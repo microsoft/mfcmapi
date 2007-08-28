@@ -70,8 +70,7 @@
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
-				Description="Build RC2"
-				CommandLine="updatebuild.vbs&#x0D;&#x0A;rc /l 0x409 /fo&quot;Release Unicode/MFCMapi.res&quot; /d &quot;NDEBUG&quot; /d &quot;_AFXDLL&quot; MFCMapi.rc&#x0D;&#x0A;"
+				CommandLine=""
 			/>
 			<Tool
 				Name="VCLinkerTool"
@@ -168,8 +167,7 @@
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
-				Description="Build RC2"
-				CommandLine="updatebuild.vbs&#x0D;&#x0A;rc /l 0x409 /fo&quot;Debug/MFCMapi.res&quot; /d &quot;_DEBUG&quot; /d &quot;_AFXDLL&quot; MFCMapi.rc&#x0D;&#x0A;"
+				CommandLine=""
 			/>
 			<Tool
 				Name="VCLinkerTool"
@@ -265,8 +263,7 @@
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
-				Description="Build RC2"
-				CommandLine="updatebuild.vbs&#x0D;&#x0A;rc /l 0x409 /fo&quot;Debug Unicode/MFCMapi.res&quot; /d &quot;_DEBUG&quot; /d &quot;_AFXDLL&quot; MFCMapi.rc&#x0D;&#x0A;"
+				CommandLine=""
 			/>
 			<Tool
 				Name="VCLinkerTool"
@@ -363,8 +360,7 @@
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
-				Description="Build RC2"
-				CommandLine="updatebuild.vbs&#x0D;&#x0A;rc /l 0x409 /fo&quot;Release/MFCMapi.res&quot; /d &quot;NDEBUG&quot; /d &quot;_AFXDLL&quot; MFCMapi.rc&#x0D;&#x0A;"
+				CommandLine=""
 			/>
 			<Tool
 				Name="VCLinkerTool"
@@ -447,10 +443,6 @@
 			</File>
 			<File
 				RelativePath=".\bldver.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Build.h"
 				>
 			</File>
 			<File

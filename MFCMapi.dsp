@@ -45,7 +45,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MD /W4 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /Yu"stdafx.h" /FD /c
-# ADD CPP /nologo /G6 /Gz /MD /W4 /WX /GX /Zi /Od /Ob1 /I ".\include" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR /YX"stdafx.h" /FD /GF /c
+# ADD CPP /nologo /G6 /MD /W4 /WX /GX /Zi /Od /Ob1 /I ".\include" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR /YX"stdafx.h" /FD /GF /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG" /d "_AFXDLL"
@@ -63,8 +63,6 @@ TargetDir=.\Release
 TargetPath=.\Release\mfcmapi.exe
 TargetName=mfcmapi
 SOURCE="$(InputPath)"
-PreLink_Desc=Build RC2
-PreLink_Cmds=updatebuild.vbs	rc /l 0x409 /fo"Release/MFCMapi.res" /d "NDEBUG" /d "_AFXDLL" MFCMapi.rc
 PostBuild_Desc=Copy Release build
 PostBuild_Cmds=copy "$(TargetPath)" "$(WkspDir)"	copy "$(TargetDir)\$(TargetName).pdb" "$(WkspDir)"
 # End Special Build Tool
@@ -95,11 +93,6 @@ LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:con
 # ADD LINK32 version.lib msi.lib /nologo /subsystem:windows /incremental:no /debug /machine:I386 /nodefaultlib:"LIBC" /libpath:".\lib" /release
 # SUBTRACT LINK32 /pdb:none
-# Begin Special Build Tool
-SOURCE="$(InputPath)"
-PreLink_Desc=Build RC2
-PreLink_Cmds=updatebuild.vbs	rc /l 0x409 /fo"Debug/MFCMapi.res" /d "_DEBUG" /d "_AFXDLL" MFCMapi.rc
-# End Special Build Tool
 
 !ELSEIF  "$(CFG)" == "MFCMapi - Win32 Debug Unicode"
 
@@ -129,11 +122,6 @@ LINK32=link.exe
 # SUBTRACT BASE LINK32 /pdb:none
 # ADD LINK32 version.lib msi.lib /nologo /entry:"wWinMainCRTStartup" /subsystem:windows /incremental:no /debug /machine:I386 /nodefaultlib:"mfc42d.lib" /nodefaultlib:"mfcs42d.lib" /nodefaultlib:"mfco42d.lib" /nodefaultlib:"LIBC" /libpath:".\lib" /release
 # SUBTRACT LINK32 /pdb:none
-# Begin Special Build Tool
-SOURCE="$(InputPath)"
-PreLink_Desc=Build RC2
-PreLink_Cmds=updatebuild.vbs	rc /l 0x409 /fo"Debug_Unicode/MFCMapi.res" /d "_DEBUG" /d "_AFXDLL" MFCMapi.rc
-# End Special Build Tool
 
 !ELSEIF  "$(CFG)" == "MFCMapi - Win32 Release Unicode"
 
@@ -162,11 +150,6 @@ LINK32=link.exe
 # ADD BASE LINK32 mapi32.lib MbLogon.Lib EdkMapi.Lib EdkDebug.Lib EdkGUID.Lib EdkUtils.Lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"LIBC" /pdbtype:con
 # ADD LINK32 version.lib msi.lib /nologo /entry:"wWinMainCRTStartup" /subsystem:windows /debug /machine:I386 /nodefaultlib:"mfc42d.lib" /nodefaultlib:"mfcs42d.lib" /nodefaultlib:"mfco42d.lib" /nodefaultlib:"LIBC" /libpath:".\lib" /release
 # SUBTRACT LINK32 /pdb:none
-# Begin Special Build Tool
-SOURCE="$(InputPath)"
-PreLink_Desc=Build RC2
-PreLink_Cmds=updatebuild.vbs	rc /l 0x409 /fo"Release_Unicode/MFCMapi.res" /d "NDEBUG" /d "_AFXDLL" MFCMapi.rc
-# End Special Build Tool
 
 !ENDIF 
 
@@ -715,23 +698,6 @@ SOURCE=.\Res\up.bmp
 # Begin Source File
 
 SOURCE=.\mfcmapi.exe.manifest
-# End Source File
-# Begin Source File
-
-SOURCE=.\UpdateBuild.vbs
-
-!IF  "$(CFG)" == "MFCMapi - Win32 Release"
-
-# PROP Exclude_From_Build 1
-
-!ELSEIF  "$(CFG)" == "MFCMapi - Win32 Debug"
-
-!ELSEIF  "$(CFG)" == "MFCMapi - Win32 Debug Unicode"
-
-!ELSEIF  "$(CFG)" == "MFCMapi - Win32 Release Unicode"
-
-!ENDIF 
-
 # End Source File
 # End Target
 # End Project
