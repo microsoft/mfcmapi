@@ -1,0 +1,736 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE
+BEGIN
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\MFCMapi.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""          // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON    DISCARDABLE     "MFCMapi.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU_MAIN MENU DISCARDABLE
+BEGIN
+    POPUP "&Session"
+    BEGIN
+        MENUITEM "Logon and Display Store Table", ID_LOGONANDDISPLAYSTORES
+        MENUITEM SEPARATOR
+        MENUITEM "&Logon only (Does not display stores)", ID_LOGON
+        MENUITEM "Logon with flags",            ID_LOGONWITHFLAGS
+        MENUITEM "&Logoff",                     ID_LOGOFF
+        MENUITEM SEPARATOR
+        MENUITEM "Load MAPI",                   ID_LOADMAPI
+        MENUITEM "Unload MAPI",                 ID_UNLOADMAPI
+        MENUITEM "MAPIInitialize",              ID_MAPIINITIALIZE
+        MENUITEM "MAPIUninitialize",            ID_MAPIUNINITIALIZE
+        MENUITEM SEPARATOR
+        MENUITEM "Display Message Store Table", ID_OPENMESSAGESTORETABLE
+        MENUITEM "Is Attachment Blocked..."		ID_ISATTACHMENTBLOCKED
+        MENUITEM "View Status Table...",        ID_VIEWSTATUSTABLE
+        MENUITEM "QueryDefaultMessageOpt",      ID_QUERYDEFAULTMESSAGEOPT
+        MENUITEM "Display Current User Properties", ID_QUERYIDENTITY
+        MENUITEM SEPARATOR
+        MENUITEM "View properties of MSG file", ID_VIEWMSGPROPERTIES
+        MENUITEM "Convert MSG to EML",          ID_CONVERTMSGTOEML
+        MENUITEM "Convert EML to MSG",          ID_CONVERTEMLTOMSG
+        MENUITEM SEPARATOR
+        MENUITEM "Local Form Container..."      ID_MAPIOPENLOCALFORMCONTAINER
+        MENUITEM "Open Form Container..."       ID_OPENFORMCONTAINER
+        MENUITEM "Select Form...",              ID_SELECTFORM
+        MENUITEM "Select Form Container...",    ID_SELECTFORMCONTAINER
+    END
+    POPUP "A&ddress Book"
+    BEGIN
+        MENUITEM "View AB Hierarchy...",        ID_VIEWABHIERARCHY
+        MENUITEM "Open PAB",                    ID_OPENPAB
+        MENUITEM "QueryDefaultRecipOpt",        ID_QUERYDEFAULTRECIPOPT
+        MENUITEM SEPARATOR
+        MENUITEM "Open Address Book",           ID_OPENADDRESSBOOK
+        MENUITEM "Close Address Book",          ID_CLOSEADDRESSBOOK
+    END
+    POPUP "&MDB"
+    BEGIN
+        MENUITEM "Open Store",                  ID_DISPLAYSELECTEDITEM
+        MENUITEM "Open &Default Message Store...",
+                                                ID_OPENDEFAULTMESSAGESTORE
+        MENUITEM "Open &Public Folder Store...", ID_OPENPUBLICFOLDERS
+        MENUITEM "Open Deleted Folders...",     ID_OPENSELECTEDSTOREDELETEDFOLDERS
+
+        MENUITEM SEPARATOR
+        MENUITEM "Open Other User's Mailbox...",
+                                                ID_OPENOTHERUSERSMAILBOXFROMGAL
+
+        MENUITEM "Open Mailbox with DN...",     ID_OPENMAILBOXWITHDN
+        MENUITEM "Open Message Store EID...",   ID_OPENMESSAGESTOREEID
+        MENUITEM "Get &Mailbox Table...",       ID_DISPLAYMAILBOXTABLE
+        MENUITEM "Get Public Folder Table...",  ID_DISPLAYPUBLICFOLDERTABLE
+        MENUITEM SEPARATOR
+        MENUITEM "Set Default Store",           ID_SETDEFAULTSTORE
+    END
+    POPUP "Profile"
+    BEGIN
+        MENUITEM "Show &Profiles",              ID_SHOWPROFILES
+        MENUITEM "Get MAPISVC.INF path",        ID_GETMAPISVCINF
+        MENUITEM "Add Services to MAPISVC.INF", ID_ADDSERVICESTOMAPISVCINF
+        MENUITEM "Remove Services from MAPISVC.INF",
+                                                ID_REMOVESERVICESFROMMAPISVCINF
+
+        MENUITEM "Launch Profile Wizard",       ID_LAUNCHPROFILEWIZARD
+    END
+    POPUP "&Dump"
+    BEGIN
+        MENUITEM "Dump Store Contents To Text (SLOW)", ID_DUMPSTORECONTENTS
+        MENUITEM "Dump Server Contents To Text (VERY SLOW)",
+                                                ID_DUMPSERVERCONTENTSTOTEXT
+    END
+END
+
+IDR_MENU_MAIN_POPUP MENU DISCARDABLE
+BEGIN
+    MENUITEM "Open Store",                  ID_DISPLAYSELECTEDITEM
+    MENUITEM "Set Default Store",           ID_SETDEFAULTSTORE
+    MENUITEM "Open &Selected Store Deleted Folders...",
+                                            ID_OPENSELECTEDSTOREDELETEDFOLDERS
+
+    MENUITEM "Dump Store Contents To Text (SLOW)", ID_DUMPSTORECONTENTS
+    MENUITEM SEPARATOR
+    MENUITEM "&Logoff",                     ID_LOGOFF
+END
+
+IDR_MENU_EDITOR_POPUP MENU DISCARDABLE
+BEGIN
+    MENUITEM "Cut",                         ID_DISPLAYSELECTEDITEM
+    MENUITEM "Copy",                        ID_DISPLAYSELECTEDITEM
+    MENUITEM "Paste",                       ID_DISPLAYSELECTEDITEM
+END
+
+IDR_MENU_DEFAULT_POPUP MENU DISCARDABLE
+BEGIN
+    MENUITEM "Open Item",                   ID_DISPLAYSELECTEDITEM
+END
+
+IDR_MENU_FOLDER MENU DISCARDABLE
+BEGIN
+    POPUP "&Actions"
+    BEGIN
+        MENUITEM "Open Message",                ID_OPENNONMODAL
+        MENUITEM "Open Message (Modal)",        ID_OPENMODAL
+        MENUITEM "Execute Verb On Form",        ID_EXECUTEVERBONFORM
+        MENUITEM SEPARATOR
+        MENUITEM "Copy Messages",               ID_COPY
+        MENUITEM "Paste Messages",              ID_PASTE
+        MENUITEM "&Delete Message",             ID_DELETESELECTEDITEM
+        MENUITEM "Delete Attachments...",       ID_DELETEATTACHMENTS
+        MENUITEM SEPARATOR
+        MENUITEM "Display Attachment Table",    ID_ATTACHMENTPROPERTIES
+        MENUITEM "Display Recipient Table",     ID_RECIPIENTPROPERTIES
+        MENUITEM SEPARATOR
+        MENUITEM "&Add Test Address",           ID_ADDTESTADDRESS
+        MENUITEM "Get Props Using Longterm EID", ID_GETPROPSUSINGLONGTERMEID
+        MENUITEM "Manual &Resolve",             ID_MANUALRESOLVE
+        MENUITEM "Resend embedded (NDR) Message", ID_RESENDMESSAGE
+        MENUITEM "RTFSync",                     ID_RTFSYNC
+        MENUITEM "Submit Message",              ID_SUBMITMESSAGE
+        MENUITEM "Abort Submit ",               ID_ABORTSUBMIT
+		MENUITEM "Remove One Off Properties"    ID_REMOVEONEOFF
+        MENUITEM SEPARATOR
+        MENUITEM "Get Message Options",         ID_GETMESSAGEOPTIONS
+        MENUITEM "Get Message Status",          ID_GETMESSAGESTATUS
+        MENUITEM "Set Message Status",          ID_SETMESSAGESTATUS
+        MENUITEM "Set Read Flag",               ID_SETREADFLAG
+        MENUITEM SEPARATOR
+        MENUITEM "Save All &Attachments...",    ID_SAVEATTACHMENTS
+        MENUITEM "Save Message(s) To File...",  ID_SAVEMESSAGETOFILE
+    END
+    POPUP "&Folder"
+    BEGIN
+        MENUITEM "Display ACL table...",        ID_DISPLAYACLTABLE
+        MENUITEM "Load From EML...",            ID_LOADFROMEML
+        MENUITEM "Load From MSG...",            ID_LOADFROMMSG
+        MENUITEM "Load From TNEF...",           ID_LOADFROMTNEF
+        MENUITEM "Select Form...",              ID_SELECTFORM
+        MENUITEM "Send Bulk Mail From Folder",  ID_SENDBULKMAIL
+        MENUITEM "Save Folder Contents as Text Files",
+                                                ID_SAVEFOLDERCONTENTSASTEXTFILES
+
+    END
+    POPUP "&New"
+    BEGIN
+        MENUITEM "&Appointment...",             ID_NEW_APPOINTMENT
+        MENUITEM "&Contact...",                 ID_NEW_CONTACT
+        MENUITEM "Custom Form (enter or select class)...", ID_NEW_CUSTOMFORM
+        MENUITEM "IPM Note...",                 ID_NEW_IPMNOTE
+        MENUITEM "IPM Post...",                 ID_NEW_IPMPOST
+        MENUITEM "Sticky Note...",              ID_NEW_STICKYNOTE
+        MENUITEM "Task...",                     ID_NEW_TASK
+        MENUITEM "Generic Message (Not Displayed)", ID_NEW_MESSAGE
+    END
+END
+
+IDR_MENU_FOLDER_POPUP MENU DISCARDABLE
+BEGIN
+    MENUITEM "Open Message",                ID_OPENNONMODAL
+    MENUITEM "Open Message (Modal)",        ID_OPENMODAL
+    MENUITEM "Execute Verb On Form",        ID_EXECUTEVERBONFORM
+    MENUITEM SEPARATOR
+    MENUITEM "Copy Messages",               ID_COPY
+    MENUITEM "Paste Messages",              ID_PASTE
+    MENUITEM "&Delete Message",             ID_DELETESELECTEDITEM
+    MENUITEM "Delete Attachments...",       ID_DELETEATTACHMENTS
+    MENUITEM SEPARATOR
+    MENUITEM "Display Attachment Table",    ID_ATTACHMENTPROPERTIES
+    MENUITEM "Display Recipient Table",     ID_RECIPIENTPROPERTIES
+    MENUITEM SEPARATOR
+    MENUITEM "&Add Test Address",           ID_ADDTESTADDRESS
+    MENUITEM "Get Props Using Longterm EID", ID_GETPROPSUSINGLONGTERMEID
+    MENUITEM "Manual &Resolve",             ID_MANUALRESOLVE
+    MENUITEM "Resend embedded (NDR) Message", ID_RESENDMESSAGE
+    MENUITEM "RTFSync",                     ID_RTFSYNC
+    MENUITEM "Submit Message",              ID_SUBMITMESSAGE
+    MENUITEM "Abort Submit ",               ID_ABORTSUBMIT
+	MENUITEM "Remove One Off Properties"    ID_REMOVEONEOFF
+    MENUITEM SEPARATOR
+    MENUITEM "Get Message Options",         ID_GETMESSAGEOPTIONS
+    MENUITEM "Get Message Status",          ID_GETMESSAGESTATUS
+    MENUITEM "Set Message Status",          ID_SETMESSAGESTATUS
+    MENUITEM "Set Read Flag",               ID_SETREADFLAG
+    MENUITEM SEPARATOR
+    MENUITEM "Save All &Attachments...",    ID_SAVEATTACHMENTS
+    MENUITEM "Save Message(s) To File...",  ID_SAVEMESSAGETOFILE
+END
+
+IDR_MENU_PROFILE MENU DISCARDABLE
+BEGIN
+    POPUP "&Actions"
+    BEGIN
+        MENUITEM "Open Profile",                ID_DISPLAYSELECTEDITEM
+        MENUITEM "Create Profile",              ID_CREATEPROFILE
+        MENUITEM SEPARATOR
+        MENUITEM "Add Exchange Mailbox",        ID_ADDEXCHANGETOPROFILE
+        MENUITEM "Add PST",                     ID_ADDPSTTOPROFILE
+        MENUITEM "Add Unicode PST",             ID_ADDUNICODEPSTTOPROFILE
+        MENUITEM "Add Service...",              ID_ADDSERVICETOPROFILE
+        MENUITEM SEPARATOR
+        MENUITEM "Get Profile Server Version",  ID_GETPROFILESERVERVERSION
+        MENUITEM SEPARATOR
+        MENUITEM "Delete Profile",              ID_DELETESELECTEDITEM
+        MENUITEM SEPARATOR
+        MENUITEM "Launch Profile Wizard",       ID_LAUNCHPROFILEWIZARD
+        MENUITEM SEPARATOR
+        MENUITEM "Get MAPISVC.INF path",        ID_GETMAPISVCINF
+        MENUITEM "Add Services to MAPISVC.INF", ID_ADDSERVICESTOMAPISVCINF
+        MENUITEM "Remove Services from MAPISVC.INF",
+                                                ID_REMOVESERVICESFROMMAPISVCINF
+
+    END
+END
+
+IDR_MENU_PROFILE_POPUP MENU DISCARDABLE
+BEGIN
+    MENUITEM "Open Profile",                ID_DISPLAYSELECTEDITEM
+    MENUITEM "Delete Profile",              ID_DELETESELECTEDITEM
+    MENUITEM SEPARATOR
+    MENUITEM "Add Exchange Mailbox",        ID_ADDEXCHANGETOPROFILE
+    MENUITEM "Add PST",                     ID_ADDPSTTOPROFILE
+    MENUITEM "Add Unicode PST",             ID_ADDUNICODEPSTTOPROFILE
+    MENUITEM "Add Service...",              ID_ADDSERVICETOPROFILE
+    MENUITEM SEPARATOR
+    MENUITEM "Get Profile Server Version",  ID_GETPROFILESERVERVERSION
+END
+
+IDR_MENU_MSGSERVICE MENU DISCARDABLE
+BEGIN
+    POPUP "&Actions"
+    BEGIN
+        MENUITEM "Open Service",                ID_DISPLAYSELECTEDITEM
+        MENUITEM "Delete Service",              ID_DELETESELECTEDITEM
+        MENUITEM "Configure Service",           ID_CONFIGUREMSGSERVICE
+    END
+    POPUP "Service Admin"
+    BEGIN
+        MENUITEM "Call OpenProfileSection",     ID_OPENPROFILESECTION
+    END
+END
+
+IDR_MENU_MSGSERVICE_POPUP MENU DISCARDABLE
+BEGIN
+    MENUITEM "Open Service",                ID_DISPLAYSELECTEDITEM
+    MENUITEM "Delete Service",              ID_DELETESELECTEDITEM
+    MENUITEM "Configure Service",           ID_CONFIGUREMSGSERVICE
+END
+
+IDR_MENU_PROVIDER MENU DISCARDABLE
+BEGIN
+    POPUP "Provider Admin"
+    BEGIN
+        MENUITEM "Call OpenProfileSection",     ID_OPENPROFILESECTION
+    END
+END
+
+IDR_MENU_AB_VIEW MENU DISCARDABLE
+BEGIN
+    POPUP "&Actions"
+    BEGIN
+        MENUITEM "Open Item",                   ID_DISPLAYSELECTEDITEM
+        MENUITEM "Copy",                        ID_COPY
+        MENUITEM "Paste",                       ID_PASTE
+        MENUITEM "Delete",                      ID_DELETESELECTEDITEM
+        MENUITEM SEPARATOR
+        MENUITEM "Display Details",             ID_DISPLAYDETAILS
+        MENUITEM "Open Contact",                ID_OPENCONTACT
+        MENUITEM "Open &Manager",               ID_OPENMANAGER
+        MENUITEM "Open &Owner",                 ID_OPENOWNER
+    END
+END
+
+IDR_MENU_AB_VIEW_POPUP MENU DISCARDABLE
+BEGIN
+    MENUITEM "Open Item",                   ID_DISPLAYSELECTEDITEM
+    MENUITEM "Copy",                        ID_COPY
+    MENUITEM "Paste",                       ID_PASTE
+    MENUITEM "Delete",                      ID_DELETESELECTEDITEM
+    MENUITEM SEPARATOR
+    MENUITEM "Display Details",             ID_DISPLAYDETAILS
+    MENUITEM "Open Contact",                ID_OPENCONTACT
+    MENUITEM "Open &Manager",               ID_OPENMANAGER
+    MENUITEM "Open &Owner",                 ID_OPENOWNER
+END
+
+IDR_MENU_ABCONT MENU DISCARDABLE
+BEGIN
+    POPUP "&Actions"
+    BEGIN
+        MENUITEM "Set PAB",                     ID_SETPAB
+    END
+END
+
+IDR_MENU_ABCONT_POPUP MENU DISCARDABLE
+BEGIN
+    MENUITEM "Set PAB",                     ID_SETPAB
+END
+
+IDR_MENU_RECIPIENTS MENU DISCARDABLE
+BEGIN
+    POPUP "&Actions"
+    BEGIN
+        MENUITEM "Open Item",                   ID_DISPLAYSELECTEDITEM
+//        MENUITEM "Copy",                        ID_COPY
+//        MENUITEM "Paste",                       ID_PASTE
+        MENUITEM "Delete",                      ID_DELETESELECTEDITEM
+        MENUITEM "Modify Recipient",            ID_MODIFYRECIPIENT
+        MENUITEM "Recipient Options",           ID_RECIPOPTIONS
+        MENUITEM "Save Changes",                ID_SAVECHANGES
+    END
+END
+
+IDR_MENU_RECIPIENTS_POPUP MENU DISCARDABLE
+BEGIN
+    MENUITEM "Open Item",                   ID_DISPLAYSELECTEDITEM
+//    MENUITEM "Copy",                        ID_COPY
+//    MENUITEM "Paste",                       ID_PASTE
+    MENUITEM "Delete",                      ID_DELETESELECTEDITEM
+    MENUITEM "Modify Recipient",            ID_MODIFYRECIPIENT
+    MENUITEM "Recipient Options",           ID_RECIPOPTIONS
+    MENUITEM "Save Changes",                ID_SAVECHANGES
+END
+
+IDR_MENU_RULES MENU DISCARDABLE
+BEGIN
+    POPUP "&Actions"
+    BEGIN
+        MENUITEM "Open Item",                   ID_DISPLAYSELECTEDITEM
+        MENUITEM "Delete",                      ID_DELETESELECTEDITEM
+        MENUITEM "Modify Items",                ID_MODIFYSELECTEDITEM
+//        MENUITEM "Save Changes",                ID_SAVECHANGES
+    END
+END
+
+IDR_MENU_RULES_POPUP MENU DISCARDABLE
+BEGIN
+    MENUITEM "Open Item",                   ID_DISPLAYSELECTEDITEM
+    MENUITEM "Delete",                      ID_DELETESELECTEDITEM
+    MENUITEM "Modify Items",                ID_MODIFYSELECTEDITEM
+//    MENUITEM "Save Changes",                ID_SAVECHANGES
+END
+
+IDR_MENU_ACL MENU DISCARDABLE
+BEGIN
+    POPUP "&Actions"
+    BEGIN
+        MENUITEM "Add Item",                    ID_ADDITEM
+        MENUITEM "Delete Item",                 ID_DELETESELECTEDITEM
+        MENUITEM "Modify Items",                ID_MODIFYSELECTEDITEM
+    END
+END
+
+IDR_MENU_ACL_POPUP MENU DISCARDABLE
+BEGIN
+    MENUITEM "Add Item",                    ID_ADDITEM
+    MENUITEM "Delete Item",                 ID_DELETESELECTEDITEM
+    MENUITEM "Modify Items",                ID_MODIFYSELECTEDITEM
+END
+
+IDR_MENU_FORM_CONTAINER MENU DISCARDABLE
+BEGIN
+    POPUP "&Actions"
+    BEGIN
+        MENUITEM "Install Form...",                     ID_INSTALLFORM
+        MENUITEM "Remove Form...",                      ID_REMOVEFORM
+        MENUITEM "Resolve Message Class...",            ID_RESOLVEMESSAGECLASS
+        MENUITEM "Resolve Multiple Message Classes...", ID_RESOLVEMULTIPLEMESSAGECLASSES
+        MENUITEM "Calc Form PropSet...",                ID_CALCFORMPOPSET
+        MENUITEM "Get Display...",                      ID_GETDISPLAY
+    END
+END
+
+IDR_MENU_FORM_CONTAINER_POPUP MENU DISCARDABLE
+BEGIN
+    MENUITEM "Remove Form",                      ID_DELETESELECTEDITEM
+END
+
+IDR_MENU_MESSAGESTORE MENU DISCARDABLE
+BEGIN
+    POPUP "&Actions"
+    BEGIN
+        MENUITEM "Open Contents Table",         ID_DISPLAYSELECTEDITEM
+        MENUITEM "Open &Associated Contents Table",
+                                                ID_DISPLAYASSOCIATEDCONTENTS
+        MENUITEM "Open &Deleted Contents Table", ID_DISPLAYDELETEDCONTENTS
+        MENUITEM "Open Deleted Sub Folder Table",
+                                                ID_DISPLAYDELETEDSUBFOLDERS
+        MENUITEM SEPARATOR
+        MENUITEM "Display &ACL table...",       ID_DISPLAYACLTABLE
+        MENUITEM "Display &Rules Table...",     ID_DISPLAYRULESTABLE
+        MENUITEM SEPARATOR
+        MENUITEM "&Copy",                       ID_COPY
+        MENUITEM "&Paste",                      ID_PASTE
+        MENUITEM "Paste Rules",                 ID_PASTE_RULES
+        MENUITEM "Restore Deleted Folder...",   ID_RESTOREDELETEDFOLDER
+        MENUITEM SEPARATOR
+        MENUITEM "Create &SubFolder",           ID_CREATESUBFOLDER
+        MENUITEM "Delete Folder",               ID_DELETESELECTEDITEM
+        MENUITEM "Empty Items and Subfolders from Folder...", ID_EMPTYFOLDER
+		MENUITEM "Open Form Container..."       ID_OPENFORMCONTAINER
+        MENUITEM "Select Form...",              ID_SELECTFORM
+        MENUITEM "Resend All Embedded (NDR) Messages", ID_RESENDALLMESSAGES
+        MENUITEM "Reset Permissions On Folder Contents",
+                                                ID_RESETPERMISSIONSONITEMS
+        MENUITEM "Set Receive Folder...",       ID_SETRECEIVEFOLDER
+        MENUITEM SEPARATOR
+        MENUITEM "Save Folder Contents as MSG Files...",
+                                                ID_SAVEFOLDERCONTENTSASMSG
+        MENUITEM "Save Folder Contents as Text Files",
+                                                ID_SAVEFOLDERCONTENTSASTEXTFILES
+
+    END
+    POPUP "&Special Folder"
+    BEGIN
+        MENUITEM "Calendar...",                 ID_DISPLAYCALENDAR
+        MENUITEM "Contacts...",                 ID_DISPLAYCONTACTS
+        MENUITEM "&Inbox...",                   ID_DISPLAYINBOX
+        MENUITEM "Tasks...",                    ID_DISPLAYTASKS
+    END
+    POPUP "&MDB"
+    BEGIN
+        MENUITEM "&Validate IPM Subtree",       ID_VALIDATEIPMSUBTREE
+        POPUP "Display"
+        BEGIN
+            MENUITEM "&Mailbox Table...",           ID_DISPLAYMAILBOXTABLE
+            MENUITEM "&Outgoing Queue",             ID_DISPLAYOUTGOINGQUEUE
+            MENUITEM "&Receive Folder Table...",    ID_DISPLAYRECEIVEFOLDERTABLE
+
+        END
+    END
+END
+
+IDR_MENU_MESSAGESTORE_POPUP MENU DISCARDABLE
+BEGIN
+    MENUITEM "Open Contents Table",         ID_DISPLAYSELECTEDITEM
+    MENUITEM "Open &Associated Contents Table", ID_DISPLAYASSOCIATEDCONTENTS
+    MENUITEM "Open &Deleted Contents Table", ID_DISPLAYDELETEDCONTENTS
+    MENUITEM "Open Deleted Sub Folder Table", ID_DISPLAYDELETEDSUBFOLDERS
+    MENUITEM SEPARATOR
+    MENUITEM "Display &ACL table...",       ID_DISPLAYACLTABLE
+    MENUITEM "Display &Rules Table...",     ID_DISPLAYRULESTABLE
+    MENUITEM SEPARATOR
+    MENUITEM "&Copy",                       ID_COPY
+    MENUITEM "&Paste",                      ID_PASTE
+    MENUITEM "Paste Rules",                 ID_PASTE_RULES
+    MENUITEM "Restore Deleted Folder...",   ID_RESTOREDELETEDFOLDER
+    MENUITEM SEPARATOR
+    MENUITEM "Create &SubFolder",           ID_CREATESUBFOLDER
+    MENUITEM "Delete Folder",               ID_DELETESELECTEDITEM
+    MENUITEM "Empty Items and Subfolders from Folder...", ID_EMPTYFOLDER
+	MENUITEM "Open Form Container..."       ID_OPENFORMCONTAINER
+    MENUITEM "Select Form...",              ID_SELECTFORM
+    MENUITEM "Resend All Embedded (NDR) Messages", ID_RESENDALLMESSAGES
+    MENUITEM "Reset Permissions On Folder Contents",
+                                            ID_RESETPERMISSIONSONITEMS
+    MENUITEM "Set Receive Folder...",       ID_SETRECEIVEFOLDER
+    MENUITEM SEPARATOR
+    MENUITEM "Save Folder Contents as MSG Files...",
+                                            ID_SAVEFOLDERCONTENTSASMSG
+    MENUITEM "Save Folder Contents as Text Files",
+                                            ID_SAVEFOLDERCONTENTSASTEXTFILES
+END
+
+IDR_MENU_ATTACHMENTS MENU DISCARDABLE
+BEGIN
+    POPUP "&Actions"
+    BEGIN
+        MENUITEM "Open Attachment",             ID_DISPLAYSELECTEDITEM
+        MENUITEM "&Delete Attachment",          ID_DELETESELECTEDITEM
+        MENUITEM "&Save to File...",            ID_SAVETOFILE
+        MENUITEM SEPARATOR
+        MENUITEM "Save Changes On Message",     ID_SAVECHANGES
+        MENUITEM "Save Changes On Selected Item", ID_MODIFYSELECTEDITEM
+        MENUITEM "View Attachments As Embedded Messages",
+                                                ID_VIEWEMBEDDEDMESSAGEPROPERTIES
+
+        MENUITEM "Use MAPI_MODIFY when viewing embedded messages",
+                                                ID_USEMAPIMODIFYONATTACHMENTS
+
+    END
+END
+
+IDR_MENU_ATTACHMENTS_POPUP MENU DISCARDABLE
+BEGIN
+    MENUITEM "Open Attachment",             ID_DISPLAYSELECTEDITEM
+    MENUITEM "&Delete Attachment",          ID_DELETESELECTEDITEM
+    MENUITEM "&Save to File...",            ID_SAVETOFILE
+    MENUITEM "Save Changes On Selected Item", ID_MODIFYSELECTEDITEM
+    MENUITEM "View Attachments As Embedded Messages",
+                                            ID_VIEWEMBEDDEDMESSAGEPROPERTIES
+    MENUITEM "Use MAPI_MODIFY when viewing embedded messages",
+                                            ID_USEMAPIMODIFYONATTACHMENTS
+END
+
+IDR_MENU_PROPERTY MENU DISCARDABLE
+BEGIN
+    POPUP "Selected Property"
+    BEGIN
+        MENUITEM "&Edit Property...",           ID_EDITPROPERTY
+        MENUITEM "Edit Property as ASCII Stream...",
+                                                ID_EDITPROPERTYASASCIISTREAM
+        MENUITEM "Edit Property as Unicode Stream...",
+                                                ID_EDITPROPERTYASUNICODESTREAM
+        MENUITEM "Edit Property as RTF Stream...",
+                                                ID_EDITPROPERTYASPRRTFCOMPRESSEDSTREAM
+
+        MENUITEM "Edit Property As Binary Stream", ID_EDITPROPASBINARYSTREAM
+        MENUITEM SEPARATOR
+        MENUITEM "&Open As Entry ID or Object", ID_OPEN_PROPERTY
+        MENUITEM "Copy Property",               ID_COPY_PROPERTY
+        MENUITEM "Paste Property",              ID_PASTE_PROPERTY
+        MENUITEM "Paste Named Properties...",   ID_PASTE_NAMEDPROPS
+        MENUITEM SEPARATOR
+        MENUITEM "&Delete Property",            ID_DELETEPROPERTY
+        MENUITEM SEPARATOR
+        MENUITEM "Display Property as Security Descriptor...",
+                                                ID_DISPLAYPROPERTYASSECURITYDESCRIPTOR
+
+        MENUITEM "Display Property As Security Descriptor Prop Sheet...",
+                                                ID_DISPLAYPROPERTYASSECURITYDESCRIPTORPROPSHEET
+        MENUITEM "Display Property as Time Zone Reg..." ID_DISPLAYPROPERTYASTZREG
+        MENUITEM "Display Property as Time Zone Definition..." ID_DISPLAYPROPERTYASTZDEFINITION
+
+    END
+    MENUITEM SEPARATOR
+    MENUITEM "&Modify 'Extra' Properties...", ID_MODIFYEXTRAPROPS
+    MENUITEM "Find All Named Props (SLOW)", ID_FINDALLNAMEDPROPS
+    MENUITEM SEPARATOR
+    MENUITEM "Call CopyTo...",              ID_COPYTO
+    MENUITEM "Edit given property...",      ID_EDITGIVENPROPERTY
+    MENUITEM "Open Property As Table...",   ID_OPENPROPERTYASTABLE
+    MENUITEM SEPARATOR
+    MENUITEM "&Save Property Pane Contents...", ID_SAVEPROPERTIES
+END
+
+IDR_MENU_PROPERTY_POPUP MENU DISCARDABLE
+BEGIN
+    MENUITEM "&Edit Property...",           ID_EDITPROPERTY
+    MENUITEM "Edit Property as ASCII Stream...",
+                                            ID_EDITPROPERTYASASCIISTREAM
+    MENUITEM "Edit Property as Unicode Stream...",
+                                            ID_EDITPROPERTYASUNICODESTREAM
+    MENUITEM "Edit Property as RTF Stream...",
+                                            ID_EDITPROPERTYASPRRTFCOMPRESSEDSTREAM
+
+    MENUITEM "Edit Property As Binary Stream", ID_EDITPROPASBINARYSTREAM
+    MENUITEM SEPARATOR
+    MENUITEM "&Open As Entry ID or Object", ID_OPEN_PROPERTY
+    MENUITEM "Copy Property",               ID_COPY_PROPERTY
+    MENUITEM "Paste Property",              ID_PASTE_PROPERTY
+    MENUITEM "Paste Named Properties...",   ID_PASTE_NAMEDPROPS
+    MENUITEM SEPARATOR
+    MENUITEM "&Delete Property",            ID_DELETEPROPERTY
+    MENUITEM SEPARATOR
+    MENUITEM "Display Property as Security Descriptor...",
+                                            ID_DISPLAYPROPERTYASSECURITYDESCRIPTOR
+
+    MENUITEM "Display Property As Security Descriptor Prop Sheet...",
+                                            ID_DISPLAYPROPERTYASSECURITYDESCRIPTORPROPSHEET
+    MENUITEM "Display Property as Time Zone Reg..." ID_DISPLAYPROPERTYASTZREG
+    MENUITEM "Display Property as Time Zone Definition..." ID_DISPLAYPROPERTYASTZDEFINITION
+
+    MENUITEM SEPARATOR
+    MENUITEM "Edit given property...",      ID_EDITGIVENPROPERTY
+END
+
+IDR_MENU_OTHER MENU DISCARDABLE
+BEGIN
+    MENUITEM "Options",                     ID_OPTIONS
+    MENUITEM "Open Main Window",            ID_OPENMAINWINDOW
+    MENUITEM SEPARATOR
+    MENUITEM "Open Entry ID...",            ID_OPENENTRYID
+    MENUITEM "Compare Entry IDs...",        ID_COMPAREENTRYIDS
+    MENUITEM "Advise For Notifications",    ID_NOTIFICATIONSON
+    MENUITEM "Unadvise",                    ID_NOTIFICATIONSOFF
+    MENUITEM "Dispatch Notifications",      ID_DISPATCHNOTIFICATIONS
+    MENUITEM SEPARATOR
+    MENUITEM "Hex Editor...",               ID_HEXEDITOR
+    MENUITEM "&Help",                       ID_HELP
+END
+
+IDR_MENU_FILE_OPEN MENU DISCARDABLE
+BEGIN
+    MENUITEM "&Display Selected Item",      ID_DISPLAYSELECTEDITEM
+    MENUITEM "E&xit",                       IDCANCEL
+END
+
+IDR_MENU_FILE MENU DISCARDABLE
+BEGIN
+    MENUITEM "E&xit",                       IDCANCEL
+END
+
+IDR_MENU_TABLE MENU DISCARDABLE
+BEGIN
+    MENUITEM "Cancel Table Load",           ID_CANCELTABLELOAD
+    MENUITEM "&Refresh View",               ID_REFRESHVIEW
+    MENUITEM SEPARATOR
+    MENUITEM "Get Table Status",            ID_GETSTATUS
+    MENUITEM "Set Columns",                 ID_SETCOLUMNS
+    MENUITEM "Sort Table",                  ID_SORTTABLE
+    MENUITEM "Output Table",                ID_OUTPUTTABLE
+    MENUITEM SEPARATOR
+    MENUITEM "Table Notification On",       ID_TABLENOTIFICATIONON
+    MENUITEM "Table Notification Off",      ID_TABLENOTIFICATIONOFF
+    MENUITEM SEPARATOR
+    MENUITEM "&Create and Apply Content Restriction...",
+                                            ID_CREATEPROPERTYSTRINGRESTRICTION
+
+    MENUITEM "Create and Apply Restriction From Current Message",
+                                            ID_CREATEMESSAGERESTRICTION
+    MENUITEM "Create and Apply Range Restriction...",
+                                            ID_CREATERANGERESTRICTION
+    MENUITEM "Edit Restriction",            ID_EDITRESTRICTION
+    MENUITEM SEPARATOR
+    MENUITEM "Apply Restriction",           ID_APPLYRESTRICTION
+    MENUITEM "Apply Restriction using FindRow", ID_APPLYFINDROW
+    MENUITEM SEPARATOR
+    MENUITEM "Clear Restriction",           ID_CLEARRESTRICTION
+END
+
+IDR_MENU_HIERARCHY_TABLE MENU DISCARDABLE
+BEGIN
+    MENUITEM "&Refresh View",               ID_REFRESHVIEW
+    MENUITEM "Display Hierarchy Table...",  ID_DISPLAYHIERARCHYTABLE
+    MENUITEM "Edit Search Criteria...",     ID_EDITSEARCHCRITERIA
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_UP                  BITMAP  DISCARDABLE     "res\\up.bmp"
+IDB_DOWN                BITMAP  DISCARDABLE     "res\\down.bmp"
+IDB_ICONS               BITMAP  DISCARDABLE     "res\\icons.bmp"
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "res\MFCMapi.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"          // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

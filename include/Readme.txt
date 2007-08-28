@@ -1,0 +1,1 @@
+Only including MAPI and EDK headers here, and some headers like strsafe, which many people do not have.
