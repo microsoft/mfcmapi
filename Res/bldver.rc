@@ -2,19 +2,19 @@
 	#error this file is not editable by Microsoft Visual C++
 #endif //APSTUDIO_INVOKED
 
-#include "..\build.h"
 #include "..\bldver.h"
 
 #define rmj 6
 #define rmm 0
 #define rup 0
+#define rmn 1000
 
 #define MAKEFILEVERSION(_rmaj, _rmin, _bmaj, _bmin)			#_rmaj "." #_rmin "." #_bmaj "." #_bmin "\0"
 #define MAKEFILEVERSIONSTR(_rmaj, _rmin, _bmaj, _bmin)		MAKEFILEVERSION(_rmaj, _rmin, _bmaj, _bmin)
 /* Define file version and project version */
 
-#define INET_VER						rmj, rmm, rup, BUILDNO
-#define INET_VERSION					MAKEFILEVERSIONSTR(rmj, rmm, rup, BUILDNO)
+#define INET_VER						rmj, rmm, rup, rmn
+#define INET_VERSION					MAKEFILEVERSIONSTR(rmj, rmm, rup, rmn)
 #define RC_VERSION_COMPANY_NAME			"Microsoft Corp.\0"
 #define VER_LEGALCOPYRIGHT_YEARS		"1999-2007"
 #define RC_VERSION_PRODUCT_NAME			RC_PRODUCT_NAME "\0"
