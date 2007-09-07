@@ -885,7 +885,7 @@ void CContentsTableDlg::OnSortTable()
 						lpMySortOrders->aSort[i].ulOrder = TABLE_SORT_ASCEND;
 						break;
 					case 1:
-						lpMySortOrders->aSort[i].ulOrder = TABLE_SORT_ASCEND;
+						lpMySortOrders->aSort[i].ulOrder = TABLE_SORT_DESCEND;
 						break;
 					case 2:
 						lpMySortOrders->aSort[i].ulOrder = TABLE_SORT_COMBINE;
