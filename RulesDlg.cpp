@@ -182,9 +182,36 @@ HRESULT CRulesDlg::GetSelectedItems(ULONG ulFlags, ULONG ulRowFlags, LPROWLIST* 
 				{
 					if (ulFlags & RULE_INCLUDE_ID && ulFlags & RULE_INCLUDE_OTHER)
 					{
-						lpTempList->aEntries[iArrayPos].cValues = lpData->cSourceProps;
-						//Borrowing the pointer here! Be careful!
-						lpTempList->aEntries[iArrayPos].rgPropVals = lpData->lpSourceProps;
+						EC_H(MAPIAllocateMore(
+							lpData->cSourceProps * sizeof(SPropValue),
+							lpTempList,
+							(LPVOID*) &lpTempList->aEntries[iArrayPos].rgPropVals));
+						if (SUCCEEDED(hRes) && lpTempList->aEntries[iArrayPos].rgPropVals)
+						{
+							ULONG ulSrc = 0;
+							ULONG ulDst = 0;
+							for (ulSrc = 0; ulSrc < lpData->cSourceProps; ulSrc++)
+							{
+								if (lpData->lpSourceProps[ulSrc].ulPropTag == PR_RULE_PROVIDER_DATA)
+								{
+									if (!lpData->lpSourceProps[ulSrc].Value.bin.cb ||
+										!lpData->lpSourceProps[ulSrc].Value.bin.lpb)
+									{
+										// PR_RULE_PROVIDER_DATA was NULL - we don't want this
+										continue;
+									}
+								}
+
+								// This relies on our augmented PropCopyMore that understands PT_SRESTRICTION and PT_ACTIONS
+								EC_H(PropCopyMore(
+									&lpTempList->aEntries[iArrayPos].rgPropVals[ulDst],
+									&lpData->lpSourceProps[ulSrc],
+									MAPIAllocateMore,
+									lpTempList));
+								ulDst++;
+							}
+							lpTempList->aEntries[iArrayPos].cValues = ulDst;
+						}
 					}
 					else if (ulFlags & RULE_INCLUDE_ID)
 					{

@@ -1102,12 +1102,12 @@ STDAPI HrCopyRestriction(
 	LPSRestriction FAR * lppResDest // dest restriction buffer ptr
 	)
 {
-	if (!lpResSrc || !lppResDest) return MAPI_E_INVALID_PARAMETER;
+	if (!lppResDest) return MAPI_E_INVALID_PARAMETER;
+	*lppResDest = NULL;
+	if (!lpResSrc) return S_OK;
 
 	BOOL fNullObject =(lpObject == NULL);
 	HRESULT	hRes = S_OK;
-
-	*lppResDest = NULL;
 
 	if (lpObject != NULL)
 	{
