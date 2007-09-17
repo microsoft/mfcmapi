@@ -217,7 +217,7 @@ void CEditor::SetAddInTitle(LPWSTR szTitle)
 	m_szAddInTitle = szTitle;
 #else
 	LPSTR szTitleA = NULL;
-	HRESULT hRes = UnicodeToAnsi(szTitle,&szTitleA);
+	UnicodeToAnsi(szTitle,&szTitleA);
 	m_szAddInTitle = szTitleA;
 	delete[] szTitleA;
 #endif
@@ -231,7 +231,7 @@ void CEditor::SetAddInLabel(ULONG i,LPWSTR szLabel)
 	m_lpControls[i].szLabel = szLabel;
 #else
 	LPSTR szLabelA = NULL;
-	HRESULT hRes = UnicodeToAnsi(szLabel,&szLabelA);
+	UnicodeToAnsi(szLabel,&szLabelA);
 	m_lpControls[i].szLabel = szLabelA;
 	delete[] szLabelA;
 #endif

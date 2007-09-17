@@ -523,13 +523,40 @@ HRESULT CopyFolderRules(LPMAPIFOLDER lpSrcFolder, LPMAPIFOLDER lpDestFolder,BOOL
 				{
 					lpTempList->cEntries = lpRows->cRows;
 					ULONG iArrayPos = 0;
-
+					
 					for(iArrayPos = 0 ; iArrayPos < lpRows->cRows ; iArrayPos++)
 					{
 						lpTempList->aEntries[iArrayPos].ulRowFlags = ROW_ADD;
-						lpTempList->aEntries[iArrayPos].cValues = lpRows->aRow[iArrayPos].cValues;
-						//Borrowing the pointer here! Be careful!
-						lpTempList->aEntries[iArrayPos].rgPropVals = lpRows->aRow[iArrayPos].lpProps;
+						EC_H(MAPIAllocateMore(
+							lpRows->aRow[iArrayPos].cValues * sizeof(SPropValue),
+							lpTempList,
+							(LPVOID*) &lpTempList->aEntries[iArrayPos].rgPropVals));
+						if (SUCCEEDED(hRes) && lpTempList->aEntries[iArrayPos].rgPropVals)
+						{
+							ULONG ulSrc = 0;
+							ULONG ulDst = 0;
+							for (ulSrc = 0; ulSrc < lpRows->aRow[iArrayPos].cValues; ulSrc++)
+							{
+								if (lpRows->aRow[iArrayPos].lpProps[ulSrc].ulPropTag == PR_RULE_PROVIDER_DATA)
+								{
+									if (!lpRows->aRow[iArrayPos].lpProps[ulSrc].Value.bin.cb ||
+										!lpRows->aRow[iArrayPos].lpProps[ulSrc].Value.bin.lpb)
+									{
+										// PR_RULE_PROVIDER_DATA was NULL - we don't want this
+										continue;
+									}
+								}
+
+								// This relies on our augmented PropCopyMore that understands PT_SRESTRICTION and PT_ACTIONS
+								EC_H(PropCopyMore(
+									&lpTempList->aEntries[iArrayPos].rgPropVals[ulDst],
+									&lpRows->aRow[iArrayPos].lpProps[ulSrc],
+									MAPIAllocateMore,
+									lpTempList));
+								ulDst++;
+							}
+							lpTempList->aEntries[iArrayPos].cValues = ulDst;
+						}
 					}
 					ULONG ulFlags = 0;
 					if (bReplace) ulFlags = ROWLIST_REPLACE;

@@ -1086,34 +1086,31 @@ void CSingleMAPIPropListCtrl::OnEditPropAsRestriction(ULONG ulPropTag)
 		lpResIn = (LPSRestriction) lpEditProp->Value.lpszA;
 	}
 
-	if (lpResIn)
+	DebugPrint(DBGGeneric,_T("Source restriction before editing:\n"));
+	DebugPrintRestriction(DBGGeneric,lpResIn,m_lpMAPIProp);
+	CRestrictEditor MyResEditor(
+		this,
+		NULL,
+		lpResIn);
+	WC_H(MyResEditor.DisplayDialog());
+
+	if (S_OK == hRes)
 	{
-		DebugPrint(DBGGeneric,_T("Source restriction before editing:\n"));
-		DebugPrintRestriction(DBGGeneric,lpResIn,m_lpMAPIProp);
-		CRestrictEditor MyResEditor(
-			this,
-			NULL,
-			lpResIn);
-		WC_H(MyResEditor.DisplayDialog());
+		LPSRestriction lpModRes = MyResEditor.DetachModifiedSRestriction();
+		//what to do with this now that I've got it?
 
-		if (S_OK == hRes)
+		if (lpModRes)
 		{
-			LPSRestriction lpModRes = MyResEditor.DetachModifiedSRestriction();
-			//what to do with this now that I've got it?
+			DebugPrint(DBGGeneric,_T("Modified restriction:\n"));
+			DebugPrintRestriction(DBGGeneric,lpModRes,m_lpMAPIProp);
 
-			if (lpModRes)
-			{
-				DebugPrint(DBGGeneric,_T("Modified restriction:\n"));
-				DebugPrintRestriction(DBGGeneric,lpModRes,m_lpMAPIProp);
+			lpEditProp->Value.lpszA = (LPSTR) lpModRes;
+			//don't free lpModRes since it'll get freed when the source array gets freed.
 
-				lpEditProp->Value.lpszA = (LPSTR) lpModRes;
-				//don't free lpModRes since it'll get freed when the source array gets freed.
+			m_bRowModified = true;
 
-				m_bRowModified = true;
-
-				//refresh
-				RefreshMAPIPropList();
-			}
+			//refresh
+			RefreshMAPIPropList();
 		}
 	}
 }//CSingleMAPIPropListCtrl::OnEditPropAsRestriction

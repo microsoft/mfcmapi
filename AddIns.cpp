@@ -149,7 +149,24 @@ void LoadAddIns()
 					hRes = S_OK;
 					DebugPrint(DBGAddInPlumbing,_T("Examining \"%s\"\n"),FindFileData.cFileName);
 					HMODULE hMod = NULL;
-					hMod = MyLoadLibrary(FindFileData.cFileName);
+
+					// LoadLibrary calls DLLMain, which can get expensive just to see if a function is exported
+					// So we use DONT_RESOLVE_DLL_REFERENCES to see if we're interested in the DLL first
+					// Only if we're interested do we reload the DLL for real
+					hMod = LoadLibraryEx(FindFileData.cFileName,NULL,DONT_RESOLVE_DLL_REFERENCES);
+					if (hMod)
+					{
+						LPLOADADDIN pfnLoadAddIn = NULL;
+						WC_D(pfnLoadAddIn, (LPLOADADDIN) GetProcAddress(hMod,szLoadAddIn));
+						FreeLibrary(hMod);
+						hMod = NULL;
+
+						if (pfnLoadAddIn)
+						{
+							// We found a candidate, load it for real now
+							hMod = MyLoadLibrary(FindFileData.cFileName);
+						}
+					}
 					if (hMod)
 					{
 						DebugPrint(DBGAddInPlumbing,_T("Opened module\n"));
