@@ -103,3 +103,5 @@ HRESULT AnsiToUnicode(LPCSTR pszA, LPWSTR* ppszW);
 HRESULT UnicodeToAnsi(LPCWSTR pszW, LPSTR* ppszA, size_t cchszW = -1);
 
 BOOL CheckStringProp(LPSPropValue lpProp, ULONG ulPropType);
+DWORD ComputeStoreHash(ULONG cbStoreEID, LPENTRYID pbStoreEID, LPCWSTR pwzFileName);
+LPWSTR EncodeID(ULONG cbEID, LPENTRYID rgbID);

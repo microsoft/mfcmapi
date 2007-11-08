@@ -1367,8 +1367,10 @@ void GetPropName(LPMAPIPROP lpMAPIProp,
 			//lpwstrName is LPWSTR which means it's ALWAYS unicode
 			//But some folks get it wrong and stuff ANSI data in there
 			//So we check the string length both ways to make our best guess
-			size_t cchShortLen = strlen((LPSTR)(lppPropNames[0]->Kind.lpwstrName));
-			size_t cchWideLen = wcslen(lppPropNames[0]->Kind.lpwstrName);
+			size_t cchShortLen = NULL;
+			size_t cchWideLen = NULL;
+			WC_H(StringCchLengthA((LPSTR)lppPropNames[0]->Kind.lpwstrName,STRSAFE_MAX_CCH,&cchShortLen));
+			WC_H(StringCchLengthW(lppPropNames[0]->Kind.lpwstrName,STRSAFE_MAX_CCH,&cchWideLen));
 
 			if (cchShortLen < cchWideLen)
 			{

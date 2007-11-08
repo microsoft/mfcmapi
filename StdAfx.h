@@ -159,24 +159,36 @@ struct SortListData
 #define DIMMSOK(iNumSelected) ((iNumSelected>=1)?MF_ENABLED:MF_GRAYED)
 #define DIMMSNOK(iNumSelected) ((iNumSelected==1)?MF_ENABLED:MF_GRAYED)
 
-//Flags for cached/offline mode - See http://support.microsoft.com/?id=834496
+//Flags for cached/offline mode - See http://msdn2.microsoft.com/en-us/library/bb820947.aspx
 //Used in OpenMsgStore
 #define MDB_ONLINE ((ULONG) 0x00000100)
 
 //Used in OpenEntry
 #define MAPI_NO_CACHE ((ULONG) 0x00000200)
 
-//various flags gleaned from product documentation and KB articles
-#define STORE_HTML_OK			((ULONG) 0x00010000)
+/* Flag to keep calls from redirecting in cached mode */
+#define MAPI_CACHE_ONLY         ((ULONG) 0x00004000)
 
+#define MAPI_BG_SESSION         0x00200000 /* Used for async profile access */
+#define SPAMFILTER_ONSAVE       ((ULONG) 0x00000080)
+
+//various flags gleaned from product documentation and KB articles
+// http://msdn2.microsoft.com/en-us/library/ms526744.aspx
+#define STORE_HTML_OK			((ULONG) 0x00010000)
+#define STORE_ANSI_OK			((ULONG) 0x00020000)
+#define STORE_LOCALSTORE		((ULONG) 0x00080000)
+
+// http://msdn2.microsoft.com/en-us/library/ms531462.aspx
 #define ATT_INVISIBLE_IN_HTML	((ULONG) 0x00000001)
 #define ATT_INVISIBLE_IN_RTF	((ULONG) 0x00000002)
 #define ATT_MHTML_REF			((ULONG) 0x00000004)
 
+// http://msdn2.microsoft.com/en-us/library/ms527629.aspx
 #define	MSGFLAG_ORIGIN_X400		((ULONG) 0x00001000)
 #define	MSGFLAG_ORIGIN_INTERNET	((ULONG) 0x00002000)
 #define MSGFLAG_ORIGIN_MISC_EXT ((ULONG) 0x00008000)
 
+// http://msdn2.microsoft.com/en-us/library/ms528848.aspx
 #define	MSGSTATUS_DRAFT			((ULONG) 0x00000100)
 #define	MSGSTATUS_ANSWERED		((ULONG) 0x00000200)
 
@@ -194,8 +206,7 @@ struct SortListData
 #define ENCODEUUENCODE 2
 #define ENCODEBINHEX 3
 
-// http://support.microsoft.com/kb/898835
-// Flags used in PR_ROH_FLAGS
+// Flags used in PR_ROH_FLAGS - http://support.microsoft.com/kb/898835
 // Connect to my Exchange mailbox using HTTP
 #define ROHFLAGS_USE_ROH                0x1
 // Connect using SSL only
@@ -238,6 +249,7 @@ struct SortListData
 #define WM_MFCMAPI_SAVECOLUMNORDERLIST		WM_APP+11
 
 //Definitions for WrapCompressedRTFStreamEx in param for WrapCompressedRTFStreamEX
+// http://msdn2.microsoft.com/en-us/library/bb905293.aspx
 typedef struct {
 	ULONG		size;		//Size of the structure
 	ULONG		ulFlags;
@@ -249,6 +261,7 @@ typedef struct {
 } RTF_WCSINFO;
 
 // out param type information for WrapCompressedRTFStreamEX
+// http://msdn2.microsoft.com/en-us/library/bb905294.aspx
 typedef struct {
 	ULONG       size;	//Size of the structure
 	ULONG		ulStreamFlags;
@@ -257,7 +270,7 @@ typedef struct {
 		/****** MAPI_NATIVE_BODY_TYPE_PLAINTEXT 	((ULONG) 0x00000004) mapidefs.h */
 } RTF_WCSRETINFO;
 
-
+// http://msdn2.microsoft.com/en-us/library/bb905291.aspx
 typedef HRESULT (STDMETHODCALLTYPE WRAPCOMPRESSEDRTFSTREAMEX) (
 						   IStream * pCompressedRTFStream, CONST RTF_WCSINFO * pWCSInfo,
 							IStream ** ppUncompressedRTFStream, RTF_WCSRETINFO * pRetInfo);
@@ -439,7 +452,7 @@ typedef MAPIOPENLOCALFORMCONTAINER *LPMAPIOPENLOCALFORMCONTAINER;
 typedef SCODE (STDAPICALLTYPE HRDISPATCHNOTIFICATIONS)(ULONG ulFlags);
 typedef HRDISPATCHNOTIFICATIONS *LPHRDISPATCHNOTIFICATIONS;
 
-// http://blogs.msdn.com/stephen_griffin/archive/2005/10/25/484656.aspx
+// http://msdn2.microsoft.com/en-us/library/bb820924.aspx
 #pragma pack(4)
 typedef struct _contab_entryid
 {
@@ -454,7 +467,7 @@ BYTE abeid[1];
 } CONTAB_ENTRYID, *LPCONTAB_ENTRYID;
 #pragma pack()
 
-// http://blogs.msdn.com/stephen_griffin/archive/2005/11/23/496264.aspx
+// http://msdn2.microsoft.com/en-us/library/bb820951.aspx
 #define MAPI_IPROXYSTOREOBJECT_METHODS(IPURE) \
 MAPIMETHOD(PlaceHolder1) \
 	() IPURE; \
@@ -495,7 +508,7 @@ static DWORD g_lcid = MAKELCID(MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), SOR
 #define fsdrightFreeBusyDetailed	0x00000002
 #endif // fsdrightFreeBusyDetailed
 
-// http://blogs.msdn.com/stephen_griffin/archive/2006/05/09/593585.aspx
+// http://msdn2.microsoft.com/en-us/library/bb820933.aspx
 #define MAPI_IATTACHMENTSECURITY_METHODS(IPURE) \
 MAPIMETHOD(IsAttachmentBlocked) \
 		(LPCWSTR pwszFileName, BOOL *pfBlocked) IPURE;
@@ -507,7 +520,7 @@ DECLARE_MAPI_INTERFACE_(IAttachmentSecurity, IUnknown)
     MAPI_IATTACHMENTSECURITY_METHODS(PURE)
 };
 
-// http://blogs.msdn.com/stephen_griffin/archive/2006/05/10/594641.aspx
+// http://msdn2.microsoft.com/en-us/library/bb820937.aspx
 #define STORE_PUSHER_OK         ((ULONG) 0x00800000)
 
 #define fnevIndexing		((ULONG) 0x00010000)
@@ -516,7 +529,7 @@ DECLARE_MAPI_INTERFACE_(IAttachmentSecurity, IUnknown)
 /* Shares EXTENDED_NOTIFICATION to pass structures below,		*/
 /* but NOTIFICATION type will be fnevIndexing				*/
 
-// Stores that are pusher enabled (PR_SUPPORT_MASK contains STORE_PUSHER_OK)
+// Stores that are pusher enabled (PR_STORE_SUPPORT_MASK contains STORE_PUSHER_OK)
 // are required to send notifications regarding the process that is pushing.
 #define INDEXING_SEARCH_OWNER		((ULONG) 0x00000001)
 
@@ -539,7 +552,7 @@ typedef struct _INDEX_SEARCH_PUSHER_PROCESS
 // a match even if there are more terms in the property.
 #define FL_PHRASE_MATCH		0x00000020
 
-// http://blogs.msdn.com/stephen_griffin/archive/2005/12/29/507991.aspx
+// http://msdn2.microsoft.com/en-us/library/bb905283.aspx
 #define dispidFormStorage		0x850F
 #define dispidPageDirStream		0x8513
 #define dispidFormPropStream	0x851B

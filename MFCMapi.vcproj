@@ -490,11 +490,23 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Flags.h"
+				>
+			</File>
+			<File
 				RelativePath=".\FolderDlg.h"
 				>
 			</File>
 			<File
 				RelativePath=".\FormContainerDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\GenTagArray.h"
+				>
+			</File>
+			<File
+				RelativePath=".\GUIDArray.h"
 				>
 			</File>
 			<File
@@ -598,6 +610,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\nameidarray.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Output.h"
 				>
 			</File>
@@ -619,6 +635,10 @@
 			</File>
 			<File
 				RelativePath=".\PropTagArray.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PropTypeArray.h"
 				>
 			</File>
 			<File

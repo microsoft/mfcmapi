@@ -920,13 +920,12 @@ HRESULT OpenProfileSection(LPSERVICEADMIN lpServiceAdmin, LPSBinary lpServiceUID
 {
 	HRESULT		hRes = S_OK;
 
-	*lppProfSect = NULL;
-
 	DebugPrint(DBGOpenItemProp,_T("OpenProfileSection opening lpServiceUID = "));
 	DebugPrintBinary(DBGOpenItemProp,lpServiceUID);
 	DebugPrint(DBGOpenItemProp,_T("\n"));
 
 	if (!lpServiceUID || !lpServiceAdmin || !lppProfSect) return MAPI_E_INVALID_PARAMETER;
+	*lppProfSect = NULL;
 
 	//First, we try the normal way of opening the profile section:
 	WC_H(lpServiceAdmin->OpenProfileSection(
@@ -982,7 +981,8 @@ HRESULT OpenProfileSection(LPPROVIDERADMIN lpProviderAdmin, LPSBinary lpProvider
 	DebugPrintBinary(DBGOpenItemProp,lpProviderUID);
 	DebugPrint(DBGOpenItemProp,_T("\n"));
 
-	if (!lpProviderUID || !lpProviderAdmin || !lpProviderUID) return MAPI_E_INVALID_PARAMETER;
+	if (!lpProviderUID || !lpProviderAdmin || !lppProfSect) return MAPI_E_INVALID_PARAMETER;
+	*lppProfSect = NULL;
 
 	WC_H(lpProviderAdmin->OpenProfileSection(
 		(LPMAPIUID) lpProviderUID->lpb,

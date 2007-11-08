@@ -14,13 +14,13 @@ HRESULT LoadMSGToMessage(LPCTSTR szMessageFile, LPMESSAGE* lppMessage);
 HRESULT	LoadFromMSG(LPCTSTR szMessageFile, LPMESSAGE lpMessage, HWND hWnd);
 HRESULT	LoadFromTNEF(LPCTSTR szMessageFile, LPADRBOOK lpAdrBook, LPMESSAGE lpMessage);
 
-HRESULT	SaveFolderContentsToMSG(LPMAPIFOLDER lpFolder, LPCTSTR szPathName, BOOL bAssoc, HWND hWnd);
+HRESULT	SaveFolderContentsToMSG(LPMAPIFOLDER lpFolder, LPCTSTR szPathName, BOOL bAssoc, BOOL bUnicode, HWND hWnd);
 HRESULT	SaveToEML(LPMESSAGE lpMessage, LPCTSTR szFileName);
-HRESULT CreateNewMSG(LPCTSTR szFileName, LPMESSAGE* lppMessage, LPSTORAGE* lppStorage);
-HRESULT	SaveToMSG(LPMESSAGE lpMessage, LPCTSTR szFileName, HWND hWnd);
+HRESULT CreateNewMSG(LPCTSTR szFileName, BOOL bUnicode, LPMESSAGE* lppMessage, LPSTORAGE* lppStorage);
+HRESULT	SaveToMSG(LPMESSAGE lpMessage, LPCTSTR szFileName, BOOL bUnicode, HWND hWnd);
 HRESULT SaveToTNEF(LPMESSAGE lpMessage, LPADRBOOK lpAdrBook, LPCTSTR szFileName);
 
 HRESULT	DeleteAttachments(LPMESSAGE lpMessage, LPCTSTR szAttName, HWND hWnd);
 HRESULT	WriteAttachmentsToFile(LPMESSAGE lpMessage, HWND hWnd);
 HRESULT	WriteAttachmentToFile(LPATTACH lpAttach, HWND hWnd);
-HRESULT WriteEmbeddedMSGToFile(LPATTACH lpAttach,LPCTSTR szFileName, HWND hWnd);
+HRESULT WriteEmbeddedMSGToFile(LPATTACH lpAttach,LPCTSTR szFileName, BOOL bUnicode, HWND hWnd);

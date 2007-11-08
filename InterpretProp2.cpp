@@ -418,12 +418,16 @@ LPCWSTR NameIDToPropName(LPMAPINAMEID lpNameID)
 HRESULT InterpretFlags(LPSPropValue lpProp, LPTSTR* szFlagString)
 {
 	if (szFlagString) *szFlagString = NULL;
-	if (!lpProp || PROP_TYPE(lpProp->ulPropTag) != PT_LONG || !szFlagString)
+	if (!lpProp || !szFlagString)
 	{
-		return S_OK;//remove this if we encounter other types needing interpreting
+		return S_OK;
 	}
+	if (PROP_TYPE(lpProp->ulPropTag) == PT_LONG)
+		return InterpretFlags(PROP_ID(lpProp->ulPropTag),lpProp->Value.ul,szFlagString);
+	if (PROP_TYPE(lpProp->ulPropTag) == PT_I2)
+		return InterpretFlags(PROP_ID(lpProp->ulPropTag),lpProp->Value.i,szFlagString);
 
-	return InterpretFlags(PROP_ID(lpProp->ulPropTag),lpProp->Value.ul,szFlagString);
+	return S_OK;
 }
 
 //Interprets a flag value according to a flag name and returns a string
@@ -481,6 +485,32 @@ HRESULT InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, LPTSTR* sz
 				}
 				EC_H(StringCchCatW(szTempString,CCHW(szTempString),FlagArray[ulCurEntry].lpszName));
 				lTempValue = 0;
+				bNeedSeparator = true;
+			}
+		}
+		else if (flagVALUE3RDBYTE == FlagArray[ulCurEntry].ulFlagType)
+		{
+			if (FlagArray[ulCurEntry].lFlagValue == ((lTempValue >> 8) & 0xFF))
+			{
+				if (bNeedSeparator)
+				{
+					EC_H(StringCchCatW(szTempString,CCHW(szTempString),L" | "));// STRING_OK
+				}
+				EC_H(StringCchCatW(szTempString,CCHW(szTempString),FlagArray[ulCurEntry].lpszName));
+				lTempValue = lTempValue - (FlagArray[ulCurEntry].lFlagValue << 8);
+				bNeedSeparator = true;
+			}
+		}
+		else if (flagVALUE4THBYTE == FlagArray[ulCurEntry].ulFlagType)
+		{
+			if (FlagArray[ulCurEntry].lFlagValue == (lTempValue & 0xFF))
+			{
+				if (bNeedSeparator)
+				{
+					EC_H(StringCchCatW(szTempString,CCHW(szTempString),L" | "));// STRING_OK
+				}
+				EC_H(StringCchCatW(szTempString,CCHW(szTempString),FlagArray[ulCurEntry].lpszName));
+				lTempValue = lTempValue - FlagArray[ulCurEntry].lFlagValue;
 				bNeedSeparator = true;
 			}
 		}

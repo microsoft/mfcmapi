@@ -1531,14 +1531,15 @@ void CFolderDlg::OnSaveMessageToFile()
 		1,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 
-	UINT uidDropDown[5] = {
+	UINT uidDropDown[6] = {
 		IDS_DDTEXTFILE,
-			IDS_DDMSGFILE,
+			IDS_DDMSGFILEANSI,
+			IDS_DDMSGFILEUNICODE,
 			IDS_DDEMLFILE,
 			IDS_DDEMLFILEUSINGICONVERTERSESSION,
 			IDS_DDTNEFFILE
 	};
-	MyData.InitDropDown(0,IDS_FORMATTOSAVEMESSAGE,5,uidDropDown,true);
+	MyData.InitDropDown(0,IDS_FORMATTOSAVEMESSAGE,6,uidDropDown,true);
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
 	{
@@ -1558,21 +1559,22 @@ void CFolderDlg::OnSaveMessageToFile()
 			szFilter.LoadString(IDS_XMLFILES);
 			break;
 		case 1:
+		case 2:
 			szExt = _T("msg");// STRING_OK
 			szDotExt = _T(".msg");// STRING_OK
 			ulDotExtLen = 4;
 			szDefaultFileName = _T("test.msg");// STRING_OK
 			szFilter.LoadString(IDS_MSGFILES);
 			break;
-		case 2:
 		case 3:
+		case 4:
 			szExt = _T("eml");// STRING_OK
 			szDotExt = _T(".eml");// STRING_OK
 			ulDotExtLen = 4;
 			szDefaultFileName = _T("test.eml");// STRING_OK
 			szFilter.LoadString(IDS_EMLFILES);
 			break;
-		case 4:
+		case 5:
 			szExt = _T("tnef");// STRING_OK
 			szDotExt = _T(".tnef");// STRING_OK
 			ulDotExtLen = 5;
@@ -1627,12 +1629,15 @@ void CFolderDlg::OnSaveMessageToFile()
 						}
 						break;
 					case 1:
-						EC_H(SaveToMSG(lpMessage,dlgFilePicker.m_ofn.lpstrFile, m_hWnd));
+						EC_H(SaveToMSG(lpMessage,dlgFilePicker.m_ofn.lpstrFile,false,m_hWnd));
 						break;
 					case 2:
-						EC_H(SaveToEML(lpMessage,dlgFilePicker.m_ofn.lpstrFile));
+						EC_H(SaveToMSG(lpMessage,dlgFilePicker.m_ofn.lpstrFile,true,m_hWnd));
 						break;
 					case 3:
+						EC_H(SaveToEML(lpMessage,dlgFilePicker.m_ofn.lpstrFile));
+						break;
+					case 4:
 						{
 							ULONG ulConvertFlags = CCSF_SMTP;
 							ENCODINGTYPE et = IET_UNKNOWN;
@@ -1657,7 +1662,7 @@ void CFolderDlg::OnSaveMessageToFile()
 							}
 						}
 						break;
-					case 4:
+					case 5:
 						EC_H(SaveToTNEF(lpMessage,lpAddrBook,dlgFilePicker.m_ofn.lpstrFile));
 						break;
 					default:
@@ -1769,7 +1774,7 @@ void CFolderDlg::OnLoadFromEML()
 	BOOL bDoApply = false;
 	HCHARSET hCharSet = NULL;
 	CSETAPPLYTYPE cSetApplyType = CSET_APPLY_UNTAGGED;
-	WC_H(GetConversionFromEMLOptions(this,&ulConvertFlags,&bDoAdrBook,&bDoApply,&hCharSet,&cSetApplyType));
+	WC_H(GetConversionFromEMLOptions(this,&ulConvertFlags,&bDoAdrBook,&bDoApply,&hCharSet,&cSetApplyType,NULL));
 	if (S_OK == hRes)
 	{
 		LPADRBOOK lpAdrBook = NULL;

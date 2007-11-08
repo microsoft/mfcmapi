@@ -167,13 +167,13 @@ void CPropertyEditor::CreatePropertyControls()
 		CreateControls(1);
 		break;
 	case(PT_ERROR):
-	case(PT_I2):
 		CreateControls(2);
 		break;
 	case(PT_BINARY):
 	case(PT_CURRENCY):
 	case(PT_I8):
 	case(PT_LONG):
+	case(PT_I2):
 	case(PT_SYSTIME):
 	case(PT_STRING8):
 	case(PT_UNICODE):
@@ -318,16 +318,27 @@ void CPropertyEditor::InitPropertyControls()
 	case(PT_I2):
 		InitSingleLine(0,IDS_SIGNEDDECIMAL,NULL,m_bReadOnly);
 		InitSingleLine(1,IDS_HEX,NULL,m_bReadOnly);
-
+		InitMultiLine(2,IDS_FLAGS,NULL,true);
 		if (m_lpsInputValue)
 		{
 			SetDecimal(0,m_lpsInputValue->Value.i);
 			SetHex(1,m_lpsInputValue->Value.i);
+
+			HRESULT hRes = S_OK;
+			LPTSTR szFlags = NULL;
+			EC_H(InterpretFlags(m_lpsInputValue, &szFlags));
+			if (szFlags)
+			{
+				SetString(2,szFlags);
+			}
+			MAPIFreeBuffer(szFlags);
+			szFlags = NULL;
 		}
 		else
 		{
 			SetDecimal(0,0);
 			SetHex(1,0);
+			SetHex(2,0);
 		}
 		break;
 	case(PT_I8):
@@ -1101,20 +1112,29 @@ ULONG CPropertyEditor::HandleChange(UINT nID)
 				iVal = (short int) _tcstol(szTmpString,NULL,16);
 				SetDecimal(0,iVal);
 			}
+
+			HRESULT hRes = S_OK;
+			LPTSTR szFlags = NULL;
+			EC_H(InterpretFlags(PROP_ID(m_ulPropTag),iVal,&szFlags));
+			if (szFlags)
+			{
+				SetString(2,szFlags);
+			}
+			MAPIFreeBuffer(szFlags);
+			szFlags = NULL;
 		}
 		break;
 	case(PT_LONG)://unsigned 32 bit
 		{
 			LONG lVal = 0;
+			m_lpControls[i].UI.lpEdit->EditBox.GetWindowText(szTmpString);
 			if (0 == i)
 			{
-				m_lpControls[0].UI.lpEdit->EditBox.GetWindowText(szTmpString);
 				lVal = (LONG) _tcstoul(szTmpString,NULL,10);
 				SetHex(1,lVal);
 			}
 			else if (1 == i)
 			{
-				m_lpControls[1].UI.lpEdit->EditBox.GetWindowText(szTmpString);
 				lVal = (LONG) _tcstoul(szTmpString,NULL,16);
 				SetStringf(0,_T("%u"),lVal);// STRING_OK
 			}

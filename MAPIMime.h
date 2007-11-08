@@ -1,6 +1,6 @@
 #pragma once
 
-// Constants
+// Constants - http://msdn2.microsoft.com/en-us/library/bb905201.aspx
 #define CCSF_SMTP            0x0002 // the converter is being passed an SMTP message
 #define CCSF_NOHEADERS       0x0004 // the converter should ignore the headers on the outside message
 #define CCSF_USE_TNEF        0x0010 // the converter should embed TNEF in the MIME message
@@ -15,6 +15,7 @@
 
 const ULARGE_INTEGER ULARGE_MAX = {0xFFFFFFFFU, 0xFFFFFFFFU};
 
+// http://msdn2.microsoft.com/en-us/library/bb905202.aspx
 interface IConverterSession : public IUnknown
 {
 	public:
@@ -70,7 +71,8 @@ HRESULT ConvertEMLToMSG(
 						BOOL bApply,
 						HCHARSET hCharSet,
 						CSETAPPLYTYPE cSetApplyType,
-						LPADRBOOK lpAdrBook);
+						LPADRBOOK lpAdrBook,
+						BOOL bUnicode);
 HRESULT ConvertMSGToEML(LPCTSTR lpszMSGFile, LPCTSTR lpszEMLFile, ULONG ulConvertFlags,
 						ENCODINGTYPE et, MIMESAVETYPE mst, ULONG ulWrapLines,
 						LPADRBOOK lpAdrBook);
@@ -85,4 +87,5 @@ HRESULT GetConversionFromEMLOptions(CWnd* pParentWnd,
 									BOOL* pDoAdrBook,
 									BOOL* pDoApply,
 									HCHARSET* phCharSet,
-									CSETAPPLYTYPE* pcSetApplyType);
+									CSETAPPLYTYPE* pcSetApplyType,
+									BOOL* bUnicode);

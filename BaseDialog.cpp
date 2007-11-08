@@ -257,6 +257,8 @@ BOOL CBaseDialog::HandleMenu(WORD wMenuSelect)
 	case ID_HEXEDITOR: OnHexEditor(); return true;
 	case ID_COMPAREENTRYIDS: OnCompareEntryIDs(); return true;
 	case ID_OPENENTRYID: OnOpenEntryID(NULL); return true;
+	case ID_COMPUTESTOREHASH: OnComputeStoreHash(); return true;
+	case ID_ENCODEID: OnEncodeID(); return true;
 	case ID_COPY: HandleCopy(); return true;
 	case ID_PASTE: HandlePaste(); return true;
 	}
@@ -813,7 +815,7 @@ void CBaseDialog::OnOpenEntryID(LPSBinary lpBin)
 		this,
 		IDS_OPENEID,
 		IDS_OPENEIDPROMPT,
-		9,
+		10,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 
 	MyEID.InitSingleLineSz(0,IDS_EID,BinToHexString(lpBin,false),false);
@@ -831,11 +833,13 @@ void CBaseDialog::OnOpenEntryID(LPSBinary lpBin)
 
 	MyEID.InitCheck(5,IDS_PASSMAPINOCACHE,false,false);
 
-	MyEID.InitCheck(6,IDS_EIDBASE64ENCODED,false,false);
+	MyEID.InitCheck(6,IDS_PASSMAPICACHEONLY,false,false);
 
-	MyEID.InitCheck(7,IDS_ATTEMPTIADDRBOOKDETAILSCALL,false,lpAB?false:true);
+	MyEID.InitCheck(7,IDS_EIDBASE64ENCODED,false,false);
 
-	MyEID.InitCheck(8,IDS_EIDISCONTAB,false,false);
+	MyEID.InitCheck(8,IDS_ATTEMPTIADDRBOOKDETAILSCALL,false,lpAB?false:true);
+
+	MyEID.InitCheck(9,IDS_EIDISCONTAB,false,false);
 
 	WC_H(MyEID.DisplayDialog());
 	if (S_OK != hRes) return;
@@ -844,9 +848,9 @@ void CBaseDialog::OnOpenEntryID(LPSBinary lpBin)
 	LPENTRYID lpEnteredEntryID = NULL;
 	LPENTRYID lpEntryID = NULL;
 	size_t cbBin = NULL;
-	EC_H(MyEID.GetEntryID(0,MyEID.GetCheck(6),&cbBin,&lpEnteredEntryID));
+	EC_H(MyEID.GetEntryID(0,MyEID.GetCheck(7),&cbBin,&lpEnteredEntryID));
 
-	if (MyEID.GetCheck(8) && lpEnteredEntryID)
+	if (MyEID.GetCheck(9) && lpEnteredEntryID)
 	{
 		LPCONTAB_ENTRYID lpContabEID = (LPCONTAB_ENTRYID)lpEnteredEntryID;
 		if (lpContabEID && lpContabEID->cbeid && lpContabEID->abeid)
@@ -861,7 +865,7 @@ void CBaseDialog::OnOpenEntryID(LPSBinary lpBin)
 		lpEntryID = lpEnteredEntryID;
 	}
 
-	if (MyEID.GetCheck(7) && lpAB) // Do IAddrBook->Details here
+	if (MyEID.GetCheck(8) && lpAB) // Do IAddrBook->Details here
 	{
 		ULONG_PTR ulUIParam = (ULONG_PTR) (void*) m_hWnd;
 
@@ -890,7 +894,8 @@ void CBaseDialog::OnOpenEntryID(LPSBinary lpBin)
 			lpEntryID,
 			NULL,
 			(MyEID.GetCheck(4)?MAPI_MODIFY:MAPI_BEST_ACCESS) |
-			(MyEID.GetCheck(5)?MAPI_NO_CACHE:0),
+			(MyEID.GetCheck(5)?MAPI_NO_CACHE:0) |
+			(MyEID.GetCheck(6)?MAPI_CACHE_ONLY:0),
 			&ulObjType,
 			&lpUnk));
 
@@ -1005,6 +1010,100 @@ void CBaseDialog::OnCompareEntryIDs()
 
 	return;
 }//OnCompareEntryIDs
+
+void CBaseDialog::OnComputeStoreHash()
+{
+	HRESULT hRes = S_OK;
+
+	CEditor MyStoreEID(
+		this,
+		IDS_COMPUTESTOREHASH,
+		IDS_COMPUTESTOREHASHPROMPT,
+		3,
+		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+
+	MyStoreEID.InitSingleLine(0,IDS_STOREEID,NULL,false);
+	MyStoreEID.InitCheck(1,IDS_EIDBASE64ENCODED,false,false);
+	MyStoreEID.InitSingleLine(2,IDS_FILENAME,NULL,false);
+
+	WC_H(MyStoreEID.DisplayDialog());
+	if (S_OK != hRes) return;
+
+	// Get the entry ID as a binary
+	LPENTRYID lpEntryID = NULL;
+	size_t cbBin = NULL;
+	EC_H(MyStoreEID.GetEntryID(0,MyStoreEID.GetCheck(1),&cbBin,&lpEntryID));
+
+	DWORD dwHash = ComputeStoreHash((ULONG) cbBin,lpEntryID,MyStoreEID.GetStringW(2));
+
+	CString szHash;
+	CString szHashStr;
+	szHashStr.LoadString(IDS_STOREHASH);
+	szHash.FormatMessage(_T("%1 = 0x%2!08X!"),szHashStr,dwHash);// STRING_OK
+
+	CEditor Result(
+		this,
+		IDS_STOREHASH,
+		NULL,
+		(ULONG) 0,
+		CEDITOR_BUTTON_OK);
+	Result.SetPromptPostFix(szHash);
+	Result.DisplayDialog();
+
+	delete[] lpEntryID;
+
+	return;
+}// CBaseDialog::OnComputeStoreHash
+
+void CBaseDialog::OnEncodeID()
+{
+	HRESULT hRes = S_OK;
+
+	CEditor MyEID(
+		this,
+		IDS_ENCODEID,
+		IDS_ENCODEIDPROMPT,
+		2,
+		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+
+	MyEID.InitSingleLine(0,IDS_EID,NULL,false);
+	MyEID.InitCheck(1,IDS_EIDBASE64ENCODED,false,false);
+
+	WC_H(MyEID.DisplayDialog());
+	if (S_OK != hRes) return;
+
+	// Get the entry ID as a binary
+	LPENTRYID lpEntryID = NULL;
+	size_t cbBin = NULL;
+	EC_H(MyEID.GetEntryID(0,MyEID.GetCheck(1),&cbBin,&lpEntryID));
+
+	LPWSTR szEncoded = EncodeID((ULONG) cbBin,lpEntryID);
+
+	if (szEncoded)
+	{
+		CEditor Result(
+			this,
+			IDS_ENCODEDID,
+			IDS_ENCODEDID,
+			(ULONG) 3,
+			CEDITOR_BUTTON_OK);
+		Result.InitSingleLine(0,IDS_UNISTRING,NULL,true);
+		Result.SetStringW(0,szEncoded);
+		size_t cchEncoded = NULL;
+		WC_H(StringCchLengthW(szEncoded,STRSAFE_MAX_CCH,&cchEncoded));
+		Result.InitSingleLine(1,IDS_CCH,NULL,true);
+		Result.SetHex(1,(ULONG) cchEncoded);
+		Result.InitMultiLine(2,IDS_HEX,NULL,true);
+		Result.SetBinary(2,(LPBYTE)szEncoded,cchEncoded);
+
+		Result.DisplayDialog();
+	}
+
+	delete[] szEncoded;
+	delete[] lpEntryID;
+
+	return;
+}// CBaseDialog::OnEncodeID
 
 void CBaseDialog::OnNotificationsOn()
 {

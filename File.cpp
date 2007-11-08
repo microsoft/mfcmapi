@@ -458,7 +458,7 @@ HRESULT SanitizeFileName(
 	return hRes;
 }
 
-HRESULT	SaveFolderContentsToMSG(LPMAPIFOLDER lpFolder, LPCTSTR szPathName, BOOL bAssoc, HWND hWnd)
+HRESULT	SaveFolderContentsToMSG(LPMAPIFOLDER lpFolder, LPCTSTR szPathName, BOOL bAssoc, BOOL bUnicode, HWND hWnd)
 {
 	HRESULT			hRes = S_OK;
 	LPMAPITABLE		lpFolderContents = NULL;
@@ -536,6 +536,7 @@ HRESULT	SaveFolderContentsToMSG(LPMAPIFOLDER lpFolder, LPCTSTR szPathName, BOOL 
 				EC_H(SaveToMSG(
 					lpMessage,
 					szFileName,
+					bUnicode,
 					hWnd));
 
 				DebugPrint(DBGGeneric,_T("Message Saved\n"));
@@ -656,7 +657,7 @@ HRESULT STDAPICALLTYPE MyStgCreateStorageEx(IN const TCHAR* pName,
 	return hRes;
 }
 
-HRESULT CreateNewMSG(LPCTSTR szFileName, LPMESSAGE* lppMessage, LPSTORAGE* lppStorage)
+HRESULT CreateNewMSG(LPCTSTR szFileName, BOOL bUnicode, LPMESSAGE* lppMessage, LPSTORAGE* lppStorage)
 {
 	if (!szFileName || !lppMessage || !lppStorage) return MAPI_E_INVALID_PARAMETER;
 
@@ -697,7 +698,7 @@ HRESULT CreateNewMSG(LPCTSTR szFileName, LPMESSAGE* lppMessage, LPSTORAGE* lppSt
 				pStorage,
 				NULL,
 				0,
-				0,
+				bUnicode?MAPI_UNICODE:0,
 				&pIMsg));
 			if (SUCCEEDED(hRes) && pIMsg)
 			{
@@ -723,7 +724,7 @@ HRESULT CreateNewMSG(LPCTSTR szFileName, LPMESSAGE* lppMessage, LPSTORAGE* lppSt
 	return hRes;
 }
 
-HRESULT SaveToMSG(LPMESSAGE lpMessage, LPCTSTR szFileName, HWND hWnd)
+HRESULT SaveToMSG(LPMESSAGE lpMessage, LPCTSTR szFileName, BOOL bUnicode, HWND hWnd)
 {
 	HRESULT hRes = S_OK;
 	LPSTORAGE pStorage = NULL;
@@ -733,7 +734,7 @@ HRESULT SaveToMSG(LPMESSAGE lpMessage, LPCTSTR szFileName, HWND hWnd)
 
 	DebugPrint(DBGGeneric,_T("SaveToMSG: Saving 0x%X to \"%s\"\n"),lpMessage,szFileName);
 
-	EC_H(CreateNewMSG(szFileName,&pIMsg,&pStorage));
+	EC_H(CreateNewMSG(szFileName,bUnicode,&pIMsg,&pStorage));
 	if (pIMsg && pStorage)
 	{
 		// Specify properties to exclude in the copy operation. These are
@@ -1048,7 +1049,7 @@ HRESULT WriteAttachmentsToFile(LPMESSAGE lpMessage, HWND hWnd)
 	return hRes;
 }//WriteAttachmentsToFile
 
-HRESULT WriteEmbeddedMSGToFile(LPATTACH lpAttach,LPCTSTR szFileName, HWND hWnd)
+HRESULT WriteEmbeddedMSGToFile(LPATTACH lpAttach,LPCTSTR szFileName, BOOL bUnicode, HWND hWnd)
 {
 	HRESULT			hRes = S_OK;
 	LPMESSAGE		lpAttachMsg = NULL;
@@ -1066,7 +1067,7 @@ HRESULT WriteEmbeddedMSGToFile(LPATTACH lpAttach,LPCTSTR szFileName, HWND hWnd)
 
 	if (lpAttachMsg)
 	{
-		EC_H(SaveToMSG(lpAttachMsg,szFileName, hWnd));
+		EC_H(SaveToMSG(lpAttachMsg,szFileName, bUnicode, hWnd));
 		lpAttachMsg->Release();
 	}
 
@@ -1334,7 +1335,7 @@ HRESULT	WriteAttachmentToFile(LPATTACH lpAttach, HWND hWnd)
 				EC_D_DIALOG(dlgFilePicker.DoModal());
 				if (iDlgRet == IDOK)
 				{
-					EC_H(WriteEmbeddedMSGToFile(lpAttach,dlgFilePicker.m_ofn.lpstrFile, hWnd));
+					EC_H(WriteEmbeddedMSGToFile(lpAttach,dlgFilePicker.m_ofn.lpstrFile, (MAPI_UNICODE == fMapiUnicode)?true:false, hWnd));
 				}
 			}
 			break;
