@@ -1596,9 +1596,10 @@ void CMainDlg::OnConvertEMLToMSG()
 	ULONG ulConvertFlags = CCSF_SMTP;
 	BOOL bDoAdrBook = false;
 	BOOL bDoApply = false;
+	BOOL bUnicode = false;
 	HCHARSET hCharSet = NULL;
 	CSETAPPLYTYPE cSetApplyType = CSET_APPLY_UNTAGGED;
-	WC_H(GetConversionFromEMLOptions(this,&ulConvertFlags,&bDoAdrBook,&bDoApply,&hCharSet,&cSetApplyType));
+	WC_H(GetConversionFromEMLOptions(this,&ulConvertFlags,&bDoAdrBook,&bDoApply,&hCharSet,&cSetApplyType,&bUnicode));
 	if (S_OK == hRes)
 	{
 		LPADRBOOK lpAdrBook = NULL;
@@ -1640,7 +1641,8 @@ void CMainDlg::OnConvertEMLToMSG()
 					bDoApply,
 					hCharSet,
 					cSetApplyType,
-					lpAdrBook));
+					lpAdrBook,
+					bUnicode));
 			}
 		}
 	}

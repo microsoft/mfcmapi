@@ -56,6 +56,7 @@ void RemoveServicesFromMapiSvcInf();
 void GetMAPISVCPath(LPTSTR szMAPIDir, ULONG cchMAPIDir);
 void DisplayMAPISVCPath(CWnd* pParentWnd);
 
+// http://msdn2.microsoft.com/en-us/library/bb820969.aspx
 typedef struct
 {
 	WORD	wMajorVersion;

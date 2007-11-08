@@ -523,7 +523,7 @@ HRESULT CopyFolderRules(LPMAPIFOLDER lpSrcFolder, LPMAPIFOLDER lpDestFolder,BOOL
 				{
 					lpTempList->cEntries = lpRows->cRows;
 					ULONG iArrayPos = 0;
-					
+
 					for(iArrayPos = 0 ; iArrayPos < lpRows->cRows ; iArrayPos++)
 					{
 						lpTempList->aEntries[iArrayPos].ulRowFlags = ROW_ADD;
@@ -2407,3 +2407,78 @@ BOOL CheckStringProp(LPSPropValue lpProp, ULONG ulPropType)
 
 	return true;
 }
+
+DWORD ComputeStoreHash(ULONG cbStoreEID, LPENTRYID pbStoreEID, LPCWSTR pwzFileName)
+{
+	DWORD  dwHash = 0;
+	ULONG  cdw    = 0;
+	DWORD* pdw    = NULL;
+	ULONG  cb     = 0;
+	BYTE*  pb     = NULL;
+	ULONG  i      = 0;
+
+	if (!cbStoreEID || !pbStoreEID) return dwHash;
+
+	// Get the Store Entry ID
+	// pbStoreEID is a pointer to the Entry ID
+	// cbStoreEID is the size in bytes of the Entry ID
+	pdw = (DWORD*)pbStoreEID;
+	cdw = cbStoreEID / sizeof(DWORD);
+
+	for (i = 0; i < cdw; i++)
+	{
+		dwHash = (dwHash << 5) + dwHash + *pdw++;
+	}
+
+	pb = (BYTE *)pdw;
+	cb = cbStoreEID % sizeof(DWORD);
+
+	for (i = 0; i < cb; i++)
+	{
+		dwHash = (dwHash << 5) + dwHash + *pb++;
+	}
+
+	// You may want to also include the store file name in the hash calculation
+	// Get store FileName
+	// pwzFileName is a NULL terminated string with the path and filename of the store
+	if (pwzFileName)
+	{
+		while (*pwzFileName)
+		{
+			dwHash = (dwHash << 5) + dwHash + *pwzFileName++;
+		}
+	}
+
+	// dwHash now contains the hash to be used. It should be written in hex when building the URL.
+	return dwHash;
+}// ComputeStoreHash
+
+const WORD kwBaseOffset = 0xAC00;  // Hangul char range (AC00-D7AF)
+// Allocates with new, free with delete[]
+LPWSTR EncodeID(ULONG cbEID, LPENTRYID rgbID)
+{
+	ULONG   i = 0;
+	LPWSTR  pwzDst = NULL;
+	LPBYTE  pbSrc = NULL;
+	LPWSTR  pwzIDEncoded = NULL;
+
+	// rgbID is the item Entry ID or the attachment ID
+	// cbID is the size in bytes of rgbID
+
+	// Allocate memory for pwzIDEncoded
+	pwzIDEncoded = new WCHAR[cbEID];
+	if (!pwzIDEncoded) return NULL;
+
+	for (i = 0, pbSrc = (LPBYTE)rgbID, pwzDst = pwzIDEncoded;
+		i < cbEID;
+		i++, pbSrc++, pwzDst++)
+	{
+		*pwzDst = (WCHAR) (*pbSrc + kwBaseOffset);
+	}
+
+	// Ensure NULL terminated
+	*pwzDst = L'\0';
+
+	// pwzIDEncoded now contains the entry ID encoded.
+	return pwzIDEncoded;
+}// EncodeID

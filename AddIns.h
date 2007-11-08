@@ -32,11 +32,15 @@ enum __FlagType
 {
 	flagFLAG,
 	flagVALUE,
+	flagVALUE3RDBYTE,
+	flagVALUE4THBYTE,
 	flagCLEARBITS,//Used to clear bits that we know we don't know so that remaining bits can be examined as values
 };
 
 // All MAPI props are stored in the array by their PROP_ID. So all are < 0xffff.
 #define FLAG_ENTRY(_fName,_fValue,_fType) {PROP_ID(_fName),(_fValue),(_fType),L#_fValue},
+#define FLAG_ENTRY3RDBYTE(_fName,_fValue,_fValType) {PROP_ID(_fName),(_fValue),flagVALUE3RDBYTE,L#_fValType L": " L#_fValue}, // STRING_OK
+#define FLAG_ENTRY4THBYTE(_fName,_fValue,_fValType) {PROP_ID(_fName),(_fValue),flagVALUE4THBYTE,L#_fValType L": " L#_fValue}, // STRING_OK
 #define CLEAR_BITS_ENTRY(_fName,_fValue) {PROP_ID(_fName),(_fValue),flagCLEARBITS,L""},
 
 // Flag parsing array - used by GetPropFlags
@@ -217,7 +221,7 @@ typedef _AddInDialogResult FAR * LPADDINDIALOGRESULT;
 // Use: Hooks in to MFCMAPI's debug logging routines.
 // Notes: Uses a 4k buffer for printf parameter expansion. All string to be printed should be smaller than 4k.
 //        Uses the DbgAddIn tag (0x00010000) for printing. This tag must be set in MFCMAPI to get output.
-#define szAddInLog "AddInLog"
+#define szAddInLog "AddInLog" // STRING_OK
 typedef void (STDMETHODVCALLTYPE ADDINLOG)(
 	BOOL bPrintThreadTime, // whether to print the thread and time banner.
 	LPWSTR szMsg, // the message to be printed. Uses printf syntax.
@@ -228,7 +232,7 @@ typedef ADDINLOG FAR *LPADDINLOG;
 // Function: SimpleDialog
 // Use: Hooks MFCMAPI's CEditor class to display a simple dialog.
 // Notes: Uses a 4k buffer for printf parameter expansion. All string to be displayed should be smaller than 4k.
-#define szSimpleDialog "SimpleDialog"
+#define szSimpleDialog "SimpleDialog" // STRING_OK
 typedef HRESULT (STDMETHODVCALLTYPE SIMPLEDIALOG)(
 	LPWSTR szTitle, // Title for dialog
 	LPWSTR szMsg, // the message to be printed. Uses printf syntax.
@@ -238,7 +242,7 @@ typedef SIMPLEDIALOG FAR *LPSIMPLEDIALOG;
 
 // Function: ComplexDialog
 // Use: Hooks MFCMAPI's CEditor class to display a complex dialog. 'Complex' means the dialog has controls.
-#define szComplexDialog "ComplexDialog"
+#define szComplexDialog "ComplexDialog" // STRING_OK
 typedef HRESULT (_cdecl COMPLEXDIALOG)(
 	LPADDINDIALOG lpDialog, // In - pointer to a _AddInDialog structure indicating what the dialog should look like
 	LPADDINDIALOGRESULT* lppDialogResult // Out, Optional - array of _AddInDialogControlResult structures with the values of the dialog when it was closed
@@ -249,7 +253,7 @@ typedef COMPLEXDIALOG FAR *LPCOMPLEXDIALOG;
 // Function: FreeDialogResult
 // Use: Free lppDialogResult returned by ComplexDialog
 // Notes: Failure to free lppDialogResult will result in a memory leak
-#define szFreeDialogResult "FreeDialogResult"
+#define szFreeDialogResult "FreeDialogResult" // STRING_OK
 typedef void (_cdecl FREEDIALOGRESULT)(
 	LPADDINDIALOGRESULT lpDialogResult // _AddInDialogControlResult array to be freed
 );
@@ -261,7 +265,7 @@ typedef FREEDIALOGRESULT FAR *LPFREEDIALOGRESULT;
 //        If MAPI isn't loaded yet and bForce is set, then MFCMAPI will load MAPI.
 //        If MAPI is loaded, bForce has no effect.
 //        The handle returned is NOT ref-counted. Pay close attention to return values from GetProcAddress. Do not call FreeLibrary.
-#define szGetMAPIModule "GetMAPIModule"
+#define szGetMAPIModule "GetMAPIModule" // STRING_OK
 typedef void (_cdecl GETMAPIMODULE)(
 	HMODULE* lphModule,
 	BOOL bForce
@@ -275,7 +279,7 @@ typedef GETMAPIMODULE FAR *LPGETMAPIMODULE;
 // Function: LoadAddIn
 // Use: Let the add-in know we're here, get its name.
 // Notes: If this function is not present, MFCMAPI won't load the add-in This is the only required function.
-#define szLoadAddIn "LoadAddIn"
+#define szLoadAddIn "LoadAddIn" // STRING_OK
 typedef void (STDMETHODCALLTYPE LOADADDIN)(
 	LPWSTR* szTitle // Name of the add-in
 );
@@ -283,13 +287,13 @@ typedef LOADADDIN FAR *LPLOADADDIN;
 
 // Function: UnloadAddIn
 // Use: Let the add-in know we're done - it can free any resources it has allocated
-#define szUnloadAddIn "UnloadAddIn"
+#define szUnloadAddIn "UnloadAddIn" // STRING_OK
 typedef void (STDMETHODCALLTYPE UNLOADADDIN)();
 typedef UNLOADADDIN FAR *LPUNLOADADDIN;
 
 // Function: GetMenus
 // Use: Returns static array of menu information
-#define szGetMenus "GetMenus"
+#define szGetMenus "GetMenus" // STRING_OK
 typedef void (STDMETHODCALLTYPE GETMENUS)(
 	ULONG* lpulMenu, // Count of _MenuItem structures in lppMenu
 	LPMENUITEM* lppMenu // Array of _MenuItem structures describing menu items
@@ -298,7 +302,7 @@ typedef GETMENUS FAR *LPGETMENUS;
 
 // Function: CallMenu
 // Use: Calls back to AddIn with a menu choice - addin will decode and invoke
-#define szCallMenu "CallMenu"
+#define szCallMenu "CallMenu" // STRING_OK
 typedef HRESULT (STDMETHODCALLTYPE CALLMENU)(
 	LPADDINMENUPARAMS lpParams	// Everything the add-in needs to know
 );
@@ -306,7 +310,7 @@ typedef CALLMENU FAR *LPCALLMENU;
 
 // Function: GetPropTags
 // Use: Returns a static array of property names for MFCMAPI to use in decoding properties
-#define szGetPropTags "GetPropTags"
+#define szGetPropTags "GetPropTags" // STRING_OK
 typedef void (STDMETHODCALLTYPE GETPROPTAGS)(
 	ULONG* lpulPropTags, // Number of entries in lppPropTags
 	LPNAME_ARRAY_ENTRY* lppPropTags // Array of NAME_ARRAY_ENTRY structures
@@ -315,7 +319,7 @@ typedef GETPROPTAGS FAR *LPGETPROPTAGS;
 
 // Function: GetPropTypes
 // Use: Returns a static array of property types for MFCMAPI to use in decoding properties
-#define szGetPropTypes "GetPropTypes"
+#define szGetPropTypes "GetPropTypes" // STRING_OK
 typedef void (STDMETHODCALLTYPE GETPROPTYPES)(
 	ULONG* lpulPropTypes, // Number of entries in lppPropTypes
 	LPNAME_ARRAY_ENTRY* lppPropTypes // Array of NAME_ARRAY_ENTRY structures
@@ -324,7 +328,7 @@ typedef GETPROPTYPES FAR *LPGETPROPTYPES;
 
 // Function: GetPropGuids
 // Use: Returns a static array of property guids for MFCMAPI to use in decoding properties
-#define szGetPropGuids "GetPropGuids"
+#define szGetPropGuids "GetPropGuids" // STRING_OK
 typedef void (STDMETHODCALLTYPE GETPROPGUIDS)(
 	ULONG* lpulPropGuids, // Number of entries in lppPropGuids
 	LPGUID_ARRAY_ENTRY* lppPropGuids // Array of GUID_ARRAY_ENTRY structures
@@ -333,7 +337,7 @@ typedef GETPROPGUIDS FAR *LPGETPROPGUIDS;
 
 // Function: GetNameIDs
 // Use: Returns a static array of named property mappings for MFCMAPI to use in decoding properties
-#define szGetNameIDs "GetNameIDs"
+#define szGetNameIDs "GetNameIDs" // STRING_OK
 typedef void (STDMETHODCALLTYPE GETNAMEIDS)(
 	ULONG* lpulNameIDs, // Number of entries in lppNameIDs
 	LPNAMEID_ARRAY_ENTRY* lppNameIDs // Array of NAMEID_ARRAY_ENTRY structures
@@ -342,7 +346,7 @@ typedef GETNAMEIDS FAR *LPGETNAMEIDS;
 
 // Function: GetPropFlags
 // Use: Returns a static array of flag parsing information for MFCMAPI to use in decoding properties
-#define szGetPropFlags "GetPropFlags"
+#define szGetPropFlags "GetPropFlags" // STRING_OK
 typedef void (STDMETHODCALLTYPE GETPROPFLAGS)(
 	ULONG* lpulPropFlags, // Number of entries in lppPropFlags
 	LPFLAG_ARRAY_ENTRY* lppPropFlags // Array of FLAG_ARRAY_ENTRY structures

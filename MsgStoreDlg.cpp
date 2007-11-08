@@ -1022,9 +1022,10 @@ void CMsgStoreDlg::OnSaveFolderContentsAsMSG()
 		this,
 		IDS_SAVEFOLDERASMSG,
 		IDS_SAVEFOLDERASMSGPROMPT,
-		1,
+		2,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 	MyData.InitCheck(0,IDS_SAVEASSOCIATED,false,false);
+	MyData.InitCheck(1,IDS_SAVEUNICODE,false,false);
 	WC_H(MyData.DisplayDialog());
 
 	if (S_OK == hRes)
@@ -1039,6 +1040,7 @@ void CMsgStoreDlg::OnSaveFolderContentsAsMSG()
 				lpMAPIFolder,
 				szFilePath,
 				MyData.GetCheck(0)?TRUE:FALSE,
+				MyData.GetCheck(1)?TRUE:FALSE,
 				m_hWnd));
 		}
 	}

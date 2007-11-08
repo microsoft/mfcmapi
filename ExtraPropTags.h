@@ -279,7 +279,7 @@
 #define PR_SUPERSEDES_W PROP_TAG(PT_UNICODE,0x103A)
 #endif
 
-//Outlook 2003 Integration API
+//Outlook 2003 Integration API - http://msdn2.microsoft.com/en-us/library/aa193120(office.11).aspx
 #ifndef PR_PRIMARY_SEND_ACCT
 #define PR_PRIMARY_SEND_ACCT PROP_TAG(PT_UNICODE,0x0E28)
 #endif
@@ -302,7 +302,7 @@
 #define PR_SECURITY_PROFILES PROP_TAG(PT_MV_BINARY, 0x355)
 #endif
 
-// http://blogs.msdn.com/stephen_griffin/archive/2005/10/25/484656.aspx
+// http://support.microsoft.com/kb/912237
 #ifndef PR_ATTACHMENT_CONTACTPHOTO
 #define PR_ATTACHMENT_CONTACTPHOTO PROP_TAG(PT_BOOLEAN, 0x7fff)
 #endif
@@ -311,8 +311,9 @@
 #define PR_AGING_PERIOD         PROP_TAG(PT_LONG,0x36EC)
 #define PR_AGING_GRANULARITY    PROP_TAG(PT_LONG,0x36EE)
 
-// http://blogs.msdn.com/stephen_griffin/archive/2006/05/10/594641.aspx
+// http://msdn2.microsoft.com/en-us/library/bb820938.aspx
 #define PR_PROVIDER_ITEMID          	PROP_TAG(PT_BINARY, 	0x0EA3)
+// http://msdn2.microsoft.com/en-us/library/bb820939.aspx
 #define PR_PROVIDER_PARENT_ITEMID   	PROP_TAG(PT_BINARY, 	0x0EA4)
 
 // PH props
@@ -343,5 +344,65 @@
 // Therefore, we need to skip it when enum through sf* special folders.
 #define PR_ADDITIONAL_REN_ENTRYIDS    PROP_TAG(PT_MV_BINARY, 0x36D8)
 
-// http://blogs.msdn.com/stephen_griffin/archive/2007/04/18/detecting-the-version-of-exchange-in-a-profile.aspx
+// http://msdn2.microsoft.com/en-us/library/bb820966.aspx
 #define	PR_PROFILE_SERVER_FULL_VERSION	PROP_TAG( PT_BINARY, pidProfileMin+0x3b)
+
+// http://msdn2.microsoft.com/en-us/library/bb820973.aspx
+// Additional display attributes, to supplement PR_DISPLAY_TYPE.
+#define PR_DISPLAY_TYPE_EX PROP_TAG( PT_LONG, 0x3905)
+
+// PR_DISPLAY_TYPE_EX has the following format
+// 
+// 33222222222211111111110000000000
+// 10987654321098765432109876543210
+//
+// FAxxxxxxxxxxxxxxRRRRRRRRLLLLLLLL
+//
+// F = 1 if remote is valid, 0 if it is not
+// A = 1 if the user is ACL-able, 0 if the user is not
+// x - unused at this time, do not interpret as this may be used in the future
+// R = display type from 
+
+#define DTE_FLAG_REMOTE_VALID 0x80000000
+#define DTE_FLAG_ACL_CAPABLE  0x40000000
+#define DTE_MASK_REMOTE       0x0000ff00
+#define DTE_MASK_LOCAL        0x000000ff
+
+#define DTE_IS_REMOTE_VALID(v) (!!((v) & DTE_FLAG_REMOTE_VALID))
+#define DTE_IS_ACL_CAPABLE(v)  (!!((v) & DTE_FLAG_ACL_CAPABLE))
+#define DTE_REMOTE(v)          (((v) & DTE_MASK_REMOTE) >> 8)
+#define DTE_LOCAL(v)           ((v) & DTE_MASK_LOCAL)
+ 
+#define DT_ROOM	        ((ULONG) 0x00000007)
+#define DT_EQUIPMENT    ((ULONG) 0x00000008)
+#define DT_SEC_DISTLIST ((ULONG) 0x00000009)
+
+// http://msdn2.microsoft.com/en-us/library/bb821036.aspx
+#define PR_FLAG_STATUS PROP_TAG( PT_LONG, 0x1090 )
+enum FollowUpStatus {
+	flwupNone = 0,
+	flwupComplete,
+	flwupMarked,
+	flwupMAX};
+
+// http://msdn2.microsoft.com/en-us/library/bb821062.aspx
+#define PR_FOLLOWUP_ICON PROP_TAG( PT_LONG, 0x1095 )
+typedef enum OlFlagIcon {
+	olNoFlagIcon=0,
+	olPurpleFlagIcon=1,
+	olOrangeFlagIcon=2,
+	olGreenFlagIcon=3,
+	olYellowFlagIcon=4,
+	olBlueFlagIcon=5,
+	olRedFlagIcon=6,
+} OlFlagIcon;
+
+// http://msdn2.microsoft.com/en-us/library/bb821130.aspx
+enum Gender {
+	genderMin = 0,
+	genderUnspecified = genderMin,
+	genderFemale,
+	genderMale,
+	genderCount,
+	genderMax = genderCount - 1
+};

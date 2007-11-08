@@ -43,6 +43,9 @@ public:
 	virtual BOOL HandleKeyDown(UINT nChar, BOOL bShift, BOOL bCtrl, BOOL bMenu);
 	afx_msg void OnCompareEntryIDs();
 	afx_msg void OnOpenEntryID(LPSBinary lpBin);
+	afx_msg void OnComputeStoreHash();
+	afx_msg void OnEncodeID();
+
 	void OnHexEditor();
 
 	CMapiObjects*			m_lpMapiObjects;
