@@ -630,7 +630,7 @@ LPSPropValue CSingleMAPIPropListCtrl::GetPropVals()
 {
 	if (m_lpSourceData && m_lpSourceData->lpSourceProps)
 	{
-			return m_lpSourceData->lpSourceProps;
+		return m_lpSourceData->lpSourceProps;
 	}
 	return 0;
 }
@@ -1245,7 +1245,10 @@ void CSingleMAPIPropListCtrl::OnEditGivenProp(ULONG ulPropTag)
 		return;
 	}
 	LPSPropValue lpSourceArray = GetPropVals();
-	if (m_lpMAPIProp && !RegKeys[regkeyUSE_ROW_DATA_FOR_SINGLEPROPLIST].ulCurDWORD)
+	// if we have m_lpMAPIProp and don't have both lpSourceArray and the reg key, 
+	// then use m_lpMAPIProp
+	if (m_lpMAPIProp && 
+		!(RegKeys[regkeyUSE_ROW_DATA_FOR_SINGLEPROPLIST].ulCurDWORD && lpSourceArray))
 	{
 		CPropertyEditor MyEditor(
 			this,
@@ -1749,12 +1752,18 @@ LPTSTR TZDEFINITIONToString(TZDEFINITION tzDef)
 	CString szDef;
 	LPTSTR szOut = NULL;
 	LPTSTR szGUID = GUIDToString(&tzDef.guidTZID);
+	LPTSTR szFlags = NULL;
+	HRESULT hRes = S_OK;
 
+	EC_H(InterpretFlags(flagTZDef, tzDef.wFlags, &szFlags));
 	szDef.FormatMessage(IDS_TZDEFTOSTRING,
 		tzDef.wFlags,
+		szFlags,
 		szGUID?szGUID:_T("null"),// STRING_OK
 		tzDef.pwszKeyName,
 		tzDef.cRules);
+	MAPIFreeBuffer(szFlags);
+	szFlags = NULL;
 
 	if (tzDef.cRules && tzDef.rgRules)
 	{
@@ -1766,9 +1775,11 @@ LPTSTR TZDEFINITIONToString(TZDEFINITION tzDef)
 
 			for (i = 0;i<tzDef.cRules;i++)
 			{
+				EC_H(InterpretFlags(flagTZRule, tzDef.rgRules[i].wFlags, &szFlags));
 				szRule.FormatMessage(IDS_TZRULETOSTRING,
 					i,
 					tzDef.rgRules[i].wFlags,
+					szFlags,
 					tzDef.rgRules[i].stStart.wYear,
 					tzDef.rgRules[i].stStart.wMonth,
 					tzDef.rgRules[i].stStart.wDayOfWeek,
@@ -1796,6 +1807,8 @@ LPTSTR TZDEFINITIONToString(TZDEFINITION tzDef)
 					tzDef.rgRules[i].TZReg.stDaylightDate.wMinute,
 					tzDef.rgRules[i].TZReg.stDaylightDate.wSecond,
 					tzDef.rgRules[i].TZReg.stDaylightDate.wMilliseconds);
+				MAPIFreeBuffer(szFlags);
+				szFlags = NULL;
 				szDef += szRule;
 			}
 		}

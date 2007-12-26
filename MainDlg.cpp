@@ -268,7 +268,7 @@ void CMainDlg::OnOpenPAB()
 		lpEID,
 		NULL,
 		MAPI_MODIFY,
-		NULL,
+		&ulObjType,
 		(LPUNKNOWN*)&lpPAB));
 
 	EC_H(DisplayObject(lpPAB,ulObjType,otDefault,this));

@@ -954,7 +954,7 @@ void CHierarchyTableTreeCtrl::GetContainer(
 					(LPENTRYID) lpCurBin->lpb,
 					NULL,
 					ulFlags,
-					NULL,
+					&ulObjType,
 					(LPUNKNOWN*)&lpContainer));
 			}
 		}
@@ -975,7 +975,7 @@ void CHierarchyTableTreeCtrl::GetContainer(
 					(LPENTRYID) lpCurBin->lpb,
 					NULL,
 					ulFlags,
-					NULL,
+					&ulObjType,
 					(LPUNKNOWN*)&lpContainer));
 			}
 		}
@@ -995,7 +995,7 @@ void CHierarchyTableTreeCtrl::GetContainer(
 			(LPENTRYID) lpCurBin->lpb,
 			NULL,
 			ulFlags,
-			NULL,
+			&ulObjType,
 			(LPUNKNOWN*)&lpContainer));
 	}
 

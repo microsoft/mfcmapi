@@ -34,7 +34,6 @@ HRESULT DisplayObject(
 					  CBaseDialog* lpHostDlg)
 {
 	HRESULT			hRes = S_OK;
-//	ULONG			ulObjType = NULL;
 	__mfcmapiAssociatedContentsEnum	bAssocContents;
 
 	if (!lpHostDlg || !lpHostDlg->m_lpMapiObjects || !lpUnk) return MAPI_E_INVALID_PARAMETER;
