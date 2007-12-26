@@ -766,14 +766,19 @@ void ActionToString(ACTION* lpAction, CString* PropString)
 	CString szAltProp;
 	HRESULT hRes = S_OK;
 	LPTSTR szFlags = NULL;
+	LPTSTR szFlags2 = NULL;
 	EC_H(InterpretFlags(flagAccountType, lpAction->acttype, &szFlags));
+	EC_H(InterpretFlags(flagRuleFlag, lpAction->ulFlags, &szFlags2));
 	PropString->FormatMessage(
 		IDS_ACTION,
 		lpAction->acttype,
 		szFlags,
 		RestrictionToString(lpAction->lpRes,NULL),
-		lpAction->ulFlags);
+		lpAction->ulFlags,
+		szFlags2);
+	MAPIFreeBuffer(szFlags2);
 	MAPIFreeBuffer(szFlags);
+	szFlags2 = NULL;
 	szFlags = NULL;
 
 	switch(lpAction->acttype)
@@ -1340,7 +1345,7 @@ void GetPropName(LPMAPIPROP lpMAPIProp,
 				else
 				{
 					// Worst case is 'id: 0xFFFFFFFF=4294967295' - 26 chars
-					*lpszPropName = new TCHAR[26];
+					*lpszPropName = new TCHAR[26+1];
 					if (*lpszPropName)
 					{
 						// Printing hex first gets a nice sort without spacing tricks

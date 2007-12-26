@@ -10,7 +10,7 @@
 #include "MAPIFunctions.h"
 #include "InterpretProp.h"
 #include "ImportProcs.h"
-#include <Tmschema.h>
+#include <vssym32.h>
 
 #include "AboutDlg.h"
 

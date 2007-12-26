@@ -41,4 +41,7 @@ enum __NonPropFlag
 	flagRulesVersion,
 	flagNotifEventType,
 	flagTableEventType,
+	flagTZDef,
+	flagTZRule,
+	flagRuleFlag,
 };

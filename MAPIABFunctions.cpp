@@ -290,7 +290,7 @@ HRESULT GetABContainerTable(LPADRBOOK lpAdrBook, LPMAPITABLE* lpABContainerTable
 	if (lpABRootContainer)
 	{
 		// Get a table of all of the Address Books.
-		EC_H(lpABRootContainer->GetHierarchyTable(fMapiUnicode, &lpTable));
+		EC_H(lpABRootContainer->GetHierarchyTable(CONVENIENT_DEPTH | fMapiUnicode, &lpTable));
 		*lpABContainerTable = lpTable;
 		lpABRootContainer->Release();
 	}
@@ -387,7 +387,7 @@ HRESULT ManualResolve(
 					(ENTRYID*)lpABRow->aRow->lpProps[abcPR_ENTRYID].Value.bin.lpb,
 					NULL,
 					NULL,
-					NULL,
+					&ulObjType,
 					(LPUNKNOWN*)&lpABContainer));
 				if (!lpABContainer) continue;
 
@@ -400,6 +400,7 @@ HRESULT ManualResolve(
 					WC_H(lpABContainer->GetContentsTable(fMapiUnicode, &pTable));
 					if (!pTable)
 					{
+						DebugPrint(DBGGeneric,_T("ManualResolve: Container did not support contents table\n"));
 						if (MAPI_E_NO_SUPPORT == hRes) hRes = S_OK;
 						continue;
 					}

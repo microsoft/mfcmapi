@@ -234,6 +234,7 @@ HRESULT OpenMessageNonModal(
 	ULONG					cValuesShow = 0;
 	LPSPropValue			lpspvaShow = NULL;
 	ULONG					ulMessageStatus = NULL;
+	LPMAPIVIEWCONTEXT		lpViewContextTemp = NULL;
 
 	enum {FLAGS,CLASS,EID,NUM_COLS};
 	SizedSPropTagArray(NUM_COLS,sptaShowForm) = { NUM_COLS, {
@@ -286,6 +287,24 @@ HRESULT OpenMessageNonModal(
 					lpForm,
 					lVerb,
 					lpRect));
+				// Fix for unknown typed freedocs.
+				WC_H(lpForm->GetViewContext(&lpViewContextTemp));
+				if (SUCCEEDED(hRes)){
+					if (lpViewContextTemp){
+						// If we got a pointer back, we'll just release it and continue.
+						lpViewContextTemp->Release();
+					}
+					else{
+						// If the pointer came back NULL, then we need to call ShutdownForm but don't release.
+						WC_H(lpForm->ShutdownForm(SAVEOPTS_NOSAVE));
+					}
+				}
+				else
+				{
+					// Not getting a view context isn't a bad thing
+					hRes = S_OK;
+				}
+
 				lpForm->Release();
 			}
 			lpMAPIFormViewer->Release();

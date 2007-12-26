@@ -1233,7 +1233,7 @@ lpAdrList->aEntries[0x%1!08X!].rgPropVals[0x%2!08X!].Value = %4\r\n\
 IDS_ACTIONNULL "lpAction was NULL\r\n"
 IDS_ACTION "lpAction->acttype = 0x%1!08X! = %2\r\n\
 lpAction->lpRes: \r\n%3\
-lpAction->ulFlags = 0x%4!08X!\r\n"
+lpAction->ulFlags = 0x%4!08X! = %5\r\n"
 
 IDS_ACTIONOPMOVECOPY "lpAction->actMoveCopy.lpStoreEntryId:\r\n\
 %1\r\n\
@@ -1284,65 +1284,65 @@ IDS_OPTIONSSTRUCTURE "lpOptions[0x%1!08X!].ulPropTag = %2\r\n\
 lpOptions[0x%1!08X!].Value = %3\r\n\
 \tAlt: %4\r\n"
 
-IDS_TZREGTOSTRING "tzReg.lBias = 0x%1!08X!\r\n\
-tzReg.lStandardBias = 0x%2!08X!\r\n\
-tzReg.lDaylightBias = 0x%3!08X!\r\n\
+IDS_TZREGTOSTRING "tzReg.lBias = 0x%1!08X! (%1!d!)\r\n\
+tzReg.lStandardBias = 0x%2!08X! (%2!d!)\r\n\
+tzReg.lDaylightBias = 0x%3!08X! (%3!d!)\r\n\
 \r\n\
-tzReg.stStandardDate.wYear = 0x%4!X!\r\n\
-tzReg.stStandardDate.wMonth = 0x%5!X!\r\n\
-tzReg.stStandardDate.wDayOfWeek = 0x%6!X!\r\n\
-tzReg.stStandardDate.wDay = 0x%7!X!\r\n\
-tzReg.stStandardDate.wHour = 0x%8!X!\r\n\
-tzReg.stStandardDate.wMinute = 0x%9!X!\r\n\
-tzReg.stStandardDate.wSecond = 0x%10!X!\r\n\
-tzReg.stStandardDate.wMilliseconds = 0x%11!X!\r\n\
+tzReg.stStandardDate.wYear = 0x%4!X! (%4!d!)\r\n\
+tzReg.stStandardDate.wMonth = 0x%5!X! (%5!d!)\r\n\
+tzReg.stStandardDate.wDayOfWeek = 0x%6!X! (%6!d!)\r\n\
+tzReg.stStandardDate.wDay = 0x%7!X! (%7!d!)\r\n\
+tzReg.stStandardDate.wHour = 0x%8!X! (%8!d!)\r\n\
+tzReg.stStandardDate.wMinute = 0x%9!X! (%9!d!)\r\n\
+tzReg.stStandardDate.wSecond = 0x%10!X! (%10!d!)\r\n\
+tzReg.stStandardDate.wMilliseconds = 0x%11!X! (%11!d!)\r\n\
 \r\n\
-tzReg.stDaylightDate.wYear = 0x%12!X!\r\n\
-tzReg.stDaylightDate.wMonth = 0x%13!X!\r\n\
-tzReg.stDaylightDate.wDayOfWeek = 0x%14!X!\r\n\
-tzReg.stDaylightDate.wDay = 0x%15!X!\r\n\
-tzReg.stDaylightDate.wHour = 0x%16!X!\r\n\
-tzReg.stDaylightDate.wMinute = 0x%17!X!\r\n\
-tzReg.stDaylightDate.wSecond = 0x%18!X!\r\n\
-tzReg.stDaylightDate.wMilliseconds = 0x%19!X!"
+tzReg.stDaylightDate.wYear = 0x%12!X! (%12!d!)\r\n\
+tzReg.stDaylightDate.wMonth = 0x%13!X! (%13!d!)\r\n\
+tzReg.stDaylightDate.wDayOfWeek = 0x%14!X! (%14!d!)\r\n\
+tzReg.stDaylightDate.wDay = 0x%15!X! (%15!d!)\r\n\
+tzReg.stDaylightDate.wHour = 0x%16!X! (%16!d!)\r\n\
+tzReg.stDaylightDate.wMinute = 0x%17!X! (%17!d!)\r\n\
+tzReg.stDaylightDate.wSecond = 0x%18!X! (%18!d!)\r\n\
+tzReg.stDaylightDate.wMilliseconds = 0x%19!X! (%19!d!)"
 
-IDS_TZDEFTOSTRING "tzDef.wFlags = 0x%1!08X!\r\n\
-tzDef.guidTZID = %2\r\n\
-tzDef.pwszKeyName = %3!ws!\r\n\
-tzDef.cRules = 0x%4!X!"
+IDS_TZDEFTOSTRING "tzDef.wFlags = 0x%1!08X! = %2\r\n\
+tzDef.guidTZID = %3\r\n\
+tzDef.pwszKeyName = %4!ws!\r\n\
+tzDef.cRules = 0x%5!X! (%5!d!)"
 
 IDS_TZRULETOSTRING "\r\n\r\n\
-tzDef.rgRules[0x%1!X!].wFlags = 0x%2!X!\r\n\
-tzDef.rgRules[0x%1!X!].stStart.wYear = 0x%3!X!\r\n\
-tzDef.rgRules[0x%1!X!].stStart.wMonth = 0x%4!X!\r\n\
-tzDef.rgRules[0x%1!X!].stStart.wDayOfWeek = 0x%5!X!\r\n\
-tzDef.rgRules[0x%1!X!].stStart.wDay = 0x%6!X!\r\n\
-tzDef.rgRules[0x%1!X!].stStart.wHour = 0x%7!X!\r\n\
-tzDef.rgRules[0x%1!X!].stStart.wMinute = 0x%8!X!\r\n\
-tzDef.rgRules[0x%1!X!].stStart.wSecond = 0x%9!X!\r\n\
-tzDef.rgRules[0x%1!X!].stStart.wMilliseconds = 0x%10!X!\r\n\
+tzDef.rgRules[0x%1!X!].wFlags = 0x%2!X! = %3\r\n\
+tzDef.rgRules[0x%1!X!].stStart.wYear = 0x%4!X! (%4!d!)\r\n\
+tzDef.rgRules[0x%1!X!].stStart.wMonth = 0x%5!X! (%5!d!)\r\n\
+tzDef.rgRules[0x%1!X!].stStart.wDayOfWeek = 0x%6!X! (%6!d!)\r\n\
+tzDef.rgRules[0x%1!X!].stStart.wDay = 0x%7!X! (%7!d!)\r\n\
+tzDef.rgRules[0x%1!X!].stStart.wHour = 0x%8!X! (%8!d!)\r\n\
+tzDef.rgRules[0x%1!X!].stStart.wMinute = 0x%9!X! (%9!d!)\r\n\
+tzDef.rgRules[0x%1!X!].stStart.wSecond = 0x%10!X! (%10!d!)\r\n\
+tzDef.rgRules[0x%1!X!].stStart.wMilliseconds = 0x%11!X! (%11!d!)\r\n\
 \r\n\
-tzDef.rgRules[0x%1!X!].TZReg.lBias = 0x%11!08X!\r\n\
-tzDef.rgRules[0x%1!X!].TZReg.lStandardBias = 0x%12!08X!\r\n\
-tzDef.rgRules[0x%1!X!].TZReg.lDaylightBias = 0x%13!08X!\r\n\
+tzDef.rgRules[0x%1!X!].TZReg.lBias = 0x%12!08X! (%12!d!)\r\n\
+tzDef.rgRules[0x%1!X!].TZReg.lStandardBias = 0x%13!08X! (%13!d!)\r\n\
+tzDef.rgRules[0x%1!X!].TZReg.lDaylightBias = 0x%14!08X! (%14!d!)\r\n\
 \r\n\
-tzDef.rgRules[0x%1!X!].TZReg.stStandardDate.wYear = 0x%14!X!\r\n\
-tzDef.rgRules[0x%1!X!].TZReg.stStandardDate.wMonth = 0x%15!X!\r\n\
-tzDef.rgRules[0x%1!X!].TZReg.stStandardDate.wDayOfWeek = 0x%16!X!\r\n\
-tzDef.rgRules[0x%1!X!].TZReg.stStandardDate.wDay = 0x%17!X!\r\n\
-tzDef.rgRules[0x%1!X!].TZReg.stStandardDate.wHour = 0x%18!X!\r\n\
-tzDef.rgRules[0x%1!X!].TZReg.stStandardDate.wMinute = 0x%19!X!\r\n\
-tzDef.rgRules[0x%1!X!].TZReg.stStandardDate.wSecond = 0x%20!X!\r\n\
-tzDef.rgRules[0x%1!X!].TZReg.stStandardDate.wMilliseconds = 0x%21!X!\r\n\
+tzDef.rgRules[0x%1!X!].TZReg.stStandardDate.wYear = 0x%15!X! (%15!d!)\r\n\
+tzDef.rgRules[0x%1!X!].TZReg.stStandardDate.wMonth = 0x%16!X! (%16!d!)\r\n\
+tzDef.rgRules[0x%1!X!].TZReg.stStandardDate.wDayOfWeek = 0x%17!X! (%17!d!)\r\n\
+tzDef.rgRules[0x%1!X!].TZReg.stStandardDate.wDay = 0x%18!X! (%18!d!)\r\n\
+tzDef.rgRules[0x%1!X!].TZReg.stStandardDate.wHour = 0x%19!X! (%19!d!)\r\n\
+tzDef.rgRules[0x%1!X!].TZReg.stStandardDate.wMinute = 0x%20!X! (%20!d!)\r\n\
+tzDef.rgRules[0x%1!X!].TZReg.stStandardDate.wSecond = 0x%21!X! (%21!d!)\r\n\
+tzDef.rgRules[0x%1!X!].TZReg.stStandardDate.wMilliseconds = 0x%22!X! (%22!d!)\r\n\
 \r\n\
-tzDef.rgRules[0x%1!X!].TZReg.stDaylightDate.wYear = 0x%22!X!\r\n\
-tzDef.rgRules[0x%1!X!].TZReg.stDaylightDate.wMonth = 0x%23!X!\r\n\
-tzDef.rgRules[0x%1!X!].TZReg.stDaylightDate.wDayOfWeek = 0x%24!X!\r\n\
-tzDef.rgRules[0x%1!X!].TZReg.stDaylightDate.wDay = 0x%25!X!\r\n\
-tzDef.rgRules[0x%1!X!].TZReg.stDaylightDate.wHour = 0x%26!X!\r\n\
-tzDef.rgRules[0x%1!X!].TZReg.stDaylightDate.wMinute = 0x%27!X!\r\n\
-tzDef.rgRules[0x%1!X!].TZReg.stDaylightDate.wSecond = 0x%28!X!\r\n\
-tzDef.rgRules[0x%1!X!].TZReg.stDaylightDate.wMilliseconds = 0x%29!X!"
+tzDef.rgRules[0x%1!X!].TZReg.stDaylightDate.wYear = 0x%23!X! (%23!d!)\r\n\
+tzDef.rgRules[0x%1!X!].TZReg.stDaylightDate.wMonth = 0x%24!X! (%24!d!)\r\n\
+tzDef.rgRules[0x%1!X!].TZReg.stDaylightDate.wDayOfWeek = 0x%25!X! (%25!d!)\r\n\
+tzDef.rgRules[0x%1!X!].TZReg.stDaylightDate.wDay = 0x%26!X! (%26!d!)\r\n\
+tzDef.rgRules[0x%1!X!].TZReg.stDaylightDate.wHour = 0x%27!X! (%27!d!)\r\n\
+tzDef.rgRules[0x%1!X!].TZReg.stDaylightDate.wMinute = 0x%28!X! (%28!d!)\r\n\
+tzDef.rgRules[0x%1!X!].TZReg.stDaylightDate.wSecond = 0x%29!X! (%29!d!)\r\n\
+tzDef.rgRules[0x%1!X!].TZReg.stDaylightDate.wMilliseconds = 0x%30!X! (%30!d!)"
 
 IDS_NOCONTEXT "No Context"
 
