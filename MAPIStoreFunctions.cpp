@@ -8,6 +8,7 @@
 #include "Editor.h"
 #include "registry.h"
 #include "Guids.h"
+#include "InterpretProp2.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -32,8 +33,6 @@ HRESULT CallOpenMsgStore(
 		ulFlags |= MDB_ONLINE;
 	}
 
-	//Any leak in this call is in emsmdb32...
-	//See Q237174
 	WC_H(lpSession->OpenMsgStore(
 		ulUIParam,
 		lpEID->cb,
@@ -410,13 +409,12 @@ HRESULT HrMailboxLogon(
 	LPMDB			lpMDB,			// open message store
 	LPCTSTR			lpszMsgStoreDN,	// desired message store DN
 	LPCTSTR			lpszMailboxDN,	// desired mailbox DN or NULL
-	BOOL			bUseAdminPriv,
+	ULONG			ulFlags,		// desired flags for CreateStoreEntryID
 	LPMDB			*lppMailboxMDB)	// ptr to mailbox message store ptr
 {
 	HRESULT					hRes			= S_OK;
 	LPEXCHANGEMANAGESTORE	lpXManageStore  = NULL;
 	LPMDB					lpMailboxMDB	= NULL;
-	ULONG					ulFlags			= 0L;
 	SBinary					sbEID			= {0};
 
 	*lppMailboxMDB = NULL;
@@ -434,11 +432,6 @@ HRESULT HrMailboxLogon(
 	if (lpszMailboxDN == NULL || !*lpszMailboxDN)
 	{
 		ulFlags |= OPENSTORE_PUBLIC;
-	}
-
-	if (bUseAdminPriv)
-	{
-		ulFlags |= OPENSTORE_USE_ADMIN_PRIVILEGE;
 	}
 
 	EC_H(lpMDB->QueryInterface(
@@ -460,7 +453,7 @@ HRESULT HrMailboxLogon(
 			EC_H(lpXManageStore->CreateStoreEntryID(
 				szAnsiMsgStoreDN,
 				szAnsiMailboxDN,
-				ulFlags | OPENSTORE_TAKE_OWNERSHIP,
+				ulFlags,
 				&sbEID.cb,
 				(LPENTRYID*) &sbEID.lpb));
 			delete[] szAnsiMsgStoreDN;
@@ -470,7 +463,7 @@ HRESULT HrMailboxLogon(
 		EC_H(lpXManageStore->CreateStoreEntryID(
 			(LPSTR) lpszMsgStoreDN,
 			(LPSTR) lpszMailboxDN,
-			ulFlags | OPENSTORE_TAKE_OWNERSHIP,
+			ulFlags,
 			&sbEID.cb,
 			(LPENTRYID*) &sbEID.lpb));
 #endif
@@ -552,7 +545,7 @@ HRESULT OpenOtherUsersMailbox(
 							  LPMDB lpMDB,
 							  LPCTSTR szServerName,
 							  LPCTSTR szMailboxDN,
-							  BOOL bUseAdminPriv,
+							  ULONG ulFlags, // desired flags for CreateStoreEntryID
 							  LPMDB* lppOtherUserMDB)
 {
 	HRESULT		 hRes			= S_OK;
@@ -585,14 +578,12 @@ HRESULT OpenOtherUsersMailbox(
 		if (szServerDN)
 		{
 			DebugPrint(DBGGeneric,_T("Calling HrMailboxLogon with Server DN = \"%s\"\n"),szServerDN);
-			//Any leak in this call is in emsmdb32...
-			//See Q237174
 			EC_H(HrMailboxLogon(
 				lpMAPISession,
 				lpMDB,
 				szServerDN,
 				szMailboxDN,
-				bUseAdminPriv,
+				ulFlags,
 				lppOtherUserMDB));
 			MAPIFreeBuffer(szServerDN);
 		}
@@ -689,27 +680,26 @@ HRESULT OpenOtherUsersMailboxFromGal(
 
 					if (CheckStringProp(lpEmailAddress,PT_TSTRING))
 					{
-						BOOL bUseAdminPriv = false;
 						CEditor MyPrompt(
 							NULL,
 							IDS_OPENOTHERUSER,
-							IDS_ASSERTPRIVPROMPT,
+							IDS_OPENWITHFLAGSPROMPT,
 							1,
 							CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-						MyPrompt.InitCheck(0,IDS_USEADMINPRIV,true,false);
+						MyPrompt.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS),true));
+						MyPrompt.InitSingleLine(0,IDS_CREATESTORENTRYIDFLAGS,NULL,false);
+						MyPrompt.SetHex(0,OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP);
 						WC_H(MyPrompt.DisplayDialog());
 						if (S_OK == hRes)
 						{
-							bUseAdminPriv = MyPrompt.GetCheck(0);
+							EC_H(OpenOtherUsersMailbox(
+								lpMAPISession,
+								lpPrivateMDB,
+								NULL,
+								lpEmailAddress->Value.LPSZ,
+								MyPrompt.GetHex(0),
+								lppOtherUserMDB));
 						}
-
-						EC_H(OpenOtherUsersMailbox(
-							lpMAPISession,
-							lpPrivateMDB,
-							NULL,
-							lpEmailAddress->Value.LPSZ,
-							bUseAdminPriv,
-							lppOtherUserMDB));
 					}
 				}
 			}
@@ -809,14 +799,12 @@ HRESULT OpenPublicMessageStoreFolderAdminPriv(
 
 		if (szServerDN)
 		{
-			//Any leak in this call is in emsmdb32...
-			//See Q237174
 			EC_H(HrMailboxLogon(
 				lpMAPISession,
 				lpMDB,
 				szServerDN,
 				szFolderDN,
-				true,
+				OPENSTORE_USE_ADMIN_PRIVILEGE,
 				lppPublicMDB));
 			MAPIFreeBuffer(szServerDN);
 		}
@@ -826,21 +814,29 @@ HRESULT OpenPublicMessageStoreFolderAdminPriv(
 }//OpenPublicMessageStoreFolderAdminPriv
 */
 
-HRESULT OpenPublicMessageStoreAdminPriv(
-							  LPMAPISESSION	lpMAPISession,
-							  LPMDB* lppPublicMDB)
+HRESULT OpenPublicMessageStore(
+							   LPMAPISESSION lpMAPISession,
+							   ULONG ulFlags, // Flags for CreateStoreEntryID
+							   LPMDB* lppPublicMDB)
 {
 	HRESULT			hRes = S_OK;
 
 	LPMDB			lpPublicMDBNonAdmin	= NULL;
 	LPSPropValue	lpServerName	= NULL;
 
-	if (!lpMAPISession) return MAPI_E_INVALID_PARAMETER;
+	if (!lpMAPISession || !lppPublicMDB) return MAPI_E_INVALID_PARAMETER;
 
 	EC_H(OpenMessageStoreGUID(
 		lpMAPISession,
 		pbExchangeProviderPublicGuid,
 		&lpPublicMDBNonAdmin));
+
+	// If we don't have flags we're done
+	if (!ulFlags)
+	{
+		*lppPublicMDB = lpPublicMDBNonAdmin;
+		return hRes;
+	}
 
 	if (lpPublicMDBNonAdmin && StoreSupportsManageStore(lpPublicMDBNonAdmin))
 	{
@@ -860,14 +856,12 @@ HRESULT OpenPublicMessageStoreAdminPriv(
 
 			if (szServerDN)
 			{
-				//Any leak in this call is in emsmdb32...
-				//See Q237174
 				EC_H(HrMailboxLogon(
 					lpMAPISession,
 					lpPublicMDBNonAdmin,
 					szServerDN,
 					NULL,
-					true,
+					ulFlags,
 					lppPublicMDB));
 				MAPIFreeBuffer(szServerDN);
 			}
@@ -877,7 +871,7 @@ HRESULT OpenPublicMessageStoreAdminPriv(
 	MAPIFreeBuffer(lpServerName);
 	if (lpPublicMDBNonAdmin) lpPublicMDBNonAdmin->Release();
 	return hRes;
-}//OpenPublicMessageStoreAdminPriv
+}//OpenPublicMessageStore
 
 HRESULT OpenStoreFromMAPIProp(LPMAPISESSION lpMAPISession, LPMAPIPROP lpMAPIProp, LPMDB* lpMDB)
 {

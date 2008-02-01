@@ -301,6 +301,18 @@
 #ifndef PR_SECURITY_PROFILES
 #define PR_SECURITY_PROFILES PROP_TAG(PT_MV_BINARY, 0x355)
 #endif
+#define PR_CERT_PROP_VERSION            PROP_TAG(PT_LONG,       0x0001)
+#define PR_CERT_MESSAGE_ENCODING        PROP_TAG(PT_LONG,       0x0006)
+#define PR_CERT_DEFAULTS                PROP_TAG(PT_LONG,       0x0020)
+#define PR_CERT_DISPLAY_NAME_A          PROP_TAG(PT_STRING8,    0x000B)
+#define PR_CERT_KEYEX_SHA1_HASH         PROP_TAG(PT_BINARY,     0x0022)
+#define PR_CERT_SIGN_SHA1_HASH          PROP_TAG(PT_BINARY,     0x0009)
+#define PR_CERT_ASYMETRIC_CAPS          PROP_TAG(PT_BINARY,     0x0002)
+// Values for PR_CERT_DEFAULTS
+#define MSG_DEFAULTS_NONE               0
+#define MSG_DEFAULTS_FOR_FORMAT         1 // Default certificate for S/MIME.
+#define MSG_DEFAULTS_GLOBAL             2 // Default certificate for all formats.
+#define MSG_DEFAULTS_SEND_CERT          4 // Send certificate with message.
 
 // http://support.microsoft.com/kb/912237
 #ifndef PR_ATTACHMENT_CONTACTPHOTO

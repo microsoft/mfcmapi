@@ -165,6 +165,8 @@ void LoadAddIns()
 						{
 							// We found a candidate, load it for real now
 							hMod = MyLoadLibrary(FindFileData.cFileName);
+							// GetProcAddress again just in case we loaded at a different address
+							WC_D(pfnLoadAddIn, (LPLOADADDIN) GetProcAddress(hMod,szLoadAddIn));
 						}
 					}
 					if (hMod)

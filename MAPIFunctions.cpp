@@ -2466,7 +2466,7 @@ LPWSTR EncodeID(ULONG cbEID, LPENTRYID rgbID)
 	// cbID is the size in bytes of rgbID
 
 	// Allocate memory for pwzIDEncoded
-	pwzIDEncoded = new WCHAR[cbEID];
+	pwzIDEncoded = new WCHAR[cbEID+1];
 	if (!pwzIDEncoded) return NULL;
 
 	for (i = 0, pbSrc = (LPBYTE)rgbID, pwzDst = pwzIDEncoded;

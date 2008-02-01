@@ -25,6 +25,7 @@
 #include "FormContainerDlg.h"
 #include "FileDialogEx.h"
 #include "MAPIMime.h"
+#include "InterpretProp2.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -338,23 +339,25 @@ void CMainDlg::OnOpenDefaultMessageStore()
 
 	if (lpMDB)
 	{
-		BOOL bUseAdminPriv = false;
+		ULONG ulFlags = NULL;
 		if (StoreSupportsManageStore(lpMDB))
 		{
 			CEditor MyPrompt(
 				this,
 				IDS_OPENDEFMSGSTORE,
-				IDS_ASSERTPRIVPROMPT,
+				IDS_OPENWITHFLAGSPROMPT,
 				1,
 				CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-			MyPrompt.InitCheck(0,IDS_USEADMINPRIV,false,false);
+			MyPrompt.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS),true));
+			MyPrompt.InitSingleLine(0,IDS_CREATESTORENTRYIDFLAGS,NULL,false);
+			MyPrompt.SetHex(0,NULL);
 			WC_H(MyPrompt.DisplayDialog());
 			if (S_OK == hRes)
 			{
-				bUseAdminPriv = MyPrompt.GetCheck(0);
+				ulFlags = MyPrompt.GetHex(0);
 			}
 		}
-		if (bUseAdminPriv)
+		if (ulFlags)
 		{
 			ULONG				cbEntryID = 0;
 			LPENTRYID			lpEntryID = NULL;
@@ -393,7 +396,7 @@ void CMainDlg::OnOpenDefaultMessageStore()
 							lpMDB,
 							NULL,
 							lpMailboxName->Value.LPSZ,
-							bUseAdminPriv,
+							ulFlags,
 							&lpAdminMDB));
 						lpMDB->Release();
 						lpMDB = lpAdminMDB;
@@ -501,37 +504,30 @@ void CMainDlg::OnOpenPublicFolders()
 	CEditor MyPrompt(
 		this,
 		IDS_OPENPUBSTORE,
-		IDS_ASSERTPRIVPROMPT,
+		IDS_OPENWITHFLAGSPROMPT,
 		1,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-	MyPrompt.InitCheck(0,IDS_USEADMINPRIV,false,false);
+	MyPrompt.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS),true));
+	MyPrompt.InitSingleLine(0,IDS_CREATESTORENTRYIDFLAGS,NULL,false);
+	MyPrompt.SetHex(0,NULL);
 	WC_H(MyPrompt.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		if (MyPrompt.GetCheck(0))
-		{
-			EC_H(OpenPublicMessageStoreAdminPriv(
-				lpMAPISession,
-				&lpMDB));
-		}
-		else
-		{
-			EC_H(OpenMessageStoreGUID(
-				lpMAPISession,
-				pbExchangeProviderPublicGuid,
-				&lpMDB));
-		}
-	}
+		EC_H(OpenPublicMessageStore(
+			lpMAPISession,
+			MyPrompt.GetHex(0),
+			&lpMDB));
 
-	if (lpMDB)
-	{
-		EC_H(DisplayObject(
-			lpMDB,
-			NULL,
-			otStore,
-			this));
+		if (lpMDB)
+		{
+			EC_H(DisplayObject(
+				lpMDB,
+				NULL,
+				otStore,
+				this));
 
-		lpMDB->Release();
+			lpMDB->Release();
+		}
 	}
 }//CMainDlg::OnOpenPublicFolders
 
@@ -563,9 +559,11 @@ void CMainDlg::OnOpenMailboxWithDN()
 				IDS_OPENMBDNPROMPT,
 				3,
 				CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+			MyPrompt.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS),true));
 			MyPrompt.InitSingleLineSz(0,IDS_SERVERNAME,szServerName,false);
 			MyPrompt.InitSingleLine(1,IDS_USERDN,NULL,false);
-			MyPrompt.InitCheck(2,IDS_USEADMINPRIV,true,false);
+			MyPrompt.InitSingleLine(2,IDS_CREATESTORENTRYIDFLAGS,NULL,false);
+			MyPrompt.SetHex(2,OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP);
 			WC_H(MyPrompt.DisplayDialog());
 			if (S_OK == hRes)
 			{
@@ -574,7 +572,7 @@ void CMainDlg::OnOpenMailboxWithDN()
 					lpMDB,
 					MyPrompt.GetString(0),
 					MyPrompt.GetString(1),
-					MyPrompt.GetCheck(2),
+					MyPrompt.GetHex(2),
 					&lpOtherMDB));
 				if (lpOtherMDB)
 				{

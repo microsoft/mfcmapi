@@ -7,7 +7,7 @@
 #define rmj 6
 #define rmm 0
 #define rup 0
-#define rmn 1003
+#define rmn 1004
 
 #define MAKEFILEVERSION(_rmaj, _rmin, _bmaj, _bmin)			#_rmaj "." #_rmin "." #_bmaj "." #_bmin "\0"
 #define MAKEFILEVERSIONSTR(_rmaj, _rmin, _bmaj, _bmin)		MAKEFILEVERSION(_rmaj, _rmin, _bmaj, _bmin)
@@ -16,7 +16,7 @@
 #define INET_VER						rmj, rmm, rup, rmn
 #define INET_VERSION					MAKEFILEVERSIONSTR(rmj, rmm, rup, rmn)
 #define RC_VERSION_COMPANY_NAME			"Microsoft Corp.\0"
-#define VER_LEGALCOPYRIGHT_YEARS		"1999-2007"
+#define VER_LEGALCOPYRIGHT_YEARS		"1999-2008"
 #define RC_VERSION_PRODUCT_NAME			RC_PRODUCT_NAME "\0"
 #define RC_VERSION_LEGAL_COPYRIGHT		"Copyright \251 " VER_LEGALCOPYRIGHT_YEARS " Microsoft Corp. All rights reserved.\0"
 #define RC_VERSION_LEGAL_TRADEMARKS		"Microsoft® is a registered trademarks of Microsoft Corporation.\0"
@@ -32,6 +32,7 @@
 
 #ifndef DS_SHELLFONT
 	#error "Compilation requires the February 2003 or later Microsoft SDK"
+	#error "Or Visual C++ 2005 or higher"
 	#error "Go to the following URL"
 	#error "    http://www.microsoft.com/msdownload/platformsdk/sdkupdate/"
 	#error "and follow the instructions to install the core SDK"

@@ -1097,9 +1097,9 @@ void CBaseDialog::OnEncodeID()
 		Result.SetBinary(2,(LPBYTE)szEncoded,cchEncoded);
 
 		Result.DisplayDialog();
+		delete[] szEncoded;
 	}
 
-	delete[] szEncoded;
 	delete[] lpEntryID;
 
 	return;

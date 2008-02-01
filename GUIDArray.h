@@ -19,6 +19,7 @@ GUID_ARRAY_ENTRY g_PropGuidArray[] =
 	GUID_ENTRY(PSETID_Common)
 	GUID_ENTRY(PSETID_Log)
 	GUID_ENTRY(IID_IProxyStoreObject)
+	GUID_ENTRY(GUID_Dilkie)
 	GUID_ENTRY(PSETID_Meeting)
 	GUID_ENTRY(IID_IAttachmentSecurity)
 };

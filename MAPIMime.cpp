@@ -269,7 +269,7 @@ HRESULT GetConversionFromEMLOptions(CWnd* pParentWnd,
 									BOOL* pDoApply,
 									HCHARSET* phCharSet,
 									CSETAPPLYTYPE* pcSetApplyType,
-									BOOL* bUnicode)
+									BOOL* pbUnicode)
 {
 	if (!lpulConvertFlags || !pDoAdrBook || !pDoApply || !phCharSet || !pcSetApplyType) return MAPI_E_INVALID_PARAMETER;
 	HRESULT hRes = S_OK;
@@ -278,7 +278,7 @@ HRESULT GetConversionFromEMLOptions(CWnd* pParentWnd,
 		pParentWnd,
 		IDS_CONVERTFROMEML,
 		IDS_CONVERTFROMEMLPROMPT,
-		bUnicode?7:6,
+		pbUnicode?7:6,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 
 	MyData.InitSingleLine(0,IDS_CONVERTFLAGS,NULL,false);
@@ -291,7 +291,7 @@ HRESULT GetConversionFromEMLOptions(CWnd* pParentWnd,
 	MyData.InitSingleLine(4,IDS_CONVERTCHARSETAPPLYTYPE,NULL,false);
 	MyData.SetDecimal(4,CSET_APPLY_UNTAGGED);
 	MyData.InitCheck(5,IDS_CONVERTDOADRBOOK,false,false);
-	if (bUnicode)
+	if (pbUnicode)
 	{
 		MyData.InitCheck(6,IDS_SAVEUNICODE,false,false);
 	}
@@ -312,9 +312,9 @@ HRESULT GetConversionFromEMLOptions(CWnd* pParentWnd,
 			EC_H(pfnMimeOleGetCodePageCharset(ulCodePage,cCharSetType,phCharSet));
 		}
 		*pDoAdrBook = MyData.GetCheck(5);
-		if (bUnicode)
+		if (pbUnicode)
 		{
-			*bUnicode = MyData.GetCheck(6);
+			*pbUnicode = MyData.GetCheck(6);
 		}
 	}
 	return hRes;

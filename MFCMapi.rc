@@ -703,6 +703,20 @@ BEGIN
     MENUITEM "Edit Search Criteria...",     ID_EDITSEARCHCRITERIA
 END
 
+IDR_MENU_MAILBOX_TABLE MENU DISCARDABLE
+BEGIN
+    POPUP "&Actions"
+    BEGIN
+        MENUITEM "&Open",                       ID_DISPLAYSELECTEDITEM
+        MENUITEM "Open with &Flags...",         ID_OPENWITHFLAGS
+    END
+END
+
+IDR_MENU_MAILBOX_TABLE_POPUP MENU DISCARDABLE
+BEGIN
+    MENUITEM "&Open",                       ID_DISPLAYSELECTEDITEM
+    MENUITEM "Open with &Flags...",         ID_OPENWITHFLAGS
+END
 
 /////////////////////////////////////////////////////////////////////////////
 //

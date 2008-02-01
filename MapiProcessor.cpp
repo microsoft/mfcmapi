@@ -122,7 +122,7 @@ void CMAPIProcessor::ProcessMailboxTable(
 					lpPrimaryMDB,
 					szExchangeServerName,
 					lpEmailAddress->Value.LPSZ,
-					true,
+					OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP,
 					&m_lpMDB));
 
 				if (m_lpMDB) ProcessStore();
