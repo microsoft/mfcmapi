@@ -602,7 +602,7 @@ HRESULT CEditor::DisplayDialog()
 	default:
 		//our error's already logged once, and will probably be logged by the caller too
 		//DebugPrint(DBGGeneric,_T("Dialog returned other than IDOK. iDlgRet = 0x%X\n"),iDlgRet);
-		return HRESULT_FROM_WIN32(iDlgRet);
+		return HRESULT_FROM_WIN32((unsigned long) iDlgRet);
 		break;
 	}
 }

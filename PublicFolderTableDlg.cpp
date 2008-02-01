@@ -116,6 +116,7 @@ void CPublicFolderTableDlg::OnDisplayItem()
 						lpMDB,
 						m_lpszServerName,
 						szMailboxDN,
+						OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP,
 						(LPMDB*) &lpMAPIProp));
 
 					if (lpMAPIProp)

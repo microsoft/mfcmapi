@@ -191,6 +191,7 @@ ID_OPENPROFILESECTION							"Display dialog to enter UID to call OpenProfileSect
 ID_OPENPROPERTYASTABLE							"Display as table using IMAPITable interface"
 ID_OPENPUBLICFOLDERS							"Display Public message store"
 ID_OPENSELECTEDSTOREDELETEDFOLDERS				"Display deleted folders for selected store"
+ID_OPENWITHFLAGS								"Allow entry of flags for CreateStoreEntryID"
 ID_OPTIONS										"Set options"
 ID_OUTPUTTABLE									"Output table to file"
 ID_PASTE										"Paste copied item(s)"
@@ -217,7 +218,7 @@ ID_SAVEATTACHMENTS								"Save all attachments to files."
 ID_SAVECHANGES									"Call SaveChanges on Message"
 ID_SAVEFOLDERCONTENTSASMSG						"Save all messages in folder as .MSG files"
 ID_SAVEFOLDERCONTENTSASTEXTFILES				"Save properties of folder and messages in folder into text files"
-ID_SAVEMESSAGETOFILE							"Save message to a file"//all properties of message, including attachment and recipient information, to text file."
+ID_SAVEMESSAGETOFILE							"Save message to a file"
 ID_SAVEPROPERTIES								"Save all properties displayed in current view to XML file."
 ID_SAVETOFILE									"Save attachment to file."
 ID_SELECTFORM									"Display Select Form dialog"
@@ -225,6 +226,7 @@ ID_SELECTFORMCONTAINER							"Display Select Form Container dialog"
 ID_SENDBULKMAIL									"Send messages with custom subject and recipient"
 ID_SETCOLUMNS									"Display current column set (QueryColumns) and allow editing (SetColumns)"
 ID_SETDEFAULTSTORE								"Set the selected store as the default store. Uses SetDefaultStore."
+ID_SETPAB										"Call IAddrBook::SetPAB to mark as the Personal Address Book"
 ID_SETREADFLAG									"Call SetReadFlag/SetReadFlags on selected messages"
 ID_SETRECEIVEFOLDER								"Call SetReceiveFolder on selected folder"
 ID_SORTTABLE									"Use SortTable to set a sort order on current contents table"
@@ -428,7 +430,6 @@ IDS_MBSEARCHCRITERIAPROMPT       "Type portion of name to find\r\n\
 ulFuzzyLevel Flags:"
 //maindlg.cpp
 IDS_OPENDEFMSGSTORE              "Open Default Message Store"
-IDS_ASSERTPRIVPROMPT             "Check box to assert Admin Privileges"
 IDS_OPENSTOREEID                 "Open Message Store With EID"
 IDS_OPENSTOREEIDPROMPT           "This function will attempt to interpret binary string as an Entry ID.\r\n\
 The Entry ID will be passed OpenMsgStore\r\n\
@@ -444,7 +445,12 @@ The Entry ID will be passed OpenMsgStore\r\n\
 Enter Entry ID as a binary string"
 IDS_OPENPUBSTORE                 "Open Public Message Store"
 IDS_OPENMBDN                     "Open Mailbox With DN"
-IDS_OPENMBDNPROMPT               "Input server name and user DN"
+IDS_OPENMBDNPROMPT               "Input server name, user DN and desired flags\r\n\
+Examples:\r\n\
+OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP = 0x9\r\n\
+OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP | OPENSTORE_PUBLIC = 0xB\r\n\
+OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP | OPENSTORE_RESTORE_DATABASE | \r\n\
+   OPENSTORE_OVERRIDE_HOME_MDB  | OPENSTORE_HOME_LOGON = 0x10001D\r\n"
 IDS_DUMPSERVERPRIVATESTORE       "Dump Server Private Store Contents"
 IDS_SERVERNAMEPROMPT             "Type name of server"
 IDS_PROFFORMAPILOGON             "Profile For MAPILogonEx"
@@ -777,6 +783,15 @@ IDS_COUNTOPTIONS "Count of Options"
 IDS_OPTIONS "Options"
 IDS_DISPLAYDETAILSDLG "Display Details dialog"
 IDS_SERVICE "Service:"
+IDS_CREATESTORENTRYIDFLAGS "CreateStoreEntryID flags"
+// MailboxTableDlg.cpp
+IDS_OPENWITHFLAGS "Open with flags"
+IDS_OPENWITHFLAGSPROMPT "Entry flags for CreateStoreEntryID\r\n\
+Examples:\r\n\
+OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP = 0x9\r\n\
+OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP | OPENSTORE_PUBLIC = 0xB\r\n\
+OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP | OPENSTORE_RESTORE_DATABASE | \r\n\
+   OPENSTORE_OVERRIDE_HOME_MDB  | OPENSTORE_HOME_LOGON = 0x10001D\r\n"
 //MAPIProfileFunctions.cpp
 IDS_EXCHANGE "Exchange"
 IDS_PST "PST"

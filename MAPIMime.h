@@ -88,4 +88,4 @@ HRESULT GetConversionFromEMLOptions(CWnd* pParentWnd,
 									BOOL* pDoApply,
 									HCHARSET* phCharSet,
 									CSETAPPLYTYPE* pcSetApplyType,
-									BOOL* bUnicode);
+									BOOL* pbUnicode);

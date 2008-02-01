@@ -59,7 +59,7 @@ HRESULT HrMailboxLogon(
 					   LPMDB			lpMDB,			// ptr to message store
 					   LPCTSTR			lpszMsgStoreDN,	// ptr to message store DN
 					   LPCTSTR			lpszMailboxDN,  // ptr to mailbox DN
-					   BOOL				bUseAdminPriv,
+					   ULONG			ulFlags,		// desired flags for CreateStoreEntryID
 					   LPMDB*			lppMailboxMDB);	// ptr to mailbox message store ptr
 HRESULT	OpenDefaultMessageStore(
 								LPMAPISESSION lpMAPISession,
@@ -69,7 +69,7 @@ HRESULT OpenOtherUsersMailbox(
 							  LPMDB lpMDB,
 							  LPCTSTR szServerName,
 							  LPCTSTR szMailboxDN,
-							  BOOL bUseAdminPriv,
+							  ULONG ulFlags, // desired flags for CreateStoreEntryID
 							  LPMDB* lppOtherUserMDB);
 HRESULT OpenOtherUsersMailboxFromGal(
 									 LPMAPISESSION	lpMAPISession,
@@ -85,9 +85,10 @@ HRESULT OpenMessageStoreGUID(
 //							  LPTSTR szServerName,
 //							  LPTSTR szFolderDN,
 //							  LPMDB* lppPublicMDB);
-HRESULT OpenPublicMessageStoreAdminPriv(
-										LPMAPISESSION	lpMAPISession,
-										LPMDB* lppPublicMDB);
+HRESULT OpenPublicMessageStore(
+							   LPMAPISESSION lpMAPISession,
+							   ULONG ulFlags, // Flags for CreateStoreEntryID
+							   LPMDB* lppPublicMDB);
 HRESULT OpenStoreFromMAPIProp(LPMAPISESSION lpMAPISession, LPMAPIPROP lpMAPIProp, LPMDB* lpMDB);
 
 BOOL StoreSupportsManageStore(LPMDB lpMDB);

@@ -43,7 +43,7 @@ CContentsTableDlg(
 						  (LPSPropTagArray) &sptMBXCols,
 						  NUMMBXCOLUMNS,
 						  MBXColumns,
-						  NULL,
+						  IDR_MENU_MAILBOX_TABLE_POPUP,
 						  MENU_CONTEXT_MAILBOX_TABLE
 						  )
 {
@@ -52,7 +52,7 @@ CContentsTableDlg(
 
 	EC_H(CopyString(&m_lpszServerName,lpszServerName,NULL));
 
-	CreateDialogAndMenu(NULL);
+	CreateDialogAndMenu(IDR_MENU_MAILBOX_TABLE);
 }
 
 CMailboxTableDlg::~CMailboxTableDlg()
@@ -63,8 +63,22 @@ CMailboxTableDlg::~CMailboxTableDlg()
 
 BEGIN_MESSAGE_MAP(CMailboxTableDlg, CContentsTableDlg)
 //{{AFX_MSG_MAP(CMailboxTableDlg)
+	ON_COMMAND(ID_OPENWITHFLAGS, OnOpenWithFlags)
 //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
+
+void CMailboxTableDlg::OnInitMenu(CMenu* pMenu)
+{
+	if (pMenu)
+	{
+		if (m_lpContentsTableListCtrl)
+		{
+			int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
+			pMenu->EnableMenuItem(ID_OPENWITHFLAGS,DIMMSOK(iNumSel));
+		}
+	}
+	CContentsTableDlg::OnInitMenu(pMenu);
+}
 
 BOOL CMailboxTableDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 {
@@ -80,7 +94,7 @@ BOOL CMailboxTableDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 	return HRES_TO_BOOL(hRes);
 }//CMailboxTableDlg::CreateDialogAndMenu
 
-void CMailboxTableDlg::OnDisplayItem()
+void CMailboxTableDlg::DisplayItem(ULONG ulFlags)
 {
 	HRESULT		hRes = S_OK;
 	CWaitCursor	Wait;//Change the mouse to an hourglass while we work.
@@ -119,7 +133,7 @@ void CMailboxTableDlg::OnDisplayItem()
 						lpSourceMDB,
 						m_lpszServerName,
 						szMailboxDN,
-						true,
+						ulFlags,
 						&lpNewMDB));
 
 					if (lpNewMDB)
@@ -139,8 +153,32 @@ void CMailboxTableDlg::OnDisplayItem()
 
 	}
 	if (lpGUIDMDB) lpGUIDMDB->Release();
-	return;
+}// CMailboxTableDlg::DisplayItem
+
+void CMailboxTableDlg::OnDisplayItem()
+{
+	DisplayItem(OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP);
 }//CMailboxTableDlg::OnDisplayItem
+
+void CMailboxTableDlg::OnOpenWithFlags()
+{
+	HRESULT		hRes = S_OK;
+
+	CEditor MyPrompt(
+		this,
+		IDS_OPENWITHFLAGS,
+		IDS_OPENWITHFLAGSPROMPT,
+		1,
+		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+	MyPrompt.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS),true));
+	MyPrompt.InitSingleLine(0,IDS_CREATESTORENTRYIDFLAGS,NULL,false);
+	MyPrompt.SetHex(0,OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP);
+	WC_H(MyPrompt.DisplayDialog());
+	if (S_OK == hRes)
+	{
+		DisplayItem(MyPrompt.GetHex(0));
+	}
+}// CMailboxTableDlg::OnOpenWithFlags
 
 void CMailboxTableDlg::OnCreatePropertyStringRestriction()
 {

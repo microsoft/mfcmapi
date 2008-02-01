@@ -172,11 +172,16 @@ struct SortListData
 #define MAPI_BG_SESSION         0x00200000 /* Used for async profile access */
 #define SPAMFILTER_ONSAVE       ((ULONG) 0x00000080)
 
-//various flags gleaned from product documentation and KB articles
+// Various flags gleaned from product documentation and KB articles
 // http://msdn2.microsoft.com/en-us/library/ms526744.aspx
 #define STORE_HTML_OK			((ULONG) 0x00010000)
 #define STORE_ANSI_OK			((ULONG) 0x00020000)
 #define STORE_LOCALSTORE		((ULONG) 0x00080000)
+
+// http://msdn2.microsoft.com/en-us/library/bb820947.aspx
+#define STORE_ITEMPROC			((ULONG) 0x00200000)
+#define ITEMPROC_FORCE			((ULONG) 0x00000800)
+#define NON_EMS_XP_SAVE			((ULONG) 0x00001000)
 
 // http://msdn2.microsoft.com/en-us/library/ms531462.aspx
 #define ATT_INVISIBLE_IN_HTML	((ULONG) 0x00000001)
