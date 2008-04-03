@@ -676,7 +676,7 @@ typedef SCODE (STDMETHODCALLTYPE ALLOCATEMORE)(
 	LPVOID FAR *	lppBuffer
 );
 
-typedef ULONG (STDAPICALLTYPE FREEBUFFER)(
+typedef ULONG_PTR (STDAPICALLTYPE FREEBUFFER)(
 	LPVOID			lpBuffer
 );
 
@@ -753,7 +753,7 @@ typedef struct _MAPIERROR
 	LPTSTR	lpszError;
 	LPTSTR	lpszComponent;
 	ULONG	ulLowLevelError;
-	ULONG	ulContext;
+	ULONG_PTR	ulContext;
 
 } MAPIERROR, FAR * LPMAPIERROR;
 
@@ -1043,7 +1043,7 @@ typedef struct _MAPINAMEID
 		(THIS_	ULONG						ciidExclude,				\
 				LPCIID						rgiidExclude,				\
 				LPSPropTagArray				lpExcludeProps,				\
-				ULONG						ulUIParam,					\
+				ULONG_PTR					ulUIParam,					\
 				LPMAPIPROGRESS 				lpProgress,					\
 				LPCIID						lpInterface,				\
 				LPVOID						lpDestObj,					\
@@ -1051,7 +1051,7 @@ typedef struct _MAPINAMEID
 				LPSPropProblemArray FAR *	lppProblems) IPURE;			\
 	MAPIMETHOD(CopyProps)												\
 		(THIS_	LPSPropTagArray				lpIncludeProps,				\
-				ULONG						ulUIParam,					\
+				ULONG_PTR					ulUIParam,					\
 				LPMAPIPROGRESS 				lpProgress,					\
 				LPCIID						lpInterface,				\
 				LPVOID						lpDestObj,					\
@@ -1325,9 +1325,9 @@ typedef struct _SRestriction
 	MAPIMETHOD(Advise)													\
 		(THIS_	ULONG						ulEventMask,				\
 				LPMAPIADVISESINK			lpAdviseSink,				\
-				ULONG FAR *					lpulConnection) IPURE;		\
+				ULONG_PTR FAR *				lpulConnection) IPURE;		\
 	MAPIMETHOD(Unadvise)												\
-		(THIS_	ULONG						ulConnection) IPURE;		\
+		(THIS_	ULONG_PTR					ulConnection) IPURE;		\
 	MAPIMETHOD(GetStatus)												\
 		(THIS_	ULONG FAR *					lpulTableStatus,			\
 				ULONG FAR *					lpulTableType) IPURE;		\
@@ -1508,17 +1508,17 @@ DECLARE_MAPI_INTERFACE_(IProfSect, IMAPIProp)
 
 #define MAPI_IMAPISTATUS_METHODS(IPURE)									\
 	MAPIMETHOD(ValidateState)											\
-		(THIS_	ULONG						ulUIParam,					\
+		(THIS_	ULONG_PTR					ulUIParam,					\
 				ULONG						ulFlags) IPURE;				\
 	MAPIMETHOD(SettingsDialog)											\
-		(THIS_	ULONG						ulUIParam,					\
+		(THIS_	ULONG_PTR					ulUIParam,					\
 				ULONG						ulFlags) IPURE;				\
 	MAPIMETHOD(ChangePassword)											\
 		(THIS_	LPTSTR						lpOldPass,					\
 				LPTSTR						lpNewPass,					\
 				ULONG						ulFlags) IPURE;				\
 	MAPIMETHOD(FlushQueues)												\
-		(THIS_	ULONG						ulUIParam,					\
+		(THIS_	ULONG_PTR					ulUIParam,					\
 				ULONG						cbTargetTransport,			\
 				LPENTRYID					lpTargetTransport,			\
 				ULONG						ulFlags) IPURE;				\
@@ -1651,7 +1651,7 @@ typedef struct _flaglist
 				LPMAPIPROP FAR	*			lppMAPIPropEntry) IPURE;	\
 	MAPIMETHOD(CopyEntries)												\
 		(THIS_	LPENTRYLIST					lpEntries,					\
-				ULONG						ulUIParam,					\
+				ULONG_PTR					ulUIParam,					\
 				LPMAPIPROGRESS				lpProgress,					\
 				ULONG						ulFlags) IPURE;				\
 	MAPIMETHOD(DeleteEntries)											\
@@ -1773,7 +1773,7 @@ DECLARE_MAPI_INTERFACE_(IMailUser, IMAPIProp)
 				LPMAPIPROP FAR	*			lppMAPIPropEntry) IPURE;	\
 	MAPIMETHOD(CopyEntries)												\
 		(THIS_	LPENTRYLIST					lpEntries,					\
-				ULONG						ulUIParam,					\
+				ULONG_PTR					ulUIParam,					\
 				LPMAPIPROGRESS				lpProgress,					\
 				ULONG						ulFlags) IPURE;				\
 	MAPIMETHOD(DeleteEntries)											\
@@ -1881,12 +1881,12 @@ DECLARE_MAPI_INTERFACE_(IDistList, IMAPIContainer)
 		(THIS_	LPENTRYLIST					lpMsgList,					\
 			   	LPCIID						lpInterface,				\
 				LPVOID						lpDestFolder,				\
-				ULONG						ulUIParam,					\
+				ULONG_PTR					ulUIParam,					\
 				LPMAPIPROGRESS				lpProgress,					\
 				ULONG						ulFlags) IPURE;				\
 	MAPIMETHOD(DeleteMessages)											\
 		(THIS_	LPENTRYLIST					lpMsgList,					\
-				ULONG						ulUIParam,					\
+				ULONG_PTR					ulUIParam,					\
 				LPMAPIPROGRESS				lpProgress,					\
 				ULONG						ulFlags) IPURE;				\
 	MAPIMETHOD(CreateFolder)											\
@@ -1902,18 +1902,18 @@ DECLARE_MAPI_INTERFACE_(IDistList, IMAPIContainer)
 			   	LPCIID						lpInterface,				\
 				LPVOID						lpDestFolder,				\
 				LPTSTR						lpszNewFolderName,			\
-				ULONG						ulUIParam,					\
+				ULONG_PTR					ulUIParam,					\
 				LPMAPIPROGRESS				lpProgress,					\
 				ULONG						ulFlags) IPURE;				\
 	MAPIMETHOD(DeleteFolder)											\
 		(THIS_	ULONG						cbEntryID,					\
 				LPENTRYID					lpEntryID,					\
-				ULONG						ulUIParam,					\
+				ULONG_PTR					ulUIParam,					\
 				LPMAPIPROGRESS				lpProgress,					\
 				ULONG						ulFlags) IPURE;				\
 	MAPIMETHOD(SetReadFlags)											\
 		(THIS_	LPENTRYLIST					lpMsgList,					\
-				ULONG						ulUIParam,					\
+				ULONG_PTR					ulUIParam,					\
 				LPMAPIPROGRESS				lpProgress,					\
 				ULONG						ulFlags) IPURE;				\
 	MAPIMETHOD(GetMessageStatus)										\
@@ -1931,7 +1931,7 @@ DECLARE_MAPI_INTERFACE_(IDistList, IMAPIContainer)
 		(THIS_	LPSSortOrderSet				lpSortCriteria,				\
 				ULONG						ulFlags) IPURE;				\
 	MAPIMETHOD(EmptyFolder)												\
-		(THIS_	ULONG						ulUIParam,					\
+		(THIS_	ULONG_PTR					ulUIParam,					\
 				LPMAPIPROGRESS				lpProgress,					\
 				ULONG						ulFlags) IPURE;				\
 
@@ -2024,9 +2024,9 @@ DECLARE_MAPI_INTERFACE_(IMAPIFolder, IMAPIContainer)
 				LPENTRYID					lpEntryID,					\
 				ULONG						ulEventMask,				\
 				LPMAPIADVISESINK			lpAdviseSink,				\
-				ULONG FAR *					lpulConnection) IPURE;		\
+				ULONG_PTR FAR *				lpulConnection) IPURE;		\
 	MAPIMETHOD(Unadvise)												\
-		(THIS_	ULONG						ulConnection) IPURE;		\
+		(THIS_	ULONG_PTR					ulConnection) IPURE;		\
 	MAPIMETHOD(CompareEntryIDs)											\
 		(THIS_	ULONG						cbEntryID1,					\
 				LPENTRYID					lpEntryID1,					\
@@ -2170,7 +2170,7 @@ DECLARE_MAPI_INTERFACE_(IMsgStore, IMAPIProp)
 				LPATTACH FAR *				lppAttach) IPURE;			\
 	MAPIMETHOD(DeleteAttach)											\
 		(THIS_	ULONG						ulAttachmentNum,			\
-				ULONG						ulUIParam,					\
+				ULONG_PTR					ulUIParam,					\
 				LPMAPIPROGRESS				lpProgress,					\
 				ULONG						ulFlags) IPURE;				\
 	MAPIMETHOD(GetRecipientTable)										\
@@ -2269,14 +2269,14 @@ DECLARE_MAPI_INTERFACE_(IAttach, IMAPIProp)
 #define DT_FOLDER_SPECIAL	((ULONG) 0x04000000)
 
 /*  Accelerator callback for DIALOG_SDI form of AB UI */
-typedef BOOL (STDMETHODCALLTYPE ACCELERATEABSDI)(ULONG ulUIParam,
+typedef BOOL (STDMETHODCALLTYPE ACCELERATEABSDI)(ULONG_PTR ulUIParam,
 												LPVOID lpvmsg);
 typedef ACCELERATEABSDI FAR * LPFNABSDI;
 
 /*  Callback to application telling it that the DIALOG_SDI form of the */
 /*  AB UI has been dismissed.  This is so that the above LPFNABSDI     */
 /*  function doesn't keep being called.                                */
-typedef void (STDMETHODCALLTYPE DISMISSMODELESS)(ULONG ulUIParam,
+typedef void (STDMETHODCALLTYPE DISMISSMODELESS)(ULONG_PTR ulUIParam,
 												LPVOID lpvContext);
 typedef DISMISSMODELESS FAR * LPFNDISMISS;
 
@@ -2286,7 +2286,7 @@ typedef DISMISSMODELESS FAR * LPFNDISMISS;
  */
 
 typedef SCODE (STDMETHODCALLTYPE FAR * LPFNBUTTON)(
-	ULONG				ulUIParam,
+	ULONG_PTR			ulUIParam,
 	LPVOID				lpvContext,
 	ULONG				cbEntryID,
 	LPENTRYID			lpSelection,
@@ -2359,7 +2359,7 @@ typedef struct _ADRPARM
 				LPMAPIERROR FAR *			lppMAPIError) IPURE;		\
 	MAPIMETHOD(Activate)												\
 		(THIS_	ULONG						ulFlags,					\
-				ULONG						ulUIParam) IPURE;			\
+				ULONG_PTR					ulUIParam) IPURE;			\
 	MAPIMETHOD(GetState)												\
 		(THIS_	ULONG						ulFlags,					\
 				ULONG FAR *					lpulState) IPURE;			\
@@ -2627,7 +2627,7 @@ typedef struct _DTBLMVDDLBX
 		(THIS_	LPTSTR						lpszProvider,				\
 				ULONG						cValues,					\
 				LPSPropValue				lpProps,					\
-				ULONG						ulUIParam,					\
+				ULONG_PTR					ulUIParam,					\
 				ULONG						ulFlags,					\
 				MAPIUID FAR *				lpUID) IPURE;				\
 	MAPIMETHOD(DeleteProvider)											\

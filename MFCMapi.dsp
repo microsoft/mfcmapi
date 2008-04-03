@@ -8,12 +8,12 @@ CFG=MFCMapi - Win32 Debug Unicode
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
 !MESSAGE 
-!MESSAGE NMAKE /f "mfcmapi.mak".
+!MESSAGE NMAKE /f "MFCMapi.mak".
 !MESSAGE 
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
 !MESSAGE 
-!MESSAGE NMAKE /f "mfcmapi.mak" CFG="MFCMapi - Win32 Debug Unicode"
+!MESSAGE NMAKE /f "MFCMapi.mak" CFG="MFCMapi - Win32 Debug Unicode"
 !MESSAGE 
 !MESSAGE Possible choices for configuration are:
 !MESSAGE 
@@ -55,13 +55,13 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /machine:I386
-# ADD LINK32 version.lib msi.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"LIBC" /libpath:".\lib" /release
+# ADD LINK32 version.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"LIBC" /libpath:".\lib" /release
 # SUBTRACT LINK32 /pdb:none
 # Begin Special Build Tool
 WkspDir=.
 TargetDir=.\Release
-TargetPath=.\Release\mfcmapi.exe
-TargetName=mfcmapi
+TargetPath=.\Release\MFCMapi.exe
+TargetName=MFCMapi
 SOURCE="$(InputPath)"
 PostBuild_Desc=Copy Release build
 PostBuild_Cmds=copy "$(TargetPath)" "$(WkspDir)"	copy "$(TargetDir)\$(TargetName).pdb" "$(WkspDir)"
@@ -91,7 +91,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:con
-# ADD LINK32 version.lib msi.lib /nologo /subsystem:windows /incremental:no /debug /machine:I386 /nodefaultlib:"LIBC" /libpath:".\lib" /release
+# ADD LINK32 version.lib /nologo /subsystem:windows /incremental:no /debug /machine:I386 /nodefaultlib:"LIBC" /libpath:".\lib" /release
 # SUBTRACT LINK32 /pdb:none
 
 !ELSEIF  "$(CFG)" == "MFCMapi - Win32 Debug Unicode"
@@ -120,7 +120,7 @@ BSC32=bscmake.exe
 LINK32=link.exe
 # ADD BASE LINK32 mapi32.lib EdkMapi.Lib MbLogon.Lib EdkDebug.Lib EdkGUID.Lib EdkUtils.Lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"LIBC" /pdbtype:con
 # SUBTRACT BASE LINK32 /pdb:none
-# ADD LINK32 version.lib msi.lib /nologo /entry:"wWinMainCRTStartup" /subsystem:windows /incremental:no /debug /machine:I386 /nodefaultlib:"mfc42d.lib" /nodefaultlib:"mfcs42d.lib" /nodefaultlib:"mfco42d.lib" /nodefaultlib:"LIBC" /libpath:".\lib" /release
+# ADD LINK32 version.lib /nologo /entry:"wWinMainCRTStartup" /subsystem:windows /incremental:no /debug /machine:I386 /nodefaultlib:"mfc42d.lib" /nodefaultlib:"mfcs42d.lib" /nodefaultlib:"mfco42d.lib" /nodefaultlib:"LIBC" /libpath:".\lib" /release
 # SUBTRACT LINK32 /pdb:none
 
 !ELSEIF  "$(CFG)" == "MFCMapi - Win32 Release Unicode"
@@ -148,7 +148,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 mapi32.lib MbLogon.Lib EdkMapi.Lib EdkDebug.Lib EdkGUID.Lib EdkUtils.Lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"LIBC" /pdbtype:con
-# ADD LINK32 version.lib msi.lib /nologo /entry:"wWinMainCRTStartup" /subsystem:windows /debug /machine:I386 /nodefaultlib:"mfc42d.lib" /nodefaultlib:"mfcs42d.lib" /nodefaultlib:"mfco42d.lib" /nodefaultlib:"LIBC" /libpath:".\lib" /release
+# ADD LINK32 version.lib /nologo /entry:"wWinMainCRTStartup" /subsystem:windows /debug /machine:I386 /nodefaultlib:"mfc42d.lib" /nodefaultlib:"mfcs42d.lib" /nodefaultlib:"mfco42d.lib" /nodefaultlib:"LIBC" /libpath:".\lib" /release
 # SUBTRACT LINK32 /pdb:none
 
 !ENDIF 

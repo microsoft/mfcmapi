@@ -122,7 +122,7 @@ typedef SCODE (STDMETHODCALLTYPE MAPIALLOCATEMORE)(
 	LPVOID FAR *	lppBuffer
 );
 
-typedef ULONG (STDAPICALLTYPE MAPIFREEBUFFER)(
+typedef ULONG_PTR (STDAPICALLTYPE MAPIFREEBUFFER)(
 	LPVOID			lpBuffer
 );
 
@@ -220,9 +220,9 @@ MAPIADMINPROFILES MAPIAdminProfiles;
 				LPENTRYID					lpEntryID,					\
 				ULONG						ulEventMask,				\
 				LPMAPIADVISESINK			lpAdviseSink,				\
-				ULONG FAR *					lpulConnection) IPURE;		\
+				ULONG_PTR FAR *				lpulConnection) IPURE;		\
 	MAPIMETHOD(Unadvise)												\
-		(THIS_	ULONG						ulConnection) IPURE;		\
+		(THIS_	ULONG_PTR					ulConnection) IPURE;		\
 	MAPIMETHOD(MessageOptions)											\
 		(THIS_	ULONG_PTR					ulUIParam,					\
 				ULONG						ulFlags,					\
@@ -256,7 +256,7 @@ MAPIADMINPROFILES MAPIAdminProfiles;
 				LPMDB						lpMsgStore,					\
 				LPMAPIFOLDER				lpParentFolder,				\
 				LPCIID						lpInterface,				\
-				ULONG						ulMessageToken,				\
+				ULONG_PTR					ulMessageToken,				\
 				LPMESSAGE					lpMessageSent,				\
 				ULONG						ulFlags,					\
 				ULONG						ulMessageStatus,			\
@@ -266,7 +266,7 @@ MAPIADMINPROFILES MAPIAdminProfiles;
 	MAPIMETHOD(PrepareForm)												\
 		(THIS_	LPCIID						lpInterface,				\
 				LPMESSAGE					lpMessage,					\
-				ULONG FAR *					lpulMessageToken) IPURE;	\
+				ULONG_PTR FAR *				lpulMessageToken) IPURE;	\
 
 
 #undef		 INTERFACE
@@ -316,9 +316,9 @@ DECLARE_MAPI_INTERFACE_(IMAPISession, IUnknown)
 				LPENTRYID					lpEntryID,					\
 				ULONG						ulEventMask,				\
 				LPMAPIADVISESINK			lpAdviseSink,				\
-				ULONG FAR *					lpulConnection) IPURE;		\
+				ULONG_PTR FAR *				lpulConnection) IPURE;		\
 	MAPIMETHOD(Unadvise)												\
-		(THIS_	ULONG						ulConnection) IPURE;		\
+		(THIS_	ULONG_PTR					ulConnection) IPURE;		\
 	MAPIMETHOD(CreateOneOff)											\
 		(THIS_	LPTSTR						lpszName,					\
 				LPTSTR						lpszAdrType,				\
@@ -345,7 +345,7 @@ DECLARE_MAPI_INTERFACE_(IMAPISession, IUnknown)
 				LPADRPARM					lpAdrParms,					\
 				LPADRLIST FAR *				lppAdrList) IPURE;			\
 	MAPIMETHOD(Details)													\
-		(THIS_	ULONG FAR *					lpulUIParam,				\
+		(THIS_	ULONG_PTR FAR *				lpulUIParam,				\
 				LPFNDISMISS					lpfnDismiss,				\
 				LPVOID						lpvDismissContext,			\
 				ULONG						cbEntryID,					\

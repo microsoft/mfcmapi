@@ -38,8 +38,6 @@ HRESULT	ConcatSPropTagArrays(
 HRESULT	CopyPropertyAsStream(LPMAPIPROP lpSourcePropObj,LPMAPIPROP lpTargetPropObj, ULONG ulSourceTag, ULONG ulTargetTag);
 HRESULT CopyFolderContents(LPMAPIFOLDER lpSrcFolder, LPMAPIFOLDER lpDestFolder,BOOL bCopyAssociatedContents,BOOL bMove,BOOL bSingleCall, HWND hWnd);
 HRESULT CopyFolderRules(LPMAPIFOLDER lpSrcFolder, LPMAPIFOLDER lpDestFolder,BOOL bReplace);
-HRESULT CopyRestriction(LPSRestriction* lpDestRes, LPSRestriction lpSrcRes, LPVOID lpParent);
-HRESULT CopyRestriction(LPSRestriction lpDestRes, LPSRestriction lpSrcRes, LPVOID lpParent);
 HRESULT	CopySBinary(LPSBinary psbDest,const LPSBinary psbSrc, LPVOID lpParent);
 HRESULT	CopyString(LPTSTR* lpszDestination,LPCTSTR szSource, LPVOID pParent);
 HRESULT	CopyStringA(LPSTR* lpszDestination,LPCSTR szSource, LPVOID pParent);

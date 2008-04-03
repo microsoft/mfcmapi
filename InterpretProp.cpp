@@ -570,6 +570,16 @@ void RestrictionToString(LPSRestriction lpRes, LPMAPIPROP lpObj, ULONG ulTabLeve
 		RestrictionToString(lpRes->res.resNot.lpRes,lpObj,ulTabLevel+1,&szTmp);
 		*PropString += szTmp;
 		break;
+	case RES_COUNT:
+		szTmp.FormatMessage(
+			IDS_RESCOUNT,
+			szTabs,
+			lpRes->res.resNot.ulReserved,
+			lpRes->res.resNot.lpRes);
+		*PropString += szTmp;
+		RestrictionToString(lpRes->res.resNot.lpRes,lpObj,ulTabLevel+1,&szTmp);
+		*PropString += szTmp;
+		break;
 	case RES_CONTENT:
 		EC_H(InterpretFlags(flagFuzzyLevel, lpRes->res.resContent.ulFuzzyLevel, &szFlags));
 		szTmp.FormatMessage(
@@ -698,6 +708,29 @@ void RestrictionToString(LPSRestriction lpRes, LPMAPIPROP lpObj, ULONG ulTabLeve
 		}
 		szTmp.FormatMessage(
 			IDS_RESCOMMENTRES,
+			szTabs,
+			lpRes->res.resComment.lpRes);
+		*PropString += szTmp;
+		RestrictionToString(lpRes->res.resComment.lpRes,lpObj,ulTabLevel+1,&szTmp);
+		*PropString += szTmp;
+		break;
+	case RES_ANNOTATION:
+		szTmp.FormatMessage(IDS_RESANNOTATION,szTabs,lpRes->res.resComment.cValues);
+		*PropString += szTmp;
+		for (i = 0;i< lpRes->res.resComment.cValues;i++)
+		{
+			InterpretProp(&lpRes->res.resComment.lpProp[i],&szProp,&szAltProp);
+			szTmp.FormatMessage(
+				IDS_RESANNOTATIONPROPS,
+				szTabs,
+				i,
+				TagToString(lpRes->res.resComment.lpProp[i].ulPropTag,lpObj,false,true),
+				szProp,
+				szAltProp);
+			*PropString += szTmp;
+		}
+		szTmp.FormatMessage(
+			IDS_RESANNOTATIONRES,
 			szTabs,
 			lpRes->res.resComment.lpRes);
 		*PropString += szTmp;

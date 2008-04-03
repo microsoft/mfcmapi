@@ -35,3 +35,16 @@ void LoadMimeOLE();
 void AutoLoadMAPI();
 void UnloadMAPI();
 void LoadMAPIFuncs(HMODULE hMod);
+
+STDAPI HrCopyRestriction(
+	LPSRestriction lpResSrc, // source restriction ptr
+	LPVOID lpObject, // ptr to existing MAPI buffer
+	LPSRestriction FAR * lppResDest // dest restriction buffer ptr
+	);
+
+HRESULT HrCopyRestrictionArray(
+	LPSRestriction lpResSrc, // source restriction
+	LPVOID lpObject, // ptr to existing MAPI buffer
+	ULONG cRes, // # elements in array
+	LPSRestriction lpResDest // destination restriction
+	);

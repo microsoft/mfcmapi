@@ -10,6 +10,7 @@
 #include "InterpretProp.h"
 #include "InterpretProp2.h"
 #include "MAPIFunctions.h"
+#include "ImportProcs.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -650,7 +651,11 @@ void CResAndOrEditor::OnOK()
 			}
 			else
 			{
-				EC_H(CopyRestriction(&lpNewResArray[i],lpData->data.Res.lpOldRes,m_lpAllocParent));
+				EC_H(HrCopyRestrictionArray(
+					lpData->data.Res.lpOldRes,
+					m_lpAllocParent,
+					1,
+					&lpNewResArray[i]));
 			}
 		}
 		m_ulNewResCount = ulNewResCount;
@@ -905,7 +910,7 @@ void CResCommentEditor::OnOK()
 	}
 	if (!m_lpNewCommentRes && m_lpSourceRes && m_lpSourceRes->res.resComment.lpRes)
 	{
-		EC_H(CopyRestriction(&m_lpNewCommentRes,m_lpSourceRes->res.resComment.lpRes,m_lpAllocParent));
+		EC_H(HrCopyRestriction(m_lpSourceRes->res.resComment.lpRes,m_lpAllocParent,&m_lpNewCommentRes));
 	}
 }
 
@@ -1097,7 +1102,7 @@ void CRestrictEditor::OnEditAction1()
 			}
 		}
 		break;
-//These cases are essentially the same - resAnd and resOr are the same structure
+// Structures for these two types are identical
 	case RES_OR:
 	case RES_AND:
 		{
@@ -1122,7 +1127,9 @@ void CRestrictEditor::OnEditAction1()
 			}
 		}
 		break;
+// Structures for these two types are identical
 	case RES_NOT:
+	case RES_COUNT:
 		{
 			CRestrictEditor MyResEditor(
 				this,
@@ -1143,7 +1150,7 @@ void CRestrictEditor::OnEditAction1()
 			}
 		}
 		break;
-//Structures for these two types are identical
+// Structures for these two types are identical
 	case RES_PROPERTY:
 	case RES_CONTENT:
 		{
@@ -1258,7 +1265,9 @@ void CRestrictEditor::OnEditAction1()
 			}
 		}
 		break;
+// Structures for these two types are identical
 	case RES_COMMENT:
+	case RES_ANNOTATION:
 		{
 			CResCommentEditor MyResEditor(
 				this,
@@ -1554,7 +1563,7 @@ void CCriteriaEditor::OnOK()
 	}
 	if (!m_lpNewRes && m_lpSourceRes)
 	{
-		EC_H(CopyRestriction(&m_lpNewRes,m_lpSourceRes,NULL));//m_lpAllocParent));
+		EC_H(HrCopyRestriction(m_lpSourceRes, NULL, &m_lpNewRes))
 	}
 	m_ulNewSearchFlags = GetHexUseControl(2);
 }

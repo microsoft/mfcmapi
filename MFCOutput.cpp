@@ -81,7 +81,14 @@ FILE* OpenFile(LPCTSTR szFileName,BOOL bNewFile)
 	FILE* fOut = NULL;
 	LPCTSTR szParams = _T("a+");// STRING_OK
 	if (bNewFile) szParams = _T("w");// STRING_OK
+
+// _tfopen has been deprecated, but older compilers do not have _tfopen_s
+// Use the replacement when we're on VS 2008 or higher.
+#if defined(_MSC_VER) && (_MSC_VER >= 1500)
+	_tfopen_s(&fOut,szFileName,szParams);
+#else
 	fOut = _tfopen(szFileName,szParams);
+#endif
 	if (fOut)
 	{
 		return fOut;

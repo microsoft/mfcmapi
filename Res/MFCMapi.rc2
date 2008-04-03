@@ -1203,6 +1203,9 @@ IDS_RESORPOINTER "%1lpRes->res.resOr.lpRes[0x%2!08X!] = 0x%3!08X!\r\n"
 IDS_RESNOT "%1lpRes->res.resNot.ulReserved = 0x%2!08X!\r\n\
 %1lpRes->res.resNot.lpRes = 0x%3!08X!\r\n"
 
+IDS_RESCOUNT "%1lpRes->res.resCount.ulCount = 0x%2!08X!\r\n\
+%1lpRes->res.resCount.lpRes = 0x%3!08X!\r\n"
+
 IDS_RESCONTENT "%1lpRes->res.resContent.ulFuzzyLevel = %2 = 0x%3!08X!\r\n\
 %1lpRes->res.resContent.ulPropTag = %4\r\n"
 IDS_RESCONTENTPROP "%1lpRes->res.resContent.lpProp->ulPropTag = %2\r\n\
@@ -1237,6 +1240,12 @@ IDS_RESCOMMENTPROPS "%1lpRes->res.resComment.lpProp[0x%2!08X!].ulPropTag = %3\r\
 %1lpRes->res.resComment.lpProp[0x%2!08X!].Value = %4\r\n\
 %1\tAlt: %5\r\n"
 IDS_RESCOMMENTRES "%1lpRes->res.resComment.lpRes = 0x%2!08X!\r\n"
+
+IDS_RESANNOTATION "%1lpRes->res.resAnnotation.cValues = 0x%2!08X!\r\n"
+IDS_RESANNOTATIONPROPS "%1lpRes->res.resAnnotation.lpProp[0x%2!08X!].ulPropTag = %3\r\n\
+%1lpRes->res.resAnnotation.lpProp[0x%2!08X!].Value = %4\r\n\
+%1\tAlt: %5\r\n"
+IDS_RESANNOTATIONRES "%1lpRes->res.resAnnotation.lpRes = 0x%2!08X!\r\n"
 
 IDS_ADRLISTNULL "lpAdrList was NULL\r\n"
 IDS_ADRLISTCOUNT "lpAdrList->cEntries = 0x%1!08X!\r\n"
