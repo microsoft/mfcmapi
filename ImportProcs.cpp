@@ -397,32 +397,48 @@ void LoadMAPIFuncs(HMODULE hMod)
 	GETPROC(pfnMAPIAllocateMore,		LPMAPIALLOCATEMORE,			"MAPIAllocateMore")
 	GETPROC(pfnMAPIFreeBuffer,			LPMAPIFREEBUFFER,			"MAPIFreeBuffer")
 	GETPROC(pfnHrGetOneProp,			LPHRGETONEPROP,				"HrGetOneProp@12")
+	GETPROC(pfnHrGetOneProp,			LPHRGETONEPROP,				"HrGetOneProp")
 	GETPROC(pfnMAPIInitialize,			LPMAPIINITIALIZE,			"MAPIInitialize")
 	GETPROC(pfnMAPIUninitialize,		LPMAPIUNINITIALIZE,			"MAPIUninitialize")
 	GETPROC(pfnLPFreeProws,				LPFREEPROWS,				"FreeProws@4")
+	GETPROC(pfnLPFreeProws,				LPFREEPROWS,				"FreeProws")
 	GETPROC(pfnPpropFindProp,			LPPPROPFINDPROP,			"PpropFindProp@12")
+	GETPROC(pfnPpropFindProp,			LPPPROPFINDPROP,			"PpropFindProp")
 	GETPROC(pfnScDupPropset,			LPSCDUPPROPSET,				"ScDupPropset@16")
+	GETPROC(pfnScDupPropset,			LPSCDUPPROPSET,				"ScDupPropset")
 	GETPROC(pfnScCountProps,			LPSCCOUNTPROPS,				"ScCountProps@12")
+	GETPROC(pfnScCountProps,			LPSCCOUNTPROPS,				"ScCountProps")
 	GETPROC(pfnScCopyProps,				LPSCCOPYPROPS,				"ScCopyProps@16")
+	GETPROC(pfnScCopyProps,				LPSCCOPYPROPS,				"ScCopyProps")
 	GETPROC(pfnOpenIMsgOnIStg,			LPOPENIMSGONISTG,			"OpenIMsgOnIStg@44")
+	GETPROC(pfnOpenIMsgOnIStg,			LPOPENIMSGONISTG,			"OpenIMsgOnIStg")
 	GETPROC(pfnMAPIGetDefaultMalloc,	LPMAPIGETDEFAULTMALLOC,		"MAPIGetDefaultMalloc@0")
+	GETPROC(pfnMAPIGetDefaultMalloc,	LPMAPIGETDEFAULTMALLOC,		"MAPIGetDefaultMalloc")
 	GETPROC(pfnOpenTnefStreamEx,		LPOPENTNEFSTREAMEX,			"OpenTnefStreamEx")
 	GETPROC(pfnOpenStreamOnFile,		LPOPENSTREAMONFILE,			"OpenStreamOnFile")
 	GETPROC(pfnCloseIMsgSession,		LPCLOSEIMSGSESSION,			"CloseIMsgSession@4")
+	GETPROC(pfnCloseIMsgSession,		LPCLOSEIMSGSESSION,			"CloseIMsgSession")
 	GETPROC(pfnOpenIMsgSession,			LPOPENIMSGSESSION,			"OpenIMsgSession@12")
+	GETPROC(pfnOpenIMsgSession,			LPOPENIMSGSESSION,			"OpenIMsgSession")
 	GETPROC(pfnHrQueryAllRows,			LPHRQUERYALLROWS,			"HrQueryAllRows@24")
+	GETPROC(pfnHrQueryAllRows,			LPHRQUERYALLROWS,			"HrQueryAllRows")
 	GETPROC(pfnMAPIOpenFormMgr,			LPMAPIOPENFORMMGR,			"MAPIOpenFormMgr")
 	GETPROC(pfnRTFSync,					LPRTFSYNC,					"RTFSync")
 	GETPROC(pfnHrSetOneProp,			LPHRSETONEPROP,				"HrSetOneProp@8")
+	GETPROC(pfnHrSetOneProp,			LPHRSETONEPROP,				"HrSetOneProp")
 	GETPROC(pfnFreePadrlist,			LPFREEPADRLIST,				"FreePadrlist@4")
+	GETPROC(pfnFreePadrlist,			LPFREEPADRLIST,				"FreePadrlist")
 	GETPROC(pfnPropCopyMore,			LPPROPCOPYMORE,				"PropCopyMore@16")
+	GETPROC(pfnPropCopyMore,			LPPROPCOPYMORE,				"PropCopyMore")
 	GETPROC(pfnWrapCompressedRTFStream,	LPWRAPCOMPRESSEDRTFSTREAM,	"WrapCompressedRTFStream")
 	GETPROC(pfnMAPILogonEx,				LPMAPILOGONEX,				"MAPILogonEx")
 	GETPROC(pfnMAPIAdminProfiles,		LPMAPIADMINPROFILES,		"MAPIAdminProfiles")
 	GETPROC(pfnHrValidateIPMSubtree,	LPHRVALIDATEIPMSUBTREE,		"HrValidateIPMSubtree@20")
+	GETPROC(pfnHrValidateIPMSubtree,	LPHRVALIDATEIPMSUBTREE,		"HrValidateIPMSubtree")
 	GETPROC(pfnWrapEx,					LPWRAPCOMPRESSEDRTFSTREAMEX,"WrapCompressedRTFStreamEx")
 	GETPROC(pfnMAPIOpenLocalFormContainer, LPMAPIOPENLOCALFORMCONTAINER,"MAPIOpenLocalFormContainer")
 	GETPROC(pfnHrDispatchNotifications,	LPHRDISPATCHNOTIFICATIONS,	"HrDispatchNotifications@4")
+	GETPROC(pfnHrDispatchNotifications,	LPHRDISPATCHNOTIFICATIONS,	"HrDispatchNotifications")
 }
 
 #define CHECKLOAD(pfn) \
@@ -935,7 +951,7 @@ HRESULT HrCopyRestrictionArray(
 	LPSRestriction lpResDest // destination restriction
 	)
 {
-	if (!lpResSrc || !lpResDest) return MAPI_E_INVALID_PARAMETER;
+	if (!lpResSrc || !lpResDest || !lpObject) return MAPI_E_INVALID_PARAMETER;
 	HRESULT hRes = S_OK;
 	ULONG i = 0;
 
@@ -947,7 +963,9 @@ HRESULT HrCopyRestrictionArray(
 		// Now fix up the pointers
 		switch (lpResSrc[i].rt)
 		{
+		// Structures for these two types are identical
 		case RES_AND:
+		case RES_OR:
 			if (lpResSrc[i].res.resAnd.cRes && lpResSrc[i].res.resAnd.lpRes)
 			{
 				if (lpResSrc[i].res.resAnd.cRes > ULONG_MAX/sizeof(SRestriction))
@@ -970,30 +988,9 @@ HRESULT HrCopyRestrictionArray(
 			}
 			break;
 
-		case RES_OR:
-			if (lpResSrc[i].res.resOr.cRes && lpResSrc[i].res.resOr.lpRes)
-			{
-				if (lpResSrc[i].res.resOr.cRes > ULONG_MAX/sizeof(SRestriction))
-				{
-					hRes = MAPI_E_CALL_FAILED;
-					break;
-				}
-				WC_H(MAPIAllocateMore(sizeof(SRestriction) * lpResSrc[i].res.resOr.cRes,
-					lpObject,
-					(LPVOID FAR *)
-					&lpResDest[i].res.resOr.lpRes));
-				if (FAILED(hRes)) break;
-
-				WC_H(HrCopyRestrictionArray(
-					lpResSrc[i].res.resOr.lpRes,
-					lpObject,
-					lpResSrc[i].res.resOr.cRes,
-					lpResDest[i].res.resOr.lpRes));
-				if (FAILED(hRes)) break;
-			}
-			break;
-
+		// Structures for these two types are identical
 		case RES_NOT:
+		case RES_COUNT:
 			if (lpResSrc[i].res.resNot.lpRes)
 			{
 				WC_H(MAPIAllocateMore(sizeof(SRestriction),
@@ -1011,7 +1008,9 @@ HRESULT HrCopyRestrictionArray(
 			}
 			break;
 
+		// Structures for these two types are identical
 		case RES_CONTENT:
+		case RES_PROPERTY:
 			if (lpResSrc[i].res.resContent.lpProp)
 			{
 				WC_H(HrDupPropset(
@@ -1019,18 +1018,6 @@ HRESULT HrCopyRestrictionArray(
 					lpResSrc[i].res.resContent.lpProp,
 					lpObject,
 					&lpResDest[i].res.resContent.lpProp));
-				if (FAILED(hRes)) break;
-			}
-			break;
-
-		case RES_PROPERTY:
-			if (lpResSrc[i].res.resProperty.lpProp)
-			{
-				WC_H(HrDupPropset(
-					1,
-					lpResSrc[i].res.resProperty.lpProp,
-					lpObject,
-					&lpResDest[i].res.resProperty.lpProp));
 				if (FAILED(hRes)) break;
 			}
 			break;
@@ -1059,7 +1046,9 @@ HRESULT HrCopyRestrictionArray(
 			}
 			break;
 
+		// Structures for these two types are identical
 		case RES_COMMENT:
+		case RES_ANNOTATION:
 			if (lpResSrc[i].res.resComment.lpRes)
 			{
 				WC_H(MAPIAllocateMore(sizeof(SRestriction),
@@ -1124,7 +1113,11 @@ STDAPI HrCopyRestriction(
 	if (FAILED(hRes)) return hRes;
 	// no short circuit returns after here
 
-	WC_H(HrCopyRestrictionArray(lpResSrc, lpObject, 1, *lppResDest));
+	WC_H(HrCopyRestrictionArray(
+		lpResSrc, 
+		lpObject,
+		1,
+		*lppResDest));
 
 	if (FAILED(hRes))
 	{
@@ -1135,6 +1128,9 @@ STDAPI HrCopyRestriction(
 	return hRes;
 }
 
+// This augmented PropCopyMore is implicitly tied to the built-in MAPIAllocateMore and MAPIAllocateBuffer through
+// the calls to HrCopyRestriction and HrCopyActions. Rewriting those functions to accept function pointers is 
+// expensive for no benefit here. So if you borrow this code, be careful if you plan on using other allocators.
 STDAPI_(SCODE) PropCopyMore(LPSPropValue lpSPropValueDest,
 							LPSPropValue lpSPropValueSrc,
 							ALLOCATEMORE * lpfAllocMore,

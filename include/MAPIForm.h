@@ -170,13 +170,13 @@ DECLARE_MAPI_INTERFACE_(IMAPIMessageSite, IUnknown)
     MAPIMETHOD(DoVerb) (THIS_                                           \
         /*in*/  LONG iVerb,                                             \
         /*in*/  LPMAPIVIEWCONTEXT lpViewContext, /* can be null */      \
-        /*in*/  ULONG hwndParent,                                       \
+        /*in*/  ULONG_PTR hwndParent,                                   \
         /*in*/  LPCRECT lprcPosRect) IPURE;                             \
     MAPIMETHOD(Advise)(THIS_                                            \
         /*in*/  LPMAPIVIEWADVISESINK pAdvise,                           \
         /*out*/ ULONG FAR * pdwStatus) IPURE;                           \
     MAPIMETHOD(Unadvise) (THIS_                                         \
-        /*in*/  ULONG ulConnection) IPURE;                              \
+        /*in*/  ULONG_PTR ulConnection) IPURE;                          \
 
 #undef INTERFACE
 #define INTERFACE IMAPIForm
@@ -468,7 +468,7 @@ typedef struct
 
 #define MAPI_IMAPIFORMMGR_METHODS(IPURE)                                \
     MAPIMETHOD(LoadForm)(THIS_                                          \
-        /*in*/  ULONG ulUIParam,                                        \
+        /*in*/  ULONG_PTR ulUIParam,                                    \
         /*in*/  ULONG ulFlags,                                          \
         /*in*/  LPCSTR lpszMessageClass,                                \
         /*in*/  ULONG ulMessageStatus,                                  \
@@ -494,26 +494,26 @@ typedef struct
         /*in*/  ULONG ulFlags,                                          \
         /*out*/ LPMAPIFORMPROPARRAY FAR* ppResults) IPURE;              \
     MAPIMETHOD(CreateForm)(THIS_                                        \
-        /*in*/  ULONG ulUIParam,                                        \
+        /*in*/  ULONG_PTR ulUIParam,                                    \
         /*in*/  ULONG ulFlags,                                          \
         /*in*/  LPMAPIFORMINFO pfrminfoToActivate,                      \
         /*in*/  REFIID refiidToAsk,                                     \
         /*out*/ LPVOID FAR* ppvObj) IPURE;                              \
     MAPIMETHOD(SelectForm)(THIS_                                        \
-        /*in*/  ULONG ulUIParam,                                        \
+        /*in*/  ULONG_PTR ulUIParam,                                    \
         /*in*/  ULONG ulFlags,                                          \
         /*in*/  LPCTSTR pszTitle,                                       \
         /*in*/  LPMAPIFOLDER pfld,                                      \
         /*out*/ LPMAPIFORMINFO FAR * ppfrminfoReturned) IPURE;          \
     MAPIMETHOD(SelectMultipleForms)(THIS_                               \
-        /*in*/  ULONG ulUIParam,                                        \
+        /*in*/  ULONG_PTR ulUIParam,                                    \
         /*in*/  ULONG ulFlags,                                          \
         /*in*/  LPCTSTR pszTitle,                                       \
         /*in*/  LPMAPIFOLDER pfld,                                      \
         /*in*/  LPSMAPIFORMINFOARRAY pfrminfoarray,                     \
         /*out*/ LPSMAPIFORMINFOARRAY FAR * ppfrminfoarray) IPURE;       \
     MAPIMETHOD(SelectFormContainer)(THIS_                               \
-        /*in*/  ULONG ulUIParam,                                        \
+        /*in*/  ULONG_PTR ulUIParam,                                    \
         /*in*/  ULONG ulFlags,                                          \
         /*out*/ LPMAPIFORMCONTAINER FAR * lppfcnt) IPURE;               \
     MAPIMETHOD(OpenFormContainer)(THIS_                                 \
@@ -521,7 +521,7 @@ typedef struct
         /*in*/  LPUNKNOWN lpunk,                                        \
         /*out*/ LPMAPIFORMCONTAINER FAR * lppfcnt) IPURE;               \
     MAPIMETHOD(PrepareForm)(THIS_                                       \
-        /*in*/  ULONG ulUIParam,                                        \
+        /*in*/  ULONG_PTR ulUIParam,                                    \
         /*in*/  ULONG ulFlags,                                          \
         /*in*/  LPMAPIFORMINFO pfrminfo) IPURE;                         \
     MAPIMETHOD(IsInConflict)(THIS_                                      \
@@ -575,7 +575,7 @@ DECLARE_MAPI_INTERFACE_(IMAPIFormMgr, IUnknown)
 
 #define MAPI_IMAPIFORMCONTAINER_METHODS(IPURE)                       \
     MAPIMETHOD(InstallForm)(THIS_                                   \
-        /*in*/  ULONG ulUIParam,                                        \
+        /*in*/  ULONG_PTR ulUIParam,                                    \
         /*in*/  ULONG ulFlags,                                          \
         /*in*/  LPCTSTR szCfgPathName) IPURE;                           \
     MAPIMETHOD(RemoveForm)(THIS_                                        \

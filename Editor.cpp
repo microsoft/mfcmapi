@@ -10,7 +10,14 @@
 #include "MAPIFunctions.h"
 #include "InterpretProp.h"
 #include "ImportProcs.h"
+
+// tmschema.h has been deprecated, but older compilers do not ship vssym32.h
+// Use the replacement when we're on VS 2008 or higher.
+#if defined(_MSC_VER) && (_MSC_VER >= 1500)
 #include <vssym32.h>
+#else
+#include <tmschema.h>
+#endif
 
 #include "AboutDlg.h"
 

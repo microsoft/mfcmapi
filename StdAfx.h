@@ -678,6 +678,10 @@ const BYTE	TZ_BIN_VERSION_MINOR	= 0x01;
 // http://blogs.msdn.com/stephen_griffin/archive/2007/03/19/mapi-and-exchange-2007.aspx
 #define CONNECT_IGNORE_NO_PF					((ULONG)0x8000)
 
+// http://blogs.msdn.com/stephen_griffin/archive/2008/04/01/new-restriction-types-seen-in-wrapped-psts.aspx
+#define RES_COUNT			((ULONG) 0x0000000B)
+#define RES_ANNOTATION		((ULONG) 0x0000000C)
+
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 

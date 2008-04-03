@@ -7,7 +7,7 @@
 #define rmj 6
 #define rmm 0
 #define rup 0
-#define rmn 1004
+#define rmn 1005
 
 #define MAKEFILEVERSION(_rmaj, _rmin, _bmaj, _bmin)			#_rmaj "." #_rmin "." #_bmaj "." #_bmin "\0"
 #define MAKEFILEVERSIONSTR(_rmaj, _rmin, _bmaj, _bmin)		MAKEFILEVERSION(_rmaj, _rmin, _bmaj, _bmin)
@@ -34,7 +34,7 @@
 	#error "Compilation requires the February 2003 or later Microsoft SDK"
 	#error "Or Visual C++ 2005 or higher"
 	#error "Go to the following URL"
-	#error "    http://www.microsoft.com/msdownload/platformsdk/sdkupdate/"
+	#error "    http://www.microsoft.com/downloads/details.aspx?FamilyId=A55B6B43-E24F-4EA3-A93E-40C0EC4F68E5"
 	#error "and follow the instructions to install the core SDK"
 	#error "The, go to Tools\Options\Directories and ensure the SDK include directory preceeds the Visual Studio include directories"
 #endif

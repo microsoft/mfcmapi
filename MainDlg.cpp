@@ -1022,6 +1022,12 @@ void CMainDlg::OnMAPIOpenLocalFormContainer()
 void CMainDlg::OnLoadMAPI()
 {
 	HRESULT hRes = S_OK;
+	TCHAR	szDLLPath[MAX_PATH] = {0};
+	UINT	uiRet = NULL;
+
+	WC_D(uiRet,GetSystemDirectory(szDLLPath, MAX_PATH));
+	WC_H(StringCchCat(szDLLPath,CCH(szDLLPath),_T("\\")));
+	WC_H(StringCchCat(szDLLPath,CCH(szDLLPath),_T("mapi32.dll")));
 
 	CEditor MyData(
 		this,
@@ -1029,7 +1035,7 @@ void CMainDlg::OnLoadMAPI()
 		IDS_LOADMAPIPROMPT,
 		1,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-	MyData.InitSingleLineSz(0,IDS_PATH,_T("C:\\Windows\\System32\\mapi32.dll"),false);// STRING_OK
+	MyData.InitSingleLineSz(0,IDS_PATH,szDLLPath,false);
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
