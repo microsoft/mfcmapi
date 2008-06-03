@@ -751,7 +751,7 @@ void CMsgStoreDlg::OnCreateSubFolder()
 	MyData.SetHex(1,FOLDER_GENERIC);
 	CString szProduct;
 	CString szFolderComment;
-	szProduct.LoadString(IDS_PRODUCT_NAME);
+	szProduct.LoadString(ID_PRODUCTNAME);
 	szFolderComment.FormatMessage(IDS_FOLDERCOMMENTVALUE,szProduct);
 	MyData.InitSingleLineSz(2,IDS_FOLDERCOMMENT,szFolderComment,false);
 	MyData.InitCheck(3,IDS_PASSOPENIFEXISTS,false,false);

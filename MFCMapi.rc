@@ -588,14 +588,9 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&Delete Property",            ID_DELETEPROPERTY
         MENUITEM SEPARATOR
-        MENUITEM "Display Property as Security Descriptor...",
-                                                ID_DISPLAYPROPERTYASSECURITYDESCRIPTOR
-
+        MENUITEM "Parse Property as Structure..." ID_PARSEPROPERTY
         MENUITEM "Display Property As Security Descriptor Prop Sheet...",
                                                 ID_DISPLAYPROPERTYASSECURITYDESCRIPTORPROPSHEET
-        MENUITEM "Display Property as Time Zone Reg..." ID_DISPLAYPROPERTYASTZREG
-        MENUITEM "Display Property as Time Zone Definition..." ID_DISPLAYPROPERTYASTZDEFINITION
-
     END
     MENUITEM SEPARATOR
     MENUITEM "&Modify 'Extra' Properties...", ID_MODIFYEXTRAPROPS
@@ -627,14 +622,9 @@ BEGIN
     MENUITEM SEPARATOR
     MENUITEM "&Delete Property",            ID_DELETEPROPERTY
     MENUITEM SEPARATOR
-    MENUITEM "Display Property as Security Descriptor...",
-                                            ID_DISPLAYPROPERTYASSECURITYDESCRIPTOR
-
+    MENUITEM "Parse Property as Structure..." ID_PARSEPROPERTY
     MENUITEM "Display Property As Security Descriptor Prop Sheet...",
                                             ID_DISPLAYPROPERTYASSECURITYDESCRIPTORPROPSHEET
-    MENUITEM "Display Property as Time Zone Reg..." ID_DISPLAYPROPERTYASTZREG
-    MENUITEM "Display Property as Time Zone Definition..." ID_DISPLAYPROPERTYASTZDEFINITION
-
     MENUITEM SEPARATOR
     MENUITEM "Edit given property...",      ID_EDITGIVENPROPERTY
 END

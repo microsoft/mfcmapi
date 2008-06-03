@@ -106,27 +106,41 @@ BOOL CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, SortListData* lpDat
 
 		szTmp.Format(_T("0x%08X"),ulNewPropTag);// STRING_OK
 		WC_B(m_lpControls[ulListNum].UI.lpList->List.SetItemText(iItem,1,szTmp));
+
+		CString PropTag;
+		CString PropType;
 		LPTSTR szExactMatch = NULL;
 		LPTSTR szPartialMatch = NULL;
-		EC_H(PropTagToPropName(ulNewPropTag,m_bIsAB,&szExactMatch,&szPartialMatch));
+		LPTSTR szNamedPropName = NULL;
+		LPTSTR szNamedPropGUID = NULL;
+
+		InterpretProp(
+			NULL,
+			ulNewPropTag,
+			NULL,
+			NULL,
+			m_bIsAB,
+			&szExactMatch, // Built from ulPropTag & bIsAB
+			&szPartialMatch, // Built from ulPropTag & bIsAB
+			&PropType,
+			&PropTag,
+			NULL,
+			NULL,
+			NULL,
+			&szNamedPropName, // Built from lpProp & lpMAPIProp
+			&szNamedPropGUID, // Built from lpProp & lpMAPIProp
+			NULL);
 		WC_B(m_lpControls[ulListNum].UI.lpList->List.SetItemText(iItem,2,szExactMatch?szExactMatch:_T("")));
 		WC_B(m_lpControls[ulListNum].UI.lpList->List.SetItemText(iItem,3,szPartialMatch?szPartialMatch:_T("")));
+		WC_B(m_lpControls[ulListNum].UI.lpList->List.SetItemText(iItem,4,PropType));
+		WC_B(m_lpControls[ulListNum].UI.lpList->List.SetItemText(iItem,5,szNamedPropName?szNamedPropName:_T("")));
+		WC_B(m_lpControls[ulListNum].UI.lpList->List.SetItemText(iItem,6,szNamedPropGUID?szNamedPropGUID:_T("")));
+
 		delete[] szPartialMatch;
 		delete[] szExactMatch;
-		WC_B(m_lpControls[ulListNum].UI.lpList->List.SetItemText(iItem,4,TypeToString(ulNewPropTag)));
-		LPTSTR szName = 0;
-		LPTSTR szGUID = 0;
-		GetPropName(m_lpMAPIProp,ulNewPropTag,&szName,&szGUID);
-		if (szName)
-		{
-			WC_B(m_lpControls[ulListNum].UI.lpList->List.SetItemText(iItem,5,szName));
-		}
-		if (szGUID)
-		{
-			WC_B(m_lpControls[ulListNum].UI.lpList->List.SetItemText(iItem,6,szGUID));
-		}
-		delete[] szName;
-		delete[] szGUID;
+		delete[] szNamedPropName;
+		delete[] szNamedPropGUID;
+
 		return true;
 	}
 	return false;
@@ -147,7 +161,6 @@ void CTagArrayEditor::ReadTagArrayToList(ULONG ulListNum)
 	if (m_lpTagArray)
 	{
 		CString szTmp;
-		CString szType;
 		HRESULT hRes = S_OK;
 		ULONG iTagCount = 0;
 		ULONG cValues = m_lpTagArray->cValues;
@@ -158,39 +171,46 @@ void CTagArrayEditor::ReadTagArrayToList(ULONG ulListNum)
 			SortListData* lpData = NULL;
 			szTmp.Format(_T("%d"),iTagCount);// STRING_OK
 			lpData = m_lpControls[ulListNum].UI.lpList->List.InsertRow(iTagCount,(LPTSTR)(LPCTSTR)szTmp);
-
-			szTmp.Format(_T("0x%08X"),ulPropTag);// STRING_OK
-			WC_B(m_lpControls[ulListNum].UI.lpList->List.SetItemText(iTagCount,1,szTmp));
-			LPTSTR szExactMatch = NULL;
-			LPTSTR szPartialMatch = NULL;
-			EC_H(PropTagToPropName(ulPropTag,m_bIsAB,&szExactMatch,&szPartialMatch));
-			WC_B(m_lpControls[ulListNum].UI.lpList->List.SetItemText(iTagCount,2,szExactMatch?szExactMatch:_T("")));
-			WC_B(m_lpControls[ulListNum].UI.lpList->List.SetItemText(iTagCount,3,szPartialMatch?szPartialMatch:_T("")));
-			delete[] szPartialMatch;
-			delete[] szExactMatch;
-			WC_B(m_lpControls[ulListNum].UI.lpList->List.SetItemText(iTagCount,4,TypeToString(ulPropTag)));
-			if (m_lpMAPIProp)
-			{
-				LPTSTR szName = 0;
-				LPTSTR szGUID = 0;
-				GetPropName(m_lpMAPIProp,ulPropTag,&szName,&szGUID);
-				if (szName)
-				{
-					WC_B(m_lpControls[ulListNum].UI.lpList->List.SetItemText(iTagCount,5,szName));
-				}
-				if (szGUID)
-				{
-					WC_B(m_lpControls[ulListNum].UI.lpList->List.SetItemText(iTagCount,6,szGUID));
-				}
-				delete[] szName;
-				delete[] szGUID;
-			}
 			if (lpData)
 			{
 				lpData->ulSortDataType = SORTLIST_TAGARRAY;
 				lpData->data.Tag.ulPropTag = ulPropTag;
 				lpData->bItemFullyLoaded = true;
 			}
+
+			CString PropTag;
+			CString PropType;
+			LPTSTR szExactMatch = NULL;
+			LPTSTR szPartialMatch = NULL;
+			LPTSTR szNamedPropName = NULL;
+			LPTSTR szNamedPropGUID = NULL;
+
+			InterpretProp(
+				NULL,
+				ulPropTag,
+				m_lpMAPIProp,
+				NULL,
+				m_bIsAB,
+				&szExactMatch, // Built from ulPropTag & bIsAB
+				&szPartialMatch, // Built from ulPropTag & bIsAB
+				&PropType,
+				&PropTag,
+				NULL,
+				NULL,
+				NULL,
+				&szNamedPropName, // Built from lpProp & lpMAPIProp
+				&szNamedPropGUID, // Built from lpProp & lpMAPIProp
+				NULL);
+			WC_B(m_lpControls[ulListNum].UI.lpList->List.SetItemText(iTagCount,1,PropTag));
+			WC_B(m_lpControls[ulListNum].UI.lpList->List.SetItemText(iTagCount,2,szExactMatch?szExactMatch:_T("")));
+			WC_B(m_lpControls[ulListNum].UI.lpList->List.SetItemText(iTagCount,3,szPartialMatch?szPartialMatch:_T("")));
+			WC_B(m_lpControls[ulListNum].UI.lpList->List.SetItemText(iTagCount,4,PropType));
+			WC_B(m_lpControls[ulListNum].UI.lpList->List.SetItemText(iTagCount,5,szNamedPropName?szNamedPropName:_T("")));
+			WC_B(m_lpControls[ulListNum].UI.lpList->List.SetItemText(iTagCount,6,szNamedPropGUID?szNamedPropGUID:_T("")));
+			delete[] szPartialMatch;
+			delete[] szExactMatch;
+			delete[] szNamedPropName;
+			delete[] szNamedPropGUID;
 		}
 	}
 	m_lpControls[ulListNum].UI.lpList->List.AutoSizeColumns();

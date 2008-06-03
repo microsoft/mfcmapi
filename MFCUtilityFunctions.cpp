@@ -55,7 +55,7 @@ HRESULT DisplayObject(
 		tType,
 		ulObjType,
 		szFlags);
-	MAPIFreeBuffer(szFlags);
+	delete[] szFlags;
 	szFlags = NULL;
 
 	//call the dialog
@@ -163,7 +163,7 @@ HRESULT DisplayObject(
 			IDS_EDVIEWERNOTIMPLEMENTED,
 			ulObjType,
 			szFlags);
-		MAPIFreeBuffer(szFlags);
+		delete[] szFlags;
 		szFlags = NULL;
 		//Perhaps we could create a 'Single Object Property Display' window for this case?
 		break;
@@ -613,12 +613,12 @@ void DisplayMailboxTable(CParentWnd*	lpParent,
 		MyData.InitSingleLine(1,IDS_OFFSET,NULL,false);
 		MyData.SetHex(1,0);
 		MyData.InitSingleLine(2,IDS_MAILBOXGUID,NULL,false);
-		UINT uidDropDown[3] = {
+		UINT uidDropDown[] = {
 			IDS_GETMBXINTERFACE1,
 			IDS_GETMBXINTERFACE3,
 			IDS_GETMBXINTERFACE5
 		};
-		MyData.InitDropDown(3,IDS_GETMBXINTERFACE,3,uidDropDown,true);
+		MyData.InitDropDown(3,IDS_GETMBXINTERFACE,sizeof(uidDropDown)/sizeof(UINT),uidDropDown,true);
 		WC_H(MyData.DisplayDialog());
 
 		if (SUCCEEDED(hRes) && 0 != MyData.GetHex(1) && 0 == MyData.GetDropDown(3))
@@ -758,12 +758,12 @@ void DisplayPublicFolderTable(CParentWnd* lpParent,
 		MyData.InitSingleLine(2,IDS_FLAGS,NULL,false);
 		MyData.SetHex(2,MDB_IPM);
 		MyData.InitSingleLine(3,IDS_PUBLICFOLDERGUID,NULL,false);
-		UINT uidDropDown[3] = {
+		UINT uidDropDown[] = {
 			IDS_GETPFINTERFACE1,
 			IDS_GETPFINTERFACE4,
 			IDS_GETPFINTERFACE5
 		};
-		MyData.InitDropDown(4,IDS_GETMBXINTERFACE,3,uidDropDown,true);
+		MyData.InitDropDown(4,IDS_GETMBXINTERFACE,sizeof(uidDropDown)/sizeof(UINT),uidDropDown,true);
 		WC_H(MyData.DisplayDialog());
 
 		if (SUCCEEDED(hRes) && 0 != MyData.GetHex(1) && 0 == MyData.GetDropDown(4))

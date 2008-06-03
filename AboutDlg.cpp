@@ -105,11 +105,7 @@ BOOL CAboutDlg::OnInitDialog()
 		IDD_HELP));
 
 	CString szHelpText;
-	CString szBuild;
-#ifdef UNICODE
-	szBuild.LoadString(IDS_UNICODEBUILD);
-#endif
-	szHelpText.FormatMessage(IDS_HELPTEXT,szProductName,szBuild);
+	szHelpText.FormatMessage(IDS_HELPTEXT,szProductName);
 	m_HelpText.SetWindowText(szHelpText);
 	m_HelpText.SetFont(GetFont());
 

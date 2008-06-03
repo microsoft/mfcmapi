@@ -47,7 +47,7 @@ CEditor(pParentWnd,IDS_RESED,IDS_RESEDCOMPPROMPT,6,CEDITOR_BUTTON_OK|CEDITOR_BUT
 	LPTSTR szFlags = NULL;
 	EC_H(InterpretFlags(flagRelop, ulRelop, &szFlags));
 	InitSingleLineSz(1,IDS_RELOP,szFlags,true);
-	MAPIFreeBuffer(szFlags);
+	delete[] szFlags;
 	szFlags = NULL;
 
 	InitSingleLine(2,IDS_ULPROPTAG1,NULL,false);
@@ -69,7 +69,7 @@ ULONG CResCompareEditor::HandleChange(UINT nID)
 		LPTSTR szFlags = NULL;
 		EC_H(InterpretFlags(flagRelop, GetHexUseControl(0), &szFlags));
 		SetString(1,szFlags);
-		MAPIFreeBuffer(szFlags);
+		delete[] szFlags;
 		szFlags = NULL;
 	}
 	else if (2 == i)
@@ -83,6 +83,8 @@ ULONG CResCompareEditor::HandleChange(UINT nID)
 	return i;
 }
 
+// This class is only invoked by CRestrictEditor. CRestrictEditor always passes an alloc parent.
+// So all memory detached from this class is owned by a parent and must not be freed manually
 static TCHAR* CONTENTCLASS = _T("CResCombinedEditor");// STRING_OK
 class CResCombinedEditor : public CEditor
 {
@@ -94,7 +96,6 @@ public:
 		ULONG ulPropTag,
 		LPSPropValue lpProp,
 		LPVOID lpAllocParent);
-	~CResCombinedEditor();
 	virtual void OnEditAction1();
 	LPSPropValue DetachModifiedSPropValue();
 
@@ -145,7 +146,7 @@ CEditor(pParentWnd,IDS_RESED,NULL,8,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_ACTION1|CED
 		EC_H(InterpretFlags(flagRelop, ulCompare, &szFlags));
 		InitSingleLineSz(1,IDS_RELOP,szFlags,true);
 	}
-	MAPIFreeBuffer(szFlags);
+	delete[] szFlags;
 	szFlags = NULL;
 
 	InitSingleLine(2,IDS_ULPROPTAG,NULL,false);
@@ -161,11 +162,6 @@ CEditor(pParentWnd,IDS_RESED,NULL,8,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_ACTION1|CED
 	InterpretProp(lpProp,&szProp,&szAltProp);
 	InitMultiLine(6,IDS_LPPROP,szProp,true);
 	InitMultiLine(7,IDS_LPPROPALTVIEW,szAltProp,true);
-}
-
-CResCombinedEditor::~CResCombinedEditor()
-{
-	MAPIFreeBuffer(m_lpNewProp);
 }
 
 ULONG CResCombinedEditor::HandleChange(UINT nID)
@@ -186,7 +182,7 @@ ULONG CResCombinedEditor::HandleChange(UINT nID)
 			EC_H(InterpretFlags(flagRelop, GetHexUseControl(0), &szFlags));
 			SetString(1,szFlags);
 		}
-		MAPIFreeBuffer(szFlags);
+		delete[] szFlags;
 		szFlags = NULL;
 	}
 	else if (2 == i)
@@ -197,8 +193,6 @@ ULONG CResCombinedEditor::HandleChange(UINT nID)
 	{
 		ULONG ulNewPropTag = GetHexUseControl(4);
 		SetString(5,TagToString(ulNewPropTag,NULL,false,true));
-		MAPIFreeBuffer(m_lpOldProp);
-		MAPIFreeBuffer(m_lpNewProp);
 		m_lpOldProp = NULL;
 		m_lpNewProp = NULL;
 		SetString(6,NULL);
@@ -241,7 +235,7 @@ void CResCombinedEditor::OnEditAction1()
 
 	if (S_OK == hRes)
 	{
-		MAPIFreeBuffer(m_lpNewProp);
+		// Since m_lpNewProp was owned by an m_lpAllocParent, we don't free it directly
 		m_lpNewProp = PropEdit.DetachModifiedSPropValue();
 		CString szProp;
 		CString szAltProp;
@@ -283,7 +277,7 @@ CEditor(pParentWnd,IDS_RESED,IDS_RESEDBITPROMPT,5,CEDITOR_BUTTON_OK|CEDITOR_BUTT
 	LPTSTR szFlags = NULL;
 	EC_H(InterpretFlags(flagBitmask, relBMR, &szFlags));
 	InitSingleLineSz(1,IDS_RELBMR,szFlags,true);
-	MAPIFreeBuffer(szFlags);
+	delete[] szFlags;
 	szFlags = NULL;
 
 	InitSingleLine(2,IDS_ULPROPTAG,NULL,false);
@@ -304,7 +298,7 @@ ULONG CResBitmaskEditor::HandleChange(UINT nID)
 		LPTSTR szFlags = NULL;
 		EC_H(InterpretFlags(flagBitmask, GetHexUseControl(0), &szFlags));
 		SetString(1,szFlags);
-		MAPIFreeBuffer(szFlags);
+		delete[] szFlags;
 		szFlags = NULL;
 	}
 	else if (2 == i)
@@ -343,7 +337,7 @@ CEditor(pParentWnd,IDS_RESED,IDS_RESEDSIZEPROMPT,5,CEDITOR_BUTTON_OK|CEDITOR_BUT
 	LPTSTR szFlags = NULL;
 	EC_H(InterpretFlags(flagRelop, relop, &szFlags));
 	InitSingleLineSz(1,IDS_RELOP,szFlags,true);
-	MAPIFreeBuffer(szFlags);
+	delete[] szFlags;
 	szFlags = NULL;
 
 	InitSingleLine(2,IDS_ULPROPTAG,NULL,false);
@@ -364,7 +358,7 @@ ULONG CResSizeEditor::HandleChange(UINT nID)
 		LPTSTR szFlags = NULL;
 		EC_H(InterpretFlags(flagRelop, GetHexUseControl(0), &szFlags));
 		SetString(1,szFlags);
-		MAPIFreeBuffer(szFlags);
+		delete[] szFlags;
 		szFlags = NULL;
 	}
 	else if (2 == i)
@@ -408,6 +402,8 @@ ULONG CResExistEditor::HandleChange(UINT nID)
 	return i;
 }
 
+// This class is only invoked by CRestrictEditor. CRestrictEditor always passes an alloc parent.
+// So all memory detached from this class is owned by a parent and must not be freed manually
 static TCHAR* SUBRESCLASS = _T("CResSubResEditor");// STRING_OK
 class CResSubResEditor : public CEditor
 {
@@ -477,12 +473,14 @@ void CResSubResEditor::OnEditAction1()
 
 	if (S_OK == hRes)
 	{
-		MAPIFreeBuffer(m_lpNewRes);
+		// Since m_lpNewRes was owned by an m_lpAllocParent, we don't free it directly
 		m_lpNewRes = ResEdit.DetachModifiedSRestriction();
 		InitMultiLine(2,IDS_LPRES,RestrictionToString(m_lpNewRes,NULL),true);
 	}
 }
 
+// This class is only invoked by CRestrictEditor. CRestrictEditor always passes an alloc parent.
+// So all memory detached from this class is owned by a parent and must not be freed manually
 static TCHAR* ANDORCLASS = _T("CResAndOrEditor");// STRING_OK
 class CResAndOrEditor : public CEditor
 {
@@ -614,7 +612,7 @@ BOOL CResAndOrEditor::DoListEdit(ULONG ulListNum, int iItem, SortListData* lpDat
 
 	if (S_OK == hRes)
 	{
-		MAPIFreeBuffer(lpData->data.Res.lpNewRes);
+		// Since lpData->data.Res.lpNewRes was owned by an m_lpAllocParent, we don't free it directly
 		lpData->data.Res.lpNewRes = MyResEditor.DetachModifiedSRestriction();
 		WC_B(m_lpControls[ulListNum].UI.lpList->List.SetItemText(iItem,1,(LPCTSTR)RestrictionToString(lpData->data.Res.lpNewRes,NULL)));
 		return true;
@@ -663,6 +661,8 @@ void CResAndOrEditor::OnOK()
 	}
 }
 
+// This class is only invoked by CRestrictEditor. CRestrictEditor always passes an alloc parent.
+// So all memory detached from this class is owned by a parent and must not be freed manually
 static TCHAR* COMMENTCLASS = _T("CResCommentEditor");// STRING_OK
 class CResCommentEditor : public CEditor
 {
@@ -751,7 +751,6 @@ ULONG CResCommentEditor::GetSPropValueCount()
 	return m_ulNewCommentProp;
 }
 
-
 void CResCommentEditor::InitListFromPropArray(ULONG ulListNum, ULONG cProps, LPSPropValue lpProps)
 {
 	if (!m_lpControls) return;
@@ -800,7 +799,7 @@ void CResCommentEditor::OnEditAction1()
 
 	if (S_OK == hRes)
 	{
-		MAPIFreeBuffer(m_lpNewCommentRes);
+		// Since m_lpNewCommentRes was owned by an m_lpAllocParent, we don't free it directly
 		m_lpNewCommentRes = MyResEditor.DetachModifiedSRestriction();
 		SetString(1,RestrictionToString(m_lpNewCommentRes,NULL));
 	}
@@ -846,7 +845,7 @@ BOOL CResCommentEditor::DoListEdit(ULONG ulListNum, int iItem, SortListData* lpD
 	WC_H(PropEdit.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		MAPIFreeBuffer(lpData->data.Comment.lpNewProp);
+		// Since lpData->data.Comment.lpNewProp was owned by an m_lpAllocParent, we don't free it directly
 		lpData->data.Comment.lpNewProp = PropEdit.DetachModifiedSPropValue();
 
 		if (lpData->data.Comment.lpNewProp)
@@ -914,10 +913,12 @@ void CResCommentEditor::OnOK()
 	}
 }
 
+// Note that an alloc parent is passed in to CRestrictEditor. If a parent isn't passed, we allocate one ourselves.
+// All other memory allocated in CRestrictEditor is owned by the parent and must not be freed manually
+// If we return (detach) memory to a caller, they must MAPIFreeBuffer only if they did not pass in a parent
 static TCHAR* CLASS = _T("CRestrictEditor");// STRING_OK
-
 //Create an editor for a restriction
-//Takes LPSRestriction lpRestriction as input
+//Takes LPSRestriction lpRes as input
 CRestrictEditor::CRestrictEditor(
 								 CWnd* pParentWnd,
 								 LPVOID lpAllocParent,
@@ -970,7 +971,11 @@ CEditor(pParentWnd,IDS_RESED,IDS_RESEDPROMPT,3,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_
 CRestrictEditor::~CRestrictEditor()
 {
 	TRACE_DESTRUCTOR(CLASS);
-	MAPIFreeBuffer(m_lpOutputRes);
+	// Only if we self allocated m_lpOutputRes and did not detach it can we free it
+	if (m_lpAllocParent == m_lpOutputRes)
+	{
+		MAPIFreeBuffer(m_lpOutputRes);
+	}
 }
 
 BEGIN_MESSAGE_MAP(CRestrictEditor, CEditor)
@@ -992,7 +997,7 @@ BOOL CRestrictEditor::OnInitDialog()
 		LPTSTR szFlags = NULL;
 		EC_H(InterpretFlags(flagRestrictionType, lpSourceRes->rt, &szFlags));
 		SetString(1,szFlags);
-		MAPIFreeBuffer(szFlags);
+		delete[] szFlags;
 		szFlags = NULL;
 	}
 	return HRES_TO_BOOL(hRes);
@@ -1024,6 +1029,7 @@ ULONG CRestrictEditor::HandleChange(UINT nID)
 {
 	ULONG i = CEditor::HandleChange(nID);
 
+	// If the restriction type changed
 	if (0 == i)
 	{
 		if (!m_lpOutputRes) return i;
@@ -1036,7 +1042,7 @@ ULONG CRestrictEditor::HandleChange(UINT nID)
 		LPTSTR szFlags = NULL;
 		EC_H(InterpretFlags(flagRestrictionType, ulNewResType, &szFlags));
 		SetString(1,szFlags);
-		MAPIFreeBuffer(szFlags);
+		delete[] szFlags;
 		szFlags = NULL;
 
 		m_bModified = true;
@@ -1050,6 +1056,7 @@ ULONG CRestrictEditor::HandleChange(UINT nID)
 			//Need to wipe out our current output restriction and rebuild it
 			if (m_lpAllocParent == m_lpOutputRes)
 			{
+				// We allocated m_lpOutputRes directly, so we can and should free it before replacing the pointer
 				MAPIFreeBuffer(m_lpOutputRes);
 				EC_H(MAPIAllocateBuffer(
 					sizeof(SRestriction),
@@ -1059,7 +1066,8 @@ ULONG CRestrictEditor::HandleChange(UINT nID)
 			}
 			else
 			{
-				MAPIFreeBuffer(m_lpOutputRes);
+				// If the pointers are different, m_lpOutputRes was allocated with MAPIAllocateMore
+				// Since m_lpOutputRes is owned by m_lpAllocParent, we don't free it directly
 				EC_H(MAPIAllocateMore(
 					sizeof(SRestriction),
 					m_lpAllocParent,
@@ -1140,13 +1148,8 @@ void CRestrictEditor::OnEditAction1()
 			if (S_OK == hRes)
 			{
 				m_lpOutputRes->rt = lpSourceRes->rt;
-				LPSRestriction lpNewRes = MyResEditor.DetachModifiedSRestriction();
-				if (lpNewRes)
-				{
-					//I can do this because our new memory was allocated from a common parent
-					MAPIFreeBuffer(m_lpOutputRes->res.resNot.lpRes);
-					m_lpOutputRes->res.resNot.lpRes = lpNewRes;
-				}
+				// Since m_lpOutputRes->res.resNot.lpRes was owned by an m_lpAllocParent, we don't free it directly
+				m_lpOutputRes->res.resNot.lpRes = MyResEditor.DetachModifiedSRestriction();
 			}
 		}
 		break;
@@ -1168,14 +1171,9 @@ void CRestrictEditor::OnEditAction1()
 				m_lpOutputRes->res.resContent.ulFuzzyLevel = MyEditor.GetHex(0);
 				m_lpOutputRes->res.resContent.ulPropTag = MyEditor.GetHex(2);
 
-				LPSPropValue lpNewProp = MyEditor.DetachModifiedSPropValue();
+				// Since m_lpOutputRes->res.resContent.lpProp was owned by an m_lpAllocParent, we don't free it directly
+				m_lpOutputRes->res.resContent.lpProp = MyEditor.DetachModifiedSPropValue();
 
-				if (lpNewProp)
-				{
-					//I can do this because our new memory was allocated from a common parent
-					MAPIFreeBuffer(m_lpOutputRes->res.resContent.lpProp);
-					m_lpOutputRes->res.resContent.lpProp = lpNewProp;
-				}
 				if (!m_lpOutputRes->res.resContent.lpProp)
 				{
 					//Got a problem here - the relop or fuzzy level was changed, but not the property
@@ -1255,13 +1253,8 @@ void CRestrictEditor::OnEditAction1()
 				m_lpOutputRes->rt = lpSourceRes->rt;
 				m_lpOutputRes->res.resSub.ulSubObject = MyEditor.GetHex(0);
 
-				LPSRestriction lpNewRes = MyEditor.DetachModifiedSRestriction();
-				if (lpNewRes)
-				{
-					//I can do this because our new memory was allocated from a common parent
-					MAPIFreeBuffer(m_lpOutputRes->res.resSub.lpRes);
-					m_lpOutputRes->res.resSub.lpRes = lpNewRes;
-				}
+				// Since m_lpOutputRes->res.resSub.lpRes was owned by an m_lpAllocParent, we don't free it directly
+				m_lpOutputRes->res.resSub.lpRes = MyEditor.DetachModifiedSRestriction();
 			}
 		}
 		break;
@@ -1279,20 +1272,13 @@ void CRestrictEditor::OnEditAction1()
 			{
 				m_lpOutputRes->rt = lpSourceRes->rt;
 
-				LPSRestriction lpNewRes = MyResEditor.DetachModifiedSRestriction();
-				if (lpNewRes)
-				{
-					//I can do this because our new memory was allocated from a common parent
-					MAPIFreeBuffer(m_lpOutputRes->res.resComment.lpRes);
-					m_lpOutputRes->res.resComment.lpRes = lpNewRes;
-				}
+				// Since m_lpOutputRes->res.resComment.lpRes was owned by an m_lpAllocParent, we don't free it directly
+				m_lpOutputRes->res.resComment.lpRes = MyResEditor.DetachModifiedSRestriction();
 
-				LPSPropValue lpNewProps = MyResEditor.DetachModifiedSPropValue();
-				if (lpNewProps)
+				// Since m_lpOutputRes->res.resComment.lpProp was owned by an m_lpAllocParent, we don't free it directly
+				m_lpOutputRes->res.resComment.lpProp = MyResEditor.DetachModifiedSPropValue();
+				if (m_lpOutputRes->res.resComment.lpProp)
 				{
-					//I can do this because our new memory was allocated from a common parent
-					MAPIFreeBuffer(m_lpOutputRes->res.resComment.lpProp);
-					m_lpOutputRes->res.resComment.lpProp = lpNewProps;
 					m_lpOutputRes->res.resComment.cValues = MyResEditor.GetSPropValueCount();
 				}
 			}
@@ -1307,7 +1293,8 @@ void CRestrictEditor::OnEditAction1()
 	return;
 }
 
-
+// Note that no alloc parent is passed in to CCriteriaEditor. So we're completely responsible for freeing any memory we allocate.
+// If we return (detach) memory to a caller, they must MAPIFreeBuffer
 static TCHAR* CRITERIACLASS = _T("CCriteriaEditor");// STRING_OK
 #define LISTNUM 4
 CCriteriaEditor::CCriteriaEditor(
@@ -1338,13 +1325,20 @@ CEditor(pParentWnd,IDS_CRITERIAEDITOR,IDS_CRITERIAEDITORPROMPT,6,CEDITOR_BUTTON_
 	LPTSTR szFlags = NULL;
 	EC_H(InterpretFlags(flagSearchState, ulSearchState, &szFlags));
 	InitSingleLineSz(1,IDS_SEARCHSTATE,szFlags,true);
-	MAPIFreeBuffer(szFlags);
+	delete[] szFlags;
 	szFlags = NULL;
 	InitSingleLine(2,IDS_SEARCHFLAGS,NULL,false);
 	SetHex(2,0);
 	InitSingleLine(3,IDS_SEARCHFLAGS,NULL,true);
 	InitList(4,IDS_EIDLIST,false,false);
 	InitMultiLine(5,IDS_RESTRICTIONTEXT,RestrictionToString(m_lpSourceRes,NULL),true);
+}
+
+CCriteriaEditor::~CCriteriaEditor()
+{
+	// If these structures weren't detached, we need to free them
+	MAPIFreeBuffer(m_lpNewEntryList);
+	MAPIFreeBuffer(m_lpNewRes);
 }
 
 //Used to call functions which need to be called AFTER controls are created
@@ -1363,8 +1357,7 @@ BOOL CCriteriaEditor::OnInitDialog()
 LPSRestriction CCriteriaEditor::GetSourceRes()
 {
 	if (m_lpNewRes) return m_lpNewRes;
-	if (m_lpSourceRes) return m_lpSourceRes;
-	return NULL;
+	return m_lpSourceRes;
 }
 
 ULONG CCriteriaEditor::HandleChange(UINT nID)
@@ -1377,12 +1370,13 @@ ULONG CCriteriaEditor::HandleChange(UINT nID)
 		LPTSTR szFlags = NULL;
 		EC_H(InterpretFlags(flagSearchFlag, GetHexUseControl(i), &szFlags));
 		SetString(3,szFlags);
-		MAPIFreeBuffer(szFlags);
+		delete[] szFlags;
 		szFlags = NULL;
 	}
 	return i;
 }
 
+// Whoever gets this MUST MAPIFreeBuffer
 LPSRestriction CCriteriaEditor::DetachModifiedSRestriction()
 {
 	LPSRestriction m_lpRet = m_lpNewRes;
@@ -1390,6 +1384,7 @@ LPSRestriction CCriteriaEditor::DetachModifiedSRestriction()
 	return m_lpRet;
 }
 
+// Whoever gets this MUST MAPIFreeBuffer
 LPENTRYLIST CCriteriaEditor::DetachModifiedEntryList()
 {
 	LPENTRYLIST m_lpRet = m_lpNewEntryList;
@@ -1449,12 +1444,13 @@ void CCriteriaEditor::OnEditAction1()
 
 	CRestrictEditor MyResEditor(
 		this,
-		NULL,//m_lpAllocParent,
+		NULL,
 		lpSourceRes);//pass source res into editor
 	WC_H(MyResEditor.DisplayDialog());
 
 	if (S_OK == hRes)
 	{
+		// We didn't pass an alloc parent to CRestrictEditor, so we must free what came back
 		MAPIFreeBuffer(m_lpNewRes);
 		m_lpNewRes = MyResEditor.DetachModifiedSRestriction();
 		SetString(5,RestrictionToString(m_lpNewRes,NULL));
@@ -1496,7 +1492,8 @@ BOOL CCriteriaEditor::DoListEdit(ULONG ulListNum, int iItem, SortListData* lpDat
 
 		if (!(ulStrLen & 1))//can't use an odd length string
 		{
-			MAPIFreeBuffer(lpData->data.Binary.NewBin.lpb);
+			// Don't free an existing lpData->data.Binary.NewBin.lpb since it's allocated with MAPIAllocateMore
+			// It'll get freed when we eventually clean up m_lpNewEntryList
 
 			lpData->data.Binary.NewBin.cb = ulStrLen / 2;
 			EC_H(MAPIAllocateMore(

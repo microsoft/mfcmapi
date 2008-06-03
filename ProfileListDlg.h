@@ -46,7 +46,7 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 
-	void AddPSTToProfile(BOOL bUnicode);
+	void AddPSTToProfile(BOOL bUnicodePST);
 };
 
 //{{AFX_INSERT_LOCATION}}

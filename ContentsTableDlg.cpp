@@ -650,7 +650,7 @@ void CContentsTableDlg::OnEditRestriction()
 
 	CRestrictEditor MyRestrict(
 		this,
-		NULL,
+		NULL, // No alloc parent - we must MAPIFreeBuffer the result
 		m_lpContentsTableListCtrl->m_lpRes);
 
 	WC_H(MyRestrict.DisplayDialog());
@@ -786,14 +786,14 @@ void CContentsTableDlg::OnGetStatus()
 		LPTSTR szFlags = NULL;
 		EC_H(InterpretFlags(flagTableStatus, ulTableStatus, &szFlags));
 		MyData.InitMultiLine(1,IDS_ULTABLESTATUS,szFlags,true);
-		MAPIFreeBuffer(szFlags);
+		delete[] szFlags;
 		szFlags = NULL;
 
 		MyData.InitSingleLine(2,IDS_ULTABLETYPE,NULL,true);
 		MyData.SetHex(2,ulTableType);
 		EC_H(InterpretFlags(flagTableType,ulTableType, &szFlags));
 		MyData.InitMultiLine(3,IDS_ULTABLETYPE,szFlags,true);
-		MAPIFreeBuffer(szFlags);
+		delete[] szFlags;
 		szFlags = NULL;
 
 		WC_H(MyData.DisplayDialog());
@@ -865,15 +865,15 @@ void CContentsTableDlg::OnSortTable()
 					IDS_SORTORDERPROMPT,
 					1,
 					CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-				UINT uidDropDown[3] = {
+				UINT uidDropDown[] = {
 					IDS_DDTABLESORTASCEND,
 						IDS_DDTABLESORTDESCEND,
 						IDS_DDTABLESORTCOMBINE
 				};
 				if (i != 0 && i < cCategories)
-					MySortOrderDlg.InitDropDown(0,IDS_SORTORDER,3,uidDropDown,true);
+					MySortOrderDlg.InitDropDown(0,IDS_SORTORDER,sizeof(uidDropDown)/sizeof(UINT),uidDropDown,true);
 				else
-					MySortOrderDlg.InitDropDown(0,IDS_SORTORDER,2,uidDropDown,true);
+					MySortOrderDlg.InitDropDown(0,IDS_SORTORDER,sizeof(uidDropDown)/sizeof(UINT) - 1,uidDropDown,true);
 
 				WC_H(MySortOrderDlg.DisplayDialog());
 				if (S_OK == hRes)

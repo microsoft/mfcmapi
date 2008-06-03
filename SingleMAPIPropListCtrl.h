@@ -30,10 +30,8 @@ public:
 	HRESULT SetDataSource(LPMAPIPROP lpMAPIProp, SortListData* lpListData, BOOL bIsAB);
 
 	void	OnDeleteProperty();
-	void	OnDisplayPropertyAsSecurityDescriptor();
 	void	OnDisplayPropertyAsSecurityDescriptorPropSheet();
-	void	OnDisplayPropAsTZREG();
-	void	OnDisplayPropAsTZDEFINITION();
+	void	OnParseProperty();
 	void	OnEditProp();
 	void	OnEditGivenProp(ULONG ulPropTag);
 	void	OnEditPropAsStream(ULONG ulType, BOOL bEditAsRTF);
@@ -71,8 +69,10 @@ private:
 	void AddPropToListBox(
 		int iRow,
 		ULONG ulPropTag,
+		LPMAPINAMEID lpNameID,
 		LPSPropValue lpsPropToAdd);
 	HRESULT LoadMAPIPropList();
+	HRESULT	SetNewProp(LPSPropValue lpNewProp);
 
 //Used to store prop tags added through AddPropsToExtraProps
 	LPSPropTagArray		m_sptExtraProps;

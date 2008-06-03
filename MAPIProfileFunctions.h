@@ -40,8 +40,8 @@ HRESULT HrAddExchangeToProfile(
 
 HRESULT HrAddPSTToProfile(
 						   IN ULONG_PTR ulUIParam, // hwnd for CreateMsgService
-						   IN BOOL bUnicode,
-						   IN LPSTR lpszPSTPath,
+						   IN BOOL bUnicodePST,
+						   IN LPTSTR lpszPSTPath,
 						   IN LPSTR lpszProfileName);
 
 HRESULT HrRemoveProfile(

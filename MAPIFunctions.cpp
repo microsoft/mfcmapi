@@ -204,7 +204,7 @@ HRESULT CallOpenEntry(
 		LPTSTR szFlags = NULL;
 		EC_H(InterpretFlags(PROP_ID(PR_OBJECT_TYPE), ulObjType, &szFlags));
 		DebugPrint(DBGGeneric,_T("OnOpenEntryID: Got object (0x%08X) of type 0x%08X = %s\n"),lpUnk,ulObjType,szFlags);
-		MAPIFreeBuffer(szFlags);
+		delete[] szFlags;
 		szFlags = NULL;
 		*lppUnk = lpUnk;
 	}

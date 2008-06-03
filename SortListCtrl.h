@@ -13,7 +13,8 @@ enum __SortListDataTypes
 	SORTLIST_TAGARRAY,
 	SORTLIST_RES,
 	SORTLIST_COMMENT,
-	SORTLIST_BINARY
+	SORTLIST_BINARY,
+	SORTLIST_TREENODE
 };
 
 // This enum maps to icons.bmp
@@ -67,6 +68,8 @@ enum __SortListIconNames
 	slIconMAPI_SESSION,
 	slIconMAPI_FORMINFO,
 };
+
+void FreeSortListData(SortListData* lpData);
 
 /////////////////////////////////////////////////////////////////////////////
 // CContentsTableListCtrl window

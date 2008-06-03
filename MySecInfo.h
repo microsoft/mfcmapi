@@ -51,5 +51,4 @@ public:
     STDMETHOD(LookupSids) (THIS_ IN ULONG /*cSids*/, IN PSID* /*rgpSids*/, OUT LPDATAOBJECT* /*ppdo*/);
 };
 
-HRESULT DisplayPropAsSD(LPMAPIPROP lpMAPIProp,ULONG ulPropTag);
 HRESULT SDToString(LPBYTE lpBuf, eAceType acetype, CString *SDString, CString *sdInfo);

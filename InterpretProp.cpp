@@ -326,18 +326,31 @@ CString CurrencyToString(CURRENCY curVal)
 
 CString TagToString(ULONG ulPropTag, LPMAPIPROP lpObj, BOOL bIsAB, BOOL bSingleLine)
 {
-	HRESULT hRes = S_OK;
 	CString szRet;
 	CString szTemp;
 
-	LPTSTR szName = NULL;
-	LPTSTR szGuid = NULL;
-	LPTSTR szDASL = NULL;
 	LPTSTR szExactMatches = NULL;
 	LPTSTR szPartialMatches = NULL;
-	EC_H(PropTagToPropName(ulPropTag,bIsAB,&szExactMatches,&szPartialMatches));
+	LPTSTR szNamedPropName = NULL;
+	LPTSTR szNamedPropGUID = NULL;
+	LPTSTR szNamedPropDASL = NULL;
 
-	GetPropName(lpObj,ulPropTag,&szName,&szGuid,&szDASL);
+	InterpretProp(
+				   NULL,
+				   ulPropTag,
+				   lpObj,
+				   NULL,
+				   bIsAB,
+				   &szExactMatches, // Built from ulPropTag & bIsAB
+				   &szPartialMatches, // Built from ulPropTag & bIsAB
+				   NULL,
+				   NULL,
+				   NULL,
+				   NULL,
+				   NULL,
+				   &szNamedPropName, // Built from lpProp & lpMAPIProp
+				   &szNamedPropGUID, // Built from lpProp & lpMAPIProp
+				   &szNamedPropDASL); // Built from ulPropTag & lpMAPIProp
 
 	CString szFormatString;
 	if (bSingleLine)
@@ -345,12 +358,12 @@ CString TagToString(ULONG ulPropTag, LPMAPIPROP lpObj, BOOL bIsAB, BOOL bSingleL
 		szFormatString = _T("0x%1!08X! (%2)");// STRING_OK
 		if (szExactMatches) szFormatString += _T(": %3");// STRING_OK
 		if (szPartialMatches) szFormatString += _T(": (%4)");// STRING_OK
-		if (szName)
+		if (szNamedPropName)
 		{
 			szTemp.LoadString(IDS_NAMEDPROPSINGLELINE);
 			szFormatString += szTemp;
 		}
-		if (szGuid)
+		if (szNamedPropGUID)
 		{
 			szTemp.LoadString(IDS_GUIDSINGLELINE);
 			szFormatString += szTemp;
@@ -379,12 +392,12 @@ CString TagToString(ULONG ulPropTag, LPMAPIPROP lpObj, BOOL bIsAB, BOOL bSingleL
 			szTemp.LoadString(IDS_DASLNAMED);
 			szFormatString += szTemp;
 		}
-		if (szName)
+		if (szNamedPropName)
 		{
 			szTemp.LoadString(IDS_NAMEPROPNAMEMULTILINE);
 			szFormatString += szTemp;
 		}
-		if (szGuid)
+		if (szNamedPropGUID)
 		{
 			szTemp.LoadString(IDS_NAMEPROPGUIDMULTILINE);
 			szFormatString += szTemp;
@@ -395,15 +408,15 @@ CString TagToString(ULONG ulPropTag, LPMAPIPROP lpObj, BOOL bIsAB, BOOL bSingleL
 		(LPCTSTR) TypeToString(ulPropTag),
 		szExactMatches,
 		szPartialMatches,
-		szName,
-		szGuid,
-		szDASL);
+		szNamedPropName,
+		szNamedPropGUID,
+		szNamedPropDASL);
 
 	delete[] szPartialMatches;
 	delete[] szExactMatches;
-	delete[] szDASL;
-	delete[] szGuid;
-	delete[] szName;
+	delete[] szNamedPropName;
+	delete[] szNamedPropGUID;
+	delete[] szNamedPropDASL;
 
 	if (fIsSet(DBGTest))
 	{
@@ -522,7 +535,7 @@ void RestrictionToString(LPSRestriction lpRes, LPMAPIPROP lpObj, ULONG ulTabLeve
 	EC_H(InterpretFlags(flagRestrictionType, lpRes->rt, &szFlags));
 	szTmp.FormatMessage(IDS_RESTYPE,szTabs,szFlags);
 	*PropString += szTmp;
-	MAPIFreeBuffer(szFlags);
+	delete[] szFlags;
 	szFlags = NULL;
 	switch(lpRes->rt)
 	{
@@ -536,7 +549,7 @@ void RestrictionToString(LPSRestriction lpRes, LPMAPIPROP lpObj, ULONG ulTabLeve
 			TagToString(lpRes->res.resCompareProps.ulPropTag1,lpObj,false,true),
 			TagToString(lpRes->res.resCompareProps.ulPropTag2,lpObj,false,true));
 		*PropString += szTmp;
-		MAPIFreeBuffer(szFlags);
+		delete[] szFlags;
 		break;
 	case RES_AND:
 		szTmp.FormatMessage(IDS_RESANDCOUNT,szTabs,lpRes->res.resAnd.cRes);
@@ -588,7 +601,7 @@ void RestrictionToString(LPSRestriction lpRes, LPMAPIPROP lpObj, ULONG ulTabLeve
 			szFlags,
 			lpRes->res.resContent.ulFuzzyLevel,
 			TagToString(lpRes->res.resContent.ulPropTag,lpObj,false,true));
-		MAPIFreeBuffer(szFlags);
+		delete[] szFlags;
 		szFlags = NULL;
 		*PropString += szTmp;
 		if (lpRes->res.resContent.lpProp)
@@ -611,7 +624,7 @@ void RestrictionToString(LPSRestriction lpRes, LPMAPIPROP lpObj, ULONG ulTabLeve
 			szFlags,
 			lpRes->res.resProperty.relop,
 			TagToString(lpRes->res.resProperty.ulPropTag,lpObj,false,true));
-		MAPIFreeBuffer(szFlags);
+		delete[] szFlags;
 		szFlags = NULL;
 		*PropString += szTmp;
 		if (lpRes->res.resProperty.lpProp)
@@ -628,7 +641,7 @@ void RestrictionToString(LPSRestriction lpRes, LPMAPIPROP lpObj, ULONG ulTabLeve
 			if (szFlags)
 			{
 				szTmp.FormatMessage(IDS_RESPROPPROPFLAGS,szTabs,szFlags);
-				MAPIFreeBuffer(szFlags);
+				delete[] szFlags;
 				szFlags = NULL;
 				*PropString += szTmp;
 			}
@@ -642,14 +655,14 @@ void RestrictionToString(LPSRestriction lpRes, LPMAPIPROP lpObj, ULONG ulTabLeve
 			szFlags,
 			lpRes->res.resBitMask.relBMR,
 			lpRes->res.resBitMask.ulMask);
-		MAPIFreeBuffer(szFlags);
+		delete[] szFlags;
 		szFlags = NULL;
 		*PropString += szTmp;
 		EC_H(InterpretFlags(PROP_ID(lpRes->res.resBitMask.ulPropTag), lpRes->res.resBitMask.ulMask, &szFlags));
 		if (szFlags)
 		{
 			szTmp.FormatMessage(IDS_RESBITMASKFLAGS,szFlags);
-			MAPIFreeBuffer(szFlags);
+			delete[] szFlags;
 			szFlags = NULL;
 			*PropString += szTmp;
 		}
@@ -668,7 +681,7 @@ void RestrictionToString(LPSRestriction lpRes, LPMAPIPROP lpObj, ULONG ulTabLeve
 			lpRes->res.resSize.relop,
 			lpRes->res.resSize.cb,
 			TagToString(lpRes->res.resSize.ulPropTag,lpObj,false,true));
-		MAPIFreeBuffer(szFlags);
+		delete[] szFlags;
 		szFlags = NULL;
 		*PropString += szTmp;
 		break;
@@ -809,8 +822,8 @@ void ActionToString(ACTION* lpAction, CString* PropString)
 		RestrictionToString(lpAction->lpRes,NULL),
 		lpAction->ulFlags,
 		szFlags2);
-	MAPIFreeBuffer(szFlags2);
-	MAPIFreeBuffer(szFlags);
+	delete[] szFlags2;
+	delete[] szFlags;
 	szFlags2 = NULL;
 	szFlags = NULL;
 
@@ -867,7 +880,7 @@ void ActionToString(ACTION* lpAction, CString* PropString)
 		{
 			EC_H(InterpretFlags(flagBounceCode, lpAction->scBounceCode, &szFlags));
 			szTmp.FormatMessage(IDS_ACTIONOPBOUNCE,lpAction->scBounceCode,szFlags);
-			MAPIFreeBuffer(szFlags);
+			delete[] szFlags;
 			szFlags = NULL;
 			*PropString += szTmp;
 			break;
@@ -909,7 +922,7 @@ void ActionToString(ACTION* lpAction, CString* PropString)
 	szTmp.FormatMessage(IDS_ACTIONFLAVOR,lpAction->ulActionFlavor,szFlags);
 	*PropString += szTmp;
 
-	MAPIFreeBuffer(szFlags);
+	delete[] szFlags;
 	szFlags = NULL;
 
 	if (!lpAction->lpPropTagArray)
@@ -952,7 +965,7 @@ void ActionsToString(ACTIONS* lpActions, CString* PropString)
 		lpActions->ulVersion,
 		szFlags,
 		lpActions->cActions);
-	MAPIFreeBuffer(szFlags);
+	delete[] szFlags;
 	szFlags = NULL;
 
 	UINT i = 0;
@@ -1273,22 +1286,7 @@ CString TypeToString(ULONG ulPropTag)
 	return tmpPropType;
 }//TypeToString
 
-//Allocates lpszPropName and lpszPropGUID with new
-//Free with delete[]
-void GetPropName(LPMAPIPROP lpMAPIProp,
-				 ULONG ulPropTag,
-				 LPTSTR *lpszPropName,
-				 LPTSTR *lpszPropGUID)
-{
-	GetPropName(lpMAPIProp,
-		ulPropTag,
-		lpszPropName,
-		lpszPropGUID,
-		NULL);
-}
-
-
-// Allocates lpszPropName lpszPropGUID and lpszDASL with new
+// Allocates strings with new
 // Free with delete[]
 //
 // lpszDASL string for a named prop will look like this:
@@ -1300,42 +1298,19 @@ void GetPropName(LPMAPIPROP lpMAPIProp,
 #define CCH_DASL_STRING 6+1+38+1+1
 // TagToString will prepend the http://schemas.microsoft.com/MAPI/ for us since it's a constant
 // We don't compute a DASL string for non-named props as FormatMessage in TagToString can handle those
-
-void GetPropName(LPMAPIPROP lpMAPIProp,
-				 ULONG ulPropTag,
-				 LPTSTR *lpszPropName,
-				 LPTSTR *lpszPropGUID,
-				 LPTSTR *lpszDASL)
+void NameIDToStrings(LPMAPINAMEID lpNameID,
+					 ULONG ulPropTag,
+					 LPTSTR* lpszPropName,
+					 LPTSTR* lpszPropGUID,
+					 LPTSTR* lpszDASL)
 {
-	if (lpszPropName) *lpszPropName = NULL;
-	if (lpszPropGUID) *lpszPropGUID = NULL;
-	if (lpszDASL) *lpszDASL = NULL;
-
-	if (!lpMAPIProp) return;
-	if (!RegKeys[regkeyPARSED_NAMED_PROPS].ulCurDWORD) return;
-	if (!RegKeys[regkeyGETPROPNAMES_ON_ALL_PROPS].ulCurDWORD && PROP_ID(ulPropTag) < 0x8000) return;
-
-	HRESULT			hRes = S_OK;
-	SPropTagArray	tag = {0};
-	LPSPropTagArray	lpTag = &tag;
-	ULONG			ulPropNames = 0;
-	LPMAPINAMEID*	lppPropNames = 0;
-
-	tag.cValues = 1;
-	tag.aulPropTag[0] = ulPropTag;
-
-	WC_H_GETPROPS(lpMAPIProp->GetNamesFromIDs(
-		&lpTag,
-		NULL,
-		NULL,
-		&ulPropNames,
-		&lppPropNames));
-	if (SUCCEEDED(hRes) && ulPropNames == 1 && lppPropNames && lppPropNames[0])
+	HRESULT hRes = S_OK;
+	if (lpNameID)
 	{
-		DebugPrint(DBGNamedProp,_T("Got a named prop array\n"));
-		DebugPrint(DBGNamedProp,_T("lpTag->aulPropTag[0] = 0x%08x\n"),lpTag->aulPropTag[0]);
-		LPTSTR szGuid = GUIDToStringAndName(lppPropNames[0]->lpguid);
-		DebugPrint(DBGNamedProp,_T("lppPropNames[0]->lpguid = %s\n"), szGuid);
+		DebugPrint(DBGNamedProp,_T("Parsing named property\n"));
+		DebugPrint(DBGNamedProp,_T("ulPropTag = 0x%08x\n"),ulPropTag);
+		LPTSTR szGuid = GUIDToStringAndName(lpNameID->lpguid);
+		DebugPrint(DBGNamedProp,_T("lpNameID->lpguid = %s\n"), szGuid);
 
 		if (lpszPropGUID)
 		{
@@ -1348,14 +1323,14 @@ void GetPropName(LPMAPIPROP lpMAPIProp,
 		}
 
 		LPTSTR szDASLGuid = NULL;
-		if (lpszDASL) szDASLGuid = GUIDToString(lppPropNames[0]->lpguid);
+		if (lpszDASL) szDASLGuid = GUIDToString(lpNameID->lpguid);
 
-		if (lppPropNames[0]->ulKind == MNID_ID)
+		if (lpNameID->ulKind == MNID_ID)
 		{
-			DebugPrint(DBGNamedProp,_T("lppPropNames[0]->Kind.lID = 0x%04X = %u\n"),lppPropNames[0]->Kind.lID,lppPropNames[0]->Kind.lID);
+			DebugPrint(DBGNamedProp,_T("lpNameID->Kind.lID = 0x%04X = %u\n"),lpNameID->Kind.lID,lpNameID->Kind.lID);
 			if (lpszPropName)
 			{
-				LPCWSTR szName = NameIDToPropName(lppPropNames[0]);
+				LPCWSTR szName = NameIDToPropName(lpNameID);
 
 				if (szName)
 				{
@@ -1369,11 +1344,12 @@ void GetPropName(LPMAPIPROP lpMAPIProp,
 						{
 							// Printing hex first gets a nice sort without spacing tricks
 							EC_H(StringCchPrintf(*lpszPropName,26 + 3 + cchName + 1,_T("id: 0x%04X=%u = %ws"),// STRING_OK
-								lppPropNames[0]->Kind.lID,
-								lppPropNames[0]->Kind.lID,
+								lpNameID->Kind.lID,
+								lpNameID->Kind.lID,
 								szName));
 						}
 					}
+					delete[] szName;
 				}
 				else
 				{
@@ -1383,8 +1359,8 @@ void GetPropName(LPMAPIPROP lpMAPIProp,
 					{
 						// Printing hex first gets a nice sort without spacing tricks
 						EC_H(StringCchPrintf(*lpszPropName,26 + 1,_T("id: 0x%04X=%u"),// STRING_OK
-							lppPropNames[0]->Kind.lID,
-							lppPropNames[0]->Kind.lID));
+							lpNameID->Kind.lID,
+							lpNameID->Kind.lID));
 					}
 				}
 			}
@@ -1395,25 +1371,25 @@ void GetPropName(LPMAPIPROP lpMAPIProp,
 				{
 					EC_H(StringCchPrintf(*lpszDASL,CCH_DASL_ID,_T("id/%s/%04X%04X"),// STRING_OK
 						szDASLGuid,
-						lppPropNames[0]->Kind.lID,
+						lpNameID->Kind.lID,
 						PROP_TYPE(ulPropTag)));
 				}
 			}
 		}
-		else if (lppPropNames[0]->ulKind == MNID_STRING)
+		else if (lpNameID->ulKind == MNID_STRING)
 		{
 			//lpwstrName is LPWSTR which means it's ALWAYS unicode
 			//But some folks get it wrong and stuff ANSI data in there
 			//So we check the string length both ways to make our best guess
 			size_t cchShortLen = NULL;
 			size_t cchWideLen = NULL;
-			WC_H(StringCchLengthA((LPSTR)lppPropNames[0]->Kind.lpwstrName,STRSAFE_MAX_CCH,&cchShortLen));
-			WC_H(StringCchLengthW(lppPropNames[0]->Kind.lpwstrName,STRSAFE_MAX_CCH,&cchWideLen));
+			WC_H(StringCchLengthA((LPSTR)lpNameID->Kind.lpwstrName,STRSAFE_MAX_CCH,&cchShortLen));
+			WC_H(StringCchLengthW(lpNameID->Kind.lpwstrName,STRSAFE_MAX_CCH,&cchWideLen));
 
 			if (cchShortLen < cchWideLen)
 			{
 				//this is the *proper* case
-				DebugPrint(DBGNamedProp,_T("lppPropNames[0]->Kind.lpwstrName = \"%ws\"\n"),lppPropNames[0]->Kind.lpwstrName);
+				DebugPrint(DBGNamedProp,_T("lpNameID->Kind.lpwstrName = \"%ws\"\n"),lpNameID->Kind.lpwstrName);
 				if (lpszPropName)
 				{
 					*lpszPropName = new TCHAR[7+cchWideLen];
@@ -1422,7 +1398,7 @@ void GetPropName(LPMAPIPROP lpMAPIProp,
 //Compiler Error C2017 - Can occur (falsly) when escape sequences are stringized, as EC_H will do here
 #define __GOODSTRING _T("sz: \"%ws\"") // STRING_OK
 						EC_H(StringCchPrintf(*lpszPropName,7+cchWideLen,__GOODSTRING,
-							lppPropNames[0]->Kind.lpwstrName));
+							lpNameID->Kind.lpwstrName));
 					}
 				}
 				if (lpszDASL)
@@ -1432,7 +1408,7 @@ void GetPropName(LPMAPIPROP lpMAPIProp,
 					{
 						EC_H(StringCchPrintf(*lpszDASL,CCH_DASL_STRING +cchWideLen,_T("string/%s/%ws"),// STRING_OK
 							szDASLGuid,
-							lppPropNames[0]->Kind.lpwstrName));
+							lpNameID->Kind.lpwstrName));
 					}
 				}
 			}
@@ -1440,7 +1416,7 @@ void GetPropName(LPMAPIPROP lpMAPIProp,
 			{
 				//this is the case where ANSI data was shoved into a unicode string.
 				DebugPrint(DBGNamedProp,_T("Warning: ANSI data was found in a unicode field. This is a bug on the part of the creator of this named property\n"));
-				DebugPrint(DBGNamedProp,_T("lppPropNames[0]->Kind.lpwstrName = \"%hs\"\n"),lppPropNames[0]->Kind.lpwstrName);
+				DebugPrint(DBGNamedProp,_T("lpNameID->Kind.lpwstrName = \"%hs\"\n"),lpNameID->Kind.lpwstrName);
 				if (lpszPropName)
 				{
 					*lpszPropName = new TCHAR[7+cchShortLen+25];
@@ -1451,7 +1427,7 @@ void GetPropName(LPMAPIPROP lpMAPIProp,
 //Compiler Error C2017 - Can occur (falsly) when escape sequences are stringized, as EC_H will do here
 #define __BADSTRING _T("sz: \"%hs\" %s") // STRING_OK
 						EC_H(StringCchPrintf(*lpszPropName,7+cchShortLen+25,__BADSTRING,
-							lppPropNames[0]->Kind.lpwstrName,szComment));
+							lpNameID->Kind.lpwstrName,szComment));
 					}
 				}
 				if (lpszDASL)
@@ -1461,12 +1437,11 @@ void GetPropName(LPMAPIPROP lpMAPIProp,
 					{
 						EC_H(StringCchPrintf(*lpszDASL,CCH_DASL_STRING+cchShortLen,_T("string/%s/%hs"),// STRING_OK
 							szDASLGuid,
-							lppPropNames[0]->Kind.lpwstrName));
+							lpNameID->Kind.lpwstrName));
 					}
 				}
 			}
 		}
 		delete[] szDASLGuid;
 	}
-	MAPIFreeBuffer(lppPropNames);
 }
