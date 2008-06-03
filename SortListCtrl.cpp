@@ -13,6 +13,7 @@
 #include "InterpretProp.h"
 #include "AboutDlg.h"
 #include "SortHeader.h"
+#include "AdviseSink.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -21,6 +22,36 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 static TCHAR* CLASS = _T("CSortListCtrl");
+
+void FreeSortListData(SortListData* lpData)
+{
+	if (!lpData) return;
+	switch (lpData->ulSortDataType)
+	{
+	case SORTLIST_CONTENTS: // _ContentsData
+	case SORTLIST_PROP: // _PropListData
+	case SORTLIST_MVPROP: // _MVPropData
+	case SORTLIST_TAGARRAY: // _TagData
+	case SORTLIST_BINARY: // _BinaryData
+	case SORTLIST_RES: // _ResData
+	case SORTLIST_COMMENT: // _CommentData
+		// Nothing to do
+		break;
+	case SORTLIST_TREENODE: // _NodeData
+		if (lpData->data.Node.lpAdviseSink)
+		{
+			//unadvise before releasing our sink
+			if (lpData->data.Node.ulAdviseConnection && lpData->data.Node.lpHierarchyTable)
+				lpData->data.Node.lpHierarchyTable->Unadvise(lpData->data.Node.ulAdviseConnection);
+			lpData->data.Node.lpAdviseSink->Release();
+		}
+		if (lpData->data.Node.lpHierarchyTable) lpData->data.Node.lpHierarchyTable->Release();
+		break;
+	}
+	MAPIFreeBuffer(lpData->szSortText);
+	MAPIFreeBuffer(lpData->lpSourceProps);
+	MAPIFreeBuffer(lpData);
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // CSortListCtrl
@@ -167,12 +198,7 @@ void CSortListCtrl::OnDeleteItem(NMHDR* pNMHDR, LRESULT* pResult)
 	{
 		SortListData* lpData;
 		lpData = (SortListData*) GetItemData(pNMV->iItem);
-		if (lpData)
-		{
-			//Watch out if we start crashing here! Make sure there's no path where this can be freed before we get here!
-			MAPIFreeBuffer(lpData->lpSourceProps);
-		}
-		MAPIFreeBuffer(lpData);
+		FreeSortListData(lpData);
 	}
 	*pResult = 0;
 }
@@ -447,7 +473,7 @@ void CSortListCtrl::SortColumn(ULONG iColumn)
 					EC_H(CopyString(
 						&lpData->szSortText,
 						GetItemText(i, iColumn),
-						lpData));
+						NULL)); // Do not allocate off of lpData - If we do that we'll 'leak' memory every time we sort until we close the window
 					lpData->ulSortValue.QuadPart = NULL;
 				}
 			}

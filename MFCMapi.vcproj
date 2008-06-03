@@ -6,6 +6,7 @@
 	ProjectGUID="{466117D5-278C-46E6-BC2E-4FA7B25C0B3F}"
 	RootNamespace="MFCMapi"
 	Keyword="MFCProj"
+	TargetFrameworkVersion="0"
 	>
 	<Platforms>
 		<Platform
@@ -59,6 +60,7 @@
 				IgnoreDefaultLibraryNames="LIBC"
 				GenerateDebugInformation="true"
 				SubSystem="2"
+				SetChecksum="true"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -95,7 +97,7 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_AFXDLL;NDEBUG"
+				PreprocessorDefinitions="_AFXDLL;NDEBUG;_WIN64"
 				Culture="1033"
 			/>
 			<Tool
@@ -108,6 +110,7 @@
 				IgnoreDefaultLibraryNames="LIBC"
 				GenerateDebugInformation="true"
 				SubSystem="2"
+				SetChecksum="true"
 				TargetMachine="17"
 			/>
 		</Configuration>
@@ -152,6 +155,7 @@
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				EntryPointSymbol="wWinMainCRTStartup"
+				SetChecksum="true"
 				TargetMachine="1"
 			/>
 		</Configuration>
@@ -182,7 +186,7 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_AFXDLL;NDEBUG"
+				PreprocessorDefinitions="_AFXDLL;NDEBUG;_WIN64"
 				Culture="1033"
 			/>
 			<Tool
@@ -196,6 +200,7 @@
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				EntryPointSymbol="wWinMainCRTStartup"
+				SetChecksum="true"
 				TargetMachine="17"
 			/>
 		</Configuration>
@@ -233,13 +238,14 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="version.lib"
-				LinkIncremental="2"
+				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories=".\lib"
 				GenerateManifest="false"
 				IgnoreDefaultLibraryNames="LIBC"
 				GenerateDebugInformation="true"
 				SubSystem="2"
+				SetChecksum="true"
 				TargetMachine="1"
 			/>
 		</Configuration>
@@ -271,19 +277,20 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_AFXDLL;_DEBUG"
+				PreprocessorDefinitions="_AFXDLL;NDEBUG;_WIN64"
 				Culture="1033"
 			/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="version.lib"
-				LinkIncremental="2"
+				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories=".\lib"
 				GenerateManifest="false"
 				IgnoreDefaultLibraryNames="LIBC"
 				GenerateDebugInformation="true"
 				SubSystem="2"
+				SetChecksum="true"
 				TargetMachine="17"
 			/>
 		</Configuration>
@@ -321,7 +328,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="version.lib"
-				LinkIncremental="2"
+				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories=".\lib"
 				GenerateManifest="false"
@@ -329,6 +336,7 @@
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				EntryPointSymbol="wWinMainCRTStartup"
+				SetChecksum="true"
 				TargetMachine="1"
 			/>
 		</Configuration>
@@ -360,13 +368,13 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_AFXDLL;_DEBUG"
+				PreprocessorDefinitions="_AFXDLL;NDEBUG;_WIN64"
 				Culture="1033"
 			/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="version.lib"
-				LinkIncremental="2"
+				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories=".\lib"
 				GenerateManifest="false"
@@ -374,6 +382,7 @@
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				EntryPointSymbol="wWinMainCRTStartup"
+				SetChecksum="true"
 				TargetMachine="17"
 			/>
 		</Configuration>

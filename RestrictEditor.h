@@ -48,6 +48,7 @@ public:
 		LPSRestriction lpRes,
 		LPENTRYLIST lpEntryList,
 		ULONG ulSearchState);
+	~CCriteriaEditor();
 	virtual void OnEditAction1();
 	LPSRestriction DetachModifiedSRestriction();
 	LPENTRYLIST DetachModifiedEntryList();

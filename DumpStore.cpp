@@ -26,29 +26,38 @@ void OutputPropertyToFile(FILE* fFile, LPSPropValue lpProp, LPMAPIPROP lpObj)
 {
 	if (!lpProp) return;
 
-	HRESULT hRes = S_OK;
-	CString PropString;
-	CString AltPropString;
 	CString PropType;
 
-	InterpretProp(lpProp,&PropString,&AltPropString);
-
 	OutputToFilef(fFile,_T("\t<property tag = \"0x%08X\" type = \"%s\">\n"),lpProp->ulPropTag,TypeToString(lpProp->ulPropTag));
+
+	CString PropString;
+	CString AltPropString;
 	LPTSTR szExactMatches = NULL;
 	LPTSTR szPartialMatches = NULL;
-	EC_H(PropTagToPropName(lpProp->ulPropTag,false,&szExactMatches,&szPartialMatches));
+	LPTSTR szSmartView = NULL;
+	LPTSTR szNamedPropName = NULL;
+	LPTSTR szNamedPropGUID = NULL;
+
+	InterpretProp(
+		NULL,
+		lpProp->ulPropTag,
+		lpObj,
+		NULL,
+		NULL,
+		&szExactMatches, // Built from ulPropTag & bIsAB
+		&szPartialMatches, // Built from ulPropTag & bIsAB
+		&PropType,
+		NULL,
+		&PropString,
+		&AltPropString,
+		&szSmartView,
+		&szNamedPropName, // Built from lpProp & lpMAPIProp
+		&szNamedPropGUID, // Built from lpProp & lpMAPIProp
+		NULL);
 	OutputXMLValueToFile(fFile,PropXMLNames[pcPROPEXACTNAMES].uidName,szExactMatches,2);
 	OutputXMLValueToFile(fFile,PropXMLNames[pcPROPPARTIALNAMES].uidName,szPartialMatches,2);
-	delete[] szPartialMatches;
-	delete[] szExactMatches;
-
-	LPTSTR szName = 0;
-	LPTSTR szGuid = 0;
-	GetPropName(lpObj,lpProp->ulPropTag,&szName,&szGuid);
-	OutputXMLValueToFile(fFile,PropXMLNames[pcPROPNAMEDIID].uidName, szGuid,2);
-	OutputXMLValueToFile(fFile,PropXMLNames[pcPROPNAMEDNAME].uidName, szName,2);
-	delete[] szName;
-	delete[] szGuid;
+	OutputXMLValueToFile(fFile,PropXMLNames[pcPROPNAMEDIID].uidName, szNamedPropGUID,2);
+	OutputXMLValueToFile(fFile,PropXMLNames[pcPROPNAMEDNAME].uidName, szNamedPropName,2);
 
 	switch(PROP_TYPE(lpProp->ulPropTag))
 	{
@@ -73,15 +82,14 @@ void OutputPropertyToFile(FILE* fFile, LPSPropValue lpProp, LPMAPIPROP lpObj)
 		}
 	}
 
-	LPTSTR szFlags = NULL;
-	EC_H(InterpretFlags(lpProp, &szFlags));
-	if (szFlags)
-	{
-		OutputXMLValueToFile(fFile,PropXMLNames[pcPROPFLAGS].uidName,szFlags,2);
-	}
-	MAPIFreeBuffer(szFlags);
-	szFlags = NULL;
+	if (szSmartView) OutputXMLValueToFile(fFile,PropXMLNames[pcPROPSMARTVIEW].uidName,szSmartView,2);
 	OutputToFile(fFile,_T("\t</property>\n"));
+
+	delete[] szPartialMatches;
+	delete[] szExactMatches;
+	delete[] szNamedPropName;
+	delete[] szNamedPropGUID;
+	delete[] szSmartView;
 }
 
 void OutputPropertiesToFile(FILE* fFile, ULONG cProps, LPSPropValue lpProps, LPMAPIPROP lpObj)
@@ -573,7 +581,7 @@ void CDumpStore::BeginMessageWork(LPMESSAGE lpMessage, LPVOID lpParentMessageDat
 					LPTSTR szFlags = NULL;
 					EC_H(InterpretFlags(flagStreamFlag, ulStreamFlags, &szFlags));
 					OutputToFilef(lpMsgData->fMessageProps,_T(" ulStreamFlags = \"0x%08X\" szStreamFlags= \"%s\""),ulStreamFlags,szFlags);
-					MAPIFreeBuffer(szFlags);
+					delete[] szFlags;
 					szFlags = NULL;
 					OutputToFilef(lpMsgData->fMessageProps,_T(" CodePageIn = \"%d\" CodePageOut = \"%d\">\n"),ulInCodePage,CP_ACP);
 					OutputCDataOpen(lpMsgData->fMessageProps);

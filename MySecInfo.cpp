@@ -73,78 +73,6 @@ GENERIC_MAPPING gmMessages =
 	msgrightsGenericAll
 };
 
-//Returns pointer to buffer contained in a prop
-//Free with MAPIFreeBuffer
-HRESULT GetBuffer(LPMAPIPROP lpMAPIProp, ULONG ulPropTag, ULONG* cbBuf, LPBYTE* lpBuf)
-{
-	if (!lpMAPIProp || !ulPropTag || !lpBuf) return MAPI_E_INVALID_PARAMETER;
-	DebugPrint(DBGGeneric,_T("GetBuffer getting buffer from 0x%08X\n"),ulPropTag);
-
-	ulPropTag = CHANGE_PROP_TYPE(ulPropTag,PT_BINARY);
-
-	HRESULT			hRes		= S_OK;
-	ULONG			cValues		= 0;
-	LPSPropValue	lpPropArray	= NULL;
-
-	SizedSPropTagArray(1, sptaBuffer) = {1,{ulPropTag}};
-
-	if (cbBuf) *cbBuf = NULL;
-
-	WC_H(lpMAPIProp->GetProps((LPSPropTagArray)&sptaBuffer, 0, &cValues, &lpPropArray));
-
-	if (lpPropArray && PT_ERROR == PROP_TYPE(lpPropArray->ulPropTag) && MAPI_E_NOT_ENOUGH_MEMORY == lpPropArray->Value.err)
-	{
-		//need to get the data as a stream
-		LPSTREAM lpStream = NULL;
-
-		WC_H(lpMAPIProp->OpenProperty(
-			ulPropTag,
-			&IID_IStream,
-			STGM_READ,
-			0,
-			(LPUNKNOWN*) &lpStream));
-		if (SUCCEEDED(hRes) && lpStream)
-		{
-			STATSTG	StatInfo = {0};
-			lpStream->Stat(&StatInfo, STATFLAG_NONAME);//find out how much space we need
-
-			EC_H(MAPIAllocateBuffer(
-				StatInfo.cbSize.LowPart,
-				(LPVOID*) lpBuf));
-
-			if (*lpBuf)
-			{
-				ULONG cbRead = 0;
-				EC_H(lpStream->Read(*lpBuf, StatInfo.cbSize.LowPart, &cbRead));
-				if (SUCCEEDED(hRes) && cbRead == StatInfo.cbSize.LowPart)
-				{
-					if (cbBuf) *cbBuf = cbRead;
-				}
-				else
-				{
-					MAPIFreeBuffer(*lpBuf);
-					*lpBuf = NULL;
-				}
-			}
-		}
-		if (lpStream) lpStream->Release();
-	}
-	else if (lpPropArray && lpPropArray->ulPropTag == ulPropTag)
-	{
-		EC_H(MAPIAllocateBuffer(
-			lpPropArray->Value.bin.cb,
-			(LPVOID*) lpBuf));
-		if (*lpBuf)
-		{
-			memcpy(*lpBuf,lpPropArray->Value.bin.lpb,lpPropArray->Value.bin.cb);
-			if (cbBuf) *cbBuf = lpPropArray->Value.bin.cb;
-		}
-	}
-
-	MAPIFreeBuffer(lpPropArray);
-	return hRes;
-}
-
 CMySecInfo::CMySecInfo(LPMAPIPROP lpMAPIProp,
 					   ULONG ulPropTag)
 {
@@ -268,17 +196,18 @@ STDMETHODIMP CMySecInfo::GetSecurity(THIS_ SECURITY_INFORMATION /*RequestedInfor
 {
 	DebugPrint(DBGGeneric,_T("CMySecInfo::GetSecurity\n"));
 	HRESULT	hRes = S_OK;
-	LPBYTE	lpSDBuffer = NULL;
-	ULONG	cbSBBuffer = NULL;
+	LPSPropValue lpsProp = NULL;
 
 	*ppSecurityDescriptor = NULL;
 
 	PSECURITY_DESCRIPTOR pSecDesc = NULL;//will be a pointer into lpPropArray, do not free!
 
-	EC_H(GetBuffer(m_lpMAPIProp,m_ulPropTag,&cbSBBuffer, &lpSDBuffer));
+	EC_H(GetLargeBinaryProp(m_lpMAPIProp,m_ulPropTag,&lpsProp));
 
-	if (lpSDBuffer)
+	if (lpsProp && PROP_TYPE(lpsProp->ulPropTag) == PT_BINARY && lpsProp->Value.bin.lpb)
 	{
+		LPBYTE	lpSDBuffer = lpsProp->Value.bin.lpb;
+		ULONG	cbSBBuffer = lpsProp->Value.bin.cb;
 		pSecDesc = SECURITY_DESCRIPTOR_OF(lpSDBuffer);
 
 		if (IsValidSecurityDescriptor(pSecDesc))
@@ -322,7 +251,7 @@ STDMETHODIMP CMySecInfo::GetSecurity(THIS_ SECURITY_INFORMATION /*RequestedInfor
 			DebugPrint(DBGGeneric,_T("sdInfo: %s\nszDACL: %s\n"),szInfo,szDACL);
 		}
 	}
-	MAPIFreeBuffer(lpSDBuffer);
+	MAPIFreeBuffer(lpsProp);
 
 	if (!*ppSecurityDescriptor) return MAPI_E_NOT_FOUND;
 	return hRes;
@@ -444,62 +373,6 @@ STDMETHODIMP CMySecInfo::LookupSids(THIS_ IN ULONG /*cSids*/, IN PSID* /*rgpSids
 {
 	DebugPrint(DBGGeneric,_T("CMySecInfo::LookupSids\n"));
 	return E_NOTIMPL;
-};
-
-HRESULT DisplayPropAsSD(LPMAPIPROP lpMAPIProp,ULONG ulPropTag)
-{
-	HRESULT hRes = S_OK;
-
-	DebugPrint(DBGGeneric,_T("DisplayPropAsSD displaying security descriptor from 0x%08X\n"),ulPropTag);
-	if (!lpMAPIProp || !ulPropTag) return MAPI_E_INVALID_PARAMETER;
-
-	LPBYTE lpSDToParse = NULL;
-
-	EC_H(GetBuffer(lpMAPIProp,ulPropTag,NULL,&lpSDToParse));
-
-	if (lpSDToParse)
-	{
-		eAceType acetype = acetypeMessage;
-		switch (GetMAPIObjectType(lpMAPIProp))
-		{
-		case (MAPI_STORE):
-		case (MAPI_ADDRBOOK):
-		case (MAPI_FOLDER):
-		case (MAPI_ABCONT):
-			acetype = acetypeContainer;
-			break;
-		}
-
-		if (PR_FREEBUSY_NT_SECURITY_DESCRIPTOR == ulPropTag)
-			acetype = acetypeFreeBusy;
-
-		CString szDACL;
-		CString szInfo;
-
-		EC_H(SDToString(lpSDToParse, acetype, &szDACL, &szInfo));
-
-		CEditor MySD(
-			NULL,
-			IDS_SECDESC,
-			IDS_SECDESC,
-			3,
-			CEDITOR_BUTTON_OK);
-		MySD.InitSingleLineSz(0,IDS_SECINFO,szInfo,true);
-		MySD.InitSingleLine(1,IDS_SECVERSION,NULL,true);
-		LPTSTR szFlags = NULL;
-		EC_H(InterpretFlags(flagSecurityVersion, SECURITY_DESCRIPTOR_VERSION(lpSDToParse), &szFlags));
-		MySD.SetStringf(1,_T("0x%04X = %s"),SECURITY_DESCRIPTOR_VERSION(lpSDToParse),szFlags);// STRING_OK
-		MAPIFreeBuffer(szFlags);
-		szFlags = NULL;
-		MySD.InitMultiLine(2,IDS_DESCRIPTOR,szDACL,true);
-
-		WC_H(MySD.DisplayDialog());
-		hRes = S_OK;
-
-		DebugPrint(DBGGeneric,_T("%s\n"),(LPCTSTR) szDACL);
-	}
-	MAPIFreeBuffer(lpSDToParse);
-	return hRes;
 };
 
 BOOL GetTextualSid(
@@ -715,9 +588,9 @@ HRESULT ACEToString(void* pACE, eAceType acetype, CString *AceString)
 		AceType, szAceType,
 		AceFlags,szAceFlags,
 		Mask, szAceMask);
-	MAPIFreeBuffer(szAceMask);
-	MAPIFreeBuffer(szAceFlags);
-	MAPIFreeBuffer(szAceType);
+	delete[] szAceMask;
+	delete[] szAceFlags;
+	delete[] szAceType;
 	szAceType = NULL;
 	szAceFlags = NULL;
 	szAceMask = NULL;
@@ -774,7 +647,7 @@ HRESULT SDToString(LPBYTE lpBuf, eAceType acetype, CString *SDString, CString *s
 		LPTSTR szFlags = NULL;
 		EC_H(InterpretFlags(flagSecurityInfo, SECURITY_INFORMATION_OF(lpBuf), &szFlags));
 		*sdInfo = szFlags;
-		MAPIFreeBuffer(szFlags);
+		delete[] szFlags;
 		szFlags = NULL;
 	}
 

@@ -528,7 +528,7 @@ void _OutputNotifications(ULONG ulDbgLvl, FILE* fFile, ULONG cNotify, LPNOTIFICA
 		{
 			Outputf(ulDbgLvl,fFile,false,_T(" = %s"),szFlags);
 		}
-		MAPIFreeBuffer(szFlags);
+		delete[] szFlags;
 		szFlags = NULL;
 		Outputf(ulDbgLvl,fFile,false,_T("\n"));
 
@@ -594,7 +594,7 @@ void _OutputNotifications(ULONG ulDbgLvl, FILE* fFile, ULONG cNotify, LPNOTIFICA
 				{
 					Outputf(ulDbgLvl,fFile,false,_T(" = %s"),szFlags);
 				}
-				MAPIFreeBuffer(szFlags);
+				delete[] szFlags;
 				szFlags = NULL;
 				Outputf(ulDbgLvl,fFile,false,_T("\n"));
 			}
@@ -608,7 +608,7 @@ void _OutputNotifications(ULONG ulDbgLvl, FILE* fFile, ULONG cNotify, LPNOTIFICA
 				{
 					Outputf(ulDbgLvl,fFile,false,_T(" = %s"),szFlags);
 				}
-				MAPIFreeBuffer(szFlags);
+				delete[] szFlags;
 				szFlags = NULL;
 				Outputf(ulDbgLvl,fFile,false,_T("\n"));
 
@@ -661,7 +661,7 @@ void _OutputNotifications(ULONG ulDbgLvl, FILE* fFile, ULONG cNotify, LPNOTIFICA
 					Outputf(ulDbgLvl,fFile,false,_T(" = %s"),
 						szFlags);
 				}
-				MAPIFreeBuffer(szFlags);
+				delete[] szFlags;
 				szFlags = NULL;
 
 				Outputf(ulDbgLvl,fFile,false,_T("\n"));
@@ -736,7 +736,7 @@ void _OutputProperty(ULONG ulDbgLvl, FILE* fFile, LPSPropValue lpProp, LPMAPIPRO
 		_Output(ulDbgLvl,fFile, false, _T("\", \""));
 		_Output(ulDbgLvl,fFile, false, szFlags);
 	}
-	MAPIFreeBuffer(szFlags);
+	delete[] szFlags;
 	szFlags = NULL;
 
 	_Output(ulDbgLvl,fFile, false, _T("\"\n"));

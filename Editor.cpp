@@ -254,9 +254,8 @@ BOOL CEditor::OnInitDialog()
 
 	EC_B(CDialog::OnInitDialog());
 
-	szPrefix.LoadString(ID_TITLEPREFIX);
 	szPostfix.LoadString(m_uidTitle);
-	m_szTitle = szPrefix+szPostfix+m_szAddInTitle;
+	m_szTitle = szPostfix+m_szAddInTitle;
 	SetWindowText(m_szTitle);
 
 	SetIcon(m_hIcon, TRUE);			// Set big icon
@@ -845,9 +844,12 @@ void CEditor::OnSetDefaultSize()
 		CalcWindowRect(MyRect);
 	}
 
-	//worst case, don't go bigger than the screen
+	// worst case, don't go bigger than the screen
 	m_iMinWidth = min(MyRect.Width(),cxFullScreen);
 	m_iMinHeight = min(MyRect.Height(),cyFullScreen);
+
+	// worst case v2, don't go bigger than 1000 pixels wide
+	m_iMinWidth = min(m_iMinWidth,1000);
 
 	BOOL bRet = 0;
 	EC_D(bRet,SetWindowPos(

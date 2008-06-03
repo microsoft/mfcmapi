@@ -13,9 +13,20 @@
 #define RC_PRODUCT_NAME               "Microsoft Exchange Server MAPI Editor"
 #define RC_VERSION_INTERNAL_NAME       RC_PRODUCT_NAME "\0"
 #define RC_VERSION_ORIGINAL_FILE_NAME  "MFCMapi.EXE\0"
-#define RC_VERSION_FILE_DESCRIPTION    RC_PRODUCT_NAME "\0"
-#define RC_TITLE_PREFIX                "\0"
 
+#ifdef UNICODE
+#define RC_VERSION_WIDTH               " Unicode"
+#else
+#define RC_VERSION_WIDTH               ""
+#endif
+
+#ifdef _WIN64
+#define RC_VERSION_BITNESS             " x64"
+#else
+#define RC_VERSION_BITNESS             ""
+#endif
+
+#define RC_VERSION_FILE_DESCRIPTION    RC_PRODUCT_NAME RC_VERSION_WIDTH RC_VERSION_BITNESS "\0"
 #include "bldver.rc"
 
 // Keep in sync with definition of IDD_ABOUTVERLAST
@@ -48,8 +59,7 @@ END
 
 STRINGTABLE DISCARDABLE
 BEGIN
-    ID_TITLEPREFIX          RC_TITLE_PREFIX
-    ID_PRODUCTNAME          RC_PRODUCT_NAME
+    ID_PRODUCTNAME          RC_VERSION_FILE_DESCRIPTION
 END
 
 // Keep in sync with definition of IDS_VER_LAST
@@ -116,7 +126,6 @@ ID_DISPLAYHIERARCHYTABLE						"Display hierarchy table of selected folder in tab
 ID_DISPLAYINBOX									"Display the default Inbox for the store"
 ID_DISPLAYMAILBOXTABLE							"Display mailbox table of server (default to server associated with primary Exchange mailbox)"
 ID_DISPLAYOUTGOINGQUEUE							"Display the outgoing queue table. Uses GetOutgoingQueue"
-ID_DISPLAYPROPERTYASSECURITYDESCRIPTOR			"Parse and display selected property as a security descriptor. Use on PR_NT_SECURITY_DESCRIPTOR."
 ID_DISPLAYPROPERTYASSECURITYDESCRIPTORPROPSHEET "Use property sheet to display selected property as a security descriptor. Use on PR_NT_SECURITY_DESCRIPTOR."
 ID_DISPLAYPUBLICFOLDERTABLE						"Display table of public folder's replicated to server (default to server associated with primary Exchange mailbox)"
 ID_DISPLAYRECEIVEFOLDERTABLE					"Display the receive folder table for the selected store. Uses GetReceiveFolderTable."
@@ -237,8 +246,7 @@ ID_SHOWPROFILES									"Display profile table"
 ID_SUBMITMESSAGE								"Call SubmitMessage on message"
 ID_TABLENOTIFICATIONOFF							"Disable content table notification - useful when rapid updates are occuring"
 ID_TABLENOTIFICATIONON							"Enable content table notification"
-ID_DISPLAYPROPERTYASTZREG						"Parse PT_BINARY property as a TZREG structure"
-ID_DISPLAYPROPERTYASTZDEFINITION				"Parse PT_BINARY property as a TZDEFINITION structure"
+ID_PARSEPROPERTY								"Parse PT_BINARY property as a MAPI structure"
 ID_UNLOADMAPI									"Manually unload MAPI DLL"
 ID_VALIDATEIPMSUBTREE							"Call HrValidateIPMSubtree on current store"
 ID_VIEWABHIERARCHY								"Display Address Book Hierarchy - Global reference must be opened first"
@@ -587,8 +595,6 @@ Check box to delete entry for this class."
 IDS_RESTOREDELFOLD               "Restore Deleted Folder"
 IDS_RESTOREDELFOLDPROMPT         "Type new name for restored folder. Check box to also restore subfolders."
 IDS_VALIDATEIPMSUB               "HrValidateIPMSubtree"
-//mysecinfo.cpp
-IDS_SECDESC                      "Security Descriptor"
 //profilelistdlg.cpp
 IDS_NEWEXPROF                    "New Exchange Profile"
 IDS_NEWEXPROFPROMPT              "Type name of server and mailbox for profile"
@@ -672,13 +678,6 @@ IDS_OPENPROPASTABLEPROMPT        "Check box to use IExchangeModifyTable interfac
 IDS_PASTENAMEDPROPS              "Paste Named Props"
 IDS_PASTENAMEDPROPSPROMPT        "Enter the property set GUID you wish to copy.\r\n\
 PS_PUBLIC_STRINGS is specified by default (braces ({/}) are required)."
-IDS_TZREG                        "Time Zone Reg"
-IDS_TZREGPROMPT                  "Property interpreted as TZREG"
-IDS_TZREGSTRUCT                  "TZREG structure"
-IDS_TZDEFINITION                 "Time Zone Definition"
-IDS_TZDEFINITIONPROMPT           "Property interpreted as TZDEFINITION"
-IDS_TZDEFINITIONSTRUCT           "TZDEFINITION structure"
-IDS_TZERR                        "Unable to parse as timezone structure. Perhaps this is not a timezone property."
 IDS_MAPISVCTITLE                 "MAPISVC.INF path"
 IDS_MAPISVCPROMPT                "File path:"
 IDS_PROFILESERVERVERSIONTITLE    "Profile Server Version"
@@ -694,6 +693,17 @@ IDS_PROFILESERVERVERSIONMINOR    "Minor Version"
 IDS_PROFILESERVERVERSIONBUILD    "Major Build"
 IDS_PROFILESERVERVERSIONMINORBUILD "Minor Build"
 IDS_PROFILESERVERVERSIONNOTFOUND "<not found>"
+IDS_STRUCTUREPICKER              "Structure Picker"
+IDS_STRUCTUREPICKERPROMPT        "Pick which structure to interpret"
+IDS_STRUCTURERESULTS             "Structure Parser"
+IDS_STRUCTURERESULTSPROMPT       "Results of parsing binary property as a structure"
+IDS_PARSEDSTRUCTURE              "Parsed Structure"
+IDS_STRUCTURES                   "Structures"
+IDS_STTZDEFINITION               "TZDEFINITION"
+IDS_STTZREG                      "TTZREG"
+IDS_STSECURITYDESCRIPTOR         "Security Descriptor"
+IDS_STEXTENDEDFOLDERFLAGS        "Extended Folder Flags"
+
 
 //AbDlg.cpp
 IDS_FLAGS "Flags"
@@ -823,10 +833,6 @@ IDS_SAVEASSOCIATEDCONTENTS "Save Associated Contents"
 IDS_DELETEASSOCIATION "Delete association"
 IDS_MAPIFORCECREATE "MAPI_FORCE_CREATE"
 IDS_MAPIFULLIPMTREE "MAPI_FULL_IPM_TREE"
-//MySecInfo.cpp
-IDS_SECINFO "Security Info"
-IDS_SECVERSION "Security Version"
-IDS_DESCRIPTOR "Descriptor parsed with Security SDK APIs"
 //ProfileListDlg.cpp
 IDS_MAILBOXNAME "Mailbox Name:"
 IDS_DISPLAYSERVICEUI "Display service UI:"
@@ -939,7 +945,6 @@ IDS_ATTACHMENTS "Attachments"
 IDS_FOLDER "Folder"
 IDS_FORMCONTAINER "Form Container"
 IDS_MAILBOXTABLE "Mailbox Table"
-IDS_PRODUCT_NAME "Microsoft Exchange Server MAPI Editor"
 IDS_STATUSTABLE "Status Table"
 IDS_RECEIVEFOLDERTABLE "Receive Folder Table"
 IDS_HIERARCHYTABLE "Hierarchy Table"
@@ -953,7 +958,7 @@ IDS_RULESTABLE "Rules Table"
 IDS_TABLEASCONTENTS "IMAPITable as Contents Table"
 IDS_BASEDIALOG "BaseDialog"
 
-IDS_HELPTEXT "%1%2 Usage notes\n\
+IDS_HELPTEXT "%1 Usage notes\n\
 \n\
 Getting Started: Select Session\\Logon and Display Store Table to open a profile\n\
 \n\
@@ -1022,7 +1027,6 @@ DBGAddIn\t\t0x00010000\n\
 DBGWindowProc\t\t0x40000000\n\
 DBGMenu\t\t0x80000000"
 
-IDS_UNICODEBUILD " Unicode Build" // leading space intentional
 IDS_DISPLAYABOUTCHECK "Display at startup"
 
 IDS_ABRESMENU "Search For Address Book Entry Using Restriction"
@@ -1394,6 +1398,8 @@ IDS_ACCESSREADCONTROL "Read Control"
 IDS_ACCESSSIMPLEFREEBUSY "Simple FreeBusy"
 IDS_ACCESSDETAILEDFREEBUSY "Detailed FreeBusy"
 
+IDS_SECURITYDESCRIPTOR "Security Info: %1\r\nSecurity Version: 0x%2!04X! = %3\r\nDescriptor:\r\n%4"
+
 IDS_SIDACCOUNT "Account: %1\\%2\r\n\
 SID: %3\r\n\
 Access Type: 0x%4!08X! = %5\r\n\
@@ -1444,7 +1450,7 @@ IDS_COLEMAILADDRESS "E-mail Address"
 IDS_COLEID "EID"
 IDS_COLEXACTNAMES "ExactNames"
 IDS_COLFILENAME "File Name"
-IDS_COLFLAGS "Flags"
+IDS_COLSMARTVIEW "Smart View"
 IDS_COLFROM "From"
 IDS_COLIDENTITY "Identity"
 IDS_COLINSTANCEKEY "Instance Key"

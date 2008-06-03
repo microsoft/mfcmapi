@@ -37,11 +37,28 @@ enum __FlagType
 	flagCLEARBITS,//Used to clear bits that we know we don't know so that remaining bits can be examined as values
 };
 
+// Types of guids for InterpretFlag named property lookup
+enum __GuidType
+{
+	guidPSETID_Meeting     = 0x100,
+	guidPSETID_Address     = 0x200,
+	guidPSETID_Task        = 0x300,
+	guidPSETID_Appointment = 0x400,
+	guidPSETID_Common      = 0x500,
+	guidPSETID_Log         = 0x600,
+	guidPSETID_PostRss     = 0x700,
+	guidPSETID_Sharing     = 0x800,
+	guidPSETID_Note        = 0x900,
+};
+
 // All MAPI props are stored in the array by their PROP_ID. So all are < 0xffff.
 #define FLAG_ENTRY(_fName,_fValue,_fType) {PROP_ID(_fName),(_fValue),(_fType),L#_fValue},
 #define FLAG_ENTRY3RDBYTE(_fName,_fValue,_fValType) {PROP_ID(_fName),(_fValue),flagVALUE3RDBYTE,L#_fValType L": " L#_fValue}, // STRING_OK
 #define FLAG_ENTRY4THBYTE(_fName,_fValue,_fValType) {PROP_ID(_fName),(_fValue),flagVALUE4THBYTE,L#_fValType L": " L#_fValue}, // STRING_OK
 #define CLEAR_BITS_ENTRY(_fName,_fValue) {PROP_ID(_fName),(_fValue),flagCLEARBITS,L""},
+
+#define NAMEDPROP_FLAG_ENTRY(_fName,_fGuid,_fValue,_fType) {PROP_TAG((guid##_fGuid),(_fName)),(_fValue),(_fType),L#_fValue},
+#define NAMEDPROP_CLEAR_BITS_ENTRY(_fName,_fGuid,_fValue) {PROP_TAG((guid##_fGuid),(_fName)),(_fValue),flagCLEARBITS,L""},
 
 // Flag parsing array - used by GetPropFlags
 struct FLAG_ARRAY_ENTRY

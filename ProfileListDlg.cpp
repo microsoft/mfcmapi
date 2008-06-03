@@ -264,7 +264,7 @@ void CProfileListDlg::OnAddExchangeToProfile()
 	return;
 }//CProfileListDlg::OnAddExchangeToProfile
 
-void CProfileListDlg::AddPSTToProfile(BOOL bUnicode)
+void CProfileListDlg::AddPSTToProfile(BOOL bUnicodePST)
 {
 	HRESULT			hRes = S_OK;
 	int				iItem = -1;
@@ -288,30 +288,18 @@ void CProfileListDlg::AddPSTToProfile(BOOL bUnicode)
 	if (IDOK == iDlgRet)
 	{
 		CWaitCursor Wait;//Change the mouse to an hourglass while we work.
-		LPSTR szPath = NULL;
-#ifdef _UNICODE
-		EC_H(UnicodeToAnsi(dlgFilePicker.m_ofn.lpstrFile,&szPath));
-#else
-		szPath = dlgFilePicker.m_ofn.lpstrFile;
-#endif
-		if (szPath)
+		do
 		{
-			do
-			{
-				hRes = S_OK;
-				//Find the highlighted item
-				lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
-				if (!lpListData) break;
+			hRes = S_OK;
+			//Find the highlighted item
+			lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
+			if (!lpListData) break;
 
-				DebugPrintEx(DBGGeneric,CLASS,_T("AddPSTToProfile"),_T("Adding PST \"%hs\" to profile \"%hs\", bUnicode = 0x%X\n"),szPath,lpListData->data.Contents.szProfileDisplayName,bUnicode);
+			DebugPrintEx(DBGGeneric,CLASS,_T("AddPSTToProfile"),_T("Adding PST \"%s\" to profile \"%hs\", bUnicodePST = 0x%X\n"),dlgFilePicker.m_ofn.lpstrFile,lpListData->data.Contents.szProfileDisplayName,bUnicodePST);
 
-				EC_H(HrAddPSTToProfile((ULONG_PTR) m_hWnd,bUnicode,szPath,lpListData->data.Contents.szProfileDisplayName));
-			}
-			while (iItem != -1);
+			EC_H(HrAddPSTToProfile((ULONG_PTR) m_hWnd,bUnicodePST,dlgFilePicker.m_ofn.lpstrFile,lpListData->data.Contents.szProfileDisplayName));
 		}
-#ifdef _UNICODE
-		delete[] szPath;
-#endif
+		while (iItem != -1);
 	}
 	return;
 }//CProfileListDlg::AddPSTToProfile

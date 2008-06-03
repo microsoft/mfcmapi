@@ -69,16 +69,16 @@ struct TagNames
 
 struct _ContentsData
 {
-	LPSBinary		lpEntryID;
-	LPSBinary		lpLongtermID;
-	LPSBinary		lpInstanceKey;
-	LPSBinary		lpServiceUID;
-	LPSBinary		lpProviderUID;
-	TCHAR*			szDN;
-	CHAR*			szProfileDisplayName;
+	LPSBinary		lpEntryID; // Allocated with MAPIAllocateMore
+	LPSBinary		lpLongtermID; // Allocated with MAPIAllocateMore
+	LPSBinary		lpInstanceKey; // Allocated with MAPIAllocateMore
+	LPSBinary		lpServiceUID; // Allocated with MAPIAllocateMore
+	LPSBinary		lpProviderUID; // Allocated with MAPIAllocateMore
+	TCHAR*			szDN; // Allocated with MAPIAllocateMore
+	CHAR*			szProfileDisplayName; // Allocated with MAPIAllocateMore
 	ULONG			ulAttachNum;
-	ULONG			ulRowID;//for recipients
-	ULONG			ulRowType;//PR_ROW_TYPE
+	ULONG			ulRowID; // for recipients
+	ULONG			ulRowType; // PR_ROW_TYPE
 };
 
 struct _PropListData
@@ -88,7 +88,7 @@ struct _PropListData
 
 struct _MVPropData
 {
-	union _PV	val;
+	union _PV	val; // Allocated with MAPIAllocateMore
 };
 
 struct _TagData
@@ -98,30 +98,30 @@ struct _TagData
 
 struct _ResData
 {
-	LPSRestriction lpOldRes;
-	LPSRestriction lpNewRes;
+	LPSRestriction lpOldRes; // not allocated - just a pointer
+	LPSRestriction lpNewRes; // Owned by an alloc parent - do not free
 };
 
 struct _CommentData
 {
-	LPSPropValue lpOldProp;
-	LPSPropValue lpNewProp;
+	LPSPropValue lpOldProp; // not allocated - just a pointer
+	LPSPropValue lpNewProp; // Owned by an alloc parent - do not free
 };
 
 struct _BinaryData
 {
-	SBinary OldBin;
-	SBinary NewBin;
+	SBinary OldBin; // not allocated - just a pointer
+	SBinary NewBin; // MAPIAllocateMore from m_lpNewEntryList
 };
 
 class CAdviseSink;
 
 struct _NodeData
 {
-	LPSBinary			lpEntryID;
-	LPSBinary			lpInstanceKey;
-	LPMAPITABLE			lpHierarchyTable;
-	CAdviseSink*		lpAdviseSink;
+	LPSBinary			lpEntryID; // Allocated with MAPIAllocateMore
+	LPSBinary			lpInstanceKey; // Allocated with MAPIAllocateMore
+	LPMAPITABLE			lpHierarchyTable; // Object - free with Release
+	CAdviseSink*		lpAdviseSink; // Object - free with Release
 	ULONG_PTR			ulAdviseConnection;
 	ULONG				bSubfolders;//this is intentionally ULONG instead of BOOL
 	ULONG				ulContainerFlags;
@@ -129,7 +129,7 @@ struct _NodeData
 
 struct SortListData
 {
-	TCHAR*				szSortText;
+	TCHAR*				szSortText; // Allocated with MAPIAllocateBuffer
 	ULARGE_INTEGER		ulSortValue;
 	ULONG				ulSortDataType;
 	union
@@ -141,11 +141,11 @@ struct SortListData
 		_ResData		Res;//SORTLIST_RES
 		_CommentData	Comment;//SORTLIST_COMMENT
 		_BinaryData		Binary;//SORTLIST_BINARY
-		_NodeData		Node;//tree node
+		_NodeData		Node;//SORTLIST_TREENODE
 
 	} data;
 	ULONG			cSourceProps;
-	LPSPropValue	lpSourceProps;
+	LPSPropValue	lpSourceProps; // Stolen from lpsRowData in CContentsTableListCtrl::BuildDataItem - free with MAPIFreeBuffer
 	BOOL			bItemFullyLoaded;
 };
 

@@ -408,7 +408,7 @@ void CBaseDialog::OnOptions()
 
 	CString szProduct;
 	CString szPrompt;
-	szProduct.LoadString(IDS_PRODUCT_NAME);
+	szProduct.LoadString(ID_PRODUCTNAME);
 	szPrompt.FormatMessage(IDS_SETOPTSPROMPT,szProduct);
 
 	CEditor MyData(
@@ -765,18 +765,15 @@ void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos,UINT uidMsg,
 
 void CBaseDialog::UpdateTitleBarText(LPCTSTR szMsg)
 {
-	CString szTitlePrefix;
 	CString szTitle;
-
-	szTitlePrefix.LoadString(ID_TITLEPREFIX);
 
 	if (szMsg)
 	{
-		szTitle.FormatMessage(_T("%1%2: %3"),szTitlePrefix,(LPCTSTR) m_szTitle,szMsg);// STRING_OK
+		szTitle.FormatMessage(_T("%1: %2"),(LPCTSTR) m_szTitle,szMsg); // STRING_OK
 	}
 	else
 	{
-		szTitle.FormatMessage(_T("%1%2"),szTitlePrefix,(LPCTSTR) m_szTitle);// STRING_OK
+		szTitle.FormatMessage(_T("%1"),(LPCTSTR) m_szTitle); // STRING_OK
 	}
 	//set the title bar
 	SetWindowText(szTitle);
@@ -904,7 +901,7 @@ void CBaseDialog::OnOpenEntryID(LPSBinary lpBin)
 			LPTSTR szFlags = NULL;
 			EC_H(InterpretFlags(PROP_ID(PR_OBJECT_TYPE), ulObjType, &szFlags));
 			DebugPrint(DBGGeneric,_T("OnOpenEntryID: Got object (0x%08X) of type 0x%08X = %s\n"),lpUnk,ulObjType,szFlags);
-			MAPIFreeBuffer(szFlags);
+			delete[] szFlags;
 			szFlags = NULL;
 
 			LPMAPIPROP lpTemp = NULL;
@@ -946,12 +943,12 @@ void CBaseDialog::OnCompareEntryIDs()
 	MyEIDs.InitSingleLine(0,IDS_EID1,NULL,false);
 	MyEIDs.InitSingleLine(1,IDS_EID2,NULL,false);
 
-	UINT uidDropDown[3] = {
+	UINT uidDropDown[] = {
 		IDS_DDMESSAGESTORE,
 			IDS_DDSESSION,
 			IDS_DDADDRESSBOOK
 	};
-	MyEIDs.InitDropDown(2,IDS_OBJECTFORCOMPAREEID,3,uidDropDown,true);
+	MyEIDs.InitDropDown(2,IDS_OBJECTFORCOMPAREEID,sizeof(uidDropDown)/sizeof(UINT),uidDropDown,true);
 
 	MyEIDs.InitCheck(3,IDS_EIDBASE64ENCODED,false,false);
 
@@ -1125,12 +1122,12 @@ void CBaseDialog::OnNotificationsOn()
 	MyData.InitSingleLine(0,IDS_EID,NULL,false);
 	MyData.InitSingleLine(1,IDS_ULEVENTMASK,NULL,false);
 	MyData.SetHex(1,fnevNewMail);
-	UINT uidDropDown[3] = {
+	UINT uidDropDown[] = {
 		IDS_DDMESSAGESTORE,
 			IDS_DDSESSION,
 			IDS_DDADDRESSBOOK
 	};
-	MyData.InitDropDown(2,IDS_OBJECTFORADVISE ,3,uidDropDown,true);
+	MyData.InitDropDown(2,IDS_OBJECTFORADVISE,sizeof(uidDropDown)/sizeof(UINT),uidDropDown,true);
 
 	WC_H(MyData.DisplayDialog());
 

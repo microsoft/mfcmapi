@@ -351,17 +351,33 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField)
 {
 	HRESULT hRes = S_OK;
 
+	CString PropType;
+	LPTSTR szExactMatch = NULL;
+	LPTSTR szPartialMatch = NULL;
+
+	InterpretProp(
+		NULL,
+		m_ulPropTag,
+		m_lpMAPIProp,
+		NULL,
+		m_bIncludeABProps,
+		&szExactMatch, // Built from ulPropTag & bIsAB
+		&szPartialMatch, // Built from ulPropTag & bIsAB
+		&PropType,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL);
+
 	if (0 != ulSkipField) SetHex(0,m_ulPropTag);
 	if (1 != ulSkipField) SetStringf(1,_T("0x%04X"),PROP_ID(m_ulPropTag));// STRING_OK
-	if (2 != ulSkipField) SetDropDown(2,(LPCTSTR) TypeToString(m_ulPropTag));
+	if (2 != ulSkipField) SetDropDown(2,PropType);
 	if (3 != ulSkipField)
 	{
-		LPTSTR szExactMatch = NULL;
-		LPTSTR szPartialMatch = NULL;
-		EC_H(PropTagToPropName(m_ulPropTag,m_bIncludeABProps,&szExactMatch,&szPartialMatch));
 		SetStringf(3,_T("%s (%s)"),szExactMatch?szExactMatch:_T(""),szPartialMatch?szPartialMatch:_T(""));// STRING_OK
-		delete[] szPartialMatch;
-		delete[] szExactMatch;
 	}
 	if (4 != ulSkipField) SetString(4,(LPCTSTR) TypeToString(m_ulPropTag));
 
@@ -413,6 +429,9 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField)
 		}
 		MAPIFreeBuffer(lppPropNames);
 	}
+
+	delete[] szPartialMatch;
+	delete[] szExactMatch;
 }
 
 

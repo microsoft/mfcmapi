@@ -20,16 +20,23 @@ CString ProblemArrayToString(LPSPropProblemArray lpProblems);
 CString MAPIErrToString(ULONG ulFlags, LPMAPIERROR lpErr);
 CString TnefProblemArrayToString(LPSTnefProblemArray lpError);
 
-void GetPropName(LPMAPIPROP lpMAPIProp,
-				 ULONG ulPropTag,
-				 LPTSTR *lpszPropName,
-				 LPTSTR *lpszPropGUID);
-
-void GetPropName(LPMAPIPROP lpMAPIProp,
-				 ULONG ulPropTag,
-				 LPTSTR *lpszPropName,
-				 LPTSTR *lpszPropGUID,
-				 LPTSTR *lpszDASL);
+// Allocates strings with new
+// Free with delete[]
+//
+// lpszDASL string for a named prop will look like this:
+// id/{12345678-1234-1234-1234-12345678ABCD}/80010003
+// string/{12345678-1234-1234-1234-12345678ABCD}/MyProp
+// So the following #defines give the size of the buffers we need, in TCHARS, including 1 for the null terminator
+// CCH_DASL_ID gets an extra digit to handle some AB props with name IDs of five digits
+#define CCH_DASL_ID 2+1+38+1+8+1+1
+#define CCH_DASL_STRING 6+1+38+1+1
+// TagToString will prepend the http://schemas.microsoft.com/MAPI/ for us since it's a constant
+// We don't compute a DASL string for non-named props as FormatMessage in TagToString can handle those
+void NameIDToStrings(LPMAPINAMEID lpNameID,
+					 ULONG ulPropTag,
+					 LPTSTR* lpszPropName,
+					 LPTSTR* lpszPropGUID,
+					 LPTSTR* lpszDASL);
 
 LPTSTR GUIDToString(LPCGUID lpGUID);
 

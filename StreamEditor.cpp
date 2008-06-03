@@ -383,7 +383,7 @@ ULONG CStreamEditor::HandleChange(UINT nID)
 		LPTSTR szFlags = NULL;
 		EC_H(InterpretFlags(flagStreamFlag, m_ulStreamFlags, &szFlags));
 		SetStringf(m_iFlagBox,_T("0x%08X = %s"),m_ulStreamFlags,szFlags);// STRING_OK
-		MAPIFreeBuffer(szFlags);
+		delete[] szFlags;
 		szFlags = NULL;
 		CString szTmp;
 		szTmp.FormatMessage(IDS_CODEPAGES,m_ulInCodePage, m_ulOutCodePage);

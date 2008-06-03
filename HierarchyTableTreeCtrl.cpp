@@ -302,6 +302,7 @@ void CHierarchyTableTreeCtrl::AddNode(ULONG			cProps,
 	if (lpData)
 	{
 		memset(lpData, 0, sizeof(SortListData));
+		lpData->ulSortDataType = SORTLIST_TREENODE;
 
 		if (lpEntryID)
 		{
@@ -1056,20 +1057,11 @@ void CHierarchyTableTreeCtrl::OnDeleteItem(NMHDR* pNMHDR, LRESULT* pResult)
 	{
 		SortListData* lpData = (SortListData*) pNMTreeView->itemOld.lParam;
 
-		if (lpData)
+		if (lpData && lpData->data.Node.lpAdviseSink)
 		{
-			if (lpData->data.Node.lpAdviseSink)
-			{
-				DebugPrintEx(DBGGeneric,CLASS,_T("OnDeleteItem"),_T("Unadvising on \"%s\", 0x%08X, ulAdviseConnection = 0x%08X\n"),GetItemText(pNMTreeView->itemOld.hItem),lpData->data.Node.lpAdviseSink,lpData->data.Node.ulAdviseConnection);
-				//unadvise before releasing our sink
-				if (lpData->data.Node.ulAdviseConnection && lpData->data.Node.lpHierarchyTable)
-					lpData->data.Node.lpHierarchyTable->Unadvise(lpData->data.Node.ulAdviseConnection);
-				lpData->data.Node.lpAdviseSink->Release();
-			}
-			if (lpData->data.Node.lpHierarchyTable) lpData->data.Node.lpHierarchyTable->Release();
-
-			MAPIFreeBuffer(lpData);
+			DebugPrintEx(DBGGeneric,CLASS,_T("OnDeleteItem"),_T("Unadvising on \"%s\", 0x%08X, ulAdviseConnection = 0x%08X\n"),GetItemText(pNMTreeView->itemOld.hItem),lpData->data.Node.lpAdviseSink,lpData->data.Node.ulAdviseConnection);
 		}
+		FreeSortListData(lpData);
 	}
 
 	*pResult = 0;

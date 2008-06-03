@@ -44,4 +44,6 @@ enum __NonPropFlag
 	flagTZDef,
 	flagTZRule,
 	flagRuleFlag,
+	flagExtendedFolderFlagType,
+	flagExtendedFolderFlag,
 };

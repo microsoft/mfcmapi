@@ -7,28 +7,29 @@
 #define rmj 6
 #define rmm 0
 #define rup 0
-#define rmn 1005
+#define rmn 1006
 
 #define MAKEFILEVERSION(_rmaj, _rmin, _bmaj, _bmin)			#_rmaj "." #_rmin "." #_bmaj "." #_bmin "\0"
 #define MAKEFILEVERSIONSTR(_rmaj, _rmin, _bmaj, _bmin)		MAKEFILEVERSION(_rmaj, _rmin, _bmaj, _bmin)
 /* Define file version and project version */
 
+// Ensure we're called MFCMAPI instead of "MAPI Editor"
+#undef RC_PRODUCT_NAME
+#define RC_PRODUCT_NAME               "MFCMAPI"
+
 #define INET_VER						rmj, rmm, rup, rmn
 #define INET_VERSION					MAKEFILEVERSIONSTR(rmj, rmm, rup, rmn)
-#define RC_VERSION_COMPANY_NAME			"Microsoft Corp.\0"
+#define RC_VERSION_COMPANY_NAME			"Microsoft Corporation\0"
 #define VER_LEGALCOPYRIGHT_YEARS		"1999-2008"
 #define RC_VERSION_PRODUCT_NAME			RC_PRODUCT_NAME "\0"
-#define RC_VERSION_LEGAL_COPYRIGHT		"Copyright \251 " VER_LEGALCOPYRIGHT_YEARS " Microsoft Corp. All rights reserved.\0"
+#define RC_VERSION_LEGAL_COPYRIGHT		"Copyright \251 " VER_LEGALCOPYRIGHT_YEARS " Microsoft Corporation. All rights reserved.\0"
 #define RC_VERSION_LEGAL_TRADEMARKS		"Microsoft® is a registered trademarks of Microsoft Corporation.\0"
 #ifdef PRIVATE_BUILD
 #define BUILD_PRIVATE					"Sample version - not eligible for support\0"
 #endif
 
 #undef  RC_VERSION_FILE_DESCRIPTION
-#define RC_VERSION_FILE_DESCRIPTION		RC_PRODUCT_NAME " Sample Version\0"
-
-#undef  RC_TITLE_PREFIX
-#define RC_TITLE_PREFIX					"SAMPLE: \0"
+#define RC_VERSION_FILE_DESCRIPTION    RC_PRODUCT_NAME RC_VERSION_WIDTH RC_VERSION_BITNESS " Sample Version\0"
 
 #ifndef DS_SHELLFONT
 	#error "Compilation requires the February 2003 or later Microsoft SDK"

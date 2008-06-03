@@ -743,22 +743,22 @@ HRESULT HrAddExchangeToProfile(
 
 HRESULT HrAddPSTToProfile(
 						  IN ULONG_PTR ulUIParam,// hwnd for CreateMsgService
-						  BOOL bUnicode,
-						  IN LPSTR lpszPSTPath,// PST name
+						  BOOL bUnicodePST,
+						  IN LPTSTR lpszPSTPath,// PST name
 						  IN LPSTR lpszProfileName) // profile name
 {
 	HRESULT			hRes = S_OK;
 
-	DebugPrint(DBGGeneric,_T("HrAddPSTToProfile(%0x08X,%hs,%hs)\n"),bUnicode,lpszPSTPath,lpszProfileName);
+	DebugPrint(DBGGeneric,_T("HrAddPSTToProfile(%0x08X,%s,%hs)\n"),bUnicodePST,lpszPSTPath,lpszProfileName);
 
 	if (!lpszPSTPath || !lpszProfileName) return MAPI_E_INVALID_PARAMETER;
 
 	SPropValue	PropVal;
 
-	PropVal.ulPropTag = PR_PST_PATH;
-	PropVal.Value.lpszA = lpszPSTPath;
+	PropVal.ulPropTag = CHANGE_PROP_TYPE(PR_PST_PATH, PT_TSTRING);
+	PropVal.Value.LPSZ = lpszPSTPath;
 
-	if (bUnicode)
+	if (bUnicodePST)
 	{
 		EC_H(HrAddServiceToProfile("MSUPST MS",ulUIParam,NULL,1,&PropVal,lpszProfileName));// STRING_OK
 	}

@@ -833,25 +833,15 @@ void CContentsTableListCtrl::BuildDataItem(LPSRow lpsRowData,SortListData* lpDat
 	LPSPropValue	lpProp = NULL;//do not free this
 
 	lpData->bItemFullyLoaded = false;
-	//Since these were MAPIAllocateMore from lpData, I cannot free them directly
-	//(Note that CopyString takes a 'parent' param, which is lpData in all cases here)
-	//Worry not - MAPI tracks the allocation and will free when I do free lpData - I can lose the pointer safely
-//	MAPIFreeBuffer(lpData->data.Contents.lpEntryID);
-//	MAPIFreeBuffer(lpData->data.Contents.lpLongtermID);
-//	MAPIFreeBuffer(lpData->data.Contents.lpInstanceKey);
-//	MAPIFreeBuffer(lpData->data.Contents.lpServiceUID);
-//	MAPIFreeBuffer(lpData->data.Contents.lpProviderUID);
-//	MAPIFreeBuffer(lpData->data.Contents.szDN);
-//	MAPIFreeBuffer(lpData->data.Contents.szProfileDisplayName);
-//	MAPIFreeBuffer(lpData->szSortText);
+	MAPIFreeBuffer(lpData->szSortText);
+	lpData->szSortText = NULL;
 
-	//this guy gets stolen from lpsRowData and is freed seperately in CSortListCtrl::OnDeleteItem
+	//this guy gets stolen from lpsRowData and is freed seperately in FreeSortListData
 	//So I do need to free it here before losing the pointer
 	MAPIFreeBuffer(lpData->lpSourceProps);
+	lpData->lpSourceProps = NULL;
 
 	lpData->ulSortValue.QuadPart = NULL;
-	lpData->szSortText = NULL;
-	lpData->lpSourceProps = NULL;
 	lpData->cSourceProps = 0;
 	lpData->ulSortDataType = SORTLIST_CONTENTS;
 	lpData->data.Contents.lpEntryID = NULL;
@@ -1028,11 +1018,11 @@ void CContentsTableListCtrl::SetRowStrings(int iRow,LPSRow lpsRowData)
 			if (ulCol < lpsRowData->cValues)
 			{
 				CString PropString;
+				LPTSTR szFlags = NULL;
 				LPSPropValue pProp = &lpsRowData->lpProps[ulCol];
 
 				InterpretProp(pProp,&PropString,NULL);
 
-				LPTSTR szFlags = NULL;
 				EC_H(InterpretFlags(pProp, &szFlags));
 				if (szFlags)
 				{
@@ -1040,7 +1030,7 @@ void CContentsTableListCtrl::SetRowStrings(int iRow,LPSRow lpsRowData)
 					PropString += szFlags;
 					PropString += _T(")");// STRING_OK
 				}
-				MAPIFreeBuffer(szFlags);
+				delete[] szFlags;
 				szFlags = NULL;
 
 				//DebugPrint(DBGGeneric,_T(", %s\n"),(LPCTSTR) PropString);
@@ -1498,10 +1488,16 @@ void CContentsTableListCtrl::OnItemChanged(NMHDR* pNMHDR, LRESULT* pResult)
 			//try to use our rowset first
 			if (NODISPLAYNAME != m_ulDisplayNameColumn
 				&& lpProps
-				&& m_ulDisplayNameColumn < cValues
-				&& CheckStringProp(&lpProps[m_ulDisplayNameColumn],PT_TSTRING))
+				&& m_ulDisplayNameColumn < cValues)
 			{
-				szTitle = lpProps[m_ulDisplayNameColumn].Value.LPSZ;
+				if (CheckStringProp(&lpProps[m_ulDisplayNameColumn],PT_STRING8))
+				{
+					szTitle.Format(_T("%hs"),lpProps[m_ulDisplayNameColumn].Value.lpszA); // STRING_OK
+				}
+				else if (CheckStringProp(&lpProps[m_ulDisplayNameColumn],PT_UNICODE))
+				{
+					szTitle.Format(_T("%ws"),lpProps[m_ulDisplayNameColumn].Value.lpszW); // STRING_OK
+				}
 			}
 			else if (lpMAPIProp)
 			{

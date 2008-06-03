@@ -438,11 +438,11 @@ BOOL CFolderDlg::HandlePaste()
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 
 	MyData.InitCheck(0,IDS_MESSAGEMOVE,false,false);
-	UINT uidDropDown[2] = {
+	UINT uidDropDown[] = {
 		IDS_DDCOPYMESSAGES,
 			IDS_DDCOPYTO
 	};
-	MyData.InitDropDown(1,IDS_COPYINTERFACE,2,uidDropDown,true);
+	MyData.InitDropDown(1,IDS_COPYINTERFACE,sizeof(uidDropDown)/sizeof(UINT),uidDropDown,true);
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -669,16 +669,16 @@ void CFolderDlg::OnDeleteSelectedItem()
 				IDS_DELETEITEMPROMPT,
 				1,
 				CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-			UINT uidDropDown[3] = {
+			UINT uidDropDown[] = {
 				IDS_DDDELETETODELETED,
 					IDS_DDDELETETORETENTION,
 					IDS_DDDELETEHARDDELETE
 			};
 
 			if (bShift)
-				MyData.InitDropDown(0,IDS_DELSTYLE,3,uidDropDown,true);
+				MyData.InitDropDown(0,IDS_DELSTYLE,sizeof(uidDropDown)/sizeof(UINT),uidDropDown,true);
 			else
-				MyData.InitDropDown(0,IDS_DELSTYLE,2,&uidDropDown[1],true);
+				MyData.InitDropDown(0,IDS_DELSTYLE,sizeof(uidDropDown)/sizeof(UINT) - 1,&uidDropDown[1],true);
 
 			WC_H(MyData.DisplayDialog());
 
@@ -814,11 +814,11 @@ void CFolderDlg::OnLoadFromMSG()
 		1,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 
-	UINT uidDropDown[2] = {
+	UINT uidDropDown[] = {
 		IDS_DDLOADTOFOLDER,
 			IDS_DDDISPLAYPROPSONLY
 	};
-	MyData.InitDropDown(0,IDS_LOADSTYLE,2,uidDropDown,true);
+	MyData.InitDropDown(0,IDS_LOADSTYLE,sizeof(uidDropDown)/sizeof(UINT),uidDropDown,true);
 
 	EC_D_DIALOG(dlgFilePicker.DoModal());
 
@@ -1071,12 +1071,12 @@ void CFolderDlg::OnNewCustomForm()
 			IDS_NEWCUSTOMFORMPROMPT1,
 			1,
 			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-		UINT uidDropDown[3] = {
+		UINT uidDropDown[] = {
 			IDS_DDENTERFORMCLASS,
 				IDS_DDFOLDERFORMLIBRARY,
 				IDS_DDORGFORMLIBRARY
 		};
-		MyPrompt1.InitDropDown(0,IDS_LOCATIONOFFORM,3,uidDropDown,true);
+		MyPrompt1.InitDropDown(0,IDS_LOCATIONOFFORM,sizeof(uidDropDown)/sizeof(UINT),uidDropDown,true);
 
 		WC_H(MyPrompt1.DisplayDialog());
 
@@ -1531,7 +1531,7 @@ void CFolderDlg::OnSaveMessageToFile()
 		1,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 
-	UINT uidDropDown[6] = {
+	UINT uidDropDown[] = {
 		IDS_DDTEXTFILE,
 			IDS_DDMSGFILEANSI,
 			IDS_DDMSGFILEUNICODE,
@@ -1539,7 +1539,7 @@ void CFolderDlg::OnSaveMessageToFile()
 			IDS_DDEMLFILEUSINGICONVERTERSESSION,
 			IDS_DDTNEFFILE
 	};
-	MyData.InitDropDown(0,IDS_FORMATTOSAVEMESSAGE,6,uidDropDown,true);
+	MyData.InitDropDown(0,IDS_FORMATTOSAVEMESSAGE,sizeof(uidDropDown)/sizeof(UINT),uidDropDown,true);
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
 	{

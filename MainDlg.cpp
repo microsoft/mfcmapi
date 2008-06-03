@@ -45,7 +45,7 @@ CMainDlg::CMainDlg(
 CContentsTableDlg(
 						  pParentWnd,
 						  lpMapiObjects,
-						  IDS_PRODUCT_NAME,
+						  ID_PRODUCTNAME,
 						  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 						  NULL,
 						  (LPSPropTagArray) &sptDEFCols,
@@ -119,13 +119,6 @@ END_MESSAGE_MAP()
 BOOL CMainDlg::HandleMenu(WORD wMenuSelect)
 {
 	DebugPrint(DBGMenu,_T("CMainDlg::HandleMenu wMenuSelect = 0x%X = %d\n"),wMenuSelect,wMenuSelect);
-/*	SortListData** lpData = 0;
-	int cData = 0;
-	if (m_lpContentsTableListCtrl)
-	{
-			m_lpContentsTableListCtrl->GetSelectedItems(&cData,&lpData);
-			MAPIFreeBuffer(lpData);
-	}*/
 	return CContentsTableDlg::HandleMenu(wMenuSelect);
 }
 
@@ -1026,8 +1019,8 @@ void CMainDlg::OnLoadMAPI()
 	UINT	uiRet = NULL;
 
 	WC_D(uiRet,GetSystemDirectory(szDLLPath, MAX_PATH));
-	WC_H(StringCchCat(szDLLPath,CCH(szDLLPath),_T("\\")));
-	WC_H(StringCchCat(szDLLPath,CCH(szDLLPath),_T("mapi32.dll")));
+	WC_H(StringCchCat(szDLLPath,CCH(szDLLPath),_T("\\"))); // STRING_OK
+	WC_H(StringCchCat(szDLLPath,CCH(szDLLPath),_T("mapi32.dll"))); // STRING_OK
 
 	CEditor MyData(
 		this,

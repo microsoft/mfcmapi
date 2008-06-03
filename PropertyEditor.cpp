@@ -170,6 +170,8 @@ void CPropertyEditor::CreatePropertyControls()
 		CreateControls(2);
 		break;
 	case(PT_BINARY):
+		CreateControls(4);
+		break;
 	case(PT_CURRENCY):
 	case(PT_I8):
 	case(PT_LONG):
@@ -201,6 +203,24 @@ void CPropertyEditor::InitPropertyControls()
 		InitList(0,IDS_PROPVALUES,false,false);
 		return;
 	}
+
+	LPTSTR szSmartView = NULL;
+
+	InterpretProp(m_lpsInputValue,
+		m_ulPropTag,
+		m_lpMAPIProp,
+		NULL,
+		NULL,
+		NULL, 
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		&szSmartView, // Built from lpProp & lpMAPIProp
+		NULL,
+		NULL,
+		NULL);
 
 	CString szTemp1;
 	CString szTemp2;
@@ -324,15 +344,7 @@ void CPropertyEditor::InitPropertyControls()
 			SetDecimal(0,m_lpsInputValue->Value.i);
 			SetHex(1,m_lpsInputValue->Value.i);
 
-			HRESULT hRes = S_OK;
-			LPTSTR szFlags = NULL;
-			EC_H(InterpretFlags(m_lpsInputValue, &szFlags));
-			if (szFlags)
-			{
-				SetString(2,szFlags);
-			}
-			MAPIFreeBuffer(szFlags);
-			szFlags = NULL;
+			if (szSmartView) SetString(2,szSmartView);
 		}
 		else
 		{
@@ -367,11 +379,13 @@ void CPropertyEditor::InitPropertyControls()
 			SetSize(0,m_lpsInputValue->Value.bin.cb);
 			InitMultiLine(1,IDS_BIN,BinToHexString(&m_lpsInputValue->Value.bin,false),m_bReadOnly);
 			InitMultiLine(2,IDS_TEXT,BinToTextString(&m_lpsInputValue->Value.bin,true),true);
+			InitMultiLine(3,IDS_COLSMARTVIEW,szSmartView,true);
 		}
 		else
 		{
 			InitMultiLine(1,IDS_BIN,NULL,m_bReadOnly);
 			InitMultiLine(2,IDS_TEXT,NULL,true);
+			InitMultiLine(3,IDS_COLSMARTVIEW,szSmartView,true);
 		}
 		break;
 	case(PT_LONG):
@@ -382,16 +396,7 @@ void CPropertyEditor::InitPropertyControls()
 		{
 			SetStringf(0,_T("%u"),m_lpsInputValue->Value.l);// STRING_OK
 			SetHex(1,m_lpsInputValue->Value.l);
-
-			HRESULT hRes = S_OK;
-			LPTSTR szFlags = NULL;
-			EC_H(InterpretFlags(m_lpsInputValue, &szFlags));
-			if (szFlags)
-			{
-				SetString(2,szFlags);
-			}
-			MAPIFreeBuffer(szFlags);
-			szFlags = NULL;
+			if (szSmartView) SetString(2,szSmartView);
 		}
 		else
 		{
@@ -452,6 +457,7 @@ void CPropertyEditor::InitPropertyControls()
 		InitMultiLine(1,IDS_ALTERNATEVIEW,szTemp2,true);
 		break;
 	}
+	delete[] szSmartView;
 }
 
 //Function must be called AFTER dialog controls have been created, not before
@@ -1096,6 +1102,7 @@ ULONG CPropertyEditor::HandleChange(UINT nID)
 	if (EDITOR_SINGLE != m_ulEditorType || (ULONG) -1 == i) return (ULONG) -1;
 
 	CString szTmpString;
+
 	switch (PROP_TYPE(m_ulPropTag))
 	{
 	case(PT_I2)://signed 16 bit
@@ -1113,15 +1120,30 @@ ULONG CPropertyEditor::HandleChange(UINT nID)
 				SetDecimal(0,iVal);
 			}
 
-			HRESULT hRes = S_OK;
-			LPTSTR szFlags = NULL;
-			EC_H(InterpretFlags(PROP_ID(m_ulPropTag),iVal,&szFlags));
-			if (szFlags)
-			{
-				SetString(2,szFlags);
-			}
-			MAPIFreeBuffer(szFlags);
-			szFlags = NULL;
+			LPTSTR szSmartView = NULL;
+			SPropValue sProp = {0};
+			sProp.ulPropTag = m_ulPropTag;
+			sProp.Value.i = iVal;
+
+			InterpretProp(&sProp,
+				m_ulPropTag,
+				m_lpMAPIProp,
+				NULL,
+				NULL,
+				NULL, 
+				NULL,
+				NULL,
+				NULL,
+				NULL,
+				NULL,
+				&szSmartView,
+				NULL,
+				NULL,
+				NULL);
+
+			if (szSmartView) SetString(2,szSmartView);
+			delete[] szSmartView;
+			szSmartView = NULL;
 		}
 		break;
 	case(PT_LONG)://unsigned 32 bit
@@ -1139,15 +1161,30 @@ ULONG CPropertyEditor::HandleChange(UINT nID)
 				SetStringf(0,_T("%u"),lVal);// STRING_OK
 			}
 
-			HRESULT hRes = S_OK;
-			LPTSTR szFlags = NULL;
-			EC_H(InterpretFlags(PROP_ID(m_ulPropTag),lVal,&szFlags));
-			if (szFlags)
-			{
-				SetString(2,szFlags);
-			}
-			MAPIFreeBuffer(szFlags);
-			szFlags = NULL;
+			LPTSTR szSmartView = NULL;
+			SPropValue sProp = {0};
+			sProp.ulPropTag = m_ulPropTag;
+			sProp.Value.l = lVal;
+
+			InterpretProp(&sProp,
+				m_ulPropTag,
+				m_lpMAPIProp,
+				NULL,
+				NULL,
+				NULL, 
+				NULL,
+				NULL,
+				NULL,
+				NULL,
+				NULL,
+				&szSmartView,
+				NULL,
+				NULL,
+				NULL);
+
+			if (szSmartView) SetString(2,szSmartView);
+			delete[] szSmartView;
+			szSmartView = NULL;
 		}
 		break;
 	case(PT_CURRENCY):
@@ -1215,6 +1252,31 @@ ULONG CPropertyEditor::HandleChange(UINT nID)
 				Bin.cb = (ULONG) cb;
 				SetString(2,BinToTextString(&Bin,true));
 				SetSize(0, cb);
+
+				LPTSTR szSmartView = NULL;
+				SPropValue sProp = {0};
+				sProp.ulPropTag = m_ulPropTag;
+				sProp.Value.bin = Bin;
+
+				InterpretProp(&sProp,
+					m_ulPropTag,
+					m_lpMAPIProp,
+					NULL,
+					NULL,
+					NULL, 
+					NULL,
+					NULL,
+					NULL,
+					NULL,
+					NULL,
+					&szSmartView,
+					NULL,
+					NULL,
+					NULL);
+
+				SetString(3,szSmartView);
+				delete[] szSmartView;
+				szSmartView = NULL;
 			}
 
 			delete[] lpb;
