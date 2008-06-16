@@ -39,7 +39,7 @@ void OutputPropertyToFile(FILE* fFile, LPSPropValue lpProp, LPMAPIPROP lpObj)
 	LPTSTR szNamedPropGUID = NULL;
 
 	InterpretProp(
-		NULL,
+		lpProp,
 		lpProp->ulPropTag,
 		lpObj,
 		NULL,
@@ -82,7 +82,7 @@ void OutputPropertyToFile(FILE* fFile, LPSPropValue lpProp, LPMAPIPROP lpObj)
 		}
 	}
 
-	if (szSmartView) OutputXMLValueToFile(fFile,PropXMLNames[pcPROPSMARTVIEW].uidName,szSmartView,2);
+	if (szSmartView) OutputXMLCDataValueToFile(fFile,PropXMLNames[pcPROPSMARTVIEW].uidName,szSmartView,2);
 	OutputToFile(fFile,_T("\t</property>\n"));
 
 	delete[] szPartialMatches;

@@ -1080,16 +1080,16 @@ BOOL FindPropInPropTagArray(LPSPropTagArray lpspTagArray, ULONG ulPropToFind, UL
 	return FALSE;
 }//FindPropInPropTagArray
 
-//See list of types (like MAPI_FOLDER) in mapidefs.h
+// See list of types (like MAPI_FOLDER) in mapidefs.h
 ULONG GetMAPIObjectType(LPMAPIPROP lpMAPIProp)
 {
 	HRESULT hRes = S_OK;
 	ULONG ulObjType = NULL;
 	LPSPropValue lpProp = NULL;
 
-	if (!lpMAPIProp) return 0;//0's not a valid Object type
+	if (!lpMAPIProp) return 0; // 0's not a valid Object type
 
-	EC_H(HrGetOneProp(
+	WC_H(HrGetOneProp(
 		lpMAPIProp,
 		PR_OBJECT_TYPE,
 		&lpProp));
