@@ -859,7 +859,7 @@ void CSingleMAPIPropListCtrl::SavePropsToXML()
 					}
 
 					szTemp1 = GetItemText(iRow,pcPROPSMARTVIEW);
-					OutputXMLValueToFile(fProps,PropXMLNames[pcPROPSMARTVIEW].uidName,(LPCTSTR) szTemp1,2);
+					OutputXMLCDataValueToFile(fProps,PropXMLNames[pcPROPSMARTVIEW].uidName,(LPCTSTR) szTemp1,2);
 
 					OutputToFile(fProps,_T("\t</property>\n"));
 				}

@@ -26,7 +26,13 @@
 #define RC_VERSION_BITNESS             ""
 #endif
 
-#define RC_VERSION_FILE_DESCRIPTION    RC_PRODUCT_NAME RC_VERSION_WIDTH RC_VERSION_BITNESS "\0"
+#ifdef _DEBUG
+#define RC_VERSION_DEBUG               " Debug"
+#else
+#define RC_VERSION_DEBUG               ""
+#endif
+
+#define RC_VERSION_FILE_DESCRIPTION    RC_PRODUCT_NAME RC_VERSION_WIDTH RC_VERSION_BITNESS RC_VERSION_DEBUG "\0"
 #include "bldver.rc"
 
 // Keep in sync with definition of IDD_ABOUTVERLAST

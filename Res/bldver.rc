@@ -7,7 +7,7 @@
 #define rmj 6
 #define rmm 0
 #define rup 0
-#define rmn 1006
+#define rmn 1007
 
 #define MAKEFILEVERSION(_rmaj, _rmin, _bmaj, _bmin)			#_rmaj "." #_rmin "." #_bmaj "." #_bmin "\0"
 #define MAKEFILEVERSIONSTR(_rmaj, _rmin, _bmaj, _bmin)		MAKEFILEVERSION(_rmaj, _rmin, _bmaj, _bmin)
@@ -29,7 +29,7 @@
 #endif
 
 #undef  RC_VERSION_FILE_DESCRIPTION
-#define RC_VERSION_FILE_DESCRIPTION    RC_PRODUCT_NAME RC_VERSION_WIDTH RC_VERSION_BITNESS " Sample Version\0"
+#define RC_VERSION_FILE_DESCRIPTION    RC_PRODUCT_NAME RC_VERSION_WIDTH RC_VERSION_BITNESS RC_VERSION_DEBUG " Sample Version\0"
 
 #ifndef DS_SHELLFONT
 	#error "Compilation requires the February 2003 or later Microsoft SDK"

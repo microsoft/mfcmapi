@@ -479,7 +479,7 @@ enum Gender {
 #define SPAM_FILTERING_HIGH						0x00000003
 #define SPAM_FILTERING_TRUSTED_ONLY				0x80000000
 
-// [MS-OXOCAL.pdf]
+// [MS-OXOCAL].pdf
 #define RECIP_UNSENDABLE	(int) 0x0000
 #define RECIP_SENDABLE		(int) 0x0001	
 #define RECIP_ORGANIZER		(int) 0x0002   // send bit plus this one
@@ -595,7 +595,7 @@ typedef enum {
 #define CAL_SAKA             16
 #define CAL_LUNAR_KOREAN     20
 
-// [MS-OXCMSG.pdf]
+// [MS-OXCMSG].pdf
 #define dispidSideEffects 0x8510
 #define seOpenToDelete		0x0001	// Additional processing is required on the Message object when deleting.
 #define seNoFrame			0x0008	// No UI is associated with the Message object.
@@ -613,7 +613,7 @@ typedef enum {
 #define seHasScript			0x2000	// The Message object contains end-user script.
 #define seOpenToPermDelete	0x4000	// Additional processing is required to permanently delete the Message object.
 
-// [MS-OXOCNTC.pdf]
+// [MS-OXOCNTC].pdf
 #define dispidFileUnderId 0x8006
 enum {
 	FILEUNDERID_NONE = 0,
@@ -638,7 +638,7 @@ enum {
 enum PostalAddressIndex
 	{ ADDRESS_NONE = 0, ADDRESS_HOME, ADDRESS_WORK, ADDRESS_OTHER };
 
-// [MS_OXOTASK.pdf]
+// [MS_OXOTASK].pdf
 #define dispidTaskMode 0x8518
 enum TaskDelegMsgType {tdmtNothing = 0,	// The task object is not assigned.
 					   tdmtTaskReq,		// The task object is embedded in a task request.
@@ -704,7 +704,7 @@ enum TaskDelegValue {
 #define dispidLogFlags 0x870C
 #define lfContactLog ((ULONG) 0x40000000L) // This journal object has a journal associated attachment 
 
-// [MS-OXOMSG.pdf]
+// [MS-OXOMSG].pdf
 #define dispidSniffState 0x851A
 enum SniffState {ssNone,    // Don't auto-process the message.
 				 ssOnSniff, // Process the message automatically or when the message is opened.
