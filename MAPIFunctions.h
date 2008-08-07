@@ -39,11 +39,13 @@ HRESULT	CopyPropertyAsStream(LPMAPIPROP lpSourcePropObj,LPMAPIPROP lpTargetPropO
 HRESULT CopyFolderContents(LPMAPIFOLDER lpSrcFolder, LPMAPIFOLDER lpDestFolder,BOOL bCopyAssociatedContents,BOOL bMove,BOOL bSingleCall, HWND hWnd);
 HRESULT CopyFolderRules(LPMAPIFOLDER lpSrcFolder, LPMAPIFOLDER lpDestFolder,BOOL bReplace);
 HRESULT	CopySBinary(LPSBinary psbDest,const LPSBinary psbSrc, LPVOID lpParent);
-HRESULT	CopyString(LPTSTR* lpszDestination,LPCTSTR szSource, LPVOID pParent);
 HRESULT	CopyStringA(LPSTR* lpszDestination,LPCSTR szSource, LPVOID pParent);
 HRESULT	CopyStringW(LPWSTR* lpszDestination,LPCWSTR szSource, LPVOID pParent);
-HRESULT CreateNewMailInFolder(
-							  LPMAPIFOLDER lpFolder);
+#ifdef UNICODE
+#define CopyString  CopyStringW
+#else
+#define CopyString  CopyStringA
+#endif
 HRESULT CreatePropertyStringRestriction(ULONG ulPropTag,
 										LPCTSTR szString,
 										ULONG ulFuzzyLevel,

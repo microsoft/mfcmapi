@@ -121,7 +121,7 @@ void CAclDlg::OnRefreshView()
 		{
 			EC_H(m_lpContentsTableListCtrl->SetContentsTable(
 				lpMAPITable,
-				mfcmapiDO_NOT_SHOW_DELETED_ITEMS,
+				dfNormal,
 				NULL));
 
 			lpMAPITable->Release();

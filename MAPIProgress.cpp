@@ -30,7 +30,7 @@ CMAPIProgress::CMAPIProgress(LPCTSTR lpszContext, HWND hWnd)
 	TRACE_CONSTRUCTOR(CLASS);
 
 	m_cRef = 1;
-	m_ulMin = 0;
+	m_ulMin = 1;
 	m_ulMax = 1000;
 	m_ulFlags = MAPI_TOP_LEVEL;
 	m_hWnd = hWnd;

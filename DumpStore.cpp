@@ -63,12 +63,15 @@ void OutputPropertyToFile(FILE* fFile, LPSPropValue lpProp, LPMAPIPROP lpObj)
 	{
 	case PT_STRING8:
 	case PT_UNICODE:
+	case PT_MV_STRING8:
+	case PT_MV_UNICODE:
 		{
 			OutputXMLCDataValueToFile(fFile,PropXMLNames[pcPROPVAL].uidName,(LPCTSTR) PropString,2);
 			OutputXMLValueToFile(fFile,PropXMLNames[pcPROPVALALT].uidName,(LPCTSTR) AltPropString,2);
 			break;
 		}
 	case PT_BINARY:
+	case PT_MV_BINARY:
 		{
 			OutputXMLValueToFile(fFile,PropXMLNames[pcPROPVAL].uidName,(LPCTSTR) PropString,2);
 			OutputXMLCDataValueToFile(fFile,PropXMLNames[pcPROPVALALT].uidName,(LPCTSTR) AltPropString,2);

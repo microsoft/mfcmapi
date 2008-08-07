@@ -376,7 +376,7 @@ HRESULT CSingleMAPIPropListCtrl::LoadMAPIPropList()
 				{
 					for (ulCurPropRow = 0; ulCurPropRow < ulProps; ulCurPropRow++)
 					{
-						if (PROP_ID(lpPropsToAdd[ulCurPropRow].ulPropTag) >= 0x8000) 
+						if (PROP_ID(lpPropsToAdd[ulCurPropRow].ulPropTag) >= 0x8000)
 						{
 							lpTag->aulPropTag[ulCurTag] = lpPropsToAdd[ulCurPropRow].ulPropTag;
 							ulCurTag++;
@@ -946,41 +946,29 @@ void CSingleMAPIPropListCtrl::OnContextMenu(CWnd* /*pWnd*/, CPoint pos)
 HRESULT CSingleMAPIPropListCtrl::FindAllNamedProps()
 {
 	HRESULT hRes = S_OK;
-	LPMAPINAMEID FAR * lppPropNames = 0;
 	LPSPropTagArray lptag = NULL;
-	ULONG ulPropNames = 0;
 
 	if (!m_lpMAPIProp) return hRes;
 
-	//Exchange can return MAPI_E_NOT_ENOUGH_MEMORY when I call this - give it a try - PSTs support it
-	DebugPrintEx(DBGNamedProp,CLASS,_T("FindAllNamedProps"),_T("Calling GetNamesFromIDs with a NULL\n"));
-	WC_H( m_lpMAPIProp->GetNamesFromIDs(
-		&lptag,
+	// Exchange can return MAPI_E_NOT_ENOUGH_MEMORY when I call this - give it a try - PSTs support it
+	DebugPrintEx(DBGNamedProp,CLASS,_T("FindAllNamedProps"),_T("Calling GetIDsFromNames with a NULL\n"));
+	WC_H(m_lpMAPIProp->GetIDsFromNames(
 		NULL,
 		NULL,
-		&ulPropNames,
-		&lppPropNames));
-	if (S_OK == hRes)
+		NULL,
+		&lptag));
+	if (S_OK == hRes && lptag)
 	{
-		//now we have a named prop NAME - need to get the ID.
-		EC_H(m_lpMAPIProp->GetIDsFromNames(
-			ulPropNames,
-			lppPropNames,
-			NULL,
-			&lptag));
-		if (lptag)
-		{
-			//Now we have an array of tags - add them in:
-			EC_H(AddPropsToExtraProps(lptag,FALSE));
-			MAPIFreeBuffer(lptag);
-			lptag = NULL;
-		}
+		//Now we have an array of tags - add them in:
+		EC_H(AddPropsToExtraProps(lptag,FALSE));
+		MAPIFreeBuffer(lptag);
+		lptag = NULL;
 	}
 	else
 	{
 		hRes = S_OK;
 
-		DebugPrintEx(DBGNamedProp,CLASS,_T("FindAllNamedProps"),_T("Exchange didn't support GetNamesFromIDs(NULL).\n"));
+		DebugPrintEx(DBGNamedProp,CLASS,_T("FindAllNamedProps"),_T("Exchange didn't support GetIDsFromNames(NULL).\n"));
 
 #define __LOWERBOUND 0x8000
 #define __UPPERBOUNDDEFAULT 0x8FFF
@@ -1028,6 +1016,8 @@ HRESULT CSingleMAPIPropListCtrl::FindAllNamedProps()
 				ULONG iTag = 0;
 				for (iTag = ulLowerBound ; iTag <= ulUpperBound ; iTag++)
 				{
+					LPMAPINAMEID FAR * lppPropNames = 0;
+					ULONG ulPropNames = 0;
 					hRes = S_OK;
 					tag.aulPropTag[0] = PROP_TAG(NULL,iTag);
 
@@ -1052,7 +1042,6 @@ HRESULT CSingleMAPIPropListCtrl::FindAllNamedProps()
 	//Refresh the display
 	WC_H(RefreshMAPIPropList());
 
-	MAPIFreeBuffer(lppPropNames);
 	return hRes;
 }
 
@@ -1335,9 +1324,9 @@ void CSingleMAPIPropListCtrl::OnEditGivenProp(ULONG ulPropTag)
 		return;
 	}
 	LPSPropValue lpSourceArray = GetPropVals();
-	// if we have m_lpMAPIProp and don't have both lpSourceArray and the reg key, 
+	// if we have m_lpMAPIProp and don't have both lpSourceArray and the reg key,
 	// then use m_lpMAPIProp
-	if (m_lpMAPIProp && 
+	if (m_lpMAPIProp &&
 		!(RegKeys[regkeyUSE_ROW_DATA_FOR_SINGLEPROPLIST].ulCurDWORD && lpSourceArray))
 	{
 		CPropertyEditor MyEditor(
@@ -1541,7 +1530,8 @@ void CSingleMAPIPropListCtrl::OnParseProperty()
 	if (!m_lpMAPIProp && !GetPropVals()) return;
 
 	GetSelectedPropTag(&ulPropTag);
-	if (!ulPropTag || PROP_TYPE(ulPropTag) != PT_BINARY) return;
+	// We're going to allow any type of property to come in here, though we'll be interpreting the property as PT_BINARY
+	if (!ulPropTag) return;
 	DebugPrintEx(DBGGeneric,CLASS,_T("OnParseProperty"),_T("interpreting 0x%X on 0x%X\n"), ulPropTag, m_lpMAPIProp);
 
 	// Get the data to interpret
@@ -1568,10 +1558,17 @@ void CSingleMAPIPropListCtrl::OnParseProperty()
 			1,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		UINT uidDropDown[] = {
-			IDS_STTZDEFINITION,
-			IDS_STTZREG,
+			IDS_STTIMEZONEDEFINITION,
+			IDS_STTIMEZONE,
 			IDS_STSECURITYDESCRIPTOR,
-			IDS_STEXTENDEDFOLDERFLAGS
+			IDS_STEXTENDEDFOLDERFLAGS,
+			IDS_APPOINTMENTRECURRENCEPATTERN,
+			IDS_RECURRENCEPATTERN,
+			IDS_REPORTTAG,
+			IDS_CONVERSATIONINDEX,
+			IDS_TASKASSIGNERS,
+			IDS_GLOBALOBJECTID,
+			IDS_ONEOFFENTRYID,
 		};
 		MyStructurePicker.InitDropDown(0,IDS_STRUCTURES,sizeof(uidDropDown)/sizeof(UINT),uidDropDown,true);
 		WC_H(MyStructurePicker.DisplayDialog());
@@ -1580,11 +1577,11 @@ void CSingleMAPIPropListCtrl::OnParseProperty()
 			switch (MyStructurePicker.GetDropDown(0))
 			{
 			default:
-			case 0: // TZDEFINITION
-				myStructType = stTZDEFINITION;
+			case 0: // Time Zone Definition
+				myStructType = stTimeZoneDefinition;
 				break;
-			case 1: // TZREG
-				myStructType = stTZREG;
+			case 1: // Time Zone
+				myStructType = stTimeZone;
 				break;
 			case 2: // Security Descriptor
 				myStructType = stSecurityDescriptor;
@@ -1592,10 +1589,29 @@ void CSingleMAPIPropListCtrl::OnParseProperty()
 			case 3: // Extended Folder Flags
 				myStructType = stExtendedFolderFlags;
 				break;
+			case 4: // Appointment Recurrence Pattern
+				myStructType = stAppointmentRecurrencePattern;
+				break;
+			case 5: // Recurrence Pattern
+				myStructType = stRecurrencePattern;
+				break;
+			case 6: // Report Tag
+				myStructType = stReportTag;
+				break;
+			case 7: // Conversation Index
+				myStructType = stConversationIndex;
+				break;
+			case 8: // Task Assigners
+				myStructType = stTaskAssigners;
+				break;
+			case 9: // Global Object Id
+				myStructType = stGlobalObjectId;
+			case 10: // One-Off Entry Id
+				myStructType = stOneOffEntryId;
 			}
 		}
 
-		// Go get the string interpretation from InterpretProps or some such
+		// Get the string interpretation
 		LPTSTR szString = NULL;
 		InterpretBinaryAsString(lpsPropToDisplay->Value.bin,myStructType,m_lpMAPIProp,ulPropTag,&szString);
 

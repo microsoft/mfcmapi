@@ -41,7 +41,7 @@ CMsgStoreDlg::CMsgStoreDlg(
 					   CParentWnd* pParentWnd,
 					   CMapiObjects *lpMapiObjects,
 					   LPMAPIFOLDER lpRootFolder,
-					   __mfcmapiDeletedItemsEnum bShowingDeletedFolders
+					   ULONG ulDisplayFlags
 					   ):
 CHierarchyTableDlg(
 						   pParentWnd,
@@ -55,7 +55,7 @@ CHierarchyTableDlg(
 	HRESULT			hRes = S_OK;
 	LPSPropValue	lpProp = NULL;
 
-	m_bShowingDeletedFolders = bShowingDeletedFolders;
+	m_ulDisplayFlags = ulDisplayFlags;
 
 	if (m_lpMapiObjects)
 	{
@@ -179,7 +179,7 @@ void CMsgStoreDlg::OnInitMenu(CMenu* pMenu)
 
 	pMenu->EnableMenuItem(ID_RESENDALLMESSAGES,DIM(bItemSelected));
 	pMenu->EnableMenuItem(ID_RESETPERMISSIONSONITEMS,DIM(bItemSelected));
-	pMenu->EnableMenuItem(ID_RESTOREDELETEDFOLDER,DIM(bItemSelected && mfcmapiSHOW_DELETED_ITEMS == m_bShowingDeletedFolders));
+	pMenu->EnableMenuItem(ID_RESTOREDELETEDFOLDER,DIM(bItemSelected && (m_ulDisplayFlags & dfDeleted)));
 
 	pMenu->EnableMenuItem(ID_COPY,DIM(bItemSelected));
 	pMenu->EnableMenuItem(ID_DELETESELECTEDITEM,DIM(bItemSelected));
@@ -851,8 +851,7 @@ void CMsgStoreDlg::OnDisplayDeletedContents()
 					m_lpParent,
 					m_lpMapiObjects,
 					lpMAPIFolder,
-					mfcmapiSHOW_NORMAL_CONTENTS,
-					mfcmapiSHOW_DELETED_ITEMS
+					dfDeleted
 					);
 				lpMAPIFolder->Release();
 			}
@@ -875,7 +874,7 @@ void CMsgStoreDlg::OnDisplayDeletedSubFolders()
 				m_lpParent,
 				m_lpMapiObjects,
 				lpFolder,
-				mfcmapiSHOW_DELETED_ITEMS);
+				dfDeleted);
 		}
 //		else ErrDialog(__FILE__,__LINE__,_T("Folder does not support SHOW_SOFT_DELETES!"));// STRING_OK
 		lpFolder->Release();

@@ -201,6 +201,7 @@ ID_OPENMODAL									"Display modal message using PrepareForm\ShowForm"
 ID_OPENNONMODAL									"Display nonmodal message using custom MAPI Form Viewer"
 ID_OPENOTHERUSERSMAILBOXFROMGAL					"Display mailbox selected from the Global Address List"
 ID_OPENOWNER									"Render PR_EMS_AB_OWNER as a MAPI table"
+ID_OPENDEFAULTDIR								"Call IAddrBook::GetDefaultDir to open the default directory"
 ID_OPENPAB										"Call IAddrBook::GetPAB to open the Personal Address Book"
 ID_OPENPROFILESECTION							"Display dialog to enter UID to call OpenProfileSection with"
 ID_OPENPROPERTYASTABLE							"Display as table using IMAPITable interface"
@@ -240,6 +241,7 @@ ID_SELECTFORM									"Display Select Form dialog"
 ID_SELECTFORMCONTAINER							"Display Select Form Container dialog"
 ID_SENDBULKMAIL									"Send messages with custom subject and recipient"
 ID_SETCOLUMNS									"Display current column set (QueryColumns) and allow editing (SetColumns)"
+ID_SETDEFAULTDIR								"Call IAddrBook::SetDefaultDir to mark as the default address book container"
 ID_SETDEFAULTSTORE								"Set the selected store as the default store. Uses SetDefaultStore."
 ID_SETPAB										"Call IAddrBook::SetPAB to mark as the Personal Address Book"
 ID_SETREADFLAG									"Call SetReadFlag/SetReadFlags on selected messages"
@@ -705,11 +707,17 @@ IDS_STRUCTURERESULTS             "Structure Parser"
 IDS_STRUCTURERESULTSPROMPT       "Results of parsing binary property as a structure"
 IDS_PARSEDSTRUCTURE              "Parsed Structure"
 IDS_STRUCTURES                   "Structures"
-IDS_STTZDEFINITION               "TZDEFINITION"
-IDS_STTZREG                      "TTZREG"
+IDS_STTIMEZONEDEFINITION         "Time Zone Definition"
+IDS_STTIMEZONE                   "Time Zone"
 IDS_STSECURITYDESCRIPTOR         "Security Descriptor"
 IDS_STEXTENDEDFOLDERFLAGS        "Extended Folder Flags"
-
+IDS_APPOINTMENTRECURRENCEPATTERN "Appointment Recurrence Pattern"
+IDS_RECURRENCEPATTERN            "Recurrence Pattern"
+IDS_REPORTTAG                    "Report Tag"
+IDS_CONVERSATIONINDEX            "Conversation Index"
+IDS_TASKASSIGNERS                "Task Assigners"
+IDS_GLOBALOBJECTID               "Global Object Id"
+IDS_ONEOFFENTRYID                "One-Off Entry Id"
 
 //AbDlg.cpp
 IDS_FLAGS "Flags"
@@ -1318,65 +1326,70 @@ IDS_OPTIONSSTRUCTURE "lpOptions[0x%1!08X!].ulPropTag = %2\r\n\
 lpOptions[0x%1!08X!].Value = %3\r\n\
 \tAlt: %4\r\n"
 
-IDS_TZREGTOSTRING "tzReg.lBias = 0x%1!08X! (%1!d!)\r\n\
-tzReg.lStandardBias = 0x%2!08X! (%2!d!)\r\n\
-tzReg.lDaylightBias = 0x%3!08X! (%3!d!)\r\n\
+IDS_TIMEZONE "Time Zone: \r\n\
+lBias = 0x%1!08X! (%1!d!)\r\n\
+lStandardBias = 0x%2!08X! (%2!d!)\r\n\
+lDaylightBias = 0x%3!08X! (%3!d!)\r\n\
 \r\n\
-tzReg.stStandardDate.wYear = 0x%4!X! (%4!d!)\r\n\
-tzReg.stStandardDate.wMonth = 0x%5!X! (%5!d!)\r\n\
-tzReg.stStandardDate.wDayOfWeek = 0x%6!X! (%6!d!)\r\n\
-tzReg.stStandardDate.wDay = 0x%7!X! (%7!d!)\r\n\
-tzReg.stStandardDate.wHour = 0x%8!X! (%8!d!)\r\n\
-tzReg.stStandardDate.wMinute = 0x%9!X! (%9!d!)\r\n\
-tzReg.stStandardDate.wSecond = 0x%10!X! (%10!d!)\r\n\
-tzReg.stStandardDate.wMilliseconds = 0x%11!X! (%11!d!)\r\n\
+wStandardYear = 0x%4!04X! (%4!d!)\r\n\
+stStandardDate.wYear = 0x%5!X! (%5!d!)\r\n\
+stStandardDate.wMonth = 0x%6!X! (%6!d!)\r\n\
+stStandardDate.wDayOfWeek = 0x%7!X! (%7!d!)\r\n\
+stStandardDate.wDay = 0x%8!X! (%8!d!)\r\n\
+stStandardDate.wHour = 0x%9!X! (%9!d!)\r\n\
+stStandardDate.wMinute = 0x%10!X! (%10!d!)\r\n\
+stStandardDate.wSecond = 0x%11!X! (%11!d!)\r\n\
+stStandardDate.wMilliseconds = 0x%12!X! (%12!d!)\r\n\
 \r\n\
-tzReg.stDaylightDate.wYear = 0x%12!X! (%12!d!)\r\n\
-tzReg.stDaylightDate.wMonth = 0x%13!X! (%13!d!)\r\n\
-tzReg.stDaylightDate.wDayOfWeek = 0x%14!X! (%14!d!)\r\n\
-tzReg.stDaylightDate.wDay = 0x%15!X! (%15!d!)\r\n\
-tzReg.stDaylightDate.wHour = 0x%16!X! (%16!d!)\r\n\
-tzReg.stDaylightDate.wMinute = 0x%17!X! (%17!d!)\r\n\
-tzReg.stDaylightDate.wSecond = 0x%18!X! (%18!d!)\r\n\
-tzReg.stDaylightDate.wMilliseconds = 0x%19!X! (%19!d!)"
+wDaylightDate = 0x%13!04X! (%13!d!)\r\n\
+stDaylightDate.wYear = 0x%14!X! (%14!d!)\r\n\
+stDaylightDate.wMonth = 0x%15!X! (%15!d!)\r\n\
+stDaylightDate.wDayOfWeek = 0x%16!X! (%16!d!)\r\n\
+stDaylightDate.wDay = 0x%17!X! (%17!d!)\r\n\
+stDaylightDate.wHour = 0x%18!X! (%18!d!)\r\n\
+stDaylightDate.wMinute = 0x%19!X! (%19!d!)\r\n\
+stDaylightDate.wSecond = 0x%20!X! (%20!d!)\r\n\
+stDaylightDate.wMilliseconds = 0x%21!X! (%21!d!)"
 
-IDS_TZDEFTOSTRING "tzDef.wFlags = 0x%1!08X! = %2\r\n\
-tzDef.guidTZID = %3\r\n\
-tzDef.pwszKeyName = %4!ws!\r\n\
-tzDef.cRules = 0x%5!X! (%5!d!)"
+IDS_TIMEZONEDEFINITION "Time Zone Definition: \r\n\
+bMajorVersion = 0x%1!02X! (%1!d!)\r\n\
+bMinorVersion = 0x%2!02X! (%2!d!)\r\n\
+cbHeader = 0x%3!04X! (%3!d!)\r\n\
+wReserved = 0x%4!04X! (%4!d!)\r\n\
+cchKeyName = 0x%5!04X! (%5!d!)\r\n\
+szKeyName = %6\r\n\
+cRules = 0x%7!04X! (%7!d!)"
 
-IDS_TZRULETOSTRING "\r\n\r\n\
-tzDef.rgRules[0x%1!X!].wFlags = 0x%2!X! = %3\r\n\
-tzDef.rgRules[0x%1!X!].stStart.wYear = 0x%4!X! (%4!d!)\r\n\
-tzDef.rgRules[0x%1!X!].stStart.wMonth = 0x%5!X! (%5!d!)\r\n\
-tzDef.rgRules[0x%1!X!].stStart.wDayOfWeek = 0x%6!X! (%6!d!)\r\n\
-tzDef.rgRules[0x%1!X!].stStart.wDay = 0x%7!X! (%7!d!)\r\n\
-tzDef.rgRules[0x%1!X!].stStart.wHour = 0x%8!X! (%8!d!)\r\n\
-tzDef.rgRules[0x%1!X!].stStart.wMinute = 0x%9!X! (%9!d!)\r\n\
-tzDef.rgRules[0x%1!X!].stStart.wSecond = 0x%10!X! (%10!d!)\r\n\
-tzDef.rgRules[0x%1!X!].stStart.wMilliseconds = 0x%11!X! (%11!d!)\r\n\
+IDS_TZRULEHEADER "\r\n\r\n\
+TZRule[0x%1!X!].bMajorVersion = 0x%2!02X! (%2!d!)\r\n\
+TZRule[0x%1!X!].bMinorVersion = 0x%3!02X! (%3!d!)\r\n\
+TZRule[0x%1!X!].wReserved = 0x%4!04X! (%4!d!)\r\n\
+TZRule[0x%1!X!].wTZRuleFlags = 0x%5!04X! = %6\r\n\
+TZRule[0x%1!X!].wYear = 0x%7!04X! (%7!d!)\r\n\
+TZRule[0x%1!X!].X = "
+
+IDS_TZRULEFOOTER "\r\n\
+TZRule[0x%1!X!].lBias = 0x%2!08X! (%2!d!)\r\n\
+TZRule[0x%1!X!].lStandardBias = 0x%3!08X! (%3!d!)\r\n\
+TZRule[0x%1!X!].lDaylightBias = 0x%4!08X! (%4!d!)\r\n\
 \r\n\
-tzDef.rgRules[0x%1!X!].TZReg.lBias = 0x%12!08X! (%12!d!)\r\n\
-tzDef.rgRules[0x%1!X!].TZReg.lStandardBias = 0x%13!08X! (%13!d!)\r\n\
-tzDef.rgRules[0x%1!X!].TZReg.lDaylightBias = 0x%14!08X! (%14!d!)\r\n\
+TZRule[0x%1!X!].stStandardDate.wYear = 0x%5!X! (%5!d!)\r\n\
+TZRule[0x%1!X!].stStandardDate.wMonth = 0x%6!X! (%6!d!)\r\n\
+TZRule[0x%1!X!].stStandardDate.wDayOfWeek = 0x%7!X! (%7!d!)\r\n\
+TZRule[0x%1!X!].stStandardDate.wDay = 0x%8!X! (%8!d!)\r\n\
+TZRule[0x%1!X!].stStandardDate.wHour = 0x%9!X! (%9!d!)\r\n\
+TZRule[0x%1!X!].stStandardDate.wMinute = 0x%10!X! (%10!d!)\r\n\
+TZRule[0x%1!X!].stStandardDate.wSecond = 0x%11!X! (%11!d!)\r\n\
+TZRule[0x%1!X!].stStandardDate.wMilliseconds = 0x%12!X! (%12!d!)\r\n\
 \r\n\
-tzDef.rgRules[0x%1!X!].TZReg.stStandardDate.wYear = 0x%15!X! (%15!d!)\r\n\
-tzDef.rgRules[0x%1!X!].TZReg.stStandardDate.wMonth = 0x%16!X! (%16!d!)\r\n\
-tzDef.rgRules[0x%1!X!].TZReg.stStandardDate.wDayOfWeek = 0x%17!X! (%17!d!)\r\n\
-tzDef.rgRules[0x%1!X!].TZReg.stStandardDate.wDay = 0x%18!X! (%18!d!)\r\n\
-tzDef.rgRules[0x%1!X!].TZReg.stStandardDate.wHour = 0x%19!X! (%19!d!)\r\n\
-tzDef.rgRules[0x%1!X!].TZReg.stStandardDate.wMinute = 0x%20!X! (%20!d!)\r\n\
-tzDef.rgRules[0x%1!X!].TZReg.stStandardDate.wSecond = 0x%21!X! (%21!d!)\r\n\
-tzDef.rgRules[0x%1!X!].TZReg.stStandardDate.wMilliseconds = 0x%22!X! (%22!d!)\r\n\
-\r\n\
-tzDef.rgRules[0x%1!X!].TZReg.stDaylightDate.wYear = 0x%23!X! (%23!d!)\r\n\
-tzDef.rgRules[0x%1!X!].TZReg.stDaylightDate.wMonth = 0x%24!X! (%24!d!)\r\n\
-tzDef.rgRules[0x%1!X!].TZReg.stDaylightDate.wDayOfWeek = 0x%25!X! (%25!d!)\r\n\
-tzDef.rgRules[0x%1!X!].TZReg.stDaylightDate.wDay = 0x%26!X! (%26!d!)\r\n\
-tzDef.rgRules[0x%1!X!].TZReg.stDaylightDate.wHour = 0x%27!X! (%27!d!)\r\n\
-tzDef.rgRules[0x%1!X!].TZReg.stDaylightDate.wMinute = 0x%28!X! (%28!d!)\r\n\
-tzDef.rgRules[0x%1!X!].TZReg.stDaylightDate.wSecond = 0x%29!X! (%29!d!)\r\n\
-tzDef.rgRules[0x%1!X!].TZReg.stDaylightDate.wMilliseconds = 0x%30!X! (%30!d!)"
+TZRule[0x%1!X!].stDaylightDate.wYear = 0x%13!X! (%13!d!)\r\n\
+TZRule[0x%1!X!].stDaylightDate.wMonth = 0x%14!X! (%14!d!)\r\n\
+TZRule[0x%1!X!].stDaylightDate.wDayOfWeek = 0x%15!X! (%15!d!)\r\n\
+TZRule[0x%1!X!].stDaylightDate.wDay = 0x%16!X! (%16!d!)\r\n\
+TZRule[0x%1!X!].stDaylightDate.wHour = 0x%17!X! (%17!d!)\r\n\
+TZRule[0x%1!X!].stDaylightDate.wMinute = 0x%18!X! (%18!d!)\r\n\
+TZRule[0x%1!X!].stDaylightDate.wSecond = 0x%19!X! (%19!d!)\r\n\
+TZRule[0x%1!X!].stDaylightDate.wMilliseconds = 0x%20!X! (%20!d!)"
 
 IDS_NOCONTEXT "No Context"
 
@@ -1404,7 +1417,10 @@ IDS_ACCESSREADCONTROL "Read Control"
 IDS_ACCESSSIMPLEFREEBUSY "Simple FreeBusy"
 IDS_ACCESSDETAILEDFREEBUSY "Detailed FreeBusy"
 
-IDS_SECURITYDESCRIPTOR "Security Info: %1\r\nSecurity Version: 0x%2!04X! = %3\r\nDescriptor:\r\n%4"
+IDS_SECURITYDESCRIPTOR "Security Descriptor: \r\n\
+Security Info: %1\r\n\
+Security Version: 0x%2!04X! = %3\r\n\
+Descriptor:\r\n%4"
 
 IDS_SIDACCOUNT "Account: %1\\%2\r\n\
 SID: %3\r\n\
@@ -1456,7 +1472,8 @@ IDS_COLEMAILADDRESS "E-mail Address"
 IDS_COLEID "EID"
 IDS_COLEXACTNAMES "ExactNames"
 IDS_COLFILENAME "File Name"
-IDS_COLSMARTVIEW "Smart View"
+IDS_COLSMARTVIEW "SmartView"
+IDS_COLSMART_VIEW "Smart View"
 IDS_COLFROM "From"
 IDS_COLIDENTITY "Identity"
 IDS_COLINSTANCEKEY "Instance Key"
@@ -1559,6 +1576,157 @@ IDS_CONVERTDOCHARSET "Set Code Page and Character Sets"
 IDS_CONVERTCODEPAGE "Code Page For Conversion"
 IDS_CONVERTCHARSETTYPE "Character Set Type"
 IDS_CONVERTCHARSETAPPLYTYPE "Character Set Apply Type"
+
+IDS_ARPHEADER "\r\nAppointment Recurrence Pattern: \r\n\
+ReaderVersion2: 0x%1!08X!\r\n\
+WriterVersion2: 0x%2!08X!\r\n\
+StartTimeOffset: 0x%3!08X! = %3!d! = %4\r\n\
+EndTimeOffset: 0x%5!08X! = %5!d! = %6\r\n\
+ExceptionCount: 0x%7!04X!\r\n"
+
+IDS_ARPEXHEADER "ExceptionInfo[%1!d!].StartDateTime: 0x%2!08X! = %3\r\n\
+ExceptionInfo[%1!d!].EndDateTime: 0x%4!08X! = %5\r\n\
+ExceptionInfo[%1!d!].OriginalStartDate: 0x%6!08X! = %7\r\n\
+ExceptionInfo[%1!d!].OverrideFlags: 0x%8!04X! = %9\r\n"
+
+IDS_ARPEXSUBJECT "ExceptionInfo[%1!d!].SubjectLength: 0x%2!04X! = %2!d!\r\n\
+ExceptionInfo[%1!d!].SubjectLength2: 0x%3!04X! = %3!d!\r\n\
+ExceptionInfo[%1!d!].Subject: ""%4!hs!""\r\n"
+
+IDS_ARPEXMEETINGTYPE "ExceptionInfo[%1!d!].MeetingType: 0x%2!08X! = %3\r\n"
+IDS_ARPEXREMINDERDELTA "ExceptionInfo[%1!d!].ReminderDelta: 0x%2!08X!\r\n"
+IDS_ARPEXREMINDERSET "ExceptionInfo[%1!d!].ReminderSet: 0x%2!08X!\r\n"
+
+IDS_ARPEXLOCATION "ExceptionInfo[%1!d!].LocationLength: 0x%2!04X! = %2!d!\r\n\
+ExceptionInfo[%1!d!].LocationLength2: 0x%3!04X! = %3!d!\r\n\
+ExceptionInfo[%1!d!].Location: ""%4!hs!""\r\n"
+
+IDS_ARPEXBUSYSTATUS "ExceptionInfo[%1!d!].BusyStatus: 0x%2!08X! = %3\r\n"
+IDS_ARPEXATTACHMENT "ExceptionInfo[%1!d!].Attachment: 0x%2!08X!\r\n"
+IDS_ARPEXSUBTYPE "ExceptionInfo[%1!d!].SubType: 0x%2!08X!\r\n"
+IDS_ARPEXAPPOINTMENTCOLOR "ExceptionInfo[%1!d!].AppointmentColor: 0x%2!08X!\r\n"
+IDS_ARPRESERVED1 "ReservedBlock1Size: 0x%1!08X!\r\n"
+
+IDS_ARPEXCHANGEHIGHLIGHT "ExtendedException[%1!d!].ChangeHighlight.ChangeHighlightSize: 0x%2!08X!\r\n\
+ExtendedException[%1!d!].ChangeHighlight.ChangeHighlightValue: 0x%3!08X! = %4\r\n"
+
+IDS_ARPEXCHANGEHIGHLIGHTRESERVED "ExtendedException[%1!d!].ChangeHighlight.Reserved: "
+IDS_ARPEXRESERVED1 "ExtendedException[%1!d!].ReservedBlockEE1Size: 0x%2!08X!\r\n"
+
+IDS_ARPEXDATETIME "ExtendedException[%1!d!].StartDateTime: 0x%2!08X! = %3\r\n\
+ExtendedException[%1!d!].EndDateTime: 0x%4!08X! = %5\r\n\
+ExtendedException[%1!d!].OriginalStartDate: 0x%6!08X! = %7\r\n"
+
+IDS_ARPEXWIDESUBJECT "ExtendedException[%1!d!].WideCharSubjectLength: 0x%2!08X! = %2!d!\r\n\
+ExtendedException[%1!d!].WideCharSubject: ""%3!ws!""\r\n"
+
+IDS_ARPEXWIDELOCATION "ExtendedException[%1!d!].WideCharLocationLength: 0x%2!08X! = %2!d!\r\n\
+ExtendedException[%1!d!].WideCharLocation: ""%3!ws!""\r\n"
+
+IDS_ARPEXRESERVED2 "ExtendedException[%1!d!].ReservedBlockEE2Size: 0x%2!08X!\r\n"
+IDS_ARPRESERVED2 "ReservedBlock2Size: 0x%1!08X!"
+
+IDS_RPHEADER "Recurrence Pattern: \r\n\
+ReaderVersion: 0x%1!04X!\r\n\
+WriterVersion: 0x%2!04X!\r\n\
+RecurFrequency: 0x%3!04X! = %4\r\n\
+PatternType: 0x%5!04X! = %6\r\n\
+CalendarType: 0x%7!04X! = %8\r\n\
+FirstDateTime: 0x%9!08X! = %9!d!\r\n\
+Period: 0x%10!08X! = %10!d!\r\n\
+SlidingFlag: 0x%11!08X!\r\n"
+
+IDS_RPPATTERNWEEK "PatternTypeSpecific.WeekRecurrencePattern: 0x%1!08X! = %2\r\n"
+IDS_RPPATTERNMONTH "PatternTypeSpecific.MonthRecurrencePattern: 0x%1!08X! = %1!d!\r\n"
+
+IDS_RPPATTERNMONTHNTH "PatternTypeSpecific.MonthNthRecurrencePattern.DayOfWeek: 0x%1!08X! = %2\r\n\
+PatternTypeSpecific.MonthNthRecurrencePattern.N: 0x%3!08X! = %4\r\n"
+
+IDS_RPHEADER2 "EndType: 0x%1!08X! = %2\r\n\
+OccurrenceCount: 0x%3!08X! = %3!d!\r\n\
+FirstDOW: 0x%4!08X! = %5\r\n\
+DeletedInstanceCount: 0x%6!08X! = %6!d!\r\n"
+
+IDS_RPDELETEDINSTANCEDATES "DeletedInstanceDates[%1!d!]: 0x%2!08X! = %3\r\n"
+IDS_RPMODIFIEDINSTANCECOUNT "ModifiedInstanceCount: 0x%1!08X! = %1!d!\r\n"
+IDS_RPMODIFIEDINSTANCEDATES "ModifiedInstanceDates[%1!d!]: 0x%2!08X! = %3\r\n"
+
+IDS_RPDATE "StartDate: 0x%1!08X! = %1!d! = %2\r\n\
+EndDate: 0x%3!08X! = %3!d! = %4"
+
+IDS_FLAGS_PREFIX "Flags: "
+
+IDS_JUNKDATASIZE "\r\nJunkDataSize = 0x%1!08X!\r\n%2"
+
+IDS_EXTENDEDFLAGSHEADER "Extended Flags: \r\n\
+Number of flags = %1!d!"
+
+IDS_EXTENDEDFLAGID "\r\nId = 0x%1!02X! = %2\
+\r\nCb = 0x%3!02X! = %3!d!"
+IDS_EXTENDEDFLAGDATAFLAG "\r\n\tExtended Flags = 0x%1!08X! = %2"
+IDS_EXTENDEDFLAGDATASFID "\r\n\tSearchFolderID = %1"
+IDS_EXTENDEDFLAGDATASFTAG "\r\n\tSearchFolderTag = 0x%1!08X!"
+IDS_EXTENDEDFLAGDATATODOVERSION "\r\n\tToDoFolderVersion = 0x%1!08X!"
+
+IDS_EXTENDEDFLAGUNKNOWN "\r\n\tUnknown Data = "
+IDS_REPORTTAGHEADER "Report Tag: \r\n\
+Cookie = %1!hs!\r\n\
+Version = 0x%2!08X! = %3"
+
+IDS_REPORTTAGSTOREEID "\r\nStoreEntryID = "
+IDS_REPORTTAGFOLDEREID "\r\nFolderEntryID = "
+IDS_REPORTTAGMESSAGEEID "\r\nMessageEntryID = "
+IDS_REPORTTAGSFEID "\r\nSearchFolderEntryID = "
+IDS_REPORTTAGMESSAGEKEY "\r\nMessageSearchKey = "
+IDS_REPORTTAGANSITEXT "\r\ncchAnsiText = 0x%1!08X!\r\n\
+AnsiText = %2!hs!"
+
+IDS_CONVERSATIONINDEXHEADER "Conversation Index: \r\n\
+Unnamed byte = 0x%1!02X! = %1!d!\r\n\
+Current FILETIME: (Low = 0x%2!08X!, High = 0x%3!08X!) = %4\r\n\
+GUID = %5"
+
+IDS_CONVERSATIONINDEXRESPONSELEVEL "\r\nResponseLevel[%1!d!].DeltaCode = %2!d!\
+\r\nResponseLevel[%1!d!].TimeDelta = 0x%3!08X! = %3!d!\
+\r\nResponseLevel[%1!d!].Random = 0x%4!02X! = %4!d!\
+\r\nResponseLevel[%1!d!].ResponseLevel = 0x%5!02X! = %5!d!"
+
+IDS_TASKASSIGNERSHEADER "Task Assigners: \r\n\
+cAssigners = 0x%1!08X! = %1!d!"
+
+IDS_TASKASSIGNEREID "\r\nTask Assigner[%1!d!]\r\n\
+\tcbEntryID = 0x%2!08X! = %2!d!\r\n\
+\tlpEntryID = "
+
+IDS_TASKASSIGNERNAME "\r\n\tszDisplayName (ANSI) = %1!hs!\
+					 \r\n\tszDisplayName (Unicode) = %2!ws!"
+
+IDS_TASKASSIGNERJUNKDATA "\r\n\tJunkDataSize = 0x%1!08X!\r\n"
+
+IDS_GLOBALOBJECTIDHEADER "Global Object ID: \
+\r\nByte Array ID = "
+
+IDS_GLOBALOBJECTIDDATA1 "\r\nYear: 0x%1!04X! = %1!d!\
+\r\nMonth: 0x%2!02X! = %2!d! = %3\
+\r\nDay: 0x%4!02X! = %4!d!\
+\r\nCreation Time = 0x%5!08X!:0x%6!08X! = %7\
+\r\nX: 0x%8!08X!:0x%9!08X!\
+\r\nSize: 0x%10!02X! = %10!d!"
+
+IDS_GLOBALOBJECTIDDATA2 "\r\nData = "
+
+IDS_ONEOFFENTRYIDHEADER "One-Off Entry Id: \r\n\
+dwFlags = 0x%1!08X! = %1!d!\r\n"
+IDS_ONEOFFENTRYIDFOOTERUNICODE "\r\n\
+dwBitmask: 0x%1!08X! = %2\r\n\
+szDisplayName = %3!ws!\r\n\
+szAddressType = %4!ws!\r\n\
+szEmailAddress = %5!ws!"
+IDS_ONEOFFENTRYIDFOOTERANSI "\r\n\
+dwBitmask: 0x%1!08X! = %1!d! = %2\r\n\
+szDisplayName = %3!hs!\r\n\
+szAddressType = %4!hs!\r\n\
+szEmailAddress = %5!hs!"
 
 // All strings above this point use FormatMessage style formatting
 

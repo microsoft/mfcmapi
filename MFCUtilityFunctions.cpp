@@ -34,7 +34,6 @@ HRESULT DisplayObject(
 					  CBaseDialog* lpHostDlg)
 {
 	HRESULT			hRes = S_OK;
-	__mfcmapiAssociatedContentsEnum	bAssocContents;
 
 	if (!lpHostDlg || !lpHostDlg->m_lpMapiObjects || !lpUnk) return MAPI_E_INVALID_PARAMETER;
 
@@ -43,8 +42,6 @@ HRESULT DisplayObject(
 	{
 		ulObjType = GetMAPIObjectType((LPMAPIPROP)lpUnk);
 	}
-
-	bAssocContents = (otAssocContents == tType)?mfcmapiSHOW_ASSOC_CONTENTS:mfcmapiSHOW_NORMAL_CONTENTS;
 
 	lpHostDlg->OnUpdateSingleMAPIPropListCtrl(lpUnk, NULL);
 
@@ -72,7 +69,7 @@ HRESULT DisplayObject(
 				lpHostDlg->m_lpParent,
 				lpHostDlg->m_lpMapiObjects,
 				NULL,
-				(otStoreDeletedItems == tType)?mfcmapiSHOW_DELETED_ITEMS:mfcmapiDO_NOT_SHOW_DELETED_ITEMS);
+				(otStoreDeletedItems == tType)?dfDeleted:dfNormal);
 
 			//restore the old MDB
 			lpHostDlg->m_lpMapiObjects->SetMDB(lpMDB);//...we can put it back
@@ -91,7 +88,7 @@ HRESULT DisplayObject(
 						lpHostDlg->m_lpParent,
 						lpHostDlg->m_lpMapiObjects,
 						(LPMAPIFOLDER) lpUnk,
-						mfcmapiDO_NOT_SHOW_DELETED_ITEMS);
+						dfNormal);
 				}
 				else
 				{
@@ -110,7 +107,7 @@ HRESULT DisplayObject(
 								lpHostDlg->m_lpParent,
 								lpHostDlg->m_lpMapiObjects,
 								(LPMAPIFOLDER) lpUnk,
-								mfcmapiDO_NOT_SHOW_DELETED_ITEMS);
+								dfNormal);
 
 							//restore the old MDB
 							lpHostDlg->m_lpMapiObjects->SetMDB(NULL);
@@ -125,8 +122,7 @@ HRESULT DisplayObject(
 					lpHostDlg->m_lpParent,
 					lpHostDlg->m_lpMapiObjects,
 					(LPMAPIFOLDER) lpUnk,
-					bAssocContents,
-					mfcmapiDO_NOT_SHOW_DELETED_ITEMS);
+					(otAssocContents == tType)?dfAssoc:dfNormal);
 			}
 			break;
 		}

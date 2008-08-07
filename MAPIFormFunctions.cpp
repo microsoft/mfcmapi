@@ -14,100 +14,6 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-HRESULT CallActivateNext(
-						 LPMAPIFORMADVISESINK	lpFormAdviseSink,
-						 LPCTSTR szClass,
-						 ULONG ulStatus,
-						 ULONG ulFlags,
-						 LPPERSISTMESSAGE* lppPersist)
-{
-	DebugPrint(DBGFormViewer,_T("CallActivateNext: szClass = %s, ulStatus = 0x%X, ulFlags = 0x%X\n"),szClass,ulStatus,ulFlags);
-	HRESULT hRes = S_OK;
-	if (!lpFormAdviseSink) return MAPI_E_INVALID_PARAMETER;
-#ifdef _UNICODE
-	{
-		char *szAnsiClass = NULL;
-		EC_H(UnicodeToAnsi(szClass,&szAnsiClass));
-
-		hRes = lpFormAdviseSink->OnActivateNext(
-			szAnsiClass,
-			ulStatus,
-			ulFlags,
-			lppPersist);
-		delete[] szAnsiClass;
-	}
-#else
-	hRes = lpFormAdviseSink->OnActivateNext(
-		szClass,
-		ulStatus,
-		ulFlags,
-		lppPersist);
-#endif
-	return hRes;
-}
-
-HRESULT LoadForm(
-				 LPMAPIMESSAGESITE lpMessageSite,
-				 LPMESSAGE lpMessage,
-				 LPMAPIFOLDER lpFolder,
-				 LPCTSTR szMessageClass,
-				 ULONG ulMessageStatus,
-				 ULONG ulMessageFlags,
-				 LPMAPIFORM* lppForm)
-{
-	DebugPrint(DBGFormViewer,_T("LoadForm: szMessageClass = %s, ulMessageStatus = 0x%X, ulMessageFlags = 0x%X\n"),szMessageClass,ulMessageStatus,ulMessageFlags);
-	HRESULT hRes = S_OK;
-	*lppForm = NULL;
-
-	if (!lpMessageSite || !lpMessage || !lpFolder) return MAPI_E_INVALID_PARAMETER;
-	LPMAPIFORMMGR	lpMAPIFormMgr = NULL;
-
-	//Load the new form
-	EC_H(lpMessageSite->GetFormManager(&lpMAPIFormMgr));
-
-	if (lpMAPIFormMgr)
-	{
-#ifdef _UNICODE
-		char *szAnsiClass = NULL;
-		EC_H(UnicodeToAnsi(szMessageClass,&szAnsiClass));
-
-		EC_H(lpMAPIFormMgr->LoadForm(
-			0,//(ULONG) m_hWnd,
-			0,//flags
-			szAnsiClass,
-			ulMessageStatus,//message status
-			ulMessageFlags,//message flags
-			lpFolder,//0,//parent folder
-			lpMessageSite,//message site
-			lpMessage,
-			(IMAPIViewContext *) lpMessageSite,//view context
-			IID_IMAPIForm,//riid
-			(LPVOID *) lppForm));
-		delete[] szAnsiClass;
-#else
-		EC_H(lpMAPIFormMgr->LoadForm(
-			0,//(ULONG) m_hWnd,
-			0,//flags
-			szMessageClass,
-			ulMessageStatus,//message status
-			ulMessageFlags,//message flags
-			lpFolder,//0,//parent folder
-			lpMessageSite,//message site
-			lpMessage,
-			(IMAPIViewContext *) lpMessageSite,//view context - OL doesn't seem to pass this
-			IID_IMAPIForm,//riid
-			(LPVOID *) lppForm));
-#endif
-		lpMAPIFormMgr->Release();
-	}
-	if (FAILED(hRes))
-	{
-		if (*lppForm) (*lppForm)->Release();
-		*lppForm = NULL;
-	}
-	return hRes;
-}
-
 //This function creates a new message of class szMessageClass, based in m_lpContainer
 //The function will also take care of launching the form
 
@@ -122,7 +28,7 @@ HRESULT CreateAndDisplayNewMailInFolder(
 							  LPMAPISESSION lpMAPISession,
 							  CContentsTableListCtrl *lpContentsTableListCtrl,
 							  int iItem,
-							  LPCTSTR szMessageClass,
+							  LPCSTR szMessageClass,
 							  LPMAPIFOLDER lpFolder)
 {
 	HRESULT				hRes = S_OK;
@@ -136,28 +42,13 @@ HRESULT CreateAndDisplayNewMailInFolder(
 
 	LPMAPIFORMINFO		lpMAPIFormInfo = NULL;
 	LPPERSISTMESSAGE	lpPersistMessage = NULL;
-#ifdef _UNICODE
-	{
-		char *szAnsiClass = NULL;
-		EC_H(UnicodeToAnsi(szMessageClass,&szAnsiClass));
 
-		EC_H_MSG(lpMAPIFormMgr->ResolveMessageClass(
-			szAnsiClass,//class
-			NULL,//flags
-			lpFolder,//folder to resolve to
-			&lpMAPIFormInfo),
-			IDS_NOCLASSHANDLER);
-		delete[] szAnsiClass;
-	}
-#else
 	EC_H_MSG(lpMAPIFormMgr->ResolveMessageClass(
 		szMessageClass,//class
 		NULL,//flags
 		lpFolder,//folder to resolve to
 		&lpMAPIFormInfo),
 		IDS_NOCLASSHANDLER);
-#endif
-
 	if (lpMAPIFormInfo)
 	{
 		EC_H(lpMAPIFormMgr->CreateForm(
@@ -239,7 +130,7 @@ HRESULT OpenMessageNonModal(
 	enum {FLAGS,CLASS,EID,NUM_COLS};
 	SizedSPropTagArray(NUM_COLS,sptaShowForm) = { NUM_COLS, {
 		PR_MESSAGE_FLAGS,
-			PR_MESSAGE_CLASS,
+			PR_MESSAGE_CLASS_A,
 			PR_ENTRYID}
 	};
 
@@ -272,15 +163,33 @@ HRESULT OpenMessageNonModal(
 
 		if (lpMAPIFormViewer)
 		{
+			LPMAPIFORMMGR lpMAPIFormMgr = NULL;
 			LPMAPIFORM lpForm = NULL;
-			EC_H(LoadForm(
-				(LPMAPIMESSAGESITE) lpMAPIFormViewer,
-				lpMessage,
-				lpSourceFolder,
-				lpspvaShow[CLASS].Value.LPSZ,
-				ulMessageStatus,
-				lpspvaShow[FLAGS].Value.ul,
-				&lpForm));
+
+			EC_H(lpMAPIFormViewer->GetFormManager(&lpMAPIFormMgr));
+
+			if (lpMAPIFormMgr)
+			{
+				DebugPrint(DBGFormViewer,_T("Calling LoadForm: szMessageClass = %hs, ulMessageStatus = 0x%X, ulMessageFlags = 0x%X\n"),
+					lpspvaShow[CLASS].Value.lpszA,
+					ulMessageStatus,
+					lpspvaShow[FLAGS].Value.ul);
+				EC_H(lpMAPIFormMgr->LoadForm(
+					0,//(ULONG) m_hWnd,
+					0,//flags
+					lpspvaShow[CLASS].Value.lpszA,
+					ulMessageStatus,
+					lpspvaShow[FLAGS].Value.ul,
+					lpSourceFolder,
+					lpMAPIFormViewer,
+					lpMessage,
+					lpMAPIFormViewer,
+					IID_IMAPIForm,//riid
+					(LPVOID *) &lpForm));
+				lpMAPIFormMgr->Release();
+				lpMAPIFormMgr = NULL;
+			}
+
 			if (lpForm)
 			{
 				EC_H(lpMAPIFormViewer->CallDoVerb(
@@ -330,7 +239,7 @@ HRESULT OpenMessageModal(LPMAPIFOLDER lpParentFolder,
 	enum {FLAGS,CLASS,ACCESS,EID,NUM_COLS};
 	SizedSPropTagArray(NUM_COLS,sptaShowForm) = { NUM_COLS, {
 		PR_MESSAGE_FLAGS,
-			PR_MESSAGE_CLASS,
+			PR_MESSAGE_CLASS_A,
 			PR_ACCESS,
 			PR_ENTRYID}
 	};
@@ -358,26 +267,6 @@ HRESULT OpenMessageModal(LPMAPIFOLDER lpParentFolder,
 			lpMessage,//message to open
 			&Token));//basically, the pointer to the form
 
-#ifdef _UNICODE
-		{
-			char *szAnsiClass = NULL;
-			EC_H(UnicodeToAnsi(lpspvaShow[CLASS].Value.lpszW,&szAnsiClass));
-
-			EC_H_CANCEL(lpMAPISession->ShowForm(
-				NULL,
-				lpMDB,//message store
-				lpParentFolder,//parent folder
-				NULL,//default interface
-				Token,//token?
-				NULL,//reserved
-				MAPI_POST_MESSAGE,//flags
-				ulMessageStatus,//message status
-				lpspvaShow[FLAGS].Value.ul,//message flags
-				lpspvaShow[ACCESS].Value.ul,//access
-				szAnsiClass));//message class
-			delete[] szAnsiClass;
-		}
-#else
 		EC_H_CANCEL(lpMAPISession->ShowForm(
 			NULL,
 			lpMDB,//message store
@@ -390,7 +279,6 @@ HRESULT OpenMessageModal(LPMAPIFOLDER lpParentFolder,
 			lpspvaShow[FLAGS].Value.ul,//message flags
 			lpspvaShow[ACCESS].Value.ul,//access
 			lpspvaShow[CLASS].Value.lpszA));//message class
-#endif
 	}
 
 	MAPIFreeBuffer(lpspvaShow);

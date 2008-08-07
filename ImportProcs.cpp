@@ -115,7 +115,7 @@ BOOL GetComponentPath(
 	LoadGetComponentPath();
 
 	if (!pfnFGetComponentPath) return false;
-#ifdef _UNICODE
+#ifdef UNICODE
 	CHAR	szAsciiPath[MAX_PATH] = {0};
 	char *szAnsiQualifier = NULL;
 	EC_H(UnicodeToAnsi(szQualifier,&szAnsiQualifier));
@@ -614,7 +614,7 @@ STDMETHODIMP OpenStreamOnFile(LPALLOCATEBUFFER lpAllocateBuffer,
 	CHECKLOAD(pfnOpenStreamOnFile);
 	HRESULT hRes = S_OK;
 	if (!pfnOpenStreamOnFile) return MAPI_E_CALL_FAILED;
-#ifdef _UNICODE
+#ifdef UNICODE
 	// Convert new file name to Ansi
 	LPSTR lpAnsiCharStr = NULL;
 	EC_H(UnicodeToAnsi(
@@ -1114,7 +1114,7 @@ STDAPI HrCopyRestriction(
 	// no short circuit returns after here
 
 	WC_H(HrCopyRestrictionArray(
-		lpResSrc, 
+		lpResSrc,
 		lpObject,
 		1,
 		*lppResDest));
@@ -1129,7 +1129,7 @@ STDAPI HrCopyRestriction(
 }
 
 // This augmented PropCopyMore is implicitly tied to the built-in MAPIAllocateMore and MAPIAllocateBuffer through
-// the calls to HrCopyRestriction and HrCopyActions. Rewriting those functions to accept function pointers is 
+// the calls to HrCopyRestriction and HrCopyActions. Rewriting those functions to accept function pointers is
 // expensive for no benefit here. So if you borrow this code, be careful if you plan on using other allocators.
 STDAPI_(SCODE) PropCopyMore(LPSPropValue lpSPropValueDest,
 							LPSPropValue lpSPropValueSrc,

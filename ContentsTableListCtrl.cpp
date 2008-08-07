@@ -60,7 +60,7 @@ CContentsTableListCtrl::CContentsTableListCtrl(
 	m_sptExtraColumnTags = sptExtraColumnTags;
 	m_ulNumExtraDisplayColumns = ulNumExtraDisplayColumns;
 	m_lpExtraDisplayColumns = lpExtraDisplayColumns;
-	m_bShowingDeletedItems = mfcmapiDO_NOT_SHOW_DELETED_ITEMS;
+	m_ulDisplayFlags = dfNormal;
 	m_ulDisplayNameColumn = NODISPLAYNAME;
 
 	m_ulHeaderColumns = 0;
@@ -144,7 +144,7 @@ LRESULT CContentsTableListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM l
 
 HRESULT CContentsTableListCtrl::SetContentsTable(
 						 LPMAPITABLE lpContentsTable,
-						 __mfcmapiDeletedItemsEnum bShowingDeletedItems,
+						 ULONG ulDisplayFlags,
 						 ULONG ulContainerType)
 {
 	HRESULT	hRes = S_OK;
@@ -155,7 +155,7 @@ HRESULT CContentsTableListCtrl::SetContentsTable(
 
 	CWaitCursor	Wait;//Change the mouse to an hourglass while we work.
 
-	m_bShowingDeletedItems = bShowingDeletedItems;
+	m_ulDisplayFlags = ulDisplayFlags;
 	m_ulContainerType = ulContainerType;
 
 	DebugPrintEx(DBGGeneric,CLASS,_T("SetContentsTable"),_T("replacing 0x%X with 0x%X\n"),m_lpContentsTable,lpContentsTable);

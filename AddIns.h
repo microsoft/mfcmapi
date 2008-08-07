@@ -53,12 +53,19 @@ enum __GuidType
 
 // All MAPI props are stored in the array by their PROP_ID. So all are < 0xffff.
 #define FLAG_ENTRY(_fName,_fValue,_fType) {PROP_ID(_fName),(_fValue),(_fType),L#_fValue},
+#define FLAG_ENTRY_NAMED(_fName,_fValue,_fValueName,_fType) {PROP_ID(_fName),(_fValue),(_fType),(_fValueName)},
 #define FLAG_ENTRY3RDBYTE(_fName,_fValue,_fValType) {PROP_ID(_fName),(_fValue),flagVALUE3RDBYTE,L#_fValType L": " L#_fValue}, // STRING_OK
 #define FLAG_ENTRY4THBYTE(_fName,_fValue,_fValType) {PROP_ID(_fName),(_fValue),flagVALUE4THBYTE,L#_fValType L": " L#_fValue}, // STRING_OK
 #define CLEAR_BITS_ENTRY(_fName,_fValue) {PROP_ID(_fName),(_fValue),flagCLEARBITS,L""},
 
 #define NAMEDPROP_FLAG_ENTRY(_fName,_fGuid,_fValue,_fType) {PROP_TAG((guid##_fGuid),(_fName)),(_fValue),(_fType),L#_fValue},
+#define NAMEDPROP_FLAG_ENTRY_NAMED(_fName,_fGuid,_fValue,_fValueName,_fType) {PROP_TAG((guid##_fGuid),(_fName)),(_fValue),(_fType),(_fValueName)},
 #define NAMEDPROP_CLEAR_BITS_ENTRY(_fName,_fGuid,_fValue) {PROP_TAG((guid##_fGuid),(_fName)),(_fValue),flagCLEARBITS,L""},
+
+// I can put non property related flags with the high bit set (see enum __NonPropFlag)
+#define NON_PROP_FLAG_ENTRY(_fName,_fValue,_fType) {(_fName),(_fValue),(_fType),L#_fValue},
+#define NON_PROP_FLAG_ENTRY_NAMED(_fName,_fValue,_fValueName,_fType) {(_fName),(_fValue),(_fType),(_fValueName)},
+#define NON_PROP_CLEAR_BITS_ENTRY(_fName,_fValue) {(_fName),(_fValue),flagCLEARBITS,L""},
 
 // Flag parsing array - used by GetPropFlags
 struct FLAG_ARRAY_ENTRY
@@ -391,10 +398,6 @@ struct _AddIn
 	ULONG                ulPropFlags; // Count of flags exposed by add-in
 	LPFLAG_ARRAY_ENTRY   lpPropFlags; // Array of flags exposed by add-in
 };
-
-// I can put non property related flags with the high bit set (see enum __NonPropFlag)
-#define NON_PROP_FLAG_ENTRY(_fName,_fValue,_fType) {(_fName),(_fValue),(_fType),L#_fValue},
-#define NON_PROP_CLEAR_BITS_ENTRY(_fName,_fValue) {(_fName),(_fValue),flagCLEARBITS,L""},
 
 EXTERN_C __declspec(dllexport) void __cdecl AddInLog(BOOL bPrintThreadTime, LPWSTR szMsg,...);
 EXTERN_C __declspec(dllexport) HRESULT __cdecl SimpleDialog(LPWSTR szTitle, LPWSTR szMsg,...);

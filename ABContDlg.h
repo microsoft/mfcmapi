@@ -27,6 +27,7 @@ public:
 protected:
 	// Generated message map functions
 	//{{AFX_MSG(CAbContDlg)
+	afx_msg void OnSetDefaultDir();
 	afx_msg void OnSetPAB();
 	//}}AFX_MSG
 	// Generated message map functions

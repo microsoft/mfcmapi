@@ -269,7 +269,7 @@ void CFormContainerDlg::OnInstallForm()
 			{
 				hRes = S_OK;
 				LPSTR szPath = NULL; // InstallForm requires an ANSI string
-#ifdef _UNICODE
+#ifdef UNICODE
 				EC_H(UnicodeToAnsi(dlgFilePicker.GetNextPathName(pos),&szPath));
 #else
 				szPath = (LPTSTR) (LPCTSTR) dlgFilePicker.GetNextPathName(pos);
@@ -290,7 +290,7 @@ void CFormContainerDlg::OnInstallForm()
 						}
 					}
 					else CHECKHRES(hRes);
-#ifdef _UNICODE
+#ifdef UNICODE
 					delete[] szPath;
 #endif
 				}

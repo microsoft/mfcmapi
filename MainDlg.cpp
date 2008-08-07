@@ -103,6 +103,7 @@ BEGIN_MESSAGE_MAP(CMainDlg, CContentsTableDlg)
 	ON_COMMAND(ID_SETDEFAULTSTORE, OnSetDefaultStore)
 	ON_COMMAND(ID_UNLOADMAPI, OnUnloadMAPI)
 	ON_COMMAND(ID_VIEWABHIERARCHY, OnABHierarchy)
+	ON_COMMAND(ID_OPENDEFAULTDIR, OnOpenDefaultDir)
 	ON_COMMAND(ID_OPENPAB, OnOpenPAB)
 	ON_COMMAND(ID_VIEWSTATUSTABLE, OnStatusTable)
 	ON_COMMAND(ID_SHOWPROFILES, OnShowProfiles)
@@ -183,6 +184,7 @@ void CMainDlg::OnInitMenu(CMenu* pMenu)
 		pMenu->EnableMenuItem(ID_CLOSEADDRESSBOOK,DIM(lpAddrBook));
 
 		pMenu->EnableMenuItem(ID_VIEWABHIERARCHY,DIM(lpMAPISession));
+		pMenu->EnableMenuItem(ID_OPENDEFAULTDIR,DIM(lpMAPISession));
 		pMenu->EnableMenuItem(ID_OPENPAB,DIM(lpMAPISession));
 	}
 	CContentsTableDlg::OnInitMenu(pMenu);
@@ -234,6 +236,42 @@ void CMainDlg::OnABHierarchy()
 
 }//CMainDlg::OnABHierarchy
 
+void CMainDlg::OnOpenDefaultDir()
+{
+	if (!m_lpMapiObjects) return;
+
+	// check if we have an AB - if we don't, get one
+	LPADRBOOK lpAddrBook = m_lpMapiObjects->GetAddrBook(true);//do not release
+	if (!lpAddrBook) return;
+
+	HRESULT		hRes = S_OK;
+	ULONG		cbEID = NULL;
+	LPENTRYID	lpEID = NULL;
+	ULONG		ulObjType = NULL;
+	LPABCONT	lpDefaultDir = NULL;
+
+	EC_H(lpAddrBook->GetDefaultDir(
+		&cbEID,
+		&lpEID));
+
+	EC_H(CallOpenEntry(
+		NULL,
+		lpAddrBook,
+		NULL,
+		NULL,
+		cbEID,
+		lpEID,
+		NULL,
+		MAPI_MODIFY,
+		&ulObjType,
+		(LPUNKNOWN*)&lpDefaultDir));
+
+	EC_H(DisplayObject(lpDefaultDir,ulObjType,otDefault,this));
+
+	if (lpDefaultDir) lpDefaultDir->Release();
+	MAPIFreeBuffer(lpEID);
+} // CMainDlg::OnOpenDefaultDir
+
 void CMainDlg::OnOpenPAB()
 {
 	if (!m_lpMapiObjects) return;
@@ -247,7 +285,6 @@ void CMainDlg::OnOpenPAB()
 	LPENTRYID	lpEID = NULL;
 	ULONG		ulObjType = NULL;
 	LPABCONT	lpPAB = NULL;
-
 
 	EC_H(lpAddrBook->GetPAB(
 		&cbEID,
@@ -270,7 +307,6 @@ void CMainDlg::OnOpenPAB()
 	if (lpPAB) lpPAB->Release();
 	MAPIFreeBuffer(lpEID);
 }//CMainDlg::OnOpenPAB
-
 
 void CMainDlg::OnLogonAndDisplayStores()
 {
@@ -602,7 +638,7 @@ void CMainDlg::OnOpenMessageStoreTable()
 	{
 		EC_H(m_lpContentsTableListCtrl->SetContentsTable(
 			pStoresTbl,
-			mfcmapiDO_NOT_SHOW_DELETED_ITEMS,
+			dfNormal,
 			MAPI_STORE));
 
 		pStoresTbl->Release();
@@ -799,7 +835,7 @@ void CMainDlg::OnLogoff()
 	//We do this first to free up any stray session pointers
 	EC_H(m_lpContentsTableListCtrl->SetContentsTable(
 		NULL,
-		mfcmapiDO_NOT_SHOW_DELETED_ITEMS,
+		dfNormal,
 		MAPI_STORE));
 
 	m_lpMapiObjects->Logoff();

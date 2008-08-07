@@ -161,39 +161,59 @@ STDMETHODIMP_(ULONG) CMyMAPIFormViewer::Release()
 STDMETHODIMP CMyMAPIFormViewer::GetSession (LPMAPISESSION FAR * ppSession)
 {
 	DebugPrintEx(DBGFormViewer,CLASS,_T("GetSession"),_T("\n"));
-	*ppSession = m_lpMAPISession;
-	if (*ppSession) (*ppSession)->AddRef();
-	return S_OK;
+	if (ppSession) *ppSession = m_lpMAPISession;
+	if (ppSession && *ppSession)
+	{
+		m_lpMAPISession->AddRef();
+		return S_OK;
+	}
+	else
+	{
+		return S_FALSE;
+	}
 }
 
 STDMETHODIMP CMyMAPIFormViewer::GetStore (LPMDB FAR * ppStore)
 {
 	DebugPrintEx(DBGFormViewer,CLASS,_T("GetStore"),_T("\n"));
-	*ppStore = m_lpMDB;
-	if (*ppStore) (*ppStore)->AddRef();
-	return S_OK;
+	if (ppStore) *ppStore = m_lpMDB;
+	if (ppStore && *ppStore)
+	{
+		m_lpMDB->AddRef();
+		return S_OK;
+	}
+	else
+	{
+		return S_FALSE;
+	}
 }
 
 STDMETHODIMP CMyMAPIFormViewer::GetFolder (LPMAPIFOLDER FAR * ppFolder)
 {
 	DebugPrintEx(DBGFormViewer,CLASS,_T("GetFolder"),_T("\n"));
-	*ppFolder = m_lpFolder;
-	if (*ppFolder) m_lpFolder->AddRef();
-	return S_OK;
+	if (ppFolder) *ppFolder = m_lpFolder;
+	if (ppFolder && *ppFolder)
+	{
+		m_lpFolder->AddRef();
+		return S_OK;
+	}
+	else
+	{
+		return S_FALSE;
+	}
 }
 
 STDMETHODIMP CMyMAPIFormViewer::GetMessage(LPMESSAGE FAR * ppmsg)
 {
 	DebugPrintEx(DBGFormViewer,CLASS,_T("GetMessage"),_T("\n"));
-	if (m_lpMessage)
+	if (ppmsg) *ppmsg = m_lpMessage;
+	if (ppmsg && *ppmsg)
 	{
-		*ppmsg = m_lpMessage;
 		m_lpMessage->AddRef();
 		return S_OK;
 	}
 	else
 	{
-		*ppmsg = NULL;
 		return S_FALSE;
 	}
 }
@@ -577,10 +597,10 @@ STDMETHODIMP CMyMAPIFormViewer::ActivateNext(ULONG ulDir,
 	DebugPrintEx(DBGFormViewer,CLASS,_T("ActivateNext"),_T("ulDir = 0x%X\n"),ulDir);
 	HRESULT	hRes = S_OK;
 
-	enum {ePR_MESSAGE_FLAGS,ePR_MESSAGE_CLASS,NUM_COLS};
+	enum {ePR_MESSAGE_FLAGS,ePR_MESSAGE_CLASS_A,NUM_COLS};
 	SizedSPropTagArray(NUM_COLS,sptaShowForm) = { NUM_COLS, {
 		PR_MESSAGE_FLAGS,
-			PR_MESSAGE_CLASS}
+			PR_MESSAGE_CLASS_A}
 	};
 
 	int			iNewItem = -1;
@@ -605,8 +625,13 @@ STDMETHODIMP CMyMAPIFormViewer::ActivateNext(ULONG ulDir,
 
 			if (m_lpMapiFormAdviseSink)
 			{
-				WC_H(CallActivateNext(m_lpMapiFormAdviseSink,
-					lpspvaShow[ePR_MESSAGE_CLASS].Value.LPSZ,
+				DebugPrint(DBGFormViewer,_T("Calling OnActivateNext: szClass = %hs, ulStatus = 0x%X, ulFlags = 0x%X\n"),
+					lpspvaShow[ePR_MESSAGE_CLASS_A].Value.lpszA,
+					ulMessageStatus,
+					lpspvaShow[ePR_MESSAGE_FLAGS].Value.ul);
+
+				WC_H(m_lpMapiFormAdviseSink->OnActivateNext(
+					lpspvaShow[ePR_MESSAGE_CLASS_A].Value.lpszA,
 					ulMessageStatus,//message status
 					lpspvaShow[ePR_MESSAGE_FLAGS].Value.ul,//message flags
 					&lpNewPersistMessage));

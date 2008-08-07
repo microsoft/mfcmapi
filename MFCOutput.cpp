@@ -823,7 +823,7 @@ void _OutputStream(ULONG ulDbgLvl, FILE* fFile, LPSTREAM lpStream)
 	HRESULT			hRes = S_OK;
 	BYTE			bBuf[MAXBYTES+2];//Allocate some extra for NULL terminators - 2 for Unicode
 	ULONG			ulNumBytes = MAXBYTES;
-	LARGE_INTEGER	li;
+	LARGE_INTEGER	li = {0};
 
 	if (!lpStream)
 	{
@@ -832,7 +832,6 @@ void _OutputStream(ULONG ulDbgLvl, FILE* fFile, LPSTREAM lpStream)
 	}
 
 //	DebugPrint(ulDbgLvl, _T("OutputStream sending 0x%X to \"%s\"\n"),lpStream, szFileName);
-	li.QuadPart = 0;
 
 	WC_H_MSG(lpStream->Seek(
 		li,

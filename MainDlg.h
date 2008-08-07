@@ -30,6 +30,7 @@ protected:
 	// Generated message map functions
 	//{{AFX_MSG(CMainDlg)
 	afx_msg void OnInitMenu(CMenu* pMenu);
+	afx_msg void OnOpenDefaultDir();
 	afx_msg void OnOpenPAB();
 	afx_msg void OnABHierarchy();
 	afx_msg void OnCloseAddressBook();

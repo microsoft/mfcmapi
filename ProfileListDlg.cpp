@@ -112,7 +112,7 @@ void CProfileListDlg::OnRefreshView()
 	//If we don't do this, we get the old table back again.
 	EC_H(m_lpContentsTableListCtrl->SetContentsTable(
 		NULL,
-		mfcmapiDO_NOT_SHOW_DELETED_ITEMS,
+		dfNormal,
 		NULL));
 
 	LPPROFADMIN lpProfAdmin = m_lpMapiObjects->GetProfAdmin();//do not release
@@ -127,7 +127,7 @@ void CProfileListDlg::OnRefreshView()
 	{
 		EC_H(m_lpContentsTableListCtrl->SetContentsTable(
 			lpProfTable,
-			mfcmapiDO_NOT_SHOW_DELETED_ITEMS,
+			dfNormal,
 			NULL));
 
 		lpProfTable->Release();

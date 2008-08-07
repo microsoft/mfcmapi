@@ -19,8 +19,7 @@ public:
 		CParentWnd* pParentWnd,
 		CMapiObjects *lpMapiObjects,
 		LPMAPIFOLDER lpMAPIFolder,
-		__mfcmapiAssociatedContentsEnum bShowingAssociatedContents,
-		__mfcmapiDeletedItemsEnum bShowingDeletedItems);
+		ULONG ulDisplayFlags);
 	virtual ~CFolderDlg();
 
 protected:

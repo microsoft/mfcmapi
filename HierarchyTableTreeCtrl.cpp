@@ -30,7 +30,7 @@ CHierarchyTableTreeCtrl::CHierarchyTableTreeCtrl(
 												 CWnd* pCreateParent,
 												 CMapiObjects *lpMapiObjects,
 												 CHierarchyTableDlg *lpHostDlg,
-												 __mfcmapiDeletedItemsEnum bShowingDeletedFolders)
+												 ULONG ulDisplayFlags)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	CRect pRect;
@@ -51,7 +51,7 @@ CHierarchyTableTreeCtrl::CHierarchyTableTreeCtrl(
 	m_lpContainer = NULL;
 	m_ulContainerType = NULL;
 
-	m_bShowingDeletedFolders = bShowingDeletedFolders;
+	m_ulDisplayFlags = ulDisplayFlags;
 
 	m_bItemSelected = FALSE;
 
@@ -438,7 +438,7 @@ LPMAPITABLE CHierarchyTableTreeCtrl::GetHierarchyTable(HTREEITEM hItem,LPMAPICON
 			//on the AB, something about this call triggers table reloads on the parent hierarchy table
 			//no idea why they're triggered - doesn't happen for all AB providers
 			WC_H(lpMAPIContainer->GetHierarchyTable(
-				(mfcmapiSHOW_DELETED_ITEMS == m_bShowingDeletedFolders?SHOW_SOFT_DELETES:NULL) | fMapiUnicode,
+				(m_ulDisplayFlags & dfDeleted?SHOW_SOFT_DELETES:NULL) | fMapiUnicode,
 				&lpHierarchyTable));
 
 			if (lpHierarchyTable)
@@ -601,7 +601,7 @@ void CHierarchyTableTreeCtrl::OnGetDispInfo(NMHDR* pNMHDR, LRESULT* pResult)
 				if ((lpData->data.Node.ulContainerFlags == MAPI_E_NOT_FOUND && lpData->data.Node.bSubfolders == MAPI_E_NOT_FOUND) ||
 					(lpData->data.Node.ulContainerFlags != MAPI_E_NOT_FOUND && lpData->data.Node.ulContainerFlags & AB_SUBCONTAINERS) ||
 					(lpData->data.Node.bSubfolders != MAPI_E_NOT_FOUND && lpData->data.Node.bSubfolders) ||
-					mfcmapiSHOW_DELETED_ITEMS == m_bShowingDeletedFolders)
+					m_ulDisplayFlags & dfDeleted)
 				{
 					lpDispInfo->item.cChildren = 1;
 				}
@@ -657,7 +657,7 @@ void CHierarchyTableTreeCtrl::UpdateSelectionUI(HTREEITEM hItem)
 			&lpProps));
 		if (lpProps)
 		{
-			if (mfcmapiDO_NOT_SHOW_DELETED_ITEMS == m_bShowingDeletedFolders)
+			if (!(m_ulDisplayFlags & dfDeleted))
 			{
 				if (PT_ERROR == PROP_TYPE(lpProps[htPR_CONTENT_COUNT].ulPropTag))
 				{
@@ -965,7 +965,7 @@ void CHierarchyTableTreeCtrl::GetContainer(
 			if (lpMDB)
 			{
 				ulFlags = (mfcmapiREQUEST_MODIFY == bModify?MAPI_MODIFY:NULL) |
-					(mfcmapiSHOW_DELETED_ITEMS == m_bShowingDeletedFolders?(SHOW_SOFT_DELETES|MAPI_NO_CACHE):NULL);
+					(m_ulDisplayFlags & dfDeleted?(SHOW_SOFT_DELETES|MAPI_NO_CACHE):NULL);
 
 				WC_H(CallOpenEntry(
 					lpMDB,

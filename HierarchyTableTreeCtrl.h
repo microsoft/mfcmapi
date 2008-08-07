@@ -19,7 +19,7 @@ public:
 		CWnd* pCreateParent,
 		CMapiObjects *lpMapiObjects,
 		CHierarchyTableDlg *lpHostDlg,
-		__mfcmapiDeletedItemsEnum bShowingDeletedFolders);
+		ULONG ulDisplayFlags);
 	virtual ~CHierarchyTableTreeCtrl();
 
 	STDMETHODIMP_(ULONG)	AddRef();
@@ -55,7 +55,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 private:
-	__mfcmapiDeletedItemsEnum	m_bShowingDeletedFolders;
+	ULONG			m_ulDisplayFlags;
 	LONG			m_cRef;
 	CHierarchyTableDlg*	m_lpHostDlg;
 	CMapiObjects*	m_lpMapiObjects;

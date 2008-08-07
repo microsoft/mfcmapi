@@ -347,7 +347,7 @@ HRESULT GetServerName(LPMAPISESSION lpSession, LPTSTR* szServerName)
 
 	if (CheckStringProp(lpServerName,PT_STRING8))//profiles are ASCII only
 	{
-#ifdef _UNICODE
+#ifdef UNICODE
 		LPWSTR	szWideServer = NULL;
 		EC_H(AnsiToUnicode(
 			lpServerName->Value.lpszA,
@@ -442,7 +442,7 @@ HRESULT HrMailboxLogon(
 	{
 		DebugPrint(DBGGeneric,_T("HrMailboxLogon: Creating EntryID. StoreDN = \"%s\", MailboxDN = \"%s\"\n"),lpszMsgStoreDN,lpszMailboxDN);
 
-#ifdef _UNICODE
+#ifdef UNICODE
 		{
 			char *szAnsiMsgStoreDN = NULL;
 			char *szAnsiMailboxDN = NULL;
@@ -601,7 +601,7 @@ HRESULT OpenOtherUsersMailboxFromGal(
 {
 	HRESULT		 hRes			= S_OK;
 
-	ADRPARM			AdrParm;
+	ADRPARM			AdrParm = {0};
 	LPADRLIST		lpAdrList		= NULL;
 	LPSPropValue	lpEmailAddress	= NULL;
 	LPSPropValue	lpEntryID		= NULL;
@@ -620,26 +620,12 @@ HRESULT OpenOtherUsersMailboxFromGal(
 		szTitle,
 		sizeof(szTitle)/sizeof(CHAR)));
 
-	AdrParm.cbABContEntryID	= 0;
-	AdrParm.lpABContEntryID	= NULL;
 	AdrParm.ulFlags			= DIALOG_MODAL | ADDRESS_ONE | AB_SELECTONLY | AB_RESOLVE ;
-	AdrParm.lpReserved		 = NULL;
-	AdrParm.ulHelpContext	  = 0;
-	AdrParm.lpszHelpFileName	= NULL;
-	AdrParm.lpfnABSDI		  = NULL;
-	AdrParm.lpfnDismiss		= NULL;
-	AdrParm.lpvDismissContext  = NULL;
 #pragma warning(push)
 #pragma warning(disable:4616)
 #pragma warning(disable:6276)
 	AdrParm.lpszCaption		= (LPTSTR) szTitle;
 #pragma warning(pop)
-	AdrParm.cDestFields		= 0;
-	AdrParm.nDestFieldFocus	= 0;
-	AdrParm.lppszDestTitles	= NULL;
-	AdrParm.lpulDestComps	  = NULL;
-	AdrParm.lpContRestriction  = NULL;
-	AdrParm.lpHierRestriction  = NULL;
 
 	ULONG_PTR ulHwnd = (ULONG_PTR)::GetDesktopWindow();
 

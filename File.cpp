@@ -98,7 +98,7 @@ HRESULT LoadMSGToMessage(LPCTSTR szMessageFile, LPMESSAGE* lppMessage)
 	if (lpMalloc)
 	{
 		// Open the compound file
-#ifdef _UNICODE
+#ifdef UNICODE
 		EC_H(::StgOpenStorage(
 			szMessageFile,
 			NULL,
@@ -622,7 +622,7 @@ HRESULT STDAPICALLTYPE MyStgCreateStorageEx(IN const TCHAR* pName,
 {
 	HRESULT hRes = S_OK;
 	if (!pName) return MAPI_E_INVALID_PARAMETER;
-#ifdef _UNICODE
+#ifdef UNICODE
 	const WCHAR* pwcsName = pName;
 #else
 	WCHAR* pwcsName = NULL;
@@ -651,7 +651,7 @@ HRESULT STDAPICALLTYPE MyStgCreateStorageEx(IN const TCHAR* pName,
 		grfMode,
 		0,
 		(LPSTORAGE*) ppObjectOpen);
-#ifndef _UNICODE
+#ifndef UNICODE
 	delete[] pwcsName;
 #endif
 	return hRes;
@@ -1197,10 +1197,10 @@ HRESULT WriteOleToFile(LPATTACH lpAttach,LPCTSTR szFileName)
 		if (lpStorageSrc)
 		{
 
-#ifdef _UNICODE
+#ifdef UNICODE
 			EC_H(::StgCreateDocfile(
 				szFileName,
-				STGM_READWRITE | STGM_CREATE,
+				STGM_READWRITE | STGM_TRANSACTED | STGM_CREATE,
 				0,
 				&lpStorageDest));
 #else
