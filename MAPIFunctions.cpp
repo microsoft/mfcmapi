@@ -679,15 +679,6 @@ HRESULT CopySBinary(LPSBinary psbDest,const LPSBinary psbSrc, LPVOID lpParent)
 //	  Uses MAPI to allocate a new string (szDestination) and copy szSource into it
 //		Uses lpParent as the parent for MAPIAllocateMore if possible
 //
-HRESULT CopyString(LPTSTR* lpszDestination, LPCTSTR szSource, LPVOID pParent)
-{
-#ifdef _UNICODE
-	return CopyStringW(lpszDestination,szSource,pParent);
-#else
-	return CopyStringA(lpszDestination,szSource,pParent);
-#endif
-}//CopyString
-
 HRESULT CopyStringA(LPSTR* lpszDestination,LPCSTR szSource, LPVOID pParent)
 {
 	HRESULT	hRes = S_OK;
@@ -751,28 +742,6 @@ HRESULT CopyStringW(LPWSTR* lpszDestination,LPCWSTR szSource, LPVOID pParent)
 
 	return hRes;
 }//CopyStringW
-
-HRESULT CreateNewMailInFolder(
-							  LPMAPIFOLDER lpFolder)
-{
-	HRESULT			hRes = S_OK;
-	LPMESSAGE		lpMessage = NULL;
-
-	if (!lpFolder) return MAPI_E_INVALID_PARAMETER;
-
-	EC_H(lpFolder->CreateMessage(
-		NULL,//default interface
-		0,//flags
-		&lpMessage));
-
-	if (lpMessage)
-	{
-		EC_H(lpMessage->SaveChanges(NULL));
-		lpMessage->Release();
-	}
-
-	return hRes;
-}//CreateNewMailInFolder
 
 //Allocates and creates a restriction that looks for existence of
 //a particular property that matches the given string

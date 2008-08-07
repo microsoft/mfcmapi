@@ -620,56 +620,8 @@ DECLARE_MAPI_INTERFACE_PTR(IExchangeManageStore5, LPEXCHANGEMANAGESTORE5);
 // http://support.microsoft.com/kb/884671
 #define STORE_UNICODE_OK		((ULONG) 0x00040000)
 
-// TZREG
-// =====================
-//   This is an individual description that defines when a daylight
-//   savings shift, and the return to standard time occurs, and how
-//   far the shift is.  This is basically the same as
-//   TIME_ZONE_INFORMATION documented in MSDN, except that the strings
-//   describing the names 'daylight' and 'standard' time are omitted.
-//
-typedef struct RenTimeZone
-{
-	long		lBias;			// offset from GMT
-	long		lStandardBias;		// offset from bias during standard time
-	long		lDaylightBias;		// offset from bias during daylight time
-	SYSTEMTIME	stStandardDate;		// time to switch to standard time
-	SYSTEMTIME	stDaylightDate;		// time to switch to daylight time
-} TZREG;
-
-// TZRULE
-// =====================
-//   This structure represents both a description when a daylight.
-//   savings shift occurs, and in addition, the year in which that
-//   timezone rule came into effect.
-//
-typedef struct
-{
-	WORD		wFlags;		// indicates which rule matches legacy recur
-	SYSTEMTIME	stStart;	// indicates when the rule starts
-	TZREG		TZReg;		// the timezone info
-} TZRULE;
-
 const WORD TZRULE_FLAG_RECUR_CURRENT_TZREG  = 0x0001; // see dispidApptTZDefRecur
 const WORD TZRULE_FLAG_EFFECTIVE_TZREG      = 0x0002;
-
-// TZDEFINITION
-// =====================
-//   This represents an entire timezone including all historical, current
-//   and future timezone shift rules for daylight savings time, etc.  It's
-//   identified by a unique GUID.
-//
-typedef struct
-{
-	WORD	wFlags; 	// indicates which fields are valid
-	GUID	guidTZID;	// guid uniquely identifying this timezone
-	LPWSTR	pwszKeyName;	// the name of the key for this timezone
-	WORD	cRules;		// the number of timezone rules for this definition
-	TZRULE*	rgRules;	// an array of rules describing when shifts occur
-} TZDEFINITION;
-
-const WORD TZDEFINITION_FLAG_VALID_GUID     = 0x0001; // the guid is valid
-const WORD TZDEFINITION_FLAG_VALID_KEYNAME  = 0x0002; // the keyname is valid
 
 const ULONG	TZ_MAX_RULES		= 1024;
 const BYTE	TZ_BIN_VERSION_MAJOR	= 0x02;

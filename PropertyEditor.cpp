@@ -57,8 +57,13 @@ void CPropertyEditor::InitPropValue(
 	if (m_lpMAPIProp)
 	{
 		m_lpMAPIProp->AddRef();
-		WC_H(HrGetOneProp(m_lpMAPIProp,m_ulPropTag,&m_lpsInputValue));
-		if (m_lpsInputValue && PROP_TYPE(m_ulPropTag) == PT_UNSPECIFIED)
+		SPropTagArray sTag = {0};
+		sTag.cValues = 1;
+		sTag.aulPropTag[0] = (PT_ERROR == PROP_TYPE(m_ulPropTag))?CHANGE_PROP_TYPE(m_ulPropTag,PT_UNSPECIFIED):m_ulPropTag;
+		ULONG ulValues = NULL;
+
+		WC_H(m_lpMAPIProp->GetProps(&sTag,NULL,&ulValues,&m_lpsInputValue));
+		if (SUCCEEDED(hRes) && m_lpsInputValue && PROP_TYPE(m_ulPropTag) == PT_UNSPECIFIED)
 			m_ulPropTag = m_lpsInputValue->ulPropTag;
 	}
 	else
@@ -211,7 +216,7 @@ void CPropertyEditor::InitPropertyControls()
 		m_lpMAPIProp,
 		NULL,
 		NULL,
-		NULL, 
+		NULL,
 		NULL,
 		NULL,
 		NULL,
@@ -338,7 +343,7 @@ void CPropertyEditor::InitPropertyControls()
 	case(PT_I2):
 		InitSingleLine(0,IDS_SIGNEDDECIMAL,NULL,m_bReadOnly);
 		InitSingleLine(1,IDS_HEX,NULL,m_bReadOnly);
-		InitMultiLine(2,IDS_FLAGS,NULL,true);
+		InitMultiLine(2,IDS_COLSMART_VIEW,NULL,true);
 		if (m_lpsInputValue)
 		{
 			SetDecimal(0,m_lpsInputValue->Value.i);
@@ -379,19 +384,19 @@ void CPropertyEditor::InitPropertyControls()
 			SetSize(0,m_lpsInputValue->Value.bin.cb);
 			InitMultiLine(1,IDS_BIN,BinToHexString(&m_lpsInputValue->Value.bin,false),m_bReadOnly);
 			InitMultiLine(2,IDS_TEXT,BinToTextString(&m_lpsInputValue->Value.bin,true),true);
-			InitMultiLine(3,IDS_COLSMARTVIEW,szSmartView,true);
+			InitMultiLine(3,IDS_COLSMART_VIEW,szSmartView,true);
 		}
 		else
 		{
 			InitMultiLine(1,IDS_BIN,NULL,m_bReadOnly);
 			InitMultiLine(2,IDS_TEXT,NULL,true);
-			InitMultiLine(3,IDS_COLSMARTVIEW,szSmartView,true);
+			InitMultiLine(3,IDS_COLSMART_VIEW,szSmartView,true);
 		}
 		break;
 	case(PT_LONG):
 		InitSingleLine(0,IDS_UNSIGNEDDECIMAL,NULL,m_bReadOnly);
 		InitSingleLine(1,IDS_HEX,NULL,m_bReadOnly);
-		InitMultiLine(2,IDS_FLAGS,NULL,true);
+		InitMultiLine(2,IDS_COLSMART_VIEW,NULL,true);
 		if (m_lpsInputValue)
 		{
 			SetStringf(0,_T("%u"),m_lpsInputValue->Value.l);// STRING_OK
@@ -1130,7 +1135,7 @@ ULONG CPropertyEditor::HandleChange(UINT nID)
 				m_lpMAPIProp,
 				NULL,
 				NULL,
-				NULL, 
+				NULL,
 				NULL,
 				NULL,
 				NULL,
@@ -1171,7 +1176,7 @@ ULONG CPropertyEditor::HandleChange(UINT nID)
 				m_lpMAPIProp,
 				NULL,
 				NULL,
-				NULL, 
+				NULL,
 				NULL,
 				NULL,
 				NULL,
@@ -1263,7 +1268,7 @@ ULONG CPropertyEditor::HandleChange(UINT nID)
 					m_lpMAPIProp,
 					NULL,
 					NULL,
-					NULL, 
+					NULL,
 					NULL,
 					NULL,
 					NULL,

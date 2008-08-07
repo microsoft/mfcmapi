@@ -65,12 +65,36 @@ CAbContDlg::~CAbContDlg()
 
 BEGIN_MESSAGE_MAP(CAbContDlg, CHierarchyTableDlg)
 //{{AFX_MSG_MAP(CAbContDlg)
+	ON_COMMAND(ID_SETDEFAULTDIR, OnSetDefaultDir)
 	ON_COMMAND(ID_SETPAB, OnSetPAB)
 //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////////////
 //  Menu Commands
+
+void CAbContDlg::OnSetDefaultDir()
+{
+	HRESULT hRes = S_OK;
+	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
+
+	if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return;
+
+	LPSBinary lpItemEID = NULL;
+	lpItemEID = m_lpHierarchyTableTreeCtrl->GetSelectedItemEID();
+
+	if (lpItemEID)
+	{
+		LPADRBOOK lpAddrBook = m_lpMapiObjects->GetAddrBook(false); // Do not release
+		if (lpAddrBook)
+		{
+			EC_H(lpAddrBook->SetDefaultDir(
+				lpItemEID->cb,
+				(LPENTRYID)lpItemEID->lpb));
+		}
+	}
+	return;
+} //CAbContDlg::OnSetDefaultDir
 
 void CAbContDlg::OnSetPAB()
 {

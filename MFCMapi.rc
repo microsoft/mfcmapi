@@ -104,6 +104,7 @@ BEGIN
     POPUP "A&ddress Book"
     BEGIN
         MENUITEM "View AB Hierarchy...",        ID_VIEWABHIERARCHY
+        MENUITEM "Open Default Directory",      ID_OPENDEFAULTDIR
         MENUITEM "Open PAB",                    ID_OPENPAB
         MENUITEM "QueryDefaultRecipOpt",        ID_QUERYDEFAULTRECIPOPT
         MENUITEM SEPARATOR
@@ -362,12 +363,14 @@ IDR_MENU_ABCONT MENU DISCARDABLE
 BEGIN
     POPUP "&Actions"
     BEGIN
+        MENUITEM "Set Default Directory",       ID_SETDEFAULTDIR
         MENUITEM "Set PAB",                     ID_SETPAB
     END
 END
 
 IDR_MENU_ABCONT_POPUP MENU DISCARDABLE
 BEGIN
+    MENUITEM "Set Default Directory",       ID_SETDEFAULTDIR
     MENUITEM "Set PAB",                     ID_SETPAB
 END
 

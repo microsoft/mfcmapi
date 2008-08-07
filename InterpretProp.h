@@ -12,6 +12,7 @@ CString BinToTextString(LPSBinary lpBin, BOOL bMultiLine);
 CString BinToHexString(LPSBinary lpBin, BOOL bPrependCB);
 
 void FileTimeToString(FILETIME* lpFileTime, CString *PropString, CString *AltPropString);
+CString RTimeToString(DWORD rTime);
 
 #define TAG_MAX_LEN 1024 // Max I've seen in testing is 546 - bit more to be safe
 CString TagToString(ULONG ulPropTag, LPMAPIPROP lpObj, BOOL bIsAB, BOOL bSingleLine);

@@ -374,7 +374,7 @@
 #define PR_DISPLAY_TYPE_EX PROP_TAG( PT_LONG, 0x3905)
 
 // PR_DISPLAY_TYPE_EX has the following format
-// 
+//
 // 33222222222211111111110000000000
 // 10987654321098765432109876543210
 //
@@ -383,7 +383,7 @@
 // F = 1 if remote is valid, 0 if it is not
 // A = 1 if the user is ACL-able, 0 if the user is not
 // x - unused at this time, do not interpret as this may be used in the future
-// R = display type from 
+// R = display type from
 
 #define DTE_FLAG_REMOTE_VALID 0x80000000
 #define DTE_FLAG_ACL_CAPABLE  0x40000000
@@ -394,7 +394,7 @@
 #define DTE_IS_ACL_CAPABLE(v)  (!!((v) & DTE_FLAG_ACL_CAPABLE))
 #define DTE_REMOTE(v)          (((v) & DTE_MASK_REMOTE) >> 8)
 #define DTE_LOCAL(v)           ((v) & DTE_MASK_LOCAL)
- 
+
 #define DT_ROOM	        ((ULONG) 0x00000007)
 #define DT_EQUIPMENT    ((ULONG) 0x00000008)
 #define DT_SEC_DISTLIST ((ULONG) 0x00000009)
@@ -464,13 +464,13 @@ enum Gender {
 // [MS-OXCSPAM].pdf
 #define PR_SENDER_ID_STATUS PROP_TAG( PT_LONG, 0x4079)
 // Values that PR_SENDER_ID_STATUS can take
-#define SENDER_ID_NEUTRAL				0x1 
-#define SENDER_ID_PASS					0x2 
-#define SENDER_ID_FAIL					0x3 
-#define SENDER_ID_SOFT_FAIL				0x4 
-#define SENDER_ID_NONE					0x5 
-#define SENDER_ID_TEMP_ERROR			0x80000006 
-#define SENDER_ID_PERM_ERROR  			0x80000007 
+#define SENDER_ID_NEUTRAL				0x1
+#define SENDER_ID_PASS					0x2
+#define SENDER_ID_FAIL					0x3
+#define SENDER_ID_SOFT_FAIL				0x4
+#define SENDER_ID_NONE					0x5
+#define SENDER_ID_TEMP_ERROR			0x80000006
+#define SENDER_ID_PERM_ERROR  			0x80000007
 
 #define PR_JUNK_THRESHOLD PROP_TAG(PT_LONG, 0x6101)
 #define SPAM_FILTERING_NONE						0xFFFFFFFF
@@ -481,7 +481,7 @@ enum Gender {
 
 // [MS-OXOCAL].pdf
 #define RECIP_UNSENDABLE	(int) 0x0000
-#define RECIP_SENDABLE		(int) 0x0001	
+#define RECIP_SENDABLE		(int) 0x0001
 #define RECIP_ORGANIZER		(int) 0x0002   // send bit plus this one
 #define RECIP_EXCEPTIONAL_RESPONSE	(int) 0x0010 // recipient has exceptional response
 #define RECIP_EXCEPTIONAL_DELETED	(int) 0x0020 // recipient is NOT in this exception
@@ -498,14 +498,14 @@ enum Gender {
 #define PR_TODO_ITEM_FLAGS PROP_TAG(PT_LONG, 0x0e2b)
 #define TDIP_None			0x00000000
 #define TDIP_Active			0x00000001 // Object is time flagged
-#define TDIP_ActiveRecip	0x00000008 // SHOULD only be set on a draft message object, and means that the object is flagged for recipients. 
+#define TDIP_ActiveRecip	0x00000008 // SHOULD only be set on a draft message object, and means that the object is flagged for recipients.
 
 // [MS-OXORule].pdf
 #define PR_RULE_MSG_STATE PROP_TAG(PT_LONG, 0x65e9)
 
 // [MS-OXOSRCH].pdf
 #define PR_WB_SF_STORAGE_TYPE PROP_TAG(PT_LONG, 0x6846)
-enum t_SmartFolderStorageType { 
+enum t_SmartFolderStorageType {
 	SFST_NUMBER = 0x01,			// for template's data (numbers)
 	SFST_TEXT = 0x02, 			// for template's data (strings)
 	SFST_BINARY = 0x04, 		// for template's data (binary form, such as entry id, etc.)
@@ -590,6 +590,7 @@ typedef enum {
 #define dispidNonSendBccTrackStatus 0x8545
 
 #define LID_CALENDAR_TYPE 0x001C
+#define CAL_DEFAULT           0
 #define CAL_JAPAN_LUNAR      14
 #define CAL_CHINESE_LUNAR    15
 #define CAL_SAKA             16
@@ -645,7 +646,7 @@ enum TaskDelegMsgType {tdmtNothing = 0,	// The task object is not assigned.
 					   tdmtTaskAcc,		// The task object has been accepted by the task assignee.
 					   tdmtTaskDec,		// The task object was rejected by the task assignee.
 					   tdmtTaskUpd,		// The task object is embedded in a task update.
-					   tdmtTaskSELF};	// The task object was assigned to the task assigner (self-delegation). 
+					   tdmtTaskSELF};	// The task object was assigned to the task assigner (self-delegation).
 
 #define dispidTaskStatus 0x8101
 enum TaskStatusValue {
@@ -655,23 +656,23 @@ enum TaskStatusValue {
                        // dispidPercentComplete MUST be greater than 0.0 and less than 1.0
 	tsvComplete,       // The user’s work on this task object is complete. If this value is set,
                        // dispidPercentComplete MUST be 1.0, dispidTaskDateCompleted
-					   // MUST be the current date, and dispidTaskComplete MUST be true. 
+					   // MUST be the current date, and dispidTaskComplete MUST be true.
 	tsvWaiting,        // The user is waiting on somebody else.
 	tsvDeferred};      // The user has deferred work on the task object.
 
 #define dispidTaskState 0x8113
 enum TaskDelegState {
-	tdsNOM = 0,	// This task object was created to correspond to a task object that was 
+	tdsNOM = 0,	// This task object was created to correspond to a task object that was
                 // embedded in a task rejection but could not be found locally.
 	tdsOWNNEW,  // The task object is not assigned.
 	tdsOWN,     // The task object is the task assignee’s copy of an assigned task object.
 	tdsACC,	    // The task object is the task assigner’s copy of an assigned task object.
-	tdsDEC};    // The task object is the task assigner’s copy of a rejected task object. 
+	tdsDEC};    // The task object is the task assigner’s copy of a rejected task object.
 
 #define dispidTaskHistory 0x811A
 enum TaskHistory {
 	thNone = 0,       // No changes were made.
-	thAccepted,       // The task assignee accepted this task object. 
+	thAccepted,       // The task assignee accepted this task object.
 	thDeclined,       // The task assignee rejected this task object.
 	thUpdated,        // Another property was changed.
 	thDueDateChanged, // The dispidTaskDueDate property changed.
@@ -681,8 +682,8 @@ enum TaskHistory {
 enum TaskMultRecips {
 	tmrNone				= 0x0000,	// none
 	tmrSent				= 0x0001,	// The task object has multiple primary recipients.
-	tmrRcvd				= 0x0002,	// Although the "Sent" hint was not present, the client detected 
-                                    // that the task object has multiple primary recipients. 
+	tmrRcvd				= 0x0002,	// Although the 'Sent' hint was not present, the client detected
+                                    // that the task object has multiple primary recipients.
 	tmrTeamTask			= 0x0004,	// This value is reserved.
 	};
 
@@ -694,15 +695,15 @@ enum TaskOwnershipValue {
 
 #define dispidTaskDelegValue 0x812A
 enum TaskDelegValue {
-	tdvNone,      // The task object is not assigned. 
+	tdvNone,      // The task object is not assigned.
 	tdvUnknown,   // The task object’s acceptance status is unknown.
-	tdvAccepted,  // The task assignee has accepted the task object. This value is set when 
+	tdvAccepted,  // The task assignee has accepted the task object. This value is set when
                   // the client processes a task acceptance.
 	tdvDeclined}; // The task assignee has rejected the task object. This value is set when the
-                  // client processes a task rejection. 
+                  // client processes a task rejection.
 
 #define dispidLogFlags 0x870C
-#define lfContactLog ((ULONG) 0x40000000L) // This journal object has a journal associated attachment 
+#define lfContactLog ((ULONG) 0x40000000L) // This journal object has a journal associated attachment
 
 // [MS-OXOMSG].pdf
 #define dispidSniffState 0x851A
@@ -741,3 +742,68 @@ enum
 };
 
 #define dispidFlagStringEnum 0x85C0
+
+// [MS-OXOCAL].pdf
+#define dispidApptRecur 0x8216
+#define ARO_SUBJECT          0x0001
+#define ARO_MEETINGTYPE      0x0002
+#define ARO_REMINDERDELTA    0x0004
+#define ARO_REMINDER         0x0008
+#define ARO_LOCATION         0x0010
+#define ARO_BUSYSTATUS       0x0020
+#define ARO_ATTACHMENT       0x0040
+#define ARO_SUBTYPE          0x0080
+#define ARO_APPTCOLOR        0x0100
+#define ARO_EXCEPTIONAL_BODY 0x0200
+
+enum IdGroup
+{
+	IDC_RCEV_PAT_ORB_DAILY = 0x200A,
+	IDC_RCEV_PAT_ORB_WEEKLY,
+	IDC_RCEV_PAT_ORB_MONTHLY,
+	IDC_RCEV_PAT_ORB_YEARLY,
+	IDC_RCEV_PAT_ERB_END=0x2021,
+	IDC_RCEV_PAT_ERB_AFTERNOCCUR,
+	IDC_RCEV_PAT_ERB_NOEND,
+};
+
+enum
+{
+	rptMinute = 0,
+	rptWeek,
+	rptMonth,
+	rptMonthNth,
+	rptMonthEnd,
+	rptHjMonth = 10,
+	rptHjMonthNth,
+	rptHjMonthEnd
+};
+
+const ULONG rpn1st = 1;
+const ULONG rpn2nd = 2;
+const ULONG rpn3rd = 3;
+const ULONG rpn4th = 4;
+const ULONG rpnLast = 5;
+
+const ULONG rdfSun = 0x01;
+const ULONG rdfMon = 0x02;
+const ULONG rdfTue = 0x04;
+const ULONG rdfWed = 0x08;
+const ULONG rdfThu = 0x10;
+const ULONG rdfFri = 0x20;
+const ULONG rdfSat = 0x40;
+
+// [MS-OXOTASK].pdf
+#define dispidTaskRecur 0x8116
+#define dispidTaskMyDelegators 0x8117
+
+// [MS-OXOCAL].pdf
+#define LID_GLOBAL_OBJID 0x0003
+#define LID_CLEAN_GLOBAL_OBJID 0x0023
+
+// [MS-OXOSRCH].pdf
+#define PR_WB_SF_DEFINITION PROP_TAG(PT_BINARY, 0x6845)
+#define PT_SVREID ((ULONG) 0x00FB)
+
+// [MS-OSCDATA].pdf
+#define OOP_DONT_LOOKUP ((ULONG) 0x10000000)

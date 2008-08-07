@@ -20,16 +20,12 @@ enum __StatusPaneEnum
 	STATUSBARNUMPANES
 };
 
-enum __mfcmapiDeletedItemsEnum
+// Flags to indicate which contents/hierarchy tables to render
+enum _mfcmapiDisplayFlagsEnum
 {
-	mfcmapiSHOW_DELETED_ITEMS,
-	mfcmapiDO_NOT_SHOW_DELETED_ITEMS
-};
-
-enum __mfcmapiAssociatedContentsEnum
-{
-	mfcmapiSHOW_NORMAL_CONTENTS,
-	mfcmapiSHOW_ASSOC_CONTENTS
+	dfNormal  = 0x0000,
+	dfAssoc   = 0x0001,
+	dfDeleted = 0x0002,
 };
 
 enum __mfcmapiRestrictionTypeEnum

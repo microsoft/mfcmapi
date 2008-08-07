@@ -13,27 +13,13 @@
 //forward definitions
 class CContentsTableListCtrl;
 
-HRESULT CallActivateNext(
-						 LPMAPIFORMADVISESINK	lpFormAdviseSink,
-						 LPCTSTR szClass,
-						 ULONG ulStatus,
-						 ULONG ulFlags,
-						 LPPERSISTMESSAGE* lppPersist);
 HRESULT	CreateAndDisplayNewMailInFolder(
 										LPMDB lpMDB,
 										LPMAPISESSION lpMAPISession,
 										CContentsTableListCtrl *lpContentsTableListCtrl,
 										int iItem,
-										LPCTSTR szMessageClass,
+										LPCSTR szMessageClass,
 										LPMAPIFOLDER lpFolder);
-HRESULT LoadForm(
-				 LPMAPIMESSAGESITE lpMessageSite,
-				 LPMESSAGE lpMessage,
-				 LPMAPIFOLDER lpFolder,
-				 LPCTSTR szMessageClass,
-				 ULONG ulMessageStatus,
-				 ULONG ulMessageFlags,
-				 LPMAPIFORM* lppForm);
 HRESULT	OpenMessageModal(LPMAPIFOLDER lpParentFolder,
 						 LPMAPISESSION lpMAPISession,
 						 LPMDB lpMDB,

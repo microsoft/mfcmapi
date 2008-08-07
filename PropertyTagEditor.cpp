@@ -187,7 +187,7 @@ void CPropertyTagEditor::OnEditAction2()
 			m_lpControls[6].UI.lpEdit->EditBox.GetWindowText(szName);
 			if (MNID_STRING == NamedID.ulKind)
 			{
-#ifdef _UNICODE
+#ifdef UNICODE
 				EC_H(CopyStringW(&NamedID.Kind.lpwstrName,szName,NULL));
 #else
 				LPWSTR	szWideName = NULL;

@@ -42,8 +42,7 @@ protected:
 	virtual BOOL	OnInitDialog();
 
 	CContentsTableListCtrl*			m_lpContentsTableListCtrl;
-	__mfcmapiAssociatedContentsEnum	m_bShowingAssociatedContents;
-	__mfcmapiDeletedItemsEnum		m_bShowingDeletedItems;
+	ULONG                           m_ulDisplayFlags;
 	LPMAPITABLE						m_lpContentsTable;
 private:
 

@@ -44,8 +44,7 @@ CFolderDlg::CFolderDlg(
 					   CParentWnd* pParentWnd,
 					   CMapiObjects *lpMapiObjects,
 					   LPMAPIFOLDER lpMAPIFolder,
-					   __mfcmapiAssociatedContentsEnum bShowingAssociatedContents,
-					   __mfcmapiDeletedItemsEnum bShowingDeletedItems
+					   ULONG ulDisplayFlags
 					   ):
 CContentsTableDlg(
 						  pParentWnd,
@@ -60,8 +59,7 @@ CContentsTableDlg(
 						  MENU_CONTEXT_FOLDER_CONTENTS)
 {
 	TRACE_CONSTRUCTOR(CLASS);
-	m_bShowingAssociatedContents = bShowingAssociatedContents;
-	m_bShowingDeletedItems = bShowingDeletedItems;
+	m_ulDisplayFlags = ulDisplayFlags;
 
 	m_lpContainer = lpMAPIFolder;
 	if (m_lpContainer) m_lpContainer->AddRef();
@@ -279,16 +277,15 @@ void CFolderDlg::EnableAddInMenus(CMenu* pMenu, ULONG ulMenu, LPMENUITEM lpAddIn
 	{
 		if (lpAddInMenu->ulFlags & MENU_FLAGS_FOLDER_ASSOC)
 		{
-			if (m_bShowingAssociatedContents != mfcmapiSHOW_ASSOC_CONTENTS) uiEnable = MF_GRAYED;
+			if (m_ulDisplayFlags & dfAssoc) uiEnable = MF_GRAYED;
 		}
 		else if (lpAddInMenu->ulFlags & MENU_FLAGS_DELETED)
 		{
-			if (m_bShowingDeletedItems != mfcmapiSHOW_DELETED_ITEMS) uiEnable = MF_GRAYED;
+			if (m_ulDisplayFlags & dfDeleted) uiEnable = MF_GRAYED;
 		}
 		else if (lpAddInMenu->ulFlags & MENU_FLAGS_FOLDER_REG)
 		{
-			if (m_bShowingAssociatedContents == mfcmapiSHOW_ASSOC_CONTENTS) uiEnable = MF_GRAYED;
-			if (m_bShowingDeletedItems == mfcmapiSHOW_DELETED_ITEMS) uiEnable = MF_GRAYED;
+			if (!(m_ulDisplayFlags == dfNormal)) uiEnable = MF_GRAYED;
 		}
 	}
 	if (pMenu) pMenu->EnableMenuItem(ulMenu,uiEnable);
@@ -655,7 +652,7 @@ void CFolderDlg::OnDeleteSelectedItem()
 		BOOL	bMove = false;
 		ULONG	ulFlag = MESSAGE_DIALOG;
 
-		if (m_bShowingDeletedItems == mfcmapiSHOW_DELETED_ITEMS)
+		if (m_ulDisplayFlags & dfDeleted)
 		{
 			ulFlag |= DELETE_HARD_DELETE;
 		}
@@ -896,7 +893,7 @@ void CFolderDlg::OnSelectForm()
 #pragma warning(push)
 #pragma warning(disable:4616)
 #pragma warning(disable:6276)
-		//Apparently, SelectForm doesn't support unicode
+		// SelectForm doesn't support unicode in Outlook XP and earlier
 		EC_H_CANCEL(lpMAPIFormMgr->SelectForm(
 			(ULONG_PTR)m_hWnd,
 			0,//fMapiUnicode,
@@ -991,31 +988,31 @@ void CFolderDlg::NewSpecialItem(WORD wMenuSelect)
 	if (lpMAPISession)
 	{
 		ULONG ulTag = NULL;
-		LPCTSTR szClass = NULL;
+		LPCSTR szClass = NULL;
 
 		switch(wMenuSelect)
 		{
 		case ID_NEW_APPOINTMENT:
 			ulTag = PR_IPM_APPOINTMENT_ENTRYID;
-			szClass = _T("IPM.APPOINTMENT");// STRING_OK
+			szClass = "IPM.APPOINTMENT";// STRING_OK
 			break;
 		case ID_NEW_CONTACT:
 			ulTag = PR_IPM_CONTACT_ENTRYID;
-			szClass = _T("IPM.CONTACT");// STRING_OK
+			szClass = "IPM.CONTACT";// STRING_OK
 			break;
 		case ID_NEW_IPMNOTE:
-			szClass = _T("IPM.NOTE");// STRING_OK
+			szClass = "IPM.NOTE";// STRING_OK
 			break;
 		case ID_NEW_IPMPOST:
-			szClass = _T("IPM.POST");// STRING_OK
+			szClass = "IPM.POST";// STRING_OK
 			break;
 		case ID_NEW_TASK:
 			ulTag = PR_IPM_TASK_ENTRYID;
-			szClass = _T("IPM.TASK");// STRING_OK
+			szClass = "IPM.TASK";// STRING_OK
 			break;
 		case ID_NEW_STICKYNOTE:
 			ulTag = PR_IPM_NOTE_ENTRYID;
-			szClass = _T("IPM.STICKYNOTE");// STRING_OK
+			szClass = "IPM.STICKYNOTE";// STRING_OK
 			break;
 
 		}
@@ -1047,9 +1044,18 @@ void CFolderDlg::NewSpecialItem(WORD wMenuSelect)
 void CFolderDlg::OnNewMessage()
 {
 	HRESULT	hRes = S_OK;
+	LPMESSAGE lpMessage = NULL;
 
-	EC_H(CreateNewMailInFolder(
-		(LPMAPIFOLDER)m_lpContainer));
+	EC_H(((LPMAPIFOLDER)m_lpContainer)->CreateMessage(
+		NULL,
+		m_ulDisplayFlags & dfAssoc?MAPI_ASSOCIATED:0,
+		&lpMessage));
+
+	if (lpMessage)
+	{
+		EC_H(lpMessage->SaveChanges(NULL));
+		lpMessage->Release();
+	}
 }//CFolderDlg::OnNewMessage
 
 void CFolderDlg::OnNewCustomForm()
@@ -1082,7 +1088,7 @@ void CFolderDlg::OnNewCustomForm()
 
 		if (S_OK == hRes)
 		{
-			LPCTSTR			szClass = NULL;
+			LPCSTR			szClass = NULL;
 			LPSPropValue	lpProp = NULL;
 
 			CEditor MyClass(
@@ -1100,7 +1106,7 @@ void CFolderDlg::OnNewCustomForm()
 
 				if (S_OK == hRes)
 				{
-					szClass = MyClass.GetString(0);
+					szClass = MyClass.GetStringA(0);
 				}
 				break;
 			case 1:
@@ -1137,11 +1143,11 @@ void CFolderDlg::OnNewCustomForm()
 						{
 							EC_H(HrGetOneProp(
 								lpMAPIFormInfo,
-								PR_MESSAGE_CLASS,
+								PR_MESSAGE_CLASS_A,
 								&lpProp));
-							if (CheckStringProp(lpProp,PT_TSTRING))
+							if (CheckStringProp(lpProp,PT_STRING8))
 							{
-								szClass = lpProp->Value.LPSZ;
+								szClass = lpProp->Value.lpszA;
 							}
 							lpMAPIFormInfo->Release();
 						}
@@ -1511,8 +1517,8 @@ void CFolderDlg::OnSaveFolderContentsAsTextFiles()
 		MyDumpStore.InitFolder((LPMAPIFOLDER) m_lpContainer);
 		MyDumpStore.InitFolderPathRoot(szDir);
 		MyDumpStore.ProcessFolders(
-			(mfcmapiSHOW_NORMAL_CONTENTS == m_bShowingAssociatedContents?true:false),
-			(mfcmapiSHOW_ASSOC_CONTENTS == m_bShowingAssociatedContents?true:false),
+			(m_ulDisplayFlags & dfAssoc)?false:true,
+			(m_ulDisplayFlags & dfAssoc)?true:false,
 			false);
 	}
 	return;
@@ -2153,9 +2159,9 @@ void CFolderDlg::HandleAddInMenuSingle(
 		lpParams->lpFolder = (LPMAPIFOLDER) m_lpContainer; // m_lpContainer is an LPMAPIFOLDER
 		lpParams->lpMessage = (LPMESSAGE) lpMAPIProp; // OpenItemProp returns LPMESSAGE
 		// Add appropriate flag to context
-		if (m_bShowingAssociatedContents == mfcmapiSHOW_ASSOC_CONTENTS)
+		if (m_ulDisplayFlags & dfAssoc)
 			lpParams->ulCurrentFlags |= MENU_FLAGS_FOLDER_ASSOC;
-		if (m_bShowingDeletedItems == mfcmapiSHOW_DELETED_ITEMS)
+		if (m_ulDisplayFlags & dfDeleted)
 			lpParams->ulCurrentFlags |= MENU_FLAGS_DELETED;
 	}
 

@@ -52,7 +52,7 @@ CBaseDialog(
 
 	m_nIDContextMenu = nIDContextMenu;
 
-	m_bShowingDeletedFolders = mfcmapiDO_NOT_SHOW_DELETED_ITEMS;
+	m_ulDisplayFlags = dfNormal;
 	m_lpHierarchyTableTreeCtrl = NULL;
 	m_lpContainer = NULL;
 	//need to make sure whatever gets passed to us is really a container
@@ -258,7 +258,7 @@ BOOL CHierarchyTableDlg::OnInitDialog()
 			m_lpFakeSplitter,
 			m_lpMapiObjects,
 			this,
-			m_bShowingDeletedFolders);
+			m_ulDisplayFlags);
 
 		if (m_lpHierarchyTableTreeCtrl)
 		{

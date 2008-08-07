@@ -109,7 +109,7 @@ void CMsgServiceTableDlg::OnRefreshView()
 	//Failure to do this leads to crashes in Outlook's profile code
 	EC_H(m_lpContentsTableListCtrl->SetContentsTable(
 		NULL,
-		mfcmapiDO_NOT_SHOW_DELETED_ITEMS,
+		dfNormal,
 		NULL));
 
 	if (m_lpServiceAdmin) m_lpServiceAdmin->Release();
@@ -141,7 +141,7 @@ void CMsgServiceTableDlg::OnRefreshView()
 			{
 				EC_H(m_lpContentsTableListCtrl->SetContentsTable(
 					lpServiceTable,
-					mfcmapiDO_NOT_SHOW_DELETED_ITEMS,
+					dfNormal,
 					NULL));
 
 				lpServiceTable->Release();

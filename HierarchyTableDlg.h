@@ -30,7 +30,7 @@ public:
 
 	// Implementation
 protected:
-	__mfcmapiDeletedItemsEnum	m_bShowingDeletedFolders;
+	ULONG						m_ulDisplayFlags;
 	CHierarchyTableTreeCtrl*	m_lpHierarchyTableTreeCtrl;
 
 	virtual BOOL	OnInitDialog();

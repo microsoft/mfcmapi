@@ -63,8 +63,7 @@ CBaseDialog(
 	m_lpContainer = NULL;
 	m_nIDContextMenu = nIDContextMenu;
 
-	m_bShowingAssociatedContents = mfcmapiSHOW_NORMAL_CONTENTS;
-	m_bShowingDeletedItems = mfcmapiDO_NOT_SHOW_DELETED_ITEMS;
+	m_ulDisplayFlags = dfNormal;
 
 	m_lpContentsTable = lpContentsTable;
 	if (m_lpContentsTable) m_lpContentsTable->AddRef();
@@ -149,8 +148,8 @@ BOOL CContentsTableDlg::OnInitDialog()
 		m_lpContentsTable = NULL;
 
 		ulFlags =
-			(mfcmapiSHOW_ASSOC_CONTENTS == m_bShowingAssociatedContents?MAPI_ASSOCIATED:NULL) |
-			(mfcmapiSHOW_DELETED_ITEMS == m_bShowingDeletedItems?SHOW_SOFT_DELETES:NULL) |
+			(m_ulDisplayFlags & dfAssoc?MAPI_ASSOCIATED:NULL) |
+			(m_ulDisplayFlags & dfDeleted?SHOW_SOFT_DELETES:NULL) |
 			fMapiUnicode;
 
 		hRes = S_OK;
@@ -208,7 +207,7 @@ BOOL CContentsTableDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 		//Pass the contents table to the list control, but don't render yet - call BuildUIForContentsTable from CreateDialogAndMenu for that
 		WC_H(m_lpContentsTableListCtrl->SetContentsTable(
 			m_lpContentsTable,
-			m_bShowingDeletedItems,
+			m_ulDisplayFlags,
 			ulPropType));
 	}
 

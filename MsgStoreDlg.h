@@ -21,7 +21,7 @@ public:
 		CParentWnd* pParentWnd,
 		CMapiObjects *lpMapiObjects,
 		LPMAPIFOLDER lpRootFolder,
-		__mfcmapiDeletedItemsEnum bShowingDeletedFolders);
+		ULONG ulDisplayFlags);
 	virtual ~CMsgStoreDlg();
 
 	// Implementation

@@ -108,14 +108,11 @@ public:
 	void InsertColumn(ULONG ulListNum,int nCol,UINT uidText);
 	void SetStringA(ULONG i,LPCSTR szMsg);
 	void SetStringW(ULONG i,LPCWSTR szMsg);
-	void inline SetString(ULONG i, LPCTSTR szMsg)
-	{
-#ifdef _UNICODE
-		SetStringW(i,szMsg);
+#ifdef UNICODE
+#define SetString  SetStringW
 #else
-		SetStringA(i,szMsg);;
+#define SetString  SetStringA
 #endif
-	}
 	void __cdecl SetStringf(ULONG i,LPCTSTR szMsg,...);
 	void LoadString(ULONG i, UINT uidMsg);
 	void SetBinary(ULONG i,LPBYTE lpb, size_t cb);
@@ -128,14 +125,11 @@ public:
 	//Get values after we've done the DisplayDialog
 	LPSTR	GetStringA(ULONG i);
 	LPWSTR	GetStringW(ULONG i);
-	LPTSTR inline GetString(ULONG i)
-	{
-#ifdef _UNICODE
-		return GetStringW(i);
+#ifdef UNICODE
+#define GetString  GetStringW
 #else
-		return GetStringA(i);
+#define GetString  GetStringA
 #endif
-	}
 	ULONG	GetHex(ULONG i);
 	ULONG	GetHexUseControl(ULONG i);
 	ULONG	GetDecimal(ULONG i);

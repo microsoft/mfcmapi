@@ -101,7 +101,7 @@ void CRulesDlg::OnRefreshView()
 		{
 			EC_H(m_lpContentsTableListCtrl->SetContentsTable(
 				lpMAPITable,
-				mfcmapiDO_NOT_SHOW_DELETED_ITEMS,
+				dfDeleted,
 				NULL));
 
 			lpMAPITable->Release();

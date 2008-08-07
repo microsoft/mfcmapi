@@ -30,7 +30,7 @@ public:
 
 	HRESULT	SetContentsTable(
 		LPMAPITABLE lpContentsTable,
-		__mfcmapiDeletedItemsEnum bShowingDeletedItems,
+		ULONG ulDisplayFlags,
 		ULONG ulContainerType);
 
 	void	OnCancelTableLoad();
@@ -87,7 +87,7 @@ private:
 	HRESULT DoExpandCollapse();
 
 
-	__mfcmapiDeletedItemsEnum	m_bShowingDeletedItems;
+	ULONG				m_ulDisplayFlags;
 
 	BOOL				m_bAbortLoad;
 

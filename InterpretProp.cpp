@@ -176,19 +176,21 @@ CString BinToTextString(LPSBinary lpBin, BOOL bMultiLine)
 		ULONG i;
 		for (i = 0;i<lpBin->cb;i++)
 		{
+			// Any printable extended ASCII character gets mapped directly
 			if (lpBin->lpb[i] >= 0x20 &&
 				lpBin->lpb[i] <= 0xFE)
 			{
 				szBin[i] = lpBin->lpb[i];
 			}
+			// If we allow multiple lines, we accept tab, LF and CR
 			else if (bMultiLine &&
-				(lpBin->lpb[i] == 8 ||
-				lpBin->lpb[i] == 9 ||
-				lpBin->lpb[i] == 10 ||
-				lpBin->lpb[i] == 13))
+				(lpBin->lpb[i] == 9 || // Tab
+				lpBin->lpb[i] == 10 || // Line Feed
+				lpBin->lpb[i] == 13))  // Carriage Return
 			{
 				szBin[i] = lpBin->lpb[i];
 			}
+			// Everything else is a dot
 			else
 			{
 				szBin[i] = _T('.');
@@ -1029,6 +1031,21 @@ void FileTimeToString(FILETIME* lpFileTime,CString *PropString,CString *AltPropS
 		IDS_FILETIMEALTFORMAT,
 		lpFileTime->dwLowDateTime,
 		lpFileTime->dwHighDateTime);
+}
+
+CString RTimeToString(DWORD rTime)
+{
+	CString PropString;
+	FILETIME fTime = {0};
+	LARGE_INTEGER liNumSec = {0};
+	liNumSec.LowPart = rTime;
+	// Resolution of RTime is in minutes, FILETIME is in 100 nanosecond intervals
+	// Scale between the two is 10000000*60
+	liNumSec.QuadPart = liNumSec.QuadPart*10000000*60;
+	fTime.dwLowDateTime = liNumSec.LowPart;
+	fTime.dwHighDateTime= liNumSec.HighPart;
+	FileTimeToString(&fTime,&PropString,NULL);
+	return PropString;
 }
 
 void InterpretMVProp(LPSPropValue lpProp, ULONG ulMVRow, CString *PropString,CString *AltPropString)
