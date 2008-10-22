@@ -2,13 +2,13 @@
 // ColumnTags.h : header file
 //
 
-//All SizedSPropTagArray arrays in ColumnTags.h must have PR_INSTANCE_KEY and PR_ENTRY_ID
-//as the first two properties. The code in CContentsTableListCtrl depends on this.
+// All SizedSPropTagArray arrays in ColumnTags.h must have PR_INSTANCE_KEY and PR_ENTRY_ID
+// as the first two properties. The code in CContentsTableListCtrl depends on this.
 
-//The following enum's and structures define the columns and
-//properties used by ContentsTableListCtrl objects.
+// The following enum's and structures define the columns and
+// properties used by ContentsTableListCtrl objects.
 
-//Default properties and columns
+// Default properties and columns
 enum DEFTAGS {
 	deftagPR_INSTANCE_KEY,
 		deftagPR_ENTRYID,
@@ -21,7 +21,7 @@ enum DEFTAGS {
 		DEFTAGS_NUM_COLS
 };
 
-//These tags represent the message information we would like to pick up
+// These tags represent the message information we would like to pick up
 static SizedSPropTagArray(DEFTAGS_NUM_COLS,sptDEFCols) = {
 	DEFTAGS_NUM_COLS,
 		PR_INSTANCE_KEY,
@@ -34,7 +34,7 @@ static SizedSPropTagArray(DEFTAGS_NUM_COLS,sptDEFCols) = {
 		PR_OBJECT_TYPE,
 };
 
-//This must be an count of the tags in DEFColumns, defined below
+// This must be an count of the tags in DEFColumns, defined below
 #define NUMDEFCOLUMNS 4
 
 static TagNames DEFColumns[NUMDEFCOLUMNS] = {
@@ -45,7 +45,7 @@ static TagNames DEFColumns[NUMDEFCOLUMNS] = {
 };
 
 
-//Message properties and columns
+// Message properties and columns
 enum MSGTAGS {
 		msgtagPR_INSTANCE_KEY,
 		msgtagPR_ENTRYID,
@@ -66,7 +66,7 @@ enum MSGTAGS {
 		MSGTAGS_NUM_COLS
 };
 
-//These tags represent the message information we would like to pick up
+// These tags represent the message information we would like to pick up
 static SizedSPropTagArray(MSGTAGS_NUM_COLS,sptMSGCols) = {
 	MSGTAGS_NUM_COLS,
 		PR_INSTANCE_KEY,
@@ -87,7 +87,7 @@ static SizedSPropTagArray(MSGTAGS_NUM_COLS,sptMSGCols) = {
 		PR_OBJECT_TYPE,
 };
 
-//This must be an count of the tags in MSGColumns, defined below
+// This must be an count of the tags in MSGColumns, defined below
 #define NUMMSGCOLUMNS 15
 
 static TagNames MSGColumns[NUMMSGCOLUMNS] = {
@@ -109,7 +109,7 @@ static TagNames MSGColumns[NUMMSGCOLUMNS] = {
 };
 
 
-//Address Book entry properties and columns
+// Address Book entry properties and columns
 enum ABTAGS {
 	abtagPR_INSTANCE_KEY,
 		abtagPR_ENTRYID,
@@ -121,7 +121,7 @@ enum ABTAGS {
 		ABTAGS_NUM_COLS
 };
 
-//These tags represent the address book information we would like to pick up
+// These tags represent the address book information we would like to pick up
 static SizedSPropTagArray(ABTAGS_NUM_COLS,sptABCols) = {
 	ABTAGS_NUM_COLS,
 		PR_INSTANCE_KEY,
@@ -133,7 +133,7 @@ static SizedSPropTagArray(ABTAGS_NUM_COLS,sptABCols) = {
 		PR_ADDRTYPE,
 };
 
-//This must be an count of the tags in ABColumns, defined below
+// This must be an count of the tags in ABColumns, defined below
 #define NUMABCOLUMNS 6
 
 static TagNames ABColumns[NUMABCOLUMNS] = {
@@ -145,7 +145,7 @@ static TagNames ABColumns[NUMABCOLUMNS] = {
 	{abtagPR_ADDRTYPE,IDS_COLADDRTYPE},
 };
 
-//Attachment properties and columns
+// Attachment properties and columns
 enum ATTACHTAGS {
 	attachtagPR_INSTANCE_KEY,
 		attachtagPR_ATTACH_NUM,
@@ -155,7 +155,7 @@ enum ATTACHTAGS {
 		ATTACHTAGS_NUM_COLS
 };
 
-//These tags represent the message information we would like to pick up
+// These tags represent the message information we would like to pick up
 static SizedSPropTagArray(ATTACHTAGS_NUM_COLS,sptATTACHCols) = {
 	ATTACHTAGS_NUM_COLS,
 		PR_INSTANCE_KEY,
@@ -165,7 +165,7 @@ static SizedSPropTagArray(ATTACHTAGS_NUM_COLS,sptATTACHCols) = {
 		PR_OBJECT_TYPE,
 };
 
-//This must be an count of the tags in ATTACHColumns, defined below
+// This must be an count of the tags in ATTACHColumns, defined below
 #define NUMATTACHCOLUMNS 4
 
 static TagNames ATTACHColumns[NUMATTACHCOLUMNS] = {
@@ -175,7 +175,7 @@ static TagNames ATTACHColumns[NUMATTACHCOLUMNS] = {
 	{attachtagPR_ATTACH_FILENAME,IDS_COLFILENAME},
 };
 
-//Mailbox properties and columns
+// Mailbox properties and columns
 enum MBXTAGS {
 	mbxtagPR_INSTANCE_KEY,
 		mbxtagPR_DISPLAY_NAME,
@@ -201,7 +201,7 @@ enum MBXTAGS {
 		MBXTAGS_NUM_COLS
 };
 
-//These tags represent the mailbox information we would like to pick up
+// These tags represent the mailbox information we would like to pick up
 static SizedSPropTagArray(MBXTAGS_NUM_COLS,sptMBXCols) = {
 	MBXTAGS_NUM_COLS,
 		PR_INSTANCE_KEY,
@@ -227,7 +227,7 @@ static SizedSPropTagArray(MBXTAGS_NUM_COLS,sptMBXCols) = {
 		PR_INTERNET_MDNS,
 };
 
-//This must be a count of the tags in MBXColumns, defined below
+// This must be a count of the tags in MBXColumns, defined below
 #define NUMMBXCOLUMNS 21
 
 static TagNames MBXColumns[NUMMBXCOLUMNS] = {
@@ -254,7 +254,7 @@ static TagNames MBXColumns[NUMMBXCOLUMNS] = {
 	{mbxtagPR_INTERNET_MDNS,IDS_COLINTERNETMDNS},
 };
 
-//Public Folder properties and columns
+// Public Folder properties and columns
 enum PFTAGS {
 		pftagPR_INSTANCE_KEY,
 		pftagPR_DISPLAY_NAME,
@@ -292,7 +292,7 @@ enum PFTAGS {
 		PFTAGS_NUM_COLS
 };
 
-//These tags represent the PF information we would like to pick up
+// These tags represent the PF information we would like to pick up
 static SizedSPropTagArray(PFTAGS_NUM_COLS,sptPFCols) = {
 	PFTAGS_NUM_COLS,
 		PR_INSTANCE_KEY,
@@ -330,7 +330,7 @@ static SizedSPropTagArray(PFTAGS_NUM_COLS,sptPFCols) = {
 		PR_SORT_LOCALE_ID,
 };
 
-//This must be a count of the tags in PFColumns, defined below
+// This must be a count of the tags in PFColumns, defined below
 #define NUMPFCOLUMNS 4
 
 static TagNames PFColumns[NUMPFCOLUMNS] = {
@@ -340,7 +340,7 @@ static TagNames PFColumns[NUMPFCOLUMNS] = {
 	{pftagPR_MESSAGE_SIZE,IDS_COLMESSAGESIZE}
 };
 
-//Status table properties and columns
+// Status table properties and columns
 enum STATUSTAGS {
 	statustagPR_INSTANCE_KEY,
 		statustagPR_ENTRYID,
@@ -357,12 +357,12 @@ enum STATUSTAGS {
 		STATUSTAGS_NUM_COLS
 };
 
-//These tags represent the message information we would like to pick up
+// These tags represent the message information we would like to pick up
 static SizedSPropTagArray(STATUSTAGS_NUM_COLS,sptSTATUSCols) = {
 	STATUSTAGS_NUM_COLS,
 		PR_INSTANCE_KEY,
 		PR_ENTRYID,
-		PR_DISPLAY_NAME_A,//Since the MAPI status table does not support unicode, we have to ask for ANSI
+		PR_DISPLAY_NAME_A, // Since the MAPI status table does not support unicode, we have to ask for ANSI
 		PR_STATUS_CODE,
 		PR_RESOURCE_METHODS,
 		PR_PROVIDER_DLL_NAME_A,
@@ -374,7 +374,7 @@ static SizedSPropTagArray(STATUSTAGS_NUM_COLS,sptSTATUSCols) = {
 		PR_OBJECT_TYPE,
 };
 
-//This must be an count of the tags in STATUSColumns, defined below
+// This must be an count of the tags in STATUSColumns, defined below
 #define NUMSTATUSCOLUMNS 9
 
 static TagNames STATUSColumns[NUMSTATUSCOLUMNS] = {
@@ -389,7 +389,7 @@ static TagNames STATUSColumns[NUMSTATUSCOLUMNS] = {
 	{statustagPR_OBJECT_TYPE,IDS_COLOBJECTTYPE}
 };
 
-//Receive table properties and columns
+// Receive table properties and columns
 enum RECEIVETAGS {
 	receivetagPR_INSTANCE_KEY,
 		receivetagPR_ENTRYID,
@@ -398,7 +398,7 @@ enum RECEIVETAGS {
 		RECEIVETAGS_NUM_COLS
 };
 
-//These tags represent the receive table information we would like to pick up
+// These tags represent the receive table information we would like to pick up
 static SizedSPropTagArray(RECEIVETAGS_NUM_COLS,sptRECEIVECols) = {
 	RECEIVETAGS_NUM_COLS,
 		PR_INSTANCE_KEY,
@@ -407,7 +407,7 @@ static SizedSPropTagArray(RECEIVETAGS_NUM_COLS,sptRECEIVECols) = {
 		PR_OBJECT_TYPE,
 };
 
-//This must be an count of the tags in RECEIVEColumns, defined below
+// This must be an count of the tags in RECEIVEColumns, defined below
 #define NUMRECEIVECOLUMNS 2
 
 static TagNames RECEIVEColumns[NUMRECEIVECOLUMNS] = {
@@ -415,7 +415,7 @@ static TagNames RECEIVEColumns[NUMRECEIVECOLUMNS] = {
 	{receivetagPR_MESSAGE_CLASS,IDS_COLMESSAGECLASS}
 };
 
-//Hierarchy table properties and columns
+// Hierarchy table properties and columns
 enum HIERARCHYTAGS {
 		hiertagPR_DISPLAY_NAME,
 		hiertagPR_INSTANCE_KEY,
@@ -424,7 +424,7 @@ enum HIERARCHYTAGS {
 		HIERARCHYTAGS_NUM_COLS
 };
 
-//These tags represent the hierarchy information we would like to pick up
+// These tags represent the hierarchy information we would like to pick up
 static SizedSPropTagArray(HIERARCHYTAGS_NUM_COLS,sptHIERARCHYCols) = {
 	HIERARCHYTAGS_NUM_COLS,
 		PR_DISPLAY_NAME,
@@ -433,7 +433,7 @@ static SizedSPropTagArray(HIERARCHYTAGS_NUM_COLS,sptHIERARCHYCols) = {
 		PR_OBJECT_TYPE,
 };
 
-//This must be an count of the tags in HIERARCHYColumns, defined below
+// This must be an count of the tags in HIERARCHYColumns, defined below
 #define NUMHIERARCHYCOLUMNS 3
 
 static TagNames HIERARCHYColumns[NUMHIERARCHYCOLUMNS] = {
@@ -443,21 +443,21 @@ static TagNames HIERARCHYColumns[NUMHIERARCHYCOLUMNS] = {
 };
 
 
-//Profile list properties and columns
+// Profile list properties and columns
 enum PROFLISTTAGS {
 	proflisttagPR_INSTANCE_KEY,
 		proflisttagPR_DISPLAY_NAME,
 		PROFLISTTAGS_NUM_COLS
 };
 
-//These tags represent the profile information we would like to pick up
+// These tags represent the profile information we would like to pick up
 static SizedSPropTagArray(PROFLISTTAGS_NUM_COLS,sptPROFLISTCols) = {
 	PROFLISTTAGS_NUM_COLS,
 		PR_INSTANCE_KEY,
 		PR_DISPLAY_NAME_A,
 };
 
-//This must be an count of the tags in PROFLISTColumns, defined below
+// This must be an count of the tags in PROFLISTColumns, defined below
 #define NUMPROFLISTCOLUMNS 2
 
 	static TagNames PROFLISTColumns[NUMPROFLISTCOLUMNS] = {
@@ -465,21 +465,21 @@ static SizedSPropTagArray(PROFLISTTAGS_NUM_COLS,sptPROFLISTCols) = {
 		{proflisttagPR_DISPLAY_NAME,IDS_COLDISPLAYNAME}
 	};
 
-//Service list properties and columns
+// Service list properties and columns
 enum SERVICETAGS {
 	servicetagPR_INSTANCE_KEY,
 		servicetagPR_DISPLAY_NAME,
 		SERVICETAGS_NUM_COLS
 };
 
-//These tags represent the service information we would like to pick up
+// These tags represent the service information we would like to pick up
 static SizedSPropTagArray(SERVICETAGS_NUM_COLS,sptSERVICECols) = {
 	SERVICETAGS_NUM_COLS,
 		PR_INSTANCE_KEY,
 		PR_DISPLAY_NAME,
 };
 
-//This must be an count of the tags in SERVICEColumns, defined below
+// This must be an count of the tags in SERVICEColumns, defined below
 #define NUMSERVICECOLUMNS 2
 
 static TagNames SERVICEColumns[NUMSERVICECOLUMNS] = {
@@ -487,21 +487,21 @@ static TagNames SERVICEColumns[NUMSERVICECOLUMNS] = {
 	{servicetagPR_DISPLAY_NAME,IDS_COLDISPLAYNAME}
 };
 
-//Provider list properties and columns
+// Provider list properties and columns
 enum PROVIDERTAGS {
 	providertagPR_INSTANCE_KEY,
 		providertagPR_DISPLAY_NAME,
 		PROVIDERTAGS_NUM_COLS
 };
 
-//These tags represent the provider information we would like to pick up
+// These tags represent the provider information we would like to pick up
 static SizedSPropTagArray(PROVIDERTAGS_NUM_COLS,sptPROVIDERCols) = {
 	PROVIDERTAGS_NUM_COLS,
 		PR_INSTANCE_KEY,
 		PR_DISPLAY_NAME,
 };
 
-//This must be an count of the tags in PROVIDERColumns, defined below
+// This must be an count of the tags in PROVIDERColumns, defined below
 #define NUMPROVIDERCOLUMNS 2
 
 static TagNames PROVIDERColumns[NUMPROVIDERCOLUMNS] = {
@@ -509,21 +509,21 @@ static TagNames PROVIDERColumns[NUMPROVIDERCOLUMNS] = {
 	{providertagPR_DISPLAY_NAME,IDS_COLDISPLAYNAME}
 };
 
-//Default properties and columns
+// Default properties and columns
 enum RULETAGS {
 	ruletagPR_INSTANCE_KEY,
 		ruletagPR_RULE_NAME,
 		RULETAGS_NUM_COLS
 };
 
-//These tags represent the message information we would like to pick up
+// These tags represent the message information we would like to pick up
 static SizedSPropTagArray(RULETAGS_NUM_COLS,sptRULECols) = {
 	RULETAGS_NUM_COLS,
 		PR_INSTANCE_KEY,
 		PR_RULE_NAME
 };
 
-//This must be an count of the tags in DEFColumns, defined below
+// This must be an count of the tags in DEFColumns, defined below
 #define NUMRULECOLUMNS 2
 
 static TagNames RULEColumns[NUMRULECOLUMNS] = {
@@ -532,21 +532,21 @@ static TagNames RULEColumns[NUMRULECOLUMNS] = {
 };
 
 
-//Default properties and columns
+// Default properties and columns
 enum ACLTAGS {
 		acltagPR_MEMBER_ID,
 		acltagPR_MEMBER_RIGHTS,
 		ACLTAGS_NUM_COLS
 };
 
-//These tags represent the message information we would like to pick up
+// These tags represent the message information we would like to pick up
 static SizedSPropTagArray(ACLTAGS_NUM_COLS,sptACLCols) = {
 	ACLTAGS_NUM_COLS,
 		PR_MEMBER_ID,
 		PR_MEMBER_RIGHTS
 };
 
-//This must be an count of the tags in DEFColumns, defined below
+// This must be an count of the tags in DEFColumns, defined below
 #define NUMACLCOLUMNS 2
 
 static TagNames ACLColumns[NUMACLCOLUMNS] = {
@@ -555,7 +555,7 @@ static TagNames ACLColumns[NUMACLCOLUMNS] = {
 };
 
 
-//These structures define the columns used in SingleMAPIPropListCtrl
+// These structures define the columns used in SingleMAPIPropListCtrl
 enum PROPCOLTAGS {
 		pcPROPEXACTNAMES,
 		pcPROPPARTIALNAMES,
@@ -569,7 +569,7 @@ enum PROPCOLTAGS {
 		PROPCOLTAGS_NUM_COLS
 };
 
-//This must be an count of the tags in PropColumns, defined below
+// This must be an count of the tags in PropColumns, defined below
 #define NUMPROPCOLUMNS 9
 
 static TagNames PropColumns[NUMPROPCOLUMNS] = {

@@ -2,10 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "Error.h"
-
 #include "HierarchyTableDlg.h"
-
 #include "HierarchyTableTreeCtrl.h"
 #include "FakeSplitter.h"
 #include "SingleMAPIPropListCtrl.h"
@@ -15,12 +12,6 @@
 #include "InterpretProp.h"
 #include "RestrictEditor.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
 static TCHAR* CLASS = _T("CHierarchyTableDlg");
 
 /////////////////////////////////////////////////////////////////////////////
@@ -29,7 +20,7 @@ static TCHAR* CLASS = _T("CHierarchyTableDlg");
 
 CHierarchyTableDlg::CHierarchyTableDlg(
 													 CParentWnd* pParentWnd,
-													 CMapiObjects *lpMapiObjects,
+													 CMapiObjects* lpMapiObjects,
 													 UINT uidTitle,
 													 LPUNKNOWN lpRootContainer,
 													 ULONG nIDContextMenu,
@@ -55,7 +46,7 @@ CBaseDialog(
 	m_ulDisplayFlags = dfNormal;
 	m_lpHierarchyTableTreeCtrl = NULL;
 	m_lpContainer = NULL;
-	//need to make sure whatever gets passed to us is really a container
+	// need to make sure whatever gets passed to us is really a container
 	if (lpRootContainer)
 	{
 		HRESULT hRes = S_OK;
@@ -76,21 +67,19 @@ CHierarchyTableDlg::~CHierarchyTableDlg()
 }
 
 BEGIN_MESSAGE_MAP(CHierarchyTableDlg, CBaseDialog)
-//{{AFX_MSG_MAP(CHierarchyTableDlg)
 	ON_COMMAND(ID_DISPLAYSELECTEDITEM, OnDisplayItem)
 	ON_COMMAND(ID_REFRESHVIEW, OnRefreshView)
 	ON_COMMAND(ID_DISPLAYHIERARCHYTABLE,OnDisplayHierarchyTable)
 	ON_COMMAND(ID_EDITSEARCHCRITERIA, OnEditSearchCriteria)
-//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 void CHierarchyTableDlg::OnInitMenu(CMenu* pMenu)
 {
 	if (pMenu)
 	{
-		BOOL	bItemSelected = m_lpHierarchyTableTreeCtrl && m_lpHierarchyTableTreeCtrl->m_bItemSelected;
 		if (m_lpHierarchyTableTreeCtrl)
 		{
+			BOOL bItemSelected = m_lpHierarchyTableTreeCtrl->IsItemSelected();
 			pMenu->EnableMenuItem(ID_DISPLAYSELECTEDITEM,DIM(bItemSelected));
 			pMenu->EnableMenuItem(ID_DISPLAYHIERARCHYTABLE,DIM(bItemSelected));
 			pMenu->EnableMenuItem(ID_EDITSEARCHCRITERIA,DIM(bItemSelected));
@@ -180,7 +169,7 @@ void CHierarchyTableDlg::OnDisplayHierarchyTable()
 		lpContainer->Release();
 	}
 	return;
-}//CHierarchyTableDlg::OnDisplayHierarchyTable
+} // CHierarchyTableDlg::OnDisplayHierarchyTable
 
 void CHierarchyTableDlg::OnEditSearchCriteria()
 {
@@ -188,7 +177,7 @@ void CHierarchyTableDlg::OnEditSearchCriteria()
 
 	if (!m_lpHierarchyTableTreeCtrl) return;
 
-	//Find the highlighted item
+	// Find the highlighted item
 	LPMAPIFOLDER lpMAPIFolder = (LPMAPIFOLDER) m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY);
 
 	if (lpMAPIFolder)
@@ -220,8 +209,8 @@ void CHierarchyTableDlg::OnEditSearchCriteria()
 		WC_H(MyCriteria.DisplayDialog());
 		if (S_OK == hRes)
 		{
-			//make sure the user really wants to call SetSearchCriteria
-			//hard to detect 'dirty' on this dialog so easier just to ask
+			// make sure the user really wants to call SetSearchCriteria
+			// hard to detect 'dirty' on this dialog so easier just to ask
 			CEditor MyYesNoDialog(
 				this,
 				IDS_CALLSETSEARCHCRITERIA,
@@ -231,7 +220,7 @@ void CHierarchyTableDlg::OnEditSearchCriteria()
 			WC_H(MyYesNoDialog.DisplayDialog());
 			if (S_OK == hRes)
 			{
-				//do the set search criteria
+				// do the set search criteria
 				LPSRestriction lpNewRes = MyCriteria.DetachModifiedSRestriction();
 				LPENTRYLIST lpNewEntryList = MyCriteria.DetachModifiedEntryList();
 				ULONG ulSearchFlags = MyCriteria.GetSearchFlags();
@@ -246,11 +235,11 @@ void CHierarchyTableDlg::OnEditSearchCriteria()
 		lpMAPIFolder->Release();
 	}
 	return;
-}//CHierarchyTableDlg::OnEditSearchCriteria
+} // CHierarchyTableDlg::OnEditSearchCriteria
 
 BOOL CHierarchyTableDlg::OnInitDialog()
 {
-	CBaseDialog::OnInitDialog();
+	BOOL bRet = CBaseDialog::OnInitDialog();
 
 	if (m_lpFakeSplitter)
 	{
@@ -258,7 +247,8 @@ BOOL CHierarchyTableDlg::OnInitDialog()
 			m_lpFakeSplitter,
 			m_lpMapiObjects,
 			this,
-			m_ulDisplayFlags);
+			m_ulDisplayFlags,
+			m_nIDContextMenu);
 
 		if (m_lpHierarchyTableTreeCtrl)
 		{
@@ -270,27 +260,25 @@ BOOL CHierarchyTableDlg::OnInitDialog()
 
 	UpdateTitleBarText(NULL);
 
-	return TRUE;
-}//CHierarchyTableDlg::OnInitDialog
+	return bRet;
+} // CHierarchyTableDlg::OnInitDialog
 
-BOOL CHierarchyTableDlg::CreateDialogAndMenu(UINT nIDMenuResource)
+void CHierarchyTableDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 {
 	HRESULT hRes = S_OK;
 
 	DebugPrintEx(DBGCreateDialog,CLASS,_T("CreateDialogAndMenu"),_T("id = 0x%X\n"),nIDMenuResource);
-	EC_B(CBaseDialog::CreateDialogAndMenu(nIDMenuResource));
+	CBaseDialog::CreateDialogAndMenu(nIDMenuResource);
 
-	EC_B(AddMenu(IDR_MENU_HIERARCHY_TABLE,IDS_HIERARCHYTABLE,(UINT)-1));
+	AddMenu(IDR_MENU_HIERARCHY_TABLE,IDS_HIERARCHYTABLE,(UINT)-1);
 
 	if (m_lpHierarchyTableTreeCtrl)
 	{
 		EC_H(m_lpHierarchyTableTreeCtrl->LoadHierarchyTable(m_lpContainer));
 	}
+} // CHierarchyTableDlg::CreateDialogAndMenu
 
-	return HRES_TO_BOOL(hRes);
-}//CHierarchyTableDlg::CreateDialogAndMenu
-
-//Per Q167960 BUG: ESC/ENTER Keys Do Not Work When Editing CTreeCtrl Labels
+// Per Q167960 BUG: ESC/ENTER Keys Do Not Work When Editing CTreeCtrl Labels
 BOOL CHierarchyTableDlg::PreTranslateMessage(MSG* pMsg)
 {
 	// If edit control is visible in tree view control, when you send a
@@ -310,7 +298,7 @@ BOOL CHierarchyTableDlg::PreTranslateMessage(MSG* pMsg)
 		}
 	}
 	return CDialog::PreTranslateMessage(pMsg);
-}//CHierarchyTableDlg::PreTranslateMessage(MSG* pMsg)
+} // CHierarchyTableDlg::PreTranslateMessage(MSG* pMsg)
 
 void CHierarchyTableDlg::OnRefreshView()
 {
@@ -327,7 +315,7 @@ BOOL CHierarchyTableDlg::HandleAddInMenu(WORD wMenuSelect)
 	if (!m_lpHierarchyTableTreeCtrl) return false;
 
 	LPMAPICONTAINER	lpContainer = NULL;
-	CWaitCursor	Wait;//Change the mouse to an hourglass while we work.
+	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
 	LPMENUITEM lpAddInMenu = GetAddinMenuItem(m_hWnd,wMenuSelect);
 	if (!lpAddInMenu) return false;
@@ -344,9 +332,9 @@ BOOL CHierarchyTableDlg::HandleAddInMenu(WORD wMenuSelect)
 	MyAddInMenuParams.hWndParent = m_hWnd;
 	if (m_lpMapiObjects)
 	{
-		MyAddInMenuParams.lpMAPISession = m_lpMapiObjects->GetSession();//do not release
-		MyAddInMenuParams.lpMDB = m_lpMapiObjects->GetMDB();//do not release
-		MyAddInMenuParams.lpAdrBook = m_lpMapiObjects->GetAddrBook(false);//do not release
+		MyAddInMenuParams.lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
+		MyAddInMenuParams.lpMDB = m_lpMapiObjects->GetMDB(); // do not release
+		MyAddInMenuParams.lpAdrBook = m_lpMapiObjects->GetAddrBook(false); // do not release
 	}
 
 	if (m_lpPropDisplay)
@@ -388,7 +376,7 @@ BOOL CHierarchyTableDlg::HandleAddInMenu(WORD wMenuSelect)
 		if (lpContainer) lpContainer->Release();
 	}
 	return true;
-}//CHierarchyTableDlg::HandleAddInMenu
+} // CHierarchyTableDlg::HandleAddInMenu
 
 void CHierarchyTableDlg::HandleAddInMenuSingle(
 									   LPADDINMENUPARAMS lpParams,

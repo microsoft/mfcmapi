@@ -2,10 +2,7 @@
 // Displays the contents of a single address book
 
 #include "stdafx.h"
-#include "Error.h"
-
 #include "ABDlg.h"
-
 #include "ContentsTableListCtrl.h"
 #include "MapiObjects.h"
 #include "SingleMAPIPropListCtrl.h"
@@ -16,12 +13,6 @@
 #include "MAPIProgress.h"
 #include "MAPIFunctions.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
 static TCHAR* CLASS = _T("CAbDlg");
 
 /////////////////////////////////////////////////////////////////////////////
@@ -30,7 +21,7 @@ static TCHAR* CLASS = _T("CAbDlg");
 
 CAbDlg::CAbDlg(
 			   CParentWnd* pParentWnd,
-			   CMapiObjects *lpMapiObjects,
+			   CMapiObjects* lpMapiObjects,
 			   LPABCONT lpAdrBook
 			   ):
 CContentsTableDlg(
@@ -60,31 +51,26 @@ CAbDlg::~CAbDlg()
 }
 
 BEGIN_MESSAGE_MAP(CAbDlg, CContentsTableDlg)
-//{{AFX_MSG_MAP(CAbDlg)
 	ON_COMMAND(ID_DELETESELECTEDITEM, OnDeleteSelectedItem)
 	ON_COMMAND(ID_DISPLAYDETAILS, OnDisplayDetails)
 	ON_COMMAND(ID_OPENCONTACT, OnOpenContact)
 	ON_COMMAND(ID_OPENMANAGER, OnOpenManager)
 	ON_COMMAND(ID_OPENOWNER, OnOpenOwner)
-//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CAbDlg message handlers
 
-BOOL CAbDlg::CreateDialogAndMenu(UINT nIDMenuResource)
+void CAbDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 {
-	HRESULT hRes = S_OK;
 	DebugPrintEx(DBGCreateDialog,CLASS,_T("CreateDialogAndMenu"),_T("id = 0x%X\n"),nIDMenuResource);
-	EC_B(CContentsTableDlg::CreateDialogAndMenu(nIDMenuResource));
+	CContentsTableDlg::CreateDialogAndMenu(nIDMenuResource);
 
-	EC_B(UpdateMenuString(
+	UpdateMenuString(
 		this,
 		ID_CREATEPROPERTYSTRINGRESTRICTION,
-		IDS_ABRESMENU));
-
-	return HRES_TO_BOOL(hRes);
-}//CAbDlg::CreateDialogAndMenu
+		IDS_ABRESMENU);
+} // CAbDlg::CreateDialogAndMenu
 
 void CAbDlg::OnInitMenu(CMenu* pMenu)
 {
@@ -113,8 +99,8 @@ void CAbDlg::OnDisplayDetails()
 
 	HRESULT		hRes = S_OK;
 	if (!m_lpMapiObjects) return;
-	LPADRBOOK	lpAddrBook = m_lpMapiObjects->GetAddrBook(false);//do not release
-	CWaitCursor	Wait;//Change the mouse to an hourglass while we work.
+	LPADRBOOK	lpAddrBook = m_lpMapiObjects->GetAddrBook(false); // do not release
+	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 	LPENTRYLIST	lpEIDs = NULL;
 
 	if (lpAddrBook)
@@ -140,7 +126,7 @@ void CAbDlg::OnDisplayDetails()
 					NULL,
 					NULL,
 					NULL,
-					DIALOG_MODAL));// API doesn't like Unicode
+					DIALOG_MODAL)); // API doesn't like Unicode
 				if (lpEIDs->cValues > i+1 && bShouldCancel(this,hRes)) break;
 				hRes = S_OK;
 			}
@@ -158,10 +144,10 @@ void CAbDlg::OnOpenContact()
 	LPMESSAGE		lpMessage = NULL;
 
 	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl || !m_lpPropDisplay) return;
-	LPMAPISESSION	lpSession = m_lpMapiObjects->GetSession();//do not release
+	LPMAPISESSION	lpSession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpSession) return;
 
-	CWaitCursor	Wait;//Change the mouse to an hourglass while we work.
+	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
 	EC_H(m_lpContentsTableListCtrl->GetSelectedItemEIDs(&lpEntryList));
 
@@ -189,14 +175,14 @@ void CAbDlg::OnOpenContact()
 	if (lpMessage) lpMessage->Release();
 	MAPIFreeBuffer(lpEntryList);
 	return;
-} //CAbDlg::OnOpenContact
+} // CAbDlg::OnOpenContact
 
 void CAbDlg::OnOpenManager()
 {
 	HRESULT			hRes = S_OK;
 	LPMAILUSER		lpMailUser = NULL;
 	int				iItem = -1;
-	CWaitCursor	Wait;//Change the mouse to an hourglass while we work.
+	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return;
 
@@ -215,7 +201,7 @@ void CAbDlg::OnOpenManager()
 			EC_H(DisplayTable(
 				lpMailUser,
 				PR_EMS_AB_MANAGER_O,
-				otDefault,//oType,
+				otDefault, // oType,
 				this));
 		}
 	}
@@ -223,14 +209,14 @@ void CAbDlg::OnOpenManager()
 
 	if (lpMailUser) lpMailUser->Release();
 	return;
-} //CAbDlg::OnOpenManager
+} // CAbDlg::OnOpenManager
 
 void CAbDlg::OnOpenOwner()
 {
 	HRESULT			hRes = S_OK;
 	LPMAILUSER		lpMailUser = NULL;
 	int				iItem = -1;
-	CWaitCursor	Wait;//Change the mouse to an hourglass while we work.
+	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return;
 
@@ -249,7 +235,7 @@ void CAbDlg::OnOpenOwner()
 			EC_H(DisplayTable(
 				lpMailUser,
 				PR_EMS_AB_OWNER_O,
-				otDefault,//oType,
+				otDefault, // oType,
 				this));
 		}
 	}
@@ -257,7 +243,7 @@ void CAbDlg::OnOpenOwner()
 
 	if (lpMailUser) lpMailUser->Release();
 	return;
-} //CAbDlg::OnOpenOwner
+} // CAbDlg::OnOpenOwner
 
 void CAbDlg::OnDeleteSelectedItem()
 {
@@ -272,7 +258,7 @@ void CAbDlg::OnDeleteSelectedItem()
 	if (S_OK == hRes)
 	{
 		DebugPrintEx(DBGGeneric,CLASS,_T("OnDeleteSelectedItem"),_T("deleting address Book entries\n"));
-		CWaitCursor		Wait;//Change the mouse to an hourglass while we work.
+		CWaitCursor		Wait; // Change the mouse to an hourglass while we work.
 		LPENTRYLIST lpEIDs = NULL;
 
 		EC_H(m_lpContentsTableListCtrl->GetSelectedItemEIDs(&lpEIDs));
@@ -283,35 +269,32 @@ void CAbDlg::OnDeleteSelectedItem()
 	}
 
 	return;
-} //CAbDlg::OnDeleteSelectedItem
+} // CAbDlg::OnDeleteSelectedItem
 
 BOOL CAbDlg::HandleCopy()
 {
 	HRESULT			hRes = S_OK;
-	CWaitCursor	Wait;//Change the mouse to an hourglass while we work.
+	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
 	DebugPrintEx(DBGGeneric,CLASS,_T("HandleCopy"),_T("\n"));
 	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return false;
-
-	//not needed - no case where we don't handle copy
-//	if (CBaseDialog::HandleCopy()) return true;
 
 	LPENTRYLIST lpEIDs = NULL;
 
 	EC_H(m_lpContentsTableListCtrl->GetSelectedItemEIDs(&lpEIDs));
 
-	//m_lpMapiObjects takes over ownership of lpEIDs - don't free now
+	// m_lpMapiObjects takes over ownership of lpEIDs - don't free now
 	m_lpMapiObjects->SetABEntriesToCopy(lpEIDs);
 
 	return true;
-} //CAbDlg::HandleCopy
+} // CAbDlg::HandleCopy
 
 BOOL CAbDlg::HandlePaste()
 {
 	if (CBaseDialog::HandlePaste()) return true;
 
 	HRESULT			hRes = S_OK;
-	CWaitCursor		Wait;//Change the mouse to an hourglass while we work.
+	CWaitCursor		Wait; // Change the mouse to an hourglass while we work.
 
 	DebugPrintEx(DBGGeneric,CLASS,_T("HandlePaste"),_T("pasting address Book entries\n"));
 	if (!m_lpMapiObjects || !m_lpContainer) return false;
@@ -333,7 +316,7 @@ BOOL CAbDlg::HandlePaste()
 		WC_H(MyData.DisplayDialog());
 		if (S_OK == hRes)
 		{
-			LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IABContainer::CopyEntries"), m_hWnd);// STRING_OK
+			LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IABContainer::CopyEntries"), m_hWnd); // STRING_OK
 
 			EC_H(((LPABCONT)m_lpContainer)->CopyEntries(
 				lpEIDs,
@@ -346,10 +329,10 @@ BOOL CAbDlg::HandlePaste()
 
 			lpProgress = NULL;
 		}
-		return true;//handled pasted
+		return true; // handled pasted
 	}
-	return false;//did not handle paste
-} //CAbDlg::HandlePaste
+	return false; // did not handle paste
+} // CAbDlg::HandlePaste
 
 void CAbDlg::OnCreatePropertyStringRestriction()
 {
@@ -370,20 +353,19 @@ void CAbDlg::OnCreatePropertyStringRestriction()
 	WC_H(MyData.DisplayDialog());
 	if (S_OK != hRes) return;
 
-	//Allocate and create our SRestriction
+	// Allocate and create our SRestriction
 	EC_H(CreateANRRestriction(
 		PR_ANR,
 		MyData.GetString(0),
 		NULL,
 		&lpRes));
 
-	MAPIFreeBuffer(m_lpContentsTableListCtrl->m_lpRes);
-	m_lpContentsTableListCtrl->m_lpRes = lpRes;
+	m_lpContentsTableListCtrl->SetRestriction(lpRes);
 
 	SetRestrictionType(mfcmapiNORMAL_RESTRICTION);
 
 	if (FAILED(hRes)) MAPIFreeBuffer(lpRes);
-}//CAbDlg::OnCreatePropertyStringRestriction
+} // CAbDlg::OnCreatePropertyStringRestriction
 
 void CAbDlg::HandleAddInMenuSingle(
 									   LPADDINMENUPARAMS lpParams,

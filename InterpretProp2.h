@@ -1,10 +1,7 @@
 #pragma once
 
-#include <MapiX.h>
-#include "PropTagArray.h"
-
-//Function to convert property tags to their names
-//Free lpszExactMatch and lpszPartialMatches with MAPIFreeBuffer
+// Function to convert property tags to their names
+// Free lpszExactMatch and lpszPartialMatches with MAPIFreeBuffer
 HRESULT PropTagToPropName(ULONG ulPropTag, BOOL bIsAB, LPTSTR* lpszExactMatch, LPTSTR* lpszPartialMatches);
 
 HRESULT PropNameToPropTag(LPCTSTR lpszPropName, ULONG* ulPropTag);
@@ -51,6 +48,7 @@ enum MAPIStructType {
 	stTaskAssigners,
 	stGlobalObjectId,
 	stOneOffEntryId,
+	stEntryId,
 };
 
 void InterpretBinaryAsString(SBinary myBin, MAPIStructType myStructType, LPMAPIPROP lpMAPIProp, ULONG ulPropTag, LPTSTR* lpszResultString);
@@ -311,7 +309,7 @@ LPTSTR RecurrencePatternStructToString(RecurrencePatternStruct* prpPattern);
 //
 typedef struct
 {
-	CHAR Cookie[9];// 8 characters + NULL terminator
+	CHAR Cookie[9]; // 8 characters + NULL terminator
 	DWORD Version;
 	ULONG cbStoreEntryID;
 	LPBYTE lpStoreEntryID;
@@ -467,3 +465,5 @@ OneOffEntryIdStruct* BinToOneOffEntryIdStruct(ULONG cbBin, LPBYTE lpBin);
 void DeleteOneOffEntryIdStruct(OneOffEntryIdStruct* pooeidOneOffEntryId);
 // result allocated with new, clean up with delete[]
 LPTSTR OneOffEntryIdStructToString(OneOffEntryIdStruct* pooeidOneOffEntryId);
+
+void EntryIdToString(SBinary myBin, LPTSTR* lpszResultString);

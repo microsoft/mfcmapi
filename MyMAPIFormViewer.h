@@ -1,8 +1,5 @@
-// MyMAPIFormViewer.h: interface for the CMyMAPIFormViewer class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #pragma once
+// MyMAPIFormViewer.h: interface for the CMyMAPIFormViewer class.
 
 class CContentsTableListCtrl;
 
@@ -18,10 +15,11 @@ public:
 		LPMAPISESSION lpMAPISession,
 		LPMAPIFOLDER lpFolder,
 		LPMESSAGE lpMessage,
-		CContentsTableListCtrl *lpContentsTableListCtrl,
+		CContentsTableListCtrl* lpContentsTableListCtrl,
 		int iItem);
 	virtual ~CMyMAPIFormViewer();
 
+	// IUnknown
 	STDMETHODIMP QueryInterface (REFIID riid, LPVOID * ppvObj);
 	STDMETHODIMP_(ULONG) AddRef();
 	STDMETHODIMP_(ULONG) Release();
@@ -31,9 +29,7 @@ public:
 		ULONG ulFlags,
 		LPMAPIERROR FAR * lppMAPIError);
 
-	////////////////////////////////////////////////////////////
-	// IMAPIMessageSite Functions
-	////////////////////////////////////////////////////////////
+	// IMAPIMessageSite
 	STDMETHODIMP GetSession (
 		LPMAPISESSION FAR * ppSession);
 	STDMETHODIMP GetStore (
@@ -65,9 +61,8 @@ public:
 		ULONG ulFlags);
 	STDMETHODIMP GetSiteStatus(
 		LPULONG lpulStatus);
-	////////////////////////////////////////////////////////////
-	// IMAPIViewAdviseSink Functions
-	////////////////////////////////////////////////////////////
+
+	// IMAPIViewAdviseSink
 	STDMETHODIMP OnShutdown();
 	STDMETHODIMP OnNewMessage();
 	STDMETHODIMP OnPrint(
@@ -76,9 +71,7 @@ public:
 	STDMETHODIMP OnSubmitted();
 	STDMETHODIMP OnSaved();
 
-	////////////////////////////////////////////////////////////
-	// IMAPIViewContext Functions
-	////////////////////////////////////////////////////////////
+	// IMAPIViewContext
 	STDMETHODIMP SetAdviseSink(
 		LPMAPIFORMADVISESINK pmvns);
 	STDMETHODIMP ActivateNext(
@@ -95,32 +88,30 @@ public:
 		LPULONG lpulStatus);
 
 	HRESULT CallDoVerb(LPMAPIFORM lpMapiForm,
-				   LONG lVerb,
-				   LPCRECT lpRect);
-private :
-	HWND					m_hwndParent;
-	LONG					m_cRef;
+		LONG lVerb,
+		LPCRECT lpRect);
 
-	//primary guts of message, folder, MDB for our message site
-	LPMAPIFOLDER			m_lpFolder;
-	LPMESSAGE				m_lpMessage;
-	LPMDB					m_lpMDB;
-	LPMAPISESSION			m_lpMAPISession;
-	CContentsTableListCtrl*	m_lpContentsTableListCtrl;
-	int						m_iItem;//index in list control of item being displayed
-	//Set in SetAdviseSink, used in ActivateNext
-	LPMAPIFORMADVISESINK	m_lpMapiFormAdviseSink;
-
-	//helper function for ActivateNext
+private:
+	// helper function for ActivateNext
 	HRESULT GetNextMessage(
 		ULONG ulDir,
 		int* piNewItem,
 		ULONG* pulStatus,
 		LPMESSAGE* ppMessage);
 	HRESULT SetPersist(LPMAPIFORM lpForm, LPPERSISTMESSAGE lpPersist);
-//	LPMAPIFORM				m_lpForm;
-	LPPERSISTMESSAGE		m_lpPersistMessage;
-//	ULONG					m_pulConnection;
 	void ShutdownPersist();
 	void ReleaseObjects();
+
+	HWND					m_hwndParent;
+	LONG					m_cRef;
+	// primary guts of message, folder, MDB for our message site
+	LPMAPIFOLDER			m_lpFolder;
+	LPMESSAGE				m_lpMessage;
+	LPMDB					m_lpMDB;
+	LPMAPISESSION			m_lpMAPISession;
+	CContentsTableListCtrl*	m_lpContentsTableListCtrl;
+	int						m_iItem; // index in list control of item being displayed
+	// Set in SetAdviseSink, used in ActivateNext
+	LPMAPIFORMADVISESINK	m_lpMapiFormAdviseSink;
+	LPPERSISTMESSAGE		m_lpPersistMessage;
 };

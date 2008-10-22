@@ -2,13 +2,9 @@
 //
 
 #include "stdafx.h"
-#include "Error.h"
-#include "registry.h"
-
 #include "SortListCtrl.h"
 #include "SingleMAPIPropListCtrl.h"
 #include "StreamEditor.h"
-
 #include "BaseDialog.h"
 #include "MAPIFunctions.h"
 #include "ColumnTags.h"
@@ -21,18 +17,11 @@
 #include "InterpretProp2.h"
 #include "File.h"
 #include "TagArrayEditor.h"
-
 #include "FileDialogEx.h"
 #include "ImportProcs.h"
 #include "RestrictEditor.h"
 #include "PropertyTagEditor.h"
 #include "MAPIProgress.h"
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
 
 static TCHAR* CLASS = _T("CSingleMAPIPropListCtrl");
 
@@ -45,6 +34,7 @@ static TCHAR* CLASS = _T("CSingleMAPIPropListCtrl");
 CSingleMAPIPropListCtrl::CSingleMAPIPropListCtrl(
 												 CWnd* pCreateParent,
 												 CBaseDialog *lpHostDlg,
+												 CMapiObjects* lpMapiObjects,
 												 BOOL bIsAB)
 												 :CSortListCtrl()
 {
@@ -56,6 +46,10 @@ CSingleMAPIPropListCtrl::CSingleMAPIPropListCtrl(
 	m_lpMAPIProp = NULL;
 
 	m_bHaveEverDisplayedSomething = FALSE;
+
+	// We borrow our parent's Mapi objects
+	m_lpMapiObjects = lpMapiObjects;
+	if (m_lpMapiObjects) m_lpMapiObjects->AddRef();
 
 	m_lpHostDlg = lpHostDlg;
 	if (m_lpHostDlg) m_lpHostDlg->AddRef();
@@ -114,39 +108,19 @@ CSingleMAPIPropListCtrl::~CSingleMAPIPropListCtrl()
 	TRACE_DESTRUCTOR(CLASS);
 	MAPIFreeBuffer(m_sptExtraProps);
 	if (m_lpMAPIProp) m_lpMAPIProp->Release();
+	if (m_lpMapiObjects) m_lpMapiObjects->Release();
 	if (m_lpHostDlg) m_lpHostDlg->Release();
 }
 
 BEGIN_MESSAGE_MAP(CSingleMAPIPropListCtrl, CSortListCtrl)
-//{{AFX_MSG_MAP(CSingleMAPIPropListCtrl)
 	ON_NOTIFY_REFLECT(NM_DBLCLK, OnDblclk)
 	ON_WM_KEYDOWN()
 	ON_WM_CONTEXTMENU()
 	ON_MESSAGE(WM_MFCMAPI_SAVECOLUMNORDERLIST, msgOnSaveColumnOrder)
-//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
 // CSingleMAPIPropListCtrl message handlers
-
-//Some message handling's not worth breaking out into separate functions.
-LRESULT CSingleMAPIPropListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
-{
-	/*
-	HRESULT hRes = S_OK;
-	LRESULT lResult = NULL;
-	DebugPrint(DBGWindowProc,_T("CSingleMAPIPropListCtrl::WindowProc message = 0x%x, wParam = 0x%X, lParam = 0x%X\n"),message,wParam,lParam);
-
-	switch (message)
-	{
-	case WM_LBUTTONDBLCLK:
-		break;
-	case WM_CONTEXTMENU:
-		break;
-	}//end switch
-	*/
-	return CSortListCtrl::WindowProc(message,wParam,lParam);
-}
 
 // WM_MFCMAPI_SAVECOLUMNORDERLIST
 LRESULT	CSingleMAPIPropListCtrl::msgOnSaveColumnOrder(WPARAM /*wParam*/, LPARAM /*lParam*/)
@@ -185,10 +159,10 @@ void CSingleMAPIPropListCtrl::InitMenu(CMenu* pMenu)
 		GetSelectedPropTag(&ulPropTag);
 		bPropSelected = (NULL != ulPropTag);
 
-		if (m_lpHostDlg && m_lpHostDlg->m_lpMapiObjects)
+		if (m_lpMapiObjects)
 		{
-			ULONG ulStatus = m_lpHostDlg->m_lpMapiObjects->GetBufferStatus();
-			LPENTRYLIST lpEIDsToCopy = m_lpHostDlg->m_lpMapiObjects->GetMessagesToCopy();
+			ULONG ulStatus = m_lpMapiObjects->GetBufferStatus();
+			LPENTRYLIST lpEIDsToCopy = m_lpMapiObjects->GetMessagesToCopy();
 			pMenu->EnableMenuItem(ID_PASTE_PROPERTY,DIM(m_lpMAPIProp && (ulStatus & BUFFER_PROPTAG) && (ulStatus & BUFFER_SOURCEPROPOBJ)));
 			pMenu->EnableMenuItem(ID_COPYTO,DIM(m_lpMAPIProp && (ulStatus & BUFFER_SOURCEPROPOBJ)));
 			pMenu->EnableMenuItem(ID_PASTE_NAMEDPROPS, DIM(m_lpMAPIProp  && (ulStatus & BUFFER_MESSAGES) && lpEIDsToCopy && 1 == lpEIDsToCopy->cValues));
@@ -203,7 +177,7 @@ void CSingleMAPIPropListCtrl::InitMenu(CMenu* pMenu)
 		pMenu->EnableMenuItem(ID_EDITPROPERTYASUNICODESTREAM,DIM(m_lpMAPIProp && bPropSelected));
 		pMenu->EnableMenuItem(ID_EDITPROPERTYASPRRTFCOMPRESSEDSTREAM,DIM(m_lpMAPIProp && bPropSelected));
 		pMenu->EnableMenuItem(ID_OPEN_PROPERTY,DIM(bPropSelected));
-		pMenu->EnableMenuItem(ID_PARSEPROPERTY,DIM(m_lpMAPIProp && bPropSelected));
+		pMenu->EnableMenuItem(ID_PARSEPROPERTY,DIM(bPropSelected));
 
 		pMenu->EnableMenuItem(ID_SAVEPROPERTIES,DIM(m_lpMAPIProp || GetPropVals()));
 		pMenu->EnableMenuItem(ID_EDITGIVENPROPERTY,DIM(m_lpMAPIProp || GetPropVals()));
@@ -273,22 +247,22 @@ void CSingleMAPIPropListCtrl::GetSelectedPropTag(ULONG* lpPropTag)
 	{
 		DebugPrintEx(DBGGeneric,CLASS,_T("GetSelectedPropTag"),_T("returning lpPropTag = 0x%X\n"),*lpPropTag);
 	}
-}//CSingleMAPIPropListCtrl::GetSelectedPropTag
+} // CSingleMAPIPropListCtrl::GetSelectedPropTag
 
-//Call GetProps with NULL to get a list of (almost) all properties.
-//Parse this list and render them in the control.
-//Add any extra props we've asked for through the UI
+// Call GetProps with NULL to get a list of (almost) all properties.
+// Parse this list and render them in the control.
+// Add any extra props we've asked for through the UI
 HRESULT CSingleMAPIPropListCtrl::LoadMAPIPropList()
 {
 	HRESULT			hRes = S_OK;
 	ULONG			ulCurListBoxRow = 0;
 	ULONG			ulCurPropRow = 0;
-	CWaitCursor		Wait;//Change the mouse to an hourglass while we work.
+	CWaitCursor		Wait; // Change the mouse to an hourglass while we work.
 	ULONG			ulProps = 0;
 	LPSPropValue	lpPropsFromGetProps = NULL;
 	LPSPropValue	lpPropsToAdd = NULL;
 
-	LPSPropValue	lpPropVals = GetPropVals();//do not free!
+	LPSPropValue	lpPropVals = GetPropVals(); // do not free!
 	if (!m_lpMAPIProp && !lpPropVals) return MAPI_E_INVALID_PARAMETER;
 
 	ulCurListBoxRow = 0;
@@ -309,17 +283,17 @@ HRESULT CSingleMAPIPropListCtrl::LoadMAPIPropList()
 			m_lpHostDlg->UpdateStatusBarText(STATUSRIGHTPANE,IDS_PROPSFROMGETPROPS);
 		if (RegKeys[regkeyDO_GETPROPS].ulCurDWORD)
 		{
-			//Can't use EC_H_GETPROPS because I want to suppress MAPI_E_CALL_FAILED as well
+			// Can't use EC_H_GETPROPS because I want to suppress MAPI_E_CALL_FAILED as well
 			hRes = GetPropsNULL(m_lpMAPIProp,
 				fMapiUnicode,
 				&ulProps,
 				&lpPropsFromGetProps);
 			if (MAPI_E_CALL_FAILED == hRes)
 			{
-				//Some stores, like public folders, don't support properties on the root folder
+				// Some stores, like public folders, don't support properties on the root folder
 				DebugPrint(DBGGeneric,_T("Failed to get call GetProps on this object!\n"));
 			}
-			else if (FAILED(hRes))//only report errors, not warnings
+			else if (FAILED(hRes)) // only report errors, not warnings
 			{
 				CHECKHRESMSG(hRes,IDS_GETPROPSNULLFAILED);
 			}
@@ -397,7 +371,7 @@ HRESULT CSingleMAPIPropListCtrl::LoadMAPIPropList()
 		}
 	}
 
-	//get each property in turn and add it to the list
+	// get each property in turn and add it to the list
 	ulCurTag = 0;
 	for (ulCurPropRow = 0; ulCurPropRow < ulProps; ulCurPropRow++)
 	{
@@ -430,7 +404,7 @@ HRESULT CSingleMAPIPropListCtrl::LoadMAPIPropList()
 
 	if (m_lpMAPIProp && m_sptExtraProps)
 	{
-		//Let's get each extra property one at a time
+		// Let's get each extra property one at a time
 		ULONG			cExtraProps = 0;
 		LPSPropValue	pExtraProps = NULL;
 		SPropValue		ExtraPropForList;
@@ -440,11 +414,11 @@ HRESULT CSingleMAPIPropListCtrl::LoadMAPIPropList()
 
 		for (iCurExtraProp = 0 ; iCurExtraProp < m_sptExtraProps->cValues ; iCurExtraProp++)
 		{
-			hRes = S_OK;//clear the error flag before each run
+			hRes = S_OK; // clear the error flag before each run
 			pNewTag.aulPropTag[0] = m_sptExtraProps->aulPropTag[iCurExtraProp];
 
-			//Let's add some extra properties
-			//Don't need to report since we're gonna put show the error in the UI
+			// Let's add some extra properties
+			// Don't need to report since we're gonna put show the error in the UI
 			WC_H(m_lpMAPIProp->GetProps(
 				&pNewTag,
 				fMapiUnicode,
@@ -457,12 +431,12 @@ HRESULT CSingleMAPIPropListCtrl::LoadMAPIPropList()
 
 				if (PROP_TYPE(pNewTag.aulPropTag[0]) == NULL)
 				{
-					//In this case, we started with a NULL tag, but we got a property back - let's 'fix' our tag for the UI
+					// In this case, we started with a NULL tag, but we got a property back - let's 'fix' our tag for the UI
 					pNewTag.aulPropTag[0]  =
 						CHANGE_PROP_TYPE(pNewTag.aulPropTag[0],PROP_TYPE(pExtraProps[0].ulPropTag));
 				}
 
-				//We want to give our parser the tag that came back from GetProps
+				// We want to give our parser the tag that came back from GetProps
 				ExtraPropForList.ulPropTag = pExtraProps[0].ulPropTag;
 
 				ExtraPropForList.Value = pExtraProps[0].Value;
@@ -474,12 +448,12 @@ HRESULT CSingleMAPIPropListCtrl::LoadMAPIPropList()
 				ExtraPropForList.Value.err = hRes;
 			}
 
-			//Add the property to the list
+			// Add the property to the list
 			AddPropToListBox(
 				ulCurListBoxRow,
-				pNewTag.aulPropTag[0],//Tag to use in the UI
+				pNewTag.aulPropTag[0], // Tag to use in the UI
 				NULL, // Let AddPropToListBox look up any named prop information it needs
-				&ExtraPropForList);//Tag + Value to parse - may differ in case of errors or NULL type.
+				&ExtraPropForList); // Tag + Value to parse - may differ in case of errors or NULL type.
 
 			ulCurListBoxRow++;
 
@@ -490,11 +464,11 @@ HRESULT CSingleMAPIPropListCtrl::LoadMAPIPropList()
 
 	DebugPrintEx(DBGGeneric,CLASS,_T("LoadMAPIPropList"),_T("added %d properties\n"),ulCurListBoxRow);
 
-	SortColumn(m_iClickedColumn);
+	SortClickedColumn();
 
-	//Don't report any errors from here - don't care at this point
+	// Don't report any errors from here - don't care at this point
 	return S_OK;
-}//CSingleMAPIPropListCtrl::LoadMAPIPropList
+} // CSingleMAPIPropListCtrl::LoadMAPIPropList
 
 HRESULT	CSingleMAPIPropListCtrl::RefreshMAPIPropList()
 {
@@ -502,7 +476,7 @@ HRESULT	CSingleMAPIPropListCtrl::RefreshMAPIPropList()
 	int iSelectedItem;
 	DebugPrintEx(DBGGeneric,CLASS,_T("RefreshMAPIPropList"),_T("\n"));
 
-	//Turn off redraw while we work on the window
+	// Turn off redraw while we work on the window
 	MySetRedraw(FALSE);
 	POSITION MyPos = GetFirstSelectedItemPosition();
 
@@ -517,14 +491,14 @@ HRESULT	CSingleMAPIPropListCtrl::RefreshMAPIPropList()
 
 	EnsureVisible(iSelectedItem,FALSE);
 
-	//Turn redraw back on to update our view
+	// Turn redraw back on to update our view
 	MySetRedraw(TRUE);
 
 	if (m_lpHostDlg)
 		m_lpHostDlg->UpdateStatusBarText(STATUSMIDDLEPANE,IDS_STATUSTEXTNUMPROPS,GetItemCount());
 
 	return hRes;
-}//CSingleMAPIPropListCtrl::RefreshMAPIPropList
+} // CSingleMAPIPropListCtrl::RefreshMAPIPropList
 
 HRESULT CSingleMAPIPropListCtrl::AddPropToExtraProps(ULONG ulPropTag,BOOL bRefresh)
 {
@@ -533,8 +507,8 @@ HRESULT CSingleMAPIPropListCtrl::AddPropToExtraProps(ULONG ulPropTag,BOOL bRefre
 
 	DebugPrintEx(DBGGeneric,CLASS,_T("AddPropToExtraProps"),_T("adding proptag 0x%X\n"),ulPropTag);
 
-	//Cache this proptag so we continue to request it in this view
-	//We've got code to refresh any props cached in m_sptExtraProps...let's add to that.
+	// Cache this proptag so we continue to request it in this view
+	// We've got code to refresh any props cached in m_sptExtraProps...let's add to that.
 
 	sptSingleProp.cValues = 1;
 	sptSingleProp.aulPropTag[0] = ulPropTag;
@@ -542,7 +516,7 @@ HRESULT CSingleMAPIPropListCtrl::AddPropToExtraProps(ULONG ulPropTag,BOOL bRefre
 	EC_H(AddPropsToExtraProps(&sptSingleProp,bRefresh));
 
 	return hRes;
-}//CSingleMAPIPropListCtrl::AddPropToExtraProps
+} // CSingleMAPIPropListCtrl::AddPropToExtraProps
 
 HRESULT CSingleMAPIPropListCtrl::AddPropsToExtraProps(LPSPropTagArray lpPropsToAdd,BOOL bRefresh)
 {
@@ -603,15 +577,13 @@ static ULONG _PropTypeIcons[NUMPROPTYPES][2] =
 {PT_ACTIONS,slIconACTIONS},
 };
 
-//Crack open the given SPropValue and render it to the given row in the list.
+// Crack open the given SPropValue and render it to the given row in the list.
 void CSingleMAPIPropListCtrl::AddPropToListBox(
 											   int iRow,
 											   ULONG ulPropTag,
 											   LPMAPINAMEID lpNameID,
 											   LPSPropValue lpsPropToAdd)
 {
-	//DebugPrintEx(DBGGeneric,CLASS,_T("AddPropToListBox"),_T("adding property:"));
-	//DebugPrint(DBGGeneric,_T("0x%X, "), ulPropTag);
 	ULONG ulImage = slIconDefault;
 	if (lpsPropToAdd)
 	{
@@ -628,7 +600,7 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 
 	SortListData* lpData = NULL;
 	lpData = InsertRow(iRow,_T(""),0,ulImage);
-	//Data used to refer to specific property tags. See GetSelectedPropTag.
+	// Data used to refer to specific property tags. See GetSelectedPropTag.
 	if (lpData)
 	{
 		lpData->data.Prop.ulPropTag = ulPropTag;
@@ -680,9 +652,9 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 	delete[] szSmartView;
 	delete[] szNamedPropName;
 	delete[] szNamedPropGUID;
-}//CSingleMAPIPropListCtrl::AddPropToListBox
+} // CSingleMAPIPropListCtrl::AddPropToListBox
 
-//to get the count of source properties
+// to get the count of source properties
 ULONG CSingleMAPIPropListCtrl::GetCountPropVals()
 {
 	if (m_lpSourceData)
@@ -707,28 +679,19 @@ LPSPropValue CSingleMAPIPropListCtrl::GetPropVals()
 	return 0;
 }
 
-//Clear the current property list from the control.
-//Load a new list from the IMAPIProp or lpSourceProps object passed in
-//Most calls to this will come through CBaseDialog::OnUpdateSingleMAPIPropListCtrl, which will preserve the current bIsAB
-//Exceptions will be where we need to set a specific bIsAB
+// Clear the current property list from the control.
+// Load a new list from the IMAPIProp or lpSourceProps object passed in
+// Most calls to this will come through CBaseDialog::OnUpdateSingleMAPIPropListCtrl, which will preserve the current bIsAB
+// Exceptions will be where we need to set a specific bIsAB
 HRESULT CSingleMAPIPropListCtrl::SetDataSource(LPMAPIPROP lpMAPIProp, SortListData* lpListData, BOOL bIsAB)
 {
 	HRESULT hRes = S_OK;
-	//if nothing to do...do nothing
+	// if nothing to do...do nothing
 	if (lpMAPIProp == m_lpMAPIProp && m_lpSourceData == lpListData) return S_OK;
-
-	//Check that we've really got an LMAPIPROP
-/*	if (lpMAPIProp)
-	{
-		LPMAPIPROP lpTemp = NULL;
-		EC_H(lpMAPIProp->QueryInterface(IID_IMAPIProp,(LPVOID*) &lpTemp));
-		if (!lpTemp) return MAPI_E_INVALID_PARAMETER;
-		lpTemp->Release();
-	}*/
 
 	DebugPrintEx(DBGGeneric,CLASS,_T("SetDataSource"),_T("clearing 0x%X and adding 0x%X\n"),m_lpMAPIProp, lpMAPIProp);
 
-	//Turn off redraw while we work on the window
+	// Turn off redraw while we work on the window
 	MySetRedraw(FALSE);
 
 	m_bIsAB = bIsAB;
@@ -741,18 +704,17 @@ HRESULT CSingleMAPIPropListCtrl::SetDataSource(LPMAPIPROP lpMAPIProp, SortListDa
 
 	WC_H(RefreshMAPIPropList());
 
-	//Reset our header widths if weren't showing anything before and are now
+	// Reset our header widths if weren't showing anything before and are now
 	if (S_OK == hRes && !m_bHaveEverDisplayedSomething && m_lpMAPIProp && GetItemCount())
 	{
 		int iCurCol;
 		m_bHaveEverDisplayedSomething = TRUE;
-//		DebugPrintEx(DBGGeneric,CLASS,_T("SetDataSource"),_T("Setting header Column widths\n"));
 
 		CHeaderCtrl* lpMyHeader = GetHeaderCtrl();
 
 		if (lpMyHeader)
 		{
-			//This fixes a ton of flashing problems
+			// This fixes a ton of flashing problems
 			lpMyHeader->SetRedraw(TRUE);
 			for (iCurCol = 0;iCurCol<NUMPROPCOLUMNS;iCurCol++)
 			{
@@ -763,7 +725,7 @@ HRESULT CSingleMAPIPropListCtrl::SetDataSource(LPMAPIPROP lpMAPIProp, SortListDa
 		}
 	}
 
-	//Turn redraw back on to update our view
+	// Turn redraw back on to update our view
 	MySetRedraw(TRUE);
 	return hRes;
 }
@@ -778,9 +740,9 @@ void CSingleMAPIPropListCtrl::SavePropsToXML()
 	szFileSpec.LoadString(IDS_XMLFILES);
 
 	CFileDialogEx dlgFilePicker(
-		FALSE,//Save As dialog
-		_T("xml"),// STRING_OK
-		_T("props.xml"),// STRING_OK
+		FALSE, // Save As dialog
+		_T("xml"), // STRING_OK
+		_T("props.xml"), // STRING_OK
 		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_EXPLORER,
 		szFileSpec,
 		this);
@@ -798,10 +760,8 @@ void CSingleMAPIPropListCtrl::SavePropsToXML()
 			{
 				DebugPrintEx(DBGGeneric,CLASS,_T("SavePropsToXML"),_T("saving to %s\n"),szFileName);
 
-				//force a sort on the tag column to make output consistent
-				m_bSortUp = false;
-				m_iClickedColumn = pcPROPTAG;
-				SortColumn(m_iClickedColumn);
+				// Force a sort on the tag column to make output consistent
+				FakeClickColumn(pcPROPTAG,false);
 
 				int iRow;
 				int iItemCount = GetItemCount();
@@ -868,7 +828,7 @@ void CSingleMAPIPropListCtrl::SavePropsToXML()
 			}
 		}
 	}
-}//CSingleMAPIPropListCtrl::SavePropsToXML
+} // CSingleMAPIPropListCtrl::SavePropsToXML
 
 void CSingleMAPIPropListCtrl::OnDblclk(NMHDR* /*pNMHDR*/, LRESULT* pResult)
 {
@@ -938,9 +898,7 @@ void CSingleMAPIPropListCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 void CSingleMAPIPropListCtrl::OnContextMenu(CWnd* /*pWnd*/, CPoint pos)
 {
-	HRESULT hRes = S_OK;
-
-	EC_B(DisplayContextMenu(IDR_MENU_PROPERTY_POPUP,NULL,this->m_lpHostDlg,pos.x, pos.y));
+	DisplayContextMenu(IDR_MENU_PROPERTY_POPUP,NULL,this->m_lpHostDlg,pos.x, pos.y);
 }
 
 HRESULT CSingleMAPIPropListCtrl::FindAllNamedProps()
@@ -959,7 +917,7 @@ HRESULT CSingleMAPIPropListCtrl::FindAllNamedProps()
 		&lptag));
 	if (S_OK == hRes && lptag)
 	{
-		//Now we have an array of tags - add them in:
+		// Now we have an array of tags - add them in:
 		EC_H(AddPropsToExtraProps(lptag,FALSE));
 		MAPIFreeBuffer(lptag);
 		lptag = NULL;
@@ -1039,13 +997,13 @@ HRESULT CSingleMAPIPropListCtrl::FindAllNamedProps()
 		}
 	}
 
-	//Refresh the display
+	// Refresh the display
 	WC_H(RefreshMAPIPropList());
 
 	return hRes;
 }
 
-//Delete the selected property
+// Delete the selected property
 void CSingleMAPIPropListCtrl::OnDeleteProperty()
 {
 	HRESULT		hRes = S_OK;
@@ -1069,14 +1027,14 @@ void CSingleMAPIPropListCtrl::OnDeleteProperty()
 
 		EC_H(DeleteProperty(m_lpMAPIProp,ulPropTag));
 
-		//Refresh the display
+		// Refresh the display
 		WC_H(RefreshMAPIPropList());
 	}
 
 	return;
-}//CSingleMAPIPropListCtrl::OnDeleteProperty
+} // CSingleMAPIPropListCtrl::OnDeleteProperty
 
-//Display the selected property as a security dscriptor using a property sheet
+// Display the selected property as a security dscriptor using a property sheet
 void CSingleMAPIPropListCtrl::OnDisplayPropertyAsSecurityDescriptorPropSheet()
 {
 	HRESULT					hRes = S_OK;
@@ -1098,7 +1056,7 @@ void CSingleMAPIPropListCtrl::OnDisplayPropertyAsSecurityDescriptorPropSheet()
 
 		MySecInfo->Release();
 	}
-}//CSingleMAPIPropListCtrl::OnDisplayPropertyAsSecurityDescriptorPropSheet
+} // CSingleMAPIPropListCtrl::OnDisplayPropertyAsSecurityDescriptorPropSheet
 
 void CSingleMAPIPropListCtrl::OnEditProp()
 {
@@ -1112,7 +1070,7 @@ void CSingleMAPIPropListCtrl::OnEditProp()
 	OnEditGivenProp(ulPropTag);
 
 	return;
-}//CSingleMAPIPropListCtrl::OnEditProp
+} // CSingleMAPIPropListCtrl::OnEditProp
 
 // Concatenate two property arrays without duplicates
 // Entries in the first array trump entries in the second
@@ -1137,7 +1095,7 @@ HRESULT	ConcatLPSPropValue(
 	ULONG ulNewArraySize = NULL;
 	LPSPropValue lpNewArray = NULL;
 
-	//Add the sizes of the passed in arrays
+	// Add the sizes of the passed in arrays
 	if (ulVal2 && ulVal1)
 	{
 		ulNewArraySize = ulVal1;
@@ -1254,7 +1212,7 @@ HRESULT CSingleMAPIPropListCtrl::SetNewProp(LPSPropValue lpNewProp)
 		m_lpSourceData->lpSourceProps = lpNewArray;
 		m_bRowModified = true;
 
-		//refresh
+		// refresh
 		RefreshMAPIPropList();
 	}
 	return hRes;
@@ -1305,7 +1263,7 @@ void CSingleMAPIPropListCtrl::OnEditPropAsRestriction(ULONG ulPropTag)
 			MAPIFreeBuffer(lpModRes);
 		}
 	}
-}//CSingleMAPIPropListCtrl::OnEditPropAsRestriction
+} // CSingleMAPIPropListCtrl::OnEditPropAsRestriction
 
 void CSingleMAPIPropListCtrl::OnEditGivenProp(ULONG ulPropTag)
 {
@@ -1338,7 +1296,7 @@ void CSingleMAPIPropListCtrl::OnEditGivenProp(ULONG ulPropTag)
 		MyEditor.InitPropValue(m_lpMAPIProp,ulPropTag);
 		WC_H(MyEditor.DisplayDialog());
 
-		//Refresh the display
+		// Refresh the display
 		WC_H(RefreshMAPIPropList());
 	}
 	else if (lpSourceArray)
@@ -1370,7 +1328,7 @@ void CSingleMAPIPropListCtrl::OnEditGivenProp(ULONG ulPropTag)
 
 		if (S_OK == hRes)
 		{
-			LPSPropValue lpModProp = MyEditor.DetachModifiedSPropValue();// I 'own' the memory now.
+			LPSPropValue lpModProp = MyEditor.DetachModifiedSPropValue(); // I 'own' the memory now.
 
 			// Special case - if we're in 'row' view of a real object, then we didn't
 			// call SetProps or SaveChanges just now, because no object was passed to
@@ -1397,9 +1355,9 @@ void CSingleMAPIPropListCtrl::OnEditGivenProp(ULONG ulPropTag)
 			}
 		}
 	}
-}//OnEditGivenProp
+} // OnEditGivenProp
 
-//Display the selected property as a stream using CStreamEditor
+// Display the selected property as a stream using CStreamEditor
 void CSingleMAPIPropListCtrl::OnEditPropAsStream(ULONG ulType, BOOL bEditAsRTF)
 {
 	HRESULT			hRes = S_OK;
@@ -1426,7 +1384,7 @@ void CSingleMAPIPropListCtrl::OnEditPropAsStream(ULONG ulType, BOOL bEditAsRTF)
 	BOOL bUseWrapEx = false;
 	ULONG ulRTFFlags = NULL;
 	ULONG ulInCodePage = NULL;
-	ULONG ulOutCodePage = CP_ACP;//Default to ANSI - check if this is valid for UNICODE builds
+	ULONG ulOutCodePage = CP_ACP; // Default to ANSI - check if this is valid for UNICODE builds
 
 	if (bEditAsRTF)
 	{
@@ -1507,17 +1465,17 @@ void CSingleMAPIPropListCtrl::OnEditPropAsStream(ULONG ulType, BOOL bEditAsRTF)
 
 		WC_H(MyEditor.DisplayDialog());
 	}
-}//CSingleMAPIPropListCtrl::OnEditPropAsStream
+} // CSingleMAPIPropListCtrl::OnEditPropAsStream
 
 void CSingleMAPIPropListCtrl::OnCopyProperty()
 {
-	//for now, we only copy from objects - copying from rows would be difficult to generalize
-	if (!m_lpHostDlg || !m_lpHostDlg->m_lpMapiObjects || !m_lpMAPIProp) return;
+	// for now, we only copy from objects - copying from rows would be difficult to generalize
+	if (!m_lpMapiObjects || !m_lpMAPIProp) return;
 
 	ULONG ulPropTag = NULL;
 	GetSelectedPropTag(&ulPropTag);
 
-	m_lpHostDlg->m_lpMapiObjects->SetPropertyToCopy(ulPropTag,m_lpMAPIProp);
+	m_lpMapiObjects->SetPropertyToCopy(ulPropTag,m_lpMAPIProp);
 }
 
 void CSingleMAPIPropListCtrl::OnParseProperty()
@@ -1569,6 +1527,7 @@ void CSingleMAPIPropListCtrl::OnParseProperty()
 			IDS_TASKASSIGNERS,
 			IDS_GLOBALOBJECTID,
 			IDS_ONEOFFENTRYID,
+			IDS_ENTRYID,
 		};
 		MyStructurePicker.InitDropDown(0,IDS_STRUCTURES,sizeof(uidDropDown)/sizeof(UINT),uidDropDown,true);
 		WC_H(MyStructurePicker.DisplayDialog());
@@ -1608,6 +1567,8 @@ void CSingleMAPIPropListCtrl::OnParseProperty()
 				myStructType = stGlobalObjectId;
 			case 10: // One-Off Entry Id
 				myStructType = stOneOffEntryId;
+			case 11: // Entry Id
+				myStructType = stEntryId;
 			}
 		}
 
@@ -1640,11 +1601,11 @@ void CSingleMAPIPropListCtrl::OnParseProperty()
 
 void CSingleMAPIPropListCtrl::OnPasteProperty()
 {
-	//for now, we only paste to objects - copying to rows would be difficult to generalize
-	if (!m_lpHostDlg || !m_lpHostDlg->m_lpMapiObjects || !m_lpMAPIProp) return;
+	// for now, we only paste to objects - copying to rows would be difficult to generalize
+	if (!m_lpHostDlg || !m_lpMapiObjects || !m_lpMAPIProp) return;
 
-	ULONG ulSourcePropTag = m_lpHostDlg->m_lpMapiObjects->GetPropertyToCopy();
-	LPMAPIPROP lpSourcePropObj = m_lpHostDlg->m_lpMapiObjects->GetSourcePropObject();
+	ULONG ulSourcePropTag = m_lpMapiObjects->GetPropertyToCopy();
+	LPMAPIPROP lpSourcePropObj = m_lpMapiObjects->GetSourcePropObject();
 	if (!lpSourcePropObj) return;
 
 	HRESULT hRes = S_OK;
@@ -1706,7 +1667,7 @@ void CSingleMAPIPropListCtrl::OnPasteProperty()
 					CString szTemp = MyCopyData.GetString(0);
 					EC_H(StringToGUID((LPCTSTR) szTemp,&MyGUID));
 
-					LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIProp::CopyProps"), m_lpHostDlg->m_hWnd);// STRING_OK
+					LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIProp::CopyProps"), m_lpHostDlg->m_hWnd); // STRING_OK
 
 					ULONG ulCopyFlags = MyCopyData.GetHex(1);
 
@@ -1715,8 +1676,8 @@ void CSingleMAPIPropListCtrl::OnPasteProperty()
 
 					EC_H(lpSourcePropObj->CopyProps(
 						&TagArray,
-						lpProgress ? (ULONG_PTR)m_lpHostDlg->m_hWnd : NULL,//ui param
-						lpProgress,//progress
+						lpProgress ? (ULONG_PTR)m_lpHostDlg->m_hWnd : NULL, // ui param
+						lpProgress, // progress
 						&MyGUID,
 						m_lpMAPIProp,
 						ulCopyFlags,
@@ -1761,7 +1722,7 @@ void CSingleMAPIPropListCtrl::OnPasteProperty()
 	{
 		EC_H(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
 
-		//refresh
+		// refresh
 		RefreshMAPIPropList();
 	}
 
@@ -1770,10 +1731,10 @@ void CSingleMAPIPropListCtrl::OnPasteProperty()
 
 void CSingleMAPIPropListCtrl::OnCopyTo()
 {
-	//for now, we only copy from objects - copying from rows would be difficult to generalize
-	if (!m_lpHostDlg || !m_lpHostDlg->m_lpMapiObjects || !m_lpMAPIProp) return;
+	// for now, we only copy from objects - copying from rows would be difficult to generalize
+	if (!m_lpHostDlg || !m_lpMapiObjects || !m_lpMAPIProp) return;
 
-	LPMAPIPROP lpSourcePropObj = m_lpHostDlg->m_lpMapiObjects->GetSourcePropObject();
+	LPMAPIPROP lpSourcePropObj = m_lpMapiObjects->GetSourcePropObject();
 	if (!lpSourcePropObj) return;
 
 	HRESULT hRes = S_OK;
@@ -1813,7 +1774,7 @@ void CSingleMAPIPropListCtrl::OnCopyTo()
 		{
 			LPSPropTagArray lpTagArray = TagEditor.DetachModifiedTagArray();
 
-			LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIProp::CopyTo"), m_lpHostDlg->m_hWnd);// STRING_OK
+			LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIProp::CopyTo"), m_lpHostDlg->m_hWnd); // STRING_OK
 
 			ULONG ulCopyFlags = MyData.GetHex(1);
 
@@ -1822,13 +1783,13 @@ void CSingleMAPIPropListCtrl::OnCopyTo()
 
 			EC_H(lpSourcePropObj->CopyTo(
 				0,
-				NULL, //TODO: exclude interfaces?
+				NULL, // TODO: exclude interfaces?
 				lpTagArray,
-				lpProgress ? (ULONG_PTR)m_lpHostDlg->m_hWnd : NULL, //UI param
-				lpProgress, //progress
+				lpProgress ? (ULONG_PTR)m_lpHostDlg->m_hWnd : NULL, // UI param
+				lpProgress, // progress
 				&MyGUID,
 				m_lpMAPIProp,
-				ulCopyFlags,//flags
+				ulCopyFlags, // flags
 				&lpProblems));
 			MAPIFreeBuffer(lpTagArray);
 
@@ -1848,7 +1809,7 @@ void CSingleMAPIPropListCtrl::OnCopyTo()
 	{
 		EC_H(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
 
-		//refresh
+		// refresh
 		RefreshMAPIPropList();
 	}
 
@@ -1922,12 +1883,12 @@ void CSingleMAPIPropListCtrl::OnOpenProperty()
 		MAPIFreeBuffer(lpProp);
 	}
 	return;
-}//OnOpenProperty
+} // OnOpenProperty
 
 void CSingleMAPIPropListCtrl::OnModifyExtraProps()
 {
-	if (!m_lpHostDlg || !m_lpHostDlg->m_lpMapiObjects) return;
-	m_lpHostDlg->m_lpMapiObjects->MAPIInitialize(NULL);
+	if (!m_lpMapiObjects) return;
+	m_lpMapiObjects->MAPIInitialize(NULL);
 
 	HRESULT hRes = S_OK;
 
@@ -1950,18 +1911,18 @@ void CSingleMAPIPropListCtrl::OnModifyExtraProps()
 	}
 
 	WC_H(RefreshMAPIPropList());
-}//CSingleMAPIPropListCtrl::OnModifyExtraProps
+} // CSingleMAPIPropListCtrl::OnModifyExtraProps
 
 void CSingleMAPIPropListCtrl::OnEditGivenProperty()
 {
 	if (!m_lpMAPIProp && !GetPropVals()) return;
 
-	//Display a dialog to get a property number.
+	// Display a dialog to get a property number.
 	HRESULT		hRes = S_OK;
 
 	CPropertyTagEditor MyPropertyTag(
 		IDS_EDITGIVENPROP,
-		NULL,//prompt
+		NULL, // prompt
 		NULL,
 		m_bIsAB,
 		m_lpMAPIProp,
@@ -1972,17 +1933,17 @@ void CSingleMAPIPropListCtrl::OnEditGivenProperty()
 	{
 		OnEditGivenProp(MyPropertyTag.GetPropertyTag());
 	}
-}//CSingleMAPIPropListCtrl::OnEditGivenProperty
+} // CSingleMAPIPropListCtrl::OnEditGivenProperty
 
 void CSingleMAPIPropListCtrl::OnOpenPropertyAsTable()
 {
 	if (!m_lpMAPIProp) return;
 
-	//Display a dialog to get a property number.
+	// Display a dialog to get a property number.
 	HRESULT		hRes = S_OK;
 	CPropertyTagEditor MyPropertyTag(
 		IDS_OPENPROPASTABLE,
-		NULL,//prompt
+		NULL, // prompt
 		NULL,
 		m_bIsAB,
 		m_lpMAPIProp,
@@ -2021,16 +1982,16 @@ void CSingleMAPIPropListCtrl::OnOpenPropertyAsTable()
 			}
 		}
 	}
-}//OnOpenPropertyAsTable
+} // OnOpenPropertyAsTable
 
 void CSingleMAPIPropListCtrl::OnPasteNamedProps()
 {
-	if (!m_lpMAPIProp || !m_lpHostDlg || !m_lpHostDlg->m_lpMapiObjects) return;
+	if (!m_lpMAPIProp || !m_lpMapiObjects) return;
 
 	HRESULT		hRes = S_OK;
-	LPENTRYLIST	lpSourceMsgEID = m_lpHostDlg->m_lpMapiObjects->GetMessagesToCopy();
+	LPENTRYLIST	lpSourceMsgEID = m_lpMapiObjects->GetMessagesToCopy();
 
-	if (m_lpHostDlg->m_lpMapiObjects->GetBufferStatus() & BUFFER_MESSAGES
+	if (m_lpMapiObjects->GetBufferStatus() & BUFFER_MESSAGES
 		&& lpSourceMsgEID
 		&& 1 == lpSourceMsgEID->cValues)
 	{
@@ -2063,7 +2024,7 @@ void CSingleMAPIPropListCtrl::OnPasteNamedProps()
 				EC_H(CallOpenEntry(
 					NULL,
 					NULL,
-					m_lpHostDlg->m_lpMapiObjects->GetSourceParentFolder(),
+					m_lpMapiObjects->GetSourceParentFolder(),
 					NULL,
 					lpSourceMsgEID->lpbin,
 					NULL,
@@ -2095,7 +2056,7 @@ void CSingleMAPIPropListCtrl::OnPasteNamedProps()
 BOOL CSingleMAPIPropListCtrl::HandleAddInMenu(WORD wMenuSelect)
 {
 	if (wMenuSelect < ID_ADDINPROPERTYMENU) return false;
-	CWaitCursor	Wait;//Change the mouse to an hourglass while we work.
+	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
 	LPMENUITEM lpAddInMenu = GetAddinMenuItem(m_lpHostDlg->m_hWnd,wMenuSelect);
 	if (!lpAddInMenu) return false;
@@ -2105,11 +2066,11 @@ BOOL CSingleMAPIPropListCtrl::HandleAddInMenu(WORD wMenuSelect)
 	MyAddInMenuParams.ulAddInContext = MENU_CONTEXT_PROPERTY;
 	MyAddInMenuParams.hWndParent = m_hWnd;
 	MyAddInMenuParams.lpMAPIProp = m_lpMAPIProp;
-	if (m_lpHostDlg && m_lpHostDlg->m_lpMapiObjects)
+	if (m_lpMapiObjects)
 	{
-		MyAddInMenuParams.lpMAPISession = m_lpHostDlg->m_lpMapiObjects->GetSession();//do not release
-		MyAddInMenuParams.lpMDB = m_lpHostDlg->m_lpMapiObjects->GetMDB();//do not release
-		MyAddInMenuParams.lpAdrBook = m_lpHostDlg->m_lpMapiObjects->GetAddrBook(false);//do not release
+		MyAddInMenuParams.lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
+		MyAddInMenuParams.lpMDB = m_lpMapiObjects->GetMDB(); // do not release
+		MyAddInMenuParams.lpAdrBook = m_lpMapiObjects->GetAddrBook(false); // do not release
 	}
 
 	SRow MyRow = {0};

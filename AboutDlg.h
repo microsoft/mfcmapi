@@ -1,6 +1,5 @@
 #pragma once
-// AboutDlg.h : header file
-//
+// AboutDlg.h : Displays an about dialog
 
 void DisplayAboutDlg(CWnd* lpParentWnd);
 
@@ -10,16 +9,14 @@ public:
 	CAboutDlg(
 		CWnd* pParentWnd
 		);
-	~CAboutDlg();
+	virtual ~CAboutDlg();
 
-	BOOL OnInitDialog();
-
-protected:
-	HICON					m_hIcon;
-	CRichEditCtrl 			m_HelpText;
-	CButton	 				m_DisplayAboutCheck;
-
+private:
 	void	OnOK();
-	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
-	DECLARE_MESSAGE_MAP()
+	LRESULT	WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	BOOL	OnInitDialog();
+
+	HICON			m_hIcon;
+	CRichEditCtrl	m_HelpText;
+	CButton	 		m_DisplayAboutCheck;
 };

@@ -1,44 +1,36 @@
-// DumpStore.h : Stand alone MAPI functions
-
 #pragma once
+// DumpStore.h : Processes a store/folder to dump to disk
 
-#include <MapiX.h>
 #include "MAPIProcessor.h"
 
 typedef struct _MessageData	FAR * LPMESSAGEDATA;
 
 typedef struct _MessageData
 {
-	TCHAR	szFilePath[MAX_PATH];//Holds file name prepended with path
+	TCHAR	szFilePath[MAX_PATH]; // Holds file name prepended with path
 	FILE* fMessageProps;
 	ULONG ulCurAttNum;
 } MessageData;
 
 
-class CDumpStore: public CMAPIProcessor
+class CDumpStore : public CMAPIProcessor
 {
 public:
 	CDumpStore();
-
-	~CDumpStore();
-
+	virtual ~CDumpStore();
 
 	void InitMessagePath(LPCTSTR szMessageFileName);
 	void InitFolderPathRoot(LPCTSTR szFolderPathRoot);
 	void InitMailboxTablePathRoot(LPCTSTR szMailboxTablePathRoot);
 
-protected:
-//Worker functions (dump messages, scan for something, etc)
+private:
+	// Worker functions (dump messages, scan for something, etc)
 	virtual void BeginMailboxTableWork(LPCTSTR szExchangeServerName);
 	virtual void DoMailboxTablePerRowWork(LPMDB lpMDB, LPSRow lpSRow, ULONG ulCurRow);
 	virtual void EndMailboxTableWork();
 
 	virtual void BeginStoreWork();
 	virtual void EndStoreWork();
-
-//	virtual void BeginProcessFoldersWork();
-//	virtual void DoProcessFoldersPerFolderWork();
-//	virtual void EndProcessFoldersWork();
 
 	virtual void BeginFolderWork();
 	virtual void DoFolderPerHierarchyTableRowWork(LPSRow lpSRow);
@@ -57,14 +49,12 @@ protected:
 	virtual void EndAttachmentWork(LPMESSAGE lpMessage, LPVOID lpData);
 	virtual void EndMessageWork(LPMESSAGE lpMessage, LPVOID lpData);
 
-private:
 	TCHAR m_szMailboxTablePathRoot[MAX_PATH];
 	TCHAR m_szFolderPathRoot[MAX_PATH];
 	TCHAR m_szMessageFileName[MAX_PATH];
-	LPTSTR  m_szFolderPath;//Root plus offset
+	LPTSTR m_szFolderPath; // Root plus offset
 
 	FILE* m_fFolderProps;
 	FILE* m_fFolderContents;
-
 	FILE* m_fMailboxTable;
 };

@@ -2,10 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "Error.h"
-
 #include "MailboxTableDlg.h"
-
 #include "ContentsTableListCtrl.h"
 #include "MapiObjects.h"
 #include "MAPIFunctions.h"
@@ -16,12 +13,7 @@
 #include "Editor.h"
 #include "PropertyTagEditor.h"
 #include "InterpretProp2.h"
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
+#include "PropTagArray.h"
 
 static TCHAR* CLASS = _T("CMailboxTableDlg");
 
@@ -30,7 +22,7 @@ static TCHAR* CLASS = _T("CMailboxTableDlg");
 
 CMailboxTableDlg::CMailboxTableDlg(
 							   CParentWnd* pParentWnd,
-							   CMapiObjects *lpMapiObjects,
+							   CMapiObjects* lpMapiObjects,
 							   LPCTSTR lpszServerName,
 							   LPMAPITABLE lpMAPITable
 							   ):
@@ -62,9 +54,7 @@ CMailboxTableDlg::~CMailboxTableDlg()
 }
 
 BEGIN_MESSAGE_MAP(CMailboxTableDlg, CContentsTableDlg)
-//{{AFX_MSG_MAP(CMailboxTableDlg)
 	ON_COMMAND(ID_OPENWITHFLAGS, OnOpenWithFlags)
-//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 void CMailboxTableDlg::OnInitMenu(CMenu* pMenu)
@@ -80,35 +70,32 @@ void CMailboxTableDlg::OnInitMenu(CMenu* pMenu)
 	CContentsTableDlg::OnInitMenu(pMenu);
 }
 
-BOOL CMailboxTableDlg::CreateDialogAndMenu(UINT nIDMenuResource)
+void CMailboxTableDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 {
-	HRESULT hRes = S_OK;
 	DebugPrintEx(DBGCreateDialog,CLASS,_T("CreateDialogAndMenu"),_T("id = 0x%X\n"),nIDMenuResource);
-	EC_B(CContentsTableDlg::CreateDialogAndMenu(nIDMenuResource));
+	CContentsTableDlg::CreateDialogAndMenu(nIDMenuResource);
 
-	EC_B(UpdateMenuString(
+	UpdateMenuString(
 		this,
 		ID_CREATEPROPERTYSTRINGRESTRICTION,
-		IDS_MBRESMENU));
-
-	return HRES_TO_BOOL(hRes);
-}//CMailboxTableDlg::CreateDialogAndMenu
+		IDS_MBRESMENU);
+} // CMailboxTableDlg::CreateDialogAndMenu
 
 void CMailboxTableDlg::DisplayItem(ULONG ulFlags)
 {
 	HRESULT		hRes = S_OK;
-	CWaitCursor	Wait;//Change the mouse to an hourglass while we work.
+	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
-	LPMAPISESSION	lpMAPISession = m_lpMapiObjects->GetSession();//do not release
+	LPMAPISESSION	lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
-	LPMDB lpMDB = m_lpMapiObjects->GetMDB();//do not release
+	LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 	LPMDB lpGUIDMDB = NULL;
 	if (!lpMDB)
 	{
 		EC_H(OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpGUIDMDB));
 	}
-	LPMDB lpSourceMDB = NULL;//do not release
+	LPMDB lpSourceMDB = NULL; // do not release
 
 	lpSourceMDB = lpMDB?lpMDB:lpGUIDMDB;
 
@@ -153,12 +140,12 @@ void CMailboxTableDlg::DisplayItem(ULONG ulFlags)
 
 	}
 	if (lpGUIDMDB) lpGUIDMDB->Release();
-}// CMailboxTableDlg::DisplayItem
+} // CMailboxTableDlg::DisplayItem
 
 void CMailboxTableDlg::OnDisplayItem()
 {
 	DisplayItem(OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP);
-}//CMailboxTableDlg::OnDisplayItem
+} // CMailboxTableDlg::OnDisplayItem
 
 void CMailboxTableDlg::OnOpenWithFlags()
 {
@@ -178,7 +165,7 @@ void CMailboxTableDlg::OnOpenWithFlags()
 	{
 		DisplayItem(MyPrompt.GetHex(0));
 	}
-}// CMailboxTableDlg::OnOpenWithFlags
+} // CMailboxTableDlg::OnOpenWithFlags
 
 void CMailboxTableDlg::OnCreatePropertyStringRestriction()
 {
@@ -187,7 +174,7 @@ void CMailboxTableDlg::OnCreatePropertyStringRestriction()
 
 	CPropertyTagEditor MyPropertyTag(
 		IDS_PROPRES,
-		NULL,//prompt
+		NULL, // prompt
 		PR_DISPLAY_NAME,
 		m_bIsAB,
 		m_lpContainer,
@@ -211,7 +198,7 @@ void CMailboxTableDlg::OnCreatePropertyStringRestriction()
 		WC_H(MyData.DisplayDialog());
 		if (S_OK != hRes) return;
 
-		//Allocate and create our SRestriction
+		// Allocate and create our SRestriction
 		EC_H(CreatePropertyStringRestriction(
 			CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(),PT_TSTRING),
 			MyData.GetString(0),
@@ -224,9 +211,8 @@ void CMailboxTableDlg::OnCreatePropertyStringRestriction()
 			lpRes = NULL;
 		}
 
-		MAPIFreeBuffer(m_lpContentsTableListCtrl->m_lpRes);
-		m_lpContentsTableListCtrl->m_lpRes = lpRes;
+		m_lpContentsTableListCtrl->SetRestriction(lpRes);
 
 		SetRestrictionType(mfcmapiNORMAL_RESTRICTION);
 	}
-}//CMailboxTableDlg::OnCreatePropertyStringRestriction
+} // CMailboxTableDlg::OnCreatePropertyStringRestriction

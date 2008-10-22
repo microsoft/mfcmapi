@@ -24,7 +24,7 @@ CMAPIProcessor::~CMAPIProcessor()
 	if (m_lpSession) m_lpSession->Release();
 }
 
-//---------------------------------------------------------------------------------//
+// --------------------------------------------------------------------------------- //
 
 void CMAPIProcessor::InitSession(LPMAPISESSION lpSession)
 {
@@ -47,12 +47,12 @@ void CMAPIProcessor::InitFolder(LPMAPIFOLDER lpFolder)
 	if (m_lpFolder) m_lpFolder->AddRef();
 	MAPIFreeBuffer(m_szFolderOffset);
 	HRESULT hRes = S_OK;
-	WC_H(CopyString(&m_szFolderOffset,_T("\\"),NULL));// STRING_OK
+	WC_H(CopyString(&m_szFolderOffset,_T("\\"),NULL)); // STRING_OK
 }
 
-//---------------------------------------------------------------------------------//
+// --------------------------------------------------------------------------------- //
 
-//Server name MUST be passed
+// Server name MUST be passed
 void CMAPIProcessor::ProcessMailboxTable(
 	LPCTSTR szExchangeServerName)
 {
@@ -84,13 +84,13 @@ void CMAPIProcessor::ProcessMailboxTable(
 		{
 			WC_H(lpMailBoxTable->SetColumns((LPSPropTagArray)&sptMBXCols,NULL));
 			hRes = S_OK;
-			//go to the first row
+			// go to the first row
 			WC_H(lpMailBoxTable->SeekRow(
 				BOOKMARK_BEGINNING,
 				0,
 				NULL));
 
-			//get each row in turn and process it
+			// get each row in turn and process it
 			if (!FAILED(hRes)) for (ulRowNum=0;;ulRowNum++)
 			{
 				if (lpRows) FreeProws(lpRows);
@@ -126,7 +126,7 @@ void CMAPIProcessor::ProcessMailboxTable(
 					&m_lpMDB));
 
 				if (m_lpMDB) ProcessStore();
-			}//loop
+			} // loop
 
 			if (lpRows) FreeProws(lpRows);
 			lpRows = NULL;
@@ -197,12 +197,12 @@ void CMAPIProcessor::ProcessFolder(BOOL bDoRegular,
 		ProcessContentsTable(MAPI_ASSOCIATED);
 	}
 
-	//If we're not processing subfolders, then get outta here
+	// If we're not processing subfolders, then get outta here
 	if (bDoDescent)
 	{
 	    LPMAPITABLE		lpHierarchyTable	= NULL;
-		//We need to walk down the tree
-		//and get the list of kids of the folder
+		// We need to walk down the tree
+		// and get the list of kids of the folder
 		WC_H(m_lpFolder->GetHierarchyTable(fMapiUnicode,&lpHierarchyTable));
 		if (lpHierarchyTable)
 		{
@@ -214,13 +214,13 @@ void CMAPIProcessor::ProcessFolder(BOOL bDoRegular,
 				PR_CONTAINER_FLAGS};
 
 			LPSRowSet lpRows = NULL;
-			//If I don't do this, the MSPST provider can blow chunks (MAPI_E_EXTENDED_ERROR) for some folders when I get a row
-			//For some reason, this fixes it.
+			// If I don't do this, the MSPST provider can blow chunks (MAPI_E_EXTENDED_ERROR) for some folders when I get a row
+			// For some reason, this fixes it.
 			WC_H(lpHierarchyTable->SetColumns(
 				(LPSPropTagArray) &sptHierarchyCols,
 				TBL_BATCH));
 
-			//go to the first row
+			// go to the first row
 			WC_H(lpHierarchyTable->SeekRow(
 				BOOKMARK_BEGINNING,
 				0,
@@ -245,7 +245,7 @@ void CMAPIProcessor::ProcessFolder(BOOL bDoRegular,
 				DoFolderPerHierarchyTableRowWork(lpRows->aRow);
 				if (lpRows->aRow[0].lpProps)
 				{
-					TCHAR	szSubFolderOffset[MAX_PATH];//Holds subfolder name
+					TCHAR	szSubFolderOffset[MAX_PATH]; // Holds subfolder name
 
 					LPSPropValue	lpFolderDisplayName = NULL;
 
@@ -257,11 +257,11 @@ void CMAPIProcessor::ProcessFolder(BOOL bDoRegular,
 					if (CheckStringProp(lpFolderDisplayName,PT_TSTRING))
 					{
 						TCHAR szTemp[MAX_PATH/2];
-						//Clean up the folder name before appending it to the offset
+						// Clean up the folder name before appending it to the offset
 						WC_H(SanitizeFileName(szTemp,CCH(szTemp),lpFolderDisplayName->Value.LPSZ,CCH(szTemp)));
 
 						WC_H(StringCchPrintf(szSubFolderOffset,CCH(szSubFolderOffset),
-							_T("%s%s\\"),// STRING_OK
+							_T("%s%s\\"), // STRING_OK
 							m_szFolderOffset,szTemp));
 					}
 					else
@@ -384,7 +384,7 @@ void CMAPIProcessor::ProcessRecipients(LPMESSAGE lpMessage, LPVOID lpData)
 
 	BeginRecipientWork(lpMessage,lpData);
 
-	//get the recipient table
+	// get the recipient table
 	WC_H(lpMessage->GetRecipientTable(
 		NULL,
 		&lpRecipTable));
@@ -427,7 +427,7 @@ void CMAPIProcessor::ProcessAttachments(LPMESSAGE lpMessage, LPVOID lpData)
 
 	BeginAttachmentWork(lpMessage,lpData);
 
-	//get the attachment table
+	// get the attachment table
 	WC_H(lpMessage->GetAttachmentTable(
 		NULL,
 		&lpAttachTable));
@@ -468,7 +468,7 @@ void CMAPIProcessor::ProcessAttachments(LPMESSAGE lpMessage, LPVOID lpData)
 				hRes = S_OK;
 
 				DoMessagePerAttachmentWork(lpMessage,lpData,lpRows->aRow,lpAttach,i);
-				//Check if the attachment is an embedded message - if it is, parse it as such!
+				// Check if the attachment is an embedded message - if it is, parse it as such!
 				LPSPropValue lpAttachMethod = NULL;
 
 				lpAttachMethod = PpropFindProp(
@@ -484,7 +484,7 @@ void CMAPIProcessor::ProcessAttachments(LPMESSAGE lpMessage, LPVOID lpData)
 						PR_ATTACH_DATA_OBJ,
 						(LPIID)&IID_IMessage,
 						0,
-						NULL,//MAPI_MODIFY,
+						NULL, // MAPI_MODIFY,
 						(LPUNKNOWN *)&lpAttachMsg));
 					if (lpAttachMsg)
 					{
@@ -506,9 +506,9 @@ void CMAPIProcessor::ProcessAttachments(LPMESSAGE lpMessage, LPVOID lpData)
 	EndAttachmentWork(lpMessage,lpData);
 }
 
-//---------------------------------------------------------------------------------//
-//List Functions
-//---------------------------------------------------------------------------------//
+// --------------------------------------------------------------------------------- //
+// List Functions
+// --------------------------------------------------------------------------------- //
 void CMAPIProcessor::AddFolderToFolderList(LPSBinary lpFolderEID, LPCTSTR szFolderOffsetPath)
 {
 	HRESULT hRes = S_OK;
@@ -540,7 +540,7 @@ void CMAPIProcessor::AddFolderToFolderList(LPSBinary lpFolderEID, LPCTSTR szFold
 	}
 }
 
-//Call OpenEntry on the first folder in the list, remove it from the list
+// Call OpenEntry on the first folder in the list, remove it from the list
 void CMAPIProcessor::OpenFirstFolderInList()
 {
 	MAPIFreeBuffer(m_szFolderOffset);
@@ -587,7 +587,7 @@ void CMAPIProcessor::OpenFirstFolderInList()
 	m_lpFolder = lpFolder;
 }
 
-//Clean up the list
+// Clean up the list
 void CMAPIProcessor::FreeFolderList()
 {
 	if (!m_lpListHead) return;
@@ -602,9 +602,9 @@ void CMAPIProcessor::FreeFolderList()
 }
 
 
-//---------------------------------------------------------------------------------//
-//Worker Functions
-//---------------------------------------------------------------------------------//
+// --------------------------------------------------------------------------------- //
+// Worker Functions
+// --------------------------------------------------------------------------------- //
 
 void CMAPIProcessor::BeginMailboxTableWork(LPCTSTR /*szExchangeServerName*/)
 {

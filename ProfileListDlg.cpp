@@ -2,10 +2,7 @@
 // Displays the list of profiles
 
 #include "stdafx.h"
-#include "Error.h"
-
 #include "ProfileListDlg.h"
-
 #include "ContentsTableListCtrl.h"
 #include "MapiObjects.h"
 #include "SingleMAPIPropListCtrl.h"
@@ -17,12 +14,6 @@
 #include "ImportProcs.h"
 #include "MAPIFunctions.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
 static TCHAR* CLASS = _T("CProfileListDlg");
 
 /////////////////////////////////////////////////////////////////////////////
@@ -31,7 +22,7 @@ static TCHAR* CLASS = _T("CProfileListDlg");
 
 CProfileListDlg::CProfileListDlg(
 								 CParentWnd* pParentWnd,
-								 CMapiObjects *lpMapiObjects,
+								 CMapiObjects* lpMapiObjects,
 								 LPMAPITABLE lpMAPITable
 								 ):
 CContentsTableDlg(
@@ -50,7 +41,7 @@ CContentsTableDlg(
 
 	CreateDialogAndMenu(IDR_MENU_PROFILE);
 
-	//Wipe the reference to the contents table to get around profile table refresh problems
+	// Wipe the reference to the contents table to get around profile table refresh problems
 	if (m_lpContentsTable) m_lpContentsTable->Release();
 	m_lpContentsTable = NULL;
 }
@@ -61,7 +52,6 @@ CProfileListDlg::~CProfileListDlg()
 }
 
 BEGIN_MESSAGE_MAP(CProfileListDlg, CContentsTableDlg)
-//{{AFX_MSG_MAP(CProfileListDlg)
 ON_COMMAND(ID_GETMAPISVCINF,OnGetMAPISVC)
 ON_COMMAND(ID_ADDSERVICESTOMAPISVCINF,OnAddServicesToMAPISVC)
 ON_COMMAND(ID_REMOVESERVICESFROMMAPISVCINF,OnRemoveServicesFromMAPISVC)
@@ -73,7 +63,6 @@ ON_COMMAND(ID_ADDUNICODEPSTTOPROFILE,OnAddUnicodePSTToProfile)
 ON_COMMAND(ID_ADDSERVICETOPROFILE,OnAddServiceToProfile)
 ON_COMMAND(ID_GETPROFILESERVERVERSION,OnGetProfileServiceVersion)
 ON_COMMAND(ID_CREATEPROFILE,OnCreateProfile)
-//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 void CProfileListDlg::OnInitMenu(CMenu* pMenu)
@@ -97,7 +86,7 @@ void CProfileListDlg::OnInitMenu(CMenu* pMenu)
 /////////////////////////////////////////////////////////////////////////////
 // CProfileListDlg message handlers
 
-//Clear the current list and get a new one with whatever code we've got in LoadMAPIPropList
+// Clear the current list and get a new one with whatever code we've got in LoadMAPIPropList
 void CProfileListDlg::OnRefreshView()
 {
 	HRESULT hRes = S_OK;
@@ -105,22 +94,22 @@ void CProfileListDlg::OnRefreshView()
 
 	if (!m_lpContentsTableListCtrl || !m_lpMapiObjects) return;
 
-	if (m_lpContentsTableListCtrl->m_bInLoadOp) m_lpContentsTableListCtrl->OnCancelTableLoad();
+	if (m_lpContentsTableListCtrl->IsLoading()) m_lpContentsTableListCtrl->OnCancelTableLoad();
 	DebugPrintEx(DBGGeneric,CLASS,_T("OnRefreshView"),_T("\n"));
 
-	//Wipe out current references to the profile table so the refresh will work
-	//If we don't do this, we get the old table back again.
+	// Wipe out current references to the profile table so the refresh will work
+	// If we don't do this, we get the old table back again.
 	EC_H(m_lpContentsTableListCtrl->SetContentsTable(
 		NULL,
 		dfNormal,
 		NULL));
 
-	LPPROFADMIN lpProfAdmin = m_lpMapiObjects->GetProfAdmin();//do not release
+	LPPROFADMIN lpProfAdmin = m_lpMapiObjects->GetProfAdmin(); // do not release
 
 	if (!lpProfAdmin) return;
 
 	EC_H(lpProfAdmin->GetProfileTable(
-		0,//fMapiUnicode is not supported
+		0, // fMapiUnicode is not supported
 		&lpProfTable));
 
 	if (lpProfTable)
@@ -132,7 +121,7 @@ void CProfileListDlg::OnRefreshView()
 
 		lpProfTable->Release();
 	}
-}//CProfileListDlg::OnRefreshView
+} // CProfileListDlg::OnRefreshView
 
 void CProfileListDlg::OnDisplayItem()
 {
@@ -140,7 +129,7 @@ void CProfileListDlg::OnDisplayItem()
 	CHAR*			szProfileName = NULL;
 	int				iItem = -1;
 	SortListData*	lpListData = NULL;
-	CWaitCursor	Wait;//Change the mouse to an hourglass while we work.
+	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return;
 
@@ -162,7 +151,7 @@ void CProfileListDlg::OnDisplayItem()
 	while (iItem != -1);
 
 	return;
-}//CProfileListDlg::OnDisplayItem
+} // CProfileListDlg::OnDisplayItem
 
 void CProfileListDlg::OnLaunchProfileWizard()
 {
@@ -175,7 +164,7 @@ void CProfileListDlg::OnLaunchProfileWizard()
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 	MyData.InitSingleLine(0,IDS_FLAGS,NULL,false);
 	MyData.SetHex(0,MAPI_PW_LAUNCHED_BY_CONFIG);
-	MyData.InitSingleLineSz(1,IDS_SERVICE,_T("MSEMS"),false);// STRING_OK
+	MyData.InitSingleLineSz(1,IDS_SERVICE,_T("MSEMS"),false); // STRING_OK
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -188,24 +177,24 @@ void CProfileListDlg::OnLaunchProfileWizard()
 			(LPCSTR FAR *) szServices,
 			CCH(szProfName),
 			szProfName);
-		OnRefreshView();//Update the view since we don't have notifications here.
+		OnRefreshView(); // Update the view since we don't have notifications here.
 	}
-}//CProfileListDlg::OnLaunchProfileWizard
+} // CProfileListDlg::OnLaunchProfileWizard
 
 void CProfileListDlg::OnGetMAPISVC()
 {
 	DisplayMAPISVCPath(this);
-}//CProfileListDlg::OnGetMAPISVC
+} // CProfileListDlg::OnGetMAPISVC
 
 void CProfileListDlg::OnAddServicesToMAPISVC()
 {
 	AddServicesToMapiSvcInf();
-}//CProfileListDlg::OnAddServicesToMAPISVC
+} // CProfileListDlg::OnAddServicesToMAPISVC
 
 void CProfileListDlg::OnRemoveServicesFromMAPISVC()
 {
 	RemoveServicesFromMapiSvcInf();
-}//CProfileListDlg::OnRemoveServicesFromMAPISVC
+} // CProfileListDlg::OnRemoveServicesFromMAPISVC
 
 void CProfileListDlg::OnAddExchangeToProfile()
 {
@@ -229,7 +218,7 @@ void CProfileListDlg::OnAddExchangeToProfile()
 
 	if (S_OK == hRes)
 	{
-		CWaitCursor Wait;//Change the mouse to an hourglass while we work.
+		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 		LPSTR szServer = MyData.GetStringA(0);
 		LPSTR szMailbox = MyData.GetStringA(1);
 
@@ -238,13 +227,13 @@ void CProfileListDlg::OnAddExchangeToProfile()
 			do
 			{
 				hRes = S_OK;
-				//Find the highlighted item
+				// Find the highlighted item
 				lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 				if (!lpListData) break;
 
 				DebugPrintEx(DBGGeneric,CLASS,
-					_T("OnAddExchangeToProfile"),// STRING_OK
-					_T("Adding Server \"%hs\" and Mailbox \"%hs\" to profile \"%hs\"\n"),// STRING_OK
+					_T("OnAddExchangeToProfile"), // STRING_OK
+					_T("Adding Server \"%hs\" and Mailbox \"%hs\" to profile \"%hs\"\n"), // STRING_OK
 					szServer,
 					szMailbox,
 					lpListData->data.Contents.szProfileDisplayName);
@@ -262,7 +251,7 @@ void CProfileListDlg::OnAddExchangeToProfile()
 		MAPIFreeBuffer(szServer);
 	}
 	return;
-}//CProfileListDlg::OnAddExchangeToProfile
+} // CProfileListDlg::OnAddExchangeToProfile
 
 void CProfileListDlg::AddPSTToProfile(BOOL bUnicodePST)
 {
@@ -276,7 +265,7 @@ void CProfileListDlg::AddPSTToProfile(BOOL bUnicodePST)
 
 	CFileDialogEx dlgFilePicker(
 		TRUE,
-		_T("pst"),// STRING_OK
+		_T("pst"), // STRING_OK
 		NULL,
 		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
 		szFileSpec,
@@ -287,11 +276,11 @@ void CProfileListDlg::AddPSTToProfile(BOOL bUnicodePST)
 	EC_D_DIALOG(dlgFilePicker.DoModal());
 	if (IDOK == iDlgRet)
 	{
-		CWaitCursor Wait;//Change the mouse to an hourglass while we work.
+		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 		do
 		{
 			hRes = S_OK;
-			//Find the highlighted item
+			// Find the highlighted item
 			lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 			if (!lpListData) break;
 
@@ -302,17 +291,17 @@ void CProfileListDlg::AddPSTToProfile(BOOL bUnicodePST)
 		while (iItem != -1);
 	}
 	return;
-}//CProfileListDlg::AddPSTToProfile
+} // CProfileListDlg::AddPSTToProfile
 
 void CProfileListDlg::OnAddPSTToProfile()
 {
 	AddPSTToProfile(false);
-}//CProfileListDlg::OnAddPSTToProfile
+} // CProfileListDlg::OnAddPSTToProfile
 
 void CProfileListDlg::OnAddUnicodePSTToProfile()
 {
 	AddPSTToProfile(true);
-}//CProfileListDlg::OnAddUnicodePSTToProfile
+} // CProfileListDlg::OnAddUnicodePSTToProfile
 
 void CProfileListDlg::OnAddServiceToProfile()
 {
@@ -335,12 +324,12 @@ void CProfileListDlg::OnAddServiceToProfile()
 
 	if (S_OK == hRes)
 	{
-		CWaitCursor Wait;//Change the mouse to an hourglass while we work.
+		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 		LPSTR szService = MyData.GetStringA(0);
 		do
 		{
 			hRes = S_OK;
-			//Find the highlighted item
+			// Find the highlighted item
 			lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 			if (!lpListData) break;
 
@@ -352,7 +341,7 @@ void CProfileListDlg::OnAddServiceToProfile()
 	}
 
 	return;
-}//CProfileListDlg::OnAddServiceToProfile
+} // CProfileListDlg::OnAddServiceToProfile
 
 void CProfileListDlg::OnCreateProfile()
 {
@@ -370,37 +359,37 @@ void CProfileListDlg::OnCreateProfile()
 
 	if (S_OK == hRes)
 	{
-		CWaitCursor		Wait;//Change the mouse to an hourglass while we work.
+		CWaitCursor		Wait; // Change the mouse to an hourglass while we work.
 		LPSTR szProfile = MyData.GetStringA(0);
 
 		DebugPrintEx(DBGGeneric,CLASS,
-			_T("OnCreateProfile"),// STRING_OK
-			_T("Creating profile \"%hs\"\n"),// STRING_OK
+			_T("OnCreateProfile"), // STRING_OK
+			_T("Creating profile \"%hs\"\n"), // STRING_OK
 			szProfile);
 
 		EC_H(HrCreateProfile(szProfile));
 
 		MAPIFreeBuffer(szProfile);
 
-		//Since we may have created a profile, update even if we failed.
-		OnRefreshView();//Update the view since we don't have notifications here.
+		// Since we may have created a profile, update even if we failed.
+		OnRefreshView(); // Update the view since we don't have notifications here.
 	}
 	return;
-}//CProfileListDlg::OnCreateProfile
+} // CProfileListDlg::OnCreateProfile
 
 void CProfileListDlg::OnDeleteSelectedItem()
 {
 	HRESULT		hRes = S_OK;
 	int			iItem = -1;
 	SortListData*	lpListData = NULL;
-	CWaitCursor	Wait;//Change the mouse to an hourglass while we work.
+	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpContentsTableListCtrl) return;
 
 	do
 	{
 		hRes = S_OK;
-		//Find the highlighted item AttachNum
+		// Find the highlighted item AttachNum
 		lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 		if (!lpListData) break;
 
@@ -410,22 +399,22 @@ void CProfileListDlg::OnDeleteSelectedItem()
 	}
 	while (iItem != -1);
 
-	OnRefreshView();//Update the view since we don't have notifications here.
-}//CProfileListDlg::OnDeleteSelectedItem
+	OnRefreshView(); // Update the view since we don't have notifications here.
+} // CProfileListDlg::OnDeleteSelectedItem
 
 void CProfileListDlg::OnGetProfileServiceVersion()
 {
 	HRESULT		hRes = S_OK;
 	int			iItem = -1;
 	SortListData*	lpListData = NULL;
-	CWaitCursor	Wait;//Change the mouse to an hourglass while we work.
+	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpContentsTableListCtrl) return;
 
 	do
 	{
 		hRes = S_OK;
-		//Find the highlighted item AttachNum
+		// Find the highlighted item AttachNum
 		lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 		if (!lpListData) break;
 
@@ -459,7 +448,7 @@ void CProfileListDlg::OnGetProfileServiceVersion()
 
 		if (bFoundServerVersion)
 		{
-			MyData.SetStringf(0,_T("%d = 0x%X"),ulServerVersion,ulServerVersion);// STRING_OK
+			MyData.SetStringf(0,_T("%d = 0x%X"),ulServerVersion,ulServerVersion); // STRING_OK
 			DebugPrint(DBGGeneric,_T("PR_PROFILE_SERVER_VERSION == 0x%08X\n"),ulServerVersion);
 		}
 		else
@@ -470,15 +459,15 @@ void CProfileListDlg::OnGetProfileServiceVersion()
 		if (bFoundServerFullVersion)
 		{
 			DebugPrint(DBGGeneric,_T("PR_PROFILE_SERVER_FULL_VERSION = \n"));
-			MyData.SetStringf(1,_T("%d = 0x%X"),storeVersion.wMajorVersion,storeVersion.wMajorVersion);// STRING_OK
-			MyData.SetStringf(2,_T("%d = 0x%X"),storeVersion.wMinorVersion,storeVersion.wMinorVersion);// STRING_OK
-			MyData.SetStringf(3,_T("%d = 0x%X"),storeVersion.wBuild,storeVersion.wBuild);// STRING_OK
-			MyData.SetStringf(4,_T("%d = 0x%X"),storeVersion.wMinorBuild,storeVersion.wMinorBuild);// STRING_OK
+			MyData.SetStringf(1,_T("%d = 0x%X"),storeVersion.wMajorVersion,storeVersion.wMajorVersion); // STRING_OK
+			MyData.SetStringf(2,_T("%d = 0x%X"),storeVersion.wMinorVersion,storeVersion.wMinorVersion); // STRING_OK
+			MyData.SetStringf(3,_T("%d = 0x%X"),storeVersion.wBuild,storeVersion.wBuild); // STRING_OK
+			MyData.SetStringf(4,_T("%d = 0x%X"),storeVersion.wMinorBuild,storeVersion.wMinorBuild); // STRING_OK
 			DebugPrint(DBGGeneric,
-				_T("\twMajorVersion 0x%04X\n")// STRING_OK
-				_T("\twMinorVersion 0x%04X\n")// STRING_OK
-				_T("\twBuild 0x%04X\n")// STRING_OK
-				_T("\twMinorBuild 0x%04X\n"),// STRING_OK
+				_T("\twMajorVersion 0x%04X\n") // STRING_OK
+				_T("\twMinorVersion 0x%04X\n") // STRING_OK
+				_T("\twBuild 0x%04X\n") // STRING_OK
+				_T("\twMinorBuild 0x%04X\n"), // STRING_OK
 				storeVersion.wMajorVersion,
 				storeVersion.wMinorVersion,
 				storeVersion.wBuild,
@@ -494,4 +483,4 @@ void CProfileListDlg::OnGetProfileServiceVersion()
 		WC_H(MyData.DisplayDialog());
 	}
 	while (iItem != -1);
-}//CProfileListDlg::OnGetProfileServiceVersion
+} // CProfileListDlg::OnGetProfileServiceVersion

@@ -1,6 +1,5 @@
 #pragma once
 // HexEditor.h : header file
-//
 
 #include "Editor.h"
 
@@ -9,12 +8,12 @@ class CHexEditor : public CEditor
 public:
 	CHexEditor(
 		CWnd* pParentWnd);
-	~CHexEditor();
+	virtual ~CHexEditor();
 
 	void InitAnsiString(
 		LPCSTR szInputString);
 
-	void InitUnicdeString(
+	void InitUnicodeString(
 		LPCWSTR szInputString);
 
 	void InitBase64(
@@ -23,12 +22,6 @@ public:
 	void InitBinary(
 		LPSBinary lpsInputBin);
 
-protected:
-	//{{AFX_MSG(CPropertyEditor)
-	//}}AFX_MSG
-
-	DECLARE_MESSAGE_MAP()
 private:
-
-	ULONG	HandleChange(UINT nID);
+	ULONG HandleChange(UINT nID);
 };

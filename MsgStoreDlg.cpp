@@ -2,10 +2,7 @@
 // Displays the hierarchy tree of folders in a message store
 
 #include "stdafx.h"
-#include "Error.h"
-
 #include "MsgStoreDlg.h"
-
 #include "HierarchyTableTreeCtrl.h"
 #include "MapiObjects.h"
 #include "MAPIFunctions.h"
@@ -17,19 +14,12 @@
 #include "MailboxTableDlg.h"
 #include "InterpretProp.h"
 #include "InterpretProp2.h"
-
 #include "Dumpstore.h"
 #include "File.h"
 #include "FileDialogEx.h"
 #include "ExtraPropTags.h"
 #include "MAPIProgress.h"
 #include "FormContainerDlg.h"
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
 
 static TCHAR* CLASS = _T("CMsgStoreDlg");
 
@@ -39,7 +29,7 @@ static TCHAR* CLASS = _T("CMsgStoreDlg");
 
 CMsgStoreDlg::CMsgStoreDlg(
 					   CParentWnd* pParentWnd,
-					   CMapiObjects *lpMapiObjects,
+					   CMapiObjects* lpMapiObjects,
 					   LPMAPIFOLDER lpRootFolder,
 					   ULONG ulDisplayFlags
 					   ):
@@ -59,7 +49,7 @@ CHierarchyTableDlg(
 
 	if (m_lpMapiObjects)
 	{
-		LPMDB lpMDB = m_lpMapiObjects->GetMDB();//do not release
+		LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 		if (lpMDB)
 		{
 			WC_H(HrGetOneProp(
@@ -68,7 +58,7 @@ CHierarchyTableDlg(
 				&lpProp));
 			if (lpProp)
 			{
-				//Check for a NULL value and get a different prop if needed
+				// Check for a NULL value and get a different prop if needed
 				if (_T('\0') == lpProp->Value.LPSZ[0])
 				{
 					MAPIFreeBuffer(lpProp);
@@ -81,7 +71,7 @@ CHierarchyTableDlg(
 			}
 			hRes = S_OK;
 
-			//Set the title
+			// Set the title
 			// Shouldn't have to check lpProp for non-NULL since CheckString does it, but prefast is complaining
 			if (lpProp && CheckStringProp(lpProp,PT_TSTRING))
 			{
@@ -97,7 +87,7 @@ CHierarchyTableDlg(
 					NULL,
 					NULL,
 					NULL,
-					NULL,//open root container
+					NULL, // open root container
 					NULL,
 					MAPI_BEST_ACCESS,
 					NULL,
@@ -115,7 +105,6 @@ CMsgStoreDlg::~CMsgStoreDlg()
 }
 
 BEGIN_MESSAGE_MAP(CMsgStoreDlg, CHierarchyTableDlg)
-//{{AFX_MSG_MAP(CMsgStoreDlg)
 	ON_COMMAND(ID_PASTE_RULES, OnPasteRules)
 	ON_COMMAND(ID_CREATESUBFOLDER, OnCreateSubFolder)
 	ON_COMMAND(ID_DISPLAYASSOCIATEDCONTENTS, OnDisplayAssociatedContents)
@@ -142,7 +131,6 @@ BEGIN_MESSAGE_MAP(CMsgStoreDlg, CHierarchyTableDlg)
 	ON_COMMAND(ID_SETRECEIVEFOLDER, OnSetReceiveFolder)
 
 	ON_COMMAND(ID_VALIDATEIPMSUBTREE, OnValidateIPMSubtree)
-//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 void CMsgStoreDlg::OnInitMenu(CMenu* pMenu)
@@ -150,12 +138,11 @@ void CMsgStoreDlg::OnInitMenu(CMenu* pMenu)
 	if (!pMenu) return;
 
 	LPMDB	lpMDB = NULL;
-	BOOL	bItemSelected = m_lpHierarchyTableTreeCtrl && m_lpHierarchyTableTreeCtrl->m_bItemSelected;
-	if (m_lpMapiObjects)
-		lpMDB = m_lpMapiObjects->GetMDB();//do not release
+	BOOL	bItemSelected = m_lpHierarchyTableTreeCtrl && m_lpHierarchyTableTreeCtrl->IsItemSelected();
 
 	if (m_lpMapiObjects)
 	{
+		lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 		ULONG ulStatus = m_lpMapiObjects->GetBufferStatus();
 		pMenu->EnableMenuItem(ID_PASTE,DIM((ulStatus != BUFFER_EMPTY) && bItemSelected));
 		pMenu->EnableMenuItem(ID_PASTE_RULES,DIM((ulStatus & BUFFER_FOLDER) && bItemSelected));
@@ -202,7 +189,7 @@ void CMsgStoreDlg::OnDisplayInbox()
 
 	if (!m_lpMapiObjects) return;
 
-	LPMDB lpMDB = m_lpMapiObjects->GetMDB();//do not release
+	LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 	if (!lpMDB) return;
 
 	EC_H(GetInbox(lpMDB,&lpInbox));
@@ -217,7 +204,7 @@ void CMsgStoreDlg::OnDisplayInbox()
 
 		lpInbox->Release();
 	}
-}//CMsgStoreDlg::OnDisplayInbox
+} // CMsgStoreDlg::OnDisplayInbox
 
 void CMsgStoreDlg::OnDisplaySpecialFolder(ULONG ulPropTag)
 {
@@ -226,7 +213,7 @@ void CMsgStoreDlg::OnDisplaySpecialFolder(ULONG ulPropTag)
 
 	if (!m_lpMapiObjects) return;
 
-	LPMDB lpMDB = m_lpMapiObjects->GetMDB();//do not release
+	LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 	if (!lpMDB) return;
 
 	EC_H(GetSpecialFolder(lpMDB,ulPropTag,&lpFolder));
@@ -244,7 +231,7 @@ void CMsgStoreDlg::OnDisplaySpecialFolder(ULONG ulPropTag)
 	return;
 }
 
-//See Q171670 INFO: Entry IDs of Outlook Special Folders for more info on these tags
+// See Q171670 INFO: Entry IDs of Outlook Special Folders for more info on these tags
 void CMsgStoreDlg::OnDisplayCalendarFolder()
 {
 	OnDisplaySpecialFolder(PR_IPM_APPOINTMENT_ENTRYID);
@@ -267,7 +254,7 @@ void CMsgStoreDlg::OnDisplayReceiveFolderTable()
 
 	if (!m_lpMapiObjects) return;
 
-	LPMDB lpMDB = m_lpMapiObjects->GetMDB();//do not release
+	LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 	if (!lpMDB) return;
 
 	EC_H(lpMDB->GetReceiveFolderTable(
@@ -282,7 +269,7 @@ void CMsgStoreDlg::OnDisplayReceiveFolderTable()
 		lpMAPITable->Release();
 	}
 	return;
-}//CMsgStoreDlg::OnDisplayReceiveFolderTable
+} // CMsgStoreDlg::OnDisplayReceiveFolderTable
 
 void CMsgStoreDlg::OnDisplayOutgoingQueueTable()
 {
@@ -291,7 +278,7 @@ void CMsgStoreDlg::OnDisplayOutgoingQueueTable()
 
 	if (!m_lpMapiObjects) return;
 
-	LPMDB lpMDB = m_lpMapiObjects->GetMDB();//do not release
+	LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 	if (!lpMDB) return;
 
 	EC_H(lpMDB->GetOutgoingQueue(
@@ -307,7 +294,7 @@ void CMsgStoreDlg::OnDisplayOutgoingQueueTable()
 		lpMAPITable->Release();
 	}
 	return;
-}//CMsgStoreDlg::OnDisplayOutgoingQueueTable
+} // CMsgStoreDlg::OnDisplayOutgoingQueueTable
 
 void CMsgStoreDlg::OnDisplayRulesTable()
 {
@@ -327,7 +314,7 @@ void CMsgStoreDlg::OnDisplayRulesTable()
 		lpMAPIFolder->Release();
 	}
 	return;
-}//CMsgStoreDlg::OnDisplayRulesTable
+} // CMsgStoreDlg::OnDisplayRulesTable
 
 void CMsgStoreDlg::OnSelectForm()
 {
@@ -337,7 +324,7 @@ void CMsgStoreDlg::OnSelectForm()
 
 	if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl || !m_lpPropDisplay) return;
 
-	LPMAPISESSION lpMAPISession = m_lpMapiObjects->GetSession();//do not release
+	LPMAPISESSION lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
 	LPMAPIFOLDER lpMAPIFolder = (LPMAPIFOLDER) m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY);
@@ -361,7 +348,7 @@ void CMsgStoreDlg::OnSelectForm()
 #pragma warning(disable:6276)
 			EC_H_CANCEL(lpMAPIFormMgr->SelectForm(
 				(ULONG_PTR)m_hWnd,
-				0,//fMapiUnicode,
+				0, // fMapiUnicode,
 				(LPCTSTR) szTitle,
 				lpMAPIFolder,
 				&lpMAPIFormInfo));
@@ -377,7 +364,7 @@ void CMsgStoreDlg::OnSelectForm()
 		}
 		lpMAPIFolder->Release();
 	}
-}//CMsgStoreDlg::OnSelectForm
+} // CMsgStoreDlg::OnSelectForm
 
 void CMsgStoreDlg::OnOpenFormContainer()
 {
@@ -387,7 +374,7 @@ void CMsgStoreDlg::OnOpenFormContainer()
 
 	if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl || !m_lpPropDisplay) return;
 
-	LPMAPISESSION lpMAPISession = m_lpMapiObjects->GetSession();//do not release
+	LPMAPISESSION lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
 	LPMAPIFOLDER lpMAPIFolder = (LPMAPIFOLDER) m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY);
@@ -416,26 +403,23 @@ void CMsgStoreDlg::OnOpenFormContainer()
 		}
 		lpMAPIFolder->Release();
 	}
-}//CMsgStoreDlg::OnOpenFormContainer
+} // CMsgStoreDlg::OnOpenFormContainer
 
 /////////////////////////////////////////////////////////////////////////////////////
 //  Menu Commands
 
-//newstyle copy folder
+// newstyle copy folder
 BOOL CMsgStoreDlg::HandleCopy()
 {
 	HRESULT hRes = S_OK;
-	CWaitCursor	Wait;//Change the mouse to an hourglass while we work.
+	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
 	DebugPrintEx(DBGGeneric,CLASS,_T("OnCopyItems"),_T("\n"));
 	if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return false;
 
-	//not needed - no case where we don't handle copy
-//	if (CBaseDialog::HandleCopy()) return true;
-
 	LPMAPIFOLDER lpMAPISourceFolder = (LPMAPIFOLDER) m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY);
 
-	LPMDB lpMDB = m_lpMapiObjects->GetMDB();//do not release
+	LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 	LPMAPIFOLDER lpSrcParentFolder = NULL;
 	WC_H(GetParentFolder(lpMAPISourceFolder,lpMDB,&lpSrcParentFolder));
 
@@ -452,14 +436,14 @@ BOOL CMsgStoreDlg::HandlePaste()
 	if (CBaseDialog::HandlePaste()) return true;
 
 	HRESULT		hRes = S_OK;
-	CWaitCursor	Wait;//Change the mouse to an hourglass while we work.
+	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
 	DebugPrintEx(DBGGeneric,CLASS,_T("HandlePaste"),_T("\n"));
 	if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return false;
 
 	ULONG ulStatus = m_lpMapiObjects->GetBufferStatus();
 
-	//Get the destination Folder
+	// Get the destination Folder
 	LPMAPIFOLDER	lpMAPIDestFolder = (LPMAPIFOLDER) m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY);
 
 	if (lpMAPIDestFolder && (ulStatus & BUFFER_MESSAGES) && (ulStatus & BUFFER_PARENTFOLDER))
@@ -486,20 +470,20 @@ BOOL CMsgStoreDlg::HandlePaste()
 	}
 	if (lpMAPIDestFolder) lpMAPIDestFolder->Release();
 	return true;
-}//CMsgStoreDlg::HandlePaste
+} // CMsgStoreDlg::HandlePaste
 
 void CMsgStoreDlg::OnPasteMessages()
 {
 	HRESULT			hRes = S_OK;
-	CWaitCursor	Wait;//Change the mouse to an hourglass while we work.
+	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
 	DebugPrintEx(DBGGeneric,CLASS,_T("OnPasteMessages"),_T("\n"));
 	if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return;
 
-	//Get the source Messages
+	// Get the source Messages
 	LPENTRYLIST		lpEIDs = m_lpMapiObjects->GetMessagesToCopy();
 	LPMAPIFOLDER	lpMAPISourceFolder = m_lpMapiObjects->GetSourceParentFolder();
-	//Get the destination Folder
+	// Get the destination Folder
 	LPMAPIFOLDER	lpMAPIDestFolder = (LPMAPIFOLDER) m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY);
 
 	if (lpMAPIDestFolder && lpMAPISourceFolder && lpEIDs)
@@ -517,7 +501,7 @@ void CMsgStoreDlg::OnPasteMessages()
 		{
 			ULONG ulMoveMessage = MyData.GetCheck(0)?MESSAGE_MOVE:0;
 
-			LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIFolder::CopyMessages"), m_hWnd);// STRING_OK
+			LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIFolder::CopyMessages"), m_hWnd); // STRING_OK
 
 			if(lpProgress)
 				ulMoveMessage |= MESSAGE_DIALOG;
@@ -538,7 +522,7 @@ void CMsgStoreDlg::OnPasteMessages()
 	}
 	if (lpMAPIDestFolder) lpMAPIDestFolder->Release();
 	if (lpMAPISourceFolder) lpMAPISourceFolder->Release();
-}//CMsgStoreDlg::OnPasteMessages
+} // CMsgStoreDlg::OnPasteMessages
 
 void CMsgStoreDlg::OnPasteFolder()
 {
@@ -556,10 +540,10 @@ void CMsgStoreDlg::OnPasteFolder()
 
 	DebugPrintEx(DBGGeneric,CLASS,_T("OnPasteFolder"),_T("\n"));
 
-	//Get the source folder
+	// Get the source folder
 	LPMAPIFOLDER lpMAPISourceFolder = m_lpMapiObjects->GetFolderToCopy();
 	LPMAPIFOLDER lpSrcParentFolder = m_lpMapiObjects->GetSourceParentFolder();
-	//Get the Destination Folder
+	// Get the Destination Folder
 	LPMAPIFOLDER lpMAPIDestFolder = (LPMAPIFOLDER) m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY);
 
 	if (lpMAPISourceFolder && lpMAPIDestFolder)
@@ -601,9 +585,9 @@ void CMsgStoreDlg::OnPasteFolder()
 
 		if (S_OK == hRes)
 		{
-			CWaitCursor		Wait;//Change the mouse to an hourglass while we work.
+			CWaitCursor		Wait; // Change the mouse to an hourglass while we work.
 
-			LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIFolder::CopyFolder"), m_hWnd);// STRING_OK
+			LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIFolder::CopyFolder"), m_hWnd); // STRING_OK
 
 			ULONG ulCopyFlags = fMapiUnicode;
 			if(MyData.GetCheck(1))
@@ -619,8 +603,8 @@ void CMsgStoreDlg::OnPasteFolder()
 				&IID_IMAPIFolder,
 				lpMAPIDestFolder,
 				MyData.GetString(0),
-				lpProgress ? (ULONG_PTR)m_hWnd : NULL,//UI
-				lpProgress,//Progress
+				lpProgress ? (ULONG_PTR)m_hWnd : NULL, // UI
+				lpProgress, // Progress
 				ulCopyFlags
 				);
 			if (MAPI_E_COLLISION == hRes)
@@ -651,9 +635,9 @@ void CMsgStoreDlg::OnPasteFolderContents()
 
 	if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return;
 
-	//Get the Source Folder
+	// Get the Source Folder
 	LPMAPIFOLDER lpMAPISourceFolder = m_lpMapiObjects->GetFolderToCopy();
-	//Get the Destination Folder
+	// Get the Destination Folder
 	LPMAPIFOLDER lpMAPIDestFolder = (LPMAPIFOLDER) m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY);
 
 	if (lpMAPISourceFolder && lpMAPIDestFolder)
@@ -674,14 +658,14 @@ void CMsgStoreDlg::OnPasteFolderContents()
 
 		if (S_OK == hRes)
 		{
-			CWaitCursor		Wait;//Change the mouse to an hourglass while we work.
+			CWaitCursor		Wait; // Change the mouse to an hourglass while we work.
 
 			EC_H(CopyFolderContents(
 				lpMAPISourceFolder,
 				lpMAPIDestFolder,
-				MyData.GetCheck(0),//associated contents
-				MyData.GetCheck(1),//move
-				MyData.GetCheck(2),//Single CopyMessages call
+				MyData.GetCheck(0), // associated contents
+				MyData.GetCheck(1), // move
+				MyData.GetCheck(2), // Single CopyMessages call
 				m_hWnd));
 		}
 
@@ -689,7 +673,7 @@ void CMsgStoreDlg::OnPasteFolderContents()
 	if (lpMAPIDestFolder) lpMAPIDestFolder->Release();
 	if (lpMAPISourceFolder) lpMAPISourceFolder->Release();
 	return;
-}//CMsgStoreDlg::OnPasteFolderContents
+} // CMsgStoreDlg::OnPasteFolderContents
 
 void CMsgStoreDlg::OnPasteRules()
 {
@@ -699,9 +683,9 @@ void CMsgStoreDlg::OnPasteRules()
 
 	if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return;
 
-	//Get the Source Folder
+	// Get the Source Folder
 	LPMAPIFOLDER lpMAPISourceFolder = m_lpMapiObjects->GetFolderToCopy();
-	//Get the Destination Folder
+	// Get the Destination Folder
 	LPMAPIFOLDER lpMAPIDestFolder = (LPMAPIFOLDER) m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY);
 
 	if (lpMAPISourceFolder && lpMAPIDestFolder)
@@ -720,19 +704,19 @@ void CMsgStoreDlg::OnPasteRules()
 
 		if (S_OK == hRes)
 		{
-			CWaitCursor		Wait;//Change the mouse to an hourglass while we work.
+			CWaitCursor		Wait; // Change the mouse to an hourglass while we work.
 
 			EC_H(CopyFolderRules(
 				lpMAPISourceFolder,
 				lpMAPIDestFolder,
-				MyData.GetCheck(0)));//move
+				MyData.GetCheck(0))); // move
 		}
 
 	}
 	if (lpMAPIDestFolder) lpMAPIDestFolder->Release();
 	if (lpMAPISourceFolder) lpMAPISourceFolder->Release();
 	return;
-}//CMsgStoreDlg::OnPasteRules
+} // CMsgStoreDlg::OnPasteRules
 
 void CMsgStoreDlg::OnCreateSubFolder()
 {
@@ -767,7 +751,7 @@ void CMsgStoreDlg::OnCreateSubFolder()
 			MyData.GetHex(1),
 			MyData.GetString(0),
 			MyData.GetString(2),
-			NULL,//interface
+			NULL, // interface
 			fMapiUnicode
 			| (MyData.GetCheck(3)?OPEN_IF_EXISTS:0),
 			&lpMAPISubFolder));
@@ -776,7 +760,7 @@ void CMsgStoreDlg::OnCreateSubFolder()
 		lpMAPIFolder->Release();
 	}
 	return;
-}//CMsgStoreDlg::OnCreateSubFolder
+} // CMsgStoreDlg::OnCreateSubFolder
 
 void CMsgStoreDlg::OnDisplayACLTable()
 {
@@ -796,13 +780,13 @@ void CMsgStoreDlg::OnDisplayACLTable()
 		lpMAPIFolder->Release();
 	}
 	return;
-}//CMsgStoreDlg::OnDisplayACLTable
+} // CMsgStoreDlg::OnDisplayACLTable
 
 void CMsgStoreDlg::OnDisplayAssociatedContents()
 {
 	if (!m_lpHierarchyTableTreeCtrl) return;
 
-	//Find the highlighted item
+	// Find the highlighted item
 	LPMAPIFOLDER lpMAPIFolder = (LPMAPIFOLDER) m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY);
 
 	if (lpMAPIFolder)
@@ -816,20 +800,20 @@ void CMsgStoreDlg::OnDisplayAssociatedContents()
 		lpMAPIFolder->Release();
 	}
 	return;
-}//CMsgStoreDlg::OnDisplayAssociatedContents
+} // CMsgStoreDlg::OnDisplayAssociatedContents
 
 void CMsgStoreDlg::OnDisplayDeletedContents()
 {
 	if (!m_lpHierarchyTableTreeCtrl || !m_lpMapiObjects) return;
 
-	//Find the highlighted item
+	// Find the highlighted item
 	HRESULT		hRes = S_OK;
 	LPSBinary	lpItemEID = NULL;
 	lpItemEID = m_lpHierarchyTableTreeCtrl->GetSelectedItemEID();
 
 	if (lpItemEID)
 	{
-		LPMDB lpMDB = m_lpMapiObjects->GetMDB();//do not release
+		LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 		if (lpMDB)
 		{
 			LPMAPIFOLDER	lpMAPIFolder = NULL;
@@ -846,7 +830,7 @@ void CMsgStoreDlg::OnDisplayDeletedContents()
 				(LPUNKNOWN*)&lpMAPIFolder));
 			if (lpMAPIFolder)
 			{
-				//call the dialog
+				// call the dialog
 				new CFolderDlg(
 					m_lpParent,
 					m_lpMapiObjects,
@@ -857,31 +841,27 @@ void CMsgStoreDlg::OnDisplayDeletedContents()
 			}
 		}
 	}
-}//CMsgStoreDlg::OnDisplayDeletedContents
+} // CMsgStoreDlg::OnDisplayDeletedContents
 
 void CMsgStoreDlg::OnDisplayDeletedSubFolders()
 {
 	if (!m_lpHierarchyTableTreeCtrl) return;
 
-	//Must open the folder with MODIFY permissions if I'm going to restore the folder!
+	// Must open the folder with MODIFY permissions if I'm going to restore the folder!
 	LPMAPIFOLDER lpFolder = (LPMAPIFOLDER) m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY);
 
 	if (lpFolder)
 	{
-//		if (ContainerSupportsDeletedItems(lpFolder))
-		{
-			new CMsgStoreDlg(
-				m_lpParent,
-				m_lpMapiObjects,
-				lpFolder,
-				dfDeleted);
-		}
-//		else ErrDialog(__FILE__,__LINE__,_T("Folder does not support SHOW_SOFT_DELETES!"));// STRING_OK
+		new CMsgStoreDlg(
+			m_lpParent,
+			m_lpMapiObjects,
+			lpFolder,
+			dfDeleted);
 		lpFolder->Release();
 	}
 	return;
 
-}//CMsgStoreDlg::OnDisplayDeletedSubFolders
+} // CMsgStoreDlg::OnDisplayDeletedSubFolders
 
 void CMsgStoreDlg::OnDisplayMailboxTable()
 {
@@ -897,7 +877,7 @@ void CMsgStoreDlg::OnEmptyFolder()
 
 	if (!m_lpHierarchyTableTreeCtrl) return;
 
-	//Find the highlighted item
+	// Find the highlighted item
 	LPMAPIFOLDER lpMAPIFolderToDelete = (LPMAPIFOLDER) m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY);
 
 	if (lpMAPIFolderToDelete)
@@ -917,7 +897,7 @@ void CMsgStoreDlg::OnEmptyFolder()
 
 			DebugPrintEx(DBGGeneric,CLASS,_T("OnEmptyFolder"),_T("Calling EmptyFolder on 0x%08X.\n"),lpMAPIFolderToDelete);
 
-			LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIFolder::EmptyFolder"), m_hWnd);// STRING_OK
+			LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIFolder::EmptyFolder"), m_hWnd); // STRING_OK
 
 			if(lpProgress)
 				ulDelAssociated |= FOLDER_DIALOG;
@@ -935,7 +915,7 @@ void CMsgStoreDlg::OnEmptyFolder()
 		lpMAPIFolderToDelete->Release();
 	}
 	return;
-}//CMsgStoreDlg::OnEmptyFolder
+} // CMsgStoreDlg::OnEmptyFolder
 
 void CMsgStoreDlg::OnDeleteSelectedItem()
 {
@@ -947,10 +927,10 @@ void CMsgStoreDlg::OnDeleteSelectedItem()
 
 	ULONG bShiftPressed = GetKeyState(VK_SHIFT) <0;
 
-	lpItemEID = m_lpHierarchyTableTreeCtrl->GetSelectedItemEID();//never free this!!!!!
+	lpItemEID = m_lpHierarchyTableTreeCtrl->GetSelectedItemEID(); // never free this!!!!!
 	if (!lpItemEID) return;
 
-	LPMDB lpMDB = m_lpMapiObjects->GetMDB();//do not release
+	LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 	if (!lpMDB) return;
 
 	LPMAPIFOLDER lpFolderToDelete = (LPMAPIFOLDER) m_lpHierarchyTableTreeCtrl->GetSelectedContainer(
@@ -978,7 +958,7 @@ void CMsgStoreDlg::OnDeleteSelectedItem()
 				DebugPrintEx(DBGDeleteSelectedItem,CLASS,_T("OnDeleteSelectedItem"),_T("Calling DeleteFolder on folder. ulFlags = 0x%08X.\n"),ulFlags);
 				DebugPrintBinary(DBGGeneric,lpItemEID);
 
-				LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIFolder::DeleteFolder"), m_hWnd);// STRING_OK
+				LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIFolder::DeleteFolder"), m_hWnd); // STRING_OK
 
 				if(lpProgress)
 					ulFlags |= FOLDER_DIALOG;
@@ -1000,7 +980,7 @@ void CMsgStoreDlg::OnDeleteSelectedItem()
 		lpFolderToDelete->Release();
 	}
 	return;
-}//CMsgStoreDlg::OnDeleteSelectedItem()
+} // CMsgStoreDlg::OnDeleteSelectedItem()
 
 void CMsgStoreDlg::OnSaveFolderContentsAsMSG()
 {
@@ -1011,7 +991,7 @@ void CMsgStoreDlg::OnSaveFolderContentsAsMSG()
 
 	DebugPrintEx(DBGGeneric,CLASS,_T("OnSaveFolderContentsAsMSG"),_T("\n"));
 
-	//Find the highlighted item
+	// Find the highlighted item
 	LPMAPIFOLDER lpMAPIFolder = (LPMAPIFOLDER) m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiDO_NOT_REQUEST_MODIFY);
 	if (!lpMAPIFolder) return;
 
@@ -1033,7 +1013,7 @@ void CMsgStoreDlg::OnSaveFolderContentsAsMSG()
 
 		if (S_OK == hRes && szFilePath[0])
 		{
-			CWaitCursor		Wait;//Change the mouse to an hourglass while we work.
+			CWaitCursor		Wait; // Change the mouse to an hourglass while we work.
 
 			EC_H(SaveFolderContentsToMSG(
 				lpMAPIFolder,
@@ -1046,7 +1026,7 @@ void CMsgStoreDlg::OnSaveFolderContentsAsMSG()
 
 	lpMAPIFolder->Release();
 	return;
-}//CMsgStoreDlg::OnSaveFolderContentsAsMSG()
+} // CMsgStoreDlg::OnSaveFolderContentsAsMSG()
 
 void CMsgStoreDlg::OnSaveFolderContentsAsTextFiles()
 {
@@ -1055,7 +1035,7 @@ void CMsgStoreDlg::OnSaveFolderContentsAsTextFiles()
 
 	if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return;
 
-	LPMDB lpMDB = m_lpMapiObjects->GetMDB();//do not release
+	LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 	if (!lpMDB) return;
 
 	LPMAPIFOLDER lpFolder = (LPMAPIFOLDER) m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiDO_NOT_REQUEST_MODIFY);
@@ -1080,7 +1060,7 @@ void CMsgStoreDlg::OnSaveFolderContentsAsTextFiles()
 
 			if (S_OK == hRes && szPathName[0])
 			{
-				CWaitCursor		Wait;//Change the mouse to an hourglass while we work.
+				CWaitCursor		Wait; // Change the mouse to an hourglass while we work.
 
 				CDumpStore MyDumpStore;
 				MyDumpStore.InitMDB(lpMDB);
@@ -1095,17 +1075,17 @@ void CMsgStoreDlg::OnSaveFolderContentsAsTextFiles()
 		lpFolder->Release();
 	}
 	return;
-}//CMsgStoreDlg::OnSaveFolderContentsAsTextFiles
+} // CMsgStoreDlg::OnSaveFolderContentsAsTextFiles
 
 void CMsgStoreDlg::OnSetReceiveFolder()
 {
 	HRESULT			hRes = S_OK;
 
-	CWaitCursor		Wait;//Change the mouse to an hourglass while we work.
+	CWaitCursor		Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return;
 
-	LPMDB lpMDB = m_lpMapiObjects->GetMDB();//do not release
+	LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 	if (!lpMDB) return;
 
 	CEditor MyData(
@@ -1117,7 +1097,7 @@ void CMsgStoreDlg::OnSetReceiveFolder()
 	MyData.InitSingleLine(0,IDS_CLASS,NULL,false);
 	MyData.InitCheck(1,IDS_DELETEASSOCIATION,false,false);
 
-	//Find the highlighted item
+	// Find the highlighted item
 	LPSBinary lpEID = m_lpHierarchyTableTreeCtrl->GetSelectedItemEID();
 
 	WC_H(MyData.DisplayDialog());
@@ -1147,11 +1127,11 @@ void CMsgStoreDlg::OnSetReceiveFolder()
 void CMsgStoreDlg::OnResendAllMessages()
 {
 	HRESULT			hRes = S_OK;
-	CWaitCursor		Wait;//Change the mouse to an hourglass while we work.
+	CWaitCursor		Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpHierarchyTableTreeCtrl) return;
 
-	//Find the highlighted item
+	// Find the highlighted item
 	LPMAPIFOLDER lpMAPIFolder = (LPMAPIFOLDER) m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY);
 
 	if (lpMAPIFolder)
@@ -1161,19 +1141,19 @@ void CMsgStoreDlg::OnResendAllMessages()
 		lpMAPIFolder->Release();
 	}
 	return;
-}//CMsgStoreDlg::OnResendAllMessages
+} // CMsgStoreDlg::OnResendAllMessages
 
-//Iterate through items in the selected folder and attempt to delete PR_NT_SECURITY_DESCRIPTOR
+// Iterate through items in the selected folder and attempt to delete PR_NT_SECURITY_DESCRIPTOR
 void CMsgStoreDlg::OnResetPermissionsOnItems()
 {
 	HRESULT			hRes = S_OK;
-	CWaitCursor		Wait;//Change the mouse to an hourglass while we work.
+	CWaitCursor		Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return;
 
-	LPMDB lpMDB = m_lpMapiObjects->GetMDB();//do not release
+	LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 
-	//Find the highlighted item
+	// Find the highlighted item
 	LPMAPIFOLDER lpMAPIFolder = (LPMAPIFOLDER) m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY);
 
 	if (lpMAPIFolder)
@@ -1182,9 +1162,9 @@ void CMsgStoreDlg::OnResetPermissionsOnItems()
 		lpMAPIFolder->Release();
 	}
 	return;
-}//CMsgStoreDlg::OnResetPermissionsOnItems
+} // CMsgStoreDlg::OnResetPermissionsOnItems
 
-//Copy selected folder back to the land of the living
+// Copy selected folder back to the land of the living
 void CMsgStoreDlg::OnRestoreDeletedFolder()
 {
 	HRESULT			hRes = S_OK;
@@ -1199,7 +1179,7 @@ void CMsgStoreDlg::OnRestoreDeletedFolder()
 			PR_ENTRYID}
 	};
 
-	LPMDB lpMDB = m_lpMapiObjects->GetMDB();//do not release
+	LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 	if (!lpMDB) return;
 
 	LPMAPIFOLDER lpSrcFolder = (LPMAPIFOLDER) m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY);
@@ -1239,15 +1219,15 @@ void CMsgStoreDlg::OnRestoreDeletedFolder()
 
 		if (S_OK == hRes)
 		{
-			//Restore the folder up under m_lpContainer
-			CWaitCursor		Wait;//Change the mouse to an hourglass while we work.
+			// Restore the folder up under m_lpContainer
+			CWaitCursor		Wait; // Change the mouse to an hourglass while we work.
 
 			DebugPrint(DBGGeneric,_T("Restoring 0x%X to 0x%X as \n"),lpSrcFolder,m_lpContainer);
 
 			LPMAPIFOLDER lpCopyRoot = lpSrcParentFolder;
 			if (!lpSrcParentFolder) lpCopyRoot = (LPMAPIFOLDER) m_lpContainer;
 
-			LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIFolder::CopyFolder"), m_hWnd);// STRING_OK
+			LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIFolder::CopyFolder"), m_hWnd); // STRING_OK
 
 			ULONG ulCopyFlags = fMapiUnicode | (MyData.GetCheck(1)?COPY_SUBFOLDERS:0);
 
@@ -1285,7 +1265,7 @@ void CMsgStoreDlg::OnRestoreDeletedFolder()
 		lpSrcFolder->Release();
 	}
 	return;
-}//CMsgStoreDlg::OnRestoreDeletedFolder
+} // CMsgStoreDlg::OnRestoreDeletedFolder
 
 void CMsgStoreDlg::OnValidateIPMSubtree()
 {
@@ -1306,7 +1286,7 @@ void CMsgStoreDlg::OnValidateIPMSubtree()
 
 	if (!m_lpMapiObjects) return;
 
-	LPMDB lpMDB = m_lpMapiObjects->GetMDB();//do not release
+	LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 	if (!lpMDB) return;
 
 	WC_H(MyData.DisplayDialog());

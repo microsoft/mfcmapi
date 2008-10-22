@@ -2,17 +2,9 @@
 //
 
 #include "stdafx.h"
-
 #include "ParentWnd.h"
-#include "Registry.h"
 #include "ImportProcs.h"
 #include "MyWinApp.h"
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
 
 extern CMyWinApp theApp;
 
@@ -54,11 +46,11 @@ VOID CALLBACK MyWinEventProc(
 
 CParentWnd::CParentWnd()
 {
-	//OutputDebugStringOutput only at first
-	//Get any settings from the registry
+	// OutputDebugStringOutput only at first
+	// Get any settings from the registry
 	SetDefaults();
 	ReadFromRegistry();
-	//After this call we may output to the debug file
+	// After this call we may output to the debug file
 	OpenDebugFile();
 	DebugPrintVersion(DBGVersionBanner);
 	// Trick to get the new button working on the MAPILogonEx dialog with Outlook 11
@@ -67,7 +59,7 @@ CParentWnd::CParentWnd()
 	LoadRichEd();
 	// Second part is to load rundll32.exe
 	// Don't plan on unloading this, so don't care about the return value
-	(void) LoadFromSystemDir(_T("rundll32.exe"));// STRING_OK
+	(void) LoadFromSystemDir(_T("rundll32.exe")); // STRING_OK
 
 	// Load aclui.dll and get EditSecurity from it
 	LoadAclUI();
@@ -94,14 +86,14 @@ CParentWnd::CParentWnd()
 
 	LoadAddIns();
 
-	//Notice we never create a window here!
+	// Notice we never create a window here!
 	TRACE_CONSTRUCTOR(CLASS);
 }
 
 CParentWnd::~CParentWnd()
 {
-	//Since we didn't create a window, we can't call DestroyWindow to let MFC know we're done.
-	//We call AfxPostQuitMessage instead
+	// Since we didn't create a window, we can't call DestroyWindow to let MFC know we're done.
+	// We call AfxPostQuitMessage instead
 	TRACE_DESTRUCTOR(CLASS);
 	UnloadAddIns();
 	if (m_hwinEventHook) UnhookWinEvent(m_hwinEventHook);

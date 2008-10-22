@@ -1,6 +1,5 @@
 #pragma once
 // HierarchyTableDlg.h : header file
-//
 
 class CHierarchyTableTreeCtrl;
 class CParentWnd;
@@ -8,17 +7,12 @@ class CMapiObjects;
 
 #include "BaseDialog.h"
 
-/////////////////////////////////////////////////////////////////////////////
-// CHierarchyTableDlg dialog
-
 class CHierarchyTableDlg : public CBaseDialog
 {
-friend class CHierarchyTableTreeCtrl;
-	// Construction
 public:
 	CHierarchyTableDlg(
 		CParentWnd* pParentWnd,
-		CMapiObjects *lpMapiObjects,
+		CMapiObjects* lpMapiObjects,
 		UINT uidTitle,
 		LPUNKNOWN lpRootContainer,
 		ULONG nIDContextMenu,
@@ -26,35 +20,34 @@ public:
 		);
 	virtual ~CHierarchyTableDlg();
 
-	BOOL CreateDialogAndMenu(UINT nIDMenuResource);
-
-	// Implementation
 protected:
-	ULONG						m_ulDisplayFlags;
+	// Overrides from base class
+	void CreateDialogAndMenu(UINT nIDMenuResource);
+	void OnInitMenu(CMenu* pMenu);
+
 	CHierarchyTableTreeCtrl*	m_lpHierarchyTableTreeCtrl;
+	ULONG						m_ulDisplayFlags;
 
-	virtual BOOL	OnInitDialog();
-	virtual void	OnInitMenu(CMenu* pMenu);
-	BOOL PreTranslateMessage(MSG* pMsg);
-
-	void	OnCancel();
-
-	// Generated message map functions
-	//{{AFX_MSG(CHierarchyTableDlg)
-	afx_msg void OnDisplayItem();
-	afx_msg void OnRefreshView();
-	afx_msg void OnDisplayHierarchyTable();
-	afx_msg void OnEditSearchCriteria();
-	//}}AFX_MSG
-
-	DECLARE_MESSAGE_MAP()
-
-	virtual BOOL HandleAddInMenu(WORD wMenuSelect);
+private:
 	virtual void HandleAddInMenuSingle(
 		LPADDINMENUPARAMS lpParams,
 		LPMAPIPROP lpMAPIProp,
 		LPMAPICONTAINER lpContainer);
 
-private:
+	// Overrides from base class
+	BOOL HandleAddInMenu(WORD wMenuSelect);
+	void OnCancel();
+	BOOL OnInitDialog();
+	void OnRefreshView();
+
+	BOOL PreTranslateMessage(MSG* pMsg);
+
+	// Menu items
+	void OnDisplayHierarchyTable();
+	void OnDisplayItem();
+	void OnEditSearchCriteria();
+
 	UINT m_nIDContextMenu;
+
+	DECLARE_MESSAGE_MAP()
 };

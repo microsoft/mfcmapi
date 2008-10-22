@@ -1,12 +1,9 @@
-// MapiObjects.h: interface for the CMapiObjects class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #pragma once
+// MapiObjects.h: interface for the CMapiObjects class.
 
 class CGlobalCache;
 
-//For GetBufferStatus
+// For GetBufferStatus
 #define BUFFER_EMPTY			((ULONG) 0x00000000)
 #define BUFFER_MESSAGES			((ULONG) 0x00000001)
 #define BUFFER_FOLDER			((ULONG) 0x00000002)
@@ -19,11 +16,11 @@ class CMapiObjects
 {
 public:
 	CMapiObjects(
-		CMapiObjects *OldMapiObjects);
+		CMapiObjects* OldMapiObjects);
 	virtual ~CMapiObjects();
 
 	STDMETHODIMP_(ULONG) AddRef();
- 	STDMETHODIMP_(ULONG) Release();
+	STDMETHODIMP_(ULONG) Release();
 
 	LPADRBOOK		GetAddrBook(BOOL bForceOpen);
 	LPMDB			GetMDB();
@@ -35,7 +32,7 @@ public:
 	void	MAPILogonEx(HWND hwnd,LPTSTR szProfileName, ULONG ulFlags);
 	void	Logoff();
 
-	//For copy buffer
+	// For copy buffer
 	LPENTRYLIST		GetABEntriesToCopy();
 	LPENTRYLIST		GetMessagesToCopy();
 	LPMAPIFOLDER	GetFolderToCopy();

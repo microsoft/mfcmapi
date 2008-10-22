@@ -1,6 +1,4 @@
 #include "stdafx.h"
-#include "Error.h"
-
 #include "InterpretProp2.h"
 #include "InterpretProp.h"
 #include "PropTagArray.h"
@@ -9,14 +7,8 @@
 #include "guids.h"
 #include "MySecInfo.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
 #define ulNoMatch 0xffffffff
-static WCHAR szPropSeparator[] = L", ";// STRING_OK
+static WCHAR szPropSeparator[] = L", "; // STRING_OK
 
 // lpszExactMatch and lpszPartialMatches allocated with new
 // clean up with delete[]
@@ -28,7 +20,7 @@ HRESULT PropTagToPropName(ULONG ulPropTag, BOOL bIsAB, LPTSTR* lpszExactMatch, L
 	ULONG ulPropID = NULL;
 	ULONG ulPropType = NULL;
 	ULONG ulLowerBound = 0;
-	ULONG ulUpperBound = ulPropTagArray-1;// ulPropTagArray-1 is the last entry
+	ULONG ulUpperBound = ulPropTagArray-1; // ulPropTagArray-1 is the last entry
 	ULONG ulMidPoint = (ulUpperBound+ulLowerBound)/2;
 	ULONG ulFirstMatch = ulNoMatch;
 	ULONG ulLastMatch = ulNoMatch;
@@ -40,8 +32,8 @@ HRESULT PropTagToPropName(ULONG ulPropTag, BOOL bIsAB, LPTSTR* lpszExactMatch, L
 
 	if (!ulPropTagArray || !PropTagArray) return S_OK;
 
-	//determine the prop ID we're seeking
-	if (ulPropTag & 0xffff0000)//dealing with a full prop tag
+	// determine the prop ID we're seeking
+	if (ulPropTag & 0xffff0000) // dealing with a full prop tag
 	{
 		ulPropID   = PROP_ID(ulPropTag);
 		ulPropType = PROP_TYPE(ulPropTag);
@@ -52,13 +44,13 @@ HRESULT PropTagToPropName(ULONG ulPropTag, BOOL bIsAB, LPTSTR* lpszExactMatch, L
 		ulPropType = PT_UNSPECIFIED;
 	}
 
-	//short circuit property IDs with the high bit set if bIsAB wasn't passed
+	// short circuit property IDs with the high bit set if bIsAB wasn't passed
 	if (!bIsAB && (ulPropID & 0x8000)) return hRes;
 
-	//put everything back together
+	// put everything back together
 	ulPropTag = PROP_TAG(ulPropType,ulPropID);
 
-	//find A match
+	// find A match
 	while (ulUpperBound - ulLowerBound > 1)
 	{
 		if (ulPropID == PROP_ID(PropTagArray[ulMidPoint].ulValue))
@@ -78,8 +70,8 @@ HRESULT PropTagToPropName(ULONG ulPropTag, BOOL bIsAB, LPTSTR* lpszExactMatch, L
 		ulMidPoint = (ulUpperBound+ulLowerBound)/2;
 	}
 
-	//when we get down to two points, we may have only checked one of them
-	//make sure we've checked the other
+	// when we get down to two points, we may have only checked one of them
+	// make sure we've checked the other
 	if (ulPropID == PROP_ID(PropTagArray[ulUpperBound].ulValue))
 	{
 		ulFirstMatch = ulUpperBound;
@@ -92,22 +84,22 @@ HRESULT PropTagToPropName(ULONG ulPropTag, BOOL bIsAB, LPTSTR* lpszExactMatch, L
 	// check that we got a match
 	if (ulNoMatch != ulFirstMatch)
 	{
-		ulLastMatch = ulFirstMatch;//remember the last match we've found so far
+		ulLastMatch = ulFirstMatch; // remember the last match we've found so far
 
-		//scan backwards to find the first match
+		// scan backwards to find the first match
 		while (ulFirstMatch > 0 && ulPropID == PROP_ID(PropTagArray[ulFirstMatch-1].ulValue))
 		{
 			ulFirstMatch = ulFirstMatch - 1;
 		}
 
-		//scan forwards to find the real last match
+		// scan forwards to find the real last match
 		// Last entry in the array is ulPropTagArray-1
 		while (ulLastMatch+1 < ulPropTagArray && ulPropID == PROP_ID(PropTagArray[ulLastMatch+1].ulValue))
 		{
 			ulLastMatch = ulLastMatch + 1;
 		}
 
-		//scan to see if we have any exact matches
+		// scan to see if we have any exact matches
 		ULONG ulCur;
 		for (ulCur = ulFirstMatch ; ulCur <= ulLastMatch ; ulCur++)
 		{
@@ -177,13 +169,13 @@ HRESULT PropTagToPropName(ULONG ulPropTag, BOOL bIsAB, LPTSTR* lpszExactMatch, L
 
 		if (lpszPartialMatches && ulNumPartials > 0 && lpszPartialMatches)
 		{
-			//let's build lpszPartialMatches
-			//see how much space we need - initialize cchPartial with space for separators and NULL terminator
-			//note - ulNumPartials-1 is the number of spaces we need...
+			// let's build lpszPartialMatches
+			// see how much space we need - initialize cchPartial with space for separators and NULL terminator
+			// note - ulNumPartials-1 is the number of spaces we need...
 			size_t cchPartial = 1 + (ulNumPartials - 1) * (sizeof(szPropSeparator)/sizeof(WCHAR)-1);
 			for (ulCur = ulFirstMatch ; ulCur <= ulLastMatch ; ulCur++)
 			{
-				if (ulPropTag == PropTagArray[ulCur].ulValue) continue;//skip our exact matches
+				if (ulPropTag == PropTagArray[ulCur].ulValue) continue; // skip our exact matches
 				size_t cchLen = 0;
 				EC_H(StringCchLengthW(PropTagArray[ulCur].lpszName,STRSAFE_MAX_CCH,&cchLen));
 				cchPartial += cchLen;
@@ -194,10 +186,10 @@ HRESULT PropTagToPropName(ULONG ulPropTag, BOOL bIsAB, LPTSTR* lpszExactMatch, L
 			if (szPartialMatches)
 			{
 				szPartialMatches[0] = _T('\0');
-				ULONG ulNumSeparators = 1;//start at 1 so we print one less than we print strings
+				ULONG ulNumSeparators = 1; // start at 1 so we print one less than we print strings
 				for (ulCur = ulFirstMatch ; ulCur <= ulLastMatch ; ulCur++)
 				{
-					if (ulPropTag == PropTagArray[ulCur].ulValue) continue;//skip our exact matches
+					if (ulPropTag == PropTagArray[ulCur].ulValue) continue; // skip our exact matches
 					EC_H(StringCchCatW(szPartialMatches,cchPartial,PropTagArray[ulCur].lpszName));
 					if (ulNumSeparators < ulNumPartials)
 					{
@@ -337,7 +329,7 @@ LPTSTR GUIDToStringAndName(LPCGUID lpGUID)
 
 	if (szBothGuid)
 	{
-		EC_H(StringCchPrintf(szBothGuid,cchBothGuid,_T("%s = %ws"),szGUID,szGUIDName));// STRING_OK
+		EC_H(StringCchPrintf(szBothGuid,cchBothGuid,_T("%s = %ws"),szGUID,szGUIDName)); // STRING_OK
 	}
 
 	delete[] szGUID;
@@ -457,11 +449,11 @@ LPCWSTR NameIDToPropName(LPMAPINAMEID lpNameID)
 	}
 
 	return NULL;
-}// NameIDToPropName
+} // NameIDToPropName
 
-//Interprets a flag found in lpProp and returns a string allocated with new
-//Free the string with delete[]
-//Will not return a string if the lpProp is not a PT_LONG/PT_I2 or we don't recognize the property
+// Interprets a flag found in lpProp and returns a string allocated with new
+// Free the string with delete[]
+// Will not return a string if the lpProp is not a PT_LONG/PT_I2 or we don't recognize the property
 HRESULT InterpretFlags(LPSPropValue lpProp, LPTSTR* szFlagString)
 {
 	if (szFlagString) *szFlagString = NULL;
@@ -586,7 +578,7 @@ HRESULT InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, LPCTSTR sz
 	if (ulFlagArray == ulCurEntry) return S_OK;
 	if (FlagArray[ulCurEntry].ulFlagName != ulFlagName) return S_OK;
 
-	//We've matched our flag name to the array - we SHOULD return a string at this point
+	// We've matched our flag name to the array - we SHOULD return a string at this point
 	BOOL bNeedSeparator = false;
 
 	for (;FlagArray[ulCurEntry].ulFlagName == ulFlagName;ulCurEntry++)
@@ -597,7 +589,7 @@ HRESULT InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, LPCTSTR sz
 			{
 				if (bNeedSeparator)
 				{
-					EC_H(StringCchCatW(szTempString,CCHW(szTempString),L" | "));// STRING_OK
+					EC_H(StringCchCatW(szTempString,CCHW(szTempString),L" | ")); // STRING_OK
 				}
 				EC_H(StringCchCatW(szTempString,CCHW(szTempString),FlagArray[ulCurEntry].lpszName));
 				lTempValue &= ~FlagArray[ulCurEntry].lFlagValue;
@@ -610,7 +602,7 @@ HRESULT InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, LPCTSTR sz
 			{
 				if (bNeedSeparator)
 				{
-					EC_H(StringCchCatW(szTempString,CCHW(szTempString),L" | "));// STRING_OK
+					EC_H(StringCchCatW(szTempString,CCHW(szTempString),L" | ")); // STRING_OK
 				}
 				EC_H(StringCchCatW(szTempString,CCHW(szTempString),FlagArray[ulCurEntry].lpszName));
 				lTempValue = 0;
@@ -623,7 +615,7 @@ HRESULT InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, LPCTSTR sz
 			{
 				if (bNeedSeparator)
 				{
-					EC_H(StringCchCatW(szTempString,CCHW(szTempString),L" | "));// STRING_OK
+					EC_H(StringCchCatW(szTempString,CCHW(szTempString),L" | ")); // STRING_OK
 				}
 				EC_H(StringCchCatW(szTempString,CCHW(szTempString),FlagArray[ulCurEntry].lpszName));
 				lTempValue = lTempValue - (FlagArray[ulCurEntry].lFlagValue << 8);
@@ -636,7 +628,7 @@ HRESULT InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, LPCTSTR sz
 			{
 				if (bNeedSeparator)
 				{
-					EC_H(StringCchCatW(szTempString,CCHW(szTempString),L" | "));// STRING_OK
+					EC_H(StringCchCatW(szTempString,CCHW(szTempString),L" | ")); // STRING_OK
 				}
 				EC_H(StringCchCatW(szTempString,CCHW(szTempString),FlagArray[ulCurEntry].lpszName));
 				lTempValue = lTempValue - FlagArray[ulCurEntry].lFlagValue;
@@ -645,19 +637,19 @@ HRESULT InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, LPCTSTR sz
 		}
 		else if (flagCLEARBITS == FlagArray[ulCurEntry].ulFlagType)
 		{
-			//find any bits we need to clear
+			// find any bits we need to clear
 			LONG lClearedBits = FlagArray[ulCurEntry].lFlagValue & lTempValue;
-			//report what we found
+			// report what we found
 			if (0 != lClearedBits)
 			{
 				if (bNeedSeparator)
 				{
-					EC_H(StringCchCatW(szTempString,CCHW(szTempString),L" | "));// STRING_OK
+					EC_H(StringCchCatW(szTempString,CCHW(szTempString),L" | ")); // STRING_OK
 				}
 				WCHAR szClearedBits[15];
-				EC_H(StringCchPrintfW(szClearedBits,CCHW(szClearedBits),L"0x%08X",lClearedBits));// STRING_OK
+				EC_H(StringCchPrintfW(szClearedBits,CCHW(szClearedBits),L"0x%08X",lClearedBits)); // STRING_OK
 				EC_H(StringCchCatW(szTempString,CCHW(szTempString),szClearedBits));
-				//clear the bits out
+				// clear the bits out
 				lTempValue &= ~FlagArray[ulCurEntry].lFlagValue;
 				bNeedSeparator = true;
 			}
@@ -672,19 +664,19 @@ HRESULT InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, LPCTSTR sz
 		WCHAR	szUnk[15];
 		if (bNeedSeparator)
 		{
-			EC_H(StringCchCatW(szTempString,CCHW(szTempString),L" | "));// STRING_OK
+			EC_H(StringCchCatW(szTempString,CCHW(szTempString),L" | ")); // STRING_OK
 		}
-		EC_H(StringCchPrintfW(szUnk,CCHW(szUnk),L"0x%08X",lTempValue));// STRING_OK
+		EC_H(StringCchPrintfW(szUnk,CCHW(szUnk),L"0x%08X",lTempValue)); // STRING_OK
 		EC_H(StringCchCatW(szTempString,CCHW(szTempString),szUnk));
 	}
 
-	//Copy the string we computed for output
+	// Copy the string we computed for output
 	size_t cchLen = 0;
 	EC_H(StringCchLengthW(szTempString,CCHW(szTempString),&cchLen));
 
 	if (cchLen)
 	{
-		cchLen++;//for the NULL
+		cchLen++; // for the NULL
 		size_t cchPrefix = NULL;
 		if (szPrefix)
 		{
@@ -697,7 +689,7 @@ HRESULT InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, LPCTSTR sz
 		if (*szFlagString)
 		{
 			(*szFlagString)[0] = NULL;
-			EC_H(StringCchPrintf(*szFlagString,cchLen,_T("%s%ws"),szPrefix,szTempString));// STRING_OK
+			EC_H(StringCchPrintf(*szFlagString,cchLen,_T("%s%ws"),szPrefix,szTempString)); // STRING_OK
 		}
 	}
 
@@ -706,12 +698,12 @@ HRESULT InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, LPCTSTR sz
 
 // Returns a list of all known flags/values for a flag name.
 // For instance, for flagFuzzyLevel, would return:
-//\r\n0x00000000 FL_FULLSTRING\r\n\
-//0x00000001 FL_SUBSTRING\r\n\
-//0x00000002 FL_PREFIX\r\n\
-//0x00010000 FL_IGNORECASE\r\n\
-//0x00020000 FL_IGNORENONSPACE\r\n\
-//0x00040000 FL_LOOSE
+// \r\n0x00000000 FL_FULLSTRING\r\n\
+// 0x00000001 FL_SUBSTRING\r\n\
+// 0x00000002 FL_PREFIX\r\n\
+// 0x00010000 FL_IGNORECASE\r\n\
+// 0x00020000 FL_IGNORENONSPACE\r\n\
+// 0x00040000 FL_LOOSE
 //
 // Since the string is always appended to a prompt we include \r\n at the start
 CString AllFlagsToString(const ULONG ulFlagName,BOOL bHex)
@@ -730,7 +722,7 @@ CString AllFlagsToString(const ULONG ulFlagName,BOOL bHex)
 
 	if (FlagArray[ulCurEntry].ulFlagName != ulFlagName) return szFlagString;
 
-	//We've matched our flag name to the array - we SHOULD return a string at this point
+	// We've matched our flag name to the array - we SHOULD return a string at this point
 	for (;FlagArray[ulCurEntry].ulFlagName == ulFlagName;ulCurEntry++)
 	{
 		if (flagCLEARBITS == FlagArray[ulCurEntry].ulFlagType)
@@ -741,11 +733,11 @@ CString AllFlagsToString(const ULONG ulFlagName,BOOL bHex)
 		{
 			if (bHex)
 			{
-				szTempString.FormatMessage(_T("\r\n0x%1!08X! %2!ws!"),FlagArray[ulCurEntry].lFlagValue,FlagArray[ulCurEntry].lpszName);// STRING_OK
+				szTempString.FormatMessage(_T("\r\n0x%1!08X! %2!ws!"),FlagArray[ulCurEntry].lFlagValue,FlagArray[ulCurEntry].lpszName); // STRING_OK
 			}
 			else
 			{
-				szTempString.FormatMessage(_T("\r\n%1!5d! %2!ws!"),FlagArray[ulCurEntry].lFlagValue,FlagArray[ulCurEntry].lpszName);// STRING_OK
+				szTempString.FormatMessage(_T("\r\n%1!5d! %2!ws!"),FlagArray[ulCurEntry].lFlagValue,FlagArray[ulCurEntry].lpszName); // STRING_OK
 			}
 			szFlagString += szTempString;
 		}
@@ -771,6 +763,76 @@ BINARY_STRUCTURE_ARRAY_ENTRY g_BinaryStructArray[] =
 	BINARY_STRUCTURE_ENTRY(PR_EXTENDED_FOLDER_FLAGS,stExtendedFolderFlags)
 	BINARY_STRUCTURE_ENTRY(PR_REPORT_TAG,stReportTag)
 	BINARY_STRUCTURE_ENTRY(PR_CONVERSATION_INDEX,stConversationIndex)
+
+	BINARY_STRUCTURE_ENTRY(PR_RECEIVED_BY_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_SENT_REPRESENTING_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_RCVD_REPRESENTING_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_REPORT_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_READ_RECEIPT_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_ORIGINAL_AUTHOR_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_ORIGINAL_SENDER_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_ORIGINAL_SENT_REPRESENTING_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_SENDER_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_PARENT_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_SENTMAIL_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_STORE_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_ORIGINALLY_INTENDED_RECIP_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_IPM_SUBTREE_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_IPM_OUTBOX_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_IPM_WASTEBASKET_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_IPM_SENTMAIL_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_VIEWS_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_COMMON_VIEWS_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_FINDER_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_DEFAULT_VIEW_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_IPM_APPOINTMENT_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_IPM_CONTACT_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_IPM_JOURNAL_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_IPM_NOTE_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_IPM_TASK_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_REM_ONLINE_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_REM_OFFLINE_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_IPM_DRAFTS_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_ORIGINAL_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_IDENTITY_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_OWN_STORE_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_HEADER_FOLDER_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_CONFLICT_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_MOVE_TO_STORE_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_MOVE_TO_FOLDER_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_CREATOR_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_LAST_MODIFIER_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_RECIPIENT_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_USER_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_MAILBOX_OWNER_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_SCHEDULE_FOLDER_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_IPM_DAF_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_NON_IPM_SUBTREE_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_EFORMS_REGISTRY_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_SPLUS_FREE_BUSY_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_OFFLINE_ADDRBOOK_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_EFORMS_FOR_LOCALE_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_FREE_BUSY_FOR_LOCAL_SITE_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_ADDRBOOK_FOR_LOCAL_SITE_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_OFFLINE_MESSAGE_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_GW_MTSIN_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_GW_MTSOUT_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_IPM_FAVORITES_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_IPM_PUBLIC_FOLDERS_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_SYS_CONFIG_FOLDER_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_ADDRESS_BOOK_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_PUBLIC_FOLDER_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_DAM_ORIGINAL_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_RULE_FOLDER_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_ACTIVE_USER_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_ORIGINATOR_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_REPORT_DESTINATION_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_LONGTERM_ENTRYID_FROM_TABLE,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_EVENTS_ROOT_FOLDER_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_NNTP_ARTICLE_FOLDER_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_NEWSGROUP_ROOT_FOLDER_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_EMS_AB_PARENT_ENTRYID,stEntryId)
 
 	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidTimeZoneStruct,PSETID_Appointment,stTimeZone)
 	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidApptTZDefStartDisplay,PSETID_Appointment,stTimeZoneDefinition)
@@ -826,9 +888,9 @@ void InterpretProp(LPSPropValue lpProp, // optional property value
 	if (PropType) *PropType = TypeToString(ulPropTag);
 	if (lpszNameExactMatches || lpszNamePartialMatches)
 		EC_H(PropTagToPropName(ulPropTag,bIsAB,lpszNameExactMatches,lpszNamePartialMatches));
-	if (PropTag) PropTag->Format(_T("0x%08X"),ulPropTag);// STRING_OK
+	if (PropTag) PropTag->Format(_T("0x%08X"),ulPropTag); // STRING_OK
 
-	//Named Props
+	// Named Props
 	LPMAPINAMEID*	lppPropNames = 0;
 
 	// If we weren't passed named property information and we need it, look it up
@@ -929,7 +991,7 @@ HRESULT GetLargeBinaryProp(LPMAPIPROP lpMAPIProp, ULONG ulPropTag, LPSPropValue*
 	{
 		MAPIFreeBuffer(lpPropArray);
 		lpPropArray = NULL;
-		//need to get the data as a stream
+		// need to get the data as a stream
 		LPSTREAM lpStream = NULL;
 
 		WC_H(lpMAPIProp->OpenProperty(
@@ -941,7 +1003,7 @@ HRESULT GetLargeBinaryProp(LPMAPIPROP lpMAPIProp, ULONG ulPropTag, LPSPropValue*
 		if (SUCCEEDED(hRes) && lpStream)
 		{
 			STATSTG	StatInfo = {0};
-			lpStream->Stat(&StatInfo, STATFLAG_NONAME); //find out how much space we need
+			lpStream->Stat(&StatInfo, STATFLAG_NONAME); // find out how much space we need
 
 			// We're not going to try to support MASSIVE properties.
 			if (!StatInfo.cbSize.HighPart)
@@ -1032,6 +1094,10 @@ void InterpretBinaryAsString(SBinary myBin, MAPIStructType myStructType, LPMAPIP
 		break;
 	case stOneOffEntryId:
 		OneOffEntryIdToString(myBin,&szResultString);
+		break;
+	case stEntryId:
+		EntryIdToString(myBin,&szResultString);
+		break;
 	}
 	if (szResultString) *lpszResultString = szResultString;
 }
@@ -1081,7 +1147,7 @@ size_t CBinaryParser::GetCurrentOffset()
 }
 
 // If we're before the end of the buffer, return the count of remaining bytes
-// If we're at or past the end of the buffer, return 0;
+// If we're at or past the end of the buffer, return 0
 size_t CBinaryParser::RemainingBytes()
 {
 	if (m_lpCur < m_lpEnd) return m_lpEnd - m_lpCur;
@@ -3059,4 +3125,42 @@ LPTSTR OneOffEntryIdStructToString(OneOffEntryIdStruct* pooeidOneOffEntryId)
 	szOneOffEntryId += JunkDataToString(pooeidOneOffEntryId->JunkDataSize,pooeidOneOffEntryId->JunkData);
 
 	return CStringToString(szOneOffEntryId);
+}
+
+void EntryIdToString(SBinary myBin, LPTSTR* lpszResultString)
+{
+	if (!lpszResultString) return;
+	*lpszResultString = NULL;
+	CBinaryParser Parser(myBin.cb,myBin.lpb);
+
+	CString szEntryId;
+	CString szTmp;
+	HRESULT hRes = S_OK;
+
+	BYTE abFlags[4] = {0};
+	Parser.GetBYTE(&abFlags[0]);
+	Parser.GetBYTE(&abFlags[1]);
+	Parser.GetBYTE(&abFlags[2]);
+	Parser.GetBYTE(&abFlags[3]);
+	LPTSTR szFlags0 = NULL;
+	LPTSTR szFlags1 = NULL;
+	EC_H(InterpretFlags(flagEntryId0, abFlags[0], &szFlags0));
+	EC_H(InterpretFlags(flagEntryId1, abFlags[1], &szFlags1));
+	szEntryId.FormatMessage(IDS_ENTRYIDHEADER,
+		abFlags[0],szFlags0,
+		abFlags[1],szFlags1,
+		abFlags[2],
+		abFlags[3]);
+	delete[] szFlags1;
+	delete[] szFlags0;
+	szFlags1 = NULL;
+	szFlags0 = NULL;
+
+	SBinary sBin = {0};
+	sBin.cb = (ULONG) Parser.RemainingBytes();
+	Parser.GetBYTES(sBin.cb,&sBin.lpb);
+	szEntryId += BinToHexString(&sBin,true);
+	delete[] sBin.lpb;
+
+	*lpszResultString = CStringToString(szEntryId);
 }

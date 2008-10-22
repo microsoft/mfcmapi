@@ -1,47 +1,44 @@
 #include "stdafx.h"
 #include "registry.h"
-
-#include "error.h"
-#include <Accctrl.h>
 #include <Aclapi.h>
 #include "MAPIFunctions.h"
 
-//Keep this in sync with REGKEYNAMES
+// Keep this in sync with REGKEYNAMES
 __RegKeys RegKeys[] = {
 #ifdef _DEBUG
-	{_T("DebugTag"),					regDWORD,	DBGAll		,0,_T(""),_T(""),IDS_REGKEY_DEBUG_TAG},// STRING_OK
+	{_T("DebugTag"),					regDWORD,	DBGAll		,0,_T(""),_T(""),IDS_REGKEY_DEBUG_TAG}, // STRING_OK
 #else
-	{_T("DebugTag"),					regDWORD,	DBGNoDebug	,0,_T(""),_T(""),IDS_REGKEY_DEBUG_TAG },// STRING_OK
+	{_T("DebugTag"),					regDWORD,	DBGNoDebug	,0,_T(""),_T(""),IDS_REGKEY_DEBUG_TAG }, // STRING_OK
 #endif
-	{_T("DebugToFile"),					regDWORD,	0			,0,_T(""),_T(""),IDS_REGKEY_DEBUG_TO_FILE},// STRING_OK
-	{_T("DebugFileName"),				regSTRING,	0			,0,_T("c:\\mfcmapi.log"),_T(""),IDS_REGKEY_DEBUG_FILE_NAME},// STRING_OK
-	{_T("ThrottleLevel"),				regDWORD,	0			,0,_T(""),_T(""),IDS_REGKEY_THROTTLE_LEVEL},// STRING_OK
-	{_T("ParseNamedProps"),				regDWORD,	true		,0,_T(""),_T(""),IDS_REGKEY_PARSED_NAMED_PROPS},// STRING_OK
-	{_T("HierNotifs"),					regDWORD,	true		,0,_T(""),_T(""),IDS_REGKEY_HIER_NOTIFS},// STRING_OK
-	{_T("HierExpandNotifs"),			regDWORD,	true		,0,_T(""),_T(""),IDS_REGKEY_HIER_EXPAND_NOTIFS},// STRING_OK
-	{_T("HierRootNotifs"),				regDWORD,	false		,0,_T(""),_T(""),IDS_REGKEY_HIER_ROOT_NOTIFS},// STRING_OK
-	{_T("HierNodeLoadCount"),			regDWORD,	20			,0,_T(""),_T(""),IDS_REGKEY_HIER_NODE_LOAD_COUNT},// STRING_OK
-	{_T("DoGetProps"),					regDWORD,	true		,0,_T(""),_T(""),IDS_REGKEY_DO_GETPROPS},// STRING_OK
-	{_T("AllowDupeColumns"),			regDWORD,	false		,0,_T(""),_T(""),IDS_REGKEY_ALLOW_DUPE_COLUMNS},// STRING_OK
-	{_T("UseRowDataForSinglePropList"),	regDWORD,	false		,0,_T(""),_T(""),IDS_REGKEY_USE_ROW_DATA_FOR_SINGLEPROPLIST},// STRING_OK
-	{_T("DoColumnNames"),				regDWORD,	true		,0,_T(""),_T(""),IDS_REGKEY_DO_COLUMN_NAMES},// STRING_OK
-	{_T("EditColumnsOnLoad"),			regDWORD,	false		,0,_T(""),_T(""),IDS_REGKEY_EDIT_COLUMNS_ON_LOAD},// STRING_OK
-	{_T("UseGetPropList"),				regDWORD,	true		,0,_T(""),_T(""),IDS_REGKEY_USE_GETPROPLIST},// STRING_OK
-	{_T("GetPropNamesOnAllProps"),		regDWORD,	false		,0,_T(""),_T(""),IDS_REGKEY_GETPROPNAMES_ON_ALL_PROPS},// STRING_OK
-	{_T("ForceMDBOnline"),				regDWORD,	false		,0,_T(""),_T(""),IDS_REGKEY_MDB_ONLINE},// STRING_OK
-	{_T("ForceMapiNoCache"),			regDWORD,	false		,0,_T(""),_T(""),IDS_REGKEY_MAPI_NO_CACHE},// STRING_OK
-	{_T("AllowPersistCache"),			regDWORD,	false		,0,_T(""),_T(""),IDS_REGKEY_ALLOW_PERSIST_CACHE },// STRING_OK
-	{_T("UseIMAPIProgress"),			regDWORD,	false		,0,_T(""),_T(""),IDS_REGKEY_USE_IMAPIPROGRESS},// STRING_OK
-	{_T("UseMessageRaw"),				regDWORD,	false		,0,_T(""),_T(""),IDS_REGKEY_USE_MESSAGERAW},// STRING_OK
-	{_T("DisplayAboutDialog"),			regDWORD,	true		,0,_T(""),_T(""),NULL},// STRING_OK
-	{_T("PropertyColumnOrder"),			regSTRING,	0			,0,_T(""),_T(""),NULL},// STRING_OK
-//	{KeyName,							keytype,	defaultDWORD,0,defaultString,NULL,IDS_REGKEY_*}//Regkey template
+	{_T("DebugToFile"),					regDWORD,	0			,0,_T(""),_T(""),IDS_REGKEY_DEBUG_TO_FILE}, // STRING_OK
+	{_T("DebugFileName"),				regSTRING,	0			,0,_T("c:\\mfcmapi.log"),_T(""),IDS_REGKEY_DEBUG_FILE_NAME}, // STRING_OK
+	{_T("ThrottleLevel"),				regDWORD,	0			,0,_T(""),_T(""),IDS_REGKEY_THROTTLE_LEVEL}, // STRING_OK
+	{_T("ParseNamedProps"),				regDWORD,	true		,0,_T(""),_T(""),IDS_REGKEY_PARSED_NAMED_PROPS}, // STRING_OK
+	{_T("HierNotifs"),					regDWORD,	true		,0,_T(""),_T(""),IDS_REGKEY_HIER_NOTIFS}, // STRING_OK
+	{_T("HierExpandNotifs"),			regDWORD,	true		,0,_T(""),_T(""),IDS_REGKEY_HIER_EXPAND_NOTIFS}, // STRING_OK
+	{_T("HierRootNotifs"),				regDWORD,	false		,0,_T(""),_T(""),IDS_REGKEY_HIER_ROOT_NOTIFS}, // STRING_OK
+	{_T("HierNodeLoadCount"),			regDWORD,	20			,0,_T(""),_T(""),IDS_REGKEY_HIER_NODE_LOAD_COUNT}, // STRING_OK
+	{_T("DoGetProps"),					regDWORD,	true		,0,_T(""),_T(""),IDS_REGKEY_DO_GETPROPS}, // STRING_OK
+	{_T("AllowDupeColumns"),			regDWORD,	false		,0,_T(""),_T(""),IDS_REGKEY_ALLOW_DUPE_COLUMNS}, // STRING_OK
+	{_T("UseRowDataForSinglePropList"),	regDWORD,	false		,0,_T(""),_T(""),IDS_REGKEY_USE_ROW_DATA_FOR_SINGLEPROPLIST}, // STRING_OK
+	{_T("DoColumnNames"),				regDWORD,	true		,0,_T(""),_T(""),IDS_REGKEY_DO_COLUMN_NAMES}, // STRING_OK
+	{_T("EditColumnsOnLoad"),			regDWORD,	false		,0,_T(""),_T(""),IDS_REGKEY_EDIT_COLUMNS_ON_LOAD}, // STRING_OK
+	{_T("UseGetPropList"),				regDWORD,	true		,0,_T(""),_T(""),IDS_REGKEY_USE_GETPROPLIST}, // STRING_OK
+	{_T("GetPropNamesOnAllProps"),		regDWORD,	false		,0,_T(""),_T(""),IDS_REGKEY_GETPROPNAMES_ON_ALL_PROPS}, // STRING_OK
+	{_T("ForceMDBOnline"),				regDWORD,	false		,0,_T(""),_T(""),IDS_REGKEY_MDB_ONLINE}, // STRING_OK
+	{_T("ForceMapiNoCache"),			regDWORD,	false		,0,_T(""),_T(""),IDS_REGKEY_MAPI_NO_CACHE}, // STRING_OK
+	{_T("AllowPersistCache"),			regDWORD,	false		,0,_T(""),_T(""),IDS_REGKEY_ALLOW_PERSIST_CACHE }, // STRING_OK
+	{_T("UseIMAPIProgress"),			regDWORD,	false		,0,_T(""),_T(""),IDS_REGKEY_USE_IMAPIPROGRESS}, // STRING_OK
+	{_T("UseMessageRaw"),				regDWORD,	false		,0,_T(""),_T(""),IDS_REGKEY_USE_MESSAGERAW}, // STRING_OK
+	{_T("DisplayAboutDialog"),			regDWORD,	true		,0,_T(""),_T(""),NULL}, // STRING_OK
+	{_T("PropertyColumnOrder"),			regSTRING,	0			,0,_T(""),_T(""),NULL}, // STRING_OK
+//	{KeyName,							keytype,	defaultDWORD,0,defaultString,NULL,IDS_REGKEY_*} // Regkey template
 };
 
 void SetDefaults()
 {
 	HRESULT hRes = S_OK;
-	//Set some defaults to begin with:
+	// Set some defaults to begin with:
 	int i = 0;
 
 	for (i = 0 ; i < NUMRegKeys ; i++)
@@ -61,7 +58,7 @@ void SetDefaults()
 	}
 }
 
-//$--HrGetRegistryValue---------------------------------------------------------
+// $--HrGetRegistryValue---------------------------------------------------------
 // Get a registry value - allocating memory using new to hold it.
 // -----------------------------------------------------------------------------
 HRESULT HrGetRegistryValue(
@@ -86,7 +83,7 @@ HRESULT HrGetRegistryValue(
 		NULL,
 		&cb));
 
-	//only handle types we know about - all others are bad
+	// only handle types we know about - all others are bad
 	if (S_OK == hRes && cb &&
 		(REG_SZ == *lpType || REG_DWORD == *lpType || REG_MULTI_SZ == *lpType))
 	{
@@ -115,7 +112,7 @@ HRESULT HrGetRegistryValue(
 	return hRes;
 }
 
-//If the value is not set in the registry, do not alter the passed in DWORD
+// If the value is not set in the registry, do not alter the passed in DWORD
 void ReadDWORDFromRegistry(HKEY hKey, LPCTSTR szValue, DWORD* lpdwVal)
 {
 	HRESULT hRes = S_OK;
@@ -137,7 +134,7 @@ void ReadDWORDFromRegistry(HKEY hKey, LPCTSTR szValue, DWORD* lpdwVal)
 	delete[] lpValue;
 }
 
-//If the value is not set in the registry, do not alter the passed in string
+// If the value is not set in the registry, do not alter the passed in string
 void ReadStringFromRegistry(HKEY hKey, LPCTSTR szValue, LPTSTR szDest, ULONG cchDestLen)
 {
 	HRESULT hRes = S_OK;
@@ -172,7 +169,7 @@ void ReadFromRegistry()
 		KEY_READ,
 		&hRootKey));
 
-	//Now that we have a root key, go get our values
+	// Now that we have a root key, go get our values
 	if (hRootKey)
 	{
 		int i = 0;
@@ -245,9 +242,9 @@ void WriteStringToRegistry(HKEY hKey, LPCTSTR szValueName, LPCTSTR szValue)
 	HRESULT hRes = S_OK;
 	size_t cbValue = 0;
 
-	//Reg needs bytes, so CB is correct here
+	// Reg needs bytes, so CB is correct here
 	EC_H(StringCbLength(szValue,STRSAFE_MAX_CCH * sizeof(TCHAR),&cbValue));
-	cbValue += sizeof(TCHAR);//NULL terminator
+	cbValue += sizeof(TCHAR); // NULL terminator
 
 	WC_W32(RegSetValueEx(
 		hKey,
@@ -351,7 +348,7 @@ void WriteToRegistry()
 
 	hRootKey = CreateRootKey();
 
-	//Now that we have a root key, go set our values
+	// Now that we have a root key, go set our values
 
 	int i = 0;
 

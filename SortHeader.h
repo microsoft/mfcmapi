@@ -15,35 +15,20 @@ typedef struct _HeaderData
 
 class CSortHeader : public CHeaderCtrl
 {
-// Construction
 public:
 	CSortHeader();
-
-// Attributes
-public:
-
-// Operations
-public:
-
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CSortHeader)
-	public:
-	afx_msg LRESULT	msgOnSaveColumnOrder(WPARAM wParam, LPARAM lParam);
-	//}}AFX_VIRTUAL
-
-// Implementation
-public:
 	BOOL Init(CHeaderCtrl *pHeader, HWND hwndParent);
-	virtual ~CSortHeader();
 
-	// Generated message map functions
-protected:
-	DECLARE_MESSAGE_MAP()
-	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+private:
+	LRESULT	WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	void	RegisterHeaderTooltip();
-	HWND	m_hwndTip;
-	TOOLINFO m_ti;
-	HWND	m_hwndParent;
 
+	// Custom messages
+	LRESULT	msgOnSaveColumnOrder(WPARAM wParam, LPARAM lParam);
+
+	HWND		m_hwndTip;
+	TOOLINFO	m_ti;
+	HWND		m_hwndParent;
+
+	DECLARE_MESSAGE_MAP()
 };

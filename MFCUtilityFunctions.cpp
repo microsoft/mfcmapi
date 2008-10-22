@@ -1,10 +1,7 @@
 // MFCUtilityFunctions.h : Common functions for MFC MAPI
 
 #include "stdafx.h"
-#include "Error.h"
-
 #include "MFCUtilityFunctions.h"
-
 #include "MAPIFunctions.h"
 #include "MAPIStoreFunctions.h"
 #include "ColumnTags.h"
@@ -21,12 +18,6 @@
 #include "MailboxTableDlg.h"
 #include "PublicFolderTableDlg.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
 HRESULT DisplayObject(
 					  LPMAPIPROP lpUnk,
 					  ULONG ulObjType,
@@ -35,9 +26,15 @@ HRESULT DisplayObject(
 {
 	HRESULT			hRes = S_OK;
 
-	if (!lpHostDlg || !lpHostDlg->m_lpMapiObjects || !lpUnk) return MAPI_E_INVALID_PARAMETER;
+	if (!lpHostDlg || !lpUnk) return MAPI_E_INVALID_PARAMETER;
 
-	//If we weren't passed an object type, go get one - careful! Some objects lie!
+	CMapiObjects* lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
+	if (!lpMapiObjects) return MAPI_E_INVALID_PARAMETER;
+
+	CParentWnd* lpParentWnd = lpHostDlg->GetParentWnd(); // do not release
+	if (!lpParentWnd) return MAPI_E_INVALID_PARAMETER;
+
+	// If we weren't passed an object type, go get one - careful! Some objects lie!
 	if (!ulObjType)
 	{
 		ulObjType = GetMAPIObjectType((LPMAPIPROP)lpUnk);
@@ -55,45 +52,45 @@ HRESULT DisplayObject(
 	delete[] szFlags;
 	szFlags = NULL;
 
-	//call the dialog
+	// call the dialog
 	switch(ulObjType)
 	{
-//#define MAPI_STORE		((ULONG) 0x00000001)	/* Message Store */
+// #define MAPI_STORE		((ULONG) 0x00000001)	/* Message Store */
 	case MAPI_STORE:
 		{
-			LPMDB lpMDB = lpHostDlg->m_lpMapiObjects->GetMDB();//do not release
-			if (lpMDB) lpMDB->AddRef();//hold on to this so that...
-			lpHostDlg->m_lpMapiObjects->SetMDB((LPMDB) lpUnk);
+			LPMDB lpMDB = lpMapiObjects->GetMDB(); // do not release
+			if (lpMDB) lpMDB->AddRef(); // hold on to this so that...
+			lpMapiObjects->SetMDB((LPMDB) lpUnk);
 
 			new CMsgStoreDlg(
-				lpHostDlg->m_lpParent,
-				lpHostDlg->m_lpMapiObjects,
+				lpParentWnd,
+				lpMapiObjects,
 				NULL,
 				(otStoreDeletedItems == tType)?dfDeleted:dfNormal);
 
-			//restore the old MDB
-			lpHostDlg->m_lpMapiObjects->SetMDB(lpMDB);//...we can put it back
+			// restore the old MDB
+			lpMapiObjects->SetMDB(lpMDB); // ...we can put it back
 			if (lpMDB) lpMDB->Release();
 			break;
 		}
 	case MAPI_FOLDER:
 		{
-			//There are two ways to display a folder...either the contents table or the hierarchy table.
+			// There are two ways to display a folder...either the contents table or the hierarchy table.
 			if (otHierarchy == tType)
 			{
-				LPMDB lpMDB = lpHostDlg->m_lpMapiObjects->GetMDB();//do not release
+				LPMDB lpMDB = lpMapiObjects->GetMDB(); // do not release
 				if (lpMDB)
 				{
 					new CMsgStoreDlg(
-						lpHostDlg->m_lpParent,
-						lpHostDlg->m_lpMapiObjects,
+						lpParentWnd,
+						lpMapiObjects,
 						(LPMAPIFOLDER) lpUnk,
 						dfNormal);
 				}
 				else
 				{
-					//Since lpMDB was NULL, let's get a good MDB
-					LPMAPISESSION lpMAPISession = lpHostDlg->m_lpMapiObjects->GetSession();//do not release
+					// Since lpMDB was NULL, let's get a good MDB
+					LPMAPISESSION lpMAPISession = lpMapiObjects->GetSession(); // do not release
 					if (lpMAPISession)
 					{
 						LPMDB lpNewMDB = NULL;
@@ -101,16 +98,16 @@ HRESULT DisplayObject(
 
 						if (lpNewMDB)
 						{
-							lpHostDlg->m_lpMapiObjects->SetMDB(lpNewMDB);
+							lpMapiObjects->SetMDB(lpNewMDB);
 
 							new CMsgStoreDlg(
-								lpHostDlg->m_lpParent,
-								lpHostDlg->m_lpMapiObjects,
+								lpParentWnd,
+								lpMapiObjects,
 								(LPMAPIFOLDER) lpUnk,
 								dfNormal);
 
-							//restore the old MDB
-							lpHostDlg->m_lpMapiObjects->SetMDB(NULL);
+							// restore the old MDB
+							lpMapiObjects->SetMDB(NULL);
 							lpNewMDB->Release();
 						}
 					}
@@ -119,40 +116,40 @@ HRESULT DisplayObject(
 			else if (otContents == tType || otAssocContents == tType)
 			{
 				new CFolderDlg(
-					lpHostDlg->m_lpParent,
-					lpHostDlg->m_lpMapiObjects,
+					lpParentWnd,
+					lpMapiObjects,
 					(LPMAPIFOLDER) lpUnk,
 					(otAssocContents == tType)?dfAssoc:dfNormal);
 			}
 			break;
 		}
-//#define MAPI_ABCONT		((ULONG) 0x00000004)	/* Address Book Container */
+// #define MAPI_ABCONT		((ULONG) 0x00000004)	/* Address Book Container */
 	case MAPI_ABCONT:
 		{
 			new CAbDlg(
-				lpHostDlg->m_lpParent,
-				lpHostDlg->m_lpMapiObjects,
+				lpParentWnd,
+				lpMapiObjects,
 				(LPABCONT) lpUnk);
 			break;
 		}
-//#define MAPI_DISTLIST	((ULONG) 0x00000008)	/* Distribution List Recipient */
-	case MAPI_DISTLIST://A DistList is really an Address book anyways
+// #define MAPI_DISTLIST	((ULONG) 0x00000008)	/* Distribution List Recipient */
+	case MAPI_DISTLIST: // A DistList is really an Address book anyways
 		{
 			new CAbDlg(
-				lpHostDlg->m_lpParent,
-				lpHostDlg->m_lpMapiObjects,
+				lpParentWnd,
+				lpMapiObjects,
 				(LPABCONT) lpUnk);
 			break;
 		}
-		//#define MAPI_ADDRBOOK	((ULONG) 0x00000002)	/* Address Book */
-		//#define MAPI_FOLDER	((ULONG) 0x00000003)	/* Folder */
-		//#define MAPI_MESSAGE	((ULONG) 0x00000005)	/* Message */
-		//#define MAPI_MAILUSER	((ULONG) 0x00000006)	/* Individual Recipient */
-		//#define MAPI_ATTACH	((ULONG) 0x00000007)	/* Attachment */
-		//#define MAPI_PROFSECT	((ULONG) 0x00000009)	/* Profile Section */
-		//#define MAPI_STATUS	((ULONG) 0x0000000A)	/* Status Object */
-		//#define MAPI_SESSION	((ULONG) 0x0000000B)	/* Session */
-		//#define MAPI_FORMINFO	((ULONG) 0x0000000C)	/* Form Information */
+		// #define MAPI_ADDRBOOK	((ULONG) 0x00000002)	/* Address Book */
+		// #define MAPI_FOLDER	((ULONG) 0x00000003)	/* Folder */
+		// #define MAPI_MESSAGE	((ULONG) 0x00000005)	/* Message */
+		// #define MAPI_MAILUSER	((ULONG) 0x00000006)	/* Individual Recipient */
+		// #define MAPI_ATTACH	((ULONG) 0x00000007)	/* Attachment */
+		// #define MAPI_PROFSECT	((ULONG) 0x00000009)	/* Profile Section */
+		// #define MAPI_STATUS	((ULONG) 0x0000000A)	/* Status Object */
+		// #define MAPI_SESSION	((ULONG) 0x0000000B)	/* Session */
+		// #define MAPI_FORMINFO	((ULONG) 0x0000000C)	/* Form Information */
 	default:
 		EC_H(InterpretFlags(PROP_ID(PR_OBJECT_TYPE), ulObjType, &szFlags));
 		ErrDialog(__FILE__,__LINE__,
@@ -161,7 +158,7 @@ HRESULT DisplayObject(
 			szFlags);
 		delete[] szFlags;
 		szFlags = NULL;
-		//Perhaps we could create a 'Single Object Property Display' window for this case?
+		// Perhaps we could create a 'Single Object Property Display' window for this case?
 		break;
 	}
 
@@ -175,6 +172,12 @@ HRESULT DisplayTable(
 {
 	if (!lpHostDlg) return MAPI_E_INVALID_PARAMETER;
 
+	CMapiObjects* lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
+	if (!lpMapiObjects) return MAPI_E_INVALID_PARAMETER;
+
+	CParentWnd* lpParentWnd = lpHostDlg->GetParentWnd(); // do not release
+	if (!lpParentWnd) return MAPI_E_INVALID_PARAMETER;
+
 	DebugPrint(DBGGeneric,_T("DisplayTable asked to display 0x%X\n"),lpTable);
 
 	switch (tType)
@@ -183,8 +186,8 @@ HRESULT DisplayTable(
 		{
 			if (!lpTable) return MAPI_E_INVALID_PARAMETER;
 			new CContentsTableDlg(
-				lpHostDlg->m_lpParent,
-				lpHostDlg->m_lpMapiObjects,
+				lpParentWnd,
+				lpMapiObjects,
 				IDS_STATUSTABLE,
 				mfcmapiCALL_CREATE_DIALOG,
 				lpTable,
@@ -199,8 +202,8 @@ HRESULT DisplayTable(
 		{
 			if (!lpTable) return MAPI_E_INVALID_PARAMETER;
 			new CContentsTableDlg(
-				lpHostDlg->m_lpParent,
-				lpHostDlg->m_lpMapiObjects,
+				lpParentWnd,
+				lpMapiObjects,
 				IDS_RECEIVEFOLDERTABLE,
 				mfcmapiCALL_CREATE_DIALOG,
 				lpTable,
@@ -215,8 +218,8 @@ HRESULT DisplayTable(
 		{
 			if (!lpTable) return MAPI_E_INVALID_PARAMETER;
 			new CContentsTableDlg(
-				lpHostDlg->m_lpParent,
-				lpHostDlg->m_lpMapiObjects,
+				lpParentWnd,
+				lpMapiObjects,
 				IDS_HIERARCHYTABLE,
 				mfcmapiCALL_CREATE_DIALOG,
 				lpTable,
@@ -233,8 +236,8 @@ HRESULT DisplayTable(
 			if (!lpTable) return MAPI_E_INVALID_PARAMETER;
 			if (otDefault != tType) ErrDialog(__FILE__,__LINE__,IDS_EDDISPLAYTABLE,tType);
 			new CContentsTableDlg(
-				lpHostDlg->m_lpParent,
-				lpHostDlg->m_lpMapiObjects,
+				lpParentWnd,
+				lpMapiObjects,
 				IDS_CONTENTSTABLE,
 				mfcmapiCALL_CREATE_DIALOG,
 				lpTable,
@@ -294,6 +297,12 @@ HRESULT DisplayExchangeTable(
 
 	if (!lpMAPIProp || !lpHostDlg) return MAPI_E_INVALID_PARAMETER;
 
+	CMapiObjects* lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
+	if (!lpMapiObjects) return MAPI_E_INVALID_PARAMETER;
+
+	CParentWnd* lpParentWnd = lpHostDlg->GetParentWnd(); // do not release
+	if (!lpParentWnd) return MAPI_E_INVALID_PARAMETER;
+
 	// Open the table in an IExchangeModifyTable interface
 	EC_H(lpMAPIProp->OpenProperty(
 		ulPropTag,
@@ -309,8 +318,8 @@ HRESULT DisplayExchangeTable(
 		case otRules:
 			{
 				new CRulesDlg(
-					lpHostDlg->m_lpParent,
-					lpHostDlg->m_lpMapiObjects,
+					lpParentWnd,
+					lpMapiObjects,
 					lpExchTbl);
 				break;
 			}
@@ -329,8 +338,8 @@ HRESULT DisplayExchangeTable(
 				if (S_OK == hRes)
 				{
 					new CAclDlg(
-						lpHostDlg->m_lpParent,
-						lpHostDlg->m_lpMapiObjects,
+						lpParentWnd,
+						lpMapiObjects,
 						lpExchTbl,
 						MyData.GetCheck(0));
 				}
@@ -362,7 +371,7 @@ HRESULT DisplayExchangeTable(
 	return hRes;
 }
 
-BOOL UpdateMenuString(CWnd *cWnd, UINT uiMenuTag, UINT uidNewString)
+void UpdateMenuString(CWnd *cWnd, UINT uiMenuTag, UINT uidNewString)
 {
 	HRESULT hRes = S_OK;
 
@@ -372,7 +381,7 @@ BOOL UpdateMenuString(CWnd *cWnd, UINT uiMenuTag, UINT uidNewString)
 	DebugPrint(DBGMenu,_T("UpdateMenuString: Changing menu item 0x%X on window 0x%X to \"%s\"\n"),uiMenuTag,cWnd,szNewString);
 	HMENU hMenu = ::GetMenu(cWnd->m_hWnd);
 
-	if (!hMenu) return false;
+	if (!hMenu) return;
 
 	MENUITEMINFO MenuInfo = {0};
 
@@ -387,7 +396,6 @@ BOOL UpdateMenuString(CWnd *cWnd, UINT uiMenuTag, UINT uidNewString)
 		uiMenuTag,
 		FALSE,
 		&MenuInfo));
-	return HRES_TO_BOOL(hRes);
 }
 
 BOOL MergeMenu(CMenu * pMenuDestination, const CMenu * pMenuAdd)
@@ -396,11 +404,11 @@ BOOL MergeMenu(CMenu * pMenuDestination, const CMenu * pMenuAdd)
 	int iMenuDestItemCount = pMenuDestination->GetMenuItemCount();
 	int iMenuAddItemCount = pMenuAdd->GetMenuItemCount();
 
-	if(iMenuAddItemCount == 0) return true;
+	if (iMenuAddItemCount == 0) return true;
 
-	if(iMenuDestItemCount > 0) pMenuDestination->AppendMenu(MF_SEPARATOR);
+	if (iMenuDestItemCount > 0) pMenuDestination->AppendMenu(MF_SEPARATOR);
 
-	for(int iLoop = 0; iLoop < iMenuAddItemCount; iLoop++ )
+	for (int iLoop = 0; iLoop < iMenuAddItemCount; iLoop++ )
 	{
 		CString sMenuAddString;
 		pMenuAdd->GetMenuString(iLoop, sMenuAddString, MF_BYPOSITION);
@@ -441,10 +449,10 @@ BOOL MergeMenu(CMenu * pMenuDestination, const CMenu * pMenuAdd)
 		}
 	}
 
-	return HRES_TO_BOOL(hRes);
+	return SUCCEEDED(hRes);
 }
 
-BOOL DisplayContextMenu(UINT uiClassMenu, UINT uiControlMenu, CWnd* pParent, int x, int y)
+void DisplayContextMenu(UINT uiClassMenu, UINT uiControlMenu, CWnd* pParent, int x, int y)
 {
 	HRESULT hRes = S_OK;
 	CMenu pPopup;
@@ -482,7 +490,6 @@ BOOL DisplayContextMenu(UINT uiClassMenu, UINT uiControlMenu, CWnd* pParent, int
 
 	EC_B(pContext.DestroyMenu());
 	EC_B(pPopup.DestroyMenu());
-	return HRES_TO_BOOL(hRes);
 }
 
 int GetEditHeight(HWND hwndEdit)
@@ -516,8 +523,8 @@ int GetEditHeight(HWND hwndEdit)
 		tmFont.tmHeight
 //		+ tmFont.tmExternalLeading
 //		+ (min(tmFont.tmHeight, tmSys.tmHeight)/2)
-		+ 2 * GetSystemMetrics(SM_CYFIXEDFRAME)//Adjust for the edit border
-		+ 2 * GetSystemMetrics(SM_CXEDGE);//Adjust for the edit border
+		+ 2 * GetSystemMetrics(SM_CYFIXEDFRAME) // Adjust for the edit border
+		+ 2 * GetSystemMetrics(SM_CXEDGE); // Adjust for the edit border
 	return iHeight;
 }
 
@@ -582,13 +589,13 @@ void DisplayMailboxTable(CParentWnd*	lpParent,
 	if (!lpParent || !lpMapiObjects) return;
 	HRESULT			hRes = S_OK;
 	LPMDB			lpPrivateMDB = NULL;
-	LPMDB			lpMDB = lpMapiObjects->GetMDB();//do not release
-	LPMAPISESSION	lpMAPISession = lpMapiObjects->GetSession();//do not release
+	LPMDB			lpMDB = lpMapiObjects->GetMDB(); // do not release
+	LPMAPISESSION	lpMAPISession = lpMapiObjects->GetSession(); // do not release
 
-	//try the 'current' MDB first
+	// try the 'current' MDB first
 	if (!StoreSupportsManageStore(lpMDB))
 	{
-		//if that MDB doesn't support manage store, try to get one that does
+		// if that MDB doesn't support manage store, try to get one that does
 		EC_H(OpenMessageStoreGUID(lpMAPISession,pbExchangeProviderPrimaryUserGuid,&lpPrivateMDB));
 		lpMDB = lpPrivateMDB;
 	}
@@ -634,12 +641,12 @@ void DisplayMailboxTable(CParentWnd*	lpParent,
 			{
 				LPMDB lpOldMDB = NULL;
 
-				//if we got a new MDB, set it in lpMapiObjects
+				// if we got a new MDB, set it in lpMapiObjects
 				if (lpPrivateMDB)
 				{
-					lpOldMDB = lpMapiObjects->GetMDB();//do not release
-					if (lpOldMDB) lpOldMDB->AddRef();//hold on to this so that...
-					//If we don't do this, we crash when destroying the Mailbox Table Window
+					lpOldMDB = lpMapiObjects->GetMDB(); // do not release
+					if (lpOldMDB) lpOldMDB->AddRef(); // hold on to this so that...
+					// If we don't do this, we crash when destroying the Mailbox Table Window
 					lpMapiObjects->SetMDB(lpMDB);
 				}
 				switch(MyData.GetDropDown(3))
@@ -702,13 +709,13 @@ void DisplayMailboxTable(CParentWnd*	lpParent,
 				{
 					ErrDialog(__FILE__,__LINE__,
 						IDS_EDGETMAILBOXTABLEFAILED,
-						_T("GetMailboxTable"),_T("GetMailboxTable"));// STRING_OK
+						_T("GetMailboxTable"),_T("GetMailboxTable")); // STRING_OK
 				}
 				if (lpMailboxTable) lpMailboxTable->Release();
 
 				if (lpOldMDB)
 				{
-					lpMapiObjects->SetMDB(lpOldMDB);//...we can put it back
+					lpMapiObjects->SetMDB(lpOldMDB); // ...we can put it back
 					if (lpOldMDB) lpOldMDB->Release();
 				}
 			}
@@ -725,13 +732,13 @@ void DisplayPublicFolderTable(CParentWnd* lpParent,
 	if (!lpParent || !lpMapiObjects) return;
 	HRESULT			hRes = S_OK;
 	LPMDB			lpPrivateMDB = NULL;
-	LPMDB			lpMDB = lpMapiObjects->GetMDB();//do not release
-	LPMAPISESSION	lpMAPISession = lpMapiObjects->GetSession();//do not release
+	LPMDB			lpMDB = lpMapiObjects->GetMDB(); // do not release
+	LPMAPISESSION	lpMAPISession = lpMapiObjects->GetSession(); // do not release
 
-	//try the 'current' MDB first
+	// try the 'current' MDB first
 	if (!StoreSupportsManageStore(lpMDB))
 	{
-		//if that MDB doesn't support manage store, try to get one that does
+		// if that MDB doesn't support manage store, try to get one that does
 		EC_H(OpenMessageStoreGUID(lpMAPISession,pbExchangeProviderPrimaryUserGuid,&lpPrivateMDB));
 		lpMDB = lpPrivateMDB;
 	}
@@ -779,12 +786,12 @@ void DisplayPublicFolderTable(CParentWnd* lpParent,
 			{
 				LPMDB lpOldMDB = NULL;
 
-				//if we got a new MDB, set it in lpMapiObjects
+				// if we got a new MDB, set it in lpMapiObjects
 				if (lpPrivateMDB)
 				{
-					lpOldMDB = lpMapiObjects->GetMDB();//do not release
-					if (lpOldMDB) lpOldMDB->AddRef();//hold on to this so that...
-					//If we don't do this, we crash when destroying the Mailbox Table Window
+					lpOldMDB = lpMapiObjects->GetMDB(); // do not release
+					if (lpOldMDB) lpOldMDB->AddRef(); // hold on to this so that...
+					// If we don't do this, we crash when destroying the Mailbox Table Window
 					lpMapiObjects->SetMDB(lpMDB);
 				}
 
@@ -848,13 +855,13 @@ void DisplayPublicFolderTable(CParentWnd* lpParent,
 				{
 					ErrDialog(__FILE__,__LINE__,
 						IDS_EDGETMAILBOXTABLEFAILED,
-						_T("GetPublicFolderTable"),_T("GetPublicFolderTable"));// STRING_OK
+						_T("GetPublicFolderTable"),_T("GetPublicFolderTable")); // STRING_OK
 				}
 				if (lpPFTable) lpPFTable->Release();
 
 				if (lpOldMDB)
 				{
-					lpMapiObjects->SetMDB(lpOldMDB);//...we can put it back
+					lpMapiObjects->SetMDB(lpOldMDB); // ...we can put it back
 					if (lpOldMDB) lpOldMDB->Release();
 				}
 			}

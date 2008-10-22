@@ -1,7 +1,6 @@
 #pragma once
 
 // ParentWnd.h : header file
-//
 // This object exists to force MFC to keep our main thread alive until all of
 // our objects have cleaned themselves up. All objects Addref this object on
 // instantiation and Release it when they delete themselves. When there are no
@@ -11,10 +10,7 @@
 // We never call Create on this object so that all Dialogs created with it are
 // ownerless. This means they show up in Task Manager, Alt + Tab, and on the taskbar.
 
-/////////////////////////////////////////////////////////////////////////////
-// CParentWnd window
-
-class CParentWnd : public CWnd,  IUnknown
+class CParentWnd : public CWnd, IUnknown
 {
 public:
 	CParentWnd();
@@ -25,6 +21,6 @@ public:
 	STDMETHODIMP_(ULONG)	Release();
 
 private:
-	LONG	m_cRef;
+	LONG m_cRef;
 	HWINEVENTHOOK m_hwinEventHook; // Hook to trap header reordering
 };

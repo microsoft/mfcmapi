@@ -1,8 +1,6 @@
 #pragma once
 // MailboxTableDlg.h : header file
-//
 
-//forward definitions
 class CContentsTableListCtrl;
 class CSingleMAPIPropListCtrl;
 class CParentWnd;
@@ -10,33 +8,29 @@ class CMapiObjects;
 
 #include "ContentsTableDlg.h"
 
-/////////////////////////////////////////////////////////////////////////////
-// CMailboxTableDlg dialog
-
 class CMailboxTableDlg : public CContentsTableDlg
 {
-	// Construction
 public:
 	CMailboxTableDlg(
 		CParentWnd* pParentWnd,
-		CMapiObjects *lpMapiObjects,
+		CMapiObjects* lpMapiObjects,
 		LPCTSTR lpszServerName,
 		LPMAPITABLE	lpMAPITable);
 	virtual ~CMailboxTableDlg();
 
-	// Implementation
-protected:
-	// Generated message map functions
-	//{{AFX_MSG(CMailboxTableDlg)
-	afx_msg void OnInitMenu(CMenu* pMenu);
-	afx_msg void OnDisplayItem();
-	afx_msg void OnOpenWithFlags();
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
-	BOOL CreateDialogAndMenu(UINT nIDMenuResource);
-	virtual void	OnCreatePropertyStringRestriction();
+private:
+	// Overrides from base class
+	void CreateDialogAndMenu(UINT nIDMenuResource);
 	void DisplayItem(ULONG ulFlags);
+	void OnCreatePropertyStringRestriction();
+	void OnDisplayItem();
+	void OnInitMenu(CMenu* pMenu);
+
+	// Menu items
+	void OnOpenWithFlags();
 
 	LPTSTR m_lpszServerName;
+
+	DECLARE_MESSAGE_MAP()
 };
 

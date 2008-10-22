@@ -2,19 +2,8 @@
 //
 
 #include "stdafx.h"
-#include "Error.h"
-
 #include "AboutDlg.h"
-#include "registry.h"
-
 #include "ParentWnd.h"
-
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
 
 void DisplayAboutDlg(CWnd* lpParentWnd)
 {
@@ -28,8 +17,8 @@ void DisplayAboutDlg(CWnd* lpParentWnd)
 static TCHAR* CLASS = _T("CAboutDlg");
 
 CAboutDlg::CAboutDlg(
-								   CWnd* pParentWnd
-								   ):CDialog(IDD_ABOUT,pParentWnd)
+					 CWnd* pParentWnd
+					 ):CDialog(IDD_ABOUT,pParentWnd)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	HRESULT hRes = S_OK;
@@ -42,16 +31,10 @@ CAboutDlg::~CAboutDlg()
 	TRACE_DESTRUCTOR(CLASS);
 }
 
-BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
-//{{AFX_MSG_MAP(CAboutDlg)
-//ON_WM_SIZE()
-//}}AFX_MSG_MAP
-END_MESSAGE_MAP()
-
 BOOL CAboutDlg::OnInitDialog()
 {
 	HRESULT hRes = S_OK;
-	EC_B(CDialog::OnInitDialog());
+	BOOL bRet = CDialog::OnInitDialog();
 	TCHAR szFullPath[256];
 	DWORD dwVerHnd = 0;
 	DWORD dwRet = 0;
@@ -76,13 +59,13 @@ BOOL CAboutDlg::OnInitDialog()
 	CRect MyBarRect;
 	CRect MyCheckRect;
 
-	//Find the shape of our client window
+	// Find the shape of our client window
 	GetClientRect(&MyTextRect);
 
-	//Get Screen coords for the last bar
+	// Get Screen coords for the last bar
 	CWnd* dlgWnd = GetDlgItem(IDD_BLACKBARLAST);
 	if (dlgWnd) dlgWnd->GetWindowRect(&MyBarRect);
-	//Convert those to client coords we need
+	// Convert those to client coords we need
 	ScreenToClient(&MyBarRect);
 	MyTextRect.DeflateRect(
 		dwBorder,
@@ -160,7 +143,7 @@ BOOL CAboutDlg::OnInitDialog()
 			// Read the list of languages and code pages.
 			EC_B(VerQueryValue(
 				pbData,
-				_T("\\VarFileInfo\\Translation"),// STRING_OK
+				_T("\\VarFileInfo\\Translation"), // STRING_OK
 				(LPVOID*)&lpTranslate,
 				&cbTranslate));
 
@@ -170,7 +153,7 @@ BOOL CAboutDlg::OnInitDialog()
 				EC_H(StringCchPrintf(
 					szGetName,
 					CCH(szGetName),
-					_T("\\StringFileInfo\\%04x%04x\\"),// STRING_OK
+					_T("\\StringFileInfo\\%04x%04x\\"), // STRING_OK
 					lpTranslate[0].wLanguage,
 					lpTranslate[0].wCodePage));
 
@@ -207,19 +190,17 @@ BOOL CAboutDlg::OnInitDialog()
 			delete[] pbData;
 		}
 	}
-	return HRES_TO_BOOL(hRes);
+	return bRet;
 }
 
 LRESULT CAboutDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
-//	LRESULT lResult = NULL;
-
 	switch (message)
 	{
 	case WM_HELP:
 		return TRUE;
 		break;
-	}//end switch
+	} // end switch
 	return CDialog::WindowProc(message,wParam,lParam);
 }
 

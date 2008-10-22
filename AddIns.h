@@ -34,7 +34,7 @@ enum __FlagType
 	flagVALUE,
 	flagVALUE3RDBYTE,
 	flagVALUE4THBYTE,
-	flagCLEARBITS,//Used to clear bits that we know we don't know so that remaining bits can be examined as values
+	flagCLEARBITS, // Used to clear bits that we know we don't know so that remaining bits can be examined as values
 };
 
 // Types of guids for InterpretFlag named property lookup

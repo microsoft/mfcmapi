@@ -1,16 +1,6 @@
+#pragma once
 // MFCUtilityFunctions.h : Common functions for MFC MAPI
 
-#pragma once
-
-#include <MapiX.h>
-#include <MapiUtil.h>
-#include <MAPIform.h>
-#include <MSPST.h>
-
-#include <edkmdb.h>
-#include <exchform.h>
-
-//forward definitions
 class CBaseDialog;
 class CParentWnd;
 class CMapiObjects;
@@ -52,9 +42,9 @@ HRESULT DisplayTable(
 					 ObjectType tType,
 					 CBaseDialog* lpHostDlg);
 
-BOOL UpdateMenuString(CWnd* cWnd, UINT uiMenuTag, UINT uidNewString);
+void UpdateMenuString(CWnd* cWnd, UINT uiMenuTag, UINT uidNewString);
 
-BOOL DisplayContextMenu(UINT uiClassMenu, UINT uiControlMenu, CWnd* pParent, int x, int y);
+void DisplayContextMenu(UINT uiClassMenu, UINT uiControlMenu, CWnd* pParent, int x, int y);
 
 int GetEditHeight(HWND hwndEdit);
 int GetTextHeight(HWND hwndEdit);

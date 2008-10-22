@@ -2,9 +2,6 @@
 //
 
 #include "stdafx.h"
-#include "Error.h"
-#include "registry.h"
-
 #include "SortListCtrl.h"
 #include "MapiObjects.h"
 #include "ContentsTableDlg.h"
@@ -14,12 +11,6 @@
 #include "AboutDlg.h"
 #include "SortHeader.h"
 #include "AdviseSink.h"
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
 
 static TCHAR* CLASS = _T("CSortListCtrl");
 
@@ -40,7 +31,7 @@ void FreeSortListData(SortListData* lpData)
 	case SORTLIST_TREENODE: // _NodeData
 		if (lpData->data.Node.lpAdviseSink)
 		{
-			//unadvise before releasing our sink
+			// unadvise before releasing our sink
 			if (lpData->data.Node.ulAdviseConnection && lpData->data.Node.lpHierarchyTable)
 				lpData->data.Node.lpHierarchyTable->Unadvise(lpData->data.Node.ulAdviseConnection);
 			lpData->data.Node.lpAdviseSink->Release();
@@ -89,12 +80,10 @@ STDMETHODIMP_(ULONG) CSortListCtrl::Release()
 }
 
 BEGIN_MESSAGE_MAP(CSortListCtrl, CListCtrl)
-//{{AFX_MSG_MAP(CSortListCtrl)
 	ON_WM_KEYDOWN()
 	ON_WM_GETDLGCODE()
 	ON_NOTIFY_REFLECT(LVN_DELETEALLITEMS, OnDeleteAllItems)
 	ON_NOTIFY_REFLECT(LVN_DELETEITEM, OnDeleteItem)
-//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 
@@ -105,14 +94,14 @@ HRESULT CSortListCtrl::Create(CWnd* pCreateParent, ULONG ulFlags, UINT nID, BOOL
 		ulFlags
 		| LVS_REPORT
 		| LVS_SHOWSELALWAYS
-//		| LVS_NOSORTHEADER //Put this back in to kill the 'clickable' headers
+//		| LVS_NOSORTHEADER // Put this back in to kill the 'clickable' headers
 		| WS_TABSTOP
 		| WS_CHILD
 //		| WS_BORDER
-//		| WS_CLIPCHILDREN //if this is passed, the header control doesn't get updated properly
+//		| WS_CLIPCHILDREN // if this is passed, the header control doesn't get updated properly
 		| WS_CLIPSIBLINGS
 		| WS_VISIBLE,
-		CRect(0,0,0,0),//size doesn't matter
+		CRect(0,0,0,0), // size doesn't matter
 		pCreateParent,
 		nID));
 
@@ -136,7 +125,6 @@ HRESULT CSortListCtrl::Create(CWnd* pCreateParent, ULONG ulFlags, UINT nID, BOOL
 LRESULT CSortListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	LRESULT lResult = NULL;
-//	DebugPrint(DBGWindowProc,_T("CSortListCtrl::WindowProc message = 0x%x, wParam = 0x%X, lParam = 0x%X\n"),message,wParam,lParam);
 
 	switch (message)
 	{
@@ -146,7 +134,6 @@ LRESULT CSortListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_NOTIFY:
 		{
 			LPNMHDR pHdr = (LPNMHDR) lParam;
-//			DebugPrint(DBGWindowProc,_T("CSortListCtrl::OnNotify code = 0x%X, hwndFrom = 0x%X, idFrom = 0x%X\n"),pHdr->code, pHdr->hwndFrom,pHdr->idFrom);
 
 			switch(pHdr->code)
 			{
@@ -161,10 +148,10 @@ LRESULT CSortListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 				return lResult;
 				break;
 			}
-			break;//WM_NOTIFY
+			break; // WM_NOTIFY
 		}
-	case WM_PAINT://TODO: Find a MUCH better message to host this on
-		//subclass the header
+	case WM_PAINT: // TODO: Find a MUCH better message to host this on
+		// subclass the header
 		if (!m_bHeaderSubclassed)
 		{
 			m_bHeaderSubclassed = m_cSortHeader.Init(GetHeaderCtrl(),GetSafeHwnd());
@@ -181,13 +168,13 @@ LRESULT CSortListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			DeleteAllColumns();
 			break;
 		}
-	}//end switch
+	} // end switch
 	return CListCtrl::WindowProc(message,wParam,lParam);
 }
 
 void CSortListCtrl::OnDeleteAllItems(NMHDR* /*pNMHDR*/, LRESULT* pResult)
 {
-	*pResult = FALSE;//make sure we get LVN_DELETEITEM for all items
+	*pResult = FALSE; // make sure we get LVN_DELETEITEM for all items
 }
 
 void CSortListCtrl::OnDeleteItem(NMHDR* pNMHDR, LRESULT* pResult)
@@ -213,8 +200,6 @@ SortListData* CSortListCtrl::InsertRow(int iRow, LPTSTR szText, int iIndent, int
 	HRESULT			hRes = S_OK;
 	SortListData*	lpData = NULL;
 
-//	DebugPrintEx(DBGGeneric,CLASS,_T("InsertRow"),_T("item %d = \"%s\, iIndent = 0x%08X, iImage - 0x%08X"\n"),iRow,szText,iIndent,iImage);
-
 	EC_H(MAPIAllocateBuffer(
 		(ULONG)sizeof(SortListData),
 		(LPVOID*) &lpData));
@@ -231,7 +216,7 @@ SortListData* CSortListCtrl::InsertRow(int iRow, LPTSTR szText, int iIndent, int
 	lvItem.iIndent = iIndent;
 	lvItem.iImage = iImage;
 	lvItem.lParam = (LPARAM) lpData;
-	iRow = InsertItem(&lvItem);//Assign result to iRow in case it changes
+	iRow = InsertItem(&lvItem); // Assign result to iRow in case it changes
 
 	return lpData;
 }
@@ -254,7 +239,7 @@ void CSortListCtrl::MySetRedraw(BOOL bRedraw)
 		}
 		m_iRedrawCount++;
 	}
-}//CSortListCtrl::MySetRedraw
+} // CSortListCtrl::MySetRedraw
 
 
 enum __SortStyle
@@ -283,11 +268,11 @@ int CALLBACK CSortListCtrl::MyCompareProc(LPARAM lParam1, LPARAM lParam2, LPARAM
 	SortListData* lpData1 = (SortListData*) lParam1;
 	SortListData* lpData2 = (SortListData*) lParam2;
 
-	if (!lpData1 && !lpData2) return sortEqual;//item which don't exist must be equal
-	if (!lpData1) return sort2First;//sort null items to the end - this makes lParam2>lParam1
-	if (!lpData2) return sort1First;//sort null items to the end - this makes lParam1>lParam2
+	if (!lpData1 && !lpData2) return sortEqual; // item which don't exist must be equal
+	if (!lpData1) return sort2First; // sort null items to the end - this makes lParam2>lParam1
+	if (!lpData2) return sort1First; // sort null items to the end - this makes lParam1>lParam2
 
-	//Don't sort items which aren't fully loaded
+	// Don't sort items which aren't fully loaded
 	if (!lpData1->bItemFullyLoaded) return sort2First;
 	if (!lpData2->bItemFullyLoaded) return sort1First;
 
@@ -329,7 +314,7 @@ int CALLBACK CSortListCtrl::MyCompareProc(LPARAM lParam1, LPARAM lParam2, LPARAM
 #define HDF_SORTDOWN            0x0200
 #endif
 
-void CSortListCtrl::SortColumn(ULONG iColumn)
+void CSortListCtrl::SortClickedColumn()
 {
 	HRESULT			hRes = S_OK;
 	HDITEM			hdItem = {0};
@@ -342,7 +327,7 @@ void CSortListCtrl::SortColumn(ULONG iColumn)
 	if (lpMyHeader)
 	{
 		BOOL bIsXP = false;
-		//check windows XP
+		// check windows XP
 		OSVERSIONINFOEX info;
 		ZeroMemory(&info, sizeof(OSVERSIONINFOEX));
 		info.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
@@ -350,7 +335,7 @@ void CSortListCtrl::SortColumn(ULONG iColumn)
 			bIsXP = (info.dwMajorVersion > 5) |
 			(info.dwMajorVersion == 5 && info.dwMinorVersion >= 1);
 
-		//Just in case we got any old bitmaps to clear
+		// Just in case we got any old bitmaps to clear
 		for (int i = 0 ; i < lpMyHeader->GetItemCount(); i++)
 		{
 			hdItem.mask = HDI_FORMAT | HDI_BITMAP;
@@ -368,7 +353,7 @@ void CSortListCtrl::SortColumn(ULONG iColumn)
 		}
 
 		hdItem.mask = HDI_FORMAT | HDI_BITMAP;
-		lpMyHeader->GetItem(iColumn, &hdItem);
+		lpMyHeader->GetItem(m_iClickedColumn, &hdItem);
 		if (hdItem.hbm != 0)
 		{
 			DeleteObject(hdItem.hbm);
@@ -384,34 +369,34 @@ void CSortListCtrl::SortColumn(ULONG iColumn)
 			hdItem.fmt &= ~(HDF_SORTUP | HDF_SORTDOWN);
 			hdItem.fmt |= m_bSortUp ? HDF_SORTUP : HDF_SORTDOWN;
 		}
-		lpMyHeader->SetItem(iColumn, &hdItem);
+		lpMyHeader->SetItem(m_iClickedColumn, &hdItem);
 
 		hdItem.mask = HDI_LPARAM;
-		EC_B(lpMyHeader->GetItem(iColumn,&hdItem));
+		EC_B(lpMyHeader->GetItem(m_iClickedColumn,&hdItem));
 		if (hdItem.lParam)
 		{
 			ulPropTag = ((LPHEADERDATA)hdItem.lParam)->ulPropTag;
 		}
 	}
 
-//#define PT_UNSPECIFIED	((ULONG)  0)	/* (Reserved for interface use) type doesn't matter to caller */
-//#define PT_NULL			((ULONG)  1)	/* NULL property value */
-//#define	PT_I2			((ULONG)  2)	/* Signed 16-bit value */
-//#define PT_LONG			((ULONG)  3)	/* Signed 32-bit value */
-//#define	PT_R4			((ULONG)  4)	/* 4-byte floating point */
-//#define PT_DOUBLE		((ULONG)  5)	/* Floating point double */
-//#define PT_CURRENCY		((ULONG)  6)	/* Signed 64-bit int (decimal w/	4 digits right of decimal pt) */
-//#define	PT_APPTIME		((ULONG)  7)	/* Application time */
-//#define PT_ERROR		((ULONG) 10)	/* 32-bit error value */
-//#define PT_BOOLEAN		((ULONG) 11)	/* 16-bit boolean (non-zero true) */
-//#define PT_OBJECT		((ULONG) 13)	/* Embedded object in a property */
-//#define	PT_I8			((ULONG) 20)	/* 8-byte signed integer */
-//#define PT_STRING8		((ULONG) 30)	/* Null terminated 8-bit character string */
-//#define PT_UNICODE		((ULONG) 31)	/* Null terminated Unicode string */
-//#define PT_SYSTIME		((ULONG) 64)	/* FILETIME 64-bit int w/ number of 100ns periods since Jan 1,1601 */
-//#define	PT_CLSID		((ULONG) 72)	/* OLE GUID */
-//#define PT_BINARY		((ULONG) 258)	/* Uninterpreted (counted byte array) */
-	//Set our sort text
+// #define PT_UNSPECIFIED	((ULONG)  0)	/* (Reserved for interface use) type doesn't matter to caller */
+// #define PT_NULL			((ULONG)  1)	/* NULL property value */
+// #define	PT_I2			((ULONG)  2)	/* Signed 16-bit value */
+// #define PT_LONG			((ULONG)  3)	/* Signed 32-bit value */
+// #define	PT_R4			((ULONG)  4)	/* 4-byte floating point */
+// #define PT_DOUBLE		((ULONG)  5)	/* Floating point double */
+// #define PT_CURRENCY		((ULONG)  6)	/* Signed 64-bit int (decimal w/	4 digits right of decimal pt) */
+// #define	PT_APPTIME		((ULONG)  7)	/* Application time */
+// #define PT_ERROR		((ULONG) 10)	/* 32-bit error value */
+// #define PT_BOOLEAN		((ULONG) 11)	/* 16-bit boolean (non-zero true) */
+// #define PT_OBJECT		((ULONG) 13)	/* Embedded object in a property */
+// #define	PT_I8			((ULONG) 20)	/* 8-byte signed integer */
+// #define PT_STRING8		((ULONG) 30)	/* Null terminated 8-bit character string */
+// #define PT_UNICODE		((ULONG) 31)	/* Null terminated Unicode string */
+// #define PT_SYSTIME		((ULONG) 64)	/* FILETIME 64-bit int w/ number of 100ns periods since Jan 1,1601 */
+// #define	PT_CLSID		((ULONG) 72)	/* OLE GUID */
+// #define PT_BINARY		((ULONG) 258)	/* Uninterpreted (counted byte array) */
+	// Set our sort text
 	switch(PROP_TYPE(ulPropTag))
 	{
 	case (PT_I2):
@@ -430,7 +415,7 @@ void CSortListCtrl::SortColumn(ULONG iColumn)
 				{
 					MAPIFreeBuffer(lpData->szSortText);
 					lpData->szSortText = NULL;
-					lpData->ulSortValue.QuadPart = _tcstoul(GetItemText(i, iColumn),NULL,10);
+					lpData->ulSortValue.QuadPart = _tcstoul(GetItemText(i, m_iClickedColumn),NULL,10);
 				}
 			}
 			break;
@@ -472,7 +457,7 @@ void CSortListCtrl::SortColumn(ULONG iColumn)
 					MAPIFreeBuffer(lpData->szSortText);
 					EC_H(CopyString(
 						&lpData->szSortText,
-						GetItemText(i, iColumn),
+						GetItemText(i, m_iClickedColumn),
 						NULL)); // Do not allocate off of lpData - If we do that we'll 'leak' memory every time we sort until we close the window
 					lpData->ulSortValue.QuadPart = NULL;
 				}
@@ -483,27 +468,35 @@ void CSortListCtrl::SortColumn(ULONG iColumn)
 
 	sortinfo.bSortUp = m_bSortUp;
 	EC_B(SortItems(MyCompareProc, (LPARAM) &sortinfo));
-}
+} // CSortListCtrl::SortClickedColumn
 
-//Leverage in support for sorting columns.
-//Basically a call to CListCtrl::SortItems with MyCompareProc
+// Leverage in support for sorting columns.
+// Basically a call to CListCtrl::SortItems with MyCompareProc
 void CSortListCtrl::OnColumnClick(int iColumn)
 {
-	if(m_bHaveSorted && m_iClickedColumn == iColumn)
+	if (m_bHaveSorted && m_iClickedColumn == iColumn)
 	{
 		m_bSortUp = !m_bSortUp;
 	}
 	else
 	{
-		if (!m_bHaveSorted) m_bSortUp = false;//init this to down arrow on first pass
+		if (!m_bHaveSorted) m_bSortUp = false; // init this to down arrow on first pass
 		m_iClickedColumn = iColumn;
 	}
-	SortColumn(m_iClickedColumn);
-}
+	SortClickedColumn();
+} // CSortListCtrl::OnColumnClick
+
+// Used by child classes to force a sort order on a column
+void CSortListCtrl::FakeClickColumn(int iColumn, BOOL bSortUp)
+{
+	m_iClickedColumn = iColumn;
+	m_bSortUp = bSortUp;
+	SortClickedColumn();
+} // CSortListCtrl::FakeClickColumn
 
 void CSortListCtrl::AutoSizeColumn(int iColumn, int iMinWidth, int iMaxWidth)
 {
-	CWaitCursor	Wait;//Change the mouse to an hourglass while we work.
+	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
 	MySetRedraw(FALSE);
 	SetColumnWidth(iColumn,LVSCW_AUTOSIZE_USEHEADER);
@@ -516,7 +509,7 @@ void CSortListCtrl::AutoSizeColumn(int iColumn, int iMinWidth, int iMaxWidth)
 void CSortListCtrl::AutoSizeColumns()
 {
 	CHeaderCtrl*	lpMyHeader = NULL;
-	CWaitCursor	Wait;//Change the mouse to an hourglass while we work.
+	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
 	DebugPrintEx(DBGGeneric,CLASS,_T("AutoSizeColumns"),_T("Sizing columns\n"));
 	lpMyHeader = GetHeaderCtrl();
@@ -538,7 +531,7 @@ void CSortListCtrl::DeleteAllColumns()
 	HDITEM			hdItem = {0};
 
 	DebugPrintEx(DBGGeneric,CLASS,_T("DeleteAllColumns"),_T("Deleting existing columns\n"));
-	CWaitCursor		Wait;//Change the mouse to an hourglass while we work.
+	CWaitCursor		Wait; // Change the mouse to an hourglass while we work.
 
 	lpMyHeader = GetHeaderCtrl();
 	if (lpMyHeader)
@@ -567,12 +560,11 @@ void CSortListCtrl::DeleteAllColumns()
 	}
 }
 
-//Assert that we want all keyboard input (including ENTER!)
-//In the case of TAB though, let it through
+// Assert that we want all keyboard input (including ENTER!)
+// In the case of TAB though, let it through
 UINT CSortListCtrl::OnGetDlgCode()
 {
 	UINT iDlgCode = CListCtrl::OnGetDlgCode();
-//	DebugPrintEx(DBGGeneric,CLASS,_T("OnGetDlgCode"),_T("default:0x%X\n"),iDlgCode);
 
 	iDlgCode |= DLGC_WANTMESSAGE;
 
@@ -584,10 +576,20 @@ UINT CSortListCtrl::OnGetDlgCode()
 			iDlgCode &= ~(DLGC_WANTALLKEYS | DLGC_WANTMESSAGE |	DLGC_WANTTAB);
 	}
 
-//	iDlgCode &= ~(DLGC_WANTARROWS);
-//	DebugPrintEx(DBGGeneric,CLASS,_T("OnGetDlgCode"),_T("ret:0x%X\n"),iDlgCode);
 	return iDlgCode;
-}//CSortListCtrl::OnGetDlgCode
+} // CSortListCtrl::OnGetDlgCode
+
+BOOL CSortListCtrl::SetItemText(int nItem, int nSubItem, LPCTSTR lpszText)
+{
+	CString szTmpString = lpszText;
+
+	// Remove any whitespace before setting in the list
+	szTmpString.Replace(_T("\r\n"),_T(" ")); // STRING_OK
+	szTmpString.Replace(_T("\r"),_T(" ")); // STRING_OK
+	szTmpString.Replace(_T("\n"),_T(" ")); // STRING_OK
+	szTmpString.Replace(_T("\t"),_T(" ")); // STRING_OK
+	return CListCtrl::SetItemText(nItem,nSubItem,szTmpString);
+} // CSortListCtrl::SetItemText
 
 void CSortListCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
@@ -619,7 +621,7 @@ void CSortListCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	}
 }
 
-//if asked to select the item after the last item - will select the last item.
+// if asked to select the item after the last item - will select the last item.
 void CSortListCtrl::SetSelectedItem(int iItem)
 {
 	HRESULT hRes = S_OK;
@@ -636,35 +638,5 @@ void CSortListCtrl::SetSelectedItem(int iItem)
 	{
 		EC_B(SetItemState(iItem-1,LVIS_SELECTED | LVIS_FOCUSED,LVIS_SELECTED | LVIS_FOCUSED));
 		EnsureVisible(iItem-1,false);
-	}
-}
-
-void CSortListCtrl::GetSelectedItems(int* cSelected, SortListData*** lpSelected)
-{
-	HRESULT hRes = S_OK;
-	*cSelected = GetSelectedCount();
-	if (!*cSelected)
-	{
-		*lpSelected = NULL;
-		return;
-	}
-	EC_H(MAPIAllocateBuffer(
-		sizeof(LPVOID) * *cSelected,
-		(LPVOID*) lpSelected));
-
-	if (*lpSelected)
-	{
-		int iItem = GetNextItem(
-			-1,
-			LVNI_SELECTED);
-		int i = 0;
-		while (iItem != -1)
-		{
-			(*lpSelected)[i] = (SortListData*) GetItemData(iItem);
-			iItem = GetNextItem(
-				iItem,
-				LVNI_SELECTED);
-			i++;
-		}
 	}
 }

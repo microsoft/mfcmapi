@@ -17,7 +17,7 @@ extern ULONG g_ulFlagArray;
 
 enum __NonPropFlag
 {
-	flagSearchFlag = 0x10000,//ensure that all flags in the enum are > 0xffff
+	flagSearchFlag = 0x10000, // ensure that all flags in the enum are > 0xffff
 	flagSearchState,
 	flagTableStatus,
 	flagTableType,
@@ -56,4 +56,6 @@ enum __NonPropFlag
 	flagReportTagVersion,
 	flagGlobalObjectIdMonth,
 	flagOneOffEntryId,
+	flagEntryId0,
+	flagEntryId1,
 };

@@ -79,12 +79,6 @@ HRESULT OpenMessageStoreGUID(
 							  LPMAPISESSION	lpMAPISession,
 							  LPCSTR lpGUID,
 							  LPMDB* lppMDB);
-//HRESULT OpenPublicMessageStoreFolderAdminPriv(
-//							  LPMAPISESSION	lpMAPISession,
-//							  LPMDB lpMDB,
-//							  LPTSTR szServerName,
-//							  LPTSTR szFolderDN,
-//							  LPMDB* lppPublicMDB);
 HRESULT OpenPublicMessageStore(
 							   LPMAPISESSION lpMAPISession,
 							   ULONG ulFlags, // Flags for CreateStoreEntryID

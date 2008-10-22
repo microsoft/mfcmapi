@@ -2,21 +2,13 @@
 //
 
 #include "stdafx.h"
-#include "Error.h"
-
 #include "MySecInfo.h"
 #include "MAPIFunctions.h"
-#include "Registry.h"
 #include "Editor.h"
 #include "InterpretProp.h"
 #include "InterpretProp2.h"
 #include "ExtraPropTags.h"
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
+#include "PropTagArray.h"
 
 static TCHAR* CLASS = _T("CMySecInfo");
 
@@ -78,7 +70,7 @@ CMySecInfo::CMySecInfo(LPMAPIPROP lpMAPIProp,
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	m_cRef = 1;
-	m_ulPropTag = CHANGE_PROP_TYPE(ulPropTag,PT_BINARY);//An SD must be in a binary prop
+	m_ulPropTag = CHANGE_PROP_TYPE(ulPropTag,PT_BINARY); // An SD must be in a binary prop
 	m_lpMAPIProp = lpMAPIProp;
 	m_acetype = acetypeMessage;
 	m_cbHeader = 0;
@@ -172,7 +164,7 @@ STDMETHODIMP CMySecInfo::GetObjectInformation(THIS_ PSI_OBJECT_INFO pObjectInfo 
 	{
 		ReadDWORDFromRegistry(
 			hRootKey,
-			_T("AllowUnsupportedSecurityEdits"),// STRING_OK
+			_T("AllowUnsupportedSecurityEdits"), // STRING_OK
 			(DWORD*) &bAllowEdits);
 		EC_W32(RegCloseKey(hRootKey));
 	}
@@ -185,8 +177,8 @@ STDMETHODIMP CMySecInfo::GetObjectInformation(THIS_ PSI_OBJECT_INFO pObjectInfo 
 	{
 		pObjectInfo->dwFlags = SI_READONLY | SI_ADVANCED | ((acetypeContainer == m_acetype) ? SI_CONTAINER : 0);
 	}
-	pObjectInfo->pszObjectName = m_wszObject;//Object being edited
-	pObjectInfo->pszServerName = NULL;//specify DC for lookups
+	pObjectInfo->pszObjectName = m_wszObject; // Object being edited
+	pObjectInfo->pszServerName = NULL; // specify DC for lookups
 	return S_OK;
 };
 
@@ -200,7 +192,7 @@ STDMETHODIMP CMySecInfo::GetSecurity(THIS_ SECURITY_INFORMATION /*RequestedInfor
 
 	*ppSecurityDescriptor = NULL;
 
-	PSECURITY_DESCRIPTOR pSecDesc = NULL;//will be a pointer into lpPropArray, do not free!
+	PSECURITY_DESCRIPTOR pSecDesc = NULL; // will be a pointer into lpPropArray, do not free!
 
 	EC_H(GetLargeBinaryProp(m_lpMAPIProp,m_ulPropTag,&lpsProp));
 
@@ -223,14 +215,14 @@ STDMETHODIMP CMySecInfo::GetSecurity(THIS_ SECURITY_INFORMATION /*RequestedInfor
 				}
 			}
 
-			//Grab our header for writes
-			//header is right at the start of the buffer
+			// Grab our header for writes
+			// header is right at the start of the buffer
 			MAPIFreeBuffer(m_lpHeader);
 			m_lpHeader = NULL;
 
 			m_cbHeader = CbSecurityDescriptorHeader(lpSDBuffer);
 
-			//make sure we don't try to copy more than we really got
+			// make sure we don't try to copy more than we really got
 			if (m_cbHeader <= cbSBBuffer)
 			{
 				EC_H(MAPIAllocateBuffer(
@@ -243,7 +235,7 @@ STDMETHODIMP CMySecInfo::GetSecurity(THIS_ SECURITY_INFORMATION /*RequestedInfor
 
 				}
 			}
-			//Dump our SD
+			// Dump our SD
 			CString szDACL;
 			CString szInfo;
 			EC_H(SDToString(lpSDBuffer,m_acetype,&szDACL,&szInfo));
@@ -257,10 +249,10 @@ STDMETHODIMP CMySecInfo::GetSecurity(THIS_ SECURITY_INFORMATION /*RequestedInfor
 	return hRes;
 }
 
-//This is very dangerous code and should only be executed under very controlled circumstances
-//The code, as written, does nothing to ensure the DACL is ordered correctly, so it will probably cause problems
-//on the server once written
-//For this reason, the property sheet is read-only unless a reg key is set.
+// This is very dangerous code and should only be executed under very controlled circumstances
+// The code, as written, does nothing to ensure the DACL is ordered correctly, so it will probably cause problems
+// on the server once written
+// For this reason, the property sheet is read-only unless a reg key is set.
 STDMETHODIMP CMySecInfo::SetSecurity(THIS_ SECURITY_INFORMATION /*SecurityInformation*/,
 									PSECURITY_DESCRIPTOR pSecurityDescriptor )
 {
@@ -284,7 +276,7 @@ STDMETHODIMP CMySecInfo::SetSecurity(THIS_ SECURITY_INFORMATION /*SecurityInform
 
 	if (lpBlob)
 	{
-		//The format is a security descriptor preceeded by a header.
+		// The format is a security descriptor preceeded by a header.
 		memcpy(lpBlob,m_lpHeader,m_cbHeader);
 		EC_B(MakeSelfRelativeSD(pSecurityDescriptor, lpBlob+m_cbHeader, &dwSDLength));
 
@@ -411,7 +403,7 @@ BOOL GetTextualSid(
 	}
 
 	// Add 'S' prefix and revision number to the string.
-	EC_H(StringCchPrintf(TextualSid, *lpdwBufferLen, _T("S-%lu-"), dwSidRev ));// STRING_OK
+	EC_H(StringCchPrintf(TextualSid, *lpdwBufferLen, _T("S-%lu-"), dwSidRev )); // STRING_OK
 
 	size_t cchTextualSid = 0;
 	EC_H(StringCchLength(TextualSid,STRSAFE_MAX_CCH,&cchTextualSid));
@@ -421,7 +413,7 @@ BOOL GetTextualSid(
 	{
 		EC_H(StringCchPrintf(TextualSid + cchTextualSid,
 			*lpdwBufferLen - cchTextualSid,
-			_T("0x%02hx%02hx%02hx%02hx%02hx%02hx"),// STRING_OK
+			_T("0x%02hx%02hx%02hx%02hx%02hx%02hx"), // STRING_OK
 			(USHORT)psia->Value[0],
 			(USHORT)psia->Value[1],
 			(USHORT)psia->Value[2],
@@ -433,7 +425,7 @@ BOOL GetTextualSid(
 	{
 		EC_H(StringCchPrintf(TextualSid + cchTextualSid,
 			*lpdwBufferLen - cchTextualSid,
-			_T("%lu"),// STRING_OK
+			_T("%lu"), // STRING_OK
 			(ULONG)(psia->Value[5]      ) +
 			(ULONG)(psia->Value[4] <<  8) +
 			(ULONG)(psia->Value[3] << 16) +
@@ -447,7 +439,7 @@ BOOL GetTextualSid(
 		EC_H(StringCchLength(TextualSid,STRSAFE_MAX_CCH,&cchTextualSid));
 		EC_H(StringCchPrintf(TextualSid + cchTextualSid,
 			*lpdwBufferLen - cchTextualSid,
-			_T("-%lu"),// STRING_OK
+			_T("-%lu"), // STRING_OK
 			*GetSidSubAuthority(pSid, dwCounter)));
 	}
 
@@ -526,7 +518,7 @@ HRESULT ACEToString(void* pACE, eAceType acetype, CString *AceString)
 	if (dwSidName) lpSidName = new TCHAR[dwSidName];
 	if (dwSidDomain) lpSidDomain = new TCHAR[dwSidDomain];
 
-	//Only make the call if we got something to get
+	// Only make the call if we got something to get
 	if (lpSidName || lpSidDomain)
 	{
 		WC_B(LookupAccountSid(
@@ -541,7 +533,7 @@ HRESULT ACEToString(void* pACE, eAceType acetype, CString *AceString)
 	}
 
 	DWORD dwStringSid = 0;
-	GetTextualSid(SidStart,NULL,&dwStringSid);//Get a buffer count
+	GetTextualSid(SidStart,NULL,&dwStringSid); // Get a buffer count
 	LPTSTR lpStringSid = NULL;
 	if (dwStringSid)
 	{

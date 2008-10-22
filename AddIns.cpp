@@ -1,8 +1,6 @@
 // AddIns.cpp : Functions supporting AddIns
 
 #include "stdafx.h"
-
-#include "error.h"
 #include "BaseDialog.h"
 #include "AddIns.h"
 #include "ImportProcs.h"
@@ -207,7 +205,7 @@ void LoadAddIns()
 							FreeLibrary(hMod);
 						}
 					}
-					//get next file
+					// get next file
 					if (!FindNextFile(hFind, &FindFileData)) break;
 				}
 
@@ -755,7 +753,7 @@ __declspec(dllexport) void __cdecl AddInLog(BOOL bPrintThreadTime, LPWSTR szMsg,
 	if (FAILED(hRes))
 	{
 		_Output(DBGFatalError,NULL, true,_T("Debug output string not large enough to print everything to it\n"));
-		//Since this function was 'safe', we've still got something we can print - send it on.
+		// Since this function was 'safe', we've still got something we can print - send it on.
 	}
 	va_end(argList);
 
@@ -789,7 +787,7 @@ __declspec(dllexport) HRESULT __cdecl SimpleDialog(LPWSTR szTitle, LPWSTR szMsg,
 	if (FAILED(hRes))
 	{
 		_Output(DBGFatalError,NULL, true,_T("Debug output string not large enough to print everything to it\n"));
-		//Since this function was 'safe', we've still got something we can print - send it on.
+		// Since this function was 'safe', we've still got something we can print - send it on.
 	}
 	va_end(argList);
 

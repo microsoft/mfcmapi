@@ -4,8 +4,6 @@
 //			  in to a log file
 
 #include "stdafx.h"
-#include "Error.h"
-
 #include "dumpstore.h"
 #include "MAPIFunctions.h"
 #include "MAPIStoreFunctions.h"
@@ -15,12 +13,7 @@
 #include "ImportProcs.h"
 #include "ExtraPropTags.h"
 #include "ColumnTags.h"
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
+#include "PropTagArray.h"
 
 void OutputPropertyToFile(FILE* fFile, LPSPropValue lpProp, LPMAPIPROP lpObj)
 {
@@ -137,7 +130,7 @@ CDumpStore::~CDumpStore()
 	MAPIFreeBuffer(m_szFolderPath);
 }
 
-//---------------------------------------------------------------------------------//
+// --------------------------------------------------------------------------------- //
 
 
 void CDumpStore::InitMessagePath(LPCTSTR szMessageFileName)
@@ -179,14 +172,14 @@ void CDumpStore::InitMailboxTablePathRoot(LPCTSTR szMailboxTablePathRoot)
 	}
 }
 
-//---------------------------------------------------------------------------------//
+// --------------------------------------------------------------------------------- //
 
 void CDumpStore::BeginMailboxTableWork(LPCTSTR szExchangeServerName)
 {
 	HRESULT hRes = S_OK;
 	TCHAR	szTableContentsFile[MAX_PATH];
 	WC_H(StringCchPrintf(szTableContentsFile,CCH(szTableContentsFile),
-		_T("%s\\MAILBOX_TABLE.xml"),// STRING_OK
+		_T("%s\\MAILBOX_TABLE.xml"), // STRING_OK
 		m_szMailboxTablePathRoot));
 	m_fMailboxTable = OpenFile(szTableContentsFile,true);
 	if (m_fMailboxTable)
@@ -227,18 +220,18 @@ void CDumpStore::DoMailboxTablePerRowWork(LPMDB lpMDB, LPSRow lpSRow, ULONG /*ul
 
 	OutputSRowToFile(m_fMailboxTable,lpSRow,lpMDB);
 
-	//build a path for our store's folder output:
+	// build a path for our store's folder output:
 	if (CheckStringProp(lpEmailAddress,PT_TSTRING) && CheckStringProp(lpDisplayName,PT_TSTRING))
 	{
 		TCHAR szTemp[MAX_PATH/2];
-		//Clean up the file name before appending it to the path
+		// Clean up the file name before appending it to the path
 		EC_H(SanitizeFileName(szTemp,CCH(szTemp),lpDisplayName->Value.LPSZ,CCH(szTemp)));
 
 		EC_H(StringCchPrintf(m_szFolderPathRoot,CCH(m_szFolderPathRoot),
-			_T("%s\\%s"),// STRING_OK
+			_T("%s\\%s"), // STRING_OK
 			m_szMailboxTablePathRoot,szTemp));
 
-		//suppress any error here since the folder may already exist
+		// suppress any error here since the folder may already exist
 		WC_B(CreateDirectory(m_szFolderPathRoot,NULL));
 		hRes = S_OK;
 	}
@@ -269,19 +262,19 @@ void CDumpStore::BeginFolderWork()
 	HRESULT hRes = S_OK;
 	TCHAR	szFolderPath[MAX_PATH];
 	WC_H(StringCchPrintf(szFolderPath,CCH(szFolderPath),
-		_T("%s%s"),// STRING_OK
+		_T("%s%s"), // STRING_OK
 		m_szFolderPathRoot,m_szFolderOffset));
 
 	WC_H(CopyString(&m_szFolderPath,szFolderPath,NULL));
 
 	WC_B(CreateDirectory(m_szFolderPath,NULL));
-	hRes = S_OK;//ignore the error - the directory may exist already
+	hRes = S_OK; // ignore the error - the directory may exist already
 
-	TCHAR	szFolderPropsFile[MAX_PATH];//Holds file/path name for folder props
+	TCHAR	szFolderPropsFile[MAX_PATH]; // Holds file/path name for folder props
 
-	//Dump the folder props to a file
+	// Dump the folder props to a file
 	WC_H(StringCchPrintf(szFolderPropsFile,CCH(szFolderPropsFile),
-		_T("%sFOLDER_PROPS.xml"),// STRING_OK
+		_T("%sFOLDER_PROPS.xml"), // STRING_OK
 		m_szFolderPath));
 	m_fFolderProps = OpenFile(szFolderPropsFile,true);
 	if (!m_fFolderProps) return;
@@ -339,17 +332,17 @@ void CDumpStore::BeginContentsTableWork(ULONG ulFlags, ULONG ulCountRows)
 	if (!m_szFolderPathRoot) return;
 
 	HRESULT hRes = S_OK;
-	TCHAR	szContentsTableFile[MAX_PATH];//Holds file/path name for contents table output
+	TCHAR	szContentsTableFile[MAX_PATH]; // Holds file/path name for contents table output
 
 	WC_H(StringCchPrintf(szContentsTableFile,CCH(szContentsTableFile),
-		(ulFlags & MAPI_ASSOCIATED)?_T("%sASSOCIATED_CONTENTS_TABLE.xml"):_T("%sCONTENTS_TABLE.xml"),// STRING_OK
+		(ulFlags & MAPI_ASSOCIATED)?_T("%sASSOCIATED_CONTENTS_TABLE.xml"):_T("%sCONTENTS_TABLE.xml"), // STRING_OK
 		m_szFolderPath));
 	m_fFolderContents = OpenFile(szContentsTableFile,true);
 	if (m_fFolderContents)
 	{
 		OutputToFile(m_fFolderContents,_T("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n"));
 		OutputToFilef(m_fFolderContents,_T("<ContentsTable TableType=\"%s\" messagecount=\"0x%08X\">\n"),
-			(ulFlags & MAPI_ASSOCIATED)?_T("Associated Contents"):_T("Contents"),// STRING_OK
+			(ulFlags & MAPI_ASSOCIATED)?_T("Associated Contents"):_T("Contents"), // STRING_OK
 			ulCountRows);
 	}
 }
@@ -395,7 +388,7 @@ void CDumpStore::BeginMessageWork(LPMESSAGE lpMessage, LPVOID lpParentMessageDat
 		ePR_ENTRYID,
 		ePR_SEARCH_KEY,
 		NUM_COLS};
-	//These tags represent the message information we would like to pick up
+	// These tags represent the message information we would like to pick up
 	static SizedSPropTagArray(NUM_COLS,sptCols) = { NUM_COLS,
 		PR_MESSAGE_CLASS,
 		PR_MESSAGE_DELIVERY_TIME,
@@ -417,43 +410,43 @@ void CDumpStore::BeginMessageWork(LPMESSAGE lpMessage, LPVOID lpParentMessageDat
 		&lpPropsMsg));
 
 	lpMsgData->szFilePath[0] = NULL;
-	//If we've got a parent message, we're an attachment - use attachment filename logic
+	// If we've got a parent message, we're an attachment - use attachment filename logic
 	if (lpParentMessageData)
 	{
-		//Take the parent filename/path, remove any extension, and append -Attach.xml
-		//Should we append something for attachment number?
+		// Take the parent filename/path, remove any extension, and append -Attach.xml
+		// Should we append something for attachment number?
 		size_t  cchLen = 0;
 
-		//Copy the source string over
+		// Copy the source string over
 		WC_H(StringCchCopy(lpMsgData->szFilePath, CCH(lpMsgData->szFilePath), ((LPMESSAGEDATA) lpParentMessageData)->szFilePath));
 
-		//Remove any extension
+		// Remove any extension
 		WC_H(StringCchLength(lpMsgData->szFilePath,CCH(lpMsgData->szFilePath),&cchLen));
 		while (cchLen > 0 && lpMsgData->szFilePath[cchLen] != _T('.')) cchLen--;
 		if (lpMsgData->szFilePath[cchLen] == _T('.')) lpMsgData->szFilePath[cchLen] = _T('\0');
 
-		//build a string for appending
+		// build a string for appending
 		TCHAR	szNewExt[MAX_PATH];
-		WC_H(StringCchPrintf(szNewExt,CCH(szNewExt),_T("-Attach%d.xml"),((LPMESSAGEDATA) lpParentMessageData)->ulCurAttNum));// STRING_OK
+		WC_H(StringCchPrintf(szNewExt,CCH(szNewExt),_T("-Attach%d.xml"),((LPMESSAGEDATA) lpParentMessageData)->ulCurAttNum)); // STRING_OK
 
-		//append our string
+		// append our string
 		WC_H(StringCchCat(lpMsgData->szFilePath,CCH(lpMsgData->szFilePath),szNewExt));
 
 		OutputToFilef(((LPMESSAGEDATA) lpParentMessageData)->fMessageProps,_T("<embeddedmessage path=\"%s\"/>\n"),lpMsgData->szFilePath);
 	}
-	else if (m_szMessageFileName[0])//if we've got a file name, use it
+	else if (m_szMessageFileName[0]) // if we've got a file name, use it
 	{
 		WC_H(StringCchCopy(lpMsgData->szFilePath, CCH(lpMsgData->szFilePath), m_szMessageFileName));
 	}
 	else
 	{
-		LPCTSTR szSubj = _T("UnknownSubject");// STRING_OK
+		LPCTSTR szSubj = _T("UnknownSubject"); // STRING_OK
 
 		if (CheckStringProp(&lpPropsMsg[ePR_SUBJECT],PT_TSTRING))
 		{
 			szSubj = lpPropsMsg[ePR_SUBJECT].Value.LPSZ;
 		}
-		WC_H(BuildFileNameAndPath(lpMsgData->szFilePath,CCH(lpMsgData->szFilePath),_T(".xml"),4,szSubj,&lpPropsMsg[ePR_SEARCH_KEY].Value.bin,m_szFolderPath));// STRING_OK
+		WC_H(BuildFileNameAndPath(lpMsgData->szFilePath,CCH(lpMsgData->szFilePath),_T(".xml"),4,szSubj,&lpPropsMsg[ePR_SEARCH_KEY].Value.bin,m_szFolderPath)); // STRING_OK
 	}
 
 	DebugPrint(DBGGeneric,_T("OutputMessagePropertiesToFile: Saving 0x%X to \"%s\"\n"),lpMessage,lpMsgData->szFilePath);
@@ -473,10 +466,10 @@ void CDumpStore::BeginMessageWork(LPMESSAGE lpMessage, LPVOID lpParentMessageDat
 			MAPIFreeBuffer(lpPropsMsg);
 		}
 
-		hRes = S_OK;//we've logged our warning if we had one - mask it now.
+		hRes = S_OK; // we've logged our warning if we had one - mask it now.
 
 		LPSTREAM lpStream = NULL;
-		//Log Body
+		// Log Body
 		WC_H(lpMessage->OpenProperty(
 			PR_BODY,
 			&IID_IStream,
@@ -494,9 +487,9 @@ void CDumpStore::BeginMessageWork(LPMESSAGE lpMessage, LPVOID lpParentMessageDat
 			OutputToFile(lpMsgData->fMessageProps,_T("</body>\n"));
 		}
 
-		hRes = S_OK;//we've logged our warning if we had one - mask it now.
+		hRes = S_OK; // we've logged our warning if we had one - mask it now.
 
-		//Log HTML Body
+		// Log HTML Body
 		WC_H(lpMessage->OpenProperty(
 			PR_BODY_HTML,
 			&IID_IStream,
@@ -516,12 +509,12 @@ void CDumpStore::BeginMessageWork(LPMESSAGE lpMessage, LPVOID lpParentMessageDat
 		OutputToFile(lpMsgData->fMessageProps,_T("\n"));
 
 
-		hRes = S_OK;//we've logged our warning if we had one - mask it now.
+		hRes = S_OK; // we've logged our warning if we had one - mask it now.
 
-		//Log RTF Body
+		// Log RTF Body
 		LPSTREAM lpRTFUncompressed = NULL;
 
-		//TODO: This fails in unicode builds since PR_RTF_COMPRESSED is always ascii.
+		// TODO: This fails in unicode builds since PR_RTF_COMPRESSED is always ascii.
 		WC_H(lpMessage->OpenProperty(
 			PR_RTF_COMPRESSED,
 			&IID_IStream,
@@ -554,7 +547,7 @@ void CDumpStore::BeginMessageWork(LPMESSAGE lpMessage, LPVOID lpParentMessageDat
 
 		if (pfnWrapEx)
 		{
-			//Log best Body using WrapCompressedRTFEx
+			// Log best Body using WrapCompressedRTFEx
 			WC_H(lpMessage->OpenProperty(
 				PR_RTF_COMPRESSED,
 				&IID_IStream,
@@ -564,7 +557,7 @@ void CDumpStore::BeginMessageWork(LPMESSAGE lpMessage, LPVOID lpParentMessageDat
 			if (lpStream)
 			{
 				ULONG ulStreamFlags = NULL;
-				ULONG ulInCodePage = CP_ACP;//picking CP_ACP as our default
+				ULONG ulInCodePage = CP_ACP; // picking CP_ACP as our default
 
 				if (PT_LONG == PROP_TYPE(lpPropsMsg[ePR_INTERNET_CPID].ulPropTag))
 				{
@@ -575,7 +568,7 @@ void CDumpStore::BeginMessageWork(LPMESSAGE lpMessage, LPVOID lpParentMessageDat
 					true,
 					MAPI_NATIVE_BODY,
 					ulInCodePage,
-					CP_ACP,//requesting ANSI code page - check if this will be valid in UNICODE builds
+					CP_ACP, // requesting ANSI code page - check if this will be valid in UNICODE builds
 					&lpRTFUncompressed,
 					&ulStreamFlags));
 				if (lpRTFUncompressed)
@@ -599,7 +592,7 @@ void CDumpStore::BeginMessageWork(LPMESSAGE lpMessage, LPVOID lpParentMessageDat
 			}
 		}
 
-		hRes = S_OK;//we've logged our warning if we had one - mask it now.
+		hRes = S_OK; // we've logged our warning if we had one - mask it now.
 
 		LPSPropValue lpAllProps = NULL;
 		WC_H_GETPROPS(GetPropsNULL(lpMessage,
@@ -657,7 +650,7 @@ void CDumpStore::DoMessagePerAttachmentWork(LPMESSAGE lpMessage, LPVOID lpData, 
 
 	LPMESSAGEDATA lpMsgData = (LPMESSAGEDATA) lpData;
 
-	lpMsgData->ulCurAttNum = ulCurRow;//set this so we can pull it if this is an embedded message
+	lpMsgData->ulCurAttNum = ulCurRow; // set this so we can pull it if this is an embedded message
 
 	LPSPropValue lpAttachName = NULL;
 
@@ -685,14 +678,14 @@ void CDumpStore::DoMessagePerAttachmentWork(LPMESSAGE lpMessage, LPVOID lpData, 
 	{
 		ULONG			ulAllProps = 0;
 		LPSPropValue	lpAllProps = NULL;
-		//Let's get all props from the message and dump them.
+		// Let's get all props from the message and dump them.
 		WC_H_GETPROPS(GetPropsNULL(lpAttach,
 			fMapiUnicode,
 			&ulAllProps,
 			&lpAllProps));
 		if (lpAllProps)
 		{
-			//We've reported any error - mask it now
+			// We've reported any error - mask it now
 			hRes = S_OK;
 
 			OutputToFile(lpMsgData->fMessageProps,_T("\t<getprops>\n"));

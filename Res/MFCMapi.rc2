@@ -4,7 +4,7 @@
 
 #ifdef APSTUDIO_INVOKED
 	#error this file is not editable by Microsoft Visual C++
-#endif //APSTUDIO_INVOKED
+#endif // APSTUDIO_INVOKED
 
 /////////////////////////////////////////////////////////////////////////////
 // Add manually edited resources here...
@@ -38,7 +38,7 @@
 // Keep in sync with definition of IDD_ABOUTVERLAST
 IDD_ABOUT DIALOG DISCARDABLE  0, 0, 400, 200
 STYLE DS_MODALFRAME | WS_CAPTION | WS_SYSMENU | DS_SHELLFONT
-CAPTION ""//About Microsoft Exchange Server MAPI Editor
+CAPTION "" // About Microsoft Exchange Server MAPI Editor
 FONT 8, "MS Shell Dlg"
 BEGIN
     DEFPUSHBUTTON   "OK",				IDOK,               317, 2, 54,14,WS_GROUP
@@ -267,7 +267,7 @@ END
 // Try to keep strings in sections by use, but do reuse strings when possible
 STRINGTABLE DISCARDABLE
 BEGIN
-//abdlg.cpp
+// abdlg.cpp
 IDS_DELETEABENTRY                "Delete Address book entry"
 IDS_DELETEABENTRYPROMPT          "This will permanently delete the selected Address Book entries."
 IDS_CALLCOPYENTRIES              "Call CopyEntries"
@@ -277,12 +277,12 @@ IDS_CALLCOPYENTRIESPROMPT        "Enter flags to pass\r\n\
 0x00000004 CREATE_REPLACE"
 IDS_SEARCHCRITERIA               "Search Criteria"
 IDS_ABSEARCHCRITERIAPROMPT       "Type portion of name to find"
-//acldlg.cpp
+// acldlg.cpp
 IDS_ACLADDITEM                   "New User"
 IDS_ACLADDITEMPROMPT             "Add which user?\r\n\
 \r\n\
 Specify PR_MEMBER_RIGHTS mask"
-//basedialog.cpp
+// basedialog.cpp
 IDS_SETOPTS                      "Set Options"
 IDS_SETOPTSPROMPT                "Options for %1"
 IDS_OPENEID                      "Open Entry ID"
@@ -308,7 +308,7 @@ IDS_COMPUTESTOREHASHPROMPT       "Enter store entry ID and file name"
 IDS_ENCODEID                     "Encode ID"
 IDS_ENCODEIDPROMPT               "Encode ID Prompt"
 
-//contentstabledlg.cpp
+// contentstabledlg.cpp
 IDS_CREATEPROPRES                "Create Property String Restriction"
 IDS_CONTSEARCHCRITERIAPROMPT     "Type value to search for\r\n\
 ulFuzzyLevel Flags:"
@@ -335,11 +335,11 @@ Not all table implementations support categories\r\n\
 If categories are specified, sorting by clicking on column headers may produce unexpected results"
 IDS_SORTORDER                    "Sort Order"
 IDS_SORTORDERPROMPT              "Select sort order"
-//contentstablelistctrl.cpp
+// contentstablelistctrl.cpp
 IDS_LARGENUMROWS                 "Large Number of Rows"
 IDS_LARGENUMROWSPROMPT           "The number of rows in this table either exceeds the throttle value or could not be determined.\r\n\
 Click OK to display the specified number of rows."
-//folderdlg.cpp
+// folderdlg.cpp
 IDS_ADDONEOFF                    "Add One Off Recipient"
 IDS_ADDONEOFFPROMPT              "Enter values for address"
 IDS_COPYMESSAGE                  "Copy Message"
@@ -407,7 +407,7 @@ IDS_SETMSGSTATUSPROMPT           "Type status and mask to pass into SetMessageSt
 0x00001000 MSGSTATUS_REMOTE_DOWNLOAD Mark message for downloading to the local client.\r\n\
 0x00002000 MSGSTATUS_REMOTE_DELETE   Mark message for deletion without downloading to the local client.\r\n\
 0x00004000 MSGSTATUS_MDNSENT         IMAP4 MDNSent flag"
-//formcontainerdlg.cpp
+// formcontainerdlg.cpp
 IDS_INSTALLFORM                  "Install Form"
 IDS_INSTALLFORMPROMPT            "Enter flags\r\n\
 0x0008 MAPIFORM_INSTALL_DIALOG\r\n\
@@ -432,19 +432,19 @@ IDS_CALCFORMPROPSETPROMPT        "Enter flags\r\n\
 Note: this will output data to the debug stream, not the UI."
 IDS_GETDISPLAY                   "GetDisplay"
 IDS_GETDISPLAYPROMPT             "Result of GetDisplay call"
-//hexeditor.cpp
+// hexeditor.cpp
 IDS_HEXEDITOR                    "Hex Editor"
 IDS_HEXEDITORPROMPT              "Type strings to edit"
-//hierarchytabledlg.cpp
+// hierarchytabledlg.cpp
 IDS_DISPLAYHIEARCHYTABLE         "Display Hierarchy Table"
 IDS_DISPLAYHIEARCHYTABLEPROMPT   "Check box to pass CONVENIENT_DEPTH."
 IDS_CALLSETSEARCHCRITERIA        "Call SetSearchCriteria?"
 IDS_CALLSETSEARCHCRITERIAPROMPT  "Hit OK to call SetSearchCriteria with these values, otherwise hit cancel"
-//mailboxtabledlg.cpp
+// mailboxtabledlg.cpp
 IDS_PROPRES                      "Property String Restriction"
 IDS_MBSEARCHCRITERIAPROMPT       "Type portion of name to find\r\n\
 ulFuzzyLevel Flags:"
-//maindlg.cpp
+// maindlg.cpp
 IDS_OPENDEFMSGSTORE              "Open Default Message Store"
 IDS_OPENSTOREEID                 "Open Message Store With EID"
 IDS_OPENSTOREEIDPROMPT           "This function will attempt to interpret binary string as an Entry ID.\r\n\
@@ -544,16 +544,16 @@ IDS_LAUNCHPROFWIZPROMPT          "Enter flags for LaunchWizard:\r\n\
 0x00000004 MAPI_PW_ADD_SERVICE_ONLY\r\n\
 0x00000008 MAPI_PW_PROVIDER_UI_ONLY\r\n\
 0x00000010 MAPI_PW_HIDE_SERVICES_LIST"
-//mapiprofilefunctions.cpp
+// mapiprofilefunctions.cpp
 IDS_ADDSERVICESTOINF             "Add Services To MAPISvc.inf"
 IDS_ADDSERVICESTOINFPROMPT       "Check which services to add:"
 IDS_REMOVEFROMINF                "Remove Services From MAPISvc.inf"
 IDS_REMOVEFROMINFPROMPT          "Check which services to remove:"
-//mapistorefunctions.cpp
+// mapistorefunctions.cpp
 IDS_SERVERNAME                   "Server Name"
 IDS_SERVERNAMEMISSINGPROMPT      "Couldn't get server name from profile. Please enter server name"
 IDS_OPENOTHERUSER                "Open Other User's Message Store"
-//mfcutilityfunctions.cpp
+// mfcutilityfunctions.cpp
 IDS_ACLTABLE                     "Display ACL Table"
 IDS_ACLTABLEPROMPT               "Check box to include Free Busy Rights (not supported in Outlook 2003/Exchange 2003 or before)"
 IDS_CANCELPROMPT                 "Hit OK to continue, Cancel to cancel remaining items"
@@ -572,12 +572,12 @@ IDS_GETMBXINTERFACE5             "IID_IExchangeManageStore5 - GetMailboxTableEx"
 IDS_GETPFINTERFACE1              "IID_IExchangeManageStore - GetPublicFolderTable"
 IDS_GETPFINTERFACE4              "IID_IExchangeManageStore4 - GetPublicFolderTableOffset"
 IDS_GETPFINTERFACE5              "IID_IExchangeManageStore5 - GetPublicFolderTableEx"
-//msgservicetabledlg.cpp
+// msgservicetabledlg.cpp
 IDS_OPENPROFSECT                 "OpenProfileSection"
 IDS_OPENPROFSECTPROMPT           "Enter MAPIUID to open\r\n\
 A MAPIUID is like a GUID, so it should be 32 hex characters\r\n\
 Example: 0a0d020000000000c000000000000046"
-//msgstoredlg.cpp
+// msgstoredlg.cpp
 IDS_PASTEFOLDER                  "Paste Folder"
 IDS_PASTEFOLDERPROMPT            "Default is to paste as subfolder (including data).\r\n\
 Check box to paste contents only."
@@ -603,27 +603,27 @@ Check box to delete entry for this class."
 IDS_RESTOREDELFOLD               "Restore Deleted Folder"
 IDS_RESTOREDELFOLDPROMPT         "Type new name for restored folder. Check box to also restore subfolders."
 IDS_VALIDATEIPMSUB               "HrValidateIPMSubtree"
-//profilelistdlg.cpp
+// profilelistdlg.cpp
 IDS_NEWEXPROF                    "New Exchange Profile"
 IDS_NEWEXPROFPROMPT              "Type name of server and mailbox for profile"
 IDS_NEWSERVICE                   "New Service"
 IDS_NEWSERVICEPROMPT             "Type new service name (e.g. MSEMS, CONTAB, MSPST MS, etc...)"
 IDS_NEWPROF                      "New Profile"
 IDS_NEWPROFPROMPT                "Type new profile name"
-//propertyeditor.cpp
+// propertyeditor.cpp
 IDS_EDITROW                      "Edit Row"
 IDS_EDITROWPROMPT                "Edit single row"
-//propertytageditor.cpp
+// propertytageditor.cpp
 IDS_PROPTAGEDITOR                "Property Tag Editor"
 IDS_PROPTAGEDITORPROMPT          "Fill out property tag information"
 IDS_CALLGETIDSFROMNAMES          "Call GetIDsFromNames"
 IDS_CALLGETIDSFROMNAMESPROMPT    "Check box to pass MAPI_CREATE"
 IDS_PROPSELECTOR                 "Property Selector"
 IDS_PROPSELECTORPROMPT           "Select property tag"
-//publicfoldertabledlg.cpp
+// publicfoldertabledlg.cpp
 IDS_PFSEARCHCRITERIAPROMPT       "Type portion of name to find\r\n\
 ulFuzzyLevel Flags:"
-//restricteditor.cpp
+// restricteditor.cpp
 IDS_RESED                        "Restriction Editor"
 IDS_RESEDCOMPPROMPT              "Edit Compare Property restriction"
 IDS_RESEDCONTPROMPT              "Edit Content restriction"
@@ -650,7 +650,7 @@ IDS_CRITERIAEDITORPROMPT         "Edit Criteria\r\n\
 Values for search flags - search will not start until RESTART_SEARCH is set:"
 IDS_EIDEDITOR                    "Entry ID Editor"
 IDS_EIDEDITORPROMPT              "Edit Entry ID"
-//singlemapiproplistctrl.cpp
+// singlemapiproplistctrl.cpp
 IDS_FINDNAMEPROPSLIMIT           "Find All Named Props Range Limit"
 IDS_FINDNAMEPROPSLIMITPROMPT     "This function will search through all properties in the given range.\r\n\
 Bounds must be between 0x8000 and 0xFFFF"
@@ -718,14 +718,15 @@ IDS_CONVERSATIONINDEX            "Conversation Index"
 IDS_TASKASSIGNERS                "Task Assigners"
 IDS_GLOBALOBJECTID               "Global Object Id"
 IDS_ONEOFFENTRYID                "One-Off Entry Id"
+IDS_ENTRYID                      "Entry Id"
 
-//AbDlg.cpp
+// AbDlg.cpp
 IDS_FLAGS "Flags"
 IDS_NAME "Name:"
-//AclDlg.cpp
+// AclDlg.cpp
 IDS_USEREID "User EntryID:"
 IDS_MASKINHEX "Mask (in hex):"
-//BaseDialog.cpp
+// BaseDialog.cpp
 IDS_EID "Entry ID:"
 IDS_USEMDB "Use MDB"
 IDS_USEAB "Use AB"
@@ -744,7 +745,7 @@ IDS_OBJECTFORADVISE "Object to call Advise on"
 IDS_STOREEID "Store Entry ID"
 IDS_STOREHASH "Store Hash"
 IDS_ENCODEDID "Encoded Entry ID"
-//ContentsTableDlg.cpp
+// ContentsTableDlg.cpp
 IDS_PROPVALUE "Property Value:"
 IDS_ULFUZZYLEVEL "ulFuzzyLevel:"
 IDS_APPLYUSINGFINDROW "Apply restriction using FindRow"
@@ -759,10 +760,10 @@ IDS_CEXPANDED "cExpanded, number of categories which are expanded"
 IDS_TBLASYNC "TBL_ASYNC"
 IDS_TBLBATCH "TBL_BATCH"
 IDS_REFRESHAFTERSORT "Refresh table after applying sort"
-//ContentsTableListCtrl.cpp
+// ContentsTableListCtrl.cpp
 IDS_NUMROWS "Number of rows"
 IDS_THROTTLEVAL "Throttle value"
-//FolderDlg.cpp
+// FolderDlg.cpp
 IDS_DISPLAYNAME "Display Name"
 IDS_ADDRESSTYPE "Address Type"
 IDS_ADDRESS "Address"
@@ -783,19 +784,19 @@ IDS_SUBJECT "Subject:"
 IDS_BODY "Body:"
 IDS_FLAGSINHEX "Flags (in hex):"
 IDS_STATUSINHEX "Status (in hex):"
-//FormContainerDlg.cpp
+// FormContainerDlg.cpp
 IDS_CLASS "Class:"
 IDS_NUMBER "Number:"
-//HexEditor.cpp
+// HexEditor.cpp
 IDS_ANSISTRING "Ansi String"
 IDS_UNISTRING "Unicode String"
 IDS_CCH "Cch"
 IDS_BASE64STRING "Base64 String"
 IDS_CB "Cb"
 IDS_HEX "Hex"
-//HierarchyTableDlg.cpp
+// HierarchyTableDlg.cpp
 IDS_CONVENIENTDEPTH "CONVENIENT_DEPTH"
-//MainDlg.cpp
+// MainDlg.cpp
 IDS_USEADMINPRIV "Use Admin Privileges"
 IDS_DISPLAYPROPS "Just display props - do not open message store in new window"
 IDS_UNWRAPSTORE "Unwrap store using IProxyStoreObject"
@@ -816,16 +817,16 @@ OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP = 0x9\r\n\
 OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP | OPENSTORE_PUBLIC = 0xB\r\n\
 OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP | OPENSTORE_RESTORE_DATABASE | \r\n\
    OPENSTORE_OVERRIDE_HOME_MDB  | OPENSTORE_HOME_LOGON = 0x10001D\r\n"
-//MAPIProfileFunctions.cpp
+// MAPIProfileFunctions.cpp
 IDS_EXCHANGE "Exchange"
 IDS_PST "PST"
-//MFCUtilityFunctions.cpp
+// MFCUtilityFunctions.cpp
 IDS_FBRIGHTSVISIBLE "Free Busy Rights Visible"
 IDS_ERROR "Error"
 IDS_OFFSET "Offset (in hex):"
-//MsgServiceTableDlg.cpp
+// MsgServiceTableDlg.cpp
 IDS_MAPIUID "MAPI UID:"
-//MsgStoreDlg.cpp
+// MsgStoreDlg.cpp
 IDS_PASTEFOLDERCONTENTS "Paste folder contents only"
 IDS_FOLDERNAME "Folder Name:"
 IDS_COPYSUBFOLDERS "COPY_SUBFOLDERS"
@@ -847,10 +848,10 @@ IDS_SAVEASSOCIATEDCONTENTS "Save Associated Contents"
 IDS_DELETEASSOCIATION "Delete association"
 IDS_MAPIFORCECREATE "MAPI_FORCE_CREATE"
 IDS_MAPIFULLIPMTREE "MAPI_FULL_IPM_TREE"
-//ProfileListDlg.cpp
+// ProfileListDlg.cpp
 IDS_MAILBOXNAME "Mailbox Name:"
 IDS_DISPLAYSERVICEUI "Display service UI:"
-//PropertyEditor.cpp
+// PropertyEditor.cpp
 IDS_PROPVALUES "Property Values"
 IDS_UNSIGNEDDECIMAL "Unsigned Decimal"
 IDS_BOOLEAN "Boolean"
@@ -876,7 +877,7 @@ IDS_RESTRICTION "Restriction"
 IDS_ACTIONS "Actions"
 IDS_VALUE "Value"
 IDS_ALTERNATEVIEW "Alternate View"
-//PropertyTagEditor.cpp
+// PropertyTagEditor.cpp
 IDS_PROPTAG "Property Tag"
 IDS_PROPID "Property ID"
 IDS_PROPTYPE "Property Type"
@@ -886,7 +887,7 @@ IDS_NAMEPROPNAME "Named Property Name (MNID_ID names in hex)"
 IDS_NAMEPROPGUID "Named Property GUID"
 IDS_MAPICREATE "MAPI_CREATE"
 IDS_KNOWNPROPTAGS "Known Property Tags"
-//Registry.cpp
+// Registry.cpp
 IDS_REGKEY_DEBUG_TAG "Debug Output Tags (0 = None, ffff = Verbose. See Help.)"
 IDS_REGKEY_DEBUG_TO_FILE "Enable Debug Output to File"
 IDS_REGKEY_DEBUG_FILE_NAME "Debug Output File:"
@@ -908,7 +909,7 @@ IDS_REGKEY_MAPI_NO_CACHE "Use MAPI_NO_CACHE when calling OpenEntry"
 IDS_REGKEY_ALLOW_PERSIST_CACHE "Allow caching of IPersistMessage objects when opening Outlook forms in compose mode, which may prevent shutdown of certain versions of Outlook"
 IDS_REGKEY_USE_IMAPIPROGRESS "Pass IMAPIProgress implementation to functions that take it"
 IDS_REGKEY_USE_MESSAGERAW "Use IID_IMessageRaw when opening messages"
-//RestrictEditor.cpp
+// RestrictEditor.cpp
 IDS_RELOP "relop"
 IDS_ULPROPTAG1 "ulPropTag1"
 IDS_ULPROPTAG2 "ulPropTag2"
@@ -927,7 +928,7 @@ IDS_RESTRICTIONTYPE "Restriction Type"
 IDS_SEARCHSTATE "Search State"
 IDS_SEARCHFLAGS "Search Flags"
 IDS_EIDLIST "Entry ID List"
-//SingleMAPIPropListCtrl.cpp
+// SingleMAPIPropListCtrl.cpp
 IDS_LOWERBOUND "Lower Bound (in hex):"
 IDS_UPPERBOUND "Upper Bound (in hex):"
 IDS_ULINCODEPAGE "ulInCodePage (in Decimal)"
@@ -939,15 +940,15 @@ IDS_INTERFACE "Interface"
 IDS_OPENASEXTABLE "Open as Exchange Table"
 IDS_MAPIMOVE "MAPI_MOVE (move instead of copy)"
 IDS_MAPINOREPLACE "MAPI_NOREPLACE (do not replace existing properties)"
-//StreamEditor.cpp
+// StreamEditor.cpp
 IDS_STREAMTEXT "Stream (Text)"
 IDS_STREAMFLAGS "Stream Flags"
 IDS_CODEPAGE "Code Page"
 IDS_STREAMBIN "Stream (Binary)"
-//TagArrayEditor.cpp
+// TagArrayEditor.cpp
 IDS_PROPTAGARRAY "Property Tag Array"
 
-//More titles
+// More titles
 IDS_ABCONT "AB Cont"
 IDS_FOLDERTREE "Folder Tree"
 IDS_TABLEASHIERARCHY "IMAPITable as Hierarchy Table"
@@ -1038,7 +1039,6 @@ DBGLoadLibrary\t\t0x00002000\n\
 DBGForms\t\t0x00004000\n\
 DBGAddInPlumbing\t\t0x00008000\n\
 DBGAddIn\t\t0x00010000\n\
-DBGWindowProc\t\t0x40000000\n\
 DBGMenu\t\t0x80000000"
 
 IDS_DISPLAYABOUTCHECK "Display at startup"
@@ -1097,7 +1097,6 @@ IDS_CANCEL "Cancel"
 // Error messages
 IDS_ERRFORMATSTRING    "Error: %1\r\nCode: %2 == 0x%3!08X!\r\nFunction %4!hs!\r\nFile %5!hs!\r\nLine %6!d!"
 IDS_WARNFORMATSTRING "Warning: %1\r\nCode: %2 == 0x%3!08X!\r\nFunction %4!hs!\r\nFile %5!hs!\r\nLine %6!d!"
-IDS_HRESBOOL "Returning false in HRES_TO_BOOL."
 IDS_ATTNOTEMBEDDEDMSG "Attachment is not an embedded message!"
 IDS_USERCANCELLED "User cancelled!"
 IDS_GETCONTENTSNOACCESS "We don't have access permissions to this container!"
@@ -1535,6 +1534,7 @@ Conversion Flags (May be combined):\r\n\
 0x0040 CCSF_8BITHEADERS\r\n\
 0x1000 CCSF_PLAIN_TEXT_ONLY\r\n\
 0x4000 CCSF_NO_MSGID\r\n\
+0x8000 CCSF_EMBEDDED_MESSAGE\r\n\
 Encoding Type (pick one):\r\n\
 0x1 IET_BASE64\r\n\
 0x2 IET_UUENCODE\r\n\
@@ -1556,6 +1556,7 @@ IDS_CONVERTFROMEMLPROMPT "Conversion Flags (May be combined):\r\n\
 0x0002 CCSF_SMTP (Must be set)\r\n\
 0x0020 CCSF_INCLUDE_BCC\r\n\
 0x0080 CCSF_USE_RTF\r\n\
+0x8000 CCSF_EMBEDDED_MESSAGE\r\n\
 Common code pages (others supported)\r\n\
 1252  - CP_USASCII      - Indicates the USASCII character set, Windows code page 1252\r\n\
 1200  - CP_UNICODE      - Indicates the Unicode character set, Windows code page 1200\r\n\
@@ -1727,6 +1728,13 @@ dwBitmask: 0x%1!08X! = %1!d! = %2\r\n\
 szDisplayName = %3!hs!\r\n\
 szAddressType = %4!hs!\r\n\
 szEmailAddress = %5!hs!"
+
+IDS_ENTRYIDHEADER "Entry Id:\r\n\
+abFlags[0] = 0x%1!02X! = %1!d! = %2\r\n\
+abFlags[1] = 0x%3!02X! = %3!d! = %4\r\n\
+abFlags[2] = 0x%5!02X! = %5!d!\r\n\
+abFlags[3] = 0x%6!02X! = %6!d!\r\n\
+ab[MAPI_DIM] = "
 
 // All strings above this point use FormatMessage style formatting
 

@@ -1,6 +1,5 @@
 #pragma once
 // FolderDlg.h : header file
-//
 
 class CContentsTableListCtrl;
 class CSingleMAPIPropListCtrl;
@@ -9,50 +8,52 @@ class CMapiObjects;
 
 #include "ContentsTableDlg.h"
 
-/////////////////////////////////////////////////////////////////////////////
-// CFolderDlg dialog
-
 class CFolderDlg : public CContentsTableDlg
 {
 public:
 	CFolderDlg(
 		CParentWnd* pParentWnd,
-		CMapiObjects *lpMapiObjects,
+		CMapiObjects* lpMapiObjects,
 		LPMAPIFOLDER lpMAPIFolder,
 		ULONG ulDisplayFlags);
 	virtual ~CFolderDlg();
 
-protected:
-	afx_msg void OnInitMenu(CMenu* pMenu);
+private:
+	// Overrides from base class
+	void EnableAddInMenus(CMenu* pMenu, ULONG ulMenu, LPMENUITEM lpAddInMenu, UINT uiEnable);
+	void HandleAddInMenuSingle(
+		LPADDINMENUPARAMS lpParams,
+		LPMAPIPROP lpMAPIProp,
+		LPMAPICONTAINER lpContainer);
+	BOOL HandleCopy();
+	BOOL HandleMenu(WORD wMenuSelect);
+	BOOL HandlePaste();
+	void OnDeleteSelectedItem();
+	void OnDisplayItem();
+	void OnInitMenu(CMenu* pMenu);
 
+	// Menu items
+	void OnAddOneOffAddress();
+	void OnDeleteAttachments();
+	void OnExecuteVerbOnForm();
 	void OnGetPropsUsingLongTermEID();
+	void OnLoadFromEML();
 	void OnLoadFromMSG();
 	void OnLoadFromTNEF();
-	void OnLoadFromEML();
-	void OnSelectForm();
 	void OnManualResolve();
 	void OnNewCustomForm();
 	void OnNewMessage();
-	void OnSaveFolderContentsAsTextFiles();
-	void OnSendBulkMail();
-
-	void OnAddOneOffAddress();
-	void OnExecuteVerbOnForm();
 	void OnRemoveOneOff();
 	void OnRTFSync();
+	void OnSaveFolderContentsAsTextFiles();
+	void OnSelectForm();
+	void OnSendBulkMail();
 	void OnSaveMessageToFile();
 	void OnSetReadFlag();
 	void OnSetMessageStatus();
 	void OnGetMessageOptions();
-
-	void OnDeleteSelectedItem();
-	virtual BOOL	HandleCopy();
-	virtual BOOL	HandlePaste();
-
-	virtual void	OnDisplayItem();
-
+	HRESULT OnAbortSubmit(int iItem, SortListData* lpData);
 	HRESULT OnAttachmentProperties(int iItem, SortListData*	lpData);
-	HRESULT OnDeleteAttachments();
 	HRESULT OnGetMessageStatus(int iItem, SortListData* lpData);
 	HRESULT OnOpenModal(int iItem, SortListData* lpData);
 	HRESULT OnOpenNonModal(int iItem, SortListData* lpData);
@@ -60,20 +61,8 @@ protected:
 	HRESULT OnResendSelectedItem(int iItem, SortListData* lpData);
 	HRESULT OnSaveAttachments(int iItem, SortListData* lpData);
 	HRESULT OnSubmitMessage(int iItem, SortListData* lpData);
-	HRESULT OnAbortSubmit(int iItem, SortListData* lpData);
 
-	virtual BOOL HandleMenu(WORD wMenuSelect);
-
-	virtual void EnableAddInMenus(CMenu* pMenu, ULONG ulMenu, LPMENUITEM lpAddInMenu, UINT uiEnable);
-	virtual void HandleAddInMenuSingle(
-		LPADDINMENUPARAMS lpParams,
-		LPMAPIPROP lpMAPIProp,
-		LPMAPICONTAINER lpContainer);
-private:
-	BOOL MultiSelectSimple(WORD wMenuSelect);
 	BOOL MultiSelectComplex(WORD wMenuSelect);
+	BOOL MultiSelectSimple(WORD wMenuSelect);
 	void NewSpecialItem(WORD wMenuSelect);
 };
-
-//{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ will insert additional declarations immediately before the previous line.

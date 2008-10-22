@@ -2,21 +2,12 @@
 // Displays the recipient table for a message
 
 #include "stdafx.h"
-#include "Error.h"
-
 #include "RecipientsDlg.h"
-
 #include "ContentsTableListCtrl.h"
 #include "MapiObjects.h"
 #include "ColumnTags.h"
 #include "SingleMAPIPropListCtrl.h"
 #include "InterpretProp.h"
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
 
 static TCHAR* CLASS = _T("CRecipientsDlg");
 
@@ -25,7 +16,7 @@ static TCHAR* CLASS = _T("CRecipientsDlg");
 
 CRecipientsDlg::CRecipientsDlg(
 							   CParentWnd* pParentWnd,
-							   CMapiObjects *lpMapiObjects,
+							   CMapiObjects* lpMapiObjects,
 							   LPMAPITABLE lpMAPITable,
 							   LPMESSAGE lpMessage
 							   ):
@@ -44,7 +35,7 @@ CContentsTableDlg(
 	TRACE_CONSTRUCTOR(CLASS);
 	m_lpMessage = lpMessage;
 	if (m_lpMessage) m_lpMessage->AddRef();
-	m_bIsAB = true;//Recipients are from the AB
+	m_bIsAB = true; // Recipients are from the AB
 
 	CreateDialogAndMenu(IDR_MENU_RECIPIENTS);
 }
@@ -53,22 +44,14 @@ CRecipientsDlg::~CRecipientsDlg()
 {
 	TRACE_DESTRUCTOR(CLASS);
 
-//	if (m_lpMessage)
-//	{
-//		HRESULT hRes = S_OK;
-//
-//		EC_H(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
-//	}
 	if (m_lpMessage) m_lpMessage->Release();
 }
 
 BEGIN_MESSAGE_MAP(CRecipientsDlg, CContentsTableDlg)
-//{{AFX_MSG_MAP(CRecipientsDlg)
 	ON_COMMAND(ID_DELETESELECTEDITEM, OnDeleteSelectedItem)
 	ON_COMMAND(ID_MODIFYRECIPIENT, OnModifyRecipients)
 	ON_COMMAND(ID_RECIPOPTIONS, OnRecipOptions)
 	ON_COMMAND(ID_SAVECHANGES, OnSaveChanges)
-//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 void CRecipientsDlg::OnInitMenu(CMenu* pMenu)
@@ -89,7 +72,7 @@ void CRecipientsDlg::OnInitMenu(CMenu* pMenu)
 void CRecipientsDlg::OnDeleteSelectedItem()
 {
 	HRESULT		hRes = S_OK;
-	CWaitCursor	Wait;//Change the mouse to an hourglass while we work.
+	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpMessage || !m_lpContentsTableListCtrl) return;
 
@@ -124,7 +107,7 @@ void CRecipientsDlg::OnDeleteSelectedItem()
 					lpAdrList->aEntries[iSelection].rgPropVals = &lpProps[iSelection];
 					lpProps[iSelection].ulPropTag = PR_ROWID;
 					lpProps[iSelection].dwAlignPad = 0;
-					//Find the highlighted item AttachNum
+					// Find the highlighted item AttachNum
 					lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 					if (lpListData)
 					{
@@ -140,18 +123,16 @@ void CRecipientsDlg::OnDeleteSelectedItem()
 				EC_H(m_lpMessage->ModifyRecipients(
 					MODRECIP_REMOVE,
 					lpAdrList));
-
-				//EC_H(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 			}
 			FreePadrlist(lpAdrList);
 		}
 	}
-}//CRecipientsDlg::OnDeleteSelectedItem
+} // CRecipientsDlg::OnDeleteSelectedItem
 
 void CRecipientsDlg::OnModifyRecipients()
 {
 	HRESULT		hRes = S_OK;
-	CWaitCursor	Wait;//Change the mouse to an hourglass while we work.
+	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpMessage || !m_lpContentsTableListCtrl || !m_lpPropDisplay) return;
 
@@ -173,15 +154,13 @@ void CRecipientsDlg::OnModifyRecipients()
 		EC_H(m_lpMessage->ModifyRecipients(
 			MODRECIP_MODIFY,
 			&adrList));
-
-//		EC_H(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 	}
 }
 
 void CRecipientsDlg::OnRecipOptions()
 {
 	HRESULT		hRes = S_OK;
-	CWaitCursor	Wait;//Change the mouse to an hourglass while we work.
+	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpMessage || !m_lpContentsTableListCtrl || !m_lpPropDisplay || !m_lpMapiObjects) return;
 
@@ -191,7 +170,7 @@ void CRecipientsDlg::OnRecipOptions()
 
 	if (lpProps)
 	{
-		LPADRBOOK lpAB = m_lpMapiObjects->GetAddrBook(true);//do not release
+		LPADRBOOK lpAB = m_lpMapiObjects->GetAddrBook(true); // do not release
 		if (lpAB)
 		{
 			ADRENTRY adrEntry = {0};

@@ -3,21 +3,11 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "registry.h"
-
 #include "MapiObjects.h"
-
-#include "error.h"
-
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
-#define new DEBUG_NEW
-#endif
 
 static TCHAR* GCCLASS = _T("CGlobalCache"); // STRING_OK
 
-//A single instance cache of objects available to all
+// A single instance cache of objects available to all
 class CGlobalCache
 {
 public:
@@ -50,8 +40,8 @@ public:
 
 private:
 	void EmptyBuffer();
-	LONG			m_cRef;
 
+	LONG			m_cRef;
 	LPENTRYLIST		m_lpAddressEntriesToCopy;
 	LPENTRYLIST		m_lpMessagesToCopy;
 	LPMAPIFOLDER	m_lpFolderToCopy;
@@ -78,7 +68,7 @@ CGlobalCache::CGlobalCache()
 
 CGlobalCache::~CGlobalCache()
 {
-	DebugPrintEx(DBGConDes,GCCLASS,GCCLASS,_T("(this = 0x%X) - Destructor\n"),this);
+	TRACE_DESTRUCTOR(GCCLASS);
 	EmptyBuffer();
 	CGlobalCache::MAPIUninitialize();
 }
@@ -110,7 +100,7 @@ void CGlobalCache::MAPIInitialize(ULONG ulFlags)
 			m_bMAPIInitialized = TRUE;
 		}
 	}
-}// CGlobalCache::MAPIInitialize
+} // CGlobalCache::MAPIInitialize
 
 void CGlobalCache::MAPIUninitialize()
 {
@@ -119,12 +109,12 @@ void CGlobalCache::MAPIUninitialize()
 		::MAPIUninitialize();
 		m_bMAPIInitialized = FALSE;
 	}
-}// CGlobalCache::MAPIUninitialize
+} // CGlobalCache::MAPIUninitialize
 
 BOOL CGlobalCache::bMAPIInitialized()
 {
 	return m_bMAPIInitialized;
-}// CGlobalCache::bMAPIInitialized
+} // CGlobalCache::bMAPIInitialized
 
 void CGlobalCache::EmptyBuffer()
 {
@@ -225,7 +215,7 @@ static TCHAR* CLASS = _T("CMapiObjects");
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-//Pass an existing CMapiObjects to make a copy, pass NULL to create a new one from scratch
+// Pass an existing CMapiObjects to make a copy, pass NULL to create a new one from scratch
 CMapiObjects::CMapiObjects(CMapiObjects *OldMapiObjects)
 {
 	TRACE_CONSTRUCTOR(CLASS);
@@ -237,7 +227,7 @@ CMapiObjects::CMapiObjects(CMapiObjects *OldMapiObjects)
 	m_lpMAPISession = NULL;
 	m_lpProfAdmin = NULL;
 
-	//If we were passed a valid object, make copies of its interfaces.
+	// If we were passed a valid object, make copies of its interfaces.
 	if (OldMapiObjects)
 	{
 		m_lpMAPISession = OldMapiObjects->m_lpMAPISession;
@@ -306,7 +296,7 @@ void CMapiObjects::MAPILogonEx(HWND hwnd,LPTSTR szProfileName, ULONG ulFlags)
 		&m_lpMAPISession));
 
 	DebugPrint(DBGGeneric,_T("\tm_lpMAPISession set to 0x%X\n"),m_lpMAPISession);
-}// CMapiObjects::MAPILogonEx
+} // CMapiObjects::MAPILogonEx
 
 void CMapiObjects::Logoff()
 {
@@ -319,7 +309,7 @@ void CMapiObjects::Logoff()
 		m_lpMAPISession->Release();
 		m_lpMAPISession = NULL;
 	}
-}// CMapiObjects::Logoff
+} // CMapiObjects::Logoff
 
 LPMAPISESSION CMapiObjects::GetSession()
 {
@@ -360,7 +350,7 @@ void CMapiObjects::SetAddrBook(LPADRBOOK lpAddrBook)
 
 LPADRBOOK CMapiObjects::GetAddrBook(BOOL bForceOpen)
 {
-	//if we haven't opened the address book yet and we have a session, open it now
+	// if we haven't opened the address book yet and we have a session, open it now
 	if (!m_lpAddrBook && m_lpMAPISession && bForceOpen)
 	{
 		HRESULT hRes = S_OK;

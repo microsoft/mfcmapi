@@ -2,18 +2,9 @@
 //
 
 #include "stdafx.h"
-#include "Error.h"
-
 #include "HexEditor.h"
-
 #include "InterpretProp.h"
 #include "MAPIFunctions.h"
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
 
 static TCHAR* CLASS = _T("CHexEditor");
 
@@ -36,7 +27,7 @@ void CHexEditor::InitAnsiString(
 	SetStringA(0,szInputString);
 }
 
-void CHexEditor::InitUnicdeString(
+void CHexEditor::InitUnicodeString(
 								  LPCWSTR szInputString)
 {
 	SetStringW(0,szInputString);
@@ -59,15 +50,9 @@ CHexEditor::~CHexEditor()
 	TRACE_DESTRUCTOR(CLASS);
 }
 
-BEGIN_MESSAGE_MAP(CHexEditor, CEditor)
-//{{AFX_MSG_MAP(CHexEditor)
-//}}AFX_MSG_MAP
-END_MESSAGE_MAP()
-
 ULONG CHexEditor::HandleChange(UINT nID)
 {
 	HRESULT hRes = S_OK;
-	if (!m_lpControls) return (ULONG) -1;
 	ULONG i = CEditor::HandleChange(nID);
 
 	if ((ULONG) -1 == i) return (ULONG) -1;
@@ -80,10 +65,9 @@ ULONG CHexEditor::HandleChange(UINT nID)
 	size_t	cchEncodeStr = 0;
 	switch (i)
 	{
-	case(0)://ANSI string changed
+	case(0): // ANSI string changed
 		{
 			lpb = (LPBYTE) GetEditBoxTextA(0);
-
 			if (lpb)
 			{
 				EC_H(StringCbLengthA((LPCSTR) lpb,STRSAFE_MAX_CCH * sizeof(char),&cb));
@@ -97,25 +81,25 @@ ULONG CHexEditor::HandleChange(UINT nID)
 			SetBinary(5, lpb, cb);
 		}
 		break;
-	case(1)://Unicode string changed
+	case(1): // Unicode string changed
 		{
-			ReadEditBoxIntoLPSZW(1);
+			lpb = (LPBYTE) GetEditBoxTextW(1);
+			if (lpb)
+			{
+				EC_H(StringCbLengthW((LPCWSTR) lpb,STRSAFE_MAX_CCH * sizeof(WCHAR),&cb));
+			}
 
-			SetStringW(0,m_lpControls[1].UI.lpEdit->lpszW);
-
-			cb = sizeof(WCHAR) * (m_lpControls[1].UI.lpEdit->cchszW-1);
-			lpb = (LPBYTE) m_lpControls[1].UI.lpEdit->lpszW;
+			SetStringW(0,(LPWSTR) lpb);
 
 			WC_H(Base64Encode(cb, lpb, &cchEncodeStr, &szEncodeStr));
-
 			SetString(3,szEncodeStr);
 
-			SetBinary(5,(LPBYTE) m_lpControls[1].UI.lpEdit->lpszW, cb);
+			SetBinary(5, lpb, cb);
 		}
 		break;
-	case(3)://base64 changed
+	case(3): // base64 changed
 		{
-			m_lpControls[3].UI.lpEdit->EditBox.GetWindowText(szTmpString);
+			szTmpString = GetStringUseControl(3);
 
 			// remove any whitespace before decoding
 			szTmpString.Replace(_T("\r"),_T("")); // STRING_OK
@@ -144,15 +128,15 @@ ULONG CHexEditor::HandleChange(UINT nID)
 			delete[] lpb;
 		}
 		break;
-	case(5)://binary changed
+	case(5): // binary changed
 		{
 			if (GetBinaryUseControl(5,&cb,&lpb))
 			{
 				Bin.lpb = lpb;
 				Bin.cb = (ULONG) cb;
-				SetString(0,BinToTextString(&Bin,true));//ansi string
+				SetString(0,BinToTextString(&Bin,true)); // ansi string
 
-				if (!(cb % 2))//Set Unicode String
+				if (!(cb % 2)) // Set Unicode String
 				{
 					SetStringW(1,(LPWSTR) lpb);
 				}
@@ -178,9 +162,9 @@ ULONG CHexEditor::HandleChange(UINT nID)
 		break;
 	}
 
-	//length of base64 encoded string
+	// length of base64 encoded string
 	SetSize(2, cchEncodeStr);
-	//Length of binary/hex data
+	// Length of binary/hex data
 	SetSize(4, cb);
 	delete[] szEncodeStr;
 	return i;
