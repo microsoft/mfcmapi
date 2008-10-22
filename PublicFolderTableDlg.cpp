@@ -2,10 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "Error.h"
-
 #include "PublicFolderTableDlg.h"
-
 #include "ContentsTableListCtrl.h"
 #include "MapiObjects.h"
 #include "MAPIFunctions.h"
@@ -16,12 +13,7 @@
 #include "Editor.h"
 #include "PropertyTagEditor.h"
 #include "InterpretProp2.h"
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
+#include "PropTagArray.h"
 
 static TCHAR* CLASS = _T("CPublicFolderTableDlg");
 
@@ -30,7 +22,7 @@ static TCHAR* CLASS = _T("CPublicFolderTableDlg");
 
 CPublicFolderTableDlg::CPublicFolderTableDlg(
 							   CParentWnd* pParentWnd,
-							   CMapiObjects *lpMapiObjects,
+							   CMapiObjects* lpMapiObjects,
 							   LPCTSTR lpszServerName,
 							   LPMAPITABLE lpMAPITable
 							   ):
@@ -60,24 +52,16 @@ CPublicFolderTableDlg::~CPublicFolderTableDlg()
 	MAPIFreeBuffer(m_lpszServerName);
 }
 
-BEGIN_MESSAGE_MAP(CPublicFolderTableDlg, CContentsTableDlg)
-//{{AFX_MSG_MAP(CPublicFolderTableDlg)
-//}}AFX_MSG_MAP
-END_MESSAGE_MAP()
-
-BOOL CPublicFolderTableDlg::CreateDialogAndMenu(UINT nIDMenuResource)
+void CPublicFolderTableDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 {
-	HRESULT hRes = S_OK;
 	DebugPrintEx(DBGCreateDialog,CLASS,_T("CreateDialogAndMenu"),_T("id = 0x%X\n"),nIDMenuResource);
-	EC_B(CContentsTableDlg::CreateDialogAndMenu(nIDMenuResource));
+	CContentsTableDlg::CreateDialogAndMenu(nIDMenuResource);
 
-	EC_B(UpdateMenuString(
+	UpdateMenuString(
 		this,
 		ID_CREATEPROPERTYSTRINGRESTRICTION,
-		IDS_PFRESMENU));
-
-	return HRES_TO_BOOL(hRes);
-}//CPublicFolderTableDlg::CreateDialogAndMenu
+		IDS_PFRESMENU);
+} // CPublicFolderTableDlg::CreateDialogAndMenu
 
 void CPublicFolderTableDlg::OnDisplayItem()
 {
@@ -88,12 +72,12 @@ void CPublicFolderTableDlg::OnDisplayItem()
 	TCHAR*			szMailboxDN = NULL;
 	int				iItem = -1;
 	SortListData*	lpListData = NULL;
-	CWaitCursor	Wait;//Change the mouse to an hourglass while we work.
+	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
-	m_lpMapiObjects->GetSession(&lpMAPISession);//do not release
+	m_lpMapiObjects->GetSession(&lpMAPISession); // do not release
 	if (!lpMAPISession) return;
 
-	m_lpMapiObjects->GetMDB(&lpMDB);//do not release
+	m_lpMapiObjects->GetMDB(&lpMDB); // do not release
 	if (!lpMDB)
 	{
 		EC_H(OpenPrivateMessageStore(lpMAPISession, &lpMDB));
@@ -136,7 +120,7 @@ void CPublicFolderTableDlg::OnDisplayItem()
 		}
 		while (iItem != -1);
 	}*/
-}//CPublicFolderTableDlg::OnDisplayItem
+} // CPublicFolderTableDlg::OnDisplayItem
 
 HRESULT CPublicFolderTableDlg::OpenItemProp(int /*iSelectedItem*/, __mfcmapiModifyEnum /*bModify*/, LPMAPIPROP* /*lppMAPIProp*/)
 {
@@ -145,17 +129,17 @@ HRESULT CPublicFolderTableDlg::OpenItemProp(int /*iSelectedItem*/, __mfcmapiModi
 	SortListData*	lpListData = NULL;
 	LPMAPISESSION	lpMAPISession	= NULL;
 	LPMDB			lpMDB = NULL;
-	CWaitCursor	Wait;//Change the mouse to an hourglass while we work.
+	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
 	DebugPrintEx(DBGOpenItemProp,CLASS,_T("OpenItemProp"),_T("iSelectedItem = 0x%X\n"),iSelectedItem);
 
 	if (!lppMAPIProp || !m_lpContentsTableListCtrl) return MAPI_E_INVALID_PARAMETER;
 
 
-	m_lpMapiObjects->GetSession(&lpMAPISession);//do not release
+	m_lpMapiObjects->GetSession(&lpMAPISession); // do not release
 	if (!lpMAPISession) return MAPI_E_INVALID_PARAMETER;
 
-	m_lpMapiObjects->GetMDB(&lpMDB);//do not release
+	m_lpMapiObjects->GetMDB(&lpMDB); // do not release
 	if (!lpMDB)
 	{
 		EC_H(OpenPrivateMessageStore(lpMAPISession, &lpMDB));
@@ -178,7 +162,7 @@ HRESULT CPublicFolderTableDlg::OpenItemProp(int /*iSelectedItem*/, __mfcmapiModi
 		}
 	}*/
 	return hRes;
-}//CPublicFolderTableDlg::OpenItemProp
+} // CPublicFolderTableDlg::OpenItemProp
 
 void CPublicFolderTableDlg::OnCreatePropertyStringRestriction()
 {
@@ -186,8 +170,8 @@ void CPublicFolderTableDlg::OnCreatePropertyStringRestriction()
 	LPSRestriction	lpRes = NULL;
 
 	CPropertyTagEditor MyPropertyTag(
-		IDS_PROPRES,//title
-		NULL,//prompt
+		IDS_PROPRES, // title
+		NULL, // prompt
 		PR_DISPLAY_NAME,
 		m_bIsAB,
 		m_lpContainer,
@@ -211,7 +195,7 @@ void CPublicFolderTableDlg::OnCreatePropertyStringRestriction()
 		WC_H(MyData.DisplayDialog());
 		if (S_OK != hRes) return;
 
-		//Allocate and create our SRestriction
+		// Allocate and create our SRestriction
 		EC_H(CreatePropertyStringRestriction(
 			CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(),PT_TSTRING),
 			MyData.GetString(0),
@@ -224,9 +208,8 @@ void CPublicFolderTableDlg::OnCreatePropertyStringRestriction()
 			lpRes = NULL;
 		}
 
-		MAPIFreeBuffer(m_lpContentsTableListCtrl->m_lpRes);
-		m_lpContentsTableListCtrl->m_lpRes = lpRes;
+		m_lpContentsTableListCtrl->SetRestriction(lpRes);
 
 		SetRestrictionType(mfcmapiNORMAL_RESTRICTION);
 	}
-}//CPublicFolderTableDlg::OnCreatePropertyStringRestriction
+} // CPublicFolderTableDlg::OnCreatePropertyStringRestriction

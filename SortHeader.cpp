@@ -4,7 +4,6 @@
 #include "stdafx.h"
 #include "SortHeader.h"
 #include "InterpretProp2.h"
-//#include <windowsx.h>
 
 CSortHeader::CSortHeader()
 {
@@ -13,14 +12,8 @@ CSortHeader::CSortHeader()
 	ZeroMemory(&m_ti,sizeof(TOOLINFO));
 }
 
-CSortHeader::~CSortHeader()
-{
-}
-
 BEGIN_MESSAGE_MAP(CSortHeader, CHeaderCtrl)
-	//{{AFX_MSG_MAP(CSortHeader)
 	ON_MESSAGE(WM_MFCMAPI_SAVECOLUMNORDERHEADER, msgOnSaveColumnOrder)
-	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 BOOL CSortHeader::Init(CHeaderCtrl *pHeader, HWND hwndParent)
@@ -116,16 +109,12 @@ LRESULT CSortHeader::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 				{
 					HDITEM	hdItem = {0};
 					hdItem.mask = HDI_LPARAM;
-					//to get text of header, use this
-/*					hdItem.mask = HDI_LPARAM | HDI_TEXT;
-					TCHAR szHeaderTitle[MAX_PATH];
-					hdItem.cchTextMax = MAX_PATH;
-					hdItem.pszText = szHeaderTitle;*/
+
 					EC_B(GetItem(hdHitTestInfo.iItem,&hdItem));
 
 					LPHEADERDATA lpHeaderData = (LPHEADERDATA) hdItem.lParam;
 
-					//this will only display tips if we have a HeaderData structure saved
+					// this will only display tips if we have a HeaderData structure saved
 					if (lpHeaderData)
 					{
 						m_ti.lpszText = lpHeaderData->szTipString;
@@ -155,7 +144,7 @@ LRESULT CSortHeader::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			return NULL;
 			break;
 		}
-	}//end switch
+	} // end switch
 	return CHeaderCtrl::WindowProc(message,wParam,lParam);
 }
 

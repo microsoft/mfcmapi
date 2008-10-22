@@ -2,26 +2,19 @@
 
 #include "stdafx.h"
 #include "MFCOutput.h"
-
-#include "registry.h"
 #include "MapiFunctions.h"
 #include "InterpretProp.h"
 #include "InterpretProp2.h"
-
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
-#define new DEBUG_NEW
-#endif
+#include "PropTagArray.h"
 
 FILE* g_fDebugFile = NULL;
 
 void OpenDebugFile()
 {
-	//close out the old file handle if we have one
+	// close out the old file handle if we have one
 	CloseDebugFile();
 
-	//only open the file if we really need to
+	// only open the file if we really need to
 	if (RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD == TRUE)
 	{
 		g_fDebugFile = OpenFile(RegKeys[regkeyDEBUG_FILE_NAME].szCurSTRING,false);
@@ -40,22 +33,22 @@ void SetDebugLevel(ULONG ulDbgLvl)
 	DebugPrintVersion(DBGVersionBanner);
 }
 
-//We've got our 'new' value here and also a debug output file name
-//gonna set the new value
-//gonna ensure our debug output file is open if we need it, closed if we don't
-//gonna output some text if we just toggled on
+// We've got our 'new' value here and also a debug output file name
+// gonna set the new value
+// gonna ensure our debug output file is open if we need it, closed if we don't
+// gonna output some text if we just toggled on
 void SetDebugOutputToFile(BOOL bDoOutput)
 {
-	//save our old value
+	// save our old value
 	BOOL bOldDoOutput = RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD;
 
-	//set the new value
+	// set the new value
 	RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD = bDoOutput;
 
-	//ensure we got a file if we need it
+	// ensure we got a file if we need it
 	OpenDebugFile();
 
-	//output text if we just toggled on
+	// output text if we just toggled on
 	if (bDoOutput && !bOldDoOutput)
 	{
 		CWinApp* lpApp = NULL;
@@ -72,19 +65,19 @@ void SetDebugOutputToFile(BOOL bDoOutput)
 
 #define CHKPARAM ASSERT(DBGNoDebug != ulDbgLvl || fFile)
 
-//quick check to see if we have anything to print - so we can avoid executing the call
+// quick check to see if we have anything to print - so we can avoid executing the call
 #define EARLYABORT {if (!fFile && !RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD && !fIsSet(ulDbgLvl)) return;}
 
 FILE* OpenFile(LPCTSTR szFileName,BOOL bNewFile)
 {
-	static TCHAR szErr[256];//buffer for catastrophic failures
+	static TCHAR szErr[256]; // buffer for catastrophic failures
 	FILE* fOut = NULL;
-	LPCTSTR szParams = _T("a+");// STRING_OK
-	if (bNewFile) szParams = _T("w");// STRING_OK
+	LPCTSTR szParams = _T("a+"); // STRING_OK
+	if (bNewFile) szParams = _T("w"); // STRING_OK
 
 // _tfopen has been deprecated, but older compilers do not have _tfopen_s
-// Use the replacement when we're on VS 2008 or higher.
-#if defined(_MSC_VER) && (_MSC_VER >= 1500)
+// Use the replacement when we're on VS 2005 or higher.
+#if defined(_MSC_VER) && (_MSC_VER >= 1000)
 	_tfopen_s(&fOut,szFileName,szParams);
 #else
 	fOut = _tfopen(szFileName,szParams);
@@ -95,7 +88,7 @@ FILE* OpenFile(LPCTSTR szFileName,BOOL bNewFile)
 	}
 	else
 	{
-		//File IO failed - complain - not using error macros since we may not have debug output here
+		// File IO failed - complain - not using error macros since we may not have debug output here
 		DWORD dwErr = GetLastError();
 		HRESULT hRes = HRESULT_FROM_WIN32(dwErr);
 		LPTSTR szSysErr = NULL;
@@ -109,7 +102,7 @@ FILE* OpenFile(LPCTSTR szFileName,BOOL bNewFile)
 			0);
 
 		hRes = StringCchPrintf(szErr,CCH(szErr),
-			_T("_tfopen failed, hRes = 0x%08X, dwErr = 0x%08X = \"%s\"\n"),// STRING_OK
+			_T("_tfopen failed, hRes = 0x%08X, dwErr = 0x%08X = \"%s\"\n"), // STRING_OK
 			HRESULT_FROM_WIN32(dwErr),
 			dwErr,
 			szSysErr);
@@ -125,21 +118,21 @@ void CloseFile(FILE* fFile)
 	fclose(fFile);
 }
 
-//The root of all debug output - call no debug output functions besides OutputDebugString from here!
+// The root of all debug output - call no debug output functions besides OutputDebugString from here!
 void _Output(ULONG ulDbgLvl, FILE* fFile, BOOL bPrintThreadTime, LPCTSTR szMsg)
 {
 	CHKPARAM;
 	EARLYABORT;
-	static TCHAR szErr[64];//buffer for catastrophic failures
+	static TCHAR szErr[64]; // buffer for catastrophic failures
 
 	HRESULT hRes = S_OK;
 
-	if (!szMsg) return;//nothing to print? Cool!
+	if (!szMsg) return; // nothing to print? Cool!
 
-	//print to debug output
+	// print to debug output
 	if (fIsSet(ulDbgLvl))
 	{
-		//Compute current time and thread for a time stamp
+		// Compute current time and thread for a time stamp
 		TCHAR		szThreadTime[MAX_PATH];
 
 		if (bPrintThreadTime)
@@ -151,13 +144,13 @@ void _Output(ULONG ulDbgLvl, FILE* fFile, BOOL bPrintThreadTime, LPCTSTR szMsg)
 
 			EC_H(StringCchPrintf(szThreadTime,
 				CCH(szThreadTime),
-				_T("0x%04x %02d:%02d:%02d.%03d%s  %02d-%02d-%4d 0x%08X: "),// STRING_OK
+				_T("0x%04x %02d:%02d:%02d.%03d%s  %02d-%02d-%4d 0x%08X: "), // STRING_OK
 				GetCurrentThreadId(),
 				(stLocalTime.wHour <= 12)?stLocalTime.wHour:stLocalTime.wHour-12,
 				stLocalTime.wMinute,
 				stLocalTime.wSecond,
 				stLocalTime.wMilliseconds,
-				(stLocalTime.wHour <= 12)?_T("AM"):_T("PM"),// STRING_OK
+				(stLocalTime.wHour <= 12)?_T("AM"):_T("PM"), // STRING_OK
 				stLocalTime.wMonth,
 				stLocalTime.wDay,
 				stLocalTime.wYear,
@@ -167,7 +160,7 @@ void _Output(ULONG ulDbgLvl, FILE* fFile, BOOL bPrintThreadTime, LPCTSTR szMsg)
 
 		OutputDebugString(szMsg);
 
-		//print to to our debug output log file
+		// print to to our debug output log file
 		if (RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD && g_fDebugFile)
 		{
 			if (bPrintThreadTime) _fputts(szThreadTime,g_fDebugFile);
@@ -175,7 +168,7 @@ void _Output(ULONG ulDbgLvl, FILE* fFile, BOOL bPrintThreadTime, LPCTSTR szMsg)
 		}
 	}
 
-	//If we were given a file - send the output there
+	// If we were given a file - send the output there
 	if (fFile)
 	{
 		_fputts(szMsg,fFile);
@@ -202,7 +195,7 @@ void __cdecl Outputf(ULONG ulDbgLvl, FILE* fFile, BOOL bPrintThreadTime, LPCTSTR
 	if (FAILED(hRes))
 	{
 		_Output(DBGFatalError,NULL, true,_T("Debug output string not large enough to print everything to it\n"));
-		//Since this function was 'safe', we've still got something we can print - send it on.
+		// Since this function was 'safe', we've still got something we can print - send it on.
 	}
 	va_end(argList);
 
@@ -229,7 +222,7 @@ void __cdecl OutputToFilef(FILE* fFile, LPCTSTR szMsg,...)
 	if (S_OK != hRes)
 	{
 		_Output(DBGFatalError,NULL, true,_T("Debug output string not large enough to print everything to it\n"));
-		//Since this function was 'safe', we've still got something we can print - send it on.
+		// Since this function was 'safe', we've still got something we can print - send it on.
 	}
 	va_end(argList);
 
@@ -249,8 +242,8 @@ void __cdecl DebugPrint(ULONG ulDbgLvl,LPCTSTR szMsg,...)
 	{
 		TCHAR szDebugString[4096];
 		hRes = StringCchVPrintf(szDebugString, CCH(szDebugString), szMsg, argList);
-		ASSERT(hRes == S_OK);
-		_Output(ulDbgLvl,NULL, true, szDebugString);
+		if (hRes == S_OK)
+			_Output(ulDbgLvl,NULL, true, szDebugString);
 	}
 	else
 		_Output(ulDbgLvl,NULL, true, szMsg);
@@ -265,18 +258,18 @@ void __cdecl DebugPrintEx(ULONG ulDbgLvl,LPCTSTR szClass, LPCTSTR szFunc, LPCTST
 
 	if (!fIsSet(ulDbgLvl) && !RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD) return;
 
-	hRes = StringCchPrintf(szMsgEx,CCH(szMsgEx),_T("%s::%s %s"),szClass, szFunc, szMsg);// STRING_OK
-	ASSERT(hRes == S_OK);
+	hRes = StringCchPrintf(szMsgEx,CCH(szMsgEx),_T("%s::%s %s"),szClass, szFunc, szMsg); // STRING_OK
+	if (hRes == S_OK)
+	{
+		va_list argList = NULL;
+		va_start(argList, szMsg);
 
-	va_list argList = NULL;
-	va_start(argList, szMsg);
-
-	TCHAR szDebugString[4096];
-	hRes = StringCchVPrintf(szDebugString, CCH(szDebugString), szMsgEx, argList);
-	ASSERT(hRes == S_OK);
-	va_end(argList);
-
-	_Output(ulDbgLvl, NULL, true, szDebugString);
+		TCHAR szDebugString[4096];
+		hRes = StringCchVPrintf(szDebugString, CCH(szDebugString), szMsgEx, argList);
+		va_end(argList);
+		if (hRes == S_OK)
+			_Output(ulDbgLvl, NULL, true, szDebugString);
+	}
 }
 
 void _OutputBinary(ULONG ulDbgLvl, FILE* fFile, LPSBinary lpBin)
@@ -293,7 +286,7 @@ void _OutputBinary(ULONG ulDbgLvl, FILE* fFile, LPSBinary lpBin)
 	_Output(ulDbgLvl, fFile, false, BinToHexString(lpBin,true));
 
 	_Output(ulDbgLvl, fFile,false,_T("\n"));
-}//_OutputBinary
+} // _OutputBinary
 
 void _OutputNamedPropID(ULONG ulDbgLvl, FILE* fFile, LPMAPINAMEID lpName)
 {
@@ -305,13 +298,13 @@ void _OutputNamedPropID(ULONG ulDbgLvl, FILE* fFile, LPMAPINAMEID lpName)
 	if (lpName->ulKind == MNID_ID)
 	{
 		Outputf(ulDbgLvl,fFile,true,
-			_T("\t\t: nmid ID: 0x%X\n"),// STRING_OK
+			_T("\t\t: nmid ID: 0x%X\n"), // STRING_OK
 			lpName->Kind.lID);
 	}
 	else
 	{
 		Outputf(ulDbgLvl,fFile,true,
-			_T("\t\t: nmid Name: %ws\n"),// STRING_OK
+			_T("\t\t: nmid Name: %ws\n"), // STRING_OK
 			lpName->Kind.lpwstrName);
 	}
 	LPTSTR szGuid = GUIDToStringAndName(lpName->lpguid);
@@ -345,7 +338,7 @@ void _OutputFormInfo(ULONG ulDbgLvl, FILE* fFile, LPMAPIFORMINFO lpMAPIFormInfo)
 		MAPIFreeBuffer(lpPropVals);
 	}
 
-	EC_H(lpMAPIFormInfo->CalcVerbSet(NULL, &lpMAPIVerbArray));// API doesn't support Unicode
+	EC_H(lpMAPIFormInfo->CalcVerbSet(NULL, &lpMAPIVerbArray)); // API doesn't support Unicode
 
 	if (lpMAPIVerbArray)
 	{
@@ -356,7 +349,7 @@ void _OutputFormInfo(ULONG ulDbgLvl, FILE* fFile, LPMAPIFORMINFO lpMAPIFormInfo)
 				ulDbgLvl,
 				fFile,
 				true,
-				_T("\t\tVerb 0x%X\n"),// STRING_OK
+				_T("\t\tVerb 0x%X\n"), // STRING_OK
 				i);
 			if (lpMAPIVerbArray->aMAPIVerb[i].ulFlags == MAPI_UNICODE)
 			{
@@ -364,7 +357,7 @@ void _OutputFormInfo(ULONG ulDbgLvl, FILE* fFile, LPMAPIFORMINFO lpMAPIFormInfo)
 					ulDbgLvl,
 					fFile,
 					true,
-					_T("\t\tDoVerb value: 0x%X\n\t\tUnicode Name: %ws\n\t\tFlags: 0x%X\n\t\tAttributes: 0x%X\n"),// STRING_OK
+					_T("\t\tDoVerb value: 0x%X\n\t\tUnicode Name: %ws\n\t\tFlags: 0x%X\n\t\tAttributes: 0x%X\n"), // STRING_OK
 					lpMAPIVerbArray->aMAPIVerb[i].lVerb,
 					lpMAPIVerbArray->aMAPIVerb[i].szVerbname,
 					lpMAPIVerbArray->aMAPIVerb[i].fuFlags,
@@ -376,7 +369,7 @@ void _OutputFormInfo(ULONG ulDbgLvl, FILE* fFile, LPMAPIFORMINFO lpMAPIFormInfo)
 					ulDbgLvl,
 					fFile,
 					true,
-					_T("\t\tDoVerb value: 0x%X\n\t\tANSI Name: %hs\n\t\tFlags: 0x%X\n\t\tAttributes: 0x%X\n"),// STRING_OK
+					_T("\t\tDoVerb value: 0x%X\n\t\tANSI Name: %hs\n\t\tFlags: 0x%X\n\t\tAttributes: 0x%X\n"), // STRING_OK
 					lpMAPIVerbArray->aMAPIVerb[i].lVerb,
 					lpMAPIVerbArray->aMAPIVerb[i].szVerbname,
 					lpMAPIVerbArray->aMAPIVerb[i].fuFlags,
@@ -387,7 +380,7 @@ void _OutputFormInfo(ULONG ulDbgLvl, FILE* fFile, LPMAPIFORMINFO lpMAPIFormInfo)
 	}
 
 	hRes = S_OK;
-	EC_H(lpMAPIFormInfo->CalcFormPropSet(NULL, &lpMAPIFormPropArray));// API doesn't support Unicode
+	EC_H(lpMAPIFormInfo->CalcFormPropSet(NULL, &lpMAPIFormPropArray)); // API doesn't support Unicode
 
 	if (lpMAPIFormPropArray)
 	{
@@ -407,7 +400,7 @@ void _OutputFormPropArray(ULONG ulDbgLvl, FILE* fFile, LPMAPIFORMPROPARRAY lpMAP
 		if (lpMAPIFormPropArray->aFormProp[i].ulFlags == MAPI_UNICODE)
 		{
 			Outputf(ulDbgLvl,fFile, true,
-				_T("\t\tProperty Name: %ws\n\t\tProperty Type: %s\n\t\tSpecial Type: 0x%X\n\t\tNum Vals: 0x%X\n"),// STRING_OK
+				_T("\t\tProperty Name: %ws\n\t\tProperty Type: %s\n\t\tSpecial Type: 0x%X\n\t\tNum Vals: 0x%X\n"), // STRING_OK
 				lpMAPIFormPropArray->aFormProp[i].pszDisplayName,
 				TypeToString(lpMAPIFormPropArray->aFormProp[i].nPropType),
 				lpMAPIFormPropArray->aFormProp[i].nSpecialType,
@@ -416,7 +409,7 @@ void _OutputFormPropArray(ULONG ulDbgLvl, FILE* fFile, LPMAPIFORMPROPARRAY lpMAP
 		else
 		{
 			Outputf(ulDbgLvl,fFile, true,
-				_T("\t\tProperty Name: %hs\n\t\tProperty Type: %s\n\t\tSpecial Type: 0x%X\n\t\tNum Vals: 0x%X\n"),// STRING_OK
+				_T("\t\tProperty Name: %hs\n\t\tProperty Type: %s\n\t\tSpecial Type: 0x%X\n\t\tNum Vals: 0x%X\n"), // STRING_OK
 				lpMAPIFormPropArray->aFormProp[i].pszDisplayName,
 				TypeToString(lpMAPIFormPropArray->aFormProp[i].nPropType),
 				lpMAPIFormPropArray->aFormProp[i].nSpecialType,
@@ -428,7 +421,7 @@ void _OutputFormPropArray(ULONG ulDbgLvl, FILE* fFile, LPMAPIFORMPROPARRAY lpMAP
 			if (lpMAPIFormPropArray->aFormProp[i].ulFlags == MAPI_UNICODE)
 			{
 				Outputf(ulDbgLvl,fFile, true,
-					_T("\t\t\tEnum 0x%X\nEnumVal Name: %ws\t\t\t\nEnumVal enumeration: 0x%X\n"),// STRING_OK
+					_T("\t\t\tEnum 0x%X\nEnumVal Name: %ws\t\t\t\nEnumVal enumeration: 0x%X\n"), // STRING_OK
 					j,
 					lpMAPIFormPropArray->aFormProp[i].u.s1.pfpevAvailable[j].pszDisplayName,
 					lpMAPIFormPropArray->aFormProp[i].u.s1.pfpevAvailable[j].nVal);
@@ -436,7 +429,7 @@ void _OutputFormPropArray(ULONG ulDbgLvl, FILE* fFile, LPMAPIFORMPROPARRAY lpMAP
 			else
 			{
 				Outputf(ulDbgLvl,fFile, true,
-					_T("\t\t\tEnum 0x%X\nEnumVal Name: %hs\t\t\t\nEnumVal enumeration: 0x%X\n"),// STRING_OK
+					_T("\t\t\tEnum 0x%X\nEnumVal Name: %hs\t\t\t\nEnumVal enumeration: 0x%X\n"), // STRING_OK
 					j,
 					lpMAPIFormPropArray->aFormProp[i].u.s1.pfpevAvailable[j].pszDisplayName,
 					lpMAPIFormPropArray->aFormProp[i].u.s1.pfpevAvailable[j].nVal);
@@ -455,7 +448,7 @@ void _OutputPropTagArray(ULONG ulDbgLvl, FILE* fFile, LPSPropTagArray lpTagsToDu
 	Outputf(ulDbgLvl,
 		fFile,
 		true,
-		_T("\tProp tag list, %d props\n"),// STRING_OK
+		_T("\tProp tag list, %d props\n"), // STRING_OK
 		lpTagsToDump->cValues);
 	ULONG uCurProp = 0;
 	for (uCurProp = 0;uCurProp < lpTagsToDump->cValues; uCurProp++)
@@ -463,7 +456,7 @@ void _OutputPropTagArray(ULONG ulDbgLvl, FILE* fFile, LPSPropTagArray lpTagsToDu
 		Outputf(ulDbgLvl,
 			fFile,
 			true,
-			_T("\t\tProp: %d = %s\n"),// STRING_OK
+			_T("\t\tProp: %d = %s\n"), // STRING_OK
 			uCurProp,
 			(LPCTSTR) TagToString(lpTagsToDump->aulPropTag[uCurProp],NULL,false,true));
 	}
@@ -483,7 +476,7 @@ void _OutputTable(ULONG ulDbgLvl, FILE* fFile, LPMAPITABLE lpMAPITable)
 		BOOKMARK_BEGINNING,
 		0,
 		NULL));
-	hRes = S_OK;//don't let failure here fail the whole op
+	hRes = S_OK; // don't let failure here fail the whole op
 
 	for (;;)
 	{
@@ -821,7 +814,7 @@ void _OutputStream(ULONG ulDbgLvl, FILE* fFile, LPSTREAM lpStream)
 	CHKPARAM;
 	EARLYABORT;
 	HRESULT			hRes = S_OK;
-	BYTE			bBuf[MAXBYTES+2];//Allocate some extra for NULL terminators - 2 for Unicode
+	BYTE			bBuf[MAXBYTES+2]; // Allocate some extra for NULL terminators - 2 for Unicode
 	ULONG			ulNumBytes = MAXBYTES;
 	LARGE_INTEGER	li = {0};
 
@@ -830,8 +823,6 @@ void _OutputStream(ULONG ulDbgLvl, FILE* fFile, LPSTREAM lpStream)
 		_Output(ulDbgLvl, fFile, true, _T("OutputStream called with NULL lpStream!\n"));
 		return;
 	}
-
-//	DebugPrint(ulDbgLvl, _T("OutputStream sending 0x%X to \"%s\"\n"),lpStream, szFileName);
 
 	WC_H_MSG(lpStream->Seek(
 		li,
@@ -848,15 +839,14 @@ void _OutputStream(ULONG ulDbgLvl, FILE* fFile, LPSTREAM lpStream)
 
 		if (ulNumBytes >0)
 		{
-//			DebugPrint(ulDbgLvl, _T("OutputStream writing 0x%X bytes to \"%s\"\n"), ulNumBytes, szFileName);
 			bBuf[ulNumBytes] = 0;
-			bBuf[ulNumBytes+1] = 0;//In case we are in Unicode
+			bBuf[ulNumBytes+1] = 0; // In case we are in Unicode
 			_Output(ulDbgLvl, fFile, true, (TCHAR*)bBuf);
 		}
 	}
 	while (ulNumBytes >= MAXBYTES);
 
-}//_OutputStream
+} // _OutputStream
 
 
 void _OutputVersion(ULONG ulDbgLvl, FILE* fFile)
@@ -904,7 +894,7 @@ void _OutputVersion(ULONG ulDbgLvl, FILE* fFile)
 				// Read the list of languages and code pages.
 				EC_B(VerQueryValue(
 					pbData,
-					_T("\\VarFileInfo\\Translation"),// STRING_OK
+					_T("\\VarFileInfo\\Translation"), // STRING_OK
 					(LPVOID*)&lpTranslate,
 					&cbTranslate));
 
@@ -918,14 +908,14 @@ void _OutputVersion(ULONG ulDbgLvl, FILE* fFile)
 						EC_H(StringCchPrintf(
 							szSubBlock,
 							CCH(szSubBlock),
-							_T("\\StringFileInfo\\%04x%04x\\"),// STRING_OK
+							_T("\\StringFileInfo\\%04x%04x\\"), // STRING_OK
 							lpTranslate[iCodePages].wLanguage,
 							lpTranslate[iCodePages].wCodePage));
 
 						size_t cchRoot = NULL;
 						EC_H(StringCchLength(szSubBlock,256,&cchRoot));
 
-						//Load all our strings
+						// Load all our strings
 						for (int iVerString = IDS_VER_FIRST; iVerString <= IDS_VER_LAST; iVerString++)
 						{
 							UINT	cchVer = 0;

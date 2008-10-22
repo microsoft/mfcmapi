@@ -50,7 +50,7 @@ HRESULT ImportEMLToIMessage(
 				// We'll make the user ensure CCSF_SMTP is passed
 				EC_H(lpConverter->MIMEToMAPI(lpEMLStm,
 					lpMsg,
-					NULL,//Must be NULL
+					NULL, // Must be NULL
 					ulConvertFlags));
 				if (SUCCEEDED(hRes))
 				{
@@ -261,7 +261,7 @@ HRESULT GetConversionToEMLOptions(CWnd* pParentWnd,
 		*pDoAdrBook = MyData.GetCheck(7);
 	}
 	return hRes;
-}//GetConversionToEMLOptions
+} // GetConversionToEMLOptions
 
 HRESULT GetConversionFromEMLOptions(CWnd* pParentWnd,
 									ULONG* lpulConvertFlags,

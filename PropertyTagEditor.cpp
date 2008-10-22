@@ -2,22 +2,25 @@
 //
 
 #include "stdafx.h"
-#include "Error.h"
-
 #include "PropertyTagEditor.h"
-
 #include "InterpretProp.h"
 #include "InterpretProp2.h"
 #include "PropTagArray.h"
 #include "MAPIFunctions.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
 static TCHAR* CLASS = _T("CPropertyTagEditor");
+
+enum __PropTagFields
+{
+	PROPTAG_TAG,
+	PROPTAG_ID,
+	PROPTAG_TYPE,
+	PROPTAG_NAME,
+	PROPTAG_TYPESTRING,
+	PROPTAG_NAMEPROPKIND,
+	PROPTAG_NAMEPROPNAME,
+	PROPTAG_NAMEPROPGUID,
+};
 
 CPropertyTagEditor::CPropertyTagEditor(
 									   UINT			uidTitle,
@@ -26,30 +29,32 @@ CPropertyTagEditor::CPropertyTagEditor(
 									   BOOL			bIncludeABProps,
 									   LPMAPIPROP	lpMAPIProp,
 									   CWnd*		pParentWnd):
-CEditor(pParentWnd,IDS_PROPTAGEDITOR,IDS_PROPTAGEDITORPROMPT,0,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL|CEDITOR_BUTTON_ACTION1|(lpMAPIProp?CEDITOR_BUTTON_ACTION2:0))
+CEditor(pParentWnd,
+		uidTitle?uidTitle:IDS_PROPTAGEDITOR,
+		uidPrompt?uidPrompt:IDS_PROPTAGEDITORPROMPT,
+		0,
+		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL|CEDITOR_BUTTON_ACTION1|(lpMAPIProp?CEDITOR_BUTTON_ACTION2:0),
+		IDS_ACTIONSELECTPTAG,
+		IDS_ACTIONLOOKUPNAMEDPROP)
 {
 	TRACE_CONSTRUCTOR(CLASS);
-	if (uidTitle) m_uidTitle = uidTitle;
-	if (uidPrompt) m_uidPrompt = uidPrompt;
 	m_ulPropTag = ulPropTag;
 	m_bIncludeABProps = bIncludeABProps;
 	m_lpMAPIProp = lpMAPIProp;
 
 	if (m_lpMAPIProp) m_lpMAPIProp->AddRef();
 
-	m_uidActionButtonText1 = IDS_ACTIONSELECTPTAG;
-	m_uidActionButtonText2 = IDS_ACTIONLOOKUPNAMEDPROP;
 	CreateControls(m_lpMAPIProp?8:5);
-	InitSingleLine(	0,IDS_PROPTAG,NULL,false);
-	InitSingleLine(	1,IDS_PROPID,NULL,false);
-	InitDropDown(	2,IDS_PROPTYPE,0,NULL,false);
-	InitSingleLine(	3,IDS_PROPNAME,NULL,true);
-	InitSingleLine(	4,IDS_PROPTYPE,NULL,true);
+	InitSingleLine(	PROPTAG_TAG,IDS_PROPTAG,NULL,false);
+	InitSingleLine(	PROPTAG_ID,IDS_PROPID,NULL,false);
+	InitDropDown(	PROPTAG_TYPE,IDS_PROPTYPE,0,NULL,false);
+	InitSingleLine(	PROPTAG_NAME,IDS_PROPNAME,NULL,true);
+	InitSingleLine(	PROPTAG_TYPESTRING,IDS_PROPTYPE,NULL,true);
 	if (m_lpMAPIProp)
 	{
-		InitDropDown(	5,IDS_NAMEPROPKIND,0,NULL,true);
-		InitSingleLine(	6,IDS_NAMEPROPNAME,NULL,false);
-		InitDropDown(	7,IDS_NAMEPROPGUID,0,NULL,false);
+		InitDropDown(	PROPTAG_NAMEPROPKIND,IDS_NAMEPROPKIND,0,NULL,true);
+		InitSingleLine(	PROPTAG_NAMEPROPNAME,IDS_NAMEPROPNAME,NULL,false);
+		InitDropDown(	PROPTAG_NAMEPROPGUID,IDS_NAMEPROPGUID,0,NULL,false);
 	}
 }
 
@@ -59,70 +64,46 @@ CPropertyTagEditor::~CPropertyTagEditor()
 	if (m_lpMAPIProp) m_lpMAPIProp->Release();
 }
 
-BEGIN_MESSAGE_MAP(CPropertyTagEditor, CEditor)
-//{{AFX_MSG_MAP(CPropertyTagEditor)
-//}}AFX_MSG_MAP
-END_MESSAGE_MAP()
-
 BOOL CPropertyTagEditor::OnInitDialog()
 {
-	HRESULT hRes = S_OK;
+	BOOL bRet = CEditor::OnInitDialog();
 
-	EC_B(CEditor::OnInitDialog());
-
-	//initialize our dropdowns here
+	// initialize our dropdowns here
 	ULONG ulDropNum = 0;
 
-	//prop types
-	if (m_lpControls[2].UI.lpDropDown)
+	// prop types
+	for (ulDropNum=0 ; ulDropNum < ulPropTypeArray ; ulDropNum++)
 	{
-		m_lpControls[2].UI.lpDropDown->ulDropList = ulPropTypeArray;
-		for (ulDropNum=0 ; ulDropNum < ulPropTypeArray ; ulDropNum++)
-		{
 #ifdef UNICODE
-			m_lpControls[2].UI.lpDropDown->DropDown.InsertString(
-				ulDropNum,
-				PropTypeArray[ulDropNum].lpszName);
+		InsertDropString(PROPTAG_ID,ulDropNum,PropTypeArray[ulDropNum].lpszName);
 #else
-			LPSTR szAnsiName = NULL;
-			EC_H(UnicodeToAnsi(PropTypeArray[ulDropNum].lpszName,&szAnsiName));
-			if (SUCCEEDED(hRes))
-			{
-				m_lpControls[2].UI.lpDropDown->DropDown.InsertString(
-					ulDropNum,
-					szAnsiName);
-			}
-			delete[] szAnsiName;
-#endif
+		HRESULT hRes = S_OK;
+		LPSTR szAnsiName = NULL;
+		EC_H(UnicodeToAnsi(PropTypeArray[ulDropNum].lpszName,&szAnsiName));
+		if (SUCCEEDED(hRes))
+		{
+			InsertDropString(PROPTAG_ID,ulDropNum,szAnsiName);
 		}
+		delete[] szAnsiName;
+#endif
 	}
 
 	if (m_lpMAPIProp)
 	{
-		if (m_lpControls[5].UI.lpDropDown)
-		{
-			m_lpControls[5].UI.lpDropDown->ulDropList = 2;
-			m_lpControls[5].UI.lpDropDown->DropDown.InsertString(0,_T("MNID_STRING"));// STRING_OK
-			m_lpControls[5].UI.lpDropDown->DropDown.InsertString(1,_T("MNID_ID"));// STRING_OK
-		}
+		InsertDropString(PROPTAG_NAMEPROPKIND,ulDropNum,_T("MNID_STRING")); // STRING_OK
+		InsertDropString(PROPTAG_NAMEPROPKIND,ulDropNum,_T("MNID_ID")); // STRING_OK
 
-		if (m_lpControls[7].UI.lpDropDown)
+		for (ulDropNum=0 ; ulDropNum < ulPropGuidArray ; ulDropNum++)
 		{
-			m_lpControls[7].UI.lpDropDown->ulDropList = ulPropGuidArray;
-			for (ulDropNum=0 ; ulDropNum < ulPropGuidArray ; ulDropNum++)
-			{
-				LPTSTR szGUID = GUIDToStringAndName(PropGuidArray[ulDropNum].lpGuid);
-				m_lpControls[7].UI.lpDropDown->DropDown.InsertString(
-					ulDropNum,
-					szGUID);
-				delete[] szGUID;
-			}
+			LPTSTR szGUID = GUIDToStringAndName(PropGuidArray[ulDropNum].lpGuid);
+			InsertDropString(PROPTAG_NAMEPROPGUID,ulDropNum,szGUID);
+			delete[] szGUID;
 		}
 	}
 
 	PopulateFields(NOSKIPFIELD);
 
-	return HRES_TO_BOOL(hRes);
+	return bRet;
 }
 
 ULONG CPropertyTagEditor::GetPropertyTag()
@@ -130,7 +111,7 @@ ULONG CPropertyTagEditor::GetPropertyTag()
 	return m_ulPropTag;
 }
 
-//Select a property tag
+// Select a property tag
 void CPropertyTagEditor::OnEditAction1()
 {
 	HRESULT hRes = S_OK;
@@ -147,7 +128,7 @@ void CPropertyTagEditor::OnEditAction1()
 	PopulateFields(NOSKIPFIELD);
 }
 
-//GetNamesFromIDs
+// GetNamesFromIDs
 void CPropertyTagEditor::OnEditAction2()
 {
 	if (!m_lpMAPIProp) return;
@@ -177,14 +158,14 @@ void CPropertyTagEditor::OnEditAction2()
 			NamedID.ulKind = MNID_STRING;
 
 			int iCurSel = 0;
-			iCurSel = m_lpControls[5].UI.lpDropDown->DropDown.GetCurSel();
+			iCurSel = GetDropDownSelection(PROPTAG_NAMEPROPKIND);
 			if (iCurSel != CB_ERR)
 			{
 				if (0 == iCurSel) NamedID.ulKind = MNID_STRING;
 				if (1 == iCurSel) NamedID.ulKind = MNID_ID;
 			}
 			CString szName;
-			m_lpControls[6].UI.lpEdit->EditBox.GetWindowText(szName);
+			szName = GetStringUseControl(PROPTAG_NAMEPROPNAME);
 			if (MNID_STRING == NamedID.ulKind)
 			{
 #ifdef UNICODE
@@ -231,24 +212,24 @@ void CPropertyTagEditor::OnEditAction2()
 BOOL CPropertyTagEditor::GetSelectedGUID(LPGUID lpSelectedGUID)
 {
 	if (!lpSelectedGUID) return false;
-	if (!IsValidDropDown(7)) return false;
+	if (!IsValidDropDown(PROPTAG_NAMEPROPGUID)) return false;
 
 	LPCGUID lpGUID = NULL;
 	int iCurSel = 0;
-	iCurSel = m_lpControls[7].UI.lpDropDown->DropDown.GetCurSel();
+	iCurSel = GetDropDownSelection(PROPTAG_NAMEPROPGUID);
 	if (iCurSel != CB_ERR)
 	{
 		lpGUID = PropGuidArray[iCurSel].lpGuid;
 	}
 	else
 	{
-		//no match - need to do a lookup
+		// no match - need to do a lookup
 		CString szText;
 		GUID	guid = {0};
-		m_lpControls[7].UI.lpDropDown->DropDown.GetWindowText(szText);
-		//try the GUID like PS_* first
+		szText = GetDropStringUseControl(PROPTAG_NAMEPROPGUID);
+		// try the GUID like PS_* first
 		GUIDNameToGUID((LPCTSTR) szText,&lpGUID);
-		if (!lpGUID)//no match - try it like a guid {}
+		if (!lpGUID) // no match - try it like a guid {}
 		{
 			HRESULT hRes = S_OK;
 			WC_H(StringToGUID((LPCTSTR) szText,&guid));
@@ -266,19 +247,19 @@ BOOL CPropertyTagEditor::GetSelectedGUID(LPGUID lpSelectedGUID)
 BOOL CPropertyTagEditor::GetSelectedPropType(ULONG* ulPropType)
 {
 	if (!ulPropType) return false;
-	if (!IsValidDropDown(2)) return false;
+	if (!IsValidDropDown(PROPTAG_ID)) return false;
 
 	HRESULT hRes = S_OK;
 	CString szType;
 	int iCurSel = 0;
-	iCurSel = m_lpControls[2].UI.lpDropDown->DropDown.GetCurSel();
+	iCurSel = GetDropDownSelection(PROPTAG_ID);
 	if (iCurSel != CB_ERR)
 	{
-		m_lpControls[2].UI.lpDropDown->DropDown.GetLBText(iCurSel,szType);
+		szType = PropTypeArray[iCurSel].lpszName;
 	}
 	else
 	{
-		m_lpControls[2].UI.lpDropDown->DropDown.GetWindowText(szType);
+		szType = GetDropStringUseControl(PROPTAG_ID);
 	}
 	LPTSTR szEnd = NULL;
 	ULONG ulType = _tcstoul((LPCTSTR) szType,&szEnd,16);
@@ -288,24 +269,23 @@ BOOL CPropertyTagEditor::GetSelectedPropType(ULONG* ulPropType)
 		EC_H(PropTypeNameToPropType((LPCTSTR) szType,&ulType));
 	}
 
-	*ulPropType = CHANGE_PROP_TYPE(m_ulPropTag,ulType);
+	*ulPropType = ulType;
 	return true;
 }
 
 ULONG CPropertyTagEditor::HandleChange(UINT nID)
 {
 	HRESULT hRes = S_OK;
-	if (!m_lpControls) return (ULONG) -1;
 	ULONG i = CEditor::HandleChange(nID);
 
 	if ((ULONG) -1 == i) return (ULONG) -1;
 
 	switch (i)
 	{
-	case(0)://Prop tag changed
+	case(PROPTAG_TAG): // Prop tag changed
 		{
 			CString szTag;
-			m_lpControls[i].UI.lpEdit->EditBox.GetWindowText(szTag);
+			szTag = GetStringUseControl(PROPTAG_TAG);
 			LPTSTR szEnd = NULL;
 			ULONG ulTag = _tcstoul((LPCTSTR) szTag,&szEnd,16);
 
@@ -314,19 +294,27 @@ ULONG CPropertyTagEditor::HandleChange(UINT nID)
 				EC_H(PropNameToPropTag((LPCTSTR) szTag,&ulTag));
 			}
 
-			m_ulPropTag = ulTag;
+			// Figure if this is a full tag or just an ID
+			if (ulTag & 0xffff0000) // Full prop tag
+			{
+				m_ulPropTag = ulTag;
+			}
+			else // Just an ID
+			{
+				m_ulPropTag = PROP_TAG(PT_UNSPECIFIED,ulTag);
+			}
 		}
 		break;
-	case(1)://Prop ID changed
+	case(PROPTAG_ID): // Prop ID changed
 		{
 			CString szID;
-			m_lpControls[i].UI.lpEdit->EditBox.GetWindowText(szID);
+			szID = GetStringUseControl(PROPTAG_ID);
 			ULONG ulID = _tcstoul((LPCTSTR) szID,NULL,16);
 
 			m_ulPropTag = PROP_TAG(PROP_TYPE(m_ulPropTag),ulID);
 		}
 		break;
-	case(2)://Prop Type changed
+	case(PROPTAG_TYPE): // Prop Type changed
 		{
 			ULONG ulType = PT_NULL;
 			GetSelectedPropType(&ulType);
@@ -344,9 +332,9 @@ ULONG CPropertyTagEditor::HandleChange(UINT nID)
 	return i;
 }
 
-//Fill out the fields in the form
-//Don't touch the field passed in ulSkipField
-//Pass NOSKIPFIELD to fill out all fields
+// Fill out the fields in the form
+// Don't touch the field passed in ulSkipField
+// Pass NOSKIPFIELD to fill out all fields
 void CPropertyTagEditor::PopulateFields(ULONG ulSkipField)
 {
 	HRESULT hRes = S_OK;
@@ -372,18 +360,18 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField)
 		NULL,
 		NULL);
 
-	if (0 != ulSkipField) SetHex(0,m_ulPropTag);
-	if (1 != ulSkipField) SetStringf(1,_T("0x%04X"),PROP_ID(m_ulPropTag));// STRING_OK
-	if (2 != ulSkipField) SetDropDown(2,PropType);
-	if (3 != ulSkipField)
+	if (PROPTAG_TAG != ulSkipField) SetHex(PROPTAG_TAG,m_ulPropTag);
+	if (PROPTAG_ID != ulSkipField) SetStringf(PROPTAG_ID,_T("0x%04X"),PROP_ID(m_ulPropTag)); // STRING_OK
+	if (PROPTAG_TYPE != ulSkipField) SetDropDownSelection(PROPTAG_TYPE,PropType);
+	if (PROPTAG_NAME != ulSkipField)
 	{
-		SetStringf(3,_T("%s (%s)"),szExactMatch?szExactMatch:_T(""),szPartialMatch?szPartialMatch:_T(""));// STRING_OK
+		SetStringf(PROPTAG_NAME,_T("%s (%s)"),szExactMatch?szExactMatch:_T(""),szPartialMatch?szPartialMatch:_T("")); // STRING_OK
 	}
-	if (4 != ulSkipField) SetString(4,(LPCTSTR) TypeToString(m_ulPropTag));
+	if (PROPTAG_TYPESTRING != ulSkipField) SetString(PROPTAG_TYPESTRING,(LPCTSTR) TypeToString(m_ulPropTag));
 
 	if (m_lpMAPIProp)
 	{
-		//do a named property lookup and fill out fields
+		// do a named property lookup and fill out fields
 		ULONG			ulPropNames = 0;
 		SPropTagArray	sTagArray = {0};
 		LPSPropTagArray lpTagArray = &sTagArray;
@@ -402,30 +390,30 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField)
 		{
 			if (MNID_STRING == lppPropNames[0]->ulKind)
 			{
-				if (5 != ulSkipField) SetDropDown(5,_T("MNID_STRING"));// STRING_OK
-				if (6 != ulSkipField) SetStringW(6,lppPropNames[0]->Kind.lpwstrName);
+				if (PROPTAG_NAMEPROPKIND != ulSkipField) SetDropDownSelection(PROPTAG_NAMEPROPKIND,_T("MNID_STRING")); // STRING_OK
+				if (PROPTAG_NAMEPROPNAME != ulSkipField) SetStringW(PROPTAG_NAMEPROPNAME,lppPropNames[0]->Kind.lpwstrName);
 			}
 			else if (MNID_ID == lppPropNames[0]->ulKind)
 			{
-				if (5 != ulSkipField) SetDropDown(5,_T("MNID_ID"));// STRING_OK
-				if (6 != ulSkipField) SetHex(6,lppPropNames[0]->Kind.lID);
+				if (PROPTAG_NAMEPROPKIND != ulSkipField) SetDropDownSelection(PROPTAG_NAMEPROPKIND,_T("MNID_ID")); // STRING_OK
+				if (PROPTAG_NAMEPROPNAME != ulSkipField) SetHex(PROPTAG_NAMEPROPNAME,lppPropNames[0]->Kind.lID);
 			}
 			else
 			{
-				if (6 != ulSkipField) SetString(6,NULL);
+				if (PROPTAG_NAMEPROPNAME != ulSkipField) SetString(PROPTAG_NAMEPROPNAME,NULL);
 			}
-			if (7 != ulSkipField)
+			if (PROPTAG_NAMEPROPGUID != ulSkipField)
 			{
 				LPTSTR szGUID = GUIDToString(lppPropNames[0]->lpguid);
-				SetDropDown(7,szGUID);
+				SetDropDownSelection(PROPTAG_NAMEPROPGUID,szGUID);
 				delete[] szGUID;
 			}
 		}
 		else
 		{
-			if (5 != ulSkipField) SetDropDown(5,NULL);
-			if (6 != ulSkipField) SetString(6,NULL);
-			if (7 != ulSkipField) SetDropDown(7,NULL);
+			if (PROPTAG_NAMEPROPKIND != ulSkipField) SetDropDownSelection(PROPTAG_NAMEPROPKIND,NULL);
+			if (PROPTAG_NAMEPROPNAME != ulSkipField) SetString(PROPTAG_NAMEPROPNAME,NULL);
+			if (PROPTAG_NAMEPROPGUID != ulSkipField) SetDropDownSelection(PROPTAG_NAMEPROPGUID,NULL);
 		}
 		MAPIFreeBuffer(lppPropNames);
 	}
@@ -464,16 +452,9 @@ CPropertySelector::~CPropertySelector()
 	if (m_lpMAPIProp) m_lpMAPIProp->Release();
 }
 
-BEGIN_MESSAGE_MAP(CPropertySelector, CEditor)
-//{{AFX_MSG_MAP(CPropertySelector)
-//}}AFX_MSG_MAP
-END_MESSAGE_MAP()
-
 BOOL CPropertySelector::OnInitDialog()
 {
-	HRESULT hRes = S_OK;
-
-	EC_B(CEditor::OnInitDialog());
+	BOOL bRet = CEditor::OnInitDialog();
 
 	if (IsValidList(0))
 	{
@@ -489,13 +470,14 @@ BOOL CPropertySelector::OnInitDialog()
 		{
 			if (!m_bIncludeABProps && (PropTagArray[i].ulValue & 0x80000000)) continue;
 #ifdef UNICODE
-			lpData = m_lpControls[0].UI.lpList->List.InsertRow(ulCurRow,PropTagArray[i].lpszName);
+			lpData = InsertListRow(0,ulCurRow,PropTagArray[i].lpszName);
 #else
+			HRESULT hRes = S_OK;
 			LPSTR szAnsiName = NULL;
 			EC_H(UnicodeToAnsi(PropTagArray[i].lpszName,&szAnsiName));
 			if (SUCCEEDED(hRes))
 			{
-				lpData = m_lpControls[0].UI.lpList->List.InsertRow(ulCurRow,szAnsiName);
+				lpData = InsertListRow(0,ulCurRow,szAnsiName);
 			}
 			delete[] szAnsiName;
 #endif
@@ -507,34 +489,25 @@ BOOL CPropertySelector::OnInitDialog()
 				lpData->bItemFullyLoaded = true;
 			}
 
-			szTmp.Format(_T("0x%08X"),PropTagArray[i].ulValue);// STRING_OK
-			WC_B(m_lpControls[0].UI.lpList->List.SetItemText(ulCurRow,1,(LPCTSTR)szTmp));
-			WC_B(m_lpControls[0].UI.lpList->List.SetItemText(ulCurRow,2,TypeToString(PropTagArray[i].ulValue)));
+			szTmp.Format(_T("0x%08X"),PropTagArray[i].ulValue); // STRING_OK
+			SetListString(0,ulCurRow,1,szTmp);
+			SetListString(0,ulCurRow,2,TypeToString(PropTagArray[i].ulValue));
 			ulCurRow++;
 		}
+
 		// Initial sort is by property tag
-		m_lpControls[0].UI.lpList->List.SortColumn(0);
-		m_lpControls[0].UI.lpList->List.AutoSizeColumns();
+		ResizeList(0,true);
 	}
 
-	return HRES_TO_BOOL(hRes);
+	return bRet;
 }
 
 void CPropertySelector::OnOK()
 {
-	if (IsValidList(0))
-	{
-		int	iItem = NULL;
+	SortListData* lpListData = GetSelectedListRowData(0);
+	if (lpListData)
+		m_ulPropTag = lpListData->data.Prop.ulPropTag;
 
-		iItem = m_lpControls[0].UI.lpList->List.GetNextItem(-1,LVNI_FOCUSED | LVNI_SELECTED);
-
-		if (-1 != iItem)
-		{
-			SortListData* lpListData = ((SortListData*)m_lpControls[0].UI.lpList->List.GetItemData(iItem));
-			if (lpListData)
-				m_ulPropTag = lpListData->data.Prop.ulPropTag;
-		}
-	}
 	CEditor::OnOK();
 }
 

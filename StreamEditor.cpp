@@ -2,19 +2,11 @@
 //
 
 #include "stdafx.h"
-#include "Error.h"
-
 #include "StreamEditor.h"
-
 #include "InterpretProp.h"
 #include "InterpretProp2.h"
 #include "MAPIFunctions.h"
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
+#include "PropTagArray.h"
 
 enum __StreamEditorTypes
 {
@@ -24,8 +16,8 @@ enum __StreamEditorTypes
 
 static TCHAR* CLASS = _T("CStreamEditor");
 
-//Create an editor for a MAPI property - can be used to initialize stream and rtf stream editing as well
-//Takes LPMAPIPROP and ulPropTag as input - will pull SPropValue from the LPMAPIPROP
+// Create an editor for a MAPI property - can be used to initialize stream and rtf stream editing as well
+// Takes LPMAPIPROP and ulPropTag as input - will pull SPropValue from the LPMAPIPROP
 CStreamEditor::CStreamEditor(
 								 CWnd* pParentWnd,
 								 UINT uidTitle,
@@ -71,12 +63,12 @@ CEditor(pParentWnd,uidTitle,uidPrompt,0,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL)
 	else m_ulEditorType = EDITOR_STREAM;
 
 	CString szPromptPostFix;
-	szPromptPostFix.Format(_T("\r\n%s"),TagToString(m_ulPropTag,m_lpMAPIProp,m_bIsAB,false));// STRING_OK
+	szPromptPostFix.Format(_T("\r\n%s"),TagToString(m_ulPropTag,m_lpMAPIProp,m_bIsAB,false)); // STRING_OK
 
 	SetPromptPostFix(szPromptPostFix);
 
-	//Let's crack our property open and see what kind of controls we'll need for it
-	//One control for text stream, one for binary
+	// Let's crack our property open and see what kind of controls we'll need for it
+	// One control for text stream, one for binary
 	CreateControls(m_iBinBox+1);
 	InitMultiLine(m_iTextBox,IDS_STREAMTEXT ,NULL,false);
 	InitSingleLine(m_iCBBox,IDS_CB,NULL,true);
@@ -93,97 +85,25 @@ CStreamEditor::~CStreamEditor()
 	TRACE_DESTRUCTOR(CLASS);
 }
 
-BEGIN_MESSAGE_MAP(CStreamEditor, CEditor)
-//{{AFX_MSG_MAP(CStreamEditor)
-//}}AFX_MSG_MAP
-END_MESSAGE_MAP()
-
-//Used to call functions which need to be called AFTER controls are created
+// Used to call functions which need to be called AFTER controls are created
 BOOL CStreamEditor::OnInitDialog()
 {
-	HRESULT hRes = S_OK;
-
-	EC_B(CEditor::OnInitDialog());
+	BOOL bRet = CEditor::OnInitDialog();
 
 	ReadTextStreamFromProperty();
 
-	return HRES_TO_BOOL(hRes);
+	return bRet;
 }
 
 void CStreamEditor::OnOK()
 {
 	WriteTextStreamToProperty();
-	CDialog::OnOK();//don't need to call CEditor::OnOK
-}
-
-class MyRichEditCookie
-{
-public:
-	LPSTREAM  m_pData;
-	MyRichEditCookie(LPSTREAM pData)
-	{
-		m_pData = pData;
-	}
-};
-
-static DWORD CALLBACK EditStreamWriteCallBack(
-											  DWORD_PTR dwCookie,
-											  LPBYTE pbBuff,
-											  LONG cb,
-											  LONG *pcb)
-{
-	HRESULT hRes = S_OK;
-	if (!pbBuff || !pcb || !dwCookie) return 0;
-
-	MyRichEditCookie* pCookie = (MyRichEditCookie*) dwCookie;
-
-	LPSTREAM stmData = pCookie->m_pData;
-	ULONG cbWritten = 0;
-
-	*pcb = 0;
-
-	DebugPrint(DBGGeneric,_T("EditStreamWriteCallBack:cb = %d\n"),cb);
-
-	EC_H(stmData->Write(pbBuff,cb,&cbWritten));
-
-	DebugPrint(DBGGeneric,_T("EditStreamWriteCallBack: wrote %d bytes\n"),cbWritten);
-
-	*pcb = cbWritten;
-
-	return 0;
-}
-
-static DWORD CALLBACK EditStreamReadCallBack(
-											  DWORD_PTR dwCookie,
-											  LPBYTE pbBuff,
-											  LONG cb,
-											  LONG *pcb)
-{
-	HRESULT hRes = S_OK;
-	if (!pbBuff || !pcb || !dwCookie) return 0;
-
-	MyRichEditCookie* pCookie = (MyRichEditCookie*) dwCookie;
-
-	LPSTREAM stmData = pCookie->m_pData;
-	ULONG cbRead = 0;
-
-	*pcb = 0;
-
-	DebugPrint(DBGGeneric,_T("EditStreamWriteCallBack:cb = %d\n"),cb);
-
-	EC_H(stmData->Read(pbBuff,cb,&cbRead));
-
-	DebugPrint(DBGGeneric,_T("EditStreamReadCallBack: read %d bytes\n"),cbRead);
-
-	*pcb = cbRead;
-
-	return 0;
+	CDialog::OnOK(); // don't need to call CEditor::OnOK
 }
 
 void CStreamEditor::ReadTextStreamFromProperty()
 {
 	if (!m_lpMAPIProp) return;
-	if (!m_lpControls) return;
 
 	if (!IsValidEdit(m_iTextBox)) return;
 	if (!IsValidEdit(m_iBinBox)) return;
@@ -210,18 +130,14 @@ void CStreamEditor::ReadTextStreamFromProperty()
 	{
 		WARNHRESMSG(hRes,IDS_STREAMNOTSUPPORTED);
 		LoadString(m_iTextBox, IDS_STREAMNOTSUPPORTED);
-		m_lpControls[m_iTextBox].UI.lpEdit->EditBox.SetBackgroundColor(false,GetSysColor(COLOR_BTNFACE));
-		m_lpControls[m_iTextBox].UI.lpEdit->EditBox.SetReadOnly();
-		m_lpControls[m_iBinBox].UI.lpEdit->EditBox.SetBackgroundColor(false,GetSysColor(COLOR_BTNFACE));
-		m_lpControls[m_iBinBox].UI.lpEdit->EditBox.SetReadOnly();
+		SetEditReadOnly(m_iTextBox);
+		SetEditReadOnly(m_iBinBox);
 		return;
 	}
-	if (m_bUseWrapEx)//if m_bUseWrapEx, we're read only
+	if (m_bUseWrapEx) // if m_bUseWrapEx, we're read only
 	{
-		m_lpControls[m_iTextBox].UI.lpEdit->EditBox.SetBackgroundColor(false,GetSysColor(COLOR_BTNFACE));
-		m_lpControls[m_iTextBox].UI.lpEdit->EditBox.SetReadOnly();
-		m_lpControls[m_iBinBox].UI.lpEdit->EditBox.SetBackgroundColor(false,GetSysColor(COLOR_BTNFACE));
-		m_lpControls[m_iBinBox].UI.lpEdit->EditBox.SetReadOnly();
+		SetEditReadOnly(m_iTextBox);
+		SetEditReadOnly(m_iBinBox);
 	}
 	if (EDITOR_STREAM == m_ulEditorType)
 	{
@@ -242,42 +158,22 @@ void CStreamEditor::ReadTextStreamFromProperty()
 	}
 	if (lpStreamIn)
 	{
-		EDITSTREAM			es = {0, 0, EditStreamReadCallBack};
-		MyRichEditCookie	cookie(lpStreamIn);
-		UINT				uFormat = SF_TEXT;
-
-		//If we're unicode, we need to pass this flag to use Unicode RichEdit
-		//However, PR_RTF_COMPRESSED don't play Unicode, so we check if we're RTF first
-		if (PROP_TYPE(m_ulPropTag) == PT_UNICODE)
-		{
-			if (EDITOR_STREAM == m_ulEditorType)
-				uFormat |= SF_UNICODE;
-		}
-
-		long				lBytesRead = 0;
-
-		es.dwCookie = (DWORD_PTR)&cookie;
-
-		//read the 'text' stream into one control
-		lBytesRead = m_lpControls[m_iTextBox].UI.lpEdit->EditBox.StreamIn(uFormat,es);
-		DebugPrintEx(DBGGeneric,CLASS,_T("ReadTextStreamFromProperty"),_T("read %d bytes from the stream\n"),lBytesRead);
+		InitEditFromStream(m_iTextBox,lpStreamIn,PROP_TYPE(m_ulPropTag) == PT_UNICODE, EDITOR_RTF == m_ulEditorType);
 	}
 
 	if (!m_bUseWrapEx) m_bWriteAllowed = true;
 
-	//cheat to get the rest filled out
-	HandleChange(m_lpControls[m_iTextBox].nID);
 	if (lpTmpRTFStream) lpTmpRTFStream->Release();
 	if (lpTmpStream) lpTmpStream->Release();
 }
 
-//this will not work if we're using WrapCompressedRTFStreamEx
+// this will not work if we're using WrapCompressedRTFStreamEx
 void CStreamEditor::WriteTextStreamToProperty()
 {
 	if (!IsValidEdit(m_iTextBox)) return;
-	if (!m_bWriteAllowed) return;//don't want to write when we're in an error state
+	if (!m_bWriteAllowed) return; // don't want to write when we're in an error state
 	if (!m_lpMAPIProp) return;
-	if (!m_lpControls[m_iTextBox].UI.lpEdit->EditBox.GetModify()) return;
+	if (!EditDirty(m_iTextBox)) return; // If we didn't change it, don't write
 	if (m_bUseWrapEx) return;
 
 	HRESULT hRes = S_OK;
@@ -312,26 +208,10 @@ void CStreamEditor::WriteTextStreamToProperty()
 		lpStreamOut = lpTmpRTFStream;
 	}
 
-	//We started with a text stream, pull text back into the stream
+	// We started with a text stream, pull text back into the stream
 	if (lpStreamOut)
 	{
-		EDITSTREAM			es = {0, 0, EditStreamWriteCallBack};
-		MyRichEditCookie	cookie(lpStreamOut);
-		LONG				cb = 0;
-		UINT				uFormat = SF_TEXT;
-
-		//If we're unicode, we need to pass this flag to use Unicode RichEdit
-		//However, PR_RTF_COMPRESSED don't play Unicode, so we check if we're RTF first
-		if (PROP_TYPE(m_ulPropTag) == PT_UNICODE)
-		{
-			if (EDITOR_STREAM == m_ulEditorType)
-				uFormat |= SF_UNICODE;
-		}
-
-		es.dwCookie	= (DWORD_PTR)&cookie;
-
-		cb = m_lpControls[m_iTextBox].UI.lpEdit->EditBox.StreamOut(uFormat,es);
-		DebugPrintEx(DBGGeneric,CLASS,_T("WriteTextStreamToProperty"),_T("wrote 0x%X\n"),cb);
+		GetEditBoxStream(m_iTextBox,lpStreamOut,PROP_TYPE(m_ulPropTag) == PT_UNICODE,EDITOR_RTF == m_ulEditorType);
 
 		EC_H(lpStreamOut->Commit(STGC_DEFAULT));
 
@@ -347,7 +227,7 @@ void CStreamEditor::WriteTextStreamToProperty()
 
 ULONG CStreamEditor::HandleChange(UINT nID)
 {
-	if (!m_lpControls) return (ULONG) -1;
+	HRESULT hRes = S_OK;
 	ULONG i = CEditor::HandleChange(nID);
 
 	if ((ULONG) -1 == i) return (ULONG) -1;
@@ -355,9 +235,11 @@ ULONG CStreamEditor::HandleChange(UINT nID)
 	{
 		LPSTR lpszA = GetEditBoxTextA(m_iTextBox);
 
-		//cchszW was count of characters in the szW, including the null terminator
-		//count of bytes in the lpszA is then cchszW-1
-		size_t cbStr = m_lpControls[m_iTextBox].UI.lpEdit->cchszW-1;
+		size_t cbStr = 0;
+		if (lpszA)
+		{
+			EC_H(StringCbLengthA(lpszA,STRSAFE_MAX_CCH * sizeof(char),&cbStr));
+		}
 
 		SetBinary(2, (LPBYTE) lpszA, cbStr);
 
@@ -379,10 +261,9 @@ ULONG CStreamEditor::HandleChange(UINT nID)
 
 	if (m_bUseWrapEx)
 	{
-		HRESULT hRes = S_OK;
 		LPTSTR szFlags = NULL;
 		EC_H(InterpretFlags(flagStreamFlag, m_ulStreamFlags, &szFlags));
-		SetStringf(m_iFlagBox,_T("0x%08X = %s"),m_ulStreamFlags,szFlags);// STRING_OK
+		SetStringf(m_iFlagBox,_T("0x%08X = %s"),m_ulStreamFlags,szFlags); // STRING_OK
 		delete[] szFlags;
 		szFlags = NULL;
 		CString szTmp;

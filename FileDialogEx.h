@@ -1,8 +1,8 @@
-// MSDN August 2000
-// If this code works, it was written by Paul DiLascia. If not, I don't
-// know who wrote it. Compiles with Visual C++ 6.0, runs on Windows 98
-// and probably Windows NT too.
 #pragma once
+// FileDialogEx.h : Extended file dialog class to work around issues in the base MFC class.
+
+// Originally from MSDN August 2000, by Paul DiLascia.
+// With substantial changes to work across more versions of Windows
 
 // Make sure OPENFILENAMEEX is the same size regardless of how _WIN32_WINNT is defined
 #if (_WIN32_WINNT >= 0x0500)
@@ -12,7 +12,7 @@ struct OPENFILENAMEEX : public OPENFILENAME {};
 // The new version has three extra members.
 // This is copied from commdlg.h
 struct OPENFILENAMEEX : public OPENFILENAME {
-	void *        pvReserved;
+	void*         pvReserved;
 	DWORD         dwReserved;
 	DWORD         FlagsEx;
 };
@@ -30,30 +30,22 @@ struct OPENFILENAMEEX : public OPENFILENAME {
 #endif // !UNICODE
 #endif // OPENFILENAME_SIZE_VERSION_400
 
-///////////////////////////////////////////////////////////////////////////
 // CFileDialogEx: Encapsulate Windows-2000 style open dialog.
 class CFileDialogEx : public CFileDialog {
-	DECLARE_DYNAMIC(CFileDialogEx)
 public:
-	CFileDialogEx(BOOL bOpenFileDialog, // TRUE for open,
-		// FALSE for FileSaveAs
+	CFileDialogEx(BOOL bOpenFileDialog, // TRUE for open, FALSE for FileSaveAs
 		LPCTSTR lpszDefExt = NULL,
 		LPCTSTR lpszFileName = NULL,
 		DWORD dwFlags = OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
 		LPCTSTR lpszFilter = NULL,
 		CWnd* pParentWnd = NULL);
-	~CFileDialogEx();
+	virtual ~CFileDialogEx();
 
-	// override
-	virtual INT_PTR DoModal();
+	INT_PTR DoModal();
 
-protected:
-	OPENFILENAMEEX m_ofnEx; // new Windows 2000 version of OPENFILENAME
+private:
+	BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult);
 
-	virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult);
-	LPTSTR m_szbigBuff;
-
-	DECLARE_MESSAGE_MAP()
-		//{{AFX_MSG(CFileDialogEx)
-		//}}AFX_MSG
+	OPENFILENAMEEX	m_ofnEx; // Windows 2000 version of OPENFILENAME
+	LPTSTR			m_szbigBuff;
 };

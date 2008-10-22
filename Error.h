@@ -2,18 +2,15 @@
 // Error.h : header file
 //
 
-#include <mapix.h>
-#include <tchar.h>
-
 BOOL CheckHResFn(HRESULT hRes,LPCSTR szFunction,UINT uidErrorMsg,LPCSTR szFile,int iLine);
 BOOL WarnHResFn(HRESULT hRes,LPCSTR szFunction,UINT uidErrorMsg,LPCSTR szFile,int iLine);
 
 void __cdecl ErrDialog(LPCSTR szFile,int iLine, UINT uidErrorFmt,...);
 
-//Function to convert error codes to their names
+// Function to convert error codes to their names
 LPTSTR	ErrorNameFromErrorCode(HRESULT hrErr);
 
-//Macros for debug output
+// Macros for debug output
 #define CHECKHRES(hRes) (CheckHResFn(hRes,"",NULL,__FILE__,__LINE__))
 #define CHECKHRESMSG(hRes,szErrorMsg) (CheckHResFn(hRes,NULL,szErrorMsg,__FILE__,__LINE__))
 #define WARNHRESMSG(hRes,szErrorMsg) (WarnHResFn(hRes,NULL,szErrorMsg,__FILE__,__LINE__))
@@ -114,8 +111,8 @@ else	\
 	PrintSkipNote(hRes,#fnx);\
 }
 
-//Used for functions which return 0 on error
-//dwRet will contain the return value - assign to a local if needed for other calls.
+// Used for functions which return 0 on error
+// dwRet will contain the return value - assign to a local if needed for other calls.
 #define EC_D(_ret,fnx)	\
 	\
 if (SUCCEEDED(hRes))	\
@@ -132,7 +129,7 @@ else	\
 	_ret = NULL;	\
 }
 
-//whatever's passed to _ret will contain the return value
+// whatever's passed to _ret will contain the return value
 #define WC_D(_ret,fnx)	\
 if (SUCCEEDED(hRes))	\
 {	\
@@ -148,14 +145,10 @@ else	\
 	_ret = NULL;	\
 }
 
-//CheckHResFn is a boolean, so it's return is false if hr failed
-#define HRES_TO_BOOL(hr) \
-(CheckHResFn(hr,"",IDS_HRESBOOL,__FILE__,__LINE__))
-
-//MAPI's GetProps call will return MAPI_W_ERRORS_RETURNED if even one prop fails
-//This is annoying, so this macro tosses those warnings.
-//We have to check each prop before we use it anyway, so we don't lose anything here.
-//Using this macro, all we have to check is that we got a props array back
+// MAPI's GetProps call will return MAPI_W_ERRORS_RETURNED if even one prop fails
+// This is annoying, so this macro tosses those warnings.
+// We have to check each prop before we use it anyway, so we don't lose anything here.
+// Using this macro, all we have to check is that we got a props array back
 #define EC_H_GETPROPS(fnx)	\
 	\
 if (SUCCEEDED(hRes))	\
@@ -180,7 +173,7 @@ else	\
 	PrintSkipNote(hRes,#fnx);\
 }
 
-//some MAPI functions allow MAPI_E_CANCEL or MAPI_E_USER_CANCEL. I don't consider these to be errors.
+// some MAPI functions allow MAPI_E_CANCEL or MAPI_E_USER_CANCEL. I don't consider these to be errors.
 #define EC_H_CANCEL(fnx)	\
 	\
 if (SUCCEEDED(hRes))	\
@@ -198,8 +191,8 @@ else	\
 	PrintSkipNote(hRes,#fnx);\
 }
 
-//Designed to check return values from dialog functions, primarily DoModal
-//These functions use CommDlgExtendedError to get error information
+// Designed to check return values from dialog functions, primarily DoModal
+// These functions use CommDlgExtendedError to get error information
 #define EC_D_DIALOG(fnx)	\
 {	\
 	iDlgRet = (fnx);	\

@@ -2,10 +2,7 @@
 // Displays the contents of a form container
 
 #include "stdafx.h"
-#include "Error.h"
-
 #include "FormContainerDlg.h"
-
 #include "ContentsTableListCtrl.h"
 #include "MapiObjects.h"
 #include "SingleMAPIPropListCtrl.h"
@@ -16,12 +13,6 @@
 #include "MAPIFunctions.h"
 #include "FileDialogEx.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
 static TCHAR* CLASS = _T("CFormContainerDlg");
 
 /////////////////////////////////////////////////////////////////////////////
@@ -30,7 +21,7 @@ static TCHAR* CLASS = _T("CFormContainerDlg");
 
 CFormContainerDlg::CFormContainerDlg(
 			   CParentWnd* pParentWnd,
-			   CMapiObjects *lpMapiObjects,
+			   CMapiObjects* lpMapiObjects,
 			   LPMAPIFORMCONTAINER lpFormContainer
 			   ):
 CContentsTableDlg(
@@ -69,7 +60,6 @@ CFormContainerDlg::~CFormContainerDlg()
 }
 
 BEGIN_MESSAGE_MAP(CFormContainerDlg, CContentsTableDlg)
-//{{AFX_MSG_MAP(CFormContainerDlg)
 	ON_COMMAND(ID_DELETESELECTEDITEM, OnDeleteSelectedItem)
 	ON_COMMAND(ID_INSTALLFORM, OnInstallForm)
 	ON_COMMAND(ID_REMOVEFORM, OnRemoveForm)
@@ -77,7 +67,6 @@ BEGIN_MESSAGE_MAP(CFormContainerDlg, CContentsTableDlg)
 	ON_COMMAND(ID_RESOLVEMULTIPLEMESSAGECLASSES, OnResolveMultipleMessageClasses)
 	ON_COMMAND(ID_CALCFORMPOPSET, OnCalcFormPropSet)
 	ON_COMMAND(ID_GETDISPLAY, OnGetDisplay)
-//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -95,25 +84,24 @@ void CFormContainerDlg::OnInitMenu(CMenu* pMenu)
 
 BOOL CFormContainerDlg::OnInitDialog()
 {
-	HRESULT			hRes = S_OK;
-	EC_B(CContentsTableDlg::OnInitDialog());
+	BOOL bRet = CContentsTableDlg::OnInitDialog();
 
 	if (m_lpContentsTableListCtrl)
 	{
 		OnRefreshView();
 	}
 
-	return HRES_TO_BOOL(hRes);
-}//CFormContainerDlg::OnInitDialog
+	return bRet;
+} // CFormContainerDlg::OnInitDialog
 
-//Clear the current list and get a new one
+// Clear the current list and get a new one
 void CFormContainerDlg::OnRefreshView()
 {
 	HRESULT hRes = S_OK;
 
 	if (!m_lpContentsTableListCtrl) return;
 
-	if (m_lpContentsTableListCtrl->m_bInLoadOp) m_lpContentsTableListCtrl->OnCancelTableLoad();
+	if (m_lpContentsTableListCtrl->IsLoading()) m_lpContentsTableListCtrl->OnCancelTableLoad();
 	DebugPrintEx(DBGForms,CLASS,_T("OnRefreshView"),_T("\n"));
 
 	EC_B(m_lpContentsTableListCtrl->DeleteAllItems());
@@ -156,7 +144,7 @@ void CFormContainerDlg::OnRefreshView()
 		}
 	}
 	m_lpContentsTableListCtrl->AutoSizeColumns();
-}//CFormContainerDlg::OnRefreshView
+} // CFormContainerDlg::OnRefreshView
 
 HRESULT CFormContainerDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum /*bModify*/, LPMAPIPROP* lppMAPIProp)
 {
@@ -170,7 +158,7 @@ HRESULT CFormContainerDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum /
 	lpListData = (SortListData*) m_lpContentsTableListCtrl->GetItemData(iSelectedItem);
 	if (lpListData)
 	{
-		LPSPropValue lpProp = NULL;//do not free this
+		LPSPropValue lpProp = NULL; // do not free this
 		lpProp = PpropFindProp(
 			lpListData->lpSourceProps,
 			lpListData->cSourceProps,
@@ -190,7 +178,7 @@ HRESULT CFormContainerDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum /
 		}
 	}
 	return hRes;
-}//CFormContainerDlg::OpenItemProp
+} // CFormContainerDlg::OpenItemProp
 
 void CFormContainerDlg::OnDeleteSelectedItem()
 {
@@ -203,11 +191,11 @@ void CFormContainerDlg::OnDeleteSelectedItem()
 	do
 	{
 		hRes = S_OK;
-		//Find the highlighted item AttachNum
+		// Find the highlighted item AttachNum
 		lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 		if (!lpListData) break;
 
-		LPSPropValue lpProp = NULL;//do not free this
+		LPSPropValue lpProp = NULL; // do not free this
 		lpProp = PpropFindProp(
 			lpListData->lpSourceProps,
 			lpListData->cSourceProps,
@@ -217,8 +205,8 @@ void CFormContainerDlg::OnDeleteSelectedItem()
 			DebugPrintEx(
 				DBGDeleteSelectedItem,
 				CLASS,
-				_T("OnDeleteSelectedItem"),// STRING_OK
-				_T("Removing form \"%hs\"\n"),// STRING_OK
+				_T("OnDeleteSelectedItem"), // STRING_OK
+				_T("Removing form \"%hs\"\n"), // STRING_OK
 				lpProp->Value.lpszA);
 			EC_H(m_lpFormContainer->RemoveForm(
 				lpProp->Value.lpszA));
@@ -226,8 +214,8 @@ void CFormContainerDlg::OnDeleteSelectedItem()
 	}
 	while (iItem != -1);
 
-	OnRefreshView();//Update the view since we don't have notifications here.
-} //CFormContainerDlg::OnDeleteSelectedItem
+	OnRefreshView(); // Update the view since we don't have notifications here.
+} // CFormContainerDlg::OnDeleteSelectedItem
 
 void CFormContainerDlg::OnInstallForm()
 {
@@ -253,7 +241,7 @@ void CFormContainerDlg::OnInstallForm()
 
 		CFileDialogEx dlgFilePicker(
 			TRUE,
-			_T("cfg"),// STRING_OK
+			_T("cfg"), // STRING_OK
 			NULL,
 			OFN_FILEMUSTEXIST | OFN_ALLOWMULTISELECT,
 			szFileSpec,
@@ -277,7 +265,7 @@ void CFormContainerDlg::OnInstallForm()
 				if (szPath)
 				{
 					DebugPrintEx(DBGForms,CLASS,_T("OnInstallForm"),
-						_T("Calling InstallForm(0x%08X,0x%08X,\"%s\")\n"),hwnd,ulFlags,szPath);// STRING_OK
+						_T("Calling InstallForm(0x%08X,0x%08X,\"%s\")\n"),hwnd,ulFlags,szPath); // STRING_OK
 					WC_H(m_lpFormContainer->InstallForm((ULONG_PTR)hwnd,ulFlags,(LPTSTR)szPath));
 					if (MAPI_E_EXTENDED_ERROR == hRes)
 					{
@@ -297,10 +285,10 @@ void CFormContainerDlg::OnInstallForm()
 				else break;
 				if (bShouldCancel(this,hRes)) break;
 			}
-			OnRefreshView();//Update the view since we don't have notifications here.
+			OnRefreshView(); // Update the view since we don't have notifications here.
 		}
 	}
-} //CFormContainerDlg::OnInstallForm
+} // CFormContainerDlg::OnInstallForm
 
 void CFormContainerDlg::OnRemoveForm()
 {
@@ -323,12 +311,12 @@ void CFormContainerDlg::OnRemoveForm()
 		if (szClass)
 		{
 			DebugPrintEx(DBGForms,CLASS,_T("OnRemoveForm"),
-				_T("Calling RemoveForm(\"%s\")\n"),szClass);// STRING_OK
+				_T("Calling RemoveForm(\"%s\")\n"),szClass); // STRING_OK
 			EC_H(m_lpFormContainer->RemoveForm(szClass));
-			OnRefreshView();//Update the view since we don't have notifications here.
+			OnRefreshView(); // Update the view since we don't have notifications here.
 		}
 	}
-} //CFormContainerDlg::OnRemoveForm
+} // CFormContainerDlg::OnRemoveForm
 
 void CFormContainerDlg::OnResolveMessageClass()
 {
@@ -354,7 +342,7 @@ void CFormContainerDlg::OnResolveMessageClass()
 		{
 			LPMAPIFORMINFO lpMAPIFormInfo = NULL;
 			DebugPrintEx(DBGForms,CLASS,_T("OnResolveMessageClass"),
-				_T("Calling ResolveMessageClass(\"%s\",0x%08X)\n"),szClass,ulFlags);// STRING_OK
+				_T("Calling ResolveMessageClass(\"%s\",0x%08X)\n"),szClass,ulFlags); // STRING_OK
 			EC_H(m_lpFormContainer->ResolveMessageClass(szClass,ulFlags,&lpMAPIFormInfo));
 			if (lpMAPIFormInfo)
 			{
@@ -364,7 +352,7 @@ void CFormContainerDlg::OnResolveMessageClass()
 			}
 		}
 	}
-} //CFormContainerDlg::OnResolveMessageClass
+} // CFormContainerDlg::OnResolveMessageClass
 
 void CFormContainerDlg::OnResolveMultipleMessageClasses()
 {
@@ -416,7 +404,7 @@ void CFormContainerDlg::OnResolveMultipleMessageClasses()
 
 						if (cbClass)
 						{
-							cbClass++;// for the NULL terminator
+							cbClass++; // for the NULL terminator
 							EC_H(MAPIAllocateMore((ULONG)cbClass,lpMSGClassArray,(LPVOID*)&lpMSGClassArray->aMessageClass[i]));
 							EC_H(StringCbCopyA((LPSTR)lpMSGClassArray->aMessageClass[i],cbClass,szClass));
 						}
@@ -431,7 +419,7 @@ void CFormContainerDlg::OnResolveMultipleMessageClasses()
 		{
 			LPSMAPIFORMINFOARRAY lpMAPIFormInfoArray = NULL;
 			DebugPrintEx(DBGForms,CLASS,_T("OnResolveMultipleMessageClasses"),
-				_T("Calling ResolveMultipleMessageClasses(Num Classes = 0x%08X,0x%08X)\n"),ulNumClasses,ulFlags);// STRING_OK
+				_T("Calling ResolveMultipleMessageClasses(Num Classes = 0x%08X,0x%08X)\n"),ulNumClasses,ulFlags); // STRING_OK
 			EC_H(m_lpFormContainer->ResolveMultipleMessageClasses(lpMSGClassArray,ulFlags,&lpMAPIFormInfoArray));
 			if (lpMAPIFormInfoArray)
 			{
@@ -449,7 +437,7 @@ void CFormContainerDlg::OnResolveMultipleMessageClasses()
 		}
 		MAPIFreeBuffer(lpMSGClassArray);
 	}
-} //CFormContainerDlg::OnResolveMultipleMessageClasses
+} // CFormContainerDlg::OnResolveMultipleMessageClasses
 
 void CFormContainerDlg::OnCalcFormPropSet()
 {
@@ -473,7 +461,7 @@ void CFormContainerDlg::OnCalcFormPropSet()
 
 		LPMAPIFORMPROPARRAY lpFormPropArray = NULL;
 		DebugPrintEx(DBGForms,CLASS,_T("OnCalcFormPropSet"),
-			_T("Calling CalcFormPropSet(0x%08X)\n"),ulFlags);// STRING_OK
+			_T("Calling CalcFormPropSet(0x%08X)\n"),ulFlags); // STRING_OK
 		EC_H(m_lpFormContainer->CalcFormPropSet(ulFlags,&lpFormPropArray));
 		if (lpFormPropArray)
 		{
@@ -481,7 +469,7 @@ void CFormContainerDlg::OnCalcFormPropSet()
 			MAPIFreeBuffer(lpFormPropArray);
 		}
 	}
-} //CFormContainerDlg::OnCalcFormPropSet
+} // CFormContainerDlg::OnCalcFormPropSet
 
 void CFormContainerDlg::OnGetDisplay()
 {
@@ -504,7 +492,7 @@ void CFormContainerDlg::OnGetDisplay()
 		WC_H(MyOutput.DisplayDialog());
 		MAPIFreeBuffer(lpszDisplayName);
 	}
-} //CFormContainerDlg::OnGetDisplay
+} // CFormContainerDlg::OnGetDisplay
 
 void CFormContainerDlg::HandleAddInMenuSingle(
 									   LPADDINMENUPARAMS lpParams,

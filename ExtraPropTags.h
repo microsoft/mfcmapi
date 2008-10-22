@@ -1,5 +1,4 @@
 #pragma once
-#include <mapidefs.h>
 
 #undef PR_CONVERSION_STATE
 #undef PR_DOTSTUFF_STATE
@@ -19,20 +18,20 @@
 #define PR_FREEBUSY_NT_SECURITY_DESCRIPTOR (PROP_TAG(PT_BINARY,0x0F00))
 
 // http://support.microsoft.com/kb/171670
-//Entry ID for the Calendar
+// Entry ID for the Calendar
 #define PR_IPM_APPOINTMENT_ENTRYID (PROP_TAG(PT_BINARY,0x36D0))
-//Entry ID for the Contact Folder
+// Entry ID for the Contact Folder
 #define PR_IPM_CONTACT_ENTRYID (PROP_TAG(PT_BINARY,0x36D1))
-//Entry ID for the Journal Folder
+// Entry ID for the Journal Folder
 #define PR_IPM_JOURNAL_ENTRYID (PROP_TAG(PT_BINARY,0x36D2))
-//Entry ID for the Notes Folder
+// Entry ID for the Notes Folder
 #define PR_IPM_NOTE_ENTRYID (PROP_TAG(PT_BINARY,0x36D3))
-//Entry ID for the Task Folder
+// Entry ID for the Task Folder
 #define PR_IPM_TASK_ENTRYID (PROP_TAG(PT_BINARY,0x36D4))
-//Entry IDs for the Reminders Folder
+// Entry IDs for the Reminders Folder
 #define PR_REM_ONLINE_ENTRYID (PROP_TAG(PT_BINARY,0x36D5))
 #define PR_REM_OFFLINE_ENTRYID PROP_TAG(PT_BINARY, 0x36D6)
-//Entry ID for the Drafts Folder
+// Entry ID for the Drafts Folder
 #define PR_IPM_DRAFTS_ENTRYID (PROP_TAG(PT_BINARY,0x36D7))
 
 #define PR_DEF_POST_MSGCLASS PROP_TAG(PT_STRING8, 0x36E5)
@@ -279,7 +278,7 @@
 #define PR_SUPERSEDES_W PROP_TAG(PT_UNICODE,0x103A)
 #endif
 
-//Outlook 2003 Integration API - http://msdn2.microsoft.com/en-us/library/aa193120(office.11).aspx
+// Outlook 2003 Integration API - http://msdn2.microsoft.com/en-us/library/aa193120(office.11).aspx
 #ifndef PR_PRIMARY_SEND_ACCT
 #define PR_PRIMARY_SEND_ACCT PROP_TAG(PT_UNICODE,0x0E28)
 #endif

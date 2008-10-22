@@ -2,14 +2,6 @@
 
 #pragma once
 
-#include <MapiX.h>
-#include <MapiUtil.h>
-#include <MAPIform.h>
-#include <MSPST.h>
-
-#include <edkmdb.h>
-#include <exchform.h>
-
 void LaunchProfileWizard(
 	HWND			hParentWnd,
 	ULONG			ulFlags,
@@ -22,7 +14,7 @@ HRESULT HrMAPIProfileExists(
 							LPSTR lpszProfileName);
 
 HRESULT HrCreateProfile(
-						IN LPSTR lpszProfileName);// profile name
+						IN LPSTR lpszProfileName); // profile name
 
 HRESULT HrAddServiceToProfile(
 							  IN LPSTR lpszServiceName, // Service Name

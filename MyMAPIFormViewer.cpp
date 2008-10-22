@@ -3,8 +3,6 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "Error.h"
-
 #include "MyMAPIFormViewer.h"
 #include "MAPIFunctions.h"
 #include "MAPIFormFunctions.h"
@@ -12,12 +10,6 @@
 #include "Editor.h"
 #include "InterpretProp.h"
 #include "InterpretProp2.h"
-
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
-#define new DEBUG_NEW
-#endif
 
 static TCHAR* CLASS = _T("CMyMAPIFormViewer");
 
@@ -52,7 +44,6 @@ CMyMAPIFormViewer::CMyMAPIFormViewer(
 	if (m_lpContentsTableListCtrl) m_lpContentsTableListCtrl->AddRef();
 
 	m_lpPersistMessage = NULL;
-//	m_pulConnection = NULL;
 	m_lpMapiFormAdviseSink = NULL;
 
 	m_hwndParent = hwndParent;
@@ -86,7 +77,7 @@ void CMyMAPIFormViewer::ReleaseObjects()
 	if (m_lpMDB) m_lpMDB->Release();
 	if (m_lpMAPISession) m_lpMAPISession->Release();
 	if (m_lpMapiFormAdviseSink) m_lpMapiFormAdviseSink->Release();
-	if (m_lpContentsTableListCtrl) m_lpContentsTableListCtrl->Release();//this must be last!!!!!
+	if (m_lpContentsTableListCtrl) m_lpContentsTableListCtrl->Release(); // this must be last!!!!!
 	m_lpMessage = NULL;
 	m_lpFolder = NULL;
 	m_lpMDB = NULL;
@@ -248,33 +239,25 @@ STDMETHODIMP CMyMAPIFormViewer::NewMessage(ULONG fComposeInFolder,
 	if (pFolderFocus)
 	{
 		EC_H(pFolderFocus->CreateMessage(
-			NULL,//IID
-			NULL,//flags
+			NULL, // IID
+			NULL, // flags
 			ppMessage));
 
-		if (*ppMessage)//not going to release this because we're returning it
+		if (*ppMessage) // not going to release this because we're returning it
 		{
-			CMyMAPIFormViewer *lpMAPIFormViewer = NULL;//don't free since we're passing it back
+			CMyMAPIFormViewer *lpMAPIFormViewer = NULL; // don't free since we're passing it back
 			lpMAPIFormViewer = new CMyMAPIFormViewer(
 				m_hwndParent,
 				m_lpMDB,
 				m_lpMAPISession,
 				pFolderFocus,
 				*ppMessage,
-				NULL,//m_lpContentsTableListCtrl,//don't need this on a new message
+				NULL, // m_lpContentsTableListCtrl, // don't need this on a new message
 				-1);
-			if (lpMAPIFormViewer)//not going to release this because we're returning it in ppMessageSite
+			if (lpMAPIFormViewer) // not going to release this because we're returning it in ppMessageSite
 			{
 				EC_H(lpMAPIFormViewer->SetPersist(NULL,pPersistMessage));
 				*ppMessageSite = (LPMAPIMESSAGESITE)lpMAPIFormViewer;
-
-				//Commented this out to see if it caused the leak - it didn't, but leaving it out to simplify things
-				//if (ppViewContext)
-				//{
-				//	*ppViewContext = (LPMAPIVIEWCONTEXT) lpMAPIFormViewer;
-				//	lpMAPIFormViewer->AddRef();//addref since this is a different pointer now
-				//}
-				//ReleaseObjects();//this would be bad - consider open, then reply - original form is still valid
 			}
 		}
 	}
@@ -311,7 +294,7 @@ STDMETHODIMP CMyMAPIFormViewer::SaveMessage()
 	if (!m_lpPersistMessage || !m_lpMessage) return MAPI_E_INVALID_PARAMETER;
 
 	EC_H(m_lpPersistMessage->Save(
-		NULL,//m_lpMessage,
+		NULL, // m_lpMessage,
 		TRUE));
 	if (FAILED(hRes))
 	{
@@ -396,32 +379,17 @@ STDMETHODIMP CMyMAPIFormViewer::GetLastError(HRESULT hResult,
 // IMAPIViewAdviseSink implementation
 ///////////////////////////////////////////////////////////////////////////////
 
-//Assuming we've advised on this form, we need to Unadvise it now, or it will never unload
+// Assuming we've advised on this form, we need to Unadvise it now, or it will never unload
 STDMETHODIMP CMyMAPIFormViewer::OnShutdown()
 {
 	DebugPrintEx(DBGFormViewer,CLASS,_T("OnShutdown"),_T("\n"));
 	return MAPI_E_NO_SUPPORT;
-/*	HRESULT hRes = S_OK;
-
-	if (!m_lpPersistMessage) return S_OK;
-
-	LPMAPIFORM lpMapiForm = NULL;
-	EC_H(m_lpPersistMessage->QueryInterface(IID_IMAPIForm ,(LPVOID *)&lpMapiForm));
-	if (lpMapiForm)
-	{
-		EC_H(lpMapiForm->Unadvise(m_pulConnection));
-		lpMapiForm->Release();
-	}
-	m_lpPersistMessage->Release();
-	m_lpPersistMessage = NULL;
-	return hRes;*/
 }
 
 STDMETHODIMP CMyMAPIFormViewer::OnNewMessage()
 {
 	DebugPrintEx(DBGFormViewer,CLASS,_T("OnNewMessage"),_T("\n"));
 	return MAPI_E_NO_SUPPORT;
-//	return S_OK;
 }
 
 STDMETHODIMP CMyMAPIFormViewer::OnPrint(
@@ -429,25 +397,22 @@ STDMETHODIMP CMyMAPIFormViewer::OnPrint(
 					 HRESULT hrStatus)
 {
 	DebugPrintEx(DBGFormViewer,CLASS,_T("OnPrint"),
-		_T("Page Number %u\nStatus: 0x%08X\n"),// STRING_OK
+		_T("Page Number %u\nStatus: 0x%08X\n"), // STRING_OK
 		dwPageNumber,
 		hrStatus);
 	return MAPI_E_NO_SUPPORT;
-//	return S_OK;
 }
 
 STDMETHODIMP CMyMAPIFormViewer::OnSubmitted()
 {
 	DebugPrintEx(DBGFormViewer,CLASS,_T("OnSubmitted"),_T("\n"));
 	return MAPI_E_NO_SUPPORT;
-//	return S_OK;
 }
 
 STDMETHODIMP CMyMAPIFormViewer::OnSaved()
 {
 	DebugPrintEx(DBGFormViewer,CLASS,_T("OnSaved"),_T("\n"));
 	return MAPI_E_NO_SUPPORT;
-//	return S_OK;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -455,25 +420,10 @@ STDMETHODIMP CMyMAPIFormViewer::OnSaved()
 ///////////////////////////////////////////////////////////////////////////////
 
 
-//Only call this when we really plan on shutting down
+// Only call this when we really plan on shutting down
 void CMyMAPIFormViewer::ShutdownPersist()
 {
 	DebugPrintEx(DBGFormViewer,CLASS,_T("ShutdownPersist"),_T("\n"));
-//	HRESULT hRes = S_OK;
-
-/*	if (m_lpPersistMessage && m_pulConnection)
-	{
-		LPMAPIFORM lpTempForm = NULL;
-		EC_H(m_lpPersistMessage->QueryInterface(IID_IMAPIForm ,(LPVOID *)&lpTempForm));
-		if (lpTempForm)
-		{
-			EC_H(lpTempForm->Unadvise(
-				m_pulConnection));
-			//lpTempForm->ShutdownForm(SAVEOPTS_PROMPTSAVE);//doing this will crash outlook as we go from secure to non-secure message
-			lpTempForm->Release();
-			m_pulConnection = NULL;
-		}
-	}*/
 
 	if (m_lpPersistMessage)
 	{
@@ -483,9 +433,9 @@ void CMyMAPIFormViewer::ShutdownPersist()
 	}
 }
 
-//Used to set or clear our m_lpPersistMessage
-//Can take either a persist or a form interface, but not both
-//This should only be called with a persist if the verb is EXCHIVERB_OPEN
+// Used to set or clear our m_lpPersistMessage
+// Can take either a persist or a form interface, but not both
+// This should only be called with a persist if the verb is EXCHIVERB_OPEN
 HRESULT CMyMAPIFormViewer::SetPersist(LPMAPIFORM lpForm, LPPERSISTMESSAGE lpPersist)
 {
 	DebugPrintEx(DBGFormViewer,CLASS,_T("SetPersist"),_T("\n"));
@@ -509,28 +459,16 @@ HRESULT CMyMAPIFormViewer::SetPersist(LPMAPIFORM lpForm, LPPERSISTMESSAGE lpPers
 	}
 	DebugPrint(DBGFormViewer,_T("Caching the persist\n"));
 
-	//Doing this part (saving the persist) will leak Winword in compose mode - which is why we make the above check
-	//trouble is - compose mode is when we need the persist, for SaveMessage and SubmitMessage
+	// Doing this part (saving the persist) will leak Winword in compose mode - which is why we make the above check
+	// trouble is - compose mode is when we need the persist, for SaveMessage and SubmitMessage
 	if (lpPersist)
 	{
 		m_lpPersistMessage = lpPersist;
 		m_lpPersistMessage->AddRef();
-/*		LPMAPIFORM lpTempForm = NULL;
-		EC_H(m_lpPersistMessage->QueryInterface(IID_IMAPIForm ,(LPVOID *)&lpTempForm));
-		if (lpTempForm)
-		{
-			EC_H(lpTempForm->Advise(
-				(LPMAPIVIEWADVISESINK) this,
-				&m_pulConnection));
-			lpTempForm->Release();
-		}*/
 	}
 	else if (lpForm)
 	{
 		EC_H(lpForm->QueryInterface(IID_IPersistMessage ,(LPVOID *)&m_lpPersistMessage));
-//		EC_H(lpForm->Advise(
-//			(LPMAPIVIEWADVISESINK) this,
-//			&m_pulConnection));
 	}
 
 	return hRes;
@@ -548,10 +486,10 @@ HRESULT CMyMAPIFormViewer::CallDoVerb(LPMAPIFORM lpMapiForm,
 
 	WC_H(lpMapiForm->DoVerb(
 		lVerb,
-		//(IMAPIViewContext *) this,//view context
-		NULL,//view context
-		(ULONG) (ULONG_PTR) m_hwndParent,//parent window
-		lpRect));//RECT structure with size
+		// (IMAPIViewContext *) this, // view context
+		NULL, // view context
+		(ULONG) (ULONG_PTR) m_hwndParent, // parent window
+		lpRect)); // RECT structure with size
 	if (S_OK != hRes)
 	{
 		hRes = S_OK;
@@ -563,10 +501,10 @@ HRESULT CMyMAPIFormViewer::CallDoVerb(LPMAPIFORM lpMapiForm,
 		Rect.bottom = 400;
 		EC_H(lpMapiForm->DoVerb(
 			lVerb,
-			//(IMAPIViewContext *) this,//view context
-			NULL,//view context
-			(ULONG) (ULONG_PTR) m_hwndParent,//parent window
-			&Rect));//RECT structure with size
+			// (IMAPIViewContext *) this, // view context
+			NULL, // view context
+			(ULONG) (ULONG_PTR) m_hwndParent, // parent window
+			&Rect)); // RECT structure with size
 	}
 	return hRes;
 }
@@ -615,10 +553,10 @@ STDMETHODIMP CMyMAPIFormViewer::ActivateNext(ULONG ulDir,
 		LPSPropValue	lpspvaShow = NULL;
 
 		EC_H_GETPROPS(lpNewMessage->GetProps(
-			(LPSPropTagArray) &sptaShowForm,//property tag array
-			fMapiUnicode,//flags
-			&cValuesShow, //Count of values returned
-			&lpspvaShow));//Values returned
+			(LPSPropTagArray) &sptaShowForm, // property tag array
+			fMapiUnicode, // flags
+			&cValuesShow, // Count of values returned
+			&lpspvaShow)); // Values returned
 		if (lpspvaShow)
 		{
 			LPPERSISTMESSAGE lpNewPersistMessage = NULL;
@@ -632,8 +570,8 @@ STDMETHODIMP CMyMAPIFormViewer::ActivateNext(ULONG ulDir,
 
 				WC_H(m_lpMapiFormAdviseSink->OnActivateNext(
 					lpspvaShow[ePR_MESSAGE_CLASS_A].Value.lpszA,
-					ulMessageStatus,//message status
-					lpspvaShow[ePR_MESSAGE_FLAGS].Value.ul,//message flags
+					ulMessageStatus, // message status
+					lpspvaShow[ePR_MESSAGE_FLAGS].Value.ul, // message flags
 					&lpNewPersistMessage));
 			}
 			else
@@ -641,31 +579,12 @@ STDMETHODIMP CMyMAPIFormViewer::ActivateNext(ULONG ulDir,
 				hRes = S_FALSE;
 			}
 
-			if (S_OK == hRes)//we can handle the message ourselves
+			if (S_OK == hRes) // we can handle the message ourselves
 			{
 				if (lpNewPersistMessage)
 				{
 					DebugPrintEx(DBGFormViewer,CLASS,_T("ActivateNext"),_T("Got new persist from OnActivateNext\n"));
 
-					//Maybe this is it...
-					//Replace the old message with the new one
-					//Still haven't gotten his part quite figured out
-					//Until I get it figured out - closing this form and opening a new one seems safe
-/*					m_iItem = iNewItem;
-
-					EC_H(SetPersist(NULL,lpNewPersistMessage));
-
-					//and load the new message into the persist
-					EC_H(lpNewPersistMessage->Load(
-						(LPMAPIMESSAGESITE) this,
-						lpNewMessage,
-						ulMessageStatus,//message status
-						lpspvaShow[ePR_MESSAGE_FLAGS].Value.ul));//message flags
-
-					if (!FAILED(hRes))
-					{
-						bUsedCurrentSite = true;//only set this on success
-					}*/
 					EC_H(OpenMessageNonModal(
 						m_lpMDB,
 						m_lpMAPISession,
@@ -679,16 +598,15 @@ STDMETHODIMP CMyMAPIFormViewer::ActivateNext(ULONG ulDir,
 				else
 				{
 					ErrDialog(__FILE__,__LINE__,IDS_EDACTIVATENEXT);
-					//bUsedCurrentSite = true;//only set this on success
 				}
 			}
-			//We have to load the form from scratch
+			// We have to load the form from scratch
 			else if (hRes == S_FALSE)
 			{
 				DebugPrintEx(DBGFormViewer,CLASS,_T("ActivateNext"),_T("Didn't get new persist from OnActivateNext\n"));
-				//we're going to return S_FALSE, which will shut us down, so we can spin a whole new site
-				//we don't need to clean up this site since the shutdown will do it for us
-				//BTW - it might be more efficient to in-line this code and eliminate a GetProps call
+				// we're going to return S_FALSE, which will shut us down, so we can spin a whole new site
+				// we don't need to clean up this site since the shutdown will do it for us
+				// BTW - it might be more efficient to in-line this code and eliminate a GetProps call
 				EC_H(OpenMessageNonModal(
 					m_lpMDB,
 					m_lpMAPISession,
@@ -767,7 +685,7 @@ HRESULT CMyMAPIFormViewer::GetNextMessage(
 	*pulStatus = NULL;
 	*ppMessage = NULL;
 
-	//Without a view list control, we can't do 'next'
+	// Without a view list control, we can't do 'next'
 	if (!m_lpContentsTableListCtrl || !m_lpMDB) return MAPI_E_INVALID_PARAMETER;
 	if (m_iItem == -1) return S_FALSE;
 
@@ -785,7 +703,7 @@ HRESULT CMyMAPIFormViewer::GetNextMessage(
 	}
 	else
 	{
-		SortListData* lpData = NULL;//do not free
+		SortListData* lpData = NULL; // do not free
 		lpData = (SortListData*) m_lpContentsTableListCtrl->GetItemData(*piNewItem);
 
 		if (lpData)

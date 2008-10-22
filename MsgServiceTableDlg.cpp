@@ -2,10 +2,7 @@
 // Displays the list of services in a profile
 
 #include "stdafx.h"
-#include "Error.h"
-
 #include "MsgServiceTableDlg.h"
-
 #include "ContentsTableListCtrl.h"
 #include "MapiObjects.h"
 #include "SingleMAPIPropListCtrl.h"
@@ -16,12 +13,6 @@
 #include "Editor.h"
 #include "MAPIFunctions.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
 static TCHAR* CLASS = _T("CMsgServiceTableDlg");
 
 /////////////////////////////////////////////////////////////////////////////
@@ -30,7 +21,7 @@ static TCHAR* CLASS = _T("CMsgServiceTableDlg");
 
 CMsgServiceTableDlg::CMsgServiceTableDlg(
 			   CParentWnd* pParentWnd,
-			   CMapiObjects *lpMapiObjects,
+			   CMapiObjects* lpMapiObjects,
 			   LPCSTR szProfileName
 			   ):
 CContentsTableDlg(
@@ -61,18 +52,16 @@ CMsgServiceTableDlg::~CMsgServiceTableDlg()
 	TRACE_DESTRUCTOR(CLASS);
 	if (m_szProfileName) MAPIFreeBuffer(m_szProfileName);
 	m_szProfileName = NULL;
-	//little hack to keep our releases in the right order - crash in o2k3 otherwise
+	// little hack to keep our releases in the right order - crash in o2k3 otherwise
 	if (m_lpContentsTable) m_lpContentsTable->Release();
 	m_lpContentsTable = NULL;
 	if (m_lpServiceAdmin) m_lpServiceAdmin->Release();
 }
 
 BEGIN_MESSAGE_MAP(CMsgServiceTableDlg, CContentsTableDlg)
-//{{AFX_MSG_MAP(CMsgServiceTableDlg)
 ON_COMMAND(ID_CONFIGUREMSGSERVICE,OnConfigureMsgService)
 ON_COMMAND(ID_DELETESELECTEDITEM,OnDeleteSelectedItem)
 ON_COMMAND(ID_OPENPROFILESECTION,OnOpenProfileSection)
-//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 void CMsgServiceTableDlg::OnInitMenu(CMenu* pMenu)
@@ -92,21 +81,21 @@ void CMsgServiceTableDlg::OnInitMenu(CMenu* pMenu)
 /////////////////////////////////////////////////////////////////////////////
 // CMsgServiceTableDlg message handlers
 
-//Clear the current list and get a new one with whatever code we've got in LoadMAPIPropList
+// Clear the current list and get a new one with whatever code we've got in LoadMAPIPropList
 void CMsgServiceTableDlg::OnRefreshView()
 {
 	DebugPrintEx(DBGGeneric,CLASS,_T("OnRefreshView"),_T("\n"));
 
 	HRESULT hRes = S_OK;
 
-	//Make sure we've got something to work with
+	// Make sure we've got something to work with
 	if (!m_szProfileName || !m_lpContentsTableListCtrl || !m_lpMapiObjects) return;
 
-	//cancel any loading which may be occuring
-	if (m_lpContentsTableListCtrl->m_bInLoadOp) m_lpContentsTableListCtrl->OnCancelTableLoad();
+	// cancel any loading which may be occuring
+	if (m_lpContentsTableListCtrl->IsLoading()) m_lpContentsTableListCtrl->OnCancelTableLoad();
 
-	//Clean up our table and admin in reverse order from which we obtained them
-	//Failure to do this leads to crashes in Outlook's profile code
+	// Clean up our table and admin in reverse order from which we obtained them
+	// Failure to do this leads to crashes in Outlook's profile code
 	EC_H(m_lpContentsTableListCtrl->SetContentsTable(
 		NULL,
 		dfNormal,
@@ -115,7 +104,7 @@ void CMsgServiceTableDlg::OnRefreshView()
 	if (m_lpServiceAdmin) m_lpServiceAdmin->Release();
 	m_lpServiceAdmin = NULL;
 
-	LPPROFADMIN lpProfAdmin = m_lpMapiObjects->GetProfAdmin();//do not release
+	LPPROFADMIN lpProfAdmin = m_lpMapiObjects->GetProfAdmin(); // do not release
 
 	if (lpProfAdmin)
 	{
@@ -134,7 +123,7 @@ void CMsgServiceTableDlg::OnRefreshView()
 			LPMAPITABLE lpServiceTable = NULL;
 
 			EC_H(m_lpServiceAdmin->GetMsgServiceTable(
-				0,//fMapiUnicode is not supported
+				0, // fMapiUnicode is not supported
 				&lpServiceTable));
 
 			if (lpServiceTable)
@@ -148,7 +137,7 @@ void CMsgServiceTableDlg::OnRefreshView()
 			}
 		}
 	}
-}//CMsgServiceTableDlg::OnRefreshView
+} // CMsgServiceTableDlg::OnRefreshView
 
 void CMsgServiceTableDlg::OnDisplayItem()
 {
@@ -158,7 +147,7 @@ void CMsgServiceTableDlg::OnDisplayItem()
 	LPMAPITABLE		lpProviderTable = NULL;
 	int				iItem = -1;
 	SortListData*	lpListData = NULL;
-	CWaitCursor	Wait;//Change the mouse to an hourglass while we work.
+	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpContentsTableListCtrl || !m_lpServiceAdmin) return;
 
@@ -173,13 +162,13 @@ void CMsgServiceTableDlg::OnDisplayItem()
 			{
 				EC_H(m_lpServiceAdmin->AdminProviders(
 					(LPMAPIUID) lpServiceUID->lpb,
-					0,//fMapiUnicode is not supported
+					0, // fMapiUnicode is not supported
 					&lpProviderAdmin));
 
 				if (lpProviderAdmin)
 				{
 					EC_H(lpProviderAdmin->GetProviderTable(
-						0,//fMapiUnicode is not supported
+						0, // fMapiUnicode is not supported
 						&lpProviderTable));
 
 					if (lpProviderTable)
@@ -201,7 +190,7 @@ void CMsgServiceTableDlg::OnDisplayItem()
 	while (iItem != -1);
 
 	return;
-}//CMsgServiceTableDlg::OnDisplayItem
+} // CMsgServiceTableDlg::OnDisplayItem
 
 void CMsgServiceTableDlg::OnConfigureMsgService()
 {
@@ -209,7 +198,7 @@ void CMsgServiceTableDlg::OnConfigureMsgService()
 	LPSBinary		lpServiceUID = NULL;
 	int				iItem = -1;
 	SortListData*	lpListData = NULL;
-	CWaitCursor	Wait;//Change the mouse to an hourglass while we work.
+	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpContentsTableListCtrl || !m_lpServiceAdmin) return;
 
@@ -261,7 +250,7 @@ HRESULT CMsgServiceTableDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum
 		}
 	}
 	return hRes;
-}//CMsgServiceTableDlg::OpenItemProp
+} // CMsgServiceTableDlg::OpenItemProp
 
 void CMsgServiceTableDlg::OnOpenProfileSection()
 {
@@ -276,7 +265,7 @@ void CMsgServiceTableDlg::OnOpenProfileSection()
 		1,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 
-	MyUID.InitSingleLineSz(0,IDS_MAPIUID,_T("0a0d020000000000c000000000000046"),false);// STRING_OK
+	MyUID.InitSingleLineSz(0,IDS_MAPIUID,_T("0a0d020000000000c000000000000046"),false); // STRING_OK
 
 	WC_H(MyUID.DisplayDialog());
 	if (S_OK != hRes) return;
@@ -321,7 +310,7 @@ void CMsgServiceTableDlg::OnOpenProfileSection()
 	MAPIFreeBuffer(MapiUID.lpb);
 
 	return;
-}//CMsgServiceTableDlg::OnOpenProfileSection
+} // CMsgServiceTableDlg::OnOpenProfileSection
 
 void CMsgServiceTableDlg::OnDeleteSelectedItem()
 {
@@ -335,7 +324,7 @@ void CMsgServiceTableDlg::OnDeleteSelectedItem()
 	do
 	{
 		hRes = S_OK;
-		//Find the highlighted item AttachNum
+		// Find the highlighted item AttachNum
 		lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 		if (!lpListData) break;
 
@@ -350,8 +339,8 @@ void CMsgServiceTableDlg::OnDeleteSelectedItem()
 	}
 	while (iItem != -1);
 
-	OnRefreshView();//Update the view since we don't have notifications here.
-}//CMsgServiceTableDlg::OnDeleteSelectedItem
+	OnRefreshView(); // Update the view since we don't have notifications here.
+} // CMsgServiceTableDlg::OnDeleteSelectedItem
 
 void CMsgServiceTableDlg::HandleAddInMenuSingle(
 									   LPADDINMENUPARAMS lpParams,

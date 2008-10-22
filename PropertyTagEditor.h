@@ -1,8 +1,9 @@
 #pragma once
 // PropertyTagEditor.h : header file
-//
 
 #include "Editor.h"
+
+#define NOSKIPFIELD ((ULONG)0xffffffff)
 
 class CPropertyTagEditor : public CEditor
 {
@@ -14,22 +15,16 @@ public:
 		BOOL		bIncludeABProps,
 		LPMAPIPROP	lpMAPIProp,
 		CWnd*		pParentWnd);
-	~CPropertyTagEditor();
+	virtual ~CPropertyTagEditor();
 
 	ULONG GetPropertyTag();
 
-protected:
-	//{{AFX_MSG(CPropertyEditor)
-	//}}AFX_MSG
-
-	DECLARE_MESSAGE_MAP()
-
-	BOOL	OnInitDialog();
 private:
 	ULONG	HandleChange(UINT nID);
+	void	OnEditAction1();
+	void	OnEditAction2();
+	BOOL	OnInitDialog();
 	void	PopulateFields(ULONG ulSkipField);
-	virtual void OnEditAction1();
-	virtual void OnEditAction2();
 	BOOL	GetSelectedGUID(LPGUID lpSelectedGUID);
 	BOOL	GetSelectedPropType(ULONG* ulPropType);
 
@@ -38,8 +33,6 @@ private:
 	LPMAPIPROP	m_lpMAPIProp;
 };
 
-#define NOSKIPFIELD ((ULONG)0xffffffff)
-
 class CPropertySelector : public CEditor
 {
 public:
@@ -47,19 +40,13 @@ public:
 		BOOL		bIncludeABProps,
 		LPMAPIPROP	lpMAPIProp,
 		CWnd*		pParentWnd);
-	~CPropertySelector();
+	virtual ~CPropertySelector();
 
 	ULONG GetPropertyTag();
 
-protected:
-	//{{AFX_MSG(CPropertyEditor)
-	//}}AFX_MSG
-
-	DECLARE_MESSAGE_MAP()
-
-	BOOL	OnInitDialog();
-	virtual BOOL	DoListEdit(ULONG ulListNum, int iItem, SortListData* lpData);
 private:
+	BOOL	OnInitDialog();
+	BOOL	DoListEdit(ULONG ulListNum, int iItem, SortListData* lpData);
 	void	OnOK();
 
 	ULONG		m_ulPropTag;

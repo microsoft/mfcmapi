@@ -2,14 +2,6 @@
 
 #pragma once
 
-#include <MapiX.h>
-#include <MapiUtil.h>
-#include <MAPIform.h>
-#include <MSPST.h>
-
-#include <edkmdb.h>
-#include <exchform.h>
-
 HRESULT CallOpenEntry(
 						LPMDB lpMDB,
 						LPADRBOOK lpAB,
@@ -98,7 +90,7 @@ HRESULT WrapStreamForRTF(
 HRESULT GetNamedPropsByGUID(LPMAPIPROP lpSource, LPGUID lpPropSetGUID, LPSPropTagArray * lpOutArray);
 HRESULT CopyNamedProps(LPMAPIPROP lpSource, LPGUID lpPropSetGUID, BOOL bDoMove, BOOL bDoNoReplace, LPMAPIPROP lpTarget, HWND hWnd);
 
-//Unicode support
+// Unicode support
 HRESULT AnsiToUnicode(LPCSTR pszA, LPWSTR* ppszW);
 HRESULT UnicodeToAnsi(LPCWSTR pszW, LPSTR* ppszA, size_t cchszW = -1);
 

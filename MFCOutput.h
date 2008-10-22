@@ -1,23 +1,19 @@
 #pragma once
 // MFCOutput.h : header file
 //
-
-#include "output.h"
-#include "error.h"
-
-//Output (to File/Debug) functions
+// Output (to File/Debug) functions
 
 void OpenDebugFile();
 void CloseDebugFile();
 void SetDebugLevel(ULONG ulDbgLvl);
 void SetDebugOutputToFile(BOOL bDoOutput);
 
-//New system for debug output: When outputting debug output, a tag is included - if that tag is
-//set in RegKeys[regkeyDEBUG_TAG].ulCurDWORD, then we do the output. Otherwise, we ditch it.
-//DBGNoDebug never gets output - special case
+// New system for debug output: When outputting debug output, a tag is included - if that tag is
+// set in RegKeys[regkeyDEBUG_TAG].ulCurDWORD, then we do the output. Otherwise, we ditch it.
+// DBGNoDebug never gets output - special case
 
-//The global debug level - combination of flags from below
-//RegKeys[regkeyDEBUG_TAG].ulCurDWORD
+// The global debug level - combination of flags from below
+// RegKeys[regkeyDEBUG_TAG].ulCurDWORD
 
 #define	DBGNoDebug							((ULONG) 0x00000000)
 #define	DBGGeneric							((ULONG) 0x00000001)
@@ -37,7 +33,6 @@ void SetDebugOutputToFile(BOOL bDoOutput);
 #define DBGForms							((ULONG) 0x00004000)
 #define DBGAddInPlumbing					((ULONG) 0x00008000)
 #define DBGAddIn 							((ULONG) 0x00010000)
-#define DBGWindowProc						((ULONG) 0x40000000)
 #define DBGMenu								((ULONG) 0x80000000)
 
 // Super verbose is really overkill - scale back for our ALL default
@@ -55,16 +50,17 @@ void __cdecl Outputf(ULONG ulDbgLvl, FILE* fFile, BOOL bPrintThreadTime, LPCTSTR
 #define OutputToFile(fFile, szMsg) _Output((DBGNoDebug), (fFile), true, (szMsg))
 void __cdecl OutputToFilef(FILE* fFile, LPCTSTR szMsg,...);
 
+void __cdecl DebugPrint(ULONG ulDbgLvl,LPCTSTR szMsg,...);
 void __cdecl DebugPrintEx(ULONG ulDbgLvl,LPCTSTR szClass, LPCTSTR szFunc, LPCTSTR szMsg, ...);
 
-//Template for the Output functions
-//void Output(ULONG ulDbgLvl, LPCTSTR szFileName,stufftooutput)
+// Template for the Output functions
+// void Output(ULONG ulDbgLvl, LPCTSTR szFileName,stufftooutput)
 
-//If the first parameter is not DBGNoDebug, we debug print the output
-//If the second parameter is a file name, we print the output to the file
-//Doing both is OK, if we ask to do neither, ASSERT
+// If the first parameter is not DBGNoDebug, we debug print the output
+// If the second parameter is a file name, we print the output to the file
+// Doing both is OK, if we ask to do neither, ASSERT
 
-//We'll use macros to make these calls so the code will read right
+// We'll use macros to make these calls so the code will read right
 
 void _OutputBinary(ULONG ulDbgLvl, FILE* fFile, LPSBinary lpBin);
 void _OutputProperty(ULONG ulDbgLvl, FILE* fFile, LPSPropValue lpProp, LPMAPIPROP lpObj);
@@ -76,7 +72,6 @@ void _OutputStream(ULONG ulDbgLvl, FILE* fFile, LPSTREAM lpStream);
 void _OutputVersion(ULONG ulDbgLvl, FILE* fFile);
 void _OutputFormInfo(ULONG ulDbgLvl, FILE* fFile, LPMAPIFORMINFO lpMAPIFormInfo);
 void _OutputFormPropArray(ULONG ulDbgLvl, FILE* fFile, LPMAPIFORMPROPARRAY lpMAPIFormPropArray);
-//void _OutputNamedPropID(ULONG ulDbgLvl, FILE* fFile, LPMAPINAMEID lpName);
 void _OutputPropTagArray(ULONG ulDbgLvl, FILE* fFile, LPSPropTagArray lpTagsToDump);
 void _OutputTable(ULONG ulDbgLvl, FILE* fFile, LPMAPITABLE lpMAPITable);
 void _OutputNotifications(ULONG ulDbgLvl, FILE* fFile, ULONG cNotify, LPNOTIFICATION lpNotifications);

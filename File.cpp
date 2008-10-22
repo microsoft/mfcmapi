@@ -1,8 +1,6 @@
 // file.cpp
 
 #include "stdafx.h"
-#include "Error.h"
-
 #include "File.h"
 #include "InterpretProp.h"
 #include "MAPIFunctions.h"
@@ -11,14 +9,7 @@
 #include "guids.h"
 #include "ImportProcs.h"
 #include "MFCUtilityFunctions.h"
-
 #include <shlobj.h>
-
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
-#define new DEBUG_NEW
-#endif
 
 // Add current Entry ID to file name
 HRESULT AppendEntryID(LPTSTR szFileName, size_t cchFileName, LPSBinary lpBin, size_t cchMaxAppend)
@@ -35,7 +26,7 @@ HRESULT AppendEntryID(LPTSTR szFileName, size_t cchFileName, LPSBinary lpBin, si
 
 	if (szBin)
 	{
-		EC_H(StringCchCatN(szFileName, cchFileName, _T("_"),1));// STRING_OK
+		EC_H(StringCchCatN(szFileName, cchFileName, _T("_"),1)); // STRING_OK
 		EC_H(StringCchCatN(szFileName, cchFileName, szBin,cchMaxAppend-1));
 		delete[] szBin;
 	}
@@ -69,7 +60,7 @@ HRESULT GetDirectoryPath(LPTSTR szPath)
 	BrowseInfo.pszDisplayName = szPath;
 	BrowseInfo.ulFlags = BIF_USENEWUI | BIF_RETURNONLYFSDIRS;
 
-	//Note - I don't initialize COM for this call because MAPIInitialize does this
+	// Note - I don't initialize COM for this call because MAPIInitialize does this
 	lpItemIdList = SHBrowseForFolder(&BrowseInfo);
 	if (lpItemIdList)
 	{
@@ -85,7 +76,7 @@ HRESULT GetDirectoryPath(LPTSTR szPath)
 	return hRes;
 }
 
-//Creates an LPMESSAGE on top of the MSG file
+// Creates an LPMESSAGE on top of the MSG file
 HRESULT LoadMSGToMessage(LPCTSTR szMessageFile, LPMESSAGE* lppMessage)
 {
 	HRESULT		hRes = S_OK;
@@ -145,10 +136,10 @@ HRESULT LoadMSGToMessage(LPCTSTR szMessageFile, LPMESSAGE* lppMessage)
 
 	if (pStorage) pStorage->Release();
 	return hRes;
-}//LoadMSGToMessage
+} // LoadMSGToMessage
 
-//Loads the MSG file into an LPMESSAGE pointer, then copies it into the passed in message
-//lpMessage must be created first
+// Loads the MSG file into an LPMESSAGE pointer, then copies it into the passed in message
+// lpMessage must be created first
 HRESULT LoadFromMSG(LPCTSTR szMessageFile, LPMESSAGE lpMessage, HWND hWnd)
 {
 	HRESULT				hRes = S_OK;
@@ -185,7 +176,7 @@ HRESULT LoadFromMSG(LPCTSTR szMessageFile, LPMESSAGE lpMessage, HWND hWnd)
 	{
 		LPSPropProblemArray lpProblems = NULL;
 
-		LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIProp::CopyTo"), hWnd);// STRING_OK
+		LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIProp::CopyTo"), hWnd); // STRING_OK
 
 		EC_H(pIMsg->CopyTo(
 			0,
@@ -213,9 +204,9 @@ HRESULT LoadFromMSG(LPCTSTR szMessageFile, LPMESSAGE lpMessage, HWND hWnd)
 
 	if (pIMsg) pIMsg->Release();
 	return hRes;
-}//LoadFromMSG
+} // LoadFromMSG
 
-//lpMessage must be created first
+// lpMessage must be created first
 HRESULT LoadFromTNEF(LPCTSTR szMessageFile, LPADRBOOK lpAdrBook, LPMESSAGE lpMessage)
 {
 	HRESULT				hRes = S_OK;
@@ -253,7 +244,7 @@ HRESULT LoadFromTNEF(LPCTSTR szMessageFile, LPADRBOOK lpAdrBook, LPMESSAGE lpMes
 	EC_H(OpenTnefStreamEx(
 		NULL,
 		lpStream,
-		(LPTSTR) "winmail.dat",// STRING_OK - despite it's signature, this function is ANSI only
+		(LPTSTR) "winmail.dat", // STRING_OK - despite it's signature, this function is ANSI only
 		TNEF_DECODE,
 		lpMessage,
 		dwKey,
@@ -279,9 +270,9 @@ HRESULT LoadFromTNEF(LPCTSTR szMessageFile, LPADRBOOK lpAdrBook, LPMESSAGE lpMes
 	if (lpTNEF) lpTNEF->Release();
 	if (lpStream) lpStream->Release();
 	return hRes;
-}//LoadFromTNEF
+} // LoadFromTNEF
 
-//Builds a file name out of the passed in message and extension
+// Builds a file name out of the passed in message and extension
 HRESULT BuildFileName(LPTSTR szFileOut, size_t cchFileOut, LPCTSTR szExt, size_t cchExt, LPMESSAGE lpMessage)
 {
 	HRESULT			hRes = S_OK;
@@ -294,7 +285,7 @@ HRESULT BuildFileName(LPTSTR szFileOut, size_t cchFileOut, LPCTSTR szExt, size_t
 	WC_H(HrGetOneProp(lpMessage, PR_SUBJECT, &lpSubject));
 	if (MAPI_E_NOT_FOUND == hRes)
 	{
-		//This is OK. We'll use our own file name.
+		// This is OK. We'll use our own file name.
 		hRes = S_OK;
 	}
 	else CHECKHRES(hRes);
@@ -310,8 +301,8 @@ HRESULT BuildFileName(LPTSTR szFileOut, size_t cchFileOut, LPCTSTR szExt, size_t
 	}
 	else
 	{
-		//We must have failed to get a subject before. Make one up.
-		EC_H(StringCchCat(szFileOut, cchFileOut, _T("UnknownSubject")));// STRING_OK
+		// We must have failed to get a subject before. Make one up.
+		EC_H(StringCchCat(szFileOut, cchFileOut, _T("UnknownSubject"))); // STRING_OK
 	}
 
 	// Add our extension
@@ -321,10 +312,10 @@ HRESULT BuildFileName(LPTSTR szFileOut, size_t cchFileOut, LPCTSTR szExt, size_t
 	return hRes;
 }
 
-//Problem here is that cchFileOut can't be longer than MAX_PATH
-//So the file name we generate must be shorter than MAX_PATH
-//This includes our directory name too!
-//So directory is part of the input and output now
+// Problem here is that cchFileOut can't be longer than MAX_PATH
+// So the file name we generate must be shorter than MAX_PATH
+// This includes our directory name too!
+// So directory is part of the input and output now
 #define MAXSUBJ 25
 #define MAXBIN 141
 HRESULT BuildFileNameAndPath(LPTSTR szFileOut, size_t cchFileOut, LPCTSTR szExt, size_t cchExt, LPCTSTR szSubj, LPSBinary lpBin, LPCTSTR szRootPath)
@@ -334,17 +325,17 @@ HRESULT BuildFileNameAndPath(LPTSTR szFileOut, size_t cchFileOut, LPCTSTR szExt,
 	if (!szFileOut) return MAPI_E_INVALID_PARAMETER;
 	if (cchFileOut > MAX_PATH) return MAPI_E_INVALID_PARAMETER;
 
-	szFileOut[0] = _T('\0');//initialize our string to NULL
+	szFileOut[0] = _T('\0'); // initialize our string to NULL
 	size_t cchCharRemaining = cchFileOut;
 
 	size_t cchRootPath = NULL;
 
-	//set up the path portion of the output:
+	// set up the path portion of the output:
 	if (szRootPath)
 	{
-		//Use the short path to give us as much room as possible
+		// Use the short path to give us as much room as possible
 		EC_D(cchRootPath,GetShortPathName(szRootPath, szFileOut, (DWORD)cchFileOut));
-		//stuff a slash in there if we need one
+		// stuff a slash in there if we need one
 		if (cchRootPath+1 < cchFileOut && szFileOut[cchRootPath-1] != _T('\\'))
 		{
 			szFileOut[cchRootPath] = _T('\\');
@@ -354,13 +345,13 @@ HRESULT BuildFileNameAndPath(LPTSTR szFileOut, size_t cchFileOut, LPCTSTR szExt,
 		cchCharRemaining -= cchRootPath;
 	}
 
-	//We now have cchCharRemaining characters in which to work
-	//Suppose this is 0? Need at least 12 for an 8.3 name
+	// We now have cchCharRemaining characters in which to work
+	// Suppose this is 0? Need at least 12 for an 8.3 name
 
 	size_t cchBin = 0;
-	if (lpBin) cchBin = (2*lpBin->cb)+1;//bin + '_'
+	if (lpBin) cchBin = (2*lpBin->cb)+1; // bin + '_'
 
-	size_t cchSubj = 14;//length of 'UnknownSubject'
+	size_t cchSubj = 14; // length of 'UnknownSubject'
 	if (szSubj)
 	{
 		EC_H(StringCchLength(szSubj,STRSAFE_MAX_CCH,&cchSubj));
@@ -368,14 +359,14 @@ HRESULT BuildFileNameAndPath(LPTSTR szFileOut, size_t cchFileOut, LPCTSTR szExt,
 
 	if (cchCharRemaining < cchSubj + cchBin + cchExt + 1)
 	{
-		//don't have enough space - need to shorten things:
+		// don't have enough space - need to shorten things:
 		if (cchSubj > MAXSUBJ) cchSubj = MAXSUBJ;
 		if (cchBin  > MAXBIN)  cchBin  = MAXBIN;
 	}
 	if (cchCharRemaining < cchSubj + cchBin + cchExt + 1)
 	{
-		//still don't have enough space - need to shorten things:
-		//TODO: generate a unique 8.3 name and return it
+		// still don't have enough space - need to shorten things:
+		// TODO: generate a unique 8.3 name and return it
 		return MAPI_E_INVALID_PARAMETER;
 	}
 	else
@@ -390,8 +381,8 @@ HRESULT BuildFileNameAndPath(LPTSTR szFileOut, size_t cchFileOut, LPCTSTR szExt,
 		}
 		else
 		{
-			//We must have failed to get a subject before. Make one up.
-			EC_H(StringCchCopy(szFileOut + cchCharRemaining, cchCharRemaining, _T("UnknownSubject")));// STRING_OK
+			// We must have failed to get a subject before. Make one up.
+			EC_H(StringCchCopy(szFileOut + cchCharRemaining, cchCharRemaining, _T("UnknownSubject"))); // STRING_OK
 		}
 
 		if (lpBin && lpBin->cb)
@@ -409,13 +400,13 @@ HRESULT BuildFileNameAndPath(LPTSTR szFileOut, size_t cchFileOut, LPCTSTR szExt,
 	return hRes;
 }
 
-//Takes szFileIn and copies it to szFileOut, replacing non file system characters with underscores
-//Do NOT call with full path - just file names
-//Resulting string will have no more than ulCharsToCopy characters
+// Takes szFileIn and copies it to szFileOut, replacing non file system characters with underscores
+// Do NOT call with full path - just file names
+// Resulting string will have no more than ulCharsToCopy characters
 HRESULT SanitizeFileName(
-						 LPTSTR szFileOut, //output buffer
-						 size_t cchFileOut, //length of output buffer
-						 LPCTSTR szFileIn,//File name in
+						 LPTSTR szFileOut, // output buffer
+						 size_t cchFileOut, // length of output buffer
+						 LPCTSTR szFileIn, // File name in
 						 size_t cchCharsToCopy)
 {
 	HRESULT hRes = S_OK;
@@ -523,13 +514,13 @@ HRESULT	SaveFolderContentsToMSG(LPMAPIFOLDER lpFolder, LPCTSTR szPathName, BOOL 
 
 				TCHAR szFileName[MAX_PATH];
 
-				LPCTSTR szSubj = _T("UnknownSubject");// STRING_OK
+				LPCTSTR szSubj = _T("UnknownSubject"); // STRING_OK
 
 				if (CheckStringProp(&pRows->aRow->lpProps[fldPR_SUBJECT],PT_TSTRING))
 				{
 					szSubj = pRows->aRow->lpProps[fldPR_SUBJECT].Value.LPSZ;
 				}
-				EC_H(BuildFileNameAndPath(szFileName,CCH(szFileName),_T(".msg"),4,szSubj,&pRows->aRow->lpProps[fldPR_SEARCH_KEY].Value.bin,szPathName));// STRING_OK
+				EC_H(BuildFileNameAndPath(szFileName,CCH(szFileName),_T(".msg"),4,szSubj,&pRows->aRow->lpProps[fldPR_SEARCH_KEY].Value.bin,szPathName)); // STRING_OK
 
 				DebugPrint(DBGGeneric,_T("Saving to = \"%s\"\n"),szFileName);
 
@@ -566,7 +557,7 @@ HRESULT SaveToEML(LPMESSAGE lpMessage, LPCTSTR szFileName)
 		PR_INTERNET_CONTENT,
 		(LPIID)&IID_IStream,
 		0,
-		NULL,//MAPI_MODIFY is not needed
+		NULL, // MAPI_MODIFY is not needed
 		(LPUNKNOWN *)&pStrmSrc));
 	if (FAILED(hRes))
 	{
@@ -609,7 +600,7 @@ HRESULT SaveToEML(LPMESSAGE lpMessage, LPCTSTR szFileName)
 	}
 
 	return hRes;
-}//SaveToEML
+} // SaveToEML
 
 HRESULT STDAPICALLTYPE MyStgCreateStorageEx(IN const TCHAR* pName,
 							IN  DWORD grfMode,
@@ -672,7 +663,7 @@ HRESULT CreateNewMSG(LPCTSTR szFileName, BOOL bUnicode, LPMESSAGE* lppMessage, L
 	{
 		STGOPTIONS myOpts = {0};
 
-		myOpts.usVersion = 1,//STGOPTIONS_VERSION;
+		myOpts.usVersion = 1; // STGOPTIONS_VERSION
 		myOpts.ulSectorSize = 4096;
 
 		// Open the compound file
@@ -680,7 +671,7 @@ HRESULT CreateNewMSG(LPCTSTR szFileName, BOOL bUnicode, LPMESSAGE* lppMessage, L
 			szFileName,
 			STGM_READWRITE | STGM_TRANSACTED | STGM_CREATE,
 			STGFMT_DOCFILE,
-			0, //FILE_FLAG_NO_BUFFERING,
+			0, // FILE_FLAG_NO_BUFFERING,
 			&myOpts,
 			0,
 			__uuidof(IStorage),
@@ -754,7 +745,7 @@ HRESULT SaveToMSG(LPMESSAGE lpMessage, LPCTSTR szFileName, BOOL bUnicode, HWND h
 		LPSPropProblemArray lpProblems = NULL;
 
 		// copy message properties to IMessage object opened on top of IStorage.
-		LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIProp::CopyTo"), hWnd);// STRING_OK
+		LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIProp::CopyTo"), hWnd); // STRING_OK
 
 		EC_H(lpMessage->CopyTo(0, NULL,
 			(LPSPropTagArray)&excludeTags,
@@ -784,7 +775,7 @@ HRESULT SaveToMSG(LPMESSAGE lpMessage, LPCTSTR szFileName, BOOL bUnicode, HWND h
 	if (pIMsg) pIMsg->Release();
 
 	return hRes;
-}//SaveToMSG
+} // SaveToMSG
 
 HRESULT SaveToTNEF(LPMESSAGE lpMessage, LPADRBOOK lpAdrBook, LPCTSTR szFileName)
 {
@@ -827,14 +818,14 @@ HRESULT SaveToTNEF(LPMESSAGE lpMessage, LPADRBOOK lpAdrBook, LPCTSTR szFileName)
 
 	if (lpStream)
 	{
-		//Open TNEF stream
+		// Open TNEF stream
 #pragma warning(push)
 #pragma warning(disable:4616)
 #pragma warning(disable:6276)
 		EC_H(OpenTnefStreamEx(
 			NULL,
 			lpStream,
-			(LPTSTR) "winmail.dat",// STRING_OK - despite it's signature, this function is ANSI only
+			(LPTSTR) "winmail.dat", // STRING_OK - despite it's signature, this function is ANSI only
 			TNEF_ENCODE,
 			lpMessage,
 			dwKey,
@@ -844,7 +835,7 @@ HRESULT SaveToTNEF(LPMESSAGE lpMessage, LPADRBOOK lpAdrBook, LPCTSTR szFileName)
 
 		if (lpTNEF)
 		{
-			//Excludes
+			// Excludes
 			EC_H(lpTNEF->AddProps(
 				TNEF_PROP_EXCLUDE,
 				0,
@@ -869,7 +860,7 @@ HRESULT SaveToTNEF(LPMESSAGE lpMessage, LPADRBOOK lpAdrBook, LPCTSTR szFileName)
 
 			EC_TNEFERR(lpError);
 
-			//Saving stream
+			// Saving stream
 			EC_H(lpStream->Commit(STGC_DEFAULT));
 
 			MAPIFreeBuffer(lpError);
@@ -879,7 +870,7 @@ HRESULT SaveToTNEF(LPMESSAGE lpMessage, LPADRBOOK lpAdrBook, LPCTSTR szFileName)
 	}
 
 	return hRes;
-}//SaveToTNEF
+} // SaveToTNEF
 
 HRESULT DeleteAttachments(LPMESSAGE lpMessage, LPCTSTR szAttName, HWND hWnd)
 {
@@ -940,7 +931,7 @@ HRESULT DeleteAttachments(LPMESSAGE lpMessage, LPCTSTR szAttName, HWND hWnd)
 					}
 
 					// Open the attachment
-					LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMessage::DeleteAttach"), hWnd);// STRING_OK
+					LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMessage::DeleteAttach"), hWnd); // STRING_OK
 
 					EC_H(lpMessage->DeleteAttach(
 						pRows->aRow[iRow].lpProps[ATTACHNUM].Value.l,
@@ -971,7 +962,7 @@ HRESULT DeleteAttachments(LPMESSAGE lpMessage, LPCTSTR szAttName, HWND hWnd)
 	MAPIFreeBuffer(pProps);
 
 	return hRes;
-}//DeleteAllAttachments
+} // DeleteAllAttachments
 
 HRESULT WriteAttachmentsToFile(LPMESSAGE lpMessage, HWND hWnd)
 {
@@ -1047,7 +1038,7 @@ HRESULT WriteAttachmentsToFile(LPMESSAGE lpMessage, HWND hWnd)
 	MAPIFreeBuffer(pProps);
 
 	return hRes;
-}//WriteAttachmentsToFile
+} // WriteAttachmentsToFile
 
 HRESULT WriteEmbeddedMSGToFile(LPATTACH lpAttach,LPCTSTR szFileName, BOOL bUnicode, HWND hWnd)
 {
@@ -1062,7 +1053,7 @@ HRESULT WriteEmbeddedMSGToFile(LPATTACH lpAttach,LPCTSTR szFileName, BOOL bUnico
 		PR_ATTACH_DATA_OBJ,
 		(LPIID)&IID_IMessage,
 		0,
-		NULL,//MAPI_MODIFY is not needed
+		NULL, // MAPI_MODIFY is not needed
 		(LPUNKNOWN *)&lpAttachMsg));
 
 	if (lpAttachMsg)
@@ -1089,7 +1080,7 @@ HRESULT WriteAttachStreamToFile(LPATTACH lpAttach,LPCTSTR szFileName)
 		PR_ATTACH_DATA_BIN,
 		(LPIID)&IID_IStream,
 		0,
-		NULL,//MAPI_MODIFY is not needed
+		NULL, // MAPI_MODIFY is not needed
 		(LPUNKNOWN *)&pStrmSrc));
 	if (FAILED(hRes))
 	{
@@ -1135,7 +1126,7 @@ HRESULT WriteAttachStreamToFile(LPATTACH lpAttach,LPCTSTR szFileName)
 	return hRes;
 }
 
-//Pretty sure this covers all OLE attachments - we don't need to look at PR_ATTACH_TAG
+// Pretty sure this covers all OLE attachments - we don't need to look at PR_ATTACH_TAG
 HRESULT WriteOleToFile(LPATTACH lpAttach,LPCTSTR szFileName)
 {
 	HRESULT			hRes = S_OK;
@@ -1154,7 +1145,7 @@ HRESULT WriteOleToFile(LPATTACH lpAttach,LPCTSTR szFileName)
 		NULL,
 		(LPUNKNOWN *)&pStrmSrc));
 
-	//We got IStreamDocFile! Great! We can copy stream to stream into the file
+	// We got IStreamDocFile! Great! We can copy stream to stream into the file
 	if (pStrmSrc)
 	{
 		// Open an IStream interface and create the file at the
@@ -1183,7 +1174,7 @@ HRESULT WriteOleToFile(LPATTACH lpAttach,LPCTSTR szFileName)
 		}
 		pStrmSrc->Release();
 	}
-	//We couldn't get IStreamDocFile! No problem - we'll try IStorage next
+	// We couldn't get IStreamDocFile! No problem - we'll try IStorage next
 	else
 	{
 		hRes = S_OK;
@@ -1261,16 +1252,16 @@ HRESULT	WriteAttachmentToFile(LPATTACH lpAttach, HWND hWnd)
 
 	// Get required properties from the message
 	EC_H_GETPROPS(lpAttach->GetProps(
-		(LPSPropTagArray) &sptaAttachProps,//property tag array
-		fMapiUnicode,//flags
-		&ulProps, //Count of values returned
-		&lpProps));//Values returned
+		(LPSPropTagArray) &sptaAttachProps, // property tag array
+		fMapiUnicode, // flags
+		&ulProps, // Count of values returned
+		&lpProps)); // Values returned
 
 	if (lpProps)
 	{
-		LPCTSTR szName = _T("Unknown");// STRING_OK
+		LPCTSTR szName = _T("Unknown"); // STRING_OK
 
-		//Get a file name to use
+		// Get a file name to use
 		if (CheckStringProp(&lpProps[ATTACH_LONG_FILENAME],PT_TSTRING))
 		{
 			szName = lpProps[ATTACH_LONG_FILENAME].Value.LPSZ;
@@ -1286,7 +1277,7 @@ HRESULT	WriteAttachmentToFile(LPATTACH lpAttach, HWND hWnd)
 
 		EC_H(SanitizeFileName(szFileName,CCH(szFileName),szName,CCH(szFileName)));
 
-		//Get File Name
+		// Get File Name
 		switch(lpProps[ATTACH_METHOD].Value.l)
 		{
 		case ATTACH_BY_VALUE:
@@ -1299,8 +1290,8 @@ HRESULT	WriteAttachmentToFile(LPATTACH lpAttach, HWND hWnd)
 
 				CFileDialogEx dlgFilePicker(
 					FALSE,
-					_T("txt"),// STRING_OK
-					_T("unknown.txt"),// STRING_OK
+					_T("txt"), // STRING_OK
+					_T("unknown.txt"), // STRING_OK
 					OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
 					szFileSpec);
 
@@ -1316,15 +1307,15 @@ HRESULT	WriteAttachmentToFile(LPATTACH lpAttach, HWND hWnd)
 			}
 			break;
 		case ATTACH_EMBEDDED_MSG:
-			//Get File Name
+			// Get File Name
 			{
 				CString szFileSpec;
 				szFileSpec.LoadString(IDS_MSGFILES);
 
 				CFileDialogEx dlgFilePicker(
 					FALSE,
-					_T("msg"),// STRING_OK
-					_T("test.msg"),// STRING_OK
+					_T("msg"), // STRING_OK
+					_T("test.msg"), // STRING_OK
 					OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
 					szFileSpec);
 
@@ -1369,4 +1360,4 @@ HRESULT	WriteAttachmentToFile(LPATTACH lpAttach, HWND hWnd)
 
 	MAPIFreeBuffer(lpProps);
 	return hRes;
-}//WriteAttachmentToFile
+} // WriteAttachmentToFile

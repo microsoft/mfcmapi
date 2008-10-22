@@ -1,16 +1,8 @@
 // MAPIABfunctions.cpp : Collection of useful MAPI Address Book functions
 
 #include "stdafx.h"
-#include "Error.h"
-
 #include "MAPIABFunctions.h"
 #include "MAPIFunctions.h"
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
 
 HRESULT HrAllocAdrList(ULONG ulNumProps, LPADRLIST* lpAdrList)
 {
@@ -129,7 +121,7 @@ HRESULT AddOneOffAddress(
 	if (lpAdrList) FreePadrlist(lpAdrList);
 	if (lpAddrBook) lpAddrBook->Release();
 	return hRes;
-}//AddOneOffAddress
+} // AddOneOffAddress
 
 HRESULT AddRecipient(
 						 LPMAPISESSION lpMAPISession,
@@ -186,9 +178,9 @@ HRESULT AddRecipient(
 	if (lpAdrList) FreePadrlist(lpAdrList);
 	if (lpAddrBook) lpAddrBook->Release();
 	return hRes;
-}//AddRecipient
+} // AddRecipient
 
-//Same as CreatePropertyStringRestriction, but skips the existence part.
+// Same as CreatePropertyStringRestriction, but skips the existence part.
 HRESULT CreateANRRestriction(ULONG ulPropTag,
 							 LPCTSTR szString,
 							 LPVOID lpParent,
@@ -201,8 +193,8 @@ HRESULT CreateANRRestriction(ULONG ulPropTag,
 
 	*lppRes = NULL;
 
-	//Allocate and create our SRestriction
-	//Allocate base memory:
+	// Allocate and create our SRestriction
+	// Allocate base memory:
 	if (lpParent)
 	{
 		EC_H(MAPIAllocateMore(
@@ -233,13 +225,13 @@ HRESULT CreateANRRestriction(ULONG ulPropTag,
 		ZeroMemory(lpRes, sizeof(SRestriction));
 		ZeroMemory(lpspvSubject, sizeof(SPropValue));
 
-		//Root Node
+		// Root Node
 		lpRes->rt = RES_PROPERTY;
 		lpRes->res.resProperty.relop = RELOP_EQ;
 		lpRes->res.resProperty.ulPropTag = ulPropTag;
 		lpRes->res.resProperty.lpProp = lpspvSubject;
 
-		//Allocate and fill out properties:
+		// Allocate and fill out properties:
 		lpspvSubject->ulPropTag = ulPropTag;
 		lpspvSubject->Value.LPSZ = NULL;
 
@@ -264,7 +256,7 @@ HRESULT CreateANRRestriction(ULONG ulPropTag,
 		*lppRes = NULL;
 	}
 	return hRes;
-}//CreateANRRestriction
+} // CreateANRRestriction
 
 HRESULT GetABContainerTable(LPADRBOOK lpAdrBook, LPMAPITABLE* lpABContainerTable)
 {
@@ -298,7 +290,7 @@ HRESULT GetABContainerTable(LPADRBOOK lpAdrBook, LPMAPITABLE* lpABContainerTable
 	return hRes;
 }
 
-//Manually resolve a name in the address book and add it to the message
+// Manually resolve a name in the address book and add it to the message
 HRESULT ManualResolve(
 					  LPMAPISESSION lpMAPISession,
 					  LPMESSAGE lpMessage,
@@ -370,7 +362,7 @@ HRESULT ManualResolve(
 				&lpABRow));
 			if (FAILED(hRes) || !lpABRow || (lpABRow && !lpABRow->cRows)) break;
 
-			//From this point forward, consider any error an error with the current address book container, so just continue and try the next one.
+			// From this point forward, consider any error an error with the current address book container, so just continue and try the next one.
 			if (PR_ENTRYID == lpABRow->aRow->lpProps[abcPR_ENTRYID].ulPropTag)
 			{
 				DebugPrint(DBGGeneric,_T("ManualResolve: Searching this container\n"));
@@ -432,13 +424,13 @@ HRESULT ManualResolve(
 						(LPVOID*)&lpAdrList->aEntries->rgPropVals));
 					if (!lpAdrList->aEntries->rgPropVals) continue;
 
-					//TODO: We are setting 5 properties below. If this changes, modify these two lines.
+					// TODO: We are setting 5 properties below. If this changes, modify these two lines.
 					ZeroMemory(lpAdrList->aEntries->rgPropVals, 5 * sizeof(SPropValue));
 					lpAdrList->aEntries->cValues = 5;
 
 					// Fill out addresslist with required property values.
 					LPSPropValue pProps = lpAdrList->aEntries->rgPropVals;
-					LPSPropValue pProp;//Just a pointer, do not free.
+					LPSPropValue pProp; // Just a pointer, do not free.
 
 					pProp = &pProps[abPR_ENTRYID];
 					pProp->ulPropTag = PR_ENTRYID;
@@ -481,7 +473,7 @@ HRESULT ManualResolve(
 
 					EC_H(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 
-					//since we're done with our work, let's get out of here.
+					// since we're done with our work, let's get out of here.
 					break;
 				}
 			}
@@ -495,7 +487,7 @@ HRESULT ManualResolve(
 	if (lpABContainer) lpABContainer->Release();
 	if (lpAdrBook) lpAdrBook->Release();
 	return hRes;
-}//ManualResolve
+} // ManualResolve
 
 HRESULT SearchContentsTableForName(
 									LPMAPITABLE pTable,
@@ -529,7 +521,7 @@ HRESULT SearchContentsTableForName(
 
 	DebugPrint(DBGGeneric,_T("SearchContentsTableForName: Looking for \"%s\"\n"),szName);
 
-	//Set a restriction so we only find close matches
+	// Set a restriction so we only find close matches
 	LPSRestriction	lpSRes = NULL;
 
 	EC_H(CreateANRRestriction(
@@ -540,19 +532,19 @@ HRESULT SearchContentsTableForName(
 
 	EC_H(pTable->SetColumns((LPSPropTagArray)&abCols, TBL_BATCH));
 
-	//Jump to the top of the table...
+	// Jump to the top of the table...
 	EC_H(pTable->SeekRow(
 		BOOKMARK_BEGINNING,
 		0,
 		NULL));
 
-	//..and jump to the first matching entry in the table
+	// ..and jump to the first matching entry in the table
 	EC_H(pTable->Restrict(
 		lpSRes,
 		NULL
 		));
 
-	//Now we iterate through each of the matching entries
+	// Now we iterate through each of the matching entries
 	if (!FAILED(hRes)) for (;;)
 	{
 		hRes = S_OK;
@@ -564,8 +556,8 @@ HRESULT SearchContentsTableForName(
 			&pRows));
 		if (FAILED(hRes) || !pRows || (pRows && !pRows->cRows)) break;
 
-		//An error at this point is an error with the current entry, so we can continue this for statement
-		//Unless it's an allocation error. Those are bad.
+		// An error at this point is an error with the current entry, so we can continue this for statement
+		// Unless it's an allocation error. Those are bad.
 		if (PropTagToCompare == pRows->aRow->lpProps[abPropTagToCompare].ulPropTag &&
 			CheckStringProp(&pRows->aRow->lpProps[abPropTagToCompare],PT_TSTRING))
 		{
@@ -573,7 +565,7 @@ HRESULT SearchContentsTableForName(
 			if (lstrcmpi(szName, pRows->aRow->lpProps[abPropTagToCompare].Value.LPSZ) == 0)
 			{
 				DebugPrint(DBGGeneric,_T("SearchContentsTableForName: This is an exact match!\n"));
-				//We found a match! Return it!
+				// We found a match! Return it!
 				EC_H(ScDupPropset(
 					abNUM_COLS,
 					pRows->aRow->lpProps,

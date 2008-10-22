@@ -3,9 +3,6 @@
 
 #pragma once
 
-#include "stdafx.h"
-#include "MAPIWz.h"
-
 extern HMODULE	hModMSMAPI;
 extern HMODULE	hModMAPI;
 extern LPWRAPCOMPRESSEDRTFSTREAMEX	pfnWrapEx;
@@ -18,7 +15,7 @@ extern LPGETTHEMEMARGINS			pfnGetThemeMargins;
 extern LPMIMEOLEGETCODEPAGECHARSET	pfnMimeOleGetCodePageCharset;
 
 BOOL GetComponentPath(
-					  LPSTR szComponent,
+					  LPTSTR szComponent,
 					  LPTSTR szQualifier,
 					  TCHAR* szDllPath,
 					  DWORD cchDLLPath);
@@ -32,6 +29,9 @@ void LoadStg();
 void LoadThemeUI();
 void LoadMimeOLE();
 
+HKEY GetMailKey(LPTSTR szClient);
+void GetMapiMsiIds(LPTSTR szClient, LPTSTR* lpszComponentID, LPTSTR* lpszAppLCID, LPTSTR* lpszOfficeLCID);
+void GetMAPIPath(LPTSTR szClient, LPTSTR szMAPIPath, ULONG cchMAPIPath);
 void AutoLoadMAPI();
 void UnloadMAPI();
 void LoadMAPIFuncs(HMODULE hMod);

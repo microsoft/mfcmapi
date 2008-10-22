@@ -2,20 +2,11 @@
 // Displays the rules table for a folder
 
 #include "stdafx.h"
-#include "Error.h"
-
 #include "RulesDlg.h"
-
 #include "ContentsTableListCtrl.h"
 #include "MapiObjects.h"
 #include "ColumnTags.h"
 #include "SingleMAPIPropListCtrl.h"
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
 
 static TCHAR* CLASS = _T("CRulesDlg");
 
@@ -27,7 +18,7 @@ static TCHAR* CLASS = _T("CRulesDlg");
 
 CRulesDlg::CRulesDlg(
 							   CParentWnd* pParentWnd,
-							   CMapiObjects *lpMapiObjects,
+							   CMapiObjects* lpMapiObjects,
 							   LPEXCHANGEMODIFYTABLE lpExchTbl):
 CContentsTableDlg(
 						  pParentWnd,
@@ -59,10 +50,8 @@ CRulesDlg::~CRulesDlg()
 }
 
 BEGIN_MESSAGE_MAP(CRulesDlg, CContentsTableDlg)
-//{{AFX_MSG_MAP(CRulesDlg)
 	ON_COMMAND(ID_DELETESELECTEDITEM, OnDeleteSelectedItem)
 	ON_COMMAND(ID_MODIFYSELECTEDITEM, OnModifySelectedItem)
-//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 void CRulesDlg::OnInitMenu(CMenu* pMenu)
@@ -80,14 +69,14 @@ void CRulesDlg::OnInitMenu(CMenu* pMenu)
 }
 
 
-//Clear the current list and get a new one with whatever code we've got in LoadMAPIPropList
+// Clear the current list and get a new one with whatever code we've got in LoadMAPIPropList
 void CRulesDlg::OnRefreshView()
 {
 	HRESULT hRes = S_OK;
 
 	if (!m_lpExchTbl || !m_lpContentsTableListCtrl) return;
 
-	if (m_lpContentsTableListCtrl->m_bInLoadOp) m_lpContentsTableListCtrl->OnCancelTableLoad();
+	if (m_lpContentsTableListCtrl->IsLoading()) m_lpContentsTableListCtrl->OnCancelTableLoad();
 	DebugPrintEx(DBGGeneric,CLASS,_T("OnRefreshView"),_T("\n"));
 
 	if (m_lpExchTbl)
@@ -107,12 +96,12 @@ void CRulesDlg::OnRefreshView()
 			lpMAPITable->Release();
 		}
 	}
-}//CRulesDlg::OnRefreshView
+} // CRulesDlg::OnRefreshView
 
 void CRulesDlg::OnDeleteSelectedItem()
 {
 	HRESULT		hRes = S_OK;
-	CWaitCursor	Wait;//Change the mouse to an hourglass while we work.
+	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
 	LPROWLIST lpSelectedItems = NULL;
 
@@ -126,12 +115,12 @@ void CRulesDlg::OnDeleteSelectedItem()
 		MAPIFreeBuffer(lpSelectedItems);
 		if (S_OK == hRes) OnRefreshView();
 	}
-}//CRulesDlg::OnDeleteSelectedItem
+} // CRulesDlg::OnDeleteSelectedItem
 
 void CRulesDlg::OnModifySelectedItem()
 {
 	HRESULT		hRes = S_OK;
-	CWaitCursor	Wait;//Change the mouse to an hourglass while we work.
+	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
 	LPROWLIST lpSelectedItems = NULL;
 
@@ -228,7 +217,7 @@ HRESULT CRulesDlg::GetSelectedItems(ULONG ulFlags, ULONG ulRowFlags, LPROWLIST* 
 
 	*lppRowList = lpTempList;
 	return hRes;
-}//CRulesDlg::GetSelectedItems
+} // CRulesDlg::GetSelectedItems
 
 void CRulesDlg::HandleAddInMenuSingle(
 									   LPADDINMENUPARAMS lpParams,

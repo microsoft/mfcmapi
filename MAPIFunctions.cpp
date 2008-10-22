@@ -1,21 +1,17 @@
 // MAPIfunctions.cpp : Collection of useful MAPI functions
 
 #include "stdafx.h"
-#include "Error.h"
-
 #include "MAPIFunctions.h"
 #include "MAPIStoreFunctions.h"
 #include "MAPIABFunctions.h"
 #include "InterpretProp.h"
 #include "InterpretProp2.h"
-
-#include "Registry.h"
 #include "ImportProcs.h"
 #include "ExtraPropTags.h"
 #include "MAPIProgress.h"
 #include "Guids.h"
 
-//I don't use MAPIOID.h, which is needed to deal with PR_ATTACH_TAG, but if I did, here's how to include it
+// I don't use MAPIOID.h, which is needed to deal with PR_ATTACH_TAG, but if I did, here's how to include it
 /*
 #include <mapiguid.h>
 #define USES_OID_TNEF
@@ -27,17 +23,11 @@
 #define USES_OID_MAC_BINARY
 #define USES_OID_MIMETAG
 #define INITOID
-//Major hack to get MAPIOID to compile
+// Major hack to get MAPIOID to compile
 #define _MAC
 #include <MAPIOID.h>
 #undef _MAC
 */
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
 
 HRESULT CallOpenEntry(
 						LPMDB lpMDB,
@@ -48,8 +38,8 @@ HRESULT CallOpenEntry(
 						LPENTRYID lpEntryID,
 						LPCIID lpInterface,
 						ULONG ulFlags,
-						ULONG* ulObjTypeRet,//optional - can be NULL
-						LPUNKNOWN* lppUnk)//required
+						ULONG* ulObjTypeRet, // optional - can be NULL
+						LPUNKNOWN* lppUnk) // required
 {
 	if (!lppUnk) return MAPI_E_INVALID_PARAMETER;
 	HRESULT			hRes = S_OK;
@@ -64,7 +54,7 @@ HRESULT CallOpenEntry(
 		ulFlags |= MAPI_NO_CACHE;
 	}
 
-	//in case we need to retry without MAPI_NO_CACHE - do not add MAPI_NO_CACHE to ulFlags after this point
+	// in case we need to retry without MAPI_NO_CACHE - do not add MAPI_NO_CACHE to ulFlags after this point
 	if (MAPI_NO_CACHE & ulFlags) ulNoCacheFlags = ulFlags & ~MAPI_NO_CACHE;
 
 	if (lpInterface && fIsSet(DBGGeneric))
@@ -113,7 +103,7 @@ HRESULT CallOpenEntry(
 		WC_H(lpAB->OpenEntry(
 			cbEntryID,
 			lpEntryID,
-			NULL,//no interface
+			NULL, // no interface
 			ulFlags,
 			&ulObjType,
 			&lpUnk));
@@ -125,7 +115,7 @@ HRESULT CallOpenEntry(
 			WC_H(lpAB->OpenEntry(
 				cbEntryID,
 				lpEntryID,
-				NULL,//no interface
+				NULL, // no interface
 				ulNoCacheFlags,
 				&ulObjType,
 				&lpUnk));
@@ -238,7 +228,7 @@ HRESULT CallOpenEntry(
 	return hRes;
 }
 
-//Concatenate two property arrays without duplicates
+// Concatenate two property arrays without duplicates
 HRESULT ConcatSPropTagArrays(
 								  LPSPropTagArray lpArray1,
 								  LPSPropTagArray lpArray2,
@@ -253,7 +243,7 @@ HRESULT ConcatSPropTagArrays(
 
 	*lpNewArray = NULL;
 
-	//Add the sizes of the passed in arrays (0 if they were NULL)
+	// Add the sizes of the passed in arrays (0 if they were NULL)
 	iNewArraySize = (lpArray1?lpArray1->cValues:0);
 
 	if (lpArray2 && lpArray1)
@@ -273,7 +263,7 @@ HRESULT ConcatSPropTagArrays(
 
 	if (!iNewArraySize) return MAPI_E_CALL_FAILED;
 
-	//Allocate memory for the new prop tag array
+	// Allocate memory for the new prop tag array
 	EC_H(MAPIAllocateBuffer(
 		CbNewSPropTagArray(iNewArraySize),
 		(LPVOID*) &lpLocalArray));
@@ -285,7 +275,7 @@ HRESULT ConcatSPropTagArrays(
 		{
 			for (iSourceArray = 0;iSourceArray<lpArray1->cValues;iSourceArray++)
 			{
-				if (PROP_TYPE(lpArray1->aulPropTag[iSourceArray]) != PT_NULL)//ditch bad props
+				if (PROP_TYPE(lpArray1->aulPropTag[iSourceArray]) != PT_NULL) // ditch bad props
 				{
 					lpLocalArray->aulPropTag[iTargetArray++] = lpArray1->aulPropTag[iSourceArray];
 				}
@@ -295,7 +285,7 @@ HRESULT ConcatSPropTagArrays(
 		{
 			for (iSourceArray = 0;iSourceArray<lpArray2->cValues;iSourceArray++)
 			{
-				if (PROP_TYPE(lpArray2->aulPropTag[iSourceArray]) != PT_NULL)//ditch bad props
+				if (PROP_TYPE(lpArray2->aulPropTag[iSourceArray]) != PT_NULL) // ditch bad props
 				{
 					if (!IsDuplicateProp(lpArray1, lpArray2->aulPropTag[iSourceArray]))
 					{
@@ -308,7 +298,7 @@ HRESULT ConcatSPropTagArrays(
 		// <= since we may have thrown some PT_NULL tags out - just make sure we didn't overrun.
 		EC_H((iTargetArray <= iNewArraySize)?S_OK:MAPI_E_CALL_FAILED);
 
-		//since we may have ditched some tags along the way, reset our size
+		// since we may have ditched some tags along the way, reset our size
 		lpLocalArray->cValues = iTargetArray;
 
 		if (FAILED(hRes))
@@ -322,11 +312,11 @@ HRESULT ConcatSPropTagArrays(
 	}
 
 	return hRes;
-}//ConcatSPropTagArrays
+} // ConcatSPropTagArrays
 
-//May not behave correctly if lpSrcFolder == lpDestFolder
-//We can check that the pointers aren't equal, but they could be different
-//and still refer to the same folder.
+// May not behave correctly if lpSrcFolder == lpDestFolder
+// We can check that the pointers aren't equal, but they could be different
+// and still refer to the same folder.
 HRESULT CopyFolderContents(LPMAPIFOLDER lpSrcFolder, LPMAPIFOLDER lpDestFolder, BOOL bCopyAssociatedContents, BOOL bMove, BOOL bSingleCall, HWND hWnd)
 {
 	HRESULT			hRes = S_OK;
@@ -385,7 +375,7 @@ HRESULT CopyFolderContents(LPMAPIFOLDER lpSrcFolder, LPMAPIFOLDER lpDestFolder, 
 				}
 			}
 
-			LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIFolder::CopyMessages"), hWnd);// STRING_OK
+			LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIFolder::CopyMessages"), hWnd); // STRING_OK
 
 			ULONG ulCopyFlags = bMove ? MESSAGE_MOVE : 0;
 
@@ -428,7 +418,7 @@ HRESULT CopyFolderContents(LPMAPIFOLDER lpSrcFolder, LPMAPIFOLDER lpDestFolder, 
 					sbaEID.cValues = 1;
 					sbaEID.lpbin = &pRows->aRow->lpProps[fldPR_ENTRYID].Value.bin;
 
-					LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIFolder::CopyMessages"), hWnd);// STRING_OK
+					LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIFolder::CopyMessages"), hWnd); // STRING_OK
 
 					ULONG ulCopyFlags = bMove ? MESSAGE_MOVE : 0;
 
@@ -459,7 +449,7 @@ HRESULT CopyFolderContents(LPMAPIFOLDER lpSrcFolder, LPMAPIFOLDER lpDestFolder, 
 
 	if (pRows) FreeProws(pRows);
 	return hRes;
-}//CopyFolderContents
+} // CopyFolderContents
 
 HRESULT CopyFolderRules(LPMAPIFOLDER lpSrcFolder, LPMAPIFOLDER lpDestFolder,BOOL bReplace)
 {
@@ -576,7 +566,8 @@ HRESULT CopyFolderRules(LPMAPIFOLDER lpSrcFolder, LPMAPIFOLDER lpDestFolder,BOOL
 	return hRes;
 }
 
-
+// Copy a property using the stream interface
+// Does not call SaveChanges
 HRESULT	CopyPropertyAsStream(LPMAPIPROP lpSourcePropObj,
 							 LPMAPIPROP lpTargetPropObj,
 							 ULONG ulSourceTag,
@@ -618,17 +609,14 @@ HRESULT	CopyPropertyAsStream(LPMAPIPROP lpSourcePropObj,
 
 		EC_H(lpStmSource->CopyTo(lpStmTarget,uli,&ulBytesRead,&ulBytesWritten));
 
-		//This may not be necessary since we opened with STGM_DIRECT
+		// This may not be necessary since we opened with STGM_DIRECT
 		EC_H(lpStmTarget->Commit(STGC_DEFAULT));
-
-		//leave it to the caller to do this
-//		EC_H(lpTargetPropObj->SaveChanges(KEEP_OPEN_READWRITE));
 	}
 
 	if (lpStmTarget) lpStmTarget->Release();
 	if (lpStmSource) lpStmSource->Release();
 	return hRes;
-}//CopyPropertyAsStream
+} // CopyPropertyAsStream
 
 ///////////////////////////////////////////////////////////////////////////////
 //	CopySBinary()
@@ -665,7 +653,7 @@ HRESULT CopySBinary(LPSBinary psbDest,const LPSBinary psbSrc, LPVOID lpParent)
 	}
 
 	return hRes;
-}//CopySBinary
+} // CopySBinary
 
 ///////////////////////////////////////////////////////////////////////////////
 //	CopyString()
@@ -709,7 +697,7 @@ HRESULT CopyStringA(LPSTR* lpszDestination,LPCSTR szSource, LPVOID pParent)
 	EC_H(StringCbCopyA(*lpszDestination, cbSource, szSource));
 
 	return hRes;
-}//CopyStringA
+} // CopyStringA
 
 HRESULT CopyStringW(LPWSTR* lpszDestination,LPCWSTR szSource, LPVOID pParent)
 {
@@ -741,11 +729,11 @@ HRESULT CopyStringW(LPWSTR* lpszDestination,LPCWSTR szSource, LPVOID pParent)
 	EC_H(StringCbCopyW(*lpszDestination, cbSource, szSource));
 
 	return hRes;
-}//CopyStringW
+} // CopyStringW
 
-//Allocates and creates a restriction that looks for existence of
-//a particular property that matches the given string
-//If lpParent is passed in, it is used as the allocation parent.
+// Allocates and creates a restriction that looks for existence of
+// a particular property that matches the given string
+// If lpParent is passed in, it is used as the allocation parent.
 HRESULT CreatePropertyStringRestriction(ULONG ulPropTag,
 										LPCTSTR szString,
 										ULONG ulFuzzyLevel,
@@ -762,8 +750,8 @@ HRESULT CreatePropertyStringRestriction(ULONG ulPropTag,
 
 	if (!szString) return MAPI_E_INVALID_PARAMETER;
 
-	//Allocate and create our SRestriction
-	//Allocate base memory:
+	// Allocate and create our SRestriction
+	// Allocate base memory:
 	if (lpParent)
 	{
 		EC_H(MAPIAllocateMore(
@@ -799,7 +787,7 @@ HRESULT CreatePropertyStringRestriction(ULONG ulPropTag,
 		ZeroMemory(lpResLevel1, sizeof(SRestriction)*2);
 		ZeroMemory(lpspvSubject, sizeof(SPropValue));
 
-		//Root Node
+		// Root Node
 		lpRes->rt = RES_AND;
 		lpRes->res.resAnd.cRes = 2;
 		lpRes->res.resAnd.lpRes = lpResLevel1;
@@ -814,7 +802,7 @@ HRESULT CreatePropertyStringRestriction(ULONG ulPropTag,
 		lpResLevel1[1].res.resContent.ulFuzzyLevel = ulFuzzyLevel;
 		lpResLevel1[1].res.resContent.lpProp = lpspvSubject;
 
-		//Allocate and fill out properties:
+		// Allocate and fill out properties:
 		lpspvSubject->ulPropTag = ulPropTag;
 
 		EC_H(CopyString(
@@ -835,7 +823,7 @@ HRESULT CreatePropertyStringRestriction(ULONG ulPropTag,
 		*lppRes = NULL;
 	}
 	return hRes;
-}//CreatePropertyStringRestriction
+} // CreatePropertyStringRestriction
 
 HRESULT CreateRangeRestriction(ULONG ulPropTag,
 							   LPCTSTR szString,
@@ -852,8 +840,8 @@ HRESULT CreateRangeRestriction(ULONG ulPropTag,
 
 	if (!szString) return MAPI_E_INVALID_PARAMETER;
 
-	//Allocate and create our SRestriction
-	//Allocate base memory:
+	// Allocate and create our SRestriction
+	// Allocate base memory:
 	if (lpParent)
 	{
 		EC_H(MAPIAllocateMore(
@@ -889,7 +877,7 @@ HRESULT CreateRangeRestriction(ULONG ulPropTag,
 		ZeroMemory(lpResLevel1, sizeof(SRestriction)*2);
 		ZeroMemory(lpspvSubject, sizeof(SPropValue));
 
-		//Root Node
+		// Root Node
 		lpRes->rt = RES_AND;
 		lpRes->res.resAnd.cRes = 2;
 		lpRes->res.resAnd.lpRes = lpResLevel1;
@@ -904,7 +892,7 @@ HRESULT CreateRangeRestriction(ULONG ulPropTag,
 		lpResLevel1[1].res.resProperty.relop = RELOP_GE;
 		lpResLevel1[1].res.resProperty.lpProp = lpspvSubject;
 
-		//Allocate and fill out properties:
+		// Allocate and fill out properties:
 		lpspvSubject->ulPropTag = ulPropTag;
 
 		EC_H(CopyString(
@@ -967,9 +955,9 @@ HRESULT DeleteProperty(LPMAPIPROP lpMAPIProp,ULONG ulPropTag)
 	MAPIFreeBuffer(pProbArray);
 
 	return hRes;
-}//DeleteProperty
+} // DeleteProperty
 
-//Delete items to the wastebasket of the passed in mdb, if it exists.
+// Delete items to the wastebasket of the passed in mdb, if it exists.
 HRESULT DeleteToDeletedItems(LPMDB lpMDB, LPMAPIFOLDER lpSourceFolder, LPENTRYLIST lpEIDs, HWND hWnd)
 {
 	HRESULT hRes = S_OK;
@@ -1007,7 +995,7 @@ HRESULT DeleteToDeletedItems(LPMDB lpMDB, LPMAPIFOLDER lpSourceFolder, LPENTRYLI
 			NULL,
 			(LPUNKNOWN*)&lpWasteFolder));
 
-		LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIFolder::CopyMessages"), hWnd);// STRING_OK
+		LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIFolder::CopyMessages"), hWnd); // STRING_OK
 
 		ULONG ulCopyFlags = MESSAGE_MOVE;
 
@@ -1016,7 +1004,7 @@ HRESULT DeleteToDeletedItems(LPMDB lpMDB, LPMAPIFOLDER lpSourceFolder, LPENTRYLI
 
 		EC_H(lpSourceFolder->CopyMessages(
 			lpEIDs,
-			NULL,//default interface
+			NULL, // default interface
 			lpWasteFolder,
 			lpProgress ? (ULONG_PTR)hWnd : NULL,
 			lpProgress,
@@ -1031,7 +1019,7 @@ HRESULT DeleteToDeletedItems(LPMDB lpMDB, LPMAPIFOLDER lpSourceFolder, LPENTRYLI
 	if (lpWasteFolder) lpWasteFolder->Release();
 	MAPIFreeBuffer(pProps);
 	return hRes;
-}//DeleteToDeletedItems
+} // DeleteToDeletedItems
 
 BOOL FindPropInPropTagArray(LPSPropTagArray lpspTagArray, ULONG ulPropToFind, ULONG* lpulRowFound)
 {
@@ -1047,7 +1035,7 @@ BOOL FindPropInPropTagArray(LPSPropTagArray lpspTagArray, ULONG ulPropToFind, UL
 		}
 	}
 	return FALSE;
-}//FindPropInPropTagArray
+} // FindPropInPropTagArray
 
 // See list of types (like MAPI_FOLDER) in mapidefs.h
 ULONG GetMAPIObjectType(LPMAPIPROP lpMAPIProp)
@@ -1083,15 +1071,15 @@ HRESULT GetInbox(LPMDB lpMDB, LPMAPIFOLDER* lpInbox)
 	if (!lpMDB) return MAPI_E_INVALID_PARAMETER;
 
 	EC_H(lpMDB->GetReceiveFolder(
-		_T("IPM.Note"),// STRING_OK this is the class of message we want
-		fMapiUnicode,//flags
-		&cbInboxEID,//size and...
-		(LPENTRYID *) &lpInboxEID,//value of entry ID
-		NULL));//returns a message class if not NULL
+		_T("IPM.Note"), // STRING_OK this is the class of message we want
+		fMapiUnicode, // flags
+		&cbInboxEID, // size and...
+		(LPENTRYID *) &lpInboxEID, // value of entry ID
+		NULL)); // returns a message class if not NULL
 
 	if (cbInboxEID && lpInboxEID)
 	{
-		//Get the Inbox...
+		// Get the Inbox...
 		WC_H(CallOpenEntry(
 			lpMDB,
 			NULL,
@@ -1148,7 +1136,7 @@ HRESULT GetParentFolder(LPMAPIFOLDER lpChildFolder, LPMDB lpMDB, LPMAPIFOLDER* l
 
 	MAPIFreeBuffer(lpProps);
 	return hRes;
-}//GetParentFolder
+} // GetParentFolder
 
 HRESULT GetPropsNULL(LPMAPIPROP lpMAPIProp,ULONG ulFlags, ULONG * lpcValues, LPSPropValue *	lppPropArray)
 {
@@ -1222,7 +1210,7 @@ HRESULT GetSpecialFolder(LPMDB lpMDB, ULONG ulFolderPropTag, LPMAPIFOLDER *lpSpe
 			NULL,
 			NULL,
 			NULL,
-			NULL,//open root container
+			NULL, // open root container
 			NULL,
 			MAPI_BEST_ACCESS,
 			NULL,
@@ -1276,7 +1264,7 @@ HRESULT IsAttachmentBlocked(LPMAPISESSION lpMAPISession, LPCWSTR pwszFileName, B
 
 	*pfBlocked = bBlocked;
 	return hRes;
-}// IsAttachmentBlocked
+} // IsAttachmentBlocked
 
 BOOL IsDuplicateProp(LPSPropTagArray lpArray, ULONG ulPropTag)
 {
@@ -1286,7 +1274,7 @@ BOOL IsDuplicateProp(LPSPropTagArray lpArray, ULONG ulPropTag)
 
 	for (i = 0; i < lpArray->cValues; i++)
 	{
-		//They're dupes if the IDs are the same
+		// They're dupes if the IDs are the same
 		if (RegKeys[regkeyALLOW_DUPE_COLUMNS].ulCurDWORD)
 		{
 			if (lpArray->aulPropTag[i] == ulPropTag)
@@ -1300,10 +1288,10 @@ BOOL IsDuplicateProp(LPSPropTagArray lpArray, ULONG ulPropTag)
 	}
 
 	return FALSE;
-}//IsDuplicateProp
+} // IsDuplicateProp
 
-//returns pointer to a string
-//delete with delete[]
+// returns pointer to a string
+// delete with delete[]
 void MyHexFromBin(LPBYTE lpb, size_t cb, LPTSTR* lpsz)
 {
 	ULONG i = 0;
@@ -1344,8 +1332,8 @@ void MyHexFromBin(LPBYTE lpb, size_t cb, LPTSTR* lpsz)
 	}
 }
 
-//must allocate first
-//Note that cb should be the number of bytes allocated for the lpb
+// must allocate first
+// Note that cb should be the number of bytes allocated for the lpb
 void MyBinFromHex(LPCTSTR lpsz, LPBYTE lpb, size_t cb)
 {
 	HRESULT hRes = S_OK;
@@ -1365,10 +1353,10 @@ void MyBinFromHex(LPCTSTR lpsz, LPBYTE lpb, size_t cb)
 	ULONG i = 0;
 	TCHAR szTmp[3] = {0};
 	szTmp[2] = 0;
-	//In case the string starts with 'x' or '0x'
+	// In case the string starts with 'x' or '0x'
 	if (lpsz[0] == _T('x') || lpsz[0] == _T('X')) i = 1;
 	if (lpsz[1] == _T('x') || lpsz[1] == _T('X')) i = 2;
-	//convert two characters at a time
+	// convert two characters at a time
 	for (; i < cchStrLen && cb > 0; i+=2)
 	{
 		szTmp[0] = lpsz[i];
@@ -1377,7 +1365,7 @@ void MyBinFromHex(LPCTSTR lpsz, LPBYTE lpb, size_t cb)
 		lpb[iBinPos] = (BYTE) _tcstol(szTmp,NULL,16);
 
 		iBinPos += 1;
-		cb--;//so we can't run off the end of the lpb
+		cb--; // so we can't run off the end of the lpb
 	}
 }
 
@@ -1495,13 +1483,13 @@ HRESULT ResendMessages(LPMAPIFOLDER lpFolder, HWND hWnd)
 	LPSRowSet	pRows = NULL;
 	ULONG		i;
 
-	//You define a SPropTagArray array here using the SizedSPropTagArray Macro
-	//This enum will allows you to access portions of the array by a name instead of a number.
-	//If more tags are added to the array, appropriate constants need to be added to the enum.
+	// You define a SPropTagArray array here using the SizedSPropTagArray Macro
+	// This enum will allows you to access portions of the array by a name instead of a number.
+	// If more tags are added to the array, appropriate constants need to be added to the enum.
 	enum {
 			ePR_ENTRYID,
 			NUM_COLS};
-	//These tags represent the message information we would like to pick up
+	// These tags represent the message information we would like to pick up
 	static SizedSPropTagArray(NUM_COLS,sptCols) = { NUM_COLS,
 		PR_ENTRYID
 	};
@@ -1515,8 +1503,8 @@ HRESULT ResendMessages(LPMAPIFOLDER lpFolder, HWND hWnd)
 		EC_H(HrQueryAllRows(
 			lpContentsTable,
 			(LPSPropTagArray) &sptCols,
-			NULL,//restriction...we're not using this parameter
-			NULL,//sort order...we're not using this parameter
+			NULL, // restriction...we're not using this parameter
+			NULL, // sort order...we're not using this parameter
 			0,
 			&pRows));
 
@@ -1550,7 +1538,7 @@ HRESULT ResendMessages(LPMAPIFOLDER lpFolder, HWND hWnd)
 	if (pRows) FreeProws(pRows);
 	if (lpContentsTable) lpContentsTable->Release();
 	return hRes;
-}//ResendMessages
+} // ResendMessages
 
 HRESULT ResendSingleMessage(
 							LPMAPIFOLDER lpFolder,
@@ -1629,7 +1617,7 @@ HRESULT ResendSingleMessage(
 	{
 		EC_H(lpAttachTable->SetColumns((LPSPropTagArray)&atCols, TBL_BATCH));
 
-		//Now we iterate through each of the attachments
+		// Now we iterate through each of the attachments
 		if (!FAILED(hRes)) for (;;)
 		{
 			hRes = S_OK;
@@ -1696,8 +1684,8 @@ HRESULT ResendSingleMessage(
 				if (!FAILED(hRes)) for(ulProp = 0; ulProp < lpsMessageTags->cValues; ulProp++)
 				{
 					hRes = S_OK;
-					//it would probably be quicker to use this loop to construct an array of properties
-					//we desire to copy, and then pass that array to GetProps and then SetProps
+					// it would probably be quicker to use this loop to construct an array of properties
+					// we desire to copy, and then pass that array to GetProps and then SetProps
 					if (FIsTransmittable(lpsMessageTags->aulPropTag[ulProp]))
 					{
 						LPSPropValue lpProp = NULL;
@@ -1714,7 +1702,7 @@ HRESULT ResendSingleMessage(
 
 				DebugPrint(DBGGeneric,_T("Copying recipients and attachments to new message.\n"));
 
-				LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIProp::CopyProps"), hWnd);// STRING_OK
+				LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIProp::CopyProps"), hWnd); // STRING_OK
 
 				EC_H(lpAttachMsg->CopyProps(
 					(LPSPropTagArray)&atObjs,
@@ -1773,7 +1761,7 @@ HRESULT ResendSingleMessage(
 	if (pRows) FreeProws(pRows);
 	if (lpAttachTable) lpAttachTable->Release();
 	return hRes;
-}//ResendSingleMessage
+} // ResendSingleMessage
 
 HRESULT ResetPermissionsOnItems(LPMDB lpMDB, LPMAPIFOLDER lpMAPIFolder)
 {
@@ -1785,7 +1773,7 @@ HRESULT ResetPermissionsOnItems(LPMDB lpMDB, LPMAPIFOLDER lpMAPIFolder)
 	ULONG			ulFlags = NULL;
 	LPMAPITABLE		lpContentsTable = NULL;
 	LPMESSAGE		lpMessage = NULL;
-	CWaitCursor		Wait;//Change the mouse to an hourglass while we work.
+	CWaitCursor		Wait; // Change the mouse to an hourglass while we work.
 	int				i = 0;
 
 	enum {eidPR_ENTRYID,
@@ -1797,7 +1785,7 @@ HRESULT ResetPermissionsOnItems(LPMDB lpMDB, LPMAPIFOLDER lpMAPIFolder)
 
 	if (!lpMDB || !lpMAPIFolder) return MAPI_E_INVALID_PARAMETER;
 
-	//We pass through this code twice, once for regular contents, once for associated contents
+	// We pass through this code twice, once for regular contents, once for associated contents
 	if (!FAILED(hRes)) for (i = 0;i<=1;i++)
 	{
 		hRes = S_OK;
@@ -1806,7 +1794,7 @@ HRESULT ResetPermissionsOnItems(LPMDB lpMDB, LPMAPIFOLDER lpMAPIFolder)
 
 		if (lpContentsTable) lpContentsTable->Release();
 		lpContentsTable = NULL;
-		//Get the table of contents of the folder
+		// Get the table of contents of the folder
 		WC_H(lpMAPIFolder->GetContentsTable(
 			ulFlags,
 			&lpContentsTable));
@@ -1836,20 +1824,20 @@ HRESULT ResetPermissionsOnItems(LPMDB lpMDB, LPMAPIFOLDER lpMAPIFolder)
 			(LPSPropTagArray) &eidCols,
 			TBL_BATCH));
 
-		//go to the first row
+		// go to the first row
 		EC_H(lpContentsTable->SeekRow(
 			BOOKMARK_BEGINNING,
 			0,
 			NULL));
-		hRes = S_OK;//don't let failure here fail the whole op
+		hRes = S_OK; // don't let failure here fail the whole op
 
-		//get rows and delete PR_NT_SECURITY_DESCRIPTOR
+		// get rows and delete PR_NT_SECURITY_DESCRIPTOR
 		if (!FAILED(hRes)) for (;;)
 		{
 			hRes = S_OK;
 			if (pRows) FreeProws(pRows);
 			pRows = NULL;
-			//Pull back a sizable block of rows to modify
+			// Pull back a sizable block of rows to modify
 			EC_H(lpContentsTable->QueryRows(
 				200,
 				NULL,
@@ -1897,10 +1885,10 @@ HRESULT ResetPermissionsOnItems(LPMDB lpMDB, LPMAPIFOLDER lpMAPIFolder)
 	if (lpContentsTable) lpContentsTable->Release();
 	if (S_OK != hResOverall) return hResOverall;
 	return hRes;
-}//ResetPermissionsOnItems
+} // ResetPermissionsOnItems
 
-//This function creates a new message based in m_lpContainer
-//Then sends the message
+// This function creates a new message based in m_lpContainer
+// Then sends the message
 HRESULT SendTestMessage(
 							  LPMAPISESSION lpMAPISession,
 							  LPMAPIFOLDER lpFolder,
@@ -1914,8 +1902,8 @@ HRESULT SendTestMessage(
 	if (!lpMAPISession || !lpFolder) return MAPI_E_INVALID_PARAMETER;
 
 	EC_H(lpFolder->CreateMessage(
-		NULL,//default interface
-		0,//flags
+		NULL, // default interface
+		0, // flags
 		&lpNewMessage));
 
 	if (lpNewMessage)
@@ -1964,7 +1952,7 @@ HRESULT SendTestMessage(
 
 	if (lpNewMessage) lpNewMessage->Release();
 	return hRes;
-}//SendTestMessage
+} // SendTestMessage
 
 HRESULT WrapStreamForRTF(
 				 LPSTREAM lpCompressedRTFStream,
@@ -1996,8 +1984,8 @@ HRESULT WrapStreamForRTF(
 
 			wcsinfo.size = sizeof (RTF_WCSINFO);
 			wcsinfo.ulFlags = ulFlags;
-			wcsinfo.ulInCodePage = ulInCodePage;			//Get ulCodePage from PR_INTERNET_CPID on the IMessage
-			wcsinfo.ulOutCodePage = ulOutCodePage;			//Desired code page for return
+			wcsinfo.ulInCodePage = ulInCodePage;			// Get ulCodePage from PR_INTERNET_CPID on the IMessage
+			wcsinfo.ulOutCodePage = ulOutCodePage;			// Desired code page for return
 
 			WC_H(pfnWrapEx(
 				lpCompressedRTFStream,
@@ -2031,7 +2019,7 @@ HRESULT CopyNamedProps(LPMAPIPROP lpSource, LPGUID lpPropSetGUID, BOOL bDoMove, 
 		if (bDoMove)		ulFlags |= MAPI_MOVE;
 		if (bDoNoReplace)	ulFlags |= MAPI_NOREPLACE;
 
-		LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIProp::CopyProps"), hWnd);// STRING_OK
+		LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIProp::CopyProps"), hWnd); // STRING_OK
 
 		if(lpProgress)
 			ulFlags |= MAPI_DIALOG;
@@ -2084,7 +2072,7 @@ HRESULT GetNamedPropsByGUID(LPMAPIPROP lpSource, LPGUID lpPropSetGUID, LPSPropTa
 		if(S_OK == hRes && lppNameIDs)
 		{
 			ULONG i = 0;
-			ULONG ulNumProps = 0;//count of props that match our guid
+			ULONG ulNumProps = 0; // count of props that match our guid
 			for (i = 0; i < cProps; i++)
 			{
 				if (PROP_ID(lpAllProps->aulPropTag[i]) > 0x7FFF
@@ -2293,7 +2281,7 @@ DWORD ComputeStoreHash(ULONG cbStoreEID, LPENTRYID pbStoreEID, LPCWSTR pwzFileNa
 
 	// dwHash now contains the hash to be used. It should be written in hex when building the URL.
 	return dwHash;
-}// ComputeStoreHash
+} // ComputeStoreHash
 
 const WORD kwBaseOffset = 0xAC00;  // Hangul char range (AC00-D7AF)
 // Allocates with new, free with delete[]
@@ -2323,4 +2311,4 @@ LPWSTR EncodeID(ULONG cbEID, LPENTRYID rgbID)
 
 	// pwzIDEncoded now contains the entry ID encoded.
 	return pwzIDEncoded;
-}// EncodeID
+} // EncodeID

@@ -2,10 +2,7 @@
 // Displays the attachment table for a message
 
 #include "stdafx.h"
-#include "Error.h"
-
 #include "AttachmentsDlg.h"
-
 #include "ContentsTableListCtrl.h"
 #include "File.h"
 #include "MapiObjects.h"
@@ -14,12 +11,6 @@
 #include "MAPIProgress.h"
 #include "MFCUtilityFunctions.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
 static TCHAR* CLASS = _T("CAttachmentsDlg");
 
 /////////////////////////////////////////////////////////////////////////////
@@ -27,7 +18,7 @@ static TCHAR* CLASS = _T("CAttachmentsDlg");
 
 CAttachmentsDlg::CAttachmentsDlg(
 							   CParentWnd* pParentWnd,
-							   CMapiObjects *lpMapiObjects,
+							   CMapiObjects* lpMapiObjects,
 							   LPMAPITABLE lpMAPITable,
 							   LPMESSAGE lpMessage
 							   ):
@@ -68,14 +59,12 @@ CAttachmentsDlg::~CAttachmentsDlg()
 }
 
 BEGIN_MESSAGE_MAP(CAttachmentsDlg, CContentsTableDlg)
-//{{AFX_MSG_MAP(CAttachmentsDlg)
 	ON_COMMAND(ID_DELETESELECTEDITEM, OnDeleteSelectedItem)
 	ON_COMMAND(ID_MODIFYSELECTEDITEM, OnModifySelectedItem)
 	ON_COMMAND(ID_SAVECHANGES, OnSaveChanges)
 	ON_COMMAND(ID_SAVETOFILE, OnSaveToFile)
 	ON_COMMAND(ID_VIEWEMBEDDEDMESSAGEPROPERTIES, OnViewEmbeddedMessageProps)
 	ON_COMMAND(ID_USEMAPIMODIFYONATTACHMENTS, OnUseMapiModify)
-//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 void CAttachmentsDlg::OnInitMenu(CMenu* pMenu)
@@ -113,7 +102,7 @@ HRESULT CAttachmentsDlg::OpenItemProp(
 
 	if (!m_lpContentsTableListCtrl || !lppMAPIProp) return MAPI_E_INVALID_PARAMETER;
 
-	//Find the highlighted item AttachNum
+	// Find the highlighted item AttachNum
 	lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(NULL);
 
 	if (lpListData)
@@ -165,7 +154,7 @@ void CAttachmentsDlg::OnDeleteSelectedItem()
 	if (!m_lpContentsTableListCtrl || !m_lpMessage) return;
 	HRESULT			hRes = S_OK;
 	ULONG*			lpAttNumList = NULL;
-	CWaitCursor		Wait;//Change the mouse to an hourglass while we work.
+	CWaitCursor		Wait; // Change the mouse to an hourglass while we work.
 	int				iItem = -1;
 	SortListData*	lpListData = NULL;
 
@@ -193,7 +182,7 @@ void CAttachmentsDlg::OnDeleteSelectedItem()
 			{
 				DebugPrintEx(DBGDeleteSelectedItem,CLASS,_T("OnDeleteSelectedItem"),_T("Deleting attachment 0x%08X\n"),lpAttNumList[iSelection]);
 
-				LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMessage::DeleteAttach"), m_hWnd);// STRING_OK
+				LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMessage::DeleteAttach"), m_hWnd); // STRING_OK
 
 				EC_H(m_lpMessage->DeleteAttach(
 					lpAttNumList[iSelection],
@@ -209,10 +198,10 @@ void CAttachmentsDlg::OnDeleteSelectedItem()
 
 			MAPIFreeBuffer(lpAttNumList);
 			EC_H(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
-			OnRefreshView();//Update the view since we don't have notifications here.
+			OnRefreshView(); // Update the view since we don't have notifications here.
 		}
 	}
-}//CAttachmentsDlg::OnDeleteSelectedItem
+} // CAttachmentsDlg::OnDeleteSelectedItem
 
 void CAttachmentsDlg::OnModifySelectedItem()
 {
@@ -241,13 +230,13 @@ void CAttachmentsDlg::OnSaveToFile()
 	ULONG			ulAttachNum = 0;
 	int				iItem = -1;
 	SortListData*	lpListData = NULL;
-	CWaitCursor		Wait;//Change the mouse to an hourglass while we work.
+	CWaitCursor		Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpContentsTableListCtrl || !m_lpMessage) return;
 
 	do
 	{
-		//Find the highlighted item AttachNum
+		// Find the highlighted item AttachNum
 		lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 		if (S_OK != hRes && -1 != iItem)
 		{
@@ -261,7 +250,7 @@ void CAttachmentsDlg::OnSaveToFile()
 			EC_H(m_lpMessage->OpenAttach(
 				ulAttachNum,
 				NULL,
-				MAPI_BEST_ACCESS,//TODO: Is best access really needed?
+				MAPI_BEST_ACCESS, // TODO: Is best access really needed?
 				(LPATTACH*)&lpAttach));
 
 			if (lpAttach)
@@ -274,18 +263,18 @@ void CAttachmentsDlg::OnSaveToFile()
 		}
 	}
 	while (iItem != -1);
-} //CAttachmentsDlg::OnSaveToFile
+} // CAttachmentsDlg::OnSaveToFile
 
 void CAttachmentsDlg::OnViewEmbeddedMessageProps()
 {
 	m_bDisplayAttachAsEmbeddedMessage = !m_bDisplayAttachAsEmbeddedMessage;
 	OnRefreshView();
-}//CAttachmentsDlg::OnViewEmbeddedMessageProps
+} // CAttachmentsDlg::OnViewEmbeddedMessageProps
 
 void CAttachmentsDlg::OnUseMapiModify()
 {
 	m_bUseMapiModifyOnEmbeddedMessage = !m_bUseMapiModifyOnEmbeddedMessage;
-}//CAttachmentsDlg::OnUseMapiModify
+} // CAttachmentsDlg::OnUseMapiModify
 
 void CAttachmentsDlg::HandleAddInMenuSingle(
 									   LPADDINMENUPARAMS lpParams,

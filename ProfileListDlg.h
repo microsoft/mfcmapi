@@ -1,6 +1,5 @@
 #pragma once
 // ProfileListDlg.h : header file
-//
 
 class CContentsTableListCtrl;
 class CSingleMAPIPropListCtrl;
@@ -9,45 +8,35 @@ class CMapiObjects;
 
 #include "ContentsTableDlg.h"
 
-/////////////////////////////////////////////////////////////////////////////
-// CProfileListDlg dialog
-
 class CProfileListDlg : public CContentsTableDlg
 {
-	// Construction
 public:
-
 	CProfileListDlg(
 		CParentWnd* pParentWnd,
-		CMapiObjects *lpMapiObjects,
+		CMapiObjects* lpMapiObjects,
 		LPMAPITABLE lpMAPITable);
 	virtual ~CProfileListDlg();
 
-	virtual void	OnRefreshView();
+private:
+	// Overrides from base class
+	void OnDeleteSelectedItem();
+	void OnDisplayItem();
+	void OnRefreshView();
 
-	// Implementation
-protected:
-	// Generated message map functions
-	//{{AFX_MSG(CProfileListDlg)
-	afx_msg void OnInitMenu(CMenu* pMenu);
-	afx_msg void OnGetMAPISVC();
-	afx_msg void OnAddServicesToMAPISVC();
-	afx_msg void OnRemoveServicesFromMAPISVC();
-	afx_msg void OnAddExchangeToProfile();
-	afx_msg void OnAddPSTToProfile();
-	afx_msg void OnAddUnicodePSTToProfile();
-	afx_msg void OnAddServiceToProfile();
-	afx_msg void OnCreateProfile();
-	afx_msg void OnLaunchProfileWizard();
-	afx_msg void OnDeleteSelectedItem();
-	afx_msg void OnDisplayItem();
-	afx_msg void OnGetProfileServiceVersion();
-	//}}AFX_MSG
-
-	DECLARE_MESSAGE_MAP()
+	// Menu items
+	void OnAddExchangeToProfile();
+	void OnAddPSTToProfile();
+	void OnAddUnicodePSTToProfile();
+	void OnAddServicesToMAPISVC();
+	void OnAddServiceToProfile();
+	void OnCreateProfile();
+	void OnGetMAPISVC();
+	void OnGetProfileServiceVersion();
+	void OnInitMenu(CMenu* pMenu);
+	void OnLaunchProfileWizard();
+	void OnRemoveServicesFromMAPISVC();
 
 	void AddPSTToProfile(BOOL bUnicodePST);
-};
 
-//{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ will insert additional declarations immediately before the previous line.
+	DECLARE_MESSAGE_MAP()
+};

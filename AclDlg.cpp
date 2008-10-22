@@ -2,22 +2,13 @@
 // Displays the ACL table for an item
 
 #include "stdafx.h"
-#include "Error.h"
-
 #include "AclDlg.h"
-
 #include "ContentsTableListCtrl.h"
 #include "Editor.h"
 #include "MapiObjects.h"
 #include "ColumnTags.h"
 #include "SingleMAPIPropListCtrl.h"
 #include "InterpretProp2.h"
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
 
 static TCHAR* CLASS = _T("CAclDlg");
 
@@ -28,7 +19,7 @@ static TCHAR* CLASS = _T("CAclDlg");
 // CAclDlg dialog
 
 CAclDlg::CAclDlg(CParentWnd* pParentWnd,
-				 CMapiObjects *lpMapiObjects,
+				 CMapiObjects* lpMapiObjects,
 				 LPEXCHANGEMODIFYTABLE lpExchTbl,
 				 BOOL fFreeBusyVisible)
 : CContentsTableDlg(pParentWnd,
@@ -69,11 +60,9 @@ CAclDlg::~CAclDlg()
 }
 
 BEGIN_MESSAGE_MAP(CAclDlg, CContentsTableDlg)
-//{{AFX_MSG_MAP(CAclDlg)
 	ON_COMMAND(ID_ADDITEM, OnAddItem)
 	ON_COMMAND(ID_DELETESELECTEDITEM, OnDeleteSelectedItem)
 	ON_COMMAND(ID_MODIFYSELECTEDITEM, OnModifySelectedItem)
-//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 
@@ -98,7 +87,7 @@ void CAclDlg::OnInitMenu(CMenu* pMenu)
 }
 
 
-//Clear the current list and get a new one with whatever code we've got in LoadMAPIPropList
+// Clear the current list and get a new one with whatever code we've got in LoadMAPIPropList
 void CAclDlg::OnRefreshView()
 {
 	HRESULT hRes = S_OK;
@@ -106,7 +95,7 @@ void CAclDlg::OnRefreshView()
 	if (!m_lpExchTbl || !m_lpContentsTableListCtrl)
 		return;
 
-	if (m_lpContentsTableListCtrl->m_bInLoadOp)
+	if (m_lpContentsTableListCtrl->IsLoading())
 		m_lpContentsTableListCtrl->OnCancelTableLoad();
 	DebugPrintEx(DBGGeneric,CLASS,_T("OnRefreshView"),_T("\n"));
 
@@ -127,7 +116,7 @@ void CAclDlg::OnRefreshView()
 			lpMAPITable->Release();
 		}
 	}
-}//CAclDlg::OnRefreshView
+} // CAclDlg::OnRefreshView
 
 void CAclDlg::OnAddItem()
 {
@@ -186,12 +175,12 @@ void CAclDlg::OnAddItem()
 			delete[] lpEntryID;
 		}
 	}
-}//CAclDlg::OnAddItem
+} // CAclDlg::OnAddItem
 
 void CAclDlg::OnDeleteSelectedItem()
 {
 	HRESULT		hRes = S_OK;
-	CWaitCursor	Wait;//Change the mouse to an hourglass while we work.
+	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
 	LPROWLIST lpSelectedItems = NULL;
 
@@ -206,13 +195,13 @@ void CAclDlg::OnDeleteSelectedItem()
 		if (S_OK == hRes)
 			OnRefreshView();
 	}
-}//CAclDlg::OnDeleteSelectedItem
+} // CAclDlg::OnDeleteSelectedItem
 
 
 void CAclDlg::OnModifySelectedItem()
 {
 	HRESULT		hRes = S_OK;
-	CWaitCursor	Wait;//Change the mouse to an hourglass while we work.
+	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
 	LPROWLIST lpSelectedItems = NULL;
 
@@ -301,7 +290,7 @@ HRESULT CAclDlg::GetSelectedItems(ULONG ulFlags, ULONG ulRowFlags, LPROWLIST* lp
 
 	*lppRowList = lpTempList;
 	return hRes;
-}//CAclDlg::GetSelectedItems
+} // CAclDlg::GetSelectedItems
 
 void CAclDlg::HandleAddInMenuSingle(
 									   LPADDINMENUPARAMS lpParams,

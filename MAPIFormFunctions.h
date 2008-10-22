@@ -1,16 +1,6 @@
+#pragma once
 // MAPIFormFunctions.h : Stand alone MAPI Form functions
 
-#pragma once
-
-#include <MapiX.h>
-#include <MapiUtil.h>
-#include <MAPIform.h>
-#include <MSPST.h>
-
-#include <edkmdb.h>
-#include <exchform.h>
-
-//forward definitions
 class CContentsTableListCtrl;
 
 HRESULT	CreateAndDisplayNewMailInFolder(

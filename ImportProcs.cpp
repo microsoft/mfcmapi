@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "ImportProcs.h"
-#include "Registry.h"
 #include "MAPIFunctions.h"
 
 // Note: when the user loads MAPI manually, hModMSMAPI and hModMAPI will be the same
@@ -83,30 +82,30 @@ void LoadGetComponentPath()
 
 	if (pfnFGetComponentPath) return;
 
-	if (!hModMAPI) hModMAPI = LoadFromSystemDir(_T("mapi32.dll"));// STRING_OK
+	if (!hModMAPI) hModMAPI = LoadFromSystemDir(_T("mapi32.dll")); // STRING_OK
 	if (hModMAPI)
 	{
 		WC_D(pfnFGetComponentPath, (LPFGETCOMPONENTPATH) GetProcAddress(
 			hModMAPI,
-			"FGetComponentPath"));// STRING_OK
+			"FGetComponentPath")); // STRING_OK
 		hRes = S_OK;
 	}
 	if (!pfnFGetComponentPath)
 	{
-		if (!hModMAPIStub) hModMAPIStub = LoadFromSystemDir(_T("mapistub.dll"));// STRING_OK
+		if (!hModMAPIStub) hModMAPIStub = LoadFromSystemDir(_T("mapistub.dll")); // STRING_OK
 		if (hModMAPIStub)
 		{
 			WC_D(pfnFGetComponentPath, (LPFGETCOMPONENTPATH) GetProcAddress(
 				hModMAPIStub,
-				"FGetComponentPath"));// STRING_OK
+				"FGetComponentPath")); // STRING_OK
 		}
 	}
 
 	DebugPrint(DBGLoadLibrary,_T("FGetComponentPath loaded at 0x%08X\n"),pfnFGetComponentPath);
-}
+} // LoadGetComponentPath
 
 BOOL GetComponentPath(
-					  LPSTR szComponent,
+					  LPTSTR szComponent,
 					  LPTSTR szQualifier,
 					  TCHAR* szDllPath,
 					  DWORD cchDLLPath)
@@ -116,18 +115,21 @@ BOOL GetComponentPath(
 
 	if (!pfnFGetComponentPath) return false;
 #ifdef UNICODE
-	CHAR	szAsciiPath[MAX_PATH] = {0};
-	char *szAnsiQualifier = NULL;
+	CHAR szAsciiPath[MAX_PATH] = {0};
+	char* szAnsiComponent = NULL;
+	char* szAnsiQualifier = NULL;
+	EC_H(UnicodeToAnsi(szComponent,&szAnsiComponent));
 	EC_H(UnicodeToAnsi(szQualifier,&szAnsiQualifier));
 
 	EC_B(pfnFGetComponentPath(
-		szComponent,
+		szAnsiComponent,
 		szAnsiQualifier,
 		szAsciiPath,
 		CCH(szAsciiPath),
 		TRUE));
 	delete[] szAnsiQualifier;
-	// Covert to Unicode.
+	delete[] szAnsiComponent;
+	// Convert to Unicode.
 	int iRet = 0;
 	EC_D(iRet,MultiByteToWideChar(
 		CP_ACP,
@@ -144,8 +146,8 @@ BOOL GetComponentPath(
 		cchDLLPath,
 		TRUE));
 #endif
-	return HRES_TO_BOOL(hRes);
-}
+	return SUCCEEDED(hRes);
+} // GetComponentPath
 
 // We do this to avoid certain problems Outlook 11's MAPI has when the system RichEd is loaded.
 // Note that we don't worry about ever unloading this
@@ -157,7 +159,7 @@ void LoadRichEd()
 
 	WC_W32(RegOpenKeyEx(
 		HKEY_LOCAL_MACHINE,
-		_T("Software\\Microsoft\\Windows\\CurrentVersion"),// STRING_OK
+		_T("Software\\Microsoft\\Windows\\CurrentVersion"), // STRING_OK
 		NULL,
 		KEY_READ,
 		&hCurrentVersion));
@@ -170,7 +172,7 @@ void LoadRichEd()
 
 		WC_H(HrGetRegistryValue(
 			hCurrentVersion,
-			_T("CommonFilesDir"),// STRING_OK
+			_T("CommonFilesDir"), // STRING_OK
 			&dwKeyType,
 			(LPVOID*) &szCF));
 		hRes = S_OK;
@@ -180,7 +182,7 @@ void LoadRichEd()
 			size_t cchCF = NULL;
 			size_t cchOffice11 = NULL;
 
-			LPTSTR szOffice11RichEd = _T("\\Microsoft Shared\\office11\\riched20.dll");// STRING_OK
+			LPTSTR szOffice11RichEd = _T("\\Microsoft Shared\\office11\\riched20.dll"); // STRING_OK
 
 			EC_H(StringCchLength(szCF,STRSAFE_MAX_CCH,&cchCF));
 			EC_H(StringCchLength(szOffice11RichEd,STRSAFE_MAX_CCH,&cchOffice11));
@@ -190,14 +192,14 @@ void LoadRichEd()
 
 			if (szRichEdFullPath)
 			{
-				EC_H(StringCchPrintf(szRichEdFullPath,cchOffice11+cchCF+1,_T("%s%s"),szCF,szOffice11RichEd));// STRING_OK
+				EC_H(StringCchPrintf(szRichEdFullPath,cchOffice11+cchCF+1,_T("%s%s"),szCF,szOffice11RichEd)); // STRING_OK
 				hModRichEd20 = MyLoadLibrary(szRichEdFullPath);
 				delete[] szRichEdFullPath;
 			}
 
 			if (!hModRichEd20)
 			{
-				LPTSTR szOffice11RichEdDebug = _T("\\Microsoft Shared Debug\\office11\\riched20.dll");// STRING_OK
+				LPTSTR szOffice11RichEdDebug = _T("\\Microsoft Shared Debug\\office11\\riched20.dll"); // STRING_OK
 				EC_H(StringCchLength(szOffice11RichEdDebug,STRSAFE_MAX_CCH,&cchOffice11));
 
 				LPTSTR szRichEdDebugFullPath = NULL;
@@ -205,7 +207,7 @@ void LoadRichEd()
 
 				if (szRichEdDebugFullPath)
 				{
-					EC_H(StringCchPrintf(szRichEdDebugFullPath,cchOffice11+cchCF+1,_T("%s%s"),szCF,szOffice11RichEdDebug));// STRING_OK
+					EC_H(StringCchPrintf(szRichEdDebugFullPath,cchOffice11+cchCF+1,_T("%s%s"),szCF,szOffice11RichEdDebug)); // STRING_OK
 					hModRichEd20 = MyLoadLibrary(szRichEdDebugFullPath);
 					delete[] szRichEdDebugFullPath;
 				}
@@ -238,7 +240,7 @@ HMODULE LoadFromSystemDir(LPTSTR szDLLName)
 		bSystemDirLoaded = true;
 	}
 
-	WC_H(StringCchPrintf(szDLLPath,CCH(szDLLPath),_T("%s\\%s"),szSystemDir,szDLLName));// STRING_OK
+	WC_H(StringCchPrintf(szDLLPath,CCH(szDLLPath),_T("%s\\%s"),szSystemDir,szDLLName)); // STRING_OK
 	DebugPrint(DBGLoadLibrary,_T("LoadFromSystemDir - loading from \"%s\"\n"),szDLLPath);
 	hModRet = MyLoadLibrary(szDLLPath);
 
@@ -248,85 +250,230 @@ HMODULE LoadFromSystemDir(LPTSTR szDLLName)
 void LoadAclUI()
 {
 	HRESULT hRes = S_OK;
-	if (!hModAclui) hModAclui = LoadFromSystemDir(_T("aclui.dll"));// STRING_OK
+	if (!hModAclui) hModAclui = LoadFromSystemDir(_T("aclui.dll")); // STRING_OK
 	if (hModAclui)
 	{
 		WC_D(pfnEditSecurity, (LPEDITSECURITY) GetProcAddress(
 			hModAclui,
-			"EditSecurity"));// STRING_OK
+			"EditSecurity")); // STRING_OK
 	}
 }
 
 void LoadStg()
 {
 	HRESULT hRes = S_OK;
-	if (!hModOle32) hModOle32 = LoadFromSystemDir(_T("ole32.dll"));// STRING_OK
+	if (!hModOle32) hModOle32 = LoadFromSystemDir(_T("ole32.dll")); // STRING_OK
 	if (hModOle32)
 	{
 		WC_D(pfnStgCreateStorageEx, (LPSTGCREATESTORAGEEX) GetProcAddress(
 			hModOle32,
-			"StgCreateStorageEx"));// STRING_OK
+			"StgCreateStorageEx")); // STRING_OK
 	}
 }
 
 void LoadThemeUI()
 {
 	HRESULT hRes = S_OK;
-	if (!hModUxTheme) hModUxTheme = LoadFromSystemDir(_T("uxtheme.dll"));// STRING_OK
+	if (!hModUxTheme) hModUxTheme = LoadFromSystemDir(_T("uxtheme.dll")); // STRING_OK
 	if (hModUxTheme)
 	{
 		WC_D(pfnOpenThemeData, (LPOPENTHEMEDATA) GetProcAddress(
 			hModUxTheme,
-			"OpenThemeData"));// STRING_OK
+			"OpenThemeData")); // STRING_OK
 		WC_D(pfnCloseThemeData, (LPCLOSETHEMEDATA) GetProcAddress(
 			hModUxTheme,
-			"CloseThemeData"));// STRING_OK
+			"CloseThemeData")); // STRING_OK
 		WC_D(pfnGetThemeMargins, (LPGETTHEMEMARGINS) GetProcAddress(
 			hModUxTheme,
-			"GetThemeMargins"));// STRING_OK
+			"GetThemeMargins")); // STRING_OK
 	}
 }
 
 void LoadMimeOLE()
 {
 	HRESULT hRes = S_OK;
-	if (!hModInetComm) hModInetComm = LoadFromSystemDir(_T("inetcomm.dll"));// STRING_OK
+	if (!hModInetComm) hModInetComm = LoadFromSystemDir(_T("inetcomm.dll")); // STRING_OK
 	if (hModInetComm)
 	{
 		WC_D(pfnMimeOleGetCodePageCharset, (LPMIMEOLEGETCODEPAGECHARSET) GetProcAddress(
 			hModInetComm,
-			"MimeOleGetCodePageCharset"));// STRING_OK
+			"MimeOleGetCodePageCharset")); // STRING_OK
 	}
 }
+
+// Opens the mail key for the specified MAPI client, such as 'Microsoft Outlook' or 'ExchangeMAPI'
+// Pass NULL to open the mail key for the default MAPI client
+HKEY GetMailKey(LPTSTR szClient)
+{
+	HRESULT hRes = S_OK;
+	HKEY hMailKey = NULL;
+	BOOL bClientIsDefault = false;
+
+	// If szClient is NULL, we need to read the name of the default MAPI client
+	if (!szClient)
+	{
+		HKEY hDefaultMailKey = NULL;
+		WC_W32(RegOpenKeyEx(
+			HKEY_LOCAL_MACHINE,
+			_T("Software\\Clients\\Mail"), // STRING_OK
+			NULL,
+			KEY_READ,
+			&hDefaultMailKey));
+		if (hDefaultMailKey)
+		{
+			DWORD dwKeyType = NULL;
+			WC_H(HrGetRegistryValue(
+				hDefaultMailKey,
+				_T(""), // get the default value
+				&dwKeyType,
+				(LPVOID*) &szClient));
+			bClientIsDefault = true;
+			EC_W32(RegCloseKey(hDefaultMailKey));
+		}
+	}
+
+	if (szClient)
+	{
+		TCHAR szMailKey[256];
+		EC_H(StringCchPrintf(
+			szMailKey,
+			CCH(szMailKey),
+			_T("Software\\Clients\\Mail\\%s"), // STRING_OK
+			szClient));
+
+		if (SUCCEEDED(hRes))
+		{
+			WC_W32(RegOpenKeyEx(
+				HKEY_LOCAL_MACHINE,
+				szMailKey,
+				NULL,
+				KEY_READ,
+				&hMailKey));
+		}
+	}
+	if (bClientIsDefault) delete[] szClient;
+
+	return hMailKey;
+} // GetMailKey
+
+// Gets MSI IDs for the specified MAPI client, such as 'Microsoft Outlook' or 'ExchangeMAPI'
+// Pass NULL to get the IDs for the default MAPI client
+// Allocates with new, delete with delete[]
+void GetMapiMsiIds(LPTSTR szClient, LPTSTR* lpszComponentID, LPTSTR* lpszAppLCID, LPTSTR* lpszOfficeLCID)
+{
+	HRESULT hRes = S_OK;
+
+	HKEY hKey = GetMailKey(szClient);
+
+	if (hKey)
+	{
+		DWORD dwKeyType = NULL;
+
+		if (lpszComponentID)
+		{
+			WC_H(HrGetRegistryValue(
+				hKey,
+				_T("MSIComponentID"), // STRING_OK
+				&dwKeyType,
+				(LPVOID*) lpszComponentID));
+			hRes = S_OK;
+		}
+
+		if (lpszAppLCID)
+		{
+			WC_H(HrGetRegistryValue(
+				hKey,
+				_T("MSIApplicationLCID"), // STRING_OK
+				&dwKeyType,
+				(LPVOID*) lpszAppLCID));
+			hRes = S_OK;
+		}
+
+		if (lpszOfficeLCID)
+		{
+			WC_H(HrGetRegistryValue(
+				hKey,
+				_T("MSIOfficeLCID"), // STRING_OK
+				&dwKeyType,
+				(LPVOID*) lpszOfficeLCID));
+			hRes = S_OK;
+		}
+
+		EC_W32(RegCloseKey(hKey));
+	}
+} // GetMAPIComponentID
+
+void GetMAPIPath(LPTSTR szClient, LPTSTR szMAPIPath, ULONG cchMAPIPath)
+{
+	HRESULT hRes = S_OK;
+
+	szMAPIPath[0] = '\0'; // Terminate String at pos 0 (safer if we fail below)
+
+	// Find some strings:
+	LPTSTR szComponentID = NULL;
+	LPTSTR szAppLCID = NULL;
+	LPTSTR szOfficeLCID = NULL;
+
+	GetMapiMsiIds(szClient,&szComponentID,&szAppLCID,&szOfficeLCID);
+
+	if (szComponentID)
+	{
+		if (szAppLCID)
+		{
+			WC_B(GetComponentPath(
+				szComponentID,
+				szAppLCID,
+				szMAPIPath,
+				cchMAPIPath));
+		}
+		if ((FAILED(hRes) || szMAPIPath[0] == _T('\0')) && szOfficeLCID)
+		{
+			hRes = S_OK;
+			WC_B(GetComponentPath(
+				szComponentID,
+				szOfficeLCID,
+				szMAPIPath,
+				cchMAPIPath));
+		}
+		if (FAILED(hRes) || szMAPIPath[0] == _T('\0'))
+		{
+			hRes = S_OK;
+			WC_B(GetComponentPath(
+				szComponentID,
+				NULL,
+				szMAPIPath,
+				cchMAPIPath));
+		}
+	}
+
+	delete[] szComponentID;
+	delete[] szOfficeLCID;
+	delete[] szAppLCID;
+} // GetMAPIPath
 
 void AutoLoadMAPI()
 {
 	DebugPrint(DBGLoadLibrary,_T("AutoLoadMAPI - loading MAPI exports\n"));
-	HRESULT hRes = S_OK;
 
-	// Attempt load from 'real' MAPI first if we have one
+	// Attempt load default MAPI first if we have one
 	// This will handle Outlook MAPI
 	if (!hModMSMAPI)
 	{
-		TCHAR	szMSMAPI32path[MAX_PATH] = {0};
-		WC_B(GetComponentPath(
-			"{FF1D0740-D227-11D1-A4B0-006008AF820E}",// STRING_OK - msmapi32.dll
-			NULL,
-			szMSMAPI32path,
-			CCH(szMSMAPI32path)));
-		if (SUCCEEDED(hRes) && szMSMAPI32path[0] != NULL)
+		TCHAR szMSMAPI32path[MAX_PATH] = {0};
+		GetMAPIPath(NULL,szMSMAPI32path,CCH(szMSMAPI32path));
+		if (szMSMAPI32path[0] != NULL)
 		{
 			hModMSMAPI = MyLoadLibrary(szMSMAPI32path);
 		}
 	}
 	if (hModMSMAPI) LoadMAPIFuncs(hModMSMAPI);
 
-	// In case that fails - look at the one in system32
+	// In case that fails - load the stub library from system32
 	// This will handle Exchange MAPI and rare case where we don't load Outlook MAPI
-	if (!hModMAPI) hModMAPI = LoadFromSystemDir(_T("mapi32.dll"));// STRING_OK
+	if (!hModMAPI) hModMAPI = LoadFromSystemDir(_T("mapi32.dll")); // STRING_OK
 	// If hModMAPI is the same as hModMSMAPI, then we don't need to try it again
 	if (hModMAPI && hModMAPI != hModMSMAPI) LoadMAPIFuncs(hModMAPI);
-}
+} // AutoLoadMAPI
 
 void UnloadMAPI()
 {

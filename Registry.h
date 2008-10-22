@@ -20,7 +20,7 @@ struct __RegKeys
 	UINT	uiOptionsPrompt;
 };
 
-//Registry key Names
+// Registry key Names
 enum REGKEYNAMES {
 	regkeyDEBUG_TAG,
 	regkeyDEBUG_TO_FILE,

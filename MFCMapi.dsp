@@ -340,10 +340,6 @@ SOURCE=.\MyWinApp.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\Output.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\ParentWnd.cpp
 # End Source File
 # Begin Source File
@@ -597,10 +593,6 @@ SOURCE=.\MySecInfo.h
 # Begin Source File
 
 SOURCE=.\MyWinApp.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\Output.h
 # End Source File
 # Begin Source File
 

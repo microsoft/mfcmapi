@@ -1,17 +1,8 @@
 #include "stdafx.h"
-#include "Error.h"
-
 #include "InterpretProp.h"
-
 #include "MAPIFunctions.h"
-#include "Registry.h"
 #include "InterpretProp2.h"
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
+#include "PropTagArray.h"
 
 static const char pBase64[] = {
 	0x3e, 0x7f, 0x7f, 0x7f, 0x3f, 0x34, 0x35, 0x36,
@@ -26,9 +17,9 @@ static const char pBase64[] = {
 		0x2c, 0x2d, 0x2e, 0x2f, 0x30, 0x31, 0x32, 0x33
 };
 
-//allocates output buffer with new
-//delete with delete[]
-//suprisingly, this algorithm works in a unicode build as well
+// allocates output buffer with new
+// delete with delete[]
+// suprisingly, this algorithm works in a unicode build as well
 HRESULT Base64Decode(LPCTSTR szEncodedStr, size_t* cbBuf, LPBYTE* lpDecodedBuffer)
 {
 	HRESULT hRes = S_OK;
@@ -38,30 +29,30 @@ HRESULT Base64Decode(LPCTSTR szEncodedStr, size_t* cbBuf, LPBYTE* lpDecodedBuffe
 
 	if (cchLen % 4) return MAPI_E_INVALID_PARAMETER;
 
-	//look for padding at the end
-	static const TCHAR szPadding[]  = _T("==");// STRING_OK
+	// look for padding at the end
+	static const TCHAR szPadding[]  = _T("=="); // STRING_OK
 	const TCHAR* szPaddingLoc = NULL;
 	szPaddingLoc = _tcschr(szEncodedStr, szPadding[0]);
 	size_t cchPaddingLen = 0;
 	if (NULL != szPaddingLoc)
 	{
-		//check padding length
+		// check padding length
 		EC_H(StringCchLength(szPaddingLoc,STRSAFE_MAX_CCH,&cchPaddingLen));
 		if (cchPaddingLen >= 3) return MAPI_E_INVALID_PARAMETER;
 
-		//check for bad characters after the first '='
+		// check for bad characters after the first '='
 		if (_tcsncmp(szPaddingLoc, (TCHAR *) szPadding, cchPaddingLen)) return MAPI_E_INVALID_PARAMETER;
 	}
-	//cchPaddingLen == 0,1,2 now
+	// cchPaddingLen == 0,1,2 now
 
-	size_t	cchDecodedLen = ((cchLen + 3)/ 4) * 3;//3 times number of 4 tuplets, rounded up
+	size_t	cchDecodedLen = ((cchLen + 3)/ 4) * 3; // 3 times number of 4 tuplets, rounded up
 
-	//back off the decoded length to the correct length
+	// back off the decoded length to the correct length
 	// xx== ->y
 	// xxx= ->yY
 	// x=== ->this is a bad case which should never happen
 	cchDecodedLen -= cchPaddingLen;
-	//we have no room for error now!
+	// we have no room for error now!
 	*lpDecodedBuffer = new BYTE[cchDecodedLen];
 	if (!*lpDecodedBuffer) return MAPI_E_CALL_FAILED;
 
@@ -70,7 +61,7 @@ HRESULT Base64Decode(LPCTSTR szEncodedStr, size_t* cbBuf, LPBYTE* lpDecodedBuffe
 	LPBYTE	lpOutByte = *lpDecodedBuffer;
 
 	TCHAR c[4] = {0};
-	BYTE bTmp[3] = {0};//output
+	BYTE bTmp[3] = {0}; // output
 
 	while (*szEncodedStr)
 	{
@@ -115,14 +106,14 @@ char pIndex[] = {	// and decoding table.
 	0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x2b, 0x2f
 };
 
-//allocates output string with new
-//delete with delete[]
+// allocates output string with new
+// delete with delete[]
 HRESULT Base64Encode(size_t cbSourceBuf, LPBYTE lpSourceBuffer, size_t* cchEncodedStr, LPTSTR* szEncodedStr)
 {
 	HRESULT hRes = S_OK;
 
-	size_t cchEncodeLen = ((cbSourceBuf + 2) / 3) * 4;//4 * number of size three blocks, round up, plus null terminator
-	*szEncodedStr = new TCHAR[cchEncodeLen+1];//allocate a touch extra for some NULL terminators
+	size_t cchEncodeLen = ((cbSourceBuf + 2) / 3) * 4; // 4 * number of size three blocks, round up, plus null terminator
+	*szEncodedStr = new TCHAR[cchEncodeLen+1]; // allocate a touch extra for some NULL terminators
 	if (cchEncodedStr) *cchEncodedStr = cchEncodeLen;
 	if (!*szEncodedStr) return MAPI_E_CALL_FAILED;
 
@@ -216,7 +207,7 @@ CString BinToHexString(LPSBinary lpBin, BOOL bPrependCB)
 	{
 		if (bPrependCB)
 		{
-			HexString.Format(_T("cb: 0 lpb: NULL"));// STRING_OK
+			HexString.Format(_T("cb: 0 lpb: NULL")); // STRING_OK
 		}
 		return HexString;
 	}
@@ -231,7 +222,7 @@ CString BinToHexString(LPSBinary lpBin, BOOL bPrependCB)
 	{
 		if (bPrependCB)
 		{
-			HexString.Format(_T("cb: %d lpb: %s"),lpBin->cb,szBin);// STRING_OK
+			HexString.Format(_T("cb: %d lpb: %s"),lpBin->cb,szBin); // STRING_OK
 		}
 		else
 		{
@@ -242,8 +233,8 @@ CString BinToHexString(LPSBinary lpBin, BOOL bPrependCB)
 	return HexString;
 }
 
-//Allocates string for GUID with new
-//free with delete[]
+// Allocates string for GUID with new
+// free with delete[]
 #define GUID_STRING_SIZE 39
 LPTSTR GUIDToString(LPCGUID lpGUID)
 {
@@ -258,7 +249,7 @@ LPTSTR GUIDToString(LPCGUID lpGUID)
 
 	szGUID = new TCHAR[GUID_STRING_SIZE];
 
-	EC_H(StringCchPrintf(szGUID,GUID_STRING_SIZE,_T("{%.8X-%.4X-%.4X-%.2X%.2X-%.2X%.2X%.2X%.2X%.2X%.2X}"),// STRING_OK
+	EC_H(StringCchPrintf(szGUID,GUID_STRING_SIZE,_T("{%.8X-%.4X-%.4X-%.2X%.2X-%.2X%.2X%.2X%.2X%.2X%.2X}"), // STRING_OK
 		lpGUID->Data1,
 		lpGUID->Data2,
 		lpGUID->Data3,
@@ -288,7 +279,7 @@ HRESULT StringToGUID(LPCTSTR szGUID, LPGUID lpGUID)
     if (*pszSrc != '{') return MAPI_E_INVALID_PARAMETER;
 
     // Convert to Unicode while you are copying to your temporary buffer.
-    // Do not worry about non-ANSI characters; this is a GUID string.
+    // Do not worry about non-ANSI characters - this is a GUID string.
     pszWDest = szWGuid;
 
     while((*pszSrc) && (*pszSrc != '}') &&
@@ -318,10 +309,10 @@ CString CurrencyToString(CURRENCY curVal)
 {
 	CString szCur;
 
-	szCur.Format(_T("%05I64d"),curVal.int64);// STRING_OK
+	szCur.Format(_T("%05I64d"),curVal.int64); // STRING_OK
 	if (szCur.GetLength() > 4)
 	{
-		szCur.Insert(szCur.GetLength()-4,_T("."));// STRING_OK
+		szCur.Insert(szCur.GetLength()-4,_T(".")); // STRING_OK
 	}
 	return szCur;
 }
@@ -357,9 +348,9 @@ CString TagToString(ULONG ulPropTag, LPMAPIPROP lpObj, BOOL bIsAB, BOOL bSingleL
 	CString szFormatString;
 	if (bSingleLine)
 	{
-		szFormatString = _T("0x%1!08X! (%2)");// STRING_OK
-		if (szExactMatches) szFormatString += _T(": %3");// STRING_OK
-		if (szPartialMatches) szFormatString += _T(": (%4)");// STRING_OK
+		szFormatString = _T("0x%1!08X! (%2)"); // STRING_OK
+		if (szExactMatches) szFormatString += _T(": %3"); // STRING_OK
+		if (szPartialMatches) szFormatString += _T(": (%4)"); // STRING_OK
 		if (szNamedPropName)
 		{
 			szTemp.LoadString(IDS_NAMEDPROPSINGLELINE);
@@ -514,7 +505,7 @@ void RestrictionToString(LPSRestriction lpRes, LPMAPIPROP lpObj, ULONG ulTabLeve
 {
 	if (!PropString) return;
 
-	*PropString = _T("");// STRING_OK
+	*PropString = _T(""); // STRING_OK
 
 	ULONG i = 0;
 	if (!lpRes)
@@ -529,7 +520,7 @@ void RestrictionToString(LPSRestriction lpRes, LPMAPIPROP lpObj, ULONG ulTabLeve
 	CString szTabs;
 	for (i = 0;i<ulTabLevel;i++)
 	{
-		szTabs += _T("\t");// STRING_OK
+		szTabs += _T("\t"); // STRING_OK
 	}
 
 	HRESULT hRes = S_OK;
@@ -766,7 +757,7 @@ void AdrListToString(LPADRLIST lpAdrList,CString *PropString)
 {
 	if (!PropString) return;
 
-	*PropString = _T("");// STRING_OK
+	*PropString = _T(""); // STRING_OK
 	if (!lpAdrList)
 	{
 		PropString->FormatMessage(IDS_ADRLISTNULL);
@@ -803,7 +794,7 @@ void ActionToString(ACTION* lpAction, CString* PropString)
 {
 	if (!PropString) return;
 
-	*PropString = _T("");// STRING_OK
+	*PropString = _T(""); // STRING_OK
 	if (!lpAction)
 	{
 		PropString->FormatMessage(IDS_ACTIONNULL);
@@ -951,7 +942,7 @@ void ActionsToString(ACTIONS* lpActions, CString* PropString)
 {
 	if (!PropString) return;
 
-	*PropString = _T("");// STRING_OK
+	*PropString = _T(""); // STRING_OK
 	if (!lpActions)
 	{
 		PropString->FormatMessage(IDS_ACTIONSNULL);
@@ -1000,7 +991,7 @@ void FileTimeToString(FILETIME* lpFileTime,CString *PropString,CString *AltPropS
 		szTimeStr[0] = NULL;
 		szDateStr[0] = NULL;
 
-		//shove millisecond info into our format string since GetTimeFormat doesn't use it
+		// shove millisecond info into our format string since GetTimeFormat doesn't use it
 		szFormatStr.FormatMessage(IDS_FILETIMEFORMAT,SysTime.wMilliseconds);
 
 		WC_D(iRet,GetTimeFormat(
@@ -1019,7 +1010,7 @@ void FileTimeToString(FILETIME* lpFileTime,CString *PropString,CString *AltPropS
 			szDateStr,
 			MAX_PATH));
 
-		PropString->Format(_T("%s %s"),szTimeStr,szDateStr);// STRING_OK
+		PropString->Format(_T("%s %s"),szTimeStr,szDateStr); // STRING_OK
 	}
 	else if (PropString)
 	{
@@ -1059,35 +1050,35 @@ void InterpretMVProp(LPSPropValue lpProp, ULONG ulMVRow, CString *PropString,CSt
 	switch(PROP_TYPE(lpProp->ulPropTag))
 	{
 	case(PT_MV_I2):
-		szTmp.Format(_T("%d"),lpProp->Value.MVi.lpi[ulMVRow]);// STRING_OK
-		szAltTmp.Format(_T("0x%X"),lpProp->Value.MVi.lpi[ulMVRow]);// STRING_OK
+		szTmp.Format(_T("%d"),lpProp->Value.MVi.lpi[ulMVRow]); // STRING_OK
+		szAltTmp.Format(_T("0x%X"),lpProp->Value.MVi.lpi[ulMVRow]); // STRING_OK
 		break;
 	case(PT_MV_LONG):
-		szTmp.Format(_T("%u"),lpProp->Value.MVl.lpl[ulMVRow]);// STRING_OK
-		szAltTmp.Format(_T("0x%X"),lpProp->Value.MVl.lpl[ulMVRow]);// STRING_OK
+		szTmp.Format(_T("%u"),lpProp->Value.MVl.lpl[ulMVRow]); // STRING_OK
+		szAltTmp.Format(_T("0x%X"),lpProp->Value.MVl.lpl[ulMVRow]); // STRING_OK
 		break;
 	case(PT_MV_DOUBLE):
-		szTmp.Format(_T("%u"),lpProp->Value.MVdbl.lpdbl[ulMVRow]);// STRING_OK
+		szTmp.Format(_T("%u"),lpProp->Value.MVdbl.lpdbl[ulMVRow]); // STRING_OK
 		break;
 	case(PT_MV_CURRENCY):
 		szTmp = CurrencyToString(lpProp->Value.MVcur.lpcur[ulMVRow]);
-		szAltTmp.Format(_T("0x%08X:0x%08X"),(int)(lpProp->Value.MVcur.lpcur[ulMVRow].Hi),(int)lpProp->Value.MVcur.lpcur[ulMVRow].Lo);// STRING_OK
+		szAltTmp.Format(_T("0x%08X:0x%08X"),(int)(lpProp->Value.MVcur.lpcur[ulMVRow].Hi),(int)lpProp->Value.MVcur.lpcur[ulMVRow].Lo); // STRING_OK
 		break;
 	case(PT_MV_APPTIME):
-		szTmp.Format(_T("%u"),lpProp->Value.MVat.lpat[ulMVRow]);// STRING_OK
+		szTmp.Format(_T("%u"),lpProp->Value.MVat.lpat[ulMVRow]); // STRING_OK
 		break;
 	case(PT_MV_SYSTIME):
 		FileTimeToString(&lpProp->Value.MVft.lpft[ulMVRow],&szTmp,&szAltTmp);
 		break;
 	case(PT_MV_I8):
-		szTmp.Format(_T("%I64d"),lpProp->Value.MVli.lpli[ulMVRow].QuadPart);// STRING_OK
-		szAltTmp.Format(_T("0x%08X:0x%08X"),(int)(lpProp->Value.MVli.lpli[ulMVRow].HighPart),(int)lpProp->Value.MVli.lpli[ulMVRow].LowPart);// STRING_OK
+		szTmp.Format(_T("%I64d"),lpProp->Value.MVli.lpli[ulMVRow].QuadPart); // STRING_OK
+		szAltTmp.Format(_T("0x%08X:0x%08X"),(int)(lpProp->Value.MVli.lpli[ulMVRow].HighPart),(int)lpProp->Value.MVli.lpli[ulMVRow].LowPart); // STRING_OK
 		break;
 	case(PT_MV_R4):
-		szTmp.Format(_T("%f"),lpProp->Value.MVflt.lpflt[ulMVRow]);// STRING_OK
+		szTmp.Format(_T("%f"),lpProp->Value.MVflt.lpflt[ulMVRow]); // STRING_OK
 		break;
 	case(PT_MV_STRING8):
-		//CString overloads '=' to handle conversions
+		// CString overloads '=' to handle conversions
 		if (lpProp->Value.MVszA.lppszA[ulMVRow] && '\0' != lpProp->Value.MVszA.lppszA[ulMVRow])
 		{
 			szTmp = lpProp->Value.MVszA.lppszA[ulMVRow];
@@ -1100,7 +1091,7 @@ void InterpretMVProp(LPSPropValue lpProp, ULONG ulMVRow, CString *PropString,CSt
 		}
 		break;
 	case(PT_MV_UNICODE):
-		//CString overloads '=' to handle conversions
+		// CString overloads '=' to handle conversions
 		if (lpProp->Value.MVszW.lppszW[ulMVRow] && L'\0' !=lpProp->Value.MVszW.lppszW[ulMVRow])
 		{
 			szTmp = lpProp->Value.MVszW.lppszW[ulMVRow];
@@ -1153,15 +1144,15 @@ void InterpretProp(LPSPropValue lpProp, CString *PropString, CString *AltPropStr
 
 	if (MV_FLAG & PROP_TYPE(lpProp->ulPropTag))
 	{
-		//MV property
-		//All the MV structures are basically the same, so we can cheat when we pull the count
+		// MV property
+		// All the MV structures are basically the same, so we can cheat when we pull the count
 		ULONG cValues = lpProp->Value.MVi.cValues;
-		tmpPropString.Format(_T("%d: "),cValues);// STRING_OK
+		tmpPropString.Format(_T("%d: "),cValues); // STRING_OK
 		for (iMVCount = 0; iMVCount < cValues; iMVCount++)
 		{
 			if (iMVCount != 0)
 			{
-				tmpPropString += _T("; ");// STRING_OK
+				tmpPropString += _T("; "); // STRING_OK
 				switch(PROP_TYPE(lpProp->ulPropTag))
 				{
 				case(PT_MV_LONG):
@@ -1169,7 +1160,7 @@ void InterpretProp(LPSPropValue lpProp, CString *PropString, CString *AltPropStr
 				case(PT_MV_SYSTIME):
 				case(PT_MV_STRING8):
 				case(PT_MV_UNICODE):
-					tmpAltPropString += _T("; ");// STRING_OK
+					tmpAltPropString += _T("; "); // STRING_OK
 					break;
 				}
 			}
@@ -1183,28 +1174,28 @@ void InterpretProp(LPSPropValue lpProp, CString *PropString, CString *AltPropStr
 		switch(PROP_TYPE(lpProp->ulPropTag))
 		{
 		case(PT_I2):
-			tmpPropString.Format(_T("%d"),lpProp->Value.i);// STRING_OK
-			tmpAltPropString.Format(_T("0x%X"),lpProp->Value.i);// STRING_OK
+			tmpPropString.Format(_T("%d"),lpProp->Value.i); // STRING_OK
+			tmpAltPropString.Format(_T("0x%X"),lpProp->Value.i); // STRING_OK
 			break;
 		case(PT_LONG):
-			tmpPropString.Format(_T("%u"),lpProp->Value.l);// STRING_OK
-			tmpAltPropString.Format(_T("0x%X"),lpProp->Value.l);// STRING_OK
+			tmpPropString.Format(_T("%u"),lpProp->Value.l); // STRING_OK
+			tmpAltPropString.Format(_T("0x%X"),lpProp->Value.l); // STRING_OK
 			break;
 		case(PT_R4):
-			tmpPropString.Format(_T("%f"),lpProp->Value.flt);// STRING_OK
+			tmpPropString.Format(_T("%f"),lpProp->Value.flt); // STRING_OK
 			break;
 		case(PT_DOUBLE):
-			tmpPropString.Format(_T("%f"),lpProp->Value.dbl);// STRING_OK
+			tmpPropString.Format(_T("%f"),lpProp->Value.dbl); // STRING_OK
 			break;
 		case(PT_CURRENCY):
 			tmpPropString = CurrencyToString(lpProp->Value.cur);
-			tmpAltPropString.Format(_T("0x%08X:0x%08X"),(int)(lpProp->Value.cur.Hi),(int)lpProp->Value.cur.Lo);// STRING_OK
+			tmpAltPropString.Format(_T("0x%08X:0x%08X"),(int)(lpProp->Value.cur.Hi),(int)lpProp->Value.cur.Lo); // STRING_OK
 			break;
 		case(PT_APPTIME):
-			tmpPropString.Format(_T("%u"),lpProp->Value.at);// STRING_OK
+			tmpPropString.Format(_T("%u"),lpProp->Value.at); // STRING_OK
 			break;
 		case(PT_ERROR):
-			tmpPropString.Format(_T("Err:0x%08X=%s"),lpProp->Value.err,ErrorNameFromErrorCode(lpProp->Value.err));// STRING_OK
+			tmpPropString.Format(_T("Err:0x%08X=%s"),lpProp->Value.err,ErrorNameFromErrorCode(lpProp->Value.err)); // STRING_OK
 			break;
 		case(PT_BOOLEAN):
 			if (lpProp->Value.b)
@@ -1215,12 +1206,12 @@ void InterpretProp(LPSPropValue lpProp, CString *PropString, CString *AltPropStr
 		case(PT_OBJECT):
 			tmpPropString.FormatMessage(IDS_OBJECT);
 			break;
-		case(PT_I8)://LARGE_INTEGER
-			tmpPropString.Format(_T("%I64d"),lpProp->Value.li.QuadPart);// STRING_OK
-			tmpAltPropString.Format(_T("0x%08X:0x%08X"),(int)(lpProp->Value.li.HighPart),(int)lpProp->Value.li.LowPart);// STRING_OK
+		case(PT_I8): // LARGE_INTEGER
+			tmpPropString.Format(_T("%I64d"),lpProp->Value.li.QuadPart); // STRING_OK
+			tmpAltPropString.Format(_T("0x%08X:0x%08X"),(int)(lpProp->Value.li.HighPart),(int)lpProp->Value.li.LowPart); // STRING_OK
 			break;
 		case(PT_STRING8):
-			//CString overloads '=' to handle conversions
+			// CString overloads '=' to handle conversions
 			if (CheckStringProp(lpProp,PT_STRING8))
 			{
 				tmpPropString = lpProp->Value.lpszA;
@@ -1233,7 +1224,7 @@ void InterpretProp(LPSPropValue lpProp, CString *PropString, CString *AltPropStr
 			}
 			break;
 		case(PT_UNICODE):
-			//CString overloads '=' to handle conversions
+			// CString overloads '=' to handle conversions
 			if (CheckStringProp(lpProp,PT_UNICODE))
 			{
 				tmpPropString = lpProp->Value.lpszW;
@@ -1271,7 +1262,7 @@ void InterpretProp(LPSPropValue lpProp, CString *PropString, CString *AltPropStr
 	}
 	if (PropString) *PropString = tmpPropString;
 	if (AltPropString) *AltPropString = tmpAltPropString;
-}//InterpretProp
+} // InterpretProp
 
 CString TypeToString(ULONG ulPropTag)
 {
@@ -1297,11 +1288,11 @@ CString TypeToString(ULONG ulPropTag)
 		}
 	}
 	if (!bTypeFound)
-		tmpPropType.Format(_T("0x%04x"),PROP_TYPE(ulPropTag));// STRING_OK
+		tmpPropType.Format(_T("0x%04x"),PROP_TYPE(ulPropTag)); // STRING_OK
 
-	if (bNeedInstance) tmpPropType += _T(" | MV_INSTANCE");// STRING_OK
+	if (bNeedInstance) tmpPropType += _T(" | MV_INSTANCE"); // STRING_OK
 	return tmpPropType;
-}//TypeToString
+} // TypeToString
 
 // Allocates strings with new
 // Free with delete[]
@@ -1335,7 +1326,7 @@ void NameIDToStrings(LPMAPINAMEID lpNameID,
 		}
 		else
 		{
-			delete[] szGuid;//if we're not giving the string back, then we need to clean it up
+			delete[] szGuid; // if we're not giving the string back, then we need to clean it up
 			szGuid = NULL;
 		}
 
@@ -1360,7 +1351,7 @@ void NameIDToStrings(LPMAPINAMEID lpNameID,
 						if (*lpszPropName)
 						{
 							// Printing hex first gets a nice sort without spacing tricks
-							EC_H(StringCchPrintf(*lpszPropName,26 + 3 + cchName + 1,_T("id: 0x%04X=%u = %ws"),// STRING_OK
+							EC_H(StringCchPrintf(*lpszPropName,26 + 3 + cchName + 1,_T("id: 0x%04X=%u = %ws"), // STRING_OK
 								lpNameID->Kind.lID,
 								lpNameID->Kind.lID,
 								szName));
@@ -1375,7 +1366,7 @@ void NameIDToStrings(LPMAPINAMEID lpNameID,
 					if (*lpszPropName)
 					{
 						// Printing hex first gets a nice sort without spacing tricks
-						EC_H(StringCchPrintf(*lpszPropName,26 + 1,_T("id: 0x%04X=%u"),// STRING_OK
+						EC_H(StringCchPrintf(*lpszPropName,26 + 1,_T("id: 0x%04X=%u"), // STRING_OK
 							lpNameID->Kind.lID,
 							lpNameID->Kind.lID));
 					}
@@ -1386,7 +1377,7 @@ void NameIDToStrings(LPMAPINAMEID lpNameID,
 				*lpszDASL = new TCHAR[CCH_DASL_ID];
 				if (*lpszDASL)
 				{
-					EC_H(StringCchPrintf(*lpszDASL,CCH_DASL_ID,_T("id/%s/%04X%04X"),// STRING_OK
+					EC_H(StringCchPrintf(*lpszDASL,CCH_DASL_ID,_T("id/%s/%04X%04X"), // STRING_OK
 						szDASLGuid,
 						lpNameID->Kind.lID,
 						PROP_TYPE(ulPropTag)));
@@ -1395,9 +1386,9 @@ void NameIDToStrings(LPMAPINAMEID lpNameID,
 		}
 		else if (lpNameID->ulKind == MNID_STRING)
 		{
-			//lpwstrName is LPWSTR which means it's ALWAYS unicode
-			//But some folks get it wrong and stuff ANSI data in there
-			//So we check the string length both ways to make our best guess
+			// lpwstrName is LPWSTR which means it's ALWAYS unicode
+			// But some folks get it wrong and stuff ANSI data in there
+			// So we check the string length both ways to make our best guess
 			size_t cchShortLen = NULL;
 			size_t cchWideLen = NULL;
 			WC_H(StringCchLengthA((LPSTR)lpNameID->Kind.lpwstrName,STRSAFE_MAX_CCH,&cchShortLen));
@@ -1405,14 +1396,14 @@ void NameIDToStrings(LPMAPINAMEID lpNameID,
 
 			if (cchShortLen < cchWideLen)
 			{
-				//this is the *proper* case
+				// this is the *proper* case
 				DebugPrint(DBGNamedProp,_T("lpNameID->Kind.lpwstrName = \"%ws\"\n"),lpNameID->Kind.lpwstrName);
 				if (lpszPropName)
 				{
 					*lpszPropName = new TCHAR[7+cchWideLen];
 					if (*lpszPropName)
 					{
-//Compiler Error C2017 - Can occur (falsly) when escape sequences are stringized, as EC_H will do here
+// Compiler Error C2017 - Can occur (falsly) when escape sequences are stringized, as EC_H will do here
 #define __GOODSTRING _T("sz: \"%ws\"") // STRING_OK
 						EC_H(StringCchPrintf(*lpszPropName,7+cchWideLen,__GOODSTRING,
 							lpNameID->Kind.lpwstrName));
@@ -1423,7 +1414,7 @@ void NameIDToStrings(LPMAPINAMEID lpNameID,
 					*lpszDASL = new TCHAR[CCH_DASL_STRING+cchWideLen];
 					if (*lpszDASL)
 					{
-						EC_H(StringCchPrintf(*lpszDASL,CCH_DASL_STRING +cchWideLen,_T("string/%s/%ws"),// STRING_OK
+						EC_H(StringCchPrintf(*lpszDASL,CCH_DASL_STRING +cchWideLen,_T("string/%s/%ws"), // STRING_OK
 							szDASLGuid,
 							lpNameID->Kind.lpwstrName));
 					}
@@ -1431,7 +1422,7 @@ void NameIDToStrings(LPMAPINAMEID lpNameID,
 			}
 			else
 			{
-				//this is the case where ANSI data was shoved into a unicode string.
+				// this is the case where ANSI data was shoved into a unicode string.
 				DebugPrint(DBGNamedProp,_T("Warning: ANSI data was found in a unicode field. This is a bug on the part of the creator of this named property\n"));
 				DebugPrint(DBGNamedProp,_T("lpNameID->Kind.lpwstrName = \"%hs\"\n"),lpNameID->Kind.lpwstrName);
 				if (lpszPropName)
@@ -1441,7 +1432,7 @@ void NameIDToStrings(LPMAPINAMEID lpNameID,
 					{
 						CString szComment;
 						szComment.LoadString(IDS_NAMEWASANSI);
-//Compiler Error C2017 - Can occur (falsly) when escape sequences are stringized, as EC_H will do here
+// Compiler Error C2017 - Can occur (falsly) when escape sequences are stringized, as EC_H will do here
 #define __BADSTRING _T("sz: \"%hs\" %s") // STRING_OK
 						EC_H(StringCchPrintf(*lpszPropName,7+cchShortLen+25,__BADSTRING,
 							lpNameID->Kind.lpwstrName,szComment));
@@ -1452,7 +1443,7 @@ void NameIDToStrings(LPMAPINAMEID lpNameID,
 					*lpszDASL = new TCHAR[CCH_DASL_STRING+cchShortLen];
 					if (*lpszDASL)
 					{
-						EC_H(StringCchPrintf(*lpszDASL,CCH_DASL_STRING+cchShortLen,_T("string/%s/%hs"),// STRING_OK
+						EC_H(StringCchPrintf(*lpszDASL,CCH_DASL_STRING+cchShortLen,_T("string/%s/%hs"), // STRING_OK
 							szDASLGuid,
 							lpNameID->Kind.lpwstrName));
 					}

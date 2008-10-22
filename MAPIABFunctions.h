@@ -32,7 +32,7 @@ HRESULT	ManualResolve(
 					  ULONG PropTagToCompare);
 
 HRESULT SearchContentsTableForName(
-									LPMAPITABLE pTable,
-									LPCTSTR szName,
-									ULONG PropTagToCompare,
-									LPSPropValue *lppPropsFound);
+								   LPMAPITABLE pTable,
+								   LPCTSTR szName,
+								   ULONG PropTagToCompare,
+								   LPSPropValue *lppPropsFound);

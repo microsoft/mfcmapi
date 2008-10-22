@@ -1,4 +1,5 @@
 #pragma once
+// CSortListCtrl window
 
 #include "enums.h"
 
@@ -71,9 +72,6 @@ enum __SortListIconNames
 
 void FreeSortListData(SortListData* lpData);
 
-/////////////////////////////////////////////////////////////////////////////
-// CContentsTableListCtrl window
-
 class CSortListCtrl : public CListCtrl
 {
 public:
@@ -83,48 +81,42 @@ public:
 	STDMETHODIMP_(ULONG)	AddRef();
 	STDMETHODIMP_(ULONG)	Release();
 
-	HRESULT Create(CWnd* pCreateParent, ULONG ulFlags, UINT nID, BOOL bImages);
-
-	void	MySetRedraw(BOOL bRedraw);
-	int		m_iClickedColumn;
-
-	void	AutoSizeColumns();
-	void	DeleteAllColumns();
-	void	SetSelectedItem(int iItem);
-	void	SortColumn(ULONG iColumn);
-	SortListData* InsertRow(int iRow, LPTSTR szText);
-	SortListData* InsertRow(int iRow, LPTSTR szText, int iIndent, int iImage);
-	void	GetSelectedItems(int* cSelected, SortListData*** lpSelected);
+	// Exported manipulation functions
+	HRESULT			Create(CWnd* pCreateParent, ULONG ulFlags, UINT nID, BOOL bImages);
+	void			AutoSizeColumns();
+	void			DeleteAllColumns();
+	void			SetSelectedItem(int iItem);
+	void			SortClickedColumn();
+	SortListData*	InsertRow(int iRow, LPTSTR szText);
+	BOOL			SetItemText(int nItem, int nSubItem, LPCTSTR lpszText);
 
 protected:
-	// Generated message map functions
-	//{{AFX_MSG(CContentsTableListCtrl)
-	afx_msg void OnColumnClick(int iColumn);
-	afx_msg UINT OnGetDlgCode();
-	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
-	afx_msg void OnDeleteAllItems(NMHDR* pNMHDR, LRESULT* pResult);
-	virtual afx_msg void OnDeleteItem(NMHDR* pNMHDR, LRESULT* pResult);
-	//}}AFX_MSG
+	void			MySetRedraw(BOOL bRedraw);
+	SortListData*	InsertRow(int iRow, LPTSTR szText, int iIndent, int iImage);
+	void			FakeClickColumn(int iColumn, BOOL bSortUp);
+
+	// protected since derived classes need to call the base implementation
+	virtual LRESULT	WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	virtual void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
+
+private:
+	// Overrides from base class
+	UINT OnGetDlgCode();
+
+	void OnColumnClick(int iColumn);
+	void OnDeleteAllItems(NMHDR* pNMHDR, LRESULT* pResult);
+	void OnDeleteItem(NMHDR* pNMHDR, LRESULT* pResult);
+	void AutoSizeColumn(int iColumn, int iMinWidth, int iMaxWidth);
+	static int CALLBACK MyCompareProc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort);
+
+	LONG		m_cRef;
+	int			m_iRedrawCount;
+	CImageList	m_ImageList;
+	BOOL		m_bHaveSorted;
+	BOOL		m_bHeaderSubclassed;
+	CSortHeader	m_cSortHeader;
+	int			m_iClickedColumn;
+	BOOL		m_bSortUp;
 
 	DECLARE_MESSAGE_MAP()
-	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
-
-	BOOL	m_bSortUp;
-private:
-	LONG	m_cRef;
-	int		m_iRedrawCount;
-	CImageList m_ImageList;
-
-	BOOL	m_bHaveSorted;
-
-	BOOL	m_bHeaderSubclassed;
-	CSortHeader	m_cSortHeader;
-	void	AutoSizeColumn(int iColumn, int iMinWidth, int iMaxWidth);
-
-	static int CALLBACK MyCompareProc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort);
 };
-
-/////////////////////////////////////////////////////////////////////////////
-
-//{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ will insert additional declarations immediately before the previous line.

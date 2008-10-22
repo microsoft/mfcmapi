@@ -1,15 +1,7 @@
 #include "stdafx.h"
-#include "Error.h"
-
 #include "MAPIProgress.h"
 #include "MAPIFunctions.h"
 #include "enums.h"
-
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
-#define new DEBUG_NEW
-#endif
 
 static TCHAR* CLASS = _T("CMAPIProgress");
 
@@ -146,29 +138,29 @@ STDMETHODIMP CMAPIProgress::SetLimits(ULONG FAR* lpulMin, ULONG FAR* lpulMax, UL
 
 	if(lpulMin)
 	{
-		EC_H(StringCchPrintf(szMin, CCH(szMin), _T("%d"), *lpulMin));// STRING_OK
+		EC_H(StringCchPrintf(szMin, CCH(szMin), _T("%d"), *lpulMin)); // STRING_OK
 	}
 	else
 	{
-		EC_H(StringCchPrintf(szMin, CCH(szMin), _T("NULL")));// STRING_OK
+		EC_H(StringCchPrintf(szMin, CCH(szMin), _T("NULL"))); // STRING_OK
 	}
 
 	if(lpulMax)
 	{
-		EC_H(StringCchPrintf(szMax, CCH(szMax), _T("%d"), *lpulMax));// STRING_OK
+		EC_H(StringCchPrintf(szMax, CCH(szMax), _T("%d"), *lpulMax)); // STRING_OK
 	}
 	else
 	{
-		EC_H(StringCchPrintf(szMax, CCH(szMax), _T("NULL")));// STRING_OK
+		EC_H(StringCchPrintf(szMax, CCH(szMax), _T("NULL"))); // STRING_OK
 	}
 
 	if(lpulFlags)
 	{
-		EC_H(StringCchPrintf(szFlags, CCH(szFlags), _T("0x%08X"), *lpulFlags));// STRING_OK
+		EC_H(StringCchPrintf(szFlags, CCH(szFlags), _T("0x%08X"), *lpulFlags)); // STRING_OK
 	}
 	else
 	{
-		EC_H(StringCchPrintf(szFlags, CCH(szFlags), _T("NULL")));// STRING_OK
+		EC_H(StringCchPrintf(szFlags, CCH(szFlags), _T("NULL"))); // STRING_OK
 	}
 
 	DebugPrintEx(DBGGeneric, CLASS, _T("SetLimits"), _T("(%s) - Passed Values: lpulMin = %s, lpulMax = %s, lpulFlags = %s\n"),

@@ -2,20 +2,11 @@
 // Displays the hierarchy tree of address books
 
 #include "stdafx.h"
-#include "Error.h"
-
 #include "AbContDlg.h"
-
 #include "HierarchyTableTreeCtrl.h"
 #include "MapiFunctions.h"
 #include "MapiObjects.h"
 #include "SingleMAPIPropListCtrl.h"
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
 
 /////////////////////////////////////////////////////////////////////////////
 // CAbContDlg dialog
@@ -41,7 +32,7 @@ CHierarchyTableDlg(
 
 	if (m_lpMapiObjects)
 	{
-		LPADRBOOK lpAddrBook = m_lpMapiObjects->GetAddrBook(false);//do not release
+		LPADRBOOK lpAddrBook = m_lpMapiObjects->GetAddrBook(false); // do not release
 		if (lpAddrBook)
 		{
 			// Open root address book (container).
@@ -64,10 +55,8 @@ CAbContDlg::~CAbContDlg()
 }
 
 BEGIN_MESSAGE_MAP(CAbContDlg, CHierarchyTableDlg)
-//{{AFX_MSG_MAP(CAbContDlg)
 	ON_COMMAND(ID_SETDEFAULTDIR, OnSetDefaultDir)
 	ON_COMMAND(ID_SETPAB, OnSetPAB)
-//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -94,12 +83,12 @@ void CAbContDlg::OnSetDefaultDir()
 		}
 	}
 	return;
-} //CAbContDlg::OnSetDefaultDir
+} // CAbContDlg::OnSetDefaultDir
 
 void CAbContDlg::OnSetPAB()
 {
 	HRESULT			hRes = S_OK;
-	CWaitCursor	Wait;//Change the mouse to an hourglass while we work.
+	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return;
 
@@ -108,7 +97,7 @@ void CAbContDlg::OnSetPAB()
 
 	if (lpItemEID)
 	{
-		LPADRBOOK lpAddrBook = m_lpMapiObjects->GetAddrBook(false);//do not release
+		LPADRBOOK lpAddrBook = m_lpMapiObjects->GetAddrBook(false); // do not release
 		if (lpAddrBook)
 		{
 			EC_H(lpAddrBook->SetPAB(
@@ -117,7 +106,7 @@ void CAbContDlg::OnSetPAB()
 		}
 	}
 	return;
-} //CAbContDlg::OnSetPAB
+} // CAbContDlg::OnSetPAB
 
 void CAbContDlg::HandleAddInMenuSingle(
 									   LPADDINMENUPARAMS lpParams,

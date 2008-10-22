@@ -1,14 +1,6 @@
 #include "stdafx.h"
 #include "Error.h"
-
-#include "registry.h"
 #include "Editor.h"
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
 
 // This function WILL DebugPrint if it is called
 void LogError(
@@ -73,8 +65,8 @@ BOOL CheckHResFn(HRESULT hRes,LPCSTR szFunction,UINT uidErrorMsg,LPCSTR szFile,i
 	return false;
 }
 
-//Warn logs an error but never displays a dialog
-//We can log MAPI_W errors along with normal ones
+// Warn logs an error but never displays a dialog
+// We can log MAPI_W errors along with normal ones
 BOOL WarnHResFn(HRESULT hRes,LPCSTR szFunction,UINT uidErrorMsg,LPCSTR szFile,int iLine)
 {
 	if (fIsSet(DBGHRes) && S_OK != hRes)
@@ -117,7 +109,7 @@ void __cdecl ErrDialog(LPCSTR szFile,int iLine, UINT uidErrorFmt,...)
 	CString szErrorEnd;
 	CString szCombo;
 
-	//Build out error message from the variant argument list
+	// Build out error message from the variant argument list
 	va_list argList = NULL;
 	va_start(argList, uidErrorFmt);
 	szErrorBegin.FormatV(szErrorFmt,argList);
@@ -161,10 +153,13 @@ void __cdecl ErrDialog(LPCSTR szFile,int iLine, UINT uidErrorFmt,...)
 #define MAPI_E_PROFILE_DELETED MAKE_MAPI_E( 0x204 )
 #endif
 
+#ifndef SYNC_E_CYCLE
+#define SYNC_E_CYCLE MAKE_SYNC_E(0x804)
+#endif
 
 #define RETURN_ERR_CASE(err) case (err): return(_T(#err))
 
-//Function to convert error codes to their names
+// Function to convert error codes to their names
 LPTSTR	ErrorNameFromErrorCode(HRESULT hrErr)
 {
 	switch (hrErr)
@@ -278,8 +273,8 @@ LPTSTR	ErrorNameFromErrorCode(HRESULT hrErr)
 		RETURN_ERR_CASE(MAPI_E_PROFILE_DELETED);
 
 		/*StrSafe.h error codes: */
-		RETURN_ERR_CASE(STRSAFE_E_INSUFFICIENT_BUFFER);	//ERROR_INSUFFICIENT_BUFFER
-		//RETURN_ERR_CASE(STRSAFE_E_INVALID_PARAMETER); //ERROR_INVALID_PARAMETER
+		RETURN_ERR_CASE(STRSAFE_E_INSUFFICIENT_BUFFER);
+		// STRSAFE_E_INVALID_PARAMETER == MAPI_E_INVALID_PARAMETER, so already handled
 		RETURN_ERR_CASE(STRSAFE_E_END_OF_FILE);
 
 		/*IStorage errors*/
@@ -330,7 +325,7 @@ LPTSTR	ErrorNameFromErrorCode(HRESULT hrErr)
 		RETURN_ERR_CASE(STG_S_MULTIPLEOPENS);
 		RETURN_ERR_CASE(STG_S_CANNOTCONSOLIDATE);
 
-		//COM errors (for CLSIDFromString)
+		// COM errors (for CLSIDFromString)
 		RETURN_ERR_CASE(CO_E_CLASSSTRING);
 		RETURN_ERR_CASE(REGDB_E_WRITEREGDB);
 		RETURN_ERR_CASE(REGDB_E_CLASSNOTREG);
@@ -347,7 +342,7 @@ LPTSTR	ErrorNameFromErrorCode(HRESULT hrErr)
 		RETURN_ERR_CASE(SYNC_E_IGNORE);
 		RETURN_ERR_CASE(SYNC_E_CONFLICT);
 		RETURN_ERR_CASE(SYNC_E_NO_PARENT);
-		RETURN_ERR_CASE(SYNC_E_INCEST);
+		RETURN_ERR_CASE(SYNC_E_CYCLE);
 		RETURN_ERR_CASE(SYNC_E_UNSYNCHRONIZED);
 		RETURN_ERR_CASE(SYNC_W_PROGRESS);
 		RETURN_ERR_CASE(SYNC_W_CLIENT_CHANGE_NEWER);
@@ -358,17 +353,17 @@ default:
 			HRESULT hRes = S_OK;
 			static TCHAR szErrCode[35]; // see string on default
 
-			EC_H(StringCchPrintf(szErrCode, CCH(szErrCode), _T("0x%08X"), hrErr));// STRING_OK
+			EC_H(StringCchPrintf(szErrCode, CCH(szErrCode), _T("0x%08X"), hrErr)); // STRING_OK
 
 			return(szErrCode);
 		}
 	}
-}//ErrorNameFromErrorCode
+} // ErrorNameFromErrorCode
 
 void PrintSkipNote(HRESULT hRes,LPCSTR szFunc)
 {
 	DebugPrint(DBGHRes,
-		_T("Skipping %hs because hRes = 0x%8x = %s.\n"),// STRING_OK
+		_T("Skipping %hs because hRes = 0x%8x = %s.\n"), // STRING_OK
 		szFunc,
 		hRes,
 		ErrorNameFromErrorCode(hRes));

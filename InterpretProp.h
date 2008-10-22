@@ -1,12 +1,10 @@
 #pragma once
 
-#include <MapiX.h>
-
-//Base64 functions
+// Base64 functions
 HRESULT Base64Decode(LPCTSTR szEncodedStr, size_t* cbBuf, LPBYTE* lpDecodedBuffer);
 HRESULT Base64Encode(size_t cbSourceBuf, LPBYTE lpSourceBuffer, size_t* cchEncodedStr, LPTSTR* szEncodedStr);
 
-//Function to create strings representing properties
+// Function to create strings representing properties
 CString BinToTextString(LPSBinary lpBin, BOOL bMultiLine);
 
 CString BinToHexString(LPSBinary lpBin, BOOL bPrependCB);

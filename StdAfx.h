@@ -23,13 +23,15 @@
 #include <afxext.h>		// MFC extensions
 #include <afxcmn.h>		// MFC support for Windows Common Controls
 
-//Safe String handling header
-//#define STRSAFE_NO_CB_FUNCTIONS
+// Safe String handling header
+// #define STRSAFE_NO_CB_FUNCTIONS
 #include <strsafe.h>
 
 #include <MapiX.h>
 #include <MapiUtil.h>
 #include <MAPIform.h>
+#include <MAPIWz.h>
+#include <MAPIHook.h>
 #include <MSPST.h>
 
 #include <edkmdb.h>
@@ -58,6 +60,7 @@
 
 #include "MFCOutput.h"
 #include "registry.h"
+#include "error.h"
 
 #include "AddIns.h"
 
@@ -123,7 +126,7 @@ struct _NodeData
 	LPMAPITABLE			lpHierarchyTable; // Object - free with Release
 	CAdviseSink*		lpAdviseSink; // Object - free with Release
 	ULONG_PTR			ulAdviseConnection;
-	ULONG				bSubfolders;//this is intentionally ULONG instead of BOOL
+	ULONG				bSubfolders; // this is intentionally ULONG instead of BOOL
 	ULONG				ulContainerFlags;
 };
 
@@ -134,14 +137,14 @@ struct SortListData
 	ULONG				ulSortDataType;
 	union
 	{
-		_ContentsData	Contents;//SORTLIST_CONTENTS
-		_PropListData	Prop;//SORTLIST_PROP
-		_MVPropData		MV;//SORTLIST_MVPROP
-		_TagData		Tag;//SORTLIST_TAGARRAY
-		_ResData		Res;//SORTLIST_RES
-		_CommentData	Comment;//SORTLIST_COMMENT
-		_BinaryData		Binary;//SORTLIST_BINARY
-		_NodeData		Node;//SORTLIST_TREENODE
+		_ContentsData	Contents; // SORTLIST_CONTENTS
+		_PropListData	Prop; // SORTLIST_PROP
+		_MVPropData		MV; // SORTLIST_MVPROP
+		_TagData		Tag; // SORTLIST_TAGARRAY
+		_ResData		Res; // SORTLIST_RES
+		_CommentData	Comment; // SORTLIST_COMMENT
+		_BinaryData		Binary; // SORTLIST_BINARY
+		_NodeData		Node; // SORTLIST_TREENODE
 
 	} data;
 	ULONG			cSourceProps;
@@ -149,21 +152,21 @@ struct SortListData
 	BOOL			bItemFullyLoaded;
 };
 
-//macro to get allocated string lengths
+// macro to get allocated string lengths
 #define CCH(string) (sizeof((string))/sizeof(TCHAR))
 #define CCHW(string) (sizeof((string))/sizeof(WCHAR))
 
-//Macros to assist in OnInitMenu
+// Macros to assist in OnInitMenu
 #define CHECK(state) ((state)?MF_CHECKED:MF_UNCHECKED)
 #define DIM(state) ((state)?MF_ENABLED:MF_GRAYED)
 #define DIMMSOK(iNumSelected) ((iNumSelected>=1)?MF_ENABLED:MF_GRAYED)
 #define DIMMSNOK(iNumSelected) ((iNumSelected==1)?MF_ENABLED:MF_GRAYED)
 
-//Flags for cached/offline mode - See http://msdn2.microsoft.com/en-us/library/bb820947.aspx
-//Used in OpenMsgStore
+// Flags for cached/offline mode - See http://msdn2.microsoft.com/en-us/library/bb820947.aspx
+// Used in OpenMsgStore
 #define MDB_ONLINE ((ULONG) 0x00000100)
 
-//Used in OpenEntry
+// Used in OpenEntry
 #define MAPI_NO_CACHE ((ULONG) 0x00000200)
 
 /* Flag to keep calls from redirecting in cached mode */
@@ -234,41 +237,41 @@ struct SortListData
 #define AG_WEEKS   1
 #define AG_DAYS    2
 
-//Custom messages - used to ensure actions occur on the right threads.
+// Custom messages - used to ensure actions occur on the right threads.
 
-//Used by CAdviseSink:
+// Used by CAdviseSink:
 #define WM_MFCMAPI_ADDITEM					WM_APP+1
 #define WM_MFCMAPI_DELETEITEM				WM_APP+2
 #define WM_MFCMAPI_MODIFYITEM				WM_APP+3
 #define WM_MFCMAPI_REFRESHTABLE				WM_APP+4
 
-//Used by DwThreadFuncLoadTable
+// Used by DwThreadFuncLoadTable
 #define WM_MFCMAPI_THREADADDITEM			WM_APP+5
 #define WM_MFCMAPI_UPDATESTATUSBAR			WM_APP+6
 #define WM_MFCMAPI_CLEARSINGLEMAPIPROPLIST	WM_APP+7
-#define WM_MFCMAPI_SETABORT					WM_APP+8
+#define WM_MFCMAPI_CLEARABORT				WM_APP+8
 #define WM_MFCMAPI_GETABORT					WM_APP+9
 
 // Used by CSingleMAPIPropListCtrl and CSortHeader
 #define WM_MFCMAPI_SAVECOLUMNORDERHEADER	WM_APP+10
 #define WM_MFCMAPI_SAVECOLUMNORDERLIST		WM_APP+11
 
-//Definitions for WrapCompressedRTFStreamEx in param for WrapCompressedRTFStreamEX
+// Definitions for WrapCompressedRTFStreamEx in param for WrapCompressedRTFStreamEX
 // http://msdn2.microsoft.com/en-us/library/bb905293.aspx
 typedef struct {
-	ULONG		size;		//Size of the structure
+	ULONG		size;		// Size of the structure
 	ULONG		ulFlags;
 		/****** MAPI_MODIFY 				((ULONG) 0x00000001) above */
 		/****** STORE_UNCOMPRESSED_RTF		((ULONG) 0x00008000) above */
 		/****** MAPI_NATIVE_BODY			((ULONG) 0x00010000) mapidefs.h   Only used for reading*/
-	ULONG		ulInCodePage;	//Codepage of the message, used when passing MAPI_NATIVE_BODY, ignored otherwise
-	ULONG		ulOutCodePage;	//Codepage of the Returned Stream, used when passing MAPI_NATIVE_BODY, ignored otherwise
+	ULONG		ulInCodePage;	// Codepage of the message, used when passing MAPI_NATIVE_BODY, ignored otherwise
+	ULONG		ulOutCodePage;	// Codepage of the Returned Stream, used when passing MAPI_NATIVE_BODY, ignored otherwise
 } RTF_WCSINFO;
 
 // out param type information for WrapCompressedRTFStreamEX
 // http://msdn2.microsoft.com/en-us/library/bb905294.aspx
 typedef struct {
-	ULONG       size;	//Size of the structure
+	ULONG       size;	// Size of the structure
 	ULONG		ulStreamFlags;
 		/****** MAPI_NATIVE_BODY_TYPE_RTF			((ULONG) 0x00000001) mapidefs.h */
 		/****** MAPI_NATIVE_BODY_TYPE_HTML			((ULONG) 0x00000002) mapidefs.h */
@@ -298,7 +301,7 @@ typedef BOOL (STDAPICALLTYPE FGETCOMPONENTPATH)
 	BOOL fInstall);
 typedef FGETCOMPONENTPATH FAR * LPFGETCOMPONENTPATH;
 
-//For EditSecurity
+// For EditSecurity
 typedef BOOL (STDAPICALLTYPE EDITSECURITY)
 (
 	HWND hwndOwner,
@@ -488,7 +491,7 @@ DECLARE_MAPI_INTERFACE_(IProxyStoreObject, IUnknown)
     MAPI_IPROXYSTOREOBJECT_METHODS(PURE)
 };
 
-//for CompareStrings
+// for CompareStrings
 static DWORD g_lcid = MAKELCID(MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), SORT_DEFAULT);
 
 // In case we are compiling against an older version of headers
@@ -540,7 +543,7 @@ DECLARE_MAPI_INTERFACE_(IAttachmentSecurity, IUnknown)
 
 typedef struct _INDEX_SEARCH_PUSHER_PROCESS
 {
-	DWORD		dwPID;			/* PID for process pushing */
+	DWORD		dwPID;			// PID for process pushing
 } INDEX_SEARCH_PUSHER_PROCESS;
 
 // http://blogs.msdn.com/stephen_griffin/archive/2006/05/11/595338.aspx
@@ -633,7 +636,3 @@ const BYTE	TZ_BIN_VERSION_MINOR	= 0x01;
 // http://blogs.msdn.com/stephen_griffin/archive/2008/04/01/new-restriction-types-seen-in-wrapped-psts.aspx
 #define RES_COUNT			((ULONG) 0x0000000B)
 #define RES_ANNOTATION		((ULONG) 0x0000000C)
-
-//{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ will insert additional declarations immediately before the previous line.
-

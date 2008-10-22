@@ -1,27 +1,18 @@
 // MAPIFormfunctions.cpp : Collection of useful MAPI functions
 
 #include "stdafx.h"
-#include "Error.h"
-
 #include "MAPIFormFunctions.h"
-
 #include "MyMAPIFormViewer.h"
 #include "MAPIFunctions.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
+// This function creates a new message of class szMessageClass, based in m_lpContainer
+// The function will also take care of launching the form
 
-//This function creates a new message of class szMessageClass, based in m_lpContainer
-//The function will also take care of launching the form
-
-//This function can be used to create a new message using any form.
-//Outlook's default IPM.Note and IPM.Post can be created in any folder, so these don't pose a problem.
-//Appointment, Contact, StickyNote, and Task can only be created in those folders
-//Attempting to create one of those in the Inbox will result in an
-//'Internal Application Error' when you save.
+// This function can be used to create a new message using any form.
+// Outlook's default IPM.Note and IPM.Post can be created in any folder, so these don't pose a problem.
+// Appointment, Contact, StickyNote, and Task can only be created in those folders
+// Attempting to create one of those in the Inbox will result in an
+// 'Internal Application Error' when you save.
 
 HRESULT CreateAndDisplayNewMailInFolder(
 							  LPMDB lpMDB,
@@ -44,27 +35,27 @@ HRESULT CreateAndDisplayNewMailInFolder(
 	LPPERSISTMESSAGE	lpPersistMessage = NULL;
 
 	EC_H_MSG(lpMAPIFormMgr->ResolveMessageClass(
-		szMessageClass,//class
-		NULL,//flags
-		lpFolder,//folder to resolve to
+		szMessageClass, // class
+		NULL, // flags
+		lpFolder, // folder to resolve to
 		&lpMAPIFormInfo),
 		IDS_NOCLASSHANDLER);
 	if (lpMAPIFormInfo)
 	{
 		EC_H(lpMAPIFormMgr->CreateForm(
-			NULL,//parent window
-			MAPI_DIALOG,//display status window
-			lpMAPIFormInfo,//form info
-			IID_IPersistMessage,//riid to open
-			(LPVOID *) &lpPersistMessage));//form to open into
+			NULL, // parent window
+			MAPI_DIALOG, // display status window
+			lpMAPIFormInfo, // form info
+			IID_IPersistMessage, // riid to open
+			(LPVOID *) &lpPersistMessage)); // form to open into
 
 		if (lpPersistMessage)
 		{
 			LPMESSAGE lpMessage = NULL;
-			//Get a message
+			// Get a message
 			EC_H(lpFolder->CreateMessage(
-				NULL,//default interface
-				0,//flags
+				NULL, // default interface
+				0, // flags
 				&lpMessage));
 			if (lpMessage)
 			{
@@ -80,7 +71,7 @@ HRESULT CreateAndDisplayNewMailInFolder(
 
 				if (lpMAPIFormViewer)
 				{
-					//put everything together with the default info
+					// put everything together with the default info
 					EC_H(lpPersistMessage->InitNew(
 						(LPMAPIMESSAGESITE) lpMAPIFormViewer,
 						lpMessage));
@@ -96,7 +87,7 @@ HRESULT CreateAndDisplayNewMailInFolder(
 						EC_H(lpMAPIFormViewer->CallDoVerb(
 							lpForm,
 							EXCHIVERB_OPEN,
-							NULL));//Not passing a RECT here so we'll try to use the default for the form
+							NULL)); // Not passing a RECT here so we'll try to use the default for the form
 						lpForm->Release();
 					}
 					lpMAPIFormViewer->Release();
@@ -109,7 +100,7 @@ HRESULT CreateAndDisplayNewMailInFolder(
 	}
 	lpMAPIFormMgr->Release();
 	return hRes;
-}//CreateAndDisplayNewMailInFolder
+} // CreateAndDisplayNewMailInFolder
 
 HRESULT OpenMessageNonModal(
 							LPMDB lpMDB,
@@ -138,10 +129,10 @@ HRESULT OpenMessageNonModal(
 
 	// Get required properties from the message
 	EC_H_GETPROPS(lpMessage->GetProps(
-		(LPSPropTagArray) &sptaShowForm,//property tag array
-		fMapiUnicode,//flags
-		&cValuesShow, //Count of values returned
-		&lpspvaShow));//Values returned
+		(LPSPropTagArray) &sptaShowForm, // property tag array
+		fMapiUnicode, // flags
+		&cValuesShow, // Count of values returned
+		&lpspvaShow)); // Values returned
 
 	if (lpspvaShow)
 	{
@@ -175,8 +166,8 @@ HRESULT OpenMessageNonModal(
 					ulMessageStatus,
 					lpspvaShow[FLAGS].Value.ul);
 				EC_H(lpMAPIFormMgr->LoadForm(
-					0,//(ULONG) m_hWnd,
-					0,//flags
+					0, // (ULONG) m_hWnd,
+					0, // flags
 					lpspvaShow[CLASS].Value.lpszA,
 					ulMessageStatus,
 					lpspvaShow[FLAGS].Value.ul,
@@ -184,7 +175,7 @@ HRESULT OpenMessageNonModal(
 					lpMAPIFormViewer,
 					lpMessage,
 					lpMAPIFormViewer,
-					IID_IMAPIForm,//riid
+					IID_IMAPIForm, // riid
 					(LPVOID *) &lpForm));
 				lpMAPIFormMgr->Release();
 				lpMAPIFormMgr = NULL;
@@ -222,7 +213,7 @@ HRESULT OpenMessageNonModal(
 		MAPIFreeBuffer(lpspvaShow);
 	}
 	return hRes;
-}//OpenMessageNonModal
+} // OpenMessageNonModal
 
 
 HRESULT OpenMessageModal(LPMAPIFOLDER lpParentFolder,
@@ -248,10 +239,10 @@ HRESULT OpenMessageModal(LPMAPIFOLDER lpParentFolder,
 
 	// Get required properties from the message
 	EC_H_GETPROPS(lpMessage->GetProps(
-		(LPSPropTagArray) &sptaShowForm,//property tag array
-		fMapiUnicode,//flags
-		&cValuesShow, //Count of values returned
-		&lpspvaShow));//Values returned
+		(LPSPropTagArray) &sptaShowForm, // property tag array
+		fMapiUnicode, // flags
+		&cValuesShow, // Count of values returned
+		&lpspvaShow)); // Values returned
 
 	if (lpspvaShow)
 	{
@@ -261,26 +252,26 @@ HRESULT OpenMessageModal(LPMAPIFOLDER lpParentFolder,
 			0,
 			&ulMessageStatus));
 
-		//set up the 'display message' form
+		// set up the 'display message' form
 		EC_H(lpMAPISession->PrepareForm(
-			NULL,//default interface
-			lpMessage,//message to open
-			&Token));//basically, the pointer to the form
+			NULL, // default interface
+			lpMessage, // message to open
+			&Token)); // basically, the pointer to the form
 
 		EC_H_CANCEL(lpMAPISession->ShowForm(
 			NULL,
-			lpMDB,//message store
-			lpParentFolder,//parent folder
-			NULL,//default interface
-			Token,//token?
-			NULL,//reserved
-			MAPI_POST_MESSAGE,//flags
-			ulMessageStatus,//message status
-			lpspvaShow[FLAGS].Value.ul,//message flags
-			lpspvaShow[ACCESS].Value.ul,//access
-			lpspvaShow[CLASS].Value.lpszA));//message class
+			lpMDB, // message store
+			lpParentFolder, // parent folder
+			NULL, // default interface
+			Token, // token?
+			NULL, // reserved
+			MAPI_POST_MESSAGE, // flags
+			ulMessageStatus, // message status
+			lpspvaShow[FLAGS].Value.ul, // message flags
+			lpspvaShow[ACCESS].Value.ul, // access
+			lpspvaShow[CLASS].Value.lpszA)); // message class
 	}
 
 	MAPIFreeBuffer(lpspvaShow);
 	return hRes;
-}//OpenMessageModal
+} // OpenMessageModal
