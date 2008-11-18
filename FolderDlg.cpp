@@ -362,22 +362,7 @@ HRESULT CFolderDlg::OnAttachmentProperties(int iItem, SortListData* /*lpData*/)
 
 	if (lpMessage)
 	{
-		LPMAPITABLE	lpTable = NULL;
-		EC_H(lpMessage->OpenProperty(
-			PR_MESSAGE_ATTACHMENTS,
-			&IID_IMAPITable,
-			0,
-			0,
-			(LPUNKNOWN *) &lpTable));
-		if (lpTable)
-		{
-			new CAttachmentsDlg(
-				m_lpParent,
-				m_lpMapiObjects,
-				lpTable,
-				lpMessage);
-			lpTable->Release();
-		}
+		EC_H(OpenAttachmentsFromMessage(lpMessage, true));
 
 		lpMessage->Release();
 	}
@@ -1316,22 +1301,7 @@ HRESULT CFolderDlg::OnRecipientProperties(int iItem, SortListData* /*lpData*/)
 
 	if (lpMessage)
 	{
-		LPMAPITABLE	lpTable = NULL;
-		EC_H(lpMessage->OpenProperty(
-			PR_MESSAGE_RECIPIENTS,
-			&IID_IMAPITable,
-			0,
-			0,
-			(LPUNKNOWN *) &lpTable));
-		if (lpTable)
-		{
-			new CRecipientsDlg(
-				m_lpParent,
-				m_lpMapiObjects,
-				lpTable,
-				lpMessage);
-			lpTable->Release();
-		}
+		EC_H(OpenRecipientsFromMessage(lpMessage));
 
 		lpMessage->Release();
 	}
@@ -2152,4 +2122,3 @@ void CFolderDlg::HandleAddInMenuSingle(
 
 	InvokeAddInMenu(lpParams);
 } // CFolderDlg::HandleAddInMenuSingle
-

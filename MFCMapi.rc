@@ -554,7 +554,9 @@ BEGIN
 
         MENUITEM "Use MAPI_MODIFY when viewing embedded messages",
                                                 ID_USEMAPIMODIFYONATTACHMENTS
-
+        MENUITEM SEPARATOR
+        MENUITEM "Display Attachment Table",    ID_ATTACHMENTPROPERTIES
+        MENUITEM "Display Recipient Table",     ID_RECIPIENTPROPERTIES
     END
 END
 
@@ -568,6 +570,9 @@ BEGIN
                                             ID_VIEWEMBEDDEDMESSAGEPROPERTIES
     MENUITEM "Use MAPI_MODIFY when viewing embedded messages",
                                             ID_USEMAPIMODIFYONATTACHMENTS
+    MENUITEM SEPARATOR
+    MENUITEM "Display Attachment Table",    ID_ATTACHMENTPROPERTIES
+    MENUITEM "Display Recipient Table",     ID_RECIPIENTPROPERTIES
 END
 
 IDR_MENU_PROPERTY MENU DISCARDABLE

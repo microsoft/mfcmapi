@@ -380,7 +380,7 @@ CString TagToString(ULONG ulPropTag, LPMAPIPROP lpObj, BOOL bIsAB, BOOL bSingleL
 			szTemp.LoadString(IDS_DASLPROPTAG);
 			szFormatString += szTemp;
 		}
-		else
+		else if (szNamedPropDASL)
 		{
 			szTemp.LoadString(IDS_DASLNAMED);
 			szFormatString += szTemp;
