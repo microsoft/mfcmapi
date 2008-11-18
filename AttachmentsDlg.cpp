@@ -20,7 +20,8 @@ CAttachmentsDlg::CAttachmentsDlg(
 							   CParentWnd* pParentWnd,
 							   CMapiObjects* lpMapiObjects,
 							   LPMAPITABLE lpMAPITable,
-							   LPMESSAGE lpMessage
+							   LPMESSAGE lpMessage,
+							   BOOL bSaveMessageAtClose
 							   ):
 CContentsTableDlg(
 						  pParentWnd,
@@ -40,6 +41,7 @@ CContentsTableDlg(
 
 	m_bDisplayAttachAsEmbeddedMessage = FALSE;
 	m_bUseMapiModifyOnEmbeddedMessage = FALSE;
+	m_bSaveMessageAtClose = bSaveMessageAtClose;
 	m_lpAttach = NULL;
 
 	CreateDialogAndMenu(IDR_MENU_ATTACHMENTS);
@@ -49,7 +51,7 @@ CAttachmentsDlg::~CAttachmentsDlg()
 {
 	TRACE_DESTRUCTOR(CLASS);
 	if (m_lpAttach) m_lpAttach->Release();
-	if (m_lpMessage)
+	if (m_lpMessage && m_bSaveMessageAtClose)
 	{
 		HRESULT hRes = S_OK;
 
@@ -65,6 +67,8 @@ BEGIN_MESSAGE_MAP(CAttachmentsDlg, CContentsTableDlg)
 	ON_COMMAND(ID_SAVETOFILE, OnSaveToFile)
 	ON_COMMAND(ID_VIEWEMBEDDEDMESSAGEPROPERTIES, OnViewEmbeddedMessageProps)
 	ON_COMMAND(ID_USEMAPIMODIFYONATTACHMENTS, OnUseMapiModify)
+	ON_COMMAND(ID_ATTACHMENTPROPERTIES, OnAttachmentProperties)
+	ON_COMMAND(ID_RECIPIENTPROPERTIES, OnRecipientProperties)
 END_MESSAGE_MAP()
 
 void CAttachmentsDlg::OnInitMenu(CMenu* pMenu)
@@ -77,6 +81,8 @@ void CAttachmentsDlg::OnInitMenu(CMenu* pMenu)
 			pMenu->EnableMenuItem(ID_DELETESELECTEDITEM,DIMMSOK(iNumSel));
 			pMenu->EnableMenuItem(ID_MODIFYSELECTEDITEM,DIMMSOK(1 == iNumSel));
 			pMenu->EnableMenuItem(ID_SAVETOFILE,DIMMSOK(iNumSel));
+			pMenu->EnableMenuItem(ID_ATTACHMENTPROPERTIES,DIM(m_bDisplayAttachAsEmbeddedMessage && 1 == iNumSel));
+			pMenu->EnableMenuItem(ID_RECIPIENTPROPERTIES,DIM(m_bDisplayAttachAsEmbeddedMessage && 1 == iNumSel));
 		}
 		pMenu->CheckMenuItem(ID_VIEWEMBEDDEDMESSAGEPROPERTIES,CHECK(m_bDisplayAttachAsEmbeddedMessage));
 		pMenu->CheckMenuItem(ID_USEMAPIMODIFYONATTACHMENTS,CHECK(m_bUseMapiModifyOnEmbeddedMessage));
@@ -275,6 +281,67 @@ void CAttachmentsDlg::OnUseMapiModify()
 {
 	m_bUseMapiModifyOnEmbeddedMessage = !m_bUseMapiModifyOnEmbeddedMessage;
 } // CAttachmentsDlg::OnUseMapiModify
+
+HRESULT CAttachmentsDlg::GetEmbeddedMessage(int iIndex, LPMESSAGE *lppMessage)
+{
+	HRESULT hRes = S_OK;
+	LPMAPIPROP lpMAPIProp = NULL;
+	__mfcmapiModifyEnum	fRequestModify = m_bUseMapiModifyOnEmbeddedMessage ? mfcmapiREQUEST_MODIFY : mfcmapiDO_NOT_REQUEST_MODIFY;
+
+	if (!m_bDisplayAttachAsEmbeddedMessage) return MAPI_E_CALL_FAILED;
+
+	EC_H(OpenItemProp(
+		iIndex,
+		fRequestModify,
+		&lpMAPIProp));
+
+	if (NULL != lpMAPIProp)
+	{
+		EC_H(lpMAPIProp->QueryInterface(
+			IID_IMessage,
+			(LPVOID*)lppMessage));
+
+		lpMAPIProp->Release();
+	}
+
+	return hRes;
+} // CAttachmentsDlg::GetEmbeddedMessage
+
+void CAttachmentsDlg::OnAttachmentProperties()
+{
+	HRESULT hRes = S_OK;
+	LPMESSAGE lpMessage = NULL;
+
+	EC_H(GetEmbeddedMessage(
+		-1,
+		&lpMessage));
+
+	if (NULL != lpMessage)
+	{
+		EC_H(OpenAttachmentsFromMessage(lpMessage, m_bUseMapiModifyOnEmbeddedMessage));
+
+		lpMessage->Release();
+	}
+
+} // CAttachmentsDlg::OnAttachmentProperties
+
+void CAttachmentsDlg::OnRecipientProperties()
+{
+	HRESULT hRes = S_OK;
+	LPMESSAGE lpMessage = NULL;
+
+	EC_H(GetEmbeddedMessage(
+		-1,
+		&lpMessage));
+
+	if (lpMessage)
+	{
+		EC_H(OpenRecipientsFromMessage(lpMessage));
+
+		lpMessage->Release();
+	}
+
+} // CAttachmentsDlg::OnRecipientProperties
 
 void CAttachmentsDlg::HandleAddInMenuSingle(
 									   LPADDINMENUPARAMS lpParams,

@@ -16,6 +16,8 @@
 #include "RestrictEditor.h"
 #include "PropertyTagEditor.h"
 #include "PropTagArray.h"
+#include "AttachmentsDlg.h"
+#include "RecipientsDlg.h"
 
 static TCHAR* CLASS = _T("CContentsTableDlg");
 
@@ -829,6 +831,59 @@ HRESULT CContentsTableDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum b
 	return hRes;
 }
 
+HRESULT CContentsTableDlg::OpenAttachmentsFromMessage(LPMESSAGE lpMessage, BOOL fSaveMessageAtClose)
+{
+	HRESULT hRes = S_OK;
+	LPMAPITABLE	lpTable = NULL;
+
+	if (NULL == lpMessage) return MAPI_E_INVALID_PARAMETER;
+
+	EC_H(lpMessage->OpenProperty(
+		PR_MESSAGE_ATTACHMENTS,
+		&IID_IMAPITable,
+		0,
+		0,
+		(LPUNKNOWN *) &lpTable));
+
+	if (lpTable)
+	{
+		new CAttachmentsDlg(
+			m_lpParent,
+			m_lpMapiObjects,
+			lpTable,
+			lpMessage,
+			fSaveMessageAtClose);
+		lpTable->Release();
+	}
+
+	return hRes;
+} // CContentsTableDlg::OpenAttachmentsFromMessage
+
+HRESULT CContentsTableDlg::OpenRecipientsFromMessage(LPMESSAGE lpMessage)
+{
+	HRESULT hRes = S_OK;
+	LPMAPITABLE	lpTable = NULL;
+
+	EC_H(lpMessage->OpenProperty(
+		PR_MESSAGE_RECIPIENTS,
+		&IID_IMAPITable,
+		0,
+		0,
+		(LPUNKNOWN *) &lpTable));
+
+	if (lpTable)
+	{
+		new CRecipientsDlg(
+			m_lpParent,
+			m_lpMapiObjects,
+			lpTable,
+			lpMessage);
+		lpTable->Release();
+	}
+
+	return hRes;
+} // CContentsTableDlg::OpenRecipientsFromMessage
+
 BOOL CContentsTableDlg::HandleAddInMenu(WORD wMenuSelect)
 {
 	if (wMenuSelect < ID_ADDINMENU || ID_ADDINMENU+m_ulAddInMenuItems < wMenuSelect) return false;
@@ -911,12 +966,21 @@ BOOL CContentsTableDlg::HandleAddInMenu(WORD wMenuSelect)
 
 void CContentsTableDlg::HandleAddInMenuSingle(
 									   LPADDINMENUPARAMS lpParams,
-									   LPMAPIPROP /*lpMAPIProp*/,
+									   LPMAPIPROP lpMAPIProp,
 									   LPMAPICONTAINER /*lpContainer*/)
 {
 	if (lpParams)
 	{
 		lpParams->lpTable = m_lpContentsTable;
+		switch(lpParams->ulAddInContext)
+		{
+		case MENU_CONTEXT_RECIEVE_FOLDER_TABLE:
+			lpParams->lpFolder = (LPMAPIFOLDER) lpMAPIProp; // OpenItemProp returns LPMAPIFOLDER
+			break;
+		case MENU_CONTEXT_HIER_TABLE:
+			lpParams->lpFolder = (LPMAPIFOLDER) lpMAPIProp; // OpenItemProp returns LPMAPIFOLDER
+			break;
+		}
 	}
 
 	InvokeAddInMenu(lpParams);

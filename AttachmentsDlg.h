@@ -10,7 +10,8 @@ public:
 		CParentWnd* pParentWnd,
 		CMapiObjects* lpMapiObjects,
 		LPMAPITABLE	lpMAPITable,
-		LPMESSAGE lpMessage);
+		LPMESSAGE lpMessage,
+		BOOL bSaveMessageAtClose);
 	virtual ~CAttachmentsDlg();
 
 private:
@@ -29,11 +30,16 @@ private:
 	void OnSaveToFile();
 	void OnUseMapiModify();
 	void OnViewEmbeddedMessageProps();
+	void OnAttachmentProperties();
+	void OnRecipientProperties();
+
+	HRESULT GetEmbeddedMessage(int iIndex, LPMESSAGE *lppMessage);
 
 	LPATTACH	m_lpAttach;
 	LPMESSAGE	m_lpMessage;
 	BOOL		m_bDisplayAttachAsEmbeddedMessage;
 	BOOL		m_bUseMapiModifyOnEmbeddedMessage;
+	BOOL		m_bSaveMessageAtClose;
 
 	DECLARE_MESSAGE_MAP()
 };

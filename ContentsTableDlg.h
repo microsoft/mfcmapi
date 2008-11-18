@@ -35,18 +35,21 @@ protected:
 	virtual void OnDisplayItem();
 
 	void SetRestrictionType(__mfcmapiRestrictionTypeEnum RestrictionType);
+	HRESULT OpenAttachmentsFromMessage(LPMESSAGE lpMessage, BOOL fSaveMessageAtClose);
+	HRESULT OpenRecipientsFromMessage(LPMESSAGE lpMessage);
 
 	CContentsTableListCtrl*	m_lpContentsTableListCtrl;
 	LPMAPITABLE				m_lpContentsTable;
 	ULONG					m_ulDisplayFlags;
 
 private:
-	// Overrides from base class
-	BOOL HandleAddInMenu(WORD wMenuSelect);
-	void HandleAddInMenuSingle(
+	virtual void HandleAddInMenuSingle(
 		LPADDINMENUPARAMS lpParams,
 		LPMAPIPROP lpMAPIProp,
 		LPMAPICONTAINER lpContainer);
+
+	// Overrides from base class
+	BOOL HandleAddInMenu(WORD wMenuSelect);
 	void OnCancel();
 	void OnEscHit();
 

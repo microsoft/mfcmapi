@@ -155,7 +155,7 @@ void CEditor::Constructor(
 
 	// Note that LoadIcon does not require a subsequent DestroyIcon in Win32
 	HRESULT hRes = S_OK;
-	EC_D(m_hIcon,AfxGetApp()->LoadIcon(IDR_MAINFRAME));
+	WC_D(m_hIcon,AfxGetApp()->LoadIcon(IDR_MAINFRAME));
 
 	m_pParentWnd = pParentWnd;
 	if (!m_pParentWnd)

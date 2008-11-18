@@ -886,7 +886,7 @@ HRESULT OpenProfileSection(LPSERVICEADMIN lpServiceAdmin, LPSBinary lpServiceUID
 		{
 			EC_H((*ppProfile)->OpenSection(
 				(LPMAPIUID)lpServiceUID->lpb,
-				NULL,
+				MAPI_MODIFY,
 				lppProfSect));
 		}
 		else

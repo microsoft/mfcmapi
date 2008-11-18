@@ -369,12 +369,13 @@ void CAbDlg::OnCreatePropertyStringRestriction()
 
 void CAbDlg::HandleAddInMenuSingle(
 									   LPADDINMENUPARAMS lpParams,
-									   LPMAPIPROP /*lpMAPIProp*/,
+									   LPMAPIPROP lpMAPIProp,
 									   LPMAPICONTAINER /*lpContainer*/)
 {
 	if (lpParams)
 	{
 		lpParams->lpAbCont = (LPABCONT) m_lpContainer;
+		lpParams->lpMailUser = (LPMAILUSER) lpMAPIProp; // OpenItemProp returns LPMAILUSER
 	}
 
 	InvokeAddInMenu(lpParams);
