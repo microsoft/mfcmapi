@@ -232,7 +232,7 @@ void CSingleMAPIPropListCtrl::GetSelectedPropTag(ULONG* lpPropTag)
 {
 	int	iItem = NULL;
 
-	*lpPropTag = NULL;
+	if (lpPropTag) *lpPropTag = NULL;
 
 	iItem = GetNextItem(-1,LVNI_FOCUSED | LVNI_SELECTED);
 
@@ -240,7 +240,10 @@ void CSingleMAPIPropListCtrl::GetSelectedPropTag(ULONG* lpPropTag)
 	{
 		SortListData* lpListData = ((SortListData*)GetItemData(iItem));
 		if (lpListData)
-			*lpPropTag = lpListData->data.Prop.ulPropTag;
+		{
+			if (lpPropTag)
+				*lpPropTag = lpListData->data.Prop.ulPropTag;
+		}
 	}
 
 	if (lpPropTag)
@@ -915,7 +918,7 @@ HRESULT CSingleMAPIPropListCtrl::FindAllNamedProps()
 		NULL,
 		NULL,
 		&lptag));
-	if (S_OK == hRes && lptag)
+	if (S_OK == hRes && lptag && lptag->cValues)
 	{
 		// Now we have an array of tags - add them in:
 		EC_H(AddPropsToExtraProps(lptag,FALSE));
@@ -1060,7 +1063,7 @@ void CSingleMAPIPropListCtrl::OnDisplayPropertyAsSecurityDescriptorPropSheet()
 
 void CSingleMAPIPropListCtrl::OnEditProp()
 {
-	ULONG			ulPropTag = NULL;
+	ULONG ulPropTag = NULL;
 
 	if (!m_lpMAPIProp && !GetPropVals()) return;
 
@@ -1211,9 +1214,6 @@ HRESULT CSingleMAPIPropListCtrl::SetNewProp(LPSPropValue lpNewProp)
 		m_lpSourceData->cSourceProps = ulNewArray;
 		m_lpSourceData->lpSourceProps = lpNewArray;
 		m_bRowModified = true;
-
-		// refresh
-		RefreshMAPIPropList();
 	}
 	return hRes;
 }
@@ -1261,13 +1261,18 @@ void CSingleMAPIPropListCtrl::OnEditPropAsRestriction(ULONG ulPropTag)
 			EC_H(SetNewProp(&ResProp));
 
 			MAPIFreeBuffer(lpModRes);
+
+			// refresh
+			WC_H(RefreshMAPIPropList());
 		}
 	}
 } // CSingleMAPIPropListCtrl::OnEditPropAsRestriction
 
 void CSingleMAPIPropListCtrl::OnEditGivenProp(ULONG ulPropTag)
 {
-	HRESULT			hRes = S_OK;
+	HRESULT hRes = S_OK;
+	LPSPropValue lpEditProp = NULL;
+
 	if (!m_lpMAPIProp && !GetPropVals()) return;
 
 	// Explicit check since TagToString is expensive
@@ -1281,80 +1286,46 @@ void CSingleMAPIPropListCtrl::OnEditGivenProp(ULONG ulPropTag)
 		OnEditPropAsRestriction(ulPropTag);
 		return;
 	}
+
 	LPSPropValue lpSourceArray = GetPropVals();
 	// if we have m_lpMAPIProp and don't have both lpSourceArray and the reg key,
-	// then use m_lpMAPIProp
+	// then don't use lpSourceArray
 	if (m_lpMAPIProp &&
-		!(RegKeys[regkeyUSE_ROW_DATA_FOR_SINGLEPROPLIST].ulCurDWORD && lpSourceArray))
+		(!RegKeys[regkeyUSE_ROW_DATA_FOR_SINGLEPROPLIST].ulCurDWORD || !lpSourceArray))
 	{
-		CPropertyEditor MyEditor(
-			this,
-			IDS_PROPEDITOR,
-			IDS_PROPEDITORPROMPT,
-			m_bIsAB,
-			NULL);
-		MyEditor.InitPropValue(m_lpMAPIProp,ulPropTag);
-		WC_H(MyEditor.DisplayDialog());
-
-		// Refresh the display
-		WC_H(RefreshMAPIPropList());
+		lpSourceArray = NULL;
 	}
 	else if (lpSourceArray)
 	{
-		ULONG ulSourceArray = GetCountPropVals();
-
-		CPropertyEditor MyEditor(
-			this,
-			IDS_PROPEDITOR,
-			IDS_PROPEDITORPROMPT,
-			m_bIsAB,
-			lpSourceArray);
-
-		LPSPropValue lpEditProp = NULL;
+		// We'll be using lpSourceArray, get the source prop from the array
 		lpEditProp = PpropFindProp(
 			lpSourceArray,
-			ulSourceArray,
+			GetCountPropVals(),
 			ulPropTag);
+	}
 
-		if (lpEditProp)
+	CPropertyEditor MyEditor(
+		this,
+		IDS_PROPEDITOR,
+		IDS_PROPEDITORPROMPT,
+		m_bIsAB,
+		lpSourceArray);
+
+	MyEditor.InitPropValue(m_lpMAPIProp,ulPropTag,lpEditProp);
+	WC_H(MyEditor.DisplayDialog());
+
+	// If we had a source array, we need to shove our results back in to it
+	if (lpSourceArray && S_OK == hRes)
+	{
+		LPSPropValue lpModProp = MyEditor.DetachModifiedSPropValue(); // I 'own' the memory now.
+
+		if (lpModProp)
 		{
-			MyEditor.InitPropValue(lpEditProp);
-		}
-		else
-		{
-			MyEditor.InitPropValue(NULL,ulPropTag);
-		}
-		WC_H(MyEditor.DisplayDialog());
-
-		if (S_OK == hRes)
-		{
-			LPSPropValue lpModProp = MyEditor.DetachModifiedSPropValue(); // I 'own' the memory now.
-
-			// Special case - if we're in 'row' view of a real object, then we didn't
-			// call SetProps or SaveChanges just now, because no object was passed to
-			// the editor. Since we expected SaveChanges to happen, do it here:
-			if (m_lpMAPIProp && RegKeys[regkeyUSE_ROW_DATA_FOR_SINGLEPROPLIST].ulCurDWORD)
-			{
-				LPSPropProblemArray lpProblemArray = NULL;
-
-				EC_H(m_lpMAPIProp->SetProps(
-					1,
-					lpModProp,
-					&lpProblemArray));
-
-				EC_PROBLEMARRAY(lpProblemArray);
-				MAPIFreeBuffer(lpProblemArray);
-
-				EC_H(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
-			}
-
-			if (lpModProp)
-			{
-				EC_H(SetNewProp(lpModProp));
-				MAPIFreeBuffer(lpModProp);
-			}
+			EC_H(SetNewProp(lpModProp));
+			MAPIFreeBuffer(lpModProp);
 		}
 	}
+	WC_H(RefreshMAPIPropList());
 } // OnEditGivenProp
 
 // Display the selected property as a stream using CStreamEditor

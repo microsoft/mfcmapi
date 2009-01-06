@@ -27,6 +27,7 @@ private:
 	void	PopulateFields(ULONG ulSkipField);
 	BOOL	GetSelectedGUID(LPGUID lpSelectedGUID);
 	BOOL	GetSelectedPropType(ULONG* ulPropType);
+	void	LookupNamedProp(ULONG ulSkipField, BOOL bCreate);
 
 	ULONG		m_ulPropTag;
 	BOOL		m_bIncludeABProps;

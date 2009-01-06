@@ -62,7 +62,7 @@
 #include "registry.h"
 #include "error.h"
 
-#include "AddIns.h"
+#include "MFCMAPI.h"
 
 struct TagNames
 {

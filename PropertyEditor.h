@@ -16,9 +16,7 @@ public:
 
 	void InitPropValue(
 		LPMAPIPROP lpMAPIProp,
-		ULONG ulPropTag);
-
-	void InitPropValue(
+		ULONG ulPropTag,
 		LPSPropValue lpsPropValue);
 
 	// Get values after we've done the DisplayDialog
@@ -28,7 +26,6 @@ private:
 	// Use this function to implement list editing
 	BOOL	DoListEdit(ULONG ulListNum, int iItem, SortListData* lpData);
 	BOOL	OnInitDialog();
-	void	Constructor();
 	void	CreatePropertyControls();
 	void	InitPropertyControls();
 	void	ReadMultiValueStringsFromProperty(ULONG ulListNum);
@@ -45,9 +42,9 @@ private:
 	LPSPropValue	m_lpsInputValue;
 	LPSPropValue	m_lpsOutputValue;
 	BOOL			m_bShouldFreeOutputValue;
-	BOOL			m_bReadOnly;
 	ULONG			m_ulEditorType;
 	BOOL			m_bDirty;
+	BOOL			m_bShouldFreeInputValue;
 
 	// all calls to MAPIAllocateMore will use m_lpAllocParent
 	// this is not something to be freed

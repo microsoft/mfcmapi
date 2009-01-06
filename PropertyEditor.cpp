@@ -27,7 +27,6 @@ CEditor(pParentWnd,uidTitle,uidPrompt,0,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL)
 	TRACE_CONSTRUCTOR(CLASS);
 
 	m_bIsAB = bIsAB;
-	m_bReadOnly = false;
 	m_lpAllocParent = lpAllocParent;
 	m_ulEditorType = EDITOR_SINGLE; // default to this, we'll change it later if we find we've got a MV prop
 	m_lpMAPIProp = NULL;
@@ -35,20 +34,27 @@ CEditor(pParentWnd,uidTitle,uidPrompt,0,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL)
 	m_lpsOutputValue = NULL;
 	m_bShouldFreeOutputValue = false;
 	m_bDirty = false;
+	m_bShouldFreeInputValue = false;
 }
 
 
 // Takes LPMAPIPROP and ulPropTag as input - will pull SPropValue from the LPMAPIPROP
+// Takes LPSPropValue as input - determines property tag from this
 void CPropertyEditor::InitPropValue(
 									LPMAPIPROP lpMAPIProp,
-									ULONG ulPropTag)
+									ULONG ulPropTag,
+									LPSPropValue lpsPropValue)
 {
 	HRESULT hRes = S_OK;
+	if (m_lpMAPIProp) m_lpMAPIProp->Release();
 	m_lpMAPIProp = lpMAPIProp;
+	if (m_lpMAPIProp) m_lpMAPIProp->AddRef();
 	m_ulPropTag = ulPropTag;
-	if (m_lpMAPIProp)
+	m_lpsInputValue = lpsPropValue;
+
+	// We got a MAPI prop object and no input value, go look one up
+	if (m_lpMAPIProp && !m_lpsInputValue)
 	{
-		m_lpMAPIProp->AddRef();
 		SPropTagArray sTag = {0};
 		sTag.cValues = 1;
 		sTag.aulPropTag[0] = (PT_ERROR == PROP_TYPE(m_ulPropTag))?CHANGE_PROP_TYPE(m_ulPropTag,PT_UNSPECIFIED):m_ulPropTag;
@@ -56,39 +62,30 @@ void CPropertyEditor::InitPropValue(
 
 		WC_H(m_lpMAPIProp->GetProps(&sTag,NULL,&ulValues,&m_lpsInputValue));
 
+		// Suppress MAPI_E_NOT_FOUND error when the source type is non error
+		if (m_lpsInputValue && 
+			PT_ERROR == PROP_TYPE(m_lpsInputValue->ulPropTag) &&
+			MAPI_E_NOT_FOUND == m_lpsInputValue->Value.err &&
+			PT_ERROR != PROP_TYPE(m_ulPropTag)
+			)
+		{
+			MAPIFreeBuffer(m_lpsInputValue);
+			m_lpsInputValue = NULL;
+		}
+
 		// In all cases where we got a value back, we need to reset our property tag to the value we got
 		// This will address when the source is PT_UNSPECIFIED, when the returned value is PT_ERROR,
 		// or any other case where the returned value has a different type than requested
 		if (SUCCEEDED(hRes) && m_lpsInputValue)
 			m_ulPropTag = m_lpsInputValue->ulPropTag;
-	}
-	else
-	{
-		m_lpsInputValue = NULL;
-	}
-	Constructor();
-}
 
-// Takes LPSPropValue as input - determines property tag from this
-void CPropertyEditor::InitPropValue(
-									LPSPropValue lpsPropValue)
-{
-	if (m_lpMAPIProp) m_lpMAPIProp->Release();
-	m_lpMAPIProp = NULL;
-	m_lpsInputValue = lpsPropValue;
-	if (m_lpsInputValue)
+		m_bShouldFreeInputValue = true;
+	}
+	else if (m_lpsInputValue && !m_ulPropTag)
 	{
 		m_ulPropTag = m_lpsInputValue->ulPropTag;
 	}
-	else
-	{
-		m_ulPropTag = NULL;
-	}
-	Constructor();
-}
 
-void CPropertyEditor::Constructor()
-{
 	if (PROP_TYPE(m_ulPropTag) & MV_FLAG) m_ulEditorType = EDITOR_MULTI;
 	CString szPromptPostFix;
 	szPromptPostFix.Format(_T("\r\n%s"),TagToString(m_ulPropTag,m_lpMAPIProp,m_bIsAB,false)); // STRING_OK
@@ -104,17 +101,14 @@ void CPropertyEditor::Constructor()
 CPropertyEditor::~CPropertyEditor()
 {
 	TRACE_DESTRUCTOR(CLASS);
-	// if we have an m_lpMAPIProp, then we created m_lpsInputValue, so we need to free it
-	if (m_lpMAPIProp)
-	{
+
+	if (m_bShouldFreeInputValue)
 		MAPIFreeBuffer(m_lpsInputValue);
-		m_lpMAPIProp->Release();
-	}
 
 	if (m_bShouldFreeOutputValue)
-	{
 		MAPIFreeBuffer(m_lpsOutputValue);
-	}
+
+	if (m_lpMAPIProp) m_lpMAPIProp->Release();
 }
 
 BOOL CPropertyEditor::OnInitDialog()
@@ -223,7 +217,7 @@ void CPropertyEditor::InitPropertyControls()
 	switch (PROP_TYPE(m_ulPropTag))
 	{
 	case(PT_APPTIME):
-		InitSingleLine(0,IDS_UNSIGNEDDECIMAL,NULL,m_bReadOnly);
+		InitSingleLine(0,IDS_UNSIGNEDDECIMAL,NULL,false);
 		if (m_lpsInputValue)
 		{
 			SetStringf(0,_T("%u"),m_lpsInputValue->Value.at); // STRING_OK
@@ -234,10 +228,10 @@ void CPropertyEditor::InitPropertyControls()
 		}
 		break;
 	case(PT_BOOLEAN):
-		InitCheck(0,IDS_BOOLEAN,m_lpsInputValue?m_lpsInputValue->Value.b:false,m_bReadOnly);
+		InitCheck(0,IDS_BOOLEAN,m_lpsInputValue?m_lpsInputValue->Value.b:false,false);
 		break;
 	case(PT_DOUBLE):
-		InitSingleLine(0,IDS_DOUBLE,NULL,m_bReadOnly);
+		InitSingleLine(0,IDS_DOUBLE,NULL,false);
 		if (m_lpsInputValue)
 		{
 			SetStringf(0,_T("%f"),m_lpsInputValue->Value.dbl); // STRING_OK
@@ -251,7 +245,7 @@ void CPropertyEditor::InitPropertyControls()
 		InitSingleLine(0,IDS_OBJECT,IDS_OBJECTVALUE,true);
 		break;
 	case(PT_R4):
-		InitSingleLine(0,IDS_FLOAT,NULL,m_bReadOnly);
+		InitSingleLine(0,IDS_FLOAT,NULL,false);
 		if (m_lpsInputValue)
 		{
 			SetStringf(0,_T("%f"),m_lpsInputValue->Value.flt); // STRING_OK
@@ -262,10 +256,10 @@ void CPropertyEditor::InitPropertyControls()
 		}
 		break;
 	case(PT_STRING8):
-		InitMultiLine(0,IDS_ANSISTRING,NULL,m_bReadOnly);
+		InitMultiLine(0,IDS_ANSISTRING,NULL,false);
 		InitSingleLine(1,IDS_CB,NULL,true);
 		SetSize(1,0);
-		InitMultiLine(2,IDS_BIN,NULL,m_bReadOnly);
+		InitMultiLine(2,IDS_BIN,NULL,false);
 		if (m_lpsInputValue && CheckStringProp(m_lpsInputValue,PT_STRING8))
 		{
 			SetStringA(0,m_lpsInputValue->Value.lpszA);
@@ -284,10 +278,10 @@ void CPropertyEditor::InitPropertyControls()
 
 		break;
 	case(PT_UNICODE):
-		InitMultiLine(0,IDS_UNISTRING,NULL,m_bReadOnly);
+		InitMultiLine(0,IDS_UNISTRING,NULL,false);
 		InitSingleLine(1,IDS_CB,NULL,true);
 		SetSize(1,0);
-		InitMultiLine(2,IDS_BIN,NULL,m_bReadOnly);
+		InitMultiLine(2,IDS_BIN,NULL,false);
 		if (m_lpsInputValue && CheckStringProp(m_lpsInputValue,PT_UNICODE))
 		{
 			SetStringW(0, m_lpsInputValue->Value.lpszW);
@@ -306,9 +300,9 @@ void CPropertyEditor::InitPropertyControls()
 
 		break;
 	case(PT_CURRENCY):
-		InitSingleLine(0,IDS_HI,NULL,m_bReadOnly);
-		InitSingleLine(1,IDS_LO,NULL,m_bReadOnly);
-		InitSingleLine(2,IDS_CURRENCY,NULL,m_bReadOnly);
+		InitSingleLine(0,IDS_HI,NULL,false);
+		InitSingleLine(1,IDS_LO,NULL,false);
+		InitSingleLine(2,IDS_CURRENCY,NULL,false);
 		if (m_lpsInputValue)
 		{
 			SetHex(0,m_lpsInputValue->Value.cur.Hi);
@@ -323,7 +317,7 @@ void CPropertyEditor::InitPropertyControls()
 		}
 		break;
 	case(PT_ERROR):
-		InitSingleLine(0,IDS_ERRORCODEHEX,NULL,m_bReadOnly);
+		InitSingleLine(0,IDS_ERRORCODEHEX,NULL,true);
 		InitSingleLine(1,IDS_ERRORNAME,NULL,true);
 		if (m_lpsInputValue)
 		{
@@ -332,8 +326,8 @@ void CPropertyEditor::InitPropertyControls()
 		}
 		break;
 	case(PT_I2):
-		InitSingleLine(0,IDS_SIGNEDDECIMAL,NULL,m_bReadOnly);
-		InitSingleLine(1,IDS_HEX,NULL,m_bReadOnly);
+		InitSingleLine(0,IDS_SIGNEDDECIMAL,NULL,false);
+		InitSingleLine(1,IDS_HEX,NULL,false);
 		InitMultiLine(2,IDS_COLSMART_VIEW,NULL,true);
 		if (m_lpsInputValue)
 		{
@@ -350,9 +344,9 @@ void CPropertyEditor::InitPropertyControls()
 		}
 		break;
 	case(PT_I8):
-		InitSingleLine(0,IDS_HIGHPART,NULL,m_bReadOnly);
-		InitSingleLine(1,IDS_LOWPART,NULL,m_bReadOnly);
-		InitSingleLine(2,IDS_DECIMAL,NULL,m_bReadOnly);
+		InitSingleLine(0,IDS_HIGHPART,NULL,false);
+		InitSingleLine(1,IDS_LOWPART,NULL,false);
+		InitSingleLine(2,IDS_DECIMAL,NULL,false);
 
 		if (m_lpsInputValue)
 		{
@@ -373,20 +367,20 @@ void CPropertyEditor::InitPropertyControls()
 		if (m_lpsInputValue)
 		{
 			SetSize(0,m_lpsInputValue->Value.bin.cb);
-			InitMultiLine(1,IDS_BIN,BinToHexString(&m_lpsInputValue->Value.bin,false),m_bReadOnly);
+			InitMultiLine(1,IDS_BIN,BinToHexString(&m_lpsInputValue->Value.bin,false),false);
 			InitMultiLine(2,IDS_TEXT,BinToTextString(&m_lpsInputValue->Value.bin,true),true);
 			InitMultiLine(3,IDS_COLSMART_VIEW,szSmartView,true);
 		}
 		else
 		{
-			InitMultiLine(1,IDS_BIN,NULL,m_bReadOnly);
+			InitMultiLine(1,IDS_BIN,NULL,false);
 			InitMultiLine(2,IDS_TEXT,NULL,true);
 			InitMultiLine(3,IDS_COLSMART_VIEW,szSmartView,true);
 		}
 		break;
 	case(PT_LONG):
-		InitSingleLine(0,IDS_UNSIGNEDDECIMAL,NULL,m_bReadOnly);
-		InitSingleLine(1,IDS_HEX,NULL,m_bReadOnly);
+		InitSingleLine(0,IDS_UNSIGNEDDECIMAL,NULL,false);
+		InitSingleLine(1,IDS_HEX,NULL,false);
 		InitMultiLine(2,IDS_COLSMART_VIEW,NULL,true);
 		if (m_lpsInputValue)
 		{
@@ -402,8 +396,8 @@ void CPropertyEditor::InitPropertyControls()
 		}
 		break;
 	case(PT_SYSTIME):
-		InitSingleLine(0,IDS_LOWDATETIME,NULL,m_bReadOnly);
-		InitSingleLine(1,IDS_HIGHDATETIME,NULL,m_bReadOnly);
+		InitSingleLine(0,IDS_LOWDATETIME,NULL,false);
+		InitSingleLine(1,IDS_HIGHDATETIME,NULL,false);
 		InitSingleLine(2,IDS_DATE,NULL,true);
 		if (m_lpsInputValue)
 		{
@@ -420,7 +414,7 @@ void CPropertyEditor::InitPropertyControls()
 		break;
 	case(PT_CLSID):
 		{
-			InitSingleLine(0,IDS_GUID,NULL,m_bReadOnly);
+			InitSingleLine(0,IDS_GUID,NULL,false);
 			LPTSTR szGuid = NULL;
 			if (m_lpsInputValue)
 			{
@@ -942,7 +936,7 @@ BOOL CPropertyEditor::DoListEdit(ULONG ulListNum, int iItem, SortListData* lpDat
 	tmpPropVal.Value = lpData->data.MV.val;
 
 	CPropertyEditor SingleProp(this, IDS_EDITROW,IDS_EDITROWPROMPT,m_bIsAB,m_lpAllocParent);
-	SingleProp.InitPropValue(&tmpPropVal);
+	SingleProp.InitPropValue(NULL,NULL,&tmpPropVal);
 
 	WC_H(SingleProp.DisplayDialog());
 

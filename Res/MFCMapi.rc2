@@ -1167,7 +1167,7 @@ IDS_PERCENTLOADED "%1: %2!d!%% done."
 IDS_ACTION1 "Action1"
 IDS_ACTION2 "Action2"
 IDS_ACTIONSELECTPTAG "Select Property Tag"
-IDS_ACTIONLOOKUPNAMEDPROP "Look up Named Property"
+IDS_ACTIONCREATENAMEDPROP "Create Named Property"
 IDS_ACTIONEDITPROP "Edit Prop Value"
 IDS_ACTIONEDITRES "Edit Restriction"
 
@@ -1184,6 +1184,7 @@ IDS_PREVIOUSCALL "Previous call returned %1 == 0x%2!08X!"
 IDS_TESTSUBJECT "%1: %2!d!"
 IDS_ROOTCONTAINER "Root Container"
 IDS_UNKNOWNNAME "Unknown name"
+IDS_UNKNOWNPROPERTY "Unknown Property"
 
 // InterpretProp.cpp stuff
 IDS_TAGMULTILINE "Tag: 0x%1!08X!\r\nType: %2"

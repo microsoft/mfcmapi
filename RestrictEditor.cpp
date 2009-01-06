@@ -221,15 +221,7 @@ void CResCombinedEditor::OnEditAction1()
 	LPSPropValue lpEditProp = m_lpOldProp;
 	if (m_lpNewProp) lpEditProp = m_lpNewProp;
 
-	if (lpEditProp)
-	{
-		PropEdit.InitPropValue(lpEditProp);
-	}
-	else
-	{
-		PropEdit.InitPropValue(NULL,GetHexUseControl(4));
-	}
-
+	PropEdit.InitPropValue(NULL,GetHexUseControl(4),lpEditProp);
 	WC_H(PropEdit.DisplayDialog());
 
 	if (S_OK == hRes)
@@ -843,7 +835,7 @@ BOOL CResCommentEditor::DoListEdit(ULONG ulListNum, int iItem, SortListData* lpD
 		lpSourceProp = &sProp;
 	}
 
-	PropEdit.InitPropValue(lpSourceProp);
+	PropEdit.InitPropValue(NULL,NULL,lpSourceProp);
 
 	WC_H(PropEdit.DisplayDialog());
 	if (S_OK == hRes)
