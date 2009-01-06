@@ -1,6 +1,18 @@
 #pragma once
-// AddIns.h : header file
+// MFCMAPI.h : header file
 //
+
+// Version history:
+// 1 
+//    Original, unversioned header
+// 2
+//    NAMEID_ARRAY_ENTRY augmented with ulType and lpszArea
+
+#define MFCMAPI_HEADER_V1 1
+#define MFCMAPI_HEADER_V2 2
+
+// Version number of this header file. Will be bumped when breaking changes are made
+#define MFCMAPI_HEADER_CURRENT_VERSION MFCMAPI_HEADER_V2
 
 // Property tags and types - used by GetPropTags and GetPropTypes
 struct NAME_ARRAY_ENTRY
@@ -21,9 +33,11 @@ typedef GUID_ARRAY_ENTRY FAR * LPGUID_ARRAY_ENTRY;
 // Named property mappings - used by GetNameIDs
 struct NAMEID_ARRAY_ENTRY
 {
-	LONG lValue;
-	LPCGUID	lpGuid;
-	LPWSTR	lpszName;
+	LONG    lValue;
+	LPCGUID lpGuid;
+	LPWSTR  lpszName;
+	ULONG   ulType;
+	LPWSTR  lpszArea;
 };
 typedef NAMEID_ARRAY_ENTRY FAR * LPNAMEID_ARRAY_ENTRY;
 
@@ -302,7 +316,7 @@ typedef GETMAPIMODULE FAR *LPGETMAPIMODULE;
 
 // Function: LoadAddIn
 // Use: Let the add-in know we're here, get its name.
-// Notes: If this function is not present, MFCMAPI won't load the add-in This is the only required function.
+// Notes: If this function is not present, MFCMAPI won't load the add-in. This is the only required function.
 #define szLoadAddIn "LoadAddIn" // STRING_OK
 typedef void (STDMETHODCALLTYPE LOADADDIN)(
 	LPWSTR* szTitle // Name of the add-in
@@ -377,6 +391,13 @@ typedef void (STDMETHODCALLTYPE GETPROPFLAGS)(
 );
 typedef GETPROPFLAGS FAR *LPGETPROPFLAGS;
 
+// Function: GetAPIVersion
+// Use: Returns version number of the API used by the add-in
+// Notes: MUST return MFCMAPI_HEADER_CURRENT_VERSION
+#define szGetAPIVersion "GetAPIVersion" // STRING_OK
+typedef ULONG (STDMETHODCALLTYPE GETAPIVERSION)();
+typedef GETAPIVERSION FAR *LPGETAPIVERSION;
+
 // Structure used internally by MFCMAPI to track information on loaded Add-Ins. While it is accessible
 // by the add-in through the CallMenu function, it should only be consulted for debugging purposes.
 struct _AddIn
@@ -399,6 +420,8 @@ struct _AddIn
 	LPFLAG_ARRAY_ENTRY   lpPropFlags; // Array of flags exposed by add-in
 };
 
+// Everything below this point is internal to MFCMAPI and should be removed from this header when including it in an add-in
+
 EXTERN_C __declspec(dllexport) void __cdecl AddInLog(BOOL bPrintThreadTime, LPWSTR szMsg,...);
 EXTERN_C __declspec(dllexport) HRESULT __cdecl SimpleDialog(LPWSTR szTitle, LPWSTR szMsg,...);
 EXTERN_C __declspec(dllexport) HRESULT __cdecl ComplexDialog(LPADDINDIALOG lpDialog, LPADDINDIALOGRESULT* lppDialogResult);
@@ -412,6 +435,7 @@ LPMENUITEM GetAddinMenuItem(HWND hWnd, UINT uidMsg);
 void InvokeAddInMenu(LPADDINMENUPARAMS lpParams);
 void MergeAddInArrays();
 void SortAddInArrays();
+LPNAMEID_ARRAY_ENTRY GetDispIDFromName(LPCWSTR lpszDispIDName);
 
 extern LPNAME_ARRAY_ENTRY PropTagArray;
 extern ULONG ulPropTagArray;

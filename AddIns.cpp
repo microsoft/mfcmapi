@@ -2,13 +2,28 @@
 
 #include "stdafx.h"
 #include "BaseDialog.h"
-#include "AddIns.h"
+#include "MFCMAPI.h"
 #include "ImportProcs.h"
 #include "MAPIFunctions.h"
 #include "PropTagArray.h"
 #include "Editor.h"
+#include "Guids.h"
 
 LPADDIN g_lpMyAddins = NULL;
+
+ULONG GetAddinVersion(HMODULE hMod)
+{
+	HRESULT hRes = S_OK;
+	LPGETAPIVERSION pfnGetAPIVersion = NULL;
+	WC_D(pfnGetAPIVersion, (LPGETAPIVERSION) GetProcAddress(hMod,szGetAPIVersion));
+	if (pfnGetAPIVersion)
+	{
+		return pfnGetAPIVersion();
+	}
+
+	// Default case for unversioned add-ins
+	return MFCMAPI_HEADER_V1;
+}
 
 void LoadSingleAddIn(LPADDIN lpAddIn, HMODULE hMod, LPLOADADDIN pfnLoadAddIn)
 {
@@ -22,6 +37,9 @@ void LoadSingleAddIn(LPADDIN lpAddIn, HMODULE hMod, LPLOADADDIN pfnLoadAddIn)
 	{
 		DebugPrint(DBGAddInPlumbing,_T("Loading \"%ws\"\n"),lpAddIn->szName);
 	}
+
+	ULONG ulVersion = GetAddinVersion(hMod);
+	DebugPrint(DBGAddInPlumbing,_T("AddIn version = %d\n"),ulVersion);
 
 	LPGETMENUS pfnGetMenus = NULL;
 	WC_D(pfnGetMenus, (LPGETMENUS) GetProcAddress(hMod,szGetMenus));
@@ -76,12 +94,16 @@ void LoadSingleAddIn(LPADDIN lpAddIn, HMODULE hMod, LPLOADADDIN pfnLoadAddIn)
 		pfnGetPropGuids(&lpAddIn->ulPropGuids,&lpAddIn->lpPropGuids);
 	}
 
-	hRes = S_OK;
-	LPGETNAMEIDS pfnGetNameIDs = NULL;
-	WC_D(pfnGetNameIDs, (LPGETNAMEIDS) GetProcAddress(hMod,szGetNameIDs));
-	if (pfnGetNameIDs)
+	// v2 changed the LPNAMEID_ARRAY_ENTRY structure
+	if (MFCMAPI_HEADER_V2 <= ulVersion)
 	{
-		pfnGetNameIDs(&lpAddIn->ulNameIDs,&lpAddIn->lpNameIDs);
+		hRes = S_OK;
+		LPGETNAMEIDS pfnGetNameIDs = NULL;
+		WC_D(pfnGetNameIDs, (LPGETNAMEIDS) GetProcAddress(hMod,szGetNameIDs));
+		if (pfnGetNameIDs)
+		{
+			pfnGetNameIDs(&lpAddIn->ulNameIDs,&lpAddIn->lpNameIDs);
+		}
 	}
 
 	hRes = S_OK;
@@ -1041,3 +1063,24 @@ __declspec(dllexport) void __cdecl GetMAPIModule(HMODULE* lphModule, BOOL bForce
 		GetMAPIModule(lphModule,false);
 	}
 }
+
+
+// Search for properties matching lpszPropName on a substring
+LPNAMEID_ARRAY_ENTRY GetDispIDFromName(LPCWSTR lpszDispIDName)
+{
+	if (!lpszDispIDName) return NULL;
+
+	ULONG ulCur = 0;
+
+	for (ulCur = 0 ; ulCur < ulNameIDArray ; ulCur++)
+	{
+		if (0 == wcscmp(NameIDArray[ulCur].lpszName,lpszDispIDName))
+		{
+			// PSUNKNOWN is used as a placeholder in NameIDArray - don't return matching entries
+			if (IsEqualGUID(*NameIDArray[ulCur].lpGuid,PSUNKNOWN)) return NULL;
+
+			return &NameIDArray[ulCur];
+		}
+	}
+	return NULL;
+} // GetDispIDFromName

@@ -411,10 +411,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\AddIns.h"
-				>
-			</File>
-			<File
 				RelativePath=".\AdviseSink.h"
 				>
 			</File>
@@ -564,6 +560,10 @@
 			</File>
 			<File
 				RelativePath=".\MAPIStoreFunctions.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MFCMAPI.h"
 				>
 			</File>
 			<File
