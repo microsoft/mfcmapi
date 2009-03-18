@@ -58,4 +58,11 @@ enum __NonPropFlag
 	flagOneOffEntryId,
 	flagEntryId0,
 	flagEntryId1,
+	flagMessageDatabaseObjectType,
+	flagContabVersion,
+	flagContabType,
+	flagContabIndex,
+	flagExchangeABVersion,
+	flagMDBVersion,
+	flagMDBFlag,
 };

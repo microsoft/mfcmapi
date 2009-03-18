@@ -40,11 +40,13 @@ private:
 	void OnDisplayPublicFolderTable();
 	void OnDumpStoreContents();
 	void OnDumpServerContents();
+	void OnFastShutdown();
 	void OnGetMAPISVC();
 	void OnIsAttachmentBlocked();
 	void OnLoadMAPI();
 	void OnLaunchProfileWizard();
 	void OnLogoff();
+	void OnLogoffWithFlags();
 	void OnLogon();
 	void OnLogonAndDisplayStores();
 	void OnLogonWithFlags();

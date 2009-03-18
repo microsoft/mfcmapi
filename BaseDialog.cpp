@@ -134,8 +134,7 @@ BOOL CBaseDialog::OnInitDialog()
 
 	EC_B(m_StatusBar.SetParts(STATUSBARNUMPANES,StatusWidth));
 
-	SetIcon(m_hIcon, TRUE);			// Set big icon
-	SetIcon(m_hIcon, FALSE);		// Set small icon
+	SetIcon(m_hIcon, FALSE); // Set small icon - large icon isn't used
 
 	m_lpFakeSplitter = new CFakeSplitter(this);
 

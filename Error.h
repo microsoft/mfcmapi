@@ -2,6 +2,44 @@
 // Error.h : header file
 //
 
+// Here's an index of error macros and functions for use throughout MFCMAPI
+// EC_H - When wrapping a function, checks that hRes is SUCCEEDED, then makes the call
+//        If the call fails, logs and displays a dialog.
+//        Prints a skip note if the call is not made.
+// WC_H - When wrapping a function, checks that hRes is SUCCEEDED, then makes the call
+//        If the call fails, logs. It does not display a dialog.
+//        Prints a skip note if the call is not made.
+// EC_H_MSG - When wrapping a function, checks that hRes is SUCCEEDED, then makes the call
+//        If the call fails, logs and displays a dialog with a given error string.
+//        Prints a skip note if the call is not made.
+// WC_H_MSG - When wrapping a function, checks that hRes is SUCCEEDED, then makes the call
+//        If the call fails, logs and a given error string.
+//        Prints a skip note if the call is not made.
+// CHECKHRES - checks an hRes and logs and displays a dialog on error
+// CHECKHRESMSG - checks an hRes and logs and displays a dialog with a given error string on error
+// WARNHRESMSG - checks an hRes and logs a given error string on error
+
+// EC_W32 - does the same as EC_H, wrapping the result of the function call in HRESULT_FROM_WIN32
+// WC_W32 - does the same as WC_H, wrapping the result of the function call in HRESULT_FROM_WIN32
+
+// EC_B - Similar to EC_H, but for Boolean functions, using DialogOnWin32Error to set failure in hRes
+// WC_B - Similar to WC_H, but for Boolean functions, using DialogOnWin32Error to set failure in hRes
+
+// EC_D - Similar to EC_B, but preserves the result in _ret so it can be used later
+// WC_D - Similar to WC_B, but preserves the result in _ret so it can be used later
+
+// EC_H_GETPROPS - EC_H tuned for GetProps. Tosses all MAPI_W_ERRORS_RETURNED warnings.
+// WC_H_GETPROPS - WC_H tuned for GetProps. Tosses all MAPI_W_ERRORS_RETURNED warnings.
+
+// EC_H_CANCEL - EC_H tuned for functions which may be cancelled. Logs but does not display cancel errors.
+//               No WC* macro needed here as WC_H already has the desired behavior.
+
+// EC_D_DIALOG - EC_H tuned for dialog functions that support CommDlgExtendedError
+
+// EC_PROBLEMARRAY - logs and displays dialog for any errors in a LPSPropProblemArray
+// EC_MAPIERR - logs and displays dialog for any errors in a LPMAPIERROR
+// EC_TNEFERR - logs and displays dialog for any errors in a LPSTnefProblemArray
+
 BOOL CheckHResFn(HRESULT hRes,LPCSTR szFunction,UINT uidErrorMsg,LPCSTR szFile,int iLine);
 BOOL WarnHResFn(HRESULT hRes,LPCSTR szFunction,UINT uidErrorMsg,LPCSTR szFile,int iLine);
 

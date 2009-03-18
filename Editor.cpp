@@ -50,11 +50,11 @@ static DWORD CALLBACK EditStreamReadCallBack(
 
 	*pcb = 0;
 
-	DebugPrint(DBGGeneric,_T("EditStreamWriteCallBack:cb = %d\n"),cb);
+	DebugPrint(DBGStream,_T("EditStreamWriteCallBack:cb = %d\n"),cb);
 
 	EC_H(stmData->Read(pbBuff,cb,&cbRead));
 
-	DebugPrint(DBGGeneric,_T("EditStreamReadCallBack: read %d bytes\n"),cbRead);
+	DebugPrint(DBGStream,_T("EditStreamReadCallBack: read %d bytes\n"),cbRead);
 
 	*pcb = cbRead;
 
@@ -75,11 +75,11 @@ static DWORD CALLBACK EditStreamWriteCallBack(
 
 	*pcb = 0;
 
-	DebugPrint(DBGGeneric,_T("EditStreamWriteCallBack:cb = %d\n"),cb);
+	DebugPrint(DBGStream,_T("EditStreamWriteCallBack:cb = %d\n"),cb);
 
 	EC_H(stmData->Write(pbBuff,cb,&cbWritten));
 
-	DebugPrint(DBGGeneric,_T("EditStreamWriteCallBack: wrote %d bytes\n"),cbWritten);
+	DebugPrint(DBGStream,_T("EditStreamWriteCallBack: wrote %d bytes\n"),cbWritten);
 
 	*pcb = cbWritten;
 
@@ -289,8 +289,7 @@ BOOL CEditor::OnInitDialog()
 	m_szTitle = szPostfix+m_szAddInTitle;
 	SetWindowText(m_szTitle);
 
-	SetIcon(m_hIcon, TRUE);			// Set big icon
-	SetIcon(m_hIcon, FALSE);		// Set small icon
+	SetIcon(m_hIcon, FALSE); // Set small icon - large icon isn't used
 
 	if (m_uidPrompt)
 	{
@@ -672,18 +671,20 @@ SIZE CEditor::ComputeWorkArea(SIZE sScreen)
 	CDC* dcSB = m_Prompt.GetDC();
 	CFont* pFont = dcSB->SelectObject(m_Prompt.GetFont());
 
-	CString strText;
 	for (int i = 0; i<iPromptLineCount ; i++)
 	{
 		// length of line i:
 		int len = m_Prompt.LineLength(m_Prompt.LineIndex(i));
 		if (len)
 		{
-			m_Prompt.GetLine(i, strText.GetBuffer(len), len);
-			strText.ReleaseBuffer(len);
+			LPTSTR szLine = new TCHAR[len+1];
+			memset(szLine,0,len+1);
+
+			m_Prompt.GetLine(i, szLine, len);
 
 			// this call fails miserably if we don't select a font above
-			SIZE sizeText = dcSB->GetTabbedTextExtent(strText,0,0);
+			SIZE sizeText = dcSB->GetTabbedTextExtent(szLine,0,0);
+			delete[] szLine;
 			cx = max(cx,sizeText.cx);
 		}
 	}
@@ -1658,7 +1659,7 @@ void CEditor::GetEditBoxStream(ULONG iControl, LPSTREAM lpStreamOut, BOOL bUnico
 	es.dwCookie	= (DWORD_PTR)lpStreamOut;
 
 	cb = m_lpControls[iControl].UI.lpEdit->EditBox.StreamOut(uFormat,es);
-	DebugPrintEx(DBGGeneric,CLASS,_T("CEditor::GetEditBoxStream"),_T("wrote 0x%X\n"),cb);
+	DebugPrintEx(DBGStream,CLASS,_T("CEditor::GetEditBoxStream"),_T("wrote 0x%X\n"),cb);
 } // CEditor::GetEditBoxStream
 
 ULONG CEditor::GetHex(ULONG i)
@@ -1894,7 +1895,7 @@ void CEditor::InitEditFromStream(ULONG iControl, LPSTREAM lpStreamIn, BOOL bUnic
 
 	// read the 'text' stream into control
 	lBytesRead = m_lpControls[iControl].UI.lpEdit->EditBox.StreamIn(uFormat,es);
-	DebugPrintEx(DBGGeneric,CLASS,_T("CEditor::InitEditFromStream"),_T("read %d bytes from the stream\n"),lBytesRead);
+	DebugPrintEx(DBGStream,CLASS,_T("CEditor::InitEditFromStream"),_T("read %d bytes from the stream\n"),lBytesRead);
 
 	// Clear the modify bit so this stream appears untouched
 	m_lpControls[iControl].UI.lpEdit->EditBox.SetModify(false);

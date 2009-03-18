@@ -47,7 +47,6 @@ enum MAPIStructType {
 	stConversationIndex,
 	stTaskAssigners,
 	stGlobalObjectId,
-	stOneOffEntryId,
 	stEntryId,
 };
 
@@ -431,39 +430,104 @@ void DeleteGlobalObjectIdStruct(GlobalObjectIdStruct* pgoidGlobalObjectId);
 // result allocated with new, clean up with delete[]
 LPTSTR GlobalObjectIdStructToString(GlobalObjectIdStruct* pgoidGlobalObjectId);
 
-// OneOffEntryIdStruct
+enum EIDStructType {
+	eidtUnknown = 0,
+	eidtShortTerm,
+	eidtFolder,
+	eidtMessage,
+	eidtMessageDatabase,
+	eidtOneOff,
+	eidtAddressBook,
+	eidtContact,
+	eidtNewsGroupFolder
+};
+struct EntryIdStruct;
+// EntryIdStruct
 // =====================
-//   This structure specifies a One-Off Entry Id
+//   This structure specifies an Entry Id
 //
-typedef struct
+typedef struct EntryIdStruct
 {
-	DWORD dwFlags;
+	BYTE abFlags[4];
 	BYTE ProviderUID[16];
-	DWORD dwBitmask;
+	ULONG ObjectType; // My own addition to simplify union parsing
 	union
 	{
 		struct
 		{
-			LPWSTR szDisplayName;
-			LPWSTR szAddressType;
-			LPWSTR szEmailAddress;
-		} Unicode;
+			WORD Type;
+			union
+			{
+				struct
+				{
+					BYTE DatabaseGUID[16];
+					BYTE GlobalCounter[6];
+					BYTE Pad[2];
+				} FolderObject;
+				struct
+				{
+					BYTE FolderDatabaseGUID[16];
+					BYTE FolderGlobalCounter[6];
+					BYTE Pad1[2];
+					BYTE MessageDatabaseGUID[16];
+					BYTE MessageGlobalCounter[6];
+					BYTE Pad2[2];
+				} MessageObject;
+			} Data;
+		} FolderOrMessage;
 		struct
 		{
-			LPSTR szDisplayName;
-			LPSTR szAddressType;
-			LPSTR szEmailAddress;
-		} ANSI;
-	} Strings;
+			BYTE Version;
+			BYTE Flag;
+			LPSTR DLLFileName;
+			BOOL bIsExchange;
+			ULONG WrappedFlags;
+			BYTE WrappedProviderUID[16];
+			ULONG WrappedType;
+			LPSTR ServerShortname;
+			LPSTR MailboxDN;
+		} MessageDatabaseObject;
+		struct
+		{
+			DWORD Bitmask;
+			union
+			{
+				struct
+				{
+					LPWSTR DisplayName;
+					LPWSTR AddressType;
+					LPWSTR EmailAddress;
+				} Unicode;
+				struct
+				{
+					LPSTR DisplayName;
+					LPSTR AddressType;
+					LPSTR EmailAddress;
+				} ANSI;
+			} Strings;
+		} OneOffRecipientObject;
+		struct
+		{
+			DWORD Version;
+			DWORD Type;
+			LPSTR X500DN;
+		} AddressBookObject;
+		struct
+		{
+			DWORD Version;
+			DWORD Type;
+			DWORD Index;
+			DWORD EntryIDCount;
+			EntryIdStruct* lpEntryID;
+		} ContactAddressBookObject;
+	} ProviderData;
 	size_t JunkDataSize;
 	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
-} OneOffEntryIdStruct;
-
-void OneOffEntryIdToString(SBinary myBin, LPTSTR* lpszResultString);
-// Allocates return value with new. Clean up with DeleteOneOffEntryIdStruct.
-OneOffEntryIdStruct* BinToOneOffEntryIdStruct(ULONG cbBin, LPBYTE lpBin);
-void DeleteOneOffEntryIdStruct(OneOffEntryIdStruct* pooeidOneOffEntryId);
-// result allocated with new, clean up with delete[]
-LPTSTR OneOffEntryIdStructToString(OneOffEntryIdStruct* pooeidOneOffEntryId);
+} EntryIdStruct;
 
 void EntryIdToString(SBinary myBin, LPTSTR* lpszResultString);
+// Allocates return value with new. Clean up with DeleteEntryIdStruct.
+EntryIdStruct* BinToEntryIdStruct(ULONG cbBin, LPBYTE lpBin);
+void DeleteEntryIdStruct(EntryIdStruct* peidEntryId);
+// result allocated with new, clean up with delete[]
+LPTSTR EntryIdStructToString(EntryIdStruct* peidEntryId);

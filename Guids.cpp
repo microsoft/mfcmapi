@@ -26,6 +26,8 @@
 #define USES_PS_ROUTING_DISPLAY_NAME
 #define USES_PS_ROUTING_ENTRYID
 #define USES_PS_ROUTING_SEARCH_KEY
+#define USES_IID_IMAPIClientShutdown
+#define USES_IID_IMAPIProviderShutdown
 
 #include <initguid.h>
 #include <MAPIguid.h>

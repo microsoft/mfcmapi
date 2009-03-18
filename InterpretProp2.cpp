@@ -647,7 +647,7 @@ HRESULT InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, LPCTSTR sz
 					EC_H(StringCchCatW(szTempString,CCHW(szTempString),L" | ")); // STRING_OK
 				}
 				WCHAR szClearedBits[15];
-				EC_H(StringCchPrintfW(szClearedBits,CCHW(szClearedBits),L"0x%08X",lClearedBits)); // STRING_OK
+				EC_H(StringCchPrintfW(szClearedBits,CCHW(szClearedBits),L"0x%X",lClearedBits)); // STRING_OK
 				EC_H(StringCchCatW(szTempString,CCHW(szTempString),szClearedBits));
 				// clear the bits out
 				lTempValue &= ~FlagArray[ulCurEntry].lFlagValue;
@@ -666,7 +666,7 @@ HRESULT InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, LPCTSTR sz
 		{
 			EC_H(StringCchCatW(szTempString,CCHW(szTempString),L" | ")); // STRING_OK
 		}
-		EC_H(StringCchPrintfW(szUnk,CCHW(szUnk),L"0x%08X",lTempValue)); // STRING_OK
+		EC_H(StringCchPrintfW(szUnk,CCHW(szUnk),L"0x%X",lTempValue)); // STRING_OK
 		EC_H(StringCchCatW(szTempString,CCHW(szTempString),szUnk));
 	}
 
@@ -1092,9 +1092,6 @@ void InterpretBinaryAsString(SBinary myBin, MAPIStructType myStructType, LPMAPIP
 	case stGlobalObjectId:
 		GlobalObjectIdToString(myBin,&szResultString);
 		break;
-	case stOneOffEntryId:
-		OneOffEntryIdToString(myBin,&szResultString);
-		break;
 	case stEntryId:
 		EntryIdToString(myBin,&szResultString);
 		break;
@@ -1210,7 +1207,6 @@ void CBinaryParser::GetBYTESNoAlloc(size_t cbBytes, LPBYTE pBYTES)
 }
 
 // cchChar is the length of the source string, NOT counting the NULL terminator
-// If the NULL terminator is known to be in the stream, follow this call with a call to Advance(sizeof(CHAR))
 void CBinaryParser::GetStringA(size_t cchChar, LPSTR* ppStr)
 {
 	if (!cchChar || !ppStr) return;
@@ -1226,7 +1222,6 @@ void CBinaryParser::GetStringA(size_t cchChar, LPSTR* ppStr)
 }
 
 // cchChar is the length of the source string, NOT counting the NULL terminator
-// If the NULL terminator is known to be in the stream, follow this call with a call to Advance(sizeof(WCHAR))
 void CBinaryParser::GetStringW(size_t cchWChar, LPWSTR* ppStr)
 {
 	if (!cchWChar || !ppStr) return;
@@ -3012,155 +3007,466 @@ LPTSTR GlobalObjectIdStructToString(GlobalObjectIdStruct* pgoidGlobalObjectId)
 	return CStringToString(szGlobalObjectId);
 }
 
-void OneOffEntryIdToString(SBinary myBin, LPTSTR* lpszResultString)
-{
-	if (!lpszResultString) return;
-	*lpszResultString = NULL;
-	OneOffEntryIdStruct* pooeidOneOffEntryId = BinToOneOffEntryIdStruct(myBin.cb,myBin.lpb);
-	if (pooeidOneOffEntryId)
-	{
-		*lpszResultString = OneOffEntryIdStructToString(pooeidOneOffEntryId);
-		DeleteOneOffEntryIdStruct(pooeidOneOffEntryId);
-	}
-}
-
-// Allocates return value with new. Clean up with DeleteOneOffEntryIdStruct.
-OneOffEntryIdStruct* BinToOneOffEntryIdStruct(ULONG cbBin, LPBYTE lpBin)
-{
-	if (!lpBin) return NULL;
-
-	OneOffEntryIdStruct ooeidOneOffEntryId = {0};
-	CBinaryParser Parser(cbBin,lpBin);
-	Parser.GetDWORD(&ooeidOneOffEntryId.dwFlags);
-	Parser.GetBYTESNoAlloc(sizeof(ooeidOneOffEntryId.ProviderUID),(LPBYTE) &ooeidOneOffEntryId.ProviderUID);
-	Parser.GetDWORD(&ooeidOneOffEntryId.dwBitmask);
-
-	if (MAPI_UNICODE & ooeidOneOffEntryId.dwBitmask)
-	{
-		Parser.GetStringW(&ooeidOneOffEntryId.Strings.Unicode.szDisplayName);
-		Parser.GetStringW(&ooeidOneOffEntryId.Strings.Unicode.szAddressType);
-		Parser.GetStringW(&ooeidOneOffEntryId.Strings.Unicode.szEmailAddress);
-	}
-	else
-	{
-		Parser.GetStringA(&ooeidOneOffEntryId.Strings.ANSI.szDisplayName);
-		Parser.GetStringA(&ooeidOneOffEntryId.Strings.ANSI.szAddressType);
-		Parser.GetStringA(&ooeidOneOffEntryId.Strings.ANSI.szEmailAddress);
-	}
-
-	// Junk data remains
-	if (Parser.RemainingBytes() > 0)
-	{
-		ooeidOneOffEntryId.JunkDataSize = Parser.RemainingBytes();
-		Parser.GetBYTES(ooeidOneOffEntryId.JunkDataSize,&ooeidOneOffEntryId.JunkData);
-	}
-
-	OneOffEntryIdStruct* pooeidOneOffEntryId = new OneOffEntryIdStruct;
-	if (pooeidOneOffEntryId)
-	{
-		*pooeidOneOffEntryId = ooeidOneOffEntryId;
-	}
-
-	return pooeidOneOffEntryId;
-}
-
-void DeleteOneOffEntryIdStruct(OneOffEntryIdStruct* pooeidOneOffEntryId)
-{
-	if (!pooeidOneOffEntryId) return;
-	if (MAPI_UNICODE & pooeidOneOffEntryId->dwBitmask)
-	{
-		delete[] pooeidOneOffEntryId->Strings.Unicode.szDisplayName;
-		delete[] pooeidOneOffEntryId->Strings.Unicode.szAddressType;
-		delete[] pooeidOneOffEntryId->Strings.Unicode.szEmailAddress;
-	}
-	else
-	{
-		delete[] pooeidOneOffEntryId->Strings.ANSI.szDisplayName;
-		delete[] pooeidOneOffEntryId->Strings.ANSI.szAddressType;
-		delete[] pooeidOneOffEntryId->Strings.ANSI.szEmailAddress;
-	}
-	delete pooeidOneOffEntryId;
-}
-
-// result allocated with new, clean up with delete[]
-LPTSTR OneOffEntryIdStructToString(OneOffEntryIdStruct* pooeidOneOffEntryId)
-{
-	if (!pooeidOneOffEntryId) return NULL;
-
-	CString szOneOffEntryId;
-	CString szTmp;
-	HRESULT hRes = S_OK;
-
-	szOneOffEntryId.FormatMessage(IDS_ONEOFFENTRYIDHEADER,
-		pooeidOneOffEntryId->dwFlags);
-
-	SBinary sBin = {0};
-	sBin.cb = sizeof(pooeidOneOffEntryId->ProviderUID);
-	sBin.lpb = pooeidOneOffEntryId->ProviderUID;
-	szOneOffEntryId += BinToHexString(&sBin,true);
-
-	LPTSTR szFlags = NULL;
-	EC_H(InterpretFlags(flagOneOffEntryId, pooeidOneOffEntryId->dwBitmask, &szFlags));
-
-	if (MAPI_UNICODE & pooeidOneOffEntryId->dwBitmask)
-	{
-		szTmp.FormatMessage(IDS_ONEOFFENTRYIDFOOTERUNICODE,
-			pooeidOneOffEntryId->dwBitmask,szFlags,
-			pooeidOneOffEntryId->Strings.Unicode.szDisplayName,
-			pooeidOneOffEntryId->Strings.Unicode.szAddressType,
-			pooeidOneOffEntryId->Strings.Unicode.szEmailAddress);
-	}
-	else
-	{
-		szTmp.FormatMessage(IDS_ONEOFFENTRYIDFOOTERANSI,
-			pooeidOneOffEntryId->dwBitmask,szFlags,
-			pooeidOneOffEntryId->Strings.ANSI.szDisplayName,
-			pooeidOneOffEntryId->Strings.ANSI.szAddressType,
-			pooeidOneOffEntryId->Strings.ANSI.szEmailAddress);
-	}
-	delete[] szFlags;
-	szFlags = NULL;
-	szOneOffEntryId += szTmp;
-
-	szOneOffEntryId += JunkDataToString(pooeidOneOffEntryId->JunkDataSize,pooeidOneOffEntryId->JunkData);
-
-	return CStringToString(szOneOffEntryId);
-}
-
 void EntryIdToString(SBinary myBin, LPTSTR* lpszResultString)
 {
 	if (!lpszResultString) return;
 	*lpszResultString = NULL;
-	CBinaryParser Parser(myBin.cb,myBin.lpb);
+	EntryIdStruct* peidEntryId = BinToEntryIdStruct(myBin.cb,myBin.lpb);
+	if (peidEntryId)
+	{
+		*lpszResultString = EntryIdStructToString(peidEntryId);
+		DeleteEntryIdStruct(peidEntryId);
+	}
+
+} // EntryIdToString
+
+// Allocates return value with new. Clean up with DeleteEntryIdStruct.
+EntryIdStruct* BinToEntryIdStruct(ULONG cbBin, LPBYTE lpBin)
+{
+	if (!lpBin) return NULL;
+
+	EntryIdStruct eidEntryId = {0};
+	CBinaryParser Parser(cbBin,lpBin);
+	Parser.GetBYTE(&eidEntryId.abFlags[0]);
+	Parser.GetBYTE(&eidEntryId.abFlags[1]);
+	Parser.GetBYTE(&eidEntryId.abFlags[2]);
+	Parser.GetBYTE(&eidEntryId.abFlags[3]);
+	Parser.GetBYTESNoAlloc(sizeof(eidEntryId.ProviderUID),(LPBYTE) &eidEntryId.ProviderUID);
+
+	// One Off Recipient
+	if (!memcmp(eidEntryId.ProviderUID, &muidOOP, sizeof(GUID)))
+	{
+		eidEntryId.ObjectType = eidtOneOff;
+		Parser.GetDWORD(&eidEntryId.ProviderData.OneOffRecipientObject.Bitmask);
+		if (MAPI_UNICODE & eidEntryId.ProviderData.OneOffRecipientObject.Bitmask)
+		{
+			Parser.GetStringW(&eidEntryId.ProviderData.OneOffRecipientObject.Strings.Unicode.DisplayName);
+			Parser.GetStringW(&eidEntryId.ProviderData.OneOffRecipientObject.Strings.Unicode.AddressType);
+			Parser.GetStringW(&eidEntryId.ProviderData.OneOffRecipientObject.Strings.Unicode.EmailAddress);
+		}
+		else
+		{
+			Parser.GetStringA(&eidEntryId.ProviderData.OneOffRecipientObject.Strings.ANSI.DisplayName);
+			Parser.GetStringA(&eidEntryId.ProviderData.OneOffRecipientObject.Strings.ANSI.AddressType);
+			Parser.GetStringA(&eidEntryId.ProviderData.OneOffRecipientObject.Strings.ANSI.EmailAddress);
+		}
+
+	}
+	// Address Book Recipient
+	else if (!memcmp(eidEntryId.ProviderUID, &muidEMSAB, sizeof(GUID)))
+	{
+		eidEntryId.ObjectType = eidtAddressBook;
+		Parser.GetDWORD(&eidEntryId.ProviderData.AddressBookObject.Version);
+		Parser.GetDWORD(&eidEntryId.ProviderData.AddressBookObject.Type);
+		Parser.GetStringA(&eidEntryId.ProviderData.AddressBookObject.X500DN);
+	}
+	// Contact Address Book / Personal Distribution List (PDL)
+	else if (!memcmp(eidEntryId.ProviderUID, &muidContabDLL, sizeof(GUID)))
+	{
+		eidEntryId.ObjectType = eidtContact;
+		Parser.GetDWORD(&eidEntryId.ProviderData.ContactAddressBookObject.Version);
+		Parser.GetDWORD(&eidEntryId.ProviderData.ContactAddressBookObject.Type);
+		Parser.GetDWORD(&eidEntryId.ProviderData.ContactAddressBookObject.Index);
+		Parser.GetDWORD(&eidEntryId.ProviderData.ContactAddressBookObject.EntryIDCount);
+		eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID = new EntryIdStruct;
+		if (eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID)
+		{
+			memset(eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID,0,sizeof(EntryIdStruct));
+
+			Parser.GetBYTE(&eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID->abFlags[0]);
+			Parser.GetBYTE(&eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID->abFlags[1]);
+			Parser.GetBYTE(&eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID->abFlags[2]);
+			Parser.GetBYTE(&eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID->abFlags[3]);
+			Parser.GetBYTESNoAlloc(sizeof(eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID->ProviderUID),(LPBYTE) &eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID->ProviderUID);
+			eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID->ObjectType = eidtMessage;
+			Parser.GetWORD(&eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID->ProviderData.FolderOrMessage.Type);
+
+			Parser.GetBYTESNoAlloc(sizeof(eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID->ProviderData.FolderOrMessage.Data.MessageObject.FolderDatabaseGUID),
+				(LPBYTE) &eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID->ProviderData.FolderOrMessage.Data.MessageObject.FolderDatabaseGUID);
+			Parser.GetBYTESNoAlloc(sizeof(eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID->ProviderData.FolderOrMessage.Data.MessageObject.FolderGlobalCounter),
+				(LPBYTE) &eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID->ProviderData.FolderOrMessage.Data.MessageObject.FolderGlobalCounter);
+			Parser.GetBYTESNoAlloc(sizeof(eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID->ProviderData.FolderOrMessage.Data.MessageObject.Pad1),
+				(LPBYTE) &eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID->ProviderData.FolderOrMessage.Data.MessageObject.Pad1);
+			Parser.GetBYTESNoAlloc(sizeof(eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID->ProviderData.FolderOrMessage.Data.MessageObject.MessageDatabaseGUID),
+				(LPBYTE) &eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID->ProviderData.FolderOrMessage.Data.MessageObject.MessageDatabaseGUID);
+			Parser.GetBYTESNoAlloc(sizeof(eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID->ProviderData.FolderOrMessage.Data.MessageObject.MessageGlobalCounter),
+				(LPBYTE) &eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID->ProviderData.FolderOrMessage.Data.MessageObject.MessageGlobalCounter);
+			Parser.GetBYTESNoAlloc(sizeof(eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID->ProviderData.FolderOrMessage.Data.MessageObject.Pad2),
+				(LPBYTE) &eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID->ProviderData.FolderOrMessage.Data.MessageObject.Pad2);
+		}
+	}
+	// message store objects
+	else if (!memcmp(eidEntryId.ProviderUID, &muidStoreWrap, sizeof(GUID)))
+	{
+		eidEntryId.ObjectType = eidtMessageDatabase;
+		Parser.GetBYTE(&eidEntryId.ProviderData.MessageDatabaseObject.Version);
+		Parser.GetBYTE(&eidEntryId.ProviderData.MessageDatabaseObject.Flag);
+		Parser.GetStringA(&eidEntryId.ProviderData.MessageDatabaseObject.DLLFileName);
+		eidEntryId.ProviderData.MessageDatabaseObject.bIsExchange = false;
+
+		// We only know how to parse emsmdb.dll's wrapped entry IDs
+		if (eidEntryId.ProviderData.MessageDatabaseObject.DLLFileName &&
+			0 == lstrcmpiA(eidEntryId.ProviderData.MessageDatabaseObject.DLLFileName,"emsmdb.dll")) // STRING_OK
+		{
+			eidEntryId.ProviderData.MessageDatabaseObject.bIsExchange = true;
+			size_t cbRead = Parser.GetCurrentOffset();
+			// Advance to the next multiple of 4
+			Parser.Advance(3-((cbRead+3)%4));
+			Parser.GetDWORD(&eidEntryId.ProviderData.MessageDatabaseObject.WrappedFlags);
+			Parser.GetBYTESNoAlloc(sizeof(eidEntryId.ProviderData.MessageDatabaseObject.WrappedProviderUID),
+				(LPBYTE) &eidEntryId.ProviderData.MessageDatabaseObject.WrappedProviderUID);
+			Parser.GetDWORD(&eidEntryId.ProviderData.MessageDatabaseObject.WrappedType);
+			Parser.GetStringA(&eidEntryId.ProviderData.MessageDatabaseObject.ServerShortname);
+			Parser.GetStringA(&eidEntryId.ProviderData.MessageDatabaseObject.MailboxDN);
+		}
+	}
+	// We can recognize Exchange message store folder and message entry IDs by their size
+	else
+	{
+		size_t ulRemainingBytes = Parser.RemainingBytes();
+
+		if (sizeof(WORD)+sizeof(GUID)+ 6*sizeof(BYTE)+2*sizeof(BYTE) == ulRemainingBytes)
+		{
+			eidEntryId.ObjectType = eidtFolder;
+			Parser.GetWORD(&eidEntryId.ProviderData.FolderOrMessage.Type);
+			Parser.GetBYTESNoAlloc(sizeof(eidEntryId.ProviderData.FolderOrMessage.Data.FolderObject.DatabaseGUID),
+				(LPBYTE) &eidEntryId.ProviderData.FolderOrMessage.Data.FolderObject.DatabaseGUID);
+			Parser.GetBYTESNoAlloc(sizeof(eidEntryId.ProviderData.FolderOrMessage.Data.FolderObject.GlobalCounter),
+				(LPBYTE) &eidEntryId.ProviderData.FolderOrMessage.Data.FolderObject.GlobalCounter);
+			Parser.GetBYTESNoAlloc(sizeof(eidEntryId.ProviderData.FolderOrMessage.Data.FolderObject.Pad),
+				(LPBYTE) &eidEntryId.ProviderData.FolderOrMessage.Data.FolderObject.Pad);
+		}
+		else if (sizeof(WORD)+2*sizeof(GUID)+ 12*sizeof(BYTE)+4*sizeof(BYTE) == ulRemainingBytes)
+		{
+			eidEntryId.ObjectType = eidtMessage;
+			Parser.GetWORD(&eidEntryId.ProviderData.FolderOrMessage.Type);
+			Parser.GetBYTESNoAlloc(sizeof(eidEntryId.ProviderData.FolderOrMessage.Data.MessageObject.FolderDatabaseGUID),
+				(LPBYTE) &eidEntryId.ProviderData.FolderOrMessage.Data.MessageObject.FolderDatabaseGUID);
+			Parser.GetBYTESNoAlloc(sizeof(eidEntryId.ProviderData.FolderOrMessage.Data.MessageObject.FolderGlobalCounter),
+				(LPBYTE) &eidEntryId.ProviderData.FolderOrMessage.Data.MessageObject.FolderGlobalCounter);
+			Parser.GetBYTESNoAlloc(sizeof(eidEntryId.ProviderData.FolderOrMessage.Data.MessageObject.Pad1),
+				(LPBYTE) &eidEntryId.ProviderData.FolderOrMessage.Data.MessageObject.Pad1);
+			Parser.GetBYTESNoAlloc(sizeof(eidEntryId.ProviderData.FolderOrMessage.Data.MessageObject.MessageDatabaseGUID),
+				(LPBYTE) &eidEntryId.ProviderData.FolderOrMessage.Data.MessageObject.MessageDatabaseGUID);
+			Parser.GetBYTESNoAlloc(sizeof(eidEntryId.ProviderData.FolderOrMessage.Data.MessageObject.MessageGlobalCounter),
+				(LPBYTE) &eidEntryId.ProviderData.FolderOrMessage.Data.MessageObject.MessageGlobalCounter);
+			Parser.GetBYTESNoAlloc(sizeof(eidEntryId.ProviderData.FolderOrMessage.Data.MessageObject.Pad2),
+				(LPBYTE) &eidEntryId.ProviderData.FolderOrMessage.Data.MessageObject.Pad2);
+		}
+	}
+
+	// Check if we have an unidentified short term entry ID:
+	if (eidtUnknown == eidEntryId.ObjectType && eidEntryId.abFlags[0] & MAPI_SHORTTERM)
+		eidEntryId.ObjectType = eidtShortTerm;
+
+	// Junk data remains
+	if (Parser.RemainingBytes() > 0)
+	{
+		eidEntryId.JunkDataSize = Parser.RemainingBytes();
+		Parser.GetBYTES(eidEntryId.JunkDataSize,&eidEntryId.JunkData);
+	}
+
+	EntryIdStruct* peidEntryId = new EntryIdStruct;
+	if (peidEntryId)
+	{
+		*peidEntryId = eidEntryId;
+	}
+
+	return peidEntryId;
+} // BinToEntryIdStruct
+
+void DeleteEntryIdStruct(EntryIdStruct* peidEntryId)
+{
+	if (!peidEntryId) return;
+
+	switch (peidEntryId->ObjectType)
+	{
+	case eidtOneOff:
+		if (MAPI_UNICODE & peidEntryId->ProviderData.OneOffRecipientObject.Bitmask)
+		{
+			delete[] peidEntryId->ProviderData.OneOffRecipientObject.Strings.Unicode.DisplayName;
+			delete[] peidEntryId->ProviderData.OneOffRecipientObject.Strings.Unicode.AddressType;
+			delete[] peidEntryId->ProviderData.OneOffRecipientObject.Strings.Unicode.EmailAddress;
+		}
+		else
+		{
+			delete[] peidEntryId->ProviderData.OneOffRecipientObject.Strings.ANSI.DisplayName;
+			delete[] peidEntryId->ProviderData.OneOffRecipientObject.Strings.ANSI.AddressType;
+			delete[] peidEntryId->ProviderData.OneOffRecipientObject.Strings.ANSI.EmailAddress;
+		}
+		break;
+	case eidtAddressBook:
+		delete[] peidEntryId->ProviderData.AddressBookObject.X500DN;
+		break;
+	case eidtContact:
+		DeleteEntryIdStruct(peidEntryId->ProviderData.ContactAddressBookObject.lpEntryID);
+		break;
+	case eidtMessageDatabase:
+		delete[] peidEntryId->ProviderData.MessageDatabaseObject.DLLFileName;
+		delete[] peidEntryId->ProviderData.MessageDatabaseObject.ServerShortname;
+		delete[] peidEntryId->ProviderData.MessageDatabaseObject.MailboxDN;
+		break;
+	}
+
+	delete peidEntryId;
+} // DeleteEntryIdStruct
+
+// result allocated with new, clean up with delete[]
+LPTSTR EntryIdStructToString(EntryIdStruct* peidEntryId)
+{
+	if (!peidEntryId) return NULL;
 
 	CString szEntryId;
 	CString szTmp;
 	HRESULT hRes = S_OK;
 
-	BYTE abFlags[4] = {0};
-	Parser.GetBYTE(&abFlags[0]);
-	Parser.GetBYTE(&abFlags[1]);
-	Parser.GetBYTE(&abFlags[2]);
-	Parser.GetBYTE(&abFlags[3]);
-	LPTSTR szFlags0 = NULL;
-	LPTSTR szFlags1 = NULL;
-	EC_H(InterpretFlags(flagEntryId0, abFlags[0], &szFlags0));
-	EC_H(InterpretFlags(flagEntryId1, abFlags[1], &szFlags1));
-	szEntryId.FormatMessage(IDS_ENTRYIDHEADER,
-		abFlags[0],szFlags0,
-		abFlags[1],szFlags1,
-		abFlags[2],
-		abFlags[3]);
-	delete[] szFlags1;
-	delete[] szFlags0;
-	szFlags1 = NULL;
-	szFlags0 = NULL;
+	switch (peidEntryId->ObjectType)
+	{
+	case eidtUnknown:
+		szEntryId.FormatMessage(IDS_ENTRYIDUNKNOWN);
+		break;
+	case eidtShortTerm:
+		szEntryId.FormatMessage(IDS_ENTRYIDSHORTTERM);
+		break;
+	case eidtFolder:
+		szEntryId.FormatMessage(IDS_ENTRYIDEXCHANGEFOLDER);
+		break;
+	case eidtMessage:
+		szEntryId.FormatMessage(IDS_ENTRYIDEXCHANGEMESSAGE);
+		break;
+	case eidtMessageDatabase:
+		szEntryId.FormatMessage(IDS_ENTRYIDMAPIMESSAGESTORE);
+		break;
+	case eidtOneOff:
+		szEntryId.FormatMessage(IDS_ENTRYIDMAPIONEOFF);
+		break;
+	case eidtAddressBook:
+		szEntryId.FormatMessage(IDS_ENTRYIDEXCHANGEADDRESS);
+		break;
+	case eidtContact:
+		szEntryId.FormatMessage(IDS_ENTRYIDCONTACTADDRESS);
+		break;
+	}
 
-	SBinary sBin = {0};
-	sBin.cb = (ULONG) Parser.RemainingBytes();
-	Parser.GetBYTES(sBin.cb,&sBin.lpb);
-	szEntryId += BinToHexString(&sBin,true);
-	delete[] sBin.lpb;
+	if (0 == (peidEntryId->abFlags[0] | peidEntryId->abFlags[1] | peidEntryId->abFlags[2] | peidEntryId->abFlags[3]))
+	{
+		szTmp.FormatMessage(IDS_ENTRYIDHEADER1);
+	}
+	else if (0 == (peidEntryId->abFlags[1] | peidEntryId->abFlags[2] | peidEntryId->abFlags[3]))
+	{
+		LPTSTR szFlags0 = NULL;
+		EC_H(InterpretFlags(flagEntryId0, peidEntryId->abFlags[0], &szFlags0));
+		szTmp.FormatMessage(IDS_ENTRYIDHEADER2,
+			peidEntryId->abFlags[0],szFlags0);
+		delete[] szFlags0;
+		szFlags0 = NULL;
+	}
+	else
+	{
+		LPTSTR szFlags0 = NULL;
+		LPTSTR szFlags1 = NULL;
+		EC_H(InterpretFlags(flagEntryId0, peidEntryId->abFlags[0], &szFlags0));
+		EC_H(InterpretFlags(flagEntryId1, peidEntryId->abFlags[1], &szFlags1));
+		szTmp.FormatMessage(IDS_ENTRYIDHEADER3,
+			peidEntryId->abFlags[0],szFlags0,
+			peidEntryId->abFlags[1],szFlags1,
+			peidEntryId->abFlags[2],
+			peidEntryId->abFlags[3]);
+		delete[] szFlags1;
+		delete[] szFlags0;
+		szFlags1 = NULL;
+		szFlags0 = NULL;
+	}
+	szEntryId += szTmp;
 
-	*lpszResultString = CStringToString(szEntryId);
-}
+	LPTSTR szGUID = NULL;
+	szGUID = GUIDToStringAndName((LPGUID) &peidEntryId->ProviderUID);
+	szTmp.FormatMessage(IDS_ENTRYIDPROVIDERGUID,szGUID);
+	szEntryId += szTmp;
+
+	delete[] szGUID;
+	szGUID = NULL;
+
+	if (eidtOneOff == peidEntryId->ObjectType)
+	{
+		LPTSTR szFlags = NULL;
+		EC_H(InterpretFlags(flagOneOffEntryId, peidEntryId->ProviderData.OneOffRecipientObject.Bitmask, &szFlags));
+
+		if (MAPI_UNICODE & peidEntryId->ProviderData.OneOffRecipientObject.Bitmask)
+		{
+			szTmp.FormatMessage(IDS_ONEOFFENTRYIDFOOTERUNICODE,
+				peidEntryId->ProviderData.OneOffRecipientObject.Bitmask,szFlags,
+				peidEntryId->ProviderData.OneOffRecipientObject.Strings.Unicode.DisplayName,
+				peidEntryId->ProviderData.OneOffRecipientObject.Strings.Unicode.AddressType,
+				peidEntryId->ProviderData.OneOffRecipientObject.Strings.Unicode.EmailAddress);
+		}
+		else
+		{
+			szTmp.FormatMessage(IDS_ONEOFFENTRYIDFOOTERANSI,
+				peidEntryId->ProviderData.OneOffRecipientObject.Bitmask,szFlags,
+				peidEntryId->ProviderData.OneOffRecipientObject.Strings.ANSI.DisplayName,
+				peidEntryId->ProviderData.OneOffRecipientObject.Strings.ANSI.AddressType,
+				peidEntryId->ProviderData.OneOffRecipientObject.Strings.ANSI.EmailAddress);
+		}
+		szEntryId += szTmp;
+		delete[] szFlags;
+		szFlags = NULL;
+	}
+	else if (eidtAddressBook == peidEntryId->ObjectType)
+	{
+		LPTSTR szVersion = NULL;
+		EC_H(InterpretFlags(flagExchangeABVersion, peidEntryId->ProviderData.AddressBookObject.Version, &szVersion));
+		LPTSTR szType = NULL;
+		EC_H(InterpretFlags(PROP_ID(PR_DISPLAY_TYPE), peidEntryId->ProviderData.AddressBookObject.Type, &szType));
+		
+		szTmp.FormatMessage(IDS_ENTRYIDEXCHANGEADDRESSDATA,
+			peidEntryId->ProviderData.AddressBookObject.Version, szVersion,
+			peidEntryId->ProviderData.AddressBookObject.Type, szType,
+			peidEntryId->ProviderData.AddressBookObject.X500DN);
+		szEntryId += szTmp;
+		
+		delete[] szType;
+		szType = NULL;
+		delete[] szVersion;
+		szVersion = NULL;
+	}
+	// Contact Address Book / Personal Distribution List (PDL)
+	else if (eidtContact == peidEntryId->ObjectType)
+	{
+		LPTSTR szVersion = NULL;
+		EC_H(InterpretFlags(flagContabVersion, peidEntryId->ProviderData.ContactAddressBookObject.Version, &szVersion));
+		LPTSTR szType = NULL;
+		EC_H(InterpretFlags(flagContabType, peidEntryId->ProviderData.ContactAddressBookObject.Type, &szType));
+		LPTSTR szIndex = NULL;
+		EC_H(InterpretFlags(flagContabIndex, peidEntryId->ProviderData.ContactAddressBookObject.Index, &szIndex));
+
+		szTmp.FormatMessage(IDS_ENTRYIDCONTACTADDRESSDATA,
+			peidEntryId->ProviderData.ContactAddressBookObject.Version,szVersion,
+			peidEntryId->ProviderData.ContactAddressBookObject.Type,szType,
+			peidEntryId->ProviderData.ContactAddressBookObject.Index,szIndex,
+			peidEntryId->ProviderData.ContactAddressBookObject.EntryIDCount);
+		szEntryId += szTmp;
+
+		delete[] szIndex;
+		szIndex = NULL;
+		delete[] szType;
+		szType = NULL;
+		delete[] szVersion;
+		szVersion = NULL;
+
+		LPTSTR szEID = EntryIdStructToString(peidEntryId->ProviderData.ContactAddressBookObject.lpEntryID);
+		szEntryId += szEID;
+		delete[] szEID;
+	}
+	else if (eidtMessageDatabase == peidEntryId->ObjectType)
+	{
+		LPTSTR szVersion = NULL;
+		EC_H(InterpretFlags(flagMDBVersion, peidEntryId->ProviderData.MessageDatabaseObject.Version, &szVersion));
+
+		LPTSTR szFlag = NULL;
+		EC_H(InterpretFlags(flagMDBFlag, peidEntryId->ProviderData.MessageDatabaseObject.Flag, &szFlag));
+
+		LPTSTR szWrappedType = NULL;
+		EC_H(InterpretFlags(PROP_ID(PR_PROFILE_OPEN_FLAGS), peidEntryId->ProviderData.MessageDatabaseObject.WrappedType, &szWrappedType));
+		
+		
+		szTmp.FormatMessage(IDS_ENTRYIDMAPIMESSAGESTOREDATA,
+			peidEntryId->ProviderData.MessageDatabaseObject.Version, szVersion,
+			peidEntryId->ProviderData.MessageDatabaseObject.Flag, szFlag,
+			peidEntryId->ProviderData.MessageDatabaseObject.DLLFileName);
+		szEntryId += szTmp;
+		if (peidEntryId->ProviderData.MessageDatabaseObject.bIsExchange)
+		{
+			szGUID = GUIDToStringAndName((LPGUID) &peidEntryId->ProviderData.MessageDatabaseObject.WrappedProviderUID);
+			szTmp.FormatMessage(IDS_ENTRYIDMAPIMESSAGESTOREEXCHANGEDATA,
+				peidEntryId->ProviderData.MessageDatabaseObject.WrappedFlags,
+				szGUID,
+				peidEntryId->ProviderData.MessageDatabaseObject.WrappedType, szWrappedType,
+				peidEntryId->ProviderData.MessageDatabaseObject.ServerShortname,
+				peidEntryId->ProviderData.MessageDatabaseObject.MailboxDN);
+			szEntryId += szTmp;
+
+			delete[] szGUID;
+			szGUID = NULL;
+		}
+
+		delete[] szWrappedType;
+		szWrappedType = NULL;
+
+		delete[] szFlag;
+		szFlag = NULL;
+
+		delete[] szVersion;
+		szVersion = NULL;
+	}
+	else if (eidtFolder == peidEntryId->ObjectType)
+	{
+		LPTSTR szType = NULL;
+		EC_H(InterpretFlags(flagMessageDatabaseObjectType, peidEntryId->ProviderData.FolderOrMessage.Type, &szType));
+
+		LPTSTR szDatabaseGUID = GUIDToStringAndName((LPGUID) &peidEntryId->ProviderData.FolderOrMessage.Data.FolderObject.DatabaseGUID);
+
+		SBinary sBinGlobalCounter = {0};
+		sBinGlobalCounter.cb = sizeof(peidEntryId->ProviderData.FolderOrMessage.Data.FolderObject.GlobalCounter);
+		sBinGlobalCounter.lpb = peidEntryId->ProviderData.FolderOrMessage.Data.FolderObject.GlobalCounter;
+
+		SBinary sBinPad = {0};
+		sBinPad.cb = sizeof(peidEntryId->ProviderData.FolderOrMessage.Data.FolderObject.Pad);
+		sBinPad.lpb = peidEntryId->ProviderData.FolderOrMessage.Data.FolderObject.Pad;
+
+		szTmp.FormatMessage(IDS_ENTRYIDEXCHANGEFOLDERDATA,
+			peidEntryId->ProviderData.FolderOrMessage.Type,szType,
+			szDatabaseGUID,
+			BinToHexString(&sBinGlobalCounter,true),
+			BinToHexString(&sBinPad,true));
+		szEntryId += szTmp;
+
+		delete[] szDatabaseGUID;
+		szDatabaseGUID = NULL;
+	}
+	else if (eidtMessage == peidEntryId->ObjectType)
+	{
+		LPTSTR szType = NULL;
+		EC_H(InterpretFlags(flagMessageDatabaseObjectType, peidEntryId->ProviderData.FolderOrMessage.Type, &szType));
+
+		LPTSTR szFolderDatabaseGUID = GUIDToStringAndName((LPGUID) &peidEntryId->ProviderData.FolderOrMessage.Data.MessageObject.FolderDatabaseGUID);
+
+		SBinary sBinFolderGlobalCounter = {0};
+		sBinFolderGlobalCounter.cb = sizeof(peidEntryId->ProviderData.FolderOrMessage.Data.MessageObject.FolderGlobalCounter);
+		sBinFolderGlobalCounter.lpb = peidEntryId->ProviderData.FolderOrMessage.Data.MessageObject.FolderGlobalCounter;
+
+		SBinary sBinPad1 = {0};
+		sBinPad1.cb = sizeof(peidEntryId->ProviderData.FolderOrMessage.Data.MessageObject.Pad1);
+		sBinPad1.lpb = peidEntryId->ProviderData.FolderOrMessage.Data.MessageObject.Pad1;
+
+		LPTSTR szMessageDatabaseGUID = GUIDToStringAndName((LPGUID) &peidEntryId->ProviderData.FolderOrMessage.Data.MessageObject.MessageDatabaseGUID);
+
+		SBinary sBinMessageGlobalCounter = {0};
+		sBinMessageGlobalCounter.cb = sizeof(peidEntryId->ProviderData.FolderOrMessage.Data.MessageObject.MessageGlobalCounter);
+		sBinMessageGlobalCounter.lpb = peidEntryId->ProviderData.FolderOrMessage.Data.MessageObject.MessageGlobalCounter;
+
+		SBinary sBinPad2 = {0};
+		sBinPad2.cb = sizeof(peidEntryId->ProviderData.FolderOrMessage.Data.MessageObject.Pad2);
+		sBinPad2.lpb = peidEntryId->ProviderData.FolderOrMessage.Data.MessageObject.Pad2;
+
+		szTmp.FormatMessage(IDS_ENTRYIDEXCHANGEMESSAGEDATA,
+			peidEntryId->ProviderData.FolderOrMessage.Type,szType,
+			szFolderDatabaseGUID,
+			BinToHexString(&sBinFolderGlobalCounter,true),
+			BinToHexString(&sBinPad1,true),
+			szMessageDatabaseGUID,
+			BinToHexString(&sBinMessageGlobalCounter,true),
+			BinToHexString(&sBinPad2,true));
+		szEntryId += szTmp;
+
+		delete[] szMessageDatabaseGUID;
+		szMessageDatabaseGUID = NULL;
+
+		delete[] szFolderDatabaseGUID;
+		szFolderDatabaseGUID = NULL;
+	}
+
+	szEntryId += JunkDataToString(peidEntryId->JunkDataSize,peidEntryId->JunkData);
+
+	return CStringToString(szEntryId);
+} // EntryIdStructToString

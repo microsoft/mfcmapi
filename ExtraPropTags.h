@@ -399,8 +399,8 @@
 #define DT_SEC_DISTLIST ((ULONG) 0x00000009)
 
 // [MS-NSPI].pdf
-#define DT_TEMPLATE     ((ULONG) 0x00000020)
 #define DT_CONTAINER    ((ULONG) 0x00000100)
+#define DT_TEMPLATE     ((ULONG) 0x00000101)
 #define DT_ADDRESS_TEMPLATE ((ULONG) 0x00000102)
 #define DT_SEARCH       ((ULONG) 0x00000200)
 
@@ -806,3 +806,40 @@ const ULONG rdfSat = 0x40;
 
 // [MS-OSCDATA].pdf
 #define OOP_DONT_LOOKUP ((ULONG) 0x10000000)
+
+// [MS-OXCDATA].pdf
+#define eitLTPrivateFolder		(0x1) // PrivateFolder
+#define eitLTPublicFolder		(0x3) // PublicFolder
+#define eitLTWackyFolder		(0x5)	// MappedPublicFolder
+#define eitLTPrivateMessage		(0x7) // PrivateMessage
+#define eitLTPublicMessage		(0x9) // PublicMessage
+#define eitLTWackyMessage		(0xB) // MappedPublicMessage
+#define eitLTPublicFolderByName	(0xC) // PublicNewsgroupFolder
+
+// Exchange Address Book Version
+#define EMS_VERSION         0x000000001
+
+// Wrapped Message Store Version
+#define MAPIMDB_VERSION	((BYTE) 0x00)
+
+// Wrapped Message Store Flag
+#define MAPIMDB_NORMAL	((BYTE) 0x00)
+
+// Contact Address Book Version
+#define CONTAB_VERSION    0x000000003
+
+// Contact Addess Book Types
+#define CONTAB_USER       0x00000004
+#define CONTAB_DISTLIST   0x00000005
+
+// Contact Address Book Index
+enum EEmailIndex
+{
+	EEI_EMAIL_1 = 0,
+	EEI_EMAIL_2,
+	EEI_EMAIL_3,
+	EEI_FAX_1,
+	EEI_FAX_2,
+	EEI_FAX_3,
+};
+#define EMAIL_TYPE_UNDEFINED 0xFF
