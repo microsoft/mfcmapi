@@ -246,9 +246,6 @@ void CProfileListDlg::OnAddExchangeToProfile()
 			}
 			while (iItem != -1);
 		}
-
-		MAPIFreeBuffer(szMailbox);
-		MAPIFreeBuffer(szServer);
 	}
 	return;
 } // CProfileListDlg::OnAddExchangeToProfile
@@ -276,7 +273,6 @@ void CProfileListDlg::AddPSTToProfile(BOOL bUnicodePST)
 	EC_D_DIALOG(dlgFilePicker.DoModal());
 	if (IDOK == iDlgRet)
 	{
-		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 		do
 		{
 			hRes = S_OK;
@@ -284,9 +280,34 @@ void CProfileListDlg::AddPSTToProfile(BOOL bUnicodePST)
 			lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 			if (!lpListData) break;
 
-			DebugPrintEx(DBGGeneric,CLASS,_T("AddPSTToProfile"),_T("Adding PST \"%s\" to profile \"%hs\", bUnicodePST = 0x%X\n"),dlgFilePicker.m_ofn.lpstrFile,lpListData->data.Contents.szProfileDisplayName,bUnicodePST);
+			CEditor MyFile(
+				this,
+				IDS_PSTPATH,
+				IDS_PSTPATHPROMPT,
+				3,
+				CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+			MyFile.InitSingleLineSz(0,IDS_SERVICE,dlgFilePicker.m_ofn.lpstrFile,false);
+			MyFile.InitCheck(1,IDS_PSTDOPW,false,false);
+			MyFile.InitSingleLineSz(2,IDS_PSTPW,_T(""),false);
 
-			EC_H(HrAddPSTToProfile((ULONG_PTR) m_hWnd,bUnicodePST,dlgFilePicker.m_ofn.lpstrFile,lpListData->data.Contents.szProfileDisplayName));
+			WC_H(MyFile.DisplayDialog());
+
+			if (S_OK == hRes)
+			{
+				LPTSTR szPath = MyFile.GetString(0);
+				BOOL bPasswordSet = MyFile.GetCheck(1);
+				LPSTR szPwd = MyFile.GetStringA(2);
+
+				DebugPrintEx(DBGGeneric,CLASS,_T("AddPSTToProfile"),_T("Adding PST \"%s\" to profile \"%hs\", bUnicodePST = 0x%X\n, bPasswordSet = 0x%X, password = \"%hs\"\n"),
+					szPath,
+					lpListData->data.Contents.szProfileDisplayName,
+					bUnicodePST,
+					bPasswordSet,
+					szPwd);
+
+				CWaitCursor Wait; // Change the mouse to an hourglass while we work.
+				EC_H(HrAddPSTToProfile((ULONG_PTR) m_hWnd,bUnicodePST,szPath,lpListData->data.Contents.szProfileDisplayName,bPasswordSet,szPwd));
+			}
 		}
 		while (iItem != -1);
 	}
@@ -368,8 +389,6 @@ void CProfileListDlg::OnCreateProfile()
 			szProfile);
 
 		EC_H(HrCreateProfile(szProfile));
-
-		MAPIFreeBuffer(szProfile);
 
 		// Since we may have created a profile, update even if we failed.
 		OnRefreshView(); // Update the view since we don't have notifications here.

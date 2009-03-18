@@ -1497,7 +1497,6 @@ void CSingleMAPIPropListCtrl::OnParseProperty()
 			IDS_CONVERSATIONINDEX,
 			IDS_TASKASSIGNERS,
 			IDS_GLOBALOBJECTID,
-			IDS_ONEOFFENTRYID,
 			IDS_ENTRYID,
 		};
 		MyStructurePicker.InitDropDown(0,IDS_STRUCTURES,sizeof(uidDropDown)/sizeof(UINT),uidDropDown,true);
@@ -1536,10 +1535,10 @@ void CSingleMAPIPropListCtrl::OnParseProperty()
 				break;
 			case 9: // Global Object Id
 				myStructType = stGlobalObjectId;
-			case 10: // One-Off Entry Id
-				myStructType = stOneOffEntryId;
-			case 11: // Entry Id
+				break;
+			case 10: // Entry Id
 				myStructType = stEntryId;
+				break;
 			}
 		}
 

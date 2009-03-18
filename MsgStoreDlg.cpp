@@ -873,7 +873,7 @@ void CMsgStoreDlg::OnDisplayMailboxTable()
 void CMsgStoreDlg::OnEmptyFolder()
 {
 	HRESULT		hRes = S_OK;
-	ULONG		ulDelAssociated = NULL;
+	ULONG		ulFlags = NULL;
 
 	if (!m_lpHierarchyTableTreeCtrl) return;
 
@@ -886,26 +886,28 @@ void CMsgStoreDlg::OnEmptyFolder()
 			this,
 			IDS_DELETEITEMSANDSUB,
 			IDS_DELETEITEMSANDSUBPROMPT,
-			1,
+			2,
 			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 		MyData.InitCheck(0,IDS_DELASSOCIATED,false,false);
+		MyData.InitCheck(1,IDS_HARDDELETION,false,false);
 
 		WC_H(MyData.DisplayDialog());
 		if (S_OK == hRes)
 		{
-			ulDelAssociated = MyData.GetCheck(0)?DEL_ASSOCIATED:0;
-
-			DebugPrintEx(DBGGeneric,CLASS,_T("OnEmptyFolder"),_T("Calling EmptyFolder on 0x%08X.\n"),lpMAPIFolderToDelete);
+			ulFlags = MyData.GetCheck(0)?DEL_ASSOCIATED:0;
+			ulFlags |= MyData.GetCheck(1)?DELETE_HARD_DELETE:0;
 
 			LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIFolder::EmptyFolder"), m_hWnd); // STRING_OK
 
 			if(lpProgress)
-				ulDelAssociated |= FOLDER_DIALOG;
+				ulFlags |= FOLDER_DIALOG;
+
+			DebugPrintEx(DBGGeneric,CLASS,_T("OnEmptyFolder"),_T("Calling EmptyFolder on 0x%08X, ulFlags = 0x%08X.\n"),lpMAPIFolderToDelete,ulFlags);
 
 			EC_H(lpMAPIFolderToDelete->EmptyFolder(
 				lpProgress ? (ULONG_PTR)m_hWnd : NULL,
 				lpProgress,
-				ulDelAssociated));
+				ulFlags));
 
 			if(lpProgress)
 				lpProgress->Release();

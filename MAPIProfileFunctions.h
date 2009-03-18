@@ -31,10 +31,12 @@ HRESULT HrAddExchangeToProfile(
 							   IN LPSTR lpszProfileName);
 
 HRESULT HrAddPSTToProfile(
-						   IN ULONG_PTR ulUIParam, // hwnd for CreateMsgService
-						   IN BOOL bUnicodePST,
-						   IN LPTSTR lpszPSTPath,
-						   IN LPSTR lpszProfileName);
+						  IN ULONG_PTR ulUIParam, // hwnd for CreateMsgService
+						  BOOL bUnicodePST,
+						  IN LPTSTR lpszPSTPath, // PST name
+						  IN LPSTR lpszProfileName, // profile name
+						  BOOL bPasswordSet, // whether or not to include a password
+						  IN LPSTR lpszPassword); // password to include
 
 HRESULT HrRemoveProfile(
 						LPSTR lpszProfileName);

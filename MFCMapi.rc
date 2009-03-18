@@ -80,11 +80,13 @@ BEGIN
         MENUITEM "&Logon only (Does not display stores)", ID_LOGON
         MENUITEM "Logon with flags",            ID_LOGONWITHFLAGS
         MENUITEM "&Logoff",                     ID_LOGOFF
+        MENUITEM "Logoff with flags",           ID_LOGOFFWITHFLAGS
         MENUITEM SEPARATOR
         MENUITEM "Load MAPI",                   ID_LOADMAPI
         MENUITEM "Unload MAPI",                 ID_UNLOADMAPI
         MENUITEM "MAPIInitialize",              ID_MAPIINITIALIZE
         MENUITEM "MAPIUninitialize",            ID_MAPIUNINITIALIZE
+        MENUITEM "Fast Shutdown",               ID_FASTSHUTDOWN
         MENUITEM SEPARATOR
         MENUITEM "Display Message Store Table", ID_OPENMESSAGESTORETABLE
         MENUITEM "Is Attachment Blocked..."		ID_ISATTACHMENTBLOCKED
@@ -158,6 +160,7 @@ BEGIN
     MENUITEM "Dump Store Contents To Text (SLOW)", ID_DUMPSTORECONTENTS
     MENUITEM SEPARATOR
     MENUITEM "&Logoff",                     ID_LOGOFF
+    MENUITEM "Logoff with flags",           ID_LOGOFFWITHFLAGS
 END
 
 IDR_MENU_EDITOR_POPUP MENU DISCARDABLE
@@ -194,7 +197,7 @@ BEGIN
         MENUITEM "Resend embedded (NDR) Message", ID_RESENDMESSAGE
         MENUITEM "RTFSync",                     ID_RTFSYNC
         MENUITEM "Submit Message",              ID_SUBMITMESSAGE
-        MENUITEM "Abort Submit ",               ID_ABORTSUBMIT
+        MENUITEM "Abort Submit",               ID_ABORTSUBMIT
 		MENUITEM "Remove One Off Properties"    ID_REMOVEONEOFF
         MENUITEM SEPARATOR
         MENUITEM "Get Message Options",         ID_GETMESSAGEOPTIONS
@@ -250,7 +253,7 @@ BEGIN
     MENUITEM "Resend embedded (NDR) Message", ID_RESENDMESSAGE
     MENUITEM "RTFSync",                     ID_RTFSYNC
     MENUITEM "Submit Message",              ID_SUBMITMESSAGE
-    MENUITEM "Abort Submit ",               ID_ABORTSUBMIT
+    MENUITEM "Abort Submit",               ID_ABORTSUBMIT
 	MENUITEM "Remove One Off Properties"    ID_REMOVEONEOFF
     MENUITEM SEPARATOR
     MENUITEM "Get Message Options",         ID_GETMESSAGEOPTIONS

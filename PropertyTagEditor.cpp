@@ -226,7 +226,7 @@ void CPropertyTagEditor::LookupNamedProp(ULONG ulSkipField, BOOL bCreate)
 	{
 		LPSPropTagArray lpNamedPropTags = NULL;
 
-		EC_H(m_lpMAPIProp->GetIDsFromNames(
+		EC_H_GETPROPS(m_lpMAPIProp->GetIDsFromNames(
 			1,
 			&lpNamedID,
 			bCreate?MAPI_CREATE:0,

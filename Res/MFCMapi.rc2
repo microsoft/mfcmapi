@@ -151,6 +151,7 @@ ID_EDITSEARCHCRITERIA							"Edit search criteria using GetSearchCriteria and Se
 ID_EMPTYFOLDER									"Call IMAPFolder::EmptyFolder"
 ID_ENCODEID										"Encode an entry ID for a MAPI Protocol Host URL"
 ID_EXECUTEVERBONFORM							"Execute a verb on selected forms"
+ID_FASTSHUTDOWN									"Check for Fast Shutdown support and attempt a Fast Shutdown."
 ID_FINDALLNAMEDPROPS							"Find all current named property mappings and add them to the current property view as 'extra' properties."
 ID_GETDISPLAY									"Get display"
 ID_GETMAPISVCINF								"Use FGetComponentPath to locate MAPISVC.INF"
@@ -167,6 +168,7 @@ ID_LOADFROMMSG									"Load a message from a .MSG file"
 ID_LOADFROMTNEF									"Load a message from a TNEF encoded file, such as Winmail.dat"
 ID_LOADMAPI										"Manually load MAPI DLL"
 ID_LOGOFF										"Log out of MAPI."
+ID_LOGOFFWITHFLAGS								"Log out of MAPI. Prompt for flags for Logoff"
 ID_LOGON										"Call MAPILogonEx. Do not open message store table."
 ID_LOGONANDDISPLAYSTORES						"Log on to MAPI and display message store table"
 ID_LOGONWITHFLAGS								"Prompt for flags to use for MAPILogonEx."
@@ -487,6 +489,11 @@ IDS_PROFFORMAPILOGONPROMPT       "Type profile name and flags:\r\n\
 0x00200000 MAPI_BG_SESSION        Client intends to operate on a background thread\r\n\
 MAPI_EXTENDED | MAPI_ALLOW_OTHERS | MAPI_NEW_SESSION | MAPI_LOGON_UI | MAPI_EXPLICIT_PROFILE == 0x3b\r\n\
 Shared Profile: MAPI_EXTENDED | MAPI_ALLOW_OTHERS | MAPI_LOGON_UI | MAPI_NO_MAIL == 0x8039"
+IDS_LOGOFF                       "Logoff flags"
+IDS_LOGOFFPROMPT                 "Enter flags for IMAPISession->Logoff\r\n\
+\r\n\
+0x00000001 MAPI_LOGOFF_SHARED Close all shared sessions\r\n\
+0x00000002 MAPI_LOGOFF_UI     It's OK to present UI"
 IDS_SELECTFORM                   "Select Form"
 IDS_SELECTFORMPROMPT             "Enter flags\r\n\
 0x00 MAPIFORM_SELECT_ALL_REGISTRIES\r\n\
@@ -590,7 +597,7 @@ IDS_ADDSUBFOLDER                 "Add SubFolder"
 IDS_ADDSUBFOLDERPROMPT           "Type new subfolder name\r\n\
 Set flags"
 IDS_DELETEITEMSANDSUB            "Delete Items and Subfolders"
-IDS_DELETEITEMSANDSUBPROMPT      "Check box to delete associated items."
+IDS_DELETEITEMSANDSUBPROMPT      "Check options to delete associated items or perform hard (permanent) deletion."
 IDS_DELETEFOLDER                 "Delete Selected Folder"
 IDS_DELETEFOLDERPROMPT           "Check box to perform hard (permanent/unrecoverable) deletion."
 IDS_SAVEFOLDERASMSG              "Save Folder Contents To MSG"
@@ -610,6 +617,10 @@ IDS_NEWSERVICE                   "New Service"
 IDS_NEWSERVICEPROMPT             "Type new service name (e.g. MSEMS, CONTAB, MSPST MS, etc...)"
 IDS_NEWPROF                      "New Profile"
 IDS_NEWPROFPROMPT                "Type new profile name"
+IDS_PSTPATH                      "PST Path"
+IDS_PSTPATHPROMPT                "Confirm or edit the PST path, and set password if desired"
+IDS_PSTDOPW                      "Set a password on the PST"
+IDS_PSTPW                        "PST Password"
 // propertyeditor.cpp
 IDS_EDITROW                      "Edit Row"
 IDS_EDITROWPROMPT                "Edit single row"
@@ -717,7 +728,6 @@ IDS_REPORTTAG                    "Report Tag"
 IDS_CONVERSATIONINDEX            "Conversation Index"
 IDS_TASKASSIGNERS                "Task Assigners"
 IDS_GLOBALOBJECTID               "Global Object Id"
-IDS_ONEOFFENTRYID                "One-Off Entry Id"
 IDS_ENTRYID                      "Entry Id"
 
 // AbDlg.cpp
@@ -899,7 +909,7 @@ IDS_REGKEY_HIER_ROOT_NOTIFS "Allow Notifications on Root Container (may cause in
 IDS_REGKEY_HIER_NODE_LOAD_COUNT "Hierarchy Node Load Count: If nonzero, limits the number of child nodes for which the hierarchy table is automatically loaded:"
 IDS_REGKEY_DO_GETPROPS "Perform GetProps call on objects when selecting or displaying. Extra properties will still display if unchecked."
 IDS_REGKEY_ALLOW_DUPE_COLUMNS "Allow duplicate columns of different types."
-IDS_REGKEY_USE_ROW_DATA_FOR_SINGLEPROPLIST "Default to using row data for property list instead of calling GetProps."
+IDS_REGKEY_USE_ROW_DATA_FOR_SINGLEPROPLIST "Use row data for property pane instead of calling GetProps."
 IDS_REGKEY_DO_COLUMN_NAMES "Use nice names for certain column headers and pull them to the front of the view"
 IDS_REGKEY_EDIT_COLUMNS_ON_LOAD "When loading tables, display SetColumns edit dialog"
 IDS_REGKEY_USE_GETPROPLIST "Use GetPropList to get property list for GetProps call (otherwise use NULL tag list)"
@@ -1039,6 +1049,7 @@ DBGLoadLibrary\t\t0x00002000\n\
 DBGForms\t\t0x00004000\n\
 DBGAddInPlumbing\t\t0x00008000\n\
 DBGAddIn\t\t0x00010000\n\
+DBGStream\t\t0x00020000\n\
 DBGMenu\t\t0x80000000"
 
 IDS_DISPLAYABOUTCHECK "Display at startup"
@@ -1658,7 +1669,7 @@ EndDate: 0x%3!08X! = %3!d! = %4"
 
 IDS_FLAGS_PREFIX "Flags: "
 
-IDS_JUNKDATASIZE "\r\nJunkDataSize = 0x%1!08X!\r\n%2"
+IDS_JUNKDATASIZE "\r\nUnparsed data size = 0x%1!08X!\r\n%2"
 
 IDS_EXTENDEDFLAGSHEADER "Extended Flags: \r\n\
 Number of flags = %1!d!"
@@ -1703,7 +1714,7 @@ IDS_TASKASSIGNEREID "\r\nTask Assigner[%1!d!]\r\n\
 IDS_TASKASSIGNERNAME "\r\n\tszDisplayName (ANSI) = %1!hs!\
 					 \r\n\tszDisplayName (Unicode) = %2!ws!"
 
-IDS_TASKASSIGNERJUNKDATA "\r\n\tJunkDataSize = 0x%1!08X!\r\n"
+IDS_TASKASSIGNERJUNKDATA "\r\n\tUnparsed Data Size = 0x%1!08X!\r\n"
 
 IDS_GLOBALOBJECTIDHEADER "Global Object ID: \
 \r\nByte Array ID = "
@@ -1717,25 +1728,77 @@ IDS_GLOBALOBJECTIDDATA1 "\r\nYear: 0x%1!04X! = %1!d!\
 
 IDS_GLOBALOBJECTIDDATA2 "\r\nData = "
 
-IDS_ONEOFFENTRYIDHEADER "One-Off Entry Id: \r\n\
-dwFlags = 0x%1!08X! = %1!d!\r\n"
 IDS_ONEOFFENTRYIDFOOTERUNICODE "\r\n\
+One-Off Entry Id: \r\n\
 dwBitmask: 0x%1!08X! = %2\r\n\
 szDisplayName = %3!ws!\r\n\
 szAddressType = %4!ws!\r\n\
 szEmailAddress = %5!ws!"
 IDS_ONEOFFENTRYIDFOOTERANSI "\r\n\
+One-Off Entry Id: \r\n\
 dwBitmask: 0x%1!08X! = %1!d! = %2\r\n\
 szDisplayName = %3!hs!\r\n\
 szAddressType = %4!hs!\r\n\
 szEmailAddress = %5!hs!"
 
-IDS_ENTRYIDHEADER "Entry Id:\r\n\
-abFlags[0] = 0x%1!02X! = %1!d! = %2\r\n\
-abFlags[1] = 0x%3!02X! = %3!d! = %4\r\n\
-abFlags[2] = 0x%5!02X! = %5!d!\r\n\
-abFlags[3] = 0x%6!02X! = %6!d!\r\n\
-ab[MAPI_DIM] = "
+IDS_ENTRYIDUNKNOWN "Entry ID:\r\n"
+
+IDS_ENTRYIDSHORTTERM "Short Term Entry ID:\r\n"
+
+IDS_ENTRYIDEXCHANGEFOLDER "Exchange Folder Entry ID:\r\n"
+
+IDS_ENTRYIDEXCHANGEMESSAGE "Exchange Message Entry ID:\r\n"
+
+IDS_ENTRYIDMAPIMESSAGESTORE "MAPI Message Store Entry ID:\r\n"
+
+IDS_ENTRYIDMAPIONEOFF "MAPI One Off Recipient Entry ID:\r\n"
+
+IDS_ENTRYIDEXCHANGEADDRESS "Exchange Address Entry ID:\r\n"
+
+IDS_ENTRYIDCONTACTADDRESS "Contact Address Book / PDL Entry ID:\r\n"
+
+IDS_ENTRYIDHEADER1 "abFlags = 0x00000000\r\n"
+
+IDS_ENTRYIDHEADER2 "abFlags[0] = 0x%1!02X!= %2\r\n\
+abFlags[1..3] = 0x000000\r\n"
+
+IDS_ENTRYIDHEADER3 "abFlags[0] = 0x%1!02X!= %2\r\n\
+abFlags[1] = 0x%3!02X!= %4\r\n\
+abFlags[2..3] = 0x%5!02X!%6!02X!\r\n"
+
+IDS_ENTRYIDPROVIDERGUID "Provider GUID = %1"
+
+IDS_ENTRYIDEXCHANGEADDRESSDATA "\r\nVersion = 0x%1!08X! = %2\r\n\
+Type = 0x%3!08X! = %4\r\n\
+X500DN = %5"
+
+IDS_ENTRYIDCONTACTADDRESSDATA "\r\nVersion = 0x%1!08X! = %2\r\n\
+Type = 0x%3!08X! = %4\r\n\
+Index = 0x%5!08X! = %6\r\n\
+EntryIDCount = 0x%7!08X!\r\n"
+
+IDS_ENTRYIDMAPIMESSAGESTOREDATA "\r\nVersion = 0x%1!02X! = %2\r\n\
+Flag = 0x%3!02X! = %4\r\n\
+DLLFileName = %5"
+
+IDS_ENTRYIDMAPIMESSAGESTOREEXCHANGEDATA "\r\nWrapped Flags = 0x%1!08X!\r\n\
+WrappedProviderUID = %2\r\n\
+WrappedType = 0x%3!08X! = %4\r\n\
+ServerShortname = %5\r\n\
+MailboxDN = %6"
+
+IDS_ENTRYIDEXCHANGEFOLDERDATA "\r\nFolder Type = 0x%1!04X! = %2\r\n\
+Database GUID = %3\r\n\
+GlobalCounter = %4\r\n\
+Pad = %5"
+
+IDS_ENTRYIDEXCHANGEMESSAGEDATA "\r\nMessage Type = 0x%1!04X! = %2\r\n\
+Folder Database GUID = %3\r\n\
+Folder GlobalCounter = %4\r\n\
+Pad1 = %5\r\n\
+Message Database GUID = %6\r\n\
+Message GlobalCounter = %7\r\n\
+Pad2 = %8"
 
 // All strings above this point use FormatMessage style formatting
 
@@ -1781,6 +1844,13 @@ IDS_EDLOWEROVERUPPER "Lower bound of 0x%X is over upper bound of 0x%X"
 IDS_EDOFFSETWITHWRONGINTERFACE "You specified an offset but requested the IID_IExchangeManageStore\r\n\
 interface. This interface does not support passing an offset.\r\n"
 IDS_EDINVALIDGUID "The GUID you entered was invalid."
+IDS_EDNOMAPICLIENTSHUTDOWN "This version of MAPI does not support Fast Shutdown."
+IDS_EDQUERYFASTSHUTDOWNFAILED "QueryFastShutdown returned an error.\r\n\
+Usually this means at least one provider does not support Fast Shutdown."
+IDS_EDNOTIFYPROCESSSHUTDOWNFAILED "NotifyProcessShutdown failed."
+IDS_EDDOFASTSHUTDOWNFAILED "DoFastShutdown failed."
+IDS_EDDOFASTSHUTDOWNSUCCEEDED "DoFastShutdown succeeded. Most MAPI operations should now fail.\r\n\
+Please close MFCMAPI now."
 
 // UpdateStatusBarText - use printf style formatting
 IDS_STATUSTEXTNUMITEMS "Number of items: %d"

@@ -23,6 +23,7 @@
 #include "FileDialogEx.h"
 #include "MAPIMime.h"
 #include "InterpretProp2.h"
+#include "guids.h"
 
 static TCHAR* CLASS = _T("CMainDlg");
 
@@ -67,9 +68,11 @@ BEGIN_MESSAGE_MAP(CMainDlg, CContentsTableDlg)
 	ON_COMMAND(ID_DISPLAYPUBLICFOLDERTABLE, OnDisplayPublicFolderTable)
 	ON_COMMAND(ID_DUMPSTORECONTENTS, OnDumpStoreContents)
 	ON_COMMAND(ID_DUMPSERVERCONTENTSTOTEXT, OnDumpServerContents)
+	ON_COMMAND(ID_FASTSHUTDOWN, OnFastShutdown)
 	ON_COMMAND(ID_ISATTACHMENTBLOCKED,OnIsAttachmentBlocked)
 	ON_COMMAND(ID_LOADMAPI, OnLoadMAPI)
 	ON_COMMAND(ID_LOGOFF, OnLogoff)
+	ON_COMMAND(ID_LOGOFFWITHFLAGS, OnLogoffWithFlags)
 	ON_COMMAND(ID_LOGON, OnLogon)
 	ON_COMMAND(ID_LOGONANDDISPLAYSTORES, OnLogonAndDisplayStores)
 	ON_COMMAND(ID_LOGONWITHFLAGS, OnLogonWithFlags)
@@ -139,6 +142,8 @@ void CMainDlg::OnInitMenu(CMenu* pMenu)
 		pMenu->EnableMenuItem(ID_LOGONWITHFLAGS,DIM(!lpMAPISession && !bInLoadOp));
 		pMenu->CheckMenuItem(ID_LOGON,CHECK(lpMAPISession && !bInLoadOp));
 		pMenu->EnableMenuItem(ID_LOGOFF,DIM(lpMAPISession && !bInLoadOp));
+		pMenu->EnableMenuItem(ID_LOGOFFWITHFLAGS,DIM(lpMAPISession && !bInLoadOp));
+		pMenu->EnableMenuItem(ID_FASTSHUTDOWN,DIM(lpMAPISession));
 		pMenu->EnableMenuItem(ID_ISATTACHMENTBLOCKED,DIM(lpMAPISession));
 		pMenu->EnableMenuItem(ID_VIEWSTATUSTABLE,DIM(lpMAPISession));
 		pMenu->EnableMenuItem(ID_QUERYDEFAULTMESSAGEOPT,DIM(lpMAPISession));
@@ -823,8 +828,39 @@ void CMainDlg::OnLogoff()
 		dfNormal,
 		MAPI_STORE));
 
-	m_lpMapiObjects->Logoff();
+	m_lpMapiObjects->Logoff(m_hWnd, MAPI_LOGOFF_UI);
 } // CMainDlg::OnLogoff
+
+void CMainDlg::OnLogoffWithFlags()
+{
+	if (m_lpContentsTableListCtrl && m_lpContentsTableListCtrl->IsLoading()) return;
+	HRESULT hRes = S_OK;
+
+	if (!m_lpMapiObjects) return;
+
+	CEditor MyData(
+		this,
+		IDS_LOGOFF,
+		IDS_LOGOFFPROMPT,
+		1,
+		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+	MyData.InitSingleLine(0,IDS_FLAGSINHEX,NULL,false);
+	MyData.SetHex(0,MAPI_LOGOFF_UI);
+
+	WC_H(MyData.DisplayDialog());
+	if (S_OK == hRes)
+	{
+		OnCloseAddressBook();
+
+		// We do this first to free up any stray session pointers
+		EC_H(m_lpContentsTableListCtrl->SetContentsTable(
+			NULL,
+			dfNormal,
+			MAPI_STORE));
+
+		m_lpMapiObjects->Logoff(m_hWnd, MyData.GetHex(0));
+	}
+} // CMainDlg::OnLogoffWithFlags
 
 void CMainDlg::OnLogon()
 {
@@ -1118,6 +1154,40 @@ void CMainDlg::OnMAPIUninitialize()
 		m_lpMapiObjects->MAPIUninitialize();
 	}
 } // CMainDlg::OnMAPIUninitialize
+
+void CMainDlg::OnFastShutdown()
+{
+	HRESULT hRes = S_OK;
+	if (!m_lpMapiObjects) return;
+	LPMAPISESSION lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
+	if (!lpMAPISession) return;
+
+	LPMAPICLIENTSHUTDOWN lpClientShutdown = NULL;
+
+	EC_H_MSG(lpMAPISession->QueryInterface(IID_IMAPIClientShutdown,(LPVOID*) &lpClientShutdown),IDS_EDNOMAPICLIENTSHUTDOWN);
+
+	if (SUCCEEDED(hRes) && lpClientShutdown)
+	{
+		EC_H_MSG(lpClientShutdown->QueryFastShutdown(),IDS_EDQUERYFASTSHUTDOWNFAILED);
+
+		HRESULT hResNotify = NULL;
+
+		hResNotify = lpClientShutdown->NotifyProcessShutdown();
+		CHECKHRESMSG(hResNotify,IDS_EDNOTIFYPROCESSSHUTDOWNFAILED);
+
+		if (SUCCEEDED(hRes))
+		{
+			EC_H_MSG(lpClientShutdown->DoFastShutdown(),IDS_EDDOFASTSHUTDOWNFAILED);
+
+			if (SUCCEEDED(hRes))
+			{
+				ErrDialog(__FILE__,__LINE__,IDS_EDDOFASTSHUTDOWNSUCCEEDED);
+			}
+		}
+	}
+
+	if (lpClientShutdown) lpClientShutdown->Release();
+}
 
 void CMainDlg::OnQueryDefaultMessageOpt()
 {

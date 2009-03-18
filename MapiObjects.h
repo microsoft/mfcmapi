@@ -30,7 +30,7 @@ public:
 	void	SetAddrBook(LPADRBOOK lpAddrBook);
 	void	SetMDB(LPMDB lppMDB);
 	void	MAPILogonEx(HWND hwnd,LPTSTR szProfileName, ULONG ulFlags);
-	void	Logoff();
+	void	Logoff(HWND hwnd, ULONG ulFlags);
 
 	// For copy buffer
 	LPENTRYLIST		GetABEntriesToCopy();

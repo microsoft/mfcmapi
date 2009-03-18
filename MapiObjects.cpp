@@ -298,14 +298,14 @@ void CMapiObjects::MAPILogonEx(HWND hwnd,LPTSTR szProfileName, ULONG ulFlags)
 	DebugPrint(DBGGeneric,_T("\tm_lpMAPISession set to 0x%X\n"),m_lpMAPISession);
 } // CMapiObjects::MAPILogonEx
 
-void CMapiObjects::Logoff()
+void CMapiObjects::Logoff(HWND hwnd, ULONG ulFlags)
 {
 	HRESULT hRes = S_OK;
-	DebugPrint(DBGGeneric,_T("Logging off of 0x%X\n"),m_lpMAPISession);
+	DebugPrint(DBGGeneric,_T("Logging off of 0x%X, ulFlags = 0x%08X\n"),m_lpMAPISession,ulFlags);
 
 	if (m_lpMAPISession)
 	{
-		EC_H(m_lpMAPISession->Logoff(NULL,MAPI_LOGOFF_UI,NULL));
+		EC_H(m_lpMAPISession->Logoff((ULONG_PTR)hwnd,ulFlags,NULL));
 		m_lpMAPISession->Release();
 		m_lpMAPISession = NULL;
 	}

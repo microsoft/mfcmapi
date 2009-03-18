@@ -47,6 +47,15 @@ DEFINE_GUID(_name, (0x29F3AB10 + _l), 0x554D, 0x11D0, 0xA9,		\
 #endif // !DEFINE_PRXGUID
 DEFINE_PRXGUID(IID_IProxyStoreObject, 0x00000000L);
 
+// http://blogs.msdn.com/stephen_griffin/archive/2009/03/03/fastest-shutdown-in-the-west.aspx
+#if !defined(INITGUID) || defined(USES_IID_IMAPIClientShutdown)
+DEFINE_OLEGUID(IID_IMAPIClientShutdown, 0x00020397, 0, 0);
+#endif
+
+#if !defined(INITGUID) || defined(USES_IID_IMAPIProviderShutdown)
+DEFINE_OLEGUID(IID_IMAPIProviderShutdown, 0x00020398, 0, 0);
+#endif
+
 // Sometimes IExchangeManageStore5 is in edkmdb.h, sometimes it isn't
 #ifdef USES_IID_IExchangeManageStore5
 DEFINE_GUID(IID_IExchangeManageStore5,0x7907dd18, 0xf141, 0x4676, 0xb1, 0x02, 0x37, 0xc9, 0xd9, 0x36, 0x34, 0x30);
@@ -66,4 +75,34 @@ DEFINE_GUID(CLSID_IConverterSession, 0x4e3a7680, 0xb77a, 0x11d0, 0x9d, 0xa5, 0x0
 DEFINE_GUID(IID_IConverterSession, 0x4b401570, 0xb77b, 0x11d0, 0x9d, 0xa5, 0x0, 0xc0, 0x4f, 0xd6, 0x56, 0x85);
 
 DEFINE_OLEGUID(PSUNKNOWN, MAKELONG(0x2000+(999),0x0006),0,0);
+
+// [MS-OXCDATA].pdf
+// Exchange Private Store Provider
+// {20FA551B-66AA-CD11-9BC8-00AA002FC45A}
+DEFINE_GUID(g_muidStorePrivate, 0x20FA551B, 0x66AA, 0xCD11, 0x9B, 0xC8, 0x00, 0xAA, 0x00, 0x2F, 0xC4, 0x5A);
+
+// Exchange Public Store Provider
+// {1002831C-66AA-CD11-9BC8-00AA002FC45A}
+DEFINE_GUID(g_muidStorePublic, 0x1002831C, 0x66AA, 0xCD11, 0x9B, 0xC8, 0x00, 0xAA, 0x00, 0x2F, 0xC4, 0x5A);
+
+// Contact Provider
+// {0AAA42FE-C718-101A-E885-0B651C240000}
+DEFINE_GUID(muidContabDLL, 0x0AAA42FE, 0xC718, 0x101A, 0xe8, 0x85, 0x0B, 0x65, 0x1C, 0x24, 0x00, 0x00);
+
+// Exchange Public Folder Store Provider
+// {9073441A-66AA-CD11-9BC8-00AA002FC45A}
+DEFINE_GUID(pbLongTermNonPrivateGuid, 0x9073441A, 0x66AA, 0xCD11, 0x9b, 0xc8, 0x00, 0xaa, 0x00, 0x2f, 0xc4, 0x5a);
+
+// One Off Entry Provider
+// {A41F2B81-A3BE-1910-9D6E-00DD010F5402}
+DEFINE_GUID(muidOOP, 0xA41F2B81, 0xA3BE, 0x1910, 0x9d, 0x6e, 0x00, 0xdd, 0x01, 0x0f, 0x54, 0x02);
+
+// MAPI Wrapped Message Store Provider
+// {10BBA138-E505-1A10-A1BB-08002B2A56C2}
+DEFINE_GUID(muidStoreWrap, 0x10BBA138, 0xE505, 0x1A10, 0xa1, 0xbb, 0x08, 0x00, 0x2b, 0x2a, 0x56, 0xc2);
+
+// Exchange Address Book Provider
+// {C840A7DC-42C0-1A10-B4B9-08002B2FE182}
+DEFINE_GUID(muidEMSAB, 0xC840A7DC, 0x42C0, 0x1A10, 0xB4, 0xB9, 0x08, 0x00, 0x2B, 0x2F, 0xE1, 0x82);
+
 #endif // MFCMAPIGUID_INCLUDED

@@ -815,7 +815,7 @@ void _OutputStream(ULONG ulDbgLvl, FILE* fFile, LPSTREAM lpStream)
 	EARLYABORT;
 	HRESULT			hRes = S_OK;
 	BYTE			bBuf[MAXBYTES+2]; // Allocate some extra for NULL terminators - 2 for Unicode
-	ULONG			ulNumBytes = MAXBYTES;
+	ULONG			ulNumBytes = 0;
 	LARGE_INTEGER	li = {0};
 
 	if (!lpStream)
@@ -832,6 +832,7 @@ void _OutputStream(ULONG ulDbgLvl, FILE* fFile, LPSTREAM lpStream)
 	if (S_OK == hRes) do
 	{
 		hRes = S_OK;
+		ulNumBytes = 0;
 		EC_H(lpStream->Read(
 			bBuf,
 			MAXBYTES,
@@ -844,7 +845,7 @@ void _OutputStream(ULONG ulDbgLvl, FILE* fFile, LPSTREAM lpStream)
 			_Output(ulDbgLvl, fFile, true, (TCHAR*)bBuf);
 		}
 	}
-	while (ulNumBytes >= MAXBYTES);
+	while (ulNumBytes > 0);
 
 } // _OutputStream
 

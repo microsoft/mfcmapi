@@ -671,26 +671,30 @@ HRESULT HrAddPSTToProfile(
 						  IN ULONG_PTR ulUIParam, // hwnd for CreateMsgService
 						  BOOL bUnicodePST,
 						  IN LPTSTR lpszPSTPath, // PST name
-						  IN LPSTR lpszProfileName) // profile name
+						  IN LPSTR lpszProfileName, // profile name
+						  BOOL bPasswordSet, // whether or not to include a password
+						  IN LPSTR lpszPassword) // password to include
 {
 	HRESULT			hRes = S_OK;
 
-	DebugPrint(DBGGeneric,_T("HrAddPSTToProfile(%0x08X,%s,%hs)\n"),bUnicodePST,lpszPSTPath,lpszProfileName);
+	DebugPrint(DBGGeneric,_T("HrAddPSTToProfile(0x%X,%s,%hs,0x%X,%s)\n"),bUnicodePST,lpszPSTPath,lpszProfileName,bPasswordSet,lpszPassword);
 
 	if (!lpszPSTPath || !lpszProfileName) return MAPI_E_INVALID_PARAMETER;
 
-	SPropValue	PropVal;
+	SPropValue PropVal[2];
 
-	PropVal.ulPropTag = CHANGE_PROP_TYPE(PR_PST_PATH, PT_TSTRING);
-	PropVal.Value.LPSZ = lpszPSTPath;
+	PropVal[0].ulPropTag = CHANGE_PROP_TYPE(PR_PST_PATH, PT_TSTRING);
+	PropVal[0].Value.LPSZ = lpszPSTPath;
+	PropVal[1].ulPropTag = PR_PST_PW_SZ_OLD;
+	PropVal[1].Value.lpszA = lpszPassword;
 
 	if (bUnicodePST)
 	{
-		EC_H(HrAddServiceToProfile("MSUPST MS",ulUIParam,NULL,1,&PropVal,lpszProfileName)); // STRING_OK
+		EC_H(HrAddServiceToProfile("MSUPST MS",ulUIParam,NULL,bPasswordSet?2:1,PropVal,lpszProfileName)); // STRING_OK
 	}
 	else
 	{
-		EC_H(HrAddServiceToProfile("MSPST MS",ulUIParam,NULL,1,&PropVal,lpszProfileName)); // STRING_OK
+		EC_H(HrAddServiceToProfile("MSPST MS",ulUIParam,NULL,bPasswordSet?2:1,PropVal,lpszProfileName)); // STRING_OK
 	}
 
 	return hRes;
