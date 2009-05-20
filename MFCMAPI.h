@@ -3,7 +3,7 @@
 //
 
 // Version history:
-// 1 
+// 1
 //    Original, unversioned header
 // 2
 //    NAMEID_ARRAY_ENTRY augmented with ulType and lpszArea

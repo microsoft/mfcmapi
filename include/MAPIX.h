@@ -3,7 +3,7 @@
  *
  *	Definitions of objects/flags, etc used by Extended MAPI.
  *
- *  Copyright 1986-1999 Microsoft Corporation. All Rights Reserved.
+ *  Copyright 1986-2010 Microsoft Corporation. All Rights Reserved.
  */
 
 #ifndef MAPIX_H
@@ -101,8 +101,8 @@ MAPIUNINITIALIZE	MAPIUninitialize;
 
 typedef HRESULT (STDMETHODCALLTYPE MAPILOGONEX)(
 	ULONG_PTR ulUIParam,
-	LPTSTR lpszProfileName,
-	LPTSTR lpszPassword,
+	/*OFFICEDEV add _opt*/ __in_opt LPTSTR lpszProfileName,
+	/*OFFICEDEV add _opt*/ __in_opt LPTSTR lpszPassword,
 	ULONG ulFlags,   /*  ulFlags takes all that SimpleMAPI does + MAPI_UNICODE */
 	LPMAPISESSION FAR * lppSession
 );

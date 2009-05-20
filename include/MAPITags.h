@@ -41,7 +41,7 @@
  *	3D00	3DFF	Profile section
  *	3E00	3FFF	Status object
  *
- *  Copyright 1986-1999 Microsoft Corporation. All Rights Reserved.
+ *  Copyright 1986-2010 Microsoft Corporation. All Rights Reserved.
  */
 
 #ifndef	MAPITAGS_H

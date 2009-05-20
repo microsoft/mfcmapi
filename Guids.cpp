@@ -15,6 +15,7 @@
 #define USES_IID_IMAPIProp
 #define USES_IID_IPersistMessage
 #define USES_IID_IMessage
+#define USES_IID_IAttachment
 #define USES_IID_IUnknown
 #define USES_IID_IABContainer
 #define USES_IID_IDistList

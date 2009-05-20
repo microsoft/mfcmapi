@@ -25,7 +25,8 @@ struct DropDownStruct
 	CComboBox	DropDown; // UI Control
 	ULONG		ulDropList; // count of entries in szDropList
 	UINT*		lpuidDropList;
-	int			iDropValue;
+	int			iDropSelection;
+	DWORD_PTR	iDropSelectionValue;
 };
 
 struct CheckStruct
@@ -131,6 +132,7 @@ public:
 	ULONG	GetDecimal(ULONG i);
 	BOOL	GetCheck(ULONG i);
 	int		GetDropDown(ULONG i);
+	DWORD_PTR GetDropDownValue(ULONG i);
 	HRESULT GetEntryID(ULONG i, BOOL bIsBase64, size_t* cbBin, LPENTRYID* lpEID);
 
 	// AddIn functions
@@ -161,6 +163,7 @@ protected:
 	LPWSTR	GetEditBoxTextW(ULONG iControl);
 	void	GetEditBoxStream(ULONG iControl, LPSTREAM lpStreamOut, BOOL bUnicode, BOOL bRTF);
 	int		GetDropDownSelection(ULONG iControl);
+	DWORD_PTR GetDropDownSelectionValue(ULONG iControl);
 	ULONG	GetListCount(ULONG iControl);
 	SortListData* GetListRowData(ULONG iControl, int iRow);
 	SortListData* GetSelectedListRowData(ULONG iControl);

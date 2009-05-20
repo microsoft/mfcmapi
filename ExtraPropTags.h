@@ -843,3 +843,20 @@ enum EEmailIndex
 	EEI_FAX_3,
 };
 #define EMAIL_TYPE_UNDEFINED 0xFF
+
+#define dispidEmail1OriginalEntryID 0x8085
+#define dispidEmail2OriginalEntryID 0x8095
+#define dispidEmail3OriginalEntryID 0x80A5
+#define dispidFax1EntryID 0x80B5
+#define dispidFax2EntryID 0x80C5
+#define dispidFax3EntryID 0x80D5
+#define dispidSelectedOriginalEntryID 0x800A
+#define dispidAnniversaryEventEID 0x804E
+#define dispidOrigStoreEid 0x8237
+#define dispidReferenceEID 0x85BD
+#define dispidSharingInitiatorEid 0x8A09
+#define dispidSharingFolderEid 0x8A15
+#define dispidSharingOriginalMessageEid 0x8A29
+#define dispidSharingBindingEid 0x8A2D
+#define dispidSharingIndexEid 0x8A2E
+#define dispidSharingParentBindingEid 0x8A5C

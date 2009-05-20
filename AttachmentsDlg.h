@@ -20,6 +20,8 @@ private:
 		LPADDINMENUPARAMS lpParams,
 		LPMAPIPROP lpMAPIProp,
 		LPMAPICONTAINER lpContainer);
+	BOOL HandleCopy();
+	BOOL HandlePaste();
 	void OnDeleteSelectedItem();
 	void OnInitMenu(CMenu* pMenu);
 	HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, LPMAPIPROP* lppMAPIProp);

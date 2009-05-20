@@ -3,7 +3,7 @@
  *
  *  MAPI OID definition header file
  *
- *  Copyright 1986-1999 Microsoft Corporation. All Rights Reserved.
+ *  Copyright 1986-2010 Microsoft Corporation. All Rights Reserved.
  */
 
 #ifndef _MAPIOID_
@@ -43,16 +43,16 @@
 #define OID_ENCODING    0x0B
 
 #define DEFINE_OID_1(name, b0, b1) \
-    EXTERN_C const BYTE FAR * name
+    EXTERN_C const BYTE name[]
 
 #define DEFINE_OID_2(name, b0, b1, b2) \
-    EXTERN_C const BYTE FAR * name
+    EXTERN_C const BYTE name[]
 
 #define DEFINE_OID_3(name, b0, b1, b2, b3) \
-    EXTERN_C const BYTE FAR * name
+    EXTERN_C const BYTE name[]
 
 #define DEFINE_OID_4(name, b0, b1, b2, b3, b4) \
-    EXTERN_C const BYTE FAR * name
+    EXTERN_C const BYTE name[]
 
 #define CB_OID_1        9
 #define CB_OID_2        10

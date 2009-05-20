@@ -4,7 +4,7 @@
  *  Definitions and prototypes for utility functions provided by MAPI
  *  in MAPI[xx].DLL.
  *
- *  Copyright 1986-1999 Microsoft Corporation. All Rights Reserved.
+ *  Copyright 1986-2010 Microsoft Corporation. All Rights Reserved.
  */
 
 #ifndef _MAPIUTIL_H_
@@ -26,10 +26,6 @@ extern "C" {
 #include <mapix.h>
 #endif
 
-#ifdef WIN16
-#include <storage.h>
-#endif
-
 #ifndef BEGIN_INTERFACE
 #define BEGIN_INTERFACE
 #endif
@@ -42,7 +38,7 @@ extern "C" {
 DECLARE_MAPI_INTERFACE_PTR(ITableData, LPTABLEDATA);
 
 typedef void (STDAPICALLTYPE CALLERRELEASE)(
-	ULONG		ulCallerData,
+	ULONG_PTR		ulCallerData,
 	LPTABLEDATA	lpTblData,
 	LPMAPITABLE	lpVue
 );
@@ -51,7 +47,7 @@ typedef void (STDAPICALLTYPE CALLERRELEASE)(
 	MAPIMETHOD(HrGetView)												\
 		(THIS_	LPSSortOrderSet				lpSSortOrderSet,			\
 				CALLERRELEASE FAR *			lpfCallerRelease,			\
-				ULONG						ulCallerData,				\
+				ULONG_PTR					ulCallerData,				\
 				LPMAPITABLE FAR *			lppMAPITable) IPURE;		\
 	MAPIMETHOD(HrModifyRow)												\
 		(THIS_	LPSRow) IPURE;											\
@@ -489,23 +485,20 @@ STDMETHODIMP OpenStreamOnFile(
 	LPALLOCATEBUFFER	lpAllocateBuffer,
 	LPFREEBUFFER		lpFreeBuffer,
 	ULONG				ulFlags,
-	LPTSTR				lpszFileName,
-	LPTSTR				lpszPrefix,
+	__in LPCTSTR		lpszFileName,
+	__in_opt LPCTSTR	lpszPrefix,
 	LPSTREAM FAR *		lppStream);
 
 typedef HRESULT (STDMETHODCALLTYPE FAR * LPOPENSTREAMONFILE) (
 	LPALLOCATEBUFFER	lpAllocateBuffer,
 	LPFREEBUFFER		lpFreeBuffer,
 	ULONG				ulFlags,
-	LPTSTR				lpszFileName,
-	LPTSTR				lpszPrefix,
+	__in LPCTSTR		lpszFileName,
+	__in_opt LPCTSTR	lpszPrefix,
 	LPSTREAM FAR *		lppStream);
 
 #ifdef	_WIN32
 #define OPENSTREAMONFILE "OpenStreamOnFile"
-#endif
-#ifdef	WIN16
-#define OPENSTREAMONFILE "_OPENSTREAMONFILE"
 #endif
 
 
@@ -740,16 +733,16 @@ STDAPI					HrValidateIPMSubtree(LPMDB lpMDB, ULONG ulFlags,
 
 /* Encoding and decoding strings */
 
-STDAPI_(BOOL)			FBinFromHex(LPTSTR lpsz, LPBYTE lpb);
-STDAPI_(SCODE)			ScBinFromHexBounded(LPTSTR lpsz, LPBYTE lpb, ULONG cb);
-STDAPI_(void)			HexFromBin(LPBYTE lpb, int cb, LPTSTR lpsz);
+STDAPI_(BOOL)			FBinFromHex(__in LPTSTR lpsz, LPBYTE lpb);
+STDAPI_(SCODE)			ScBinFromHexBounded(__in LPTSTR lpsz, LPBYTE lpb, ULONG cb);
+STDAPI_(void)			HexFromBin(LPBYTE lpb, int cb, __in LPTSTR lpsz);
 STDAPI_(ULONG)			UlFromSzHex(LPCTSTR lpsz);
 
 /* Encoding and decoding entry IDs */
-STDAPI					HrEntryIDFromSz(LPTSTR lpsz, ULONG FAR *lpcb,
+STDAPI					HrEntryIDFromSz(__in LPTSTR lpsz, ULONG FAR *lpcb,
 						LPENTRYID FAR *lppEntryID);
 STDAPI					HrSzFromEntryID(ULONG cb, LPENTRYID lpEntryID,
-						LPTSTR FAR *lpsz);
+						__in LPTSTR FAR *lpsz);
 STDAPI					HrComposeEID(LPMAPISESSION lpSession,
 						ULONG cbStoreRecordKey, LPBYTE lpStoreRecordKey,
 						ULONG cbMsgEntryID, LPENTRYID lpMsgEntryID,
@@ -763,9 +756,9 @@ STDAPI					HrDecomposeEID(LPMAPISESSION lpSession,
 STDAPI					HrComposeMsgID(LPMAPISESSION lpSession,
 						ULONG cbStoreSearchKey, LPBYTE pStoreSearchKey,
 						ULONG cbMsgEntryID, LPENTRYID lpMsgEntryID,
-						LPTSTR FAR *lpszMsgID);
+						__in LPTSTR FAR *lpszMsgID);
 STDAPI					HrDecomposeMsgID(LPMAPISESSION lpSession,
-						LPTSTR lpszMsgID,
+						__in LPTSTR lpszMsgID,
 						ULONG FAR *lpcbStoreEntryID,
 						LPENTRYID FAR *lppStoreEntryID,
 						ULONG FAR *lppcbMsgEntryID,
@@ -779,9 +772,9 @@ STDAPI_(LPTSTR)			SzFindLastCh(LPCTSTR lpsz, USHORT ch);	/* strrchr */
 STDAPI_(LPTSTR)			SzFindSz(LPCTSTR lpsz, LPCTSTR lpszKey); /*strstr */
 STDAPI_(unsigned int)	UFromSz(LPCTSTR lpsz);					/* atoi */
 
-STDAPI_(SCODE)			ScUNCFromLocalPath(LPSTR lpszLocal, LPSTR lpszUNC,
+STDAPI_(SCODE)			ScUNCFromLocalPath(__in LPSTR lpszLocal, __in LPSTR lpszUNC,
 						UINT cchUNC);
-STDAPI_(SCODE)			ScLocalPathFromUNC(LPSTR lpszUNC, LPSTR lpszLocal,
+STDAPI_(SCODE)			ScLocalPathFromUNC(__in LPSTR lpszUNC, __in LPSTR lpszLocal,
 						UINT cchLocal);
 
 /* 64-bit arithmetic with times */
@@ -801,7 +794,7 @@ STDAPI_(SCODE)			ScCreateConversationIndex (ULONG cbParent,
 
 /* Store support */
 
-STDAPI WrapStoreEntryID (ULONG ulFlags, LPTSTR lpszDLLName, ULONG cbOrigEntry,
+STDAPI WrapStoreEntryID (ULONG ulFlags, __in LPTSTR lpszDLLName, ULONG cbOrigEntry,
 	LPENTRYID lpOrigEntry, ULONG *lpcbWrappedEntry, LPENTRYID *lppWrappedEntry);
 
 /* RTF Sync Utilities */
@@ -810,7 +803,7 @@ STDAPI WrapStoreEntryID (ULONG ulFlags, LPTSTR lpszDLLName, ULONG cbOrigEntry,
 #define RTF_SYNC_BODY_CHANGED	((ULONG) 0x00000002)
 
 STDAPI_(HRESULT)
-RTFSync (LPMESSAGE lpMessage, ULONG ulFlags, BOOL FAR * lpfMessageUpdated);
+RTFSync (LPMESSAGE lpMessage, ULONG ulFlags, __out BOOL FAR * lpfMessageUpdated);
 
 
 /* Flags for WrapCompressedRTFStream() */
@@ -819,8 +812,8 @@ RTFSync (LPMESSAGE lpMessage, ULONG ulFlags, BOOL FAR * lpfMessageUpdated);
 /****** STORE_UNCOMPRESSED_RTF	((ULONG) 0x00008000) mapidefs.h */
 
 STDAPI_(HRESULT)
-WrapCompressedRTFStream (LPSTREAM lpCompressedRTFStream,
-		ULONG ulFlags, LPSTREAM FAR * lpUncompressedRTFStream);
+WrapCompressedRTFStream (__in LPSTREAM lpCompressedRTFStream,
+		ULONG ulFlags, __out LPSTREAM FAR * lpUncompressedRTFStream);
 
 /* Storage on Stream */
 
@@ -860,8 +853,6 @@ STDAPI_(VOID)			DeinitMapiUtil(VOID);
 #define szHrDispatchNotifications "HrDispatchNotifications"
 #elif defined (_WIN32) && defined (_X86_)
 #define szHrDispatchNotifications "_HrDispatchNotifications@4"
-#elif defined (_ALPHA_) || defined (_MIPS_) || defined (_PPC_) || defined(_IA64_)
-#define szHrDispatchNotifications "HrDispatchNotifications"
 #endif
 
 typedef HRESULT (STDAPICALLTYPE DISPATCHNOTIFICATIONS)(ULONG ulFlags);
@@ -871,8 +862,6 @@ typedef DISPATCHNOTIFICATIONS FAR * LPDISPATCHNOTIFICATIONS;
 #define szScCreateConversationIndex "ScCreateConversationIndex"
 #elif defined (_WIN32) && defined (_X86_)
 #define szScCreateConversationIndex "_ScCreateConversationIndex@16"
-#elif defined (_ALPHA_) || defined (_MIPS_) || defined (_PPC_) || defined(_IA64_)
-#define szScCreateConversationIndex "ScCreateConversationIndex"
 #endif
 
 typedef SCODE (STDAPICALLTYPE CREATECONVERSATIONINDEX)(ULONG cbParent,

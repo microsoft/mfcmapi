@@ -488,9 +488,10 @@ void _OutputTable(ULONG ulDbgLvl, FILE* fFile, LPMAPITABLE lpMAPITable)
 			20,
 			NULL,
 			&lpRows));
-		if (FAILED(hRes) || !lpRows || (lpRows && !lpRows->cRows)) break;
+		if (FAILED(hRes) || !lpRows || !lpRows->cRows) break;
 
-		for(ULONG iCurRow = 0; iCurRow<lpRows->cRows; iCurRow++)
+		ULONG iCurRow = 0;
+		for (iCurRow = 0; iCurRow<lpRows->cRows; iCurRow++)
 		{
 			hRes = S_OK;
 			Outputf(ulDbgLvl,fFile,true,_T("Row 0x%X of 0x%X\n"),iCurRow+1,lpRows->cRows);

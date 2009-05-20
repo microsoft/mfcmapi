@@ -4,7 +4,7 @@
  *	Declarations of interfaces for clients and providers of MAPI
  *  forms and form registries.
  *
- *  Copyright 1986-1999 Microsoft Corporation. All Rights Reserved.
+ *  Copyright 1986-2010 Microsoft Corporation. All Rights Reserved.
  */
 
 #ifndef MAPIFORM_H
@@ -165,7 +165,7 @@ DECLARE_MAPI_INTERFACE_(IMAPIMessageSite, IUnknown)
         /*in*/  LPMAPIVIEWCONTEXT pViewContext) IPURE;                  \
     MAPIMETHOD(GetViewContext) (THIS_                                   \
         /*out*/ LPMAPIVIEWCONTEXT FAR * ppViewContext) IPURE;           \
-    MAPIMETHOD(ShutdownForm)(THIS_                                             \
+    MAPIMETHOD(ShutdownForm)(THIS_                                      \
         /*in*/  ULONG ulSaveOptions) IPURE;                             \
     MAPIMETHOD(DoVerb) (THIS_                                           \
         /*in*/  LONG iVerb,                                             \
@@ -174,7 +174,7 @@ DECLARE_MAPI_INTERFACE_(IMAPIMessageSite, IUnknown)
         /*in*/  LPCRECT lprcPosRect) IPURE;                             \
     MAPIMETHOD(Advise)(THIS_                                            \
         /*in*/  LPMAPIVIEWADVISESINK pAdvise,                           \
-        /*out*/ ULONG FAR * pdwStatus) IPURE;                           \
+        /*out*/ ULONG_PTR FAR * pdwStatus) IPURE;                       \
     MAPIMETHOD(Unadvise) (THIS_                                         \
         /*in*/  ULONG_PTR ulConnection) IPURE;                          \
 
@@ -553,6 +553,8 @@ DECLARE_MAPI_INTERFACE_(IMAPIFormMgr, IUnknown)
 #define MAPIFORM_OS_WIN_95              3
 #define MAPIFORM_OS_MAC_7x              4
 #define MAPIFORM_OS_WINNT_40            5
+#define MAPIFORM_OS_WINNT_50            6
+#define MAPIFORM_OS_WINNT_60            7
 
 #define MAPIFORM_PLATFORM(CPU, OS) ((ULONG) ((((ULONG) CPU) << 16) | OS))
 
@@ -627,5 +629,3 @@ DECLARE_MAPI_INTERFACE_(IMAPIFormFactory, IUnknown)
 };
 
 #endif							/* MAPIFORM_H */
-
-

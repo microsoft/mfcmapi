@@ -374,6 +374,7 @@ void GUIDNameToGUID(LPCTSTR szGUID, LPCGUID* lpGUID)
 LPCWSTR NameIDToPropName(LPMAPINAMEID lpNameID)
 {
 	if (!lpNameID) return NULL;
+	if (!lpNameID->lpguid) return NULL;
 	if (lpNameID->ulKind != MNID_ID) return NULL;
 	HRESULT hRes = S_OK;
 	ULONG	ulCur = 0;
@@ -404,7 +405,7 @@ LPCWSTR NameIDToPropName(LPMAPINAMEID lpNameID)
 		{
 			break;
 		}
-		if (IsEqualGUID(*lpNameID->lpguid,*NameIDArray[ulCur].lpGuid))
+		if (NameIDArray[ulCur].lpGuid && IsEqualGUID(*lpNameID->lpguid,*NameIDArray[ulCur].lpGuid))
 		{
 			EC_H(StringCchLengthW(NameIDArray[ulCur].lpszName,STRSAFE_MAX_CCH,&cchLen));
 			cchResultString += cchLen;
@@ -429,7 +430,7 @@ LPCWSTR NameIDToPropName(LPMAPINAMEID lpNameID)
 			{
 				break;
 			}
-			if (IsEqualGUID(*lpNameID->lpguid,*NameIDArray[ulCur].lpGuid))
+			if (NameIDArray[ulCur].lpGuid && IsEqualGUID(*lpNameID->lpguid,*NameIDArray[ulCur].lpGuid))
 			{
 				EC_H(StringCchCatW(szResultString,cchResultString,NameIDArray[ulCur].lpszName));
 				if (--ulNumMatches > 0)
@@ -746,10 +747,29 @@ CString AllFlagsToString(const ULONG ulFlagName,BOOL bHex)
 	return szFlagString;
 }
 
+UINT g_uidParsingTypesDropDown[] = {
+	IDS_STTIMEZONEDEFINITION,
+	IDS_STTIMEZONE,
+	IDS_STSECURITYDESCRIPTOR,
+	IDS_STEXTENDEDFOLDERFLAGS,
+	IDS_STAPPOINTMENTRECURRENCEPATTERN,
+	IDS_STRECURRENCEPATTERN,
+	IDS_STREPORTTAG,
+	IDS_STCONVERSATIONINDEX,
+	IDS_STTASKASSIGNERS,
+	IDS_STGLOBALOBJECTID,
+	IDS_STENTRYID,
+	IDS_STENTRYLIST,
+	IDS_STPROPERTY,
+	IDS_STRESTRICTION,
+	IDS_STSEARCHFOLDERDEFINITION,
+};
+ULONG g_cbuidParsingTypesDropDown = sizeof(g_uidParsingTypesDropDown)/sizeof(UINT);
+
 struct BINARY_STRUCTURE_ARRAY_ENTRY
 {
 	ULONG	ulIndex;
-	MAPIStructType myStructType;
+	ULONG	iStructType;
 };
 typedef BINARY_STRUCTURE_ARRAY_ENTRY FAR * LPBINARY_STRUCTURE_ARRAY_ENTRY;
 
@@ -758,98 +778,115 @@ typedef BINARY_STRUCTURE_ARRAY_ENTRY FAR * LPBINARY_STRUCTURE_ARRAY_ENTRY;
 
 BINARY_STRUCTURE_ARRAY_ENTRY g_BinaryStructArray[] =
 {
-	BINARY_STRUCTURE_ENTRY(PR_FREEBUSY_NT_SECURITY_DESCRIPTOR,stSecurityDescriptor)
-	BINARY_STRUCTURE_ENTRY(PR_NT_SECURITY_DESCRIPTOR,stSecurityDescriptor)
-	BINARY_STRUCTURE_ENTRY(PR_EXTENDED_FOLDER_FLAGS,stExtendedFolderFlags)
-	BINARY_STRUCTURE_ENTRY(PR_REPORT_TAG,stReportTag)
-	BINARY_STRUCTURE_ENTRY(PR_CONVERSATION_INDEX,stConversationIndex)
+	BINARY_STRUCTURE_ENTRY(PR_FREEBUSY_NT_SECURITY_DESCRIPTOR,IDS_STSECURITYDESCRIPTOR)
+	BINARY_STRUCTURE_ENTRY(PR_NT_SECURITY_DESCRIPTOR,IDS_STSECURITYDESCRIPTOR)
+	BINARY_STRUCTURE_ENTRY(PR_EXTENDED_FOLDER_FLAGS,IDS_STEXTENDEDFOLDERFLAGS)
+	BINARY_STRUCTURE_ENTRY(PR_REPORT_TAG,IDS_STREPORTTAG)
+	BINARY_STRUCTURE_ENTRY(PR_CONVERSATION_INDEX,IDS_STCONVERSATIONINDEX)
+	BINARY_STRUCTURE_ENTRY(PR_WB_SF_DEFINITION,IDS_STSEARCHFOLDERDEFINITION)
 
-	BINARY_STRUCTURE_ENTRY(PR_RECEIVED_BY_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_SENT_REPRESENTING_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_RCVD_REPRESENTING_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_REPORT_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_READ_RECEIPT_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_ORIGINAL_AUTHOR_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_ORIGINAL_SENDER_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_ORIGINAL_SENT_REPRESENTING_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_SENDER_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_PARENT_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_SENTMAIL_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_STORE_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_ORIGINALLY_INTENDED_RECIP_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_IPM_SUBTREE_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_IPM_OUTBOX_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_IPM_WASTEBASKET_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_IPM_SENTMAIL_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_VIEWS_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_COMMON_VIEWS_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_FINDER_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_DEFAULT_VIEW_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_IPM_APPOINTMENT_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_IPM_CONTACT_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_IPM_JOURNAL_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_IPM_NOTE_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_IPM_TASK_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_REM_ONLINE_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_REM_OFFLINE_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_IPM_DRAFTS_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_ORIGINAL_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_IDENTITY_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_OWN_STORE_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_HEADER_FOLDER_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_CONFLICT_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_MOVE_TO_STORE_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_MOVE_TO_FOLDER_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_CREATOR_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_LAST_MODIFIER_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_RECIPIENT_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_USER_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_MAILBOX_OWNER_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_SCHEDULE_FOLDER_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_IPM_DAF_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_NON_IPM_SUBTREE_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_EFORMS_REGISTRY_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_SPLUS_FREE_BUSY_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_OFFLINE_ADDRBOOK_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_EFORMS_FOR_LOCALE_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_FREE_BUSY_FOR_LOCAL_SITE_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_ADDRBOOK_FOR_LOCAL_SITE_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_OFFLINE_MESSAGE_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_GW_MTSIN_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_GW_MTSOUT_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_IPM_FAVORITES_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_IPM_PUBLIC_FOLDERS_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_SYS_CONFIG_FOLDER_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_ADDRESS_BOOK_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_PUBLIC_FOLDER_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_DAM_ORIGINAL_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_RULE_FOLDER_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_ACTIVE_USER_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_ORIGINATOR_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_REPORT_DESTINATION_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_LONGTERM_ENTRYID_FROM_TABLE,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_EVENTS_ROOT_FOLDER_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_NNTP_ARTICLE_FOLDER_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_NEWSGROUP_ROOT_FOLDER_ENTRYID,stEntryId)
-	BINARY_STRUCTURE_ENTRY(PR_EMS_AB_PARENT_ENTRYID,stEntryId)
+	BINARY_STRUCTURE_ENTRY(PR_RECEIVED_BY_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_SENT_REPRESENTING_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_RCVD_REPRESENTING_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_REPORT_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_READ_RECEIPT_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_ORIGINAL_AUTHOR_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_ORIGINAL_SENDER_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_ORIGINAL_SENT_REPRESENTING_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_SENDER_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_PARENT_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_SENTMAIL_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_STORE_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_ORIGINALLY_INTENDED_RECIP_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_IPM_SUBTREE_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_IPM_OUTBOX_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_IPM_WASTEBASKET_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_IPM_SENTMAIL_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_VIEWS_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_COMMON_VIEWS_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_FINDER_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_DEFAULT_VIEW_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_IPM_APPOINTMENT_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_IPM_CONTACT_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_IPM_JOURNAL_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_IPM_NOTE_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_IPM_TASK_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_REM_ONLINE_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_REM_OFFLINE_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_IPM_DRAFTS_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_ORIGINAL_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_IDENTITY_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_OWN_STORE_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_HEADER_FOLDER_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_CONFLICT_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_MOVE_TO_STORE_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_MOVE_TO_FOLDER_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_CREATOR_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_LAST_MODIFIER_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_RECIPIENT_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_USER_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_MAILBOX_OWNER_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_SCHEDULE_FOLDER_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_IPM_DAF_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_NON_IPM_SUBTREE_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_EFORMS_REGISTRY_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_SPLUS_FREE_BUSY_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_OFFLINE_ADDRBOOK_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_EFORMS_FOR_LOCALE_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_FREE_BUSY_FOR_LOCAL_SITE_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_ADDRBOOK_FOR_LOCAL_SITE_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_OFFLINE_MESSAGE_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_GW_MTSIN_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_GW_MTSOUT_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_IPM_FAVORITES_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_IPM_PUBLIC_FOLDERS_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_SYS_CONFIG_FOLDER_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_ADDRESS_BOOK_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_PUBLIC_FOLDER_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_DAM_ORIGINAL_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_RULE_FOLDER_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_ACTIVE_USER_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_ORIGINATOR_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_REPORT_DESTINATION_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_LONGTERM_ENTRYID_FROM_TABLE,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_EVENTS_ROOT_FOLDER_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_NNTP_ARTICLE_FOLDER_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_NEWSGROUP_ROOT_FOLDER_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_EMS_AB_PARENT_ENTRYID,IDS_STENTRYID)
+	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidEmail1OriginalEntryID,PSETID_Address,IDS_STENTRYID)
+	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidEmail2OriginalEntryID,PSETID_Address,IDS_STENTRYID)
+	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidEmail3OriginalEntryID,PSETID_Address,IDS_STENTRYID)
+	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidFax1EntryID,PSETID_Address,IDS_STENTRYID)
+	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidFax2EntryID,PSETID_Address,IDS_STENTRYID)
+	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidFax3EntryID,PSETID_Address,IDS_STENTRYID)
+	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidSelectedOriginalEntryID,PSETID_Address,IDS_STENTRYID)
+	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidAnniversaryEventEID,PSETID_Address,IDS_STENTRYID)
+	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidOrigStoreEid,PSETID_Appointment,IDS_STENTRYID)
+	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidReferenceEID,PSETID_Common,IDS_STENTRYID)
+	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidSharingInitiatorEid,PSETID_Sharing,IDS_STENTRYID)
+	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidSharingFolderEid,PSETID_Sharing,IDS_STENTRYID)
+	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidSharingOriginalMessageEid,PSETID_Sharing,IDS_STENTRYID)
+	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidSharingBindingEid,PSETID_Sharing,IDS_STENTRYID)
+	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidSharingIndexEid,PSETID_Sharing,IDS_STENTRYID)
+	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidSharingParentBindingEid,PSETID_Sharing,IDS_STENTRYID)
 
-	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidTimeZoneStruct,PSETID_Appointment,stTimeZone)
-	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidApptTZDefStartDisplay,PSETID_Appointment,stTimeZoneDefinition)
-	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidApptTZDefEndDisplay,PSETID_Appointment,stTimeZoneDefinition)
-	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidApptTZDefRecur,PSETID_Appointment,stTimeZoneDefinition)
+	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidTimeZoneStruct,PSETID_Appointment,IDS_STTIMEZONE)
+	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidApptTZDefStartDisplay,PSETID_Appointment,IDS_STTIMEZONEDEFINITION)
+	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidApptTZDefEndDisplay,PSETID_Appointment,IDS_STTIMEZONEDEFINITION)
+	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidApptTZDefRecur,PSETID_Appointment,IDS_STTIMEZONEDEFINITION)
 
-	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidApptRecur,PSETID_Appointment,stAppointmentRecurrencePattern)
-	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidTaskRecur,PSETID_Task,stRecurrencePattern)
-	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidTaskMyDelegators,PSETID_Task,stTaskAssigners)
-	NAMEDPROP_BINARY_STRUCTURE_ENTRY(LID_GLOBAL_OBJID,PSETID_Meeting,stGlobalObjectId)
-	NAMEDPROP_BINARY_STRUCTURE_ENTRY(LID_CLEAN_GLOBAL_OBJID,PSETID_Meeting,stGlobalObjectId)
+	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidApptRecur,PSETID_Appointment,IDS_STAPPOINTMENTRECURRENCEPATTERN)
+	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidTaskRecur,PSETID_Task,IDS_STRECURRENCEPATTERN)
+	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidTaskMyDelegators,PSETID_Task,IDS_STTASKASSIGNERS)
+	NAMEDPROP_BINARY_STRUCTURE_ENTRY(LID_GLOBAL_OBJID,PSETID_Meeting,IDS_STGLOBALOBJECTID)
+	NAMEDPROP_BINARY_STRUCTURE_ENTRY(LID_CLEAN_GLOBAL_OBJID,PSETID_Meeting,IDS_STGLOBALOBJECTID)
 };
 
 LPBINARY_STRUCTURE_ARRAY_ENTRY BinaryStructArray = g_BinaryStructArray;
 ULONG ulBinaryStructArray = sizeof(g_BinaryStructArray)/sizeof(BINARY_STRUCTURE_ARRAY_ENTRY);
 
-MAPIStructType FindStructForBinaryProp(const ULONG ulPropTag, const ULONG ulPropNameID, const LPGUID lpguidNamedProp)
+ULONG FindStructForBinaryProp(const ULONG ulPropTag, const ULONG ulPropNameID, const LPGUID lpguidNamedProp)
 {
 	ULONG	ulCurEntry = 0;
 	ULONG	ulIndex = BuildFlagIndexFromTag(ulPropTag,ulPropNameID,NULL,lpguidNamedProp);
@@ -859,8 +896,8 @@ MAPIStructType FindStructForBinaryProp(const ULONG ulPropTag, const ULONG ulProp
 		ulCurEntry++;
 	}
 
-	if (BinaryStructArray[ulCurEntry].ulIndex == ulIndex) return BinaryStructArray[ulCurEntry].myStructType;
-	return stUnknown;
+	if (BinaryStructArray[ulCurEntry].ulIndex == ulIndex) return BinaryStructArray[ulCurEntry].iStructType;
+	return 0;
 }
 
 // Uber property interpreter - given an LPSPropValue, produces all manner of strings
@@ -953,10 +990,10 @@ void InterpretProp(LPSPropValue lpProp, // optional property value
 				{
 					if (lpProp)
 					{
-						MAPIStructType myType = FindStructForBinaryProp(lpProp->ulPropTag,ulPropNameID,lpNameID?lpNameID->lpguid:NULL);
-						if (stUnknown != myType)
+						ULONG iStructType = FindStructForBinaryProp(lpProp->ulPropTag,ulPropNameID,lpNameID?lpNameID->lpguid:NULL);
+						if (iStructType)
 						{
-							InterpretBinaryAsString(lpProp->Value.bin,myType,lpMAPIProp,ulPropTag,lpszSmartView);
+							InterpretBinaryAsString(lpProp->Value.bin,iStructType,lpMAPIProp,ulPropTag,lpszSmartView);
 						}
 					}
 				}
@@ -1055,45 +1092,57 @@ HRESULT GetLargeBinaryProp(LPMAPIPROP lpMAPIProp, ULONG ulPropTag, LPSPropValue*
 	return hRes;
 }
 
-void InterpretBinaryAsString(SBinary myBin, MAPIStructType myStructType, LPMAPIPROP lpMAPIProp, ULONG ulPropTag, LPTSTR* lpszResultString)
+void InterpretBinaryAsString(SBinary myBin, DWORD_PTR iStructType, LPMAPIPROP lpMAPIProp, ULONG ulPropTag, LPTSTR* lpszResultString)
 {
 	if (!lpszResultString) return;
 	LPTSTR szResultString = NULL;
 
-	switch (myStructType)
+	switch (iStructType)
 	{
-	case stTimeZoneDefinition:
+	case IDS_STTIMEZONEDEFINITION:
 		TimeZoneDefinitionToString(myBin,&szResultString);
 		break;
-	case stTimeZone:
+	case IDS_STTIMEZONE:
 		TimeZoneToString(myBin,&szResultString);
 		break;
-	case stSecurityDescriptor:
+	case IDS_STSECURITYDESCRIPTOR:
 		SDBinToString(myBin,lpMAPIProp,ulPropTag,&szResultString);
 		break;
-	case stExtendedFolderFlags:
+	case IDS_STEXTENDEDFOLDERFLAGS:
 		ExtendedFlagsBinToString(myBin,&szResultString);
 		break;
-	case stAppointmentRecurrencePattern:
+	case IDS_STAPPOINTMENTRECURRENCEPATTERN:
 		AppointmentRecurrencePatternToString(myBin,&szResultString);
 		break;
-	case stRecurrencePattern:
+	case IDS_STRECURRENCEPATTERN:
 		RecurrencePatternToString(myBin,&szResultString);
 		break;
-	case stReportTag:
+	case IDS_STREPORTTAG:
 		ReportTagToString(myBin,&szResultString);
 		break;
-	case stConversationIndex:
+	case IDS_STCONVERSATIONINDEX:
 		ConversationIndexToString(myBin,&szResultString);
 		break;
-	case stTaskAssigners:
+	case IDS_STTASKASSIGNERS:
 		TaskAssignersToString(myBin,&szResultString);
 		break;
-	case stGlobalObjectId:
+	case IDS_STGLOBALOBJECTID:
 		GlobalObjectIdToString(myBin,&szResultString);
 		break;
-	case stEntryId:
+	case IDS_STENTRYID:
 		EntryIdToString(myBin,&szResultString);
+		break;
+	case IDS_STENTRYLIST:
+		EntryListToString(myBin,&szResultString);
+		break;
+	case IDS_STPROPERTY:
+		PropertyToString(myBin,&szResultString);
+		break;
+	case IDS_STRESTRICTION:
+		RestrictionToString(myBin,&szResultString);
+		break;
+	case IDS_STSEARCHFOLDERDEFINITION:
+		SearchFolderDefinitionToString(myBin,&szResultString);
 		break;
 	}
 	if (szResultString) *lpszResultString = szResultString;
@@ -1323,7 +1372,7 @@ void RecurrencePatternToString(SBinary myBin, LPTSTR* lpszResultString)
 void DeleteAppointmentRecurrencePatternStruct(AppointmentRecurrencePatternStruct* parpPattern)
 {
 	if (!parpPattern) return;
-	delete[] parpPattern->RecurrencePattern;
+	DeleteRecurrencePatternStruct(parpPattern->RecurrencePattern);
 	int i = 0;
 	if (parpPattern->ExceptionCount && parpPattern->ExceptionInfo)
 	{
@@ -1356,6 +1405,7 @@ void DeleteRecurrencePatternStruct(RecurrencePatternStruct* prpPattern)
 	if (!prpPattern) return;
 	delete[] prpPattern->DeletedInstanceDates;
 	delete[] prpPattern->ModifiedInstanceDates;
+	delete[] prpPattern->JunkData;
 	delete prpPattern;
 }
 
@@ -1621,12 +1671,12 @@ RecurrencePatternStruct* BinToRecurrencePatternStruct(ULONG cbBin, LPBYTE lpBin,
 		rpPattern.JunkDataSize = Parser.RemainingBytes();
 		Parser.GetBYTES(rpPattern.JunkDataSize,&rpPattern.JunkData);
 	}
+	if (lpcbBytesRead) *lpcbBytesRead = Parser.GetCurrentOffset();
 
 	RecurrencePatternStruct* prpPattern = new RecurrencePatternStruct;
 	if (prpPattern)
 	{
 		*prpPattern = rpPattern;
-		if (lpcbBytesRead) *lpcbBytesRead = Parser.GetCurrentOffset();
 	}
 
 	return prpPattern;
@@ -1640,15 +1690,18 @@ LPTSTR AppointmentRecurrencePatternStructToString(AppointmentRecurrencePatternSt
 
 	CString szARP;
 	CString szTmp;
+	LPTSTR szRecurrencePattern = NULL;
 	HRESULT hRes = S_OK;
-	szARP = RecurrencePatternStructToString(parpPattern->RecurrencePattern);
 
+	szRecurrencePattern = RecurrencePatternStructToString(parpPattern->RecurrencePattern);
 	szTmp.FormatMessage(IDS_ARPHEADER,
+		szRecurrencePattern,
 		parpPattern->ReaderVersion2,
 		parpPattern->WriterVersion2,
 		parpPattern->StartTimeOffset,RTimeToString(parpPattern->StartTimeOffset),
 		parpPattern->EndTimeOffset,RTimeToString(parpPattern->EndTimeOffset),
 		parpPattern->ExceptionCount);
+	delete[] szRecurrencePattern;
 	szARP += szTmp;
 
 	WORD i = 0;
@@ -2257,6 +2310,7 @@ TimeZoneStruct* BinToTimeZoneStruct(ULONG cbBin, LPBYTE lpBin)
 void DeleteTimeZoneStruct(TimeZoneStruct* ptzTimeZone)
 {
 	if (!ptzTimeZone) return;
+	delete[] ptzTimeZone->JunkData;
 	delete ptzTimeZone;
 }
 
@@ -2382,6 +2436,7 @@ void DeleteTimeZoneDefinitionStruct(TimeZoneDefinitionStruct* ptzdTimeZoneDefini
 	if (!ptzdTimeZoneDefinition) return;
 	delete[] ptzdTimeZoneDefinition->szKeyName;
 	delete[] ptzdTimeZoneDefinition->lpTZRule;
+	delete[] ptzdTimeZoneDefinition->JunkData;
 	delete ptzdTimeZoneDefinition;
 }
 
@@ -2843,12 +2898,15 @@ void DeleteTaskAssignersStruct(TaskAssignersStruct* ptaTaskAssigners)
 {
 	if (!ptaTaskAssigners) return;
 	DWORD i = 0;
-	for (i = 0 ; i < ptaTaskAssigners->cAssigners ; i++)
+	if (ptaTaskAssigners->cAssigners && ptaTaskAssigners->lpTaskAssigners)
 	{
-		delete[] ptaTaskAssigners->lpTaskAssigners[i].lpEntryID;
-		delete[] ptaTaskAssigners->lpTaskAssigners[i].szDisplayName;
-		delete[] ptaTaskAssigners->lpTaskAssigners[i].wzDisplayName;
-		delete[] ptaTaskAssigners->lpTaskAssigners[i].JunkData;
+		for (i = 0 ; i < ptaTaskAssigners->cAssigners ; i++)
+		{
+			delete[] ptaTaskAssigners->lpTaskAssigners[i].lpEntryID;
+			delete[] ptaTaskAssigners->lpTaskAssigners[i].szDisplayName;
+			delete[] ptaTaskAssigners->lpTaskAssigners[i].wzDisplayName;
+			delete[] ptaTaskAssigners->lpTaskAssigners[i].JunkData;
+		}
 	}
 	delete[] ptaTaskAssigners->lpTaskAssigners;
 	delete[] ptaTaskAssigners->JunkData;
@@ -3017,7 +3075,6 @@ void EntryIdToString(SBinary myBin, LPTSTR* lpszResultString)
 		*lpszResultString = EntryIdStructToString(peidEntryId);
 		DeleteEntryIdStruct(peidEntryId);
 	}
-
 } // EntryIdToString
 
 // Allocates return value with new. Clean up with DeleteEntryIdStruct.
@@ -3208,6 +3265,7 @@ void DeleteEntryIdStruct(EntryIdStruct* peidEntryId)
 		break;
 	}
 
+	delete[] peidEntryId->JunkData;
 	delete peidEntryId;
 } // DeleteEntryIdStruct
 
@@ -3318,13 +3376,13 @@ LPTSTR EntryIdStructToString(EntryIdStruct* peidEntryId)
 		EC_H(InterpretFlags(flagExchangeABVersion, peidEntryId->ProviderData.AddressBookObject.Version, &szVersion));
 		LPTSTR szType = NULL;
 		EC_H(InterpretFlags(PROP_ID(PR_DISPLAY_TYPE), peidEntryId->ProviderData.AddressBookObject.Type, &szType));
-		
+
 		szTmp.FormatMessage(IDS_ENTRYIDEXCHANGEADDRESSDATA,
 			peidEntryId->ProviderData.AddressBookObject.Version, szVersion,
 			peidEntryId->ProviderData.AddressBookObject.Type, szType,
 			peidEntryId->ProviderData.AddressBookObject.X500DN);
 		szEntryId += szTmp;
-		
+
 		delete[] szType;
 		szType = NULL;
 		delete[] szVersion;
@@ -3368,8 +3426,7 @@ LPTSTR EntryIdStructToString(EntryIdStruct* peidEntryId)
 
 		LPTSTR szWrappedType = NULL;
 		EC_H(InterpretFlags(PROP_ID(PR_PROFILE_OPEN_FLAGS), peidEntryId->ProviderData.MessageDatabaseObject.WrappedType, &szWrappedType));
-		
-		
+
 		szTmp.FormatMessage(IDS_ENTRYIDMAPIMESSAGESTOREDATA,
 			peidEntryId->ProviderData.MessageDatabaseObject.Version, szVersion,
 			peidEntryId->ProviderData.MessageDatabaseObject.Flag, szFlag,
@@ -3423,6 +3480,7 @@ LPTSTR EntryIdStructToString(EntryIdStruct* peidEntryId)
 
 		delete[] szDatabaseGUID;
 		szDatabaseGUID = NULL;
+		delete[] szType;
 	}
 	else if (eidtMessage == peidEntryId->ObjectType)
 	{
@@ -3470,3 +3528,1024 @@ LPTSTR EntryIdStructToString(EntryIdStruct* peidEntryId)
 
 	return CStringToString(szEntryId);
 } // EntryIdStructToString
+
+void PropertyToString(SBinary myBin, LPTSTR* lpszResultString)
+{
+	if (!lpszResultString) return;
+	*lpszResultString = NULL;
+	PropertyStruct* ppProperty = BinToPropertyStruct(myBin.cb,myBin.lpb,1,NULL);
+	if (ppProperty)
+	{
+		*lpszResultString = PropertyStructToString(ppProperty);
+		DeletePropertyStruct(ppProperty);
+	}
+} // PropertyToString
+
+// Allocates return value with new. Clean up with DeletePropertyStruct.
+PropertyStruct* BinToPropertyStruct(ULONG cbBin, LPBYTE lpBin, DWORD dwPropCount, size_t* lpcbBytesRead)
+{
+	if (!lpBin) return NULL;
+	if (lpcbBytesRead) *lpcbBytesRead = NULL;
+	CBinaryParser Parser(cbBin,lpBin);
+
+	size_t cbBytesRead = 0;
+
+	PropertyStruct* ppProperty = new PropertyStruct;
+	if (ppProperty)
+	{
+		memset(ppProperty,0,sizeof(PropertyStruct));
+		ppProperty->PropCount = dwPropCount;
+		ppProperty->Prop = BinToSPropValue(
+			cbBin,
+			lpBin,
+			dwPropCount,
+			&cbBytesRead);
+		Parser.Advance(cbBytesRead);
+	}
+
+	// Junk data remains
+	// Only fill out junk data if we've not been asked to report back how many bytes we read
+	// If we've been asked to report back, then someone else will handle the remaining data
+	if (!lpcbBytesRead && Parser.RemainingBytes() > 0)
+	{
+		ppProperty->JunkDataSize = Parser.RemainingBytes();
+		Parser.GetBYTES(ppProperty->JunkDataSize,&ppProperty->JunkData);
+	}
+	if (lpcbBytesRead) *lpcbBytesRead = Parser.GetCurrentOffset();
+
+	return ppProperty;
+} // BinToPropertyStruct
+
+// There may be property arrays with over 500 props, but we're not going to try to parse them
+#define _MaxProperties 500
+
+// Caller allocates with new. Clean up with DeleteRestrictionStruct.
+LPSPropValue BinToSPropValue(ULONG cbBin, LPBYTE lpBin, DWORD dwPropCount, size_t* lpcbBytesRead)
+{
+	if (!lpBin) return NULL;
+	if (lpcbBytesRead) *lpcbBytesRead = NULL;
+	if (!dwPropCount || dwPropCount > _MaxProperties) return NULL;
+	LPSPropValue pspvProperty = new SPropValue[dwPropCount];
+	if (!pspvProperty) return NULL;
+	memset(pspvProperty,0,sizeof(SPropValue)*dwPropCount);
+	CBinaryParser Parser(cbBin,lpBin);
+
+	DWORD i = 0;
+
+	for (i = 0 ; i < dwPropCount ; i++)
+	{
+		WORD PropType = 0;
+		WORD PropID = 0;
+
+		Parser.GetWORD(&PropType);
+		Parser.GetWORD(&PropID);
+		pspvProperty[i].ulPropTag = PROP_TAG(PropType,PropID);
+		pspvProperty[i].dwAlignPad = 0;
+
+		DWORD dwTemp = 0;
+		WORD wTemp = 0;
+		switch (PropType)
+		{
+		case PT_LONG:
+			Parser.GetDWORD(&dwTemp);
+			pspvProperty[i].Value.l = dwTemp;
+			break;
+		case PT_ERROR:
+			Parser.GetDWORD(&dwTemp);
+			pspvProperty[i].Value.err = dwTemp;
+			break;
+		case PT_BOOLEAN:
+			Parser.GetWORD(&wTemp);
+			pspvProperty[i].Value.b = wTemp;
+			break;
+		case PT_UNICODE:
+			// This is apparently a cb...
+			Parser.GetWORD(&wTemp);
+			Parser.GetStringW(wTemp/sizeof(WCHAR),&pspvProperty[i].Value.lpszW);
+			break;
+		case PT_STRING8:
+			// This is apparently a cb...
+			Parser.GetWORD(&wTemp);
+			Parser.GetStringA(wTemp,&pspvProperty[i].Value.lpszA);
+			break;
+		case PT_SYSTIME:
+			Parser.GetDWORD(&pspvProperty[i].Value.ft.dwHighDateTime);
+			Parser.GetDWORD(&pspvProperty[i].Value.ft.dwLowDateTime);
+			break;
+		case PT_BINARY:
+			Parser.GetWORD(&wTemp);
+			pspvProperty[i].Value.bin.cb = wTemp;
+			Parser.GetBYTES(pspvProperty[i].Value.bin.cb,&pspvProperty[i].Value.bin.lpb);
+			break;
+		case PT_MV_STRING8:
+			Parser.GetWORD(&wTemp);
+			pspvProperty[i].Value.MVszA.cValues = wTemp;
+			pspvProperty[i].Value.MVszA.lppszA = new CHAR*[wTemp];
+			if (pspvProperty[i].Value.MVszA.lppszA)
+			{
+				memset(pspvProperty[i].Value.MVszA.lppszA,0,sizeof(CHAR*) * wTemp);
+				DWORD j = 0;
+				for (j = 0 ; j < pspvProperty[i].Value.MVszA.cValues ; j++)
+				{
+					Parser.GetStringA(&pspvProperty[i].Value.MVszA.lppszA[j]);
+				}
+			}
+			break;
+		case PT_MV_UNICODE:
+			Parser.GetWORD(&wTemp);
+			pspvProperty[i].Value.MVszW.cValues = wTemp;
+			pspvProperty[i].Value.MVszW.lppszW = new WCHAR*[wTemp];
+			if (pspvProperty[i].Value.MVszW.lppszW)
+			{
+				memset(pspvProperty[i].Value.MVszW.lppszW,0,sizeof(WCHAR*) * wTemp);
+				DWORD j = 0;
+				for (j = 0 ; j < pspvProperty[i].Value.MVszW.cValues ; j++)
+				{
+					Parser.GetStringW(&pspvProperty[i].Value.MVszW.lppszW[j]);
+				}
+			}
+			break;
+		default:
+			break;
+		}
+	}
+
+	if (lpcbBytesRead) *lpcbBytesRead = Parser.GetCurrentOffset();
+	return pspvProperty;
+}
+
+void DeleteSPropVal(ULONG cVal, LPSPropValue lpsPropVal)
+{
+	if (!lpsPropVal) return;
+	DWORD i = 0;
+	DWORD j = 0;
+	for (i = 0 ; i < cVal ; i++)
+	{
+		switch (PROP_TYPE(lpsPropVal[i].ulPropTag))
+		{
+		case PT_UNICODE:
+			delete[] lpsPropVal[i].Value.lpszW;
+			break;
+		case PT_STRING8:
+			delete[] lpsPropVal[i].Value.lpszA;
+			break;
+		case PT_BINARY:
+			delete[] lpsPropVal[i].Value.bin.lpb;
+			break;
+		case PT_MV_STRING8:
+			for (j = 0 ; j < lpsPropVal[i].Value.MVszA.cValues ; j++)
+			{
+				delete[] lpsPropVal[i].Value.MVszA.lppszA[j];
+			}
+			break;
+		case PT_MV_UNICODE:
+			for (j = 0 ; j < lpsPropVal[i].Value.MVszW.cValues ; j++)
+			{
+				delete[] lpsPropVal[i].Value.MVszW.lppszW[j];
+			}
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+void DeletePropertyStruct(PropertyStruct* ppProperty)
+{
+	if (!ppProperty) return;
+
+	DeleteSPropVal(ppProperty->PropCount,ppProperty->Prop);
+	delete[] ppProperty->Prop;
+
+	delete[] ppProperty->JunkData;
+	delete ppProperty;
+} // DeletePropertyStruct
+
+// result allocated with new, clean up with delete[]
+LPTSTR PropertyStructToString(PropertyStruct* ppProperty)
+{
+	if (!ppProperty) return NULL;
+
+	CString szProperty;
+	CString szTmp;
+	DWORD i = 0;
+
+	if (ppProperty->Prop)
+	{
+		for (i = 0 ; i < ppProperty->PropCount ; i++)
+		{
+			CString PropType;
+			CString PropString;
+			CString AltPropString;
+			LPTSTR szExactMatches = NULL;
+			LPTSTR szPartialMatches = NULL;
+			LPTSTR szSmartView = NULL;
+
+			InterpretProp(
+				&ppProperty->Prop[i],
+				ppProperty->Prop[i].ulPropTag,
+				NULL,
+				NULL,
+				false,
+				&szExactMatches,
+				&szPartialMatches,
+				&PropType,
+				NULL,
+				&PropString,
+				&AltPropString,
+				&szSmartView,
+				NULL,
+				NULL,
+				NULL);
+
+			szTmp.FormatMessage(IDS_PROPERTYDATAHEADER,
+				i);
+			szProperty += szTmp;
+
+			if (szExactMatches)
+			{
+				szTmp.FormatMessage(IDS_PROPERTYDATAEXACTMATCHES,
+					szExactMatches);
+				szProperty += szTmp;
+			}
+
+			if (szPartialMatches)
+			{
+				szTmp.FormatMessage(IDS_PROPERTYDATAPARTIALMATCHES,
+					szPartialMatches);
+				szProperty += szTmp;
+			}
+
+			szTmp.FormatMessage(IDS_PROPERTYDATA,
+				(LPCTSTR) PropString,
+				(LPCTSTR) AltPropString);
+			szProperty += szTmp;
+
+			if (szSmartView)
+			{
+				szTmp.FormatMessage(IDS_PROPERTYDATASMARTVIEW,
+					szSmartView);
+				szProperty += szTmp;
+			}
+
+			delete[] szExactMatches;
+			delete[] szPartialMatches;
+			delete[] szSmartView;
+		}
+	}
+
+	szProperty += JunkDataToString(ppProperty->JunkDataSize,ppProperty->JunkData);
+
+	return CStringToString(szProperty);
+} // PropertyStructToString
+
+void RestrictionToString(SBinary myBin, LPTSTR* lpszResultString)
+{
+	if (!lpszResultString) return;
+	*lpszResultString = NULL;
+	RestrictionStruct* prRestriction = BinToRestrictionStruct(myBin.cb,myBin.lpb,NULL);
+
+	if (prRestriction)
+	{
+		*lpszResultString = RestrictionStructToString(prRestriction);
+		DeleteRestrictionStruct(prRestriction);
+		delete prRestriction;
+	}
+} // RestrictionToString
+
+// Allocates return value with new. Clean up with DeletePropertyStruct.
+RestrictionStruct* BinToRestrictionStruct(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead)
+{
+	if (!lpBin) return NULL;
+	if (lpcbBytesRead) *lpcbBytesRead = NULL;
+	CBinaryParser Parser(cbBin,lpBin);
+
+	size_t cbBytesRead = 0;
+
+	RestrictionStruct* prRestriction = new RestrictionStruct;
+	if (prRestriction)
+	{
+		memset(prRestriction,0,sizeof(RestrictionStruct));
+		prRestriction->lpRes = new SRestriction;
+
+		if (prRestriction->lpRes)
+		{
+			memset(prRestriction->lpRes,0,sizeof(SRestriction));
+
+			BinToRestrictionStruct(
+				cbBin,
+				lpBin,
+				&cbBytesRead,
+				prRestriction->lpRes);
+			Parser.Advance(cbBytesRead);
+		}
+	}
+
+	// Junk data remains
+	// Only fill out junk data if we've not been asked to report back how many bytes we read
+	// If we've been asked to report back, then someone else will handle the remaining data
+	if (!lpcbBytesRead && Parser.RemainingBytes() > 0)
+	{
+		prRestriction->JunkDataSize = Parser.RemainingBytes();
+		Parser.GetBYTES(prRestriction->JunkDataSize,&prRestriction->JunkData);
+	}
+	if (lpcbBytesRead) *lpcbBytesRead = Parser.GetCurrentOffset();
+
+	return prRestriction;
+}
+
+// There may be restrictions with over 500 sub restrictions, but we're not going to try to parse them
+#define _MaxRestrictions 500
+
+// Caller allocates with new. Clean up with DeleteRestrictionStruct.
+void BinToRestrictionStruct(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead, LPSRestriction psrRestriction)
+{
+	if (!lpBin) return;
+	if (lpcbBytesRead) *lpcbBytesRead = NULL;
+	if (!psrRestriction) return;
+	CBinaryParser Parser(cbBin,lpBin);
+
+	BYTE bTemp = 0;
+	DWORD dwTemp = 0;
+	DWORD i = 0;
+	size_t cbOffset = 0;
+	size_t cbBytesRead = 0;
+
+	Parser.GetDWORD(&dwTemp);
+	psrRestriction->rt = dwTemp;
+
+	switch(psrRestriction->rt)
+	{
+	case RES_AND:
+	case RES_OR:
+		Parser.GetDWORD(&dwTemp);
+		psrRestriction->res.resAnd.cRes = dwTemp;
+		if (psrRestriction->res.resAnd.cRes &&
+			psrRestriction->res.resAnd.cRes < _MaxRestrictions)
+		{
+			psrRestriction->res.resAnd.lpRes = new SRestriction[psrRestriction->res.resAnd.cRes];
+			if (psrRestriction->res.resAnd.lpRes)
+			{
+				memset(psrRestriction->res.resAnd.lpRes,0,sizeof(LPSRestriction) * psrRestriction->res.resAnd.cRes);
+				for (i = 0 ; i < psrRestriction->res.resAnd.cRes ; i++)
+				{
+					cbOffset = Parser.GetCurrentOffset();
+					BinToRestrictionStruct(
+						(ULONG) Parser.RemainingBytes(),
+						lpBin+cbOffset,
+						&cbBytesRead,
+						&psrRestriction->res.resAnd.lpRes[i]);
+					Parser.Advance(cbBytesRead);
+				}
+			}
+		}
+		break;
+	case RES_NOT:
+		psrRestriction->res.resNot.lpRes = new SRestriction;
+		if (psrRestriction->res.resNot.lpRes)
+		{
+			memset(psrRestriction->res.resNot.lpRes,0,sizeof(LPSRestriction));
+			cbOffset = Parser.GetCurrentOffset();
+			BinToRestrictionStruct(
+				(ULONG) Parser.RemainingBytes(),
+				lpBin+cbOffset,
+				&cbBytesRead,
+				psrRestriction->res.resNot.lpRes);
+			Parser.Advance(cbBytesRead);
+		}
+		break;
+	case RES_CONTENT:
+		Parser.GetDWORD(&psrRestriction->res.resContent.ulFuzzyLevel);
+		Parser.GetDWORD(&psrRestriction->res.resContent.ulPropTag);
+		cbOffset = Parser.GetCurrentOffset();
+		psrRestriction->res.resContent.lpProp = BinToSPropValue(
+			(ULONG) Parser.RemainingBytes(),
+			lpBin+cbOffset,
+			1,
+			&cbBytesRead);
+		Parser.Advance(cbBytesRead);
+		break;
+	case RES_PROPERTY:
+		Parser.GetDWORD(&psrRestriction->res.resProperty.relop);
+		Parser.GetDWORD(&psrRestriction->res.resProperty.ulPropTag);
+		cbOffset = Parser.GetCurrentOffset();
+		psrRestriction->res.resProperty.lpProp = BinToSPropValue(
+			(ULONG) Parser.RemainingBytes(),
+			lpBin+cbOffset,
+			1,
+			&cbBytesRead);
+		Parser.Advance(cbBytesRead);
+		break;
+	case RES_COMPAREPROPS:
+		Parser.GetDWORD(&psrRestriction->res.resCompareProps.relop);
+		Parser.GetDWORD(&psrRestriction->res.resCompareProps.ulPropTag1);
+		Parser.GetDWORD(&psrRestriction->res.resCompareProps.ulPropTag2);
+		break;
+	case RES_BITMASK:
+		Parser.GetDWORD(&psrRestriction->res.resBitMask.relBMR);
+		Parser.GetDWORD(&psrRestriction->res.resBitMask.ulPropTag);
+		Parser.GetDWORD(&psrRestriction->res.resBitMask.ulMask);
+		break;
+	case RES_SIZE:
+		Parser.GetDWORD(&psrRestriction->res.resSize.relop);
+		Parser.GetDWORD(&psrRestriction->res.resSize.ulPropTag);
+		Parser.GetDWORD(&psrRestriction->res.resSize.cb);
+		break;
+	case RES_EXIST:
+		Parser.GetDWORD(&psrRestriction->res.resExist.ulPropTag);
+		break;
+	case RES_SUBRESTRICTION:
+		Parser.GetDWORD(&psrRestriction->res.resSub.ulSubObject);
+		psrRestriction->res.resSub.lpRes = new SRestriction;
+		if (psrRestriction->res.resSub.lpRes)
+		{
+			memset(psrRestriction->res.resSub.lpRes,0,sizeof(LPSRestriction));
+			cbOffset = Parser.GetCurrentOffset();
+			BinToRestrictionStruct(
+				(ULONG) Parser.RemainingBytes(),
+				lpBin+cbOffset,
+				&cbBytesRead,
+				psrRestriction->res.resSub.lpRes);
+			Parser.Advance(cbBytesRead);
+		}
+		break;
+	case RES_COMMENT:
+		Parser.GetDWORD(&psrRestriction->res.resComment.cValues);
+		cbOffset = Parser.GetCurrentOffset();
+		psrRestriction->res.resProperty.lpProp = BinToSPropValue(
+			(ULONG) Parser.RemainingBytes(),
+			lpBin+cbOffset,
+			psrRestriction->res.resComment.cValues,
+			&cbBytesRead);
+		Parser.Advance(cbBytesRead);
+
+		// Check if a restriction is present
+		Parser.GetBYTE(&bTemp);
+		if (bTemp)
+		{
+			psrRestriction->res.resComment.lpRes = new SRestriction;
+			if (psrRestriction->res.resComment.lpRes)
+			{
+				memset(psrRestriction->res.resComment.lpRes,0,sizeof(LPSRestriction));
+				cbOffset = Parser.GetCurrentOffset();
+				BinToRestrictionStruct(
+					(ULONG) Parser.RemainingBytes(),
+					lpBin+cbOffset,
+					&cbBytesRead,
+					psrRestriction->res.resComment.lpRes);
+				Parser.Advance(cbBytesRead);
+			}
+		}
+		break;
+	case RES_COUNT:
+		// RES_COUNT and RES_NOT look the same, so we use the resNot member here
+		Parser.GetDWORD(&psrRestriction->res.resNot.ulReserved);
+		psrRestriction->res.resNot.lpRes = new SRestriction;
+		if (psrRestriction->res.resNot.lpRes)
+		{
+			memset(psrRestriction->res.resNot.lpRes,0,sizeof(LPSRestriction));
+			cbOffset = Parser.GetCurrentOffset();
+			BinToRestrictionStruct(
+				(ULONG) Parser.RemainingBytes(),
+				lpBin+cbOffset,
+				&cbBytesRead,
+				psrRestriction->res.resNot.lpRes);
+			Parser.Advance(cbBytesRead);
+		}
+		break;
+	}
+
+	if (lpcbBytesRead) *lpcbBytesRead = Parser.GetCurrentOffset();
+} // BinToRestrictionStruct
+
+void DeleteRestriction(LPSRestriction lpRes)
+{
+	if (!lpRes) return;
+	DWORD i = 0;
+
+	switch(lpRes->rt)
+	{
+	case RES_AND:
+	case RES_OR:
+		if (lpRes->res.resAnd.lpRes)
+		{
+			for (i = 0 ; i < lpRes->res.resAnd.cRes ; i++)
+			{
+				DeleteRestriction(&lpRes->res.resAnd.lpRes[i]);
+			}
+		}
+		delete[] lpRes->res.resAnd.lpRes;
+		break;
+	case RES_NOT:
+		DeleteRestriction(&lpRes->res.resNot.lpRes[i]);
+		delete[] lpRes->res.resNot.lpRes;
+		break;
+	case RES_CONTENT:
+		DeleteSPropVal(1,lpRes->res.resContent.lpProp);
+		delete[] lpRes->res.resContent.lpProp;
+		break;
+	case RES_PROPERTY:
+		DeleteSPropVal(1,lpRes->res.resProperty.lpProp);
+		delete[] lpRes->res.resProperty.lpProp;
+		break;
+	case RES_SUBRESTRICTION:
+		DeleteRestriction(lpRes->res.resSub.lpRes);
+		delete[] lpRes->res.resSub.lpRes;
+		break;
+	case RES_COMMENT:
+		if (lpRes->res.resComment.cValues)
+		{
+			DeleteSPropVal(lpRes->res.resComment.cValues,lpRes->res.resComment.lpProp);
+			delete[] lpRes->res.resComment.lpProp;
+		}
+		DeleteRestriction(lpRes->res.resComment.lpRes);
+		delete[] lpRes->res.resComment.lpRes;
+		break;
+	case RES_COUNT:
+		// RES_COUNT and RES_NOT look the same, so we use the resNot member here
+		DeleteRestriction(lpRes->res.resNot.lpRes);
+		delete[] lpRes->res.resNot.lpRes;
+		break;
+	}
+
+}
+// Neuters the Restriction struct - caller must use delete to delete the struct itself
+void DeleteRestrictionStruct(RestrictionStruct* prRestriction)
+{
+	if (!prRestriction) return;
+
+	DeleteRestriction(prRestriction->lpRes);
+	delete[] prRestriction->lpRes;
+
+	delete[] prRestriction->JunkData;
+} // DeleteRestrictionStruct
+
+// result allocated with new, clean up with delete[]
+LPTSTR RestrictionStructToString(RestrictionStruct* prRestriction)
+{
+	if (!prRestriction) return NULL;
+
+	CString szRestriction;
+	CString szTmp;
+
+	szRestriction.FormatMessage(IDS_RESTRICTIONDATA);
+	szRestriction += RestrictionToString(prRestriction->lpRes,NULL);
+
+	szRestriction += JunkDataToString(prRestriction->JunkDataSize,prRestriction->JunkData);
+
+	return CStringToString(szRestriction);
+} // RestrictionStructToString
+
+void EntryListToString(SBinary myBin, LPTSTR* lpszResultString)
+{
+	if (!lpszResultString) return;
+	*lpszResultString = NULL;
+	EntryListStruct* pelEntryList = BinToEntryListStruct(myBin.cb,myBin.lpb);
+	if (pelEntryList)
+	{
+		*lpszResultString = EntryListStructToString(pelEntryList);
+		DeleteEntryListStruct(pelEntryList);
+	}
+} // EntryListToString
+
+// There may be entry lists with over 1000 entries, but we're not going to try to parse them
+#define _MaxEntries 1000
+
+// Allocates return value with new. Clean up with DeleteEntryListStruct.
+EntryListStruct* BinToEntryListStruct(ULONG cbBin, LPBYTE lpBin)
+{
+	if (!lpBin) return NULL;
+
+	EntryListStruct elEntryList = {0};
+	CBinaryParser Parser(cbBin,lpBin);
+
+	Parser.GetDWORD(&elEntryList.EntryCount);
+	Parser.GetDWORD(&elEntryList.Pad);
+
+	if (elEntryList.EntryCount && elEntryList.EntryCount < _MaxEntries)
+	{
+		elEntryList.Entry = new EntryListEntryStruct[elEntryList.EntryCount];
+		if (elEntryList.Entry)
+		{
+			memset(elEntryList.Entry,0,sizeof(EntryListEntryStruct) * elEntryList.EntryCount);
+			DWORD i = 0;
+			for (i = 0 ; i < elEntryList.EntryCount ; i++)
+			{
+				Parser.GetDWORD(&elEntryList.Entry[i].EntryLength);
+				Parser.GetDWORD(&elEntryList.Entry[i].EntryLengthPad);
+			}
+
+			for (i = 0 ; i < elEntryList.EntryCount ; i++)
+			{
+				size_t cbOffset = Parser.GetCurrentOffset();
+				elEntryList.Entry[i].EntryId = BinToEntryIdStruct(
+					(ULONG) min(elEntryList.Entry[i].EntryLength,Parser.RemainingBytes()),
+					lpBin+cbOffset);
+				Parser.Advance(min(elEntryList.Entry[i].EntryLength,Parser.RemainingBytes()));
+			}
+		}
+	}
+
+	// Junk data remains
+	if (Parser.RemainingBytes() > 0)
+	{
+		elEntryList.JunkDataSize = Parser.RemainingBytes();
+		Parser.GetBYTES(elEntryList.JunkDataSize,&elEntryList.JunkData);
+	}
+
+	EntryListStruct* pelEntryList = new EntryListStruct;
+	if (pelEntryList)
+	{
+		*pelEntryList = elEntryList;
+	}
+
+	return pelEntryList;
+} // BinToEntryListStruct
+
+void DeleteEntryListStruct(EntryListStruct* pelEntryList)
+{
+	if (!pelEntryList) return;
+	if (pelEntryList->Entry)
+	{
+		DWORD i = 0;
+		for (i = 0 ; i < pelEntryList->EntryCount ; i++)
+		{
+			DeleteEntryIdStruct(pelEntryList->Entry[i].EntryId);
+		}
+	}
+	delete[] pelEntryList->Entry;
+
+	delete[] pelEntryList->JunkData;
+	delete pelEntryList;
+} // DeleteEntryListStruct
+
+// result allocated with new, clean up with delete[]
+LPTSTR EntryListStructToString(EntryListStruct* pelEntryList)
+{
+	if (!pelEntryList) return NULL;
+
+	CString szEntryList;
+	CString szTmp;
+
+	szEntryList.FormatMessage(IDS_ENTRYLISTDATA,
+		pelEntryList->EntryCount,
+		pelEntryList->Pad);
+
+	if (pelEntryList->Entry)
+	{
+		DWORD i = pelEntryList->EntryCount;
+		for (i = 0 ; i < pelEntryList->EntryCount ; i++)
+		{
+			LPTSTR szEntryId = EntryIdStructToString(pelEntryList->Entry[i].EntryId);
+			szTmp.FormatMessage(IDS_ENTRYLISTENTRYID,
+				i,
+				pelEntryList->Entry[i].EntryLength,
+				pelEntryList->Entry[i].EntryLengthPad,
+				szEntryId);
+			delete[] szEntryId;
+			szEntryList += szTmp;
+		}
+	}
+
+	szEntryList += JunkDataToString(pelEntryList->JunkDataSize,pelEntryList->JunkData);
+
+	return CStringToString(szEntryList);
+} // EntryListStructToString
+
+void SearchFolderDefinitionToString(SBinary myBin, LPTSTR* lpszResultString)
+{
+	if (!lpszResultString) return;
+	*lpszResultString = NULL;
+	SearchFolderDefinitionStruct* psfdSearchFolderDefinition = BinToSearchFolderDefinitionStruct(myBin.cb,myBin.lpb);
+	if (psfdSearchFolderDefinition)
+	{
+		*lpszResultString = SearchFolderDefinitionStructToString(psfdSearchFolderDefinition);
+		DeleteSearchFolderDefinitionStruct(psfdSearchFolderDefinition);
+	}
+} // SearchFolderDefinitionToString
+
+// Allocates return value with new. Clean up with DeleteSearchFolderDefinitionStruct.
+SearchFolderDefinitionStruct* BinToSearchFolderDefinitionStruct(ULONG cbBin, LPBYTE lpBin)
+{
+	if (!lpBin) return NULL;
+
+	SearchFolderDefinitionStruct sfdSearchFolderDefinition = {0};
+	CBinaryParser Parser(cbBin,lpBin);
+	size_t cbOffset = 0;
+
+	Parser.GetDWORD(&sfdSearchFolderDefinition.Version);
+	Parser.GetDWORD(&sfdSearchFolderDefinition.Flags);
+	Parser.GetDWORD(&sfdSearchFolderDefinition.NumericSearch);
+
+	Parser.GetBYTE(&sfdSearchFolderDefinition.TextSearchLength);
+	size_t cchTextSearch = sfdSearchFolderDefinition.TextSearchLength;
+	if (255 == sfdSearchFolderDefinition.TextSearchLength)
+	{
+		Parser.GetWORD(&sfdSearchFolderDefinition.TextSearchLengthExtended);
+		cchTextSearch = sfdSearchFolderDefinition.TextSearchLengthExtended;
+	}
+	if (cchTextSearch)
+	{
+		Parser.GetStringW(cchTextSearch,&sfdSearchFolderDefinition.TextSearch);
+	}
+
+	Parser.GetDWORD(&sfdSearchFolderDefinition.SkipLen1);
+	if (sfdSearchFolderDefinition.SkipLen1)
+	{
+		Parser.GetBYTES(sfdSearchFolderDefinition.SkipLen1,&sfdSearchFolderDefinition.SkipBytes1);
+	}
+
+	Parser.GetDWORD(&sfdSearchFolderDefinition.DeepSearch);
+
+	Parser.GetBYTE(&sfdSearchFolderDefinition.FolderList1Length);
+	size_t cchFolderList1 = sfdSearchFolderDefinition.FolderList1Length;
+	if (255 == sfdSearchFolderDefinition.FolderList1Length)
+	{
+		Parser.GetWORD(&sfdSearchFolderDefinition.FolderList1LengthExtended);
+		cchFolderList1 = sfdSearchFolderDefinition.FolderList1LengthExtended;
+	}
+	if (cchFolderList1)
+	{
+		Parser.GetStringW(cchFolderList1,&sfdSearchFolderDefinition.FolderList1);
+	}
+
+	Parser.GetDWORD(&sfdSearchFolderDefinition.FolderList2Length);
+
+	if (sfdSearchFolderDefinition.FolderList2Length)
+	{
+		cbOffset = Parser.GetCurrentOffset();
+		sfdSearchFolderDefinition.FolderList2 = BinToEntryListStruct(
+			(ULONG) min(sfdSearchFolderDefinition.FolderList2Length,Parser.RemainingBytes()),
+			lpBin+cbOffset);
+		Parser.Advance(min(sfdSearchFolderDefinition.FolderList2Length,Parser.RemainingBytes()));
+	}
+
+	if (SFST_BINARY & sfdSearchFolderDefinition.Flags)
+	{
+		Parser.GetDWORD(&sfdSearchFolderDefinition.AddressCount);
+		if (sfdSearchFolderDefinition.AddressCount)
+		{
+			sfdSearchFolderDefinition.Addresses = new AddressListEntryStruct[sfdSearchFolderDefinition.AddressCount];
+
+			if (sfdSearchFolderDefinition.Addresses)
+			{
+				memset(sfdSearchFolderDefinition.Addresses,0,sfdSearchFolderDefinition.AddressCount * sizeof(AddressListEntryStruct));
+
+				DWORD i = 0;
+				for (i = 0 ; i < sfdSearchFolderDefinition.AddressCount ; i++)
+				{
+					Parser.GetDWORD(&sfdSearchFolderDefinition.Addresses[i].PropertyCount);
+					Parser.GetDWORD(&sfdSearchFolderDefinition.Addresses[i].Pad);
+					if (sfdSearchFolderDefinition.Addresses[i].PropertyCount)
+					{
+						sfdSearchFolderDefinition.Addresses[i].Properties.PropCount = sfdSearchFolderDefinition.Addresses[i].PropertyCount;
+
+						size_t cbBytesRead = 0;
+						cbOffset = Parser.GetCurrentOffset();
+						sfdSearchFolderDefinition.Addresses[i].Properties.Prop = BinToSPropValue(
+							(ULONG) Parser.RemainingBytes(),
+							lpBin+cbOffset,
+							sfdSearchFolderDefinition.Addresses[i].PropertyCount,
+							&cbBytesRead);
+						Parser.Advance(cbBytesRead);
+					}
+				}
+			}
+		}
+	}
+
+	Parser.GetDWORD(&sfdSearchFolderDefinition.SkipLen2);
+	if (sfdSearchFolderDefinition.SkipLen2)
+	{
+		Parser.GetBYTES(sfdSearchFolderDefinition.SkipLen2,&sfdSearchFolderDefinition.SkipBytes2);
+	}
+
+	if (SFST_MRES & sfdSearchFolderDefinition.Flags)
+	{
+			size_t cbBytesRead = 0;
+			cbOffset = Parser.GetCurrentOffset();
+			sfdSearchFolderDefinition.Restriction = BinToRestrictionStruct(
+				(ULONG) Parser.RemainingBytes(),
+				lpBin+cbOffset,
+				&cbBytesRead);
+			Parser.Advance(cbBytesRead);
+	}
+
+	if (SFST_FILTERSTREAM & sfdSearchFolderDefinition.Flags)
+	{
+		size_t cbRemainingBytes = Parser.RemainingBytes();
+		// Since the format for SFST_FILTERSTREAM isn't documented, just assume that everything remaining
+		// is part of this bucket. We leave DWORD space for the final skip block, which should be empty
+		if (cbRemainingBytes > sizeof(DWORD))
+		{
+			sfdSearchFolderDefinition.AdvancedSearchLen = (DWORD) cbRemainingBytes-sizeof(DWORD);
+			Parser.GetBYTES(sfdSearchFolderDefinition.AdvancedSearchLen,&sfdSearchFolderDefinition.AdvancedSearchBytes);
+		}
+	}
+
+	Parser.GetDWORD(&sfdSearchFolderDefinition.SkipLen3);
+	if (sfdSearchFolderDefinition.SkipLen3)
+	{
+		Parser.GetBYTES(sfdSearchFolderDefinition.SkipLen3,&sfdSearchFolderDefinition.SkipBytes3);
+	}
+
+	// Junk data remains
+	if (Parser.RemainingBytes() > 0)
+	{
+		sfdSearchFolderDefinition.JunkDataSize = Parser.RemainingBytes();
+		Parser.GetBYTES(sfdSearchFolderDefinition.JunkDataSize,&sfdSearchFolderDefinition.JunkData);
+	}
+
+	SearchFolderDefinitionStruct* psfdSearchFolderDefinition = new SearchFolderDefinitionStruct;
+	if (psfdSearchFolderDefinition)
+	{
+		*psfdSearchFolderDefinition = sfdSearchFolderDefinition;
+	}
+
+	return psfdSearchFolderDefinition;
+} // BinToSearchFolderDefinitionStruct
+
+void DeleteSearchFolderDefinitionStruct(SearchFolderDefinitionStruct* psfdSearchFolderDefinition)
+{
+	if (!psfdSearchFolderDefinition) return;
+	delete[] psfdSearchFolderDefinition->TextSearch;
+	delete[] psfdSearchFolderDefinition->SkipBytes1;
+	delete[] psfdSearchFolderDefinition->FolderList1;
+	if (psfdSearchFolderDefinition->FolderList2) DeleteEntryListStruct(psfdSearchFolderDefinition->FolderList2);
+	if (psfdSearchFolderDefinition->Addresses)
+	{
+		DWORD i = 0;
+		for (i = 0 ; i < psfdSearchFolderDefinition->AddressCount ; i++)
+		{
+			DeleteSPropVal(psfdSearchFolderDefinition->Addresses[i].Properties.PropCount,psfdSearchFolderDefinition->Addresses[i].Properties.Prop);
+			delete[] psfdSearchFolderDefinition->Addresses[i].Properties.Prop;
+		}
+		delete[] psfdSearchFolderDefinition->Addresses;
+	}
+	delete[] psfdSearchFolderDefinition->SkipBytes2;
+	DeleteRestrictionStruct(psfdSearchFolderDefinition->Restriction);
+	delete psfdSearchFolderDefinition->Restriction;
+	delete[] psfdSearchFolderDefinition->AdvancedSearchBytes;
+	delete[] psfdSearchFolderDefinition->SkipBytes3;
+
+	delete[] psfdSearchFolderDefinition->JunkData;
+	delete psfdSearchFolderDefinition;
+} // DeleteSearchFolderDefinitionStruct
+
+// result allocated with new, clean up with delete[]
+LPTSTR SearchFolderDefinitionStructToString(SearchFolderDefinitionStruct* psfdSearchFolderDefinition)
+{
+	if (!psfdSearchFolderDefinition) return NULL;
+
+	CString szSearchFolderDefinition;
+	CString szTmp;
+	HRESULT hRes = S_OK;
+
+	LPTSTR szFlags = NULL;
+	EC_H(InterpretFlags(PROP_ID(PR_WB_SF_STORAGE_TYPE), psfdSearchFolderDefinition->Flags, &szFlags));
+
+	szSearchFolderDefinition.FormatMessage(IDS_SFDEFINITIONHEADER,
+		psfdSearchFolderDefinition->Version,
+		psfdSearchFolderDefinition->Flags,szFlags,
+		psfdSearchFolderDefinition->NumericSearch,
+		psfdSearchFolderDefinition->TextSearchLength);
+	delete[] szFlags;
+
+	if (psfdSearchFolderDefinition->TextSearchLength)
+	{
+		szTmp.FormatMessage(IDS_SFDEFINITIONTEXTSEARCH,
+			psfdSearchFolderDefinition->TextSearchLengthExtended,
+			psfdSearchFolderDefinition->TextSearch);
+		szSearchFolderDefinition += szTmp;
+	}
+
+	szTmp.FormatMessage(IDS_SFDEFINITIONSKIPLEN1,
+		psfdSearchFolderDefinition->SkipLen1);
+	szSearchFolderDefinition += szTmp;
+
+	if (psfdSearchFolderDefinition->SkipLen1)
+	{
+		SBinary sBin = {0};
+
+		sBin.cb = (ULONG) psfdSearchFolderDefinition->SkipLen1;
+		sBin.lpb = psfdSearchFolderDefinition->SkipBytes1;
+
+		szTmp.FormatMessage(IDS_SFDEFINITIONSKIPBYTES1,
+			BinToHexString(&sBin,true));
+		szSearchFolderDefinition += szTmp;
+	}
+
+	szTmp.FormatMessage(IDS_SFDEFINITIONDEEPSEARCH,
+		psfdSearchFolderDefinition->DeepSearch,
+		psfdSearchFolderDefinition->FolderList1Length);
+	szSearchFolderDefinition += szTmp;
+
+
+	if (psfdSearchFolderDefinition->FolderList1Length)
+	{
+		szTmp.FormatMessage(IDS_SFDEFINITIONFOLDERLIST1,
+			psfdSearchFolderDefinition->FolderList1LengthExtended,
+			psfdSearchFolderDefinition->FolderList1);
+		szSearchFolderDefinition += szTmp;
+	}
+
+	szTmp.FormatMessage(IDS_SFDEFINITIONFOLDERLISTLENGTH2,
+		psfdSearchFolderDefinition->FolderList2Length);
+	szSearchFolderDefinition += szTmp;
+
+	if (psfdSearchFolderDefinition->FolderList2Length)
+	{
+		LPTSTR szEntryList = EntryListStructToString(psfdSearchFolderDefinition->FolderList2);
+		szTmp.FormatMessage(IDS_SFDEFINITIONFOLDERLIST2,
+			szEntryList);
+		delete[] szEntryList;
+		szSearchFolderDefinition += szTmp;
+	}
+
+	if (SFST_BINARY & psfdSearchFolderDefinition->Flags)
+	{
+		szTmp.FormatMessage(IDS_SFDEFINITIONADDRESSCOUNT,
+			psfdSearchFolderDefinition->AddressCount);
+		szSearchFolderDefinition += szTmp;
+		if (psfdSearchFolderDefinition->AddressCount)
+		{
+			DWORD i = 0;
+			for (i = 0 ; i < psfdSearchFolderDefinition->AddressCount ; i++)
+			{
+				szTmp.FormatMessage(IDS_SFDEFINITIONADDRESSES,
+					i,psfdSearchFolderDefinition->Addresses[i].PropertyCount,
+					i,psfdSearchFolderDefinition->Addresses[i].Pad);
+				szSearchFolderDefinition += szTmp;
+
+				LPTSTR szProps = PropertyStructToString(&psfdSearchFolderDefinition->Addresses[i].Properties);
+				szTmp.FormatMessage(IDS_SFDEFINITIONPROPERTIES,
+					i,szProps);
+				szSearchFolderDefinition += szTmp;
+				delete[] szProps;
+			}
+		}
+	}
+
+	szTmp.FormatMessage(IDS_SFDEFINITIONSKIPLEN2,
+		psfdSearchFolderDefinition->SkipLen2);
+	szSearchFolderDefinition += szTmp;
+
+	if (psfdSearchFolderDefinition->SkipLen2)
+	{
+		SBinary sBin = {0};
+
+		sBin.cb = (ULONG) psfdSearchFolderDefinition->SkipLen2;
+		sBin.lpb = psfdSearchFolderDefinition->SkipBytes2;
+
+		szTmp.FormatMessage(IDS_SFDEFINITIONSKIPBYTES2,
+			BinToHexString(&sBin,true));
+		szSearchFolderDefinition += szTmp;
+	}
+
+	if (psfdSearchFolderDefinition->Restriction)
+	{
+		LPTSTR szRes = RestrictionStructToString(psfdSearchFolderDefinition->Restriction);
+		szSearchFolderDefinition += szRes;
+		szSearchFolderDefinition += _T("\r\n"); // STRING_OK
+		delete[] szRes;
+	}
+
+	if (SFST_FILTERSTREAM & psfdSearchFolderDefinition->Flags)
+	{
+		szTmp.FormatMessage(IDS_SFDEFINITIONADVANCEDSEARCHLEN,
+			psfdSearchFolderDefinition->AdvancedSearchLen);
+		szSearchFolderDefinition += szTmp;
+
+		if (psfdSearchFolderDefinition->AdvancedSearchLen)
+		{
+			SBinary sBin = {0};
+
+			sBin.cb = (ULONG) psfdSearchFolderDefinition->AdvancedSearchLen;
+			sBin.lpb = psfdSearchFolderDefinition->AdvancedSearchBytes;
+
+			szTmp.FormatMessage(IDS_SFDEFINITIONADVANCEDSEARCHBYTES,
+				BinToHexString(&sBin,true));
+			szSearchFolderDefinition += szTmp;
+		}
+	}
+
+	szTmp.FormatMessage(IDS_SFDEFINITIONSKIPLEN3,
+		psfdSearchFolderDefinition->SkipLen3);
+	szSearchFolderDefinition += szTmp;
+
+	if (psfdSearchFolderDefinition->SkipLen3)
+	{
+		SBinary sBin = {0};
+
+		sBin.cb = (ULONG) psfdSearchFolderDefinition->SkipLen3;
+		sBin.lpb = psfdSearchFolderDefinition->SkipBytes3;
+
+		szTmp.FormatMessage(IDS_SFDEFINITIONSKIPBYTES3,
+			BinToHexString(&sBin,true));
+		szSearchFolderDefinition += szTmp;
+	}
+
+	szSearchFolderDefinition += JunkDataToString(psfdSearchFolderDefinition->JunkDataSize,psfdSearchFolderDefinition->JunkData);
+
+	return CStringToString(szSearchFolderDefinition);
+} // SearchFolderDefinitionStructToString

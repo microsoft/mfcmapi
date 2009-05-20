@@ -211,6 +211,7 @@ ID_OPENPUBLICFOLDERS							"Display Public message store"
 ID_OPENSELECTEDSTOREDELETEDFOLDERS				"Display deleted folders for selected store"
 ID_OPENWITHFLAGS								"Allow entry of flags for CreateStoreEntryID"
 ID_OPTIONS										"Set options"
+ID_OUTLOOKVERSION								"Get version of Outlook"
 ID_OUTPUTTABLE									"Output table to file"
 ID_PASTE										"Paste copied item(s)"
 ID_PASTE_NAMEDPROPS								"Paste named properties from source to target"
@@ -309,6 +310,11 @@ IDS_COMPUTESTOREHASH             "Compute Store Hash"
 IDS_COMPUTESTOREHASHPROMPT       "Enter store entry ID and file name"
 IDS_ENCODEID                     "Encode ID"
 IDS_ENCODEIDPROMPT               "Encode ID Prompt"
+IDS_OUTLOOKVERSIONTITLE          "Outlook Version"
+IDS_OUTLOOKVERSIONPROMPT         "Outlook path, version and language obtained through MsiProvideQualifiedComponent and MsiGetFileVersion"
+IDS_OUTLOOKVERSIONLABELVER       "Version:"
+IDS_OUTLOOKVERSIONLABELPATH      "Path:"
+IDS_OUTLOOKVERSIONLABELLANG      "Language:"
 
 // contentstabledlg.cpp
 IDS_CREATEPROPRES                "Create Property String Restriction"
@@ -711,7 +717,7 @@ IDS_PROFILESERVERVERSIONMAJOR    "Major Version"
 IDS_PROFILESERVERVERSIONMINOR    "Minor Version"
 IDS_PROFILESERVERVERSIONBUILD    "Major Build"
 IDS_PROFILESERVERVERSIONMINORBUILD "Minor Build"
-IDS_PROFILESERVERVERSIONNOTFOUND "<not found>"
+IDS_NOTFOUND                     "<not found>"
 IDS_STRUCTUREPICKER              "Structure Picker"
 IDS_STRUCTUREPICKERPROMPT        "Pick which structure to interpret"
 IDS_STRUCTURERESULTS             "Structure Parser"
@@ -722,13 +728,17 @@ IDS_STTIMEZONEDEFINITION         "Time Zone Definition"
 IDS_STTIMEZONE                   "Time Zone"
 IDS_STSECURITYDESCRIPTOR         "Security Descriptor"
 IDS_STEXTENDEDFOLDERFLAGS        "Extended Folder Flags"
-IDS_APPOINTMENTRECURRENCEPATTERN "Appointment Recurrence Pattern"
-IDS_RECURRENCEPATTERN            "Recurrence Pattern"
-IDS_REPORTTAG                    "Report Tag"
-IDS_CONVERSATIONINDEX            "Conversation Index"
-IDS_TASKASSIGNERS                "Task Assigners"
-IDS_GLOBALOBJECTID               "Global Object Id"
-IDS_ENTRYID                      "Entry Id"
+IDS_STAPPOINTMENTRECURRENCEPATTERN "Appointment Recurrence Pattern"
+IDS_STRECURRENCEPATTERN          "Recurrence Pattern"
+IDS_STREPORTTAG                  "Report Tag"
+IDS_STCONVERSATIONINDEX          "Conversation Index"
+IDS_STTASKASSIGNERS              "Task Assigners"
+IDS_STGLOBALOBJECTID             "Global Object Id"
+IDS_STENTRYID                    "Entry Id"
+IDS_STENTRYLIST                  "Entry List"
+IDS_STPROPERTY                   "Property"
+IDS_STRESTRICTION                "Restriction"
+IDS_STSEARCHFOLDERDEFINITION     "Search Folder Definition"
 
 // AbDlg.cpp
 IDS_FLAGS "Flags"
@@ -1217,23 +1227,23 @@ IDS_ENTRYLISTPREFIX "Count of Entries: 0x%1!08X!\r\n"
 IDS_ENTRYLISTENTRY "%1\r\nAlt: %2\r\n"
 IDS_NULLENTRYLIST "Null entry list\r\n"
 IDS_NULLRES "lpRes was NULL\r\n"
-IDS_RESTYPE "%1lpRes->rt = %2 =\r\n"
+IDS_RESTYPE "%1lpRes->rt = %2\r\n"
 
 IDS_RESCOMPARE "%1lpRes->res.resCompareProps.relop = %2 = 0x%3!08X!\r\n\
 %1lpRes->res.resCompareProps.ulPropTag1 = %4\r\n\
 %1lpRes->res.resCompareProps.ulPropTag2 = %5\r\n"
 
 IDS_RESANDCOUNT "%1lpRes->res.resAnd.cRes = 0x%2!08X!\r\n"
-IDS_RESANDPOINTER "%1lpRes->res.resAnd.lpRes[0x%2!08X!] = 0x%3!08X!\r\n"
+IDS_RESANDPOINTER "%1lpRes->res.resAnd.lpRes[0x%2!08X!]\r\n"
 
 IDS_RESORCOUNT "%1lpRes->res.resOr.cRes = 0x%2!08X!\r\n"
-IDS_RESORPOINTER "%1lpRes->res.resOr.lpRes[0x%2!08X!] = 0x%3!08X!\r\n"
+IDS_RESORPOINTER "%1lpRes->res.resOr.lpRes[0x%2!08X!]\r\n"
 
 IDS_RESNOT "%1lpRes->res.resNot.ulReserved = 0x%2!08X!\r\n\
-%1lpRes->res.resNot.lpRes = 0x%3!08X!\r\n"
+%1lpRes->res.resNot.lpRes\r\n"
 
 IDS_RESCOUNT "%1lpRes->res.resCount.ulCount = 0x%2!08X!\r\n\
-%1lpRes->res.resCount.lpRes = 0x%3!08X!\r\n"
+%1lpRes->res.resCount.lpRes\r\n"
 
 IDS_RESCONTENT "%1lpRes->res.resContent.ulFuzzyLevel = %2 = 0x%3!08X!\r\n\
 %1lpRes->res.resContent.ulPropTag = %4\r\n"
@@ -1262,19 +1272,19 @@ IDS_RESEXIST "%1lpRes->res.resExist.ulPropTag = %2\r\n\
 %1lpRes->res.resExist.ulReserved2 = 0x%4!08X!\r\n"
 
 IDS_RESSUBRES "%1lpRes->res.resSub.ulSubObject = %2\r\n\
-%1lpRes->res.resSub.lpRes = 0x%3!08X!\r\n"
+%1lpRes->res.resSub.lpRes\r\n"
 
 IDS_RESCOMMENT "%1lpRes->res.resComment.cValues = 0x%2!08X!\r\n"
 IDS_RESCOMMENTPROPS "%1lpRes->res.resComment.lpProp[0x%2!08X!].ulPropTag = %3\r\n\
 %1lpRes->res.resComment.lpProp[0x%2!08X!].Value = %4\r\n\
 %1\tAlt: %5\r\n"
-IDS_RESCOMMENTRES "%1lpRes->res.resComment.lpRes = 0x%2!08X!\r\n"
+IDS_RESCOMMENTRES "%1lpRes->res.resComment.lpRes\r\n"
 
 IDS_RESANNOTATION "%1lpRes->res.resAnnotation.cValues = 0x%2!08X!\r\n"
 IDS_RESANNOTATIONPROPS "%1lpRes->res.resAnnotation.lpProp[0x%2!08X!].ulPropTag = %3\r\n\
 %1lpRes->res.resAnnotation.lpProp[0x%2!08X!].Value = %4\r\n\
 %1\tAlt: %5\r\n"
-IDS_RESANNOTATIONRES "%1lpRes->res.resAnnotation.lpRes = 0x%2!08X!\r\n"
+IDS_RESANNOTATIONRES "%1lpRes->res.resAnnotation.lpRes\r\n"
 
 IDS_ADRLISTNULL "lpAdrList was NULL\r\n"
 IDS_ADRLISTCOUNT "lpAdrList->cEntries = 0x%1!08X!\r\n"
@@ -1590,12 +1600,12 @@ IDS_CONVERTCODEPAGE "Code Page For Conversion"
 IDS_CONVERTCHARSETTYPE "Character Set Type"
 IDS_CONVERTCHARSETAPPLYTYPE "Character Set Apply Type"
 
-IDS_ARPHEADER "\r\nAppointment Recurrence Pattern: \r\n\
-ReaderVersion2: 0x%1!08X!\r\n\
-WriterVersion2: 0x%2!08X!\r\n\
-StartTimeOffset: 0x%3!08X! = %3!d! = %4\r\n\
-EndTimeOffset: 0x%5!08X! = %5!d! = %6\r\n\
-ExceptionCount: 0x%7!04X!\r\n"
+IDS_ARPHEADER "%1\r\nAppointment Recurrence Pattern: \r\n\
+ReaderVersion2: 0x%2!08X!\r\n\
+WriterVersion2: 0x%3!08X!\r\n\
+StartTimeOffset: 0x%4!08X! = %4!d! = %5\r\n\
+EndTimeOffset: 0x%6!08X! = %6!d! = %7\r\n\
+ExceptionCount: 0x%8!04X!\r\n"
 
 IDS_ARPEXHEADER "ExceptionInfo[%1!d!].StartDateTime: 0x%2!08X! = %3\r\n\
 ExceptionInfo[%1!d!].EndDateTime: 0x%4!08X! = %5\r\n\
@@ -1729,13 +1739,11 @@ IDS_GLOBALOBJECTIDDATA1 "\r\nYear: 0x%1!04X! = %1!d!\
 IDS_GLOBALOBJECTIDDATA2 "\r\nData = "
 
 IDS_ONEOFFENTRYIDFOOTERUNICODE "\r\n\
-One-Off Entry Id: \r\n\
 dwBitmask: 0x%1!08X! = %2\r\n\
 szDisplayName = %3!ws!\r\n\
 szAddressType = %4!ws!\r\n\
 szEmailAddress = %5!ws!"
 IDS_ONEOFFENTRYIDFOOTERANSI "\r\n\
-One-Off Entry Id: \r\n\
 dwBitmask: 0x%1!08X! = %1!d! = %2\r\n\
 szDisplayName = %3!hs!\r\n\
 szAddressType = %4!hs!\r\n\
@@ -1770,7 +1778,7 @@ IDS_ENTRYIDPROVIDERGUID "Provider GUID = %1"
 
 IDS_ENTRYIDEXCHANGEADDRESSDATA "\r\nVersion = 0x%1!08X! = %2\r\n\
 Type = 0x%3!08X! = %4\r\n\
-X500DN = %5"
+X500DN = %5!hs!"
 
 IDS_ENTRYIDCONTACTADDRESSDATA "\r\nVersion = 0x%1!08X! = %2\r\n\
 Type = 0x%3!08X! = %4\r\n\
@@ -1779,13 +1787,13 @@ EntryIDCount = 0x%7!08X!\r\n"
 
 IDS_ENTRYIDMAPIMESSAGESTOREDATA "\r\nVersion = 0x%1!02X! = %2\r\n\
 Flag = 0x%3!02X! = %4\r\n\
-DLLFileName = %5"
+DLLFileName = %5!hs!"
 
 IDS_ENTRYIDMAPIMESSAGESTOREEXCHANGEDATA "\r\nWrapped Flags = 0x%1!08X!\r\n\
 WrappedProviderUID = %2\r\n\
 WrappedType = 0x%3!08X! = %4\r\n\
-ServerShortname = %5\r\n\
-MailboxDN = %6"
+ServerShortname = %5!hs!\r\n\
+MailboxDN = %6!hs!"
 
 IDS_ENTRYIDEXCHANGEFOLDERDATA "\r\nFolder Type = 0x%1!04X! = %2\r\n\
 Database GUID = %3\r\n\
@@ -1799,6 +1807,49 @@ Pad1 = %5\r\n\
 Message Database GUID = %6\r\n\
 Message GlobalCounter = %7\r\n\
 Pad2 = %8"
+
+IDS_PROPERTYDATAHEADER "Property[%1!d!]\r\n"
+IDS_PROPERTYDATA "PropString = %1 AltPropString = %2\r\n"
+IDS_PROPERTYDATASMARTVIEW "Smart View: %1\r\n"
+IDS_PROPERTYDATAEXACTMATCHES "Exact Matches: %1\r\n"
+IDS_PROPERTYDATAPARTIALMATCHES "Partial Matches: %1\r\n"
+
+IDS_RESTRICTIONDATA "Restriction:\r\n"
+
+IDS_ENTRYLISTDATA "EntryCount = 0x%1!08X!\r\n\
+Pad = 0x%2!08X!\r\n"
+IDS_ENTRYLISTENTRYID "EntryId[%1!d!]:\r\n\
+EntryLength = 0x%2!08X!\r\n\
+EntryLengthPad = 0x%3!08X!\r\n\
+Entry Id = %4\r\n"
+
+IDS_SFDEFINITIONHEADER "Search Folder Definition:\r\n\
+Version = 0x%1!08X!\r\n\
+Flags = 0x%2!08X! = %3\r\n\
+Numeric Search = 0x%4!08X!\r\n\
+Text Search Length = 0x%5!02X!\r\n"
+IDS_SFDEFINITIONTEXTSEARCH "Text Search Length Extended = 0x%1!04X!\r\n\
+Text Search = %2!ws!\r\n"
+IDS_SFDEFINITIONSKIPLEN1 "SkipLen1 = 0x%1!08X!\r\n"
+IDS_SFDEFINITIONSKIPBYTES1 "SkipBytes1 = %1\r\n"
+IDS_SFDEFINITIONDEEPSEARCH "Deep Search = 0x%1!08X!\r\n\
+Folder List 1 Length = 0x%2!02X!\r\n"
+IDS_SFDEFINITIONFOLDERLIST1 "Folder List 1 Length Extended = 0x%1!04X!\r\n\
+Folder List 1 = %2!ws!\r\n"
+IDS_SFDEFINITIONFOLDERLISTLENGTH2 "Folder List 2 Length = 0x%1!08X!\r\n"
+IDS_SFDEFINITIONFOLDERLIST2 "FolderList2 = \r\n\
+%1"
+IDS_SFDEFINITIONADDRESSCOUNT "AddressCount = 0x%1!08X!\n"
+IDS_SFDEFINITIONADDRESSES "Addresses[%1!d!].PropertyCount = 0x%2!08X!\r\n\
+Addresses[%3!d!].Pad = 0x%4!08X!\r\n"
+IDS_SFDEFINITIONPROPERTIES "Properties[%1!d!]:\r\n\
+%2\r\n"
+IDS_SFDEFINITIONSKIPLEN2 "SkipLen2 = 0x%1!08X!\r\n"
+IDS_SFDEFINITIONSKIPBYTES2 "SkipBytes2 = %1\r\n"
+IDS_SFDEFINITIONADVANCEDSEARCHLEN "AdvancedSearchLen = 0x%1!08X!\r\n"
+IDS_SFDEFINITIONADVANCEDSEARCHBYTES "AdvancedSearchBytes = %1\r\n"
+IDS_SFDEFINITIONSKIPLEN3 "SkipLen3 = 0x%1!08X!\r\n"
+IDS_SFDEFINITIONSKIPBYTES3 "SkipBytes2 = %1\r\n"
 
 // All strings above this point use FormatMessage style formatting
 

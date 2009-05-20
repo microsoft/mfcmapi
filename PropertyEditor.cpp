@@ -63,7 +63,7 @@ void CPropertyEditor::InitPropValue(
 		WC_H(m_lpMAPIProp->GetProps(&sTag,NULL,&ulValues,&m_lpsInputValue));
 
 		// Suppress MAPI_E_NOT_FOUND error when the source type is non error
-		if (m_lpsInputValue && 
+		if (m_lpsInputValue &&
 			PT_ERROR == PROP_TYPE(m_lpsInputValue->ulPropTag) &&
 			MAPI_E_NOT_FOUND == m_lpsInputValue->Value.err &&
 			PT_ERROR != PROP_TYPE(m_ulPropTag)

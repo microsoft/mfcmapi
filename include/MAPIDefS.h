@@ -3,7 +3,7 @@
  *
  *	Definitions used by MAPI clients and service providers.
  *
- *  Copyright 1986-1999 Microsoft Corporation. All Rights Reserved.
+ *  Copyright 1986-2010 Microsoft Corporation. All Rights Reserved.
  */
 
 #ifndef MAPIDEFS_H
@@ -33,7 +33,7 @@
 #endif
 #endif
 
-#if defined (WIN16) || defined (DOS) || defined (DOS16)
+#if defined (DOS)
 #ifndef _COMPOBJ_H_
 #include <compobj.h>
 #endif
@@ -315,7 +315,7 @@ typedef struct _MAPIUID
 #define PROP_ID_INVALID			0xFFFF
 #define PR_NULL					PROP_TAG( PT_NULL, PROP_ID_NULL)
 #define CHANGE_PROP_TYPE(ulPropTag, ulPropType)	\
-						(((ULONG)0xFFFF0000 & ulPropTag) | ulPropType)
+						(((ULONG)0xFFFF0000 & (ulPropTag)) | (ulPropType))
 
 
 /* Multi-valued Property Types */
@@ -390,7 +390,7 @@ typedef struct _SPropValue	SPropValue;
 #ifndef _tagCY_DEFINED
 #define _tagCY_DEFINED
 #define _CY_DEFINED
-#if (defined (WIN16) || defined (DOS)) && !defined (_VARIANT_H_)
+#if defined (DOS) && !defined (_VARIANT_H_)
 typedef struct FARSTRUCT tagCY {
 #ifdef _MAC
         long      Hi;
@@ -414,7 +414,7 @@ typedef union tagCY {
     };
     LONGLONG int64;
 } CY;
-#endif /* 16-bit vs 32-bit definition */
+#endif
 #endif
 			/* size is 8 */
 typedef CY CURRENCY;
@@ -753,7 +753,7 @@ typedef struct _MAPIERROR
 	LPTSTR	lpszError;
 	LPTSTR	lpszComponent;
 	ULONG	ulLowLevelError;
-	ULONG_PTR	ulContext;
+	ULONG	ulContext;
 
 } MAPIERROR, FAR * LPMAPIERROR;
 
@@ -1005,8 +1005,9 @@ typedef struct _MAPINAMEID
 	LPGUID lpguid;
 	ULONG ulKind;
 	union {
-		LONG lID;
-		LPWSTR lpwstrName;
+		LONG_PTR	lID_Reserved;
+		LONG 		lID;
+		LPWSTR 		lpwstrName;
 	} Kind;
 
 } MAPINAMEID, FAR * LPMAPINAMEID;
@@ -1118,7 +1119,7 @@ typedef struct _SSortOrder
 
 typedef struct _SSortOrderSet
 {
-	ULONG	  		cSorts;		/* Number of sort columns in aSort below*/
+	ULONG			cSorts;		/* Number of sort columns in aSort below*/
 	ULONG			cCategories;	/* 0 for non-categorized, up to cSorts */
 	ULONG			cExpanded;		/* 0 if no categories start expanded, */
 									/*		up to cExpanded */
@@ -1139,7 +1140,7 @@ struct _SSortOrderSet_ ## _name \
 	SSortOrder		aSort[_csort];	\
 } _name
 
-typedef ULONG 		BOOKMARK;
+typedef ULONG_PTR 		BOOKMARK;
 
 #define BOOKMARK_BEGINNING	((BOOKMARK) 0)		/* Before first row */
 #define BOOKMARK_CURRENT	((BOOKMARK) 1)		/* Before current row */
@@ -1172,6 +1173,8 @@ typedef struct _SRestriction	FAR * LPSRestriction;
 #define RES_EXIST			((ULONG) 0x00000008)
 #define RES_SUBRESTRICTION	((ULONG) 0x00000009)
 #define RES_COMMENT			((ULONG) 0x0000000A)
+#define RES_COUNT			((ULONG) 0x0000000B)	// OFFICEDEV: Count restriction to CAP results
+#define RES_ANNOTATION		((ULONG) 0x0000000C)	// OFFICEDEV: Annotation restriction to pass information like LCID, etc.
 
 /* Relational operators. These apply to all property comparison restrictions. */
 
@@ -1266,6 +1269,21 @@ typedef struct _SCommentRestriction
 	LPSPropValue	lpProp;
 } SCommentRestriction;
 
+// OFFICEDEV: The following two restrictions are new to Office 12 and are not
+// backwards compatible with older clients.
+typedef struct _SAnnotationRestriction
+{
+	ULONG			cValues; /* # of properties in lpProp */
+	LPSRestriction	lpRes;
+	LPSPropValue	lpProp;
+} SAnnotationRestriction;
+
+typedef struct _SCountRestriction
+{
+	ULONG			ulCount;
+	LPSRestriction 	lpRes;
+} SCountRestriction;
+
 typedef struct _SRestriction
 {
 	ULONG	rt;			/* Restriction type */
@@ -1282,6 +1300,8 @@ typedef struct _SRestriction
 		SExistRestriction			resExist;
 		SSubRestriction				resSub;
 		SCommentRestriction			resComment;
+		SAnnotationRestriction		resAnnotation;	// OFFICEDEV: not backwards compatible with Office 11 and older
+		SCountRestriction			resCount;		// OFFICEDEV: not backwards compatible with Office 11 and older
 	} res;
 } SRestriction;
 
@@ -2650,9 +2670,51 @@ DECLARE_MAPI_INTERFACE_(IProviderAdmin, IUnknown)
 
 
 
+/* IMAPIClientShutdown Interface ----------------------------------------- */
+DECLARE_MAPI_INTERFACE_PTR(IMAPIClientShutdown,	LPMAPICLIENTSHUTDOWN);
+
+#define MAPI_IMAPICLIENTSHUTDOWN_METHODS(IPURE)								\
+	MAPIMETHOD(QueryFastShutdown)											\
+		(THIS) IPURE;														\
+	MAPIMETHOD(NotifyProcessShutdown)										\
+		(THIS) IPURE;														\
+	MAPIMETHOD(DoFastShutdown)												\
+		(THIS) IPURE;														\
+
+#undef		 INTERFACE
+#define		 INTERFACE  IMAPIClientShutdown
+DECLARE_MAPI_INTERFACE_(IMAPIClientShutdown, IUnknown)
+{
+	BEGIN_INTERFACE
+	MAPI_IUNKNOWN_METHODS(PURE)
+	MAPI_IMAPICLIENTSHUTDOWN_METHODS(PURE)
+};
+
+
+/* IMAPIProviderShutdown Interface --------------------------------------- */
+DECLARE_MAPI_INTERFACE_PTR(IMAPIProviderShutdown,	LPMAPIPROVIDERSHUTDOWN);
+
+#define MAPI_IMAPIPROVIDERSHUTDOWN_METHODS(IPURE)							\
+	MAPIMETHOD(QueryFastShutdown)											\
+		(THIS) IPURE;														\
+	MAPIMETHOD(NotifyProcessShutdown)										\
+		(THIS) IPURE;														\
+	MAPIMETHOD(DoFastShutdown)												\
+		(THIS) IPURE;														\
+
+#undef		 INTERFACE
+#define		 INTERFACE  IMAPIProviderShutdown
+DECLARE_MAPI_INTERFACE_(IMAPIProviderShutdown, IUnknown)
+{
+	BEGIN_INTERFACE
+	MAPI_IUNKNOWN_METHODS(PURE)
+	MAPI_IMAPIPROVIDERSHUTDOWN_METHODS(PURE)
+};
+
+
+
 #ifdef	__cplusplus
 }		/*	extern "C" */
 #endif
 
 #endif /* MAPIDEFS_H */
-

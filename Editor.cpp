@@ -486,6 +486,9 @@ BOOL CEditor::OnInitDialog()
 						m_lpControls[i].UI.lpDropDown->DropDown.InsertString(
 							iDropNum,
 							szDropString);
+						m_lpControls[i].UI.lpDropDown->DropDown.SetItemData(
+							iDropNum,
+							m_lpControls[i].UI.lpDropDown->lpuidDropList[iDropNum]);
 					}
 				}
 				m_lpControls[i].UI.lpDropDown->DropDown.SetCurSel(0);
@@ -618,7 +621,10 @@ void CEditor::OnOK()
 			break;
 		case CTRL_DROPDOWN:
 			if (m_lpControls[j].UI.lpDropDown)
-				m_lpControls[j].UI.lpDropDown->iDropValue = GetDropDownSelection(j);
+			{
+				m_lpControls[j].UI.lpDropDown->iDropSelection = GetDropDownSelection(j);
+				m_lpControls[j].UI.lpDropDown->iDropSelectionValue = GetDropDownSelectionValue(j);
+			}
 			break;
 		}
 	}
@@ -1691,10 +1697,23 @@ CString	CEditor::GetDropStringUseControl(ULONG iControl)
 
 int CEditor::GetDropDownSelection(ULONG iControl)
 {
-	if (!IsValidDropDown(iControl)) return 0;
+	if (!IsValidDropDown(iControl)) return CB_ERR;
 
 	return m_lpControls[iControl].UI.lpDropDown->DropDown.GetCurSel();
 } // CEditor::GetDropDownSelection
+
+DWORD_PTR CEditor::GetDropDownSelectionValue(ULONG iControl)
+{
+	if (!IsValidDropDown(iControl)) return 0;
+
+	int iSel = m_lpControls[iControl].UI.lpDropDown->DropDown.GetCurSel();
+
+	if (CB_ERR != iSel)
+	{
+		return m_lpControls[iControl].UI.lpDropDown->DropDown.GetItemData(iSel);
+	}
+	return 0;
+} // CEditor::GetDropDownSelectionValue
 
 ULONG CEditor::GetListCount(ULONG iControl)
 {
@@ -1782,10 +1801,17 @@ void CEditor::SetDropDownSelection(ULONG i,LPCTSTR szText)
 
 int	CEditor::GetDropDown(ULONG i)
 {
-	if (!IsValidDropDown(i)) return -1;
+	if (!IsValidDropDown(i)) return CB_ERR;
 
-	return m_lpControls[i].UI.lpDropDown->iDropValue;
+	return m_lpControls[i].UI.lpDropDown->iDropSelection;
 } // CEditor::GetDropDown
+
+DWORD_PTR CEditor::GetDropDownValue(ULONG i)
+{
+	if (!IsValidDropDown(i)) return 0;
+
+	return m_lpControls[i].UI.lpDropDown->iDropSelectionValue;
+} // CEditor::GetDropDownValue
 
 void CEditor::InitMultiLine(ULONG i, UINT uidLabel, LPCTSTR szVal, BOOL bReadOnly)
 {
@@ -1871,7 +1897,8 @@ void CEditor::InitDropDown(ULONG i, UINT uidLabel, ULONG ulDropList, UINT* lpuid
 	{
 		m_lpControls[i].UI.lpDropDown->ulDropList = ulDropList;
 		m_lpControls[i].UI.lpDropDown->lpuidDropList = lpuidDropList;
-		m_lpControls[i].UI.lpDropDown->iDropValue = CB_ERR;
+		m_lpControls[i].UI.lpDropDown->iDropSelection = CB_ERR;
+		m_lpControls[i].UI.lpDropDown->iDropSelectionValue = 0;
 	}
 } // CEditor::InitDropDown
 

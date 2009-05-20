@@ -29,7 +29,7 @@ HRESULT ImportEMLToIMessage(
 	{
 		LPSTREAM lpEMLStm = NULL;
 
-		EC_H(OpenStreamOnFile(MAPIAllocateBuffer,
+		EC_H(MyOpenStreamOnFile(MAPIAllocateBuffer,
 			MAPIFreeBuffer,
 			STGM_READ,
 			(LPTSTR)lpszEMLFile,
@@ -116,7 +116,7 @@ HRESULT ExportIMessageToEML(LPMESSAGE lpMsg, LPCTSTR lpszEMLFile, ULONG ulConver
 				{
 					LPSTREAM lpFileStm = NULL;
 
-					EC_H(OpenStreamOnFile(MAPIAllocateBuffer,
+					EC_H(MyOpenStreamOnFile(MAPIAllocateBuffer,
 											MAPIFreeBuffer,
 											STGM_CREATE | STGM_READWRITE,
 											(LPTSTR)lpszEMLFile,

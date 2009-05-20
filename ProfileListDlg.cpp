@@ -472,7 +472,7 @@ void CProfileListDlg::OnGetProfileServiceVersion()
 		}
 		else
 		{
-			MyData.LoadString(0,IDS_PROFILESERVERVERSIONNOTFOUND);
+			MyData.LoadString(0,IDS_NOTFOUND);
 		}
 
 		if (bFoundServerFullVersion)
@@ -494,10 +494,10 @@ void CProfileListDlg::OnGetProfileServiceVersion()
 		}
 		else
 		{
-			MyData.LoadString(1,IDS_PROFILESERVERVERSIONNOTFOUND);
-			MyData.LoadString(2,IDS_PROFILESERVERVERSIONNOTFOUND);
-			MyData.LoadString(3,IDS_PROFILESERVERVERSIONNOTFOUND);
-			MyData.LoadString(4,IDS_PROFILESERVERVERSIONNOTFOUND);
+			MyData.LoadString(1,IDS_NOTFOUND);
+			MyData.LoadString(2,IDS_NOTFOUND);
+			MyData.LoadString(3,IDS_NOTFOUND);
+			MyData.LoadString(4,IDS_NOTFOUND);
 		}
 		WC_H(MyData.DisplayDialog());
 	}

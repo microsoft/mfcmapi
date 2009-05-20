@@ -3,7 +3,7 @@
  *
  *	Status Codes returned by MAPI routines
  *
- *  Copyright 1986-1999 Microsoft Corporation. All Rights Reserved.
+ *  Copyright 1986-2010 Microsoft Corporation. All Rights Reserved.
  */
 
 #ifndef MAPICODE_H
@@ -23,46 +23,9 @@
 #include <winerror.h>
 #endif
 
-/*
- *	MAPI Status codes follow the style of OLE 2.0 sCodes as defined in the
- *	OLE 2.0 Programmer's Reference and header file scode.h (Windows 3.x)
- *	or winerror.h (Windows NT and Windows 95).
- *
- */
-
-/*  On Windows 3.x, status codes have 32-bit values as follows:
- *
- *   3 3 2 2 2 2 2 2 2 2 2 2 1 1 1 1 1 1 1 1 1 1
- *   1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0
- *  +-+---------------------+-------+-------------------------------+
- *  |S|       Context       | Facil |               Code            |
- *  +-+---------------------+-------+-------------------------------+
- *
- *  where
- *
- *      S - is the severity code
- *
- *          0 - SEVERITY_SUCCESS
- *          1 - SEVERITY_ERROR
- *
- *      Context - context info
- *
- *      Facility - is the facility code
- *
- *			0x0 - FACILITY_NULL		generally useful errors ([SE]_*)
- *			0x1 - FACILITY_RPC		remote procedure call errors (RPC_E_*)
- *			0x2 - FACILITY_DISPATCH late binding dispatch errors
- *			0x3 - FACILITY_STORAGE  storage errors (STG_E_*)
- *			0x4 - FACILITY_ITF		interface-specific errors
- *
- *      Code - is the facility's status code
- *
- *
- */
 
 /*
- *	On Windows NT 3.5 and Windows 95, scodes are 32-bit values
- *	laid out as follows:
+ *	On Windows, scodes are 32-bit values laid out as follows:
  *
  *	  3 3 2 2 2 2 2 2 2 2 2 2 1 1 1 1 1 1 1 1 1 1
  *	  1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0
@@ -77,14 +40,14 @@
  *	        0 - Success
  *	        1 - Fail (COERROR)
  *
- *	    R - reserved portion of the facility code, corresponds to NT's
+ *	    R - reserved portion of the facility code, corresponds to Windows
  *	        second severity bit.
  *
- *	    C - reserved portion of the facility code, corresponds to NT's
+ *	    C - reserved portion of the facility code, corresponds to Windows
  *	        C field.
  *
  *	    N - reserved portion of the facility code. Used to indicate a
- *	        mapped NT status value.
+ *	        mapped Windows status value.
  *
  *	    r - reserved portion of the facility code. Reserved for internal
  *	        use. Used to indicate HRESULT values that are not status
@@ -245,4 +208,3 @@
 #endif
 
 #endif	/* MAPICODE_H */
-

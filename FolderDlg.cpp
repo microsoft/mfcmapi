@@ -370,7 +370,6 @@ HRESULT CFolderDlg::OnAttachmentProperties(int iItem, SortListData* /*lpData*/)
 	return hRes;
 } // CFolderDlg::OnAttachmentProperties
 
-// new style copy
 BOOL CFolderDlg::HandleCopy()
 {
 	HRESULT			hRes = S_OK;
@@ -387,7 +386,7 @@ BOOL CFolderDlg::HandleCopy()
 	m_lpMapiObjects->SetMessagesToCopy(lpEIDs,(LPMAPIFOLDER) m_lpContainer);
 
 	return true;
-} // HandleCopy
+} // CFolderDlg::HandleCopy
 
 BOOL CFolderDlg::HandlePaste()
 {
@@ -546,7 +545,7 @@ BOOL CFolderDlg::HandlePaste()
 		if (lpMAPISourceFolder) lpMAPISourceFolder->Release();
 	}
 	return true;
-} // HandlePaste
+} // CFolderDlg::HandlePaste
 
 void CFolderDlg::OnDeleteAttachments()
 {

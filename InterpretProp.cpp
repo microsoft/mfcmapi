@@ -547,31 +547,36 @@ void RestrictionToString(LPSRestriction lpRes, LPMAPIPROP lpObj, ULONG ulTabLeve
 	case RES_AND:
 		szTmp.FormatMessage(IDS_RESANDCOUNT,szTabs,lpRes->res.resAnd.cRes);
 		*PropString += szTmp;
-		for (i = 0;i< lpRes->res.resAnd.cRes;i++)
+		if (lpRes->res.resAnd.lpRes)
 		{
-			szTmp.FormatMessage(IDS_RESANDPOINTER,szTabs,i,&lpRes->res.resAnd.lpRes[i]);
-			*PropString += szTmp;
-			RestrictionToString(&lpRes->res.resAnd.lpRes[i],lpObj,ulTabLevel+1,&szTmp);
-			*PropString += szTmp;
+			for (i = 0;i< lpRes->res.resAnd.cRes;i++)
+			{
+				szTmp.FormatMessage(IDS_RESANDPOINTER,szTabs,i);
+				*PropString += szTmp;
+				RestrictionToString(&lpRes->res.resAnd.lpRes[i],lpObj,ulTabLevel+1,&szTmp);
+				*PropString += szTmp;
+			}
 		}
 		break;
 	case RES_OR:
 		szTmp.FormatMessage(IDS_RESORCOUNT,szTabs,lpRes->res.resOr.cRes);
 		*PropString += szTmp;
-		for (i = 0;i< lpRes->res.resOr.cRes;i++)
+		if (lpRes->res.resOr.lpRes)
 		{
-			szTmp.FormatMessage(IDS_RESORPOINTER,szTabs,i,&lpRes->res.resOr.lpRes[i]);
-			*PropString += szTmp;
-			RestrictionToString(&lpRes->res.resOr.lpRes[i],lpObj,ulTabLevel+1,&szTmp);
-			*PropString += szTmp;
+			for (i = 0;i< lpRes->res.resOr.cRes;i++)
+			{
+				szTmp.FormatMessage(IDS_RESORPOINTER,szTabs,i);
+				*PropString += szTmp;
+				RestrictionToString(&lpRes->res.resOr.lpRes[i],lpObj,ulTabLevel+1,&szTmp);
+				*PropString += szTmp;
+			}
 		}
 		break;
 	case RES_NOT:
 		szTmp.FormatMessage(
 			IDS_RESNOT,
 			szTabs,
-			lpRes->res.resNot.ulReserved,
-			lpRes->res.resNot.lpRes);
+			lpRes->res.resNot.ulReserved);
 		*PropString += szTmp;
 		RestrictionToString(lpRes->res.resNot.lpRes,lpObj,ulTabLevel+1,&szTmp);
 		*PropString += szTmp;
@@ -580,8 +585,7 @@ void RestrictionToString(LPSRestriction lpRes, LPMAPIPROP lpObj, ULONG ulTabLeve
 		szTmp.FormatMessage(
 			IDS_RESCOUNT,
 			szTabs,
-			lpRes->res.resNot.ulReserved,
-			lpRes->res.resNot.lpRes);
+			lpRes->res.resNot.ulReserved);
 		*PropString += szTmp;
 		RestrictionToString(lpRes->res.resNot.lpRes,lpObj,ulTabLevel+1,&szTmp);
 		*PropString += szTmp;
@@ -691,8 +695,7 @@ void RestrictionToString(LPSRestriction lpRes, LPMAPIPROP lpObj, ULONG ulTabLeve
 		szTmp.FormatMessage(
 			IDS_RESSUBRES,
 			szTabs,
-			TagToString(lpRes->res.resSub.ulSubObject,lpObj,false,true),
-			lpRes->res.resSub.lpRes);
+			TagToString(lpRes->res.resSub.ulSubObject,lpObj,false,true));
 		*PropString += szTmp;
 		RestrictionToString(lpRes->res.resSub.lpRes,lpObj,ulTabLevel+1,&szTmp);
 		*PropString += szTmp;
@@ -700,22 +703,24 @@ void RestrictionToString(LPSRestriction lpRes, LPMAPIPROP lpObj, ULONG ulTabLeve
 	case RES_COMMENT:
 		szTmp.FormatMessage(IDS_RESCOMMENT,szTabs,lpRes->res.resComment.cValues);
 		*PropString += szTmp;
-		for (i = 0;i< lpRes->res.resComment.cValues;i++)
+		if (lpRes->res.resComment.lpProp)
 		{
-			InterpretProp(&lpRes->res.resComment.lpProp[i],&szProp,&szAltProp);
-			szTmp.FormatMessage(
-				IDS_RESCOMMENTPROPS,
-				szTabs,
-				i,
-				TagToString(lpRes->res.resComment.lpProp[i].ulPropTag,lpObj,false,true),
-				szProp,
-				szAltProp);
-			*PropString += szTmp;
+			for (i = 0;i< lpRes->res.resComment.cValues;i++)
+			{
+				InterpretProp(&lpRes->res.resComment.lpProp[i],&szProp,&szAltProp);
+				szTmp.FormatMessage(
+					IDS_RESCOMMENTPROPS,
+					szTabs,
+					i,
+					TagToString(lpRes->res.resComment.lpProp[i].ulPropTag,lpObj,false,true),
+					szProp,
+					szAltProp);
+				*PropString += szTmp;
+			}
 		}
 		szTmp.FormatMessage(
 			IDS_RESCOMMENTRES,
-			szTabs,
-			lpRes->res.resComment.lpRes);
+			szTabs);
 		*PropString += szTmp;
 		RestrictionToString(lpRes->res.resComment.lpRes,lpObj,ulTabLevel+1,&szTmp);
 		*PropString += szTmp;
@@ -723,22 +728,24 @@ void RestrictionToString(LPSRestriction lpRes, LPMAPIPROP lpObj, ULONG ulTabLeve
 	case RES_ANNOTATION:
 		szTmp.FormatMessage(IDS_RESANNOTATION,szTabs,lpRes->res.resComment.cValues);
 		*PropString += szTmp;
-		for (i = 0;i< lpRes->res.resComment.cValues;i++)
+		if (lpRes->res.resComment.lpProp)
 		{
-			InterpretProp(&lpRes->res.resComment.lpProp[i],&szProp,&szAltProp);
-			szTmp.FormatMessage(
-				IDS_RESANNOTATIONPROPS,
-				szTabs,
-				i,
-				TagToString(lpRes->res.resComment.lpProp[i].ulPropTag,lpObj,false,true),
-				szProp,
-				szAltProp);
-			*PropString += szTmp;
+			for (i = 0;i< lpRes->res.resComment.cValues;i++)
+			{
+				InterpretProp(&lpRes->res.resComment.lpProp[i],&szProp,&szAltProp);
+				szTmp.FormatMessage(
+					IDS_RESANNOTATIONPROPS,
+					szTabs,
+					i,
+					TagToString(lpRes->res.resComment.lpProp[i].ulPropTag,lpObj,false,true),
+					szProp,
+					szAltProp);
+				*PropString += szTmp;
+			}
 		}
 		szTmp.FormatMessage(
 			IDS_RESANNOTATIONRES,
-			szTabs,
-			lpRes->res.resComment.lpRes);
+			szTabs);
 		*PropString += szTmp;
 		RestrictionToString(lpRes->res.resComment.lpRes,lpObj,ulTabLevel+1,&szTmp);
 		*PropString += szTmp;

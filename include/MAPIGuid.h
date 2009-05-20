@@ -12,7 +12,7 @@
  *
  *	This range of 256 GUIDs reserved by OLE for MAPI use October 5, 1992.
  *
- *  Copyright 1986-1999 Microsoft Corporation. All Rights Reserved.
+ *  Copyright 1986-2010 Microsoft Corporation. All Rights Reserved.
  */
 
 /*
@@ -74,9 +74,11 @@
  *	0x00020383	PS_ROUTING_ENTRYID
  *	0x00020384	PS_ROUTING_SEARCH_KEY
  *	0x00020385	MUID_PROFILE_INSTANCE
+ *	0x00020397	IID_IMAPIClientShutdown
+ *	0x00020398	IID_IMAPIProviderShutdown
  *
  *	The remaining GUIDs from 0x00020300 to 0x000203FF are reserved by
- *	MAPI for future use.  The current maximum used by MAPI is 0x00020385
+ *	MAPI for future use.  The current maximum used by MAPI is 0x00020398
  *
  */
 
@@ -333,6 +335,19 @@ DEFINE_OLEGUID(PS_ROUTING_SEARCH_KEY,	0x00020384, 0, 0);
 	different for each unique profile. */
 #if !defined(INITGUID) || defined(USES_MUID_PROFILE_INSTANCE)
 DEFINE_OLEGUID(MUID_PROFILE_INSTANCE, 0x00020385, 0, 0);
+#endif
+
+
+/* Interface GUIDs for Fast Shutdown support */
+
+/* IMAPIClientShutdown */
+#if !defined(INITGUID) || defined(USES_IID_IMAPIClientShutdown)
+DEFINE_OLEGUID(IID_IMAPIClientShutdown, 0x00020397, 0, 0);
+#endif
+
+/* IMAPIProviderShutdown */
+#if !defined(INITGUID) || defined(USES_IID_IMAPIProviderShutdown)
+DEFINE_OLEGUID(IID_IMAPIProviderShutdown, 0x00020398, 0, 0);
 #endif
 
 #endif	/* MAPIGUID_H */

@@ -35,22 +35,10 @@ void InterpretProp(LPSPropValue lpProp, // optional property value
 				   LPTSTR* lpszNamedPropGUID, // Built from ulPropTag & lpMAPIProp
 				   LPTSTR* lpszNamedPropDASL); // Built from ulPropTag & lpMAPIProp
 
-enum MAPIStructType {
-	stUnknown = 0,
-	stTimeZoneDefinition,
-	stTimeZone,
-	stSecurityDescriptor,
-	stExtendedFolderFlags,
-	stAppointmentRecurrencePattern,
-	stRecurrencePattern,
-	stReportTag,
-	stConversationIndex,
-	stTaskAssigners,
-	stGlobalObjectId,
-	stEntryId,
-};
+extern UINT g_uidParsingTypesDropDown[];
+extern ULONG g_cbuidParsingTypesDropDown;
 
-void InterpretBinaryAsString(SBinary myBin, MAPIStructType myStructType, LPMAPIPROP lpMAPIProp, ULONG ulPropTag, LPTSTR* lpszResultString);
+void InterpretBinaryAsString(SBinary myBin, DWORD_PTR iStructType, LPMAPIPROP lpMAPIProp, ULONG ulPropTag, LPTSTR* lpszResultString);
 
 HRESULT GetLargeBinaryProp(LPMAPIPROP lpMAPIProp, ULONG ulPropTag, LPSPropValue* lppProp);
 
@@ -531,3 +519,135 @@ EntryIdStruct* BinToEntryIdStruct(ULONG cbBin, LPBYTE lpBin);
 void DeleteEntryIdStruct(EntryIdStruct* peidEntryId);
 // result allocated with new, clean up with delete[]
 LPTSTR EntryIdStructToString(EntryIdStruct* peidEntryId);
+
+// EntryListEntryStruct
+// =====================
+//   This structure specifies an Entry in an Entry List
+//
+typedef struct EntryListEntryStruct
+{
+	DWORD EntryLength;
+	DWORD EntryLengthPad;
+	EntryIdStruct* EntryId;
+} EntryListEntryStruct;
+
+
+// EntryListStruct
+// =====================
+//   This structure specifies an Entry List
+//
+typedef struct EntryListStruct
+{
+	DWORD EntryCount;
+	DWORD Pad;
+
+	EntryListEntryStruct* Entry;
+
+	size_t JunkDataSize;
+	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
+} EntryListStruct;
+
+void EntryListToString(SBinary myBin, LPTSTR* lpszResultString);
+// Allocates return value with new. Clean up with DeleteEntryListStruct.
+EntryListStruct* BinToEntryListStruct(ULONG cbBin, LPBYTE lpBin);
+void DeleteEntryListStruct(EntryListStruct* pelEntryList);
+// result allocated with new, clean up with delete[]
+LPTSTR EntryListStructToString(EntryListStruct* pelEntryList);
+
+// PropertyStruct
+// =====================
+//   This structure specifies an array of Properties
+//
+typedef struct
+{
+	DWORD PropCount;
+	LPSPropValue Prop;
+
+	size_t JunkDataSize;
+	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
+} PropertyStruct;
+
+void PropertyToString(SBinary myBin, LPTSTR* lpszResultString);
+// Allocates return value with new. Clean up with DeletePropertyStruct.
+PropertyStruct* BinToPropertyStruct(ULONG cbBin, LPBYTE lpBin, DWORD dwPropCount, size_t* lpcbBytesRead);
+// Allocates return value with new. Clean up with DeletePropertyStruct.
+LPSPropValue BinToSPropValue(ULONG cbBin, LPBYTE lpBin, DWORD dwPropCount, size_t* lpcbBytesRead);
+// Neuters an array of SPropValues - caller must use delete to delete the SPropValue
+void DeleteSPropVal(ULONG cVal, LPSPropValue lpsPropVal);
+void DeletePropertyStruct(PropertyStruct* ppProperty);
+// result allocated with new, clean up with delete[]
+LPTSTR PropertyStructToString(PropertyStruct* ppProperty);
+
+// RestrictionStruct
+// =====================
+//   This structure specifies a Restriction
+//
+typedef struct
+{
+	LPSRestriction lpRes;
+
+	size_t JunkDataSize;
+	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
+} RestrictionStruct;
+
+void RestrictionToString(SBinary myBin, LPTSTR* lpszResultString);
+// Allocates return value with new. Clean up with DeletePropertyStruct.
+RestrictionStruct* BinToRestrictionStruct(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead);
+// Caller allocates with new. Clean up with DeleteRestrictionStruct.
+void BinToRestrictionStruct(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead, LPSRestriction psrRestriction);
+// Neuters an SRestriction - caller must use delete to delete the SRestriction
+void DeleteRestriction(LPSRestriction lpRes);
+void DeleteRestrictionStruct(RestrictionStruct* prRestriction);
+// result allocated with new, clean up with delete[]
+LPTSTR RestrictionStructToString(RestrictionStruct* prRestriction);
+
+// AddressListEntryStruct
+// =====================
+//   This structure specifies an entry in an Address List
+//
+typedef struct
+{
+	DWORD PropertyCount;
+	DWORD Pad;
+	PropertyStruct Properties;
+} AddressListEntryStruct;
+
+// SearchFolderDefinitionStruct
+// =====================
+//   This structure specifies a Search Folder Definition
+//
+typedef struct
+{
+	DWORD Version;
+	DWORD Flags;
+	DWORD NumericSearch;
+	BYTE TextSearchLength;
+	WORD TextSearchLengthExtended;
+	LPWSTR TextSearch;
+	DWORD SkipLen1;
+	LPBYTE SkipBytes1;
+	DWORD DeepSearch;
+	BYTE FolderList1Length;
+	WORD FolderList1LengthExtended;
+	LPWSTR FolderList1;
+	DWORD FolderList2Length;
+	EntryListStruct* FolderList2;
+	DWORD AddressCount; // SFST_BINARY
+	AddressListEntryStruct* Addresses; // SFST_BINARY
+	DWORD SkipLen2;
+	LPBYTE SkipBytes2;
+	RestrictionStruct* Restriction; // SFST_MRES
+	DWORD AdvancedSearchLen; // SFST_FILTERSTREAM
+	LPBYTE AdvancedSearchBytes; // SFST_FILTERSTREAM
+	DWORD SkipLen3;
+	LPBYTE SkipBytes3;
+	size_t JunkDataSize;
+	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
+} SearchFolderDefinitionStruct;
+
+void SearchFolderDefinitionToString(SBinary myBin, LPTSTR* lpszResultString);
+// Allocates return value with new. Clean up with DeleteSearchFolderDefinitionStruct.
+SearchFolderDefinitionStruct* BinToSearchFolderDefinitionStruct(ULONG cbBin, LPBYTE lpBin);
+void DeleteSearchFolderDefinitionStruct(SearchFolderDefinitionStruct* psfdSearchFolderDefinition);
+// result allocated with new, clean up with delete[]
+LPTSTR SearchFolderDefinitionStructToString(SearchFolderDefinitionStruct* psfdSearchFolderDefinition);
