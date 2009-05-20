@@ -76,6 +76,53 @@ HRESULT GetDirectoryPath(LPTSTR szPath)
 	return hRes;
 }
 
+// Opens storage with best access
+HRESULT MyStgOpenStorage(LPCTSTR szMessageFile, BOOL bBestAccess, LPSTORAGE* lppStorage)
+{
+	if (!lppStorage) return MAPI_E_INVALID_PARAMETER;
+	HRESULT		hRes = S_OK;
+	ULONG		ulFlags = STGM_TRANSACTED;
+
+	if (bBestAccess) ulFlags |= STGM_READWRITE;
+
+#ifdef UNICODE
+		WC_H(::StgOpenStorage(
+			szMessageFile,
+			NULL,
+			ulFlags,
+			NULL,
+			0,
+			lppStorage));
+#else
+		{
+			LPWSTR	szWideCharStr = NULL;
+			EC_H(AnsiToUnicode(
+				szMessageFile,
+				&szWideCharStr));
+			if (szWideCharStr)
+			{
+				WC_H(::StgOpenStorage(
+					szWideCharStr,
+					NULL,
+					ulFlags,
+					NULL,
+					0,
+					lppStorage));
+				delete[] szWideCharStr;
+			}
+		}
+#endif
+
+	// If we asked for best access (read/write) and didn't get it, then try it without readwrite
+	if (STG_E_ACCESSDENIED == hRes && !*lppStorage && bBestAccess)
+	{
+		hRes = S_OK;
+		EC_H(MyStgOpenStorage(szMessageFile, false, lppStorage));
+	}
+
+	return hRes;
+} // MyStgOpenStorage
+
 // Creates an LPMESSAGE on top of the MSG file
 HRESULT LoadMSGToMessage(LPCTSTR szMessageFile, LPMESSAGE* lppMessage)
 {
@@ -89,33 +136,7 @@ HRESULT LoadMSGToMessage(LPCTSTR szMessageFile, LPMESSAGE* lppMessage)
 	if (lpMalloc)
 	{
 		// Open the compound file
-#ifdef UNICODE
-		EC_H(::StgOpenStorage(
-			szMessageFile,
-			NULL,
-			STGM_READ | STGM_TRANSACTED,
-			NULL,
-			0,
-			&pStorage));
-#else
-		{
-			LPWSTR	szWideCharStr = NULL;
-			EC_H(AnsiToUnicode(
-				szMessageFile,
-				&szWideCharStr));
-			if (szWideCharStr)
-			{
-				EC_H(::StgOpenStorage(
-					szWideCharStr,
-					NULL,
-					STGM_READ | STGM_TRANSACTED,
-					NULL,
-					0,
-					&pStorage));
-				delete[] szWideCharStr;
-			}
-		}
-#endif
+		EC_H(MyStgOpenStorage(szMessageFile, true, &pStorage));
 
 		if (pStorage)
 		{
@@ -227,7 +248,7 @@ HRESULT LoadFromTNEF(LPCTSTR szMessageFile, LPADRBOOK lpAdrBook, LPMESSAGE lpMes
 	};
 
 	// Get a Stream interface on the input TNEF file
-	EC_H(OpenStreamOnFile(
+	EC_H(MyOpenStreamOnFile(
 		MAPIAllocateBuffer,
 		MAPIFreeBuffer,
 		STGM_READ,
@@ -573,7 +594,7 @@ HRESULT SaveToEML(LPMESSAGE lpMessage, LPCTSTR szFileName)
 			// Open an IStream interface and create the file at the
 			// same time. This code will create the file in the
 			// current directory.
-			EC_H(OpenStreamOnFile(
+			EC_H(MyOpenStreamOnFile(
 				MAPIAllocateBuffer,
 				MAPIFreeBuffer,
 				STGM_CREATE | STGM_READWRITE,
@@ -808,7 +829,7 @@ HRESULT SaveToTNEF(LPMESSAGE lpMessage, LPADRBOOK lpAdrBook, LPCTSTR szFileName)
 	static WORD dwKey = (WORD)::GetTickCount();
 
 	// Get a Stream interface on the input TNEF file
-	EC_H(OpenStreamOnFile(
+	EC_H(MyOpenStreamOnFile(
 		MAPIAllocateBuffer,
 		MAPIFreeBuffer,
 		STGM_READWRITE | STGM_CREATE,
@@ -1097,7 +1118,7 @@ HRESULT WriteAttachStreamToFile(LPATTACH lpAttach,LPCTSTR szFileName)
 			// Open an IStream interface and create the file at the
 			// same time. This code will create the file in the
 			// current directory.
-			EC_H(OpenStreamOnFile(
+			EC_H(MyOpenStreamOnFile(
 				MAPIAllocateBuffer,
 				MAPIFreeBuffer,
 				STGM_CREATE | STGM_READWRITE,
@@ -1151,7 +1172,7 @@ HRESULT WriteOleToFile(LPATTACH lpAttach,LPCTSTR szFileName)
 		// Open an IStream interface and create the file at the
 		// same time. This code will create the file in the
 		// current directory.
-		EC_H(OpenStreamOnFile(
+		EC_H(MyOpenStreamOnFile(
 			MAPIAllocateBuffer,
 			MAPIFreeBuffer,
 			STGM_CREATE | STGM_READWRITE,

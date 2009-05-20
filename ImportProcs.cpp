@@ -12,6 +12,7 @@ HMODULE hModRichEd20 = NULL;
 HMODULE hModOle32 = NULL;
 HMODULE hModUxTheme = NULL;
 HMODULE hModInetComm = NULL;
+HMODULE hModMSI = NULL;
 
 LPEDITSECURITY				pfnEditSecurity = NULL;
 
@@ -23,6 +24,10 @@ LPGETTHEMEMARGINS			pfnGetThemeMargins = NULL;
 
 // From inetcomm.dll
 LPMIMEOLEGETCODEPAGECHARSET pfnMimeOleGetCodePageCharset = NULL;
+
+// From MSI.dll
+LPMSIPROVIDEQUALIFIEDCOMPONENT pfnMsiProvideQualifiedComponent = NULL;
+LPMSIGETFILEVERSION pfnMsiGetFileVersion = NULL;
 
 // All of these get loaded from a MAPI DLL:
 LPFGETCOMPONENTPATH			pfnFGetComponentPath = NULL;
@@ -300,6 +305,34 @@ void LoadMimeOLE()
 			"MimeOleGetCodePageCharset")); // STRING_OK
 	}
 }
+
+void LoadMSI()
+{
+	HRESULT hRes = S_OK;
+	if (!hModMSI) hModMSI = LoadFromSystemDir(_T("msi.dll")); // STRING_OK
+	if (hModMSI)
+	{
+#ifdef _UNICODE
+		WC_D(pfnMsiProvideQualifiedComponent, (LPMSIPROVIDEQUALIFIEDCOMPONENT) GetProcAddress(
+			hModMSI,
+			"MsiProvideQualifiedComponentW" // STRING_OK
+			));
+		WC_D(pfnMsiGetFileVersion, (LPMSIGETFILEVERSION) GetProcAddress(
+			hModMSI,
+			"MsiGetFileVersionW" // STRING_OK
+			));
+#else
+		WC_D(pfnMsiProvideQualifiedComponent, (LPMSIPROVIDEQUALIFIEDCOMPONENT) GetProcAddress(
+			hModMSI,
+			"MsiProvideQualifiedComponentA" // STRING_OK
+			));
+		WC_D(pfnMsiGetFileVersion, (LPMSIGETFILEVERSION) GetProcAddress(
+			hModMSI,
+			"MsiGetFileVersionA" // STRING_OK
+			));
+#endif
+	}
+}// LoadMSI
 
 // Opens the mail key for the specified MAPI client, such as 'Microsoft Outlook' or 'ExchangeMAPI'
 // Pass NULL to open the mail key for the default MAPI client
@@ -751,12 +784,12 @@ STDMETHODIMP OpenTnefStreamEx(LPVOID lpvSupport,
 // Since I never use lpszPrefix, I don't convert it
 // To make certain of that, I pass NULL for it
 // If I ever do need this param, I'll have to fix this
-STDMETHODIMP OpenStreamOnFile(LPALLOCATEBUFFER lpAllocateBuffer,
-							  LPFREEBUFFER lpFreeBuffer,
-							  ULONG ulFlags,
-							  LPTSTR lpszFileName,
-							  LPTSTR /*lpszPrefix*/,
-							  LPSTREAM FAR * lppStream)
+STDMETHODIMP MyOpenStreamOnFile(LPALLOCATEBUFFER lpAllocateBuffer,
+								LPFREEBUFFER lpFreeBuffer,
+								ULONG ulFlags,
+								__in LPCTSTR lpszFileName,
+								__in LPCTSTR /*lpszPrefix*/,
+								LPSTREAM FAR * lppStream)
 {
 	CHECKLOAD(pfnOpenStreamOnFile);
 	HRESULT hRes = S_OK;
@@ -783,7 +816,7 @@ STDMETHODIMP OpenStreamOnFile(LPALLOCATEBUFFER lpAllocateBuffer,
 		lpAllocateBuffer,
 		lpFreeBuffer,
 		ulFlags,
-		lpszFileName,
+		(LPSTR) lpszFileName,
 		NULL,
 		lppStream);
 #endif

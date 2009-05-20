@@ -3,7 +3,7 @@
  *
  *  Defines the SpoolerMsgHook provider interface.
  *
- *  Copyright 1986-1999 Microsoft Corporation. All Rights Reserved.
+ *  Copyright 1986-2010 Microsoft Corporation. All Rights Reserved.
  */
 
 #ifndef MAPIHOOK_H

@@ -73,6 +73,9 @@ CParentWnd::CParentWnd()
 	// Load inetcomm.dll and get MIMEOLE API from it
 	LoadMimeOLE();
 
+	// Load msi.dll and get MSI functions from it
+	LoadMSI();
+
 	m_cRef = 1;
 
 	m_hwinEventHook = SetWinEventHook(

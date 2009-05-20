@@ -13,6 +13,8 @@ extern LPOPENTHEMEDATA				pfnOpenThemeData;
 extern LPCLOSETHEMEDATA				pfnCloseThemeData;
 extern LPGETTHEMEMARGINS			pfnGetThemeMargins;
 extern LPMIMEOLEGETCODEPAGECHARSET	pfnMimeOleGetCodePageCharset;
+extern LPMSIPROVIDEQUALIFIEDCOMPONENT pfnMsiProvideQualifiedComponent;
+extern LPMSIGETFILEVERSION			pfnMsiGetFileVersion;
 
 BOOL GetComponentPath(
 					  LPTSTR szComponent,
@@ -28,6 +30,7 @@ void LoadAclUI();
 void LoadStg();
 void LoadThemeUI();
 void LoadMimeOLE();
+void LoadMSI();
 
 HKEY GetMailKey(LPTSTR szClient);
 void GetMapiMsiIds(LPTSTR szClient, LPTSTR* lpszComponentID, LPTSTR* lpszAppLCID, LPTSTR* lpszOfficeLCID);
@@ -48,3 +51,10 @@ HRESULT HrCopyRestrictionArray(
 	ULONG cRes, // # elements in array
 	LPSRestriction lpResDest // destination restriction
 	);
+
+STDMETHODIMP MyOpenStreamOnFile(LPALLOCATEBUFFER lpAllocateBuffer,
+								LPFREEBUFFER lpFreeBuffer,
+								ULONG ulFlags,
+								__in LPCTSTR lpszFileName,
+								__in LPCTSTR /*lpszPrefix*/,
+								LPSTREAM FAR * lppStream);

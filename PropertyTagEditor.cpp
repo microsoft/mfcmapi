@@ -471,7 +471,7 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField)
 		{
 			if (PROPTAG_NAMEPROPKIND != ulSkipField &&
 				PROPTAG_NAMEPROPNAME != ulSkipField &&
-				PROPTAG_NAMEPROPGUID != ulSkipField) 
+				PROPTAG_NAMEPROPGUID != ulSkipField)
 			{
 				SetDropDownSelection(PROPTAG_NAMEPROPKIND,NULL);
 				SetString(PROPTAG_NAMEPROPNAME,NULL);

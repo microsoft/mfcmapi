@@ -548,6 +548,8 @@ BEGIN
     BEGIN
         MENUITEM "Open Attachment",             ID_DISPLAYSELECTEDITEM
         MENUITEM "&Delete Attachment",          ID_DELETESELECTEDITEM
+        MENUITEM "Copy Attachments",            ID_COPY
+        MENUITEM "Paste Attachments",           ID_PASTE
         MENUITEM "&Save to File...",            ID_SAVETOFILE
         MENUITEM SEPARATOR
         MENUITEM "Save Changes On Message",     ID_SAVECHANGES
@@ -567,6 +569,8 @@ IDR_MENU_ATTACHMENTS_POPUP MENU DISCARDABLE
 BEGIN
     MENUITEM "Open Attachment",             ID_DISPLAYSELECTEDITEM
     MENUITEM "&Delete Attachment",          ID_DELETESELECTEDITEM
+    MENUITEM "Copy Attachments",            ID_COPY
+    MENUITEM "Paste Attachments",           ID_PASTE
     MENUITEM "&Save to File...",            ID_SAVETOFILE
     MENUITEM "Save Changes On Selected Item", ID_MODIFYSELECTEDITEM
     MENUITEM "View Attachments As Embedded Messages",
@@ -655,6 +659,7 @@ BEGIN
     MENUITEM "Dispatch Notifications",      ID_DISPATCHNOTIFICATIONS
     MENUITEM SEPARATOR
     MENUITEM "Hex Editor...",               ID_HEXEDITOR
+	MENUITEM "Outlook Version",             ID_OUTLOOKVERSION
     MENUITEM "&Help",                       ID_HELP
 END
 
@@ -751,4 +756,3 @@ LANGUAGE 9, 1
 
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
-

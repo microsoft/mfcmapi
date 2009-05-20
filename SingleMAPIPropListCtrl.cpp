@@ -1479,90 +1479,45 @@ void CSingleMAPIPropListCtrl::OnParseProperty()
 	if (lpsPropToDisplay && PT_BINARY == PROP_TYPE(lpsPropToDisplay->ulPropTag))
 	{
 		// Find out how to interpret the data
-		MAPIStructType myStructType = stUnknown;
+		DWORD_PTR iStructType = NULL;
 		CEditor MyStructurePicker(
 			this,
 			IDS_STRUCTUREPICKER,
 			IDS_STRUCTUREPICKERPROMPT,
 			1,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		UINT uidDropDown[] = {
-			IDS_STTIMEZONEDEFINITION,
-			IDS_STTIMEZONE,
-			IDS_STSECURITYDESCRIPTOR,
-			IDS_STEXTENDEDFOLDERFLAGS,
-			IDS_APPOINTMENTRECURRENCEPATTERN,
-			IDS_RECURRENCEPATTERN,
-			IDS_REPORTTAG,
-			IDS_CONVERSATIONINDEX,
-			IDS_TASKASSIGNERS,
-			IDS_GLOBALOBJECTID,
-			IDS_ENTRYID,
-		};
-		MyStructurePicker.InitDropDown(0,IDS_STRUCTURES,sizeof(uidDropDown)/sizeof(UINT),uidDropDown,true);
+
+		MyStructurePicker.InitDropDown(0,IDS_STRUCTURES,g_cbuidParsingTypesDropDown,g_uidParsingTypesDropDown,true);
 		WC_H(MyStructurePicker.DisplayDialog());
 		if (S_OK == hRes)
 		{
-			switch (MyStructurePicker.GetDropDown(0))
-			{
-			default:
-			case 0: // Time Zone Definition
-				myStructType = stTimeZoneDefinition;
-				break;
-			case 1: // Time Zone
-				myStructType = stTimeZone;
-				break;
-			case 2: // Security Descriptor
-				myStructType = stSecurityDescriptor;
-				break;
-			case 3: // Extended Folder Flags
-				myStructType = stExtendedFolderFlags;
-				break;
-			case 4: // Appointment Recurrence Pattern
-				myStructType = stAppointmentRecurrencePattern;
-				break;
-			case 5: // Recurrence Pattern
-				myStructType = stRecurrencePattern;
-				break;
-			case 6: // Report Tag
-				myStructType = stReportTag;
-				break;
-			case 7: // Conversation Index
-				myStructType = stConversationIndex;
-				break;
-			case 8: // Task Assigners
-				myStructType = stTaskAssigners;
-				break;
-			case 9: // Global Object Id
-				myStructType = stGlobalObjectId;
-				break;
-			case 10: // Entry Id
-				myStructType = stEntryId;
-				break;
-			}
+			iStructType = MyStructurePicker.GetDropDownValue(0);
 		}
 
-		// Get the string interpretation
-		LPTSTR szString = NULL;
-		InterpretBinaryAsString(lpsPropToDisplay->Value.bin,myStructType,m_lpMAPIProp,ulPropTag,&szString);
-
-		// Display our dialog
-		if (szString)
+		if (iStructType)
 		{
-			CEditor MyResults(
-				this,
-				IDS_STRUCTURERESULTS,
-				IDS_STRUCTURERESULTSPROMPT,
-				2,
-				CEDITOR_BUTTON_OK);
-			MyResults.InitSingleLine(0,IDS_PROPTAG,NULL,true);
-			MyResults.SetHex(0,ulPropTag);
-			MyResults.InitMultiLine(1,IDS_PARSEDSTRUCTURE,NULL,true);
-			MyResults.SetString(1,szString);
+			// Get the string interpretation
+			LPTSTR szString = NULL;
+			InterpretBinaryAsString(lpsPropToDisplay->Value.bin,iStructType,m_lpMAPIProp,ulPropTag,&szString);
 
-			WC_H(MyResults.DisplayDialog());
+			// Display our dialog
+			if (szString)
+			{
+				CEditor MyResults(
+					this,
+					IDS_STRUCTURERESULTS,
+					IDS_STRUCTURERESULTSPROMPT,
+					2,
+					CEDITOR_BUTTON_OK);
+				MyResults.InitSingleLine(0,IDS_PROPTAG,NULL,true);
+				MyResults.SetHex(0,ulPropTag);
+				MyResults.InitMultiLine(1,IDS_PARSEDSTRUCTURE,NULL,true);
+				MyResults.SetString(1,szString);
 
-			delete[] szString;
+				WC_H(MyResults.DisplayDialog());
+
+				delete[] szString;
+			}
 		}
 	}
 

@@ -24,4 +24,5 @@ public:
 
 private:
 	ULONG HandleChange(UINT nID);
+	void UpdateParser();
 };

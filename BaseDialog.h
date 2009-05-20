@@ -78,6 +78,7 @@ private:
 	void OnNotificationsOn();
 	void OnOpenMainWindow();
 	void OnOptions();
+	void OnOutlookVersion();
 
 	void SetStatusWidths();
 

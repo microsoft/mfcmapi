@@ -11,6 +11,7 @@ class CGlobalCache;
 #define BUFFER_ABENTRIES		((ULONG) 0x00000008)
 #define BUFFER_PROPTAG			((ULONG) 0x00000010)
 #define BUFFER_SOURCEPROPOBJ	((ULONG) 0x00000020)
+#define BUFFER_ATTACHMENTS		((ULONG) 0x00000040)
 
 class CMapiObjects
 {
@@ -41,10 +42,14 @@ public:
 	ULONG			GetPropertyToCopy();
 	LPMAPIPROP		GetSourcePropObject();
 
+	ULONG*			GetAttachmentsToCopy();
+	ULONG			GetNumAttachments();
+
 	void	SetABEntriesToCopy(LPENTRYLIST lpEBEntriesToCopy);
 	void	SetMessagesToCopy(LPENTRYLIST lpMessagesToCopy, LPMAPIFOLDER lpSourceParent);
 	void	SetFolderToCopy(LPMAPIFOLDER lpFolderToCopy, LPMAPIFOLDER lpSourceParent);
 	void	SetPropertyToCopy(ULONG ulPropTag, LPMAPIPROP lpSourcePropObject);
+	void	SetAttachmentsToCopy(LPMESSAGE lpMessage, ULONG ulNumSelected, ULONG* lpAttNumList);
 
 	ULONG	GetBufferStatus();
 

@@ -34,6 +34,10 @@ public:
 	ULONG GetPropertyToCopy();
 	LPMAPIPROP GetSourcePropObject();
 
+	void SetAttachmentsToCopy(LPMESSAGE lpMessage, ULONG ulNumAttachments, ULONG* lpAttNumList);
+	ULONG* GetAttachmentsToCopy();
+	ULONG GetNumAttachments();
+
 	LPMAPIFOLDER GetSourceParentFolder();
 
 	ULONG GetBufferStatus();
@@ -46,6 +50,8 @@ private:
 	LPENTRYLIST		m_lpMessagesToCopy;
 	LPMAPIFOLDER	m_lpFolderToCopy;
 	ULONG			m_ulPropTagToCopy;
+	ULONG*			m_lpulAttachmentsToCopy;
+	ULONG			m_ulNumAttachments;
 	LPMAPIFOLDER	m_lpSourceParent;
 	LPMAPIPROP		m_lpSourcePropObject;
 	BOOL			m_bMAPIInitialized;
@@ -64,6 +70,9 @@ CGlobalCache::CGlobalCache()
 
 	m_lpSourceParent = NULL;
 	m_lpSourcePropObject = NULL;
+
+	m_lpulAttachmentsToCopy = NULL;
+	m_ulNumAttachments = NULL;
 }
 
 CGlobalCache::~CGlobalCache()
@@ -120,6 +129,7 @@ void CGlobalCache::EmptyBuffer()
 {
 	MAPIFreeBuffer(m_lpAddressEntriesToCopy);
 	MAPIFreeBuffer(m_lpMessagesToCopy);
+	MAPIFreeBuffer(m_lpulAttachmentsToCopy);
 	if (m_lpFolderToCopy) m_lpFolderToCopy->Release();
 	if (m_lpSourceParent) m_lpSourceParent->Release();
 	if (m_lpSourcePropObject) m_lpSourcePropObject->Release();
@@ -130,6 +140,8 @@ void CGlobalCache::EmptyBuffer()
 	m_ulPropTagToCopy = NULL;
 	m_lpSourceParent = NULL;
 	m_lpSourcePropObject = NULL;
+	m_lpulAttachmentsToCopy = NULL;
+	m_ulNumAttachments = NULL;
 }
 
 void CGlobalCache::SetABEntriesToCopy(LPENTRYLIST lpEBEntriesToCopy)
@@ -197,6 +209,25 @@ LPMAPIPROP CGlobalCache::GetSourcePropObject()
 	return m_lpSourcePropObject;
 }
 
+void CGlobalCache::SetAttachmentsToCopy(LPMESSAGE lpMessage, ULONG ulNumAttachments, ULONG* lpAttNumList)
+{
+	EmptyBuffer();
+	m_lpulAttachmentsToCopy = lpAttNumList;
+	m_ulNumAttachments = ulNumAttachments;
+	m_lpSourcePropObject = lpMessage;
+	if (m_lpSourcePropObject) m_lpSourcePropObject->AddRef();
+} // CGlobalCache::SetAttachmentsToCopy
+
+ULONG* CGlobalCache::GetAttachmentsToCopy()
+{
+	return m_lpulAttachmentsToCopy;
+} // CGlobalCache::GetAttachmentsToCopy
+
+ULONG CGlobalCache::GetNumAttachments()
+{
+	return m_ulNumAttachments;
+} // CGlobalCache::GetNumAttachments
+
 ULONG CGlobalCache::GetBufferStatus()
 {
 	ULONG ulStatus = BUFFER_EMPTY;
@@ -206,6 +237,7 @@ ULONG CGlobalCache::GetBufferStatus()
 	if (m_lpAddressEntriesToCopy)	ulStatus |= BUFFER_ABENTRIES;
 	if (m_ulPropTagToCopy)			ulStatus |= BUFFER_PROPTAG;
 	if (m_lpSourcePropObject)		ulStatus |= BUFFER_SOURCEPROPOBJ;
+	if (m_lpulAttachmentsToCopy)	ulStatus |= BUFFER_ATTACHMENTS;
 	return ulStatus;
 }
 
@@ -473,6 +505,32 @@ LPMAPIPROP CMapiObjects::GetSourcePropObject()
 	}
 	return NULL;
 }
+
+void CMapiObjects::SetAttachmentsToCopy(LPMESSAGE lpMessage, ULONG ulNumAttachments, ULONG* lpAttNumList)
+{
+	if (m_lpGlobalCache)
+	{
+		m_lpGlobalCache->SetAttachmentsToCopy(lpMessage,ulNumAttachments,lpAttNumList);
+	}
+} // CMapiObjects::SetAttachmentsToCopy
+
+ULONG* CMapiObjects::GetAttachmentsToCopy()
+{
+	if (m_lpGlobalCache)
+	{
+		return m_lpGlobalCache->GetAttachmentsToCopy();
+	}
+	return NULL;
+} // CMapiObjects::GetAttachmentsToCopy
+
+ULONG CMapiObjects::GetNumAttachments()
+{
+	if (m_lpGlobalCache)
+	{
+		return m_lpGlobalCache->GetNumAttachments();
+	}
+	return NULL;
+} // CMapiObjects::GetNumAttachments
 
 ULONG CMapiObjects::GetBufferStatus()
 {

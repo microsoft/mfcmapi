@@ -17,6 +17,8 @@
 #include "AboutDlg.h"
 #include "AdviseSink.h"
 #include "PropTagArray.h"
+#include <msi.h>
+#include "ImportProcs.h"
 
 static TCHAR* CLASS = _T("CBaseDialog");
 
@@ -216,6 +218,7 @@ BOOL CBaseDialog::HandleMenu(WORD wMenuSelect)
 	case ID_ENCODEID: OnEncodeID(); return true;
 	case ID_COPY: HandleCopy(); return true;
 	case ID_PASTE: HandlePaste(); return true;
+	case ID_OUTLOOKVERSION: OnOutlookVersion(); return true;
 	}
 	if (HandleAddInMenu(wMenuSelect)) return true;
 
@@ -749,7 +752,133 @@ void CBaseDialog::OnHexEditor()
 {
 	CHexEditor MyHexEditor(this);
 	MyHexEditor.DisplayDialog();
-} // OnHexEditor
+} // CBaseDialog::OnHexEditor
+
+// result allocated with new, clean up with delete[]
+void GetOutlookVersionString(LPTSTR* lppszPath, LPTSTR* lppszVer, LPTSTR* lppszLang)
+{
+	HRESULT hRes = S_OK;
+	LPTSTR lpszTempPath = NULL;
+	LPTSTR lpszTempVer = NULL;
+	LPTSTR lpszTempLang = NULL;
+
+	if (lpszTempPath) *lpszTempPath = NULL;
+	if (lpszTempVer) *lpszTempPath = NULL;
+	if (lpszTempLang) *lpszTempLang = NULL;
+
+	if (!pfnMsiProvideQualifiedComponent || !pfnMsiGetFileVersion) return;
+
+	TCHAR pszaOutlookQualifiedComponents[][MAX_PATH] = {
+		_T("{BC174BAD-2F53-4855-A1D5-0D575C19B1EA}"), // O11_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
+		_T("{BC174BAD-2F53-4855-A1D5-1D575C19B1EA}"), // O11_CATEGORY_GUID_CORE_OFFICE (debug) // STRING_OK
+		_T("{24AAE126-0911-478F-A019-07B875EB9996}")  // O12_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
+	};
+	int nOutlookQualifiedComponents = sizeof(pszaOutlookQualifiedComponents)/sizeof(TCHAR*);
+	int i = 0;
+	DWORD dwValueBuf = 0;
+	UINT ret = 0;
+
+	for (i = 0; i < nOutlookQualifiedComponents; i++)
+	{
+		WC_D(ret,pfnMsiProvideQualifiedComponent(
+			pszaOutlookQualifiedComponents[i],
+			_T("outlook.exe"), // STRING_OK
+			(DWORD) INSTALLMODE_DEFAULT,
+			NULL,
+			&dwValueBuf));
+		if (ERROR_SUCCESS == ret) break;
+	}
+
+	if (ERROR_SUCCESS == ret)
+	{
+		dwValueBuf += 1;
+		lpszTempPath = new TCHAR[dwValueBuf];
+
+		if (lpszTempPath != NULL)
+		{
+			WC_D(ret,pfnMsiProvideQualifiedComponent(
+				pszaOutlookQualifiedComponents[i],
+				_T("outlook.exe"), // STRING_OK
+				(DWORD) INSTALLMODE_EXISTING,
+				lpszTempPath,
+				&dwValueBuf));
+
+			if (ERROR_SUCCESS == ret)
+			{
+				lpszTempVer = new TCHAR[MAX_PATH];
+				lpszTempLang = new TCHAR[MAX_PATH];
+				dwValueBuf = MAX_PATH;
+				if (lpszTempVer && lpszTempLang)
+				{
+					WC_D(ret,pfnMsiGetFileVersion(lpszTempPath,
+						lpszTempVer,
+						&dwValueBuf,
+						lpszTempLang,
+						&dwValueBuf));
+					if (ERROR_SUCCESS == ret)
+					{
+						if (lppszVer)
+						{
+							*lppszVer = lpszTempVer;
+							lpszTempVer = NULL;
+						}
+					}
+
+					if (lppszPath)
+					{
+						*lppszPath = lpszTempPath;
+						lpszTempPath = NULL;
+					}
+					if (lppszLang)
+					{
+						*lppszLang = lpszTempLang;
+						lpszTempLang = NULL;
+					}
+				}
+			}
+		}
+	}
+
+	delete[] lpszTempVer;
+	delete[] lpszTempLang;
+	delete[] lpszTempPath;
+} // GetOutlookVersionString
+
+void CBaseDialog::OnOutlookVersion()
+{
+	HRESULT hRes = S_OK;
+	LPTSTR lpszPath = NULL;
+	LPTSTR lpszVer = NULL;
+	LPTSTR lpszLang = NULL;
+	GetOutlookVersionString(&lpszPath, &lpszVer, &lpszLang);
+
+	CEditor MyEID(
+		this,
+		IDS_OUTLOOKVERSIONTITLE,
+		IDS_OUTLOOKVERSIONPROMPT,
+		3,
+		CEDITOR_BUTTON_OK);
+
+	MyEID.InitSingleLineSz(0,IDS_OUTLOOKVERSIONLABELPATH,lpszPath,true);
+	MyEID.InitSingleLineSz(1,IDS_OUTLOOKVERSIONLABELVER,lpszVer,true);
+	MyEID.InitSingleLineSz(2,IDS_OUTLOOKVERSIONLABELLANG,lpszLang,true);
+	if (!lpszPath)
+	{
+		MyEID.LoadString(0,IDS_NOTFOUND);
+	}
+	if (!lpszVer)
+	{
+		MyEID.LoadString(1,IDS_NOTFOUND);
+	}
+	if (!lpszLang)
+	{
+		MyEID.LoadString(2,IDS_NOTFOUND);
+	}
+	delete[] lpszPath;
+	delete[] lpszVer;
+
+	WC_H(MyEID.DisplayDialog());
+} // CBaseDialog::OnOutlookVersion
 
 void CBaseDialog::OnOpenEntryID(LPSBinary lpBin)
 {

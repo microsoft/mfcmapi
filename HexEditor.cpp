@@ -5,6 +5,7 @@
 #include "HexEditor.h"
 #include "InterpretProp.h"
 #include "MAPIFunctions.h"
+#include "InterpretProp2.h"
 
 static TCHAR* CLASS = _T("CHexEditor");
 
@@ -12,13 +13,15 @@ CHexEditor::CHexEditor(CWnd* pParentWnd):
 CEditor(pParentWnd,IDS_HEXEDITOR,IDS_HEXEDITORPROMPT,0,CEDITOR_BUTTON_OK)
 {
 	TRACE_CONSTRUCTOR(CLASS);
-	CreateControls(6);
+	CreateControls(8);
 	InitMultiLine(0,IDS_ANSISTRING,NULL,false);
 	InitMultiLine(1,IDS_UNISTRING,NULL,false);
 	InitSingleLine(2,IDS_CCH,NULL,true);
 	InitMultiLine(3,IDS_BASE64STRING,NULL,false);
 	InitSingleLine(4,IDS_CB,NULL,true);
 	InitMultiLine(5,IDS_HEX,NULL,false);
+	InitDropDown(6,IDS_STRUCTUREPICKERPROMPT,g_cbuidParsingTypesDropDown,g_uidParsingTypesDropDown,true);
+	InitMultiLine(7,IDS_PARSEDSTRUCTURE,NULL,true);
 }
 
 void CHexEditor::InitAnsiString(
@@ -166,7 +169,37 @@ ULONG CHexEditor::HandleChange(UINT nID)
 	SetSize(2, cchEncodeStr);
 	// Length of binary/hex data
 	SetSize(4, cb);
+	// Update any parsing we've got:
+	UpdateParser();
 	delete[] szEncodeStr;
 	return i;
-}
+} // CHexEditor::HandleChange
 
+void CHexEditor::UpdateParser()
+{
+	// Find out how to interpret the data
+	DWORD_PTR iStructType = GetDropDownSelectionValue(6);
+
+	LPTSTR szString = NULL;
+	if (iStructType)
+	{
+		SBinary Bin = {0};
+		if (GetBinaryUseControl(5,(size_t*) &Bin.cb,&Bin.lpb))
+		{
+			// Get the string interpretation
+			InterpretBinaryAsString(Bin,iStructType,NULL,NULL,&szString);
+			delete[] Bin.lpb;
+		}
+	}
+	// Display our dialog
+	if (szString)
+	{
+		SetString(7,szString);
+
+		delete[] szString;
+	}
+	else
+	{
+		SetString(7,_T(""));
+	}
+}

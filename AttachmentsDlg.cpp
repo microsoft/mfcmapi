@@ -78,6 +78,12 @@ void CAttachmentsDlg::OnInitMenu(CMenu* pMenu)
 		if (m_lpContentsTableListCtrl)
 		{
 			int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
+			if (m_lpMapiObjects)
+			{
+				ULONG ulStatus = m_lpMapiObjects->GetBufferStatus();
+				pMenu->EnableMenuItem(ID_PASTE,DIM(ulStatus & BUFFER_ATTACHMENTS));
+			}
+			pMenu->EnableMenuItem(ID_COPY,DIMMSOK(iNumSel));
 			pMenu->EnableMenuItem(ID_DELETESELECTEDITEM,DIMMSOK(iNumSel));
 			pMenu->EnableMenuItem(ID_MODIFYSELECTEDITEM,DIMMSOK(1 == iNumSel));
 			pMenu->EnableMenuItem(ID_SAVETOFILE,DIMMSOK(iNumSel));
@@ -154,6 +160,129 @@ HRESULT CAttachmentsDlg::OpenItemProp(
 	}
 	return hRes;
 }
+
+BOOL CAttachmentsDlg::HandleCopy()
+{
+	if (!m_lpContentsTableListCtrl || !m_lpMessage) return false;
+	HRESULT hRes = S_OK;
+	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
+
+	DebugPrintEx(DBGGeneric,CLASS,_T("HandleCopy"),_T("\n"));
+	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return false;
+
+	ULONG*			lpAttNumList = NULL;
+	SortListData*	lpListData = NULL;
+
+	ULONG ulNumSelected = m_lpContentsTableListCtrl->GetSelectedCount();
+
+	if (ulNumSelected && ulNumSelected < ULONG_MAX/sizeof(ULONG))
+	{
+		EC_H(MAPIAllocateBuffer(
+			ulNumSelected * sizeof(ULONG),
+			(LPVOID*) &lpAttNumList));
+		if (lpAttNumList)
+		{
+			ZeroMemory(lpAttNumList, ulNumSelected * sizeof(ULONG));
+			ULONG ulSelection = 0;
+			for (ulSelection = 0 ; ulSelection < ulNumSelected ; ulSelection++)
+			{
+				int	iItem = -1;
+				lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
+				if (lpListData)
+				{
+					lpAttNumList[ulSelection] = lpListData->data.Contents.ulAttachNum;
+				}
+			}
+
+			// m_lpMapiObjects takes over ownership of lpAttNumList - don't free now
+			m_lpMapiObjects->SetAttachmentsToCopy(m_lpMessage, ulNumSelected, lpAttNumList);
+		}
+	}
+
+	return true;
+} // CAttachmentsDlg::HandleCopy
+
+BOOL CAttachmentsDlg::HandlePaste()
+{
+	if (CBaseDialog::HandlePaste()) return true;
+
+	if (!m_lpContentsTableListCtrl || !m_lpMessage || !m_lpMapiObjects) return false;
+	DebugPrintEx(DBGGeneric,CLASS,_T("HandlePaste"),_T("\n"));
+
+	HRESULT		hRes = S_OK;
+	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
+
+	ULONG ulStatus = m_lpMapiObjects->GetBufferStatus();
+	if (!(ulStatus & BUFFER_ATTACHMENTS) || !(ulStatus & BUFFER_SOURCEPROPOBJ)) return false;
+
+	ULONG* lpAttNumList = m_lpMapiObjects->GetAttachmentsToCopy();
+	ULONG iNumSelected = m_lpMapiObjects->GetNumAttachments();
+	LPMESSAGE lpSourceMessage = (LPMESSAGE) m_lpMapiObjects->GetSourcePropObject();
+
+	if (lpAttNumList && iNumSelected && lpSourceMessage)
+	{
+		// If we failed on one pass, try the rest
+		hRes = S_OK;
+		// Go through each attachment and copy it
+		ULONG ulAtt = 0;
+		for (ulAtt = 0; ulAtt < iNumSelected; ++ulAtt)
+		{
+			LPATTACH lpAttSrc = NULL;
+			LPATTACH lpAttDst = NULL;
+			LPSPropProblemArray lpProblems = NULL;
+
+			// Open the attachment source
+			EC_H(lpSourceMessage->OpenAttach(
+				lpAttNumList[ulAtt],
+				NULL,
+				MAPI_DEFERRED_ERRORS,
+				&lpAttSrc));
+
+			if (lpAttSrc)
+			{
+				ULONG ulAttNum = NULL;
+				// Create the attachment destination
+				EC_H(m_lpMessage->CreateAttach(NULL, MAPI_DEFERRED_ERRORS, &ulAttNum, &lpAttDst));
+				if (lpAttDst)
+				{
+					LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IAttach::CopyTo"), m_hWnd); // STRING_OK
+
+					// Copy from source to destination
+					EC_H(lpAttSrc->CopyTo(
+						0,
+						NULL,
+						0,
+						lpProgress ? (ULONG_PTR)m_hWnd : NULL,
+						lpProgress,
+						(LPIID) &IID_IAttachment,
+						lpAttDst,
+						lpProgress ? MAPI_DIALOG : 0,
+						&lpProblems));
+
+					if (lpProgress) lpProgress->Release();
+					lpProgress = NULL;
+
+					EC_PROBLEMARRAY(lpProblems);
+					MAPIFreeBuffer(lpProblems);
+				}
+			}
+
+			if (lpAttSrc) lpAttSrc->Release();
+			lpAttSrc = NULL;
+
+			if (lpAttDst)
+			{
+				EC_H(lpAttDst->SaveChanges(KEEP_OPEN_READWRITE));
+				lpAttDst->Release();
+				lpAttDst = NULL;
+			}
+		}
+		EC_H(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+		OnRefreshView(); // Update the view since we don't have notifications here.
+	}
+
+	return true;
+} // CAttachmentsDlg::HandlePaste
 
 void CAttachmentsDlg::OnDeleteSelectedItem()
 {

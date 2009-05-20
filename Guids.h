@@ -47,14 +47,12 @@ DEFINE_GUID(_name, (0x29F3AB10 + _l), 0x554D, 0x11D0, 0xA9,		\
 #endif // !DEFINE_PRXGUID
 DEFINE_PRXGUID(IID_IProxyStoreObject, 0x00000000L);
 
+#ifdef _IID_IMAPIClientShutdown_MISSING_IN_HEADER
 // http://blogs.msdn.com/stephen_griffin/archive/2009/03/03/fastest-shutdown-in-the-west.aspx
 #if !defined(INITGUID) || defined(USES_IID_IMAPIClientShutdown)
 DEFINE_OLEGUID(IID_IMAPIClientShutdown, 0x00020397, 0, 0);
 #endif
-
-#if !defined(INITGUID) || defined(USES_IID_IMAPIProviderShutdown)
-DEFINE_OLEGUID(IID_IMAPIProviderShutdown, 0x00020398, 0, 0);
-#endif
+#endif // _IID_IMAPIClientShutdown_MISSING_IN_HEADER
 
 // Sometimes IExchangeManageStore5 is in edkmdb.h, sometimes it isn't
 #ifdef USES_IID_IExchangeManageStore5
