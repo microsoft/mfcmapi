@@ -6,6 +6,7 @@
 #include "MAPIFunctions.h"
 #include "guids.h"
 #include "MySecInfo.h"
+#include "NamedPropCache.h"
 
 #define ulNoMatch 0xffffffff
 static WCHAR szPropSeparator[] = L", "; // STRING_OK
@@ -371,7 +372,7 @@ void GUIDNameToGUID(LPCTSTR szGUID, LPCGUID* lpGUID)
 
 // Allocates and returns string built from NameIDArray
 // Allocated with new, clean up with delete[]
-LPCWSTR NameIDToPropName(LPMAPINAMEID lpNameID)
+LPWSTR NameIDToPropName(LPMAPINAMEID lpNameID)
 {
 	if (!lpNameID) return NULL;
 	if (!lpNameID->lpguid) return NULL;
@@ -901,12 +902,14 @@ ULONG FindStructForBinaryProp(const ULONG ulPropTag, const ULONG ulPropNameID, c
 }
 
 // Uber property interpreter - given an LPSPropValue, produces all manner of strings
-// All LPTSTR strings allocated with new, delete with delete[]
+// lpszNameExactMatches, lpszSmartView, lpszNamePartialMatches allocated with new, delete with delete[]
+// lpszNamedPropName, lpszNamedPropGUID, lpszNamedPropDASL freed with FreeNameIDStrings
 // If lpProp is NULL but ulPropTag and lpMAPIProp are passed, will call GetProps
 void InterpretProp(LPSPropValue lpProp, // optional property value
 				   ULONG ulPropTag, // optional 'original' prop tag
 				   LPMAPIPROP lpMAPIProp, // optional source object
 				   LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
+				   LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
 				   BOOL bIsAB, // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
 				   LPTSTR* lpszNameExactMatches, // Built from ulPropTag & bIsAB
 				   LPTSTR* lpszNamePartialMatches, // Built from ulPropTag & bIsAB
@@ -928,9 +931,11 @@ void InterpretProp(LPSPropValue lpProp, // optional property value
 	if (PropTag) PropTag->Format(_T("0x%08X"),ulPropTag); // STRING_OK
 
 	// Named Props
-	LPMAPINAMEID*	lppPropNames = 0;
+	LPMAPINAMEID* lppPropNames = 0;
 
 	// If we weren't passed named property information and we need it, look it up
+	// We don't check bIsAB here - some address book providers may actually support named props
+	// If they don't, they should return empty results or an error, either of which we can handle
 	if (!lpNameID &&
 		lpMAPIProp && // if we have an object
 		RegKeys[regkeyPARSED_NAMED_PROPS].ulCurDWORD && // and we're parsing named props
@@ -943,7 +948,8 @@ void InterpretProp(LPSPropValue lpProp, // optional property value
 		tag.cValues = 1;
 		tag.aulPropTag[0] = ulPropTag;
 
-		WC_H_GETPROPS(lpMAPIProp->GetNamesFromIDs(
+		WC_H_GETPROPS(GetNamesFromIDs(lpMAPIProp,
+			lpMappingSignature,
 			&lpTag,
 			NULL,
 			NULL,
@@ -955,6 +961,7 @@ void InterpretProp(LPSPropValue lpProp, // optional property value
 		}
 		hRes = S_OK;
 	}
+
 	if (lpNameID)
 	{
 		NameIDToStrings(lpNameID,
@@ -976,7 +983,7 @@ void InterpretProp(LPSPropValue lpProp, // optional property value
 			{
 				ulPropNameID = lpNameID->Kind.lID;
 			}
-			switch(PROP_TYPE(ulPropTag))
+			switch(PROP_TYPE(lpProp->ulPropTag))
 			{
 			case PT_LONG:
 			case PT_I2:
@@ -1298,7 +1305,7 @@ void CBinaryParser::GetStringA(LPSTR* ppStr)
 
 	// With string length in hand, we defer to our other implementation
 	// Add 1 for the NULL terminator
-	return GetStringA(cchChar+1,ppStr);
+	GetStringA(cchChar+1,ppStr);
 }
 
 // No size specified - assume the NULL terminator is in the stream, but don't read off the end
@@ -1314,7 +1321,7 @@ void CBinaryParser::GetStringW(LPWSTR* ppStr)
 
 	// With string length in hand, we defer to our other implementation
 	// Add 1 for the NULL terminator
-	return GetStringW(cchChar+1,ppStr);
+	GetStringW(cchChar+1,ppStr);
 }
 
 CString JunkDataToString(size_t cbJunkData, LPBYTE lpJunkData)
@@ -1326,8 +1333,8 @@ CString JunkDataToString(size_t cbJunkData, LPBYTE lpJunkData)
 	sBin.cb = (ULONG) cbJunkData;
 	sBin.lpb = lpJunkData;
 	szTmp.FormatMessage(IDS_JUNKDATASIZE,
-		cbJunkData,
-		BinToHexString(&sBin,true));
+		cbJunkData);
+	szTmp += BinToHexString(&sBin,true);
 	return szTmp;
 }
 
@@ -2727,10 +2734,10 @@ ConversationIndexStruct* BinToConversationIndexStruct(ULONG cbBin, LPBYTE lpBin)
 	ciConversationIndex.guid.Data1 = (b1 << 24) | (b2 << 16) | (b3 << 8) | b4;
 	Parser.GetBYTE(&b1);
 	Parser.GetBYTE(&b2);
-	ciConversationIndex.guid.Data2 = (b1 << 8) | b2;
+	ciConversationIndex.guid.Data2 = (unsigned short) ((b1 << 8) | b2);
 	Parser.GetBYTE(&b1);
 	Parser.GetBYTE(&b2);
-	ciConversationIndex.guid.Data3 = (b1 << 8) | b2;
+	ciConversationIndex.guid.Data3 = (unsigned short) ((b1 << 8) | b2);
 	Parser.GetBYTESNoAlloc(sizeof(ciConversationIndex.guid.Data4),ciConversationIndex.guid.Data4);
 
 	if (Parser.RemainingBytes() > 0)
@@ -2758,8 +2765,8 @@ ConversationIndexStruct* BinToConversationIndexStruct(ULONG cbBin, LPBYTE lpBin)
 				ciConversationIndex.lpResponseLevels[i].DeltaCode = true;
 			}
 			Parser.GetBYTE(&b1);
-			ciConversationIndex.lpResponseLevels[i].Random = b1 >> 4;
-			ciConversationIndex.lpResponseLevels[i].ResponseLevel = b1 & 0xf;
+			ciConversationIndex.lpResponseLevels[i].Random = (BYTE) (b1 >> 4);
+			ciConversationIndex.lpResponseLevels[i].ResponseLevel = (BYTE) (b1 & 0xf);
 		}
 	}
 
@@ -2987,7 +2994,7 @@ GlobalObjectIdStruct* BinToGlobalObjectIdStruct(ULONG cbBin, LPBYTE lpBin)
 	BYTE b2 = NULL;
 	Parser.GetBYTE(&b1);
 	Parser.GetBYTE(&b2);
-	goidGlobalObjectId.Year = (b1 << 8) | b2;
+	goidGlobalObjectId.Year = (WORD) ((b1 << 8) | b2);
 	Parser.GetBYTE(&goidGlobalObjectId.Month);
 	Parser.GetBYTE(&goidGlobalObjectId.Day);
 	Parser.GetLARGE_INTEGER((LARGE_INTEGER*) &goidGlobalObjectId.CreationTime);
@@ -3472,15 +3479,19 @@ LPTSTR EntryIdStructToString(EntryIdStruct* peidEntryId)
 		sBinPad.lpb = peidEntryId->ProviderData.FolderOrMessage.Data.FolderObject.Pad;
 
 		szTmp.FormatMessage(IDS_ENTRYIDEXCHANGEFOLDERDATA,
-			peidEntryId->ProviderData.FolderOrMessage.Type,szType,
-			szDatabaseGUID,
-			BinToHexString(&sBinGlobalCounter,true),
-			BinToHexString(&sBinPad,true));
+			peidEntryId->ProviderData.FolderOrMessage.Type, szType,
+			szDatabaseGUID);
 		szEntryId += szTmp;
+		szEntryId += BinToHexString(&sBinGlobalCounter,true);
+
+		szTmp.FormatMessage(IDS_ENTRYIDEXCHANGEDATAPAD);
+		szEntryId += szTmp;
+		szEntryId += BinToHexString(&sBinPad,true);
 
 		delete[] szDatabaseGUID;
 		szDatabaseGUID = NULL;
 		delete[] szType;
+		szType = NULL;
 	}
 	else if (eidtMessage == peidEntryId->ObjectType)
 	{
@@ -3508,20 +3519,32 @@ LPTSTR EntryIdStructToString(EntryIdStruct* peidEntryId)
 		sBinPad2.lpb = peidEntryId->ProviderData.FolderOrMessage.Data.MessageObject.Pad2;
 
 		szTmp.FormatMessage(IDS_ENTRYIDEXCHANGEMESSAGEDATA,
-			peidEntryId->ProviderData.FolderOrMessage.Type,szType,
-			szFolderDatabaseGUID,
-			BinToHexString(&sBinFolderGlobalCounter,true),
-			BinToHexString(&sBinPad1,true),
-			szMessageDatabaseGUID,
-			BinToHexString(&sBinMessageGlobalCounter,true),
-			BinToHexString(&sBinPad2,true));
+			peidEntryId->ProviderData.FolderOrMessage.Type, szType,
+			szFolderDatabaseGUID);
 		szEntryId += szTmp;
+		szEntryId += BinToHexString(&sBinFolderGlobalCounter,true);
+
+		szTmp.FormatMessage(IDS_ENTRYIDEXCHANGEDATAPADNUM, 1);
+		szEntryId += szTmp;
+		szEntryId += BinToHexString(&sBinPad1,true);
+
+		szTmp.FormatMessage(IDS_ENTRYIDEXCHANGEMESSAGEDATAGUID,
+			szMessageDatabaseGUID);
+		szEntryId += szTmp;
+		szEntryId += BinToHexString(&sBinMessageGlobalCounter,true);
+
+		szTmp.FormatMessage(IDS_ENTRYIDEXCHANGEDATAPADNUM, 2);
+		szEntryId += szTmp;
+		szEntryId += BinToHexString(&sBinPad2,true);
 
 		delete[] szMessageDatabaseGUID;
 		szMessageDatabaseGUID = NULL;
 
 		delete[] szFolderDatabaseGUID;
 		szFolderDatabaseGUID = NULL;
+
+		delete[] szType;
+		szType = NULL;
 	}
 
 	szEntryId += JunkDataToString(peidEntryId->JunkDataSize,peidEntryId->JunkData);
@@ -3746,6 +3769,7 @@ LPTSTR PropertyStructToString(PropertyStruct* ppProperty)
 				ppProperty->Prop[i].ulPropTag,
 				NULL,
 				NULL,
+				NULL,
 				false,
 				&szExactMatches,
 				&szPartialMatches,
@@ -3886,7 +3910,7 @@ void BinToRestrictionStruct(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead, LP
 			psrRestriction->res.resAnd.lpRes = new SRestriction[psrRestriction->res.resAnd.cRes];
 			if (psrRestriction->res.resAnd.lpRes)
 			{
-				memset(psrRestriction->res.resAnd.lpRes,0,sizeof(LPSRestriction) * psrRestriction->res.resAnd.cRes);
+				memset(psrRestriction->res.resAnd.lpRes,0,sizeof(SRestriction) * psrRestriction->res.resAnd.cRes);
 				for (i = 0 ; i < psrRestriction->res.resAnd.cRes ; i++)
 				{
 					cbOffset = Parser.GetCurrentOffset();
@@ -3904,7 +3928,7 @@ void BinToRestrictionStruct(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead, LP
 		psrRestriction->res.resNot.lpRes = new SRestriction;
 		if (psrRestriction->res.resNot.lpRes)
 		{
-			memset(psrRestriction->res.resNot.lpRes,0,sizeof(LPSRestriction));
+			memset(psrRestriction->res.resNot.lpRes,0,sizeof(SRestriction));
 			cbOffset = Parser.GetCurrentOffset();
 			BinToRestrictionStruct(
 				(ULONG) Parser.RemainingBytes(),
@@ -3959,7 +3983,7 @@ void BinToRestrictionStruct(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead, LP
 		psrRestriction->res.resSub.lpRes = new SRestriction;
 		if (psrRestriction->res.resSub.lpRes)
 		{
-			memset(psrRestriction->res.resSub.lpRes,0,sizeof(LPSRestriction));
+			memset(psrRestriction->res.resSub.lpRes,0,sizeof(SRestriction));
 			cbOffset = Parser.GetCurrentOffset();
 			BinToRestrictionStruct(
 				(ULONG) Parser.RemainingBytes(),
@@ -3986,7 +4010,7 @@ void BinToRestrictionStruct(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead, LP
 			psrRestriction->res.resComment.lpRes = new SRestriction;
 			if (psrRestriction->res.resComment.lpRes)
 			{
-				memset(psrRestriction->res.resComment.lpRes,0,sizeof(LPSRestriction));
+				memset(psrRestriction->res.resComment.lpRes,0,sizeof(SRestriction));
 				cbOffset = Parser.GetCurrentOffset();
 				BinToRestrictionStruct(
 					(ULONG) Parser.RemainingBytes(),
@@ -4003,7 +4027,7 @@ void BinToRestrictionStruct(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead, LP
 		psrRestriction->res.resNot.lpRes = new SRestriction;
 		if (psrRestriction->res.resNot.lpRes)
 		{
-			memset(psrRestriction->res.resNot.lpRes,0,sizeof(LPSRestriction));
+			memset(psrRestriction->res.resNot.lpRes,0,sizeof(SRestriction));
 			cbOffset = Parser.GetCurrentOffset();
 			BinToRestrictionStruct(
 				(ULONG) Parser.RemainingBytes(),
@@ -4196,14 +4220,14 @@ LPTSTR EntryListStructToString(EntryListStruct* pelEntryList)
 		DWORD i = pelEntryList->EntryCount;
 		for (i = 0 ; i < pelEntryList->EntryCount ; i++)
 		{
-			LPTSTR szEntryId = EntryIdStructToString(pelEntryList->Entry[i].EntryId);
 			szTmp.FormatMessage(IDS_ENTRYLISTENTRYID,
 				i,
 				pelEntryList->Entry[i].EntryLength,
-				pelEntryList->Entry[i].EntryLengthPad,
-				szEntryId);
-			delete[] szEntryId;
+				pelEntryList->Entry[i].EntryLengthPad);
 			szEntryList += szTmp;
+			LPTSTR szEntryId = EntryIdStructToString(pelEntryList->Entry[i].EntryId);
+			szEntryList += szEntryId;
+			delete[] szEntryId;
 		}
 	}
 
@@ -4223,6 +4247,9 @@ void SearchFolderDefinitionToString(SBinary myBin, LPTSTR* lpszResultString)
 		DeleteSearchFolderDefinitionStruct(psfdSearchFolderDefinition);
 	}
 } // SearchFolderDefinitionToString
+
+// There may be search folder definitions with over 500 addresses, but we're not going to try to parse them
+#define _MaxSFAddresses 500
 
 // Allocates return value with new. Clean up with DeleteSearchFolderDefinitionStruct.
 SearchFolderDefinitionStruct* BinToSearchFolderDefinitionStruct(ULONG cbBin, LPBYTE lpBin)
@@ -4283,7 +4310,7 @@ SearchFolderDefinitionStruct* BinToSearchFolderDefinitionStruct(ULONG cbBin, LPB
 	if (SFST_BINARY & sfdSearchFolderDefinition.Flags)
 	{
 		Parser.GetDWORD(&sfdSearchFolderDefinition.AddressCount);
-		if (sfdSearchFolderDefinition.AddressCount)
+		if (sfdSearchFolderDefinition.AddressCount && sfdSearchFolderDefinition.AddressCount < _MaxSFAddresses)
 		{
 			sfdSearchFolderDefinition.Addresses = new AddressListEntryStruct[sfdSearchFolderDefinition.AddressCount];
 
@@ -4406,7 +4433,7 @@ LPTSTR SearchFolderDefinitionStructToString(SearchFolderDefinitionStruct* psfdSe
 
 	szSearchFolderDefinition.FormatMessage(IDS_SFDEFINITIONHEADER,
 		psfdSearchFolderDefinition->Version,
-		psfdSearchFolderDefinition->Flags,szFlags,
+		psfdSearchFolderDefinition->Flags, szFlags,
 		psfdSearchFolderDefinition->NumericSearch,
 		psfdSearchFolderDefinition->TextSearchLength);
 	delete[] szFlags;
@@ -4414,9 +4441,9 @@ LPTSTR SearchFolderDefinitionStructToString(SearchFolderDefinitionStruct* psfdSe
 	if (psfdSearchFolderDefinition->TextSearchLength)
 	{
 		szTmp.FormatMessage(IDS_SFDEFINITIONTEXTSEARCH,
-			psfdSearchFolderDefinition->TextSearchLengthExtended,
-			psfdSearchFolderDefinition->TextSearch);
+			psfdSearchFolderDefinition->TextSearchLengthExtended);
 		szSearchFolderDefinition += szTmp;
+		szSearchFolderDefinition += psfdSearchFolderDefinition->TextSearch;
 	}
 
 	szTmp.FormatMessage(IDS_SFDEFINITIONSKIPLEN1,
@@ -4430,9 +4457,9 @@ LPTSTR SearchFolderDefinitionStructToString(SearchFolderDefinitionStruct* psfdSe
 		sBin.cb = (ULONG) psfdSearchFolderDefinition->SkipLen1;
 		sBin.lpb = psfdSearchFolderDefinition->SkipBytes1;
 
-		szTmp.FormatMessage(IDS_SFDEFINITIONSKIPBYTES1,
-			BinToHexString(&sBin,true));
+		szTmp.FormatMessage(IDS_SFDEFINITIONSKIPBYTES1);
 		szSearchFolderDefinition += szTmp;
+		szSearchFolderDefinition += BinToHexString(&sBin,true);
 	}
 
 	szTmp.FormatMessage(IDS_SFDEFINITIONDEEPSEARCH,
@@ -4444,9 +4471,9 @@ LPTSTR SearchFolderDefinitionStructToString(SearchFolderDefinitionStruct* psfdSe
 	if (psfdSearchFolderDefinition->FolderList1Length)
 	{
 		szTmp.FormatMessage(IDS_SFDEFINITIONFOLDERLIST1,
-			psfdSearchFolderDefinition->FolderList1LengthExtended,
-			psfdSearchFolderDefinition->FolderList1);
+			psfdSearchFolderDefinition->FolderList1LengthExtended);
 		szSearchFolderDefinition += szTmp;
+		szSearchFolderDefinition += psfdSearchFolderDefinition->FolderList1;
 	}
 
 	szTmp.FormatMessage(IDS_SFDEFINITIONFOLDERLISTLENGTH2,
@@ -4455,11 +4482,11 @@ LPTSTR SearchFolderDefinitionStructToString(SearchFolderDefinitionStruct* psfdSe
 
 	if (psfdSearchFolderDefinition->FolderList2Length)
 	{
-		LPTSTR szEntryList = EntryListStructToString(psfdSearchFolderDefinition->FolderList2);
-		szTmp.FormatMessage(IDS_SFDEFINITIONFOLDERLIST2,
-			szEntryList);
-		delete[] szEntryList;
+		szTmp.FormatMessage(IDS_SFDEFINITIONFOLDERLIST2);
 		szSearchFolderDefinition += szTmp;
+		LPTSTR szEntryList = EntryListStructToString(psfdSearchFolderDefinition->FolderList2);
+		szSearchFolderDefinition += szEntryList;
+		delete[] szEntryList;
 	}
 
 	if (SFST_BINARY & psfdSearchFolderDefinition->Flags)
@@ -4467,7 +4494,7 @@ LPTSTR SearchFolderDefinitionStructToString(SearchFolderDefinitionStruct* psfdSe
 		szTmp.FormatMessage(IDS_SFDEFINITIONADDRESSCOUNT,
 			psfdSearchFolderDefinition->AddressCount);
 		szSearchFolderDefinition += szTmp;
-		if (psfdSearchFolderDefinition->AddressCount)
+		if (psfdSearchFolderDefinition->Addresses && psfdSearchFolderDefinition->AddressCount)
 		{
 			DWORD i = 0;
 			for (i = 0 ; i < psfdSearchFolderDefinition->AddressCount ; i++)
@@ -4497,16 +4524,16 @@ LPTSTR SearchFolderDefinitionStructToString(SearchFolderDefinitionStruct* psfdSe
 		sBin.cb = (ULONG) psfdSearchFolderDefinition->SkipLen2;
 		sBin.lpb = psfdSearchFolderDefinition->SkipBytes2;
 
-		szTmp.FormatMessage(IDS_SFDEFINITIONSKIPBYTES2,
-			BinToHexString(&sBin,true));
+		szTmp.FormatMessage(IDS_SFDEFINITIONSKIPBYTES2);
 		szSearchFolderDefinition += szTmp;
+		szSearchFolderDefinition += BinToHexString(&sBin,true);
 	}
 
 	if (psfdSearchFolderDefinition->Restriction)
 	{
+		szSearchFolderDefinition += _T("\r\n"); // STRING_OK
 		LPTSTR szRes = RestrictionStructToString(psfdSearchFolderDefinition->Restriction);
 		szSearchFolderDefinition += szRes;
-		szSearchFolderDefinition += _T("\r\n"); // STRING_OK
 		delete[] szRes;
 	}
 
@@ -4523,9 +4550,9 @@ LPTSTR SearchFolderDefinitionStructToString(SearchFolderDefinitionStruct* psfdSe
 			sBin.cb = (ULONG) psfdSearchFolderDefinition->AdvancedSearchLen;
 			sBin.lpb = psfdSearchFolderDefinition->AdvancedSearchBytes;
 
-			szTmp.FormatMessage(IDS_SFDEFINITIONADVANCEDSEARCHBYTES,
-				BinToHexString(&sBin,true));
+			szTmp.FormatMessage(IDS_SFDEFINITIONADVANCEDSEARCHBYTES);
 			szSearchFolderDefinition += szTmp;
+			szSearchFolderDefinition += BinToHexString(&sBin,true);
 		}
 	}
 
@@ -4540,9 +4567,9 @@ LPTSTR SearchFolderDefinitionStructToString(SearchFolderDefinitionStruct* psfdSe
 		sBin.cb = (ULONG) psfdSearchFolderDefinition->SkipLen3;
 		sBin.lpb = psfdSearchFolderDefinition->SkipBytes3;
 
-		szTmp.FormatMessage(IDS_SFDEFINITIONSKIPBYTES3,
-			BinToHexString(&sBin,true));
+		szTmp.FormatMessage(IDS_SFDEFINITIONSKIPBYTES3);
 		szSearchFolderDefinition += szTmp;
+		szSearchFolderDefinition += BinToHexString(&sBin,true);
 	}
 
 	szSearchFolderDefinition += JunkDataToString(psfdSearchFolderDefinition->JunkDataSize,psfdSearchFolderDefinition->JunkData);

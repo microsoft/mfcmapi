@@ -29,6 +29,7 @@ private:
 	HWND		m_hwndTip;
 	TOOLINFO	m_ti;
 	HWND		m_hwndParent;
+	BOOL		m_bTrackingMouse;
 
 	DECLARE_MESSAGE_MAP()
 };

@@ -112,6 +112,7 @@ ID_CONVERTMSGTOEML								"Convert an MSG file to an EML file using IConverterSe
 ID_CONVERTEMLTOMSG								"Convert an EML file to an MSG file using IConverterSession"
 ID_COPY											"Copy selected item(s)"
 ID_COPY_PROPERTY								"Copy property"
+ID_COUNTNAMEDPROPS								"Determine the number of named property mappings by locating the highest currently mapped named property"
 ID_CREATEMESSAGERESTRICTION						"Create a restriction based on the selected message using the subject and submit and delivery times"
 ID_CREATEPROFILE								"Create an empty profile"
 ID_CREATEPROPERTYSTRINGRESTRICTION				"Create a content restriction using a given string and property"
@@ -739,6 +740,13 @@ IDS_STENTRYLIST                  "Entry List"
 IDS_STPROPERTY                   "Property"
 IDS_STRESTRICTION                "Restriction"
 IDS_STSEARCHFOLDERDEFINITION     "Search Folder Definition"
+IDS_COUNTNAMEDPROPS              "Count Named Props"
+IDS_COUNTNAMEDPROPSPROMPT        "Count of how many named property mappings exist and the highest \r\n\
+named property found in the selected store. Both are found using\r\n\
+a binary search of the named property range (0x8000-0xFFFF).\r\n\
+\r\n\
+The Edit Given Property menu item may be used to further examine\r\n\
+existing named property mappings.\r\n"
 
 // AbDlg.cpp
 IDS_FLAGS "Flags"
@@ -924,6 +932,7 @@ IDS_REGKEY_DO_COLUMN_NAMES "Use nice names for certain column headers and pull t
 IDS_REGKEY_EDIT_COLUMNS_ON_LOAD "When loading tables, display SetColumns edit dialog"
 IDS_REGKEY_USE_GETPROPLIST "Use GetPropList to get property list for GetProps call (otherwise use NULL tag list)"
 IDS_REGKEY_GETPROPNAMES_ON_ALL_PROPS "Parse Named Properties for All Props (including those below 0x8000)"
+IDS_REGKEY_CACHE_NAMED_PROPS "Cache named property mappings from GetNamesFromIDs and GetIDsFromNames"
 IDS_REGKEY_MDB_ONLINE "Use MDB_ONLINE when calling OpenMsgStore"
 IDS_REGKEY_MAPI_NO_CACHE "Use MAPI_NO_CACHE when calling OpenEntry"
 IDS_REGKEY_ALLOW_PERSIST_CACHE "Allow caching of IPersistMessage objects when opening Outlook forms in compose mode, which may prevent shutdown of certain versions of Outlook"
@@ -960,6 +969,13 @@ IDS_INTERFACE "Interface"
 IDS_OPENASEXTABLE "Open as Exchange Table"
 IDS_MAPIMOVE "MAPI_MOVE (move instead of copy)"
 IDS_MAPINOREPLACE "MAPI_NOREPLACE (do not replace existing properties)"
+IDS_HIGHESTNAMEDPROPNOTFOUND "No named properties were found"
+IDS_HIGHESTNAMEDPROPNUM "Highest named property found:"
+IDS_HIGHESTNAMEDPROPNAME "MAPI Property ID: 0x%1!04X!\r\n\
+Named property Name = %2\r\n\
+Named property GUID = %3"
+IDS_HIGHESTNAMEDPROPTOTAL "Total number of named properties (out of 32767):"
+
 // StreamEditor.cpp
 IDS_STREAMTEXT "Stream (Text)"
 IDS_STREAMFLAGS "Stream Flags"
@@ -1378,7 +1394,7 @@ bMinorVersion = 0x%2!02X! (%2!d!)\r\n\
 cbHeader = 0x%3!04X! (%3!d!)\r\n\
 wReserved = 0x%4!04X! (%4!d!)\r\n\
 cchKeyName = 0x%5!04X! (%5!d!)\r\n\
-szKeyName = %6\r\n\
+szKeyName = %6!ws!\r\n\
 cRules = 0x%7!04X! (%7!d!)"
 
 IDS_TZRULEHEADER "\r\n\r\n\
@@ -1679,7 +1695,7 @@ EndDate: 0x%3!08X! = %3!d! = %4"
 
 IDS_FLAGS_PREFIX "Flags: "
 
-IDS_JUNKDATASIZE "\r\nUnparsed data size = 0x%1!08X!\r\n%2"
+IDS_JUNKDATASIZE "\r\nUnparsed data size = 0x%1!08X!\r\n"
 
 IDS_EXTENDEDFLAGSHEADER "Extended Flags: \r\n\
 Number of flags = %1!d!"
@@ -1797,16 +1813,20 @@ MailboxDN = %6!hs!"
 
 IDS_ENTRYIDEXCHANGEFOLDERDATA "\r\nFolder Type = 0x%1!04X! = %2\r\n\
 Database GUID = %3\r\n\
-GlobalCounter = %4\r\n\
-Pad = %5"
+GlobalCounter = "
+
+IDS_ENTRYIDEXCHANGEDATAPAD "\r\n\
+Pad = "
+
+IDS_ENTRYIDEXCHANGEDATAPADNUM "\r\n\
+Pad%1!d! = "
 
 IDS_ENTRYIDEXCHANGEMESSAGEDATA "\r\nMessage Type = 0x%1!04X! = %2\r\n\
 Folder Database GUID = %3\r\n\
-Folder GlobalCounter = %4\r\n\
-Pad1 = %5\r\n\
-Message Database GUID = %6\r\n\
-Message GlobalCounter = %7\r\n\
-Pad2 = %8"
+Folder GlobalCounter = "
+
+IDS_ENTRYIDEXCHANGEMESSAGEDATAGUID "\r\nMessage Database GUID = %1\r\n\
+Message GlobalCounter = "
 
 IDS_PROPERTYDATAHEADER "Property[%1!d!]\r\n"
 IDS_PROPERTYDATA "PropString = %1 AltPropString = %2\r\n"
@@ -1817,39 +1837,38 @@ IDS_PROPERTYDATAPARTIALMATCHES "Partial Matches: %1\r\n"
 IDS_RESTRICTIONDATA "Restriction:\r\n"
 
 IDS_ENTRYLISTDATA "EntryCount = 0x%1!08X!\r\n\
-Pad = 0x%2!08X!\r\n"
-IDS_ENTRYLISTENTRYID "EntryId[%1!d!]:\r\n\
+Pad = 0x%2!08X!"
+IDS_ENTRYLISTENTRYID "\r\nEntryId[%1!d!]:\r\n\
 EntryLength = 0x%2!08X!\r\n\
 EntryLengthPad = 0x%3!08X!\r\n\
-Entry Id = %4\r\n"
+Entry Id = "
 
 IDS_SFDEFINITIONHEADER "Search Folder Definition:\r\n\
 Version = 0x%1!08X!\r\n\
 Flags = 0x%2!08X! = %3\r\n\
 Numeric Search = 0x%4!08X!\r\n\
-Text Search Length = 0x%5!02X!\r\n"
-IDS_SFDEFINITIONTEXTSEARCH "Text Search Length Extended = 0x%1!04X!\r\n\
-Text Search = %2!ws!\r\n"
-IDS_SFDEFINITIONSKIPLEN1 "SkipLen1 = 0x%1!08X!\r\n"
-IDS_SFDEFINITIONSKIPBYTES1 "SkipBytes1 = %1\r\n"
-IDS_SFDEFINITIONDEEPSEARCH "Deep Search = 0x%1!08X!\r\n\
-Folder List 1 Length = 0x%2!02X!\r\n"
-IDS_SFDEFINITIONFOLDERLIST1 "Folder List 1 Length Extended = 0x%1!04X!\r\n\
-Folder List 1 = %2!ws!\r\n"
-IDS_SFDEFINITIONFOLDERLISTLENGTH2 "Folder List 2 Length = 0x%1!08X!\r\n"
-IDS_SFDEFINITIONFOLDERLIST2 "FolderList2 = \r\n\
-%1"
-IDS_SFDEFINITIONADDRESSCOUNT "AddressCount = 0x%1!08X!\n"
-IDS_SFDEFINITIONADDRESSES "Addresses[%1!d!].PropertyCount = 0x%2!08X!\r\n\
-Addresses[%3!d!].Pad = 0x%4!08X!\r\n"
-IDS_SFDEFINITIONPROPERTIES "Properties[%1!d!]:\r\n\
-%2\r\n"
-IDS_SFDEFINITIONSKIPLEN2 "SkipLen2 = 0x%1!08X!\r\n"
-IDS_SFDEFINITIONSKIPBYTES2 "SkipBytes2 = %1\r\n"
-IDS_SFDEFINITIONADVANCEDSEARCHLEN "AdvancedSearchLen = 0x%1!08X!\r\n"
-IDS_SFDEFINITIONADVANCEDSEARCHBYTES "AdvancedSearchBytes = %1\r\n"
-IDS_SFDEFINITIONSKIPLEN3 "SkipLen3 = 0x%1!08X!\r\n"
-IDS_SFDEFINITIONSKIPBYTES3 "SkipBytes2 = %1\r\n"
+Text Search Length = 0x%5!02X!"
+IDS_SFDEFINITIONTEXTSEARCH "\r\nText Search Length Extended = 0x%1!04X!\r\n\
+Text Search = "
+IDS_SFDEFINITIONSKIPLEN1 "\r\nSkipLen1 = 0x%1!08X!"
+IDS_SFDEFINITIONSKIPBYTES1 "\r\nSkipBytes1 = "
+IDS_SFDEFINITIONDEEPSEARCH "\r\nDeep Search = 0x%1!08X!\r\n\
+Folder List 1 Length = 0x%2!02X!"
+IDS_SFDEFINITIONFOLDERLIST1 "\r\nFolder List 1 Length Extended = 0x%1!04X!\r\n\
+Folder List 1 = "
+IDS_SFDEFINITIONFOLDERLISTLENGTH2 "\r\nFolder List 2 Length = 0x%1!08X!"
+IDS_SFDEFINITIONFOLDERLIST2 "\r\nFolderList2 = \r\n"
+IDS_SFDEFINITIONADDRESSCOUNT "\r\nAddressCount = 0x%1!08X!"
+IDS_SFDEFINITIONADDRESSES "\r\nAddresses[%1!d!].PropertyCount = 0x%2!08X!\r\n\
+Addresses[%3!d!].Pad = 0x%4!08X!"
+IDS_SFDEFINITIONPROPERTIES "\r\nProperties[%1!d!]:\r\n\
+%2"
+IDS_SFDEFINITIONSKIPLEN2 "\r\nSkipLen2 = 0x%1!08X!"
+IDS_SFDEFINITIONSKIPBYTES2 "\r\nSkipBytes2 = "
+IDS_SFDEFINITIONADVANCEDSEARCHLEN "\r\nAdvancedSearchLen = 0x%1!08X!"
+IDS_SFDEFINITIONADVANCEDSEARCHBYTES "\r\nAdvancedSearchBytes = "
+IDS_SFDEFINITIONSKIPLEN3 "\r\nSkipLen3 = 0x%1!08X!"
+IDS_SFDEFINITIONSKIPBYTES3 "\r\nSkipBytes2 = "
 
 // All strings above this point use FormatMessage style formatting
 

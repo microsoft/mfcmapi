@@ -1,6 +1,6 @@
 // stdafx.h : include file for standard system include files,
 //  or project specific include files that are used frequently, but
-//	  are changed infrequently
+//  are changed infrequently
 //
 
 #pragma once
@@ -26,6 +26,14 @@
 // Safe String handling header
 #define ALLOW_LEGACY_STRSAFE_USE
 #include <strsafe.h>
+
+// Fix a build issue with a few versions of the MAPI headers
+#if !defined(FREEBUFFER_DEFINED)
+typedef ULONG (STDAPICALLTYPE FREEBUFFER)(
+	LPVOID			lpBuffer
+);
+#define FREEBUFFER_DEFINED
+#endif
 
 #include <MapiX.h>
 #include <MapiUtil.h>

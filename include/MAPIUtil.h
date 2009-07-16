@@ -4,7 +4,7 @@
  *  Definitions and prototypes for utility functions provided by MAPI
  *  in MAPI[xx].DLL.
  *
- *  Copyright 1986-2010 Microsoft Corporation. All Rights Reserved.
+ *  Copyright (c) 2009 Microsoft Corporation. All Rights Reserved.
  */
 
 #ifndef _MAPIUTIL_H_
@@ -13,6 +13,14 @@
 #if _MSC_VER > 1000
 #pragma once
 #endif
+
+#if defined (WIN64) && !defined (_WIN64)
+#define _WIN64
+#endif
+
+/*
+ *	Under Win64 systems Win32 is also defined for backwards compatibility.
+ */
 
 #if defined (WIN32) && !defined (_WIN32)
 #define _WIN32
@@ -497,8 +505,10 @@ typedef HRESULT (STDMETHODCALLTYPE FAR * LPOPENSTREAMONFILE) (
 	__in_opt LPCTSTR	lpszPrefix,
 	LPSTREAM FAR *		lppStream);
 
-#ifdef	_WIN32
+#if defined(_WIN64) || defined(_WIN32)
 #define OPENSTREAMONFILE "OpenStreamOnFile"
+#else
+#error	"Unknown Platform: MAPI is currently supported on Win32 and Win64"
 #endif
 
 
@@ -526,7 +536,7 @@ UlPropSize(	LPSPropValue	lpSPropValue );
 STDAPI_(BOOL)
 FEqualNames( LPMAPINAMEID lpName1, LPMAPINAMEID lpName2 );
 
-#if defined(_WIN32) && !defined(_WINNT) && !defined(_WIN95) && !defined(_MAC)
+#if (defined(_WIN64) || defined(_WIN32)) && !defined(_WINNT) && !defined(_WIN95) && !defined(_MAC)
 #define _WINNT
 #endif
 
@@ -817,7 +827,7 @@ WrapCompressedRTFStream (__in LPSTREAM lpCompressedRTFStream,
 
 /* Storage on Stream */
 
-#if defined(_WIN32) || defined(WIN16)
+#if defined(_WIN64) || defined(_WIN32) || defined(WIN16)
 STDAPI_(HRESULT)
 HrIStorageFromStream (LPUNKNOWN lpUnkIn,
 	LPCIID lpInterface, ULONG ulFlags, LPSTORAGE FAR * lppStorageOut);
@@ -849,19 +859,23 @@ STDAPI_(VOID)			DeinitMapiUtil(VOID);
  *	it easier to write code which uses them optionally.
  */
 
-#if defined (WIN16)
+#if defined (_WIN64) && defined(_AMD64_)
 #define szHrDispatchNotifications "HrDispatchNotifications"
 #elif defined (_WIN32) && defined (_X86_)
 #define szHrDispatchNotifications "_HrDispatchNotifications@4"
+#else
+#error	"Unknown Platform: MAPI is currently supported on Win32/X86 and Win64/AMD64"
 #endif
 
 typedef HRESULT (STDAPICALLTYPE DISPATCHNOTIFICATIONS)(ULONG ulFlags);
 typedef DISPATCHNOTIFICATIONS FAR * LPDISPATCHNOTIFICATIONS;
 
-#if defined (WIN16)
+#if defined (_WIN64) && defined (_AMD64_)
 #define szScCreateConversationIndex "ScCreateConversationIndex"
 #elif defined (_WIN32) && defined (_X86_)
 #define szScCreateConversationIndex "_ScCreateConversationIndex@16"
+#else
+#error	"Unknown Platform: MAPI is currently supported on Win32/X86 and Win64/AMD64"
 #endif
 
 typedef SCODE (STDAPICALLTYPE CREATECONVERSATIONINDEX)(ULONG cbParent,

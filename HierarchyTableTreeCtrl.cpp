@@ -187,14 +187,12 @@ HRESULT CHierarchyTableTreeCtrl::AddRootNode(LPMAPICONTAINER lpMAPIContainer)
 	enum{
 		htPR_ENTRYID,
 		htPR_DISPLAY_NAME,
-		htPR_SUBFOLDERS,
 		htPR_CONTAINER_FLAGS,
 		htNUMCOLS
 	};
 	SizedSPropTagArray(htNUMCOLS,sptHTCols) = {htNUMCOLS,
 		PR_ENTRYID,
 		PR_DISPLAY_NAME,
-		PR_SUBFOLDERS,
 		PR_CONTAINER_FLAGS
 	};
 	ULONG cVals = 0;
@@ -241,7 +239,7 @@ HRESULT CHierarchyTableTreeCtrl::AddRootNode(LPMAPICONTAINER lpMAPIContainer)
 		szName,
 		lpEIDBin,
 		NULL,
-		lpProps?(ULONG)lpProps[htPR_SUBFOLDERS].Value.b:MAPI_E_NOT_FOUND,
+		(ULONG) MAPI_E_NOT_FOUND, // No real need to get PR_SUBFOLDERS on a root node
 		lpProps?lpProps[htPR_CONTAINER_FLAGS].Value.ul:MAPI_E_NOT_FOUND,
 		TVI_ROOT,
 		true);

@@ -10,6 +10,7 @@
 #include "ExtraPropTags.h"
 #include "MAPIProgress.h"
 #include "Guids.h"
+#include "NamedPropCache.h"
 
 // I don't use MAPIOID.h, which is needed to deal with PR_ATTACH_TAG, but if I did, here's how to include it
 /*
@@ -1397,7 +1398,7 @@ HRESULT RemoveOneOff(LPMESSAGE lpMessage, BOOL bRemovePropDef)
 		rgpnmid[i] = &rgnmid[i];
 	}
 
-	EC_H(lpMessage->GetIDsFromNames(
+	EC_H(GetIDsFromNames(lpMessage,
 		ulNumOneOffIDs,
 		rgpnmid,
 		0,
@@ -2063,11 +2064,12 @@ HRESULT GetNamedPropsByGUID(LPMAPIPROP lpSource, LPGUID lpPropSetGUID, LPSPropTa
 		ULONG			cProps = 0;
 		LPMAPINAMEID*	lppNameIDs = NULL;
 
-		WC_H(lpSource->GetNamesFromIDs(&lpAllProps,
-									   NULL,
-									   0,
-									   &cProps,
-									   &lppNameIDs));
+		WC_H(GetNamesFromIDs(lpSource,
+			&lpAllProps,
+			NULL,
+			0,
+			&cProps,
+			&lppNameIDs));
 
 		if(S_OK == hRes && lppNameIDs)
 		{

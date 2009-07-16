@@ -201,6 +201,7 @@ void CPropertyEditor::InitPropertyControls()
 		m_lpMAPIProp,
 		NULL,
 		NULL,
+		m_bIsAB,
 		NULL,
 		NULL,
 		NULL,
@@ -692,6 +693,13 @@ void CPropertyEditor::WriteStringsToSPropValue()
 		// Check that we've got valid binary before we allocate anything. Note that we're
 		// reading szTmpString now and will assume it's read when we get to the real PT_BINARY case
 		szTmpString = GetStringUseControl(1);
+
+		// remove any whitespace before decoding
+		szTmpString.Replace(_T("\r"),_T("")); // STRING_OK
+		szTmpString.Replace(_T("\n"),_T("")); // STRING_OK
+		szTmpString.Replace(_T("\t"),_T("")); // STRING_OK
+		szTmpString.Replace(_T(" "),_T("")); // STRING_OK
+
 		ulStrLen = szTmpString.GetLength();
 		if (ulStrLen & 1) return; // can't use an odd length string
 	default: break;
@@ -1068,6 +1076,7 @@ ULONG CPropertyEditor::HandleChange(UINT nID)
 				m_lpMAPIProp,
 				NULL,
 				NULL,
+				m_bIsAB,
 				NULL,
 				NULL,
 				NULL,
@@ -1109,6 +1118,7 @@ ULONG CPropertyEditor::HandleChange(UINT nID)
 				m_lpMAPIProp,
 				NULL,
 				NULL,
+				m_bIsAB,
 				NULL,
 				NULL,
 				NULL,
@@ -1201,6 +1211,7 @@ ULONG CPropertyEditor::HandleChange(UINT nID)
 					m_lpMAPIProp,
 					NULL,
 					NULL,
+					m_bIsAB,
 					NULL,
 					NULL,
 					NULL,

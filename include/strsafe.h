@@ -67,13 +67,6 @@ typedef __success(return >= 0) long HRESULT;
 
 typedef unsigned long DWORD;
 
-
-// macros
-#define SUCCEEDED(hr)   (((HRESULT)(hr)) >= 0)
-#define FAILED(hr)      (((HRESULT)(hr)) < 0)
-
-#define S_OK            ((HRESULT)0L)
-
 #ifndef SORTPP_PASS
 // compiletime asserts (failure results in error C2118: negative subscript)
 #define C_ASSERT(e) typedef char __C_ASSERT__[(e)?1:-1]

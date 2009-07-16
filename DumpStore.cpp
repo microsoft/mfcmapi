@@ -37,6 +37,7 @@ void OutputPropertyToFile(FILE* fFile, LPSPropValue lpProp, LPMAPIPROP lpObj)
 		lpObj,
 		NULL,
 		NULL,
+		false,
 		&szExactMatches, // Built from ulPropTag & bIsAB
 		&szPartialMatches, // Built from ulPropTag & bIsAB
 		&PropType,
@@ -83,8 +84,7 @@ void OutputPropertyToFile(FILE* fFile, LPSPropValue lpProp, LPMAPIPROP lpObj)
 
 	delete[] szPartialMatches;
 	delete[] szExactMatches;
-	delete[] szNamedPropName;
-	delete[] szNamedPropGUID;
+	FreeNameIDStrings(szNamedPropName, szNamedPropGUID, NULL);
 	delete[] szSmartView;
 }
 

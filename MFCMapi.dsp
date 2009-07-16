@@ -54,7 +54,7 @@ BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
 LINK32=link.exe
-# ADD BASE LINK32 /nologo /subsystem:windows /machine:I386
+# ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"LIBC" /pdbtype:con
 # ADD LINK32 version.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"LIBC" /libpath:".\lib" /release
 # SUBTRACT LINK32 /pdb:none
 # Begin Special Build Tool
@@ -118,7 +118,7 @@ BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
 LINK32=link.exe
-# ADD BASE LINK32 mapi32.lib EdkMapi.Lib MbLogon.Lib EdkDebug.Lib EdkGUID.Lib EdkUtils.Lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"LIBC" /pdbtype:con
+# ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"LIBC" /pdbtype:con
 # SUBTRACT BASE LINK32 /pdb:none
 # ADD LINK32 version.lib /nologo /entry:"wWinMainCRTStartup" /subsystem:windows /incremental:no /debug /machine:I386 /nodefaultlib:"mfc42d.lib" /nodefaultlib:"mfcs42d.lib" /nodefaultlib:"mfco42d.lib" /nodefaultlib:"LIBC" /libpath:".\lib" /release
 # SUBTRACT LINK32 /pdb:none
@@ -147,7 +147,7 @@ BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
 LINK32=link.exe
-# ADD BASE LINK32 mapi32.lib MbLogon.Lib EdkMapi.Lib EdkDebug.Lib EdkGUID.Lib EdkUtils.Lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"LIBC" /pdbtype:con
+# ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"LIBC" /pdbtype:con
 # ADD LINK32 version.lib /nologo /entry:"wWinMainCRTStartup" /subsystem:windows /debug /machine:I386 /nodefaultlib:"mfc42d.lib" /nodefaultlib:"mfcs42d.lib" /nodefaultlib:"mfco42d.lib" /nodefaultlib:"LIBC" /libpath:".\lib" /release
 # SUBTRACT LINK32 /pdb:none
 
@@ -337,6 +337,10 @@ SOURCE=.\MySecInfo.cpp
 # Begin Source File
 
 SOURCE=.\MyWinApp.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\NamedPropCache.cpp
 # End Source File
 # Begin Source File
 
@@ -593,6 +597,10 @@ SOURCE=.\MySecInfo.h
 # Begin Source File
 
 SOURCE=.\MyWinApp.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\NamedPropCache.h
 # End Source File
 # Begin Source File
 

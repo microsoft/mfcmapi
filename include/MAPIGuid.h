@@ -12,7 +12,7 @@
  *
  *	This range of 256 GUIDs reserved by OLE for MAPI use October 5, 1992.
  *
- *  Copyright 1986-2010 Microsoft Corporation. All Rights Reserved.
+ *  Copyright (c) 2009 Microsoft Corporation. All Rights Reserved.
  */
 
 /*

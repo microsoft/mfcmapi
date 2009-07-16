@@ -103,6 +103,7 @@ BOOL CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, SortListData* lpDat
 			ulNewPropTag,
 			NULL,
 			NULL,
+			NULL,
 			m_bIsAB,
 			&szExactMatch, // Built from ulPropTag & bIsAB
 			&szPartialMatch, // Built from ulPropTag & bIsAB
@@ -122,8 +123,7 @@ BOOL CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, SortListData* lpDat
 
 		delete[] szPartialMatch;
 		delete[] szExactMatch;
-		delete[] szNamedPropName;
-		delete[] szNamedPropGUID;
+		FreeNameIDStrings(szNamedPropName, szNamedPropGUID, NULL);
 
 		return true;
 	}
@@ -173,6 +173,7 @@ void CTagArrayEditor::ReadTagArrayToList(ULONG ulListNum)
 				ulPropTag,
 				m_lpMAPIProp,
 				NULL,
+				NULL,
 				m_bIsAB,
 				&szExactMatch, // Built from ulPropTag & bIsAB
 				&szPartialMatch, // Built from ulPropTag & bIsAB
@@ -192,8 +193,7 @@ void CTagArrayEditor::ReadTagArrayToList(ULONG ulListNum)
 			SetListString(ulListNum,iTagCount,6,szNamedPropGUID);
 			delete[] szPartialMatch;
 			delete[] szExactMatch;
-			delete[] szNamedPropName;
-			delete[] szNamedPropGUID;
+			FreeNameIDStrings(szNamedPropName, szNamedPropGUID, NULL);
 		}
 	}
 	ResizeList(ulListNum,false);

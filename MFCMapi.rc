@@ -609,11 +609,12 @@ BEGIN
     END
     MENUITEM SEPARATOR
     MENUITEM "&Modify 'Extra' Properties...", ID_MODIFYEXTRAPROPS
-    MENUITEM "Find All Named Props (SLOW)", ID_FINDALLNAMEDPROPS
+    MENUITEM "Find All Named Props (SLOW)",   ID_FINDALLNAMEDPROPS
+    MENUITEM "Count Named Props",             ID_COUNTNAMEDPROPS
     MENUITEM SEPARATOR
-    MENUITEM "Call CopyTo...",              ID_COPYTO
-    MENUITEM "Edit given property...",      ID_EDITGIVENPROPERTY
-    MENUITEM "Open Property As Table...",   ID_OPENPROPERTYASTABLE
+    MENUITEM "Call CopyTo...",                ID_COPYTO
+    MENUITEM "Edit given property...",        ID_EDITGIVENPROPERTY
+    MENUITEM "Open Property As Table...",     ID_OPENPROPERTYASTABLE
     MENUITEM SEPARATOR
     MENUITEM "&Save Property Pane Contents...", ID_SAVEPROPERTIES
 END

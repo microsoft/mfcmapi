@@ -7,6 +7,7 @@
 #include "InterpretProp2.h"
 #include "PropTagArray.h"
 #include "MAPIFunctions.h"
+#include "NamedPropCache.h"
 
 static TCHAR* CLASS = _T("CPropertyTagEditor");
 
@@ -226,7 +227,7 @@ void CPropertyTagEditor::LookupNamedProp(ULONG ulSkipField, BOOL bCreate)
 	{
 		LPSPropTagArray lpNamedPropTags = NULL;
 
-		EC_H_GETPROPS(m_lpMAPIProp->GetIDsFromNames(
+		EC_H_GETPROPS(GetIDsFromNames(m_lpMAPIProp,
 			1,
 			&lpNamedID,
 			bCreate?MAPI_CREATE:0,
@@ -399,6 +400,7 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField)
 		m_ulPropTag,
 		m_lpMAPIProp,
 		NULL,
+		NULL,
 		m_bIncludeABProps,
 		&szExactMatch, // Built from ulPropTag & bIsAB
 		&szPartialMatch, // Built from ulPropTag & bIsAB
@@ -438,7 +440,7 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField)
 		lpTagArray->cValues = 1;
 		lpTagArray->aulPropTag[0] = m_ulPropTag;
 
-		WC_H_GETPROPS(m_lpMAPIProp->GetNamesFromIDs(
+		WC_H_GETPROPS(GetNamesFromIDs(m_lpMAPIProp,
 			&lpTagArray,
 			NULL,
 			NULL,
@@ -481,7 +483,7 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField)
 		MAPIFreeBuffer(lppPropNames);
 	}
 
-	delete[] szNamedPropName;
+	FreeNameIDStrings(szNamedPropName, NULL, NULL);
 	delete[] szPartialMatch;
 	delete[] szExactMatch;
 }

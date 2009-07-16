@@ -4,7 +4,7 @@
  *	Declarations of interfaces for clients and providers of MAPI
  *  forms and form registries.
  *
- *  Copyright 1986-2010 Microsoft Corporation. All Rights Reserved.
+ *  Copyright (c) 2009 Microsoft Corporation. All Rights Reserved.
  */
 
 #ifndef MAPIFORM_H
@@ -547,6 +547,7 @@ DECLARE_MAPI_INTERFACE_(IMAPIFormMgr, IUnknown)
 #define MAPIFORM_CPU_AXP                3
 #define MAPIFORM_CPU_PPC                4
 #define MAPIFORM_CPU_M68                5
+#define MAPIFORM_CPU_X64                6
 
 #define MAPIFORM_OS_WIN_31              1
 #define MAPIFORM_OS_WINNT_35            2

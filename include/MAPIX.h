@@ -3,7 +3,7 @@
  *
  *	Definitions of objects/flags, etc used by Extended MAPI.
  *
- *  Copyright 1986-2010 Microsoft Corporation. All Rights Reserved.
+ *  Copyright (c) 2009 Microsoft Corporation. All Rights Reserved.
  */
 
 #ifndef MAPIX_H
@@ -122,7 +122,7 @@ typedef SCODE (STDMETHODCALLTYPE MAPIALLOCATEMORE)(
 	LPVOID FAR *	lppBuffer
 );
 
-typedef ULONG_PTR (STDAPICALLTYPE MAPIFREEBUFFER)(
+typedef ULONG (STDAPICALLTYPE MAPIFREEBUFFER)(
 	LPVOID			lpBuffer
 );
 

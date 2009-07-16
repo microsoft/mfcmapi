@@ -20,7 +20,7 @@ CString MAPIErrToString(ULONG ulFlags, LPMAPIERROR lpErr);
 CString TnefProblemArrayToString(LPSTnefProblemArray lpError);
 
 // Allocates strings with new
-// Free with delete[]
+// Free with FreeNameIDStrings
 //
 // lpszDASL string for a named prop will look like this:
 // id/{12345678-1234-1234-1234-12345678ABCD}/80010003
@@ -36,6 +36,9 @@ void NameIDToStrings(LPMAPINAMEID lpNameID,
 					 LPTSTR* lpszPropName,
 					 LPTSTR* lpszPropGUID,
 					 LPTSTR* lpszDASL);
+void FreeNameIDStrings(LPTSTR lpszPropName,
+					   LPTSTR lpszPropGUID,
+					   LPTSTR lpszDASL);
 
 LPTSTR GUIDToString(LPCGUID lpGUID);
 

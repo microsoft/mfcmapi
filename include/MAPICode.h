@@ -3,7 +3,7 @@
  *
  *	Status Codes returned by MAPI routines
  *
- *  Copyright 1986-2010 Microsoft Corporation. All Rights Reserved.
+ *  Copyright (c) 2009 Microsoft Corporation. All Rights Reserved.
  */
 
 #ifndef MAPICODE_H
@@ -13,13 +13,21 @@
 #pragma once
 #endif
 
+#if defined (WIN64) && !defined (_WIN64)
+#define _WIN64
+#endif
+
+/*
+ *	Under Win64 systems Win32 is also defined for backwards compatibility.
+ */
+
 #if defined (WIN32) && !defined (_WIN32)
 #define _WIN32
 #endif
 
 /* Define S_OK and ITF_* */
 
-#ifdef _WIN32
+#if	defined(_WIN64) || defined(_WIN32)
 #include <winerror.h>
 #endif
 
