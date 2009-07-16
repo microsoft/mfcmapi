@@ -9,14 +9,23 @@ enum __REGKEYTYPES {
 	regSTRING
 };
 
+enum __REGOPTIONTYPE {
+	regoptCheck,
+	regoptString,
+	regoptStringHex,
+	regoptStringDec
+};
+
 struct __RegKeys
 {
 	TCHAR*	szKeyName;
 	ULONG	ulRegKeyType;
+	ULONG	ulRegOptType;
 	ULONG	ulDefDWORD;
 	ULONG	ulCurDWORD;
 	TCHAR	szDefSTRING[MAX_PATH];
 	TCHAR	szCurSTRING[MAX_PATH];
+	BOOL	bRefresh;
 	UINT	uiOptionsPrompt;
 };
 
@@ -25,19 +34,20 @@ enum REGKEYNAMES {
 	regkeyDEBUG_TAG,
 	regkeyDEBUG_TO_FILE,
 	regkeyDEBUG_FILE_NAME,
-	regkeyTHROTTLE_LEVEL,
 	regkeyPARSED_NAMED_PROPS,
+	regkeyGETPROPNAMES_ON_ALL_PROPS,
+	regkeyTHROTTLE_LEVEL,
 	regkeyHIER_NOTIFS,
 	regkeyHIER_EXPAND_NOTIFS,
 	regkeyHIER_ROOT_NOTIFS,
 	regkeyHIER_NODE_LOAD_COUNT,
 	regkeyDO_GETPROPS,
+	regkeyUSE_GETPROPLIST,
+	regkeyCACHE_NAME_DPROPS,
 	regkeyALLOW_DUPE_COLUMNS,
 	regkeyUSE_ROW_DATA_FOR_SINGLEPROPLIST,
 	regkeyDO_COLUMN_NAMES,
 	regkeyEDIT_COLUMNS_ON_LOAD,
-	regkeyUSE_GETPROPLIST,
-	regkeyGETPROPNAMES_ON_ALL_PROPS,
 	regkeyMDB_ONLINE,
 	regKeyMAPI_NO_CACHE,
 	regkeyALLOW_PERSIST_CACHE,
@@ -47,6 +57,8 @@ enum REGKEYNAMES {
 	regkeyPROP_COLUMN_ORDER,
 	NUMRegKeys
 };
+
+#define NumRegOptionKeys (NUMRegKeys-2)
 
 extern __RegKeys RegKeys[NUMRegKeys];
 

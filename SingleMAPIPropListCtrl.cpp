@@ -22,6 +22,7 @@
 #include "RestrictEditor.h"
 #include "PropertyTagEditor.h"
 #include "MAPIProgress.h"
+#include "NamedPropCache.h"
 
 static TCHAR* CLASS = _T("CSingleMAPIPropListCtrl");
 
@@ -183,6 +184,7 @@ void CSingleMAPIPropListCtrl::InitMenu(CMenu* pMenu)
 		pMenu->EnableMenuItem(ID_EDITGIVENPROPERTY,DIM(m_lpMAPIProp || GetPropVals()));
 		pMenu->EnableMenuItem(ID_OPENPROPERTYASTABLE,DIM(m_lpMAPIProp));
 		pMenu->EnableMenuItem(ID_FINDALLNAMEDPROPS,DIM(m_lpMAPIProp));
+		pMenu->EnableMenuItem(ID_COUNTNAMEDPROPS,DIM(m_lpMAPIProp));
 
 		if (m_lpHostDlg)
 		{
@@ -217,6 +219,7 @@ BOOL CSingleMAPIPropListCtrl::HandleMenu(WORD wMenuSelect)
 	case ID_EDITPROPERTYASUNICODESTREAM: OnEditPropAsStream(PT_UNICODE,false); return true;
 	case ID_EDITPROPERTYASPRRTFCOMPRESSEDSTREAM: OnEditPropAsStream(PT_BINARY,true); return true;
 	case ID_FINDALLNAMEDPROPS: FindAllNamedProps(); return true;
+	case ID_COUNTNAMEDPROPS: CountNamedProps(); return true;
 	case ID_MODIFYEXTRAPROPS: OnModifyExtraProps(); return true;
 	case ID_OPEN_PROPERTY: OnOpenProperty(); return true;
 	case ID_OPENPROPERTYASTABLE: OnOpenPropertyAsTable(); return true;
@@ -307,6 +310,8 @@ HRESULT CSingleMAPIPropListCtrl::LoadMAPIPropList()
 		}
 	}
 
+	LPSPropValue lpMappingSig = PpropFindProp(lpPropsToAdd, ulProps, PR_MAPPING_SIGNATURE);
+
 	// If we don't pass named property information to AddPropToListBox, it will look it up for us
 	// But this costs a GetNamesFromIDs call for each property we add
 	// As a speed up, we put together a single GetNamesFromIDs call here and pass its results to AddPropToListBox
@@ -360,8 +365,10 @@ HRESULT CSingleMAPIPropListCtrl::LoadMAPIPropList()
 						}
 					}
 				}
+
 				// Get the names
-				WC_H_GETPROPS(m_lpMAPIProp->GetNamesFromIDs(
+				WC_H_GETPROPS(GetNamesFromIDs(m_lpMAPIProp,
+					lpMappingSig?&lpMappingSig->Value.bin:NULL,
 					&lpTag,
 					NULL,
 					NULL,
@@ -374,6 +381,12 @@ HRESULT CSingleMAPIPropListCtrl::LoadMAPIPropList()
 		}
 	}
 
+	// Is this worth it?
+	// Set the item count to speed up the addition of items
+	ULONG ulTotalRowCount = ulProps;
+	if (m_lpMAPIProp && m_sptExtraProps) ulTotalRowCount += m_sptExtraProps->cValues;
+	SetItemCount(ulTotalRowCount);
+
 	// get each property in turn and add it to the list
 	ulCurTag = 0;
 	for (ulCurPropRow = 0; ulCurPropRow < ulProps; ulCurPropRow++)
@@ -382,12 +395,8 @@ HRESULT CSingleMAPIPropListCtrl::LoadMAPIPropList()
 		// We shouldn't need to check ulCurTag < ulPropNames, but I fear bad GetNamesFromIDs implementations
 		if (lppPropNames && ulCurTag < ulPropNames)
 		{
-			if (RegKeys[regkeyGETPROPNAMES_ON_ALL_PROPS].ulCurDWORD)
-			{
-				lpNameIDInfo = lppPropNames[ulCurTag];
-				ulCurTag++;
-			}
-			else if (PROP_ID(lpPropsToAdd[ulCurPropRow].ulPropTag) >= 0x8000)
+			if (RegKeys[regkeyGETPROPNAMES_ON_ALL_PROPS].ulCurDWORD ||
+				PROP_ID(lpPropsToAdd[ulCurPropRow].ulPropTag) >= 0x8000)
 			{
 				lpNameIDInfo = lppPropNames[ulCurTag];
 				ulCurTag++;
@@ -398,6 +407,7 @@ HRESULT CSingleMAPIPropListCtrl::LoadMAPIPropList()
 			ulCurListBoxRow,
 			lpPropsToAdd[ulCurPropRow].ulPropTag,
 			lpNameIDInfo,
+			lpMappingSig?&lpMappingSig->Value.bin:NULL,
 			&lpPropsToAdd[ulCurPropRow]);
 
 		ulCurListBoxRow++;
@@ -456,6 +466,7 @@ HRESULT CSingleMAPIPropListCtrl::LoadMAPIPropList()
 				ulCurListBoxRow,
 				pNewTag.aulPropTag[0], // Tag to use in the UI
 				NULL, // Let AddPropToListBox look up any named prop information it needs
+				lpMappingSig?&lpMappingSig->Value.bin:NULL,
 				&ExtraPropForList); // Tag + Value to parse - may differ in case of errors or NULL type.
 
 			ulCurListBoxRow++;
@@ -585,6 +596,7 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 											   int iRow,
 											   ULONG ulPropTag,
 											   LPMAPINAMEID lpNameID,
+											   LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
 											   LPSPropValue lpsPropToAdd)
 {
 	ULONG ulImage = slIconDefault;
@@ -628,6 +640,7 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 		ulPropTag,
 		m_lpMAPIProp,
 		lpNameID,
+		lpMappingSignature,
 		m_bIsAB,
 		&szExactMatches, // Built from ulPropTag & bIsAB
 		&szPartialMatches, // Built from ulPropTag & bIsAB
@@ -653,8 +666,7 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 	delete[] szPartialMatches;
 	delete[] szExactMatches;
 	delete[] szSmartView;
-	delete[] szNamedPropName;
-	delete[] szNamedPropGUID;
+	FreeNameIDStrings(szNamedPropName, szNamedPropGUID, NULL);
 } // CSingleMAPIPropListCtrl::AddPropToListBox
 
 // to get the count of source properties
@@ -904,16 +916,16 @@ void CSingleMAPIPropListCtrl::OnContextMenu(CWnd* /*pWnd*/, CPoint pos)
 	DisplayContextMenu(IDR_MENU_PROPERTY_POPUP,NULL,this->m_lpHostDlg,pos.x, pos.y);
 }
 
-HRESULT CSingleMAPIPropListCtrl::FindAllNamedProps()
+void CSingleMAPIPropListCtrl::FindAllNamedProps()
 {
 	HRESULT hRes = S_OK;
 	LPSPropTagArray lptag = NULL;
 
-	if (!m_lpMAPIProp) return hRes;
+	if (!m_lpMAPIProp) return;
 
 	// Exchange can return MAPI_E_NOT_ENOUGH_MEMORY when I call this - give it a try - PSTs support it
 	DebugPrintEx(DBGNamedProp,CLASS,_T("FindAllNamedProps"),_T("Calling GetIDsFromNames with a NULL\n"));
-	WC_H(m_lpMAPIProp->GetIDsFromNames(
+	WC_H(GetIDsFromNames(m_lpMAPIProp,
 		NULL,
 		NULL,
 		NULL,
@@ -952,10 +964,8 @@ HRESULT CSingleMAPIPropListCtrl::FindAllNamedProps()
 		{
 			ULONG ulLowerBound = MyData.GetHex(0);
 			ULONG ulUpperBound = MyData.GetHex(1);
-			SPropTagArray tag = {0};
 
 			DebugPrintEx(DBGNamedProp,CLASS,_T("FindAllNamedProps"),_T("Walking through all IDs from 0x%X to 0x%X, looking for mappings to names\n"),ulLowerBound,ulUpperBound);
-			tag.cValues = 1;
 			if (ulLowerBound < __LOWERBOUND)
 			{
 				ErrDialog(__FILE__,__LINE__,IDS_EDLOWERBOUNDTOOLOW,ulLowerBound,__LOWERBOUND);
@@ -973,6 +983,8 @@ HRESULT CSingleMAPIPropListCtrl::FindAllNamedProps()
 			}
 			else
 			{
+				SPropTagArray tag = {0};
+				tag.cValues = 1;
 				lptag = &tag;
 				ULONG iTag = 0;
 				for (iTag = ulLowerBound ; iTag <= ulUpperBound ; iTag++)
@@ -982,7 +994,7 @@ HRESULT CSingleMAPIPropListCtrl::FindAllNamedProps()
 					hRes = S_OK;
 					tag.aulPropTag[0] = PROP_TAG(NULL,iTag);
 
-					WC_H(m_lpMAPIProp->GetNamesFromIDs(
+					WC_H(GetNamesFromIDs(m_lpMAPIProp,
 						&lptag,
 						NULL,
 						NULL,
@@ -1002,9 +1014,111 @@ HRESULT CSingleMAPIPropListCtrl::FindAllNamedProps()
 
 	// Refresh the display
 	WC_H(RefreshMAPIPropList());
+} // CSingleMAPIPropListCtrl::FindAllNamedProps
 
-	return hRes;
-}
+void CSingleMAPIPropListCtrl::CountNamedProps()
+{
+	if (!m_lpMAPIProp) return;
+
+	DebugPrintEx(DBGNamedProp,CLASS,_T("CountNamedProps"),_T("Searching for the highest named prop mapping\n"));
+
+	HRESULT hRes = S_OK;
+	ULONG ulLower = 0x8000;
+	ULONG ulUpper = 0xFFFF;
+	ULONG ulHighestKnown = 0;
+	ULONG ulCurrent = (ulUpper+ulLower)/2;
+
+	LPSPropTagArray lptag = NULL;
+	SPropTagArray tag = {0};
+	LPMAPINAMEID FAR * lppPropNames = 0;
+	ULONG ulPropNames = 0;
+	lptag = &tag;
+	tag.cValues = 1;
+
+	while (ulUpper - ulLower > 1)
+	{
+		hRes = S_OK;
+		tag.aulPropTag[0] = PROP_TAG(NULL,ulCurrent);
+
+		WC_H(GetNamesFromIDs(m_lpMAPIProp,
+			&lptag,
+			NULL,
+			NULL,
+			&ulPropNames,
+			&lppPropNames));
+		if (S_OK == hRes && ulPropNames == 1 && lppPropNames && *lppPropNames)
+		{
+			// Found a named property, reset lower bound
+
+			// Avoid NameIDToStrings call if we're not debug printing
+			if (fIsSet(DBGNamedProp))
+			{
+				DebugPrintEx(DBGNamedProp,CLASS,_T("CountNamedProps"),_T("Found a named property at 0x%04X.\n"),ulCurrent);
+				LPTSTR lpszNameID = NULL;
+				LPTSTR lpszNameGUID = NULL;
+				NameIDToStrings(lppPropNames[0],tag.aulPropTag[0],&lpszNameID,&lpszNameGUID,NULL);
+				DebugPrintEx(DBGNamedProp,CLASS,_T("CountNamedProps"),_T("Name = %s, GUID = %s\n"),lpszNameID, lpszNameGUID);
+				FreeNameIDStrings(lpszNameID, lpszNameGUID, NULL);
+			}
+			ulHighestKnown = ulCurrent;
+			ulLower = ulCurrent;
+		}
+		else
+		{
+			// Did not find a named property, reset upper bound
+			ulUpper = ulCurrent;
+		}
+		MAPIFreeBuffer(lppPropNames);
+		lppPropNames = NULL;
+
+		ulCurrent = (ulUpper+ulLower)/2;
+	}
+
+	CEditor MyResult(
+		this,
+		IDS_COUNTNAMEDPROPS,
+		IDS_COUNTNAMEDPROPSPROMPT,
+		(ULONG) ulHighestKnown?2:1,
+		CEDITOR_BUTTON_OK);
+	if (ulHighestKnown)
+	{
+		tag.aulPropTag[0] = PROP_TAG(NULL,ulCurrent);
+
+		WC_H(GetNamesFromIDs(m_lpMAPIProp,
+			&lptag,
+			NULL,
+			NULL,
+			&ulPropNames,
+			&lppPropNames));
+		if (S_OK == hRes && ulPropNames == 1 && lppPropNames && *lppPropNames)
+		{
+			DebugPrintEx(DBGNamedProp,CLASS,_T("CountNamedProps"),_T("Found a named property at 0x%04X.\n"),ulCurrent);
+			ulHighestKnown = ulCurrent;
+			ulLower = ulCurrent;
+		}
+		MyResult.InitSingleLine(0,IDS_HIGHESTNAMEDPROPTOTAL,NULL,true);
+		MyResult.SetDecimal(0,ulHighestKnown-0x8000);
+
+		MyResult.InitMultiLine(1,IDS_HIGHESTNAMEDPROPNUM,NULL,true);
+		CString szNamedProp;
+		LPTSTR lpszNameID = NULL;
+		LPTSTR lpszNameGUID = NULL;
+		NameIDToStrings(lppPropNames[0],tag.aulPropTag[0],&lpszNameID,&lpszNameGUID,NULL);
+		szNamedProp.FormatMessage(IDS_HIGHESTNAMEDPROPNAME, ulHighestKnown, lpszNameID, lpszNameGUID);
+		FreeNameIDStrings(lpszNameID, lpszNameGUID, NULL);
+		MyResult.SetString(1,szNamedProp);
+
+		MAPIFreeBuffer(lppPropNames);
+		lppPropNames = NULL;
+	}
+	else
+	{
+		MyResult.InitSingleLine(0,IDS_HIGHESTNAMEDPROPTOTAL,NULL,true);
+		MyResult.LoadString(0,IDS_HIGHESTNAMEDPROPNOTFOUND);
+	}
+	hRes = S_OK;
+	WC_H(MyResult.DisplayDialog());
+} // CSingleMAPIPropListCtrl::CountNamedProps
 
 // Delete the selected property
 void CSingleMAPIPropListCtrl::OnDeleteProperty()

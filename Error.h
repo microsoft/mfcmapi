@@ -55,7 +55,13 @@ LPTSTR	ErrorNameFromErrorCode(HRESULT hrErr);
 
 HRESULT WarnOnWin32Error(LPCSTR szFile,int iLine, LPCSTR szFunction);
 HRESULT DialogOnWin32Error(LPCSTR szFile,int iLine, LPCSTR szFunction);
+
+// We'll only output this information in debug builds.
+#ifdef _DEBUG
 void PrintSkipNote(HRESULT hRes,LPCSTR szFunc);
+#else
+#define PrintSkipNote
+#endif
 
 #define EC_H(fnx)	\
 if (SUCCEEDED(hRes))	\

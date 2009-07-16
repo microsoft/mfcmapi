@@ -77,7 +77,7 @@ FILE* OpenFile(LPCTSTR szFileName,BOOL bNewFile)
 
 // _tfopen has been deprecated, but older compilers do not have _tfopen_s
 // Use the replacement when we're on VS 2005 or higher.
-#if defined(_MSC_VER) && (_MSC_VER >= 1000)
+#if defined(_MSC_VER) && (_MSC_VER >= 1400)
 	_tfopen_s(&fOut,szFileName,szParams);
 #else
 	fOut = _tfopen(szFileName,szParams);

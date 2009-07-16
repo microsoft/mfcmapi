@@ -332,7 +332,7 @@ void LoadMSI()
 			));
 #endif
 	}
-}// LoadMSI
+} // LoadMSI
 
 // Opens the mail key for the specified MAPI client, such as 'Microsoft Outlook' or 'ExchangeMAPI'
 // Pass NULL to open the mail key for the default MAPI client
@@ -647,7 +647,7 @@ STDMETHODIMP_(SCODE) MAPIAllocateMore(ULONG cbSize,
 	return MAPI_E_CALL_FAILED;
 }
 
-STDAPI_(ULONG_PTR) MAPIFreeBuffer(LPVOID lpBuffer)
+STDAPI_(ULONG) MAPIFreeBuffer(LPVOID lpBuffer)
 {
 	// If we don't have this, the memory's already leaked - don't compound it with a crash
 	if (!lpBuffer) return NULL;

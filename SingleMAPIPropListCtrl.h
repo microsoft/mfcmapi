@@ -34,7 +34,8 @@ public:
 private:
 	HRESULT AddPropToExtraProps(ULONG ulPropTag,BOOL bRefresh);
 	HRESULT AddPropsToExtraProps(LPSPropTagArray lpPropsToAdd,BOOL bRefresh);
-	HRESULT FindAllNamedProps();
+	void FindAllNamedProps();
+	void CountNamedProps();
 	HRESULT LoadMAPIPropList();
 	HRESULT	SetNewProp(LPSPropValue lpNewProp);
 
@@ -42,6 +43,7 @@ private:
 		int iRow,
 		ULONG ulPropTag,
 		LPMAPINAMEID lpNameID,
+		LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
 		LPSPropValue lpsPropToAdd);
 
 	BOOL HandleAddInMenu(WORD wMenuSelect);

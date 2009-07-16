@@ -373,56 +373,35 @@ void CBaseDialog::OnOptions()
 		this,
 		IDS_SETOPTS,
 		NULL,
-		21,
+		NumRegOptionKeys,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 	MyData.SetPromptPostFix(szPrompt);
 
 	DebugPrintEx(DBGGeneric,CLASS,_T("OnOptions"),_T("Building option sheet - adding fields\n"));
 
-	MyData.InitSingleLine(0,RegKeys[regkeyDEBUG_TAG].uiOptionsPrompt,NULL,false);
-	MyData.SetHex(0,RegKeys[regkeyDEBUG_TAG].ulCurDWORD);
+	ULONG ulReg = 0;
 
-	MyData.InitCheck(1,RegKeys[regkeyDEBUG_TO_FILE].uiOptionsPrompt,RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD,false);
-
-	MyData.InitSingleLineSz(2,RegKeys[regkeyDEBUG_FILE_NAME].uiOptionsPrompt,RegKeys[regkeyDEBUG_FILE_NAME].szCurSTRING,false);
-
-	MyData.InitCheck(3,RegKeys[regkeyPARSED_NAMED_PROPS].uiOptionsPrompt,RegKeys[regkeyPARSED_NAMED_PROPS].ulCurDWORD,false);
-
-	MyData.InitCheck(4,RegKeys[regkeyGETPROPNAMES_ON_ALL_PROPS].uiOptionsPrompt,RegKeys[regkeyGETPROPNAMES_ON_ALL_PROPS].ulCurDWORD,false);
-
-	MyData.InitSingleLine(5,RegKeys[regkeyTHROTTLE_LEVEL].uiOptionsPrompt,NULL,false);
-	MyData.SetDecimal(5,RegKeys[regkeyTHROTTLE_LEVEL].ulCurDWORD);
-
-	MyData.InitCheck(6,RegKeys[regkeyHIER_NOTIFS].uiOptionsPrompt,RegKeys[regkeyHIER_NOTIFS].ulCurDWORD,false);
-
-	MyData.InitCheck(7,RegKeys[regkeyHIER_EXPAND_NOTIFS].uiOptionsPrompt,RegKeys[regkeyHIER_EXPAND_NOTIFS].ulCurDWORD,false);
-
-	MyData.InitCheck(8,RegKeys[regkeyHIER_ROOT_NOTIFS].uiOptionsPrompt,RegKeys[regkeyHIER_ROOT_NOTIFS].ulCurDWORD,false);
-
-	MyData.InitSingleLine(9,RegKeys[regkeyHIER_NODE_LOAD_COUNT].uiOptionsPrompt,NULL,false);
-	MyData.SetDecimal(9,RegKeys[regkeyHIER_NODE_LOAD_COUNT].ulCurDWORD);
-
-	MyData.InitCheck(10,RegKeys[regkeyDO_GETPROPS].uiOptionsPrompt,RegKeys[regkeyDO_GETPROPS].ulCurDWORD,false);
-
-	MyData.InitCheck(11,RegKeys[regkeyUSE_GETPROPLIST].uiOptionsPrompt,RegKeys[regkeyUSE_GETPROPLIST].ulCurDWORD,false);
-
-	MyData.InitCheck(12,RegKeys[regkeyALLOW_DUPE_COLUMNS].uiOptionsPrompt,RegKeys[regkeyALLOW_DUPE_COLUMNS].ulCurDWORD,false);
-
-	MyData.InitCheck(13,RegKeys[regkeyUSE_ROW_DATA_FOR_SINGLEPROPLIST].uiOptionsPrompt,RegKeys[regkeyUSE_ROW_DATA_FOR_SINGLEPROPLIST].ulCurDWORD,false);
-
-	MyData.InitCheck(14,RegKeys[regkeyDO_COLUMN_NAMES].uiOptionsPrompt,RegKeys[regkeyDO_COLUMN_NAMES].ulCurDWORD,false);
-
-	MyData.InitCheck(15,RegKeys[regkeyEDIT_COLUMNS_ON_LOAD].uiOptionsPrompt,RegKeys[regkeyEDIT_COLUMNS_ON_LOAD].ulCurDWORD,false);
-
-	MyData.InitCheck(16,RegKeys[regkeyMDB_ONLINE].uiOptionsPrompt,RegKeys[regkeyMDB_ONLINE].ulCurDWORD,false);
-
-	MyData.InitCheck(17,RegKeys[regKeyMAPI_NO_CACHE].uiOptionsPrompt,RegKeys[regKeyMAPI_NO_CACHE].ulCurDWORD,false);
-
-	MyData.InitCheck(18,RegKeys[regkeyALLOW_PERSIST_CACHE].uiOptionsPrompt,RegKeys[regkeyALLOW_PERSIST_CACHE].ulCurDWORD,false);
-
-	MyData.InitCheck(19,RegKeys[regkeyUSE_IMAPIPROGRESS].uiOptionsPrompt,RegKeys[regkeyUSE_IMAPIPROGRESS].ulCurDWORD,false);
-
-	MyData.InitCheck(20,RegKeys[regkeyUSE_MESSAGERAW].uiOptionsPrompt,RegKeys[regkeyUSE_MESSAGERAW].ulCurDWORD,false);
+	for (ulReg = 0 ; ulReg < NumRegOptionKeys ; ulReg++)
+	{
+		if (regoptCheck == RegKeys[ulReg].ulRegOptType)
+		{
+			MyData.InitCheck(ulReg,RegKeys[ulReg].uiOptionsPrompt,RegKeys[ulReg].ulCurDWORD,false);
+		}
+		else if (regoptString == RegKeys[ulReg].ulRegOptType)
+		{
+			MyData.InitSingleLineSz(ulReg,RegKeys[ulReg].uiOptionsPrompt,RegKeys[ulReg].szCurSTRING,false);
+		}
+		else if (regoptStringHex == RegKeys[ulReg].ulRegOptType)
+		{
+			MyData.InitSingleLine(ulReg,RegKeys[ulReg].uiOptionsPrompt,NULL,false);
+			MyData.SetHex(ulReg,RegKeys[ulReg].ulCurDWORD);
+		}
+		else if (regoptStringDec == RegKeys[ulReg].ulRegOptType)
+		{
+			MyData.InitSingleLine(ulReg,RegKeys[ulReg].uiOptionsPrompt,NULL,false);
+			MyData.SetDecimal(ulReg,RegKeys[ulReg].ulCurDWORD);
+		}
+	}
 
 	DebugPrintEx(DBGGeneric,CLASS,_T("OnOptions"),_T("Done building option sheet - displaying dialog\n"));
 
@@ -431,70 +410,35 @@ void CBaseDialog::OnOptions()
 	{
 		BOOL bNeedPropRefresh = false;
 		// need to grab this FIRST
-		EC_H(StringCchCopy(RegKeys[regkeyDEBUG_FILE_NAME].szCurSTRING,CCH(RegKeys[regkeyDEBUG_FILE_NAME].szCurSTRING),MyData.GetString(2)));
+		EC_H(StringCchCopy(RegKeys[regkeyDEBUG_FILE_NAME].szCurSTRING,CCH(RegKeys[regkeyDEBUG_FILE_NAME].szCurSTRING),MyData.GetString(regkeyDEBUG_FILE_NAME)));
 
-		if (MyData.GetHex(0) != RegKeys[regkeyDEBUG_TAG].ulCurDWORD)
+		if (MyData.GetHex(regkeyDEBUG_TAG) != RegKeys[regkeyDEBUG_TAG].ulCurDWORD)
 		{
-			SetDebugLevel(MyData.GetHex(0));
+			SetDebugLevel(MyData.GetHex(regkeyDEBUG_TAG));
 		}
 
-		SetDebugOutputToFile(MyData.GetCheck(1));
+		SetDebugOutputToFile(MyData.GetCheck(regkeyDEBUG_TO_FILE));
 
-		if (RegKeys[regkeyPARSED_NAMED_PROPS].ulCurDWORD != (ULONG) MyData.GetCheck(3))
+		// Remaining options require no special handling - loop through them
+		for (ulReg = 0 ; ulReg < NumRegOptionKeys ; ulReg++)
 		{
-			RegKeys[regkeyPARSED_NAMED_PROPS].ulCurDWORD = MyData.GetCheck(3);
-			bNeedPropRefresh = true;
+			if (regoptCheck == RegKeys[ulReg].ulRegOptType)
+			{
+				if (RegKeys[ulReg].bRefresh && RegKeys[ulReg].ulCurDWORD != (ULONG) MyData.GetCheck(ulReg))
+				{
+					bNeedPropRefresh = true;
+				}
+				RegKeys[ulReg].ulCurDWORD = MyData.GetCheck(ulReg);
+			}
+			else if (regoptStringHex == RegKeys[ulReg].ulRegOptType)
+			{
+				RegKeys[ulReg].ulCurDWORD = MyData.GetHex(ulReg);
+			}
+			else if (regoptStringDec == RegKeys[ulReg].ulRegOptType)
+			{
+				RegKeys[ulReg].ulCurDWORD = MyData.GetDecimal(ulReg);
+			}
 		}
-
-		if (RegKeys[regkeyGETPROPNAMES_ON_ALL_PROPS].ulCurDWORD != (ULONG) MyData.GetCheck(4))
-		{
-			RegKeys[regkeyGETPROPNAMES_ON_ALL_PROPS].ulCurDWORD = MyData.GetCheck(4);
-			bNeedPropRefresh = true;
-		}
-
-		RegKeys[regkeyTHROTTLE_LEVEL].ulCurDWORD = MyData.GetDecimal(5);
-
-		RegKeys[regkeyHIER_NOTIFS].ulCurDWORD = MyData.GetCheck(6);
-
-		RegKeys[regkeyHIER_EXPAND_NOTIFS].ulCurDWORD = MyData.GetCheck(7);
-
-		RegKeys[regkeyHIER_ROOT_NOTIFS].ulCurDWORD = MyData.GetCheck(8);
-
-		RegKeys[regkeyHIER_NODE_LOAD_COUNT].ulCurDWORD = MyData.GetDecimal(9);
-
-		if (RegKeys[regkeyDO_GETPROPS].ulCurDWORD != (ULONG) MyData.GetCheck(10))
-		{
-			RegKeys[regkeyDO_GETPROPS].ulCurDWORD = MyData.GetCheck(10);
-			bNeedPropRefresh = true;
-		}
-
-		if (RegKeys[regkeyUSE_GETPROPLIST].ulCurDWORD != (ULONG) MyData.GetCheck(11))
-		{
-			RegKeys[regkeyUSE_GETPROPLIST].ulCurDWORD = MyData.GetCheck(11);
-			bNeedPropRefresh = true;
-		}
-
-		RegKeys[regkeyALLOW_DUPE_COLUMNS].ulCurDWORD = MyData.GetCheck(12);
-
-		if (RegKeys[regkeyUSE_ROW_DATA_FOR_SINGLEPROPLIST].ulCurDWORD != (ULONG) MyData.GetCheck(13))
-		{
-			RegKeys[regkeyUSE_ROW_DATA_FOR_SINGLEPROPLIST].ulCurDWORD = MyData.GetCheck(13);
-			bNeedPropRefresh = true;
-		}
-
-		RegKeys[regkeyDO_COLUMN_NAMES].ulCurDWORD = MyData.GetCheck(14);
-
-		RegKeys[regkeyEDIT_COLUMNS_ON_LOAD].ulCurDWORD = MyData.GetCheck(15);
-
-		RegKeys[regkeyMDB_ONLINE].ulCurDWORD = MyData.GetCheck(16);
-
-		RegKeys[regKeyMAPI_NO_CACHE].ulCurDWORD = MyData.GetCheck(17);
-
-		RegKeys[regkeyALLOW_PERSIST_CACHE].ulCurDWORD = MyData.GetCheck(18);
-
-		RegKeys[regkeyUSE_IMAPIPROGRESS].ulCurDWORD = MyData.GetCheck(19);
-
-		RegKeys[regkeyUSE_MESSAGERAW].ulCurDWORD = MyData.GetCheck(20);
 
 		// Commit our values to the registry
 		WriteToRegistry();

@@ -3,7 +3,7 @@
  *
  *	Definitions used by MAPI clients and service providers.
  *
- *  Copyright 1986-2010 Microsoft Corporation. All Rights Reserved.
+ *  Copyright (c) 2009 Microsoft Corporation. All Rights Reserved.
  */
 
 #ifndef MAPIDEFS_H
@@ -13,11 +13,19 @@
 #pragma once
 #endif
 
+#if defined (WIN64) && !defined (_WIN64)
+#define _WIN64
+#endif
+
+/*
+ *	Under Win64 systems Win32 is also defined for backwards compatibility.
+ */
+
 #if defined (WIN32) && !defined (_WIN32)
 #define _WIN32
 #endif
 
-#if defined (_WIN32) /* Must include WINDOWS.H on Win32 */
+#if defined (_WIN64) || defined(_WIN32) /* Must include WINDOWS.H on Win32/Win64 */
 #ifndef _WINDOWS_
 #define INC_OLE2 /* Get the OLE2 stuff */
 #define INC_RPC  /* harmless on Windows NT; Windows 95 needs it */
@@ -52,7 +60,7 @@
 /* Provider init type. Force to cdecl always */
 
 #ifndef STDMAPIINITCALLTYPE
-#if !defined (_MAC) && defined (_WIN32)
+#if !defined (_MAC) && (defined (_WIN64) || defined(_WIN32))
 #define STDMAPIINITCALLTYPE		__cdecl
 #else
 #define STDMAPIINITCALLTYPE		STDMETHODCALLTYPE
@@ -267,6 +275,7 @@ typedef struct _MAPIUID
 #define PT_SYSTIME		((ULONG) 64)	/* FILETIME 64-bit int w/ number of 100ns periods since Jan 1,1601 */
 #define	PT_CLSID		((ULONG) 72)	/* OLE GUID */
 #define PT_BINARY		((ULONG) 258)	/* Uninterpreted (counted byte array) */
+#define PT_PTR			((ULONG) 259)	/* Pointer Variable, scales to the platform */
 /* Changes are likely to these numbers, and to their structures. */
 
 /* Alternate property type names for ease of use */
@@ -400,7 +409,7 @@ typedef struct FARSTRUCT tagCY {
         long      Hi;
 #endif
 } CY;
-#elif defined (_WIN32)
+#elif defined (_WIN64) || defined(_WIN32)
 /* real definition that makes the C++ compiler happy */
 typedef union tagCY {
     struct {
@@ -502,6 +511,7 @@ typedef union _PV
 	short int			i;			/* case PT_I2 */
 	LONG				l;			/* case PT_LONG */
 	ULONG				ul;			/* alias for PT_LONG */
+	LPVOID				lpv;		/* alias for PT_PTR */
 	float				flt;		/* case PT_R4 */
 	double				dbl;		/* case PT_DOUBLE */
 	unsigned short int	b;			/* case PT_BOOLEAN */
@@ -676,7 +686,7 @@ typedef SCODE (STDMETHODCALLTYPE ALLOCATEMORE)(
 	LPVOID FAR *	lppBuffer
 );
 
-typedef ULONG_PTR (STDAPICALLTYPE FREEBUFFER)(
+typedef ULONG (STDAPICALLTYPE FREEBUFFER)(
 	LPVOID			lpBuffer
 );
 

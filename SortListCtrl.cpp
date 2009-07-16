@@ -322,18 +322,27 @@ void CSortListCtrl::SortClickedColumn()
 	CHeaderCtrl*	lpMyHeader = NULL;
 	SortInfo		sortinfo = {0};
 
+	// There's little point in getting more than 128 characters for sorting
+	TCHAR			szText[128];
+
 	m_bHaveSorted = true;
 	lpMyHeader = GetHeaderCtrl();
 	if (lpMyHeader)
 	{
-		BOOL bIsXP = false;
-		// check windows XP
-		OSVERSIONINFOEX info;
-		ZeroMemory(&info, sizeof(OSVERSIONINFOEX));
-		info.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-		if(GetVersionEx((OSVERSIONINFO*)&info))
-			bIsXP = (info.dwMajorVersion > 5) |
-			(info.dwMajorVersion == 5 && info.dwMinorVersion >= 1);
+		static BOOL bIsXP = false;
+		static BOOL bVersionCheck = false;
+
+		if (!bVersionCheck)
+		{
+			// check windows XP
+			OSVERSIONINFOEX info;
+			ZeroMemory(&info, sizeof(OSVERSIONINFOEX));
+			info.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+			if (GetVersionEx((OSVERSIONINFO*)&info))
+				bIsXP = (info.dwMajorVersion > 5) |
+				(info.dwMajorVersion == 5 && info.dwMinorVersion >= 1);
+			bVersionCheck = true;
+		}
 
 		// Just in case we got any old bitmaps to clear
 		for (int i = 0 ; i < lpMyHeader->GetItemCount(); i++)
@@ -342,7 +351,7 @@ void CSortListCtrl::SortClickedColumn()
 			EC_B(lpMyHeader->GetItem(i,&hdItem));
 
 			hdItem.fmt &= ~(HDF_BITMAP | HDF_BITMAP_ON_RIGHT);
-			if(bIsXP)
+			if (bIsXP)
 				hdItem.fmt &= ~(HDF_SORTUP | HDF_SORTDOWN);
 			if (hdItem.hbm != 0)
 			{
@@ -360,7 +369,7 @@ void CSortListCtrl::SortClickedColumn()
 			hdItem.hbm = 0;
 		}
 		hdItem.fmt |= HDF_BITMAP | HDF_BITMAP_ON_RIGHT ;
-		if(!bIsXP)
+		if (!bIsXP)
 		{
 			EC_D(hdItem.hbm, (HBITMAP) LoadImage(AfxGetInstanceHandle(), MAKEINTRESOURCE(m_bSortUp ? IDB_UP : IDB_DOWN), IMAGE_BITMAP, 0, 0, LR_LOADMAP3DCOLORS));
 		}
@@ -397,6 +406,12 @@ void CSortListCtrl::SortClickedColumn()
 // #define	PT_CLSID		((ULONG) 72)	/* OLE GUID */
 // #define PT_BINARY		((ULONG) 258)	/* Uninterpreted (counted byte array) */
 	// Set our sort text
+	LVITEM lvi = {0};
+	lvi.mask = LVIF_PARAM | LVIF_TEXT;
+	lvi.iSubItem = m_iClickedColumn;
+	lvi.cchTextMax = sizeof(szText);
+	lvi.pszText = szText;
+
 	switch(PROP_TYPE(ulPropTag))
 	{
 	case (PT_I2):
@@ -410,12 +425,16 @@ void CSortListCtrl::SortClickedColumn()
 			sortinfo.sortstyle = SORTSTYLE_NUMERIC;
 			for (int i = 0;i<GetItemCount();i++)
 			{
-				SortListData *lpData = (SortListData*) GetItemData(i);
+				lvi.iItem = i;
+				lvi.lParam = 0;
+				szText[0] = NULL;
+				::SendMessage(m_hWnd, LVM_GETITEM, (WPARAM)0, (LPARAM)&lvi);
+				SortListData *lpData = (SortListData*) lvi.lParam;
 				if (lpData)
 				{
 					MAPIFreeBuffer(lpData->szSortText);
 					lpData->szSortText = NULL;
-					lpData->ulSortValue.QuadPart = _tcstoul(GetItemText(i, m_iClickedColumn),NULL,10);
+					lpData->ulSortValue.QuadPart = _tcstoul(szText,NULL,10);
 				}
 			}
 			break;
@@ -451,13 +470,17 @@ void CSortListCtrl::SortClickedColumn()
 			sortinfo.sortstyle = SORTSTYLE_STRING;
 			for (int i = 0;i<GetItemCount();i++)
 			{
-				SortListData *lpData = (SortListData*) GetItemData(i);
+				lvi.iItem = i;
+				lvi.lParam = 0;
+				szText[0] = NULL;
+				::SendMessage(m_hWnd, LVM_GETITEM, (WPARAM)0, (LPARAM)&lvi);
+				SortListData *lpData = (SortListData*) lvi.lParam;
 				if (lpData)
 				{
 					MAPIFreeBuffer(lpData->szSortText);
 					EC_H(CopyString(
 						&lpData->szSortText,
-						GetItemText(i, m_iClickedColumn),
+						szText,
 						NULL)); // Do not allocate off of lpData - If we do that we'll 'leak' memory every time we sort until we close the window
 					lpData->ulSortValue.QuadPart = NULL;
 				}
@@ -581,14 +604,14 @@ UINT CSortListCtrl::OnGetDlgCode()
 
 BOOL CSortListCtrl::SetItemText(int nItem, int nSubItem, LPCTSTR lpszText)
 {
-	CString szTmpString = lpszText;
-
 	// Remove any whitespace before setting in the list
-	szTmpString.Replace(_T("\r\n"),_T(" ")); // STRING_OK
-	szTmpString.Replace(_T("\r"),_T(" ")); // STRING_OK
-	szTmpString.Replace(_T("\n"),_T(" ")); // STRING_OK
-	szTmpString.Replace(_T("\t"),_T(" ")); // STRING_OK
-	return CListCtrl::SetItemText(nItem,nSubItem,szTmpString);
+	LPTSTR szWhitespace = (LPTSTR) _tcspbrk(lpszText,_T("\r\n\t")); // STRING_OK
+	while (szWhitespace != NULL)
+	{
+		szWhitespace[0] = _T(' ');
+		szWhitespace = (LPTSTR) _tcspbrk(szWhitespace,_T("\r\n\t")); // STRING_OK
+	}
+	return CListCtrl::SetItemText(nItem,nSubItem,lpszText);
 } // CSortListCtrl::SetItemText
 
 void CSortListCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)

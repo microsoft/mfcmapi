@@ -4,7 +4,7 @@
  *  This file lists internal properties of the Microsoft Personal
  *  Information Store
  *
- *  Copyright 1986-1999 Microsoft Corporation. All Rights Reserved.
+ *  Copyright (c) 2009 Microsoft Corporation. All Rights Reserved.
  */
 
 #ifndef _MSPST_H_

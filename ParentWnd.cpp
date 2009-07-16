@@ -5,6 +5,7 @@
 #include "ParentWnd.h"
 #include "ImportProcs.h"
 #include "MyWinApp.h"
+#include "NamedPropCache.h"
 
 extern CMyWinApp theApp;
 
@@ -16,7 +17,7 @@ static TCHAR* CLASS = _T("CParentWnd");
 // First, we throw WM_MFCMAPI_SAVECOLUMNORDERHEADER to whoever generated the event
 // Most controls will ignore this - only CSortHeader knows this message
 // That ditches most false hits
-// Then CSortHeader throws WM_MFCMAPI_SAVECOLUMNORDERLIST to it's parent
+// Then CSortHeader throws WM_MFCMAPI_SAVECOLUMNORDERLIST to its parent
 // Only CSingleMAPIPropListCtrl handles that, so we'll only get hits when the header for
 // a particular CSingleMAPIPropListCtrl gets changed.
 // We can't throw to the CSingleMAPIPropListCtrl directly since we don't have a handle here for it
@@ -100,6 +101,7 @@ CParentWnd::~CParentWnd()
 	TRACE_DESTRUCTOR(CLASS);
 	UnloadAddIns();
 	if (m_hwinEventHook) UnhookWinEvent(m_hwinEventHook);
+	UninitializeNamedPropCache();
 	WriteToRegistry();
 	CloseDebugFile();
 	// Since we're killing what m_pMainWnd points to here, we need to clear it

@@ -2,7 +2,7 @@
 #include "Error.h"
 #include "Editor.h"
 
-// This function WILL DebugPrint if it is called
+// This function WILL _Output if it is called
 void LogError(
 				  HRESULT hRes,
 				  UINT uidErrorMsg,
@@ -41,7 +41,7 @@ void LogError(
 		szFile,
 		iLine);
 
-	DebugPrint(DBGHRes,szErrString);
+	_Output(DBGHRes,NULL, true, szErrString);
 	_Output(DBGHRes,NULL, false, _T("\n"));
 
 	if (bShowDialog)
@@ -119,7 +119,7 @@ void __cdecl ErrDialog(LPCSTR szFile,int iLine, UINT uidErrorFmt,...)
 
 	szCombo = szErrorBegin+szErrorEnd;
 
-	DebugPrint(DBGHRes,szCombo);
+	_Output(DBGHRes,NULL, true, szCombo);
 	_Output(DBGHRes,NULL, false, _T("\n"));
 
 	CEditor Err(
@@ -360,6 +360,7 @@ default:
 	}
 } // ErrorNameFromErrorCode
 
+#ifdef _DEBUG
 void PrintSkipNote(HRESULT hRes,LPCSTR szFunc)
 {
 	DebugPrint(DBGHRes,
@@ -368,3 +369,4 @@ void PrintSkipNote(HRESULT hRes,LPCSTR szFunc)
 		hRes,
 		ErrorNameFromErrorCode(hRes));
 }
+#endif

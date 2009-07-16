@@ -3,6 +3,7 @@
 #include "MAPIFunctions.h"
 #include "InterpretProp2.h"
 #include "PropTagArray.h"
+#include "NamedPropCache.h"
 
 static const char pBase64[] = {
 	0x3e, 0x7f, 0x7f, 0x7f, 0x3f, 0x34, 0x35, 0x36,
@@ -333,6 +334,7 @@ CString TagToString(ULONG ulPropTag, LPMAPIPROP lpObj, BOOL bIsAB, BOOL bSingleL
 				   ulPropTag,
 				   lpObj,
 				   NULL,
+				   NULL,
 				   bIsAB,
 				   &szExactMatches, // Built from ulPropTag & bIsAB
 				   &szPartialMatches, // Built from ulPropTag & bIsAB
@@ -407,9 +409,7 @@ CString TagToString(ULONG ulPropTag, LPMAPIPROP lpObj, BOOL bIsAB, BOOL bSingleL
 
 	delete[] szPartialMatches;
 	delete[] szExactMatches;
-	delete[] szNamedPropName;
-	delete[] szNamedPropGUID;
-	delete[] szNamedPropDASL;
+	FreeNameIDStrings(szNamedPropName, szNamedPropGUID, szNamedPropDASL);
 
 	if (fIsSet(DBGTest))
 	{
@@ -1302,7 +1302,7 @@ CString TypeToString(ULONG ulPropTag)
 } // TypeToString
 
 // Allocates strings with new
-// Free with delete[]
+// Free with FreeNameIDStrings
 //
 // lpszDASL string for a named prop will look like this:
 // id/{12345678-1234-1234-1234-12345678ABCD}/80010003
@@ -1320,143 +1320,188 @@ void NameIDToStrings(LPMAPINAMEID lpNameID,
 					 LPTSTR* lpszDASL)
 {
 	HRESULT hRes = S_OK;
-	if (lpNameID)
-	{
-		DebugPrint(DBGNamedProp,_T("Parsing named property\n"));
-		DebugPrint(DBGNamedProp,_T("ulPropTag = 0x%08x\n"),ulPropTag);
-		LPTSTR szGuid = GUIDToStringAndName(lpNameID->lpguid);
-		DebugPrint(DBGNamedProp,_T("lpNameID->lpguid = %s\n"), szGuid);
 
-		if (lpszPropGUID)
+	// In case we error out, set our returns
+	if (lpszPropName) *lpszPropName = NULL;
+	if (lpszPropGUID) *lpszPropGUID = NULL;
+	if (lpszDASL)     *lpszDASL = NULL;
+
+	// Can't generate strings without a MAPINAMEID structure
+	if (!lpNameID) return;
+
+	LPNAMEDPROPCACHEENTRY lpNamedPropCacheEntry = NULL;
+
+	// If we're using the cache, look up the answer there and return
+	if (fCacheNamedProps())
+	{
+		lpNamedPropCacheEntry = FindCacheEntry(PROP_ID(ulPropTag), lpNameID->lpguid, lpNameID->ulKind, lpNameID->Kind.lID, lpNameID->Kind.lpwstrName);
+		if (lpNamedPropCacheEntry && lpNamedPropCacheEntry->bStringsCached)
 		{
-			*lpszPropGUID = szGuid;
+			if (lpszPropName) *lpszPropName = lpNamedPropCacheEntry->lpszPropName;
+			if (lpszPropGUID) *lpszPropGUID = lpNamedPropCacheEntry->lpszPropGUID;
+			if (lpszDASL)     *lpszDASL     = lpNamedPropCacheEntry->lpszDASL;
+			return;
+		}
+
+		// We shouldn't ever get here without a cached entry
+		if (!lpNamedPropCacheEntry)
+		{
+			DebugPrint(DBGNamedProp,_T("NameIDToStrings: Failed to find cache entry for ulPropTag = 0x%08X\n"),ulPropTag);
+			return;
+		}
+	}
+
+	// If we're not using the cache, or don't find anything, build the strings manually
+	LPTSTR szPropName = NULL;
+	LPTSTR szPropGUID = NULL;
+	LPTSTR szDASL = NULL;
+
+	DebugPrint(DBGNamedProp,_T("Parsing named property\n"));
+	DebugPrint(DBGNamedProp,_T("ulPropTag = 0x%08x\n"),ulPropTag);
+	szPropGUID = GUIDToStringAndName(lpNameID->lpguid);
+	DebugPrint(DBGNamedProp,_T("lpNameID->lpguid = %s\n"), szPropGUID);
+
+	LPTSTR szDASLGuid = NULL;
+	szDASLGuid = GUIDToString(lpNameID->lpguid);
+
+	if (lpNameID->ulKind == MNID_ID)
+	{
+		DebugPrint(DBGNamedProp,_T("lpNameID->Kind.lID = 0x%04X = %u\n"),lpNameID->Kind.lID,lpNameID->Kind.lID);
+		LPWSTR szName = NameIDToPropName(lpNameID);
+
+		if (szName)
+		{
+			size_t cchName = 0;
+			EC_H(StringCchLengthW(szName,STRSAFE_MAX_CCH,&cchName));
+			if (SUCCEEDED(hRes))
+			{
+				// Worst case is 'id: 0xFFFFFFFF=4294967295' - 26 chars
+				szPropName = new TCHAR[26 + 3 + cchName + 1];
+				if (szPropName)
+				{
+					// Printing hex first gets a nice sort without spacing tricks
+					EC_H(StringCchPrintf(szPropName,26 + 3 + cchName + 1,_T("id: 0x%04X=%u = %ws"), // STRING_OK
+						lpNameID->Kind.lID,
+						lpNameID->Kind.lID,
+						szName));
+				}
+			}
+			delete[] szName;
 		}
 		else
 		{
-			delete[] szGuid; // if we're not giving the string back, then we need to clean it up
-			szGuid = NULL;
+			// Worst case is 'id: 0xFFFFFFFF=4294967295' - 26 chars
+			szPropName = new TCHAR[26+1];
+			if (szPropName)
+			{
+				// Printing hex first gets a nice sort without spacing tricks
+				EC_H(StringCchPrintf(szPropName,26 + 1,_T("id: 0x%04X=%u"), // STRING_OK
+					lpNameID->Kind.lID,
+					lpNameID->Kind.lID));
+			}
 		}
 
-		LPTSTR szDASLGuid = NULL;
-		if (lpszDASL) szDASLGuid = GUIDToString(lpNameID->lpguid);
-
-		if (lpNameID->ulKind == MNID_ID)
+		szDASL = new TCHAR[CCH_DASL_ID];
+		if (szDASL)
 		{
-			DebugPrint(DBGNamedProp,_T("lpNameID->Kind.lID = 0x%04X = %u\n"),lpNameID->Kind.lID,lpNameID->Kind.lID);
-			if (lpszPropName)
-			{
-				LPCWSTR szName = NameIDToPropName(lpNameID);
-
-				if (szName)
-				{
-					size_t cchName = 0;
-					EC_H(StringCchLengthW(szName,STRSAFE_MAX_CCH,&cchName));
-					if (SUCCEEDED(hRes))
-					{
-						// Worst case is 'id: 0xFFFFFFFF=4294967295' - 26 chars
-						*lpszPropName = new TCHAR[26 + 3 + cchName + 1];
-						if (*lpszPropName)
-						{
-							// Printing hex first gets a nice sort without spacing tricks
-							EC_H(StringCchPrintf(*lpszPropName,26 + 3 + cchName + 1,_T("id: 0x%04X=%u = %ws"), // STRING_OK
-								lpNameID->Kind.lID,
-								lpNameID->Kind.lID,
-								szName));
-						}
-					}
-					delete[] szName;
-				}
-				else
-				{
-					// Worst case is 'id: 0xFFFFFFFF=4294967295' - 26 chars
-					*lpszPropName = new TCHAR[26+1];
-					if (*lpszPropName)
-					{
-						// Printing hex first gets a nice sort without spacing tricks
-						EC_H(StringCchPrintf(*lpszPropName,26 + 1,_T("id: 0x%04X=%u"), // STRING_OK
-							lpNameID->Kind.lID,
-							lpNameID->Kind.lID));
-					}
-				}
-			}
-			if (lpszDASL)
-			{
-				*lpszDASL = new TCHAR[CCH_DASL_ID];
-				if (*lpszDASL)
-				{
-					EC_H(StringCchPrintf(*lpszDASL,CCH_DASL_ID,_T("id/%s/%04X%04X"), // STRING_OK
-						szDASLGuid,
-						lpNameID->Kind.lID,
-						PROP_TYPE(ulPropTag)));
-				}
-			}
+			EC_H(StringCchPrintf(szDASL,CCH_DASL_ID,_T("id/%s/%04X%04X"), // STRING_OK
+				szDASLGuid,
+				lpNameID->Kind.lID,
+				PROP_TYPE(ulPropTag)));
 		}
-		else if (lpNameID->ulKind == MNID_STRING)
-		{
-			// lpwstrName is LPWSTR which means it's ALWAYS unicode
-			// But some folks get it wrong and stuff ANSI data in there
-			// So we check the string length both ways to make our best guess
-			size_t cchShortLen = NULL;
-			size_t cchWideLen = NULL;
-			WC_H(StringCchLengthA((LPSTR)lpNameID->Kind.lpwstrName,STRSAFE_MAX_CCH,&cchShortLen));
-			WC_H(StringCchLengthW(lpNameID->Kind.lpwstrName,STRSAFE_MAX_CCH,&cchWideLen));
-
-			if (cchShortLen < cchWideLen)
-			{
-				// this is the *proper* case
-				DebugPrint(DBGNamedProp,_T("lpNameID->Kind.lpwstrName = \"%ws\"\n"),lpNameID->Kind.lpwstrName);
-				if (lpszPropName)
-				{
-					*lpszPropName = new TCHAR[7+cchWideLen];
-					if (*lpszPropName)
-					{
-// Compiler Error C2017 - Can occur (falsly) when escape sequences are stringized, as EC_H will do here
-#define __GOODSTRING _T("sz: \"%ws\"") // STRING_OK
-						EC_H(StringCchPrintf(*lpszPropName,7+cchWideLen,__GOODSTRING,
-							lpNameID->Kind.lpwstrName));
-					}
-				}
-				if (lpszDASL)
-				{
-					*lpszDASL = new TCHAR[CCH_DASL_STRING+cchWideLen];
-					if (*lpszDASL)
-					{
-						EC_H(StringCchPrintf(*lpszDASL,CCH_DASL_STRING +cchWideLen,_T("string/%s/%ws"), // STRING_OK
-							szDASLGuid,
-							lpNameID->Kind.lpwstrName));
-					}
-				}
-			}
-			else
-			{
-				// this is the case where ANSI data was shoved into a unicode string.
-				DebugPrint(DBGNamedProp,_T("Warning: ANSI data was found in a unicode field. This is a bug on the part of the creator of this named property\n"));
-				DebugPrint(DBGNamedProp,_T("lpNameID->Kind.lpwstrName = \"%hs\"\n"),lpNameID->Kind.lpwstrName);
-				if (lpszPropName)
-				{
-					*lpszPropName = new TCHAR[7+cchShortLen+25];
-					if (*lpszPropName)
-					{
-						CString szComment;
-						szComment.LoadString(IDS_NAMEWASANSI);
-// Compiler Error C2017 - Can occur (falsly) when escape sequences are stringized, as EC_H will do here
-#define __BADSTRING _T("sz: \"%hs\" %s") // STRING_OK
-						EC_H(StringCchPrintf(*lpszPropName,7+cchShortLen+25,__BADSTRING,
-							lpNameID->Kind.lpwstrName,szComment));
-					}
-				}
-				if (lpszDASL)
-				{
-					*lpszDASL = new TCHAR[CCH_DASL_STRING+cchShortLen];
-					if (*lpszDASL)
-					{
-						EC_H(StringCchPrintf(*lpszDASL,CCH_DASL_STRING+cchShortLen,_T("string/%s/%hs"), // STRING_OK
-							szDASLGuid,
-							lpNameID->Kind.lpwstrName));
-					}
-				}
-			}
-		}
-		delete[] szDASLGuid;
 	}
-}
+	else if (lpNameID->ulKind == MNID_STRING)
+	{
+		// lpwstrName is LPWSTR which means it's ALWAYS unicode
+		// But some folks get it wrong and stuff ANSI data in there
+		// So we check the string length both ways to make our best guess
+		size_t cchShortLen = NULL;
+		size_t cchWideLen = NULL;
+		WC_H(StringCchLengthA((LPSTR)lpNameID->Kind.lpwstrName,STRSAFE_MAX_CCH,&cchShortLen));
+		WC_H(StringCchLengthW(lpNameID->Kind.lpwstrName,STRSAFE_MAX_CCH,&cchWideLen));
+
+		if (cchShortLen < cchWideLen)
+		{
+			// this is the *proper* case
+			DebugPrint(DBGNamedProp,_T("lpNameID->Kind.lpwstrName = \"%ws\"\n"),lpNameID->Kind.lpwstrName);
+			szPropName = new TCHAR[7+cchWideLen];
+			if (szPropName)
+			{
+				// Compiler Error C2017 - Can occur (falsly) when escape sequences are stringized, as EC_H will do here
+#define __GOODSTRING _T("sz: \"%ws\"") // STRING_OK
+				EC_H(StringCchPrintf(szPropName,7+cchWideLen,__GOODSTRING,
+					lpNameID->Kind.lpwstrName));
+			}
+
+			szDASL = new TCHAR[CCH_DASL_STRING+cchWideLen];
+			if (szDASL)
+			{
+				EC_H(StringCchPrintf(szDASL,CCH_DASL_STRING+cchWideLen,_T("string/%s/%ws"), // STRING_OK
+					szDASLGuid,
+					lpNameID->Kind.lpwstrName));
+			}
+		}
+		else
+		{
+			// this is the case where ANSI data was shoved into a unicode string.
+			DebugPrint(DBGNamedProp,_T("Warning: ANSI data was found in a unicode field. This is a bug on the part of the creator of this named property\n"));
+			DebugPrint(DBGNamedProp,_T("lpNameID->Kind.lpwstrName = \"%hs\"\n"),lpNameID->Kind.lpwstrName);
+
+			szPropName = new TCHAR[7+cchShortLen+25];
+			if (szPropName)
+			{
+				CString szComment;
+				szComment.LoadString(IDS_NAMEWASANSI);
+				// Compiler Error C2017 - Can occur (falsly) when escape sequences are stringized, as EC_H will do here
+#define __BADSTRING _T("sz: \"%hs\" %s") // STRING_OK
+				EC_H(StringCchPrintf(szPropName,7+cchShortLen+25,__BADSTRING,
+					lpNameID->Kind.lpwstrName,szComment));
+			}
+			szDASL = new TCHAR[CCH_DASL_STRING+cchShortLen];
+			if (szDASL)
+			{
+				EC_H(StringCchPrintf(szDASL,CCH_DASL_STRING+cchShortLen,_T("string/%s/%hs"), // STRING_OK
+					szDASLGuid,
+					lpNameID->Kind.lpwstrName));
+			}
+		}
+	}
+	delete[] szDASLGuid;
+
+	// Return what we were asked for
+	if (lpszPropName) *lpszPropName = szPropName;
+	if (lpszPropGUID) *lpszPropGUID = szPropGUID;
+	if (lpszDASL)     *lpszDASL     = szDASL;
+
+	// We've built our strings - if we're caching, put them in the cache
+	if (lpNamedPropCacheEntry)
+	{
+		lpNamedPropCacheEntry->lpszPropName = szPropName;
+		lpNamedPropCacheEntry->lpszPropGUID = szPropGUID;
+		lpNamedPropCacheEntry->lpszDASL     = szDASL;
+		lpNamedPropCacheEntry->bStringsCached = true;
+	}
+	// But if we're not caching, free what we didn't use
+	else
+	{
+		if (!lpszPropName) delete[] szPropName;
+		if (!lpszPropGUID) delete[] szPropGUID;
+		if (!lpszDASL)     delete[] szDASL;
+	}
+} // NameIDToStrings
+
+// Free strings from NameIDToStrings if necessary
+// If we're using the cache, we don't need to free
+// Need to watch out for callers to NameIDToStrings holding the strings
+// long enough for the user to change the cache setting!
+void FreeNameIDStrings(LPTSTR lpszPropName,
+					   LPTSTR lpszPropGUID,
+					   LPTSTR lpszDASL)
+{
+	if (!fCacheNamedProps())
+	{
+		delete[] lpszPropName;
+		delete[] lpszPropGUID;
+		delete[] lpszDASL;
+	}
+} // FreeNameIDStrings

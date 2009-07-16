@@ -6,33 +6,34 @@
 // Keep this in sync with REGKEYNAMES
 __RegKeys RegKeys[] = {
 #ifdef _DEBUG
-	{_T("DebugTag"),					regDWORD,	DBGAll		,0,_T(""),_T(""),IDS_REGKEY_DEBUG_TAG}, // STRING_OK
+	{_T("DebugTag"),					regDWORD,regoptStringHex,	DBGAll		,0,_T(""),_T(""),false,	IDS_REGKEY_DEBUG_TAG}, // STRING_OK
 #else
-	{_T("DebugTag"),					regDWORD,	DBGNoDebug	,0,_T(""),_T(""),IDS_REGKEY_DEBUG_TAG }, // STRING_OK
+	{_T("DebugTag"),					regDWORD,regoptStringHex,	DBGNoDebug	,0,_T(""),_T(""),false,	IDS_REGKEY_DEBUG_TAG }, // STRING_OK
 #endif
-	{_T("DebugToFile"),					regDWORD,	0			,0,_T(""),_T(""),IDS_REGKEY_DEBUG_TO_FILE}, // STRING_OK
-	{_T("DebugFileName"),				regSTRING,	0			,0,_T("c:\\mfcmapi.log"),_T(""),IDS_REGKEY_DEBUG_FILE_NAME}, // STRING_OK
-	{_T("ThrottleLevel"),				regDWORD,	0			,0,_T(""),_T(""),IDS_REGKEY_THROTTLE_LEVEL}, // STRING_OK
-	{_T("ParseNamedProps"),				regDWORD,	true		,0,_T(""),_T(""),IDS_REGKEY_PARSED_NAMED_PROPS}, // STRING_OK
-	{_T("HierNotifs"),					regDWORD,	true		,0,_T(""),_T(""),IDS_REGKEY_HIER_NOTIFS}, // STRING_OK
-	{_T("HierExpandNotifs"),			regDWORD,	true		,0,_T(""),_T(""),IDS_REGKEY_HIER_EXPAND_NOTIFS}, // STRING_OK
-	{_T("HierRootNotifs"),				regDWORD,	false		,0,_T(""),_T(""),IDS_REGKEY_HIER_ROOT_NOTIFS}, // STRING_OK
-	{_T("HierNodeLoadCount"),			regDWORD,	20			,0,_T(""),_T(""),IDS_REGKEY_HIER_NODE_LOAD_COUNT}, // STRING_OK
-	{_T("DoGetProps"),					regDWORD,	true		,0,_T(""),_T(""),IDS_REGKEY_DO_GETPROPS}, // STRING_OK
-	{_T("AllowDupeColumns"),			regDWORD,	false		,0,_T(""),_T(""),IDS_REGKEY_ALLOW_DUPE_COLUMNS}, // STRING_OK
-	{_T("UseRowDataForSinglePropList"),	regDWORD,	false		,0,_T(""),_T(""),IDS_REGKEY_USE_ROW_DATA_FOR_SINGLEPROPLIST}, // STRING_OK
-	{_T("DoColumnNames"),				regDWORD,	true		,0,_T(""),_T(""),IDS_REGKEY_DO_COLUMN_NAMES}, // STRING_OK
-	{_T("EditColumnsOnLoad"),			regDWORD,	false		,0,_T(""),_T(""),IDS_REGKEY_EDIT_COLUMNS_ON_LOAD}, // STRING_OK
-	{_T("UseGetPropList"),				regDWORD,	true		,0,_T(""),_T(""),IDS_REGKEY_USE_GETPROPLIST}, // STRING_OK
-	{_T("GetPropNamesOnAllProps"),		regDWORD,	false		,0,_T(""),_T(""),IDS_REGKEY_GETPROPNAMES_ON_ALL_PROPS}, // STRING_OK
-	{_T("ForceMDBOnline"),				regDWORD,	false		,0,_T(""),_T(""),IDS_REGKEY_MDB_ONLINE}, // STRING_OK
-	{_T("ForceMapiNoCache"),			regDWORD,	false		,0,_T(""),_T(""),IDS_REGKEY_MAPI_NO_CACHE}, // STRING_OK
-	{_T("AllowPersistCache"),			regDWORD,	false		,0,_T(""),_T(""),IDS_REGKEY_ALLOW_PERSIST_CACHE }, // STRING_OK
-	{_T("UseIMAPIProgress"),			regDWORD,	false		,0,_T(""),_T(""),IDS_REGKEY_USE_IMAPIPROGRESS}, // STRING_OK
-	{_T("UseMessageRaw"),				regDWORD,	false		,0,_T(""),_T(""),IDS_REGKEY_USE_MESSAGERAW}, // STRING_OK
-	{_T("DisplayAboutDialog"),			regDWORD,	true		,0,_T(""),_T(""),NULL}, // STRING_OK
-	{_T("PropertyColumnOrder"),			regSTRING,	0			,0,_T(""),_T(""),NULL}, // STRING_OK
-//	{KeyName,							keytype,	defaultDWORD,0,defaultString,NULL,IDS_REGKEY_*} // Regkey template
+	{_T("DebugToFile"),					regDWORD,regoptCheck,		0			,0,_T(""),_T(""),false,	IDS_REGKEY_DEBUG_TO_FILE}, // STRING_OK
+	{_T("DebugFileName"),				regSTRING,regoptString,		0			,0,_T("c:\\mfcmapi.log"),_T(""),false,	IDS_REGKEY_DEBUG_FILE_NAME}, // STRING_OK
+	{_T("ParseNamedProps"),				regDWORD,regoptCheck,		true		,0,_T(""),_T(""),true,	IDS_REGKEY_PARSED_NAMED_PROPS}, // STRING_OK
+	{_T("GetPropNamesOnAllProps"),		regDWORD,regoptCheck,		false		,0,_T(""),_T(""),true,	IDS_REGKEY_GETPROPNAMES_ON_ALL_PROPS}, // STRING_OK
+	{_T("ThrottleLevel"),				regDWORD,regoptStringDec,	0			,0,_T(""),_T(""),false,	IDS_REGKEY_THROTTLE_LEVEL}, // STRING_OK
+	{_T("HierNotifs"),					regDWORD,regoptCheck,		true		,0,_T(""),_T(""),false,	IDS_REGKEY_HIER_NOTIFS}, // STRING_OK
+	{_T("HierExpandNotifs"),			regDWORD,regoptCheck,		true		,0,_T(""),_T(""),false,	IDS_REGKEY_HIER_EXPAND_NOTIFS}, // STRING_OK
+	{_T("HierRootNotifs"),				regDWORD,regoptCheck,		false		,0,_T(""),_T(""),false,	IDS_REGKEY_HIER_ROOT_NOTIFS}, // STRING_OK
+	{_T("HierNodeLoadCount"),			regDWORD,regoptStringDec,	20			,0,_T(""),_T(""),false,	IDS_REGKEY_HIER_NODE_LOAD_COUNT}, // STRING_OK
+	{_T("DoGetProps"),					regDWORD,regoptCheck,		true		,0,_T(""),_T(""),true,	IDS_REGKEY_DO_GETPROPS}, // STRING_OK
+	{_T("DoGetPropList"),				regDWORD,regoptCheck,		false		,0,_T(""),_T(""),true,	IDS_REGKEY_USE_GETPROPLIST}, // STRING_OK
+	{_T("CacheNamedProps"),				regDWORD,regoptCheck,		true		,0,_T(""),_T(""),false,	IDS_REGKEY_CACHE_NAMED_PROPS}, // STRING_OK
+	{_T("AllowDupeColumns"),			regDWORD,regoptCheck,		false		,0,_T(""),_T(""),false,	IDS_REGKEY_ALLOW_DUPE_COLUMNS}, // STRING_OK
+	{_T("UseRowDataForSinglePropList"),	regDWORD,regoptCheck,		false		,0,_T(""),_T(""),true,	IDS_REGKEY_USE_ROW_DATA_FOR_SINGLEPROPLIST}, // STRING_OK
+	{_T("DoColumnNames"),				regDWORD,regoptCheck,		true		,0,_T(""),_T(""),false,	IDS_REGKEY_DO_COLUMN_NAMES}, // STRING_OK
+	{_T("EditColumnsOnLoad"),			regDWORD,regoptCheck,		false		,0,_T(""),_T(""),false,	IDS_REGKEY_EDIT_COLUMNS_ON_LOAD}, // STRING_OK
+	{_T("ForceMDBOnline"),				regDWORD,regoptCheck,		false		,0,_T(""),_T(""),false,	IDS_REGKEY_MDB_ONLINE}, // STRING_OK
+	{_T("ForceMapiNoCache"),			regDWORD,regoptCheck,		false		,0,_T(""),_T(""),false,	IDS_REGKEY_MAPI_NO_CACHE}, // STRING_OK
+	{_T("AllowPersistCache"),			regDWORD,regoptCheck,		false		,0,_T(""),_T(""),false,	IDS_REGKEY_ALLOW_PERSIST_CACHE }, // STRING_OK
+	{_T("UseIMAPIProgress"),			regDWORD,regoptCheck,		false		,0,_T(""),_T(""),false,	IDS_REGKEY_USE_IMAPIPROGRESS}, // STRING_OK
+	{_T("UseMessageRaw"),				regDWORD,regoptCheck,		false		,0,_T(""),_T(""),false,	IDS_REGKEY_USE_MESSAGERAW}, // STRING_OK
+	{_T("DisplayAboutDialog"),			regDWORD,regoptCheck,		true		,0,_T(""),_T(""),false,	NULL}, // STRING_OK
+	{_T("PropertyColumnOrder"),			regSTRING,regoptCheck,		0			,0,_T(""),_T(""),false,	NULL}, // STRING_OK
+//	{KeyName,							keytype,opttype,			defaultDWORD,0,defaultString,NULL,bRefresh,IDS_REGKEY_*} // Regkey template
 };
 
 void SetDefaults()
