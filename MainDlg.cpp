@@ -1052,6 +1052,7 @@ void CMainDlg::OnMAPIOpenLocalFormContainer()
 {
 	if (!m_lpMapiObjects) return;
 	m_lpMapiObjects->MAPIInitialize(NULL);
+	if (!m_lpMapiObjects->bMAPIInitialized()) return;
 
 	HRESULT	hRes = S_OK;
 	LPMAPIFORMCONTAINER	lpMAPILocalFormContainer = NULL;
@@ -1104,7 +1105,7 @@ void CMainDlg::OnUnloadMAPI()
 	CEditor MyData(
 		this,
 		IDS_UNLOADMAPI,
-		IDS_UNLOADMAPIPROMPT,
+		IDS_MAPICRASHWARNING,
 		0,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 
@@ -1144,7 +1145,7 @@ void CMainDlg::OnMAPIUninitialize()
 	CEditor MyData(
 		this,
 		IDS_MAPIUNINIT,
-		IDS_MAPIUNINITPROMPT,
+		IDS_MAPICRASHWARNING,
 		0,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 
@@ -1496,6 +1497,7 @@ void CMainDlg::OnLaunchProfileWizard()
 {
 	if (!m_lpMapiObjects) return;
 	m_lpMapiObjects->MAPIInitialize(NULL);
+	if (!m_lpMapiObjects->bMAPIInitialized()) return;
 
 	HRESULT hRes = S_OK;
 	CEditor MyData(
@@ -1586,6 +1588,7 @@ void CMainDlg::OnViewMSGProperties()
 {
 	if (!m_lpMapiObjects || !m_lpPropDisplay) return;
 	m_lpMapiObjects->MAPIInitialize(NULL);
+	if (!m_lpMapiObjects->bMAPIInitialized()) return;
 
 	HRESULT		hRes = S_OK;
 	LPMESSAGE	lpNewMessage = NULL;
@@ -1619,6 +1622,7 @@ void CMainDlg::OnConvertMSGToEML()
 {
 	if (!m_lpMapiObjects) return;
 	m_lpMapiObjects->MAPIInitialize(NULL);
+	if (!m_lpMapiObjects->bMAPIInitialized()) return;
 
 	HRESULT hRes = S_OK;
 	ULONG ulConvertFlags = CCSF_SMTP;
@@ -1679,6 +1683,7 @@ void CMainDlg::OnConvertEMLToMSG()
 {
 	if (!m_lpMapiObjects) return;
 	m_lpMapiObjects->MAPIInitialize(NULL);
+	if (!m_lpMapiObjects->bMAPIInitialized()) return;
 
 	HRESULT	hRes = S_OK;
 	ULONG ulConvertFlags = CCSF_SMTP;

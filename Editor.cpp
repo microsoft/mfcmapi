@@ -7,6 +7,8 @@
 #include "MAPIFunctions.h"
 #include "InterpretProp.h"
 #include "ImportProcs.h"
+#include "MyWinApp.h"
+extern CMyWinApp theApp;
 
 // tmschema.h has been deprecated, but older compilers do not ship vssym32.h
 // Use the replacement when we're on VS 2008 or higher.
@@ -50,7 +52,7 @@ static DWORD CALLBACK EditStreamReadCallBack(
 
 	*pcb = 0;
 
-	DebugPrint(DBGStream,_T("EditStreamWriteCallBack:cb = %d\n"),cb);
+	DebugPrint(DBGStream,_T("EditStreamReadCallBack: cb = %d\n"),cb);
 
 	EC_H(stmData->Read(pbBuff,cb,&cbRead));
 
@@ -75,7 +77,7 @@ static DWORD CALLBACK EditStreamWriteCallBack(
 
 	*pcb = 0;
 
-	DebugPrint(DBGStream,_T("EditStreamWriteCallBack:cb = %d\n"),cb);
+	DebugPrint(DBGStream,_T("EditStreamWriteCallBack: cb = %d\n"),cb);
 
 	EC_H(stmData->Write(pbBuff,cb,&cbWritten));
 
@@ -160,17 +162,18 @@ void CEditor::Constructor(
 	m_pParentWnd = pParentWnd;
 	if (!m_pParentWnd)
 	{
-		m_pParentWnd = GetForegroundWindow();
+		m_pParentWnd = GetActiveWindow();
 	}
 	if (!m_pParentWnd)
 	{
-		m_pParentWnd = GetDesktopWindow();
+		m_pParentWnd = theApp.m_pMainWnd;
 	}
 	if (!m_pParentWnd)
 	{
 		DebugPrint(DBGGeneric,_T("Editor created with a NULL parent!\n"));
 	}
 	if (ulNumFields) CreateControls(ulNumFields);
+
 } // CEditor::Constructor
 
 CEditor::~CEditor()
@@ -298,7 +301,7 @@ BOOL CEditor::OnInitDialog()
 	else
 	{
 		// Make sure we clear the prefix out or it might show up in the prompt
-		szPrefix = _T(""); // STRING_OK
+		szPrefix = _T("");
 	}
 	szFullString = szPrefix+m_szPromptPostFix;
 
@@ -373,11 +376,12 @@ BOOL CEditor::OnInitDialog()
 				if (m_lpControls[i].bReadOnly) SetEditReadOnly(i);
 
 				// Set maximum text size
+				// Use -1 to allow for VERY LARGE strings
 				(void)::SendMessage(
 					m_lpControls[i].UI.lpEdit->EditBox.m_hWnd,
 					EM_EXLIMITTEXT,
 					(WPARAM) 0,
-					(LPARAM) 0);
+					(LPARAM) -1);
 
 				SetEditBoxText(i);
 
@@ -1222,44 +1226,70 @@ void CEditor::SetPromptPostFix(LPCTSTR szMsg)
 	m_szPromptPostFix = szMsg;
 } // CEditor::SetPromptPostFix
 
+struct FakeStream
+{
+	LPWSTR lpszW;
+	size_t cbszW;
+	size_t cbCur;
+};
+
+static DWORD CALLBACK FakeEditStreamReadCallBack(
+											  DWORD_PTR dwCookie,
+											  LPBYTE pbBuff,
+											  LONG cb,
+											  LONG *pcb)
+{
+	if (!pbBuff || !pcb || !dwCookie) return 0;
+
+	FakeStream* lpfs = (FakeStream*) dwCookie;
+	if (!lpfs) return 0;
+	ULONG cbRemaining = (ULONG) (lpfs->cbszW - lpfs->cbCur);
+	ULONG cbRead = min((ULONG) cb, cbRemaining);
+
+	*pcb = cbRead;
+
+	if (cbRead) memcpy(pbBuff, ((LPBYTE) lpfs->lpszW) + lpfs->cbCur, cbRead);
+
+	lpfs->cbCur += cbRead;
+
+	return 0;
+} // FakeEditStreamReadCallBack
+
 // Updates the specified edit box - does not trigger change notifications
 // Copies string from m_lpControls[i].UI.lpEdit->lpszW
 // Only function that modifies the text in the edit controls
-void CEditor::SetEditBoxText(ULONG i)
+// All strings passed in here MUST be NULL terminated or they will be truncated
+void CEditor::SetEditBoxText(ULONG iControl)
 {
-	if (!IsValidEdit(i)) return;
-	if (!m_lpControls[i].UI.lpEdit->EditBox.m_hWnd) return;
+	if (!IsValidEdit(iControl)) return;
+	if (!m_lpControls[iControl].UI.lpEdit->EditBox.m_hWnd) return;
 
-	ULONG ulEventMask = m_lpControls[i].UI.lpEdit->EditBox.GetEventMask(); // Get original mask
-	m_lpControls[i].UI.lpEdit->EditBox.SetEventMask(ENM_NONE);
-	SETTEXTEX setText = {0};
+	ULONG ulEventMask = m_lpControls[iControl].UI.lpEdit->EditBox.GetEventMask(); // Get original mask
+	m_lpControls[iControl].UI.lpEdit->EditBox.SetEventMask(ENM_NONE);
 
-	setText.flags = ST_DEFAULT;
-	setText.codepage = 1200;
+	// In order to support strings with embedded NULLs, we're going to stream the string in
+	// We don't have to build a real stream interface - we can fake a lightweight one
+	EDITSTREAM	es = {0, 0, FakeEditStreamReadCallBack};
+	UINT		uFormat = SF_TEXT | SF_UNICODE;
 
-	LRESULT lRes = NULL;
+	FakeStream fs = {0};
+	fs.lpszW = m_lpControls[iControl].UI.lpEdit->lpszW;
+	fs.cbszW = m_lpControls[iControl].UI.lpEdit->cchsz * sizeof(WCHAR);
 
-	lRes = ::SendMessage(
-		m_lpControls[i].UI.lpEdit->EditBox.m_hWnd,
-		EM_SETTEXTEX,
-		(WPARAM) &setText,
-		(LPARAM) m_lpControls[i].UI.lpEdit->lpszW);
+	// The edit control's gonna read in the actual NULL terminator, which we do not want, so back off one character
+	if (fs.cbszW) fs.cbszW -= sizeof(WCHAR);
 
-	if (0 == lRes)
-	{
-		// We failed to set text like we wanted, fall back to WM_SETTEXT
-		HRESULT hRes = S_OK;
-		LPSTR szA = NULL;
-		EC_H(UnicodeToAnsi(m_lpControls[i].UI.lpEdit->lpszW,&szA));
-		lRes = ::SendMessage(
-			m_lpControls[i].UI.lpEdit->EditBox.m_hWnd,
-			WM_SETTEXT,
-			(WPARAM) NULL,
-			(LPARAM) szA);
-		delete[] szA;
-	}
+	es.dwCookie = (DWORD_PTR)&fs;
 
-	m_lpControls[i].UI.lpEdit->EditBox.SetEventMask(ulEventMask); // put original mask back
+	// read the 'text stream' into control
+	long lBytesRead = 0;
+	lBytesRead = m_lpControls[iControl].UI.lpEdit->EditBox.StreamIn(uFormat,es);
+	DebugPrintEx(DBGStream,CLASS,_T("CEditor::SetEditBoxText"),_T("read %d bytes from the stream\n"),lBytesRead);
+
+	// Clear the modify bit so this stream appears untouched
+	m_lpControls[iControl].UI.lpEdit->EditBox.SetModify(false);
+
+	m_lpControls[iControl].UI.lpEdit->EditBox.SetEventMask(ulEventMask); // put original mask back
 } // CEditor::SetEditBoxText
 
 // Clears the strings out of an lpEdit
@@ -1271,10 +1301,12 @@ void CEditor::ClearString(ULONG i)
 	delete[] m_lpControls[i].UI.lpEdit->lpszA;
 	m_lpControls[i].UI.lpEdit->lpszW = NULL;
 	m_lpControls[i].UI.lpEdit->lpszA = NULL;
+	m_lpControls[i].UI.lpEdit->cchsz = NULL;
 } // CEditor::ClearString
 
-// Sets m_lpControls[i].UI.lpEdit->lpszW
-void CEditor::SetStringA(ULONG i,LPCSTR szMsg)
+// Sets m_lpControls[i].UI.lpEdit->lpszW using SetStringW
+// cchsz of -1 lets AnsiToUnicode and SetStringW calculate the length on their own
+void CEditor::SetStringA(ULONG i, PCSTR szMsg, size_t cchsz)
 {
 	if (!IsValidEdit(i)) return;
 
@@ -1282,16 +1314,16 @@ void CEditor::SetStringA(ULONG i,LPCSTR szMsg)
 	HRESULT hRes = S_OK;
 
 	LPWSTR szMsgW = NULL;
-	EC_H(AnsiToUnicode(szMsg,&szMsgW));
+	EC_H(AnsiToUnicode(szMsg, &szMsgW, cchsz));
 	if (SUCCEEDED(hRes))
 	{
-		SetStringW(i,szMsgW);
+		SetStringW(i, szMsgW, cchsz);
 	}
 	delete[] szMsgW;
 } // CEditor::SetStringA
 
 // Sets m_lpControls[i].UI.lpEdit->lpszW
-void CEditor::SetStringW(ULONG i,LPCWSTR szMsg)
+void CEditor::SetStringW(ULONG i, LPCWSTR szMsg, size_t cchsz)
 {
 	if (!IsValidEdit(i)) return;
 
@@ -1299,28 +1331,25 @@ void CEditor::SetStringW(ULONG i,LPCWSTR szMsg)
 
 	if (!szMsg) szMsg = L"";
 	HRESULT hRes = S_OK;
-	size_t cchszW = 0;
+	size_t cchszW = cchsz;
 
-	EC_H(StringCchLengthW(szMsg,STRSAFE_MAX_CCH,&cchszW));
-	cchszW++;
+	if (-1 == cchszW)
+	{
+		EC_H(StringCchLengthW(szMsg,STRSAFE_MAX_CCH,&cchszW));
+		cchszW++;
+	}
 	m_lpControls[i].UI.lpEdit->lpszW = new WCHAR[cchszW];
+	m_lpControls[i].UI.lpEdit->cchsz = cchszW;
 
 	if (m_lpControls[i].UI.lpEdit->lpszW)
 	{
-		EC_H(StringCchCopyW(
-			m_lpControls[i].UI.lpEdit->lpszW,
-			cchszW,
-			szMsg));
-		if (FAILED(hRes))
-		{
-			ClearString(i);
-		}
+		memcpy(m_lpControls[i].UI.lpEdit->lpszW, szMsg, cchszW * sizeof(WCHAR));
 	}
 
 	SetEditBoxText(i);
 } // CEditor::SetStringW
 
-// Updates m_lpControls[i].UI.lpEdit->lpszW
+// Updates m_lpControls[i].UI.lpEdit->lpszW using SetStringW
 void __cdecl CEditor::SetStringf(ULONG i,LPCTSTR szMsg,...)
 {
 	if (!IsValidEdit(i)) return;
@@ -1338,6 +1367,7 @@ void __cdecl CEditor::SetStringf(ULONG i,LPCTSTR szMsg,...)
 	SetString(i,(LPCTSTR) szTemp);
 } // CEditor::SetStringf
 
+// Updates m_lpControls[i].UI.lpEdit->lpszW using SetStringW
 void CEditor::LoadString(ULONG i, UINT uidMsg)
 {
 	if (!IsValidEdit(i)) return;
@@ -1352,6 +1382,7 @@ void CEditor::LoadString(ULONG i, UINT uidMsg)
 	SetString(i,(LPCTSTR) szTemp);
 } // CEditor::LoadString
 
+// Updates m_lpControls[i].UI.lpEdit->lpszW using SetStringW
 void CEditor::SetBinary(ULONG i,LPBYTE lpb, size_t cb)
 {
 	LPTSTR lpszStr = NULL;
@@ -1365,12 +1396,16 @@ void CEditor::SetBinary(ULONG i,LPBYTE lpb, size_t cb)
 	delete[] lpszStr;
 } // CEditor::SetBinary
 
+// Updates m_lpControls[i].UI.lpEdit->lpszW using SetStringW
 void CEditor::SetSize(ULONG i, size_t cb)
 {
 	SetStringf(i,_T("0x%08X = %d"), cb, cb); // STRING_OK
 } // CEditor::SetSize
 
 // returns false if we failed to get a binary
+// Returns a binary buffer which is represented by the hex string
+// cb will be the exact length of the decoded buffer
+// Uncounted NULLs will be present on the end to aid in converting to strings
 BOOL CEditor::GetBinaryUseControl(ULONG i,size_t* cbBin,LPBYTE* lpBin)
 {
 	if (!IsValidEdit(i)) return false;
@@ -1544,7 +1579,7 @@ LPSTR CEditor::GetStringA(ULONG i)
 
 	// We're not leaking this conversion
 	// It goes into m_lpControls[i].UI.lpEdit->lpszA, which we manage
-	EC_H(UnicodeToAnsi(m_lpControls[i].UI.lpEdit->lpszW,&m_lpControls[i].UI.lpEdit->lpszA));
+	EC_H(UnicodeToAnsi(m_lpControls[i].UI.lpEdit->lpszW,&m_lpControls[i].UI.lpEdit->lpszA,m_lpControls[i].UI.lpEdit->cchsz));
 
 	return m_lpControls[i].UI.lpEdit->lpszA;
 } // CEditor::GetStringA
@@ -1557,7 +1592,7 @@ void CEditor::GetEditBoxText(ULONG i)
 	ClearString(i);
 
 	GETTEXTLENGTHEX getTextLength = {0};
-	getTextLength.flags = GTL_PRECISE | GTL_NUMBYTES;
+	getTextLength.flags = GTL_PRECISE | GTL_NUMCHARS;
 	getTextLength.codepage = 1200;
 
 	size_t cchText = 0;
@@ -1567,8 +1602,7 @@ void CEditor::GetEditBoxText(ULONG i)
 		EM_GETTEXTLENGTHEX,
 		(WPARAM) &getTextLength,
 		(LPARAM) 0);
-
-	if (0 == cchText || E_INVALIDARG == cchText)
+	if (E_INVALIDARG == cchText)
 	{
 		// we didn't get a length - try another method
 		cchText = (size_t)::SendMessage(
@@ -1578,11 +1612,7 @@ void CEditor::GetEditBoxText(ULONG i)
 			(LPARAM) 0);
 	}
 
-	// Our EM_GETTEXTLENGTHEX call is asking for number of bytes (GTL_NUMBYTES).
-	// Documentation is unclear whether this will or will not include 2 bytes for the NULL terminator
-	// (though in testing it always does)
-	// WM_GETTEXTLENGTH does not include the NULL terminator
-	// So adding 1 to be safe - want this to always be positive
+	// cchText will never include the NULL terminator, so add one to our count
 	cchText += 1;
 
 	LPWSTR lpszW = (WCHAR*) new WCHAR[cchText];
@@ -1627,25 +1657,28 @@ void CEditor::GetEditBoxText(ULONG i)
 		}
 
 		m_lpControls[i].UI.lpEdit->lpszW = lpszW;
+		m_lpControls[i].UI.lpEdit->cchsz = cchText;
 	}
-} // CEditor::GetEditBoxValue
+} // CEditor::GetEditBoxText
 
 // No need to free this - treat it like a static
-LPSTR CEditor::GetEditBoxTextA(ULONG i)
-{
-	if (!IsValidEdit(i)) return NULL;
-
-	GetEditBoxText(i);
-
-	return GetStringA(i);
-} // CEditor::GetEditBoxTextA
-
-LPWSTR CEditor::GetEditBoxTextW(ULONG iControl)
+LPSTR CEditor::GetEditBoxTextA(ULONG iControl, size_t* lpcchText)
 {
 	if (!IsValidEdit(iControl)) return NULL;
 
 	GetEditBoxText(iControl);
 
+	if (lpcchText) *lpcchText = m_lpControls[iControl].UI.lpEdit->cchsz;
+	return GetStringA(iControl);
+} // CEditor::GetEditBoxTextA
+
+LPWSTR CEditor::GetEditBoxTextW(ULONG iControl, size_t* lpcchText)
+{
+	if (!IsValidEdit(iControl)) return NULL;
+
+	GetEditBoxText(iControl);
+
+	if (lpcchText) *lpcchText = m_lpControls[iControl].UI.lpEdit->cchsz;
 	return GetStringW(iControl);
 } // CEditor::GetEditBoxTextW
 

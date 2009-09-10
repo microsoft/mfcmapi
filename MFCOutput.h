@@ -91,11 +91,20 @@ void _OutputNotifications(ULONG ulDbgLvl, FILE* fFile, ULONG cNotify, LPNOTIFICA
 #define OutputStreamToFile(fFile, lpStream)					_OutputStream(DBGNoDebug, (fFile), (lpStream))
 #define OutputTableToFile(fFile, lpMAPITable)					_OutputTable(DBGNoDebug, (fFile), (lpMAPITable))
 
+// We'll only output this information in debug builds.
+#ifdef _DEBUG
 #define TRACE_CONSTRUCTOR(__class) DebugPrintEx(DBGConDes,(__class),(__class),_T("(this = 0x%X) - Constructor\n"),this);
 #define TRACE_DESTRUCTOR(__class) DebugPrintEx(DBGConDes,(__class),(__class),_T("(this = 0x%X) - Destructor\n"),this);
 
 #define TRACE_ADDREF(__class,__count) DebugPrintEx(DBGRefCount,(__class),_T("AddRef"),_T("(this = 0x%X) m_cRef increased to %d.\n"),this,(__count));
 #define TRACE_RELEASE(__class,__count) DebugPrintEx(DBGRefCount,(__class),_T("Release"),_T("(this = 0x%X) m_cRef decreased to %d.\n"),this,(__count));
+#else
+#define TRACE_CONSTRUCTOR(__class)
+#define TRACE_DESTRUCTOR(__class)
+
+#define TRACE_ADDREF(__class,__count)
+#define TRACE_RELEASE(__class,__count)
+#endif
 
 void OutputXMLValueToFile(FILE* fFile,UINT uidTag, LPCTSTR szValue, int iIndent);
 void OutputCDataOpen(FILE* fFile);

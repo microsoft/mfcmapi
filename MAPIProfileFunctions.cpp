@@ -52,7 +52,7 @@ void DisplayMAPISVCPath(CWnd* pParentWnd)
 	CEditor MyData(
 		pParentWnd,
 		IDS_MAPISVCTITLE,
-		NULL,
+		IDS_MAPISVCTEXT,
 		1,
 		CEDITOR_BUTTON_OK);
 	MyData.InitSingleLine(0,IDS_MAPISVCPROMPT,NULL,true);

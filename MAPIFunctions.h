@@ -91,7 +91,7 @@ HRESULT GetNamedPropsByGUID(LPMAPIPROP lpSource, LPGUID lpPropSetGUID, LPSPropTa
 HRESULT CopyNamedProps(LPMAPIPROP lpSource, LPGUID lpPropSetGUID, BOOL bDoMove, BOOL bDoNoReplace, LPMAPIPROP lpTarget, HWND hWnd);
 
 // Unicode support
-HRESULT AnsiToUnicode(LPCSTR pszA, LPWSTR* ppszW);
+HRESULT AnsiToUnicode(LPCSTR pszA, LPWSTR* ppszW, size_t cchszA = -1);
 HRESULT UnicodeToAnsi(LPCWSTR pszW, LPSTR* ppszA, size_t cchszW = -1);
 
 BOOL CheckStringProp(LPSPropValue lpProp, ULONG ulPropType);

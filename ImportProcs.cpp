@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "ImportProcs.h"
 #include "MAPIFunctions.h"
+#include <mapival.h>
 
 // Note: when the user loads MAPI manually, hModMSMAPI and hModMAPI will be the same
 HMODULE	hModMSMAPI = NULL; // Address of Outlook's MAPI
@@ -13,6 +14,174 @@ HMODULE hModOle32 = NULL;
 HMODULE hModUxTheme = NULL;
 HMODULE hModInetComm = NULL;
 HMODULE hModMSI = NULL;
+
+// For GetComponentPath
+typedef BOOL (STDAPICALLTYPE FGETCOMPONENTPATH)
+	(LPSTR szComponent,
+	LPSTR szQualifier,
+	LPSTR szDllPath,
+	DWORD cchBufferSize,
+	BOOL fInstall);
+typedef FGETCOMPONENTPATH FAR * LPFGETCOMPONENTPATH;
+
+// For all the MAPI funcs we use
+typedef SCODE (STDMETHODCALLTYPE HRGETONEPROP)(
+					LPMAPIPROP lpMapiProp,
+					ULONG ulPropTag,
+					LPSPropValue FAR *lppProp);
+typedef HRGETONEPROP *LPHRGETONEPROP;
+
+typedef void (STDMETHODCALLTYPE FREEPROWS)(
+					LPSRowSet lpRows);
+typedef FREEPROWS	*LPFREEPROWS;
+
+typedef	LPSPropValue (STDMETHODCALLTYPE PPROPFINDPROP)(
+					LPSPropValue lpPropArray, ULONG cValues,
+					ULONG ulPropTag);
+typedef PPROPFINDPROP *LPPPROPFINDPROP;
+
+typedef SCODE (STDMETHODCALLTYPE SCDUPPROPSET)(
+					int cValues, LPSPropValue lpPropArray,
+					LPALLOCATEBUFFER lpAllocateBuffer, LPSPropValue FAR *lppPropArray);
+typedef SCDUPPROPSET *LPSCDUPPROPSET;
+
+typedef SCODE (STDMETHODCALLTYPE SCCOUNTPROPS)(
+					int cValues, LPSPropValue lpPropArray, ULONG FAR *lpcb);
+typedef SCCOUNTPROPS *LPSCCOUNTPROPS;
+
+typedef SCODE (STDMETHODCALLTYPE SCCOPYPROPS)(
+					int cValues, LPSPropValue lpPropArray, LPVOID lpvDst,
+					ULONG FAR *lpcb);
+typedef SCCOPYPROPS *LPSCCOPYPROPS;
+
+typedef SCODE (STDMETHODCALLTYPE OPENIMSGONISTG)(
+					LPMSGSESS		lpMsgSess,
+					LPALLOCATEBUFFER lpAllocateBuffer,
+					LPALLOCATEMORE 	lpAllocateMore,
+					LPFREEBUFFER	lpFreeBuffer,
+					LPMALLOC		lpMalloc,
+					LPVOID			lpMapiSup,
+					LPSTORAGE 		lpStg,
+					MSGCALLRELEASE FAR *lpfMsgCallRelease,
+					ULONG			ulCallerData,
+					ULONG			ulFlags,
+					LPMESSAGE		FAR *lppMsg );
+typedef OPENIMSGONISTG *LPOPENIMSGONISTG;
+
+typedef	LPMALLOC (STDMETHODCALLTYPE MAPIGETDEFAULTMALLOC)(
+					void);
+typedef MAPIGETDEFAULTMALLOC *LPMAPIGETDEFAULTMALLOC;
+
+typedef	void (STDMETHODCALLTYPE CLOSEIMSGSESSION)(
+					LPMSGSESS		lpMsgSess);
+typedef CLOSEIMSGSESSION *LPCLOSEIMSGSESSION;
+
+typedef	SCODE (STDMETHODCALLTYPE OPENIMSGSESSION)(
+					LPMALLOC		lpMalloc,
+					ULONG			ulFlags,
+					LPMSGSESS FAR	*lppMsgSess);
+typedef OPENIMSGSESSION *LPOPENIMSGSESSION;
+
+typedef SCODE (STDMETHODCALLTYPE HRQUERYALLROWS)(
+					LPMAPITABLE lpTable,
+					LPSPropTagArray lpPropTags,
+					LPSRestriction lpRestriction,
+					LPSSortOrderSet lpSortOrderSet,
+					LONG crowsMax,
+					LPSRowSet FAR *lppRows);
+typedef HRQUERYALLROWS *LPHRQUERYALLROWS;
+
+typedef SCODE (STDMETHODCALLTYPE MAPIOPENFORMMGR)(
+					LPMAPISESSION pSession, LPMAPIFORMMGR FAR * ppmgr);
+typedef MAPIOPENFORMMGR *LPMAPIOPENFORMMGR;
+
+typedef HRESULT (STDMETHODCALLTYPE RTFSYNC) (
+	LPMESSAGE lpMessage, ULONG ulFlags, BOOL FAR * lpfMessageUpdated);
+typedef RTFSYNC *LPRTFSYNC;
+
+typedef SCODE (STDMETHODCALLTYPE HRSETONEPROP)(
+					LPMAPIPROP lpMapiProp,
+					LPSPropValue lpProp);
+typedef HRSETONEPROP *LPHRSETONEPROP;
+
+typedef void (STDMETHODCALLTYPE FREEPADRLIST)(
+					LPADRLIST lpAdrList);
+typedef FREEPADRLIST *LPFREEPADRLIST;
+
+typedef SCODE (STDMETHODCALLTYPE PROPCOPYMORE)(
+					LPSPropValue		lpSPropValueDest,
+					LPSPropValue		lpSPropValueSrc,
+					ALLOCATEMORE *	lpfAllocMore,
+					LPVOID			lpvObject );
+typedef PROPCOPYMORE *LPPROPCOPYMORE;
+
+typedef HRESULT (STDMETHODCALLTYPE WRAPCOMPRESSEDRTFSTREAM) (
+	LPSTREAM lpCompressedRTFStream, ULONG ulFlags, LPSTREAM FAR * lpUncompressedRTFStream);
+typedef WRAPCOMPRESSEDRTFSTREAM *LPWRAPCOMPRESSEDRTFSTREAM;
+
+typedef SCODE (STDMETHODCALLTYPE HRVALIDATEIPMSUBTREE)(
+					LPMDB lpMDB, ULONG ulFlags,
+					ULONG FAR *lpcValues, LPSPropValue FAR *lppValues,
+					LPMAPIERROR FAR *lpperr);
+typedef HRVALIDATEIPMSUBTREE *LPHRVALIDATEIPMSUBTREE;
+
+typedef HRESULT (STDAPICALLTYPE MAPIOPENLOCALFORMCONTAINER)(LPMAPIFORMCONTAINER FAR * ppfcnt);
+typedef MAPIOPENLOCALFORMCONTAINER *LPMAPIOPENLOCALFORMCONTAINER;
+
+typedef SCODE (STDAPICALLTYPE HRDISPATCHNOTIFICATIONS)(ULONG ulFlags);
+typedef HRDISPATCHNOTIFICATIONS *LPHRDISPATCHNOTIFICATIONS;
+
+typedef HRESULT (STDMETHODCALLTYPE WRAPSTOREENTRYID)(
+	ULONG ulFlags,
+	__in LPTSTR lpszDLLName,
+	ULONG cbOrigEntry,
+	LPENTRYID lpOrigEntry,
+	ULONG *lpcbWrappedEntry,
+	LPENTRYID *lppWrappedEntry);
+typedef WRAPSTOREENTRYID *LPWRAPSTOREENTRYID;
+
+typedef SCODE (STDMETHODCALLTYPE CREATEIPROP)(
+	LPCIID					lpInterface,
+	ALLOCATEBUFFER FAR *	lpAllocateBuffer,
+	ALLOCATEMORE FAR *		lpAllocateMore,
+	FREEBUFFER FAR *		lpFreeBuffer,
+	LPVOID					lpvReserved,
+	LPPROPDATA FAR *		lppPropData);
+typedef CREATEIPROP *LPCREATEIPROP;
+
+typedef SCODE (STDMETHODCALLTYPE CREATETABLE)(
+	LPCIID					lpInterface,
+	ALLOCATEBUFFER FAR *	lpAllocateBuffer,
+	ALLOCATEMORE FAR *		lpAllocateMore,
+	FREEBUFFER FAR *		lpFreeBuffer,
+	LPVOID					lpvReserved,
+	ULONG					ulTableType,
+	ULONG					ulPropTagIndexColumn,
+	LPSPropTagArray		lpSPropTagArrayColumns,
+	LPTABLEDATA FAR *		lppTableData);
+typedef CREATETABLE *LPCREATETABLE;
+
+typedef HRESULT (STDMETHODCALLTYPE HRVALIDATEPARAMETERS)(
+	METHODS eMethod,
+	LPVOID FAR *ppFirstArg);
+typedef HRVALIDATEPARAMETERS *LPHRVALIDATEPARAMETERS;
+
+typedef HRESULT (STDMETHODCALLTYPE BUILDDISPLAYTABLE)(
+	LPALLOCATEBUFFER	lpAllocateBuffer,
+	LPALLOCATEMORE		lpAllocateMore,
+	LPFREEBUFFER		lpFreeBuffer,
+	LPMALLOC			lpMalloc,
+	HINSTANCE			hInstance,
+	UINT				cPages,
+	LPDTPAGE			lpPage,
+	ULONG				ulFlags,
+	LPMAPITABLE *		lppTable,
+	LPTABLEDATA	*		lppTblData);
+typedef BUILDDISPLAYTABLE *LPBUILDDISPLAYTABLE;
+
+typedef int (STDMETHODCALLTYPE MNLS_LSTRLENW)(
+	LPCWSTR	lpString);
+typedef MNLS_LSTRLENW *LPMNLS_LSTRLENW;
 
 LPEDITSECURITY				pfnEditSecurity = NULL;
 
@@ -56,6 +225,12 @@ LPHRSETONEPROP				pfnHrSetOneProp = NULL;
 LPFREEPADRLIST				pfnFreePadrlist = NULL;
 LPPROPCOPYMORE				pfnPropCopyMore = NULL;
 LPWRAPCOMPRESSEDRTFSTREAM	pfnWrapCompressedRTFStream = NULL;
+LPWRAPSTOREENTRYID			pfnWrapStoreEntryID = NULL;
+LPCREATEIPROP				pfnCreateIProp = NULL;
+LPCREATETABLE				pfnCreateTable = NULL;
+LPHRVALIDATEPARAMETERS		pfnHrValidateParameters = NULL;
+LPBUILDDISPLAYTABLE			pfnBuildDisplayTable = NULL;
+LPMNLS_LSTRLENW				pfnMNLS_lstrlenW = NULL;
 LPMAPILOGONEX				pfnMAPILogonEx = NULL;
 LPMAPIADMINPROFILES			pfnMAPIAdminProfiles = NULL;
 LPHRVALIDATEIPMSUBTREE		pfnHrValidateIPMSubtree = NULL;
@@ -120,6 +295,7 @@ BOOL GetComponentPath(
 
 	if (!pfnFGetComponentPath) return false;
 #ifdef UNICODE
+	int iRet = 0;
 	CHAR szAsciiPath[MAX_PATH] = {0};
 	char* szAnsiComponent = NULL;
 	char* szAnsiQualifier = NULL;
@@ -135,7 +311,6 @@ BOOL GetComponentPath(
 	delete[] szAnsiQualifier;
 	delete[] szAnsiComponent;
 	// Convert to Unicode.
-	int iRet = 0;
 	EC_D(iRet,MultiByteToWideChar(
 		CP_ACP,
 		0,
@@ -338,6 +513,7 @@ void LoadMSI()
 // Pass NULL to open the mail key for the default MAPI client
 HKEY GetMailKey(LPTSTR szClient)
 {
+	DebugPrint(DBGLoadLibrary,_T("Enter GetMailKey(%s)\n"),szClient?szClient:_T("Default"));
 	HRESULT hRes = S_OK;
 	HKEY hMailKey = NULL;
 	BOOL bClientIsDefault = false;
@@ -360,6 +536,7 @@ HKEY GetMailKey(LPTSTR szClient)
 				_T(""), // get the default value
 				&dwKeyType,
 				(LPVOID*) &szClient));
+			DebugPrint(DBGLoadLibrary,_T("Default MAPI = %s\n"),szClient?szClient:_T("Default"));
 			bClientIsDefault = true;
 			EC_W32(RegCloseKey(hDefaultMailKey));
 		}
@@ -394,6 +571,7 @@ HKEY GetMailKey(LPTSTR szClient)
 // Allocates with new, delete with delete[]
 void GetMapiMsiIds(LPTSTR szClient, LPTSTR* lpszComponentID, LPTSTR* lpszAppLCID, LPTSTR* lpszOfficeLCID)
 {
+	DebugPrint(DBGLoadLibrary,_T("GetMapiMsiIds()\n"));
 	HRESULT hRes = S_OK;
 
 	HKEY hKey = GetMailKey(szClient);
@@ -409,6 +587,7 @@ void GetMapiMsiIds(LPTSTR szClient, LPTSTR* lpszComponentID, LPTSTR* lpszAppLCID
 				_T("MSIComponentID"), // STRING_OK
 				&dwKeyType,
 				(LPVOID*) lpszComponentID));
+			DebugPrint(DBGLoadLibrary,_T("MSIComponentID = %s\n"),*lpszComponentID?*lpszComponentID:_T("<not found>"));
 			hRes = S_OK;
 		}
 
@@ -419,6 +598,7 @@ void GetMapiMsiIds(LPTSTR szClient, LPTSTR* lpszComponentID, LPTSTR* lpszAppLCID
 				_T("MSIApplicationLCID"), // STRING_OK
 				&dwKeyType,
 				(LPVOID*) lpszAppLCID));
+			DebugPrint(DBGLoadLibrary,_T("MSIApplicationLCID = %s\n"),*lpszAppLCID?*lpszAppLCID:_T("<not found>"));
 			hRes = S_OK;
 		}
 
@@ -429,12 +609,13 @@ void GetMapiMsiIds(LPTSTR szClient, LPTSTR* lpszComponentID, LPTSTR* lpszAppLCID
 				_T("MSIOfficeLCID"), // STRING_OK
 				&dwKeyType,
 				(LPVOID*) lpszOfficeLCID));
+			DebugPrint(DBGLoadLibrary,_T("MSIOfficeLCID = %s\n"),*lpszOfficeLCID?*lpszOfficeLCID:_T("<not found>"));
 			hRes = S_OK;
 		}
 
 		EC_W32(RegCloseKey(hKey));
 	}
-} // GetMAPIComponentID
+} // GetMapiMsiIds
 
 void GetMAPIPath(LPTSTR szClient, LPTSTR szMAPIPath, ULONG cchMAPIPath)
 {
@@ -538,6 +719,12 @@ void UnloadMAPI()
 	pfnFreePadrlist = NULL;
 	pfnPropCopyMore = NULL;
 	pfnWrapCompressedRTFStream = NULL;
+	pfnWrapStoreEntryID = NULL;
+	pfnCreateIProp = NULL;
+	pfnCreateTable = NULL;
+	pfnHrValidateParameters = NULL;
+	pfnBuildDisplayTable = NULL;
+	pfnMNLS_lstrlenW = NULL;
 	pfnMAPILogonEx = NULL;
 	pfnMAPIAdminProfiles = NULL;
 	pfnHrValidateIPMSubtree = NULL;
@@ -611,6 +798,17 @@ void LoadMAPIFuncs(HMODULE hMod)
 	GETPROC(pfnPropCopyMore,			LPPROPCOPYMORE,				"PropCopyMore@16")
 	GETPROC(pfnPropCopyMore,			LPPROPCOPYMORE,				"PropCopyMore")
 	GETPROC(pfnWrapCompressedRTFStream,	LPWRAPCOMPRESSEDRTFSTREAM,	"WrapCompressedRTFStream")
+	GETPROC(pfnWrapStoreEntryID,		LPWRAPSTOREENTRYID,			"WrapStoreEntryID@24")
+	GETPROC(pfnWrapStoreEntryID,		LPWRAPSTOREENTRYID,			"WrapStoreEntryID")
+	GETPROC(pfnCreateIProp,				LPCREATEIPROP,				"CreateIProp@24")
+	GETPROC(pfnCreateIProp,				LPCREATEIPROP,				"CreateIProp")
+	GETPROC(pfnCreateTable,				LPCREATETABLE,				"CreateTable@36")
+	GETPROC(pfnCreateTable,				LPCREATETABLE,				"CreateTable")
+	GETPROC(pfnHrValidateParameters,	LPHRVALIDATEPARAMETERS,		"HrValidateParameters@8")
+	GETPROC(pfnHrValidateParameters,	LPHRVALIDATEPARAMETERS,		"HrValidateParameters")
+	GETPROC(pfnBuildDisplayTable,		LPBUILDDISPLAYTABLE,		"BuildDisplayTable@40")
+	GETPROC(pfnBuildDisplayTable,		LPBUILDDISPLAYTABLE,		"BuildDisplayTable")
+	GETPROC(pfnMNLS_lstrlenW,			LPMNLS_LSTRLENW,			"MNLS_lstrlenW")
 	GETPROC(pfnMAPILogonEx,				LPMAPILOGONEX,				"MAPILogonEx")
 	GETPROC(pfnMAPIAdminProfiles,		LPMAPIADMINPROFILES,		"MAPIAdminProfiles")
 	GETPROC(pfnHrValidateIPMSubtree,	LPHRVALIDATEIPMSUBTREE,		"HrValidateIPMSubtree@20")
@@ -1422,4 +1620,93 @@ STDAPI HrDispatchNotifications(ULONG ulFlags)
 	if (pfnHrDispatchNotifications) return pfnHrDispatchNotifications(
 		ulFlags);
 	return MAPI_E_CALL_FAILED;
+}
+
+STDAPI WrapStoreEntryID(ULONG ulFlags, __in LPTSTR lpszDLLName, ULONG cbOrigEntry,
+	LPENTRYID lpOrigEntry, ULONG *lpcbWrappedEntry, LPENTRYID *lppWrappedEntry)
+{
+	CHECKLOAD(pfnWrapStoreEntryID);
+	if (pfnWrapStoreEntryID) return pfnWrapStoreEntryID(ulFlags, lpszDLLName, cbOrigEntry, lpOrigEntry, lpcbWrappedEntry, lppWrappedEntry);
+	return MAPI_E_CALL_FAILED;
+}
+STDAPI_(SCODE)
+CreateIProp( LPCIID					lpInterface,
+			 ALLOCATEBUFFER FAR *	lpAllocateBuffer,
+			 ALLOCATEMORE FAR *		lpAllocateMore,
+			 FREEBUFFER FAR *		lpFreeBuffer,
+			 LPVOID					lpvReserved,
+			 LPPROPDATA FAR *		lppPropData )
+{
+	CHECKLOAD(pfnCreateIProp);
+	if (pfnCreateIProp) return pfnCreateIProp(lpInterface, lpAllocateBuffer, lpAllocateMore, lpFreeBuffer, lpvReserved, lppPropData);
+	return MAPI_E_CALL_FAILED;
+}
+
+STDAPI_(SCODE)
+CreateTable( LPCIID					lpInterface,
+			 ALLOCATEBUFFER FAR *	lpAllocateBuffer,
+			 ALLOCATEMORE FAR *		lpAllocateMore,
+			 FREEBUFFER FAR *		lpFreeBuffer,
+			 LPVOID					lpvReserved,
+			 ULONG					ulTableType,
+			 ULONG					ulPropTagIndexColumn,
+			 LPSPropTagArray		lpSPropTagArrayColumns,
+			 LPTABLEDATA FAR *		lppTableData )
+{
+	CHECKLOAD(pfnCreateTable);
+	if (pfnCreateTable) return pfnCreateTable(
+		lpInterface,
+		lpAllocateBuffer,
+		lpAllocateMore,
+		lpFreeBuffer,
+		lpvReserved,
+		ulTableType,
+		ulPropTagIndexColumn,
+		lpSPropTagArrayColumns,
+		lppTableData);
+	return MAPI_E_CALL_FAILED;
+}
+
+STDAPI HrValidateParameters( METHODS eMethod, LPVOID FAR *ppFirstArg)
+{
+	CHECKLOAD(pfnHrValidateParameters);
+	if (pfnHrValidateParameters) return pfnHrValidateParameters(
+		eMethod,
+		ppFirstArg);
+	return MAPI_E_CALL_FAILED;
+}
+
+STDAPI
+BuildDisplayTable(	LPALLOCATEBUFFER	lpAllocateBuffer,
+					LPALLOCATEMORE		lpAllocateMore,
+					LPFREEBUFFER		lpFreeBuffer,
+					LPMALLOC			lpMalloc,
+					HINSTANCE			hInstance,
+					UINT				cPages,
+					LPDTPAGE			lpPage,
+					ULONG				ulFlags,
+					LPMAPITABLE *		lppTable,
+					LPTABLEDATA	*		lppTblData )
+{
+	CHECKLOAD(pfnBuildDisplayTable);
+	if (pfnBuildDisplayTable) return pfnBuildDisplayTable(
+		lpAllocateBuffer,
+		lpAllocateMore,
+		lpFreeBuffer,
+		lpMalloc,
+		hInstance,
+		cPages,
+		lpPage,
+		ulFlags,
+		lppTable,
+		lppTblData);
+	return MAPI_E_CALL_FAILED;
+}
+
+int	WINAPI MNLS_lstrlenW(LPCWSTR lpString)
+{
+	CHECKLOAD(pfnMNLS_lstrlenW);
+	if (pfnMNLS_lstrlenW) return pfnMNLS_lstrlenW(
+		lpString);
+	return 0;
 }

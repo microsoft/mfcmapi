@@ -62,7 +62,7 @@ typedef ULONG (STDAPICALLTYPE FREEBUFFER)(
 #define CHARFORMAT CHARFORMATW
 #endif
 
-// Sample tree uses bldver.h to maintain some definitions. Do not remove.
+// Some trees use bldver.h to maintain some definitions. Do not remove.
 #include "bldver.h"
 #include "resource.h"		// main symbols
 
@@ -300,15 +300,6 @@ typedef WRAPCOMPRESSEDRTFSTREAMEX *LPWRAPCOMPRESSEDRTFSTREAMEX;
 #define MAPI_NATIVE_BODY_TYPE_HTML 			0x00000002
 #define MAPI_NATIVE_BODY_TYPE_PLAINTEXT		0x00000004
 
-// For GetComponentPath
-typedef BOOL (STDAPICALLTYPE FGETCOMPONENTPATH)
-	(LPSTR szComponent,
-	LPSTR szQualifier,
-	LPSTR szDllPath,
-	DWORD cchBufferSize,
-	BOOL fInstall);
-typedef FGETCOMPONENTPATH FAR * LPFGETCOMPONENTPATH;
-
 // For EditSecurity
 typedef BOOL (STDAPICALLTYPE EDITSECURITY)
 (
@@ -380,113 +371,6 @@ typedef HRESULT (STDMETHODCALLTYPE MSIGETFILEVERSION)
 	LPDWORD   pcchLangBuf
 );
 typedef MSIGETFILEVERSION FAR * LPMSIGETFILEVERSION;
-
-// For all the MAPI funcs we use
-typedef SCODE (STDMETHODCALLTYPE HRGETONEPROP)(
-					LPMAPIPROP lpMapiProp,
-					ULONG ulPropTag,
-					LPSPropValue FAR *lppProp);
-typedef HRGETONEPROP *LPHRGETONEPROP;
-
-typedef void (STDMETHODCALLTYPE FREEPROWS)(
-					LPSRowSet lpRows);
-typedef FREEPROWS	*LPFREEPROWS;
-
-typedef	LPSPropValue (STDMETHODCALLTYPE PPROPFINDPROP)(
-					LPSPropValue lpPropArray, ULONG cValues,
-					ULONG ulPropTag);
-typedef PPROPFINDPROP *LPPPROPFINDPROP;
-
-typedef SCODE (STDMETHODCALLTYPE SCDUPPROPSET)(
-					int cValues, LPSPropValue lpPropArray,
-					LPALLOCATEBUFFER lpAllocateBuffer, LPSPropValue FAR *lppPropArray);
-typedef SCDUPPROPSET *LPSCDUPPROPSET;
-
-typedef SCODE (STDMETHODCALLTYPE SCCOUNTPROPS)(
-					int cValues, LPSPropValue lpPropArray, ULONG FAR *lpcb);
-typedef SCCOUNTPROPS *LPSCCOUNTPROPS;
-
-typedef SCODE (STDMETHODCALLTYPE SCCOPYPROPS)(
-					int cValues, LPSPropValue lpPropArray, LPVOID lpvDst,
-					ULONG FAR *lpcb);
-typedef SCCOPYPROPS *LPSCCOPYPROPS;
-
-typedef SCODE (STDMETHODCALLTYPE OPENIMSGONISTG)(
-					LPMSGSESS		lpMsgSess,
-					LPALLOCATEBUFFER lpAllocateBuffer,
-					LPALLOCATEMORE 	lpAllocateMore,
-					LPFREEBUFFER	lpFreeBuffer,
-					LPMALLOC		lpMalloc,
-					LPVOID			lpMapiSup,
-					LPSTORAGE 		lpStg,
-					MSGCALLRELEASE FAR *lpfMsgCallRelease,
-					ULONG			ulCallerData,
-					ULONG			ulFlags,
-					LPMESSAGE		FAR *lppMsg );
-typedef OPENIMSGONISTG *LPOPENIMSGONISTG;
-
-typedef	LPMALLOC (STDMETHODCALLTYPE MAPIGETDEFAULTMALLOC)(
-					void);
-typedef MAPIGETDEFAULTMALLOC *LPMAPIGETDEFAULTMALLOC;
-
-typedef	void (STDMETHODCALLTYPE CLOSEIMSGSESSION)(
-					LPMSGSESS		lpMsgSess);
-typedef CLOSEIMSGSESSION *LPCLOSEIMSGSESSION;
-
-typedef	SCODE (STDMETHODCALLTYPE OPENIMSGSESSION)(
-					LPMALLOC		lpMalloc,
-					ULONG			ulFlags,
-					LPMSGSESS FAR	*lppMsgSess);
-typedef OPENIMSGSESSION *LPOPENIMSGSESSION;
-
-typedef SCODE (STDMETHODCALLTYPE HRQUERYALLROWS)(
-					LPMAPITABLE lpTable,
-					LPSPropTagArray lpPropTags,
-					LPSRestriction lpRestriction,
-					LPSSortOrderSet lpSortOrderSet,
-					LONG crowsMax,
-					LPSRowSet FAR *lppRows);
-typedef HRQUERYALLROWS *LPHRQUERYALLROWS;
-
-typedef SCODE (STDMETHODCALLTYPE MAPIOPENFORMMGR)(
-					LPMAPISESSION pSession, LPMAPIFORMMGR FAR * ppmgr);
-typedef MAPIOPENFORMMGR *LPMAPIOPENFORMMGR;
-
-typedef HRESULT (STDMETHODCALLTYPE RTFSYNC) (
-	LPMESSAGE lpMessage, ULONG ulFlags, BOOL FAR * lpfMessageUpdated);
-typedef RTFSYNC *LPRTFSYNC;
-
-typedef SCODE (STDMETHODCALLTYPE HRSETONEPROP)(
-					LPMAPIPROP lpMapiProp,
-					LPSPropValue lpProp);
-typedef HRSETONEPROP *LPHRSETONEPROP;
-
-typedef void (STDMETHODCALLTYPE FREEPADRLIST)(
-					LPADRLIST lpAdrList);
-typedef FREEPADRLIST *LPFREEPADRLIST;
-
-typedef SCODE (STDMETHODCALLTYPE PROPCOPYMORE)(
-					LPSPropValue		lpSPropValueDest,
-					LPSPropValue		lpSPropValueSrc,
-					ALLOCATEMORE *	lpfAllocMore,
-					LPVOID			lpvObject );
-typedef PROPCOPYMORE *LPPROPCOPYMORE;
-
-typedef HRESULT (STDMETHODCALLTYPE WRAPCOMPRESSEDRTFSTREAM) (
-	LPSTREAM lpCompressedRTFStream, ULONG ulFlags, LPSTREAM FAR * lpUncompressedRTFStream);
-typedef WRAPCOMPRESSEDRTFSTREAM *LPWRAPCOMPRESSEDRTFSTREAM;
-
-typedef SCODE (STDMETHODCALLTYPE HRVALIDATEIPMSUBTREE)(
-					LPMDB lpMDB, ULONG ulFlags,
-					ULONG FAR *lpcValues, LPSPropValue FAR *lppValues,
-					LPMAPIERROR FAR *lpperr);
-typedef HRVALIDATEIPMSUBTREE *LPHRVALIDATEIPMSUBTREE;
-
-typedef HRESULT (STDAPICALLTYPE MAPIOPENLOCALFORMCONTAINER)(LPMAPIFORMCONTAINER FAR * ppfcnt);
-typedef MAPIOPENLOCALFORMCONTAINER *LPMAPIOPENLOCALFORMCONTAINER;
-
-typedef SCODE (STDAPICALLTYPE HRDISPATCHNOTIFICATIONS)(ULONG ulFlags);
-typedef HRDISPATCHNOTIFICATIONS *LPHRDISPATCHNOTIFICATIONS;
 
 // http://msdn2.microsoft.com/en-us/library/bb820924.aspx
 #pragma pack(4)

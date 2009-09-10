@@ -1374,6 +1374,7 @@ void CSingleMAPIPropListCtrl::OnEditPropAsRestriction(ULONG ulPropTag)
 
 			EC_H(SetNewProp(&ResProp));
 
+			// Remember, we had no alloc parent - this is safe to free
 			MAPIFreeBuffer(lpModRes);
 
 			// refresh
@@ -1418,26 +1419,24 @@ void CSingleMAPIPropListCtrl::OnEditGivenProp(ULONG ulPropTag)
 			ulPropTag);
 	}
 
-	CPropertyEditor MyEditor(
+	LPSPropValue lpModProp = NULL;
+	WC_H(DisplayPropertyEditor(
 		this,
 		IDS_PROPEDITOR,
 		IDS_PROPEDITORPROMPT,
 		m_bIsAB,
-		lpSourceArray);
-
-	MyEditor.InitPropValue(m_lpMAPIProp,ulPropTag,lpEditProp);
-	WC_H(MyEditor.DisplayDialog());
+		lpSourceArray,
+		m_lpMAPIProp,
+		ulPropTag,
+		lpEditProp,
+		lpSourceArray?&lpModProp:NULL));
 
 	// If we had a source array, we need to shove our results back in to it
-	if (lpSourceArray && S_OK == hRes)
+	if (S_OK == hRes && lpSourceArray && lpModProp)
 	{
-		LPSPropValue lpModProp = MyEditor.DetachModifiedSPropValue(); // I 'own' the memory now.
-
-		if (lpModProp)
-		{
-			EC_H(SetNewProp(lpModProp));
-			MAPIFreeBuffer(lpModProp);
-		}
+		EC_H(SetNewProp(lpModProp));
+		// At this point, we're done with lpModProp - it was allocated off of lpSourceArray
+		// and freed when a new source array was allocated. Nothing to free here. Move along.
 	}
 	WC_H(RefreshMAPIPropList());
 } // OnEditGivenProp

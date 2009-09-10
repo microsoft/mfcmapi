@@ -2113,8 +2113,9 @@ HRESULT GetNamedPropsByGUID(LPMAPIPROP lpSource, LPGUID lpPropSetGUID, LPSPropTa
 	return hRes;
 }
 
+// if cchszA == -1, MultiByteToWideChar will compute the length
 // Delete with delete[]
-HRESULT AnsiToUnicode(LPCSTR pszA, LPWSTR* ppszW)
+HRESULT AnsiToUnicode(LPCSTR pszA, LPWSTR* ppszW, size_t cchszA)
 {
 	HRESULT hRes = S_OK;
 	if (!ppszW) return MAPI_E_INVALID_PARAMETER;
@@ -2127,7 +2128,7 @@ HRESULT AnsiToUnicode(LPCSTR pszA, LPWSTR* ppszW)
 		CP_ACP,
 		0,
 		pszA,
-		(int) -1,
+		(int) cchszA,
 		NULL,
 		NULL));
 
@@ -2140,18 +2141,22 @@ HRESULT AnsiToUnicode(LPCSTR pszA, LPWSTR* ppszW)
 			CP_ACP,
 			0,
 			pszA,
-			(int) -1,
+			(int) cchszA,
 			pszW,
 			iRet));
 		if (SUCCEEDED(hRes))
 		{
 			*ppszW = pszW;
 		}
+		else
+		{
+			delete[] pszW;
+		}
 	}
 	return hRes;
 }
 
-// if cbszW == -1, let WideCharToMultiByte compute the length
+// if cchszW == -1, WideCharToMultiByte will compute the length
 // Delete with delete[]
 HRESULT UnicodeToAnsi(LPCWSTR pszW, LPSTR* ppszA, size_t cchszW)
 {
@@ -2189,6 +2194,10 @@ HRESULT UnicodeToAnsi(LPCWSTR pszW, LPSTR* ppszA, size_t cchszW)
 		if (SUCCEEDED(hRes))
 		{
 			*ppszA = pszA;
+		}
+		else
+		{
+			delete[] pszA;
 		}
 	}
 	return hRes;

@@ -233,17 +233,16 @@ ULONG CStreamEditor::HandleChange(UINT nID)
 	if ((ULONG) -1 == i) return (ULONG) -1;
 	if (m_iTextBox == i)
 	{
-		LPSTR lpszA = GetEditBoxTextA(m_iTextBox);
+		size_t cchStr = 0;
+		LPSTR lpszA = GetEditBoxTextA(m_iTextBox, &cchStr);
 
-		size_t cbStr = 0;
-		if (lpszA)
-		{
-			EC_H(StringCbLengthA(lpszA,STRSAFE_MAX_CCH * sizeof(char),&cbStr));
-		}
+		// What we just read includes a NULL terminator, in both the string and count.
+		// When we write binary, we don't want to include this NULL
+		if (cchStr) cchStr -= 1;
 
-		SetBinary(2, (LPBYTE) lpszA, cbStr);
+		SetBinary(m_iBinBox, (LPBYTE) lpszA, cchStr * sizeof(CHAR));
 
-		SetSize(m_iCBBox, cbStr);
+		SetSize(m_iCBBox, cchStr * sizeof(CHAR));
 	}
 	else if (m_iBinBox == i)
 	{
@@ -252,7 +251,9 @@ ULONG CStreamEditor::HandleChange(UINT nID)
 
 		if (GetBinaryUseControl(m_iBinBox,&cb,&lpb))
 		{
-			SetStringA(0,(LPCSTR) lpb);
+			// Treat as a NULL terminated string
+			// GetBinaryUseControl includes extra NULLs at the end of the buffer to make this work
+			SetStringA(m_iTextBox,(LPCSTR) lpb, cb+1);
 			SetSize(m_iCBBox, cb);
 		}
 

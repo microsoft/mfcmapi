@@ -1048,84 +1048,55 @@ CString RTimeToString(DWORD rTime)
 
 void InterpretMVProp(LPSPropValue lpProp, ULONG ulMVRow, CString *PropString,CString *AltPropString)
 {
-	CString szTmp;
-	CString	szAltTmp;
-
 	if (!lpProp) return;
 	if (ulMVRow > lpProp->Value.MVi.cValues) return;
+
+	// We'll let InterpretProp do all the work
+	SPropValue sProp = {0};
+	sProp.ulPropTag = CHANGE_PROP_TYPE(lpProp->ulPropTag,PROP_TYPE(lpProp->ulPropTag) & ~MV_FLAG);
 
 	switch(PROP_TYPE(lpProp->ulPropTag))
 	{
 	case(PT_MV_I2):
-		szTmp.Format(_T("%d"),lpProp->Value.MVi.lpi[ulMVRow]); // STRING_OK
-		szAltTmp.Format(_T("0x%X"),lpProp->Value.MVi.lpi[ulMVRow]); // STRING_OK
+		sProp.Value.i = lpProp->Value.MVi.lpi[ulMVRow];
 		break;
 	case(PT_MV_LONG):
-		szTmp.Format(_T("%u"),lpProp->Value.MVl.lpl[ulMVRow]); // STRING_OK
-		szAltTmp.Format(_T("0x%X"),lpProp->Value.MVl.lpl[ulMVRow]); // STRING_OK
+		sProp.Value.l = lpProp->Value.MVl.lpl[ulMVRow];
 		break;
 	case(PT_MV_DOUBLE):
-		szTmp.Format(_T("%u"),lpProp->Value.MVdbl.lpdbl[ulMVRow]); // STRING_OK
+		sProp.Value.dbl = lpProp->Value.MVdbl.lpdbl[ulMVRow];
 		break;
 	case(PT_MV_CURRENCY):
-		szTmp = CurrencyToString(lpProp->Value.MVcur.lpcur[ulMVRow]);
-		szAltTmp.Format(_T("0x%08X:0x%08X"),(int)(lpProp->Value.MVcur.lpcur[ulMVRow].Hi),(int)lpProp->Value.MVcur.lpcur[ulMVRow].Lo); // STRING_OK
+		sProp.Value.cur = lpProp->Value.MVcur.lpcur[ulMVRow];
 		break;
 	case(PT_MV_APPTIME):
-		szTmp.Format(_T("%u"),lpProp->Value.MVat.lpat[ulMVRow]); // STRING_OK
+		sProp.Value.at = lpProp->Value.MVat.lpat[ulMVRow];
 		break;
 	case(PT_MV_SYSTIME):
-		FileTimeToString(&lpProp->Value.MVft.lpft[ulMVRow],&szTmp,&szAltTmp);
+		sProp.Value.ft = lpProp->Value.MVft.lpft[ulMVRow];
 		break;
 	case(PT_MV_I8):
-		szTmp.Format(_T("%I64d"),lpProp->Value.MVli.lpli[ulMVRow].QuadPart); // STRING_OK
-		szAltTmp.Format(_T("0x%08X:0x%08X"),(int)(lpProp->Value.MVli.lpli[ulMVRow].HighPart),(int)lpProp->Value.MVli.lpli[ulMVRow].LowPart); // STRING_OK
+		sProp.Value.li = lpProp->Value.MVli.lpli[ulMVRow];
 		break;
 	case(PT_MV_R4):
-		szTmp.Format(_T("%f"),lpProp->Value.MVflt.lpflt[ulMVRow]); // STRING_OK
+		sProp.Value.flt = lpProp->Value.MVflt.lpflt[ulMVRow];
 		break;
 	case(PT_MV_STRING8):
-		// CString overloads '=' to handle conversions
-		if (lpProp->Value.MVszA.lppszA[ulMVRow] && '\0' != lpProp->Value.MVszA.lppszA[ulMVRow])
-		{
-			szTmp = lpProp->Value.MVszA.lppszA[ulMVRow];
-
-			HRESULT hRes = S_OK;
-			SBinary sBin = {0};
-			WC_H(StringCbLengthA(lpProp->Value.MVszA.lppszA[ulMVRow],STRSAFE_MAX_CCH * sizeof(char),(size_t*)&sBin.cb));
-			sBin.lpb = (LPBYTE) lpProp->Value.MVszA.lppszA[ulMVRow];
-			szAltTmp = BinToHexString(&sBin,true);
-		}
+		sProp.Value.lpszA = lpProp->Value.MVszA.lppszA[ulMVRow];
 		break;
 	case(PT_MV_UNICODE):
-		// CString overloads '=' to handle conversions
-		if (lpProp->Value.MVszW.lppszW[ulMVRow] && L'\0' !=lpProp->Value.MVszW.lppszW[ulMVRow])
-		{
-			szTmp = lpProp->Value.MVszW.lppszW[ulMVRow];
-
-			HRESULT hRes = S_OK;
-			SBinary sBin = {0};
-			WC_H(StringCbLengthW(lpProp->Value.MVszW.lppszW[ulMVRow],STRSAFE_MAX_CCH * sizeof(WCHAR),(size_t*)&sBin.cb));
-			sBin.lpb = (LPBYTE) lpProp->Value.MVszW.lppszW[ulMVRow];
-			szAltTmp = BinToHexString(&sBin,true);
-		}
+		sProp.Value.lpszW = lpProp->Value.MVszW.lppszW[ulMVRow];
 		break;
 	case(PT_MV_BINARY):
-		szTmp = BinToHexString(&lpProp->Value.MVbin.lpbin[ulMVRow],true);
-		szAltTmp = BinToTextString(&lpProp->Value.MVbin.lpbin[ulMVRow],false);
+		sProp.Value.bin = lpProp->Value.MVbin.lpbin[ulMVRow];
 		break;
 	case(PT_MV_CLSID):
-		{
-			LPTSTR szGuid = GUIDToStringAndName(&lpProp->Value.MVguid.lpguid[ulMVRow]);
-			szTmp = szGuid;
-			delete[] szGuid;
-		}
+		sProp.Value.lpguid = &lpProp->Value.MVguid.lpguid[ulMVRow];
 		break;
 	default:
 		break;
 	}
-	if (PropString) *PropString = szTmp;
-	if (AltPropString) *AltPropString = szAltTmp;
+	InterpretProp(&sProp,PropString, AltPropString);
 }
 
 /***************************************************************************

@@ -20,7 +20,7 @@ __RegKeys RegKeys[] = {
 	{_T("HierRootNotifs"),				regDWORD,regoptCheck,		false		,0,_T(""),_T(""),false,	IDS_REGKEY_HIER_ROOT_NOTIFS}, // STRING_OK
 	{_T("HierNodeLoadCount"),			regDWORD,regoptStringDec,	20			,0,_T(""),_T(""),false,	IDS_REGKEY_HIER_NODE_LOAD_COUNT}, // STRING_OK
 	{_T("DoGetProps"),					regDWORD,regoptCheck,		true		,0,_T(""),_T(""),true,	IDS_REGKEY_DO_GETPROPS}, // STRING_OK
-	{_T("DoGetPropList"),				regDWORD,regoptCheck,		false		,0,_T(""),_T(""),true,	IDS_REGKEY_USE_GETPROPLIST}, // STRING_OK
+	{_T("UseGetPropList"),				regDWORD,regoptCheck,		true		,0,_T(""),_T(""),true,	IDS_REGKEY_USE_GETPROPLIST}, // STRING_OK
 	{_T("CacheNamedProps"),				regDWORD,regoptCheck,		true		,0,_T(""),_T(""),false,	IDS_REGKEY_CACHE_NAMED_PROPS}, // STRING_OK
 	{_T("AllowDupeColumns"),			regDWORD,regoptCheck,		false		,0,_T(""),_T(""),false,	IDS_REGKEY_ALLOW_DUPE_COLUMNS}, // STRING_OK
 	{_T("UseRowDataForSinglePropList"),	regDWORD,regoptCheck,		false		,0,_T(""),_T(""),true,	IDS_REGKEY_USE_ROW_DATA_FOR_SINGLEPROPLIST}, // STRING_OK

@@ -7,7 +7,7 @@
 #define rmj 6
 #define rmm 0
 #define rup 0
-#define rmn 1014
+#define rmn 1015
 
 #define MAKEFILEVERSION(_rmaj, _rmin, _bmaj, _bmin)			#_rmaj "." #_rmin "." #_bmaj "." #_bmin "\0"
 #define MAKEFILEVERSIONSTR(_rmaj, _rmin, _bmaj, _bmin)		MAKEFILEVERSION(_rmaj, _rmin, _bmaj, _bmin)
@@ -23,13 +23,10 @@
 #define VER_LEGALCOPYRIGHT_YEARS		"1999-2009"
 #define RC_VERSION_PRODUCT_NAME			RC_PRODUCT_NAME "\0"
 #define RC_VERSION_LEGAL_COPYRIGHT		"Copyright \251 " VER_LEGALCOPYRIGHT_YEARS " Microsoft Corporation. All rights reserved.\0"
-#define RC_VERSION_LEGAL_TRADEMARKS		"Microsoft® is a registered trademarks of Microsoft Corporation.\0"
+#define RC_VERSION_LEGAL_TRADEMARKS		"Microsoft\256 is a registered trademark of Microsoft Corporation.\0"
 #ifdef PRIVATE_BUILD
-#define BUILD_PRIVATE					"Sample version - not eligible for support\0"
+#define BUILD_PRIVATE					"\0"
 #endif
-
-#undef  RC_VERSION_FILE_DESCRIPTION
-#define RC_VERSION_FILE_DESCRIPTION    RC_PRODUCT_NAME RC_VERSION_WIDTH RC_VERSION_BITNESS RC_VERSION_DEBUG " Sample Version\0"
 
 #ifndef DS_SHELLFONT
 	#error "Compilation requires the February 2003 or later Microsoft SDK"
@@ -66,7 +63,7 @@ BEGIN
             VALUE "FileDescription", RC_VERSION_FILE_DESCRIPTION
             VALUE "InternalName", RC_VERSION_INTERNAL_NAME
             VALUE "LegalCopyright", RC_VERSION_LEGAL_COPYRIGHT
-			VALUE "LegalTrademarks", RC_VERSION_LEGAL_TRADEMARKS
+            VALUE "LegalTrademarks", RC_VERSION_LEGAL_TRADEMARKS
             VALUE "OriginalFilename", RC_VERSION_ORIGINAL_FILE_NAME
             VALUE "ProductName", RC_VERSION_PRODUCT_NAME
             VALUE "FileVersion", INET_VERSION
