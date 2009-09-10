@@ -65,4 +65,10 @@ enum __NonPropFlag
 	flagExchangeABVersion,
 	flagMDBVersion,
 	flagMDBFlag,
+	flagPropDefVersion,
+	flagPDOFlag,
+	flagVarEnum,
+	flagInternalType,
+	flagPersistID,
+	flagElementID,
 };

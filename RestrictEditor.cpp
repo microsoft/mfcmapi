@@ -209,33 +209,33 @@ LPSPropValue CResCombinedEditor::DetachModifiedSPropValue()
 
 void CResCombinedEditor::OnEditAction1()
 {
-	HRESULT hRes = S_OK;
-	CPropertyEditor PropEdit(
-		this,
-		IDS_PROPEDITOR,
-		IDS_PROPEDITORPROMPT,
-		false,
-		m_lpAllocParent);
+	if (!m_lpAllocParent) return;
 
+	HRESULT hRes = S_OK;
 
 	LPSPropValue lpEditProp = m_lpOldProp;
 	if (m_lpNewProp) lpEditProp = m_lpNewProp;
 
-	PropEdit.InitPropValue(NULL,GetHexUseControl(4),lpEditProp);
-	WC_H(PropEdit.DisplayDialog());
+	WC_H(DisplayPropertyEditor(
+		this,
+		IDS_PROPEDITOR,
+		IDS_PROPEDITORPROMPT,
+		false,
+		m_lpAllocParent,
+		NULL,
+		GetHexUseControl(4),
+		lpEditProp,
+		&m_lpNewProp));
 
-	if (S_OK == hRes)
+	// Since m_lpNewProp was owned by an m_lpAllocParent, we don't free it directly
+	if (S_OK == hRes && m_lpNewProp)
 	{
-		// Since m_lpNewProp was owned by an m_lpAllocParent, we don't free it directly
-		m_lpNewProp = PropEdit.DetachModifiedSPropValue();
 		CString szProp;
 		CString szAltProp;
-		if (m_lpNewProp)
-		{
-			InterpretProp(m_lpNewProp,&szProp,&szAltProp);
-			SetString(6,szProp);
-			SetString(7,szAltProp);
-		}
+
+		InterpretProp(m_lpNewProp,&szProp,&szAltProp);
+		SetString(6,szProp);
+		SetString(7,szAltProp);
 	}
 }
 
@@ -804,14 +804,8 @@ BOOL CResCommentEditor::DoListEdit(ULONG ulListNum, int iItem, SortListData* lpD
 {
 	if (!lpData) return false;
 	if (!IsValidList(ulListNum)) return false;
+	if (!m_lpAllocParent) return false;
 	HRESULT hRes = S_OK;
-
-	CPropertyEditor PropEdit(
-		this,
-		IDS_PROPEDITOR,
-		IDS_PROPEDITORPROMPT,
-		false,
-		m_lpAllocParent);
 
 	LPSPropValue lpSourceProp = lpData->data.Comment.lpNewProp;
 	if (!lpSourceProp) lpSourceProp = lpData->data.Comment.lpOldProp;
@@ -835,24 +829,27 @@ BOOL CResCommentEditor::DoListEdit(ULONG ulListNum, int iItem, SortListData* lpD
 		lpSourceProp = &sProp;
 	}
 
-	PropEdit.InitPropValue(NULL,NULL,lpSourceProp);
+	WC_H(DisplayPropertyEditor(
+		this,
+		IDS_PROPEDITOR,
+		IDS_PROPEDITORPROMPT,
+		false,
+		m_lpAllocParent,
+		NULL,
+		NULL,
+		lpSourceProp,
+		&lpData->data.Comment.lpNewProp));
 
-	WC_H(PropEdit.DisplayDialog());
-	if (S_OK == hRes)
+	// Since lpData->data.Comment.lpNewProp was owned by an m_lpAllocParent, we don't free it directly
+	if (S_OK == hRes && lpData->data.Comment.lpNewProp)
 	{
-		// Since lpData->data.Comment.lpNewProp was owned by an m_lpAllocParent, we don't free it directly
-		lpData->data.Comment.lpNewProp = PropEdit.DetachModifiedSPropValue();
-
-		if (lpData->data.Comment.lpNewProp)
-		{
-			CString szTmp;
-			CString szAltTmp;
-			SetListString(ulListNum,iItem,1,TagToString(lpData->data.Comment.lpNewProp->ulPropTag,NULL,false,true));
-			InterpretProp(lpData->data.Comment.lpNewProp,&szTmp,&szAltTmp);
-			SetListString(ulListNum,iItem,2,szTmp);
-			SetListString(ulListNum,iItem,3,szAltTmp);
-			return true;
-		}
+		CString szTmp;
+		CString szAltTmp;
+		SetListString(ulListNum,iItem,1,TagToString(lpData->data.Comment.lpNewProp->ulPropTag,NULL,false,true));
+		InterpretProp(lpData->data.Comment.lpNewProp,&szTmp,&szAltTmp);
+		SetListString(ulListNum,iItem,2,szTmp);
+		SetListString(ulListNum,iItem,3,szAltTmp);
+		return true;
 	}
 
 	return false;

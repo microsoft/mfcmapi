@@ -278,6 +278,12 @@ BOOL CBaseDialog::HandleKeyDown(UINT nChar, BOOL bShift, BOOL bCtrl, BOOL bMenu)
 		nChar,bShift, bCtrl, bMenu);
 	if (!bMenu) switch (nChar)
 	{
+		case 'H':
+			if (bCtrl)
+			{
+				OnHexEditor(); return true;
+			}
+			break;
 		case 'D':
 			if (bCtrl && !bShift)
 			{
@@ -286,12 +292,6 @@ BOOL CBaseDialog::HandleKeyDown(UINT nChar, BOOL bShift, BOOL bCtrl, BOOL bMenu)
 			if (bCtrl && bShift)
 			{
 				SetDebugLevel(DBGNoDebug); return true;
-			}
-			break;
-		case 'H':
-			if (bCtrl)
-			{
-				DisplayAboutDlg(this); return true;
 			}
 			break;
 		case VK_F1:
@@ -694,8 +694,7 @@ LRESULT	CBaseDialog::msgOnClearSingleMAPIPropList(WPARAM /*wParam*/, LPARAM /*lP
 
 void CBaseDialog::OnHexEditor()
 {
-	CHexEditor MyHexEditor(this);
-	MyHexEditor.DisplayDialog();
+	new CHexEditor(m_lpParent);
 } // CBaseDialog::OnHexEditor
 
 // result allocated with new, clean up with delete[]
@@ -715,7 +714,8 @@ void GetOutlookVersionString(LPTSTR* lppszPath, LPTSTR* lppszVer, LPTSTR* lppszL
 	TCHAR pszaOutlookQualifiedComponents[][MAX_PATH] = {
 		_T("{BC174BAD-2F53-4855-A1D5-0D575C19B1EA}"), // O11_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
 		_T("{BC174BAD-2F53-4855-A1D5-1D575C19B1EA}"), // O11_CATEGORY_GUID_CORE_OFFICE (debug) // STRING_OK
-		_T("{24AAE126-0911-478F-A019-07B875EB9996}")  // O12_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
+		_T("{24AAE126-0911-478F-A019-07B875EB9996}"), // O12_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
+		_T("{1E77DE88-BCAB-4C37-B9E5-073AF52DFD7A}")  // O14_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
 	};
 	int nOutlookQualifiedComponents = sizeof(pszaOutlookQualifiedComponents)/sizeof(TCHAR*);
 	int i = 0;

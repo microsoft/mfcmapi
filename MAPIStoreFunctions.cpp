@@ -192,7 +192,7 @@ HRESULT GetMailboxTable(
 
 	EC_H(BuildServerDN(
 		szServerName,
-		_T(""), // STRING_OK
+		_T(""),
 		&szServerDN));
 	if (szServerDN)
 	{
@@ -732,9 +732,9 @@ HRESULT OpenMessageStoreGUID(
 			{
 				hRes = S_OK;
 				// check to see if we have a folder with a matching GUID
-				if (IsEqualMAPIUID(
-					pRow->aRow[ulRowNum].lpProps[STORETYPE].Value.bin.lpb,
-					lpGUID))
+				if (pRow->aRow[ulRowNum].lpProps[STORETYPE].ulPropTag == PR_MDB_PROVIDER &&
+					pRow->aRow[ulRowNum].lpProps[EID].ulPropTag == PR_ENTRYID &&
+					IsEqualMAPIUID(pRow->aRow[ulRowNum].lpProps[STORETYPE].Value.bin.lpb,lpGUID))
 				{
 					EC_H(CallOpenMsgStore(
 						lpMAPISession,

@@ -615,6 +615,7 @@ typedef enum {
 
 // [MS-OXOCNTC].pdf
 #define dispidFileUnderId 0x8006
+#define dispidFileUnderList 0x8026
 enum {
 	FILEUNDERID_NONE = 0,
 	FILEUNDERID_CUSTOM = 0xffffffff,
@@ -860,3 +861,62 @@ enum EEmailIndex
 #define dispidSharingBindingEid 0x8A2D
 #define dispidSharingIndexEid 0x8A2E
 #define dispidSharingParentBindingEid 0x8A5C
+
+// Property Definition Stream
+#define	PropDefV1			0x102
+#define PropDefV2			0x103
+
+#define	PDO_IS_CUSTOM		0x00000001	// This FieldDefinition structure contains a definition of a user-defined field.
+#define	PDO_REQUIRED		0x00000002	// For a form control bound to this field, the checkbox for A value is required for this field is selected in the Validation tab of the Properties dialog box.
+#define PDO_PRINT_SAVEAS	0x00000004	// For a form control bound to this field, the checkbox for Include this field for printing and Save As is selected in the Validation tab of the Properties dialog box.
+#define PDO_CALC_AUTO		0x00000008	// For a form control bound to this field, the checkbox for Calculate this formula automatically option is selected in the Value tab of the Properties dialog box.
+#define PDO_FT_CONCAT		0x00000010	// This is a field of type Combination and it has the "Joining fields and any text fragments with each other" option selected in its Combination Formula Field dialog.
+#define PDO_FT_SWITCH		0x00000020	// This field is of type Combination and has the Showing only the first non-empty field, ignoring subsequent ones option selected in the Combination Formula Field dialog box.
+#define PDO_PRINT_SAVEAS_DEF	0x000000040	// This flag is not used
+
+typedef enum
+{
+	iTypeUnknown = -1,
+	iTypeString,		// 0
+	iTypeNumber,		// 1
+	iTypePercent,		// 2
+	iTypeCurrency,		// 3
+	iTypeBool,			// 4
+	iTypeDateTime,		// 5
+	iTypeDuration,		// 6
+	iTypeCombination,	// 7
+	iTypeFormula,		// 8
+	iTypeIntResult,		// 9
+	iTypeVariant,		// 10
+	iTypeFloatResult,	// 11
+	iTypeConcat,		// 12
+	iTypeKeywords,		// 13
+	iTypeInteger,		// 14
+} iTypeEnum;
+
+// [MS-OXOSFLD].pdf
+#define PR_ADDITIONAL_REN_ENTRYIDS_EX PROP_TAG( PT_BINARY, 0x36d9)
+
+#define		RSF_PID_TREAT_AS_SF			0x8000
+#define		RSF_PID_RSS_SUBSCRIPTION	(RSF_PID_TREAT_AS_SF | 1)
+#define		RSF_PID_SEND_AND_TRACK		(RSF_PID_TREAT_AS_SF | 2)
+#define		RSF_PID_TODO_SEARCH			(RSF_PID_TREAT_AS_SF | 4)
+#define		RSF_PID_CONV_ACTIONS		(RSF_PID_TREAT_AS_SF | 6)
+#define		RSF_PID_COMBINED_ACTIONS	(RSF_PID_TREAT_AS_SF | 7) 
+#define		RSF_PID_SUGGESTED_CONTACTS	(RSF_PID_TREAT_AS_SF | 8)
+
+#define		RSF_ELID_ENTRYID			1
+#define		RSF_ELID_HEADER				2
+
+#define PR_TARGET_ENTRYID PROP_TAG( PT_BINARY, 0x3010)
+
+#define PR_SCHDINFO_DELEGATE_ENTRYIDS PROP_TAG( PT_MV_BINARY, 0x6845)
+
+#define PR_EMSMDB_SECTION_UID PROP_TAG( PT_BINARY, 0x3d15)
+
+#define EDK_PROFILEUISTATE_ENCRYPTNETWORK 0x4000
+
+#define PR_CONTAB_FOLDER_ENTRYIDS PROP_TAG( PT_MV_BINARY, 0x6620)
+#define PR_CONTAB_STORE_ENTRYIDS PROP_TAG( PT_MV_BINARY, 0x6626)
+#define PR_CONTAB_STORE_SUPPORT_MASKS PROP_TAG( PT_MV_LONG, 0x6621)
+#define PR_DELEGATE_FLAGS PROP_TAG( PT_MV_LONG, 0x686b)

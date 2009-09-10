@@ -3,6 +3,16 @@
 
 #include "Editor.h"
 
+HRESULT DisplayPropertyEditor(CWnd* pParentWnd,
+							  UINT uidTitle,
+							  UINT uidPrompt,
+							  BOOL bIsAB,
+							  LPVOID lpAllocParent,
+							  LPMAPIPROP lpMAPIProp,
+							  ULONG ulPropTag,
+							  LPSPropValue lpsPropValue,
+							  LPSPropValue* lpNewValue);
+
 class CPropertyEditor : public CEditor
 {
 public:
@@ -11,13 +21,50 @@ public:
 		UINT uidTitle,
 		UINT uidPrompt,
 		BOOL bIsAB,
-		LPVOID lpAllocParent);
-	virtual ~CPropertyEditor();
-
-	void InitPropValue(
+		LPVOID lpAllocParent,
 		LPMAPIPROP lpMAPIProp,
 		ULONG ulPropTag,
 		LPSPropValue lpsPropValue);
+	virtual ~CPropertyEditor();
+
+	// Get values after we've done the DisplayDialog
+	LPSPropValue DetachModifiedSPropValue();
+
+private:
+	BOOL	OnInitDialog();
+	void	CreatePropertyControls();
+	void	InitPropertyControls();
+	void	WriteStringsToSPropValue();
+	void	WriteSPropValueToObject();
+	ULONG	HandleChange(UINT nID);
+	void	OnOK();
+
+	// source variables
+	LPMAPIPROP		m_lpMAPIProp;
+	ULONG			m_ulPropTag;
+	BOOL			m_bIsAB; // whether the tag is from the AB or not
+	LPSPropValue	m_lpsInputValue;
+	LPSPropValue	m_lpsOutputValue;
+	BOOL			m_bDirty;
+
+	// all calls to MAPIAllocateMore will use m_lpAllocParent
+	// this is not something to be freed
+	LPVOID			m_lpAllocParent;
+}; // CPropertyEditor
+
+class CMultiValuePropertyEditor : public CEditor
+{
+public:
+	CMultiValuePropertyEditor(
+		CWnd* pParentWnd,
+		UINT uidTitle,
+		UINT uidPrompt,
+		BOOL bIsAB,
+		LPVOID lpAllocParent,
+		LPMAPIPROP lpMAPIProp,
+		ULONG ulPropTag,
+		LPSPropValue lpsPropValue);
+	virtual ~CMultiValuePropertyEditor();
 
 	// Get values after we've done the DisplayDialog
 	LPSPropValue DetachModifiedSPropValue();
@@ -29,10 +76,11 @@ private:
 	void	CreatePropertyControls();
 	void	InitPropertyControls();
 	void	ReadMultiValueStringsFromProperty(ULONG ulListNum);
-	void	WriteStringsToSPropValue();
 	void	WriteSPropValueToObject();
 	void	WriteMultiValueStringsToSPropValue(ULONG ulListNum);
-	ULONG	HandleChange(UINT nID);
+	void	WriteMultiValueStringsToSPropValue(ULONG ulListNum, LPVOID lpParent, LPSPropValue lpsProp);
+	void	UpdateListRow(LPSPropValue lpProp, ULONG ulListNum, ULONG iMVCount);
+	void	UpdateSmartView(ULONG ulListNum);
 	void	OnOK();
 
 	// source variables
@@ -41,12 +89,9 @@ private:
 	BOOL			m_bIsAB; // whether the tag is from the AB or not
 	LPSPropValue	m_lpsInputValue;
 	LPSPropValue	m_lpsOutputValue;
-	BOOL			m_bShouldFreeOutputValue;
-	ULONG			m_ulEditorType;
 	BOOL			m_bDirty;
-	BOOL			m_bShouldFreeInputValue;
 
 	// all calls to MAPIAllocateMore will use m_lpAllocParent
 	// this is not something to be freed
-	LPVOID					m_lpAllocParent;
-};
+	LPVOID			m_lpAllocParent;
+}; // CMultiValuePropertyEditor

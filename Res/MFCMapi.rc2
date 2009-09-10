@@ -21,9 +21,9 @@
 #endif
 
 #ifdef _WIN64
-#define RC_VERSION_BITNESS             " x64"
+#define RC_VERSION_BITNESS             " x64 Build"
 #else
-#define RC_VERSION_BITNESS             ""
+#define RC_VERSION_BITNESS             " x86 Build"
 #endif
 
 #ifdef _DEBUG
@@ -32,7 +32,7 @@
 #define RC_VERSION_DEBUG               ""
 #endif
 
-#define RC_VERSION_FILE_DESCRIPTION    RC_PRODUCT_NAME RC_VERSION_WIDTH RC_VERSION_BITNESS RC_VERSION_DEBUG "\0"
+#define RC_VERSION_FILE_DESCRIPTION    RC_PRODUCT_NAME RC_VERSION_WIDTH RC_VERSION_DEBUG RC_VERSION_BITNESS "\0"
 #include "bldver.rc"
 
 // Keep in sync with definition of IDD_ABOUTVERLAST
@@ -523,7 +523,7 @@ C:\\Windows\\System32\\mapistub.dll\r\n\
 C:\\Program Files\\Common Files\\System\\MSMAPI\\1033\\mapi32.dll\r\n\
 C:\\Program Files\\Exchsrvr\\bin\\mapi32.dll"
 IDS_UNLOADMAPI                   "Unload MAPI"
-IDS_UNLOADMAPIPROMPT             "WARNING - Making this call incorrectly could cause MFCMAPI to crash.\r\n\
+IDS_MAPICRASHWARNING             "WARNING - Making this call incorrectly could cause MFCMAPI to crash.\r\n\
 Use caution and only proceed if you know what you are doing."
 IDS_MAPIINIT                     "MAPIInitialize"
 IDS_MAPIINITPROMPT               "WARNING - Making this call incorrectly could cause MFCMAPI to crash.\r\n\
@@ -535,8 +535,6 @@ Select flags:\r\n\
 0x00000008 MAPI_NO_COINIT                 MAPI should not call CoInitialize\r\n\
 0x00010000 MAPI_NT_SERVICE                The caller is running as a Windows NT service"
 IDS_MAPIUNINIT                   "MAPIUninitialize"
-IDS_MAPIUNINITPROMPT             "WARNING - Making this call incorrectly could cause MFCMAPI to crash.\r\n\
-Use caution and only proceed if you know what you are doing."
 IDS_QUERYDEFMSGOPT               "QueryDefaultMessageOpt"
 IDS_RESULTOFCALLPROMPT           "Result of call"
 IDS_QUERYDEFRECIPOPT             "QueryDefaultRecipOpt"
@@ -705,6 +703,11 @@ IDS_PASTENAMEDPROPS              "Paste Named Props"
 IDS_PASTENAMEDPROPSPROMPT        "Enter the property set GUID you wish to copy.\r\n\
 PS_PUBLIC_STRINGS is specified by default (braces ({/}) are required)."
 IDS_MAPISVCTITLE                 "MAPISVC.INF path"
+IDS_MAPISVCTEXT                  
+"This is the path which MAPI will use to read MAPISVC.INF,\r\n\
+and which MFCMAPI will use in updating this file. Note that\r\n\
+if MFCMAPI is 32 bit and running on a 64 bit operating system,\r\n\
+this path may be virtualized."
 IDS_MAPISVCPROMPT                "File path:"
 IDS_PROFILESERVERVERSIONTITLE    "Profile Server Version"
 IDS_PROFILESERVERVERSIONPROMPT   "Server Version is extracted from PR_SERVER_VERSION\r\n\
@@ -747,6 +750,9 @@ a binary search of the named property range (0x8000-0xFFFF).\r\n\
 \r\n\
 The Edit Given Property menu item may be used to further examine\r\n\
 existing named property mappings.\r\n"
+IDS_STNOPARSING                   "No parsing"
+IDS_PROPERTYDEFINITIONSTREAM      "Property Definition Stream"
+IDS_ADDITIONALRENENTRYIDSEX       "Additional Ren Entry IDs Ex"
 
 // AbDlg.cpp
 IDS_FLAGS "Flags"
@@ -1011,11 +1017,14 @@ IDS_BASEDIALOG "BaseDialog"
 
 IDS_HELPTEXT "%1 Usage notes\n\
 \n\
+Visit http://mfcmapi.codeplex.com for more information, bug reports, and the latest builds.\n\
+\n\
 Getting Started: Select Session\\Logon and Display Store Table to open a profile\n\
 \n\
 Keyboard Shortcuts:\n\
 All Panes\n\
-\tF1, Ctrl+H\t\t: Display this help screen\n\
+\tF1\t\t: Display this help screen\n\
+\tCtrl+H\t\t: Display Hex Editor\n\
 \tCtrl+D\t\t: Enable Verbose Debug Output\n\
 \tCtrl+Shift+D\t: Disable Debug Output\n\
 \n\
@@ -1869,6 +1878,43 @@ IDS_SFDEFINITIONADVANCEDSEARCHLEN "\r\nAdvancedSearchLen = 0x%1!08X!"
 IDS_SFDEFINITIONADVANCEDSEARCHBYTES "\r\nAdvancedSearchBytes = "
 IDS_SFDEFINITIONSKIPLEN3 "\r\nSkipLen3 = 0x%1!08X!"
 IDS_SFDEFINITIONSKIPBYTES3 "\r\nSkipBytes2 = "
+IDS_PROPDEFPACKEDSTRINGLEN "%1: Length = 0x%2!04X!"
+IDS_PROPDEFPACKEDSTRINGCHARS " Characters = "
+IDS_PROPDEFHEADER "Property Definition Stream\r\n\
+Version = 0x%1!04X! = %2\r\n\
+FieldDefinitionCount = 0x%3!08X!"
+IDS_PROPDEFFIELDHEADER "\r\nDefinition: %1!d!\r\n\
+\tFlags = 0x%2!08X! = %3\r\n\
+\tVT = 0x%4!04X! = %5\r\n\
+\tDispID = 0x%6!08X!"
+IDS_PROPDEFDISPIDTAG " = %1"
+IDS_PROPDEFDISPIDNAMED " = %1!ws!"
+IDS_PROPDEFNMIDNAME "\r\n\tNmidNameLength = 0x%1!04X!\r\n\
+\tNmidName = "
+IDS_PROPDEFTAB1 "\r\n\t"
+IDS_PROPDEFNAME "NameAnsi"
+IDS_PROPDEFFORUMULA "FormulaANSI"
+IDS_PROPDEFVRULE "ValidationRuleANSI"
+IDS_PROPDEFVTEXT "ValidationTextANSI"
+IDS_PROPDEFERROR "ErrorANSI"
+IDS_PROPDEFINTERNALTYPE "\r\n\tInternalType = 0x%1!08X! = %2\r\n\
+\tSkipBlockCount = %3!d!"
+IDS_PROPDEFSKIPBLOCK "\r\n\tSkipBlock: %1!d!\r\n\
+\t\tSize = 0x%2!08X!"
+IDS_PROPDEFTAB2 "\r\n\t\t"
+IDS_PROPDEFFIELDNAME "FieldName"
+IDS_PROPDEFCONTENT "\r\n\t\tContent = "
+IDS_AEIDHEADER "Additional Ren Entry IDs\r\n\
+PersistDataCount = %1!d!"
+IDS_AEIDPERSISTELEMENT "\r\n\r\nPersist Element %1!d!:\r\n\
+PersistID = 0x%2!04X! = %3\r\n\
+DataElementsSize = 0x%4!04X!"
+IDS_AEIDDATAELEMENT "\r\nDataElement: %1!d!\r\n\
+\tElementID = 0x%2!04X! = %3\r\n\
+\tElementDataSize = 0x%4!04X!\r\n\
+\tElementData = "
+IDS_MVROWBIN "Row %1!d!\r\n"
+IDS_MVROWFLAG "Flag %1!d!: %2"
 
 // All strings above this point use FormatMessage style formatting
 
@@ -1921,6 +1967,13 @@ IDS_EDNOTIFYPROCESSSHUTDOWNFAILED "NotifyProcessShutdown failed."
 IDS_EDDOFASTSHUTDOWNFAILED "DoFastShutdown failed."
 IDS_EDDOFASTSHUTDOWNSUCCEEDED "DoFastShutdown succeeded. Most MAPI operations should now fail.\r\n\
 Please close MFCMAPI now."
+IDS_EDMAPIINITIALIZEFAILED "MAPIIntialize failed with error 0x%08X == %s.\r\n\
+\r\n\
+Here are some known causes for this.\r\n\
+1 - Windows Mail or Outlook Express (which do not implement Extended MAPI) is registered as the Default Mail Client.\r\n\
+\tSee http://msdn.microsoft.com/en-gb/library/dd162409.aspx for information on setting the Default Mail Client.\r\n\
+2 - The bitness (32 or 64 bit) of MFCMAPI does not match the bitness of Outlook.\r\n\
+\tSee http://mfcmapi.codeplex.com for the latest 32 bit and 64 bit builds of MFCMAPI."
 
 // UpdateStatusBarText - use printf style formatting
 IDS_STATUSTEXTNUMITEMS "Number of items: %d"

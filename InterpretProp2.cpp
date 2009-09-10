@@ -375,7 +375,6 @@ void GUIDNameToGUID(LPCTSTR szGUID, LPCGUID* lpGUID)
 LPWSTR NameIDToPropName(LPMAPINAMEID lpNameID)
 {
 	if (!lpNameID) return NULL;
-	if (!lpNameID->lpguid) return NULL;
 	if (lpNameID->ulKind != MNID_ID) return NULL;
 	HRESULT hRes = S_OK;
 	ULONG	ulCur = 0;
@@ -402,16 +401,15 @@ LPWSTR NameIDToPropName(LPMAPINAMEID lpNameID)
 	for (ulCur = ulMatch ; ulCur < ulNameIDArray ; ulCur++)
 	{
 		size_t cchLen = 0;
-		if (NameIDArray[ulCur].lValue != lpNameID->Kind.lID)
-		{
-			break;
-		}
-		if (NameIDArray[ulCur].lpGuid && IsEqualGUID(*lpNameID->lpguid,*NameIDArray[ulCur].lpGuid))
-		{
-			EC_H(StringCchLengthW(NameIDArray[ulCur].lpszName,STRSAFE_MAX_CCH,&cchLen));
-			cchResultString += cchLen;
-			ulNumMatches++;
-		}
+		if (NameIDArray[ulCur].lValue != lpNameID->Kind.lID) break;
+		// We don't acknowledge array entries without guids
+		if (!NameIDArray[ulCur].lpGuid) break;
+		// But if we weren't asked about a guid, we don't check one
+		if (lpNameID->lpguid && !IsEqualGUID(*lpNameID->lpguid,*NameIDArray[ulCur].lpGuid)) break;
+
+		EC_H(StringCchLengthW(NameIDArray[ulCur].lpszName,STRSAFE_MAX_CCH,&cchLen));
+		cchResultString += cchLen;
+		ulNumMatches++;
 	}
 
 	if (!ulNumMatches) return NULL;
@@ -427,17 +425,16 @@ LPWSTR NameIDToPropName(LPMAPINAMEID lpNameID)
 		szResultString[0] = L'\0'; // STRING_OK
 		for (ulCur = ulMatch ; ulCur < ulNameIDArray ; ulCur++)
 		{
-			if (NameIDArray[ulCur].lValue != lpNameID->Kind.lID)
+			if (NameIDArray[ulCur].lValue != lpNameID->Kind.lID) break;
+			// We don't acknowledge array entries without guids
+			if (!NameIDArray[ulCur].lpGuid) break;
+			// But if we weren't asked about a guid, we don't check one
+			if (lpNameID->lpguid && !IsEqualGUID(*lpNameID->lpguid,*NameIDArray[ulCur].lpGuid)) break;
+
+			EC_H(StringCchCatW(szResultString,cchResultString,NameIDArray[ulCur].lpszName));
+			if (--ulNumMatches > 0)
 			{
-				break;
-			}
-			if (NameIDArray[ulCur].lpGuid && IsEqualGUID(*lpNameID->lpguid,*NameIDArray[ulCur].lpGuid))
-			{
-				EC_H(StringCchCatW(szResultString,cchResultString,NameIDArray[ulCur].lpszName));
-				if (--ulNumMatches > 0)
-				{
-					EC_H(StringCchCatW(szResultString,cchResultString,szPropSeparator));
-				}
+				EC_H(StringCchCatW(szResultString,cchResultString,szPropSeparator));
 			}
 		}
 		if (SUCCEEDED(hRes))
@@ -691,12 +688,12 @@ HRESULT InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, LPCTSTR sz
 		if (*szFlagString)
 		{
 			(*szFlagString)[0] = NULL;
-			EC_H(StringCchPrintf(*szFlagString,cchLen,_T("%s%ws"),szPrefix,szTempString)); // STRING_OK
+			EC_H(StringCchPrintf(*szFlagString,cchLen,_T("%s%ws"),szPrefix?szPrefix:_T(""),szTempString)); // STRING_OK
 		}
 	}
 
 	return S_OK;
-}
+} // InterpretFlags
 
 // Returns a list of all known flags/values for a flag name.
 // For instance, for flagFuzzyLevel, would return:
@@ -749,6 +746,7 @@ CString AllFlagsToString(const ULONG ulFlagName,BOOL bHex)
 }
 
 UINT g_uidParsingTypesDropDown[] = {
+	IDS_STNOPARSING,
 	IDS_STTIMEZONEDEFINITION,
 	IDS_STTIMEZONE,
 	IDS_STSECURITYDESCRIPTOR,
@@ -764,6 +762,8 @@ UINT g_uidParsingTypesDropDown[] = {
 	IDS_STPROPERTY,
 	IDS_STRESTRICTION,
 	IDS_STSEARCHFOLDERDEFINITION,
+	IDS_PROPERTYDEFINITIONSTREAM,
+	IDS_ADDITIONALRENENTRYIDSEX,
 };
 ULONG g_cbuidParsingTypesDropDown = sizeof(g_uidParsingTypesDropDown)/sizeof(UINT);
 
@@ -776,6 +776,7 @@ typedef BINARY_STRUCTURE_ARRAY_ENTRY FAR * LPBINARY_STRUCTURE_ARRAY_ENTRY;
 
 #define BINARY_STRUCTURE_ENTRY(_fName,_fType) {PROP_ID((_fName)),(_fType)},
 #define NAMEDPROP_BINARY_STRUCTURE_ENTRY(_fName,_fGuid,_fType) {PROP_TAG((guid##_fGuid),(_fName)),(_fType)},
+#define MV_BINARY_STRUCTURE_ENTRY(_fName,_fType) {PROP_ID((_fName)),(_fType)},{PROP_ID(CHANGE_PROP_TYPE((_fName),PROP_TYPE((_fName)) & ~MV_FLAG)),(_fType)},
 
 BINARY_STRUCTURE_ARRAY_ENTRY g_BinaryStructArray[] =
 {
@@ -785,6 +786,7 @@ BINARY_STRUCTURE_ARRAY_ENTRY g_BinaryStructArray[] =
 	BINARY_STRUCTURE_ENTRY(PR_REPORT_TAG,IDS_STREPORTTAG)
 	BINARY_STRUCTURE_ENTRY(PR_CONVERSATION_INDEX,IDS_STCONVERSATIONINDEX)
 	BINARY_STRUCTURE_ENTRY(PR_WB_SF_DEFINITION,IDS_STSEARCHFOLDERDEFINITION)
+	BINARY_STRUCTURE_ENTRY(PR_ADDITIONAL_REN_ENTRYIDS_EX,IDS_ADDITIONALRENENTRYIDSEX)
 
 	BINARY_STRUCTURE_ENTRY(PR_RECEIVED_BY_ENTRYID,IDS_STENTRYID)
 	BINARY_STRUCTURE_ENTRY(PR_SENT_REPRESENTING_ENTRYID,IDS_STENTRYID)
@@ -855,6 +857,15 @@ BINARY_STRUCTURE_ARRAY_ENTRY g_BinaryStructArray[] =
 	BINARY_STRUCTURE_ENTRY(PR_NNTP_ARTICLE_FOLDER_ENTRYID,IDS_STENTRYID)
 	BINARY_STRUCTURE_ENTRY(PR_NEWSGROUP_ROOT_FOLDER_ENTRYID,IDS_STENTRYID)
 	BINARY_STRUCTURE_ENTRY(PR_EMS_AB_PARENT_ENTRYID,IDS_STENTRYID)
+	BINARY_STRUCTURE_ENTRY(PR_TARGET_ENTRYID,IDS_STENTRYID)
+
+	MV_BINARY_STRUCTURE_ENTRY(PR_ADDITIONAL_REN_ENTRYIDS,IDS_STENTRYID)
+	MV_BINARY_STRUCTURE_ENTRY(PR_FREEBUSY_ENTRYIDS,IDS_STENTRYID)
+	MV_BINARY_STRUCTURE_ENTRY(PR_SCHDINFO_DELEGATE_ENTRYIDS,IDS_STENTRYID)
+	MV_BINARY_STRUCTURE_ENTRY(PR_AB_SEARCH_PATH,IDS_STENTRYID)
+	MV_BINARY_STRUCTURE_ENTRY(PR_CONTAB_FOLDER_ENTRYIDS,IDS_STENTRYID)
+	MV_BINARY_STRUCTURE_ENTRY(PR_CONTAB_STORE_ENTRYIDS,IDS_STENTRYID)
+
 	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidEmail1OriginalEntryID,PSETID_Address,IDS_STENTRYID)
 	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidEmail2OriginalEntryID,PSETID_Address,IDS_STENTRYID)
 	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidEmail3OriginalEntryID,PSETID_Address,IDS_STENTRYID)
@@ -882,6 +893,7 @@ BINARY_STRUCTURE_ARRAY_ENTRY g_BinaryStructArray[] =
 	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidTaskMyDelegators,PSETID_Task,IDS_STTASKASSIGNERS)
 	NAMEDPROP_BINARY_STRUCTURE_ENTRY(LID_GLOBAL_OBJID,PSETID_Meeting,IDS_STGLOBALOBJECTID)
 	NAMEDPROP_BINARY_STRUCTURE_ENTRY(LID_CLEAN_GLOBAL_OBJID,PSETID_Meeting,IDS_STGLOBALOBJECTID)
+	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidPropDefStream,PSETID_Common,IDS_PROPERTYDEFINITIONSTREAM)
 };
 
 LPBINARY_STRUCTURE_ARRAY_ENTRY BinaryStructArray = g_BinaryStructArray;
@@ -993,6 +1005,11 @@ void InterpretProp(LPSPropValue lpProp, // optional property value
 					EC_H(InterpretFlags(lpProp,ulPropNameID,NULL,lpNameID?lpNameID->lpguid:NULL,szPrefix,lpszSmartView));
 				}
 				break;
+			case PT_MV_LONG:
+				{
+					InterpretMVLongAsString(lpProp->Value.MVl,ulPropNameID,lpProp->ulPropTag,lpNameID?lpNameID->lpguid:NULL,lpszSmartView);
+				}
+				break;
 			case PT_BINARY:
 				{
 					if (lpProp)
@@ -1001,6 +1018,18 @@ void InterpretProp(LPSPropValue lpProp, // optional property value
 						if (iStructType)
 						{
 							InterpretBinaryAsString(lpProp->Value.bin,iStructType,lpMAPIProp,ulPropTag,lpszSmartView);
+						}
+					}
+				}
+				break;
+			case PT_MV_BINARY:
+				{
+					if (lpProp)
+					{
+						ULONG iStructType = FindStructForBinaryProp(lpProp->ulPropTag,ulPropNameID,lpNameID?lpNameID->lpguid:NULL);
+						if (iStructType)
+						{
+							InterpretMVBinaryAsString(lpProp->Value.MVbin,iStructType,lpMAPIProp,ulPropTag,lpszSmartView);
 						}
 					}
 				}
@@ -1099,6 +1128,67 @@ HRESULT GetLargeBinaryProp(LPMAPIPROP lpMAPIProp, ULONG ulPropTag, LPSPropValue*
 	return hRes;
 }
 
+void InterpretMVBinaryAsString(SBinaryArray myBinArray, DWORD_PTR iStructType, LPMAPIPROP lpMAPIProp, ULONG ulPropTag, LPTSTR* lpszResultString)
+{
+	if (!lpszResultString) return;
+
+	ULONG ulRow = 0;
+	CString szResult;
+	CString szTmp;
+	LPTSTR szSmartView = NULL;
+
+	for (ulRow = 0 ; ulRow < myBinArray.cValues ; ulRow++)
+	{
+		if (ulRow != 0)
+		{
+			szResult += _T("\r\n\r\n"); // STRING_OK
+		}
+		szTmp.FormatMessage(IDS_MVROWBIN,
+			ulRow);
+		szResult += szTmp;
+		InterpretBinaryAsString(myBinArray.lpbin[ulRow],iStructType,lpMAPIProp,ulPropTag,&szSmartView);
+		szResult += szSmartView;
+		delete[] szSmartView;
+		szSmartView++;
+	}
+
+	*lpszResultString = CStringToString(szResult);
+} // InterpretMVBinaryAsString
+
+void InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropNameID, ULONG ulPropTag, LPGUID lpguidNamedProp, LPTSTR* lpszResultString)
+{
+	if (!lpszResultString) return;
+
+	ULONG ulRow = 0;
+	CString szResult;
+	CString szTmp;
+	LPTSTR szSmartView = NULL;
+
+	for (ulRow = 0 ; ulRow < myLongArray.cValues ; ulRow++)
+	{
+		HRESULT hRes = S_OK;
+		SPropValue sProp = {0};
+		sProp.ulPropTag = CHANGE_PROP_TYPE(ulPropTag, PT_LONG);
+		sProp.Value.l = myLongArray.lpl[ulRow];
+
+		if (ulRow != 0)
+		{
+			szResult += _T("\r\n"); // STRING_OK
+		}
+		EC_H(InterpretFlags(&sProp,ulPropNameID,NULL,lpguidNamedProp,NULL,&szSmartView));
+		if (szSmartView)
+		{
+			szTmp.FormatMessage(IDS_MVROWFLAG,
+				ulRow,
+				szSmartView?szSmartView:_T(""));
+			szResult += szTmp;
+			delete[] szSmartView;
+		}
+	}
+
+	*lpszResultString = CStringToString(szResult);
+} // InterpretMVLongAsString
+
 void InterpretBinaryAsString(SBinary myBin, DWORD_PTR iStructType, LPMAPIPROP lpMAPIProp, ULONG ulPropTag, LPTSTR* lpszResultString)
 {
 	if (!lpszResultString) return;
@@ -1106,6 +1196,9 @@ void InterpretBinaryAsString(SBinary myBin, DWORD_PTR iStructType, LPMAPIPROP lp
 
 	switch (iStructType)
 	{
+	case IDS_STNOPARSING:
+		// We don't do any parsing in this case
+		break;
 	case IDS_STTIMEZONEDEFINITION:
 		TimeZoneDefinitionToString(myBin,&szResultString);
 		break;
@@ -1151,8 +1244,14 @@ void InterpretBinaryAsString(SBinary myBin, DWORD_PTR iStructType, LPMAPIPROP lp
 	case IDS_STSEARCHFOLDERDEFINITION:
 		SearchFolderDefinitionToString(myBin,&szResultString);
 		break;
+	case IDS_PROPERTYDEFINITIONSTREAM:
+		PropertyDefinitionStreamToString(myBin,&szResultString);
+		break;
+	case IDS_ADDITIONALRENENTRYIDSEX:
+		AdditionalRenEntryIDsToString(myBin,&szResultString);
+		break;
 	}
-	if (szResultString) *lpszResultString = szResultString;
+	*lpszResultString = szResultString;
 }
 
 class CBinaryParser
@@ -1162,6 +1261,8 @@ public:
 
 	void Advance(size_t cbAdvance);
 	size_t GetCurrentOffset();
+	// Moves the parser to an offset obtained from GetCurrentOffset
+	void SetCurrentOffset(size_t stOffset);
 	size_t RemainingBytes();
 	void GetBYTE(BYTE* pBYTE);
 	void GetWORD(WORD* pWORD);
@@ -1197,6 +1298,11 @@ void CBinaryParser::Advance(size_t cbAdvance)
 size_t CBinaryParser::GetCurrentOffset()
 {
 	return m_lpCur - m_lpBin;
+}
+
+void CBinaryParser::SetCurrentOffset(size_t stOffset)
+{
+	m_lpCur = m_lpBin + stOffset;
 }
 
 // If we're before the end of the buffer, return the count of remaining bytes
@@ -1326,7 +1432,7 @@ void CBinaryParser::GetStringW(LPWSTR* ppStr)
 
 CString JunkDataToString(size_t cbJunkData, LPBYTE lpJunkData)
 {
-	if (!cbJunkData || !lpJunkData) return _T(""); // STRING_OK
+	if (!cbJunkData || !lpJunkData) return _T("");
 	CString szTmp;
 	SBinary sBin = {0};
 
@@ -1767,7 +1873,7 @@ LPTSTR AppointmentRecurrencePatternStructToString(AppointmentRecurrencePatternSt
 			if (parpPattern->ExceptionInfo[i].OverrideFlags & ARO_BUSYSTATUS)
 			{
 				LPTSTR szFlags = NULL;
-				EC_H(InterpretFlags(PROP_TAG((guidPSETID_Common),dispidBusyStatus), parpPattern->ExceptionInfo[i].BusyStatus, &szFlags));
+				EC_H(InterpretFlags(PROP_TAG((guidPSETID_Appointment),dispidBusyStatus), parpPattern->ExceptionInfo[i].BusyStatus, &szFlags));
 				szTmp.FormatMessage(IDS_ARPEXBUSYSTATUS,
 					i,parpPattern->ExceptionInfo[i].BusyStatus,szFlags);
 				delete[] szFlags;
@@ -2076,6 +2182,9 @@ void ExtendedFlagsBinToString(SBinary myBin, LPTSTR* lpszResultString)
 	}
 }
 
+// There may be extended flag streams with over 500 extended flags, but we're not going to try to parse them
+#define _MaxExtendedFlags 500
+
 ExtendedFlagsStruct* BinToExtendedFlagsStruct(ULONG cbBin, LPBYTE lpBin)
 {
 	if (!lpBin) return NULL;
@@ -2101,7 +2210,7 @@ ExtendedFlagsStruct* BinToExtendedFlagsStruct(ULONG cbBin, LPBYTE lpBin)
 
 	// Set up to parse for real
 	CBinaryParser Parser2(cbBin,lpBin);
-	if (efExtendedFlags.ulNumFlags && efExtendedFlags.ulNumFlags < ULONG_MAX/sizeof(ExtendedFlagStruct))
+	if (efExtendedFlags.ulNumFlags && efExtendedFlags.ulNumFlags < _MaxExtendedFlags)
 		efExtendedFlags.pefExtendedFlags = new ExtendedFlagStruct[efExtendedFlags.ulNumFlags];
 
 	if (efExtendedFlags.pefExtendedFlags)
@@ -2707,6 +2816,9 @@ void ConversationIndexToString(SBinary myBin, LPTSTR* lpszResultString)
 	}
 }
 
+// There may be conversation indexes with over 500 response levels, but we're not going to try to parse them
+#define _MaxResponseLevels 500
+
 // Allocates return value with new. Clean up with DeleteConversationIndexStruct.
 ConversationIndexStruct* BinToConversationIndexStruct(ULONG cbBin, LPBYTE lpBin)
 {
@@ -2745,7 +2857,7 @@ ConversationIndexStruct* BinToConversationIndexStruct(ULONG cbBin, LPBYTE lpBin)
 		ciConversationIndex.ulResponseLevels = (ULONG) Parser.RemainingBytes()/5; // Response levels consume 5 bytes each
 	}
 
-	if (ciConversationIndex.ulResponseLevels && ciConversationIndex.ulResponseLevels < ULONG_MAX/sizeof(ResponseLevelStruct))
+	if (ciConversationIndex.ulResponseLevels && ciConversationIndex.ulResponseLevels < _MaxResponseLevels)
 		ciConversationIndex.lpResponseLevels = new ResponseLevelStruct[ciConversationIndex.ulResponseLevels];
 
 	if (ciConversationIndex.lpResponseLevels)
@@ -2845,6 +2957,9 @@ void TaskAssignersToString(SBinary myBin, LPTSTR* lpszResultString)
 	}
 }
 
+// There may be task assigner structs with over 500 task assigners, but we're not going to try to parse them
+#define _MaxTaskAssigners 500
+
 // Allocates return value with new. Clean up with DeleteTaskAssignersStruct.
 TaskAssignersStruct* BinToTaskAssignersStruct(ULONG cbBin, LPBYTE lpBin)
 {
@@ -2855,7 +2970,7 @@ TaskAssignersStruct* BinToTaskAssignersStruct(ULONG cbBin, LPBYTE lpBin)
 
 	Parser.GetDWORD(&taTaskAssigners.cAssigners);
 
-	if (taTaskAssigners.cAssigners && taTaskAssigners.cAssigners < ULONG_MAX/sizeof(TaskAssignerStruct))
+	if (taTaskAssigners.cAssigners && taTaskAssigners.cAssigners < _MaxTaskAssigners)
 		taTaskAssigners.lpTaskAssigners = new TaskAssignerStruct[taTaskAssigners.cAssigners];
 
 	if (taTaskAssigners.lpTaskAssigners)
@@ -3556,7 +3671,7 @@ void PropertyToString(SBinary myBin, LPTSTR* lpszResultString)
 {
 	if (!lpszResultString) return;
 	*lpszResultString = NULL;
-	PropertyStruct* ppProperty = BinToPropertyStruct(myBin.cb,myBin.lpb,1,NULL);
+	PropertyStruct* ppProperty = BinToPropertyStruct(myBin.cb,myBin.lpb,1);
 	if (ppProperty)
 	{
 		*lpszResultString = PropertyStructToString(ppProperty);
@@ -3565,10 +3680,9 @@ void PropertyToString(SBinary myBin, LPTSTR* lpszResultString)
 } // PropertyToString
 
 // Allocates return value with new. Clean up with DeletePropertyStruct.
-PropertyStruct* BinToPropertyStruct(ULONG cbBin, LPBYTE lpBin, DWORD dwPropCount, size_t* lpcbBytesRead)
+PropertyStruct* BinToPropertyStruct(ULONG cbBin, LPBYTE lpBin, DWORD dwPropCount)
 {
 	if (!lpBin) return NULL;
-	if (lpcbBytesRead) *lpcbBytesRead = NULL;
 	CBinaryParser Parser(cbBin,lpBin);
 
 	size_t cbBytesRead = 0;
@@ -3587,14 +3701,11 @@ PropertyStruct* BinToPropertyStruct(ULONG cbBin, LPBYTE lpBin, DWORD dwPropCount
 	}
 
 	// Junk data remains
-	// Only fill out junk data if we've not been asked to report back how many bytes we read
-	// If we've been asked to report back, then someone else will handle the remaining data
-	if (!lpcbBytesRead && Parser.RemainingBytes() > 0)
+	if (Parser.RemainingBytes() > 0)
 	{
 		ppProperty->JunkDataSize = Parser.RemainingBytes();
 		Parser.GetBYTES(ppProperty->JunkDataSize,&ppProperty->JunkData);
 	}
-	if (lpcbBytesRead) *lpcbBytesRead = Parser.GetCurrentOffset();
 
 	return ppProperty;
 } // BinToPropertyStruct
@@ -4576,3 +4687,589 @@ LPTSTR SearchFolderDefinitionStructToString(SearchFolderDefinitionStruct* psfdSe
 
 	return CStringToString(szSearchFolderDefinition);
 } // SearchFolderDefinitionStructToString
+
+
+void PropertyDefinitionStreamToString(SBinary myBin, LPTSTR* lpszResultString)
+{
+	if (!lpszResultString) return;
+	*lpszResultString = NULL;
+	PropertyDefinitionStreamStruct* ppdsPropertyDefinitionStream = BinToPropertyDefinitionStreamStruct(myBin.cb,myBin.lpb);
+	if (ppdsPropertyDefinitionStream)
+	{
+		*lpszResultString = PropertyDefinitionStreamStructToString(ppdsPropertyDefinitionStream);
+		DeletePropertyDefinitionStreamStruct(ppdsPropertyDefinitionStream);
+	}
+} // PropertyDefinitionStreamToString
+
+// There may be property definition streams with over 1000 field definitions, but we're not going to try to parse them
+#define _MaxFieldDefinition 1000
+// There may be field definitions with over 500 skip blocks, but we're not going to try to parse them
+#define _MaxSkipBlock 500
+
+void ReadPackedAnsiString(CBinaryParser* pParser, PackedAnsiString* ppasString)
+{
+	if (!pParser || !ppasString) return;
+
+	pParser->GetBYTE(&ppasString->cchLength);
+	if (0xFF == ppasString->cchLength)
+	{
+		pParser->GetWORD(&ppasString->cchExtendedLength);
+	}
+	pParser->GetStringA(ppasString->cchExtendedLength?ppasString->cchExtendedLength:ppasString->cchLength,
+		&ppasString->szCharacters);
+} // ReadPackedAnsiString
+
+void ReadPackedUnicodeString(CBinaryParser* pParser, PackedUnicodeString* ppusString)
+{
+	if (!pParser || !ppusString) return;
+
+	pParser->GetBYTE(&ppusString->cchLength);
+	if (0xFF == ppusString->cchLength)
+	{
+		pParser->GetWORD(&ppusString->cchExtendedLength);
+	}
+	pParser->GetStringW(ppusString->cchExtendedLength?ppusString->cchExtendedLength:ppusString->cchLength,
+		&ppusString->szCharacters);
+} // ReadPackedUnicodeString
+
+// Allocates return value with new. Clean up with DeletePropertyDefinitionStreamStruct.
+PropertyDefinitionStreamStruct* BinToPropertyDefinitionStreamStruct(ULONG cbBin, LPBYTE lpBin)
+{
+	if (!lpBin) return NULL;
+
+	PropertyDefinitionStreamStruct pdsPropertyDefinitionStream = {0};
+	CBinaryParser Parser(cbBin,lpBin);
+
+	Parser.GetWORD(&pdsPropertyDefinitionStream.wVersion);
+	Parser.GetDWORD(&pdsPropertyDefinitionStream.dwFieldDefinitionCount);
+	if (pdsPropertyDefinitionStream.dwFieldDefinitionCount && pdsPropertyDefinitionStream.dwFieldDefinitionCount < _MaxFieldDefinition)
+	{
+		pdsPropertyDefinitionStream.pfdFieldDefinitions = new FieldDefinition[pdsPropertyDefinitionStream.dwFieldDefinitionCount];
+
+		if (pdsPropertyDefinitionStream.pfdFieldDefinitions)
+		{
+			memset(pdsPropertyDefinitionStream.pfdFieldDefinitions,0,pdsPropertyDefinitionStream.dwFieldDefinitionCount * sizeof(FieldDefinition));
+
+			DWORD iDef = 0;
+			for (iDef = 0 ; iDef < pdsPropertyDefinitionStream.dwFieldDefinitionCount ; iDef++)
+			{
+				Parser.GetDWORD(&pdsPropertyDefinitionStream.pfdFieldDefinitions[iDef].dwFlags);
+				Parser.GetWORD(&pdsPropertyDefinitionStream.pfdFieldDefinitions[iDef].wVT);
+				Parser.GetDWORD(&pdsPropertyDefinitionStream.pfdFieldDefinitions[iDef].dwDispid);
+				Parser.GetWORD(&pdsPropertyDefinitionStream.pfdFieldDefinitions[iDef].wNmidNameLength);
+				Parser.GetStringW(pdsPropertyDefinitionStream.pfdFieldDefinitions[iDef].wNmidNameLength,
+					&pdsPropertyDefinitionStream.pfdFieldDefinitions[iDef].szNmidName);
+				
+				ReadPackedAnsiString(&Parser,&pdsPropertyDefinitionStream.pfdFieldDefinitions[iDef].pasNameANSI);
+				ReadPackedAnsiString(&Parser,&pdsPropertyDefinitionStream.pfdFieldDefinitions[iDef].pasFormulaANSI);
+				ReadPackedAnsiString(&Parser,&pdsPropertyDefinitionStream.pfdFieldDefinitions[iDef].pasValidationRuleANSI);
+				ReadPackedAnsiString(&Parser,&pdsPropertyDefinitionStream.pfdFieldDefinitions[iDef].pasValidationTextANSI);
+				ReadPackedAnsiString(&Parser,&pdsPropertyDefinitionStream.pfdFieldDefinitions[iDef].pasErrorANSI);
+
+				if (PropDefV2 == pdsPropertyDefinitionStream.wVersion)
+				{
+					Parser.GetDWORD(&pdsPropertyDefinitionStream.pfdFieldDefinitions[iDef].dwInternalType);
+
+					// Have to count how many skip blocks are here.
+					// The only way to do that is to parse them. So we parse once without storing, allocate, then reparse.
+					size_t stBookmark = Parser.GetCurrentOffset();
+
+					DWORD dwSkipBlockCount = 0;
+
+					while (true)
+					{
+						dwSkipBlockCount++;
+						DWORD dwBlock = 0;
+						Parser.GetDWORD(&dwBlock);
+						if (!dwBlock) break; // we hit the last, zero byte block, or the end of the buffer
+						Parser.Advance(dwBlock);
+					}
+					Parser.SetCurrentOffset(stBookmark); // We're done with our first pass, restore the bookmark
+
+					pdsPropertyDefinitionStream.pfdFieldDefinitions[iDef].dwSkipBlockCount = dwSkipBlockCount;
+					if (pdsPropertyDefinitionStream.pfdFieldDefinitions[iDef].dwSkipBlockCount &&
+						pdsPropertyDefinitionStream.pfdFieldDefinitions[iDef].dwSkipBlockCount < _MaxSkipBlock)
+					{
+						pdsPropertyDefinitionStream.pfdFieldDefinitions[iDef].psbSkipBlocks = new SkipBlock[pdsPropertyDefinitionStream.pfdFieldDefinitions[iDef].dwSkipBlockCount];
+
+						if (pdsPropertyDefinitionStream.pfdFieldDefinitions[iDef].psbSkipBlocks)
+						{
+							memset(pdsPropertyDefinitionStream.pfdFieldDefinitions[iDef].psbSkipBlocks,0,pdsPropertyDefinitionStream.pfdFieldDefinitions[iDef].dwSkipBlockCount * sizeof(SkipBlock));
+
+							DWORD iSkip = 0;
+							for (iSkip = 0 ; iSkip < pdsPropertyDefinitionStream.pfdFieldDefinitions[iDef].dwSkipBlockCount ; iSkip++)
+							{
+								Parser.GetDWORD(&pdsPropertyDefinitionStream.pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].dwSize);
+								Parser.GetBYTES(pdsPropertyDefinitionStream.pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].dwSize,
+									&pdsPropertyDefinitionStream.pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].lpbContent);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// Junk data remains
+	if (Parser.RemainingBytes() > 0)
+	{
+		pdsPropertyDefinitionStream.JunkDataSize = Parser.RemainingBytes();
+		Parser.GetBYTES(pdsPropertyDefinitionStream.JunkDataSize,&pdsPropertyDefinitionStream.JunkData);
+	}
+
+	PropertyDefinitionStreamStruct* ppdsPropertyDefinitionStream = new PropertyDefinitionStreamStruct;
+	if (ppdsPropertyDefinitionStream)
+	{
+		*ppdsPropertyDefinitionStream = pdsPropertyDefinitionStream;
+	}
+
+	return ppdsPropertyDefinitionStream;
+} // BinToPropertyDefinitionStreamStruct
+
+void DeletePropertyDefinitionStreamStruct(PropertyDefinitionStreamStruct* ppdsPropertyDefinitionStream)
+{
+	if (!ppdsPropertyDefinitionStream) return;
+	if (ppdsPropertyDefinitionStream->pfdFieldDefinitions)
+	{
+		DWORD iDef = 0;
+		for (iDef = 0 ; iDef < ppdsPropertyDefinitionStream->dwFieldDefinitionCount ; iDef++)
+		{
+			delete[] ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].pasNameANSI.szCharacters;
+			delete[] ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].pasFormulaANSI.szCharacters;
+			delete[] ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].pasValidationRuleANSI.szCharacters;
+			delete[] ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].pasValidationTextANSI.szCharacters;
+			delete[] ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].pasErrorANSI.szCharacters;
+
+			if (ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].psbSkipBlocks)
+			{
+				DWORD iSkip = 0;
+				for (iSkip = 0 ; iSkip < ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].dwSkipBlockCount ; iSkip++)
+				{
+					delete[] ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].lpbContent;
+				}
+				delete[] ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].psbSkipBlocks;
+			}
+		}
+		delete[] ppdsPropertyDefinitionStream->pfdFieldDefinitions;
+	}
+
+	delete[] ppdsPropertyDefinitionStream->JunkData;
+	delete ppdsPropertyDefinitionStream;
+} // DeletePropertyDefinitionStreamStruct
+
+CString PackedAnsiStringToString(DWORD dwFlags, PackedAnsiString* ppasString)
+{
+	if (!ppasString) return _T("");
+
+	CString szFieldName;
+	CString szPackedAnsiString;
+	CString szTmp;
+
+	szFieldName.FormatMessage(dwFlags);
+
+	szPackedAnsiString.FormatMessage(IDS_PROPDEFPACKEDSTRINGLEN,
+		szFieldName,
+		(0xFF == ppasString->cchLength)?ppasString->cchExtendedLength:ppasString->cchLength);
+	if (ppasString->szCharacters)
+	{
+		szTmp.FormatMessage(IDS_PROPDEFPACKEDSTRINGCHARS,
+			szFieldName);
+		szPackedAnsiString += szTmp;
+		szPackedAnsiString += ppasString->szCharacters;
+	}
+
+	return szPackedAnsiString;
+} // PackedAnsiStringToString
+
+CString PackedUnicodeStringToString(DWORD dwFlags, PackedUnicodeString* ppusString)
+{
+	if (!ppusString) return _T("");
+
+	CString szFieldName;
+	CString szPackedUnicodeString;
+	CString szTmp;
+
+	szFieldName.FormatMessage(dwFlags);
+
+	szPackedUnicodeString.FormatMessage(IDS_PROPDEFPACKEDSTRINGLEN,
+		szFieldName,
+		(0xFF == ppusString->cchLength)?ppusString->cchExtendedLength:ppusString->cchLength);
+	if (ppusString->szCharacters)
+	{
+		szTmp.FormatMessage(IDS_PROPDEFPACKEDSTRINGCHARS,
+			szFieldName);
+		szPackedUnicodeString += szTmp;
+		szPackedUnicodeString += ppusString->szCharacters;
+	}
+	return szPackedUnicodeString;
+} // PackedUnicodeStringToString
+
+// result allocated with new, clean up with delete[]
+LPTSTR PropertyDefinitionStreamStructToString(PropertyDefinitionStreamStruct* ppdsPropertyDefinitionStream)
+{
+	if (!ppdsPropertyDefinitionStream) return NULL;
+
+	CString szPropertyDefinitionStream;
+	CString szTmp;
+	HRESULT hRes = S_OK;
+
+	LPTSTR szVersion = NULL;
+	EC_H(InterpretFlags(flagPropDefVersion, ppdsPropertyDefinitionStream->wVersion, &szVersion));
+
+	szPropertyDefinitionStream.FormatMessage(IDS_PROPDEFHEADER,
+		ppdsPropertyDefinitionStream->wVersion,szVersion,
+		ppdsPropertyDefinitionStream->dwFieldDefinitionCount);
+	delete[] szVersion;
+
+	if (ppdsPropertyDefinitionStream->pfdFieldDefinitions)
+	{
+		DWORD iDef = 0;
+		for (iDef = 0 ; iDef < ppdsPropertyDefinitionStream->dwFieldDefinitionCount ; iDef++)
+		{
+			LPTSTR szFlags = NULL;
+			LPTSTR szVarEnum = NULL;
+			EC_H(InterpretFlags(flagPDOFlag, ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].dwFlags, &szFlags)); 
+			EC_H(InterpretFlags(flagVarEnum, ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].wVT, &szVarEnum));
+			szTmp.FormatMessage(IDS_PROPDEFFIELDHEADER,
+				iDef,
+				ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].dwFlags, szFlags,
+				ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].wVT, szVarEnum,
+				ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].dwDispid);
+			szPropertyDefinitionStream += szTmp;
+			delete[] szVarEnum;
+			delete[] szFlags;
+
+			if (ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].dwDispid)
+			{
+				if (ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].dwDispid < 0x8000)
+				{
+					LPTSTR szDispidName = NULL;
+					EC_H(PropTagToPropName(ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].dwDispid,false,NULL,&szDispidName));
+					if (szDispidName)
+					{
+						szTmp.FormatMessage(IDS_PROPDEFDISPIDTAG,szDispidName);
+						szPropertyDefinitionStream += szTmp;
+					}
+					delete[] szDispidName;
+				}
+				else
+				{
+					LPWSTR szDispidName = NULL;
+					MAPINAMEID mnid = {0};
+					mnid.lpguid = NULL;
+					mnid.ulKind = MNID_ID;
+					mnid.Kind.lID = ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].dwDispid;
+					szDispidName = NameIDToPropName(&mnid);
+					if (szDispidName)
+					{
+						szTmp.FormatMessage(IDS_PROPDEFDISPIDNAMED,szDispidName);
+						szPropertyDefinitionStream += szTmp;
+					}
+					delete[] szDispidName;
+				}
+			}
+
+			szTmp.FormatMessage(IDS_PROPDEFNMIDNAME,
+				ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].wNmidNameLength);
+			szPropertyDefinitionStream += szTmp;
+			szPropertyDefinitionStream += ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].szNmidName;
+
+			CString szTab1;
+			szTab1.FormatMessage(IDS_PROPDEFTAB1);
+
+			szPropertyDefinitionStream += szTab1 + PackedAnsiStringToString(IDS_PROPDEFNAME,&ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].pasNameANSI);
+			szPropertyDefinitionStream += szTab1 + PackedAnsiStringToString(IDS_PROPDEFFORUMULA,&ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].pasFormulaANSI);
+			szPropertyDefinitionStream += szTab1 + PackedAnsiStringToString(IDS_PROPDEFVRULE,&ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].pasValidationRuleANSI);
+			szPropertyDefinitionStream += szTab1 + PackedAnsiStringToString(IDS_PROPDEFVTEXT,&ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].pasValidationTextANSI);
+			szPropertyDefinitionStream += szTab1 + PackedAnsiStringToString(IDS_PROPDEFERROR,&ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].pasErrorANSI);
+
+			if (PropDefV2 == ppdsPropertyDefinitionStream->wVersion)
+			{
+				EC_H(InterpretFlags(flagInternalType, ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].dwInternalType, &szFlags));
+				szTmp.FormatMessage(IDS_PROPDEFINTERNALTYPE,
+					ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].dwInternalType, szFlags,
+					ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].dwSkipBlockCount);
+				szPropertyDefinitionStream += szTmp;
+
+				if (ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].psbSkipBlocks)
+				{
+					DWORD iSkip = 0;
+					for (iSkip = 0 ; iSkip < ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].dwSkipBlockCount ; iSkip++)
+					{
+						szTmp.FormatMessage(IDS_PROPDEFSKIPBLOCK,
+							iSkip,
+							ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].dwSize);
+						szPropertyDefinitionStream += szTmp;
+
+						if (ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].dwSize &&
+							ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].lpbContent)
+						{
+							if (0 == iSkip)
+							{
+								// Parse this on the fly
+								CBinaryParser ParserFirstBlock(
+									ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].dwSize,
+									ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].lpbContent);
+								PackedUnicodeString pusString = {0};
+								ReadPackedUnicodeString(&ParserFirstBlock, &pusString);
+								CString szTab2;
+								szTab2.FormatMessage(IDS_PROPDEFTAB2);
+								szPropertyDefinitionStream += szTab2 + PackedUnicodeStringToString(IDS_PROPDEFFIELDNAME,&pusString);
+
+								delete[] pusString.szCharacters;
+							}
+							else
+							{
+								SBinary sBin = {0};
+
+								sBin.cb = (ULONG) ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].dwSize;
+								sBin.lpb = ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].lpbContent;
+
+								szTmp.FormatMessage(IDS_PROPDEFCONTENT);
+								szPropertyDefinitionStream += szTmp;
+								szPropertyDefinitionStream += BinToHexString(&sBin,true);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	szPropertyDefinitionStream += JunkDataToString(ppdsPropertyDefinitionStream->JunkDataSize,ppdsPropertyDefinitionStream->JunkData);
+
+	return CStringToString(szPropertyDefinitionStream);
+} // PropertyDefinitionStreamStructToString
+
+void AdditionalRenEntryIDsToString(SBinary myBin, LPTSTR* lpszResultString)
+{
+	if (!lpszResultString) return;
+	*lpszResultString = NULL;
+	AdditionalRenEntryIDsStruct* pareiAdditionalRenEntryIDs = BinToAdditionalRenEntryIDsStruct(myBin.cb,myBin.lpb);
+	if (pareiAdditionalRenEntryIDs)
+	{
+		*lpszResultString = AdditionalRenEntryIDsStructToString(pareiAdditionalRenEntryIDs);
+		DeleteAdditionalRenEntryIDsStruct(pareiAdditionalRenEntryIDs);
+	}
+} // AdditionalRenEntryIDsToString
+
+// There may be persist data blocks with over 500 persist element blocks, but we're not going to try to parse them
+#define _MaxPersistElements 500
+
+#define PERISIST_SENTINEL 0
+#define ELEMENT_SENTINEL 0
+
+void BinToPersistData(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead, PersistData* ppdPersistData)
+{
+	if (!lpBin || !lpcbBytesRead || !ppdPersistData) return;
+
+	CBinaryParser Parser(cbBin,lpBin);
+
+	Parser.GetWORD(&ppdPersistData->wPersistID);
+	Parser.GetWORD(&ppdPersistData->wDataElementsSize);
+
+	if (ppdPersistData->wPersistID != PERISIST_SENTINEL &&
+		Parser.RemainingBytes() >= ppdPersistData->wDataElementsSize)
+	{
+		// Build a new parser to preread and count our elements
+		// This new parser will only contain as much space as suggested in wDataElementsSize
+		CBinaryParser DataElementParser(ppdPersistData->wDataElementsSize,
+			Parser.GetCurrentOffset() + lpBin);
+		for (;;)
+		{
+			if (DataElementParser.RemainingBytes() <  2 * sizeof(WORD)) break;
+			WORD wElementID = NULL;
+			WORD wElementDataSize = NULL;
+			DataElementParser.GetWORD(&wElementID);
+			DataElementParser.GetWORD(&wElementDataSize);
+			// Must have at least wElementDataSize bytes left to be a valid element data
+			if (DataElementParser.RemainingBytes() < wElementDataSize) break;
+
+			DataElementParser.Advance(wElementDataSize);
+			ppdPersistData->wDataElementCount++;
+			if (ELEMENT_SENTINEL == wElementID) break;
+		}
+	}
+
+	if (ppdPersistData->wDataElementCount && ppdPersistData->wDataElementCount < _MaxPersistElements)
+	{
+		ppdPersistData->ppeDataElement = new PersistElement[ppdPersistData->wDataElementCount];
+
+		if (ppdPersistData->ppeDataElement)
+		{
+			memset(ppdPersistData->ppeDataElement,0,ppdPersistData->wDataElementCount * sizeof(PersistElement));
+
+			WORD iDataElement = 0;
+			for (iDataElement = 0 ; iDataElement < ppdPersistData->wDataElementCount ; iDataElement++)
+			{
+				Parser.GetWORD(&ppdPersistData->ppeDataElement[iDataElement].wElementID);
+				Parser.GetWORD(&ppdPersistData->ppeDataElement[iDataElement].wElementDataSize);
+				if (ELEMENT_SENTINEL == ppdPersistData->ppeDataElement[iDataElement].wElementID) break;
+				Parser.GetBYTES(
+					ppdPersistData->ppeDataElement[iDataElement].wElementDataSize,
+					&ppdPersistData->ppeDataElement[iDataElement].lpbElementData);
+			}
+		}
+	}
+
+	// We'll trust wDataElementsSize to dictate our record size.
+	// Count the 2 WORD size header fields too.
+	size_t cbRecordSize = ppdPersistData->wDataElementsSize+sizeof(WORD) * 2;
+
+	*lpcbBytesRead = Parser.GetCurrentOffset();
+
+	// Junk data remains
+	if (*lpcbBytesRead < cbRecordSize)
+	{
+		ppdPersistData->JunkDataSize = cbRecordSize-*lpcbBytesRead;
+		Parser.GetBYTES(ppdPersistData->JunkDataSize,&ppdPersistData->JunkData);
+		*lpcbBytesRead = Parser.GetCurrentOffset();
+	}
+} // BinToPersistData
+
+// There may be additional entry id streams with over 500 persist data blocks, but we're not going to try to parse them
+#define _MaxPersistData 500
+
+// Allocates return value with new. Clean up with DeleteAdditionalRenEntryIDsStruct.
+AdditionalRenEntryIDsStruct* BinToAdditionalRenEntryIDsStruct(ULONG cbBin, LPBYTE lpBin)
+{
+	if (!lpBin) return NULL;
+
+	AdditionalRenEntryIDsStruct areiAdditionalRenEntryIDs = {0};
+	CBinaryParser Parser(cbBin,lpBin);
+	size_t cbOffset = 0;
+
+	// We're gonna preprocess the buffer to get a count of PersistData blocks
+	cbOffset = Parser.GetCurrentOffset();
+	for (;;)
+	{
+		if (Parser.RemainingBytes() <  2 * sizeof(WORD)) break;
+		WORD wPersistID = NULL;
+		WORD wDataElementSize = NULL;
+		Parser.GetWORD(&wPersistID);
+		Parser.GetWORD(&wDataElementSize);
+		// Must have at least wDataElementSize bytes left to be a valid data element
+		if (Parser.RemainingBytes() < wDataElementSize) break;
+
+		Parser.Advance(wDataElementSize);
+		areiAdditionalRenEntryIDs.wPersistDataCount++;
+		if (PERISIST_SENTINEL == wPersistID) break;
+	}
+	Parser.SetCurrentOffset(cbOffset);
+
+	if (areiAdditionalRenEntryIDs.wPersistDataCount && areiAdditionalRenEntryIDs.wPersistDataCount < _MaxPersistData)
+	{
+		areiAdditionalRenEntryIDs.ppdPersistData = new PersistData[areiAdditionalRenEntryIDs.wPersistDataCount];
+
+		if (areiAdditionalRenEntryIDs.ppdPersistData)
+		{
+			memset(areiAdditionalRenEntryIDs.ppdPersistData,0,areiAdditionalRenEntryIDs.wPersistDataCount * sizeof(PersistData));
+			WORD iPersistElement = 0;
+			for (iPersistElement = 0 ; iPersistElement < areiAdditionalRenEntryIDs.wPersistDataCount ; iPersistElement++)
+			{
+				size_t cbBytesRead = 0;
+				BinToPersistData(
+					(ULONG) Parser.RemainingBytes(),
+					lpBin+Parser.GetCurrentOffset(),
+					&cbBytesRead,
+					&areiAdditionalRenEntryIDs.ppdPersistData[iPersistElement]);
+				Parser.Advance(cbBytesRead);
+			}
+		}
+	}
+
+	// Junk data remains
+	if (Parser.RemainingBytes() > 0)
+	{
+		areiAdditionalRenEntryIDs.JunkDataSize = Parser.RemainingBytes();
+		Parser.GetBYTES(areiAdditionalRenEntryIDs.JunkDataSize,&areiAdditionalRenEntryIDs.JunkData);
+	}
+
+	AdditionalRenEntryIDsStruct* pareiAdditionalRenEntryIDs = new AdditionalRenEntryIDsStruct;
+	if (pareiAdditionalRenEntryIDs)
+	{
+		*pareiAdditionalRenEntryIDs = areiAdditionalRenEntryIDs;
+	}
+
+	return pareiAdditionalRenEntryIDs;
+} // BinToAdditionalRenEntryIDsStruct
+
+void DeleteAdditionalRenEntryIDsStruct(AdditionalRenEntryIDsStruct* pareiAdditionalRenEntryIDs)
+{
+	if (!pareiAdditionalRenEntryIDs) return;
+	if (pareiAdditionalRenEntryIDs->ppdPersistData)
+	{
+		WORD iPersistElement = 0;
+		for (iPersistElement = 0 ; iPersistElement < pareiAdditionalRenEntryIDs->wPersistDataCount ; iPersistElement++)
+		{
+			if (pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].ppeDataElement)
+			{
+				WORD iDataElement = 0;
+				for (iDataElement = 0 ; iDataElement < pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].wDataElementCount; iDataElement++)
+				{
+					delete[] pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].ppeDataElement[iDataElement].lpbElementData;
+				}
+			}
+			delete[] pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].ppeDataElement;
+		}
+	}
+	delete[] pareiAdditionalRenEntryIDs->ppdPersistData;
+
+	delete[] pareiAdditionalRenEntryIDs->JunkData;
+	delete pareiAdditionalRenEntryIDs;
+} // DeleteAdditionalRenEntryIDsStruct
+
+// result allocated with new, clean up with delete[]
+LPTSTR AdditionalRenEntryIDsStructToString(AdditionalRenEntryIDsStruct* pareiAdditionalRenEntryIDs)
+{
+	if (!pareiAdditionalRenEntryIDs) return NULL;
+
+	CString szAdditionalRenEntryIDs;
+	CString szTmp;
+	HRESULT hRes = S_OK;
+
+	szAdditionalRenEntryIDs.FormatMessage(IDS_AEIDHEADER,
+		pareiAdditionalRenEntryIDs->wPersistDataCount);
+
+	if (pareiAdditionalRenEntryIDs->ppdPersistData)
+	{
+		WORD iPersistElement = 0;
+		for (iPersistElement = 0 ; iPersistElement < pareiAdditionalRenEntryIDs->wPersistDataCount ; iPersistElement++)
+		{
+			LPTSTR szPersistID = NULL;
+			EC_H(InterpretFlags(flagPersistID, pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].wPersistID, &szPersistID));
+			szTmp.FormatMessage(IDS_AEIDPERSISTELEMENT,
+				iPersistElement,
+				pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].wPersistID,szPersistID,
+				pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].wDataElementsSize);
+			szAdditionalRenEntryIDs += szTmp;
+			delete[] szPersistID;
+
+			if (pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].ppeDataElement)
+			{
+				WORD iDataElement = 0;
+				for (iDataElement = 0 ; iDataElement < pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].wDataElementCount; iDataElement++)
+				{
+					LPTSTR szElementID = NULL;
+					EC_H(InterpretFlags(flagElementID, pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID, &szElementID));
+					szTmp.FormatMessage(IDS_AEIDDATAELEMENT,
+						iDataElement,
+						pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID, szElementID,
+						pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementDataSize);
+					szAdditionalRenEntryIDs += szTmp;
+					delete[] szElementID;
+
+					SBinary sBin = {0};
+					sBin.cb = (ULONG) pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementDataSize;
+					sBin.lpb = pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].ppeDataElement[iDataElement].lpbElementData;
+					szAdditionalRenEntryIDs += BinToHexString(&sBin,true);
+				}
+			}
+			szAdditionalRenEntryIDs += JunkDataToString(pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].JunkDataSize,pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].JunkData);
+		}
+	}
+
+	szAdditionalRenEntryIDs += JunkDataToString(pareiAdditionalRenEntryIDs->JunkDataSize,pareiAdditionalRenEntryIDs->JunkData);
+
+	return CStringToString(szAdditionalRenEntryIDs);
+} // AdditionalRenEntryIDsStructToString

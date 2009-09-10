@@ -10,6 +10,8 @@
 #include "Editor.h"
 #include "InterpretProp.h"
 #include "InterpretProp2.h"
+#include "MyWinApp.h"
+extern CMyWinApp theApp;
 
 static TCHAR* CLASS = _T("CMyMAPIFormViewer");
 
@@ -49,11 +51,11 @@ CMyMAPIFormViewer::CMyMAPIFormViewer(
 	m_hwndParent = hwndParent;
 	if (!m_hwndParent)
 	{
-		m_hwndParent = GetForegroundWindow();
+		m_hwndParent = GetActiveWindow();
 	}
-	if (!m_hwndParent)
+	if (!m_hwndParent && theApp.m_pMainWnd)
 	{
-		m_hwndParent = GetDesktopWindow();
+		m_hwndParent = theApp.m_pMainWnd->m_hWnd;
 	}
 	if (!m_hwndParent)
 	{
@@ -488,7 +490,7 @@ HRESULT CMyMAPIFormViewer::CallDoVerb(LPMAPIFORM lpMapiForm,
 		lVerb,
 		// (IMAPIViewContext *) this, // view context
 		NULL, // view context
-		(ULONG) (ULONG_PTR) m_hwndParent, // parent window
+		(ULONG_PTR) m_hwndParent, // parent window
 		lpRect)); // RECT structure with size
 	if (S_OK != hRes)
 	{
@@ -503,7 +505,7 @@ HRESULT CMyMAPIFormViewer::CallDoVerb(LPMAPIFORM lpMapiForm,
 			lVerb,
 			// (IMAPIViewContext *) this, // view context
 			NULL, // view context
-			(ULONG) (ULONG_PTR) m_hwndParent, // parent window
+			(ULONG_PTR) m_hwndParent, // parent window
 			&Rect)); // RECT structure with size
 	}
 	return hRes;

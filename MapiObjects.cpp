@@ -103,10 +103,17 @@ void CGlobalCache::MAPIInitialize(ULONG ulFlags)
 	if (!m_bMAPIInitialized)
 	{
 		MAPIINIT_0 mapiInit = {MAPI_INIT_VERSION,ulFlags};
-		EC_H(::MAPIInitialize(&mapiInit));
+		WC_H(::MAPIInitialize(&mapiInit));
 		if (SUCCEEDED(hRes))
 		{
 			m_bMAPIInitialized = TRUE;
+		}
+		else
+		{
+			ErrDialog(__FILE__,__LINE__,
+				IDS_EDMAPIINITIALIZEFAILED,
+				hRes,
+				ErrorNameFromErrorCode(hRes));
 		}
 	}
 } // CGlobalCache::MAPIInitialize
@@ -316,6 +323,7 @@ void CMapiObjects::MAPILogonEx(HWND hwnd,LPTSTR szProfileName, ULONG ulFlags)
 	DebugPrint(DBGGeneric,_T("Logging on with MAPILogonEx, ulFlags = 0x%X\n"),ulFlags);
 
 	this->MAPIInitialize(NULL);
+	if (!bMAPIInitialized()) return;
 
 	if (m_lpMAPISession) m_lpMAPISession->Release();
 	m_lpMAPISession = NULL;

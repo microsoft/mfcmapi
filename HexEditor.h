@@ -7,22 +7,14 @@ class CHexEditor : public CEditor
 {
 public:
 	CHexEditor(
-		CWnd* pParentWnd);
+		CParentWnd* pParentWnd);
 	virtual ~CHexEditor();
-
-	void InitAnsiString(
-		LPCSTR szInputString);
-
-	void InitUnicodeString(
-		LPCWSTR szInputString);
-
-	void InitBase64(
-		LPCTSTR szInputBase64String);
-
-	void InitBinary(
-		LPSBinary lpsInputBin);
 
 private:
 	ULONG HandleChange(UINT nID);
 	void UpdateParser();
+
+	void OnOK();
+	void OnCancel();
+	CParentWnd* m_lpNonModalParent;
 };

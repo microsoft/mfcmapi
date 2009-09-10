@@ -40,6 +40,10 @@ extern UINT g_uidParsingTypesDropDown[];
 extern ULONG g_cbuidParsingTypesDropDown;
 
 void InterpretBinaryAsString(SBinary myBin, DWORD_PTR iStructType, LPMAPIPROP lpMAPIProp, ULONG ulPropTag, LPTSTR* lpszResultString);
+void InterpretMVBinaryAsString(SBinaryArray myBinArray, DWORD_PTR iStructType, LPMAPIPROP lpMAPIProp, ULONG ulPropTag, LPTSTR* lpszResultString);
+void InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropNameID, ULONG ulPropTag, LPGUID lpguidNamedProp, LPTSTR* lpszResultString);
+
+LPTSTR CStringToString(CString szCString);
 
 HRESULT GetLargeBinaryProp(LPMAPIPROP lpMAPIProp, ULONG ulPropTag, LPSPropValue* lppProp);
 
@@ -532,7 +536,6 @@ typedef struct EntryListEntryStruct
 	EntryIdStruct* EntryId;
 } EntryListEntryStruct;
 
-
 // EntryListStruct
 // =====================
 //   This structure specifies an Entry List
@@ -570,7 +573,7 @@ typedef struct
 
 void PropertyToString(SBinary myBin, LPTSTR* lpszResultString);
 // Allocates return value with new. Clean up with DeletePropertyStruct.
-PropertyStruct* BinToPropertyStruct(ULONG cbBin, LPBYTE lpBin, DWORD dwPropCount, size_t* lpcbBytesRead);
+PropertyStruct* BinToPropertyStruct(ULONG cbBin, LPBYTE lpBin, DWORD dwPropCount);
 // Allocates return value with new. Clean up with DeletePropertyStruct.
 LPSPropValue BinToSPropValue(ULONG cbBin, LPBYTE lpBin, DWORD dwPropCount, size_t* lpcbBytesRead);
 // Neuters an array of SPropValues - caller must use delete to delete the SPropValue
@@ -652,3 +655,125 @@ SearchFolderDefinitionStruct* BinToSearchFolderDefinitionStruct(ULONG cbBin, LPB
 void DeleteSearchFolderDefinitionStruct(SearchFolderDefinitionStruct* psfdSearchFolderDefinition);
 // result allocated with new, clean up with delete[]
 LPTSTR SearchFolderDefinitionStructToString(SearchFolderDefinitionStruct* psfdSearchFolderDefinition);
+
+// PackedUnicodeString 
+// =====================
+//   This structure specifies a Packed Unicode String
+//
+typedef struct
+{
+	BYTE cchLength;
+	WORD cchExtendedLength;
+	LPWSTR szCharacters;
+} PackedUnicodeString;
+
+// PackedAnsiString 
+// =====================
+//   This structure specifies a Packed Ansi String
+//
+typedef struct
+{
+	BYTE cchLength;
+	WORD cchExtendedLength;
+	LPSTR szCharacters;
+} PackedAnsiString;
+
+// SkipBlock
+// =====================
+//   This structure specifies a Skip Block
+//
+typedef struct
+{
+	DWORD dwSize;
+	BYTE* lpbContent;
+} SkipBlock;
+
+// FieldDefinition
+// =====================
+//   This structure specifies a Field Definition
+//
+typedef struct
+{
+	DWORD dwFlags;
+	WORD wVT;
+	DWORD dwDispid;
+	WORD wNmidNameLength;
+	LPWSTR szNmidName;
+	PackedAnsiString pasNameANSI;
+	PackedAnsiString pasFormulaANSI;
+	PackedAnsiString pasValidationRuleANSI;
+	PackedAnsiString pasValidationTextANSI;
+	PackedAnsiString pasErrorANSI;
+	DWORD dwInternalType;
+	DWORD dwSkipBlockCount;
+	SkipBlock* psbSkipBlocks;
+} FieldDefinition;
+
+// PropertyDefinitionStreamStruct
+// =====================
+//   This structure specifies a Property Definition Stream
+//
+typedef struct
+{
+	WORD wVersion;
+	DWORD dwFieldDefinitionCount;
+	FieldDefinition* pfdFieldDefinitions;
+
+	size_t JunkDataSize;
+	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
+} PropertyDefinitionStreamStruct;
+
+void PropertyDefinitionStreamToString(SBinary myBin, LPTSTR* lpszResultString);
+// Allocates return value with new. Clean up with DeletePropertyDefinitionStreamStruct.
+PropertyDefinitionStreamStruct* BinToPropertyDefinitionStreamStruct(ULONG cbBin, LPBYTE lpBin);
+void DeletePropertyDefinitionStreamStruct(PropertyDefinitionStreamStruct* ppdsPropertyDefinitionStream);
+// result allocated with new, clean up with delete[]
+LPTSTR PropertyDefinitionStreamStructToString(PropertyDefinitionStreamStruct* ppdsPropertyDefinitionStream);
+
+// PersistElement
+// =====================
+//   This structure specifies a Persist Element block
+//
+typedef struct
+{
+	WORD wElementID;
+	WORD wElementDataSize;
+	LPBYTE lpbElementData;
+} PersistElement;
+
+// PersistData
+// =====================
+//   This structure specifies a Persist Data block
+//
+typedef struct
+{
+	WORD wPersistID;
+	WORD wDataElementsSize;
+	WORD wDataElementCount;
+	PersistElement* ppeDataElement;
+
+	size_t JunkDataSize;
+	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
+} PersistData;
+
+// AdditionalRenEntryIDsStruct
+// =====================
+//   This structure specifies a Additional Ren Entry ID blob
+//
+typedef struct
+{
+	WORD wPersistDataCount;
+	PersistData* ppdPersistData;
+
+	size_t JunkDataSize;
+	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
+} AdditionalRenEntryIDsStruct;
+
+void AdditionalRenEntryIDsToString(SBinary myBin, LPTSTR* lpszResultString);
+// Allocates return value with new. Clean up with DeleteAdditionalRenEntryIDsStruct.
+void BinToPersistData(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead, PersistData* ppdPersistData);
+// Allocates return value with new. Clean up with DeleteAdditionalRenEntryIDsStruct.
+AdditionalRenEntryIDsStruct* BinToAdditionalRenEntryIDsStruct(ULONG cbBin, LPBYTE lpBin);
+void DeleteAdditionalRenEntryIDsStruct(AdditionalRenEntryIDsStruct* pareiAdditionalRenEntryIDs);
+// result allocated with new, clean up with delete[]
+LPTSTR AdditionalRenEntryIDsStructToString(AdditionalRenEntryIDsStruct* pareiAdditionalRenEntryIDs);

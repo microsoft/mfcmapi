@@ -41,6 +41,7 @@ struct EditStruct
 
 	LPWSTR			lpszW;
 	LPSTR			lpszA; // on demand conversion of lpszW
+	size_t			cchsz; // length of string - maintained to preserve possible internal NULLs, includes NULL terminator
 	BOOL			bMultiline;
 };
 
@@ -107,8 +108,8 @@ public:
 	void InitSingleLine(ULONG i, UINT uidLabel, UINT uidVal, BOOL bReadOnly);
 	void InitCheck(ULONG i, UINT uidLabel, BOOL bVal, BOOL bReadOnly);
 	void InitDropDown(ULONG i, UINT uidLabel, ULONG ulDropList, UINT* lpuidDropList, BOOL bReadOnly);
-	void SetStringA(ULONG i,LPCSTR szMsg);
-	void SetStringW(ULONG i,LPCWSTR szMsg);
+	void SetStringA(ULONG i, LPCSTR szMsg, size_t cchsz = -1);
+	void SetStringW(ULONG i, LPCWSTR szMsg, size_t cchsz = -1);
 #ifdef UNICODE
 #define SetString  SetStringW
 #else
@@ -159,8 +160,8 @@ protected:
 	ULONG	GetHexUseControl(ULONG i);
 	BOOL	GetBinaryUseControl(ULONG i,size_t* cbBin,LPBYTE* lpBin);
 	BOOL	GetCheckUseControl(ULONG iControl);
-	LPSTR	GetEditBoxTextA(ULONG i);
-	LPWSTR	GetEditBoxTextW(ULONG iControl);
+	LPSTR	GetEditBoxTextA(ULONG iControl, size_t* lpcchText = NULL);
+	LPWSTR	GetEditBoxTextW(ULONG iControl, size_t* lpcchText = NULL);
 	void	GetEditBoxStream(ULONG iControl, LPSTREAM lpStreamOut, BOOL bUnicode, BOOL bRTF);
 	int		GetDropDownSelection(ULONG iControl);
 	DWORD_PTR GetDropDownSelectionValue(ULONG iControl);
