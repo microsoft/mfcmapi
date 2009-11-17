@@ -42,7 +42,7 @@ void SetDebugOutputToFile(BOOL bDoOutput);
 
 #define fIsSet(ulTag)	(((ulTag) != DBGNoDebug) && (RegKeys[regkeyDEBUG_TAG].ulCurDWORD & (ulTag)))
 
-FILE* OpenFile(LPCTSTR szFileName,BOOL bNewFile);
+FILE* OpenFile(LPCWSTR szFileName,BOOL bNewFile);
 void CloseFile(FILE* fFile);
 
 void _Output(ULONG ulDbgLvl, FILE* fFile, BOOL bPrintThreadTime, LPCTSTR szMsg);

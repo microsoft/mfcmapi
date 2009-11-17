@@ -103,6 +103,7 @@ HRESULT CreateAndDisplayNewMailInFolder(
 } // CreateAndDisplayNewMailInFolder
 
 HRESULT OpenMessageNonModal(
+							HWND hwndParent,
 							LPMDB lpMDB,
 							LPMAPISESSION lpMAPISession,
 							LPMAPIFOLDER lpSourceFolder,
@@ -144,7 +145,7 @@ HRESULT OpenMessageNonModal(
 
 		CMyMAPIFormViewer* lpMAPIFormViewer = NULL;
 		lpMAPIFormViewer = new CMyMAPIFormViewer(
-			NULL,
+			hwndParent,
 			lpMDB,
 			lpMAPISession,
 			lpSourceFolder,
@@ -166,7 +167,7 @@ HRESULT OpenMessageNonModal(
 					ulMessageStatus,
 					lpspvaShow[FLAGS].Value.ul);
 				EC_H(lpMAPIFormMgr->LoadForm(
-					0, // (ULONG) m_hWnd,
+					(ULONG_PTR) hwndParent,
 					0, // flags
 					lpspvaShow[CLASS].Value.lpszA,
 					ulMessageStatus,

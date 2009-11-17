@@ -14,6 +14,7 @@ HRESULT DisplayPropertyEditor(CWnd* pParentWnd,
 							  LPVOID lpAllocParent,
 							  LPMAPIPROP lpMAPIProp,
 							  ULONG ulPropTag,
+							  BOOL bMVRow,
 							  LPSPropValue lpsPropValue,
 							  LPSPropValue* lpNewValue)
 {
@@ -78,6 +79,7 @@ HRESULT DisplayPropertyEditor(CWnd* pParentWnd,
 			uidTitle,
 			uidPrompt,
 			bIsAB,
+			bMVRow,
 			lpAllocParent,
 			lpMAPIProp,
 			ulPropTag,
@@ -93,7 +95,7 @@ HRESULT DisplayPropertyEditor(CWnd* pParentWnd,
 	return hRes;
 }
 
-static TCHAR* SVCLASS = _T("CPropertyEditor");
+static TCHAR* SVCLASS = _T("CPropertyEditor"); // STRING_OK
 
 // Create an editor for a MAPI property
 CPropertyEditor::CPropertyEditor(
@@ -101,6 +103,7 @@ CPropertyEditor::CPropertyEditor(
 								 UINT uidTitle,
 								 UINT uidPrompt,
 								 BOOL bIsAB,
+								 BOOL bMVRow,
 								 LPVOID lpAllocParent,
 								 LPMAPIPROP lpMAPIProp,
 								 ULONG ulPropTag,
@@ -110,6 +113,7 @@ CEditor(pParentWnd,uidTitle,uidPrompt,0,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL)
 	TRACE_CONSTRUCTOR(SVCLASS);
 
 	m_bIsAB = bIsAB;
+	m_bMVRow = bMVRow;
 	m_lpAllocParent = lpAllocParent;
 	m_lpsOutputValue = NULL;
 	m_bDirty = false;
@@ -120,7 +124,7 @@ CEditor(pParentWnd,uidTitle,uidPrompt,0,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL)
 	m_lpsInputValue = lpsPropValue;
 
 	CString szPromptPostFix;
-	szPromptPostFix.Format(_T("\r\n%s"),TagToString(m_ulPropTag,m_lpMAPIProp,m_bIsAB,false)); // STRING_OK
+	szPromptPostFix.Format(_T("\r\n%s"),TagToString(m_ulPropTag | (m_bMVRow?MV_FLAG:NULL),m_lpMAPIProp,m_bIsAB,false)); // STRING_OK
 
 	SetPromptPostFix(szPromptPostFix);
 
@@ -197,22 +201,12 @@ void CPropertyEditor::InitPropertyControls()
 {
 	LPTSTR szSmartView = NULL;
 
-	InterpretProp(m_lpsInputValue,
-		m_ulPropTag,
+	InterpretPropSmartView(m_lpsInputValue,
 		m_lpMAPIProp,
 		NULL,
 		NULL,
-		m_bIsAB,
-		NULL,
-		NULL,
-		NULL,
-		NULL,
-		NULL,
-		NULL,
-		&szSmartView, // Built from lpProp & lpMAPIProp
-		NULL,
-		NULL,
-		NULL);
+		m_bMVRow,
+		&szSmartView); // Built from lpProp & lpMAPIProp
 
 	CString szTemp1;
 	CString szTemp2;
@@ -442,10 +436,7 @@ void CPropertyEditor::InitPropertyControls()
 		SetString(0,szTemp1);
 		break;
 	default:
-		InterpretProp(
-			m_lpsInputValue,
-			&szTemp1,
-			&szTemp2);
+		InterpretProp(m_lpsInputValue,&szTemp1,&szTemp2);
 		InitMultiLine(0,IDS_VALUE,szTemp1,true);
 		InitMultiLine(1,IDS_ALTERNATEVIEW,szTemp2,true);
 		break;
@@ -467,7 +458,7 @@ void CPropertyEditor::WriteStringsToSPropValue()
 	case(PT_ACTIONS):
 		return;
 	case (PT_BINARY):
-		// Check that we've got valid binary before we allocate anything. Note that we're
+		// Check that we've got valid hex string before we allocate anything. Note that we're
 		// reading szTmpString now and will assume it's read when we get to the real PT_BINARY case
 		szTmpString = GetStringUseControl(1);
 
@@ -479,6 +470,22 @@ void CPropertyEditor::WriteStringsToSPropValue()
 
 		ulStrLen = szTmpString.GetLength();
 		if (ulStrLen & 1) return; // can't use an odd length string
+		break;
+	case (PT_STRING8):
+	case (PT_UNICODE):
+		// Check that we've got valid hex string before we allocate anything. Note that we're
+		// reading szTmpString now and will assume it's read when we get to the real PT_STRING8/PT_UNICODE cases
+		szTmpString = GetStringUseControl(2);
+
+		// remove any whitespace before decoding
+		szTmpString.Replace(_T("\r"),_T("")); // STRING_OK
+		szTmpString.Replace(_T("\n"),_T("")); // STRING_OK
+		szTmpString.Replace(_T("\t"),_T("")); // STRING_OK
+		szTmpString.Replace(_T(" "),_T("")); // STRING_OK
+
+		ulStrLen = szTmpString.GetLength();
+		if (ulStrLen & 1) return; // can't use an odd length string
+		break;
 	default: break;
 	}
 
@@ -587,25 +594,57 @@ void CPropertyEditor::WriteStringsToSPropValue()
 			break;
 		case(PT_STRING8):
 			{
+				// We read strings out of the hex control in order to preserve any hex level tweaks the user
+				// may have done. The RichEdit control likes throwing them away.
 				m_lpsOutputValue->Value.lpszA = NULL;
 
-				LPSTR lpszA = GetEditBoxTextA(0); // Get ascii text
-				if (lpszA)
+				// remember we already read szTmpString and ulStrLen and found ulStrLen was even
+				ULONG cbBin = ulStrLen / 2;
+				if (cbBin)
 				{
-					EC_H(CopyStringA(&m_lpsOutputValue->Value.lpszA,lpszA,m_lpAllocParent));
+					ULONG cchString = cbBin;
+					EC_H(MAPIAllocateMore(
+						(cchString+1)*sizeof(CHAR), // NULL terminator
+						m_lpAllocParent,
+						(LPVOID*)&m_lpsOutputValue->Value.lpszA));
 					if (FAILED(hRes)) bFailed = true;
+					else
+					{
+						MyBinFromHex(
+							(LPCTSTR) szTmpString,
+							(LPBYTE) m_lpsOutputValue->Value.lpszA,
+							cbBin);
+						m_lpsOutputValue->Value.lpszA[cchString] = NULL;
+					}
 				}
 			}
 			break;
 		case(PT_UNICODE):
 			{
+				// We read strings out of the hex control in order to preserve any hex level tweaks the user
+				// may have done. The RichEdit control likes throwing them away.
 				m_lpsOutputValue->Value.lpszW = NULL;
 
-				LPWSTR lpszW = GetEditBoxTextW(0); // Get unicode text
-				if (lpszW)
+				// remember we already read szTmpString and ulStrLen and found ulStrLen was even
+				ULONG cbBin = ulStrLen / 2;
+				// Since this is a unicode string, cbBin must also be even
+				if (cbBin & 1) bFailed = true;
+				else
 				{
-					EC_H(CopyStringW(&m_lpsOutputValue->Value.lpszW,lpszW,m_lpAllocParent));
+					ULONG cchString = cbBin / 2;
+					EC_H(MAPIAllocateMore(
+						(cchString+1)*sizeof(WCHAR), // NULL terminator
+						m_lpAllocParent,
+						(LPVOID*)&m_lpsOutputValue->Value.lpszW));
 					if (FAILED(hRes)) bFailed = true;
+					else
+					{
+						MyBinFromHex(
+							(LPCTSTR) szTmpString,
+							(LPBYTE) m_lpsOutputValue->Value.lpszW,
+							cbBin);
+						m_lpsOutputValue->Value.lpszW[cchString] = NULL;
+					}
 				}
 			}
 			break;
@@ -743,22 +782,12 @@ ULONG CPropertyEditor::HandleChange(UINT nID)
 			sProp.ulPropTag = m_ulPropTag;
 			sProp.Value.i = iVal;
 
-			InterpretProp(&sProp,
-				m_ulPropTag,
+			InterpretPropSmartView(&sProp,
 				m_lpMAPIProp,
 				NULL,
 				NULL,
-				m_bIsAB,
-				NULL,
-				NULL,
-				NULL,
-				NULL,
-				NULL,
-				NULL,
-				&szSmartView,
-				NULL,
-				NULL,
-				NULL);
+				m_bMVRow,
+				&szSmartView);
 
 			if (szSmartView) SetString(2,szSmartView);
 			delete[] szSmartView;
@@ -785,22 +814,12 @@ ULONG CPropertyEditor::HandleChange(UINT nID)
 			sProp.ulPropTag = m_ulPropTag;
 			sProp.Value.l = lVal;
 
-			InterpretProp(&sProp,
-				m_ulPropTag,
+			InterpretPropSmartView(&sProp,
 				m_lpMAPIProp,
 				NULL,
 				NULL,
-				m_bIsAB,
-				NULL,
-				NULL,
-				NULL,
-				NULL,
-				NULL,
-				NULL,
-				&szSmartView,
-				NULL,
-				NULL,
-				NULL);
+				m_bMVRow,
+				&szSmartView);
 
 			if (szSmartView) SetString(2,szSmartView);
 			delete[] szSmartView;
@@ -898,22 +917,12 @@ ULONG CPropertyEditor::HandleChange(UINT nID)
 			sProp.ulPropTag = m_ulPropTag;
 			sProp.Value.bin = Bin;
 
-			InterpretProp(&sProp,
-				m_ulPropTag,
+			InterpretPropSmartView(&sProp,
 				m_lpMAPIProp,
 				NULL,
 				NULL,
-				m_bIsAB,
-				NULL,
-				NULL,
-				NULL,
-				NULL,
-				NULL,
-				NULL,
-				&szSmartView,
-				NULL,
-				NULL,
-				NULL);
+				m_bMVRow,
+				&szSmartView);
 
 			SetString(3,szSmartView);
 			delete[] szSmartView;
@@ -999,7 +1008,7 @@ ULONG CPropertyEditor::HandleChange(UINT nID)
 	return i;
 } // CPropertyEditor::HandleChange
 
-static TCHAR* MVCLASS = _T("CMultiValuePropertyEditor");
+static TCHAR* MVCLASS = _T("CMultiValuePropertyEditor"); // STRING_OK
 
 // Create an editor for a MAPI property
 CMultiValuePropertyEditor::CMultiValuePropertyEditor(
@@ -1092,7 +1101,11 @@ void CMultiValuePropertyEditor::ReadMultiValueStringsFromProperty(ULONG ulListNu
 	InsertColumn(ulListNum,0,IDS_ENTRY);
 	InsertColumn(ulListNum,1,IDS_VALUE);
 	InsertColumn(ulListNum,2,IDS_ALTERNATEVIEW);
-	InsertColumn(ulListNum,3,IDS_COLSMART_VIEW);
+	if (PT_MV_LONG == PROP_TYPE(m_lpsInputValue->ulPropTag) ||
+		PT_MV_BINARY == PROP_TYPE(m_lpsInputValue->ulPropTag))
+	{
+		InsertColumn(ulListNum,3,IDS_COLSMART_VIEW);
+	}
 
 	if (!m_lpsInputValue) return;
 	if (!(PROP_TYPE(m_lpsInputValue->ulPropTag) & MV_FLAG)) return;
@@ -1355,7 +1368,8 @@ BOOL CMultiValuePropertyEditor::DoListEdit(ULONG ulListNum, int iItem, SortListD
 
 	HRESULT hRes = S_OK;
 	SPropValue tmpPropVal = {0};
-	tmpPropVal.ulPropTag = CHANGE_PROP_TYPE(m_ulPropTag,PROP_TYPE(m_ulPropTag) & ~MV_FLAG);
+	// Strip off MV_FLAG since we're displaying only a row
+	tmpPropVal.ulPropTag = m_ulPropTag & ~MV_FLAG;
 	tmpPropVal.Value = lpData->data.MV.val;
 
 	LPSPropValue lpNewValue = NULL;
@@ -1367,6 +1381,7 @@ BOOL CMultiValuePropertyEditor::DoListEdit(ULONG ulListNum, int iItem, SortListD
 		NULL, // not passing an allocation parent because we know we're gonna free the result
 		NULL,
 		NULL,
+		true, // This is a row from a multivalued property. Only case we pass true here.
 		&tmpPropVal,
 		&lpNewValue));
 
@@ -1466,22 +1481,12 @@ void CMultiValuePropertyEditor::UpdateListRow(LPSPropValue lpProp, ULONG ulListN
 	{
 		LPTSTR szSmartView = NULL;
 
-		InterpretProp(lpProp,
-			lpProp->ulPropTag,
+		InterpretPropSmartView(lpProp,
 			m_lpMAPIProp,
 			NULL,
 			NULL,
-			m_bIsAB,
-			NULL,
-			NULL,
-			NULL,
-			NULL,
-			NULL,
-			NULL,
-			&szSmartView,
-			NULL,
-			NULL,
-			NULL);
+			true,
+			&szSmartView);
 
 		if (szSmartView) SetListString(ulListNum,iMVCount,3,szSmartView);
 		delete[] szSmartView;
@@ -1501,22 +1506,12 @@ void CMultiValuePropertyEditor::UpdateSmartView(ULONG ulListNum)
 		WriteMultiValueStringsToSPropValue(ulListNum, (LPVOID) lpsProp, lpsProp);
 
 		LPTSTR szSmartView = NULL;
-		InterpretProp(lpsProp,
-			m_ulPropTag,
+		InterpretPropSmartView(lpsProp,
 			m_lpMAPIProp,
 			NULL,
 			NULL,
-			m_bIsAB,
-			NULL,
-			NULL,
-			NULL,
-			NULL,
-			NULL,
-			NULL,
-			&szSmartView,
-			NULL,
-			NULL,
-			NULL);
+			true,
+			&szSmartView);
 		if (szSmartView) SetString(1,szSmartView);
 		delete[] szSmartView;
 	}

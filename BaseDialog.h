@@ -59,6 +59,7 @@ private:
 	virtual void OnDeleteSelectedItem();
 	virtual void OnEscHit();
 	virtual void OnRefreshView();
+	virtual BOOL CheckAutoCenter();
 
 	// Overrides from base class
 	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);

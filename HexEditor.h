@@ -16,5 +16,7 @@ private:
 
 	void OnOK();
 	void OnCancel();
+	virtual BOOL CheckAutoCenter();
 	CParentWnd* m_lpNonModalParent;
+	CWnd* m_hwndCenteringWindow;
 };

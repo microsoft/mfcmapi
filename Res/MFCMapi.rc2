@@ -931,6 +931,7 @@ IDS_REGKEY_HIER_NOTIFS "Register Notifications on Hierarchy Tables During Load"
 IDS_REGKEY_HIER_EXPAND_NOTIFS "Register Notifications on Hierarchy Tables During Node Expansion or Selection"
 IDS_REGKEY_HIER_ROOT_NOTIFS "Allow Notifications on Root Container (may cause infinite loop in some Address Books)"
 IDS_REGKEY_HIER_NODE_LOAD_COUNT "Hierarchy Node Load Count: If nonzero, limits the number of child nodes for which the hierarchy table is automatically loaded:"
+IDS_REGKEY_DO_SMART_VIEW "Do Smart View processing on properties."
 IDS_REGKEY_DO_GETPROPS "Perform GetProps call on objects when selecting or displaying. Extra properties will still display if unchecked."
 IDS_REGKEY_ALLOW_DUPE_COLUMNS "Allow duplicate columns of different types."
 IDS_REGKEY_USE_ROW_DATA_FOR_SINGLEPROPLIST "Use row data for property pane instead of calling GetProps."
@@ -1252,7 +1253,7 @@ IDS_ENTRYLISTPREFIX "Count of Entries: 0x%1!08X!\r\n"
 IDS_ENTRYLISTENTRY "%1\r\nAlt: %2\r\n"
 IDS_NULLENTRYLIST "Null entry list\r\n"
 IDS_NULLRES "lpRes was NULL\r\n"
-IDS_RESTYPE "%1lpRes->rt = %2\r\n"
+IDS_RESTYPE "%1lpRes->rt = 0x%2!X! = %3\r\n"
 
 IDS_RESCOMPARE "%1lpRes->res.resCompareProps.relop = %2 = 0x%3!08X!\r\n\
 %1lpRes->res.resCompareProps.ulPropTag1 = %4\r\n\
@@ -1463,10 +1464,11 @@ IDS_ACCESSREADCONTROL "Read Control"
 IDS_ACCESSSIMPLEFREEBUSY "Simple FreeBusy"
 IDS_ACCESSDETAILEDFREEBUSY "Detailed FreeBusy"
 
-IDS_SECURITYDESCRIPTOR "Security Descriptor: \r\n\
-Security Info: %1\r\n\
-Security Version: 0x%2!04X! = %3\r\n\
-Descriptor:\r\n%4"
+IDS_SECURITYDESCRIPTORHEADER "Security Descriptor: \r\n\
+Security Info: "
+IDS_SECURITYDESCRIPTORVERSION "\r\n\
+Security Version: 0x%1!04X! = %2\r\n\
+Descriptor:\r\n"
 
 IDS_SIDACCOUNT "Account: %1\\%2\r\n\
 SID: %3\r\n\
@@ -1938,8 +1940,6 @@ MAPI_E_NO_ACCESS: The user does not have permissions. Try again with an administ
 MAPI_E_NETWORK_ERROR: The client machine is not in the same domain as the server\r\n\
 \t%s does not work over domain boundaries.\r\n\
 \tTry again from a machine in the same domain as the server."
-IDS_EDVIEWERNOTIMPLEMENTED "DisplayObject: Object type: 0x%08X = %s not implemented\r\n\
-This is not an error. It just means no specialized viewer has been implemented for this object type."
 IDS_EDDISPLAYTABLE "DisplayTable couldn't handle unknown object type 0x%X"
 IDS_EDDUPEFOLDER "A folder of that name already exists under the parent folder."
 IDS_EDRESTOREFAILED "OnRestoreDeletedFolder did not complete because CopyFolder failed.\r\n\
@@ -1967,13 +1967,23 @@ IDS_EDNOTIFYPROCESSSHUTDOWNFAILED "NotifyProcessShutdown failed."
 IDS_EDDOFASTSHUTDOWNFAILED "DoFastShutdown failed."
 IDS_EDDOFASTSHUTDOWNSUCCEEDED "DoFastShutdown succeeded. Most MAPI operations should now fail.\r\n\
 Please close MFCMAPI now."
+#ifdef _WIN64
 IDS_EDMAPIINITIALIZEFAILED "MAPIIntialize failed with error 0x%08X == %s.\r\n\
 \r\n\
 Here are some known causes for this.\r\n\
-1 - Windows Mail or Outlook Express (which do not implement Extended MAPI) is registered as the Default Mail Client.\r\n\
-\tSee http://msdn.microsoft.com/en-gb/library/dd162409.aspx for information on setting the Default Mail Client.\r\n\
-2 - The bitness (32 or 64 bit) of MFCMAPI does not match the bitness of Outlook.\r\n\
-\tSee http://mfcmapi.codeplex.com for the latest 32 bit and 64 bit builds of MFCMAPI."
+1 - The 64 bit version of Outlook 2010 is not installed. The 64 bit version of MFCMAPI only works with the 64 bit version of Outlook 2010.\r\n\
+\tSee http://mfcmapi.codeplex.com for the latest 32 bit bit build of MFCMAPI.\r\n\
+2 - Windows Mail or Outlook Express (which do not implement Extended MAPI) is registered as the Default Mail Client.\r\n\
+\tSee http://msdn.microsoft.com/en-gb/library/dd162409.aspx for information on setting the Default Mail Client."
+#else
+IDS_EDMAPIINITIALIZEFAILED "MAPIIntialize failed with error 0x%08X == %s.\r\n\
+\r\n\
+Here are some known causes for this.\r\n\
+1 - The 64 bit version of Outlook 2010 is installed. The 64 bit version of Outlook 2010 requires the 64 bit build of MFCMAPI.\r\n\
+\tSee http://mfcmapi.codeplex.com for the latest 64 bit build of MFCMAPI.\r\n\
+2 - Windows Mail or Outlook Express (which do not implement Extended MAPI) is registered as the Default Mail Client.\r\n\
+\tSee http://msdn.microsoft.com/en-gb/library/dd162409.aspx for information on setting the Default Mail Client."
+#endif
 
 // UpdateStatusBarText - use printf style formatting
 IDS_STATUSTEXTNUMITEMS "Number of items: %d"

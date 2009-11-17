@@ -116,6 +116,14 @@ LRESULT CBaseDialog::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	return CDialog::WindowProc(message,wParam,lParam);
 }
 
+// MFC will call this function to check if it ought to center the dialog
+// We'll tell it no, but also place the dialog where we want it.
+BOOL CBaseDialog::CheckAutoCenter()
+{
+	CenterWindow(GetActiveWindow());
+	return false;
+} // CBaseDialog::CheckAutoCenter
+
 BOOL CBaseDialog::OnInitDialog()
 {
 	HRESULT hRes = S_OK;
@@ -410,7 +418,7 @@ void CBaseDialog::OnOptions()
 	{
 		BOOL bNeedPropRefresh = false;
 		// need to grab this FIRST
-		EC_H(StringCchCopy(RegKeys[regkeyDEBUG_FILE_NAME].szCurSTRING,CCH(RegKeys[regkeyDEBUG_FILE_NAME].szCurSTRING),MyData.GetString(regkeyDEBUG_FILE_NAME)));
+		EC_H(StringCchCopy(RegKeys[regkeyDEBUG_FILE_NAME].szCurSTRING,_countof(RegKeys[regkeyDEBUG_FILE_NAME].szCurSTRING),MyData.GetString(regkeyDEBUG_FILE_NAME)));
 
 		if (MyData.GetHex(regkeyDEBUG_TAG) != RegKeys[regkeyDEBUG_TAG].ulCurDWORD)
 		{

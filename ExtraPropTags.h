@@ -870,7 +870,7 @@ enum EEmailIndex
 #define	PDO_REQUIRED		0x00000002	// For a form control bound to this field, the checkbox for A value is required for this field is selected in the Validation tab of the Properties dialog box.
 #define PDO_PRINT_SAVEAS	0x00000004	// For a form control bound to this field, the checkbox for Include this field for printing and Save As is selected in the Validation tab of the Properties dialog box.
 #define PDO_CALC_AUTO		0x00000008	// For a form control bound to this field, the checkbox for Calculate this formula automatically option is selected in the Value tab of the Properties dialog box.
-#define PDO_FT_CONCAT		0x00000010	// This is a field of type Combination and it has the "Joining fields and any text fragments with each other" option selected in its Combination Formula Field dialog.
+#define PDO_FT_CONCAT		0x00000010	// This is a field of type Combination and it has the 'Joining fields and any text fragments with each other' option selected in its Combination Formula Field dialog.
 #define PDO_FT_SWITCH		0x00000020	// This field is of type Combination and has the Showing only the first non-empty field, ignoring subsequent ones option selected in the Combination Formula Field dialog box.
 #define PDO_PRINT_SAVEAS_DEF	0x000000040	// This flag is not used
 
@@ -902,7 +902,7 @@ typedef enum
 #define		RSF_PID_SEND_AND_TRACK		(RSF_PID_TREAT_AS_SF | 2)
 #define		RSF_PID_TODO_SEARCH			(RSF_PID_TREAT_AS_SF | 4)
 #define		RSF_PID_CONV_ACTIONS		(RSF_PID_TREAT_AS_SF | 6)
-#define		RSF_PID_COMBINED_ACTIONS	(RSF_PID_TREAT_AS_SF | 7) 
+#define		RSF_PID_COMBINED_ACTIONS	(RSF_PID_TREAT_AS_SF | 7)
 #define		RSF_PID_SUGGESTED_CONTACTS	(RSF_PID_TREAT_AS_SF | 8)
 
 #define		RSF_ELID_ENTRYID			1

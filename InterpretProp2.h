@@ -31,13 +31,20 @@ void InterpretProp(LPSPropValue lpProp, // optional property value
 				   CString* PropTag, // Built from ulPropTag
 				   CString* PropString, // Built from lpProp
 				   CString* AltPropString, // Built from lpProp
-				   LPTSTR* lpszSmartView, // Built from lpProp & lpMAPIProp
 				   LPTSTR* lpszNamedPropName, // Built from ulPropTag & lpMAPIProp
 				   LPTSTR* lpszNamedPropGUID, // Built from ulPropTag & lpMAPIProp
 				   LPTSTR* lpszNamedPropDASL); // Built from ulPropTag & lpMAPIProp
 
+// lpszSmartView allocated with new, delete with delete[]
+void InterpretPropSmartView(LPSPropValue lpProp, // required property value
+				   LPMAPIPROP lpMAPIProp, // optional source object
+				   LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
+				   LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
+				   BOOL bMVRow, // did the row come from a MV prop?
+				   LPTSTR* lpszSmartView); // Built from lpProp & lpMAPIProp
+
 extern UINT g_uidParsingTypesDropDown[];
-extern ULONG g_cbuidParsingTypesDropDown;
+extern ULONG g_cuidParsingTypesDropDown;
 
 void InterpretBinaryAsString(SBinary myBin, DWORD_PTR iStructType, LPMAPIPROP lpMAPIProp, ULONG ulPropTag, LPTSTR* lpszResultString);
 void InterpretMVBinaryAsString(SBinaryArray myBinArray, DWORD_PTR iStructType, LPMAPIPROP lpMAPIProp, ULONG ulPropTag, LPTSTR* lpszResultString);
@@ -595,7 +602,7 @@ typedef struct
 } RestrictionStruct;
 
 void RestrictionToString(SBinary myBin, LPTSTR* lpszResultString);
-// Allocates return value with new. Clean up with DeletePropertyStruct.
+// Allocates return value with new. Clean up with DeleteRestrictionStruct.
 RestrictionStruct* BinToRestrictionStruct(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead);
 // Caller allocates with new. Clean up with DeleteRestrictionStruct.
 void BinToRestrictionStruct(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead, LPSRestriction psrRestriction);
@@ -656,7 +663,7 @@ void DeleteSearchFolderDefinitionStruct(SearchFolderDefinitionStruct* psfdSearch
 // result allocated with new, clean up with delete[]
 LPTSTR SearchFolderDefinitionStructToString(SearchFolderDefinitionStruct* psfdSearchFolderDefinition);
 
-// PackedUnicodeString 
+// PackedUnicodeString
 // =====================
 //   This structure specifies a Packed Unicode String
 //
@@ -667,7 +674,7 @@ typedef struct
 	LPWSTR szCharacters;
 } PackedUnicodeString;
 
-// PackedAnsiString 
+// PackedAnsiString
 // =====================
 //   This structure specifies a Packed Ansi String
 //

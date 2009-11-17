@@ -7,7 +7,7 @@
 #include "ImportProcs.h"
 
 HRESULT ImportEMLToIMessage(
-							LPCTSTR lpszEMLFile,
+							LPCWSTR lpszEMLFile,
 							LPMESSAGE lpMsg,
 							ULONG ulConvertFlags,
 							BOOL bApply,
@@ -32,7 +32,7 @@ HRESULT ImportEMLToIMessage(
 		EC_H(MyOpenStreamOnFile(MAPIAllocateBuffer,
 			MAPIFreeBuffer,
 			STGM_READ,
-			(LPTSTR)lpszEMLFile,
+			lpszEMLFile,
 			NULL,
 			&lpEMLStm));
 		if (SUCCEEDED(hRes) && lpEMLStm)
@@ -69,7 +69,7 @@ HRESULT ImportEMLToIMessage(
 	return hRes;
 }
 
-HRESULT ExportIMessageToEML(LPMESSAGE lpMsg, LPCTSTR lpszEMLFile, ULONG ulConvertFlags,
+HRESULT ExportIMessageToEML(LPMESSAGE lpMsg, LPCWSTR lpszEMLFile, ULONG ulConvertFlags,
 							ENCODINGTYPE et, MIMESAVETYPE mst, ULONG ulWrapLines,LPADRBOOK lpAdrBook)
 {
 	if (!lpszEMLFile || !lpMsg) return MAPI_E_INVALID_PARAMETER;
@@ -119,7 +119,7 @@ HRESULT ExportIMessageToEML(LPMESSAGE lpMsg, LPCTSTR lpszEMLFile, ULONG ulConver
 					EC_H(MyOpenStreamOnFile(MAPIAllocateBuffer,
 											MAPIFreeBuffer,
 											STGM_CREATE | STGM_READWRITE,
-											(LPTSTR)lpszEMLFile,
+											lpszEMLFile,
 											NULL,
 											&lpFileStm));
 					if (SUCCEEDED(hRes) && lpFileStm)
@@ -152,8 +152,8 @@ HRESULT ExportIMessageToEML(LPMESSAGE lpMsg, LPCTSTR lpszEMLFile, ULONG ulConver
 }
 
 HRESULT ConvertEMLToMSG(
-						LPCTSTR lpszEMLFile,
-						LPCTSTR lpszMSGFile,
+						LPCWSTR lpszEMLFile,
+						LPCWSTR lpszMSGFile,
 						ULONG ulConvertFlags,
 						BOOL bApply,
 						HCHARSET hCharSet,
@@ -190,8 +190,8 @@ HRESULT ConvertEMLToMSG(
 	return hRes;
 }
 
-HRESULT ConvertMSGToEML(LPCTSTR lpszMSGFile,
-						LPCTSTR lpszEMLFile,
+HRESULT ConvertMSGToEML(LPCWSTR lpszMSGFile,
+						LPCWSTR lpszEMLFile,
 						ULONG ulConvertFlags,
 						ENCODINGTYPE et,
 						MIMESAVETYPE mst,

@@ -138,29 +138,29 @@ STDMETHODIMP CMAPIProgress::SetLimits(ULONG FAR* lpulMin, ULONG FAR* lpulMax, UL
 
 	if(lpulMin)
 	{
-		EC_H(StringCchPrintf(szMin, CCH(szMin), _T("%d"), *lpulMin)); // STRING_OK
+		EC_H(StringCchPrintf(szMin, _countof(szMin), _T("%d"), *lpulMin)); // STRING_OK
 	}
 	else
 	{
-		EC_H(StringCchPrintf(szMin, CCH(szMin), _T("NULL"))); // STRING_OK
+		EC_H(StringCchPrintf(szMin, _countof(szMin), _T("NULL"))); // STRING_OK
 	}
 
 	if(lpulMax)
 	{
-		EC_H(StringCchPrintf(szMax, CCH(szMax), _T("%d"), *lpulMax)); // STRING_OK
+		EC_H(StringCchPrintf(szMax, _countof(szMax), _T("%d"), *lpulMax)); // STRING_OK
 	}
 	else
 	{
-		EC_H(StringCchPrintf(szMax, CCH(szMax), _T("NULL"))); // STRING_OK
+		EC_H(StringCchPrintf(szMax, _countof(szMax), _T("NULL"))); // STRING_OK
 	}
 
 	if(lpulFlags)
 	{
-		EC_H(StringCchPrintf(szFlags, CCH(szFlags), _T("0x%08X"), *lpulFlags)); // STRING_OK
+		EC_H(StringCchPrintf(szFlags, _countof(szFlags), _T("0x%08X"), *lpulFlags)); // STRING_OK
 	}
 	else
 	{
-		EC_H(StringCchPrintf(szFlags, CCH(szFlags), _T("NULL"))); // STRING_OK
+		EC_H(StringCchPrintf(szFlags, _countof(szFlags), _T("NULL"))); // STRING_OK
 	}
 
 	DebugPrintEx(DBGGeneric, CLASS, _T("SetLimits"), _T("(%s) - Passed Values: lpulMin = %s, lpulMax = %s, lpulFlags = %s\n"),

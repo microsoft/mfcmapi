@@ -101,7 +101,7 @@ CMySecInfo::CMySecInfo(LPMAPIPROP lpMAPIProp,
 	EC_D(iRet,LoadStringW(GetModuleHandle(NULL),
 		IDS_OBJECT,
 		m_wszObject,
-		CCHW(m_wszObject)));
+		_countof(m_wszObject)));
 
 };
 CMySecInfo::~CMySecInfo()

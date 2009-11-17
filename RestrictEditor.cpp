@@ -224,6 +224,7 @@ void CResCombinedEditor::OnEditAction1()
 		m_lpAllocParent,
 		NULL,
 		GetHexUseControl(4),
+		false,
 		lpEditProp,
 		&m_lpNewProp));
 
@@ -837,6 +838,7 @@ BOOL CResCommentEditor::DoListEdit(ULONG ulListNum, int iItem, SortListData* lpD
 		m_lpAllocParent,
 		NULL,
 		NULL,
+		false,
 		lpSourceProp,
 		&lpData->data.Comment.lpNewProp));
 

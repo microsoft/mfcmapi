@@ -17,7 +17,14 @@ void OpenDebugFile()
 	// only open the file if we really need to
 	if (RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD == TRUE)
 	{
+#ifdef UNICODE
 		g_fDebugFile = OpenFile(RegKeys[regkeyDEBUG_FILE_NAME].szCurSTRING,false);
+#else
+		LPWSTR szDebugFileW = NULL;
+		AnsiToUnicode(RegKeys[regkeyDEBUG_FILE_NAME].szCurSTRING,&szDebugFileW);
+		g_fDebugFile = OpenFile(szDebugFileW,false);
+		delete[] szDebugFileW;
+#endif
 	}
 }
 
@@ -68,19 +75,19 @@ void SetDebugOutputToFile(BOOL bDoOutput)
 // quick check to see if we have anything to print - so we can avoid executing the call
 #define EARLYABORT {if (!fFile && !RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD && !fIsSet(ulDbgLvl)) return;}
 
-FILE* OpenFile(LPCTSTR szFileName,BOOL bNewFile)
+FILE* OpenFile(LPCWSTR szFileName,BOOL bNewFile)
 {
 	static TCHAR szErr[256]; // buffer for catastrophic failures
 	FILE* fOut = NULL;
-	LPCTSTR szParams = _T("a+"); // STRING_OK
-	if (bNewFile) szParams = _T("w"); // STRING_OK
+	LPCWSTR szParams = L"a+"; // STRING_OK
+	if (bNewFile) szParams = L"w"; // STRING_OK
 
-// _tfopen has been deprecated, but older compilers do not have _tfopen_s
+// _wfopen has been deprecated, but older compilers do not have _wfopen_s
 // Use the replacement when we're on VS 2005 or higher.
 #if defined(_MSC_VER) && (_MSC_VER >= 1400)
-	_tfopen_s(&fOut,szFileName,szParams);
+	_wfopen_s(&fOut,szFileName,szParams);
 #else
-	fOut = _tfopen(szFileName,szParams);
+	fOut = _wfopen(szFileName,szParams);
 #endif
 	if (fOut)
 	{
@@ -101,7 +108,7 @@ FILE* OpenFile(LPCTSTR szFileName,BOOL bNewFile)
 			0,
 			0);
 
-		hRes = StringCchPrintf(szErr,CCH(szErr),
+		hRes = StringCchPrintf(szErr,_countof(szErr),
 			_T("_tfopen failed, hRes = 0x%08X, dwErr = 0x%08X = \"%s\"\n"), // STRING_OK
 			HRESULT_FROM_WIN32(dwErr),
 			dwErr,
@@ -143,7 +150,7 @@ void _Output(ULONG ulDbgLvl, FILE* fFile, BOOL bPrintThreadTime, LPCTSTR szMsg)
 			GetSystemTimeAsFileTime(&ftLocalTime);
 
 			EC_H(StringCchPrintf(szThreadTime,
-				CCH(szThreadTime),
+				_countof(szThreadTime),
 				_T("0x%04x %02d:%02d:%02d.%03d%s  %02d-%02d-%4d 0x%08X: "), // STRING_OK
 				GetCurrentThreadId(),
 				(stLocalTime.wHour <= 12)?stLocalTime.wHour:stLocalTime.wHour-12,
@@ -191,7 +198,7 @@ void __cdecl Outputf(ULONG ulDbgLvl, FILE* fFile, BOOL bPrintThreadTime, LPCTSTR
 	va_start(argList, szMsg);
 
 	TCHAR szDebugString[4096];
-	WC_H(StringCchVPrintf(szDebugString, CCH(szDebugString), szMsg, argList));
+	WC_H(StringCchVPrintf(szDebugString, _countof(szDebugString), szMsg, argList));
 	if (FAILED(hRes))
 	{
 		_Output(DBGFatalError,NULL, true,_T("Debug output string not large enough to print everything to it\n"));
@@ -218,7 +225,7 @@ void __cdecl OutputToFilef(FILE* fFile, LPCTSTR szMsg,...)
 	va_start(argList, szMsg);
 
 	TCHAR szDebugString[4096];
-	hRes = StringCchVPrintf(szDebugString, CCH(szDebugString), szMsg, argList);
+	hRes = StringCchVPrintf(szDebugString, _countof(szDebugString), szMsg, argList);
 	if (S_OK != hRes)
 	{
 		_Output(DBGFatalError,NULL, true,_T("Debug output string not large enough to print everything to it\n"));
@@ -241,7 +248,7 @@ void __cdecl DebugPrint(ULONG ulDbgLvl,LPCTSTR szMsg,...)
 	if (argList)
 	{
 		TCHAR szDebugString[4096];
-		hRes = StringCchVPrintf(szDebugString, CCH(szDebugString), szMsg, argList);
+		hRes = StringCchVPrintf(szDebugString, _countof(szDebugString), szMsg, argList);
 		if (hRes == S_OK)
 			_Output(ulDbgLvl,NULL, true, szDebugString);
 	}
@@ -258,14 +265,14 @@ void __cdecl DebugPrintEx(ULONG ulDbgLvl,LPCTSTR szClass, LPCTSTR szFunc, LPCTST
 
 	if (!fIsSet(ulDbgLvl) && !RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD) return;
 
-	hRes = StringCchPrintf(szMsgEx,CCH(szMsgEx),_T("%s::%s %s"),szClass, szFunc, szMsg); // STRING_OK
+	hRes = StringCchPrintf(szMsgEx,_countof(szMsgEx),_T("%s::%s %s"),szClass, szFunc, szMsg); // STRING_OK
 	if (hRes == S_OK)
 	{
 		va_list argList = NULL;
 		va_start(argList, szMsg);
 
 		TCHAR szDebugString[4096];
-		hRes = StringCchVPrintf(szDebugString, CCH(szDebugString), szMsgEx, argList);
+		hRes = StringCchVPrintf(szDebugString, _countof(szDebugString), szMsgEx, argList);
 		va_end(argList);
 		if (hRes == S_OK)
 			_Output(ulDbgLvl, NULL, true, szDebugString);
@@ -860,7 +867,7 @@ void _OutputVersion(ULONG ulDbgLvl, FILE* fFile)
 	DWORD dwRet = 0;
 
 	// Get version information from the application.
-	EC_D(dwRet,GetModuleFileName(NULL, szFullPath, CCH(szFullPath)));
+	EC_D(dwRet,GetModuleFileName(NULL, szFullPath, _countof(szFullPath)));
 
 	if (S_OK == hRes)
 	{
@@ -909,7 +916,7 @@ void _OutputVersion(ULONG ulDbgLvl, FILE* fFile)
 						hRes = S_OK;
 						EC_H(StringCchPrintf(
 							szSubBlock,
-							CCH(szSubBlock),
+							_countof(szSubBlock),
 							_T("\\StringFileInfo\\%04x%04x\\"), // STRING_OK
 							lpTranslate[iCodePages].wLanguage,
 							lpTranslate[iCodePages].wCodePage));
@@ -930,11 +937,11 @@ void _OutputVersion(ULONG ulDbgLvl, FILE* fFile)
 								GetModuleHandle(NULL),
 								iVerString,
 								szVerString,
-								CCH(szVerString)));
+								_countof(szVerString)));
 
 							EC_H(StringCchCopy(
 								&szSubBlock[cchRoot],
-								CCH(szSubBlock) - cchRoot,
+								_countof(szSubBlock) - cchRoot,
 								szVerString));
 
 							EC_B(VerQueryValue(

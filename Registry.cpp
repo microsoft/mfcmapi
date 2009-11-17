@@ -19,6 +19,7 @@ __RegKeys RegKeys[] = {
 	{_T("HierExpandNotifs"),			regDWORD,regoptCheck,		true		,0,_T(""),_T(""),false,	IDS_REGKEY_HIER_EXPAND_NOTIFS}, // STRING_OK
 	{_T("HierRootNotifs"),				regDWORD,regoptCheck,		false		,0,_T(""),_T(""),false,	IDS_REGKEY_HIER_ROOT_NOTIFS}, // STRING_OK
 	{_T("HierNodeLoadCount"),			regDWORD,regoptStringDec,	20			,0,_T(""),_T(""),false,	IDS_REGKEY_HIER_NODE_LOAD_COUNT}, // STRING_OK
+	{_T("DoSmartView"),					regDWORD,regoptCheck,		true		,0,_T(""),_T(""),false,	IDS_REGKEY_DO_SMART_VIEW}, // STRING_OK
 	{_T("DoGetProps"),					regDWORD,regoptCheck,		true		,0,_T(""),_T(""),true,	IDS_REGKEY_DO_GETPROPS}, // STRING_OK
 	{_T("UseGetPropList"),				regDWORD,regoptCheck,		true		,0,_T(""),_T(""),true,	IDS_REGKEY_USE_GETPROPLIST}, // STRING_OK
 	{_T("CacheNamedProps"),				regDWORD,regoptCheck,		true		,0,_T(""),_T(""),false,	IDS_REGKEY_CACHE_NAMED_PROPS}, // STRING_OK
@@ -52,7 +53,7 @@ void SetDefaults()
 		{
 			EC_H(StringCchCopy(
 				RegKeys[i].szCurSTRING,
-				CCH(RegKeys[i].szCurSTRING),
+				_countof(RegKeys[i].szCurSTRING),
 				RegKeys[i].szDefSTRING));
 		}
 
@@ -190,12 +191,12 @@ void ReadFromRegistry()
 					hRootKey,
 					RegKeys[i].szKeyName,
 					RegKeys[i].szCurSTRING,
-					CCH(RegKeys[i].szCurSTRING));
+					_countof(RegKeys[i].szCurSTRING));
 				if (RegKeys[i].szCurSTRING[0] == _T('\0'))
 				{
 					EC_H(StringCchCopy(
 						RegKeys[i].szCurSTRING,
-						CCH(RegKeys[i].szCurSTRING),
+						_countof(RegKeys[i].szCurSTRING),
 						RegKeys[i].szDefSTRING));
 				}
 			}

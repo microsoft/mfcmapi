@@ -1,51 +1,85 @@
 #pragma once
-// FileDialogEx.h : Extended file dialog class to work around issues in the base MFC class.
-
-// Originally from MSDN August 2000, by Paul DiLascia.
-// With substantial changes to work across more versions of Windows
 
 // Make sure OPENFILENAMEEX is the same size regardless of how _WIN32_WINNT is defined
 #if (_WIN32_WINNT >= 0x0500)
-struct OPENFILENAMEEX : public OPENFILENAME {};
+struct OPENFILENAMEEXA : public OPENFILENAMEA {};
+struct OPENFILENAMEEXW : public OPENFILENAMEW {};
 #else
 // Windows 2000 version of OPENFILENAME.
 // The new version has three extra members.
 // This is copied from commdlg.h
-struct OPENFILENAMEEX : public OPENFILENAME {
+struct OPENFILENAMEEXA : public OPENFILENAMEA {
+	void*         pvReserved;
+	DWORD         dwReserved;
+	DWORD         FlagsEx;
+};
+struct OPENFILENAMEEXW : public OPENFILENAMEW {
 	void*         pvReserved;
 	DWORD         dwReserved;
 	DWORD         FlagsEx;
 };
 #endif
 
-// Copied from commdlg.h - size of the 'NT4 version' of OPENFILENAME
-// Not always defined, but we need to know this size
-#ifndef OPENFILENAME_SIZE_VERSION_400
-#define OPENFILENAME_SIZE_VERSION_400A  CDSIZEOF_STRUCT(OPENFILENAMEA,lpTemplateName)
-#define OPENFILENAME_SIZE_VERSION_400W  CDSIZEOF_STRUCT(OPENFILENAMEW,lpTemplateName)
-#ifdef UNICODE
-#define OPENFILENAME_SIZE_VERSION_400  OPENFILENAME_SIZE_VERSION_400W
-#else
-#define OPENFILENAME_SIZE_VERSION_400  OPENFILENAME_SIZE_VERSION_400A
-#endif // !UNICODE
-#endif // OPENFILENAME_SIZE_VERSION_400
-
-// CFileDialogEx: Encapsulate Windows-2000 style open dialog.
-class CFileDialogEx : public CFileDialog {
+// CFileDialogExA: Encapsulate Windows-2000 style open dialog.
+class CFileDialogExA{
 public:
-	CFileDialogEx(BOOL bOpenFileDialog, // TRUE for open, FALSE for FileSaveAs
-		LPCTSTR lpszDefExt = NULL,
-		LPCTSTR lpszFileName = NULL,
-		DWORD dwFlags = OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-		LPCTSTR lpszFilter = NULL,
-		CWnd* pParentWnd = NULL);
-	virtual ~CFileDialogEx();
+	CFileDialogExA();
+	~CFileDialogExA();
 
-	INT_PTR DoModal();
+	INT_PTR DisplayDialog(BOOL bOpenFileDialog, // TRUE for open, FALSE for FileSaveAs
+		LPCSTR lpszDefExt = NULL,
+		LPCSTR lpszFileName = NULL,
+		DWORD dwFlags = OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
+		LPCSTR lpszFilter = NULL,
+		CWnd* pParentWnd = NULL);
+
+public:
+	// The values returned here are only valid as long as this object is valid
+	// To keep them, make a copy before this object is destroyed
+	LPSTR GetFileName();
+	LPSTR GetNextFileName();
 
 private:
-	BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult);
+	BOOL m_bOpenFileDialog;
+	CHAR m_szFileName[_MAX_PATH]; // contains full path name after return
 
-	OPENFILENAMEEX	m_ofnEx; // Windows 2000 version of OPENFILENAME
-	LPTSTR			m_szbigBuff;
+	OPENFILENAMEEXA	m_ofn; // Windows 2000 version of OPENFILENAME
+	LPSTR			m_szBigBuff;
+	LPSTR			m_szNextPath;
+	CHAR			strPath[_MAX_PATH];
 };
+
+// CFileDialogExA: Encapsulate Windows-2000 style open dialog.
+class CFileDialogExW{
+public:
+	CFileDialogExW();
+	~CFileDialogExW();
+
+	INT_PTR DisplayDialog(BOOL bOpenFileDialog, // TRUE for open, FALSE for FileSaveAs
+		LPCWSTR lpszDefExt = NULL,
+		LPCWSTR lpszFileName = NULL,
+		DWORD dwFlags = OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
+		LPCWSTR lpszFilter = NULL,
+		CWnd* pParentWnd = NULL);
+
+public:
+	// The values returned here are only valid as long as this object is valid
+	// To keep them, make a copy before this object is destroyed
+	LPWSTR GetFileName();
+	LPWSTR GetNextFileName();
+
+private:
+	BOOL m_bOpenFileDialog;
+	WCHAR m_szFileName[_MAX_PATH]; // contains full path name after return
+
+	OPENFILENAMEEXW	m_ofn; // Windows 2000 version of OPENFILENAME
+	LPWSTR			m_szBigBuff;
+	LPWSTR			m_szNextPath;
+	WCHAR			strPath[_MAX_PATH];
+};
+
+#ifdef UNICODE
+#define CFileDialogEx CFileDialogExW
+#else
+#define CFileDialogEx CFileDialogExA
+#endif

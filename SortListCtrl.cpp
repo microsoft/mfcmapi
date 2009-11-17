@@ -165,7 +165,7 @@ LRESULT CSortListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		}
 	case WM_DESTROY:
 		{
-			DeleteAllColumns();
+			DeleteAllColumns(false);
 			break;
 		}
 	} // end switch
@@ -547,7 +547,7 @@ void CSortListCtrl::AutoSizeColumns()
 	}
 }
 
-void CSortListCtrl::DeleteAllColumns()
+void CSortListCtrl::DeleteAllColumns(BOOL bShutdown)
 {
 	HRESULT			hRes = S_OK;
 	CHeaderCtrl*	lpMyHeader = NULL;
@@ -559,7 +559,7 @@ void CSortListCtrl::DeleteAllColumns()
 	lpMyHeader = GetHeaderCtrl();
 	if (lpMyHeader)
 	{
-		MySetRedraw(FALSE);
+		if (!bShutdown) MySetRedraw(FALSE);
 
 		// Delete all of the old column headers
 		int iColCount = lpMyHeader->GetItemCount();
@@ -576,10 +576,10 @@ void CSortListCtrl::DeleteAllColumns()
 				if (SUCCEEDED(hRes))
 					delete (HeaderData*) hdItem.lParam;
 
-				EC_B(DeleteColumn(iCol));
+				if (!bShutdown) EC_B(DeleteColumn(iCol));
 			}
 		}
-		MySetRedraw(TRUE);
+		if (!bShutdown) MySetRedraw(TRUE);
 	}
 }
 

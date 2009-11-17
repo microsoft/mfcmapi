@@ -178,7 +178,7 @@ void CSingleMAPIPropListCtrl::InitMenu(CMenu* pMenu)
 		pMenu->EnableMenuItem(ID_EDITPROPERTYASUNICODESTREAM,DIM(m_lpMAPIProp && bPropSelected));
 		pMenu->EnableMenuItem(ID_EDITPROPERTYASPRRTFCOMPRESSEDSTREAM,DIM(m_lpMAPIProp && bPropSelected));
 		pMenu->EnableMenuItem(ID_OPEN_PROPERTY,DIM(bPropSelected));
-		pMenu->EnableMenuItem(ID_PARSEPROPERTY,DIM(bPropSelected));
+		pMenu->EnableMenuItem(ID_PARSEPROPERTY,DIM(bPropSelected && RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD));
 
 		pMenu->EnableMenuItem(ID_SAVEPROPERTIES,DIM(m_lpMAPIProp || GetPropVals()));
 		pMenu->EnableMenuItem(ID_EDITGIVENPROPERTY,DIM(m_lpMAPIProp || GetPropVals()));
@@ -648,10 +648,17 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 		&PropTag, // Built from ulPropTag
 		&PropString, // Built from lpProp
 		&AltPropString, // Built from lpProp
-		&szSmartView, // Built from lpProp & lpMAPIProp
 		&szNamedPropName, // Built from lpProp & lpMAPIProp
 		&szNamedPropGUID, // Built from lpProp & lpMAPIProp
 		NULL);
+
+	InterpretPropSmartView(
+		lpsPropToAdd,
+		m_lpMAPIProp,
+		lpNameID,
+		lpMappingSignature,
+		false,
+		&szSmartView); // Built from lpProp & lpMAPIProp
 
 	SetItemText(iRow,pcPROPEXACTNAMES,szExactMatches?szExactMatches:(LPCTSTR) PropTag);
 	SetItemText(iRow,pcPROPPARTIALNAMES,szPartialMatches?szPartialMatches:_T(""));
@@ -747,25 +754,25 @@ HRESULT CSingleMAPIPropListCtrl::SetDataSource(LPMAPIPROP lpMAPIProp, SortListDa
 
 void CSingleMAPIPropListCtrl::SavePropsToXML()
 {
-	TCHAR *szFileName = NULL;
+	WCHAR *szFileName = NULL;
 	HRESULT hRes = S_OK;
 	INT_PTR iDlgRet = 0;
 
-	CString szFileSpec;
+	CStringW szFileSpec;
 	szFileSpec.LoadString(IDS_XMLFILES);
 
-	CFileDialogEx dlgFilePicker(
-		FALSE, // Save As dialog
-		_T("xml"), // STRING_OK
-		_T("props.xml"), // STRING_OK
-		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_EXPLORER,
-		szFileSpec,
-		this);
+	CFileDialogExW dlgFilePicker;
 
-	EC_D_DIALOG(dlgFilePicker.DoModal());
+	EC_D_DIALOG(dlgFilePicker.DisplayDialog(
+		FALSE, // Save As dialog
+		L"xml", // STRING_OK
+		L"props.xml", // STRING_OK
+		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
+		szFileSpec,
+		this));
 	if (IDOK == iDlgRet)
 	{
-		szFileName = dlgFilePicker.m_ofn.lpstrFile;
+		szFileName = dlgFilePicker.GetFileName();
 
 		if (szFileName)
 		{
@@ -773,7 +780,7 @@ void CSingleMAPIPropListCtrl::SavePropsToXML()
 			fProps = OpenFile(szFileName,true);
 			if (fProps)
 			{
-				DebugPrintEx(DBGGeneric,CLASS,_T("SavePropsToXML"),_T("saving to %s\n"),szFileName);
+				DebugPrintEx(DBGGeneric,CLASS,_T("SavePropsToXML"),_T("saving to %ws\n"),szFileName);
 
 				// Force a sort on the tag column to make output consistent
 				FakeClickColumn(pcPROPTAG,false);
@@ -1428,6 +1435,7 @@ void CSingleMAPIPropListCtrl::OnEditGivenProp(ULONG ulPropTag)
 		lpSourceArray,
 		m_lpMAPIProp,
 		ulPropTag,
+		false,
 		lpEditProp,
 		lpSourceArray?&lpModProp:NULL));
 
@@ -1600,7 +1608,8 @@ void CSingleMAPIPropListCtrl::OnParseProperty()
 			1,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		MyStructurePicker.InitDropDown(0,IDS_STRUCTURES,g_cbuidParsingTypesDropDown,g_uidParsingTypesDropDown,true);
+		// Skip the first entry in g_uidParsingTypesDropDown, which is 'No Parsing'
+		MyStructurePicker.InitDropDown(0,IDS_STRUCTURES,g_cuidParsingTypesDropDown-1,&g_uidParsingTypesDropDown[1],true);
 		WC_H(MyStructurePicker.DisplayDialog());
 		if (S_OK == hRes)
 		{

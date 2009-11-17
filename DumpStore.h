@@ -7,7 +7,7 @@ typedef struct _MessageData	FAR * LPMESSAGEDATA;
 
 typedef struct _MessageData
 {
-	TCHAR	szFilePath[MAX_PATH]; // Holds file name prepended with path
+	WCHAR	szFilePath[MAX_PATH]; // Holds file name prepended with path
 	FILE* fMessageProps;
 	ULONG ulCurAttNum;
 } MessageData;
@@ -19,9 +19,9 @@ public:
 	CDumpStore();
 	virtual ~CDumpStore();
 
-	void InitMessagePath(LPCTSTR szMessageFileName);
-	void InitFolderPathRoot(LPCTSTR szFolderPathRoot);
-	void InitMailboxTablePathRoot(LPCTSTR szMailboxTablePathRoot);
+	void InitMessagePath(LPCWSTR szMessageFileName);
+	void InitFolderPathRoot(LPCWSTR szFolderPathRoot);
+	void InitMailboxTablePathRoot(LPCWSTR szMailboxTablePathRoot);
 
 private:
 	// Worker functions (dump messages, scan for something, etc)
@@ -49,10 +49,10 @@ private:
 	virtual void EndAttachmentWork(LPMESSAGE lpMessage, LPVOID lpData);
 	virtual void EndMessageWork(LPMESSAGE lpMessage, LPVOID lpData);
 
-	TCHAR m_szMailboxTablePathRoot[MAX_PATH];
-	TCHAR m_szFolderPathRoot[MAX_PATH];
-	TCHAR m_szMessageFileName[MAX_PATH];
-	LPTSTR m_szFolderPath; // Root plus offset
+	WCHAR m_szMailboxTablePathRoot[MAX_PATH];
+	WCHAR m_szFolderPathRoot[MAX_PATH];
+	WCHAR m_szMessageFileName[MAX_PATH];
+	LPWSTR m_szFolderPath; // Root plus offset
 
 	FILE* m_fFolderProps;
 	FILE* m_fFolderContents;

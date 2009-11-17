@@ -316,7 +316,7 @@ LPTSTR GUIDToStringAndName(LPCGUID lpGUID)
 		EC_D(iRet,LoadStringW(GetModuleHandle(NULL),
 			IDS_UNKNOWNGUID,
 			szUnknown,
-			CCHW(szUnknown)));
+			_countof(szUnknown)));
 		szGUIDName = szUnknown;
 	}
 
@@ -588,9 +588,9 @@ HRESULT InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, LPCTSTR sz
 			{
 				if (bNeedSeparator)
 				{
-					EC_H(StringCchCatW(szTempString,CCHW(szTempString),L" | ")); // STRING_OK
+					EC_H(StringCchCatW(szTempString,_countof(szTempString),L" | ")); // STRING_OK
 				}
-				EC_H(StringCchCatW(szTempString,CCHW(szTempString),FlagArray[ulCurEntry].lpszName));
+				EC_H(StringCchCatW(szTempString,_countof(szTempString),FlagArray[ulCurEntry].lpszName));
 				lTempValue &= ~FlagArray[ulCurEntry].lFlagValue;
 				bNeedSeparator = true;
 			}
@@ -601,9 +601,9 @@ HRESULT InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, LPCTSTR sz
 			{
 				if (bNeedSeparator)
 				{
-					EC_H(StringCchCatW(szTempString,CCHW(szTempString),L" | ")); // STRING_OK
+					EC_H(StringCchCatW(szTempString,_countof(szTempString),L" | ")); // STRING_OK
 				}
-				EC_H(StringCchCatW(szTempString,CCHW(szTempString),FlagArray[ulCurEntry].lpszName));
+				EC_H(StringCchCatW(szTempString,_countof(szTempString),FlagArray[ulCurEntry].lpszName));
 				lTempValue = 0;
 				bNeedSeparator = true;
 			}
@@ -614,9 +614,9 @@ HRESULT InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, LPCTSTR sz
 			{
 				if (bNeedSeparator)
 				{
-					EC_H(StringCchCatW(szTempString,CCHW(szTempString),L" | ")); // STRING_OK
+					EC_H(StringCchCatW(szTempString,_countof(szTempString),L" | ")); // STRING_OK
 				}
-				EC_H(StringCchCatW(szTempString,CCHW(szTempString),FlagArray[ulCurEntry].lpszName));
+				EC_H(StringCchCatW(szTempString,_countof(szTempString),FlagArray[ulCurEntry].lpszName));
 				lTempValue = lTempValue - (FlagArray[ulCurEntry].lFlagValue << 8);
 				bNeedSeparator = true;
 			}
@@ -627,9 +627,9 @@ HRESULT InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, LPCTSTR sz
 			{
 				if (bNeedSeparator)
 				{
-					EC_H(StringCchCatW(szTempString,CCHW(szTempString),L" | ")); // STRING_OK
+					EC_H(StringCchCatW(szTempString,_countof(szTempString),L" | ")); // STRING_OK
 				}
-				EC_H(StringCchCatW(szTempString,CCHW(szTempString),FlagArray[ulCurEntry].lpszName));
+				EC_H(StringCchCatW(szTempString,_countof(szTempString),FlagArray[ulCurEntry].lpszName));
 				lTempValue = lTempValue - FlagArray[ulCurEntry].lFlagValue;
 				bNeedSeparator = true;
 			}
@@ -643,11 +643,11 @@ HRESULT InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, LPCTSTR sz
 			{
 				if (bNeedSeparator)
 				{
-					EC_H(StringCchCatW(szTempString,CCHW(szTempString),L" | ")); // STRING_OK
+					EC_H(StringCchCatW(szTempString,_countof(szTempString),L" | ")); // STRING_OK
 				}
 				WCHAR szClearedBits[15];
-				EC_H(StringCchPrintfW(szClearedBits,CCHW(szClearedBits),L"0x%X",lClearedBits)); // STRING_OK
-				EC_H(StringCchCatW(szTempString,CCHW(szTempString),szClearedBits));
+				EC_H(StringCchPrintfW(szClearedBits,_countof(szClearedBits),L"0x%X",lClearedBits)); // STRING_OK
+				EC_H(StringCchCatW(szTempString,_countof(szTempString),szClearedBits));
 				// clear the bits out
 				lTempValue &= ~FlagArray[ulCurEntry].lFlagValue;
 				bNeedSeparator = true;
@@ -663,15 +663,15 @@ HRESULT InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, LPCTSTR sz
 		WCHAR	szUnk[15];
 		if (bNeedSeparator)
 		{
-			EC_H(StringCchCatW(szTempString,CCHW(szTempString),L" | ")); // STRING_OK
+			EC_H(StringCchCatW(szTempString,_countof(szTempString),L" | ")); // STRING_OK
 		}
-		EC_H(StringCchPrintfW(szUnk,CCHW(szUnk),L"0x%X",lTempValue)); // STRING_OK
-		EC_H(StringCchCatW(szTempString,CCHW(szTempString),szUnk));
+		EC_H(StringCchPrintfW(szUnk,_countof(szUnk),L"0x%X",lTempValue)); // STRING_OK
+		EC_H(StringCchCatW(szTempString,_countof(szTempString),szUnk));
 	}
 
 	// Copy the string we computed for output
 	size_t cchLen = 0;
-	EC_H(StringCchLengthW(szTempString,CCHW(szTempString),&cchLen));
+	EC_H(StringCchLengthW(szTempString,_countof(szTempString),&cchLen));
 
 	if (cchLen)
 	{
@@ -765,18 +765,19 @@ UINT g_uidParsingTypesDropDown[] = {
 	IDS_PROPERTYDEFINITIONSTREAM,
 	IDS_ADDITIONALRENENTRYIDSEX,
 };
-ULONG g_cbuidParsingTypesDropDown = sizeof(g_uidParsingTypesDropDown)/sizeof(UINT);
+ULONG g_cuidParsingTypesDropDown = sizeof(g_uidParsingTypesDropDown)/sizeof(UINT);
 
 struct BINARY_STRUCTURE_ARRAY_ENTRY
 {
 	ULONG	ulIndex;
 	ULONG	iStructType;
+	BOOL	bMV;
 };
 typedef BINARY_STRUCTURE_ARRAY_ENTRY FAR * LPBINARY_STRUCTURE_ARRAY_ENTRY;
 
-#define BINARY_STRUCTURE_ENTRY(_fName,_fType) {PROP_ID((_fName)),(_fType)},
-#define NAMEDPROP_BINARY_STRUCTURE_ENTRY(_fName,_fGuid,_fType) {PROP_TAG((guid##_fGuid),(_fName)),(_fType)},
-#define MV_BINARY_STRUCTURE_ENTRY(_fName,_fType) {PROP_ID((_fName)),(_fType)},{PROP_ID(CHANGE_PROP_TYPE((_fName),PROP_TYPE((_fName)) & ~MV_FLAG)),(_fType)},
+#define BINARY_STRUCTURE_ENTRY(_fName,_fType) {PROP_ID((_fName)),(_fType),false},
+#define NAMEDPROP_BINARY_STRUCTURE_ENTRY(_fName,_fGuid,_fType) {PROP_TAG((guid##_fGuid),(_fName)),(_fType),false},
+#define MV_BINARY_STRUCTURE_ENTRY(_fName,_fType) {PROP_ID((_fName)),(_fType),true},
 
 BINARY_STRUCTURE_ARRAY_ENTRY g_BinaryStructArray[] =
 {
@@ -903,8 +904,11 @@ ULONG FindStructForBinaryProp(const ULONG ulPropTag, const ULONG ulPropNameID, c
 {
 	ULONG	ulCurEntry = 0;
 	ULONG	ulIndex = BuildFlagIndexFromTag(ulPropTag,ulPropNameID,NULL,lpguidNamedProp);
+	BOOL	bMV = (PROP_TYPE(ulPropTag) & MV_FLAG) == MV_FLAG;
 
-	while (ulCurEntry < ulBinaryStructArray && BinaryStructArray[ulCurEntry].ulIndex != ulIndex)
+	while (ulCurEntry < ulBinaryStructArray &&
+		!(BinaryStructArray[ulCurEntry].ulIndex == ulIndex &&
+		BinaryStructArray[ulCurEntry].bMV == bMV))
 	{
 		ulCurEntry++;
 	}
@@ -914,7 +918,7 @@ ULONG FindStructForBinaryProp(const ULONG ulPropTag, const ULONG ulPropNameID, c
 }
 
 // Uber property interpreter - given an LPSPropValue, produces all manner of strings
-// lpszNameExactMatches, lpszSmartView, lpszNamePartialMatches allocated with new, delete with delete[]
+// lpszNameExactMatches, lpszNamePartialMatches allocated with new, delete with delete[]
 // lpszNamedPropName, lpszNamedPropGUID, lpszNamedPropDASL freed with FreeNameIDStrings
 // If lpProp is NULL but ulPropTag and lpMAPIProp are passed, will call GetProps
 void InterpretProp(LPSPropValue lpProp, // optional property value
@@ -929,7 +933,6 @@ void InterpretProp(LPSPropValue lpProp, // optional property value
 				   CString* PropTag, // Built from ulPropTag
 				   CString* PropString, // Built from lpProp
 				   CString* AltPropString, // Built from lpProp
-				   LPTSTR* lpszSmartView, // Built from lpProp & lpMAPIProp
 				   LPTSTR* lpszNamedPropName, // Built from ulPropTag & lpMAPIProp
 				   LPTSTR* lpszNamedPropGUID, // Built from ulPropTag & lpMAPIProp
 				   LPTSTR* lpszNamedPropDASL) // Built from ulPropTag & lpMAPIProp
@@ -952,7 +955,7 @@ void InterpretProp(LPSPropValue lpProp, // optional property value
 		lpMAPIProp && // if we have an object
 		RegKeys[regkeyPARSED_NAMED_PROPS].ulCurDWORD && // and we're parsing named props
 		(RegKeys[regkeyGETPROPNAMES_ON_ALL_PROPS].ulCurDWORD || PROP_ID(ulPropTag) >= 0x8000) && // and it's either a named prop or we're doing all props
-		(lpszNamedPropName || lpszNamedPropGUID || lpszNamedPropDASL || (lpProp && lpszSmartView))) // and we want to return something that needs named prop information
+		(lpszNamedPropName || lpszNamedPropGUID || lpszNamedPropDASL)) // and we want to return something that needs named prop information
 	{
 		SPropTagArray	tag = {0};
 		LPSPropTagArray	lpTag = &tag;
@@ -987,58 +990,104 @@ void InterpretProp(LPSPropValue lpProp, // optional property value
 	{
 		if (PropString || AltPropString)
 			InterpretProp(lpProp,PropString,AltPropString);
-
-		if (lpszSmartView)
-		{
-			ULONG ulPropNameID = NULL;
-			if (lpNameID && lpNameID->ulKind == MNID_ID)
-			{
-				ulPropNameID = lpNameID->Kind.lID;
-			}
-			switch(PROP_TYPE(lpProp->ulPropTag))
-			{
-			case PT_LONG:
-			case PT_I2:
-				{
-					CString	szPrefix;
-					szPrefix.LoadString(IDS_FLAGS_PREFIX);
-					EC_H(InterpretFlags(lpProp,ulPropNameID,NULL,lpNameID?lpNameID->lpguid:NULL,szPrefix,lpszSmartView));
-				}
-				break;
-			case PT_MV_LONG:
-				{
-					InterpretMVLongAsString(lpProp->Value.MVl,ulPropNameID,lpProp->ulPropTag,lpNameID?lpNameID->lpguid:NULL,lpszSmartView);
-				}
-				break;
-			case PT_BINARY:
-				{
-					if (lpProp)
-					{
-						ULONG iStructType = FindStructForBinaryProp(lpProp->ulPropTag,ulPropNameID,lpNameID?lpNameID->lpguid:NULL);
-						if (iStructType)
-						{
-							InterpretBinaryAsString(lpProp->Value.bin,iStructType,lpMAPIProp,ulPropTag,lpszSmartView);
-						}
-					}
-				}
-				break;
-			case PT_MV_BINARY:
-				{
-					if (lpProp)
-					{
-						ULONG iStructType = FindStructForBinaryProp(lpProp->ulPropTag,ulPropNameID,lpNameID?lpNameID->lpguid:NULL);
-						if (iStructType)
-						{
-							InterpretMVBinaryAsString(lpProp->Value.MVbin,iStructType,lpMAPIProp,ulPropTag,lpszSmartView);
-						}
-					}
-				}
-				break;
-			}
-		}
 	}
 	MAPIFreeBuffer(lppPropNames);
-}
+} // InterpretProp
+
+// lpszSmartView allocated with new, delete with delete[]
+void InterpretPropSmartView(LPSPropValue lpProp, // required property value
+				   LPMAPIPROP lpMAPIProp, // optional source object
+				   LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
+				   LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
+				   BOOL bMVRow, // did the row come from a MV prop?
+				   LPTSTR* lpszSmartView) // Built from lpProp & lpMAPIProp
+{
+	if (!lpszSmartView) return;
+	*lpszSmartView = NULL;
+	if (!lpProp) return;
+
+	HRESULT hRes = S_OK;
+
+	// Named Props
+	LPMAPINAMEID* lppPropNames = 0;
+
+	// If we weren't passed named property information and we need it, look it up
+	if (!lpNameID &&
+		lpMAPIProp && // if we have an object
+		RegKeys[regkeyPARSED_NAMED_PROPS].ulCurDWORD && // and we're parsing named props
+		(RegKeys[regkeyGETPROPNAMES_ON_ALL_PROPS].ulCurDWORD || PROP_ID(lpProp->ulPropTag) >= 0x8000)) // and it's either a named prop or we're doing all props
+	{
+		SPropTagArray	tag = {0};
+		LPSPropTagArray	lpTag = &tag;
+		ULONG			ulPropNames = 0;
+		tag.cValues = 1;
+		tag.aulPropTag[0] = lpProp->ulPropTag;
+
+		WC_H_GETPROPS(GetNamesFromIDs(lpMAPIProp,
+			lpMappingSignature,
+			&lpTag,
+			NULL,
+			NULL,
+			&ulPropNames,
+			&lppPropNames));
+		if (SUCCEEDED(hRes) && ulPropNames == 1 && lppPropNames && lppPropNames[0])
+		{
+			lpNameID = lppPropNames[0];
+		}
+		hRes = S_OK;
+	}
+
+	ULONG ulPropNameID = NULL;
+	LPGUID lpPropNameGUID = NULL;
+
+	if (lpNameID)
+	{
+		lpPropNameGUID = lpNameID->lpguid;
+		if (lpNameID->ulKind == MNID_ID)
+		{
+			ulPropNameID = lpNameID->Kind.lID;
+		}
+	}
+
+	switch(PROP_TYPE(lpProp->ulPropTag))
+	{
+	case PT_LONG:
+	case PT_I2:
+		{
+			CString	szPrefix;
+			szPrefix.LoadString(IDS_FLAGS_PREFIX);
+			EC_H(InterpretFlags(lpProp,ulPropNameID,NULL,lpPropNameGUID,szPrefix,lpszSmartView));
+		}
+		break;
+	case PT_MV_LONG:
+		{
+			InterpretMVLongAsString(lpProp->Value.MVl,ulPropNameID,lpProp->ulPropTag,lpPropNameGUID,lpszSmartView);
+		}
+		break;
+	case PT_BINARY:
+		{
+			ULONG ulLookupPropTag = lpProp->ulPropTag;
+			if (bMVRow) ulLookupPropTag |= MV_FLAG;
+
+			ULONG iStructType = FindStructForBinaryProp(ulLookupPropTag,ulPropNameID,lpPropNameGUID);
+			if (iStructType)
+			{
+				InterpretBinaryAsString(lpProp->Value.bin,iStructType,lpMAPIProp,lpProp->ulPropTag,lpszSmartView);
+			}
+		}
+		break;
+	case PT_MV_BINARY:
+		{
+			ULONG iStructType = FindStructForBinaryProp(lpProp->ulPropTag,ulPropNameID,lpPropNameGUID);
+			if (iStructType)
+			{
+				InterpretMVBinaryAsString(lpProp->Value.MVbin,iStructType,lpMAPIProp,lpProp->ulPropTag,lpszSmartView);
+			}
+		}
+		break;
+	}
+	MAPIFreeBuffer(lppPropNames);
+} // InterpretPropSmartView
 
 // Returns LPSPropValue with value of a binary property
 // Uses GetProps and falls back to OpenProperty if the value is large
@@ -1130,6 +1179,7 @@ HRESULT GetLargeBinaryProp(LPMAPIPROP lpMAPIProp, ULONG ulPropTag, LPSPropValue*
 
 void InterpretMVBinaryAsString(SBinaryArray myBinArray, DWORD_PTR iStructType, LPMAPIPROP lpMAPIProp, ULONG ulPropTag, LPTSTR* lpszResultString)
 {
+	if (!RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD) return;
 	if (!lpszResultString) return;
 
 	ULONG ulRow = 0;
@@ -1149,7 +1199,7 @@ void InterpretMVBinaryAsString(SBinaryArray myBinArray, DWORD_PTR iStructType, L
 		InterpretBinaryAsString(myBinArray.lpbin[ulRow],iStructType,lpMAPIProp,ulPropTag,&szSmartView);
 		szResult += szSmartView;
 		delete[] szSmartView;
-		szSmartView++;
+		szSmartView = NULL;
 	}
 
 	*lpszResultString = CStringToString(szResult);
@@ -1157,6 +1207,7 @@ void InterpretMVBinaryAsString(SBinaryArray myBinArray, DWORD_PTR iStructType, L
 
 void InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropNameID, ULONG ulPropTag, LPGUID lpguidNamedProp, LPTSTR* lpszResultString)
 {
+	if (!RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD) return;
 	if (!lpszResultString) return;
 
 	ULONG ulRow = 0;
@@ -1183,6 +1234,7 @@ void InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropNameID, ULONG u
 				szSmartView?szSmartView:_T(""));
 			szResult += szTmp;
 			delete[] szSmartView;
+			szSmartView = NULL;
 		}
 	}
 
@@ -1191,6 +1243,7 @@ void InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropNameID, ULONG u
 
 void InterpretBinaryAsString(SBinary myBin, DWORD_PTR iStructType, LPMAPIPROP lpMAPIProp, ULONG ulPropTag, LPTSTR* lpszResultString)
 {
+	if (!RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD) return;
 	if (!lpszResultString) return;
 	LPTSTR szResultString = NULL;
 
@@ -1312,7 +1365,6 @@ size_t CBinaryParser::RemainingBytes()
 	if (m_lpCur < m_lpEnd) return m_lpEnd - m_lpCur;
 	return 0;
 }
-
 
 void CBinaryParser::GetBYTE(BYTE* pBYTE)
 {
@@ -2148,6 +2200,7 @@ void SDBinToString(SBinary myBin, LPMAPIPROP lpMAPIProp, ULONG ulPropTag, LPTSTR
 
 		CString szDACL;
 		CString szInfo;
+		CString szTmp;
 
 		EC_H(SDToString(lpSDToParse, acetype, &szDACL, &szInfo));
 
@@ -2155,7 +2208,11 @@ void SDBinToString(SBinary myBin, LPMAPIPROP lpMAPIProp, ULONG ulPropTag, LPTSTR
 		EC_H(InterpretFlags(flagSecurityVersion, SECURITY_DESCRIPTOR_VERSION(lpSDToParse), &szFlags));
 
 		CString szResult;
-		szResult.FormatMessage(IDS_SECURITYDESCRIPTOR,(LPCTSTR) szInfo,SECURITY_DESCRIPTOR_VERSION(lpSDToParse),szFlags,(LPCTSTR) szDACL);
+		szResult.FormatMessage(IDS_SECURITYDESCRIPTORHEADER);
+		szResult += szInfo;
+		szTmp.FormatMessage(IDS_SECURITYDESCRIPTORVERSION, SECURITY_DESCRIPTOR_VERSION(lpSDToParse),szFlags);
+		szResult += szTmp;
+		szResult += szDACL;
 
 		delete[] szFlags;
 		szFlags = NULL;
@@ -3888,10 +3945,17 @@ LPTSTR PropertyStructToString(PropertyStruct* ppProperty)
 				NULL,
 				&PropString,
 				&AltPropString,
-				&szSmartView,
 				NULL,
 				NULL,
 				NULL);
+
+			InterpretPropSmartView(
+				&ppProperty->Prop[i],
+				NULL,
+				NULL,
+				NULL,
+				false,
+				&szSmartView);
 
 			szTmp.FormatMessage(IDS_PROPERTYDATAHEADER,
 				i);
@@ -3948,7 +4012,7 @@ void RestrictionToString(SBinary myBin, LPTSTR* lpszResultString)
 	}
 } // RestrictionToString
 
-// Allocates return value with new. Clean up with DeletePropertyStruct.
+// Allocates return value with new. Clean up with DeleteRestrictionStruct.
 RestrictionStruct* BinToRestrictionStruct(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead)
 {
 	if (!lpBin) return NULL;
@@ -3987,7 +4051,7 @@ RestrictionStruct* BinToRestrictionStruct(ULONG cbBin, LPBYTE lpBin, size_t* lpc
 	if (lpcbBytesRead) *lpcbBytesRead = Parser.GetCurrentOffset();
 
 	return prRestriction;
-}
+} // BinToRestrictionStruct
 
 // There may be restrictions with over 500 sub restrictions, but we're not going to try to parse them
 #define _MaxRestrictions 500
@@ -4156,7 +4220,6 @@ void BinToRestrictionStruct(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead, LP
 void DeleteRestriction(LPSRestriction lpRes)
 {
 	if (!lpRes) return;
-	DWORD i = 0;
 
 	switch(lpRes->rt)
 	{
@@ -4164,6 +4227,7 @@ void DeleteRestriction(LPSRestriction lpRes)
 	case RES_OR:
 		if (lpRes->res.resAnd.lpRes)
 		{
+			DWORD i = 0;
 			for (i = 0 ; i < lpRes->res.resAnd.cRes ; i++)
 			{
 				DeleteRestriction(&lpRes->res.resAnd.lpRes[i]);
@@ -4171,8 +4235,10 @@ void DeleteRestriction(LPSRestriction lpRes)
 		}
 		delete[] lpRes->res.resAnd.lpRes;
 		break;
+		// Structures for these two types are identical
 	case RES_NOT:
-		DeleteRestriction(&lpRes->res.resNot.lpRes[i]);
+	case RES_COUNT:
+		DeleteRestriction(lpRes->res.resNot.lpRes);
 		delete[] lpRes->res.resNot.lpRes;
 		break;
 	case RES_CONTENT:
@@ -4196,14 +4262,9 @@ void DeleteRestriction(LPSRestriction lpRes)
 		DeleteRestriction(lpRes->res.resComment.lpRes);
 		delete[] lpRes->res.resComment.lpRes;
 		break;
-	case RES_COUNT:
-		// RES_COUNT and RES_NOT look the same, so we use the resNot member here
-		DeleteRestriction(lpRes->res.resNot.lpRes);
-		delete[] lpRes->res.resNot.lpRes;
-		break;
 	}
+} // DeleteRestriction
 
-}
 // Neuters the Restriction struct - caller must use delete to delete the struct itself
 void DeleteRestrictionStruct(RestrictionStruct* prRestriction)
 {
@@ -4759,7 +4820,7 @@ PropertyDefinitionStreamStruct* BinToPropertyDefinitionStreamStruct(ULONG cbBin,
 				Parser.GetWORD(&pdsPropertyDefinitionStream.pfdFieldDefinitions[iDef].wNmidNameLength);
 				Parser.GetStringW(pdsPropertyDefinitionStream.pfdFieldDefinitions[iDef].wNmidNameLength,
 					&pdsPropertyDefinitionStream.pfdFieldDefinitions[iDef].szNmidName);
-				
+
 				ReadPackedAnsiString(&Parser,&pdsPropertyDefinitionStream.pfdFieldDefinitions[iDef].pasNameANSI);
 				ReadPackedAnsiString(&Parser,&pdsPropertyDefinitionStream.pfdFieldDefinitions[iDef].pasFormulaANSI);
 				ReadPackedAnsiString(&Parser,&pdsPropertyDefinitionStream.pfdFieldDefinitions[iDef].pasValidationRuleANSI);
@@ -4928,7 +4989,7 @@ LPTSTR PropertyDefinitionStreamStructToString(PropertyDefinitionStreamStruct* pp
 		{
 			LPTSTR szFlags = NULL;
 			LPTSTR szVarEnum = NULL;
-			EC_H(InterpretFlags(flagPDOFlag, ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].dwFlags, &szFlags)); 
+			EC_H(InterpretFlags(flagPDOFlag, ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].dwFlags, &szFlags));
 			EC_H(InterpretFlags(flagVarEnum, ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].wVT, &szVarEnum));
 			szTmp.FormatMessage(IDS_PROPDEFFIELDHEADER,
 				iDef,

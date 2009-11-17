@@ -175,7 +175,7 @@ void CProfileListDlg::OnLaunchProfileWizard()
 			m_hWnd,
 			MyData.GetHex(0),
 			(LPCSTR FAR *) szServices,
-			CCH(szProfName),
+			_countof(szProfName),
 			szProfName);
 		OnRefreshView(); // Update the view since we don't have notifications here.
 	}
@@ -260,17 +260,16 @@ void CProfileListDlg::AddPSTToProfile(BOOL bUnicodePST)
 	CString szFileSpec;
 	szFileSpec.LoadString(IDS_PSTFILES);
 
-	CFileDialogEx dlgFilePicker(
+	if (!m_lpContentsTableListCtrl) return;
+
+	CFileDialogEx dlgFilePicker;
+	EC_D_DIALOG(dlgFilePicker.DisplayDialog(
 		TRUE,
 		_T("pst"), // STRING_OK
 		NULL,
 		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
 		szFileSpec,
-		this);
-
-	if (!m_lpContentsTableListCtrl) return;
-
-	EC_D_DIALOG(dlgFilePicker.DoModal());
+		this));
 	if (IDOK == iDlgRet)
 	{
 		do
@@ -286,7 +285,7 @@ void CProfileListDlg::AddPSTToProfile(BOOL bUnicodePST)
 				IDS_PSTPATHPROMPT,
 				3,
 				CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-			MyFile.InitSingleLineSz(0,IDS_SERVICE,dlgFilePicker.m_ofn.lpstrFile,false);
+			MyFile.InitSingleLineSz(0,IDS_SERVICE,dlgFilePicker.GetFileName(),false);
 			MyFile.InitCheck(1,IDS_PSTDOPW,false,false);
 			MyFile.InitSingleLineSz(2,IDS_PSTPW,_T(""),false);
 

@@ -47,7 +47,7 @@ void DisplayMAPISVCPath(CWnd* pParentWnd)
 
 	DebugPrint(DBGGeneric,_T("DisplayMAPISVCPath()\n"));
 
-	GetMAPISVCPath(szServicesIni,CCH(szServicesIni));
+	GetMAPISVCPath(szServicesIni,_countof(szServicesIni));
 
 	CEditor MyData(
 		pParentWnd,
@@ -285,7 +285,7 @@ HRESULT HrSetProfileParameters(SERVICESINIREC *lpServicesIni)
 
 	if (!lpServicesIni) return MAPI_E_INVALID_PARAMETER;
 
-	GetMAPISVCPath(szServicesIni,CCH(szServicesIni));
+	GetMAPISVCPath(szServicesIni,_countof(szServicesIni));
 
 	if (!szServicesIni[0])
 	{
@@ -312,7 +312,7 @@ HRESULT HrSetProfileParameters(SERVICESINIREC *lpServicesIni)
 			{
 				EC_H(StringCchPrintf(
 					szPropNum,
-					CCH(szPropNum),
+					_countof(szPropNum),
 					_T("%lx"), // STRING_OK
 					lpServicesIni[n].ulKey));
 

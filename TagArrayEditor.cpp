@@ -111,7 +111,6 @@ BOOL CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, SortListData* lpDat
 			&PropTag,
 			NULL,
 			NULL,
-			NULL,
 			&szNamedPropName, // Built from lpProp & lpMAPIProp
 			&szNamedPropGUID, // Built from lpProp & lpMAPIProp
 			NULL);
@@ -179,7 +178,6 @@ void CTagArrayEditor::ReadTagArrayToList(ULONG ulListNum)
 				&szPartialMatch, // Built from ulPropTag & bIsAB
 				&PropType,
 				&PropTag,
-				NULL,
 				NULL,
 				NULL,
 				&szNamedPropName, // Built from lpProp & lpMAPIProp

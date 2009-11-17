@@ -10,6 +10,7 @@ HRESULT DisplayPropertyEditor(CWnd* pParentWnd,
 							  LPVOID lpAllocParent,
 							  LPMAPIPROP lpMAPIProp,
 							  ULONG ulPropTag,
+							  BOOL bMVRow,
 							  LPSPropValue lpsPropValue,
 							  LPSPropValue* lpNewValue);
 
@@ -21,6 +22,7 @@ public:
 		UINT uidTitle,
 		UINT uidPrompt,
 		BOOL bIsAB,
+		BOOL bMVRow,
 		LPVOID lpAllocParent,
 		LPMAPIPROP lpMAPIProp,
 		ULONG ulPropTag,
@@ -46,6 +48,7 @@ private:
 	LPSPropValue	m_lpsInputValue;
 	LPSPropValue	m_lpsOutputValue;
 	BOOL			m_bDirty;
+	BOOL			m_bMVRow; // whether this row came from a multivalued property. Used for smart view parsing.
 
 	// all calls to MAPIAllocateMore will use m_lpAllocParent
 	// this is not something to be freed
