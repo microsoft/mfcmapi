@@ -44,10 +44,18 @@ void OutputPropertyToFile(FILE* fFile, LPSPropValue lpProp, LPMAPIPROP lpObj)
 		NULL,
 		&PropString,
 		&AltPropString,
-		&szSmartView,
 		&szNamedPropName, // Built from lpProp & lpMAPIProp
 		&szNamedPropGUID, // Built from lpProp & lpMAPIProp
 		NULL);
+
+	InterpretPropSmartView(
+		lpProp,
+		lpObj,
+		NULL,
+		NULL,
+		false,
+		&szSmartView);
+
 	OutputXMLValueToFile(fFile,PropXMLNames[pcPROPEXACTNAMES].uidName,szExactMatches,2);
 	OutputXMLValueToFile(fFile,PropXMLNames[pcPROPPARTIALNAMES].uidName,szPartialMatches,2);
 	OutputXMLValueToFile(fFile,PropXMLNames[pcPROPNAMEDIID].uidName, szNamedPropGUID,2);
@@ -111,9 +119,9 @@ void OutputSRowToFile(FILE* fFile, LPSRow lpSRow, LPMAPIPROP lpObj)
 
 CDumpStore::CDumpStore()
 {
-	m_szMessageFileName[0] = _T('\0');
-	m_szMailboxTablePathRoot[0] = _T('\0');
-	m_szFolderPathRoot[0] = _T('\0');
+	m_szMessageFileName[0] = L'\0';
+	m_szMailboxTablePathRoot[0] = L'\0';
+	m_szFolderPathRoot[0] = L'\0';
 
 	m_szFolderPath = NULL;
 
@@ -133,53 +141,53 @@ CDumpStore::~CDumpStore()
 // --------------------------------------------------------------------------------- //
 
 
-void CDumpStore::InitMessagePath(LPCTSTR szMessageFileName)
+void CDumpStore::InitMessagePath(LPCWSTR szMessageFileName)
 {
 	if (szMessageFileName)
 	{
 		HRESULT hRes = S_OK;
-		EC_H(StringCchCopy(m_szMessageFileName, CCH(m_szMessageFileName), szMessageFileName));
+		EC_H(StringCchCopyW(m_szMessageFileName, _countof(m_szMessageFileName), szMessageFileName));
 	}
 	else
 	{
-		m_szMessageFileName[0] = _T('\0');
+		m_szMessageFileName[0] = L'\0';
 	}
-}
+} // CDumpStore::InitMessagePath
 
-void CDumpStore::InitFolderPathRoot(LPCTSTR szFolderPathRoot)
+void CDumpStore::InitFolderPathRoot(LPCWSTR szFolderPathRoot)
 {
 	if (szFolderPathRoot)
 	{
 		HRESULT hRes = S_OK;
-		EC_H(StringCchCopy(m_szFolderPathRoot, CCH(m_szFolderPathRoot), szFolderPathRoot));
+		EC_H(StringCchCopyW(m_szFolderPathRoot, _countof(m_szFolderPathRoot), szFolderPathRoot));
 	}
 	else
 	{
-		m_szFolderPathRoot[0] = _T('\0');
+		m_szFolderPathRoot[0] = L'\0';
 	}
-}
+} // CDumpStore::InitFolderPathRoot
 
-void CDumpStore::InitMailboxTablePathRoot(LPCTSTR szMailboxTablePathRoot)
+void CDumpStore::InitMailboxTablePathRoot(LPCWSTR szMailboxTablePathRoot)
 {
 	if (szMailboxTablePathRoot)
 	{
 		HRESULT hRes = S_OK;
-		EC_H(StringCchCopy(m_szMailboxTablePathRoot, CCH(m_szMailboxTablePathRoot), szMailboxTablePathRoot));
+		EC_H(StringCchCopyW(m_szMailboxTablePathRoot, _countof(m_szMailboxTablePathRoot), szMailboxTablePathRoot));
 	}
 	else
 	{
-		m_szMailboxTablePathRoot[0] = _T('\0');
+		m_szMailboxTablePathRoot[0] = L'\0';
 	}
-}
+} // CDumpStore::InitMailboxTablePathRoot
 
 // --------------------------------------------------------------------------------- //
 
 void CDumpStore::BeginMailboxTableWork(LPCTSTR szExchangeServerName)
 {
 	HRESULT hRes = S_OK;
-	TCHAR	szTableContentsFile[MAX_PATH];
-	WC_H(StringCchPrintf(szTableContentsFile,CCH(szTableContentsFile),
-		_T("%s\\MAILBOX_TABLE.xml"), // STRING_OK
+	WCHAR	szTableContentsFile[MAX_PATH];
+	WC_H(StringCchPrintfW(szTableContentsFile,_countof(szTableContentsFile),
+		L"%s\\MAILBOX_TABLE.xml", // STRING_OK
 		m_szMailboxTablePathRoot));
 	m_fMailboxTable = OpenFile(szTableContentsFile,true);
 	if (m_fMailboxTable)
@@ -187,7 +195,7 @@ void CDumpStore::BeginMailboxTableWork(LPCTSTR szExchangeServerName)
 		OutputToFile(m_fMailboxTable,_T("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n"));
 		OutputToFilef(m_fMailboxTable,_T("<mailboxtable server=\"%s\">\n"),szExchangeServerName);
 	}
-}
+} // CDumpStore::BeginMailboxTableWork
 
 void CDumpStore::DoMailboxTablePerRowWork(LPMDB lpMDB, LPSRow lpSRow, ULONG /*ulCurRow*/)
 {
@@ -225,19 +233,25 @@ void CDumpStore::DoMailboxTablePerRowWork(LPMDB lpMDB, LPSRow lpSRow, ULONG /*ul
 	{
 		TCHAR szTemp[MAX_PATH/2];
 		// Clean up the file name before appending it to the path
-		EC_H(SanitizeFileName(szTemp,CCH(szTemp),lpDisplayName->Value.LPSZ,CCH(szTemp)));
+		EC_H(SanitizeFileName(szTemp,_countof(szTemp),lpDisplayName->Value.LPSZ,_countof(szTemp)));
 
-		EC_H(StringCchPrintf(m_szFolderPathRoot,CCH(m_szFolderPathRoot),
-			_T("%s\\%s"), // STRING_OK
+#ifdef UNICODE
+		EC_H(StringCchPrintfW(m_szFolderPathRoot,_countof(m_szFolderPathRoot),
+			L"%s\\%ws", // STRING_OK
 			m_szMailboxTablePathRoot,szTemp));
+#else
+		EC_H(StringCchPrintfW(m_szFolderPathRoot,_countof(m_szFolderPathRoot),
+			L"%s\\%hs", // STRING_OK
+			m_szMailboxTablePathRoot,szTemp));
+#endif
 
 		// suppress any error here since the folder may already exist
-		WC_B(CreateDirectory(m_szFolderPathRoot,NULL));
+		WC_B(CreateDirectoryW(m_szFolderPathRoot,NULL));
 		hRes = S_OK;
 	}
 
 	OutputToFile(m_fMailboxTable,_T("</mailbox>\n"));
-}
+} // CDumpStore::DoMailboxTablePerRowWork
 
 void CDumpStore::EndMailboxTableWork()
 {
@@ -247,34 +261,40 @@ void CDumpStore::EndMailboxTableWork()
 		CloseFile(m_fMailboxTable);
 	}
 	m_fMailboxTable = NULL;
-}
+} // CDumpStore::EndMailboxTableWork(
 
 void CDumpStore::BeginStoreWork()
 {
-}
+} // CDumpStore::BeginStoreWork
 
 void CDumpStore::EndStoreWork()
 {
-}
+} // CDumpStore::EndStoreWork
 
 void CDumpStore::BeginFolderWork()
 {
 	HRESULT hRes = S_OK;
-	TCHAR	szFolderPath[MAX_PATH];
-	WC_H(StringCchPrintf(szFolderPath,CCH(szFolderPath),
-		_T("%s%s"), // STRING_OK
+	WCHAR	szFolderPath[MAX_PATH];
+#ifdef UNICODE
+	WC_H(StringCchPrintfW(szFolderPath,_countof(szFolderPath),
+		L"%s%ws", // STRING_OK
 		m_szFolderPathRoot,m_szFolderOffset));
+#else
+	WC_H(StringCchPrintfW(szFolderPath,_countof(szFolderPath),
+		L"%s%hs", // STRING_OK
+		m_szFolderPathRoot,m_szFolderOffset));
+#endif
 
-	WC_H(CopyString(&m_szFolderPath,szFolderPath,NULL));
+	WC_H(CopyStringW(&m_szFolderPath,szFolderPath,NULL));
 
-	WC_B(CreateDirectory(m_szFolderPath,NULL));
+	WC_B(CreateDirectoryW(m_szFolderPath,NULL));
 	hRes = S_OK; // ignore the error - the directory may exist already
 
-	TCHAR	szFolderPropsFile[MAX_PATH]; // Holds file/path name for folder props
+	WCHAR	szFolderPropsFile[MAX_PATH]; // Holds file/path name for folder props
 
 	// Dump the folder props to a file
-	WC_H(StringCchPrintf(szFolderPropsFile,CCH(szFolderPropsFile),
-		_T("%sFOLDER_PROPS.xml"), // STRING_OK
+	WC_H(StringCchPrintfW(szFolderPropsFile,_countof(szFolderPropsFile),
+		L"%sFOLDER_PROPS.xml", // STRING_OK
 		m_szFolderPath));
 	m_fFolderProps = OpenFile(szFolderPropsFile,true);
 	if (!m_fFolderProps) return;
@@ -305,7 +325,7 @@ void CDumpStore::BeginFolderWork()
 	}
 
 	OutputToFile(m_fFolderProps,_T("<HierarchyTable>\n"));
-}
+} // CDumpStore::BeginFolderWork
 
 void CDumpStore::DoFolderPerHierarchyTableRowWork(LPSRow lpSRow)
 {
@@ -332,10 +352,10 @@ void CDumpStore::BeginContentsTableWork(ULONG ulFlags, ULONG ulCountRows)
 	if (!m_szFolderPathRoot) return;
 
 	HRESULT hRes = S_OK;
-	TCHAR	szContentsTableFile[MAX_PATH]; // Holds file/path name for contents table output
+	WCHAR	szContentsTableFile[MAX_PATH]; // Holds file/path name for contents table output
 
-	WC_H(StringCchPrintf(szContentsTableFile,CCH(szContentsTableFile),
-		(ulFlags & MAPI_ASSOCIATED)?_T("%sASSOCIATED_CONTENTS_TABLE.xml"):_T("%sCONTENTS_TABLE.xml"), // STRING_OK
+	WC_H(StringCchPrintfW(szContentsTableFile,_countof(szContentsTableFile),
+		(ulFlags & MAPI_ASSOCIATED)?L"%sASSOCIATED_CONTENTS_TABLE.xml":L"%sCONTENTS_TABLE.xml", // STRING_OK
 		m_szFolderPath));
 	m_fFolderContents = OpenFile(szContentsTableFile,true);
 	if (m_fFolderContents)
@@ -381,7 +401,7 @@ void CDumpStore::BeginMessageWork(LPMESSAGE lpMessage, LPVOID lpParentMessageDat
 
 	enum {ePR_MESSAGE_CLASS,
 		ePR_MESSAGE_DELIVERY_TIME,
-		ePR_SUBJECT,
+		ePR_SUBJECT_W,
 		ePR_SENDER_ADDRTYPE,
 		ePR_SENDER_EMAIL_ADDRESS,
 		ePR_INTERNET_CPID,
@@ -392,7 +412,7 @@ void CDumpStore::BeginMessageWork(LPMESSAGE lpMessage, LPVOID lpParentMessageDat
 	static SizedSPropTagArray(NUM_COLS,sptCols) = { NUM_COLS,
 		PR_MESSAGE_CLASS,
 		PR_MESSAGE_DELIVERY_TIME,
-		PR_SUBJECT,
+		PR_SUBJECT_W,
 		PR_SENDER_ADDRTYPE,
 		PR_SENDER_EMAIL_ADDRESS,
 		PR_INTERNET_CPID,
@@ -418,38 +438,38 @@ void CDumpStore::BeginMessageWork(LPMESSAGE lpMessage, LPVOID lpParentMessageDat
 		size_t  cchLen = 0;
 
 		// Copy the source string over
-		WC_H(StringCchCopy(lpMsgData->szFilePath, CCH(lpMsgData->szFilePath), ((LPMESSAGEDATA) lpParentMessageData)->szFilePath));
+		WC_H(StringCchCopyW(lpMsgData->szFilePath, _countof(lpMsgData->szFilePath), ((LPMESSAGEDATA) lpParentMessageData)->szFilePath));
 
 		// Remove any extension
-		WC_H(StringCchLength(lpMsgData->szFilePath,CCH(lpMsgData->szFilePath),&cchLen));
-		while (cchLen > 0 && lpMsgData->szFilePath[cchLen] != _T('.')) cchLen--;
-		if (lpMsgData->szFilePath[cchLen] == _T('.')) lpMsgData->szFilePath[cchLen] = _T('\0');
+		WC_H(StringCchLengthW(lpMsgData->szFilePath,_countof(lpMsgData->szFilePath),&cchLen));
+		while (cchLen > 0 && lpMsgData->szFilePath[cchLen] != L'.') cchLen--;
+		if (lpMsgData->szFilePath[cchLen] == L'.') lpMsgData->szFilePath[cchLen] = L'\0';
 
 		// build a string for appending
-		TCHAR	szNewExt[MAX_PATH];
-		WC_H(StringCchPrintf(szNewExt,CCH(szNewExt),_T("-Attach%d.xml"),((LPMESSAGEDATA) lpParentMessageData)->ulCurAttNum)); // STRING_OK
+		WCHAR	szNewExt[MAX_PATH];
+		WC_H(StringCchPrintfW(szNewExt,_countof(szNewExt),L"-Attach%d.xml",((LPMESSAGEDATA) lpParentMessageData)->ulCurAttNum)); // STRING_OK
 
 		// append our string
-		WC_H(StringCchCat(lpMsgData->szFilePath,CCH(lpMsgData->szFilePath),szNewExt));
+		WC_H(StringCchCatW(lpMsgData->szFilePath,_countof(lpMsgData->szFilePath),szNewExt));
 
-		OutputToFilef(((LPMESSAGEDATA) lpParentMessageData)->fMessageProps,_T("<embeddedmessage path=\"%s\"/>\n"),lpMsgData->szFilePath);
+		OutputToFilef(((LPMESSAGEDATA) lpParentMessageData)->fMessageProps,_T("<embeddedmessage path=\"%ws\"/>\n"),lpMsgData->szFilePath);
 	}
 	else if (m_szMessageFileName[0]) // if we've got a file name, use it
 	{
-		WC_H(StringCchCopy(lpMsgData->szFilePath, CCH(lpMsgData->szFilePath), m_szMessageFileName));
+		WC_H(StringCchCopyW(lpMsgData->szFilePath, _countof(lpMsgData->szFilePath), m_szMessageFileName));
 	}
 	else
 	{
-		LPCTSTR szSubj = _T("UnknownSubject"); // STRING_OK
+		LPCWSTR szSubj = L"UnknownSubject"; // STRING_OK
 
-		if (CheckStringProp(&lpPropsMsg[ePR_SUBJECT],PT_TSTRING))
+		if (CheckStringProp(&lpPropsMsg[ePR_SUBJECT_W],PT_UNICODE))
 		{
-			szSubj = lpPropsMsg[ePR_SUBJECT].Value.LPSZ;
+			szSubj = lpPropsMsg[ePR_SUBJECT_W].Value.lpszW;
 		}
-		WC_H(BuildFileNameAndPath(lpMsgData->szFilePath,CCH(lpMsgData->szFilePath),_T(".xml"),4,szSubj,&lpPropsMsg[ePR_SEARCH_KEY].Value.bin,m_szFolderPath)); // STRING_OK
+		WC_H(BuildFileNameAndPath(lpMsgData->szFilePath,_countof(lpMsgData->szFilePath),L".xml",4,szSubj,&lpPropsMsg[ePR_SEARCH_KEY].Value.bin,m_szFolderPath)); // STRING_OK
 	}
 
-	DebugPrint(DBGGeneric,_T("OutputMessagePropertiesToFile: Saving 0x%X to \"%s\"\n"),lpMessage,lpMsgData->szFilePath);
+	DebugPrint(DBGGeneric,_T("OutputMessagePropertiesToFile: Saving 0x%X to \"%ws\"\n"),lpMessage,lpMsgData->szFilePath);
 	lpMsgData->fMessageProps = OpenFile(lpMsgData->szFilePath,true);
 
 	if (lpMsgData->fMessageProps)
@@ -609,7 +629,7 @@ void CDumpStore::BeginMessageWork(LPMESSAGE lpMessage, LPVOID lpParentMessageDat
 			MAPIFreeBuffer(lpAllProps);
 		}
 	}
-}
+} // CDumpStore::BeginMessageWork
 
 void CDumpStore::BeginRecipientWork(LPMESSAGE /*lpMessage*/,LPVOID lpData)
 {

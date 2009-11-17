@@ -987,7 +987,7 @@ void CMsgStoreDlg::OnDeleteSelectedItem()
 void CMsgStoreDlg::OnSaveFolderContentsAsMSG()
 {
 	HRESULT			hRes = S_OK;
-	TCHAR			szFilePath[MAX_PATH];
+	WCHAR			szFilePath[MAX_PATH];
 
 	if (!m_lpHierarchyTableTreeCtrl) return;
 
@@ -996,8 +996,6 @@ void CMsgStoreDlg::OnSaveFolderContentsAsMSG()
 	// Find the highlighted item
 	LPMAPIFOLDER lpMAPIFolder = (LPMAPIFOLDER) m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiDO_NOT_REQUEST_MODIFY);
 	if (!lpMAPIFolder) return;
-
-	DebugPrint(DBGGeneric,_T("Saving items from 0x%08X\n"),lpMAPIFolder);
 
 	CEditor MyData(
 		this,
@@ -1033,7 +1031,7 @@ void CMsgStoreDlg::OnSaveFolderContentsAsMSG()
 void CMsgStoreDlg::OnSaveFolderContentsAsTextFiles()
 {
 	HRESULT			hRes = S_OK;
-	TCHAR			szPathName[MAX_PATH];
+	WCHAR			szPathName[MAX_PATH];
 
 	if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return;
 

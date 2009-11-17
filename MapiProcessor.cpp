@@ -258,15 +258,15 @@ void CMAPIProcessor::ProcessFolder(BOOL bDoRegular,
 					{
 						TCHAR szTemp[MAX_PATH/2];
 						// Clean up the folder name before appending it to the offset
-						WC_H(SanitizeFileName(szTemp,CCH(szTemp),lpFolderDisplayName->Value.LPSZ,CCH(szTemp)));
+						WC_H(SanitizeFileName(szTemp,_countof(szTemp),lpFolderDisplayName->Value.LPSZ,_countof(szTemp)));
 
-						WC_H(StringCchPrintf(szSubFolderOffset,CCH(szSubFolderOffset),
+						WC_H(StringCchPrintf(szSubFolderOffset,_countof(szSubFolderOffset),
 							_T("%s%s\\"), // STRING_OK
 							m_szFolderOffset,szTemp));
 					}
 					else
 					{
-						WC_H(StringCchPrintf(szSubFolderOffset,CCH(szSubFolderOffset),
+						WC_H(StringCchPrintf(szSubFolderOffset,_countof(szSubFolderOffset),
 							_T("%s\\UnknownFolder\\"), // STRING_OK
 							m_szFolderOffset));
 					}

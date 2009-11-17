@@ -24,7 +24,6 @@
 #include <afxcmn.h>		// MFC support for Windows Common Controls
 
 // Safe String handling header
-#define ALLOW_LEGACY_STRSAFE_USE
 #include <strsafe.h>
 
 // Fix a build issue with a few versions of the MAPI headers
@@ -88,6 +87,7 @@ struct _ContentsData
 	TCHAR*			szDN; // Allocated with MAPIAllocateMore
 	CHAR*			szProfileDisplayName; // Allocated with MAPIAllocateMore
 	ULONG			ulAttachNum;
+	ULONG			ulAttachMethod;
 	ULONG			ulRowID; // for recipients
 	ULONG			ulRowType; // PR_ROW_TYPE
 };
@@ -159,10 +159,6 @@ struct SortListData
 	LPSPropValue	lpSourceProps; // Stolen from lpsRowData in CContentsTableListCtrl::BuildDataItem - free with MAPIFreeBuffer
 	BOOL			bItemFullyLoaded;
 };
-
-// macro to get allocated string lengths
-#define CCH(string) (sizeof((string))/sizeof(TCHAR))
-#define CCHW(string) (sizeof((string))/sizeof(WCHAR))
 
 // Macros to assist in OnInitMenu
 #define CHECK(state) ((state)?MF_CHECKED:MF_UNCHECKED)
@@ -257,8 +253,6 @@ struct SortListData
 #define WM_MFCMAPI_THREADADDITEM			WM_APP+5
 #define WM_MFCMAPI_UPDATESTATUSBAR			WM_APP+6
 #define WM_MFCMAPI_CLEARSINGLEMAPIPROPLIST	WM_APP+7
-#define WM_MFCMAPI_CLEARABORT				WM_APP+8
-#define WM_MFCMAPI_GETABORT					WM_APP+9
 
 // Used by CSingleMAPIPropListCtrl and CSortHeader
 #define WM_MFCMAPI_SAVECOLUMNORDERHEADER	WM_APP+10

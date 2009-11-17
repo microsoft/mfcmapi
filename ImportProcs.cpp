@@ -183,6 +183,14 @@ typedef int (STDMETHODCALLTYPE MNLS_LSTRLENW)(
 	LPCWSTR	lpString);
 typedef MNLS_LSTRLENW *LPMNLS_LSTRLENW;
 
+typedef HRESULT (STDMETHODCALLTYPE FAR * LPOPENSTREAMONFILEW) (
+	LPALLOCATEBUFFER	lpAllocateBuffer,
+	LPFREEBUFFER		lpFreeBuffer,
+	ULONG				ulFlags,
+	__in LPCWSTR		lpszFileName,
+	__in_opt LPCWSTR	lpszPrefix,
+	LPSTREAM FAR *		lppStream);
+
 LPEDITSECURITY				pfnEditSecurity = NULL;
 
 LPSTGCREATESTORAGEEX		pfnStgCreateStorageEx = NULL;
@@ -216,6 +224,7 @@ LPOPENIMSGONISTG			pfnOpenIMsgOnIStg = NULL;
 LPMAPIGETDEFAULTMALLOC		pfnMAPIGetDefaultMalloc = NULL;
 LPOPENTNEFSTREAMEX			pfnOpenTnefStreamEx = NULL;
 LPOPENSTREAMONFILE			pfnOpenStreamOnFile = NULL;
+LPOPENSTREAMONFILEW			pfnOpenStreamOnFileW = NULL;
 LPCLOSEIMSGSESSION			pfnCloseIMsgSession = NULL;
 LPOPENIMSGSESSION			pfnOpenIMsgSession = NULL;
 LPHRQUERYALLROWS			pfnHrQueryAllRows = NULL;
@@ -306,7 +315,7 @@ BOOL GetComponentPath(
 		szAnsiComponent,
 		szAnsiQualifier,
 		szAsciiPath,
-		CCH(szAsciiPath),
+		_countof(szAsciiPath),
 		TRUE));
 	delete[] szAnsiQualifier;
 	delete[] szAnsiComponent;
@@ -315,7 +324,7 @@ BOOL GetComponentPath(
 		CP_ACP,
 		0,
 		szAsciiPath,
-		CCH(szAsciiPath),
+		_countof(szAsciiPath),
 		szDllPath,
 		cchDLLPath));
 #else
@@ -420,7 +429,7 @@ HMODULE LoadFromSystemDir(LPTSTR szDLLName)
 		bSystemDirLoaded = true;
 	}
 
-	WC_H(StringCchPrintf(szDLLPath,CCH(szDLLPath),_T("%s\\%s"),szSystemDir,szDLLName)); // STRING_OK
+	WC_H(StringCchPrintf(szDLLPath,_countof(szDLLPath),_T("%s\\%s"),szSystemDir,szDLLName)); // STRING_OK
 	DebugPrint(DBGLoadLibrary,_T("LoadFromSystemDir - loading from \"%s\"\n"),szDLLPath);
 	hModRet = MyLoadLibrary(szDLLPath);
 
@@ -547,7 +556,7 @@ HKEY GetMailKey(LPTSTR szClient)
 		TCHAR szMailKey[256];
 		EC_H(StringCchPrintf(
 			szMailKey,
-			CCH(szMailKey),
+			_countof(szMailKey),
 			_T("Software\\Clients\\Mail\\%s"), // STRING_OK
 			szClient));
 
@@ -674,7 +683,7 @@ void AutoLoadMAPI()
 	if (!hModMSMAPI)
 	{
 		TCHAR szMSMAPI32path[MAX_PATH] = {0};
-		GetMAPIPath(NULL,szMSMAPI32path,CCH(szMSMAPI32path));
+		GetMAPIPath(NULL,szMSMAPI32path,_countof(szMSMAPI32path));
 		if (szMSMAPI32path[0] != NULL)
 		{
 			hModMSMAPI = MyLoadLibrary(szMSMAPI32path);
@@ -710,6 +719,7 @@ void UnloadMAPI()
 	pfnMAPIGetDefaultMalloc = NULL;
 	pfnOpenTnefStreamEx = NULL;
 	pfnOpenStreamOnFile = NULL;
+	pfnOpenStreamOnFileW = NULL;
 	pfnCloseIMsgSession = NULL;
 	pfnOpenIMsgSession = NULL;
 	pfnHrQueryAllRows = NULL;
@@ -783,6 +793,7 @@ void LoadMAPIFuncs(HMODULE hMod)
 	GETPROC(pfnMAPIGetDefaultMalloc,	LPMAPIGETDEFAULTMALLOC,		"MAPIGetDefaultMalloc")
 	GETPROC(pfnOpenTnefStreamEx,		LPOPENTNEFSTREAMEX,			"OpenTnefStreamEx")
 	GETPROC(pfnOpenStreamOnFile,		LPOPENSTREAMONFILE,			"OpenStreamOnFile")
+	GETPROC(pfnOpenStreamOnFileW,		LPOPENSTREAMONFILEW,		"OpenStreamOnFileW")
 	GETPROC(pfnCloseIMsgSession,		LPCLOSEIMSGSESSION,			"CloseIMsgSession@4")
 	GETPROC(pfnCloseIMsgSession,		LPCLOSEIMSGSESSION,			"CloseIMsgSession")
 	GETPROC(pfnOpenIMsgSession,			LPOPENIMSGSESSION,			"OpenIMsgSession@12")
@@ -985,39 +996,43 @@ STDMETHODIMP OpenTnefStreamEx(LPVOID lpvSupport,
 STDMETHODIMP MyOpenStreamOnFile(LPALLOCATEBUFFER lpAllocateBuffer,
 								LPFREEBUFFER lpFreeBuffer,
 								ULONG ulFlags,
-								__in LPCTSTR lpszFileName,
-								__in LPCTSTR /*lpszPrefix*/,
+								__in LPCWSTR lpszFileName,
+								__in LPCWSTR /*lpszPrefix*/,
 								LPSTREAM FAR * lppStream)
 {
 	CHECKLOAD(pfnOpenStreamOnFile);
+	CHECKLOAD(pfnOpenStreamOnFileW);
 	HRESULT hRes = S_OK;
-	if (!pfnOpenStreamOnFile) return MAPI_E_CALL_FAILED;
-#ifdef UNICODE
-	// Convert new file name to Ansi
-	LPSTR lpAnsiCharStr = NULL;
-	EC_H(UnicodeToAnsi(
-		lpszFileName,
-		&lpAnsiCharStr));
-	if (SUCCEEDED(hRes))
+	if (!pfnOpenStreamOnFile && !pfnOpenStreamOnFileW) return MAPI_E_CALL_FAILED;
+	if (pfnOpenStreamOnFileW)
 	{
-		hRes = pfnOpenStreamOnFile(
+		hRes = pfnOpenStreamOnFileW(
 			lpAllocateBuffer,
 			lpFreeBuffer,
 			ulFlags,
-			(LPWSTR)lpAnsiCharStr,
+			lpszFileName,
 			NULL,
 			lppStream);
 	}
-	delete[] lpAnsiCharStr;
-#else
-	hRes = pfnOpenStreamOnFile(
-		lpAllocateBuffer,
-		lpFreeBuffer,
-		ulFlags,
-		(LPSTR) lpszFileName,
-		NULL,
-		lppStream);
-#endif
+	else
+	{
+		// Convert new file name to Ansi
+		LPSTR lpAnsiCharStr = NULL;
+		EC_H(UnicodeToAnsi(
+			lpszFileName,
+			&lpAnsiCharStr));
+		if (SUCCEEDED(hRes))
+		{
+			hRes = pfnOpenStreamOnFile(
+				lpAllocateBuffer,
+				lpFreeBuffer,
+				ulFlags,
+				(LPTSTR) lpAnsiCharStr,
+				NULL,
+				lppStream);
+		}
+		delete[] lpAnsiCharStr;
+	}
 	return hRes;
 }
 

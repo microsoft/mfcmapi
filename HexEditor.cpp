@@ -33,13 +33,15 @@ CEditor(pParentWnd,IDS_HEXEDITOR,IDS_HEXEDITORPROMPT,0,CEDITOR_BUTTON_OK)
 	InitMultiLine(HEXED_BASE64,IDS_BASE64STRING,NULL,false);
 	InitSingleLine(HEXED_CB,IDS_CB,NULL,true);
 	InitMultiLine(HEXED_HEX,IDS_HEX,NULL,false);
-	InitDropDown(HEXED_PICKER,IDS_STRUCTUREPICKERPROMPT,g_cbuidParsingTypesDropDown,g_uidParsingTypesDropDown,true);
+	InitDropDown(HEXED_PICKER,IDS_STRUCTUREPICKERPROMPT,g_cuidParsingTypesDropDown,g_uidParsingTypesDropDown,true);
 	InitMultiLine(HEXED_SMARTVIEW,IDS_PARSEDSTRUCTURE,NULL,true);
 	HRESULT hRes = S_OK;
 	m_lpszTemplateName = MAKEINTRESOURCE(IDD_BLANK_DIALOG);
 
 	m_lpNonModalParent = pParentWnd;
 	if (m_lpNonModalParent) m_lpNonModalParent->AddRef();
+
+	m_hwndCenteringWindow = GetActiveWindow();
 
 	HINSTANCE hInst = AfxFindResourceHandle(m_lpszTemplateName, RT_DIALOG);
 	HRSRC hResource = NULL;
@@ -66,6 +68,16 @@ void CHexEditor::OnCancel()
 {
 	OnOK();
 }
+
+// MFC will call this function to check if it ought to center the dialog
+// We'll tell it no, but also place the dialog where we want it.
+BOOL CHexEditor::CheckAutoCenter()
+{
+	// We can make the hex editor wider - OnSize will fix the height for us
+	SetWindowPos(NULL,0,0,1000,0,NULL);
+	CenterWindow(m_hwndCenteringWindow);
+	return false;
+} // CHexEditor::CheckAutoCenter
 
 ULONG CHexEditor::HandleChange(UINT nID)
 {

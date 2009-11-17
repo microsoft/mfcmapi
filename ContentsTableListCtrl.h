@@ -37,7 +37,7 @@ public:
 	HRESULT	NotificationOn();
 	HRESULT	RefreshTable();
 	void	OnCancelTableLoad();
-	void	OnOutputTable(LPCTSTR szFileName);
+	void	OnOutputTable(LPCWSTR szFileName);
 	HRESULT SetSortTable(LPSSortOrderSet lpSortOrderSet, ULONG ulFlags);
 	HRESULT SetUIColumns(LPSPropTagArray lpTags);
 	BOOL	IsLoading();
@@ -57,6 +57,7 @@ private:
 	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	void	OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 	void	OnItemChanged(NMHDR* pNMHDR, LRESULT* pResult);
+	void	OnContextMenu(CWnd *pWnd, CPoint pos);
 
 	HRESULT AddColumn(UINT uidHeaderName, ULONG ulCurHeaderCol, ULONG ulCurTagArrayRow, ULONG ulPropTag);
 	HRESULT AddColumns(LPSPropTagArray lpCurColTagArray);
@@ -76,11 +77,9 @@ private:
 	LRESULT	msgOnModifyItem(WPARAM wParam, LPARAM lParam);
 	LRESULT	msgOnRefreshTable(WPARAM wParam, LPARAM lParam);
 	LRESULT	msgOnThreadAddItem(WPARAM wParam, LPARAM lParam);
-	LRESULT	msgOnClearAbort(WPARAM wParam, LPARAM lParam);
-	LRESULT	msgOnGetAbort(WPARAM wParam, LPARAM lParam);
 
 	ULONG				m_ulDisplayFlags;
-	BOOL				m_bAbortLoad;
+	LONG volatile		m_bAbortLoad;
 	HANDLE				m_LoadThreadHandle;
 	CContentsTableDlg*	m_lpHostDlg;
 	CMapiObjects*		m_lpMapiObjects;

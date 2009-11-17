@@ -588,6 +588,7 @@ STDMETHODIMP CMyMAPIFormViewer::ActivateNext(ULONG ulDir,
 					DebugPrintEx(DBGFormViewer,CLASS,_T("ActivateNext"),_T("Got new persist from OnActivateNext\n"));
 
 					EC_H(OpenMessageNonModal(
+						m_hwndParent,
 						m_lpMDB,
 						m_lpMAPISession,
 						m_lpFolder,
@@ -610,6 +611,7 @@ STDMETHODIMP CMyMAPIFormViewer::ActivateNext(ULONG ulDir,
 				// we don't need to clean up this site since the shutdown will do it for us
 				// BTW - it might be more efficient to in-line this code and eliminate a GetProps call
 				EC_H(OpenMessageNonModal(
+					m_hwndParent,
 					m_lpMDB,
 					m_lpMAPISession,
 					m_lpFolder,

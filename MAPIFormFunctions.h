@@ -15,6 +15,7 @@ HRESULT	OpenMessageModal(LPMAPIFOLDER lpParentFolder,
 						 LPMDB lpMDB,
 						 LPMESSAGE lpMessage);
 HRESULT	OpenMessageNonModal(
+							HWND hwndParent,
 							LPMDB lpMDB,
 							LPMAPISESSION lpMAPISession,
 							LPMAPIFOLDER lpSourceFolder,

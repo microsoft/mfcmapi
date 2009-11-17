@@ -127,7 +127,7 @@ void LoadAddIns()
 	HRESULT hRes = S_OK;
 	TCHAR szFilePath[MAX_PATH];
 	DWORD dwDir = NULL;
-	EC_D(dwDir,GetModuleFileName(NULL,szFilePath,CCH(szFilePath)));
+	EC_D(dwDir,GetModuleFileName(NULL,szFilePath,_countof(szFilePath)));
 	if (!dwDir) return;
 
 	if (szFilePath[0])
@@ -347,7 +347,7 @@ ULONG ExtendAddInMenu(HMENU hMenu, ULONG ulAddInContext)
 							EC_D(iRet,LoadStringW(GetModuleHandle(NULL),
 								IDS_ADDINSMENU,
 								szAddInTitle,
-								CCHW(szAddInTitle)));
+								_countof(szAddInTitle)));
 
 							hAddInMenu = CreatePopupMenu();
 
@@ -771,7 +771,7 @@ __declspec(dllexport) void __cdecl AddInLog(BOOL bPrintThreadTime, LPWSTR szMsg,
 	va_start(argList, szMsg);
 
 	WCHAR szAddInLogString[4096];
-	WC_H(StringCchVPrintfW(szAddInLogString, CCHW(szAddInLogString), szMsg, argList));
+	WC_H(StringCchVPrintfW(szAddInLogString, _countof(szAddInLogString), szMsg, argList));
 	if (FAILED(hRes))
 	{
 		_Output(DBGFatalError,NULL, true,_T("Debug output string not large enough to print everything to it\n"));
@@ -805,7 +805,7 @@ __declspec(dllexport) HRESULT __cdecl SimpleDialog(LPWSTR szTitle, LPWSTR szMsg,
 	va_start(argList, szMsg);
 
 	WCHAR szDialogString[4096];
-	WC_H(StringCchVPrintfW(szDialogString, CCHW(szDialogString), szMsg, argList));
+	WC_H(StringCchVPrintfW(szDialogString, _countof(szDialogString), szMsg, argList));
 	if (FAILED(hRes))
 	{
 		_Output(DBGFatalError,NULL, true,_T("Debug output string not large enough to print everything to it\n"));

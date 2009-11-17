@@ -649,28 +649,28 @@ void CContentsTableDlg::OnOutputTable()
 {
 	if (!m_lpContentsTableListCtrl) return;
 	HRESULT	hRes = S_OK;
-	TCHAR*	szFileName = NULL;
+	WCHAR*	szFileName = NULL;
 	INT_PTR	iDlgRet = 0;
 
-	CString szFileSpec;
+	CStringW szFileSpec;
 	szFileSpec.LoadString(IDS_TEXTFILES);
 
-	CFileDialogEx dlgFilePicker(
-		FALSE, // Save As dialog
-		_T("txt"), // STRING_OK
-		_T("table.txt"), // STRING_OK
-		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_EXPLORER,
-		szFileSpec,
-		this);
+	CFileDialogExW dlgFilePicker;
 
-	EC_D_DIALOG(dlgFilePicker.DoModal());
+	EC_D_DIALOG(dlgFilePicker.DisplayDialog(
+		FALSE, // Save As dialog
+		L"txt", // STRING_OK
+		L"table.txt", // STRING_OK
+		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
+		szFileSpec,
+		this));
 	if (IDOK == iDlgRet)
 	{
-		szFileName = dlgFilePicker.m_ofn.lpstrFile;
+		szFileName = dlgFilePicker.GetFileName();
 
 		if (szFileName)
 		{
-			DebugPrintEx(DBGGeneric,CLASS,_T("OnOutputTable"),_T("saving to %s\n"),szFileName);
+			DebugPrintEx(DBGGeneric,CLASS,_T("OnOutputTable"),_T("saving to %ws\n"),szFileName);
 
 			m_lpContentsTableListCtrl->OnOutputTable(szFileName);
 		}

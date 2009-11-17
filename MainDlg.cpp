@@ -49,7 +49,6 @@ CContentsTableDlg(
 	TRACE_CONSTRUCTOR(CLASS);
 
 	CreateDialogAndMenu(IDR_MENU_MAIN);
-	CenterWindow();
 
 	if (RegKeys[regkeyDISPLAY_ABOUT_DIALOG].ulCurDWORD)
 	{
@@ -649,7 +648,7 @@ void CMainDlg::OnOpenOtherUsersMailboxFromGAL()
 	LPMAPISESSION lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
-	LPADRBOOK lpAddrBook = m_lpMapiObjects->GetAddrBook(true);
+	LPADRBOOK lpAddrBook = m_lpMapiObjects->GetAddrBook(true); // do not release
 	if (lpAddrBook)
 	{
 		EC_H_CANCEL(OpenOtherUsersMailboxFromGal(
@@ -667,7 +666,6 @@ void CMainDlg::OnOpenOtherUsersMailboxFromGAL()
 
 			lpMailboxMDB->Release();
 		}
-		lpAddrBook->Release();
 	}
 } // CMainDlg::OnOpenOtherUsersMailboxFromGAL
 
@@ -729,7 +727,7 @@ void CMainDlg::OnDumpStoreContents()
 	LPSBinary		lpItemEID = NULL;
 	int				iItem = -1;
 	SortListData*	lpListData = NULL;
-	TCHAR			szDir[MAX_PATH];
+	WCHAR			szDir[MAX_PATH];
 
 	if (!m_lpContentsTableListCtrl || !m_lpMapiObjects) return;
 
@@ -775,7 +773,7 @@ void CMainDlg::OnDumpStoreContents()
 void CMainDlg::OnDumpServerContents()
 {
 	HRESULT			hRes = S_OK;
-	TCHAR			szDir[MAX_PATH];
+	WCHAR			szDir[MAX_PATH];
 	LPTSTR			szServerName = NULL;
 
 	if (!m_lpMapiObjects) return;
@@ -1077,8 +1075,8 @@ void CMainDlg::OnLoadMAPI()
 	UINT	uiRet = NULL;
 
 	WC_D(uiRet,GetSystemDirectory(szDLLPath, MAX_PATH));
-	WC_H(StringCchCat(szDLLPath,CCH(szDLLPath),_T("\\"))); // STRING_OK
-	WC_H(StringCchCat(szDLLPath,CCH(szDLLPath),_T("mapi32.dll"))); // STRING_OK
+	WC_H(StringCchCat(szDLLPath,_countof(szDLLPath),_T("\\"))); // STRING_OK
+	WC_H(StringCchCat(szDLLPath,_countof(szDLLPath),_T("mapi32.dll"))); // STRING_OK
 
 	CEditor MyData(
 		this,
@@ -1520,7 +1518,7 @@ void CMainDlg::OnLaunchProfileWizard()
 			m_hWnd,
 			MyData.GetHex(0),
 			(LPCSTR FAR *) szServices,
-			CCH(szProfName),
+			_countof(szProfName),
 			szProfName);
 	}
 }
@@ -1594,21 +1592,22 @@ void CMainDlg::OnViewMSGProperties()
 	LPMESSAGE	lpNewMessage = NULL;
 	INT_PTR		iDlgRet = IDOK;
 
-	CString szFileSpec;
+	CStringW szFileSpec;
+	CFileDialogExW dlgFilePicker;
+
 	szFileSpec.LoadString(IDS_MSGFILES);
-	CFileDialogEx dlgFilePicker(
+
+	EC_D_DIALOG(dlgFilePicker.DisplayDialog(
 		TRUE,
-		_T("msg"), // STRING_OK
+		L"msg", // STRING_OK
 		NULL,
 		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_FILEMUSTEXIST,
 		szFileSpec,
-		this);
-	EC_D_DIALOG(dlgFilePicker.DoModal());
-
+		this));
 	if (iDlgRet == IDOK)
 	{
 		EC_H(LoadMSGToMessage(
-			dlgFilePicker.m_ofn.lpstrFile,
+			dlgFilePicker.GetFileName(),
 			&lpNewMessage));
 		if (lpNewMessage)
 		{
@@ -1639,36 +1638,35 @@ void CMainDlg::OnConvertMSGToEML()
 
 		INT_PTR iDlgRet = IDOK;
 
-		CString szFileSpec;
+		CStringW szFileSpec;
+		CFileDialogExW dlgFilePickerMSG;
 		szFileSpec.LoadString(IDS_MSGFILES);
 
-		CFileDialogEx dlgFilePickerMSG(
+		EC_D_DIALOG(dlgFilePickerMSG.DisplayDialog(
 			TRUE,
-			_T("msg"), // STRING_OK
+			L"msg", // STRING_OK
 			NULL,
 			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_FILEMUSTEXIST,
 			szFileSpec,
-			this);
-		EC_D_DIALOG(dlgFilePickerMSG.DoModal());
-
+			this));
 		if (iDlgRet == IDOK)
 		{
 			szFileSpec.LoadString(IDS_EMLFILES);
 
-			CFileDialogEx dlgFilePickerEML(
+			CFileDialogExW dlgFilePickerEML;
+
+			EC_D_DIALOG(dlgFilePickerEML.DisplayDialog(
 				TRUE,
-				_T("eml"), // STRING_OK
+				L"eml", // STRING_OK
 				NULL,
 				OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
 				szFileSpec,
-				this);
-			EC_D_DIALOG(dlgFilePickerEML.DoModal());
-
+				this));
 			if (iDlgRet == IDOK)
 			{
 				EC_H(ConvertMSGToEML(
-					dlgFilePickerMSG.m_ofn.lpstrFile,
-					dlgFilePickerEML.m_ofn.lpstrFile,
+					dlgFilePickerMSG.GetFileName(),
+					dlgFilePickerEML.GetFileName(),
 					ulConvertFlags,
 					et,
 					mst,
@@ -1700,36 +1698,35 @@ void CMainDlg::OnConvertEMLToMSG()
 
 		INT_PTR iDlgRet = IDOK;
 
-		CString szFileSpec;
+		CStringW szFileSpec;
 		szFileSpec.LoadString(IDS_EMLFILES);
 
-		CFileDialogEx dlgFilePickerEML(
+		CFileDialogExW dlgFilePickerEML;
+
+		EC_D_DIALOG(dlgFilePickerEML.DisplayDialog(
 			TRUE,
-			_T("eml"), // STRING_OK
+			L"eml", // STRING_OK
 			NULL,
 			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_FILEMUSTEXIST,
 			szFileSpec,
-			this);
-		EC_D_DIALOG(dlgFilePickerEML.DoModal());
-
+			this));
 		if (iDlgRet == IDOK)
 		{
 			szFileSpec.LoadString(IDS_MSGFILES);
 
-			CFileDialogEx dlgFilePickerMSG(
+			CFileDialogExW dlgFilePickerMSG;
+			EC_D_DIALOG(dlgFilePickerMSG.DisplayDialog(
 				TRUE,
-				_T("msg"), // STRING_OK
+				L"msg", // STRING_OK
 				NULL,
 				OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
 				szFileSpec,
-				this);
-			EC_D_DIALOG(dlgFilePickerMSG.DoModal());
-
+				this));
 			if (iDlgRet == IDOK)
 			{
 				EC_H(ConvertEMLToMSG(
-					dlgFilePickerEML.m_ofn.lpstrFile,
-					dlgFilePickerMSG.m_ofn.lpstrFile,
+					dlgFilePickerEML.GetFileName(),
+					dlgFilePickerMSG.GetFileName(),
 					ulConvertFlags,
 					bDoApply,
 					hCharSet,

@@ -55,6 +55,6 @@ HRESULT HrCopyRestrictionArray(
 STDMETHODIMP MyOpenStreamOnFile(LPALLOCATEBUFFER lpAllocateBuffer,
 								LPFREEBUFFER lpFreeBuffer,
 								ULONG ulFlags,
-								__in LPCTSTR lpszFileName,
-								__in LPCTSTR /*lpszPrefix*/,
+								__in LPCWSTR lpszFileName,
+								__in LPCWSTR /*lpszPrefix*/,
 								LPSTREAM FAR * lppStream);

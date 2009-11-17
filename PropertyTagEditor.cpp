@@ -408,7 +408,6 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField)
 		NULL,
 		NULL,
 		NULL,
-		NULL,
 		&szNamedPropName,
 		NULL,
 		NULL);

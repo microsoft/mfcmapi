@@ -84,7 +84,7 @@ public:
 	// Exported manipulation functions
 	HRESULT			Create(CWnd* pCreateParent, ULONG ulFlags, UINT nID, BOOL bImages);
 	void			AutoSizeColumns();
-	void			DeleteAllColumns();
+	void			DeleteAllColumns(BOOL bShutdown = false);
 	void			SetSelectedItem(int iItem);
 	void			SortClickedColumn();
 	SortListData*	InsertRow(int iRow, LPTSTR szText);

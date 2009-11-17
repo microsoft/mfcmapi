@@ -16,6 +16,7 @@
 #include "TagArrayEditor.h"
 #include "Guids.h"
 #include "PropTagArray.h"
+#include <process.h>
 
 static TCHAR* CLASS = _T("CContentsTableListCtrl");
 
@@ -40,7 +41,7 @@ CContentsTableListCtrl::CContentsTableListCtrl(
 
 	EC_H(Create(pCreateParent,NULL,IDC_LIST_CTRL,true));
 
-	m_bAbortLoad = FALSE;
+	m_bAbortLoad = false; // no need to synchronize this - the thread hasn't started yet
 	m_bInLoadOp = FALSE;
 	m_LoadThreadHandle = NULL;
 
@@ -85,13 +86,12 @@ CContentsTableListCtrl::~CContentsTableListCtrl()
 BEGIN_MESSAGE_MAP(CContentsTableListCtrl, CSortListCtrl)
 	ON_NOTIFY_REFLECT(LVN_ITEMCHANGED, OnItemChanged)
 	ON_WM_KEYDOWN()
+	ON_WM_CONTEXTMENU()
     ON_MESSAGE(WM_MFCMAPI_ADDITEM, msgOnAddItem)
 	ON_MESSAGE(WM_MFCMAPI_THREADADDITEM, msgOnThreadAddItem)
 	ON_MESSAGE(WM_MFCMAPI_DELETEITEM, msgOnDeleteItem)
 	ON_MESSAGE(WM_MFCMAPI_MODIFYITEM, msgOnModifyItem)
 	ON_MESSAGE(WM_MFCMAPI_REFRESHTABLE, msgOnRefreshTable)
-	ON_MESSAGE(WM_MFCMAPI_CLEARABORT, msgOnClearAbort)
-	ON_MESSAGE(WM_MFCMAPI_GETABORT, msgOnGetAbort)
 END_MESSAGE_MAP()
 
 // Some message handling's not worth breaking out into separate functions.
@@ -115,23 +115,23 @@ LRESULT CContentsTableListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM l
 		}
 		return NULL;
 		break;
-	case WM_CONTEXTMENU:
-		if (m_nIDContextMenu)
-		{
-			DisplayContextMenu(m_nIDContextMenu,IDR_MENU_TABLE,m_lpHostDlg,LOWORD(lParam), HIWORD(lParam));
-		}
-		else
-		{
-			DisplayContextMenu(IDR_MENU_DEFAULT_POPUP,IDR_MENU_TABLE,m_lpHostDlg,LOWORD(lParam), HIWORD(lParam));
-		}
-		return NULL;
-		break;
 	} // end switch
 	return CSortListCtrl::WindowProc(message,wParam,lParam);
 }
 /////////////////////////////////////////////////////////////////////////////
 // CContentsTableListCtrl message handlers
 
+void CContentsTableListCtrl::OnContextMenu(CWnd* /*pWnd*/, CPoint pos)
+{
+	if (m_nIDContextMenu)
+	{
+		DisplayContextMenu(m_nIDContextMenu,IDR_MENU_TABLE,m_lpHostDlg, pos.x, pos.y);
+	}
+	else
+	{
+		DisplayContextMenu(IDR_MENU_DEFAULT_POPUP,IDR_MENU_TABLE,m_lpHostDlg, pos.x, pos.y);
+	}
+} // CContentsTableListCtrl::OnContextMenu
 
 ULONG CContentsTableListCtrl::GetContainerType()
 {
@@ -451,7 +451,7 @@ HRESULT CContentsTableListCtrl::AddColumn(UINT uidHeaderName, ULONG ulCurHeaderC
 			lpHeaderData->ulTagArrayRow = ulCurTagArrayRow;
 			lpHeaderData->ulPropTag = ulPropTag;
 			lpHeaderData->bIsAB = m_bIsAB;
-			EC_H(StringCchCopy(lpHeaderData->szTipString,CCH(lpHeaderData->szTipString),
+			EC_H(StringCchCopy(lpHeaderData->szTipString,_countof(lpHeaderData->szTipString),
 				(LPCTSTR) TagToString(ulPropTag,lpMDB,m_bIsAB,false)));
 
 			hdItem.lParam = (LPARAM) lpHeaderData;
@@ -591,18 +591,19 @@ struct ThreadLoadTableInfo
 	HWND							hWndHost;
 	CContentsTableListCtrl*			lpListCtrl;
 	LPMAPITABLE						lpContentsTable;
+	LONG volatile*					lpbAbort;
 };
 
-// only do the send message if we need to check again, once abort is set we don't need to recheck
-#define bABORTSET (bAbortSet?true:(bAbortSet=(0!=::SendMessage(lpListCtrl->m_hWnd,WM_MFCMAPI_GETABORT,NULL,NULL))))
+#define bABORTSET (*lpThreadInfo->lpbAbort) // This is safe
 #define BREAKONABORT if (bABORTSET) break;
 #define CHECKABORT(__fn) if (!bABORTSET) {__fn;}
+#define NUMROWSPERLOOP 255
 
 // Idea here is to do our MAPI work here on this thread, then send messages (SendMessage) back to the control to add the data to the view
 // This way, control functions only happen on the main thread
 // ::SendMessage will be handled on main thread, but block until the call returns.
 // This is the ideal behavior for this worker thread.
-DWORD STDAPICALLTYPE DwThreadFuncLoadTable(void* lpParam)
+unsigned STDAPICALLTYPE ThreadFuncLoadTable(void* lpParam)
 {
 	HRESULT					hRes = S_OK;
 	ULONG					ulTotal = 0;
@@ -611,7 +612,7 @@ DWORD STDAPICALLTYPE DwThreadFuncLoadTable(void* lpParam)
 	ULONG					iCurPropRow = 0;
 	ULONG					iCurListBoxRow = 0;
 	ThreadLoadTableInfo*	lpThreadInfo = (ThreadLoadTableInfo*) lpParam;
-	if (!lpThreadInfo)	return 0;
+	if (!lpThreadInfo || !lpThreadInfo->lpbAbort)	return 0;
 
 	CContentsTableListCtrl* lpListCtrl = lpThreadInfo->lpListCtrl;
 	LPMAPITABLE				lpContentsTable = lpThreadInfo->lpContentsTable;
@@ -619,9 +620,6 @@ DWORD STDAPICALLTYPE DwThreadFuncLoadTable(void* lpParam)
 
 	HWND					hWndHost = lpThreadInfo->hWndHost;
 	CString					szStatusText;
-	BOOL					bAbortSet = false;
-
-	(void)::SendMessage(lpListCtrl->m_hWnd,WM_MFCMAPI_CLEARABORT,NULL,NULL);
 
 	// required on da new thread before we do any MAPI work
 	EC_H(MAPIInitialize(NULL));
@@ -648,7 +646,7 @@ DWORD STDAPICALLTYPE DwThreadFuncLoadTable(void* lpParam)
 			&ulTotal));
 		hRes = S_OK; // don't let failure here fail the whole load
 
-		DebugPrintEx(DBGGeneric,CLASS,_T("DwThreadFuncLoadTable"),_T("ulTotal = 0x%X\n"),ulTotal);
+		DebugPrintEx(DBGGeneric,CLASS,_T("ThreadFuncLoadTable"),_T("ulTotal = 0x%X\n"),ulTotal);
 
 		ulThrottleLevel = RegKeys[regkeyTHROTTLE_LEVEL].ulCurDWORD;
 
@@ -691,26 +689,25 @@ DWORD STDAPICALLTYPE DwThreadFuncLoadTable(void* lpParam)
 		}
 		else
 		{
-			DebugPrintEx(DBGGeneric,CLASS,_T("DwThreadFuncLoadTable"),_T("Calling QueryRows. Asking for 0x%X rows.\n"),(ulThrottleLevel)?ulThrottleLevel:255);
+			DebugPrintEx(DBGGeneric,CLASS,_T("ThreadFuncLoadTable"),_T("Calling QueryRows. Asking for 0x%X rows.\n"),(ulThrottleLevel)?ulThrottleLevel:NUMROWSPERLOOP);
 			// Pull back a sizable block of rows to add to the list box
 			CHECKABORT(EC_H(lpContentsTable->QueryRows(
-				(ulThrottleLevel)?ulThrottleLevel:255,
+				(ulThrottleLevel)?ulThrottleLevel:NUMROWSPERLOOP,
 				NULL,
 				&pRows)));
 			if (FAILED(hRes)) break;
 		}
 		if (FAILED(hRes) || !pRows || !pRows->cRows) break;
 
-		DebugPrintEx(DBGGeneric,CLASS,_T("DwThreadFuncLoadTable"),_T("Got this many rows: 0x%X\n"),pRows->cRows);
+		DebugPrintEx(DBGGeneric,CLASS,_T("ThreadFuncLoadTable"),_T("Got this many rows: 0x%X\n"),pRows->cRows);
 		for (iCurPropRow = 0;iCurPropRow<pRows->cRows;iCurPropRow++)
 		{
-			// rendering is quick enough that we can aford to render a couple rows after an abort
-			// So don't BREAKONABORT inside this loop
 			hRes = S_OK;
+			BREAKONABORT; // This check is cheap enough not to be a perf concern anymore
 			szStatusText.FormatMessage(IDS_LOADINGITEMS,iCurListBoxRow+1,ulTotal);
 			(void)::SendMessage(hWndHost,WM_MFCMAPI_UPDATESTATUSBAR,STATUSMIDDLEPANE,(LPARAM)(LPCTSTR) szStatusText);
 
-			DebugPrintEx(DBGGeneric,CLASS,_T("DwThreadFuncLoadTable"),_T("Asking to add 0x%08X to %d\n"),&pRows->aRow[iCurPropRow],iCurListBoxRow);
+			DebugPrintEx(DBGGeneric,CLASS,_T("ThreadFuncLoadTable"),_T("Asking to add 0x%08X to %d\n"),&pRows->aRow[iCurPropRow],iCurListBoxRow);
 			(void)::SendMessage(lpListCtrl->m_hWnd,WM_MFCMAPI_THREADADDITEM,iCurListBoxRow,(LPARAM)&pRows->aRow[iCurPropRow]);
 			if (FAILED(hRes)) continue;
 			iCurListBoxRow++;
@@ -734,25 +731,24 @@ DWORD STDAPICALLTYPE DwThreadFuncLoadTable(void* lpParam)
 		(void)::SendMessage(hWndHost,WM_MFCMAPI_UPDATESTATUSBAR,STATUSRIGHTPANE,(LPARAM)(LPCTSTR) szStatusText);
 	}
 	(void)::SendMessage(hWndHost,WM_MFCMAPI_UPDATESTATUSBAR,STATUSMIDDLEPANE,(LPARAM)_T(""));
-	DebugPrintEx(DBGGeneric,CLASS,_T("DwThreadFuncLoadTable"),_T("added %d items\n"),iCurListBoxRow);
+	DebugPrintEx(DBGGeneric,CLASS,_T("ThreadFuncLoadTable"),_T("added %d items\n"),iCurListBoxRow);
 
-	DebugPrintEx(DBGGeneric,CLASS,_T("DwThreadFuncLoadTable"),_T("Releasing pointers.\n"));
+	DebugPrintEx(DBGGeneric,CLASS,_T("ThreadFuncLoadTable"),_T("Releasing pointers.\n"));
 
 	lpListCtrl->ClearLoading();
-	(void)::SendMessage(lpListCtrl->m_hWnd,WM_MFCMAPI_CLEARABORT,NULL,NULL);
 
 	// Bunch of cleanup
 	if (pRows) FreeProws(pRows);
 	if (lpContentsTable) lpContentsTable->Release();
 	if (lpListCtrl) lpListCtrl->Release();
-	DebugPrintEx(DBGGeneric,CLASS,_T("DwThreadFuncLoadTable"),_T("Pointers released.\n"));
+	DebugPrintEx(DBGGeneric,CLASS,_T("ThreadFuncLoadTable"),_T("Pointers released.\n"));
 
 	MAPIUninitialize();
 
 	delete lpThreadInfo;
 
 	return 0;
-} // DwThreadFuncLoadTable
+} // ThreadFuncLoadTable
 
 BOOL CContentsTableListCtrl::IsLoading()
 {
@@ -791,6 +787,8 @@ HRESULT CContentsTableListCtrl::LoadContentsTableIntoView()
 	if (lpThreadInfo)
 	{
 		lpThreadInfo->hWndHost = m_lpHostDlg->m_hWnd;
+		lpThreadInfo->lpbAbort = &m_bAbortLoad;
+		m_bAbortLoad = false; // no need to synchronize this - the thread hasn't started yet
 
 		lpThreadInfo->lpListCtrl = this;
 		if (this) this->AddRef();
@@ -801,7 +799,7 @@ HRESULT CContentsTableListCtrl::LoadContentsTableIntoView()
 		DebugPrintEx(DBGGeneric,CLASS,_T("LoadContentsTableIntoView"),_T("Creating load thread.\n"));
 
 		HANDLE hThread = 0;
-		EC_D(hThread,CreateThread(NULL, 0, DwThreadFuncLoadTable, lpThreadInfo, 0, 0));
+		EC_D(hThread,(HANDLE) _beginthreadex(NULL, 0, ThreadFuncLoadTable, lpThreadInfo, 0, 0));
 
 		if (!hThread)
 		{
@@ -825,66 +823,48 @@ void CContentsTableListCtrl::OnCancelTableLoad()
 	DebugPrintEx(DBGGeneric,CLASS,_T("OnCancelTableLoad"),_T("Setting abort flag and waiting for thread to discover it\n"));
 	// Wait here until the thread we spun off has shut down
 	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
-	HRESULT hRes = S_OK;
 	DWORD dwRet = 0;
-	BOOL bIDCancelHit = false;
 	BOOL bVKF5Hit = false;
 
 	// See if the thread is still active
-	// As much as I would prefer to use OpenThread, which would allow me to close the
-	// thread handle when I don't need it, it's not universally supported.
-
 	while (m_LoadThreadHandle) // this won't change, but if it's NULL, we just skip the loop
 	{
 		MSG msg;
 
-		m_bAbortLoad = true;
+		InterlockedExchange(&m_bAbortLoad,true);
 
-		// Read all of the messages in this next loop, removing each message as we read it.
-		// If we don't do this, the thread never stops
-		while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-		{
-			if (msg.message == WM_KEYDOWN && msg.wParam == VK_F5)
-			{
-				DebugPrintEx(DBGGeneric,CLASS,_T("OnCancelTableLoad"),_T("Ditching refresh (F5)\n"));
-				bVKF5Hit = true;
-			}
-			else if (msg.message == WM_COMMAND && msg.wParam == IDCANCEL)
-			{
-				DebugPrintEx(DBGGeneric,CLASS,_T("OnCancelTableLoad"),_T("Ditching cancel messages\n"));
-				bIDCancelHit = true;
-			}
-			else
-			{
-				DispatchMessage(&msg);
-			}
-		}
-
-		// Wait for any message sent or posted to this queue
-		// or for one of the passed handles be set to signaled.
+		// Wait for the thread to shutdown/signal, or messages posted to our queue
 		dwRet = MsgWaitForMultipleObjects(
 			1,
 			&m_LoadThreadHandle,
 			FALSE,
 			INFINITE,
 			QS_ALLINPUT);
+		if (dwRet == (WAIT_OBJECT_0 + 0)) break;
 
-		if (dwRet == (WAIT_OBJECT_0 + 1)) continue;
-		else break;
+		// Read all of the messages in this next loop, removing each message as we read it.
+		// If we don't do this, the thread never stops
+		while (PeekMessage(&msg, m_hWnd, 0, 0, PM_REMOVE))
+		{
+			if (msg.message == WM_KEYDOWN && msg.wParam == VK_F5)
+			{
+				DebugPrintEx(DBGGeneric,CLASS,_T("OnCancelTableLoad"),_T("Ditching refresh (F5)\n"));
+				bVKF5Hit = true;
+			}
+			else
+			{
+				DispatchMessage(&msg);
+			}
+		}
 	}
 
 	DebugPrintEx(DBGGeneric,CLASS,_T("OnCancelTableLoad"),_T("Load thread has shut down.\n"));
 
-	if (m_LoadThreadHandle) EC_B(CloseHandle(m_LoadThreadHandle));
+	if (m_LoadThreadHandle) CloseHandle(m_LoadThreadHandle);
 	m_LoadThreadHandle = NULL;
 	m_bAbortLoad = false;
 
-	if (bIDCancelHit) // If we ditched a cancel message, repost it now
-	{
-		DebugPrintEx(DBGGeneric,CLASS,_T("OnCancelTableLoad"),_T("Posting skipped cancel message\n"));
-		m_lpHostDlg->PostMessage(WM_COMMAND,IDCANCEL,0);
-	}
-	else if (bVKF5Hit) // If we ditched a refresh message, repost it now
+	if (bVKF5Hit) // If we ditched a refresh message, repost it now
 	{
 		DebugPrintEx(DBGGeneric,CLASS,_T("OnCancelTableLoad"),_T("Posting skipped refresh message\n"));
 		PostMessage(WM_KEYDOWN,VK_F5,0);
@@ -905,7 +885,7 @@ void CContentsTableListCtrl::BuildDataItem(LPSRow lpsRowData,SortListData* lpDat
 	MAPIFreeBuffer(lpData->szSortText);
 	lpData->szSortText = NULL;
 
-	// this guy gets stolen from lpsRowData and is freed seperately in FreeSortListData
+	// this guy gets stolen from lpsRowData and is freed separately in FreeSortListData
 	// So I do need to free it here before losing the pointer
 	MAPIFreeBuffer(lpData->lpSourceProps);
 	lpData->lpSourceProps = NULL;
@@ -913,16 +893,7 @@ void CContentsTableListCtrl::BuildDataItem(LPSRow lpsRowData,SortListData* lpDat
 	lpData->ulSortValue.QuadPart = NULL;
 	lpData->cSourceProps = 0;
 	lpData->ulSortDataType = SORTLIST_CONTENTS;
-	lpData->data.Contents.lpEntryID = NULL;
-	lpData->data.Contents.lpLongtermID = NULL;
-	lpData->data.Contents.lpInstanceKey = NULL;
-	lpData->data.Contents.lpServiceUID = NULL;
-	lpData->data.Contents.lpProviderUID = NULL;
-	lpData->data.Contents.szDN = NULL;
-	lpData->data.Contents.szProfileDisplayName = NULL;
-	lpData->data.Contents.ulAttachNum = NULL;
-	lpData->data.Contents.ulRowID = NULL;
-	lpData->data.Contents.ulRowType = NULL;
+	memset(&lpData->data,0,sizeof(_ContentsData));
 
 	// Save off the source props
 	lpData->lpSourceProps = lpsRowData->lpProps;
@@ -951,6 +922,16 @@ void CContentsTableListCtrl::BuildDataItem(LPSRow lpsRowData,SortListData* lpDat
 	{
 		DebugPrint(DBGGeneric,_T("\tPR_ATTACH_NUM = %d\n"),lpProp->Value.l);
 		lpData->data.Contents.ulAttachNum = lpProp->Value.l;
+	}
+
+	lpProp = PpropFindProp(
+		lpsRowData->lpProps,
+		lpsRowData->cValues,
+		PR_ATTACH_METHOD);
+	if (lpProp && PR_ATTACH_METHOD == lpProp->ulPropTag)
+	{
+		DebugPrint(DBGGeneric,_T("\tPR_ATTACH_METHOD = %d\n"),lpProp->Value.l);
+		lpData->data.Contents.ulAttachMethod = lpProp->Value.l;
 	}
 
 	// Save the row ID (recipients) into lpData
@@ -1410,7 +1391,7 @@ HRESULT CContentsTableListCtrl::DefaultOpenItemProp(
 	{
 	case (MAPI_ABCONT):
 		{
-			LPADRBOOK lpAB = m_lpMapiObjects->GetAddrBook(false);
+			LPADRBOOK lpAB = m_lpMapiObjects->GetAddrBook(false); // do not release
 			WC_H(CallOpenEntry(
 				NULL,
 				lpAB, // use AB
@@ -1421,7 +1402,6 @@ HRESULT CContentsTableListCtrl::DefaultOpenItemProp(
 				(bModify == mfcmapiREQUEST_MODIFY)?MAPI_MODIFY:MAPI_BEST_ACCESS,
 				NULL,
 				(LPUNKNOWN*)lppProp));
-			if (lpAB) lpAB->Release();
 		}
 		break;
 	case(MAPI_FOLDER):
@@ -1793,7 +1773,7 @@ HRESULT CContentsTableListCtrl::DoExpandCollapse()
 	return hRes;
 }
 
-void CContentsTableListCtrl::OnOutputTable(LPCTSTR szFileName)
+void CContentsTableListCtrl::OnOutputTable(LPCWSTR szFileName)
 {
 	if (m_bInLoadOp) return;
 	FILE* fTable = NULL;
@@ -1803,7 +1783,7 @@ void CContentsTableListCtrl::OnOutputTable(LPCTSTR szFileName)
 		OutputTableToFile(fTable,m_lpContentsTable);
 		CloseFile(fTable);
 	}
-}
+} // CContentsTableListCtrl::OnOutputTable
 
 HRESULT CContentsTableListCtrl::SetSortTable(LPSSortOrderSet lpSortOrderSet, ULONG ulFlags)
 {
@@ -1970,18 +1950,4 @@ int	CContentsTableListCtrl::FindRow(LPSBinary lpInstance)
 
 	DebugPrintEx(DBGGeneric,CLASS,_T("msgOnGetIndex"),_T("No match found: 0x%08X\n"),iItem);
 	return -1;
-}
-
-// WM_MFCMAPI_CLEARABORT
-LRESULT	CContentsTableListCtrl::msgOnClearAbort(WPARAM /*wParam*/, LPARAM /*lParam*/)
-{
-	m_bAbortLoad = false;
-
-	return S_OK;
-}
-
-// WM_MFCMAPI_GETABORT
-LRESULT	CContentsTableListCtrl::msgOnGetAbort(WPARAM /*wParam*/, LPARAM /*lParam*/)
-{
-	return m_bAbortLoad;
 }

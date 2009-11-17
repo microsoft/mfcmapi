@@ -152,8 +152,9 @@ HRESULT DisplayObject(
 		// #define MAPI_FORMINFO	((ULONG) 0x0000000C)	/* Form Information */
 	default:
 		EC_H(InterpretFlags(PROP_ID(PR_OBJECT_TYPE), ulObjType, &szFlags));
-		ErrDialog(__FILE__,__LINE__,
-			IDS_EDVIEWERNOTIMPLEMENTED,
+		DebugPrint(DBGGeneric,
+			_T("DisplayObject: Object type: 0x%08X = %s not implemented\r\n") // STRING_OK
+			_T("This is not an error. It just means no specialized viewer has been implemented for this object type."), // STRING_OK
 			ulObjType,
 			szFlags);
 		delete[] szFlags;

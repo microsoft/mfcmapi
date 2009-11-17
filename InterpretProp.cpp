@@ -342,7 +342,6 @@ CString TagToString(ULONG ulPropTag, LPMAPIPROP lpObj, BOOL bIsAB, BOOL bSingleL
 				   NULL,
 				   NULL,
 				   NULL,
-				   NULL,
 				   &szNamedPropName, // Built from lpProp & lpMAPIProp
 				   &szNamedPropGUID, // Built from lpProp & lpMAPIProp
 				   &szNamedPropDASL); // Built from ulPropTag & lpMAPIProp
@@ -526,7 +525,7 @@ void RestrictionToString(LPSRestriction lpRes, LPMAPIPROP lpObj, ULONG ulTabLeve
 	HRESULT hRes = S_OK;
 	LPTSTR szFlags = NULL;
 	EC_H(InterpretFlags(flagRestrictionType, lpRes->rt, &szFlags));
-	szTmp.FormatMessage(IDS_RESTYPE,szTabs,szFlags);
+	szTmp.FormatMessage(IDS_RESTYPE,szTabs,lpRes->rt,szFlags);
 	*PropString += szTmp;
 	delete[] szFlags;
 	szFlags = NULL;
@@ -582,6 +581,7 @@ void RestrictionToString(LPSRestriction lpRes, LPMAPIPROP lpObj, ULONG ulTabLeve
 		*PropString += szTmp;
 		break;
 	case RES_COUNT:
+		// RES_COUNT and RES_NOT look the same, so we use the resNot member here
 		szTmp.FormatMessage(
 			IDS_RESCOUNT,
 			szTabs,

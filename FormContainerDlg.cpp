@@ -236,53 +236,41 @@ void CFormContainerDlg::OnInstallForm()
 	if (S_OK == hRes)
 	{
 		INT_PTR	iDlgRet = IDOK;
-		CString szFileSpec;
+		CStringA szFileSpec;
 		szFileSpec.LoadString(IDS_CFGFILES);
 
-		CFileDialogEx dlgFilePicker(
+		CFileDialogExA dlgFilePicker;
+
+		EC_D_DIALOG(dlgFilePicker.DisplayDialog(
 			TRUE,
-			_T("cfg"), // STRING_OK
+			"cfg", // STRING_OK
 			NULL,
 			OFN_FILEMUSTEXIST | OFN_ALLOWMULTISELECT,
 			szFileSpec,
-			this);
-
-		EC_D_DIALOG(dlgFilePicker.DoModal());
+			this));
 		if (iDlgRet == IDOK)
 		{
 			ULONG ulFlags = MyFlags.GetHex(0);
 			HWND hwnd = (ulFlags & MAPIFORM_INSTALL_DIALOG)?m_hWnd:0;
-			POSITION pos = dlgFilePicker.GetStartPosition();
-			while (pos)
+			LPSTR lpszPath = NULL;
+			while (NULL != (lpszPath = dlgFilePicker.GetNextFileName()))
 			{
 				hRes = S_OK;
-				LPSTR szPath = NULL; // InstallForm requires an ANSI string
-#ifdef UNICODE
-				EC_H(UnicodeToAnsi(dlgFilePicker.GetNextPathName(pos),&szPath));
-#else
-				szPath = (LPTSTR) (LPCTSTR) dlgFilePicker.GetNextPathName(pos);
-#endif
-				if (szPath)
+				DebugPrintEx(DBGForms,CLASS,_T("OnInstallForm"),
+					_T("Calling InstallForm(0x%08X,0x%08X,\"%hs\")\n"),hwnd,ulFlags,lpszPath); // STRING_OK
+				WC_H(m_lpFormContainer->InstallForm((ULONG_PTR)hwnd,ulFlags,(LPTSTR)lpszPath));
+				if (MAPI_E_EXTENDED_ERROR == hRes)
 				{
-					DebugPrintEx(DBGForms,CLASS,_T("OnInstallForm"),
-						_T("Calling InstallForm(0x%08X,0x%08X,\"%s\")\n"),hwnd,ulFlags,szPath); // STRING_OK
-					WC_H(m_lpFormContainer->InstallForm((ULONG_PTR)hwnd,ulFlags,(LPTSTR)szPath));
-					if (MAPI_E_EXTENDED_ERROR == hRes)
+					LPMAPIERROR lpErr = NULL;
+					hRes = m_lpFormContainer->GetLastError(hRes,fMapiUnicode,&lpErr);
+					if (lpErr)
 					{
-						LPMAPIERROR lpErr = NULL;
-						hRes = m_lpFormContainer->GetLastError(hRes,fMapiUnicode,&lpErr);
-						if (lpErr)
-						{
-							EC_MAPIERR(fMapiUnicode,lpErr);
-							MAPIFreeBuffer(lpErr);
-						}
+						EC_MAPIERR(fMapiUnicode,lpErr);
+						MAPIFreeBuffer(lpErr);
 					}
-					else CHECKHRES(hRes);
-#ifdef UNICODE
-					delete[] szPath;
-#endif
 				}
-				else break;
+				else CHECKHRES(hRes);
+
 				if (bShouldCancel(this,hRes)) break;
 			}
 			OnRefreshView(); // Update the view since we don't have notifications here.

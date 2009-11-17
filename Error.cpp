@@ -353,7 +353,7 @@ default:
 			HRESULT hRes = S_OK;
 			static TCHAR szErrCode[35]; // see string on default
 
-			EC_H(StringCchPrintf(szErrCode, CCH(szErrCode), _T("0x%08X"), hrErr)); // STRING_OK
+			EC_H(StringCchPrintf(szErrCode, _countof(szErrCode), _T("0x%08X"), hrErr)); // STRING_OK
 
 			return(szErrCode);
 		}

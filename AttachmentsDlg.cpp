@@ -104,7 +104,6 @@ HRESULT CAttachmentsDlg::OpenItemProp(
 {
 	HRESULT			hRes = S_OK;
 	SortListData*	lpListData = NULL;
-	ULONG			ulAttachNum = 0;
 
 	DebugPrintEx(DBGOpenItemProp,CLASS,_T("OpenItemProp"),_T("iSelectedItem = 0x%X\n"),iSelectedItem);
 
@@ -119,19 +118,12 @@ HRESULT CAttachmentsDlg::OpenItemProp(
 
 	if (lpListData)
 	{
+		ULONG ulAttachNum = 0;
+		ULONG ulAttachMethod = 0;
 		ulAttachNum = lpListData->data.Contents.ulAttachNum;
+		ulAttachMethod = lpListData->data.Contents.ulAttachMethod;
 
-		if (!m_bDisplayAttachAsEmbeddedMessage)
-		{
-			EC_H(m_lpMessage->OpenAttach(
-				ulAttachNum,
-				NULL,
-				MAPI_BEST_ACCESS,
-				(LPATTACH*)&m_lpAttach));
-			*lppMAPIProp = m_lpAttach;
-			if (*lppMAPIProp) (*lppMAPIProp)->AddRef();
-		}
-		else
+		if (m_bDisplayAttachAsEmbeddedMessage && ATTACH_EMBEDDED_MSG == ulAttachMethod)
 		{
 			EC_H(m_lpMessage->OpenAttach(
 				ulAttachNum,
@@ -156,6 +148,16 @@ HRESULT CAttachmentsDlg::OpenItemProp(
 					WARNHRESMSG(hRes,IDS_ATTNOTEMBEDDEDMSG);
 				}
 			}
+		}
+		else
+		{
+			EC_H(m_lpMessage->OpenAttach(
+				ulAttachNum,
+				NULL,
+				MAPI_BEST_ACCESS,
+				(LPATTACH*)&m_lpAttach));
+			*lppMAPIProp = m_lpAttach;
+			if (*lppMAPIProp) (*lppMAPIProp)->AddRef();
 		}
 	}
 	return hRes;

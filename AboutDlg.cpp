@@ -49,11 +49,9 @@ BOOL CAboutDlg::OnInitDialog()
 		GetModuleHandle(NULL),
 		ID_PRODUCTNAME,
 		szProductName,
-		CCH(szProductName)));
+		_countof(szProductName)));
 
 	SetWindowText(szProductName);
-
-	CenterWindow();
 
 	CRect MyTextRect;
 	CRect MyBarRect;
@@ -115,7 +113,7 @@ BOOL CAboutDlg::OnInitDialog()
 	m_DisplayAboutCheck.SetWindowText(szDisplayAboutCheck);
 
 	// Get version information from the application.
-	EC_D(dwRet,GetModuleFileName(NULL, szFullPath, CCH(szFullPath)));
+	EC_D(dwRet,GetModuleFileName(NULL, szFullPath, _countof(szFullPath)));
 	EC_D(dwVerInfoSize,GetFileVersionInfoSize(szFullPath, &dwVerHnd));
 	if (dwVerInfoSize)
 	{
@@ -152,7 +150,7 @@ BOOL CAboutDlg::OnInitDialog()
 			{
 				EC_H(StringCchPrintf(
 					szGetName,
-					CCH(szGetName),
+					_countof(szGetName),
 					_T("\\StringFileInfo\\%04x%04x\\"), // STRING_OK
 					lpTranslate[0].wLanguage,
 					lpTranslate[0].wCodePage));
@@ -169,8 +167,8 @@ BOOL CAboutDlg::OnInitDialog()
 					hRes = S_OK;
 
 					UINT uiRet = 0;
-					EC_D(uiRet,GetDlgItemText(i, szResult, CCH(szResult)));
-					EC_H(StringCchCopy(&szGetName[cchRoot], CCH(szGetName)-cchRoot,szResult));
+					EC_D(uiRet,GetDlgItemText(i, szResult, _countof(szResult)));
+					EC_H(StringCchCopy(&szGetName[cchRoot], _countof(szGetName)-cchRoot,szResult));
 
 					EC_B(VerQueryValue(
 						(void*)pbData,
@@ -181,7 +179,7 @@ BOOL CAboutDlg::OnInitDialog()
 					if (S_OK == hRes && cchVer && pszVer)
 					{
 						// Replace the dialog box item text with version information.
-						EC_H(StringCchCopy(szResult, CCH(szResult), pszVer));
+						EC_H(StringCchCopy(szResult, _countof(szResult), pszVer));
 
 						SetDlgItemText(i, szResult);
 					}

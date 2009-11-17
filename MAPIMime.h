@@ -56,25 +56,25 @@ typedef IConverterSession FAR * LPCONVERTERSESSION;
 
 // Helper functions
 HRESULT ImportEMLToIMessage(
-							LPCTSTR lpszEMLFile,
+							LPCWSTR lpszEMLFile,
 							LPMESSAGE lpMsg,
 							ULONG ulConvertFlags,
 							BOOL bApply,
 							HCHARSET hCharSet,
 							CSETAPPLYTYPE cSetApplyType,
 							LPADRBOOK lpAdrBook);
-HRESULT ExportIMessageToEML(LPMESSAGE lpMsg, LPCTSTR lpszEMLFile, ULONG ulConvertFlags,
+HRESULT ExportIMessageToEML(LPMESSAGE lpMsg, LPCWSTR lpszEMLFile, ULONG ulConvertFlags,
 							ENCODINGTYPE et, MIMESAVETYPE mst, ULONG ulWrapLines,LPADRBOOK lpAdrBook);
 HRESULT ConvertEMLToMSG(
-						LPCTSTR lpszEMLFile,
-						LPCTSTR lpszMSGFile,
+						LPCWSTR lpszEMLFile,
+						LPCWSTR lpszMSGFile,
 						ULONG ulConvertFlags,
 						BOOL bApply,
 						HCHARSET hCharSet,
 						CSETAPPLYTYPE cSetApplyType,
 						LPADRBOOK lpAdrBook,
 						BOOL bUnicode);
-HRESULT ConvertMSGToEML(LPCTSTR lpszMSGFile, LPCTSTR lpszEMLFile, ULONG ulConvertFlags,
+HRESULT ConvertMSGToEML(LPCWSTR lpszMSGFile, LPCWSTR lpszEMLFile, ULONG ulConvertFlags,
 						ENCODINGTYPE et, MIMESAVETYPE mst, ULONG ulWrapLines,
 						LPADRBOOK lpAdrBook);
 HRESULT GetConversionToEMLOptions(CWnd* pParentWnd,

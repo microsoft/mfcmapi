@@ -539,7 +539,7 @@ HRESULT CacheGetIDsFromNames(LPMAPIPROP lpMAPIProp,
 			if (lpEntry)
 			{
 				// We have a hit - copy the data over
-				lpPropTags->aulPropTag[ulTarget] = lpEntry->ulPropID;
+				lpPropTags->aulPropTag[ulTarget] = PROP_TAG(PT_UNSPECIFIED,lpEntry->ulPropID);
 
 				// Got a hit, decrement the miss counter
 				ulMisses--;
