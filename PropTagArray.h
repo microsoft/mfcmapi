@@ -71,4 +71,5 @@ enum __NonPropFlag
 	flagInternalType,
 	flagPersistID,
 	flagElementID,
+	flagWABEntryIDType,
 };

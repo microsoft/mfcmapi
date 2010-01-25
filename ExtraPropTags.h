@@ -845,6 +845,15 @@ enum EEmailIndex
 };
 #define EMAIL_TYPE_UNDEFINED 0xFF
 
+enum
+	{
+	BFLAGS_INTERNAL_MAILUSER	= 0x03,		// Outlook Contact
+	BFLAGS_INTERNAL_DISTLIST,				// Outlook Distribution List
+	BFLAGS_EXTERNAL_MAILUSER,				// external (MAPI) Contact
+	BFLAGS_EXTERNAL_DISTLIST,				// external (MAPI) Distribution List
+	BFLAGS_MASK_OUTLOOK			= 0x80,		// bit pattern 1000 0000
+	};
+
 #define dispidEmail1OriginalEntryID 0x8085
 #define dispidEmail2OriginalEntryID 0x8095
 #define dispidEmail3OriginalEntryID 0x80A5
@@ -920,3 +929,11 @@ typedef enum
 #define PR_CONTAB_STORE_ENTRYIDS PROP_TAG( PT_MV_BINARY, 0x6626)
 #define PR_CONTAB_STORE_SUPPORT_MASKS PROP_TAG( PT_MV_LONG, 0x6621)
 #define PR_DELEGATE_FLAGS PROP_TAG( PT_MV_LONG, 0x686b)
+
+#define PR_EXTENDED_RULE_MSG_CONDITION PROP_TAG( PT_BINARY, 0x0E9A)
+
+// [MS-OXOCNTC].pdf
+#define dispidDLOneOffMembers 0x8054
+#define dispidDLMembers 0x8055
+#define dispidABPEmailList 0x8028
+#define dispidABPArrayType 0x8029

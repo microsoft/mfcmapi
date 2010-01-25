@@ -387,6 +387,7 @@ ULONG ExtendAddInMenu(HMENU hMenu, ULONG ulAddInContext)
 			lpCurAddIn = lpCurAddIn->lpNextAddIn;
 		}
 	}
+	DestroyMenu(hAddInMenu);
 	DebugPrint(DBGAddInPlumbing,_T("Done extending menus\n"));
 	return uidCurMenu-ID_ADDINMENU;
 }

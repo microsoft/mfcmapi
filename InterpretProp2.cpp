@@ -634,6 +634,19 @@ HRESULT InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, LPCTSTR sz
 				bNeedSeparator = true;
 			}
 		}
+		else if (flagVALUELOWERNIBBLE == FlagArray[ulCurEntry].ulFlagType)
+		{
+			if (FlagArray[ulCurEntry].lFlagValue == (lTempValue & 0x0F))
+			{
+				if (bNeedSeparator)
+				{
+					EC_H(StringCchCatW(szTempString,_countof(szTempString),L" | ")); // STRING_OK
+				}
+				EC_H(StringCchCatW(szTempString,_countof(szTempString),FlagArray[ulCurEntry].lpszName));
+				lTempValue = lTempValue - FlagArray[ulCurEntry].lFlagValue;
+				bNeedSeparator = true;
+			}
+		}
 		else if (flagCLEARBITS == FlagArray[ulCurEntry].ulFlagType)
 		{
 			// find any bits we need to clear
@@ -761,6 +774,8 @@ UINT g_uidParsingTypesDropDown[] = {
 	IDS_STENTRYLIST,
 	IDS_STPROPERTY,
 	IDS_STRESTRICTION,
+	IDS_STRULECONDITION,
+	IDS_STEXTENDEDRULECONDITION,
 	IDS_STSEARCHFOLDERDEFINITION,
 	IDS_PROPERTYDEFINITIONSTREAM,
 	IDS_ADDITIONALRENENTRYIDSEX,
@@ -778,6 +793,7 @@ typedef BINARY_STRUCTURE_ARRAY_ENTRY FAR * LPBINARY_STRUCTURE_ARRAY_ENTRY;
 #define BINARY_STRUCTURE_ENTRY(_fName,_fType) {PROP_ID((_fName)),(_fType),false},
 #define NAMEDPROP_BINARY_STRUCTURE_ENTRY(_fName,_fGuid,_fType) {PROP_TAG((guid##_fGuid),(_fName)),(_fType),false},
 #define MV_BINARY_STRUCTURE_ENTRY(_fName,_fType) {PROP_ID((_fName)),(_fType),true},
+#define NAMEDPROP_MV_BINARY_STRUCTURE_ENTRY(_fName,_fGuid,_fType) {PROP_TAG((guid##_fGuid),(_fName)),(_fType),true},
 
 BINARY_STRUCTURE_ARRAY_ENTRY g_BinaryStructArray[] =
 {
@@ -788,6 +804,7 @@ BINARY_STRUCTURE_ARRAY_ENTRY g_BinaryStructArray[] =
 	BINARY_STRUCTURE_ENTRY(PR_CONVERSATION_INDEX,IDS_STCONVERSATIONINDEX)
 	BINARY_STRUCTURE_ENTRY(PR_WB_SF_DEFINITION,IDS_STSEARCHFOLDERDEFINITION)
 	BINARY_STRUCTURE_ENTRY(PR_ADDITIONAL_REN_ENTRYIDS_EX,IDS_ADDITIONALRENENTRYIDSEX)
+	BINARY_STRUCTURE_ENTRY(PR_EXTENDED_RULE_MSG_CONDITION,IDS_STEXTENDEDRULECONDITION)
 
 	BINARY_STRUCTURE_ENTRY(PR_RECEIVED_BY_ENTRYID,IDS_STENTRYID)
 	BINARY_STRUCTURE_ENTRY(PR_SENT_REPRESENTING_ENTRYID,IDS_STENTRYID)
@@ -895,6 +912,9 @@ BINARY_STRUCTURE_ARRAY_ENTRY g_BinaryStructArray[] =
 	NAMEDPROP_BINARY_STRUCTURE_ENTRY(LID_GLOBAL_OBJID,PSETID_Meeting,IDS_STGLOBALOBJECTID)
 	NAMEDPROP_BINARY_STRUCTURE_ENTRY(LID_CLEAN_GLOBAL_OBJID,PSETID_Meeting,IDS_STGLOBALOBJECTID)
 	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidPropDefStream,PSETID_Common,IDS_PROPERTYDEFINITIONSTREAM)
+
+	NAMEDPROP_MV_BINARY_STRUCTURE_ENTRY(dispidDLMembers,PSETID_Address,IDS_STENTRYID)
+	NAMEDPROP_MV_BINARY_STRUCTURE_ENTRY(dispidDLOneOffMembers,PSETID_Address,IDS_STENTRYID)
 };
 
 LPBINARY_STRUCTURE_ARRAY_ENTRY BinaryStructArray = g_BinaryStructArray;
@@ -1293,6 +1313,12 @@ void InterpretBinaryAsString(SBinary myBin, DWORD_PTR iStructType, LPMAPIPROP lp
 		break;
 	case IDS_STRESTRICTION:
 		RestrictionToString(myBin,&szResultString);
+		break;
+	case IDS_STRULECONDITION:
+		RuleConditionToString(myBin,&szResultString,false);
+		break;
+	case IDS_STEXTENDEDRULECONDITION:
+		RuleConditionToString(myBin,&szResultString,true);
 		break;
 	case IDS_STSEARCHFOLDERDEFINITION:
 		SearchFolderDefinitionToString(myBin,&szResultString);
@@ -3248,7 +3274,7 @@ void EntryIdToString(SBinary myBin, LPTSTR* lpszResultString)
 {
 	if (!lpszResultString) return;
 	*lpszResultString = NULL;
-	EntryIdStruct* peidEntryId = BinToEntryIdStruct(myBin.cb,myBin.lpb);
+	EntryIdStruct* peidEntryId = BinToEntryIdStruct(myBin.cb,myBin.lpb,NULL);
 	if (peidEntryId)
 	{
 		*lpszResultString = EntryIdStructToString(peidEntryId);
@@ -3256,10 +3282,154 @@ void EntryIdToString(SBinary myBin, LPTSTR* lpszResultString)
 	}
 } // EntryIdToString
 
+// Fills out lpEID based on the passed in entry ID type
+// lpcbBytesRead returns the number of bytes consumed
+void BinToTypedEntryIdStruct(EIDStructType ulType, ULONG cbBin, LPBYTE lpBin, EntryIdStruct* lpEID, size_t* lpcbBytesRead)
+{
+	if (!lpBin || !lpEID) return;
+	if (lpcbBytesRead) *lpcbBytesRead = NULL;
+
+	CBinaryParser Parser(cbBin,lpBin);
+
+	switch (ulType)
+	{
+		// One Off Recipient
+	case eidtOneOff:
+		{
+			Parser.GetDWORD(&lpEID->ProviderData.OneOffRecipientObject.Bitmask);
+			if (MAPI_UNICODE & lpEID->ProviderData.OneOffRecipientObject.Bitmask)
+			{
+				Parser.GetStringW(&lpEID->ProviderData.OneOffRecipientObject.Strings.Unicode.DisplayName);
+				Parser.GetStringW(&lpEID->ProviderData.OneOffRecipientObject.Strings.Unicode.AddressType);
+				Parser.GetStringW(&lpEID->ProviderData.OneOffRecipientObject.Strings.Unicode.EmailAddress);
+			}
+			else
+			{
+				Parser.GetStringA(&lpEID->ProviderData.OneOffRecipientObject.Strings.ANSI.DisplayName);
+				Parser.GetStringA(&lpEID->ProviderData.OneOffRecipientObject.Strings.ANSI.AddressType);
+				Parser.GetStringA(&lpEID->ProviderData.OneOffRecipientObject.Strings.ANSI.EmailAddress);
+			}
+		}
+		break;
+		// Address Book Recipient
+	case eidtAddressBook:
+		{
+			Parser.GetDWORD(&lpEID->ProviderData.AddressBookObject.Version);
+			Parser.GetDWORD(&lpEID->ProviderData.AddressBookObject.Type);
+			Parser.GetStringA(&lpEID->ProviderData.AddressBookObject.X500DN);
+		}
+		break;
+		// Contact Address Book / Personal Distribution List (PDL)
+	case eidtContact:
+		{
+			Parser.GetDWORD(&lpEID->ProviderData.ContactAddressBookObject.Version);
+			Parser.GetDWORD(&lpEID->ProviderData.ContactAddressBookObject.Type);
+			Parser.GetDWORD(&lpEID->ProviderData.ContactAddressBookObject.Index);
+			Parser.GetDWORD(&lpEID->ProviderData.ContactAddressBookObject.EntryIDCount);
+
+			// We don't use BinToEntryIdStruct here because we know which type we need to read
+			// So we read the header of the entry ID manually, then recurse on BinToTypedEntryIdStruct to fill it out
+			lpEID->ProviderData.ContactAddressBookObject.lpEntryID = new EntryIdStruct;
+			if (lpEID->ProviderData.ContactAddressBookObject.lpEntryID)
+			{
+				memset(lpEID->ProviderData.ContactAddressBookObject.lpEntryID,0,sizeof(EntryIdStruct));
+
+				Parser.GetBYTE(&lpEID->ProviderData.ContactAddressBookObject.lpEntryID->abFlags[0]);
+				Parser.GetBYTE(&lpEID->ProviderData.ContactAddressBookObject.lpEntryID->abFlags[1]);
+				Parser.GetBYTE(&lpEID->ProviderData.ContactAddressBookObject.lpEntryID->abFlags[2]);
+				Parser.GetBYTE(&lpEID->ProviderData.ContactAddressBookObject.lpEntryID->abFlags[3]);
+				Parser.GetBYTESNoAlloc(sizeof(lpEID->ProviderData.ContactAddressBookObject.lpEntryID->ProviderUID),(LPBYTE) &lpEID->ProviderData.ContactAddressBookObject.lpEntryID->ProviderUID);
+				size_t cbBinRead = 0;
+				BinToTypedEntryIdStruct(
+					eidtMessage,
+					(ULONG) Parser.RemainingBytes(),
+					lpBin+Parser.GetCurrentOffset(),
+					lpEID->ProviderData.ContactAddressBookObject.lpEntryID,
+					&cbBinRead);
+				Parser.Advance(cbBinRead);
+			}
+		}
+		break;
+	case eidtWAB:
+		{
+			lpEID->ObjectType = eidtWAB;
+
+			Parser.GetBYTE(&lpEID->ProviderData.WAB.Type);
+
+			size_t cbBinRead = 0;
+			lpEID->ProviderData.WAB.lpEntryID = BinToEntryIdStruct(
+				(ULONG) Parser.RemainingBytes(),
+				lpBin+Parser.GetCurrentOffset(),
+				&cbBinRead);
+			Parser.Advance(cbBinRead);
+		}
+		break;
+		// message store objects
+	case eidtMessageDatabase:
+		{
+			Parser.GetBYTE(&lpEID->ProviderData.MessageDatabaseObject.Version);
+			Parser.GetBYTE(&lpEID->ProviderData.MessageDatabaseObject.Flag);
+			Parser.GetStringA(&lpEID->ProviderData.MessageDatabaseObject.DLLFileName);
+			lpEID->ProviderData.MessageDatabaseObject.bIsExchange = false;
+
+			// We only know how to parse emsmdb.dll's wrapped entry IDs
+			if (lpEID->ProviderData.MessageDatabaseObject.DLLFileName &&
+				0 == lstrcmpiA(lpEID->ProviderData.MessageDatabaseObject.DLLFileName,"emsmdb.dll")) // STRING_OK
+			{
+				lpEID->ProviderData.MessageDatabaseObject.bIsExchange = true;
+				size_t cbRead = Parser.GetCurrentOffset();
+				// Advance to the next multiple of 4
+				Parser.Advance(3-((cbRead+3)%4));
+				Parser.GetDWORD(&lpEID->ProviderData.MessageDatabaseObject.WrappedFlags);
+				Parser.GetBYTESNoAlloc(sizeof(lpEID->ProviderData.MessageDatabaseObject.WrappedProviderUID),
+					(LPBYTE) &lpEID->ProviderData.MessageDatabaseObject.WrappedProviderUID);
+				Parser.GetDWORD(&lpEID->ProviderData.MessageDatabaseObject.WrappedType);
+				Parser.GetStringA(&lpEID->ProviderData.MessageDatabaseObject.ServerShortname);
+				Parser.GetStringA(&lpEID->ProviderData.MessageDatabaseObject.MailboxDN);
+			}
+		}
+		break;
+		// Exchange message store folder
+	case eidtFolder:
+		{
+			Parser.GetWORD(&lpEID->ProviderData.FolderOrMessage.Type);
+			Parser.GetBYTESNoAlloc(sizeof(lpEID->ProviderData.FolderOrMessage.Data.FolderObject.DatabaseGUID),
+				(LPBYTE) &lpEID->ProviderData.FolderOrMessage.Data.FolderObject.DatabaseGUID);
+			Parser.GetBYTESNoAlloc(sizeof(lpEID->ProviderData.FolderOrMessage.Data.FolderObject.GlobalCounter),
+				(LPBYTE) &lpEID->ProviderData.FolderOrMessage.Data.FolderObject.GlobalCounter);
+			Parser.GetBYTESNoAlloc(sizeof(lpEID->ProviderData.FolderOrMessage.Data.FolderObject.Pad),
+				(LPBYTE) &lpEID->ProviderData.FolderOrMessage.Data.FolderObject.Pad);
+		}
+		break;
+		// Exchange message store message
+	case eidtMessage:
+		{
+			Parser.GetWORD(&lpEID->ProviderData.FolderOrMessage.Type);
+			Parser.GetBYTESNoAlloc(sizeof(lpEID->ProviderData.FolderOrMessage.Data.MessageObject.FolderDatabaseGUID),
+				(LPBYTE) &lpEID->ProviderData.FolderOrMessage.Data.MessageObject.FolderDatabaseGUID);
+			Parser.GetBYTESNoAlloc(sizeof(lpEID->ProviderData.FolderOrMessage.Data.MessageObject.FolderGlobalCounter),
+				(LPBYTE) &lpEID->ProviderData.FolderOrMessage.Data.MessageObject.FolderGlobalCounter);
+			Parser.GetBYTESNoAlloc(sizeof(lpEID->ProviderData.FolderOrMessage.Data.MessageObject.Pad1),
+				(LPBYTE) &lpEID->ProviderData.FolderOrMessage.Data.MessageObject.Pad1);
+			Parser.GetBYTESNoAlloc(sizeof(lpEID->ProviderData.FolderOrMessage.Data.MessageObject.MessageDatabaseGUID),
+				(LPBYTE) &lpEID->ProviderData.FolderOrMessage.Data.MessageObject.MessageDatabaseGUID);
+			Parser.GetBYTESNoAlloc(sizeof(lpEID->ProviderData.FolderOrMessage.Data.MessageObject.MessageGlobalCounter),
+				(LPBYTE) &lpEID->ProviderData.FolderOrMessage.Data.MessageObject.MessageGlobalCounter);
+			Parser.GetBYTESNoAlloc(sizeof(lpEID->ProviderData.FolderOrMessage.Data.MessageObject.Pad2),
+				(LPBYTE) &lpEID->ProviderData.FolderOrMessage.Data.MessageObject.Pad2);
+		}
+		break;
+	}
+
+	if (lpcbBytesRead) *lpcbBytesRead = Parser.GetCurrentOffset();
+} // BinToTypedEntryIdStruct
+
 // Allocates return value with new. Clean up with DeleteEntryIdStruct.
-EntryIdStruct* BinToEntryIdStruct(ULONG cbBin, LPBYTE lpBin)
+// lpcbBytesRead returns the number of bytes consumed
+EntryIdStruct* BinToEntryIdStruct(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead)
 {
 	if (!lpBin) return NULL;
+	if (lpcbBytesRead) *lpcbBytesRead = NULL;
 
 	EntryIdStruct eidEntryId = {0};
 	CBinaryParser Parser(cbBin,lpBin);
@@ -3273,88 +3443,25 @@ EntryIdStruct* BinToEntryIdStruct(ULONG cbBin, LPBYTE lpBin)
 	if (!memcmp(eidEntryId.ProviderUID, &muidOOP, sizeof(GUID)))
 	{
 		eidEntryId.ObjectType = eidtOneOff;
-		Parser.GetDWORD(&eidEntryId.ProviderData.OneOffRecipientObject.Bitmask);
-		if (MAPI_UNICODE & eidEntryId.ProviderData.OneOffRecipientObject.Bitmask)
-		{
-			Parser.GetStringW(&eidEntryId.ProviderData.OneOffRecipientObject.Strings.Unicode.DisplayName);
-			Parser.GetStringW(&eidEntryId.ProviderData.OneOffRecipientObject.Strings.Unicode.AddressType);
-			Parser.GetStringW(&eidEntryId.ProviderData.OneOffRecipientObject.Strings.Unicode.EmailAddress);
-		}
-		else
-		{
-			Parser.GetStringA(&eidEntryId.ProviderData.OneOffRecipientObject.Strings.ANSI.DisplayName);
-			Parser.GetStringA(&eidEntryId.ProviderData.OneOffRecipientObject.Strings.ANSI.AddressType);
-			Parser.GetStringA(&eidEntryId.ProviderData.OneOffRecipientObject.Strings.ANSI.EmailAddress);
-		}
-
 	}
 	// Address Book Recipient
 	else if (!memcmp(eidEntryId.ProviderUID, &muidEMSAB, sizeof(GUID)))
 	{
 		eidEntryId.ObjectType = eidtAddressBook;
-		Parser.GetDWORD(&eidEntryId.ProviderData.AddressBookObject.Version);
-		Parser.GetDWORD(&eidEntryId.ProviderData.AddressBookObject.Type);
-		Parser.GetStringA(&eidEntryId.ProviderData.AddressBookObject.X500DN);
 	}
 	// Contact Address Book / Personal Distribution List (PDL)
 	else if (!memcmp(eidEntryId.ProviderUID, &muidContabDLL, sizeof(GUID)))
 	{
 		eidEntryId.ObjectType = eidtContact;
-		Parser.GetDWORD(&eidEntryId.ProviderData.ContactAddressBookObject.Version);
-		Parser.GetDWORD(&eidEntryId.ProviderData.ContactAddressBookObject.Type);
-		Parser.GetDWORD(&eidEntryId.ProviderData.ContactAddressBookObject.Index);
-		Parser.GetDWORD(&eidEntryId.ProviderData.ContactAddressBookObject.EntryIDCount);
-		eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID = new EntryIdStruct;
-		if (eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID)
-		{
-			memset(eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID,0,sizeof(EntryIdStruct));
-
-			Parser.GetBYTE(&eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID->abFlags[0]);
-			Parser.GetBYTE(&eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID->abFlags[1]);
-			Parser.GetBYTE(&eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID->abFlags[2]);
-			Parser.GetBYTE(&eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID->abFlags[3]);
-			Parser.GetBYTESNoAlloc(sizeof(eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID->ProviderUID),(LPBYTE) &eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID->ProviderUID);
-			eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID->ObjectType = eidtMessage;
-			Parser.GetWORD(&eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID->ProviderData.FolderOrMessage.Type);
-
-			Parser.GetBYTESNoAlloc(sizeof(eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID->ProviderData.FolderOrMessage.Data.MessageObject.FolderDatabaseGUID),
-				(LPBYTE) &eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID->ProviderData.FolderOrMessage.Data.MessageObject.FolderDatabaseGUID);
-			Parser.GetBYTESNoAlloc(sizeof(eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID->ProviderData.FolderOrMessage.Data.MessageObject.FolderGlobalCounter),
-				(LPBYTE) &eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID->ProviderData.FolderOrMessage.Data.MessageObject.FolderGlobalCounter);
-			Parser.GetBYTESNoAlloc(sizeof(eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID->ProviderData.FolderOrMessage.Data.MessageObject.Pad1),
-				(LPBYTE) &eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID->ProviderData.FolderOrMessage.Data.MessageObject.Pad1);
-			Parser.GetBYTESNoAlloc(sizeof(eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID->ProviderData.FolderOrMessage.Data.MessageObject.MessageDatabaseGUID),
-				(LPBYTE) &eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID->ProviderData.FolderOrMessage.Data.MessageObject.MessageDatabaseGUID);
-			Parser.GetBYTESNoAlloc(sizeof(eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID->ProviderData.FolderOrMessage.Data.MessageObject.MessageGlobalCounter),
-				(LPBYTE) &eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID->ProviderData.FolderOrMessage.Data.MessageObject.MessageGlobalCounter);
-			Parser.GetBYTESNoAlloc(sizeof(eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID->ProviderData.FolderOrMessage.Data.MessageObject.Pad2),
-				(LPBYTE) &eidEntryId.ProviderData.ContactAddressBookObject.lpEntryID->ProviderData.FolderOrMessage.Data.MessageObject.Pad2);
-		}
 	}
 	// message store objects
 	else if (!memcmp(eidEntryId.ProviderUID, &muidStoreWrap, sizeof(GUID)))
 	{
 		eidEntryId.ObjectType = eidtMessageDatabase;
-		Parser.GetBYTE(&eidEntryId.ProviderData.MessageDatabaseObject.Version);
-		Parser.GetBYTE(&eidEntryId.ProviderData.MessageDatabaseObject.Flag);
-		Parser.GetStringA(&eidEntryId.ProviderData.MessageDatabaseObject.DLLFileName);
-		eidEntryId.ProviderData.MessageDatabaseObject.bIsExchange = false;
-
-		// We only know how to parse emsmdb.dll's wrapped entry IDs
-		if (eidEntryId.ProviderData.MessageDatabaseObject.DLLFileName &&
-			0 == lstrcmpiA(eidEntryId.ProviderData.MessageDatabaseObject.DLLFileName,"emsmdb.dll")) // STRING_OK
-		{
-			eidEntryId.ProviderData.MessageDatabaseObject.bIsExchange = true;
-			size_t cbRead = Parser.GetCurrentOffset();
-			// Advance to the next multiple of 4
-			Parser.Advance(3-((cbRead+3)%4));
-			Parser.GetDWORD(&eidEntryId.ProviderData.MessageDatabaseObject.WrappedFlags);
-			Parser.GetBYTESNoAlloc(sizeof(eidEntryId.ProviderData.MessageDatabaseObject.WrappedProviderUID),
-				(LPBYTE) &eidEntryId.ProviderData.MessageDatabaseObject.WrappedProviderUID);
-			Parser.GetDWORD(&eidEntryId.ProviderData.MessageDatabaseObject.WrappedType);
-			Parser.GetStringA(&eidEntryId.ProviderData.MessageDatabaseObject.ServerShortname);
-			Parser.GetStringA(&eidEntryId.ProviderData.MessageDatabaseObject.MailboxDN);
-		}
+	}
+	else if (!memcmp(eidEntryId.ProviderUID, &WAB_GUID, sizeof(GUID)))
+	{
+		eidEntryId.ObjectType = eidtWAB;
 	}
 	// We can recognize Exchange message store folder and message entry IDs by their size
 	else
@@ -3364,31 +3471,23 @@ EntryIdStruct* BinToEntryIdStruct(ULONG cbBin, LPBYTE lpBin)
 		if (sizeof(WORD)+sizeof(GUID)+ 6*sizeof(BYTE)+2*sizeof(BYTE) == ulRemainingBytes)
 		{
 			eidEntryId.ObjectType = eidtFolder;
-			Parser.GetWORD(&eidEntryId.ProviderData.FolderOrMessage.Type);
-			Parser.GetBYTESNoAlloc(sizeof(eidEntryId.ProviderData.FolderOrMessage.Data.FolderObject.DatabaseGUID),
-				(LPBYTE) &eidEntryId.ProviderData.FolderOrMessage.Data.FolderObject.DatabaseGUID);
-			Parser.GetBYTESNoAlloc(sizeof(eidEntryId.ProviderData.FolderOrMessage.Data.FolderObject.GlobalCounter),
-				(LPBYTE) &eidEntryId.ProviderData.FolderOrMessage.Data.FolderObject.GlobalCounter);
-			Parser.GetBYTESNoAlloc(sizeof(eidEntryId.ProviderData.FolderOrMessage.Data.FolderObject.Pad),
-				(LPBYTE) &eidEntryId.ProviderData.FolderOrMessage.Data.FolderObject.Pad);
 		}
 		else if (sizeof(WORD)+2*sizeof(GUID)+ 12*sizeof(BYTE)+4*sizeof(BYTE) == ulRemainingBytes)
 		{
 			eidEntryId.ObjectType = eidtMessage;
-			Parser.GetWORD(&eidEntryId.ProviderData.FolderOrMessage.Type);
-			Parser.GetBYTESNoAlloc(sizeof(eidEntryId.ProviderData.FolderOrMessage.Data.MessageObject.FolderDatabaseGUID),
-				(LPBYTE) &eidEntryId.ProviderData.FolderOrMessage.Data.MessageObject.FolderDatabaseGUID);
-			Parser.GetBYTESNoAlloc(sizeof(eidEntryId.ProviderData.FolderOrMessage.Data.MessageObject.FolderGlobalCounter),
-				(LPBYTE) &eidEntryId.ProviderData.FolderOrMessage.Data.MessageObject.FolderGlobalCounter);
-			Parser.GetBYTESNoAlloc(sizeof(eidEntryId.ProviderData.FolderOrMessage.Data.MessageObject.Pad1),
-				(LPBYTE) &eidEntryId.ProviderData.FolderOrMessage.Data.MessageObject.Pad1);
-			Parser.GetBYTESNoAlloc(sizeof(eidEntryId.ProviderData.FolderOrMessage.Data.MessageObject.MessageDatabaseGUID),
-				(LPBYTE) &eidEntryId.ProviderData.FolderOrMessage.Data.MessageObject.MessageDatabaseGUID);
-			Parser.GetBYTESNoAlloc(sizeof(eidEntryId.ProviderData.FolderOrMessage.Data.MessageObject.MessageGlobalCounter),
-				(LPBYTE) &eidEntryId.ProviderData.FolderOrMessage.Data.MessageObject.MessageGlobalCounter);
-			Parser.GetBYTESNoAlloc(sizeof(eidEntryId.ProviderData.FolderOrMessage.Data.MessageObject.Pad2),
-				(LPBYTE) &eidEntryId.ProviderData.FolderOrMessage.Data.MessageObject.Pad2);
 		}
+	}
+
+	if (eidtUnknown != eidEntryId.ObjectType)
+	{
+		size_t cbBinRead = 0;
+		BinToTypedEntryIdStruct(
+			eidEntryId.ObjectType,
+			(ULONG) Parser.RemainingBytes(),
+			lpBin+Parser.GetCurrentOffset(),
+			&eidEntryId,
+			&cbBinRead);
+		Parser.Advance(cbBinRead);
 	}
 
 	// Check if we have an unidentified short term entry ID:
@@ -3396,11 +3495,14 @@ EntryIdStruct* BinToEntryIdStruct(ULONG cbBin, LPBYTE lpBin)
 		eidEntryId.ObjectType = eidtShortTerm;
 
 	// Junk data remains
-	if (Parser.RemainingBytes() > 0)
+	// Only fill out junk data if we've not been asked to report back how many bytes we read
+	// If we've been asked to report back, then someone else will handle the remaining data
+	if (!lpcbBytesRead && Parser.RemainingBytes() > 0)
 	{
 		eidEntryId.JunkDataSize = Parser.RemainingBytes();
 		Parser.GetBYTES(eidEntryId.JunkDataSize,&eidEntryId.JunkData);
 	}
+	if (lpcbBytesRead) *lpcbBytesRead = Parser.GetCurrentOffset();
 
 	EntryIdStruct* peidEntryId = new EntryIdStruct;
 	if (peidEntryId)
@@ -3442,6 +3544,8 @@ void DeleteEntryIdStruct(EntryIdStruct* peidEntryId)
 		delete[] peidEntryId->ProviderData.MessageDatabaseObject.ServerShortname;
 		delete[] peidEntryId->ProviderData.MessageDatabaseObject.MailboxDN;
 		break;
+	case eidtWAB:
+		DeleteEntryIdStruct(peidEntryId->ProviderData.ContactAddressBookObject.lpEntryID);
 	}
 
 	delete[] peidEntryId->JunkData;
@@ -3482,6 +3586,9 @@ LPTSTR EntryIdStructToString(EntryIdStruct* peidEntryId)
 		break;
 	case eidtContact:
 		szEntryId.FormatMessage(IDS_ENTRYIDCONTACTADDRESS);
+		break;
+	case eidtWAB:
+		szEntryId.FormatMessage(IDS_ENTRYIDWRAPPEDENTRYID);
 		break;
 	}
 
@@ -3592,6 +3699,18 @@ LPTSTR EntryIdStructToString(EntryIdStruct* peidEntryId)
 		szVersion = NULL;
 
 		LPTSTR szEID = EntryIdStructToString(peidEntryId->ProviderData.ContactAddressBookObject.lpEntryID);
+		szEntryId += szEID;
+		delete[] szEID;
+	}
+	else if (eidtWAB == peidEntryId->ObjectType)
+	{
+		LPTSTR szType = NULL;
+		EC_H(InterpretFlags(flagWABEntryIDType, peidEntryId->ProviderData.WAB.Type, &szType));
+
+		szTmp.FormatMessage(IDS_ENTRYIDWRAPPEDENTRYIDDATA, peidEntryId->ProviderData.WAB.Type, szType);
+		szEntryId += szTmp;
+
+		LPTSTR szEID = EntryIdStructToString(peidEntryId->ProviderData.WAB.lpEntryID);
 		szEntryId += szEID;
 		delete[] szEID;
 	}
@@ -3753,7 +3872,8 @@ PropertyStruct* BinToPropertyStruct(ULONG cbBin, LPBYTE lpBin, DWORD dwPropCount
 			cbBin,
 			lpBin,
 			dwPropCount,
-			&cbBytesRead);
+			&cbBytesRead,
+			false);
 		Parser.Advance(cbBytesRead);
 	}
 
@@ -3770,8 +3890,8 @@ PropertyStruct* BinToPropertyStruct(ULONG cbBin, LPBYTE lpBin, DWORD dwPropCount
 // There may be property arrays with over 500 props, but we're not going to try to parse them
 #define _MaxProperties 500
 
-// Caller allocates with new. Clean up with DeleteRestrictionStruct.
-LPSPropValue BinToSPropValue(ULONG cbBin, LPBYTE lpBin, DWORD dwPropCount, size_t* lpcbBytesRead)
+// Caller allocates with new. Clean up with DeleteSPropVal.
+LPSPropValue BinToSPropValue(ULONG cbBin, LPBYTE lpBin, DWORD dwPropCount, size_t* lpcbBytesRead, BOOL bStringPropsExcludeLength)
 {
 	if (!lpBin) return NULL;
 	if (lpcbBytesRead) *lpcbBytesRead = NULL;
@@ -3790,6 +3910,7 @@ LPSPropValue BinToSPropValue(ULONG cbBin, LPBYTE lpBin, DWORD dwPropCount, size_
 
 		Parser.GetWORD(&PropType);
 		Parser.GetWORD(&PropID);
+
 		pspvProperty[i].ulPropTag = PROP_TAG(PropType,PropID);
 		pspvProperty[i].dwAlignPad = 0;
 
@@ -3810,14 +3931,28 @@ LPSPropValue BinToSPropValue(ULONG cbBin, LPBYTE lpBin, DWORD dwPropCount, size_
 			pspvProperty[i].Value.b = wTemp;
 			break;
 		case PT_UNICODE:
-			// This is apparently a cb...
-			Parser.GetWORD(&wTemp);
-			Parser.GetStringW(wTemp/sizeof(WCHAR),&pspvProperty[i].Value.lpszW);
+			if (bStringPropsExcludeLength)
+			{
+				Parser.GetStringW(&pspvProperty[i].Value.lpszW);
+			}
+			else
+			{
+				// This is apparently a cb...
+				Parser.GetWORD(&wTemp);
+				Parser.GetStringW(wTemp/sizeof(WCHAR),&pspvProperty[i].Value.lpszW);
+			}
 			break;
 		case PT_STRING8:
-			// This is apparently a cb...
-			Parser.GetWORD(&wTemp);
-			Parser.GetStringA(wTemp,&pspvProperty[i].Value.lpszA);
+			if (bStringPropsExcludeLength)
+			{
+				Parser.GetStringA(&pspvProperty[i].Value.lpszA);
+			}
+			else
+			{
+				// This is apparently a cb...
+				Parser.GetWORD(&wTemp);
+				Parser.GetStringA(wTemp,&pspvProperty[i].Value.lpszA);
+			}
 			break;
 		case PT_SYSTIME:
 			Parser.GetDWORD(&pspvProperty[i].Value.ft.dwHighDateTime);
@@ -4031,11 +4166,13 @@ RestrictionStruct* BinToRestrictionStruct(ULONG cbBin, LPBYTE lpBin, size_t* lpc
 		{
 			memset(prRestriction->lpRes,0,sizeof(SRestriction));
 
-			BinToRestrictionStruct(
+			BinToRestriction(
 				cbBin,
 				lpBin,
 				&cbBytesRead,
-				prRestriction->lpRes);
+				prRestriction->lpRes,
+				false,
+				true);
 			Parser.Advance(cbBytesRead);
 		}
 	}
@@ -4053,11 +4190,15 @@ RestrictionStruct* BinToRestrictionStruct(ULONG cbBin, LPBYTE lpBin, size_t* lpc
 	return prRestriction;
 } // BinToRestrictionStruct
 
-// There may be restrictions with over 500 sub restrictions, but we're not going to try to parse them
-#define _MaxRestrictions 500
+// There may be restrictions with over 5000 sub restrictions, but we're not going to try to parse them
+#define _MaxRestrictions 5000
 
-// Caller allocates with new. Clean up with DeleteRestrictionStruct.
-void BinToRestrictionStruct(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead, LPSRestriction psrRestriction)
+// Caller allocates with new. Clean up with DeleteRestriction and delete[].
+// If bRuleCondition is true, parse restrictions defined in [MS-OXCDATA] 2.13
+// If bRuleCondition is true, bExtendedCount controls whether the count fields in AND/OR restrictions is 16 or 32 bits
+// If bRuleCondition is false, parse restrictions defined in [MS-OXOCFG] 2.2.4.1.2
+// If bRuleCondition is false, ignore bExtendedCount (assumes true)
+void BinToRestriction(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead, LPSRestriction psrRestriction, BOOL bRuleCondition, BOOL bExtendedCount)
 {
 	if (!lpBin) return;
 	if (lpcbBytesRead) *lpcbBytesRead = NULL;
@@ -4065,19 +4206,36 @@ void BinToRestrictionStruct(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead, LP
 	CBinaryParser Parser(cbBin,lpBin);
 
 	BYTE bTemp = 0;
+	WORD wTemp = 0;
 	DWORD dwTemp = 0;
 	DWORD i = 0;
 	size_t cbOffset = 0;
 	size_t cbBytesRead = 0;
 
-	Parser.GetDWORD(&dwTemp);
-	psrRestriction->rt = dwTemp;
+	if (bRuleCondition)
+	{
+		Parser.GetBYTE(&bTemp);
+		psrRestriction->rt = bTemp;
+	}
+	else
+	{
+		Parser.GetDWORD(&dwTemp);
+		psrRestriction->rt = dwTemp;
+	}
 
 	switch(psrRestriction->rt)
 	{
 	case RES_AND:
 	case RES_OR:
-		Parser.GetDWORD(&dwTemp);
+		if (!bRuleCondition || bExtendedCount)
+		{
+			Parser.GetDWORD(&dwTemp);
+		}
+		else
+		{
+			Parser.GetWORD(&wTemp);
+			dwTemp = wTemp;
+		}
 		psrRestriction->res.resAnd.cRes = dwTemp;
 		if (psrRestriction->res.resAnd.cRes &&
 			psrRestriction->res.resAnd.cRes < _MaxRestrictions)
@@ -4089,11 +4247,13 @@ void BinToRestrictionStruct(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead, LP
 				for (i = 0 ; i < psrRestriction->res.resAnd.cRes ; i++)
 				{
 					cbOffset = Parser.GetCurrentOffset();
-					BinToRestrictionStruct(
+					BinToRestriction(
 						(ULONG) Parser.RemainingBytes(),
 						lpBin+cbOffset,
 						&cbBytesRead,
-						&psrRestriction->res.resAnd.lpRes[i]);
+						&psrRestriction->res.resAnd.lpRes[i],
+						bRuleCondition,
+						bExtendedCount);
 					Parser.Advance(cbBytesRead);
 				}
 			}
@@ -4105,11 +4265,13 @@ void BinToRestrictionStruct(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead, LP
 		{
 			memset(psrRestriction->res.resNot.lpRes,0,sizeof(SRestriction));
 			cbOffset = Parser.GetCurrentOffset();
-			BinToRestrictionStruct(
+			BinToRestriction(
 				(ULONG) Parser.RemainingBytes(),
 				lpBin+cbOffset,
 				&cbBytesRead,
-				psrRestriction->res.resNot.lpRes);
+				psrRestriction->res.resNot.lpRes,
+				bRuleCondition,
+				bExtendedCount);
 			Parser.Advance(cbBytesRead);
 		}
 		break;
@@ -4121,32 +4283,46 @@ void BinToRestrictionStruct(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead, LP
 			(ULONG) Parser.RemainingBytes(),
 			lpBin+cbOffset,
 			1,
-			&cbBytesRead);
+			&cbBytesRead,
+			bRuleCondition);
 		Parser.Advance(cbBytesRead);
 		break;
 	case RES_PROPERTY:
-		Parser.GetDWORD(&psrRestriction->res.resProperty.relop);
+		if (bRuleCondition)
+			Parser.GetBYTE((LPBYTE) &psrRestriction->res.resProperty.relop);
+		else
+			Parser.GetDWORD(&psrRestriction->res.resProperty.relop);
 		Parser.GetDWORD(&psrRestriction->res.resProperty.ulPropTag);
 		cbOffset = Parser.GetCurrentOffset();
 		psrRestriction->res.resProperty.lpProp = BinToSPropValue(
 			(ULONG) Parser.RemainingBytes(),
 			lpBin+cbOffset,
 			1,
-			&cbBytesRead);
+			&cbBytesRead,
+			bRuleCondition);
 		Parser.Advance(cbBytesRead);
 		break;
 	case RES_COMPAREPROPS:
-		Parser.GetDWORD(&psrRestriction->res.resCompareProps.relop);
+		if (bRuleCondition)
+			Parser.GetBYTE((LPBYTE) &psrRestriction->res.resCompareProps.relop);
+		else
+			Parser.GetDWORD(&psrRestriction->res.resCompareProps.relop);
 		Parser.GetDWORD(&psrRestriction->res.resCompareProps.ulPropTag1);
 		Parser.GetDWORD(&psrRestriction->res.resCompareProps.ulPropTag2);
 		break;
 	case RES_BITMASK:
-		Parser.GetDWORD(&psrRestriction->res.resBitMask.relBMR);
+		if (bRuleCondition)
+			Parser.GetBYTE((LPBYTE) &psrRestriction->res.resBitMask.relBMR);
+		else
+			Parser.GetDWORD(&psrRestriction->res.resBitMask.relBMR);
 		Parser.GetDWORD(&psrRestriction->res.resBitMask.ulPropTag);
 		Parser.GetDWORD(&psrRestriction->res.resBitMask.ulMask);
 		break;
 	case RES_SIZE:
-		Parser.GetDWORD(&psrRestriction->res.resSize.relop);
+		if (bRuleCondition)
+			Parser.GetBYTE((LPBYTE) &psrRestriction->res.resSize.relop);
+		else
+			Parser.GetDWORD(&psrRestriction->res.resSize.relop);
 		Parser.GetDWORD(&psrRestriction->res.resSize.ulPropTag);
 		Parser.GetDWORD(&psrRestriction->res.resSize.cb);
 		break;
@@ -4160,22 +4336,28 @@ void BinToRestrictionStruct(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead, LP
 		{
 			memset(psrRestriction->res.resSub.lpRes,0,sizeof(SRestriction));
 			cbOffset = Parser.GetCurrentOffset();
-			BinToRestrictionStruct(
+			BinToRestriction(
 				(ULONG) Parser.RemainingBytes(),
 				lpBin+cbOffset,
 				&cbBytesRead,
-				psrRestriction->res.resSub.lpRes);
+				psrRestriction->res.resSub.lpRes,
+				bRuleCondition,
+				bExtendedCount);
 			Parser.Advance(cbBytesRead);
 		}
 		break;
 	case RES_COMMENT:
-		Parser.GetDWORD(&psrRestriction->res.resComment.cValues);
+		if (bRuleCondition)
+			Parser.GetBYTE((LPBYTE) &psrRestriction->res.resComment.cValues);
+		else
+			Parser.GetDWORD(&psrRestriction->res.resComment.cValues);
 		cbOffset = Parser.GetCurrentOffset();
 		psrRestriction->res.resProperty.lpProp = BinToSPropValue(
 			(ULONG) Parser.RemainingBytes(),
 			lpBin+cbOffset,
 			psrRestriction->res.resComment.cValues,
-			&cbBytesRead);
+			&cbBytesRead,
+			bRuleCondition);
 		Parser.Advance(cbBytesRead);
 
 		// Check if a restriction is present
@@ -4187,11 +4369,13 @@ void BinToRestrictionStruct(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead, LP
 			{
 				memset(psrRestriction->res.resComment.lpRes,0,sizeof(SRestriction));
 				cbOffset = Parser.GetCurrentOffset();
-				BinToRestrictionStruct(
+				BinToRestriction(
 					(ULONG) Parser.RemainingBytes(),
 					lpBin+cbOffset,
 					&cbBytesRead,
-					psrRestriction->res.resComment.lpRes);
+					psrRestriction->res.resComment.lpRes,
+					bRuleCondition,
+					bExtendedCount);
 				Parser.Advance(cbBytesRead);
 			}
 		}
@@ -4204,18 +4388,20 @@ void BinToRestrictionStruct(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead, LP
 		{
 			memset(psrRestriction->res.resNot.lpRes,0,sizeof(SRestriction));
 			cbOffset = Parser.GetCurrentOffset();
-			BinToRestrictionStruct(
+			BinToRestriction(
 				(ULONG) Parser.RemainingBytes(),
 				lpBin+cbOffset,
 				&cbBytesRead,
-				psrRestriction->res.resNot.lpRes);
+				psrRestriction->res.resNot.lpRes,
+				bRuleCondition,
+				bExtendedCount);
 			Parser.Advance(cbBytesRead);
 		}
 		break;
 	}
 
 	if (lpcbBytesRead) *lpcbBytesRead = Parser.GetCurrentOffset();
-} // BinToRestrictionStruct
+} // BinToRestriction
 
 void DeleteRestriction(LPSRestriction lpRes)
 {
@@ -4292,6 +4478,186 @@ LPTSTR RestrictionStructToString(RestrictionStruct* prRestriction)
 	return CStringToString(szRestriction);
 } // RestrictionStructToString
 
+// Rule Condition - these are used in Rules messages
+// bExtended indicates an Extended Rules Message
+void RuleConditionToString(SBinary myBin, LPTSTR* lpszResultString, BOOL bExtended)
+{
+	if (!lpszResultString) return;
+	*lpszResultString = NULL;
+	RuleConditionStruct* prcRuleCondition = BinToRuleConditionStruct(myBin.cb,myBin.lpb,NULL,bExtended);
+
+	if (prcRuleCondition)
+	{
+		*lpszResultString = RuleConditionStructToString(prcRuleCondition,bExtended);
+		DeleteRuleConditionStruct(prcRuleCondition);
+		delete prcRuleCondition;
+	}
+} // RuleConditionToString
+
+// Allocates return value with new. Clean up with DeleteRuleConditionStruct.
+RuleConditionStruct* BinToRuleConditionStruct(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead, BOOL bExtended)
+{
+	if (!lpBin) return NULL;
+	if (lpcbBytesRead) *lpcbBytesRead = NULL;
+	CBinaryParser Parser(cbBin,lpBin);
+
+	size_t cbBytesRead = 0;
+
+	RuleConditionStruct* prcRuleCondition = new RuleConditionStruct;
+	if (prcRuleCondition)
+	{
+		memset(prcRuleCondition,0,sizeof(RuleConditionStruct));
+		Parser.GetWORD(&prcRuleCondition->NamedPropertyInformation.NoOfNamedProps);
+		if (prcRuleCondition->NamedPropertyInformation.NoOfNamedProps)
+		{
+			prcRuleCondition->NamedPropertyInformation.PropId = new WORD[prcRuleCondition->NamedPropertyInformation.NoOfNamedProps];
+			if (prcRuleCondition->NamedPropertyInformation.PropId)
+			{
+				memset(prcRuleCondition->NamedPropertyInformation.PropId,0,prcRuleCondition->NamedPropertyInformation.NoOfNamedProps*sizeof(WORD));
+				WORD i = 0;
+				for (i = 0 ; i < prcRuleCondition->NamedPropertyInformation.NoOfNamedProps ; i++)
+				{
+					Parser.GetWORD(&prcRuleCondition->NamedPropertyInformation.PropId[i]);
+				}
+			}
+			Parser.GetDWORD(&prcRuleCondition->NamedPropertyInformation.NamedPropertiesSize);
+			prcRuleCondition->NamedPropertyInformation.PropertyName = new PropertyNameStruct[prcRuleCondition->NamedPropertyInformation.NoOfNamedProps];
+			if (prcRuleCondition->NamedPropertyInformation.PropertyName)
+			{
+				memset(prcRuleCondition->NamedPropertyInformation.PropertyName,0,prcRuleCondition->NamedPropertyInformation.NoOfNamedProps*sizeof(PropertyNameStruct));
+				WORD i = 0;
+				for (i = 0 ; i < prcRuleCondition->NamedPropertyInformation.NoOfNamedProps ; i++)
+				{
+					Parser.GetBYTE(&prcRuleCondition->NamedPropertyInformation.PropertyName[i].Kind);
+					Parser.GetBYTESNoAlloc(sizeof(GUID),(LPBYTE)&prcRuleCondition->NamedPropertyInformation.PropertyName[i].Guid);
+					if (MNID_ID == prcRuleCondition->NamedPropertyInformation.PropertyName[i].Kind)
+					{
+						Parser.GetDWORD(&prcRuleCondition->NamedPropertyInformation.PropertyName[i].LID);
+					}
+					else if (MNID_STRING == prcRuleCondition->NamedPropertyInformation.PropertyName[i].Kind)
+					{
+						Parser.GetBYTE(&prcRuleCondition->NamedPropertyInformation.PropertyName[i].NameSize);
+						Parser.GetStringW(
+							prcRuleCondition->NamedPropertyInformation.PropertyName[i].NameSize / sizeof(WCHAR),
+							&prcRuleCondition->NamedPropertyInformation.PropertyName[i].Name);
+					}
+				}
+			}
+		}
+
+		prcRuleCondition->lpRes = new SRestriction;
+
+		if (prcRuleCondition->lpRes)
+		{
+			memset(prcRuleCondition->lpRes,0,sizeof(SRestriction));
+
+			BinToRestriction(
+				(ULONG) Parser.RemainingBytes(),
+				lpBin + Parser.GetCurrentOffset(),
+				&cbBytesRead,
+				prcRuleCondition->lpRes,
+				true,
+				bExtended);
+			Parser.Advance(cbBytesRead);
+		}
+	}
+
+	// Junk data remains
+	// Only fill out junk data if we've not been asked to report back how many bytes we read
+	// If we've been asked to report back, then someone else will handle the remaining data
+	if (!lpcbBytesRead && Parser.RemainingBytes() > 0)
+	{
+		prcRuleCondition->JunkDataSize = Parser.RemainingBytes();
+		Parser.GetBYTES(prcRuleCondition->JunkDataSize,&prcRuleCondition->JunkData);
+	}
+	if (lpcbBytesRead) *lpcbBytesRead = Parser.GetCurrentOffset();
+
+	return prcRuleCondition;
+} // BinToRuleConditionStruct
+
+void DeleteRuleConditionStruct(RuleConditionStruct* prcRuleCondition)
+{
+	if (!prcRuleCondition) return;
+
+	delete[] prcRuleCondition->NamedPropertyInformation.PropId;
+	WORD i = 0;
+	prcRuleCondition->NamedPropertyInformation.NoOfNamedProps;
+	for (i = 0 ; i < prcRuleCondition->NamedPropertyInformation.NoOfNamedProps ; i++)
+	{
+		delete[] prcRuleCondition->NamedPropertyInformation.PropertyName[i].Name;
+	}
+	delete[] prcRuleCondition->NamedPropertyInformation.PropertyName;
+	DeleteRestriction(prcRuleCondition->lpRes);
+	delete[] prcRuleCondition->lpRes;
+
+	delete[] prcRuleCondition->JunkData;
+} // DeleteRuleConditionStruct
+
+LPTSTR RuleConditionStructToString(RuleConditionStruct* prcRuleCondition, BOOL bExtended)
+{
+	if (!prcRuleCondition) return NULL;
+
+	CString szRuleCondition;
+	CString szRestriction;
+	CString szTmp;
+	if (bExtended)
+	{
+		szRuleCondition.FormatMessage(IDS_EXRULECONHEADER,
+			prcRuleCondition->NamedPropertyInformation.NoOfNamedProps);
+	}
+	else
+	{
+		szRuleCondition.FormatMessage(IDS_RULECONHEADER,
+			prcRuleCondition->NamedPropertyInformation.NoOfNamedProps);
+	}
+	if (prcRuleCondition->NamedPropertyInformation.NoOfNamedProps)
+	{
+		szTmp.FormatMessage(IDS_RULECONNAMEPROPSIZE,
+			prcRuleCondition->NamedPropertyInformation.NamedPropertiesSize);
+		szRuleCondition += szTmp;
+
+		WORD i = 0;
+		for (i = 0 ; i < prcRuleCondition->NamedPropertyInformation.NoOfNamedProps ; i++)
+		{
+			szTmp.FormatMessage(IDS_RULECONNAMEPROPID,i,prcRuleCondition->NamedPropertyInformation.PropId[i]);
+			szRuleCondition += szTmp;
+
+			szTmp.FormatMessage(IDS_RULECONNAMEPROPKIND,
+				prcRuleCondition->NamedPropertyInformation.PropertyName[i].Kind);
+			szRuleCondition += szTmp;
+
+			szTmp = GUIDToString(&prcRuleCondition->NamedPropertyInformation.PropertyName[i].Guid);
+			szRuleCondition += szTmp;
+
+			if (MNID_ID == prcRuleCondition->NamedPropertyInformation.PropertyName[i].Kind)
+			{
+				szTmp.FormatMessage(IDS_RULECONNAMEPROPLID,
+					prcRuleCondition->NamedPropertyInformation.PropertyName[i].LID);
+				szRuleCondition += szTmp;
+			}
+			else if (MNID_STRING == prcRuleCondition->NamedPropertyInformation.PropertyName[i].Kind)
+			{
+				szTmp.FormatMessage(IDS_RULENAMEPROPSIZE,
+					prcRuleCondition->NamedPropertyInformation.PropertyName[i].NameSize);
+				szRuleCondition += szTmp;
+				if (prcRuleCondition->NamedPropertyInformation.PropertyName[i].Name)
+				{
+					szRuleCondition += prcRuleCondition->NamedPropertyInformation.PropertyName[i].Name;
+				}
+			}
+		}
+	}
+
+	szRuleCondition += _T("\r\n"); // STRING_OK
+	szRestriction.FormatMessage(IDS_RESTRICTIONDATA);
+	szRestriction += RestrictionToString(prcRuleCondition->lpRes,NULL);
+	szRuleCondition += szRestriction;
+
+	szRuleCondition += JunkDataToString(prcRuleCondition->JunkDataSize,prcRuleCondition->JunkData);
+
+	return CStringToString(szRuleCondition);
+} // RuleConditionStructToString
+
 void EntryListToString(SBinary myBin, LPTSTR* lpszResultString)
 {
 	if (!lpszResultString) return;
@@ -4336,7 +4702,8 @@ EntryListStruct* BinToEntryListStruct(ULONG cbBin, LPBYTE lpBin)
 				size_t cbOffset = Parser.GetCurrentOffset();
 				elEntryList.Entry[i].EntryId = BinToEntryIdStruct(
 					(ULONG) min(elEntryList.Entry[i].EntryLength,Parser.RemainingBytes()),
-					lpBin+cbOffset);
+					lpBin+cbOffset,
+					NULL);
 				Parser.Advance(min(elEntryList.Entry[i].EntryLength,Parser.RemainingBytes()));
 			}
 		}
@@ -4505,7 +4872,8 @@ SearchFolderDefinitionStruct* BinToSearchFolderDefinitionStruct(ULONG cbBin, LPB
 							(ULONG) Parser.RemainingBytes(),
 							lpBin+cbOffset,
 							sfdSearchFolderDefinition.Addresses[i].PropertyCount,
-							&cbBytesRead);
+							&cbBytesRead,
+							false);
 						Parser.Advance(cbBytesRead);
 					}
 				}

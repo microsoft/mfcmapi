@@ -42,6 +42,8 @@ private:
 	UINT		m_iFlagBox;
 	UINT		m_iCodePageBox;
 	UINT		m_iBinBox;
+	UINT		m_iSmartViewBox;
 	BOOL		m_bWriteAllowed;
+	BOOL		m_bDoSmartView;
 	ULONG		m_ulEditorType;
 };

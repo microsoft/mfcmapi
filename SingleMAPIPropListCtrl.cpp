@@ -413,7 +413,6 @@ HRESULT CSingleMAPIPropListCtrl::LoadMAPIPropList()
 		ulCurListBoxRow++;
 	}
 	MAPIFreeBuffer(lppPropNames);
-	MAPIFreeBuffer(lpPropsFromGetProps);
 
 	if (m_lpMAPIProp && m_sptExtraProps)
 	{
@@ -475,6 +474,9 @@ HRESULT CSingleMAPIPropListCtrl::LoadMAPIPropList()
 			pExtraProps = NULL;
 		}
 	}
+
+	// lpMappingSig might come from lpPropsFromGetProps, so don't free this until here
+	MAPIFreeBuffer(lpPropsFromGetProps);
 
 	DebugPrintEx(DBGGeneric,CLASS,_T("LoadMAPIPropList"),_T("added %d properties\n"),ulCurListBoxRow);
 

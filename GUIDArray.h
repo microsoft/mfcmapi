@@ -51,4 +51,6 @@ GUID_ARRAY_ENTRY g_PropGuidArray[] =
 	GUID_ENTRY(muidOOP)
 	GUID_ENTRY(muidStoreWrap)
 	GUID_ENTRY(muidEMSAB)
+	GUID_ENTRY(WAB_GUID)
+	GUID_ENTRY(PSETID_CalendarAssistant)
 };

@@ -236,14 +236,22 @@ void CContentsTableDlg::OnInitMenu(CMenu* pMenu)
 		pMenu->CheckMenuItem(ID_APPLYFINDROW,CHECK(mfcmapiFINDROW_RESTRICTION == RestrictionType));
 		pMenu->CheckMenuItem(ID_APPLYRESTRICTION,CHECK(mfcmapiNORMAL_RESTRICTION == RestrictionType));
 		pMenu->CheckMenuItem(ID_CLEARRESTRICTION,CHECK(mfcmapiNO_RESTRICTION == RestrictionType));
-		pMenu->EnableMenuItem(ID_TABLENOTIFICATIONON,DIM(!m_lpContentsTableListCtrl->IsAdviseSet()));
+		pMenu->EnableMenuItem(ID_TABLENOTIFICATIONON,DIM(m_lpContentsTableListCtrl->IsContentsTableSet() && !m_lpContentsTableListCtrl->IsAdviseSet()));
 		pMenu->CheckMenuItem(ID_TABLENOTIFICATIONON,CHECK(m_lpContentsTableListCtrl->IsAdviseSet()));
 		pMenu->EnableMenuItem(ID_TABLENOTIFICATIONOFF,DIM(m_lpContentsTableListCtrl->IsAdviseSet()));
-		pMenu->EnableMenuItem(ID_OUTPUTTABLE,DIM(!m_lpContentsTableListCtrl->IsLoading()));
+		pMenu->EnableMenuItem(ID_OUTPUTTABLE,DIM(m_lpContentsTableListCtrl->IsContentsTableSet() && !m_lpContentsTableListCtrl->IsLoading()));
 
 		pMenu->EnableMenuItem(ID_SETCOLUMNS,DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
 		pMenu->EnableMenuItem(ID_SORTTABLE,DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
 		pMenu->EnableMenuItem(ID_GETSTATUS,DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
+		pMenu->EnableMenuItem(ID_CREATEMESSAGERESTRICTION,DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
+		pMenu->EnableMenuItem(ID_CREATEPROPERTYSTRINGRESTRICTION,DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
+		pMenu->EnableMenuItem(ID_CREATERANGERESTRICTION,DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
+		pMenu->EnableMenuItem(ID_EDITRESTRICTION,DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
+		pMenu->EnableMenuItem(ID_APPLYFINDROW,DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
+		pMenu->EnableMenuItem(ID_APPLYRESTRICTION,DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
+		pMenu->EnableMenuItem(ID_CLEARRESTRICTION,DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
+		pMenu->EnableMenuItem(ID_REFRESHVIEW,DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
 
 		ULONG ulMenu = ID_ADDINMENU;
 		for (ulMenu = ID_ADDINMENU; ulMenu < ID_ADDINMENU+m_ulAddInMenuItems ; ulMenu++)
@@ -326,27 +334,30 @@ void CContentsTableDlg::OnDisplayItem()
 void CContentsTableDlg::OnRefreshView()
 {
 	HRESULT hRes = S_OK;
+	if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
 	DebugPrintEx(DBGGeneric,CLASS,_T("OnRefreshView"),_T("\n"));
-	if (m_lpContentsTableListCtrl && m_lpContentsTableListCtrl->IsLoading()) m_lpContentsTableListCtrl->OnCancelTableLoad();
-	if (m_lpContentsTableListCtrl) EC_H(m_lpContentsTableListCtrl->RefreshTable());
+	if (m_lpContentsTableListCtrl->IsLoading()) m_lpContentsTableListCtrl->OnCancelTableLoad();
+	EC_H(m_lpContentsTableListCtrl->RefreshTable());
 } // CContentsTableDlg::OnRefreshView
 
 void CContentsTableDlg::OnNotificationOn()
 {
+	if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
 	HRESULT hRes = S_OK;
 	EC_H(m_lpContentsTableListCtrl->NotificationOn());
 } // CContentsTableDlg::OnNotificationOn
 
 void CContentsTableDlg::OnNotificationOff()
 {
-	if (m_lpContentsTableListCtrl)
-		m_lpContentsTableListCtrl->NotificationOff();
+	if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
+	m_lpContentsTableListCtrl->NotificationOff();
 } // CContentsTableDlg::OnNotificationOff
 
 // Read properties of the current message and save them for a restriction
 // Designed to work with messages, but could be made to work with anything
 void CContentsTableDlg::OnCreateMessageRestriction()
 {
+	if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
 	HRESULT			hRes = S_OK;
 	ULONG			cVals = 0;
 	LPSPropValue	lpProps = NULL;
@@ -515,7 +526,7 @@ void CContentsTableDlg::OnCreatePropertyStringRestriction()
 	HRESULT			hRes = S_OK;
 	LPSRestriction	lpRes = NULL;
 
-	if (!m_lpContentsTableListCtrl) return;
+	if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
 
 	CPropertyTagEditor MyPropertyTag(
 		IDS_CREATEPROPRES,
@@ -576,7 +587,7 @@ void CContentsTableDlg::OnCreateRangeRestriction()
 	HRESULT			hRes = S_OK;
 	LPSRestriction	lpRes = NULL;
 
-	if (!m_lpContentsTableListCtrl) return;
+	if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
 
 	CPropertyTagEditor MyPropertyTag(
 		IDS_CREATERANGERES,
@@ -632,7 +643,7 @@ void CContentsTableDlg::OnEditRestriction()
 {
 	HRESULT			hRes = S_OK;
 
-	if (!m_lpContentsTableListCtrl) return;
+	if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
 
 	CRestrictEditor MyRestrict(
 		this,
@@ -647,7 +658,7 @@ void CContentsTableDlg::OnEditRestriction()
 
 void CContentsTableDlg::OnOutputTable()
 {
-	if (!m_lpContentsTableListCtrl) return;
+	if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
 	HRESULT	hRes = S_OK;
 	WCHAR*	szFileName = NULL;
 	INT_PTR	iDlgRet = 0;
@@ -679,7 +690,7 @@ void CContentsTableDlg::OnOutputTable()
 
 void CContentsTableDlg::OnSetColumns()
 {
-	if (!m_lpContentsTableListCtrl) return;
+	if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
 	m_lpContentsTableListCtrl->DoSetColumns(
 			false,
 			true,
@@ -689,7 +700,7 @@ void CContentsTableDlg::OnSetColumns()
 
 void CContentsTableDlg::OnGetStatus()
 {
-	if (!m_lpContentsTableListCtrl) return;
+	if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
 	m_lpContentsTableListCtrl->GetStatus();
 } // CContentsTableDlg::OnGetStatus
 
@@ -697,7 +708,7 @@ void CContentsTableDlg::OnSortTable()
 {
 	HRESULT			hRes = S_OK;
 
-	if (!m_lpContentsTableListCtrl) return;
+	if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
 
 	CEditor MyData(
 		this,

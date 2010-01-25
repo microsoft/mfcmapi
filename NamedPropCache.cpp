@@ -173,7 +173,8 @@ void CopyCacheData(
 			else
 			{
 				// this is the case where ANSI data was shoved into a unicode string.
-				cbName = (ULONG) (cchShortLen+1) * sizeof(CHAR);
+				// add a couple extra NULL in case we read this as unicode again.
+				cbName = (ULONG) (cchShortLen+3) * sizeof(CHAR);
 			}
 			if (lpMAPIParent)
 			{

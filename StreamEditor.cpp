@@ -59,6 +59,17 @@ CEditor(pParentWnd,uidTitle,uidPrompt,0,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL)
 		m_iBinBox = 2;
 	}
 
+	UINT iNumBoxes = m_iBinBox+1;
+
+	m_iSmartViewBox = 0xFFFFFFFF;
+	m_bDoSmartView = false;
+	if (PT_BINARY == PROP_TYPE(m_ulPropTag))
+	{
+		m_bDoSmartView = true;
+		m_iSmartViewBox = m_iBinBox+1;
+		iNumBoxes++;
+	}
+
 	if (bEditPropAsRTF) m_ulEditorType = EDITOR_RTF;
 	else m_ulEditorType = EDITOR_STREAM;
 
@@ -69,7 +80,7 @@ CEditor(pParentWnd,uidTitle,uidPrompt,0,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL)
 
 	// Let's crack our property open and see what kind of controls we'll need for it
 	// One control for text stream, one for binary
-	CreateControls(m_iBinBox+1);
+	CreateControls(iNumBoxes);
 	InitMultiLine(m_iTextBox,IDS_STREAMTEXT ,NULL,false);
 	InitSingleLine(m_iCBBox,IDS_CB,NULL,true);
 	if (bUseWrapEx)
@@ -78,6 +89,10 @@ CEditor(pParentWnd,uidTitle,uidPrompt,0,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL)
 		InitSingleLine(m_iCodePageBox,IDS_CODEPAGE,NULL,true);
 	}
 	InitMultiLine(m_iBinBox,IDS_STREAMBIN,NULL,false);
+	if (m_bDoSmartView)
+	{
+		InitMultiLine(m_iSmartViewBox,IDS_COLSMART_VIEW,NULL,true);
+	}
 }
 
 CStreamEditor::~CStreamEditor()
@@ -231,6 +246,10 @@ ULONG CStreamEditor::HandleChange(UINT nID)
 	ULONG i = CEditor::HandleChange(nID);
 
 	if ((ULONG) -1 == i) return (ULONG) -1;
+
+	LPBYTE	lpb = NULL;
+	size_t	cb = 0;
+
 	if (m_iTextBox == i)
 	{
 		size_t cchStr = 0;
@@ -246,9 +265,6 @@ ULONG CStreamEditor::HandleChange(UINT nID)
 	}
 	else if (m_iBinBox == i)
 	{
-		LPBYTE	lpb = NULL;
-		size_t	cb = 0;
-
 		if (GetBinaryUseControl(m_iBinBox,&cb,&lpb))
 		{
 			// Treat as a NULL terminated string
@@ -256,9 +272,31 @@ ULONG CStreamEditor::HandleChange(UINT nID)
 			SetStringA(m_iTextBox,(LPCSTR) lpb, cb+1);
 			SetSize(m_iCBBox, cb);
 		}
-
-		delete[] lpb;
 	}
+
+	if (m_bDoSmartView)
+	{
+		if (!cb && ! lpb) GetBinaryUseControl(m_iBinBox,&cb,&lpb);
+
+		LPTSTR szSmartView = NULL;
+		SBinary Bin = {0};
+		Bin.cb = (ULONG) cb;
+		Bin.lpb = lpb;
+		SPropValue sProp = {0};
+		sProp.ulPropTag = m_ulPropTag;
+		sProp.Value.bin = Bin;
+
+		InterpretPropSmartView(
+			&sProp,
+			NULL,
+			NULL,
+			NULL,
+			false,
+			&szSmartView);
+		SetString(m_iSmartViewBox,szSmartView);
+		delete[] szSmartView;
+	}
+	delete[] lpb;
 
 	if (m_bUseWrapEx)
 	{

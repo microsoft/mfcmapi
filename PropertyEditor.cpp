@@ -1056,6 +1056,8 @@ BOOL CMultiValuePropertyEditor::OnInitDialog()
 	BOOL bRet = CEditor::OnInitDialog();
 
 	ReadMultiValueStringsFromProperty(0);
+	ResizeList(0,false);
+	UpdateSmartView(0);
 	UpdateListButtons();
 
 	m_bDirty = false;
@@ -1101,8 +1103,8 @@ void CMultiValuePropertyEditor::ReadMultiValueStringsFromProperty(ULONG ulListNu
 	InsertColumn(ulListNum,0,IDS_ENTRY);
 	InsertColumn(ulListNum,1,IDS_VALUE);
 	InsertColumn(ulListNum,2,IDS_ALTERNATEVIEW);
-	if (PT_MV_LONG == PROP_TYPE(m_lpsInputValue->ulPropTag) ||
-		PT_MV_BINARY == PROP_TYPE(m_lpsInputValue->ulPropTag))
+	if (PT_MV_LONG == PROP_TYPE(m_ulPropTag) ||
+		PT_MV_BINARY == PROP_TYPE(m_ulPropTag))
 	{
 		InsertColumn(ulListNum,3,IDS_COLSMART_VIEW);
 	}
@@ -1172,9 +1174,6 @@ void CMultiValuePropertyEditor::ReadMultiValueStringsFromProperty(ULONG ulListNu
 			lpData->bItemFullyLoaded = true;
 		}
 	}
-	ResizeList(ulListNum,false);
-
-	UpdateSmartView(ulListNum);
 } // CMultiValuePropertyEditor::ReadMultiValueStringsFromProperty
 
 // Perisist the data in the controls to m_lpsOutputValue
@@ -1379,7 +1378,7 @@ BOOL CMultiValuePropertyEditor::DoListEdit(ULONG ulListNum, int iItem, SortListD
 		IDS_EDITROWPROMPT,
 		m_bIsAB,
 		NULL, // not passing an allocation parent because we know we're gonna free the result
-		NULL,
+		m_lpMAPIProp,
 		NULL,
 		true, // This is a row from a multivalued property. Only case we pass true here.
 		&tmpPropVal,
@@ -1476,8 +1475,8 @@ void CMultiValuePropertyEditor::UpdateListRow(LPSPropValue lpProp, ULONG ulListN
 	SetListString(ulListNum,iMVCount,1,szTmp);
 	SetListString(ulListNum,iMVCount,2,szAltTmp);
 
-	if (PT_MV_LONG == PROP_TYPE(m_lpsInputValue->ulPropTag) ||
-		PT_MV_BINARY == PROP_TYPE(m_lpsInputValue->ulPropTag))
+	if (PT_MV_LONG == PROP_TYPE(m_ulPropTag) ||
+		PT_MV_BINARY == PROP_TYPE(m_ulPropTag))
 	{
 		LPTSTR szSmartView = NULL;
 
