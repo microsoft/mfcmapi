@@ -439,7 +439,8 @@ enum EIDStructType {
 	eidtOneOff,
 	eidtAddressBook,
 	eidtContact,
-	eidtNewsGroupFolder
+	eidtNewsGroupFolder,
+	eidtWAB,
 };
 struct EntryIdStruct;
 // EntryIdStruct
@@ -450,7 +451,7 @@ typedef struct EntryIdStruct
 {
 	BYTE abFlags[4];
 	BYTE ProviderUID[16];
-	ULONG ObjectType; // My own addition to simplify union parsing
+	EIDStructType ObjectType; // My own addition to simplify union parsing
 	union
 	{
 		struct
@@ -520,6 +521,11 @@ typedef struct EntryIdStruct
 			DWORD EntryIDCount;
 			EntryIdStruct* lpEntryID;
 		} ContactAddressBookObject;
+		struct
+		{
+			BYTE Type;
+			EntryIdStruct* lpEntryID;
+		} WAB;
 	} ProviderData;
 	size_t JunkDataSize;
 	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
@@ -527,7 +533,7 @@ typedef struct EntryIdStruct
 
 void EntryIdToString(SBinary myBin, LPTSTR* lpszResultString);
 // Allocates return value with new. Clean up with DeleteEntryIdStruct.
-EntryIdStruct* BinToEntryIdStruct(ULONG cbBin, LPBYTE lpBin);
+EntryIdStruct* BinToEntryIdStruct(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead);
 void DeleteEntryIdStruct(EntryIdStruct* peidEntryId);
 // result allocated with new, clean up with delete[]
 LPTSTR EntryIdStructToString(EntryIdStruct* peidEntryId);
@@ -582,7 +588,7 @@ void PropertyToString(SBinary myBin, LPTSTR* lpszResultString);
 // Allocates return value with new. Clean up with DeletePropertyStruct.
 PropertyStruct* BinToPropertyStruct(ULONG cbBin, LPBYTE lpBin, DWORD dwPropCount);
 // Allocates return value with new. Clean up with DeletePropertyStruct.
-LPSPropValue BinToSPropValue(ULONG cbBin, LPBYTE lpBin, DWORD dwPropCount, size_t* lpcbBytesRead);
+LPSPropValue BinToSPropValue(ULONG cbBin, LPBYTE lpBin, DWORD dwPropCount, size_t* lpcbBytesRead, BOOL bStringPropsExcludeLength);
 // Neuters an array of SPropValues - caller must use delete to delete the SPropValue
 void DeleteSPropVal(ULONG cVal, LPSPropValue lpsPropVal);
 void DeletePropertyStruct(PropertyStruct* ppProperty);
@@ -604,13 +610,66 @@ typedef struct
 void RestrictionToString(SBinary myBin, LPTSTR* lpszResultString);
 // Allocates return value with new. Clean up with DeleteRestrictionStruct.
 RestrictionStruct* BinToRestrictionStruct(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead);
-// Caller allocates with new. Clean up with DeleteRestrictionStruct.
-void BinToRestrictionStruct(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead, LPSRestriction psrRestriction);
+// Caller allocates with new. Clean up with DeleteRestriction and delete[].
+void BinToRestriction(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead, LPSRestriction psrRestriction, BOOL bRuleCondition, BOOL bExtendedCount);
 // Neuters an SRestriction - caller must use delete to delete the SRestriction
 void DeleteRestriction(LPSRestriction lpRes);
 void DeleteRestrictionStruct(RestrictionStruct* prRestriction);
 // result allocated with new, clean up with delete[]
 LPTSTR RestrictionStructToString(RestrictionStruct* prRestriction);
+
+
+// http://msdn.microsoft.com/en-us/library/ee158295.aspx
+// http://msdn.microsoft.com/en-us/library/ee179073.aspx
+
+// [MS-OXCDATA]
+// PropertyNameStruct
+// =====================
+//   This structure specifies a Property Name
+//
+typedef struct
+{
+	BYTE Kind;
+	GUID Guid;
+	DWORD LID;
+	BYTE NameSize;
+	LPWSTR Name;
+} PropertyNameStruct;
+
+// [MS-OXORULE]
+// NamedPropertyInformationStruct
+// =====================
+//   This structure specifies named property information for a rule condition
+//
+typedef struct
+{
+	WORD NoOfNamedProps;
+	WORD* PropId;
+	DWORD NamedPropertiesSize;
+	PropertyNameStruct* PropertyName;
+} NamedPropertyInformationStruct;
+
+// [MS-OXORULE]
+// RuleConditionStruct
+// =====================
+//   This structure specifies a Rule Condition
+//
+typedef struct
+{
+	NamedPropertyInformationStruct NamedPropertyInformation;
+	LPSRestriction lpRes;
+
+	size_t JunkDataSize;
+	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
+} RuleConditionStruct;
+
+// Rule Condition - these are used in rules messages
+void RuleConditionToString(SBinary myBin, LPTSTR* lpszResultString, BOOL bExtended);
+// Allocates return value with new. Clean up with DeleteRuleConditionStruct.
+RuleConditionStruct* BinToRuleConditionStruct(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead, BOOL bExtended);
+void DeleteRuleConditionStruct(RuleConditionStruct* prcRuleCondition);
+// result allocated with new, clean up with delete[]
+LPTSTR RuleConditionStructToString(RuleConditionStruct* prcRuleCondition, BOOL bExtended);
 
 // AddressListEntryStruct
 // =====================

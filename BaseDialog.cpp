@@ -59,6 +59,9 @@ CBaseDialog::CBaseDialog(
 CBaseDialog::~CBaseDialog()
 {
 	TRACE_DESTRUCTOR(CLASS);
+	HMENU hMenu = ::GetMenu(this->m_hWnd);
+	if (hMenu) DestroyMenu(hMenu);
+
 	DestroyWindow();
 	OnNotificationsOff();
 	if (m_lpContainer) m_lpContainer->Release();
@@ -530,7 +533,6 @@ void CBaseDialog::AddMenu(UINT uiResource, UINT uidTitle, UINT uiPos)
 			MF_BYPOSITION | MF_POPUP,
 			(UINT_PTR) MyMenu.m_hMenu,
 			szTitle));
-
 		if (IDR_MENU_PROPERTY == uiResource)
 		{
 			ExtendAddInMenu(MyMenu.m_hMenu, MENU_CONTEXT_PROPERTY);
@@ -538,8 +540,6 @@ void CBaseDialog::AddMenu(UINT uiResource, UINT uidTitle, UINT uiPos)
 	}
 
 	DrawMenuBar();
-
-	MyMenu.Detach();
 }
 
 void CBaseDialog::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)

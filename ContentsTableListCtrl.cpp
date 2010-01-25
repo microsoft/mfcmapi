@@ -1580,8 +1580,7 @@ HRESULT CContentsTableListCtrl::NotificationOn()
 {
 	HRESULT			hRes = S_OK;
 
-	if (m_lpAdviseSink) return S_OK;
-	if (!m_lpContentsTable) return MAPI_E_INVALID_PARAMETER;
+	if (m_lpAdviseSink || !m_lpContentsTable) return S_OK;
 
 	DebugPrintEx(DBGGeneric,CLASS,_T("NotificationOn"),_T("registering table notification on 0x%X\n"),m_lpContentsTable);
 

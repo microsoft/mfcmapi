@@ -703,14 +703,14 @@ IDS_PASTENAMEDPROPS              "Paste Named Props"
 IDS_PASTENAMEDPROPSPROMPT        "Enter the property set GUID you wish to copy.\r\n\
 PS_PUBLIC_STRINGS is specified by default (braces ({/}) are required)."
 IDS_MAPISVCTITLE                 "MAPISVC.INF path"
-IDS_MAPISVCTEXT                  
+IDS_MAPISVCTEXT
 "This is the path which MAPI will use to read MAPISVC.INF,\r\n\
 and which MFCMAPI will use in updating this file. Note that\r\n\
 if MFCMAPI is 32 bit and running on a 64 bit operating system,\r\n\
 this path may be virtualized."
 IDS_MAPISVCPROMPT                "File path:"
 IDS_PROFILESERVERVERSIONTITLE    "Profile Server Version"
-IDS_PROFILESERVERVERSIONPROMPT   "Server Version is extracted from PR_SERVER_VERSION\r\n\
+IDS_PROFILESERVERVERSIONPROMPT   "Server Version is extracted from PR_PROFILE_SERVER_VERSION\r\n\
 Major and minor version and build are extracted from PR_SERVER_FULL_VERSION\r\n\
 \r\n\
 If a value is <not found> then the property was not found.\r\n\
@@ -742,6 +742,8 @@ IDS_STENTRYID                    "Entry Id"
 IDS_STENTRYLIST                  "Entry List"
 IDS_STPROPERTY                   "Property"
 IDS_STRESTRICTION                "Restriction"
+IDS_STRULECONDITION              "Rule Condition"
+IDS_STEXTENDEDRULECONDITION      "Extended Rule Condition"
 IDS_STSEARCHFOLDERDEFINITION     "Search Folder Definition"
 IDS_COUNTNAMEDPROPS              "Count Named Props"
 IDS_COUNTNAMEDPROPSPROMPT        "Count of how many named property mappings exist and the highest \r\n\
@@ -1792,6 +1794,8 @@ IDS_ENTRYIDEXCHANGEADDRESS "Exchange Address Entry ID:\r\n"
 
 IDS_ENTRYIDCONTACTADDRESS "Contact Address Book / PDL Entry ID:\r\n"
 
+IDS_ENTRYIDWRAPPEDENTRYID "Wrapped Entry ID:\r\n"
+
 IDS_ENTRYIDHEADER1 "abFlags = 0x00000000\r\n"
 
 IDS_ENTRYIDHEADER2 "abFlags[0] = 0x%1!02X!= %2\r\n\
@@ -1839,6 +1843,8 @@ Folder GlobalCounter = "
 IDS_ENTRYIDEXCHANGEMESSAGEDATAGUID "\r\nMessage Database GUID = %1\r\n\
 Message GlobalCounter = "
 
+IDS_ENTRYIDWRAPPEDENTRYIDDATA "\r\nWrapped Entry Type = 0x%1!02X! = %2\r\n"
+
 IDS_PROPERTYDATAHEADER "Property[%1!d!]\r\n"
 IDS_PROPERTYDATA "PropString = %1 AltPropString = %2\r\n"
 IDS_PROPERTYDATASMARTVIEW "Smart View: %1\r\n"
@@ -1853,6 +1859,19 @@ IDS_ENTRYLISTENTRYID "\r\nEntryId[%1!d!]:\r\n\
 EntryLength = 0x%2!08X!\r\n\
 EntryLengthPad = 0x%3!08X!\r\n\
 Entry Id = "
+
+IDS_EXRULECONHEADER "Extended Rule Condition\
+\r\nNumber of named props = 0x%1!04X!"
+IDS_RULECONHEADER "Rule Condition\
+\r\nNumber of named props = 0x%1!04X!"
+IDS_RULECONNAMEPROPSIZE "\r\nNamed prop size = 0x%1!08X!"
+IDS_RULECONNAMEPROPID "\r\nNamed Prop 0x%1!04X!\
+\r\n\tPropID = 0x%2!04X!"
+IDS_RULECONNAMEPROPKIND "\r\n\tKind = 0x%1!02X!\
+\r\n\tGuid = "
+IDS_RULECONNAMEPROPLID "\r\n\tLID = 0x%1!08X!"
+IDS_RULENAMEPROPSIZE "\r\n\tNameSize = 0x%1!02X!\
+\r\n\tName = "
 
 IDS_SFDEFINITIONHEADER "Search Folder Definition:\r\n\
 Version = 0x%1!08X!\r\n\

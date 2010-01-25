@@ -445,8 +445,6 @@ BOOL MergeMenu(CMenu * pMenuDestination, const CMenu * pMenuAdd)
 				sMenuAddString));
 			if (FAILED(hRes)) return false;
 			iMenuDestItemCount++;
-
-			NewPopupMenu.Detach();
 		}
 	}
 
@@ -819,13 +817,13 @@ void DisplayPublicFolderTable(CParentWnd* lpParent,
 						BOOL bHaveGUID = false;
 
 						LPTSTR pszGUID = NULL;
-						pszGUID = MyData.GetString(2);
+						pszGUID = MyData.GetString(3);
 
 						if (_T('\0') != pszGUID[0])
 						{
 							bHaveGUID = true;
 
-							WC_H(StringToGUID(MyData.GetString(2),&MyGUID));
+							WC_H(StringToGUID(MyData.GetString(3),&MyGUID));
 							if (FAILED(hRes))
 							{
 								ErrDialog(__FILE__,__LINE__,IDS_EDINVALIDGUID);

@@ -48,6 +48,7 @@ enum __FlagType
 	flagVALUE,
 	flagVALUE3RDBYTE,
 	flagVALUE4THBYTE,
+	flagVALUELOWERNIBBLE,
 	flagCLEARBITS, // Used to clear bits that we know we don't know so that remaining bits can be examined as values
 };
 
@@ -79,6 +80,7 @@ enum __GuidType
 // I can put non property related flags with the high bit set (see enum __NonPropFlag)
 #define NON_PROP_FLAG_ENTRY(_fName,_fValue,_fType) {(_fName),(_fValue),(_fType),L#_fValue},
 #define NON_PROP_FLAG_ENTRY_NAMED(_fName,_fValue,_fValueName,_fType) {(_fName),(_fValue),(_fType),(_fValueName)},
+#define NON_PROP_FLAG_ENTRYLOWERNIBBLE(_fName,_fValue,_fValType) {(_fName),(_fValue),flagVALUELOWERNIBBLE,L#_fValType L": " L#_fValue}, // STRING_OK
 #define NON_PROP_CLEAR_BITS_ENTRY(_fName,_fValue) {(_fName),(_fValue),flagCLEARBITS,L""},
 
 // Flag parsing array - used by GetPropFlags

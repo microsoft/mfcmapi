@@ -816,7 +816,8 @@ SIZE CEditor::ComputeWorkArea(SIZE sScreen)
 
 		cx = max(cx,sizeTitle);
 		::SelectObject(myHDC,hOldFont);
-		if(titleFont) ::DeleteObject(titleFont);
+		if (titleFont) ::DeleteObject(titleFont);
+		::ReleaseDC(NULL,myHDC);
 	}
 
 	// throw all that work out if we have enough buttons
