@@ -23,39 +23,39 @@ public:
 	STDMETHODIMP_(ULONG) AddRef();
 	STDMETHODIMP_(ULONG) Release();
 
-	LPADRBOOK		GetAddrBook(BOOL bForceOpen);
-	LPMDB			GetMDB();
-	LPMAPISESSION	GetSession();
-	LPPROFADMIN		GetProfAdmin();
+	LPADRBOOK     GetAddrBook(BOOL bForceOpen);
+	LPMDB         GetMDB();
+	LPMAPISESSION GetSession();
+	LPPROFADMIN   GetProfAdmin();
 
-	void	SetAddrBook(LPADRBOOK lpAddrBook);
-	void	SetMDB(LPMDB lppMDB);
-	void	MAPILogonEx(HWND hwnd,LPTSTR szProfileName, ULONG ulFlags);
-	void	Logoff(HWND hwnd, ULONG ulFlags);
+	void SetAddrBook(LPADRBOOK lpAddrBook);
+	void SetMDB(LPMDB lppMDB);
+	void MAPILogonEx(HWND hwnd,LPTSTR szProfileName, ULONG ulFlags);
+	void Logoff(HWND hwnd, ULONG ulFlags);
 
 	// For copy buffer
-	LPENTRYLIST		GetABEntriesToCopy();
-	LPENTRYLIST		GetMessagesToCopy();
-	LPMAPIFOLDER	GetFolderToCopy();
-	LPMAPIFOLDER	GetSourceParentFolder();
+	LPENTRYLIST  GetABEntriesToCopy();
+	LPENTRYLIST  GetMessagesToCopy();
+	LPMAPIFOLDER GetFolderToCopy();
+	LPMAPIFOLDER GetSourceParentFolder();
 
-	ULONG			GetPropertyToCopy();
-	LPMAPIPROP		GetSourcePropObject();
+	ULONG      GetPropertyToCopy();
+	LPMAPIPROP GetSourcePropObject();
 
-	ULONG*			GetAttachmentsToCopy();
-	ULONG			GetNumAttachments();
+	ULONG* GetAttachmentsToCopy();
+	ULONG  GetNumAttachments();
 
-	void	SetABEntriesToCopy(LPENTRYLIST lpEBEntriesToCopy);
-	void	SetMessagesToCopy(LPENTRYLIST lpMessagesToCopy, LPMAPIFOLDER lpSourceParent);
-	void	SetFolderToCopy(LPMAPIFOLDER lpFolderToCopy, LPMAPIFOLDER lpSourceParent);
-	void	SetPropertyToCopy(ULONG ulPropTag, LPMAPIPROP lpSourcePropObject);
-	void	SetAttachmentsToCopy(LPMESSAGE lpMessage, ULONG ulNumSelected, ULONG* lpAttNumList);
+	void SetABEntriesToCopy(LPENTRYLIST lpEBEntriesToCopy);
+	void SetMessagesToCopy(LPENTRYLIST lpMessagesToCopy, LPMAPIFOLDER lpSourceParent);
+	void SetFolderToCopy(LPMAPIFOLDER lpFolderToCopy, LPMAPIFOLDER lpSourceParent);
+	void SetPropertyToCopy(ULONG ulPropTag, LPMAPIPROP lpSourcePropObject);
+	void SetAttachmentsToCopy(LPMESSAGE lpMessage, ULONG ulNumSelected, ULONG* lpAttNumList);
 
-	ULONG	GetBufferStatus();
+	ULONG GetBufferStatus();
 
-	void	MAPIInitialize(ULONG ulFlags);
-	void	MAPIUninitialize();
-	BOOL	bMAPIInitialized();
+	void MAPIInitialize(ULONG ulFlags);
+	void MAPIUninitialize();
+	BOOL bMAPIInitialized();
 
 private:
 	LONG			m_cRef;

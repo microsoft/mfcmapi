@@ -22,7 +22,7 @@ public:
 		);
 	virtual ~CContentsTableDlg();
 
-	virtual HRESULT	OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, LPMAPIPROP* lppMAPIProp);
+	virtual HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, LPMAPIPROP* lppMAPIProp);
 
 protected:
 	// Overrides from base class

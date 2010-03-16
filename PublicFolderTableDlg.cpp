@@ -21,22 +21,22 @@ static TCHAR* CLASS = _T("CPublicFolderTableDlg");
 // CPublicFolderTableDlg dialog
 
 CPublicFolderTableDlg::CPublicFolderTableDlg(
-							   CParentWnd* pParentWnd,
-							   CMapiObjects* lpMapiObjects,
-							   LPCTSTR lpszServerName,
-							   LPMAPITABLE lpMAPITable
-							   ):
+	CParentWnd* pParentWnd,
+	CMapiObjects* lpMapiObjects,
+	LPCTSTR lpszServerName,
+	LPMAPITABLE lpMAPITable
+	):
 CContentsTableDlg(
-						  pParentWnd,
-						  lpMapiObjects,
-						  IDS_PUBLICFOLDERTABLE,
-						  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
-						  lpMAPITable,
-						  (LPSPropTagArray) &sptPFCols,
-						  NUMPFCOLUMNS,
-						  PFColumns,
-						  NULL,
-						  MENU_CONTEXT_PUBLIC_FOLDER_TABLE)
+				  pParentWnd,
+				  lpMapiObjects,
+				  IDS_PUBLICFOLDERTABLE,
+				  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+				  lpMAPITable,
+				  (LPSPropTagArray) &sptPFCols,
+				  NUMPFCOLUMNS,
+				  PFColumns,
+				  NULL,
+				  MENU_CONTEXT_PUBLIC_FOLDER_TABLE)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	HRESULT hRes = S_OK;
@@ -74,15 +74,14 @@ void CPublicFolderTableDlg::OnDisplayItem()
 	SortListData*	lpListData = NULL;
 	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
-	m_lpMapiObjects->GetSession(&lpMAPISession); // do not release
+	lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
-	m_lpMapiObjects->GetMDB(&lpMDB); // do not release
+	lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 	if (!lpMDB)
 	{
-		EC_H(OpenPrivateMessageStore(lpMAPISession, &lpMDB));
+		EC_H(OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpMDB));
 	}
-	HrMAPIOpenFolderEx
 	if (lpMDB)
 	{
 		do
@@ -106,10 +105,11 @@ void CPublicFolderTableDlg::OnDisplayItem()
 					if (lpMAPIProp)
 					{
 						if (m_lpPropDisplay)
-							EC_H(m_lpPropDisplay->SetMAPIProp(lpMAPIProp,false));
+							EC_H(m_lpPropDisplay->SetDataSource(lpMAPIProp, NULL, false));
 
 						EC_H(DisplayObject(
 							lpMAPIProp,
+							NULL,
 							otStore,
 							this));
 						lpMAPIProp->Release();
@@ -135,14 +135,13 @@ HRESULT CPublicFolderTableDlg::OpenItemProp(int /*iSelectedItem*/, __mfcmapiModi
 
 	if (!lppMAPIProp || !m_lpContentsTableListCtrl) return MAPI_E_INVALID_PARAMETER;
 
-
-	m_lpMapiObjects->GetSession(&lpMAPISession); // do not release
+	lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return MAPI_E_INVALID_PARAMETER;
 
-	m_lpMapiObjects->GetMDB(&lpMDB); // do not release
+	lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 	if (!lpMDB)
 	{
-		EC_H(OpenPrivateMessageStore(lpMAPISession, &lpMDB));
+		EC_H(OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpMDB));
 	}
 
 	lpListData = (SortListData*) m_lpContentsTableListCtrl->GetItemData(iSelectedItem);

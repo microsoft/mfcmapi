@@ -10,6 +10,7 @@
 #include "SingleMAPIPropListCtrl.h"
 #include "Editor.h"
 #include "HexEditor.h"
+#include "DbgView.h"
 #include "MFCUtilityFunctions.h"
 #include "MAPIFunctions.h"
 #include "InterpretProp.h"
@@ -23,10 +24,10 @@
 static TCHAR* CLASS = _T("CBaseDialog");
 
 CBaseDialog::CBaseDialog(
-				 CParentWnd* pParentWnd,
-				 CMapiObjects* lpMapiObjects, // Pass NULL to create a new m_lpMapiObjects,
-				 ULONG ulAddInContext
-				 ) : CDialog()
+						 CParentWnd* pParentWnd,
+						 CMapiObjects* lpMapiObjects, // Pass NULL to create a new m_lpMapiObjects,
+						 ULONG ulAddInContext
+						 ) : CDialog()
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	m_szTitle.LoadString(IDS_BASEDIALOG);
@@ -223,6 +224,7 @@ BOOL CBaseDialog::HandleMenu(WORD wMenuSelect)
 	switch (wMenuSelect)
 	{
 	case ID_HEXEDITOR: OnHexEditor(); return true;
+	case ID_DBGVIEW: DisplayDbgView(m_lpParent); return true;
 	case ID_COMPAREENTRYIDS: OnCompareEntryIDs(); return true;
 	case ID_OPENENTRYID: OnOpenEntryID(NULL); return true;
 	case ID_COMPUTESTOREHASH: OnComputeStoreHash(); return true;
@@ -287,64 +289,65 @@ BOOL CBaseDialog::HandleKeyDown(UINT nChar, BOOL bShift, BOOL bCtrl, BOOL bMenu)
 {
 	DebugPrintEx(DBGMenu,CLASS,_T("HandleKeyDown"),_T("nChar = 0x%0X, bShift = 0x%X, bCtrl = 0x%X, bMenu = 0x%X\n"),
 		nChar,bShift, bCtrl, bMenu);
-	if (!bMenu) switch (nChar)
+	if (bMenu) return false;
+
+	switch (nChar)
 	{
-		case 'H':
-			if (bCtrl)
-			{
-				OnHexEditor(); return true;
-			}
-			break;
-		case 'D':
-			if (bCtrl && !bShift)
-			{
-				SetDebugLevel(DBGAll); return true;
-			}
-			if (bCtrl && bShift)
-			{
-				SetDebugLevel(DBGNoDebug); return true;
-			}
-			break;
-		case VK_F1:
-				DisplayAboutDlg(this); return true;
-		case 'S':
-			if (bCtrl && m_lpPropDisplay)
-			{
-				m_lpPropDisplay->SavePropsToXML(); return true;
-			}
-			break;
-		case VK_DELETE:
+	case 'H':
+		if (bCtrl)
+		{
+			OnHexEditor(); return true;
+		}
+		break;
+	case 'D':
+		if (bCtrl)
+		{
+			DisplayDbgView(m_lpParent); return true;
+		}
+		break;
+	case VK_F1:
+		DisplayAboutDlg(this); return true;
+	case 'S':
+		if (bCtrl && m_lpPropDisplay)
+		{
+			m_lpPropDisplay->SavePropsToXML(); return true;
+		}
+		break;
+	case VK_DELETE:
+		OnDeleteSelectedItem(); return true;
+		break;
+	case 'X':
+		if (bCtrl)
+		{
 			OnDeleteSelectedItem(); return true;
-		case 'X':
-			if (bCtrl)
-			{
-				OnDeleteSelectedItem(); return true;
-			}
-			break;
-		case 'C':
-			if (bCtrl && !bShift)
-			{
-				HandleCopy(); return true;
-			}
-			break;
-		case 'V':
-			if (bCtrl)
-			{
-				HandlePaste(); return true;
-			}
-			break;
-		case VK_F5:
-			if (!bCtrl)
-			{
-				OnRefreshView(); return true;
-			}
-			break;
-		case VK_ESCAPE:
-			OnEscHit(); return true;
-		case VK_RETURN:
-			DebugPrint(DBGMenu,_T("CBaseDialog::HandleKeyDown posting ID_DISPLAYSELECTEDITEM\n"));
-			PostMessage(WM_COMMAND,ID_DISPLAYSELECTEDITEM,NULL);
-			return true;
+		}
+		break;
+	case 'C':
+		if (bCtrl && !bShift)
+		{
+			HandleCopy(); return true;
+		}
+		break;
+	case 'V':
+		if (bCtrl)
+		{
+			HandlePaste(); return true;
+		}
+		break;
+	case VK_F5:
+		if (!bCtrl)
+		{
+			OnRefreshView(); return true;
+		}
+		break;
+	case VK_ESCAPE:
+		OnEscHit(); return true;
+		break;
+	case VK_RETURN:
+		DebugPrint(DBGMenu,_T("CBaseDialog::HandleKeyDown posting ID_DISPLAYSELECTEDITEM\n"));
+		PostMessage(WM_COMMAND,ID_DISPLAYSELECTEDITEM,NULL);
+		return true;
+		break;
 	}
 	return false;
 }
@@ -426,6 +429,7 @@ void CBaseDialog::OnOptions()
 		if (MyData.GetHex(regkeyDEBUG_TAG) != RegKeys[regkeyDEBUG_TAG].ulCurDWORD)
 		{
 			SetDebugLevel(MyData.GetHex(regkeyDEBUG_TAG));
+			DebugPrintVersion(DBGVersionBanner);
 		}
 
 		SetDebugOutputToFile(MyData.GetCheck(regkeyDEBUG_TO_FILE));
@@ -685,8 +689,8 @@ void CBaseDialog::UpdateTitleBarText(LPCTSTR szMsg)
 // WM_MFCMAPI_UPDATESTATUSBAR
 LRESULT	CBaseDialog::msgOnUpdateStatusBar(WPARAM wParam, LPARAM lParam)
 {
-	__StatusPaneEnum	iPane	= (__StatusPaneEnum) wParam;
-	LPCTSTR				szStr	= (LPCTSTR) lParam;
+	__StatusPaneEnum	iPane = (__StatusPaneEnum) wParam;
+	LPCTSTR				szStr = (LPCTSTR) lParam;
 	UpdateStatusBarText(iPane, szStr);
 
 	return S_OK;
@@ -725,7 +729,7 @@ void GetOutlookVersionString(LPTSTR* lppszPath, LPTSTR* lppszVer, LPTSTR* lppszL
 		_T("{24AAE126-0911-478F-A019-07B875EB9996}"), // O12_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
 		_T("{1E77DE88-BCAB-4C37-B9E5-073AF52DFD7A}")  // O14_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
 	};
-	int nOutlookQualifiedComponents = sizeof(pszaOutlookQualifiedComponents)/sizeof(TCHAR*);
+	int nOutlookQualifiedComponents = _countof(pszaOutlookQualifiedComponents);
 	int i = 0;
 	DWORD dwValueBuf = 0;
 	UINT ret = 0;
@@ -974,10 +978,10 @@ void CBaseDialog::OnCompareEntryIDs()
 
 	UINT uidDropDown[] = {
 		IDS_DDMESSAGESTORE,
-			IDS_DDSESSION,
-			IDS_DDADDRESSBOOK
+		IDS_DDSESSION,
+		IDS_DDADDRESSBOOK
 	};
-	MyEIDs.InitDropDown(2,IDS_OBJECTFORCOMPAREEID,sizeof(uidDropDown)/sizeof(UINT),uidDropDown,true);
+	MyEIDs.InitDropDown(2,IDS_OBJECTFORCOMPAREEID,_countof(uidDropDown),uidDropDown,true);
 
 	MyEIDs.InitCheck(3,IDS_EIDBASE64ENCODED,false,false);
 
@@ -1153,10 +1157,10 @@ void CBaseDialog::OnNotificationsOn()
 	MyData.SetHex(1,fnevNewMail);
 	UINT uidDropDown[] = {
 		IDS_DDMESSAGESTORE,
-			IDS_DDSESSION,
-			IDS_DDADDRESSBOOK
+		IDS_DDSESSION,
+		IDS_DDADDRESSBOOK
 	};
-	MyData.InitDropDown(2,IDS_OBJECTFORADVISE,sizeof(uidDropDown)/sizeof(UINT),uidDropDown,true);
+	MyData.InitDropDown(2,IDS_OBJECTFORADVISE,_countof(uidDropDown),uidDropDown,true);
 
 	WC_H(MyData.DisplayDialog());
 

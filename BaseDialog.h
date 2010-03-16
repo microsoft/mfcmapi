@@ -63,10 +63,10 @@ private:
 
 	// Overrides from base class
 	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
-	void	OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized);
-	void	OnMenuSelect(UINT nItemID, UINT nFlags, HMENU hSysMenu);
-	void	OnOK();
-	void	OnSize(UINT nType, int cx, int cy);
+	void    OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized);
+	void    OnMenuSelect(UINT nItemID, UINT nFlags, HMENU hSysMenu);
+	void    OnOK();
+	void    OnSize(UINT nType, int cx, int cy);
 
 	// Menu items
 	void OnCompareEntryIDs();

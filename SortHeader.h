@@ -20,16 +20,16 @@ public:
 	BOOL Init(CHeaderCtrl *pHeader, HWND hwndParent);
 
 private:
-	LRESULT	WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
-	void	RegisterHeaderTooltip();
+	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	void    RegisterHeaderTooltip();
 
 	// Custom messages
-	LRESULT	msgOnSaveColumnOrder(WPARAM wParam, LPARAM lParam);
+	LRESULT msgOnSaveColumnOrder(WPARAM wParam, LPARAM lParam);
 
 	HWND		m_hwndTip;
 	TOOLINFO	m_ti;
 	HWND		m_hwndParent;
-	BOOL		m_bTrackingMouse;
+	BOOL		m_bTooltipDisplayed;
 
 	DECLARE_MESSAGE_MAP()
 };

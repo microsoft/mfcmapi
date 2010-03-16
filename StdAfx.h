@@ -7,13 +7,13 @@
 
 #define VC_EXTRALEAN	// Exclude rarely-used stuff from Windows headers
 
-#ifndef WINVER		// Permit use of features specific to Windows 95 and Windows NT 4.0 or later.
-#define WINVER 0x0500	// Change this to the appropriate value to target
-#endif                     // Windows 98 and Windows 2000 or later.
+#ifndef WINVER        // Permit use of features specific to Windows 95 and Windows NT 4.0 or later.
+#define WINVER 0x0500 // Change this to the appropriate value to target
+#endif                // Windows 98 and Windows 2000 or later.
 
-#ifndef _WIN32_WINNT	// Permit use of features specific to Windows NT 4.0 or later.
-#define _WIN32_WINNT 0x0400	// Change this to the appropriate value to target
-#endif		         // Windows 98 and Windows 2000 or later.
+#ifndef _WIN32_WINNT        // Permit use of features specific to Windows NT 4.0 or later.
+#define _WIN32_WINNT 0x0400 // Change this to the appropriate value to target
+#endif                      // Windows 98 and Windows 2000 or later.
 
 #ifndef _WIN32_IE		// Permit use of features specific to Internet Explorer 4.0 or later.
 #define _WIN32_IE 0x0500   // Change this to the appropriate value to target
@@ -30,7 +30,7 @@
 #if !defined(FREEBUFFER_DEFINED)
 typedef ULONG (STDAPICALLTYPE FREEBUFFER)(
 	LPVOID			lpBuffer
-);
+	);
 #define FREEBUFFER_DEFINED
 #endif
 
@@ -263,9 +263,9 @@ struct SortListData
 typedef struct {
 	ULONG		size;		// Size of the structure
 	ULONG		ulFlags;
-		/****** MAPI_MODIFY 				((ULONG) 0x00000001) above */
-		/****** STORE_UNCOMPRESSED_RTF		((ULONG) 0x00008000) above */
-		/****** MAPI_NATIVE_BODY			((ULONG) 0x00010000) mapidefs.h   Only used for reading*/
+	/****** MAPI_MODIFY					((ULONG) 0x00000001) above */
+	/****** STORE_UNCOMPRESSED_RTF		((ULONG) 0x00008000) above */
+	/****** MAPI_NATIVE_BODY			((ULONG) 0x00010000) mapidefs.h   Only used for reading*/
 	ULONG		ulInCodePage;	// Codepage of the message, used when passing MAPI_NATIVE_BODY, ignored otherwise
 	ULONG		ulOutCodePage;	// Codepage of the Returned Stream, used when passing MAPI_NATIVE_BODY, ignored otherwise
 } RTF_WCSINFO;
@@ -275,31 +275,31 @@ typedef struct {
 typedef struct {
 	ULONG       size;	// Size of the structure
 	ULONG		ulStreamFlags;
-		/****** MAPI_NATIVE_BODY_TYPE_RTF			((ULONG) 0x00000001) mapidefs.h */
-		/****** MAPI_NATIVE_BODY_TYPE_HTML			((ULONG) 0x00000002) mapidefs.h */
-		/****** MAPI_NATIVE_BODY_TYPE_PLAINTEXT 	((ULONG) 0x00000004) mapidefs.h */
+	/****** MAPI_NATIVE_BODY_TYPE_RTF			((ULONG) 0x00000001) mapidefs.h */
+	/****** MAPI_NATIVE_BODY_TYPE_HTML			((ULONG) 0x00000002) mapidefs.h */
+	/****** MAPI_NATIVE_BODY_TYPE_PLAINTEXT		((ULONG) 0x00000004) mapidefs.h */
 } RTF_WCSRETINFO;
 
 // http://msdn2.microsoft.com/en-us/library/bb905291.aspx
 typedef HRESULT (STDMETHODCALLTYPE WRAPCOMPRESSEDRTFSTREAMEX) (
-						   IStream * pCompressedRTFStream, CONST RTF_WCSINFO * pWCSInfo,
-							IStream ** ppUncompressedRTFStream, RTF_WCSRETINFO * pRetInfo);
+	IStream * pCompressedRTFStream, CONST RTF_WCSINFO * pWCSInfo,
+	IStream ** ppUncompressedRTFStream, RTF_WCSRETINFO * pRetInfo);
 
 typedef WRAPCOMPRESSEDRTFSTREAMEX *LPWRAPCOMPRESSEDRTFSTREAMEX;
 
 #define MAPI_NATIVE_BODY					0x00010000
 
 /* out param type infomation for WrapCompressedRTFStreamEx */
-#define MAPI_NATIVE_BODY_TYPE_RTF  			0x00000001
-#define MAPI_NATIVE_BODY_TYPE_HTML 			0x00000002
+#define MAPI_NATIVE_BODY_TYPE_RTF			0x00000001
+#define MAPI_NATIVE_BODY_TYPE_HTML			0x00000002
 #define MAPI_NATIVE_BODY_TYPE_PLAINTEXT		0x00000004
 
 // For EditSecurity
 typedef BOOL (STDAPICALLTYPE EDITSECURITY)
 (
-	HWND hwndOwner,
-	LPSECURITYINFO psi
-);
+ HWND hwndOwner,
+ LPSECURITYINFO psi
+ );
 typedef EDITSECURITY FAR * LPEDITSECURITY;
 
 // For StgCreateStorageEx
@@ -343,58 +343,58 @@ typedef HRESULT (STDMETHODCALLTYPE MIMEOLEGETCODEPAGECHARSET)
  CODEPAGEID cpiCodePage,
  CHARSETTYPE ctCsetType,
  LPHCHARSET phCharset
-);
+ );
 typedef MIMEOLEGETCODEPAGECHARSET FAR * LPMIMEOLEGETCODEPAGECHARSET;
 
 typedef HRESULT (STDMETHODCALLTYPE MSIPROVIDEQUALIFIEDCOMPONENT)
 (
-	LPCTSTR     szCategory,
-	LPCTSTR     szQualifier,
-	DWORD       dwInstallMode,
-	LPTSTR      lpPathBuf,
-	LPDWORD     pcchPathBuf
-);
+ LPCTSTR     szCategory,
+ LPCTSTR     szQualifier,
+ DWORD       dwInstallMode,
+ LPTSTR      lpPathBuf,
+ LPDWORD     pcchPathBuf
+ );
 typedef MSIPROVIDEQUALIFIEDCOMPONENT FAR * LPMSIPROVIDEQUALIFIEDCOMPONENT;
 
 typedef HRESULT (STDMETHODCALLTYPE MSIGETFILEVERSION)
 (
-	LPCTSTR   szFilePath,
-	LPTSTR    lpVersionBuf,
-	LPDWORD   pcchVersionBuf,
-	LPTSTR    lpLangBuf,
-	LPDWORD   pcchLangBuf
-);
+ LPCTSTR   szFilePath,
+ LPTSTR    lpVersionBuf,
+ LPDWORD   pcchVersionBuf,
+ LPTSTR    lpLangBuf,
+ LPDWORD   pcchLangBuf
+ );
 typedef MSIGETFILEVERSION FAR * LPMSIGETFILEVERSION;
 
 // http://msdn2.microsoft.com/en-us/library/bb820924.aspx
 #pragma pack(4)
 typedef struct _contab_entryid
 {
-BYTE misc1[4];
-MAPIUID misc2;
-ULONG misc3;
-ULONG misc4;
-ULONG misc5;
-// EntryID of contact in store.
-ULONG cbeid;
-BYTE abeid[1];
+	BYTE misc1[4];
+	MAPIUID misc2;
+	ULONG misc3;
+	ULONG misc4;
+	ULONG misc5;
+	// EntryID of contact in store.
+	ULONG cbeid;
+	BYTE abeid[1];
 } CONTAB_ENTRYID, *LPCONTAB_ENTRYID;
 #pragma pack()
 
 // http://msdn2.microsoft.com/en-us/library/bb820951.aspx
 #define MAPI_IPROXYSTOREOBJECT_METHODS(IPURE) \
-MAPIMETHOD(PlaceHolder1) \
+	MAPIMETHOD(PlaceHolder1) \
 	() IPURE; \
-MAPIMETHOD(UnwrapNoRef) \
-		(LPVOID *ppvObject) IPURE; \
-MAPIMETHOD(PlaceHolder2) \
-    () IPURE;
+	MAPIMETHOD(UnwrapNoRef) \
+	(LPVOID *ppvObject) IPURE; \
+	MAPIMETHOD(PlaceHolder2) \
+	() IPURE;
 
 DECLARE_MAPI_INTERFACE_(IProxyStoreObject, IUnknown)
 {
-    BEGIN_INTERFACE
-    MAPI_IUNKNOWN_METHODS(PURE)
-    MAPI_IPROXYSTOREOBJECT_METHODS(PURE)
+	BEGIN_INTERFACE
+		MAPI_IUNKNOWN_METHODS(PURE)
+		MAPI_IPROXYSTOREOBJECT_METHODS(PURE)
 };
 
 #ifndef MAPI_IMAPICLIENTSHUTDOWN_METHODS
@@ -402,17 +402,17 @@ DECLARE_MAPI_INTERFACE_(IProxyStoreObject, IUnknown)
 DECLARE_MAPI_INTERFACE_PTR(IMAPIClientShutdown, LPMAPICLIENTSHUTDOWN);
 #define MAPI_IMAPICLIENTSHUTDOWN_METHODS(IPURE) \
 	MAPIMETHOD(QueryFastShutdown) \
-		(THIS) IPURE; \
+	(THIS) IPURE; \
 	MAPIMETHOD(NotifyProcessShutdown) \
-		(THIS) IPURE; \
+	(THIS) IPURE; \
 	MAPIMETHOD(DoFastShutdown) \
-		(THIS) IPURE;
+	(THIS) IPURE;
 
 DECLARE_MAPI_INTERFACE_(IMAPIClientShutdown, IUnknown)
 {
 	BEGIN_INTERFACE
-	MAPI_IUNKNOWN_METHODS(PURE)
-	MAPI_IMAPICLIENTSHUTDOWN_METHODS(PURE)
+		MAPI_IUNKNOWN_METHODS(PURE)
+		MAPI_IMAPICLIENTSHUTDOWN_METHODS(PURE)
 };
 #define _IID_IMAPIClientShutdown_MISSING_IN_HEADER
 #endif // MAPI_IMAPICLIENTSHUTDOWN_METHODS
@@ -423,17 +423,17 @@ DECLARE_MAPI_INTERFACE_PTR(IMAPIProviderShutdown, LPMAPIPROVIDERSHUTDOWN);
 
 #define MAPI_IMAPIPROVIDERSHUTDOWN_METHODS(IPURE) \
 	MAPIMETHOD(QueryFastShutdown) \
-		(THIS) IPURE; \
+	(THIS) IPURE; \
 	MAPIMETHOD(NotifyProcessShutdown) \
-		(THIS) IPURE; \
+	(THIS) IPURE; \
 	MAPIMETHOD(DoFastShutdown) \
-		(THIS) IPURE;
+	(THIS) IPURE;
 
 DECLARE_MAPI_INTERFACE_(IMAPIProviderShutdown, IUnknown)
 {
 	BEGIN_INTERFACE
-	MAPI_IUNKNOWN_METHODS(PURE)
-	MAPI_IMAPIPROVIDERSHUTDOWN_METHODS(PURE)
+		MAPI_IUNKNOWN_METHODS(PURE)
+		MAPI_IMAPIPROVIDERSHUTDOWN_METHODS(PURE)
 };
 #endif // MAPI_IMAPIPROVIDERSHUTDOWN_METHODS
 
@@ -464,14 +464,14 @@ static DWORD g_lcid = MAKELCID(MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), SOR
 
 // http://msdn2.microsoft.com/en-us/library/bb820933.aspx
 #define MAPI_IATTACHMENTSECURITY_METHODS(IPURE) \
-MAPIMETHOD(IsAttachmentBlocked) \
-		(LPCWSTR pwszFileName, BOOL *pfBlocked) IPURE;
+	MAPIMETHOD(IsAttachmentBlocked) \
+	(LPCWSTR pwszFileName, BOOL *pfBlocked) IPURE;
 
 DECLARE_MAPI_INTERFACE_(IAttachmentSecurity, IUnknown)
 {
-    BEGIN_INTERFACE
-    MAPI_IUNKNOWN_METHODS(PURE)
-    MAPI_IATTACHMENTSECURITY_METHODS(PURE)
+	BEGIN_INTERFACE
+		MAPI_IUNKNOWN_METHODS(PURE)
+		MAPI_IATTACHMENTSECURITY_METHODS(PURE)
 };
 
 // http://msdn2.microsoft.com/en-us/library/bb820937.aspx
@@ -497,7 +497,7 @@ typedef struct _INDEX_SEARCH_PUSHER_PROCESS
 #define STORE_FILTER_SEARCH_OK  ((ULONG) 0x04000000)
 
 // Will match prefix on words instead of the whole prop value
-#define FL_PREFIX_ON_ANY_WORD 	0x00000010
+#define FL_PREFIX_ON_ANY_WORD	0x00000010
 
 // Phrase match means the words have to be exactly matched and the
 // sequence matters. This is different than FL_FULLSTRING because
@@ -512,7 +512,7 @@ typedef struct _INDEX_SEARCH_PUSHER_PROCESS
 #define dispidFormPropStream	0x851B
 #define dispidPropDefStream		0x8540
 #define dispidScriptStream		0x8541
-#define dispidCustomFlag 		0x8542
+#define dispidCustomFlag		0x8542
 
 #define INSP_ONEOFFFLAGS    0xD000000
 #define INSP_PROPDEFINITION 0x2000000
@@ -522,37 +522,37 @@ typedef struct _INDEX_SEARCH_PUSHER_PROCESS
 #define USES_IID_IExchangeManageStore5
 
 /*------------------------------------------------------------------------
- *
- *	'IExchangeManageStore5' Interface Declaration
- *
- *	Used for store management functions.
- *
- *-----------------------------------------------------------------------*/
+*
+*	'IExchangeManageStore5' Interface Declaration
+*
+*	Used for store management functions.
+*
+*-----------------------------------------------------------------------*/
 
 #define EXCHANGE_IEXCHANGEMANAGESTORE5_METHODS(IPURE)					\
 	MAPIMETHOD(GetMailboxTableEx)									\
-		(THIS_	LPSTR						lpszServerName,				\
-				LPGUID						lpguidMdb,					\
-				LPMAPITABLE FAR *			lppTable,					\
-				ULONG						ulFlags,					\
-				UINT						uOffset) IPURE;				\
+	(THIS_	LPSTR						lpszServerName,				\
+	LPGUID						lpguidMdb,					\
+	LPMAPITABLE FAR *			lppTable,					\
+	ULONG						ulFlags,					\
+	UINT						uOffset) IPURE;				\
 	MAPIMETHOD(GetPublicFolderTableEx)								\
-		(THIS_	LPSTR						lpszServerName,				\
-				LPGUID						lpguidMdb,					\
-				LPMAPITABLE FAR *			lppTable,					\
-				ULONG						ulFlags,					\
-				UINT						uOffset) IPURE;				\
+	(THIS_	LPSTR						lpszServerName,				\
+	LPGUID						lpguidMdb,					\
+	LPMAPITABLE FAR *			lppTable,					\
+	ULONG						ulFlags,					\
+	UINT						uOffset) IPURE;				\
 
-#undef		 INTERFACE
-#define		 INTERFACE  IExchangeManageStore5
+#undef  INTERFACE
+#define INTERFACE  IExchangeManageStore5
 DECLARE_MAPI_INTERFACE_(IExchangeManageStore5, IUnknown)
 {
 	MAPI_IUNKNOWN_METHODS(PURE)
-	EXCHANGE_IEXCHANGEMANAGESTORE_METHODS(PURE)
-	EXCHANGE_IEXCHANGEMANAGESTORE2_METHODS(PURE)
-	EXCHANGE_IEXCHANGEMANAGESTORE3_METHODS(PURE)
-	EXCHANGE_IEXCHANGEMANAGESTORE4_METHODS(PURE)
-	EXCHANGE_IEXCHANGEMANAGESTORE5_METHODS(PURE)
+		EXCHANGE_IEXCHANGEMANAGESTORE_METHODS(PURE)
+		EXCHANGE_IEXCHANGEMANAGESTORE2_METHODS(PURE)
+		EXCHANGE_IEXCHANGEMANAGESTORE3_METHODS(PURE)
+		EXCHANGE_IEXCHANGEMANAGESTORE4_METHODS(PURE)
+		EXCHANGE_IEXCHANGEMANAGESTORE5_METHODS(PURE)
 };
 #undef	IMPL
 #define IMPL
@@ -561,7 +561,7 @@ DECLARE_MAPI_INTERFACE_PTR(IExchangeManageStore5, LPEXCHANGEMANAGESTORE5);
 #endif // #ifndef EXCHANGE_IEXCHANGEMANAGESTORE5_METHODS
 
 #define	CbNewROWLIST(_centries)	(offsetof(ROWLIST,aEntries) + \
-								(_centries)*sizeof(ROWENTRY))
+	(_centries)*sizeof(ROWENTRY))
 #define	MAXNewROWLIST (ULONG_MAX-offsetof(ROWLIST,aEntries))/sizeof(ROWENTRY)
 #define MAXMessageClassArray (ULONG_MAX - offsetof(SMessageClassArray, aMessageClass))/sizeof(LPCSTR)
 #define MAXNewADRLIST (ULONG_MAX - offsetof(ADRLIST, aEntries))/sizeof(ADRENTRY)
@@ -582,3 +582,5 @@ const BYTE	TZ_BIN_VERSION_MINOR	= 0x01;
 // http://blogs.msdn.com/stephen_griffin/archive/2008/04/01/new-restriction-types-seen-in-wrapped-psts.aspx
 #define RES_COUNT			((ULONG) 0x0000000B)
 #define RES_ANNOTATION		((ULONG) 0x0000000C)
+
+#define dispidContactLinkEntry 0x8585

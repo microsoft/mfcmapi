@@ -47,7 +47,7 @@ DEFINE_OLEGUID(IID_IMessageRaw, 0x0002038A, 0, 0);
 // http://msdn2.microsoft.com/en-us/library/bb820937.aspx
 #ifndef DEFINE_PRXGUID
 #define DEFINE_PRXGUID(_name, _l)								\
-DEFINE_GUID(_name, (0x29F3AB10 + _l), 0x554D, 0x11D0, 0xA9,		\
+	DEFINE_GUID(_name, (0x29F3AB10 + _l), 0x554D, 0x11D0, 0xA9,	\
 				0x7C, 0x00, 0xA0, 0xC9, 0x11, 0xF5, 0x0A)
 #endif // !DEFINE_PRXGUID
 DEFINE_PRXGUID(IID_IProxyStoreObject, 0x00000000L);

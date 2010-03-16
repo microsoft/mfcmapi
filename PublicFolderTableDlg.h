@@ -23,7 +23,7 @@ private:
 	void CreateDialogAndMenu(UINT nIDMenuResource);
 	void OnCreatePropertyStringRestriction();
 	void OnDisplayItem();
-	HRESULT	OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, LPMAPIPROP* lppMAPIProp);
+	HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, LPMAPIPROP* lppMAPIProp);
 
 	LPTSTR m_lpszServerName;
 };

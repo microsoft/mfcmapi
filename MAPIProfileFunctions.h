@@ -3,11 +3,11 @@
 #pragma once
 
 void LaunchProfileWizard(
-	HWND			hParentWnd,
-	ULONG			ulFlags,
-	LPCSTR FAR *	lppszServiceNameToAdd,
-	ULONG			cbBufferMax,
-	LPTSTR			lpszNewProfileName);
+						 HWND			hParentWnd,
+						 ULONG			ulFlags,
+						 LPCSTR FAR *	lppszServiceNameToAdd,
+						 ULONG			cbBufferMax,
+						 LPTSTR			lpszNewProfileName);
 
 HRESULT HrMAPIProfileExists(
 							LPPROFADMIN lpProfAdmin,
@@ -55,8 +55,8 @@ typedef struct
 {
 	WORD	wMajorVersion;
 	WORD	wMinorVersion;
-	WORD 	wBuild;
-	WORD 	wMinorBuild;
+	WORD	wBuild;
+	WORD	wMinorBuild;
 } EXCHANGE_STORE_VERSION_NUM;
 
 HRESULT GetProfileServiceVersion(LPSTR lpszProfileName,

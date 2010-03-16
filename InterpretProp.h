@@ -50,7 +50,6 @@ CString RestrictionToString(LPSRestriction lpRes,LPMAPIPROP lpObj);
 
 void ActionsToString(ACTIONS* lpActions, CString* PropString);
 
-CString EntryListToString(LPENTRYLIST lpEntryList);
 void AdrListToString(LPADRLIST lpAdrList,CString *PropString);
 
 void InterpretMVProp(LPSPropValue lpProp, ULONG ulMVRow, CString *PropString, CString *AltPropString);

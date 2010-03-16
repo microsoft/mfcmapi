@@ -17,38 +17,38 @@ public:
 		UINT nIDContextMenu);
 	virtual ~CHierarchyTableTreeCtrl();
 
-	STDMETHODIMP_(ULONG)	AddRef();
-	STDMETHODIMP_(ULONG)	Release();
+	STDMETHODIMP_(ULONG) AddRef();
+	STDMETHODIMP_(ULONG) Release();
 
 	// Initialization
-	HRESULT	LoadHierarchyTable(LPMAPICONTAINER lpMAPIContainer);
-	HRESULT	RefreshHierarchyTable();
+	HRESULT LoadHierarchyTable(LPMAPICONTAINER lpMAPIContainer);
+	HRESULT RefreshHierarchyTable();
 
 	// Selected item accessors
-	LPMAPICONTAINER	GetSelectedContainer(__mfcmapiModifyEnum bModify);
-	LPSBinary		GetSelectedItemEID();
-	SortListData*	GetSelectedItemData();
-	BOOL			IsItemSelected();
+	LPMAPICONTAINER GetSelectedContainer(__mfcmapiModifyEnum bModify);
+	LPSBinary       GetSelectedItemEID();
+	SortListData*   GetSelectedItemData();
+	BOOL            IsItemSelected();
 
 private:
 	// Overrides from base class
-	LRESULT		WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
-	void		OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
+	LRESULT     WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	void        OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 
-	HRESULT		ExpandNode(HTREEITEM Parent);
-	HTREEITEM	FindNode(LPSBinary lpInstance, HTREEITEM hParent);
-	void		GetContainer(HTREEITEM Item, __mfcmapiModifyEnum bModify, LPMAPICONTAINER *lpContainer);
-	LPMAPITABLE	GetHierarchyTable(HTREEITEM hItem,LPMAPICONTAINER lpMAPIContainer,BOOL bGetTable);
-	void		OnContextMenu(CWnd *pWnd, CPoint pos);
-	void		OnDblclk(NMHDR* pNMHDR, LRESULT* pResult);
-	void		OnDeleteItem(NMHDR* pNMHDR, LRESULT* pResult);
-	void		OnEndLabelEdit(NMHDR* pNMHDR, LRESULT* pResult);
-	void		OnGetDispInfo(NMHDR* pNMHDR, LRESULT* pResult);
-	UINT		OnGetDlgCode();
-	void		OnItemExpanding(NMHDR* pNMHDR, LRESULT* pResult);
-	void		OnRightClick(NMHDR* pNMHDR, LRESULT* pResult);
-	void		OnSelChanged(NMHDR* pNMHDR, LRESULT* pResult);
-	void		UpdateSelectionUI(HTREEITEM hItem);
+	HRESULT     ExpandNode(HTREEITEM Parent);
+	HTREEITEM   FindNode(LPSBinary lpInstance, HTREEITEM hParent);
+	void        GetContainer(HTREEITEM Item, __mfcmapiModifyEnum bModify, LPMAPICONTAINER *lpContainer);
+	LPMAPITABLE GetHierarchyTable(HTREEITEM hItem,LPMAPICONTAINER lpMAPIContainer,BOOL bGetTable);
+	void        OnContextMenu(CWnd *pWnd, CPoint pos);
+	void        OnDblclk(NMHDR* pNMHDR, LRESULT* pResult);
+	void        OnDeleteItem(NMHDR* pNMHDR, LRESULT* pResult);
+	void        OnEndLabelEdit(NMHDR* pNMHDR, LRESULT* pResult);
+	void        OnGetDispInfo(NMHDR* pNMHDR, LRESULT* pResult);
+	UINT        OnGetDlgCode();
+	void        OnItemExpanding(NMHDR* pNMHDR, LRESULT* pResult);
+	void        OnRightClick(NMHDR* pNMHDR, LRESULT* pResult);
+	void        OnSelChanged(NMHDR* pNMHDR, LRESULT* pResult);
+	void        UpdateSelectionUI(HTREEITEM hItem);
 
 	// Node insertion
 	HRESULT AddRootNode(LPMAPICONTAINER lpMAPIContainer);

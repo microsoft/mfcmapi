@@ -5,6 +5,7 @@
 
 void OpenDebugFile();
 void CloseDebugFile();
+ULONG GetDebugLevel();
 void SetDebugLevel(ULONG ulDbgLvl);
 void SetDebugOutputToFile(BOOL bDoOutput);
 
@@ -32,7 +33,7 @@ void SetDebugOutputToFile(BOOL bDoOutput);
 #define DBGLoadLibrary						((ULONG) 0x00002000)
 #define DBGForms							((ULONG) 0x00004000)
 #define DBGAddInPlumbing					((ULONG) 0x00008000)
-#define DBGAddIn 							((ULONG) 0x00010000)
+#define DBGAddIn							((ULONG) 0x00010000)
 #define DBGStream							((ULONG) 0x00020000)
 #define DBGMenu								((ULONG) 0x80000000)
 

@@ -21,23 +21,23 @@ static TCHAR* CLASS = _T("CMailboxTableDlg");
 // CMailboxTableDlg dialog
 
 CMailboxTableDlg::CMailboxTableDlg(
-							   CParentWnd* pParentWnd,
-							   CMapiObjects* lpMapiObjects,
-							   LPCTSTR lpszServerName,
-							   LPMAPITABLE lpMAPITable
-							   ):
+								   CParentWnd* pParentWnd,
+								   CMapiObjects* lpMapiObjects,
+								   LPCTSTR lpszServerName,
+								   LPMAPITABLE lpMAPITable
+								   ):
 CContentsTableDlg(
-						  pParentWnd,
-						  lpMapiObjects,
-						  IDS_MAILBOXTABLE,
-						  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
-						  lpMAPITable,
-						  (LPSPropTagArray) &sptMBXCols,
-						  NUMMBXCOLUMNS,
-						  MBXColumns,
-						  IDR_MENU_MAILBOX_TABLE_POPUP,
-						  MENU_CONTEXT_MAILBOX_TABLE
-						  )
+				  pParentWnd,
+				  lpMapiObjects,
+				  IDS_MAILBOXTABLE,
+				  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+				  lpMAPITable,
+				  (LPSPropTagArray) &sptMBXCols,
+				  NUMMBXCOLUMNS,
+				  MBXColumns,
+				  IDR_MENU_MAILBOX_TABLE_POPUP,
+				  MENU_CONTEXT_MAILBOX_TABLE
+				  )
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	HRESULT hRes = S_OK;

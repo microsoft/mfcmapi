@@ -22,13 +22,13 @@ static TCHAR* CLASS = _T("CParentWnd");
 // a particular CSingleMAPIPropListCtrl gets changed.
 // We can't throw to the CSingleMAPIPropListCtrl directly since we don't have a handle here for it
 VOID CALLBACK MyWinEventProc(
-  HWINEVENTHOOK /*hWinEventHook*/,
-  DWORD event,
-  HWND hwnd,
-  LONG /*idObject*/,
-  LONG /*idChild*/,
-  DWORD /*dwEventThread*/,
-  DWORD /*dwmsEventTime*/)
+							 HWINEVENTHOOK /*hWinEventHook*/,
+							 DWORD event,
+							 HWND hwnd,
+							 LONG /*idObject*/,
+							 LONG /*idChild*/,
+							 DWORD /*dwEventThread*/,
+							 DWORD /*dwmsEventTime*/)
 {
 	if (EVENT_OBJECT_REORDER == event)
 	{
@@ -62,20 +62,8 @@ CParentWnd::CParentWnd()
 	// Don't plan on unloading this, so don't care about the return value
 	(void) LoadFromSystemDir(_T("rundll32.exe")); // STRING_OK
 
-	// Load aclui.dll and get EditSecurity from it
-	LoadAclUI();
-
-	// Load ole32.dll and get StgCreateStorageEx from it
-	LoadStg();
-
-	// Load uxtheme.dll and get theme API from it
-	LoadThemeUI();
-
-	// Load inetcomm.dll and get MIMEOLE API from it
-	LoadMimeOLE();
-
-	// Load msi.dll and get MSI functions from it
-	LoadMSI();
+	// Load DLLS and get functions from them
+	ImportProcs();
 
 	m_cRef = 1;
 
@@ -111,7 +99,7 @@ CParentWnd::~CParentWnd()
 }
 
 STDMETHODIMP CParentWnd::QueryInterface(REFIID riid,
-												 LPVOID * ppvObj)
+										LPVOID * ppvObj)
 {
 	*ppvObj = 0;
 	if (riid == IID_IUnknown)

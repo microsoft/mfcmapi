@@ -21,10 +21,10 @@ HRESULT ImportEMLToIMessage(
 	LPCONVERTERSESSION lpConverter = NULL;
 
 	EC_H_MSG(CoCreateInstance(CLSID_IConverterSession,
-						NULL,
-						CLSCTX_INPROC_SERVER,
-						IID_IConverterSession,
-						(LPVOID*)&lpConverter),IDS_NOCONVERTERSESSION);
+		NULL,
+		CLSCTX_INPROC_SERVER,
+		IID_IConverterSession,
+		(LPVOID*)&lpConverter),IDS_NOCONVERTERSESSION);
 	if (SUCCEEDED(hRes) && lpConverter)
 	{
 		LPSTREAM lpEMLStm = NULL;
@@ -79,10 +79,10 @@ HRESULT ExportIMessageToEML(LPMESSAGE lpMsg, LPCWSTR lpszEMLFile, ULONG ulConver
 	LPCONVERTERSESSION lpConverter = NULL;
 
 	EC_H_MSG(CoCreateInstance(CLSID_IConverterSession,
-						NULL,
-						CLSCTX_INPROC_SERVER,
-						IID_IConverterSession,
-						(LPVOID*)&lpConverter),IDS_NOCONVERTERSESSION);
+		NULL,
+		CLSCTX_INPROC_SERVER,
+		IID_IConverterSession,
+		(LPVOID*)&lpConverter),IDS_NOCONVERTERSESSION);
 	if (SUCCEEDED(hRes) && lpConverter)
 	{
 		if (lpAdrBook)
@@ -117,11 +117,11 @@ HRESULT ExportIMessageToEML(LPMESSAGE lpMsg, LPCWSTR lpszEMLFile, ULONG ulConver
 					LPSTREAM lpFileStm = NULL;
 
 					EC_H(MyOpenStreamOnFile(MAPIAllocateBuffer,
-											MAPIFreeBuffer,
-											STGM_CREATE | STGM_READWRITE,
-											lpszEMLFile,
-											NULL,
-											&lpFileStm));
+						MAPIFreeBuffer,
+						STGM_CREATE | STGM_READWRITE,
+						lpszEMLFile,
+						NULL,
+						&lpFileStm));
 					if (SUCCEEDED(hRes) && lpFileStm)
 					{
 						LARGE_INTEGER dwBegin = {0};

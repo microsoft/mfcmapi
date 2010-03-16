@@ -82,22 +82,21 @@ public:
 	STDMETHODIMP_(ULONG)	Release();
 
 	// Exported manipulation functions
-	HRESULT			Create(CWnd* pCreateParent, ULONG ulFlags, UINT nID, BOOL bImages);
-	void			AutoSizeColumns();
-	void			DeleteAllColumns(BOOL bShutdown = false);
-	void			SetSelectedItem(int iItem);
-	void			SortClickedColumn();
-	SortListData*	InsertRow(int iRow, LPTSTR szText);
-	BOOL			SetItemText(int nItem, int nSubItem, LPCTSTR lpszText);
+	HRESULT       Create(CWnd* pCreateParent, ULONG ulFlags, UINT nID, BOOL bImages);
+	void          AutoSizeColumns();
+	void          DeleteAllColumns(BOOL bShutdown = false);
+	void          SetSelectedItem(int iItem);
+	void          SortClickedColumn();
+	SortListData* InsertRow(int iRow, LPTSTR szText);
+	BOOL          SetItemText(int nItem, int nSubItem, LPCTSTR lpszText);
 
 protected:
-	void			MySetRedraw(BOOL bRedraw);
-	SortListData*	InsertRow(int iRow, LPTSTR szText, int iIndent, int iImage);
-	void			FakeClickColumn(int iColumn, BOOL bSortUp);
+	void          MySetRedraw(BOOL bRedraw);
+	SortListData* InsertRow(int iRow, LPTSTR szText, int iIndent, int iImage);
+	void          FakeClickColumn(int iColumn, BOOL bSortUp);
 
 	// protected since derived classes need to call the base implementation
 	virtual LRESULT	WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
-	virtual void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 
 private:
 	// Overrides from base class

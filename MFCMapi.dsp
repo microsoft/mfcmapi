@@ -204,6 +204,10 @@ SOURCE=.\ContentsTableListCtrl.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\DbgView.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\DumpStore.cpp
 # End Source File
 # Begin Source File
@@ -392,6 +396,10 @@ SOURCE=.\SingleMAPIPropListCtrl.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\SmartView.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\SortHeader.cpp
 # End Source File
 # Begin Source File
@@ -457,6 +465,10 @@ SOURCE=.\ContentsTableDlg.h
 # Begin Source File
 
 SOURCE=.\ContentsTableListCtrl.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\DbgView.h
 # End Source File
 # Begin Source File
 
@@ -653,6 +665,10 @@ SOURCE=.\RulesDlg.h
 # Begin Source File
 
 SOURCE=.\SingleMAPIPropListCtrl.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\SmartView.h
 # End Source File
 # Begin Source File
 

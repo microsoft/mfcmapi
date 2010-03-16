@@ -19,7 +19,7 @@ const ULARGE_INTEGER ULARGE_MAX = {0xFFFFFFFFU, 0xFFFFFFFFU};
 // http://msdn2.microsoft.com/en-us/library/bb905202.aspx
 interface IConverterSession : public IUnknown
 {
-	public:
+public:
 	virtual HRESULT STDMETHODCALLTYPE SetAdrBook(LPADRBOOK pab);
 
 	virtual HRESULT STDMETHODCALLTYPE SetEncoding(ENCODINGTYPE et);
@@ -27,20 +27,20 @@ interface IConverterSession : public IUnknown
 	virtual HRESULT PlaceHolder1();
 
 	virtual HRESULT STDMETHODCALLTYPE MIMEToMAPI(LPSTREAM pstm,
-												 LPMESSAGE pmsg,
-												 LPCSTR pszSrcSrv,
-												 ULONG ulFlags);
+		LPMESSAGE pmsg,
+		LPCSTR pszSrcSrv,
+		ULONG ulFlags);
 
 	virtual HRESULT STDMETHODCALLTYPE MAPIToMIMEStm(LPMESSAGE pmsg,
-													LPSTREAM pstm,
-													ULONG ulFlags);
+		LPSTREAM pstm,
+		ULONG ulFlags);
 
 	virtual HRESULT PlaceHolder2();
 	virtual HRESULT PlaceHolder3();
 	virtual HRESULT PlaceHolder4();
 
 	virtual HRESULT STDMETHODCALLTYPE SetTextWrapping(BOOL  fWrapText,
-													  ULONG ulWrapWidth);
+		ULONG ulWrapWidth);
 
 	virtual HRESULT STDMETHODCALLTYPE SetSaveFormat(MIMESAVETYPE mstSaveFormat);
 

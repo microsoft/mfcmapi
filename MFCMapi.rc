@@ -89,7 +89,7 @@ BEGIN
         MENUITEM "Fast Shutdown",               ID_FASTSHUTDOWN
         MENUITEM SEPARATOR
         MENUITEM "Display Message Store Table", ID_OPENMESSAGESTORETABLE
-        MENUITEM "Is Attachment Blocked..."		ID_ISATTACHMENTBLOCKED
+        MENUITEM "Is Attachment Blocked..."     ID_ISATTACHMENTBLOCKED
         MENUITEM "View Status Table...",        ID_VIEWSTATUSTABLE
         MENUITEM "QueryDefaultMessageOpt",      ID_QUERYDEFAULTMESSAGEOPT
         MENUITEM "Display Current User Properties", ID_QUERYIDENTITY
@@ -198,7 +198,7 @@ BEGIN
         MENUITEM "RTFSync",                     ID_RTFSYNC
         MENUITEM "Submit Message",              ID_SUBMITMESSAGE
         MENUITEM "Abort Submit",               ID_ABORTSUBMIT
-		MENUITEM "Remove One Off Properties"    ID_REMOVEONEOFF
+        MENUITEM "Remove One Off Properties"    ID_REMOVEONEOFF
         MENUITEM SEPARATOR
         MENUITEM "Get Message Options",         ID_GETMESSAGEOPTIONS
         MENUITEM "Get Message Status",          ID_GETMESSAGESTATUS
@@ -253,8 +253,8 @@ BEGIN
     MENUITEM "Resend embedded (NDR) Message", ID_RESENDMESSAGE
     MENUITEM "RTFSync",                     ID_RTFSYNC
     MENUITEM "Submit Message",              ID_SUBMITMESSAGE
-    MENUITEM "Abort Submit",               ID_ABORTSUBMIT
-	MENUITEM "Remove One Off Properties"    ID_REMOVEONEOFF
+    MENUITEM "Abort Submit",                ID_ABORTSUBMIT
+    MENUITEM "Remove One Off Properties"    ID_REMOVEONEOFF
     MENUITEM SEPARATOR
     MENUITEM "Get Message Options",         ID_GETMESSAGEOPTIONS
     MENUITEM "Get Message Status",          ID_GETMESSAGESTATUS
@@ -478,7 +478,7 @@ BEGIN
         MENUITEM "Create &SubFolder",           ID_CREATESUBFOLDER
         MENUITEM "Delete Folder",               ID_DELETESELECTEDITEM
         MENUITEM "Empty Items and Subfolders from Folder...", ID_EMPTYFOLDER
-		MENUITEM "Open Form Container..."       ID_OPENFORMCONTAINER
+        MENUITEM "Open Form Container..."       ID_OPENFORMCONTAINER
         MENUITEM "Select Form...",              ID_SELECTFORM
         MENUITEM "Resend All Embedded (NDR) Messages", ID_RESENDALLMESSAGES
         MENUITEM "Reset Permissions On Folder Contents",
@@ -529,7 +529,7 @@ BEGIN
     MENUITEM "Create &SubFolder",           ID_CREATESUBFOLDER
     MENUITEM "Delete Folder",               ID_DELETESELECTEDITEM
     MENUITEM "Empty Items and Subfolders from Folder...", ID_EMPTYFOLDER
-	MENUITEM "Open Form Container..."       ID_OPENFORMCONTAINER
+    MENUITEM "Open Form Container..."       ID_OPENFORMCONTAINER
     MENUITEM "Select Form...",              ID_SELECTFORM
     MENUITEM "Resend All Embedded (NDR) Messages", ID_RESENDALLMESSAGES
     MENUITEM "Reset Permissions On Folder Contents",
@@ -659,8 +659,9 @@ BEGIN
     MENUITEM "Unadvise",                    ID_NOTIFICATIONSOFF
     MENUITEM "Dispatch Notifications",      ID_DISPATCHNOTIFICATIONS
     MENUITEM SEPARATOR
+    MENUITEM "Debug View...",               ID_DBGVIEW
     MENUITEM "Hex Editor...",               ID_HEXEDITOR
-	MENUITEM "Outlook Version",             ID_OUTLOOKVERSION
+    MENUITEM "Outlook Version",             ID_OUTLOOKVERSION
     MENUITEM "&Help",                       ID_HELP
 END
 
@@ -725,6 +726,20 @@ BEGIN
     MENUITEM "Open with &Flags...",         ID_OPENWITHFLAGS
 END
 
+IDR_MENU_RICHEDIT_POPUP MENU DISCARDABLE
+BEGIN
+    POPUP ""
+    BEGIN
+        MENUITEM "Undo",                        WM_UNDO
+        MENUITEM SEPARATOR
+        MENUITEM "Cut",                         WM_CUT
+        MENUITEM "Copy",                        WM_COPY
+        MENUITEM "Paste",                       WM_PASTE
+        MENUITEM "Delete",                      WM_CLEAR
+        MENUITEM SEPARATOR
+        MENUITEM "Select All",                  EM_SETSEL
+    END
+END
 /////////////////////////////////////////////////////////////////////////////
 //
 // Bitmap

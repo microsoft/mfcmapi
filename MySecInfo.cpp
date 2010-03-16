@@ -15,18 +15,18 @@ static TCHAR* CLASS = _T("CMySecInfo");
 // The following array defines the permission names for Exchange objects.
 SI_ACCESS siExchangeAccessesFolder[] =
 {
-    { &GUID_NULL, frightsReadAny,			MAKEINTRESOURCEW(IDS_ACCESSREADANY),		SI_ACCESS_GENERAL },
+	{ &GUID_NULL, frightsReadAny,			MAKEINTRESOURCEW(IDS_ACCESSREADANY),		SI_ACCESS_GENERAL },
 	{ &GUID_NULL, rightsReadOnly,			MAKEINTRESOURCEW(IDS_ACCESSREADONLY),		SI_ACCESS_GENERAL },
-    { &GUID_NULL, frightsCreate,			MAKEINTRESOURCEW(IDS_ACCESSCREATE),			SI_ACCESS_GENERAL },
-    { &GUID_NULL, frightsEditOwned,			MAKEINTRESOURCEW(IDS_ACCESSEDITOWN),		SI_ACCESS_GENERAL },
-    { &GUID_NULL, frightsDeleteOwned,		MAKEINTRESOURCEW(IDS_ACCESSDELETEOWN),		SI_ACCESS_CONTAINER },
-    { &GUID_NULL, frightsEditAny,			MAKEINTRESOURCEW(IDS_ACCESSEDITANY),		SI_ACCESS_GENERAL },
-    { &GUID_NULL, rightsReadWrite,			MAKEINTRESOURCEW(IDS_ACCESSREADWRITE),		SI_ACCESS_GENERAL },
-    { &GUID_NULL, frightsDeleteAny,			MAKEINTRESOURCEW(IDS_ACCESSDELETEANY),		SI_ACCESS_GENERAL },
-    { &GUID_NULL, frightsCreateSubfolder,	MAKEINTRESOURCEW(IDS_ACCESSCREATESUBFOLDER),SI_ACCESS_GENERAL },
-    { &GUID_NULL, frightsOwner,				MAKEINTRESOURCEW(IDS_ACCESSOWNER),			SI_ACCESS_GENERAL },
+	{ &GUID_NULL, frightsCreate,			MAKEINTRESOURCEW(IDS_ACCESSCREATE),			SI_ACCESS_GENERAL },
+	{ &GUID_NULL, frightsEditOwned,			MAKEINTRESOURCEW(IDS_ACCESSEDITOWN),		SI_ACCESS_GENERAL },
+	{ &GUID_NULL, frightsDeleteOwned,		MAKEINTRESOURCEW(IDS_ACCESSDELETEOWN),		SI_ACCESS_CONTAINER },
+	{ &GUID_NULL, frightsEditAny,			MAKEINTRESOURCEW(IDS_ACCESSEDITANY),		SI_ACCESS_GENERAL },
+	{ &GUID_NULL, rightsReadWrite,			MAKEINTRESOURCEW(IDS_ACCESSREADWRITE),		SI_ACCESS_GENERAL },
+	{ &GUID_NULL, frightsDeleteAny,			MAKEINTRESOURCEW(IDS_ACCESSDELETEANY),		SI_ACCESS_GENERAL },
+	{ &GUID_NULL, frightsCreateSubfolder,	MAKEINTRESOURCEW(IDS_ACCESSCREATESUBFOLDER),SI_ACCESS_GENERAL },
+	{ &GUID_NULL, frightsOwner,				MAKEINTRESOURCEW(IDS_ACCESSOWNER),			SI_ACCESS_GENERAL },
 	{ &GUID_NULL, frightsVisible,			MAKEINTRESOURCEW(IDS_ACCESSVISIBLE),		SI_ACCESS_GENERAL },
-    { &GUID_NULL, frightsContact,			MAKEINTRESOURCEW(IDS_ACCESSCONTACT),		SI_ACCESS_GENERAL }
+	{ &GUID_NULL, frightsContact,			MAKEINTRESOURCEW(IDS_ACCESSCONTACT),		SI_ACCESS_GENERAL }
 };
 
 SI_ACCESS siExchangeAccessesMessage[] =
@@ -34,9 +34,9 @@ SI_ACCESS siExchangeAccessesMessage[] =
 	{ &GUID_NULL, fsdrightDelete,			MAKEINTRESOURCEW(IDS_ACCESSDELETE),			SI_ACCESS_GENERAL },
 	{ &GUID_NULL, fsdrightReadProperty,		MAKEINTRESOURCEW(IDS_ACCESSREADPROPERTY),	SI_ACCESS_GENERAL },
 	{ &GUID_NULL, fsdrightWriteProperty,	MAKEINTRESOURCEW(IDS_ACCESSWRITEPROPERTY),	SI_ACCESS_GENERAL },
-//	{ &GUID_NULL, fsdrightCreateMessage,	MAKEINTRESOURCEW(IDS_ACCESSCREATEMESSAGE),	SI_ACCESS_GENERAL },
-//	{ &GUID_NULL, fsdrightSaveMessage,		MAKEINTRESOURCEW(IDS_ACCESSSAVEMESSAGE),	SI_ACCESS_GENERAL },
-//	{ &GUID_NULL, fsdrightOpenMessage,		MAKEINTRESOURCEW(IDS_ACCESSOPENMESSAGE),	SI_ACCESS_GENERAL },
+	// { &GUID_NULL, fsdrightCreateMessage,	MAKEINTRESOURCEW(IDS_ACCESSCREATEMESSAGE),	SI_ACCESS_GENERAL },
+	// { &GUID_NULL, fsdrightSaveMessage,		MAKEINTRESOURCEW(IDS_ACCESSSAVEMESSAGE),	SI_ACCESS_GENERAL },
+	// { &GUID_NULL, fsdrightOpenMessage,		MAKEINTRESOURCEW(IDS_ACCESSOPENMESSAGE),	SI_ACCESS_GENERAL },
 	{ &GUID_NULL, fsdrightWriteSD,			MAKEINTRESOURCEW(IDS_ACCESSWRITESD),		SI_ACCESS_GENERAL },
 	{ &GUID_NULL, fsdrightWriteOwner,		MAKEINTRESOURCEW(IDS_ACCESSWRITEOWNER),		SI_ACCESS_GENERAL },
 	{ &GUID_NULL, fsdrightReadControl,		MAKEINTRESOURCEW(IDS_ACCESSREADCONTROL),	SI_ACCESS_GENERAL },
@@ -183,8 +183,8 @@ STDMETHODIMP CMySecInfo::GetObjectInformation(THIS_ PSI_OBJECT_INFO pObjectInfo 
 };
 
 STDMETHODIMP CMySecInfo::GetSecurity(THIS_ SECURITY_INFORMATION /*RequestedInformation*/,
-									PSECURITY_DESCRIPTOR *ppSecurityDescriptor,
-									BOOL /*fDefault*/)
+									 PSECURITY_DESCRIPTOR *ppSecurityDescriptor,
+									 BOOL /*fDefault*/)
 {
 	DebugPrint(DBGGeneric,_T("CMySecInfo::GetSecurity\n"));
 	HRESULT	hRes = S_OK;
@@ -254,7 +254,7 @@ STDMETHODIMP CMySecInfo::GetSecurity(THIS_ SECURITY_INFORMATION /*RequestedInfor
 // on the server once written
 // For this reason, the property sheet is read-only unless a reg key is set.
 STDMETHODIMP CMySecInfo::SetSecurity(THIS_ SECURITY_INFORMATION /*SecurityInformation*/,
-									PSECURITY_DESCRIPTOR pSecurityDescriptor )
+									 PSECURITY_DESCRIPTOR pSecurityDescriptor )
 {
 	DebugPrint(DBGGeneric,_T("CMySecInfo::SetSecurity\n"));
 	HRESULT		hRes = S_OK;
@@ -294,10 +294,10 @@ STDMETHODIMP CMySecInfo::SetSecurity(THIS_ SECURITY_INFORMATION /*SecurityInform
 	return hRes;
 }
 STDMETHODIMP CMySecInfo::GetAccessRights(THIS_ const GUID* /*pguidObjectType*/,
-										DWORD /*dwFlags*/,
-										PSI_ACCESS *ppAccess,
-										ULONG *pcAccesses,
-										ULONG *piDefaultAccess )
+										 DWORD /*dwFlags*/,
+										 PSI_ACCESS *ppAccess,
+										 ULONG *pcAccesses,
+										 ULONG *piDefaultAccess )
 {
 	DebugPrint(DBGGeneric,_T("CMySecInfo::GetAccessRights\n"));
 
@@ -305,15 +305,15 @@ STDMETHODIMP CMySecInfo::GetAccessRights(THIS_ const GUID* /*pguidObjectType*/,
 	{
 	case acetypeContainer:
 		*ppAccess = siExchangeAccessesFolder;
-		*pcAccesses = sizeof(siExchangeAccessesFolder)/sizeof(SI_ACCESS);
+		*pcAccesses = _countof(siExchangeAccessesFolder);
 		break;
 	case acetypeMessage:
 		*ppAccess = siExchangeAccessesMessage;
-		*pcAccesses = sizeof(siExchangeAccessesMessage)/sizeof(SI_ACCESS);
+		*pcAccesses = _countof(siExchangeAccessesMessage);
 		break;
 	case acetypeFreeBusy:
 		*ppAccess = siExchangeAccessesFreeBusy;
-		*pcAccesses = sizeof(siExchangeAccessesFreeBusy)/sizeof(SI_ACCESS);
+		*pcAccesses = _countof(siExchangeAccessesFreeBusy);
 		break;
 	};
 
@@ -322,8 +322,8 @@ STDMETHODIMP CMySecInfo::GetAccessRights(THIS_ const GUID* /*pguidObjectType*/,
 };
 
 STDMETHODIMP CMySecInfo::MapGeneric(THIS_ const GUID* /*pguidObjectType*/,
-								   UCHAR * /*pAceFlags*/,
-								   ACCESS_MASK *pMask)
+									UCHAR * /*pAceFlags*/,
+									ACCESS_MASK *pMask)
 {
 	DebugPrint(DBGGeneric,_T("CMySecInfo::MapGeneric\n"));
 
@@ -343,7 +343,7 @@ STDMETHODIMP CMySecInfo::MapGeneric(THIS_ const GUID* /*pguidObjectType*/,
 };
 
 STDMETHODIMP CMySecInfo::GetInheritTypes(THIS_ PSI_INHERIT_TYPE* /*ppInheritTypes*/,
-										ULONG* /*pcInheritTypes*/)
+										 ULONG* /*pcInheritTypes*/)
 {
 	DebugPrint(DBGGeneric,_T("CMySecInfo::GetInheritTypes\n"));
 	return E_NOTIMPL;

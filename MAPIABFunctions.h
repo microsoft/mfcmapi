@@ -25,7 +25,7 @@ HRESULT GetABContainerTable(LPADRBOOK lpAdrBook, LPMAPITABLE* lpABContainerTable
 
 HRESULT HrAllocAdrList(ULONG ulNumProps, LPADRLIST* lpAdrList);
 
-HRESULT	ManualResolve(
+HRESULT ManualResolve(
 					  LPMAPISESSION lpMAPISession,
 					  LPMESSAGE lpMessage,
 					  LPCTSTR szName,

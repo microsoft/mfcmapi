@@ -16,10 +16,10 @@ public:
 	LPSRestriction DetachModifiedSRestriction();
 
 private:
-	void	OnEditAction1();
-	BOOL	OnInitDialog();
-	ULONG	HandleChange(UINT nID);
-	void	OnOK();
+	void  OnEditAction1();
+	BOOL  OnInitDialog();
+	ULONG HandleChange(UINT nID);
+	void  OnOK();
 
 	LPSRestriction GetSourceRes();
 
@@ -49,12 +49,12 @@ public:
 
 private:
 	// Use this function to implement list editing
-	BOOL	DoListEdit(ULONG ulListNum, int iItem, SortListData* lpData);
-	void	OnEditAction1();
-	BOOL	OnInitDialog();
-	ULONG	HandleChange(UINT nID);
-	void	InitListFromEntryList(ULONG ulListNum, LPENTRYLIST lpEntryList);
-	void	OnOK();
+	BOOL  DoListEdit(ULONG ulListNum, int iItem, SortListData* lpData);
+	void  OnEditAction1();
+	BOOL  OnInitDialog();
+	ULONG HandleChange(UINT nID);
+	void  InitListFromEntryList(ULONG ulListNum, LPENTRYLIST lpEntryList);
+	void  OnOK();
 
 	LPSRestriction GetSourceRes();
 

@@ -20,14 +20,14 @@ public:
 	ULONG GetPropertyTag();
 
 private:
-	ULONG	HandleChange(UINT nID);
-	void	OnEditAction1();
-	void	OnEditAction2();
-	BOOL	OnInitDialog();
-	void	PopulateFields(ULONG ulSkipField);
-	BOOL	GetSelectedGUID(LPGUID lpSelectedGUID);
-	BOOL	GetSelectedPropType(ULONG* ulPropType);
-	void	LookupNamedProp(ULONG ulSkipField, BOOL bCreate);
+	ULONG HandleChange(UINT nID);
+	void  OnEditAction1();
+	void  OnEditAction2();
+	BOOL  OnInitDialog();
+	void  PopulateFields(ULONG ulSkipField);
+	BOOL  GetSelectedGUID(LPGUID lpSelectedGUID);
+	BOOL  GetSelectedPropType(ULONG* ulPropType);
+	void  LookupNamedProp(ULONG ulSkipField, BOOL bCreate);
 
 	ULONG		m_ulPropTag;
 	BOOL		m_bIncludeABProps;
@@ -46,9 +46,9 @@ public:
 	ULONG GetPropertyTag();
 
 private:
-	BOOL	OnInitDialog();
-	BOOL	DoListEdit(ULONG ulListNum, int iItem, SortListData* lpData);
-	void	OnOK();
+	BOOL OnInitDialog();
+	BOOL DoListEdit(ULONG ulListNum, int iItem, SortListData* lpData);
+	void OnOK();
 
 	ULONG		m_ulPropTag;
 	BOOL		m_bIncludeABProps;

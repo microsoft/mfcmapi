@@ -3,9 +3,9 @@
 
 #include "stdafx.h"
 #include "PropertyEditor.h"
-#include "InterpretProp.h"
 #include "InterpretProp2.h"
 #include "MAPIFunctions.h"
+#include "SmartView.h"
 
 HRESULT DisplayPropertyEditor(CWnd* pParentWnd,
 							  UINT uidTitle,
@@ -1012,14 +1012,14 @@ static TCHAR* MVCLASS = _T("CMultiValuePropertyEditor"); // STRING_OK
 
 // Create an editor for a MAPI property
 CMultiValuePropertyEditor::CMultiValuePropertyEditor(
-								 CWnd* pParentWnd,
-								 UINT uidTitle,
-								 UINT uidPrompt,
-								 BOOL bIsAB,
-								 LPVOID lpAllocParent,
-								 LPMAPIPROP lpMAPIProp,
-								 ULONG ulPropTag,
-								 LPSPropValue lpsPropValue):
+	CWnd* pParentWnd,
+	UINT uidTitle,
+	UINT uidPrompt,
+	BOOL bIsAB,
+	LPVOID lpAllocParent,
+	LPMAPIPROP lpMAPIProp,
+	ULONG ulPropTag,
+	LPSPropValue lpsPropValue):
 CEditor(pParentWnd,uidTitle,uidPrompt,0,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL)
 {
 	TRACE_CONSTRUCTOR(MVCLASS);

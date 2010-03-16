@@ -42,5 +42,5 @@ HRESULT GetIDsFromNames(LPMAPIPROP lpMAPIProp,
 
 inline BOOL fCacheNamedProps()
 {
-    return RegKeys[regkeyCACHE_NAME_DPROPS].ulCurDWORD != 0;
+	return RegKeys[regkeyCACHE_NAME_DPROPS].ulCurDWORD != 0;
 }

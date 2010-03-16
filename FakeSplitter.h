@@ -24,16 +24,16 @@ public:
 	void SetSplitType(SplitType stSplitType);
 
 private:
-	void	OnSize(UINT nType, int cx, int cy);
-	void	OnPaint();
-	void	OnMouseMove(UINT nFlags,CPoint point);
+	void    OnSize(UINT nType, int cx, int cy);
+	void    OnPaint();
+	void    OnMouseMove(UINT nFlags,CPoint point);
 	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
-	int		HitTest(LONG x, LONG y);
+	int     HitTest(LONG x, LONG y);
 
 	// starting and stopping tracking
-	void	StartTracking(int ht);
-	void	StopTracking();
-	void	CalcSplitPos();
+	void StartTracking(int ht);
+	void StopTracking();
+	void CalcSplitPos();
 
 	CBaseDialog*	m_lpHostDlg;
 	BOOL			m_bTracking;

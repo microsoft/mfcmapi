@@ -28,7 +28,7 @@ private:
 	void OnDisplayItem();
 	void OnInitMenu(CMenu* pMenu);
 	void OnRefreshView();
-	HRESULT	OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, LPMAPIPROP* lppMAPIProp);
+	HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, LPMAPIPROP* lppMAPIProp);
 
 	// Menu items
 	void OnConfigureMsgService();

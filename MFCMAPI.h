@@ -266,7 +266,7 @@ typedef void (STDMETHODVCALLTYPE ADDINLOG)(
 	BOOL bPrintThreadTime, // whether to print the thread and time banner.
 	LPWSTR szMsg, // the message to be printed. Uses printf syntax.
 	... // optional printf style parameters
-);
+	);
 typedef ADDINLOG FAR *LPADDINLOG;
 
 // Function: SimpleDialog
@@ -277,17 +277,17 @@ typedef HRESULT (STDMETHODVCALLTYPE SIMPLEDIALOG)(
 	LPWSTR szTitle, // Title for dialog
 	LPWSTR szMsg, // the message to be printed. Uses printf syntax.
 	... // optional printf style parameters
-);
+	);
 typedef SIMPLEDIALOG FAR *LPSIMPLEDIALOG;
 
 // Function: ComplexDialog
 // Use: Hooks MFCMAPI's CEditor class to display a complex dialog. 'Complex' means the dialog has controls.
 #define szComplexDialog "ComplexDialog" // STRING_OK
 typedef HRESULT (_cdecl COMPLEXDIALOG)(
-	LPADDINDIALOG lpDialog, // In - pointer to a _AddInDialog structure indicating what the dialog should look like
-	LPADDINDIALOGRESULT* lppDialogResult // Out, Optional - array of _AddInDialogControlResult structures with the values of the dialog when it was closed
-                                         // Must be freed with FreeDialogResult
-);
+									   LPADDINDIALOG lpDialog, // In - pointer to a _AddInDialog structure indicating what the dialog should look like
+									   LPADDINDIALOGRESULT* lppDialogResult // Out, Optional - array of _AddInDialogControlResult structures with the values of the dialog when it was closed
+									                                        // Must be freed with FreeDialogResult
+									   );
 typedef COMPLEXDIALOG FAR *LPCOMPLEXDIALOG;
 
 // Function: FreeDialogResult
@@ -295,8 +295,8 @@ typedef COMPLEXDIALOG FAR *LPCOMPLEXDIALOG;
 // Notes: Failure to free lppDialogResult will result in a memory leak
 #define szFreeDialogResult "FreeDialogResult" // STRING_OK
 typedef void (_cdecl FREEDIALOGRESULT)(
-	LPADDINDIALOGRESULT lpDialogResult // _AddInDialogControlResult array to be freed
-);
+									   LPADDINDIALOGRESULT lpDialogResult // _AddInDialogControlResult array to be freed
+									   );
 typedef FREEDIALOGRESULT FAR *LPFREEDIALOGRESULT;
 
 // Function: GetMAPIModule
@@ -307,9 +307,9 @@ typedef FREEDIALOGRESULT FAR *LPFREEDIALOGRESULT;
 //        The handle returned is NOT ref-counted. Pay close attention to return values from GetProcAddress. Do not call FreeLibrary.
 #define szGetMAPIModule "GetMAPIModule" // STRING_OK
 typedef void (_cdecl GETMAPIMODULE)(
-	HMODULE* lphModule,
-	BOOL bForce
-);
+									HMODULE* lphModule,
+									BOOL bForce
+									);
 typedef GETMAPIMODULE FAR *LPGETMAPIMODULE;
 
 // End functions exported by MFCMAPI
@@ -322,7 +322,7 @@ typedef GETMAPIMODULE FAR *LPGETMAPIMODULE;
 #define szLoadAddIn "LoadAddIn" // STRING_OK
 typedef void (STDMETHODCALLTYPE LOADADDIN)(
 	LPWSTR* szTitle // Name of the add-in
-);
+	);
 typedef LOADADDIN FAR *LPLOADADDIN;
 
 // Function: UnloadAddIn
@@ -337,7 +337,7 @@ typedef UNLOADADDIN FAR *LPUNLOADADDIN;
 typedef void (STDMETHODCALLTYPE GETMENUS)(
 	ULONG* lpulMenu, // Count of _MenuItem structures in lppMenu
 	LPMENUITEM* lppMenu // Array of _MenuItem structures describing menu items
-);
+	);
 typedef GETMENUS FAR *LPGETMENUS;
 
 // Function: CallMenu
@@ -345,7 +345,7 @@ typedef GETMENUS FAR *LPGETMENUS;
 #define szCallMenu "CallMenu" // STRING_OK
 typedef HRESULT (STDMETHODCALLTYPE CALLMENU)(
 	LPADDINMENUPARAMS lpParams	// Everything the add-in needs to know
-);
+	);
 typedef CALLMENU FAR *LPCALLMENU;
 
 // Function: GetPropTags
@@ -354,7 +354,7 @@ typedef CALLMENU FAR *LPCALLMENU;
 typedef void (STDMETHODCALLTYPE GETPROPTAGS)(
 	ULONG* lpulPropTags, // Number of entries in lppPropTags
 	LPNAME_ARRAY_ENTRY* lppPropTags // Array of NAME_ARRAY_ENTRY structures
-);
+	);
 typedef GETPROPTAGS FAR *LPGETPROPTAGS;
 
 // Function: GetPropTypes
@@ -363,7 +363,7 @@ typedef GETPROPTAGS FAR *LPGETPROPTAGS;
 typedef void (STDMETHODCALLTYPE GETPROPTYPES)(
 	ULONG* lpulPropTypes, // Number of entries in lppPropTypes
 	LPNAME_ARRAY_ENTRY* lppPropTypes // Array of NAME_ARRAY_ENTRY structures
-);
+	);
 typedef GETPROPTYPES FAR *LPGETPROPTYPES;
 
 // Function: GetPropGuids
@@ -372,7 +372,7 @@ typedef GETPROPTYPES FAR *LPGETPROPTYPES;
 typedef void (STDMETHODCALLTYPE GETPROPGUIDS)(
 	ULONG* lpulPropGuids, // Number of entries in lppPropGuids
 	LPGUID_ARRAY_ENTRY* lppPropGuids // Array of GUID_ARRAY_ENTRY structures
-);
+	);
 typedef GETPROPGUIDS FAR *LPGETPROPGUIDS;
 
 // Function: GetNameIDs
@@ -381,7 +381,7 @@ typedef GETPROPGUIDS FAR *LPGETPROPGUIDS;
 typedef void (STDMETHODCALLTYPE GETNAMEIDS)(
 	ULONG* lpulNameIDs, // Number of entries in lppNameIDs
 	LPNAMEID_ARRAY_ENTRY* lppNameIDs // Array of NAMEID_ARRAY_ENTRY structures
-);
+	);
 typedef GETNAMEIDS FAR *LPGETNAMEIDS;
 
 // Function: GetPropFlags
@@ -390,7 +390,7 @@ typedef GETNAMEIDS FAR *LPGETNAMEIDS;
 typedef void (STDMETHODCALLTYPE GETPROPFLAGS)(
 	ULONG* lpulPropFlags, // Number of entries in lppPropFlags
 	LPFLAG_ARRAY_ENTRY* lppPropFlags // Array of FLAG_ARRAY_ENTRY structures
-);
+	);
 typedef GETPROPFLAGS FAR *LPGETPROPFLAGS;
 
 // Function: GetAPIVersion

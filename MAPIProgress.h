@@ -9,12 +9,12 @@ public:
 
 private:
 	// IUnknown
-	STDMETHODIMP			QueryInterface(REFIID riid, LPVOID * ppvObj);
-	STDMETHODIMP_(ULONG)	AddRef();
-	STDMETHODIMP_(ULONG)	Release();
+	STDMETHODIMP         QueryInterface(REFIID riid, LPVOID * ppvObj);
+	STDMETHODIMP_(ULONG) AddRef();
+	STDMETHODIMP_(ULONG) Release();
 
 	// IMAPIProgress
-	STDMETHODIMP Progress(ULONG	ulValue, ULONG ulCount, ULONG ulTotal);
+	STDMETHODIMP Progress(ULONG ulValue, ULONG ulCount, ULONG ulTotal);
 	STDMETHODIMP GetFlags(ULONG FAR* lpulFlags);
 	STDMETHODIMP GetMax(ULONG FAR* lpulMax);
 	STDMETHODIMP GetMin(ULONG FAR* lpulMin);

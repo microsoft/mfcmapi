@@ -3,36 +3,36 @@
 #pragma once
 
 HRESULT CallOpenEntry(
-						LPMDB lpMDB,
-						LPADRBOOK lpAB,
-						LPMAPICONTAINER lpContainer,
-						LPMAPISESSION lpMAPISession,
-						LPSBinary lpSBinary,
-						LPCIID lpInterface,
-						ULONG ulFlags,
-						ULONG* ulObjTypeRet,
-						LPUNKNOWN* lppUnk);
+					  LPMDB lpMDB,
+					  LPADRBOOK lpAB,
+					  LPMAPICONTAINER lpContainer,
+					  LPMAPISESSION lpMAPISession,
+					  LPSBinary lpSBinary,
+					  LPCIID lpInterface,
+					  ULONG ulFlags,
+					  ULONG* ulObjTypeRet,
+					  LPUNKNOWN* lppUnk);
 HRESULT CallOpenEntry(
-						LPMDB lpMDB,
-						LPADRBOOK lpAB,
-						LPMAPICONTAINER lpContainer,
-						LPMAPISESSION lpMAPISession,
-						ULONG cbEntryID,
-						LPENTRYID lpEntryID,
-						LPCIID lpInterface,
-						ULONG ulFlags,
-						ULONG* ulObjTypeRet,
-						LPUNKNOWN* lppUnk);
-HRESULT	ConcatSPropTagArrays(
+					  LPMDB lpMDB,
+					  LPADRBOOK lpAB,
+					  LPMAPICONTAINER lpContainer,
+					  LPMAPISESSION lpMAPISession,
+					  ULONG cbEntryID,
+					  LPENTRYID lpEntryID,
+					  LPCIID lpInterface,
+					  ULONG ulFlags,
+					  ULONG* ulObjTypeRet,
+					  LPUNKNOWN* lppUnk);
+HRESULT ConcatSPropTagArrays(
 							 LPSPropTagArray lpArray1,
 							 LPSPropTagArray lpArray2,
 							 LPSPropTagArray *lpNewArray);
-HRESULT	CopyPropertyAsStream(LPMAPIPROP lpSourcePropObj,LPMAPIPROP lpTargetPropObj, ULONG ulSourceTag, ULONG ulTargetTag);
+HRESULT CopyPropertyAsStream(LPMAPIPROP lpSourcePropObj,LPMAPIPROP lpTargetPropObj, ULONG ulSourceTag, ULONG ulTargetTag);
 HRESULT CopyFolderContents(LPMAPIFOLDER lpSrcFolder, LPMAPIFOLDER lpDestFolder,BOOL bCopyAssociatedContents,BOOL bMove,BOOL bSingleCall, HWND hWnd);
 HRESULT CopyFolderRules(LPMAPIFOLDER lpSrcFolder, LPMAPIFOLDER lpDestFolder,BOOL bReplace);
-HRESULT	CopySBinary(LPSBinary psbDest,const LPSBinary psbSrc, LPVOID lpParent);
-HRESULT	CopyStringA(LPSTR* lpszDestination,LPCSTR szSource, LPVOID pParent);
-HRESULT	CopyStringW(LPWSTR* lpszDestination,LPCWSTR szSource, LPVOID pParent);
+HRESULT CopySBinary(LPSBinary psbDest,const LPSBinary psbSrc, LPVOID lpParent);
+HRESULT CopyStringA(LPSTR* lpszDestination,LPCSTR szSource, LPVOID pParent);
+HRESULT CopyStringW(LPWSTR* lpszDestination,LPCWSTR szSource, LPVOID pParent);
 #ifdef UNICODE
 #define CopyString  CopyStringW
 #else
@@ -48,17 +48,17 @@ HRESULT CreateRangeRestriction(ULONG ulPropTag,
 							   LPVOID lpParent,
 							   LPSRestriction* lppRes);
 HRESULT DeleteProperty(LPMAPIPROP lpMAPIProp,ULONG ulPropTag);
-HRESULT	DeleteToDeletedItems(LPMDB lpMDB, LPMAPIFOLDER lpSourceFolder, LPENTRYLIST lpEIDs, HWND hWnd);
-BOOL	FindPropInPropTagArray(LPSPropTagArray lpspTagArray, ULONG ulPropToFind, ULONG* lpulRowFound);
-ULONG	GetMAPIObjectType(LPMAPIPROP lpMAPIProp);
+HRESULT DeleteToDeletedItems(LPMDB lpMDB, LPMAPIFOLDER lpSourceFolder, LPENTRYLIST lpEIDs, HWND hWnd);
+BOOL    FindPropInPropTagArray(LPSPropTagArray lpspTagArray, ULONG ulPropToFind, ULONG* lpulRowFound);
+ULONG   GetMAPIObjectType(LPMAPIPROP lpMAPIProp);
 HRESULT GetInbox(LPMDB lpMDB, LPMAPIFOLDER* lpInbox);
 HRESULT GetParentFolder(LPMAPIFOLDER lpChildFolder, LPMDB lpMDB, LPMAPIFOLDER* lpParentFolder);
 HRESULT GetPropsNULL(LPMAPIPROP lpMAPIProp,ULONG ulFlags, ULONG * lpcValues, LPSPropValue *	lppPropArray);
 HRESULT GetSpecialFolder(LPMDB lpMDB, ULONG ulFolderPropTag, LPMAPIFOLDER *lpSpecialFolder);
 HRESULT IsAttachmentBlocked(LPMAPISESSION lpMAPISession, LPCWSTR pwszFileName, BOOL* pfBlocked);
-BOOL	IsDuplicateProp(LPSPropTagArray lpArray, ULONG ulPropTag);
-void	MyHexFromBin(LPBYTE lpb, size_t cb, LPTSTR* lpsz);
-void	MyBinFromHex(LPCTSTR lpsz, LPBYTE lpb, size_t cb);
+BOOL    IsDuplicateProp(LPSPropTagArray lpArray, ULONG ulPropTag);
+void    MyHexFromBin(LPBYTE lpb, size_t cb, LPTSTR* lpsz);
+void    MyBinFromHex(LPCTSTR lpsz, LPBYTE lpb, size_t cb);
 HRESULT RemoveOneOff(LPMESSAGE lpMessage, BOOL bRemovePropDef);
 HRESULT ResendMessages(
 					   LPMAPIFOLDER lpFolder,
@@ -79,13 +79,13 @@ HRESULT SendTestMessage(
 						LPCTSTR szBody,
 						LPCTSTR szSubject);
 HRESULT WrapStreamForRTF(
-				 LPSTREAM lpCompressedRTFStream,
-				 BOOL bUseWrapEx,
-				 ULONG ulFlags,
-				 ULONG ulInCodePage,
-				 ULONG ulOutCodePage,
-				 LPSTREAM FAR * lpUncompressedRTFStream,
-				 ULONG FAR * pulStreamFlags);
+						 LPSTREAM lpCompressedRTFStream,
+						 BOOL bUseWrapEx,
+						 ULONG ulFlags,
+						 ULONG ulInCodePage,
+						 ULONG ulOutCodePage,
+						 LPSTREAM FAR * lpUncompressedRTFStream,
+						 ULONG FAR * pulStreamFlags);
 
 HRESULT GetNamedPropsByGUID(LPMAPIPROP lpSource, LPGUID lpPropSetGUID, LPSPropTagArray * lpOutArray);
 HRESULT CopyNamedProps(LPMAPIPROP lpSource, LPGUID lpPropSetGUID, BOOL bDoMove, BOOL bDoNoReplace, LPMAPIPROP lpTarget, HWND hWnd);

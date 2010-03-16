@@ -55,7 +55,7 @@ HRESULT DisplayObject(
 	// call the dialog
 	switch(ulObjType)
 	{
-// #define MAPI_STORE		((ULONG) 0x00000001)	/* Message Store */
+		// #define MAPI_STORE		((ULONG) 0x00000001)	/* Message Store */
 	case MAPI_STORE:
 		{
 			LPMDB lpMDB = lpMapiObjects->GetMDB(); // do not release
@@ -73,6 +73,7 @@ HRESULT DisplayObject(
 			if (lpMDB) lpMDB->Release();
 			break;
 		}
+		// #define MAPI_FOLDER		((ULONG) 0x00000003)	/* Folder */
 	case MAPI_FOLDER:
 		{
 			// There are two ways to display a folder...either the contents table or the hierarchy table.
@@ -94,8 +95,7 @@ HRESULT DisplayObject(
 					if (lpMAPISession)
 					{
 						LPMDB lpNewMDB = NULL;
-						EC_H(OpenStoreFromMAPIProp(lpMAPISession, (LPMAPIPROP)lpUnk,&lpNewMDB));
-
+						EC_H(OpenStoreFromMAPIProp(lpMAPISession, (LPMAPIPROP)lpUnk, &lpNewMDB));
 						if (lpNewMDB)
 						{
 							lpMapiObjects->SetMDB(lpNewMDB);
@@ -123,7 +123,7 @@ HRESULT DisplayObject(
 			}
 			break;
 		}
-// #define MAPI_ABCONT		((ULONG) 0x00000004)	/* Address Book Container */
+		// #define MAPI_ABCONT		((ULONG) 0x00000004)	/* Address Book Container */
 	case MAPI_ABCONT:
 		{
 			new CAbDlg(
@@ -132,7 +132,7 @@ HRESULT DisplayObject(
 				(LPABCONT) lpUnk);
 			break;
 		}
-// #define MAPI_DISTLIST	((ULONG) 0x00000008)	/* Distribution List Recipient */
+		// #define MAPI_DISTLIST	((ULONG) 0x00000008)	/* Distribution List Recipient */
 	case MAPI_DISTLIST: // A DistList is really an Address book anyways
 		{
 			new CAbDlg(
@@ -520,8 +520,8 @@ int GetEditHeight(HWND hwndEdit)
 	// Calculate the new height for the edit control.
 	iHeight =
 		tmFont.tmHeight
-//		+ tmFont.tmExternalLeading
-//		+ (min(tmFont.tmHeight, tmSys.tmHeight)/2)
+		// + tmFont.tmExternalLeading
+		// + (min(tmFont.tmHeight, tmSys.tmHeight)/2)
 		+ 2 * GetSystemMetrics(SM_CYFIXEDFRAME) // Adjust for the edit border
 		+ 2 * GetSystemMetrics(SM_CXEDGE); // Adjust for the edit border
 	return iHeight;
@@ -620,7 +620,7 @@ void DisplayMailboxTable(CParentWnd*	lpParent,
 			IDS_GETMBXINTERFACE3,
 			IDS_GETMBXINTERFACE5
 		};
-		MyData.InitDropDown(3,IDS_GETMBXINTERFACE,sizeof(uidDropDown)/sizeof(UINT),uidDropDown,true);
+		MyData.InitDropDown(3,IDS_GETMBXINTERFACE,_countof(uidDropDown),uidDropDown,true);
 		WC_H(MyData.DisplayDialog());
 
 		if (SUCCEEDED(hRes) && 0 != MyData.GetHex(1) && 0 == MyData.GetDropDown(3))
@@ -723,7 +723,7 @@ void DisplayMailboxTable(CParentWnd*	lpParent,
 		MAPIFreeBuffer(szServerName);
 	}
 	if (lpPrivateMDB) lpPrivateMDB->Release();
-}
+} // DisplayMailboxTable
 
 void DisplayPublicFolderTable(CParentWnd* lpParent,
 							  CMapiObjects* lpMapiObjects)
@@ -765,7 +765,7 @@ void DisplayPublicFolderTable(CParentWnd* lpParent,
 			IDS_GETPFINTERFACE4,
 			IDS_GETPFINTERFACE5
 		};
-		MyData.InitDropDown(4,IDS_GETMBXINTERFACE,sizeof(uidDropDown)/sizeof(UINT),uidDropDown,true);
+		MyData.InitDropDown(4,IDS_GETMBXINTERFACE,_countof(uidDropDown),uidDropDown,true);
 		WC_H(MyData.DisplayDialog());
 
 		if (SUCCEEDED(hRes) && 0 != MyData.GetHex(1) && 0 == MyData.GetDropDown(4))
@@ -869,4 +869,4 @@ void DisplayPublicFolderTable(CParentWnd* lpParent,
 		MAPIFreeBuffer(szServerName);
 	}
 	if (lpPrivateMDB) lpPrivateMDB->Release();
-}
+} // DisplayPublicFolderTable

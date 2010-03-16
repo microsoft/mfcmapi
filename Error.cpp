@@ -4,13 +4,13 @@
 
 // This function WILL _Output if it is called
 void LogError(
-				  HRESULT hRes,
-				  UINT uidErrorMsg,
-				  LPCSTR szFile,
-				  int iLine,
-				  LPCSTR szFunction,
-				  BOOL bShowDialog,
-				  BOOL bErrorMsgFromSystem)
+			  HRESULT hRes,
+			  UINT uidErrorMsg,
+			  LPCSTR szFile,
+			  int iLine,
+			  LPCSTR szFunction,
+			  BOOL bShowDialog,
+			  BOOL bErrorMsgFromSystem)
 {
 	// Get our error message if we have one
 	CString szErrorMsg;
@@ -160,7 +160,7 @@ void __cdecl ErrDialog(LPCSTR szFile,int iLine, UINT uidErrorFmt,...)
 #define RETURN_ERR_CASE(err) case (err): return(_T(#err))
 
 // Function to convert error codes to their names
-LPTSTR	ErrorNameFromErrorCode(HRESULT hrErr)
+LPTSTR ErrorNameFromErrorCode(HRESULT hrErr)
 {
 	switch (hrErr)
 	{
@@ -348,7 +348,7 @@ LPTSTR	ErrorNameFromErrorCode(HRESULT hrErr)
 		RETURN_ERR_CASE(SYNC_W_CLIENT_CHANGE_NEWER);
 
 		RETURN_ERR_CASE(OLEOBJ_S_CANNOT_DOVERB_NOW);
-default:
+	default:
 		{
 			HRESULT hRes = S_OK;
 			static TCHAR szErrCode[35]; // see string on default

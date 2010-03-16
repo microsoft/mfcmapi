@@ -3,18 +3,18 @@
 
 class CContentsTableListCtrl;
 
-HRESULT	CreateAndDisplayNewMailInFolder(
+HRESULT CreateAndDisplayNewMailInFolder(
 										LPMDB lpMDB,
 										LPMAPISESSION lpMAPISession,
 										CContentsTableListCtrl *lpContentsTableListCtrl,
 										int iItem,
 										LPCSTR szMessageClass,
 										LPMAPIFOLDER lpFolder);
-HRESULT	OpenMessageModal(LPMAPIFOLDER lpParentFolder,
+HRESULT OpenMessageModal(LPMAPIFOLDER lpParentFolder,
 						 LPMAPISESSION lpMAPISession,
 						 LPMDB lpMDB,
 						 LPMESSAGE lpMessage);
-HRESULT	OpenMessageNonModal(
+HRESULT OpenMessageNonModal(
 							HWND hwndParent,
 							LPMDB lpMDB,
 							LPMAPISESSION lpMAPISession,

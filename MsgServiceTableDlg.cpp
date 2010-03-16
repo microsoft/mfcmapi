@@ -20,21 +20,21 @@ static TCHAR* CLASS = _T("CMsgServiceTableDlg");
 
 
 CMsgServiceTableDlg::CMsgServiceTableDlg(
-			   CParentWnd* pParentWnd,
-			   CMapiObjects* lpMapiObjects,
-			   LPCSTR szProfileName
-			   ):
+	CParentWnd* pParentWnd,
+	CMapiObjects* lpMapiObjects,
+	LPCSTR szProfileName
+	):
 CContentsTableDlg(
-						  pParentWnd,
-						  lpMapiObjects,
-						  IDS_SERVICES,
-						  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
-						  NULL,
-						  (LPSPropTagArray) &sptSERVICECols,
-						  NUMSERVICECOLUMNS,
-						  SERVICEColumns,
-						  IDR_MENU_MSGSERVICE_POPUP,
-						  MENU_CONTEXT_PROFILE_SERVICES)
+				  pParentWnd,
+				  lpMapiObjects,
+				  IDS_SERVICES,
+				  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+				  NULL,
+				  (LPSPropTagArray) &sptSERVICECols,
+				  NUMSERVICECOLUMNS,
+				  SERVICEColumns,
+				  IDR_MENU_MSGSERVICE_POPUP,
+				  MENU_CONTEXT_PROFILE_SERVICES)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 
@@ -59,9 +59,9 @@ CMsgServiceTableDlg::~CMsgServiceTableDlg()
 }
 
 BEGIN_MESSAGE_MAP(CMsgServiceTableDlg, CContentsTableDlg)
-ON_COMMAND(ID_CONFIGUREMSGSERVICE,OnConfigureMsgService)
-ON_COMMAND(ID_DELETESELECTEDITEM,OnDeleteSelectedItem)
-ON_COMMAND(ID_OPENPROFILESECTION,OnOpenProfileSection)
+	ON_COMMAND(ID_CONFIGUREMSGSERVICE,OnConfigureMsgService)
+	ON_COMMAND(ID_DELETESELECTEDITEM,OnDeleteSelectedItem)
+	ON_COMMAND(ID_OPENPROFILESECTION,OnOpenProfileSection)
 END_MESSAGE_MAP()
 
 void CMsgServiceTableDlg::OnInitMenu(CMenu* pMenu)
@@ -343,9 +343,9 @@ void CMsgServiceTableDlg::OnDeleteSelectedItem()
 } // CMsgServiceTableDlg::OnDeleteSelectedItem
 
 void CMsgServiceTableDlg::HandleAddInMenuSingle(
-									   LPADDINMENUPARAMS lpParams,
-									   LPMAPIPROP lpMAPIProp,
-									   LPMAPICONTAINER /*lpContainer*/)
+	LPADDINMENUPARAMS lpParams,
+	LPMAPIPROP lpMAPIProp,
+	LPMAPICONTAINER /*lpContainer*/)
 {
 	if (lpParams)
 	{

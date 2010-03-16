@@ -2,7 +2,6 @@
 //
 
 #include "stdafx.h"
-#include "SortListCtrl.h"
 #include "SingleMAPIPropListCtrl.h"
 #include "StreamEditor.h"
 #include "BaseDialog.h"
@@ -13,9 +12,7 @@
 #include "MySecInfo.h"
 #include "Editor.h"
 #include "PropertyEditor.h"
-#include "InterpretProp.h"
 #include "InterpretProp2.h"
-#include "File.h"
 #include "TagArrayEditor.h"
 #include "FileDialogEx.h"
 #include "ImportProcs.h"
@@ -23,6 +20,7 @@
 #include "PropertyTagEditor.h"
 #include "MAPIProgress.h"
 #include "NamedPropCache.h"
+#include "SmartView.h"
 
 static TCHAR* CLASS = _T("CSingleMAPIPropListCtrl");
 
@@ -33,11 +31,11 @@ static TCHAR* CLASS = _T("CSingleMAPIPropListCtrl");
 // CSingleMAPIPropListCtrl
 
 CSingleMAPIPropListCtrl::CSingleMAPIPropListCtrl(
-												 CWnd* pCreateParent,
-												 CBaseDialog *lpHostDlg,
-												 CMapiObjects* lpMapiObjects,
-												 BOOL bIsAB)
-												 :CSortListCtrl()
+	CWnd* pCreateParent,
+	CBaseDialog *lpHostDlg,
+	CMapiObjects* lpMapiObjects,
+	BOOL bIsAB)
+	:CSortListCtrl()
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	HRESULT hRes = S_OK;
@@ -486,7 +484,7 @@ HRESULT CSingleMAPIPropListCtrl::LoadMAPIPropList()
 	return S_OK;
 } // CSingleMAPIPropListCtrl::LoadMAPIPropList
 
-HRESULT	CSingleMAPIPropListCtrl::RefreshMAPIPropList()
+HRESULT CSingleMAPIPropListCtrl::RefreshMAPIPropList()
 {
 	HRESULT hRes = S_OK;
 	int iSelectedItem;
@@ -560,46 +558,46 @@ HRESULT CSingleMAPIPropListCtrl::AddPropsToExtraProps(LPSPropTagArray lpPropsToA
 #define NUMPROPTYPES 31
 static ULONG _PropTypeIcons[NUMPROPTYPES][2] =
 {
-{PT_UNSPECIFIED,slIconUNSPECIFIED},
-{PT_NULL,slIconNULL},
-{PT_I2,slIconI2},
-{PT_LONG,slIconLONG},
-{PT_R4,slIconR4},
-{PT_DOUBLE,slIconDOUBLE},
-{PT_CURRENCY,slIconCURRENCY},
-{PT_APPTIME,slIconAPPTIME},
-{PT_ERROR,slIconERROR},
-{PT_BOOLEAN,slIconBOOLEAN},
-{PT_OBJECT,slIconOBJECT},
-{PT_I8,slIconI8},
-{PT_STRING8,slIconSTRING8},
-{PT_UNICODE,slIconUNICODE},
-{PT_SYSTIME,slIconSYSTIME},
-{PT_CLSID,slIconCLSID},
-{PT_BINARY,slIconBINARY},
-{PT_MV_I2,slIconMV_I2},
-{PT_MV_LONG,slIconMV_LONG},
-{PT_MV_R4,slIconMV_R4},
-{PT_MV_DOUBLE,slIconMV_DOUBLE},
-{PT_MV_CURRENCY,slIconMV_CURRENCY},
-{PT_MV_APPTIME,slIconMV_APPTIME},
-{PT_MV_SYSTIME,slIconMV_SYSTIME},
-{PT_MV_STRING8,slIconMV_STRING8},
-{PT_MV_BINARY,slIconMV_BINARY},
-{PT_MV_UNICODE,slIconMV_UNICODE},
-{PT_MV_CLSID,slIconMV_CLSID},
-{PT_MV_I8,slIconMV_I8},
-{PT_SRESTRICTION,slIconSRESTRICTION},
-{PT_ACTIONS,slIconACTIONS},
+	{PT_UNSPECIFIED,slIconUNSPECIFIED},
+	{PT_NULL,slIconNULL},
+	{PT_I2,slIconI2},
+	{PT_LONG,slIconLONG},
+	{PT_R4,slIconR4},
+	{PT_DOUBLE,slIconDOUBLE},
+	{PT_CURRENCY,slIconCURRENCY},
+	{PT_APPTIME,slIconAPPTIME},
+	{PT_ERROR,slIconERROR},
+	{PT_BOOLEAN,slIconBOOLEAN},
+	{PT_OBJECT,slIconOBJECT},
+	{PT_I8,slIconI8},
+	{PT_STRING8,slIconSTRING8},
+	{PT_UNICODE,slIconUNICODE},
+	{PT_SYSTIME,slIconSYSTIME},
+	{PT_CLSID,slIconCLSID},
+	{PT_BINARY,slIconBINARY},
+	{PT_MV_I2,slIconMV_I2},
+	{PT_MV_LONG,slIconMV_LONG},
+	{PT_MV_R4,slIconMV_R4},
+	{PT_MV_DOUBLE,slIconMV_DOUBLE},
+	{PT_MV_CURRENCY,slIconMV_CURRENCY},
+	{PT_MV_APPTIME,slIconMV_APPTIME},
+	{PT_MV_SYSTIME,slIconMV_SYSTIME},
+	{PT_MV_STRING8,slIconMV_STRING8},
+	{PT_MV_BINARY,slIconMV_BINARY},
+	{PT_MV_UNICODE,slIconMV_UNICODE},
+	{PT_MV_CLSID,slIconMV_CLSID},
+	{PT_MV_I8,slIconMV_I8},
+	{PT_SRESTRICTION,slIconSRESTRICTION},
+	{PT_ACTIONS,slIconACTIONS},
 };
 
 // Crack open the given SPropValue and render it to the given row in the list.
 void CSingleMAPIPropListCtrl::AddPropToListBox(
-											   int iRow,
-											   ULONG ulPropTag,
-											   LPMAPINAMEID lpNameID,
-											   LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
-											   LPSPropValue lpsPropToAdd)
+	int iRow,
+	ULONG ulPropTag,
+	LPMAPINAMEID lpNameID,
+	LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
+	LPSPropValue lpsPropToAdd)
 {
 	ULONG ulImage = slIconDefault;
 	if (lpsPropToAdd)
@@ -1201,13 +1199,13 @@ void CSingleMAPIPropListCtrl::OnEditProp()
 // Concatenate two property arrays without duplicates
 // Entries in the first array trump entries in the second
 // Will also eliminate any duplicates already existing within the arrays
-HRESULT	ConcatLPSPropValue(
-							 ULONG ulVal1,
-							 LPSPropValue lpVal1,
-							 ULONG ulVal2,
-							 LPSPropValue lpVal2,
-							 ULONG* lpulRetVal,
-							 LPSPropValue* lppRetVal)
+HRESULT ConcatLPSPropValue(
+						   ULONG ulVal1,
+						   LPSPropValue lpVal1,
+						   ULONG ulVal2,
+						   LPSPropValue lpVal2,
+						   ULONG* lpulRetVal,
+						   LPSPropValue* lppRetVal)
 {
 	if (!lpulRetVal || !lppRetVal) return MAPI_E_INVALID_PARAMETER;
 	if (ulVal1 && !lpVal1) return MAPI_E_INVALID_PARAMETER;
@@ -1672,10 +1670,10 @@ void CSingleMAPIPropListCtrl::OnPasteProperty()
 
 	UINT uidDropDown[] = {
 		IDS_DDCOPYPROPS,
-			IDS_DDGETSETPROPS,
-			IDS_DDCOPYSTREAM
+		IDS_DDGETSETPROPS,
+		IDS_DDCOPYSTREAM
 	};
-	MyData.InitDropDown(0,IDS_COPYSTYLE,sizeof(uidDropDown)/sizeof(UINT),uidDropDown,true);
+	MyData.InitDropDown(0,IDS_COPYSTYLE,_countof(uidDropDown),uidDropDown,true);
 	MyData.InitSingleLine(1,IDS_SOURCEPROP,NULL,false);
 	MyData.SetHex(1,ulSourcePropTag);
 	MyData.InitSingleLine(2,IDS_TARGETPROP,NULL,false);

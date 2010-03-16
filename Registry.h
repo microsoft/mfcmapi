@@ -54,6 +54,7 @@ enum REGKEYNAMES {
 	regkeyALLOW_PERSIST_CACHE,
 	regkeyUSE_IMAPIPROGRESS,
 	regkeyUSE_MESSAGERAW,
+	regkeyHEAPENABLETERMINATIONONCORRUPTION,
 	regkeyDISPLAY_ABOUT_DIALOG,
 	regkeyPROP_COLUMN_ORDER,
 	NUMRegKeys
@@ -69,8 +70,18 @@ void ReadFromRegistry();
 
 void ReadDWORDFromRegistry(HKEY hKey, LPCTSTR szValue, DWORD* lpdwVal);
 
-HRESULT HrGetRegistryValue(
-						   IN HKEY hKey, // the key.
-						   IN LPCTSTR lpszValue, // value name in key.
-						   OUT DWORD* lpType, // where to put type info.
-						   OUT LPVOID* lppData); // where to put the data.
+HRESULT HrGetRegistryValueW(
+							IN HKEY hKey, // the key.
+							IN LPCTSTR lpszValue, // value name in key.
+							OUT DWORD* lpType, // where to put type info.
+							OUT LPVOID* lppData); // where to put the data.
+HRESULT HrGetRegistryValueA(
+							IN HKEY hKey, // the key.
+							IN LPCSTR lpszValue, // value name in key.
+							OUT DWORD* lpType, // where to put type info.
+							OUT LPVOID* lppData); // where to put the data.
+#ifdef UNICODE
+#define HrGetRegistryValue HrGetRegistryValueW
+#else
+#define HrGetRegistryValue HrGetRegistryValueA
+#endif

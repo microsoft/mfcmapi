@@ -21,62 +21,62 @@ public:
 	virtual ~CContentsTableListCtrl();
 
 	// Initialization
-	HRESULT	SetContentsTable(
+	HRESULT SetContentsTable(
 		LPMAPITABLE lpContentsTable,
 		ULONG ulDisplayFlags,
 		ULONG ulContainerType);
 
 	// Selected item accessors
-	HRESULT			GetSelectedItemEIDs(LPENTRYLIST* lppEntryIDs);
-	SortListData*	GetNextSelectedItemData(int* iCurItem);
-	HRESULT			OpenNextSelectedItemProp(int* iCurItem,__mfcmapiModifyEnum bModify,LPMAPIPROP* lppProp);
+	HRESULT       GetSelectedItemEIDs(LPENTRYLIST* lppEntryIDs);
+	SortListData* GetNextSelectedItemData(int* iCurItem);
+	HRESULT       OpenNextSelectedItemProp(int* iCurItem,__mfcmapiModifyEnum bModify,LPMAPIPROP* lppProp);
 
 	HRESULT ApplyRestriction();
 	HRESULT DefaultOpenItemProp(int iItem,__mfcmapiModifyEnum bModify,LPMAPIPROP* lppProp);
-	void	NotificationOff();
-	HRESULT	NotificationOn();
-	HRESULT	RefreshTable();
-	void	OnCancelTableLoad();
-	void	OnOutputTable(LPCWSTR szFileName);
+	void    NotificationOff();
+	HRESULT NotificationOn();
+	HRESULT RefreshTable();
+	void    OnCancelTableLoad();
+	void    OnOutputTable(LPCWSTR szFileName);
 	HRESULT SetSortTable(LPSSortOrderSet lpSortOrderSet, ULONG ulFlags);
 	HRESULT SetUIColumns(LPSPropTagArray lpTags);
-	BOOL	IsLoading();
-	void	ClearLoading();
-	void	SetRestriction(LPSRestriction lpRes);
+	BOOL    IsLoading();
+	void    ClearLoading();
+	void    SetRestriction(LPSRestriction lpRes);
 	LPSRestriction GetRestriction();
 	__mfcmapiRestrictionTypeEnum GetRestrictionType();
-	void	SetRestrictionType(__mfcmapiRestrictionTypeEnum RestrictionType);
-	ULONG	GetContainerType();
-	BOOL	IsAdviseSet();
-	BOOL	IsContentsTableSet();
-	void	DoSetColumns(BOOL bAddExtras, BOOL bDisplayEditor, BOOL bQueryFlags, BOOL bDoRefresh);
-	void	GetStatus();
+	void    SetRestrictionType(__mfcmapiRestrictionTypeEnum RestrictionType);
+	ULONG   GetContainerType();
+	BOOL    IsAdviseSet();
+	BOOL    IsContentsTableSet();
+	void    DoSetColumns(BOOL bAddExtras, BOOL bDisplayEditor, BOOL bQueryFlags, BOOL bDoRefresh);
+	void    GetStatus();
 
 private:
 	// Overrides from base class
 	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
-	void	OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
-	void	OnItemChanged(NMHDR* pNMHDR, LRESULT* pResult);
-	void	OnContextMenu(CWnd *pWnd, CPoint pos);
+	void    OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
+	void    OnItemChanged(NMHDR* pNMHDR, LRESULT* pResult);
+	void    OnContextMenu(CWnd *pWnd, CPoint pos);
 
 	HRESULT AddColumn(UINT uidHeaderName, ULONG ulCurHeaderCol, ULONG ulCurTagArrayRow, ULONG ulPropTag);
 	HRESULT AddColumns(LPSPropTagArray lpCurColTagArray);
-	HRESULT	AddItemToListBox(int iRow, LPSRow lpsRowToAdd);
-	void	BuildDataItem(LPSRow lpsRowData,SortListData* lpData);
+	HRESULT AddItemToListBox(int iRow, LPSRow lpsRowToAdd);
+	void    BuildDataItem(LPSRow lpsRowData,SortListData* lpData);
 	HRESULT DoExpandCollapse();
-	int		FindRow(LPSBinary lpInstance);
-	int		GetNextSelectedItemNum(int *iCurItem);
-	HRESULT	LoadContentsTableIntoView();
+	int     FindRow(LPSBinary lpInstance);
+	int     GetNextSelectedItemNum(int *iCurItem);
+	HRESULT LoadContentsTableIntoView();
 	HRESULT RefreshItem(int iRow,LPSRow lpsRowData, BOOL bItemExists);
-	void	SelectAll();
-	void	SetRowStrings(int iRow,LPSRow lpsRowData);
+	void    SelectAll();
+	void    SetRowStrings(int iRow,LPSRow lpsRowData);
 
 	// Custom messages
-	LRESULT	msgOnAddItem(WPARAM wParam, LPARAM lParam);
-	LRESULT	msgOnDeleteItem(WPARAM wParam, LPARAM lParam);
-	LRESULT	msgOnModifyItem(WPARAM wParam, LPARAM lParam);
-	LRESULT	msgOnRefreshTable(WPARAM wParam, LPARAM lParam);
-	LRESULT	msgOnThreadAddItem(WPARAM wParam, LPARAM lParam);
+	LRESULT msgOnAddItem(WPARAM wParam, LPARAM lParam);
+	LRESULT msgOnDeleteItem(WPARAM wParam, LPARAM lParam);
+	LRESULT msgOnModifyItem(WPARAM wParam, LPARAM lParam);
+	LRESULT msgOnRefreshTable(WPARAM wParam, LPARAM lParam);
+	LRESULT msgOnThreadAddItem(WPARAM wParam, LPARAM lParam);
 
 	ULONG				m_ulDisplayFlags;
 	LONG volatile		m_bAbortLoad;

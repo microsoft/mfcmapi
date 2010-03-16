@@ -178,12 +178,12 @@ void CMAPIProcessor::ProcessFolders(BOOL bDoRegular, BOOL bDoAssociated, BOOL bD
 }
 
 void CMAPIProcessor::ProcessFolder(BOOL bDoRegular,
-									  BOOL bDoAssociated,
-									  BOOL bDoDescent)
+								   BOOL bDoAssociated,
+								   BOOL bDoDescent)
 {
 	if (!m_lpMDB || !m_lpFolder) return;
 
-    HRESULT         hRes = S_OK;
+	HRESULT hRes = S_OK;
 
 	BeginFolderWork();
 
@@ -200,7 +200,7 @@ void CMAPIProcessor::ProcessFolder(BOOL bDoRegular,
 	// If we're not processing subfolders, then get outta here
 	if (bDoDescent)
 	{
-	    LPMAPITABLE		lpHierarchyTable	= NULL;
+		LPMAPITABLE lpHierarchyTable = NULL;
 		// We need to walk down the tree
 		// and get the list of kids of the folder
 		WC_H(m_lpFolder->GetHierarchyTable(fMapiUnicode,&lpHierarchyTable));

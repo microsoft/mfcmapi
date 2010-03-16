@@ -124,10 +124,10 @@ HRESULT AddOneOffAddress(
 } // AddOneOffAddress
 
 HRESULT AddRecipient(
-						 LPMAPISESSION lpMAPISession,
-						 LPMESSAGE lpMessage,
-						 LPCTSTR szName,
-						 ULONG ulRecipientType)
+					 LPMAPISESSION lpMAPISession,
+					 LPMESSAGE lpMessage,
+					 LPCTSTR szName,
+					 ULONG ulRecipientType)
 {
 	HRESULT			hRes	= S_OK;
 	LPADRLIST		lpAdrList = NULL;  // ModifyRecips takes LPADRLIST
@@ -490,10 +490,10 @@ HRESULT ManualResolve(
 } // ManualResolve
 
 HRESULT SearchContentsTableForName(
-									LPMAPITABLE pTable,
-									LPCTSTR szName,
-									ULONG PropTagToCompare,
-									LPSPropValue *lppPropsFound)
+								   LPMAPITABLE pTable,
+								   LPCTSTR szName,
+								   ULONG PropTagToCompare,
+								   LPSPropValue *lppPropsFound)
 {
 	HRESULT			hRes = S_OK;
 

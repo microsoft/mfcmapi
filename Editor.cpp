@@ -39,10 +39,10 @@ __ListButtons ListButtons[NUMLISTBUTTONS] = {
 #define INVALIDRANGE(iVal) ((iVal) >= m_cControls)
 
 static DWORD CALLBACK EditStreamReadCallBack(
-											  DWORD_PTR dwCookie,
-											  LPBYTE pbBuff,
-											  LONG cb,
-											  LONG *pcb)
+	DWORD_PTR dwCookie,
+	LPBYTE pbBuff,
+	LONG cb,
+	LONG *pcb)
 {
 	HRESULT hRes = S_OK;
 	if (!pbBuff || !pcb || !dwCookie) return 0;
@@ -64,10 +64,10 @@ static DWORD CALLBACK EditStreamReadCallBack(
 } // EditStreamReadCallBack
 
 static DWORD CALLBACK EditStreamWriteCallBack(
-											  DWORD_PTR dwCookie,
-											  LPBYTE pbBuff,
-											  LONG cb,
-											  LONG *pcb)
+	DWORD_PTR dwCookie,
+	LPBYTE pbBuff,
+	LONG cb,
+	LONG *pcb)
 {
 	HRESULT hRes = S_OK;
 	if (!pbBuff || !pcb || !dwCookie) return 0;
@@ -124,13 +124,13 @@ CEditor::CEditor(
 } // CEditor::CEditor
 
 void CEditor::Constructor(
-				 CWnd* pParentWnd,
-				 UINT uidTitle,
-				 UINT uidPrompt,
-				 ULONG ulNumFields,
-				 ULONG ulButtonFlags,
-				 UINT uidActionButtonText1,
-				 UINT uidActionButtonText2)
+						  CWnd* pParentWnd,
+						  UINT uidTitle,
+						  UINT uidPrompt,
+						  ULONG ulNumFields,
+						  ULONG ulButtonFlags,
+						  UINT uidActionButtonText1,
+						  UINT uidActionButtonText2)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 
@@ -187,6 +187,7 @@ BEGIN_MESSAGE_MAP(CEditor, CDialog)
 	ON_WM_GETMINMAXINFO()
 	ON_WM_PAINT()
 	ON_WM_NCHITTEST()
+	ON_WM_CONTEXTMENU()
 END_MESSAGE_MAP()
 
 LRESULT CEditor::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
@@ -251,6 +252,22 @@ LRESULT CEditor::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	} // end switch
 	return CDialog::WindowProc(message,wParam,lParam);
 } // CEditor::WindowProc
+
+void CEditor::OnContextMenu(CWnd* pWnd, CPoint pos)
+{
+	HRESULT hRes = S_OK;
+	CMenu pContext;
+	EC_B(pContext.LoadMenu(IDR_MENU_RICHEDIT_POPUP));
+	CMenu* pPopup = pContext.GetSubMenu(0);
+
+	if (pPopup)
+	{
+		DWORD dwCommand = pPopup->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pos.x, pos.y, pWnd);
+		(void)::SendMessage(pWnd->m_hWnd, dwCommand, (WPARAM) 0, (LPARAM) (EM_SETSEL == dwCommand)?-1:0);
+	}
+
+	EC_B(pContext.DestroyMenu());
+} // CEditor::OnContextMenu
 
 // AddIn functions
 void CEditor::SetAddInTitle(LPWSTR szTitle)
@@ -947,17 +964,17 @@ LRESULT CEditor::OnNcHitTest(CPoint point)
 	GetWindowRect(gripRect);
 	gripRect.left = gripRect.right - ::GetSystemMetrics(SM_CXHSCROLL);
 	gripRect.top  = gripRect.bottom - ::GetSystemMetrics(SM_CYVSCROLL);
-    // Test to see if the cursor is within the 'gripper'
-    // bitmap, and tell the system that the user is over
-    // the lower right-hand corner if it is.
-    if (gripRect.PtInRect(point))
-    {
-        return HTBOTTOMRIGHT ;
-    }
-    else
-    {
-        return CDialog::OnNcHitTest(point) ;
-    }
+	// Test to see if the cursor is within the 'gripper'
+	// bitmap, and tell the system that the user is over
+	// the lower right-hand corner if it is.
+	if (gripRect.PtInRect(point))
+	{
+		return HTBOTTOMRIGHT ;
+	}
+	else
+	{
+		return CDialog::OnNcHitTest(point) ;
+	}
 } // CEditor::OnNcHitTest
 
 void CEditor::OnSize(UINT nType, int cx, int cy)
@@ -1235,10 +1252,10 @@ struct FakeStream
 };
 
 static DWORD CALLBACK FakeEditStreamReadCallBack(
-											  DWORD_PTR dwCookie,
-											  LPBYTE pbBuff,
-											  LONG cb,
-											  LONG *pcb)
+	DWORD_PTR dwCookie,
+	LPBYTE pbBuff,
+	LONG cb,
+	LONG *pcb)
 {
 	if (!pbBuff || !pcb || !dwCookie) return 0;
 
@@ -1285,7 +1302,7 @@ void CEditor::SetEditBoxText(ULONG iControl)
 	// read the 'text stream' into control
 	long lBytesRead = 0;
 	lBytesRead = m_lpControls[iControl].UI.lpEdit->EditBox.StreamIn(uFormat,es);
-	DebugPrintEx(DBGStream,CLASS,_T("CEditor::SetEditBoxText"),_T("read %d bytes from the stream\n"),lBytesRead);
+	DebugPrintEx(DBGStream,CLASS,_T("SetEditBoxText"),_T("read %d bytes from the stream\n"),lBytesRead);
 
 	// Clear the modify bit so this stream appears untouched
 	m_lpControls[iControl].UI.lpEdit->EditBox.SetModify(false);
@@ -1509,6 +1526,34 @@ void CEditor::SetDecimal(ULONG i, ULONG ulVal)
 	SetStringf(i,_T("%d"),ulVal); // STRING_OK
 } // CEditor::SetDecimal
 
+// This is used by the DbgView - don't call any debugger functions here!!!
+void CEditor::AppendString(ULONG i, LPCTSTR szMsg)
+{
+	if (!IsValidEdit(i)) return;
+
+	m_lpControls[i].UI.lpEdit->EditBox.HideSelection(FALSE,TRUE);
+	GETTEXTLENGTHEX getTextLength = {0};
+	getTextLength.flags = GTL_PRECISE | GTL_NUMCHARS;
+	getTextLength.codepage = 1200;
+
+	int cchText = m_lpControls[i].UI.lpEdit->EditBox.GetWindowTextLength();
+	m_lpControls[i].UI.lpEdit->EditBox.SetSel(cchText, cchText);
+	m_lpControls[i].UI.lpEdit->EditBox.ReplaceSel(szMsg);
+} // CEditor::AppendString
+
+// This is used by the DbgView - don't call any debugger functions here!!!
+void CEditor::ClearView(ULONG i)
+{
+	if (!IsValidEdit(i)) return;
+
+	ClearString(i);
+	::SendMessage(
+			m_lpControls[i].UI.lpEdit->EditBox.m_hWnd,
+			WM_SETTEXT,
+			NULL,
+			(LPARAM) _T(""));
+} // CEditor::ClearView
+
 void CEditor::SetListString(ULONG iControl, ULONG iListRow, ULONG iListCol, LPCTSTR szListString)
 {
 	if (!IsValidList(iControl)) return;
@@ -1699,7 +1744,7 @@ void CEditor::GetEditBoxStream(ULONG iControl, LPSTREAM lpStreamOut, BOOL bUnico
 	es.dwCookie	= (DWORD_PTR)lpStreamOut;
 
 	cb = m_lpControls[iControl].UI.lpEdit->EditBox.StreamOut(uFormat,es);
-	DebugPrintEx(DBGStream,CLASS,_T("CEditor::GetEditBoxStream"),_T("wrote 0x%X\n"),cb);
+	DebugPrintEx(DBGStream,CLASS,_T("GetEditBoxStream"),_T("wrote 0x%X\n"),cb);
 } // CEditor::GetEditBoxStream
 
 ULONG CEditor::GetHex(ULONG i)
@@ -1709,7 +1754,7 @@ ULONG CEditor::GetHex(ULONG i)
 	return wcstoul(m_lpControls[i].UI.lpEdit->lpszW,NULL,16);
 } // CEditor::GetHex
 
-CString	CEditor::GetStringUseControl(ULONG iControl)
+CString CEditor::GetStringUseControl(ULONG iControl)
 {
 	if (!IsValidEdit(iControl)) return _T("");
 
@@ -1719,7 +1764,7 @@ CString	CEditor::GetStringUseControl(ULONG iControl)
 	return szText;
 } // CEditor::GetStringUseControl
 
-CString	CEditor::GetDropStringUseControl(ULONG iControl)
+CString CEditor::GetDropStringUseControl(ULONG iControl)
 {
 	if (!IsValidDropDown(iControl)) return _T("");
 
@@ -1833,7 +1878,7 @@ void CEditor::SetDropDownSelection(ULONG i,LPCTSTR szText)
 	}
 } // CEditor::SetDropDownSelection
 
-int	CEditor::GetDropDown(ULONG i)
+int CEditor::GetDropDown(ULONG i)
 {
 	if (!IsValidDropDown(i)) return CB_ERR;
 
@@ -1956,7 +2001,7 @@ void CEditor::InitEditFromStream(ULONG iControl, LPSTREAM lpStreamIn, BOOL bUnic
 
 	// read the 'text' stream into control
 	lBytesRead = m_lpControls[iControl].UI.lpEdit->EditBox.StreamIn(uFormat,es);
-	DebugPrintEx(DBGStream,CLASS,_T("CEditor::InitEditFromStream"),_T("read %d bytes from the stream\n"),lBytesRead);
+	DebugPrintEx(DBGStream,CLASS,_T("InitEditFromStream"),_T("read %d bytes from the stream\n"),lBytesRead);
 
 	// Clear the modify bit so this stream appears untouched
 	m_lpControls[iControl].UI.lpEdit->EditBox.SetModify(false);

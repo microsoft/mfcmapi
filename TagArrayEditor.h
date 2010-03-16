@@ -19,12 +19,12 @@ public:
 
 private:
 	// Use this function to implement list editing
-	BOOL	DoListEdit(ULONG ulListNum, int iItem, SortListData* lpData);
-	BOOL	OnInitDialog();
-	void	OnOK();
+	BOOL DoListEdit(ULONG ulListNum, int iItem, SortListData* lpData);
+	BOOL OnInitDialog();
+	void OnOK();
 
-	void	ReadTagArrayToList(ULONG ulListNum);
-	void	WriteListToTagArray(ULONG ulListNum);
+	void ReadTagArrayToList(ULONG ulListNum);
+	void WriteListToTagArray(ULONG ulListNum);
 
 	// source variables
 	LPSPropTagArray	m_lpTagArray;

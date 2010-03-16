@@ -94,11 +94,11 @@ HRESULT CSortListCtrl::Create(CWnd* pCreateParent, ULONG ulFlags, UINT nID, BOOL
 		ulFlags
 		| LVS_REPORT
 		| LVS_SHOWSELALWAYS
-//		| LVS_NOSORTHEADER // Put this back in to kill the 'clickable' headers
+		// | LVS_NOSORTHEADER // Put this back in to kill the 'clickable' headers
 		| WS_TABSTOP
 		| WS_CHILD
-//		| WS_BORDER
-//		| WS_CLIPCHILDREN // if this is passed, the header control doesn't get updated properly
+		// | WS_BORDER
+		// | WS_CLIPCHILDREN // if this is passed, the header control doesn't get updated properly
 		| WS_CLIPSIBLINGS
 		| WS_VISIBLE,
 		CRect(0,0,0,0), // size doesn't matter
@@ -128,9 +128,9 @@ LRESULT CSortListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 
 	switch (message)
 	{
-	// I can handle notify messages for my child header control since I am the parent window
-	// This makes it easy for me to customize the child control to do what I want
-	// I cannot handle notify's heading to my parent though - have to depend on reflection for that
+		// I can handle notify messages for my child header control since I am the parent window
+		// This makes it easy for me to customize the child control to do what I want
+		// I cannot handle notify's heading to my parent though - have to depend on reflection for that
 	case WM_NOTIFY:
 		{
 			LPNMHDR pHdr = (LPNMHDR) lParam;
@@ -165,7 +165,7 @@ LRESULT CSortListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		}
 	case WM_DESTROY:
 		{
-			DeleteAllColumns(false);
+			DeleteAllColumns(true);
 			break;
 		}
 	} // end switch
@@ -388,28 +388,28 @@ void CSortListCtrl::SortClickedColumn()
 		}
 	}
 
-// #define PT_UNSPECIFIED	((ULONG)  0)	/* (Reserved for interface use) type doesn't matter to caller */
-// #define PT_NULL			((ULONG)  1)	/* NULL property value */
-// #define	PT_I2			((ULONG)  2)	/* Signed 16-bit value */
-// #define PT_LONG			((ULONG)  3)	/* Signed 32-bit value */
-// #define	PT_R4			((ULONG)  4)	/* 4-byte floating point */
-// #define PT_DOUBLE		((ULONG)  5)	/* Floating point double */
-// #define PT_CURRENCY		((ULONG)  6)	/* Signed 64-bit int (decimal w/	4 digits right of decimal pt) */
-// #define	PT_APPTIME		((ULONG)  7)	/* Application time */
-// #define PT_ERROR		((ULONG) 10)	/* 32-bit error value */
-// #define PT_BOOLEAN		((ULONG) 11)	/* 16-bit boolean (non-zero true) */
-// #define PT_OBJECT		((ULONG) 13)	/* Embedded object in a property */
-// #define	PT_I8			((ULONG) 20)	/* 8-byte signed integer */
-// #define PT_STRING8		((ULONG) 30)	/* Null terminated 8-bit character string */
-// #define PT_UNICODE		((ULONG) 31)	/* Null terminated Unicode string */
-// #define PT_SYSTIME		((ULONG) 64)	/* FILETIME 64-bit int w/ number of 100ns periods since Jan 1,1601 */
-// #define	PT_CLSID		((ULONG) 72)	/* OLE GUID */
-// #define PT_BINARY		((ULONG) 258)	/* Uninterpreted (counted byte array) */
+	// #define PT_UNSPECIFIED	((ULONG)  0)	/* (Reserved for interface use) type doesn't matter to caller */
+	// #define PT_NULL			((ULONG)  1)	/* NULL property value */
+	// #define	PT_I2			((ULONG)  2)	/* Signed 16-bit value */
+	// #define PT_LONG			((ULONG)  3)	/* Signed 32-bit value */
+	// #define	PT_R4			((ULONG)  4)	/* 4-byte floating point */
+	// #define PT_DOUBLE		((ULONG)  5)	/* Floating point double */
+	// #define PT_CURRENCY		((ULONG)  6)	/* Signed 64-bit int (decimal w/	4 digits right of decimal pt) */
+	// #define	PT_APPTIME		((ULONG)  7)	/* Application time */
+	// #define PT_ERROR		((ULONG) 10)	/* 32-bit error value */
+	// #define PT_BOOLEAN		((ULONG) 11)	/* 16-bit boolean (non-zero true) */
+	// #define PT_OBJECT		((ULONG) 13)	/* Embedded object in a property */
+	// #define	PT_I8			((ULONG) 20)	/* 8-byte signed integer */
+	// #define PT_STRING8		((ULONG) 30)	/* Null terminated 8-bit character string */
+	// #define PT_UNICODE		((ULONG) 31)	/* Null terminated Unicode string */
+	// #define PT_SYSTIME		((ULONG) 64)	/* FILETIME 64-bit int w/ number of 100ns periods since Jan 1,1601 */
+	// #define	PT_CLSID		((ULONG) 72)	/* OLE GUID */
+	// #define PT_BINARY		((ULONG) 258)	/* Uninterpreted (counted byte array) */
 	// Set our sort text
 	LVITEM lvi = {0};
 	lvi.mask = LVIF_PARAM | LVIF_TEXT;
 	lvi.iSubItem = m_iClickedColumn;
-	lvi.cchTextMax = sizeof(szText);
+	lvi.cchTextMax = _countof(szText);
 	lvi.pszText = szText;
 
 	switch(PROP_TYPE(ulPropTag))
@@ -613,36 +613,6 @@ BOOL CSortListCtrl::SetItemText(int nItem, int nSubItem, LPCTSTR lpszText)
 	}
 	return CListCtrl::SetItemText(nItem,nSubItem,lpszText);
 } // CSortListCtrl::SetItemText
-
-void CSortListCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
-{
-	DebugPrintEx(DBGMenu,CLASS,_T("OnKeyDown"),_T("0x%X\n"),nChar);
-
-	ULONG bCtrlPressed = GetKeyState(VK_CONTROL) < 0;
-	ULONG bShiftPressed = GetKeyState(VK_SHIFT) < 0;
-	ULONG bMenuPressed = GetKeyState(VK_MENU) < 0;
-
-	if (!bMenuPressed)
-	{
-		if ('D' == nChar && bCtrlPressed)
-		{
-			if (bShiftPressed)
-			{
-				SetDebugLevel(DBGNoDebug);
-			}
-			else
-				SetDebugLevel(DBGAll);
-		}
-		else if ('H' == nChar && bCtrlPressed)
-		{
-			DisplayAboutDlg(this);
-		}
-		else
-		{
-			CListCtrl::OnKeyDown(nChar,nRepCnt,nFlags);
-		}
-	}
-}
 
 // if asked to select the item after the last item - will select the last item.
 void CSortListCtrl::SetSelectedItem(int iItem)

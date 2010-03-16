@@ -26,7 +26,7 @@ BOOL CSortHeader::Init(CHeaderCtrl *pHeader, HWND hwndParent)
 		return false;
 	}
 	m_hwndParent = hwndParent;
-	m_bTrackingMouse = false;
+	m_bTooltipDisplayed = false;
 
 	RegisterHeaderTooltip();
 
@@ -73,91 +73,96 @@ void CSortHeader::RegisterHeaderTooltip()
 	}
 }
 
+#define GET_X_LPARAM(lp) ((int)(short)LOWORD(lp))
+#define GET_Y_LPARAM(lp) ((int)(short)HIWORD(lp))
 LRESULT CSortHeader::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	HRESULT hRes = S_OK;
 
-	switch (message)
+	if (m_hwndTip)
 	{
-	case WM_MOUSEMOVE:
+		switch (message)
 		{
-			if (m_hwndTip)
+		case WM_MOUSEMOVE:
 			{
-				static int oldX = 0;
-				static int oldY = 0;
-#define GET_X_LPARAM(lp)                        ((int)(short)LOWORD(lp))
-#define GET_Y_LPARAM(lp)                        ((int)(short)HIWORD(lp))
-				int newX = GET_X_LPARAM(lParam);
-				int newY = GET_Y_LPARAM(lParam);
+				// This covers the case where we move from one header to another, but don't leave the control
+				if (m_bTooltipDisplayed)
+				{
+					HDHITTESTINFO hdHitTestInfo = {0};
+					hdHitTestInfo.pt.x = GET_X_LPARAM(lParam);
+					hdHitTestInfo.pt.y = GET_Y_LPARAM(lParam);
 
+					EC_B(::SendMessage(m_hWnd, HDM_HITTEST, 0, (LPARAM) &hdHitTestInfo));
+
+					// Turn off the tooltip if we're not on a column header
+					if (!(hdHitTestInfo.flags & HHT_ONHEADER))
+					{
+						// We were displaying a tooltip, but we're now on empty space in the header. Turn it off.
+						EC_B(::SendMessage(m_hwndTip, TTM_TRACKACTIVATE, false, (LPARAM) (LPTOOLINFO) &m_ti));
+						m_bTooltipDisplayed = false;
+					}
+				}
+				else
+				{
+					TRACKMOUSEEVENT tmEvent = {0};
+					tmEvent.cbSize = sizeof(TRACKMOUSEEVENT);
+					tmEvent.dwFlags = TME_HOVER;
+					tmEvent.hwndTrack = m_hWnd;
+					tmEvent.dwHoverTime = HOVER_DEFAULT;
+
+					EC_B(TrackMouseEvent(&tmEvent));
+				}
+				break;
+			}
+		case WM_MOUSEHOVER:
+			{
 				HDHITTESTINFO hdHitTestInfo = {0};
-
-				hdHitTestInfo.pt.x = newX;
-				hdHitTestInfo.pt.y = newY;
+				hdHitTestInfo.pt.x = GET_X_LPARAM(lParam);
+				hdHitTestInfo.pt.y = GET_Y_LPARAM(lParam);
 
 				EC_B(::SendMessage(m_hWnd, HDM_HITTEST, 0, (LPARAM) &hdHitTestInfo));
 
 				// We only turn on or modify our tooltip if we're on a column header
 				if (hdHitTestInfo.flags & HHT_ONHEADER)
 				{
-					// Make sure the mouse has actually moved. The presence of the ToolTip
-					// causes Windows to send the message continuously.
-					if ((newX != oldX) || (newY != oldY))
+					HDITEM	hdItem = {0};
+					hdItem.mask = HDI_LPARAM;
+
+					EC_B(GetItem(hdHitTestInfo.iItem,&hdItem));
+
+					LPHEADERDATA lpHeaderData = (LPHEADERDATA) hdItem.lParam;
+
+					// This will only display tips if we have a HeaderData structure saved
+					if (lpHeaderData)
 					{
-						oldX = newX;
-						oldY = newY;
+						m_ti.lpszText = lpHeaderData->szTipString;
+						EC_B(::GetCursorPos( &hdHitTestInfo.pt ));
+						EC_B(::SendMessage(m_hwndTip, TTM_TRACKPOSITION, 0, (LPARAM)MAKELPARAM(hdHitTestInfo.pt.x+10, hdHitTestInfo.pt.y+20)));
+						EC_B(::SendMessage(m_hwndTip, TTM_SETTOOLINFO, true, (LPARAM) (LPTOOLINFO) &m_ti));
+						// Ask for notification when the mouse leaves the control
+						TRACKMOUSEEVENT tmEvent = {0};
+						tmEvent.cbSize = sizeof(TRACKMOUSEEVENT);
+						tmEvent.dwFlags = TME_LEAVE;
+						tmEvent.hwndTrack = m_hWnd;
+						EC_B(TrackMouseEvent(&tmEvent));
 
-						HDITEM	hdItem = {0};
-						hdItem.mask = HDI_LPARAM;
-
-						EC_B(GetItem(hdHitTestInfo.iItem,&hdItem));
-
-						LPHEADERDATA lpHeaderData = (LPHEADERDATA) hdItem.lParam;
-
-						// This will only display tips if we have a HeaderData structure saved
-						if (lpHeaderData)
-						{
-							m_ti.lpszText = lpHeaderData->szTipString;
-							EC_B(::GetCursorPos( &hdHitTestInfo.pt ));
-							EC_B(::SendMessage(m_hwndTip, TTM_TRACKPOSITION, 0, (LPARAM)MAKELPARAM(hdHitTestInfo.pt.x+10, hdHitTestInfo.pt.y+20)));
-							EC_B(::SendMessage(m_hwndTip, TTM_SETTOOLINFO, true, (LPARAM) (LPTOOLINFO) &m_ti));
-							if (!m_bTrackingMouse)
-							{
-								// Ask for notification when the mouse leaves the control
-								TRACKMOUSEEVENT tmEvent = {0};
-								tmEvent.cbSize = sizeof(TRACKMOUSEEVENT);
-								tmEvent.dwFlags = TME_LEAVE;
-								tmEvent.hwndTrack = m_hWnd;
-								EC_B(TrackMouseEvent(&tmEvent));
-
-								// Turn on the tooltip
-								EC_B(::SendMessage(m_hwndTip, TTM_TRACKACTIVATE, true, (LPARAM) (LPTOOLINFO) &m_ti));
-								m_bTrackingMouse = true;
-							}
-						}
+						// Turn on the tooltip
+						EC_B(::SendMessage(m_hwndTip, TTM_TRACKACTIVATE, true, (LPARAM) (LPTOOLINFO) &m_ti));
+						m_bTooltipDisplayed = true;
 					}
 				}
-				else if (m_bTrackingMouse)
-				{
-					// We were displaying a tooltip, but we're now on empty space in the header. Turn it off.
-					EC_B(::SendMessage(m_hwndTip, TTM_TRACKACTIVATE, false, (LPARAM) (LPTOOLINFO) &m_ti));
-					m_bTrackingMouse = false;
-				}
+				break;
 			}
-			break;
-		}
-	case WM_MOUSELEAVE:
-		{
-			if (m_hwndTip)
+		case WM_MOUSELEAVE:
 			{
 				// We were displaying a tooltip, but we're now off of the header. Turn it off.
 				EC_B(::SendMessage(m_hwndTip, TTM_TRACKACTIVATE, false, (LPARAM) (LPTOOLINFO) &m_ti));
-				m_bTrackingMouse = false;
+				m_bTooltipDisplayed = false;
+				return NULL;
+				break;
 			}
-			return NULL;
-			break;
-		}
-	} // end switch
+		} // end switch
+	}
 	return CHeaderCtrl::WindowProc(message,wParam,lParam);
 }
 

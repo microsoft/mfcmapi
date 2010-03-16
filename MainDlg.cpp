@@ -35,16 +35,16 @@ CMainDlg::CMainDlg(
 				   CMapiObjects* lpMapiObjects
 				   ):
 CContentsTableDlg(
-						  pParentWnd,
-						  lpMapiObjects,
-						  ID_PRODUCTNAME,
-						  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
-						  NULL,
-						  (LPSPropTagArray) &sptDEFCols,
-						  NUMDEFCOLUMNS,
-						  DEFColumns,
-						  IDR_MENU_MAIN_POPUP,
-						  MENU_CONTEXT_MAIN)
+				  pParentWnd,
+				  lpMapiObjects,
+				  ID_PRODUCTNAME,
+				  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+				  NULL,
+				  (LPSPropTagArray) &sptDEFCols,
+				  NUMDEFCOLUMNS,
+				  DEFColumns,
+				  IDR_MENU_MAIN_POPUP,
+				  MENU_CONTEXT_MAIN)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 
@@ -355,90 +355,86 @@ void CMainDlg::OnOpenDefaultMessageStore()
 	LPMAPISESSION lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
-	EC_H(OpenDefaultMessageStore(
-		lpMAPISession,
-		&lpMDB));
+	EC_H(OpenDefaultMessageStore(lpMAPISession, &lpMDB));
+	if (!lpMDB) return;
 
-	if (lpMDB)
+	// Now that we have a message store, try to open the Admin version of it
+	ULONG ulFlags = NULL;
+	if (StoreSupportsManageStore(lpMDB))
 	{
-		ULONG ulFlags = NULL;
-		if (StoreSupportsManageStore(lpMDB))
+		CEditor MyPrompt(
+			this,
+			IDS_OPENDEFMSGSTORE,
+			IDS_OPENWITHFLAGSPROMPT,
+			1,
+			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+		MyPrompt.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS),true));
+		MyPrompt.InitSingleLine(0,IDS_CREATESTORENTRYIDFLAGS,NULL,false);
+		MyPrompt.SetHex(0,NULL);
+		WC_H(MyPrompt.DisplayDialog());
+		if (S_OK == hRes)
 		{
-			CEditor MyPrompt(
-				this,
-				IDS_OPENDEFMSGSTORE,
-				IDS_OPENWITHFLAGSPROMPT,
-				1,
-				CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-			MyPrompt.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS),true));
-			MyPrompt.InitSingleLine(0,IDS_CREATESTORENTRYIDFLAGS,NULL,false);
-			MyPrompt.SetHex(0,NULL);
-			WC_H(MyPrompt.DisplayDialog());
-			if (S_OK == hRes)
-			{
-				ulFlags = MyPrompt.GetHex(0);
-			}
+			ulFlags = MyPrompt.GetHex(0);
 		}
-		if (ulFlags)
+	}
+	if (ulFlags)
+	{
+		ULONG				cbEntryID = 0;
+		LPENTRYID			lpEntryID = NULL;
+		LPMAPIPROP			lpIdentity = NULL;
+		LPSPropValue		lpMailboxName = NULL;
+
+		EC_H(lpMAPISession->QueryIdentity(
+			&cbEntryID,
+			&lpEntryID));
+
+		if (lpEntryID)
 		{
-			ULONG				cbEntryID = 0;
-			LPENTRYID			lpEntryID = NULL;
-			LPMAPIPROP			lpIdentity = NULL;
-			LPSPropValue		lpMailboxName = NULL;
-
-			EC_H(lpMAPISession->QueryIdentity(
-				&cbEntryID,
-				&lpEntryID));
-
-			if (lpEntryID)
+			EC_H(CallOpenEntry(
+				NULL,
+				NULL,
+				NULL,
+				lpMAPISession,
+				cbEntryID,
+				lpEntryID,
+				NULL,
+				NULL,
+				NULL,
+				(LPUNKNOWN*)&lpIdentity));
+			if (lpIdentity)
 			{
-				EC_H(CallOpenEntry(
-					NULL,
-					NULL,
-					NULL,
-					lpMAPISession,
-					cbEntryID,
-					lpEntryID,
-					NULL,
-					NULL,
-					NULL,
-					(LPUNKNOWN*)&lpIdentity));
-				if (lpIdentity)
+				EC_H(HrGetOneProp(
+					lpIdentity,
+					PR_EMAIL_ADDRESS,
+					&lpMailboxName));
+
+				if (CheckStringProp(lpMailboxName,PT_TSTRING))
 				{
-					EC_H(HrGetOneProp(
-						lpIdentity,
-						PR_EMAIL_ADDRESS,
-						&lpMailboxName));
-
-					if (CheckStringProp(lpMailboxName,PT_TSTRING))
+					LPMDB lpAdminMDB = NULL;
+					EC_H(OpenOtherUsersMailbox(
+						lpMAPISession,
+						lpMDB,
+						NULL,
+						lpMailboxName->Value.LPSZ,
+						ulFlags,
+						&lpAdminMDB));
+					if (lpAdminMDB)
 					{
-						LPMDB lpAdminMDB = NULL;
-						EC_H(OpenOtherUsersMailbox(
-							lpMAPISession,
-							lpMDB,
+						EC_H(DisplayObject(
+							lpAdminMDB,
 							NULL,
-							lpMailboxName->Value.LPSZ,
-							ulFlags,
-							&lpAdminMDB));
-						lpMDB->Release();
-						lpMDB = lpAdminMDB;
+							otStore,
+							this));
+						lpAdminMDB->Release();
 					}
-					lpIdentity->Release();
 				}
-				MAPIFreeBuffer(lpEntryID);
+				lpIdentity->Release();
 			}
+			MAPIFreeBuffer(lpEntryID);
 		}
 	}
-	if (lpMDB)
-	{
-		EC_H(DisplayObject(
-			lpMDB,
-			NULL,
-			otStore,
-			this));
 
-		lpMDB->Release();
-	}
+	if (lpMDB) lpMDB->Release();
 } // CMainDlg::OnOpenDefaultMessageStore
 
 void CMainDlg::OnOpenMessageStoreEID()
@@ -567,49 +563,46 @@ void CMainDlg::OnOpenMailboxWithDN()
 
 	EC_H(GetServerName(lpMAPISession, &szServerName));
 
-	EC_H(OpenDefaultMessageStore(
-		lpMAPISession,
-		&lpMDB));
+	EC_H(OpenDefaultMessageStore(lpMAPISession, &lpMDB));
+	if (!lpMDB) return;
 
-	if (lpMDB)
+	if (StoreSupportsManageStore(lpMDB))
 	{
-		if (StoreSupportsManageStore(lpMDB))
+		CEditor MyPrompt(
+			this,
+			IDS_OPENMBDN,
+			IDS_OPENMBDNPROMPT,
+			3,
+			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+		MyPrompt.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS),true));
+		MyPrompt.InitSingleLineSz(0,IDS_SERVERNAME,szServerName,false);
+		MyPrompt.InitSingleLine(1,IDS_USERDN,NULL,false);
+		MyPrompt.InitSingleLine(2,IDS_CREATESTORENTRYIDFLAGS,NULL,false);
+		MyPrompt.SetHex(2,OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP);
+		WC_H(MyPrompt.DisplayDialog());
+		if (S_OK == hRes)
 		{
-			CEditor MyPrompt(
-				this,
-				IDS_OPENMBDN,
-				IDS_OPENMBDNPROMPT,
-				3,
-				CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-			MyPrompt.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS),true));
-			MyPrompt.InitSingleLineSz(0,IDS_SERVERNAME,szServerName,false);
-			MyPrompt.InitSingleLine(1,IDS_USERDN,NULL,false);
-			MyPrompt.InitSingleLine(2,IDS_CREATESTORENTRYIDFLAGS,NULL,false);
-			MyPrompt.SetHex(2,OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP);
-			WC_H(MyPrompt.DisplayDialog());
-			if (S_OK == hRes)
+			EC_H(OpenOtherUsersMailbox(
+				lpMAPISession,
+				lpMDB,
+				MyPrompt.GetString(0),
+				MyPrompt.GetString(1),
+				MyPrompt.GetHex(2),
+				&lpOtherMDB));
+			if (lpOtherMDB)
 			{
-				EC_H(OpenOtherUsersMailbox(
-					lpMAPISession,
-					lpMDB,
-					MyPrompt.GetString(0),
-					MyPrompt.GetString(1),
-					MyPrompt.GetHex(2),
-					&lpOtherMDB));
-				if (lpOtherMDB)
-				{
-					EC_H(DisplayObject(
-						lpOtherMDB,
-						NULL,
-						otStore,
-						this));
+				EC_H(DisplayObject(
+					lpOtherMDB,
+					NULL,
+					otStore,
+					this));
 
-					lpOtherMDB->Release();
-				}
+				lpOtherMDB->Release();
 			}
 		}
-		lpMDB->Release();
 	}
+	lpMDB->Release();
+
 	MAPIFreeBuffer(szServerName);
 } // CMainDlg::OnOpenMailboxWithDN
 
@@ -641,7 +634,7 @@ void CMainDlg::OnOpenMessageStoreTable()
 void CMainDlg::OnOpenOtherUsersMailboxFromGAL()
 {
 	HRESULT			hRes			= S_OK;
-	LPMDB			lpMailboxMDB	= NULL;	 // Ptr to any another's msg store interface.
+	LPMDB			lpMailboxMDB	= NULL; // Ptr to any another's msg store interface.
 
 	if (!m_lpMapiObjects) return;
 
@@ -893,17 +886,17 @@ void CMainDlg::OnLogonWithFlags()
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
 	{
-			CString szProfile = MyData.GetString(0);
-			LPCTSTR lpszProfile = NULL;
+		CString szProfile = MyData.GetString(0);
+		LPCTSTR lpszProfile = NULL;
 
-			if (!szProfile.IsEmpty())
-			{
-				lpszProfile = (LPCTSTR)szProfile;
-			}
-			m_lpMapiObjects->MAPILogonEx(
-				m_hWnd, // handle of current window (from def'n of CWnd)
-				(LPTSTR) lpszProfile, // profile name
-				MyData.GetHex(1));
+		if (!szProfile.IsEmpty())
+		{
+			lpszProfile = (LPCTSTR)szProfile;
+		}
+		m_lpMapiObjects->MAPILogonEx(
+			m_hWnd, // handle of current window (from def'n of CWnd)
+			(LPTSTR) lpszProfile, // profile name
+			MyData.GetHex(1));
 	}
 	else
 	{
@@ -932,7 +925,7 @@ void CMainDlg::OnSelectForm()
 		EC_D(iRet,LoadStringA(GetModuleHandle(NULL),
 			IDS_SELECTFORMPROPS,
 			szTitle,
-			sizeof(szTitle)/sizeof(CHAR)));
+			_countof(szTitle)));
 #pragma warning(push)
 #pragma warning(disable:4616)
 #pragma warning(disable:6276)
@@ -1739,9 +1732,9 @@ void CMainDlg::OnConvertEMLToMSG()
 } // CMainDlg::OnConvertEMLToMSG
 
 void CMainDlg::HandleAddInMenuSingle(
-									   LPADDINMENUPARAMS lpParams,
-									   LPMAPIPROP lpMAPIProp,
-									   LPMAPICONTAINER /*lpContainer*/)
+									 LPADDINMENUPARAMS lpParams,
+									 LPMAPIPROP lpMAPIProp,
+									 LPMAPICONTAINER /*lpContainer*/)
 {
 	if (lpParams)
 	{

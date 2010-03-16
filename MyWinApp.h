@@ -7,6 +7,8 @@
 
 class CMyWinApp : public CWinApp
 {
+public:
+	CMyWinApp();
 private:
 	BOOL InitInstance();
 };

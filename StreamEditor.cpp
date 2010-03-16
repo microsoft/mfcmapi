@@ -3,10 +3,10 @@
 
 #include "stdafx.h"
 #include "StreamEditor.h"
-#include "InterpretProp.h"
 #include "InterpretProp2.h"
 #include "MAPIFunctions.h"
 #include "PropTagArray.h"
+#include "SmartView.h"
 
 enum __StreamEditorTypes
 {
@@ -19,17 +19,17 @@ static TCHAR* CLASS = _T("CStreamEditor");
 // Create an editor for a MAPI property - can be used to initialize stream and rtf stream editing as well
 // Takes LPMAPIPROP and ulPropTag as input - will pull SPropValue from the LPMAPIPROP
 CStreamEditor::CStreamEditor(
-								 CWnd* pParentWnd,
-								 UINT uidTitle,
-								 UINT uidPrompt,
-								 LPMAPIPROP lpMAPIProp,
-								 ULONG ulPropTag,
-								 BOOL bIsAB,
-								 BOOL bEditPropAsRTF,
-								 BOOL bUseWrapEx,
-								 ULONG ulRTFFlags,
-								 ULONG ulInCodePage,
-								 ULONG ulOutCodePage):
+							 CWnd* pParentWnd,
+							 UINT uidTitle,
+							 UINT uidPrompt,
+							 LPMAPIPROP lpMAPIProp,
+							 ULONG ulPropTag,
+							 BOOL bIsAB,
+							 BOOL bEditPropAsRTF,
+							 BOOL bUseWrapEx,
+							 ULONG ulRTFFlags,
+							 ULONG ulInCodePage,
+							 ULONG ulOutCodePage):
 CEditor(pParentWnd,uidTitle,uidPrompt,0,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL)
 {
 	TRACE_CONSTRUCTOR(CLASS);

@@ -425,9 +425,10 @@ void InvokeAddInMenu(LPADDINMENUPARAMS lpParams)
 			szCallMenu));
 	}
 
-	if (!lpParams->lpAddInMenu->lpAddIn->pfnCallMenu){
-			DebugPrint(DBGAddInPlumbing,_T("InvokeAddInMenu: CallMenu not found\n"));
-			return;
+	if (!lpParams->lpAddInMenu->lpAddIn->pfnCallMenu)
+	{
+		DebugPrint(DBGAddInPlumbing,_T("InvokeAddInMenu: CallMenu not found\n"));
+		return;
 	}
 
 	WC_H(lpParams->lpAddInMenu->lpAddIn->pfnCallMenu(lpParams));

@@ -20,11 +20,11 @@ CFileDialogExA::~CFileDialogExA()
 } // CFileDialogExA::~CFileDialogExA
 
 INT_PTR CFileDialogExA::DisplayDialog(BOOL bOpenFileDialog, // TRUE for open, FALSE for FileSaveAs
-		LPCSTR lpszDefExt,
-		LPCSTR lpszFileName,
-		DWORD dwFlags,
-		LPCSTR lpszFilter,
-		CWnd* pParentWnd)
+									  LPCSTR lpszDefExt,
+									  LPCSTR lpszFileName,
+									  DWORD dwFlags,
+									  LPCSTR lpszFilter,
+									  CWnd* pParentWnd)
 {
 	m_szBigBuff = NULL;
 	m_szNextPath = NULL;
@@ -155,11 +155,11 @@ CFileDialogExW::~CFileDialogExW()
 } // CFileDialogExW::~CFileDialogExW
 
 INT_PTR CFileDialogExW::DisplayDialog(BOOL bOpenFileDialog, // TRUE for open, FALSE for FileSaveAs
-		LPCWSTR lpszDefExt,
-		LPCWSTR lpszFileName,
-		DWORD dwFlags,
-		LPCWSTR lpszFilter,
-		CWnd* pParentWnd)
+									  LPCWSTR lpszDefExt,
+									  LPCWSTR lpszFileName,
+									  DWORD dwFlags,
+									  LPCWSTR lpszFilter,
+									  CWnd* pParentWnd)
 {
 	m_szBigBuff = NULL;
 	m_szNextPath = NULL;

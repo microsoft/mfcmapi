@@ -6,6 +6,7 @@
 #include "InterpretProp.h"
 #include "InterpretProp2.h"
 #include "PropTagArray.h"
+#include "DbgView.h"
 
 FILE* g_fDebugFile = NULL;
 
@@ -34,10 +35,14 @@ void CloseDebugFile()
 	g_fDebugFile = NULL;
 }
 
+ULONG GetDebugLevel()
+{
+	return RegKeys[regkeyDEBUG_TAG].ulCurDWORD;
+}
+
 void SetDebugLevel(ULONG ulDbgLvl)
 {
 	RegKeys[regkeyDEBUG_TAG].ulCurDWORD = ulDbgLvl;
-	DebugPrintVersion(DBGVersionBanner);
 }
 
 // We've got our 'new' value here and also a debug output file name
@@ -82,8 +87,8 @@ FILE* OpenFile(LPCWSTR szFileName,BOOL bNewFile)
 	LPCWSTR szParams = L"a+"; // STRING_OK
 	if (bNewFile) szParams = L"w"; // STRING_OK
 
-// _wfopen has been deprecated, but older compilers do not have _wfopen_s
-// Use the replacement when we're on VS 2005 or higher.
+	// _wfopen has been deprecated, but older compilers do not have _wfopen_s
+	// Use the replacement when we're on VS 2005 or higher.
 #if defined(_MSC_VER) && (_MSC_VER >= 1400)
 	_wfopen_s(&fOut,szFileName,szParams);
 #else
@@ -163,9 +168,11 @@ void _Output(ULONG ulDbgLvl, FILE* fFile, BOOL bPrintThreadTime, LPCTSTR szMsg)
 				stLocalTime.wYear,
 				ulDbgLvl));
 			OutputDebugString(szThreadTime);
+			OutputToDbgView(szThreadTime);
 		}
 
 		OutputDebugString(szMsg);
+		OutputToDbgView(szMsg);
 
 		// print to to our debug output log file
 		if (RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD && g_fDebugFile)
@@ -693,7 +700,7 @@ void _OutputNotifications(ULONG ulDbgLvl, FILE* fFile, ULONG cNotify, LPNOTIFICA
 				}
 			}
 			break;
- 		}
+		}
 	}
 	Outputf(ulDbgLvl,fFile,true,_T("End dumping notifications.\n"));
 }

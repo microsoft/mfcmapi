@@ -26,21 +26,21 @@ static TCHAR* CLASS = _T("CContentsTableDlg");
 
 
 CContentsTableDlg::CContentsTableDlg(
-													 CParentWnd* pParentWnd,
-													 CMapiObjects* lpMapiObjects,
-													 UINT uidTitle,
-													 __mfcmapiCreateDialogEnum bCreateDialog,
-													 LPMAPITABLE lpContentsTable,
-													 LPSPropTagArray	sptExtraColumnTags,
-													 ULONG iNumExtraDisplayColumns,
-													 TagNames *lpExtraDisplayColumns,
-													 ULONG nIDContextMenu,
-													 ULONG ulAddInContext
-													 ):
+									 CParentWnd* pParentWnd,
+									 CMapiObjects* lpMapiObjects,
+									 UINT uidTitle,
+									 __mfcmapiCreateDialogEnum bCreateDialog,
+									 LPMAPITABLE lpContentsTable,
+									 LPSPropTagArray	sptExtraColumnTags,
+									 ULONG iNumExtraDisplayColumns,
+									 TagNames *lpExtraDisplayColumns,
+									 ULONG nIDContextMenu,
+									 ULONG ulAddInContext
+									 ):
 CBaseDialog(
-		pParentWnd,
-		lpMapiObjects,
-		ulAddInContext)
+			pParentWnd,
+			lpMapiObjects,
+			ulAddInContext)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	if (NULL != uidTitle)
@@ -692,10 +692,10 @@ void CContentsTableDlg::OnSetColumns()
 {
 	if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
 	m_lpContentsTableListCtrl->DoSetColumns(
-			false,
-			true,
-			true,
-			true);
+		false,
+		true,
+		true,
+		true);
 } // CContentsTableDlg::OnSetColumns
 
 void CContentsTableDlg::OnGetStatus()
@@ -771,13 +771,13 @@ void CContentsTableDlg::OnSortTable()
 					CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 				UINT uidDropDown[] = {
 					IDS_DDTABLESORTASCEND,
-						IDS_DDTABLESORTDESCEND,
-						IDS_DDTABLESORTCOMBINE
+					IDS_DDTABLESORTDESCEND,
+					IDS_DDTABLESORTCOMBINE
 				};
 				if (i != 0 && i < cCategories)
-					MySortOrderDlg.InitDropDown(0,IDS_SORTORDER,sizeof(uidDropDown)/sizeof(UINT),uidDropDown,true);
+					MySortOrderDlg.InitDropDown(0,IDS_SORTORDER,_countof(uidDropDown),uidDropDown,true);
 				else
-					MySortOrderDlg.InitDropDown(0,IDS_SORTORDER,sizeof(uidDropDown)/sizeof(UINT) - 1,uidDropDown,true);
+					MySortOrderDlg.InitDropDown(0,IDS_SORTORDER,_countof(uidDropDown) - 1,uidDropDown,true);
 
 				WC_H(MySortOrderDlg.DisplayDialog());
 				if (S_OK == hRes)
@@ -976,9 +976,9 @@ BOOL CContentsTableDlg::HandleAddInMenu(WORD wMenuSelect)
 } // CContentsTableDlg::HandleAddInMenu
 
 void CContentsTableDlg::HandleAddInMenuSingle(
-									   LPADDINMENUPARAMS lpParams,
-									   LPMAPIPROP lpMAPIProp,
-									   LPMAPICONTAINER /*lpContainer*/)
+	LPADDINMENUPARAMS lpParams,
+	LPMAPIPROP lpMAPIProp,
+	LPMAPICONTAINER /*lpContainer*/)
 {
 	if (lpParams)
 	{

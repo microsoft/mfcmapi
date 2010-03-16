@@ -3,14 +3,12 @@
 
 #include "stdafx.h"
 #include "HexEditor.h"
-#include "InterpretProp.h"
-#include "MAPIFunctions.h"
-#include "InterpretProp2.h"
 #include "ParentWnd.h"
+#include "SmartView.h"
 
 static TCHAR* CLASS = _T("CHexEditor");
 
-enum __PropTagFields
+enum __HexEditorFields
 {
 	HEXED_ANSI,
 	HEXED_UNICODE,
