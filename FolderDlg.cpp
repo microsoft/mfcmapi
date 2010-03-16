@@ -37,16 +37,16 @@ CFolderDlg::CFolderDlg(
 					   ULONG ulDisplayFlags
 					   ):
 CContentsTableDlg(
-						  pParentWnd,
-						  lpMapiObjects,
-						  IDS_FOLDER,
-						  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
-						  NULL,
-						  (LPSPropTagArray) &sptMSGCols,
-						  NUMMSGCOLUMNS,
-						  MSGColumns,
-						  IDR_MENU_FOLDER_POPUP,
-						  MENU_CONTEXT_FOLDER_CONTENTS)
+				  pParentWnd,
+				  lpMapiObjects,
+				  IDS_FOLDER,
+				  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+				  NULL,
+				  (LPSPropTagArray) &sptMSGCols,
+				  NUMMSGCOLUMNS,
+				  MSGColumns,
+				  IDR_MENU_FOLDER_POPUP,
+				  MENU_CONTEXT_FOLDER_CONTENTS)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	m_ulDisplayFlags = ulDisplayFlags;
@@ -408,9 +408,9 @@ BOOL CFolderDlg::HandlePaste()
 	MyData.InitCheck(0,IDS_MESSAGEMOVE,false,false);
 	UINT uidDropDown[] = {
 		IDS_DDCOPYMESSAGES,
-			IDS_DDCOPYTO
+		IDS_DDCOPYTO
 	};
-	MyData.InitDropDown(1,IDS_COPYINTERFACE,sizeof(uidDropDown)/sizeof(UINT),uidDropDown,true);
+	MyData.InitDropDown(1,IDS_COPYINTERFACE,_countof(uidDropDown),uidDropDown,true);
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -574,8 +574,8 @@ void CFolderDlg::OnDeleteAttachments()
 		}
 
 		int iItem = m_lpContentsTableListCtrl->GetNextItem(
-				-1,
-				LVNI_SELECTED);
+			-1,
+			LVNI_SELECTED);
 
 		while (-1 != iItem)
 		{
@@ -595,8 +595,8 @@ void CFolderDlg::OnDeleteAttachments()
 			}
 
 			iItem = m_lpContentsTableListCtrl->GetNextItem(
-					iItem,
-					LVNI_SELECTED);
+				iItem,
+				LVNI_SELECTED);
 		}
 	}
 } // CFolderDlg::OnDeleteAttachments
@@ -612,98 +612,93 @@ void CFolderDlg::OnDeleteSelectedItem()
 	LPMAPISESSION	lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
-	EC_H(OpenDefaultMessageStore(
-		lpMAPISession,
-		&lpMDB));
+	EC_H(OpenDefaultMessageStore(lpMAPISession, &lpMDB));
+	if (!lpMDB) return;
 
-	if (lpMDB)
+	BOOL	bMove = false;
+	ULONG	ulFlag = MESSAGE_DIALOG;
+
+	if (m_ulDisplayFlags & dfDeleted)
 	{
-		BOOL	bMove = false;
-		ULONG	ulFlag = MESSAGE_DIALOG;
+		ulFlag |= DELETE_HARD_DELETE;
+	}
+	else
+	{
+		BOOL bShift = !(GetKeyState(VK_SHIFT) < 0);
 
-		if (m_ulDisplayFlags & dfDeleted)
+		CEditor MyData(
+			this,
+			IDS_DELETEITEM,
+			IDS_DELETEITEMPROMPT,
+			1,
+			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+		UINT uidDropDown[] = {
+			IDS_DDDELETETODELETED,
+			IDS_DDDELETETORETENTION,
+			IDS_DDDELETEHARDDELETE
+		};
+
+		if (bShift)
+			MyData.InitDropDown(0,IDS_DELSTYLE,_countof(uidDropDown),uidDropDown,true);
+		else
+			MyData.InitDropDown(0,IDS_DELSTYLE,_countof(uidDropDown) - 1,&uidDropDown[1],true);
+
+		WC_H(MyData.DisplayDialog());
+
+		if (bShift)
 		{
-			ulFlag |= DELETE_HARD_DELETE;
+			switch(MyData.GetDropDown(0))
+			{
+			case 0:
+				bMove = true;
+				break;
+			case 2:
+				ulFlag |= DELETE_HARD_DELETE;
+				break;
+			}
 		}
 		else
 		{
-			BOOL bShift = !(GetKeyState(VK_SHIFT) < 0);
-
-			CEditor MyData(
-				this,
-				IDS_DELETEITEM,
-				IDS_DELETEITEMPROMPT,
-				1,
-				CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-			UINT uidDropDown[] = {
-				IDS_DDDELETETODELETED,
-					IDS_DDDELETETORETENTION,
-					IDS_DDDELETEHARDDELETE
-			};
-
-			if (bShift)
-				MyData.InitDropDown(0,IDS_DELSTYLE,sizeof(uidDropDown)/sizeof(UINT),uidDropDown,true);
-			else
-				MyData.InitDropDown(0,IDS_DELSTYLE,sizeof(uidDropDown)/sizeof(UINT) - 1,&uidDropDown[1],true);
-
-			WC_H(MyData.DisplayDialog());
-
-			if (bShift)
-			{
-				switch(MyData.GetDropDown(0))
-				{
-				case 0:
-					bMove = true;
-					break;
-				case 2:
-					ulFlag |= DELETE_HARD_DELETE;
-					break;
-				}
-			}
-			else
-			{
-				if (1 == MyData.GetDropDown(0)) ulFlag |= DELETE_HARD_DELETE;
-			}
+			if (1 == MyData.GetDropDown(0)) ulFlag |= DELETE_HARD_DELETE;
 		}
-
-		if (S_OK == hRes)
-		{
-			LPENTRYLIST lpEIDs = NULL;
-
-			EC_H(m_lpContentsTableListCtrl->GetSelectedItemEIDs(&lpEIDs));
-
-			if (bMove)
-			{
-				EC_H(DeleteToDeletedItems(
-					lpMDB,
-					(LPMAPIFOLDER) m_lpContainer,
-					lpEIDs,
-					m_hWnd));
-			}
-			else
-			{
-				LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIFolder::DeleteMessages"), m_hWnd); // STRING_OK
-
-				if(lpProgress)
-					ulFlag |= MESSAGE_DIALOG;
-
-				EC_H(((LPMAPIFOLDER) m_lpContainer)->DeleteMessages(
-					lpEIDs, // list of messages to delete
-					lpProgress ? (ULONG_PTR)m_hWnd : NULL,
-					lpProgress,
-					ulFlag));
-
-				if(lpProgress)
-					lpProgress->Release();
-
-				lpProgress = NULL;
-			}
-			MAPIFreeBuffer(lpEIDs);
-		}
-
-		lpMDB->Release();
 	}
-	return;
+
+	if (S_OK == hRes)
+	{
+		LPENTRYLIST lpEIDs = NULL;
+
+		EC_H(m_lpContentsTableListCtrl->GetSelectedItemEIDs(&lpEIDs));
+
+		if (bMove)
+		{
+			EC_H(DeleteToDeletedItems(
+				lpMDB,
+				(LPMAPIFOLDER) m_lpContainer,
+				lpEIDs,
+				m_hWnd));
+		}
+		else
+		{
+			LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIFolder::DeleteMessages"), m_hWnd); // STRING_OK
+
+			if(lpProgress)
+				ulFlag |= MESSAGE_DIALOG;
+
+			EC_H(((LPMAPIFOLDER) m_lpContainer)->DeleteMessages(
+				lpEIDs, // list of messages to delete
+				lpProgress ? (ULONG_PTR)m_hWnd : NULL,
+				lpProgress,
+				ulFlag));
+
+			if(lpProgress)
+				lpProgress->Release();
+
+			lpProgress = NULL;
+		}
+		MAPIFreeBuffer(lpEIDs);
+	}
+
+	lpMDB->Release();
 } // CFolderDlg::OnDeleteSelectedItem
 
 void CFolderDlg::OnGetPropsUsingLongTermEID()
@@ -785,9 +780,9 @@ void CFolderDlg::OnLoadFromMSG()
 
 		UINT uidDropDown[] = {
 			IDS_DDLOADTOFOLDER,
-				IDS_DDDISPLAYPROPSONLY
+			IDS_DDDISPLAYPROPSONLY
 		};
-		MyData.InitDropDown(0,IDS_LOADSTYLE,sizeof(uidDropDown)/sizeof(UINT),uidDropDown,true);
+		MyData.InitDropDown(0,IDS_LOADSTYLE,_countof(uidDropDown),uidDropDown,true);
 
 		WC_H(MyData.DisplayDialog());
 		if (S_OK == hRes)
@@ -858,7 +853,7 @@ void CFolderDlg::OnSelectForm()
 		EC_D(iRet,LoadStringA(GetModuleHandle(NULL),
 			IDS_SELECTFORMCREATE,
 			szTitle,
-			sizeof(szTitle)/sizeof(CHAR)));
+			_countof(szTitle)));
 #pragma warning(push)
 #pragma warning(disable:4616)
 #pragma warning(disable:6276)
@@ -1048,10 +1043,10 @@ void CFolderDlg::OnNewCustomForm()
 			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 		UINT uidDropDown[] = {
 			IDS_DDENTERFORMCLASS,
-				IDS_DDFOLDERFORMLIBRARY,
-				IDS_DDORGFORMLIBRARY
+			IDS_DDFOLDERFORMLIBRARY,
+			IDS_DDORGFORMLIBRARY
 		};
-		MyPrompt1.InitDropDown(0,IDS_LOCATIONOFFORM,sizeof(uidDropDown)/sizeof(UINT),uidDropDown,true);
+		MyPrompt1.InitDropDown(0,IDS_LOCATIONOFFORM,_countof(uidDropDown),uidDropDown,true);
 
 		WC_H(MyPrompt1.DisplayDialog());
 
@@ -1096,7 +1091,7 @@ void CFolderDlg::OnNewCustomForm()
 						EC_D(iRet,LoadStringA(GetModuleHandle(NULL),
 							IDS_SELECTFORMCREATE,
 							szTitle,
-							sizeof(szTitle)/sizeof(CHAR)));
+							_countof(szTitle)));
 #pragma warning(push)
 #pragma warning(disable:4616)
 #pragma warning(disable:6276)
@@ -1154,23 +1149,32 @@ HRESULT CFolderDlg::OnOpenModal(int iItem, SortListData* /*lpData*/)
 	LPMAPISESSION lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (lpMAPISession)
 	{
-		EC_H(OpenItemProp(
-			iItem,
-			mfcmapiREQUEST_MODIFY,
-			(LPMAPIPROP*)&lpMessage));
-		if (lpMessage)
-		{
-			EC_H(OpenMessageModal(
-				(LPMAPIFOLDER) m_lpContainer,
-				lpMAPISession,
-				lpMDB,
-				lpMessage));
+		// Before we open the message, make sure the MAPI Form Manager is implemented
+		LPMAPIFORMMGR lpFormMgr = NULL;
+		WC_H(MAPIOpenFormMgr(lpMAPISession,&lpFormMgr));
+		hRes = S_OK; // Ditch the error if we got one
 
-			lpMessage->Release();
+		if (lpFormMgr)
+		{
+			EC_H(OpenItemProp(
+				iItem,
+				mfcmapiREQUEST_MODIFY,
+				(LPMAPIPROP*)&lpMessage));
+			if (lpMessage)
+			{
+				EC_H(OpenMessageModal(
+					(LPMAPIFOLDER) m_lpContainer,
+					lpMAPISession,
+					lpMDB,
+					lpMessage));
+
+				lpMessage->Release();
+			}
+			lpFormMgr->Release();
 		}
 	}
 	return hRes;
-}
+} // CFolderDlg::OnOpenModal
 
 HRESULT CFolderDlg::OnOpenNonModal(int iItem, SortListData* /*lpData*/)
 {
@@ -1187,25 +1191,34 @@ HRESULT CFolderDlg::OnOpenNonModal(int iItem, SortListData* /*lpData*/)
 	LPMAPISESSION lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (lpMAPISession)
 	{
-		EC_H(OpenItemProp(
-			iItem,
-			mfcmapiREQUEST_MODIFY,
-			(LPMAPIPROP*)&lpMessage));
+		// Before we open the message, make sure the MAPI Form Manager is implemented
+		LPMAPIFORMMGR lpFormMgr = NULL;
+		WC_H(MAPIOpenFormMgr(lpMAPISession,&lpFormMgr));
+		hRes = S_OK; // Ditch the error if we got one
 
-		if (lpMessage)
+		if (lpFormMgr)
 		{
-			EC_H(OpenMessageNonModal(
-				m_hWnd,
-				lpMDB,
-				lpMAPISession,
-				(LPMAPIFOLDER) m_lpContainer,
-				m_lpContentsTableListCtrl,
+			EC_H(OpenItemProp(
 				iItem,
-				lpMessage,
-				EXCHIVERB_OPEN,
-				NULL));
+				mfcmapiREQUEST_MODIFY,
+				(LPMAPIPROP*)&lpMessage));
 
-			lpMessage->Release();
+			if (lpMessage)
+			{
+				WC_H(OpenMessageNonModal(
+					m_hWnd,
+					lpMDB,
+					lpMAPISession,
+					(LPMAPIFOLDER) m_lpContainer,
+					m_lpContentsTableListCtrl,
+					iItem,
+					lpMessage,
+					EXCHIVERB_OPEN,
+					NULL));
+
+				lpMessage->Release();
+			}
+			lpFormMgr->Release();
 		}
 	}
 	return hRes;
@@ -1495,13 +1508,13 @@ void CFolderDlg::OnSaveMessageToFile()
 
 	UINT uidDropDown[] = {
 		IDS_DDTEXTFILE,
-			IDS_DDMSGFILEANSI,
-			IDS_DDMSGFILEUNICODE,
-			IDS_DDEMLFILE,
-			IDS_DDEMLFILEUSINGICONVERTERSESSION,
-			IDS_DDTNEFFILE
+		IDS_DDMSGFILEANSI,
+		IDS_DDMSGFILEUNICODE,
+		IDS_DDEMLFILE,
+		IDS_DDEMLFILEUSINGICONVERTERSESSION,
+		IDS_DDTNEFFILE
 	};
-	MyData.InitDropDown(0,IDS_FORMATTOSAVEMESSAGE,sizeof(uidDropDown)/sizeof(UINT),uidDropDown,true);
+	MyData.InitDropDown(0,IDS_FORMATTOSAVEMESSAGE,_countof(uidDropDown),uidDropDown,true);
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
 	{

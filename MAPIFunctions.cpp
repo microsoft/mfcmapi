@@ -31,16 +31,16 @@
 */
 
 HRESULT CallOpenEntry(
-						LPMDB lpMDB,
-						LPADRBOOK lpAB,
-						LPMAPICONTAINER lpContainer,
-						LPMAPISESSION lpMAPISession,
-						ULONG cbEntryID,
-						LPENTRYID lpEntryID,
-						LPCIID lpInterface,
-						ULONG ulFlags,
-						ULONG* ulObjTypeRet, // optional - can be NULL
-						LPUNKNOWN* lppUnk) // required
+					  LPMDB lpMDB,
+					  LPADRBOOK lpAB,
+					  LPMAPICONTAINER lpContainer,
+					  LPMAPISESSION lpMAPISession,
+					  ULONG cbEntryID,
+					  LPENTRYID lpEntryID,
+					  LPCIID lpInterface,
+					  ULONG ulFlags,
+					  ULONG* ulObjTypeRet, // optional - can be NULL
+					  LPUNKNOWN* lppUnk) // required
 {
 	if (!lppUnk) return MAPI_E_INVALID_PARAMETER;
 	HRESULT			hRes = S_OK;
@@ -204,15 +204,15 @@ HRESULT CallOpenEntry(
 }
 
 HRESULT CallOpenEntry(
-								  LPMDB lpMDB,
-								  LPADRBOOK lpAB,
-								  LPMAPICONTAINER lpContainer,
-								  LPMAPISESSION lpMAPISession,
-								  LPSBinary lpSBinary,
-								  LPCIID lpInterface,
-								  ULONG ulFlags,
-								  ULONG* ulObjTypeRet,
-								  LPUNKNOWN* lppUnk)
+					  LPMDB lpMDB,
+					  LPADRBOOK lpAB,
+					  LPMAPICONTAINER lpContainer,
+					  LPMAPISESSION lpMAPISession,
+					  LPSBinary lpSBinary,
+					  LPCIID lpInterface,
+					  ULONG ulFlags,
+					  ULONG* ulObjTypeRet,
+					  LPUNKNOWN* lppUnk)
 {
 	HRESULT			hRes = S_OK;
 	WC_H(CallOpenEntry(
@@ -231,9 +231,9 @@ HRESULT CallOpenEntry(
 
 // Concatenate two property arrays without duplicates
 HRESULT ConcatSPropTagArrays(
-								  LPSPropTagArray lpArray1,
-								  LPSPropTagArray lpArray2,
-								  LPSPropTagArray *lpNewArray)
+							 LPSPropTagArray lpArray1,
+							 LPSPropTagArray lpArray2,
+							 LPSPropTagArray *lpNewArray)
 {
 	if (!lpNewArray) return MAPI_E_INVALID_PARAMETER;
 	HRESULT hRes = S_OK;
@@ -569,7 +569,7 @@ HRESULT CopyFolderRules(LPMAPIFOLDER lpSrcFolder, LPMAPIFOLDER lpDestFolder,BOOL
 
 // Copy a property using the stream interface
 // Does not call SaveChanges
-HRESULT	CopyPropertyAsStream(LPMAPIPROP lpSourcePropObj,
+HRESULT CopyPropertyAsStream(LPMAPIPROP lpSourcePropObj,
 							 LPMAPIPROP lpTargetPropObj,
 							 ULONG ulSourceTag,
 							 ULONG ulTargetTag)
@@ -628,11 +628,11 @@ HRESULT	CopyPropertyAsStream(LPMAPIPROP lpSourcePropObj,
 //		lpParent - Pointer to parent object (not, however, pointer to pointer!)
 //
 //	Purpose
-//	  Allocates a new SBinary and copies psbSrc into it
+//		Allocates a new SBinary and copies psbSrc into it
 //
 HRESULT CopySBinary(LPSBinary psbDest,const LPSBinary psbSrc, LPVOID lpParent)
 {
-	HRESULT	 hRes = S_OK;
+	HRESULT hRes = S_OK;
 
 	if (!psbDest || !psbSrc) return MAPI_E_INVALID_PARAMETER;
 
@@ -641,14 +641,18 @@ HRESULT CopySBinary(LPSBinary psbDest,const LPSBinary psbSrc, LPVOID lpParent)
 	if (psbSrc->cb)
 	{
 		if (lpParent)
+		{
 			EC_H(MAPIAllocateMore(
-					psbSrc->cb,
-					lpParent,
-					(LPVOID *) &psbDest->lpb))
+				psbSrc->cb,
+				lpParent,
+				(LPVOID *) &psbDest->lpb))
+		}
 		else
+		{
 			EC_H(MAPIAllocateBuffer(
-					psbSrc->cb,
-					(LPVOID *) &psbDest->lpb));
+				psbSrc->cb,
+				(LPVOID *) &psbDest->lpb));
+		}
 		if (S_OK == hRes)
 			CopyMemory(psbDest->lpb,psbSrc->lpb,psbSrc->cb);
 	}
@@ -661,11 +665,11 @@ HRESULT CopySBinary(LPSBinary psbDest,const LPSBinary psbSrc, LPVOID lpParent)
 //
 //	Parameters
 //		lpszDestination - Address of pointer to destination string
-//		szSource		- Pointer to source string
-//		lpParent - Pointer to parent object (not, however, pointer to pointer!)
+//		szSource        - Pointer to source string
+//		lpParent        - Pointer to parent object (not, however, pointer to pointer!)
 //
 //	Purpose
-//	  Uses MAPI to allocate a new string (szDestination) and copy szSource into it
+//		Uses MAPI to allocate a new string (szDestination) and copy szSource into it
 //		Uses lpParent as the parent for MAPIAllocateMore if possible
 //
 HRESULT CopyStringA(LPSTR* lpszDestination,LPCSTR szSource, LPVOID pParent)
@@ -1377,7 +1381,7 @@ dispidScriptStream,
 dispidPropDefStream, // dispidPropDefStream must remain next to last in list
 dispidCustomFlag}; // dispidCustomFlag must remain last in list
 
-#define ulNumOneOffIDs (sizeof(aulOneOffIDs)/sizeof(aulOneOffIDs[0]))
+#define ulNumOneOffIDs (_countof(aulOneOffIDs))
 
 HRESULT RemoveOneOff(LPMESSAGE lpMessage, BOOL bRemovePropDef)
 {
@@ -1488,8 +1492,9 @@ HRESULT ResendMessages(LPMAPIFOLDER lpFolder, HWND hWnd)
 	// This enum will allows you to access portions of the array by a name instead of a number.
 	// If more tags are added to the array, appropriate constants need to be added to the enum.
 	enum {
-			ePR_ENTRYID,
-			NUM_COLS};
+		ePR_ENTRYID,
+		NUM_COLS
+	};
 	// These tags represent the message information we would like to pick up
 	static SizedSPropTagArray(NUM_COLS,sptCols) = { NUM_COLS,
 		PR_ENTRYID
@@ -1891,11 +1896,11 @@ HRESULT ResetPermissionsOnItems(LPMDB lpMDB, LPMAPIFOLDER lpMAPIFolder)
 // This function creates a new message based in m_lpContainer
 // Then sends the message
 HRESULT SendTestMessage(
-							  LPMAPISESSION lpMAPISession,
-							  LPMAPIFOLDER lpFolder,
-							  LPCTSTR szRecipient,
-							  LPCTSTR szBody,
-							  LPCTSTR szSubject)
+						LPMAPISESSION lpMAPISession,
+						LPMAPIFOLDER lpFolder,
+						LPCTSTR szRecipient,
+						LPCTSTR szBody,
+						LPCTSTR szSubject)
 {
 	HRESULT			hRes = S_OK;
 	LPMESSAGE		lpNewMessage = NULL;
@@ -1956,13 +1961,13 @@ HRESULT SendTestMessage(
 } // SendTestMessage
 
 HRESULT WrapStreamForRTF(
-				 LPSTREAM lpCompressedRTFStream,
-				 BOOL bUseWrapEx,
-				 ULONG ulFlags,
-				 ULONG ulInCodePage,
-				 ULONG ulOutCodePage,
-				 LPSTREAM FAR * lpUncompressedRTFStream,
-				 ULONG FAR * pulStreamFlags)
+						 LPSTREAM lpCompressedRTFStream,
+						 BOOL bUseWrapEx,
+						 ULONG ulFlags,
+						 ULONG ulInCodePage,
+						 ULONG ulOutCodePage,
+						 LPSTREAM FAR * lpUncompressedRTFStream,
+						 ULONG FAR * pulStreamFlags)
 {
 	if (!lpCompressedRTFStream || !lpUncompressedRTFStream) return MAPI_E_INVALID_PARAMETER;
 	HRESULT hRes = S_OK;
@@ -2026,12 +2031,12 @@ HRESULT CopyNamedProps(LPMAPIPROP lpSource, LPGUID lpPropSetGUID, BOOL bDoMove, 
 			ulFlags |= MAPI_DIALOG;
 
 		EC_H(lpSource->CopyProps(lpPropTags,
-								 lpProgress ? (ULONG_PTR)hWnd : NULL,
-								 lpProgress,
-								 &IID_IMAPIProp,
-								 lpTarget,
-								 ulFlags,
-								 &lpProblems));
+			lpProgress ? (ULONG_PTR)hWnd : NULL,
+			lpProgress,
+			&IID_IMAPIProp,
+			lpTarget,
+			ulFlags,
+			&lpProblems));
 
 		if(lpProgress)
 			lpProgress->Release();
@@ -2077,9 +2082,9 @@ HRESULT GetNamedPropsByGUID(LPMAPIPROP lpSource, LPGUID lpPropSetGUID, LPSPropTa
 			ULONG ulNumProps = 0; // count of props that match our guid
 			for (i = 0; i < cProps; i++)
 			{
-				if (PROP_ID(lpAllProps->aulPropTag[i]) > 0x7FFF
-					&& lppNameIDs[i]
-				    && !memcmp(lppNameIDs[i]->lpguid, lpPropSetGUID, sizeof(GUID)))
+				if (PROP_ID(lpAllProps->aulPropTag[i]) > 0x7FFF &&
+					lppNameIDs[i] &&
+					!memcmp(lppNameIDs[i]->lpguid, lpPropSetGUID, sizeof(GUID)))
 				{
 					ulNumProps++;
 				}
@@ -2088,7 +2093,7 @@ HRESULT GetNamedPropsByGUID(LPMAPIPROP lpSource, LPGUID lpPropSetGUID, LPSPropTa
 			LPSPropTagArray lpFilteredProps = NULL;
 
 			WC_H(MAPIAllocateBuffer(CbNewSPropTagArray(ulNumProps),
-									(LPVOID*)&lpFilteredProps));
+				(LPVOID*)&lpFilteredProps));
 
 			if (S_OK == hRes && lpFilteredProps)
 			{
@@ -2096,9 +2101,9 @@ HRESULT GetNamedPropsByGUID(LPMAPIPROP lpSource, LPGUID lpPropSetGUID, LPSPropTa
 
 				for (i = 0; i < cProps; i++)
 				{
-					if (PROP_ID(lpAllProps->aulPropTag[i]) > 0x7FFF
-						&& lppNameIDs[i]
-						&& !memcmp(lppNameIDs[i]->lpguid, lpPropSetGUID, sizeof(GUID)))
+					if (PROP_ID(lpAllProps->aulPropTag[i]) > 0x7FFF &&
+						lppNameIDs[i] &&
+						!memcmp(lppNameIDs[i]->lpguid, lpPropSetGUID, sizeof(GUID)))
 					{
 						lpFilteredProps->aulPropTag[lpFilteredProps->cValues] = lpAllProps->aulPropTag[i];
 						lpFilteredProps->cValues++;

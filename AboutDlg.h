@@ -12,11 +12,11 @@ public:
 	virtual ~CAboutDlg();
 
 private:
-	void	OnOK();
-	LRESULT	WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
-	BOOL	OnInitDialog();
+	void    OnOK();
+	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	BOOL    OnInitDialog();
 
 	HICON			m_hIcon;
 	CRichEditCtrl	m_HelpText;
-	CButton	 		m_DisplayAboutCheck;
+	CButton			m_DisplayAboutCheck;
 };

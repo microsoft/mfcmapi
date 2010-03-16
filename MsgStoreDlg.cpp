@@ -28,18 +28,18 @@ static TCHAR* CLASS = _T("CMsgStoreDlg");
 
 
 CMsgStoreDlg::CMsgStoreDlg(
-					   CParentWnd* pParentWnd,
-					   CMapiObjects* lpMapiObjects,
-					   LPMAPIFOLDER lpRootFolder,
-					   ULONG ulDisplayFlags
-					   ):
+						   CParentWnd* pParentWnd,
+						   CMapiObjects* lpMapiObjects,
+						   LPMAPIFOLDER lpRootFolder,
+						   ULONG ulDisplayFlags
+						   ):
 CHierarchyTableDlg(
-						   pParentWnd,
-						   lpMapiObjects,
-						   IDS_FOLDERTREE,
-						   lpRootFolder,
-						   IDR_MENU_MESSAGESTORE_POPUP,
-						   MENU_CONTEXT_FOLDER_TREE)
+				   pParentWnd,
+				   lpMapiObjects,
+				   IDS_FOLDERTREE,
+				   lpRootFolder,
+				   IDR_MENU_MESSAGESTORE_POPUP,
+				   MENU_CONTEXT_FOLDER_TREE)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	HRESULT			hRes = S_OK;
@@ -342,7 +342,7 @@ void CMsgStoreDlg::OnSelectForm()
 			EC_D(iRet,LoadStringA(GetModuleHandle(NULL),
 				IDS_SELECTFORMPROPS,
 				szTitle,
-				sizeof(szTitle)/sizeof(CHAR)));
+				_countof(szTitle)));
 #pragma warning(push)
 #pragma warning(disable:4616)
 #pragma warning(disable:6276)
@@ -534,8 +534,8 @@ void CMsgStoreDlg::OnPasteFolder()
 
 	enum {NAME,EID,NUM_COLS};
 	SizedSPropTagArray(NUM_COLS,sptaSrcFolder) = { NUM_COLS, {
-			PR_DISPLAY_NAME,
-			PR_ENTRYID}
+		PR_DISPLAY_NAME,
+		PR_ENTRYID}
 	};
 
 	DebugPrintEx(DBGGeneric,CLASS,_T("OnPasteFolder"),_T("\n"));
@@ -1175,8 +1175,8 @@ void CMsgStoreDlg::OnRestoreDeletedFolder()
 
 	enum {NAME,EID,NUM_COLS};
 	SizedSPropTagArray(NUM_COLS,sptaSrcFolder) = { NUM_COLS, {
-			PR_DISPLAY_NAME,
-			PR_ENTRYID}
+		PR_DISPLAY_NAME,
+		PR_ENTRYID}
 	};
 
 	LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release
@@ -1319,9 +1319,9 @@ void CMsgStoreDlg::OnValidateIPMSubtree()
 }
 
 void CMsgStoreDlg::HandleAddInMenuSingle(
-									   LPADDINMENUPARAMS lpParams,
-									   LPMAPIPROP /*lpMAPIProp*/,
-									   LPMAPICONTAINER lpContainer)
+	LPADDINMENUPARAMS lpParams,
+	LPMAPIPROP /*lpMAPIProp*/,
+	LPMAPICONTAINER lpContainer)
 {
 	if (lpParams)
 	{

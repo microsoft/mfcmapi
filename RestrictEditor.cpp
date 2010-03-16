@@ -24,10 +24,10 @@ private:
 };
 
 CResCompareEditor::CResCompareEditor(
-								 CWnd* pParentWnd,
-								 ULONG ulRelop,
-								 ULONG ulPropTag1,
-								 ULONG ulPropTag2):
+									 CWnd* pParentWnd,
+									 ULONG ulRelop,
+									 ULONG ulPropTag1,
+									 ULONG ulPropTag2):
 CEditor(pParentWnd,IDS_RESED,IDS_RESEDCOMPPROMPT,6,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL)
 {
 	TRACE_CONSTRUCTOR(COMPCLASS);
@@ -102,12 +102,12 @@ private:
 };
 
 CResCombinedEditor::CResCombinedEditor(
-									 CWnd* pParentWnd,
-									 ULONG ulResType,
-									 ULONG ulCompare,
-									 ULONG ulPropTag,
-									 LPSPropValue lpProp,
-									 LPVOID lpAllocParent):
+									   CWnd* pParentWnd,
+									   ULONG ulResType,
+									   ULONG ulCompare,
+									   ULONG ulPropTag,
+									   LPSPropValue lpProp,
+									   LPVOID lpAllocParent):
 CEditor(pParentWnd,
 		IDS_RESED,
 		ulResType == RES_CONTENT?IDS_RESEDCONTPROMPT : // Content case
@@ -316,10 +316,10 @@ private:
 };
 
 CResSizeEditor::CResSizeEditor(
-									 CWnd* pParentWnd,
-									 ULONG relop,
-									 ULONG ulPropTag,
-									 ULONG cb):
+							   CWnd* pParentWnd,
+							   ULONG relop,
+							   ULONG ulPropTag,
+							   ULONG cb):
 CEditor(pParentWnd,IDS_RESED,IDS_RESEDSIZEPROMPT,5,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL)
 {
 	TRACE_CONSTRUCTOR(SIZECLASS);
@@ -375,8 +375,8 @@ private:
 };
 
 CResExistEditor::CResExistEditor(
-									 CWnd* pParentWnd,
-									 ULONG ulPropTag):
+								 CWnd* pParentWnd,
+								 ULONG ulPropTag):
 CEditor(pParentWnd,IDS_RESED,IDS_RESEDEXISTPROMPT,2,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL)
 {
 	TRACE_CONSTRUCTOR(EXISTCLASS);
@@ -421,10 +421,10 @@ private:
 };
 
 CResSubResEditor::CResSubResEditor(
-									 CWnd* pParentWnd,
-									 ULONG ulSubObject,
-									 LPSRestriction lpRes,
-									 LPVOID lpAllocParent):
+								   CWnd* pParentWnd,
+								   ULONG ulSubObject,
+								   LPSRestriction lpRes,
+								   LPVOID lpAllocParent):
 CEditor(pParentWnd,IDS_SUBRESED,IDS_RESEDSUBPROMPT,3,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_ACTION1|CEDITOR_BUTTON_CANCEL,IDS_ACTIONEDITRES,NULL)
 {
 	TRACE_CONSTRUCTOR(SUBRESCLASS);
@@ -491,10 +491,10 @@ public:
 	ULONG			GetResCount();
 
 private:
-	BOOL	DoListEdit(ULONG ulListNum, int iItem, SortListData* lpData);
-	BOOL	OnInitDialog();
-	void	InitListFromRestriction(ULONG ulListNum,LPSRestriction lpRes);
-	void	OnOK();
+	BOOL DoListEdit(ULONG ulListNum, int iItem, SortListData* lpData);
+	BOOL OnInitDialog();
+	void InitListFromRestriction(ULONG ulListNum,LPSRestriction lpRes);
+	void OnOK();
 
 	LPVOID			m_lpAllocParent;
 	LPSRestriction	m_lpRes;
@@ -503,9 +503,9 @@ private:
 };
 
 CResAndOrEditor::CResAndOrEditor(
-									 CWnd* pParentWnd,
-									 LPSRestriction lpRes,
-									 LPVOID lpAllocParent):
+								 CWnd* pParentWnd,
+								 LPSRestriction lpRes,
+								 LPVOID lpAllocParent):
 CEditor(pParentWnd,IDS_RESED,IDS_RESEDANDORPROMPT,1,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL)
 {
 	TRACE_CONSTRUCTOR(ANDORCLASS);
@@ -673,24 +673,24 @@ public:
 		LPSRestriction lpRes,
 		LPVOID lpAllocParent);
 
-	LPSRestriction	DetachModifiedSRestriction();
-	LPSPropValue	DetachModifiedSPropValue();
-	ULONG			GetSPropValueCount();
+	LPSRestriction DetachModifiedSRestriction();
+	LPSPropValue   DetachModifiedSPropValue();
+	ULONG          GetSPropValueCount();
 
 private:
-	void			OnEditAction1();
-	BOOL			DoListEdit(ULONG ulListNum, int iItem, SortListData* lpData);
-	BOOL			OnInitDialog();
-	void			InitListFromPropArray(ULONG ulListNum, ULONG cProps, LPSPropValue lpProps);
-	LPSRestriction	GetSourceRes();
-	void			OnOK();
+	void           OnEditAction1();
+	BOOL           DoListEdit(ULONG ulListNum, int iItem, SortListData* lpData);
+	BOOL           OnInitDialog();
+	void           InitListFromPropArray(ULONG ulListNum, ULONG cProps, LPSPropValue lpProps);
+	LPSRestriction GetSourceRes();
+	void           OnOK();
 
-	LPVOID			m_lpAllocParent;
-	LPSRestriction	m_lpSourceRes;
+	LPVOID         m_lpAllocParent;
+	LPSRestriction m_lpSourceRes;
 
-	LPSRestriction	m_lpNewCommentRes;
-	LPSPropValue	m_lpNewCommentProp;
-	ULONG			m_ulNewCommentProp;
+	LPSRestriction m_lpNewCommentRes;
+	LPSPropValue   m_lpNewCommentProp;
+	ULONG          m_ulNewCommentProp;
 };
 
 CResCommentEditor::CResCommentEditor(
@@ -1099,7 +1099,7 @@ void CRestrictEditor::OnEditAction1()
 			}
 		}
 		break;
-	// Structures for these two types are identical
+		// Structures for these two types are identical
 	case RES_OR:
 	case RES_AND:
 		{
@@ -1124,7 +1124,7 @@ void CRestrictEditor::OnEditAction1()
 			}
 		}
 		break;
-	// Structures for these two types are identical
+		// Structures for these two types are identical
 	case RES_NOT:
 	case RES_COUNT:
 		{
@@ -1142,7 +1142,7 @@ void CRestrictEditor::OnEditAction1()
 			}
 		}
 		break;
-	// Structures for these two types are identical
+		// Structures for these two types are identical
 	case RES_PROPERTY:
 	case RES_CONTENT:
 		{
@@ -1247,7 +1247,7 @@ void CRestrictEditor::OnEditAction1()
 			}
 		}
 		break;
-	// Structures for these two types are identical
+		// Structures for these two types are identical
 	case RES_COMMENT:
 	case RES_ANNOTATION:
 		{

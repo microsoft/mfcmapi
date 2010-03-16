@@ -780,6 +780,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\DbgView.h"
+				>
+			</File>
+			<File
 				RelativePath=".\DumpStore.h"
 				>
 			</File>
@@ -1000,6 +1004,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SmartView.h"
+				>
+			</File>
+			<File
 				RelativePath=".\SortHeader.h"
 				>
 			</File>
@@ -1151,6 +1159,10 @@
 			</File>
 			<File
 				RelativePath=".\ContentsTableListCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DbgView.cpp"
 				>
 			</File>
 			<File
@@ -1403,6 +1415,10 @@
 			</File>
 			<File
 				RelativePath=".\SingleMAPIPropListCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SmartView.cpp"
 				>
 			</File>
 			<File

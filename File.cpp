@@ -54,9 +54,9 @@ HRESULT GetDirectoryPath(LPWSTR szPath)
 
 	if (!szPath) return MAPI_E_INVALID_PARAMETER;
 
-    LPMALLOC lpMalloc = NULL;
+	LPMALLOC lpMalloc = NULL;
 
-    EC_H(SHGetMalloc(&lpMalloc));
+	EC_H(SHGetMalloc(&lpMalloc));
 
 	if (!lpMalloc) return hRes;
 
@@ -236,7 +236,7 @@ HRESULT LoadFromTNEF(LPCWSTR szMessageFile, LPADRBOOK lpAdrBook, LPMESSAGE lpMes
 		ulNumTNEFExcludeProps, lpPropTnefExcludeArray ) =
 	{
 		ulNumTNEFExcludeProps,
-			PR_URL_COMP_NAME
+		PR_URL_COMP_NAME
 	};
 
 	// Get a Stream interface on the input TNEF file
@@ -417,10 +417,10 @@ HRESULT BuildFileNameAndPath(LPWSTR szFileOut, size_t cchFileOut, LPCWSTR szExt,
 // Do NOT call with full path - just file names
 // Resulting string will have no more than cchCharsToCopy characters
 HRESULT SanitizeFileNameA(
-						 LPSTR szFileOut, // output buffer
-						 size_t cchFileOut, // length of output buffer
-						 LPCSTR szFileIn, // File name in
-						 size_t cchCharsToCopy)
+						  LPSTR szFileOut, // output buffer
+						  size_t cchFileOut, // length of output buffer
+						  LPCSTR szFileIn, // File name in
+						  size_t cchCharsToCopy)
 {
 	HRESULT hRes = S_OK;
 	LPSTR szCur = NULL;
@@ -434,10 +434,10 @@ HRESULT SanitizeFileNameA(
 } // SanitizeFileNameA
 
 HRESULT SanitizeFileNameW(
-						 LPWSTR szFileOut, // output buffer
-						 size_t cchFileOut, // length of output buffer
-						 LPCWSTR szFileIn, // File name in
-						 size_t cchCharsToCopy)
+						  LPWSTR szFileOut, // output buffer
+						  size_t cchFileOut, // length of output buffer
+						  LPCWSTR szFileIn, // File name in
+						  size_t cchCharsToCopy)
 {
 	HRESULT hRes = S_OK;
 	LPWSTR szCur = NULL;
@@ -450,7 +450,7 @@ HRESULT SanitizeFileNameW(
 	return hRes;
 } // SanitizeFileNameW
 
-HRESULT	SaveFolderContentsToMSG(LPMAPIFOLDER lpFolder, LPCWSTR szPathName, BOOL bAssoc, BOOL bUnicode, HWND hWnd)
+HRESULT SaveFolderContentsToMSG(LPMAPIFOLDER lpFolder, LPCWSTR szPathName, BOOL bAssoc, BOOL bUnicode, HWND hWnd)
 {
 	HRESULT			hRes = S_OK;
 	LPMAPITABLE		lpFolderContents = NULL;
@@ -604,13 +604,13 @@ HRESULT SaveToEML(LPMESSAGE lpMessage, LPCWSTR szFileName)
 } // SaveToEML
 
 HRESULT STDAPICALLTYPE MyStgCreateStorageEx(IN const WCHAR* pName,
-							IN  DWORD grfMode,
-							IN  DWORD stgfmt,
-							IN  DWORD grfAttrs,
-							IN  STGOPTIONS * pStgOptions,
-							IN  void * reserved,
-							IN  REFIID riid,
-							OUT void ** ppObjectOpen)
+											IN  DWORD grfMode,
+											IN  DWORD stgfmt,
+											IN  DWORD grfAttrs,
+											IN  STGOPTIONS * pStgOptions,
+											IN  void * reserved,
+											IN  REFIID riid,
+											OUT void ** ppObjectOpen)
 {
 	HRESULT hRes = S_OK;
 	if (!pName) return MAPI_E_INVALID_PARAMETER;
@@ -771,8 +771,8 @@ HRESULT SaveToTNEF(LPMESSAGE lpMessage, LPADRBOOK lpAdrBook, LPCWSTR szFileName)
 		ulNumTNEFIncludeProps, lpPropTnefIncludeArray ) =
 	{
 		ulNumTNEFIncludeProps,
-			PR_MESSAGE_RECIPIENTS,
-			PR_ATTACH_DATA_BIN
+		PR_MESSAGE_RECIPIENTS,
+		PR_ATTACH_DATA_BIN
 	};
 
 	enum { ulNumTNEFExcludeProps = 1 };
@@ -780,15 +780,15 @@ HRESULT SaveToTNEF(LPMESSAGE lpMessage, LPADRBOOK lpAdrBook, LPCWSTR szFileName)
 		ulNumTNEFExcludeProps, lpPropTnefExcludeArray ) =
 	{
 		ulNumTNEFExcludeProps,
-			PR_URL_COMP_NAME
+		PR_URL_COMP_NAME
 	};
 
 	if (!lpMessage || !lpAdrBook || !szFileName) return MAPI_E_INVALID_PARAMETER;
 	DebugPrint(DBGGeneric,_T("SaveToTNEF: Saving message to \"%ws\"\n"),szFileName);
 
-	LPSTREAM			lpStream	=	NULL;
-	LPITNEF				lpTNEF		=	NULL;
-	LPSTnefProblemArray	lpError		=	NULL;
+	LPSTREAM			lpStream	= NULL;
+	LPITNEF				lpTNEF		= NULL;
+	LPSTnefProblemArray	lpError		= NULL;
 
 	static WORD dwKey = (WORD)::GetTickCount();
 
@@ -1197,7 +1197,7 @@ HRESULT WriteOleToFile(LPATTACH lpAttach,LPCWSTR szFileName)
 	return hRes;
 } // WriteOleToFile
 
-HRESULT	WriteAttachmentToFile(LPATTACH lpAttach, HWND hWnd)
+HRESULT WriteAttachmentToFile(LPATTACH lpAttach, HWND hWnd)
 {
 	HRESULT			hRes = S_OK;
 	LPSPropValue	lpProps = NULL;
@@ -1314,7 +1314,7 @@ HRESULT	WriteAttachmentToFile(LPATTACH lpAttach, HWND hWnd)
 			}
 			break;
 		default:
-				ErrDialog(__FILE__,__LINE__,IDS_EDUNKNOWNATTMETHOD); break;
+			ErrDialog(__FILE__,__LINE__,IDS_EDUNKNOWNATTMETHOD); break;
 		}
 	}
 	if (iDlgRet == IDCANCEL) hRes = MAPI_E_USER_CANCEL;

@@ -46,7 +46,7 @@ BOOL WarnHResFn(HRESULT hRes,LPCSTR szFunction,UINT uidErrorMsg,LPCSTR szFile,in
 void __cdecl ErrDialog(LPCSTR szFile,int iLine, UINT uidErrorFmt,...);
 
 // Function to convert error codes to their names
-LPTSTR	ErrorNameFromErrorCode(HRESULT hrErr);
+LPTSTR ErrorNameFromErrorCode(HRESULT hrErr);
 
 // Macros for debug output
 #define CHECKHRES(hRes) (CheckHResFn(hRes,"",NULL,__FILE__,__LINE__))
@@ -158,7 +158,6 @@ else	\
 // Used for functions which return 0 on error
 // dwRet will contain the return value - assign to a local if needed for other calls.
 #define EC_D(_ret,fnx)	\
-	\
 if (SUCCEEDED(hRes))	\
 {	\
 	_ret = (fnx);	\
@@ -194,7 +193,6 @@ else	\
 // We have to check each prop before we use it anyway, so we don't lose anything here.
 // Using this macro, all we have to check is that we got a props array back
 #define EC_H_GETPROPS(fnx)	\
-	\
 if (SUCCEEDED(hRes))	\
 {	\
 	hRes = (fnx);	\
@@ -206,7 +204,6 @@ else	\
 }
 
 #define WC_H_GETPROPS(fnx)	\
-	\
 if (SUCCEEDED(hRes))	\
 {	\
 	hRes = (fnx);	\
@@ -219,7 +216,6 @@ else	\
 
 // some MAPI functions allow MAPI_E_CANCEL or MAPI_E_USER_CANCEL. I don't consider these to be errors.
 #define EC_H_CANCEL(fnx)	\
-	\
 if (SUCCEEDED(hRes))	\
 {	\
 	hRes = (fnx);	\

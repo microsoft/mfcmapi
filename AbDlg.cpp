@@ -25,16 +25,16 @@ CAbDlg::CAbDlg(
 			   LPABCONT lpAdrBook
 			   ):
 CContentsTableDlg(
-						  pParentWnd,
-						  lpMapiObjects,
-						  IDS_AB,
-						  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
-						  NULL,
-						  (LPSPropTagArray) &sptABCols,
-						  NUMABCOLUMNS,
-						  ABColumns,
-						  IDR_MENU_AB_VIEW_POPUP,
-						  MENU_CONTEXT_AB_CONTENTS)
+				  pParentWnd,
+				  lpMapiObjects,
+				  IDS_AB,
+				  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+				  NULL,
+				  (LPSPropTagArray) &sptABCols,
+				  NUMABCOLUMNS,
+				  ABColumns,
+				  IDR_MENU_AB_VIEW_POPUP,
+				  MENU_CONTEXT_AB_CONTENTS)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	m_lpContainer = lpAdrBook;
@@ -368,9 +368,9 @@ void CAbDlg::OnCreatePropertyStringRestriction()
 } // CAbDlg::OnCreatePropertyStringRestriction
 
 void CAbDlg::HandleAddInMenuSingle(
-									   LPADDINMENUPARAMS lpParams,
-									   LPMAPIPROP lpMAPIProp,
-									   LPMAPICONTAINER /*lpContainer*/)
+								   LPADDINMENUPARAMS lpParams,
+								   LPMAPIPROP lpMAPIProp,
+								   LPMAPICONTAINER /*lpContainer*/)
 {
 	if (lpParams)
 	{

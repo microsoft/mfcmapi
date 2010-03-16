@@ -19,17 +19,17 @@ static TCHAR* CLASS = _T("CHierarchyTableDlg");
 
 
 CHierarchyTableDlg::CHierarchyTableDlg(
-													 CParentWnd* pParentWnd,
-													 CMapiObjects* lpMapiObjects,
-													 UINT uidTitle,
-													 LPUNKNOWN lpRootContainer,
-													 ULONG nIDContextMenu,
-													 ULONG ulAddInContext
-													 ):
+									   CParentWnd* pParentWnd,
+									   CMapiObjects* lpMapiObjects,
+									   UINT uidTitle,
+									   LPUNKNOWN lpRootContainer,
+									   ULONG nIDContextMenu,
+									   ULONG ulAddInContext
+									   ):
 CBaseDialog(
-		pParentWnd,
-		lpMapiObjects,
-		ulAddInContext)
+			pParentWnd,
+			lpMapiObjects,
+			ulAddInContext)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	if (NULL != uidTitle)
@@ -126,7 +126,7 @@ void CHierarchyTableDlg::OnDisplayItem()
 		lpMAPIContainer,
 		NULL,
 		otContents,
-		this))
+		this));
 
 	lpMAPIContainer->Release();
 	return;
@@ -379,9 +379,9 @@ BOOL CHierarchyTableDlg::HandleAddInMenu(WORD wMenuSelect)
 } // CHierarchyTableDlg::HandleAddInMenu
 
 void CHierarchyTableDlg::HandleAddInMenuSingle(
-									   LPADDINMENUPARAMS lpParams,
-									   LPMAPIPROP /*lpMAPIProp*/,
-									   LPMAPICONTAINER /*lpContainer*/)
+	LPADDINMENUPARAMS lpParams,
+	LPMAPIPROP /*lpMAPIProp*/,
+	LPMAPICONTAINER /*lpContainer*/)
 {
 	InvokeAddInMenu(lpParams);
 } // CHierarchyTableDlg::HandleAddInMenuSingle

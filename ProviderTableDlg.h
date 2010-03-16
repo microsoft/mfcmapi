@@ -24,7 +24,7 @@ private:
 		LPADDINMENUPARAMS lpParams,
 		LPMAPIPROP lpMAPIProp,
 		LPMAPICONTAINER lpContainer);
-	HRESULT	OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, LPMAPIPROP* lppMAPIProp);
+	HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, LPMAPIPROP* lppMAPIProp);
 
 	// Menu items
 	void OnOpenProfileSection();

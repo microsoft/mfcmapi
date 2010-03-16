@@ -19,12 +19,12 @@ CAbContDlg::CAbContDlg(
 					   CMapiObjects* lpMapiObjects
 					   ):
 CHierarchyTableDlg(
-						   pParentWnd,
-						   lpMapiObjects,
-						   IDS_ABCONT,
-						   NULL,
-						   IDR_MENU_ABCONT_POPUP,
-						   MENU_CONTEXT_AB_TREE)
+				   pParentWnd,
+				   lpMapiObjects,
+				   IDS_ABCONT,
+				   NULL,
+				   IDR_MENU_ABCONT_POPUP,
+				   MENU_CONTEXT_AB_TREE)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 

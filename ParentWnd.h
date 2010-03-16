@@ -16,9 +16,9 @@ public:
 	CParentWnd();
 	virtual ~CParentWnd();
 
-	STDMETHODIMP			QueryInterface(REFIID riid, LPVOID * ppvObj);
-	STDMETHODIMP_(ULONG)	AddRef();
-	STDMETHODIMP_(ULONG)	Release();
+	STDMETHODIMP         QueryInterface(REFIID riid, LPVOID * ppvObj);
+	STDMETHODIMP_(ULONG) AddRef();
+	STDMETHODIMP_(ULONG) Release();
 
 private:
 	LONG m_cRef;

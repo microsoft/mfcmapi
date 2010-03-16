@@ -19,22 +19,22 @@ static TCHAR* CLASS = _T("CProviderTableDlg");
 
 
 CProviderTableDlg::CProviderTableDlg(
-			   CParentWnd* pParentWnd,
-			   CMapiObjects* lpMapiObjects,
-			   LPMAPITABLE lpMAPITable,
-			   LPPROVIDERADMIN lpProviderAdmin
-			   ):
+									 CParentWnd* pParentWnd,
+									 CMapiObjects* lpMapiObjects,
+									 LPMAPITABLE lpMAPITable,
+									 LPPROVIDERADMIN lpProviderAdmin
+									 ):
 CContentsTableDlg(
-						  pParentWnd,
-						  lpMapiObjects,
-						  IDS_PROVIDERS,
-						  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
-						  lpMAPITable,
-						  (LPSPropTagArray) &sptPROVIDERCols,
-						  NUMPROVIDERCOLUMNS,
-						  PROVIDERColumns,
-						  NULL,
-						  MENU_CONTEXT_PROFILE_PROVIDERS)
+				  pParentWnd,
+				  lpMapiObjects,
+				  IDS_PROVIDERS,
+				  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+				  lpMAPITable,
+				  (LPSPropTagArray) &sptPROVIDERCols,
+				  NUMPROVIDERCOLUMNS,
+				  PROVIDERColumns,
+				  NULL,
+				  MENU_CONTEXT_PROFILE_PROVIDERS)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 
@@ -146,9 +146,9 @@ void CProviderTableDlg::OnOpenProfileSection()
 } // CProviderTableDlg::OnOpenProfileSection
 
 void CProviderTableDlg::HandleAddInMenuSingle(
-									   LPADDINMENUPARAMS lpParams,
-									   LPMAPIPROP lpMAPIProp,
-									   LPMAPICONTAINER /*lpContainer*/)
+	LPADDINMENUPARAMS lpParams,
+	LPMAPIPROP lpMAPIProp,
+	LPMAPICONTAINER /*lpContainer*/)
 {
 	if (lpParams)
 	{

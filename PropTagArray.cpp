@@ -9,8 +9,8 @@
 #include "NameIDArray.h"
 #include "PropTypeArray.h"
 
-ULONG g_ulPropTagArray = sizeof(g_PropTagArray)/sizeof(NAME_ARRAY_ENTRY);
-ULONG g_ulFlagArray = sizeof(g_FlagArray)/sizeof(FLAG_ARRAY_ENTRY);
-ULONG g_ulPropGuidArray = sizeof(g_PropGuidArray)/sizeof(GUID_ARRAY_ENTRY);
-ULONG g_ulNameIDArray = sizeof(g_NameIDArray)/sizeof(NAMEID_ARRAY_ENTRY);
-ULONG g_ulPropTypeArray = sizeof(g_PropTypeArray)/sizeof(NAME_ARRAY_ENTRY);
+ULONG g_ulPropTagArray = _countof(g_PropTagArray);
+ULONG g_ulFlagArray = _countof(g_FlagArray);
+ULONG g_ulPropGuidArray = _countof(g_PropGuidArray);
+ULONG g_ulNameIDArray = _countof(g_NameIDArray);
+ULONG g_ulPropTypeArray = _countof(g_PropTypeArray);

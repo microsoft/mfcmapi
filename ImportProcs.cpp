@@ -3,6 +3,15 @@
 #include "MAPIFunctions.h"
 #include <mapival.h>
 
+BOOL GetComponentPath(
+					  LPSTR szComponent,
+					  LPSTR szQualifier,
+					  TCHAR* szDllPath,
+					  DWORD cchDLLPath);
+
+HKEY GetMailKey(LPTSTR szClient);
+void GetMapiMsiIds(LPTSTR szClient, LPSTR* lpszComponentID, LPSTR* lpszAppLCID, LPSTR* lpszOfficeLCID);
+
 // Note: when the user loads MAPI manually, hModMSMAPI and hModMAPI will be the same
 HMODULE	hModMSMAPI = NULL; // Address of Outlook's MAPI
 HMODULE	hModMAPI = NULL; // Address of MAPI32 in System32
@@ -16,8 +25,8 @@ HMODULE hModInetComm = NULL;
 HMODULE hModMSI = NULL;
 
 // For GetComponentPath
-typedef BOOL (STDAPICALLTYPE FGETCOMPONENTPATH)
-	(LPSTR szComponent,
+typedef BOOL (STDAPICALLTYPE FGETCOMPONENTPATH)(
+	LPSTR szComponent,
 	LPSTR szQualifier,
 	LPSTR szDllPath,
 	DWORD cchBufferSize,
@@ -26,73 +35,73 @@ typedef FGETCOMPONENTPATH FAR * LPFGETCOMPONENTPATH;
 
 // For all the MAPI funcs we use
 typedef SCODE (STDMETHODCALLTYPE HRGETONEPROP)(
-					LPMAPIPROP lpMapiProp,
-					ULONG ulPropTag,
-					LPSPropValue FAR *lppProp);
+	LPMAPIPROP lpMapiProp,
+	ULONG ulPropTag,
+	LPSPropValue FAR *lppProp);
 typedef HRGETONEPROP *LPHRGETONEPROP;
 
 typedef void (STDMETHODCALLTYPE FREEPROWS)(
-					LPSRowSet lpRows);
+	LPSRowSet lpRows);
 typedef FREEPROWS	*LPFREEPROWS;
 
 typedef	LPSPropValue (STDMETHODCALLTYPE PPROPFINDPROP)(
-					LPSPropValue lpPropArray, ULONG cValues,
-					ULONG ulPropTag);
+	LPSPropValue lpPropArray, ULONG cValues,
+	ULONG ulPropTag);
 typedef PPROPFINDPROP *LPPPROPFINDPROP;
 
 typedef SCODE (STDMETHODCALLTYPE SCDUPPROPSET)(
-					int cValues, LPSPropValue lpPropArray,
-					LPALLOCATEBUFFER lpAllocateBuffer, LPSPropValue FAR *lppPropArray);
+	int cValues, LPSPropValue lpPropArray,
+	LPALLOCATEBUFFER lpAllocateBuffer, LPSPropValue FAR *lppPropArray);
 typedef SCDUPPROPSET *LPSCDUPPROPSET;
 
 typedef SCODE (STDMETHODCALLTYPE SCCOUNTPROPS)(
-					int cValues, LPSPropValue lpPropArray, ULONG FAR *lpcb);
+	int cValues, LPSPropValue lpPropArray, ULONG FAR *lpcb);
 typedef SCCOUNTPROPS *LPSCCOUNTPROPS;
 
 typedef SCODE (STDMETHODCALLTYPE SCCOPYPROPS)(
-					int cValues, LPSPropValue lpPropArray, LPVOID lpvDst,
-					ULONG FAR *lpcb);
+	int cValues, LPSPropValue lpPropArray, LPVOID lpvDst,
+	ULONG FAR *lpcb);
 typedef SCCOPYPROPS *LPSCCOPYPROPS;
 
 typedef SCODE (STDMETHODCALLTYPE OPENIMSGONISTG)(
-					LPMSGSESS		lpMsgSess,
-					LPALLOCATEBUFFER lpAllocateBuffer,
-					LPALLOCATEMORE 	lpAllocateMore,
-					LPFREEBUFFER	lpFreeBuffer,
-					LPMALLOC		lpMalloc,
-					LPVOID			lpMapiSup,
-					LPSTORAGE 		lpStg,
-					MSGCALLRELEASE FAR *lpfMsgCallRelease,
-					ULONG			ulCallerData,
-					ULONG			ulFlags,
-					LPMESSAGE		FAR *lppMsg );
+	LPMSGSESS		lpMsgSess,
+	LPALLOCATEBUFFER lpAllocateBuffer,
+	LPALLOCATEMORE	lpAllocateMore,
+	LPFREEBUFFER	lpFreeBuffer,
+	LPMALLOC		lpMalloc,
+	LPVOID			lpMapiSup,
+	LPSTORAGE		lpStg,
+	MSGCALLRELEASE FAR *lpfMsgCallRelease,
+	ULONG			ulCallerData,
+	ULONG			ulFlags,
+	LPMESSAGE		FAR *lppMsg );
 typedef OPENIMSGONISTG *LPOPENIMSGONISTG;
 
 typedef	LPMALLOC (STDMETHODCALLTYPE MAPIGETDEFAULTMALLOC)(
-					void);
+	void);
 typedef MAPIGETDEFAULTMALLOC *LPMAPIGETDEFAULTMALLOC;
 
 typedef	void (STDMETHODCALLTYPE CLOSEIMSGSESSION)(
-					LPMSGSESS		lpMsgSess);
+	LPMSGSESS lpMsgSess);
 typedef CLOSEIMSGSESSION *LPCLOSEIMSGSESSION;
 
 typedef	SCODE (STDMETHODCALLTYPE OPENIMSGSESSION)(
-					LPMALLOC		lpMalloc,
-					ULONG			ulFlags,
-					LPMSGSESS FAR	*lppMsgSess);
+	LPMALLOC		lpMalloc,
+	ULONG			ulFlags,
+	LPMSGSESS FAR	*lppMsgSess);
 typedef OPENIMSGSESSION *LPOPENIMSGSESSION;
 
 typedef SCODE (STDMETHODCALLTYPE HRQUERYALLROWS)(
-					LPMAPITABLE lpTable,
-					LPSPropTagArray lpPropTags,
-					LPSRestriction lpRestriction,
-					LPSSortOrderSet lpSortOrderSet,
-					LONG crowsMax,
-					LPSRowSet FAR *lppRows);
+	LPMAPITABLE lpTable,
+	LPSPropTagArray lpPropTags,
+	LPSRestriction lpRestriction,
+	LPSSortOrderSet lpSortOrderSet,
+	LONG crowsMax,
+	LPSRowSet FAR *lppRows);
 typedef HRQUERYALLROWS *LPHRQUERYALLROWS;
 
 typedef SCODE (STDMETHODCALLTYPE MAPIOPENFORMMGR)(
-					LPMAPISESSION pSession, LPMAPIFORMMGR FAR * ppmgr);
+	LPMAPISESSION pSession, LPMAPIFORMMGR FAR * ppmgr);
 typedef MAPIOPENFORMMGR *LPMAPIOPENFORMMGR;
 
 typedef HRESULT (STDMETHODCALLTYPE RTFSYNC) (
@@ -100,19 +109,19 @@ typedef HRESULT (STDMETHODCALLTYPE RTFSYNC) (
 typedef RTFSYNC *LPRTFSYNC;
 
 typedef SCODE (STDMETHODCALLTYPE HRSETONEPROP)(
-					LPMAPIPROP lpMapiProp,
-					LPSPropValue lpProp);
+	LPMAPIPROP lpMapiProp,
+	LPSPropValue lpProp);
 typedef HRSETONEPROP *LPHRSETONEPROP;
 
 typedef void (STDMETHODCALLTYPE FREEPADRLIST)(
-					LPADRLIST lpAdrList);
+	LPADRLIST lpAdrList);
 typedef FREEPADRLIST *LPFREEPADRLIST;
 
 typedef SCODE (STDMETHODCALLTYPE PROPCOPYMORE)(
-					LPSPropValue		lpSPropValueDest,
-					LPSPropValue		lpSPropValueSrc,
-					ALLOCATEMORE *	lpfAllocMore,
-					LPVOID			lpvObject );
+	LPSPropValue		lpSPropValueDest,
+	LPSPropValue		lpSPropValueSrc,
+	ALLOCATEMORE *	lpfAllocMore,
+	LPVOID			lpvObject );
 typedef PROPCOPYMORE *LPPROPCOPYMORE;
 
 typedef HRESULT (STDMETHODCALLTYPE WRAPCOMPRESSEDRTFSTREAM) (
@@ -120,9 +129,9 @@ typedef HRESULT (STDMETHODCALLTYPE WRAPCOMPRESSEDRTFSTREAM) (
 typedef WRAPCOMPRESSEDRTFSTREAM *LPWRAPCOMPRESSEDRTFSTREAM;
 
 typedef SCODE (STDMETHODCALLTYPE HRVALIDATEIPMSUBTREE)(
-					LPMDB lpMDB, ULONG ulFlags,
-					ULONG FAR *lpcValues, LPSPropValue FAR *lppValues,
-					LPMAPIERROR FAR *lpperr);
+	LPMDB lpMDB, ULONG ulFlags,
+	ULONG FAR *lpcValues, LPSPropValue FAR *lppValues,
+	LPMAPIERROR FAR *lpperr);
 typedef HRVALIDATEIPMSUBTREE *LPHRVALIDATEIPMSUBTREE;
 
 typedef HRESULT (STDAPICALLTYPE MAPIOPENLOCALFORMCONTAINER)(LPMAPIFORMCONTAINER FAR * ppfcnt);
@@ -265,37 +274,39 @@ HMODULE MyLoadLibrary(LPCTSTR lpLibFileName)
 	return hMod;
 }
 
+// Loads szModule at the handle given by lphModule, then looks for szEntryPoint.
+// Will not load a module or entry point twice
+VOID LoadProc(LPTSTR szModule, HMODULE* lphModule, LPSTR szEntryPoint, FARPROC* lpfn)
+{
+	if (!szEntryPoint || !lpfn || !lphModule) return;
+	if (*lpfn) return;
+	if (!*lphModule && szModule)
+	{
+		*lphModule = LoadFromSystemDir(szModule);
+	}
+	if (!*lphModule) return;
+
+	HRESULT hRes = S_OK;
+	WC_D(*lpfn, GetProcAddress(
+		*lphModule,
+		szEntryPoint));
+} // LoadProc
+
 void LoadGetComponentPath()
 {
-	HRESULT hRes = S_OK;
-
 	if (pfnFGetComponentPath) return;
 
-	if (!hModMAPI) hModMAPI = LoadFromSystemDir(_T("mapi32.dll")); // STRING_OK
-	if (hModMAPI)
-	{
-		WC_D(pfnFGetComponentPath, (LPFGETCOMPONENTPATH) GetProcAddress(
-			hModMAPI,
-			"FGetComponentPath")); // STRING_OK
-		hRes = S_OK;
-	}
-	if (!pfnFGetComponentPath)
-	{
-		if (!hModMAPIStub) hModMAPIStub = LoadFromSystemDir(_T("mapistub.dll")); // STRING_OK
-		if (hModMAPIStub)
-		{
-			WC_D(pfnFGetComponentPath, (LPFGETCOMPONENTPATH) GetProcAddress(
-				hModMAPIStub,
-				"FGetComponentPath")); // STRING_OK
-		}
-	}
+	// Try to get FGetComponentPath from mapi32.dll
+	LoadProc(_T("mapi32.dll"), &hModMAPI, "FGetComponentPath", (FARPROC*) &pfnFGetComponentPath); // STRING_OK
+	// If we don't find it there, try mapistub.dll
+	LoadProc(_T("mapistub.dll"), &hModMAPIStub, "FGetComponentPath", (FARPROC*) &pfnFGetComponentPath); // STRING_OK
 
 	DebugPrint(DBGLoadLibrary,_T("FGetComponentPath loaded at 0x%08X\n"),pfnFGetComponentPath);
 } // LoadGetComponentPath
 
 BOOL GetComponentPath(
-					  LPTSTR szComponent,
-					  LPTSTR szQualifier,
+					  LPSTR szComponent,
+					  LPSTR szQualifier,
 					  TCHAR* szDllPath,
 					  DWORD cchDLLPath)
 {
@@ -303,22 +314,19 @@ BOOL GetComponentPath(
 	LoadGetComponentPath();
 
 	if (!pfnFGetComponentPath) return false;
+
+	DebugPrint(DBGLoadLibrary,_T("GetComponentPath - Called with szComponent = \"%hs\", szQualifier = \"%hs\"\n"),szComponent,szQualifier);
 #ifdef UNICODE
 	int iRet = 0;
 	CHAR szAsciiPath[MAX_PATH] = {0};
-	char* szAnsiComponent = NULL;
-	char* szAnsiQualifier = NULL;
-	EC_H(UnicodeToAnsi(szComponent,&szAnsiComponent));
-	EC_H(UnicodeToAnsi(szQualifier,&szAnsiQualifier));
 
 	EC_B(pfnFGetComponentPath(
-		szAnsiComponent,
-		szAnsiQualifier,
+		szComponent,
+		szQualifier,
 		szAsciiPath,
 		_countof(szAsciiPath),
 		TRUE));
-	delete[] szAnsiQualifier;
-	delete[] szAnsiComponent;
+
 	// Convert to Unicode.
 	EC_D(iRet,MultiByteToWideChar(
 		CP_ACP,
@@ -335,6 +343,8 @@ BOOL GetComponentPath(
 		cchDLLPath,
 		TRUE));
 #endif
+	DebugPrint(DBGLoadLibrary,_T("GetComponentPath - hRes = 0x%08X\n"),hRes);
+	if (SUCCEEDED(hRes)) DebugPrint(DBGLoadLibrary,_T("GetComponentPath - szDllPath = \"%s\"\n"),szDllPath);
 	return SUCCEEDED(hRes);
 } // GetComponentPath
 
@@ -436,87 +446,22 @@ HMODULE LoadFromSystemDir(LPTSTR szDLLName)
 	return hModRet;
 }
 
-void LoadAclUI()
+void ImportProcs()
 {
-	HRESULT hRes = S_OK;
-	if (!hModAclui) hModAclui = LoadFromSystemDir(_T("aclui.dll")); // STRING_OK
-	if (hModAclui)
-	{
-		WC_D(pfnEditSecurity, (LPEDITSECURITY) GetProcAddress(
-			hModAclui,
-			"EditSecurity")); // STRING_OK
-	}
-}
-
-void LoadStg()
-{
-	HRESULT hRes = S_OK;
-	if (!hModOle32) hModOle32 = LoadFromSystemDir(_T("ole32.dll")); // STRING_OK
-	if (hModOle32)
-	{
-		WC_D(pfnStgCreateStorageEx, (LPSTGCREATESTORAGEEX) GetProcAddress(
-			hModOle32,
-			"StgCreateStorageEx")); // STRING_OK
-	}
-}
-
-void LoadThemeUI()
-{
-	HRESULT hRes = S_OK;
-	if (!hModUxTheme) hModUxTheme = LoadFromSystemDir(_T("uxtheme.dll")); // STRING_OK
-	if (hModUxTheme)
-	{
-		WC_D(pfnOpenThemeData, (LPOPENTHEMEDATA) GetProcAddress(
-			hModUxTheme,
-			"OpenThemeData")); // STRING_OK
-		WC_D(pfnCloseThemeData, (LPCLOSETHEMEDATA) GetProcAddress(
-			hModUxTheme,
-			"CloseThemeData")); // STRING_OK
-		WC_D(pfnGetThemeMargins, (LPGETTHEMEMARGINS) GetProcAddress(
-			hModUxTheme,
-			"GetThemeMargins")); // STRING_OK
-	}
-}
-
-void LoadMimeOLE()
-{
-	HRESULT hRes = S_OK;
-	if (!hModInetComm) hModInetComm = LoadFromSystemDir(_T("inetcomm.dll")); // STRING_OK
-	if (hModInetComm)
-	{
-		WC_D(pfnMimeOleGetCodePageCharset, (LPMIMEOLEGETCODEPAGECHARSET) GetProcAddress(
-			hModInetComm,
-			"MimeOleGetCodePageCharset")); // STRING_OK
-	}
-}
-
-void LoadMSI()
-{
-	HRESULT hRes = S_OK;
-	if (!hModMSI) hModMSI = LoadFromSystemDir(_T("msi.dll")); // STRING_OK
-	if (hModMSI)
-	{
+	LoadProc(_T("aclui.dll"),&hModAclui,"EditSecurity", (FARPROC*) &pfnEditSecurity); // STRING_OK;
+	LoadProc(_T("ole32.dll"), &hModOle32, "StgCreateStorageEx", (FARPROC*) &pfnStgCreateStorageEx); // STRING_OK;
+	LoadProc(_T("uxtheme.dll"), &hModUxTheme, "OpenThemeData", (FARPROC*) &pfnOpenThemeData); // STRING_OK;
+	LoadProc(_T("uxtheme.dll"), &hModUxTheme, "CloseThemeData", (FARPROC*) &pfnCloseThemeData); // STRING_OK;
+	LoadProc(_T("uxtheme.dll"), &hModUxTheme, "GetThemeMargins", (FARPROC*) &pfnGetThemeMargins); // STRING_OK;
+	LoadProc(_T("inetcomm.dll"), &hModInetComm, "MimeOleGetCodePageCharset", (FARPROC*) &pfnMimeOleGetCodePageCharset); // STRING_OK;
 #ifdef _UNICODE
-		WC_D(pfnMsiProvideQualifiedComponent, (LPMSIPROVIDEQUALIFIEDCOMPONENT) GetProcAddress(
-			hModMSI,
-			"MsiProvideQualifiedComponentW" // STRING_OK
-			));
-		WC_D(pfnMsiGetFileVersion, (LPMSIGETFILEVERSION) GetProcAddress(
-			hModMSI,
-			"MsiGetFileVersionW" // STRING_OK
-			));
+	LoadProc(_T("msi.dll"), &hModMSI, "MsiProvideQualifiedComponentW", (FARPROC*) &pfnMsiProvideQualifiedComponent); // STRING_OK;
+	LoadProc(_T("msi.dll"), &hModMSI, "MsiGetFileVersionW", (FARPROC*) &pfnMsiGetFileVersion); // STRING_OK;
 #else
-		WC_D(pfnMsiProvideQualifiedComponent, (LPMSIPROVIDEQUALIFIEDCOMPONENT) GetProcAddress(
-			hModMSI,
-			"MsiProvideQualifiedComponentA" // STRING_OK
-			));
-		WC_D(pfnMsiGetFileVersion, (LPMSIGETFILEVERSION) GetProcAddress(
-			hModMSI,
-			"MsiGetFileVersionA" // STRING_OK
-			));
+	LoadProc(_T("msi.dll"), &hModMSI, "MsiProvideQualifiedComponentA", (FARPROC*) &pfnMsiProvideQualifiedComponent); // STRING_OK;
+	LoadProc(_T("msi.dll"), &hModMSI, "MsiGetFileVersionA", (FARPROC*) &pfnMsiGetFileVersion); // STRING_OK;
 #endif
-	}
-} // LoadMSI
+} // ImportProcs
 
 // Opens the mail key for the specified MAPI client, such as 'Microsoft Outlook' or 'ExchangeMAPI'
 // Pass NULL to open the mail key for the default MAPI client
@@ -578,9 +523,9 @@ HKEY GetMailKey(LPTSTR szClient)
 // Gets MSI IDs for the specified MAPI client, such as 'Microsoft Outlook' or 'ExchangeMAPI'
 // Pass NULL to get the IDs for the default MAPI client
 // Allocates with new, delete with delete[]
-void GetMapiMsiIds(LPTSTR szClient, LPTSTR* lpszComponentID, LPTSTR* lpszAppLCID, LPTSTR* lpszOfficeLCID)
+void GetMapiMsiIds(LPTSTR szClient, LPSTR* lpszComponentID, LPSTR* lpszAppLCID, LPSTR* lpszOfficeLCID)
 {
-	DebugPrint(DBGLoadLibrary,_T("GetMapiMsiIds()\n"));
+	DebugPrint(DBGLoadLibrary,_T("GetMapiMsiIds(%s)\n"),szClient);
 	HRESULT hRes = S_OK;
 
 	HKEY hKey = GetMailKey(szClient);
@@ -591,34 +536,34 @@ void GetMapiMsiIds(LPTSTR szClient, LPTSTR* lpszComponentID, LPTSTR* lpszAppLCID
 
 		if (lpszComponentID)
 		{
-			WC_H(HrGetRegistryValue(
+			WC_H(HrGetRegistryValueA(
 				hKey,
-				_T("MSIComponentID"), // STRING_OK
+				"MSIComponentID", // STRING_OK
 				&dwKeyType,
 				(LPVOID*) lpszComponentID));
-			DebugPrint(DBGLoadLibrary,_T("MSIComponentID = %s\n"),*lpszComponentID?*lpszComponentID:_T("<not found>"));
+			DebugPrint(DBGLoadLibrary,_T("MSIComponentID = %hs\n"),*lpszComponentID?*lpszComponentID:"<not found>");
 			hRes = S_OK;
 		}
 
 		if (lpszAppLCID)
 		{
-			WC_H(HrGetRegistryValue(
+			WC_H(HrGetRegistryValueA(
 				hKey,
-				_T("MSIApplicationLCID"), // STRING_OK
+				"MSIApplicationLCID", // STRING_OK
 				&dwKeyType,
 				(LPVOID*) lpszAppLCID));
-			DebugPrint(DBGLoadLibrary,_T("MSIApplicationLCID = %s\n"),*lpszAppLCID?*lpszAppLCID:_T("<not found>"));
+			DebugPrint(DBGLoadLibrary,_T("MSIApplicationLCID = %hs\n"),*lpszAppLCID?*lpszAppLCID:"<not found>");
 			hRes = S_OK;
 		}
 
 		if (lpszOfficeLCID)
 		{
-			WC_H(HrGetRegistryValue(
+			WC_H(HrGetRegistryValueA(
 				hKey,
-				_T("MSIOfficeLCID"), // STRING_OK
+				"MSIOfficeLCID", // STRING_OK
 				&dwKeyType,
 				(LPVOID*) lpszOfficeLCID));
-			DebugPrint(DBGLoadLibrary,_T("MSIOfficeLCID = %s\n"),*lpszOfficeLCID?*lpszOfficeLCID:_T("<not found>"));
+			DebugPrint(DBGLoadLibrary,_T("MSIOfficeLCID = %hs\n"),*lpszOfficeLCID?*lpszOfficeLCID:"<not found>");
 			hRes = S_OK;
 		}
 
@@ -633,9 +578,9 @@ void GetMAPIPath(LPTSTR szClient, LPTSTR szMAPIPath, ULONG cchMAPIPath)
 	szMAPIPath[0] = '\0'; // Terminate String at pos 0 (safer if we fail below)
 
 	// Find some strings:
-	LPTSTR szComponentID = NULL;
-	LPTSTR szAppLCID = NULL;
-	LPTSTR szOfficeLCID = NULL;
+	LPSTR szComponentID = NULL;
+	LPSTR szAppLCID = NULL;
+	LPSTR szOfficeLCID = NULL;
 
 	GetMapiMsiIds(szClient,&szComponentID,&szAppLCID,&szOfficeLCID);
 
@@ -754,14 +699,74 @@ void UnloadMAPI()
 	hRes = S_OK;
 }
 
-// Translation - if pfn isn't already set, GetProcAddress for it from hMod
-#define GETPROC(pfn,_TYPE, ProcName) \
-if (!(pfn)) \
-{ \
-	WC_D((pfn), (_TYPE) GetProcAddress(hMod, (ProcName))); \
-	if (!(pfn)) DebugPrint(DBGLoadLibrary,_T("Failed to load \"%hs\" from 0x%08X\n"),(ProcName),(hMod)); \
-	hRes = S_OK; \
-}
+struct MAPI_FUNC_ENTRY
+{
+	FARPROC* fFunc;
+	LPSTR szEntryPoint;
+};
+#define MAKE_MAPI_FUNC_ENTRY(_fFunc, _szEntryPoint) {(FARPROC*)&(_fFunc), (_szEntryPoint)},
+MAPI_FUNC_ENTRY g_MAPIFuncs[] = {
+	MAKE_MAPI_FUNC_ENTRY(pfnLaunchWizard, LAUNCHWIZARDENTRYNAME)
+	MAKE_MAPI_FUNC_ENTRY(pfnMAPIAllocateBuffer, "MAPIAllocateBuffer") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnMAPIAllocateMore, "MAPIAllocateMore") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnMAPIFreeBuffer, "MAPIFreeBuffer") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnHrGetOneProp, "HrGetOneProp@12") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnHrGetOneProp, "HrGetOneProp") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnMAPIInitialize, "MAPIInitialize") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnMAPIUninitialize, "MAPIUninitialize") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnLPFreeProws, "FreeProws@4") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnLPFreeProws, "FreeProws") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnPpropFindProp, "PpropFindProp@12") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnPpropFindProp, "PpropFindProp") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnScDupPropset, "ScDupPropset@16") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnScDupPropset, "ScDupPropset") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnScCountProps, "ScCountProps@12") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnScCountProps, "ScCountProps") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnScCopyProps, "ScCopyProps@16") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnScCopyProps, "ScCopyProps") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnOpenIMsgOnIStg, "OpenIMsgOnIStg@44") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnOpenIMsgOnIStg, "OpenIMsgOnIStg") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnMAPIGetDefaultMalloc, "MAPIGetDefaultMalloc@0") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnMAPIGetDefaultMalloc, "MAPIGetDefaultMalloc") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnOpenTnefStreamEx, "OpenTnefStreamEx") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnOpenStreamOnFile, "OpenStreamOnFile") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnOpenStreamOnFileW, "OpenStreamOnFileW") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnCloseIMsgSession, "CloseIMsgSession@4") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnCloseIMsgSession, "CloseIMsgSession") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnOpenIMsgSession, "OpenIMsgSession@12") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnOpenIMsgSession, "OpenIMsgSession") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnHrQueryAllRows, "HrQueryAllRows@24") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnHrQueryAllRows, "HrQueryAllRows") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnMAPIOpenFormMgr, "MAPIOpenFormMgr") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnRTFSync, "RTFSync") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnHrSetOneProp, "HrSetOneProp@8") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnHrSetOneProp, "HrSetOneProp") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnFreePadrlist, "FreePadrlist@4") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnFreePadrlist, "FreePadrlist") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnPropCopyMore, "PropCopyMore@16") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnPropCopyMore, "PropCopyMore") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnWrapCompressedRTFStream, "WrapCompressedRTFStream") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnWrapStoreEntryID, "WrapStoreEntryID@24") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnWrapStoreEntryID, "WrapStoreEntryID") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnCreateIProp, "CreateIProp@24") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnCreateIProp, "CreateIProp") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnCreateTable, "CreateTable@36") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnCreateTable, "CreateTable") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnHrValidateParameters, "HrValidateParameters@8") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnHrValidateParameters, "HrValidateParameters") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnBuildDisplayTable, "BuildDisplayTable@40") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnBuildDisplayTable, "BuildDisplayTable") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnMNLS_lstrlenW, "MNLS_lstrlenW") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnMAPILogonEx, "MAPILogonEx") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnMAPIAdminProfiles, "MAPIAdminProfiles") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnHrValidateIPMSubtree, "HrValidateIPMSubtree@20") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnHrValidateIPMSubtree, "HrValidateIPMSubtree") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnWrapEx, "WrapCompressedRTFStreamEx") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnMAPIOpenLocalFormContainer, "MAPIOpenLocalFormContainer") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnHrDispatchNotifications, "HrDispatchNotifications@4") // STRING_OK
+	MAKE_MAPI_FUNC_ENTRY(pfnHrDispatchNotifications, "HrDispatchNotifications") // STRING_OK
+};
+ULONG g_cMAPIFuncs = _countof(g_MAPIFuncs);
 
 void LoadMAPIFuncs(HMODULE hMod)
 {
@@ -769,65 +774,16 @@ void LoadMAPIFuncs(HMODULE hMod)
 	HRESULT hRes = S_OK;
 	if (!hMod) return;
 
-	GETPROC(pfnLaunchWizard,			LPLAUNCHWIZARDENTRY,		LAUNCHWIZARDENTRYNAME)
-	GETPROC(pfnMAPIAllocateBuffer,		LPMAPIALLOCATEBUFFER,		"MAPIAllocateBuffer")
-	GETPROC(pfnMAPIAllocateMore,		LPMAPIALLOCATEMORE,			"MAPIAllocateMore")
-	GETPROC(pfnMAPIFreeBuffer,			LPMAPIFREEBUFFER,			"MAPIFreeBuffer")
-	GETPROC(pfnHrGetOneProp,			LPHRGETONEPROP,				"HrGetOneProp@12")
-	GETPROC(pfnHrGetOneProp,			LPHRGETONEPROP,				"HrGetOneProp")
-	GETPROC(pfnMAPIInitialize,			LPMAPIINITIALIZE,			"MAPIInitialize")
-	GETPROC(pfnMAPIUninitialize,		LPMAPIUNINITIALIZE,			"MAPIUninitialize")
-	GETPROC(pfnLPFreeProws,				LPFREEPROWS,				"FreeProws@4")
-	GETPROC(pfnLPFreeProws,				LPFREEPROWS,				"FreeProws")
-	GETPROC(pfnPpropFindProp,			LPPPROPFINDPROP,			"PpropFindProp@12")
-	GETPROC(pfnPpropFindProp,			LPPPROPFINDPROP,			"PpropFindProp")
-	GETPROC(pfnScDupPropset,			LPSCDUPPROPSET,				"ScDupPropset@16")
-	GETPROC(pfnScDupPropset,			LPSCDUPPROPSET,				"ScDupPropset")
-	GETPROC(pfnScCountProps,			LPSCCOUNTPROPS,				"ScCountProps@12")
-	GETPROC(pfnScCountProps,			LPSCCOUNTPROPS,				"ScCountProps")
-	GETPROC(pfnScCopyProps,				LPSCCOPYPROPS,				"ScCopyProps@16")
-	GETPROC(pfnScCopyProps,				LPSCCOPYPROPS,				"ScCopyProps")
-	GETPROC(pfnOpenIMsgOnIStg,			LPOPENIMSGONISTG,			"OpenIMsgOnIStg@44")
-	GETPROC(pfnOpenIMsgOnIStg,			LPOPENIMSGONISTG,			"OpenIMsgOnIStg")
-	GETPROC(pfnMAPIGetDefaultMalloc,	LPMAPIGETDEFAULTMALLOC,		"MAPIGetDefaultMalloc@0")
-	GETPROC(pfnMAPIGetDefaultMalloc,	LPMAPIGETDEFAULTMALLOC,		"MAPIGetDefaultMalloc")
-	GETPROC(pfnOpenTnefStreamEx,		LPOPENTNEFSTREAMEX,			"OpenTnefStreamEx")
-	GETPROC(pfnOpenStreamOnFile,		LPOPENSTREAMONFILE,			"OpenStreamOnFile")
-	GETPROC(pfnOpenStreamOnFileW,		LPOPENSTREAMONFILEW,		"OpenStreamOnFileW")
-	GETPROC(pfnCloseIMsgSession,		LPCLOSEIMSGSESSION,			"CloseIMsgSession@4")
-	GETPROC(pfnCloseIMsgSession,		LPCLOSEIMSGSESSION,			"CloseIMsgSession")
-	GETPROC(pfnOpenIMsgSession,			LPOPENIMSGSESSION,			"OpenIMsgSession@12")
-	GETPROC(pfnOpenIMsgSession,			LPOPENIMSGSESSION,			"OpenIMsgSession")
-	GETPROC(pfnHrQueryAllRows,			LPHRQUERYALLROWS,			"HrQueryAllRows@24")
-	GETPROC(pfnHrQueryAllRows,			LPHRQUERYALLROWS,			"HrQueryAllRows")
-	GETPROC(pfnMAPIOpenFormMgr,			LPMAPIOPENFORMMGR,			"MAPIOpenFormMgr")
-	GETPROC(pfnRTFSync,					LPRTFSYNC,					"RTFSync")
-	GETPROC(pfnHrSetOneProp,			LPHRSETONEPROP,				"HrSetOneProp@8")
-	GETPROC(pfnHrSetOneProp,			LPHRSETONEPROP,				"HrSetOneProp")
-	GETPROC(pfnFreePadrlist,			LPFREEPADRLIST,				"FreePadrlist@4")
-	GETPROC(pfnFreePadrlist,			LPFREEPADRLIST,				"FreePadrlist")
-	GETPROC(pfnPropCopyMore,			LPPROPCOPYMORE,				"PropCopyMore@16")
-	GETPROC(pfnPropCopyMore,			LPPROPCOPYMORE,				"PropCopyMore")
-	GETPROC(pfnWrapCompressedRTFStream,	LPWRAPCOMPRESSEDRTFSTREAM,	"WrapCompressedRTFStream")
-	GETPROC(pfnWrapStoreEntryID,		LPWRAPSTOREENTRYID,			"WrapStoreEntryID@24")
-	GETPROC(pfnWrapStoreEntryID,		LPWRAPSTOREENTRYID,			"WrapStoreEntryID")
-	GETPROC(pfnCreateIProp,				LPCREATEIPROP,				"CreateIProp@24")
-	GETPROC(pfnCreateIProp,				LPCREATEIPROP,				"CreateIProp")
-	GETPROC(pfnCreateTable,				LPCREATETABLE,				"CreateTable@36")
-	GETPROC(pfnCreateTable,				LPCREATETABLE,				"CreateTable")
-	GETPROC(pfnHrValidateParameters,	LPHRVALIDATEPARAMETERS,		"HrValidateParameters@8")
-	GETPROC(pfnHrValidateParameters,	LPHRVALIDATEPARAMETERS,		"HrValidateParameters")
-	GETPROC(pfnBuildDisplayTable,		LPBUILDDISPLAYTABLE,		"BuildDisplayTable@40")
-	GETPROC(pfnBuildDisplayTable,		LPBUILDDISPLAYTABLE,		"BuildDisplayTable")
-	GETPROC(pfnMNLS_lstrlenW,			LPMNLS_LSTRLENW,			"MNLS_lstrlenW")
-	GETPROC(pfnMAPILogonEx,				LPMAPILOGONEX,				"MAPILogonEx")
-	GETPROC(pfnMAPIAdminProfiles,		LPMAPIADMINPROFILES,		"MAPIAdminProfiles")
-	GETPROC(pfnHrValidateIPMSubtree,	LPHRVALIDATEIPMSUBTREE,		"HrValidateIPMSubtree@20")
-	GETPROC(pfnHrValidateIPMSubtree,	LPHRVALIDATEIPMSUBTREE,		"HrValidateIPMSubtree")
-	GETPROC(pfnWrapEx,					LPWRAPCOMPRESSEDRTFSTREAMEX,"WrapCompressedRTFStreamEx")
-	GETPROC(pfnMAPIOpenLocalFormContainer, LPMAPIOPENLOCALFORMCONTAINER,"MAPIOpenLocalFormContainer")
-	GETPROC(pfnHrDispatchNotifications,	LPHRDISPATCHNOTIFICATIONS,	"HrDispatchNotifications@4")
-	GETPROC(pfnHrDispatchNotifications,	LPHRDISPATCHNOTIFICATIONS,	"HrDispatchNotifications")
+	ULONG i = 0;
+	for (i = 0 ; i < g_cMAPIFuncs ; i++)
+	{
+		if (!*g_MAPIFuncs[i].fFunc)
+		{
+			hRes = S_OK;
+			WC_D((*g_MAPIFuncs[i].fFunc), GetProcAddress(hMod, g_MAPIFuncs[i].szEntryPoint));
+			if (!*g_MAPIFuncs[i].fFunc) DebugPrint(DBGLoadLibrary,_T("Failed to load \"%hs\" from 0x%08X\n"), g_MAPIFuncs[i].szEntryPoint, hMod);
+		}
+	}
 }
 
 #define CHECKLOAD(pfn) \
@@ -924,9 +880,9 @@ STDAPI_(SCODE) ScCountProps(int cValues,
 }
 
 STDAPI_(SCODE) ScCopyProps(int cValues,
-							LPSPropValue lpPropArray,
-							LPVOID lpvDst,
-							ULONG FAR *lpcb)
+						   LPSPropValue lpPropArray,
+						   LPVOID lpvDst,
+						   ULONG FAR *lpcb)
 {
 	CHECKLOAD(pfnScCopyProps);
 	if (pfnScCopyProps) return pfnScCopyProps(cValues,lpPropArray,lpvDst,lpcb);
@@ -1143,9 +1099,9 @@ typedef ACTIONS FAR *	LPACTIONS;
 
 // swiped from EDK rules sample
 STDAPI HrCopyActions(
-					LPACTIONS lpActsSrc, // source action ptr
-					LPVOID lpObject, // ptr to existing MAPI buffer
-					LPACTIONS FAR *	lppActsDst) // ptr to destination ACTIONS buffer
+					 LPACTIONS lpActsSrc, // source action ptr
+					 LPVOID lpObject, // ptr to existing MAPI buffer
+					 LPACTIONS FAR *	lppActsDst) // ptr to destination ACTIONS buffer
 {
 	if (!lpActsSrc || !lppActsDst) return MAPI_E_INVALID_PARAMETER;
 	if (lpActsSrc->cActions <= 0 || lpActsSrc->lpAction == NULL) return MAPI_E_INVALID_PARAMETER;
@@ -1177,8 +1133,8 @@ STDAPI HrCopyActions(
 	lpActsDst->lpAction = NULL;
 
 	WC_H(MAPIAllocateMore(sizeof(ACTION) * lpActsDst->cActions,
-						  lpObject,
-						  (LPVOID FAR *)&(lpActsDst->lpAction)));
+		lpObject,
+		(LPVOID FAR *)&(lpActsDst->lpAction)));
 	if (SUCCEEDED(hRes) && lpActsDst->lpAction)
 	{
 		// Initialize acttype values for all members of the array to a value
@@ -1189,8 +1145,8 @@ STDAPI HrCopyActions(
 		// Now actually copy all the members of the array.
 		for (i = 0; i < lpActsDst->cActions; i++)
 		{
-			lpActDst =	&(lpActsDst->lpAction[i]);
-			lpActSrc =	&(lpActsSrc->lpAction[i]);
+			lpActDst = &(lpActsDst->lpAction[i]);
+			lpActSrc = &(lpActsSrc->lpAction[i]);
 
 			*lpActDst = *lpActSrc;
 
@@ -1331,18 +1287,18 @@ STDAPI HrCopyActions(
 	if (FAILED(hRes))
 	{
 		if (fNullObject)
-		    MAPIFreeBuffer(*lppActsDst);
+			MAPIFreeBuffer(*lppActsDst);
 	}
 
 	return hRes;
 }
 
 HRESULT HrCopyRestrictionArray(
-	LPSRestriction lpResSrc, // source restriction
-	LPVOID lpObject, // ptr to existing MAPI buffer
-	ULONG cRes, // # elements in array
-	LPSRestriction lpResDest // destination restriction
-	)
+							   LPSRestriction lpResSrc, // source restriction
+							   LPVOID lpObject, // ptr to existing MAPI buffer
+							   ULONG cRes, // # elements in array
+							   LPSRestriction lpResDest // destination restriction
+							   )
 {
 	if (!lpResSrc || !lpResDest || !lpObject) return MAPI_E_INVALID_PARAMETER;
 	HRESULT hRes = S_OK;
@@ -1356,7 +1312,7 @@ HRESULT HrCopyRestrictionArray(
 		// Now fix up the pointers
 		switch (lpResSrc[i].rt)
 		{
-		// Structures for these two types are identical
+			// Structures for these two types are identical
 		case RES_AND:
 		case RES_OR:
 			if (lpResSrc[i].res.resAnd.cRes && lpResSrc[i].res.resAnd.lpRes)
@@ -1381,7 +1337,7 @@ HRESULT HrCopyRestrictionArray(
 			}
 			break;
 
-		// Structures for these two types are identical
+			// Structures for these two types are identical
 		case RES_NOT:
 		case RES_COUNT:
 			if (lpResSrc[i].res.resNot.lpRes)
@@ -1401,7 +1357,7 @@ HRESULT HrCopyRestrictionArray(
 			}
 			break;
 
-		// Structures for these two types are identical
+			// Structures for these two types are identical
 		case RES_CONTENT:
 		case RES_PROPERTY:
 			if (lpResSrc[i].res.resContent.lpProp)
@@ -1439,7 +1395,7 @@ HRESULT HrCopyRestrictionArray(
 			}
 			break;
 
-		// Structures for these two types are identical
+			// Structures for these two types are identical
 		case RES_COMMENT:
 		case RES_ANNOTATION:
 			if (lpResSrc[i].res.resComment.lpRes)
@@ -1479,10 +1435,10 @@ HRESULT HrCopyRestrictionArray(
 }
 
 STDAPI HrCopyRestriction(
-	LPSRestriction lpResSrc, // source restriction ptr
-	LPVOID lpObject, // ptr to existing MAPI buffer
-	LPSRestriction FAR * lppResDest // dest restriction buffer ptr
-	)
+						 LPSRestriction lpResSrc, // source restriction ptr
+						 LPVOID lpObject, // ptr to existing MAPI buffer
+						 LPSRestriction FAR * lppResDest // dest restriction buffer ptr
+						 )
 {
 	if (!lppResDest) return MAPI_E_INVALID_PARAMETER;
 	*lppResDest = NULL;
@@ -1494,13 +1450,13 @@ STDAPI HrCopyRestriction(
 	if (lpObject != NULL)
 	{
 		WC_H(MAPIAllocateMore(sizeof(SRestriction),
-							  lpObject,
-							  (LPVOID FAR *)lppResDest));
+			lpObject,
+			(LPVOID FAR *)lppResDest));
 	}
 	else
 	{
 		WC_H(MAPIAllocateBuffer(sizeof(SRestriction),
-								(LPVOID FAR *)lppResDest));
+			(LPVOID FAR *)lppResDest));
 		lpObject = *lppResDest;
 	}
 	if (FAILED(hRes)) return hRes;
@@ -1638,7 +1594,7 @@ STDAPI HrDispatchNotifications(ULONG ulFlags)
 }
 
 STDAPI WrapStoreEntryID(ULONG ulFlags, __in LPTSTR lpszDLLName, ULONG cbOrigEntry,
-	LPENTRYID lpOrigEntry, ULONG *lpcbWrappedEntry, LPENTRYID *lppWrappedEntry)
+						LPENTRYID lpOrigEntry, ULONG *lpcbWrappedEntry, LPENTRYID *lppWrappedEntry)
 {
 	CHECKLOAD(pfnWrapStoreEntryID);
 	if (pfnWrapStoreEntryID) return pfnWrapStoreEntryID(ulFlags, lpszDLLName, cbOrigEntry, lpOrigEntry, lpcbWrappedEntry, lppWrappedEntry);
@@ -1646,11 +1602,11 @@ STDAPI WrapStoreEntryID(ULONG ulFlags, __in LPTSTR lpszDLLName, ULONG cbOrigEntr
 }
 STDAPI_(SCODE)
 CreateIProp( LPCIID					lpInterface,
-			 ALLOCATEBUFFER FAR *	lpAllocateBuffer,
-			 ALLOCATEMORE FAR *		lpAllocateMore,
-			 FREEBUFFER FAR *		lpFreeBuffer,
-			 LPVOID					lpvReserved,
-			 LPPROPDATA FAR *		lppPropData )
+			ALLOCATEBUFFER FAR *	lpAllocateBuffer,
+			ALLOCATEMORE FAR *		lpAllocateMore,
+			FREEBUFFER FAR *		lpFreeBuffer,
+			LPVOID					lpvReserved,
+			LPPROPDATA FAR *		lppPropData )
 {
 	CHECKLOAD(pfnCreateIProp);
 	if (pfnCreateIProp) return pfnCreateIProp(lpInterface, lpAllocateBuffer, lpAllocateMore, lpFreeBuffer, lpvReserved, lppPropData);
@@ -1659,14 +1615,14 @@ CreateIProp( LPCIID					lpInterface,
 
 STDAPI_(SCODE)
 CreateTable( LPCIID					lpInterface,
-			 ALLOCATEBUFFER FAR *	lpAllocateBuffer,
-			 ALLOCATEMORE FAR *		lpAllocateMore,
-			 FREEBUFFER FAR *		lpFreeBuffer,
-			 LPVOID					lpvReserved,
-			 ULONG					ulTableType,
-			 ULONG					ulPropTagIndexColumn,
-			 LPSPropTagArray		lpSPropTagArrayColumns,
-			 LPTABLEDATA FAR *		lppTableData )
+			ALLOCATEBUFFER FAR *	lpAllocateBuffer,
+			ALLOCATEMORE FAR *		lpAllocateMore,
+			FREEBUFFER FAR *		lpFreeBuffer,
+			LPVOID					lpvReserved,
+			ULONG					ulTableType,
+			ULONG					ulPropTagIndexColumn,
+			LPSPropTagArray		lpSPropTagArrayColumns,
+			LPTABLEDATA FAR *		lppTableData )
 {
 	CHECKLOAD(pfnCreateTable);
 	if (pfnCreateTable) return pfnCreateTable(
@@ -1693,15 +1649,15 @@ STDAPI HrValidateParameters( METHODS eMethod, LPVOID FAR *ppFirstArg)
 
 STDAPI
 BuildDisplayTable(	LPALLOCATEBUFFER	lpAllocateBuffer,
-					LPALLOCATEMORE		lpAllocateMore,
-					LPFREEBUFFER		lpFreeBuffer,
-					LPMALLOC			lpMalloc,
-					HINSTANCE			hInstance,
-					UINT				cPages,
-					LPDTPAGE			lpPage,
-					ULONG				ulFlags,
-					LPMAPITABLE *		lppTable,
-					LPTABLEDATA	*		lppTblData )
+				  LPALLOCATEMORE		lpAllocateMore,
+				  LPFREEBUFFER		lpFreeBuffer,
+				  LPMALLOC			lpMalloc,
+				  HINSTANCE			hInstance,
+				  UINT				cPages,
+				  LPDTPAGE			lpPage,
+				  ULONG				ulFlags,
+				  LPMAPITABLE *		lppTable,
+				  LPTABLEDATA	*		lppTblData )
 {
 	CHECKLOAD(pfnBuildDisplayTable);
 	if (pfnBuildDisplayTable) return pfnBuildDisplayTable(
@@ -1718,7 +1674,7 @@ BuildDisplayTable(	LPALLOCATEBUFFER	lpAllocateBuffer,
 	return MAPI_E_CALL_FAILED;
 }
 
-int	WINAPI MNLS_lstrlenW(LPCWSTR lpString)
+int WINAPI MNLS_lstrlenW(LPCWSTR lpString)
 {
 	CHECKLOAD(pfnMNLS_lstrlenW);
 	if (pfnMNLS_lstrlenW) return pfnMNLS_lstrlenW(

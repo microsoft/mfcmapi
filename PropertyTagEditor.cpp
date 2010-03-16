@@ -118,9 +118,9 @@ void CPropertyTagEditor::OnEditAction1()
 	HRESULT hRes = S_OK;
 
 	CPropertySelector MyData(
-			m_bIncludeABProps,
-			m_lpMAPIProp,
-			this);
+		m_bIncludeABProps,
+		m_lpMAPIProp,
+		this);
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK != hRes) return;
@@ -495,9 +495,9 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField)
 //////////////////////////////////////////////////////////////////////////////////////
 
 CPropertySelector::CPropertySelector(
-									   BOOL			bIncludeABProps,
-									   LPMAPIPROP	lpMAPIProp,
-									   CWnd*		pParentWnd):
+									 BOOL			bIncludeABProps,
+									 LPMAPIPROP	lpMAPIProp,
+									 CWnd*		pParentWnd):
 CEditor(pParentWnd,IDS_PROPSELECTOR,IDS_PROPSELECTORPROMPT,0,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL)
 {
 	TRACE_CONSTRUCTOR(CLASS);

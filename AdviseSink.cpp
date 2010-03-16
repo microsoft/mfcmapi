@@ -22,7 +22,7 @@ CAdviseSink::~CAdviseSink()
 
 
 STDMETHODIMP CAdviseSink::QueryInterface(REFIID riid,
-											  LPVOID * ppvObj)
+										 LPVOID * ppvObj)
 {
 	*ppvObj = 0;
 	if (riid == IID_IMAPIAdviseSink ||
@@ -51,7 +51,7 @@ STDMETHODIMP_(ULONG) CAdviseSink::Release()
 };
 
 STDMETHODIMP_(ULONG) CAdviseSink::OnNotify (ULONG cNotify,
-												 LPNOTIFICATION lpNotifications)
+											LPNOTIFICATION lpNotifications)
 {
 	HRESULT			hRes = S_OK;
 

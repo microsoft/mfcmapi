@@ -17,11 +17,11 @@ static TCHAR* CLASS = _T("CHierarchyTableTreeCtrl");
 // CHierarchyTableTreeCtrl
 
 CHierarchyTableTreeCtrl::CHierarchyTableTreeCtrl(
-												 CWnd* pCreateParent,
-												 CMapiObjects* lpMapiObjects,
-												 CHierarchyTableDlg *lpHostDlg,
-												 ULONG ulDisplayFlags,
-												 UINT nIDContextMenu)
+	CWnd* pCreateParent,
+	CMapiObjects* lpMapiObjects,
+	CHierarchyTableDlg *lpHostDlg,
+	ULONG ulDisplayFlags,
+	UINT nIDContextMenu)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	CRect pRect;
@@ -56,9 +56,9 @@ CHierarchyTableTreeCtrl::CHierarchyTableTreeCtrl(
 		| TVS_DISABLEDRAGDROP
 		| TVS_SHOWSELALWAYS
 		| WS_CHILD
-//		| WS_BORDER
+		//| WS_BORDER
 		| WS_TABSTOP
-//		| WS_CLIPCHILDREN
+		//| WS_CLIPCHILDREN
 		| WS_CLIPSIBLINGS
 		| WS_VISIBLE,
 		pRect,
@@ -101,7 +101,7 @@ BEGIN_MESSAGE_MAP(CHierarchyTableTreeCtrl, CTreeCtrl)
 	ON_WM_KEYDOWN()
 	ON_WM_GETDLGCODE()
 	ON_WM_CONTEXTMENU()
-    ON_MESSAGE(WM_MFCMAPI_ADDITEM, msgOnAddItem)
+	ON_MESSAGE(WM_MFCMAPI_ADDITEM, msgOnAddItem)
 	ON_MESSAGE(WM_MFCMAPI_DELETEITEM, msgOnDeleteItem)
 	ON_MESSAGE(WM_MFCMAPI_MODIFYITEM, msgOnModifyItem)
 	ON_MESSAGE(WM_MFCMAPI_REFRESHTABLE, msgOnRefreshTable)
@@ -805,8 +805,8 @@ void CHierarchyTableTreeCtrl::OnContextMenu(CWnd* /*pWnd*/, CPoint pos)
 {
 	// Select the item that is at the point pos.
 	UINT uFlags;
-    CPoint ptTree = pos;
-    ScreenToClient(&ptTree);
+	CPoint ptTree = pos;
+	ScreenToClient(&ptTree);
 	HTREEITEM hClickedItem = HitTest(ptTree, &uFlags);
 
 	if ((hClickedItem != NULL) && (TVHT_ONITEM & uFlags))
@@ -866,9 +866,9 @@ LPMAPICONTAINER CHierarchyTableTreeCtrl::GetSelectedContainer(__mfcmapiModifyEnu
 }
 
 void CHierarchyTableTreeCtrl::GetContainer(
-										   HTREEITEM Item,
-										   __mfcmapiModifyEnum bModify,
-										   LPMAPICONTAINER* lppContainer)
+	HTREEITEM Item,
+	__mfcmapiModifyEnum bModify,
+	LPMAPICONTAINER* lppContainer)
 {
 	HRESULT			hRes = S_OK;
 	ULONG			ulObjType = NULL;

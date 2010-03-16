@@ -17,20 +17,20 @@ static TCHAR* CLASS = _T("CRulesDlg");
 // CRulesDlg dialog
 
 CRulesDlg::CRulesDlg(
-							   CParentWnd* pParentWnd,
-							   CMapiObjects* lpMapiObjects,
-							   LPEXCHANGEMODIFYTABLE lpExchTbl):
+					 CParentWnd* pParentWnd,
+					 CMapiObjects* lpMapiObjects,
+					 LPEXCHANGEMODIFYTABLE lpExchTbl):
 CContentsTableDlg(
-						  pParentWnd,
-						  lpMapiObjects,
-						  IDS_RULESTABLE,
-						  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
-						  NULL,
-						  (LPSPropTagArray) &sptRULECols,
-						  NUMRULECOLUMNS,
-						  RULEColumns,
-						  IDR_MENU_RULES_POPUP,
-						  MENU_CONTEXT_RULES_TABLE)
+				  pParentWnd,
+				  lpMapiObjects,
+				  IDS_RULESTABLE,
+				  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+				  NULL,
+				  (LPSPropTagArray) &sptRULECols,
+				  NUMRULECOLUMNS,
+				  RULEColumns,
+				  IDR_MENU_RULES_POPUP,
+				  MENU_CONTEXT_RULES_TABLE)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	m_lpExchTbl = lpExchTbl;
@@ -220,9 +220,9 @@ HRESULT CRulesDlg::GetSelectedItems(ULONG ulFlags, ULONG ulRowFlags, LPROWLIST* 
 } // CRulesDlg::GetSelectedItems
 
 void CRulesDlg::HandleAddInMenuSingle(
-									   LPADDINMENUPARAMS lpParams,
-									   LPMAPIPROP /*lpMAPIProp*/,
-									   LPMAPICONTAINER /*lpContainer*/)
+									  LPADDINMENUPARAMS lpParams,
+									  LPMAPIPROP /*lpMAPIProp*/,
+									  LPMAPICONTAINER /*lpContainer*/)
 {
 	if (lpParams)
 	{

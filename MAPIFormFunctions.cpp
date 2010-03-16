@@ -15,12 +15,12 @@
 // 'Internal Application Error' when you save.
 
 HRESULT CreateAndDisplayNewMailInFolder(
-							  LPMDB lpMDB,
-							  LPMAPISESSION lpMAPISession,
-							  CContentsTableListCtrl *lpContentsTableListCtrl,
-							  int iItem,
-							  LPCSTR szMessageClass,
-							  LPMAPIFOLDER lpFolder)
+										LPMDB lpMDB,
+										LPMAPISESSION lpMAPISession,
+										CContentsTableListCtrl *lpContentsTableListCtrl,
+										int iItem,
+										LPCSTR szMessageClass,
+										LPMAPIFOLDER lpFolder)
 {
 	HRESULT				hRes = S_OK;
 	LPMAPIFORMMGR		lpMAPIFormMgr = NULL;

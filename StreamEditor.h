@@ -21,11 +21,11 @@ public:
 	virtual ~CStreamEditor();
 
 private:
-	BOOL	OnInitDialog();
-	void	ReadTextStreamFromProperty();
-	void	WriteTextStreamToProperty();
-	ULONG	HandleChange(UINT nID);
-	void	OnOK();
+	BOOL  OnInitDialog();
+	void  ReadTextStreamFromProperty();
+	void  WriteTextStreamToProperty();
+	ULONG HandleChange(UINT nID);
+	void  OnOK();
 
 	// source variables
 	LPMAPIPROP	m_lpMAPIProp;

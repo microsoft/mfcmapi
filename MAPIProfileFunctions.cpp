@@ -8,11 +8,11 @@
 #include "ExtraPropTags.h"
 
 void LaunchProfileWizard(
-	HWND			hParentWnd,
-	ULONG			ulFlags,
-	LPCSTR FAR *	lppszServiceNameToAdd,
-	ULONG			cbBufferMax,
-	LPTSTR			lpszNewProfileName)
+						 HWND			hParentWnd,
+						 ULONG			ulFlags,
+						 LPCSTR FAR *	lppszServiceNameToAdd,
+						 ULONG			cbBufferMax,
+						 LPTSTR			lpszNewProfileName)
 {
 	HRESULT		hRes = S_OK;
 
@@ -62,11 +62,11 @@ void DisplayMAPISVCPath(CWnd* pParentWnd)
 } // DisplayMAPISVCPath
 
 ///////////////////////////////////////////////////////////////////////////////
-// Function name	: GetMAPISVCPath
-// Description	    : This will get the correct path to the MAPISVC.INF file.
-// Return type		: void
-// Argument         : LPSTR szMAPIDir - Buffer to hold the path to the MAPISVC file.
-//                    ULONG cchMAPIDir - size of the buffer
+// Function name : GetMAPISVCPath
+// Description   : This will get the correct path to the MAPISVC.INF file.
+// Return type   : void
+// Argument      : LPTSTR szMAPIDir - Buffer to hold the path to the MAPISVC file.
+//                 ULONG cchMAPIDir - size of the buffer
 void GetMAPISVCPath(LPTSTR szMAPIDir, ULONG cchMAPIDir)
 {
 	HRESULT hRes = S_OK;
@@ -645,10 +645,10 @@ HRESULT HrAddServiceToProfile(
 } // HrAddServiceToProfile
 
 HRESULT HrAddExchangeToProfile(
-						   IN ULONG_PTR ulUIParam, // hwnd for CreateMsgService
-						   IN LPSTR lpszServerName,
-						   IN LPSTR lpszMailboxName,
-						   IN LPSTR lpszProfileName)
+							   IN ULONG_PTR ulUIParam, // hwnd for CreateMsgService
+							   IN LPSTR lpszServerName,
+							   IN LPSTR lpszMailboxName,
+							   IN LPSTR lpszProfileName)
 {
 	HRESULT			hRes = S_OK;
 
@@ -875,8 +875,8 @@ HRESULT OpenProfileSection(LPSERVICEADMIN lpServiceAdmin, LPSBinary lpServiceUID
 		// offset of 0x48.  USE AT YOUR OWN RISK!  NOT SUPPORTED!
 		interface IOpenSectionHack : public IUnknown
 		{
-					public:
-						virtual HRESULT STDMETHODCALLTYPE OpenSection(LPMAPIUID, ULONG, LPPROFSECT*) = 0;
+		public:
+			virtual HRESULT STDMETHODCALLTYPE OpenSection(LPMAPIUID, ULONG, LPPROFSECT*) = 0;
 		};
 
 		IOpenSectionHack** ppProfile;

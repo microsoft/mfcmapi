@@ -25,15 +25,15 @@ static TCHAR* CLASS = _T("CContentsTableListCtrl");
 // CContentsTableListCtrl
 
 CContentsTableListCtrl::CContentsTableListCtrl(
-									 CWnd* pCreateParent,
-									 CMapiObjects* lpMapiObjects,
-									 LPSPropTagArray	sptExtraColumnTags,
-									 ULONG ulNumExtraDisplayColumns,
-									 TagNames *lpExtraDisplayColumns,
-									 UINT nIDContextMenu,
-									 BOOL bIsAB,
-									 CContentsTableDlg *lpHostDlg)
-									 :CSortListCtrl()
+	CWnd* pCreateParent,
+	CMapiObjects* lpMapiObjects,
+	LPSPropTagArray	sptExtraColumnTags,
+	ULONG ulNumExtraDisplayColumns,
+	TagNames *lpExtraDisplayColumns,
+	UINT nIDContextMenu,
+	BOOL bIsAB,
+	CContentsTableDlg *lpHostDlg)
+	:CSortListCtrl()
 {
 	TRACE_CONSTRUCTOR(CLASS);
 
@@ -87,7 +87,7 @@ BEGIN_MESSAGE_MAP(CContentsTableListCtrl, CSortListCtrl)
 	ON_NOTIFY_REFLECT(LVN_ITEMCHANGED, OnItemChanged)
 	ON_WM_KEYDOWN()
 	ON_WM_CONTEXTMENU()
-    ON_MESSAGE(WM_MFCMAPI_ADDITEM, msgOnAddItem)
+	ON_MESSAGE(WM_MFCMAPI_ADDITEM, msgOnAddItem)
 	ON_MESSAGE(WM_MFCMAPI_THREADADDITEM, msgOnThreadAddItem)
 	ON_MESSAGE(WM_MFCMAPI_DELETEITEM, msgOnDeleteItem)
 	ON_MESSAGE(WM_MFCMAPI_MODIFYITEM, msgOnModifyItem)
@@ -144,9 +144,9 @@ BOOL CContentsTableListCtrl::IsContentsTableSet()
 } // CContentsTableListCtrl::IsContentsTableSet
 
 HRESULT CContentsTableListCtrl::SetContentsTable(
-						 LPMAPITABLE lpContentsTable,
-						 ULONG ulDisplayFlags,
-						 ULONG ulContainerType)
+	LPMAPITABLE lpContentsTable,
+	ULONG ulDisplayFlags,
+	ULONG ulContainerType)
 {
 	HRESULT	hRes = S_OK;
 
@@ -1100,18 +1100,18 @@ void CContentsTableListCtrl::SetRowStrings(int iRow,LPSRow lpsRowData)
 #define NUMOBJTYPES 12
 static LONG _ObjTypeIcons[NUMOBJTYPES][2] =
 {
-{MAPI_STORE,slIconMAPI_STORE},
-{MAPI_ADDRBOOK,slIconMAPI_ADDRBOOK},
-{MAPI_FOLDER,slIconMAPI_FOLDER},
-{MAPI_ABCONT,slIconMAPI_ABCONT},
-{MAPI_MESSAGE,slIconMAPI_MESSAGE},
-{MAPI_MAILUSER,slIconMAPI_MAILUSER},
-{MAPI_ATTACH,slIconMAPI_ATTACH},
-{MAPI_DISTLIST,slIconMAPI_DISTLIST},
-{MAPI_PROFSECT,slIconMAPI_PROFSECT},
-{MAPI_STATUS,slIconMAPI_STATUS},
-{MAPI_SESSION,slIconMAPI_SESSION},
-{MAPI_FORMINFO,slIconMAPI_FORMINFO},
+	{MAPI_STORE,slIconMAPI_STORE},
+	{MAPI_ADDRBOOK,slIconMAPI_ADDRBOOK},
+	{MAPI_FOLDER,slIconMAPI_FOLDER},
+	{MAPI_ABCONT,slIconMAPI_ABCONT},
+	{MAPI_MESSAGE,slIconMAPI_MESSAGE},
+	{MAPI_MAILUSER,slIconMAPI_MAILUSER},
+	{MAPI_ATTACH,slIconMAPI_ATTACH},
+	{MAPI_DISTLIST,slIconMAPI_DISTLIST},
+	{MAPI_PROFSECT,slIconMAPI_PROFSECT},
+	{MAPI_STATUS,slIconMAPI_STATUS},
+	{MAPI_SESSION,slIconMAPI_SESSION},
+	{MAPI_FORMINFO,slIconMAPI_FORMINFO},
 };
 
 void GetDepthAndImage(LPSRow lpsRowData,ULONG* lpulDepth, ULONG* lpulImage)
@@ -1282,9 +1282,9 @@ HRESULT CContentsTableListCtrl::GetSelectedItemEIDs(LPENTRYLIST* lppEntryIDs)
 					{
 						lpTempList->lpbin[iArrayPos].cb = lpData->data.Contents.lpEntryID->cb;
 						EC_H(MAPIAllocateMore(
-								lpData->data.Contents.lpEntryID->cb,
-								lpTempList,
-								(LPVOID *) &lpTempList->lpbin[iArrayPos].lpb));
+							lpData->data.Contents.lpEntryID->cb,
+							lpTempList,
+							(LPVOID *) &lpTempList->lpbin[iArrayPos].lpb));
 						if (lpTempList->lpbin[iArrayPos].lpb)
 						{
 							CopyMemory(
@@ -1306,8 +1306,8 @@ HRESULT CContentsTableListCtrl::GetSelectedItemEIDs(LPENTRYLIST* lppEntryIDs)
 // Call again with the previous iCurItem to get the next one.
 // Stop calling when iCurItem = -1 and/or lppProp is NULL
 // If iCurItem is NULL, just returns the focused item
-int	CContentsTableListCtrl::GetNextSelectedItemNum(
-												   int *iCurItem)
+int CContentsTableListCtrl::GetNextSelectedItemNum(
+	int *iCurItem)
 {
 	int	iItem = NULL;
 
@@ -1345,10 +1345,10 @@ SortListData* CContentsTableListCtrl::GetNextSelectedItemData(int *iCurItem)
 // Call again with the previous iCurItem to get the next one.
 // Stop calling when iCurItem = -1 and/or lppProp is NULL
 // If iCurItem is NULL, just returns the focused item
-HRESULT	CContentsTableListCtrl::OpenNextSelectedItemProp(
-													int *iCurItem,
-													__mfcmapiModifyEnum bModify,
-													LPMAPIPROP* lppProp)
+HRESULT CContentsTableListCtrl::OpenNextSelectedItemProp(
+	int *iCurItem,
+	__mfcmapiModifyEnum bModify,
+	LPMAPIPROP* lppProp)
 {
 	HRESULT	hRes = S_OK;
 	int iItem;
@@ -1363,9 +1363,9 @@ HRESULT	CContentsTableListCtrl::OpenNextSelectedItemProp(
 } // CContentsTableListCtrl::OpenNextSelectedItemProp
 
 HRESULT CContentsTableListCtrl::DefaultOpenItemProp(
-							   int iItem,
-							   __mfcmapiModifyEnum bModify,
-							   LPMAPIPROP* lppProp)
+	int iItem,
+	__mfcmapiModifyEnum bModify,
+	LPMAPIPROP* lppProp)
 {
 	HRESULT			hRes = S_OK;
 	LPSBinary		lpEID = NULL;
@@ -1517,7 +1517,7 @@ void CContentsTableListCtrl::OnItemChanged(NMHDR* pNMHDR, LRESULT* pResult)
 				lpProps = lpData->lpSourceProps;
 			}
 
-			EC_H(m_lpHostDlg->OpenItemProp(pNMListView->iItem, mfcmapiREQUEST_MODIFY, &lpMAPIProp));
+			WC_H(m_lpHostDlg->OpenItemProp(pNMListView->iItem, mfcmapiREQUEST_MODIFY, &lpMAPIProp));
 
 			szTitle.LoadString(IDS_DISPLAYNAMENOTFOUND);
 

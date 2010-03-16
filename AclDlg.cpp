@@ -22,16 +22,16 @@ CAclDlg::CAclDlg(CParentWnd* pParentWnd,
 				 CMapiObjects* lpMapiObjects,
 				 LPEXCHANGEMODIFYTABLE lpExchTbl,
 				 BOOL fFreeBusyVisible)
-: CContentsTableDlg(pParentWnd,
-					lpMapiObjects,
-					(fFreeBusyVisible ? IDS_ACLFBTABLE : IDS_ACLTABLE),
-					mfcmapiDO_NOT_CALL_CREATE_DIALOG,
-					NULL,
-					(LPSPropTagArray) &sptACLCols,
-					NUMACLCOLUMNS,
-					ACLColumns,
-					IDR_MENU_ACL_POPUP,
-					MENU_CONTEXT_ACL_TABLE)
+				 : CContentsTableDlg(pParentWnd,
+				 lpMapiObjects,
+				 (fFreeBusyVisible ? IDS_ACLFBTABLE : IDS_ACLTABLE),
+				 mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+				 NULL,
+				 (LPSPropTagArray) &sptACLCols,
+				 NUMACLCOLUMNS,
+				 ACLColumns,
+				 IDR_MENU_ACL_POPUP,
+				 MENU_CONTEXT_ACL_TABLE)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	m_lpExchTbl = lpExchTbl;
@@ -66,7 +66,7 @@ BEGIN_MESSAGE_MAP(CAclDlg, CContentsTableDlg)
 END_MESSAGE_MAP()
 
 
-HRESULT	CAclDlg::OpenItemProp(int /*iSelectedItem*/, __mfcmapiModifyEnum /*bModify*/, LPMAPIPROP* /*lppMAPIProp*/)
+HRESULT CAclDlg::OpenItemProp(int /*iSelectedItem*/, __mfcmapiModifyEnum /*bModify*/, LPMAPIPROP* /*lppMAPIProp*/)
 {
 	// Don't do anything because we don't want to override the properties that we have
 	return S_OK;
@@ -293,9 +293,9 @@ HRESULT CAclDlg::GetSelectedItems(ULONG ulFlags, ULONG ulRowFlags, LPROWLIST* lp
 } // CAclDlg::GetSelectedItems
 
 void CAclDlg::HandleAddInMenuSingle(
-									   LPADDINMENUPARAMS lpParams,
-									   LPMAPIPROP /*lpMAPIProp*/,
-									   LPMAPICONTAINER /*lpContainer*/)
+									LPADDINMENUPARAMS lpParams,
+									LPMAPIPROP /*lpMAPIProp*/,
+									LPMAPICONTAINER /*lpContainer*/)
 {
 	if (lpParams)
 	{

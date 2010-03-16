@@ -18,13 +18,13 @@ public:
 
 	// Initialization
 	HRESULT SetDataSource(LPMAPIPROP lpMAPIProp, SortListData* lpListData, BOOL bIsAB);
-	HRESULT	RefreshMAPIPropList();
+	HRESULT RefreshMAPIPropList();
 
 	// Selected item accessors
-	ULONG			GetCountPropVals();
-	LPSPropValue	GetPropVals();
-	void			GetSelectedPropTag(ULONG* lpPropTag);
-	BOOL			IsModifiedPropVals();
+	ULONG        GetCountPropVals();
+	LPSPropValue GetPropVals();
+	void         GetSelectedPropTag(ULONG* lpPropTag);
+	BOOL         IsModifiedPropVals();
 
 	BOOL HandleMenu(WORD wMenuSelect);
 	void InitMenu(CMenu* pMenu);
@@ -37,7 +37,7 @@ private:
 	void FindAllNamedProps();
 	void CountNamedProps();
 	HRESULT LoadMAPIPropList();
-	HRESULT	SetNewProp(LPSPropValue lpNewProp);
+	HRESULT SetNewProp(LPSPropValue lpNewProp);
 
 	void AddPropToListBox(
 		int iRow,
@@ -66,7 +66,7 @@ private:
 	void OnPasteNamedProps();
 
 	// Custom messages
-	LRESULT	msgOnSaveColumnOrder(WPARAM wParam, LPARAM lParam);
+	LRESULT msgOnSaveColumnOrder(WPARAM wParam, LPARAM lParam);
 
 	LPMAPIPROP		m_lpMAPIProp;
 	SortListData*	m_lpSourceData; // NEVER FREE THIS - It's just 'on loan' from CContentsTableListCtrl

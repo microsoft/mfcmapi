@@ -118,6 +118,7 @@ ID_CREATEPROFILE								"Create an empty profile"
 ID_CREATEPROPERTYSTRINGRESTRICTION				"Create a content restriction using a given string and property"
 ID_CREATERANGERESTRICTION						"Create a restriction using a range"
 ID_CREATESUBFOLDER								"Create a subfolder under the selected folder"
+ID_DBGVIEW										"Open Debug Viewer"
 ID_DELETEATTACHMENTS							"Delete attachments from selected items"
 ID_DELETEPROPERTY								"Delete selected property from the selected item"
 ID_DELETESELECTEDITEM							"Delete selected item (to the Deleted Items folder for messages)"
@@ -348,6 +349,9 @@ IDS_SORTORDERPROMPT              "Select sort order"
 IDS_LARGENUMROWS                 "Large Number of Rows"
 IDS_LARGENUMROWSPROMPT           "The number of rows in this table either exceeds the throttle value or could not be determined.\r\n\
 Click OK to display the specified number of rows."
+// DbgView.cpp
+IDS_DBGVIEW                      "Debug Viewer"
+IDS_DBGVIEWPROMPT                "Control debug output using tags."
 // folderdlg.cpp
 IDS_ADDONEOFF                    "Add One Off Recipient"
 IDS_ADDONEOFFPROMPT              "Enter values for address"
@@ -752,9 +756,10 @@ a binary search of the named property range (0x8000-0xFFFF).\r\n\
 \r\n\
 The Edit Given Property menu item may be used to further examine\r\n\
 existing named property mappings.\r\n"
-IDS_STNOPARSING                   "No parsing"
-IDS_PROPERTYDEFINITIONSTREAM      "Property Definition Stream"
-IDS_ADDITIONALRENENTRYIDSEX       "Additional Ren Entry IDs Ex"
+IDS_STNOPARSING                  "No parsing"
+IDS_STPROPERTYDEFINITIONSTREAM   "Property Definition Stream"
+IDS_STADDITIONALRENENTRYIDSEX    "Additional Ren Entry IDs Ex"
+IDS_STFLATENTRYLIST              "Flat Entry List"
 
 // AbDlg.cpp
 IDS_FLAGS "Flags"
@@ -947,6 +952,7 @@ IDS_REGKEY_MAPI_NO_CACHE "Use MAPI_NO_CACHE when calling OpenEntry"
 IDS_REGKEY_ALLOW_PERSIST_CACHE "Allow caching of IPersistMessage objects when opening Outlook forms in compose mode, which may prevent shutdown of certain versions of Outlook"
 IDS_REGKEY_USE_IMAPIPROGRESS "Pass IMAPIProgress implementation to functions that take it"
 IDS_REGKEY_USE_MESSAGERAW "Use IID_IMessageRaw when opening messages"
+IDS_REGKEY_HEAPENABLETERMINATIONONCORRUPTION "Terminate on heap corruption (requires restart)"
 // RestrictEditor.cpp
 IDS_RELOP "relop"
 IDS_ULPROPTAG1 "ulPropTag1"
@@ -1027,9 +1033,8 @@ Getting Started: Select Session\\Logon and Display Store Table to open a profile
 Keyboard Shortcuts:\n\
 All Panes\n\
 \tF1\t\t: Display this help screen\n\
+\tCtrl+D\t\t: Display Debug Viewer\n\
 \tCtrl+H\t\t: Display Hex Editor\n\
-\tCtrl+D\t\t: Enable Verbose Debug Output\n\
-\tCtrl+Shift+D\t: Disable Debug Output\n\
 \n\
 Table View Pane\n\
 \tF5\t\t\t: Refresh/reload table\n\
@@ -1219,6 +1224,8 @@ IDS_ACTIONSELECTPTAG "Select Property Tag"
 IDS_ACTIONCREATENAMEDPROP "Create Named Property"
 IDS_ACTIONEDITPROP "Edit Prop Value"
 IDS_ACTIONEDITRES "Edit Restriction"
+IDS_CLEAR "Clear"
+IDS_PAUSE "Pause"
 
 IDS_DIRPROMPT "Choose directory to save to"
 
@@ -1251,9 +1258,6 @@ IDS_PROBLEMARRAY "Index: 0x%1!08X!, ulPropTag: %2, scode: 0x%3!08X! = %4\r\n"
 IDS_MAPIERRUNICODE "ulVersion = 0x%1!X!\r\nlpszError = %2!ws!\r\nlpszComponent = %3!ws!\r\nulLowLevelError = 0x%4!X! = %5!ws!\r\nulContext = 0x%6!X!"
 IDS_MAPIERRANSI    "ulVersion = 0x%1!X!\r\nlpszError = %2!hs!\r\nlpszComponent = %3!hs!\r\nulLowLevelError = 0x%4!X! = %5!hs!\r\nulContext = 0x%6!X!"
 IDS_TNEFPROBARRAY "Component: 0x%1!08X!\r\nAttribute: 0x%2!08X!\r\n%3\r\nError: 0x%4!08X! = %5\r\n"
-IDS_ENTRYLISTPREFIX "Count of Entries: 0x%1!08X!\r\n"
-IDS_ENTRYLISTENTRY "%1\r\nAlt: %2\r\n"
-IDS_NULLENTRYLIST "Null entry list\r\n"
 IDS_NULLRES "lpRes was NULL\r\n"
 IDS_RESTYPE "%1lpRes->rt = 0x%2!X! = %3\r\n"
 
@@ -1751,7 +1755,7 @@ IDS_TASKASSIGNEREID "\r\nTask Assigner[%1!d!]\r\n\
 \tlpEntryID = "
 
 IDS_TASKASSIGNERNAME "\r\n\tszDisplayName (ANSI) = %1!hs!\
-					 \r\n\tszDisplayName (Unicode) = %2!ws!"
+\r\n\tszDisplayName (Unicode) = %2!ws!"
 
 IDS_TASKASSIGNERJUNKDATA "\r\n\tUnparsed Data Size = 0x%1!08X!\r\n"
 
@@ -1936,6 +1940,11 @@ IDS_AEIDDATAELEMENT "\r\nDataElement: %1!d!\r\n\
 \tElementData = "
 IDS_MVROWBIN "Row %1!d!\r\n"
 IDS_MVROWFLAG "Flag %1!d!: %2"
+IDS_FELHEADER "Flat Entry List\r\n\
+cEntries = %1!d!\r\n\
+cbEntries = 0x%2!08X!\r\n"
+IDS_FELENTRYHEADER "\r\nEntry[%1!d!] Size = 0x%2!08X!\r\n"
+IDS_FELENTRYPADDING "\r\nEntry[%1!d!] Padding:"
 
 // All strings above this point use FormatMessage style formatting
 
@@ -1987,7 +1996,7 @@ IDS_EDDOFASTSHUTDOWNFAILED "DoFastShutdown failed."
 IDS_EDDOFASTSHUTDOWNSUCCEEDED "DoFastShutdown succeeded. Most MAPI operations should now fail.\r\n\
 Please close MFCMAPI now."
 #ifdef _WIN64
-IDS_EDMAPIINITIALIZEFAILED "MAPIIntialize failed with error 0x%08X == %s.\r\n\
+IDS_EDMAPIINITIALIZEFAILED "MAPIInitialize failed with error 0x%08X == %s.\r\n\
 \r\n\
 Here are some known causes for this.\r\n\
 1 - The 64 bit version of Outlook 2010 is not installed. The 64 bit version of MFCMAPI only works with the 64 bit version of Outlook 2010.\r\n\
@@ -1995,12 +2004,14 @@ Here are some known causes for this.\r\n\
 2 - Windows Mail or Outlook Express (which do not implement Extended MAPI) is registered as the Default Mail Client.\r\n\
 \tSee http://msdn.microsoft.com/en-gb/library/dd162409.aspx for information on setting the Default Mail Client."
 #else
-IDS_EDMAPIINITIALIZEFAILED "MAPIIntialize failed with error 0x%08X == %s.\r\n\
+IDS_EDMAPIINITIALIZEFAILED "MAPIInitialize failed with error 0x%08X == %s.\r\n\
 \r\n\
 Here are some known causes for this.\r\n\
-1 - The 64 bit version of Outlook 2010 is installed. The 64 bit version of Outlook 2010 requires the 64 bit build of MFCMAPI.\r\n\
+1 - No version of Extended MAPI is installed. Either Outlook or MAPICDO must be installed.\r\n\
+\tSee http://www.microsoft.com/downloads/details.aspx?familyid=E17E7F31-079A-43A9-BFF2-0A110307611E to install MAPICDO.\r\n\
+2 - The 64 bit version of Outlook 2010 is installed. The 64 bit version of Outlook 2010 requires the 64 bit build of MFCMAPI.\r\n\
 \tSee http://mfcmapi.codeplex.com for the latest 64 bit build of MFCMAPI.\r\n\
-2 - Windows Mail or Outlook Express (which do not implement Extended MAPI) is registered as the Default Mail Client.\r\n\
+3 - Windows Mail or Outlook Express (which do not implement Extended MAPI) is registered as the Default Mail Client.\r\n\
 \tSee http://msdn.microsoft.com/en-gb/library/dd162409.aspx for information on setting the Default Mail Client."
 #endif
 

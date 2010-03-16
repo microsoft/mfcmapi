@@ -333,9 +333,9 @@
 #define AG_DEFAULT_BOTH			(AG_DEFAULT_FILE | AG_DEFAULT_ALL)
 
 // http://msdn2.microsoft.com/en-us/library/bb820938.aspx
-#define PR_PROVIDER_ITEMID          	PROP_TAG(PT_BINARY, 	0x0EA3)
+#define PR_PROVIDER_ITEMID        PROP_TAG(PT_BINARY, 0x0EA3)
 // http://msdn2.microsoft.com/en-us/library/bb820939.aspx
-#define PR_PROVIDER_PARENT_ITEMID   	PROP_TAG(PT_BINARY, 	0x0EA4)
+#define PR_PROVIDER_PARENT_ITEMID PROP_TAG(PT_BINARY, 0x0EA4)
 
 // PH props
 #define PR_SEARCH_ATTACHMENTS_W      PROP_TAG(PT_UNICODE, 0x0EA5)
@@ -366,7 +366,7 @@
 #define PR_ADDITIONAL_REN_ENTRYIDS    PROP_TAG(PT_MV_BINARY, 0x36D8)
 
 // http://msdn2.microsoft.com/en-us/library/bb820966.aspx
-#define	PR_PROFILE_SERVER_FULL_VERSION	PROP_TAG( PT_BINARY, pidProfileMin+0x3b)
+#define	PR_PROFILE_SERVER_FULL_VERSION PROP_TAG( PT_BINARY, pidProfileMin+0x3b)
 
 // http://msdn2.microsoft.com/en-us/library/bb820973.aspx
 // Additional display attributes, to supplement PR_DISPLAY_TYPE.
@@ -394,7 +394,7 @@
 #define DTE_REMOTE(v)          (((v) & DTE_MASK_REMOTE) >> 8)
 #define DTE_LOCAL(v)           ((v) & DTE_MASK_LOCAL)
 
-#define DT_ROOM	        ((ULONG) 0x00000007)
+#define DT_ROOM         ((ULONG) 0x00000007)
 #define DT_EQUIPMENT    ((ULONG) 0x00000008)
 #define DT_SEC_DISTLIST ((ULONG) 0x00000009)
 
@@ -409,7 +409,8 @@
 enum FollowUpStatus {
 	flwupNone = 0,
 	flwupComplete,
-	flwupMarked};
+	flwupMarked
+};
 
 // http://msdn2.microsoft.com/en-us/library/bb821062.aspx
 #define PR_FOLLOWUP_ICON PROP_TAG( PT_LONG, 0x1095 )
@@ -469,7 +470,7 @@ enum Gender {
 #define SENDER_ID_SOFT_FAIL				0x4
 #define SENDER_ID_NONE					0x5
 #define SENDER_ID_TEMP_ERROR			0x80000006
-#define SENDER_ID_PERM_ERROR  			0x80000007
+#define SENDER_ID_PERM_ERROR			0x80000007
 
 #define PR_JUNK_THRESHOLD PROP_TAG(PT_LONG, 0x6101)
 #define SPAM_FILTERING_NONE						0xFFFFFFFF
@@ -506,9 +507,9 @@ enum Gender {
 #define PR_WB_SF_STORAGE_TYPE PROP_TAG(PT_LONG, 0x6846)
 enum t_SmartFolderStorageType {
 	SFST_NUMBER = 0x01,			// for template's data (numbers)
-	SFST_TEXT = 0x02, 			// for template's data (strings)
-	SFST_BINARY = 0x04, 		// for template's data (binary form, such as entry id, etc.)
-	SFST_MRES = 0x08, 			// for condition in MRES format
+	SFST_TEXT = 0x02,			// for template's data (strings)
+	SFST_BINARY = 0x04,			// for template's data (binary form, such as entry id, etc.)
+	SFST_MRES = 0x08,			// for condition in MRES format
 	SFST_FILTERSTREAM = 0x10,	// for condition in IStream format
 	SFST_FOLDERNAME = 0x20,		// for folder list's names
 	SFST_FOLDERLIST = 0x40,		// for the binary folder entrylist
@@ -600,13 +601,13 @@ typedef enum {
 #define seOpenToDelete		0x0001	// Additional processing is required on the Message object when deleting.
 #define seNoFrame			0x0008	// No UI is associated with the Message object.
 #define seCoerceToInbox		0x0010	// Additional processing is required on the Message object when moving or
-                                    // copying to a Folder object with a PR_CONTAINER_CLASS of “IPF.Note”.
+									// copying to a Folder object with a PR_CONTAINER_CLASS of 'IPF.Note'.
 #define seOpenToCopy		0x0020	// Additional processing is required on the Message object when copying to
-                                    // another folder.
+									// another folder.
 #define seOpenToMove		0x0040	// Additional processing is required on the Message object when moving to
-                                    // another folder.
+									// another folder.
 #define seOpenForCtxMenu    0x0100  // Additional processing is required on the Message object when displaying verbs
-                                    // to the end-user.
+									// to the end-user.
 #define seCannotUndoDelete	0x0400	// Cannot undo delete operation, MUST NOT be set unless seOpenToDelete is set.
 #define seCannotUndoCopy	0x0800	// Cannot undo copy operation, MUST NOT be set unless seOpenToCopy is set.
 #define seCannotUndoMove	0x1000	// Cannot undo move operation, MUST NOT be set unless seOpenToMove is set.
@@ -637,37 +638,41 @@ enum {
 
 #define dispidPostalAddressId 0x8022
 enum PostalAddressIndex
-	{ ADDRESS_NONE = 0, ADDRESS_HOME, ADDRESS_WORK, ADDRESS_OTHER };
+{ ADDRESS_NONE = 0, ADDRESS_HOME, ADDRESS_WORK, ADDRESS_OTHER };
 
 // [MS_OXOTASK].pdf
 #define dispidTaskMode 0x8518
-enum TaskDelegMsgType {tdmtNothing = 0,	// The task object is not assigned.
-					   tdmtTaskReq,		// The task object is embedded in a task request.
-					   tdmtTaskAcc,		// The task object has been accepted by the task assignee.
-					   tdmtTaskDec,		// The task object was rejected by the task assignee.
-					   tdmtTaskUpd,		// The task object is embedded in a task update.
-					   tdmtTaskSELF};	// The task object was assigned to the task assigner (self-delegation).
+enum TaskDelegMsgType {
+	tdmtNothing = 0,	// The task object is not assigned.
+	tdmtTaskReq,		// The task object is embedded in a task request.
+	tdmtTaskAcc,		// The task object has been accepted by the task assignee.
+	tdmtTaskDec,		// The task object was rejected by the task assignee.
+	tdmtTaskUpd,		// The task object is embedded in a task update.
+	tdmtTaskSELF		// The task object was assigned to the task assigner (self-delegation).
+};
 
 #define dispidTaskStatus 0x8101
 enum TaskStatusValue {
 	tsvNotStarted = 0, // The user has not started work on the task object. If this value is set,
-                       // dispidPercentComplete MUST be 0.0.
+	                   // dispidPercentComplete MUST be 0.0.
 	tsvInProgress,     // The user’s work on this task object is in progress. If this value is set,
-                       // dispidPercentComplete MUST be greater than 0.0 and less than 1.0
+	                   // dispidPercentComplete MUST be greater than 0.0 and less than 1.0
 	tsvComplete,       // The user’s work on this task object is complete. If this value is set,
-                       // dispidPercentComplete MUST be 1.0, dispidTaskDateCompleted
-					   // MUST be the current date, and dispidTaskComplete MUST be true.
+	                   // dispidPercentComplete MUST be 1.0, dispidTaskDateCompleted
+	                   // MUST be the current date, and dispidTaskComplete MUST be true.
 	tsvWaiting,        // The user is waiting on somebody else.
-	tsvDeferred};      // The user has deferred work on the task object.
+	tsvDeferred        // The user has deferred work on the task object.
+};
 
 #define dispidTaskState 0x8113
 enum TaskDelegState {
-	tdsNOM = 0,	// This task object was created to correspond to a task object that was
-                // embedded in a task rejection but could not be found locally.
+	tdsNOM = 0, // This task object was created to correspond to a task object that was
+	            // embedded in a task rejection but could not be found locally.
 	tdsOWNNEW,  // The task object is not assigned.
 	tdsOWN,     // The task object is the task assignee’s copy of an assigned task object.
-	tdsACC,	    // The task object is the task assigner’s copy of an assigned task object.
-	tdsDEC};    // The task object is the task assigner’s copy of a rejected task object.
+	tdsACC,     // The task object is the task assigner’s copy of an assigned task object.
+	tdsDEC      // The task object is the task assigner’s copy of a rejected task object.
+};
 
 #define dispidTaskHistory 0x811A
 enum TaskHistory {
@@ -676,40 +681,45 @@ enum TaskHistory {
 	thDeclined,       // The task assignee rejected this task object.
 	thUpdated,        // Another property was changed.
 	thDueDateChanged, // The dispidTaskDueDate property changed.
-	thAssigned};      // The task object has been assigned to a task assignee.
+	thAssigned        // The task object has been assigned to a task assignee.
+};
 
 #define dispidTaskMultRecips 0x8120
 enum TaskMultRecips {
 	tmrNone				= 0x0000,	// none
 	tmrSent				= 0x0001,	// The task object has multiple primary recipients.
 	tmrRcvd				= 0x0002,	// Although the 'Sent' hint was not present, the client detected
-                                    // that the task object has multiple primary recipients.
+									// that the task object has multiple primary recipients.
 	tmrTeamTask			= 0x0004,	// This value is reserved.
-	};
+};
 
 #define dispidTaskOwnership 0x8129
 enum TaskOwnershipValue {
 	tovNew,   // The task object is not assigned.
 	tovDeleg, // The task object is the task assigner’s copy of the task object.
-	tovMe};   // The task object is the task assignee’s copy of the task object.
+	tovMe     // The task object is the task assignee’s copy of the task object.
+};
 
 #define dispidTaskDelegValue 0x812A
 enum TaskDelegValue {
 	tdvNone,      // The task object is not assigned.
 	tdvUnknown,   // The task object’s acceptance status is unknown.
 	tdvAccepted,  // The task assignee has accepted the task object. This value is set when
-                  // the client processes a task acceptance.
-	tdvDeclined}; // The task assignee has rejected the task object. This value is set when the
-                  // client processes a task rejection.
+	// the client processes a task acceptance.
+	tdvDeclined   // The task assignee has rejected the task object. This value is set when the
+	// client processes a task rejection.
+};
 
 #define dispidLogFlags 0x870C
 #define lfContactLog ((ULONG) 0x40000000L) // This journal object has a journal associated attachment
 
 // [MS-OXOMSG].pdf
 #define dispidSniffState 0x851A
-enum SniffState {ssNone,    // Don't auto-process the message.
-				 ssOnSniff, // Process the message automatically or when the message is opened.
-				 ssOnOpen}; // Process when the message is opened only.
+enum SniffState {
+	ssNone,    // Don't auto-process the message.
+	ssOnSniff, // Process the message automatically or when the message is opened.
+	ssOnOpen   // Process when the message is opened only.
+};
 
 #define dispidNoteColor 0x8B00
 #define ncBlue 0
@@ -846,13 +856,13 @@ enum EEmailIndex
 #define EMAIL_TYPE_UNDEFINED 0xFF
 
 enum
-	{
+{
 	BFLAGS_INTERNAL_MAILUSER	= 0x03,		// Outlook Contact
 	BFLAGS_INTERNAL_DISTLIST,				// Outlook Distribution List
 	BFLAGS_EXTERNAL_MAILUSER,				// external (MAPI) Contact
 	BFLAGS_EXTERNAL_DISTLIST,				// external (MAPI) Distribution List
 	BFLAGS_MASK_OUTLOOK			= 0x80,		// bit pattern 1000 0000
-	};
+};
 
 #define dispidEmail1OriginalEntryID 0x8085
 #define dispidEmail2OriginalEntryID 0x8095

@@ -21,16 +21,16 @@ CRecipientsDlg::CRecipientsDlg(
 							   LPMESSAGE lpMessage
 							   ):
 CContentsTableDlg(
-						  pParentWnd,
-						  lpMapiObjects,
-						  IDS_RECIPIENTS,
-						  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
-						  lpMAPITable,
-						  (LPSPropTagArray) &sptDEFCols,
-						  NUMDEFCOLUMNS,
-						  DEFColumns,
-						  IDR_MENU_RECIPIENTS_POPUP,
-						  MENU_CONTEXT_RECIPIENT_TABLE)
+				  pParentWnd,
+				  lpMapiObjects,
+				  IDS_RECIPIENTS,
+				  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+				  lpMAPITable,
+				  (LPSPropTagArray) &sptDEFCols,
+				  NUMDEFCOLUMNS,
+				  DEFColumns,
+				  IDR_MENU_RECIPIENTS_POPUP,
+				  MENU_CONTEXT_RECIPIENT_TABLE)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	m_lpMessage = lpMessage;

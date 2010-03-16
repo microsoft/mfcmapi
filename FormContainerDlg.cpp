@@ -20,21 +20,21 @@ static TCHAR* CLASS = _T("CFormContainerDlg");
 
 
 CFormContainerDlg::CFormContainerDlg(
-			   CParentWnd* pParentWnd,
-			   CMapiObjects* lpMapiObjects,
-			   LPMAPIFORMCONTAINER lpFormContainer
-			   ):
+									 CParentWnd* pParentWnd,
+									 CMapiObjects* lpMapiObjects,
+									 LPMAPIFORMCONTAINER lpFormContainer
+									 ):
 CContentsTableDlg(
-						  pParentWnd,
-						  lpMapiObjects,
-						  IDS_FORMCONTAINER,
-						  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
-						  NULL,
-						  (LPSPropTagArray) &sptDEFCols,
-						  NUMDEFCOLUMNS,
-						  DEFColumns,
-						  IDR_MENU_FORM_CONTAINER_POPUP,
-						  MENU_CONTEXT_FORM_CONTAINER)
+				  pParentWnd,
+				  lpMapiObjects,
+				  IDS_FORMCONTAINER,
+				  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+				  NULL,
+				  (LPSPropTagArray) &sptDEFCols,
+				  NUMDEFCOLUMNS,
+				  DEFColumns,
+				  IDR_MENU_FORM_CONTAINER_POPUP,
+				  MENU_CONTEXT_FORM_CONTAINER)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 
@@ -483,9 +483,9 @@ void CFormContainerDlg::OnGetDisplay()
 } // CFormContainerDlg::OnGetDisplay
 
 void CFormContainerDlg::HandleAddInMenuSingle(
-									   LPADDINMENUPARAMS lpParams,
-									   LPMAPIPROP lpMAPIProp,
-									   LPMAPICONTAINER /*lpContainer*/)
+	LPADDINMENUPARAMS lpParams,
+	LPMAPIPROP lpMAPIProp,
+	LPMAPICONTAINER /*lpContainer*/)
 {
 	if (lpParams)
 	{

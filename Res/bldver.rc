@@ -7,34 +7,34 @@
 #define rmj 6
 #define rmm 0
 #define rup 0
-#define rmn 1017
+#define rmn 1018
 
-#define MAKEFILEVERSION(_rmaj, _rmin, _bmaj, _bmin)			#_rmaj "." #_rmin "." #_bmaj "." #_bmin "\0"
-#define MAKEFILEVERSIONSTR(_rmaj, _rmin, _bmaj, _bmin)		MAKEFILEVERSION(_rmaj, _rmin, _bmaj, _bmin)
+#define MAKEFILEVERSION(_rmaj, _rmin, _bmaj, _bmin)    #_rmaj "." #_rmin "." #_bmaj "." #_bmin "\0"
+#define MAKEFILEVERSIONSTR(_rmaj, _rmin, _bmaj, _bmin) MAKEFILEVERSION(_rmaj, _rmin, _bmaj, _bmin)
 /* Define file version and project version */
 
 // Ensure we're called MFCMAPI instead of "MAPI Editor"
 #undef RC_PRODUCT_NAME
 #define RC_PRODUCT_NAME               "MFCMAPI"
 
-#define INET_VER						rmj, rmm, rup, rmn
-#define INET_VERSION					MAKEFILEVERSIONSTR(rmj, rmm, rup, rmn)
-#define RC_VERSION_COMPANY_NAME			"Microsoft Corporation\0"
-#define VER_LEGALCOPYRIGHT_YEARS		"1999-2009"
-#define RC_VERSION_PRODUCT_NAME			RC_PRODUCT_NAME "\0"
-#define RC_VERSION_LEGAL_COPYRIGHT		"Copyright \251 " VER_LEGALCOPYRIGHT_YEARS " Microsoft Corporation. All rights reserved.\0"
-#define RC_VERSION_LEGAL_TRADEMARKS		"Microsoft\256 is a registered trademark of Microsoft Corporation.\0"
+#define INET_VER                    rmj, rmm, rup, rmn
+#define INET_VERSION                MAKEFILEVERSIONSTR(rmj, rmm, rup, rmn)
+#define RC_VERSION_COMPANY_NAME     "Microsoft Corporation\0"
+#define VER_LEGALCOPYRIGHT_YEARS    "1999-2010"
+#define RC_VERSION_PRODUCT_NAME     RC_PRODUCT_NAME "\0"
+#define RC_VERSION_LEGAL_COPYRIGHT  "Copyright \251 " VER_LEGALCOPYRIGHT_YEARS " Microsoft Corporation. All rights reserved.\0"
+#define RC_VERSION_LEGAL_TRADEMARKS "Microsoft\256 is a registered trademark of Microsoft Corporation.\0"
 #ifdef PRIVATE_BUILD
-#define BUILD_PRIVATE					"\0"
+#define BUILD_PRIVATE               "\0"
 #endif
 
 #ifndef DS_SHELLFONT
-	#error "Compilation requires the February 2003 or later Microsoft SDK"
-	#error "Or Visual C++ 2005 or higher"
-	#error "Go to the following URL"
-	#error "    http://www.microsoft.com/downloads/details.aspx?FamilyId=A55B6B43-E24F-4EA3-A93E-40C0EC4F68E5"
-	#error "and follow the instructions to install the core SDK"
-	#error "The, go to Tools\Options\Directories and ensure the SDK include directory preceeds the Visual Studio include directories"
+#error "Compilation requires the February 2003 or later Microsoft SDK"
+#error "Or Visual C++ 2005 or higher"
+#error "Go to the following URL"
+#error "    http://www.microsoft.com/downloads/details.aspx?FamilyId=A55B6B43-E24F-4EA3-A93E-40C0EC4F68E5"
+#error "and follow the instructions to install the core SDK"
+#error "Then go to Tools\Options\Directories and ensure the SDK include directory preceeds the Visual Studio include directories"
 #endif
 
 /////////////////////////////////////////////////////////////////////////////

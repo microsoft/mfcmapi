@@ -32,9 +32,10 @@ __RegKeys RegKeys[] = {
 	{_T("AllowPersistCache"),			regDWORD,regoptCheck,		false		,0,_T(""),_T(""),false,	IDS_REGKEY_ALLOW_PERSIST_CACHE }, // STRING_OK
 	{_T("UseIMAPIProgress"),			regDWORD,regoptCheck,		false		,0,_T(""),_T(""),false,	IDS_REGKEY_USE_IMAPIPROGRESS}, // STRING_OK
 	{_T("UseMessageRaw"),				regDWORD,regoptCheck,		false		,0,_T(""),_T(""),false,	IDS_REGKEY_USE_MESSAGERAW}, // STRING_OK
+	{_T("HeapEnableTerminationOnCorruption"),regDWORD,regoptCheck,	true		,0,_T(""),_T(""),false,	IDS_REGKEY_HEAPENABLETERMINATIONONCORRUPTION}, // STRING_OK
 	{_T("DisplayAboutDialog"),			regDWORD,regoptCheck,		true		,0,_T(""),_T(""),false,	NULL}, // STRING_OK
 	{_T("PropertyColumnOrder"),			regSTRING,regoptCheck,		0			,0,_T(""),_T(""),false,	NULL}, // STRING_OK
-//	{KeyName,							keytype,opttype,			defaultDWORD,0,defaultString,NULL,bRefresh,IDS_REGKEY_*} // Regkey template
+	// {KeyName,							keytype,opttype,			defaultDWORD,0,defaultString,NULL,bRefresh,IDS_REGKEY_*} // Regkey template
 };
 
 void SetDefaults()
@@ -60,24 +61,24 @@ void SetDefaults()
 	}
 }
 
-// $--HrGetRegistryValue---------------------------------------------------------
+// $--HrGetRegistryValueW---------------------------------------------------------
 // Get a registry value - allocating memory using new to hold it.
 // -----------------------------------------------------------------------------
-HRESULT HrGetRegistryValue(
-						   IN HKEY hKey, // the key.
-						   IN LPCTSTR lpszValue, // value name in key.
-						   OUT DWORD* lpType, // where to put type info.
-						   OUT LPVOID* lppData) // where to put the data.
+HRESULT HrGetRegistryValueW(
+							IN HKEY hKey, // the key.
+							IN LPCWSTR lpszValue, // value name in key.
+							OUT DWORD* lpType, // where to put type info.
+							OUT LPVOID* lppData) // where to put the data.
 {
 	HRESULT hRes = S_OK;
 
-	DebugPrint(DBGGeneric,_T("HrGetRegistryValue(%s)\n"),lpszValue);
+	DebugPrint(DBGGeneric,_T("HrGetRegistryValue(%ws)\n"),lpszValue);
 
 	*lppData = NULL;
 	DWORD cb = NULL;
 
 	// Get its size
-	WC_W32(RegQueryValueEx(
+	WC_W32(RegQueryValueExW(
 		hKey,
 		lpszValue,
 		NULL,
@@ -94,7 +95,7 @@ HRESULT HrGetRegistryValue(
 		if (*lppData)
 		{
 			// Get the current value
-			EC_W32(RegQueryValueEx(
+			EC_W32(RegQueryValueExW(
 				hKey,
 				lpszValue,
 				NULL,
@@ -112,7 +113,61 @@ HRESULT HrGetRegistryValue(
 	else hRes = MAPI_E_INVALID_PARAMETER;
 
 	return hRes;
-}
+} // HrGetRegistryValueW
+
+// $--HrGetRegistryValueA---------------------------------------------------------
+// Get a registry value - allocating memory using new to hold it.
+// -----------------------------------------------------------------------------
+HRESULT HrGetRegistryValueA(
+							IN HKEY hKey, // the key.
+							IN LPCSTR lpszValue, // value name in key.
+							OUT DWORD* lpType, // where to put type info.
+							OUT LPVOID* lppData) // where to put the data.
+{
+	HRESULT hRes = S_OK;
+
+	DebugPrint(DBGGeneric,_T("HrGetRegistryValueA(%hs)\n"),lpszValue);
+
+	*lppData = NULL;
+	DWORD cb = NULL;
+
+	// Get its size
+	WC_W32(RegQueryValueExA(
+		hKey,
+		lpszValue,
+		NULL,
+		lpType,
+		NULL,
+		&cb));
+
+	// only handle types we know about - all others are bad
+	if (S_OK == hRes && cb &&
+		(REG_SZ == *lpType || REG_DWORD == *lpType || REG_MULTI_SZ == *lpType))
+	{
+		*lppData = new BYTE[cb];
+
+		if (*lppData)
+		{
+			// Get the current value
+			EC_W32(RegQueryValueExA(
+				hKey,
+				lpszValue,
+				NULL,
+				lpType,
+				(unsigned char*)*lppData,
+				&cb));
+
+			if (FAILED(hRes))
+			{
+				delete[] *lppData;
+				*lppData = NULL;
+			}
+		}
+	}
+	else hRes = MAPI_E_INVALID_PARAMETER;
+
+	return hRes;
+} // HrGetRegistryValueA
 
 // If the value is not set in the registry, do not alter the passed in DWORD
 void ReadDWORDFromRegistry(HKEY hKey, LPCTSTR szValue, DWORD* lpdwVal)
@@ -207,6 +262,7 @@ void ReadFromRegistry()
 	}
 
 	SetDebugLevel(RegKeys[regkeyDEBUG_TAG].ulCurDWORD);
+	DebugPrintVersion(DBGVersionBanner);
 }
 
 void WriteDWORDToRegistry(HKEY hKey, LPCTSTR szValueName, DWORD dwValue)
@@ -277,55 +333,55 @@ void CommitStringIfNeeded(HKEY hKey, LPCTSTR szValueName, LPCTSTR szValue, LPCTS
 HKEY CreateRootKey()
 {
 	HRESULT hRes = S_OK;
-    PSID pEveryoneSID = NULL;
-    PACL pACL = NULL;
-    PSECURITY_DESCRIPTOR pSD = NULL;
-    EXPLICIT_ACCESS ea[2];
-    SID_IDENTIFIER_AUTHORITY SIDAuthWorld = SECURITY_WORLD_SID_AUTHORITY;
-    SECURITY_ATTRIBUTES sa = {0};
-    HKEY hkSub = NULL;
+	PSID pEveryoneSID = NULL;
+	PACL pACL = NULL;
+	PSECURITY_DESCRIPTOR pSD = NULL;
+	EXPLICIT_ACCESS ea[2];
+	SID_IDENTIFIER_AUTHORITY SIDAuthWorld = SECURITY_WORLD_SID_AUTHORITY;
+	SECURITY_ATTRIBUTES sa = {0};
+	HKEY hkSub = NULL;
 
-    // Create a well-known SID for the Everyone group.
-    EC_B(AllocateAndInitializeSid(
+	// Create a well-known SID for the Everyone group.
+	EC_B(AllocateAndInitializeSid(
 		&SIDAuthWorld,
 		1,
 		SECURITY_WORLD_RID,
 		0, 0, 0, 0, 0, 0, 0,
 		&pEveryoneSID));
 
-    // Initialize an EXPLICIT_ACCESS structure for an ACE.
-    // The ACE will allow Everyone full control to the key.
-    ZeroMemory(ea, sizeof(EXPLICIT_ACCESS));
-    ea[0].grfAccessPermissions = KEY_ALL_ACCESS;
-    ea[0].grfAccessMode = SET_ACCESS;
-    ea[0].grfInheritance= SUB_CONTAINERS_AND_OBJECTS_INHERIT;
-    ea[0].Trustee.TrusteeForm = TRUSTEE_IS_SID;
-    ea[0].Trustee.TrusteeType = TRUSTEE_IS_WELL_KNOWN_GROUP;
-    ea[0].Trustee.ptstrName  = (LPTSTR) pEveryoneSID;
+	// Initialize an EXPLICIT_ACCESS structure for an ACE.
+	// The ACE will allow Everyone full control to the key.
+	ZeroMemory(ea, sizeof(EXPLICIT_ACCESS));
+	ea[0].grfAccessPermissions = KEY_ALL_ACCESS;
+	ea[0].grfAccessMode = SET_ACCESS;
+	ea[0].grfInheritance= SUB_CONTAINERS_AND_OBJECTS_INHERIT;
+	ea[0].Trustee.TrusteeForm = TRUSTEE_IS_SID;
+	ea[0].Trustee.TrusteeType = TRUSTEE_IS_WELL_KNOWN_GROUP;
+	ea[0].Trustee.ptstrName  = (LPTSTR) pEveryoneSID;
 
-    // Create a new ACL that contains the new ACEs.
-    EC_W32(SetEntriesInAcl(1, ea, NULL, &pACL));
+	// Create a new ACL that contains the new ACEs.
+	EC_W32(SetEntriesInAcl(1, ea, NULL, &pACL));
 
-    // Initialize a security descriptor.
-    EC_D(pSD, LocalAlloc(LPTR,
+	// Initialize a security descriptor.
+	EC_D(pSD, LocalAlloc(LPTR,
 		SECURITY_DESCRIPTOR_MIN_LENGTH));
 
-    EC_B(InitializeSecurityDescriptor(pSD, SECURITY_DESCRIPTOR_REVISION));
+	EC_B(InitializeSecurityDescriptor(pSD, SECURITY_DESCRIPTOR_REVISION));
 
-    // Add the ACL to the security descriptor.
-    EC_B(SetSecurityDescriptorDacl(pSD,
+	// Add the ACL to the security descriptor.
+	EC_B(SetSecurityDescriptorDacl(pSD,
 		TRUE,     // bDaclPresent flag
 		pACL,
 		FALSE));   // not a default DACL
 
-    // Initialize a security attributes structure.
-    sa.nLength = sizeof (SECURITY_ATTRIBUTES);
-    sa.lpSecurityDescriptor = pSD;
-    sa.bInheritHandle = FALSE;
+	// Initialize a security attributes structure.
+	sa.nLength = sizeof (SECURITY_ATTRIBUTES);
+	sa.lpSecurityDescriptor = pSD;
+	sa.bInheritHandle = FALSE;
 
-    // Use the security attributes to set the security descriptor
-    // when you create a key.
-    WC_W32(RegCreateKeyEx(
+	// Use the security attributes to set the security descriptor
+	// when you create a key.
+	WC_W32(RegCreateKeyEx(
 		HKEY_CURRENT_USER,
 		RKEY_ROOT,
 		0,
@@ -336,9 +392,9 @@ HKEY CreateRootKey()
 		&hkSub,
 		NULL));
 
-    if (pEveryoneSID) FreeSid(pEveryoneSID);
-    LocalFree(pACL);
-    LocalFree(pSD);
+	if (pEveryoneSID) FreeSid(pEveryoneSID);
+	LocalFree(pACL);
+	LocalFree(pSD);
 
 	return hkSub;
 }
@@ -358,11 +414,11 @@ void WriteToRegistry()
 	{
 		if (RegKeys[i].ulRegKeyType == regDWORD)
 		{
-		CommitDWORDIfNeeded(
-			hRootKey,
-			RegKeys[i].szKeyName,
-			RegKeys[i].ulCurDWORD,
-			RegKeys[i].ulDefDWORD);
+			CommitDWORDIfNeeded(
+				hRootKey,
+				RegKeys[i].szKeyName,
+				RegKeys[i].ulCurDWORD,
+				RegKeys[i].ulDefDWORD);
 		}
 		else if (RegKeys[i].ulRegKeyType == regSTRING)
 		{

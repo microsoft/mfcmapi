@@ -17,23 +17,23 @@ static TCHAR* CLASS = _T("CAttachmentsDlg");
 // CAttachmentsDlg dialog
 
 CAttachmentsDlg::CAttachmentsDlg(
-							   CParentWnd* pParentWnd,
-							   CMapiObjects* lpMapiObjects,
-							   LPMAPITABLE lpMAPITable,
-							   LPMESSAGE lpMessage,
-							   BOOL bSaveMessageAtClose
-							   ):
+								 CParentWnd* pParentWnd,
+								 CMapiObjects* lpMapiObjects,
+								 LPMAPITABLE lpMAPITable,
+								 LPMESSAGE lpMessage,
+								 BOOL bSaveMessageAtClose
+								 ):
 CContentsTableDlg(
-						  pParentWnd,
-						  lpMapiObjects,
-						  IDS_ATTACHMENTS,
-						  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
-						  lpMAPITable,
-						  (LPSPropTagArray) &sptATTACHCols,
-						  NUMATTACHCOLUMNS,
-						  ATTACHColumns,
-						  IDR_MENU_ATTACHMENTS_POPUP,
-						  MENU_CONTEXT_ATTACHMENT_TABLE)
+				  pParentWnd,
+				  lpMapiObjects,
+				  IDS_ATTACHMENTS,
+				  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+				  lpMAPITable,
+				  (LPSPropTagArray) &sptATTACHCols,
+				  NUMATTACHCOLUMNS,
+				  ATTACHColumns,
+				  IDR_MENU_ATTACHMENTS_POPUP,
+				  MENU_CONTEXT_ATTACHMENT_TABLE)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	m_lpMessage = lpMessage;
@@ -475,9 +475,9 @@ void CAttachmentsDlg::OnRecipientProperties()
 } // CAttachmentsDlg::OnRecipientProperties
 
 void CAttachmentsDlg::HandleAddInMenuSingle(
-									   LPADDINMENUPARAMS lpParams,
-									   LPMAPIPROP lpMAPIProp,
-									   LPMAPICONTAINER /*lpContainer*/)
+	LPADDINMENUPARAMS lpParams,
+	LPMAPIPROP lpMAPIProp,
+	LPMAPICONTAINER /*lpContainer*/)
 {
 	if (lpParams)
 	{

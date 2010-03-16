@@ -72,12 +72,12 @@ BOOL CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, SortListData* lpDat
 	ULONG	ulNewPropTag = ulOrigPropTag;
 
 	CPropertyTagEditor MyPropertyTag(
-			NULL, // title
-			NULL, // prompt
-			ulOrigPropTag,
-			m_bIsAB,
-			m_lpMAPIProp,
-			this);
+		NULL, // title
+		NULL, // prompt
+		ulOrigPropTag,
+		m_bIsAB,
+		m_lpMAPIProp,
+		this);
 
 	WC_H(MyPropertyTag.DisplayDialog());
 	if (S_OK != hRes) return false;

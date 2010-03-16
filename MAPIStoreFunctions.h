@@ -18,41 +18,41 @@ HRESULT GetMailboxTable(
 						ULONG ulOffset,
 						LPMAPITABLE* lpMailboxTable);
 HRESULT GetMailboxTable1(
-						LPMDB lpMDB,
-						LPCTSTR szServerDN,
-						ULONG ulFlags,
-						LPMAPITABLE* lpMailboxTable);
+						 LPMDB lpMDB,
+						 LPCTSTR szServerDN,
+						 ULONG ulFlags,
+						 LPMAPITABLE* lpMailboxTable);
 HRESULT GetMailboxTable3(
-						LPMDB lpMDB,
-						LPCTSTR szServerDN,
-						ULONG ulOffset,
-						ULONG ulFlags,
-						LPMAPITABLE* lpMailboxTable);
+						 LPMDB lpMDB,
+						 LPCTSTR szServerDN,
+						 ULONG ulOffset,
+						 ULONG ulFlags,
+						 LPMAPITABLE* lpMailboxTable);
 HRESULT GetMailboxTable5(
-						LPMDB lpMDB,
-						LPCTSTR szServerDN,
-						ULONG ulOffset,
-						ULONG ulFlags,
-						LPGUID lpGuidMDB,
-						LPMAPITABLE* lpMailboxTable);
+						 LPMDB lpMDB,
+						 LPCTSTR szServerDN,
+						 ULONG ulOffset,
+						 ULONG ulFlags,
+						 LPGUID lpGuidMDB,
+						 LPMAPITABLE* lpMailboxTable);
 HRESULT GetPublicFolderTable1(
-						LPMDB lpMDB,
-						LPCTSTR szServerDN,
-						ULONG ulFlags,
-						LPMAPITABLE* lpPFTable);
+							  LPMDB lpMDB,
+							  LPCTSTR szServerDN,
+							  ULONG ulFlags,
+							  LPMAPITABLE* lpPFTable);
 HRESULT GetPublicFolderTable4(
-						LPMDB lpMDB,
-						LPCTSTR szServerDN,
-						ULONG ulOffset,
-						ULONG ulFlags,
-						LPMAPITABLE* lpPFTable);
+							  LPMDB lpMDB,
+							  LPCTSTR szServerDN,
+							  ULONG ulOffset,
+							  ULONG ulFlags,
+							  LPMAPITABLE* lpPFTable);
 HRESULT GetPublicFolderTable5(
-						LPMDB lpMDB,
-						LPCTSTR szServerDN,
-						ULONG ulOffset,
-						ULONG ulFlags,
-						LPGUID lpGuidMDB,
-						LPMAPITABLE* lpPFTable);
+							  LPMDB lpMDB,
+							  LPCTSTR szServerDN,
+							  ULONG ulOffset,
+							  ULONG ulFlags,
+							  LPGUID lpGuidMDB,
+							  LPMAPITABLE* lpPFTable);
 HRESULT GetServerName(LPMAPISESSION lpSession, LPTSTR* szServerName);
 HRESULT HrMailboxLogon(
 					   LPMAPISESSION	lplhSession,	// ptr to MAPI session handle
@@ -61,7 +61,7 @@ HRESULT HrMailboxLogon(
 					   LPCTSTR			lpszMailboxDN,  // ptr to mailbox DN
 					   ULONG			ulFlags,		// desired flags for CreateStoreEntryID
 					   LPMDB*			lppMailboxMDB);	// ptr to mailbox message store ptr
-HRESULT	OpenDefaultMessageStore(
+HRESULT OpenDefaultMessageStore(
 								LPMAPISESSION lpMAPISession,
 								LPMDB* lppDefaultMDB);
 HRESULT OpenOtherUsersMailbox(
@@ -76,9 +76,9 @@ HRESULT OpenOtherUsersMailboxFromGal(
 									 LPADRBOOK lpAddrBook,
 									 LPMDB* lppOtherUserMDB);
 HRESULT OpenMessageStoreGUID(
-							  LPMAPISESSION	lpMAPISession,
-							  LPCSTR lpGUID,
-							  LPMDB* lppMDB);
+							 LPMAPISESSION	lpMAPISession,
+							 LPCSTR lpGUID,
+							 LPMDB* lppMDB);
 HRESULT OpenPublicMessageStore(
 							   LPMAPISESSION lpMAPISession,
 							   ULONG ulFlags, // Flags for CreateStoreEntryID

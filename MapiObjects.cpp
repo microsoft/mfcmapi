@@ -15,11 +15,11 @@ public:
 	virtual ~CGlobalCache();
 
 	STDMETHODIMP_(ULONG) AddRef();
- 	STDMETHODIMP_(ULONG) Release();
+	STDMETHODIMP_(ULONG) Release();
 
-	void	MAPIInitialize(ULONG ulFlags);
-	void	MAPIUninitialize();
-	BOOL	bMAPIInitialized();
+	void MAPIInitialize(ULONG ulFlags);
+	void MAPIUninitialize();
+	BOOL bMAPIInitialized();
 
 	void SetABEntriesToCopy(LPENTRYLIST lpEBEntriesToCopy);
 	LPENTRYLIST GetABEntriesToCopy();

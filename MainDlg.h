@@ -26,7 +26,7 @@ private:
 		LPMAPIPROP lpMAPIProp,
 		LPMAPICONTAINER lpContainer);
 	BOOL HandleMenu(WORD wMenuSelect);
-	HRESULT	OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, LPMAPIPROP* lppMAPIProp);
+	HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, LPMAPIPROP* lppMAPIProp);
 	void OnDisplayItem();
 	void OnInitMenu(CMenu* pMenu);
 

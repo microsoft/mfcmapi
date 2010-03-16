@@ -267,8 +267,8 @@ void AddMapping(ULONG cbSig,                // Count bytes of signature
 // Since this function should rarely be hit, we'll do it the slow but easy way...
 // One entry at a time
 void AddMappingWithoutSignature(ULONG ulNumProps,      // Number of mapped names
-						   LPMAPINAMEID* lppPropNames, // Output from GetNamesFromIDs, input for GetIDsFromNames
-						   LPSPropTagArray lpTag)     // Input for GetNamesFromIDs, output from GetIDsFromNames
+								LPMAPINAMEID* lppPropNames, // Output from GetNamesFromIDs, input for GetIDsFromNames
+								LPSPropTagArray lpTag)     // Input for GetNamesFromIDs, output from GetIDsFromNames
 {
 	if (!ulNumProps || !lppPropNames || !lpTag) return;
 	if (ulNumProps != lpTag->cValues) return; // Wouldn't know what to do with this
@@ -423,11 +423,11 @@ HRESULT CacheGetNamesFromIDs(LPMAPIPROP lpMAPIProp,
 } // CacheGetNamesFromIDs
 
 HRESULT GetNamesFromIDs(LPMAPIPROP lpMAPIProp,
-						  LPSPropTagArray* lppPropTags,
-						  LPGUID lpPropSetGuid,
-						  ULONG ulFlags,
-						  ULONG* lpcPropNames,
-						  LPMAPINAMEID** lpppPropNames)
+						LPSPropTagArray* lppPropTags,
+						LPGUID lpPropSetGuid,
+						ULONG ulFlags,
+						ULONG* lpcPropNames,
+						LPMAPINAMEID** lpppPropNames)
 {
 	return GetNamesFromIDs(
 		lpMAPIProp,
@@ -451,9 +451,9 @@ HRESULT GetNamesFromIDs(LPMAPIPROP lpMAPIProp,
 
 	// Check if we're bypassing the cache:
 	if (!fCacheNamedProps() ||
-	// Assume an array was passed - none of my calling code passes a NULL tag array
+		// Assume an array was passed - none of my calling code passes a NULL tag array
 		!lppPropTags || !*lppPropTags ||
-	// None of my code uses these flags, but bypass the cache if we see them
+		// None of my code uses these flags, but bypass the cache if we see them
 		ulFlags || lpPropSetGuid)
 	{
 		return lpMAPIProp->GetNamesFromIDs(lppPropTags,lpPropSetGuid,ulFlags,lpcPropNames,lpppPropNames);
@@ -627,8 +627,8 @@ HRESULT GetIDsFromNames(LPMAPIPROP lpMAPIProp,
 
 	// Check if we're bypassing the cache:
 	if (!fCacheNamedProps() ||
-	// If no names were passed, we have to bypass the cache
-	// Should we cache results?
+		// If no names were passed, we have to bypass the cache
+		// Should we cache results?
 		!cPropNames || !*lppPropNames)
 	{
 		return lpMAPIProp->GetIDsFromNames(cPropNames,lppPropNames,ulFlags,lppPropTags);

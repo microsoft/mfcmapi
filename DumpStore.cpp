@@ -1,12 +1,11 @@
 //  MODULE:   DumpStore.cpp
 //
 //  PURPOSE:  Contains routines used in dumping the contents of the Exchange store
-//			  in to a log file
+//            in to a log file
 
 #include "stdafx.h"
 #include "dumpstore.h"
 #include "MAPIFunctions.h"
-#include "MAPIStoreFunctions.h"
 #include "file.h"
 #include "InterpretProp.h"
 #include "InterpretProp2.h"
@@ -14,6 +13,7 @@
 #include "ExtraPropTags.h"
 #include "ColumnTags.h"
 #include "PropTagArray.h"
+#include "SmartView.h"
 
 void OutputPropertyToFile(FILE* fFile, LPSPropValue lpProp, LPMAPIPROP lpObj)
 {
