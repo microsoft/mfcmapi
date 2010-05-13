@@ -15,6 +15,15 @@ void InterpretBinaryAsString(SBinary myBin, DWORD_PTR iStructType, LPMAPIPROP lp
 
 // Nothing below this point actually needs to be public. It's only used internally by InterpretPropSmartView
 
+// Functions to parse PT_LONG/PT-I2 properties
+
+CString RTimeToString(DWORD rTime);
+LPTSTR RTimeToSzString(DWORD rTime);
+
+// End: Functions to parse PT_LONG/PT-I2 properties
+
+// Functions to parse PT_BINARY properties
+
 // [MS-OXOCAL].pdf
 // PatternTypeSpecificStruct
 // =====================
@@ -822,3 +831,55 @@ FlatEntryListStruct* BinToFlatEntryListStruct(ULONG cbBin, LPBYTE lpBin);
 void DeleteFlatEntryListStruct(FlatEntryListStruct* pfelFlatEntryList);
 // result allocated with new, clean up with delete[]
 LPTSTR FlatEntryListStructToString(FlatEntryListStruct* pfelFlatEntryList);
+
+// WebViewPersistStruct
+// =====================
+//   This structure specifies a single Web View Persistance Object
+//
+typedef struct
+{
+	DWORD dwVersion;
+	DWORD dwType;
+	DWORD dwFlags;
+	DWORD dwUnused[7];
+	DWORD cbData;
+	LPBYTE lpData;
+} WebViewPersistStruct;
+
+// WebViewPersistStreamStruct
+// =====================
+//   This structure specifies a Web View Persistance Object stream struct
+//
+typedef struct
+{
+	DWORD cWebViews;
+	WebViewPersistStruct* lpWebViews;
+	size_t JunkDataSize;
+	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
+} WebViewPersistStreamStruct;
+
+// Allocates return value with new. Clean up with DeleteWebViewPersistStreamStruct.
+WebViewPersistStreamStruct* BinToWebViewPersistStreamStruct(ULONG cbBin, LPBYTE lpBin);
+void DeleteWebViewPersistStreamStruct(WebViewPersistStreamStruct* pwvpsWebViewPersistStream);
+// result allocated with new, clean up with delete[]
+LPTSTR WebViewPersistStreamStructToString(WebViewPersistStreamStruct* pwvpsWebViewPersistStream);
+
+// RecipientRowStreamStruct
+// =====================
+//   This structure specifies an recipient row stream struct
+//
+typedef struct
+{
+	DWORD cVersion;
+	DWORD cRowCount;
+	LPADRENTRY lpAdrEntry;
+	size_t JunkDataSize;
+	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
+} RecipientRowStreamStruct;
+
+// Allocates return value with new. Clean up with DeleteRecipientRowStreamStruct.
+RecipientRowStreamStruct* BinToRecipientRowStreamStruct(ULONG cbBin, LPBYTE lpBin);
+void DeleteRecipientRowStreamStruct(RecipientRowStreamStruct* prrsRecipientRowStream);
+// result allocated with new, clean up with delete[]
+LPTSTR RecipientRowStreamStructToString(RecipientRowStreamStruct* prrsRecipientRowStream);
+// End Functions to parse PT_BINARY properties

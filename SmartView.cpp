@@ -10,7 +10,8 @@
 #include "NamedPropCache.h"
 
 void InterpretMVBinaryAsString(SBinaryArray myBinArray, DWORD_PTR iStructType, LPMAPIPROP lpMAPIProp, ULONG ulPropTag, LPTSTR* lpszResultString);
-void InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropNameID, ULONG ulPropTag, LPGUID lpguidNamedProp, LPTSTR* lpszResultString);
+void InterpretLongAsString(ULONG ulVal, ULONG ulPropTag, ULONG ulPropNameID, LPWSTR lpszPropNameString, LPGUID lpguidNamedProp, LPTSTR* lpszResultString);
+void InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropTag, ULONG ulPropNameID, LPGUID lpguidNamedProp, LPTSTR* lpszResultString);
 
 LPTSTR CStringToString(CString szCString);
 
@@ -28,6 +29,7 @@ UINT g_uidParsingTypesDropDown[] = {
 	IDS_STGLOBALOBJECTID,
 	IDS_STPROPERTY,
 	IDS_STPROPERTYDEFINITIONSTREAM,
+	IDS_STRECIPIENTROWSTREAM,
 	IDS_STRECURRENCEPATTERN,
 	IDS_STREPORTTAG,
 	IDS_STRESTRICTION,
@@ -37,6 +39,7 @@ UINT g_uidParsingTypesDropDown[] = {
 	IDS_STTASKASSIGNERS,
 	IDS_STTIMEZONE,
 	IDS_STTIMEZONEDEFINITION,
+	IDS_STWEBVIEWPERSISTSTREAM,
 };
 ULONG g_cuidParsingTypesDropDown = _countof(g_uidParsingTypesDropDown);
 
@@ -79,24 +82,25 @@ SMART_VIEW_PARSERS_ENTRY g_SmartViewParsers[] = {
 	MAKE_SV_ENTRY(IDS_STPROPERTYDEFINITIONSTREAM, PropertyDefinitionStreamStruct)
 	MAKE_SV_ENTRY(IDS_STADDITIONALRENENTRYIDSEX, AdditionalRenEntryIDsStruct)
 	MAKE_SV_ENTRY(IDS_STFLATENTRYLIST, FlatEntryListStruct)
-
+	MAKE_SV_ENTRY(IDS_STRECIPIENTROWSTREAM, RecipientRowStreamStruct)
+	MAKE_SV_ENTRY(IDS_STWEBVIEWPERSISTSTREAM, WebViewPersistStreamStruct)
 };
 ULONG g_cSmartViewParsers = _countof(g_SmartViewParsers);
 
-struct BINARY_STRUCTURE_ARRAY_ENTRY
+struct SMARTVIEW_PARSER_ARRAY_ENTRY
 {
 	ULONG	ulIndex;
 	ULONG	iStructType;
 	BOOL	bMV;
 };
-typedef BINARY_STRUCTURE_ARRAY_ENTRY FAR * LPBINARY_STRUCTURE_ARRAY_ENTRY;
+typedef SMARTVIEW_PARSER_ARRAY_ENTRY FAR * LPSMARTVIEW_PARSER_ARRAY_ENTRY;
 
 #define BINARY_STRUCTURE_ENTRY(_fName,_fType) {PROP_ID((_fName)),(_fType),false},
 #define NAMEDPROP_BINARY_STRUCTURE_ENTRY(_fName,_fGuid,_fType) {PROP_TAG((guid##_fGuid),(_fName)),(_fType),false},
 #define MV_BINARY_STRUCTURE_ENTRY(_fName,_fType) {PROP_ID((_fName)),(_fType),true},
 #define NAMEDPROP_MV_BINARY_STRUCTURE_ENTRY(_fName,_fGuid,_fType) {PROP_TAG((guid##_fGuid),(_fName)),(_fType),true},
 
-BINARY_STRUCTURE_ARRAY_ENTRY g_BinaryStructArray[] =
+SMARTVIEW_PARSER_ARRAY_ENTRY g_BinaryStructArray[] =
 {
 	BINARY_STRUCTURE_ENTRY(PR_FREEBUSY_NT_SECURITY_DESCRIPTOR,IDS_STSECURITYDESCRIPTOR)
 	BINARY_STRUCTURE_ENTRY(PR_NT_SECURITY_DESCRIPTOR,IDS_STSECURITYDESCRIPTOR)
@@ -108,6 +112,7 @@ BINARY_STRUCTURE_ARRAY_ENTRY g_BinaryStructArray[] =
 	BINARY_STRUCTURE_ENTRY(PR_EXTENDED_RULE_MSG_CONDITION,IDS_STEXTENDEDRULECONDITION)
 	BINARY_STRUCTURE_ENTRY(PR_REPLY_RECIPIENT_ENTRIES,IDS_STFLATENTRYLIST)
 	BINARY_STRUCTURE_ENTRY(PR_ALTERNATE_RECIPIENT,IDS_STFLATENTRYLIST)
+	BINARY_STRUCTURE_ENTRY(PR_FOLDER_WEBVIEWINFO,IDS_STWEBVIEWPERSISTSTREAM)
 
 	BINARY_STRUCTURE_ENTRY(PR_RECEIVED_BY_ENTRYID,IDS_STENTRYID)
 	BINARY_STRUCTURE_ENTRY(PR_SENT_REPRESENTING_ENTRYID,IDS_STENTRYID)
@@ -217,12 +222,26 @@ BINARY_STRUCTURE_ARRAY_ENTRY g_BinaryStructArray[] =
 	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidPropDefStream,PSETID_Common,IDS_STPROPERTYDEFINITIONSTREAM)
 	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidContactLinkEntry,PSETID_Common,IDS_STFLATENTRYLIST)
 
+	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidApptUnsendableRecips,PSETID_Appointment,IDS_STRECIPIENTROWSTREAM)
+	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidForwardNotificationRecipients,PSETID_Appointment,IDS_STRECIPIENTROWSTREAM)
+
 	NAMEDPROP_MV_BINARY_STRUCTURE_ENTRY(dispidDLMembers,PSETID_Address,IDS_STENTRYID)
 	NAMEDPROP_MV_BINARY_STRUCTURE_ENTRY(dispidDLOneOffMembers,PSETID_Address,IDS_STENTRYID)
 };
 
-LPBINARY_STRUCTURE_ARRAY_ENTRY BinaryStructArray = g_BinaryStructArray;
+LPSMARTVIEW_PARSER_ARRAY_ENTRY BinaryStructArray = g_BinaryStructArray;
 ULONG ulBinaryStructArray = _countof(g_BinaryStructArray);
+
+SMARTVIEW_PARSER_ARRAY_ENTRY g_LongStructArray[] =
+{
+	BINARY_STRUCTURE_ENTRY(PR_WB_SF_LAST_USED,IDS_STLONGRTIME)
+	BINARY_STRUCTURE_ENTRY(PR_WB_SF_EXPIRATION,IDS_STLONGRTIME)
+	BINARY_STRUCTURE_ENTRY(PR_FREEBUSY_PUBLISH_START,IDS_STLONGRTIME)
+	BINARY_STRUCTURE_ENTRY(PR_FREEBUSY_PUBLISH_END,IDS_STLONGRTIME)
+};
+
+LPSMARTVIEW_PARSER_ARRAY_ENTRY LongStructArray = g_LongStructArray;
+ULONG ulLongStructArray = _countof(g_LongStructArray);
 
 ULONG BuildFlagIndexFromTag(ULONG ulPropTag,
 							ULONG ulPropNameID,
@@ -262,55 +281,23 @@ ULONG BuildFlagIndexFromTag(ULONG ulPropTag,
 	return NULL;
 } // BuildFlagIndexFromTag
 
-ULONG FindStructForBinaryProp(const ULONG ulPropTag, const ULONG ulPropNameID, const LPGUID lpguidNamedProp)
+ULONG FindSmartViewParserForProp(LPSMARTVIEW_PARSER_ARRAY_ENTRY lpParserArray, ULONG ulParserArray, const ULONG ulPropTag, const ULONG ulPropNameID, const LPGUID lpguidNamedProp)
 {
+	if (!lpParserArray) return 0;
 	ULONG	ulCurEntry = 0;
 	ULONG	ulIndex = BuildFlagIndexFromTag(ulPropTag,ulPropNameID,NULL,lpguidNamedProp);
 	BOOL	bMV = (PROP_TYPE(ulPropTag) & MV_FLAG) == MV_FLAG;
 
-	while (ulCurEntry < ulBinaryStructArray &&
-		!(BinaryStructArray[ulCurEntry].ulIndex == ulIndex &&
-		BinaryStructArray[ulCurEntry].bMV == bMV))
+	while (ulCurEntry < ulParserArray &&
+		!(lpParserArray[ulCurEntry].ulIndex == ulIndex &&
+		lpParserArray[ulCurEntry].bMV == bMV))
 	{
 		ulCurEntry++;
 	}
 
-	if (BinaryStructArray[ulCurEntry].ulIndex == ulIndex) return BinaryStructArray[ulCurEntry].iStructType;
+	if (lpParserArray[ulCurEntry].ulIndex == ulIndex) return lpParserArray[ulCurEntry].iStructType;
 	return 0;
-}
-
-// Interprets a flag found in lpProp and returns a string allocated with new
-// Free the string with delete[]
-// Will not return a string if the lpProp is not a PT_LONG/PT_I2 or we don't recognize the property
-// Will use named property details to look up named property flags
-HRESULT InterpretFlags(LPSPropValue lpProp,
-					   ULONG ulPropNameID,
-					   LPWSTR lpszPropNameString,
-					   LPGUID lpguidNamedProp,
-					   LPCTSTR szPrefix,
-					   LPTSTR* szFlagString)
-{
-	if (szFlagString) *szFlagString = NULL;
-	if (!lpProp || !szFlagString)
-	{
-		return S_OK;
-	}
-	if (PROP_TYPE(lpProp->ulPropTag) != PT_LONG &&
-		PROP_TYPE(lpProp->ulPropTag) != PT_I2)
-	{
-		return S_OK;
-	}
-
-	ULONG ulPropID = BuildFlagIndexFromTag(lpProp->ulPropTag,ulPropNameID,lpszPropNameString,lpguidNamedProp);
-	LONG lVal = NULL;
-	if (PROP_TYPE(lpProp->ulPropTag) == PT_LONG)
-		lVal = lpProp->Value.ul;
-	if (PROP_TYPE(lpProp->ulPropTag) == PT_I2)
-		lVal = lpProp->Value.i;
-
-	InterpretFlags(ulPropID,lVal,szPrefix,szFlagString);
-	return S_OK;
-} // InterpretFlags
+} // FindSmartViewParserForProp
 
 // lpszSmartView allocated with new, delete with delete[]
 void InterpretPropSmartView(LPSPropValue lpProp, // required property value
@@ -370,16 +357,18 @@ void InterpretPropSmartView(LPSPropValue lpProp, // required property value
 	switch(PROP_TYPE(lpProp->ulPropTag))
 	{
 	case PT_LONG:
+		{
+			InterpretLongAsString(lpProp->Value.ul,lpProp->ulPropTag,ulPropNameID,NULL,lpPropNameGUID,lpszSmartView);
+		}
+		break;
 	case PT_I2:
 		{
-			CString szPrefix;
-			szPrefix.LoadString(IDS_FLAGS_PREFIX);
-			EC_H(InterpretFlags(lpProp,ulPropNameID,NULL,lpPropNameGUID,szPrefix,lpszSmartView));
+			InterpretLongAsString(lpProp->Value.i,lpProp->ulPropTag,ulPropNameID,NULL,lpPropNameGUID,lpszSmartView);
 		}
 		break;
 	case PT_MV_LONG:
 		{
-			InterpretMVLongAsString(lpProp->Value.MVl,ulPropNameID,lpProp->ulPropTag,lpPropNameGUID,lpszSmartView);
+			InterpretMVLongAsString(lpProp->Value.MVl,lpProp->ulPropTag,ulPropNameID,lpPropNameGUID,lpszSmartView);
 		}
 		break;
 	case PT_BINARY:
@@ -387,7 +376,7 @@ void InterpretPropSmartView(LPSPropValue lpProp, // required property value
 			ULONG ulLookupPropTag = lpProp->ulPropTag;
 			if (bMVRow) ulLookupPropTag |= MV_FLAG;
 
-			ULONG iStructType = FindStructForBinaryProp(ulLookupPropTag,ulPropNameID,lpPropNameGUID);
+			ULONG iStructType = FindSmartViewParserForProp(BinaryStructArray, ulBinaryStructArray, ulLookupPropTag, ulPropNameID, lpPropNameGUID);
 			if (iStructType)
 			{
 				InterpretBinaryAsString(lpProp->Value.bin,iStructType,lpMAPIProp,lpProp->ulPropTag,lpszSmartView);
@@ -396,7 +385,7 @@ void InterpretPropSmartView(LPSPropValue lpProp, // required property value
 		break;
 	case PT_MV_BINARY:
 		{
-			ULONG iStructType = FindStructForBinaryProp(lpProp->ulPropTag,ulPropNameID,lpPropNameGUID);
+			ULONG iStructType = FindSmartViewParserForProp(BinaryStructArray, ulBinaryStructArray, lpProp->ulPropTag, ulPropNameID, lpPropNameGUID);
 			if (iStructType)
 			{
 				InterpretMVBinaryAsString(lpProp->Value.MVbin,iStructType,lpMAPIProp,lpProp->ulPropTag,lpszSmartView);
@@ -435,7 +424,46 @@ void InterpretMVBinaryAsString(SBinaryArray myBinArray, DWORD_PTR iStructType, L
 	*lpszResultString = CStringToString(szResult);
 } // InterpretMVBinaryAsString
 
-void InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropNameID, ULONG ulPropTag, LPGUID lpguidNamedProp, LPTSTR* lpszResultString)
+// Interprets a PT_LONG or PT_I2 found in lpProp and returns a string allocated with new
+// Free the string with delete[]
+// Will not return a string if the lpProp is not a PT_LONG/PT_I2 or we don't recognize the property
+// Will use named property details to look up named property flags
+void InterpretLongAsString(ULONG ulVal, ULONG ulPropTag, ULONG ulPropNameID, LPWSTR lpszPropNameString, LPGUID lpguidNamedProp, LPTSTR* lpszResultString)
+{
+	if (lpszResultString) *lpszResultString = NULL;
+	if (!ulPropTag || !lpszResultString)
+	{
+		return;
+	}
+	if (PROP_TYPE(ulPropTag) != PT_LONG &&
+		PROP_TYPE(ulPropTag) != PT_I2)
+	{
+		return;
+	}
+
+	ULONG iParser = FindSmartViewParserForProp(LongStructArray, ulLongStructArray, ulPropTag, ulPropNameID, lpguidNamedProp);
+	switch (iParser)
+	{
+	case IDS_STLONGRTIME:
+		*lpszResultString = RTimeToSzString(ulVal);
+		break;
+		// insert future parsers here
+	default:
+		{
+			ULONG ulPropID = BuildFlagIndexFromTag(ulPropTag,ulPropNameID,lpszPropNameString,lpguidNamedProp);
+			if (ulPropID)
+			{
+				CString szPrefix;
+				szPrefix.LoadString(IDS_FLAGS_PREFIX);
+
+				InterpretFlags(ulPropID,ulVal,szPrefix,lpszResultString);
+			}
+		}
+		break;
+	}
+} // InterpretLongAsString
+
+void InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropTag, ULONG ulPropNameID, LPGUID lpguidNamedProp, LPTSTR* lpszResultString)
 {
 	if (!RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD) return;
 	if (!lpszResultString) return;
@@ -447,19 +475,14 @@ void InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropNameID, ULONG u
 
 	for (ulRow = 0 ; ulRow < myLongArray.cValues ; ulRow++)
 	{
-		HRESULT hRes = S_OK;
-		SPropValue sProp = {0};
-		sProp.ulPropTag = CHANGE_PROP_TYPE(ulPropTag, PT_LONG);
-		sProp.Value.l = myLongArray.lpl[ulRow];
-
 		if (ulRow != 0)
 		{
 			szResult += _T("\r\n"); // STRING_OK
 		}
-		EC_H(InterpretFlags(&sProp,ulPropNameID,NULL,lpguidNamedProp,NULL,&szSmartView));
+		InterpretLongAsString(myLongArray.lpl[ulRow], CHANGE_PROP_TYPE(ulPropTag, PT_LONG), ulPropNameID, NULL, lpguidNamedProp, &szSmartView);
 		if (szSmartView)
 		{
-			szTmp.FormatMessage(IDS_MVROWFLAG,
+			szTmp.FormatMessage(IDS_MVROWLONG,
 				ulRow,
 				szSmartView?szSmartView:_T(""));
 			szResult += szTmp;
@@ -516,6 +539,29 @@ void InterpretBinaryAsString(SBinary myBin, DWORD_PTR iStructType, LPMAPIPROP lp
 	}
 	*lpszResultString = szResultString;
 }
+
+CString RTimeToString(DWORD rTime)
+{
+	CString PropString;
+	FILETIME fTime = {0};
+	LARGE_INTEGER liNumSec = {0};
+	liNumSec.LowPart = rTime;
+	// Resolution of RTime is in minutes, FILETIME is in 100 nanosecond intervals
+	// Scale between the two is 10000000*60
+	liNumSec.QuadPart = liNumSec.QuadPart*10000000*60;
+	fTime.dwLowDateTime = liNumSec.LowPart;
+	fTime.dwHighDateTime= liNumSec.HighPart;
+	FileTimeToString(&fTime,&PropString,NULL);
+	return PropString;
+} // RTimeToString
+
+LPTSTR RTimeToSzString(DWORD rTime)
+{
+	CString szRTime;
+	szRTime.FormatMessage(_T("RTime: "));
+	szRTime += RTimeToString(rTime);
+	return CStringToString(szRTime);
+} // RTimeToSzString
 
 // CBinaryParser - helper class for parsing binary data without
 // worrying about whether you've run off the end of your buffer.
@@ -581,7 +627,7 @@ size_t CBinaryParser::RemainingBytes()
 void CBinaryParser::GetBYTE(BYTE* pBYTE)
 {
 	if (!pBYTE || !m_lpCur) return;
-	if (m_lpCur + sizeof(BYTE) > m_lpEnd) return;
+	if (sizeof(BYTE) > RemainingBytes()) return;
 	*pBYTE = *((BYTE*)m_lpCur);
 	m_lpCur += sizeof(BYTE);
 }
@@ -589,7 +635,7 @@ void CBinaryParser::GetBYTE(BYTE* pBYTE)
 void CBinaryParser::GetWORD(WORD* pWORD)
 {
 	if (!pWORD || !m_lpCur) return;
-	if (m_lpCur + sizeof(WORD) > m_lpEnd) return;
+	if (sizeof(WORD) > RemainingBytes()) return;
 	*pWORD = *((WORD*)m_lpCur);
 	m_lpCur += sizeof(WORD);
 }
@@ -597,7 +643,7 @@ void CBinaryParser::GetWORD(WORD* pWORD)
 void CBinaryParser::GetDWORD(DWORD* pDWORD)
 {
 	if (!pDWORD || !m_lpCur) return;
-	if (m_lpCur + sizeof(DWORD) > m_lpEnd) return;
+	if (sizeof(DWORD) > RemainingBytes()) return;
 	*pDWORD = *((DWORD*)m_lpCur);
 	m_lpCur += sizeof(DWORD);
 }
@@ -605,7 +651,7 @@ void CBinaryParser::GetDWORD(DWORD* pDWORD)
 void CBinaryParser::GetLARGE_INTEGER(LARGE_INTEGER* pLARGE_INTEGER)
 {
 	if (!pLARGE_INTEGER || !m_lpCur) return;
-	if (m_lpCur + sizeof(LARGE_INTEGER) > m_lpEnd) return;
+	if (sizeof(LARGE_INTEGER) > RemainingBytes()) return;
 	*pLARGE_INTEGER = *((LARGE_INTEGER*)m_lpCur);
 	m_lpCur += sizeof(LARGE_INTEGER);
 }
@@ -613,7 +659,7 @@ void CBinaryParser::GetLARGE_INTEGER(LARGE_INTEGER* pLARGE_INTEGER)
 void CBinaryParser::GetBYTES(size_t cbBytes, LPBYTE* ppBYTES)
 {
 	if (!cbBytes || !ppBYTES) return;
-	if (m_lpCur + cbBytes > m_lpEnd) return;
+	if (cbBytes > RemainingBytes()) return;
 	*ppBYTES = new BYTE[cbBytes];
 	if (*ppBYTES)
 	{
@@ -626,7 +672,7 @@ void CBinaryParser::GetBYTES(size_t cbBytes, LPBYTE* ppBYTES)
 void CBinaryParser::GetBYTESNoAlloc(size_t cbBytes, LPBYTE pBYTES)
 {
 	if (!cbBytes || !pBYTES) return;
-	if (m_lpCur + cbBytes > m_lpEnd) return;
+	if (cbBytes > RemainingBytes()) return;
 	memset(pBYTES,0,sizeof(BYTE) * cbBytes);
 	memcpy(pBYTES,m_lpCur,cbBytes);
 	m_lpCur += cbBytes;
@@ -636,7 +682,7 @@ void CBinaryParser::GetBYTESNoAlloc(size_t cbBytes, LPBYTE pBYTES)
 void CBinaryParser::GetStringA(size_t cchChar, LPSTR* ppStr)
 {
 	if (!cchChar || !ppStr) return;
-	if (m_lpCur + sizeof(CHAR) * cchChar > m_lpEnd) return;
+	if (sizeof(CHAR) * cchChar > RemainingBytes()) return;
 	*ppStr = new CHAR[cchChar+1];
 	if (*ppStr)
 	{
@@ -651,7 +697,7 @@ void CBinaryParser::GetStringA(size_t cchChar, LPSTR* ppStr)
 void CBinaryParser::GetStringW(size_t cchWChar, LPWSTR* ppStr)
 {
 	if (!cchWChar || !ppStr) return;
-	if (m_lpCur + sizeof(WCHAR) * cchWChar > m_lpEnd) return;
+	if (sizeof(WCHAR) * cchWChar > RemainingBytes()) return;
 	*ppStr = new WCHAR[cchWChar+1];
 	if (*ppStr)
 	{
@@ -1554,10 +1600,12 @@ void DeleteExtendedFlagsStruct(ExtendedFlagsStruct* pefExtendedFlags)
 {
 	if (!pefExtendedFlags) return;
 	ULONG i = 0;
-	pefExtendedFlags->ulNumFlags;
-	for (i = 0 ; i < pefExtendedFlags->ulNumFlags ; i++)
+	if (pefExtendedFlags->ulNumFlags && pefExtendedFlags->pefExtendedFlags)
 	{
-		delete[] pefExtendedFlags->pefExtendedFlags[i].lpUnknownData;
+		for (i = 0 ; i < pefExtendedFlags->ulNumFlags ; i++)
+		{
+			delete[] pefExtendedFlags->pefExtendedFlags[i].lpUnknownData;
+		}
 	}
 	delete[] pefExtendedFlags->pefExtendedFlags;
 	delete[] pefExtendedFlags->JunkData;
@@ -1575,51 +1623,54 @@ LPTSTR ExtendedFlagsStructToString(ExtendedFlagsStruct* pefExtendedFlags)
 
 	szExtendedFlags.FormatMessage(IDS_EXTENDEDFLAGSHEADER,pefExtendedFlags->ulNumFlags);
 
-	ULONG i = 0;
-	for (i = 0 ; i < pefExtendedFlags->ulNumFlags ; i++)
+	if (pefExtendedFlags->ulNumFlags && pefExtendedFlags->pefExtendedFlags)
 	{
-		LPTSTR szFlags = NULL;
-		InterpretFlags(flagExtendedFolderFlagType,pefExtendedFlags->pefExtendedFlags[i].Id,&szFlags);
-		szTmp.FormatMessage(IDS_EXTENDEDFLAGID,
-			pefExtendedFlags->pefExtendedFlags[i].Id,szFlags,
-			pefExtendedFlags->pefExtendedFlags[i].Cb);
-		delete[] szFlags;
-		szFlags = NULL;
-		szExtendedFlags += szTmp;
+		ULONG i = 0;
+		for (i = 0 ; i < pefExtendedFlags->ulNumFlags ; i++)
+		{
+			LPTSTR szFlags = NULL;
+			InterpretFlags(flagExtendedFolderFlagType,pefExtendedFlags->pefExtendedFlags[i].Id,&szFlags);
+			szTmp.FormatMessage(IDS_EXTENDEDFLAGID,
+				pefExtendedFlags->pefExtendedFlags[i].Id,szFlags,
+				pefExtendedFlags->pefExtendedFlags[i].Cb);
+			delete[] szFlags;
+			szFlags = NULL;
+			szExtendedFlags += szTmp;
 
-		switch (pefExtendedFlags->pefExtendedFlags[i].Id)
-		{
-		case EFPB_FLAGS:
-			InterpretFlags(flagExtendedFolderFlag,pefExtendedFlags->pefExtendedFlags[i].Data.ExtendedFlags,&szFlags);
-			szTmp.FormatMessage(IDS_EXTENDEDFLAGDATAFLAG,pefExtendedFlags->pefExtendedFlags[i].Data.ExtendedFlags,szFlags);
-			delete[] szFlags;
-			szFlags = NULL;
-			szExtendedFlags += szTmp;
-			break;
-		case EFPB_CLSIDID:
-			szFlags = GUIDToString(&pefExtendedFlags->pefExtendedFlags[i].Data.SearchFolderID);
-			szTmp.FormatMessage(IDS_EXTENDEDFLAGDATASFID,szFlags);
-			delete[] szFlags;
-			szFlags = NULL;
-			szExtendedFlags += szTmp;
-			break;
-		case EFPB_SFTAG:
-			szTmp.FormatMessage(IDS_EXTENDEDFLAGDATASFTAG,
-				pefExtendedFlags->pefExtendedFlags[i].Data.SearchFolderTag);
-			szExtendedFlags += szTmp;
-			break;
-		case EFPB_TODO_VERSION:
-			szTmp.FormatMessage(IDS_EXTENDEDFLAGDATATODOVERSION,pefExtendedFlags->pefExtendedFlags[i].Data.ToDoFolderVersion);
-			szExtendedFlags += szTmp;
-			break;
-		}
-		if (pefExtendedFlags->pefExtendedFlags[i].lpUnknownData)
-		{
-			szTmp.FormatMessage(IDS_EXTENDEDFLAGUNKNOWN);
-			szExtendedFlags += szTmp;
-			sBin.cb = pefExtendedFlags->pefExtendedFlags[i].Cb;
-			sBin.lpb = pefExtendedFlags->pefExtendedFlags[i].lpUnknownData;
-			szExtendedFlags += BinToHexString(&sBin,true);
+			switch (pefExtendedFlags->pefExtendedFlags[i].Id)
+			{
+			case EFPB_FLAGS:
+				InterpretFlags(flagExtendedFolderFlag,pefExtendedFlags->pefExtendedFlags[i].Data.ExtendedFlags,&szFlags);
+				szTmp.FormatMessage(IDS_EXTENDEDFLAGDATAFLAG,pefExtendedFlags->pefExtendedFlags[i].Data.ExtendedFlags,szFlags);
+				delete[] szFlags;
+				szFlags = NULL;
+				szExtendedFlags += szTmp;
+				break;
+			case EFPB_CLSIDID:
+				szFlags = GUIDToString(&pefExtendedFlags->pefExtendedFlags[i].Data.SearchFolderID);
+				szTmp.FormatMessage(IDS_EXTENDEDFLAGDATASFID,szFlags);
+				delete[] szFlags;
+				szFlags = NULL;
+				szExtendedFlags += szTmp;
+				break;
+			case EFPB_SFTAG:
+				szTmp.FormatMessage(IDS_EXTENDEDFLAGDATASFTAG,
+					pefExtendedFlags->pefExtendedFlags[i].Data.SearchFolderTag);
+				szExtendedFlags += szTmp;
+				break;
+			case EFPB_TODO_VERSION:
+				szTmp.FormatMessage(IDS_EXTENDEDFLAGDATATODOVERSION,pefExtendedFlags->pefExtendedFlags[i].Data.ToDoFolderVersion);
+				szExtendedFlags += szTmp;
+				break;
+			}
+			if (pefExtendedFlags->pefExtendedFlags[i].lpUnknownData)
+			{
+				szTmp.FormatMessage(IDS_EXTENDEDFLAGUNKNOWN);
+				szExtendedFlags += szTmp;
+				sBin.cb = pefExtendedFlags->pefExtendedFlags[i].Cb;
+				sBin.lpb = pefExtendedFlags->pefExtendedFlags[i].lpUnknownData;
+				szExtendedFlags += BinToHexString(&sBin,true);
+			}
 		}
 	}
 
@@ -1980,10 +2031,16 @@ LPTSTR ReportTagStructToString(ReportTagStruct* prtReportTag)
 	CString szTmp;
 	HRESULT hRes = S_OK;
 
+	szReportTag.FormatMessage(IDS_REPORTTAGHEADER);
+
+	SBinary sBin = {0};
+	sBin.cb = sizeof(prtReportTag->Cookie);
+	sBin.lpb = (LPBYTE) prtReportTag->Cookie;
+	szReportTag += BinToHexString(&sBin,true);
+
 	LPTSTR szFlags = NULL;
 	EC_H(InterpretFlags(flagReportTagVersion, prtReportTag->Version, &szFlags));
-	szTmp.FormatMessage(IDS_REPORTTAGHEADER,
-		prtReportTag->Cookie,
+	szTmp.FormatMessage(IDS_REPORTTAGVERSION,
 		prtReportTag->Version,
 		szFlags);
 	delete[] szFlags;
@@ -1994,7 +2051,6 @@ LPTSTR ReportTagStructToString(ReportTagStruct* prtReportTag)
 	{
 		szTmp.FormatMessage(IDS_REPORTTAGSTOREEID);
 		szReportTag += szTmp;
-		SBinary sBin = {0};
 		sBin.cb = prtReportTag->cbStoreEntryID;
 		sBin.lpb = prtReportTag->lpStoreEntryID;
 		szReportTag += BinToHexString(&sBin,true);
@@ -2004,7 +2060,6 @@ LPTSTR ReportTagStructToString(ReportTagStruct* prtReportTag)
 	{
 		szTmp.FormatMessage(IDS_REPORTTAGFOLDEREID);
 		szReportTag += szTmp;
-		SBinary sBin = {0};
 		sBin.cb = prtReportTag->cbFolderEntryID;
 		sBin.lpb = prtReportTag->lpFolderEntryID;
 		szReportTag += BinToHexString(&sBin,true);
@@ -2014,7 +2069,6 @@ LPTSTR ReportTagStructToString(ReportTagStruct* prtReportTag)
 	{
 		szTmp.FormatMessage(IDS_REPORTTAGMESSAGEEID);
 		szReportTag += szTmp;
-		SBinary sBin = {0};
 		sBin.cb = prtReportTag->cbMessageEntryID;
 		sBin.lpb = prtReportTag->lpMessageEntryID;
 		szReportTag += BinToHexString(&sBin,true);
@@ -2024,7 +2078,6 @@ LPTSTR ReportTagStructToString(ReportTagStruct* prtReportTag)
 	{
 		szTmp.FormatMessage(IDS_REPORTTAGSFEID);
 		szReportTag += szTmp;
-		SBinary sBin = {0};
 		sBin.cb = prtReportTag->cbSearchFolderEntryID;
 		sBin.lpb = prtReportTag->lpSearchFolderEntryID;
 		szReportTag += BinToHexString(&sBin,true);
@@ -2034,7 +2087,6 @@ LPTSTR ReportTagStructToString(ReportTagStruct* prtReportTag)
 	{
 		szTmp.FormatMessage(IDS_REPORTTAGMESSAGEKEY);
 		szReportTag += szTmp;
-		SBinary sBin = {0};
 		sBin.cb = prtReportTag->cbMessageSearchKey;
 		sBin.lpb = prtReportTag->lpMessageSearchKey;
 		szReportTag += BinToHexString(&sBin,true);
@@ -2171,7 +2223,7 @@ LPTSTR ConversationIndexStructToString(ConversationIndexStruct* pciConversationI
 	szConversationIndex += szTmp;
 	delete[] szGUID;
 
-	if (pciConversationIndex->ulResponseLevels)
+	if (pciConversationIndex->ulResponseLevels && pciConversationIndex->lpResponseLevels)
 	{
 		ULONG i = 0;
 		for (i = 0 ; i < pciConversationIndex->ulResponseLevels ; i++)
@@ -3247,7 +3299,8 @@ LPTSTR PropertyStructToString(PropertyStruct* ppProperty)
 				&szSmartView);
 
 			szTmp.FormatMessage(IDS_PROPERTYDATAHEADER,
-				i);
+				i,
+				ppProperty->Prop[i].ulPropTag);
 			szProperty += szTmp;
 
 			if (szExactMatches)
@@ -3343,8 +3396,8 @@ RestrictionStruct* BinToRestrictionStructWithSize(ULONG cbBin, LPBYTE lpBin, siz
 	return prRestriction;
 } // BinToRestrictionStructWithSize
 
-// There may be restrictions with over 5000 sub restrictions, but we're not going to try to parse them
-#define _MaxRestrictions 5000
+// There may be restrictions with over 1500 sub restrictions, but we're not going to try to parse them
+#define _MaxRestrictions 1500
 
 // Helper function for both RestrictionStruct and RuleConditionStruct
 // Caller allocates with new. Clean up with DeleteRestriction and delete[].
@@ -4989,4 +5042,301 @@ LPTSTR FlatEntryListStructToString(FlatEntryListStruct* pfelFlatEntryList)
 
 //////////////////////////////////////////////////////////////////////////
 // End FlatEntryListStruct
+//////////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////
+// WebViewPersistStreamStruct
+//////////////////////////////////////////////////////////////////////////
+
+// There may be web view persistance streams with over 500 web view structs, but we're not going to try to parse them
+#define _MaxWebViewPersist 500
+
+// Allocates return value with new. Clean up with DeleteWebViewPersistStreamStruct.
+WebViewPersistStreamStruct* BinToWebViewPersistStreamStruct(ULONG cbBin, LPBYTE lpBin)
+{
+	if (!lpBin) return NULL;
+
+	WebViewPersistStreamStruct wvpsWebViewPersistStream = {0};
+	CBinaryParser Parser(cbBin,lpBin);
+
+	// Run through the parser once to count the number of web view structs
+	for (;;)
+	{
+		// Must have at least 2 bytes left to have another struct
+		if (Parser.RemainingBytes() <  sizeof(DWORD) * 11) break;
+		Parser.Advance(sizeof(DWORD) * 10);
+		DWORD cbData;
+		Parser.GetDWORD(&cbData);
+
+		// Must have at least cbData bytes left to be a valid flag
+		if (Parser.RemainingBytes() < cbData) break;
+
+		Parser.Advance(cbData);
+		wvpsWebViewPersistStream.cWebViews++;
+	}
+	// Set up to parse for real
+	CBinaryParser Parser2(cbBin,lpBin);
+	if (wvpsWebViewPersistStream.cWebViews && wvpsWebViewPersistStream.cWebViews < _MaxWebViewPersist)
+		wvpsWebViewPersistStream.lpWebViews = new WebViewPersistStruct[wvpsWebViewPersistStream.cWebViews];
+
+	if (wvpsWebViewPersistStream.lpWebViews)
+	{
+		memset(wvpsWebViewPersistStream.lpWebViews,0,sizeof(WebViewPersistStruct)*wvpsWebViewPersistStream.cWebViews);
+		ULONG i = 0;
+
+		for (i = 0 ; i < wvpsWebViewPersistStream.cWebViews ; i++)
+		{
+			Parser2.GetDWORD(&wvpsWebViewPersistStream.lpWebViews[i].dwVersion);
+			Parser2.GetDWORD(&wvpsWebViewPersistStream.lpWebViews[i].dwType);
+			Parser2.GetDWORD(&wvpsWebViewPersistStream.lpWebViews[i].dwFlags);
+			Parser2.GetBYTESNoAlloc(sizeof(wvpsWebViewPersistStream.lpWebViews[i].dwUnused),(LPBYTE) &wvpsWebViewPersistStream.lpWebViews[i].dwUnused);
+			Parser2.GetDWORD(&wvpsWebViewPersistStream.lpWebViews[i].cbData);
+			Parser2.GetBYTES(wvpsWebViewPersistStream.lpWebViews[i].cbData,&wvpsWebViewPersistStream.lpWebViews[i].lpData);
+		}
+	}
+
+	// Junk data remains
+	if (Parser2.RemainingBytes() > 0)
+	{
+		wvpsWebViewPersistStream.JunkDataSize = Parser2.RemainingBytes();
+		Parser2.GetBYTES(wvpsWebViewPersistStream.JunkDataSize,&wvpsWebViewPersistStream.JunkData);
+	}
+
+	WebViewPersistStreamStruct* pwvpsWebViewPersistStream = new WebViewPersistStreamStruct;
+	if (pwvpsWebViewPersistStream)
+	{
+		*pwvpsWebViewPersistStream = wvpsWebViewPersistStream;
+	}
+
+	return pwvpsWebViewPersistStream;
+} // BinToWebViewPersistStreamStruct
+
+void DeleteWebViewPersistStreamStruct(WebViewPersistStreamStruct* pwvpsWebViewPersistStream)
+{
+	if (!pwvpsWebViewPersistStream) return;
+	if (pwvpsWebViewPersistStream->lpWebViews && pwvpsWebViewPersistStream->cWebViews)
+	{
+		ULONG i = 0;
+
+		for (i = 0 ; i < pwvpsWebViewPersistStream->cWebViews ; i++)
+		{
+			delete[] pwvpsWebViewPersistStream->lpWebViews[i].lpData;
+		}
+	}
+	delete[] pwvpsWebViewPersistStream->lpWebViews;
+
+	delete[] pwvpsWebViewPersistStream->JunkData;
+	delete pwvpsWebViewPersistStream;
+} // DeleteWebViewPersistStreamStruct
+
+// result allocated with new, clean up with delete[]
+LPTSTR WebViewPersistStreamStructToString(WebViewPersistStreamStruct* pwvpsWebViewPersistStream)
+{
+	if (!pwvpsWebViewPersistStream) return NULL;
+
+	HRESULT hRes = S_OK;
+	CString szWebViewPersistStream;
+	CString szTmp;
+
+	szWebViewPersistStream.FormatMessage(IDS_WEBVIEWSTREAMHEADER, pwvpsWebViewPersistStream->cWebViews);
+	if (pwvpsWebViewPersistStream->lpWebViews && pwvpsWebViewPersistStream->cWebViews)
+	{
+		ULONG i = 0;
+
+		for (i = 0 ; i < pwvpsWebViewPersistStream->cWebViews ; i++)
+		{
+			LPTSTR szVersion = NULL;
+			LPTSTR szType = NULL;
+			LPTSTR szFlags = NULL;
+			EC_H(InterpretFlags(flagWebViewVersion, pwvpsWebViewPersistStream->lpWebViews[i].dwVersion, &szVersion));
+			EC_H(InterpretFlags(flagWebViewType, pwvpsWebViewPersistStream->lpWebViews[i].dwType, &szType));
+			EC_H(InterpretFlags(flagWebViewFlags, pwvpsWebViewPersistStream->lpWebViews[i].dwFlags, &szFlags));
+
+			szTmp.FormatMessage(
+				IDS_WEBVIEWHEADER,
+				i,
+				pwvpsWebViewPersistStream->lpWebViews[i].dwVersion, szVersion,
+				pwvpsWebViewPersistStream->lpWebViews[i].dwType, szType,
+				pwvpsWebViewPersistStream->lpWebViews[i].dwFlags, szFlags);
+			szWebViewPersistStream += szTmp;
+			delete[] szFlags;
+			delete[] szType;
+			delete[] szVersion;
+
+			SBinary sBinUnused = {0};
+			sBinUnused.cb = sizeof(pwvpsWebViewPersistStream->lpWebViews[i].dwUnused);
+			sBinUnused.lpb = (LPBYTE) &pwvpsWebViewPersistStream->lpWebViews[i].dwUnused;
+			szWebViewPersistStream += BinToHexString(&sBinUnused,true);
+
+			szTmp.FormatMessage(IDS_WEBVIEWCBDATA, pwvpsWebViewPersistStream->lpWebViews[i].cbData);
+			szWebViewPersistStream += szTmp;
+
+			switch (pwvpsWebViewPersistStream->lpWebViews[i].dwType)
+			{
+			case WEBVIEWURL:
+				{
+					// Copy lpData to a new buffer and NULL terminate it in case it's not already.
+					size_t cchData = pwvpsWebViewPersistStream->lpWebViews[i].cbData / sizeof(WCHAR);
+					WCHAR* lpwzTmp = new WCHAR[cchData+1];
+					if (lpwzTmp)
+					{
+						memcpy(lpwzTmp,pwvpsWebViewPersistStream->lpWebViews[i].lpData,sizeof(WCHAR) * cchData);
+						lpwzTmp[cchData] = NULL;
+						szTmp.FormatMessage(IDS_WEBVIEWURL);
+						szWebViewPersistStream += szTmp;
+						szWebViewPersistStream += lpwzTmp;
+						delete[] lpwzTmp;
+					}
+					break;
+				}
+			default:
+				{
+					SBinary sBinData = {0};
+					sBinData.cb = pwvpsWebViewPersistStream->lpWebViews[i].cbData;
+					sBinData.lpb = pwvpsWebViewPersistStream->lpWebViews[i].lpData;
+
+					szTmp.FormatMessage(IDS_WEBVIEWDATA);
+					szWebViewPersistStream += szTmp;
+					szWebViewPersistStream += BinToHexString(&sBinData,true);
+					break;
+				}
+			}
+		}
+	}
+
+
+	szWebViewPersistStream += JunkDataToString(pwvpsWebViewPersistStream->JunkDataSize,pwvpsWebViewPersistStream->JunkData);
+
+	return CStringToString(szWebViewPersistStream);
+} // WebViewPersistStreamStructToString
+
+//////////////////////////////////////////////////////////////////////////
+// End WebViewPersistStreamStruct
+//////////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////
+// RecipientRowStreamStruct
+//////////////////////////////////////////////////////////////////////////
+
+// There may be recipient row streams with over 500 recipients, but we're not going to try to parse them
+#define _MaxRecipientRow 500
+// There may be recipient rows with over 500 properties, but we're not going to try to parse them
+#define _MaxRecipientRowProps 500
+
+// Allocates return value with new. Clean up with DeleteRecipientRowStreamStruct.
+RecipientRowStreamStruct* BinToRecipientRowStreamStruct(ULONG cbBin, LPBYTE lpBin)
+{
+	if (!lpBin) return NULL;
+
+	RecipientRowStreamStruct rrsRecipientRowStream = {0};
+	CBinaryParser Parser(cbBin,lpBin);
+
+	Parser.GetDWORD(&rrsRecipientRowStream.cVersion);
+	Parser.GetDWORD(&rrsRecipientRowStream.cRowCount);
+
+	if (rrsRecipientRowStream.cRowCount && rrsRecipientRowStream.cRowCount < _MaxRecipientRow)
+		rrsRecipientRowStream.lpAdrEntry = new ADRENTRY[rrsRecipientRowStream.cRowCount];
+
+	if (rrsRecipientRowStream.lpAdrEntry)
+	{
+		memset(rrsRecipientRowStream.lpAdrEntry,0,sizeof(ADRENTRY)*rrsRecipientRowStream.cRowCount);
+		ULONG i = 0;
+
+		for (i = 0 ; i < rrsRecipientRowStream.cRowCount ; i++)
+		{
+			Parser.GetDWORD(&rrsRecipientRowStream.lpAdrEntry[i].cValues);
+			Parser.GetDWORD(&rrsRecipientRowStream.lpAdrEntry[i].ulReserved1);
+
+			if (rrsRecipientRowStream.lpAdrEntry[i].cValues && rrsRecipientRowStream.lpAdrEntry[i].cValues < _MaxRecipientRowProps)
+			{
+				size_t cbOffset = Parser.GetCurrentOffset();
+				size_t cbBytesRead = 0;
+				rrsRecipientRowStream.lpAdrEntry[i].rgPropVals = BinToSPropValue(
+					(ULONG) Parser.RemainingBytes(),
+					lpBin+cbOffset,
+					rrsRecipientRowStream.lpAdrEntry[i].cValues,
+					&cbBytesRead,
+					false);
+				Parser.Advance(cbBytesRead);
+			}
+		}
+	}
+
+	// Junk data remains
+	if (Parser.RemainingBytes() > 0)
+	{
+		rrsRecipientRowStream.JunkDataSize = Parser.RemainingBytes();
+		Parser.GetBYTES(rrsRecipientRowStream.JunkDataSize,&rrsRecipientRowStream.JunkData);
+	}
+
+	RecipientRowStreamStruct* prrsRecipientRowStream = new RecipientRowStreamStruct;
+	if (prrsRecipientRowStream)
+	{
+		*prrsRecipientRowStream = rrsRecipientRowStream;
+	}
+
+	return prrsRecipientRowStream;
+} // BinToRecipientRowStreamStruct
+
+void DeleteRecipientRowStreamStruct(RecipientRowStreamStruct* prrsRecipientRowStream)
+{
+	if (!prrsRecipientRowStream) return;
+	if (prrsRecipientRowStream->lpAdrEntry && prrsRecipientRowStream->cRowCount)
+	{
+		ULONG i = 0;
+
+		for (i = 0 ; i < prrsRecipientRowStream->cRowCount ; i++)
+		{
+			DeleteSPropVal(prrsRecipientRowStream->lpAdrEntry[i].cValues,prrsRecipientRowStream->lpAdrEntry[i].rgPropVals);
+			delete[] prrsRecipientRowStream->lpAdrEntry[i].rgPropVals;
+		}
+	}
+	delete[] prrsRecipientRowStream->lpAdrEntry;
+
+	delete[] prrsRecipientRowStream->JunkData;
+	delete prrsRecipientRowStream;
+} // DeleteRecipientRowStreamStruct
+
+// result allocated with new, clean up with delete[]
+LPTSTR RecipientRowStreamStructToString(RecipientRowStreamStruct* prrsRecipientRowStream)
+{
+	if (!prrsRecipientRowStream) return NULL;
+
+	CString szRecipientRowStream;
+	CString szTmp;
+
+	szRecipientRowStream.FormatMessage(
+		IDS_RECIPIENTROWSTREAMHEADER,
+		prrsRecipientRowStream->cVersion,
+		prrsRecipientRowStream->cRowCount);
+	if (prrsRecipientRowStream->lpAdrEntry && prrsRecipientRowStream->cRowCount)
+	{
+		ULONG i = 0;
+		for (i = 0 ; i < prrsRecipientRowStream->cRowCount ; i++)
+		{
+			szTmp.FormatMessage(
+				IDS_RECIPIENTROWSTREAMROW,
+				i,
+				prrsRecipientRowStream->lpAdrEntry[i].cValues,
+				prrsRecipientRowStream->lpAdrEntry[i].ulReserved1);
+			szRecipientRowStream += szTmp;
+
+			PropertyStruct psPropStruct = {0};
+			psPropStruct.PropCount = prrsRecipientRowStream->lpAdrEntry[i].cValues;
+			psPropStruct.Prop = prrsRecipientRowStream->lpAdrEntry[i].rgPropVals;
+
+			LPTSTR szProps = PropertyStructToString(&psPropStruct);
+			szRecipientRowStream += szProps;
+			delete[] szProps;
+		}
+	}
+
+
+	szRecipientRowStream += JunkDataToString(prrsRecipientRowStream->JunkDataSize,prrsRecipientRowStream->JunkData);
+
+	return CStringToString(szRecipientRowStream);
+} // RecipientRowStreamStructToString
+
+//////////////////////////////////////////////////////////////////////////
+// End RecipientRowStreamStruct
 //////////////////////////////////////////////////////////////////////////

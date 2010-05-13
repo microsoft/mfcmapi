@@ -72,4 +72,7 @@ enum __NonPropFlag
 	flagPersistID,
 	flagElementID,
 	flagWABEntryIDType,
+	flagWebViewVersion,
+	flagWebViewType,
+	flagWebViewFlags,
 };

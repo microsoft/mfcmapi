@@ -11,7 +11,9 @@
 enum __StreamEditorTypes
 {
 	EDITOR_RTF,
-	EDITOR_STREAM,
+	EDITOR_STREAM_BINARY,
+	EDITOR_STREAM_ANSI,
+	EDITOR_STREAM_UNICODE,
 };
 
 static TCHAR* CLASS = _T("CStreamEditor");
@@ -63,7 +65,7 @@ CEditor(pParentWnd,uidTitle,uidPrompt,0,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL)
 
 	m_iSmartViewBox = 0xFFFFFFFF;
 	m_bDoSmartView = false;
-	if (PT_BINARY == PROP_TYPE(m_ulPropTag))
+	if (!m_bUseWrapEx && PT_BINARY == PROP_TYPE(m_ulPropTag))
 	{
 		m_bDoSmartView = true;
 		m_iSmartViewBox = m_iBinBox+1;
@@ -71,7 +73,22 @@ CEditor(pParentWnd,uidTitle,uidPrompt,0,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL)
 	}
 
 	if (bEditPropAsRTF) m_ulEditorType = EDITOR_RTF;
-	else m_ulEditorType = EDITOR_STREAM;
+	else 
+	{
+		switch (PROP_TYPE(m_ulPropTag))
+		{
+		case PT_STRING8:
+			m_ulEditorType = EDITOR_STREAM_ANSI;
+			break;
+		case PT_UNICODE:
+			m_ulEditorType = EDITOR_STREAM_UNICODE;
+			break;
+		case PT_BINARY:
+		default:
+			m_ulEditorType = EDITOR_STREAM_BINARY;
+			break;
+		}
+	}
 
 	CString szPromptPostFix;
 	szPromptPostFix.Format(_T("\r\n%s"),TagToString(m_ulPropTag,m_lpMAPIProp,m_bIsAB,false)); // STRING_OK
@@ -128,7 +145,7 @@ void CStreamEditor::ReadTextStreamFromProperty()
 	LPSTREAM lpTmpRTFStream = NULL;
 	LPSTREAM lpStreamIn = NULL;
 
-	DebugPrintEx(DBGGeneric,CLASS,_T("ReadTextStreamFromProperty"),_T("opening property 0x%X (==%s) from 0x%X\n"),m_ulPropTag,(LPCTSTR) TagToString(m_ulPropTag,m_lpMAPIProp,m_bIsAB,true),m_lpMAPIProp);
+	DebugPrintEx(DBGStream,CLASS,_T("ReadTextStreamFromProperty"),_T("opening property 0x%X (== %s) from 0x%X\n"),m_ulPropTag,(LPCTSTR) TagToString(m_ulPropTag,m_lpMAPIProp,m_bIsAB,true),m_lpMAPIProp);
 
 	WC_H(m_lpMAPIProp->OpenProperty(
 		m_ulPropTag,
@@ -154,7 +171,7 @@ void CStreamEditor::ReadTextStreamFromProperty()
 		SetEditReadOnly(m_iTextBox);
 		SetEditReadOnly(m_iBinBox);
 	}
-	if (EDITOR_STREAM == m_ulEditorType)
+	if (EDITOR_RTF != m_ulEditorType)
 	{
 		lpStreamIn = lpTmpStream;
 	}
@@ -173,22 +190,22 @@ void CStreamEditor::ReadTextStreamFromProperty()
 	}
 	if (lpStreamIn)
 	{
-		InitEditFromStream(m_iTextBox,lpStreamIn,PROP_TYPE(m_ulPropTag) == PT_UNICODE, EDITOR_RTF == m_ulEditorType);
+		InitEditFromBinaryStream(m_iBinBox,lpStreamIn);
 	}
 
 	if (!m_bUseWrapEx) m_bWriteAllowed = true;
 
 	if (lpTmpRTFStream) lpTmpRTFStream->Release();
 	if (lpTmpStream) lpTmpStream->Release();
-}
+} // CStreamEditor::ReadTextStreamFromProperty
 
 // this will not work if we're using WrapCompressedRTFStreamEx
 void CStreamEditor::WriteTextStreamToProperty()
 {
-	if (!IsValidEdit(m_iTextBox)) return;
+	if (!IsValidEdit(m_iBinBox)) return;
 	if (!m_bWriteAllowed) return; // don't want to write when we're in an error state
 	if (!m_lpMAPIProp) return;
-	if (!EditDirty(m_iTextBox)) return; // If we didn't change it, don't write
+	if (!EditDirty(m_iBinBox) && !EditDirty(m_iTextBox)) return; // If we didn't change it, don't write
 	if (m_bUseWrapEx) return;
 
 	HRESULT hRes = S_OK;
@@ -205,7 +222,7 @@ void CStreamEditor::WriteTextStreamToProperty()
 
 	if (FAILED(hRes) || !lpTmpStream) return;
 
-	if (EDITOR_STREAM == m_ulEditorType)
+	if (EDITOR_RTF != m_ulEditorType)
 	{
 		lpStreamOut = lpTmpStream;
 	}
@@ -223,22 +240,32 @@ void CStreamEditor::WriteTextStreamToProperty()
 		lpStreamOut = lpTmpRTFStream;
 	}
 
-	// We started with a text stream, pull text back into the stream
+	// We started with a binary stream, pull binary back into the stream
 	if (lpStreamOut)
 	{
-		GetEditBoxStream(m_iTextBox,lpStreamOut,PROP_TYPE(m_ulPropTag) == PT_UNICODE,EDITOR_RTF == m_ulEditorType);
+		// We used to use EDITSTREAM here, but instead, just use GetBinaryUseControl and write it out.
+		LPBYTE	lpb = NULL;
+		size_t	cb = 0;
+		ULONG cbWritten = 0;
 
-		EC_H(lpStreamOut->Commit(STGC_DEFAULT));
+		if (GetBinaryUseControl(m_iBinBox, &cb, &lpb))
+		{
+			EC_H(lpStreamOut->Write(lpb, (ULONG) cb, &cbWritten));
+			DebugPrintEx(DBGStream,CLASS,_T("WriteTextStreamToProperty"),_T("wrote 0x%X\n"),cbWritten);
 
-		EC_H(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
+			EC_H(lpStreamOut->Commit(STGC_DEFAULT));
+
+			EC_H(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
+		}
+		delete[] lpb;
 	}
 
-	DebugPrintEx(DBGGeneric,CLASS, _T("WriteTextStreamToProperty"),_T("Wrote out this stream:\n"));
-	DebugPrintStream(DBGGeneric,lpStreamOut);
+	DebugPrintEx(DBGStream,CLASS, _T("WriteTextStreamToProperty"),_T("Wrote out this stream:\n"));
+	DebugPrintStream(DBGStream,lpStreamOut);
 
 	if (lpTmpRTFStream) lpTmpRTFStream->Release();
 	if (lpTmpStream) lpTmpStream->Release();
-}
+} // CStreamEditor::WriteTextStreamToProperty
 
 ULONG CStreamEditor::HandleChange(UINT nID)
 {
@@ -253,24 +280,60 @@ ULONG CStreamEditor::HandleChange(UINT nID)
 	if (m_iTextBox == i)
 	{
 		size_t cchStr = 0;
-		LPSTR lpszA = GetEditBoxTextA(m_iTextBox, &cchStr);
+		switch (m_ulEditorType)
+		{
+		case EDITOR_STREAM_ANSI:
+		case EDITOR_RTF:
+		case EDITOR_STREAM_BINARY:
+		default:
+			{
+				LPSTR lpszA = GetEditBoxTextA(m_iTextBox, &cchStr);
 
-		// What we just read includes a NULL terminator, in both the string and count.
-		// When we write binary, we don't want to include this NULL
-		if (cchStr) cchStr -= 1;
+				// What we just read includes a NULL terminator, in both the string and count.
+				// When we write binary, we don't want to include this NULL
+				if (cchStr) cchStr -= 1;
 
-		SetBinary(m_iBinBox, (LPBYTE) lpszA, cchStr * sizeof(CHAR));
+				SetBinary(m_iBinBox, (LPBYTE) lpszA, cchStr * sizeof(CHAR));
+				SetSize(m_iCBBox, cchStr * sizeof(CHAR));
+				break;
+			}
+		case EDITOR_STREAM_UNICODE:
+			{
+				LPWSTR lpszW = GetEditBoxTextW(m_iTextBox, &cchStr);
 
-		SetSize(m_iCBBox, cchStr * sizeof(CHAR));
+				// What we just read includes a NULL terminator, in both the string and count.
+				// When we write binary, we don't want to include this NULL
+				if (cchStr) cchStr -= 1;
+
+				SetBinary(m_iBinBox, (LPBYTE) lpszW, cchStr * sizeof(WCHAR));
+				SetSize(m_iCBBox, cchStr * sizeof(WCHAR));
+				delete[] lpszW;
+				break;
+			}
+		}
 	}
 	else if (m_iBinBox == i)
 	{
 		if (GetBinaryUseControl(m_iBinBox,&cb,&lpb))
 		{
-			// Treat as a NULL terminated string
-			// GetBinaryUseControl includes extra NULLs at the end of the buffer to make this work
-			SetStringA(m_iTextBox,(LPCSTR) lpb, cb+1);
-			SetSize(m_iCBBox, cb);
+			switch (m_ulEditorType)
+			{
+			case EDITOR_STREAM_ANSI:
+			case EDITOR_RTF:
+			case EDITOR_STREAM_BINARY:
+			default:
+				// Treat as a NULL terminated string
+				// GetBinaryUseControl includes extra NULLs at the end of the buffer to make this work
+				SetStringA(m_iTextBox,(LPCSTR) lpb, cb/sizeof(CHAR)+1);
+				SetSize(m_iCBBox, cb);
+				break;
+			case EDITOR_STREAM_UNICODE:
+				// Treat as a NULL terminated string
+				// GetBinaryUseControl includes extra NULLs at the end of the buffer to make this work
+				SetStringW(m_iTextBox,(LPCWSTR) lpb, cb/sizeof(WCHAR)+1);
+				SetSize(m_iCBBox, cb);
+				break;
+			}
 		}
 	}
 

@@ -24,6 +24,7 @@
 #include "PropertyTagEditor.h"
 #include "MAPIProgress.h"
 #include "MAPIMime.h"
+#include "InterpretProp2.h"
 
 static TCHAR* CLASS = _T("CFolderDlg");
 
@@ -1243,6 +1244,7 @@ void CFolderDlg::OnExecuteVerbOnForm()
 			IDS_EXECUTEVERBPROMPT,
 			1,
 			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+		MyData.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_LAST_VERB_EXECUTED),false));
 
 		MyData.InitSingleLine(0,IDS_VERB,NULL,false);
 		MyData.SetDecimal(0,EXCHIVERB_OPEN);

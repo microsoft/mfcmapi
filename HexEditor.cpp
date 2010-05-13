@@ -133,10 +133,7 @@ ULONG CHexEditor::HandleChange(UINT nID)
 			szTmpString = GetStringUseControl(HEXED_BASE64);
 
 			// remove any whitespace before decoding
-			szTmpString.Replace(_T("\r"),_T("")); // STRING_OK
-			szTmpString.Replace(_T("\n"),_T("")); // STRING_OK
-			szTmpString.Replace(_T("\t"),_T("")); // STRING_OK
-			szTmpString.Replace(_T(" "),_T("")); // STRING_OK
+			CleanString(&szTmpString);
 
 			cchEncodeStr = szTmpString.GetLength();
 			WC_H(Base64Decode(szTmpString,&cb, &lpb));

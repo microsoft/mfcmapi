@@ -38,6 +38,8 @@ __ListButtons ListButtons[NUMLISTBUTTONS] = {
 
 #define INVALIDRANGE(iVal) ((iVal) >= m_cControls)
 
+// Imports binary data from a stream, converting it to hex format before returning
+// Incorporates a custom version of MyHexFromBin to minimize new/delete
 static DWORD CALLBACK EditStreamReadCallBack(
 	DWORD_PTR dwCookie,
 	LPBYTE pbBuff,
@@ -48,45 +50,48 @@ static DWORD CALLBACK EditStreamReadCallBack(
 	if (!pbBuff || !pcb || !dwCookie) return 0;
 
 	LPSTREAM stmData = (LPSTREAM) dwCookie;
-	ULONG cbRead = 0;
 
 	*pcb = 0;
 
 	DebugPrint(DBGStream,_T("EditStreamReadCallBack: cb = %d\n"),cb);
 
-	EC_H(stmData->Read(pbBuff,cb,&cbRead));
+	LONG cbTemp = cb/2;
+	ULONG cbTempRead = 0;
+	LPBYTE pbTempBuff = new BYTE[cbTemp];
 
-	DebugPrint(DBGStream,_T("EditStreamReadCallBack: read %d bytes\n"),cbRead);
+	if (pbTempBuff)
+	{
+		EC_H(stmData->Read(pbTempBuff,cbTemp,&cbTempRead));
+		DebugPrint(DBGStream,_T("EditStreamReadCallBack: read %d bytes\n"),cbTempRead);
 
-	*pcb = cbRead;
+		memset(pbBuff, 0, cbTempRead*2);
+		ULONG i = 0;
+		ULONG iBinPos = 0;
+		for (i = 0; i < cbTempRead; i++)
+		{
+			BYTE bLow;
+			BYTE bHigh;
+			CHAR szLow;
+			CHAR szHigh;
+
+			bLow = (BYTE) ((pbTempBuff[i]) & 0xf);
+			bHigh = (BYTE) ((pbTempBuff[i] >> 4) & 0xf);
+			szLow = (CHAR) ((bLow <= 0x9) ? '0' + bLow : 'A' + bLow - 0xa);
+			szHigh = (CHAR) ((bHigh <= 0x9) ? '0' + bHigh : 'A' + bHigh - 0xa);
+
+			pbBuff[iBinPos] = szHigh;
+			pbBuff[iBinPos+1] = szLow;
+
+			iBinPos += 2;
+		}
+
+		*pcb = cbTempRead*2;
+
+		delete[] pbTempBuff;
+	}
 
 	return 0;
 } // EditStreamReadCallBack
-
-static DWORD CALLBACK EditStreamWriteCallBack(
-	DWORD_PTR dwCookie,
-	LPBYTE pbBuff,
-	LONG cb,
-	LONG *pcb)
-{
-	HRESULT hRes = S_OK;
-	if (!pbBuff || !pcb || !dwCookie) return 0;
-
-	LPSTREAM stmData = (LPSTREAM) dwCookie;
-	ULONG cbWritten = 0;
-
-	*pcb = 0;
-
-	DebugPrint(DBGStream,_T("EditStreamWriteCallBack: cb = %d\n"),cb);
-
-	EC_H(stmData->Write(pbBuff,cb,&cbWritten));
-
-	DebugPrint(DBGStream,_T("EditStreamWriteCallBack: wrote %d bytes\n"),cbWritten);
-
-	*pcb = cbWritten;
-
-	return 0;
-} // EditStreamWriteCallBack
 
 // Use this constuctor for generic data editing
 CEditor::CEditor(
@@ -1436,10 +1441,7 @@ BOOL CEditor::GetBinaryUseControl(ULONG i,size_t* cbBin,LPBYTE* lpBin)
 	szString = GetStringUseControl(i);
 
 	// remove any whitespace before decoding
-	szString.Replace(_T("\r"),_T("")); // STRING_OK
-	szString.Replace(_T("\n"),_T("")); // STRING_OK
-	szString.Replace(_T("\t"),_T("")); // STRING_OK
-	szString.Replace(_T(" "),_T("")); // STRING_OK
+	CleanHexString(&szString);
 
 	size_t cchStrLen = szString.GetLength();
 
@@ -1728,25 +1730,6 @@ LPWSTR CEditor::GetEditBoxTextW(ULONG iControl, size_t* lpcchText)
 	return GetStringW(iControl);
 } // CEditor::GetEditBoxTextW
 
-void CEditor::GetEditBoxStream(ULONG iControl, LPSTREAM lpStreamOut, BOOL bUnicode, BOOL bRTF)
-{
-	EDITSTREAM	es = {0, 0, EditStreamWriteCallBack};
-	LONG		cb = 0;
-	UINT		uFormat = SF_TEXT;
-
-	// If we're unicode, we need to pass this flag to use Unicode RichEdit
-	// However, PR_RTF_COMPRESSED don't play Unicode, so we check if we're RTF first
-	if (bUnicode && !bRTF)
-	{
-		uFormat |= SF_UNICODE;
-	}
-
-	es.dwCookie	= (DWORD_PTR)lpStreamOut;
-
-	cb = m_lpControls[iControl].UI.lpEdit->EditBox.StreamOut(uFormat,es);
-	DebugPrintEx(DBGStream,CLASS,_T("GetEditBoxStream"),_T("wrote 0x%X\n"),cb);
-} // CEditor::GetEditBoxStream
-
 ULONG CEditor::GetHex(ULONG i)
 {
 	if (!IsValidEdit(i)) return 0;
@@ -1981,19 +1964,13 @@ void CEditor::InitDropDown(ULONG i, UINT uidLabel, ULONG ulDropList, UINT* lpuid
 	}
 } // CEditor::InitDropDown
 
-void CEditor::InitEditFromStream(ULONG iControl, LPSTREAM lpStreamIn, BOOL bUnicode, BOOL bRTF)
+// Takes a binary stream and initializes an edit control with the HEX version of this stream
+void CEditor::InitEditFromBinaryStream(ULONG iControl, LPSTREAM lpStreamIn)
 {
 	if (!IsValidEdit(iControl)) return;
 
 	EDITSTREAM	es = {0, 0, EditStreamReadCallBack};
 	UINT		uFormat = SF_TEXT;
-
-	// If we're unicode, we need to pass this flag to use Unicode RichEdit
-	// However, PR_RTF_COMPRESSED don't play Unicode, so we check if we're RTF first
-	if (bUnicode && !bRTF)
-	{
-		uFormat |= SF_UNICODE;
-	}
 
 	long lBytesRead = 0;
 
@@ -2005,7 +1982,7 @@ void CEditor::InitEditFromStream(ULONG iControl, LPSTREAM lpStreamIn, BOOL bUnic
 
 	// Clear the modify bit so this stream appears untouched
 	m_lpControls[iControl].UI.lpEdit->EditBox.SetModify(false);
-} // CEditor::InitEditFromStream
+} // CEditor::InitEditFromBinaryStream
 
 void CEditor::InsertColumn(ULONG ulListNum,int nCol,UINT uidText)
 {
@@ -2342,3 +2319,31 @@ BOOL CEditor::DoListEdit(ULONG /*ulListNum*/, int /*iItem*/, SortListData* /*lpD
 	// Not Implemented
 	return false;
 } // CEditor::DoListEdit
+
+void CleanString(CString* lpString)
+{
+	if (!lpString) return;
+
+	// remove any whitespace
+	lpString->Replace(_T("\r"),_T("")); // STRING_OK
+	lpString->Replace(_T("\n"),_T("")); // STRING_OK
+	lpString->Replace(_T("\t"),_T("")); // STRING_OK
+	lpString->Replace(_T(" "),_T("")); // STRING_OK
+} // CleanString
+
+void CleanHexString(CString* lpHexString)
+{
+	if (!lpHexString) return;
+
+	// remove any whitespace
+	CleanString(lpHexString);
+
+	// remove punctuation
+	lpHexString->Replace(_T("-"),_T("")); // STRING_OK
+	lpHexString->Replace(_T("."),_T("")); // STRING_OK
+	lpHexString->Replace(_T("\\"),_T("")); // STRING_OK
+	lpHexString->Replace(_T("/"),_T("")); // STRING_OK
+	lpHexString->Replace(_T("\""),_T("")); // STRING_OK
+	lpHexString->Replace(_T("'"),_T("")); // STRING_OK
+	lpHexString->Replace(_T("`"),_T("")); // STRING_OK
+} // CleanHexString

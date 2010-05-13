@@ -1009,21 +1009,6 @@ void FileTimeToString(FILETIME* lpFileTime,CString *PropString,CString *AltPropS
 		lpFileTime->dwHighDateTime);
 }
 
-CString RTimeToString(DWORD rTime)
-{
-	CString PropString;
-	FILETIME fTime = {0};
-	LARGE_INTEGER liNumSec = {0};
-	liNumSec.LowPart = rTime;
-	// Resolution of RTime is in minutes, FILETIME is in 100 nanosecond intervals
-	// Scale between the two is 10000000*60
-	liNumSec.QuadPart = liNumSec.QuadPart*10000000*60;
-	fTime.dwLowDateTime = liNumSec.LowPart;
-	fTime.dwHighDateTime= liNumSec.HighPart;
-	FileTimeToString(&fTime,&PropString,NULL);
-	return PropString;
-}
-
 void InterpretMVProp(LPSPropValue lpProp, ULONG ulMVRow, CString *PropString,CString *AltPropString)
 {
 	if (!lpProp) return;

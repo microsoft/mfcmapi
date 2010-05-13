@@ -152,7 +152,9 @@ void CPropertyEditor::OnOK()
 {
 	// This is where we write our changes back
 	WriteStringsToSPropValue();
-	WriteSPropValueToObject();
+
+	// Write the property to the object if we're not editing a row of a MV property
+	if (!m_bMVRow) WriteSPropValueToObject();
 	CDialog::OnOK(); // don't need to call CEditor::OnOK
 }
 
@@ -463,10 +465,7 @@ void CPropertyEditor::WriteStringsToSPropValue()
 		szTmpString = GetStringUseControl(1);
 
 		// remove any whitespace before decoding
-		szTmpString.Replace(_T("\r"),_T("")); // STRING_OK
-		szTmpString.Replace(_T("\n"),_T("")); // STRING_OK
-		szTmpString.Replace(_T("\t"),_T("")); // STRING_OK
-		szTmpString.Replace(_T(" "),_T("")); // STRING_OK
+		CleanHexString(&szTmpString);
 
 		ulStrLen = szTmpString.GetLength();
 		if (ulStrLen & 1) return; // can't use an odd length string
@@ -478,10 +477,7 @@ void CPropertyEditor::WriteStringsToSPropValue()
 		szTmpString = GetStringUseControl(2);
 
 		// remove any whitespace before decoding
-		szTmpString.Replace(_T("\r"),_T("")); // STRING_OK
-		szTmpString.Replace(_T("\n"),_T("")); // STRING_OK
-		szTmpString.Replace(_T("\t"),_T("")); // STRING_OK
-		szTmpString.Replace(_T(" "),_T("")); // STRING_OK
+		CleanHexString(&szTmpString);
 
 		ulStrLen = szTmpString.GetLength();
 		if (ulStrLen & 1) return; // can't use an odd length string
