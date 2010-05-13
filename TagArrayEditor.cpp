@@ -8,12 +8,6 @@
 #include "MAPIFunctions.h"
 #include "PropertyTagEditor.h"
 
-enum __TagArrayEditorTypes
-{
-	EDITOR_RTF,
-	EDITOR_STREAM,
-};
-
 static TCHAR* CLASS = _T("CTagArrayEditor");
 
 // Takes LPMAPIPROP and ulPropTag as input - will pull SPropValue from the LPMAPIPROP

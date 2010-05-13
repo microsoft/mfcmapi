@@ -1139,6 +1139,8 @@ NAME_ARRAY_ENTRY g_PropTagArray[] =
 	{0x36da0102,	L"PR_EXTENDED_FOLDER_FLAGS" },
 	{0x36da0102,	L"PidTagExtendedFolderFlags" },
 	{0x36da0102,	L"ptagExtendedFolderFlags" },
+	{0x36df0102,	L"PR_FOLDER_WEBVIEWINFO" },
+	{0x36df0102,	L"PidTagFolderWebviewinfo" }, 
 	{0x36e20003,	L"PR_ORDINAL_MOST" },
 	{0x36e20003,	L"PidTagOrdinalMost" },
 	{0x36e41102,	L"PR_FREEBUSY_ENTRYIDS" },

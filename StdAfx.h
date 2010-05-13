@@ -7,18 +7,6 @@
 
 #define VC_EXTRALEAN	// Exclude rarely-used stuff from Windows headers
 
-#ifndef WINVER        // Permit use of features specific to Windows 95 and Windows NT 4.0 or later.
-#define WINVER 0x0500 // Change this to the appropriate value to target
-#endif                // Windows 98 and Windows 2000 or later.
-
-#ifndef _WIN32_WINNT        // Permit use of features specific to Windows NT 4.0 or later.
-#define _WIN32_WINNT 0x0400 // Change this to the appropriate value to target
-#endif                      // Windows 98 and Windows 2000 or later.
-
-#ifndef _WIN32_IE		// Permit use of features specific to Internet Explorer 4.0 or later.
-#define _WIN32_IE 0x0500   // Change this to the appropriate value to target
-#endif			// Internet Explorer 5.0 or later.
-
 #include <afxwin.h>		// MFC core and standard components
 #include <afxext.h>		// MFC extensions
 #include <afxcmn.h>		// MFC support for Windows Common Controls
@@ -213,10 +201,10 @@ struct SortListData
 #define MAC_ATTACH_ENCODING_APPLEDOUBLE	((ULONG) 0x00600000)
 
 // http://support.microsoft.com/kb/278321
-#define ENCODEDONTKNOW 0
-#define ENCODEMIME 1
-#define ENCODEUUENCODE 2
-#define ENCODEBINHEX 3
+#define INTERNET_FORMAT_DEFAULT 0
+#define INTERNET_FORMAT_MIME 1
+#define INTERNET_FORMAT_UUENCODE 2
+#define INTERNET_FORMAT_BINHEX 3
 
 // Flags used in PR_ROH_FLAGS - http://support.microsoft.com/kb/898835
 // Connect to my Exchange mailbox using HTTP
@@ -582,5 +570,3 @@ const BYTE	TZ_BIN_VERSION_MINOR	= 0x01;
 // http://blogs.msdn.com/stephen_griffin/archive/2008/04/01/new-restriction-types-seen-in-wrapped-psts.aspx
 #define RES_COUNT			((ULONG) 0x0000000B)
 #define RES_ANNOTATION		((ULONG) 0x0000000C)
-
-#define dispidContactLinkEntry 0x8585

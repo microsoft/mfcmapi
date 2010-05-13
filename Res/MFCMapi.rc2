@@ -372,17 +372,7 @@ IDS_NEWCUSTOMFORM                "New Custom Form"
 IDS_NEWCUSTOMFORMPROMPT1         "Select form location"
 IDS_NEWCUSTOMFORMPROMPT2         "Enter type of custom form"
 IDS_EXECUTEVERB                  "Execute Verb On Form"
-IDS_EXECUTEVERBPROMPT            "Enter verb to execute\r\n\
-    0 EXCHIVERB_OPEN\r\n\
-  100 EXCHIVERB_RESERVED_COMPOSE\r\n\
-  101 EXCHIVERB_RESERVED_OPEN\r\n\
-  102 EXCHIVERB_REPLYTOSENDER\r\n\
-  103 EXCHIVERB_REPLYTOALL\r\n\
-  104 EXCHIVERB_FORWARD\r\n\
-  105 EXCHIVERB_PRINT\r\n\
-  106 EXCHIVERB_SAVEAS\r\n\
-  107 EXCHIVERB_RESERVED_DELIVERY\r\n\
-  108 EXCHIVERB_REPLYTOFOLDER"
+IDS_EXECUTEVERBPROMPT            "Enter verb to execute:"
 IDS_REMOVEONEOFF                 "Remove one-off properties"
 IDS_REMOVEONEOFFPROMPT           "Check box to remove property definition stream"
 IDS_CALLRTFSYNC                  "Call RTFSync"
@@ -677,8 +667,7 @@ Bounds must be between 0x8000 and 0xFFFF"
 IDS_DELETEPROPERTY               "Delete Property"
 IDS_DELETEPROPERTYPROMPT         "This will permanently delete this property from the item."
 IDS_USEWRAPEX                    "Use WrapCompressedRTFStreamEx"
-IDS_USEWRAPEXPROMPT              "Check box to use the WrapCompressedRTFStreamEx interface\r\n\
-"
+IDS_USEWRAPEXPROMPT              "Check box to use the WrapCompressedRTFStreamEx interface\r\n"
 IDS_WRAPEXFLAGS                  "WrapCompressedRTFStreamEx Flags"
 IDS_WRAPEXFLAGSPROMPT            "0x00000001 MAPI_MODIFY\r\n\
 0x00008000 STORE_UNCOMPRESSED_RTF\r\n\
@@ -760,6 +749,9 @@ IDS_STNOPARSING                  "No parsing"
 IDS_STPROPERTYDEFINITIONSTREAM   "Property Definition Stream"
 IDS_STADDITIONALRENENTRYIDSEX    "Additional Ren Entry IDs Ex"
 IDS_STFLATENTRYLIST              "Flat Entry List"
+IDS_STLONGRTIME                  "RTime"
+IDS_STWEBVIEWPERSISTSTREAM       "Web View Persistence Object Stream"
+IDS_STRECIPIENTROWSTREAM         "Recipient Row Stream"
 
 // AbDlg.cpp
 IDS_FLAGS "Flags"
@@ -976,7 +968,7 @@ IDS_EIDLIST "Entry ID List"
 IDS_LOWERBOUND "Lower Bound (in hex):"
 IDS_UPPERBOUND "Upper Bound (in hex):"
 IDS_ULINCODEPAGE "ulInCodePage (in Decimal)"
-IDS_ULCODEPAGE "ulCodePage (in Decimal)"
+IDS_ULOUTCODEPAGE "ulOutCodePage (in Decimal)"
 IDS_COPYSTYLE "Copy style"
 IDS_SOURCEPROP "Source Prop"
 IDS_TARGETPROP "Target Prop"
@@ -1577,6 +1569,7 @@ IDS_COLDELNORMALSIZEEX "Deleted Normal Size"
 IDS_COLDELASSOCSIZEEX "Deleted Assoc Size"
 IDS_COLDELCONTENTCOUNT "Deleted Content Count"
 IDS_COLDELASSOCCONTENTCOUNT "Deleted Assoc Content Count"
+IDS_COLCONVERSATIONID "Conversation ID"
 IDS_ISATTBLOCKED "IsAttachmentBlocked"
 IDS_ENTERFILENAME "Enter file name"
 IDS_RESULT "Result:"
@@ -1726,8 +1719,9 @@ IDS_EXTENDEDFLAGDATATODOVERSION "\r\n\tToDoFolderVersion = 0x%1!08X!"
 
 IDS_EXTENDEDFLAGUNKNOWN "\r\n\tUnknown Data = "
 IDS_REPORTTAGHEADER "Report Tag: \r\n\
-Cookie = %1!hs!\r\n\
-Version = 0x%2!08X! = %3"
+Cookie = "
+IDS_REPORTTAGVERSION "\r\n\
+Version = 0x%1!08X! = %2"
 
 IDS_REPORTTAGSTOREEID "\r\nStoreEntryID = "
 IDS_REPORTTAGFOLDEREID "\r\nFolderEntryID = "
@@ -1849,7 +1843,8 @@ Message GlobalCounter = "
 
 IDS_ENTRYIDWRAPPEDENTRYIDDATA "\r\nWrapped Entry Type = 0x%1!02X! = %2\r\n"
 
-IDS_PROPERTYDATAHEADER "Property[%1!d!]\r\n"
+IDS_PROPERTYDATAHEADER "Property[%1!d!]\r\n\
+Property = 0x%2!08X!\r\n"
 IDS_PROPERTYDATA "PropString = %1 AltPropString = %2\r\n"
 IDS_PROPERTYDATASMARTVIEW "Smart View: %1\r\n"
 IDS_PROPERTYDATAEXACTMATCHES "Exact Matches: %1\r\n"
@@ -1939,12 +1934,29 @@ IDS_AEIDDATAELEMENT "\r\nDataElement: %1!d!\r\n\
 \tElementDataSize = 0x%4!04X!\r\n\
 \tElementData = "
 IDS_MVROWBIN "Row %1!d!\r\n"
-IDS_MVROWFLAG "Flag %1!d!: %2"
+IDS_MVROWLONG "Row %1!d!: %2"
 IDS_FELHEADER "Flat Entry List\r\n\
 cEntries = %1!d!\r\n\
 cbEntries = 0x%2!08X!\r\n"
 IDS_FELENTRYHEADER "\r\nEntry[%1!d!] Size = 0x%2!08X!\r\n"
 IDS_FELENTRYPADDING "\r\nEntry[%1!d!] Padding:"
+IDS_WEBVIEWSTREAMHEADER "Web View Persistence Object Stream\r\n\
+cWebViews = %1!d!"
+IDS_WEBVIEWHEADER "\r\n\r\nWeb View %1!d!\r\n\
+dwVersion = 0x%2!08X! = %3\r\n\
+dwType = 0x%4!08X! = %5\r\n\
+dwFlags = 0x%6!08X! = %7\r\n\
+dwUnused = "
+IDS_WEBVIEWCBDATA "\r\n\
+cbData = 0x%1!08X!"
+IDS_WEBVIEWURL "\r\nwzURL = "
+IDS_WEBVIEWDATA "\r\nlpData = "
+IDS_RECIPIENTROWSTREAMHEADER "Recipient Row Stream\r\n\
+cVersion = %1!d!\r\n\
+cRowCount = %2!d!\r\n"
+IDS_RECIPIENTROWSTREAMROW "\r\nRow %1!d!\r\n\
+cValues = 0x%2!08X! = %2!d!\r\n\
+ulReserved1 = 0x%3!08X! = %3!d!\r\n"
 
 // All strings above this point use FormatMessage style formatting
 

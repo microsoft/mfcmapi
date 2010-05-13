@@ -1524,7 +1524,7 @@ void CSingleMAPIPropListCtrl::OnEditPropAsStream(ULONG ulType, BOOL bEditAsRTF)
 					MyPrompt2.SetHex(0,MAPI_NATIVE_BODY);
 					MyPrompt2.InitSingleLine(1,IDS_ULINCODEPAGE,NULL,false);
 					MyPrompt2.SetDecimal(1,ulInCodePage);
-					MyPrompt2.InitSingleLine(2,IDS_ULCODEPAGE,NULL,false);
+					MyPrompt2.InitSingleLine(2,IDS_ULOUTCODEPAGE,NULL,false);
 					MyPrompt2.SetDecimal(2,0);
 
 					WC_H(MyPrompt2.DisplayDialog());
@@ -1556,6 +1556,8 @@ void CSingleMAPIPropListCtrl::OnEditPropAsStream(ULONG ulType, BOOL bEditAsRTF)
 			ulOutCodePage);
 
 		WC_H(MyEditor.DisplayDialog());
+
+		WC_H(RefreshMAPIPropList());
 	}
 } // CSingleMAPIPropListCtrl::OnEditPropAsStream
 

@@ -143,7 +143,7 @@ public:
 protected:
 	// Functions used by derived classes during init
 	void InitList(ULONG i, UINT uidLabel, BOOL bAllowSort, BOOL bReadOnly);
-	void InitEditFromStream(ULONG iControl, LPSTREAM lpStreamIn, BOOL bUnicode, BOOL bRTF);
+	void InitEditFromBinaryStream(ULONG iControl, LPSTREAM lpStreamIn);
 	void InsertColumn(ULONG ulListNum,int nCol,UINT uidText);
 	void SetSize(ULONG i, size_t cb);
 	void SetDropDownSelection(ULONG i,LPCTSTR szText);
@@ -162,7 +162,6 @@ protected:
 	BOOL    GetCheckUseControl(ULONG iControl);
 	LPSTR   GetEditBoxTextA(ULONG iControl, size_t* lpcchText = NULL);
 	LPWSTR  GetEditBoxTextW(ULONG iControl, size_t* lpcchText = NULL);
-	void    GetEditBoxStream(ULONG iControl, LPSTREAM lpStreamOut, BOOL bUnicode, BOOL bRTF);
 	int     GetDropDownSelection(ULONG iControl);
 	DWORD_PTR GetDropDownSelectionValue(ULONG iControl);
 	ULONG   GetListCount(ULONG iControl);
@@ -273,3 +272,6 @@ private:
 
 	DECLARE_MESSAGE_MAP()
 };
+
+void CleanString(CString* lpString);
+void CleanHexString(CString* lpHexString);
