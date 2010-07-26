@@ -21,9 +21,9 @@ static TCHAR* CLASS = _T("CProfileListDlg");
 
 
 CProfileListDlg::CProfileListDlg(
-								 CParentWnd* pParentWnd,
-								 CMapiObjects* lpMapiObjects,
-								 LPMAPITABLE lpMAPITable
+								 _In_ CParentWnd* pParentWnd,
+								 _In_ CMapiObjects* lpMapiObjects,
+								 _In_ LPMAPITABLE lpMAPITable
 								 ):
 CContentsTableDlg(
 				  pParentWnd,
@@ -44,12 +44,12 @@ CContentsTableDlg(
 	// Wipe the reference to the contents table to get around profile table refresh problems
 	if (m_lpContentsTable) m_lpContentsTable->Release();
 	m_lpContentsTable = NULL;
-}
+} // CProfileListDlg::CProfileListDlg
 
 CProfileListDlg::~CProfileListDlg()
 {
 	TRACE_DESTRUCTOR(CLASS);
-}
+} // CProfileListDlg::~CProfileListDlg
 
 BEGIN_MESSAGE_MAP(CProfileListDlg, CContentsTableDlg)
 	ON_COMMAND(ID_GETMAPISVCINF,OnGetMAPISVC)
@@ -65,7 +65,7 @@ BEGIN_MESSAGE_MAP(CProfileListDlg, CContentsTableDlg)
 	ON_COMMAND(ID_CREATEPROFILE,OnCreateProfile)
 END_MESSAGE_MAP()
 
-void CProfileListDlg::OnInitMenu(CMenu* pMenu)
+void CProfileListDlg::OnInitMenu(_In_ CMenu* pMenu)
 {
 	if (pMenu)
 	{
@@ -81,7 +81,7 @@ void CProfileListDlg::OnInitMenu(CMenu* pMenu)
 		pMenu->EnableMenuItem(ID_LAUNCHPROFILEWIZARD,DIM(pfnLaunchWizard));
 	}
 	CContentsTableDlg::OnInitMenu(pMenu);
-}
+} // CProfileListDlg::OnInitMenu
 
 /////////////////////////////////////////////////////////////////////////////
 // CProfileListDlg message handlers
@@ -149,8 +149,6 @@ void CProfileListDlg::OnDisplayItem()
 		}
 	}
 	while (iItem != -1);
-
-	return;
 } // CProfileListDlg::OnDisplayItem
 
 void CProfileListDlg::OnLaunchProfileWizard()
@@ -169,7 +167,7 @@ void CProfileListDlg::OnLaunchProfileWizard()
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		TCHAR szProfName[80] = {0};
+		CHAR szProfName[80] = {0};
 		LPSTR szServices[] = {MyData.GetStringA(1),NULL};
 		LaunchProfileWizard(
 			m_hWnd,
@@ -247,7 +245,6 @@ void CProfileListDlg::OnAddExchangeToProfile()
 			while (iItem != -1);
 		}
 	}
-	return;
 } // CProfileListDlg::OnAddExchangeToProfile
 
 void CProfileListDlg::AddPSTToProfile(BOOL bUnicodePST)
@@ -258,7 +255,7 @@ void CProfileListDlg::AddPSTToProfile(BOOL bUnicodePST)
 	INT_PTR			iDlgRet = IDOK;
 
 	CString szFileSpec;
-	szFileSpec.LoadString(IDS_PSTFILES);
+	EC_B(szFileSpec.LoadString(IDS_PSTFILES));
 
 	if (!m_lpContentsTableListCtrl) return;
 
@@ -310,7 +307,6 @@ void CProfileListDlg::AddPSTToProfile(BOOL bUnicodePST)
 		}
 		while (iItem != -1);
 	}
-	return;
 } // CProfileListDlg::AddPSTToProfile
 
 void CProfileListDlg::OnAddPSTToProfile()
@@ -359,8 +355,6 @@ void CProfileListDlg::OnAddServiceToProfile()
 		}
 		while (iItem != -1);
 	}
-
-	return;
 } // CProfileListDlg::OnAddServiceToProfile
 
 void CProfileListDlg::OnCreateProfile()
@@ -392,7 +386,6 @@ void CProfileListDlg::OnCreateProfile()
 		// Since we may have created a profile, update even if we failed.
 		OnRefreshView(); // Update the view since we don't have notifications here.
 	}
-	return;
 } // CProfileListDlg::OnCreateProfile
 
 void CProfileListDlg::OnDeleteSelectedItem()

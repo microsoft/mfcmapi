@@ -21,7 +21,7 @@ static const char pBase64[] = {
 // allocates output buffer with new
 // delete with delete[]
 // suprisingly, this algorithm works in a unicode build as well
-HRESULT Base64Decode(LPCTSTR szEncodedStr, size_t* cbBuf, LPBYTE* lpDecodedBuffer)
+_Check_return_ HRESULT Base64Decode(_In_z_ LPCTSTR szEncodedStr, _Inout_ size_t* cbBuf, _Out_ _Deref_post_cap_(*cbBuf) LPBYTE* lpDecodedBuffer)
 {
 	HRESULT hRes = S_OK;
 	size_t	cchLen = 0;
@@ -93,7 +93,7 @@ HRESULT Base64Decode(LPCTSTR szEncodedStr, size_t* cbBuf, LPBYTE* lpDecodedBuffe
 	}
 
 	return hRes;
-}
+} // Base64Decode
 
 static const		// Base64 Index into encoding
 char pIndex[] = {	// and decoding table.
@@ -109,7 +109,7 @@ char pIndex[] = {	// and decoding table.
 
 // allocates output string with new
 // delete with delete[]
-HRESULT Base64Encode(size_t cbSourceBuf, LPBYTE lpSourceBuffer, size_t* cchEncodedStr, LPTSTR* szEncodedStr)
+_Check_return_ HRESULT Base64Encode(size_t cbSourceBuf, _In_count_(cbSourceBuf) LPBYTE lpSourceBuffer, _Inout_ size_t* cchEncodedStr, _Out_ _Deref_post_cap_(*cchEncodedStr) LPTSTR* szEncodedStr)
 {
 	HRESULT hRes = S_OK;
 
@@ -152,9 +152,9 @@ HRESULT Base64Encode(size_t cbSourceBuf, LPBYTE lpSourceBuffer, size_t* cchEncod
 	*szOutChar = _T('\0');
 
 	return hRes;
-}
+} // Base64Encode
 
-CString BinToTextString(LPSBinary lpBin, BOOL bMultiLine)
+_Check_return_ CString BinToTextString(_In_ LPSBinary lpBin, BOOL bMultiLine)
 {
 	if (!lpBin) return _T("");
 
@@ -196,9 +196,9 @@ CString BinToTextString(LPSBinary lpBin, BOOL bMultiLine)
 		delete[] szBin;
 	}
 	return StringAsText;
-}
+} // BinToTextString
 
-CString BinToHexString(LPSBinary lpBin, BOOL bPrependCB)
+_Check_return_ CString BinToHexString(_In_ LPSBinary lpBin, BOOL bPrependCB)
 {
 	if (!lpBin) return _T("");
 
@@ -232,12 +232,12 @@ CString BinToHexString(LPSBinary lpBin, BOOL bPrependCB)
 		delete[] szBin;
 	}
 	return HexString;
-}
+} // BinToHexString
 
 // Allocates string for GUID with new
 // free with delete[]
 #define GUID_STRING_SIZE 39
-LPTSTR GUIDToString(LPCGUID lpGUID)
+_Check_return_ LPTSTR GUIDToString(_In_opt_ LPCGUID lpGUID)
 {
 	HRESULT	hRes = S_OK;
 	GUID	nullGUID = {0};
@@ -264,9 +264,9 @@ LPTSTR GUIDToString(LPCGUID lpGUID)
 		lpGUID->Data4[7]));
 
 	return szGUID;
-}
+} // GUIDToString
 
-HRESULT StringToGUID(LPCTSTR szGUID, LPGUID lpGUID)
+_Check_return_ HRESULT StringToGUID(_In_z_ LPCTSTR szGUID, _Inout_ LPGUID lpGUID)
 {
 	HRESULT hRes = S_OK;
 	if (!szGUID || !lpGUID) return MAPI_E_INVALID_PARAMETER;
@@ -304,9 +304,9 @@ HRESULT StringToGUID(LPCTSTR szGUID, LPGUID lpGUID)
 		lpGUID));
 
 	return hRes;
-}
+} // StringToGUID
 
-CString CurrencyToString(CURRENCY curVal)
+_Check_return_ CString CurrencyToString(CURRENCY curVal)
 {
 	CString szCur;
 
@@ -316,12 +316,13 @@ CString CurrencyToString(CURRENCY curVal)
 		szCur.Insert(szCur.GetLength()-4,_T(".")); // STRING_OK
 	}
 	return szCur;
-}
+} // CurrencyToString
 
-CString TagToString(ULONG ulPropTag, LPMAPIPROP lpObj, BOOL bIsAB, BOOL bSingleLine)
+_Check_return_ CString TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, BOOL bIsAB, BOOL bSingleLine)
 {
 	CString szRet;
 	CString szTemp;
+	HRESULT hRes = S_OK;
 
 	LPTSTR szExactMatches = NULL;
 	LPTSTR szPartialMatches = NULL;
@@ -354,46 +355,46 @@ CString TagToString(ULONG ulPropTag, LPMAPIPROP lpObj, BOOL bIsAB, BOOL bSingleL
 		if (szPartialMatches) szFormatString += _T(": (%4)"); // STRING_OK
 		if (szNamedPropName)
 		{
-			szTemp.LoadString(IDS_NAMEDPROPSINGLELINE);
+			EC_B(szTemp.LoadString(IDS_NAMEDPROPSINGLELINE));
 			szFormatString += szTemp;
 		}
 		if (szNamedPropGUID)
 		{
-			szTemp.LoadString(IDS_GUIDSINGLELINE);
+			EC_B(szTemp.LoadString(IDS_GUIDSINGLELINE));
 			szFormatString += szTemp;
 		}
 	}
 	else
 	{
-		szFormatString.LoadString(IDS_TAGMULTILINE);
+		EC_B(szFormatString.LoadString(IDS_TAGMULTILINE));
 		if (szExactMatches)
 		{
-			szTemp.LoadString(IDS_PROPNAMEMULTILINE);
+			EC_B(szTemp.LoadString(IDS_PROPNAMEMULTILINE));
 			szFormatString += szTemp;
 		}
 		if (szPartialMatches)
 		{
-			szTemp.LoadString(IDS_OTHERNAMESMULTILINE);
+			EC_B(szTemp.LoadString(IDS_OTHERNAMESMULTILINE));
 			szFormatString += szTemp;
 		}
 		if (PROP_ID(ulPropTag) < 0x8000)
 		{
-			szTemp.LoadString(IDS_DASLPROPTAG);
+			EC_B(szTemp.LoadString(IDS_DASLPROPTAG));
 			szFormatString += szTemp;
 		}
 		else if (szNamedPropDASL)
 		{
-			szTemp.LoadString(IDS_DASLNAMED);
+			EC_B(szTemp.LoadString(IDS_DASLNAMED));
 			szFormatString += szTemp;
 		}
 		if (szNamedPropName)
 		{
-			szTemp.LoadString(IDS_NAMEPROPNAMEMULTILINE);
+			EC_B(szTemp.LoadString(IDS_NAMEPROPNAMEMULTILINE));
 			szFormatString += szTemp;
 		}
 		if (szNamedPropGUID)
 		{
-			szTemp.LoadString(IDS_NAMEPROPGUIDMULTILINE);
+			EC_B(szTemp.LoadString(IDS_NAMEPROPGUIDMULTILINE));
 			szFormatString += szTemp;
 		}
 	}
@@ -418,9 +419,9 @@ CString TagToString(ULONG ulPropTag, LPMAPIPROP lpObj, BOOL bIsAB, BOOL bSingleL
 		DebugPrint(DBGTest,_T("TagToString parsing 0x%08X returned %d chars - max %d\n"),ulPropTag,cchBuff,cchMaxBuff);
 	}
 	return szRet;
-}
+} // TagToString
 
-CString ProblemArrayToString(LPSPropProblemArray lpProblems)
+_Check_return_ CString ProblemArrayToString(_In_ LPSPropProblemArray lpProblems)
 {
 	CString szOut;
 	if (lpProblems)
@@ -438,9 +439,9 @@ CString ProblemArrayToString(LPSPropProblemArray lpProblems)
 		}
 	}
 	return szOut;
-}
+} // ProblemArrayToString
 
-CString MAPIErrToString(ULONG ulFlags, LPMAPIERROR lpErr)
+_Check_return_ CString MAPIErrToString(ULONG ulFlags, _In_ LPMAPIERROR lpErr)
 {
 	CString szOut;
 	if (lpErr)
@@ -455,9 +456,9 @@ CString MAPIErrToString(ULONG ulFlags, LPMAPIERROR lpErr)
 			lpErr->ulContext);
 	}
 	return szOut;
-}
+} // MAPIErrToString
 
-CString TnefProblemArrayToString(LPSTnefProblemArray lpError)
+_Check_return_ CString TnefProblemArrayToString(_In_ LPSTnefProblemArray lpError)
 {
 	CString szOut;
 	if (lpError)
@@ -476,9 +477,9 @@ CString TnefProblemArrayToString(LPSTnefProblemArray lpError)
 		}
 	}
 	return szOut;
-}
+} // TnefProblemArrayToString
 
-void RestrictionToString(LPSRestriction lpRes, LPMAPIPROP lpObj, ULONG ulTabLevel, CString *PropString)
+void RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj, ULONG ulTabLevel, _In_ CString *PropString)
 {
 	if (!PropString) return;
 
@@ -500,9 +501,8 @@ void RestrictionToString(LPSRestriction lpRes, LPMAPIPROP lpObj, ULONG ulTabLeve
 		szTabs += _T("\t"); // STRING_OK
 	}
 
-	HRESULT hRes = S_OK;
 	LPTSTR szFlags = NULL;
-	EC_H(InterpretFlags(flagRestrictionType, lpRes->rt, &szFlags));
+	InterpretFlags(flagRestrictionType, lpRes->rt, &szFlags);
 	szTmp.FormatMessage(IDS_RESTYPE,szTabs,lpRes->rt,szFlags);
 	*PropString += szTmp;
 	delete[] szFlags;
@@ -510,7 +510,7 @@ void RestrictionToString(LPSRestriction lpRes, LPMAPIPROP lpObj, ULONG ulTabLeve
 	switch(lpRes->rt)
 	{
 	case RES_COMPAREPROPS:
-		EC_H(InterpretFlags(flagRelop, lpRes->res.resCompareProps.relop, &szFlags));
+		InterpretFlags(flagRelop, lpRes->res.resCompareProps.relop, &szFlags);
 		szTmp.FormatMessage(
 			IDS_RESCOMPARE,
 			szTabs,
@@ -569,7 +569,7 @@ void RestrictionToString(LPSRestriction lpRes, LPMAPIPROP lpObj, ULONG ulTabLeve
 		*PropString += szTmp;
 		break;
 	case RES_CONTENT:
-		EC_H(InterpretFlags(flagFuzzyLevel, lpRes->res.resContent.ulFuzzyLevel, &szFlags));
+		InterpretFlags(flagFuzzyLevel, lpRes->res.resContent.ulFuzzyLevel, &szFlags);
 		szTmp.FormatMessage(
 			IDS_RESCONTENT,
 			szTabs,
@@ -592,7 +592,7 @@ void RestrictionToString(LPSRestriction lpRes, LPMAPIPROP lpObj, ULONG ulTabLeve
 		}
 		break;
 	case RES_PROPERTY:
-		EC_H(InterpretFlags(flagRelop, lpRes->res.resProperty.relop, &szFlags));
+		InterpretFlags(flagRelop, lpRes->res.resProperty.relop, &szFlags);
 		szTmp.FormatMessage(
 			IDS_RESPROP,
 			szTabs,
@@ -612,7 +612,7 @@ void RestrictionToString(LPSRestriction lpRes, LPMAPIPROP lpObj, ULONG ulTabLeve
 				szProp,
 				szAltProp);
 			*PropString += szTmp;
-			EC_H(InterpretFlags(lpRes->res.resProperty.lpProp, &szFlags));
+			InterpretFlags(lpRes->res.resProperty.lpProp, &szFlags);
 			if (szFlags)
 			{
 				szTmp.FormatMessage(IDS_RESPROPPROPFLAGS,szTabs,szFlags);
@@ -623,7 +623,7 @@ void RestrictionToString(LPSRestriction lpRes, LPMAPIPROP lpObj, ULONG ulTabLeve
 		}
 		break;
 	case RES_BITMASK:
-		EC_H(InterpretFlags(flagBitmask, lpRes->res.resBitMask.relBMR, &szFlags));
+		InterpretFlags(flagBitmask, lpRes->res.resBitMask.relBMR, &szFlags);
 		szTmp.FormatMessage(
 			IDS_RESBITMASK,
 			szTabs,
@@ -633,7 +633,7 @@ void RestrictionToString(LPSRestriction lpRes, LPMAPIPROP lpObj, ULONG ulTabLeve
 		delete[] szFlags;
 		szFlags = NULL;
 		*PropString += szTmp;
-		EC_H(InterpretFlags(PROP_ID(lpRes->res.resBitMask.ulPropTag), lpRes->res.resBitMask.ulMask, &szFlags));
+		InterpretFlags(PROP_ID(lpRes->res.resBitMask.ulPropTag), lpRes->res.resBitMask.ulMask, &szFlags);
 		if (szFlags)
 		{
 			szTmp.FormatMessage(IDS_RESBITMASKFLAGS,szFlags);
@@ -648,7 +648,7 @@ void RestrictionToString(LPSRestriction lpRes, LPMAPIPROP lpObj, ULONG ulTabLeve
 		*PropString += szTmp;
 		break;
 	case RES_SIZE:
-		EC_H(InterpretFlags(flagRelop, lpRes->res.resSize.relop, &szFlags));
+		InterpretFlags(flagRelop, lpRes->res.resSize.relop, &szFlags);
 		szTmp.FormatMessage(
 			IDS_RESSIZE,
 			szTabs,
@@ -729,16 +729,16 @@ void RestrictionToString(LPSRestriction lpRes, LPMAPIPROP lpObj, ULONG ulTabLeve
 		*PropString += szTmp;
 		break;
 	}
-}
+} // RestrictionToString
 
-CString RestrictionToString(LPSRestriction lpRes, LPMAPIPROP lpObj)
+_Check_return_ CString RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj)
 {
 	CString szRes;
 	RestrictionToString(lpRes,lpObj,0,&szRes);
 	return szRes;
-}
+} // RestrictionToString
 
-void AdrListToString(LPADRLIST lpAdrList,CString *PropString)
+void AdrListToString(_In_ LPADRLIST lpAdrList, _In_ CString *PropString)
 {
 	if (!PropString) return;
 
@@ -773,9 +773,9 @@ void AdrListToString(LPADRLIST lpAdrList,CString *PropString)
 			*PropString += szTmp;
 		}
 	}
-}
+} // AdrListToString
 
-void ActionToString(ACTION* lpAction, CString* PropString)
+void ActionToString(_In_ ACTION* lpAction, _In_ CString* PropString)
 {
 	if (!PropString) return;
 
@@ -788,11 +788,10 @@ void ActionToString(ACTION* lpAction, CString* PropString)
 	CString szTmp;
 	CString szProp;
 	CString szAltProp;
-	HRESULT hRes = S_OK;
 	LPTSTR szFlags = NULL;
 	LPTSTR szFlags2 = NULL;
-	EC_H(InterpretFlags(flagAccountType, lpAction->acttype, &szFlags));
-	EC_H(InterpretFlags(flagRuleFlag, lpAction->ulFlags, &szFlags2));
+	InterpretFlags(flagAccountType, lpAction->acttype, &szFlags);
+	InterpretFlags(flagRuleFlag, lpAction->ulFlags, &szFlags2);
 	PropString->FormatMessage(
 		IDS_ACTION,
 		lpAction->acttype,
@@ -856,7 +855,7 @@ void ActionToString(ACTION* lpAction, CString* PropString)
 		}
 	case OP_BOUNCE:
 		{
-			EC_H(InterpretFlags(flagBounceCode, lpAction->scBounceCode, &szFlags));
+			InterpretFlags(flagBounceCode, lpAction->scBounceCode, &szFlags);
 			szTmp.FormatMessage(IDS_ACTIONOPBOUNCE,lpAction->scBounceCode,szFlags);
 			delete[] szFlags;
 			szFlags = NULL;
@@ -888,12 +887,12 @@ void ActionToString(ACTION* lpAction, CString* PropString)
 	{
 	case OP_REPLY:
 		{
-			EC_H(InterpretFlags(flagOPReply, lpAction->ulActionFlavor, &szFlags));
+			InterpretFlags(flagOPReply, lpAction->ulActionFlavor, &szFlags);
 			break;
 		}
 	case OP_FORWARD:
 		{
-			EC_H(InterpretFlags(flagOpForward, lpAction->ulActionFlavor, &szFlags));
+			InterpretFlags(flagOpForward, lpAction->ulActionFlavor, &szFlags);
 			break;
 		}
 	}
@@ -921,9 +920,9 @@ void ActionToString(ACTION* lpAction, CString* PropString)
 			*PropString += szTmp;
 		}
 	}
-}
+} // ActionToString
 
-void ActionsToString(ACTIONS* lpActions, CString* PropString)
+void ActionsToString(_In_ ACTIONS* lpActions, _In_ CString* PropString)
 {
 	if (!PropString) return;
 
@@ -936,9 +935,8 @@ void ActionsToString(ACTIONS* lpActions, CString* PropString)
 	CString szTmp;
 	CString szAltTmp;
 
-	HRESULT hRes = S_OK;
 	LPTSTR szFlags = NULL;
-	EC_H(InterpretFlags(flagRulesVersion, lpActions->ulVersion, &szFlags));
+	InterpretFlags(flagRulesVersion, lpActions->ulVersion, &szFlags);
 	PropString->FormatMessage(IDS_ACTIONSMEMBERS,
 		lpActions->ulVersion,
 		szFlags,
@@ -954,10 +952,9 @@ void ActionsToString(ACTIONS* lpActions, CString* PropString)
 		ActionToString(&lpActions->lpAction[i],&szTmp);
 		*PropString += szTmp;
 	}
-}
+} // ActionsToString
 
-
-void FileTimeToString(FILETIME* lpFileTime,CString *PropString,CString *AltPropString)
+void FileTimeToString(_In_ FILETIME* lpFileTime, _In_ CString *PropString, _In_opt_ CString *AltPropString)
 {
 	HRESULT	hRes = S_OK;
 	SYSTEMTIME SysTime = {0};
@@ -1007,9 +1004,9 @@ void FileTimeToString(FILETIME* lpFileTime,CString *PropString,CString *AltPropS
 		IDS_FILETIMEALTFORMAT,
 		lpFileTime->dwLowDateTime,
 		lpFileTime->dwHighDateTime);
-}
+} // FileTimeToString
 
-void InterpretMVProp(LPSPropValue lpProp, ULONG ulMVRow, CString *PropString,CString *AltPropString)
+void InterpretMVProp(_In_ LPSPropValue lpProp, ULONG ulMVRow, _In_ CString *PropString, _In_ CString *AltPropString)
 {
 	if (!lpProp) return;
 	if (ulMVRow > lpProp->Value.MVi.cValues) return;
@@ -1060,7 +1057,7 @@ void InterpretMVProp(LPSPropValue lpProp, ULONG ulMVRow, CString *PropString,CSt
 		break;
 	}
 	InterpretProp(&sProp,PropString, AltPropString);
-}
+} // InterpretMVProp
 
 /***************************************************************************
 Name		: InterpretProp
@@ -1073,7 +1070,7 @@ CString *tmpPropString: String representing property value
 CString *tmpAltPropString: Alternative string representation
 Comment	: Add new Property ID's as they become known
 ***************************************************************************/
-void InterpretProp(LPSPropValue lpProp, CString *PropString, CString *AltPropString)
+void InterpretProp(_In_ LPSPropValue lpProp, _In_opt_ CString *PropString, _In_opt_ CString *AltPropString)
 {
 	CString tmpPropString;
 	CString tmpAltPropString;
@@ -1133,7 +1130,7 @@ void InterpretProp(LPSPropValue lpProp, CString *PropString, CString *AltPropStr
 			tmpAltPropString.Format(_T("0x%08X:0x%08X"),(int)(lpProp->Value.cur.Hi),(int)lpProp->Value.cur.Lo); // STRING_OK
 			break;
 		case(PT_APPTIME):
-			tmpPropString.Format(_T("%u"),lpProp->Value.at); // STRING_OK
+			tmpPropString.Format(_T("%f"),lpProp->Value.at); // STRING_OK
 			break;
 		case(PT_ERROR):
 			tmpPropString.Format(_T("Err:0x%08X=%s"),lpProp->Value.err,ErrorNameFromErrorCode(lpProp->Value.err)); // STRING_OK
@@ -1205,7 +1202,7 @@ void InterpretProp(LPSPropValue lpProp, CString *PropString, CString *AltPropStr
 	if (AltPropString) *AltPropString = tmpAltPropString;
 } // InterpretProp
 
-CString TypeToString(ULONG ulPropTag)
+_Check_return_ CString TypeToString(ULONG ulPropTag)
 {
 	CString tmpPropType;
 
@@ -1247,11 +1244,11 @@ CString TypeToString(ULONG ulPropTag)
 #define CCH_DASL_STRING 6+1+38+1+1
 // TagToString will prepend the http://schemas.microsoft.com/MAPI/ for us since it's a constant
 // We don't compute a DASL string for non-named props as FormatMessage in TagToString can handle those
-void NameIDToStrings(LPMAPINAMEID lpNameID,
+void NameIDToStrings(_In_ LPMAPINAMEID lpNameID,
 					 ULONG ulPropTag,
-					 LPTSTR* lpszPropName,
-					 LPTSTR* lpszPropGUID,
-					 LPTSTR* lpszDASL)
+					 _Deref_opt_out_opt_z_ LPTSTR* lpszPropName,
+					 _Deref_opt_out_opt_z_ LPTSTR* lpszPropGUID,
+					 _Deref_opt_out_opt_z_ LPTSTR* lpszDASL)
 {
 	HRESULT hRes = S_OK;
 
@@ -1379,13 +1376,13 @@ void NameIDToStrings(LPMAPINAMEID lpNameID,
 		{
 			// this is the case where ANSI data was shoved into a unicode string.
 			DebugPrint(DBGNamedProp,_T("Warning: ANSI data was found in a unicode field. This is a bug on the part of the creator of this named property\n"));
-			DebugPrint(DBGNamedProp,_T("lpNameID->Kind.lpwstrName = \"%hs\"\n"),lpNameID->Kind.lpwstrName);
+			DebugPrint(DBGNamedProp,_T("lpNameID->Kind.lpwstrName = \"%hs\"\n"),(LPCSTR) lpNameID->Kind.lpwstrName);
 
 			szPropName = new TCHAR[7+cchShortLen+25];
 			if (szPropName)
 			{
 				CString szComment;
-				szComment.LoadString(IDS_NAMEWASANSI);
+				EC_B(szComment.LoadString(IDS_NAMEWASANSI));
 				// Compiler Error C2017 - Can occur (falsly) when escape sequences are stringized, as EC_H will do here
 #define __BADSTRING _T("sz: \"%hs\" %s") // STRING_OK
 				EC_H(StringCchPrintf(szPropName,7+cchShortLen+25,__BADSTRING,
@@ -1428,9 +1425,9 @@ void NameIDToStrings(LPMAPINAMEID lpNameID,
 // If we're using the cache, we don't need to free
 // Need to watch out for callers to NameIDToStrings holding the strings
 // long enough for the user to change the cache setting!
-void FreeNameIDStrings(LPTSTR lpszPropName,
-					   LPTSTR lpszPropGUID,
-					   LPTSTR lpszDASL)
+void FreeNameIDStrings(_In_opt_z_ LPTSTR lpszPropName,
+					   _In_opt_z_ LPTSTR lpszPropGUID,
+					   _In_opt_z_ LPTSTR lpszDASL)
 {
 	if (!fCacheNamedProps())
 	{

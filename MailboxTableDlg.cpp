@@ -21,10 +21,10 @@ static TCHAR* CLASS = _T("CMailboxTableDlg");
 // CMailboxTableDlg dialog
 
 CMailboxTableDlg::CMailboxTableDlg(
-								   CParentWnd* pParentWnd,
-								   CMapiObjects* lpMapiObjects,
-								   LPCTSTR lpszServerName,
-								   LPMAPITABLE lpMAPITable
+								   _In_ CParentWnd* pParentWnd,
+								   _In_ CMapiObjects* lpMapiObjects,
+								   _In_z_ LPCTSTR lpszServerName,
+								   _In_ LPMAPITABLE lpMAPITable
 								   ):
 CContentsTableDlg(
 				  pParentWnd,
@@ -45,19 +45,19 @@ CContentsTableDlg(
 	EC_H(CopyString(&m_lpszServerName,lpszServerName,NULL));
 
 	CreateDialogAndMenu(IDR_MENU_MAILBOX_TABLE);
-}
+} // CMailboxTableDlg::CMailboxTableDlg
 
 CMailboxTableDlg::~CMailboxTableDlg()
 {
 	TRACE_DESTRUCTOR(CLASS);
 	MAPIFreeBuffer(m_lpszServerName);
-}
+} // CMailboxTableDlg::~CMailboxTableDlg
 
 BEGIN_MESSAGE_MAP(CMailboxTableDlg, CContentsTableDlg)
 	ON_COMMAND(ID_OPENWITHFLAGS, OnOpenWithFlags)
 END_MESSAGE_MAP()
 
-void CMailboxTableDlg::OnInitMenu(CMenu* pMenu)
+void CMailboxTableDlg::OnInitMenu(_In_ CMenu* pMenu)
 {
 	if (pMenu)
 	{
@@ -68,7 +68,7 @@ void CMailboxTableDlg::OnInitMenu(CMenu* pMenu)
 		}
 	}
 	CContentsTableDlg::OnInitMenu(pMenu);
-}
+} // CMailboxTableDlg::OnInitMenu
 
 void CMailboxTableDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 {

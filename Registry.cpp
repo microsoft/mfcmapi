@@ -59,16 +59,16 @@ void SetDefaults()
 		}
 
 	}
-}
+} // SetDefaults
 
 // $--HrGetRegistryValueW---------------------------------------------------------
 // Get a registry value - allocating memory using new to hold it.
 // -----------------------------------------------------------------------------
-HRESULT HrGetRegistryValueW(
-							IN HKEY hKey, // the key.
-							IN LPCWSTR lpszValue, // value name in key.
-							OUT DWORD* lpType, // where to put type info.
-							OUT LPVOID* lppData) // where to put the data.
+_Check_return_ HRESULT HrGetRegistryValueW(
+	_In_ HKEY hKey, // the key.
+	_In_z_ LPCWSTR lpszValue, // value name in key.
+	_Out_ DWORD* lpType, // where to put type info.
+	_Out_ LPVOID* lppData) // where to put the data.
 {
 	HRESULT hRes = S_OK;
 
@@ -118,11 +118,11 @@ HRESULT HrGetRegistryValueW(
 // $--HrGetRegistryValueA---------------------------------------------------------
 // Get a registry value - allocating memory using new to hold it.
 // -----------------------------------------------------------------------------
-HRESULT HrGetRegistryValueA(
-							IN HKEY hKey, // the key.
-							IN LPCSTR lpszValue, // value name in key.
-							OUT DWORD* lpType, // where to put type info.
-							OUT LPVOID* lppData) // where to put the data.
+_Check_return_ HRESULT HrGetRegistryValueA(
+	_In_ HKEY hKey, // the key.
+	_In_z_ LPCSTR lpszValue, // value name in key.
+	_Out_ DWORD* lpType, // where to put type info.
+	_Out_ LPVOID* lppData) // where to put the data.
 {
 	HRESULT hRes = S_OK;
 
@@ -170,7 +170,7 @@ HRESULT HrGetRegistryValueA(
 } // HrGetRegistryValueA
 
 // If the value is not set in the registry, do not alter the passed in DWORD
-void ReadDWORDFromRegistry(HKEY hKey, LPCTSTR szValue, DWORD* lpdwVal)
+void ReadDWORDFromRegistry(_In_ HKEY hKey, _In_z_ LPCTSTR szValue, _Out_ DWORD* lpdwVal)
 {
 	HRESULT hRes = S_OK;
 
@@ -189,10 +189,10 @@ void ReadDWORDFromRegistry(HKEY hKey, LPCTSTR szValue, DWORD* lpdwVal)
 	}
 
 	delete[] lpValue;
-}
+} // ReadDWORDFromRegistry
 
 // If the value is not set in the registry, do not alter the passed in string
-void ReadStringFromRegistry(HKEY hKey, LPCTSTR szValue, LPTSTR szDest, ULONG cchDestLen)
+void ReadStringFromRegistry(_In_ HKEY hKey, _In_z_ LPCTSTR szValue, _In_z_ LPTSTR szDest, ULONG cchDestLen)
 {
 	HRESULT hRes = S_OK;
 
@@ -212,7 +212,7 @@ void ReadStringFromRegistry(HKEY hKey, LPCTSTR szValue, LPTSTR szDest, ULONG cch
 	}
 
 	delete[] szBuf;
-}
+} // ReadStringFromRegistry
 
 void ReadFromRegistry()
 {
@@ -263,9 +263,9 @@ void ReadFromRegistry()
 
 	SetDebugLevel(RegKeys[regkeyDEBUG_TAG].ulCurDWORD);
 	DebugPrintVersion(DBGVersionBanner);
-}
+} // ReadFromRegistry
 
-void WriteDWORDToRegistry(HKEY hKey, LPCTSTR szValueName, DWORD dwValue)
+void WriteDWORDToRegistry(_In_ HKEY hKey, _In_z_ LPCTSTR szValueName, DWORD dwValue)
 {
 	HRESULT hRes = S_OK;
 
@@ -276,9 +276,9 @@ void WriteDWORDToRegistry(HKEY hKey, LPCTSTR szValueName, DWORD dwValue)
 		REG_DWORD,
 		(LPBYTE) &dwValue,
 		sizeof(DWORD)));
-}
+} // WriteDWORDToRegistry
 
-void CommitDWORDIfNeeded(HKEY hKey, LPCTSTR szValueName, DWORD dwValue, DWORD dwDefaultValue)
+void CommitDWORDIfNeeded(_In_ HKEY hKey, _In_z_ LPCTSTR szValueName, DWORD dwValue, DWORD dwDefaultValue)
 {
 	HRESULT hRes = S_OK;
 	if (dwValue != dwDefaultValue)
@@ -293,9 +293,9 @@ void CommitDWORDIfNeeded(HKEY hKey, LPCTSTR szValueName, DWORD dwValue, DWORD dw
 		WC_W32(RegDeleteValue(hKey,szValueName));
 		hRes = S_OK;
 	}
-}
+} // CommitDWORDIfNeeded
 
-void WriteStringToRegistry(HKEY hKey, LPCTSTR szValueName, LPCTSTR szValue)
+void WriteStringToRegistry(_In_ HKEY hKey, _In_z_ LPCTSTR szValueName, _In_z_ LPCTSTR szValue)
 {
 	HRESULT hRes = S_OK;
 	size_t cbValue = 0;
@@ -311,9 +311,9 @@ void WriteStringToRegistry(HKEY hKey, LPCTSTR szValueName, LPCTSTR szValue)
 		REG_SZ,
 		(LPBYTE) szValue,
 		(DWORD) cbValue));
-}
+} // WriteStringToRegistry
 
-void CommitStringIfNeeded(HKEY hKey, LPCTSTR szValueName, LPCTSTR szValue, LPCTSTR szDefaultValue)
+void CommitStringIfNeeded(_In_ HKEY hKey, _In_z_ LPCTSTR szValueName, _In_z_ LPCTSTR szValue, _In_z_ LPCTSTR szDefaultValue)
 {
 	HRESULT hRes = S_OK;
 	if (0 != lstrcmpi(szValue,szDefaultValue))
@@ -328,9 +328,9 @@ void CommitStringIfNeeded(HKEY hKey, LPCTSTR szValueName, LPCTSTR szValue, LPCTS
 		WC_W32(RegDeleteValue(hKey,szValueName));
 		hRes = S_OK;
 	}
-}
+} // CommitStringIfNeeded
 
-HKEY CreateRootKey()
+_Check_return_ HKEY CreateRootKey()
 {
 	HRESULT hRes = S_OK;
 	PSID pEveryoneSID = NULL;
@@ -366,13 +366,16 @@ HKEY CreateRootKey()
 	EC_D(pSD, LocalAlloc(LPTR,
 		SECURITY_DESCRIPTOR_MIN_LENGTH));
 
-	EC_B(InitializeSecurityDescriptor(pSD, SECURITY_DESCRIPTOR_REVISION));
+	if (pSD)
+	{
+		EC_B(InitializeSecurityDescriptor(pSD, SECURITY_DESCRIPTOR_REVISION));
 
-	// Add the ACL to the security descriptor.
-	EC_B(SetSecurityDescriptorDacl(pSD,
-		TRUE,     // bDaclPresent flag
-		pACL,
-		FALSE));   // not a default DACL
+		// Add the ACL to the security descriptor.
+		EC_B(SetSecurityDescriptorDacl(pSD,
+			TRUE,     // bDaclPresent flag
+			pACL,
+			FALSE));   // not a default DACL
+	}
 
 	// Initialize a security attributes structure.
 	sa.nLength = sizeof (SECURITY_ATTRIBUTES);
@@ -397,7 +400,7 @@ HKEY CreateRootKey()
 	LocalFree(pSD);
 
 	return hkSub;
-}
+} // CreateRootKey
 
 void WriteToRegistry()
 {
@@ -432,4 +435,4 @@ void WriteToRegistry()
 	}
 
 	if (hRootKey) EC_W32(RegCloseKey(hRootKey));
-}
+} // WriteToRegistry

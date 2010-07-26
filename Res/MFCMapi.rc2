@@ -318,6 +318,11 @@ IDS_OUTLOOKVERSIONLABELVER       "Version:"
 IDS_OUTLOOKVERSIONLABELPATH      "Path:"
 IDS_OUTLOOKVERSIONLABELLANG      "Language:"
 
+IDS_TITLEBARMESSAGE              "%1: %2"
+IDS_TITLEBARPLAIN                "%1"
+IDS_COMPAREEIDBOOL               "0x%1!08X! = %2"
+IDS_STOREHASHVAL                 "%1 = 0x%2!08X!"
+
 // contentstabledlg.cpp
 IDS_CREATEPROPRES                "Create Property String Restriction"
 IDS_CONTSEARCHCRITERIAPROMPT     "Type value to search for\r\n\
@@ -1478,6 +1483,9 @@ IDS_SIDINHERITEDOBJECTYPE "\r\nInheritedObjectType: "
 IDS_SIDFLAGS "\r\nFlags: 0x%1!08X!\r\n"
 
 IDS_INVALIDSD "This is not a valid security descriptor."
+
+IDS_FLAGTOSTRINGHEX "\r\n0x%1!08X! %2!ws!"
+IDS_FLAGTOSTRINGDEC "\r\n%1!5d! %2!ws!"
 
 // For InsertColumn
 IDS_ENTRY "Entry"

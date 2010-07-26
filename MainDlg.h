@@ -12,8 +12,8 @@ class CMainDlg : public CContentsTableDlg
 {
 public:
 	CMainDlg(
-		CParentWnd* pParentWnd,
-		CMapiObjects* lpMapiObjects);
+		_In_ CParentWnd* pParentWnd,
+		_In_ CMapiObjects* lpMapiObjects);
 	virtual ~CMainDlg();
 
 	// public so CBaseDialog can call it
@@ -22,13 +22,13 @@ public:
 private:
 	// Overrides from base class
 	void HandleAddInMenuSingle(
-		LPADDINMENUPARAMS lpParams,
-		LPMAPIPROP lpMAPIProp,
-		LPMAPICONTAINER lpContainer);
-	BOOL HandleMenu(WORD wMenuSelect);
-	HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, LPMAPIPROP* lppMAPIProp);
+		_In_ LPADDINMENUPARAMS lpParams,
+		_In_ LPMAPIPROP lpMAPIProp,
+		_In_ LPMAPICONTAINER lpContainer);
+	_Check_return_ BOOL HandleMenu(WORD wMenuSelect);
+	_Check_return_ HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp);
 	void OnDisplayItem();
-	void OnInitMenu(CMenu* pMenu);
+	void OnInitMenu(_In_ CMenu* pMenu);
 
 	// Menu items
 	void OnABHierarchy();

@@ -32,9 +32,9 @@ static TCHAR* CLASS = _T("CFolderDlg");
 // CFolderDlg dialog
 
 CFolderDlg::CFolderDlg(
-					   CParentWnd* pParentWnd,
-					   CMapiObjects* lpMapiObjects,
-					   LPMAPIFOLDER lpMAPIFolder,
+					   _In_ CParentWnd* pParentWnd,
+					   _In_ CMapiObjects* lpMapiObjects,
+					   _In_ LPMAPIFOLDER lpMAPIFolder,
 					   ULONG ulDisplayFlags
 					   ):
 CContentsTableDlg(
@@ -56,14 +56,14 @@ CContentsTableDlg(
 	if (m_lpContainer) m_lpContainer->AddRef();
 
 	CreateDialogAndMenu(IDR_MENU_FOLDER);
-}
+} // CFolderDlg::CFolderDlg
 
 CFolderDlg::~CFolderDlg()
 {
 	TRACE_DESTRUCTOR(CLASS);
-}
+} // CFolderDlg::~CFolderDlg
 
-BOOL CFolderDlg::HandleMenu(WORD wMenuSelect)
+_Check_return_ BOOL CFolderDlg::HandleMenu(WORD wMenuSelect)
 {
 	DebugPrint(DBGMenu,_T("CFolderDlg::HandleMenu wMenuSelect = 0x%X = %d\n"),wMenuSelect,wMenuSelect);
 	HRESULT hRes = S_OK;
@@ -105,7 +105,7 @@ BOOL CFolderDlg::HandleMenu(WORD wMenuSelect)
 	if (MultiSelectComplex(wMenuSelect)) return TRUE;
 
 	return CContentsTableDlg::HandleMenu(wMenuSelect);
-}
+} // CFolderDlg::HandleMenu
 
 typedef HRESULT (CFolderDlg::* LPSIMPLEMULTI)
 (
@@ -113,7 +113,7 @@ typedef HRESULT (CFolderDlg::* LPSIMPLEMULTI)
 	SortListData*	lpData
 );
 
-BOOL CFolderDlg::MultiSelectSimple(WORD wMenuSelect)
+_Check_return_ BOOL CFolderDlg::MultiSelectSimple(WORD wMenuSelect)
 {
 	LPSIMPLEMULTI	lpFunc = NULL;
 	HRESULT			hRes = S_OK;
@@ -173,9 +173,9 @@ BOOL CFolderDlg::MultiSelectSimple(WORD wMenuSelect)
 		}
 	}
 	return FALSE;
-}
+} // CFolderDlg::MultiSelectSimple
 
-BOOL CFolderDlg::MultiSelectComplex(WORD wMenuSelect)
+_Check_return_ BOOL CFolderDlg::MultiSelectComplex(WORD wMenuSelect)
 {
 	switch (wMenuSelect)
 	{
@@ -190,18 +190,17 @@ BOOL CFolderDlg::MultiSelectComplex(WORD wMenuSelect)
 	case ID_DELETEATTACHMENTS: OnDeleteAttachments(); return TRUE;
 	}
 	return FALSE;
-}
-
+} // CFolderDlg::MultiSelectComplex
 
 /////////////////////////////////////////////////////////////////////////////
 // CFolderDlg message handlers
 
 void CFolderDlg::OnDisplayItem()
 {
-	HandleMenu(ID_OPENNONMODAL);
-}
+	(void) HandleMenu(ID_OPENNONMODAL);
+} // CFolderDlg::OnDisplayItem
 
-void CFolderDlg::OnInitMenu(CMenu* pMenu)
+void CFolderDlg::OnInitMenu(_In_ CMenu* pMenu)
 {
 	if (pMenu && m_lpContentsTableListCtrl)
 	{
@@ -262,7 +261,7 @@ void CFolderDlg::OnInitMenu(CMenu* pMenu)
 
 // Checks flags on add-in menu items to ensure they should be enabled
 // Override to support context sensitive scenarios
-void CFolderDlg::EnableAddInMenus(CMenu* pMenu, ULONG ulMenu, LPMENUITEM lpAddInMenu, UINT uiEnable)
+void CFolderDlg::EnableAddInMenus(_In_ CMenu* pMenu, ULONG ulMenu, _In_ LPMENUITEM lpAddInMenu, UINT uiEnable)
 {
 	if (lpAddInMenu)
 	{
@@ -344,11 +343,9 @@ void CFolderDlg::OnAddOneOffAddress()
 			}
 		}
 	}
-
-	return;
 } // CFolderDlg::OnAddOneOffAddress
 
-HRESULT CFolderDlg::OnAttachmentProperties(int iItem, SortListData* /*lpData*/)
+_Check_return_ HRESULT CFolderDlg::OnAttachmentProperties(int iItem, _In_ SortListData* /*lpData*/)
 {
 	HRESULT			hRes = S_OK;
 	LPMESSAGE		lpMessage = NULL;
@@ -371,13 +368,13 @@ HRESULT CFolderDlg::OnAttachmentProperties(int iItem, SortListData* /*lpData*/)
 	return hRes;
 } // CFolderDlg::OnAttachmentProperties
 
-BOOL CFolderDlg::HandleCopy()
+void CFolderDlg::HandleCopy()
 {
 	HRESULT			hRes = S_OK;
 	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
 	DebugPrintEx(DBGGeneric,CLASS,_T("HandleCopy"),_T("\n"));
-	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return false;
+	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return;
 
 	LPENTRYLIST lpEIDs = NULL;
 
@@ -385,11 +382,9 @@ BOOL CFolderDlg::HandleCopy()
 
 	// m_lpMapiObjects takes over ownership of lpEIDs - don't free now
 	m_lpMapiObjects->SetMessagesToCopy(lpEIDs,(LPMAPIFOLDER) m_lpContainer);
-
-	return true;
 } // CFolderDlg::HandleCopy
 
-BOOL CFolderDlg::HandlePaste()
+_Check_return_ BOOL CFolderDlg::HandlePaste()
 {
 	if (CBaseDialog::HandlePaste()) return true;
 
@@ -488,7 +483,7 @@ BOOL CFolderDlg::HandlePaste()
 						if (lpMessage)
 						{
 							LPMESSAGE lpNewMessage = NULL;
-							EC_H(((LPMAPIFOLDER) m_lpContainer)->CreateMessage(NULL,NULL,&lpNewMessage));
+							EC_H(((LPMAPIFOLDER) m_lpContainer)->CreateMessage(NULL,dfAssoc?MAPI_ASSOCIATED:NULL,&lpNewMessage));
 							if (lpNewMessage)
 							{
 								LPSPropProblemArray lpProblems = NULL;
@@ -744,9 +739,7 @@ void CFolderDlg::OnGetPropsUsingLongTermEID()
 			if (lpMAPIProp) lpMAPIProp->Release();
 		}
 	}
-
-	return;
-}
+} // CFolderDlg::OnGetPropsUsingLongTermEID
 
 // Use CFileDialogExW to locate a .MSG file to load,
 // Pass the file name and a message to load in to LoadFromMsg to do the work.
@@ -759,7 +752,7 @@ void CFolderDlg::OnLoadFromMSG()
 	INT_PTR			iDlgRet = IDOK;
 
 	CStringW szFileSpec;
-	szFileSpec.LoadString(IDS_MSGFILES);
+	EC_B(szFileSpec.LoadString(IDS_MSGFILES));
 
 	CFileDialogExW dlgFilePicker;
 	EC_D_DIALOG(dlgFilePicker.DisplayDialog(
@@ -797,7 +790,7 @@ void CFolderDlg::OnLoadFromMSG()
 				case 0:
 					EC_H(((LPMAPIFOLDER)m_lpContainer)->CreateMessage(
 						NULL,
-						NULL,
+						dfAssoc?MAPI_ASSOCIATED:NULL,
 						&lpNewMessage));
 
 					if (lpNewMessage)
@@ -830,7 +823,6 @@ void CFolderDlg::OnLoadFromMSG()
 			}
 		}
 	}
-	return;
 } // CFolderDlg::OnLoadFromMSG
 
 void CFolderDlg::OnSelectForm()
@@ -995,6 +987,7 @@ void CFolderDlg::NewSpecialItem(WORD wMenuSelect)
 		if (lpFolder)
 		{
 			EC_H(CreateAndDisplayNewMailInFolder(
+				m_hWnd,
 				lpMDB,
 				lpMAPISession,
 				m_lpContentsTableListCtrl,
@@ -1004,7 +997,7 @@ void CFolderDlg::NewSpecialItem(WORD wMenuSelect)
 		}
 		if (lpSpecialFolder) lpSpecialFolder->Release();
 	}
-}
+} // CFolderDlg::NewSpecialItem
 
 void CFolderDlg::OnNewMessage()
 {
@@ -1123,6 +1116,7 @@ void CFolderDlg::OnNewCustomForm()
 			}
 
 			EC_H(CreateAndDisplayNewMailInFolder(
+				m_hWnd,
 				lpMDB,
 				lpMAPISession,
 				m_lpContentsTableListCtrl,
@@ -1135,7 +1129,7 @@ void CFolderDlg::OnNewCustomForm()
 	}
 } // CFolderDlg::OnNewCustomForm
 
-HRESULT CFolderDlg::OnOpenModal(int iItem, SortListData* /*lpData*/)
+_Check_return_ HRESULT CFolderDlg::OnOpenModal(int iItem, _In_ SortListData* /*lpData*/)
 {
 	HRESULT			hRes = S_OK;
 	LPMESSAGE		lpMessage = NULL;
@@ -1177,7 +1171,7 @@ HRESULT CFolderDlg::OnOpenModal(int iItem, SortListData* /*lpData*/)
 	return hRes;
 } // CFolderDlg::OnOpenModal
 
-HRESULT CFolderDlg::OnOpenNonModal(int iItem, SortListData* /*lpData*/)
+_Check_return_ HRESULT CFolderDlg::OnOpenNonModal(int iItem, _In_ SortListData* /*lpData*/)
 {
 	HRESULT			hRes = S_OK;
 	LPMESSAGE		lpMessage = NULL;
@@ -1282,10 +1276,9 @@ void CFolderDlg::OnExecuteVerbOnForm()
 			}
 		}
 	}
-	return;
 } // CFolderDlg::OnExecuteVerbOnForm
 
-HRESULT CFolderDlg::OnResendSelectedItem(int /*iItem*/, SortListData* lpData)
+_Check_return_ HRESULT CFolderDlg::OnResendSelectedItem(int /*iItem*/, _In_ SortListData* lpData)
 {
 	HRESULT			hRes = S_OK;
 	CWaitCursor		Wait; // Change the mouse to an hourglass while we work.
@@ -1302,7 +1295,7 @@ HRESULT CFolderDlg::OnResendSelectedItem(int /*iItem*/, SortListData* lpData)
 	return hRes;
 } // CFolderDlg::OnResendSelectedItem
 
-HRESULT CFolderDlg::OnRecipientProperties(int iItem, SortListData* /*lpData*/)
+_Check_return_ HRESULT CFolderDlg::OnRecipientProperties(int iItem, _In_ SortListData* /*lpData*/)
 {
 	HRESULT			hRes = S_OK;
 	LPMESSAGE		lpMessage = NULL;
@@ -1357,7 +1350,7 @@ void CFolderDlg::OnRemoveOneOff()
 
 			if (lpMessage)
 			{
-				DebugPrint(DBGGeneric, _T("Calling RemoveOneOff on 0x%X, %sremoving property definition stream\n"),lpMessage,MyData.GetCheck(0)?_T(""):_T("not "));
+				DebugPrint(DBGGeneric, _T("Calling RemoveOneOff on %p, %sremoving property definition stream\n"),lpMessage,MyData.GetCheck(0)?_T(""):_T("not "));
 				EC_H(RemoveOneOff(
 					lpMessage,
 					MyData.GetCheck(0)));
@@ -1375,8 +1368,6 @@ void CFolderDlg::OnRemoveOneOff()
 			}
 		}
 	}
-
-	return;
 } // CFolderDlg::OnRemoveOneOff
 
 #define RTF_SYNC_HTML_CHANGED ((ULONG) 0x00000004)
@@ -1416,7 +1407,7 @@ void CFolderDlg::OnRTFSync()
 
 			if (lpMessage)
 			{
-				DebugPrint(DBGGeneric, _T("Calling RTFSync on 0x%X with flags 0x%X\n"),lpMessage,MyData.GetHex(0));
+				DebugPrint(DBGGeneric, _T("Calling RTFSync on %p with flags 0x%X\n"),lpMessage,MyData.GetHex(0));
 				EC_H(RTFSync(
 					lpMessage,
 					MyData.GetHex(0),
@@ -1439,11 +1430,9 @@ void CFolderDlg::OnRTFSync()
 			}
 		}
 	}
-
-	return;
 } // CFolderDlg::OnRTFSync
 
-HRESULT CFolderDlg::OnSaveAttachments(int iItem, SortListData* /*lpData*/)
+_Check_return_ HRESULT CFolderDlg::OnSaveAttachments(int iItem, _In_ SortListData* /*lpData*/)
 {
 	HRESULT			hRes = S_OK;
 	LPMESSAGE		lpMessage = NULL;
@@ -1492,7 +1481,6 @@ void CFolderDlg::OnSaveFolderContentsAsTextFiles()
 			(m_ulDisplayFlags & dfAssoc)?true:false,
 			false);
 	}
-	return;
 } // CFolderDlg::OnSaveFolderContentsAsTextFiles
 
 void CFolderDlg::OnSaveMessageToFile()
@@ -1531,27 +1519,27 @@ void CFolderDlg::OnSaveMessageToFile()
 			szExt = L"xml"; // STRING_OK
 			szDotExt = L".xml"; // STRING_OK
 			ulDotExtLen = 4;
-			szFilter.LoadString(IDS_XMLFILES);
+			EC_B(szFilter.LoadString(IDS_XMLFILES));
 			break;
 		case 1:
 		case 2:
 			szExt = L"msg"; // STRING_OK
 			szDotExt = L".msg"; // STRING_OK
 			ulDotExtLen = 4;
-			szFilter.LoadString(IDS_MSGFILES);
+			EC_B(szFilter.LoadString(IDS_MSGFILES));
 			break;
 		case 3:
 		case 4:
 			szExt = L"eml"; // STRING_OK
 			szDotExt = L".eml"; // STRING_OK
 			ulDotExtLen = 4;
-			szFilter.LoadString(IDS_EMLFILES);
+			EC_B(szFilter.LoadString(IDS_EMLFILES));
 			break;
 		case 5:
 			szExt = L"tnef"; // STRING_OK
 			szDotExt = L".tnef"; // STRING_OK
 			ulDotExtLen = 5;
-			szFilter.LoadString(IDS_TNEFFILES);
+			EC_B(szFilter.LoadString(IDS_TNEFFILES));
 
 			lpAddrBook = m_lpMapiObjects->GetAddrBook(true); // do not release
 			break;
@@ -1564,7 +1552,7 @@ void CFolderDlg::OnSaveMessageToFile()
 		while (-1 != iItem)
 		{
 			LPMESSAGE	lpMessage = NULL;
-			WCHAR		szFileName[MAX_PATH];
+			WCHAR		szFileName[MAX_PATH] = {0};
 			INT_PTR		iDlgRet = IDOK;
 
 			EC_H(OpenItemProp(
@@ -1662,7 +1650,7 @@ void CFolderDlg::OnSaveMessageToFile()
 			}
 		}
 	}
-}
+} // CFolderDlg::OnSaveMessageToFile
 
 // Use CFileDialogExW to locate a .DAT or .TNEF file to load,
 // Pass the file name and a message to load in to LoadFromTNEF to do the work.
@@ -1678,7 +1666,7 @@ void CFolderDlg::OnLoadFromTNEF()
 	if (lpAddrBook)
 	{
 		CStringW szFileSpec;
-		szFileSpec.LoadString(IDS_TNEFFILES);
+		EC_B(szFileSpec.LoadString(IDS_TNEFFILES));
 
 		CFileDialogExW dlgFilePicker;
 		EC_D_DIALOG(dlgFilePicker.DisplayDialog(
@@ -1697,7 +1685,7 @@ void CFolderDlg::OnLoadFromTNEF()
 				hRes = S_OK;
 				EC_H(((LPMAPIFOLDER)m_lpContainer)->CreateMessage(
 					NULL,
-					NULL,
+					dfAssoc?MAPI_ASSOCIATED:0,
 					&lpNewMessage));
 
 				if (lpNewMessage)
@@ -1715,7 +1703,6 @@ void CFolderDlg::OnLoadFromTNEF()
 	}
 
 	if (lpNewMessage) lpNewMessage->Release();
-	return;
 } // CFolderDlg::OnLoadFromTNEF
 
 // Use CFileDialogExW to locate a .EML file to load,
@@ -1742,7 +1729,7 @@ void CFolderDlg::OnLoadFromEML()
 		CFileDialogExW dlgFilePicker;
 		CStringW szFileSpec;
 
-		szFileSpec.LoadString(IDS_EMLFILES);
+		EC_B(szFileSpec.LoadString(IDS_EMLFILES));
 		EC_D_DIALOG(dlgFilePicker.DisplayDialog(
 			TRUE,
 			L"eml", // STRING_OK
@@ -1759,7 +1746,7 @@ void CFolderDlg::OnLoadFromEML()
 				hRes = S_OK;
 				EC_H(((LPMAPIFOLDER)m_lpContainer)->CreateMessage(
 					NULL,
-					NULL,
+					dfAssoc?MAPI_ASSOCIATED:0,
 					&lpNewMessage));
 
 				if (lpNewMessage)
@@ -1779,8 +1766,6 @@ void CFolderDlg::OnLoadFromEML()
 			}
 		}
 	}
-
-	return;
 } // CFolderDlg::OnLoadFromEML
 
 void CFolderDlg::OnSendBulkMail()
@@ -1833,8 +1818,7 @@ void CFolderDlg::OnSendBulkMail()
 			}
 		}
 	}
-	return;
-}
+} // CFolderDlg::OnSendBulkMail
 
 void CFolderDlg::OnSetReadFlag()
 {
@@ -1903,8 +1887,6 @@ void CFolderDlg::OnSetReadFlag()
 			MAPIFreeBuffer(lpEIDs);
 		}
 	}
-
-	return;
 } // CFolderDlg::OnSetReadFlag
 
 void CFolderDlg::OnGetMessageOptions()
@@ -1964,7 +1946,7 @@ void CFolderDlg::OnGetMessageOptions()
 	}
 } // CFolderDlg::OnGetMessageOptions
 
-HRESULT CFolderDlg::OnGetMessageStatus(int /*iItem*/, SortListData* lpData)
+_Check_return_ HRESULT CFolderDlg::OnGetMessageStatus(int /*iItem*/, _In_ SortListData* lpData)
 {
 	HRESULT			hRes = S_OK;
 	LPSBinary		lpMessageEID = NULL;
@@ -2059,7 +2041,7 @@ void CFolderDlg::OnSetMessageStatus()
 	}
 } // CFolderDlg::OnSetMessageStatus
 
-HRESULT CFolderDlg::OnSubmitMessage(int iItem, SortListData* /*lpData*/)
+_Check_return_ HRESULT CFolderDlg::OnSubmitMessage(int iItem, _In_ SortListData* /*lpData*/)
 {
 	HRESULT			hRes = S_OK;
 	LPMESSAGE		lpMessage = NULL;
@@ -2085,7 +2067,7 @@ HRESULT CFolderDlg::OnSubmitMessage(int iItem, SortListData* /*lpData*/)
 	return hRes;
 } // CFolderDlg::OnSubmitMessage
 
-HRESULT CFolderDlg::OnAbortSubmit(int iItem, SortListData* lpData)
+_Check_return_ HRESULT CFolderDlg::OnAbortSubmit(int iItem, _In_ SortListData* lpData)
 {
 	HRESULT			hRes = S_OK;
 	LPMDB			lpMDB = NULL;
@@ -2114,9 +2096,9 @@ HRESULT CFolderDlg::OnAbortSubmit(int iItem, SortListData* lpData)
 } // CFolderDlg::OnAbortSubmit
 
 void CFolderDlg::HandleAddInMenuSingle(
-									   LPADDINMENUPARAMS lpParams,
-									   LPMAPIPROP lpMAPIProp,
-									   LPMAPICONTAINER /*lpContainer*/)
+									   _In_ LPADDINMENUPARAMS lpParams,
+									   _In_ LPMAPIPROP lpMAPIProp,
+									   _In_ LPMAPICONTAINER /*lpContainer*/)
 {
 	if (lpParams)
 	{

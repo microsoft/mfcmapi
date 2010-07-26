@@ -15,10 +15,10 @@ static TCHAR* CLASS = _T("CRecipientsDlg");
 // CRecipientsDlg dialog
 
 CRecipientsDlg::CRecipientsDlg(
-							   CParentWnd* pParentWnd,
-							   CMapiObjects* lpMapiObjects,
-							   LPMAPITABLE lpMAPITable,
-							   LPMESSAGE lpMessage
+							   _In_ CParentWnd* pParentWnd,
+							   _In_ CMapiObjects* lpMapiObjects,
+							   _In_ LPMAPITABLE lpMAPITable,
+							   _In_ LPMESSAGE lpMessage
 							   ):
 CContentsTableDlg(
 				  pParentWnd,
@@ -38,14 +38,14 @@ CContentsTableDlg(
 	m_bIsAB = true; // Recipients are from the AB
 
 	CreateDialogAndMenu(IDR_MENU_RECIPIENTS);
-}
+} // CRecipientsDlg::CRecipientsDlg
 
 CRecipientsDlg::~CRecipientsDlg()
 {
 	TRACE_DESTRUCTOR(CLASS);
 
 	if (m_lpMessage) m_lpMessage->Release();
-}
+} // CRecipientsDlg::~CRecipientsDlg
 
 BEGIN_MESSAGE_MAP(CRecipientsDlg, CContentsTableDlg)
 	ON_COMMAND(ID_DELETESELECTEDITEM, OnDeleteSelectedItem)
@@ -54,7 +54,7 @@ BEGIN_MESSAGE_MAP(CRecipientsDlg, CContentsTableDlg)
 	ON_COMMAND(ID_SAVECHANGES, OnSaveChanges)
 END_MESSAGE_MAP()
 
-void CRecipientsDlg::OnInitMenu(CMenu* pMenu)
+void CRecipientsDlg::OnInitMenu(_In_ CMenu* pMenu)
 {
 	if (pMenu)
 	{
@@ -67,7 +67,7 @@ void CRecipientsDlg::OnInitMenu(CMenu* pMenu)
 		}
 	}
 	CContentsTableDlg::OnInitMenu(pMenu);
-}
+} // CRecipientsDlg::OnInitMenu
 
 void CRecipientsDlg::OnDeleteSelectedItem()
 {
@@ -155,7 +155,7 @@ void CRecipientsDlg::OnModifyRecipients()
 			MODRECIP_MODIFY,
 			&adrList));
 	}
-}
+} // CRecipientsDlg::OnModifyRecipients
 
 void CRecipientsDlg::OnRecipOptions()
 {
@@ -220,7 +220,7 @@ void CRecipientsDlg::OnRecipOptions()
 			}
 		}
 	}
-}
+} // CRecipientsDlg::OnRecipOptions
 
 void CRecipientsDlg::OnSaveChanges()
 {
@@ -230,5 +230,4 @@ void CRecipientsDlg::OnSaveChanges()
 
 		EC_H(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 	}
-}
-
+} // CRecipientsDlg::OnSaveChanges

@@ -19,10 +19,10 @@ static TCHAR* CLASS = _T("CHierarchyTableDlg");
 
 
 CHierarchyTableDlg::CHierarchyTableDlg(
-									   CParentWnd* pParentWnd,
-									   CMapiObjects* lpMapiObjects,
+									   _In_ CParentWnd* pParentWnd,
+									   _In_ CMapiObjects* lpMapiObjects,
 									   UINT uidTitle,
-									   LPUNKNOWN lpRootContainer,
+									   _In_opt_ LPUNKNOWN lpRootContainer,
 									   ULONG nIDContextMenu,
 									   ULONG ulAddInContext
 									   ):
@@ -32,13 +32,14 @@ CBaseDialog(
 			ulAddInContext)
 {
 	TRACE_CONSTRUCTOR(CLASS);
+	HRESULT hRes = S_OK;
 	if (NULL != uidTitle)
 	{
-		m_szTitle.LoadString(uidTitle);
+		EC_B(m_szTitle.LoadString(uidTitle));
 	}
 	else
 	{
-		m_szTitle.LoadString(IDS_TABLEASHIERARCHY);
+		EC_B(m_szTitle.LoadString(IDS_TABLEASHIERARCHY));
 	}
 
 	m_nIDContextMenu = nIDContextMenu;
@@ -49,7 +50,6 @@ CBaseDialog(
 	// need to make sure whatever gets passed to us is really a container
 	if (lpRootContainer)
 	{
-		HRESULT hRes = S_OK;
 		LPMAPICONTAINER lpTemp = NULL;
 		EC_H(lpRootContainer->QueryInterface(IID_IMAPIContainer,(LPVOID*) &lpTemp));
 		if (lpTemp)
@@ -57,14 +57,13 @@ CBaseDialog(
 			m_lpContainer = lpTemp;
 		}
 	}
-
-}
+} // CHierarchyTableDlg::CHierarchyTableDlg
 
 CHierarchyTableDlg::~CHierarchyTableDlg()
 {
 	TRACE_DESTRUCTOR(CLASS);
 	if (m_lpContainer) m_lpContainer->Release();
-}
+} // CHierarchyTableDlg::~CHierarchyTableDlg
 
 BEGIN_MESSAGE_MAP(CHierarchyTableDlg, CBaseDialog)
 	ON_COMMAND(ID_DISPLAYSELECTEDITEM, OnDisplayItem)
@@ -73,7 +72,7 @@ BEGIN_MESSAGE_MAP(CHierarchyTableDlg, CBaseDialog)
 	ON_COMMAND(ID_EDITSEARCHCRITERIA, OnEditSearchCriteria)
 END_MESSAGE_MAP()
 
-void CHierarchyTableDlg::OnInitMenu(CMenu* pMenu)
+void CHierarchyTableDlg::OnInitMenu(_In_ CMenu* pMenu)
 {
 	if (pMenu)
 	{
@@ -100,7 +99,7 @@ void CHierarchyTableDlg::OnInitMenu(CMenu* pMenu)
 
 	}
 	CBaseDialog::OnInitMenu(pMenu);
-}
+} // CHierarchyTableDlg::OnInitMenu
 
 void CHierarchyTableDlg::OnCancel()
 {
@@ -108,7 +107,7 @@ void CHierarchyTableDlg::OnCancel()
 	if (m_lpHierarchyTableTreeCtrl) m_lpHierarchyTableTreeCtrl->Release();
 	m_lpHierarchyTableTreeCtrl = NULL;
 	CBaseDialog::OnCancel();
-}
+} // CHierarchyTableDlg::OnCancel
 
 void CHierarchyTableDlg::OnDisplayItem()
 {
@@ -129,8 +128,7 @@ void CHierarchyTableDlg::OnDisplayItem()
 		this));
 
 	lpMAPIContainer->Release();
-	return;
-}
+} // CHierarchyTableDlg::OnDisplayItem
 
 void CHierarchyTableDlg::OnDisplayHierarchyTable()
 {
@@ -168,7 +166,6 @@ void CHierarchyTableDlg::OnDisplayHierarchyTable()
 		}
 		lpContainer->Release();
 	}
-	return;
 } // CHierarchyTableDlg::OnDisplayHierarchyTable
 
 void CHierarchyTableDlg::OnEditSearchCriteria()
@@ -182,7 +179,7 @@ void CHierarchyTableDlg::OnEditSearchCriteria()
 
 	if (lpMAPIFolder)
 	{
-		DebugPrintEx(DBGGeneric,CLASS,_T("OnEditSearchCriteria"),_T("Calling GetSearchCriteria on 0x%08X.\n"),lpMAPIFolder);
+		DebugPrintEx(DBGGeneric,CLASS,_T("OnEditSearchCriteria"),_T("Calling GetSearchCriteria on %p.\n"),lpMAPIFolder);
 
 		LPSRestriction lpRes = NULL;
 		LPENTRYLIST lpEntryList = NULL;
@@ -234,10 +231,9 @@ void CHierarchyTableDlg::OnEditSearchCriteria()
 		}
 		lpMAPIFolder->Release();
 	}
-	return;
 } // CHierarchyTableDlg::OnEditSearchCriteria
 
-BOOL CHierarchyTableDlg::OnInitDialog()
+_Check_return_ BOOL CHierarchyTableDlg::OnInitDialog()
 {
 	BOOL bRet = CBaseDialog::OnInitDialog();
 
@@ -279,7 +275,7 @@ void CHierarchyTableDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 } // CHierarchyTableDlg::CreateDialogAndMenu
 
 // Per Q167960 BUG: ESC/ENTER Keys Do Not Work When Editing CTreeCtrl Labels
-BOOL CHierarchyTableDlg::PreTranslateMessage(MSG* pMsg)
+_Check_return_ BOOL CHierarchyTableDlg::PreTranslateMessage(_In_ MSG* pMsg)
 {
 	// If edit control is visible in tree view control, when you send a
 	// WM_KEYDOWN message to the edit control it will dismiss the edit
@@ -307,9 +303,9 @@ void CHierarchyTableDlg::OnRefreshView()
 	DebugPrintEx(DBGGeneric,CLASS,_T("OnRefreshView"),_T("\n"));
 	if (m_lpHierarchyTableTreeCtrl)
 		EC_H(m_lpHierarchyTableTreeCtrl->RefreshHierarchyTable());
-}
+} // CHierarchyTableDlg::OnRefreshView
 
-BOOL CHierarchyTableDlg::HandleAddInMenu(WORD wMenuSelect)
+_Check_return_ BOOL CHierarchyTableDlg::HandleAddInMenu(WORD wMenuSelect)
 {
 	if (wMenuSelect < ID_ADDINMENU || ID_ADDINMENU+m_ulAddInMenuItems < wMenuSelect) return false;
 	if (!m_lpHierarchyTableTreeCtrl) return false;
@@ -379,9 +375,9 @@ BOOL CHierarchyTableDlg::HandleAddInMenu(WORD wMenuSelect)
 } // CHierarchyTableDlg::HandleAddInMenu
 
 void CHierarchyTableDlg::HandleAddInMenuSingle(
-	LPADDINMENUPARAMS lpParams,
-	LPMAPIPROP /*lpMAPIProp*/,
-	LPMAPICONTAINER /*lpContainer*/)
+	_In_ LPADDINMENUPARAMS lpParams,
+	_In_opt_ LPMAPIPROP /*lpMAPIProp*/,
+	_In_opt_ LPMAPICONTAINER /*lpContainer*/)
 {
 	InvokeAddInMenu(lpParams);
 } // CHierarchyTableDlg::HandleAddInMenuSingle

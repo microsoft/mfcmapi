@@ -13,22 +13,22 @@ class CMsgServiceTableDlg : public CContentsTableDlg
 public:
 
 	CMsgServiceTableDlg(
-		CParentWnd* pParentWnd,
-		CMapiObjects* lpMapiObjects,
-		LPCSTR szProfileName);
+		_In_ CParentWnd* pParentWnd,
+		_In_ CMapiObjects* lpMapiObjects,
+		_In_z_ LPCSTR szProfileName);
 	virtual ~CMsgServiceTableDlg();
 
 private:
 	// Overrides from base class
 	void HandleAddInMenuSingle(
-		LPADDINMENUPARAMS lpParams,
-		LPMAPIPROP lpMAPIProp,
-		LPMAPICONTAINER lpContainer);
+		_In_ LPADDINMENUPARAMS lpParams,
+		_In_ LPMAPIPROP lpMAPIProp,
+		_In_ LPMAPICONTAINER lpContainer);
 	void OnDeleteSelectedItem();
 	void OnDisplayItem();
-	void OnInitMenu(CMenu* pMenu);
+	void OnInitMenu(_In_ CMenu* pMenu);
 	void OnRefreshView();
-	HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, LPMAPIPROP* lppMAPIProp);
+	_Check_return_ HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp);
 
 	// Menu items
 	void OnConfigureMsgService();

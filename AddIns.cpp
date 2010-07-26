@@ -11,7 +11,7 @@
 
 LPADDIN g_lpMyAddins = NULL;
 
-ULONG GetAddinVersion(HMODULE hMod)
+_Check_return_ ULONG GetAddinVersion(HMODULE hMod)
 {
 	HRESULT hRes = S_OK;
 	LPGETAPIVERSION pfnGetAPIVersion = NULL;
@@ -23,9 +23,9 @@ ULONG GetAddinVersion(HMODULE hMod)
 
 	// Default case for unversioned add-ins
 	return MFCMAPI_HEADER_V1;
-}
+} // GetAddinVersion
 
-void LoadSingleAddIn(LPADDIN lpAddIn, HMODULE hMod, LPLOADADDIN pfnLoadAddIn)
+void LoadSingleAddIn(_In_ LPADDIN lpAddIn, HMODULE hMod, _In_ LPLOADADDIN pfnLoadAddIn)
 {
 	DebugPrint(DBGAddInPlumbing,_T("Loading AddIn\n"));
 	if (!lpAddIn) return;
@@ -115,7 +115,7 @@ void LoadSingleAddIn(LPADDIN lpAddIn, HMODULE hMod, LPLOADADDIN pfnLoadAddIn)
 	}
 
 	DebugPrint(DBGAddInPlumbing,_T("Done loading AddIn\n"));
-}
+} // LoadSingleAddIn
 
 void LoadAddIns()
 {
@@ -244,7 +244,7 @@ void LoadAddIns()
 	MergeAddInArrays();
 	SortAddInArrays();
 	DebugPrint(DBGAddInPlumbing,_T("Done loading AddIns\n"));
-}
+} // LoadAddIns
 
 void ResetArrays()
 {
@@ -264,7 +264,7 @@ void ResetArrays()
 	NameIDArray = g_NameIDArray;
 	ulFlagArray = g_ulFlagArray;
 	FlagArray = g_FlagArray;
-}
+} // ResetArrays
 
 void UnloadAddIns()
 {
@@ -297,7 +297,7 @@ void UnloadAddIns()
 	ResetArrays();
 
 	DebugPrint(DBGAddInPlumbing,_T("Done unloading AddIns\n"));
-}
+} // UnloadAddIns
 
 // Adds menu items appropriate to the context
 // Returns number of menu items added
@@ -387,10 +387,10 @@ ULONG ExtendAddInMenu(HMENU hMenu, ULONG ulAddInContext)
 			lpCurAddIn = lpCurAddIn->lpNextAddIn;
 		}
 	}
-	DestroyMenu(hAddInMenu);
+	if (hAddInMenu) DestroyMenu(hAddInMenu);
 	DebugPrint(DBGAddInPlumbing,_T("Done extending menus\n"));
 	return uidCurMenu-ID_ADDINMENU;
-}
+} // ExtendAddInMenu
 
 LPMENUITEM GetAddinMenuItem(HWND hWnd, UINT uidMsg)
 {
@@ -407,9 +407,9 @@ LPMENUITEM GetAddinMenuItem(HWND hWnd, UINT uidMsg)
 		false,
 		&subMenu));
 	return (LPMENUITEM) subMenu.dwItemData;
-}
+} // GetAddinMenuItem
 
-void InvokeAddInMenu(LPADDINMENUPARAMS lpParams)
+void InvokeAddInMenu(_In_opt_ LPADDINMENUPARAMS lpParams)
 {
 	HRESULT hRes = S_OK;
 
@@ -432,9 +432,7 @@ void InvokeAddInMenu(LPADDINMENUPARAMS lpParams)
 	}
 
 	WC_H(lpParams->lpAddInMenu->lpAddIn->pfnCallMenu(lpParams));
-
-	return;
-}
+} // InvokeAddInMenu
 
 LPNAME_ARRAY_ENTRY PropTypeArray = NULL;
 ULONG ulPropTypeArray = NULL;
@@ -592,7 +590,7 @@ void MergeAddInArrays()
 	ulFlagArray = ulCurFlag;
 
 	DebugPrint(DBGAddInPlumbing,_T("Done merging add-in arrays\n"));
-}
+} // MergeAddInArrays
 
 // Sort arrays and eliminate duplicates
 void SortAddInArrays()
@@ -756,9 +754,9 @@ void SortAddInArrays()
 	DebugPrint(DBGAddInPlumbing,_T("After sort, 0x%08X flags.\n"),ulFlagArray);
 
 	DebugPrint(DBGAddInPlumbing,_T("Done sorting add-in arrays\n"));
-}
+} // SortAddInArrays
 
-__declspec(dllexport) void __cdecl AddInLog(BOOL bPrintThreadTime, LPWSTR szMsg,...)
+__declspec(dllexport) void __cdecl AddInLog(BOOL bPrintThreadTime, _Printf_format_string_ LPWSTR szMsg, ...)
 {
 	if (!fIsSet(DBGAddIn)) return;
 	HRESULT hRes = S_OK;
@@ -789,9 +787,9 @@ __declspec(dllexport) void __cdecl AddInLog(BOOL bPrintThreadTime, LPWSTR szMsg,
 	_Output(DBGAddIn, NULL, bPrintThreadTime, szAnsiAddInLogString);
 	delete[] szAnsiAddInLogString;
 #endif
-}
+} // AddInLog
 
-__declspec(dllexport) HRESULT __cdecl SimpleDialog(LPWSTR szTitle, LPWSTR szMsg,...)
+_Check_return_ __declspec(dllexport) HRESULT __cdecl SimpleDialog(_In_z_ LPWSTR szTitle, _Printf_format_string_ LPWSTR szMsg, ...)
 {
 	HRESULT hRes = S_OK;
 
@@ -825,9 +823,9 @@ __declspec(dllexport) HRESULT __cdecl SimpleDialog(LPWSTR szTitle, LPWSTR szMsg,
 #endif
 	WC_H(MySimpleDialog.DisplayDialog());
 	return hRes;
-}
+} // SimpleDialog
 
-__declspec(dllexport) HRESULT __cdecl ComplexDialog(LPADDINDIALOG lpDialog, LPADDINDIALOGRESULT* lppDialogResult)
+_Check_return_ __declspec(dllexport) HRESULT __cdecl ComplexDialog(_In_ LPADDINDIALOG lpDialog, _Out_ LPADDINDIALOGRESULT* lppDialogResult)
 {
 	if (!lpDialog) return MAPI_E_INVALID_PARAMETER;
 	// Reject any flags except CEDITOR_BUTTON_OK and CEDITOR_BUTTON_CANCEL
@@ -980,7 +978,7 @@ __declspec(dllexport) HRESULT __cdecl ComplexDialog(LPADDINDIALOG lpDialog, LPAD
 							if (szText)
 							{
 								size_t cchText = NULL;
-								StringCchLengthW(szText,STRSAFE_MAX_CCH,&cchText);
+								WC_H(StringCchLengthW(szText,STRSAFE_MAX_CCH,&cchText));
 
 								cchText++;
 								lpResults->lpDialogControlResults[i].szText = new WCHAR[cchText];
@@ -1027,9 +1025,9 @@ __declspec(dllexport) HRESULT __cdecl ComplexDialog(LPADDINDIALOG lpDialog, LPAD
 		}
 	}
 	return hRes;
-}
+} // ComplexDialog
 
-__declspec(dllexport) void __cdecl FreeDialogResult(LPADDINDIALOGRESULT lpDialogResult)
+__declspec(dllexport) void __cdecl FreeDialogResult(_In_ LPADDINDIALOGRESULT lpDialogResult)
 {
 	if (lpDialogResult)
 	{
@@ -1044,9 +1042,9 @@ __declspec(dllexport) void __cdecl FreeDialogResult(LPADDINDIALOGRESULT lpDialog
 		}
 		delete[] lpDialogResult;
 	}
-}
+} // FreeDialogResult
 
-__declspec(dllexport) void __cdecl GetMAPIModule(HMODULE* lphModule, BOOL bForce)
+__declspec(dllexport) void __cdecl GetMAPIModule(_In_ HMODULE* lphModule, BOOL bForce)
 {
 	if (!lphModule) return;
 	*lphModule = NULL;
@@ -1064,11 +1062,10 @@ __declspec(dllexport) void __cdecl GetMAPIModule(HMODULE* lphModule, BOOL bForce
 		AutoLoadMAPI();
 		GetMAPIModule(lphModule,false);
 	}
-}
-
+} // GetMAPIModule
 
 // Search for properties matching lpszPropName on a substring
-LPNAMEID_ARRAY_ENTRY GetDispIDFromName(LPCWSTR lpszDispIDName)
+LPNAMEID_ARRAY_ENTRY GetDispIDFromName(_In_z_ LPCWSTR lpszDispIDName)
 {
 	if (!lpszDispIDName) return NULL;
 

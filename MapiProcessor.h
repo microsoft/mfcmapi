@@ -25,15 +25,15 @@ public:
 	virtual ~CMAPIProcessor();
 
 	// Initialization
-	void InitSession(LPMAPISESSION lpSession);
-	void InitMDB(LPMDB lpMDB);
-	void InitFolder(LPMAPIFOLDER lpFolder);
+	void InitSession(_In_ LPMAPISESSION lpSession);
+	void InitMDB(_In_ LPMDB lpMDB);
+	void InitFolder(_In_ LPMAPIFOLDER lpFolder);
 
 	// Processing functions
-	void ProcessMailboxTable(LPCTSTR szExchangeServerName);
+	void ProcessMailboxTable(_In_z_ LPCTSTR szExchangeServerName);
 	void ProcessStore();
 	void ProcessFolders(BOOL bDoRegular, BOOL bDoAssociated, BOOL bDoDescent);
-	void ProcessMessage(LPMESSAGE lpMessage, LPVOID lpParentMessageData);
+	void ProcessMessage(_In_ LPMESSAGE lpMessage, _In_opt_ LPVOID lpParentMessageData);
 
 protected:
 	LPMAPISESSION	m_lpSession;
@@ -43,8 +43,8 @@ protected:
 
 private:
 	// Worker functions (dump messages, scan for something, etc)
-	virtual void BeginMailboxTableWork(LPCTSTR szExchangeServerName);
-	virtual void DoMailboxTablePerRowWork(LPMDB lpMDB, LPSRow lpSRow, ULONG ulCurRow);
+	virtual void BeginMailboxTableWork(_In_z_ LPCTSTR szExchangeServerName);
+	virtual void DoMailboxTablePerRowWork(_In_ LPMDB lpMDB, _In_ LPSRow lpSRow, ULONG ulCurRow);
 	virtual void EndMailboxTableWork();
 
 	virtual void BeginStoreWork();
@@ -55,33 +55,33 @@ private:
 	virtual void EndProcessFoldersWork();
 
 	virtual void BeginFolderWork();
-	virtual void DoFolderPerHierarchyTableRowWork(LPSRow lpSRow);
+	virtual void DoFolderPerHierarchyTableRowWork(_In_ LPSRow lpSRow);
 	virtual void EndFolderWork();
 
 	virtual void BeginContentsTableWork(ULONG ulFlags, ULONG ulCountRows);
-	virtual void DoContentsTablePerRowWork(LPSRow lpSRow, ULONG ulCurRow);
+	virtual void DoContentsTablePerRowWork(_In_ LPSRow lpSRow, ULONG ulCurRow);
 	virtual void EndContentsTableWork();
 
 	// lpData is allocated and returned by BeginMessageWork
 	// If used, it should be cleaned up EndMessageWork
 	// This allows implementations of these functions to avoid global variables
-	virtual void BeginMessageWork(LPMESSAGE lpMessage, LPVOID lpParentMessageData, LPVOID* lpData);
-	virtual void BeginRecipientWork(LPMESSAGE lpMessage, LPVOID lpData);
-	virtual void DoMessagePerRecipientWork(LPMESSAGE lpMessage, LPVOID lpData, LPSRow lpSRow, ULONG ulCurRow);
-	virtual void EndRecipientWork(LPMESSAGE lpMessage, LPVOID lpData);
-	virtual void BeginAttachmentWork(LPMESSAGE lpMessage, LPVOID lpData);
-	virtual void DoMessagePerAttachmentWork(LPMESSAGE lpMessage, LPVOID lpData, LPSRow lpSRow, LPATTACH lpAttach, ULONG ulCurRow);
-	virtual void EndAttachmentWork(LPMESSAGE lpMessage, LPVOID lpData);
-	virtual void EndMessageWork(LPMESSAGE lpMessage, LPVOID lpData);
+	virtual void BeginMessageWork(_In_ LPMESSAGE lpMessage, _In_opt_ LPVOID lpParentMessageData, _Deref_out_ LPVOID* lpData);
+	virtual void BeginRecipientWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData);
+	virtual void DoMessagePerRecipientWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData, _In_ LPSRow lpSRow, ULONG ulCurRow);
+	virtual void EndRecipientWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData);
+	virtual void BeginAttachmentWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData);
+	virtual void DoMessagePerAttachmentWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData, _In_ LPSRow lpSRow, _In_ LPATTACH lpAttach, ULONG ulCurRow);
+	virtual void EndAttachmentWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData);
+	virtual void EndMessageWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData);
 
 	void ProcessFolder(BOOL bDoRegular, BOOL bDoAssociated, BOOL bDoDescent);
 	void ProcessContentsTable(ULONG ulFlags);
-	void ProcessRecipients(LPMESSAGE lpMessage, LPVOID lpData);
-	void ProcessAttachments(LPMESSAGE lpMessage, LPVOID lpData);
+	void ProcessRecipients(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData);
+	void ProcessAttachments(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData);
 
 	// FolderList functions
 	// Add a new node to the end of the folder list
-	void AddFolderToFolderList(LPSBinary lpFolderEID, LPCTSTR szFolderOffsetPath);
+	void AddFolderToFolderList(_In_opt_ LPSBinary lpFolderEID, _In_z_ LPCTSTR szFolderOffsetPath);
 
 	// Call OpenEntry on the first folder in the list, remove it from the list
 	void OpenFirstFolderInList();

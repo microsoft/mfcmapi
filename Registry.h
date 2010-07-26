@@ -68,18 +68,18 @@ void SetDefaults();
 void WriteToRegistry();
 void ReadFromRegistry();
 
-void ReadDWORDFromRegistry(HKEY hKey, LPCTSTR szValue, DWORD* lpdwVal);
+void ReadDWORDFromRegistry(_In_ HKEY hKey, _In_z_ LPCTSTR szValue, _Out_ DWORD* lpdwVal);
 
-HRESULT HrGetRegistryValueW(
-							IN HKEY hKey, // the key.
-							IN LPCTSTR lpszValue, // value name in key.
-							OUT DWORD* lpType, // where to put type info.
-							OUT LPVOID* lppData); // where to put the data.
-HRESULT HrGetRegistryValueA(
-							IN HKEY hKey, // the key.
-							IN LPCSTR lpszValue, // value name in key.
-							OUT DWORD* lpType, // where to put type info.
-							OUT LPVOID* lppData); // where to put the data.
+_Check_return_ HRESULT HrGetRegistryValueW(
+	_In_ HKEY hKey, // the key.
+	_In_z_ LPCTSTR lpszValue, // value name in key.
+	_Out_ DWORD* lpType, // where to put type info.
+	_Out_ LPVOID* lppData); // where to put the data.
+_Check_return_ HRESULT HrGetRegistryValueA(
+	_In_ HKEY hKey, // the key.
+	_In_z_ LPCSTR lpszValue, // value name in key.
+	_Out_ DWORD* lpType, // where to put type info.
+	_Out_ LPVOID* lppData); // where to put the data.
 #ifdef UNICODE
 #define HrGetRegistryValue HrGetRegistryValueW
 #else

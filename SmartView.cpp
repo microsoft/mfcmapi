@@ -9,11 +9,11 @@
 #include "MySecInfo.h"
 #include "NamedPropCache.h"
 
-void InterpretMVBinaryAsString(SBinaryArray myBinArray, DWORD_PTR iStructType, LPMAPIPROP lpMAPIProp, ULONG ulPropTag, LPTSTR* lpszResultString);
-void InterpretLongAsString(ULONG ulVal, ULONG ulPropTag, ULONG ulPropNameID, LPWSTR lpszPropNameString, LPGUID lpguidNamedProp, LPTSTR* lpszResultString);
-void InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropTag, ULONG ulPropNameID, LPGUID lpguidNamedProp, LPTSTR* lpszResultString);
+void InterpretMVBinaryAsString(SBinaryArray myBinArray, DWORD_PTR iStructType, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_z_ LPTSTR* lpszResultString);
+void InterpretLongAsString(ULONG ulVal, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_z_ LPWSTR lpszPropNameString, _In_opt_ LPGUID lpguidNamedProp, _Deref_out_opt_z_ LPTSTR* lpszResultString);
+void InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_ LPGUID lpguidNamedProp, _Deref_out_z_ LPTSTR* lpszResultString);
 
-LPTSTR CStringToString(CString szCString);
+_Check_return_ LPTSTR CStringToString(CString szCString);
 
 // After 'No Parsing', these are in alphabetical order
 UINT g_uidParsingTypesDropDown[] = {
@@ -43,7 +43,7 @@ UINT g_uidParsingTypesDropDown[] = {
 };
 ULONG g_cuidParsingTypesDropDown = _countof(g_uidParsingTypesDropDown);
 
-typedef LPVOID BINTOSTRUCT(ULONG cbBin, LPBYTE lpBin);
+typedef LPVOID BINTOSTRUCT(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
 typedef BINTOSTRUCT *LPBINTOSTRUCT;
 typedef void DELETESTRUCT(LPVOID lpStruct);
 typedef DELETESTRUCT *LPDELETESTRUCT;
@@ -243,10 +243,10 @@ SMARTVIEW_PARSER_ARRAY_ENTRY g_LongStructArray[] =
 LPSMARTVIEW_PARSER_ARRAY_ENTRY LongStructArray = g_LongStructArray;
 ULONG ulLongStructArray = _countof(g_LongStructArray);
 
-ULONG BuildFlagIndexFromTag(ULONG ulPropTag,
-							ULONG ulPropNameID,
-							LPWSTR lpszPropNameString,
-							LPGUID lpguidNamedProp)
+_Check_return_ ULONG BuildFlagIndexFromTag(ULONG ulPropTag,
+										   ULONG ulPropNameID,
+										   _In_opt_z_ LPWSTR lpszPropNameString,
+										   _In_opt_ LPGUID lpguidNamedProp)
 {
 	ULONG ulPropID = PROP_ID(ulPropTag);
 
@@ -281,31 +281,31 @@ ULONG BuildFlagIndexFromTag(ULONG ulPropTag,
 	return NULL;
 } // BuildFlagIndexFromTag
 
-ULONG FindSmartViewParserForProp(LPSMARTVIEW_PARSER_ARRAY_ENTRY lpParserArray, ULONG ulParserArray, const ULONG ulPropTag, const ULONG ulPropNameID, const LPGUID lpguidNamedProp)
+_Check_return_ ULONG FindSmartViewParserForProp(_In_count_(ulParserArray) LPSMARTVIEW_PARSER_ARRAY_ENTRY lpParserArray, ULONG ulParserArray, const ULONG ulPropTag, const ULONG ulPropNameID, _In_opt_ const LPGUID lpguidNamedProp)
 {
 	if (!lpParserArray) return 0;
 	ULONG	ulCurEntry = 0;
 	ULONG	ulIndex = BuildFlagIndexFromTag(ulPropTag,ulPropNameID,NULL,lpguidNamedProp);
 	BOOL	bMV = (PROP_TYPE(ulPropTag) & MV_FLAG) == MV_FLAG;
 
-	while (ulCurEntry < ulParserArray &&
-		!(lpParserArray[ulCurEntry].ulIndex == ulIndex &&
-		lpParserArray[ulCurEntry].bMV == bMV))
+	while (ulCurEntry < ulParserArray)
 	{
+		if (lpParserArray[ulCurEntry].ulIndex == ulIndex &&
+			lpParserArray[ulCurEntry].bMV == bMV)
+			return lpParserArray[ulCurEntry].iStructType;
 		ulCurEntry++;
 	}
 
-	if (lpParserArray[ulCurEntry].ulIndex == ulIndex) return lpParserArray[ulCurEntry].iStructType;
 	return 0;
 } // FindSmartViewParserForProp
 
 // lpszSmartView allocated with new, delete with delete[]
-void InterpretPropSmartView(LPSPropValue lpProp, // required property value
-							LPMAPIPROP lpMAPIProp, // optional source object
-							LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
-							LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
+void InterpretPropSmartView(_In_ LPSPropValue lpProp, // required property value
+							_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
+							_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
+							_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
 							BOOL bMVRow, // did the row come from a MV prop?
-							LPTSTR* lpszSmartView) // Built from lpProp & lpMAPIProp
+							_Deref_out_opt_z_ LPTSTR* lpszSmartView) // Built from lpProp & lpMAPIProp
 {
 	if (!lpszSmartView) return;
 	*lpszSmartView = NULL;
@@ -396,7 +396,7 @@ void InterpretPropSmartView(LPSPropValue lpProp, // required property value
 	MAPIFreeBuffer(lppPropNames);
 } // InterpretPropSmartView
 
-void InterpretMVBinaryAsString(SBinaryArray myBinArray, DWORD_PTR iStructType, LPMAPIPROP lpMAPIProp, ULONG ulPropTag, LPTSTR* lpszResultString)
+void InterpretMVBinaryAsString(SBinaryArray myBinArray, DWORD_PTR iStructType, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_z_ LPTSTR* lpszResultString)
 {
 	if (!RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD) return;
 	if (!lpszResultString) return;
@@ -428,7 +428,7 @@ void InterpretMVBinaryAsString(SBinaryArray myBinArray, DWORD_PTR iStructType, L
 // Free the string with delete[]
 // Will not return a string if the lpProp is not a PT_LONG/PT_I2 or we don't recognize the property
 // Will use named property details to look up named property flags
-void InterpretLongAsString(ULONG ulVal, ULONG ulPropTag, ULONG ulPropNameID, LPWSTR lpszPropNameString, LPGUID lpguidNamedProp, LPTSTR* lpszResultString)
+void InterpretLongAsString(ULONG ulVal, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_z_ LPWSTR lpszPropNameString, _In_opt_ LPGUID lpguidNamedProp, _Deref_out_opt_z_ LPTSTR* lpszResultString)
 {
 	if (lpszResultString) *lpszResultString = NULL;
 	if (!ulPropTag || !lpszResultString)
@@ -454,7 +454,8 @@ void InterpretLongAsString(ULONG ulVal, ULONG ulPropTag, ULONG ulPropNameID, LPW
 			if (ulPropID)
 			{
 				CString szPrefix;
-				szPrefix.LoadString(IDS_FLAGS_PREFIX);
+				HRESULT hRes = S_OK;
+				EC_B(szPrefix.LoadString(IDS_FLAGS_PREFIX));
 
 				InterpretFlags(ulPropID,ulVal,szPrefix,lpszResultString);
 			}
@@ -463,7 +464,7 @@ void InterpretLongAsString(ULONG ulVal, ULONG ulPropTag, ULONG ulPropNameID, LPW
 	}
 } // InterpretLongAsString
 
-void InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropTag, ULONG ulPropNameID, LPGUID lpguidNamedProp, LPTSTR* lpszResultString)
+void InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_ LPGUID lpguidNamedProp, _Deref_out_z_ LPTSTR* lpszResultString)
 {
 	if (!RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD) return;
 	if (!lpszResultString) return;
@@ -494,7 +495,7 @@ void InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropTag, ULONG ulPr
 	*lpszResultString = CStringToString(szResult);
 } // InterpretMVLongAsString
 
-void InterpretBinaryAsString(SBinary myBin, DWORD_PTR iStructType, LPMAPIPROP lpMAPIProp, ULONG ulPropTag, LPTSTR* lpszResultString)
+void InterpretBinaryAsString(SBinary myBin, DWORD_PTR iStructType, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_z_ LPTSTR* lpszResultString)
 {
 	if (!RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD) return;
 	if (!lpszResultString) return;
@@ -538,9 +539,9 @@ void InterpretBinaryAsString(SBinary myBin, DWORD_PTR iStructType, LPMAPIPROP lp
 		}
 	}
 	*lpszResultString = szResultString;
-}
+} // InterpretBinaryAsString
 
-CString RTimeToString(DWORD rTime)
+_Check_return_ CString RTimeToString(DWORD rTime)
 {
 	CString PropString;
 	FILETIME fTime = {0};
@@ -555,10 +556,10 @@ CString RTimeToString(DWORD rTime)
 	return PropString;
 } // RTimeToString
 
-LPTSTR RTimeToSzString(DWORD rTime)
+_Check_return_ LPTSTR RTimeToSzString(DWORD rTime)
 {
 	CString szRTime;
-	szRTime.FormatMessage(_T("RTime: "));
+	szRTime.FormatMessage(_T("RTime: ")); // STRING_OK
 	szRTime += RTimeToString(rTime);
 	return CStringToString(szRTime);
 } // RTimeToSzString
@@ -568,23 +569,23 @@ LPTSTR RTimeToSzString(DWORD rTime)
 class CBinaryParser
 {
 public:
-	CBinaryParser(size_t cbBin, LPBYTE lpBin);
+	CBinaryParser(size_t cbBin, _In_count_(cbBin) LPBYTE lpBin);
 
 	void Advance(size_t cbAdvance);
 	size_t GetCurrentOffset();
 	// Moves the parser to an offset obtained from GetCurrentOffset
 	void SetCurrentOffset(size_t stOffset);
 	size_t RemainingBytes();
-	void GetBYTE(BYTE* pBYTE);
-	void GetWORD(WORD* pWORD);
-	void GetDWORD(DWORD* pDWORD);
-	void GetLARGE_INTEGER(LARGE_INTEGER* pLARGE_INTEGER);
-	void GetBYTES(size_t cbBytes, LPBYTE* ppBYTES);
-	void GetBYTESNoAlloc(size_t cbBytes, LPBYTE pBYTES);
-	void GetStringA(size_t cchChar, LPSTR* ppStr);
-	void GetStringW(size_t cchChar, LPWSTR* ppStr);
-	void GetStringA(LPSTR* ppStr);
-	void GetStringW(LPWSTR* ppStr);
+	void GetBYTE(_Out_ BYTE* pBYTE);
+	void GetWORD(_Out_ WORD* pWORD);
+	void GetDWORD(_Out_ DWORD* pDWORD);
+	void GetLARGE_INTEGER(_Out_ LARGE_INTEGER* pLARGE_INTEGER);
+	void GetBYTES(size_t cbBytes, _Out_ LPBYTE* ppBYTES);
+	void GetBYTESNoAlloc(size_t cbBytes, _In_count_(cbBytes) LPBYTE pBYTES);
+	void GetStringA(size_t cchChar, _Deref_out_z_ LPSTR* ppStr);
+	void GetStringW(size_t cchChar, _Deref_out_z_ LPWSTR* ppStr);
+	void GetStringA(_Deref_out_z_ LPSTR* ppStr);
+	void GetStringW(_Deref_out_z_ LPWSTR* ppStr);
 
 private:
 	size_t m_cbBin;
@@ -593,28 +594,28 @@ private:
 	LPBYTE m_lpCur;
 };
 
-CBinaryParser::CBinaryParser(size_t cbBin, LPBYTE lpBin)
+CBinaryParser::CBinaryParser(size_t cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
 	m_cbBin = cbBin;
 	m_lpBin = lpBin;
 	m_lpCur = lpBin;
 	m_lpEnd = lpBin+cbBin;
-}
+} // CBinaryParser::CBinaryParser
 
 void CBinaryParser::Advance(size_t cbAdvance)
 {
 	m_lpCur += cbAdvance;
-}
+} // CBinaryParser::Advance
 
 size_t CBinaryParser::GetCurrentOffset()
 {
 	return m_lpCur - m_lpBin;
-}
+} // CBinaryParser::GetCurrentOffset
 
 void CBinaryParser::SetCurrentOffset(size_t stOffset)
 {
 	m_lpCur = m_lpBin + stOffset;
-}
+} // CBinaryParser::SetCurrentOffset
 
 // If we're before the end of the buffer, return the count of remaining bytes
 // If we're at or past the end of the buffer, return 0
@@ -622,41 +623,41 @@ size_t CBinaryParser::RemainingBytes()
 {
 	if (m_lpCur < m_lpEnd) return m_lpEnd - m_lpCur;
 	return 0;
-}
+} // CBinaryParser::RemainingBytes
 
-void CBinaryParser::GetBYTE(BYTE* pBYTE)
+void CBinaryParser::GetBYTE(_Out_ BYTE* pBYTE)
 {
 	if (!pBYTE || !m_lpCur) return;
 	if (sizeof(BYTE) > RemainingBytes()) return;
 	*pBYTE = *((BYTE*)m_lpCur);
 	m_lpCur += sizeof(BYTE);
-}
+} // CBinaryParser::GetBYTE
 
-void CBinaryParser::GetWORD(WORD* pWORD)
+void CBinaryParser::GetWORD(_Out_ WORD* pWORD)
 {
 	if (!pWORD || !m_lpCur) return;
 	if (sizeof(WORD) > RemainingBytes()) return;
 	*pWORD = *((WORD*)m_lpCur);
 	m_lpCur += sizeof(WORD);
-}
+} // CBinaryParser::GetWORD
 
-void CBinaryParser::GetDWORD(DWORD* pDWORD)
+void CBinaryParser::GetDWORD(_Out_ DWORD* pDWORD)
 {
 	if (!pDWORD || !m_lpCur) return;
 	if (sizeof(DWORD) > RemainingBytes()) return;
 	*pDWORD = *((DWORD*)m_lpCur);
 	m_lpCur += sizeof(DWORD);
-}
+} // CBinaryParser::GetDWORD
 
-void CBinaryParser::GetLARGE_INTEGER(LARGE_INTEGER* pLARGE_INTEGER)
+void CBinaryParser::GetLARGE_INTEGER(_Out_ LARGE_INTEGER* pLARGE_INTEGER)
 {
 	if (!pLARGE_INTEGER || !m_lpCur) return;
 	if (sizeof(LARGE_INTEGER) > RemainingBytes()) return;
 	*pLARGE_INTEGER = *((LARGE_INTEGER*)m_lpCur);
 	m_lpCur += sizeof(LARGE_INTEGER);
-}
+} // CBinaryParser::GetLARGE_INTEGER
 
-void CBinaryParser::GetBYTES(size_t cbBytes, LPBYTE* ppBYTES)
+void CBinaryParser::GetBYTES(size_t cbBytes, _Out_ LPBYTE* ppBYTES)
 {
 	if (!cbBytes || !ppBYTES) return;
 	if (cbBytes > RemainingBytes()) return;
@@ -667,19 +668,19 @@ void CBinaryParser::GetBYTES(size_t cbBytes, LPBYTE* ppBYTES)
 		memcpy(*ppBYTES,m_lpCur,cbBytes);
 	}
 	m_lpCur += cbBytes;
-}
+} // CBinaryParser::GetBYTES
 
-void CBinaryParser::GetBYTESNoAlloc(size_t cbBytes, LPBYTE pBYTES)
+void CBinaryParser::GetBYTESNoAlloc(size_t cbBytes, _In_count_(cbBytes) LPBYTE pBYTES)
 {
 	if (!cbBytes || !pBYTES) return;
 	if (cbBytes > RemainingBytes()) return;
 	memset(pBYTES,0,sizeof(BYTE) * cbBytes);
 	memcpy(pBYTES,m_lpCur,cbBytes);
 	m_lpCur += cbBytes;
-}
+} // CBinaryParser::GetBYTESNoAlloc
 
 // cchChar is the length of the source string, NOT counting the NULL terminator
-void CBinaryParser::GetStringA(size_t cchChar, LPSTR* ppStr)
+void CBinaryParser::GetStringA(size_t cchChar, _Deref_out_z_ LPSTR* ppStr)
 {
 	if (!cchChar || !ppStr) return;
 	if (sizeof(CHAR) * cchChar > RemainingBytes()) return;
@@ -691,10 +692,10 @@ void CBinaryParser::GetStringA(size_t cchChar, LPSTR* ppStr)
 		(*ppStr)[cchChar] = NULL;
 	}
 	m_lpCur += sizeof(CHAR) * cchChar;
-}
+} // CBinaryParser::GetStringA
 
 // cchChar is the length of the source string, NOT counting the NULL terminator
-void CBinaryParser::GetStringW(size_t cchWChar, LPWSTR* ppStr)
+void CBinaryParser::GetStringW(size_t cchWChar, _Deref_out_z_ LPWSTR* ppStr)
 {
 	if (!cchWChar || !ppStr) return;
 	if (sizeof(WCHAR) * cchWChar > RemainingBytes()) return;
@@ -706,10 +707,10 @@ void CBinaryParser::GetStringW(size_t cchWChar, LPWSTR* ppStr)
 		(*ppStr)[cchWChar] = NULL;
 	}
 	m_lpCur += sizeof(WCHAR) * cchWChar;
-}
+} // CBinaryParser::GetStringW
 
 // No size specified - assume the NULL terminator is in the stream, but don't read off the end
-void CBinaryParser::GetStringA(LPSTR* ppStr)
+void CBinaryParser::GetStringA(_Deref_out_z_ LPSTR* ppStr)
 {
 	if (!ppStr) return;
 	size_t cchChar = NULL;
@@ -722,10 +723,10 @@ void CBinaryParser::GetStringA(LPSTR* ppStr)
 	// With string length in hand, we defer to our other implementation
 	// Add 1 for the NULL terminator
 	GetStringA(cchChar+1,ppStr);
-}
+} // CBinaryParser::GetStringA
 
 // No size specified - assume the NULL terminator is in the stream, but don't read off the end
-void CBinaryParser::GetStringW(LPWSTR* ppStr)
+void CBinaryParser::GetStringW(_Deref_out_z_ LPWSTR* ppStr)
 {
 	if (!ppStr) return;
 	size_t cchChar = NULL;
@@ -738,9 +739,9 @@ void CBinaryParser::GetStringW(LPWSTR* ppStr)
 	// With string length in hand, we defer to our other implementation
 	// Add 1 for the NULL terminator
 	GetStringW(cchChar+1,ppStr);
-}
+} // CBinaryParser::GetStringW
 
-CString JunkDataToString(size_t cbJunkData, LPBYTE lpJunkData)
+_Check_return_ CString JunkDataToString(size_t cbJunkData, _In_count_(cbJunkData) LPBYTE lpJunkData)
 {
 	if (!cbJunkData || !lpJunkData) return _T("");
 	CString szTmp;
@@ -752,11 +753,11 @@ CString JunkDataToString(size_t cbJunkData, LPBYTE lpJunkData)
 		cbJunkData);
 	szTmp += BinToHexString(&sBin,true);
 	return szTmp;
-}
+} // JunkDataToString
 
 // result allocated with new
 // clean up with delete[]
-LPTSTR CStringToString(CString szCString)
+_Check_return_ LPTSTR CStringToString(CString szCString)
 {
 	size_t cchCString = szCString.GetLength()+1;
 	LPTSTR szOut = new TCHAR[cchCString];
@@ -766,7 +767,7 @@ LPTSTR CStringToString(CString szCString)
 		EC_H(StringCchCopy(szOut,cchCString,(LPCTSTR)szCString));
 	}
 	return szOut;
-}
+} // CStringToString
 
 //////////////////////////////////////////////////////////////////////////
 // RecurrencePatternStruct
@@ -775,7 +776,7 @@ LPTSTR CStringToString(CString szCString)
 // There may be recurrence with over 500 exceptions, but we're not going to try to parse them
 #define _MaxExceptions 500
 
-RecurrencePatternStruct* BinToRecurrencePatternStruct(ULONG cbBin, LPBYTE lpBin)
+_Check_return_ RecurrencePatternStruct* BinToRecurrencePatternStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
 	return BinToRecurrencePatternStructWithSize(cbBin, lpBin, NULL);
 } // BinToRecurrencePatternStruct
@@ -784,7 +785,7 @@ RecurrencePatternStruct* BinToRecurrencePatternStruct(ULONG cbBin, LPBYTE lpBin)
 // lpcbBytesRead returns the number of bytes consumed
 // Allocates return value with new.
 // clean up with delete.
-RecurrencePatternStruct* BinToRecurrencePatternStructWithSize(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead)
+_Check_return_ RecurrencePatternStruct* BinToRecurrencePatternStructWithSize(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, _Out_opt_ size_t* lpcbBytesRead)
 {
 	if (!lpBin) return NULL;
 	if (lpcbBytesRead) *lpcbBytesRead = NULL;
@@ -879,7 +880,7 @@ RecurrencePatternStruct* BinToRecurrencePatternStructWithSize(ULONG cbBin, LPBYT
 	return prpPattern;
 } // BinToRecurrencePatternStructWithSize
 
-void DeleteRecurrencePatternStruct(RecurrencePatternStruct* prpPattern)
+void DeleteRecurrencePatternStruct(_In_ RecurrencePatternStruct* prpPattern)
 {
 	if (!prpPattern) return;
 	delete[] prpPattern->DeletedInstanceDates;
@@ -890,20 +891,19 @@ void DeleteRecurrencePatternStruct(RecurrencePatternStruct* prpPattern)
 
 // result allocated with new
 // clean up with delete[]
-LPTSTR RecurrencePatternStructToString(RecurrencePatternStruct* prpPattern)
+_Check_return_ LPTSTR RecurrencePatternStructToString(_In_ RecurrencePatternStruct* prpPattern)
 {
 	if (!prpPattern) return NULL;
 
 	CString szRP;
 	CString szTmp;
-	HRESULT hRes = S_OK;
 
 	LPTSTR szRecurFrequency = NULL;
 	LPTSTR szPatternType = NULL;
 	LPTSTR szCalendarType = NULL;
-	EC_H(InterpretFlags(flagRecurFrequency, prpPattern->RecurFrequency, &szRecurFrequency));
-	EC_H(InterpretFlags(flagPatternType, prpPattern->PatternType, &szPatternType));
-	EC_H(InterpretFlags(flagCalendarType, prpPattern->CalendarType, &szCalendarType));
+	InterpretFlags(flagRecurFrequency, prpPattern->RecurFrequency, &szRecurFrequency);
+	InterpretFlags(flagPatternType, prpPattern->PatternType, &szPatternType);
+	InterpretFlags(flagCalendarType, prpPattern->CalendarType, &szCalendarType);
 	szTmp.FormatMessage(IDS_RPHEADER,
 		prpPattern->ReaderVersion,
 		prpPattern->WriterVersion,
@@ -928,7 +928,7 @@ LPTSTR RecurrencePatternStructToString(RecurrencePatternStruct* prpPattern)
 	case rptMinute:
 		break;
 	case rptWeek:
-		EC_H(InterpretFlags(flagDOW, prpPattern->PatternTypeSpecific.WeekRecurrencePattern, &szDOW));
+		InterpretFlags(flagDOW, prpPattern->PatternTypeSpecific.WeekRecurrencePattern, &szDOW);
 		szTmp.FormatMessage(IDS_RPPATTERNWEEK,
 			prpPattern->PatternTypeSpecific.WeekRecurrencePattern,szDOW);
 		szRP += szTmp;
@@ -943,8 +943,8 @@ LPTSTR RecurrencePatternStructToString(RecurrencePatternStruct* prpPattern)
 		break;
 	case rptMonthNth:
 	case rptHjMonthNth:
-		EC_H(InterpretFlags(flagDOW, prpPattern->PatternTypeSpecific.MonthNthRecurrencePattern.DayOfWeek, &szDOW));
-		EC_H(InterpretFlags(flagN, prpPattern->PatternTypeSpecific.MonthNthRecurrencePattern.N, &szN));
+		InterpretFlags(flagDOW, prpPattern->PatternTypeSpecific.MonthNthRecurrencePattern.DayOfWeek, &szDOW);
+		InterpretFlags(flagN, prpPattern->PatternTypeSpecific.MonthNthRecurrencePattern.N, &szN);
 		szTmp.FormatMessage(IDS_RPPATTERNMONTHNTH,
 			prpPattern->PatternTypeSpecific.MonthNthRecurrencePattern.DayOfWeek, szDOW,
 			prpPattern->PatternTypeSpecific.MonthNthRecurrencePattern.N,szN);
@@ -958,8 +958,8 @@ LPTSTR RecurrencePatternStructToString(RecurrencePatternStruct* prpPattern)
 
 	LPTSTR szEndType = NULL;
 	LPTSTR szFirstDOW = NULL;
-	EC_H(InterpretFlags(flagEndType, prpPattern->EndType, &szEndType));
-	EC_H(InterpretFlags(flagFirstDOW, prpPattern->FirstDOW, &szFirstDOW));
+	InterpretFlags(flagEndType, prpPattern->EndType, &szEndType);
+	InterpretFlags(flagFirstDOW, prpPattern->FirstDOW, &szFirstDOW);
 
 	szTmp.FormatMessage(IDS_RPHEADER2,
 		prpPattern->EndType, szEndType,
@@ -1021,7 +1021,7 @@ LPTSTR RecurrencePatternStructToString(RecurrencePatternStruct* prpPattern)
 
 // Allocates return value with new.
 // Clean up with DeleteAppointmentRecurrencePatternStruct.
-AppointmentRecurrencePatternStruct* BinToAppointmentRecurrencePatternStruct(ULONG cbBin, LPBYTE lpBin)
+_Check_return_ AppointmentRecurrencePatternStruct* BinToAppointmentRecurrencePatternStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
 	if (!lpBin) return NULL;
 
@@ -1189,7 +1189,7 @@ AppointmentRecurrencePatternStruct* BinToAppointmentRecurrencePatternStruct(ULON
 	return parpPattern;
 } // BinToAppointmentRecurrencePatternStruct
 
-void DeleteAppointmentRecurrencePatternStruct(AppointmentRecurrencePatternStruct* parpPattern)
+void DeleteAppointmentRecurrencePatternStruct(_In_ AppointmentRecurrencePatternStruct* parpPattern)
 {
 	if (!parpPattern) return;
 	DeleteRecurrencePatternStruct(parpPattern->RecurrencePattern);
@@ -1222,14 +1222,13 @@ void DeleteAppointmentRecurrencePatternStruct(AppointmentRecurrencePatternStruct
 
 // result allocated with new
 // clean up with delete[]
-LPTSTR AppointmentRecurrencePatternStructToString(AppointmentRecurrencePatternStruct* parpPattern)
+_Check_return_ LPTSTR AppointmentRecurrencePatternStructToString(_In_ AppointmentRecurrencePatternStruct* parpPattern)
 {
 	if (!parpPattern) return NULL;
 
 	CString szARP;
 	CString szTmp;
 	LPTSTR szRecurrencePattern = NULL;
-	HRESULT hRes = S_OK;
 
 	szRecurrencePattern = RecurrencePatternStructToString(parpPattern->RecurrencePattern);
 	szTmp.FormatMessage(IDS_ARPHEADER,
@@ -1249,7 +1248,7 @@ LPTSTR AppointmentRecurrencePatternStructToString(AppointmentRecurrencePatternSt
 		{
 			CString szExceptionInfo;
 			LPTSTR szOverrideFlags = NULL;
-			EC_H(InterpretFlags(flagOverrideFlags, parpPattern->ExceptionInfo[i].OverrideFlags, &szOverrideFlags));
+			InterpretFlags(flagOverrideFlags, parpPattern->ExceptionInfo[i].OverrideFlags, &szOverrideFlags);
 			szExceptionInfo.FormatMessage(IDS_ARPEXHEADER,
 				i,parpPattern->ExceptionInfo[i].StartDateTime,RTimeToString(parpPattern->ExceptionInfo[i].StartDateTime),
 				parpPattern->ExceptionInfo[i].EndDateTime,RTimeToString(parpPattern->ExceptionInfo[i].EndDateTime),
@@ -1268,7 +1267,7 @@ LPTSTR AppointmentRecurrencePatternStructToString(AppointmentRecurrencePatternSt
 			if (parpPattern->ExceptionInfo[i].OverrideFlags & ARO_MEETINGTYPE)
 			{
 				LPTSTR szFlags = NULL;
-				EC_H(InterpretFlags(PROP_TAG((guidPSETID_Appointment),dispidApptStateFlags), parpPattern->ExceptionInfo[i].MeetingType, &szFlags));
+				InterpretFlags(PROP_TAG((guidPSETID_Appointment),dispidApptStateFlags), parpPattern->ExceptionInfo[i].MeetingType, &szFlags);
 				szTmp.FormatMessage(IDS_ARPEXMEETINGTYPE,
 					i,parpPattern->ExceptionInfo[i].MeetingType,szFlags);
 				delete[] szFlags;
@@ -1298,7 +1297,7 @@ LPTSTR AppointmentRecurrencePatternStructToString(AppointmentRecurrencePatternSt
 			if (parpPattern->ExceptionInfo[i].OverrideFlags & ARO_BUSYSTATUS)
 			{
 				LPTSTR szFlags = NULL;
-				EC_H(InterpretFlags(PROP_TAG((guidPSETID_Appointment),dispidBusyStatus), parpPattern->ExceptionInfo[i].BusyStatus, &szFlags));
+				InterpretFlags(PROP_TAG((guidPSETID_Appointment),dispidBusyStatus), parpPattern->ExceptionInfo[i].BusyStatus, &szFlags);
 				szTmp.FormatMessage(IDS_ARPEXBUSYSTATUS,
 					i,parpPattern->ExceptionInfo[i].BusyStatus,szFlags);
 				delete[] szFlags;
@@ -1346,7 +1345,7 @@ LPTSTR AppointmentRecurrencePatternStructToString(AppointmentRecurrencePatternSt
 			if (parpPattern->WriterVersion2 >= 0x00003009)
 			{
 				LPTSTR szFlags = NULL;
-				EC_H(InterpretFlags(PROP_TAG((guidPSETID_Appointment),dispidChangeHighlight), parpPattern->ExtendedException[i].ChangeHighlight.ChangeHighlightValue, &szFlags));
+				InterpretFlags(PROP_TAG((guidPSETID_Appointment),dispidChangeHighlight), parpPattern->ExtendedException[i].ChangeHighlight.ChangeHighlightValue, &szFlags);
 				szTmp.FormatMessage(IDS_ARPEXCHANGEHIGHLIGHT,
 					i,parpPattern->ExtendedException[i].ChangeHighlight.ChangeHighlightSize,
 					parpPattern->ExtendedException[i].ChangeHighlight.ChangeHighlightValue,szFlags);
@@ -1375,28 +1374,31 @@ LPTSTR AppointmentRecurrencePatternStructToString(AppointmentRecurrencePatternSt
 				sBin.lpb = parpPattern->ExtendedException[i].ReservedBlockEE1;
 				szExtendedException += BinToHexString(&sBin,true);
 			}
-			if (parpPattern->ExceptionInfo[i].OverrideFlags & ARO_SUBJECT ||
-				parpPattern->ExceptionInfo[i].OverrideFlags & ARO_LOCATION)
+			if (parpPattern->ExceptionInfo)
 			{
-				szTmp.FormatMessage(IDS_ARPEXDATETIME,
-					i,parpPattern->ExtendedException[i].StartDateTime,RTimeToString(parpPattern->ExtendedException[i].StartDateTime),
-					parpPattern->ExtendedException[i].EndDateTime,RTimeToString(parpPattern->ExtendedException[i].EndDateTime),
-					parpPattern->ExtendedException[i].OriginalStartDate,RTimeToString(parpPattern->ExtendedException[i].OriginalStartDate));
-				szExtendedException += szTmp;
-			}
-			if (parpPattern->ExceptionInfo[i].OverrideFlags & ARO_SUBJECT)
-			{
-				szTmp.FormatMessage(IDS_ARPEXWIDESUBJECT,
-					i,parpPattern->ExtendedException[i].WideCharSubjectLength,
-					parpPattern->ExtendedException[i].WideCharSubject?parpPattern->ExtendedException[i].WideCharSubject:L"");
-				szExtendedException += szTmp;
-			}
-			if (parpPattern->ExceptionInfo[i].OverrideFlags & ARO_LOCATION)
-			{
-				szTmp.FormatMessage(IDS_ARPEXWIDELOCATION,
-					i,parpPattern->ExtendedException[i].WideCharLocationLength,
-					parpPattern->ExtendedException[i].WideCharLocation?parpPattern->ExtendedException[i].WideCharLocation:L"");
-				szExtendedException += szTmp;
+				if (parpPattern->ExceptionInfo[i].OverrideFlags & ARO_SUBJECT ||
+					parpPattern->ExceptionInfo[i].OverrideFlags & ARO_LOCATION)
+				{
+					szTmp.FormatMessage(IDS_ARPEXDATETIME,
+						i,parpPattern->ExtendedException[i].StartDateTime,RTimeToString(parpPattern->ExtendedException[i].StartDateTime),
+						parpPattern->ExtendedException[i].EndDateTime,RTimeToString(parpPattern->ExtendedException[i].EndDateTime),
+						parpPattern->ExtendedException[i].OriginalStartDate,RTimeToString(parpPattern->ExtendedException[i].OriginalStartDate));
+					szExtendedException += szTmp;
+				}
+				if (parpPattern->ExceptionInfo[i].OverrideFlags & ARO_SUBJECT)
+				{
+					szTmp.FormatMessage(IDS_ARPEXWIDESUBJECT,
+						i,parpPattern->ExtendedException[i].WideCharSubjectLength,
+						parpPattern->ExtendedException[i].WideCharSubject?parpPattern->ExtendedException[i].WideCharSubject:L"");
+					szExtendedException += szTmp;
+				}
+				if (parpPattern->ExceptionInfo[i].OverrideFlags & ARO_LOCATION)
+				{
+					szTmp.FormatMessage(IDS_ARPEXWIDELOCATION,
+						i,parpPattern->ExtendedException[i].WideCharLocationLength,
+						parpPattern->ExtendedException[i].WideCharLocation?parpPattern->ExtendedException[i].WideCharLocation:L"");
+					szExtendedException += szTmp;
+				}
 			}
 			szTmp.FormatMessage(IDS_ARPEXRESERVED1,
 				i,parpPattern->ExtendedException[i].ReservedBlockEE2Size);
@@ -1437,7 +1439,7 @@ LPTSTR AppointmentRecurrencePatternStructToString(AppointmentRecurrencePatternSt
 // SDBin
 //////////////////////////////////////////////////////////////////////////
 
-void SDBinToString(SBinary myBin, LPMAPIPROP lpMAPIProp, ULONG ulPropTag, LPTSTR* lpszResultString)
+void SDBinToString(SBinary myBin, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_z_ LPTSTR* lpszResultString)
 {
 	if (!lpszResultString) return;
 	HRESULT hRes = S_OK;
@@ -1466,7 +1468,7 @@ void SDBinToString(SBinary myBin, LPMAPIPROP lpMAPIProp, ULONG ulPropTag, LPTSTR
 		EC_H(SDToString(lpSDToParse, acetype, &szDACL, &szInfo));
 
 		LPTSTR szFlags = NULL;
-		EC_H(InterpretFlags(flagSecurityVersion, SECURITY_DESCRIPTOR_VERSION(lpSDToParse), &szFlags));
+		InterpretFlags(flagSecurityVersion, SECURITY_DESCRIPTOR_VERSION(lpSDToParse), &szFlags);
 
 		CString szResult;
 		szResult.FormatMessage(IDS_SECURITYDESCRIPTORHEADER);
@@ -1494,7 +1496,7 @@ void SDBinToString(SBinary myBin, LPMAPIPROP lpMAPIProp, ULONG ulPropTag, LPTSTR
 // There may be extended flag streams with over 500 extended flags, but we're not going to try to parse them
 #define _MaxExtendedFlags 500
 
-ExtendedFlagsStruct* BinToExtendedFlagsStruct(ULONG cbBin, LPBYTE lpBin)
+_Check_return_ ExtendedFlagsStruct* BinToExtendedFlagsStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
 	if (!lpBin) return NULL;
 
@@ -1596,7 +1598,7 @@ ExtendedFlagsStruct* BinToExtendedFlagsStruct(ULONG cbBin, LPBYTE lpBin)
 	return pefExtendedFlags;
 } // BinToExtendedFlagsStruct
 
-void DeleteExtendedFlagsStruct(ExtendedFlagsStruct* pefExtendedFlags)
+void DeleteExtendedFlagsStruct(_In_ ExtendedFlagsStruct* pefExtendedFlags)
 {
 	if (!pefExtendedFlags) return;
 	ULONG i = 0;
@@ -1613,7 +1615,7 @@ void DeleteExtendedFlagsStruct(ExtendedFlagsStruct* pefExtendedFlags)
 } // DeleteExtendedFlagsStruct
 
 // result allocated with new, clean up with delete[]
-LPTSTR ExtendedFlagsStructToString(ExtendedFlagsStruct* pefExtendedFlags)
+_Check_return_ LPTSTR ExtendedFlagsStructToString(_In_ ExtendedFlagsStruct* pefExtendedFlags)
 {
 	if (!pefExtendedFlags) return NULL;
 
@@ -1688,7 +1690,7 @@ LPTSTR ExtendedFlagsStructToString(ExtendedFlagsStruct* pefExtendedFlags)
 //////////////////////////////////////////////////////////////////////////
 
 // Allocates return value with new. Clean up with DeleteTimeZoneStruct.
-TimeZoneStruct* BinToTimeZoneStruct(ULONG cbBin, LPBYTE lpBin)
+_Check_return_ TimeZoneStruct* BinToTimeZoneStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
 	if (!lpBin) return NULL;
 
@@ -1733,7 +1735,7 @@ TimeZoneStruct* BinToTimeZoneStruct(ULONG cbBin, LPBYTE lpBin)
 	return ptzTimeZone;
 } // BinToTimeZoneStruct
 
-void DeleteTimeZoneStruct(TimeZoneStruct* ptzTimeZone)
+void DeleteTimeZoneStruct(_In_ TimeZoneStruct* ptzTimeZone)
 {
 	if (!ptzTimeZone) return;
 	delete[] ptzTimeZone->JunkData;
@@ -1741,7 +1743,7 @@ void DeleteTimeZoneStruct(TimeZoneStruct* ptzTimeZone)
 } // DeleteTimeZoneStruct
 
 // result allocated with new, clean up with delete[]
-LPTSTR TimeZoneStructToString(TimeZoneStruct* ptzTimeZone)
+_Check_return_ LPTSTR TimeZoneStructToString(_In_ TimeZoneStruct* ptzTimeZone)
 {
 	if (!ptzTimeZone) return NULL;
 
@@ -1784,7 +1786,7 @@ LPTSTR TimeZoneStructToString(TimeZoneStruct* ptzTimeZone)
 //////////////////////////////////////////////////////////////////////////
 
 // Allocates return value with new. Clean up with DeleteTimeZoneDefinitionStruct.
-TimeZoneDefinitionStruct* BinToTimeZoneDefinitionStruct(ULONG cbBin, LPBYTE lpBin)
+_Check_return_ TimeZoneDefinitionStruct* BinToTimeZoneDefinitionStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
 	if (!lpBin) return NULL;
 
@@ -1852,7 +1854,7 @@ TimeZoneDefinitionStruct* BinToTimeZoneDefinitionStruct(ULONG cbBin, LPBYTE lpBi
 	return ptzdTimeZoneDefinition;
 } // BinToTimeZoneDefinitionStruct
 
-void DeleteTimeZoneDefinitionStruct(TimeZoneDefinitionStruct* ptzdTimeZoneDefinition)
+void DeleteTimeZoneDefinitionStruct(_In_ TimeZoneDefinitionStruct* ptzdTimeZoneDefinition)
 {
 	if (!ptzdTimeZoneDefinition) return;
 	delete[] ptzdTimeZoneDefinition->szKeyName;
@@ -1862,13 +1864,12 @@ void DeleteTimeZoneDefinitionStruct(TimeZoneDefinitionStruct* ptzdTimeZoneDefini
 } // DeleteTimeZoneDefinitionStruct
 
 // result allocated with new, clean up with delete[]
-LPTSTR TimeZoneDefinitionStructToString(TimeZoneDefinitionStruct* ptzdTimeZoneDefinition)
+_Check_return_ LPTSTR TimeZoneDefinitionStructToString(_In_ TimeZoneDefinitionStruct* ptzdTimeZoneDefinition)
 {
 	if (!ptzdTimeZoneDefinition) return NULL;
 
 	CString szTimeZoneDefinition;
 	CString szTmp;
-	HRESULT hRes = S_OK;
 
 	szTimeZoneDefinition.FormatMessage(IDS_TIMEZONEDEFINITION,
 		ptzdTimeZoneDefinition->bMajorVersion,
@@ -1888,7 +1889,7 @@ LPTSTR TimeZoneDefinitionStructToString(TimeZoneDefinitionStruct* ptzdTimeZoneDe
 		for (i = 0;i<ptzdTimeZoneDefinition->cRules;i++)
 		{
 			LPTSTR szFlags = NULL;
-			EC_H(InterpretFlags(flagTZRule, ptzdTimeZoneDefinition->lpTZRule[i].wTZRuleFlags, &szFlags));
+			InterpretFlags(flagTZRule, ptzdTimeZoneDefinition->lpTZRule[i].wTZRuleFlags, &szFlags);
 			szTZRule.FormatMessage(IDS_TZRULEHEADER,
 				i,
 				ptzdTimeZoneDefinition->lpTZRule[i].bMajorVersion,
@@ -1946,7 +1947,7 @@ LPTSTR TimeZoneDefinitionStructToString(TimeZoneDefinitionStruct* ptzdTimeZoneDe
 //////////////////////////////////////////////////////////////////////////
 
 // Allocates return value with new. Clean up with DeleteReportTagStruct.
-ReportTagStruct* BinToReportTagStruct(ULONG cbBin, LPBYTE lpBin)
+_Check_return_ ReportTagStruct* BinToReportTagStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
 	if (!lpBin) return NULL;
 
@@ -2009,7 +2010,7 @@ ReportTagStruct* BinToReportTagStruct(ULONG cbBin, LPBYTE lpBin)
 	return prtReportTag;
 } // BinToReportTagStruct
 
-void DeleteReportTagStruct(ReportTagStruct* prtReportTag)
+void DeleteReportTagStruct(_In_ ReportTagStruct* prtReportTag)
 {
 	if (!prtReportTag) return;
 	delete[] prtReportTag->lpStoreEntryID;
@@ -2023,13 +2024,12 @@ void DeleteReportTagStruct(ReportTagStruct* prtReportTag)
 } // DeleteReportTagStruct
 
 // result allocated with new, clean up with delete[]
-LPTSTR ReportTagStructToString(ReportTagStruct* prtReportTag)
+_Check_return_ LPTSTR ReportTagStructToString(_In_ ReportTagStruct* prtReportTag)
 {
 	if (!prtReportTag) return NULL;
 
 	CString szReportTag;
 	CString szTmp;
-	HRESULT hRes = S_OK;
 
 	szReportTag.FormatMessage(IDS_REPORTTAGHEADER);
 
@@ -2039,7 +2039,7 @@ LPTSTR ReportTagStructToString(ReportTagStruct* prtReportTag)
 	szReportTag += BinToHexString(&sBin,true);
 
 	LPTSTR szFlags = NULL;
-	EC_H(InterpretFlags(flagReportTagVersion, prtReportTag->Version, &szFlags));
+	InterpretFlags(flagReportTagVersion, prtReportTag->Version, &szFlags);
 	szTmp.FormatMessage(IDS_REPORTTAGVERSION,
 		prtReportTag->Version,
 		szFlags);
@@ -2117,7 +2117,7 @@ LPTSTR ReportTagStructToString(ReportTagStruct* prtReportTag)
 #define _MaxResponseLevels 500
 
 // Allocates return value with new. Clean up with DeleteConversationIndexStruct.
-ConversationIndexStruct* BinToConversationIndexStruct(ULONG cbBin, LPBYTE lpBin)
+_Check_return_ ConversationIndexStruct* BinToConversationIndexStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
 	if (!lpBin) return NULL;
 
@@ -2195,7 +2195,7 @@ ConversationIndexStruct* BinToConversationIndexStruct(ULONG cbBin, LPBYTE lpBin)
 	return pciConversationIndex;
 } // BinToConversationIndexStruct
 
-void DeleteConversationIndexStruct(ConversationIndexStruct* pciConversationIndex)
+void DeleteConversationIndexStruct(_In_ ConversationIndexStruct* pciConversationIndex)
 {
 	if (!pciConversationIndex) return;
 	delete[] pciConversationIndex->lpResponseLevels;
@@ -2204,7 +2204,7 @@ void DeleteConversationIndexStruct(ConversationIndexStruct* pciConversationIndex
 } // DeleteConversationIndexStruct
 
 // result allocated with new, clean up with delete[]
-LPTSTR ConversationIndexStructToString(ConversationIndexStruct* pciConversationIndex)
+_Check_return_ LPTSTR ConversationIndexStructToString(_In_ ConversationIndexStruct* pciConversationIndex)
 {
 	if (!pciConversationIndex) return NULL;
 
@@ -2254,7 +2254,7 @@ LPTSTR ConversationIndexStructToString(ConversationIndexStruct* pciConversationI
 #define _MaxTaskAssigners 500
 
 // Allocates return value with new. Clean up with DeleteTaskAssignersStruct.
-TaskAssignersStruct* BinToTaskAssignersStruct(ULONG cbBin, LPBYTE lpBin)
+_Check_return_ TaskAssignersStruct* BinToTaskAssignersStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
 	if (!lpBin) return NULL;
 
@@ -2310,7 +2310,7 @@ TaskAssignersStruct* BinToTaskAssignersStruct(ULONG cbBin, LPBYTE lpBin)
 	return ptaTaskAssigners;
 } // BinToTaskAssignersStruct
 
-void DeleteTaskAssignersStruct(TaskAssignersStruct* ptaTaskAssigners)
+void DeleteTaskAssignersStruct(_In_ TaskAssignersStruct* ptaTaskAssigners)
 {
 	if (!ptaTaskAssigners) return;
 	DWORD i = 0;
@@ -2330,7 +2330,7 @@ void DeleteTaskAssignersStruct(TaskAssignersStruct* ptaTaskAssigners)
 } // DeleteTaskAssignersStruct
 
 // result allocated with new, clean up with delete[]
-LPTSTR TaskAssignersStructToString(TaskAssignersStruct* ptaTaskAssigners)
+_Check_return_ LPTSTR TaskAssignersStructToString(_In_ TaskAssignersStruct* ptaTaskAssigners)
 {
 	if (!ptaTaskAssigners) return NULL;
 
@@ -2388,7 +2388,7 @@ LPTSTR TaskAssignersStructToString(TaskAssignersStruct* ptaTaskAssigners)
 //////////////////////////////////////////////////////////////////////////
 
 // Allocates return value with new. Clean up with DeleteGlobalObjectIdStruct.
-GlobalObjectIdStruct* BinToGlobalObjectIdStruct(ULONG cbBin, LPBYTE lpBin)
+_Check_return_ GlobalObjectIdStruct* BinToGlobalObjectIdStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
 	if (!lpBin) return NULL;
 
@@ -2424,7 +2424,7 @@ GlobalObjectIdStruct* BinToGlobalObjectIdStruct(ULONG cbBin, LPBYTE lpBin)
 	return pgoidGlobalObjectId;
 } // BinToGlobalObjectIdStruct
 
-void DeleteGlobalObjectIdStruct(GlobalObjectIdStruct* pgoidGlobalObjectId)
+void DeleteGlobalObjectIdStruct(_In_ GlobalObjectIdStruct* pgoidGlobalObjectId)
 {
 	if (!pgoidGlobalObjectId) return;
 	delete[] pgoidGlobalObjectId->lpData;
@@ -2433,13 +2433,12 @@ void DeleteGlobalObjectIdStruct(GlobalObjectIdStruct* pgoidGlobalObjectId)
 } // DeleteGlobalObjectIdStruct
 
 // result allocated with new, clean up with delete[]
-LPTSTR GlobalObjectIdStructToString(GlobalObjectIdStruct* pgoidGlobalObjectId)
+_Check_return_ LPTSTR GlobalObjectIdStructToString(_In_ GlobalObjectIdStruct* pgoidGlobalObjectId)
 {
 	if (!pgoidGlobalObjectId) return NULL;
 
 	CString szGlobalObjectId;
 	CString szTmp;
-	HRESULT hRes = S_OK;
 
 	szGlobalObjectId.FormatMessage(IDS_GLOBALOBJECTIDHEADER);
 
@@ -2449,7 +2448,7 @@ LPTSTR GlobalObjectIdStructToString(GlobalObjectIdStruct* pgoidGlobalObjectId)
 	szGlobalObjectId += BinToHexString(&sBin,true);
 
 	LPTSTR szFlags = NULL;
-	EC_H(InterpretFlags(flagGlobalObjectIdMonth, pgoidGlobalObjectId->Month, &szFlags));
+	InterpretFlags(flagGlobalObjectIdMonth, pgoidGlobalObjectId->Month, &szFlags);
 
 	CString PropString;
 	FileTimeToString(&pgoidGlobalObjectId->CreationTime,&PropString,NULL);
@@ -2488,7 +2487,7 @@ LPTSTR GlobalObjectIdStructToString(GlobalObjectIdStruct* pgoidGlobalObjectId)
 
 // Fills out lpEID based on the passed in entry ID type
 // lpcbBytesRead returns the number of bytes consumed
-void BinToTypedEntryIdStruct(EIDStructType ulType, ULONG cbBin, LPBYTE lpBin, EntryIdStruct* lpEID, size_t* lpcbBytesRead)
+void BinToTypedEntryIdStruct(EIDStructType ulType, ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, _Out_ EntryIdStruct* lpEID, _Out_ size_t* lpcbBytesRead)
 {
 	if (!lpBin || !lpEID) return;
 	if (lpcbBytesRead) *lpcbBytesRead = NULL;
@@ -2579,7 +2578,12 @@ void BinToTypedEntryIdStruct(EIDStructType ulType, ULONG cbBin, LPBYTE lpBin, En
 
 			// We only know how to parse emsmdb.dll's wrapped entry IDs
 			if (lpEID->ProviderData.MessageDatabaseObject.DLLFileName &&
-				0 == lstrcmpiA(lpEID->ProviderData.MessageDatabaseObject.DLLFileName,"emsmdb.dll")) // STRING_OK
+				CSTR_EQUAL == CompareStringA(LOCALE_INVARIANT,
+				NORM_IGNORECASE,
+				lpEID->ProviderData.MessageDatabaseObject.DLLFileName,
+				-1,
+				"emsmdb.dll", // STRING_OK
+				-1))
 			{
 				lpEID->ProviderData.MessageDatabaseObject.bIsExchange = true;
 				size_t cbRead = Parser.GetCurrentOffset();
@@ -2629,14 +2633,14 @@ void BinToTypedEntryIdStruct(EIDStructType ulType, ULONG cbBin, LPBYTE lpBin, En
 	if (lpcbBytesRead) *lpcbBytesRead = Parser.GetCurrentOffset();
 } // BinToTypedEntryIdStruct
 
-EntryIdStruct* BinToEntryIdStruct(ULONG cbBin, LPBYTE lpBin)
+_Check_return_ EntryIdStruct* BinToEntryIdStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
 	return BinToEntryIdStructWithSize(cbBin,lpBin,NULL);
 } // BinToEntryIdStruct
 
 // Allocates return value with new. Clean up with DeleteEntryIdStruct.
 // lpcbBytesRead returns the number of bytes consumed
-EntryIdStruct* BinToEntryIdStructWithSize(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead)
+_Check_return_ EntryIdStruct* BinToEntryIdStructWithSize(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, _Out_opt_ size_t* lpcbBytesRead)
 {
 	if (!lpBin) return NULL;
 	if (lpcbBytesRead) *lpcbBytesRead = NULL;
@@ -2723,7 +2727,7 @@ EntryIdStruct* BinToEntryIdStructWithSize(ULONG cbBin, LPBYTE lpBin, size_t* lpc
 	return peidEntryId;
 } // BinToEntryIdStructWithSize
 
-void DeleteEntryIdStruct(EntryIdStruct* peidEntryId)
+void DeleteEntryIdStruct(_In_ EntryIdStruct* peidEntryId)
 {
 	if (!peidEntryId) return;
 
@@ -2763,13 +2767,12 @@ void DeleteEntryIdStruct(EntryIdStruct* peidEntryId)
 } // DeleteEntryIdStruct
 
 // result allocated with new, clean up with delete[]
-LPTSTR EntryIdStructToString(EntryIdStruct* peidEntryId)
+_Check_return_ LPTSTR EntryIdStructToString(_In_ EntryIdStruct* peidEntryId)
 {
 	if (!peidEntryId) return NULL;
 
 	CString szEntryId;
 	CString szTmp;
-	HRESULT hRes = S_OK;
 
 	switch (peidEntryId->ObjectType)
 	{
@@ -2809,7 +2812,7 @@ LPTSTR EntryIdStructToString(EntryIdStruct* peidEntryId)
 	else if (0 == (peidEntryId->abFlags[1] | peidEntryId->abFlags[2] | peidEntryId->abFlags[3]))
 	{
 		LPTSTR szFlags0 = NULL;
-		EC_H(InterpretFlags(flagEntryId0, peidEntryId->abFlags[0], &szFlags0));
+		InterpretFlags(flagEntryId0, peidEntryId->abFlags[0], &szFlags0);
 		szTmp.FormatMessage(IDS_ENTRYIDHEADER2,
 			peidEntryId->abFlags[0],szFlags0);
 		delete[] szFlags0;
@@ -2819,8 +2822,8 @@ LPTSTR EntryIdStructToString(EntryIdStruct* peidEntryId)
 	{
 		LPTSTR szFlags0 = NULL;
 		LPTSTR szFlags1 = NULL;
-		EC_H(InterpretFlags(flagEntryId0, peidEntryId->abFlags[0], &szFlags0));
-		EC_H(InterpretFlags(flagEntryId1, peidEntryId->abFlags[1], &szFlags1));
+		InterpretFlags(flagEntryId0, peidEntryId->abFlags[0], &szFlags0);
+		InterpretFlags(flagEntryId1, peidEntryId->abFlags[1], &szFlags1);
 		szTmp.FormatMessage(IDS_ENTRYIDHEADER3,
 			peidEntryId->abFlags[0],szFlags0,
 			peidEntryId->abFlags[1],szFlags1,
@@ -2844,7 +2847,7 @@ LPTSTR EntryIdStructToString(EntryIdStruct* peidEntryId)
 	if (eidtOneOff == peidEntryId->ObjectType)
 	{
 		LPTSTR szFlags = NULL;
-		EC_H(InterpretFlags(flagOneOffEntryId, peidEntryId->ProviderData.OneOffRecipientObject.Bitmask, &szFlags));
+		InterpretFlags(flagOneOffEntryId, peidEntryId->ProviderData.OneOffRecipientObject.Bitmask, &szFlags);
 
 		if (MAPI_UNICODE & peidEntryId->ProviderData.OneOffRecipientObject.Bitmask)
 		{
@@ -2869,9 +2872,9 @@ LPTSTR EntryIdStructToString(EntryIdStruct* peidEntryId)
 	else if (eidtAddressBook == peidEntryId->ObjectType)
 	{
 		LPTSTR szVersion = NULL;
-		EC_H(InterpretFlags(flagExchangeABVersion, peidEntryId->ProviderData.AddressBookObject.Version, &szVersion));
+		InterpretFlags(flagExchangeABVersion, peidEntryId->ProviderData.AddressBookObject.Version, &szVersion);
 		LPTSTR szType = NULL;
-		EC_H(InterpretFlags(PROP_ID(PR_DISPLAY_TYPE), peidEntryId->ProviderData.AddressBookObject.Type, &szType));
+		InterpretFlags(PROP_ID(PR_DISPLAY_TYPE), peidEntryId->ProviderData.AddressBookObject.Type, &szType);
 
 		szTmp.FormatMessage(IDS_ENTRYIDEXCHANGEADDRESSDATA,
 			peidEntryId->ProviderData.AddressBookObject.Version, szVersion,
@@ -2888,11 +2891,11 @@ LPTSTR EntryIdStructToString(EntryIdStruct* peidEntryId)
 	else if (eidtContact == peidEntryId->ObjectType)
 	{
 		LPTSTR szVersion = NULL;
-		EC_H(InterpretFlags(flagContabVersion, peidEntryId->ProviderData.ContactAddressBookObject.Version, &szVersion));
+		InterpretFlags(flagContabVersion, peidEntryId->ProviderData.ContactAddressBookObject.Version, &szVersion);
 		LPTSTR szType = NULL;
-		EC_H(InterpretFlags(flagContabType, peidEntryId->ProviderData.ContactAddressBookObject.Type, &szType));
+		InterpretFlags(flagContabType, peidEntryId->ProviderData.ContactAddressBookObject.Type, &szType);
 		LPTSTR szIndex = NULL;
-		EC_H(InterpretFlags(flagContabIndex, peidEntryId->ProviderData.ContactAddressBookObject.Index, &szIndex));
+		InterpretFlags(flagContabIndex, peidEntryId->ProviderData.ContactAddressBookObject.Index, &szIndex);
 
 		szTmp.FormatMessage(IDS_ENTRYIDCONTACTADDRESSDATA,
 			peidEntryId->ProviderData.ContactAddressBookObject.Version,szVersion,
@@ -2915,7 +2918,7 @@ LPTSTR EntryIdStructToString(EntryIdStruct* peidEntryId)
 	else if (eidtWAB == peidEntryId->ObjectType)
 	{
 		LPTSTR szType = NULL;
-		EC_H(InterpretFlags(flagWABEntryIDType, peidEntryId->ProviderData.WAB.Type, &szType));
+		InterpretFlags(flagWABEntryIDType, peidEntryId->ProviderData.WAB.Type, &szType);
 
 		szTmp.FormatMessage(IDS_ENTRYIDWRAPPEDENTRYIDDATA, peidEntryId->ProviderData.WAB.Type, szType);
 		szEntryId += szTmp;
@@ -2927,13 +2930,13 @@ LPTSTR EntryIdStructToString(EntryIdStruct* peidEntryId)
 	else if (eidtMessageDatabase == peidEntryId->ObjectType)
 	{
 		LPTSTR szVersion = NULL;
-		EC_H(InterpretFlags(flagMDBVersion, peidEntryId->ProviderData.MessageDatabaseObject.Version, &szVersion));
+		InterpretFlags(flagMDBVersion, peidEntryId->ProviderData.MessageDatabaseObject.Version, &szVersion);
 
 		LPTSTR szFlag = NULL;
-		EC_H(InterpretFlags(flagMDBFlag, peidEntryId->ProviderData.MessageDatabaseObject.Flag, &szFlag));
+		InterpretFlags(flagMDBFlag, peidEntryId->ProviderData.MessageDatabaseObject.Flag, &szFlag);
 
 		LPTSTR szWrappedType = NULL;
-		EC_H(InterpretFlags(PROP_ID(PR_PROFILE_OPEN_FLAGS), peidEntryId->ProviderData.MessageDatabaseObject.WrappedType, &szWrappedType));
+		InterpretFlags(PROP_ID(PR_PROFILE_OPEN_FLAGS), peidEntryId->ProviderData.MessageDatabaseObject.WrappedType, &szWrappedType);
 
 		szTmp.FormatMessage(IDS_ENTRYIDMAPIMESSAGESTOREDATA,
 			peidEntryId->ProviderData.MessageDatabaseObject.Version, szVersion,
@@ -2967,7 +2970,7 @@ LPTSTR EntryIdStructToString(EntryIdStruct* peidEntryId)
 	else if (eidtFolder == peidEntryId->ObjectType)
 	{
 		LPTSTR szType = NULL;
-		EC_H(InterpretFlags(flagMessageDatabaseObjectType, peidEntryId->ProviderData.FolderOrMessage.Type, &szType));
+		InterpretFlags(flagMessageDatabaseObjectType, peidEntryId->ProviderData.FolderOrMessage.Type, &szType);
 
 		LPTSTR szDatabaseGUID = GUIDToStringAndName((LPGUID) &peidEntryId->ProviderData.FolderOrMessage.Data.FolderObject.DatabaseGUID);
 
@@ -2997,7 +3000,7 @@ LPTSTR EntryIdStructToString(EntryIdStruct* peidEntryId)
 	else if (eidtMessage == peidEntryId->ObjectType)
 	{
 		LPTSTR szType = NULL;
-		EC_H(InterpretFlags(flagMessageDatabaseObjectType, peidEntryId->ProviderData.FolderOrMessage.Type, &szType));
+		InterpretFlags(flagMessageDatabaseObjectType, peidEntryId->ProviderData.FolderOrMessage.Type, &szType);
 
 		LPTSTR szFolderDatabaseGUID = GUIDToStringAndName((LPGUID) &peidEntryId->ProviderData.FolderOrMessage.Data.MessageObject.FolderDatabaseGUID);
 
@@ -3062,7 +3065,7 @@ LPTSTR EntryIdStructToString(EntryIdStruct* peidEntryId)
 //////////////////////////////////////////////////////////////////////////
 
 // Allocates return value with new. Clean up with DeletePropertyStruct.
-PropertyStruct* BinToPropertyStruct(ULONG cbBin, LPBYTE lpBin, DWORD dwPropCount)
+_Check_return_ PropertyStruct* BinToPropertyStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, DWORD dwPropCount)
 {
 	if (!lpBin) return NULL;
 	CBinaryParser Parser(cbBin,lpBin);
@@ -3081,13 +3084,13 @@ PropertyStruct* BinToPropertyStruct(ULONG cbBin, LPBYTE lpBin, DWORD dwPropCount
 			&cbBytesRead,
 			false);
 		Parser.Advance(cbBytesRead);
-	}
 
-	// Junk data remains
-	if (Parser.RemainingBytes() > 0)
-	{
-		ppProperty->JunkDataSize = Parser.RemainingBytes();
-		Parser.GetBYTES(ppProperty->JunkDataSize,&ppProperty->JunkData);
+		// Junk data remains
+		if (Parser.RemainingBytes() > 0)
+		{
+			ppProperty->JunkDataSize = Parser.RemainingBytes();
+			Parser.GetBYTES(ppProperty->JunkDataSize,&ppProperty->JunkData);
+		}
 	}
 
 	return ppProperty;
@@ -3097,7 +3100,7 @@ PropertyStruct* BinToPropertyStruct(ULONG cbBin, LPBYTE lpBin, DWORD dwPropCount
 #define _MaxProperties 500
 
 // Caller allocates with new. Clean up with DeleteSPropVal.
-LPSPropValue BinToSPropValue(ULONG cbBin, LPBYTE lpBin, DWORD dwPropCount, size_t* lpcbBytesRead, BOOL bStringPropsExcludeLength)
+_Check_return_ LPSPropValue BinToSPropValue(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, DWORD dwPropCount, _Out_ size_t* lpcbBytesRead, BOOL bStringPropsExcludeLength)
 {
 	if (!lpBin) return NULL;
 	if (lpcbBytesRead) *lpcbBytesRead = NULL;
@@ -3204,9 +3207,9 @@ LPSPropValue BinToSPropValue(ULONG cbBin, LPBYTE lpBin, DWORD dwPropCount, size_
 
 	if (lpcbBytesRead) *lpcbBytesRead = Parser.GetCurrentOffset();
 	return pspvProperty;
-}
+} // BinToSPropValue
 
-void DeleteSPropVal(ULONG cVal, LPSPropValue lpsPropVal)
+void DeleteSPropVal(ULONG cVal, _In_count_(cVal) LPSPropValue lpsPropVal)
 {
 	if (!lpsPropVal) return;
 	DWORD i = 0;
@@ -3240,9 +3243,9 @@ void DeleteSPropVal(ULONG cVal, LPSPropValue lpsPropVal)
 			break;
 		}
 	}
-}
+} // DeleteSPropVal
 
-void DeletePropertyStruct(PropertyStruct* ppProperty)
+void DeletePropertyStruct(_In_ PropertyStruct* ppProperty)
 {
 	if (!ppProperty) return;
 
@@ -3254,7 +3257,7 @@ void DeletePropertyStruct(PropertyStruct* ppProperty)
 } // DeletePropertyStruct
 
 // result allocated with new, clean up with delete[]
-LPTSTR PropertyStructToString(PropertyStruct* ppProperty)
+_Check_return_ LPTSTR PropertyStructToString(_In_ PropertyStruct* ppProperty)
 {
 	if (!ppProperty) return NULL;
 
@@ -3348,13 +3351,13 @@ LPTSTR PropertyStructToString(PropertyStruct* ppProperty)
 // RestrictionStruct
 //////////////////////////////////////////////////////////////////////////
 
-RestrictionStruct* BinToRestrictionStruct(ULONG cbBin, LPBYTE lpBin)
+RestrictionStruct* BinToRestrictionStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
 	return BinToRestrictionStructWithSize(cbBin,lpBin,NULL);
 } // BinToRestrictionStruct
 
 // Allocates return value with new. Clean up with DeleteRestrictionStruct.
-RestrictionStruct* BinToRestrictionStructWithSize(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead)
+RestrictionStruct* BinToRestrictionStructWithSize(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, _Out_opt_ size_t* lpcbBytesRead)
 {
 	if (!lpBin) return NULL;
 	if (lpcbBytesRead) *lpcbBytesRead = NULL;
@@ -3381,15 +3384,15 @@ RestrictionStruct* BinToRestrictionStructWithSize(ULONG cbBin, LPBYTE lpBin, siz
 				true);
 			Parser.Advance(cbBytesRead);
 		}
-	}
 
-	// Junk data remains
-	// Only fill out junk data if we've not been asked to report back how many bytes we read
-	// If we've been asked to report back, then someone else will handle the remaining data
-	if (!lpcbBytesRead && Parser.RemainingBytes() > 0)
-	{
-		prRestriction->JunkDataSize = Parser.RemainingBytes();
-		Parser.GetBYTES(prRestriction->JunkDataSize,&prRestriction->JunkData);
+		// Junk data remains
+		// Only fill out junk data if we've not been asked to report back how many bytes we read
+		// If we've been asked to report back, then someone else will handle the remaining data
+		if (!lpcbBytesRead && Parser.RemainingBytes() > 0)
+		{
+			prRestriction->JunkDataSize = Parser.RemainingBytes();
+			Parser.GetBYTES(prRestriction->JunkDataSize,&prRestriction->JunkData);
+		}
 	}
 	if (lpcbBytesRead) *lpcbBytesRead = Parser.GetCurrentOffset();
 
@@ -3405,7 +3408,7 @@ RestrictionStruct* BinToRestrictionStructWithSize(ULONG cbBin, LPBYTE lpBin, siz
 // If bRuleCondition is true, bExtendedCount controls whether the count fields in AND/OR restrictions is 16 or 32 bits
 // If bRuleCondition is false, parse restrictions defined in [MS-OXOCFG] 2.2.4.1.2
 // If bRuleCondition is false, ignore bExtendedCount (assumes true)
-void BinToRestriction(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead, LPSRestriction psrRestriction, BOOL bRuleCondition, BOOL bExtendedCount)
+void BinToRestriction(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, _Out_ size_t* lpcbBytesRead, _In_ LPSRestriction psrRestriction, BOOL bRuleCondition, BOOL bExtendedCount)
 {
 	if (!lpBin) return;
 	if (lpcbBytesRead) *lpcbBytesRead = NULL;
@@ -3610,7 +3613,7 @@ void BinToRestriction(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead, LPSRestr
 	if (lpcbBytesRead) *lpcbBytesRead = Parser.GetCurrentOffset();
 } // BinToRestriction
 
-void DeleteRestriction(LPSRestriction lpRes)
+void DeleteRestriction(_In_ LPSRestriction lpRes)
 {
 	if (!lpRes) return;
 
@@ -3659,7 +3662,7 @@ void DeleteRestriction(LPSRestriction lpRes)
 } // DeleteRestriction
 
 // Neuters the Restriction struct - caller must use delete to delete the struct itself
-void DeleteRestrictionStruct(RestrictionStruct* prRestriction)
+void DeleteRestrictionStruct(_In_ RestrictionStruct* prRestriction)
 {
 	if (!prRestriction) return;
 
@@ -3670,7 +3673,7 @@ void DeleteRestrictionStruct(RestrictionStruct* prRestriction)
 } // DeleteRestrictionStruct
 
 // result allocated with new, clean up with delete[]
-LPTSTR RestrictionStructToString(RestrictionStruct* prRestriction)
+_Check_return_ LPTSTR RestrictionStructToString(_In_ RestrictionStruct* prRestriction)
 {
 	if (!prRestriction) return NULL;
 
@@ -3695,7 +3698,7 @@ LPTSTR RestrictionStructToString(RestrictionStruct* prRestriction)
 
 // Rule Condition - these are used in Rules messages
 // bExtended indicates an Extended Rules Message
-void RuleConditionToString(SBinary myBin, LPTSTR* lpszResultString, BOOL bExtended)
+void RuleConditionToString(SBinary myBin, _Deref_out_opt_z_ LPTSTR* lpszResultString, BOOL bExtended)
 {
 	if (!lpszResultString) return;
 	*lpszResultString = NULL;
@@ -3713,7 +3716,7 @@ void RuleConditionToString(SBinary myBin, LPTSTR* lpszResultString, BOOL bExtend
 #define _MaxNamedProps 1000
 
 // Allocates return value with new. Clean up with DeleteRuleConditionStruct.
-RuleConditionStruct* BinToRuleConditionStruct(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead, BOOL bExtended)
+_Check_return_ RuleConditionStruct* BinToRuleConditionStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, _Out_opt_ size_t* lpcbBytesRead, BOOL bExtended)
 {
 	if (!lpBin) return NULL;
 	if (lpcbBytesRead) *lpcbBytesRead = NULL;
@@ -3778,22 +3781,22 @@ RuleConditionStruct* BinToRuleConditionStruct(ULONG cbBin, LPBYTE lpBin, size_t*
 				bExtended);
 			Parser.Advance(cbBytesRead);
 		}
-	}
 
-	// Junk data remains
-	// Only fill out junk data if we've not been asked to report back how many bytes we read
-	// If we've been asked to report back, then someone else will handle the remaining data
-	if (!lpcbBytesRead && Parser.RemainingBytes() > 0)
-	{
-		prcRuleCondition->JunkDataSize = Parser.RemainingBytes();
-		Parser.GetBYTES(prcRuleCondition->JunkDataSize,&prcRuleCondition->JunkData);
+		// Junk data remains
+		// Only fill out junk data if we've not been asked to report back how many bytes we read
+		// If we've been asked to report back, then someone else will handle the remaining data
+		if (!lpcbBytesRead && Parser.RemainingBytes() > 0)
+		{
+			prcRuleCondition->JunkDataSize = Parser.RemainingBytes();
+			Parser.GetBYTES(prcRuleCondition->JunkDataSize,&prcRuleCondition->JunkData);
+		}
 	}
 	if (lpcbBytesRead) *lpcbBytesRead = Parser.GetCurrentOffset();
 
 	return prcRuleCondition;
 } // BinToRuleConditionStruct
 
-void DeleteRuleConditionStruct(RuleConditionStruct* prcRuleCondition)
+void DeleteRuleConditionStruct(_In_ RuleConditionStruct* prcRuleCondition)
 {
 	if (!prcRuleCondition) return;
 
@@ -3814,7 +3817,7 @@ void DeleteRuleConditionStruct(RuleConditionStruct* prcRuleCondition)
 	delete[] prcRuleCondition->JunkData;
 } // DeleteRuleConditionStruct
 
-LPTSTR RuleConditionStructToString(RuleConditionStruct* prcRuleCondition, BOOL bExtended)
+_Check_return_ LPTSTR RuleConditionStructToString(_In_ RuleConditionStruct* prcRuleCondition, BOOL bExtended)
 {
 	if (!prcRuleCondition) return NULL;
 
@@ -3891,7 +3894,7 @@ LPTSTR RuleConditionStructToString(RuleConditionStruct* prcRuleCondition, BOOL b
 #define _MaxEntries 1000
 
 // Allocates return value with new. Clean up with DeleteEntryListStruct.
-EntryListStruct* BinToEntryListStruct(ULONG cbBin, LPBYTE lpBin)
+EntryListStruct* BinToEntryListStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
 	if (!lpBin) return NULL;
 
@@ -3941,7 +3944,7 @@ EntryListStruct* BinToEntryListStruct(ULONG cbBin, LPBYTE lpBin)
 	return pelEntryList;
 } // BinToEntryListStruct
 
-void DeleteEntryListStruct(EntryListStruct* pelEntryList)
+void DeleteEntryListStruct(_In_ EntryListStruct* pelEntryList)
 {
 	if (!pelEntryList) return;
 	if (pelEntryList->Entry)
@@ -3959,7 +3962,7 @@ void DeleteEntryListStruct(EntryListStruct* pelEntryList)
 } // DeleteEntryListStruct
 
 // result allocated with new, clean up with delete[]
-LPTSTR EntryListStructToString(EntryListStruct* pelEntryList)
+_Check_return_ LPTSTR EntryListStructToString(_In_ EntryListStruct* pelEntryList)
 {
 	if (!pelEntryList) return NULL;
 
@@ -4003,7 +4006,7 @@ LPTSTR EntryListStructToString(EntryListStruct* pelEntryList)
 #define _MaxSFAddresses 500
 
 // Allocates return value with new. Clean up with DeleteSearchFolderDefinitionStruct.
-SearchFolderDefinitionStruct* BinToSearchFolderDefinitionStruct(ULONG cbBin, LPBYTE lpBin)
+SearchFolderDefinitionStruct* BinToSearchFolderDefinitionStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
 	if (!lpBin) return NULL;
 
@@ -4144,7 +4147,7 @@ SearchFolderDefinitionStruct* BinToSearchFolderDefinitionStruct(ULONG cbBin, LPB
 	return psfdSearchFolderDefinition;
 } // BinToSearchFolderDefinitionStruct
 
-void DeleteSearchFolderDefinitionStruct(SearchFolderDefinitionStruct* psfdSearchFolderDefinition)
+void DeleteSearchFolderDefinitionStruct(_In_ SearchFolderDefinitionStruct* psfdSearchFolderDefinition)
 {
 	if (!psfdSearchFolderDefinition) return;
 	delete[] psfdSearchFolderDefinition->TextSearch;
@@ -4172,16 +4175,15 @@ void DeleteSearchFolderDefinitionStruct(SearchFolderDefinitionStruct* psfdSearch
 } // DeleteSearchFolderDefinitionStruct
 
 // result allocated with new, clean up with delete[]
-LPTSTR SearchFolderDefinitionStructToString(SearchFolderDefinitionStruct* psfdSearchFolderDefinition)
+_Check_return_ LPTSTR SearchFolderDefinitionStructToString(_In_ SearchFolderDefinitionStruct* psfdSearchFolderDefinition)
 {
 	if (!psfdSearchFolderDefinition) return NULL;
 
 	CString szSearchFolderDefinition;
 	CString szTmp;
-	HRESULT hRes = S_OK;
 
 	LPTSTR szFlags = NULL;
-	EC_H(InterpretFlags(PROP_ID(PR_WB_SF_STORAGE_TYPE), psfdSearchFolderDefinition->Flags, &szFlags));
+	InterpretFlags(PROP_ID(PR_WB_SF_STORAGE_TYPE), psfdSearchFolderDefinition->Flags, &szFlags);
 
 	szSearchFolderDefinition.FormatMessage(IDS_SFDEFINITIONHEADER,
 		psfdSearchFolderDefinition->Version,
@@ -4342,7 +4344,7 @@ LPTSTR SearchFolderDefinitionStructToString(SearchFolderDefinitionStruct* psfdSe
 // There may be field definitions with over 500 skip blocks, but we're not going to try to parse them
 #define _MaxSkipBlock 500
 
-void ReadPackedAnsiString(CBinaryParser* pParser, PackedAnsiString* ppasString)
+void ReadPackedAnsiString(_In_ CBinaryParser* pParser, _In_ PackedAnsiString* ppasString)
 {
 	if (!pParser || !ppasString) return;
 
@@ -4355,7 +4357,7 @@ void ReadPackedAnsiString(CBinaryParser* pParser, PackedAnsiString* ppasString)
 		&ppasString->szCharacters);
 } // ReadPackedAnsiString
 
-void ReadPackedUnicodeString(CBinaryParser* pParser, PackedUnicodeString* ppusString)
+void ReadPackedUnicodeString(_In_ CBinaryParser* pParser, _In_ PackedUnicodeString* ppusString)
 {
 	if (!pParser || !ppusString) return;
 
@@ -4369,7 +4371,7 @@ void ReadPackedUnicodeString(CBinaryParser* pParser, PackedUnicodeString* ppusSt
 } // ReadPackedUnicodeString
 
 // Allocates return value with new. Clean up with DeletePropertyDefinitionStreamStruct.
-PropertyDefinitionStreamStruct* BinToPropertyDefinitionStreamStruct(ULONG cbBin, LPBYTE lpBin)
+_Check_return_ PropertyDefinitionStreamStruct* BinToPropertyDefinitionStreamStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
 	if (!lpBin) return NULL;
 
@@ -4462,7 +4464,7 @@ PropertyDefinitionStreamStruct* BinToPropertyDefinitionStreamStruct(ULONG cbBin,
 	return ppdsPropertyDefinitionStream;
 } // BinToPropertyDefinitionStreamStruct
 
-void DeletePropertyDefinitionStreamStruct(PropertyDefinitionStreamStruct* ppdsPropertyDefinitionStream)
+void DeletePropertyDefinitionStreamStruct(_In_ PropertyDefinitionStreamStruct* ppdsPropertyDefinitionStream)
 {
 	if (!ppdsPropertyDefinitionStream) return;
 	if (ppdsPropertyDefinitionStream->pfdFieldDefinitions)
@@ -4493,7 +4495,7 @@ void DeletePropertyDefinitionStreamStruct(PropertyDefinitionStreamStruct* ppdsPr
 	delete ppdsPropertyDefinitionStream;
 } // DeletePropertyDefinitionStreamStruct
 
-CString PackedAnsiStringToString(DWORD dwFlags, PackedAnsiString* ppasString)
+_Check_return_ CString PackedAnsiStringToString(DWORD dwFlags, _In_ PackedAnsiString* ppasString)
 {
 	if (!ppasString) return _T("");
 
@@ -4517,7 +4519,7 @@ CString PackedAnsiStringToString(DWORD dwFlags, PackedAnsiString* ppasString)
 	return szPackedAnsiString;
 } // PackedAnsiStringToString
 
-CString PackedUnicodeStringToString(DWORD dwFlags, PackedUnicodeString* ppusString)
+_Check_return_ CString PackedUnicodeStringToString(DWORD dwFlags, _In_ PackedUnicodeString* ppusString)
 {
 	if (!ppusString) return _T("");
 
@@ -4541,7 +4543,7 @@ CString PackedUnicodeStringToString(DWORD dwFlags, PackedUnicodeString* ppusStri
 } // PackedUnicodeStringToString
 
 // result allocated with new, clean up with delete[]
-LPTSTR PropertyDefinitionStreamStructToString(PropertyDefinitionStreamStruct* ppdsPropertyDefinitionStream)
+_Check_return_ LPTSTR PropertyDefinitionStreamStructToString(_In_ PropertyDefinitionStreamStruct* ppdsPropertyDefinitionStream)
 {
 	if (!ppdsPropertyDefinitionStream) return NULL;
 
@@ -4550,7 +4552,7 @@ LPTSTR PropertyDefinitionStreamStructToString(PropertyDefinitionStreamStruct* pp
 	HRESULT hRes = S_OK;
 
 	LPTSTR szVersion = NULL;
-	EC_H(InterpretFlags(flagPropDefVersion, ppdsPropertyDefinitionStream->wVersion, &szVersion));
+	InterpretFlags(flagPropDefVersion, ppdsPropertyDefinitionStream->wVersion, &szVersion);
 
 	szPropertyDefinitionStream.FormatMessage(IDS_PROPDEFHEADER,
 		ppdsPropertyDefinitionStream->wVersion,szVersion,
@@ -4564,8 +4566,8 @@ LPTSTR PropertyDefinitionStreamStructToString(PropertyDefinitionStreamStruct* pp
 		{
 			LPTSTR szFlags = NULL;
 			LPTSTR szVarEnum = NULL;
-			EC_H(InterpretFlags(flagPDOFlag, ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].dwFlags, &szFlags));
-			EC_H(InterpretFlags(flagVarEnum, ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].wVT, &szVarEnum));
+			InterpretFlags(flagPDOFlag, ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].dwFlags, &szFlags);
+			InterpretFlags(flagVarEnum, ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].wVT, &szVarEnum);
 			szTmp.FormatMessage(IDS_PROPDEFFIELDHEADER,
 				iDef,
 				ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].dwFlags, szFlags,
@@ -4621,7 +4623,7 @@ LPTSTR PropertyDefinitionStreamStructToString(PropertyDefinitionStreamStruct* pp
 
 			if (PropDefV2 == ppdsPropertyDefinitionStream->wVersion)
 			{
-				EC_H(InterpretFlags(flagInternalType, ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].dwInternalType, &szFlags));
+				InterpretFlags(flagInternalType, ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].dwInternalType, &szFlags);
 				szTmp.FormatMessage(IDS_PROPDEFINTERNALTYPE,
 					ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].dwInternalType, szFlags,
 					ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].dwSkipBlockCount);
@@ -4691,7 +4693,7 @@ LPTSTR PropertyDefinitionStreamStructToString(PropertyDefinitionStreamStruct* pp
 #define PERISIST_SENTINEL 0
 #define ELEMENT_SENTINEL 0
 
-void BinToPersistData(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead, PersistData* ppdPersistData)
+void BinToPersistData(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, _Out_ size_t* lpcbBytesRead, _Out_ PersistData* ppdPersistData)
 {
 	if (!lpBin || !lpcbBytesRead || !ppdPersistData) return;
 
@@ -4763,7 +4765,7 @@ void BinToPersistData(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead, PersistD
 #define _MaxPersistData 500
 
 // Allocates return value with new. Clean up with DeleteAdditionalRenEntryIDsStruct.
-AdditionalRenEntryIDsStruct* BinToAdditionalRenEntryIDsStruct(ULONG cbBin, LPBYTE lpBin)
+_Check_return_ AdditionalRenEntryIDsStruct* BinToAdditionalRenEntryIDsStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
 	if (!lpBin) return NULL;
 
@@ -4826,7 +4828,7 @@ AdditionalRenEntryIDsStruct* BinToAdditionalRenEntryIDsStruct(ULONG cbBin, LPBYT
 	return pareiAdditionalRenEntryIDs;
 } // BinToAdditionalRenEntryIDsStruct
 
-void DeleteAdditionalRenEntryIDsStruct(AdditionalRenEntryIDsStruct* pareiAdditionalRenEntryIDs)
+void DeleteAdditionalRenEntryIDsStruct(_In_ AdditionalRenEntryIDsStruct* pareiAdditionalRenEntryIDs)
 {
 	if (!pareiAdditionalRenEntryIDs) return;
 	if (pareiAdditionalRenEntryIDs->ppdPersistData)
@@ -4852,13 +4854,12 @@ void DeleteAdditionalRenEntryIDsStruct(AdditionalRenEntryIDsStruct* pareiAdditio
 } // DeleteAdditionalRenEntryIDsStruct
 
 // result allocated with new, clean up with delete[]
-LPTSTR AdditionalRenEntryIDsStructToString(AdditionalRenEntryIDsStruct* pareiAdditionalRenEntryIDs)
+_Check_return_ LPTSTR AdditionalRenEntryIDsStructToString(_In_ AdditionalRenEntryIDsStruct* pareiAdditionalRenEntryIDs)
 {
 	if (!pareiAdditionalRenEntryIDs) return NULL;
 
 	CString szAdditionalRenEntryIDs;
 	CString szTmp;
-	HRESULT hRes = S_OK;
 
 	szAdditionalRenEntryIDs.FormatMessage(IDS_AEIDHEADER,
 		pareiAdditionalRenEntryIDs->wPersistDataCount);
@@ -4869,7 +4870,7 @@ LPTSTR AdditionalRenEntryIDsStructToString(AdditionalRenEntryIDsStruct* pareiAdd
 		for (iPersistElement = 0 ; iPersistElement < pareiAdditionalRenEntryIDs->wPersistDataCount ; iPersistElement++)
 		{
 			LPTSTR szPersistID = NULL;
-			EC_H(InterpretFlags(flagPersistID, pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].wPersistID, &szPersistID));
+			InterpretFlags(flagPersistID, pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].wPersistID, &szPersistID);
 			szTmp.FormatMessage(IDS_AEIDPERSISTELEMENT,
 				iPersistElement,
 				pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].wPersistID,szPersistID,
@@ -4883,7 +4884,7 @@ LPTSTR AdditionalRenEntryIDsStructToString(AdditionalRenEntryIDsStruct* pareiAdd
 				for (iDataElement = 0 ; iDataElement < pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].wDataElementCount; iDataElement++)
 				{
 					LPTSTR szElementID = NULL;
-					EC_H(InterpretFlags(flagElementID, pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID, &szElementID));
+					InterpretFlags(flagElementID, pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID, &szElementID);
 					szTmp.FormatMessage(IDS_AEIDDATAELEMENT,
 						iDataElement,
 						pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID, szElementID,
@@ -4918,7 +4919,7 @@ LPTSTR AdditionalRenEntryIDsStructToString(AdditionalRenEntryIDsStruct* pareiAdd
 #define _MaxFlatEntries 1000
 
 // Allocates return value with new. Clean up with DeleteFlatEntryListStruct.
-FlatEntryListStruct* BinToFlatEntryListStruct(ULONG cbBin, LPBYTE lpBin)
+_Check_return_ FlatEntryListStruct* BinToFlatEntryListStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
 	if (!lpBin) return NULL;
 
@@ -4975,7 +4976,7 @@ FlatEntryListStruct* BinToFlatEntryListStruct(ULONG cbBin, LPBYTE lpBin)
 	return pfelFlatEntryList;
 } // BinToFlatEntryListStruct
 
-void DeleteFlatEntryListStruct(FlatEntryListStruct* pfelFlatEntryList)
+void DeleteFlatEntryListStruct(_In_ FlatEntryListStruct* pfelFlatEntryList)
 {
 	if (!pfelFlatEntryList) return;
 	if (pfelFlatEntryList->pEntryIDs)
@@ -4994,7 +4995,7 @@ void DeleteFlatEntryListStruct(FlatEntryListStruct* pfelFlatEntryList)
 } // DeleteFlatEntryListStruct
 
 // result allocated with new, clean up with delete[]
-LPTSTR FlatEntryListStructToString(FlatEntryListStruct* pfelFlatEntryList)
+_Check_return_ LPTSTR FlatEntryListStructToString(_In_ FlatEntryListStruct* pfelFlatEntryList)
 {
 	if (!pfelFlatEntryList) return NULL;
 
@@ -5052,7 +5053,7 @@ LPTSTR FlatEntryListStructToString(FlatEntryListStruct* pfelFlatEntryList)
 #define _MaxWebViewPersist 500
 
 // Allocates return value with new. Clean up with DeleteWebViewPersistStreamStruct.
-WebViewPersistStreamStruct* BinToWebViewPersistStreamStruct(ULONG cbBin, LPBYTE lpBin)
+_Check_return_ WebViewPersistStreamStruct* BinToWebViewPersistStreamStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
 	if (!lpBin) return NULL;
 
@@ -5111,7 +5112,7 @@ WebViewPersistStreamStruct* BinToWebViewPersistStreamStruct(ULONG cbBin, LPBYTE 
 	return pwvpsWebViewPersistStream;
 } // BinToWebViewPersistStreamStruct
 
-void DeleteWebViewPersistStreamStruct(WebViewPersistStreamStruct* pwvpsWebViewPersistStream)
+void DeleteWebViewPersistStreamStruct(_In_ WebViewPersistStreamStruct* pwvpsWebViewPersistStream)
 {
 	if (!pwvpsWebViewPersistStream) return;
 	if (pwvpsWebViewPersistStream->lpWebViews && pwvpsWebViewPersistStream->cWebViews)
@@ -5130,11 +5131,10 @@ void DeleteWebViewPersistStreamStruct(WebViewPersistStreamStruct* pwvpsWebViewPe
 } // DeleteWebViewPersistStreamStruct
 
 // result allocated with new, clean up with delete[]
-LPTSTR WebViewPersistStreamStructToString(WebViewPersistStreamStruct* pwvpsWebViewPersistStream)
+_Check_return_ LPTSTR WebViewPersistStreamStructToString(_In_ WebViewPersistStreamStruct* pwvpsWebViewPersistStream)
 {
 	if (!pwvpsWebViewPersistStream) return NULL;
 
-	HRESULT hRes = S_OK;
 	CString szWebViewPersistStream;
 	CString szTmp;
 
@@ -5148,9 +5148,9 @@ LPTSTR WebViewPersistStreamStructToString(WebViewPersistStreamStruct* pwvpsWebVi
 			LPTSTR szVersion = NULL;
 			LPTSTR szType = NULL;
 			LPTSTR szFlags = NULL;
-			EC_H(InterpretFlags(flagWebViewVersion, pwvpsWebViewPersistStream->lpWebViews[i].dwVersion, &szVersion));
-			EC_H(InterpretFlags(flagWebViewType, pwvpsWebViewPersistStream->lpWebViews[i].dwType, &szType));
-			EC_H(InterpretFlags(flagWebViewFlags, pwvpsWebViewPersistStream->lpWebViews[i].dwFlags, &szFlags));
+			InterpretFlags(flagWebViewVersion, pwvpsWebViewPersistStream->lpWebViews[i].dwVersion, &szVersion);
+			InterpretFlags(flagWebViewType, pwvpsWebViewPersistStream->lpWebViews[i].dwType, &szType);
+			InterpretFlags(flagWebViewFlags, pwvpsWebViewPersistStream->lpWebViews[i].dwFlags, &szFlags);
 
 			szTmp.FormatMessage(
 				IDS_WEBVIEWHEADER,
@@ -5224,7 +5224,7 @@ LPTSTR WebViewPersistStreamStructToString(WebViewPersistStreamStruct* pwvpsWebVi
 #define _MaxRecipientRowProps 500
 
 // Allocates return value with new. Clean up with DeleteRecipientRowStreamStruct.
-RecipientRowStreamStruct* BinToRecipientRowStreamStruct(ULONG cbBin, LPBYTE lpBin)
+_Check_return_ RecipientRowStreamStruct* BinToRecipientRowStreamStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
 	if (!lpBin) return NULL;
 
@@ -5278,7 +5278,7 @@ RecipientRowStreamStruct* BinToRecipientRowStreamStruct(ULONG cbBin, LPBYTE lpBi
 	return prrsRecipientRowStream;
 } // BinToRecipientRowStreamStruct
 
-void DeleteRecipientRowStreamStruct(RecipientRowStreamStruct* prrsRecipientRowStream)
+void DeleteRecipientRowStreamStruct(_In_ RecipientRowStreamStruct* prrsRecipientRowStream)
 {
 	if (!prrsRecipientRowStream) return;
 	if (prrsRecipientRowStream->lpAdrEntry && prrsRecipientRowStream->cRowCount)
@@ -5298,7 +5298,7 @@ void DeleteRecipientRowStreamStruct(RecipientRowStreamStruct* prrsRecipientRowSt
 } // DeleteRecipientRowStreamStruct
 
 // result allocated with new, clean up with delete[]
-LPTSTR RecipientRowStreamStructToString(RecipientRowStreamStruct* prrsRecipientRowStream)
+_Check_return_ LPTSTR RecipientRowStreamStructToString(_In_ RecipientRowStreamStruct* prrsRecipientRowStream)
 {
 	if (!prrsRecipientRowStream) return NULL;
 

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "FileDialogEx.h"
 
-static BOOL IsWin2000();
+_Check_return_ static BOOL IsWin2000();
 
 ///////////////////////////////////////////////////////////////////////////
 // CFileDialogExA / CFileDialogExW
@@ -19,12 +19,12 @@ CFileDialogExA::~CFileDialogExA()
 	delete[] m_szBigBuff;
 } // CFileDialogExA::~CFileDialogExA
 
-INT_PTR CFileDialogExA::DisplayDialog(BOOL bOpenFileDialog, // TRUE for open, FALSE for FileSaveAs
-									  LPCSTR lpszDefExt,
-									  LPCSTR lpszFileName,
+_Check_return_ INT_PTR CFileDialogExA::DisplayDialog(BOOL bOpenFileDialog, // TRUE for open, FALSE for FileSaveAs
+									  _In_opt_z_ LPCSTR lpszDefExt,
+									  _In_opt_z_ LPCSTR lpszFileName,
 									  DWORD dwFlags,
-									  LPCSTR lpszFilter,
-									  CWnd* pParentWnd)
+									  _In_opt_z_ LPCSTR lpszFilter,
+									  _In_opt_ CWnd* pParentWnd)
 {
 	m_szBigBuff = NULL;
 	m_szNextPath = NULL;
@@ -86,12 +86,12 @@ INT_PTR CFileDialogExA::DisplayDialog(BOOL bOpenFileDialog, // TRUE for open, FA
 	return nResult ? nResult : IDCANCEL;
 } // CFileDialogExA::DisplayDialog
 
-LPSTR CFileDialogExA::GetFileName()
+_Check_return_ LPSTR CFileDialogExA::GetFileName()
 {
 	return m_ofn.lpstrFile;
 } // CFileDialogExA::GetFileName
 
-LPSTR CFileDialogExA::GetNextFileName()
+_Check_return_ LPSTR CFileDialogExA::GetNextFileName()
 {
 	if (!m_szNextPath) return NULL;
 	LPSTR lpsz = m_szNextPath;
@@ -142,7 +142,6 @@ LPSTR CFileDialogExA::GetNextFileName()
 	return strPath;
 } // CFileDialogExA::GetNextFileName
 
-
 CFileDialogExW::CFileDialogExW()
 {
 	m_szBigBuff = NULL;
@@ -154,12 +153,12 @@ CFileDialogExW::~CFileDialogExW()
 	delete[] m_szBigBuff;
 } // CFileDialogExW::~CFileDialogExW
 
-INT_PTR CFileDialogExW::DisplayDialog(BOOL bOpenFileDialog, // TRUE for open, FALSE for FileSaveAs
-									  LPCWSTR lpszDefExt,
-									  LPCWSTR lpszFileName,
+_Check_return_ INT_PTR CFileDialogExW::DisplayDialog(BOOL bOpenFileDialog, // TRUE for open, FALSE for FileSaveAs
+									  _In_opt_z_ LPCWSTR lpszDefExt,
+									  _In_opt_z_ LPCWSTR lpszFileName,
 									  DWORD dwFlags,
-									  LPCWSTR lpszFilter,
-									  CWnd* pParentWnd)
+									  _In_opt_z_ LPCWSTR lpszFilter,
+									  _In_opt_ CWnd* pParentWnd)
 {
 	m_szBigBuff = NULL;
 	m_szNextPath = NULL;
@@ -221,12 +220,12 @@ INT_PTR CFileDialogExW::DisplayDialog(BOOL bOpenFileDialog, // TRUE for open, FA
 	return nResult ? nResult : IDCANCEL;
 } // CFileDialogExW::DisplayDialog
 
-LPWSTR CFileDialogExW::GetFileName()
+_Check_return_ LPWSTR CFileDialogExW::GetFileName()
 {
 	return m_ofn.lpstrFile;
 } // CFileDialogExW::GetFileName
 
-LPWSTR CFileDialogExW::GetNextFileName()
+_Check_return_ LPWSTR CFileDialogExW::GetNextFileName()
 {
 	if (!m_szNextPath) return NULL;
 	LPWSTR lpsz = m_szNextPath;
@@ -277,7 +276,7 @@ LPWSTR CFileDialogExW::GetNextFileName()
 	return strPath;
 } // CFileDialogExW::GetNextFileName
 
-BOOL IsWin2000()
+_Check_return_ BOOL IsWin2000()
 {
 	OSVERSIONINFOEX osvi;
 	HRESULT hRes = S_OK;
@@ -310,4 +309,4 @@ BOOL IsWin2000()
 		break;
 	}
 	return FALSE;
-}
+} // IsWin2000

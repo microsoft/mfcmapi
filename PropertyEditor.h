@@ -3,42 +3,42 @@
 
 #include "Editor.h"
 
-HRESULT DisplayPropertyEditor(CWnd* pParentWnd,
-							  UINT uidTitle,
-							  UINT uidPrompt,
-							  BOOL bIsAB,
-							  LPVOID lpAllocParent,
-							  LPMAPIPROP lpMAPIProp,
-							  ULONG ulPropTag,
-							  BOOL bMVRow,
-							  LPSPropValue lpsPropValue,
-							  LPSPropValue* lpNewValue);
+_Check_return_ HRESULT DisplayPropertyEditor(_In_ CWnd* pParentWnd,
+											 UINT uidTitle,
+											 UINT uidPrompt,
+											 BOOL bIsAB,
+											 _In_opt_ LPVOID lpAllocParent,
+											 _In_opt_ LPMAPIPROP lpMAPIProp,
+											 ULONG ulPropTag,
+											 BOOL bMVRow,
+											 _In_opt_ LPSPropValue lpsPropValue,
+											 _Inout_opt_ LPSPropValue* lpNewValue);
 
 class CPropertyEditor : public CEditor
 {
 public:
 	CPropertyEditor(
-		CWnd* pParentWnd,
+		_In_ CWnd* pParentWnd,
 		UINT uidTitle,
 		UINT uidPrompt,
 		BOOL bIsAB,
 		BOOL bMVRow,
-		LPVOID lpAllocParent,
-		LPMAPIPROP lpMAPIProp,
+		_In_opt_ LPVOID lpAllocParent,
+		_In_opt_ LPMAPIPROP lpMAPIProp,
 		ULONG ulPropTag,
-		LPSPropValue lpsPropValue);
+		_In_opt_ LPSPropValue lpsPropValue);
 	virtual ~CPropertyEditor();
 
 	// Get values after we've done the DisplayDialog
-	LPSPropValue DetachModifiedSPropValue();
+	_Check_return_ LPSPropValue DetachModifiedSPropValue();
 
 private:
-	BOOL  OnInitDialog();
+	_Check_return_ BOOL  OnInitDialog();
 	void  CreatePropertyControls();
 	void  InitPropertyControls();
 	void  WriteStringsToSPropValue();
 	void  WriteSPropValueToObject();
-	ULONG HandleChange(UINT nID);
+	_Check_return_ ULONG HandleChange(UINT nID);
 	void  OnOK();
 
 	// source variables
@@ -59,30 +59,30 @@ class CMultiValuePropertyEditor : public CEditor
 {
 public:
 	CMultiValuePropertyEditor(
-		CWnd* pParentWnd,
+		_In_ CWnd* pParentWnd,
 		UINT uidTitle,
 		UINT uidPrompt,
 		BOOL bIsAB,
-		LPVOID lpAllocParent,
-		LPMAPIPROP lpMAPIProp,
+		_In_opt_ LPVOID lpAllocParent,
+		_In_opt_ LPMAPIPROP lpMAPIProp,
 		ULONG ulPropTag,
-		LPSPropValue lpsPropValue);
+		_In_opt_ LPSPropValue lpsPropValue);
 	virtual ~CMultiValuePropertyEditor();
 
 	// Get values after we've done the DisplayDialog
-	LPSPropValue DetachModifiedSPropValue();
+	_Check_return_ LPSPropValue DetachModifiedSPropValue();
 
 private:
 	// Use this function to implement list editing
-	BOOL DoListEdit(ULONG ulListNum, int iItem, SortListData* lpData);
-	BOOL OnInitDialog();
+	_Check_return_ BOOL DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData);
+	_Check_return_ BOOL OnInitDialog();
 	void CreatePropertyControls();
 	void InitPropertyControls();
 	void ReadMultiValueStringsFromProperty(ULONG ulListNum);
 	void WriteSPropValueToObject();
 	void WriteMultiValueStringsToSPropValue(ULONG ulListNum);
-	void WriteMultiValueStringsToSPropValue(ULONG ulListNum, LPVOID lpParent, LPSPropValue lpsProp);
-	void UpdateListRow(LPSPropValue lpProp, ULONG ulListNum, ULONG iMVCount);
+	void WriteMultiValueStringsToSPropValue(ULONG ulListNum, _In_ LPVOID lpParent, _In_ LPSPropValue lpsProp);
+	void UpdateListRow(_In_ LPSPropValue lpProp, ULONG ulListNum, ULONG iMVCount);
 	void UpdateSmartView(ULONG ulListNum);
 	void OnOK();
 
@@ -92,7 +92,6 @@ private:
 	BOOL			m_bIsAB; // whether the tag is from the AB or not
 	LPSPropValue	m_lpsInputValue;
 	LPSPropValue	m_lpsOutputValue;
-	BOOL			m_bDirty;
 
 	// all calls to MAPIAllocateMore will use m_lpAllocParent
 	// this is not something to be freed

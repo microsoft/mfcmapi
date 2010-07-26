@@ -17,9 +17,9 @@ static TCHAR* CLASS = _T("CRulesDlg");
 // CRulesDlg dialog
 
 CRulesDlg::CRulesDlg(
-					 CParentWnd* pParentWnd,
-					 CMapiObjects* lpMapiObjects,
-					 LPEXCHANGEMODIFYTABLE lpExchTbl):
+					 _In_ CParentWnd* pParentWnd,
+					 _In_ CMapiObjects* lpMapiObjects,
+					 _In_ LPEXCHANGEMODIFYTABLE lpExchTbl):
 CContentsTableDlg(
 				  pParentWnd,
 				  lpMapiObjects,
@@ -40,14 +40,14 @@ CContentsTableDlg(
 	CreateDialogAndMenu(IDR_MENU_RULES);
 
 	OnRefreshView();
-}
+} // CRulesDlg::CRulesDlg
 
 CRulesDlg::~CRulesDlg()
 {
 	TRACE_DESTRUCTOR(CLASS);
 
 	if (m_lpExchTbl) m_lpExchTbl->Release();
-}
+} // CRulesDlg::~CRulesDlg
 
 BEGIN_MESSAGE_MAP(CRulesDlg, CContentsTableDlg)
 	ON_COMMAND(ID_DELETESELECTEDITEM, OnDeleteSelectedItem)
@@ -66,8 +66,7 @@ void CRulesDlg::OnInitMenu(CMenu* pMenu)
 		}
 	}
 	CContentsTableDlg::OnInitMenu(pMenu);
-}
-
+} // CRulesDlg::OnInitMenu
 
 // Clear the current list and get a new one with whatever code we've got in LoadMAPIPropList
 void CRulesDlg::OnRefreshView()
@@ -134,9 +133,9 @@ void CRulesDlg::OnModifySelectedItem()
 		MAPIFreeBuffer(lpSelectedItems);
 		if (S_OK == hRes) OnRefreshView();
 	}
-}
+} // CRulesDlg::OnModifySelectedItem
 
-HRESULT CRulesDlg::GetSelectedItems(ULONG ulFlags, ULONG ulRowFlags, LPROWLIST* lppRowList)
+_Check_return_ HRESULT CRulesDlg::GetSelectedItems(ULONG ulFlags, ULONG ulRowFlags, _In_ LPROWLIST* lppRowList)
 {
 	if (!lppRowList || !m_lpContentsTableListCtrl) return MAPI_E_INVALID_PARAMETER;
 	*lppRowList = NULL;
@@ -220,9 +219,9 @@ HRESULT CRulesDlg::GetSelectedItems(ULONG ulFlags, ULONG ulRowFlags, LPROWLIST* 
 } // CRulesDlg::GetSelectedItems
 
 void CRulesDlg::HandleAddInMenuSingle(
-									  LPADDINMENUPARAMS lpParams,
-									  LPMAPIPROP /*lpMAPIProp*/,
-									  LPMAPICONTAINER /*lpContainer*/)
+									  _In_ LPADDINMENUPARAMS lpParams,
+									  _In_ LPMAPIPROP /*lpMAPIProp*/,
+									  _In_ LPMAPICONTAINER /*lpContainer*/)
 {
 	if (lpParams)
 	{

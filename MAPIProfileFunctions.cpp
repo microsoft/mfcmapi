@@ -8,11 +8,11 @@
 #include "ExtraPropTags.h"
 
 void LaunchProfileWizard(
-						 HWND			hParentWnd,
-						 ULONG			ulFlags,
-						 LPCSTR FAR *	lppszServiceNameToAdd,
-						 ULONG			cbBufferMax,
-						 LPTSTR			lpszNewProfileName)
+						 _In_ HWND hParentWnd,
+						 ULONG ulFlags,
+						 _In_z_ LPCSTR FAR * lppszServiceNameToAdd,
+						 ULONG cbBufferMax,
+						 _In_z_count_(cbBufferMax) LPSTR lpszNewProfileName)
 {
 	HRESULT		hRes = S_OK;
 
@@ -26,7 +26,7 @@ void LaunchProfileWizard(
 			ulFlags,
 			(LPCTSTR FAR *) lppszServiceNameToAdd,
 			cbBufferMax,
-			lpszNewProfileName));
+			(LPTSTR) lpszNewProfileName));
 		if (MAPI_E_CALL_FAILED == hRes)
 		{
 			CHECKHRESMSG(hRes,IDS_LAUNCHWIZARDFAILED);
@@ -40,7 +40,7 @@ void LaunchProfileWizard(
 	}
 } // LaunchProfileWizard
 
-void DisplayMAPISVCPath(CWnd* pParentWnd)
+void DisplayMAPISVCPath(_In_ CWnd* pParentWnd)
 {
 	HRESULT hRes = S_OK;
 	TCHAR   szServicesIni[MAX_PATH+12] = {0}; // 12 = space for 'MAPISVC.INF'
@@ -67,7 +67,7 @@ void DisplayMAPISVCPath(CWnd* pParentWnd)
 // Return type   : void
 // Argument      : LPTSTR szMAPIDir - Buffer to hold the path to the MAPISVC file.
 //                 ULONG cchMAPIDir - size of the buffer
-void GetMAPISVCPath(LPTSTR szMAPIDir, ULONG cchMAPIDir)
+void GetMAPISVCPath(_Inout_z_count_(cchMAPIDir) LPTSTR szMAPIDir, ULONG cchMAPIDir)
 {
 	HRESULT hRes = S_OK;
 
@@ -104,7 +104,7 @@ void GetMAPISVCPath(LPTSTR szMAPIDir, ULONG cchMAPIDir)
 			szMAPIDir,
 			_T("MAPISVC.INF"))); // STRING_OK
 	}
-}
+} // GetMAPISVCPath
 
 typedef struct
 {
@@ -274,7 +274,7 @@ static SERVICESINIREC aREMOVE_MSPSTServicesIni[] =
 // $--HrSetProfileParameters----------------------------------------------
 // Add values to MAPISVC.INF
 // -----------------------------------------------------------------------------
-HRESULT HrSetProfileParameters(SERVICESINIREC *lpServicesIni)
+_Check_return_ HRESULT HrSetProfileParameters(_In_ SERVICESINIREC *lpServicesIni)
 {
 	HRESULT	hRes						= S_OK;
 	TCHAR	szServicesIni[MAX_PATH+12]	= {0}; // 12 = space for 'MAPISVC.INF'
@@ -341,7 +341,7 @@ HRESULT HrSetProfileParameters(SERVICESINIREC *lpServicesIni)
 	}
 
 	return hRes;
-}
+} // HrSetProfileParameters
 
 void AddServicesToMapiSvcInf()
 {
@@ -369,7 +369,7 @@ void AddServicesToMapiSvcInf()
 			hRes = S_OK;
 		}
 	}
-}
+} // AddServicesToMapiSvcInf
 
 void RemoveServicesFromMapiSvcInf()
 {
@@ -397,13 +397,13 @@ void RemoveServicesFromMapiSvcInf()
 			hRes = S_OK;
 		}
 	}
-}
+} // RemoveServicesFromMapiSvcInf
 
 #define PR_MARKER PR_BODY_A
 #define MARKER_STRING "MFCMAPI Existing Provider Marker" // STRING_OK
 // Walk through providers and add/remove our tag
 // bAddMark of true will add tag, bAddMark of false will remove it
-HRESULT HrMarkExistingProviders(LPSERVICEADMIN lpServiceAdmin, BOOL bAddMark)
+_Check_return_ HRESULT HrMarkExistingProviders(_In_ LPSERVICEADMIN lpServiceAdmin, BOOL bAddMark)
 {
 	HRESULT			hRes = S_OK;
 	LPMAPITABLE		lpProviderTable = NULL;
@@ -425,7 +425,7 @@ HRESULT HrMarkExistingProviders(LPSERVICEADMIN lpServiceAdmin, BOOL bAddMark)
 
 		EC_H(HrQueryAllRows(lpProviderTable, (LPSPropTagArray) &pTagUID, NULL, NULL, 0, &lpRowSet));
 
-		DebugPrintSRowSet(DBGGeneric,lpRowSet,NULL);
+		if (lpRowSet) DebugPrintSRowSet(DBGGeneric,lpRowSet,NULL);
 
 		if (lpRowSet && lpRowSet->cRows >= 1)
 		{
@@ -475,10 +475,10 @@ HRESULT HrMarkExistingProviders(LPSERVICEADMIN lpServiceAdmin, BOOL bAddMark)
 		lpProviderTable->Release();
 	}
 	return hRes;
-}
+} // HrMarkExistingProviders
 
 // Returns first provider without our mark on it
-HRESULT HrFindUnmarkedProvider(LPSERVICEADMIN lpServiceAdmin, LPSRowSet* lpRowSet)
+_Check_return_ HRESULT HrFindUnmarkedProvider(_In_ LPSERVICEADMIN lpServiceAdmin, _Deref_out_opt_ LPSRowSet* lpRowSet)
 {
 	HRESULT			hRes = S_OK;
 	LPMAPITABLE		lpProviderTable = NULL;
@@ -558,15 +558,15 @@ HRESULT HrFindUnmarkedProvider(LPSERVICEADMIN lpServiceAdmin, LPSRowSet* lpRowSe
 		lpProviderTable->Release();
 	}
 	return hRes;
-}
+} // HrFindUnmarkedProvider
 
-HRESULT HrAddServiceToProfile(
-							  IN LPSTR lpszServiceName, // Service Name
-							  IN ULONG_PTR ulUIParam, // hwnd for CreateMsgService
-							  IN ULONG ulFlags, // Flags for CreateMsgService
-							  IN ULONG cPropVals, // Count of properties for ConfigureMsgService
-							  IN LPSPropValue lpPropVals, // Properties for ConfigureMsgService
-							  IN LPSTR lpszProfileName) // profile name
+_Check_return_ HRESULT HrAddServiceToProfile(
+	_In_z_ LPCSTR lpszServiceName, // Service Name
+	_In_ ULONG_PTR ulUIParam, // hwnd for CreateMsgService
+	ULONG ulFlags, // Flags for CreateMsgService
+	ULONG cPropVals, // Count of properties for ConfigureMsgService
+	_In_opt_ LPSPropValue lpPropVals, // Properties for ConfigureMsgService
+	_In_z_ LPCSTR lpszProfileName) // profile name
 {
 	HRESULT			hRes = S_OK;
 	LPPROFADMIN		lpProfAdmin = NULL;
@@ -609,7 +609,7 @@ HRESULT HrAddServiceToProfile(
 			// Look for a provider without our dummy prop
 			EC_H(HrFindUnmarkedProvider(lpServiceAdmin,&lpRowSet));
 
-			DebugPrintSRowSet(DBGGeneric,lpRowSet,NULL);
+			if (lpRowSet) DebugPrintSRowSet(DBGGeneric,lpRowSet,NULL);
 
 			// should only have one unmarked row
 			if (lpRowSet && lpRowSet->cRows == 1)
@@ -644,11 +644,11 @@ HRESULT HrAddServiceToProfile(
 	return hRes;
 } // HrAddServiceToProfile
 
-HRESULT HrAddExchangeToProfile(
-							   IN ULONG_PTR ulUIParam, // hwnd for CreateMsgService
-							   IN LPSTR lpszServerName,
-							   IN LPSTR lpszMailboxName,
-							   IN LPSTR lpszProfileName)
+_Check_return_ HRESULT HrAddExchangeToProfile(
+	_In_ ULONG_PTR ulUIParam, // hwnd for CreateMsgService
+	_In_z_ LPCSTR lpszServerName,
+	_In_z_ LPCSTR lpszMailboxName,
+	_In_z_ LPCSTR lpszProfileName)
 {
 	HRESULT			hRes = S_OK;
 
@@ -659,34 +659,34 @@ HRESULT HrAddExchangeToProfile(
 #define NUMEXCHANGEPROPS 2
 	SPropValue		PropVal[NUMEXCHANGEPROPS];
 	PropVal[0].ulPropTag = PR_PROFILE_UNRESOLVED_SERVER;
-	PropVal[0].Value.lpszA = lpszServerName;
+	PropVal[0].Value.lpszA = (LPSTR) lpszServerName;
 	PropVal[1].ulPropTag = PR_PROFILE_UNRESOLVED_NAME;
-	PropVal[1].Value.lpszA = lpszMailboxName;
+	PropVal[1].Value.lpszA = (LPSTR) lpszMailboxName;
 	EC_H(HrAddServiceToProfile("MSEMS",ulUIParam,NULL,NUMEXCHANGEPROPS,PropVal,lpszProfileName)); // STRING_OK
 
 	return hRes;
 } // HrAddExchangeToProfile
 
-HRESULT HrAddPSTToProfile(
-						  IN ULONG_PTR ulUIParam, // hwnd for CreateMsgService
-						  BOOL bUnicodePST,
-						  IN LPTSTR lpszPSTPath, // PST name
-						  IN LPSTR lpszProfileName, // profile name
-						  BOOL bPasswordSet, // whether or not to include a password
-						  IN LPSTR lpszPassword) // password to include
+_Check_return_ HRESULT HrAddPSTToProfile(
+	_In_ ULONG_PTR ulUIParam, // hwnd for CreateMsgService
+	BOOL bUnicodePST,
+	_In_z_ LPCTSTR lpszPSTPath, // PST name
+	_In_z_ LPCSTR lpszProfileName, // profile name
+	BOOL bPasswordSet, // whether or not to include a password
+	_In_z_ LPCSTR lpszPassword) // password to include
 {
 	HRESULT			hRes = S_OK;
 
-	DebugPrint(DBGGeneric,_T("HrAddPSTToProfile(0x%X,%s,%hs,0x%X,%s)\n"),bUnicodePST,lpszPSTPath,lpszProfileName,bPasswordSet,lpszPassword);
+	DebugPrint(DBGGeneric,_T("HrAddPSTToProfile(0x%X,%s,%hs,0x%X,%hs)\n"),bUnicodePST,lpszPSTPath,lpszProfileName,bPasswordSet,lpszPassword);
 
 	if (!lpszPSTPath || !lpszProfileName) return MAPI_E_INVALID_PARAMETER;
 
 	SPropValue PropVal[2];
 
 	PropVal[0].ulPropTag = CHANGE_PROP_TYPE(PR_PST_PATH, PT_TSTRING);
-	PropVal[0].Value.LPSZ = lpszPSTPath;
+	PropVal[0].Value.LPSZ = (LPTSTR) lpszPSTPath;
 	PropVal[1].ulPropTag = PR_PST_PW_SZ_OLD;
-	PropVal[1].Value.lpszA = lpszPassword;
+	PropVal[1].Value.lpszA = (LPSTR) lpszPassword;
 
 	if (bUnicodePST)
 	{
@@ -698,13 +698,13 @@ HRESULT HrAddPSTToProfile(
 	}
 
 	return hRes;
-}
+} // HrAddPSTToProfile
 
 // $--HrCreateProfile---------------------------------------------
 // Creates an empty profile.
 // -----------------------------------------------------------------------------
-HRESULT HrCreateProfile(
-						IN LPSTR lpszProfileName) // profile name
+_Check_return_ HRESULT HrCreateProfile(
+									   _In_z_ LPCSTR lpszProfileName) // profile name
 {
 	HRESULT			hRes = S_OK;
 	LPPROFADMIN		lpProfAdmin = NULL;
@@ -733,13 +733,13 @@ HRESULT HrCreateProfile(
 	lpProfAdmin->Release();
 
 	return hRes;
-}
+} // HrCreateProfile
 
 // $--HrRemoveProfile---------------------------------------------------------
 // Removes a profile.
 // ------------------------------------------------------------------------------
-HRESULT HrRemoveProfile(
-						LPSTR lpszProfileName)
+_Check_return_ HRESULT HrRemoveProfile(
+									   _In_z_ LPCSTR lpszProfileName)
 {
 	HRESULT		hRes= S_OK;
 	LPPROFADMIN	lpProfAdmin = NULL;
@@ -758,21 +758,20 @@ HRESULT HrRemoveProfile(
 	RegFlushKey(HKEY_CURRENT_USER);
 
 	return hRes;
-}
+} // HrRemoveProfile
 
 // $--HrMAPIProfileExists---------------------------------------------------------
 // Checks for an existing profile.
 // -----------------------------------------------------------------------------
-HRESULT HrMAPIProfileExists(
-							LPPROFADMIN lpProfAdmin,
-							LPSTR lpszProfileName)
+_Check_return_ HRESULT HrMAPIProfileExists(
+	_In_ LPPROFADMIN lpProfAdmin,
+	_In_z_ LPCSTR lpszProfileName)
 {
 	HRESULT hRes = S_OK;
 	LPMAPITABLE lpTable = NULL;
 	LPSRowSet lpRows = NULL;
 	LPSPropValue lpProp = NULL;
 	ULONG i = 0;
-	ULONG cRows = 0;
 
 	SizedSPropTagArray(1, rgPropTag) =
 	{
@@ -800,9 +799,6 @@ HRESULT HrMAPIProfileExists(
 		0,
 		&lpRows));
 
-	cRows = lpRows->cRows;
-
-
 	if (lpRows)
 	{
 		if (lpRows->cRows == 0)
@@ -814,7 +810,7 @@ HRESULT HrMAPIProfileExists(
 		{
 			// Search rows for the folder in question
 
-			if (!FAILED(hRes)) for (i = 0; i < cRows; i++)
+			if (!FAILED(hRes)) for (i = 0; i < lpRows->cRows; i++)
 			{
 				hRes = S_OK;
 				lpProp = lpRows->aRow[i].lpProps;
@@ -842,11 +838,11 @@ HRESULT HrMAPIProfileExists(
 
 	lpTable->Release();
 	return hRes;
-}
+} // HrMAPIProfileExists
 
 #define MAPI_FORCE_ACCESS 0x00080000
 
-HRESULT OpenProfileSection(LPSERVICEADMIN lpServiceAdmin, LPSBinary lpServiceUID, LPPROFSECT* lppProfSect)
+_Check_return_ HRESULT OpenProfileSection(_In_ LPSERVICEADMIN lpServiceAdmin, _In_ LPSBinary lpServiceUID, _Deref_out_opt_ LPPROFSECT* lppProfSect)
 {
 	HRESULT		hRes = S_OK;
 
@@ -901,9 +897,9 @@ HRESULT OpenProfileSection(LPSERVICEADMIN lpServiceAdmin, LPSBinary lpServiceUID
 		///////////////////////////////////////////////////////////////////
 	}
 	return hRes;
-}
+} // OpenProfileSection
 
-HRESULT OpenProfileSection(LPPROVIDERADMIN lpProviderAdmin, LPSBinary lpProviderUID, LPPROFSECT* lppProfSect)
+_Check_return_ HRESULT OpenProfileSection(_In_ LPPROVIDERADMIN lpProviderAdmin, _In_ LPSBinary lpProviderUID, _Deref_out_ LPPROFSECT* lppProfSect)
 {
 	HRESULT			hRes = S_OK;
 
@@ -933,13 +929,13 @@ HRESULT OpenProfileSection(LPPROVIDERADMIN lpProviderAdmin, LPSBinary lpProvider
 			lppProfSect));
 	}
 	return hRes;
-}
+} // OpenProfileSection
 
-HRESULT GetProfileServiceVersion(LPSTR lpszProfileName,
-								 ULONG* lpulServerVersion,
-								 EXCHANGE_STORE_VERSION_NUM* lpStoreVersion,
-								 BOOL* lpbFoundServerVersion,
-								 BOOL* lpbFoundServerFullVersion)
+_Check_return_ HRESULT GetProfileServiceVersion(_In_z_ LPCSTR lpszProfileName,
+												_Out_ ULONG* lpulServerVersion,
+												_Out_ EXCHANGE_STORE_VERSION_NUM* lpStoreVersion,
+												_Out_ BOOL* lpbFoundServerVersion,
+												_Out_ BOOL* lpbFoundServerFullVersion)
 {
 	if (!lpszProfileName
 		|| !lpulServerVersion
@@ -1016,4 +1012,4 @@ HRESULT GetProfileServiceVersion(LPSTR lpszProfileName,
 	if (*lpbFoundServerVersion || *lpbFoundServerFullVersion) hRes = S_OK;
 
 	return hRes;
-}
+} // GetProfileServiceVersion

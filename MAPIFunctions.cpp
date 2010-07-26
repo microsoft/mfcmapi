@@ -30,17 +30,17 @@
 #undef _MAC
 */
 
-HRESULT CallOpenEntry(
-					  LPMDB lpMDB,
-					  LPADRBOOK lpAB,
-					  LPMAPICONTAINER lpContainer,
-					  LPMAPISESSION lpMAPISession,
-					  ULONG cbEntryID,
-					  LPENTRYID lpEntryID,
-					  LPCIID lpInterface,
-					  ULONG ulFlags,
-					  ULONG* ulObjTypeRet, // optional - can be NULL
-					  LPUNKNOWN* lppUnk) // required
+_Check_return_ HRESULT CallOpenEntry(
+									 _In_opt_ LPMDB lpMDB,
+									 _In_opt_ LPADRBOOK lpAB,
+									 _In_opt_ LPMAPICONTAINER lpContainer,
+									 _In_opt_ LPMAPISESSION lpMAPISession,
+									 ULONG cbEntryID,
+									 _In_opt_ LPENTRYID lpEntryID,
+									 _In_opt_ LPCIID lpInterface,
+									 ULONG ulFlags,
+									 _Out_opt_ ULONG* ulObjTypeRet, // optional - can be NULL
+									 _Deref_out_opt_ LPUNKNOWN* lppUnk) // required
 {
 	if (!lppUnk) return MAPI_E_INVALID_PARAMETER;
 	HRESULT			hRes = S_OK;
@@ -193,26 +193,26 @@ HRESULT CallOpenEntry(
 	if (lpUnk)
 	{
 		LPTSTR szFlags = NULL;
-		EC_H(InterpretFlags(PROP_ID(PR_OBJECT_TYPE), ulObjType, &szFlags));
-		DebugPrint(DBGGeneric,_T("OnOpenEntryID: Got object (0x%08X) of type 0x%08X = %s\n"),lpUnk,ulObjType,szFlags);
+		InterpretFlags(PROP_ID(PR_OBJECT_TYPE), ulObjType, &szFlags);
+		DebugPrint(DBGGeneric,_T("OnOpenEntryID: Got object (%p) of type 0x%08X = %s\n"),lpUnk,ulObjType,szFlags);
 		delete[] szFlags;
 		szFlags = NULL;
 		*lppUnk = lpUnk;
 	}
 	if (ulObjTypeRet) *ulObjTypeRet = ulObjType;
 	return hRes;
-}
+} // CallOpenEntry
 
-HRESULT CallOpenEntry(
-					  LPMDB lpMDB,
-					  LPADRBOOK lpAB,
-					  LPMAPICONTAINER lpContainer,
-					  LPMAPISESSION lpMAPISession,
-					  LPSBinary lpSBinary,
-					  LPCIID lpInterface,
-					  ULONG ulFlags,
-					  ULONG* ulObjTypeRet,
-					  LPUNKNOWN* lppUnk)
+_Check_return_ HRESULT CallOpenEntry(
+									 _In_opt_ LPMDB lpMDB,
+									 _In_opt_ LPADRBOOK lpAB,
+									 _In_opt_ LPMAPICONTAINER lpContainer,
+									 _In_opt_ LPMAPISESSION lpMAPISession,
+									 _In_opt_ LPSBinary lpSBinary,
+									 _In_opt_ LPCIID lpInterface,
+									 ULONG ulFlags,
+									 _Out_opt_ ULONG* ulObjTypeRet,
+									 _Deref_out_opt_ LPUNKNOWN* lppUnk)
 {
 	HRESULT			hRes = S_OK;
 	WC_H(CallOpenEntry(
@@ -227,13 +227,13 @@ HRESULT CallOpenEntry(
 		ulObjTypeRet,
 		lppUnk));
 	return hRes;
-}
+} // CallOpenEntry
 
 // Concatenate two property arrays without duplicates
-HRESULT ConcatSPropTagArrays(
-							 LPSPropTagArray lpArray1,
-							 LPSPropTagArray lpArray2,
-							 LPSPropTagArray *lpNewArray)
+_Check_return_ HRESULT ConcatSPropTagArrays(
+	_In_ LPSPropTagArray lpArray1,
+	_In_opt_ LPSPropTagArray lpArray2,
+	_Deref_out_opt_ LPSPropTagArray *lpNewArray)
 {
 	if (!lpNewArray) return MAPI_E_INVALID_PARAMETER;
 	HRESULT hRes = S_OK;
@@ -318,7 +318,7 @@ HRESULT ConcatSPropTagArrays(
 // May not behave correctly if lpSrcFolder == lpDestFolder
 // We can check that the pointers aren't equal, but they could be different
 // and still refer to the same folder.
-HRESULT CopyFolderContents(LPMAPIFOLDER lpSrcFolder, LPMAPIFOLDER lpDestFolder, BOOL bCopyAssociatedContents, BOOL bMove, BOOL bSingleCall, HWND hWnd)
+_Check_return_ HRESULT CopyFolderContents(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LPMAPIFOLDER lpDestFolder, BOOL bCopyAssociatedContents, BOOL bMove, BOOL bSingleCall, _In_ HWND hWnd)
 {
 	HRESULT			hRes = S_OK;
 	LPMAPITABLE		lpSrcContents = NULL;
@@ -332,7 +332,7 @@ HRESULT CopyFolderContents(LPMAPIFOLDER lpSrcFolder, LPMAPIFOLDER lpDestFolder, 
 		PR_ENTRYID,
 	};
 
-	DebugPrint(DBGGeneric,_T("CopyFolderContents: lpSrcFolder = 0x%08X, lpDestFolder = 0x%08X, bCopyAssociatedContents = %d, bMove = %d\n"),
+	DebugPrint(DBGGeneric,_T("CopyFolderContents: lpSrcFolder = %p, lpDestFolder = %p, bCopyAssociatedContents = %d, bMove = %d\n"),
 		lpSrcFolder,
 		lpDestFolder,
 		bCopyAssociatedContents,
@@ -452,7 +452,7 @@ HRESULT CopyFolderContents(LPMAPIFOLDER lpSrcFolder, LPMAPIFOLDER lpDestFolder, 
 	return hRes;
 } // CopyFolderContents
 
-HRESULT CopyFolderRules(LPMAPIFOLDER lpSrcFolder, LPMAPIFOLDER lpDestFolder,BOOL bReplace)
+_Check_return_ HRESULT CopyFolderRules(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LPMAPIFOLDER lpDestFolder, BOOL bReplace)
 {
 	if (!lpSrcFolder || !lpDestFolder) return MAPI_E_INVALID_PARAMETER;
 	HRESULT					hRes = S_OK;
@@ -565,14 +565,14 @@ HRESULT CopyFolderRules(LPMAPIFOLDER lpSrcFolder, LPMAPIFOLDER lpDestFolder,BOOL
 	if (lpDstTbl) lpDstTbl->Release();
 	if (lpSrcTbl) lpSrcTbl->Release();
 	return hRes;
-}
+} // CopyFolderRules
 
 // Copy a property using the stream interface
 // Does not call SaveChanges
-HRESULT CopyPropertyAsStream(LPMAPIPROP lpSourcePropObj,
-							 LPMAPIPROP lpTargetPropObj,
-							 ULONG ulSourceTag,
-							 ULONG ulTargetTag)
+_Check_return_ HRESULT CopyPropertyAsStream(_In_ LPMAPIPROP lpSourcePropObj,
+											_In_ LPMAPIPROP lpTargetPropObj,
+											ULONG ulSourceTag,
+											ULONG ulTargetTag)
 {
 	HRESULT			hRes = S_OK;
 	LPSTREAM		lpStmSource = NULL;
@@ -630,7 +630,7 @@ HRESULT CopyPropertyAsStream(LPMAPIPROP lpSourcePropObj,
 //	Purpose
 //		Allocates a new SBinary and copies psbSrc into it
 //
-HRESULT CopySBinary(LPSBinary psbDest,const LPSBinary psbSrc, LPVOID lpParent)
+_Check_return_ HRESULT CopySBinary(_Out_ LPSBinary psbDest, _In_ const LPSBinary psbSrc, _In_ LPVOID lpParent)
 {
 	HRESULT hRes = S_OK;
 
@@ -672,7 +672,7 @@ HRESULT CopySBinary(LPSBinary psbDest,const LPSBinary psbSrc, LPVOID lpParent)
 //		Uses MAPI to allocate a new string (szDestination) and copy szSource into it
 //		Uses lpParent as the parent for MAPIAllocateMore if possible
 //
-HRESULT CopyStringA(LPSTR* lpszDestination,LPCSTR szSource, LPVOID pParent)
+_Check_return_ HRESULT CopyStringA(_Deref_out_z_ LPSTR* lpszDestination, _In_z_ LPCSTR szSource, _In_opt_ LPVOID pParent)
 {
 	HRESULT	hRes = S_OK;
 	size_t	cbSource = 0;
@@ -704,7 +704,7 @@ HRESULT CopyStringA(LPSTR* lpszDestination,LPCSTR szSource, LPVOID pParent)
 	return hRes;
 } // CopyStringA
 
-HRESULT CopyStringW(LPWSTR* lpszDestination,LPCWSTR szSource, LPVOID pParent)
+_Check_return_ HRESULT CopyStringW(_Deref_out_z_ LPWSTR* lpszDestination, _In_z_ LPCWSTR szSource, _In_opt_ LPVOID pParent)
 {
 	HRESULT	hRes = S_OK;
 	size_t	cbSource = 0;
@@ -739,11 +739,11 @@ HRESULT CopyStringW(LPWSTR* lpszDestination,LPCWSTR szSource, LPVOID pParent)
 // Allocates and creates a restriction that looks for existence of
 // a particular property that matches the given string
 // If lpParent is passed in, it is used as the allocation parent.
-HRESULT CreatePropertyStringRestriction(ULONG ulPropTag,
-										LPCTSTR szString,
-										ULONG ulFuzzyLevel,
-										LPVOID lpParent,
-										LPSRestriction* lppRes)
+_Check_return_ HRESULT CreatePropertyStringRestriction(ULONG ulPropTag,
+													   _In_z_ LPCTSTR szString,
+													   ULONG ulFuzzyLevel,
+													   _In_opt_ LPVOID lpParent,
+													   _Deref_out_opt_ LPSRestriction* lppRes)
 {
 	HRESULT hRes = S_OK;
 	LPSRestriction	lpRes = NULL;
@@ -830,10 +830,10 @@ HRESULT CreatePropertyStringRestriction(ULONG ulPropTag,
 	return hRes;
 } // CreatePropertyStringRestriction
 
-HRESULT CreateRangeRestriction(ULONG ulPropTag,
-							   LPCTSTR szString,
-							   LPVOID lpParent,
-							   LPSRestriction* lppRes)
+_Check_return_ HRESULT CreateRangeRestriction(ULONG ulPropTag,
+											  _In_z_ LPCTSTR szString,
+											  _In_opt_ LPVOID lpParent,
+											  _Deref_out_opt_ LPSRestriction* lppRes)
 {
 	HRESULT hRes = S_OK;
 	LPSRestriction	lpRes = NULL;
@@ -918,9 +918,9 @@ HRESULT CreateRangeRestriction(ULONG ulPropTag,
 		*lppRes = NULL;
 	}
 	return hRes;
-}
+} // CreateRangeRestriction
 
-HRESULT DeleteProperty(LPMAPIPROP lpMAPIProp,ULONG ulPropTag)
+_Check_return_ HRESULT DeleteProperty(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
 {
 	HRESULT hRes = S_OK;
 	SPropTagArray		ptaTag;
@@ -934,7 +934,7 @@ HRESULT DeleteProperty(LPMAPIPROP lpMAPIProp,ULONG ulPropTag)
 	ptaTag.cValues = 1;
 	ptaTag.aulPropTag[0] = ulPropTag;
 
-	DebugPrint(DBGGeneric,_T("DeleteProperty: Deleting prop 0x%08X from MAPI item 0x%X.\n"),ulPropTag,lpMAPIProp);
+	DebugPrint(DBGGeneric,_T("DeleteProperty: Deleting prop 0x%08X from MAPI item %p.\n"),ulPropTag,lpMAPIProp);
 
 	EC_H(lpMAPIProp->DeleteProps(
 		&ptaTag,
@@ -963,7 +963,7 @@ HRESULT DeleteProperty(LPMAPIPROP lpMAPIProp,ULONG ulPropTag)
 } // DeleteProperty
 
 // Delete items to the wastebasket of the passed in mdb, if it exists.
-HRESULT DeleteToDeletedItems(LPMDB lpMDB, LPMAPIFOLDER lpSourceFolder, LPENTRYLIST lpEIDs, HWND hWnd)
+_Check_return_ HRESULT DeleteToDeletedItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLDER lpSourceFolder, _In_ LPENTRYLIST lpEIDs, _In_ HWND hWnd)
 {
 	HRESULT hRes = S_OK;
 	ULONG cProps;
@@ -974,7 +974,7 @@ HRESULT DeleteToDeletedItems(LPMDB lpMDB, LPMAPIFOLDER lpSourceFolder, LPENTRYLI
 
 	if (!lpMDB || !lpSourceFolder || !lpEIDs) return MAPI_E_INVALID_PARAMETER;
 
-	DebugPrint(DBGGeneric,_T("DeleteToDeletedItems: Deleting from folder 0x%X in store 0x%X\n"),
+	DebugPrint(DBGGeneric,_T("DeleteToDeletedItems: Deleting from folder %p in store %p\n"),
 		lpSourceFolder,
 		lpMDB);
 
@@ -1026,7 +1026,7 @@ HRESULT DeleteToDeletedItems(LPMDB lpMDB, LPMAPIFOLDER lpSourceFolder, LPENTRYLI
 	return hRes;
 } // DeleteToDeletedItems
 
-BOOL FindPropInPropTagArray(LPSPropTagArray lpspTagArray, ULONG ulPropToFind, ULONG* lpulRowFound)
+_Check_return_ BOOL FindPropInPropTagArray(_In_ LPSPropTagArray lpspTagArray, ULONG ulPropToFind, _Out_ ULONG* lpulRowFound)
 {
 	ULONG i = 0;
 	*lpulRowFound = 0;
@@ -1043,7 +1043,7 @@ BOOL FindPropInPropTagArray(LPSPropTagArray lpspTagArray, ULONG ulPropToFind, UL
 } // FindPropInPropTagArray
 
 // See list of types (like MAPI_FOLDER) in mapidefs.h
-ULONG GetMAPIObjectType(LPMAPIPROP lpMAPIProp)
+_Check_return_ ULONG GetMAPIObjectType(_In_opt_ LPMAPIPROP lpMAPIProp)
 {
 	HRESULT hRes = S_OK;
 	ULONG ulObjType = NULL;
@@ -1061,15 +1061,15 @@ ULONG GetMAPIObjectType(LPMAPIPROP lpMAPIProp)
 
 	MAPIFreeBuffer(lpProp);
 	return ulObjType;
-}
+} // GetMAPIObjectType
 
-HRESULT GetInbox(LPMDB lpMDB, LPMAPIFOLDER* lpInbox)
+_Check_return_ HRESULT GetInbox(_In_ LPMDB lpMDB, _Deref_out_opt_ LPMAPIFOLDER* lpInbox)
 {
 	HRESULT			hRes = S_OK;
 	ULONG			cbInboxEID = NULL;
 	LPENTRYID		lpInboxEID = NULL;
 
-	DebugPrint(DBGGeneric, _T("GetInbox: getting Inbox from 0x%X\n"),lpMDB);
+	DebugPrint(DBGGeneric, _T("GetInbox: getting Inbox from %p\n"),lpMDB);
 
 	*lpInbox = NULL;
 
@@ -1100,9 +1100,9 @@ HRESULT GetInbox(LPMDB lpMDB, LPMAPIFOLDER* lpInbox)
 
 	MAPIFreeBuffer(lpInboxEID);
 	return hRes;
-}
+} // GetInbox
 
-HRESULT GetParentFolder(LPMAPIFOLDER lpChildFolder, LPMDB lpMDB, LPMAPIFOLDER* lpParentFolder)
+_Check_return_ HRESULT GetParentFolder(_In_ LPMAPIFOLDER lpChildFolder, _In_ LPMDB lpMDB, _Deref_out_opt_ LPMAPIFOLDER* lpParentFolder)
 {
 	HRESULT			hRes = S_OK;
 	ULONG			cProps;
@@ -1143,7 +1143,7 @@ HRESULT GetParentFolder(LPMAPIFOLDER lpChildFolder, LPMDB lpMDB, LPMAPIFOLDER* l
 	return hRes;
 } // GetParentFolder
 
-HRESULT GetPropsNULL(LPMAPIPROP lpMAPIProp,ULONG ulFlags, ULONG * lpcValues, LPSPropValue *	lppPropArray)
+_Check_return_ HRESULT GetPropsNULL(_In_ LPMAPIPROP lpMAPIProp, ULONG ulFlags, _Out_ ULONG* lpcValues, _Deref_out_opt_ LPSPropValue* lppPropArray)
 {
 	HRESULT hRes = S_OK;
 	*lpcValues = NULL;
@@ -1153,7 +1153,7 @@ HRESULT GetPropsNULL(LPMAPIPROP lpMAPIProp,ULONG ulFlags, ULONG * lpcValues, LPS
 	LPSPropTagArray lpTags = NULL;
 	if (RegKeys[regkeyUSE_GETPROPLIST].ulCurDWORD)
 	{
-		DebugPrint(DBGGeneric, _T("GetPropsNULL: Calling GetPropList on 0x%X\n"),lpMAPIProp);
+		DebugPrint(DBGGeneric, _T("GetPropsNULL: Calling GetPropList on %p\n"),lpMAPIProp);
 		WC_H(lpMAPIProp->GetPropList(
 			ulFlags,
 			&lpTags));
@@ -1172,7 +1172,7 @@ HRESULT GetPropsNULL(LPMAPIPROP lpMAPIProp,ULONG ulFlags, ULONG * lpcValues, LPS
 	}
 	else
 	{
-		DebugPrint(DBGGeneric, _T("GetPropsNULL: Calling GetProps(NULL) on 0x%X\n"),lpMAPIProp);
+		DebugPrint(DBGGeneric, _T("GetPropsNULL: Calling GetProps(NULL) on %p\n"),lpMAPIProp);
 	}
 
 	WC_H(lpMAPIProp->GetProps(
@@ -1183,16 +1183,16 @@ HRESULT GetPropsNULL(LPMAPIPROP lpMAPIProp,ULONG ulFlags, ULONG * lpcValues, LPS
 	MAPIFreeBuffer(lpTags);
 
 	return hRes;
-}
+} // GetPropsNULL
 
-HRESULT GetSpecialFolder(LPMDB lpMDB, ULONG ulFolderPropTag, LPMAPIFOLDER *lpSpecialFolder)
+_Check_return_ HRESULT GetSpecialFolder(_In_ LPMDB lpMDB, ULONG ulFolderPropTag, _Deref_out_opt_ LPMAPIFOLDER *lpSpecialFolder)
 {
 	HRESULT			hRes = S_OK;
 	LPMAPIFOLDER	lpInbox = NULL;
 
 	*lpSpecialFolder = NULL;
 
-	DebugPrint(DBGGeneric, _T("GetSpecialFolder: getting 0x%X from 0x%X\n"),ulFolderPropTag,lpMDB);
+	DebugPrint(DBGGeneric, _T("GetSpecialFolder: getting 0x%X from %p\n"),ulFolderPropTag,lpMDB);
 
 	if (!lpMDB) return MAPI_E_INVALID_PARAMETER;
 
@@ -1250,9 +1250,9 @@ HRESULT GetSpecialFolder(LPMDB lpMDB, ULONG ulFolderPropTag, LPMAPIFOLDER *lpSpe
 	}
 	MAPIFreeBuffer(lpProp);
 	return hRes;
-}
+} // GetSpecialFolder
 
-HRESULT IsAttachmentBlocked(LPMAPISESSION lpMAPISession, LPCWSTR pwszFileName, BOOL* pfBlocked)
+_Check_return_ HRESULT IsAttachmentBlocked(_In_ LPMAPISESSION lpMAPISession, _In_z_ LPCWSTR pwszFileName, _Out_ BOOL* pfBlocked)
 {
 	if (!lpMAPISession || !pwszFileName || !pfBlocked) return MAPI_E_INVALID_PARAMETER;
 
@@ -1271,7 +1271,7 @@ HRESULT IsAttachmentBlocked(LPMAPISESSION lpMAPISession, LPCWSTR pwszFileName, B
 	return hRes;
 } // IsAttachmentBlocked
 
-BOOL IsDuplicateProp(LPSPropTagArray lpArray, ULONG ulPropTag)
+_Check_return_ BOOL IsDuplicateProp(_In_ LPSPropTagArray lpArray, ULONG ulPropTag)
 {
 	ULONG i = 0;
 
@@ -1297,7 +1297,7 @@ BOOL IsDuplicateProp(LPSPropTagArray lpArray, ULONG ulPropTag)
 
 // returns pointer to a string
 // delete with delete[]
-void MyHexFromBin(LPBYTE lpb, size_t cb, LPTSTR* lpsz)
+void MyHexFromBin(_In_opt_count_(cb) LPBYTE lpb, size_t cb, _Deref_out_opt_z_ LPTSTR* lpsz)
 {
 	ULONG i = 0;
 	ULONG iBinPos = 0;
@@ -1335,11 +1335,11 @@ void MyHexFromBin(LPBYTE lpb, size_t cb, LPTSTR* lpsz)
 		}
 		(*lpsz)[iBinPos] = _T('\0');
 	}
-}
+} // MyHexFromBin
 
 // must allocate first
 // Note that cb should be the number of bytes allocated for the lpb
-void MyBinFromHex(LPCTSTR lpsz, LPBYTE lpb, size_t cb)
+void MyBinFromHex(_In_z_ LPCTSTR lpsz, _Inout_count_(cb) LPBYTE lpb, size_t cb)
 {
 	HRESULT hRes = S_OK;
 	if (!lpb || !cb)
@@ -1372,7 +1372,7 @@ void MyBinFromHex(LPCTSTR lpsz, LPBYTE lpb, size_t cb)
 		iBinPos += 1;
 		cb--; // so we can't run off the end of the lpb
 	}
-}
+} // MyBinFromHex
 
 ULONG aulOneOffIDs[] = {dispidFormStorage,
 dispidPageDirStream,
@@ -1383,7 +1383,7 @@ dispidCustomFlag}; // dispidCustomFlag must remain last in list
 
 #define ulNumOneOffIDs (_countof(aulOneOffIDs))
 
-HRESULT RemoveOneOff(LPMESSAGE lpMessage, BOOL bRemovePropDef)
+_Check_return_ HRESULT RemoveOneOff(_In_ LPMESSAGE lpMessage, BOOL bRemovePropDef)
 {
 	if (!lpMessage) return MAPI_E_INVALID_PARAMETER;
 	DebugPrint(DBGNamedProp,_T("RemoveOneOff - removing one off named properties.\n"));
@@ -1430,7 +1430,7 @@ HRESULT RemoveOneOff(LPMESSAGE lpMessage, BOOL bRemovePropDef)
 		{
 			if (lpProbArray)
 			{
-				DebugPrint(DBGNamedProp,_T("RemoveOneOff - DeleteProps problem array:\n%s\n"),ProblemArrayToString(lpProbArray));
+				DebugPrint(DBGNamedProp,_T("RemoveOneOff - DeleteProps problem array:\n%s\n"),(LPCTSTR) ProblemArrayToString(lpProbArray));
 			}
 
 			SPropTagArray	pTag = {0};
@@ -1461,7 +1461,7 @@ HRESULT RemoveOneOff(LPMESSAGE lpMessage, BOOL bRemovePropDef)
 					&lpProbArray2));
 				if (S_OK == hRes && lpProbArray2)
 				{
-					DebugPrint(DBGNamedProp,_T("RemoveOneOff - SetProps problem array:\n%s\n"),ProblemArrayToString(lpProbArray2));
+					DebugPrint(DBGNamedProp,_T("RemoveOneOff - SetProps problem array:\n%s\n"),(LPCTSTR) ProblemArrayToString(lpProbArray2));
 				}
 				MAPIFreeBuffer(lpProbArray2);
 			}
@@ -1479,9 +1479,9 @@ HRESULT RemoveOneOff(LPMESSAGE lpMessage, BOOL bRemovePropDef)
 	MAPIFreeBuffer(lpTags);
 
 	return hRes;
-}
+} // RemoveOneOff
 
-HRESULT ResendMessages(LPMAPIFOLDER lpFolder, HWND hWnd)
+_Check_return_ HRESULT ResendMessages(_In_ LPMAPIFOLDER lpFolder, _In_ HWND hWnd)
 {
 	HRESULT		hRes = S_OK;
 	LPMAPITABLE	lpContentsTable = NULL;
@@ -1546,10 +1546,10 @@ HRESULT ResendMessages(LPMAPIFOLDER lpFolder, HWND hWnd)
 	return hRes;
 } // ResendMessages
 
-HRESULT ResendSingleMessage(
-							LPMAPIFOLDER lpFolder,
-							LPSBinary MessageEID,
-							HWND hWnd)
+_Check_return_ HRESULT ResendSingleMessage(
+	_In_ LPMAPIFOLDER lpFolder,
+	_In_ LPSBinary MessageEID,
+	_In_ HWND hWnd)
 {
 	HRESULT hRes = S_OK;
 	LPMESSAGE lpMessage = NULL;
@@ -1577,12 +1577,12 @@ HRESULT ResendSingleMessage(
 
 	if (lpMessage) lpMessage->Release();
 	return hRes;
-}
+} // ResendSingleMessage
 
-HRESULT ResendSingleMessage(
-							LPMAPIFOLDER lpFolder,
-							LPMESSAGE lpMessage,
-							HWND hWnd)
+_Check_return_ HRESULT ResendSingleMessage(
+	_In_ LPMAPIFOLDER lpFolder,
+	_In_ LPMESSAGE lpMessage,
+	_In_ HWND hWnd)
 {
 	HRESULT			hRes = S_OK;
 	LPATTACH		lpAttach = NULL;
@@ -1769,7 +1769,7 @@ HRESULT ResendSingleMessage(
 	return hRes;
 } // ResendSingleMessage
 
-HRESULT ResetPermissionsOnItems(LPMDB lpMDB, LPMAPIFOLDER lpMAPIFolder)
+_Check_return_ HRESULT ResetPermissionsOnItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLDER lpMAPIFolder)
 {
 	LPSRowSet		pRows = NULL;
 	HRESULT			hRes = S_OK;
@@ -1895,12 +1895,12 @@ HRESULT ResetPermissionsOnItems(LPMDB lpMDB, LPMAPIFOLDER lpMAPIFolder)
 
 // This function creates a new message based in m_lpContainer
 // Then sends the message
-HRESULT SendTestMessage(
-						LPMAPISESSION lpMAPISession,
-						LPMAPIFOLDER lpFolder,
-						LPCTSTR szRecipient,
-						LPCTSTR szBody,
-						LPCTSTR szSubject)
+_Check_return_ HRESULT SendTestMessage(
+									   _In_ LPMAPISESSION lpMAPISession,
+									   _In_ LPMAPIFOLDER lpFolder,
+									   _In_z_ LPCTSTR szRecipient,
+									   _In_z_ LPCTSTR szBody,
+									   _In_z_ LPCTSTR szSubject)
 {
 	HRESULT			hRes = S_OK;
 	LPMESSAGE		lpNewMessage = NULL;
@@ -1960,14 +1960,14 @@ HRESULT SendTestMessage(
 	return hRes;
 } // SendTestMessage
 
-HRESULT WrapStreamForRTF(
-						 LPSTREAM lpCompressedRTFStream,
-						 BOOL bUseWrapEx,
-						 ULONG ulFlags,
-						 ULONG ulInCodePage,
-						 ULONG ulOutCodePage,
-						 LPSTREAM FAR * lpUncompressedRTFStream,
-						 ULONG FAR * pulStreamFlags)
+_Check_return_ HRESULT WrapStreamForRTF(
+										_In_ LPSTREAM lpCompressedRTFStream,
+										BOOL bUseWrapEx,
+										ULONG ulFlags,
+										ULONG ulInCodePage,
+										ULONG ulOutCodePage,
+										_Deref_out_ LPSTREAM FAR* lpUncompressedRTFStream,
+										_Out_opt_ ULONG FAR* pulStreamFlags)
 {
 	if (!lpCompressedRTFStream || !lpUncompressedRTFStream) return MAPI_E_INVALID_PARAMETER;
 	HRESULT hRes = S_OK;
@@ -1998,7 +1998,7 @@ HRESULT WrapStreamForRTF(
 				&wcsinfo,
 				lpUncompressedRTFStream,
 				&retinfo));
-			*pulStreamFlags = retinfo.ulStreamFlags;
+			if (pulStreamFlags) *pulStreamFlags = retinfo.ulStreamFlags;
 		}
 		else
 		{
@@ -2007,9 +2007,9 @@ HRESULT WrapStreamForRTF(
 	}
 
 	return hRes;
-}
+} // WrapStreamForRTF
 
-HRESULT CopyNamedProps(LPMAPIPROP lpSource, LPGUID lpPropSetGUID, BOOL bDoMove, BOOL bDoNoReplace, LPMAPIPROP lpTarget, HWND hWnd)
+_Check_return_ HRESULT CopyNamedProps(_In_ LPMAPIPROP lpSource, _In_ LPGUID lpPropSetGUID, BOOL bDoMove, BOOL bDoNoReplace, _In_ LPMAPIPROP lpTarget, _In_ HWND hWnd)
 {
 	if((!lpSource) || (!lpTarget)) return MAPI_E_INVALID_PARAMETER;
 
@@ -2050,11 +2050,11 @@ HRESULT CopyNamedProps(LPMAPIPROP lpSource, LPGUID lpPropSetGUID, BOOL bDoMove, 
 	MAPIFreeBuffer(lpPropTags);
 
 	return hRes;
-}
+} // CopyNamedProps
 
-HRESULT GetNamedPropsByGUID(LPMAPIPROP lpSource, LPGUID lpPropSetGUID, LPSPropTagArray* lpOutArray)
+_Check_return_ HRESULT GetNamedPropsByGUID(_In_ LPMAPIPROP lpSource, _In_ LPGUID lpPropSetGUID, _Deref_out_ LPSPropTagArray* lpOutArray)
 {
-	if(!lpSource || !lpPropSetGUID || *lpOutArray)
+	if(!lpSource || !lpPropSetGUID || lpOutArray)
 		return MAPI_E_INVALID_PARAMETER;
 
 	HRESULT hRes = S_OK;
@@ -2116,11 +2116,11 @@ HRESULT GetNamedPropsByGUID(LPMAPIPROP lpSource, LPGUID lpPropSetGUID, LPSPropTa
 	}
 	MAPIFreeBuffer(lpAllProps);
 	return hRes;
-}
+} // GetNamedPropsByGUID
 
 // if cchszA == -1, MultiByteToWideChar will compute the length
 // Delete with delete[]
-HRESULT AnsiToUnicode(LPCSTR pszA, LPWSTR* ppszW, size_t cchszA)
+_Check_return_ HRESULT AnsiToUnicode(_In_z_ LPCSTR pszA, _Out_z_cap_(cchszA) LPWSTR* ppszW, size_t cchszA)
 {
 	HRESULT hRes = S_OK;
 	if (!ppszW) return MAPI_E_INVALID_PARAMETER;
@@ -2159,11 +2159,11 @@ HRESULT AnsiToUnicode(LPCSTR pszA, LPWSTR* ppszW, size_t cchszA)
 		}
 	}
 	return hRes;
-}
+} // AnsiToUnicode
 
 // if cchszW == -1, WideCharToMultiByte will compute the length
 // Delete with delete[]
-HRESULT UnicodeToAnsi(LPCWSTR pszW, LPSTR* ppszA, size_t cchszW)
+_Check_return_ HRESULT UnicodeToAnsi(_In_z_ LPCWSTR pszW, _Out_z_cap_(cchszW) LPSTR* ppszA, size_t cchszW)
 {
 	HRESULT hRes = S_OK;
 	if (!ppszA) return MAPI_E_INVALID_PARAMETER;
@@ -2206,9 +2206,9 @@ HRESULT UnicodeToAnsi(LPCWSTR pszW, LPSTR* ppszA, size_t cchszW)
 		}
 	}
 	return hRes;
-}
+} // UnicodeToAnsi
 
-BOOL CheckStringProp(LPSPropValue lpProp, ULONG ulPropType)
+_Check_return_ BOOL CheckStringProp(_In_opt_ LPSPropValue lpProp, ULONG ulPropType)
 {
 	if (PT_STRING8 != ulPropType && PT_UNICODE != ulPropType)
 	{
@@ -2252,9 +2252,9 @@ BOOL CheckStringProp(LPSPropValue lpProp, ULONG ulPropType)
 	}
 
 	return true;
-}
+} // CheckStringProp
 
-DWORD ComputeStoreHash(ULONG cbStoreEID, LPENTRYID pbStoreEID, LPCWSTR pwzFileName)
+_Check_return_ DWORD ComputeStoreHash(ULONG cbStoreEID, _In_ LPENTRYID pbStoreEID, _In_z_ LPCWSTR pwzFileName)
 {
 	DWORD  dwHash = 0;
 	ULONG  cdw    = 0;
@@ -2301,7 +2301,7 @@ DWORD ComputeStoreHash(ULONG cbStoreEID, LPENTRYID pbStoreEID, LPCWSTR pwzFileNa
 
 const WORD kwBaseOffset = 0xAC00;  // Hangul char range (AC00-D7AF)
 // Allocates with new, free with delete[]
-LPWSTR EncodeID(ULONG cbEID, LPENTRYID rgbID)
+_Check_return_ LPWSTR EncodeID(ULONG cbEID, _In_ LPENTRYID rgbID)
 {
 	ULONG   i = 0;
 	LPWSTR  pwzDst = NULL;

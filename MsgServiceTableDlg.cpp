@@ -20,9 +20,9 @@ static TCHAR* CLASS = _T("CMsgServiceTableDlg");
 
 
 CMsgServiceTableDlg::CMsgServiceTableDlg(
-	CParentWnd* pParentWnd,
-	CMapiObjects* lpMapiObjects,
-	LPCSTR szProfileName
+	_In_ CParentWnd* pParentWnd,
+	_In_ CMapiObjects* lpMapiObjects,
+	_In_z_ LPCSTR szProfileName
 	):
 CContentsTableDlg(
 				  pParentWnd,
@@ -43,9 +43,9 @@ CContentsTableDlg(
 
 	CreateDialogAndMenu(IDR_MENU_MSGSERVICE);
 
-	CopyStringA(&m_szProfileName,szProfileName,NULL);
+	(void) CopyStringA(&m_szProfileName,szProfileName,NULL);
 	OnRefreshView();
-}
+} // CMsgServiceTableDlg::CMsgServiceTableDlg
 
 CMsgServiceTableDlg::~CMsgServiceTableDlg()
 {
@@ -56,7 +56,7 @@ CMsgServiceTableDlg::~CMsgServiceTableDlg()
 	if (m_lpContentsTable) m_lpContentsTable->Release();
 	m_lpContentsTable = NULL;
 	if (m_lpServiceAdmin) m_lpServiceAdmin->Release();
-}
+} // CMsgServiceTableDlg::~CMsgServiceTableDlg
 
 BEGIN_MESSAGE_MAP(CMsgServiceTableDlg, CContentsTableDlg)
 	ON_COMMAND(ID_CONFIGUREMSGSERVICE,OnConfigureMsgService)
@@ -64,7 +64,7 @@ BEGIN_MESSAGE_MAP(CMsgServiceTableDlg, CContentsTableDlg)
 	ON_COMMAND(ID_OPENPROFILESECTION,OnOpenProfileSection)
 END_MESSAGE_MAP()
 
-void CMsgServiceTableDlg::OnInitMenu(CMenu* pMenu)
+void CMsgServiceTableDlg::OnInitMenu(_In_ CMenu* pMenu)
 {
 	if (pMenu)
 	{
@@ -76,7 +76,7 @@ void CMsgServiceTableDlg::OnInitMenu(CMenu* pMenu)
 		}
 	}
 	CContentsTableDlg::OnInitMenu(pMenu);
-}
+} // CMsgServiceTableDlg::OnInitMenu
 
 /////////////////////////////////////////////////////////////////////////////
 // CMsgServiceTableDlg message handlers
@@ -188,8 +188,6 @@ void CMsgServiceTableDlg::OnDisplayItem()
 		}
 	}
 	while (iItem != -1);
-
-	return;
 } // CMsgServiceTableDlg::OnDisplayItem
 
 void CMsgServiceTableDlg::OnConfigureMsgService()
@@ -221,11 +219,9 @@ void CMsgServiceTableDlg::OnConfigureMsgService()
 		}
 	}
 	while (iItem != -1);
+} // CMsgServiceTableDlg::OnConfigureMsgService
 
-	return;
-}
-
-HRESULT CMsgServiceTableDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum /*bModify*/, LPMAPIPROP* lppMAPIProp)
+_Check_return_ HRESULT CMsgServiceTableDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum /*bModify*/, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
 {
 	HRESULT		hRes = S_OK;
 	LPSBinary	lpServiceUID = NULL;
@@ -308,8 +304,6 @@ void CMsgServiceTableDlg::OnOpenProfileSection()
 		lpProfSect->Release();
 	}
 	MAPIFreeBuffer(MapiUID.lpb);
-
-	return;
 } // CMsgServiceTableDlg::OnOpenProfileSection
 
 void CMsgServiceTableDlg::OnDeleteSelectedItem()
@@ -343,9 +337,9 @@ void CMsgServiceTableDlg::OnDeleteSelectedItem()
 } // CMsgServiceTableDlg::OnDeleteSelectedItem
 
 void CMsgServiceTableDlg::HandleAddInMenuSingle(
-	LPADDINMENUPARAMS lpParams,
-	LPMAPIPROP lpMAPIProp,
-	LPMAPICONTAINER /*lpContainer*/)
+	_In_ LPADDINMENUPARAMS lpParams,
+	_In_ LPMAPIPROP lpMAPIProp,
+	_In_ LPMAPICONTAINER /*lpContainer*/)
 {
 	if (lpParams)
 	{

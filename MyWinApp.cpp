@@ -6,6 +6,7 @@
 #include "ParentWnd.h"
 #include "MainDlg.h"
 #include "MapiObjects.h"
+#include "ImportProcs.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CMyWinApp
@@ -49,14 +50,14 @@ CMyWinApp::CMyWinApp()
 
 	if (bTerminateOnCorruption)
 	{
-		(void) HeapSetInformation(NULL, HeapEnableTerminationOnCorruption, NULL, 0);
+		MyHeapSetInformation(NULL, HeapEnableTerminationOnCorruption, NULL, 0);
 	}
 } // CMyWinApp
 
 /////////////////////////////////////////////////////////////////////////////
 // CMyWinApp initialization
 
-BOOL CMyWinApp::InitInstance()
+_Check_return_ BOOL CMyWinApp::InitInstance()
 {
 	// Create a parent window that all objects get a pointer to, ensuring we don't
 	// quit this thread until all objects have freed themselves.
@@ -74,4 +75,4 @@ BOOL CMyWinApp::InitInstance()
 	}
 
 	return TRUE;
-}
+} // CMyWinApp::InitInstance

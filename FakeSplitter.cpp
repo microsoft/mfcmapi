@@ -18,7 +18,7 @@ enum FakesSplitHitTestValue
 
 
 CFakeSplitter::CFakeSplitter(
-							 CBaseDialog *lpHostDlg
+							 _In_ CBaseDialog *lpHostDlg
 							 ):CWnd()
 {
 	TRACE_CONSTRUCTOR(CLASS);
@@ -70,14 +70,14 @@ CFakeSplitter::CFakeSplitter(
 	// Necessary for TAB to work. Without this, all TABS get stuck on the fake splitter control
 	// instead of passing to the children. Haven't tested with nested splitters.
 	EC_B(ModifyStyleEx(0,WS_EX_CONTROLPARENT));
-}
+} // CFakeSplitter::CFakeSplitter
 
 CFakeSplitter::~CFakeSplitter()
 {
 	TRACE_DESTRUCTOR(CLASS);
 	DestroyWindow();
 	if (m_lpHostDlg) m_lpHostDlg->Release();
-}
+} // CFakeSplitter::~CFakeSplitter
 
 BEGIN_MESSAGE_MAP(CFakeSplitter, CWnd)
 	ON_WM_MOUSEMOVE()
@@ -85,7 +85,7 @@ BEGIN_MESSAGE_MAP(CFakeSplitter, CWnd)
 	ON_WM_PAINT()
 END_MESSAGE_MAP()
 
-LRESULT CFakeSplitter::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+_Check_return_ LRESULT CFakeSplitter::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
 	{
@@ -121,17 +121,17 @@ LRESULT CFakeSplitter::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 
 	} // end switch
 	return CWnd::WindowProc(message,wParam,lParam);
-}
+} // CFakeSplitter::WindowProc
 
 void CFakeSplitter::SetPaneOne(CWnd* PaneOne)
 {
 	m_PaneOne = PaneOne;
-}
+} // CFakeSplitter::SetPaneOne
 
 void CFakeSplitter::SetPaneTwo(CWnd* PaneTwo)
 {
 	m_PaneTwo = PaneTwo;
-}
+} // CFakeSplitter::SetPaneTwo
 
 void CFakeSplitter::OnSize(UINT /*nType*/, int cx, int cy)
 {
@@ -142,42 +142,45 @@ void CFakeSplitter::OnSize(UINT /*nType*/, int cx, int cy)
 
 	WC_D(hdwp, BeginDeferWindowPos(2));
 
-	cy--;
-	if (m_PaneOne && m_PaneOne->m_hWnd)
+	if (hdwp)
 	{
-		CRect r1;
-		if (SplitHorizontal == m_SplitType)
+		cy--;
+		if (m_PaneOne && m_PaneOne->m_hWnd)
 		{
-			r1.SetRect(0,0,m_iSplitPos,cy);
+			CRect r1;
+			if (SplitHorizontal == m_SplitType)
+			{
+				r1.SetRect(0,0,m_iSplitPos,cy);
+			}
+			else
+			{
+				r1.SetRect(0,0,cx,m_iSplitPos);
+			}
+			DeferWindowPos(hdwp,m_PaneOne->m_hWnd,0,0,0,r1.Width(),r1.Height(),SWP_NOZORDER);
 		}
-		else
+		if (m_PaneTwo && m_PaneTwo->m_hWnd)
 		{
-			r1.SetRect(0,0,cx,m_iSplitPos);
+			CRect r2;
+			if (SplitHorizontal == m_SplitType)
+			{
+				r2.SetRect(
+					m_iSplitPos+m_iSplitWidth, // new x
+					0, // new y
+					cx, // - iSplitPos-m_iSplitWidth, // new width
+					cy); // new height
+			}
+			else
+			{
+				r2.SetRect(
+					0, // new x
+					m_iSplitPos+m_iSplitWidth, // new y
+					cx, // new width
+					cy); // new height
+			}
+			DeferWindowPos(hdwp,m_PaneTwo->m_hWnd,0,r2.left,r2.top,r2.Width(),r2.Height(),SWP_NOZORDER);
 		}
-		DeferWindowPos(hdwp,m_PaneOne->m_hWnd,0,0,0,r1.Width(),r1.Height(),SWP_NOZORDER);
+		EC_B(EndDeferWindowPos(hdwp));
 	}
-	if (m_PaneTwo && m_PaneTwo->m_hWnd)
-	{
-		CRect r2;
-		if (SplitHorizontal == m_SplitType)
-		{
-			r2.SetRect(
-				m_iSplitPos+m_iSplitWidth, // new x
-				0, // new y
-				cx, // - iSplitPos-m_iSplitWidth, // new width
-				cy); // new height
-		}
-		else
-		{
-			r2.SetRect(
-				0, // new x
-				m_iSplitPos+m_iSplitWidth, // new y
-				cx, // new width
-				cy); // new height
-		}
-		DeferWindowPos(hdwp,m_PaneTwo->m_hWnd,0,r2.left,r2.top,r2.Width(),r2.Height(),SWP_NOZORDER);
-	}
-	EC_B(EndDeferWindowPos(hdwp));
 
 	// Invalidate our splitter region to force a redraw
 	if (SplitHorizontal == m_SplitType)
@@ -188,7 +191,7 @@ void CFakeSplitter::OnSize(UINT /*nType*/, int cx, int cy)
 	{
 		InvalidateRect(CRect(0,m_iSplitPos,cx,m_iSplitPos+m_iSplitWidth),false);
 	}
-}
+} // CFakeSplitter::OnSize
 
 void CFakeSplitter::CalcSplitPos()
 {
@@ -209,12 +212,12 @@ void CFakeSplitter::CalcSplitPos()
 	{
 		m_iSplitPos = m_iSplitPos - m_iSplitWidth - 1;
 	}
-}
+} // CFakeSplitter::CalcSplitPos
 
-BOOL CFakeSplitter::SetPercent(FLOAT iNewPercent)
+void CFakeSplitter::SetPercent(FLOAT iNewPercent)
 {
 	if (iNewPercent < 0.0 || iNewPercent > 1.0)
-		return FALSE;
+		return;
 	m_flSplitPercent = iNewPercent;
 
 	CalcSplitPos();
@@ -224,16 +227,14 @@ BOOL CFakeSplitter::SetPercent(FLOAT iNewPercent)
 
 	// Recalculate our layout
 	OnSize(0,rect.Width(),rect.Height());
-	return TRUE;
-}
+} // CFakeSplitter::SetPercent
 
 void CFakeSplitter::SetSplitType(SplitType stSplitType)
 {
 	m_SplitType = stSplitType;
 } // CFakeSplitter::SetSplitType
 
-
-int CFakeSplitter::HitTest(LONG x, LONG y)
+_Check_return_ int CFakeSplitter::HitTest(LONG x, LONG y)
 {
 	LONG lTestPos;
 
@@ -251,9 +252,9 @@ int CFakeSplitter::HitTest(LONG x, LONG y)
 		return SplitterHit;
 	else
 		return noHit;
-}
+} // CFakeSplitter::HitTest
 
-void CFakeSplitter::OnMouseMove(UINT /*nFlags*/,CPoint point)
+void CFakeSplitter::OnMouseMove(UINT /*nFlags*/, CPoint point)
 {
 	HRESULT hRes = S_OK;
 	// If we don't have GetCapture, then we don't want to track right now.
@@ -271,8 +272,11 @@ void CFakeSplitter::OnMouseMove(UINT /*nFlags*/,CPoint point)
 		{
 			EC_D(hSplitCursor,::LoadCursor(NULL, IDC_SIZENS));
 		}
-		::SetCursor(hSplitCursor);
-		EC_B(::DestroyCursor(hSplitCursor)); // destroy after being set
+		if (hSplitCursor)
+		{
+			::SetCursor(hSplitCursor);
+			EC_B(::DestroyCursor(hSplitCursor)); // destroy after being set
+		}
 	}
 
 	if (m_bTracking)
@@ -294,7 +298,7 @@ void CFakeSplitter::OnMouseMove(UINT /*nFlags*/,CPoint point)
 		// Force child windows to refresh now
 		EC_B(RedrawWindow(NULL, NULL, RDW_ALLCHILDREN | RDW_UPDATENOW));
 	}
-}
+} // CFakeSplitter::OnMouseMove
 
 void CFakeSplitter::StartTracking(int ht)
 {
@@ -312,7 +316,7 @@ void CFakeSplitter::StartTracking(int ht)
 
 	// set tracking state and appropriate cursor
 	m_bTracking = TRUE;
-}
+} // CFakeSplitter::StartTracking
 
 void CFakeSplitter::StopTracking()
 {
@@ -322,7 +326,7 @@ void CFakeSplitter::StopTracking()
 	ReleaseCapture();
 
 	m_bTracking = FALSE;
-}
+} // CFakeSplitter::StopTracking
 
 // See CSplitterWnd::OnPaint to see where I swiped this code.
 void CFakeSplitter::OnPaint()
@@ -365,4 +369,4 @@ void CFakeSplitter::OnPaint()
 	}
 
 	EndPaint(&ps);
-}
+} // CFakeSplitter::OnPaint

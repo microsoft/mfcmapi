@@ -18,9 +18,9 @@ static TCHAR* CLASS = _T("CAclDlg");
 /////////////////////////////////////////////////////////////////////////////
 // CAclDlg dialog
 
-CAclDlg::CAclDlg(CParentWnd* pParentWnd,
-				 CMapiObjects* lpMapiObjects,
-				 LPEXCHANGEMODIFYTABLE lpExchTbl,
+CAclDlg::CAclDlg(_In_ CParentWnd* pParentWnd,
+				 _In_ CMapiObjects* lpMapiObjects,
+				 _In_ LPEXCHANGEMODIFYTABLE lpExchTbl,
 				 BOOL fFreeBusyVisible)
 				 : CContentsTableDlg(pParentWnd,
 				 lpMapiObjects,
@@ -49,7 +49,7 @@ CAclDlg::CAclDlg(CParentWnd* pParentWnd,
 	CreateDialogAndMenu(IDR_MENU_ACL);
 
 	OnRefreshView();
-}
+} // CAclDlg::CAclDlg
 
 CAclDlg::~CAclDlg()
 {
@@ -57,7 +57,7 @@ CAclDlg::~CAclDlg()
 
 	if (m_lpExchTbl)
 		m_lpExchTbl->Release();
-}
+} // CAclDlg::~CAclDlg
 
 BEGIN_MESSAGE_MAP(CAclDlg, CContentsTableDlg)
 	ON_COMMAND(ID_ADDITEM, OnAddItem)
@@ -66,13 +66,13 @@ BEGIN_MESSAGE_MAP(CAclDlg, CContentsTableDlg)
 END_MESSAGE_MAP()
 
 
-HRESULT CAclDlg::OpenItemProp(int /*iSelectedItem*/, __mfcmapiModifyEnum /*bModify*/, LPMAPIPROP* /*lppMAPIProp*/)
+_Check_return_ HRESULT CAclDlg::OpenItemProp(int /*iSelectedItem*/, __mfcmapiModifyEnum /*bModify*/, _Deref_out_opt_ LPMAPIPROP* /*lppMAPIProp*/)
 {
 	// Don't do anything because we don't want to override the properties that we have
 	return S_OK;
-}
+} // CAclDlg::OpenItemProp
 
-void CAclDlg::OnInitMenu(CMenu* pMenu)
+void CAclDlg::OnInitMenu(_In_ CMenu* pMenu)
 {
 	if (pMenu)
 	{
@@ -84,8 +84,7 @@ void CAclDlg::OnInitMenu(CMenu* pMenu)
 		}
 	}
 	CContentsTableDlg::OnInitMenu(pMenu);
-}
-
+} // CAclDlg::OnInitMenu
 
 // Clear the current list and get a new one with whatever code we've got in LoadMAPIPropList
 void CAclDlg::OnRefreshView()
@@ -215,9 +214,9 @@ void CAclDlg::OnModifySelectedItem()
 		MAPIFreeBuffer(lpSelectedItems);
 		if (S_OK == hRes) OnRefreshView();
 	}
-}
+} // CAclDlg::OnModifySelectedItem
 
-HRESULT CAclDlg::GetSelectedItems(ULONG ulFlags, ULONG ulRowFlags, LPROWLIST* lppRowList)
+_Check_return_ HRESULT CAclDlg::GetSelectedItems(ULONG ulFlags, ULONG ulRowFlags, _In_ LPROWLIST* lppRowList)
 {
 	if (!lppRowList || !m_lpContentsTableListCtrl)
 		return MAPI_E_INVALID_PARAMETER;
@@ -293,9 +292,9 @@ HRESULT CAclDlg::GetSelectedItems(ULONG ulFlags, ULONG ulRowFlags, LPROWLIST* lp
 } // CAclDlg::GetSelectedItems
 
 void CAclDlg::HandleAddInMenuSingle(
-									LPADDINMENUPARAMS lpParams,
-									LPMAPIPROP /*lpMAPIProp*/,
-									LPMAPICONTAINER /*lpContainer*/)
+									_In_ LPADDINMENUPARAMS lpParams,
+									_In_ LPMAPIPROP /*lpMAPIProp*/,
+									_In_ LPMAPICONTAINER /*lpContainer*/)
 {
 	if (lpParams)
 	{

@@ -17,45 +17,45 @@ class CMapiObjects
 {
 public:
 	CMapiObjects(
-		CMapiObjects* OldMapiObjects);
+		_In_opt_ CMapiObjects* OldMapiObjects);
 	virtual ~CMapiObjects();
 
 	STDMETHODIMP_(ULONG) AddRef();
 	STDMETHODIMP_(ULONG) Release();
 
-	LPADRBOOK     GetAddrBook(BOOL bForceOpen);
-	LPMDB         GetMDB();
-	LPMAPISESSION GetSession();
-	LPPROFADMIN   GetProfAdmin();
+	_Check_return_ LPADRBOOK     GetAddrBook(BOOL bForceOpen);
+	_Check_return_ LPMDB         GetMDB();
+	_Check_return_ LPMAPISESSION GetSession();
+	_Check_return_ LPPROFADMIN   GetProfAdmin();
 
-	void SetAddrBook(LPADRBOOK lpAddrBook);
-	void SetMDB(LPMDB lppMDB);
-	void MAPILogonEx(HWND hwnd,LPTSTR szProfileName, ULONG ulFlags);
-	void Logoff(HWND hwnd, ULONG ulFlags);
+	void SetAddrBook(_In_opt_ LPADRBOOK lpAddrBook);
+	void SetMDB(_In_opt_ LPMDB lppMDB);
+	void MAPILogonEx(_In_ HWND hwnd, _In_opt_z_ LPTSTR szProfileName, ULONG ulFlags);
+	void Logoff(_In_ HWND hwnd, ULONG ulFlags);
 
 	// For copy buffer
-	LPENTRYLIST  GetABEntriesToCopy();
-	LPENTRYLIST  GetMessagesToCopy();
-	LPMAPIFOLDER GetFolderToCopy();
-	LPMAPIFOLDER GetSourceParentFolder();
+	_Check_return_ LPENTRYLIST  GetABEntriesToCopy();
+	_Check_return_ LPENTRYLIST  GetMessagesToCopy();
+	_Check_return_ LPMAPIFOLDER GetFolderToCopy();
+	_Check_return_ LPMAPIFOLDER GetSourceParentFolder();
 
-	ULONG      GetPropertyToCopy();
-	LPMAPIPROP GetSourcePropObject();
+	_Check_return_ ULONG      GetPropertyToCopy();
+	_Check_return_ LPMAPIPROP GetSourcePropObject();
 
-	ULONG* GetAttachmentsToCopy();
-	ULONG  GetNumAttachments();
+	_Check_return_ ULONG* GetAttachmentsToCopy();
+	_Check_return_ ULONG  GetNumAttachments();
 
-	void SetABEntriesToCopy(LPENTRYLIST lpEBEntriesToCopy);
-	void SetMessagesToCopy(LPENTRYLIST lpMessagesToCopy, LPMAPIFOLDER lpSourceParent);
-	void SetFolderToCopy(LPMAPIFOLDER lpFolderToCopy, LPMAPIFOLDER lpSourceParent);
-	void SetPropertyToCopy(ULONG ulPropTag, LPMAPIPROP lpSourcePropObject);
-	void SetAttachmentsToCopy(LPMESSAGE lpMessage, ULONG ulNumSelected, ULONG* lpAttNumList);
+	void SetABEntriesToCopy(_In_ LPENTRYLIST lpEBEntriesToCopy);
+	void SetMessagesToCopy(_In_ LPENTRYLIST lpMessagesToCopy, _In_ LPMAPIFOLDER lpSourceParent);
+	void SetFolderToCopy(_In_ LPMAPIFOLDER lpFolderToCopy, _In_ LPMAPIFOLDER lpSourceParent);
+	void SetPropertyToCopy(ULONG ulPropTag, _In_ LPMAPIPROP lpSourcePropObject);
+	void SetAttachmentsToCopy(_In_ LPMESSAGE lpMessage, ULONG ulNumSelected, _Out_ ULONG* lpAttNumList);
 
-	ULONG GetBufferStatus();
+	_Check_return_ ULONG GetBufferStatus();
 
 	void MAPIInitialize(ULONG ulFlags);
 	void MAPIUninitialize();
-	BOOL bMAPIInitialized();
+	_Check_return_ BOOL bMAPIInitialized();
 
 private:
 	LONG			m_cRef;

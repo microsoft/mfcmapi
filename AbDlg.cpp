@@ -20,9 +20,9 @@ static TCHAR* CLASS = _T("CAbDlg");
 
 
 CAbDlg::CAbDlg(
-			   CParentWnd* pParentWnd,
-			   CMapiObjects* lpMapiObjects,
-			   LPABCONT lpAdrBook
+			   _In_ CParentWnd* pParentWnd,
+			   _In_ CMapiObjects* lpMapiObjects,
+			   _In_ LPABCONT lpAdrBook
 			   ):
 CContentsTableDlg(
 				  pParentWnd,
@@ -43,12 +43,12 @@ CContentsTableDlg(
 	m_bIsAB = true;
 
 	CreateDialogAndMenu(IDR_MENU_AB_VIEW);
-}
+} // CAbDlg::CAbDlg
 
 CAbDlg::~CAbDlg()
 {
 	TRACE_DESTRUCTOR(CLASS);
-}
+} // CAbDlg::~CAbDlg
 
 BEGIN_MESSAGE_MAP(CAbDlg, CContentsTableDlg)
 	ON_COMMAND(ID_DELETESELECTEDITEM, OnDeleteSelectedItem)
@@ -72,7 +72,7 @@ void CAbDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 		IDS_ABRESMENU);
 } // CAbDlg::CreateDialogAndMenu
 
-void CAbDlg::OnInitMenu(CMenu* pMenu)
+void CAbDlg::OnInitMenu(_In_ CMenu* pMenu)
 {
 	if (pMenu && m_lpContentsTableListCtrl)
 	{
@@ -91,7 +91,7 @@ void CAbDlg::OnInitMenu(CMenu* pMenu)
 		pMenu->EnableMenuItem(ID_OPENOWNER,DIMMSOK(iNumSel));
 	}
 	CContentsTableDlg::OnInitMenu(pMenu);
-}
+} // CAbDlg::OnInitMenu
 
 void CAbDlg::OnDisplayDetails()
 {
@@ -133,9 +133,7 @@ void CAbDlg::OnDisplayDetails()
 		}
 		MAPIFreeBuffer(lpEIDs);
 	}
-
-	return;
-}
+} // CAbDlg::OnDisplayDetails
 
 void CAbDlg::OnOpenContact()
 {
@@ -171,10 +169,9 @@ void CAbDlg::OnOpenContact()
 		}
 	}
 
-	m_lpPropDisplay->SetDataSource(lpMessage, NULL, false);
+	WC_H(m_lpPropDisplay->SetDataSource(lpMessage, NULL, false));
 	if (lpMessage) lpMessage->Release();
 	MAPIFreeBuffer(lpEntryList);
-	return;
 } // CAbDlg::OnOpenContact
 
 void CAbDlg::OnOpenManager()
@@ -208,7 +205,6 @@ void CAbDlg::OnOpenManager()
 	while (iItem != -1);
 
 	if (lpMailUser) lpMailUser->Release();
-	return;
 } // CAbDlg::OnOpenManager
 
 void CAbDlg::OnOpenOwner()
@@ -242,7 +238,6 @@ void CAbDlg::OnOpenOwner()
 	while (iItem != -1);
 
 	if (lpMailUser) lpMailUser->Release();
-	return;
 } // CAbDlg::OnOpenOwner
 
 void CAbDlg::OnDeleteSelectedItem()
@@ -267,17 +262,15 @@ void CAbDlg::OnDeleteSelectedItem()
 
 		MAPIFreeBuffer(lpEIDs);
 	}
-
-	return;
 } // CAbDlg::OnDeleteSelectedItem
 
-BOOL CAbDlg::HandleCopy()
+void CAbDlg::HandleCopy()
 {
 	HRESULT			hRes = S_OK;
 	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
 	DebugPrintEx(DBGGeneric,CLASS,_T("HandleCopy"),_T("\n"));
-	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return false;
+	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return;
 
 	LPENTRYLIST lpEIDs = NULL;
 
@@ -285,11 +278,9 @@ BOOL CAbDlg::HandleCopy()
 
 	// m_lpMapiObjects takes over ownership of lpEIDs - don't free now
 	m_lpMapiObjects->SetABEntriesToCopy(lpEIDs);
-
-	return true;
 } // CAbDlg::HandleCopy
 
-BOOL CAbDlg::HandlePaste()
+_Check_return_ BOOL CAbDlg::HandlePaste()
 {
 	if (CBaseDialog::HandlePaste()) return true;
 
@@ -368,9 +359,9 @@ void CAbDlg::OnCreatePropertyStringRestriction()
 } // CAbDlg::OnCreatePropertyStringRestriction
 
 void CAbDlg::HandleAddInMenuSingle(
-								   LPADDINMENUPARAMS lpParams,
-								   LPMAPIPROP lpMAPIProp,
-								   LPMAPICONTAINER /*lpContainer*/)
+								   _In_ LPADDINMENUPARAMS lpParams,
+								   _In_ LPMAPIPROP lpMAPIProp,
+								   _In_ LPMAPICONTAINER /*lpContainer*/)
 {
 	if (lpParams)
 	{

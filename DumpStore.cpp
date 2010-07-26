@@ -15,13 +15,13 @@
 #include "PropTagArray.h"
 #include "SmartView.h"
 
-void OutputPropertyToFile(FILE* fFile, LPSPropValue lpProp, LPMAPIPROP lpObj)
+void OutputPropertyToFile(_In_ FILE* fFile, _In_ LPSPropValue lpProp, _In_ LPMAPIPROP lpObj)
 {
 	if (!lpProp) return;
 
 	CString PropType;
 
-	OutputToFilef(fFile,_T("\t<property tag = \"0x%08X\" type = \"%s\">\n"),lpProp->ulPropTag,TypeToString(lpProp->ulPropTag));
+	OutputToFilef(fFile,_T("\t<property tag = \"0x%08X\" type = \"%s\">\n"),lpProp->ulPropTag,(LPCTSTR) TypeToString(lpProp->ulPropTag));
 
 	CString PropString;
 	CString AltPropString;
@@ -94,11 +94,10 @@ void OutputPropertyToFile(FILE* fFile, LPSPropValue lpProp, LPMAPIPROP lpObj)
 	delete[] szExactMatches;
 	FreeNameIDStrings(szNamedPropName, szNamedPropGUID, NULL);
 	delete[] szSmartView;
-}
+} // OutputPropertyToFile
 
-void OutputPropertiesToFile(FILE* fFile, ULONG cProps, LPSPropValue lpProps, LPMAPIPROP lpObj)
+void OutputPropertiesToFile(_In_ FILE* fFile, ULONG cProps, _In_count_(cProps) LPSPropValue lpProps, _In_ LPMAPIPROP lpObj)
 {
-
 	if (cProps && !lpProps) return;
 
 	ULONG i = 0;
@@ -106,16 +105,16 @@ void OutputPropertiesToFile(FILE* fFile, ULONG cProps, LPSPropValue lpProps, LPM
 	{
 		OutputPropertyToFile(fFile, &lpProps[i], lpObj);
 	}
-}
+} // OutputPropertiesToFile
 
-void OutputSRowToFile(FILE* fFile, LPSRow lpSRow, LPMAPIPROP lpObj)
+void OutputSRowToFile(_In_ FILE* fFile, _In_ LPSRow lpSRow, _In_ LPMAPIPROP lpObj)
 {
 	if (!lpSRow) return;
 
 	if (lpSRow->cValues && !lpSRow->lpProps) return;
 
 	OutputPropertiesToFile(fFile, lpSRow->cValues, lpSRow->lpProps,lpObj);
-}
+} // OutputSRowToFile
 
 CDumpStore::CDumpStore()
 {
@@ -128,7 +127,7 @@ CDumpStore::CDumpStore()
 	m_fFolderProps = NULL;
 	m_fFolderContents = NULL;
 	m_fMailboxTable = NULL;
-}
+} // CDumpStore::CDumpStore
 
 CDumpStore::~CDumpStore()
 {
@@ -136,12 +135,11 @@ CDumpStore::~CDumpStore()
 	if (m_fFolderContents)	CloseFile(m_fFolderContents);
 	if (m_fMailboxTable)	CloseFile(m_fMailboxTable);
 	MAPIFreeBuffer(m_szFolderPath);
-}
+} // CDumpStore::~CDumpStore
 
 // --------------------------------------------------------------------------------- //
 
-
-void CDumpStore::InitMessagePath(LPCWSTR szMessageFileName)
+void CDumpStore::InitMessagePath(_In_z_ LPCWSTR szMessageFileName)
 {
 	if (szMessageFileName)
 	{
@@ -154,7 +152,7 @@ void CDumpStore::InitMessagePath(LPCWSTR szMessageFileName)
 	}
 } // CDumpStore::InitMessagePath
 
-void CDumpStore::InitFolderPathRoot(LPCWSTR szFolderPathRoot)
+void CDumpStore::InitFolderPathRoot(_In_z_ LPCWSTR szFolderPathRoot)
 {
 	if (szFolderPathRoot)
 	{
@@ -167,7 +165,7 @@ void CDumpStore::InitFolderPathRoot(LPCWSTR szFolderPathRoot)
 	}
 } // CDumpStore::InitFolderPathRoot
 
-void CDumpStore::InitMailboxTablePathRoot(LPCWSTR szMailboxTablePathRoot)
+void CDumpStore::InitMailboxTablePathRoot(_In_z_ LPCWSTR szMailboxTablePathRoot)
 {
 	if (szMailboxTablePathRoot)
 	{
@@ -182,7 +180,7 @@ void CDumpStore::InitMailboxTablePathRoot(LPCWSTR szMailboxTablePathRoot)
 
 // --------------------------------------------------------------------------------- //
 
-void CDumpStore::BeginMailboxTableWork(LPCTSTR szExchangeServerName)
+void CDumpStore::BeginMailboxTableWork(_In_z_ LPCTSTR szExchangeServerName)
 {
 	HRESULT hRes = S_OK;
 	WCHAR	szTableContentsFile[MAX_PATH];
@@ -197,7 +195,7 @@ void CDumpStore::BeginMailboxTableWork(LPCTSTR szExchangeServerName)
 	}
 } // CDumpStore::BeginMailboxTableWork
 
-void CDumpStore::DoMailboxTablePerRowWork(LPMDB lpMDB, LPSRow lpSRow, ULONG /*ulCurRow*/)
+void CDumpStore::DoMailboxTablePerRowWork(_In_ LPMDB lpMDB, _In_ LPSRow lpSRow, ULONG /*ulCurRow*/)
 {
 	if (!lpSRow || !m_fMailboxTable) return;
 	HRESULT			hRes = S_OK;
@@ -309,7 +307,8 @@ void CDumpStore::BeginFolderWork()
 		fMapiUnicode,
 		&cValues,
 		&lpAllProps);
-	if (!WARNHRESMSG(hRes,IDS_DUMPFOLDERGETPROPFAILED))
+	WARNHRESMSG(hRes,IDS_DUMPFOLDERGETPROPFAILED);
+	if (FAILED(hRes))
 	{
 		OutputToFilef(m_fFolderProps,_T("<properties error=\"0x%08X\" />\n"),hRes);
 	}
@@ -327,14 +326,13 @@ void CDumpStore::BeginFolderWork()
 	OutputToFile(m_fFolderProps,_T("<HierarchyTable>\n"));
 } // CDumpStore::BeginFolderWork
 
-void CDumpStore::DoFolderPerHierarchyTableRowWork(LPSRow lpSRow)
+void CDumpStore::DoFolderPerHierarchyTableRowWork(_In_ LPSRow lpSRow)
 {
 	if (!m_fFolderProps || !lpSRow) return;
 	OutputToFile(m_fFolderProps,_T("<row>\n"));
 	OutputSRowToFile(m_fFolderProps,lpSRow,m_lpMDB);
 	OutputToFile(m_fFolderProps,_T("</row>\n"));
-}
-
+} // CDumpStore::DoFolderPerHierarchyTableRowWork
 
 void CDumpStore::EndFolderWork()
 {
@@ -345,7 +343,7 @@ void CDumpStore::EndFolderWork()
 		CloseFile(m_fFolderProps);
 	}
 	m_fFolderProps = NULL;
-}
+} // CDumpStore::EndFolderWork
 
 void CDumpStore::BeginContentsTableWork(ULONG ulFlags, ULONG ulCountRows)
 {
@@ -365,9 +363,9 @@ void CDumpStore::BeginContentsTableWork(ULONG ulFlags, ULONG ulCountRows)
 			(ulFlags & MAPI_ASSOCIATED)?_T("Associated Contents"):_T("Contents"), // STRING_OK
 			ulCountRows);
 	}
-}
+} // CDumpStore::BeginContentsTableWork
 
-void CDumpStore::DoContentsTablePerRowWork(LPSRow lpSRow, ULONG ulCurRow)
+void CDumpStore::DoContentsTablePerRowWork(_In_ LPSRow lpSRow, ULONG ulCurRow)
 {
 	if (!m_fFolderContents || !m_lpFolder) return;
 
@@ -376,7 +374,7 @@ void CDumpStore::DoContentsTablePerRowWork(LPSRow lpSRow, ULONG ulCurRow)
 	OutputSRowToFile(m_fFolderContents,lpSRow,m_lpFolder);
 
 	OutputToFile(m_fFolderContents,_T("</message>\n"));
-}
+} // CDumpStore::DoContentsTablePerRowWork
 
 void CDumpStore::EndContentsTableWork()
 {
@@ -386,9 +384,9 @@ void CDumpStore::EndContentsTableWork()
 		CloseFile(m_fFolderContents);
 	}
 	m_fFolderContents = NULL;
-}
+} // CDumpStore::EndContentsTableWork
 
-void CDumpStore::BeginMessageWork(LPMESSAGE lpMessage, LPVOID lpParentMessageData, LPVOID* lpData)
+void CDumpStore::BeginMessageWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpParentMessageData, _Deref_out_ LPVOID* lpData)
 {
 	if (!lpMessage || !lpData) return;
 
@@ -469,7 +467,7 @@ void CDumpStore::BeginMessageWork(LPMESSAGE lpMessage, LPVOID lpParentMessageDat
 		WC_H(BuildFileNameAndPath(lpMsgData->szFilePath,_countof(lpMsgData->szFilePath),L".xml",4,szSubj,&lpPropsMsg[ePR_SEARCH_KEY].Value.bin,m_szFolderPath)); // STRING_OK
 	}
 
-	DebugPrint(DBGGeneric,_T("OutputMessagePropertiesToFile: Saving 0x%X to \"%ws\"\n"),lpMessage,lpMsgData->szFilePath);
+	DebugPrint(DBGGeneric,_T("OutputMessagePropertiesToFile: Saving %p to \"%ws\"\n"),lpMessage,lpMsgData->szFilePath);
 	lpMsgData->fMessageProps = OpenFile(lpMsgData->szFilePath,true);
 
 	if (lpMsgData->fMessageProps)
@@ -595,7 +593,7 @@ void CDumpStore::BeginMessageWork(LPMESSAGE lpMessage, LPVOID lpParentMessageDat
 				{
 					OutputToFile(lpMsgData->fMessageProps,_T("<body property=\"WrapCompressedRTFEx best body\""));
 					LPTSTR szFlags = NULL;
-					EC_H(InterpretFlags(flagStreamFlag, ulStreamFlags, &szFlags));
+					InterpretFlags(flagStreamFlag, ulStreamFlags, &szFlags);
 					OutputToFilef(lpMsgData->fMessageProps,_T(" ulStreamFlags = \"0x%08X\" szStreamFlags= \"%s\""),ulStreamFlags,szFlags);
 					delete[] szFlags;
 					szFlags = NULL;
@@ -631,14 +629,13 @@ void CDumpStore::BeginMessageWork(LPMESSAGE lpMessage, LPVOID lpParentMessageDat
 	}
 } // CDumpStore::BeginMessageWork
 
-void CDumpStore::BeginRecipientWork(LPMESSAGE /*lpMessage*/,LPVOID lpData)
+void CDumpStore::BeginRecipientWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID lpData)
 {
 	if (!lpData) return;
 	OutputToFile(((LPMESSAGEDATA) lpData)->fMessageProps,_T("<recipients>\n"));
+} // CDumpStore::BeginRecipientWork
 
-}
-
-void CDumpStore::DoMessagePerRecipientWork(LPMESSAGE lpMessage, LPVOID lpData, LPSRow lpSRow, ULONG ulCurRow)
+void CDumpStore::DoMessagePerRecipientWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData, _In_ LPSRow lpSRow, ULONG ulCurRow)
 {
 	if (!lpMessage || !lpData || !lpSRow) return;
 
@@ -649,21 +646,21 @@ void CDumpStore::DoMessagePerRecipientWork(LPMESSAGE lpMessage, LPVOID lpData, L
 	OutputSRowToFile(lpMsgData->fMessageProps,lpSRow, lpMessage);
 
 	OutputToFile(lpMsgData->fMessageProps,_T("</recipient>\n"));
-}
+} // CDumpStore::DoMessagePerRecipientWork
 
-void CDumpStore::EndRecipientWork(LPMESSAGE /*lpMessage*/,LPVOID lpData)
+void CDumpStore::EndRecipientWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID lpData)
 {
 	if (!lpData) return;
 	OutputToFile(((LPMESSAGEDATA) lpData)->fMessageProps,_T("</recipients>\n"));
-}
+} // CDumpStore::EndRecipientWork
 
-void CDumpStore::BeginAttachmentWork(LPMESSAGE /*lpMessage*/,LPVOID lpData)
+void CDumpStore::BeginAttachmentWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID lpData)
 {
 	if (!lpData) return;
 	OutputToFile(((LPMESSAGEDATA) lpData)->fMessageProps,_T("<attachments>\n"));
-}
+} // CDumpStore::BeginAttachmentWork
 
-void CDumpStore::DoMessagePerAttachmentWork(LPMESSAGE lpMessage, LPVOID lpData, LPSRow lpSRow, LPATTACH lpAttach, ULONG ulCurRow)
+void CDumpStore::DoMessagePerAttachmentWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData, _In_ LPSRow lpSRow, _In_ LPATTACH lpAttach, ULONG ulCurRow)
 {
 	if (!lpMessage || !lpData || !lpSRow) return;
 	HRESULT hRes = S_OK;
@@ -717,15 +714,15 @@ void CDumpStore::DoMessagePerAttachmentWork(LPMESSAGE lpMessage, LPVOID lpData, 
 		lpAllProps = NULL;
 	}
 	OutputToFile(lpMsgData->fMessageProps,_T("</attachment>\n"));
-}
+} // CDumpStore::DoMessagePerAttachmentWork
 
-void CDumpStore::EndAttachmentWork(LPMESSAGE /*lpMessage*/,LPVOID lpData)
+void CDumpStore::EndAttachmentWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID lpData)
 {
 	if (!lpData) return;
 	OutputToFile(((LPMESSAGEDATA) lpData)->fMessageProps,_T("</attachments>\n"));
-}
+} // CDumpStore::EndAttachmentWork
 
-void CDumpStore::EndMessageWork(LPMESSAGE /*lpMessage*/, LPVOID lpData)
+void CDumpStore::EndMessageWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID lpData)
 {
 	LPMESSAGEDATA lpMsgData = (LPMESSAGEDATA) lpData;
 
@@ -735,4 +732,4 @@ void CDumpStore::EndMessageWork(LPMESSAGE /*lpMessage*/, LPVOID lpData)
 		CloseFile(lpMsgData->fMessageProps);
 	}
 	delete lpMsgData;
-}
+} // CDumpStore::EndMessageWork

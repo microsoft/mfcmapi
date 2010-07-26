@@ -21,10 +21,10 @@ static TCHAR* CLASS = _T("CPublicFolderTableDlg");
 // CPublicFolderTableDlg dialog
 
 CPublicFolderTableDlg::CPublicFolderTableDlg(
-	CParentWnd* pParentWnd,
-	CMapiObjects* lpMapiObjects,
-	LPCTSTR lpszServerName,
-	LPMAPITABLE lpMAPITable
+	_In_ CParentWnd* pParentWnd,
+	_In_ CMapiObjects* lpMapiObjects,
+	_In_ LPCTSTR lpszServerName,
+	_In_ LPMAPITABLE lpMAPITable
 	):
 CContentsTableDlg(
 				  pParentWnd,
@@ -44,13 +44,13 @@ CContentsTableDlg(
 	EC_H(CopyString(&m_lpszServerName,lpszServerName,NULL));
 
 	CreateDialogAndMenu(NULL);
-}
+} // CPublicFolderTableDlg::CPublicFolderTableDlg
 
 CPublicFolderTableDlg::~CPublicFolderTableDlg()
 {
 	TRACE_DESTRUCTOR(CLASS);
 	MAPIFreeBuffer(m_lpszServerName);
-}
+} // CPublicFolderTableDlg::~CPublicFolderTableDlg
 
 void CPublicFolderTableDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 {
@@ -122,7 +122,7 @@ void CPublicFolderTableDlg::OnDisplayItem()
 	}*/
 } // CPublicFolderTableDlg::OnDisplayItem
 
-HRESULT CPublicFolderTableDlg::OpenItemProp(int /*iSelectedItem*/, __mfcmapiModifyEnum /*bModify*/, LPMAPIPROP* /*lppMAPIProp*/)
+_Check_return_ HRESULT CPublicFolderTableDlg::OpenItemProp(int /*iSelectedItem*/, __mfcmapiModifyEnum /*bModify*/, _Deref_out_opt_ LPMAPIPROP* /*lppMAPIProp*/)
 {
 	HRESULT			hRes = S_OK;
 /*	LPSBinary		lpProviderUID = NULL;

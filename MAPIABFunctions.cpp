@@ -4,7 +4,7 @@
 #include "MAPIABFunctions.h"
 #include "MAPIFunctions.h"
 
-HRESULT HrAllocAdrList(ULONG ulNumProps, LPADRLIST* lpAdrList)
+_Check_return_ HRESULT HrAllocAdrList(ULONG ulNumProps, _Deref_out_opt_ LPADRLIST* lpAdrList)
 {
 	if (!lpAdrList || ulNumProps > ULONG_MAX/sizeof(SPropValue)) return MAPI_E_INVALID_PARAMETER;
 	HRESULT hRes = S_OK;
@@ -40,15 +40,15 @@ HRESULT HrAllocAdrList(ULONG ulNumProps, LPADRLIST* lpAdrList)
 	}
 
 	return hRes;
-}
+} // HrAllocAdrList
 
-HRESULT AddOneOffAddress(
-						 LPMAPISESSION lpMAPISession,
-						 LPMESSAGE lpMessage,
-						 LPCTSTR szDisplayName,
-						 LPCTSTR szAddrType,
-						 LPCTSTR szEmailAddress,
-						 ULONG ulRecipientType)
+_Check_return_ HRESULT AddOneOffAddress(
+										_In_ LPMAPISESSION lpMAPISession,
+										_In_ LPMESSAGE lpMessage,
+										_In_z_ LPCTSTR szDisplayName,
+										_In_z_ LPCTSTR szAddrType,
+										_In_z_ LPCTSTR szEmailAddress,
+										ULONG ulRecipientType)
 {
 	HRESULT			hRes	= S_OK;
 	LPADRLIST		lpAdrList = NULL;  // ModifyRecips takes LPADRLIST
@@ -123,11 +123,11 @@ HRESULT AddOneOffAddress(
 	return hRes;
 } // AddOneOffAddress
 
-HRESULT AddRecipient(
-					 LPMAPISESSION lpMAPISession,
-					 LPMESSAGE lpMessage,
-					 LPCTSTR szName,
-					 ULONG ulRecipientType)
+_Check_return_ HRESULT AddRecipient(
+									_In_ LPMAPISESSION lpMAPISession,
+									_In_ LPMESSAGE lpMessage,
+									_In_z_ LPCTSTR szName,
+									ULONG ulRecipientType)
 {
 	HRESULT			hRes	= S_OK;
 	LPADRLIST		lpAdrList = NULL;  // ModifyRecips takes LPADRLIST
@@ -181,10 +181,10 @@ HRESULT AddRecipient(
 } // AddRecipient
 
 // Same as CreatePropertyStringRestriction, but skips the existence part.
-HRESULT CreateANRRestriction(ULONG ulPropTag,
-							 LPCTSTR szString,
-							 LPVOID lpParent,
-							 LPSRestriction* lppRes)
+_Check_return_ HRESULT CreateANRRestriction(ULONG ulPropTag,
+											_In_z_ LPCTSTR szString,
+											_In_opt_ LPVOID lpParent,
+											_Deref_out_opt_ LPSRestriction* lppRes)
 {
 	HRESULT hRes = S_OK;
 	LPSRestriction	lpRes = NULL;
@@ -258,7 +258,7 @@ HRESULT CreateANRRestriction(ULONG ulPropTag,
 	return hRes;
 } // CreateANRRestriction
 
-HRESULT GetABContainerTable(LPADRBOOK lpAdrBook, LPMAPITABLE* lpABContainerTable)
+_Check_return_ HRESULT GetABContainerTable(_In_ LPADRBOOK lpAdrBook, _Deref_out_opt_ LPMAPITABLE* lpABContainerTable)
 {
 	HRESULT		hRes = S_OK;
 	LPABCONT	lpABRootContainer = NULL;
@@ -288,14 +288,14 @@ HRESULT GetABContainerTable(LPADRBOOK lpAdrBook, LPMAPITABLE* lpABContainerTable
 	}
 
 	return hRes;
-}
+} // GetABContainerTable
 
 // Manually resolve a name in the address book and add it to the message
-HRESULT ManualResolve(
-					  LPMAPISESSION lpMAPISession,
-					  LPMESSAGE lpMessage,
-					  LPCTSTR szName,
-					  ULONG PropTagToCompare)
+_Check_return_ HRESULT ManualResolve(
+									 _In_ LPMAPISESSION lpMAPISession,
+									 _In_ LPMESSAGE lpMessage,
+									 _In_z_ LPCTSTR szName,
+									 ULONG PropTagToCompare)
 {
 	HRESULT			hRes = S_OK;
 	ULONG			ulObjType = 0;
@@ -489,11 +489,11 @@ HRESULT ManualResolve(
 	return hRes;
 } // ManualResolve
 
-HRESULT SearchContentsTableForName(
-								   LPMAPITABLE pTable,
-								   LPCTSTR szName,
-								   ULONG PropTagToCompare,
-								   LPSPropValue *lppPropsFound)
+_Check_return_ HRESULT SearchContentsTableForName(
+	_In_ LPMAPITABLE pTable,
+	_In_z_ LPCTSTR szName,
+	ULONG PropTagToCompare,
+	_Deref_out_opt_ LPSPropValue *lppPropsFound)
 {
 	HRESULT			hRes = S_OK;
 
@@ -583,4 +583,4 @@ HRESULT SearchContentsTableForName(
 	MAPIFreeBuffer(lpSRes);
 	if (pRows) FreeProws(pRows);
 	return hRes;
-}
+} // SearchContentsTableForName

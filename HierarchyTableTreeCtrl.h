@@ -10,9 +10,9 @@ class CHierarchyTableTreeCtrl : public CTreeCtrl
 {
 public:
 	CHierarchyTableTreeCtrl(
-		CWnd* pCreateParent,
-		CMapiObjects* lpMapiObjects,
-		CHierarchyTableDlg *lpHostDlg,
+		_In_ CWnd* pCreateParent,
+		_In_ CMapiObjects* lpMapiObjects,
+		_In_ CHierarchyTableDlg *lpHostDlg,
 		ULONG ulDisplayFlags,
 		UINT nIDContextMenu);
 	virtual ~CHierarchyTableTreeCtrl();
@@ -21,54 +21,54 @@ public:
 	STDMETHODIMP_(ULONG) Release();
 
 	// Initialization
-	HRESULT LoadHierarchyTable(LPMAPICONTAINER lpMAPIContainer);
-	HRESULT RefreshHierarchyTable();
+	_Check_return_ HRESULT LoadHierarchyTable(_In_ LPMAPICONTAINER lpMAPIContainer);
+	_Check_return_ HRESULT RefreshHierarchyTable();
 
 	// Selected item accessors
-	LPMAPICONTAINER GetSelectedContainer(__mfcmapiModifyEnum bModify);
-	LPSBinary       GetSelectedItemEID();
-	SortListData*   GetSelectedItemData();
-	BOOL            IsItemSelected();
+	_Check_return_ LPMAPICONTAINER GetSelectedContainer(__mfcmapiModifyEnum bModify);
+	_Check_return_ LPSBinary       GetSelectedItemEID();
+	_Check_return_ SortListData*   GetSelectedItemData();
+	_Check_return_ BOOL            IsItemSelected();
 
 private:
 	// Overrides from base class
-	LRESULT     WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	_Check_return_ LRESULT     WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	void        OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 
-	HRESULT     ExpandNode(HTREEITEM Parent);
-	HTREEITEM   FindNode(LPSBinary lpInstance, HTREEITEM hParent);
-	void        GetContainer(HTREEITEM Item, __mfcmapiModifyEnum bModify, LPMAPICONTAINER *lpContainer);
-	LPMAPITABLE GetHierarchyTable(HTREEITEM hItem,LPMAPICONTAINER lpMAPIContainer,BOOL bGetTable);
-	void        OnContextMenu(CWnd *pWnd, CPoint pos);
-	void        OnDblclk(NMHDR* pNMHDR, LRESULT* pResult);
-	void        OnDeleteItem(NMHDR* pNMHDR, LRESULT* pResult);
-	void        OnEndLabelEdit(NMHDR* pNMHDR, LRESULT* pResult);
-	void        OnGetDispInfo(NMHDR* pNMHDR, LRESULT* pResult);
-	UINT        OnGetDlgCode();
-	void        OnItemExpanding(NMHDR* pNMHDR, LRESULT* pResult);
-	void        OnRightClick(NMHDR* pNMHDR, LRESULT* pResult);
-	void        OnSelChanged(NMHDR* pNMHDR, LRESULT* pResult);
+	_Check_return_ HRESULT     ExpandNode(HTREEITEM Parent);
+	_Check_return_ HTREEITEM   FindNode(_In_ LPSBinary lpInstance, HTREEITEM hParent);
+	void        GetContainer(HTREEITEM Item, __mfcmapiModifyEnum bModify, _In_ LPMAPICONTAINER *lpContainer);
+	_Check_return_ LPMAPITABLE GetHierarchyTable(HTREEITEM hItem, _In_opt_ LPMAPICONTAINER lpMAPIContainer, BOOL bGetTable);
+	void        OnContextMenu(_In_ CWnd *pWnd, CPoint pos);
+	void        OnDblclk(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
+	void        OnDeleteItem(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
+	void        OnEndLabelEdit(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
+	void        OnGetDispInfo(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
+	_Check_return_ UINT        OnGetDlgCode();
+	void        OnItemExpanding(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
+	void        OnRightClick(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
+	void        OnSelChanged(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 	void        UpdateSelectionUI(HTREEITEM hItem);
 
 	// Node insertion
-	HRESULT AddRootNode(LPMAPICONTAINER lpMAPIContainer);
+	_Check_return_ HRESULT AddRootNode(_In_ LPMAPICONTAINER lpMAPIContainer);
 	void AddNode(
 		ULONG			cProps,
-		LPSPropValue	lpProps,
-		LPCTSTR szName,
-		LPSBinary	lpEntryID,
-		LPSBinary	lpInstanceKey,
+		_In_opt_ LPSPropValue	lpProps,
+		_In_ LPCTSTR szName,
+		_In_opt_ LPSBinary	lpEntryID,
+		_In_opt_ LPSBinary	lpInstanceKey,
 		ULONG		bSubfolders,
 		ULONG		ulContainerFlags,
 		HTREEITEM	hParent,
 		BOOL		bDoNotifs);
-	void AddNode(LPSRow lpsRow, HTREEITEM hParent, BOOL bGetTable);
+	void AddNode(_In_ LPSRow lpsRow, HTREEITEM hParent, BOOL bGetTable);
 
 	// Custom messages
-	LRESULT msgOnAddItem(WPARAM wParam, LPARAM lParam);
-	LRESULT msgOnDeleteItem(WPARAM wParam, LPARAM lParam);
-	LRESULT msgOnModifyItem(WPARAM wParam, LPARAM lParam);
-	LRESULT msgOnRefreshTable(WPARAM wParam, LPARAM lParam);
+	_Check_return_ LRESULT msgOnAddItem(WPARAM wParam, LPARAM lParam);
+	_Check_return_ LRESULT msgOnDeleteItem(WPARAM wParam, LPARAM lParam);
+	_Check_return_ LRESULT msgOnModifyItem(WPARAM wParam, LPARAM lParam);
+	_Check_return_ LRESULT msgOnRefreshTable(WPARAM wParam, LPARAM lParam);
 
 	LONG				m_cRef;
 	CHierarchyTableDlg*	m_lpHostDlg;

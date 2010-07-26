@@ -12,10 +12,10 @@ class CPublicFolderTableDlg : public CContentsTableDlg
 {
 public:
 	CPublicFolderTableDlg(
-		CParentWnd* pParentWnd,
-		CMapiObjects* lpMapiObjects,
-		LPCTSTR lpszServerName,
-		LPMAPITABLE	lpMAPITable);
+		_In_ CParentWnd* pParentWnd,
+		_In_ CMapiObjects* lpMapiObjects,
+		_In_ LPCTSTR lpszServerName,
+		_In_ LPMAPITABLE	lpMAPITable);
 	virtual ~CPublicFolderTableDlg();
 
 private:
@@ -23,7 +23,7 @@ private:
 	void CreateDialogAndMenu(UINT nIDMenuResource);
 	void OnCreatePropertyStringRestriction();
 	void OnDisplayItem();
-	HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, LPMAPIPROP* lppMAPIProp);
+	_Check_return_ HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp);
 
 	LPTSTR m_lpszServerName;
 };

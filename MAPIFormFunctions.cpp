@@ -14,13 +14,14 @@
 // Attempting to create one of those in the Inbox will result in an
 // 'Internal Application Error' when you save.
 
-HRESULT CreateAndDisplayNewMailInFolder(
-										LPMDB lpMDB,
-										LPMAPISESSION lpMAPISession,
-										CContentsTableListCtrl *lpContentsTableListCtrl,
-										int iItem,
-										LPCSTR szMessageClass,
-										LPMAPIFOLDER lpFolder)
+_Check_return_ HRESULT CreateAndDisplayNewMailInFolder(
+	_In_ HWND hwndParent,
+	_In_ LPMDB lpMDB,
+	_In_ LPMAPISESSION lpMAPISession,
+	_In_ CContentsTableListCtrl *lpContentsTableListCtrl,
+	int iItem,
+	_In_z_ LPCSTR szMessageClass,
+	_In_ LPMAPIFOLDER lpFolder)
 {
 	HRESULT				hRes = S_OK;
 	LPMAPIFORMMGR		lpMAPIFormMgr = NULL;
@@ -43,7 +44,7 @@ HRESULT CreateAndDisplayNewMailInFolder(
 	if (lpMAPIFormInfo)
 	{
 		EC_H(lpMAPIFormMgr->CreateForm(
-			NULL, // parent window
+			(ULONG_PTR) hwndParent, // parent window
 			MAPI_DIALOG, // display status window
 			lpMAPIFormInfo, // form info
 			IID_IPersistMessage, // riid to open
@@ -61,7 +62,7 @@ HRESULT CreateAndDisplayNewMailInFolder(
 			{
 				CMyMAPIFormViewer*	lpMAPIFormViewer = NULL;
 				lpMAPIFormViewer = new CMyMAPIFormViewer(
-					NULL,
+					hwndParent,
 					lpMDB,
 					lpMAPISession,
 					lpFolder,
@@ -102,16 +103,16 @@ HRESULT CreateAndDisplayNewMailInFolder(
 	return hRes;
 } // CreateAndDisplayNewMailInFolder
 
-HRESULT OpenMessageNonModal(
-							HWND hwndParent,
-							LPMDB lpMDB,
-							LPMAPISESSION lpMAPISession,
-							LPMAPIFOLDER lpSourceFolder,
-							CContentsTableListCtrl *lpContentsTableListCtrl,
-							int iItem,
-							LPMESSAGE lpMessage,
-							LONG lVerb,
-							LPCRECT lpRect)
+_Check_return_ HRESULT OpenMessageNonModal(
+	_In_ HWND hwndParent,
+	_In_ LPMDB lpMDB,
+	_In_ LPMAPISESSION lpMAPISession,
+	_In_ LPMAPIFOLDER lpSourceFolder,
+	_In_ CContentsTableListCtrl *lpContentsTableListCtrl,
+	int iItem,
+	_In_ LPMESSAGE lpMessage,
+	LONG lVerb,
+	_In_opt_ LPCRECT lpRect)
 {
 	HRESULT					hRes = S_OK;
 	ULONG					cValuesShow = 0;
@@ -216,11 +217,10 @@ HRESULT OpenMessageNonModal(
 	return hRes;
 } // OpenMessageNonModal
 
-
-HRESULT OpenMessageModal(LPMAPIFOLDER lpParentFolder,
-						 LPMAPISESSION lpMAPISession,
-						 LPMDB lpMDB,
-						 LPMESSAGE lpMessage)
+_Check_return_ HRESULT OpenMessageModal(_In_ LPMAPIFOLDER lpParentFolder,
+										_In_ LPMAPISESSION lpMAPISession,
+										_In_ LPMDB lpMDB,
+										_In_ LPMESSAGE lpMessage)
 {
 	HRESULT			hRes = S_OK;
 	ULONG			cValuesShow;

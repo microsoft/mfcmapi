@@ -70,7 +70,7 @@ enum __SortListIconNames
 	slIconMAPI_FORMINFO,
 };
 
-void FreeSortListData(SortListData* lpData);
+void FreeSortListData(_In_ SortListData* lpData);
 
 class CSortListCtrl : public CListCtrl
 {
@@ -82,31 +82,31 @@ public:
 	STDMETHODIMP_(ULONG)	Release();
 
 	// Exported manipulation functions
-	HRESULT       Create(CWnd* pCreateParent, ULONG ulFlags, UINT nID, BOOL bImages);
+	_Check_return_ HRESULT       Create(_In_ CWnd* pCreateParent, ULONG ulFlags, UINT nID, BOOL bImages);
 	void          AutoSizeColumns();
 	void          DeleteAllColumns(BOOL bShutdown = false);
 	void          SetSelectedItem(int iItem);
 	void          SortClickedColumn();
-	SortListData* InsertRow(int iRow, LPTSTR szText);
-	BOOL          SetItemText(int nItem, int nSubItem, LPCTSTR lpszText);
+	_Check_return_ SortListData* InsertRow(int iRow, _In_z_ LPTSTR szText);
+	void SetItemText(int nItem, int nSubItem, _In_z_ LPCTSTR lpszText);
 
 protected:
 	void          MySetRedraw(BOOL bRedraw);
-	SortListData* InsertRow(int iRow, LPTSTR szText, int iIndent, int iImage);
+	_Check_return_ SortListData* InsertRow(int iRow, _In_z_ LPTSTR szText, int iIndent, int iImage);
 	void          FakeClickColumn(int iColumn, BOOL bSortUp);
 
 	// protected since derived classes need to call the base implementation
-	virtual LRESULT	WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	_Check_return_ virtual LRESULT	WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 
 private:
 	// Overrides from base class
-	UINT OnGetDlgCode();
+	_Check_return_ UINT OnGetDlgCode();
 
 	void OnColumnClick(int iColumn);
-	void OnDeleteAllItems(NMHDR* pNMHDR, LRESULT* pResult);
-	void OnDeleteItem(NMHDR* pNMHDR, LRESULT* pResult);
+	void OnDeleteAllItems(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
+	void OnDeleteItem(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 	void AutoSizeColumn(int iColumn, int iMinWidth, int iMaxWidth);
-	static int CALLBACK MyCompareProc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort);
+	_Check_return_ static int CALLBACK MyCompareProc(_In_ LPARAM lParam1, _In_ LPARAM lParam2, _In_ LPARAM lParamSort);
 
 	LONG		m_cRef;
 	int			m_iRedrawCount;

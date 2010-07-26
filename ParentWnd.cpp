@@ -24,7 +24,7 @@ static TCHAR* CLASS = _T("CParentWnd");
 VOID CALLBACK MyWinEventProc(
 							 HWINEVENTHOOK /*hWinEventHook*/,
 							 DWORD event,
-							 HWND hwnd,
+							 _In_ HWND hwnd,
 							 LONG /*idObject*/,
 							 LONG /*idChild*/,
 							 DWORD /*dwEventThread*/,
@@ -40,7 +40,7 @@ VOID CALLBACK MyWinEventProc(
 			(WPARAM) NULL,
 			(LPARAM) NULL));
 	}
-}
+} // MyWinEventProc
 
 /////////////////////////////////////////////////////////////////////////////
 // CParentWnd
@@ -80,7 +80,7 @@ CParentWnd::CParentWnd()
 
 	// Notice we never create a window here!
 	TRACE_CONSTRUCTOR(CLASS);
-}
+} // CParentWnd::CParentWnd
 
 CParentWnd::~CParentWnd()
 {
@@ -96,10 +96,10 @@ CParentWnd::~CParentWnd()
 	// Else MFC will try to route messages to it
 	theApp.m_pMainWnd = NULL;
 	AfxPostQuitMessage(0);
-}
+} // CParentWnd::~CParentWnd
 
-STDMETHODIMP CParentWnd::QueryInterface(REFIID riid,
-										LPVOID * ppvObj)
+_Check_return_ STDMETHODIMP CParentWnd::QueryInterface(REFIID riid,
+													   _Deref_out_opt_ LPVOID * ppvObj)
 {
 	*ppvObj = 0;
 	if (riid == IID_IUnknown)
@@ -109,14 +109,14 @@ STDMETHODIMP CParentWnd::QueryInterface(REFIID riid,
 		return S_OK;
 	}
 	return E_NOINTERFACE;
-}
+} // CParentWnd::QueryInterface
 
 STDMETHODIMP_(ULONG) CParentWnd::AddRef()
 {
 	LONG lCount = InterlockedIncrement(&m_cRef);
 	TRACE_ADDREF(CLASS,lCount);
 	return lCount;
-}
+} // CParentWnd::AddRef
 
 STDMETHODIMP_(ULONG) CParentWnd::Release()
 {
@@ -124,4 +124,4 @@ STDMETHODIMP_(ULONG) CParentWnd::Release()
 	TRACE_RELEASE(CLASS,lCount);
 	if (!lCount) delete this;
 	return lCount;
-}
+} // CParentWnd::Release

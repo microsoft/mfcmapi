@@ -4,21 +4,21 @@ extern UINT g_uidParsingTypesDropDown[];
 extern ULONG g_cuidParsingTypesDropDown;
 
 // lpszSmartView allocated with new, delete with delete[]
-void InterpretPropSmartView(LPSPropValue lpProp, // required property value
-							LPMAPIPROP lpMAPIProp, // optional source object
-							LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
-							LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
+void InterpretPropSmartView(_In_ LPSPropValue lpProp, // required property value
+							_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
+							_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
+							_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
 							BOOL bMVRow, // did the row come from a MV prop?
-							LPTSTR* lpszSmartView); // Built from lpProp & lpMAPIProp
+							_Deref_out_opt_z_ LPTSTR* lpszSmartView); // Built from lpProp & lpMAPIProp
 
-void InterpretBinaryAsString(SBinary myBin, DWORD_PTR iStructType, LPMAPIPROP lpMAPIProp, ULONG ulPropTag, LPTSTR* lpszResultString);
+void InterpretBinaryAsString(SBinary myBin, DWORD_PTR iStructType, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_z_ LPTSTR* lpszResultString);
 
 // Nothing below this point actually needs to be public. It's only used internally by InterpretPropSmartView
 
 // Functions to parse PT_LONG/PT-I2 properties
 
-CString RTimeToString(DWORD rTime);
-LPTSTR RTimeToSzString(DWORD rTime);
+_Check_return_ CString RTimeToString(DWORD rTime);
+_Check_return_ LPTSTR RTimeToSzString(DWORD rTime);
 
 // End: Functions to parse PT_LONG/PT-I2 properties
 
@@ -69,11 +69,11 @@ typedef struct
 } RecurrencePatternStruct;
 
 // Allocates return value with new. Clean up with DeleteRecurrencePatternStruct.
-RecurrencePatternStruct* BinToRecurrencePatternStruct(ULONG cbBin, LPBYTE lpBin);
-RecurrencePatternStruct* BinToRecurrencePatternStructWithSize(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead);
-void DeleteRecurrencePatternStruct(RecurrencePatternStruct* prpPattern);
+_Check_return_ RecurrencePatternStruct* BinToRecurrencePatternStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+_Check_return_ RecurrencePatternStruct* BinToRecurrencePatternStructWithSize(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, _Out_opt_ size_t* lpcbBytesRead);
+void DeleteRecurrencePatternStruct(_In_ RecurrencePatternStruct* prpPattern);
 // result allocated with new, clean up with delete[]
-LPTSTR RecurrencePatternStructToString(RecurrencePatternStruct* prpPattern);
+_Check_return_ LPTSTR RecurrencePatternStructToString(_In_ RecurrencePatternStruct* prpPattern);
 
 // ExceptionInfoStruct
 // =====================
@@ -151,12 +151,12 @@ typedef struct
 } AppointmentRecurrencePatternStruct;
 
 // Allocates return value with new. Clean up with DeleteAppointmentRecurrencePatternStruct.
-AppointmentRecurrencePatternStruct* BinToAppointmentRecurrencePatternStruct(ULONG cbBin, LPBYTE lpBin);
-void DeleteAppointmentRecurrencePatternStruct(AppointmentRecurrencePatternStruct* parpPattern);
+_Check_return_ AppointmentRecurrencePatternStruct* BinToAppointmentRecurrencePatternStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+void DeleteAppointmentRecurrencePatternStruct(_In_ AppointmentRecurrencePatternStruct* parpPattern);
 // result allocated with new, clean up with delete[]
-LPTSTR AppointmentRecurrencePatternStructToString(AppointmentRecurrencePatternStruct* parpPattern);
+_Check_return_ LPTSTR AppointmentRecurrencePatternStructToString(_In_ AppointmentRecurrencePatternStruct* parpPattern);
 
-void SDBinToString(SBinary myBin, LPMAPIPROP lpMAPIProp, ULONG ulPropTag, LPTSTR* lpszResultString);
+void SDBinToString(SBinary myBin, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_z_ LPTSTR* lpszResultString);
 
 // ExtendedFlagStruct
 // =====================
@@ -189,10 +189,10 @@ typedef struct
 } ExtendedFlagsStruct;
 
 // Allocates return value with new. Clean up with DeleteExtendedFlagsStruct.
-ExtendedFlagsStruct* BinToExtendedFlagsStruct(ULONG cbBin, LPBYTE lpBin);
-void DeleteExtendedFlagsStruct(ExtendedFlagsStruct* pefExtendedFlags);
+_Check_return_ ExtendedFlagsStruct* BinToExtendedFlagsStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+void DeleteExtendedFlagsStruct(_In_ ExtendedFlagsStruct* pefExtendedFlags);
 // result allocated with new, clean up with delete[]
-LPTSTR ExtendedFlagsStructToString(ExtendedFlagsStruct* pefExtendedFlags);
+_Check_return_ LPTSTR ExtendedFlagsStructToString(_In_ ExtendedFlagsStruct* pefExtendedFlags);
 
 // TimeZoneStruct
 // =====================
@@ -216,10 +216,10 @@ typedef struct
 } TimeZoneStruct;
 
 // Allocates return value with new. Clean up with DeleteTimeZoneStruct.
-TimeZoneStruct* BinToTimeZoneStruct(ULONG cbBin, LPBYTE lpBin);
-void DeleteTimeZoneStruct(TimeZoneStruct* ptzTimeZone);
+_Check_return_ TimeZoneStruct* BinToTimeZoneStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+void DeleteTimeZoneStruct(_In_ TimeZoneStruct* ptzTimeZone);
 // result allocated with new, clean up with delete[]
-LPTSTR TimeZoneStructToString(TimeZoneStruct* ptzTimeZone);
+_Check_return_ LPTSTR TimeZoneStructToString(_In_ TimeZoneStruct* ptzTimeZone);
 
 // TZRule
 // =====================
@@ -262,10 +262,10 @@ typedef struct
 } TimeZoneDefinitionStruct;
 
 // Allocates return value with new. Clean up with DeleteTimeZoneDefinitionStruct.
-TimeZoneDefinitionStruct* BinToTimeZoneDefinitionStruct(ULONG cbBin, LPBYTE lpBin);
-void DeleteTimeZoneDefinitionStruct(TimeZoneDefinitionStruct* ptzdTimeZoneDefinition);
+_Check_return_ TimeZoneDefinitionStruct* BinToTimeZoneDefinitionStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+void DeleteTimeZoneDefinitionStruct(_In_ TimeZoneDefinitionStruct* ptzdTimeZoneDefinition);
 // result allocated with new, clean up with delete[]
-LPTSTR TimeZoneDefinitionStructToString(TimeZoneDefinitionStruct* ptzdTimeZoneDefinition);
+_Check_return_ LPTSTR TimeZoneDefinitionStructToString(_In_ TimeZoneDefinitionStruct* ptzdTimeZoneDefinition);
 
 // [MS-OXOMSG].pdf
 // ReportTagStruct
@@ -293,10 +293,10 @@ typedef struct
 } ReportTagStruct;
 
 // Allocates return value with new. Clean up with DeleteReportTagStruct.
-ReportTagStruct* BinToReportTagStruct(ULONG cbBin, LPBYTE lpBin);
-void DeleteReportTagStruct(ReportTagStruct* prtReportTag);
+_Check_return_ ReportTagStruct* BinToReportTagStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+void DeleteReportTagStruct(_In_ ReportTagStruct* prtReportTag);
 // result allocated with new, clean up with delete[]
-LPTSTR ReportTagStructToString(ReportTagStruct* prtReportTag);
+_Check_return_ LPTSTR ReportTagStructToString(_In_ ReportTagStruct* prtReportTag);
 
 // [MS-OXOMSG].pdf
 // ResponseLevelStruct
@@ -327,10 +327,10 @@ typedef struct
 } ConversationIndexStruct;
 
 // Allocates return value with new. Clean up with DeleteConversationIndexStruct.
-ConversationIndexStruct* BinToConversationIndexStruct(ULONG cbBin, LPBYTE lpBin);
-void DeleteConversationIndexStruct(ConversationIndexStruct* pciConversationIndex);
+_Check_return_ ConversationIndexStruct* BinToConversationIndexStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+void DeleteConversationIndexStruct(_In_ ConversationIndexStruct* pciConversationIndex);
 // result allocated with new, clean up with delete[]
-LPTSTR ConversationIndexStructToString(ConversationIndexStruct* pciConversationIndex);
+_Check_return_ LPTSTR ConversationIndexStructToString(_In_ ConversationIndexStruct* pciConversationIndex);
 
 // [MS-OXOTASK].pdf
 // TaskAssignerStruct
@@ -361,10 +361,10 @@ typedef struct
 } TaskAssignersStruct;
 
 // Allocates return value with new. Clean up with DeleteTaskAssignersStruct.
-TaskAssignersStruct* BinToTaskAssignersStruct(ULONG cbBin, LPBYTE lpBin);
-void DeleteTaskAssignersStruct(TaskAssignersStruct* ptaTaskAssigners);
+_Check_return_ TaskAssignersStruct* BinToTaskAssignersStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+void DeleteTaskAssignersStruct(_In_ TaskAssignersStruct* ptaTaskAssigners);
 // result allocated with new, clean up with delete[]
-LPTSTR TaskAssignersStructToString(TaskAssignersStruct* ptaTaskAssigners);
+_Check_return_ LPTSTR TaskAssignersStructToString(_In_ TaskAssignersStruct* ptaTaskAssigners);
 
 // GlobalObjectIdStruct
 // =====================
@@ -385,10 +385,10 @@ typedef struct
 } GlobalObjectIdStruct;
 
 // Allocates return value with new. Clean up with DeleteGlobalObjectIdStruct.
-GlobalObjectIdStruct* BinToGlobalObjectIdStruct(ULONG cbBin, LPBYTE lpBin);
-void DeleteGlobalObjectIdStruct(GlobalObjectIdStruct* pgoidGlobalObjectId);
+_Check_return_ GlobalObjectIdStruct* BinToGlobalObjectIdStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+void DeleteGlobalObjectIdStruct(_In_ GlobalObjectIdStruct* pgoidGlobalObjectId);
 // result allocated with new, clean up with delete[]
-LPTSTR GlobalObjectIdStructToString(GlobalObjectIdStruct* pgoidGlobalObjectId);
+_Check_return_ LPTSTR GlobalObjectIdStructToString(_In_ GlobalObjectIdStruct* pgoidGlobalObjectId);
 
 enum EIDStructType {
 	eidtUnknown = 0,
@@ -493,11 +493,11 @@ typedef struct EntryIdStruct
 } EntryIdStruct;
 
 // Allocates return value with new. Clean up with DeleteEntryIdStruct.
-EntryIdStruct* BinToEntryIdStruct(ULONG cbBin, LPBYTE lpBin);
-EntryIdStruct* BinToEntryIdStructWithSize(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead);
-void DeleteEntryIdStruct(EntryIdStruct* peidEntryId);
+_Check_return_ EntryIdStruct* BinToEntryIdStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+_Check_return_ EntryIdStruct* BinToEntryIdStructWithSize(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, _Out_opt_ size_t* lpcbBytesRead);
+void DeleteEntryIdStruct(_In_ EntryIdStruct* peidEntryId);
 // result allocated with new, clean up with delete[]
-LPTSTR EntryIdStructToString(EntryIdStruct* peidEntryId);
+_Check_return_ LPTSTR EntryIdStructToString(_In_ EntryIdStruct* peidEntryId);
 
 // PropertyStruct
 // =====================
@@ -513,14 +513,14 @@ typedef struct
 } PropertyStruct;
 
 // Allocates return value with new. Clean up with DeletePropertyStruct.
-PropertyStruct* BinToPropertyStruct(ULONG cbBin, LPBYTE lpBin, DWORD dwPropCount);
+_Check_return_ PropertyStruct* BinToPropertyStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, DWORD dwPropCount);
 // Allocates return value with new. Clean up with DeletePropertyStruct.
-LPSPropValue BinToSPropValue(ULONG cbBin, LPBYTE lpBin, DWORD dwPropCount, size_t* lpcbBytesRead, BOOL bStringPropsExcludeLength);
+_Check_return_ LPSPropValue BinToSPropValue(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, DWORD dwPropCount, _Out_ size_t* lpcbBytesRead, BOOL bStringPropsExcludeLength);
 // Neuters an array of SPropValues - caller must use delete to delete the SPropValue
-void DeleteSPropVal(ULONG cVal, LPSPropValue lpsPropVal);
-void DeletePropertyStruct(PropertyStruct* ppProperty);
+void DeleteSPropVal(ULONG cVal, _In_count_(cVal) LPSPropValue lpsPropVal);
+void DeletePropertyStruct(_In_ PropertyStruct* ppProperty);
 // result allocated with new, clean up with delete[]
-LPTSTR PropertyStructToString(PropertyStruct* ppProperty);
+_Check_return_ LPTSTR PropertyStructToString(_In_ PropertyStruct* ppProperty);
 
 // RestrictionStruct
 // =====================
@@ -535,15 +535,15 @@ typedef struct
 } RestrictionStruct;
 
 // Allocates return value with new. Clean up with DeleteRestrictionStruct.
-RestrictionStruct* BinToRestrictionStruct(ULONG cbBin, LPBYTE lpBin);
-RestrictionStruct* BinToRestrictionStructWithSize(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead);
+_Check_return_ RestrictionStruct* BinToRestrictionStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+_Check_return_ RestrictionStruct* BinToRestrictionStructWithSize(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, _Out_opt_ size_t* lpcbBytesRead);
 // Caller allocates with new. Clean up with DeleteRestriction and delete[].
-void BinToRestriction(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead, LPSRestriction psrRestriction, BOOL bRuleCondition, BOOL bExtendedCount);
+void BinToRestriction(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, _Out_ size_t* lpcbBytesRead, _In_ LPSRestriction psrRestriction, BOOL bRuleCondition, BOOL bExtendedCount);
 // Neuters an SRestriction - caller must use delete to delete the SRestriction
-void DeleteRestriction(LPSRestriction lpRes);
-void DeleteRestrictionStruct(RestrictionStruct* prRestriction);
+void DeleteRestriction(_In_ LPSRestriction lpRes);
+void DeleteRestrictionStruct(_In_ RestrictionStruct* prRestriction);
 // result allocated with new, clean up with delete[]
-LPTSTR RestrictionStructToString(RestrictionStruct* prRestriction);
+_Check_return_ LPTSTR RestrictionStructToString(_In_ RestrictionStruct* prRestriction);
 
 // http://msdn.microsoft.com/en-us/library/ee158295.aspx
 // http://msdn.microsoft.com/en-us/library/ee179073.aspx
@@ -590,12 +590,12 @@ typedef struct
 } RuleConditionStruct;
 
 // Rule Condition - these are used in rules messages
-void RuleConditionToString(SBinary myBin, LPTSTR* lpszResultString, BOOL bExtended);
+void RuleConditionToString(SBinary myBin, _Deref_out_opt_z_ LPTSTR* lpszResultString, BOOL bExtended);
 // Allocates return value with new. Clean up with DeleteRuleConditionStruct.
-RuleConditionStruct* BinToRuleConditionStruct(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead, BOOL bExtended);
-void DeleteRuleConditionStruct(RuleConditionStruct* prcRuleCondition);
+_Check_return_ RuleConditionStruct* BinToRuleConditionStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, _Out_opt_ size_t* lpcbBytesRead, BOOL bExtended);
+void DeleteRuleConditionStruct(_In_ RuleConditionStruct* prcRuleCondition);
 // result allocated with new, clean up with delete[]
-LPTSTR RuleConditionStructToString(RuleConditionStruct* prcRuleCondition, BOOL bExtended);
+_Check_return_ LPTSTR RuleConditionStructToString(_In_ RuleConditionStruct* prcRuleCondition, BOOL bExtended);
 
 // EntryListEntryStruct
 // =====================
@@ -624,10 +624,10 @@ typedef struct EntryListStruct
 } EntryListStruct;
 
 // Allocates return value with new. Clean up with DeleteEntryListStruct.
-EntryListStruct* BinToEntryListStruct(ULONG cbBin, LPBYTE lpBin);
-void DeleteEntryListStruct(EntryListStruct* pelEntryList);
+_Check_return_ EntryListStruct* BinToEntryListStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+void DeleteEntryListStruct(_In_ EntryListStruct* pelEntryList);
 // result allocated with new, clean up with delete[]
-LPTSTR EntryListStructToString(EntryListStruct* pelEntryList);
+_Check_return_ LPTSTR EntryListStructToString(_In_ EntryListStruct* pelEntryList);
 
 // AddressListEntryStruct
 // =====================
@@ -674,10 +674,10 @@ typedef struct
 } SearchFolderDefinitionStruct;
 
 // Allocates return value with new. Clean up with DeleteSearchFolderDefinitionStruct.
-SearchFolderDefinitionStruct* BinToSearchFolderDefinitionStruct(ULONG cbBin, LPBYTE lpBin);
-void DeleteSearchFolderDefinitionStruct(SearchFolderDefinitionStruct* psfdSearchFolderDefinition);
+_Check_return_ SearchFolderDefinitionStruct* BinToSearchFolderDefinitionStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+void DeleteSearchFolderDefinitionStruct(_In_ SearchFolderDefinitionStruct* psfdSearchFolderDefinition);
 // result allocated with new, clean up with delete[]
-LPTSTR SearchFolderDefinitionStructToString(SearchFolderDefinitionStruct* psfdSearchFolderDefinition);
+_Check_return_ LPTSTR SearchFolderDefinitionStructToString(_In_ SearchFolderDefinitionStruct* psfdSearchFolderDefinition);
 
 // PackedUnicodeString
 // =====================
@@ -747,10 +747,10 @@ typedef struct
 } PropertyDefinitionStreamStruct;
 
 // Allocates return value with new. Clean up with DeletePropertyDefinitionStreamStruct.
-PropertyDefinitionStreamStruct* BinToPropertyDefinitionStreamStruct(ULONG cbBin, LPBYTE lpBin);
-void DeletePropertyDefinitionStreamStruct(PropertyDefinitionStreamStruct* ppdsPropertyDefinitionStream);
+_Check_return_ PropertyDefinitionStreamStruct* BinToPropertyDefinitionStreamStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+void DeletePropertyDefinitionStreamStruct(_In_ PropertyDefinitionStreamStruct* ppdsPropertyDefinitionStream);
 // result allocated with new, clean up with delete[]
-LPTSTR PropertyDefinitionStreamStructToString(PropertyDefinitionStreamStruct* ppdsPropertyDefinitionStream);
+_Check_return_ LPTSTR PropertyDefinitionStreamStructToString(_In_ PropertyDefinitionStreamStruct* ppdsPropertyDefinitionStream);
 
 // PersistElement
 // =====================
@@ -792,12 +792,12 @@ typedef struct
 } AdditionalRenEntryIDsStruct;
 
 // Allocates return value with new. Clean up with DeleteAdditionalRenEntryIDsStruct.
-void BinToPersistData(ULONG cbBin, LPBYTE lpBin, size_t* lpcbBytesRead, PersistData* ppdPersistData);
+void BinToPersistData(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, _Out_ size_t* lpcbBytesRead, _Out_ PersistData* ppdPersistData);
 // Allocates return value with new. Clean up with DeleteAdditionalRenEntryIDsStruct.
-AdditionalRenEntryIDsStruct* BinToAdditionalRenEntryIDsStruct(ULONG cbBin, LPBYTE lpBin);
-void DeleteAdditionalRenEntryIDsStruct(AdditionalRenEntryIDsStruct* pareiAdditionalRenEntryIDs);
+_Check_return_ AdditionalRenEntryIDsStruct* BinToAdditionalRenEntryIDsStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+void DeleteAdditionalRenEntryIDsStruct(_In_ AdditionalRenEntryIDsStruct* pareiAdditionalRenEntryIDs);
 // result allocated with new, clean up with delete[]
-LPTSTR AdditionalRenEntryIDsStructToString(AdditionalRenEntryIDsStruct* pareiAdditionalRenEntryIDs);
+_Check_return_ LPTSTR AdditionalRenEntryIDsStructToString(_In_ AdditionalRenEntryIDsStruct* pareiAdditionalRenEntryIDs);
 
 // FlatEntryIDStruct
 // =====================
@@ -827,10 +827,10 @@ typedef struct
 } FlatEntryListStruct;
 
 // Allocates return value with new. Clean up with DeleteFlatEntryListStruct.
-FlatEntryListStruct* BinToFlatEntryListStruct(ULONG cbBin, LPBYTE lpBin);
-void DeleteFlatEntryListStruct(FlatEntryListStruct* pfelFlatEntryList);
+_Check_return_ FlatEntryListStruct* BinToFlatEntryListStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+void DeleteFlatEntryListStruct(_In_ FlatEntryListStruct* pfelFlatEntryList);
 // result allocated with new, clean up with delete[]
-LPTSTR FlatEntryListStructToString(FlatEntryListStruct* pfelFlatEntryList);
+_Check_return_ LPTSTR FlatEntryListStructToString(_In_ FlatEntryListStruct* pfelFlatEntryList);
 
 // WebViewPersistStruct
 // =====================
@@ -859,10 +859,10 @@ typedef struct
 } WebViewPersistStreamStruct;
 
 // Allocates return value with new. Clean up with DeleteWebViewPersistStreamStruct.
-WebViewPersistStreamStruct* BinToWebViewPersistStreamStruct(ULONG cbBin, LPBYTE lpBin);
-void DeleteWebViewPersistStreamStruct(WebViewPersistStreamStruct* pwvpsWebViewPersistStream);
+_Check_return_ WebViewPersistStreamStruct* BinToWebViewPersistStreamStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+void DeleteWebViewPersistStreamStruct(_In_ WebViewPersistStreamStruct* pwvpsWebViewPersistStream);
 // result allocated with new, clean up with delete[]
-LPTSTR WebViewPersistStreamStructToString(WebViewPersistStreamStruct* pwvpsWebViewPersistStream);
+_Check_return_ LPTSTR WebViewPersistStreamStructToString(_In_ WebViewPersistStreamStruct* pwvpsWebViewPersistStream);
 
 // RecipientRowStreamStruct
 // =====================
@@ -878,8 +878,8 @@ typedef struct
 } RecipientRowStreamStruct;
 
 // Allocates return value with new. Clean up with DeleteRecipientRowStreamStruct.
-RecipientRowStreamStruct* BinToRecipientRowStreamStruct(ULONG cbBin, LPBYTE lpBin);
-void DeleteRecipientRowStreamStruct(RecipientRowStreamStruct* prrsRecipientRowStream);
+_Check_return_ RecipientRowStreamStruct* BinToRecipientRowStreamStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+void DeleteRecipientRowStreamStruct(_In_ RecipientRowStreamStruct* prrsRecipientRowStream);
 // result allocated with new, clean up with delete[]
-LPTSTR RecipientRowStreamStructToString(RecipientRowStreamStruct* prrsRecipientRowStream);
+_Check_return_ LPTSTR RecipientRowStreamStructToString(_In_ RecipientRowStreamStruct* prrsRecipientRowStream);
 // End Functions to parse PT_BINARY properties

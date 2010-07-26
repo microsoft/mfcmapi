@@ -21,10 +21,10 @@ static TCHAR* CLASS = _T("CStreamEditor");
 // Create an editor for a MAPI property - can be used to initialize stream and rtf stream editing as well
 // Takes LPMAPIPROP and ulPropTag as input - will pull SPropValue from the LPMAPIPROP
 CStreamEditor::CStreamEditor(
-							 CWnd* pParentWnd,
+							 _In_ CWnd* pParentWnd,
 							 UINT uidTitle,
 							 UINT uidPrompt,
-							 LPMAPIPROP lpMAPIProp,
+							 _In_ LPMAPIPROP lpMAPIProp,
 							 ULONG ulPropTag,
 							 BOOL bIsAB,
 							 BOOL bEditPropAsRTF,
@@ -91,7 +91,7 @@ CEditor(pParentWnd,uidTitle,uidPrompt,0,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL)
 	}
 
 	CString szPromptPostFix;
-	szPromptPostFix.Format(_T("\r\n%s"),TagToString(m_ulPropTag,m_lpMAPIProp,m_bIsAB,false)); // STRING_OK
+	szPromptPostFix.Format(_T("\r\n%s"),(LPCTSTR) TagToString(m_ulPropTag,m_lpMAPIProp,m_bIsAB,false)); // STRING_OK
 
 	SetPromptPostFix(szPromptPostFix);
 
@@ -110,28 +110,28 @@ CEditor(pParentWnd,uidTitle,uidPrompt,0,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL)
 	{
 		InitMultiLine(m_iSmartViewBox,IDS_COLSMART_VIEW,NULL,true);
 	}
-}
+} // CStreamEditor::CStreamEditor
 
 CStreamEditor::~CStreamEditor()
 {
 	TRACE_DESTRUCTOR(CLASS);
-}
+} // CStreamEditor::~CStreamEditor
 
 // Used to call functions which need to be called AFTER controls are created
-BOOL CStreamEditor::OnInitDialog()
+_Check_return_ BOOL CStreamEditor::OnInitDialog()
 {
 	BOOL bRet = CEditor::OnInitDialog();
 
 	ReadTextStreamFromProperty();
 
 	return bRet;
-}
+} // CStreamEditor::OnInitDialog
 
 void CStreamEditor::OnOK()
 {
 	WriteTextStreamToProperty();
 	CDialog::OnOK(); // don't need to call CEditor::OnOK
-}
+} // CStreamEditor::OnOK
 
 void CStreamEditor::ReadTextStreamFromProperty()
 {
@@ -145,7 +145,7 @@ void CStreamEditor::ReadTextStreamFromProperty()
 	LPSTREAM lpTmpRTFStream = NULL;
 	LPSTREAM lpStreamIn = NULL;
 
-	DebugPrintEx(DBGStream,CLASS,_T("ReadTextStreamFromProperty"),_T("opening property 0x%X (== %s) from 0x%X\n"),m_ulPropTag,(LPCTSTR) TagToString(m_ulPropTag,m_lpMAPIProp,m_bIsAB,true),m_lpMAPIProp);
+	DebugPrintEx(DBGStream,CLASS,_T("ReadTextStreamFromProperty"),_T("opening property 0x%X (== %s) from %p\n"),m_ulPropTag,(LPCTSTR) TagToString(m_ulPropTag,m_lpMAPIProp,m_bIsAB,true),m_lpMAPIProp);
 
 	WC_H(m_lpMAPIProp->OpenProperty(
 		m_ulPropTag,
@@ -267,9 +267,8 @@ void CStreamEditor::WriteTextStreamToProperty()
 	if (lpTmpStream) lpTmpStream->Release();
 } // CStreamEditor::WriteTextStreamToProperty
 
-ULONG CStreamEditor::HandleChange(UINT nID)
+_Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
 {
-	HRESULT hRes = S_OK;
 	ULONG i = CEditor::HandleChange(nID);
 
 	if ((ULONG) -1 == i) return (ULONG) -1;
@@ -339,7 +338,7 @@ ULONG CStreamEditor::HandleChange(UINT nID)
 
 	if (m_bDoSmartView)
 	{
-		if (!cb && ! lpb) GetBinaryUseControl(m_iBinBox,&cb,&lpb);
+		if (!cb && !lpb) (void) GetBinaryUseControl(m_iBinBox,&cb,&lpb);
 
 		LPTSTR szSmartView = NULL;
 		SBinary Bin = {0};
@@ -364,7 +363,7 @@ ULONG CStreamEditor::HandleChange(UINT nID)
 	if (m_bUseWrapEx)
 	{
 		LPTSTR szFlags = NULL;
-		EC_H(InterpretFlags(flagStreamFlag, m_ulStreamFlags, &szFlags));
+		InterpretFlags(flagStreamFlag, m_ulStreamFlags, &szFlags);
 		SetStringf(m_iFlagBox,_T("0x%08X = %s"),m_ulStreamFlags,szFlags); // STRING_OK
 		delete[] szFlags;
 		szFlags = NULL;
@@ -374,4 +373,4 @@ ULONG CStreamEditor::HandleChange(UINT nID)
 	}
 
 	return i;
-}
+} // CStreamEditor::HandleChange

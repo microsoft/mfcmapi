@@ -19,28 +19,28 @@ public:
 
 	void MAPIInitialize(ULONG ulFlags);
 	void MAPIUninitialize();
-	BOOL bMAPIInitialized();
+	_Check_return_ BOOL bMAPIInitialized();
 
-	void SetABEntriesToCopy(LPENTRYLIST lpEBEntriesToCopy);
-	LPENTRYLIST GetABEntriesToCopy();
+	void SetABEntriesToCopy(_In_ LPENTRYLIST lpEBEntriesToCopy);
+	_Check_return_ LPENTRYLIST GetABEntriesToCopy();
 
-	void SetMessagesToCopy(LPENTRYLIST lpMessagesToCopy, LPMAPIFOLDER lpSourceParent);
-	LPENTRYLIST GetMessagesToCopy();
+	void SetMessagesToCopy(_In_ LPENTRYLIST lpMessagesToCopy, _In_ LPMAPIFOLDER lpSourceParent);
+	_Check_return_ LPENTRYLIST GetMessagesToCopy();
 
-	void SetFolderToCopy(LPMAPIFOLDER lpFolderToCopy, LPMAPIFOLDER lpSourceParent);
-	LPMAPIFOLDER GetFolderToCopy();
+	void SetFolderToCopy(_In_ LPMAPIFOLDER lpFolderToCopy, _In_ LPMAPIFOLDER lpSourceParent);
+	_Check_return_ LPMAPIFOLDER GetFolderToCopy();
 
-	void SetPropertyToCopy(ULONG ulPropTag, LPMAPIPROP lpSourcePropObject);
-	ULONG GetPropertyToCopy();
-	LPMAPIPROP GetSourcePropObject();
+	void SetPropertyToCopy(ULONG ulPropTag, _In_ LPMAPIPROP lpSourcePropObject);
+	_Check_return_ ULONG GetPropertyToCopy();
+	_Check_return_ LPMAPIPROP GetSourcePropObject();
 
-	void SetAttachmentsToCopy(LPMESSAGE lpMessage, ULONG ulNumAttachments, ULONG* lpAttNumList);
-	ULONG* GetAttachmentsToCopy();
-	ULONG GetNumAttachments();
+	void SetAttachmentsToCopy(_In_ LPMESSAGE lpMessage, ULONG ulNumAttachments, _Out_ ULONG* lpAttNumList);
+	_Check_return_ ULONG* GetAttachmentsToCopy();
+	_Check_return_ ULONG GetNumAttachments();
 
-	LPMAPIFOLDER GetSourceParentFolder();
+	_Check_return_ LPMAPIFOLDER GetSourceParentFolder();
 
-	ULONG GetBufferStatus();
+	_Check_return_ ULONG GetBufferStatus();
 
 private:
 	void EmptyBuffer();
@@ -73,21 +73,21 @@ CGlobalCache::CGlobalCache()
 
 	m_lpulAttachmentsToCopy = NULL;
 	m_ulNumAttachments = NULL;
-}
+} // CGlobalCache::CGlobalCache
 
 CGlobalCache::~CGlobalCache()
 {
 	TRACE_DESTRUCTOR(GCCLASS);
 	EmptyBuffer();
 	CGlobalCache::MAPIUninitialize();
-}
+} // CGlobalCache::~CGlobalCache
 
 STDMETHODIMP_(ULONG) CGlobalCache::AddRef()
 {
 	LONG lCount = InterlockedIncrement(&m_cRef);
 	TRACE_ADDREF(GCCLASS,lCount);
 	return lCount;
-}
+} // CGlobalCache::AddRef
 
 STDMETHODIMP_(ULONG) CGlobalCache::Release()
 {
@@ -95,7 +95,7 @@ STDMETHODIMP_(ULONG) CGlobalCache::Release()
 	TRACE_RELEASE(GCCLASS,lCount);
 	if (!lCount)  delete this;
 	return lCount;
-}
+} // CGlobalCache::Release
 
 void CGlobalCache::MAPIInitialize(ULONG ulFlags)
 {
@@ -127,7 +127,7 @@ void CGlobalCache::MAPIUninitialize()
 	}
 } // CGlobalCache::MAPIUninitialize
 
-BOOL CGlobalCache::bMAPIInitialized()
+_Check_return_ BOOL CGlobalCache::bMAPIInitialized()
 {
 	return m_bMAPIInitialized;
 } // CGlobalCache::bMAPIInitialized
@@ -149,74 +149,73 @@ void CGlobalCache::EmptyBuffer()
 	m_lpSourcePropObject = NULL;
 	m_lpulAttachmentsToCopy = NULL;
 	m_ulNumAttachments = NULL;
-}
+} // CGlobalCache::EmptyBuffer
 
-void CGlobalCache::SetABEntriesToCopy(LPENTRYLIST lpEBEntriesToCopy)
+void CGlobalCache::SetABEntriesToCopy(_In_ LPENTRYLIST lpEBEntriesToCopy)
 {
 	EmptyBuffer();
 	m_lpAddressEntriesToCopy = lpEBEntriesToCopy;
-}
+} // CGlobalCache::SetABEntriesToCopy
 
-LPENTRYLIST CGlobalCache::GetABEntriesToCopy()
+_Check_return_ LPENTRYLIST CGlobalCache::GetABEntriesToCopy()
 {
 	return m_lpAddressEntriesToCopy;
-}
+} // CGlobalCache::GetABEntriesToCopy
 
-void CGlobalCache::SetMessagesToCopy(LPENTRYLIST lpMessagesToCopy, LPMAPIFOLDER lpSourceParent)
+void CGlobalCache::SetMessagesToCopy(_In_ LPENTRYLIST lpMessagesToCopy, _In_ LPMAPIFOLDER lpSourceParent)
 {
 	EmptyBuffer();
 	m_lpMessagesToCopy = lpMessagesToCopy;
 	m_lpSourceParent = lpSourceParent;
 	if (m_lpSourceParent) m_lpSourceParent->AddRef();
+} // CGlobalCache::SetMessagesToCopy
 
-}
-
-LPENTRYLIST CGlobalCache::GetMessagesToCopy()
+_Check_return_ LPENTRYLIST CGlobalCache::GetMessagesToCopy()
 {
 	return m_lpMessagesToCopy;
-}
+} // CGlobalCache::GetMessagesToCopy
 
-void CGlobalCache::SetFolderToCopy(LPMAPIFOLDER lpFolderToCopy, LPMAPIFOLDER lpSourceParent)
+void CGlobalCache::SetFolderToCopy(_In_ LPMAPIFOLDER lpFolderToCopy, _In_ LPMAPIFOLDER lpSourceParent)
 {
 	EmptyBuffer();
 	m_lpFolderToCopy = lpFolderToCopy;
 	if (m_lpFolderToCopy) m_lpFolderToCopy->AddRef();
 	m_lpSourceParent = lpSourceParent;
 	if (m_lpSourceParent) m_lpSourceParent->AddRef();
-}
+} // CGlobalCache::SetFolderToCopy
 
-LPMAPIFOLDER CGlobalCache::GetFolderToCopy()
+_Check_return_ LPMAPIFOLDER CGlobalCache::GetFolderToCopy()
 {
 	if (m_lpFolderToCopy) m_lpFolderToCopy->AddRef();
 	return m_lpFolderToCopy;
-}
+} // CGlobalCache::GetFolderToCopy
 
-LPMAPIFOLDER CGlobalCache::GetSourceParentFolder()
+_Check_return_ LPMAPIFOLDER CGlobalCache::GetSourceParentFolder()
 {
 	if (m_lpSourceParent) m_lpSourceParent->AddRef();
 	return m_lpSourceParent;
-}
+} // CGlobalCache::GetSourceParentFolder
 
-void CGlobalCache::SetPropertyToCopy(ULONG ulPropTag, LPMAPIPROP lpSourcePropObject)
+void CGlobalCache::SetPropertyToCopy(ULONG ulPropTag, _In_ LPMAPIPROP lpSourcePropObject)
 {
 	EmptyBuffer();
 	m_ulPropTagToCopy = ulPropTag;
 	m_lpSourcePropObject = lpSourcePropObject;
 	if (m_lpSourcePropObject) m_lpSourcePropObject->AddRef();
-}
+} // CGlobalCache::SetPropertyToCopy
 
-ULONG CGlobalCache::GetPropertyToCopy()
+_Check_return_ ULONG CGlobalCache::GetPropertyToCopy()
 {
 	return m_ulPropTagToCopy;
-}
+} // CGlobalCache::GetPropertyToCopy
 
-LPMAPIPROP CGlobalCache::GetSourcePropObject()
+_Check_return_ LPMAPIPROP CGlobalCache::GetSourcePropObject()
 {
 	if (m_lpSourcePropObject) m_lpSourcePropObject->AddRef();
 	return m_lpSourcePropObject;
-}
+} // CGlobalCache::GetSourcePropObject
 
-void CGlobalCache::SetAttachmentsToCopy(LPMESSAGE lpMessage, ULONG ulNumAttachments, ULONG* lpAttNumList)
+void CGlobalCache::SetAttachmentsToCopy(_In_ LPMESSAGE lpMessage, ULONG ulNumAttachments, _Out_ ULONG* lpAttNumList)
 {
 	EmptyBuffer();
 	m_lpulAttachmentsToCopy = lpAttNumList;
@@ -225,17 +224,17 @@ void CGlobalCache::SetAttachmentsToCopy(LPMESSAGE lpMessage, ULONG ulNumAttachme
 	if (m_lpSourcePropObject) m_lpSourcePropObject->AddRef();
 } // CGlobalCache::SetAttachmentsToCopy
 
-ULONG* CGlobalCache::GetAttachmentsToCopy()
+_Check_return_ ULONG* CGlobalCache::GetAttachmentsToCopy()
 {
 	return m_lpulAttachmentsToCopy;
 } // CGlobalCache::GetAttachmentsToCopy
 
-ULONG CGlobalCache::GetNumAttachments()
+_Check_return_ ULONG CGlobalCache::GetNumAttachments()
 {
 	return m_ulNumAttachments;
 } // CGlobalCache::GetNumAttachments
 
-ULONG CGlobalCache::GetBufferStatus()
+_Check_return_ ULONG CGlobalCache::GetBufferStatus()
 {
 	ULONG ulStatus = BUFFER_EMPTY;
 	if (m_lpMessagesToCopy)			ulStatus |= BUFFER_MESSAGES;
@@ -246,7 +245,7 @@ ULONG CGlobalCache::GetBufferStatus()
 	if (m_lpSourcePropObject)		ulStatus |= BUFFER_SOURCEPROPOBJ;
 	if (m_lpulAttachmentsToCopy)	ulStatus |= BUFFER_ATTACHMENTS;
 	return ulStatus;
-}
+} // CGlobalCache::GetBufferStatus
 
 static TCHAR* CLASS = _T("CMapiObjects");
 
@@ -255,10 +254,10 @@ static TCHAR* CLASS = _T("CMapiObjects");
 //////////////////////////////////////////////////////////////////////
 
 // Pass an existing CMapiObjects to make a copy, pass NULL to create a new one from scratch
-CMapiObjects::CMapiObjects(CMapiObjects *OldMapiObjects)
+CMapiObjects::CMapiObjects(_In_opt_ CMapiObjects *OldMapiObjects)
 {
 	TRACE_CONSTRUCTOR(CLASS);
-	DebugPrintEx(DBGConDes,CLASS,CLASS,_T("OldMapiObjects = 0x%X\n"),OldMapiObjects);
+	DebugPrintEx(DBGConDes,CLASS,CLASS,_T("OldMapiObjects = %p\n"),OldMapiObjects);
 	m_cRef = 1;
 
 	m_lpAddrBook = NULL;
@@ -288,7 +287,7 @@ CMapiObjects::CMapiObjects(CMapiObjects *OldMapiObjects)
 	{
 		m_lpGlobalCache = new CGlobalCache();
 	}
-}
+} // CMapiObjects::CMapiObjects
 
 CMapiObjects::~CMapiObjects()
 {
@@ -300,14 +299,14 @@ CMapiObjects::~CMapiObjects()
 
 	// Must be last - uninitializes MAPI
 	if (m_lpGlobalCache) m_lpGlobalCache->Release();
-}
+} // CMapiObjects::~CMapiObjects
 
 STDMETHODIMP_(ULONG) CMapiObjects::AddRef()
 {
 	LONG lCount = InterlockedIncrement(&m_cRef);
 	TRACE_ADDREF(CLASS,lCount);
 	return lCount;
-}
+} // CMapiObjects::AddRef
 
 STDMETHODIMP_(ULONG) CMapiObjects::Release()
 {
@@ -315,9 +314,9 @@ STDMETHODIMP_(ULONG) CMapiObjects::Release()
 	TRACE_RELEASE(CLASS,lCount);
 	if (!lCount)  delete this;
 	return lCount;
-}
+} // CMapiObjects::Release
 
-void CMapiObjects::MAPILogonEx(HWND hwnd,LPTSTR szProfileName, ULONG ulFlags)
+void CMapiObjects::MAPILogonEx(_In_ HWND hwnd, _In_opt_z_ LPTSTR szProfileName, ULONG ulFlags)
 {
 	HRESULT hRes = S_OK;
 	DebugPrint(DBGGeneric,_T("Logging on with MAPILogonEx, ulFlags = 0x%X\n"),ulFlags);
@@ -335,13 +334,13 @@ void CMapiObjects::MAPILogonEx(HWND hwnd,LPTSTR szProfileName, ULONG ulFlags)
 		ulFlags,
 		&m_lpMAPISession));
 
-	DebugPrint(DBGGeneric,_T("\tm_lpMAPISession set to 0x%X\n"),m_lpMAPISession);
+	DebugPrint(DBGGeneric,_T("\tm_lpMAPISession set to %p\n"),m_lpMAPISession);
 } // CMapiObjects::MAPILogonEx
 
-void CMapiObjects::Logoff(HWND hwnd, ULONG ulFlags)
+void CMapiObjects::Logoff(_In_ HWND hwnd, ULONG ulFlags)
 {
 	HRESULT hRes = S_OK;
-	DebugPrint(DBGGeneric,_T("Logging off of 0x%X, ulFlags = 0x%08X\n"),m_lpMAPISession,ulFlags);
+	DebugPrint(DBGGeneric,_T("Logging off of %p, ulFlags = 0x%08X\n"),m_lpMAPISession,ulFlags);
 
 	if (m_lpMAPISession)
 	{
@@ -351,12 +350,12 @@ void CMapiObjects::Logoff(HWND hwnd, ULONG ulFlags)
 	}
 } // CMapiObjects::Logoff
 
-LPMAPISESSION CMapiObjects::GetSession()
+_Check_return_ LPMAPISESSION CMapiObjects::GetSession()
 {
 	return m_lpMAPISession;
-}
+} // CMapiObjects::GetSession
 
-LPPROFADMIN CMapiObjects::GetProfAdmin()
+_Check_return_ LPPROFADMIN CMapiObjects::GetProfAdmin()
 {
 	if (!m_lpProfAdmin)
 	{
@@ -365,30 +364,30 @@ LPPROFADMIN CMapiObjects::GetProfAdmin()
 		EC_H(MAPIAdminProfiles(0, &m_lpProfAdmin));
 	}
 	return m_lpProfAdmin;
-}
+} // CMapiObjects::GetProfAdmin
 
-void CMapiObjects::SetMDB(LPMDB lpMDB)
+void CMapiObjects::SetMDB(_In_opt_ LPMDB lpMDB)
 {
-	DebugPrintEx(DBGGeneric,CLASS,_T("SetMDB"),_T("replacing 0x%X with 0x%X\n"),m_lpMDB,lpMDB);
+	DebugPrintEx(DBGGeneric,CLASS,_T("SetMDB"),_T("replacing %p with %p\n"),m_lpMDB,lpMDB);
 	if (m_lpMDB) m_lpMDB->Release();
 	m_lpMDB = lpMDB;
 	if (m_lpMDB) m_lpMDB->AddRef();
-}
+} // CMapiObjects::SetMDB
 
-LPMDB CMapiObjects::GetMDB()
+_Check_return_ LPMDB CMapiObjects::GetMDB()
 {
 	return m_lpMDB;
-}
+} // CMapiObjects::GetMDB
 
-void CMapiObjects::SetAddrBook(LPADRBOOK lpAddrBook)
+void CMapiObjects::SetAddrBook(_In_opt_ LPADRBOOK lpAddrBook)
 {
-	DebugPrintEx(DBGGeneric,CLASS,_T("SetAddrBook"),_T("replacing 0x%X with 0x%X\n"),m_lpAddrBook,lpAddrBook);
+	DebugPrintEx(DBGGeneric,CLASS,_T("SetAddrBook"),_T("replacing %p with %p\n"),m_lpAddrBook,lpAddrBook);
 	if (m_lpAddrBook) m_lpAddrBook->Release();
 	m_lpAddrBook = lpAddrBook;
 	if (m_lpAddrBook) m_lpAddrBook->AddRef();
-}
+} // CMapiObjects::SetAddrBook
 
-LPADRBOOK CMapiObjects::GetAddrBook(BOOL bForceOpen)
+_Check_return_ LPADRBOOK CMapiObjects::GetAddrBook(BOOL bForceOpen)
 {
 	// if we haven't opened the address book yet and we have a session, open it now
 	if (!m_lpAddrBook && m_lpMAPISession && bForceOpen)
@@ -401,7 +400,7 @@ LPADRBOOK CMapiObjects::GetAddrBook(BOOL bForceOpen)
 			&m_lpAddrBook));
 	}
 	return m_lpAddrBook;
-}
+} // CMapiObjects::GetAddrBook
 
 void CMapiObjects::MAPIInitialize(ULONG ulFlags)
 {
@@ -409,7 +408,7 @@ void CMapiObjects::MAPIInitialize(ULONG ulFlags)
 	{
 		m_lpGlobalCache->MAPIInitialize(ulFlags);
 	}
-}
+} // CMapiObjects::MAPIInitialize
 
 void CMapiObjects::MAPIUninitialize()
 {
@@ -417,76 +416,76 @@ void CMapiObjects::MAPIUninitialize()
 	{
 		m_lpGlobalCache->MAPIUninitialize();
 	}
-}
+} // CMapiObjects::MAPIUninitialize
 
-BOOL CMapiObjects::bMAPIInitialized()
+_Check_return_ BOOL CMapiObjects::bMAPIInitialized()
 {
 	if (m_lpGlobalCache)
 	{
 		return m_lpGlobalCache->bMAPIInitialized();
 	}
 	return false;
-}
+} // CMapiObjects::bMAPIInitialized
 
-void CMapiObjects::SetABEntriesToCopy(LPENTRYLIST lpEBEntriesToCopy)
+void CMapiObjects::SetABEntriesToCopy(_In_ LPENTRYLIST lpEBEntriesToCopy)
 {
 	if (m_lpGlobalCache)
 	{
 		m_lpGlobalCache->SetABEntriesToCopy(lpEBEntriesToCopy);
 	}
-}
+} // CMapiObjects::SetABEntriesToCopy
 
-LPENTRYLIST CMapiObjects::GetABEntriesToCopy()
+_Check_return_ LPENTRYLIST CMapiObjects::GetABEntriesToCopy()
 {
 	if (m_lpGlobalCache)
 	{
 		return m_lpGlobalCache->GetABEntriesToCopy();
 	}
 	return NULL;
-}
+} // CMapiObjects::GetABEntriesToCopy
 
-void CMapiObjects::SetMessagesToCopy(LPENTRYLIST lpMessagesToCopy, LPMAPIFOLDER lpSourceParent)
+void CMapiObjects::SetMessagesToCopy(_In_ LPENTRYLIST lpMessagesToCopy, _In_ LPMAPIFOLDER lpSourceParent)
 {
 	if (m_lpGlobalCache)
 	{
 		m_lpGlobalCache->SetMessagesToCopy(lpMessagesToCopy,lpSourceParent);
 	}
-}
+} // CMapiObjects::SetMessagesToCopy
 
-LPENTRYLIST CMapiObjects::GetMessagesToCopy()
+_Check_return_ LPENTRYLIST CMapiObjects::GetMessagesToCopy()
 {
 	if (m_lpGlobalCache)
 	{
 		return m_lpGlobalCache->GetMessagesToCopy();
 	}
 	return NULL;
-}
+} // CMapiObjects::GetMessagesToCopy
 
-void CMapiObjects::SetFolderToCopy(LPMAPIFOLDER lpFolderToCopy, LPMAPIFOLDER lpSourceParent)
+void CMapiObjects::SetFolderToCopy(_In_ LPMAPIFOLDER lpFolderToCopy, _In_ LPMAPIFOLDER lpSourceParent)
 {
 	if (m_lpGlobalCache)
 	{
 		m_lpGlobalCache->SetFolderToCopy(lpFolderToCopy,lpSourceParent);
 	}
-}
+} // CMapiObjects::SetFolderToCopy
 
-LPMAPIFOLDER CMapiObjects::GetFolderToCopy()
+_Check_return_ LPMAPIFOLDER CMapiObjects::GetFolderToCopy()
 {
 	if (m_lpGlobalCache)
 	{
 		return m_lpGlobalCache->GetFolderToCopy();
 	}
 	return NULL;
-}
+} // CMapiObjects::GetFolderToCopy
 
-LPMAPIFOLDER CMapiObjects::GetSourceParentFolder()
+_Check_return_ LPMAPIFOLDER CMapiObjects::GetSourceParentFolder()
 {
 	if (m_lpGlobalCache)
 	{
 		return m_lpGlobalCache->GetSourceParentFolder();
 	}
 	return NULL;
-}
+} // CMapiObjects::GetSourceParentFolder
 
 void CMapiObjects::SetPropertyToCopy(ULONG ulPropTag, LPMAPIPROP lpSourcePropObject)
 {
@@ -494,27 +493,27 @@ void CMapiObjects::SetPropertyToCopy(ULONG ulPropTag, LPMAPIPROP lpSourcePropObj
 	{
 		m_lpGlobalCache->SetPropertyToCopy(ulPropTag,lpSourcePropObject);
 	}
-}
+} // CMapiObjects::SetPropertyToCopy
 
-ULONG CMapiObjects::GetPropertyToCopy()
+_Check_return_ ULONG CMapiObjects::GetPropertyToCopy()
 {
 	if (m_lpGlobalCache)
 	{
 		return m_lpGlobalCache->GetPropertyToCopy();
 	}
 	return NULL;
-}
+} // CMapiObjects::GetPropertyToCopy
 
-LPMAPIPROP CMapiObjects::GetSourcePropObject()
+_Check_return_ LPMAPIPROP CMapiObjects::GetSourcePropObject()
 {
 	if (m_lpGlobalCache)
 	{
 		return m_lpGlobalCache->GetSourcePropObject();
 	}
 	return NULL;
-}
+} // CMapiObjects::GetSourcePropObject
 
-void CMapiObjects::SetAttachmentsToCopy(LPMESSAGE lpMessage, ULONG ulNumAttachments, ULONG* lpAttNumList)
+void CMapiObjects::SetAttachmentsToCopy(_In_ LPMESSAGE lpMessage, ULONG ulNumAttachments, _Out_ ULONG* lpAttNumList)
 {
 	if (m_lpGlobalCache)
 	{
@@ -522,7 +521,7 @@ void CMapiObjects::SetAttachmentsToCopy(LPMESSAGE lpMessage, ULONG ulNumAttachme
 	}
 } // CMapiObjects::SetAttachmentsToCopy
 
-ULONG* CMapiObjects::GetAttachmentsToCopy()
+_Check_return_ ULONG* CMapiObjects::GetAttachmentsToCopy()
 {
 	if (m_lpGlobalCache)
 	{
@@ -531,7 +530,7 @@ ULONG* CMapiObjects::GetAttachmentsToCopy()
 	return NULL;
 } // CMapiObjects::GetAttachmentsToCopy
 
-ULONG CMapiObjects::GetNumAttachments()
+_Check_return_ ULONG CMapiObjects::GetNumAttachments()
 {
 	if (m_lpGlobalCache)
 	{
@@ -540,11 +539,11 @@ ULONG CMapiObjects::GetNumAttachments()
 	return NULL;
 } // CMapiObjects::GetNumAttachments
 
-ULONG CMapiObjects::GetBufferStatus()
+_Check_return_ ULONG CMapiObjects::GetBufferStatus()
 {
 	if (m_lpGlobalCache)
 	{
 		return m_lpGlobalCache->GetBufferStatus();
 	}
 	return BUFFER_EMPTY;
-}
+} // CMapiObjects::GetBufferStatus

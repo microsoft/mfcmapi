@@ -7,22 +7,21 @@
 
 static TCHAR* CLASS = _T("CAdviseSink");
 
-CAdviseSink::CAdviseSink(HWND hWndParent, HTREEITEM hTreeParent)
+CAdviseSink::CAdviseSink(_In_ HWND hWndParent, _In_opt_ HTREEITEM hTreeParent)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	m_cRef = 1;
 	m_hWndParent = hWndParent;
 	m_hTreeParent = hTreeParent;
-};
+} // CAdviseSink::CAdviseSink
 
 CAdviseSink::~CAdviseSink()
 {
 	TRACE_DESTRUCTOR(CLASS);
-};
+} // CAdviseSink::~CAdviseSink
 
-
-STDMETHODIMP CAdviseSink::QueryInterface(REFIID riid,
-										 LPVOID * ppvObj)
+_Check_return_ STDMETHODIMP CAdviseSink::QueryInterface(_In_ REFIID riid,
+										 _Deref_out_opt_ LPVOID * ppvObj)
 {
 	*ppvObj = 0;
 	if (riid == IID_IMAPIAdviseSink ||
@@ -33,14 +32,14 @@ STDMETHODIMP CAdviseSink::QueryInterface(REFIID riid,
 		return S_OK;
 	}
 	return E_NOINTERFACE;
-};
+} // CAdviseSink::QueryInterface
 
 STDMETHODIMP_(ULONG) CAdviseSink::AddRef()
 {
 	LONG lCount = InterlockedIncrement(&m_cRef);
 	TRACE_ADDREF(CLASS,lCount);
 	return lCount;
-};
+} // CAdviseSink::AddRef
 
 STDMETHODIMP_(ULONG) CAdviseSink::Release()
 {
@@ -48,10 +47,10 @@ STDMETHODIMP_(ULONG) CAdviseSink::Release()
 	TRACE_RELEASE(CLASS,lCount);
 	if (!lCount)  delete this;
 	return lCount;
-};
+} // CAdviseSink::Release
 
-STDMETHODIMP_(ULONG) CAdviseSink::OnNotify (ULONG cNotify,
-											LPNOTIFICATION lpNotifications)
+_Check_return_ STDMETHODIMP_(ULONG) CAdviseSink::OnNotify(ULONG cNotify,
+											_In_ LPNOTIFICATION lpNotifications)
 {
 	HRESULT			hRes = S_OK;
 
@@ -100,4 +99,4 @@ STDMETHODIMP_(ULONG) CAdviseSink::OnNotify (ULONG cNotify,
 		}
 	}
 	return 0;
-}
+} // CAdviseSink::OnNotify

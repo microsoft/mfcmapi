@@ -13,22 +13,22 @@ class CFormContainerDlg : public CContentsTableDlg
 public:
 
 	CFormContainerDlg(
-		CParentWnd* pParentWnd,
-		CMapiObjects* lpMapiObjects,
-		LPMAPIFORMCONTAINER lpFormContainer);
+		_In_ CParentWnd* pParentWnd,
+		_In_ CMapiObjects* lpMapiObjects,
+		_In_ LPMAPIFORMCONTAINER lpFormContainer);
 	virtual ~CFormContainerDlg();
 
 private:
 	// Overrides from base class
 	void HandleAddInMenuSingle(
-		LPADDINMENUPARAMS lpParams,
-		LPMAPIPROP lpMAPIProp,
-		LPMAPICONTAINER lpContainer);
+		_In_ LPADDINMENUPARAMS lpParams,
+		_In_ LPMAPIPROP lpMAPIProp,
+		_In_ LPMAPICONTAINER lpContainer);
 	void OnDeleteSelectedItem();
-	BOOL OnInitDialog();
-	void OnInitMenu(CMenu* pMenu);
+	_Check_return_ BOOL OnInitDialog();
+	void OnInitMenu(_In_ CMenu* pMenu);
 	void OnRefreshView();
-	HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, LPMAPIPROP* lppMAPIProp);
+	_Check_return_ HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp);
 
 	// Menu items
 	void OnCalcFormPropSet();

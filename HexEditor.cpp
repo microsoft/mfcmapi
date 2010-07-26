@@ -3,7 +3,6 @@
 
 #include "stdafx.h"
 #include "HexEditor.h"
-#include "ParentWnd.h"
 #include "SmartView.h"
 
 static TCHAR* CLASS = _T("CHexEditor");
@@ -20,7 +19,7 @@ enum __HexEditorFields
 	HEXED_SMARTVIEW
 };
 
-CHexEditor::CHexEditor(CParentWnd* pParentWnd):
+CHexEditor::CHexEditor(_In_ CParentWnd* pParentWnd):
 CEditor(pParentWnd,IDS_HEXEDITOR,IDS_HEXEDITORPROMPT,0,CEDITOR_BUTTON_OK)
 {
 	TRACE_CONSTRUCTOR(CLASS);
@@ -44,32 +43,38 @@ CEditor(pParentWnd,IDS_HEXEDITOR,IDS_HEXEDITORPROMPT,0,CEDITOR_BUTTON_OK)
 	HINSTANCE hInst = AfxFindResourceHandle(m_lpszTemplateName, RT_DIALOG);
 	HRSRC hResource = NULL;
 	EC_D(hResource,::FindResource(hInst, m_lpszTemplateName, RT_DIALOG));
-	HGLOBAL hTemplate = NULL;
-	EC_D(hTemplate,LoadResource(hInst, hResource));
-	LPCDLGTEMPLATE lpDialogTemplate = (LPCDLGTEMPLATE)LockResource(hTemplate);
-	EC_B(CreateDlgIndirect(lpDialogTemplate, m_lpNonModalParent, hInst));
-}
+	if (hResource)
+	{
+		HGLOBAL hTemplate = NULL;
+		EC_D(hTemplate,LoadResource(hInst, hResource));
+		if (hTemplate)
+		{
+			LPCDLGTEMPLATE lpDialogTemplate = (LPCDLGTEMPLATE)LockResource(hTemplate);
+			EC_B(CreateDlgIndirect(lpDialogTemplate, m_lpNonModalParent, hInst));
+		}
+	}
+} // CHexEditor::CHexEditor
 
 CHexEditor::~CHexEditor()
 {
 	TRACE_DESTRUCTOR(CLASS);
 	if (m_lpNonModalParent) m_lpNonModalParent->Release();
-}
+} // CHexEditor::~CHexEditor
 
 void CHexEditor::OnOK()
 {
 	ShowWindow(SW_HIDE);
 	delete this;
-}
+} // CHexEditor::OnOK
 
 void CHexEditor::OnCancel()
 {
 	OnOK();
-}
+} // CHexEditor::OnCancel
 
 // MFC will call this function to check if it ought to center the dialog
 // We'll tell it no, but also place the dialog where we want it.
-BOOL CHexEditor::CheckAutoCenter()
+_Check_return_ BOOL CHexEditor::CheckAutoCenter()
 {
 	// We can make the hex editor wider - OnSize will fix the height for us
 	SetWindowPos(NULL,0,0,1000,0,NULL);
@@ -77,7 +82,7 @@ BOOL CHexEditor::CheckAutoCenter()
 	return false;
 } // CHexEditor::CheckAutoCenter
 
-ULONG CHexEditor::HandleChange(UINT nID)
+_Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 {
 	HRESULT hRes = S_OK;
 	ULONG i = CEditor::HandleChange(nID);
@@ -234,4 +239,4 @@ void CHexEditor::UpdateParser()
 	{
 		SetString(HEXED_SMARTVIEW,_T(""));
 	}
-}
+} // CHexEditor::UpdateParser

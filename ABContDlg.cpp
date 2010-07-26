@@ -15,8 +15,8 @@
 static TCHAR* CLASS = _T("CAbContDlg");
 
 CAbContDlg::CAbContDlg(
-					   CParentWnd* pParentWnd,
-					   CMapiObjects* lpMapiObjects
+					   _In_ CParentWnd* pParentWnd,
+					   _In_ CMapiObjects* lpMapiObjects
 					   ):
 CHierarchyTableDlg(
 				   pParentWnd,
@@ -47,12 +47,12 @@ CHierarchyTableDlg(
 	}
 
 	CreateDialogAndMenu(IDR_MENU_ABCONT);
-}
+} // CAbContDlg::CAbContDlg
 
 CAbContDlg::~CAbContDlg()
 {
 	TRACE_DESTRUCTOR(CLASS);
-}
+} // CAbContDlg::~CAbContDlg
 
 BEGIN_MESSAGE_MAP(CAbContDlg, CHierarchyTableDlg)
 	ON_COMMAND(ID_SETDEFAULTDIR, OnSetDefaultDir)
@@ -82,7 +82,6 @@ void CAbContDlg::OnSetDefaultDir()
 				(LPENTRYID)lpItemEID->lpb));
 		}
 	}
-	return;
 } // CAbContDlg::OnSetDefaultDir
 
 void CAbContDlg::OnSetPAB()
@@ -105,13 +104,12 @@ void CAbContDlg::OnSetPAB()
 				(LPENTRYID)lpItemEID->lpb));
 		}
 	}
-	return;
 } // CAbContDlg::OnSetPAB
 
 void CAbContDlg::HandleAddInMenuSingle(
-									   LPADDINMENUPARAMS lpParams,
-									   LPMAPIPROP /*lpMAPIProp*/,
-									   LPMAPICONTAINER lpContainer)
+									   _In_ LPADDINMENUPARAMS lpParams,
+									   _In_ LPMAPIPROP /*lpMAPIProp*/,
+									   _In_ LPMAPICONTAINER lpContainer)
 {
 	if (lpParams)
 	{

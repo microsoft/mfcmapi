@@ -12,25 +12,25 @@ class CFolderDlg : public CContentsTableDlg
 {
 public:
 	CFolderDlg(
-		CParentWnd* pParentWnd,
-		CMapiObjects* lpMapiObjects,
-		LPMAPIFOLDER lpMAPIFolder,
+		_In_ CParentWnd* pParentWnd,
+		_In_ CMapiObjects* lpMapiObjects,
+		_In_ LPMAPIFOLDER lpMAPIFolder,
 		ULONG ulDisplayFlags);
 	virtual ~CFolderDlg();
 
 private:
 	// Overrides from base class
-	void EnableAddInMenus(CMenu* pMenu, ULONG ulMenu, LPMENUITEM lpAddInMenu, UINT uiEnable);
+	void EnableAddInMenus(_In_ CMenu* pMenu, ULONG ulMenu, _In_ LPMENUITEM lpAddInMenu, UINT uiEnable);
 	void HandleAddInMenuSingle(
-		LPADDINMENUPARAMS lpParams,
-		LPMAPIPROP lpMAPIProp,
-		LPMAPICONTAINER lpContainer);
-	BOOL HandleCopy();
-	BOOL HandleMenu(WORD wMenuSelect);
-	BOOL HandlePaste();
+		_In_ LPADDINMENUPARAMS lpParams,
+		_In_ LPMAPIPROP lpMAPIProp,
+		_In_ LPMAPICONTAINER lpContainer);
+	void HandleCopy();
+	_Check_return_ BOOL HandleMenu(WORD wMenuSelect);
+	_Check_return_ BOOL HandlePaste();
 	void OnDeleteSelectedItem();
 	void OnDisplayItem();
-	void OnInitMenu(CMenu* pMenu);
+	void OnInitMenu(_In_ CMenu* pMenu);
 
 	// Menu items
 	void OnAddOneOffAddress();
@@ -52,17 +52,17 @@ private:
 	void OnSetReadFlag();
 	void OnSetMessageStatus();
 	void OnGetMessageOptions();
-	HRESULT OnAbortSubmit(int iItem, SortListData* lpData);
-	HRESULT OnAttachmentProperties(int iItem, SortListData*	lpData);
-	HRESULT OnGetMessageStatus(int iItem, SortListData* lpData);
-	HRESULT OnOpenModal(int iItem, SortListData* lpData);
-	HRESULT OnOpenNonModal(int iItem, SortListData* lpData);
-	HRESULT OnRecipientProperties(int iItem, SortListData* lpData);
-	HRESULT OnResendSelectedItem(int iItem, SortListData* lpData);
-	HRESULT OnSaveAttachments(int iItem, SortListData* lpData);
-	HRESULT OnSubmitMessage(int iItem, SortListData* lpData);
+	_Check_return_ HRESULT OnAbortSubmit(int iItem, _In_ SortListData* lpData);
+	_Check_return_ HRESULT OnAttachmentProperties(int iItem, _In_ SortListData*	lpData);
+	_Check_return_ HRESULT OnGetMessageStatus(int iItem, _In_ SortListData* lpData);
+	_Check_return_ HRESULT OnOpenModal(int iItem, _In_ SortListData* lpData);
+	_Check_return_ HRESULT OnOpenNonModal(int iItem, _In_ SortListData* lpData);
+	_Check_return_ HRESULT OnRecipientProperties(int iItem, _In_ SortListData* lpData);
+	_Check_return_ HRESULT OnResendSelectedItem(int iItem, _In_ SortListData* lpData);
+	_Check_return_ HRESULT OnSaveAttachments(int iItem, _In_ SortListData* lpData);
+	_Check_return_ HRESULT OnSubmitMessage(int iItem, _In_ SortListData* lpData);
 
-	BOOL MultiSelectComplex(WORD wMenuSelect);
-	BOOL MultiSelectSimple(WORD wMenuSelect);
+	_Check_return_ BOOL MultiSelectComplex(WORD wMenuSelect);
+	_Check_return_ BOOL MultiSelectSimple(WORD wMenuSelect);
 	void NewSpecialItem(WORD wMenuSelect);
 };

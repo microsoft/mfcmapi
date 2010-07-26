@@ -18,11 +18,11 @@
 #include "MailboxTableDlg.h"
 #include "PublicFolderTableDlg.h"
 
-HRESULT DisplayObject(
-					  LPMAPIPROP lpUnk,
+_Check_return_ HRESULT DisplayObject(
+					  _In_ LPMAPIPROP lpUnk,
 					  ULONG ulObjType,
 					  ObjectType tType,
-					  CBaseDialog* lpHostDlg)
+					  _In_ CBaseDialog* lpHostDlg)
 {
 	HRESULT			hRes = S_OK;
 
@@ -43,8 +43,8 @@ HRESULT DisplayObject(
 	lpHostDlg->OnUpdateSingleMAPIPropListCtrl(lpUnk, NULL);
 
 	LPTSTR szFlags = NULL;
-	EC_H(InterpretFlags(PROP_ID(PR_OBJECT_TYPE), ulObjType, &szFlags));
-	DebugPrint(DBGGeneric,_T("DisplayObject asked to display 0x%08X, with ObjectType of 0x%08X and MAPI type of 0x%08X = %s\n"),
+	InterpretFlags(PROP_ID(PR_OBJECT_TYPE), ulObjType, &szFlags);
+	DebugPrint(DBGGeneric,_T("DisplayObject asked to display %p, with ObjectType of 0x%08X and MAPI type of 0x%08X = %s\n"),
 		lpUnk,
 		tType,
 		ulObjType,
@@ -151,7 +151,7 @@ HRESULT DisplayObject(
 		// #define MAPI_SESSION	((ULONG) 0x0000000B)	/* Session */
 		// #define MAPI_FORMINFO	((ULONG) 0x0000000C)	/* Form Information */
 	default:
-		EC_H(InterpretFlags(PROP_ID(PR_OBJECT_TYPE), ulObjType, &szFlags));
+		InterpretFlags(PROP_ID(PR_OBJECT_TYPE), ulObjType, &szFlags);
 		DebugPrint(DBGGeneric,
 			_T("DisplayObject: Object type: 0x%08X = %s not implemented\r\n") // STRING_OK
 			_T("This is not an error. It just means no specialized viewer has been implemented for this object type."), // STRING_OK
@@ -164,12 +164,12 @@ HRESULT DisplayObject(
 	}
 
 	return hRes;
-}
+} // DisplayObject
 
-HRESULT DisplayTable(
-					 LPMAPITABLE lpTable,
+_Check_return_ HRESULT DisplayTable(
+					 _In_ LPMAPITABLE lpTable,
 					 ObjectType tType,
-					 CBaseDialog* lpHostDlg)
+					 _In_ CBaseDialog* lpHostDlg)
 {
 	if (!lpHostDlg) return MAPI_E_INVALID_PARAMETER;
 
@@ -179,7 +179,7 @@ HRESULT DisplayTable(
 	CParentWnd* lpParentWnd = lpHostDlg->GetParentWnd(); // do not release
 	if (!lpParentWnd) return MAPI_E_INVALID_PARAMETER;
 
-	DebugPrint(DBGGeneric,_T("DisplayTable asked to display 0x%X\n"),lpTable);
+	DebugPrint(DBGGeneric,_T("DisplayTable asked to display %p\n"),lpTable);
 
 	switch (tType)
 	{
@@ -252,13 +252,13 @@ HRESULT DisplayTable(
 	}
 
 	return S_OK;
-}
+} // DisplayTable
 
-HRESULT DisplayTable(
-					 LPMAPIPROP lpMAPIProp,
+_Check_return_ HRESULT DisplayTable(
+					 _In_ LPMAPIPROP lpMAPIProp,
 					 ULONG ulPropTag,
 					 ObjectType tType,
-					 CBaseDialog* lpHostDlg)
+					 _In_ CBaseDialog* lpHostDlg)
 {
 	HRESULT		hRes = S_OK;
 	LPMAPITABLE	lpTable = NULL;
@@ -284,13 +284,13 @@ HRESULT DisplayTable(
 	}
 
 	return hRes;
-}
+} // DisplayTable
 
-HRESULT DisplayExchangeTable(
-							 LPMAPIPROP lpMAPIProp,
+_Check_return_ HRESULT DisplayExchangeTable(
+							 _In_ LPMAPIPROP lpMAPIProp,
 							 ULONG ulPropTag,
 							 ObjectType tType,
-							 CBaseDialog* lpHostDlg)
+							 _In_ CBaseDialog* lpHostDlg)
 {
 	HRESULT			hRes = S_OK;
 	LPEXCHANGEMODIFYTABLE	lpExchTbl = NULL;
@@ -362,24 +362,24 @@ HRESULT DisplayExchangeTable(
 						lpMAPITable,
 						tType,
 						lpHostDlg));
+					lpMAPITable->Release();
 				}
-				lpMAPITable->Release();
 				break;
 			}
 		}
 		lpExchTbl->Release();
 	}
 	return hRes;
-}
+} // DisplayExchangeTable
 
-void UpdateMenuString(CWnd *cWnd, UINT uiMenuTag, UINT uidNewString)
+void UpdateMenuString(_In_ CWnd *cWnd, UINT uiMenuTag, UINT uidNewString)
 {
 	HRESULT hRes = S_OK;
 
 	CString szNewString;
-	szNewString.LoadString(uidNewString);
+	EC_B(szNewString.LoadString(uidNewString));
 
-	DebugPrint(DBGMenu,_T("UpdateMenuString: Changing menu item 0x%X on window 0x%X to \"%s\"\n"),uiMenuTag,cWnd,szNewString);
+	DebugPrint(DBGMenu,_T("UpdateMenuString: Changing menu item 0x%X on window %p to \"%s\"\n"),uiMenuTag,cWnd,(LPCTSTR) szNewString);
 	HMENU hMenu = ::GetMenu(cWnd->m_hWnd);
 
 	if (!hMenu) return;
@@ -397,9 +397,9 @@ void UpdateMenuString(CWnd *cWnd, UINT uiMenuTag, UINT uidNewString)
 		uiMenuTag,
 		FALSE,
 		&MenuInfo));
-}
+} // UpdateMenuString
 
-BOOL MergeMenu(CMenu * pMenuDestination, const CMenu * pMenuAdd)
+_Check_return_ BOOL MergeMenu(_In_ CMenu * pMenuDestination, _In_ const CMenu * pMenuAdd)
 {
 	HRESULT hRes = S_OK;
 	int iMenuDestItemCount = pMenuDestination->GetMenuItemCount();
@@ -449,9 +449,9 @@ BOOL MergeMenu(CMenu * pMenuDestination, const CMenu * pMenuAdd)
 	}
 
 	return SUCCEEDED(hRes);
-}
+} // MergeMenu
 
-void DisplayContextMenu(UINT uiClassMenu, UINT uiControlMenu, CWnd* pParent, int x, int y)
+void DisplayContextMenu(UINT uiClassMenu, UINT uiControlMenu, _In_ CWnd* pParent, int x, int y)
 {
 	HRESULT hRes = S_OK;
 	CMenu pPopup;
@@ -481,7 +481,7 @@ void DisplayContextMenu(UINT uiClassMenu, UINT uiControlMenu, CWnd* pParent, int
 
 		if (IDR_MENU_PROPERTY_POPUP == uiClassMenu)
 		{
-			ExtendAddInMenu(pRealPopup->m_hMenu, MENU_CONTEXT_PROPERTY);
+			(void) ExtendAddInMenu(pRealPopup->m_hMenu, MENU_CONTEXT_PROPERTY);
 		}
 
 		EC_B(pRealPopup->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, x, y, pParent));
@@ -489,9 +489,9 @@ void DisplayContextMenu(UINT uiClassMenu, UINT uiControlMenu, CWnd* pParent, int
 
 	EC_B(pContext.DestroyMenu());
 	EC_B(pPopup.DestroyMenu());
-}
+} // DisplayContextMenu
 
-int GetEditHeight(HWND hwndEdit)
+_Check_return_ int GetEditHeight(_In_ HWND hwndEdit)
 {
 	HRESULT		hRes = S_OK;
 	HFONT		hSysFont = 0;
@@ -504,18 +504,24 @@ int GetEditHeight(HWND hwndEdit)
 	// Get the DC for the edit control.
 	EC_D(hdc, GetDC(hwndEdit));
 
-	// Get the metrics for the current font.
-	EC_B(::GetTextMetrics(hdc, &tmFont));
+	if (hdc)
+	{
+		// Get the metrics for the current font.
+		EC_B(::GetTextMetrics(hdc, &tmFont));
 
-	// Get the metrics for the system font.
-	WC_D(hSysFont, (HFONT) GetStockObject(SYSTEM_FONT));
-	hOldFont = (HFONT) SelectObject(hdc, hSysFont);
-	EC_B(::GetTextMetrics(hdc, &tmSys));
+		// Get the metrics for the system font.
+		WC_D(hSysFont, (HFONT) GetStockObject(SYSTEM_FONT));
+		if (hSysFont)
+		{
+			hOldFont = (HFONT) SelectObject(hdc, hSysFont);
+			EC_B(::GetTextMetrics(hdc, &tmSys));
 
-	// Select the original font back into the DC and release the DC.
-	SelectObject(hdc, hOldFont);
-	DeleteObject(hSysFont);
-	ReleaseDC(hwndEdit, hdc);
+			// Select the original font back into the DC and release the DC.
+			SelectObject(hdc, hOldFont);
+			DeleteObject(hSysFont);
+		}
+		ReleaseDC(hwndEdit, hdc);
+	}
 
 	// Calculate the new height for the edit control.
 	iHeight =
@@ -525,9 +531,9 @@ int GetEditHeight(HWND hwndEdit)
 		+ 2 * GetSystemMetrics(SM_CYFIXEDFRAME) // Adjust for the edit border
 		+ 2 * GetSystemMetrics(SM_CXEDGE); // Adjust for the edit border
 	return iHeight;
-}
+} // GetEditHeight
 
-int GetTextHeight(HWND hwndEdit)
+_Check_return_ int GetTextHeight(_In_ HWND hwndEdit)
 {
 	HRESULT		hRes = S_OK;
 	HDC			hdc = 0;
@@ -537,17 +543,20 @@ int GetTextHeight(HWND hwndEdit)
 	// Get the DC for the edit control.
 	EC_D(hdc, GetDC(hwndEdit));
 
-	// Get the metrics for the current font.
-	EC_B(::GetTextMetrics(hdc, &tmFont));
+	if (hdc)
+	{
+		// Get the metrics for the current font.
+		EC_B(::GetTextMetrics(hdc, &tmFont));
 
-	ReleaseDC(hwndEdit, hdc);
+		ReleaseDC(hwndEdit, hdc);
+	}
 
 	// Calculate the new height for the edit control.
 	iHeight = tmFont.tmHeight - tmFont.tmInternalLeading;
 	return iHeight;
-}
+} // GetTextHeight
 
-BOOL bShouldCancel(CWnd* cWnd, HRESULT hResPrev)
+_Check_return_ BOOL bShouldCancel(_In_opt_ CWnd* cWnd, HRESULT hResPrev)
 {
 	BOOL bGotError = false;
 
@@ -580,10 +589,10 @@ BOOL bShouldCancel(CWnd* cWnd, HRESULT hResPrev)
 		}
 	}
 	return false;
-}
+} // bShouldCancel
 
-void DisplayMailboxTable(CParentWnd*	lpParent,
-						 CMapiObjects* lpMapiObjects)
+void DisplayMailboxTable(_In_ CParentWnd*	lpParent,
+						 _In_ CMapiObjects* lpMapiObjects)
 {
 	if (!lpParent || !lpMapiObjects) return;
 	HRESULT			hRes = S_OK;
@@ -725,8 +734,8 @@ void DisplayMailboxTable(CParentWnd*	lpParent,
 	if (lpPrivateMDB) lpPrivateMDB->Release();
 } // DisplayMailboxTable
 
-void DisplayPublicFolderTable(CParentWnd* lpParent,
-							  CMapiObjects* lpMapiObjects)
+void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
+							  _In_ CMapiObjects* lpMapiObjects)
 {
 	if (!lpParent || !lpMapiObjects) return;
 	HRESULT			hRes = S_OK;

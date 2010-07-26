@@ -9,7 +9,7 @@ static WCHAR szPropSeparator[] = L", "; // STRING_OK
 
 // lpszExactMatch and lpszPartialMatches allocated with new
 // clean up with delete[]
-HRESULT PropTagToPropName(ULONG ulPropTag, BOOL bIsAB, LPTSTR* lpszExactMatch, LPTSTR* lpszPartialMatches)
+_Check_return_ HRESULT PropTagToPropName(ULONG ulPropTag, BOOL bIsAB, _Deref_opt_out_opt_z_ LPTSTR* lpszExactMatch, _Deref_opt_out_opt_z_ LPTSTR* lpszPartialMatches)
 {
 	if (!lpszExactMatch && !lpszPartialMatches) return MAPI_E_INVALID_PARAMETER;
 
@@ -213,9 +213,9 @@ HRESULT PropTagToPropName(ULONG ulPropTag, BOOL bIsAB, LPTSTR* lpszExactMatch, L
 	}
 
 	return hRes;
-}
+} // PropTagToPropName
 
-HRESULT PropNameToPropTag(LPCTSTR lpszPropName, ULONG* ulPropTag)
+_Check_return_ HRESULT PropNameToPropTag(_In_z_ LPCTSTR lpszPropName, _Out_ ULONG* ulPropTag)
 {
 	if (!lpszPropName || !ulPropTag) return MAPI_E_INVALID_PARAMETER;
 
@@ -248,9 +248,9 @@ HRESULT PropNameToPropTag(LPCTSTR lpszPropName, ULONG* ulPropTag)
 	delete[] szPropName;
 #endif
 	return hRes;
-}
+} // PropNameToPropTag
 
-HRESULT PropTypeNameToPropType(LPCTSTR lpszPropType, ULONG* ulPropType)
+_Check_return_ HRESULT PropTypeNameToPropType(_In_z_ LPCTSTR lpszPropType, _Out_ ULONG* ulPropType)
 {
 	if (!lpszPropType || !ulPropType) return MAPI_E_INVALID_PARAMETER;
 
@@ -283,9 +283,9 @@ HRESULT PropTypeNameToPropType(LPCTSTR lpszPropType, ULONG* ulPropType)
 	delete[] szPropType;
 #endif
 	return S_OK;
-}
+} // PropTypeNameToPropType
 
-LPTSTR GUIDToStringAndName(LPCGUID lpGUID)
+_Check_return_ LPTSTR GUIDToStringAndName(_In_opt_ LPCGUID lpGUID)
 {
 	HRESULT	hRes = S_OK;
 	ULONG	ulCur = 0;
@@ -331,9 +331,9 @@ LPTSTR GUIDToStringAndName(LPCGUID lpGUID)
 
 	delete[] szGUID;
 	return szBothGuid;
-}
+} // GUIDToStringAndName
 
-void GUIDNameToGUID(LPCTSTR szGUID, LPCGUID* lpGUID)
+void GUIDNameToGUID(_In_z_ LPCTSTR szGUID, _Deref_out_opt_ LPCGUID* lpGUID)
 {
 	if (!szGUID || !lpGUID) return;
 
@@ -364,11 +364,11 @@ void GUIDNameToGUID(LPCTSTR szGUID, LPCGUID* lpGUID)
 	}
 	delete[] szGUIDW;
 #endif
-}
+} // GUIDNameToGUID
 
 // Allocates and returns string built from NameIDArray
 // Allocated with new, clean up with delete[]
-LPWSTR NameIDToPropName(LPMAPINAMEID lpNameID)
+_Check_return_ LPWSTR NameIDToPropName(_In_ LPMAPINAMEID lpNameID)
 {
 	if (!lpNameID) return NULL;
 	if (lpNameID->ulKind != MNID_ID) return NULL;
@@ -449,39 +449,37 @@ LPWSTR NameIDToPropName(LPMAPINAMEID lpNameID)
 // Interprets a flag found in lpProp and returns a string allocated with new
 // Free the string with delete[]
 // Will not return a string if the lpProp is not a PT_LONG/PT_I2 or we don't recognize the property
-HRESULT InterpretFlags(LPSPropValue lpProp, LPTSTR* szFlagString)
+void InterpretFlags(_In_ LPSPropValue lpProp, _Deref_out_opt_z_ LPTSTR* szFlagString)
 {
 	if (szFlagString) *szFlagString = NULL;
 	if (!lpProp || !szFlagString)
 	{
-		return S_OK;
+		return;
 	}
 	if (PROP_TYPE(lpProp->ulPropTag) == PT_LONG)
-		return InterpretFlags(PROP_ID(lpProp->ulPropTag),lpProp->Value.ul,szFlagString);
-	if (PROP_TYPE(lpProp->ulPropTag) == PT_I2)
-		return InterpretFlags(PROP_ID(lpProp->ulPropTag),lpProp->Value.i,szFlagString);
-
-	return S_OK;
-}
+		InterpretFlags(PROP_ID(lpProp->ulPropTag),lpProp->Value.ul,szFlagString);
+	else if (PROP_TYPE(lpProp->ulPropTag) == PT_I2)
+		InterpretFlags(PROP_ID(lpProp->ulPropTag),lpProp->Value.i,szFlagString);
+} // InterpretFlags
 
 // Interprets a flag value according to a flag name and returns a string
 // allocated with new
 // Free the string with delete[]
 // Will not return a string if the flag name is not recognized
-HRESULT InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, LPTSTR* szFlagString)
+void InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, _Deref_out_opt_z_ LPTSTR* szFlagString)
 {
-	return InterpretFlags(ulFlagName, lFlagValue, _T(""), szFlagString);
-}
+	InterpretFlags(ulFlagName, lFlagValue, _T(""), szFlagString);
+} // InterpretFlags
 
 // Interprets a flag value according to a flag name and returns a string
 // allocated with new
 // Free the string with delete[]
 // Will not return a string if the flag name is not recognized
-HRESULT InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, LPCTSTR szPrefix, LPTSTR* szFlagString)
+void InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, _In_z_ LPCTSTR szPrefix, _Deref_out_opt_z_ LPTSTR* szFlagString)
 {
 	if (!szFlagString)
 	{
-		return S_OK;
+		return;
 	}
 	HRESULT	hRes = S_OK;
 	ULONG	ulCurEntry = 0;
@@ -491,7 +489,7 @@ HRESULT InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, LPCTSTR sz
 	*szFlagString = NULL;
 	szTempString[0] = NULL;
 
-	if (!ulFlagArray || !FlagArray) return S_OK;
+	if (!ulFlagArray || !FlagArray) return;
 
 	while (ulCurEntry < ulFlagArray && FlagArray[ulCurEntry].ulFlagName != ulFlagName)
 	{
@@ -499,8 +497,8 @@ HRESULT InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, LPCTSTR sz
 	}
 
 	// Don't run off the end of the array
-	if (ulFlagArray == ulCurEntry) return S_OK;
-	if (FlagArray[ulCurEntry].ulFlagName != ulFlagName) return S_OK;
+	if (ulFlagArray == ulCurEntry) return;
+	if (FlagArray[ulCurEntry].ulFlagName != ulFlagName) return;
 
 	// We've matched our flag name to the array - we SHOULD return a string at this point
 	BOOL bNeedSeparator = false;
@@ -629,8 +627,6 @@ HRESULT InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, LPCTSTR sz
 			EC_H(StringCchPrintf(*szFlagString,cchLen,_T("%s%ws"),szPrefix?szPrefix:_T(""),szTempString)); // STRING_OK
 		}
 	}
-
-	return S_OK;
 } // InterpretFlags
 
 // Returns a list of all known flags/values for a flag name.
@@ -643,7 +639,7 @@ HRESULT InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, LPCTSTR sz
 // 0x00040000 FL_LOOSE
 //
 // Since the string is always appended to a prompt we include \r\n at the start
-CString AllFlagsToString(const ULONG ulFlagName,BOOL bHex)
+_Check_return_ CString AllFlagsToString(const ULONG ulFlagName, BOOL bHex)
 {
 	CString szFlagString;
 	if (!ulFlagName) return szFlagString;
@@ -670,38 +666,38 @@ CString AllFlagsToString(const ULONG ulFlagName,BOOL bHex)
 		{
 			if (bHex)
 			{
-				szTempString.FormatMessage(_T("\r\n0x%1!08X! %2!ws!"),FlagArray[ulCurEntry].lFlagValue,FlagArray[ulCurEntry].lpszName); // STRING_OK
+				szTempString.FormatMessage(IDS_FLAGTOSTRINGHEX,FlagArray[ulCurEntry].lFlagValue,FlagArray[ulCurEntry].lpszName);
 			}
 			else
 			{
-				szTempString.FormatMessage(_T("\r\n%1!5d! %2!ws!"),FlagArray[ulCurEntry].lFlagValue,FlagArray[ulCurEntry].lpszName); // STRING_OK
+				szTempString.FormatMessage(IDS_FLAGTOSTRINGDEC,FlagArray[ulCurEntry].lFlagValue,FlagArray[ulCurEntry].lpszName);
 			}
 			szFlagString += szTempString;
 		}
 	}
 
 	return szFlagString;
-}
+} // AllFlagsToString
 
 // Uber property interpreter - given an LPSPropValue, produces all manner of strings
 // lpszNameExactMatches, lpszNamePartialMatches allocated with new, delete with delete[]
 // lpszNamedPropName, lpszNamedPropGUID, lpszNamedPropDASL freed with FreeNameIDStrings
 // If lpProp is NULL but ulPropTag and lpMAPIProp are passed, will call GetProps
-void InterpretProp(LPSPropValue lpProp, // optional property value
+void InterpretProp(_In_opt_ LPSPropValue lpProp, // optional property value
 				   ULONG ulPropTag, // optional 'original' prop tag
-				   LPMAPIPROP lpMAPIProp, // optional source object
-				   LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
-				   LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
+				   _In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
+				   _In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
+				   _In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
 				   BOOL bIsAB, // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
-				   LPTSTR* lpszNameExactMatches, // Built from ulPropTag & bIsAB
-				   LPTSTR* lpszNamePartialMatches, // Built from ulPropTag & bIsAB
-				   CString* PropType, // Built from ulPropTag
-				   CString* PropTag, // Built from ulPropTag
-				   CString* PropString, // Built from lpProp
-				   CString* AltPropString, // Built from lpProp
-				   LPTSTR* lpszNamedPropName, // Built from ulPropTag & lpMAPIProp
-				   LPTSTR* lpszNamedPropGUID, // Built from ulPropTag & lpMAPIProp
-				   LPTSTR* lpszNamedPropDASL) // Built from ulPropTag & lpMAPIProp
+				   _Deref_out_opt_z_ LPTSTR* lpszNameExactMatches, // Built from ulPropTag & bIsAB
+				   _Deref_out_opt_z_ LPTSTR* lpszNamePartialMatches, // Built from ulPropTag & bIsAB
+				   _In_opt_ CString* PropType, // Built from ulPropTag
+				   _In_opt_ CString* PropTag, // Built from ulPropTag
+				   _In_opt_ CString* PropString, // Built from lpProp
+				   _In_opt_ CString* AltPropString, // Built from lpProp
+				   _Deref_opt_out_opt_z_ LPTSTR* lpszNamedPropName, // Built from ulPropTag & lpMAPIProp
+				   _Deref_opt_out_opt_z_ LPTSTR* lpszNamedPropGUID, // Built from ulPropTag & lpMAPIProp
+				   _Deref_opt_out_opt_z_ LPTSTR* lpszNamedPropDASL) // Built from ulPropTag & lpMAPIProp
 {
 	HRESULT hRes = S_OK;
 
@@ -763,7 +759,7 @@ void InterpretProp(LPSPropValue lpProp, // optional property value
 // Returns LPSPropValue with value of a binary property
 // Uses GetProps and falls back to OpenProperty if the value is large
 // Free with MAPIFreeBuffer
-HRESULT GetLargeBinaryProp(LPMAPIPROP lpMAPIProp, ULONG ulPropTag, LPSPropValue* lppProp)
+_Check_return_ HRESULT GetLargeBinaryProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_ LPSPropValue* lppProp)
 {
 	if (!lpMAPIProp || !lppProp) return MAPI_E_INVALID_PARAMETER;
 	DebugPrint(DBGGeneric,_T("GetLargeBinaryProp getting buffer from 0x%08X\n"),ulPropTag);
@@ -846,4 +842,4 @@ HRESULT GetLargeBinaryProp(LPMAPIPROP lpMAPIProp, ULONG ulPropTag, LPSPropValue*
 	}
 
 	return hRes;
-}
+} // GetLargeBinaryProp

@@ -15,20 +15,20 @@ class CFakeSplitter : public CWnd
 {
 public:
 	CFakeSplitter(
-		CBaseDialog* lpHostDlg);
+		_In_ CBaseDialog* lpHostDlg);
 	virtual ~CFakeSplitter();
 
 	void SetPaneOne(CWnd* PaneOne);
 	void SetPaneTwo(CWnd* PaneTwo);
-	BOOL SetPercent(FLOAT iNewPercent);
+	void SetPercent(FLOAT iNewPercent);
 	void SetSplitType(SplitType stSplitType);
 
 private:
 	void    OnSize(UINT nType, int cx, int cy);
 	void    OnPaint();
 	void    OnMouseMove(UINT nFlags,CPoint point);
-	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
-	int     HitTest(LONG x, LONG y);
+	_Check_return_ LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	_Check_return_ int     HitTest(LONG x, LONG y);
 
 	// starting and stopping tracking
 	void StartTracking(int ht);

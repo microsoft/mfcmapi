@@ -4,23 +4,23 @@
 class CMAPIProgress : public IMAPIProgress
 {
 public:
-	CMAPIProgress(LPCTSTR lpszContext, HWND hWnd);
+	CMAPIProgress(_In_z_ LPCTSTR lpszContext, _In_ HWND hWnd);
 	virtual ~CMAPIProgress();
 
 private:
 	// IUnknown
-	STDMETHODIMP         QueryInterface(REFIID riid, LPVOID * ppvObj);
+	_Check_return_ STDMETHODIMP QueryInterface(REFIID riid, _Deref_out_opt_ LPVOID * ppvObj);
 	STDMETHODIMP_(ULONG) AddRef();
 	STDMETHODIMP_(ULONG) Release();
 
 	// IMAPIProgress
-	STDMETHODIMP Progress(ULONG ulValue, ULONG ulCount, ULONG ulTotal);
-	STDMETHODIMP GetFlags(ULONG FAR* lpulFlags);
-	STDMETHODIMP GetMax(ULONG FAR* lpulMax);
-	STDMETHODIMP GetMin(ULONG FAR* lpulMin);
-	STDMETHODIMP SetLimits(ULONG FAR* lpulMin, ULONG FAR* lpulMax, ULONG FAR* lpulFlags);
+	_Check_return_ STDMETHODIMP Progress(ULONG ulValue, ULONG ulCount, ULONG ulTotal);
+	_Check_return_ STDMETHODIMP GetFlags(_Inout_ ULONG FAR* lpulFlags);
+	_Check_return_ STDMETHODIMP GetMax(_Inout_ ULONG FAR* lpulMax);
+	_Check_return_ STDMETHODIMP GetMin(_Inout_ ULONG FAR* lpulMin);
+	_Check_return_ STDMETHODIMP SetLimits(_Inout_ ULONG FAR* lpulMin, _Inout_ ULONG FAR* lpulMax, _Inout_ ULONG FAR* lpulFlags);
 
-	void OutputState(LPTSTR lpszFunction);
+	void OutputState(_In_z_ LPTSTR lpszFunction);
 
 	LONG		m_cRef;
 	ULONG		m_ulMin;
@@ -30,4 +30,4 @@ private:
 	HWND		m_hWnd;
 };
 
-CMAPIProgress * GetMAPIProgress(LPTSTR lpszContext, HWND hWnd);
+_Check_return_ CMAPIProgress* GetMAPIProgress(_In_z_ LPTSTR lpszContext, _In_ HWND hWnd);
