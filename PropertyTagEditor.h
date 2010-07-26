@@ -9,24 +9,24 @@ class CPropertyTagEditor : public CEditor
 {
 public:
 	CPropertyTagEditor(
-		UINT		uidTitle,
-		UINT		uidPrompt,
-		ULONG		ulPropTag,
-		BOOL		bIncludeABProps,
-		LPMAPIPROP	lpMAPIProp,
-		CWnd*		pParentWnd);
+		UINT uidTitle,
+		UINT uidPrompt,
+		ULONG ulPropTag,
+		BOOL bIncludeABProps,
+		_In_ LPMAPIPROP lpMAPIProp,
+		_In_ CWnd* pParentWnd);
 	virtual ~CPropertyTagEditor();
 
-	ULONG GetPropertyTag();
+	_Check_return_ ULONG GetPropertyTag();
 
 private:
-	ULONG HandleChange(UINT nID);
+	_Check_return_ ULONG HandleChange(UINT nID);
 	void  OnEditAction1();
 	void  OnEditAction2();
-	BOOL  OnInitDialog();
+	_Check_return_ BOOL  OnInitDialog();
 	void  PopulateFields(ULONG ulSkipField);
-	BOOL  GetSelectedGUID(LPGUID lpSelectedGUID);
-	BOOL  GetSelectedPropType(ULONG* ulPropType);
+	_Check_return_ BOOL  GetSelectedGUID(_In_ LPGUID lpSelectedGUID);
+	_Check_return_ ULONG GetSelectedPropType();
 	void  LookupNamedProp(ULONG ulSkipField, BOOL bCreate);
 
 	ULONG		m_ulPropTag;
@@ -38,16 +38,16 @@ class CPropertySelector : public CEditor
 {
 public:
 	CPropertySelector(
-		BOOL		bIncludeABProps,
-		LPMAPIPROP	lpMAPIProp,
-		CWnd*		pParentWnd);
+		BOOL bIncludeABProps,
+		_In_ LPMAPIPROP lpMAPIProp,
+		_In_ CWnd* pParentWnd);
 	virtual ~CPropertySelector();
 
-	ULONG GetPropertyTag();
+	_Check_return_ ULONG GetPropertyTag();
 
 private:
-	BOOL OnInitDialog();
-	BOOL DoListEdit(ULONG ulListNum, int iItem, SortListData* lpData);
+	_Check_return_ BOOL OnInitDialog();
+	_Check_return_ BOOL DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData);
 	void OnOK();
 
 	ULONG		m_ulPropTag;

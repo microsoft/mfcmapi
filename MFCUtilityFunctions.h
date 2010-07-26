@@ -1,9 +1,9 @@
 #pragma once
 // MFCUtilityFunctions.h : Common functions for MFC MAPI
 
-class CBaseDialog;
-class CParentWnd;
-class CMapiObjects;
+#include "BaseDialog.h"
+#include "ParentWnd.h"
+#include "MAPIObjects.h"
 
 enum ObjectType
 {
@@ -19,39 +19,39 @@ enum ObjectType
 	otStoreDeletedItems,
 };
 
-HRESULT DisplayObject(
-					  LPMAPIPROP lpUnk,
+_Check_return_ HRESULT DisplayObject(
+					  _In_ LPMAPIPROP lpUnk,
 					  ULONG ulObjType,
 					  ObjectType Table,
-					  CBaseDialog* lpHostDlg);
+					  _In_ CBaseDialog* lpHostDlg);
 
-HRESULT DisplayExchangeTable(
-							 LPMAPIPROP lpMAPIProp,
+_Check_return_ HRESULT DisplayExchangeTable(
+							 _In_ LPMAPIPROP lpMAPIProp,
 							 ULONG ulPropTag,
 							 ObjectType tType,
-							 CBaseDialog* lpHostDlg);
+							 _In_ CBaseDialog* lpHostDlg);
 
-HRESULT DisplayTable(
-					 LPMAPITABLE lpTable,
+_Check_return_ HRESULT DisplayTable(
+					 _In_ LPMAPITABLE lpTable,
 					 ObjectType tType,
-					 CBaseDialog* lpHostDlg);
+					 _In_ CBaseDialog* lpHostDlg);
 
-HRESULT DisplayTable(
-					 LPMAPIPROP lpMAPIProp,
+_Check_return_ HRESULT DisplayTable(
+					 _In_ LPMAPIPROP lpMAPIProp,
 					 ULONG ulPropTag,
 					 ObjectType tType,
-					 CBaseDialog* lpHostDlg);
+					 _In_ CBaseDialog* lpHostDlg);
 
-void UpdateMenuString(CWnd* cWnd, UINT uiMenuTag, UINT uidNewString);
+void UpdateMenuString(_In_ CWnd* cWnd, UINT uiMenuTag, UINT uidNewString);
 
-void DisplayContextMenu(UINT uiClassMenu, UINT uiControlMenu, CWnd* pParent, int x, int y);
+void DisplayContextMenu(UINT uiClassMenu, UINT uiControlMenu, _In_ CWnd* pParent, int x, int y);
 
-int GetEditHeight(HWND hwndEdit);
-int GetTextHeight(HWND hwndEdit);
+_Check_return_ int GetEditHeight(_In_ HWND hwndEdit);
+_Check_return_ int GetTextHeight(_In_ HWND hwndEdit);
 
-BOOL bShouldCancel(CWnd* cWnd, HRESULT hRes);
+_Check_return_ BOOL bShouldCancel(_In_opt_ CWnd* cWnd, HRESULT hRes);
 
-void DisplayMailboxTable(CParentWnd*	lpParent,
-						 CMapiObjects* lpMapiObjects);
-void DisplayPublicFolderTable(CParentWnd* lpParent,
-							  CMapiObjects* lpMapiObjects);
+void DisplayMailboxTable(_In_ CParentWnd*	lpParent,
+						 _In_ CMapiObjects* lpMapiObjects);
+void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
+							  _In_ CMapiObjects* lpMapiObjects);

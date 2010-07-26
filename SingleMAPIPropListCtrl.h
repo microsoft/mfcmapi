@@ -9,46 +9,46 @@ class CSingleMAPIPropListCtrl : public CSortListCtrl
 {
 public:
 	CSingleMAPIPropListCtrl(
-		CWnd* pCreateParent,
-		CBaseDialog* lpHostDlg,
-		CMapiObjects* lpMapiObjects,
+		_In_ CWnd* pCreateParent,
+		_In_ CBaseDialog* lpHostDlg,
+		_In_ CMapiObjects* lpMapiObjects,
 		BOOL bIsAB
 		);
 	virtual ~CSingleMAPIPropListCtrl();
 
 	// Initialization
-	HRESULT SetDataSource(LPMAPIPROP lpMAPIProp, SortListData* lpListData, BOOL bIsAB);
-	HRESULT RefreshMAPIPropList();
+	_Check_return_ HRESULT SetDataSource(_In_opt_ LPMAPIPROP lpMAPIProp, _In_opt_ SortListData* lpListData, BOOL bIsAB);
+	_Check_return_ HRESULT RefreshMAPIPropList();
 
 	// Selected item accessors
-	ULONG        GetCountPropVals();
-	LPSPropValue GetPropVals();
-	void         GetSelectedPropTag(ULONG* lpPropTag);
-	BOOL         IsModifiedPropVals();
+	_Check_return_ ULONG        GetCountPropVals();
+	_Check_return_ LPSPropValue GetPropVals();
+	void         GetSelectedPropTag(_Out_ ULONG* lpPropTag);
+	_Check_return_ BOOL         IsModifiedPropVals();
 
-	BOOL HandleMenu(WORD wMenuSelect);
-	void InitMenu(CMenu* pMenu);
+	_Check_return_ BOOL HandleMenu(WORD wMenuSelect);
+	void InitMenu(_In_ CMenu* pMenu);
 	void SavePropsToXML();
 	void OnPasteProperty();
 
 private:
-	HRESULT AddPropToExtraProps(ULONG ulPropTag,BOOL bRefresh);
-	HRESULT AddPropsToExtraProps(LPSPropTagArray lpPropsToAdd,BOOL bRefresh);
+	_Check_return_ HRESULT AddPropToExtraProps(ULONG ulPropTag, BOOL bRefresh);
+	_Check_return_ HRESULT AddPropsToExtraProps(_In_ LPSPropTagArray lpPropsToAdd, BOOL bRefresh);
 	void FindAllNamedProps();
 	void CountNamedProps();
-	HRESULT LoadMAPIPropList();
-	HRESULT SetNewProp(LPSPropValue lpNewProp);
+	_Check_return_ HRESULT LoadMAPIPropList();
+	_Check_return_ HRESULT SetNewProp(_In_ LPSPropValue lpNewProp);
 
 	void AddPropToListBox(
 		int iRow,
 		ULONG ulPropTag,
-		LPMAPINAMEID lpNameID,
-		LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
-		LPSPropValue lpsPropToAdd);
+		_In_opt_ LPMAPINAMEID lpNameID,
+		_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
+		_In_ LPSPropValue lpsPropToAdd);
 
-	BOOL HandleAddInMenu(WORD wMenuSelect);
-	void OnContextMenu(CWnd *pWnd, CPoint pos);
-	void OnDblclk(NMHDR* pNMHDR, LRESULT* pResult);
+	_Check_return_ BOOL HandleAddInMenu(WORD wMenuSelect);
+	void OnContextMenu(_In_ CWnd *pWnd, CPoint pos);
+	void OnDblclk(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 	void OnCopyProperty();
 	void OnCopyTo();
 	void OnDeleteProperty();
@@ -66,7 +66,7 @@ private:
 	void OnPasteNamedProps();
 
 	// Custom messages
-	LRESULT msgOnSaveColumnOrder(WPARAM wParam, LPARAM lParam);
+	_Check_return_ LRESULT msgOnSaveColumnOrder(WPARAM wParam, LPARAM lParam);
 
 	LPMAPIPROP		m_lpMAPIProp;
 	SortListData*	m_lpSourceData; // NEVER FREE THIS - It's just 'on loan' from CContentsTableListCtrl

@@ -5,33 +5,33 @@
 #include "AboutDlg.h"
 #include "ParentWnd.h"
 
-void DisplayAboutDlg(CWnd* lpParentWnd)
+void DisplayAboutDlg(_In_ CWnd* lpParentWnd)
 {
 	CAboutDlg AboutDlg(lpParentWnd);
 	HRESULT hRes = S_OK;
 	INT_PTR iDlgRet = 0;
 
 	EC_D_DIALOG(AboutDlg.DoModal());
-}
+} // DisplayAboutDlg
 
 static TCHAR* CLASS = _T("CAboutDlg");
 
 CAboutDlg::CAboutDlg(
-					 CWnd* pParentWnd
+					 _In_ CWnd* pParentWnd
 					 ):CDialog(IDD_ABOUT,pParentWnd)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	HRESULT hRes = S_OK;
 	// Note that LoadIcon does not require a subsequent DestroyIcon in Win32
 	EC_D(m_hIcon,AfxGetApp()->LoadIcon(IDR_MAINFRAME));
-}
+} // CAboutDlg::CAboutDlg
 
 CAboutDlg::~CAboutDlg()
 {
 	TRACE_DESTRUCTOR(CLASS);
-}
+} // CAboutDlg::~CAboutDlg
 
-BOOL CAboutDlg::OnInitDialog()
+_Check_return_ BOOL CAboutDlg::OnInitDialog()
 {
 	HRESULT hRes = S_OK;
 	BOOL bRet = CDialog::OnInitDialog();
@@ -109,7 +109,7 @@ BOOL CAboutDlg::OnInitDialog()
 	m_DisplayAboutCheck.SetCheck(RegKeys[regkeyDISPLAY_ABOUT_DIALOG].ulCurDWORD?BST_CHECKED:BST_UNCHECKED);
 	m_DisplayAboutCheck.SetFont(GetFont());
 	CString szDisplayAboutCheck;
-	szDisplayAboutCheck.LoadString(IDS_DISPLAYABOUTCHECK);
+	EC_B(szDisplayAboutCheck.LoadString(IDS_DISPLAYABOUTCHECK));
 	m_DisplayAboutCheck.SetWindowText(szDisplayAboutCheck);
 
 	// Get version information from the application.
@@ -126,7 +126,6 @@ BOOL CAboutDlg::OnInitDialog()
 
 		if (pbData)
 		{
-			BOOL bRet = false;
 			EC_D(bRet,GetFileVersionInfo(szFullPath,
 				dwVerHnd, dwVerInfoSize, (void*)pbData));
 
@@ -189,9 +188,9 @@ BOOL CAboutDlg::OnInitDialog()
 		}
 	}
 	return bRet;
-}
+} // CAboutDlg::OnInitDialog
 
-LRESULT CAboutDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+_Check_return_ LRESULT CAboutDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
 	{
@@ -200,7 +199,7 @@ LRESULT CAboutDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	} // end switch
 	return CDialog::WindowProc(message,wParam,lParam);
-}
+} // CAboutDlg::WindowProc
 
 void CAboutDlg::OnOK()
 {
@@ -211,4 +210,4 @@ void CAboutDlg::OnOK()
 		RegKeys[regkeyDISPLAY_ABOUT_DIALOG].ulCurDWORD = true;
 	else
 		RegKeys[regkeyDISPLAY_ABOUT_DIALOG].ulCurDWORD = false;
-}
+} // CAboutDlg::OnOK

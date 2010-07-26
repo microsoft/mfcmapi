@@ -19,10 +19,10 @@ static TCHAR* CLASS = _T("CProviderTableDlg");
 
 
 CProviderTableDlg::CProviderTableDlg(
-									 CParentWnd* pParentWnd,
-									 CMapiObjects* lpMapiObjects,
-									 LPMAPITABLE lpMAPITable,
-									 LPPROVIDERADMIN lpProviderAdmin
+									 _In_ CParentWnd* pParentWnd,
+									 _In_ CMapiObjects* lpMapiObjects,
+									 _In_ LPMAPITABLE lpMAPITable,
+									 _In_ LPPROVIDERADMIN lpProviderAdmin
 									 ):
 CContentsTableDlg(
 				  pParentWnd,
@@ -42,7 +42,7 @@ CContentsTableDlg(
 
 	m_lpProviderAdmin = lpProviderAdmin;
 	if (m_lpProviderAdmin) m_lpProviderAdmin->AddRef();
-}
+} // CProviderTableDlg::CProviderTableDlg
 
 CProviderTableDlg::~CProviderTableDlg()
 {
@@ -51,7 +51,7 @@ CProviderTableDlg::~CProviderTableDlg()
 	if (m_lpContentsTable) m_lpContentsTable->Release();
 	m_lpContentsTable = NULL;
 	if (m_lpProviderAdmin) m_lpProviderAdmin->Release();
-}
+} // CProviderTableDlg::~CProviderTableDlg
 
 BEGIN_MESSAGE_MAP(CProviderTableDlg, CContentsTableDlg)
 	ON_COMMAND(ID_OPENPROFILESECTION,OnOpenProfileSection)
@@ -60,7 +60,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CProviderTableDlg message handlers
 
-HRESULT CProviderTableDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum /*bModify*/, LPMAPIPROP* lppMAPIProp)
+_Check_return_ HRESULT CProviderTableDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum /*bModify*/, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
 {
 	HRESULT			hRes = S_OK;
 	LPSBinary		lpProviderUID = NULL;
@@ -141,14 +141,12 @@ void CProviderTableDlg::OnOpenProfileSection()
 		lpProfSect->Release();
 	}
 	MAPIFreeBuffer(MapiUID.lpb);
-
-	return;
 } // CProviderTableDlg::OnOpenProfileSection
 
 void CProviderTableDlg::HandleAddInMenuSingle(
-	LPADDINMENUPARAMS lpParams,
-	LPMAPIPROP lpMAPIProp,
-	LPMAPICONTAINER /*lpContainer*/)
+	_In_ LPADDINMENUPARAMS lpParams,
+	_In_ LPMAPIPROP lpMAPIProp,
+	_In_ LPMAPICONTAINER /*lpContainer*/)
 {
 	if (lpParams)
 	{

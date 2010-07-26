@@ -1,20 +1,20 @@
 #pragma once
 // AboutDlg.h : Displays an about dialog
 
-void DisplayAboutDlg(CWnd* lpParentWnd);
+void DisplayAboutDlg(_In_ CWnd* lpParentWnd);
 
 class CAboutDlg : public CDialog
 {
 public:
 	CAboutDlg(
-		CWnd* pParentWnd
+		_In_ CWnd* pParentWnd
 		);
 	virtual ~CAboutDlg();
 
 private:
 	void    OnOK();
-	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
-	BOOL    OnInitDialog();
+	_Check_return_ LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	_Check_return_ BOOL    OnInitDialog();
 
 	HICON			m_hIcon;
 	CRichEditCtrl	m_HelpText;

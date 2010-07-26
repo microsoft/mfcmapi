@@ -1,7 +1,6 @@
 #pragma once
 // DbgView.h : header file
+#include "ParentWnd.h"
 
-class CParentWnd;
-
-void DisplayDbgView(CParentWnd* pParentWnd);
-void OutputToDbgView(LPCTSTR szMsg);
+void DisplayDbgView(_In_ CParentWnd* pParentWnd);
+void OutputToDbgView(_In_z_ LPCTSTR szMsg);

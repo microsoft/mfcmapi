@@ -7,24 +7,24 @@ class CAttachmentsDlg : public CContentsTableDlg
 {
 public:
 	CAttachmentsDlg(
-		CParentWnd* pParentWnd,
-		CMapiObjects* lpMapiObjects,
-		LPMAPITABLE	lpMAPITable,
-		LPMESSAGE lpMessage,
+		_In_ CParentWnd* pParentWnd,
+		_In_ CMapiObjects* lpMapiObjects,
+		_In_ LPMAPITABLE	lpMAPITable,
+		_In_ LPMESSAGE lpMessage,
 		BOOL bSaveMessageAtClose);
 	virtual ~CAttachmentsDlg();
 
 private:
 	// Overrides from base class
 	void HandleAddInMenuSingle(
-		LPADDINMENUPARAMS lpParams,
-		LPMAPIPROP lpMAPIProp,
-		LPMAPICONTAINER lpContainer);
-	BOOL HandleCopy();
-	BOOL HandlePaste();
+		_In_ LPADDINMENUPARAMS lpParams,
+		_In_ LPMAPIPROP lpMAPIProp,
+		_In_ LPMAPICONTAINER lpContainer);
+	void HandleCopy();
+	_Check_return_ BOOL HandlePaste();
 	void OnDeleteSelectedItem();
-	void OnInitMenu(CMenu* pMenu);
-	HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, LPMAPIPROP* lppMAPIProp);
+	void OnInitMenu(_In_ CMenu* pMenu);
+	_Check_return_ HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp);
 
 	// Menu items
 	void OnModifySelectedItem();
@@ -35,7 +35,7 @@ private:
 	void OnAttachmentProperties();
 	void OnRecipientProperties();
 
-	HRESULT GetEmbeddedMessage(int iIndex, LPMESSAGE *lppMessage);
+	_Check_return_ HRESULT GetEmbeddedMessage(int iIndex, _Deref_out_opt_ LPMESSAGE *lppMessage);
 
 	LPATTACH	m_lpAttach;
 	LPMESSAGE	m_lpMessage;

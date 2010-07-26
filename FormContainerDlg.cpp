@@ -20,9 +20,9 @@ static TCHAR* CLASS = _T("CFormContainerDlg");
 
 
 CFormContainerDlg::CFormContainerDlg(
-									 CParentWnd* pParentWnd,
-									 CMapiObjects* lpMapiObjects,
-									 LPMAPIFORMCONTAINER lpFormContainer
+									 _In_ CParentWnd* pParentWnd,
+									 _In_ CMapiObjects* lpMapiObjects,
+									 _In_ LPMAPIFORMCONTAINER lpFormContainer
 									 ):
 CContentsTableDlg(
 				  pParentWnd,
@@ -51,13 +51,13 @@ CContentsTableDlg(
 		}
 	}
 	CreateDialogAndMenu(IDR_MENU_FORM_CONTAINER);
-}
+} // CFormContainerDlg::CFormContainerDlg
 
 CFormContainerDlg::~CFormContainerDlg()
 {
 	TRACE_DESTRUCTOR(CLASS);
 	if (m_lpFormContainer) m_lpFormContainer->Release();
-}
+} // CFormContainerDlg::~CFormContainerDlg
 
 BEGIN_MESSAGE_MAP(CFormContainerDlg, CContentsTableDlg)
 	ON_COMMAND(ID_DELETESELECTEDITEM, OnDeleteSelectedItem)
@@ -72,7 +72,7 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // CFormContainerDlg message handlers
 
-void CFormContainerDlg::OnInitMenu(CMenu* pMenu)
+void CFormContainerDlg::OnInitMenu(_In_ CMenu* pMenu)
 {
 	if (pMenu && m_lpContentsTableListCtrl)
 	{
@@ -80,9 +80,9 @@ void CFormContainerDlg::OnInitMenu(CMenu* pMenu)
 		pMenu->EnableMenuItem(ID_DELETESELECTEDITEM,DIMMSOK(iNumSel));
 	}
 	CContentsTableDlg::OnInitMenu(pMenu);
-}
+} // CFormContainerDlg::OnInitMenu
 
-BOOL CFormContainerDlg::OnInitDialog()
+_Check_return_ BOOL CFormContainerDlg::OnInitDialog()
 {
 	BOOL bRet = CContentsTableDlg::OnInitDialog();
 
@@ -146,7 +146,7 @@ void CFormContainerDlg::OnRefreshView()
 	m_lpContentsTableListCtrl->AutoSizeColumns();
 } // CFormContainerDlg::OnRefreshView
 
-HRESULT CFormContainerDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum /*bModify*/, LPMAPIPROP* lppMAPIProp)
+_Check_return_ HRESULT CFormContainerDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum /*bModify*/, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
 {
 	HRESULT			hRes = S_OK;
 	SortListData*	lpListData = NULL;
@@ -237,7 +237,7 @@ void CFormContainerDlg::OnInstallForm()
 	{
 		INT_PTR	iDlgRet = IDOK;
 		CStringA szFileSpec;
-		szFileSpec.LoadString(IDS_CFGFILES);
+		EC_B(szFileSpec.LoadString(IDS_CFGFILES));
 
 		CFileDialogExA dlgFilePicker;
 
@@ -257,7 +257,7 @@ void CFormContainerDlg::OnInstallForm()
 			{
 				hRes = S_OK;
 				DebugPrintEx(DBGForms,CLASS,_T("OnInstallForm"),
-					_T("Calling InstallForm(0x%08X,0x%08X,\"%hs\")\n"),hwnd,ulFlags,lpszPath); // STRING_OK
+					_T("Calling InstallForm(%p,0x%08X,\"%hs\")\n"),hwnd,ulFlags,lpszPath); // STRING_OK
 				WC_H(m_lpFormContainer->InstallForm((ULONG_PTR)hwnd,ulFlags,(LPTSTR)lpszPath));
 				if (MAPI_E_EXTENDED_ERROR == hRes)
 				{
@@ -299,7 +299,7 @@ void CFormContainerDlg::OnRemoveForm()
 		if (szClass)
 		{
 			DebugPrintEx(DBGForms,CLASS,_T("OnRemoveForm"),
-				_T("Calling RemoveForm(\"%s\")\n"),szClass); // STRING_OK
+				_T("Calling RemoveForm(\"%hs\")\n"),szClass); // STRING_OK
 			EC_H(m_lpFormContainer->RemoveForm(szClass));
 			OnRefreshView(); // Update the view since we don't have notifications here.
 		}
@@ -330,7 +330,7 @@ void CFormContainerDlg::OnResolveMessageClass()
 		{
 			LPMAPIFORMINFO lpMAPIFormInfo = NULL;
 			DebugPrintEx(DBGForms,CLASS,_T("OnResolveMessageClass"),
-				_T("Calling ResolveMessageClass(\"%s\",0x%08X)\n"),szClass,ulFlags); // STRING_OK
+				_T("Calling ResolveMessageClass(\"%hs\",0x%08X)\n"),szClass,ulFlags); // STRING_OK
 			EC_H(m_lpFormContainer->ResolveMessageClass(szClass,ulFlags,&lpMAPIFormInfo));
 			if (lpMAPIFormInfo)
 			{
@@ -483,9 +483,9 @@ void CFormContainerDlg::OnGetDisplay()
 } // CFormContainerDlg::OnGetDisplay
 
 void CFormContainerDlg::HandleAddInMenuSingle(
-	LPADDINMENUPARAMS lpParams,
-	LPMAPIPROP lpMAPIProp,
-	LPMAPICONTAINER /*lpContainer*/)
+	_In_ LPADDINMENUPARAMS lpParams,
+	_In_ LPMAPIPROP lpMAPIProp,
+	_In_ LPMAPICONTAINER /*lpContainer*/)
 {
 	if (lpParams)
 	{

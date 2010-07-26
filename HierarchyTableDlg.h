@@ -11,10 +11,10 @@ class CHierarchyTableDlg : public CBaseDialog
 {
 public:
 	CHierarchyTableDlg(
-		CParentWnd* pParentWnd,
-		CMapiObjects* lpMapiObjects,
+		_In_ CParentWnd* pParentWnd,
+		_In_ CMapiObjects* lpMapiObjects,
 		UINT uidTitle,
-		LPUNKNOWN lpRootContainer,
+		_In_opt_ LPUNKNOWN lpRootContainer,
 		ULONG nIDContextMenu,
 		ULONG ulAddInContext
 		);
@@ -23,24 +23,24 @@ public:
 protected:
 	// Overrides from base class
 	void CreateDialogAndMenu(UINT nIDMenuResource);
-	void OnInitMenu(CMenu* pMenu);
+	void OnInitMenu(_In_ CMenu* pMenu);
 
 	CHierarchyTableTreeCtrl*	m_lpHierarchyTableTreeCtrl;
 	ULONG						m_ulDisplayFlags;
 
 private:
 	virtual void HandleAddInMenuSingle(
-		LPADDINMENUPARAMS lpParams,
-		LPMAPIPROP lpMAPIProp,
-		LPMAPICONTAINER lpContainer);
+		_In_ LPADDINMENUPARAMS lpParams,
+		_In_opt_ LPMAPIPROP lpMAPIProp,
+		_In_opt_ LPMAPICONTAINER lpContainer);
 
 	// Overrides from base class
-	BOOL HandleAddInMenu(WORD wMenuSelect);
+	_Check_return_ BOOL HandleAddInMenu(WORD wMenuSelect);
 	void OnCancel();
-	BOOL OnInitDialog();
+	_Check_return_ BOOL OnInitDialog();
 	void OnRefreshView();
 
-	BOOL PreTranslateMessage(MSG* pMsg);
+	_Check_return_ BOOL PreTranslateMessage(_In_ MSG* pMsg);
 
 	// Menu items
 	void OnDisplayHierarchyTable();

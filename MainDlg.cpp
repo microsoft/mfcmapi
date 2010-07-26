@@ -31,8 +31,8 @@ static TCHAR* CLASS = _T("CMainDlg");
 // CMainDlg dialog
 
 CMainDlg::CMainDlg(
-				   CParentWnd* pParentWnd,
-				   CMapiObjects* lpMapiObjects
+				   _In_ CParentWnd* pParentWnd,
+				   _In_ CMapiObjects* lpMapiObjects
 				   ):
 CContentsTableDlg(
 				  pParentWnd,
@@ -54,12 +54,12 @@ CContentsTableDlg(
 	{
 		DisplayAboutDlg(this);
 	}
-}
+} // CMainDlg::CMainDlg
 
 CMainDlg::~CMainDlg()
 {
 	TRACE_DESTRUCTOR(CLASS);
-}
+} // CMainDlg::~CMainDlg
 
 BEGIN_MESSAGE_MAP(CMainDlg, CContentsTableDlg)
 	ON_COMMAND(ID_CLOSEADDRESSBOOK, OnCloseAddressBook)
@@ -108,13 +108,13 @@ BEGIN_MESSAGE_MAP(CMainDlg, CContentsTableDlg)
 	ON_COMMAND(ID_CONVERTEMLTOMSG, OnConvertEMLToMSG)
 END_MESSAGE_MAP()
 
-BOOL CMainDlg::HandleMenu(WORD wMenuSelect)
+_Check_return_ BOOL CMainDlg::HandleMenu(WORD wMenuSelect)
 {
 	DebugPrint(DBGMenu,_T("CMainDlg::HandleMenu wMenuSelect = 0x%X = %d\n"),wMenuSelect,wMenuSelect);
 	return CContentsTableDlg::HandleMenu(wMenuSelect);
-}
+} // CMainDlg::HandleMenu
 
-void CMainDlg::OnInitMenu(CMenu* pMenu)
+void CMainDlg::OnInitMenu(_In_ CMenu* pMenu)
 {
 	if (pMenu)
 	{
@@ -220,7 +220,7 @@ void CMainDlg::OnABHierarchy()
 	if (!m_lpMapiObjects) return;
 
 	// ensure we have an AB
-	m_lpMapiObjects->GetAddrBook(true); // do not release
+	(void) m_lpMapiObjects->GetAddrBook(true); // do not release
 
 	// call the dialog
 	new CAbContDlg(
@@ -259,9 +259,12 @@ void CMainDlg::OnOpenDefaultDir()
 		&ulObjType,
 		(LPUNKNOWN*)&lpDefaultDir));
 
-	EC_H(DisplayObject(lpDefaultDir,ulObjType,otDefault,this));
+	if (lpDefaultDir)
+	{
+		EC_H(DisplayObject(lpDefaultDir,ulObjType,otDefault,this));
 
-	if (lpDefaultDir) lpDefaultDir->Release();
+		lpDefaultDir->Release();
+	}
 	MAPIFreeBuffer(lpEID);
 } // CMainDlg::OnOpenDefaultDir
 
@@ -295,9 +298,12 @@ void CMainDlg::OnOpenPAB()
 		&ulObjType,
 		(LPUNKNOWN*)&lpPAB));
 
-	EC_H(DisplayObject(lpPAB,ulObjType,otDefault,this));
+	if (lpPAB)
+	{
+		EC_H(DisplayObject(lpPAB,ulObjType,otDefault,this));
 
-	if (lpPAB) lpPAB->Release();
+		lpPAB->Release();
+	}
 	MAPIFreeBuffer(lpEID);
 } // CMainDlg::OnOpenPAB
 
@@ -311,7 +317,7 @@ void CMainDlg::OnLogonAndDisplayStores()
 	OnOpenMessageStoreTable();
 } // CMainDlg::OnLogonAndDisplayStores
 
-HRESULT CMainDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, LPMAPIPROP* lppMAPIProp)
+_Check_return_ HRESULT CMainDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
 {
 	HRESULT		hRes = S_OK;
 
@@ -505,8 +511,6 @@ void CMainDlg::OnOpenMessageStoreEID()
 
 	}
 	delete[] sBin.lpb;
-
-	return;
 } // CMainDlg::OnOpenMessageStoreEID
 
 void CMainDlg::OnOpenPublicFolders()
@@ -766,7 +770,7 @@ void CMainDlg::OnDumpStoreContents()
 void CMainDlg::OnDumpServerContents()
 {
 	HRESULT			hRes = S_OK;
-	WCHAR			szDir[MAX_PATH];
+	WCHAR			szDir[MAX_PATH] = {0};
 	LPTSTR			szServerName = NULL;
 
 	if (!m_lpMapiObjects) return;
@@ -802,7 +806,6 @@ void CMainDlg::OnDumpServerContents()
 	}
 	MAPIFreeBuffer(szServerName);
 } // CMainDlg::OnDumpServerContents
-
 
 void CMainDlg::OnLogoff()
 {
@@ -1179,7 +1182,7 @@ void CMainDlg::OnFastShutdown()
 	}
 
 	if (lpClientShutdown) lpClientShutdown->Release();
-}
+} // CMainDlg::OnFastShutdown
 
 void CMainDlg::OnQueryDefaultMessageOpt()
 {
@@ -1245,7 +1248,7 @@ void CMainDlg::OnQueryDefaultMessageOpt()
 		}
 		MAPIFreeBuffer(lpOptions);
 	}
-}
+} // CMainDlg::OnQueryDefaultMessageOpt
 
 void CMainDlg::OnQueryDefaultRecipOpt()
 {
@@ -1311,7 +1314,7 @@ void CMainDlg::OnQueryDefaultRecipOpt()
 		}
 		MAPIFreeBuffer(lpOptions);
 	}
-}
+} // CMainDlg::OnQueryDefaultRecipOpt
 
 void CMainDlg::OnQueryIdentity()
 {
@@ -1450,14 +1453,12 @@ void CMainDlg::OnIsAttachmentBlocked()
 				CEDITOR_BUTTON_OK);
 			CString szRet;
 			CString szResult;
-			szResult.LoadString(bBlocked?IDS_TRUE:IDS_FALSE);
+			EC_B(szResult.LoadString(bBlocked?IDS_TRUE:IDS_FALSE));
 			MyResult.InitSingleLineSz(0,IDS_RESULT,szResult,true);
 
 			WC_H(MyResult.DisplayDialog());
 		}
 	}
-
-	return;
 } // CMainDlg::OnIsAttachmentBlocked
 
 void CMainDlg::OnShowProfiles()
@@ -1482,7 +1483,7 @@ void CMainDlg::OnShowProfiles()
 
 		lpProfTable->Release();
 	}
-}
+} // CMainDlg::OnShowProfiles
 
 void CMainDlg::OnLaunchProfileWizard()
 {
@@ -1504,7 +1505,7 @@ void CMainDlg::OnLaunchProfileWizard()
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		TCHAR szProfName[80] = {0};
+		CHAR szProfName[80] = {0};
 		LPSTR szServices[] = {MyData.GetStringA(1),NULL};
 
 		LaunchProfileWizard(
@@ -1514,7 +1515,7 @@ void CMainDlg::OnLaunchProfileWizard()
 			_countof(szProfName),
 			szProfName);
 	}
-}
+} // CMainDlg::OnLaunchProfileWizard
 
 void CMainDlg::OnGetMAPISVC()
 {
@@ -1588,7 +1589,7 @@ void CMainDlg::OnViewMSGProperties()
 	CStringW szFileSpec;
 	CFileDialogExW dlgFilePicker;
 
-	szFileSpec.LoadString(IDS_MSGFILES);
+	EC_B(szFileSpec.LoadString(IDS_MSGFILES));
 
 	EC_D_DIALOG(dlgFilePicker.DisplayDialog(
 		TRUE,
@@ -1633,7 +1634,7 @@ void CMainDlg::OnConvertMSGToEML()
 
 		CStringW szFileSpec;
 		CFileDialogExW dlgFilePickerMSG;
-		szFileSpec.LoadString(IDS_MSGFILES);
+		EC_B(szFileSpec.LoadString(IDS_MSGFILES));
 
 		EC_D_DIALOG(dlgFilePickerMSG.DisplayDialog(
 			TRUE,
@@ -1644,7 +1645,7 @@ void CMainDlg::OnConvertMSGToEML()
 			this));
 		if (iDlgRet == IDOK)
 		{
-			szFileSpec.LoadString(IDS_EMLFILES);
+			EC_B(szFileSpec.LoadString(IDS_EMLFILES));
 
 			CFileDialogExW dlgFilePickerEML;
 
@@ -1692,7 +1693,7 @@ void CMainDlg::OnConvertEMLToMSG()
 		INT_PTR iDlgRet = IDOK;
 
 		CStringW szFileSpec;
-		szFileSpec.LoadString(IDS_EMLFILES);
+		EC_B(szFileSpec.LoadString(IDS_EMLFILES));
 
 		CFileDialogExW dlgFilePickerEML;
 
@@ -1705,7 +1706,7 @@ void CMainDlg::OnConvertEMLToMSG()
 			this));
 		if (iDlgRet == IDOK)
 		{
-			szFileSpec.LoadString(IDS_MSGFILES);
+			EC_B(szFileSpec.LoadString(IDS_MSGFILES));
 
 			CFileDialogExW dlgFilePickerMSG;
 			EC_D_DIALOG(dlgFilePickerMSG.DisplayDialog(
@@ -1732,9 +1733,9 @@ void CMainDlg::OnConvertEMLToMSG()
 } // CMainDlg::OnConvertEMLToMSG
 
 void CMainDlg::HandleAddInMenuSingle(
-									 LPADDINMENUPARAMS lpParams,
-									 LPMAPIPROP lpMAPIProp,
-									 LPMAPICONTAINER /*lpContainer*/)
+									 _In_ LPADDINMENUPARAMS lpParams,
+									 _In_ LPMAPIPROP lpMAPIProp,
+									 _In_ LPMAPICONTAINER /*lpContainer*/)
 {
 	if (lpParams)
 	{

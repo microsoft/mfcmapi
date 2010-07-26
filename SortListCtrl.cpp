@@ -14,7 +14,7 @@
 
 static TCHAR* CLASS = _T("CSortListCtrl");
 
-void FreeSortListData(SortListData* lpData)
+void FreeSortListData(_In_ SortListData* lpData)
 {
 	if (!lpData) return;
 	switch (lpData->ulSortDataType)
@@ -42,7 +42,7 @@ void FreeSortListData(SortListData* lpData)
 	MAPIFreeBuffer(lpData->szSortText);
 	MAPIFreeBuffer(lpData->lpSourceProps);
 	MAPIFreeBuffer(lpData);
-}
+} // FreeSortListData
 
 /////////////////////////////////////////////////////////////////////////////
 // CSortListCtrl
@@ -56,20 +56,20 @@ CSortListCtrl::CSortListCtrl()
 	m_bSortUp = false;
 	m_bHaveSorted = FALSE;
 	m_bHeaderSubclassed = false;
-}
+} // CSortListCtrl::CSortListCtrl
 
 CSortListCtrl::~CSortListCtrl()
 {
 	TRACE_DESTRUCTOR(CLASS);
 	DestroyWindow();
-}
+} // CSortListCtrl::~CSortListCtrl
 
 STDMETHODIMP_(ULONG) CSortListCtrl::AddRef()
 {
 	LONG lCount(InterlockedIncrement(&m_cRef));
 	TRACE_ADDREF(CLASS,lCount);
 	return lCount;
-}
+} // CSortListCtrl::AddRef
 
 STDMETHODIMP_(ULONG) CSortListCtrl::Release()
 {
@@ -77,7 +77,7 @@ STDMETHODIMP_(ULONG) CSortListCtrl::Release()
 	TRACE_RELEASE(CLASS,lCount);
 	if (!lCount)  delete this;
 	return lCount;
-}
+} // CSortListCtrl::Release
 
 BEGIN_MESSAGE_MAP(CSortListCtrl, CListCtrl)
 	ON_WM_KEYDOWN()
@@ -86,8 +86,7 @@ BEGIN_MESSAGE_MAP(CSortListCtrl, CListCtrl)
 	ON_NOTIFY_REFLECT(LVN_DELETEITEM, OnDeleteItem)
 END_MESSAGE_MAP()
 
-
-HRESULT CSortListCtrl::Create(CWnd* pCreateParent, ULONG ulFlags, UINT nID, BOOL bImages)
+_Check_return_ HRESULT CSortListCtrl::Create(_In_ CWnd* pCreateParent, ULONG ulFlags, UINT nID, BOOL bImages)
 {
 	HRESULT hRes = S_OK;
 	EC_B(CListCtrl::Create(
@@ -120,9 +119,9 @@ HRESULT CSortListCtrl::Create(CWnd* pCreateParent, ULONG ulFlags, UINT nID, BOOL
 	}
 
 	return hRes;
-}
+} // CSortListCtrl::Create
 
-LRESULT CSortListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+_Check_return_ LRESULT CSortListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	LRESULT lResult = NULL;
 
@@ -170,12 +169,12 @@ LRESULT CSortListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		}
 	} // end switch
 	return CListCtrl::WindowProc(message,wParam,lParam);
-}
+} // CSortListCtrl::WindowProc
 
 void CSortListCtrl::OnDeleteAllItems(NMHDR* /*pNMHDR*/, LRESULT* pResult)
 {
 	*pResult = FALSE; // make sure we get LVN_DELETEITEM for all items
-}
+} // CSortListCtrl::OnDeleteAllItems
 
 void CSortListCtrl::OnDeleteItem(NMHDR* pNMHDR, LRESULT* pResult)
 {
@@ -188,14 +187,14 @@ void CSortListCtrl::OnDeleteItem(NMHDR* pNMHDR, LRESULT* pResult)
 		FreeSortListData(lpData);
 	}
 	*pResult = 0;
-}
+} // CSortListCtrl::OnDeleteItem
 
-SortListData* CSortListCtrl::InsertRow(int iRow, LPTSTR szText)
+_Check_return_ SortListData* CSortListCtrl::InsertRow(int iRow, LPTSTR szText)
 {
 	return InsertRow(iRow,szText,0,0);
-}
+} // CSortListCtrl::InsertRow
 
-SortListData* CSortListCtrl::InsertRow(int iRow, LPTSTR szText, int iIndent, int iImage)
+_Check_return_ SortListData* CSortListCtrl::InsertRow(int iRow, _In_z_ LPTSTR szText, int iIndent, int iImage)
 {
 	HRESULT			hRes = S_OK;
 	SortListData*	lpData = NULL;
@@ -219,7 +218,7 @@ SortListData* CSortListCtrl::InsertRow(int iRow, LPTSTR szText, int iIndent, int
 	iRow = InsertItem(&lvItem); // Assign result to iRow in case it changes
 
 	return lpData;
-}
+} // CSortListCtrl::InsertRow
 
 void CSortListCtrl::MySetRedraw(BOOL bRedraw)
 {
@@ -241,7 +240,6 @@ void CSortListCtrl::MySetRedraw(BOOL bRedraw)
 	}
 } // CSortListCtrl::MySetRedraw
 
-
 enum __SortStyle
 {
 	SORTSTYLE_STRING = 0,
@@ -254,14 +252,13 @@ typedef struct _SortInfo
 	__SortStyle	sortstyle;
 } SortInfo;
 
-
 #define sortEqual 0
 #define sort1First -1
 #define sort2First 1
 // Sort the item in alphabetical order.
 // Simplistic algorithm that only looks at the text. This pays no attention to the underlying MAPI properties.
 // This will sort dates and numbers badly. :)
-int CALLBACK CSortListCtrl::MyCompareProc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
+int CALLBACK CSortListCtrl::MyCompareProc(_In_ LPARAM lParam1, _In_ LPARAM lParam2, _In_ LPARAM lParamSort)
 {
 	if (!lParamSort) return sortEqual;
 	SortInfo* lpSortInfo = (SortInfo*) lParamSort;
@@ -305,7 +302,7 @@ int CALLBACK CSortListCtrl::MyCompareProc(LPARAM lParam1, LPARAM lParam2, LPARAM
 		break;
 	}
 	return 0;
-}
+} // CSortListCtrl::MyCompareProc
 
 #ifndef HDF_SORTUP
 #define HDF_SORTUP              0x0400
@@ -527,7 +524,7 @@ void CSortListCtrl::AutoSizeColumn(int iColumn, int iMinWidth, int iMaxWidth)
 	if (iMaxWidth && width > iMaxWidth) SetColumnWidth(iColumn,iMaxWidth);
 	else if (width < iMinWidth) SetColumnWidth(iColumn,iMinWidth);
 	MySetRedraw(TRUE);
-}
+} // CSortListCtrl::AutoSizeColumn
 
 void CSortListCtrl::AutoSizeColumns()
 {
@@ -545,7 +542,7 @@ void CSortListCtrl::AutoSizeColumns()
 		}
 		MySetRedraw(TRUE);
 	}
-}
+} // CSortListCtrl::AutoSizeColumns
 
 void CSortListCtrl::DeleteAllColumns(BOOL bShutdown)
 {
@@ -581,11 +578,11 @@ void CSortListCtrl::DeleteAllColumns(BOOL bShutdown)
 		}
 		if (!bShutdown) MySetRedraw(TRUE);
 	}
-}
+} // CSortListCtrl::DeleteAllColumns
 
 // Assert that we want all keyboard input (including ENTER!)
 // In the case of TAB though, let it through
-UINT CSortListCtrl::OnGetDlgCode()
+_Check_return_ UINT CSortListCtrl::OnGetDlgCode()
 {
 	UINT iDlgCode = CListCtrl::OnGetDlgCode();
 
@@ -602,7 +599,7 @@ UINT CSortListCtrl::OnGetDlgCode()
 	return iDlgCode;
 } // CSortListCtrl::OnGetDlgCode
 
-BOOL CSortListCtrl::SetItemText(int nItem, int nSubItem, LPCTSTR lpszText)
+void CSortListCtrl::SetItemText(int nItem, int nSubItem, _In_z_ LPCTSTR lpszText)
 {
 	// Remove any whitespace before setting in the list
 	LPTSTR szWhitespace = (LPTSTR) _tcspbrk(lpszText,_T("\r\n\t")); // STRING_OK
@@ -611,7 +608,7 @@ BOOL CSortListCtrl::SetItemText(int nItem, int nSubItem, LPCTSTR lpszText)
 		szWhitespace[0] = _T(' ');
 		szWhitespace = (LPTSTR) _tcspbrk(szWhitespace,_T("\r\n\t")); // STRING_OK
 	}
-	return CListCtrl::SetItemText(nItem,nSubItem,lpszText);
+	(void) CListCtrl::SetItemText(nItem,nSubItem,lpszText);
 } // CSortListCtrl::SetItemText
 
 // if asked to select the item after the last item - will select the last item.
@@ -632,4 +629,4 @@ void CSortListCtrl::SetSelectedItem(int iItem)
 		EC_B(SetItemState(iItem-1,LVIS_SELECTED | LVIS_FOCUSED,LVIS_SELECTED | LVIS_FOCUSED));
 		EnsureVisible(iItem-1,false);
 	}
-}
+} // CSortListCtrl::SetSelectedItem

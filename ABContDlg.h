@@ -7,16 +7,16 @@ class CAbContDlg : public CHierarchyTableDlg
 {
 public:
 	CAbContDlg(
-		CParentWnd* pParentWnd,
-		CMapiObjects* lpMapiObjects);
+		_In_ CParentWnd* pParentWnd,
+		_In_ CMapiObjects* lpMapiObjects);
 	virtual ~CAbContDlg();
 
 private:
 	// Overrides from base class
 	void HandleAddInMenuSingle(
-		LPADDINMENUPARAMS lpParams,
-		LPMAPIPROP lpMAPIProp,
-		LPMAPICONTAINER lpContainer);
+		_In_ LPADDINMENUPARAMS lpParams,
+		_In_ LPMAPIPROP lpMAPIProp,
+		_In_ LPMAPICONTAINER lpContainer);
 
 	// Menu items
 	void OnSetDefaultDir();

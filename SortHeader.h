@@ -17,14 +17,14 @@ class CSortHeader : public CHeaderCtrl
 {
 public:
 	CSortHeader();
-	BOOL Init(CHeaderCtrl *pHeader, HWND hwndParent);
+	_Check_return_ BOOL Init(_In_ CHeaderCtrl *pHeader, _In_ HWND hwndParent);
 
 private:
-	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	_Check_return_ LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	void    RegisterHeaderTooltip();
 
 	// Custom messages
-	LRESULT msgOnSaveColumnOrder(WPARAM wParam, LPARAM lParam);
+	_Check_return_ LRESULT msgOnSaveColumnOrder(WPARAM wParam, LPARAM lParam);
 
 	HWND		m_hwndTip;
 	TOOLINFO	m_ti;

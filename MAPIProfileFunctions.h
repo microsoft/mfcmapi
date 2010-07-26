@@ -3,52 +3,52 @@
 #pragma once
 
 void LaunchProfileWizard(
-						 HWND			hParentWnd,
-						 ULONG			ulFlags,
-						 LPCSTR FAR *	lppszServiceNameToAdd,
-						 ULONG			cbBufferMax,
-						 LPTSTR			lpszNewProfileName);
+						 _In_ HWND hParentWnd,
+						 ULONG ulFlags,
+						 _In_z_ LPCSTR FAR * lppszServiceNameToAdd,
+						 ULONG cbBufferMax,
+						 _In_z_count_(cbBufferMax) LPSTR lpszNewProfileName);
 
-HRESULT HrMAPIProfileExists(
-							LPPROFADMIN lpProfAdmin,
-							LPSTR lpszProfileName);
+_Check_return_ HRESULT HrMAPIProfileExists(
+	_In_ LPPROFADMIN lpProfAdmin,
+	_In_z_ LPCSTR lpszProfileName);
 
-HRESULT HrCreateProfile(
-						IN LPSTR lpszProfileName); // profile name
+_Check_return_ HRESULT HrCreateProfile(
+									   _In_z_ LPCSTR lpszProfileName); // profile name
 
-HRESULT HrAddServiceToProfile(
-							  IN LPSTR lpszServiceName, // Service Name
-							  IN ULONG_PTR ulUIParam, // hwnd for CreateMsgService
-							  IN ULONG ulFlags, // Flags for CreateMsgService
-							  IN ULONG cPropVals, // Count of properties for ConfigureMsgService
-							  IN LPSPropValue lpPropVals, // Properties for ConfigureMsgService
-							  IN LPSTR lpszProfileName); // profile name
+_Check_return_ HRESULT HrAddServiceToProfile(
+	_In_z_ LPCSTR lpszServiceName, // Service Name
+	_In_ ULONG_PTR ulUIParam, // hwnd for CreateMsgService
+	ULONG ulFlags, // Flags for CreateMsgService
+	ULONG cPropVals, // Count of properties for ConfigureMsgService
+	_In_opt_ LPSPropValue lpPropVals, // Properties for ConfigureMsgService
+	_In_z_ LPCSTR lpszProfileName); // profile name
 
-HRESULT HrAddExchangeToProfile(
-							   IN ULONG_PTR ulUIParam, // hwnd for CreateMsgService
-							   IN LPSTR lpszServerName,
-							   IN LPSTR lpszMailboxName,
-							   IN LPSTR lpszProfileName);
+_Check_return_ HRESULT HrAddExchangeToProfile(
+	_In_ ULONG_PTR ulUIParam, // hwnd for CreateMsgService
+	_In_z_ LPCSTR lpszServerName,
+	_In_z_ LPCSTR lpszMailboxName,
+	_In_z_ LPCSTR lpszProfileName);
 
-HRESULT HrAddPSTToProfile(
-						  IN ULONG_PTR ulUIParam, // hwnd for CreateMsgService
-						  BOOL bUnicodePST,
-						  IN LPTSTR lpszPSTPath, // PST name
-						  IN LPSTR lpszProfileName, // profile name
-						  BOOL bPasswordSet, // whether or not to include a password
-						  IN LPSTR lpszPassword); // password to include
+_Check_return_ HRESULT HrAddPSTToProfile(
+	_In_ ULONG_PTR ulUIParam, // hwnd for CreateMsgService
+	BOOL bUnicodePST,
+	_In_z_ LPCTSTR lpszPSTPath, // PST name
+	_In_z_ LPCSTR lpszProfileName, // profile name
+	BOOL bPasswordSet, // whether or not to include a password
+	_In_z_ LPCSTR lpszPassword); // password to include
 
-HRESULT HrRemoveProfile(
-						LPSTR lpszProfileName);
+_Check_return_ HRESULT HrRemoveProfile(
+									   _In_z_ LPCSTR lpszProfileName);
 
-HRESULT OpenProfileSection(LPSERVICEADMIN lpServiceAdmin, LPSBinary lpServiceUID, LPPROFSECT* lppProfSect);
+_Check_return_ HRESULT OpenProfileSection(_In_ LPSERVICEADMIN lpServiceAdmin, _In_ LPSBinary lpServiceUID, _Deref_out_opt_ LPPROFSECT* lppProfSect);
 
-HRESULT OpenProfileSection(LPPROVIDERADMIN lpProviderAdmin, LPSBinary lpProviderUID, LPPROFSECT* lppProfSect);
+_Check_return_ HRESULT OpenProfileSection(_In_ LPPROVIDERADMIN lpProviderAdmin, _In_ LPSBinary lpProviderUID, _Deref_out_ LPPROFSECT* lppProfSect);
 
 void AddServicesToMapiSvcInf();
 void RemoveServicesFromMapiSvcInf();
-void GetMAPISVCPath(LPTSTR szMAPIDir, ULONG cchMAPIDir);
-void DisplayMAPISVCPath(CWnd* pParentWnd);
+void GetMAPISVCPath(_Inout_z_count_(cchMAPIDir) LPTSTR szMAPIDir, ULONG cchMAPIDir);
+void DisplayMAPISVCPath(_In_ CWnd* pParentWnd);
 
 // http://msdn2.microsoft.com/en-us/library/bb820969.aspx
 typedef struct
@@ -59,8 +59,8 @@ typedef struct
 	WORD	wMinorBuild;
 } EXCHANGE_STORE_VERSION_NUM;
 
-HRESULT GetProfileServiceVersion(LPSTR lpszProfileName,
-								 ULONG* lpulServerVersion,
-								 EXCHANGE_STORE_VERSION_NUM* lpStoreVersion,
-								 BOOL* lpbFoundServerVersion,
-								 BOOL* lpbFoundServerFullVersion);
+_Check_return_ HRESULT GetProfileServiceVersion(_In_z_ LPCSTR lpszProfileName,
+												_Out_ ULONG* lpulServerVersion,
+												_Out_ EXCHANGE_STORE_VERSION_NUM* lpStoreVersion,
+												_Out_ BOOL* lpbFoundServerVersion,
+												_Out_ BOOL* lpbFoundServerFullVersion);

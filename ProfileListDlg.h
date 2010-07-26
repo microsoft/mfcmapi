@@ -12,9 +12,9 @@ class CProfileListDlg : public CContentsTableDlg
 {
 public:
 	CProfileListDlg(
-		CParentWnd* pParentWnd,
-		CMapiObjects* lpMapiObjects,
-		LPMAPITABLE lpMAPITable);
+		_In_ CParentWnd* pParentWnd,
+		_In_ CMapiObjects* lpMapiObjects,
+		_In_ LPMAPITABLE lpMAPITable);
 	virtual ~CProfileListDlg();
 
 private:
@@ -32,7 +32,7 @@ private:
 	void OnCreateProfile();
 	void OnGetMAPISVC();
 	void OnGetProfileServiceVersion();
-	void OnInitMenu(CMenu* pMenu);
+	void OnInitMenu(_In_ CMenu* pMenu);
 	void OnLaunchProfileWizard();
 	void OnRemoveServicesFromMAPISVC();
 

@@ -6,9 +6,9 @@
 void LogError(
 			  HRESULT hRes,
 			  UINT uidErrorMsg,
-			  LPCSTR szFile,
+			  _In_z_ LPCSTR szFile,
 			  int iLine,
-			  LPCSTR szFunction,
+			  _In_opt_z_ LPCSTR szFunction,
 			  BOOL bShowDialog,
 			  BOOL bErrorMsgFromSystem)
 {
@@ -29,7 +29,7 @@ void LogError(
 		szErrorMsg = szErr;
 		LocalFree(szErr);
 	}
-	else if (uidErrorMsg) szErrorMsg.LoadString(uidErrorMsg);
+	else if (uidErrorMsg) (void) szErrorMsg.LoadString(uidErrorMsg);
 
 	CString szErrString;
 	szErrString.FormatMessage(
@@ -53,30 +53,27 @@ void LogError(
 			(ULONG) 0,
 			CEDITOR_BUTTON_OK);
 		Err.SetPromptPostFix(szErrString);
-		Err.DisplayDialog();
+		(void) Err.DisplayDialog();
 	}
-}
+} // LogError
 
-BOOL CheckHResFn(HRESULT hRes,LPCSTR szFunction,UINT uidErrorMsg,LPCSTR szFile,int iLine)
+void CheckHResFn(HRESULT hRes, _In_opt_z_ LPCSTR szFunction, UINT uidErrorMsg, _In_z_ LPCSTR szFile, int iLine)
 {
-	if (S_OK == hRes) return true;
+	if (S_OK == hRes) return;
 	LogError(hRes,uidErrorMsg,szFile,iLine,szFunction,true,false);
-
-	return false;
-}
+} // CheckHResFn
 
 // Warn logs an error but never displays a dialog
 // We can log MAPI_W errors along with normal ones
-BOOL WarnHResFn(HRESULT hRes,LPCSTR szFunction,UINT uidErrorMsg,LPCSTR szFile,int iLine)
+void WarnHResFn(HRESULT hRes, _In_opt_z_ LPCSTR szFunction, UINT uidErrorMsg, _In_z_ LPCSTR szFile, int iLine)
 {
 	if (fIsSet(DBGHRes) && S_OK != hRes)
 	{
 		LogError(hRes,uidErrorMsg,szFile,iLine,szFunction,false,false);
 	}
-	return SUCCEEDED(hRes);
-}
+} // WarnHResFn
 
-HRESULT DialogOnWin32Error(LPCSTR szFile,int iLine, LPCSTR szFunction)
+_Check_return_ HRESULT DialogOnWin32Error(_In_z_ LPCSTR szFile, int iLine, _In_z_ LPCSTR szFunction)
 {
 	DWORD dwErr = GetLastError();
 	if (0 == dwErr) return S_OK;
@@ -86,9 +83,9 @@ HRESULT DialogOnWin32Error(LPCSTR szFile,int iLine, LPCSTR szFunction)
 	LogError(hRes,dwErr,szFile,iLine,szFunction,true,true);
 
 	return hRes;
-}
+} // DialogOnWin32Error
 
-HRESULT WarnOnWin32Error(LPCSTR szFile,int iLine, LPCSTR szFunction)
+_Check_return_ HRESULT WarnOnWin32Error(_In_z_ LPCSTR szFile, int iLine, _In_z_ LPCSTR szFunction)
 {
 	DWORD dwErr = GetLastError();
 	HRESULT hRes = HRESULT_FROM_WIN32(dwErr);
@@ -99,12 +96,12 @@ HRESULT WarnOnWin32Error(LPCSTR szFile,int iLine, LPCSTR szFunction)
 	}
 
 	return hRes;
-}
+} // WarnOnWin32Error
 
-void __cdecl ErrDialog(LPCSTR szFile,int iLine, UINT uidErrorFmt,...)
+void __cdecl ErrDialog(_In_z_ LPCSTR szFile, int iLine, UINT uidErrorFmt, ...)
 {
 	CString szErrorFmt;
-	szErrorFmt.LoadString(uidErrorFmt);
+	(void) szErrorFmt.LoadString(uidErrorFmt);
 	CString szErrorBegin;
 	CString szErrorEnd;
 	CString szCombo;
@@ -129,9 +126,8 @@ void __cdecl ErrDialog(LPCSTR szFile,int iLine, UINT uidErrorFmt,...)
 		(ULONG) 0,
 		CEDITOR_BUTTON_OK);
 	Err.SetPromptPostFix(szCombo);
-	Err.DisplayDialog();
-}
-
+	(void) Err.DisplayDialog();
+} // ErrDialog
 
 #define E_ACCT_NOT_FOUND 0x800C8101
 #define E_ACCT_WRONG_SORT_ORDER 0x800C8105
@@ -160,7 +156,7 @@ void __cdecl ErrDialog(LPCSTR szFile,int iLine, UINT uidErrorFmt,...)
 #define RETURN_ERR_CASE(err) case (err): return(_T(#err))
 
 // Function to convert error codes to their names
-LPTSTR ErrorNameFromErrorCode(HRESULT hrErr)
+_Check_return_ LPTSTR ErrorNameFromErrorCode(HRESULT hrErr)
 {
 	switch (hrErr)
 	{
@@ -361,12 +357,12 @@ LPTSTR ErrorNameFromErrorCode(HRESULT hrErr)
 } // ErrorNameFromErrorCode
 
 #ifdef _DEBUG
-void PrintSkipNote(HRESULT hRes,LPCSTR szFunc)
+void PrintSkipNote(HRESULT hRes, _In_z_ LPCSTR szFunc)
 {
 	DebugPrint(DBGHRes,
 		_T("Skipping %hs because hRes = 0x%8x = %s.\n"), // STRING_OK
 		szFunc,
 		hRes,
 		ErrorNameFromErrorCode(hRes));
-}
+} // PrintSkipNote
 #endif

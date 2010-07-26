@@ -445,6 +445,7 @@ enum Gender {
 // of whether or not the search uses CI.
 #define STATIC_SEARCH				((ULONG) 0x00040000)
 
+// http://msdn.microsoft.com/en-us/library/ee219969(EXCHG.80).aspx
 // The search used the content index (CI) in some fashion, and is
 // non-dynamic
 // NOTE: If SEARCH_REBUILD is set, the query is still being processed, and
@@ -456,6 +457,16 @@ enum Gender {
 // This bit is needed to distinguish this in-progress state separately from
 // static-only (SEARCH_STATIC) or dynamic-only (default).
 #define SEARCH_MAYBE_STATIC		((ULONG) 0x00020000)
+
+// CI TWIR Search State for a query request. 
+// Currently, we have 4 different search states for CI/TWIR, they are:
+// CI Totally, CI with TWIR residual, TWIR Mostly, and TWIR Totally
+#define SEARCH_COMPLETE         ((ULONG) 0x00001000)
+#define SEARCH_PARTIAL          ((ULONG) 0x00002000)
+#define CI_TOTALLY              ((ULONG) 0x01000000)
+#define CI_WITH_TWIR_RESIDUAL   ((ULONG) 0x02000000)
+#define TWIR_MOSTLY             ((ULONG) 0x04000000)
+#define TWIR_TOTALLY            ((ULONG) 0x08000000)
 
 // [MS-OXPROPS].pdf
 #define PR_7BIT_DISPLAY_NAME_A PROP_TAG( PT_STRING8, 0x39ff)
@@ -1040,3 +1051,6 @@ typedef enum
 #define NOTEIVERB_COPYTOPOSTFOLDER	574
 #define NOTEIVERB_PARTIALRECIP_SILENTINVITE		575
 #define NOTEIVERB_PARTIALRECIP_SILENTCANCEL		576
+
+#define PR_NT_USER_NAME_A CHANGE_PROP_TYPE(PR_NT_USER_NAME, PT_STRING8)
+#define PR_NT_USER_NAME_W CHANGE_PROP_TYPE(PR_NT_USER_NAME, PT_UNICODE)

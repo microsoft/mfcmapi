@@ -12,9 +12,9 @@ class CMsgStoreDlg : public CHierarchyTableDlg
 {
 public:
 	CMsgStoreDlg(
-		CParentWnd* pParentWnd,
-		CMapiObjects* lpMapiObjects,
-		LPMAPIFOLDER lpRootFolder,
+		_In_ CParentWnd* pParentWnd,
+		_In_ CMapiObjects* lpMapiObjects,
+		_In_opt_ LPMAPIFOLDER lpRootFolder,
 		ULONG ulDisplayFlags);
 	virtual ~CMsgStoreDlg();
 
@@ -22,12 +22,12 @@ private:
 	// Overrides from base class
 	void OnDeleteSelectedItem();
 	void HandleAddInMenuSingle(
-		LPADDINMENUPARAMS lpParams,
-		LPMAPIPROP lpMAPIProp,
-		LPMAPICONTAINER lpContainer);
-	BOOL HandleCopy();
-	BOOL HandlePaste();
-	void OnInitMenu(CMenu* pMenu);
+		_In_ LPADDINMENUPARAMS lpParams,
+		_In_ LPMAPIPROP lpMAPIProp,
+		_In_ LPMAPICONTAINER lpContainer);
+	void HandleCopy();
+	_Check_return_ BOOL HandlePaste();
+	void OnInitMenu(_In_ CMenu* pMenu);
 
 	// Menu items
 	void OnCreateSubFolder();

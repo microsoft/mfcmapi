@@ -36,7 +36,7 @@ void UninitializeNamedPropCache()
 	delete[] g_lpNamedPropCache;
 } // UninitializeNamedPropCache
 
-BOOL InitializeNamedPropCache()
+_Check_return_ BOOL InitializeNamedPropCache()
 {
 	// Already initialized
 	if (g_bNamedPropCacheInitialized) return true;
@@ -54,7 +54,7 @@ BOOL InitializeNamedPropCache()
 } // InitializeNamedPropCache
 
 // Given a signature and property ID (ulPropID), finds the named prop mapping in the cache
-LPNAMEDPROPCACHEENTRY FindCacheEntry(ULONG cbSig, LPBYTE lpSig, ULONG ulPropID)
+_Check_return_ LPNAMEDPROPCACHEENTRY FindCacheEntry(ULONG cbSig, _In_count_(cbSig) LPBYTE lpSig, ULONG ulPropID)
 {
 	// No results without a cache
 	if (!g_bNamedPropCacheInitialized) return NULL;
@@ -73,7 +73,7 @@ LPNAMEDPROPCACHEENTRY FindCacheEntry(ULONG cbSig, LPBYTE lpSig, ULONG ulPropID)
 } // FindCacheEntry (cbSig, lpSig, ulPropID)
 
 // Given a signature, guid, kind, and value, finds the named prop mapping in the cache
-LPNAMEDPROPCACHEENTRY FindCacheEntry(ULONG cbSig, LPBYTE lpSig, LPGUID lpguid, ULONG ulKind, LONG lID, LPWSTR lpwstrName)
+_Check_return_ LPNAMEDPROPCACHEENTRY FindCacheEntry(ULONG cbSig, _In_count_(cbSig) LPBYTE lpSig, _In_ LPGUID lpguid, ULONG ulKind, LONG lID, _In_z_ LPWSTR lpwstrName)
 {
 	// No results without a cache
 	if (!g_bNamedPropCacheInitialized) return NULL;
@@ -96,7 +96,7 @@ LPNAMEDPROPCACHEENTRY FindCacheEntry(ULONG cbSig, LPBYTE lpSig, LPGUID lpguid, U
 } // FindCacheEntry (lpguid, ulKind, wID, lpwstrName)
 
 // Given a tag, guid, kind, and value, finds the named prop mapping in the cache
-LPNAMEDPROPCACHEENTRY FindCacheEntry(ULONG ulPropID, LPGUID lpguid, ULONG ulKind, LONG lID, LPWSTR lpwstrName)
+_Check_return_ LPNAMEDPROPCACHEENTRY FindCacheEntry(ULONG ulPropID, _In_ LPGUID lpguid, ULONG ulKind, LONG lID, _In_z_ LPWSTR lpwstrName)
 {
 	// No results without a cache
 	if (!g_bNamedPropCacheInitialized) return NULL;
@@ -118,16 +118,15 @@ LPNAMEDPROPCACHEENTRY FindCacheEntry(ULONG ulPropID, LPGUID lpguid, ULONG ulKind
 } // FindCacheEntry (ulPropID, lpguid, ulKind, wID, lpwstrName)
 
 // Go through all the details of copying allocated data to or from a cache entry
-void CopyCacheData(
-				   LPGUID lpSrcGUID,
+void CopyCacheData(_In_ LPGUID lpSrcGUID,
 				   ULONG ulSrcKind,
 				   LONG lSrcID,
-				   LPWSTR lpSrcName,
-				   LPGUID* lppDstGUID,
-				   ULONG* lpulDstKind,
-				   LONG* lplDstID,
-				   LPWSTR* lppDstName,
-				   LPVOID lpMAPIParent) // If passed, allocate using MAPI with this as a parent
+				   _In_z_ LPWSTR lpSrcName,
+				   _In_ LPGUID* lppDstGUID,
+				   _In_ ULONG* lpulDstKind,
+				   _In_ LONG* lplDstID,
+				   _In_z_ LPWSTR* lppDstName,
+				   _In_opt_ LPVOID lpMAPIParent) // If passed, allocate using MAPI with this as a parent
 {
 	if (lpSrcGUID && lppDstGUID)
 	{
@@ -193,11 +192,16 @@ void CopyCacheData(
 	}
 } // CopyCacheData
 
+// The compiler gets confused by the memcpy call and thinks g_lpNamedPropCache is smaller than it really is.
+// Then it complains when I write to the 'bad' memory, even though it's definitely good.
+// This is a bug in SAL, so I'm disabling the warning.
+#pragma warning(push)
+#pragma warning(disable:6385)
 void AddMapping(ULONG cbSig,                // Count bytes of signature
-				LPBYTE lpSig,               // Signature
+				_In_opt_count_(cbSig) LPBYTE lpSig,               // Signature
 				ULONG ulNumProps,           // Number of mapped names
-				LPMAPINAMEID* lppPropNames, // Output from GetNamesFromIDs, input for GetIDsFromNames
-				LPSPropTagArray lpTag)      // Input for GetNamesFromIDs, output from GetIDsFromNames
+				_In_count_(ulNumProps) LPMAPINAMEID* lppPropNames, // Output from GetNamesFromIDs, input for GetIDsFromNames
+				_In_ LPSPropTagArray lpTag)      // Input for GetNamesFromIDs, output from GetIDsFromNames
 {
 	if (!ulNumProps || !lppPropNames || !lpTag) return;
 	if (ulNumProps != lpTag->cValues) return; // Wouldn't know what to do with this
@@ -218,16 +222,19 @@ void AddMapping(ULONG cbSig,                // Count bytes of signature
 		if (!lpNewNamedPropCache) return;
 
 		memset(lpNewNamedPropCache, 0, sizeof(NamedPropCacheEntry) * ulNewCacheSize);
-		memcpy(lpNewNamedPropCache, g_lpNamedPropCache, sizeof(NamedPropCacheEntry)*g_ulNamedPropCacheNumEntries);
-		delete[] g_lpNamedPropCache; // no need to delete more, everything has been passed to the new array
+		if (g_lpNamedPropCache)
+		{
+			memcpy(lpNewNamedPropCache, g_lpNamedPropCache, sizeof(NamedPropCacheEntry)*g_ulNamedPropCacheNumEntries);
+			delete[] g_lpNamedPropCache; // no need to delete more, everything has been passed to the new array
+		}
 		g_lpNamedPropCache = lpNewNamedPropCache;
 		g_ulNamedPropCacheSize = ulNewCacheSize;
 	}
 
 	// Now we know we have enough room - loop the source and add the entries
-	ULONG ulCache = 0;
+	ULONG ulCache = g_ulNamedPropCacheNumEntries;
 	ULONG ulSource = 0;
-	for (ulCache = g_ulNamedPropCacheNumEntries, ulSource = 0 ; ulSource < ulNumProps ; ulCache++, ulSource++)
+	for (ulSource = 0 ; ulSource < ulNumProps && ulCache < g_ulNamedPropCacheSize; ulCache++, ulSource++)
 	{
 		if (lppPropNames[ulSource])
 		{
@@ -261,14 +268,15 @@ void AddMapping(ULONG cbSig,                // Count bytes of signature
 
 	g_ulNamedPropCacheNumEntries = ulNewNumEntries;
 } // AddMapping
+#pragma warning(pop)
 
 // Add to the cache entries that don't have a mapping signature
 // For each one, we have to check that the item isn't already in the cache
 // Since this function should rarely be hit, we'll do it the slow but easy way...
 // One entry at a time
 void AddMappingWithoutSignature(ULONG ulNumProps,      // Number of mapped names
-								LPMAPINAMEID* lppPropNames, // Output from GetNamesFromIDs, input for GetIDsFromNames
-								LPSPropTagArray lpTag)     // Input for GetNamesFromIDs, output from GetIDsFromNames
+								_In_count_(ulNumProps) LPMAPINAMEID* lppPropNames, // Output from GetNamesFromIDs, input for GetIDsFromNames
+								_In_ LPSPropTagArray lpTag)     // Input for GetNamesFromIDs, output from GetIDsFromNames
 {
 	if (!ulNumProps || !lppPropNames || !lpTag) return;
 	if (ulNumProps != lpTag->cValues) return; // Wouldn't know what to do with this
@@ -295,12 +303,12 @@ void AddMappingWithoutSignature(ULONG ulNumProps,      // Number of mapped names
 	}
 } // AddMappingWithoutSignature
 
-HRESULT CacheGetNamesFromIDs(LPMAPIPROP lpMAPIProp,
-							 ULONG cbSig,
-							 LPBYTE lpSig,
-							 LPSPropTagArray* lppPropTags,
-							 ULONG* lpcPropNames,
-							 LPMAPINAMEID** lpppPropNames)
+_Check_return_ HRESULT CacheGetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp,
+											ULONG cbSig,
+											_In_count_(cbSig) LPBYTE lpSig,
+											_In_ LPSPropTagArray* lppPropTags,
+											_Out_ ULONG* lpcPropNames,
+											_Out_ _Deref_post_cap_(*lpcPropNames) LPMAPINAMEID** lpppPropNames)
 {
 	if (!lpMAPIProp || !lppPropTags || !*lppPropTags || !cbSig || !lpSig) return MAPI_E_INVALID_PARAMETER;
 
@@ -309,23 +317,24 @@ HRESULT CacheGetNamesFromIDs(LPMAPIPROP lpMAPIProp,
 	// We're going to walk the cache, looking for the values we need. As soon as we have all the values we need, we're done
 	// If we reach the end of the cache and don't have everything, we set up to make a GetNamesFromIDs call.
 
+	LPSPropTagArray lpPropTags = (*lppPropTags);
 	// First, allocate our results using MAPI
 	LPMAPINAMEID* lppNameIDs = NULL;
-	EC_H(MAPIAllocateBuffer(sizeof(MAPINAMEID*) * (*lppPropTags)->cValues, (LPVOID*) &lppNameIDs));
+	EC_H(MAPIAllocateBuffer(sizeof(MAPINAMEID*) * lpPropTags->cValues, (LPVOID*) &lppNameIDs));
 
 	if (lppNameIDs)
 	{
-		memset(lppNameIDs, 0, sizeof(MAPINAMEID*) * (*lppPropTags)->cValues);
+		memset(lppNameIDs, 0, sizeof(MAPINAMEID*) * lpPropTags->cValues);
 		ULONG ulTarget = 0;
 
 		// Assume we'll miss on everything
-		ULONG ulMisses = (*lppPropTags)->cValues;
+		ULONG ulMisses = lpPropTags->cValues;
 
 		// For each tag we wish to look up...
-		for (ulTarget = 0 ; ulTarget < (*lppPropTags)->cValues ; ulTarget++)
+		for (ulTarget = 0 ; ulTarget < lpPropTags->cValues ; ulTarget++)
 		{
 			// ...check the cache
-			LPNAMEDPROPCACHEENTRY lpEntry = FindCacheEntry(cbSig, lpSig, PROP_ID((*lppPropTags)->aulPropTag[ulTarget]));
+			LPNAMEDPROPCACHEENTRY lpEntry = FindCacheEntry(cbSig, lpSig, PROP_ID(lpPropTags->aulPropTag[ulTarget]));
 
 			if (lpEntry)
 			{
@@ -347,12 +356,12 @@ HRESULT CacheGetNamesFromIDs(LPMAPIPROP lpMAPIProp,
 				memset(lpUncachedTags, 0, CbNewSPropTagArray(ulMisses));
 				lpUncachedTags->cValues = ulMisses;
 				ULONG ulUncachedTag = NULL;
-				for (ulTarget = 0 ; ulTarget < (*lppPropTags)->cValues ; ulTarget++)
+				for (ulTarget = 0 ; ulTarget < lpPropTags->cValues ; ulTarget++)
 				{
 					// We're looking for any result which doesn't have a mapping
 					if (!lppNameIDs[ulTarget])
 					{
-						lpUncachedTags->aulPropTag[ulUncachedTag] = (*lppPropTags)->aulPropTag[ulTarget];
+						lpUncachedTags->aulPropTag[ulUncachedTag] = lpPropTags->aulPropTag[ulTarget];
 						ulUncachedTag++;
 					}
 				}
@@ -374,7 +383,7 @@ HRESULT CacheGetNamesFromIDs(LPMAPIPROP lpMAPIProp,
 					// Copy our results over
 					// Loop over the target array, looking for empty slots
 					ulUncachedTag = 0;
-					for (ulTarget = 0 ; ulTarget < (*lppPropTags)->cValues ; ulTarget++)
+					for (ulTarget = 0 ; ulTarget < lpPropTags->cValues ; ulTarget++)
 					{
 						// Found an empty slot
 						if (!lppNameIDs[ulTarget])
@@ -416,18 +425,18 @@ HRESULT CacheGetNamesFromIDs(LPMAPIPROP lpMAPIProp,
 		}
 
 		*lpppPropNames = lppNameIDs;
-		if (lpcPropNames) *lpcPropNames = (*lppPropTags)->cValues;
+		if (lpcPropNames) *lpcPropNames = lpPropTags->cValues;
 	}
 
 	return hRes;
 } // CacheGetNamesFromIDs
 
-HRESULT GetNamesFromIDs(LPMAPIPROP lpMAPIProp,
-						LPSPropTagArray* lppPropTags,
-						LPGUID lpPropSetGuid,
-						ULONG ulFlags,
-						ULONG* lpcPropNames,
-						LPMAPINAMEID** lpppPropNames)
+_Check_return_ HRESULT GetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp,
+									   _In_ LPSPropTagArray* lppPropTags,
+									   _In_opt_ LPGUID lpPropSetGuid,
+									   ULONG ulFlags,
+									   _Out_ ULONG* lpcPropNames,
+									   _Out_ _Deref_post_cap_(*lpcPropNames) LPMAPINAMEID** lpppPropNames)
 {
 	return GetNamesFromIDs(
 		lpMAPIProp,
@@ -439,13 +448,13 @@ HRESULT GetNamesFromIDs(LPMAPIPROP lpMAPIProp,
 		lpppPropNames);
 } // GetNamesFromIDs
 
-HRESULT GetNamesFromIDs(LPMAPIPROP lpMAPIProp,
-						LPSBinary lpMappingSignature,
-						LPSPropTagArray* lppPropTags,
-						LPGUID lpPropSetGuid,
-						ULONG ulFlags,
-						ULONG* lpcPropNames,
-						LPMAPINAMEID** lpppPropNames)
+_Check_return_ HRESULT GetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp,
+									   _In_opt_ LPSBinary lpMappingSignature,
+									   _In_ LPSPropTagArray* lppPropTags,
+									   _In_opt_ LPGUID lpPropSetGuid,
+									   ULONG ulFlags,
+									   _Out_ ULONG* lpcPropNames,
+									   _Out_ _Deref_post_cap_(*lpcPropNames) LPMAPINAMEID** lpppPropNames)
 {
 	if (!lpMAPIProp) return MAPI_E_INVALID_PARAMETER;
 
@@ -497,13 +506,13 @@ HRESULT GetNamesFromIDs(LPMAPIPROP lpMAPIProp,
 	return hRes;
 } // GetNamesFromIDs
 
-HRESULT CacheGetIDsFromNames(LPMAPIPROP lpMAPIProp,
-							 ULONG cbSig,
-							 LPBYTE lpSig,
-							 ULONG cPropNames,
-							 LPMAPINAMEID* lppPropNames,
-							 ULONG ulFlags,
-							 LPSPropTagArray* lppPropTags)
+_Check_return_ HRESULT CacheGetIDsFromNames(_In_ LPMAPIPROP lpMAPIProp,
+											ULONG cbSig,
+											_In_count_(cbSig) LPBYTE lpSig,
+											ULONG cPropNames,
+											_In_count_(cPropNames) LPMAPINAMEID* lppPropNames,
+											ULONG ulFlags,
+											_Out_opt_cap_(cPropNames) LPSPropTagArray* lppPropTags)
 {
 	if (!lpMAPIProp || !cPropNames || !*lppPropNames || !lppPropTags) return MAPI_E_INVALID_PARAMETER;
 
@@ -617,11 +626,11 @@ HRESULT CacheGetIDsFromNames(LPMAPIPROP lpMAPIProp,
 	return hRes;
 } // CacheGetIDsFromNames
 
-HRESULT GetIDsFromNames(LPMAPIPROP lpMAPIProp,
-						ULONG cPropNames,
-						LPMAPINAMEID* lppPropNames,
-						ULONG ulFlags,
-						LPSPropTagArray* lppPropTags)
+_Check_return_ HRESULT GetIDsFromNames(_In_ LPMAPIPROP lpMAPIProp,
+									   ULONG cPropNames,
+									   _In_opt_count_(cPropNames) LPMAPINAMEID* lppPropNames,
+									   ULONG ulFlags,
+									   _Out_ _Deref_post_cap_(cPropNames) LPSPropTagArray* lppPropTags)
 {
 	if (!lpMAPIProp) return MAPI_E_INVALID_PARAMETER;
 
@@ -629,7 +638,7 @@ HRESULT GetIDsFromNames(LPMAPIPROP lpMAPIProp,
 	if (!fCacheNamedProps() ||
 		// If no names were passed, we have to bypass the cache
 		// Should we cache results?
-		!cPropNames || !*lppPropNames)
+		!cPropNames || !lppPropNames || !*lppPropNames)
 	{
 		return lpMAPIProp->GetIDsFromNames(cPropNames,lppPropNames,ulFlags,lppPropTags);
 	}

@@ -10,13 +10,13 @@ CSortHeader::CSortHeader()
 	m_hwndTip = NULL;
 	m_hwndParent = NULL;
 	ZeroMemory(&m_ti,sizeof(TOOLINFO));
-}
+} // CSortHeader::CSortHeader
 
 BEGIN_MESSAGE_MAP(CSortHeader, CHeaderCtrl)
 	ON_MESSAGE(WM_MFCMAPI_SAVECOLUMNORDERHEADER, msgOnSaveColumnOrder)
 END_MESSAGE_MAP()
 
-BOOL CSortHeader::Init(CHeaderCtrl *pHeader, HWND hwndParent)
+_Check_return_ BOOL CSortHeader::Init(_In_ CHeaderCtrl *pHeader, _In_ HWND hwndParent)
 {
 	if (!pHeader) return false;
 
@@ -31,7 +31,7 @@ BOOL CSortHeader::Init(CHeaderCtrl *pHeader, HWND hwndParent)
 	RegisterHeaderTooltip();
 
 	return true;
-}
+} // CSortHeader::Init
 
 void CSortHeader::RegisterHeaderTooltip()
 {
@@ -71,11 +71,11 @@ void CSortHeader::RegisterHeaderTooltip()
 			EC_B(::SendMessage(m_hwndTip, TTM_SETMAXTIPWIDTH, 0, (LPARAM) 500));
 		}
 	}
-}
+} // CSortHeader::RegisterHeaderTooltip
 
 #define GET_X_LPARAM(lp) ((int)(short)LOWORD(lp))
 #define GET_Y_LPARAM(lp) ((int)(short)HIWORD(lp))
-LRESULT CSortHeader::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+_Check_return_ LRESULT CSortHeader::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	HRESULT hRes = S_OK;
 
@@ -164,10 +164,10 @@ LRESULT CSortHeader::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		} // end switch
 	}
 	return CHeaderCtrl::WindowProc(message,wParam,lParam);
-}
+} // CSortHeader::WindowProc
 
 // WM_MFCMAPI_SAVECOLUMNORDERHEADER
-LRESULT	CSortHeader::msgOnSaveColumnOrder(WPARAM /*wParam*/, LPARAM /*lParam*/)
+_Check_return_ LRESULT CSortHeader::msgOnSaveColumnOrder(WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	if (m_hwndParent)
 	{
@@ -179,4 +179,4 @@ LRESULT	CSortHeader::msgOnSaveColumnOrder(WPARAM /*wParam*/, LPARAM /*lParam*/)
 			(LPARAM) NULL));
 	}
 	return S_OK;
-}
+} // CSortHeader::msgOnSaveColumnOrder

@@ -40,11 +40,11 @@ __ListButtons ListButtons[NUMLISTBUTTONS] = {
 
 // Imports binary data from a stream, converting it to hex format before returning
 // Incorporates a custom version of MyHexFromBin to minimize new/delete
-static DWORD CALLBACK EditStreamReadCallBack(
+_Check_return_ static DWORD CALLBACK EditStreamReadCallBack(
 	DWORD_PTR dwCookie,
-	LPBYTE pbBuff,
+	_In_ LPBYTE pbBuff,
 	LONG cb,
-	LONG *pcb)
+	_In_count_(cb) LONG *pcb)
 {
 	HRESULT hRes = S_OK;
 	if (!pbBuff || !pcb || !dwCookie) return 0;
@@ -95,7 +95,7 @@ static DWORD CALLBACK EditStreamReadCallBack(
 
 // Use this constuctor for generic data editing
 CEditor::CEditor(
-				 CWnd* pParentWnd,
+				 _In_opt_ CWnd* pParentWnd,
 				 UINT uidTitle,
 				 UINT uidPrompt,
 				 ULONG ulNumFields,
@@ -111,7 +111,7 @@ CEditor::CEditor(
 } // CEditor::CEditor
 
 CEditor::CEditor(
-				 CWnd* pParentWnd,
+				 _In_ CWnd* pParentWnd,
 				 UINT uidTitle,
 				 UINT uidPrompt,
 				 ULONG ulNumFields,
@@ -129,7 +129,7 @@ CEditor::CEditor(
 } // CEditor::CEditor
 
 void CEditor::Constructor(
-						  CWnd* pParentWnd,
+						  _In_opt_ CWnd* pParentWnd,
 						  UINT uidTitle,
 						  UINT uidPrompt,
 						  ULONG ulNumFields,
@@ -195,7 +195,7 @@ BEGIN_MESSAGE_MAP(CEditor, CDialog)
 	ON_WM_CONTEXTMENU()
 END_MESSAGE_MAP()
 
-LRESULT CEditor::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+_Check_return_ LRESULT CEditor::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
 	{
@@ -214,7 +214,7 @@ LRESULT CEditor::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			{
 			case NM_DBLCLK:
 			case NM_RETURN:
-				OnEditListEntry(m_ulListNum);
+				(void) OnEditListEntry(m_ulListNum);
 				return NULL;
 				break;
 			}
@@ -226,15 +226,15 @@ LRESULT CEditor::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			WORD idFrom = LOWORD(wParam);
 			if (EN_CHANGE == nCode)
 			{
-				HandleChange(idFrom);
+				(void) HandleChange(idFrom);
 			}
 			else if (CBN_SELCHANGE == nCode)
 			{
-				HandleChange(idFrom);
+				(void) HandleChange(idFrom);
 			}
 			else if (CBN_EDITCHANGE == nCode)
 			{
-				HandleChange(idFrom);
+				(void) HandleChange(idFrom);
 			}
 			else if (BN_CLICKED == nCode)
 			{
@@ -242,14 +242,14 @@ LRESULT CEditor::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 				{
 				case IDD_LISTMOVEDOWN:		OnMoveListEntryDown(m_ulListNum); return NULL;
 				case IDD_LISTADD:			OnAddListEntry(m_ulListNum); return NULL;
-				case IDD_LISTEDIT:			OnEditListEntry(m_ulListNum); return NULL;
+				case IDD_LISTEDIT:			(void) OnEditListEntry(m_ulListNum); return NULL;
 				case IDD_LISTDELETE:		OnDeleteListEntry(m_ulListNum,true); return NULL;
 				case IDD_LISTMOVEUP:		OnMoveListEntryUp(m_ulListNum); return NULL;
 				case IDD_LISTMOVETOBOTTOM:	OnMoveListEntryToBottom(m_ulListNum); return NULL;
 				case IDD_LISTMOVETOTOP:		OnMoveListEntryToTop(m_ulListNum); return NULL;
 				case IDD_EDITACTION1:		OnEditAction1(); return NULL;
 				case IDD_EDITACTION2:		OnEditAction2(); return NULL;
-				default:					HandleChange(idFrom); break;
+				default:					(void) HandleChange(idFrom); break;
 				}
 			}
 			break;
@@ -258,7 +258,7 @@ LRESULT CEditor::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	return CDialog::WindowProc(message,wParam,lParam);
 } // CEditor::WindowProc
 
-void CEditor::OnContextMenu(CWnd* pWnd, CPoint pos)
+void CEditor::OnContextMenu(_In_ CWnd* pWnd, CPoint pos)
 {
 	HRESULT hRes = S_OK;
 	CMenu pContext;
@@ -275,26 +275,26 @@ void CEditor::OnContextMenu(CWnd* pWnd, CPoint pos)
 } // CEditor::OnContextMenu
 
 // AddIn functions
-void CEditor::SetAddInTitle(LPWSTR szTitle)
+void CEditor::SetAddInTitle(_In_z_ LPWSTR szTitle)
 {
 #ifdef UNICODE
 	m_szAddInTitle = szTitle;
 #else
 	LPSTR szTitleA = NULL;
-	UnicodeToAnsi(szTitle,&szTitleA);
+	(void) UnicodeToAnsi(szTitle,&szTitleA);
 	m_szAddInTitle = szTitleA;
 	delete[] szTitleA;
 #endif
 } // CEditor::SetAddInTitle
 
-void CEditor::SetAddInLabel(ULONG i,LPWSTR szLabel)
+void CEditor::SetAddInLabel(ULONG i, _In_z_ LPWSTR szLabel)
 {
 	if (INVALIDRANGE(i)) return;
 #ifdef UNICODE
 	m_lpControls[i].szLabel = szLabel;
 #else
 	LPSTR szLabelA = NULL;
-	UnicodeToAnsi(szLabel,&szLabelA);
+	(void) UnicodeToAnsi(szLabel,&szLabelA);
 	m_lpControls[i].szLabel = szLabelA;
 	delete[] szLabelA;
 #endif
@@ -310,7 +310,7 @@ BOOL CEditor::OnInitDialog()
 
 	BOOL bRet = CDialog::OnInitDialog();
 
-	szPostfix.LoadString(m_uidTitle);
+	EC_B(szPostfix.LoadString(m_uidTitle));
 	m_szTitle = szPostfix+m_szAddInTitle;
 	SetWindowText(m_szTitle);
 
@@ -318,7 +318,7 @@ BOOL CEditor::OnInitDialog()
 
 	if (m_uidPrompt)
 	{
-		szPrefix.LoadString(m_uidPrompt);
+		EC_B(szPrefix.LoadString(m_uidPrompt));
 	}
 	else
 	{
@@ -357,7 +357,7 @@ BOOL CEditor::OnInitDialog()
 		// If uidLabel is NULL, then szLabel might already be set as an Add-In Label
 		if (m_lpControls[i].uidLabel)
 		{
-			m_lpControls[i].szLabel.LoadString(m_lpControls[i].uidLabel);
+			EC_B(m_lpControls[i].szLabel.LoadString(m_lpControls[i].uidLabel));
 		}
 
 		if (m_lpControls[i].bUseLabelControl)
@@ -454,7 +454,7 @@ BOOL CEditor::OnInitDialog()
 					for (iButton = 0; iButton <NUMLISTBUTTONS; iButton++)
 					{
 						CString szButtonText;
-						szButtonText.LoadString(ListButtons[iButton].uiButtonID);
+						EC_B(szButtonText.LoadString(ListButtons[iButton].uiButtonID));
 
 						EC_B(m_lpControls[i].UI.lpList->ButtonArray[iButton].Create(
 							szButtonText,
@@ -508,7 +508,7 @@ BOOL CEditor::OnInitDialog()
 					for (ULONG iDropNum=0 ; iDropNum < m_lpControls[i].UI.lpDropDown->ulDropList ; iDropNum++)
 					{
 						CString szDropString;
-						szDropString.LoadString(m_lpControls[i].UI.lpDropDown->lpuidDropList[iDropNum]);
+						EC_B(szDropString.LoadString(m_lpControls[i].UI.lpDropDown->lpuidDropList[iDropNum]));
 						m_lpControls[i].UI.lpDropDown->DropDown.InsertString(
 							iDropNum,
 							szDropString);
@@ -526,7 +526,7 @@ BOOL CEditor::OnInitDialog()
 	if (m_bButtonFlags & CEDITOR_BUTTON_OK)
 	{
 		CString szOk;
-		szOk.LoadString(IDS_OK);
+		EC_B(szOk.LoadString(IDS_OK));
 		EC_B(m_OkButton.Create(
 			szOk,
 			WS_TABSTOP
@@ -541,7 +541,7 @@ BOOL CEditor::OnInitDialog()
 	if (m_bButtonFlags & CEDITOR_BUTTON_ACTION1)
 	{
 		CString szActionButtonText1;
-		szActionButtonText1.LoadString(m_uidActionButtonText1);
+		EC_B(szActionButtonText1.LoadString(m_uidActionButtonText1));
 		EC_B(m_ActionButton1.Create(
 			szActionButtonText1,
 			WS_TABSTOP
@@ -562,7 +562,7 @@ BOOL CEditor::OnInitDialog()
 	if (m_bButtonFlags & CEDITOR_BUTTON_ACTION2)
 	{
 		CString szActionButtonText2;
-		szActionButtonText2.LoadString(m_uidActionButtonText2);
+		EC_B(szActionButtonText2.LoadString(m_uidActionButtonText2));
 		EC_B(m_ActionButton2.Create(
 			szActionButtonText2,
 			WS_TABSTOP
@@ -583,7 +583,7 @@ BOOL CEditor::OnInitDialog()
 	if (m_bButtonFlags & CEDITOR_BUTTON_CANCEL)
 	{
 		CString szCancel;
-		szCancel.LoadString(IDS_CANCEL);
+		EC_B(szCancel.LoadString(IDS_CANCEL));
 		EC_B(m_CancelButton.Create(
 			szCancel,
 			WS_TABSTOP
@@ -657,7 +657,7 @@ void CEditor::OnOK()
 	CDialog::OnOK();
 } // CEditor::OnOK
 
-HRESULT CEditor::DisplayDialog()
+_Check_return_ HRESULT CEditor::DisplayDialog()
 {
 	HRESULT hRes = S_OK;
 	INT_PTR	iDlgRet = 0;
@@ -686,7 +686,7 @@ HRESULT CEditor::DisplayDialog()
 
 // Computes good width and height in pixels
 // Good is defined as big enough to display all elements at a minimum size, including title
-SIZE CEditor::ComputeWorkArea(SIZE sScreen)
+_Check_return_ SIZE CEditor::ComputeWorkArea(SIZE sScreen)
 {
 	SIZE sArea = {0};
 
@@ -957,13 +957,13 @@ void CEditor::OnSetDefaultSize()
 		SWP_NOZORDER | SWP_NOMOVE));
 } // CEditor::OnSetDefaultSize
 
-void CEditor::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
+void CEditor::OnGetMinMaxInfo(_Inout_ MINMAXINFO* lpMMI)
 {
 	lpMMI->ptMinTrackSize.x = m_iMinWidth;
 	lpMMI->ptMinTrackSize.y = m_iMinHeight;
 } // CEditor::OnGetMinMaxInfo
 
-LRESULT CEditor::OnNcHitTest(CPoint point)
+_Check_return_ LRESULT CEditor::OnNcHitTest(CPoint point)
 {
 	CRect gripRect;
 	GetWindowRect(gripRect);
@@ -1244,7 +1244,7 @@ void CEditor::DeleteControls()
 	m_cControls = 0;
 } // CEditor::DeleteControls
 
-void CEditor::SetPromptPostFix(LPCTSTR szMsg)
+void CEditor::SetPromptPostFix(_In_opt_z_ LPCTSTR szMsg)
 {
 	m_szPromptPostFix = szMsg;
 } // CEditor::SetPromptPostFix
@@ -1256,11 +1256,11 @@ struct FakeStream
 	size_t cbCur;
 };
 
-static DWORD CALLBACK FakeEditStreamReadCallBack(
+_Check_return_ static DWORD CALLBACK FakeEditStreamReadCallBack(
 	DWORD_PTR dwCookie,
-	LPBYTE pbBuff,
+	_In_ LPBYTE pbBuff,
 	LONG cb,
-	LONG *pcb)
+	_In_count_(cb) LONG *pcb)
 {
 	if (!pbBuff || !pcb || !dwCookie) return 0;
 
@@ -1329,7 +1329,7 @@ void CEditor::ClearString(ULONG i)
 
 // Sets m_lpControls[i].UI.lpEdit->lpszW using SetStringW
 // cchsz of -1 lets AnsiToUnicode and SetStringW calculate the length on their own
-void CEditor::SetStringA(ULONG i, PCSTR szMsg, size_t cchsz)
+void CEditor::SetStringA(ULONG i, _In_opt_z_ LPCSTR szMsg, size_t cchsz)
 {
 	if (!IsValidEdit(i)) return;
 
@@ -1346,7 +1346,7 @@ void CEditor::SetStringA(ULONG i, PCSTR szMsg, size_t cchsz)
 } // CEditor::SetStringA
 
 // Sets m_lpControls[i].UI.lpEdit->lpszW
-void CEditor::SetStringW(ULONG i, LPCWSTR szMsg, size_t cchsz)
+void CEditor::SetStringW(ULONG i, _In_opt_z_ LPCWSTR szMsg, size_t cchsz)
 {
 	if (!IsValidEdit(i)) return;
 
@@ -1373,7 +1373,7 @@ void CEditor::SetStringW(ULONG i, LPCWSTR szMsg, size_t cchsz)
 } // CEditor::SetStringW
 
 // Updates m_lpControls[i].UI.lpEdit->lpszW using SetStringW
-void __cdecl CEditor::SetStringf(ULONG i,LPCTSTR szMsg,...)
+void __cdecl CEditor::SetStringf(ULONG i, _Printf_format_string_ LPCTSTR szMsg, ...)
 {
 	if (!IsValidEdit(i)) return;
 
@@ -1399,14 +1399,15 @@ void CEditor::LoadString(ULONG i, UINT uidMsg)
 
 	if (uidMsg)
 	{
-		szTemp.LoadString(uidMsg);
+		HRESULT hRes = S_OK;
+		EC_B(szTemp.LoadString(uidMsg));
 	}
 
 	SetString(i,(LPCTSTR) szTemp);
 } // CEditor::LoadString
 
 // Updates m_lpControls[i].UI.lpEdit->lpszW using SetStringW
-void CEditor::SetBinary(ULONG i,LPBYTE lpb, size_t cb)
+void CEditor::SetBinary(ULONG i, _In_opt_count_(cb) LPBYTE lpb, size_t cb)
 {
 	LPTSTR lpszStr = NULL;
 	MyHexFromBin(
@@ -1429,7 +1430,7 @@ void CEditor::SetSize(ULONG i, size_t cb)
 // Returns a binary buffer which is represented by the hex string
 // cb will be the exact length of the decoded buffer
 // Uncounted NULLs will be present on the end to aid in converting to strings
-BOOL CEditor::GetBinaryUseControl(ULONG i,size_t* cbBin,LPBYTE* lpBin)
+_Check_return_ BOOL CEditor::GetBinaryUseControl(ULONG i, _Out_ size_t* cbBin, _Out_ LPBYTE* lpBin)
 {
 	if (!IsValidEdit(i)) return false;
 	if (!cbBin || ! lpBin) return false;
@@ -1464,7 +1465,7 @@ BOOL CEditor::GetBinaryUseControl(ULONG i,size_t* cbBin,LPBYTE* lpBin)
 	return false;
 } // CEditor::GetBinaryUseControl
 
-BOOL CEditor::GetCheckUseControl(ULONG iControl)
+_Check_return_ BOOL CEditor::GetCheckUseControl(ULONG iControl)
 {
 	if (!IsValidCheck(iControl)) return false;
 
@@ -1474,7 +1475,7 @@ BOOL CEditor::GetCheckUseControl(ULONG iControl)
 // converts string in a text(edit) control into an entry ID
 // Can base64 decode if needed
 // entryID is allocated with new, free with delete[]
-HRESULT CEditor::GetEntryID(ULONG i, BOOL bIsBase64, size_t* cbBin, LPENTRYID* lppEID)
+_Check_return_ HRESULT CEditor::GetEntryID(ULONG i, BOOL bIsBase64, _Out_ size_t* cbBin, _Out_ LPENTRYID* lppEID)
 {
 	if (!IsValidEdit(i)) return MAPI_E_INVALID_PARAMETER;
 	if (!cbBin || !lppEID) return MAPI_E_INVALID_PARAMETER;
@@ -1529,7 +1530,7 @@ void CEditor::SetDecimal(ULONG i, ULONG ulVal)
 } // CEditor::SetDecimal
 
 // This is used by the DbgView - don't call any debugger functions here!!!
-void CEditor::AppendString(ULONG i, LPCTSTR szMsg)
+void CEditor::AppendString(ULONG i, _In_z_ LPCTSTR szMsg)
 {
 	if (!IsValidEdit(i)) return;
 
@@ -1556,22 +1557,21 @@ void CEditor::ClearView(ULONG i)
 			(LPARAM) _T(""));
 } // CEditor::ClearView
 
-void CEditor::SetListString(ULONG iControl, ULONG iListRow, ULONG iListCol, LPCTSTR szListString)
+void CEditor::SetListString(ULONG iControl, ULONG iListRow, ULONG iListCol, _In_opt_z_ LPCTSTR szListString)
 {
 	if (!IsValidList(iControl)) return;
 
-	HRESULT hRes = S_OK;
-	WC_B(m_lpControls[iControl].UI.lpList->List.SetItemText(iListRow,iListCol,szListString?szListString:_T("")));
+	m_lpControls[iControl].UI.lpList->List.SetItemText(iListRow,iListCol,szListString?szListString:_T(""));
 } // CEditor::SetListString
 
-SortListData* CEditor::InsertListRow(ULONG iControl, int iRow, LPCTSTR szText)
+_Check_return_ SortListData* CEditor::InsertListRow(ULONG iControl, int iRow, _In_z_ LPCTSTR szText)
 {
 	if (!IsValidList(iControl)) return NULL;
 
 	return m_lpControls[iControl].UI.lpList->List.InsertRow(iRow,(LPTSTR) szText);
 } // CEditor::InsertListRow
 
-void CEditor::InsertDropString(ULONG iControl, int iRow, LPCTSTR szText)
+void CEditor::InsertDropString(ULONG iControl, int iRow, _In_z_ LPCTSTR szText)
 {
 	if (!IsValidDropDown(iControl)) return;
 
@@ -1710,7 +1710,7 @@ void CEditor::GetEditBoxText(ULONG i)
 } // CEditor::GetEditBoxText
 
 // No need to free this - treat it like a static
-LPSTR CEditor::GetEditBoxTextA(ULONG iControl, size_t* lpcchText)
+_Check_return_ LPSTR CEditor::GetEditBoxTextA(ULONG iControl, _Out_ size_t* lpcchText)
 {
 	if (!IsValidEdit(iControl)) return NULL;
 
@@ -1720,7 +1720,7 @@ LPSTR CEditor::GetEditBoxTextA(ULONG iControl, size_t* lpcchText)
 	return GetStringA(iControl);
 } // CEditor::GetEditBoxTextA
 
-LPWSTR CEditor::GetEditBoxTextW(ULONG iControl, size_t* lpcchText)
+_Check_return_ LPWSTR CEditor::GetEditBoxTextW(ULONG iControl, _Out_ size_t* lpcchText)
 {
 	if (!IsValidEdit(iControl)) return NULL;
 
@@ -1730,14 +1730,14 @@ LPWSTR CEditor::GetEditBoxTextW(ULONG iControl, size_t* lpcchText)
 	return GetStringW(iControl);
 } // CEditor::GetEditBoxTextW
 
-ULONG CEditor::GetHex(ULONG i)
+_Check_return_ ULONG CEditor::GetHex(ULONG i)
 {
 	if (!IsValidEdit(i)) return 0;
 
 	return wcstoul(m_lpControls[i].UI.lpEdit->lpszW,NULL,16);
 } // CEditor::GetHex
 
-CString CEditor::GetStringUseControl(ULONG iControl)
+_Check_return_ CString CEditor::GetStringUseControl(ULONG iControl)
 {
 	if (!IsValidEdit(iControl)) return _T("");
 
@@ -1747,7 +1747,7 @@ CString CEditor::GetStringUseControl(ULONG iControl)
 	return szText;
 } // CEditor::GetStringUseControl
 
-CString CEditor::GetDropStringUseControl(ULONG iControl)
+_Check_return_ CString CEditor::GetDropStringUseControl(ULONG iControl)
 {
 	if (!IsValidDropDown(iControl)) return _T("");
 
@@ -1757,14 +1757,14 @@ CString CEditor::GetDropStringUseControl(ULONG iControl)
 	return szText;
 } // CEditor::GetDropStringUseControl
 
-int CEditor::GetDropDownSelection(ULONG iControl)
+_Check_return_ int CEditor::GetDropDownSelection(ULONG iControl)
 {
 	if (!IsValidDropDown(iControl)) return CB_ERR;
 
 	return m_lpControls[iControl].UI.lpDropDown->DropDown.GetCurSel();
 } // CEditor::GetDropDownSelection
 
-DWORD_PTR CEditor::GetDropDownSelectionValue(ULONG iControl)
+_Check_return_ DWORD_PTR CEditor::GetDropDownSelectionValue(ULONG iControl)
 {
 	if (!IsValidDropDown(iControl)) return 0;
 
@@ -1777,21 +1777,21 @@ DWORD_PTR CEditor::GetDropDownSelectionValue(ULONG iControl)
 	return 0;
 } // CEditor::GetDropDownSelectionValue
 
-ULONG CEditor::GetListCount(ULONG iControl)
+_Check_return_ ULONG CEditor::GetListCount(ULONG iControl)
 {
 	if (!IsValidList(iControl)) return 0;
 
 	return m_lpControls[iControl].UI.lpList->List.GetItemCount();
 } // CEditor::GetListCount
 
-SortListData* CEditor::GetListRowData(ULONG iControl, int iRow)
+_Check_return_ SortListData* CEditor::GetListRowData(ULONG iControl, int iRow)
 {
 	if (!IsValidList(iControl)) return 0;
 
 	return (SortListData*) m_lpControls[iControl].UI.lpList->List.GetItemData(iRow);
 } // CEditor::GetListRowData
 
-SortListData* CEditor::GetSelectedListRowData(ULONG iControl)
+_Check_return_ SortListData* CEditor::GetSelectedListRowData(ULONG iControl)
 {
 	if (!IsValidList(iControl)) return NULL;
 
@@ -1804,21 +1804,21 @@ SortListData* CEditor::GetSelectedListRowData(ULONG iControl)
 	return NULL;
 } // CEditor::GetSelectedListRowData
 
-BOOL CEditor::ListDirty(ULONG iControl)
+_Check_return_ BOOL CEditor::ListDirty(ULONG iControl)
 {
 	if (!IsValidList(iControl)) return 0;
 
 	return m_lpControls[iControl].UI.lpList->bDirty;
 } // CEditor::ListDirty
 
-BOOL CEditor::EditDirty(ULONG iControl)
+_Check_return_ BOOL CEditor::EditDirty(ULONG iControl)
 {
 	if (!IsValidEdit(iControl)) return 0;
 
 	return m_lpControls[iControl].UI.lpEdit->EditBox.GetModify();
 } // CEditor::EditDirty
 
-ULONG CEditor::GetHexUseControl(ULONG i)
+_Check_return_ ULONG CEditor::GetHexUseControl(ULONG i)
 {
 	if (!IsValidEdit(i)) return 0;
 
@@ -1827,21 +1827,21 @@ ULONG CEditor::GetHexUseControl(ULONG i)
 	return _tcstoul((LPCTSTR) szTmpString,NULL,16);
 } // CEditor::GetHexUseControl
 
-ULONG CEditor::GetDecimal(ULONG i)
+_Check_return_ ULONG CEditor::GetDecimal(ULONG i)
 {
 	if (!IsValidEdit(i)) return 0;
 
 	return wcstoul(m_lpControls[i].UI.lpEdit->lpszW,NULL,10);
 } // CEditor::GetDecimal
 
-BOOL CEditor::GetCheck(ULONG i)
+_Check_return_ BOOL CEditor::GetCheck(ULONG i)
 {
 	if (!IsValidCheck(i)) return false;
 
 	return m_lpControls[i].UI.lpCheck->bCheckValue;
 } // CEditor::GetCheck
 
-void CEditor::SetDropDownSelection(ULONG i,LPCTSTR szText)
+void CEditor::SetDropDownSelection(ULONG i, _In_opt_z_ LPCTSTR szText)
 {
 	if (!IsValidDropDown(i)) return;
 
@@ -1861,28 +1861,28 @@ void CEditor::SetDropDownSelection(ULONG i,LPCTSTR szText)
 	}
 } // CEditor::SetDropDownSelection
 
-int CEditor::GetDropDown(ULONG i)
+_Check_return_ int CEditor::GetDropDown(ULONG i)
 {
 	if (!IsValidDropDown(i)) return CB_ERR;
 
 	return m_lpControls[i].UI.lpDropDown->iDropSelection;
 } // CEditor::GetDropDown
 
-DWORD_PTR CEditor::GetDropDownValue(ULONG i)
+_Check_return_ DWORD_PTR CEditor::GetDropDownValue(ULONG i)
 {
 	if (!IsValidDropDown(i)) return 0;
 
 	return m_lpControls[i].UI.lpDropDown->iDropSelectionValue;
 } // CEditor::GetDropDownValue
 
-void CEditor::InitMultiLine(ULONG i, UINT uidLabel, LPCTSTR szVal, BOOL bReadOnly)
+void CEditor::InitMultiLine(ULONG i, UINT uidLabel, _In_opt_z_ LPCTSTR szVal, BOOL bReadOnly)
 {
 	if (INVALIDRANGE(i)) return;
 	InitSingleLineSz(i,uidLabel,szVal,bReadOnly);
 	m_lpControls[i].UI.lpEdit->bMultiline = true;
 } // CEditor::InitMultiLine
 
-void CEditor::InitSingleLineSz(ULONG i, UINT uidLabel, LPCTSTR szVal, BOOL bReadOnly)
+void CEditor::InitSingleLineSz(ULONG i, UINT uidLabel, _In_opt_z_ LPCTSTR szVal, BOOL bReadOnly)
 {
 	if (INVALIDRANGE(i)) return;
 
@@ -1945,7 +1945,7 @@ void CEditor::InitList(ULONG i, UINT uidLabel, BOOL bAllowSort, BOOL bReadOnly)
 	}
 } // CEditor::InitList
 
-void CEditor::InitDropDown(ULONG i, UINT uidLabel, ULONG ulDropList, UINT* lpuidDropList, BOOL bReadOnly)
+void CEditor::InitDropDown(ULONG i, UINT uidLabel, ULONG ulDropList, _In_opt_count_(ulDropList) UINT* lpuidDropList, BOOL bReadOnly)
 {
 	if (INVALIDRANGE(i)) return;
 
@@ -1965,7 +1965,7 @@ void CEditor::InitDropDown(ULONG i, UINT uidLabel, ULONG ulDropList, UINT* lpuid
 } // CEditor::InitDropDown
 
 // Takes a binary stream and initializes an edit control with the HEX version of this stream
-void CEditor::InitEditFromBinaryStream(ULONG iControl, LPSTREAM lpStreamIn)
+void CEditor::InitEditFromBinaryStream(ULONG iControl, _In_ LPSTREAM lpStreamIn)
 {
 	if (!IsValidEdit(iControl)) return;
 
@@ -1984,16 +1984,17 @@ void CEditor::InitEditFromBinaryStream(ULONG iControl, LPSTREAM lpStreamIn)
 	m_lpControls[iControl].UI.lpEdit->EditBox.SetModify(false);
 } // CEditor::InitEditFromBinaryStream
 
-void CEditor::InsertColumn(ULONG ulListNum,int nCol,UINT uidText)
+void CEditor::InsertColumn(ULONG ulListNum, int nCol, UINT uidText)
 {
 	if (!IsValidList(ulListNum)) return;
 	CString szText;
-	szText.LoadString(uidText);
+	HRESULT hRes = S_OK;
+	EC_B(szText.LoadString(uidText));
 
 	m_lpControls[ulListNum].UI.lpList->List.InsertColumn(nCol,szText);
 } // CEditor::InsertColumn
 
-ULONG CEditor::HandleChange(UINT nID)
+_Check_return_ ULONG CEditor::HandleChange(UINT nID)
 {
 	if (!m_lpControls) return (ULONG) -1;
 	ULONG i = 0;
@@ -2036,7 +2037,7 @@ void CEditor::OnPaint()
 	EndPaint(&ps);
 } // CEditor::OnPaint
 
-BOOL CEditor::IsValidDropDown(ULONG ulNum)
+_Check_return_ BOOL CEditor::IsValidDropDown(ULONG ulNum)
 {
 	if (INVALIDRANGE(ulNum)) return false;
 	if (!m_lpControls) return false;
@@ -2045,7 +2046,7 @@ BOOL CEditor::IsValidDropDown(ULONG ulNum)
 	return true;
 } // CEditor::IsValidDropDown
 
-BOOL CEditor::IsValidEdit(ULONG ulNum)
+_Check_return_ BOOL CEditor::IsValidEdit(ULONG ulNum)
 {
 	if (INVALIDRANGE(ulNum)) return false;
 	if (!m_lpControls) return false;
@@ -2054,7 +2055,7 @@ BOOL CEditor::IsValidEdit(ULONG ulNum)
 	return true;
 } // CEditor::IsValidEdit
 
-BOOL CEditor::IsValidList(ULONG ulNum)
+_Check_return_ BOOL CEditor::IsValidList(ULONG ulNum)
 {
 	if (NOLIST == ulNum) return false;
 	if (INVALIDRANGE(ulNum)) return false;
@@ -2064,14 +2065,14 @@ BOOL CEditor::IsValidList(ULONG ulNum)
 	return true;
 } // CEditor::IsValidList
 
-BOOL CEditor::IsValidListWithButtons(ULONG ulNum)
+_Check_return_ BOOL CEditor::IsValidListWithButtons(ULONG ulNum)
 {
 	if (!IsValidList(ulNum)) return false;
 	if (m_lpControls[ulNum].bReadOnly) return false;
 	return true;
 } // CEditor::IsValidListWithButtons
 
-BOOL CEditor::IsValidCheck(ULONG iControl)
+_Check_return_ BOOL CEditor::IsValidCheck(ULONG iControl)
 {
 	if (INVALIDRANGE(iControl)) return false;
 	if (!m_lpControls) return false;
@@ -2152,8 +2153,8 @@ void CEditor::SwapListItems(ULONG ulListNum, ULONG ulFirstItem, ULONG ulSecondIt
 
 			szText1	= m_lpControls[ulListNum].UI.lpList->List.GetItemText(ulFirstItem,i);
 			szText2	= m_lpControls[ulListNum].UI.lpList->List.GetItemText(ulSecondItem,i);
-			WC_B(m_lpControls[ulListNum].UI.lpList->List.SetItemText(ulFirstItem,i,szText2));
-			WC_B(m_lpControls[ulListNum].UI.lpList->List.SetItemText(ulSecondItem,i,szText1));
+			m_lpControls[ulListNum].UI.lpList->List.SetItemText(ulFirstItem,i,szText2);
+			m_lpControls[ulListNum].UI.lpList->List.SetItemText(ulSecondItem,i,szText1);
 		}
 	}
 } // CEditor::SwapListItems
@@ -2280,7 +2281,7 @@ void CEditor::OnDeleteListEntry(ULONG ulListNum, BOOL bDoDirty)
 	UpdateListButtons();
 } // CEditor::OnDeleteListEntry
 
-BOOL CEditor::OnEditListEntry(ULONG ulListNum)
+_Check_return_ BOOL CEditor::OnEditListEntry(ULONG ulListNum)
 {
 	if (!IsValidList(m_ulListNum)) return false;
 
@@ -2314,13 +2315,13 @@ void CEditor::OnEditAction2()
 
 // Will be invoked on both edit button and double-click
 // return true to indicate the entry was changed, false to indicate it was not
-BOOL CEditor::DoListEdit(ULONG /*ulListNum*/, int /*iItem*/, SortListData* /*lpData*/)
+_Check_return_ BOOL CEditor::DoListEdit(ULONG /*ulListNum*/, int /*iItem*/, _In_ SortListData* /*lpData*/)
 {
 	// Not Implemented
 	return false;
 } // CEditor::DoListEdit
 
-void CleanString(CString* lpString)
+void CleanString(_In_ CString* lpString)
 {
 	if (!lpString) return;
 
@@ -2331,7 +2332,7 @@ void CleanString(CString* lpString)
 	lpString->Replace(_T(" "),_T("")); // STRING_OK
 } // CleanString
 
-void CleanHexString(CString* lpHexString)
+void CleanHexString(_In_ CString* lpHexString)
 {
 	if (!lpHexString) return;
 

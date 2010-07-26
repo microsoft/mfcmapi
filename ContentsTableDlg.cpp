@@ -26,14 +26,14 @@ static TCHAR* CLASS = _T("CContentsTableDlg");
 
 
 CContentsTableDlg::CContentsTableDlg(
-									 CParentWnd* pParentWnd,
-									 CMapiObjects* lpMapiObjects,
+									 _In_ CParentWnd* pParentWnd,
+									 _In_ CMapiObjects* lpMapiObjects,
 									 UINT uidTitle,
 									 __mfcmapiCreateDialogEnum bCreateDialog,
-									 LPMAPITABLE lpContentsTable,
-									 LPSPropTagArray	sptExtraColumnTags,
+									 _In_opt_ LPMAPITABLE lpContentsTable,
+									 _In_ LPSPropTagArray sptExtraColumnTags,
 									 ULONG iNumExtraDisplayColumns,
-									 TagNames *lpExtraDisplayColumns,
+									 _In_count_(iNumExtraDisplayColumns) TagNames* lpExtraDisplayColumns,
 									 ULONG nIDContextMenu,
 									 ULONG ulAddInContext
 									 ):
@@ -43,13 +43,14 @@ CBaseDialog(
 			ulAddInContext)
 {
 	TRACE_CONSTRUCTOR(CLASS);
+	HRESULT hRes = S_OK;
 	if (NULL != uidTitle)
 	{
-		m_szTitle.LoadString(uidTitle);
+		EC_B(m_szTitle.LoadString(uidTitle));
 	}
 	else
 	{
-		m_szTitle.LoadString(IDS_TABLEASCONTENTS);
+		EC_B(m_szTitle.LoadString(IDS_TABLEASCONTENTS));
 	}
 
 	m_lpContentsTableListCtrl = NULL;
@@ -69,16 +70,16 @@ CBaseDialog(
 	{
 		CreateDialogAndMenu(NULL);
 	}
-}
+} // CContentsTableDlg::CContentsTableDlg
 
 CContentsTableDlg::~CContentsTableDlg()
 {
 	TRACE_DESTRUCTOR(CLASS);
 	if (m_lpContentsTable) m_lpContentsTable->Release();
 	m_lpContentsTable = NULL;
-}
+} // CContentsTableDlg::~CContentsTableDlg
 
-BOOL CContentsTableDlg::HandleMenu(WORD wMenuSelect)
+_Check_return_ BOOL CContentsTableDlg::HandleMenu(WORD wMenuSelect)
 {
 	DebugPrint(DBGMenu,_T("CContentsTableDlg::HandleMenu wMenuSelect = 0x%X = %d\n"),wMenuSelect,wMenuSelect);
 	switch (wMenuSelect)
@@ -89,10 +90,9 @@ BOOL CContentsTableDlg::HandleMenu(WORD wMenuSelect)
 	}
 
 	return CBaseDialog::HandleMenu(wMenuSelect);
-}
+} // CContentsTableDlg::HandleMenu
 
-
-BOOL CContentsTableDlg::OnInitDialog()
+_Check_return_ BOOL CContentsTableDlg::OnInitDialog()
 {
 	HRESULT	hRes = S_OK;
 	BOOL	bRet = CBaseDialog::OnInitDialog();
@@ -132,7 +132,7 @@ BOOL CContentsTableDlg::OnInitDialog()
 			}
 			else
 			{
-				m_szTitle.LoadString(IDS_DISPLAYNAMENOTFOUND);
+				EC_B(m_szTitle.LoadString(IDS_DISPLAYNAMENOTFOUND));
 			}
 			MAPIFreeBuffer(lpProp);
 		}
@@ -221,7 +221,7 @@ BEGIN_MESSAGE_MAP(CContentsTableDlg, CBaseDialog)
 	ON_COMMAND(ID_TABLENOTIFICATIONOFF, OnNotificationOff)
 END_MESSAGE_MAP()
 
-void CContentsTableDlg::OnInitMenu(CMenu* pMenu)
+void CContentsTableDlg::OnInitMenu(_In_opt_ CMenu* pMenu)
 {
 	if (m_lpContentsTableListCtrl && pMenu)
 	{
@@ -268,7 +268,7 @@ void CContentsTableDlg::OnInitMenu(CMenu* pMenu)
 		}
 	}
 	CBaseDialog::OnInitMenu(pMenu);
-}
+} // CContentsTableDlg::OnInitMenu
 
 void CContentsTableDlg::OnCancel()
 {
@@ -281,7 +281,7 @@ void CContentsTableDlg::OnCancel()
 	if (m_lpContentsTableListCtrl) m_lpContentsTableListCtrl->Release();
 	m_lpContentsTableListCtrl = NULL;
 	CBaseDialog::OnCancel();
-}
+} // CContentsTableDlg::OnCancel
 
 void CContentsTableDlg::OnEscHit()
 {
@@ -290,7 +290,7 @@ void CContentsTableDlg::OnEscHit()
 	{
 		m_lpContentsTableListCtrl->OnCancelTableLoad();
 	}
-}
+} // CContentsTableDlg::OnEscHit
 
 void CContentsTableDlg::SetRestrictionType(__mfcmapiRestrictionTypeEnum RestrictionType)
 {
@@ -326,9 +326,7 @@ void CContentsTableDlg::OnDisplayItem()
 		}
 	}
 	while (iItem != -1);
-
-	return;
-}
+} // CContentsTableDlg::OnDisplayItem
 
 // Clear the current list and get a new one with whatever code we've got in LoadMAPIPropList
 void CContentsTableDlg::OnRefreshView()
@@ -432,7 +430,6 @@ void CContentsTableDlg::OnCreateMessageRestriction()
 			// Check that all our allocations were good before going on
 			if (!FAILED(hRes))
 			{
-
 				// Zero out allocated memory.
 				ZeroMemory(lpRes, sizeof(SRestriction));
 				ZeroMemory(lpResLevel1, sizeof(SRestriction)*2);
@@ -664,7 +661,7 @@ void CContentsTableDlg::OnOutputTable()
 	INT_PTR	iDlgRet = 0;
 
 	CStringW szFileSpec;
-	szFileSpec.LoadString(IDS_TEXTFILES);
+	EC_B(szFileSpec.LoadString(IDS_TEXTFILES));
 
 	CFileDialogExW dlgFilePicker;
 
@@ -686,7 +683,7 @@ void CContentsTableDlg::OnOutputTable()
 			m_lpContentsTableListCtrl->OnOutputTable(szFileName);
 		}
 	}
-}
+} // CContentsTableDlg::OnOutputTable
 
 void CContentsTableDlg::OnSetColumns()
 {
@@ -812,11 +809,11 @@ void CContentsTableDlg::OnSortTable()
 	MAPIFreeBuffer(lpMySortOrders);
 
 	if (MyData.GetCheck(5)) EC_H(m_lpContentsTableListCtrl->RefreshTable());
-}
+} // CContentsTableDlg::OnSortTable
 
 // Since the strategy for opening the selected property may vary depending on the table we're displaying,
 // this virtual function allows us to override the default method with the method used by the table we've written a special class for.
-HRESULT CContentsTableDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, LPMAPIPROP* lppMAPIProp)
+_Check_return_ HRESULT CContentsTableDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
 {
 	HRESULT hRes = S_OK;
 	DebugPrintEx(DBGOpenItemProp,CLASS,_T("OpenItemProp"),_T("iSelectedItem = 0x%X\n"),iSelectedItem);
@@ -840,9 +837,9 @@ HRESULT CContentsTableDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum b
 	}
 
 	return hRes;
-}
+} // CContentsTableDlg::OpenItemProp
 
-HRESULT CContentsTableDlg::OpenAttachmentsFromMessage(LPMESSAGE lpMessage, BOOL fSaveMessageAtClose)
+_Check_return_ HRESULT CContentsTableDlg::OpenAttachmentsFromMessage(_In_ LPMESSAGE lpMessage, BOOL fSaveMessageAtClose)
 {
 	HRESULT hRes = S_OK;
 	LPMAPITABLE	lpTable = NULL;
@@ -870,7 +867,7 @@ HRESULT CContentsTableDlg::OpenAttachmentsFromMessage(LPMESSAGE lpMessage, BOOL 
 	return hRes;
 } // CContentsTableDlg::OpenAttachmentsFromMessage
 
-HRESULT CContentsTableDlg::OpenRecipientsFromMessage(LPMESSAGE lpMessage)
+_Check_return_ HRESULT CContentsTableDlg::OpenRecipientsFromMessage(LPMESSAGE lpMessage)
 {
 	HRESULT hRes = S_OK;
 	LPMAPITABLE	lpTable = NULL;
@@ -895,11 +892,10 @@ HRESULT CContentsTableDlg::OpenRecipientsFromMessage(LPMESSAGE lpMessage)
 	return hRes;
 } // CContentsTableDlg::OpenRecipientsFromMessage
 
-BOOL CContentsTableDlg::HandleAddInMenu(WORD wMenuSelect)
+_Check_return_ BOOL CContentsTableDlg::HandleAddInMenu(WORD wMenuSelect)
 {
 	if (wMenuSelect < ID_ADDINMENU || ID_ADDINMENU+m_ulAddInMenuItems < wMenuSelect) return false;
 	if (!m_lpContentsTableListCtrl) return false;
-	HRESULT			hRes = S_OK;
 	LPMAPIPROP		lpMAPIProp = NULL;
 	int				iItem = -1;
 	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
@@ -943,7 +939,6 @@ BOOL CContentsTableDlg::HandleAddInMenu(WORD wMenuSelect)
 		MyAddInMenuParams.ulCurrentFlags |= (ulFlags & (MENU_FLAGS_SINGLESELECT|MENU_FLAGS_MULTISELECT));
 		while (true)
 		{
-			hRes = S_OK;
 			SortListData* lpData = (SortListData*) m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 			if (-1 == iItem) break;
 			SRow MyRow = {0};
@@ -959,7 +954,7 @@ BOOL CContentsTableDlg::HandleAddInMenu(WORD wMenuSelect)
 
 			if (!(ulFlags & MENU_FLAGS_ROW))
 			{
-				OpenItemProp(iItem, fRequestModify, &lpMAPIProp);
+				(void) OpenItemProp(iItem, fRequestModify, &lpMAPIProp);
 			}
 
 			HandleAddInMenuSingle(
@@ -976,9 +971,9 @@ BOOL CContentsTableDlg::HandleAddInMenu(WORD wMenuSelect)
 } // CContentsTableDlg::HandleAddInMenu
 
 void CContentsTableDlg::HandleAddInMenuSingle(
-	LPADDINMENUPARAMS lpParams,
-	LPMAPIPROP lpMAPIProp,
-	LPMAPICONTAINER /*lpContainer*/)
+	_In_ LPADDINMENUPARAMS lpParams,
+	_In_opt_ LPMAPIPROP lpMAPIProp,
+	_In_opt_ LPMAPICONTAINER /*lpContainer*/)
 {
 	if (lpParams)
 	{

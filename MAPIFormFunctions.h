@@ -3,24 +3,25 @@
 
 class CContentsTableListCtrl;
 
-HRESULT CreateAndDisplayNewMailInFolder(
-										LPMDB lpMDB,
-										LPMAPISESSION lpMAPISession,
-										CContentsTableListCtrl *lpContentsTableListCtrl,
-										int iItem,
-										LPCSTR szMessageClass,
-										LPMAPIFOLDER lpFolder);
-HRESULT OpenMessageModal(LPMAPIFOLDER lpParentFolder,
-						 LPMAPISESSION lpMAPISession,
-						 LPMDB lpMDB,
-						 LPMESSAGE lpMessage);
-HRESULT OpenMessageNonModal(
-							HWND hwndParent,
-							LPMDB lpMDB,
-							LPMAPISESSION lpMAPISession,
-							LPMAPIFOLDER lpSourceFolder,
-							CContentsTableListCtrl *lpContentsTableListCtrl,
-							int iItem,
-							LPMESSAGE lpMessage,
-							LONG lVerb,
-							LPCRECT lpRect);
+_Check_return_ HRESULT CreateAndDisplayNewMailInFolder(
+	_In_ HWND hwndParent,
+	_In_ LPMDB lpMDB,
+	_In_ LPMAPISESSION lpMAPISession,
+	_In_ CContentsTableListCtrl *lpContentsTableListCtrl,
+	int iItem,
+	_In_z_ LPCSTR szMessageClass,
+	_In_ LPMAPIFOLDER lpFolder);
+_Check_return_ HRESULT OpenMessageModal(_In_ LPMAPIFOLDER lpParentFolder,
+										_In_ LPMAPISESSION lpMAPISession,
+										_In_ LPMDB lpMDB,
+										_In_ LPMESSAGE lpMessage);
+_Check_return_ HRESULT OpenMessageNonModal(
+	_In_ HWND hwndParent,
+	_In_ LPMDB lpMDB,
+	_In_ LPMAPISESSION lpMAPISession,
+	_In_ LPMAPIFOLDER lpSourceFolder,
+	_In_ CContentsTableListCtrl *lpContentsTableListCtrl,
+	int iItem,
+	_In_ LPMESSAGE lpMessage,
+	LONG lVerb,
+	_In_opt_ LPCRECT lpRect);

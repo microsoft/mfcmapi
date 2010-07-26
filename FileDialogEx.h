@@ -26,18 +26,18 @@ public:
 	CFileDialogExA();
 	~CFileDialogExA();
 
-	INT_PTR DisplayDialog(BOOL bOpenFileDialog, // TRUE for open, FALSE for FileSaveAs
-		LPCSTR lpszDefExt = NULL,
-		LPCSTR lpszFileName = NULL,
+	_Check_return_ INT_PTR DisplayDialog(BOOL bOpenFileDialog, // TRUE for open, FALSE for FileSaveAs
+		_In_opt_z_ LPCSTR lpszDefExt = NULL,
+		_In_opt_z_ LPCSTR lpszFileName = NULL,
 		DWORD dwFlags = OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-		LPCSTR lpszFilter = NULL,
-		CWnd* pParentWnd = NULL);
+		_In_opt_z_ LPCSTR lpszFilter = NULL,
+		_In_opt_ CWnd* pParentWnd = NULL);
 
 public:
 	// The values returned here are only valid as long as this object is valid
 	// To keep them, make a copy before this object is destroyed
-	LPSTR GetFileName();
-	LPSTR GetNextFileName();
+	_Check_return_ LPSTR GetFileName();
+	_Check_return_ LPSTR GetNextFileName();
 
 private:
 	BOOL m_bOpenFileDialog;
@@ -55,18 +55,18 @@ public:
 	CFileDialogExW();
 	~CFileDialogExW();
 
-	INT_PTR DisplayDialog(BOOL bOpenFileDialog, // TRUE for open, FALSE for FileSaveAs
-		LPCWSTR lpszDefExt = NULL,
-		LPCWSTR lpszFileName = NULL,
+	_Check_return_ INT_PTR DisplayDialog(BOOL bOpenFileDialog, // TRUE for open, FALSE for FileSaveAs
+		_In_opt_z_ LPCWSTR lpszDefExt = NULL,
+		_In_opt_z_ LPCWSTR lpszFileName = NULL,
 		DWORD dwFlags = OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-		LPCWSTR lpszFilter = NULL,
-		CWnd* pParentWnd = NULL);
+		_In_opt_z_ LPCWSTR lpszFilter = NULL,
+		_In_opt_ CWnd* pParentWnd = NULL);
 
 public:
 	// The values returned here are only valid as long as this object is valid
 	// To keep them, make a copy before this object is destroyed
-	LPWSTR GetFileName();
-	LPWSTR GetNextFileName();
+	_Check_return_ LPWSTR GetFileName();
+	_Check_return_ LPWSTR GetNextFileName();
 
 private:
 	BOOL m_bOpenFileDialog;

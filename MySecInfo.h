@@ -12,34 +12,34 @@ enum eAceType {
 class CMySecInfo : public ISecurityInformation, ISecurityInformation2
 {
 public:
-	CMySecInfo(LPMAPIPROP lpMAPIProp,
+	CMySecInfo(_In_ LPMAPIPROP lpMAPIProp,
 		ULONG ulPropTag);
 	virtual ~CMySecInfo();
 
-	STDMETHODIMP QueryInterface (REFIID riid,
-		LPVOID* ppvObj);
+	_Check_return_ STDMETHODIMP QueryInterface (REFIID riid,
+		_Deref_out_opt_ LPVOID* ppvObj);
 	STDMETHODIMP_(ULONG) AddRef();
 	STDMETHODIMP_(ULONG) Release();
 
-	STDMETHOD(GetObjectInformation) (THIS_ PSI_OBJECT_INFO pObjectInfo );
-	STDMETHOD(GetSecurity) (THIS_ SECURITY_INFORMATION RequestedInformation,
-		PSECURITY_DESCRIPTOR* ppSecurityDescriptor,
+	_Check_return_ STDMETHOD(GetObjectInformation) (_In_ PSI_OBJECT_INFO pObjectInfo);
+	_Check_return_ STDMETHOD(GetSecurity) (SECURITY_INFORMATION RequestedInformation,
+		_Deref_out_opt_ PSECURITY_DESCRIPTOR* ppSecurityDescriptor,
 		BOOL fDefault);
-	STDMETHOD(SetSecurity) (THIS_ SECURITY_INFORMATION SecurityInformation,
-		PSECURITY_DESCRIPTOR pSecurityDescriptor );
-	STDMETHOD(GetAccessRights) (THIS_ const GUID* pguidObjectType,
+	_Check_return_ STDMETHOD(SetSecurity) (SECURITY_INFORMATION SecurityInformation,
+		_Out_ PSECURITY_DESCRIPTOR pSecurityDescriptor );
+	_Check_return_ STDMETHOD(GetAccessRights) (_In_ const GUID* pguidObjectType,
 		DWORD dwFlags,
-		PSI_ACCESS* ppAccess,
-		ULONG* pcAccesses,
-		ULONG* piDefaultAccess );
-	STDMETHOD(MapGeneric) (THIS_ const GUID* pguidObjectType,
-		UCHAR* pAceFlags,
-		ACCESS_MASK *pMask);
-	STDMETHOD(GetInheritTypes) (THIS_ PSI_INHERIT_TYPE* ppInheritTypes,
-		ULONG* pcInheritTypes);
-	STDMETHOD(PropertySheetPageCallback)(THIS_ HWND hwnd, UINT uMsg, SI_PAGE_TYPE uPage );
-	STDMETHOD_(BOOL,IsDaclCanonical) (THIS_ IN PACL pDacl);
-	STDMETHOD(LookupSids) (THIS_ IN ULONG cSids, IN PSID* rgpSids, OUT LPDATAOBJECT* ppdo);
+		_Out_ PSI_ACCESS* ppAccess,
+		_Out_ ULONG* pcAccesses,
+		_Out_ ULONG* piDefaultAccess );
+	_Check_return_ STDMETHOD(MapGeneric) (_In_ const GUID* pguidObjectType,
+		_In_ UCHAR* pAceFlags,
+		_Out_ ACCESS_MASK *pMask);
+	_Check_return_ STDMETHOD(GetInheritTypes) (_Out_ PSI_INHERIT_TYPE* ppInheritTypes,
+		_Out_ ULONG* pcInheritTypes);
+	_Check_return_ STDMETHOD(PropertySheetPageCallback)(_In_ HWND hwnd, UINT uMsg, SI_PAGE_TYPE uPage );
+	_Check_return_ STDMETHOD_(BOOL,IsDaclCanonical) (_In_ PACL pDacl);
+	_Check_return_ STDMETHOD(LookupSids) (ULONG cSids, _In_count_(cSids) PSID* rgpSids, _Deref_out_ LPDATAOBJECT* ppdo);
 
 private:
 	LONG		m_cRef;
@@ -51,4 +51,4 @@ private:
 	WCHAR		m_wszObject[64];
 };
 
-HRESULT SDToString(LPBYTE lpBuf, eAceType acetype, CString *SDString, CString *sdInfo);
+_Check_return_ HRESULT SDToString(_In_ LPBYTE lpBuf, eAceType acetype, _In_ CString *SDString, _In_ CString *sdInfo);

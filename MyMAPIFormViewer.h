@@ -10,95 +10,95 @@ class CMyMAPIFormViewer :
 {
 public:
 	CMyMAPIFormViewer(
-		HWND hwndParent,
-		LPMDB lpMDB,
-		LPMAPISESSION lpMAPISession,
-		LPMAPIFOLDER lpFolder,
-		LPMESSAGE lpMessage,
-		CContentsTableListCtrl* lpContentsTableListCtrl,
+		_In_ HWND hwndParent,
+		_In_ LPMDB lpMDB,
+		_In_ LPMAPISESSION lpMAPISession,
+		_In_ LPMAPIFOLDER lpFolder,
+		_In_ LPMESSAGE lpMessage,
+		_In_opt_ CContentsTableListCtrl* lpContentsTableListCtrl,
 		int iItem);
 	virtual ~CMyMAPIFormViewer();
 
 	// IUnknown
-	STDMETHODIMP QueryInterface (REFIID riid, LPVOID * ppvObj);
+	_Check_return_ STDMETHODIMP QueryInterface (REFIID riid, _Deref_out_opt_ LPVOID * ppvObj);
 	STDMETHODIMP_(ULONG) AddRef();
 	STDMETHODIMP_(ULONG) Release();
 
-	STDMETHODIMP GetLastError(
+	_Check_return_ STDMETHODIMP GetLastError(
 		HRESULT hResult,
 		ULONG ulFlags,
-		LPMAPIERROR FAR * lppMAPIError);
+		_Deref_out_ LPMAPIERROR FAR * lppMAPIError);
 
 	// IMAPIMessageSite
-	STDMETHODIMP GetSession (
-		LPMAPISESSION FAR * ppSession);
-	STDMETHODIMP GetStore (
-		LPMDB FAR * ppStore);
-	STDMETHODIMP GetFolder (
-		LPMAPIFOLDER FAR * ppFolder);
-	STDMETHODIMP GetMessage (
-		LPMESSAGE FAR * ppmsg);
-	STDMETHODIMP GetFormManager (
-		LPMAPIFORMMGR FAR * ppFormMgr);
-	STDMETHODIMP NewMessage (
+	_Check_return_ STDMETHODIMP GetSession (
+		_Deref_out_opt_ LPMAPISESSION FAR * ppSession);
+	_Check_return_ STDMETHODIMP GetStore (
+		_Deref_out_opt_ LPMDB FAR * ppStore);
+	_Check_return_ STDMETHODIMP GetFolder (
+		_Deref_out_opt_ LPMAPIFOLDER FAR * ppFolder);
+	_Check_return_ STDMETHODIMP GetMessage (
+		_Deref_out_opt_ LPMESSAGE FAR * ppmsg);
+	_Check_return_ STDMETHODIMP GetFormManager (
+		_Deref_out_ LPMAPIFORMMGR FAR * ppFormMgr);
+	_Check_return_ STDMETHODIMP NewMessage (
 		ULONG fComposeInFolder,
-		LPMAPIFOLDER pFolderFocus,
-		LPPERSISTMESSAGE pPersistMessage,
-		LPMESSAGE FAR * ppMessage,
-		LPMAPIMESSAGESITE FAR * ppMessageSite,
-		LPMAPIVIEWCONTEXT FAR * ppViewContext);
-	STDMETHODIMP CopyMessage (
-		LPMAPIFOLDER pFolderDestination);
-	STDMETHODIMP MoveMessage (
-		LPMAPIFOLDER pFolderDestination,
-		LPMAPIVIEWCONTEXT pViewContext,
-		LPCRECT prcPosRect);
-	STDMETHODIMP DeleteMessage (
-		LPMAPIVIEWCONTEXT pViewContext,
-		LPCRECT prcPosRect);
-	STDMETHODIMP SaveMessage();
-	STDMETHODIMP SubmitMessage(
+		_In_ LPMAPIFOLDER pFolderFocus,
+		_In_ LPPERSISTMESSAGE pPersistMessage,
+		_Deref_out_opt_ LPMESSAGE FAR * ppMessage,
+		_Deref_out_opt_ LPMAPIMESSAGESITE FAR * ppMessageSite,
+		_Deref_out_opt_ LPMAPIVIEWCONTEXT FAR * ppViewContext);
+	_Check_return_ STDMETHODIMP CopyMessage (
+		_In_ LPMAPIFOLDER pFolderDestination);
+	_Check_return_ STDMETHODIMP MoveMessage (
+		_In_ LPMAPIFOLDER pFolderDestination,
+		_In_ LPMAPIVIEWCONTEXT pViewContext,
+		_In_ LPCRECT prcPosRect);
+	_Check_return_ STDMETHODIMP DeleteMessage (
+		_In_ LPMAPIVIEWCONTEXT pViewContext,
+		_In_ LPCRECT prcPosRect);
+	_Check_return_ STDMETHODIMP SaveMessage();
+	_Check_return_ STDMETHODIMP SubmitMessage(
 		ULONG ulFlags);
-	STDMETHODIMP GetSiteStatus(
-		LPULONG lpulStatus);
+	_Check_return_ STDMETHODIMP GetSiteStatus(
+		_Inout_ LPULONG lpulStatus);
 
 	// IMAPIViewAdviseSink
-	STDMETHODIMP OnShutdown();
-	STDMETHODIMP OnNewMessage();
-	STDMETHODIMP OnPrint(
+	_Check_return_ STDMETHODIMP OnShutdown();
+	_Check_return_ STDMETHODIMP OnNewMessage();
+	_Check_return_ STDMETHODIMP OnPrint(
 		ULONG dwPageNumber,
 		HRESULT hrStatus);
-	STDMETHODIMP OnSubmitted();
-	STDMETHODIMP OnSaved();
+	_Check_return_ STDMETHODIMP OnSubmitted();
+	_Check_return_ STDMETHODIMP OnSaved();
 
 	// IMAPIViewContext
-	STDMETHODIMP SetAdviseSink(
-		LPMAPIFORMADVISESINK pmvns);
-	STDMETHODIMP ActivateNext(
+	_Check_return_ STDMETHODIMP SetAdviseSink(
+		_In_ LPMAPIFORMADVISESINK pmvns);
+	_Check_return_ STDMETHODIMP ActivateNext(
 		ULONG ulDir,
-		LPCRECT prcPosRect);
-	STDMETHODIMP GetPrintSetup(
+		_In_ LPCRECT prcPosRect);
+	_Check_return_ STDMETHODIMP GetPrintSetup(
 		ULONG ulFlags,
-		LPFORMPRINTSETUP FAR * lppFormPrintSetup);
-	STDMETHODIMP GetSaveStream(
-		ULONG FAR * pulFlags,
-		ULONG FAR * pulFormat,
-		LPSTREAM FAR * ppstm);
-	STDMETHODIMP GetViewStatus(
-		LPULONG lpulStatus);
+		_Deref_out_ LPFORMPRINTSETUP FAR * lppFormPrintSetup);
+	_Check_return_ STDMETHODIMP GetSaveStream(
+		_Out_ ULONG FAR * pulFlags,
+		_Out_ ULONG FAR * pulFormat,
+		_Deref_out_ LPSTREAM FAR * ppstm);
+	_Check_return_ STDMETHODIMP GetViewStatus(
+		_In_ LPULONG lpulStatus);
 
-	HRESULT CallDoVerb(LPMAPIFORM lpMapiForm,
+	_Check_return_ HRESULT CallDoVerb(_In_ LPMAPIFORM lpMapiForm,
 		LONG lVerb,
-		LPCRECT lpRect);
+		_In_opt_ LPCRECT lpRect);
 
 private:
 	// helper function for ActivateNext
-	HRESULT GetNextMessage(
+	_Check_return_ HRESULT GetNextMessage(
 		ULONG ulDir,
-		int* piNewItem,
-		ULONG* pulStatus,
-		LPMESSAGE* ppMessage);
-	HRESULT SetPersist(LPMAPIFORM lpForm, LPPERSISTMESSAGE lpPersist);
+		_Out_ int* piNewItem,
+		_Out_ ULONG* pulStatus,
+		_Deref_out_opt_ LPMESSAGE* ppMessage);
+	_Check_return_ HRESULT SetPersist(_In_opt_ LPMAPIFORM lpForm, _In_opt_ LPPERSISTMESSAGE lpPersist);
 	void ShutdownPersist();
 	void ReleaseObjects();
 

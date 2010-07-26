@@ -12,12 +12,12 @@ static TCHAR* CLASS = _T("CTagArrayEditor");
 
 // Takes LPMAPIPROP and ulPropTag as input - will pull SPropValue from the LPMAPIPROP
 CTagArrayEditor::CTagArrayEditor(
-								 CWnd* pParentWnd,
+								 _In_ CWnd* pParentWnd,
 								 UINT uidTitle,
 								 UINT uidPrompt,
-								 LPSPropTagArray lpTagArray,
+								 _In_opt_ LPSPropTagArray lpTagArray,
 								 BOOL bIsAB,
-								 LPMAPIPROP	lpMAPIProp):
+								 _In_ LPMAPIPROP lpMAPIProp):
 CEditor(pParentWnd,uidTitle,uidPrompt,0,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL)
 {
 	TRACE_CONSTRUCTOR(CLASS);
@@ -30,17 +30,17 @@ CEditor(pParentWnd,uidTitle,uidPrompt,0,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL)
 
 	CreateControls(1);
 	InitList(0,IDS_PROPTAGARRAY,false,false);
-}
+} // CTagArrayEditor::CTagArrayEditor
 
 CTagArrayEditor::~CTagArrayEditor()
 {
 	TRACE_DESTRUCTOR(CLASS);
 	MAPIFreeBuffer(m_lpOutputTagArray);
 	if (m_lpMAPIProp) m_lpMAPIProp->Release();
-}
+} // CTagArrayEditor::~CTagArrayEditor
 
 // Used to call functions which need to be called AFTER controls are created
-BOOL CTagArrayEditor::OnInitDialog()
+_Check_return_ BOOL CTagArrayEditor::OnInitDialog()
 {
 	BOOL bRet = CEditor::OnInitDialog();
 
@@ -48,15 +48,15 @@ BOOL CTagArrayEditor::OnInitDialog()
 
 	UpdateListButtons();
 	return bRet;
-}
+} // CTagArrayEditor::OnInitDialog
 
 void CTagArrayEditor::OnOK()
 {
 	WriteListToTagArray(0);
 	CDialog::OnOK(); // don't need to call CEditor::OnOK
-}
+} // CTagArrayEditor::OnOK
 
-BOOL CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, SortListData* lpData)
+_Check_return_ BOOL CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData)
 {
 	if (!IsValidList(ulListNum)) return false;
 	if (!lpData) return false;
@@ -218,7 +218,7 @@ void CTagArrayEditor::WriteListToTagArray(ULONG ulListNum)
 	}
 } // CTagArrayEditor::WriteListToTagArray
 
-LPSPropTagArray CTagArrayEditor::DetachModifiedTagArray()
+_Check_return_ LPSPropTagArray CTagArrayEditor::DetachModifiedTagArray()
 {
 	LPSPropTagArray lpRetArray = m_lpOutputTagArray;
 	m_lpOutputTagArray = NULL;

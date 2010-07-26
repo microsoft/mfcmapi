@@ -24,13 +24,14 @@
 static TCHAR* CLASS = _T("CBaseDialog");
 
 CBaseDialog::CBaseDialog(
-						 CParentWnd* pParentWnd,
-						 CMapiObjects* lpMapiObjects, // Pass NULL to create a new m_lpMapiObjects,
+						 _In_ CParentWnd* pParentWnd,
+						 _In_ CMapiObjects* lpMapiObjects, // Pass NULL to create a new m_lpMapiObjects,
 						 ULONG ulAddInContext
 						 ) : CDialog()
 {
 	TRACE_CONSTRUCTOR(CLASS);
-	m_szTitle.LoadString(IDS_BASEDIALOG);
+	HRESULT hRes = S_OK;
+	EC_B(m_szTitle.LoadString(IDS_BASEDIALOG));
 	m_bDisplayingMenuText = false;
 
 	m_lpBaseAdviseSink = NULL;
@@ -40,7 +41,6 @@ CBaseDialog::CBaseDialog(
 	m_bIsAB = false;
 
 	// Note that LoadIcon does not require a subsequent DestroyIcon in Win32
-	HRESULT hRes = S_OK;
 	EC_D(m_hIcon,AfxGetApp()->LoadIcon(IDR_MAINFRAME));
 
 	m_cRef = 1;
@@ -55,7 +55,7 @@ CBaseDialog::CBaseDialog(
 	m_ulAddInMenuItems = NULL;
 
 	m_lpMapiObjects = new CMapiObjects(lpMapiObjects);
-}
+} // CBaseDialog::CBaseDialog
 
 CBaseDialog::~CBaseDialog()
 {
@@ -68,24 +68,24 @@ CBaseDialog::~CBaseDialog()
 	if (m_lpContainer) m_lpContainer->Release();
 	if (m_lpMapiObjects) m_lpMapiObjects->Release();
 	if (m_lpParent) m_lpParent->Release();
-}
+} // CBaseDialog::~CBaseDialog
 
 STDMETHODIMP_(ULONG) CBaseDialog::AddRef()
 {
 	LONG lCount = InterlockedIncrement(&m_cRef);
 	TRACE_ADDREF(CLASS,lCount);
-	DebugPrint(DBGRefCount,_T("CBaseDialog::AddRef(\"%s\")\n"),m_szTitle);
+	DebugPrint(DBGRefCount,_T("CBaseDialog::AddRef(\"%s\")\n"),(LPCTSTR) m_szTitle);
 	return lCount;
-}
+} // CBaseDialog::AddRef
 
 STDMETHODIMP_(ULONG) CBaseDialog::Release()
 {
 	LONG lCount = InterlockedDecrement(&m_cRef);
 	TRACE_RELEASE(CLASS,lCount);
-	DebugPrint(DBGRefCount,_T("CBaseDialog::Release(\"%s\")\n"),m_szTitle);
+	DebugPrint(DBGRefCount,_T("CBaseDialog::Release(\"%s\")\n"),(LPCTSTR) m_szTitle);
 	if (!lCount) delete this;
 	return lCount;
-}
+} // CBaseDialog::Release
 
 BEGIN_MESSAGE_MAP(CBaseDialog, CDialog)
 	ON_WM_ACTIVATE()
@@ -105,7 +105,7 @@ BEGIN_MESSAGE_MAP(CBaseDialog, CDialog)
 	ON_MESSAGE(WM_MFCMAPI_CLEARSINGLEMAPIPROPLIST, msgOnClearSingleMAPIPropList)
 END_MESSAGE_MAP()
 
-LRESULT CBaseDialog::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+_Check_return_ LRESULT CBaseDialog::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
 	{
@@ -118,17 +118,17 @@ LRESULT CBaseDialog::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		}
 	} // end switch
 	return CDialog::WindowProc(message,wParam,lParam);
-}
+} // CBaseDialog::WindowProc
 
 // MFC will call this function to check if it ought to center the dialog
 // We'll tell it no, but also place the dialog where we want it.
-BOOL CBaseDialog::CheckAutoCenter()
+_Check_return_ BOOL CBaseDialog::CheckAutoCenter()
 {
 	CenterWindow(GetActiveWindow());
 	return false;
 } // CBaseDialog::CheckAutoCenter
 
-BOOL CBaseDialog::OnInitDialog()
+_Check_return_ BOOL CBaseDialog::OnInitDialog()
 {
 	HRESULT hRes = S_OK;
 
@@ -161,7 +161,7 @@ BOOL CBaseDialog::OnInitDialog()
 	}
 
 	return false;
-}
+} // CBaseDialog::OnInitDialog
 
 void CBaseDialog::CreateDialogAndMenu(UINT nIDMenuResource)
 {
@@ -176,9 +176,15 @@ void CBaseDialog::CreateDialogAndMenu(UINT nIDMenuResource)
 	HRSRC hResource = NULL;
 	EC_D(hResource,::FindResource(hInst, m_lpszTemplateName, RT_DIALOG));
 	HGLOBAL hTemplate = NULL;
-	EC_D(hTemplate,LoadResource(hInst, hResource));
-	LPCDLGTEMPLATE lpDialogTemplate = (LPCDLGTEMPLATE)LockResource(hTemplate);
-	EC_B(CreateDlgIndirect(lpDialogTemplate, m_lpParent, hInst));
+	if (hResource)
+	{
+		EC_D(hTemplate,LoadResource(hInst, hResource));
+		if (hTemplate)
+		{
+			LPCDLGTEMPLATE lpDialogTemplate = (LPCDLGTEMPLATE)LockResource(hTemplate);
+			EC_B(CreateDlgIndirect(lpDialogTemplate, m_lpParent, hInst));
+		}
+	}
 
 	if (nIDMenuResource)
 	{
@@ -218,7 +224,7 @@ void CBaseDialog::CreateDialogAndMenu(UINT nIDMenuResource)
 	MenuToAdd.Detach();
 } // CBaseDialog::CreateDialogAndMenu
 
-BOOL CBaseDialog::HandleMenu(WORD wMenuSelect)
+_Check_return_ BOOL CBaseDialog::HandleMenu(WORD wMenuSelect)
 {
 	DebugPrint(DBGMenu,_T("CBaseDialog::HandleMenu wMenuSelect = 0x%X = %d\n"),wMenuSelect,wMenuSelect);
 	switch (wMenuSelect)
@@ -230,16 +236,16 @@ BOOL CBaseDialog::HandleMenu(WORD wMenuSelect)
 	case ID_COMPUTESTOREHASH: OnComputeStoreHash(); return true;
 	case ID_ENCODEID: OnEncodeID(); return true;
 	case ID_COPY: HandleCopy(); return true;
-	case ID_PASTE: HandlePaste(); return true;
+	case ID_PASTE: (void) HandlePaste(); return true;
 	case ID_OUTLOOKVERSION: OnOutlookVersion(); return true;
 	}
 	if (HandleAddInMenu(wMenuSelect)) return true;
 
 	if (m_lpPropDisplay) return m_lpPropDisplay->HandleMenu(wMenuSelect);
 	return false;
-}
+} // CBaseDialog::HandleMenu
 
-void CBaseDialog::OnInitMenu(CMenu* pMenu)
+void CBaseDialog::OnInitMenu(_In_opt_ CMenu* pMenu)
 {
 	if (pMenu)
 	{
@@ -249,11 +255,11 @@ void CBaseDialog::OnInitMenu(CMenu* pMenu)
 		pMenu->EnableMenuItem(ID_NOTIFICATIONSOFF,DIM(m_lpBaseAdviseSink));
 	}
 	CDialog::OnInitMenu(pMenu);
-}
+} // CBaseDialog::OnInitMenu
 
 // Checks flags on add-in menu items to ensure they should be enabled
 // Override to support context sensitive scenarios
-void CBaseDialog::EnableAddInMenus(CMenu* pMenu, ULONG ulMenu, LPMENUITEM /*lpAddInMenu*/, UINT uiEnable)
+void CBaseDialog::EnableAddInMenus(_In_ CMenu* pMenu, ULONG ulMenu, LPMENUITEM /*lpAddInMenu*/, UINT uiEnable)
 {
 	if (pMenu) pMenu->EnableMenuItem(ulMenu,uiEnable);
 } // CBaseDialog::EnableAddInMenus
@@ -264,7 +270,8 @@ void CBaseDialog::OnMenuSelect(UINT nItemID, UINT nFlags, HMENU /*hSysMenu*/)
 {
 	if (!m_bDisplayingMenuText)
 	{
-		m_szMenuDisplacedText = m_StatusBar.GetText(STATUSRIGHTPANE,NULL);
+		int nType = 0;
+		m_szMenuDisplacedText = m_StatusBar.GetText(STATUSRIGHTPANE, &nType);
 	}
 
 	if (nItemID && !(nFlags & (MF_SEPARATOR | MF_POPUP)))
@@ -280,12 +287,9 @@ void CBaseDialog::OnMenuSelect(UINT nItemID, UINT nFlags, HMENU /*hSysMenu*/)
 	{
 		UpdateStatusBarText(STATUSRIGHTPANE,m_szMenuDisplacedText);
 	}
+} // CBaseDialog::OnMenuSelect
 
-	return;
-
-}
-
-BOOL CBaseDialog::HandleKeyDown(UINT nChar, BOOL bShift, BOOL bCtrl, BOOL bMenu)
+_Check_return_ BOOL CBaseDialog::HandleKeyDown(UINT nChar, BOOL bShift, BOOL bCtrl, BOOL bMenu)
 {
 	DebugPrintEx(DBGMenu,CLASS,_T("HandleKeyDown"),_T("nChar = 0x%0X, bShift = 0x%X, bCtrl = 0x%X, bMenu = 0x%X\n"),
 		nChar,bShift, bCtrl, bMenu);
@@ -331,7 +335,7 @@ BOOL CBaseDialog::HandleKeyDown(UINT nChar, BOOL bShift, BOOL bCtrl, BOOL bMenu)
 	case 'V':
 		if (bCtrl)
 		{
-			HandlePaste(); return true;
+			(void) HandlePaste(); return true;
 		}
 		break;
 	case VK_F5:
@@ -350,13 +354,13 @@ BOOL CBaseDialog::HandleKeyDown(UINT nChar, BOOL bShift, BOOL bCtrl, BOOL bMenu)
 		break;
 	}
 	return false;
-}
+} // CBaseDialog::HandleKeyDown
 
 // prevent dialog from disappearing on Enter
 void CBaseDialog::OnOK()
 {
 	// Now that my controls capture VK_ENTER...this is unneeded...keep it just in case.
-}
+} // CBaseDialog::OnOK
 
 void CBaseDialog::OnCancel()
 {
@@ -366,12 +370,12 @@ void CBaseDialog::OnCancel()
 	delete m_lpFakeSplitter;
 	m_lpFakeSplitter = NULL;
 	Release();
-}
+} // CBaseDialog::OnCancel
 
 void CBaseDialog::OnEscHit()
 {
 	DebugPrintEx(DBGGeneric,CLASS,_T("OnEscHit"),_T("Not implemented\n"));
-}
+} // CBaseDialog::OnEscHit
 
 void CBaseDialog::OnOptions()
 {
@@ -380,7 +384,7 @@ void CBaseDialog::OnOptions()
 
 	CString szProduct;
 	CString szPrompt;
-	szProduct.LoadString(ID_PRODUCTNAME);
+	EC_B(szProduct.LoadString(ID_PRODUCTNAME));
 	szPrompt.FormatMessage(IDS_SETOPTSPROMPT,szProduct);
 
 	CEditor MyData(
@@ -461,21 +465,20 @@ void CBaseDialog::OnOptions()
 		if (bNeedPropRefresh && m_lpPropDisplay)
 			WC_H(m_lpPropDisplay->RefreshMAPIPropList());
 	}
-}
+} // CBaseDialog::OnOptions
 
 void CBaseDialog::OnOpenMainWindow()
 {
 	CMainDlg* pMain = new CMainDlg(m_lpParent,m_lpMapiObjects);
 	if (pMain) pMain->OnOpenMessageStoreTable();
-}
+} // CBaseDialog::OnOpenMainWindow
 
-BOOL CBaseDialog::HandleCopy()
+void CBaseDialog::HandleCopy()
 {
 	DebugPrintEx(DBGGeneric,CLASS,_T("HandleCopy"),_T("\n"));
-	return false;
-}
+} // CBaseDialog::HandleCopy
 
-BOOL CBaseDialog::HandlePaste()
+_Check_return_ BOOL CBaseDialog::HandlePaste()
 {
 	DebugPrintEx(DBGGeneric,CLASS,_T("HandlePaste"),_T("\n"));
 	ULONG ulStatus = m_lpMapiObjects->GetBufferStatus();
@@ -487,27 +490,27 @@ BOOL CBaseDialog::HandlePaste()
 	}
 
 	return false;
-}
+} // CBaseDialog::HandlePaste
 
 void CBaseDialog::OnHelp()
 {
 	DisplayAboutDlg(this);
-}
+} // CBaseDialog::OnHelp
 
 void CBaseDialog::OnDeleteSelectedItem()
 {
 	DebugPrintEx(DBGDeleteSelectedItem,CLASS,_T("OnDeleteSelectedItem"),_T(" Not Implemented\n"));
-}
+} // CBaseDialog::OnDeleteSelectedItem
 
 void CBaseDialog::OnRefreshView()
 {
 	DebugPrintEx(DBGGeneric,CLASS,_T("OnRefreshView"),_T(" Not Implemented\n"));
-}
+} // CBaseDialog::OnRefreshView
 
-void CBaseDialog::OnUpdateSingleMAPIPropListCtrl(LPMAPIPROP lpMAPIProp, SortListData* lpListData)
+void CBaseDialog::OnUpdateSingleMAPIPropListCtrl(_In_opt_ LPMAPIPROP lpMAPIProp, _In_opt_ SortListData* lpListData)
 {
 	HRESULT hRes = S_OK;
-	DebugPrintEx(DBGGeneric,CLASS,_T("OnUpdateSingleMAPIPropListCtrl"),_T("Setting item 0x%X\n"),lpMAPIProp);
+	DebugPrintEx(DBGGeneric,CLASS,_T("OnUpdateSingleMAPIPropListCtrl"),_T("Setting item %p\n"),lpMAPIProp);
 
 	if (m_lpPropDisplay)
 	{
@@ -516,7 +519,7 @@ void CBaseDialog::OnUpdateSingleMAPIPropListCtrl(LPMAPIPROP lpMAPIProp, SortList
 			lpListData,
 			m_bIsAB));
 	}
-}
+} // CBaseDialog::OnUpdateSingleMAPIPropListCtrl
 
 void CBaseDialog::AddMenu(UINT uiResource, UINT uidTitle, UINT uiPos)
 {
@@ -530,7 +533,7 @@ void CBaseDialog::AddMenu(UINT uiResource, UINT uidTitle, UINT uiPos)
 	if (hMenu)
 	{
 		CString szTitle;
-		szTitle.LoadString(uidTitle);
+		EC_B(szTitle.LoadString(uidTitle));
 		EC_B(InsertMenu(
 			hMenu,
 			uiPos,
@@ -539,19 +542,19 @@ void CBaseDialog::AddMenu(UINT uiResource, UINT uidTitle, UINT uiPos)
 			szTitle));
 		if (IDR_MENU_PROPERTY == uiResource)
 		{
-			ExtendAddInMenu(MyMenu.m_hMenu, MENU_CONTEXT_PROPERTY);
+			(void) ExtendAddInMenu(MyMenu.m_hMenu, MENU_CONTEXT_PROPERTY);
 		}
 	}
 
 	DrawMenuBar();
-}
+} // CBaseDialog::AddMenu
 
-void CBaseDialog::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized)
+void CBaseDialog::OnActivate(UINT nState, _In_ CWnd* pWndOther, BOOL bMinimized)
 {
 	HRESULT hRes = S_OK;
 	CDialog::OnActivate(nState, pWndOther, bMinimized);
 	if (nState == 1 && !bMinimized) EC_B(RedrawWindow());
-}
+} // CBaseDialog::OnActivate
 
 void CBaseDialog::SetStatusWidths()
 {
@@ -604,7 +607,7 @@ void CBaseDialog::SetStatusWidths()
 
 	}
 	delete[] szText;
-}
+} // CBaseDialog::SetStatusWidths
 
 void CBaseDialog::OnSize(UINT/* nType*/, int cx, int cy)
 {
@@ -636,18 +639,18 @@ void CBaseDialog::OnSize(UINT/* nType*/, int cx, int cy)
 			iNewCY-1, // new height
 			TRUE);
 	}
-}
+} // CBaseDialog::OnSize
 
-void CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos,LPCTSTR szMsg)
+void CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, _In_z_ LPCTSTR szMsg)
 {
 	HRESULT hRes = S_OK;
 	// set the status bar
 	EC_B(m_StatusBar.SetText(szMsg,nPos,0)); // SBT_NOBORDERS??
 
 	SetStatusWidths();
-}
+} // CBaseDialog::UpdateStatusBarText
 
-void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos,UINT uidMsg,...)
+void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg, ...)
 {
 	CString szStatBarString;
 
@@ -658,8 +661,9 @@ void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos,UINT uidMsg,
 	}
 	else
 	{
+		HRESULT hRes = S_OK;
 		CString szMsg;
-		szMsg.LoadString(uidMsg);
+		EC_B(szMsg.LoadString(uidMsg));
 
 		va_list argList = NULL;
 		va_start(argList, uidMsg);
@@ -670,39 +674,39 @@ void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos,UINT uidMsg,
 	UpdateStatusBarText(nPos,szStatBarString);
 } // CBaseDialog::UpdateStatusBarText
 
-void CBaseDialog::UpdateTitleBarText(LPCTSTR szMsg)
+void CBaseDialog::UpdateTitleBarText(_In_opt_z_ LPCTSTR szMsg)
 {
 	CString szTitle;
 
 	if (szMsg)
 	{
-		szTitle.FormatMessage(_T("%1: %2"),(LPCTSTR) m_szTitle,szMsg); // STRING_OK
+		szTitle.FormatMessage(IDS_TITLEBARMESSAGE,(LPCTSTR) m_szTitle,szMsg);
 	}
 	else
 	{
-		szTitle.FormatMessage(_T("%1"),(LPCTSTR) m_szTitle); // STRING_OK
+		szTitle.FormatMessage(IDS_TITLEBARPLAIN,(LPCTSTR) m_szTitle);
 	}
 	// set the title bar
 	SetWindowText(szTitle);
 } // CBaseDialog::UpdateTitleBarText
 
 // WM_MFCMAPI_UPDATESTATUSBAR
-LRESULT	CBaseDialog::msgOnUpdateStatusBar(WPARAM wParam, LPARAM lParam)
+_Check_return_ LRESULT	CBaseDialog::msgOnUpdateStatusBar(WPARAM wParam, LPARAM lParam)
 {
 	__StatusPaneEnum	iPane = (__StatusPaneEnum) wParam;
 	LPCTSTR				szStr = (LPCTSTR) lParam;
 	UpdateStatusBarText(iPane, szStr);
 
 	return S_OK;
-}
+} // CBaseDialog::msgOnUpdateStatusBar
 
 // WM_MFCMAPI_CLEARSINGLEMAPIPROPLIST
-LRESULT	CBaseDialog::msgOnClearSingleMAPIPropList(WPARAM /*wParam*/, LPARAM /*lParam*/)
+_Check_return_ LRESULT	CBaseDialog::msgOnClearSingleMAPIPropList(WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	OnUpdateSingleMAPIPropListCtrl(NULL,NULL);
 
 	return S_OK;
-}
+} // CBaseDialog::msgOnClearSingleMAPIPropList
 
 void CBaseDialog::OnHexEditor()
 {
@@ -710,16 +714,16 @@ void CBaseDialog::OnHexEditor()
 } // CBaseDialog::OnHexEditor
 
 // result allocated with new, clean up with delete[]
-void GetOutlookVersionString(LPTSTR* lppszPath, LPTSTR* lppszVer, LPTSTR* lppszLang)
+void GetOutlookVersionString(_Deref_out_opt_ LPTSTR* lppszPath, _Deref_out_opt_z_ LPTSTR* lppszVer, _Deref_out_opt_z_ LPTSTR* lppszLang)
 {
 	HRESULT hRes = S_OK;
 	LPTSTR lpszTempPath = NULL;
 	LPTSTR lpszTempVer = NULL;
 	LPTSTR lpszTempLang = NULL;
 
-	if (lpszTempPath) *lpszTempPath = NULL;
-	if (lpszTempVer) *lpszTempPath = NULL;
-	if (lpszTempLang) *lpszTempLang = NULL;
+	if (lppszPath) *lppszPath = NULL;
+	if (lppszVer) *lppszVer = NULL;
+	if (lppszLang) *lppszLang = NULL;
 
 	if (!pfnMsiProvideQualifiedComponent || !pfnMsiGetFileVersion) return;
 
@@ -836,7 +840,7 @@ void CBaseDialog::OnOutlookVersion()
 	WC_H(MyEID.DisplayDialog());
 } // CBaseDialog::OnOutlookVersion
 
-void CBaseDialog::OnOpenEntryID(LPSBinary lpBin)
+void CBaseDialog::OnOpenEntryID(_In_opt_ LPSBinary lpBin)
 {
 	HRESULT			hRes = S_OK;
 	if (!m_lpMapiObjects) return;
@@ -932,8 +936,8 @@ void CBaseDialog::OnOpenEntryID(LPSBinary lpBin)
 		if (lpUnk)
 		{
 			LPTSTR szFlags = NULL;
-			EC_H(InterpretFlags(PROP_ID(PR_OBJECT_TYPE), ulObjType, &szFlags));
-			DebugPrint(DBGGeneric,_T("OnOpenEntryID: Got object (0x%08X) of type 0x%08X = %s\n"),lpUnk,ulObjType,szFlags);
+			InterpretFlags(PROP_ID(PR_OBJECT_TYPE), ulObjType, &szFlags);
+			DebugPrint(DBGGeneric,_T("OnOpenEntryID: Got object (%p) of type 0x%08X = %s\n"),lpUnk,ulObjType,szFlags);
 			delete[] szFlags;
 			szFlags = NULL;
 
@@ -953,9 +957,7 @@ void CBaseDialog::OnOpenEntryID(LPSBinary lpBin)
 	}
 
 	delete[] lpEnteredEntryID;
-
-	return;
-} // OnOpenEntryID
+} // CBaseDialog::OnOpenEntryID
 
 void CBaseDialog::OnCompareEntryIDs()
 {
@@ -1022,8 +1024,8 @@ void CBaseDialog::OnCompareEntryIDs()
 	{
 		CString szRet;
 		CString szResult;
-		szResult.LoadString(ulResult?IDS_TRUE:IDS_FALSE);
-		szRet.FormatMessage(_T("0x%1!08X! = %2"),ulResult,szResult); // STRING_OK
+		EC_B(szResult.LoadString(ulResult?IDS_TRUE:IDS_FALSE));
+		szRet.FormatMessage(IDS_COMPAREEIDBOOL,ulResult,szResult);
 
 		CEditor Result(
 			this,
@@ -1032,14 +1034,12 @@ void CBaseDialog::OnCompareEntryIDs()
 			(ULONG) 0,
 			CEDITOR_BUTTON_OK);
 		Result.SetPromptPostFix(szRet);
-		Result.DisplayDialog();
+		(void) Result.DisplayDialog();
 	}
 
 	delete[] lpEntryID2;
 	delete[] lpEntryID1;
-
-	return;
-} // OnCompareEntryIDs
+} // CBaseDialog::OnCompareEntryIDs
 
 void CBaseDialog::OnComputeStoreHash()
 {
@@ -1068,8 +1068,8 @@ void CBaseDialog::OnComputeStoreHash()
 
 	CString szHash;
 	CString szHashStr;
-	szHashStr.LoadString(IDS_STOREHASH);
-	szHash.FormatMessage(_T("%1 = 0x%2!08X!"),szHashStr,dwHash); // STRING_OK
+	EC_B(szHashStr.LoadString(IDS_STOREHASH));
+	szHash.FormatMessage(IDS_STOREHASHVAL,szHashStr,dwHash);
 
 	CEditor Result(
 		this,
@@ -1078,11 +1078,9 @@ void CBaseDialog::OnComputeStoreHash()
 		(ULONG) 0,
 		CEDITOR_BUTTON_OK);
 	Result.SetPromptPostFix(szHash);
-	Result.DisplayDialog();
+	(void) Result.DisplayDialog();
 
 	delete[] lpEntryID;
-
-	return;
 } // CBaseDialog::OnComputeStoreHash
 
 void CBaseDialog::OnEncodeID()
@@ -1126,13 +1124,11 @@ void CBaseDialog::OnEncodeID()
 		Result.InitMultiLine(2,IDS_HEX,NULL,true);
 		Result.SetBinary(2,(LPBYTE)szEncoded,cchEncoded);
 
-		Result.DisplayDialog();
+		(void) Result.DisplayDialog();
 		delete[] szEncoded;
 	}
 
 	delete[] lpEntryID;
-
-	return;
 } // CBaseDialog::OnEncodeID
 
 void CBaseDialog::OnNotificationsOn()
@@ -1285,18 +1281,18 @@ void CBaseDialog::OnDispatchNotifications()
 	EC_H(HrDispatchNotifications(NULL));
 } // CBaseDialog::OnDispatchNotifications
 
-BOOL CBaseDialog::HandleAddInMenu(WORD wMenuSelect)
+_Check_return_ BOOL CBaseDialog::HandleAddInMenu(WORD wMenuSelect)
 {
 	DebugPrintEx(DBGAddInPlumbing,CLASS,_T("HandleAddInMenu"),_T("wMenuSelect = 0x%08X\n"),wMenuSelect);
 	return false;
 } // CBaseDialog::HandleAddInMenu
 
-CParentWnd* CBaseDialog::GetParentWnd()
+_Check_return_ CParentWnd* CBaseDialog::GetParentWnd()
 {
 	return m_lpParent;
-}
+} // CBaseDialog::GetParentWnd
 
-CMapiObjects* CBaseDialog::GetMapiObjects()
+_Check_return_ CMapiObjects* CBaseDialog::GetMapiObjects()
 {
 	return m_lpMapiObjects;
-}
+} // CBaseDialog::GetMapiObjects

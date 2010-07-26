@@ -65,7 +65,7 @@ GENERIC_MAPPING gmMessages =
 	msgrightsGenericAll
 };
 
-CMySecInfo::CMySecInfo(LPMAPIPROP lpMAPIProp,
+CMySecInfo::CMySecInfo(_In_ LPMAPIPROP lpMAPIProp,
 					   ULONG ulPropTag)
 {
 	TRACE_CONSTRUCTOR(CLASS);
@@ -103,16 +103,17 @@ CMySecInfo::CMySecInfo(LPMAPIPROP lpMAPIProp,
 		m_wszObject,
 		_countof(m_wszObject)));
 
-};
+} // CMySecInfo::CMySecInfo
+
 CMySecInfo::~CMySecInfo()
 {
 	TRACE_DESTRUCTOR(CLASS);
 	MAPIFreeBuffer(m_lpHeader);
 	if (m_lpMAPIProp) m_lpMAPIProp->Release();
-}
+} // CMySecInfo::~CMySecInfo
 
-STDMETHODIMP CMySecInfo::QueryInterface (REFIID riid,
-										 LPVOID * ppvObj)
+STDMETHODIMP CMySecInfo::QueryInterface(REFIID riid,
+										_Deref_out_opt_ LPVOID * ppvObj)
 {
 	*ppvObj = 0;
 	if (riid == IID_ISecurityInformation ||
@@ -129,14 +130,14 @@ STDMETHODIMP CMySecInfo::QueryInterface (REFIID riid,
 		return S_OK;
 	}
 	return E_NOINTERFACE;
-};
+} // CMySecInfo::QueryInterface
 
 STDMETHODIMP_(ULONG) CMySecInfo::AddRef()
 {
 	LONG lCount = InterlockedIncrement(&m_cRef);
 	TRACE_ADDREF(CLASS,lCount);
 	return m_cRef;
-}
+} // CMySecInfo::AddRef
 
 STDMETHODIMP_(ULONG) CMySecInfo::Release()
 {
@@ -144,8 +145,9 @@ STDMETHODIMP_(ULONG) CMySecInfo::Release()
 	TRACE_RELEASE(CLASS,lCount);
 	if (!lCount) delete this;
 	return lCount;
-}
-STDMETHODIMP CMySecInfo::GetObjectInformation(THIS_ PSI_OBJECT_INFO pObjectInfo )
+} // CMySecInfo::Release
+
+STDMETHODIMP CMySecInfo::GetObjectInformation(_In_ PSI_OBJECT_INFO pObjectInfo )
 {
 	DebugPrint(DBGGeneric,_T("CMySecInfo::GetObjectInformation\n"));
 	HRESULT hRes = S_OK;
@@ -180,10 +182,10 @@ STDMETHODIMP CMySecInfo::GetObjectInformation(THIS_ PSI_OBJECT_INFO pObjectInfo 
 	pObjectInfo->pszObjectName = m_wszObject; // Object being edited
 	pObjectInfo->pszServerName = NULL; // specify DC for lookups
 	return S_OK;
-};
+} // CMySecInfo::GetObjectInformation
 
-STDMETHODIMP CMySecInfo::GetSecurity(THIS_ SECURITY_INFORMATION /*RequestedInformation*/,
-									 PSECURITY_DESCRIPTOR *ppSecurityDescriptor,
+STDMETHODIMP CMySecInfo::GetSecurity(SECURITY_INFORMATION /*RequestedInformation*/,
+									 _Deref_out_opt_ PSECURITY_DESCRIPTOR *ppSecurityDescriptor,
 									 BOOL /*fDefault*/)
 {
 	DebugPrint(DBGGeneric,_T("CMySecInfo::GetSecurity\n"));
@@ -240,21 +242,21 @@ STDMETHODIMP CMySecInfo::GetSecurity(THIS_ SECURITY_INFORMATION /*RequestedInfor
 			CString szInfo;
 			EC_H(SDToString(lpSDBuffer,m_acetype,&szDACL,&szInfo));
 
-			DebugPrint(DBGGeneric,_T("sdInfo: %s\nszDACL: %s\n"),szInfo,szDACL);
+			DebugPrint(DBGGeneric,_T("sdInfo: %s\nszDACL: %s\n"), (LPCTSTR) szInfo, (LPCTSTR) szDACL);
 		}
 	}
 	MAPIFreeBuffer(lpsProp);
 
 	if (!*ppSecurityDescriptor) return MAPI_E_NOT_FOUND;
 	return hRes;
-}
+} // CMySecInfo::GetSecurity
 
 // This is very dangerous code and should only be executed under very controlled circumstances
 // The code, as written, does nothing to ensure the DACL is ordered correctly, so it will probably cause problems
 // on the server once written
 // For this reason, the property sheet is read-only unless a reg key is set.
-STDMETHODIMP CMySecInfo::SetSecurity(THIS_ SECURITY_INFORMATION /*SecurityInformation*/,
-									 PSECURITY_DESCRIPTOR pSecurityDescriptor )
+STDMETHODIMP CMySecInfo::SetSecurity(SECURITY_INFORMATION /*SecurityInformation*/,
+									 _Out_ PSECURITY_DESCRIPTOR pSecurityDescriptor )
 {
 	DebugPrint(DBGGeneric,_T("CMySecInfo::SetSecurity\n"));
 	HRESULT		hRes = S_OK;
@@ -292,12 +294,13 @@ STDMETHODIMP CMySecInfo::SetSecurity(THIS_ SECURITY_INFORMATION /*SecurityInform
 		MAPIFreeBuffer(lpBlob);
 	}
 	return hRes;
-}
-STDMETHODIMP CMySecInfo::GetAccessRights(THIS_ const GUID* /*pguidObjectType*/,
+} // CMySecInfo::SetSecurity
+
+STDMETHODIMP CMySecInfo::GetAccessRights(_In_ const GUID* /*pguidObjectType*/,
 										 DWORD /*dwFlags*/,
-										 PSI_ACCESS *ppAccess,
-										 ULONG *pcAccesses,
-										 ULONG *piDefaultAccess )
+										 _Out_ PSI_ACCESS *ppAccess,
+										 _Out_ ULONG *pcAccesses,
+										 _Out_ ULONG *piDefaultAccess )
 {
 	DebugPrint(DBGGeneric,_T("CMySecInfo::GetAccessRights\n"));
 
@@ -319,11 +322,11 @@ STDMETHODIMP CMySecInfo::GetAccessRights(THIS_ const GUID* /*pguidObjectType*/,
 
 	*piDefaultAccess = 0;
 	return S_OK;
-};
+} // CMySecInfo::GetAccessRights
 
-STDMETHODIMP CMySecInfo::MapGeneric(THIS_ const GUID* /*pguidObjectType*/,
-									UCHAR * /*pAceFlags*/,
-									ACCESS_MASK *pMask)
+STDMETHODIMP CMySecInfo::MapGeneric(_In_ const GUID* /*pguidObjectType*/,
+									_In_ UCHAR* /*pAceFlags*/,
+									_Out_ ACCESS_MASK *pMask)
 {
 	DebugPrint(DBGGeneric,_T("CMySecInfo::MapGeneric\n"));
 
@@ -340,37 +343,37 @@ STDMETHODIMP CMySecInfo::MapGeneric(THIS_ const GUID* /*pguidObjectType*/,
 		break;
 	};
 	return S_OK;
-};
+} // CMySecInfo::MapGeneric
 
-STDMETHODIMP CMySecInfo::GetInheritTypes(THIS_ PSI_INHERIT_TYPE* /*ppInheritTypes*/,
-										 ULONG* /*pcInheritTypes*/)
+STDMETHODIMP CMySecInfo::GetInheritTypes(_Out_ PSI_INHERIT_TYPE* /*ppInheritTypes*/,
+										 _Out_ ULONG* /*pcInheritTypes*/)
 {
 	DebugPrint(DBGGeneric,_T("CMySecInfo::GetInheritTypes\n"));
 	return E_NOTIMPL;
-};
+} // CMySecInfo::GetInheritTypes
 
-STDMETHODIMP CMySecInfo::PropertySheetPageCallback(THIS_ HWND /*hwnd*/, UINT uMsg, SI_PAGE_TYPE uPage )
+STDMETHODIMP CMySecInfo::PropertySheetPageCallback(_In_ HWND /*hwnd*/, UINT uMsg, SI_PAGE_TYPE uPage )
 {
 	DebugPrint(DBGGeneric,_T("CMySecInfo::PropertySheetPageCallback, uMsg = 0x%X, uPage = 0x%X\n"),uMsg,uPage);
 	return S_OK;
-};
+} // CMySecInfo::PropertySheetPageCallback
 
-STDMETHODIMP_(BOOL) CMySecInfo::IsDaclCanonical(THIS_ IN PACL /*pDacl*/)
+_Check_return_ STDMETHODIMP_(BOOL) CMySecInfo::IsDaclCanonical(_In_ PACL /*pDacl*/)
 {
 	DebugPrint(DBGGeneric,_T("CMySecInfo::IsDaclCanonical - always returns true.\n"));
 	return true;
-};
+} // CMySecInfo::IsDaclCanonical
 
-STDMETHODIMP CMySecInfo::LookupSids(THIS_ IN ULONG /*cSids*/, IN PSID* /*rgpSids*/, OUT LPDATAOBJECT* /*ppdo*/)
+_Check_return_ STDMETHODIMP CMySecInfo::LookupSids(ULONG /*cSids*/, _In_count_(cSids) PSID* /*rgpSids*/, _Deref_out_ LPDATAOBJECT* /*ppdo*/)
 {
 	DebugPrint(DBGGeneric,_T("CMySecInfo::LookupSids\n"));
 	return E_NOTIMPL;
-};
+} // CMySecInfo::LookupSids
 
-BOOL GetTextualSid(
-				   PSID pSid,            // binary SID
-				   LPTSTR TextualSid,    // buffer for Textual representation of SID
-				   LPDWORD lpdwBufferLen // required/provided TextualSid buffersize
+_Check_return_ BOOL GetTextualSid(
+				   _In_ PSID pSid,            // binary SID
+				   _Out_opt_z_cap_(*lpdwBufferLen) LPTSTR TextualSid,    // buffer for Textual representation of SID
+				   _Inout_ LPDWORD lpdwBufferLen // required/provided TextualSid buffersize
 				   )
 {
 	HRESULT hRes = S_OK;
@@ -391,11 +394,11 @@ BOOL GetTextualSid(
 
 	// Compute the buffer length.
 	// S-SID_REVISION- + IdentifierAuthority- + subauthorities- + NULL
-	dwSidSize=(15 + 12 + (12 * dwSubAuthorities) + 1) * sizeof(TCHAR);
+	dwSidSize = (15 + 12 + (12 * dwSubAuthorities) + 1) * sizeof(TCHAR);
 
 	// Check input buffer length.
 	// If too small, indicate the proper size and set last error.
-	if (*lpdwBufferLen < dwSidSize)
+	if (*lpdwBufferLen < dwSidSize || !TextualSid)
 	{
 		*lpdwBufferLen = dwSidSize;
 		SetLastError(ERROR_INSUFFICIENT_BUFFER);
@@ -444,9 +447,9 @@ BOOL GetTextualSid(
 	}
 
 	return TRUE;
-}
+} // GetTextualSid
 
-HRESULT ACEToString(void* pACE, eAceType acetype, CString *AceString)
+void ACEToString(_In_ void* pACE, eAceType acetype, _In_ CString *AceString)
 {
 	HRESULT hRes = S_OK;
 	CString szTmpString;
@@ -459,7 +462,7 @@ HRESULT ACEToString(void* pACE, eAceType acetype, CString *AceString)
 	SID*	SidStart = NULL;
 	BOOL	bObjectFound = false;
 
-	if (!pACE || !AceString) return MAPI_E_NOT_FOUND;
+	if (!pACE || !AceString) return;
 
 	/* Check type of ACE */
 	switch (((PACE_HEADER)pACE)->AceType)
@@ -515,8 +518,11 @@ HRESULT ACEToString(void* pACE, eAceType acetype, CString *AceString)
 	LPTSTR lpSidName = NULL;
 	LPTSTR lpSidDomain = NULL;
 
+#pragma warning(push)
+#pragma warning(disable:6211)
 	if (dwSidName) lpSidName = new TCHAR[dwSidName];
 	if (dwSidDomain) lpSidDomain = new TCHAR[dwSidDomain];
+#pragma warning(pop)
 
 	// Only make the call if we got something to get
 	if (lpSidName || lpSidDomain)
@@ -533,7 +539,7 @@ HRESULT ACEToString(void* pACE, eAceType acetype, CString *AceString)
 	}
 
 	DWORD dwStringSid = 0;
-	GetTextualSid(SidStart,NULL,&dwStringSid); // Get a buffer count
+	(void) GetTextualSid(SidStart,NULL,&dwStringSid); // Get a buffer count
 	LPTSTR lpStringSid = NULL;
 	if (dwStringSid)
 	{
@@ -547,18 +553,18 @@ HRESULT ACEToString(void* pACE, eAceType acetype, CString *AceString)
 	LPTSTR szAceType = NULL;
 	LPTSTR szAceFlags = NULL;
 	LPTSTR szAceMask = NULL;
-	EC_H(InterpretFlags(flagACEType, AceType, &szAceType));
-	EC_H(InterpretFlags(flagACEFlag, AceFlags, &szAceFlags));
+	InterpretFlags(flagACEType, AceType, &szAceType);
+	InterpretFlags(flagACEFlag, AceFlags, &szAceFlags);
 	switch(acetype)
 	{
 	case acetypeContainer:
-		EC_H(InterpretFlags(flagACEMaskContainer, Mask, &szAceMask));
+		InterpretFlags(flagACEMaskContainer, Mask, &szAceMask);
 		break;
 	case acetypeMessage:
-		EC_H(InterpretFlags(flagACEMaskNonContainer, Mask, &szAceMask));
+		InterpretFlags(flagACEMaskNonContainer, Mask, &szAceMask);
 		break;
 	case acetypeFreeBusy:
-		EC_H(InterpretFlags(flagACEMaskFreeBusy, Mask, &szAceMask));
+		InterpretFlags(flagACEMaskFreeBusy, Mask, &szAceMask);
 		break;
 	};
 	CString szDomain;
@@ -566,11 +572,11 @@ HRESULT ACEToString(void* pACE, eAceType acetype, CString *AceString)
 	CString szSID;
 
 	if (lpSidDomain) szDomain = lpSidDomain;
-	else szDomain.LoadString(IDS_NODOMAIN);
+	else EC_B(szDomain.LoadString(IDS_NODOMAIN));
 	if (lpSidName) szName = lpSidName;
-	else szName.LoadString(IDS_NONAME);
+	else EC_B(szName.LoadString(IDS_NONAME));
 	if (lpStringSid) szSID = lpStringSid;
-	else szSID.LoadString(IDS_NOSID);
+	else EC_B(szSID.LoadString(IDS_NOSID));
 
 	szTmpString.FormatMessage(
 		IDS_SIDACCOUNT,
@@ -613,10 +619,9 @@ HRESULT ACEToString(void* pACE, eAceType acetype, CString *AceString)
 		szTmpString.FormatMessage(IDS_SIDFLAGS,Flags);
 		*AceString += szTmpString;
 	}
-	return hRes;
-}
+} // ACEToString
 
-HRESULT SDToString(LPBYTE lpBuf, eAceType acetype, CString *SDString, CString *sdInfo)
+_Check_return_ HRESULT SDToString(_In_ LPBYTE lpBuf, eAceType acetype, _In_ CString *SDString, _In_ CString *sdInfo)
 {
 	HRESULT hRes = S_OK;
 	BOOL bValidDACL = false;
@@ -637,7 +642,7 @@ HRESULT SDToString(LPBYTE lpBuf, eAceType acetype, CString *SDString, CString *s
 	if (sdInfo)
 	{
 		LPTSTR szFlags = NULL;
-		EC_H(InterpretFlags(flagSecurityInfo, SECURITY_INFORMATION_OF(lpBuf), &szFlags));
+		InterpretFlags(flagSecurityInfo, SECURITY_INFORMATION_OF(lpBuf), &szFlags);
 		*sdInfo = szFlags;
 		delete[] szFlags;
 		szFlags = NULL;
@@ -667,10 +672,12 @@ HRESULT SDToString(LPBYTE lpBuf, eAceType acetype, CString *SDString, CString *s
 				i,
 				&pACE));
 
-			ACEToString(pACE,acetype,&szTmpString);
-
-			*SDString += szTmpString;
+			if (pACE)
+			{
+				ACEToString(pACE,acetype,&szTmpString);
+				*SDString += szTmpString;
+			}
 		}
 	}
 	return hRes;
-}
+} // SDToString

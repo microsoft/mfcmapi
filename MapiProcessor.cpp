@@ -13,7 +13,7 @@ CMAPIProcessor::CMAPIProcessor()
 	m_szFolderOffset = NULL;
 	m_lpListHead = NULL;
 	m_lpListTail = NULL;
-}
+} // CMAPIProcessor::CMAPIProcessor
 
 CMAPIProcessor::~CMAPIProcessor()
 {
@@ -22,25 +22,25 @@ CMAPIProcessor::~CMAPIProcessor()
 	if (m_lpFolder) m_lpFolder->Release();
 	if (m_lpMDB) m_lpMDB->Release();
 	if (m_lpSession) m_lpSession->Release();
-}
+} // CMAPIProcessor::~CMAPIProcessor
 
 // --------------------------------------------------------------------------------- //
 
-void CMAPIProcessor::InitSession(LPMAPISESSION lpSession)
+void CMAPIProcessor::InitSession(_In_ LPMAPISESSION lpSession)
 {
 	if (m_lpSession) m_lpSession->Release();
 	m_lpSession = lpSession;
 	if (m_lpSession) m_lpSession->AddRef();
-}
+} // CMAPIProcessor::InitSession
 
-void CMAPIProcessor::InitMDB(LPMDB lpMDB)
+void CMAPIProcessor::InitMDB(_In_ LPMDB lpMDB)
 {
 	if (m_lpMDB) m_lpMDB->Release();
 	m_lpMDB = lpMDB;
 	if (m_lpMDB) m_lpMDB->AddRef();
-}
+} // CMAPIProcessor::InitMDB
 
-void CMAPIProcessor::InitFolder(LPMAPIFOLDER lpFolder)
+void CMAPIProcessor::InitFolder(_In_ LPMAPIFOLDER lpFolder)
 {
 	if (m_lpFolder) m_lpFolder->Release();
 	m_lpFolder = lpFolder;
@@ -48,13 +48,13 @@ void CMAPIProcessor::InitFolder(LPMAPIFOLDER lpFolder)
 	MAPIFreeBuffer(m_szFolderOffset);
 	HRESULT hRes = S_OK;
 	WC_H(CopyString(&m_szFolderOffset,_T("\\"),NULL)); // STRING_OK
-}
+} // CMAPIProcessor::InitFolder
 
 // --------------------------------------------------------------------------------- //
 
 // Server name MUST be passed
 void CMAPIProcessor::ProcessMailboxTable(
-	LPCTSTR szExchangeServerName)
+	_In_z_ LPCTSTR szExchangeServerName)
 {
 	if (!szExchangeServerName) return;
 	HRESULT		hRes			= S_OK;
@@ -144,7 +144,7 @@ void CMAPIProcessor::ProcessMailboxTable(
 
 	if (lpPrimaryMDB) lpPrimaryMDB->Release();
 	EndMailboxTableWork();
-}
+} // CMAPIProcessor::ProcessMailboxTable
 
 void CMAPIProcessor::ProcessStore()
 {
@@ -157,7 +157,7 @@ void CMAPIProcessor::ProcessStore()
 	ProcessFolders(true,true,true);
 
 	EndStoreWork();
-}
+} // CMAPIProcessor::ProcessStore
 
 void CMAPIProcessor::ProcessFolders(BOOL bDoRegular, BOOL bDoAssociated, BOOL bDoDescent)
 {
@@ -175,7 +175,7 @@ void CMAPIProcessor::ProcessFolders(BOOL bDoRegular, BOOL bDoAssociated, BOOL bD
 		OpenFirstFolderInList();
 	}
 	EndProcessFoldersWork();
-}
+} // CMAPIProcessor::ProcessFolders
 
 void CMAPIProcessor::ProcessFolder(BOOL bDoRegular,
 								   BOOL bDoAssociated,
@@ -280,7 +280,7 @@ void CMAPIProcessor::ProcessFolder(BOOL bDoRegular,
 		}
 	}
 	EndFolderWork();
-}
+} // CMAPIProcessor::ProcessFolder
 
 void CMAPIProcessor::ProcessContentsTable(ULONG ulFlags)
 {
@@ -361,9 +361,9 @@ void CMAPIProcessor::ProcessContentsTable(ULONG ulFlags)
 		lpContentsTable->Release();
 	}
 	EndContentsTableWork();
-}
+} // CMAPIProcessor::ProcessContentsTable
 
-void CMAPIProcessor::ProcessMessage(LPMESSAGE lpMessage, LPVOID lpParentMessageData)
+void CMAPIProcessor::ProcessMessage(_In_ LPMESSAGE lpMessage, _In_opt_ LPVOID lpParentMessageData)
 {
 	if (!lpMessage) return;
 
@@ -372,9 +372,9 @@ void CMAPIProcessor::ProcessMessage(LPMESSAGE lpMessage, LPVOID lpParentMessageD
 	ProcessRecipients(lpMessage,lpData);
 	ProcessAttachments(lpMessage,lpData);
 	EndMessageWork(lpMessage,lpData);
-}
+} // CMAPIProcessor::ProcessMessage
 
-void CMAPIProcessor::ProcessRecipients(LPMESSAGE lpMessage, LPVOID lpData)
+void CMAPIProcessor::ProcessRecipients(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData)
 {
 	if (!lpMessage) return;
 
@@ -415,9 +415,9 @@ void CMAPIProcessor::ProcessRecipients(LPMESSAGE lpMessage, LPVOID lpData)
 	}
 
 	EndRecipientWork(lpMessage,lpData);
-}
+} // CMAPIProcessor::ProcessRecipients
 
-void CMAPIProcessor::ProcessAttachments(LPMESSAGE lpMessage, LPVOID lpData)
+void CMAPIProcessor::ProcessAttachments(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData)
 {
 	if (!lpMessage) return;
 
@@ -504,12 +504,12 @@ void CMAPIProcessor::ProcessAttachments(LPMESSAGE lpMessage, LPVOID lpData)
 	}
 
 	EndAttachmentWork(lpMessage,lpData);
-}
+} // CMAPIProcessor::ProcessAttachments
 
 // --------------------------------------------------------------------------------- //
 // List Functions
 // --------------------------------------------------------------------------------- //
-void CMAPIProcessor::AddFolderToFolderList(LPSBinary lpFolderEID, LPCTSTR szFolderOffsetPath)
+void CMAPIProcessor::AddFolderToFolderList(_In_opt_ LPSBinary lpFolderEID, _In_z_ LPCTSTR szFolderOffsetPath)
 {
 	HRESULT hRes = S_OK;
 	LPFOLDERNODE lpNewNode = NULL;
@@ -538,7 +538,7 @@ void CMAPIProcessor::AddFolderToFolderList(LPSBinary lpFolderEID, LPCTSTR szFold
 		m_lpListTail->lpNextFolder = lpNewNode;
 		m_lpListTail = lpNewNode;
 	}
-}
+} // CMAPIProcessor::AddFolderToFolderList
 
 // Call OpenEntry on the first folder in the list, remove it from the list
 void CMAPIProcessor::OpenFirstFolderInList()
@@ -585,7 +585,7 @@ void CMAPIProcessor::OpenFirstFolderInList()
 	MAPIFreeBuffer(lpTempNode);
 
 	m_lpFolder = lpFolder;
-}
+} // CMAPIProcessor::OpenFirstFolderInList
 
 // Clean up the list
 void CMAPIProcessor::FreeFolderList()
@@ -599,97 +599,96 @@ void CMAPIProcessor::FreeFolderList()
 		m_lpListHead = lpTempNode;
 	}
 	m_lpListTail = NULL;
-}
-
+} // CMAPIProcessor::FreeFolderList
 
 // --------------------------------------------------------------------------------- //
 // Worker Functions
 // --------------------------------------------------------------------------------- //
 
-void CMAPIProcessor::BeginMailboxTableWork(LPCTSTR /*szExchangeServerName*/)
+void CMAPIProcessor::BeginMailboxTableWork(_In_z_ LPCTSTR /*szExchangeServerName*/)
 {
-}
+} // CMAPIProcessor::BeginMailboxTableWork
 
-void CMAPIProcessor::DoMailboxTablePerRowWork(LPMDB /*lpMDB*/, LPSRow /*lpSRow*/, ULONG /*ulCurRow*/)
+void CMAPIProcessor::DoMailboxTablePerRowWork(_In_ LPMDB /*lpMDB*/, _In_ LPSRow /*lpSRow*/, ULONG /*ulCurRow*/)
 {
-}
+} // CMAPIProcessor::DoMailboxTablePerRowWork
 
 void CMAPIProcessor::EndMailboxTableWork()
 {
-}
+} // CMAPIProcessor::EndMailboxTableWork
 
 void CMAPIProcessor::BeginStoreWork()
 {
-}
+} // CMAPIProcessor::BeginStoreWork
 
 void CMAPIProcessor::EndStoreWork()
 {
-}
+} // CMAPIProcessor::EndStoreWork
 
 void CMAPIProcessor::BeginProcessFoldersWork()
 {
-}
+} // CMAPIProcessor::BeginProcessFoldersWork
 
 void CMAPIProcessor::DoProcessFoldersPerFolderWork()
 {
-}
+} // CMAPIProcessor::DoProcessFoldersPerFolderWork
 
 void CMAPIProcessor::EndProcessFoldersWork()
 {
-}
+} // CMAPIProcessor::EndProcessFoldersWork
 
 void CMAPIProcessor::BeginFolderWork()
 {
-}
+} // CMAPIProcessor::BeginFolderWork
 
-void CMAPIProcessor::DoFolderPerHierarchyTableRowWork(LPSRow /*lpSRow*/)
+void CMAPIProcessor::DoFolderPerHierarchyTableRowWork(_In_ LPSRow /*lpSRow*/)
 {
-}
+} // CMAPIProcessor::DoFolderPerHierarchyTableRowWork
 
 void CMAPIProcessor::EndFolderWork()
 {
-}
+} // CMAPIProcessor::EndFolderWork
 
 void CMAPIProcessor::BeginContentsTableWork(ULONG /*ulFlags*/, ULONG /*ulCountRows*/)
 {
-}
+} // CMAPIProcessor::BeginContentsTableWork
 
-void CMAPIProcessor::DoContentsTablePerRowWork(LPSRow /*lpSRow*/, ULONG /*ulCurRow*/)
+void CMAPIProcessor::DoContentsTablePerRowWork(_In_ LPSRow /*lpSRow*/, ULONG /*ulCurRow*/)
 {
-}
+} // CMAPIProcessor::DoContentsTablePerRowWork
 
 void CMAPIProcessor::EndContentsTableWork()
 {
-}
+} // CMAPIProcessor::EndContentsTableWork
 
-void CMAPIProcessor::BeginMessageWork(LPMESSAGE /*lpMessage*/,LPVOID /*lpParentMessageData*/, LPVOID* /*lpData*/)
+void CMAPIProcessor::BeginMessageWork(_In_ LPMESSAGE /*lpMessage*/, _In_opt_ LPVOID /*lpParentMessageData*/, _Deref_out_ LPVOID* /*lpData*/)
 {
-}
+} // CMAPIProcessor::BeginMessageWork
 
-void CMAPIProcessor::BeginRecipientWork(LPMESSAGE /*lpMessage*/,LPVOID /*lpData*/)
+void CMAPIProcessor::BeginRecipientWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID /*lpData*/)
 {
-}
+} // CMAPIProcessor::BeginRecipientWork
 
-void CMAPIProcessor::DoMessagePerRecipientWork(LPMESSAGE /*lpMessage*/, LPVOID /*lpData*/, LPSRow /*lpSRow*/, ULONG /*ulCurRow*/)
+void CMAPIProcessor::DoMessagePerRecipientWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID /*lpData*/, _In_ LPSRow /*lpSRow*/, ULONG /*ulCurRow*/)
 {
-}
+} // CMAPIProcessor::DoMessagePerRecipientWork
 
-void CMAPIProcessor::EndRecipientWork(LPMESSAGE /*lpMessage*/,LPVOID /*lpData*/)
+void CMAPIProcessor::EndRecipientWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID /*lpData*/)
 {
-}
+} // CMAPIProcessor::EndRecipientWork
 
-void CMAPIProcessor::BeginAttachmentWork(LPMESSAGE /*lpMessage*/,LPVOID /*lpData*/)
+void CMAPIProcessor::BeginAttachmentWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID /*lpData*/)
 {
-}
+} // CMAPIProcessor::BeginAttachmentWork
 
-void CMAPIProcessor::DoMessagePerAttachmentWork(LPMESSAGE /*lpMessage*/, LPVOID /*lpData*/, LPSRow /*lpSRow*/, LPATTACH /*lpAttach*/, ULONG /*ulCurRow*/)
+void CMAPIProcessor::DoMessagePerAttachmentWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID /*lpData*/, _In_ LPSRow /*lpSRow*/, _In_ LPATTACH /*lpAttach*/, ULONG /*ulCurRow*/)
 {
-}
+} // CMAPIProcessor::DoMessagePerAttachmentWork
 
-void CMAPIProcessor::EndAttachmentWork(LPMESSAGE /*lpMessage*/,LPVOID /*lpData*/)
+void CMAPIProcessor::EndAttachmentWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID /*lpData*/)
 {
-}
+} // CMAPIProcessor::EndAttachmentWork
 
-void CMAPIProcessor::EndMessageWork(LPMESSAGE /*lpMessage*/,LPVOID /*lpData*/)
+void CMAPIProcessor::EndMessageWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID /*lpData*/)
 {
-}
+} // CMAPIProcessor::EndMessageWork

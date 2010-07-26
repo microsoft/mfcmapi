@@ -12,7 +12,7 @@
 #include <shlobj.h>
 
 // Add current Entry ID to file name
-HRESULT AppendEntryID(LPWSTR szFileName, size_t cchFileName, LPSBinary lpBin, size_t cchMaxAppend)
+_Check_return_ HRESULT AppendEntryID(_Inout_z_count_(cchFileName) LPWSTR szFileName, size_t cchFileName, _In_ LPSBinary lpBin, size_t cchMaxAppend)
 {
 	HRESULT hRes = S_OK;
 	LPTSTR szBin = NULL;
@@ -46,7 +46,7 @@ HRESULT AppendEntryID(LPWSTR szFileName, size_t cchFileName, LPSBinary lpBin, si
 	return hRes;
 } // AppendEntryID
 
-HRESULT GetDirectoryPath(LPWSTR szPath)
+_Check_return_ HRESULT GetDirectoryPath(_Inout_z_ LPWSTR szPath)
 {
 	BROWSEINFOW BrowseInfo;
 	LPITEMIDLIST lpItemIdList = NULL;
@@ -65,7 +65,7 @@ HRESULT GetDirectoryPath(LPWSTR szPath)
 	szPath[0] = NULL;
 
 	CStringW szInputString;
-	szInputString.LoadString(IDS_DIRPROMPT);
+	EC_B(szInputString.LoadString(IDS_DIRPROMPT));
 
 	BrowseInfo.hwndOwner = NULL;
 	BrowseInfo.lpszTitle = szInputString;
@@ -89,7 +89,7 @@ HRESULT GetDirectoryPath(LPWSTR szPath)
 } // GetDirectoryPath
 
 // Opens storage with best access
-HRESULT MyStgOpenStorage(LPCWSTR szMessageFile, BOOL bBestAccess, LPSTORAGE* lppStorage)
+_Check_return_ HRESULT MyStgOpenStorage(_In_z_ LPCWSTR szMessageFile, BOOL bBestAccess, _Deref_out_ LPSTORAGE* lppStorage)
 {
 	if (!lppStorage) return MAPI_E_INVALID_PARAMETER;
 	HRESULT		hRes = S_OK;
@@ -116,7 +116,7 @@ HRESULT MyStgOpenStorage(LPCWSTR szMessageFile, BOOL bBestAccess, LPSTORAGE* lpp
 } // MyStgOpenStorage
 
 // Creates an LPMESSAGE on top of the MSG file
-HRESULT LoadMSGToMessage(LPCWSTR szMessageFile, LPMESSAGE* lppMessage)
+_Check_return_ HRESULT LoadMSGToMessage(_In_z_ LPCWSTR szMessageFile, _Deref_out_ LPMESSAGE* lppMessage)
 {
 	HRESULT		hRes = S_OK;
 	LPSTORAGE	pStorage = NULL;
@@ -153,7 +153,7 @@ HRESULT LoadMSGToMessage(LPCWSTR szMessageFile, LPMESSAGE* lppMessage)
 
 // Loads the MSG file into an LPMESSAGE pointer, then copies it into the passed in message
 // lpMessage must be created first
-HRESULT LoadFromMSG(LPCWSTR szMessageFile, LPMESSAGE lpMessage, HWND hWnd)
+_Check_return_ HRESULT LoadFromMSG(_In_z_ LPCWSTR szMessageFile, _In_ LPMESSAGE lpMessage, HWND hWnd)
 {
 	HRESULT				hRes = S_OK;
 	LPMESSAGE			pIMsg = NULL;
@@ -220,7 +220,7 @@ HRESULT LoadFromMSG(LPCWSTR szMessageFile, LPMESSAGE lpMessage, HWND hWnd)
 } // LoadFromMSG
 
 // lpMessage must be created first
-HRESULT LoadFromTNEF(LPCWSTR szMessageFile, LPADRBOOK lpAdrBook, LPMESSAGE lpMessage)
+_Check_return_ HRESULT LoadFromTNEF(_In_z_ LPCWSTR szMessageFile, _In_ LPADRBOOK lpAdrBook, _In_ LPMESSAGE lpMessage)
 {
 	HRESULT				hRes = S_OK;
 	LPSTREAM			lpStream = NULL;
@@ -286,7 +286,7 @@ HRESULT LoadFromTNEF(LPCWSTR szMessageFile, LPADRBOOK lpAdrBook, LPMESSAGE lpMes
 } // LoadFromTNEF
 
 // Builds a file name out of the passed in message and extension
-HRESULT BuildFileName(LPWSTR szFileOut, size_t cchFileOut, LPCWSTR szExt, size_t cchExt, LPMESSAGE lpMessage)
+_Check_return_ HRESULT BuildFileName(_Inout_z_count_(cchFileOut) LPWSTR szFileOut, size_t cchFileOut, _In_z_count_(cchExt) LPCWSTR szExt, size_t cchExt, _In_ LPMESSAGE lpMessage)
 {
 	HRESULT			hRes = S_OK;
 	LPSPropValue	lpSubject = NULL;
@@ -331,7 +331,7 @@ HRESULT BuildFileName(LPWSTR szFileOut, size_t cchFileOut, LPCWSTR szExt, size_t
 // So directory is part of the input and output now
 #define MAXSUBJ 25
 #define MAXBIN 141
-HRESULT BuildFileNameAndPath(LPWSTR szFileOut, size_t cchFileOut, LPCWSTR szExt, size_t cchExt, LPCWSTR szSubj, LPSBinary lpBin, LPCWSTR szRootPath)
+_Check_return_ HRESULT BuildFileNameAndPath(_Inout_z_count_(cchFileOut) LPWSTR szFileOut, size_t cchFileOut, _In_z_count_(cchExt) LPCWSTR szExt, size_t cchExt, _In_z_ LPCWSTR szSubj, _In_ LPSBinary lpBin, _In_z_ LPCWSTR szRootPath)
 {
 	HRESULT			hRes = S_OK;
 
@@ -416,10 +416,10 @@ HRESULT BuildFileNameAndPath(LPWSTR szFileOut, size_t cchFileOut, LPCWSTR szExt,
 // Takes szFileIn and copies it to szFileOut, replacing non file system characters with underscores
 // Do NOT call with full path - just file names
 // Resulting string will have no more than cchCharsToCopy characters
-HRESULT SanitizeFileNameA(
-						  LPSTR szFileOut, // output buffer
+_Check_return_ HRESULT SanitizeFileNameA(
+						  _Inout_z_count_(cchFileOut) LPSTR szFileOut, // output buffer
 						  size_t cchFileOut, // length of output buffer
-						  LPCSTR szFileIn, // File name in
+						  _In_z_ LPCSTR szFileIn, // File name in
 						  size_t cchCharsToCopy)
 {
 	HRESULT hRes = S_OK;
@@ -433,10 +433,10 @@ HRESULT SanitizeFileNameA(
 	return hRes;
 } // SanitizeFileNameA
 
-HRESULT SanitizeFileNameW(
-						  LPWSTR szFileOut, // output buffer
+_Check_return_ HRESULT SanitizeFileNameW(
+						  _Inout_z_count_(cchFileOut) LPWSTR szFileOut, // output buffer
 						  size_t cchFileOut, // length of output buffer
-						  LPCWSTR szFileIn, // File name in
+						  _In_z_ LPCWSTR szFileIn, // File name in
 						  size_t cchCharsToCopy)
 {
 	HRESULT hRes = S_OK;
@@ -450,7 +450,7 @@ HRESULT SanitizeFileNameW(
 	return hRes;
 } // SanitizeFileNameW
 
-HRESULT SaveFolderContentsToMSG(LPMAPIFOLDER lpFolder, LPCWSTR szPathName, BOOL bAssoc, BOOL bUnicode, HWND hWnd)
+_Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_z_ LPCWSTR szPathName, BOOL bAssoc, BOOL bUnicode, HWND hWnd)
 {
 	HRESULT			hRes = S_OK;
 	LPMAPITABLE		lpFolderContents = NULL;
@@ -542,7 +542,7 @@ HRESULT SaveFolderContentsToMSG(LPMAPIFOLDER lpFolder, LPCWSTR szPathName, BOOL 
 	return hRes;
 } // SaveFolderContentsToMSG
 
-HRESULT SaveToEML(LPMESSAGE lpMessage, LPCWSTR szFileName)
+_Check_return_ HRESULT SaveToEML(_In_ LPMESSAGE lpMessage, _In_z_ LPCWSTR szFileName)
 {
 	HRESULT hRes = S_OK;
 	LPSTREAM		pStrmSrc = NULL;
@@ -603,14 +603,14 @@ HRESULT SaveToEML(LPMESSAGE lpMessage, LPCWSTR szFileName)
 	return hRes;
 } // SaveToEML
 
-HRESULT STDAPICALLTYPE MyStgCreateStorageEx(IN const WCHAR* pName,
-											IN  DWORD grfMode,
-											IN  DWORD stgfmt,
-											IN  DWORD grfAttrs,
-											IN  STGOPTIONS * pStgOptions,
-											IN  void * reserved,
-											IN  REFIID riid,
-											OUT void ** ppObjectOpen)
+_Check_return_ HRESULT STDAPICALLTYPE MyStgCreateStorageEx(IN const WCHAR* pName,
+											DWORD grfMode,
+											DWORD stgfmt,
+											DWORD grfAttrs,
+											_In_ STGOPTIONS * pStgOptions,
+											_Pre_null_ void * reserved,
+											_In_ REFIID riid,
+											_Out_ void ** ppObjectOpen)
 {
 	HRESULT hRes = S_OK;
 	if (!pName) return MAPI_E_INVALID_PARAMETER;
@@ -633,7 +633,7 @@ HRESULT STDAPICALLTYPE MyStgCreateStorageEx(IN const WCHAR* pName,
 	return hRes;
 } // MyStgCreateStorageEx
 
-HRESULT CreateNewMSG(LPCWSTR szFileName, BOOL bUnicode, LPMESSAGE* lppMessage, LPSTORAGE* lppStorage)
+_Check_return_ HRESULT CreateNewMSG(_In_z_ LPCWSTR szFileName, BOOL bUnicode, _Deref_out_ LPMESSAGE* lppMessage, _Deref_out_ LPSTORAGE* lppStorage)
 {
 	if (!szFileName || !lppMessage || !lppStorage) return MAPI_E_INVALID_PARAMETER;
 
@@ -700,7 +700,7 @@ HRESULT CreateNewMSG(LPCWSTR szFileName, BOOL bUnicode, LPMESSAGE* lppMessage, L
 	return hRes;
 } // CreateNewMSG
 
-HRESULT SaveToMSG(LPMESSAGE lpMessage, LPCWSTR szFileName, BOOL bUnicode, HWND hWnd)
+_Check_return_ HRESULT SaveToMSG(_In_ LPMESSAGE lpMessage, _In_z_ LPCWSTR szFileName, BOOL bUnicode, HWND hWnd)
 {
 	HRESULT hRes = S_OK;
 	LPSTORAGE pStorage = NULL;
@@ -762,7 +762,7 @@ HRESULT SaveToMSG(LPMESSAGE lpMessage, LPCWSTR szFileName, BOOL bUnicode, HWND h
 	return hRes;
 } // SaveToMSG
 
-HRESULT SaveToTNEF(LPMESSAGE lpMessage, LPADRBOOK lpAdrBook, LPCWSTR szFileName)
+_Check_return_ HRESULT SaveToTNEF(_In_ LPMESSAGE lpMessage, _In_ LPADRBOOK lpAdrBook, _In_z_ LPCWSTR szFileName)
 {
 	HRESULT hRes = S_OK;
 
@@ -857,7 +857,7 @@ HRESULT SaveToTNEF(LPMESSAGE lpMessage, LPADRBOOK lpAdrBook, LPCWSTR szFileName)
 	return hRes;
 } // SaveToTNEF
 
-HRESULT DeleteAttachments(LPMESSAGE lpMessage, LPCTSTR szAttName, HWND hWnd)
+_Check_return_ HRESULT DeleteAttachments(_In_ LPMESSAGE lpMessage, _In_opt_z_ LPCTSTR szAttName, HWND hWnd)
 {
 	LPSPropValue	pProps = NULL;
 	HRESULT			hRes = S_OK;
@@ -949,7 +949,7 @@ HRESULT DeleteAttachments(LPMESSAGE lpMessage, LPCTSTR szAttName, HWND hWnd)
 	return hRes;
 } // DeleteAllAttachments
 
-HRESULT WriteAttachmentsToFile(LPMESSAGE lpMessage, HWND hWnd)
+_Check_return_ HRESULT WriteAttachmentsToFile(_In_ LPMESSAGE lpMessage, HWND hWnd)
 {
 	LPSPropValue	pProps = NULL;
 	HRESULT			hRes = S_OK;
@@ -1025,7 +1025,7 @@ HRESULT WriteAttachmentsToFile(LPMESSAGE lpMessage, HWND hWnd)
 	return hRes;
 } // WriteAttachmentsToFile
 
-HRESULT WriteEmbeddedMSGToFile(LPATTACH lpAttach,LPCWSTR szFileName, BOOL bUnicode, HWND hWnd)
+_Check_return_ HRESULT WriteEmbeddedMSGToFile(_In_ LPATTACH lpAttach, _In_z_ LPCWSTR szFileName, BOOL bUnicode, HWND hWnd)
 {
 	HRESULT			hRes = S_OK;
 	LPMESSAGE		lpAttachMsg = NULL;
@@ -1050,7 +1050,7 @@ HRESULT WriteEmbeddedMSGToFile(LPATTACH lpAttach,LPCWSTR szFileName, BOOL bUnico
 	return hRes;
 } // WriteEmbeddedMSGToFile
 
-HRESULT WriteAttachStreamToFile(LPATTACH lpAttach,LPCWSTR szFileName)
+_Check_return_ HRESULT WriteAttachStreamToFile(_In_ LPATTACH lpAttach, _In_z_ LPCWSTR szFileName)
 {
 	HRESULT			hRes = S_OK;
 	LPSTREAM		pStrmSrc = NULL;
@@ -1112,7 +1112,7 @@ HRESULT WriteAttachStreamToFile(LPATTACH lpAttach,LPCWSTR szFileName)
 } // WriteAttachStreamToFile
 
 // Pretty sure this covers all OLE attachments - we don't need to look at PR_ATTACH_TAG
-HRESULT WriteOleToFile(LPATTACH lpAttach,LPCWSTR szFileName)
+_Check_return_ HRESULT WriteOleToFile(_In_ LPATTACH lpAttach, _In_z_ LPCWSTR szFileName)
 {
 	HRESULT			hRes = S_OK;
 	LPSTORAGE		lpStorageSrc = NULL;
@@ -1197,12 +1197,12 @@ HRESULT WriteOleToFile(LPATTACH lpAttach,LPCWSTR szFileName)
 	return hRes;
 } // WriteOleToFile
 
-HRESULT WriteAttachmentToFile(LPATTACH lpAttach, HWND hWnd)
+_Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd)
 {
 	HRESULT			hRes = S_OK;
 	LPSPropValue	lpProps = NULL;
 	ULONG			ulProps = 0;
-	WCHAR			szFileName[MAX_PATH];
+	WCHAR			szFileName[MAX_PATH] = {0};
 	INT_PTR			iDlgRet = 0;
 
 	enum {ATTACH_METHOD,ATTACH_LONG_FILENAME_W,ATTACH_FILENAME_W,DISPLAY_NAME_W,NUM_COLS};
@@ -1253,7 +1253,7 @@ HRESULT WriteAttachmentToFile(LPATTACH lpAttach, HWND hWnd)
 		case ATTACH_BY_REF_ONLY:
 			{
 				CStringW szFileSpec;
-				szFileSpec.LoadString(IDS_ALLFILES);
+				EC_B(szFileSpec.LoadString(IDS_ALLFILES));
 
 				CFileDialogExW dlgFilePicker;
 
@@ -1275,7 +1275,7 @@ HRESULT WriteAttachmentToFile(LPATTACH lpAttach, HWND hWnd)
 			// Get File Name
 			{
 				CStringW szFileSpec;
-				szFileSpec.LoadString(IDS_MSGFILES);
+				EC_B(szFileSpec.LoadString(IDS_MSGFILES));
 
 				CFileDialogExW dlgFilePicker;
 
@@ -1296,7 +1296,7 @@ HRESULT WriteAttachmentToFile(LPATTACH lpAttach, HWND hWnd)
 		case ATTACH_OLE:
 			{
 				CStringW szFileSpec;
-				szFileSpec.LoadString(IDS_ALLFILES);
+				EC_B(szFileSpec.LoadString(IDS_ALLFILES));
 
 				CFileDialogExW dlgFilePicker;
 

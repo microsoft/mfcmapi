@@ -10,17 +10,17 @@
 class CDbgView : public CEditor
 {
 public:
-	CDbgView(CParentWnd* pParentWnd);
+	CDbgView(_In_ CParentWnd* pParentWnd);
 	virtual ~CDbgView();
-	void AppendText(LPCTSTR szMsg);
+	void AppendText(_In_z_ LPCTSTR szMsg);
 
 private:
-	ULONG HandleChange(UINT nID);
+	_Check_return_ ULONG HandleChange(UINT nID);
 	void  OnEditAction1();
 
 	void OnOK();
 	void OnCancel();
-	virtual BOOL CheckAutoCenter();
+	_Check_return_ virtual BOOL CheckAutoCenter();
 	CParentWnd* m_lpNonModalParent;
 	CWnd* m_hwndCenteringWindow;
 	BOOL m_bPaused;
@@ -29,12 +29,12 @@ private:
 CDbgView* g_DgbView = NULL;
 
 // Displays the debug viewer - only one may exist at a time
-void DisplayDbgView(CParentWnd* pParentWnd)
+void DisplayDbgView(_In_ CParentWnd* pParentWnd)
 {
 	if (!g_DgbView) g_DgbView = new CDbgView(pParentWnd);
-}
+} // DisplayDbgView
 
-void OutputToDbgView(LPCTSTR szMsg)
+void OutputToDbgView(_In_z_ LPCTSTR szMsg)
 {
 	if (!g_DgbView) return;
 	g_DgbView->AppendText(szMsg);
@@ -50,7 +50,7 @@ enum __DbgViewFields
 
 static TCHAR* CLASS = _T("CDbgView");
 
-CDbgView::CDbgView(CParentWnd* pParentWnd):
+CDbgView::CDbgView(_In_ CParentWnd* pParentWnd):
 CEditor(pParentWnd,IDS_DBGVIEW,IDS_DBGVIEWPROMPT,0,CEDITOR_BUTTON_CANCEL|CEDITOR_BUTTON_ACTION1,IDS_CLEAR,NULL)
 {
 	TRACE_CONSTRUCTOR(CLASS);
@@ -72,10 +72,16 @@ CEditor(pParentWnd,IDS_DBGVIEW,IDS_DBGVIEWPROMPT,0,CEDITOR_BUTTON_CANCEL|CEDITOR
 	HINSTANCE hInst = AfxFindResourceHandle(m_lpszTemplateName, RT_DIALOG);
 	HRSRC hResource = NULL;
 	EC_D(hResource,::FindResource(hInst, m_lpszTemplateName, RT_DIALOG));
-	HGLOBAL hTemplate = NULL;
-	EC_D(hTemplate,LoadResource(hInst, hResource));
-	LPCDLGTEMPLATE lpDialogTemplate = (LPCDLGTEMPLATE)LockResource(hTemplate);
-	EC_B(CreateDlgIndirect(lpDialogTemplate, m_lpNonModalParent, hInst));
+	if (hResource)
+	{
+		HGLOBAL hTemplate = NULL;
+		EC_D(hTemplate,LoadResource(hInst, hResource));
+		if (hTemplate)
+		{
+			LPCDLGTEMPLATE lpDialogTemplate = (LPCDLGTEMPLATE)LockResource(hTemplate);
+			EC_B(CreateDlgIndirect(lpDialogTemplate, m_lpNonModalParent, hInst));
+		}
+	}
 } // CDbgView::CDbgView
 
 CDbgView::~CDbgView()
@@ -98,7 +104,7 @@ void CDbgView::OnCancel()
 
 // MFC will call this function to check if it ought to center the dialog
 // We'll tell it no, but also place the dialog where we want it.
-BOOL CDbgView::CheckAutoCenter()
+_Check_return_ BOOL CDbgView::CheckAutoCenter()
 {
 	// We can make the debug viewer wider - OnSize will fix the height for us
 	SetWindowPos(NULL,0,0,800,0,NULL);
@@ -106,7 +112,7 @@ BOOL CDbgView::CheckAutoCenter()
 	return false;
 } // CDbgView::CheckAutoCenter
 
-ULONG CDbgView::HandleChange(UINT nID)
+_Check_return_ ULONG CDbgView::HandleChange(UINT nID)
 {
 	ULONG i = CEditor::HandleChange(nID);
 
@@ -139,7 +145,7 @@ void CDbgView::OnEditAction1()
 	ClearView(DBGVIEW_VIEW);
 } // CDbgView::OnEditAction1
 
-void CDbgView::AppendText(LPCTSTR szMsg)
+void CDbgView::AppendText(_In_z_ LPCTSTR szMsg)
 {
 	if (m_bPaused) return;
 	AppendString(DBGVIEW_VIEW,szMsg);

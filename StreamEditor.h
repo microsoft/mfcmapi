@@ -7,10 +7,10 @@ class CStreamEditor : public CEditor
 {
 public:
 	CStreamEditor(
-		CWnd* pParentWnd,
+		_In_ CWnd* pParentWnd,
 		UINT uidTitle,
 		UINT uidPrompt,
-		LPMAPIPROP lpMAPIProp,
+		_In_ LPMAPIPROP lpMAPIProp,
 		ULONG ulPropTag,
 		BOOL bIsAB,
 		BOOL bEditPropAsRTF,
@@ -21,10 +21,10 @@ public:
 	virtual ~CStreamEditor();
 
 private:
-	BOOL  OnInitDialog();
+	_Check_return_ BOOL  OnInitDialog();
 	void  ReadTextStreamFromProperty();
 	void  WriteTextStreamToProperty();
-	ULONG HandleChange(UINT nID);
+	_Check_return_ ULONG HandleChange(UINT nID);
 	void  OnOK();
 
 	// source variables

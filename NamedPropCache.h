@@ -19,28 +19,28 @@ typedef struct _NamedPropCacheEntry
 // Cache initializes on demand. Uninitialize on program shutdown.
 void UninitializeNamedPropCache();
 
-LPNAMEDPROPCACHEENTRY FindCacheEntry(ULONG ulPropID, LPGUID lpguid, ULONG ulKind, LONG lID, LPWSTR lpwstrName);
+_Check_return_ LPNAMEDPROPCACHEENTRY FindCacheEntry(ULONG ulPropID, _In_ LPGUID lpguid, ULONG ulKind, LONG lID, _In_z_ LPWSTR lpwstrName);
 
-HRESULT GetNamesFromIDs(LPMAPIPROP lpMAPIProp,
-						LPSPropTagArray* lppPropTags,
-						LPGUID lpPropSetGuid,
-						ULONG ulFlags,
-						ULONG* lpcPropNames,
-						LPMAPINAMEID** lpppPropNames);
-HRESULT GetNamesFromIDs(LPMAPIPROP lpMAPIProp,
-						LPSBinary lpMappingSignature,
-						LPSPropTagArray* lppPropTags,
-						LPGUID lpPropSetGuid,
-						ULONG ulFlags,
-						ULONG* lpcPropNames,
-						LPMAPINAMEID** lpppPropNames);
-HRESULT GetIDsFromNames(LPMAPIPROP lpMAPIProp,
-						ULONG cPropNames,
-						LPMAPINAMEID* lppPropNames,
-						ULONG ulFlags,
-						LPSPropTagArray* lppPropTags);
+_Check_return_ HRESULT GetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp,
+									   _In_ LPSPropTagArray* lppPropTags,
+									   _In_opt_ LPGUID lpPropSetGuid,
+									   ULONG ulFlags,
+									   _Out_ ULONG* lpcPropNames,
+									   _Out_ _Deref_post_cap_(*lpcPropNames) LPMAPINAMEID** lpppPropNames);
+_Check_return_ HRESULT GetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp,
+									   _In_opt_ LPSBinary lpMappingSignature,
+									   _In_ LPSPropTagArray* lppPropTags,
+									   _In_opt_ LPGUID lpPropSetGuid,
+									   ULONG ulFlags,
+									   _Out_ ULONG* lpcPropNames,
+									   _Out_ _Deref_post_cap_(*lpcPropNames) LPMAPINAMEID** lpppPropNames);
+_Check_return_ HRESULT GetIDsFromNames(_In_ LPMAPIPROP lpMAPIProp,
+									   ULONG cPropNames,
+									   _In_opt_count_(cPropNames) LPMAPINAMEID* lppPropNames,
+									   ULONG ulFlags,
+									   _Out_ _Deref_post_cap_(cPropNames) LPSPropTagArray* lppPropTags);
 
-inline BOOL fCacheNamedProps()
+_Check_return_ inline BOOL fCacheNamedProps()
 {
 	return RegKeys[regkeyCACHE_NAME_DPROPS].ulCurDWORD != 0;
-}
+} // fCacheNamedProps

@@ -17,10 +17,10 @@ static TCHAR* CLASS = _T("CAttachmentsDlg");
 // CAttachmentsDlg dialog
 
 CAttachmentsDlg::CAttachmentsDlg(
-								 CParentWnd* pParentWnd,
-								 CMapiObjects* lpMapiObjects,
-								 LPMAPITABLE lpMAPITable,
-								 LPMESSAGE lpMessage,
+								 _In_ CParentWnd* pParentWnd,
+								 _In_ CMapiObjects* lpMapiObjects,
+								 _In_ LPMAPITABLE lpMAPITable,
+								 _In_ LPMESSAGE lpMessage,
 								 BOOL bSaveMessageAtClose
 								 ):
 CContentsTableDlg(
@@ -45,7 +45,7 @@ CContentsTableDlg(
 	m_lpAttach = NULL;
 
 	CreateDialogAndMenu(IDR_MENU_ATTACHMENTS);
-}
+} // CAttachmentsDlg::CAttachmentsDlg
 
 CAttachmentsDlg::~CAttachmentsDlg()
 {
@@ -58,7 +58,7 @@ CAttachmentsDlg::~CAttachmentsDlg()
 		EC_H(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 	}
 	if (m_lpMessage) m_lpMessage->Release();
-}
+} // CAttachmentsDlg::~CAttachmentsDlg
 
 BEGIN_MESSAGE_MAP(CAttachmentsDlg, CContentsTableDlg)
 	ON_COMMAND(ID_DELETESELECTEDITEM, OnDeleteSelectedItem)
@@ -71,7 +71,7 @@ BEGIN_MESSAGE_MAP(CAttachmentsDlg, CContentsTableDlg)
 	ON_COMMAND(ID_RECIPIENTPROPERTIES, OnRecipientProperties)
 END_MESSAGE_MAP()
 
-void CAttachmentsDlg::OnInitMenu(CMenu* pMenu)
+void CAttachmentsDlg::OnInitMenu(_In_ CMenu* pMenu)
 {
 	if (pMenu)
 	{
@@ -95,23 +95,23 @@ void CAttachmentsDlg::OnInitMenu(CMenu* pMenu)
 
 	}
 	CContentsTableDlg::OnInitMenu(pMenu);
-}
+} // CAttachmentsDlg::OnInitMenu
 
-HRESULT CAttachmentsDlg::OpenItemProp(
+_Check_return_ HRESULT CAttachmentsDlg::OpenItemProp(
 									  int iSelectedItem,
 									  __mfcmapiModifyEnum /*bModify*/,
-									  LPMAPIPROP* lppMAPIProp)
+									  _Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
 {
 	HRESULT			hRes = S_OK;
 	SortListData*	lpListData = NULL;
 
 	DebugPrintEx(DBGOpenItemProp,CLASS,_T("OpenItemProp"),_T("iSelectedItem = 0x%X\n"),iSelectedItem);
 
+	if (!m_lpContentsTableListCtrl || !lppMAPIProp) return MAPI_E_INVALID_PARAMETER;
+
 	*lppMAPIProp = NULL;
 	if (m_lpAttach) m_lpAttach->Release();
 	m_lpAttach = NULL;
-
-	if (!m_lpContentsTableListCtrl || !lppMAPIProp) return MAPI_E_INVALID_PARAMETER;
 
 	// Find the highlighted item AttachNum
 	lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(NULL);
@@ -161,16 +161,16 @@ HRESULT CAttachmentsDlg::OpenItemProp(
 		}
 	}
 	return hRes;
-}
+} // CAttachmentsDlg::OpenItemProp
 
-BOOL CAttachmentsDlg::HandleCopy()
+void CAttachmentsDlg::HandleCopy()
 {
-	if (!m_lpContentsTableListCtrl || !m_lpMessage) return false;
+	if (!m_lpContentsTableListCtrl || !m_lpMessage) return;
 	HRESULT hRes = S_OK;
 	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
 	DebugPrintEx(DBGGeneric,CLASS,_T("HandleCopy"),_T("\n"));
-	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return false;
+	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return;
 
 	ULONG*			lpAttNumList = NULL;
 	SortListData*	lpListData = NULL;
@@ -200,11 +200,9 @@ BOOL CAttachmentsDlg::HandleCopy()
 			m_lpMapiObjects->SetAttachmentsToCopy(m_lpMessage, ulNumSelected, lpAttNumList);
 		}
 	}
-
-	return true;
 } // CAttachmentsDlg::HandleCopy
 
-BOOL CAttachmentsDlg::HandlePaste()
+_Check_return_ BOOL CAttachmentsDlg::HandlePaste()
 {
 	if (CBaseDialog::HandlePaste()) return true;
 
@@ -348,7 +346,7 @@ void CAttachmentsDlg::OnModifySelectedItem()
 
 		EC_H(m_lpAttach->SaveChanges(KEEP_OPEN_READWRITE));
 	}
-}
+} // CAttachmentsDlg::OnModifySelectedItem
 
 void CAttachmentsDlg::OnSaveChanges()
 {
@@ -358,7 +356,7 @@ void CAttachmentsDlg::OnSaveChanges()
 
 		EC_H(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 	}
-}
+} // CAttachmentsDlg::OnSaveChanges
 
 void CAttachmentsDlg::OnSaveToFile()
 {
@@ -413,7 +411,7 @@ void CAttachmentsDlg::OnUseMapiModify()
 	m_bUseMapiModifyOnEmbeddedMessage = !m_bUseMapiModifyOnEmbeddedMessage;
 } // CAttachmentsDlg::OnUseMapiModify
 
-HRESULT CAttachmentsDlg::GetEmbeddedMessage(int iIndex, LPMESSAGE *lppMessage)
+_Check_return_ HRESULT CAttachmentsDlg::GetEmbeddedMessage(int iIndex, _Deref_out_opt_ LPMESSAGE *lppMessage)
 {
 	HRESULT hRes = S_OK;
 	LPMAPIPROP lpMAPIProp = NULL;
@@ -475,9 +473,9 @@ void CAttachmentsDlg::OnRecipientProperties()
 } // CAttachmentsDlg::OnRecipientProperties
 
 void CAttachmentsDlg::HandleAddInMenuSingle(
-	LPADDINMENUPARAMS lpParams,
-	LPMAPIPROP lpMAPIProp,
-	LPMAPICONTAINER /*lpContainer*/)
+	_In_ LPADDINMENUPARAMS lpParams,
+	_In_ LPMAPIPROP lpMAPIProp,
+	_In_ LPMAPICONTAINER /*lpContainer*/)
 {
 	if (lpParams)
 	{

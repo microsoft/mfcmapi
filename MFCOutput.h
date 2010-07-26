@@ -5,7 +5,7 @@
 
 void OpenDebugFile();
 void CloseDebugFile();
-ULONG GetDebugLevel();
+_Check_return_ ULONG GetDebugLevel();
 void SetDebugLevel(ULONG ulDbgLvl);
 void SetDebugOutputToFile(BOOL bDoOutput);
 
@@ -43,17 +43,17 @@ void SetDebugOutputToFile(BOOL bDoOutput);
 
 #define fIsSet(ulTag)	(((ulTag) != DBGNoDebug) && (RegKeys[regkeyDEBUG_TAG].ulCurDWORD & (ulTag)))
 
-FILE* OpenFile(LPCWSTR szFileName,BOOL bNewFile);
-void CloseFile(FILE* fFile);
+_Check_return_ FILE* OpenFile(_In_z_ LPCWSTR szFileName,BOOL bNewFile);
+void CloseFile(_In_opt_ FILE* fFile);
 
-void _Output(ULONG ulDbgLvl, FILE* fFile, BOOL bPrintThreadTime, LPCTSTR szMsg);
-void __cdecl Outputf(ULONG ulDbgLvl, FILE* fFile, BOOL bPrintThreadTime, LPCTSTR szMsg,...);
+void _Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, BOOL bPrintThreadTime, _In_opt_z_ LPCTSTR szMsg);
+void __cdecl Outputf(ULONG ulDbgLvl, _In_opt_ FILE* fFile, BOOL bPrintThreadTime, _Printf_format_string_ LPCTSTR szMsg, ...);
 
 #define OutputToFile(fFile, szMsg) _Output((DBGNoDebug), (fFile), true, (szMsg))
-void __cdecl OutputToFilef(FILE* fFile, LPCTSTR szMsg,...);
+void __cdecl OutputToFilef(_In_opt_ FILE* fFile, _Printf_format_string_ LPCTSTR szMsg, ...);
 
-void __cdecl DebugPrint(ULONG ulDbgLvl,LPCTSTR szMsg,...);
-void __cdecl DebugPrintEx(ULONG ulDbgLvl,LPCTSTR szClass, LPCTSTR szFunc, LPCTSTR szMsg, ...);
+void __cdecl DebugPrint(ULONG ulDbgLvl, _Printf_format_string_ LPCTSTR szMsg, ...);
+void __cdecl DebugPrintEx(ULONG ulDbgLvl, _In_z_ LPCTSTR szClass, _In_z_ LPCTSTR szFunc, _Printf_format_string_ LPCTSTR szMsg, ...);
 
 // Template for the Output functions
 // void Output(ULONG ulDbgLvl, LPCTSTR szFileName,stufftooutput)
@@ -64,19 +64,19 @@ void __cdecl DebugPrintEx(ULONG ulDbgLvl,LPCTSTR szClass, LPCTSTR szFunc, LPCTST
 
 // We'll use macros to make these calls so the code will read right
 
-void _OutputBinary(ULONG ulDbgLvl, FILE* fFile, LPSBinary lpBin);
-void _OutputProperty(ULONG ulDbgLvl, FILE* fFile, LPSPropValue lpProp, LPMAPIPROP lpObj);
-void _OutputProperties(ULONG ulDbgLvl, FILE* fFile, ULONG cProps, LPSPropValue lpProps, LPMAPIPROP lpObj);
-void _OutputSRow(ULONG ulDbgLvl, FILE* fFile, LPSRow lpSRow, LPMAPIPROP lpObj);
-void _OutputSRowSet(ULONG ulDbgLvl, FILE* fFile, LPSRowSet lpRowSet, LPMAPIPROP lpObj);
-void _OutputRestriction(ULONG ulDbgLvl, FILE* fFile, LPSRestriction lpRes, LPMAPIPROP lpObj);
-void _OutputStream(ULONG ulDbgLvl, FILE* fFile, LPSTREAM lpStream);
-void _OutputVersion(ULONG ulDbgLvl, FILE* fFile);
-void _OutputFormInfo(ULONG ulDbgLvl, FILE* fFile, LPMAPIFORMINFO lpMAPIFormInfo);
-void _OutputFormPropArray(ULONG ulDbgLvl, FILE* fFile, LPMAPIFORMPROPARRAY lpMAPIFormPropArray);
-void _OutputPropTagArray(ULONG ulDbgLvl, FILE* fFile, LPSPropTagArray lpTagsToDump);
-void _OutputTable(ULONG ulDbgLvl, FILE* fFile, LPMAPITABLE lpMAPITable);
-void _OutputNotifications(ULONG ulDbgLvl, FILE* fFile, ULONG cNotify, LPNOTIFICATION lpNotifications);
+void _OutputBinary(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSBinary lpBin);
+void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpProp, _In_opt_ LPMAPIPROP lpObj);
+void _OutputProperties(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cProps, _In_count_(cProps) LPSPropValue lpProps, _In_opt_ LPMAPIPROP lpObj);
+void _OutputSRow(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSRow lpSRow, _In_opt_ LPMAPIPROP lpObj);
+void _OutputSRowSet(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSRowSet lpRowSet, _In_opt_ LPMAPIPROP lpObj);
+void _OutputRestriction(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj);
+void _OutputStream(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSTREAM lpStream);
+void _OutputVersion(ULONG ulDbgLvl, _In_opt_ FILE* fFile);
+void _OutputFormInfo(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMINFO lpMAPIFormInfo);
+void _OutputFormPropArray(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMPROPARRAY lpMAPIFormPropArray);
+void _OutputPropTagArray(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropTagArray lpTagsToDump);
+void _OutputTable(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPITABLE lpMAPITable);
+void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify,  _In_count_(cNotify) LPNOTIFICATION lpNotifications);
 
 #define DebugPrintBinary(ulDbgLvl, lpBin)						_OutputBinary((ulDbgLvl), NULL, (lpBin))
 #define DebugPrintProperties(ulDbgLvl, cProps, lpProps, lpObj)	_OutputProperties((ulDbgLvl), NULL, (cProps), (lpProps), (lpObj))
@@ -94,11 +94,11 @@ void _OutputNotifications(ULONG ulDbgLvl, FILE* fFile, ULONG cNotify, LPNOTIFICA
 
 // We'll only output this information in debug builds.
 #ifdef _DEBUG
-#define TRACE_CONSTRUCTOR(__class) DebugPrintEx(DBGConDes,(__class),(__class),_T("(this = 0x%X) - Constructor\n"),this);
-#define TRACE_DESTRUCTOR(__class) DebugPrintEx(DBGConDes,(__class),(__class),_T("(this = 0x%X) - Destructor\n"),this);
+#define TRACE_CONSTRUCTOR(__class) DebugPrintEx(DBGConDes,(__class),(__class),_T("(this = %p) - Constructor\n"),this);
+#define TRACE_DESTRUCTOR(__class) DebugPrintEx(DBGConDes,(__class),(__class),_T("(this = %p) - Destructor\n"),this);
 
-#define TRACE_ADDREF(__class,__count) DebugPrintEx(DBGRefCount,(__class),_T("AddRef"),_T("(this = 0x%X) m_cRef increased to %d.\n"),this,(__count));
-#define TRACE_RELEASE(__class,__count) DebugPrintEx(DBGRefCount,(__class),_T("Release"),_T("(this = 0x%X) m_cRef decreased to %d.\n"),this,(__count));
+#define TRACE_ADDREF(__class,__count) DebugPrintEx(DBGRefCount,(__class),_T("AddRef"),_T("(this = %p) m_cRef increased to %d.\n"),this,(__count));
+#define TRACE_RELEASE(__class,__count) DebugPrintEx(DBGRefCount,(__class),_T("Release"),_T("(this = %p) m_cRef decreased to %d.\n"),this,(__count));
 #else
 #define TRACE_CONSTRUCTOR(__class)
 #define TRACE_DESTRUCTOR(__class)
@@ -107,7 +107,7 @@ void _OutputNotifications(ULONG ulDbgLvl, FILE* fFile, ULONG cNotify, LPNOTIFICA
 #define TRACE_RELEASE(__class,__count)
 #endif
 
-void OutputXMLValueToFile(FILE* fFile,UINT uidTag, LPCTSTR szValue, int iIndent);
-void OutputCDataOpen(FILE* fFile);
-void OutputCDataClose(FILE* fFile);
-void OutputXMLCDataValueToFile(FILE* fFile,UINT uidTag, LPCTSTR szValue, int iIndent);
+void OutputXMLValueToFile(_In_opt_ FILE* fFile, UINT uidTag, _In_opt_z_ LPCTSTR szValue, int iIndent);
+void OutputCDataOpen(_In_opt_ FILE* fFile);
+void OutputCDataClose(_In_opt_ FILE* fFile);
+void OutputXMLCDataValueToFile(_In_opt_ FILE* fFile, UINT uidTag, _In_z_ LPCTSTR szValue, int iIndent);

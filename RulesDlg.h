@@ -12,17 +12,17 @@ class CRulesDlg : public CContentsTableDlg
 {
 public:
 	CRulesDlg(
-		CParentWnd* pParentWnd,
-		CMapiObjects* lpMapiObjects,
-		LPEXCHANGEMODIFYTABLE lpExchTbl);
+		_In_ CParentWnd* pParentWnd,
+		_In_ CMapiObjects* lpMapiObjects,
+		_In_ LPEXCHANGEMODIFYTABLE lpExchTbl);
 	virtual ~CRulesDlg();
 
 private:
 	// Overrides from base class
 	void HandleAddInMenuSingle(
-		LPADDINMENUPARAMS lpParams,
-		LPMAPIPROP lpMAPIProp,
-		LPMAPICONTAINER lpContainer);
+		_In_ LPADDINMENUPARAMS lpParams,
+		_In_ LPMAPIPROP lpMAPIProp,
+		_In_ LPMAPICONTAINER lpContainer);
 	void OnDeleteSelectedItem();
 	void OnInitMenu(CMenu* pMenu);
 	void OnRefreshView();
@@ -30,7 +30,7 @@ private:
 	// Menu items
 	void OnModifySelectedItem();
 
-	HRESULT GetSelectedItems(ULONG ulFlags, ULONG ulRowFlags, LPROWLIST* lppRowList);
+	_Check_return_ HRESULT GetSelectedItems(ULONG ulFlags, ULONG ulRowFlags, _In_ LPROWLIST* lppRowList);
 
 	LPEXCHANGEMODIFYTABLE m_lpExchTbl;
 

@@ -13,33 +13,33 @@ class CBaseDialog : public CDialog
 {
 public:
 	CBaseDialog(
-		CParentWnd* pParentWnd,
-		CMapiObjects* lpMapiObjects,
+		_In_ CParentWnd* pParentWnd,
+		_In_ CMapiObjects* lpMapiObjects,
 		ULONG ulAddInContext);
 	virtual ~CBaseDialog();
 
 	STDMETHODIMP_(ULONG) AddRef();
 	STDMETHODIMP_(ULONG) Release();
 
-	void OnUpdateSingleMAPIPropListCtrl(LPMAPIPROP lpMAPIProp, SortListData* lpListData);
-	BOOL HandleKeyDown(UINT nChar, BOOL bShift, BOOL bCtrl, BOOL bMenu);
+	void OnUpdateSingleMAPIPropListCtrl(_In_opt_ LPMAPIPROP lpMAPIProp, _In_opt_ SortListData* lpListData);
+	_Check_return_ BOOL HandleKeyDown(UINT nChar, BOOL bShift, BOOL bCtrl, BOOL bMenu);
 
-	void UpdateTitleBarText(LPCTSTR szMsg);
-	void UpdateStatusBarText(__StatusPaneEnum nPos,LPCTSTR szMsg);
-	void __cdecl UpdateStatusBarText(__StatusPaneEnum nPos,UINT uidMsg,...);
-	void OnOpenEntryID(LPSBinary lpBin);
-	CParentWnd* GetParentWnd();
-	CMapiObjects* GetMapiObjects();
+	void UpdateTitleBarText(_In_opt_z_ LPCTSTR szMsg);
+	void UpdateStatusBarText(__StatusPaneEnum nPos, _In_z_ LPCTSTR szMsg);
+	void __cdecl UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg, ...);
+	void OnOpenEntryID(_In_opt_ LPSBinary lpBin);
+	_Check_return_ CParentWnd* GetParentWnd();
+	_Check_return_ CMapiObjects* GetMapiObjects();
 
 protected:
 	// Overrides called by child classes
 	virtual void CreateDialogAndMenu(UINT nIDMenuResource);
-	virtual void EnableAddInMenus(CMenu* pMenu, ULONG ulMenu, LPMENUITEM lpAddInMenu, UINT uiEnable);
-	virtual BOOL HandleMenu(WORD wMenuSelect);
-	virtual BOOL HandlePaste();
+	virtual void EnableAddInMenus(_In_ CMenu* pMenu, ULONG ulMenu, _In_ LPMENUITEM lpAddInMenu, UINT uiEnable);
+	_Check_return_ virtual BOOL HandleMenu(WORD wMenuSelect);
+	_Check_return_ virtual BOOL HandlePaste();
 	virtual void OnCancel();
-	virtual BOOL OnInitDialog();
-	virtual void OnInitMenu(CMenu* pMenu);
+	_Check_return_ virtual BOOL OnInitDialog();
+	virtual void OnInitMenu(_In_opt_ CMenu* pMenu);
 
 	void AddMenu(UINT uiResource, UINT uidTitle, UINT uiPos);
 
@@ -54,16 +54,16 @@ protected:
 	CParentWnd*					m_lpParent;
 
 private:
-	virtual BOOL HandleAddInMenu(WORD wMenuSelect);
-	virtual BOOL HandleCopy();
+	_Check_return_ virtual BOOL HandleAddInMenu(WORD wMenuSelect);
+	virtual void HandleCopy();
 	virtual void OnDeleteSelectedItem();
 	virtual void OnEscHit();
 	virtual void OnRefreshView();
-	virtual BOOL CheckAutoCenter();
+	_Check_return_ virtual BOOL CheckAutoCenter();
 
 	// Overrides from base class
-	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
-	void    OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized);
+	_Check_return_ LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	void    OnActivate(UINT nState, _In_ CWnd* pWndOther, BOOL bMinimized);
 	void    OnMenuSelect(UINT nItemID, UINT nFlags, HMENU hSysMenu);
 	void    OnOK();
 	void    OnSize(UINT nType, int cx, int cy);
@@ -84,8 +84,8 @@ private:
 	void SetStatusWidths();
 
 	// Custom messages
-	LRESULT msgOnUpdateStatusBar(WPARAM wParam, LPARAM lParam);
-	LRESULT msgOnClearSingleMAPIPropList(WPARAM wParam, LPARAM lParam);
+	_Check_return_ LRESULT msgOnUpdateStatusBar(WPARAM wParam, LPARAM lParam);
+	_Check_return_ LRESULT msgOnClearSingleMAPIPropList(WPARAM wParam, LPARAM lParam);
 
 	LONG			m_cRef;
 	HICON			m_hIcon;

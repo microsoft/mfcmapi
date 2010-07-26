@@ -6,14 +6,14 @@
 #include "Editor.h"
 #include "ImportProcs.h"
 
-HRESULT ImportEMLToIMessage(
-							LPCWSTR lpszEMLFile,
-							LPMESSAGE lpMsg,
-							ULONG ulConvertFlags,
-							BOOL bApply,
-							HCHARSET hCharSet,
-							CSETAPPLYTYPE cSetApplyType,
-							LPADRBOOK lpAdrBook)
+_Check_return_ HRESULT ImportEMLToIMessage(
+	_In_z_ LPCWSTR lpszEMLFile,
+	_In_ LPMESSAGE lpMsg,
+	ULONG ulConvertFlags,
+	BOOL bApply,
+	HCHARSET hCharSet,
+	CSETAPPLYTYPE cSetApplyType,
+	_In_ LPADRBOOK lpAdrBook)
 {
 	if (!lpszEMLFile || !lpMsg) return MAPI_E_INVALID_PARAMETER;
 
@@ -67,10 +67,10 @@ HRESULT ImportEMLToIMessage(
 	if (lpConverter) lpConverter->Release();
 
 	return hRes;
-}
+} // ImportEMLToIMessage
 
-HRESULT ExportIMessageToEML(LPMESSAGE lpMsg, LPCWSTR lpszEMLFile, ULONG ulConvertFlags,
-							ENCODINGTYPE et, MIMESAVETYPE mst, ULONG ulWrapLines,LPADRBOOK lpAdrBook)
+_Check_return_ HRESULT ExportIMessageToEML(_In_ LPMESSAGE lpMsg, _In_z_ LPCWSTR lpszEMLFile, ULONG ulConvertFlags,
+										   ENCODINGTYPE et, MIMESAVETYPE mst, ULONG ulWrapLines, _In_ LPADRBOOK lpAdrBook)
 {
 	if (!lpszEMLFile || !lpMsg) return MAPI_E_INVALID_PARAMETER;
 
@@ -149,17 +149,16 @@ HRESULT ExportIMessageToEML(LPMESSAGE lpMsg, LPCWSTR lpszEMLFile, ULONG ulConver
 	if (lpConverter) lpConverter->Release();
 
 	return hRes;
-}
+} // ExportIMessageToEML
 
-HRESULT ConvertEMLToMSG(
-						LPCWSTR lpszEMLFile,
-						LPCWSTR lpszMSGFile,
-						ULONG ulConvertFlags,
-						BOOL bApply,
-						HCHARSET hCharSet,
-						CSETAPPLYTYPE cSetApplyType,
-						LPADRBOOK lpAdrBook,
-						BOOL bUnicode)
+_Check_return_ HRESULT ConvertEMLToMSG(_In_z_ LPCWSTR lpszEMLFile,
+									   _In_z_ LPCWSTR lpszMSGFile,
+									   ULONG ulConvertFlags,
+									   BOOL bApply,
+									   HCHARSET hCharSet,
+									   CSETAPPLYTYPE cSetApplyType,
+									   _In_ LPADRBOOK lpAdrBook,
+									   BOOL bUnicode)
 {
 	if (!lpszEMLFile || !lpszMSGFile) return MAPI_E_INVALID_PARAMETER;
 
@@ -188,15 +187,15 @@ HRESULT ConvertEMLToMSG(
 	if (pStorage) pStorage->Release();
 
 	return hRes;
-}
+} // ConvertEMLToMSG
 
-HRESULT ConvertMSGToEML(LPCWSTR lpszMSGFile,
-						LPCWSTR lpszEMLFile,
-						ULONG ulConvertFlags,
-						ENCODINGTYPE et,
-						MIMESAVETYPE mst,
-						ULONG ulWrapLines,
-						LPADRBOOK lpAdrBook)
+_Check_return_ HRESULT ConvertMSGToEML(_In_z_ LPCWSTR lpszMSGFile,
+									   _In_z_ LPCWSTR lpszEMLFile,
+									   ULONG ulConvertFlags,
+									   ENCODINGTYPE et,
+									   MIMESAVETYPE mst,
+									   ULONG ulWrapLines,
+									   _In_ LPADRBOOK lpAdrBook)
 {
 	if (!lpszEMLFile || !lpszMSGFile) return MAPI_E_INVALID_PARAMETER;
 
@@ -219,14 +218,14 @@ HRESULT ConvertMSGToEML(LPCWSTR lpszMSGFile,
 	if (pMessage) pMessage->Release();
 
 	return hRes;
-}
+} // ConvertMSGToEML
 
-HRESULT GetConversionToEMLOptions(CWnd* pParentWnd,
-								  ULONG* lpulConvertFlags,
-								  ENCODINGTYPE* lpet,
-								  MIMESAVETYPE* lpmst,
-								  ULONG* lpulWrapLines,
-								  BOOL* pDoAdrBook)
+_Check_return_ HRESULT GetConversionToEMLOptions(_In_ CWnd* pParentWnd,
+												 _Out_ ULONG* lpulConvertFlags,
+												 _Out_ ENCODINGTYPE* lpet,
+												 _Out_ MIMESAVETYPE* lpmst,
+												 _Out_ ULONG* lpulWrapLines,
+												 _Out_ BOOL* pDoAdrBook)
 {
 	if (!lpulConvertFlags || !lpet || !lpmst || !lpulWrapLines || !pDoAdrBook) return MAPI_E_INVALID_PARAMETER;
 	HRESULT hRes = S_OK;
@@ -263,13 +262,13 @@ HRESULT GetConversionToEMLOptions(CWnd* pParentWnd,
 	return hRes;
 } // GetConversionToEMLOptions
 
-HRESULT GetConversionFromEMLOptions(CWnd* pParentWnd,
-									ULONG* lpulConvertFlags,
-									BOOL* pDoAdrBook,
-									BOOL* pDoApply,
-									HCHARSET* phCharSet,
-									CSETAPPLYTYPE* pcSetApplyType,
-									BOOL* pbUnicode)
+_Check_return_ HRESULT GetConversionFromEMLOptions(_In_ CWnd* pParentWnd,
+												   _Out_ ULONG* lpulConvertFlags,
+												   _Out_ BOOL* pDoAdrBook,
+												   _Out_ BOOL* pDoApply,
+												   _Out_ HCHARSET* phCharSet,
+												   _Out_ CSETAPPLYTYPE* pcSetApplyType,
+												   _Out_opt_ BOOL* pbUnicode)
 {
 	if (!lpulConvertFlags || !pDoAdrBook || !pDoApply || !phCharSet || !pcSetApplyType) return MAPI_E_INVALID_PARAMETER;
 	HRESULT hRes = S_OK;
@@ -318,4 +317,4 @@ HRESULT GetConversionFromEMLOptions(CWnd* pParentWnd,
 		}
 	}
 	return hRes;
-}
+} // GetConversionFromEMLOptions

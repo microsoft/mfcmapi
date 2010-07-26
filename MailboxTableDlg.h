@@ -12,10 +12,10 @@ class CMailboxTableDlg : public CContentsTableDlg
 {
 public:
 	CMailboxTableDlg(
-		CParentWnd* pParentWnd,
-		CMapiObjects* lpMapiObjects,
-		LPCTSTR lpszServerName,
-		LPMAPITABLE	lpMAPITable);
+		_In_ CParentWnd* pParentWnd,
+		_In_ CMapiObjects* lpMapiObjects,
+		_In_z_ LPCTSTR lpszServerName,
+		_In_ LPMAPITABLE lpMAPITable);
 	virtual ~CMailboxTableDlg();
 
 private:
@@ -24,7 +24,7 @@ private:
 	void DisplayItem(ULONG ulFlags);
 	void OnCreatePropertyStringRestriction();
 	void OnDisplayItem();
-	void OnInitMenu(CMenu* pMenu);
+	void OnInitMenu(_In_ CMenu* pMenu);
 
 	// Menu items
 	void OnOpenWithFlags();

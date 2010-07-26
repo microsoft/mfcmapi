@@ -9,34 +9,34 @@ class CContentsTableDlg : public CBaseDialog
 {
 public:
 	CContentsTableDlg(
-		CParentWnd* pParentWnd,
-		CMapiObjects* lpMapiObjects,
+		_In_ CParentWnd* pParentWnd,
+		_In_ CMapiObjects* lpMapiObjects,
 		UINT uidTitle,
 		__mfcmapiCreateDialogEnum bCreateDialog,
-		LPMAPITABLE lpContentsTable,
-		LPSPropTagArray	sptExtraColumnTags,
+		_In_opt_ LPMAPITABLE lpContentsTable,
+		_In_ LPSPropTagArray sptExtraColumnTags,
 		ULONG iNumExtraDisplayColumns,
-		TagNames *lpExtraDisplayColumns,
+		_In_count_(iNumExtraDisplayColumns) TagNames* lpExtraDisplayColumns,
 		ULONG nIDContextMenu,
 		ULONG ulAddInContext
 		);
 	virtual ~CContentsTableDlg();
 
-	virtual HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, LPMAPIPROP* lppMAPIProp);
+	_Check_return_ virtual HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp);
 
 protected:
 	// Overrides from base class
 	void CreateDialogAndMenu(UINT nIDMenuResource);
-	BOOL HandleMenu(WORD wMenuSelect);
-	BOOL OnInitDialog();
-	void OnInitMenu(CMenu* pMenu);
+	_Check_return_ BOOL HandleMenu(WORD wMenuSelect);
+	_Check_return_ BOOL OnInitDialog();
+	void OnInitMenu(_In_opt_ CMenu* pMenu);
 	void OnRefreshView();
 
 	virtual void OnDisplayItem();
 
 	void SetRestrictionType(__mfcmapiRestrictionTypeEnum RestrictionType);
-	HRESULT OpenAttachmentsFromMessage(LPMESSAGE lpMessage, BOOL fSaveMessageAtClose);
-	HRESULT OpenRecipientsFromMessage(LPMESSAGE lpMessage);
+	_Check_return_ HRESULT OpenAttachmentsFromMessage(_In_ LPMESSAGE lpMessage, BOOL fSaveMessageAtClose);
+	_Check_return_ HRESULT OpenRecipientsFromMessage(_In_ LPMESSAGE lpMessage);
 
 	CContentsTableListCtrl*	m_lpContentsTableListCtrl;
 	LPMAPITABLE				m_lpContentsTable;
@@ -44,12 +44,12 @@ protected:
 
 private:
 	virtual void HandleAddInMenuSingle(
-		LPADDINMENUPARAMS lpParams,
-		LPMAPIPROP lpMAPIProp,
-		LPMAPICONTAINER lpContainer);
+		_In_ LPADDINMENUPARAMS lpParams,
+		_In_opt_ LPMAPIPROP lpMAPIProp,
+		_In_opt_ LPMAPICONTAINER lpContainer);
 
 	// Overrides from base class
-	BOOL HandleAddInMenu(WORD wMenuSelect);
+	_Check_return_ BOOL HandleAddInMenu(WORD wMenuSelect);
 	void OnCancel();
 	void OnEscHit();
 
