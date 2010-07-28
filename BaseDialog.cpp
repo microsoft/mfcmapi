@@ -663,7 +663,8 @@ void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg
 	{
 		HRESULT hRes = S_OK;
 		CString szMsg;
-		EC_B(szMsg.LoadString(uidMsg));
+		WC_B(szMsg.LoadString(uidMsg));
+		if (FAILED(hRes)) DebugPrintEx(DBGMenu,CLASS,_T("UpdateStatusBarText"),_T("Cannot find menu item 0x%08X\n"),uidMsg);
 
 		va_list argList = NULL;
 		va_start(argList, uidMsg);
