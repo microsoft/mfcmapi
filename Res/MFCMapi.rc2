@@ -2041,4 +2041,11 @@ IDS_STATUSTEXTNUMPROPS "Number of Properties: %d"
 IDS_STATUSTEXTCONTENTCOUNTS "Contents: %d, Assoc. Contents: %d"
 IDS_STATUSTEXTDELETEDCOUNTS "Deleted Items: %d, Deleted Assoc. Items: %d, Deleted Subfolders: %d"
 
+SC_CLOSE "Close window."
+SC_RESTORE "Restore window."
+SC_MOVE "Move window."
+SC_SIZE "Size window."
+SC_MINIMIZE "Minimize window."
+SC_MAXIMIZE "Maximize window."
+
 END
