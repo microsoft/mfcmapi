@@ -34,6 +34,7 @@ private:
 	void OnABHierarchy();
 	void OnAddServicesToMAPISVC();
 	void OnCloseAddressBook();
+	void OnComputeGivenStoreHash();
 	void OnConvertMSGToEML();
 	void OnConvertEMLToMSG();
 	void OnDisplayMailboxTable();

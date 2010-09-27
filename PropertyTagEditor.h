@@ -25,7 +25,6 @@ private:
 	void  OnEditAction2();
 	_Check_return_ BOOL  OnInitDialog();
 	void  PopulateFields(ULONG ulSkipField);
-	_Check_return_ BOOL  GetSelectedGUID(_In_ LPGUID lpSelectedGUID);
 	_Check_return_ ULONG GetSelectedPropType();
 	void  LookupNamedProp(ULONG ulSkipField, BOOL bCreate);
 

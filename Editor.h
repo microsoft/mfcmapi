@@ -27,6 +27,9 @@ struct DropDownStruct
 	UINT*		lpuidDropList;
 	int			iDropSelection;
 	DWORD_PTR	iDropSelectionValue;
+	CString		lpszSelectionString;
+	BOOL		bGUID;
+	BOOL		bActive;
 };
 
 struct CheckStruct
@@ -108,6 +111,7 @@ public:
 	void InitSingleLine(ULONG i, UINT uidLabel, UINT uidVal, BOOL bReadOnly);
 	void InitCheck(ULONG i, UINT uidLabel, BOOL bVal, BOOL bReadOnly);
 	void InitDropDown(ULONG i, UINT uidLabel, ULONG ulDropList, _In_opt_count_(ulDropList) UINT* lpuidDropList, BOOL bReadOnly);
+	void InitGUIDDropDown(ULONG i, UINT uidLabel, BOOL bReadOnly);
 	void SetStringA(ULONG i, _In_opt_z_ LPCSTR szMsg, size_t cchsz = -1);
 	void SetStringW(ULONG i, _In_opt_z_ LPCWSTR szMsg, size_t cchsz = -1);
 #ifdef UNICODE
@@ -135,6 +139,7 @@ public:
 	_Check_return_ int   GetDropDown(ULONG i);
 	_Check_return_ DWORD_PTR GetDropDownValue(ULONG i);
 	_Check_return_ HRESULT GetEntryID(ULONG i, BOOL bIsBase64, _Out_ size_t* cbBin, _Out_ LPENTRYID* lpEID);
+	_Check_return_ BOOL  GetSelectedGUID(ULONG iControl, BOOL bByteSwapped, _In_ LPGUID lpSelectedGUID);
 
 	// AddIn functions
 	void SetAddInTitle(_In_z_ LPWSTR szTitle);

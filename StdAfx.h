@@ -188,6 +188,7 @@ struct SortListData
 #define	MSGFLAG_ORIGIN_X400		((ULONG) 0x00001000)
 #define	MSGFLAG_ORIGIN_INTERNET	((ULONG) 0x00002000)
 #define MSGFLAG_ORIGIN_MISC_EXT ((ULONG) 0x00008000)
+#define MSGFLAG_OUTLOOK_NON_EMS_XP ((ULONG) 0x00010000)
 
 // http://msdn2.microsoft.com/en-us/library/ms528848.aspx
 #define	MSGSTATUS_DRAFT			((ULONG) 0x00000100)
@@ -200,12 +201,6 @@ struct SortListData
 #define MAC_ATTACH_ENCODING_UUENCODE	((ULONG) 0x00200000)
 #define MAC_ATTACH_ENCODING_APPLESINGLE	((ULONG) 0x00400000)
 #define MAC_ATTACH_ENCODING_APPLEDOUBLE	((ULONG) 0x00600000)
-
-// http://support.microsoft.com/kb/278321
-#define INTERNET_FORMAT_DEFAULT 0
-#define INTERNET_FORMAT_MIME 1
-#define INTERNET_FORMAT_UUENCODE 2
-#define INTERNET_FORMAT_BINHEX 3
 
 // Flags used in PR_ROH_FLAGS - http://support.microsoft.com/kb/898835
 // Connect to my Exchange mailbox using HTTP
@@ -571,3 +566,23 @@ const BYTE	TZ_BIN_VERSION_MINOR	= 0x01;
 // http://blogs.msdn.com/stephen_griffin/archive/2008/04/01/new-restriction-types-seen-in-wrapped-psts.aspx
 #define RES_COUNT			((ULONG) 0x0000000B)
 #define RES_ANNOTATION		((ULONG) 0x0000000C)
+
+#define TABLE_SORT_CATEG_MAX ((ULONG) 0x00000004)
+#define TABLE_SORT_CATEG_MIN ((ULONG) 0x00000008)
+
+#define MAPI_IMSGSERVICEADMIN_METHODS2(IPURE)							\
+	MAPIMETHOD(CreateMsgServiceEx)										\
+		(THIS_	LPTSTR						lpszService,				\
+				LPTSTR						lpszDisplayName,			\
+				ULONG_PTR					ulUIParam,					\
+				ULONG						ulFlags,					\
+				LPMAPIUID					lpuidService) IPURE;		\
+
+DECLARE_MAPI_INTERFACE_(IMsgServiceAdmin2, IUnknown)
+{
+	BEGIN_INTERFACE
+	MAPI_IUNKNOWN_METHODS(PURE)
+	MAPI_IMSGSERVICEADMIN_METHODS(PURE)
+	MAPI_IMSGSERVICEADMIN_METHODS2(PURE)
+};
+DECLARE_MAPI_INTERFACE_PTR(IMsgServiceAdmin2, LPSERVICEADMIN2);

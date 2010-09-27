@@ -40,9 +40,9 @@ CContentsTableDlg(
 				  ID_PRODUCTNAME,
 				  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 				  NULL,
-				  (LPSPropTagArray) &sptDEFCols,
-				  NUMDEFCOLUMNS,
-				  DEFColumns,
+				  (LPSPropTagArray) &sptSTORECols,
+				  NUMSTORECOLUMNS,
+				  STOREColumns,
 				  IDR_MENU_MAIN_POPUP,
 				  MENU_CONTEXT_MAIN)
 {
@@ -63,6 +63,7 @@ CMainDlg::~CMainDlg()
 
 BEGIN_MESSAGE_MAP(CMainDlg, CContentsTableDlg)
 	ON_COMMAND(ID_CLOSEADDRESSBOOK, OnCloseAddressBook)
+	ON_COMMAND(ID_COMPUTEGIVENSTOREHASH, OnComputeGivenStoreHash)
 	ON_COMMAND(ID_DISPLAYMAILBOXTABLE, OnDisplayMailboxTable)
 	ON_COMMAND(ID_DISPLAYPUBLICFOLDERTABLE, OnDisplayPublicFolderTable)
 	ON_COMMAND(ID_DUMPSTORECONTENTS, OnDumpStoreContents)
@@ -171,6 +172,7 @@ void CMainDlg::OnInitMenu(_In_ CMenu* pMenu)
 			pMenu->EnableMenuItem(ID_OPENSELECTEDSTOREDELETEDFOLDERS,DIM(lpMAPISession && iNumSel));
 			pMenu->EnableMenuItem(ID_SETDEFAULTSTORE,DIM(lpMAPISession && 1 == iNumSel));
 			pMenu->EnableMenuItem(ID_DUMPSTORECONTENTS,DIM(lpMAPISession && 1 == iNumSel));
+			pMenu->EnableMenuItem(ID_COMPUTEGIVENSTOREHASH,DIM(lpMAPISession && 1 == iNumSel));
 		}
 		pMenu->EnableMenuItem(ID_OPENADDRESSBOOK,DIM(lpMAPISession && !lpAddrBook));
 		pMenu->CheckMenuItem(ID_OPENADDRESSBOOK,CHECK(lpAddrBook));
@@ -1731,6 +1733,163 @@ void CMainDlg::OnConvertEMLToMSG()
 		}
 	}
 } // CMainDlg::OnConvertEMLToMSG
+
+void CMainDlg::OnComputeGivenStoreHash()
+{
+	HRESULT hRes = S_OK;
+	SortListData* lpListData = NULL;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
+
+	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return;
+
+	LPMAPISESSION lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
+	if (!lpMAPISession) return;
+
+	lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(NULL);
+	if (lpListData)
+	{
+		LPSBinary lpItemEID = lpListData->data.Contents.lpEntryID;
+
+		if (lpItemEID)
+		{
+			LPSPropValue lpProp = NULL;
+			LPSBinary lpServiceUID = NULL;
+			LPSBinary lpProviderUID = NULL;
+			lpProp = PpropFindProp(
+				lpListData->lpSourceProps,
+				lpListData->cSourceProps,
+				PR_SERVICE_UID);
+			if (lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag)) lpServiceUID = &lpProp->Value.bin;
+			lpProp = PpropFindProp(
+				lpListData->lpSourceProps,
+				lpListData->cSourceProps,
+				PR_MDB_PROVIDER);
+			if (lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag)) lpProviderUID = &lpProp->Value.bin;
+
+			MAPIUID emsmdbUID = {0};
+			LPPROFSECT lpProfSect = NULL;
+			BOOL fPublicExchangeStore  = FExchangePublicStore((LPMAPIUID)lpProviderUID->lpb);
+			BOOL fPrivateExchangeStore = FExchangePrivateStore((LPMAPIUID)lpProviderUID->lpb);
+			BOOL fCached = false;
+			LPSPropValue lpConfigProp = NULL;
+			LPSPropValue lpPathPropA = NULL;
+			LPSPropValue lpPathPropW = NULL;
+			LPSPropValue lpMappingSig = NULL;
+			LPSTR szPath = NULL; // do not free
+			LPWSTR wzPath = NULL; // do not free
+
+			// Get profile section
+			if (lpServiceUID)
+			{
+				WC_H(HrEmsmdbUIDFromStore(lpMAPISession,
+					reinterpret_cast<LPMAPIUID>(lpServiceUID->lpb),
+					&emsmdbUID));
+				if (SUCCEEDED(hRes))
+				{
+					if (fIsSet(DBGGeneric))
+					{
+							LPTSTR szGUID = GUIDToString((LPCGUID) &emsmdbUID);
+							DebugPrint(DBGGeneric,_T("CMainDlg::OnComputeGivenStoreHash, emsmdbUID from PR_EMSMDB_SECTION_UID = %s\n"),szGUID);
+							delete[] szGUID;
+					}
+					WC_H(lpMAPISession->OpenProfileSection(&emsmdbUID, NULL, 0, &lpProfSect));
+				}
+			}
+			if (!lpServiceUID || FAILED(hRes))
+			{
+				hRes = S_OK;
+				// For Outlook 2003/2007, HrEmsmdbUIDFromStore may not succeed,
+				// so use pbGlobalProfileSectionGuid instead
+				WC_H(lpMAPISession->OpenProfileSection((LPMAPIUID)pbGlobalProfileSectionGuid, NULL, 0, &lpProfSect));
+			}
+
+			if (lpProfSect)
+			{
+				hRes = S_OK;
+				WC_H(HrGetOneProp(lpProfSect, PR_PROFILE_CONFIG_FLAGS, &lpConfigProp));
+				if (SUCCEEDED(hRes) && PROP_TYPE(lpConfigProp->ulPropTag) != PT_ERROR)
+				{
+					if (fPrivateExchangeStore)
+					{
+						fCached = ((lpConfigProp->Value.l & CONFIG_OST_CACHE_PRIVATE) != 0);
+					}
+					if (fPublicExchangeStore)
+					{
+						fCached = ((lpConfigProp->Value.l & CONFIG_OST_CACHE_PUBLIC) == CONFIG_OST_CACHE_PUBLIC);
+					}
+				}
+				DebugPrint(DBGGeneric,_T("CMainDlg::OnComputeGivenStoreHash, fPrivateExchangeStore = %d\n"),fPrivateExchangeStore);
+				DebugPrint(DBGGeneric,_T("CMainDlg::OnComputeGivenStoreHash, fPublicExchangeStore = %d\n"),fPublicExchangeStore);
+				DebugPrint(DBGGeneric,_T("CMainDlg::OnComputeGivenStoreHash, fCached = %d\n"),fCached);
+
+				if (fCached)
+				{
+					hRes = S_OK;
+					WC_H(HrGetOneProp(lpProfSect, PR_PROFILE_OFFLINE_STORE_PATH_W, &lpPathPropW));
+					if (FAILED(hRes))
+					{
+						hRes = S_OK;
+						WC_H(HrGetOneProp(lpProfSect, PR_PROFILE_OFFLINE_STORE_PATH_A, &lpPathPropA));
+					}
+					if (SUCCEEDED(hRes))
+					{
+						if (lpPathPropW && lpPathPropW->Value.lpszW)
+						{
+							wzPath = lpPathPropW->Value.lpszW;
+							DebugPrint(DBGGeneric,_T("CMainDlg::OnComputeGivenStoreHash, PR_PROFILE_OFFLINE_STORE_PATH_W = %ws\n"),wzPath);
+						}
+						else if (lpPathPropA && lpPathPropA->Value.lpszA)
+						{
+							szPath = lpPathPropA->Value.lpszA;
+							DebugPrint(DBGGeneric,_T("CMainDlg::OnComputeGivenStoreHash, PR_PROFILE_OFFLINE_STORE_PATH_A = %hs\n"),szPath);
+						}
+					}
+					// If this is an Exchange store with an OST path, it's an OST, so we get the mapping signature
+					if ((fPrivateExchangeStore || fPublicExchangeStore) && (wzPath || szPath))
+					{
+						hRes = S_OK;
+						WC_H(HrGetOneProp(lpProfSect, PR_MAPPING_SIGNATURE, &lpMappingSig));
+					}
+					hRes = S_OK;
+				}
+			}
+			DWORD dwSigHash = NULL;
+			if (lpMappingSig && PT_BINARY == PROP_TYPE(lpMappingSig->ulPropTag))
+			{
+				dwSigHash = ComputeStoreHash(lpMappingSig->Value.bin.cb, lpMappingSig->Value.bin.lpb, NULL, NULL, fPublicExchangeStore);
+			}
+			DWORD dwEIDHash = ComputeStoreHash(lpItemEID->cb, lpItemEID->lpb, szPath, wzPath, fPublicExchangeStore);
+
+			CString szHash;
+			if (dwSigHash)
+			{
+				szHash.FormatMessage(IDS_STOREHASHDOUBLEVAL,dwEIDHash,dwSigHash);
+			}
+			else
+			{
+				szHash.FormatMessage(IDS_STOREHASHVAL,dwEIDHash);
+			}
+			DebugPrint(DBGGeneric,_T("CMainDlg::OnComputeGivenStoreHash, Entry ID hash = 0x%08X\n"), dwEIDHash);
+			if (dwSigHash)
+				DebugPrint(DBGGeneric,_T("CMainDlg::OnComputeGivenStoreHash, Mapping Signature hash = 0x%08X\n"), dwSigHash);
+
+			CEditor Result(
+				this,
+				IDS_STOREHASH,
+				NULL,
+				(ULONG) 0,
+				CEDITOR_BUTTON_OK);
+			Result.SetPromptPostFix(szHash);
+			(void) Result.DisplayDialog();
+
+			MAPIFreeBuffer(lpMappingSig);
+			MAPIFreeBuffer(lpPathPropA);
+			MAPIFreeBuffer(lpPathPropW);
+			MAPIFreeBuffer(lpConfigProp);
+			if (lpProfSect) lpProfSect->Release();
+		}
+	}
+} // CMainDlg::OnComputeGivenStoreHash
 
 void CMainDlg::HandleAddInMenuSingle(
 									 _In_ LPADDINMENUPARAMS lpParams,

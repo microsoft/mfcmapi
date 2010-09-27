@@ -1050,12 +1050,13 @@ void CBaseDialog::OnComputeStoreHash()
 		this,
 		IDS_COMPUTESTOREHASH,
 		IDS_COMPUTESTOREHASHPROMPT,
-		3,
+		4,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 
 	MyStoreEID.InitSingleLine(0,IDS_STOREEID,NULL,false);
 	MyStoreEID.InitCheck(1,IDS_EIDBASE64ENCODED,false,false);
 	MyStoreEID.InitSingleLine(2,IDS_FILENAME,NULL,false);
+	MyStoreEID.InitCheck(3,IDS_PUBLICFOLDERSTORE,false,false);
 
 	WC_H(MyStoreEID.DisplayDialog());
 	if (S_OK != hRes) return;
@@ -1065,12 +1066,10 @@ void CBaseDialog::OnComputeStoreHash()
 	size_t cbBin = NULL;
 	EC_H(MyStoreEID.GetEntryID(0,MyStoreEID.GetCheck(1),&cbBin,&lpEntryID));
 
-	DWORD dwHash = ComputeStoreHash((ULONG) cbBin,lpEntryID,MyStoreEID.GetStringW(2));
+	DWORD dwHash = ComputeStoreHash((ULONG) cbBin, (LPBYTE) lpEntryID,NULL,MyStoreEID.GetStringW(2),MyStoreEID.GetCheck(3));
 
 	CString szHash;
-	CString szHashStr;
-	EC_B(szHashStr.LoadString(IDS_STOREHASH));
-	szHash.FormatMessage(IDS_STOREHASHVAL,szHashStr,dwHash);
+	szHash.FormatMessage(IDS_STOREHASHVAL,dwHash);
 
 	CEditor Result(
 		this,

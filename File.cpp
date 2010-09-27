@@ -286,42 +286,55 @@ _Check_return_ HRESULT LoadFromTNEF(_In_z_ LPCWSTR szMessageFile, _In_ LPADRBOOK
 } // LoadFromTNEF
 
 // Builds a file name out of the passed in message and extension
-_Check_return_ HRESULT BuildFileName(_Inout_z_count_(cchFileOut) LPWSTR szFileOut, size_t cchFileOut, _In_z_count_(cchExt) LPCWSTR szExt, size_t cchExt, _In_ LPMESSAGE lpMessage)
+_Check_return_ HRESULT BuildFileName(_Inout_z_count_(cchFileOut) LPWSTR szFileOut,
+									 size_t cchFileOut,
+									 _In_z_count_(cchExt) LPCWSTR szExt,
+									 size_t cchExt,
+									 _In_ LPMESSAGE lpMessage)
 {
-	HRESULT			hRes = S_OK;
-	LPSPropValue	lpSubject = NULL;
+	HRESULT hRes = S_OK;
+	ULONG ulProps = NULL;
+	LPSPropValue lpProps = NULL;
+	LPWSTR szSubj = NULL;
+	LPSBinary lpSearchKey = NULL;
 
 	if (!lpMessage || !szFileOut) return MAPI_E_INVALID_PARAMETER;
 
+	enum {ePR_SUBJECT_W, ePR_SEARCH_KEY,NUM_COLS};
+	SizedSPropTagArray(NUM_COLS,sptaMessageProps) = { NUM_COLS, {
+		PR_SUBJECT_W,
+		PR_SEARCH_KEY}
+	};
+
 	// Get subject line of message
 	// This will be used as the new file name.
-	WC_H(HrGetOneProp(lpMessage, PR_SUBJECT_W, &lpSubject));
-	if (MAPI_E_NOT_FOUND == hRes)
-	{
-		// This is OK. We'll use our own file name.
-		hRes = S_OK;
-	}
-	else CHECKHRES(hRes);
+	WC_H_GETPROPS(lpMessage->GetProps(
+		(LPSPropTagArray) &sptaMessageProps,
+		fMapiUnicode,
+		&ulProps,
+		&lpProps));
+	hRes = S_OK;
 
 	szFileOut[0] = NULL;
-	if (CheckStringProp(lpSubject,PT_UNICODE))
+	if (CheckStringProp(&lpProps[ePR_SUBJECT_W],PT_UNICODE))
 	{
-		EC_H(SanitizeFileNameW(
-			szFileOut,
-			cchFileOut,
-			lpSubject->Value.lpszW,
-			cchFileOut-cchExt-1));
+		szSubj = lpProps[ePR_SUBJECT_W].Value.lpszW;
 	}
-	else
+	if (PR_SEARCH_KEY == lpProps[ePR_SEARCH_KEY].ulPropTag)
 	{
-		// We must have failed to get a subject before. Make one up.
-		EC_H(StringCchCatW(szFileOut, cchFileOut, L"UnknownSubject")); // STRING_OK
+		lpSearchKey = &lpProps[ePR_SEARCH_KEY].Value.bin;
 	}
 
-	// Add our extension
-	EC_H(StringCchCatW(szFileOut, cchFileOut, szExt));
+	EC_H(BuildFileNameAndPath(
+		szFileOut,
+		cchFileOut,
+		szExt,
+		cchExt,
+		szSubj,
+		lpSearchKey,
+		NULL));
 
-	MAPIFreeBuffer(lpSubject);
+	MAPIFreeBuffer(lpProps);
 	return hRes;
 } // BuildFileName
 
@@ -331,7 +344,13 @@ _Check_return_ HRESULT BuildFileName(_Inout_z_count_(cchFileOut) LPWSTR szFileOu
 // So directory is part of the input and output now
 #define MAXSUBJ 25
 #define MAXBIN 141
-_Check_return_ HRESULT BuildFileNameAndPath(_Inout_z_count_(cchFileOut) LPWSTR szFileOut, size_t cchFileOut, _In_z_count_(cchExt) LPCWSTR szExt, size_t cchExt, _In_z_ LPCWSTR szSubj, _In_ LPSBinary lpBin, _In_z_ LPCWSTR szRootPath)
+_Check_return_ HRESULT BuildFileNameAndPath(_Inout_z_count_(cchFileOut) LPWSTR szFileOut,
+											size_t cchFileOut,
+											_In_z_count_(cchExt) LPCWSTR szExt,
+											size_t cchExt,
+											_In_opt_z_ LPCWSTR szSubj,
+											_In_opt_ LPSBinary lpBin,
+											_In_opt_z_ LPCWSTR szRootPath)
 {
 	HRESULT			hRes = S_OK;
 

@@ -268,41 +268,59 @@ _Check_return_ LPTSTR GUIDToString(_In_opt_ LPCGUID lpGUID)
 
 _Check_return_ HRESULT StringToGUID(_In_z_ LPCTSTR szGUID, _Inout_ LPGUID lpGUID)
 {
+	return StringToGUID(szGUID, false, lpGUID);
+} // StringToGUID
+
+_Check_return_ HRESULT StringToGUID(_In_z_ LPCTSTR szGUID, BOOL bByteSwapped, _Inout_ LPGUID lpGUID)
+{
 	HRESULT hRes = S_OK;
 	if (!szGUID || !lpGUID) return MAPI_E_INVALID_PARAMETER;
 
-	WCHAR szWGuid[GUID_STRING_SIZE];
+	TCHAR szCleanGUID[GUID_STRING_SIZE] = {0};
 	LPCTSTR pszSrc = NULL;
-	LPWSTR pszWDest = NULL;
+	LPTSTR pszDst = NULL;
 
 	pszSrc = szGUID;
 
-	if (*pszSrc != '{') return MAPI_E_INVALID_PARAMETER;
-
-	// Convert to Unicode while you are copying to your temporary buffer.
+	// Convert to Unicode while copying to a temporary buffer.
 	// Do not worry about non-ANSI characters - this is a GUID string.
-	pszWDest = szWGuid;
+	// Drop {,-,}, space, or tab characters on the way
+	pszDst = szCleanGUID;
 
-	while((*pszSrc) && (*pszSrc != '}') &&
-		(pszWDest < &szWGuid[GUID_STRING_SIZE - 2]))
+	while ((*pszSrc) &&
+		(pszDst < &szCleanGUID[GUID_STRING_SIZE - 1]))
 	{
-		*pszWDest++ = *pszSrc++;
+		switch (*pszSrc)
+		{
+		case _T(' '): // STRING_OK
+		case _T('\t'): // STRING_OK
+		case _T('{'): // STRING_OK
+		case _T('-'): // STRING_OK
+		case _T('}'): // STRING_OK
+			pszSrc++;
+			break;
+		default:
+			*pszDst++ = *pszSrc++;
+		}
 	}
 
-	// On success, pszSrc will point to '}' (the last character of the GUID string).
-	if (*pszSrc != '}') return MAPI_E_INVALID_PARAMETER;
+	// szCleanGUID is guaranteed null terminated at this point
 
-	// pszDest will still be in range and have two chars left because
-	// of the condition in the preceding while loop.
-	*pszWDest++ = '}';
-	*pszWDest = '\0';
+	// Now we use MyBinFromHex to do the work.
+	MyBinFromHex(szCleanGUID, (LPBYTE) lpGUID, sizeof(GUID));
 
-	// Borrow the functionality of CLSIDFromString to get the 16-byte
-	// GUID from the GUID string.
-	WC_H(CLSIDFromString(
-		szWGuid,
-		lpGUID));
-
+	// Note that we get the bByteSwapped behavior by default. We have to work to get the 'normal' behavior
+	if (!bByteSwapped)
+	{
+		LPBYTE lpByte = (LPBYTE) lpGUID;
+		BYTE bByte = 0;
+		bByte = lpByte[0];
+		lpByte[0] = lpByte[3];
+		lpByte[3] = bByte;
+		bByte = lpByte[1];
+		lpByte[1] = lpByte[2];
+		lpByte[2] = bByte;
+	}
 	return hRes;
 } // StringToGUID
 

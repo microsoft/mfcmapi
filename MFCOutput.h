@@ -35,6 +35,7 @@ void SetDebugOutputToFile(BOOL bDoOutput);
 #define DBGAddInPlumbing					((ULONG) 0x00008000)
 #define DBGAddIn							((ULONG) 0x00010000)
 #define DBGStream							((ULONG) 0x00020000)
+#define DBGSmartView						((ULONG) 0x00040000)
 #define DBGMenu								((ULONG) 0x80000000)
 
 // Super verbose is really overkill - scale back for our ALL default

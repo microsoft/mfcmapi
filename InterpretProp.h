@@ -42,6 +42,7 @@ void FreeNameIDStrings(_In_opt_z_ LPTSTR lpszPropName,
 _Check_return_ LPTSTR GUIDToString(_In_opt_ LPCGUID lpGUID);
 
 _Check_return_ HRESULT StringToGUID(_In_z_ LPCTSTR szGUID, _Inout_ LPGUID lpGUID);
+_Check_return_ HRESULT StringToGUID(_In_z_ LPCTSTR szGUID, BOOL bByteSwapped, _Inout_ LPGUID lpGUID);
 
 _Check_return_ CString CurrencyToString(CURRENCY curVal);
 

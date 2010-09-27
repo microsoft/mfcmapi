@@ -458,13 +458,18 @@ void CDumpStore::BeginMessageWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpParent
 	}
 	else
 	{
-		LPCWSTR szSubj = L"UnknownSubject"; // STRING_OK
+		LPCWSTR szSubj = NULL; // BuildFileNameAndPath will substitute a subject if we don't find one
+		LPSBinary lpSearchKey = NULL;
 
 		if (CheckStringProp(&lpPropsMsg[ePR_SUBJECT_W],PT_UNICODE))
 		{
 			szSubj = lpPropsMsg[ePR_SUBJECT_W].Value.lpszW;
 		}
-		WC_H(BuildFileNameAndPath(lpMsgData->szFilePath,_countof(lpMsgData->szFilePath),L".xml",4,szSubj,&lpPropsMsg[ePR_SEARCH_KEY].Value.bin,m_szFolderPath)); // STRING_OK
+		if (PR_SEARCH_KEY == lpPropsMsg[ePR_SEARCH_KEY].ulPropTag)
+		{
+			lpSearchKey = &lpPropsMsg[ePR_SEARCH_KEY].Value.bin;
+		}
+		WC_H(BuildFileNameAndPath(lpMsgData->szFilePath,_countof(lpMsgData->szFilePath),L".xml",4,szSubj,lpSearchKey,m_szFolderPath)); // STRING_OK
 	}
 
 	DebugPrint(DBGGeneric,_T("OutputMessagePropertiesToFile: Saving %p to \"%ws\"\n"),lpMessage,lpMsgData->szFilePath);

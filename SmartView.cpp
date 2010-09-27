@@ -26,6 +26,7 @@ UINT g_uidParsingTypesDropDown[] = {
 	IDS_STEXTENDEDFOLDERFLAGS,
 	IDS_STEXTENDEDRULECONDITION,
 	IDS_STFLATENTRYLIST,
+	IDS_STFOLDERUSERFIELDS,
 	IDS_STGLOBALOBJECTID,
 	IDS_STPROPERTY,
 	IDS_STPROPERTYDEFINITIONSTREAM,
@@ -84,6 +85,7 @@ SMART_VIEW_PARSERS_ENTRY g_SmartViewParsers[] = {
 	MAKE_SV_ENTRY(IDS_STFLATENTRYLIST, FlatEntryListStruct)
 	MAKE_SV_ENTRY(IDS_STRECIPIENTROWSTREAM, RecipientRowStreamStruct)
 	MAKE_SV_ENTRY(IDS_STWEBVIEWPERSISTSTREAM, WebViewPersistStreamStruct)
+	MAKE_SV_ENTRY(IDS_STFOLDERUSERFIELDS, FolderUserFieldStreamStruct)
 };
 ULONG g_cSmartViewParsers = _countof(g_SmartViewParsers);
 
@@ -113,6 +115,7 @@ SMARTVIEW_PARSER_ARRAY_ENTRY g_BinaryStructArray[] =
 	BINARY_STRUCTURE_ENTRY(PR_REPLY_RECIPIENT_ENTRIES,IDS_STFLATENTRYLIST)
 	BINARY_STRUCTURE_ENTRY(PR_ALTERNATE_RECIPIENT,IDS_STFLATENTRYLIST)
 	BINARY_STRUCTURE_ENTRY(PR_FOLDER_WEBVIEWINFO,IDS_STWEBVIEWPERSISTSTREAM)
+	BINARY_STRUCTURE_ENTRY(PR_USERFIELDS,IDS_STFOLDERUSERFIELDS)
 
 	BINARY_STRUCTURE_ENTRY(PR_RECEIVED_BY_ENTRYID,IDS_STENTRYID)
 	BINARY_STRUCTURE_ENTRY(PR_SENT_REPRESENTING_ENTRYID,IDS_STENTRYID)
@@ -588,14 +591,18 @@ public:
 	void GetStringW(_Deref_out_z_ LPWSTR* ppStr);
 
 private:
+	BOOL CheckRemainingBytes(size_t cbBytes);
 	size_t m_cbBin;
 	LPBYTE m_lpBin;
 	LPBYTE m_lpEnd;
 	LPBYTE m_lpCur;
 };
 
+static TCHAR* CLASS = _T("CBinaryParser");
+
 CBinaryParser::CBinaryParser(size_t cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
+	DebugPrintEx(DBGSmartView,CLASS,_T("CBinaryParser"),_T("cbBin = 0x%08X = %d\n"),cbBin,cbBin);
 	m_cbBin = cbBin;
 	m_lpBin = lpBin;
 	m_lpCur = lpBin;
@@ -604,16 +611,19 @@ CBinaryParser::CBinaryParser(size_t cbBin, _In_count_(cbBin) LPBYTE lpBin)
 
 void CBinaryParser::Advance(size_t cbAdvance)
 {
+	DebugPrintEx(DBGSmartView,CLASS,_T("Advance"),_T("Advancing 0x%08X = %d bytes.\n"),cbAdvance,cbAdvance);
 	m_lpCur += cbAdvance;
 } // CBinaryParser::Advance
 
 size_t CBinaryParser::GetCurrentOffset()
 {
+	DebugPrintEx(DBGSmartView,CLASS,_T("GetCurrentOffset"),_T("Returning offset 0x%08X = %d bytes.\n"),m_lpCur - m_lpBin,m_lpCur - m_lpBin);
 	return m_lpCur - m_lpBin;
 } // CBinaryParser::GetCurrentOffset
 
 void CBinaryParser::SetCurrentOffset(size_t stOffset)
 {
+	DebugPrintEx(DBGSmartView,CLASS,_T("SetCurrentOffset"),_T("Setting offset 0x%08X = %d bytes.\n"),stOffset,stOffset);
 	m_lpCur = m_lpBin + stOffset;
 } // CBinaryParser::SetCurrentOffset
 
@@ -625,42 +635,57 @@ size_t CBinaryParser::RemainingBytes()
 	return 0;
 } // CBinaryParser::RemainingBytes
 
+BOOL CBinaryParser::CheckRemainingBytes(size_t cbBytes)
+{
+	if (!m_lpCur)
+	{
+		DebugPrintEx(DBGSmartView,CLASS,_T("CheckRemainingBytes"),_T("Current offset does not exist!\n"));
+		return false;
+	}
+	size_t cbRemaining = RemainingBytes();
+	if (cbBytes > cbRemaining)
+	{
+		DebugPrintEx(DBGSmartView,CLASS,_T("CheckRemainingBytes"),_T("Bytes requested (0x%08X = %d) > remaining bytes (0x%08X = %d)\n"),
+			cbBytes,cbBytes,
+			cbRemaining,cbRemaining);
+		DebugPrintEx(DBGSmartView,CLASS,_T("CheckRemainingBytes"),_T("Total Bytes: 0x%08X = %d\n"),m_cbBin,m_cbBin);
+		DebugPrintEx(DBGSmartView,CLASS,_T("CheckRemainingBytes"),_T("Current offset: 0x%08X = %d\n"),m_lpCur-m_lpBin,m_lpCur-m_lpBin);
+		return false;
+	}
+	return true;
+} // CBinaryParser::CheckRemainingBytes
+
 void CBinaryParser::GetBYTE(_Out_ BYTE* pBYTE)
 {
-	if (!pBYTE || !m_lpCur) return;
-	if (sizeof(BYTE) > RemainingBytes()) return;
+	if (!pBYTE || !CheckRemainingBytes(sizeof(pBYTE))) return;
 	*pBYTE = *((BYTE*)m_lpCur);
 	m_lpCur += sizeof(BYTE);
 } // CBinaryParser::GetBYTE
 
 void CBinaryParser::GetWORD(_Out_ WORD* pWORD)
 {
-	if (!pWORD || !m_lpCur) return;
-	if (sizeof(WORD) > RemainingBytes()) return;
+	if (!pWORD || !CheckRemainingBytes(sizeof(pWORD))) return;
 	*pWORD = *((WORD*)m_lpCur);
 	m_lpCur += sizeof(WORD);
 } // CBinaryParser::GetWORD
 
 void CBinaryParser::GetDWORD(_Out_ DWORD* pDWORD)
 {
-	if (!pDWORD || !m_lpCur) return;
-	if (sizeof(DWORD) > RemainingBytes()) return;
+	if (!pDWORD || !CheckRemainingBytes(sizeof(pDWORD))) return;
 	*pDWORD = *((DWORD*)m_lpCur);
 	m_lpCur += sizeof(DWORD);
 } // CBinaryParser::GetDWORD
 
 void CBinaryParser::GetLARGE_INTEGER(_Out_ LARGE_INTEGER* pLARGE_INTEGER)
 {
-	if (!pLARGE_INTEGER || !m_lpCur) return;
-	if (sizeof(LARGE_INTEGER) > RemainingBytes()) return;
+	if (!pLARGE_INTEGER || !CheckRemainingBytes(sizeof(pLARGE_INTEGER))) return;
 	*pLARGE_INTEGER = *((LARGE_INTEGER*)m_lpCur);
 	m_lpCur += sizeof(LARGE_INTEGER);
 } // CBinaryParser::GetLARGE_INTEGER
 
 void CBinaryParser::GetBYTES(size_t cbBytes, _Out_ LPBYTE* ppBYTES)
 {
-	if (!cbBytes || !ppBYTES) return;
-	if (cbBytes > RemainingBytes()) return;
+	if (!cbBytes || !ppBYTES || !CheckRemainingBytes(cbBytes)) return;
 	*ppBYTES = new BYTE[cbBytes];
 	if (*ppBYTES)
 	{
@@ -672,8 +697,7 @@ void CBinaryParser::GetBYTES(size_t cbBytes, _Out_ LPBYTE* ppBYTES)
 
 void CBinaryParser::GetBYTESNoAlloc(size_t cbBytes, _In_count_(cbBytes) LPBYTE pBYTES)
 {
-	if (!cbBytes || !pBYTES) return;
-	if (cbBytes > RemainingBytes()) return;
+	if (!cbBytes || !pBYTES || !CheckRemainingBytes(cbBytes)) return;
 	memset(pBYTES,0,sizeof(BYTE) * cbBytes);
 	memcpy(pBYTES,m_lpCur,cbBytes);
 	m_lpCur += cbBytes;
@@ -683,7 +707,7 @@ void CBinaryParser::GetBYTESNoAlloc(size_t cbBytes, _In_count_(cbBytes) LPBYTE p
 void CBinaryParser::GetStringA(size_t cchChar, _Deref_out_z_ LPSTR* ppStr)
 {
 	if (!cchChar || !ppStr) return;
-	if (sizeof(CHAR) * cchChar > RemainingBytes()) return;
+	if (!CheckRemainingBytes(sizeof(CHAR) * cchChar)) return;
 	*ppStr = new CHAR[cchChar+1];
 	if (*ppStr)
 	{
@@ -698,7 +722,7 @@ void CBinaryParser::GetStringA(size_t cchChar, _Deref_out_z_ LPSTR* ppStr)
 void CBinaryParser::GetStringW(size_t cchWChar, _Deref_out_z_ LPWSTR* ppStr)
 {
 	if (!cchWChar || !ppStr) return;
-	if (sizeof(WCHAR) * cchWChar > RemainingBytes()) return;
+	if (!CheckRemainingBytes(sizeof(WCHAR) * cchWChar)) return;
 	*ppStr = new WCHAR[cchWChar+1];
 	if (*ppStr)
 	{
@@ -744,6 +768,7 @@ void CBinaryParser::GetStringW(_Deref_out_z_ LPWSTR* ppStr)
 _Check_return_ CString JunkDataToString(size_t cbJunkData, _In_count_(cbJunkData) LPBYTE lpJunkData)
 {
 	if (!cbJunkData || !lpJunkData) return _T("");
+	DebugPrintEx(DBGSmartView,CLASS,_T("JunkDataToString"),_T("Had 0x%08X = %d bytes left over.\n"),cbJunkData,cbJunkData);
 	CString szTmp;
 	SBinary sBin = {0};
 
@@ -4946,7 +4971,7 @@ _Check_return_ FlatEntryListStruct* BinToFlatEntryListStruct(ULONG cbBin, _In_co
 				Parser.GetDWORD(&felFlatEntryList.pEntryIDs[iFlatEntryList].dwSize);
 
 				felFlatEntryList.pEntryIDs[iFlatEntryList].lpEntryID = BinToEntryIdStruct(
-					(ULONG) felFlatEntryList.pEntryIDs[iFlatEntryList].dwSize,
+					(ULONG) min(felFlatEntryList.pEntryIDs[iFlatEntryList].dwSize,Parser.RemainingBytes()),
 					lpBin+Parser.GetCurrentOffset());
 				Parser.Advance(felFlatEntryList.pEntryIDs[iFlatEntryList].dwSize);
 
@@ -5339,4 +5364,249 @@ _Check_return_ LPTSTR RecipientRowStreamStructToString(_In_ RecipientRowStreamSt
 
 //////////////////////////////////////////////////////////////////////////
 // End RecipientRowStreamStruct
+//////////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////
+// FolderUserFieldStreamStruct
+//////////////////////////////////////////////////////////////////////////
+
+// There may be folder user formulas which are longer than 1000 characters, but we're not going to try to parse them
+#define _MaxFolderUserFieldFormula 1000
+
+void BinToFolderFieldDefinitionCommon(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, _Out_ size_t* lpcbBytesRead, _Out_ FolderFieldDefinitionCommon* pffdcFolderFieldDefinitionCommon)
+{
+	if (!lpBin || !lpcbBytesRead || !pffdcFolderFieldDefinitionCommon) return;
+
+	CBinaryParser Parser(cbBin,lpBin);
+
+	Parser.GetBYTESNoAlloc(sizeof(GUID),(LPBYTE)&pffdcFolderFieldDefinitionCommon->PropSetGuid);
+	Parser.GetDWORD(&pffdcFolderFieldDefinitionCommon->fcapm);
+	Parser.GetDWORD(&pffdcFolderFieldDefinitionCommon->dwString);
+	Parser.GetDWORD(&pffdcFolderFieldDefinitionCommon->dwBitmap);
+	Parser.GetDWORD(&pffdcFolderFieldDefinitionCommon->dwDisplay);
+	Parser.GetDWORD(&pffdcFolderFieldDefinitionCommon->iFmt);
+	Parser.GetWORD(&pffdcFolderFieldDefinitionCommon->wszFormulaLength);
+	if (pffdcFolderFieldDefinitionCommon->wszFormulaLength && 
+		pffdcFolderFieldDefinitionCommon->wszFormulaLength < _MaxFolderUserFieldFormula)
+	{
+		Parser.GetStringW(
+			pffdcFolderFieldDefinitionCommon->wszFormulaLength,
+			&pffdcFolderFieldDefinitionCommon->wszFormula);
+	}
+
+	*lpcbBytesRead = Parser.GetCurrentOffset();
+} // BinToFolderFieldDefinitionCommon
+
+// There may be folder user field streams with over 500 fields, but we're not going to try to parse them
+#define _MaxFolderUserFields 500
+// There may be folder user field names which are longer than 500 characters, but we're not going to try to parse them
+#define _MaxFolderUserFieldName 500
+
+// Allocates return value with new. Clean up with DeleteFolderUserFieldStreamStruct.
+_Check_return_ FolderUserFieldStreamStruct* BinToFolderUserFieldStreamStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
+{
+	if (!lpBin) return NULL;
+
+	FolderUserFieldStreamStruct fufsFolderUserFieldStream = {0};
+	CBinaryParser Parser(cbBin,lpBin);
+
+	Parser.GetDWORD(&fufsFolderUserFieldStream.FolderUserFieldsAnsi.FieldDefinitionCount);
+
+	if (fufsFolderUserFieldStream.FolderUserFieldsAnsi.FieldDefinitionCount && fufsFolderUserFieldStream.FolderUserFieldsAnsi.FieldDefinitionCount < _MaxFolderUserFields)
+		fufsFolderUserFieldStream.FolderUserFieldsAnsi.FieldDefinitions = new FolderFieldDefinitionA[fufsFolderUserFieldStream.FolderUserFieldsAnsi.FieldDefinitionCount];
+
+	if (fufsFolderUserFieldStream.FolderUserFieldsAnsi.FieldDefinitions)
+	{
+		memset(fufsFolderUserFieldStream.FolderUserFieldsAnsi.FieldDefinitions,0,sizeof(FolderFieldDefinitionA)*fufsFolderUserFieldStream.FolderUserFieldsAnsi.FieldDefinitionCount);
+		ULONG i = 0;
+
+		for (i = 0 ; i < fufsFolderUserFieldStream.FolderUserFieldsAnsi.FieldDefinitionCount ; i++)
+		{
+			Parser.GetDWORD(&fufsFolderUserFieldStream.FolderUserFieldsAnsi.FieldDefinitions[i].FieldType);
+			Parser.GetWORD(&fufsFolderUserFieldStream.FolderUserFieldsAnsi.FieldDefinitions[i].FieldNameLength);
+
+			if (fufsFolderUserFieldStream.FolderUserFieldsAnsi.FieldDefinitions[i].FieldNameLength && 
+				fufsFolderUserFieldStream.FolderUserFieldsAnsi.FieldDefinitions[i].FieldNameLength < _MaxFolderUserFieldName)
+			{
+				Parser.GetStringA(
+					fufsFolderUserFieldStream.FolderUserFieldsAnsi.FieldDefinitions[i].FieldNameLength,
+					&fufsFolderUserFieldStream.FolderUserFieldsAnsi.FieldDefinitions[i].FieldName);
+			}
+			size_t cbBytesRead = 0;
+			BinToFolderFieldDefinitionCommon(
+				(ULONG) Parser.RemainingBytes(),
+				lpBin+Parser.GetCurrentOffset(),
+				&cbBytesRead,
+				&fufsFolderUserFieldStream.FolderUserFieldsAnsi.FieldDefinitions[i].Common);
+			Parser.Advance(cbBytesRead);
+		}
+	}
+
+	Parser.GetDWORD(&fufsFolderUserFieldStream.FolderUserFieldsUnicode.FieldDefinitionCount);
+
+	if (fufsFolderUserFieldStream.FolderUserFieldsUnicode.FieldDefinitionCount && fufsFolderUserFieldStream.FolderUserFieldsUnicode.FieldDefinitionCount < _MaxFolderUserFields)
+		fufsFolderUserFieldStream.FolderUserFieldsUnicode.FieldDefinitions = new FolderFieldDefinitionW[fufsFolderUserFieldStream.FolderUserFieldsUnicode.FieldDefinitionCount];
+
+	if (fufsFolderUserFieldStream.FolderUserFieldsUnicode.FieldDefinitions)
+	{
+		memset(fufsFolderUserFieldStream.FolderUserFieldsUnicode.FieldDefinitions,0,sizeof(FolderFieldDefinitionA)*fufsFolderUserFieldStream.FolderUserFieldsUnicode.FieldDefinitionCount);
+		ULONG i = 0;
+
+		for (i = 0 ; i < fufsFolderUserFieldStream.FolderUserFieldsUnicode.FieldDefinitionCount ; i++)
+		{
+			Parser.GetDWORD(&fufsFolderUserFieldStream.FolderUserFieldsUnicode.FieldDefinitions[i].FieldType);
+			Parser.GetWORD(&fufsFolderUserFieldStream.FolderUserFieldsUnicode.FieldDefinitions[i].FieldNameLength);
+
+			if (fufsFolderUserFieldStream.FolderUserFieldsUnicode.FieldDefinitions[i].FieldNameLength && 
+				fufsFolderUserFieldStream.FolderUserFieldsUnicode.FieldDefinitions[i].FieldNameLength < _MaxFolderUserFieldName)
+			{
+				Parser.GetStringW(
+					fufsFolderUserFieldStream.FolderUserFieldsUnicode.FieldDefinitions[i].FieldNameLength,
+					&fufsFolderUserFieldStream.FolderUserFieldsUnicode.FieldDefinitions[i].FieldName);
+			}
+			size_t cbBytesRead = 0;
+			BinToFolderFieldDefinitionCommon(
+				(ULONG) Parser.RemainingBytes(),
+				lpBin+Parser.GetCurrentOffset(),
+				&cbBytesRead,
+				&fufsFolderUserFieldStream.FolderUserFieldsUnicode.FieldDefinitions[i].Common);
+			Parser.Advance(cbBytesRead);
+		}
+	}
+
+	// Junk data remains
+	if (Parser.RemainingBytes() > 0)
+	{
+		fufsFolderUserFieldStream.JunkDataSize = Parser.RemainingBytes();
+		Parser.GetBYTES(fufsFolderUserFieldStream.JunkDataSize,&fufsFolderUserFieldStream.JunkData);
+	}
+
+	FolderUserFieldStreamStruct* pfufsFolderUserFieldStream = new FolderUserFieldStreamStruct;
+	if (pfufsFolderUserFieldStream)
+	{
+		*pfufsFolderUserFieldStream = fufsFolderUserFieldStream;
+	}
+
+	return pfufsFolderUserFieldStream;
+} // BinToFolderUserFieldStreamStruct
+
+void DeleteFolderUserFieldStreamStruct(_In_ FolderUserFieldStreamStruct* pfufsFolderUserFieldStream)
+{
+	if (!pfufsFolderUserFieldStream) return;
+	if (pfufsFolderUserFieldStream->FolderUserFieldsAnsi.FieldDefinitionCount && pfufsFolderUserFieldStream->FolderUserFieldsAnsi.FieldDefinitions)
+	{
+		ULONG i = 0;
+
+		for (i = 0 ; i < pfufsFolderUserFieldStream->FolderUserFieldsAnsi.FieldDefinitionCount ; i++)
+		{
+			delete[] pfufsFolderUserFieldStream->FolderUserFieldsAnsi.FieldDefinitions[i].FieldName;
+			delete[] pfufsFolderUserFieldStream->FolderUserFieldsAnsi.FieldDefinitions[i].Common.wszFormula;
+		}
+	}
+	delete[] pfufsFolderUserFieldStream->FolderUserFieldsAnsi.FieldDefinitions;
+
+	if (pfufsFolderUserFieldStream->FolderUserFieldsUnicode.FieldDefinitionCount && pfufsFolderUserFieldStream->FolderUserFieldsUnicode.FieldDefinitions)
+	{
+		ULONG i = 0;
+
+		for (i = 0 ; i < pfufsFolderUserFieldStream->FolderUserFieldsUnicode.FieldDefinitionCount ; i++)
+		{
+			delete[] pfufsFolderUserFieldStream->FolderUserFieldsUnicode.FieldDefinitions[i].FieldName;
+			delete[] pfufsFolderUserFieldStream->FolderUserFieldsUnicode.FieldDefinitions[i].Common.wszFormula;
+		}
+	}
+	delete[] pfufsFolderUserFieldStream->FolderUserFieldsUnicode.FieldDefinitions;
+
+	delete[] pfufsFolderUserFieldStream->JunkData;
+	delete pfufsFolderUserFieldStream;
+} // DeleteFolderUserFieldStreamStruct
+
+// result allocated with new, clean up with delete[]
+_Check_return_ LPTSTR FolderUserFieldStreamStructToString(_In_ FolderUserFieldStreamStruct* pfufsFolderUserFieldStream)
+{
+	if (!pfufsFolderUserFieldStream) return NULL;
+
+	CString szFolderUserFieldStream;
+	CString szTmp;
+
+	szFolderUserFieldStream.FormatMessage(
+		IDS_FIELDHEADER,
+		pfufsFolderUserFieldStream->FolderUserFieldsAnsi.FieldDefinitionCount);
+	if (pfufsFolderUserFieldStream->FolderUserFieldsAnsi.FieldDefinitionCount && pfufsFolderUserFieldStream->FolderUserFieldsAnsi.FieldDefinitions)
+	{
+		ULONG i = 0;
+		for (i = 0 ; i < pfufsFolderUserFieldStream->FolderUserFieldsAnsi.FieldDefinitionCount ; i++)
+		{
+			LPTSTR szGUID = GUIDToString(&pfufsFolderUserFieldStream->FolderUserFieldsAnsi.FieldDefinitions[i].Common.PropSetGuid);
+			LPTSTR szFieldType = NULL;
+			InterpretFlags(flagFolderType, pfufsFolderUserFieldStream->FolderUserFieldsAnsi.FieldDefinitions[i].FieldType, &szFieldType);
+			LPTSTR szFieldcap = NULL;
+			InterpretFlags(flagFieldCap, pfufsFolderUserFieldStream->FolderUserFieldsAnsi.FieldDefinitions[i].Common.fcapm, &szFieldcap);
+
+			szTmp.FormatMessage(
+				IDS_FIELDANSIFIELD,
+				i,
+				pfufsFolderUserFieldStream->FolderUserFieldsAnsi.FieldDefinitions[i].FieldType,szFieldType,
+				pfufsFolderUserFieldStream->FolderUserFieldsAnsi.FieldDefinitions[i].FieldNameLength,
+				pfufsFolderUserFieldStream->FolderUserFieldsAnsi.FieldDefinitions[i].FieldName,
+				szGUID,
+				pfufsFolderUserFieldStream->FolderUserFieldsAnsi.FieldDefinitions[i].Common.fcapm,szFieldcap,
+				pfufsFolderUserFieldStream->FolderUserFieldsAnsi.FieldDefinitions[i].Common.dwString,
+				pfufsFolderUserFieldStream->FolderUserFieldsAnsi.FieldDefinitions[i].Common.dwBitmap,
+				pfufsFolderUserFieldStream->FolderUserFieldsAnsi.FieldDefinitions[i].Common.dwDisplay,
+				pfufsFolderUserFieldStream->FolderUserFieldsAnsi.FieldDefinitions[i].Common.iFmt,
+				pfufsFolderUserFieldStream->FolderUserFieldsAnsi.FieldDefinitions[i].Common.wszFormulaLength,
+				pfufsFolderUserFieldStream->FolderUserFieldsAnsi.FieldDefinitions[i].Common.wszFormula);
+			szFolderUserFieldStream += szTmp;
+
+			delete[] szFieldcap;
+			delete[] szFieldType;
+			delete[] szGUID;
+		}
+	}
+
+	szTmp.FormatMessage(
+		IDS_FIELDUNICODEHEADER,
+		pfufsFolderUserFieldStream->FolderUserFieldsUnicode.FieldDefinitionCount);
+	szFolderUserFieldStream += szTmp;
+
+	if (pfufsFolderUserFieldStream->FolderUserFieldsUnicode.FieldDefinitionCount && pfufsFolderUserFieldStream->FolderUserFieldsUnicode.FieldDefinitions)
+	{
+		ULONG i = 0;
+		for (i = 0 ; i < pfufsFolderUserFieldStream->FolderUserFieldsUnicode.FieldDefinitionCount ; i++)
+		{
+			LPTSTR szGUID = GUIDToString(&pfufsFolderUserFieldStream->FolderUserFieldsUnicode.FieldDefinitions[i].Common.PropSetGuid);
+			LPTSTR szFieldType = NULL;
+			InterpretFlags(flagFolderType, pfufsFolderUserFieldStream->FolderUserFieldsUnicode.FieldDefinitions[i].FieldType, &szFieldType);
+			LPTSTR szFieldcap = NULL;
+			InterpretFlags(flagFieldCap, pfufsFolderUserFieldStream->FolderUserFieldsUnicode.FieldDefinitions[i].Common.fcapm, &szFieldcap);
+			szTmp.FormatMessage(
+				IDS_FIELDUNICODEFIELD,
+				i,
+				pfufsFolderUserFieldStream->FolderUserFieldsUnicode.FieldDefinitions[i].FieldType,szFieldType,
+				pfufsFolderUserFieldStream->FolderUserFieldsUnicode.FieldDefinitions[i].FieldNameLength,
+				pfufsFolderUserFieldStream->FolderUserFieldsUnicode.FieldDefinitions[i].FieldName,
+				szGUID,
+				pfufsFolderUserFieldStream->FolderUserFieldsUnicode.FieldDefinitions[i].Common.fcapm,szFieldcap,
+				pfufsFolderUserFieldStream->FolderUserFieldsUnicode.FieldDefinitions[i].Common.dwString,
+				pfufsFolderUserFieldStream->FolderUserFieldsUnicode.FieldDefinitions[i].Common.dwBitmap,
+				pfufsFolderUserFieldStream->FolderUserFieldsUnicode.FieldDefinitions[i].Common.dwDisplay,
+				pfufsFolderUserFieldStream->FolderUserFieldsUnicode.FieldDefinitions[i].Common.iFmt,
+				pfufsFolderUserFieldStream->FolderUserFieldsUnicode.FieldDefinitions[i].Common.wszFormulaLength,
+				pfufsFolderUserFieldStream->FolderUserFieldsUnicode.FieldDefinitions[i].Common.wszFormula);
+			szFolderUserFieldStream += szTmp;
+
+			delete[] szFieldcap;
+			delete[] szFieldType;
+			delete[] szGUID;
+		}
+	}
+
+	szFolderUserFieldStream += JunkDataToString(pfufsFolderUserFieldStream->JunkDataSize,pfufsFolderUserFieldStream->JunkData);
+
+	return CStringToString(szFolderUserFieldStream);
+} // FolderUserFieldStreamStructToString
+
+//////////////////////////////////////////////////////////////////////////
+// End FolderUserFieldStreamStruct
 //////////////////////////////////////////////////////////////////////////
