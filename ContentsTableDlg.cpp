@@ -769,12 +769,11 @@ void CContentsTableDlg::OnSortTable()
 				UINT uidDropDown[] = {
 					IDS_DDTABLESORTASCEND,
 					IDS_DDTABLESORTDESCEND,
-					IDS_DDTABLESORTCOMBINE
+					IDS_DDTABLESORTCOMBINE,
+					IDS_DDTABLESORTCATEGMAX,
+					IDS_DDTABLESORTCATEGMIN
 				};
-				if (i != 0 && i < cCategories)
-					MySortOrderDlg.InitDropDown(0,IDS_SORTORDER,_countof(uidDropDown),uidDropDown,true);
-				else
-					MySortOrderDlg.InitDropDown(0,IDS_SORTORDER,_countof(uidDropDown) - 1,uidDropDown,true);
+				MySortOrderDlg.InitDropDown(0,IDS_SORTORDER,_countof(uidDropDown),uidDropDown,true);
 
 				WC_H(MySortOrderDlg.DisplayDialog());
 				if (S_OK == hRes)
@@ -790,6 +789,12 @@ void CContentsTableDlg::OnSortTable()
 						break;
 					case 2:
 						lpMySortOrders->aSort[i].ulOrder = TABLE_SORT_COMBINE;
+						break;
+					case 3:
+						lpMySortOrders->aSort[i].ulOrder = TABLE_SORT_CATEG_MAX;
+						break;
+					case 4:
+						lpMySortOrders->aSort[i].ulOrder = TABLE_SORT_CATEG_MIN;
 						break;
 					}
 				}

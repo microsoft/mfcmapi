@@ -75,4 +75,6 @@ enum __NonPropFlag
 	flagWebViewVersion,
 	flagWebViewType,
 	flagWebViewFlags,
+	flagFolderType,
+	flagFieldCap,
 };

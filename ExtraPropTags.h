@@ -1054,3 +1054,106 @@ typedef enum
 
 #define PR_NT_USER_NAME_A CHANGE_PROP_TYPE(PR_NT_USER_NAME, PT_STRING8)
 #define PR_NT_USER_NAME_W CHANGE_PROP_TYPE(PR_NT_USER_NAME, PT_UNICODE)
+
+#define PR_PROFILE_OFFLINE_STORE_PATH_A PROP_TAG(PT_STRING8, 0x6610)
+#define PR_PROFILE_OFFLINE_STORE_PATH_W PROP_TAG(PT_UNICODE, 0x6610)
+
+// Documented via widely shipped mapisvc.inf files.
+#define CONFIG_USE_SMTP_ADDRESSES ((ULONG)0x00000040)
+
+#define CONFIG_OST_CACHE_PRIVATE  ((ULONG)0x00000180)
+#define CONFIG_OST_CACHE_PUBLIC   ((ULONG)0x00000400)
+
+#define PR_STORE_UNICODE_MASK PROP_TAG(PT_LONG, 0x340F)
+
+#define PR_PST_CONFIG_FLAGS PROP_TAG(PT_LONG, 0x6770)
+#define PST_CONFIG_CREATE_NOWARN           0x00000001
+#define	PST_CONFIG_PRESERVE_DISPLAY_NAME   0x00000002
+#define OST_CONFIG_POLICY_DELAY_IGNORE_OST 0x00000008
+#define OST_CONFIG_CREATE_NEW_DEFAULT_OST  0x00000010
+#define PST_CONFIG_UNICODE                 0x80000000
+
+// http://msdn.microsoft.com/en-us/library/dd941354.aspx
+#define dispidImgAttchmtsCompressLevel 0x8593
+enum PictureCompressLevel
+{
+ pclOriginal = 0,
+ pclEmail = 1,
+ pclWeb = 2,
+ pclDocuments = 3,
+};
+
+// http://msdn.microsoft.com/en-us/library/dd941362.aspx
+#define dispidOfflineStatus 0x85B9
+typedef enum _MSOCOST
+	{
+	costNil,
+	costCheckedOut,
+	costSimpleOffline
+	} MSOCOST;
+
+// http://msdn.microsoft.com/en-us/library/ff368035(EXCHG.80).aspx
+#define dispidClientIntent 0x0015
+enum ClientIntent
+{
+	ciNone                             = 0x0000,
+	ciManager                          = 0x0001,
+	ciDelegate                         = 0x0002,
+	ciDeletedWithNoResponse            = 0x0004,
+	ciDeletedExceptionWithNoResponse   = 0x0008,
+	ciRespondedTentative               = 0x0010,
+	ciRespondedAccept                  = 0x0020,
+	ciRespondedDecline                 = 0x0040,
+	ciModifiedStartTime                = 0x0080,
+	ciModifiedEndTime                  = 0x0100,
+	ciModifiedLocation                 = 0x0200,
+	ciRespondedExceptionDecline        = 0x0400,
+	ciCanceled                         = 0x0800,
+	ciExceptionCanceled                = 0x1000,
+};
+
+// http://support.microsoft.com/kb/278321
+#define INTERNET_FORMAT_DEFAULT 0
+#define INTERNET_FORMAT_MIME 1
+#define INTERNET_FORMAT_UUENCODE 2
+#define INTERNET_FORMAT_BINHEX 3
+
+// http://msdn.microsoft.com/en-us/library/cc765809.aspx
+#define dispidContactItemData 0x8007
+#define	dispidEmail1DisplayName 0x8080
+#define	dispidEmail2DisplayName 0x8090
+#define	dispidEmail3DisplayName 0x80A0
+
+// http://blogs.msdn.com/b/stephen_griffin/archive/2010/09/13/you-chose-wisely.aspx
+#define PR_AB_CHOOSE_DIRECTORY_AUTOMATICALLY PROP_TAG( PT_BOOLEAN, 0x3D1C)
+
+#define PR_USERFIELDS PROP_TAG( PT_BINARY, 0x36E3)
+
+#define ftNull        0x00
+#define ftString      0x01
+#define ftInteger     0x03
+#define ftTime        0x05
+#define ftBoolean     0x06
+#define ftDuration    0x07
+#define ftMultiString 0x0B
+#define ftFloat       0x0C
+#define ftCurrency    0x0E
+#define ftCalc        0x12
+#define ftSwitch      0x13
+#define ftConcat      0x17
+
+#define FCAPM_CAN_EDIT			0x00000001	// field is editable
+#define FCAPM_CAN_SORT			0x00000002	// field is sortable
+#define FCAPM_CAN_GROUP			0x00000004	// Field is groupable
+#define FCAPM_MULTILINE_TEXT	0x00000100	// can hold multiple lines of text
+#define FCAPM_PERCENT			0x01000000	// FLOAT this is a percentage field
+#define FCAPM_DATEONLY			0x01000000	// TIME a date-only 'time' field
+#define FCAPM_UNITLESS			0x01000000	// INT no unit allowed in display
+#define FCAPM_CAN_EDIT_IN_ITEM	0x80000000	// Field can be edited in the item (specifically for custom forms)
+
+#define PR_SPAM_THRESHOLD PROP_TAG(PT_LONG, 0x041B)
+#define SPAM_FILTERING_NONE						0xFFFFFFFF
+#define SPAM_FILTERING_LOW						0x00000006
+#define SPAM_FILTERING_MEDIUM					0x00000005
+#define SPAM_FILTERING_HIGH						0x00000003
+#define SPAM_FILTERING_TRUSTED_ONLY				0x80000000

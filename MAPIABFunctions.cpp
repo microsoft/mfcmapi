@@ -35,7 +35,7 @@ _Check_return_ HRESULT HrAllocAdrList(ULONG ulNumProps, _Deref_out_opt_ LPADRLIS
 		}
 		else
 		{
-			MAPIFreeBuffer(lpLocalAdrList);
+			FreePadrlist(lpLocalAdrList);
 		}
 	}
 
@@ -354,7 +354,7 @@ _Check_return_ HRESULT ManualResolve(
 		{
 			hRes = S_OK;
 
-			MAPIFreeBuffer(lpABRow);
+			FreeProws(lpABRow);
 			lpABRow = NULL;
 			EC_H(lpABContainerTable->QueryRows(
 				1,
@@ -480,7 +480,7 @@ _Check_return_ HRESULT ManualResolve(
 		}
 		lpABContainerTable->Release();
 	}
-	MAPIFreeBuffer(lpABRow);
+	FreeProws(lpABRow);
 	MAPIFreeBuffer(lpFoundRow);
 	if (lpAdrList) FreePadrlist(lpAdrList);
 	if (pTable) pTable->Release();

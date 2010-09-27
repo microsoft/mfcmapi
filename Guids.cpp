@@ -29,6 +29,7 @@
 #define USES_PS_ROUTING_SEARCH_KEY
 #define USES_IID_IMAPIClientShutdown
 #define USES_IID_IMAPIProviderShutdown
+#define USES_IID_IMsgServiceAdmin2
 
 #include <initguid.h>
 #include <MAPIguid.h>

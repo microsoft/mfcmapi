@@ -46,16 +46,16 @@ CEditor(pParentWnd,
 	if (m_lpMAPIProp) m_lpMAPIProp->AddRef();
 
 	CreateControls(m_lpMAPIProp?8:5);
-	InitSingleLine(	PROPTAG_TAG,IDS_PROPTAG,NULL,false);
-	InitSingleLine(	PROPTAG_ID,IDS_PROPID,NULL,false);
-	InitDropDown(	PROPTAG_TYPE,IDS_PROPTYPE,0,NULL,false);
-	InitSingleLine(	PROPTAG_NAME,IDS_PROPNAME,NULL,true);
-	InitSingleLine(	PROPTAG_TYPESTRING,IDS_PROPTYPE,NULL,true);
+	InitSingleLine(PROPTAG_TAG,IDS_PROPTAG,NULL,false);
+	InitSingleLine(PROPTAG_ID,IDS_PROPID,NULL,false);
+	InitDropDown(PROPTAG_TYPE,IDS_PROPTYPE,0,NULL,false);
+	InitSingleLine(PROPTAG_NAME,IDS_PROPNAME,NULL,true);
+	InitSingleLine(PROPTAG_TYPESTRING,IDS_PROPTYPE,NULL,true);
 	if (m_lpMAPIProp)
 	{
-		InitDropDown(	PROPTAG_NAMEPROPKIND,IDS_NAMEPROPKIND,0,NULL,true);
-		InitSingleLine(	PROPTAG_NAMEPROPNAME,IDS_NAMEPROPNAME,NULL,false);
-		InitDropDown(	PROPTAG_NAMEPROPGUID,IDS_NAMEPROPGUID,0,NULL,false);
+		InitDropDown(PROPTAG_NAMEPROPKIND,IDS_NAMEPROPKIND,0,NULL,true);
+		InitSingleLine(PROPTAG_NAMEPROPNAME,IDS_NAMEPROPNAME,NULL,false);
+		InitGUIDDropDown(PROPTAG_NAMEPROPGUID,IDS_NAMEPROPGUID,false);
 	}
 } // CPropertyTagEditor::CPropertyTagEditor
 
@@ -93,13 +93,6 @@ _Check_return_ BOOL CPropertyTagEditor::OnInitDialog()
 	{
 		InsertDropString(PROPTAG_NAMEPROPKIND,0,_T("MNID_STRING")); // STRING_OK
 		InsertDropString(PROPTAG_NAMEPROPKIND,1,_T("MNID_ID")); // STRING_OK
-
-		for (ulDropNum=0 ; ulDropNum < ulPropGuidArray ; ulDropNum++)
-		{
-			LPTSTR szGUID = GUIDToStringAndName(PropGuidArray[ulDropNum].lpGuid);
-			InsertDropString(PROPTAG_NAMEPROPGUID,ulDropNum,szGUID);
-			delete[] szGUID;
-		}
 	}
 
 	PopulateFields(NOSKIPFIELD);
@@ -171,7 +164,7 @@ void CPropertyTagEditor::LookupNamedProp(ULONG ulSkipField, BOOL bCreate)
 	EC_H(AnsiToUnicode(szName,&szWideName));
 #endif
 
-	if (GetSelectedGUID(&guid))
+	if (GetSelectedGUID(PROPTAG_NAMEPROPGUID, false, &guid))
 	{
 		NamedID.lpguid = &guid;
 	}
@@ -226,7 +219,7 @@ void CPropertyTagEditor::LookupNamedProp(ULONG ulSkipField, BOOL bCreate)
 	{
 		LPSPropTagArray lpNamedPropTags = NULL;
 
-		EC_H_GETPROPS(GetIDsFromNames(m_lpMAPIProp,
+		WC_H_GETPROPS(GetIDsFromNames(m_lpMAPIProp,
 			1,
 			&lpNamedID,
 			bCreate?MAPI_CREATE:0,
@@ -247,45 +240,6 @@ void CPropertyTagEditor::LookupNamedProp(ULONG ulSkipField, BOOL bCreate)
 	delete[] szWideName;
 #endif
 } // CPropertyTagEditor::LookupNamedProp
-
-_Check_return_ BOOL CPropertyTagEditor::GetSelectedGUID(_In_ LPGUID lpSelectedGUID)
-{
-	if (!lpSelectedGUID) return false;
-	if (!IsValidDropDown(PROPTAG_NAMEPROPGUID)) return false;
-
-	LPCGUID lpGUID = NULL;
-	int iCurSel = 0;
-	iCurSel = GetDropDownSelection(PROPTAG_NAMEPROPGUID);
-	if (iCurSel != CB_ERR)
-	{
-		lpGUID = PropGuidArray[iCurSel].lpGuid;
-	}
-	else
-	{
-		// no match - need to do a lookup
-		CString szText;
-		GUID	guid = {0};
-		szText = GetDropStringUseControl(PROPTAG_NAMEPROPGUID);
-		// try the GUID like PS_* first
-		GUIDNameToGUID((LPCTSTR) szText,&lpGUID);
-		if (!lpGUID) // no match - try it like a guid {}
-		{
-			HRESULT hRes = S_OK;
-			WC_H(StringToGUID((LPCTSTR) szText,&guid));
-
-			if (SUCCEEDED(hRes))
-			{
-				lpGUID = &guid;
-			}
-		}
-	}
-	if (lpGUID)
-	{
-		memcpy(lpSelectedGUID,lpGUID,sizeof(GUID));
-		return true;
-	}
-	return false;
-} // CPropertyTagEditor::GetSelectedGUID
 
 _Check_return_ ULONG CPropertyTagEditor::GetSelectedPropType()
 {

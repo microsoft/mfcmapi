@@ -106,6 +106,7 @@ ID_CANCELTABLELOAD								"Cancel load of table"
 ID_CLEARRESTRICTION								"Remove the FindRow or Restrict restriction from the contents table"
 ID_CLOSEADDRESSBOOK								"Close the global reference to the address book"
 ID_COMPAREENTRYIDS								"Display dialog to enter Entry IDs to call CompareEntryIDs with"
+ID_COMPUTEGIVENSTOREHASH						"Compute a MAPI Protocol Host URL store hash for the selected store"
 ID_COMPUTESTOREHASH								"Compute a store hash for a MAPI Protocol Host URL"
 ID_CONFIGUREMSGSERVICE							"Call ConfigureMsgService on selected provider"
 ID_CONVERTMSGTOEML								"Convert an MSG file to an EML file using IConverterSession"
@@ -321,7 +322,8 @@ IDS_OUTLOOKVERSIONLABELLANG      "Language:"
 IDS_TITLEBARMESSAGE              "%1: %2"
 IDS_TITLEBARPLAIN                "%1"
 IDS_COMPAREEIDBOOL               "0x%1!08X! = %2"
-IDS_STOREHASHVAL                 "%1 = 0x%2!08X!"
+IDS_STOREHASHVAL                 "Store Hash = 0x%1!08X!"
+IDS_STOREHASHDOUBLEVAL           "EntryID Hash = 0x%1!08X!\r\nMapping Signature Hash = 0x%2!08X!"
 
 // contentstabledlg.cpp
 IDS_CREATEPROPRES                "Create Property String Restriction"
@@ -585,9 +587,9 @@ IDS_GETPFINTERFACE4              "IID_IExchangeManageStore4 - GetPublicFolderTab
 IDS_GETPFINTERFACE5              "IID_IExchangeManageStore5 - GetPublicFolderTableEx"
 // msgservicetabledlg.cpp
 IDS_OPENPROFSECT                 "OpenProfileSection"
-IDS_OPENPROFSECTPROMPT           "Enter MAPIUID to open\r\n\
-A MAPIUID is like a GUID, so it should be 32 hex characters\r\n\
-Example: 0a0d020000000000c000000000000046"
+IDS_OPENPROFSECTPROMPT           "Enter or select a MAPIUID to open.\r\n\
+A MAPIUID looks like a GUID.\r\n\
+Example: {00020D0A-0000-0000-C000-000000000046}"
 // msgstoredlg.cpp
 IDS_PASTEFOLDER                  "Paste Folder"
 IDS_PASTEFOLDERPROMPT            "Default is to paste as subfolder (including data).\r\n\
@@ -757,6 +759,7 @@ IDS_STFLATENTRYLIST              "Flat Entry List"
 IDS_STLONGRTIME                  "RTime"
 IDS_STWEBVIEWPERSISTSTREAM       "Web View Persistence Object Stream"
 IDS_STRECIPIENTROWSTREAM         "Recipient Row Stream"
+IDS_STFOLDERUSERFIELDS           "Folder User Fields Stream"
 
 // AbDlg.cpp
 IDS_FLAGS "Flags"
@@ -783,6 +786,7 @@ IDS_OBJECTFORADVISE "Object to call Advise on"
 IDS_STOREEID "Store Entry ID"
 IDS_STOREHASH "Store Hash"
 IDS_ENCODEDID "Encoded Entry ID"
+IDS_PUBLICFOLDERSTORE "Store is a Public Folder Store"
 // ContentsTableDlg.cpp
 IDS_PROPVALUE "Property Value:"
 IDS_ULFUZZYLEVEL "ulFuzzyLevel:"
@@ -864,6 +868,7 @@ IDS_ERROR "Error"
 IDS_OFFSET "Offset (in hex):"
 // MsgServiceTableDlg.cpp
 IDS_MAPIUID "MAPI UID:"
+IDS_MAPIUIDBYTESWAPPED "Byte swapped (useful for a UID read from the registry or memory)"
 // MsgStoreDlg.cpp
 IDS_PASTEFOLDERCONTENTS "Paste folder contents only"
 IDS_FOLDERNAME "Folder Name:"
@@ -1071,26 +1076,27 @@ Options Dialog: Please review Other\\Options for various options.\n\
 Debug Output supports various tags. All Output includes the tag number used to print it.\n\
 The output can be excluded by removing the tag from the options page.\n\
 Supported tags:\n\
-DBGNoDebug\t\t0x00000000\n\
-DBGGeneric\t\t0x00000001\n\
-DBGVersionBanner\t\t0x00000002\n\
-DBGFatalError\t\t0x00000004\n\
-DBGRefCount\t\t0x00000008\n\
-DBGConDes\t\t0x00000010\n\
-DBGNotify\t\t0x00000020\n\
-DBGHRes\t\t0x00000040\n\
-DBGCreateDialog\t\t0x00000080\n\
-DBGOpenItemProp\t\t0x00000100\n\
-DBGDeleteSelectedItem\t0x00000200\n\
-DBGTest\t\t\t0x00000400\n\
-DBGFormViewer\t\t0x00000800\n\
-DBGNamedProp\t\t0x00001000\n\
-DBGLoadLibrary\t\t0x00002000\n\
-DBGForms\t\t0x00004000\n\
-DBGAddInPlumbing\t\t0x00008000\n\
-DBGAddIn\t\t0x00010000\n\
-DBGStream\t\t0x00020000\n\
-DBGMenu\t\t0x80000000"
+0x00000000 DBGNoDebug\n\
+0x00000001 DBGGeneric\n\
+0x00000002 DBGVersionBanner\n\
+0x00000004 DBGFatalError\n\
+0x00000008 DBGRefCount\n\
+0x00000010 DBGConDes\n\
+0x00000020 DBGNotify\n\
+0x00000040 DBGHRes\n\
+0x00000080 DBGCreateDialog\n\
+0x00000100 DBGOpenItemProp\n\
+0x00000200 DBGDeleteSelectedItem\n\
+0x00000400 DBGTest\n\
+0x00000800 DBGFormViewer\n\
+0x00001000 DBGNamedProp\n\
+0x00002000 DBGLoadLibrary\n\
+0x00004000 DBGForms\n\
+0x00008000 DBGAddInPlumbing\n\
+0x00010000 DBGAddIn\n\
+0x00020000 DBGStream\n\
+0x00040000 DBGSmartView\n\
+0x80000000 DBGMenu"
 
 IDS_DISPLAYABOUTCHECK "Display at startup"
 
@@ -1113,6 +1119,8 @@ IDS_DDADDRESSBOOK "Address Book"
 IDS_DDTABLESORTASCEND "TABLE_SORT_ASCEND"
 IDS_DDTABLESORTDESCEND "TABLE_SORT_DESCEND"
 IDS_DDTABLESORTCOMBINE "TABLE_SORT_COMBINE"
+IDS_DDTABLESORTCATEGMAX "TABLE_SORT_CATEG_MAX"
+IDS_DDTABLESORTCATEGMIN "TABLE_SORT_CATEG_MIN"
 IDS_DDCOPYMESSAGES "CopyMessages"
 IDS_DDCOPYTO "CopyTo"
 IDS_DDDELETETODELETED "Delete to deleted items"
@@ -1487,6 +1495,34 @@ IDS_INVALIDSD "This is not a valid security descriptor."
 IDS_FLAGTOSTRINGHEX "\r\n0x%1!08X! %2!ws!"
 IDS_FLAGTOSTRINGDEC "\r\n%1!5d! %2!ws!"
 
+IDS_FIELDHEADER "Folder User Field Stream\r\n\
+FolderUserFieldAnsi.FieldDefinitionCount = %1!d!"
+IDS_FIELDANSIFIELD "\r\n\r\nField %1!d!\r\n\
+FieldType = 0x%2!08X! = %3\r\n\
+FieldNameLength = 0x%4!08X! = %4!d!\r\n\
+FieldName = %5!hs!\r\n\
+PropSetGuid = %6\r\n\
+fcapm = 0x%7!08X! = %8\r\n\
+dwString = 0x%9!08X!\r\n\
+dwBitmap = 0x%10!08X!\r\n\
+dwDisplay = 0x%11!08X!\r\n\
+iFmt = 0x%12!08X!\r\n\
+wszFormulaLength = 0x%13!04X! = %13!d!\r\n\
+wszFormula = %14!ws!"
+IDS_FIELDUNICODEHEADER "\r\n\r\nFolderUserFieldUnicode.FieldDefinitionCount = %1!d!"
+IDS_FIELDUNICODEFIELD "\r\n\r\nField %1!d!\r\n\
+FieldType = 0x%2!08X! = %3\r\n\
+FieldNameLength = 0x%4!08X! = %4!d!\r\n\
+FieldName = %5!ws!\r\n\
+PropSetGuid = %6\r\n\
+fcapm = 0x%7!08X! = %8\r\n\
+dwString = 0x%9!08X!\r\n\
+dwBitmap = 0x%10!08X!\r\n\
+dwDisplay = 0x%11!08X!\r\n\
+iFmt = 0x%12!08X!\r\n\
+wszFormulaLength = 0x%13!04X! = %13!d!\r\n\
+wszFormula = %14!ws!"
+
 // For InsertColumn
 IDS_ENTRY "Entry"
 IDS_PROPERTNAME "Property Name"
@@ -1518,6 +1554,7 @@ IDS_COLASSOCCONTENTCOUNT "Assoc Content Count"
 IDS_COLATT "Att?"
 IDS_COLCONTENTCOUNT "Content Count"
 IDS_COLCONTENTUNREAD "Content Unread"
+IDS_COLDEFAULTSTORE "Default Store"
 IDS_COLDEPTH "Depth"
 IDS_COLDISPLAYNAME "Display Name"
 IDS_COLDISPLAYTYPE "Display Type"
@@ -1552,6 +1589,7 @@ IDS_COLOBJECTTYPE "Object Type"
 IDS_COLOTHERNAMES "Other Names"
 IDS_COLPARTIALNAMES "PartialNames"
 IDS_COLPROPERTYNAMES "Property Name(s)"
+IDS_COLPROVIDERDISPLAY "Provider"
 IDS_COLPROVIDERDLL "Provider DLL"
 IDS_COLQUOTARECEIVE "Quota Receive"
 IDS_COLQUOTASEND "Quota Send"

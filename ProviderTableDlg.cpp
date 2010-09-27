@@ -95,30 +95,18 @@ void CProviderTableDlg::OnOpenProfileSection()
 		this,
 		IDS_OPENPROFSECT,
 		IDS_OPENPROFSECTPROMPT,
-		1,
+		2,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 
-	MyUID.InitSingleLineSz(0,IDS_MAPIUID,_T("0a0d020000000000c000000000000046"),false); // STRING_OK
+	MyUID.InitGUIDDropDown(0,IDS_MAPIUID,false);
+	MyUID.InitCheck(1, IDS_MAPIUIDBYTESWAPPED, false, false);
 
 	WC_H(MyUID.DisplayDialog());
 	if (S_OK != hRes) return;
 
-	SBinary MapiUID = {0};
-	CString szTmp;
-	szTmp = MyUID.GetString(0);
-	ULONG ulStrLen = szTmp.GetLength();
-
-	if (32 != ulStrLen) return;
-
-	MapiUID.cb = 16;
-
-	EC_H(MAPIAllocateBuffer(
-		MapiUID.cb,
-		(LPVOID*)&MapiUID.lpb));
-	MyBinFromHex(
-		(LPCTSTR) szTmp,
-		MapiUID.lpb,
-		MapiUID.cb);
+	GUID guid = {0};
+	SBinary MapiUID = {sizeof(GUID),(LPBYTE) &guid};
+	(void) MyUID.GetSelectedGUID(0, MyUID.GetCheck(1), &guid);
 
 	LPPROFSECT lpProfSect = NULL;
 	EC_H(OpenProfileSection(

@@ -882,4 +882,82 @@ _Check_return_ RecipientRowStreamStruct* BinToRecipientRowStreamStruct(ULONG cbB
 void DeleteRecipientRowStreamStruct(_In_ RecipientRowStreamStruct* prrsRecipientRowStream);
 // result allocated with new, clean up with delete[]
 _Check_return_ LPTSTR RecipientRowStreamStructToString(_In_ RecipientRowStreamStruct* prrsRecipientRowStream);
+
+// FolderFieldDefinitionCommon
+// =====================
+//   This structure specifies a folder field definition common struct
+//
+typedef struct
+{
+	GUID PropSetGuid;
+	DWORD fcapm;
+	DWORD dwString;
+	DWORD dwBitmap;
+	DWORD dwDisplay;
+	DWORD iFmt;
+	WORD wszFormulaLength;
+	LPWSTR wszFormula;
+} FolderFieldDefinitionCommon;
+
+// FolderFieldDefinitionA
+// =====================
+//   This structure specifies a folder field definition ANSI struct
+//
+typedef struct
+{
+	DWORD FieldType;
+	WORD FieldNameLength;
+	LPSTR FieldName;
+	FolderFieldDefinitionCommon Common;
+} FolderFieldDefinitionA;
+
+// FolderFieldDefinitionW
+// =====================
+//   This structure specifies a folder field definition Unicode struct
+//
+typedef struct
+{
+	DWORD FieldType;
+	WORD FieldNameLength;
+	LPWSTR FieldName;
+	FolderFieldDefinitionCommon Common;
+} FolderFieldDefinitionW;
+
+// FolderUserFieldA
+// =====================
+//   This structure specifies a folder user field ANSI stream struct
+//
+typedef struct
+{
+	DWORD FieldDefinitionCount;
+	FolderFieldDefinitionA* FieldDefinitions;
+} FolderUserFieldA;
+
+// FolderUserFieldW
+// =====================
+//   This structure specifies a folder user field Unicode stream struct
+//
+typedef struct
+{
+	DWORD FieldDefinitionCount;
+	FolderFieldDefinitionW* FieldDefinitions;
+} FolderUserFieldW;
+
+// FolderUserFieldStreamStruct
+// =====================
+//   This structure specifies a folder user field stream struct
+//
+typedef struct
+{
+	FolderUserFieldA FolderUserFieldsAnsi;
+	FolderUserFieldW FolderUserFieldsUnicode;
+	size_t JunkDataSize;
+	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
+} FolderUserFieldStreamStruct;
+
+// Allocates return value with new. Clean up with DeleteFolderUserFieldStreamStruct.
+_Check_return_ FolderUserFieldStreamStruct* BinToFolderUserFieldStreamStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+void DeleteFolderUserFieldStreamStruct(_In_ FolderUserFieldStreamStruct* pfufsFolderUserFieldStream);
+// result allocated with new, clean up with delete[]
+_Check_return_ LPTSTR FolderUserFieldStreamStructToString(_In_ FolderUserFieldStreamStruct* pfufsFolderUserFieldStream);
 // End Functions to parse PT_BINARY properties

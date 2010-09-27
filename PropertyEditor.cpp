@@ -598,22 +598,19 @@ void CPropertyEditor::WriteStringsToSPropValue()
 
 				// remember we already read szTmpString and ulStrLen and found ulStrLen was even
 				ULONG cbBin = ulStrLen / 2;
-				if (cbBin)
+				ULONG cchString = cbBin;
+				EC_H(MAPIAllocateMore(
+					(cchString+1)*sizeof(CHAR), // NULL terminator
+					m_lpAllocParent,
+					(LPVOID*)&m_lpsOutputValue->Value.lpszA));
+				if (FAILED(hRes)) bFailed = true;
+				else
 				{
-					ULONG cchString = cbBin;
-					EC_H(MAPIAllocateMore(
-						(cchString+1)*sizeof(CHAR), // NULL terminator
-						m_lpAllocParent,
-						(LPVOID*)&m_lpsOutputValue->Value.lpszA));
-					if (FAILED(hRes)) bFailed = true;
-					else
-					{
-						MyBinFromHex(
-							(LPCTSTR) szTmpString,
-							(LPBYTE) m_lpsOutputValue->Value.lpszA,
-							cbBin);
-						m_lpsOutputValue->Value.lpszA[cchString] = NULL;
-					}
+					if (cbBin) MyBinFromHex(
+						(LPCTSTR) szTmpString,
+						(LPBYTE) m_lpsOutputValue->Value.lpszA,
+						cbBin);
+					m_lpsOutputValue->Value.lpszA[cchString] = NULL;
 				}
 			}
 			break;
@@ -637,7 +634,7 @@ void CPropertyEditor::WriteStringsToSPropValue()
 					if (FAILED(hRes)) bFailed = true;
 					else
 					{
-						MyBinFromHex(
+						if (cbBin) MyBinFromHex(
 							(LPCTSTR) szTmpString,
 							(LPBYTE) m_lpsOutputValue->Value.lpszW,
 							cbBin);

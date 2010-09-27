@@ -1717,9 +1717,12 @@ _Check_return_ HRESULT CContentsTableListCtrl::DoExpandCollapse()
 					{
 						// add the item to the NEXT slot
 						EC_H(AddItemToListBox(iItem + i + 1,&lpRowSet->aRow[i]));
+						// Since we handed the props off to the list box, null it out of the row set
+						// so we don't free it later with FreeProws
+						lpRowSet->aRow[i].lpProps = NULL;
 					}
 				}
-				MAPIFreeBuffer(lpRowSet);
+				FreeProws(lpRowSet);
 				lpData->data.Contents.ulRowType = TBL_EXPANDED_CATEGORY;
 				lvItem.iImage = slIconNodeExpanded;
 				bDidWork = true;

@@ -6,6 +6,7 @@
 #include "MFCUtilityFunctions.h"
 #include "MAPIFunctions.h"
 #include "InterpretProp.h"
+#include "InterpretProp2.h"
 #include "ImportProcs.h"
 #include "MyWinApp.h"
 extern CMyWinApp theApp;
@@ -518,6 +519,18 @@ BOOL CEditor::OnInitDialog()
 					}
 				}
 				m_lpControls[i].UI.lpDropDown->DropDown.SetCurSel(0);
+
+				// If this is a GUID list, load up our list of guids
+				if (m_lpControls[i].UI.lpDropDown->bGUID)
+				{
+					ULONG ulDropNum = 0;
+					for (ulDropNum=0 ; ulDropNum < ulPropGuidArray ; ulDropNum++)
+					{
+						LPTSTR szGUID = GUIDToStringAndName(PropGuidArray[ulDropNum].lpGuid);
+						InsertDropString(i,ulDropNum,szGUID);
+						delete[] szGUID;
+					}
+				}
 			}
 			break;
 		}
@@ -650,12 +663,56 @@ void CEditor::OnOK()
 			{
 				m_lpControls[j].UI.lpDropDown->iDropSelection = GetDropDownSelection(j);
 				m_lpControls[j].UI.lpDropDown->iDropSelectionValue = GetDropDownSelectionValue(j);
+				m_lpControls[j].UI.lpDropDown->lpszSelectionString = GetDropStringUseControl(j);
+				m_lpControls[j].UI.lpDropDown->bActive = false; // must be last
 			}
 			break;
 		}
 	}
 	CDialog::OnOK();
 } // CEditor::OnOK
+
+// This should work whether the editor is active/displayed or not
+_Check_return_ BOOL CEditor::GetSelectedGUID(ULONG iControl, BOOL bByteSwapped, _In_ LPGUID lpSelectedGUID)
+{
+	if (!lpSelectedGUID) return NULL;
+	if (!IsValidDropDown(iControl)) return NULL;
+
+	LPCGUID lpGUID = NULL;
+	int iCurSel = 0;
+	iCurSel = GetDropDownSelection(iControl);
+	if (iCurSel != CB_ERR)
+	{
+		lpGUID = PropGuidArray[iCurSel].lpGuid;
+	}
+	else
+	{
+		// no match - need to do a lookup
+		CString szText;
+		GUID guid = {0};
+		szText = GetDropStringUseControl(iControl);
+		if (szText.IsEmpty()) szText = m_lpControls[iControl].UI.lpDropDown->lpszSelectionString;
+
+		// try the GUID like PS_* first
+		GUIDNameToGUID((LPCTSTR) szText,&lpGUID);
+		if (!lpGUID) // no match - try it like a guid {}
+		{
+			HRESULT hRes = S_OK;
+			WC_H(StringToGUID((LPCTSTR) szText, bByteSwapped, &guid));
+
+			if (SUCCEEDED(hRes))
+			{
+				lpGUID = &guid;
+			}
+		}
+	}
+	if (lpGUID)
+	{
+		memcpy(lpSelectedGUID,lpGUID,sizeof(GUID));
+		return true;
+	}
+	return false;
+} // CEditor::GetSelectedGUID
 
 _Check_return_ HRESULT CEditor::DisplayDialog()
 {
@@ -1757,11 +1814,15 @@ _Check_return_ CString CEditor::GetDropStringUseControl(ULONG iControl)
 	return szText;
 } // CEditor::GetDropStringUseControl
 
+// This should work whether the editor is active/displayed or not
 _Check_return_ int CEditor::GetDropDownSelection(ULONG iControl)
 {
 	if (!IsValidDropDown(iControl)) return CB_ERR;
 
-	return m_lpControls[iControl].UI.lpDropDown->DropDown.GetCurSel();
+	if (m_lpControls[iControl].UI.lpDropDown->bActive) return m_lpControls[iControl].UI.lpDropDown->DropDown.GetCurSel();
+
+	// In case we're being called after we're done displaying, use the stored value
+	return m_lpControls[iControl].UI.lpDropDown->iDropSelection;
 } // CEditor::GetDropDownSelection
 
 _Check_return_ DWORD_PTR CEditor::GetDropDownSelectionValue(ULONG iControl)
@@ -1957,12 +2018,25 @@ void CEditor::InitDropDown(ULONG i, UINT uidLabel, ULONG ulDropList, _In_opt_cou
 	m_lpControls[i].UI.lpDropDown = new DropDownStruct;
 	if (m_lpControls[i].UI.lpDropDown)
 	{
+		m_lpControls[i].UI.lpDropDown->bActive = true;
 		m_lpControls[i].UI.lpDropDown->ulDropList = ulDropList;
 		m_lpControls[i].UI.lpDropDown->lpuidDropList = lpuidDropList;
 		m_lpControls[i].UI.lpDropDown->iDropSelection = CB_ERR;
 		m_lpControls[i].UI.lpDropDown->iDropSelectionValue = 0;
+		m_lpControls[i].UI.lpDropDown->bGUID = false;
 	}
 } // CEditor::InitDropDown
+
+void CEditor::InitGUIDDropDown(ULONG i, UINT uidLabel, BOOL bReadOnly)
+{
+	if (INVALIDRANGE(i)) return;
+	InitDropDown(i, uidLabel, 0, NULL, bReadOnly);
+
+	if (m_lpControls[i].UI.lpDropDown)
+	{
+		m_lpControls[i].UI.lpDropDown->bGUID = true;
+	}
+} // CEditor::InitGUIDDropDown
 
 // Takes a binary stream and initializes an edit control with the HEX version of this stream
 void CEditor::InitEditFromBinaryStream(ULONG iControl, _In_ LPSTREAM lpStreamIn)

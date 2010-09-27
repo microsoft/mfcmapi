@@ -6,6 +6,7 @@
 #include "Editor.h"
 #include "MAPIFunctions.h"
 #include "ExtraPropTags.h"
+#include "Guids.h"
 
 void LaunchProfileWizard(
 						 _In_ HWND hParentWnd,
@@ -471,7 +472,7 @@ _Check_return_ HRESULT HrMarkExistingProviders(_In_ LPSERVICEADMIN lpServiceAdmi
 			}
 
 		}
-		MAPIFreeBuffer(lpRowSet);
+		FreeProws(lpRowSet);
 		lpProviderTable->Release();
 	}
 	return hRes;
@@ -542,13 +543,13 @@ _Check_return_ HRESULT HrFindUnmarkedProvider(_In_ LPSERVICEADMIN lpServiceAdmin
 					}
 				}
 				// go on to next one in the loop
-				MAPIFreeBuffer(*lpRowSet);
+				FreeProws(*lpRowSet);
 				*lpRowSet = NULL;
 			}
 			else
 			{
 				// no more hits - get out of the loop
-				MAPIFreeBuffer(*lpRowSet);
+				FreeProws(*lpRowSet);
 				*lpRowSet = NULL;
 				break;
 			}
@@ -571,7 +572,7 @@ _Check_return_ HRESULT HrAddServiceToProfile(
 	HRESULT			hRes = S_OK;
 	LPPROFADMIN		lpProfAdmin = NULL;
 	LPSERVICEADMIN	lpServiceAdmin = NULL;
-	LPSRowSet       lpRowSet =NULL;
+	LPSRowSet		lpRowSet =NULL;
 
 	DebugPrint(DBGGeneric,_T("HrAddServiceToProfile(%hs,%hs)\n"),lpszServiceName,lpszProfileName);
 
@@ -590,53 +591,77 @@ _Check_return_ HRESULT HrAddServiceToProfile(
 
 	if (lpServiceAdmin)
 	{
-		// Only need to mark if we plan on calling ConfigureMsgService
-		if (lpPropVals)
+		MAPIUID uidService = {0};
+		LPMAPIUID lpuidService = &uidService;
+
+		LPSERVICEADMIN2 lpServiceAdmin2 = NULL;
+		WC_H(lpServiceAdmin->QueryInterface(IID_IMsgServiceAdmin2, (LPVOID*) &lpServiceAdmin2));
+
+		if (SUCCEEDED(hRes) && lpServiceAdmin2)
 		{
-			// Add a dummy prop to the current providers
-			EC_H(HrMarkExistingProviders(lpServiceAdmin,true));
+			EC_H_MSG(lpServiceAdmin2->CreateMsgServiceEx(
+				(LPTSTR)lpszServiceName,
+				(LPTSTR)lpszServiceName,
+				ulUIParam,
+				ulFlags,
+				&uidService),
+				IDS_CREATEMSGSERVICEFAILED);
 		}
-
-		EC_H_MSG(lpServiceAdmin->CreateMsgService(
-			(LPTSTR)lpszServiceName,
-			(LPTSTR)lpszServiceName,
-			ulUIParam,
-			ulFlags),
-			IDS_CREATEMSGSERVICEFAILED);
-
-		if (lpPropVals)
+		else
 		{
-			// Look for a provider without our dummy prop
-			EC_H(HrFindUnmarkedProvider(lpServiceAdmin,&lpRowSet));
-
-			if (lpRowSet) DebugPrintSRowSet(DBGGeneric,lpRowSet,NULL);
-
-			// should only have one unmarked row
-			if (lpRowSet && lpRowSet->cRows == 1)
-			{
-				LPSPropValue lpServiceUID = NULL;
-
-				lpServiceUID = PpropFindProp(
-					lpRowSet->aRow[0].lpProps,
-					lpRowSet->aRow[0].cValues,
-					PR_SERVICE_UID);
-
-				if (lpServiceUID)
-				{
-					EC_H_CANCEL(lpServiceAdmin->ConfigureMsgService(
-						(LPMAPIUID) lpServiceUID->Value.bin.lpb,
-						NULL,
-						0,
-						cPropVals,
-						lpPropVals));
-				}
-			}
-			MAPIFreeBuffer(lpRowSet);
-
 			hRes = S_OK;
-			// Strip out the dummy prop
-			EC_H(HrMarkExistingProviders(lpServiceAdmin,false));
+			// Only need to mark if we plan on calling ConfigureMsgService
+			if (lpPropVals)
+			{
+				// Add a dummy prop to the current providers
+				EC_H(HrMarkExistingProviders(lpServiceAdmin,true));
+			}
+			EC_H_MSG(lpServiceAdmin->CreateMsgService(
+				(LPTSTR)lpszServiceName,
+				(LPTSTR)lpszServiceName,
+				ulUIParam,
+				ulFlags),
+				IDS_CREATEMSGSERVICEFAILED);
+			if (lpPropVals)
+			{
+				// Look for a provider without our dummy prop
+				EC_H(HrFindUnmarkedProvider(lpServiceAdmin,&lpRowSet));
+
+				if (lpRowSet) DebugPrintSRowSet(DBGGeneric,lpRowSet,NULL);
+
+				// should only have one unmarked row
+				if (lpRowSet && lpRowSet->cRows == 1)
+				{
+					LPSPropValue lpServiceUIDProp = NULL;
+
+					lpServiceUIDProp = PpropFindProp(
+						lpRowSet->aRow[0].lpProps,
+						lpRowSet->aRow[0].cValues,
+						PR_SERVICE_UID);
+
+					if (lpServiceUIDProp)
+					{
+						lpuidService = (LPMAPIUID) lpServiceUIDProp->Value.bin.lpb;
+					}
+				}
+
+				hRes = S_OK;
+				// Strip out the dummy prop
+				EC_H(HrMarkExistingProviders(lpServiceAdmin,false));
+			}
 		}
+
+		if (lpPropVals)
+		{
+			EC_H_CANCEL(lpServiceAdmin->ConfigureMsgService(
+				lpuidService,
+				NULL,
+				0,
+				cPropVals,
+				lpPropVals));
+		}
+		FreeProws(lpRowSet);
+		if (lpServiceAdmin2) lpServiceAdmin2->Release();
 		lpServiceAdmin->Release();
 	}
 	lpProfAdmin->Release();

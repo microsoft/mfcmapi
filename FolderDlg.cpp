@@ -483,7 +483,7 @@ _Check_return_ BOOL CFolderDlg::HandlePaste()
 						if (lpMessage)
 						{
 							LPMESSAGE lpNewMessage = NULL;
-							EC_H(((LPMAPIFOLDER) m_lpContainer)->CreateMessage(NULL,dfAssoc?MAPI_ASSOCIATED:NULL,&lpNewMessage));
+							EC_H(((LPMAPIFOLDER) m_lpContainer)->CreateMessage(NULL,(m_ulDisplayFlags & dfAssoc)?MAPI_ASSOCIATED:NULL,&lpNewMessage));
 							if (lpNewMessage)
 							{
 								LPSPropProblemArray lpProblems = NULL;
@@ -790,7 +790,7 @@ void CFolderDlg::OnLoadFromMSG()
 				case 0:
 					EC_H(((LPMAPIFOLDER)m_lpContainer)->CreateMessage(
 						NULL,
-						dfAssoc?MAPI_ASSOCIATED:NULL,
+						(m_ulDisplayFlags & dfAssoc)?MAPI_ASSOCIATED:NULL,
 						&lpNewMessage));
 
 					if (lpNewMessage)
@@ -1685,7 +1685,7 @@ void CFolderDlg::OnLoadFromTNEF()
 				hRes = S_OK;
 				EC_H(((LPMAPIFOLDER)m_lpContainer)->CreateMessage(
 					NULL,
-					dfAssoc?MAPI_ASSOCIATED:0,
+					(m_ulDisplayFlags & dfAssoc)?MAPI_ASSOCIATED:0,
 					&lpNewMessage));
 
 				if (lpNewMessage)
@@ -1746,7 +1746,7 @@ void CFolderDlg::OnLoadFromEML()
 				hRes = S_OK;
 				EC_H(((LPMAPIFOLDER)m_lpContainer)->CreateMessage(
 					NULL,
-					dfAssoc?MAPI_ASSOCIATED:0,
+					(m_ulDisplayFlags & dfAssoc)?MAPI_ASSOCIATED:0,
 					&lpNewMessage));
 
 				if (lpNewMessage)

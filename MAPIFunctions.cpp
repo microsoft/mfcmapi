@@ -515,7 +515,7 @@ _Check_return_ HRESULT CopyFolderRules(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LPMAP
 					lpTempList->cEntries = lpRows->cRows;
 					ULONG iArrayPos = 0;
 
-					for(iArrayPos = 0 ; iArrayPos < lpRows->cRows ; iArrayPos++)
+					for (iArrayPos = 0 ; iArrayPos < lpRows->cRows ; iArrayPos++)
 					{
 						lpTempList->aEntries[iArrayPos].ulRowFlags = ROW_ADD;
 						EC_H(MAPIAllocateMore(
@@ -556,7 +556,7 @@ _Check_return_ HRESULT CopyFolderRules(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LPMAP
 
 					MAPIFreeBuffer(lpTempList);
 				}
-				MAPIFreeBuffer(lpRows);
+				FreeProws(lpRows);
 			}
 			lpTable->Release();
 		}
@@ -2254,7 +2254,7 @@ _Check_return_ BOOL CheckStringProp(_In_opt_ LPSPropValue lpProp, ULONG ulPropTy
 	return true;
 } // CheckStringProp
 
-_Check_return_ DWORD ComputeStoreHash(ULONG cbStoreEID, _In_ LPENTRYID pbStoreEID, _In_z_ LPCWSTR pwzFileName)
+_Check_return_ DWORD ComputeStoreHash(ULONG cbStoreEID, _In_ LPBYTE pbStoreEID, _In_opt_z_ LPCSTR pszFileName, _In_opt_z_ LPCWSTR pwzFileName, BOOL bPublicStore)
 {
 	DWORD  dwHash = 0;
 	ULONG  cdw    = 0;
@@ -2264,6 +2264,8 @@ _Check_return_ DWORD ComputeStoreHash(ULONG cbStoreEID, _In_ LPENTRYID pbStoreEI
 	ULONG  i      = 0;
 
 	if (!cbStoreEID || !pbStoreEID) return dwHash;
+	// We shouldn't see both of these at the same time.
+	if (pszFileName && pwzFileName) return dwHash;
 
 	// Get the Store Entry ID
 	// pbStoreEID is a pointer to the Entry ID
@@ -2284,9 +2286,17 @@ _Check_return_ DWORD ComputeStoreHash(ULONG cbStoreEID, _In_ LPENTRYID pbStoreEI
 		dwHash = (dwHash << 5) + dwHash + *pb++;
 	}
 
+	if (bPublicStore)
+	{
+		DebugPrint(DBGGeneric,_T("ComputeStoreHash, hash (before adding .PUB) = 0x%08X\n"), dwHash);
+		// augment to make sure it is unique else could be same as the private store
+		dwHash = (dwHash << 5) + dwHash + 0x2E505542; // this is '.PUB'
+	}
+	if (pwzFileName || pszFileName)
+		DebugPrint(DBGGeneric,_T("ComputeStoreHash, hash (before adding path) = 0x%08X\n"), dwHash);
+
 	// You may want to also include the store file name in the hash calculation
-	// Get store FileName
-	// pwzFileName is a NULL terminated string with the path and filename of the store
+	// pszFileName and pwzFileName are NULL terminated strings with the path and filename of the store
 	if (pwzFileName)
 	{
 		while (*pwzFileName)
@@ -2294,8 +2304,17 @@ _Check_return_ DWORD ComputeStoreHash(ULONG cbStoreEID, _In_ LPENTRYID pbStoreEI
 			dwHash = (dwHash << 5) + dwHash + *pwzFileName++;
 		}
 	}
+	else if (pszFileName)
+	{
+		while (*pszFileName)
+		{
+			dwHash = (dwHash << 5) + dwHash + *pszFileName++;
+		}
+	}
+	if (pwzFileName || pszFileName)
+		DebugPrint(DBGGeneric,_T("ComputeStoreHash, hash (after adding path) = 0x%08X\n"), dwHash);
 
-	// dwHash now contains the hash to be used. It should be written in hex when building the URL.
+	// dwHash now contains the hash to be used. It should be written in hex when building a URL.
 	return dwHash;
 } // ComputeStoreHash
 
@@ -2328,3 +2347,79 @@ _Check_return_ LPWSTR EncodeID(ULONG cbEID, _In_ LPENTRYID rgbID)
 	// pwzIDEncoded now contains the entry ID encoded.
 	return pwzIDEncoded;
 } // EncodeID
+
+HRESULT HrEmsmdbUIDFromStore(_In_ LPMAPISESSION pmsess,
+							 _In_ MAPIUID const * const puidService,
+							 _Out_opt_ MAPIUID* pEmsmdbUID)
+{
+	if (!puidService) return MAPI_E_INVALID_PARAMETER;
+	HRESULT hRes = S_OK;
+
+	SRestriction mres = {0};
+	SPropValue mval = {0};
+	SRowSet* pRows = NULL;
+	SRow* pRow = NULL;
+	LPSERVICEADMIN spSvcAdmin = NULL;
+	LPMAPITABLE spmtab = NULL;
+
+	enum { eEntryID = 0, eSectionUid, eMax };
+	static const SizedSPropTagArray(eMax, tagaCols) =
+	{
+		eMax,
+		{
+			PR_ENTRYID,
+			PR_EMSMDB_SECTION_UID,
+		}
+	};
+
+	EC_H(pmsess->AdminServices(0, (LPSERVICEADMIN*)&spSvcAdmin));
+	if (spSvcAdmin)
+	{
+		EC_H(spSvcAdmin->GetMsgServiceTable(0, &spmtab));
+		if (spmtab)
+		{
+			EC_H(spmtab->SetColumns((LPSPropTagArray)&tagaCols, TBL_BATCH));
+
+			mres.rt = RES_PROPERTY;
+			mres.res.resProperty.relop = RELOP_EQ;
+			mres.res.resProperty.ulPropTag = PR_SERVICE_UID;
+			mres.res.resProperty.lpProp = &mval;
+			mval.ulPropTag = PR_SERVICE_UID;
+			mval.Value.bin.cb = sizeof(*puidService);
+			mval.Value.bin.lpb = (LPBYTE)puidService;
+
+			EC_H(spmtab->Restrict(&mres, 0));
+			EC_H(spmtab->QueryRows(10, 0, &pRows));
+
+			if (SUCCEEDED(hRes) && pRows && pRows->cRows)
+			{
+				pRow = &pRows->aRow[0];
+
+				if (pEmsmdbUID && pRow)
+				{
+					if (PR_EMSMDB_SECTION_UID == pRow->lpProps[eSectionUid].ulPropTag &&
+						pRow->lpProps[eSectionUid].Value.bin.cb == sizeof(*pEmsmdbUID))
+					{
+						memcpy(pEmsmdbUID, pRow->lpProps[eSectionUid].Value.bin.lpb, sizeof(*pEmsmdbUID));
+					}
+				}
+			}
+			FreeProws(pRows);
+		}
+		if (spmtab) spmtab->Release();
+	}
+	if (spSvcAdmin) spSvcAdmin->Release();
+	return hRes;
+} // HrEmsmdbUIDFromStore
+
+bool FExchangePrivateStore(_In_ LPMAPIUID lpmapiuid)
+{
+	if (!lpmapiuid) return false;
+	return IsEqualMAPIUID(lpmapiuid, (LPMAPIUID)pbExchangeProviderPrimaryUserGuid);
+} // FExchangePrivateStore
+
+bool FExchangePublicStore(_In_ LPMAPIUID lpmapiuid)
+{
+	if (!lpmapiuid) return false;
+	return IsEqualMAPIUID(lpmapiuid, (LPMAPIUID)pbExchangeProviderPublicGuid);
+} // FExchangePublicStore

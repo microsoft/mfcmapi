@@ -43,6 +43,50 @@ static TagNames DEFColumns[] = {
 };
 #define NUMDEFCOLUMNS _countof(DEFColumns)
 
+// Message store properties and columns
+enum {
+	storetagPR_INSTANCE_KEY,
+	storetagPR_DISPLAY_NAME,
+	storetagPR_ENTRY_ID,
+	storetagPR_OBJECT_TYPE,
+	storetagPR_PROVIDER_DISPLAY,
+	storetagPR_RESOURCE_FLAGS,
+	storetagPR_DEFAULT_STORE,
+	storetagPR_MDB_PROVIDER,
+	storetagPR_RESOURCE_TYPE,
+	storetagPR_RECORD_KEY,
+	storetagPR_SERVICE_UID,
+	storetagPR_PROVIDER_UID,
+	STORETAGS_NUM_COLS
+};
+
+// These tags represent the message store information we would like to pick up
+static SizedSPropTagArray(STORETAGS_NUM_COLS,sptSTORECols) = {
+	STORETAGS_NUM_COLS,
+	PR_INSTANCE_KEY,
+	PR_DISPLAY_NAME,
+	PR_ENTRYID,
+	PR_OBJECT_TYPE,
+	PR_PROVIDER_DISPLAY,
+	PR_RESOURCE_FLAGS,
+	PR_DEFAULT_STORE,
+	PR_MDB_PROVIDER,
+	PR_RESOURCE_TYPE,
+	PR_RECORD_KEY,
+	PR_SERVICE_UID,
+	PR_PROVIDER_UID,
+};
+
+static TagNames STOREColumns[] = {
+	{storetagPR_DISPLAY_NAME,IDS_COLDISPLAYNAME},
+	{storetagPR_DEFAULT_STORE,IDS_COLDEFAULTSTORE},
+	{storetagPR_PROVIDER_DISPLAY,IDS_COLPROVIDERDISPLAY},
+	{storetagPR_ENTRY_ID,IDS_COLEID},
+	{storetagPR_RESOURCE_FLAGS,IDS_COLRESOURCEFLAGS},
+	{storetagPR_OBJECT_TYPE,IDS_COLOBJECTTYPE},
+	{storetagPR_RESOURCE_TYPE,IDS_COLRESOURCETYPE},
+};
+#define NUMSTORECOLUMNS _countof(STOREColumns)
 
 // Message properties and columns
 enum {

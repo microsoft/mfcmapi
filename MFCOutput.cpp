@@ -495,7 +495,7 @@ void _OutputTable(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPITABLE lpMAPIT
 	{
 		hRes = S_OK;
 
-		MAPIFreeBuffer(lpRows);
+		FreeProws(lpRows);
 		lpRows = NULL;
 		EC_H(lpMAPITable->QueryRows(
 			20,
@@ -512,7 +512,7 @@ void _OutputTable(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPITABLE lpMAPIT
 		}
 	}
 
-	MAPIFreeBuffer(lpRows);
+	FreeProws(lpRows);
 	lpRows = NULL;
 } // _OutputTable
 
