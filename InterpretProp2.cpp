@@ -250,39 +250,26 @@ _Check_return_ HRESULT PropNameToPropTag(_In_z_ LPCTSTR lpszPropName, _Out_ ULON
 	return hRes;
 } // PropNameToPropTag
 
-_Check_return_ HRESULT PropTypeNameToPropType(_In_z_ LPCTSTR lpszPropType, _Out_ ULONG* ulPropType)
+_Check_return_ ULONG PropTypeNameToPropType(_In_z_ LPCWSTR lpszPropType)
 {
-	if (!lpszPropType || !ulPropType) return MAPI_E_INVALID_PARAMETER;
+	if (!lpszPropType || !ulPropTypeArray || !PropTypeArray) return PT_UNSPECIFIED;
 
 	ULONG ulCur = 0;
 
-	*ulPropType = NULL;
-	if (!ulPropTypeArray || !PropTypeArray) return S_OK;
+	ULONG ulPropType = PT_UNSPECIFIED;
 
-#ifdef UNICODE
 	LPCWSTR szPropType = lpszPropType;
-#else
-	HRESULT hRes = S_OK;
-	LPWSTR szPropType = NULL;
-	EC_H(AnsiToUnicode(lpszPropType,&szPropType));
-	if (SUCCEEDED(hRes))
+
+	for (ulCur = 0 ; ulCur < ulPropTypeArray ; ulCur++)
 	{
-#endif
-
-		for (ulCur = 0 ; ulCur < ulPropTypeArray ; ulCur++)
+		if (0 == lstrcmpiW(szPropType,PropTypeArray[ulCur].lpszName))
 		{
-			if (0 == lstrcmpiW(szPropType,PropTypeArray[ulCur].lpszName))
-			{
-				*ulPropType = PropTypeArray[ulCur].ulValue;
-				break;
-			}
+			ulPropType = PropTypeArray[ulCur].ulValue;
+			break;
 		}
-
-#ifndef UNICODE
 	}
-	delete[] szPropType;
-#endif
-	return S_OK;
+
+	return ulPropType;
 } // PropTypeNameToPropType
 
 _Check_return_ LPTSTR GUIDToStringAndName(_In_opt_ LPCGUID lpGUID)

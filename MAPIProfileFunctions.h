@@ -41,6 +41,9 @@ _Check_return_ HRESULT HrAddPSTToProfile(
 _Check_return_ HRESULT HrRemoveProfile(
 									   _In_z_ LPCSTR lpszProfileName);
 
+_Check_return_ HRESULT HrSetDefaultProfile(
+	_In_z_ LPCSTR lpszProfileName);
+
 _Check_return_ HRESULT OpenProfileSection(_In_ LPSERVICEADMIN lpServiceAdmin, _In_ LPSBinary lpServiceUID, _Deref_out_opt_ LPPROFSECT* lppProfSect);
 
 _Check_return_ HRESULT OpenProfileSection(_In_ LPPROVIDERADMIN lpProviderAdmin, _In_ LPSBinary lpProviderUID, _Deref_out_ LPPROFSECT* lppProfSect);

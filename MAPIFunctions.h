@@ -58,7 +58,7 @@ _Check_return_ HRESULT GetSpecialFolder(_In_ LPMDB lpMDB, ULONG ulFolderPropTag,
 _Check_return_ HRESULT IsAttachmentBlocked(_In_ LPMAPISESSION lpMAPISession, _In_z_ LPCWSTR pwszFileName, _Out_ BOOL* pfBlocked);
 _Check_return_ BOOL    IsDuplicateProp(_In_ LPSPropTagArray lpArray, ULONG ulPropTag);
 void    MyHexFromBin(_In_opt_count_(cb) LPBYTE lpb, size_t cb, _Deref_out_opt_z_ LPTSTR* lpsz);
-void    MyBinFromHex(_In_z_ LPCTSTR lpsz, _Inout_count_(cb) LPBYTE lpb, size_t cb);
+_Check_return_ BOOL MyBinFromHex(_In_z_ LPCTSTR lpsz, _Inout_opt_count_(*lpcb) LPBYTE lpb, _Inout_ ULONG* lpcb);
 _Check_return_ HRESULT RemoveOneOff(_In_ LPMESSAGE lpMessage, BOOL bRemovePropDef);
 _Check_return_ HRESULT ResendMessages(
 									  _In_ LPMAPIFOLDER lpFolder,

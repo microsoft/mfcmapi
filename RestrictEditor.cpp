@@ -1470,24 +1470,23 @@ _Check_return_ BOOL CCriteriaEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 	if (S_OK == hRes)
 	{
 		szTmp = BinEdit.GetString(0);
-		ULONG ulStrLen = szTmp.GetLength();
-
-		if (!(ulStrLen & 1)) // can't use an odd length string
+		if (MyBinFromHex(
+			(LPCTSTR) szTmp,
+			NULL,
+			&lpData->data.Binary.NewBin.cb))
 		{
 			// Don't free an existing lpData->data.Binary.NewBin.lpb since it's allocated with MAPIAllocateMore
 			// It'll get freed when we eventually clean up m_lpNewEntryList
-
-			lpData->data.Binary.NewBin.cb = ulStrLen / 2;
 			EC_H(MAPIAllocateMore(
 				lpData->data.Binary.NewBin.cb,
 				m_lpNewEntryList,
 				(LPVOID*)&lpData->data.Binary.NewBin.lpb));
 			if (lpData->data.Binary.NewBin.lpb)
 			{
-				MyBinFromHex(
+				EC_B(MyBinFromHex(
 					(LPCTSTR) szTmp,
 					lpData->data.Binary.NewBin.lpb,
-					lpData->data.Binary.NewBin.cb);
+					&lpData->data.Binary.NewBin.cb));
 
 				szTmp.Format(_T("%d"),lpData->data.Binary.NewBin.cb); // STRING_OK
 				SetListString(ulListNum,iItem,1,szTmp);

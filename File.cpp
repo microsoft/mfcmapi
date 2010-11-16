@@ -257,7 +257,7 @@ _Check_return_ HRESULT LoadFromTNEF(_In_z_ LPCWSTR szMessageFile, _In_ LPADRBOOK
 	EC_H(OpenTnefStreamEx(
 		NULL,
 		lpStream,
-		(LPTSTR) "winmail.dat", // STRING_OK - despite it's signature, this function is ANSI only
+		(LPTSTR) "winmail.dat", // STRING_OK - despite its signature, this function is ANSI only
 		TNEF_DECODE,
 		lpMessage,
 		dwKey,
@@ -414,7 +414,7 @@ _Check_return_ HRESULT BuildFileNameAndPath(_Inout_z_count_(cchFileOut) LPWSTR s
 		else
 		{
 			// We must have failed to get a subject before. Make one up.
-			EC_H(StringCchCopyW(szFileOut + cchCharRemaining, cchCharRemaining, L"UnknownSubject")); // STRING_OK
+			EC_H(StringCchCopyW(szFileOut + cchRootPath, cchCharRemaining, L"UnknownSubject")); // STRING_OK
 		}
 
 		if (lpBin && lpBin->cb)
@@ -829,7 +829,7 @@ _Check_return_ HRESULT SaveToTNEF(_In_ LPMESSAGE lpMessage, _In_ LPADRBOOK lpAdr
 		EC_H(OpenTnefStreamEx(
 			NULL,
 			lpStream,
-			(LPTSTR) "winmail.dat", // STRING_OK - despite it's signature, this function is ANSI only
+			(LPTSTR) "winmail.dat", // STRING_OK - despite its signature, this function is ANSI only
 			TNEF_ENCODE,
 			lpMessage,
 			dwKey,

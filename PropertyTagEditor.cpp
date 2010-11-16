@@ -245,7 +245,6 @@ _Check_return_ ULONG CPropertyTagEditor::GetSelectedPropType()
 {
 	if (!IsValidDropDown(PROPTAG_TYPE)) return PT_NULL;
 
-	HRESULT hRes = S_OK;
 	CString szType;
 	int iCurSel = 0;
 	iCurSel = GetDropDownSelection(PROPTAG_TYPE);
@@ -262,7 +261,21 @@ _Check_return_ ULONG CPropertyTagEditor::GetSelectedPropType()
 
 	if (*szEnd != NULL) // If we didn't consume the whole string, try a lookup
 	{
-		EC_H(PropTypeNameToPropType((LPCTSTR) szType,&ulType));
+#ifdef UNICODE
+		LPCWSTR szPropType = szType;
+#else
+		HRESULT hRes = S_OK;
+		LPWSTR szPropType = NULL;
+		EC_H(AnsiToUnicode(szType,&szPropType));
+		if (SUCCEEDED(hRes))
+		{
+#endif
+			ulType = PropTypeNameToPropType(szPropType);
+
+#ifndef UNICODE
+		}
+		delete[] szPropType;
+#endif
 	}
 
 	return ulType;

@@ -528,7 +528,7 @@ _Check_return_ HRESULT OpenDefaultMessageStore(
 	return hRes;
 } // OpenDefaultMessageStore
 
-// Build DN's for call to HrMailboxLogon
+// Build DNs for call to HrMailboxLogon
 _Check_return_ HRESULT OpenOtherUsersMailbox(
 							  _In_ LPMAPISESSION lpMAPISession,
 							  _In_ LPMDB lpMDB,

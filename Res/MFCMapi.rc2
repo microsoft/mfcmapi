@@ -10,9 +10,15 @@
 // Add manually edited resources here...
 /////////////////////////////////////////////////////////////////////////////
 
+#ifdef MRMAPI
+#define RC_PRODUCT_NAME               "Mr MAPI"
+#define RC_VERSION_INTERNAL_NAME       RC_PRODUCT_NAME "\0"
+#define RC_VERSION_ORIGINAL_FILE_NAME  "MrMAPI.EXE\0"
+#else
 #define RC_PRODUCT_NAME               "Microsoft Exchange Server MAPI Editor"
 #define RC_VERSION_INTERNAL_NAME       RC_PRODUCT_NAME "\0"
 #define RC_VERSION_ORIGINAL_FILE_NAME  "MFCMapi.EXE\0"
+#endif
 
 #ifdef UNICODE
 #define RC_VERSION_WIDTH               " Unicode"
@@ -85,7 +91,11 @@ BEGIN
 #endif
 END
 
+#ifdef MRMAPI
+CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "mrmapi.exe.manifest"
+#else
 CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "mfcmapi.exe.manifest"
+#endif
 
 // Help strings for menu items
 STRINGTABLE DISCARDABLE
@@ -136,7 +146,7 @@ ID_DISPLAYINBOX									"Display the default Inbox for the store"
 ID_DISPLAYMAILBOXTABLE							"Display mailbox table of server (default to server associated with primary Exchange mailbox)"
 ID_DISPLAYOUTGOINGQUEUE							"Display the outgoing queue table. Uses GetOutgoingQueue"
 ID_DISPLAYPROPERTYASSECURITYDESCRIPTORPROPSHEET "Use property sheet to display selected property as a security descriptor. Use on PR_NT_SECURITY_DESCRIPTOR."
-ID_DISPLAYPUBLICFOLDERTABLE						"Display table of public folder's replicated to server (default to server associated with primary Exchange mailbox)"
+ID_DISPLAYPUBLICFOLDERTABLE						"Display table of public folders replicated to server (default to server associated with primary Exchange mailbox)"
 ID_DISPLAYRECEIVEFOLDERTABLE					"Display the receive folder table for the selected store. Uses GetReceiveFolderTable."
 ID_DISPLAYRULESTABLE							"Display PR_RULES_TABLE as a table"
 ID_DISPLAYSELECTEDITEM							"Attempt to open and display the selected item"
@@ -248,6 +258,7 @@ ID_SELECTFORMCONTAINER							"Display Select Form Container dialog"
 ID_SENDBULKMAIL									"Send messages with custom subject and recipient"
 ID_SETCOLUMNS									"Display current column set (QueryColumns) and allow editing (SetColumns)"
 ID_SETDEFAULTDIR								"Call IAddrBook::SetDefaultDir to mark as the default address book container"
+ID_SETDEFAULTPROFILE							"Set the selected profile as the default profile. Uses SetDefaultProfile."
 ID_SETDEFAULTSTORE								"Set the selected store as the default store. Uses SetDefaultStore."
 ID_SETPAB										"Call IAddrBook::SetPAB to mark as the Personal Address Book"
 ID_SETREADFLAG									"Call SetReadFlag/SetReadFlags on selected messages"
@@ -267,6 +278,7 @@ ID_VIEWABHIERARCHY								"Display Address Book Hierarchy - Global reference mus
 ID_VIEWEMBEDDEDMESSAGEPROPERTIES				"Interpret all attachments as embedded messages and display properties"
 ID_VIEWMSGPROPERTIES							"View properties of an MSG file"
 ID_VIEWSTATUSTABLE								"Display the status table. Uses GetStatusTable."
+ID_VIEWRECIPIENTABENTRY							"View recipient's address book entry."
 END
 
 // Stringtable definitions for GUI
@@ -760,6 +772,7 @@ IDS_STLONGRTIME                  "RTime"
 IDS_STWEBVIEWPERSISTSTREAM       "Web View Persistence Object Stream"
 IDS_STRECIPIENTROWSTREAM         "Recipient Row Stream"
 IDS_STFOLDERUSERFIELDS           "Folder User Fields Stream"
+IDS_STSID                        "SID"
 
 // AbDlg.cpp
 IDS_FLAGS "Flags"
@@ -1492,6 +1505,10 @@ IDS_SIDFLAGS "\r\nFlags: 0x%1!08X!\r\n"
 
 IDS_INVALIDSD "This is not a valid security descriptor."
 
+IDS_SIDHEADER "SID: \r\n\
+User: %1\\%2\r\n\
+Textual SID: %3"
+
 IDS_FLAGTOSTRINGHEX "\r\n0x%1!08X! %2!ws!"
 IDS_FLAGTOSTRINGDEC "\r\n%1!5d! %2!ws!"
 
@@ -2076,6 +2093,7 @@ Here are some known causes for this.\r\n\
 // UpdateStatusBarText - use printf style formatting
 IDS_STATUSTEXTNUMITEMS "Number of items: %d"
 IDS_STATUSTEXTNUMPROPS "Number of Properties: %d"
+IDS_STATUSTEXTNOFOLDER "Could not open folder or get properties"
 IDS_STATUSTEXTCONTENTCOUNTS "Contents: %d, Assoc. Contents: %d"
 IDS_STATUSTEXTDELETEDCOUNTS "Deleted Items: %d, Deleted Assoc. Items: %d, Deleted Subfolders: %d"
 

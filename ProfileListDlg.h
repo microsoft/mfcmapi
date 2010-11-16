@@ -35,6 +35,7 @@ private:
 	void OnInitMenu(_In_ CMenu* pMenu);
 	void OnLaunchProfileWizard();
 	void OnRemoveServicesFromMAPISVC();
+	void OnSetDefaultProfile();
 
 	void AddPSTToProfile(BOOL bUnicodePST);
 

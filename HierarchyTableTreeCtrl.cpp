@@ -586,11 +586,10 @@ void CHierarchyTableTreeCtrl::UpdateSelectionUI(HTREEITEM hItem)
 	LPMAPICONTAINER	lpMAPIContainer = NULL;
 	LPSPropValue	lpProps = NULL;
 	ULONG			cVals = 0;
-	ULONG			ulContCount = 0;
-	ULONG			ulAssocContCount = 0;
-	ULONG			ulDelMsgCount = 0;
-	ULONG			ulDelAssocMsgCount = 0;
-	ULONG			ulDelFolderCount = 0;
+	UINT			uiMsg = IDS_STATUSTEXTNOFOLDER;
+	ULONG			ulParam1 = 0;
+	ULONG			ulParam2 = 0;
+	ULONG			ulParam3 = 0;
 
 	enum{
 		htPR_CONTENT_COUNT,
@@ -628,60 +627,50 @@ void CHierarchyTableTreeCtrl::UpdateSelectionUI(HTREEITEM hItem)
 		{
 			if (!(m_ulDisplayFlags & dfDeleted))
 			{
+				uiMsg = IDS_STATUSTEXTCONTENTCOUNTS;
 				if (PT_ERROR == PROP_TYPE(lpProps[htPR_CONTENT_COUNT].ulPropTag))
 				{
 					WARNHRESMSG(lpProps[htPR_CONTENT_COUNT].Value.err,IDS_NODELACKSCONTENTCOUNT);
-					ulContCount = 0;
 				}
-				else ulContCount = lpProps[htPR_CONTENT_COUNT].Value.ul;
+				else ulParam1 = lpProps[htPR_CONTENT_COUNT].Value.ul;
 
 				if (PT_ERROR == PROP_TYPE(lpProps[htPR_ASSOC_CONTENT_COUNT].ulPropTag))
 				{
 					WARNHRESMSG(lpProps[htPR_ASSOC_CONTENT_COUNT].Value.err,IDS_NODELACKSASSOCCONTENTCOUNT);
-					ulAssocContCount = 0;
 				}
-				else ulAssocContCount = lpProps[htPR_ASSOC_CONTENT_COUNT].Value.ul;
-
-				m_lpHostDlg->UpdateStatusBarText(
-					STATUSLEFTPANE,
-					IDS_STATUSTEXTCONTENTCOUNTS,
-					ulContCount,
-					ulAssocContCount);
+				else ulParam2 = lpProps[htPR_ASSOC_CONTENT_COUNT].Value.ul;
 			}
 			else
 			{
+				uiMsg = IDS_STATUSTEXTDELETEDCOUNTS;
 				if (PT_ERROR == PROP_TYPE(lpProps[htPR_DELETED_MSG_COUNT].ulPropTag))
 				{
 					WARNHRESMSG(lpProps[htPR_DELETED_MSG_COUNT].Value.err,IDS_NODELACKSDELETEDMESSAGECOUNT);
-					ulDelMsgCount = 0;
 				}
-				else ulDelMsgCount = lpProps[htPR_DELETED_MSG_COUNT].Value.ul;
+				else ulParam1 = lpProps[htPR_DELETED_MSG_COUNT].Value.ul;
 
 				if (PT_ERROR == PROP_TYPE(lpProps[htPR_DELETED_ASSOC_MSG_COUNT].ulPropTag))
 				{
 					WARNHRESMSG(lpProps[htPR_DELETED_ASSOC_MSG_COUNT].Value.err,IDS_NODELACKSDELETEDASSOCMESSAGECOUNT);
-					ulDelAssocMsgCount = 0;
 				}
-				else ulDelAssocMsgCount = lpProps[htPR_DELETED_ASSOC_MSG_COUNT].Value.ul;
+				else ulParam2 = lpProps[htPR_DELETED_ASSOC_MSG_COUNT].Value.ul;
 
 				if (PT_ERROR == PROP_TYPE(lpProps[htPR_DELETED_FOLDER_COUNT].ulPropTag))
 				{
 					WARNHRESMSG(lpProps[htPR_DELETED_FOLDER_COUNT].Value.err,IDS_NODELACKSDELETEDSUBFOLDERCOUNT);
-					ulDelFolderCount = 0;
 				}
-				else ulDelFolderCount = lpProps[htPR_DELETED_FOLDER_COUNT].Value.ul;
-
-				m_lpHostDlg->UpdateStatusBarText(
-					STATUSLEFTPANE,
-					IDS_STATUSTEXTDELETEDCOUNTS,
-					ulDelMsgCount,
-					ulDelAssocMsgCount,
-					ulDelFolderCount);
+				else ulParam2 = lpProps[htPR_DELETED_FOLDER_COUNT].Value.ul;
 			}
 			MAPIFreeBuffer(lpProps);
 		}
-
 	}
+
+	m_lpHostDlg->UpdateStatusBarText(
+		STATUSLEFTPANE,
+		uiMsg,
+		ulParam1,
+		ulParam2,
+		ulParam3);
 
 	if (m_lpHostDlg)
 	{
@@ -898,7 +887,7 @@ void CHierarchyTableTreeCtrl::GetContainer(
 	if (!lpCurBin) lpCurBin = &NullBin;
 
 	// Check the type of the root container to know whether the MDB or AddrBook object is valid
-	// This also allows NULL EID's to return the root container itself.
+	// This also allows NULL EIDs to return the root container itself.
 	// Use the Root container if we can't decide and log an error
 	if (m_lpMapiObjects)
 	{

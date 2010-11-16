@@ -129,7 +129,7 @@ _Check_return_ LRESULT CSortListCtrl::WindowProc(UINT message, WPARAM wParam, LP
 	{
 		// I can handle notify messages for my child header control since I am the parent window
 		// This makes it easy for me to customize the child control to do what I want
-		// I cannot handle notify's heading to my parent though - have to depend on reflection for that
+		// I cannot handle notify heading to my parent though - have to depend on reflection for that
 	case WM_NOTIFY:
 		{
 			LPNMHDR pHdr = (LPNMHDR) lParam;

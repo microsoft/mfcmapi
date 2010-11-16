@@ -94,7 +94,7 @@ BEGIN_MESSAGE_MAP(CContentsTableListCtrl, CSortListCtrl)
 	ON_MESSAGE(WM_MFCMAPI_REFRESHTABLE, msgOnRefreshTable)
 END_MESSAGE_MAP()
 
-// Some message handling's not worth breaking out into separate functions.
+// Some message handling is not worth breaking out into separate functions.
 _Check_return_ LRESULT CContentsTableListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	HRESULT hRes = S_OK;
@@ -267,8 +267,8 @@ _Check_return_ HRESULT CContentsTableListCtrl::SetUIColumns(_In_ LPSPropTagArray
 		{
 			if (PROP_ID(lpTags->aulPropTag[i]) == PROP_ID(PR_SUBJECT) ||
 				PROP_ID(lpTags->aulPropTag[i]) == PROP_ID(PR_RULE_NAME) ||
-				PROP_ID(lpTags->aulPropTag[i]) == PROP_ID(PR_MEMBER_NAME))
-
+				PROP_ID(lpTags->aulPropTag[i]) == PROP_ID(PR_MEMBER_NAME) ||
+				PROP_ID(lpTags->aulPropTag[i]) == PROP_ID(PR_ATTACH_FILENAME))
 			{
 				m_ulDisplayNameColumn = i;
 				break;

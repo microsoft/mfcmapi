@@ -30,7 +30,7 @@ CEditor(pParentWnd,IDS_HEXEDITOR,IDS_HEXEDITORPROMPT,0,CEDITOR_BUTTON_OK)
 	InitMultiLine(HEXED_BASE64,IDS_BASE64STRING,NULL,false);
 	InitSingleLine(HEXED_CB,IDS_CB,NULL,true);
 	InitMultiLine(HEXED_HEX,IDS_HEX,NULL,false);
-	InitDropDown(HEXED_PICKER,IDS_STRUCTUREPICKERPROMPT,g_cuidParsingTypesDropDown,g_uidParsingTypesDropDown,true);
+	InitDropDown(HEXED_PICKER,IDS_STRUCTUREPICKERPROMPT,g_cuidParsingTypes,g_uidParsingTypes,true);
 	InitMultiLine(HEXED_SMARTVIEW,IDS_PARSEDSTRUCTURE,NULL,true);
 	HRESULT hRes = S_OK;
 	m_lpszTemplateName = MAKEINTRESOURCE(IDD_BLANK_DIALOG);

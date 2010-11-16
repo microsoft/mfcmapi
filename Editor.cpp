@@ -863,7 +863,7 @@ _Check_return_ SIZE CEditor::ComputeWorkArea(SIZE sScreen)
 			_hTheme = pfnOpenThemeData(NULL, L"Window"); // STRING_OK
 			if (_hTheme)
 			{
-				// Concession to Vista Aero and it's funky buttons - don't wanna call WM_GETTITLEBARINFOEX here
+				// Concession to Vista Aero and its funky buttons - don't wanna call WM_GETTITLEBARINFOEX here
 				int iStupidFunkyAeroButtons = 3;
 
 				// Different themes have different margins around the caption text - fetch it
@@ -1497,28 +1497,23 @@ _Check_return_ BOOL CEditor::GetBinaryUseControl(ULONG i, _Out_ size_t* cbBin, _
 	*lpBin = NULL;
 
 	szString = GetStringUseControl(i);
+	if (!MyBinFromHex(
+		(LPCTSTR) szString,
+		NULL,
+		(ULONG*) cbBin)) return false;
 
-	// remove any whitespace before decoding
-	CleanHexString(&szString);
-
-	size_t cchStrLen = szString.GetLength();
-
-	if (cchStrLen & 1) return false; // odd length strings aren't valid at all
-
-	*cbBin = cchStrLen / 2;
 	*lpBin = new BYTE[*cbBin+2]; // lil extra space to shove a NULL terminator on there
 	if (*lpBin)
 	{
-		MyBinFromHex(
+		(void) MyBinFromHex(
 			(LPCTSTR) szString,
 			*lpBin,
-			*cbBin);
+			(ULONG*) cbBin);
 		// In case we try printing this...
 		(*lpBin)[*cbBin] = 0;
 		(*lpBin)[*cbBin+1] = 0;
 		return true;
 	}
-	else *cbBin = NULL;
 	return false;
 } // CEditor::GetBinaryUseControl
 
@@ -1545,29 +1540,24 @@ _Check_return_ HRESULT CEditor::GetEntryID(ULONG i, BOOL bIsBase64, _Out_ size_t
 
 	if (szString)
 	{
-		size_t	cchString = NULL;
-
-		EC_H(StringCchLength(szString,STRSAFE_MAX_CCH,&cchString));
-
-		if (FAILED(hRes) || cchString & 1) return hRes; // can't use an odd length string - Hex strings are multiples of two and Base64 are multiples of 4
-
 		if (bIsBase64) // entry was BASE64 encoded
 		{
 			EC_H(Base64Decode(szString,cbBin,(LPBYTE*) lppEID));
 		}
 		else // Entry was hexized string
 		{
-			*cbBin = cchString / 2;
-
-			if (0 != *cbBin)
+			if (MyBinFromHex(
+				(LPCTSTR) szString,
+				NULL,
+				(ULONG*) cbBin))
 			{
 				*lppEID = (LPENTRYID) new BYTE[*cbBin];
 				if (*lppEID)
 				{
-					MyBinFromHex(
+					EC_B(MyBinFromHex(
 						szString,
 						(LPBYTE) *lppEID,
-						*cbBin);
+						(ULONG*) cbBin));
 				}
 			}
 		}
@@ -2405,20 +2395,3 @@ void CleanString(_In_ CString* lpString)
 	lpString->Replace(_T("\t"),_T("")); // STRING_OK
 	lpString->Replace(_T(" "),_T("")); // STRING_OK
 } // CleanString
-
-void CleanHexString(_In_ CString* lpHexString)
-{
-	if (!lpHexString) return;
-
-	// remove any whitespace
-	CleanString(lpHexString);
-
-	// remove punctuation
-	lpHexString->Replace(_T("-"),_T("")); // STRING_OK
-	lpHexString->Replace(_T("."),_T("")); // STRING_OK
-	lpHexString->Replace(_T("\\"),_T("")); // STRING_OK
-	lpHexString->Replace(_T("/"),_T("")); // STRING_OK
-	lpHexString->Replace(_T("\""),_T("")); // STRING_OK
-	lpHexString->Replace(_T("'"),_T("")); // STRING_OK
-	lpHexString->Replace(_T("`"),_T("")); // STRING_OK
-} // CleanHexString
