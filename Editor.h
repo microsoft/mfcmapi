@@ -279,4 +279,3 @@ private:
 };
 
 void CleanString(_In_ CString* lpString);
-void CleanHexString(_In_ CString* lpHexString);

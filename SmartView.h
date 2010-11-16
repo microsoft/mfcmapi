@@ -1,7 +1,7 @@
 #pragma once
 
-extern UINT g_uidParsingTypesDropDown[];
-extern ULONG g_cuidParsingTypesDropDown;
+extern UINT g_uidParsingTypes[];
+extern ULONG g_cuidParsingTypes;
 
 // lpszSmartView allocated with new, delete with delete[]
 void InterpretPropSmartView(_In_ LPSPropValue lpProp, // required property value
@@ -157,6 +157,7 @@ void DeleteAppointmentRecurrencePatternStruct(_In_ AppointmentRecurrencePatternS
 _Check_return_ LPTSTR AppointmentRecurrencePatternStructToString(_In_ AppointmentRecurrencePatternStruct* parpPattern);
 
 void SDBinToString(SBinary myBin, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_z_ LPTSTR* lpszResultString);
+void SIDBinToString(SBinary myBin, _Deref_out_z_ LPTSTR* lpszResultString);
 
 // ExtendedFlagStruct
 // =====================

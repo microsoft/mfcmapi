@@ -6,7 +6,7 @@
 // All SizedSPropTagArray arrays in ColumnTags.h must have PR_INSTANCE_KEY and PR_ENTRY_ID
 // as the first two properties. The code in CContentsTableListCtrl depends on this.
 
-// The following enum's and structures define the columns and
+// The following enums and structures define the columns and
 // properties used by ContentsTableListCtrl objects.
 
 // Default properties and columns

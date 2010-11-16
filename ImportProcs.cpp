@@ -1249,7 +1249,7 @@ _Check_return_ STDAPI HrCopyActions(
 
 					lpActDst->lpadrlist->cEntries = lpActSrc->lpadrlist->cEntries;
 
-					// Initialize the new ADRENTRY's and validate cValues.
+					// Initialize the new ADRENTRYs and validate cValues.
 					for (j = 0; j < lpActSrc->lpadrlist->cEntries; j++)
 					{
 						lpActDst->lpadrlist->aEntries[j] = lpActSrc->lpadrlist->aEntries[j];

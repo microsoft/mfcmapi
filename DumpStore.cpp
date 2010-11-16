@@ -100,8 +100,23 @@ void OutputPropertiesToFile(_In_ FILE* fFile, ULONG cProps, _In_count_(cProps) L
 {
 	if (cProps && !lpProps) return;
 
+	// sort the list first
+	// insertion sort on lpProps
+	ULONG iUnsorted = 0;
+	ULONG iLoc = 0;
+	for (iUnsorted = 1; iUnsorted < cProps; iUnsorted++)
+	{
+		SPropValue NextItem = lpProps[iUnsorted];
+		for (iLoc = iUnsorted; iLoc > 0; iLoc--)
+		{
+			if (lpProps[iLoc-1].ulPropTag < NextItem.ulPropTag) break;
+			lpProps[iLoc] = lpProps[iLoc-1];
+		}
+		lpProps[iLoc] = NextItem;
+	}
+
 	ULONG i = 0;
-	for (i = 0;i<cProps;i++)
+	for (i = 0; i < cProps; i++)
 	{
 		OutputPropertyToFile(fFile, &lpProps[i], lpObj);
 	}

@@ -269,6 +269,7 @@ BEGIN
     POPUP "&Actions"
     BEGIN
         MENUITEM "Open Profile",                ID_DISPLAYSELECTEDITEM
+        MENUITEM "Set Default Profile",         ID_SETDEFAULTPROFILE
         MENUITEM "Create Profile",              ID_CREATEPROFILE
         MENUITEM SEPARATOR
         MENUITEM "Add Exchange Mailbox",        ID_ADDEXCHANGETOPROFILE
@@ -293,6 +294,7 @@ END
 IDR_MENU_PROFILE_POPUP MENU DISCARDABLE
 BEGIN
     MENUITEM "Open Profile",                ID_DISPLAYSELECTEDITEM
+    MENUITEM "Set Default Profile",         ID_SETDEFAULTPROFILE
     MENUITEM "Delete Profile",              ID_DELETESELECTEDITEM
     MENUITEM SEPARATOR
     MENUITEM "Add Exchange Mailbox",        ID_ADDEXCHANGETOPROFILE
@@ -380,6 +382,7 @@ IDR_MENU_RECIPIENTS MENU DISCARDABLE
 BEGIN
     POPUP "&Actions"
     BEGIN
+        MENUITEM "View As AB Entry"             ID_VIEWRECIPIENTABENTRY
         MENUITEM "Open Item",                   ID_DISPLAYSELECTEDITEM
 //        MENUITEM "Copy",                        ID_COPY
 //        MENUITEM "Paste",                       ID_PASTE
@@ -392,6 +395,7 @@ END
 
 IDR_MENU_RECIPIENTS_POPUP MENU DISCARDABLE
 BEGIN
+    MENUITEM "View As AB Entry"             ID_VIEWRECIPIENTABENTRY
     MENUITEM "Open Item",                   ID_DISPLAYSELECTEDITEM
 //    MENUITEM "Copy",                        ID_COPY
 //    MENUITEM "Paste",                       ID_PASTE

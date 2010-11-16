@@ -63,6 +63,7 @@ BEGIN_MESSAGE_MAP(CProfileListDlg, CContentsTableDlg)
 	ON_COMMAND(ID_ADDSERVICETOPROFILE,OnAddServiceToProfile)
 	ON_COMMAND(ID_GETPROFILESERVERVERSION,OnGetProfileServiceVersion)
 	ON_COMMAND(ID_CREATEPROFILE,OnCreateProfile)
+	ON_COMMAND(ID_SETDEFAULTPROFILE,OnSetDefaultProfile)
 END_MESSAGE_MAP()
 
 void CProfileListDlg::OnInitMenu(_In_ CMenu* pMenu)
@@ -77,6 +78,7 @@ void CProfileListDlg::OnInitMenu(_In_ CMenu* pMenu)
 			pMenu->EnableMenuItem(ID_ADDPSTTOPROFILE,DIMMSOK(iNumSel));
 			pMenu->EnableMenuItem(ID_ADDUNICODEPSTTOPROFILE,DIMMSOK(iNumSel));
 			pMenu->EnableMenuItem(ID_ADDSERVICETOPROFILE,DIMMSOK(iNumSel));
+			pMenu->EnableMenuItem(ID_SETDEFAULTPROFILE,DIMMSNOK(iNumSel));
 		}
 		pMenu->EnableMenuItem(ID_LAUNCHPROFILEWIZARD,DIM(pfnLaunchWizard));
 	}
@@ -495,3 +497,24 @@ void CProfileListDlg::OnGetProfileServiceVersion()
 	}
 	while (iItem != -1);
 } // CProfileListDlg::OnGetProfileServiceVersion
+
+void CProfileListDlg::OnSetDefaultProfile()
+{
+	HRESULT hRes = S_OK;
+	int iItem = -1;
+	SortListData* lpListData = NULL;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
+
+	if (!m_lpContentsTableListCtrl) return;
+
+	// Find the highlighted item AttachNum
+	lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
+	if (lpListData)
+	{
+		DebugPrintEx(DBGGeneric,CLASS,_T("OnSetDefaultProfile"),_T("Setting profile \"%hs\" as default\n"),lpListData->data.Contents.szProfileDisplayName);
+
+		EC_H(HrSetDefaultProfile(lpListData->data.Contents.szProfileDisplayName));
+
+		OnRefreshView(); // Update the view since we don't have notifications here.
+	}
+} // CProfileListDlg::OnSetDefaultProfile

@@ -16,7 +16,7 @@ void InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropTag, ULONG ulPr
 _Check_return_ LPTSTR CStringToString(CString szCString);
 
 // After 'No Parsing', these are in alphabetical order
-UINT g_uidParsingTypesDropDown[] = {
+UINT g_uidParsingTypes[] = {
 	IDS_STNOPARSING,
 	IDS_STADDITIONALRENENTRYIDSEX,
 	IDS_STAPPOINTMENTRECURRENCEPATTERN,
@@ -37,12 +37,13 @@ UINT g_uidParsingTypesDropDown[] = {
 	IDS_STRULECONDITION,
 	IDS_STSEARCHFOLDERDEFINITION,
 	IDS_STSECURITYDESCRIPTOR,
+	IDS_STSID,
 	IDS_STTASKASSIGNERS,
 	IDS_STTIMEZONE,
 	IDS_STTIMEZONEDEFINITION,
 	IDS_STWEBVIEWPERSISTSTREAM,
 };
-ULONG g_cuidParsingTypesDropDown = _countof(g_uidParsingTypesDropDown);
+ULONG g_cuidParsingTypes = _countof(g_uidParsingTypes);
 
 typedef LPVOID BINTOSTRUCT(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
 typedef BINTOSTRUCT *LPBINTOSTRUCT;
@@ -86,6 +87,7 @@ SMART_VIEW_PARSERS_ENTRY g_SmartViewParsers[] = {
 	MAKE_SV_ENTRY(IDS_STRECIPIENTROWSTREAM, RecipientRowStreamStruct)
 	MAKE_SV_ENTRY(IDS_STWEBVIEWPERSISTSTREAM, WebViewPersistStreamStruct)
 	MAKE_SV_ENTRY(IDS_STFOLDERUSERFIELDS, FolderUserFieldStreamStruct)
+	// MAKE_SV_ENTRY(IDS_STSID, SIDStruct)
 };
 ULONG g_cSmartViewParsers = _countof(g_SmartViewParsers);
 
@@ -116,6 +118,7 @@ SMARTVIEW_PARSER_ARRAY_ENTRY g_BinaryStructArray[] =
 	BINARY_STRUCTURE_ENTRY(PR_ALTERNATE_RECIPIENT,IDS_STFLATENTRYLIST)
 	BINARY_STRUCTURE_ENTRY(PR_FOLDER_WEBVIEWINFO,IDS_STWEBVIEWPERSISTSTREAM)
 	BINARY_STRUCTURE_ENTRY(PR_USERFIELDS,IDS_STFOLDERUSERFIELDS)
+	BINARY_STRUCTURE_ENTRY(PR_LAST_MODIFIER_SID,IDS_STSID)
 
 	BINARY_STRUCTURE_ENTRY(PR_RECEIVED_BY_ENTRYID,IDS_STENTRYID)
 	BINARY_STRUCTURE_ENTRY(PR_SENT_REPRESENTING_ENTRYID,IDS_STENTRYID)
@@ -194,6 +197,7 @@ SMARTVIEW_PARSER_ARRAY_ENTRY g_BinaryStructArray[] =
 	MV_BINARY_STRUCTURE_ENTRY(PR_AB_SEARCH_PATH,IDS_STENTRYID)
 	MV_BINARY_STRUCTURE_ENTRY(PR_CONTAB_FOLDER_ENTRYIDS,IDS_STENTRYID)
 	MV_BINARY_STRUCTURE_ENTRY(PR_CONTAB_STORE_ENTRYIDS,IDS_STENTRYID)
+	MV_BINARY_STRUCTURE_ENTRY(PR_CONFLICT_ITEMS,IDS_STENTRYID)
 
 	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidEmail1OriginalEntryID,PSETID_Address,IDS_STENTRYID)
 	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidEmail2OriginalEntryID,PSETID_Address,IDS_STENTRYID)
@@ -539,6 +543,9 @@ void InterpretBinaryAsString(SBinary myBin, DWORD_PTR iStructType, _In_opt_ LPMA
 		case IDS_STEXTENDEDRULECONDITION:
 			RuleConditionToString(myBin,&szResultString,true);
 			break;
+		case IDS_STSID:
+			SIDBinToString(myBin,&szResultString);
+			break;
 		}
 	}
 	*lpszResultString = szResultString;
@@ -657,28 +664,28 @@ BOOL CBinaryParser::CheckRemainingBytes(size_t cbBytes)
 
 void CBinaryParser::GetBYTE(_Out_ BYTE* pBYTE)
 {
-	if (!pBYTE || !CheckRemainingBytes(sizeof(pBYTE))) return;
+	if (!pBYTE || !CheckRemainingBytes(sizeof(BYTE))) return;
 	*pBYTE = *((BYTE*)m_lpCur);
 	m_lpCur += sizeof(BYTE);
 } // CBinaryParser::GetBYTE
 
 void CBinaryParser::GetWORD(_Out_ WORD* pWORD)
 {
-	if (!pWORD || !CheckRemainingBytes(sizeof(pWORD))) return;
+	if (!pWORD || !CheckRemainingBytes(sizeof(WORD))) return;
 	*pWORD = *((WORD*)m_lpCur);
 	m_lpCur += sizeof(WORD);
 } // CBinaryParser::GetWORD
 
 void CBinaryParser::GetDWORD(_Out_ DWORD* pDWORD)
 {
-	if (!pDWORD || !CheckRemainingBytes(sizeof(pDWORD))) return;
+	if (!pDWORD || !CheckRemainingBytes(sizeof(DWORD))) return;
 	*pDWORD = *((DWORD*)m_lpCur);
 	m_lpCur += sizeof(DWORD);
 } // CBinaryParser::GetDWORD
 
 void CBinaryParser::GetLARGE_INTEGER(_Out_ LARGE_INTEGER* pLARGE_INTEGER)
 {
-	if (!pLARGE_INTEGER || !CheckRemainingBytes(sizeof(pLARGE_INTEGER))) return;
+	if (!pLARGE_INTEGER || !CheckRemainingBytes(sizeof(LARGE_INTEGER))) return;
 	*pLARGE_INTEGER = *((LARGE_INTEGER*)m_lpCur);
 	m_lpCur += sizeof(LARGE_INTEGER);
 } // CBinaryParser::GetLARGE_INTEGER
@@ -1513,6 +1520,92 @@ void SDBinToString(SBinary myBin, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTa
 		}
 	}
 } // SDBinToString
+
+//////////////////////////////////////////////////////////////////////////
+// SIDDBin
+//////////////////////////////////////////////////////////////////////////
+
+void SIDBinToString(SBinary myBin, _Deref_out_z_ LPTSTR* lpszResultString)
+{
+	if (!lpszResultString) return;
+	HRESULT hRes = S_OK;
+	PSID SidStart = myBin.lpb;
+	LPTSTR lpSidName = NULL;
+	LPTSTR lpSidDomain = NULL;
+	LPTSTR lpStringSid = NULL;
+
+	if (SidStart)
+	{
+		DWORD dwSidName = 0;
+		DWORD dwSidDomain = 0;
+		SID_NAME_USE SidNameUse;
+
+		WC_B(LookupAccountSid(
+			NULL,
+			SidStart,
+			NULL,
+			&dwSidName,
+			NULL,
+			&dwSidDomain,
+			&SidNameUse));
+		hRes = S_OK;
+
+#pragma warning(push)
+#pragma warning(disable:6211)
+		if (dwSidName) lpSidName = new TCHAR[dwSidName];
+		if (dwSidDomain) lpSidDomain = new TCHAR[dwSidDomain];
+#pragma warning(pop)
+
+		// Only make the call if we got something to get
+		if (lpSidName || lpSidDomain)
+		{
+			WC_B(LookupAccountSid(
+				NULL,
+				SidStart,
+				lpSidName,
+				&dwSidName,
+				lpSidDomain,
+				&dwSidDomain,
+				&SidNameUse));
+			hRes = S_OK;
+		}
+
+		DWORD dwStringSid = 0;
+		(void) GetTextualSid(SidStart,NULL,&dwStringSid); // Get a buffer count
+		if (dwStringSid)
+		{
+			lpStringSid = new TCHAR[dwStringSid];
+			if (lpStringSid)
+			{
+				EC_B(GetTextualSid(SidStart,lpStringSid,&dwStringSid));
+			}
+		}
+	}
+
+	CString szDomain;
+	CString szName;
+	CString szSID;
+
+	if (lpSidDomain) szDomain = lpSidDomain;
+	else EC_B(szDomain.LoadString(IDS_NODOMAIN));
+	if (lpSidName) szName = lpSidName;
+	else EC_B(szName.LoadString(IDS_NONAME));
+	if (lpStringSid) szSID = lpStringSid;
+	else EC_B(szSID.LoadString(IDS_NOSID));
+
+	CString szResult;
+	szResult.FormatMessage(IDS_SIDHEADER,szDomain,szName,szSID);
+
+	size_t cchSD = szResult.GetLength()+1;
+	*lpszResultString = new TCHAR[cchSD];
+	if (*lpszResultString)
+	{
+		EC_H(StringCchCopy(*lpszResultString,cchSD,(LPCTSTR)szResult));
+	}
+	if (lpStringSid) delete[] lpStringSid;
+	if (lpSidDomain) delete[] lpSidDomain;
+	if (lpSidName) delete[] lpSidName;
+} // SIDBinToString
 
 //////////////////////////////////////////////////////////////////////////
 // ExtendedFlagsStruct

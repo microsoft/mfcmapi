@@ -276,38 +276,10 @@ _Check_return_ HRESULT StringToGUID(_In_z_ LPCTSTR szGUID, BOOL bByteSwapped, _I
 	HRESULT hRes = S_OK;
 	if (!szGUID || !lpGUID) return MAPI_E_INVALID_PARAMETER;
 
-	TCHAR szCleanGUID[GUID_STRING_SIZE] = {0};
-	LPCTSTR pszSrc = NULL;
-	LPTSTR pszDst = NULL;
-
-	pszSrc = szGUID;
-
-	// Convert to Unicode while copying to a temporary buffer.
-	// Do not worry about non-ANSI characters - this is a GUID string.
-	// Drop {,-,}, space, or tab characters on the way
-	pszDst = szCleanGUID;
-
-	while ((*pszSrc) &&
-		(pszDst < &szCleanGUID[GUID_STRING_SIZE - 1]))
-	{
-		switch (*pszSrc)
-		{
-		case _T(' '): // STRING_OK
-		case _T('\t'): // STRING_OK
-		case _T('{'): // STRING_OK
-		case _T('-'): // STRING_OK
-		case _T('}'): // STRING_OK
-			pszSrc++;
-			break;
-		default:
-			*pszDst++ = *pszSrc++;
-		}
-	}
-
-	// szCleanGUID is guaranteed null terminated at this point
+	ULONG cbGUID = sizeof(GUID);
 
 	// Now we use MyBinFromHex to do the work.
-	MyBinFromHex(szCleanGUID, (LPBYTE) lpGUID, sizeof(GUID));
+	(void) MyBinFromHex(szGUID, (LPBYTE) lpGUID, &cbGUID);
 
 	// Note that we get the bByteSwapped behavior by default. We have to work to get the 'normal' behavior
 	if (!bByteSwapped)
@@ -1086,7 +1058,7 @@ LPSPropValue lpProp: Property to be evaluated
 OUT:
 CString *tmpPropString: String representing property value
 CString *tmpAltPropString: Alternative string representation
-Comment	: Add new Property ID's as they become known
+Comment	: Add new Property IDs as they become known
 ***************************************************************************/
 void InterpretProp(_In_ LPSPropValue lpProp, _In_opt_ CString *PropString, _In_opt_ CString *AltPropString)
 {

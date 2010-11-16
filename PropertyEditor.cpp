@@ -452,7 +452,7 @@ void CPropertyEditor::WriteStringsToSPropValue()
 {
 	HRESULT hRes = S_OK;
 	CString szTmpString;
-	ULONG ulStrLen = NULL;
+	ULONG cbBin = NULL;
 
 	// Check first if we'll have anything to write
 	switch (PROP_TYPE(m_ulPropTag))
@@ -465,24 +465,21 @@ void CPropertyEditor::WriteStringsToSPropValue()
 		// Check that we've got valid hex string before we allocate anything. Note that we're
 		// reading szTmpString now and will assume it's read when we get to the real PT_BINARY case
 		szTmpString = GetStringUseControl(1);
-
-		// remove any whitespace before decoding
-		CleanHexString(&szTmpString);
-
-		ulStrLen = szTmpString.GetLength();
-		if (ulStrLen & 1) return; // can't use an odd length string
+		if (!MyBinFromHex(
+			(LPCTSTR) szTmpString,
+			NULL,
+			&cbBin)) return;
 		break;
 	case (PT_STRING8):
 	case (PT_UNICODE):
 		// Check that we've got valid hex string before we allocate anything. Note that we're
 		// reading szTmpString now and will assume it's read when we get to the real PT_STRING8/PT_UNICODE cases
 		szTmpString = GetStringUseControl(2);
-
-		// remove any whitespace before decoding
-		CleanHexString(&szTmpString);
-
-		ulStrLen = szTmpString.GetLength();
-		if (ulStrLen & 1) return; // can't use an odd length string
+		if (!MyBinFromHex(
+			(LPCTSTR) szTmpString,
+			NULL,
+			&cbBin)) return;
+		if (PROP_TYPE(m_ulPropTag) == PT_UNICODE && cbBin & 1) return;
 		break;
 	default: break;
 	}
@@ -596,21 +593,18 @@ void CPropertyEditor::WriteStringsToSPropValue()
 				// may have done. The RichEdit control likes throwing them away.
 				m_lpsOutputValue->Value.lpszA = NULL;
 
-				// remember we already read szTmpString and ulStrLen and found ulStrLen was even
-				ULONG cbBin = ulStrLen / 2;
-				ULONG cchString = cbBin;
 				EC_H(MAPIAllocateMore(
-					(cchString+1)*sizeof(CHAR), // NULL terminator
+					cbBin+sizeof(char), // NULL terminator
 					m_lpAllocParent,
 					(LPVOID*)&m_lpsOutputValue->Value.lpszA));
 				if (FAILED(hRes)) bFailed = true;
 				else
 				{
-					if (cbBin) MyBinFromHex(
+					EC_B(MyBinFromHex(
 						(LPCTSTR) szTmpString,
 						(LPBYTE) m_lpsOutputValue->Value.lpszA,
-						cbBin);
-					m_lpsOutputValue->Value.lpszA[cchString] = NULL;
+						&cbBin));
+					m_lpsOutputValue->Value.lpszA[cbBin] = NULL;
 				}
 			}
 			break;
@@ -620,26 +614,18 @@ void CPropertyEditor::WriteStringsToSPropValue()
 				// may have done. The RichEdit control likes throwing them away.
 				m_lpsOutputValue->Value.lpszW = NULL;
 
-				// remember we already read szTmpString and ulStrLen and found ulStrLen was even
-				ULONG cbBin = ulStrLen / 2;
-				// Since this is a unicode string, cbBin must also be even
-				if (cbBin & 1) bFailed = true;
+				EC_H(MAPIAllocateMore(
+					cbBin+sizeof(WCHAR), // NULL terminator
+					m_lpAllocParent,
+					(LPVOID*)&m_lpsOutputValue->Value.lpszW));
+				if (FAILED(hRes)) bFailed = true;
 				else
 				{
-					ULONG cchString = cbBin / 2;
-					EC_H(MAPIAllocateMore(
-						(cchString+1)*sizeof(WCHAR), // NULL terminator
-						m_lpAllocParent,
-						(LPVOID*)&m_lpsOutputValue->Value.lpszW));
-					if (FAILED(hRes)) bFailed = true;
-					else
-					{
-						if (cbBin) MyBinFromHex(
-							(LPCTSTR) szTmpString,
-							(LPBYTE) m_lpsOutputValue->Value.lpszW,
-							cbBin);
-						m_lpsOutputValue->Value.lpszW[cchString] = NULL;
-					}
+					EC_B(MyBinFromHex(
+						(LPCTSTR) szTmpString,
+						(LPBYTE) m_lpsOutputValue->Value.lpszW,
+						&cbBin));
+					m_lpsOutputValue->Value.lpszW[cbBin/2] = NULL;
 				}
 			}
 			break;
@@ -670,7 +656,6 @@ void CPropertyEditor::WriteStringsToSPropValue()
 		case(PT_BINARY):
 			{
 				// remember we already read szTmpString and ulStrLen and found ulStrLen was even
-				ULONG cbBin = ulStrLen / 2;
 				m_lpsOutputValue->Value.bin.cb = cbBin;
 				if (0 == m_lpsOutputValue->Value.bin.cb)
 				{
@@ -685,10 +670,10 @@ void CPropertyEditor::WriteStringsToSPropValue()
 					if (FAILED(hRes)) bFailed = true;
 					else
 					{
-						MyBinFromHex(
+						EC_B(MyBinFromHex(
 							(LPCTSTR) szTmpString,
 							m_lpsOutputValue->Value.bin.lpb,
-							m_lpsOutputValue->Value.bin.cb);
+							&m_lpsOutputValue->Value.bin.cb));
 					}
 				}
 			}

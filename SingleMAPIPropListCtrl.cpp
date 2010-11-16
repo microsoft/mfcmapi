@@ -1318,7 +1318,7 @@ _Check_return_ HRESULT ConcatLPSPropValue(
 _Check_return_ HRESULT CSingleMAPIPropListCtrl::SetNewProp(_In_ LPSPropValue lpNewProp)
 {
 	// Merge the new prop with the old array
-	// Pass new prop first so it's value will replace old value if it existed
+	// Pass new prop first so its value will replace old value if it existed
 
 	HRESULT hRes = S_OK;
 	ULONG ulNewArray = NULL;
@@ -1613,7 +1613,7 @@ void CSingleMAPIPropListCtrl::OnParseProperty()
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 		// Skip the first entry in g_uidParsingTypesDropDown, which is 'No Parsing'
-		MyStructurePicker.InitDropDown(0,IDS_STRUCTURES,g_cuidParsingTypesDropDown-1,&g_uidParsingTypesDropDown[1],true);
+		MyStructurePicker.InitDropDown(0,IDS_STRUCTURES,g_cuidParsingTypes-1,&g_uidParsingTypes[1],true);
 		WC_H(MyStructurePicker.DisplayDialog());
 		if (S_OK == hRes)
 		{

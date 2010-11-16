@@ -36,6 +36,7 @@ CContentsTableDlg(
 	m_lpMessage = lpMessage;
 	if (m_lpMessage) m_lpMessage->AddRef();
 	m_bIsAB = true; // Recipients are from the AB
+	m_bViewRecipientABEntry = false;
 
 	CreateDialogAndMenu(IDR_MENU_RECIPIENTS);
 } // CRecipientsDlg::CRecipientsDlg
@@ -52,6 +53,7 @@ BEGIN_MESSAGE_MAP(CRecipientsDlg, CContentsTableDlg)
 	ON_COMMAND(ID_MODIFYRECIPIENT, OnModifyRecipients)
 	ON_COMMAND(ID_RECIPOPTIONS, OnRecipOptions)
 	ON_COMMAND(ID_SAVECHANGES, OnSaveChanges)
+	ON_COMMAND(ID_VIEWRECIPIENTABENTRY, OnViewRecipientABEntry)
 END_MESSAGE_MAP()
 
 void CRecipientsDlg::OnInitMenu(_In_ CMenu* pMenu)
@@ -65,9 +67,33 @@ void CRecipientsDlg::OnInitMenu(_In_ CMenu* pMenu)
 			pMenu->EnableMenuItem(ID_MODIFYRECIPIENT,
 				DIM(1 == iNumSel && m_lpPropDisplay && m_lpPropDisplay->IsModifiedPropVals()));
 		}
+		pMenu->CheckMenuItem(ID_VIEWRECIPIENTABENTRY,CHECK(m_bViewRecipientABEntry));
 	}
 	CContentsTableDlg::OnInitMenu(pMenu);
 } // CRecipientsDlg::OnInitMenu
+
+_Check_return_ HRESULT CRecipientsDlg::OpenItemProp(
+									  int iSelectedItem,
+									  __mfcmapiModifyEnum bModify,
+									  _Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
+{
+	DebugPrintEx(DBGOpenItemProp,CLASS,_T("OpenItemProp"),_T("iSelectedItem = 0x%X\n"),iSelectedItem);
+
+	if (!m_lpContentsTableListCtrl || !lppMAPIProp) return MAPI_E_INVALID_PARAMETER;
+
+	*lppMAPIProp = NULL;
+
+	if (m_bViewRecipientABEntry) return CContentsTableDlg::OpenItemProp(iSelectedItem, bModify, lppMAPIProp);
+
+	// Do nothing, ensuring we work with the row
+	return S_OK;
+} // CRecipientsDlg::OpenItemProp
+
+void CRecipientsDlg::OnViewRecipientABEntry()
+{
+	m_bViewRecipientABEntry = !m_bViewRecipientABEntry;
+	OnRefreshView();
+} // CRecipientsDlg::OnViewRecipientABEntry
 
 void CRecipientsDlg::OnDeleteSelectedItem()
 {
@@ -123,6 +149,8 @@ void CRecipientsDlg::OnDeleteSelectedItem()
 				EC_H(m_lpMessage->ModifyRecipients(
 					MODRECIP_REMOVE,
 					lpAdrList));
+		
+				OnRefreshView();
 			}
 			FreePadrlist(lpAdrList);
 		}
@@ -148,12 +176,30 @@ void CRecipientsDlg::OnModifyRecipients()
 		adrList.cEntries = 1;
 		adrList.aEntries[0].ulReserved1 = 0;
 		adrList.aEntries[0].cValues = m_lpPropDisplay->GetCountPropVals();
-		adrList.aEntries[0].rgPropVals = lpProps;
+
+		ULONG ulSizeProps = NULL;
+		EC_H(ScCountProps(
+			adrList.aEntries[0].cValues,
+			lpProps,
+			&ulSizeProps));
+
+		EC_H(MAPIAllocateBuffer(ulSizeProps,(LPVOID*) &adrList.aEntries[0].rgPropVals));
+
+		EC_H(ScCopyProps(
+			adrList.aEntries[0].cValues,
+			lpProps,
+			adrList.aEntries[0].rgPropVals,
+			&ulSizeProps));
+
 		DebugPrintEx(DBGGeneric,CLASS,_T("OnModifyRecipients"),_T("Committing changes for current selection\n"));
 
 		EC_H(m_lpMessage->ModifyRecipients(
 			MODRECIP_MODIFY,
 			&adrList));
+
+		MAPIFreeBuffer(adrList.aEntries[0].rgPropVals);
+
+		OnRefreshView();
 	}
 } // CRecipientsDlg::OnModifyRecipients
 

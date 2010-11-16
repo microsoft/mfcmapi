@@ -51,4 +51,10 @@ private:
 	WCHAR		m_wszObject[64];
 };
 
+_Check_return_ BOOL GetTextualSid(
+				   _In_ PSID pSid, // binary SID
+				   _Out_opt_z_cap_(*lpdwBufferLen) LPTSTR TextualSid, // buffer for Textual representation of SID
+				   _Inout_ LPDWORD lpdwBufferLen // required/provided TextualSid buffersize
+				   );
+
 _Check_return_ HRESULT SDToString(_In_ LPBYTE lpBuf, eAceType acetype, _In_ CString *SDString, _In_ CString *sdInfo);

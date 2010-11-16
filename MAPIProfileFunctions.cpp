@@ -785,6 +785,31 @@ _Check_return_ HRESULT HrRemoveProfile(
 	return hRes;
 } // HrRemoveProfile
 
+// $--HrSetDefaultProfile---------------------------------------------------------
+// Set a profile as default.
+// ------------------------------------------------------------------------------
+_Check_return_ HRESULT HrSetDefaultProfile(
+	_In_z_ LPCSTR lpszProfileName)
+{
+	HRESULT hRes= S_OK;
+	LPPROFADMIN lpProfAdmin = NULL;
+
+	DebugPrint(DBGGeneric,_T("HrRemoveProfile(%hs)\n"),lpszProfileName);
+	if (!lpszProfileName) return MAPI_E_INVALID_PARAMETER;
+
+	EC_H(MAPIAdminProfiles(0, &lpProfAdmin));
+	if (!lpProfAdmin) return hRes;
+
+	EC_H(lpProfAdmin->SetDefaultProfile((LPTSTR)lpszProfileName, 0));
+
+	lpProfAdmin->Release();
+
+	RegFlushKey(HKEY_LOCAL_MACHINE);
+	RegFlushKey(HKEY_CURRENT_USER);
+
+	return hRes;
+} // HrSetDefaultProfile
+
 // $--HrMAPIProfileExists---------------------------------------------------------
 // Checks for an existing profile.
 // -----------------------------------------------------------------------------
