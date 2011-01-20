@@ -46,7 +46,14 @@ void WarnHResFn (HRESULT hRes, _In_opt_z_ LPCSTR szFunction, UINT uidErrorMsg, _
 void __cdecl ErrDialog(_In_z_ LPCSTR szFile, int iLine, UINT uidErrorFmt, ...);
 
 // Function to convert error codes to their names
-_Check_return_ LPTSTR ErrorNameFromErrorCode(HRESULT hrErr);
+_Check_return_ LPWSTR ErrorNameFromErrorCode(ULONG hrErr);
+// Flag parsing array - used by GetPropFlags
+struct ERROR_ARRAY_ENTRY
+{
+	ULONG	ulErrorName;
+	LPCWSTR lpszName;
+};
+typedef ERROR_ARRAY_ENTRY FAR * LPERROR_ARRAY_ENTRY;
 
 // Macros for debug output
 #define CHECKHRES(hRes) (CheckHResFn(hRes,"",NULL,__FILE__,__LINE__))

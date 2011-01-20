@@ -961,4 +961,24 @@ _Check_return_ FolderUserFieldStreamStruct* BinToFolderUserFieldStreamStruct(ULO
 void DeleteFolderUserFieldStreamStruct(_In_ FolderUserFieldStreamStruct* pfufsFolderUserFieldStream);
 // result allocated with new, clean up with delete[]
 _Check_return_ LPTSTR FolderUserFieldStreamStructToString(_In_ FolderUserFieldStreamStruct* pfufsFolderUserFieldStream);
+
+// NickNameCacheStruct
+// =====================
+//   This structure specifies a nickname cache struct
+//
+typedef struct
+{
+	BYTE Metadata1[12];
+	DWORD cRowCount;
+	LPSRow lpRows;
+	BYTE Metadata2[12];
+	size_t JunkDataSize;
+	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
+} NickNameCacheStruct;
+
+// Allocates return value with new. Clean up with DeleteNickNameCacheStruct.
+_Check_return_ NickNameCacheStruct* BinToNickNameCacheStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+void DeleteNickNameCacheStruct(_In_ NickNameCacheStruct* pfufsNickNameCache);
+// result allocated with new, clean up with delete[]
+_Check_return_ LPTSTR NickNameCacheStructToString(_In_ NickNameCacheStruct* pfufsNickNameCache);
 // End Functions to parse PT_BINARY properties

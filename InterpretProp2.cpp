@@ -250,16 +250,34 @@ _Check_return_ HRESULT PropNameToPropTag(_In_z_ LPCTSTR lpszPropName, _Out_ ULON
 	return hRes;
 } // PropNameToPropTag
 
-_Check_return_ ULONG PropTypeNameToPropType(_In_z_ LPCWSTR lpszPropType)
+_Check_return_ ULONG PropTypeNameToPropTypeA(_In_z_ LPCSTR lpszPropType)
+{
+	ULONG ulPropType = PT_UNSPECIFIED;
+
+	HRESULT hRes = S_OK;
+	LPWSTR szPropType = NULL;
+	EC_H(AnsiToUnicode(lpszPropType,&szPropType));
+	ulPropType =  PropTypeNameToPropTypeW(szPropType);
+	delete[] szPropType;
+
+	return ulPropType;
+} // PropTypeNameToPropTypeA
+
+_Check_return_ ULONG PropTypeNameToPropTypeW(_In_z_ LPCWSTR lpszPropType)
 {
 	if (!lpszPropType || !ulPropTypeArray || !PropTypeArray) return PT_UNSPECIFIED;
+
+	// Check for numbers first before trying the string as an array lookup.
+	// This will translate '0x102' to 0x102, 0x3 to 3, etc.
+	LPWSTR szEnd = NULL;
+	ULONG ulType = wcstoul(lpszPropType,&szEnd,16);
+	if (*szEnd == NULL) return ulType;
 
 	ULONG ulCur = 0;
 
 	ULONG ulPropType = PT_UNSPECIFIED;
 
 	LPCWSTR szPropType = lpszPropType;
-
 	for (ulCur = 0 ; ulCur < ulPropTypeArray ; ulCur++)
 	{
 		if (0 == lstrcmpiW(szPropType,PropTypeArray[ulCur].lpszName))
@@ -270,7 +288,7 @@ _Check_return_ ULONG PropTypeNameToPropType(_In_z_ LPCWSTR lpszPropType)
 	}
 
 	return ulPropType;
-} // PropTypeNameToPropType
+} // PropTypeNameToPropTypeW
 
 _Check_return_ LPTSTR GUIDToStringAndName(_In_opt_ LPCGUID lpGUID)
 {
@@ -515,6 +533,19 @@ void InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, _In_z_ LPCTST
 				}
 				EC_H(StringCchCatW(szTempString,_countof(szTempString),FlagArray[ulCurEntry].lpszName));
 				lTempValue = 0;
+				bNeedSeparator = true;
+			}
+		}
+		else if (flagVALUEHIGHBYTES == FlagArray[ulCurEntry].ulFlagType)
+		{
+			if (FlagArray[ulCurEntry].lFlagValue == ((lTempValue >> 16) & 0xFFFF))
+			{
+				if (bNeedSeparator)
+				{
+					EC_H(StringCchCatW(szTempString,_countof(szTempString),L" | ")); // STRING_OK
+				}
+				EC_H(StringCchCatW(szTempString,_countof(szTempString),FlagArray[ulCurEntry].lpszName));
+				lTempValue = lTempValue - (FlagArray[ulCurEntry].lFlagValue << 16);
 				bNeedSeparator = true;
 			}
 		}

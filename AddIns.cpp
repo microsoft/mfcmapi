@@ -117,6 +117,157 @@ void LoadSingleAddIn(_In_ LPADDIN lpAddIn, HMODULE hMod, _In_ LPLOADADDIN pfnLoa
 	DebugPrint(DBGAddInPlumbing,_T("Done loading AddIn\n"));
 } // LoadSingleAddIn
 
+class CFileList
+{
+	struct DLLEntry
+	{
+		TCHAR*	szDLL;
+		DLLEntry* lpNext;
+	};
+public:
+	CFileList(_In_z_ LPTSTR szKey);
+	~CFileList();
+	void AddToList(_In_z_ LPTSTR szDLL);
+	bool IsOnList(_In_z_ LPTSTR szDLL);
+
+	LPTSTR m_szKey;
+	HKEY m_hRootKey;
+	DLLEntry* m_lpList;
+};
+#define EXCLUSION_LIST _T("AddInExclusionList") // STRING_OK
+#define INCLUSION_LIST _T("AddInInclusionList") // STRING_OK
+#define SEPARATOR _T(";") // STRING_OK
+
+// Read in registry and build a list of invalid add-in DLLs
+CFileList::CFileList(_In_z_ LPTSTR szKey)
+{
+	HRESULT hRes = S_OK;
+	LPTSTR lpszReg = NULL;
+
+	m_lpList = NULL;
+	m_hRootKey = CreateRootKey();
+	m_szKey = szKey;
+
+	if (m_hRootKey)
+	{
+		DWORD dwKeyType = NULL;
+		WC_H(HrGetRegistryValue(
+			m_hRootKey,
+			m_szKey,
+			&dwKeyType,
+			(LPVOID*) &lpszReg));
+	}
+
+	if (lpszReg)
+	{
+		LPTSTR szDLL = _tcstok(lpszReg,SEPARATOR);
+		while (szDLL)
+		{
+			AddToList(szDLL);
+			szDLL = _tcstok(NULL,SEPARATOR);
+		}
+	}
+	delete[] lpszReg;
+} // CFileList::CFileList
+
+// Write the list back to registry
+CFileList::~CFileList()
+{
+	HRESULT hRes = S_OK;
+	DLLEntry* lpCur = m_lpList;
+	LPTSTR szList = NULL;
+	size_t cchList = 0;
+	size_t cchDLL = 0;
+
+	while (lpCur)
+	{
+		if (lpCur->szDLL)
+		{
+			hRes = StringCchLength(lpCur->szDLL,STRSAFE_MAX_CCH,&cchDLL);
+			cchList += cchDLL + 1; // length + ; or null terminator
+		}
+		lpCur = lpCur->lpNext;
+	}
+
+	if (cchList)
+	{
+		szList = new TCHAR[cchList];
+	}
+
+	if (szList)
+	{
+		szList[0] = NULL;
+		lpCur = m_lpList;
+		while (lpCur)
+		{
+			if (lpCur->szDLL)
+			{
+				hRes = StringCchCat(szList,cchList,lpCur->szDLL);
+				if (lpCur->lpNext)
+				{
+					hRes = StringCchCat(szList,cchList,SEPARATOR);
+				}
+			}
+			lpCur = lpCur->lpNext;
+		}
+		WriteStringToRegistry(
+			m_hRootKey,
+			m_szKey,
+			szList);
+
+		delete[] szList;
+	}
+
+	while (m_lpList)
+	{
+		delete[] m_lpList->szDLL;
+		DLLEntry* lpNext = m_lpList->lpNext;
+		delete m_lpList;
+		m_lpList = lpNext;
+	}
+	EC_W32(RegCloseKey(m_hRootKey));
+} // CFileList::~CFileList
+
+// Add the DLL to the list
+void CFileList::AddToList(_In_z_ LPTSTR szDLL)
+{
+	if (!szDLL) return;
+
+	DLLEntry* lpNewEntry = new DLLEntry;
+	if (lpNewEntry)
+	{
+		lpNewEntry->szDLL = NULL;
+		lpNewEntry->lpNext = m_lpList;
+		m_lpList = lpNewEntry;
+
+		size_t cchDLL = NULL;
+		HRESULT hRes = S_OK;
+		hRes = StringCchLength(szDLL,STRSAFE_MAX_CCH,&cchDLL);
+		if (cchDLL)
+		{
+			lpNewEntry->szDLL = new TCHAR[cchDLL+1];
+
+			if (lpNewEntry->szDLL)
+			{
+				hRes = StringCchCopy(lpNewEntry->szDLL, cchDLL+1, szDLL);
+			}
+		}
+	}
+} // CFileList::AddToList
+
+// Check this DLL name against the list
+bool CFileList::IsOnList(_In_z_ LPTSTR szDLL)
+{
+	if (!szDLL) return true;
+	DLLEntry* lpCur = m_lpList;
+	while (lpCur)
+	{
+		if (!_tcsicmp(szDLL,lpCur->szDLL)) return true;
+		lpCur = lpCur->lpNext;
+	}
+	return false;
+} // CFileList::IsOnList
+
 void LoadAddIns()
 {
 	DebugPrint(DBGAddInPlumbing,_T("Loading AddIns\n"));
@@ -146,6 +297,9 @@ void LoadAddIns()
 		}
 	}
 
+	CFileList ExclusionList(EXCLUSION_LIST);
+	CFileList InclusionList(INCLUSION_LIST);
+
 #define SPECLEN 6 // for '\\*.dll'
 	if (szFilePath[0])
 	{
@@ -170,23 +324,43 @@ void LoadAddIns()
 					DebugPrint(DBGAddInPlumbing,_T("Examining \"%s\"\n"),FindFileData.cFileName);
 					HMODULE hMod = NULL;
 
+					// If we know the Add-in is good, just load it.
+					// If we know it's bad, skip it.
+					// Otherwise, we have to check if it's good.
 					// LoadLibrary calls DLLMain, which can get expensive just to see if a function is exported
 					// So we use DONT_RESOLVE_DLL_REFERENCES to see if we're interested in the DLL first
 					// Only if we're interested do we reload the DLL for real
-					hMod = LoadLibraryEx(FindFileData.cFileName,NULL,DONT_RESOLVE_DLL_REFERENCES);
-					if (hMod)
+					if (InclusionList.IsOnList(FindFileData.cFileName))
 					{
-						LPLOADADDIN pfnLoadAddIn = NULL;
-						WC_D(pfnLoadAddIn, (LPLOADADDIN) GetProcAddress(hMod,szLoadAddIn));
-						FreeLibrary(hMod);
-						hMod = NULL;
-
-						if (pfnLoadAddIn)
+						hMod = MyLoadLibrary(FindFileData.cFileName);
+					}
+					else
+					{
+						if (!ExclusionList.IsOnList(FindFileData.cFileName))
 						{
-							// We found a candidate, load it for real now
-							hMod = MyLoadLibrary(FindFileData.cFileName);
-							// GetProcAddress again just in case we loaded at a different address
-							WC_D(pfnLoadAddIn, (LPLOADADDIN) GetProcAddress(hMod,szLoadAddIn));
+							hMod = LoadLibraryEx(FindFileData.cFileName,NULL,DONT_RESOLVE_DLL_REFERENCES);
+							if (hMod)
+							{
+								LPLOADADDIN pfnLoadAddIn = NULL;
+								WC_D(pfnLoadAddIn, (LPLOADADDIN) GetProcAddress(hMod,szLoadAddIn));
+								FreeLibrary(hMod);
+								hMod = NULL;
+
+								if (pfnLoadAddIn)
+								{
+									// Remember this as a good add-in
+									InclusionList.AddToList(FindFileData.cFileName);
+									// We found a candidate, load it for real now
+									hMod = MyLoadLibrary(FindFileData.cFileName);
+									// GetProcAddress again just in case we loaded at a different address
+									WC_D(pfnLoadAddIn, (LPLOADADDIN) GetProcAddress(hMod,szLoadAddIn));
+								}
+							}
+							// If we still don't have a DLL loaded, exclude it
+							if (!hMod)
+							{
+								ExclusionList.AddToList(FindFileData.cFileName);
+							}
 						}
 					}
 					if (hMod)
@@ -242,17 +416,16 @@ void LoadAddIns()
 	}
 
 	MergeAddInArrays();
-	SortAddInArrays();
 	DebugPrint(DBGAddInPlumbing,_T("Done loading AddIns\n"));
 } // LoadAddIns
 
 void ResetArrays()
 {
-	if (PropTypeArray != g_PropTypeArray) delete PropTypeArray;
-	if (PropTagArray != g_PropTagArray) delete PropTagArray;
-	if (PropGuidArray != g_PropGuidArray) delete PropGuidArray;
-	if (NameIDArray != g_NameIDArray) delete NameIDArray;
-	if (FlagArray != g_FlagArray) delete FlagArray;
+	if (PropTypeArray != g_PropTypeArray) delete[] PropTypeArray;
+	if (PropTagArray != g_PropTagArray) delete[] PropTagArray;
+	if (PropGuidArray != g_PropGuidArray) delete[] PropGuidArray;
+	if (NameIDArray != g_NameIDArray) delete[] NameIDArray;
+	if (FlagArray != g_FlagArray) delete[] FlagArray;
 
 	ulPropTypeArray = g_ulPropTypeArray;
 	PropTypeArray = g_PropTypeArray;
@@ -449,6 +622,193 @@ ULONG ulNameIDArray;
 LPFLAG_ARRAY_ENTRY FlagArray = NULL;
 ULONG ulFlagArray = NULL;
 
+// Compare tag arrays. Also works on type arrays.
+int CompareTags(_In_ const void* a1, _In_ const void* a2)
+{
+	LPNAME_ARRAY_ENTRY lpTag1 = (LPNAME_ARRAY_ENTRY) a1;
+	LPNAME_ARRAY_ENTRY lpTag2 = (LPNAME_ARRAY_ENTRY) a2;
+
+	if (lpTag1->ulValue > lpTag2->ulValue) return 1;
+	if (lpTag1->ulValue == lpTag2->ulValue)
+	{
+		return wcscmp(lpTag1->lpszName,lpTag2->lpszName);
+	}
+	return -1;
+} // CompareTags
+
+int CompareNameID(_In_ const void* a1, _In_ const void* a2)
+{
+	LPNAMEID_ARRAY_ENTRY lpID1 = (LPNAMEID_ARRAY_ENTRY) a1;
+	LPNAMEID_ARRAY_ENTRY lpID2 = (LPNAMEID_ARRAY_ENTRY) a2;
+
+	if (lpID1->lValue > lpID2->lValue) return 1;
+	if (lpID1->lValue == lpID2->lValue)
+	{
+		int iCmp = wcscmp(lpID1->lpszName,lpID2->lpszName);
+		if (iCmp) return iCmp;
+		if (IsEqualGUID(*lpID1->lpGuid,*lpID2->lpGuid)) return 0;
+	}
+	return -1;
+} // CompareNameID
+
+void MergeArrays(
+    _Inout_bytecap_x_(cIn1 * width) LPVOID In1,
+    _In_ size_t cIn1,
+    _Inout_bytecap_x_(cIn2 * width) LPVOID In2,
+    _In_ size_t cIn2,
+    _Out_ _Deref_post_bytecap_x_(*lpcOut * width) LPVOID* lpOut,
+    _Out_ size_t* lpcOut,
+    _In_ size_t width,
+    _In_ int (*comp)(const void *, const void *))
+{
+	if (!In1 && !In2) return;
+	if (!lpOut || !lpcOut) return;
+
+	// Assume no duplicates
+	*lpcOut = cIn1+cIn2;
+	*lpOut = new char[*lpcOut * width];
+
+	if (lpOut)
+	{
+		char* iIn1 = (char*) In1;
+		char* iIn2 = (char*) In2;
+		LPVOID endIn1 = iIn1 + width * (cIn1-1);
+		LPVOID endIn2 = iIn2 + width * (cIn2-1);
+		char* iOut = (char*) *lpOut;
+		int iComp = 0;
+
+		while (iIn1 <= endIn1 && iIn2 <= endIn2)
+		{
+			iComp = comp(iIn1,iIn2);
+			if (iComp < 0)
+			{
+				memcpy(iOut,iIn1,width);
+				iIn1 += width;
+			}
+			else if (iComp > 0)
+			{
+				memcpy(iOut,iIn2,width);
+				iIn2 += width;
+			}
+			else
+			{
+				// They're the same - copy one over and skip past both
+				memcpy(iOut,iIn1,width);
+				iIn1 += width;
+				iIn2 += width;
+			}
+			iOut += width;
+		}
+		while (iIn1 <= endIn1)
+		{
+			memcpy(iOut,iIn1,width);
+			iIn1 += width;
+			iOut += width;
+		}
+		while (iIn2 <= endIn2)
+		{
+			memcpy(iOut,iIn2,width);
+			iIn2 += width;
+			iOut += width;
+		}
+
+		*lpcOut = (iOut - (char*) *lpOut) / width;
+	}
+} // MergeArrays
+
+// Flags are difficult to sort since we need to have a stable sort
+// Records with the same key must appear in the output in the same order as the input
+// qsort doesn't guarantee this, so we do it manually with an insertion sort
+void SortFlagArray(_In_count_(ulFlags) LPFLAG_ARRAY_ENTRY lpFlags, _In_ ULONG ulFlags)
+{
+	ULONG i = 0;
+	ULONG iLoc = 0;
+	for (i = 1;i<ulFlags;i++)
+	{
+		FLAG_ARRAY_ENTRY NextItem = lpFlags[i];
+		for (iLoc = i;iLoc > 0;iLoc--)
+		{
+			if (lpFlags[iLoc-1].ulFlagName <= NextItem.ulFlagName) break;
+			lpFlags[iLoc] = lpFlags[iLoc-1];
+		}
+		lpFlags[iLoc] = NextItem;
+	}
+} // SortFlagArray
+
+// Consults the end of the supplied array to find a match to the passed in entry
+// If no dupe is found, copies lpSource[*lpiSource] to lpTarget and increases *lpcArray
+// Increases *lpiSource regardless
+void AppendFlagIfNotDupe(_In_count_(*lpcArray) LPFLAG_ARRAY_ENTRY lpTarget, _In_ size_t* lpcArray, _In_count_(*lpiSource+1)  LPFLAG_ARRAY_ENTRY lpSource, _In_ size_t* lpiSource)
+{
+	size_t iTarget = *lpcArray;
+	size_t iSource = *lpiSource;
+	(*lpiSource)++;
+	while (iTarget)
+	{
+		iTarget--;
+		// Stop searching when ulFlagName doesn't match
+		// Assumes lpTarget is sorted
+		if (lpTarget[iTarget].ulFlagName != lpSource[iSource].ulFlagName) break;
+		if (lpTarget[iTarget].lFlagValue == lpSource[iSource].lFlagValue &&
+			lpTarget[iTarget].ulFlagType == lpSource[iSource].ulFlagType &&
+			!wcscmp(lpTarget[iTarget].lpszName,lpSource[iSource].lpszName))
+		{
+			return;
+		}
+	}
+	lpTarget[*lpcArray] = lpSource[iSource];
+	(*lpcArray)++;
+} // AppendFlagIfNotDupe
+
+// Similar to MergeArrays, but using AppendFlagIfNotDupe logic
+void MergeFlagArrays(
+    _In_count_(cIn1) LPFLAG_ARRAY_ENTRY In1,
+    _In_ size_t cIn1,
+    _In_count_(cIn2) LPFLAG_ARRAY_ENTRY In2,
+    _In_ size_t cIn2,
+    _Out_ _Deref_post_count_(*lpcOut) LPFLAG_ARRAY_ENTRY* lpOut,
+    _Out_ size_t* lpcOut)
+{
+	if (!In1 && !In2) return;
+	if (!lpOut || !lpcOut) return;
+
+	// Assume no duplicates
+	*lpcOut = cIn1+cIn2;
+	LPFLAG_ARRAY_ENTRY Out = new FLAG_ARRAY_ENTRY[*lpcOut];
+
+	if (Out)
+	{
+		size_t iIn1 = 0;
+		size_t iIn2 = 0;
+		size_t iOut = 0;
+
+		while (iIn1 < cIn1 && iIn2 < cIn2)
+		{
+			// Add from In1 first, then In2 when In2 is bigger than In2
+			if (In1[iIn1].ulFlagName <= In2[iIn2].ulFlagName)
+			{
+				AppendFlagIfNotDupe(Out,&iOut,In1,&iIn1);
+			}
+			else
+			{
+				AppendFlagIfNotDupe(Out,&iOut,In2,&iIn2);
+			}
+		}
+		while (iIn1 < cIn1)
+		{
+			AppendFlagIfNotDupe(Out,&iOut,In1,&iIn1);
+		}
+		while (iIn2 < cIn2)
+		{
+			AppendFlagIfNotDupe(Out,&iOut,In2,&iIn2);
+		}
+
+		*lpcOut = iOut-1;
+		*lpOut = Out;
+	}
+} // MergeFlagArrays
+
+// Assumes built in arrays are already sorted!
 void MergeAddInArrays()
 {
 	DebugPrint(DBGAddInPlumbing,_T("Merging Add-In arrays\n"));
@@ -464,12 +824,8 @@ void MergeAddInArrays()
 	// No add-in == nothing to merge
 	if (!g_lpMyAddins) return;
 
-	// First pass - count up any arrays we have to merge
-	ULONG ulAddInPropTypeArray = g_ulPropTypeArray;
-	ULONG ulAddInPropTagArray = g_ulPropTagArray;
+	// First pass - count up any the size of the guid array
 	ULONG ulAddInPropGuidArray = g_ulPropGuidArray;
-	ULONG ulAddInNameIDArray = g_ulNameIDArray;
-	ULONG ulAddInFlagArray = g_ulFlagArray;
 
 	LPADDIN lpCurAddIn = g_lpMyAddins;
 	while (lpCurAddIn)
@@ -480,33 +836,13 @@ void MergeAddInArrays()
 		DebugPrint(DBGAddInPlumbing,_T("Found 0x%08X guids.\n"),lpCurAddIn->ulPropGuids);
 		DebugPrint(DBGAddInPlumbing,_T("Found 0x%08X named ids.\n"),lpCurAddIn->ulNameIDs);
 		DebugPrint(DBGAddInPlumbing,_T("Found 0x%08X flags.\n"),lpCurAddIn->ulPropFlags);
-		ulAddInPropTypeArray += lpCurAddIn->ulPropTypes;
-		ulAddInPropTagArray += lpCurAddIn->ulPropTags;
 		ulAddInPropGuidArray += lpCurAddIn->ulPropGuids;
-		ulAddInNameIDArray += lpCurAddIn->ulNameIDs;
-		ulAddInFlagArray += lpCurAddIn->ulPropFlags;
 		lpCurAddIn = lpCurAddIn->lpNextAddIn;
 	}
 
 	// if count has gone up - we need to merge
 	// Allocate a larger array and initialize it with our hardcoded data
 	ULONG i = 0;
-	if (ulAddInPropTypeArray != g_ulPropTypeArray)
-	{
-		PropTypeArray = new NAME_ARRAY_ENTRY[ulAddInPropTypeArray];
-		for (i = 0 ; i < g_ulPropTypeArray ; i++)
-		{
-			PropTypeArray[i] = g_PropTypeArray[i];
-		}
-	}
-	if (ulAddInPropTagArray != g_ulPropTagArray)
-	{
-		PropTagArray = new NAME_ARRAY_ENTRY[ulAddInPropTagArray];
-		for (i = 0 ; i < g_ulPropTagArray ; i++)
-		{
-			PropTagArray[i] = g_PropTagArray[i];
-		}
-	}
 	if (ulAddInPropGuidArray != g_ulPropGuidArray)
 	{
 		PropGuidArray = new GUID_ARRAY_ENTRY[ulAddInPropGuidArray];
@@ -515,246 +851,100 @@ void MergeAddInArrays()
 			PropGuidArray[i] = g_PropGuidArray[i];
 		}
 	}
-	if (ulAddInNameIDArray != g_ulNameIDArray)
-	{
-		NameIDArray = new NAMEID_ARRAY_ENTRY[ulAddInNameIDArray];
-		for (i = 0 ; i < g_ulNameIDArray ; i++)
-		{
-			NameIDArray[i] = g_NameIDArray[i];
-		}
-	}
-	if (ulAddInFlagArray != g_ulFlagArray)
-	{
-		FlagArray = new FLAG_ARRAY_ENTRY[ulAddInFlagArray];
-		for (i = 0 ; i < g_ulFlagArray ; i++)
-		{
-			FlagArray[i] = g_FlagArray[i];
-		}
-	}
 
-	// Second pass - append the new arrays to the hardcoded arrays
-	ULONG ulCurPropType = g_ulPropTypeArray;
-	ULONG ulCurPropTag = g_ulPropTagArray;
+	// Second pass - merge our arrays to the hardcoded arrays
 	ULONG ulCurPropGuid = g_ulPropGuidArray;
-	ULONG ulCurNameID = g_ulNameIDArray;
-	ULONG ulCurFlag = g_ulFlagArray;
 	lpCurAddIn = g_lpMyAddins;
 	while (lpCurAddIn)
 	{
 		if (lpCurAddIn->ulPropTypes)
 		{
-			for (i = ulCurPropType; i < ulCurPropType+lpCurAddIn->ulPropTypes ; i++)
-			{
-				PropTypeArray[i] = lpCurAddIn->lpPropTypes[i-ulCurPropType];
-			}
-			ulCurPropType += lpCurAddIn->ulPropTypes;
+			qsort(lpCurAddIn->lpPropTypes,lpCurAddIn->ulPropTypes,sizeof(NAME_ARRAY_ENTRY),&CompareTags);
+			LPNAME_ARRAY_ENTRY newPropTypeArray = NULL;
+			size_t ulnewPropTypeArray = NULL;
+			MergeArrays(PropTypeArray,ulPropTypeArray,
+				lpCurAddIn->lpPropTypes,lpCurAddIn->ulPropTypes,
+				(LPVOID*) &newPropTypeArray,&ulnewPropTypeArray,
+				sizeof(NAME_ARRAY_ENTRY),
+				CompareTags);
+			if (PropTypeArray != g_PropTypeArray) delete[] PropTypeArray;
+			PropTypeArray = newPropTypeArray;
+			ulPropTypeArray = (ULONG) ulnewPropTypeArray;
 		}
 		if (lpCurAddIn->ulPropTags)
 		{
-			for (i = ulCurPropTag; i < ulCurPropTag+lpCurAddIn->ulPropTags ; i++)
-			{
-				PropTagArray[i] = lpCurAddIn->lpPropTags[i-ulCurPropTag];
-			}
-			ulCurPropTag += lpCurAddIn->ulPropTags;
-		}
-		if (lpCurAddIn->ulPropGuids)
-		{
-			for (i = ulCurPropGuid; i < ulCurPropGuid+lpCurAddIn->ulPropGuids ; i++)
-			{
-				PropGuidArray[i] = lpCurAddIn->lpPropGuids[i-ulCurPropGuid];
-			}
-			ulCurPropGuid += lpCurAddIn->ulPropGuids;
+			qsort(lpCurAddIn->lpPropTags,lpCurAddIn->ulPropTags,sizeof(NAME_ARRAY_ENTRY),&CompareTags);
+			LPNAME_ARRAY_ENTRY newPropTagArray = NULL;
+			size_t ulnewPropTagArray = NULL;
+			MergeArrays(PropTagArray,ulPropTagArray,
+				lpCurAddIn->lpPropTags,lpCurAddIn->ulPropTags,
+				(LPVOID*) &newPropTagArray,&ulnewPropTagArray,
+				sizeof(NAME_ARRAY_ENTRY),
+				CompareTags);
+			if (PropTagArray != g_PropTagArray) delete[] PropTagArray;
+			PropTagArray = newPropTagArray;
+			ulPropTagArray = (ULONG) ulnewPropTagArray;
 		}
 		if (lpCurAddIn->ulNameIDs)
 		{
-			for (i = ulCurNameID; i < ulCurNameID+lpCurAddIn->ulNameIDs ; i++)
-			{
-				NameIDArray[i] = lpCurAddIn->lpNameIDs[i-ulCurNameID];
-			}
-			ulCurNameID += lpCurAddIn->ulNameIDs;
+			qsort(lpCurAddIn->lpNameIDs,lpCurAddIn->ulNameIDs,sizeof(NAMEID_ARRAY_ENTRY),&CompareNameID);
+			LPNAMEID_ARRAY_ENTRY newNameIDArray = NULL;
+			size_t ulnewNameIDArray = NULL;
+			MergeArrays(NameIDArray,ulNameIDArray,
+				lpCurAddIn->lpNameIDs,lpCurAddIn->ulNameIDs,
+				(LPVOID*) &newNameIDArray,&ulnewNameIDArray,
+				sizeof(NAMEID_ARRAY_ENTRY),
+				CompareNameID);
+			if (NameIDArray != g_NameIDArray) delete[] NameIDArray;
+			NameIDArray = newNameIDArray;
+			ulNameIDArray = (ULONG) ulnewNameIDArray;
 		}
 		if (lpCurAddIn->ulPropFlags)
 		{
-			for (i = ulCurFlag; i < ulCurFlag+lpCurAddIn->ulPropFlags ; i++)
+			SortFlagArray(lpCurAddIn->lpPropFlags,lpCurAddIn->ulPropFlags);
+			LPFLAG_ARRAY_ENTRY newFlagArray = NULL;
+			size_t ulnewFlagArray = NULL;
+			MergeFlagArrays(FlagArray,ulFlagArray,
+				lpCurAddIn->lpPropFlags,lpCurAddIn->ulPropFlags,
+				&newFlagArray,&ulnewFlagArray);
+			if (FlagArray != g_FlagArray) delete[] FlagArray;
+			FlagArray = newFlagArray;
+			ulFlagArray = (ULONG) ulnewFlagArray;
+		}
+		if (lpCurAddIn->ulPropGuids)
+		{
+			// Copy guids from lpCurAddIn->lpPropGuids, checking for dupes on the way
+			for (i = 0;i < lpCurAddIn->ulPropGuids;i++)
 			{
-				FlagArray[i] = lpCurAddIn->lpPropFlags[i-ulCurFlag];
+				ULONG iCur = 0;
+				BOOL bDupe = false;
+				// Since this array isn't sorted, we have to compare against all valid entries for dupes
+				for (iCur = 0;iCur < ulCurPropGuid;iCur++)
+				{
+					if (IsEqualGUID(*lpCurAddIn->lpPropGuids[i].lpGuid,*PropGuidArray[iCur].lpGuid))
+					{
+						bDupe = true;
+						break;
+					}
+				}
+				if (!bDupe)
+				{
+					PropGuidArray[ulCurPropGuid] = lpCurAddIn->lpPropGuids[i];
+					ulCurPropGuid++;
+				}
 			}
-			ulCurFlag += lpCurAddIn->ulPropFlags;
+			ulPropGuidArray = ulCurPropGuid;
 		}
 		lpCurAddIn = lpCurAddIn->lpNextAddIn;
 	}
-	ulPropTypeArray = ulCurPropType;
-	ulPropTagArray = ulCurPropTag;
-	ulPropGuidArray = ulCurPropGuid;
-	ulNameIDArray = ulCurNameID;
-	ulFlagArray = ulCurFlag;
+
+	DebugPrint(DBGAddInPlumbing,_T("After merge, 0x%08X prop tags.\n"),ulPropTagArray);
+	DebugPrint(DBGAddInPlumbing,_T("After merge, 0x%08X prop types.\n"),ulPropTypeArray);
+	DebugPrint(DBGAddInPlumbing,_T("After merge, 0x%08X guids.\n"),ulPropGuidArray);
+	DebugPrint(DBGAddInPlumbing,_T("After merge, 0x%08X flags.\n"),ulFlagArray);
 
 	DebugPrint(DBGAddInPlumbing,_T("Done merging add-in arrays\n"));
 } // MergeAddInArrays
-
-// Sort arrays and eliminate duplicates
-void SortAddInArrays()
-{
-	DebugPrint(DBGAddInPlumbing,_T("Sorting add-in arrays\n"));
-
-	// insertion sort on PropTagArray/ulPropTagArray
-	ULONG i = 0;
-	ULONG iUnsorted = 0;
-	ULONG iLoc = 0;
-	for (iUnsorted = 1;iUnsorted<ulPropTagArray;iUnsorted++)
-	{
-		NAME_ARRAY_ENTRY NextItem = PropTagArray[iUnsorted];
-		for (iLoc = iUnsorted;iLoc > 0;iLoc--)
-		{
-			if (PropTagArray[iLoc-1].ulValue < NextItem.ulValue) break;
-			if (PropTagArray[iLoc-1].ulValue == NextItem.ulValue &&
-				wcscmp(NextItem.lpszName,PropTagArray[iLoc-1].lpszName) >= 0) break;
-			PropTagArray[iLoc] = PropTagArray[iLoc-1];
-		}
-		PropTagArray[iLoc] = NextItem;
-	}
-
-	// Move the dupes to the end of the array and truncate the array
-	for (i = 0;i < ulPropTagArray-1;)
-	{
-		if ((PropTagArray[i].ulValue == PropTagArray[i+1].ulValue) &&
-			!wcscmp(PropTagArray[i].lpszName,PropTagArray[i+1].lpszName))
-		{
-			for (iLoc = i+1;iLoc < ulPropTagArray-1; iLoc++)
-			{
-				PropTagArray[iLoc] = PropTagArray[iLoc+1];
-			}
-			ulPropTagArray--;
-		}
-		else i++;
-	}
-	DebugPrint(DBGAddInPlumbing,_T("After sort, 0x%08X prop tags.\n"),ulPropTagArray);
-
-	// insertion sort on PropTypeArray/ulPropTypeArray
-	for (iUnsorted = 1;iUnsorted<ulPropTypeArray;iUnsorted++)
-	{
-		NAME_ARRAY_ENTRY NextItem = PropTypeArray[iUnsorted];
-		for (iLoc = iUnsorted;iLoc > 0;iLoc--)
-		{
-			if (PropTypeArray[iLoc-1].ulValue < NextItem.ulValue) break;
-			if (PropTypeArray[iLoc-1].ulValue == NextItem.ulValue &&
-				wcscmp(NextItem.lpszName,PropTypeArray[iLoc-1].lpszName) >= 0) break;
-			PropTypeArray[iLoc] = PropTypeArray[iLoc-1];
-		}
-		PropTypeArray[iLoc] = NextItem;
-	}
-
-	// Move the dupes to the end of the array and truncate the array
-	for (i = 0;i < ulPropTypeArray-1;)
-	{
-		if ((PropTypeArray[i].ulValue == PropTypeArray[i+1].ulValue) &&
-			!wcscmp(PropTypeArray[i].lpszName,PropTypeArray[i+1].lpszName))
-		{
-			for (iLoc = i+1;iLoc < ulPropTypeArray-1; iLoc++)
-			{
-				PropTypeArray[iLoc] = PropTypeArray[iLoc+1];
-			}
-			ulPropTypeArray--;
-		}
-		else i++;
-	}
-	DebugPrint(DBGAddInPlumbing,_T("After sort, 0x%08X prop types.\n"),ulPropTypeArray);
-
-	// No sort on PropGuidArray/ulPropGuidArray
-	// Move the dupes to the end of the array and truncate the array
-	for (i = 0;i < ulPropGuidArray-1;i++)
-	{
-		ULONG iCur = 0;
-		for (iCur = i+1;iCur < ulPropGuidArray;)
-		{
-			if (IsEqualGUID(*PropGuidArray[i].lpGuid,*PropGuidArray[iCur].lpGuid))
-			{
-				for (iLoc = iCur;iLoc < ulPropGuidArray-1; iLoc++)
-				{
-					PropGuidArray[iLoc] = PropGuidArray[iLoc+1];
-				}
-				ulPropGuidArray--;
-			}
-			else iCur++;
-		}
-	}
-	DebugPrint(DBGAddInPlumbing,_T("After sort, 0x%08X guids.\n"),ulPropGuidArray);
-
-	// insertion sort on NameIDArray/ulNameIDArray
-	for (iUnsorted = 1;iUnsorted<ulNameIDArray;iUnsorted++)
-	{
-		NAMEID_ARRAY_ENTRY NextItem = NameIDArray[iUnsorted];
-		for (iLoc = iUnsorted;iLoc > 0;iLoc--)
-		{
-			if (NameIDArray[iLoc-1].lValue < NextItem.lValue) break;
-			if (NameIDArray[iLoc-1].lValue == NextItem.lValue &&
-				wcscmp(NextItem.lpszName,NameIDArray[iLoc-1].lpszName) >= 0) break;
-			NameIDArray[iLoc] = NameIDArray[iLoc-1];
-		}
-
-		NameIDArray[iLoc] = NextItem;
-	}
-
-	// Move the dupes to the end of the array and truncate the array
-	for (i = 0;i < ulNameIDArray-1;)
-	{
-		ULONG iMatch = i+1;
-		for (; iMatch < ulNameIDArray-1 ; iMatch++)
-		{
-			if (NameIDArray[i].lValue != NameIDArray[iMatch].lValue) break;
-			if (wcscmp(NameIDArray[i].lpszName,NameIDArray[iMatch].lpszName)) break;
-			if (IsEqualGUID(*NameIDArray[i].lpGuid,*NameIDArray[iMatch].lpGuid))
-			{
-				for (iLoc = iMatch;iLoc < ulNameIDArray-1; iLoc++)
-				{
-					NameIDArray[iLoc] = NameIDArray[iLoc+1];
-				}
-				ulNameIDArray--;
-			}
-		}
-		i++;
-	}
-	DebugPrint(DBGAddInPlumbing,_T("After sort, 0x%08X named ids.\n"),ulNameIDArray);
-
-	// Flags are difficult to sort
-	// Sort order
-	// 1 - prev.ulFlagName <= next.ulFlagName
-	// 2 - ?? We have to preserve a stable order - so just delete dupes here
-	for (iUnsorted = 1;iUnsorted<ulFlagArray;iUnsorted++)
-	{
-		FLAG_ARRAY_ENTRY NextItem = FlagArray[iUnsorted];
-		for (iLoc = iUnsorted;iLoc > 0;iLoc--)
-		{
-			if (FlagArray[iLoc-1].ulFlagName <= NextItem.ulFlagName) break;
-			FlagArray[iLoc] = FlagArray[iLoc-1];
-		}
-		FlagArray[iLoc] = NextItem;
-	}
-
-	// Move the dupes to the end of the array and truncate the array
-	for (i = 0;i < ulFlagArray-1;)
-	{
-		ULONG iMatch = i+1;
-		for (; iMatch < ulFlagArray-1 ; iMatch++)
-		{
-			if (FlagArray[i].ulFlagName != FlagArray[iMatch].ulFlagName) break;
-			if (FlagArray[i].lFlagValue == FlagArray[iMatch].lFlagValue &&
-				FlagArray[i].ulFlagType == FlagArray[iMatch].ulFlagType &&
-				!wcscmp(FlagArray[i].lpszName,FlagArray[iMatch].lpszName))
-			{
-				for (iLoc = iMatch;iLoc < ulFlagArray-1; iLoc++)
-				{
-					FlagArray[iLoc] = FlagArray[iLoc+1];
-				}
-				ulFlagArray--;
-			}
-		}
-		i++;
-	}
-	DebugPrint(DBGAddInPlumbing,_T("After sort, 0x%08X flags.\n"),ulFlagArray);
-
-	DebugPrint(DBGAddInPlumbing,_T("Done sorting add-in arrays\n"));
-} // SortAddInArrays
 
 __declspec(dllexport) void __cdecl AddInLog(BOOL bPrintThreadTime, _Printf_format_string_ LPWSTR szMsg, ...)
 {

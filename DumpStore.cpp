@@ -7,129 +7,10 @@
 #include "dumpstore.h"
 #include "MAPIFunctions.h"
 #include "file.h"
-#include "InterpretProp.h"
 #include "InterpretProp2.h"
 #include "ImportProcs.h"
 #include "ExtraPropTags.h"
-#include "ColumnTags.h"
 #include "PropTagArray.h"
-#include "SmartView.h"
-
-void OutputPropertyToFile(_In_ FILE* fFile, _In_ LPSPropValue lpProp, _In_ LPMAPIPROP lpObj)
-{
-	if (!lpProp) return;
-
-	CString PropType;
-
-	OutputToFilef(fFile,_T("\t<property tag = \"0x%08X\" type = \"%s\">\n"),lpProp->ulPropTag,(LPCTSTR) TypeToString(lpProp->ulPropTag));
-
-	CString PropString;
-	CString AltPropString;
-	LPTSTR szExactMatches = NULL;
-	LPTSTR szPartialMatches = NULL;
-	LPTSTR szSmartView = NULL;
-	LPTSTR szNamedPropName = NULL;
-	LPTSTR szNamedPropGUID = NULL;
-
-	InterpretProp(
-		lpProp,
-		lpProp->ulPropTag,
-		lpObj,
-		NULL,
-		NULL,
-		false,
-		&szExactMatches, // Built from ulPropTag & bIsAB
-		&szPartialMatches, // Built from ulPropTag & bIsAB
-		&PropType,
-		NULL,
-		&PropString,
-		&AltPropString,
-		&szNamedPropName, // Built from lpProp & lpMAPIProp
-		&szNamedPropGUID, // Built from lpProp & lpMAPIProp
-		NULL);
-
-	InterpretPropSmartView(
-		lpProp,
-		lpObj,
-		NULL,
-		NULL,
-		false,
-		&szSmartView);
-
-	OutputXMLValueToFile(fFile,PropXMLNames[pcPROPEXACTNAMES].uidName,szExactMatches,2);
-	OutputXMLValueToFile(fFile,PropXMLNames[pcPROPPARTIALNAMES].uidName,szPartialMatches,2);
-	OutputXMLValueToFile(fFile,PropXMLNames[pcPROPNAMEDIID].uidName, szNamedPropGUID,2);
-	OutputXMLValueToFile(fFile,PropXMLNames[pcPROPNAMEDNAME].uidName, szNamedPropName,2);
-
-	switch(PROP_TYPE(lpProp->ulPropTag))
-	{
-	case PT_STRING8:
-	case PT_UNICODE:
-	case PT_MV_STRING8:
-	case PT_MV_UNICODE:
-		{
-			OutputXMLCDataValueToFile(fFile,PropXMLNames[pcPROPVAL].uidName,(LPCTSTR) PropString,2);
-			OutputXMLValueToFile(fFile,PropXMLNames[pcPROPVALALT].uidName,(LPCTSTR) AltPropString,2);
-			break;
-		}
-	case PT_BINARY:
-	case PT_MV_BINARY:
-		{
-			OutputXMLValueToFile(fFile,PropXMLNames[pcPROPVAL].uidName,(LPCTSTR) PropString,2);
-			OutputXMLCDataValueToFile(fFile,PropXMLNames[pcPROPVALALT].uidName,(LPCTSTR) AltPropString,2);
-			break;
-		}
-	default:
-		{
-			OutputXMLValueToFile(fFile,PropXMLNames[pcPROPVAL].uidName,(LPCTSTR) PropString,2);
-			OutputXMLValueToFile(fFile,PropXMLNames[pcPROPVALALT].uidName,(LPCTSTR) AltPropString,2);
-			break;
-		}
-	}
-
-	if (szSmartView) OutputXMLCDataValueToFile(fFile,PropXMLNames[pcPROPSMARTVIEW].uidName,szSmartView,2);
-	OutputToFile(fFile,_T("\t</property>\n"));
-
-	delete[] szPartialMatches;
-	delete[] szExactMatches;
-	FreeNameIDStrings(szNamedPropName, szNamedPropGUID, NULL);
-	delete[] szSmartView;
-} // OutputPropertyToFile
-
-void OutputPropertiesToFile(_In_ FILE* fFile, ULONG cProps, _In_count_(cProps) LPSPropValue lpProps, _In_ LPMAPIPROP lpObj)
-{
-	if (cProps && !lpProps) return;
-
-	// sort the list first
-	// insertion sort on lpProps
-	ULONG iUnsorted = 0;
-	ULONG iLoc = 0;
-	for (iUnsorted = 1; iUnsorted < cProps; iUnsorted++)
-	{
-		SPropValue NextItem = lpProps[iUnsorted];
-		for (iLoc = iUnsorted; iLoc > 0; iLoc--)
-		{
-			if (lpProps[iLoc-1].ulPropTag < NextItem.ulPropTag) break;
-			lpProps[iLoc] = lpProps[iLoc-1];
-		}
-		lpProps[iLoc] = NextItem;
-	}
-
-	ULONG i = 0;
-	for (i = 0; i < cProps; i++)
-	{
-		OutputPropertyToFile(fFile, &lpProps[i], lpObj);
-	}
-} // OutputPropertiesToFile
-
-void OutputSRowToFile(_In_ FILE* fFile, _In_ LPSRow lpSRow, _In_ LPMAPIPROP lpObj)
-{
-	if (!lpSRow) return;
-
-	if (lpSRow->cValues && !lpSRow->lpProps) return;
-
-	OutputPropertiesToFile(fFile, lpSRow->cValues, lpSRow->lpProps,lpObj);
-} // OutputSRowToFile
 
 CDumpStore::CDumpStore()
 {
@@ -517,11 +398,11 @@ void CDumpStore::BeginMessageWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpParent
 		if (lpStream)
 		{
 			OutputToFile(lpMsgData->fMessageProps,_T("<body property=\"PR_BODY\">\n"));
-			OutputCDataOpen(lpMsgData->fMessageProps);
+			OutputCDataOpen(DBGNoDebug,lpMsgData->fMessageProps);
 			OutputStreamToFile(lpMsgData->fMessageProps, lpStream);
 			lpStream->Release();
 			lpStream = NULL;
-			OutputCDataClose(lpMsgData->fMessageProps);
+			OutputCDataClose(DBGNoDebug,lpMsgData->fMessageProps);
 			OutputToFile(lpMsgData->fMessageProps,_T("</body>\n"));
 		}
 
@@ -537,11 +418,11 @@ void CDumpStore::BeginMessageWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpParent
 		if (lpStream)
 		{
 			OutputToFile(lpMsgData->fMessageProps,_T("<body property=\"PR_BODY_HTML\">\n"));
-			OutputCDataOpen(lpMsgData->fMessageProps);
+			OutputCDataOpen(DBGNoDebug,lpMsgData->fMessageProps);
 			OutputStreamToFile(lpMsgData->fMessageProps, lpStream);
 			lpStream->Release();
 			lpStream = NULL;
-			OutputCDataClose(lpMsgData->fMessageProps);
+			OutputCDataClose(DBGNoDebug,lpMsgData->fMessageProps);
 			OutputToFile(lpMsgData->fMessageProps,_T("</body>\n"));
 		}
 		OutputToFile(lpMsgData->fMessageProps,_T("\n"));
@@ -572,11 +453,11 @@ void CDumpStore::BeginMessageWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpParent
 			if (lpRTFUncompressed)
 			{
 				OutputToFile(lpMsgData->fMessageProps,_T("<body property=\"PR_RTF_COMPRESSED\">\n"));
-				OutputCDataOpen(lpMsgData->fMessageProps);
+				OutputCDataOpen(DBGNoDebug,lpMsgData->fMessageProps);
 				OutputStreamToFile(lpMsgData->fMessageProps, lpRTFUncompressed);
 				lpRTFUncompressed->Release();
 				lpRTFUncompressed = NULL;
-				OutputCDataClose(lpMsgData->fMessageProps);
+				OutputCDataClose(DBGNoDebug,lpMsgData->fMessageProps);
 				OutputToFile(lpMsgData->fMessageProps,_T("</body>\n"));
 			}
 			lpStream->Release();
@@ -618,11 +499,11 @@ void CDumpStore::BeginMessageWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpParent
 					delete[] szFlags;
 					szFlags = NULL;
 					OutputToFilef(lpMsgData->fMessageProps,_T(" CodePageIn = \"%d\" CodePageOut = \"%d\">\n"),ulInCodePage,CP_ACP);
-					OutputCDataOpen(lpMsgData->fMessageProps);
+					OutputCDataOpen(DBGNoDebug,lpMsgData->fMessageProps);
 					OutputStreamToFile(lpMsgData->fMessageProps, lpRTFUncompressed);
 					lpRTFUncompressed->Release();
 					lpRTFUncompressed = NULL;
-					OutputCDataClose(lpMsgData->fMessageProps);
+					OutputCDataClose(DBGNoDebug,lpMsgData->fMessageProps);
 					OutputToFile(lpMsgData->fMessageProps,_T("</body>\n"));
 				}
 				lpStream->Release();

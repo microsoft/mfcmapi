@@ -50,6 +50,7 @@ enum __FlagType
 	flagVALUE4THBYTE,
 	flagVALUELOWERNIBBLE,
 	flagCLEARBITS, // Used to clear bits that we know we don't know so that remaining bits can be examined as values
+	flagVALUEHIGHBYTES,
 };
 
 // Types of guids for InterpretFlag named property lookup
@@ -72,6 +73,7 @@ enum __GuidType
 #define FLAG_ENTRY3RDBYTE(_fName,_fValue,_fValType) {PROP_ID(_fName),(_fValue),flagVALUE3RDBYTE,L#_fValType L": " L#_fValue}, // STRING_OK
 #define FLAG_ENTRY4THBYTE(_fName,_fValue,_fValType) {PROP_ID(_fName),(_fValue),flagVALUE4THBYTE,L#_fValType L": " L#_fValue}, // STRING_OK
 #define CLEAR_BITS_ENTRY(_fName,_fValue) {PROP_ID(_fName),(_fValue),flagCLEARBITS,L""},
+#define FLAG_ENTRYHIGHBYTES(_fName,_fValue,_fValType) {PROP_ID(_fName),(_fValue),flagVALUEHIGHBYTES,L#_fValType L": " L#_fValue}, // STRING_OK
 
 #define NAMEDPROP_FLAG_ENTRY(_fName,_fGuid,_fValue,_fType) {PROP_TAG((guid##_fGuid),(_fName)),(_fValue),(_fType),L#_fValue},
 #define NAMEDPROP_FLAG_ENTRY_NAMED(_fName,_fGuid,_fValue,_fValueName,_fType) {PROP_TAG((guid##_fGuid),(_fName)),(_fValue),(_fType),(_fValueName)},
@@ -436,7 +438,6 @@ _Check_return_ ULONG ExtendAddInMenu(HMENU hMenu, ULONG ulAddInContext);
 _Check_return_ LPMENUITEM GetAddinMenuItem(HWND hWnd, UINT uidMsg);
 void InvokeAddInMenu(_In_opt_ LPADDINMENUPARAMS lpParams);
 void MergeAddInArrays();
-void SortAddInArrays();
 _Check_return_ LPNAMEID_ARRAY_ENTRY GetDispIDFromName(_In_z_ LPCWSTR lpszDispIDName);
 
 extern LPNAME_ARRAY_ENTRY PropTagArray;

@@ -9,10 +9,8 @@
 #define PR_USER_SID					PROP_TAG(PT_BINARY, 0x6783)
 
 // http://support.microsoft.com/kb/898835
-#define PR_ROH_FLAGS                PROP_TAG(PT_LONG,0x6623)
 #define PR_ROH_PROXY_SERVER         PROP_TAG(PT_UNICODE,0x6622)
 #define PR_ROH_PROXY_PRINCIPAL_NAME PROP_TAG(PT_UNICODE,0x6625)
-#define PR_ROH_PROXY_AUTH_SCHEME    PROP_TAG(PT_LONG,0x6627)
 #define	PR_RULE_VERSION				PROP_TAG(PT_I2, pidSpecialMin+0x1D)
 
 #define PR_FREEBUSY_NT_SECURITY_DESCRIPTOR (PROP_TAG(PT_BINARY,0x0F00))
@@ -64,10 +62,6 @@
 #define PR_BODY_HTML_W (PROP_TAG(PT_UNICODE,0x1013))
 #endif
 
-// http://support.microsoft.com/kb/816477
-#ifndef PR_MSG_EDITOR_FORMAT
-#define PR_MSG_EDITOR_FORMAT PROP_TAG( PT_LONG, 0x5909 )
-#endif
 #ifndef PR_INTERNET_MESSAGE_ID
 #define PR_INTERNET_MESSAGE_ID PROP_TAG(PT_TSTRING, 0x1035)
 #endif
@@ -112,15 +106,6 @@
 #endif
 #ifndef PR_ATTACH_CONTENT_BASE_W
 #define PR_ATTACH_CONTENT_BASE_W PROP_TAG(PT_UNICODE, 0x3711)
-#endif
-#ifndef PR_ATTACH_CONTENT_ID
-#define PR_ATTACH_CONTENT_ID PROP_TAG(PT_TSTRING, 0x3712)
-#endif
-#ifndef PR_ATTACH_CONTENT_ID_A
-#define PR_ATTACH_CONTENT_ID_A PROP_TAG(PT_STRING8, 0x3712)
-#endif
-#ifndef PR_ATTACH_CONTENT_ID_W
-#define PR_ATTACH_CONTENT_ID_W PROP_TAG(PT_UNICODE, 0x3712)
 #endif
 #ifndef PR_ATTACH_CONTENT_LOCATION
 #define PR_ATTACH_CONTENT_LOCATION PROP_TAG(PT_TSTRING, 0x3713)
@@ -368,36 +353,6 @@
 // http://msdn2.microsoft.com/en-us/library/bb820966.aspx
 #define	PR_PROFILE_SERVER_FULL_VERSION PROP_TAG( PT_BINARY, pidProfileMin+0x3b)
 
-// http://msdn2.microsoft.com/en-us/library/bb820973.aspx
-// Additional display attributes, to supplement PR_DISPLAY_TYPE.
-#define PR_DISPLAY_TYPE_EX PROP_TAG( PT_LONG, 0x3905)
-
-// PR_DISPLAY_TYPE_EX has the following format
-//
-// 33222222222211111111110000000000
-// 10987654321098765432109876543210
-//
-// FAxxxxxxxxxxxxxxRRRRRRRRLLLLLLLL
-//
-// F = 1 if remote is valid, 0 if it is not
-// A = 1 if the user is ACL-able, 0 if the user is not
-// x - unused at this time, do not interpret as this may be used in the future
-// R = display type from
-
-#define DTE_FLAG_REMOTE_VALID 0x80000000
-#define DTE_FLAG_ACL_CAPABLE  0x40000000
-#define DTE_MASK_REMOTE       0x0000ff00
-#define DTE_MASK_LOCAL        0x000000ff
-
-#define DTE_IS_REMOTE_VALID(v) (!!((v) & DTE_FLAG_REMOTE_VALID))
-#define DTE_IS_ACL_CAPABLE(v)  (!!((v) & DTE_FLAG_ACL_CAPABLE))
-#define DTE_REMOTE(v)          (((v) & DTE_MASK_REMOTE) >> 8)
-#define DTE_LOCAL(v)           ((v) & DTE_MASK_LOCAL)
-
-#define DT_ROOM         ((ULONG) 0x00000007)
-#define DT_EQUIPMENT    ((ULONG) 0x00000008)
-#define DT_SEC_DISTLIST ((ULONG) 0x00000009)
-
 // [MS-NSPI].pdf
 #define DT_CONTAINER    ((ULONG) 0x00000100)
 #define DT_TEMPLATE     ((ULONG) 0x00000101)
@@ -458,7 +413,7 @@ enum Gender {
 // static-only (SEARCH_STATIC) or dynamic-only (default).
 #define SEARCH_MAYBE_STATIC		((ULONG) 0x00020000)
 
-// CI TWIR Search State for a query request. 
+// CI TWIR Search State for a query request.
 // Currently, we have 4 different search states for CI/TWIR, they are:
 // CI Totally, CI with TWIR residual, TWIR Mostly, and TWIR Totally
 #define SEARCH_COMPLETE         ((ULONG) 0x00001000)

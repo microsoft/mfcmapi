@@ -1348,7 +1348,7 @@ _Check_return_ BOOL MyBinFromHex(_In_z_ LPCTSTR lpsz, _Inout_opt_count_(*lpcb) L
 	ULONG iBinPos = 0;
 	TCHAR szTmp[3] = {0};
 	szTmp[2] = 0;
-	TCHAR szJunk[] = _T("\r\n\t -.\\/'{}`");
+	TCHAR szJunk[] = _T("\r\n\t -.\\/'{}`"); // STRING_OK
 
 	if (!lpcb)
 	{
