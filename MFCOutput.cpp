@@ -7,6 +7,8 @@
 #include "InterpretProp2.h"
 #include "PropTagArray.h"
 #include "DbgView.h"
+#include "SmartView.h"
+#include "ColumnTags.h"
 
 FILE* g_fDebugFile = NULL;
 
@@ -130,6 +132,15 @@ void CloseFile(_In_opt_ FILE* fFile)
 	if (fFile) fclose(fFile);
 } // CloseFile
 
+#ifdef MRMAPI
+void OutputToConsole(_In_z_ LPCTSTR szMsg)
+{
+	_tprintf(szMsg);
+} // OutputToConsole
+#else
+#define OutputToConsole __noop
+#endif
+
 // The root of all debug output - call no debug output functions besides OutputDebugString from here!
 void _Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, BOOL bPrintThreadTime, _In_opt_z_ LPCTSTR szMsg)
 {
@@ -173,6 +184,7 @@ void _Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, BOOL bPrintThreadTime, _In_op
 
 		OutputDebugString(szMsg);
 		OutputToDbgView(szMsg);
+		OutputToConsole(szMsg);
 
 		// print to to our debug output log file
 		if (RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD && g_fDebugFile)
@@ -490,6 +502,8 @@ void _OutputTable(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPITABLE lpMAPIT
 		0,
 		NULL));
 	hRes = S_OK; // don't let failure here fail the whole op
+	_Output(ulDbgLvl,fFile,false,_T("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n"));
+	_Output(ulDbgLvl,fFile,false,_T("<table>\n"));
 
 	for (;;)
 	{
@@ -507,10 +521,12 @@ void _OutputTable(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPITABLE lpMAPIT
 		for (iCurRow = 0; iCurRow<lpRows->cRows; iCurRow++)
 		{
 			hRes = S_OK;
-			Outputf(ulDbgLvl,fFile,true,_T("Row 0x%X of 0x%X\n"),iCurRow+1,lpRows->cRows);
+			Outputf(ulDbgLvl,fFile,false,_T("<row index = \"0x%08X\">\n"),iCurRow);
 			_OutputSRow(ulDbgLvl,fFile,&lpRows->aRow[iCurRow],NULL);
+			_Output(ulDbgLvl,fFile,false,_T("</row>\n"));
 		}
 	}
+	_Output(ulDbgLvl,fFile,false,_T("</table>\n"));
 
 	FreeProws(lpRows);
 	lpRows = NULL;
@@ -708,55 +724,112 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 	CHKPARAM;
 	EARLYABORT;
 
-	CString PropString;
-	CString AltPropString;
+	if (!lpProp) return;
+
 	CString PropType;
 
-	if (!lpProp)
+	Outputf(ulDbgLvl,fFile,false,_T("\t<property tag = \"0x%08X\" type = \"%s\">\n"),lpProp->ulPropTag,(LPCTSTR) TypeToString(lpProp->ulPropTag));
+
+	CString PropString;
+	CString AltPropString;
+	LPTSTR szExactMatches = NULL;
+	LPTSTR szPartialMatches = NULL;
+	LPTSTR szSmartView = NULL;
+	LPTSTR szNamedPropName = NULL;
+	LPTSTR szNamedPropGUID = NULL;
+
+	InterpretProp(
+		lpProp,
+		lpProp->ulPropTag,
+		lpObj,
+		NULL,
+		NULL,
+		false,
+		&szExactMatches, // Built from ulPropTag & bIsAB
+		&szPartialMatches, // Built from ulPropTag & bIsAB
+		&PropType,
+		NULL,
+		&PropString,
+		&AltPropString,
+		&szNamedPropName, // Built from lpProp & lpMAPIProp
+		&szNamedPropGUID, // Built from lpProp & lpMAPIProp
+		NULL);
+
+	InterpretPropSmartView(
+		lpProp,
+		lpObj,
+		NULL,
+		NULL,
+		false,
+		&szSmartView);
+
+	OutputXMLValue(ulDbgLvl,fFile,PropXMLNames[pcPROPEXACTNAMES].uidName,szExactMatches,2);
+	OutputXMLValue(ulDbgLvl,fFile,PropXMLNames[pcPROPPARTIALNAMES].uidName,szPartialMatches,2);
+	OutputXMLValue(ulDbgLvl,fFile,PropXMLNames[pcPROPNAMEDIID].uidName, szNamedPropGUID,2);
+	OutputXMLValue(ulDbgLvl,fFile,PropXMLNames[pcPROPNAMEDNAME].uidName, szNamedPropName,2);
+
+	switch(PROP_TYPE(lpProp->ulPropTag))
 	{
-		_Output(ulDbgLvl,fFile, true,_T("OutputProperty called with NULL lpProp!\n"));
-		return;
+	case PT_STRING8:
+	case PT_UNICODE:
+	case PT_MV_STRING8:
+	case PT_MV_UNICODE:
+	case PT_SRESTRICTION:
+	case PT_ACTIONS:
+		{
+			OutputXMLCDataValue(ulDbgLvl,fFile,PropXMLNames[pcPROPVAL].uidName,(LPCTSTR) PropString,2);
+			OutputXMLValue(ulDbgLvl,fFile,PropXMLNames[pcPROPVALALT].uidName,(LPCTSTR) AltPropString,2);
+			break;
+		}
+	case PT_BINARY:
+	case PT_MV_BINARY:
+		{
+			OutputXMLValue(ulDbgLvl,fFile,PropXMLNames[pcPROPVAL].uidName,(LPCTSTR) PropString,2);
+			OutputXMLCDataValue(ulDbgLvl,fFile,PropXMLNames[pcPROPVALALT].uidName,(LPCTSTR) AltPropString,2);
+			break;
+		}
+	default:
+		{
+			OutputXMLValue(ulDbgLvl,fFile,PropXMLNames[pcPROPVAL].uidName,(LPCTSTR) PropString,2);
+			OutputXMLValue(ulDbgLvl,fFile,PropXMLNames[pcPROPVALALT].uidName,(LPCTSTR) AltPropString,2);
+			break;
+		}
 	}
 
-	_Output(ulDbgLvl,fFile, true, TagToString(lpProp->ulPropTag,lpObj,false,false));
+	if (szSmartView) OutputXMLCDataValue(ulDbgLvl,fFile,PropXMLNames[pcPROPSMARTVIEW].uidName,szSmartView,2);
+	_Output(ulDbgLvl,fFile,false,_T("\t</property>\n"));
 
-	_Output(ulDbgLvl,fFile, false, _T(", \""));
-	if (PROP_TYPE(lpProp->ulPropTag) == PT_BINARY)
-	{
-		PropString = BinToHexString(&lpProp->Value.bin,true);
-		AltPropString = BinToTextString(&lpProp->Value.bin,true);
-	}
-	else
-	{
-		InterpretProp(lpProp,&PropString,&AltPropString);
-	}
-	_Output(ulDbgLvl,fFile, false, (LPCTSTR) PropString);
-	_Output(ulDbgLvl,fFile, false, _T("\", \""));
-	_Output(ulDbgLvl,fFile, false, (LPCTSTR) AltPropString);
-
-	LPTSTR szFlags = NULL;
-	InterpretFlags(lpProp, &szFlags);
-	if (szFlags)
-	{
-		_Output(ulDbgLvl,fFile, false, _T("\", \""));
-		_Output(ulDbgLvl,fFile, false, szFlags);
-	}
-	delete[] szFlags;
-	szFlags = NULL;
-
-	_Output(ulDbgLvl,fFile, false, _T("\"\n"));
+	delete[] szPartialMatches;
+	delete[] szExactMatches;
+	FreeNameIDStrings(szNamedPropName, szNamedPropGUID, NULL);
+	delete[] szSmartView;
 } // _OutputProperty
 
 void _OutputProperties(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cProps, _In_count_(cProps) LPSPropValue lpProps, _In_opt_ LPMAPIPROP lpObj)
 {
 	CHKPARAM;
 	EARLYABORT;
-	ULONG i;
+	ULONG i = 0;
 
 	if (cProps && !lpProps)
 	{
 		_Output(ulDbgLvl, fFile, true, _T("OutputProperties called with NULL lpProps!\n"));
 		return;
+	}
+
+	// sort the list first
+	// insertion sort on lpProps
+	ULONG iUnsorted = 0;
+	ULONG iLoc = 0;
+	for (iUnsorted = 1; iUnsorted < cProps; iUnsorted++)
+	{
+		SPropValue NextItem = lpProps[iUnsorted];
+		for (iLoc = iUnsorted; iLoc > 0; iLoc--)
+		{
+			if (lpProps[iLoc-1].ulPropTag < NextItem.ulPropTag) break;
+			lpProps[iLoc] = lpProps[iLoc-1];
+		}
+		lpProps[iLoc] = NextItem;
 	}
 
 	for (i = 0;i<cProps;i++)
@@ -965,9 +1038,11 @@ void _OutputVersion(ULONG ulDbgLvl, _In_opt_ FILE* fFile)
 	}
 } // _OutputVersion
 
-void OutputXMLValueToFile(_In_opt_ FILE* fFile, UINT uidTag, _In_opt_z_ LPCTSTR szValue, int iIndent)
+void OutputXMLValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, _In_opt_z_ LPCTSTR szValue, int iIndent)
 {
-	if (! fFile || !szValue || !uidTag) return;
+	CHKPARAM;
+	EARLYABORT;
+	if (!szValue || !uidTag) return;
 
 	if (!szValue[0]) return;
 
@@ -975,26 +1050,28 @@ void OutputXMLValueToFile(_In_opt_ FILE* fFile, UINT uidTag, _In_opt_z_ LPCTSTR 
 	HRESULT hRes = S_OK;
 	EC_B(szTag.LoadString(uidTag));
 
-	int i;
-	for (i = 0;i<iIndent;i++) OutputToFile(fFile,_T("\t"));
-	OutputToFilef(fFile,_T("<%s>"),(LPCTSTR) szTag);
-	OutputToFile(fFile,szValue);
-	OutputToFilef(fFile,_T("</%s>\n"),(LPCTSTR) szTag);
-} // OutputXMLValueToFile
+	int i = 0;
+	for (i = 0;i<iIndent;i++) _Output(ulDbgLvl,fFile,false,_T("\t"));
+	Outputf(ulDbgLvl,fFile,false,_T("<%s>"),(LPCTSTR) szTag);
+	_Output(ulDbgLvl,fFile,false,szValue);
+	Outputf(ulDbgLvl,fFile,false,_T("</%s>\n"),(LPCTSTR) szTag);
+} // OutputXMLValue
 
-void OutputCDataOpen(_In_opt_ FILE* fFile)
+void OutputCDataOpen(ULONG ulDbgLvl, _In_opt_ FILE* fFile)
 {
-	OutputToFile(fFile,_T("<![CDATA["));
+	_Output(ulDbgLvl,fFile,false,_T("<![CDATA["));
 } // OutputCDataOpen
 
-void OutputCDataClose(_In_opt_ FILE* fFile)
+void OutputCDataClose(ULONG ulDbgLvl, _In_opt_ FILE* fFile)
 {
-	OutputToFile(fFile,_T("]]>\n"));
+	_Output(ulDbgLvl,fFile,false,_T("]]>\n"));
 } // OutputCDataClose
 
-void OutputXMLCDataValueToFile(_In_opt_ FILE* fFile, UINT uidTag, _In_z_ LPCTSTR szValue, int iIndent)
+void OutputXMLCDataValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, _In_z_ LPCTSTR szValue, int iIndent)
 {
-	if (! fFile || !szValue || !uidTag) return;
+	CHKPARAM;
+	EARLYABORT;
+	if (!szValue || !uidTag) return;
 
 	if (!szValue[0]) return;
 
@@ -1002,12 +1079,12 @@ void OutputXMLCDataValueToFile(_In_opt_ FILE* fFile, UINT uidTag, _In_z_ LPCTSTR
 	HRESULT hRes = S_OK;
 	EC_B(szTag.LoadString(uidTag));
 
-	int i;
+	int i = 0;
+	for (i = 0;i<iIndent;i++) _Output(ulDbgLvl,fFile,false,_T("\t"));
+	Outputf(ulDbgLvl,fFile,false,_T("<%s>"),(LPCTSTR) szTag);
+	OutputCDataOpen(ulDbgLvl,fFile);
+	_Output(ulDbgLvl,fFile,false,szValue);
+	OutputCDataClose(ulDbgLvl,fFile);
 	for (i = 0;i<iIndent;i++) OutputToFile(fFile,_T("\t"));
-	OutputToFilef(fFile,_T("<%s>"),(LPCTSTR) szTag);
-	OutputCDataOpen(fFile);
-	OutputToFile(fFile,szValue);
-	OutputCDataClose(fFile);
-	for (i = 0;i<iIndent;i++) OutputToFile(fFile,_T("\t"));
-	OutputToFilef(fFile,_T("</%s>\n"),(LPCTSTR) szTag);
-} // OutputXMLCDataValueToFile
+	Outputf(ulDbgLvl,fFile,false,_T("</%s>\n"),(LPCTSTR) szTag);
+} // OutputXMLCDataValue

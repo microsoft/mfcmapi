@@ -73,7 +73,7 @@ CEditor(pParentWnd,uidTitle,uidPrompt,0,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL)
 	}
 
 	if (bEditPropAsRTF) m_ulEditorType = EDITOR_RTF;
-	else 
+	else
 	{
 		switch (PROP_TYPE(m_ulPropTag))
 		{

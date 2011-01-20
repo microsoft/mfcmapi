@@ -1005,46 +1005,51 @@ void InterpretMVProp(_In_ LPSPropValue lpProp, ULONG ulMVRow, _In_ CString *Prop
 	SPropValue sProp = {0};
 	sProp.ulPropTag = CHANGE_PROP_TYPE(lpProp->ulPropTag,PROP_TYPE(lpProp->ulPropTag) & ~MV_FLAG);
 
-	switch(PROP_TYPE(lpProp->ulPropTag))
+	// Only attempt to dereference our array if it's non-NULL
+	if (PROP_TYPE(lpProp->ulPropTag) & MV_FLAG &&
+		lpProp->Value.MVi.lpi)
 	{
-	case(PT_MV_I2):
-		sProp.Value.i = lpProp->Value.MVi.lpi[ulMVRow];
-		break;
-	case(PT_MV_LONG):
-		sProp.Value.l = lpProp->Value.MVl.lpl[ulMVRow];
-		break;
-	case(PT_MV_DOUBLE):
-		sProp.Value.dbl = lpProp->Value.MVdbl.lpdbl[ulMVRow];
-		break;
-	case(PT_MV_CURRENCY):
-		sProp.Value.cur = lpProp->Value.MVcur.lpcur[ulMVRow];
-		break;
-	case(PT_MV_APPTIME):
-		sProp.Value.at = lpProp->Value.MVat.lpat[ulMVRow];
-		break;
-	case(PT_MV_SYSTIME):
-		sProp.Value.ft = lpProp->Value.MVft.lpft[ulMVRow];
-		break;
-	case(PT_MV_I8):
-		sProp.Value.li = lpProp->Value.MVli.lpli[ulMVRow];
-		break;
-	case(PT_MV_R4):
-		sProp.Value.flt = lpProp->Value.MVflt.lpflt[ulMVRow];
-		break;
-	case(PT_MV_STRING8):
-		sProp.Value.lpszA = lpProp->Value.MVszA.lppszA[ulMVRow];
-		break;
-	case(PT_MV_UNICODE):
-		sProp.Value.lpszW = lpProp->Value.MVszW.lppszW[ulMVRow];
-		break;
-	case(PT_MV_BINARY):
-		sProp.Value.bin = lpProp->Value.MVbin.lpbin[ulMVRow];
-		break;
-	case(PT_MV_CLSID):
-		sProp.Value.lpguid = &lpProp->Value.MVguid.lpguid[ulMVRow];
-		break;
-	default:
-		break;
+		switch(PROP_TYPE(lpProp->ulPropTag))
+		{
+		case(PT_MV_I2):
+			sProp.Value.i = lpProp->Value.MVi.lpi[ulMVRow];
+			break;
+		case(PT_MV_LONG):
+			sProp.Value.l = lpProp->Value.MVl.lpl[ulMVRow];
+			break;
+		case(PT_MV_DOUBLE):
+			sProp.Value.dbl = lpProp->Value.MVdbl.lpdbl[ulMVRow];
+			break;
+		case(PT_MV_CURRENCY):
+			sProp.Value.cur = lpProp->Value.MVcur.lpcur[ulMVRow];
+			break;
+		case(PT_MV_APPTIME):
+			sProp.Value.at = lpProp->Value.MVat.lpat[ulMVRow];
+			break;
+		case(PT_MV_SYSTIME):
+			sProp.Value.ft = lpProp->Value.MVft.lpft[ulMVRow];
+			break;
+		case(PT_MV_I8):
+			sProp.Value.li = lpProp->Value.MVli.lpli[ulMVRow];
+			break;
+		case(PT_MV_R4):
+			sProp.Value.flt = lpProp->Value.MVflt.lpflt[ulMVRow];
+			break;
+		case(PT_MV_STRING8):
+			sProp.Value.lpszA = lpProp->Value.MVszA.lppszA[ulMVRow];
+			break;
+		case(PT_MV_UNICODE):
+			sProp.Value.lpszW = lpProp->Value.MVszW.lppszW[ulMVRow];
+			break;
+		case(PT_MV_BINARY):
+			sProp.Value.bin = lpProp->Value.MVbin.lpbin[ulMVRow];
+			break;
+		case(PT_MV_CLSID):
+			sProp.Value.lpguid = &lpProp->Value.MVguid.lpguid[ulMVRow];
+			break;
+		default:
+			break;
+		}
 	}
 	InterpretProp(&sProp,PropString, AltPropString);
 } // InterpretMVProp
@@ -1076,25 +1081,29 @@ void InterpretProp(_In_ LPSPropValue lpProp, _In_opt_ CString *PropString, _In_o
 		// All the MV structures are basically the same, so we can cheat when we pull the count
 		ULONG cValues = lpProp->Value.MVi.cValues;
 		tmpPropString.Format(_T("%d: "),cValues); // STRING_OK
-		for (iMVCount = 0; iMVCount < cValues; iMVCount++)
+		// Don't bother with the loop if we don't have data
+		if (lpProp->Value.MVi.lpi)
 		{
-			if (iMVCount != 0)
+			for (iMVCount = 0; iMVCount < cValues; iMVCount++)
 			{
-				tmpPropString += _T("; "); // STRING_OK
-				switch(PROP_TYPE(lpProp->ulPropTag))
+				if (iMVCount != 0)
 				{
-				case(PT_MV_LONG):
-				case(PT_MV_BINARY):
-				case(PT_MV_SYSTIME):
-				case(PT_MV_STRING8):
-				case(PT_MV_UNICODE):
-					tmpAltPropString += _T("; "); // STRING_OK
-					break;
+					tmpPropString += _T("; "); // STRING_OK
+					switch(PROP_TYPE(lpProp->ulPropTag))
+					{
+					case(PT_MV_LONG):
+					case(PT_MV_BINARY):
+					case(PT_MV_SYSTIME):
+					case(PT_MV_STRING8):
+					case(PT_MV_UNICODE):
+						tmpAltPropString += _T("; "); // STRING_OK
+						break;
+					}
 				}
+				InterpretMVProp(lpProp, iMVCount, &szTmp, &szAltTmp);
+				tmpPropString += szTmp;
+				tmpAltPropString += szAltTmp;
 			}
-			InterpretMVProp(lpProp, iMVCount, &szTmp, &szAltTmp);
-			tmpPropString += szTmp;
-			tmpAltPropString += szAltTmp;
 		}
 	}
 	else
@@ -1123,7 +1132,7 @@ void InterpretProp(_In_ LPSPropValue lpProp, _In_opt_ CString *PropString, _In_o
 			tmpPropString.Format(_T("%f"),lpProp->Value.at); // STRING_OK
 			break;
 		case(PT_ERROR):
-			tmpPropString.Format(_T("Err:0x%08X=%s"),lpProp->Value.err,ErrorNameFromErrorCode(lpProp->Value.err)); // STRING_OK
+			tmpPropString.Format(_T("Err:0x%08X=%ws"),lpProp->Value.err,ErrorNameFromErrorCode(lpProp->Value.err)); // STRING_OK
 			break;
 		case(PT_BOOLEAN):
 			if (lpProp->Value.b)

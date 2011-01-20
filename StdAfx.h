@@ -36,6 +36,7 @@ typedef ULONG (STDAPICALLTYPE FREEBUFFER)(
 #include <IMessage.h>
 #include <edkguid.h>
 #include <tnef.h>
+#include <mapiaux.h>
 
 #include <aclui.h>
 #include <uxtheme.h>
@@ -155,29 +156,11 @@ struct SortListData
 #define DIMMSOK(iNumSelected) ((iNumSelected>=1)?MF_ENABLED:MF_GRAYED)
 #define DIMMSNOK(iNumSelected) ((iNumSelected==1)?MF_ENABLED:MF_GRAYED)
 
-// Flags for cached/offline mode - See http://msdn2.microsoft.com/en-us/library/bb820947.aspx
-// Used in OpenMsgStore
-#define MDB_ONLINE ((ULONG) 0x00000100)
-
-// Used in OpenEntry
-#define MAPI_NO_CACHE ((ULONG) 0x00000200)
-
-/* Flag to keep calls from redirecting in cached mode */
-#define MAPI_CACHE_ONLY         ((ULONG) 0x00004000)
-
-#define MAPI_BG_SESSION         0x00200000 /* Used for async profile access */
-#define SPAMFILTER_ONSAVE       ((ULONG) 0x00000080)
-
 // Various flags gleaned from product documentation and KB articles
 // http://msdn2.microsoft.com/en-us/library/ms526744.aspx
 #define STORE_HTML_OK			((ULONG) 0x00010000)
 #define STORE_ANSI_OK			((ULONG) 0x00020000)
 #define STORE_LOCALSTORE		((ULONG) 0x00080000)
-
-// http://msdn2.microsoft.com/en-us/library/bb820947.aspx
-#define STORE_ITEMPROC			((ULONG) 0x00200000)
-#define ITEMPROC_FORCE			((ULONG) 0x00000800)
-#define NON_EMS_XP_SAVE			((ULONG) 0x00001000)
 
 // http://msdn2.microsoft.com/en-us/library/ms531462.aspx
 #define ATT_INVISIBLE_IN_HTML	((ULONG) 0x00000001)
@@ -201,29 +184,6 @@ struct SortListData
 #define MAC_ATTACH_ENCODING_UUENCODE	((ULONG) 0x00200000)
 #define MAC_ATTACH_ENCODING_APPLESINGLE	((ULONG) 0x00400000)
 #define MAC_ATTACH_ENCODING_APPLEDOUBLE	((ULONG) 0x00600000)
-
-// Flags used in PR_ROH_FLAGS - http://support.microsoft.com/kb/898835
-// Connect to my Exchange mailbox using HTTP
-#define ROHFLAGS_USE_ROH                0x1
-// Connect using SSL only
-#define ROHFLAGS_SSL_ONLY               0x2
-// Mutually authenticate the session when connecting with SSL
-#define ROHFLAGS_MUTUAL_AUTH            0x4
-// On fast networks, connect using HTTP first, then connect using TCP/IP
-#define ROHFLAGS_HTTP_FIRST_ON_FAST     0x8
-// On slow networks, connect using HTTP first, then connect using TCP/IP
-#define ROHFLAGS_HTTP_FIRST_ON_SLOW     0x20
-
-// Flags used in PR_ROH_PROXY_AUTH_SCHEME
-// Basic Authentication
-#define ROHAUTH_BASIC                   0x1
-// NTLM Authentication
-#define ROHAUTH_NTLM                    0x2
-
-// http://support.microsoft.com/kb/194955
-#define AG_MONTHS  0
-#define AG_WEEKS   1
-#define AG_DAYS    2
 
 // Custom messages - used to ensure actions occur on the right threads.
 
@@ -550,9 +510,6 @@ DECLARE_MAPI_INTERFACE_PTR(IExchangeManageStore5, LPEXCHANGEMANAGESTORE5);
 #define MAXMessageClassArray (ULONG_MAX - offsetof(SMessageClassArray, aMessageClass))/sizeof(LPCSTR)
 #define MAXNewADRLIST (ULONG_MAX - offsetof(ADRLIST, aEntries))/sizeof(ADRENTRY)
 
-// http://support.microsoft.com/kb/884671
-#define STORE_UNICODE_OK		((ULONG) 0x00040000)
-
 const WORD TZRULE_FLAG_RECUR_CURRENT_TZREG  = 0x0001; // see dispidApptTZDefRecur
 const WORD TZRULE_FLAG_EFFECTIVE_TZREG      = 0x0002;
 
@@ -569,20 +526,3 @@ const BYTE	TZ_BIN_VERSION_MINOR	= 0x01;
 
 #define TABLE_SORT_CATEG_MAX ((ULONG) 0x00000004)
 #define TABLE_SORT_CATEG_MIN ((ULONG) 0x00000008)
-
-#define MAPI_IMSGSERVICEADMIN_METHODS2(IPURE)							\
-	MAPIMETHOD(CreateMsgServiceEx)										\
-		(THIS_	LPTSTR						lpszService,				\
-				LPTSTR						lpszDisplayName,			\
-				ULONG_PTR					ulUIParam,					\
-				ULONG						ulFlags,					\
-				LPMAPIUID					lpuidService) IPURE;		\
-
-DECLARE_MAPI_INTERFACE_(IMsgServiceAdmin2, IUnknown)
-{
-	BEGIN_INTERFACE
-	MAPI_IUNKNOWN_METHODS(PURE)
-	MAPI_IMSGSERVICEADMIN_METHODS(PURE)
-	MAPI_IMSGSERVICEADMIN_METHODS2(PURE)
-};
-DECLARE_MAPI_INTERFACE_PTR(IMsgServiceAdmin2, LPSERVICEADMIN2);

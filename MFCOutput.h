@@ -90,8 +90,10 @@ void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify,  
 #define DebugPrintNotifications(ulDbgLvl, cNotify, lpNotifications)		_OutputNotifications((ulDbgLvl),NULL, (cNotify), (lpNotifications))
 #define DebugPrintSRowSet(ulDbgLvl, lpRowSet, lpObj)			_OutputSRowSet((ulDbgLvl), NULL, (lpRowSet), (lpObj))
 
-#define OutputStreamToFile(fFile, lpStream)					_OutputStream(DBGNoDebug, (fFile), (lpStream))
+#define OutputStreamToFile(fFile, lpStream)						_OutputStream(DBGNoDebug, (fFile), (lpStream))
 #define OutputTableToFile(fFile, lpMAPITable)					_OutputTable(DBGNoDebug, (fFile), (lpMAPITable))
+#define OutputSRowToFile(fFile, lpSRow, lpObj)					_OutputSRow(DBGNoDebug,fFile, lpSRow, lpObj)
+#define OutputPropertiesToFile(fFile, cProps, lpProps, lpObj)	_OutputProperties(DBGNoDebug,fFile, cProps, lpProps, lpObj)
 
 // We'll only output this information in debug builds.
 #ifdef _DEBUG
@@ -108,7 +110,10 @@ void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify,  
 #define TRACE_RELEASE(__class,__count)
 #endif
 
-void OutputXMLValueToFile(_In_opt_ FILE* fFile, UINT uidTag, _In_opt_z_ LPCTSTR szValue, int iIndent);
-void OutputCDataOpen(_In_opt_ FILE* fFile);
-void OutputCDataClose(_In_opt_ FILE* fFile);
-void OutputXMLCDataValueToFile(_In_opt_ FILE* fFile, UINT uidTag, _In_z_ LPCTSTR szValue, int iIndent);
+void OutputXMLValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, _In_opt_z_ LPCTSTR szValue, int iIndent);
+void OutputCDataOpen(ULONG ulDbgLvl, _In_opt_ FILE* fFile);
+void OutputCDataClose(ULONG ulDbgLvl, _In_opt_ FILE* fFile);
+void OutputXMLCDataValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, _In_z_ LPCTSTR szValue, int iIndent);
+
+#define OutputXMLValueToFile(fFile, uidTag, szValue, iIndent)		OutputXMLValue(DBGNoDebug, fFile, uidTag, szValue, iIndent)
+#define OutputXMLCDataValueToFile(fFile, uidTag, szValue, iIndent)	OutputXMLCDataValue(DBGNoDebug, fFile, uidTag, szValue, iIndent)

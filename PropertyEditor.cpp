@@ -322,7 +322,7 @@ void CPropertyEditor::InitPropertyControls()
 		if (m_lpsInputValue)
 		{
 			SetHex(0, m_lpsInputValue->Value.err);
-			SetString(1,ErrorNameFromErrorCode(m_lpsInputValue->Value.err));
+			SetStringW(1,ErrorNameFromErrorCode(m_lpsInputValue->Value.err));
 		}
 		break;
 	case(PT_I2):

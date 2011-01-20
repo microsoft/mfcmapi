@@ -5,7 +5,14 @@
 _Check_return_ HRESULT PropTagToPropName(ULONG ulPropTag, BOOL bIsAB, _Deref_opt_out_opt_z_ LPTSTR* lpszExactMatch, _Deref_opt_out_opt_z_ LPTSTR* lpszPartialMatches);
 
 _Check_return_ HRESULT PropNameToPropTag(_In_z_ LPCTSTR lpszPropName, _Out_ ULONG* ulPropTag);
-_Check_return_ ULONG PropTypeNameToPropType(_In_z_ LPCWSTR lpszPropType);
+_Check_return_ ULONG PropTypeNameToPropTypeW(_In_z_ LPCWSTR lpszPropType);
+_Check_return_ ULONG PropTypeNameToPropTypeA(_In_z_ LPCSTR lpszPropType);
+#ifdef UNICODE
+#define PropTypeNameToPropType PropTypeNameToPropTypeW
+#else
+#define PropTypeNameToPropType PropTypeNameToPropTypeA
+#endif
+
 _Check_return_ LPTSTR GUIDToStringAndName(_In_opt_ LPCGUID lpGUID);
 void GUIDNameToGUID(_In_z_ LPCTSTR szGUID, _Deref_out_opt_ LPCGUID* lpGUID);
 

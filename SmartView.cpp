@@ -42,6 +42,7 @@ UINT g_uidParsingTypes[] = {
 	IDS_STTIMEZONE,
 	IDS_STTIMEZONEDEFINITION,
 	IDS_STWEBVIEWPERSISTSTREAM,
+	IDS_STNICKNAMECACHE,
 };
 ULONG g_cuidParsingTypes = _countof(g_uidParsingTypes);
 
@@ -87,6 +88,7 @@ SMART_VIEW_PARSERS_ENTRY g_SmartViewParsers[] = {
 	MAKE_SV_ENTRY(IDS_STRECIPIENTROWSTREAM, RecipientRowStreamStruct)
 	MAKE_SV_ENTRY(IDS_STWEBVIEWPERSISTSTREAM, WebViewPersistStreamStruct)
 	MAKE_SV_ENTRY(IDS_STFOLDERUSERFIELDS, FolderUserFieldStreamStruct)
+	MAKE_SV_ENTRY(IDS_STNICKNAMECACHE, NickNameCacheStruct)
 	// MAKE_SV_ENTRY(IDS_STSID, SIDStruct)
 };
 ULONG g_cSmartViewParsers = _countof(g_SmartViewParsers);
@@ -3346,15 +3348,30 @@ void DeleteSPropVal(ULONG cVal, _In_count_(cVal) LPSPropValue lpsPropVal)
 			delete[] lpsPropVal[i].Value.bin.lpb;
 			break;
 		case PT_MV_STRING8:
-			for (j = 0 ; j < lpsPropVal[i].Value.MVszA.cValues ; j++)
+			if (lpsPropVal[i].Value.MVszA.lppszA)
 			{
-				delete[] lpsPropVal[i].Value.MVszA.lppszA[j];
+				for (j = 0 ; j < lpsPropVal[i].Value.MVszA.cValues ; j++)
+				{
+					delete[] lpsPropVal[i].Value.MVszA.lppszA[j];
+				}
 			}
 			break;
 		case PT_MV_UNICODE:
-			for (j = 0 ; j < lpsPropVal[i].Value.MVszW.cValues ; j++)
+			if (lpsPropVal[i].Value.MVszW.lppszW)
 			{
-				delete[] lpsPropVal[i].Value.MVszW.lppszW[j];
+				for (j = 0 ; j < lpsPropVal[i].Value.MVszW.cValues ; j++)
+				{
+					delete[] lpsPropVal[i].Value.MVszW.lppszW[j];
+				}
+			}
+			break;
+		case PT_MV_BINARY:
+			if (lpsPropVal[i].Value.MVbin.lpbin)
+			{
+				for (j = 0 ; j < lpsPropVal[i].Value.MVbin.cValues ; j++)
+				{
+					delete[] lpsPropVal[i].Value.MVbin.lpbin[j].lpb;
+				}
 			}
 			break;
 		default:
@@ -5479,7 +5496,7 @@ void BinToFolderFieldDefinitionCommon(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBi
 	Parser.GetDWORD(&pffdcFolderFieldDefinitionCommon->dwDisplay);
 	Parser.GetDWORD(&pffdcFolderFieldDefinitionCommon->iFmt);
 	Parser.GetWORD(&pffdcFolderFieldDefinitionCommon->wszFormulaLength);
-	if (pffdcFolderFieldDefinitionCommon->wszFormulaLength && 
+	if (pffdcFolderFieldDefinitionCommon->wszFormulaLength &&
 		pffdcFolderFieldDefinitionCommon->wszFormulaLength < _MaxFolderUserFieldFormula)
 	{
 		Parser.GetStringW(
@@ -5518,7 +5535,7 @@ _Check_return_ FolderUserFieldStreamStruct* BinToFolderUserFieldStreamStruct(ULO
 			Parser.GetDWORD(&fufsFolderUserFieldStream.FolderUserFieldsAnsi.FieldDefinitions[i].FieldType);
 			Parser.GetWORD(&fufsFolderUserFieldStream.FolderUserFieldsAnsi.FieldDefinitions[i].FieldNameLength);
 
-			if (fufsFolderUserFieldStream.FolderUserFieldsAnsi.FieldDefinitions[i].FieldNameLength && 
+			if (fufsFolderUserFieldStream.FolderUserFieldsAnsi.FieldDefinitions[i].FieldNameLength &&
 				fufsFolderUserFieldStream.FolderUserFieldsAnsi.FieldDefinitions[i].FieldNameLength < _MaxFolderUserFieldName)
 			{
 				Parser.GetStringA(
@@ -5550,7 +5567,7 @@ _Check_return_ FolderUserFieldStreamStruct* BinToFolderUserFieldStreamStruct(ULO
 			Parser.GetDWORD(&fufsFolderUserFieldStream.FolderUserFieldsUnicode.FieldDefinitions[i].FieldType);
 			Parser.GetWORD(&fufsFolderUserFieldStream.FolderUserFieldsUnicode.FieldDefinitions[i].FieldNameLength);
 
-			if (fufsFolderUserFieldStream.FolderUserFieldsUnicode.FieldDefinitions[i].FieldNameLength && 
+			if (fufsFolderUserFieldStream.FolderUserFieldsUnicode.FieldDefinitions[i].FieldNameLength &&
 				fufsFolderUserFieldStream.FolderUserFieldsUnicode.FieldDefinitions[i].FieldNameLength < _MaxFolderUserFieldName)
 			{
 				Parser.GetStringW(
@@ -5702,4 +5719,273 @@ _Check_return_ LPTSTR FolderUserFieldStreamStructToString(_In_ FolderUserFieldSt
 
 //////////////////////////////////////////////////////////////////////////
 // End FolderUserFieldStreamStruct
+//////////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////
+// NickNameCacheStruct
+//////////////////////////////////////////////////////////////////////////
+
+// There may be nick name cache MV props with over 1024 rows, but we're not going to try to parse them
+#define _MaxNickNameCacheMVRows 1024
+
+// Caller allocates with new. Clean up with DeleteSPropVal.
+_Check_return_ LPSPropValue NickNameBinToSPropValue(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, DWORD dwPropCount, _Out_ size_t* lpcbBytesRead)
+{
+	if (!lpBin) return NULL;
+	if (lpcbBytesRead) *lpcbBytesRead = NULL;
+	if (!dwPropCount || dwPropCount > _MaxProperties) return NULL;
+	LPSPropValue pspvProperty = new SPropValue[dwPropCount];
+	if (!pspvProperty) return NULL;
+	memset(pspvProperty,0,sizeof(SPropValue)*dwPropCount);
+	CBinaryParser Parser(cbBin,lpBin);
+
+	DWORD i = 0;
+
+	for (i = 0 ; i < dwPropCount ; i++)
+	{
+		WORD PropType = 0;
+		WORD PropID = 0;
+
+		Parser.GetWORD(&PropType);
+		Parser.GetWORD(&PropID);
+
+		pspvProperty[i].ulPropTag = PROP_TAG(PropType,PropID);
+		pspvProperty[i].dwAlignPad = 0;
+
+		LARGE_INTEGER liTemp = {0};
+		DWORD dwTemp = 0;
+		Parser.GetDWORD(&dwTemp); // reserved
+		Parser.GetLARGE_INTEGER(&liTemp); // union
+
+		switch (PropType)
+		{
+		case PT_I2:
+			pspvProperty[i].Value.i = (short int) liTemp.LowPart;
+			break;
+		case PT_LONG:
+			pspvProperty[i].Value.l = liTemp.LowPart;
+			break;
+		case PT_ERROR:
+			pspvProperty[i].Value.err = liTemp.LowPart;
+			break;
+		case PT_R4:
+			pspvProperty[i].Value.flt = (float) liTemp.QuadPart;
+			break;
+		case PT_DOUBLE:
+			pspvProperty[i].Value.dbl = liTemp.LowPart;
+			break;
+		case PT_BOOLEAN:
+			pspvProperty[i].Value.b = liTemp.LowPart?true:false;
+			break;
+		case PT_SYSTIME:
+			pspvProperty[i].Value.ft.dwHighDateTime = liTemp.HighPart;
+			pspvProperty[i].Value.ft.dwLowDateTime = liTemp.LowPart;
+			break;
+		case PT_I8:
+			pspvProperty[i].Value.li = liTemp;
+			break;
+		case PT_STRING8:
+			Parser.GetDWORD(&dwTemp);
+			Parser.GetStringA(dwTemp,&pspvProperty[i].Value.lpszA);
+			break;
+		case PT_UNICODE:
+			Parser.GetDWORD(&dwTemp);
+			Parser.GetStringW(dwTemp/sizeof(WCHAR),&pspvProperty[i].Value.lpszW);
+			break;
+		case PT_CLSID:
+			Parser.GetBYTESNoAlloc(sizeof(GUID),(LPBYTE)pspvProperty[i].Value.lpguid);
+			break;
+		case PT_BINARY:
+			Parser.GetDWORD(&dwTemp);
+			pspvProperty[i].Value.bin.cb = dwTemp;
+			Parser.GetBYTES(pspvProperty[i].Value.bin.cb,&pspvProperty[i].Value.bin.lpb);
+			break;
+		case PT_MV_BINARY:
+			Parser.GetDWORD(&dwTemp);
+			pspvProperty[i].Value.MVbin.cValues = dwTemp;
+			if (pspvProperty[i].Value.MVbin.cValues && pspvProperty[i].Value.MVbin.cValues < _MaxNickNameCacheMVRows)
+			{
+				pspvProperty[i].Value.MVbin.lpbin = new SBinary[dwTemp];
+				if (pspvProperty[i].Value.MVbin.lpbin)
+				{
+					memset(pspvProperty[i].Value.MVbin.lpbin,0,sizeof(SBinary) * dwTemp);
+					DWORD j = 0;
+					for (j = 0 ; j < pspvProperty[i].Value.MVbin.cValues ; j++)
+					{
+						Parser.GetDWORD(&dwTemp);
+						pspvProperty[i].Value.MVbin.lpbin[j].cb = dwTemp;
+						Parser.GetBYTES(pspvProperty[i].Value.MVbin.lpbin[j].cb,&pspvProperty[i].Value.MVbin.lpbin[j].lpb);
+					}
+				}
+			}
+			break;
+		case PT_MV_STRING8:
+			Parser.GetDWORD(&dwTemp);
+			pspvProperty[i].Value.MVszA.cValues = dwTemp;
+			if (pspvProperty[i].Value.MVszA.cValues && pspvProperty[i].Value.MVszA.cValues < _MaxNickNameCacheMVRows)
+			{
+				pspvProperty[i].Value.MVszA.lppszA = new CHAR*[dwTemp];
+				if (pspvProperty[i].Value.MVszA.lppszA)
+				{
+					memset(pspvProperty[i].Value.MVszA.lppszA,0,sizeof(CHAR*) * dwTemp);
+					DWORD j = 0;
+					for (j = 0 ; j < pspvProperty[i].Value.MVszA.cValues ; j++)
+					{
+						Parser.GetStringA(&pspvProperty[i].Value.MVszA.lppszA[j]);
+					}
+				}
+			}
+			break;
+		case PT_MV_UNICODE:
+			Parser.GetDWORD(&dwTemp);
+			pspvProperty[i].Value.MVszW.cValues = dwTemp;
+			if (pspvProperty[i].Value.MVszW.cValues && pspvProperty[i].Value.MVszW.cValues < _MaxNickNameCacheMVRows)
+			{
+				pspvProperty[i].Value.MVszW.lppszW = new WCHAR*[dwTemp];
+				if (pspvProperty[i].Value.MVszW.lppszW)
+				{
+					memset(pspvProperty[i].Value.MVszW.lppszW,0,sizeof(WCHAR*) * dwTemp);
+					DWORD j = 0;
+					for (j = 0 ; j < pspvProperty[i].Value.MVszW.cValues ; j++)
+					{
+						Parser.GetStringW(&pspvProperty[i].Value.MVszW.lppszW[j]);
+					}
+				}
+			}
+			break;
+		default:
+			break;
+		}
+	}
+
+	if (lpcbBytesRead) *lpcbBytesRead = Parser.GetCurrentOffset();
+	return pspvProperty;
+} // NickNameBinToSPropValue
+
+// There may be nick name caches with more than 10000 rows, but we're not going to try to parse them
+#define _MaxNickNameCacheRows 10000
+// There may be nick name cache rows with over 500 props, but we're not going to try to parse them
+#define _MaxNickNameCacheRowProps 500
+
+// Allocates return value with new. Clean up with DeleteNickNameCacheStruct.
+_Check_return_ NickNameCacheStruct* BinToNickNameCacheStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
+{
+	if (!lpBin) return NULL;
+
+	NickNameCacheStruct nncNickNameCache = {0};
+	CBinaryParser Parser(cbBin,lpBin);
+
+	Parser.GetBYTESNoAlloc(sizeof(nncNickNameCache.Metadata1),nncNickNameCache.Metadata1);
+	Parser.GetDWORD(&nncNickNameCache.cRowCount);
+
+	if (nncNickNameCache.cRowCount && nncNickNameCache.cRowCount < _MaxNickNameCacheRows)
+		nncNickNameCache.lpRows = new SRow[nncNickNameCache.cRowCount];
+
+	if (nncNickNameCache.lpRows)
+	{
+		memset(nncNickNameCache.lpRows,0,sizeof(SRow)*nncNickNameCache.cRowCount);
+		ULONG i = 0;
+
+		for (i = 0 ; i < nncNickNameCache.cRowCount ; i++)
+		{
+			Parser.GetDWORD(&nncNickNameCache.lpRows[i].cValues);
+
+			if (nncNickNameCache.lpRows[i].cValues && nncNickNameCache.lpRows[i].cValues < _MaxNickNameCacheRowProps)
+			{
+				size_t cbBytesRead = 0;
+				nncNickNameCache.lpRows[i].lpProps = NickNameBinToSPropValue(
+					(ULONG) Parser.RemainingBytes(),
+					lpBin+Parser.GetCurrentOffset(),
+					nncNickNameCache.lpRows[i].cValues,
+					&cbBytesRead);
+				Parser.Advance(cbBytesRead);
+			}
+		}
+	}
+
+	Parser.GetBYTESNoAlloc(sizeof(nncNickNameCache.Metadata2),nncNickNameCache.Metadata2);
+
+	// Junk data remains
+	if (Parser.RemainingBytes() > 0)
+	{
+		nncNickNameCache.JunkDataSize = Parser.RemainingBytes();
+		Parser.GetBYTES(nncNickNameCache.JunkDataSize,&nncNickNameCache.JunkData);
+	}
+
+	NickNameCacheStruct* pnncNickNameCache = new NickNameCacheStruct;
+	if (pnncNickNameCache)
+	{
+		*pnncNickNameCache = nncNickNameCache;
+	}
+
+	return pnncNickNameCache;
+} // BinToNickNameCacheStruct
+
+void DeleteNickNameCacheStruct(_In_ NickNameCacheStruct* pnncNickNameCache)
+{
+	if (!pnncNickNameCache) return;
+	if (pnncNickNameCache->cRowCount && pnncNickNameCache->lpRows)
+	{
+		ULONG i = 0;
+
+		for (i = 0 ; i < pnncNickNameCache->cRowCount ; i++)
+		{
+			DeleteSPropVal(pnncNickNameCache->lpRows[i].cValues,pnncNickNameCache->lpRows[i].lpProps);
+		}
+		delete[] pnncNickNameCache->lpRows;
+	}
+
+	delete[] pnncNickNameCache->JunkData;
+	delete pnncNickNameCache;
+} // DeleteNickNameCacheStruct
+
+// result allocated with new, clean up with delete[]
+_Check_return_ LPTSTR NickNameCacheStructToString(_In_ NickNameCacheStruct* pnncNickNameCache)
+{
+	if (!pnncNickNameCache) return NULL;
+
+	CString szNickNameCache;
+	CString szTmp;
+
+	szNickNameCache.FormatMessage(IDS_NICKNAMEHEADER);
+	SBinary sBinMetadata = {0};
+	sBinMetadata.cb = sizeof(pnncNickNameCache->Metadata1);
+	sBinMetadata.lpb = pnncNickNameCache->Metadata1;
+	szNickNameCache += BinToHexString(&sBinMetadata,true);
+
+	szTmp.FormatMessage(IDS_NICKNAMEROWCOUNT,pnncNickNameCache->cRowCount);
+	szNickNameCache += szTmp;
+
+	if (pnncNickNameCache->cRowCount && pnncNickNameCache->lpRows)
+	{
+		ULONG i = 0;
+		for (i = 0 ; i < pnncNickNameCache->cRowCount ; i++)
+		{
+			szTmp.FormatMessage(IDS_NICKNAMEROWS,
+				i,
+				pnncNickNameCache->lpRows[i].cValues);
+			szNickNameCache += szTmp;
+
+			PropertyStruct psPropStruct = {0};
+			psPropStruct.PropCount = pnncNickNameCache->lpRows[i].cValues;
+			psPropStruct.Prop = pnncNickNameCache->lpRows[i].lpProps;
+
+			LPTSTR szProps = PropertyStructToString(&psPropStruct);
+			szNickNameCache += szProps;
+			delete[] szProps;
+		}
+	}
+	szTmp.FormatMessage(IDS_NICKNAMEFOOTER);
+	szNickNameCache += szTmp;
+	sBinMetadata.cb = sizeof(pnncNickNameCache->Metadata2);
+	sBinMetadata.lpb = pnncNickNameCache->Metadata2;
+	szNickNameCache += BinToHexString(&sBinMetadata,true);
+
+	szNickNameCache += JunkDataToString(pnncNickNameCache->JunkDataSize,pnncNickNameCache->JunkData);
+
+	return CStringToString(szNickNameCache);
+} // NickNameCacheStructToString
+
+//////////////////////////////////////////////////////////////////////////
+// End NickNameCacheStruct
 //////////////////////////////////////////////////////////////////////////

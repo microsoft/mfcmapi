@@ -57,7 +57,6 @@ void SetDefaults()
 				_countof(RegKeys[i].szCurSTRING),
 				RegKeys[i].szDefSTRING));
 		}
-
 	}
 } // SetDefaults
 
@@ -255,7 +254,6 @@ void ReadFromRegistry()
 						RegKeys[i].szDefSTRING));
 				}
 			}
-
 		}
 
 		EC_W32(RegCloseKey(hRootKey));
@@ -333,13 +331,25 @@ void CommitStringIfNeeded(_In_ HKEY hKey, _In_z_ LPCTSTR szValueName, _In_z_ LPC
 _Check_return_ HKEY CreateRootKey()
 {
 	HRESULT hRes = S_OK;
+	HKEY hkSub = NULL;
+
+	// Try to open the root key before we do the work to create it
+	WC_W32(RegOpenKeyEx(
+		HKEY_CURRENT_USER,
+		RKEY_ROOT,
+		NULL,
+		KEY_READ | KEY_WRITE,
+		&hkSub));
+	if (SUCCEEDED(hRes) && hkSub) return hkSub;
+
+	hRes = S_OK;
+
 	PSID pEveryoneSID = NULL;
 	PACL pACL = NULL;
 	PSECURITY_DESCRIPTOR pSD = NULL;
 	EXPLICIT_ACCESS ea[2];
 	SID_IDENTIFIER_AUTHORITY SIDAuthWorld = SECURITY_WORLD_SID_AUTHORITY;
 	SECURITY_ATTRIBUTES sa = {0};
-	HKEY hkSub = NULL;
 
 	// Create a well-known SID for the Everyone group.
 	EC_B(AllocateAndInitializeSid(
@@ -431,7 +441,6 @@ void WriteToRegistry()
 				RegKeys[i].szCurSTRING,
 				RegKeys[i].szDefSTRING);
 		}
-
 	}
 
 	if (hRootKey) EC_W32(RegCloseKey(hRootKey));

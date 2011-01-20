@@ -149,7 +149,7 @@ void CRecipientsDlg::OnDeleteSelectedItem()
 				EC_H(m_lpMessage->ModifyRecipients(
 					MODRECIP_REMOVE,
 					lpAdrList));
-		
+
 				OnRefreshView();
 			}
 			FreePadrlist(lpAdrList);

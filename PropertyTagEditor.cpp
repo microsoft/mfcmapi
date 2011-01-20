@@ -256,27 +256,8 @@ _Check_return_ ULONG CPropertyTagEditor::GetSelectedPropType()
 	{
 		szType = GetDropStringUseControl(PROPTAG_TYPE);
 	}
-	LPTSTR szEnd = NULL;
-	ULONG ulType = _tcstoul((LPCTSTR) szType,&szEnd,16);
 
-	if (*szEnd != NULL) // If we didn't consume the whole string, try a lookup
-	{
-#ifdef UNICODE
-		LPCWSTR szPropType = szType;
-#else
-		HRESULT hRes = S_OK;
-		LPWSTR szPropType = NULL;
-		EC_H(AnsiToUnicode(szType,&szPropType));
-		if (SUCCEEDED(hRes))
-		{
-#endif
-			ulType = PropTypeNameToPropType(szPropType);
-
-#ifndef UNICODE
-		}
-		delete[] szPropType;
-#endif
-	}
+	ULONG ulType = PropTypeNameToPropType(szType);
 
 	return ulType;
 } // CPropertyTagEditor::GetSelectedPropType

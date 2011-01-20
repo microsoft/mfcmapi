@@ -43,9 +43,6 @@ DEFINE_GUID(GUID_Dilkie,
 			0x53BC2EC0,
 			0xD953, 0x11CD,	0x97, 0x52, 0x00, 0xAA, 0x00, 0x4A, 0xE4, 0x0E);
 
-// http://msdn2.microsoft.com/en-us/library/bb820947.aspx
-DEFINE_OLEGUID(IID_IMessageRaw, 0x0002038A, 0, 0);
-
 // http://msdn2.microsoft.com/en-us/library/bb820937.aspx
 #ifndef DEFINE_PRXGUID
 #define DEFINE_PRXGUID(_name, _l)								\
@@ -119,9 +116,16 @@ DEFINE_GUID(WAB_GUID, 0xD3AD91C0, 0x9D51, 0x11CF, 0xA4, 0xA9, 0x00, 0xAA, 0x00, 
 // {00020D0A-0000-0000-C000-000000000046}
 DEFINE_OLEGUID(IID_CAPONE_PROF, 0x00020d0a, 0, 0);
 
-// {00020387-0000-0000-C000-000000000046}
-#if !defined(INITGUID) || defined(USES_IID_IMsgServiceAdmin2)
-DEFINE_OLEGUID(IID_IMsgServiceAdmin2,0x00020387, 0, 0);
-#endif
+// IMAPISync
+DEFINE_GUID(IID_IMAPISync, 0x5024a385, 0x2d44, 0x486a,  0x81, 0xa8, 0x8f, 0xe, 0xcb, 0x60, 0x71, 0xdd);
+
+// IMAPISyncProgressCallback
+DEFINE_GUID(IID_IMAPISyncProgressCallback, 0x5024a386, 0x2d44, 0x486a,  0x81, 0xa8, 0x8f, 0xe, 0xcb, 0x60, 0x71, 0xdd);
+
+// IMAPISecureMessage
+DEFINE_GUID(IID_IMAPISecureMessage, 0x253cc320, 0xeab6, 0x11d0, 0x82, 0x22, 0, 0x60, 0x97, 0x93, 0x87, 0xea);
+
+// IMAPIGetSession
+DEFINE_GUID(IID_IMAPIGetSession, 0x614ab435, 0x491d, 0x4f5b, 0xa8, 0xb4, 0x60, 0xeb, 0x3, 0x10, 0x30, 0xc6);
 
 #endif // MFCMAPIGUID_INCLUDED

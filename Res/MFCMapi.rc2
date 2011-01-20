@@ -773,6 +773,7 @@ IDS_STWEBVIEWPERSISTSTREAM       "Web View Persistence Object Stream"
 IDS_STRECIPIENTROWSTREAM         "Recipient Row Stream"
 IDS_STFOLDERUSERFIELDS           "Folder User Fields Stream"
 IDS_STSID                        "SID"
+IDS_STNICKNAMECACHE              "Nickname Cache"
 
 // AbDlg.cpp
 IDS_FLAGS "Flags"
@@ -1167,8 +1168,8 @@ IDS_OK "Ok"
 IDS_CANCEL "Cancel"
 
 // Error messages
-IDS_ERRFORMATSTRING    "Error: %1\r\nCode: %2 == 0x%3!08X!\r\nFunction %4!hs!\r\nFile %5!hs!\r\nLine %6!d!"
-IDS_WARNFORMATSTRING "Warning: %1\r\nCode: %2 == 0x%3!08X!\r\nFunction %4!hs!\r\nFile %5!hs!\r\nLine %6!d!"
+IDS_ERRFORMATSTRING    "Error: %1\r\nCode: %2!ws! == 0x%3!08X!\r\nFunction %4!hs!\r\nFile %5!hs!\r\nLine %6!d!"
+IDS_WARNFORMATSTRING "Warning: %1\r\nCode: %2!ws! == 0x%3!08X!\r\nFunction %4!hs!\r\nFile %5!hs!\r\nLine %6!d!"
 IDS_ATTNOTEMBEDDEDMSG "Attachment is not an embedded message!"
 IDS_USERCANCELLED "User cancelled!"
 IDS_GETCONTENTSNOACCESS "We don't have access permissions to this container!"
@@ -1253,7 +1254,7 @@ IDS_FOLDERNAMEVALUE "New Folder"
 IDS_FOLDERCOMMENTVALUE "Folder Created with %1"
 IDS_OBJECTVALUE "Object"
 
-IDS_PREVIOUSCALL "Previous call returned %1 == 0x%2!08X!"
+IDS_PREVIOUSCALL "Previous call returned %1!ws! == 0x%2!08X!"
 
 IDS_TESTSUBJECT "%1: %2!d!"
 IDS_ROOTCONTAINER "Root Container"
@@ -1272,10 +1273,10 @@ IDS_NAMEPROPGUIDMULTILINE "\r\nNamed Prop Guid: %6"
 IDS_DASLPROPTAG "\r\nDASL: http://schemas.microsoft.com/mapi/proptag/0x%1!08X!"
 IDS_DASLNAMED "\r\nDASL: http://schemas.microsoft.com/mapi/%7"
 
-IDS_PROBLEMARRAY "Index: 0x%1!08X!, ulPropTag: %2, scode: 0x%3!08X! = %4\r\n"
+IDS_PROBLEMARRAY "Index: 0x%1!08X!, ulPropTag: %2, scode: 0x%3!08X! = %4!ws!\r\n"
 IDS_MAPIERRUNICODE "ulVersion = 0x%1!X!\r\nlpszError = %2!ws!\r\nlpszComponent = %3!ws!\r\nulLowLevelError = 0x%4!X! = %5!ws!\r\nulContext = 0x%6!X!"
-IDS_MAPIERRANSI    "ulVersion = 0x%1!X!\r\nlpszError = %2!hs!\r\nlpszComponent = %3!hs!\r\nulLowLevelError = 0x%4!X! = %5!hs!\r\nulContext = 0x%6!X!"
-IDS_TNEFPROBARRAY "Component: 0x%1!08X!\r\nAttribute: 0x%2!08X!\r\n%3\r\nError: 0x%4!08X! = %5\r\n"
+IDS_MAPIERRANSI    "ulVersion = 0x%1!X!\r\nlpszError = %2!hs!\r\nlpszComponent = %3!hs!\r\nulLowLevelError = 0x%4!X! = %5!ws!\r\nulContext = 0x%6!X!"
+IDS_TNEFPROBARRAY "Component: 0x%1!08X!\r\nAttribute: 0x%2!08X!\r\n%3\r\nError: 0x%4!08X! = %5!ws!\r\n"
 IDS_NULLRES "lpRes was NULL\r\n"
 IDS_RESTYPE "%1lpRes->rt = 0x%2!X! = %3\r\n"
 
@@ -1539,6 +1540,12 @@ dwDisplay = 0x%11!08X!\r\n\
 iFmt = 0x%12!08X!\r\n\
 wszFormulaLength = 0x%13!04X! = %13!d!\r\n\
 wszFormula = %14!ws!"
+IDS_NICKNAMEHEADER "Nickname Cache\r\n\
+Metadata1 = "
+IDS_NICKNAMEROWCOUNT "\r\nRow Count = %1!d!"
+IDS_NICKNAMEROWS "\r\nRow %1!d!\r\n\
+cValues = 0x%2!08X! = %2!d!\r\n"
+IDS_NICKNAMEFOOTER "\r\nMetadata 2 = "
 
 // For InsertColumn
 IDS_ENTRY "Entry"
@@ -2071,7 +2078,7 @@ IDS_EDDOFASTSHUTDOWNFAILED "DoFastShutdown failed."
 IDS_EDDOFASTSHUTDOWNSUCCEEDED "DoFastShutdown succeeded. Most MAPI operations should now fail.\r\n\
 Please close MFCMAPI now."
 #ifdef _WIN64
-IDS_EDMAPIINITIALIZEFAILED "MAPIInitialize failed with error 0x%08X == %s.\r\n\
+IDS_EDMAPIINITIALIZEFAILED "MAPIInitialize failed with error 0x%08X == %ws.\r\n\
 \r\n\
 Here are some known causes for this.\r\n\
 1 - The 64 bit version of Outlook 2010 is not installed. The 64 bit version of MFCMAPI only works with the 64 bit version of Outlook 2010.\r\n\
@@ -2079,7 +2086,7 @@ Here are some known causes for this.\r\n\
 2 - Windows Mail or Outlook Express (which do not implement Extended MAPI) is registered as the Default Mail Client.\r\n\
 \tSee http://msdn.microsoft.com/en-gb/library/dd162409.aspx for information on setting the Default Mail Client."
 #else
-IDS_EDMAPIINITIALIZEFAILED "MAPIInitialize failed with error 0x%08X == %s.\r\n\
+IDS_EDMAPIINITIALIZEFAILED "MAPIInitialize failed with error 0x%08X == %ws.\r\n\
 \r\n\
 Here are some known causes for this.\r\n\
 1 - No version of Extended MAPI is installed. Either Outlook or MAPICDO must be installed.\r\n\

@@ -68,7 +68,10 @@ void SetDefaults();
 void WriteToRegistry();
 void ReadFromRegistry();
 
+_Check_return_ HKEY CreateRootKey();
+
 void ReadDWORDFromRegistry(_In_ HKEY hKey, _In_z_ LPCTSTR szValue, _Out_ DWORD* lpdwVal);
+void WriteStringToRegistry(_In_ HKEY hKey, _In_z_ LPCTSTR szValueName, _In_z_ LPCTSTR szValue);
 
 _Check_return_ HRESULT HrGetRegistryValueW(
 	_In_ HKEY hKey, // the key.

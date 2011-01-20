@@ -30,9 +30,11 @@
 #define USES_IID_IMAPIClientShutdown
 #define USES_IID_IMAPIProviderShutdown
 #define USES_IID_IMsgServiceAdmin2
+#define USES_IID_IMessageRaw
 
 #include <initguid.h>
 #include <MAPIguid.h>
+#include <mapiaux.h>
 
 #ifdef EDKGUID_INCLUDED
 #undef EDKGUID_INCLUDED
