@@ -50,9 +50,10 @@ _Check_return_ HRESULT AddOneOffAddress(
 										_In_z_ LPCTSTR szEmailAddress,
 										ULONG ulRecipientType)
 {
-	HRESULT			hRes	= S_OK;
-	LPADRLIST		lpAdrList = NULL;  // ModifyRecips takes LPADRLIST
-	LPADRBOOK		lpAddrBook = NULL;
+	HRESULT hRes = S_OK;
+	LPADRLIST lpAdrList = NULL; // ModifyRecips takes LPADRLIST
+	LPADRBOOK lpAddrBook = NULL;
+	LPENTRYID lpEID = NULL;
 
 	enum {NAME,
 		ADDR,
@@ -78,14 +79,14 @@ _Check_return_ HRESULT AddOneOffAddress(
 	if (SUCCEEDED(hRes) && lpAdrList)
 	{
 		lpAdrList->cEntries = 1;	// How many recipients.
-		lpAdrList->aEntries[0].cValues = NUM_RECIP_PROPS;  // How many properties per recipient
+		lpAdrList->aEntries[0].cValues = NUM_RECIP_PROPS; // How many properties per recipient
 
 		// Set the SPropValue members == the desired values.
 		lpAdrList->aEntries[0].rgPropVals[NAME].ulPropTag = PR_DISPLAY_NAME;
-		lpAdrList->aEntries[0].rgPropVals[NAME].Value.LPSZ =  (LPTSTR) szDisplayName;
+		lpAdrList->aEntries[0].rgPropVals[NAME].Value.LPSZ = (LPTSTR) szDisplayName;
 
 		lpAdrList->aEntries[0].rgPropVals[ADDR].ulPropTag = PR_ADDRTYPE;
-		lpAdrList->aEntries[0].rgPropVals[ADDR].Value.LPSZ =  (LPTSTR) szAddrType;
+		lpAdrList->aEntries[0].rgPropVals[ADDR].Value.LPSZ = (LPTSTR) szAddrType;
 
 		lpAdrList->aEntries[0].rgPropVals[EMAIL].ulPropTag = PR_EMAIL_ADDRESS;
 		lpAdrList->aEntries[0].rgPropVals[EMAIL].Value.LPSZ = (LPTSTR) szEmailAddress;
@@ -102,8 +103,8 @@ _Check_return_ HRESULT AddOneOffAddress(
 			lpAdrList-> aEntries[0].rgPropVals[EMAIL].Value.LPSZ,
 			fMapiUnicode,
 			&lpAdrList->aEntries[0].rgPropVals[EID].Value.bin.cb,
-			(LPENTRYID *)
-			(&lpAdrList->aEntries[0].rgPropVals[EID].Value.bin.lpb)));
+			&lpEID));
+		lpAdrList->aEntries[0].rgPropVals[EID].Value.bin.lpb = (LPBYTE) lpEID;
 
 		EC_H(lpAddrBook->ResolveName(
 			0L,
@@ -118,6 +119,7 @@ _Check_return_ HRESULT AddOneOffAddress(
 		EC_H(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 	}
 
+	MAPIFreeBuffer(lpEID);
 	if (lpAdrList) FreePadrlist(lpAdrList);
 	if (lpAddrBook) lpAddrBook->Release();
 	return hRes;
@@ -130,7 +132,7 @@ _Check_return_ HRESULT AddRecipient(
 									ULONG ulRecipientType)
 {
 	HRESULT			hRes	= S_OK;
-	LPADRLIST		lpAdrList = NULL;  // ModifyRecips takes LPADRLIST
+	LPADRLIST		lpAdrList = NULL; // ModifyRecips takes LPADRLIST
 	LPADRBOOK		lpAddrBook = NULL;
 
 	enum {NAME,
@@ -153,11 +155,11 @@ _Check_return_ HRESULT AddRecipient(
 		// Setup the One Time recipient by indicating how many recipients
 		// and how many properties will be set on each recipient.
 		lpAdrList->cEntries = 1;	// How many recipients.
-		lpAdrList->aEntries[0].cValues = NUM_RECIP_PROPS;  // How many properties per recipient
+		lpAdrList->aEntries[0].cValues = NUM_RECIP_PROPS; // How many properties per recipient
 
 		// Set the SPropValue members == the desired values.
 		lpAdrList->aEntries[0].rgPropVals[NAME].ulPropTag = PR_DISPLAY_NAME;
-		lpAdrList->aEntries[0].rgPropVals[NAME].Value.LPSZ =  (LPTSTR) szName;
+		lpAdrList->aEntries[0].rgPropVals[NAME].Value.LPSZ = (LPTSTR) szName;
 
 		lpAdrList->aEntries[0].rgPropVals[RECIP].ulPropTag = PR_RECIPIENT_TYPE;
 		lpAdrList->aEntries[0].rgPropVals[RECIP].Value.l = ulRecipientType;
@@ -418,9 +420,8 @@ _Check_return_ HRESULT ManualResolve(
 					// recipient properties will be set. To resolve a name that
 					// already exists in the Address book, this will always be 1.
 
-					EC_H(MAPIAllocateMore(
+					EC_H(MAPIAllocateBuffer(
 						(ULONG)(abNUM_COLS * sizeof(SPropValue)),
-						lpAdrList,
 						(LPVOID*)&lpAdrList->aEntries->rgPropVals));
 					if (!lpAdrList->aEntries->rgPropVals) continue;
 

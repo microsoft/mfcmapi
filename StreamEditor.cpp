@@ -5,7 +5,7 @@
 #include "StreamEditor.h"
 #include "InterpretProp2.h"
 #include "MAPIFunctions.h"
-#include "PropTagArray.h"
+#include "ExtraPropTags.h"
 #include "SmartView.h"
 
 enum __StreamEditorTypes
@@ -158,10 +158,14 @@ void CStreamEditor::ReadTextStreamFromProperty()
 		WARNHRESMSG(hRes,IDS_PROPERTYNOTFOUND);
 		return;
 	}
-	if (MAPI_E_NO_SUPPORT == hRes || !lpTmpStream)
+	if (FAILED(hRes) || !lpTmpStream)
 	{
-		WARNHRESMSG(hRes,IDS_STREAMNOTSUPPORTED);
-		LoadString(m_iTextBox, IDS_STREAMNOTSUPPORTED);
+		CString szStreamErr;
+		szStreamErr.FormatMessage(
+			IDS_CANNOTOPENSTREAM,
+			ErrorNameFromErrorCode(hRes),
+			hRes);
+		SetString(m_iTextBox, szStreamErr);
 		SetEditReadOnly(m_iTextBox);
 		SetEditReadOnly(m_iBinBox);
 		return;

@@ -1,5 +1,71 @@
 #pragma once
 
+enum __NonPropFlag
+{
+	flagSearchFlag = 0x10000, // ensure that all flags in the enum are > 0xffff
+	flagSearchState,
+	flagTableStatus,
+	flagTableType,
+	flagObjectType,
+	flagSecurityVersion,
+	flagSecurityInfo,
+	flagACEFlag,
+	flagACEType,
+	flagACEMaskContainer,
+	flagACEMaskNonContainer,
+	flagACEMaskFreeBusy,
+	flagStreamFlag,
+	flagRestrictionType,
+	flagBitmask,
+	flagRelop,
+	flagAccountType,
+	flagBounceCode,
+	flagOPReply,
+	flagOpForward,
+	flagFuzzyLevel,
+	flagRulesVersion,
+	flagNotifEventType,
+	flagTableEventType,
+	flagTZRule,
+	flagRuleFlag,
+	flagExtendedFolderFlagType,
+	flagExtendedFolderFlag,
+	flagRecurFrequency,
+	flagPatternType,
+	flagCalendarType,
+	flagDOW,
+	flagN,
+	flagEndType,
+	flagFirstDOW,
+	flagOverrideFlags,
+	flagReportTagVersion,
+	flagGlobalObjectIdMonth,
+	flagOneOffEntryId,
+	flagEntryId0,
+	flagEntryId1,
+	flagMessageDatabaseObjectType,
+	flagContabVersion,
+	flagContabType,
+	flagContabIndex,
+	flagExchangeABVersion,
+	flagMDBVersion,
+	flagMDBFlag,
+	flagPropDefVersion,
+	flagPDOFlag,
+	flagVarEnum,
+	flagInternalType,
+	flagPersistID,
+	flagElementID,
+	flagWABEntryIDType,
+	flagWebViewVersion,
+	flagWebViewType,
+	flagWebViewFlags,
+	flagFolderType,
+	flagFieldCap,
+	flagCcsf,
+	flagIet,
+};
+
 #undef PR_CONVERSION_STATE
 #undef PR_DOTSTUFF_STATE
 #undef PR_USER_SID
@@ -1112,3 +1178,14 @@ enum ClientIntent
 #define SPAM_FILTERING_MEDIUM					0x00000005
 #define SPAM_FILTERING_HIGH						0x00000003
 #define SPAM_FILTERING_TRUSTED_ONLY				0x80000000
+
+// Constants - http://msdn2.microsoft.com/en-us/library/bb905201.aspx
+#define CCSF_SMTP             0x0002 // the converter is being passed an SMTP message
+#define CCSF_NOHEADERS        0x0004 // the converter should ignore the headers on the outside message
+#define CCSF_USE_TNEF         0x0010 // the converter should embed TNEF in the MIME message
+#define CCSF_INCLUDE_BCC      0x0020 // the converter should include Bcc recipients
+#define CCSF_8BITHEADERS      0x0040 // the converter should allow 8 bit headers
+#define CCSF_USE_RTF          0x0080 // the converter should do HTML->RTF conversion
+#define CCSF_PLAIN_TEXT_ONLY  0x1000 // the converter should just send plain text
+#define CCSF_NO_MSGID         0x4000 // don't include Message-Id field in outgoing messages
+#define CCSF_EMBEDDED_MESSAGE 0x8000 // sent/unsent information is persisted in X-Unsent

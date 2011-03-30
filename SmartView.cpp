@@ -2,7 +2,6 @@
 #include "SmartView.h"
 #include "InterpretProp2.h"
 #include "InterpretProp.h"
-#include "PropTagArray.h"
 #include "ExtraPropTags.h"
 #include "MAPIFunctions.h"
 #include "guids.h"
@@ -10,39 +9,46 @@
 #include "NamedPropCache.h"
 
 void InterpretMVBinaryAsString(SBinaryArray myBinArray, DWORD_PTR iStructType, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_z_ LPTSTR* lpszResultString);
-void InterpretLongAsString(ULONG ulVal, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_z_ LPWSTR lpszPropNameString, _In_opt_ LPGUID lpguidNamedProp, _Deref_out_opt_z_ LPTSTR* lpszResultString);
 void InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_ LPGUID lpguidNamedProp, _Deref_out_z_ LPTSTR* lpszResultString);
 
 _Check_return_ LPTSTR CStringToString(CString szCString);
 
+// Functions to parse PT_LONG/PT-I2 properties
+
+_Check_return_ CString RTimeToString(DWORD rTime);
+_Check_return_ LPTSTR RTimeToSzString(DWORD rTime, BOOL bLabel);
+_Check_return_ LPTSTR RuleIDToSzString(LARGE_INTEGER liRuleID, BOOL bLabel);
+
+// End: Functions to parse PT_LONG/PT-I2 properties
+
 // After 'No Parsing', these are in alphabetical order
-UINT g_uidParsingTypes[] = {
-	IDS_STNOPARSING,
-	IDS_STADDITIONALRENENTRYIDSEX,
-	IDS_STAPPOINTMENTRECURRENCEPATTERN,
-	IDS_STCONVERSATIONINDEX,
-	IDS_STENTRYID,
-	IDS_STENTRYLIST,
-	IDS_STEXTENDEDFOLDERFLAGS,
-	IDS_STEXTENDEDRULECONDITION,
-	IDS_STFLATENTRYLIST,
-	IDS_STFOLDERUSERFIELDS,
-	IDS_STGLOBALOBJECTID,
-	IDS_STPROPERTY,
-	IDS_STPROPERTYDEFINITIONSTREAM,
-	IDS_STRECIPIENTROWSTREAM,
-	IDS_STRECURRENCEPATTERN,
-	IDS_STREPORTTAG,
-	IDS_STRESTRICTION,
-	IDS_STRULECONDITION,
-	IDS_STSEARCHFOLDERDEFINITION,
-	IDS_STSECURITYDESCRIPTOR,
-	IDS_STSID,
-	IDS_STTASKASSIGNERS,
-	IDS_STTIMEZONE,
-	IDS_STTIMEZONEDEFINITION,
-	IDS_STWEBVIEWPERSISTSTREAM,
-	IDS_STNICKNAMECACHE,
+NAME_ARRAY_ENTRY g_uidParsingTypes[] = {
+	{IDS_STNOPARSING,L"No Parsing"}, // STRING_OK
+	{IDS_STADDITIONALRENENTRYIDSEX,L"Additional Ren Entry IDs Ex"}, // STRING_OK
+	{IDS_STAPPOINTMENTRECURRENCEPATTERN,L"Appointment Recurrence Pattern"}, // STRING_OK
+	{IDS_STCONVERSATIONINDEX,L"Conversation Index"}, // STRING_OK
+	{IDS_STENTRYID,L"Entry Id"}, // STRING_OK
+	{IDS_STENTRYLIST,L"Entry List"}, // STRING_OK
+	{IDS_STEXTENDEDFOLDERFLAGS,L"Extended Folder Flags"}, // STRING_OK
+	{IDS_STEXTENDEDRULECONDITION,L"Extended Rule Condition"}, // STRING_OK
+	{IDS_STFLATENTRYLIST,L"Flat Entry List"}, // STRING_OK
+	{IDS_STFOLDERUSERFIELDS,L"Folder User Fields Stream"}, // STRING_OK
+	{IDS_STGLOBALOBJECTID,L"Global Object Id"}, // STRING_OK
+	{IDS_STPROPERTY,L"Property"}, // STRING_OK
+	{IDS_STPROPERTYDEFINITIONSTREAM,L"Property Definition Stream"}, // STRING_OK
+	{IDS_STRECIPIENTROWSTREAM,L"Recipient Row Stream"}, // STRING_OK
+	{IDS_STRECURRENCEPATTERN,L"Recurrence Pattern"}, // STRING_OK
+	{IDS_STREPORTTAG,L"Report Tag"}, // STRING_OK
+	{IDS_STRESTRICTION,L"Restriction"}, // STRING_OK
+	{IDS_STRULECONDITION,L"Rule Condition"}, // STRING_OK
+	{IDS_STSEARCHFOLDERDEFINITION,L"Search Folder Definition"}, // STRING_OK
+	{IDS_STSECURITYDESCRIPTOR,L"Security Descriptor"}, // STRING_OK
+	{IDS_STSID,L"SID"}, // STRING_OK
+	{IDS_STTASKASSIGNERS,L"Task Assigners"}, // STRING_OK
+	{IDS_STTIMEZONE,L"Time Zone"}, // STRING_OK
+	{IDS_STTIMEZONEDEFINITION,L"Time Zone Definition"}, // STRING_OK
+	{IDS_STWEBVIEWPERSISTSTREAM,L"Web View Persistence Object Stream"}, // STRING_OK
+	{IDS_STNICKNAMECACHE,L"Nickname Cache"}, // STRING_OK
 };
 ULONG g_cuidParsingTypes = _countof(g_uidParsingTypes);
 
@@ -93,164 +99,17 @@ SMART_VIEW_PARSERS_ENTRY g_SmartViewParsers[] = {
 };
 ULONG g_cSmartViewParsers = _countof(g_SmartViewParsers);
 
-struct SMARTVIEW_PARSER_ARRAY_ENTRY
+SMARTVIEW_PARSER_ARRAY_ENTRY g_NumStructArray[] =
 {
-	ULONG	ulIndex;
-	ULONG	iStructType;
-	BOOL	bMV;
-};
-typedef SMARTVIEW_PARSER_ARRAY_ENTRY FAR * LPSMARTVIEW_PARSER_ARRAY_ENTRY;
-
-#define BINARY_STRUCTURE_ENTRY(_fName,_fType) {PROP_ID((_fName)),(_fType),false},
-#define NAMEDPROP_BINARY_STRUCTURE_ENTRY(_fName,_fGuid,_fType) {PROP_TAG((guid##_fGuid),(_fName)),(_fType),false},
-#define MV_BINARY_STRUCTURE_ENTRY(_fName,_fType) {PROP_ID((_fName)),(_fType),true},
-#define NAMEDPROP_MV_BINARY_STRUCTURE_ENTRY(_fName,_fGuid,_fType) {PROP_TAG((guid##_fGuid),(_fName)),(_fType),true},
-
-SMARTVIEW_PARSER_ARRAY_ENTRY g_BinaryStructArray[] =
-{
-	BINARY_STRUCTURE_ENTRY(PR_FREEBUSY_NT_SECURITY_DESCRIPTOR,IDS_STSECURITYDESCRIPTOR)
-	BINARY_STRUCTURE_ENTRY(PR_NT_SECURITY_DESCRIPTOR,IDS_STSECURITYDESCRIPTOR)
-	BINARY_STRUCTURE_ENTRY(PR_EXTENDED_FOLDER_FLAGS,IDS_STEXTENDEDFOLDERFLAGS)
-	BINARY_STRUCTURE_ENTRY(PR_REPORT_TAG,IDS_STREPORTTAG)
-	BINARY_STRUCTURE_ENTRY(PR_CONVERSATION_INDEX,IDS_STCONVERSATIONINDEX)
-	BINARY_STRUCTURE_ENTRY(PR_WB_SF_DEFINITION,IDS_STSEARCHFOLDERDEFINITION)
-	BINARY_STRUCTURE_ENTRY(PR_ADDITIONAL_REN_ENTRYIDS_EX,IDS_STADDITIONALRENENTRYIDSEX)
-	BINARY_STRUCTURE_ENTRY(PR_EXTENDED_RULE_MSG_CONDITION,IDS_STEXTENDEDRULECONDITION)
-	BINARY_STRUCTURE_ENTRY(PR_REPLY_RECIPIENT_ENTRIES,IDS_STFLATENTRYLIST)
-	BINARY_STRUCTURE_ENTRY(PR_ALTERNATE_RECIPIENT,IDS_STFLATENTRYLIST)
-	BINARY_STRUCTURE_ENTRY(PR_FOLDER_WEBVIEWINFO,IDS_STWEBVIEWPERSISTSTREAM)
-	BINARY_STRUCTURE_ENTRY(PR_USERFIELDS,IDS_STFOLDERUSERFIELDS)
-	BINARY_STRUCTURE_ENTRY(PR_LAST_MODIFIER_SID,IDS_STSID)
-
-	BINARY_STRUCTURE_ENTRY(PR_RECEIVED_BY_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_SENT_REPRESENTING_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_RCVD_REPRESENTING_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_REPORT_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_READ_RECEIPT_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_ORIGINAL_AUTHOR_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_ORIGINAL_SENDER_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_ORIGINAL_SENT_REPRESENTING_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_SENDER_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_PARENT_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_SENTMAIL_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_STORE_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_ORIGINALLY_INTENDED_RECIP_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_IPM_SUBTREE_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_IPM_OUTBOX_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_IPM_WASTEBASKET_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_IPM_SENTMAIL_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_VIEWS_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_COMMON_VIEWS_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_FINDER_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_DEFAULT_VIEW_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_IPM_APPOINTMENT_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_IPM_CONTACT_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_IPM_JOURNAL_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_IPM_NOTE_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_IPM_TASK_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_REM_ONLINE_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_REM_OFFLINE_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_IPM_DRAFTS_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_ORIGINAL_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_IDENTITY_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_OWN_STORE_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_HEADER_FOLDER_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_CONFLICT_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_MOVE_TO_STORE_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_MOVE_TO_FOLDER_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_CREATOR_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_LAST_MODIFIER_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_RECIPIENT_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_USER_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_MAILBOX_OWNER_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_SCHEDULE_FOLDER_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_IPM_DAF_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_NON_IPM_SUBTREE_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_EFORMS_REGISTRY_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_SPLUS_FREE_BUSY_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_OFFLINE_ADDRBOOK_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_EFORMS_FOR_LOCALE_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_FREE_BUSY_FOR_LOCAL_SITE_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_ADDRBOOK_FOR_LOCAL_SITE_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_OFFLINE_MESSAGE_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_GW_MTSIN_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_GW_MTSOUT_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_IPM_FAVORITES_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_IPM_PUBLIC_FOLDERS_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_SYS_CONFIG_FOLDER_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_ADDRESS_BOOK_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_PUBLIC_FOLDER_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_DAM_ORIGINAL_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_RULE_FOLDER_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_ACTIVE_USER_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_ORIGINATOR_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_REPORT_DESTINATION_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_LONGTERM_ENTRYID_FROM_TABLE,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_EVENTS_ROOT_FOLDER_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_NNTP_ARTICLE_FOLDER_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_NEWSGROUP_ROOT_FOLDER_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_EMS_AB_PARENT_ENTRYID,IDS_STENTRYID)
-	BINARY_STRUCTURE_ENTRY(PR_TARGET_ENTRYID,IDS_STENTRYID)
-
-	MV_BINARY_STRUCTURE_ENTRY(PR_ADDITIONAL_REN_ENTRYIDS,IDS_STENTRYID)
-	MV_BINARY_STRUCTURE_ENTRY(PR_FREEBUSY_ENTRYIDS,IDS_STENTRYID)
-	MV_BINARY_STRUCTURE_ENTRY(PR_SCHDINFO_DELEGATE_ENTRYIDS,IDS_STENTRYID)
-	MV_BINARY_STRUCTURE_ENTRY(PR_AB_SEARCH_PATH,IDS_STENTRYID)
-	MV_BINARY_STRUCTURE_ENTRY(PR_CONTAB_FOLDER_ENTRYIDS,IDS_STENTRYID)
-	MV_BINARY_STRUCTURE_ENTRY(PR_CONTAB_STORE_ENTRYIDS,IDS_STENTRYID)
-	MV_BINARY_STRUCTURE_ENTRY(PR_CONFLICT_ITEMS,IDS_STENTRYID)
-
-	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidEmail1OriginalEntryID,PSETID_Address,IDS_STENTRYID)
-	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidEmail2OriginalEntryID,PSETID_Address,IDS_STENTRYID)
-	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidEmail3OriginalEntryID,PSETID_Address,IDS_STENTRYID)
-	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidFax1EntryID,PSETID_Address,IDS_STENTRYID)
-	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidFax2EntryID,PSETID_Address,IDS_STENTRYID)
-	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidFax3EntryID,PSETID_Address,IDS_STENTRYID)
-	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidSelectedOriginalEntryID,PSETID_Address,IDS_STENTRYID)
-	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidAnniversaryEventEID,PSETID_Address,IDS_STENTRYID)
-	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidOrigStoreEid,PSETID_Appointment,IDS_STENTRYID)
-	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidReferenceEID,PSETID_Common,IDS_STENTRYID)
-	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidSharingInitiatorEid,PSETID_Sharing,IDS_STENTRYID)
-	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidSharingFolderEid,PSETID_Sharing,IDS_STENTRYID)
-	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidSharingOriginalMessageEid,PSETID_Sharing,IDS_STENTRYID)
-	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidSharingBindingEid,PSETID_Sharing,IDS_STENTRYID)
-	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidSharingIndexEid,PSETID_Sharing,IDS_STENTRYID)
-	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidSharingParentBindingEid,PSETID_Sharing,IDS_STENTRYID)
-
-	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidTimeZoneStruct,PSETID_Appointment,IDS_STTIMEZONE)
-	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidApptTZDefStartDisplay,PSETID_Appointment,IDS_STTIMEZONEDEFINITION)
-	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidApptTZDefEndDisplay,PSETID_Appointment,IDS_STTIMEZONEDEFINITION)
-	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidApptTZDefRecur,PSETID_Appointment,IDS_STTIMEZONEDEFINITION)
-
-	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidApptRecur,PSETID_Appointment,IDS_STAPPOINTMENTRECURRENCEPATTERN)
-	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidTaskRecur,PSETID_Task,IDS_STRECURRENCEPATTERN)
-	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidTaskMyDelegators,PSETID_Task,IDS_STTASKASSIGNERS)
-	NAMEDPROP_BINARY_STRUCTURE_ENTRY(LID_GLOBAL_OBJID,PSETID_Meeting,IDS_STGLOBALOBJECTID)
-	NAMEDPROP_BINARY_STRUCTURE_ENTRY(LID_CLEAN_GLOBAL_OBJID,PSETID_Meeting,IDS_STGLOBALOBJECTID)
-	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidPropDefStream,PSETID_Common,IDS_STPROPERTYDEFINITIONSTREAM)
-	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidContactLinkEntry,PSETID_Common,IDS_STFLATENTRYLIST)
-
-	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidApptUnsendableRecips,PSETID_Appointment,IDS_STRECIPIENTROWSTREAM)
-	NAMEDPROP_BINARY_STRUCTURE_ENTRY(dispidForwardNotificationRecipients,PSETID_Appointment,IDS_STRECIPIENTROWSTREAM)
-
-	NAMEDPROP_MV_BINARY_STRUCTURE_ENTRY(dispidDLMembers,PSETID_Address,IDS_STENTRYID)
-	NAMEDPROP_MV_BINARY_STRUCTURE_ENTRY(dispidDLOneOffMembers,PSETID_Address,IDS_STENTRYID)
-};
-
-LPSMARTVIEW_PARSER_ARRAY_ENTRY BinaryStructArray = g_BinaryStructArray;
-ULONG ulBinaryStructArray = _countof(g_BinaryStructArray);
-
-SMARTVIEW_PARSER_ARRAY_ENTRY g_LongStructArray[] =
-{
+	BINARY_STRUCTURE_ENTRY(PR_RULE_ID,IDS_STRULEID)
 	BINARY_STRUCTURE_ENTRY(PR_WB_SF_LAST_USED,IDS_STLONGRTIME)
 	BINARY_STRUCTURE_ENTRY(PR_WB_SF_EXPIRATION,IDS_STLONGRTIME)
 	BINARY_STRUCTURE_ENTRY(PR_FREEBUSY_PUBLISH_START,IDS_STLONGRTIME)
 	BINARY_STRUCTURE_ENTRY(PR_FREEBUSY_PUBLISH_END,IDS_STLONGRTIME)
 };
 
-LPSMARTVIEW_PARSER_ARRAY_ENTRY LongStructArray = g_LongStructArray;
-ULONG ulLongStructArray = _countof(g_LongStructArray);
+LPSMARTVIEW_PARSER_ARRAY_ENTRY NumStructArray = g_NumStructArray;
+ULONG ulNumStructArray = _countof(g_NumStructArray);
 
 _Check_return_ ULONG BuildFlagIndexFromTag(ULONG ulPropTag,
 										   ULONG ulPropNameID,
@@ -366,13 +225,10 @@ void InterpretPropSmartView(_In_ LPSPropValue lpProp, // required property value
 	switch(PROP_TYPE(lpProp->ulPropTag))
 	{
 	case PT_LONG:
-		{
-			InterpretLongAsString(lpProp->Value.ul,lpProp->ulPropTag,ulPropNameID,NULL,lpPropNameGUID,lpszSmartView);
-		}
-		break;
 	case PT_I2:
+	case PT_I8:
 		{
-			InterpretLongAsString(lpProp->Value.i,lpProp->ulPropTag,ulPropNameID,NULL,lpPropNameGUID,lpszSmartView);
+			InterpretNumberAsString(lpProp->Value,lpProp->ulPropTag,ulPropNameID,NULL,lpPropNameGUID,true,lpszSmartView);
 		}
 		break;
 	case PT_MV_LONG:
@@ -385,7 +241,7 @@ void InterpretPropSmartView(_In_ LPSPropValue lpProp, // required property value
 			ULONG ulLookupPropTag = lpProp->ulPropTag;
 			if (bMVRow) ulLookupPropTag |= MV_FLAG;
 
-			ULONG iStructType = FindSmartViewParserForProp(BinaryStructArray, ulBinaryStructArray, ulLookupPropTag, ulPropNameID, lpPropNameGUID);
+			ULONG iStructType = FindSmartViewParserForProp(SmartViewParserArray, ulSmartViewParserArray, ulLookupPropTag, ulPropNameID, lpPropNameGUID);
 			if (iStructType)
 			{
 				InterpretBinaryAsString(lpProp->Value.bin,iStructType,lpMAPIProp,lpProp->ulPropTag,lpszSmartView);
@@ -394,7 +250,7 @@ void InterpretPropSmartView(_In_ LPSPropValue lpProp, // required property value
 		break;
 	case PT_MV_BINARY:
 		{
-			ULONG iStructType = FindSmartViewParserForProp(BinaryStructArray, ulBinaryStructArray, lpProp->ulPropTag, ulPropNameID, lpPropNameGUID);
+			ULONG iStructType = FindSmartViewParserForProp(SmartViewParserArray, ulSmartViewParserArray, lpProp->ulPropTag, ulPropNameID, lpPropNameGUID);
 			if (iStructType)
 			{
 				InterpretMVBinaryAsString(lpProp->Value.MVbin,iStructType,lpMAPIProp,lpProp->ulPropTag,lpszSmartView);
@@ -433,11 +289,25 @@ void InterpretMVBinaryAsString(SBinaryArray myBinArray, DWORD_PTR iStructType, _
 	*lpszResultString = CStringToString(szResult);
 } // InterpretMVBinaryAsString
 
-// Interprets a PT_LONG or PT_I2 found in lpProp and returns a string allocated with new
+void InterpretNumberAsStringProp(ULONG ulVal, ULONG ulPropTag, _Deref_out_opt_z_ LPTSTR* lpszResultString)
+{
+	_PV pV = {0};
+	pV.ul = ulVal;
+	InterpretNumberAsString(pV, ulPropTag, NULL, NULL, NULL, false, lpszResultString);
+} // InterpretNumberAsStringProp
+
+void InterpretNumberAsStringNamedProp(ULONG ulVal, ULONG ulPropNameID, _In_opt_ LPGUID lpguidNamedProp, _Deref_out_opt_z_ LPTSTR* lpszResultString)
+{
+	_PV pV = {0};
+	pV.ul = ulVal;
+	InterpretNumberAsString(pV, PT_LONG, ulPropNameID, NULL, lpguidNamedProp, false, lpszResultString);
+} // InterpretNumberAsStringNamedProp
+
+// Interprets a PT_LONG, PT_I2. or PT_I8 found in lpProp and returns a string allocated with new
 // Free the string with delete[]
-// Will not return a string if the lpProp is not a PT_LONG/PT_I2 or we don't recognize the property
+// Will not return a string if the lpProp is not a PT_LONG/PT_I2/PT_I8 or we don't recognize the property
 // Will use named property details to look up named property flags
-void InterpretLongAsString(ULONG ulVal, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_z_ LPWSTR lpszPropNameString, _In_opt_ LPGUID lpguidNamedProp, _Deref_out_opt_z_ LPTSTR* lpszResultString)
+void InterpretNumberAsString(_PV pV, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_z_ LPWSTR lpszPropNameString, _In_opt_ LPGUID lpguidNamedProp, BOOL bLabel, _Deref_out_opt_z_ LPTSTR* lpszResultString)
 {
 	if (lpszResultString) *lpszResultString = NULL;
 	if (!ulPropTag || !lpszResultString)
@@ -445,16 +315,20 @@ void InterpretLongAsString(ULONG ulVal, ULONG ulPropTag, ULONG ulPropNameID, _In
 		return;
 	}
 	if (PROP_TYPE(ulPropTag) != PT_LONG &&
-		PROP_TYPE(ulPropTag) != PT_I2)
+		PROP_TYPE(ulPropTag) != PT_I2 &&
+		PROP_TYPE(ulPropTag) != PT_I8)
 	{
 		return;
 	}
 
-	ULONG iParser = FindSmartViewParserForProp(LongStructArray, ulLongStructArray, ulPropTag, ulPropNameID, lpguidNamedProp);
+	ULONG iParser = FindSmartViewParserForProp(NumStructArray, ulNumStructArray, ulPropTag, ulPropNameID, lpguidNamedProp);
 	switch (iParser)
 	{
 	case IDS_STLONGRTIME:
-		*lpszResultString = RTimeToSzString(ulVal);
+		*lpszResultString = RTimeToSzString(pV.ul,bLabel);
+		break;
+	case IDS_STRULEID:
+		*lpszResultString = RuleIDToSzString(pV.li,bLabel);
 		break;
 		// insert future parsers here
 	default:
@@ -464,14 +338,17 @@ void InterpretLongAsString(ULONG ulVal, ULONG ulPropTag, ULONG ulPropNameID, _In
 			{
 				CString szPrefix;
 				HRESULT hRes = S_OK;
-				EC_B(szPrefix.LoadString(IDS_FLAGS_PREFIX));
+				if (bLabel)
+				{
+					EC_B(szPrefix.LoadString(IDS_FLAGS_PREFIX));
+				}
 
-				InterpretFlags(ulPropID,ulVal,szPrefix,lpszResultString);
+				InterpretFlags(ulPropID,pV.ul,szPrefix,lpszResultString);
 			}
 		}
 		break;
 	}
-} // InterpretLongAsString
+} // InterpretNumberAsString
 
 void InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_ LPGUID lpguidNamedProp, _Deref_out_z_ LPTSTR* lpszResultString)
 {
@@ -489,7 +366,9 @@ void InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropTag, ULONG ulPr
 		{
 			szResult += _T("\r\n"); // STRING_OK
 		}
-		InterpretLongAsString(myLongArray.lpl[ulRow], CHANGE_PROP_TYPE(ulPropTag, PT_LONG), ulPropNameID, NULL, lpguidNamedProp, &szSmartView);
+		_PV pV = {0};
+		pV.ul = myLongArray.lpl[ulRow];
+		InterpretNumberAsString(pV, CHANGE_PROP_TYPE(ulPropTag, PT_LONG), ulPropNameID, NULL, lpguidNamedProp, true, &szSmartView);
 		if (szSmartView)
 		{
 			szTmp.FormatMessage(IDS_MVROWLONG,
@@ -568,13 +447,30 @@ _Check_return_ CString RTimeToString(DWORD rTime)
 	return PropString;
 } // RTimeToString
 
-_Check_return_ LPTSTR RTimeToSzString(DWORD rTime)
+_Check_return_ LPTSTR RTimeToSzString(DWORD rTime, BOOL bLabel)
 {
 	CString szRTime;
-	szRTime.FormatMessage(_T("RTime: ")); // STRING_OK
+	if (bLabel)
+	{
+		szRTime.FormatMessage(_T("RTime: ")); // STRING_OK
+	}
 	szRTime += RTimeToString(rTime);
 	return CStringToString(szRTime);
 } // RTimeToSzString
+
+_Check_return_ LPTSTR RuleIDToSzString(LARGE_INTEGER liRuleID, BOOL bLabel)
+{
+	CString szRuleID;
+	if (bLabel)
+	{
+		szRuleID.FormatMessage(IDS_RULEIDFORMATLABEL,liRuleID.LowPart,liRuleID.HighPart);
+	}
+	else
+	{
+		szRuleID.FormatMessage(IDS_RULEIDFORMAT,liRuleID.LowPart,liRuleID.HighPart);
+	}
+	return CStringToString(szRuleID);
+} // RuleIDToSzString
 
 // CBinaryParser - helper class for parsing binary data without
 // worrying about whether you've run off the end of your buffer.
@@ -1301,7 +1197,7 @@ _Check_return_ LPTSTR AppointmentRecurrencePatternStructToString(_In_ Appointmen
 			if (parpPattern->ExceptionInfo[i].OverrideFlags & ARO_MEETINGTYPE)
 			{
 				LPTSTR szFlags = NULL;
-				InterpretFlags(PROP_TAG((guidPSETID_Appointment),dispidApptStateFlags), parpPattern->ExceptionInfo[i].MeetingType, &szFlags);
+				InterpretNumberAsStringNamedProp(parpPattern->ExceptionInfo[i].MeetingType, dispidApptStateFlags, (LPGUID)&PSETID_Appointment, &szFlags);
 				szTmp.FormatMessage(IDS_ARPEXMEETINGTYPE,
 					i,parpPattern->ExceptionInfo[i].MeetingType,szFlags);
 				delete[] szFlags;
@@ -1331,7 +1227,7 @@ _Check_return_ LPTSTR AppointmentRecurrencePatternStructToString(_In_ Appointmen
 			if (parpPattern->ExceptionInfo[i].OverrideFlags & ARO_BUSYSTATUS)
 			{
 				LPTSTR szFlags = NULL;
-				InterpretFlags(PROP_TAG((guidPSETID_Appointment),dispidBusyStatus), parpPattern->ExceptionInfo[i].BusyStatus, &szFlags);
+				InterpretNumberAsStringNamedProp(parpPattern->ExceptionInfo[i].BusyStatus, dispidBusyStatus, (LPGUID)&PSETID_Appointment, &szFlags);
 				szTmp.FormatMessage(IDS_ARPEXBUSYSTATUS,
 					i,parpPattern->ExceptionInfo[i].BusyStatus,szFlags);
 				delete[] szFlags;
@@ -1379,7 +1275,7 @@ _Check_return_ LPTSTR AppointmentRecurrencePatternStructToString(_In_ Appointmen
 			if (parpPattern->WriterVersion2 >= 0x00003009)
 			{
 				LPTSTR szFlags = NULL;
-				InterpretFlags(PROP_TAG((guidPSETID_Appointment),dispidChangeHighlight), parpPattern->ExtendedException[i].ChangeHighlight.ChangeHighlightValue, &szFlags);
+				InterpretNumberAsStringNamedProp(parpPattern->ExtendedException[i].ChangeHighlight.ChangeHighlightValue, dispidChangeHighlight, (LPGUID)&PSETID_Appointment, &szFlags);
 				szTmp.FormatMessage(IDS_ARPEXCHANGEHIGHLIGHT,
 					i,parpPattern->ExtendedException[i].ChangeHighlight.ChangeHighlightSize,
 					parpPattern->ExtendedException[i].ChangeHighlight.ChangeHighlightValue,szFlags);
@@ -1905,6 +1801,9 @@ _Check_return_ LPTSTR TimeZoneStructToString(_In_ TimeZoneStruct* ptzTimeZone)
 // TimeZoneDefinitionStruct
 //////////////////////////////////////////////////////////////////////////
 
+// There may be time zone definitions with over 1024 rules, but we're not going to try to parse them
+#define _MaxRules 500
+
 // Allocates return value with new. Clean up with DeleteTimeZoneDefinitionStruct.
 _Check_return_ TimeZoneDefinitionStruct* BinToTimeZoneDefinitionStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
@@ -1921,7 +1820,7 @@ _Check_return_ TimeZoneDefinitionStruct* BinToTimeZoneDefinitionStruct(ULONG cbB
 	Parser.GetStringW(tzdTimeZoneDefinition.cchKeyName,&tzdTimeZoneDefinition.szKeyName);
 	Parser.GetWORD(&tzdTimeZoneDefinition.cRules);
 
-	if (tzdTimeZoneDefinition.cRules && tzdTimeZoneDefinition.cRules < TZ_MAX_RULES)
+	if (tzdTimeZoneDefinition.cRules && tzdTimeZoneDefinition.cRules < _MaxRules)
 		tzdTimeZoneDefinition.lpTZRule = new TZRule[tzdTimeZoneDefinition.cRules];
 
 	if (tzdTimeZoneDefinition.lpTZRule)
@@ -2994,7 +2893,7 @@ _Check_return_ LPTSTR EntryIdStructToString(_In_ EntryIdStruct* peidEntryId)
 		LPTSTR szVersion = NULL;
 		InterpretFlags(flagExchangeABVersion, peidEntryId->ProviderData.AddressBookObject.Version, &szVersion);
 		LPTSTR szType = NULL;
-		InterpretFlags(PROP_ID(PR_DISPLAY_TYPE), peidEntryId->ProviderData.AddressBookObject.Type, &szType);
+		InterpretNumberAsStringProp(peidEntryId->ProviderData.AddressBookObject.Type, PR_DISPLAY_TYPE, &szType);
 
 		szTmp.FormatMessage(IDS_ENTRYIDEXCHANGEADDRESSDATA,
 			peidEntryId->ProviderData.AddressBookObject.Version, szVersion,
@@ -3056,7 +2955,7 @@ _Check_return_ LPTSTR EntryIdStructToString(_In_ EntryIdStruct* peidEntryId)
 		InterpretFlags(flagMDBFlag, peidEntryId->ProviderData.MessageDatabaseObject.Flag, &szFlag);
 
 		LPTSTR szWrappedType = NULL;
-		InterpretFlags(PROP_ID(PR_PROFILE_OPEN_FLAGS), peidEntryId->ProviderData.MessageDatabaseObject.WrappedType, &szWrappedType);
+		InterpretNumberAsStringProp(peidEntryId->ProviderData.MessageDatabaseObject.WrappedType, PR_PROFILE_OPEN_FLAGS, &szWrappedType);
 
 		szTmp.FormatMessage(IDS_ENTRYIDMAPIMESSAGESTOREDATA,
 			peidEntryId->ProviderData.MessageDatabaseObject.Version, szVersion,
@@ -3378,6 +3277,7 @@ void DeleteSPropVal(ULONG cVal, _In_count_(cVal) LPSPropValue lpsPropVal)
 			break;
 		}
 	}
+	delete[] lpsPropVal;
 } // DeleteSPropVal
 
 void DeletePropertyStruct(_In_ PropertyStruct* ppProperty)
@@ -3385,7 +3285,6 @@ void DeletePropertyStruct(_In_ PropertyStruct* ppProperty)
 	if (!ppProperty) return;
 
 	DeleteSPropVal(ppProperty->PropCount,ppProperty->Prop);
-	delete[] ppProperty->Prop;
 
 	delete[] ppProperty->JunkData;
 	delete ppProperty;
@@ -3748,6 +3647,7 @@ void BinToRestriction(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, _Out_ size_t*
 	if (lpcbBytesRead) *lpcbBytesRead = Parser.GetCurrentOffset();
 } // BinToRestriction
 
+// Does not delete lpRes, which must be released manually. See RES_AND case below.
 void DeleteRestriction(_In_ LPSRestriction lpRes)
 {
 	if (!lpRes) return;
@@ -3774,11 +3674,9 @@ void DeleteRestriction(_In_ LPSRestriction lpRes)
 		break;
 	case RES_CONTENT:
 		DeleteSPropVal(1,lpRes->res.resContent.lpProp);
-		delete[] lpRes->res.resContent.lpProp;
 		break;
 	case RES_PROPERTY:
 		DeleteSPropVal(1,lpRes->res.resProperty.lpProp);
-		delete[] lpRes->res.resProperty.lpProp;
 		break;
 	case RES_SUBRESTRICTION:
 		DeleteRestriction(lpRes->res.resSub.lpRes);
@@ -3788,7 +3686,6 @@ void DeleteRestriction(_In_ LPSRestriction lpRes)
 		if (lpRes->res.resComment.cValues)
 		{
 			DeleteSPropVal(lpRes->res.resComment.cValues,lpRes->res.resComment.lpProp);
-			delete[] lpRes->res.resComment.lpProp;
 		}
 		DeleteRestriction(lpRes->res.resComment.lpRes);
 		delete[] lpRes->res.resComment.lpRes;
@@ -3805,6 +3702,7 @@ void DeleteRestrictionStruct(_In_ RestrictionStruct* prRestriction)
 	delete[] prRestriction->lpRes;
 
 	delete[] prRestriction->JunkData;
+	delete prRestriction;
 } // DeleteRestrictionStruct
 
 // result allocated with new, clean up with delete[]
@@ -3843,7 +3741,6 @@ void RuleConditionToString(SBinary myBin, _Deref_out_opt_z_ LPTSTR* lpszResultSt
 	{
 		*lpszResultString = RuleConditionStructToString(prcRuleCondition,bExtended);
 		DeleteRuleConditionStruct(prcRuleCondition);
-		delete prcRuleCondition;
 	}
 } // RuleConditionToString
 
@@ -3950,6 +3847,7 @@ void DeleteRuleConditionStruct(_In_ RuleConditionStruct* prcRuleCondition)
 	delete[] prcRuleCondition->lpRes;
 
 	delete[] prcRuleCondition->JunkData;
+	delete[] prcRuleCondition;
 } // DeleteRuleConditionStruct
 
 _Check_return_ LPTSTR RuleConditionStructToString(_In_ RuleConditionStruct* prcRuleCondition, BOOL bExtended)
@@ -3985,8 +3883,10 @@ _Check_return_ LPTSTR RuleConditionStructToString(_In_ RuleConditionStruct* prcR
 				prcRuleCondition->NamedPropertyInformation.PropertyName[i].Kind);
 			szRuleCondition += szTmp;
 
-			szTmp = GUIDToString(&prcRuleCondition->NamedPropertyInformation.PropertyName[i].Guid);
-			szRuleCondition += szTmp;
+			LPTSTR szGUID = GUIDToString(&prcRuleCondition->NamedPropertyInformation.PropertyName[i].Guid);
+			szRuleCondition += szGUID;
+			delete[] szGUID;
+			szGUID = NULL;
 
 			if (MNID_ID == prcRuleCondition->NamedPropertyInformation.PropertyName[i].Kind)
 			{
@@ -4295,13 +4195,11 @@ void DeleteSearchFolderDefinitionStruct(_In_ SearchFolderDefinitionStruct* psfdS
 		for (i = 0 ; i < psfdSearchFolderDefinition->AddressCount ; i++)
 		{
 			DeleteSPropVal(psfdSearchFolderDefinition->Addresses[i].Properties.PropCount,psfdSearchFolderDefinition->Addresses[i].Properties.Prop);
-			delete[] psfdSearchFolderDefinition->Addresses[i].Properties.Prop;
 		}
 		delete[] psfdSearchFolderDefinition->Addresses;
 	}
 	delete[] psfdSearchFolderDefinition->SkipBytes2;
 	DeleteRestrictionStruct(psfdSearchFolderDefinition->Restriction);
-	delete psfdSearchFolderDefinition->Restriction;
 	delete[] psfdSearchFolderDefinition->AdvancedSearchBytes;
 	delete[] psfdSearchFolderDefinition->SkipBytes3;
 
@@ -4318,7 +4216,7 @@ _Check_return_ LPTSTR SearchFolderDefinitionStructToString(_In_ SearchFolderDefi
 	CString szTmp;
 
 	LPTSTR szFlags = NULL;
-	InterpretFlags(PROP_ID(PR_WB_SF_STORAGE_TYPE), psfdSearchFolderDefinition->Flags, &szFlags);
+	InterpretNumberAsStringProp(psfdSearchFolderDefinition->Flags, PR_WB_SF_STORAGE_TYPE, &szFlags);
 
 	szSearchFolderDefinition.FormatMessage(IDS_SFDEFINITIONHEADER,
 		psfdSearchFolderDefinition->Version,
@@ -5423,7 +5321,6 @@ void DeleteRecipientRowStreamStruct(_In_ RecipientRowStreamStruct* prrsRecipient
 		for (i = 0 ; i < prrsRecipientRowStream->cRowCount ; i++)
 		{
 			DeleteSPropVal(prrsRecipientRowStream->lpAdrEntry[i].cValues,prrsRecipientRowStream->lpAdrEntry[i].rgPropVals);
-			delete[] prrsRecipientRowStream->lpAdrEntry[i].rgPropVals;
 		}
 	}
 	delete[] prrsRecipientRowStream->lpAdrEntry;

@@ -15,7 +15,7 @@ void DoSmartView(_In_ MYOPTIONS ProgOpts)
 
 	if (ProgOpts.ulParser && ProgOpts.ulParser < g_cuidParsingTypes)
 	{
-		ulStructType = g_uidParsingTypes[ProgOpts.ulParser];
+		ulStructType = g_uidParsingTypes[ProgOpts.ulParser].ulValue;
 	}
 
 	if (ulStructType)

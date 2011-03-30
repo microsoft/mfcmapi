@@ -118,40 +118,40 @@ void CRecipientsDlg::OnDeleteSelectedItem()
 			ZeroMemory(lpAdrList, CbNewADRLIST(iNumSelected));
 			lpAdrList->cEntries = iNumSelected;
 
-			LPSPropValue lpProps = NULL;
-			EC_H(MAPIAllocateBuffer(
-				(ULONG)(iNumSelected * sizeof(SPropValue)),
-				(LPVOID*) &lpProps));
-
-			if (lpProps)
+			int iSelection = 0;
+			for (iSelection = 0 ; iSelection < iNumSelected ; iSelection++)
 			{
-				int iSelection = 0;
-				for (iSelection = 0 ; iSelection < iNumSelected ; iSelection++)
+				LPSPropValue lpProp = NULL;
+				EC_H(MAPIAllocateBuffer(
+					sizeof(SPropValue),
+					(LPVOID*) &lpProp));
+				
+				if (lpProp)
 				{
 					lpAdrList->aEntries[iSelection].ulReserved1 = 0;
 					lpAdrList->aEntries[iSelection].cValues = 1;
-					lpAdrList->aEntries[iSelection].rgPropVals = &lpProps[iSelection];
-					lpProps[iSelection].ulPropTag = PR_ROWID;
-					lpProps[iSelection].dwAlignPad = 0;
+					lpAdrList->aEntries[iSelection].rgPropVals = lpProp;
+					lpProp->ulPropTag = PR_ROWID;
+					lpProp->dwAlignPad = 0;
 					// Find the highlighted item AttachNum
 					lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 					if (lpListData)
 					{
-						lpProps[iSelection].Value.l = lpListData->data.Contents.ulRowID;
+						lpProp->Value.l = lpListData->data.Contents.ulRowID;
 					}
 					else
 					{
-						lpProps[iSelection].Value.l = 0;
+						lpProp->Value.l = 0;
 					}
-					DebugPrintEx(DBGDeleteSelectedItem,CLASS,_T("OnDeleteSelectedItem"),_T("Deleting row 0x%08X\n"),lpProps[iSelection].Value.l);
+					DebugPrintEx(DBGDeleteSelectedItem,CLASS,_T("OnDeleteSelectedItem"),_T("Deleting row 0x%08X\n"),lpProp->Value.l);
 				}
-
-				EC_H(m_lpMessage->ModifyRecipients(
-					MODRECIP_REMOVE,
-					lpAdrList));
-
-				OnRefreshView();
 			}
+
+			EC_H(m_lpMessage->ModifyRecipients(
+				MODRECIP_REMOVE,
+				lpAdrList));
+
+			OnRefreshView();
 			FreePadrlist(lpAdrList);
 		}
 	}

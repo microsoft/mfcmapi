@@ -5,11 +5,45 @@
 #include "MFCMAPI.h"
 #include "ImportProcs.h"
 #include "MAPIFunctions.h"
-#include "PropTagArray.h"
 #include "Editor.h"
 #include "Guids.h"
 
+// Our built in arrays, which get merged into the arrays declared in mfcmapi.h
+#include "GenTagArray.h"
+#include "Flags.h"
+#include "GuidArray.h"
+#include "NameIDArray.h"
+#include "PropTypeArray.h"
+#include "SmartViewParsers.h"
+
 LPADDIN g_lpMyAddins = NULL;
+
+// Count of built-in arrays
+ULONG g_ulPropTagArray = _countof(g_PropTagArray);
+ULONG g_ulFlagArray = _countof(g_FlagArray);
+ULONG g_ulPropGuidArray = _countof(g_PropGuidArray);
+ULONG g_ulNameIDArray = _countof(g_NameIDArray);
+ULONG g_ulPropTypeArray = _countof(g_PropTypeArray);
+ULONG g_ulSmartViewParserArray = _countof(g_SmartViewParserArray);
+
+// Arrays and counts declared in mfcmapi.h
+LPNAME_ARRAY_ENTRY PropTypeArray = NULL;
+ULONG ulPropTypeArray = NULL;
+
+LPNAME_ARRAY_ENTRY PropTagArray = NULL;
+ULONG ulPropTagArray = NULL;
+
+LPGUID_ARRAY_ENTRY PropGuidArray = NULL;
+ULONG ulPropGuidArray = NULL;
+
+LPNAMEID_ARRAY_ENTRY NameIDArray = NULL;
+ULONG ulNameIDArray;
+
+LPFLAG_ARRAY_ENTRY FlagArray = NULL;
+ULONG ulFlagArray = NULL;
+
+LPSMARTVIEW_PARSER_ARRAY_ENTRY SmartViewParserArray = NULL;
+ULONG ulSmartViewParserArray;
 
 _Check_return_ ULONG GetAddinVersion(HMODULE hMod)
 {
@@ -112,6 +146,14 @@ void LoadSingleAddIn(_In_ LPADDIN lpAddIn, HMODULE hMod, _In_ LPLOADADDIN pfnLoa
 	if (pfnGetPropFlags)
 	{
 		pfnGetPropFlags(&lpAddIn->ulPropFlags,&lpAddIn->lpPropFlags);
+	}
+
+	hRes = S_OK;
+	LPGETSMARTVIEWPARSERARRAY pfnGetSmartViewParserArray = NULL;
+	WC_D(pfnGetSmartViewParserArray, (LPGETSMARTVIEWPARSERARRAY) GetProcAddress(hMod,szGetSmartViewParserArray));
+	if (pfnGetSmartViewParserArray)
+	{
+		pfnGetSmartViewParserArray(&lpAddIn->ulSmartViewParsers,&lpAddIn->lpSmartViewParsers);
 	}
 
 	DebugPrint(DBGAddInPlumbing,_T("Done loading AddIn\n"));
@@ -275,141 +317,148 @@ void LoadAddIns()
 	LPADDIN lpCurAddIn = NULL;
 	// Allocate space to hold information on all DLLs in the directory
 
-	HRESULT hRes = S_OK;
-	TCHAR szFilePath[MAX_PATH];
-	DWORD dwDir = NULL;
-	EC_D(dwDir,GetModuleFileName(NULL,szFilePath,_countof(szFilePath)));
-	if (!dwDir) return;
-
-	if (szFilePath[0])
+	if (!RegKeys[regkeyLOADADDINS].ulCurDWORD)
 	{
-		// We got the path to mfcmapi.exe - need to strip it
-		if (SUCCEEDED(hRes) && szFilePath[0] != _T('\0'))
-		{
-			LPTSTR lpszSlash = NULL;
-			LPTSTR lpszCur = szFilePath;
-
-			for (lpszSlash = lpszCur; *lpszCur; lpszCur = lpszCur++)
-			{
-				if (*lpszCur == _T('\\')) lpszSlash = lpszCur;
-			}
-			*lpszSlash = _T('\0');
-		}
+		DebugPrint(DBGAddInPlumbing,_T("Bypassing add-in loading\n"));
 	}
+	else
+	{
+		HRESULT hRes = S_OK;
+		TCHAR szFilePath[MAX_PATH];
+		DWORD dwDir = NULL;
+		EC_D(dwDir,GetModuleFileName(NULL,szFilePath,_countof(szFilePath)));
+		if (!dwDir) return;
 
-	CFileList ExclusionList(EXCLUSION_LIST);
-	CFileList InclusionList(INCLUSION_LIST);
+		if (szFilePath[0])
+		{
+			// We got the path to mfcmapi.exe - need to strip it
+			if (SUCCEEDED(hRes) && szFilePath[0] != _T('\0'))
+			{
+				LPTSTR lpszSlash = NULL;
+				LPTSTR lpszCur = szFilePath;
+
+				for (lpszSlash = lpszCur; *lpszCur; lpszCur = lpszCur++)
+				{
+					if (*lpszCur == _T('\\')) lpszSlash = lpszCur;
+				}
+				*lpszSlash = _T('\0');
+			}
+		}
+
+		CFileList ExclusionList(EXCLUSION_LIST);
+		CFileList InclusionList(INCLUSION_LIST);
 
 #define SPECLEN 6 // for '\\*.dll'
-	if (szFilePath[0])
-	{
-		DebugPrint(DBGAddInPlumbing,_T("Current dir = \"%s\"\n"),szFilePath);
-		hRes = StringCchCatN(szFilePath, MAX_PATH, _T("\\*.dll"), SPECLEN); // STRING_OK
-		if (SUCCEEDED(hRes))
+		if (szFilePath[0])
 		{
-			DebugPrint(DBGAddInPlumbing,_T("File spec = \"%s\"\n"),szFilePath);
-
-			WIN32_FIND_DATA FindFileData = {0};
-			HANDLE hFind = FindFirstFile(szFilePath, &FindFileData);
-
-			if (hFind == INVALID_HANDLE_VALUE)
+			DebugPrint(DBGAddInPlumbing,_T("Current dir = \"%s\"\n"),szFilePath);
+			hRes = StringCchCatN(szFilePath, MAX_PATH, _T("\\*.dll"), SPECLEN); // STRING_OK
+			if (SUCCEEDED(hRes))
 			{
-				DebugPrint(DBGAddInPlumbing,_T("Invalid file handle. Error is %u.\n"),GetLastError());
-			}
-			else
-			{
-				while (true)
+				DebugPrint(DBGAddInPlumbing,_T("File spec = \"%s\"\n"),szFilePath);
+
+				WIN32_FIND_DATA FindFileData = {0};
+				HANDLE hFind = FindFirstFile(szFilePath, &FindFileData);
+
+				if (hFind == INVALID_HANDLE_VALUE)
 				{
-					hRes = S_OK;
-					DebugPrint(DBGAddInPlumbing,_T("Examining \"%s\"\n"),FindFileData.cFileName);
-					HMODULE hMod = NULL;
+					DebugPrint(DBGAddInPlumbing,_T("Invalid file handle. Error is %u.\n"),GetLastError());
+				}
+				else
+				{
+					while (true)
+					{
+						hRes = S_OK;
+						DebugPrint(DBGAddInPlumbing,_T("Examining \"%s\"\n"),FindFileData.cFileName);
+						HMODULE hMod = NULL;
 
-					// If we know the Add-in is good, just load it.
-					// If we know it's bad, skip it.
-					// Otherwise, we have to check if it's good.
-					// LoadLibrary calls DLLMain, which can get expensive just to see if a function is exported
-					// So we use DONT_RESOLVE_DLL_REFERENCES to see if we're interested in the DLL first
-					// Only if we're interested do we reload the DLL for real
-					if (InclusionList.IsOnList(FindFileData.cFileName))
-					{
-						hMod = MyLoadLibrary(FindFileData.cFileName);
-					}
-					else
-					{
-						if (!ExclusionList.IsOnList(FindFileData.cFileName))
+						// If we know the Add-in is good, just load it.
+						// If we know it's bad, skip it.
+						// Otherwise, we have to check if it's good.
+						// LoadLibrary calls DLLMain, which can get expensive just to see if a function is exported
+						// So we use DONT_RESOLVE_DLL_REFERENCES to see if we're interested in the DLL first
+						// Only if we're interested do we reload the DLL for real
+						if (InclusionList.IsOnList(FindFileData.cFileName))
 						{
-							hMod = LoadLibraryEx(FindFileData.cFileName,NULL,DONT_RESOLVE_DLL_REFERENCES);
-							if (hMod)
-							{
-								LPLOADADDIN pfnLoadAddIn = NULL;
-								WC_D(pfnLoadAddIn, (LPLOADADDIN) GetProcAddress(hMod,szLoadAddIn));
-								FreeLibrary(hMod);
-								hMod = NULL;
-
-								if (pfnLoadAddIn)
-								{
-									// Remember this as a good add-in
-									InclusionList.AddToList(FindFileData.cFileName);
-									// We found a candidate, load it for real now
-									hMod = MyLoadLibrary(FindFileData.cFileName);
-									// GetProcAddress again just in case we loaded at a different address
-									WC_D(pfnLoadAddIn, (LPLOADADDIN) GetProcAddress(hMod,szLoadAddIn));
-								}
-							}
-							// If we still don't have a DLL loaded, exclude it
-							if (!hMod)
-							{
-								ExclusionList.AddToList(FindFileData.cFileName);
-							}
-						}
-					}
-					if (hMod)
-					{
-						DebugPrint(DBGAddInPlumbing,_T("Opened module\n"));
-						LPLOADADDIN pfnLoadAddIn = NULL;
-						WC_D(pfnLoadAddIn, (LPLOADADDIN) GetProcAddress(hMod,szLoadAddIn));
-
-						if (pfnLoadAddIn)
-						{
-							DebugPrint(DBGAddInPlumbing,_T("Found an add-in\n"));
-							// Add a node
-							if (!lpCurAddIn)
-							{
-								if (!g_lpMyAddins)
-								{
-									g_lpMyAddins = new _AddIn;
-									ZeroMemory(g_lpMyAddins,sizeof(_AddIn));
-								}
-								lpCurAddIn = g_lpMyAddins;
-							}
-							else if (lpCurAddIn)
-							{
-								lpCurAddIn->lpNextAddIn = new _AddIn;
-								ZeroMemory(lpCurAddIn->lpNextAddIn,sizeof(_AddIn));
-								lpCurAddIn = lpCurAddIn->lpNextAddIn;
-							}
-
-							// Now that we have a node, populate it
-							if (lpCurAddIn)
-							{
-								LoadSingleAddIn(lpCurAddIn,hMod,pfnLoadAddIn);
-							}
+							hMod = MyLoadLibrary(FindFileData.cFileName);
 						}
 						else
 						{
-							// Not an add-in, release the hMod
-							FreeLibrary(hMod);
-						}
-					}
-					// get next file
-					if (!FindNextFile(hFind, &FindFileData)) break;
-				}
+							if (!ExclusionList.IsOnList(FindFileData.cFileName))
+							{
+								hMod = LoadLibraryEx(FindFileData.cFileName,NULL,DONT_RESOLVE_DLL_REFERENCES);
+								if (hMod)
+								{
+									LPLOADADDIN pfnLoadAddIn = NULL;
+									WC_D(pfnLoadAddIn, (LPLOADADDIN) GetProcAddress(hMod,szLoadAddIn));
+									FreeLibrary(hMod);
+									hMod = NULL;
 
-				DWORD dwRet = GetLastError();
-				FindClose(hFind);
-				if (dwRet != ERROR_NO_MORE_FILES)
-				{
-					DebugPrint(DBGAddInPlumbing,_T("FindNextFile error. Error is %u.\n"),dwRet);
+									if (pfnLoadAddIn)
+									{
+										// Remember this as a good add-in
+										InclusionList.AddToList(FindFileData.cFileName);
+										// We found a candidate, load it for real now
+										hMod = MyLoadLibrary(FindFileData.cFileName);
+										// GetProcAddress again just in case we loaded at a different address
+										WC_D(pfnLoadAddIn, (LPLOADADDIN) GetProcAddress(hMod,szLoadAddIn));
+									}
+								}
+								// If we still don't have a DLL loaded, exclude it
+								if (!hMod)
+								{
+									ExclusionList.AddToList(FindFileData.cFileName);
+								}
+							}
+						}
+						if (hMod)
+						{
+							DebugPrint(DBGAddInPlumbing,_T("Opened module\n"));
+							LPLOADADDIN pfnLoadAddIn = NULL;
+							WC_D(pfnLoadAddIn, (LPLOADADDIN) GetProcAddress(hMod,szLoadAddIn));
+
+							if (pfnLoadAddIn)
+							{
+								DebugPrint(DBGAddInPlumbing,_T("Found an add-in\n"));
+								// Add a node
+								if (!lpCurAddIn)
+								{
+									if (!g_lpMyAddins)
+									{
+										g_lpMyAddins = new _AddIn;
+										ZeroMemory(g_lpMyAddins,sizeof(_AddIn));
+									}
+									lpCurAddIn = g_lpMyAddins;
+								}
+								else if (lpCurAddIn)
+								{
+									lpCurAddIn->lpNextAddIn = new _AddIn;
+									ZeroMemory(lpCurAddIn->lpNextAddIn,sizeof(_AddIn));
+									lpCurAddIn = lpCurAddIn->lpNextAddIn;
+								}
+
+								// Now that we have a node, populate it
+								if (lpCurAddIn)
+								{
+									LoadSingleAddIn(lpCurAddIn,hMod,pfnLoadAddIn);
+								}
+							}
+							else
+							{
+								// Not an add-in, release the hMod
+								FreeLibrary(hMod);
+							}
+						}
+						// get next file
+						if (!FindNextFile(hFind, &FindFileData)) break;
+					}
+
+					DWORD dwRet = GetLastError();
+					FindClose(hFind);
+					if (dwRet != ERROR_NO_MORE_FILES)
+					{
+						DebugPrint(DBGAddInPlumbing,_T("FindNextFile error. Error is %u.\n"),dwRet);
+					}
 				}
 			}
 		}
@@ -426,6 +475,7 @@ void ResetArrays()
 	if (PropGuidArray != g_PropGuidArray) delete[] PropGuidArray;
 	if (NameIDArray != g_NameIDArray) delete[] NameIDArray;
 	if (FlagArray != g_FlagArray) delete[] FlagArray;
+	if (SmartViewParserArray != g_SmartViewParserArray) delete[] SmartViewParserArray;
 
 	ulPropTypeArray = g_ulPropTypeArray;
 	PropTypeArray = g_PropTypeArray;
@@ -437,6 +487,8 @@ void ResetArrays()
 	NameIDArray = g_NameIDArray;
 	ulFlagArray = g_ulFlagArray;
 	FlagArray = g_FlagArray;
+	ulSmartViewParserArray = g_ulSmartViewParserArray;
+	SmartViewParserArray = g_SmartViewParserArray;
 } // ResetArrays
 
 void UnloadAddIns()
@@ -607,21 +659,6 @@ void InvokeAddInMenu(_In_opt_ LPADDINMENUPARAMS lpParams)
 	WC_H(lpParams->lpAddInMenu->lpAddIn->pfnCallMenu(lpParams));
 } // InvokeAddInMenu
 
-LPNAME_ARRAY_ENTRY PropTypeArray = NULL;
-ULONG ulPropTypeArray = NULL;
-
-LPNAME_ARRAY_ENTRY PropTagArray = NULL;
-ULONG ulPropTagArray = NULL;
-
-LPGUID_ARRAY_ENTRY PropGuidArray = NULL;
-ULONG ulPropGuidArray = NULL;
-
-LPNAMEID_ARRAY_ENTRY NameIDArray = NULL;
-ULONG ulNameIDArray;
-
-LPFLAG_ARRAY_ENTRY FlagArray = NULL;
-ULONG ulFlagArray = NULL;
-
 // Compare tag arrays. Also works on type arrays.
 int CompareTags(_In_ const void* a1, _In_ const void* a2)
 {
@@ -650,6 +687,25 @@ int CompareNameID(_In_ const void* a1, _In_ const void* a2)
 	}
 	return -1;
 } // CompareNameID
+
+int CompareSmartViewParser(_In_ const void* a1, _In_ const void* a2)
+{
+	LPSMARTVIEW_PARSER_ARRAY_ENTRY lpParser1 = (LPSMARTVIEW_PARSER_ARRAY_ENTRY) a1;
+	LPSMARTVIEW_PARSER_ARRAY_ENTRY lpParser2 = (LPSMARTVIEW_PARSER_ARRAY_ENTRY) a2;
+
+	if (lpParser1->ulIndex > lpParser2->ulIndex) return 1;
+	if (lpParser1->ulIndex == lpParser2->ulIndex)
+	{
+		if (lpParser1->iStructType > lpParser2->iStructType) return 1;
+		if (lpParser1->iStructType == lpParser2->iStructType)
+		{
+			if (lpParser1->bMV && !lpParser2->bMV) return 1;
+			if (!lpParser1->bMV && lpParser2->bMV) return -1;
+			return 0;
+		}
+	}
+	return -1;
+} // CompareSmartViewParser
 
 void MergeArrays(
     _Inout_bytecap_x_(cIn1 * width) LPVOID In1,
@@ -820,6 +876,7 @@ void MergeAddInArrays()
 	DebugPrint(DBGAddInPlumbing,_T("Found 0x%08X built in guids.\n"),g_ulPropGuidArray);
 	DebugPrint(DBGAddInPlumbing,_T("Found 0x%08X built in named ids.\n"),g_ulNameIDArray);
 	DebugPrint(DBGAddInPlumbing,_T("Found 0x%08X built in flags.\n"),g_ulFlagArray);
+	DebugPrint(DBGAddInPlumbing,_T("Found 0x%08X built in Smart View parsers.\n"),g_ulSmartViewParserArray);
 
 	// No add-in == nothing to merge
 	if (!g_lpMyAddins) return;
@@ -836,6 +893,7 @@ void MergeAddInArrays()
 		DebugPrint(DBGAddInPlumbing,_T("Found 0x%08X guids.\n"),lpCurAddIn->ulPropGuids);
 		DebugPrint(DBGAddInPlumbing,_T("Found 0x%08X named ids.\n"),lpCurAddIn->ulNameIDs);
 		DebugPrint(DBGAddInPlumbing,_T("Found 0x%08X flags.\n"),lpCurAddIn->ulPropFlags);
+		DebugPrint(DBGAddInPlumbing,_T("Found 0x%08X Smart View parsers.\n"),lpCurAddIn->ulSmartViewParsers);
 		ulAddInPropGuidArray += lpCurAddIn->ulPropGuids;
 		lpCurAddIn = lpCurAddIn->lpNextAddIn;
 	}
@@ -911,6 +969,20 @@ void MergeAddInArrays()
 			FlagArray = newFlagArray;
 			ulFlagArray = (ULONG) ulnewFlagArray;
 		}
+		if (lpCurAddIn->ulSmartViewParsers)
+		{
+			qsort(lpCurAddIn->lpSmartViewParsers,lpCurAddIn->ulSmartViewParsers,sizeof(SMARTVIEW_PARSER_ARRAY_ENTRY),&CompareSmartViewParser);
+			LPSMARTVIEW_PARSER_ARRAY_ENTRY newSmartViewParserArray = NULL;
+			size_t ulnewSmartViewParserArray = NULL;
+			MergeArrays(SmartViewParserArray,ulSmartViewParserArray,
+				lpCurAddIn->lpSmartViewParsers,lpCurAddIn->ulSmartViewParsers,
+				(LPVOID*) &newSmartViewParserArray,&ulnewSmartViewParserArray,
+				sizeof(SMARTVIEW_PARSER_ARRAY_ENTRY),
+				CompareSmartViewParser);
+			if (SmartViewParserArray != g_SmartViewParserArray) delete[] SmartViewParserArray;
+			SmartViewParserArray = newSmartViewParserArray;
+			ulSmartViewParserArray = (ULONG) ulnewSmartViewParserArray;
+		}
 		if (lpCurAddIn->ulPropGuids)
 		{
 			// Copy guids from lpCurAddIn->lpPropGuids, checking for dupes on the way
@@ -942,6 +1014,7 @@ void MergeAddInArrays()
 	DebugPrint(DBGAddInPlumbing,_T("After merge, 0x%08X prop types.\n"),ulPropTypeArray);
 	DebugPrint(DBGAddInPlumbing,_T("After merge, 0x%08X guids.\n"),ulPropGuidArray);
 	DebugPrint(DBGAddInPlumbing,_T("After merge, 0x%08X flags.\n"),ulFlagArray);
+	DebugPrint(DBGAddInPlumbing,_T("After merge, 0x%08X Smart View parsers.\n"),ulSmartViewParserArray);
 
 	DebugPrint(DBGAddInPlumbing,_T("Done merging add-in arrays\n"));
 } // MergeAddInArrays
@@ -979,6 +1052,7 @@ __declspec(dllexport) void __cdecl AddInLog(BOOL bPrintThreadTime, _Printf_forma
 #endif
 } // AddInLog
 
+#ifndef MRMAPI
 _Check_return_ __declspec(dllexport) HRESULT __cdecl SimpleDialog(_In_z_ LPWSTR szTitle, _Printf_format_string_ LPWSTR szMsg, ...)
 {
 	HRESULT hRes = S_OK;
@@ -1233,6 +1307,7 @@ __declspec(dllexport) void __cdecl FreeDialogResult(_In_ LPADDINDIALOGRESULT lpD
 		delete[] lpDialogResult;
 	}
 } // FreeDialogResult
+#endif
 
 __declspec(dllexport) void __cdecl GetMAPIModule(_In_ HMODULE* lphModule, BOOL bForce)
 {

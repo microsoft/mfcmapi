@@ -33,7 +33,7 @@ public:
 	void ProcessMailboxTable(_In_z_ LPCTSTR szExchangeServerName);
 	void ProcessStore();
 	void ProcessFolders(BOOL bDoRegular, BOOL bDoAssociated, BOOL bDoDescent);
-	void ProcessMessage(_In_ LPMESSAGE lpMessage, _In_opt_ LPVOID lpParentMessageData);
+	void ProcessMessage(_In_ LPMESSAGE lpMessage, BOOL bHasAttach, _In_opt_ LPVOID lpParentMessageData);
 
 protected:
 	LPMAPISESSION	m_lpSession;
@@ -77,7 +77,7 @@ private:
 	void ProcessFolder(BOOL bDoRegular, BOOL bDoAssociated, BOOL bDoDescent);
 	void ProcessContentsTable(ULONG ulFlags);
 	void ProcessRecipients(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData);
-	void ProcessAttachments(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData);
+	void ProcessAttachments(_In_ LPMESSAGE lpMessage, BOOL bHasAttach, _In_ LPVOID lpData);
 
 	// FolderList functions
 	// Add a new node to the end of the folder list

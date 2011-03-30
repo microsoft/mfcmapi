@@ -45,12 +45,9 @@ void LogError(
 	_Output(DBGHRes,NULL, true, szErrString);
 	_Output(DBGHRes,NULL, false, _T("\n"));
 
-#ifdef MRMAPI
-	bShowDialog = false;
-#endif
-
 	if (bShowDialog)
 	{
+#ifndef MRMAPI
 		CEditor Err(
 			NULL,
 			ID_PRODUCTNAME,
@@ -59,6 +56,7 @@ void LogError(
 			CEDITOR_BUTTON_OK);
 		Err.SetPromptPostFix(szErrString);
 		(void) Err.DisplayDialog();
+#endif
 	}
 } // LogError
 
@@ -124,6 +122,7 @@ void __cdecl ErrDialog(_In_z_ LPCSTR szFile, int iLine, UINT uidErrorFmt, ...)
 	_Output(DBGHRes,NULL, true, szCombo);
 	_Output(DBGHRes,NULL, false, _T("\n"));
 
+#ifndef MRMAPI
 	CEditor Err(
 		NULL,
 		ID_PRODUCTNAME,
@@ -132,6 +131,7 @@ void __cdecl ErrDialog(_In_z_ LPCSTR szFile, int iLine, UINT uidErrorFmt, ...)
 		CEDITOR_BUTTON_OK);
 	Err.SetPromptPostFix(szCombo);
 	(void) Err.DisplayDialog();
+#endif
 } // ErrDialog
 
 #define RETURN_ERR_CASE(err) case (err): return(_T(#err))

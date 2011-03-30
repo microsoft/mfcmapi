@@ -22,6 +22,7 @@ public:
 	void InitMessagePath(_In_z_ LPCWSTR szMessageFileName);
 	void InitFolderPathRoot(_In_z_ LPCWSTR szFolderPathRoot);
 	void InitMailboxTablePathRoot(_In_z_ LPCWSTR szMailboxTablePathRoot);
+	void EnableStreamRetry();
 
 private:
 	// Worker functions (dump messages, scan for something, etc)
@@ -57,4 +58,6 @@ private:
 	FILE* m_fFolderProps;
 	FILE* m_fFolderContents;
 	FILE* m_fMailboxTable;
+
+	BOOL m_bRetryStreamProps;
 };

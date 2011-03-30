@@ -1,8 +1,9 @@
 #pragma once
-// MMPropTag.h : Prop tag parsing for MrMAPI
+// MMAcls.h : Acl table dumping for MrMAPI
 
 void DoAcls(_In_ MYOPTIONS ProgOpts);
 void DumpExchangeTable(_In_z_ LPWSTR lpszProfile, _In_ ULONG ulPropTag, _In_ ULONG ulFolder);
+STDMETHODIMP OpenDefaultFolder(ULONG ulFolder, LPMDB lpMDB, LPMAPIFOLDER *lpFolder);
 
 enum {DEFAULT_UNSPECIFIED,
 DEFAULT_CALENDAR,
@@ -18,6 +19,7 @@ DEFAULT_DELETEDITEMS,
 DEFAULT_FINDER,
 DEFAULT_IPM_SUBTREE,
 DEFAULT_INBOX,
+DEFAULT_LOCALFREEBUSY,
 NUM_DEFAULT_PROPS};
 
 // Keep this in sync with the above enum
@@ -36,4 +38,5 @@ static LPSTR FolderNames[] = {
 	"Finder",
 	"IPM_SUBTREE",
 	"Inbox",
+	"Local Freebusy",
 };

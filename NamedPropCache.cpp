@@ -474,7 +474,8 @@ _Check_return_ HRESULT GetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp,
 
 	if (!lpMappingSignature)
 	{
-		WC_H(HrGetOneProp(lpMAPIProp,PR_MAPPING_SIGNATURE,&lpProp));
+		// This error is too chatty to log - ignore it.
+		hRes = HrGetOneProp(lpMAPIProp,PR_MAPPING_SIGNATURE,&lpProp);
 
 		if (SUCCEEDED(hRes) && lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag))
 		{

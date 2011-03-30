@@ -8,7 +8,7 @@
 #include "InterpretProp2.h"
 #include "MAPIFunctions.h"
 #include "ImportProcs.h"
-#include "PropTagArray.h"
+#include "ExtraPropTags.h"
 
 static TCHAR* COMPCLASS = _T("CResCompareEditor"); // STRING_OK
 class CResCompareEditor : public CEditor
@@ -877,7 +877,7 @@ void CResCommentEditor::OnOK()
 				{
 					if (lpData->data.Comment.lpNewProp)
 					{
-						EC_H(PropCopyMore(
+						EC_H(MyPropCopyMore(
 							&lpNewCommentProp[i],
 							lpData->data.Comment.lpNewProp,
 							MAPIAllocateMore,
@@ -885,7 +885,7 @@ void CResCommentEditor::OnOK()
 					}
 					else
 					{
-						EC_H(PropCopyMore(
+						EC_H(MyPropCopyMore(
 							&lpNewCommentProp[i],
 							lpData->data.Comment.lpOldProp,
 							MAPIAllocateMore,
@@ -1164,7 +1164,7 @@ void CRestrictEditor::OnEditAction1()
 						sizeof(SPropValue),
 						m_lpAllocParent,
 						(LPVOID*)&m_lpOutputRes->res.resContent.lpProp));
-					EC_H(PropCopyMore(
+					EC_H(MyPropCopyMore(
 						m_lpOutputRes->res.resContent.lpProp,
 						lpSourceRes->res.resContent.lpProp,
 						MAPIAllocateMore,

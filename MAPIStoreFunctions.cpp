@@ -14,7 +14,6 @@ _Check_return_ HRESULT CallOpenMsgStore(
 						 ULONG			ulFlags,
 						 _Deref_out_ LPMDB*			lpMDB)
 {
-	DebugPrint(DBGOpenItemProp,_T("CallOpenMsgStore ulFlags = 0x%X\n"),ulFlags);
 	if (!lpSession || !lpMDB || !lpEID) return MAPI_E_INVALID_PARAMETER;
 
 	HRESULT hRes = S_OK;
@@ -23,6 +22,7 @@ _Check_return_ HRESULT CallOpenMsgStore(
 	{
 		ulFlags |= MDB_ONLINE;
 	}
+	DebugPrint(DBGOpenItemProp,_T("CallOpenMsgStore ulFlags = 0x%X\n"),ulFlags);
 
 	WC_H(lpSession->OpenMsgStore(
 		ulUIParam,
@@ -36,6 +36,7 @@ _Check_return_ HRESULT CallOpenMsgStore(
 		hRes = S_OK;
 		// perhaps this store doesn't know the MDB_ONLINE flag - remove and retry
 		ulFlags = ulFlags & ~MDB_ONLINE;
+		DebugPrint(DBGOpenItemProp,_T("CallOpenMsgStore 2nd attempt ulFlags = 0x%X\n"),ulFlags);
 
 		WC_H(lpSession->OpenMsgStore(
 			ulUIParam,
@@ -348,6 +349,7 @@ _Check_return_ HRESULT GetServerName(_In_ LPMAPISESSION lpSession, _Deref_out_op
 		EC_H(CopyStringA(szServerName,lpServerName->Value.lpszA,NULL));
 #endif
 	}
+#ifndef MRMAPI
 	else
 	{
 		// prompt the user to enter a server name
@@ -366,6 +368,7 @@ _Check_return_ HRESULT GetServerName(_In_ LPMAPISESSION lpSession, _Deref_out_op
 			EC_H(CopyString(szServerName,MyData.GetString(0),NULL));
 		}
 	}
+#endif
 	MAPIFreeBuffer(lpServerName);
 	if (pGlobalProfSect) pGlobalProfSect->Release();
 	if (pSvcAdmin) pSvcAdmin->Release();
@@ -582,6 +585,7 @@ _Check_return_ HRESULT OpenOtherUsersMailbox(
 	return hRes;
 } // OpenOtherUsersMailbox
 
+#ifndef MRMAPI
 // Display a UI to select a mailbox, then call OpenOtherUsersMailbox with the mailboxDN
 // May return MAPI_E_CANCEL
 _Check_return_ HRESULT OpenOtherUsersMailboxFromGal(
@@ -688,6 +692,7 @@ _Check_return_ HRESULT OpenOtherUsersMailboxFromGal(
 	if (lpPrivateMDB) lpPrivateMDB->Release();
 	return hRes;
 } // OpenOtherUsersMailboxFromGal
+#endif
 
 // Use these guids:
 // pbExchangeProviderPrimaryUserGuid

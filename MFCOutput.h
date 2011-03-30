@@ -66,8 +66,8 @@ void __cdecl DebugPrintEx(ULONG ulDbgLvl, _In_z_ LPCTSTR szClass, _In_z_ LPCTSTR
 // We'll use macros to make these calls so the code will read right
 
 void _OutputBinary(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSBinary lpBin);
-void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpProp, _In_opt_ LPMAPIPROP lpObj);
-void _OutputProperties(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cProps, _In_count_(cProps) LPSPropValue lpProps, _In_opt_ LPMAPIPROP lpObj);
+void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpProp, _In_opt_ LPMAPIPROP lpObj, BOOL bRetryStreamProps);
+void _OutputProperties(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cProps, _In_count_(cProps) LPSPropValue lpProps, _In_opt_ LPMAPIPROP lpObj, BOOL bRetryStreamProps);
 void _OutputSRow(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSRow lpSRow, _In_opt_ LPMAPIPROP lpObj);
 void _OutputSRowSet(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSRowSet lpRowSet, _In_opt_ LPMAPIPROP lpObj);
 void _OutputRestriction(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj);
@@ -80,7 +80,7 @@ void _OutputTable(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPITABLE lpMAPIT
 void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify,  _In_count_(cNotify) LPNOTIFICATION lpNotifications);
 
 #define DebugPrintBinary(ulDbgLvl, lpBin)						_OutputBinary((ulDbgLvl), NULL, (lpBin))
-#define DebugPrintProperties(ulDbgLvl, cProps, lpProps, lpObj)	_OutputProperties((ulDbgLvl), NULL, (cProps), (lpProps), (lpObj))
+#define DebugPrintProperties(ulDbgLvl, cProps, lpProps, lpObj)	_OutputProperties((ulDbgLvl), NULL, (cProps), (lpProps), (lpObj), false)
 #define DebugPrintRestriction(ulDbgLvl, lpRes, lpObj)			_OutputRestriction((ulDbgLvl), NULL, (lpRes), (lpObj))
 #define DebugPrintStream(ulDbgLvl, lpStream)					_OutputStream((ulDbgLvl), NULL, lpStream)
 #define DebugPrintVersion(ulDbgLvl)								_OutputVersion((ulDbgLvl), NULL)
@@ -93,7 +93,8 @@ void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify,  
 #define OutputStreamToFile(fFile, lpStream)						_OutputStream(DBGNoDebug, (fFile), (lpStream))
 #define OutputTableToFile(fFile, lpMAPITable)					_OutputTable(DBGNoDebug, (fFile), (lpMAPITable))
 #define OutputSRowToFile(fFile, lpSRow, lpObj)					_OutputSRow(DBGNoDebug,fFile, lpSRow, lpObj)
-#define OutputPropertiesToFile(fFile, cProps, lpProps, lpObj)	_OutputProperties(DBGNoDebug,fFile, cProps, lpProps, lpObj)
+#define OutputPropertiesToFile(fFile,cProps,lpProps,lpObj,bRetry) _OutputProperties(DBGNoDebug,fFile, cProps, lpProps, lpObj, bRetry)
+#define OutputPropertyToFile(fFile, lpProp, lpObj, bRetry)		_OutputProperty(DBGNoDebug,fFile, lpProp, lpObj, bRetry)
 
 // We'll only output this information in debug builds.
 #ifdef _DEBUG

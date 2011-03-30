@@ -68,6 +68,7 @@ private:
 	void OnQueryDefaultMessageOpt();
 	void OnQueryDefaultRecipOpt();
 	void OnQueryIdentity();
+	void OnResolveMessageClass();
 	void OnSelectForm();
 	void OnSelectFormContainer();
 	void OnSetDefaultStore();

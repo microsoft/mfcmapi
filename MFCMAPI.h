@@ -95,6 +95,49 @@ struct FLAG_ARRAY_ENTRY
 };
 typedef FLAG_ARRAY_ENTRY FAR * LPFLAG_ARRAY_ENTRY;
 
+enum __ParsingTypeEnum
+{
+	IDS_STNOPARSING,
+	IDS_STADDITIONALRENENTRYIDSEX,
+	IDS_STAPPOINTMENTRECURRENCEPATTERN,
+	IDS_STCONVERSATIONINDEX,
+	IDS_STENTRYID,
+	IDS_STENTRYLIST,
+	IDS_STEXTENDEDFOLDERFLAGS,
+	IDS_STEXTENDEDRULECONDITION,
+	IDS_STFLATENTRYLIST,
+	IDS_STFOLDERUSERFIELDS,
+	IDS_STGLOBALOBJECTID,
+	IDS_STPROPERTY,
+	IDS_STPROPERTYDEFINITIONSTREAM,
+	IDS_STRECIPIENTROWSTREAM,
+	IDS_STRECURRENCEPATTERN,
+	IDS_STREPORTTAG,
+	IDS_STRESTRICTION,
+	IDS_STRULECONDITION,
+	IDS_STSEARCHFOLDERDEFINITION,
+	IDS_STSECURITYDESCRIPTOR,
+	IDS_STSID,
+	IDS_STTASKASSIGNERS,
+	IDS_STTIMEZONE,
+	IDS_STTIMEZONEDEFINITION,
+	IDS_STWEBVIEWPERSISTSTREAM,
+	IDS_STNICKNAMECACHE,
+};
+
+struct SMARTVIEW_PARSER_ARRAY_ENTRY
+{
+	ULONG	ulIndex;
+	ULONG	iStructType;
+	BOOL	bMV;
+};
+typedef SMARTVIEW_PARSER_ARRAY_ENTRY FAR * LPSMARTVIEW_PARSER_ARRAY_ENTRY;
+
+#define BINARY_STRUCTURE_ENTRY(_fName,_fType) {PROP_ID((_fName)),(_fType),false},
+#define NAMEDPROP_BINARY_STRUCTURE_ENTRY(_fName,_fGuid,_fType) {PROP_TAG((guid##_fGuid),(_fName)),(_fType),false},
+#define MV_BINARY_STRUCTURE_ENTRY(_fName,_fType) {PROP_ID((_fName)),(_fType),true},
+#define NAMEDPROP_MV_BINARY_STRUCTURE_ENTRY(_fName,_fGuid,_fType) {PROP_TAG((guid##_fGuid),(_fName)),(_fType),true},
+
 // Menu contexts - denote when a menu item should be present. May be combined.
 // Used in _MenuItem and _AddInMenuParams.
 #define MENU_CONTEXT_MAIN                 0x00000001 // Main window
@@ -395,6 +438,15 @@ typedef void (STDMETHODCALLTYPE GETPROPFLAGS)(
 	);
 typedef GETPROPFLAGS FAR *LPGETPROPFLAGS;
 
+// Function: GetSmartViewParserArray
+// Use: Returns a static array of SmartView parsers for MFCMAPI to use in SmartView parsing
+#define szGetSmartViewParserArray "GetSmartViewParserArray" // STRING_OK
+typedef void (STDMETHODCALLTYPE GETSMARTVIEWPARSERARRAY)(
+	_In_ ULONG* lpulSmartViewParserArray, // Number of entries in lppSmartViewParserArray
+	_In_ LPSMARTVIEW_PARSER_ARRAY_ENTRY* lppSmartViewParserArray // Array of SMARTVIEW_PARSER_ARRAY_ENTRY structures
+	);
+typedef GETSMARTVIEWPARSERARRAY FAR *LPGETSMARTVIEWPARSERARRAY;
+
 // Function: GetAPIVersion
 // Use: Returns version number of the API used by the add-in
 // Notes: MUST return MFCMAPI_HEADER_CURRENT_VERSION
@@ -406,22 +458,24 @@ typedef GETAPIVERSION FAR *LPGETAPIVERSION;
 // by the add-in through the CallMenu function, it should only be consulted for debugging purposes.
 struct _AddIn
 {
-	LPADDIN              lpNextAddIn; // Pointer to the next add-in
-	HMODULE              hMod;        // Handle to add-in module
-	LPWSTR               szName;      // Name of add-in
-	LPCALLMENU           pfnCallMenu; // Pointer to function in module for invoking menus
-	ULONG                ulMenu;      // Count of menu items exposed by add-in
-	LPMENUITEM           lpMenu;      // Array of menu items exposed by add-in
-	ULONG                ulPropTags;  // Count of property tags exposed by add-in
-	LPNAME_ARRAY_ENTRY   lpPropTags;  // Array of property tags exposed by add-in
-	ULONG                ulPropTypes; // Count of property tags exposed by add-in
-	LPNAME_ARRAY_ENTRY   lpPropTypes; // Array of property tags exposed by add-in
-	ULONG                ulPropGuids; // Count of property guids exposed by add-in
-	LPGUID_ARRAY_ENTRY   lpPropGuids; // Array of property guids exposed by add-in
-	ULONG                ulNameIDs;   // Count of named property mappings exposed by add-in
-	LPNAMEID_ARRAY_ENTRY lpNameIDs;   // Array of named property mappings exposed by add-in
-	ULONG                ulPropFlags; // Count of flags exposed by add-in
-	LPFLAG_ARRAY_ENTRY   lpPropFlags; // Array of flags exposed by add-in
+	LPADDIN                        lpNextAddIn;        // Pointer to the next add-in
+	HMODULE                        hMod;               // Handle to add-in module
+	LPWSTR                         szName;             // Name of add-in
+	LPCALLMENU                     pfnCallMenu;        // Pointer to function in module for invoking menus
+	ULONG                          ulMenu;             // Count of menu items exposed by add-in
+	LPMENUITEM                     lpMenu;             // Array of menu items exposed by add-in
+	ULONG                          ulPropTags;         // Count of property tags exposed by add-in
+	LPNAME_ARRAY_ENTRY             lpPropTags;         // Array of property tags exposed by add-in
+	ULONG                          ulPropTypes;        // Count of property tags exposed by add-in
+	LPNAME_ARRAY_ENTRY             lpPropTypes;        // Array of property tags exposed by add-in
+	ULONG                          ulPropGuids;        // Count of property guids exposed by add-in
+	LPGUID_ARRAY_ENTRY             lpPropGuids;        // Array of property guids exposed by add-in
+	ULONG                          ulNameIDs;          // Count of named property mappings exposed by add-in
+	LPNAMEID_ARRAY_ENTRY           lpNameIDs;          // Array of named property mappings exposed by add-in
+	ULONG                          ulPropFlags;        // Count of flags exposed by add-in
+	LPFLAG_ARRAY_ENTRY             lpPropFlags;        // Array of flags exposed by add-in
+	ULONG                          ulSmartViewParsers; // Count of Smart View parsers exposed by add-in
+	LPSMARTVIEW_PARSER_ARRAY_ENTRY lpSmartViewParsers; // Array of Smart View parsers exposed by add-in
 };
 
 // Everything below this point is internal to MFCMAPI and should be removed from this header when including it in an add-in
@@ -454,3 +508,6 @@ extern ULONG ulNameIDArray;
 
 extern LPFLAG_ARRAY_ENTRY FlagArray;
 extern ULONG ulFlagArray;
+
+extern LPSMARTVIEW_PARSER_ARRAY_ENTRY SmartViewParserArray;
+extern ULONG ulSmartViewParserArray;

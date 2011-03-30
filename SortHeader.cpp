@@ -3,7 +3,6 @@
 
 #include "stdafx.h"
 #include "SortHeader.h"
-#include "InterpretProp2.h"
 
 CSortHeader::CSortHeader()
 {

@@ -18,8 +18,7 @@ void GUIDNameToGUID(_In_z_ LPCTSTR szGUID, _Deref_out_opt_ LPCGUID* lpGUID);
 
 _Check_return_ LPWSTR NameIDToPropName(_In_ LPMAPINAMEID lpNameID);
 
-void InterpretFlags(_In_ const LPSPropValue lpProp, _Deref_out_opt_z_ LPTSTR* szFlagString);
-void InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, _Deref_out_opt_z_ LPTSTR* szFlagString);
+void InterpretFlags(const enum __NonPropFlag ulFlagName, const LONG lFlagValue, _Deref_out_opt_z_ LPTSTR* szFlagString);
 void InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, _In_z_ LPCTSTR szPrefix, _Deref_out_opt_z_ LPTSTR* szFlagString);
 _Check_return_ CString AllFlagsToString(const ULONG ulFlagName, BOOL bHex);
 

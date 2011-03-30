@@ -22,6 +22,7 @@ _Check_return_ HRESULT AppendEntryID(_Inout_z_count_(cchFileName) LPWSTR szFileN
 	MyHexFromBin(
 		lpBin->lpb,
 		lpBin->cb,
+		false,
 		&szBin);
 
 	if (szBin)
@@ -92,6 +93,7 @@ _Check_return_ HRESULT GetDirectoryPath(_Inout_z_ LPWSTR szPath)
 _Check_return_ HRESULT MyStgOpenStorage(_In_z_ LPCWSTR szMessageFile, BOOL bBestAccess, _Deref_out_ LPSTORAGE* lppStorage)
 {
 	if (!lppStorage) return MAPI_E_INVALID_PARAMETER;
+	DebugPrint(DBGGeneric,_T("MyStgOpenStorage: Opening \"%ws\", bBestAccess == %s\n"),szMessageFile,bBestAccess?_T("True"):_T("False"));
 	HRESULT		hRes = S_OK;
 	ULONG		ulFlags = STGM_TRANSACTED;
 
@@ -968,6 +970,7 @@ _Check_return_ HRESULT DeleteAttachments(_In_ LPMESSAGE lpMessage, _In_opt_z_ LP
 	return hRes;
 } // DeleteAllAttachments
 
+#ifndef MRMAPI
 _Check_return_ HRESULT WriteAttachmentsToFile(_In_ LPMESSAGE lpMessage, HWND hWnd)
 {
 	LPSPropValue	pProps = NULL;
@@ -1043,6 +1046,7 @@ _Check_return_ HRESULT WriteAttachmentsToFile(_In_ LPMESSAGE lpMessage, HWND hWn
 
 	return hRes;
 } // WriteAttachmentsToFile
+#endif
 
 _Check_return_ HRESULT WriteEmbeddedMSGToFile(_In_ LPATTACH lpAttach, _In_z_ LPCWSTR szFileName, BOOL bUnicode, HWND hWnd)
 {
@@ -1216,6 +1220,7 @@ _Check_return_ HRESULT WriteOleToFile(_In_ LPATTACH lpAttach, _In_z_ LPCWSTR szF
 	return hRes;
 } // WriteOleToFile
 
+#ifndef MRMAPI
 _Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd)
 {
 	HRESULT			hRes = S_OK;
@@ -1341,3 +1346,4 @@ _Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd)
 	MAPIFreeBuffer(lpProps);
 	return hRes;
 } // WriteAttachmentToFile
+#endif

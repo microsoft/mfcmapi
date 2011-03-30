@@ -5,10 +5,13 @@
 #include "InterpretProp2.h"
 #include "SmartView.h"
 #include "MMAcls.h"
+#include "MMContents.h"
 #include "MMErr.h"
 #include "MMPropTag.h"
 #include "MMRules.h"
 #include "MMSmartView.h"
+#include "MMMapiMime.h"
+#include <shlwapi.h>
 
 // Initialize MFC for LoadString support later on
 void InitMFC()
@@ -20,11 +23,118 @@ void InitMFC()
 #pragma warning(pop)
 } // InitMFC
 
+HRESULT MrMAPILogonEx(LPCWSTR lpszProfile, LPMAPISESSION FAR* lppSession)
+{
+	HRESULT hRes = S_OK;
+	ULONG ulFlags = MAPI_EXTENDED | MAPI_NO_MAIL | MAPI_UNICODE | MAPI_NEW_SESSION;
+	if (!lpszProfile) ulFlags |= MAPI_USE_DEFAULT;
+
+	WC_H(MAPILogonEx(NULL, (LPTSTR) lpszProfile, NULL,
+		ulFlags,
+		lppSession));
+	return hRes;
+} // MrMAPILogonEx
+
+enum __CommandLineSwitch
+{
+	switchNoSwitch = 0,       // not a switch
+	switchUnknown,            // unknown switch
+	switchVerbose,            // '-v'
+	switchSearch,             // '-s'
+	switchDecimal,            // '-n'
+	switchFolder,             // '-f'
+	switchOutput,             // '-o'
+	switchDispid,             // '-d'
+	switchType,               // '-t'
+	switchGuid,               // '-g'
+	switchError,              // '-e'
+	switchParser,             // '-p'
+	switchInput,              // '-i'
+	switchBinary,             // '-b'
+	switchAcl,                // '-a'
+	switchRule,               // '-r'
+	switchContents,           // '-c'
+	switchAssociatedContents, // '-h'
+	switchMoreProperties,     // '-m'
+	switchNoAddins,           // '-no'
+	switchOnline,             // '-on'
+	switchMAPI,               // '-ma'
+	switchMIME,               // '-mi'
+	switchCCSFFlags,          // '-cc'
+	switchRFC822,             // '-rf'
+	switchWrap,               // '-w'
+	switchEncoding,           // '-en'
+	switchCharset,            // '-ch'
+	switchAddressBook,        // '-ad'
+	switchUnicode,            // '-u'
+	switchProfile,            // '-pr'
+	switchXML,                // '-x'
+};
+
+struct COMMANDLINE_SWITCH
+{
+	__CommandLineSwitch	iSwitch;
+	LPCSTR szSwitch;
+};
+typedef COMMANDLINE_SWITCH FAR * LPCOMMANDLINE_SWITCH;
+
+// All entries before the aliases must be in the
+// same order as the __CommandLineSwitch enum.
+COMMANDLINE_SWITCH g_Switches[] =
+{
+	{switchNoSwitch,           ""},
+	{switchUnknown,            ""},
+	{switchVerbose,            "Verbose"},
+	{switchSearch,             "Search"},
+	{switchDecimal,            "Number"},
+	{switchFolder,             "Folder"},
+	{switchOutput,             "Output"},
+	{switchDispid,             "Dispids"},
+	{switchType,               "Type"},
+	{switchGuid,               "Guids"},
+	{switchError,              "Error"},
+	{switchParser,             "ParserType"},
+	{switchInput,              "Input"},
+	{switchBinary,             "Binary"},
+	{switchAcl,                "Acl"},
+	{switchRule,               "Rules"},
+	{switchContents,           "Contents"},
+	{switchAssociatedContents, "HiddenContents"},
+	{switchMoreProperties,     "MoreProperties"},
+	{switchNoAddins,           "NoAddins"},
+	{switchOnline,             "Online"},
+	{switchMAPI,               "MAPI"},
+	{switchMIME,               "MIME"},
+	{switchCCSFFlags,          "CCSFFlags"},
+	{switchRFC822,             "RFC822"},
+	{switchWrap,               "Wrap"},
+	{switchEncoding,           "Encoding"},
+	{switchCharset,            "Charset"},
+	{switchAddressBook,        "AddressBook"},
+	{switchUnicode,            "Unicode"},
+	{switchProfile,            "Profile"},
+	{switchXML,                "XML"},
+// If we want to add aliases for any switches, add them here
+};
+ULONG g_ulSwitches = _countof(g_Switches);
+
+extern LPADDIN g_lpMyAddins;
+
 void DisplayUsage()
 {
 	InitMFC();
 	printf("MAPI data collection and parsing tool. Supports property tag lookup, error translation,\n");
-	printf("   smart view processing, rule tables and ACL tables.\n");
+	printf("   smart view processing, rule tables, ACL tables, contents tables, and MAPI<->MIME conversion.\n");
+	LPADDIN lpCurAddIn = g_lpMyAddins;
+	if (lpCurAddIn)
+	{
+		printf("Addins Loaded:\n");
+		while (lpCurAddIn)
+		{
+			printf("   %ws\n",lpCurAddIn->szName);
+			lpCurAddIn = lpCurAddIn->lpNextAddIn;
+		}
+	}
 	printf("MrMAPI currently knows:\n");
 	printf("%6d property tags\n",ulPropTagArray);
 	printf("%6d dispids\n",ulNameIDArray);
@@ -34,49 +144,122 @@ void DisplayUsage()
 	printf("%6d smart view parsers\n",g_cuidParsingTypes-1);
 	printf("\n");
 	printf("Usage:\n");
-	printf("   MrMAPI [-S] [-D] [-N] [-T <type>] <number>|<name>\n");
-	printf("   MrMAPI -G\n");
-	printf("   MrMAPI -E <error>\n");
-	printf("   MrMAPI -P <type> -I <input file> [-B] [-O <output file>]\n");
-	printf("   MrMAPI -R <profile> [-F <folder>]\n");
-	printf("   MrMAPI -A <profile> [-F <folder>]\n");
+	printf("   MrMAPI [-%s] [-%s] [-%s] [-%s <type>] <number>|<name>\n",
+		g_Switches[switchSearch].szSwitch,g_Switches[switchDispid].szSwitch,g_Switches[switchDecimal].szSwitch,g_Switches[switchType].szSwitch);
+	printf("   MrMAPI -%s\n",g_Switches[switchGuid].szSwitch);
+	printf("   MrMAPI -%s <error>\n",g_Switches[switchError].szSwitch);
+	printf("   MrMAPI -%s <type> -%s <input file> [-%s] [-%s <output file>]\n",
+		g_Switches[switchParser].szSwitch,g_Switches[switchInput].szSwitch,g_Switches[switchBinary].szSwitch,g_Switches[switchOutput].szSwitch);
+	printf("   MrMAPI -%s [<profile>] [-%s <folder>]\n",g_Switches[switchRule].szSwitch,g_Switches[switchFolder].szSwitch);
+	printf("   MrMAPI -%s [<profile>] [-%s <folder>]\n",g_Switches[switchAcl].szSwitch,g_Switches[switchFolder].szSwitch);
+	printf("   MrMAPI [-%s | -%s] [<profile>] [-%s <folder>] [-%s <output directory>]\n",
+		g_Switches[switchContents].szSwitch,g_Switches[switchAssociatedContents].szSwitch,g_Switches[switchFolder].szSwitch,g_Switches[switchOutput].szSwitch);
+	printf("   MrMAPI -%s -%s <path to input file> -%s <path to output file>\n",
+		g_Switches[switchXML].szSwitch,g_Switches[switchInput].szSwitch,g_Switches[switchOutput].szSwitch);
+	printf("   MrMAPI -%s | -%s -%s <path to input file> -%s <path to output file> [-%s <conversion flags>]\n",
+		g_Switches[switchMAPI].szSwitch,g_Switches[switchMIME].szSwitch,g_Switches[switchInput].szSwitch,g_Switches[switchOutput].szSwitch,g_Switches[switchCCSFFlags].szSwitch);
+	printf("          [-%s] [-%s <Decimal number of characters>] [-%s <Decimal number indicating encoding>]\n",
+		g_Switches[switchRFC822].szSwitch,g_Switches[switchWrap].szSwitch,g_Switches[switchEncoding].szSwitch);
+	printf("          [-%s] [-%s] [-%s CodePage CharSetType CharSetApplyType]\n",
+		g_Switches[switchAddressBook].szSwitch,g_Switches[switchUnicode].szSwitch,g_Switches[switchCharset].szSwitch);
+	printf("\n");
+	printf("All switches may be shortened if the intended switch is unambiguous.\n");
+	printf("For example, -T may be used instead of -%s.\n",g_Switches[switchType].szSwitch);
 	printf("\n");
 	printf("   Property Tag Lookup:\n");
-	printf("   -S   Perform substring search.\n");
+	printf("   -S   (or -%s) Perform substring search.\n",g_Switches[switchSearch].szSwitch);
 	printf("           With no parameters prints all known properties.\n");
-	printf("   -D   Search dispids.\n");
-	printf("   -N   Number is in decimal. Ignored for non-numbers.\n");
-	printf("   -T   Print information on specified type.\n");
+	printf("   -D   (or -%s) Search dispids.\n",g_Switches[switchDispid].szSwitch);
+	printf("   -N   (or -%s) Number is in decimal. Ignored for non-numbers.\n",g_Switches[switchDecimal].szSwitch);
+	printf("   -T   (or -%s) Print information on specified type.\n",g_Switches[switchType].szSwitch);
 	printf("           With no parameters prints list of known types.\n");
 	printf("           When combined with -S, restrict output to given type.\n");
-	printf("   -G   Display list of known guids.\n");
+	printf("   -G   (or -%s) Display list of known guids.\n",g_Switches[switchGuid].szSwitch);
 	printf("\n");
 	printf("   Error Parsing:\n");
-	printf("   -E   Map an error code to its name and vice versa (may be combined with -s and -n switches).\n");
+	printf("   -E   (or -%s) Map an error code to its name and vice versa.\n",g_Switches[switchError].szSwitch);
+	printf("           May be combined with -S and -N switches.\n");
 	printf("\n");
 	printf("   Smart View Parsing:\n");
-	printf("   -P   Parser type (number). See list below for supported parsers.\n");
-	printf("   -I   Input file.\n");
-	printf("   -B   Input file is binary. Default is hex encoded text.\n");
-	printf("   -O   Output file (optional).\n");
+	printf("   -P   (or -%s) Parser type (number). See list below for supported parsers.\n",g_Switches[switchParser].szSwitch);
+	printf("   -B   (or -%s) Input file is binary. Default is hex encoded text.\n",g_Switches[switchBinary].szSwitch);
 	printf("\n");
 	printf("   Rules Table:\n");
-	printf("   -R   Output rules table. Profile optional\n");
-	printf("   -F   Folder to output. Default is Inbox. See list below for supported folders.\n");
+	printf("   -R   (or -%s) Output rules table. Profile optional.\n",g_Switches[switchRule].szSwitch);
 	printf("\n");
 	printf("   ACL Table:\n");
-	printf("   -A   Output ACL table. Profile optional\n");
-	printf("   -F   Folder to output. Default is Inbox. See list below for supported folders.\n");
+	printf("   -A   (or -%s) Output ACL table. Profile optional.\n",g_Switches[switchAcl].szSwitch);
+	printf("\n");
+	printf("   Contents Table:\n");
+	printf("   -C   (or -%s) Output contents table. May be combined with -H. Profile optional.\n",g_Switches[switchContents].szSwitch);
+	printf("   -H   (or -%s) Output associated contents table. May be combined with -C. Profile optional\n",g_Switches[switchAssociatedContents].szSwitch);
+	printf("\n");
+	printf("   MSG File Properties\n");
+	printf("   -X   (or -%s) Output properties of an MSG file as XML.\n",g_Switches[switchXML].szSwitch);
+	printf("\n");
+	printf("   MAPI <-> MIME Conversion:\n");
+	printf("   -Ma  (or -%s) Convert an EML file to MAPI format (MSG file).\n",g_Switches[switchMAPI].szSwitch);
+	printf("   -Mi  (or -%s) Convert an MSG file to MIME format (EML file).\n",g_Switches[switchMIME].szSwitch);
+	printf("   -I   (or -%s) Indicates the input file for conversion, either a MIME-formatted EML file or an MSG file.\n",g_Switches[switchInput].szSwitch);
+	printf("   -O   (or -%s) Indicates the output file for the convertion.\n",g_Switches[switchOutput].szSwitch);
+	printf("   -Cc  (or -%s) Indicates specific flags to pass to the converter.\n",g_Switches[switchCCSFFlags].szSwitch);
+	printf("           Available values (these may be OR'ed together):\n");
+	printf("              MIME -> MAPI:\n");
+	printf("                CCSF_SMTP:        0x02\n");
+	printf("                CCSF_INCLUDE_BCC: 0x20\n");
+	printf("                CCSF_USE_RTF:     0x80\n");
+	printf("              MAPI -> MIME:\n");
+	printf("                CCSF_NOHEADERS:        0x0004\n");
+	printf("                CCSF_USE_TNEF:         0x0010\n");
+	printf("                CCSF_8BITHEADERS:      0x0040\n");
+	printf("                CCSF_PLAIN_TEXT_ONLY:  0x1000\n");
+	printf("                CCSF_NO_MSGID:         0x4000\n");
+	printf("                CCSF_EMBEDDED_MESSAGE: 0x8000\n");
+	printf("   -Rf  (or -%s) (MAPI->MIME only) Indicates the EML should be generated in RFC822 format.\n",g_Switches[switchRFC822].szSwitch);
+	printf("           If not present, RFC1521 is used instead.\n");
+	printf("   -W   (or -%s) (MAPI->MIME only) Indicates the maximum number of characters in each line in the\n",g_Switches[switchWrap].szSwitch);
+	printf("           generated EML. Default value is 74. A value of 0 indicates no wrapping.\n");
+	printf("   -En  (or -%s) (MAPI->MIME only) Indicates the encoding type to use. Supported values are:\n",g_Switches[switchEncoding].szSwitch);
+	printf("              1 - Base64\n");
+	printf("              2 - UUENCODE\n");
+	printf("              3 - Quoted-Printable\n");
+	printf("              4 - 7bit (DEFAULT)\n");
+	printf("              5 - 8bit\n");
+	printf("   -Ad  (or -%s) Pass MAPI Address Book into converter. Profile optional.\n",g_Switches[switchAddressBook].szSwitch);
+	printf("   -U   (or -%s) (MIME->MAPI only) The resulting MSG file should be unicode.\n",g_Switches[switchUnicode].szSwitch);
+	printf("   -Ch  (or -%s) (MIME->MAPI only) Character set - three required parameters:\n",g_Switches[switchCharset].szSwitch);
+	printf("           CodePage - common values (others supported)\n");
+	printf("              1252  - CP_USASCII      - Indicates the USASCII character set, Windows code page 1252\n");
+	printf("              1200  - CP_UNICODE      - Indicates the Unicode character set, Windows code page 1200\n");
+	printf("              50932 - CP_JAUTODETECT  - Indicates Japanese auto-detect (50932)\n");
+	printf("              50949 - CP_KAUTODETECT  - Indicates Korean auto-detect (50949)\n");
+	printf("              50221 - CP_ISO2022JPESC - Indicates the Internet character set ISO-2022-JP-ESC\n");
+	printf("              50222 - CP_ISO2022JPSIO - Indicates the Internet character set ISO-2022-JP-SIO\n");
+	printf("           CharSetType - supported values (see CHARSETTYPE)\n");
+	printf("              0 - CHARSET_BODY\n");
+	printf("              1 - CHARSET_HEADER\n");
+	printf("              2 - CHARSET_WEB\n");
+	printf("           CharSetApplyType - supported values (see CSETAPPLYTYPE)\n");
+	printf("              0 - CSET_APPLY_UNTAGGED\n");
+	printf("              1 - CSET_APPLY_ALL\n");
+	printf("              2 - CSET_APPLY_TAG_ALL\n");
+	printf("\n");
+	printf("   Universal Options:\n");
+	printf("   -I   (or -%s) Input file.\n",g_Switches[switchInput].szSwitch);
+	printf("   -O   (or -%s) Output file or directory.\n",g_Switches[switchOutput].szSwitch);
+	printf("   -F   (or -%s) Folder to scan. Default is Inbox. See list below for supported folders.\n",g_Switches[switchFolder].szSwitch);
+	printf("   -Pr  (or -%s) Profile for MAPILogonEx.\n",g_Switches[switchProfile].szSwitch);
+	printf("   -M   (or -%s) More properties. Tries harder to get stream properties. May take longer.\n",g_Switches[switchMoreProperties].szSwitch);
+	printf("   -No  (or -%s) No Addins. Don't load any add-ins.\n",g_Switches[switchNoAddins].szSwitch);
+	printf("   -On  (or -%s) Online mode. Bypass cached mode.\n",g_Switches[switchOnline].szSwitch);
+	printf("   -V   (or -%s) Verbose. Turn on all debug output.\n",g_Switches[switchVerbose].szSwitch);
 	printf("\n");
 	printf("Smart View Parsers:\n");
 	// Print smart view options
 	ULONG i = 1;
 	for (i = 1 ; i < g_cuidParsingTypes ; i++)
 	{
-		HRESULT hRes = S_OK;
-		CString szStruct;
-		EC_B(szStruct.LoadString(g_uidParsingTypes[i]));
-		_tprintf(_T("   %2d %s\n"),i,(LPCTSTR) szStruct);
+		_tprintf(_T("   %2d %ws\n"),i,g_uidParsingTypes[i].lpszName);
 	}
 	printf("\n");
 	printf("Folders:\n");
@@ -121,128 +304,216 @@ BOOL bSetMode(_In_ CmdMode* pMode, _In_ CmdMode TargetMode)
 	return false;
 } // bSetMode
 
-// Checks if szArg is an option, and if it is, returns first character
-char GetOption(_In_z_ LPCSTR szArg)
+// Checks if szArg is an option, and if it is, returns which parser it is
+// We return the first match, so g_Switches should be ordered appropriately
+__CommandLineSwitch ParseArgument(_In_z_ LPCSTR szArg)
 {
-	if (!szArg) return NULL;
+	if (!szArg || !szArg[0]) return switchNoSwitch;
+
+	ULONG i = 0;
+	LPCSTR szSwitch = NULL;
+
+	// Check if this is a switch at all
 	switch (szArg[0])
 	{
 	case '-':
 	case '/':
 	case '\\':
-		if (szArg[1] != 0) return (char) tolower(szArg[1]);
+		if (szArg[1] != 0) szSwitch = &szArg[1];
 		break;
 	default:
+		return switchNoSwitch;
 		break;
 	}
-	return NULL;
-} // GetOption
+
+	for (i = 0 ; i < g_ulSwitches ; i++)
+	{
+		// If we have a match
+		if (StrStrIA(g_Switches[i].szSwitch,szSwitch) == g_Switches[i].szSwitch)
+		{
+			return g_Switches[i].iSwitch;
+		}
+	}
+	return switchUnknown;
+} // ParseArgument
 
 // Parses command line arguments and fills out MYOPTIONS
 BOOL ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * pRunOpts)
 {
 	HRESULT hRes = S_OK;
+	LPSTR szEndPtr = NULL;
+
 	// Clear our options list
 	ZeroMemory(pRunOpts,sizeof(MYOPTIONS));
 
 	pRunOpts->ulTypeNum = ulNoMatch;
+	pRunOpts->ulFolder = DEFAULT_INBOX;
 
 	if (!pRunOpts) return false;
 	if (1 == argc) return false;
 
 	for (int i = 1; i < argc; i++)
 	{
-		switch (GetOption(argv[i]))
+		switch (ParseArgument(argv[i]))
 		{
-			// Global flags
-		case 's':
+		// Global flags
+		case switchVerbose:
+			pRunOpts->bVerbose = true;
+			break;
+		case switchNoAddins:
+			pRunOpts->bNoAddins = true;
+			break;
+		case switchOnline:
+			pRunOpts->bOnline = true;
+			break;
+		case switchSearch:
 			pRunOpts->bDoPartialSearch = true;
 			break;
-		case 'n':
+		case switchDecimal:
 			pRunOpts->bDoDecimal = true;
 			break;
+		case switchFolder:
+			if (argc <= i+1 || switchNoSwitch != ParseArgument(argv[i+1])) return false;
+			pRunOpts->ulFolder = strtoul(argv[i+1],&szEndPtr,10);
+			i++;
+			break;
+		case switchInput:
+			if (argc <= i+1 || switchNoSwitch != ParseArgument(argv[i+1])) return false;
+			EC_H(AnsiToUnicode(argv[i+1],&pRunOpts->lpszInput));
+			i++;
+			break;
+		case switchOutput:
+			if (argc <= i+1 || switchNoSwitch != ParseArgument(argv[i+1])) return false;
+			EC_H(AnsiToUnicode(argv[i+1],&pRunOpts->lpszOutput));
+			i++;
+			break;
+		case switchProfile:
+			if (argc <= i+1 || switchNoSwitch != ParseArgument(argv[i+1])) return false;
+			EC_H(AnsiToUnicode(argv[i+1],&pRunOpts->lpszProfile));
+			i++;
+			break;
+		case switchMoreProperties:
+			pRunOpts->bRetryStreamProps = true;
+			break;
 		// Proptag parsing
-		case 'd':
+		case switchDispid:
 			if (!bSetMode(&pRunOpts->Mode,cmdmodePropTag)) return false;
 			pRunOpts->bDoDispid = true;
 			break;
-		case 't':
+		case switchType:
 			if (!bSetMode(&pRunOpts->Mode,cmdmodePropTag)) return false;
 			pRunOpts->bDoType = true;
 			// If we have a next argument and it's not an option, parse it as a type
-			if (i+1 < argc && !GetOption(argv[i+1]))
+			if (i+1 < argc && switchNoSwitch == ParseArgument(argv[i+1]))
 			{
 				pRunOpts->ulTypeNum = PropTypeNameToPropTypeA(argv[i+1]);
 				i++;
 			}
 			break;
-			// GUID
-		case 'g':
+		// GUID
+		case switchGuid:
 			if (!bSetMode(&pRunOpts->Mode,cmdmodeGuid)) return false;
 			break;
 		// Error parsing
-		case 'e':
+		case switchError:
 			if (!bSetMode(&pRunOpts->Mode,cmdmodeErr)) return false;
 			break;
 		// Smart View parsing
-		case 'p':
+		case switchParser:
 			if (!bSetMode(&pRunOpts->Mode,cmdmodeSmartView)) return false;
-			if (i+1 < argc)
-			{
-				LPSTR szEndPtr = NULL;
-				pRunOpts->ulParser = strtoul(argv[i+1],&szEndPtr,10);
-				i++;
-			}
+			if (argc <= i+1 || switchNoSwitch != ParseArgument(argv[i+1])) return false;
+			pRunOpts->ulParser = strtoul(argv[i+1],&szEndPtr,10);
+			i++;
 			break;
-		case 'i':
-			if (!bSetMode(&pRunOpts->Mode,cmdmodeSmartView)) return false;
-			if (i+1 < argc)
-			{
-				EC_H(AnsiToUnicode(argv[i+1],&pRunOpts->lpszInput));
-				i++;
-			}
-			break;
-		case 'b':
+		case switchBinary:
 			if (!bSetMode(&pRunOpts->Mode,cmdmodeSmartView)) return false;
 			pRunOpts->bBinaryFile = true;
 			break;
-		case 'o':
-			if (!bSetMode(&pRunOpts->Mode,cmdmodeSmartView)) return false;
-			if (i+1 < argc)
-			{
-				EC_H(AnsiToUnicode(argv[i+1],&pRunOpts->lpszOutput));
-				i++;
-			}
-			break;
-		case 'a':
+		// ACL Table
+		case switchAcl:
 			if (!bSetMode(&pRunOpts->Mode,cmdmodeAcls)) return false;
-			if (i+1 < argc && !GetOption(argv[i+1]))
-			{
-				EC_H(AnsiToUnicode(argv[i+1],&pRunOpts->lpszProfile));
-				i++;
-			}
 			break;
-		case 'r':
+		// Rules Table
+		case switchRule:
 			if (!bSetMode(&pRunOpts->Mode,cmdmodeRules)) return false;
-			if (i+1 < argc && !GetOption(argv[i+1]))
-			{
-				EC_H(AnsiToUnicode(argv[i+1],&pRunOpts->lpszProfile));
-				i++;
-			}
 			break;
-		case 'f':
-			if (i+1 < argc && !GetOption(argv[i+1]))
-			{
-				LPSTR szEndPtr = NULL;
-				pRunOpts->ulFolder = strtoul(argv[i+1],&szEndPtr,10);
-				i++;
-			}
+		// Contents tables
+		case switchContents:
+			if (!bSetMode(&pRunOpts->Mode,cmdmodeContents)) return false;
+			pRunOpts->bDoContents = true;
 			break;
-		case NULL:
+		case switchAssociatedContents:
+			if (!bSetMode(&pRunOpts->Mode,cmdmodeContents)) return false;
+			pRunOpts->bDoAssociatedContents = true;
+			break;
+		// XML
+		case switchXML:
+			if (!bSetMode(&pRunOpts->Mode,cmdmodeXML)) return false;
+			break;
+		// MAPIMIME
+		case switchMAPI:
+			if (!bSetMode(&pRunOpts->Mode,cmdmodeMAPIMIME)) return false;
+			pRunOpts->ulMAPIMIMEFlags |= MAPIMIME_TOMAPI;
+			break;
+		case switchMIME:
+			if (!bSetMode(&pRunOpts->Mode,cmdmodeMAPIMIME)) return false;
+			pRunOpts->ulMAPIMIMEFlags |= MAPIMIME_TOMIME;
+			break;
+		case switchCCSFFlags:
+			if (!bSetMode(&pRunOpts->Mode,cmdmodeMAPIMIME)) return false;
+			if (argc <= i+1 || switchNoSwitch != ParseArgument(argv[i+1])) return false;
+			pRunOpts->ulConvertFlags = strtoul(argv[i+1],&szEndPtr,10);
+			i++;
+			break;
+		case switchRFC822:
+			if (!bSetMode(&pRunOpts->Mode,cmdmodeMAPIMIME)) return false;
+			pRunOpts->ulMAPIMIMEFlags |= MAPIMIME_RFC822;
+			break;
+		case switchWrap:
+			if (!bSetMode(&pRunOpts->Mode,cmdmodeMAPIMIME)) return false;
+			if (argc <= i+1 || switchNoSwitch != ParseArgument(argv[i+1])) return false;
+			pRunOpts->ulWrapLines = strtoul(argv[i+1], &szEndPtr, 10);
+			pRunOpts->ulMAPIMIMEFlags |= MAPIMIME_WRAP;
+			i++;
+			break;
+		case switchEncoding:
+			if (!bSetMode(&pRunOpts->Mode,cmdmodeMAPIMIME)) return false;
+			if (argc <= i+1 || switchNoSwitch != ParseArgument(argv[i+1])) return false;
+			pRunOpts->ulEncodingType = strtoul(argv[i+1], &szEndPtr, 10);
+			pRunOpts->ulMAPIMIMEFlags |= MAPIMIME_ENCODING;
+			i++;
+			break;
+		case switchCharset:
+			if (!bSetMode(&pRunOpts->Mode,cmdmodeMAPIMIME)) return false;
+			if (argc <= i+3 ||
+				switchNoSwitch != ParseArgument(argv[i+1]) ||
+				switchNoSwitch != ParseArgument(argv[i+2]) ||
+				switchNoSwitch != ParseArgument(argv[i+3]))
+				return false;
+
+			pRunOpts->ulCodePage = strtoul(argv[i+1], &szEndPtr, 10);
+			pRunOpts->cSetType = (CHARSETTYPE) strtoul(argv[i+2], &szEndPtr, 10);
+			if (pRunOpts->cSetType > CHARSET_WEB) return false;
+			pRunOpts->cSetApplyType = (CSETAPPLYTYPE) strtoul(argv[i+3], &szEndPtr, 10);
+			if (pRunOpts->cSetApplyType > CSET_APPLY_TAG_ALL) return false;
+			pRunOpts->ulMAPIMIMEFlags |= MAPIMIME_CHARSET;
+			i += 3;
+			break;
+		case switchAddressBook:
+			if (!bSetMode(&pRunOpts->Mode,cmdmodeMAPIMIME)) return false;
+			pRunOpts->ulMAPIMIMEFlags |= MAPIMIME_ADDRESSBOOK;
+			break;
+		case switchUnicode:
+			if (!bSetMode(&pRunOpts->Mode,cmdmodeMAPIMIME)) return false;
+			pRunOpts->ulMAPIMIMEFlags |= MAPIMIME_UNICODE;
+			break;
+
+		case switchNoSwitch:
 			// naked option without a flag - we only allow one of these
 			if (pRunOpts->lpszUnswitchedOption) return false; // He's already got one, you see.
 			EC_H(AnsiToUnicode(argv[i],&pRunOpts->lpszUnswitchedOption));
 			break;
+		case switchUnknown:
 		default:
 			// display help
 			return false;
@@ -253,11 +524,21 @@ BOOL ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 	// If we didn't get a mode set, assume we're in prop tag mode
 	if (cmdmodeUnknown == pRunOpts->Mode) pRunOpts->Mode = cmdmodePropTag;
 
+	// If we weren't passed an output file/directory, remember the current directory
+	if (!pRunOpts->lpszOutput)
+	{
+		CHAR strPath[_MAX_PATH];
+		GetCurrentDirectoryA(_MAX_PATH,strPath);
+
+		EC_H(AnsiToUnicode(strPath,&pRunOpts->lpszOutput));
+	}
+
 	// Validate that we have bare minimum to run
 	switch (pRunOpts->Mode)
 	{
 	case cmdmodePropTag:
 		if (pRunOpts->bDoType && !pRunOpts->bDoPartialSearch && (pRunOpts->lpszUnswitchedOption != NULL)) return false;
+		if (!pRunOpts->bDoType && !pRunOpts->bDoPartialSearch && (pRunOpts->lpszUnswitchedOption == NULL)) return false;
 		break;
 	case cmdmodeGuid:
 		// Nothing to check
@@ -267,14 +548,42 @@ BOOL ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 		break;
 	case cmdmodeAcls:
 		// Nothing to check - both lpszProfile and ulFolder are optional
-		if (DEFAULT_UNSPECIFIED == pRunOpts->ulFolder) pRunOpts->ulFolder = DEFAULT_INBOX;
 		break;
 	case cmdmodeRules:
 		// Nothing to check - both lpszProfile and ulFolder are optional
-		if (DEFAULT_UNSPECIFIED == pRunOpts->ulFolder) pRunOpts->ulFolder = DEFAULT_INBOX;
+		break;
+	case cmdmodeContents:
+		if (!pRunOpts->bDoContents && !pRunOpts->bDoAssociatedContents) return false;
+		break;
+	case cmdmodeXML:
+		if (!pRunOpts->lpszInput) return false;
+		break;
+	case cmdmodeMAPIMIME:
+#define CHECKFLAG(__flag) ((pRunOpts->ulMAPIMIMEFlags & (__flag)) == (__flag))
+		// Can't convert both ways at once
+		if (CHECKFLAG(MAPIMIME_TOMAPI) && CHECKFLAG(MAPIMIME_TOMIME)) return false;
+
+		// Should have given us source and target files
+		if (pRunOpts->lpszInput == NULL || 
+			pRunOpts->lpszOutput == NULL)
+			return false;
+
+		// Make sure there's no MIME-only options specified in a MIME->MAPI conversion
+		if (CHECKFLAG(MAPIMIME_TOMAPI) &&
+			(CHECKFLAG(MAPIMIME_RFC822) ||
+			CHECKFLAG(MAPIMIME_ENCODING) ||
+			CHECKFLAG(MAPIMIME_WRAP)))
+			return false;
+
+		// Make sure there's no MAPI-only options specified in a MAPI->MIME conversion
+		if (CHECKFLAG(MAPIMIME_TOMIME) &&
+			(CHECKFLAG(MAPIMIME_CHARSET) ||
+			CHECKFLAG(MAPIMIME_UNICODE)))
+			return false;
 		break;
 	case cmdmodeErr:
 		// Nothing to check
+		break;
 	default:
 		break;
 	}
@@ -285,44 +594,75 @@ BOOL ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 
 void main(_In_ int argc, _In_count_(argc) char * argv[])
 {
-	LoadAddIns();
+	// Set up our property arrays or nothing works
+	MergeAddInArrays();
+
+	RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD = 1;
+	RegKeys[regkeyUSE_GETPROPLIST].ulCurDWORD = 1;
+	RegKeys[regkeyPARSED_NAMED_PROPS].ulCurDWORD = 1;
+	RegKeys[regkeyCACHE_NAME_DPROPS].ulCurDWORD = 1;
 
 	MYOPTIONS ProgOpts;
+	BOOL bGoodCommandLine = ParseArgs(argc, argv, &ProgOpts);
 
-	if (!ParseArgs(argc, argv, &ProgOpts))
+	if (ProgOpts.bVerbose)
+	{
+		InitMFC();
+		RegKeys[regkeyDEBUG_TAG].ulCurDWORD = 0xFFFFFFFF;
+	}
+
+	if (!ProgOpts.bNoAddins)
+	{
+		RegKeys[regkeyLOADADDINS].ulCurDWORD = true;
+		LoadAddIns();
+	}
+
+	if (!bGoodCommandLine)
 	{
 		DisplayUsage();
-		delete[] ProgOpts.lpszUnswitchedOption;
-		delete[] ProgOpts.lpszInput;
-		delete[] ProgOpts.lpszOutput;
-		delete[] ProgOpts.lpszProfile;
-		return;
 	}
-
-	switch (ProgOpts.Mode)
+	else
 	{
-	case cmdmodePropTag:
-		DoPropTags(ProgOpts);
-		break;
-	case cmdmodeGuid:
-		DoGUIDs(ProgOpts);
-		break;
-	case cmdmodeSmartView:
-		DoSmartView(ProgOpts);
-		break;
-	case cmdmodeAcls:
-		DoAcls(ProgOpts);
-		break;
-	case cmdmodeRules:
-		DoRules(ProgOpts);
-		break;
-	case cmdmodeErr:
-		DoErrorParse(ProgOpts);
-		break;
+		if (ProgOpts.bOnline)
+		{
+			RegKeys[regKeyMAPI_NO_CACHE].ulCurDWORD = true;
+			RegKeys[regkeyMDB_ONLINE].ulCurDWORD = true;
+		}
+
+		switch (ProgOpts.Mode)
+		{
+		case cmdmodePropTag:
+			DoPropTags(ProgOpts);
+			break;
+		case cmdmodeGuid:
+			DoGUIDs(ProgOpts);
+			break;
+		case cmdmodeSmartView:
+			DoSmartView(ProgOpts);
+			break;
+		case cmdmodeAcls:
+			DoAcls(ProgOpts);
+			break;
+		case cmdmodeRules:
+			DoRules(ProgOpts);
+			break;
+		case cmdmodeErr:
+			DoErrorParse(ProgOpts);
+			break;
+		case cmdmodeContents:
+			DoContents(ProgOpts);
+			break;
+		case cmdmodeXML:
+			DoMSG(ProgOpts);
+			break;
+		case cmdmodeMAPIMIME:
+			DoMAPIMIME(ProgOpts);
+			break;
+		}
 	}
 
+	delete[] ProgOpts.lpszProfile;
 	delete[] ProgOpts.lpszUnswitchedOption;
 	delete[] ProgOpts.lpszInput;
 	delete[] ProgOpts.lpszOutput;
-	delete[] ProgOpts.lpszProfile;
 } // main

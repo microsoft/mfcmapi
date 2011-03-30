@@ -13,13 +13,13 @@
 #include "DbgView.h"
 #include "MFCUtilityFunctions.h"
 #include "MAPIFunctions.h"
-#include "InterpretProp.h"
 #include "InterpretProp2.h"
 #include "AboutDlg.h"
 #include "AdviseSink.h"
-#include "PropTagArray.h"
+#include "ExtraPropTags.h"
 #include <msi.h>
 #include "ImportProcs.h"
+#include "SmartView.h"
 
 static TCHAR* CLASS = _T("CBaseDialog");
 
@@ -729,10 +729,10 @@ void GetOutlookVersionString(_Deref_out_opt_ LPTSTR* lppszPath, _Deref_out_opt_z
 	if (!pfnMsiProvideQualifiedComponent || !pfnMsiGetFileVersion) return;
 
 	TCHAR pszaOutlookQualifiedComponents[][MAX_PATH] = {
-		_T("{BC174BAD-2F53-4855-A1D5-0D575C19B1EA}"), // O11_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
-		_T("{BC174BAD-2F53-4855-A1D5-1D575C19B1EA}"), // O11_CATEGORY_GUID_CORE_OFFICE (debug) // STRING_OK
+		_T("{1E77DE88-BCAB-4C37-B9E5-073AF52DFD7A}"), // O14_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
 		_T("{24AAE126-0911-478F-A019-07B875EB9996}"), // O12_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
-		_T("{1E77DE88-BCAB-4C37-B9E5-073AF52DFD7A}")  // O14_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
+		_T("{BC174BAD-2F53-4855-A1D5-0D575C19B1EA}"), // O11_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
+		_T("{BC174BAD-2F53-4855-A1D5-1D575C19B1EA}"), // O11_CATEGORY_GUID_CORE_OFFICE (debug)  // STRING_OK
 	};
 	int nOutlookQualifiedComponents = _countof(pszaOutlookQualifiedComponents);
 	int i = 0;
@@ -743,11 +743,26 @@ void GetOutlookVersionString(_Deref_out_opt_ LPTSTR* lppszPath, _Deref_out_opt_z
 	{
 		WC_D(ret,pfnMsiProvideQualifiedComponent(
 			pszaOutlookQualifiedComponents[i],
-			_T("outlook.exe"), // STRING_OK
+			_T("outlook.x64.exe"), // STRING_OK
 			(DWORD) INSTALLMODE_DEFAULT,
 			NULL,
 			&dwValueBuf));
 		if (ERROR_SUCCESS == ret) break;
+	}
+
+	if (ERROR_SUCCESS != ret)
+	{
+		hRes = S_OK;
+		for (i = 0; i < nOutlookQualifiedComponents; i++)
+		{
+			WC_D(ret,pfnMsiProvideQualifiedComponent(
+				pszaOutlookQualifiedComponents[i],
+				_T("outlook.exe"), // STRING_OK
+				(DWORD) INSTALLMODE_DEFAULT,
+				NULL,
+				&dwValueBuf));
+			if (ERROR_SUCCESS == ret) break;
+		}
 	}
 
 	if (ERROR_SUCCESS == ret)
@@ -937,7 +952,7 @@ void CBaseDialog::OnOpenEntryID(_In_opt_ LPSBinary lpBin)
 		if (lpUnk)
 		{
 			LPTSTR szFlags = NULL;
-			InterpretFlags(PROP_ID(PR_OBJECT_TYPE), ulObjType, &szFlags);
+			InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE, &szFlags);
 			DebugPrint(DBGGeneric,_T("OnOpenEntryID: Got object (%p) of type 0x%08X = %s\n"),lpUnk,ulObjType,szFlags);
 			delete[] szFlags;
 			szFlags = NULL;

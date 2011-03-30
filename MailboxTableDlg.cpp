@@ -13,7 +13,6 @@
 #include "Editor.h"
 #include "PropertyTagEditor.h"
 #include "InterpretProp2.h"
-#include "PropTagArray.h"
 
 static TCHAR* CLASS = _T("CMailboxTableDlg");
 

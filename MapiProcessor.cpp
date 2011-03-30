@@ -286,14 +286,34 @@ void CMAPIProcessor::ProcessContentsTable(ULONG ulFlags)
 {
 	if (!m_lpFolder) return;
 
-	HRESULT		hRes = S_OK;
+	enum {contPR_SUBJECT,
+		contPR_MESSAGE_CLASS,
+		contPR_MESSAGE_DELIVERY_TIME,
+		contPR_HASATTACH,
+		contPR_ENTRYID,
+		contPR_SEARCH_KEY,
+		contNUM_COLS};
+	static SizedSPropTagArray(contNUM_COLS,contCols) = {contNUM_COLS,
+		PR_MESSAGE_CLASS,
+		PR_SUBJECT,
+		PR_MESSAGE_DELIVERY_TIME,
+		PR_HASATTACH,
+		PR_ENTRYID,
+		PR_SEARCH_KEY,
+	};
+	HRESULT	hRes = S_OK;
 
 	LPMAPITABLE lpContentsTable = NULL;
 
 	WC_H(m_lpFolder->GetContentsTable(
 		ulFlags | fMapiUnicode,
 		&lpContentsTable));
-	if (lpContentsTable)
+	if (SUCCEEDED(hRes) && lpContentsTable)
+	{
+		WC_H(lpContentsTable->SetColumns((LPSPropTagArray)&contCols, TBL_BATCH));
+	}
+
+	if (SUCCEEDED(hRes) && lpContentsTable)
 	{
 		ULONG ulCountRows = 0;
 		WC_H(lpContentsTable->GetRowCount(0,&ulCountRows));
@@ -302,13 +322,13 @@ void CMAPIProcessor::ProcessContentsTable(ULONG ulFlags)
 
 		LPSRowSet lpRows = NULL;
 		ULONG i = 0;
-		for (i = 0;;i++)
+		for (;;)
 		{
 			hRes = S_OK;
 			if (lpRows) FreeProws(lpRows);
 			lpRows = NULL;
 			WC_H(lpContentsTable->QueryRows(
-				1,
+				255,
 				NULL,
 				&lpRows));
 			if (FAILED(hRes))
@@ -318,43 +338,50 @@ void CMAPIProcessor::ProcessContentsTable(ULONG ulFlags)
 			}
 			if (!lpRows || !lpRows->cRows) break;
 
-			LPSPropValue	lpMsgSubject = NULL;
-			LPSPropValue	lpMsgEID = NULL;
-
-			DoContentsTablePerRowWork(lpRows->aRow, i);
-
-			lpMsgSubject = PpropFindProp(
-				lpRows->aRow->lpProps,
-				lpRows->aRow->cValues,
-				PR_SUBJECT);
-
-			lpMsgEID = PpropFindProp(
-				lpRows->aRow->lpProps,
-				lpRows->aRow->cValues,
-				PR_ENTRYID);
-
-			if (!lpMsgEID) continue;
-
-			LPMESSAGE lpMessage = NULL;
-			WC_H(CallOpenEntry(
-				NULL,
-				NULL,
-				m_lpFolder,
-				NULL,
-				lpMsgEID->Value.bin.cb,
-				(LPENTRYID)lpMsgEID->Value.bin.lpb,
-				NULL,
-				MAPI_BEST_ACCESS,
-				NULL,
-				(LPUNKNOWN*)&lpMessage));
-
-			if (lpMessage)
+			ULONG iRow = 0;
+			for (iRow = 0 ; iRow < lpRows->cRows ; iRow++)
 			{
-				ProcessMessage(lpMessage, NULL);
-				lpMessage->Release();
-			}
+				DoContentsTablePerRowWork(&lpRows->aRow[iRow], i++);
 
-			lpMessage = NULL;
+				LPSPropValue lpMsgEID = NULL;
+				lpMsgEID = PpropFindProp(
+					lpRows->aRow[iRow].lpProps,
+					lpRows->aRow[iRow].cValues,
+					PR_ENTRYID);
+
+				if (!lpMsgEID) continue;
+
+				LPMESSAGE lpMessage = NULL;
+				WC_H(CallOpenEntry(
+					NULL,
+					NULL,
+					m_lpFolder,
+					NULL,
+					lpMsgEID->Value.bin.cb,
+					(LPENTRYID)lpMsgEID->Value.bin.lpb,
+					NULL,
+					MAPI_BEST_ACCESS,
+					NULL,
+					(LPUNKNOWN*)&lpMessage));
+
+				if (lpMessage)
+				{
+					LPSPropValue lpMsgHasAttach = NULL;
+					BOOL bHasAttach = true;
+					lpMsgHasAttach = PpropFindProp(
+						lpRows->aRow[iRow].lpProps,
+						lpRows->aRow[iRow].cValues,
+						PR_HASATTACH);
+					if (lpMsgHasAttach)
+					{
+						bHasAttach = lpMsgHasAttach->Value.b;
+					}
+					ProcessMessage(lpMessage, bHasAttach, NULL);
+					lpMessage->Release();
+				}
+
+				lpMessage = NULL;
+			}
 		}
 
 		if (lpRows) FreeProws(lpRows);
@@ -363,14 +390,14 @@ void CMAPIProcessor::ProcessContentsTable(ULONG ulFlags)
 	EndContentsTableWork();
 } // CMAPIProcessor::ProcessContentsTable
 
-void CMAPIProcessor::ProcessMessage(_In_ LPMESSAGE lpMessage, _In_opt_ LPVOID lpParentMessageData)
+void CMAPIProcessor::ProcessMessage(_In_ LPMESSAGE lpMessage, BOOL bHasAttach, _In_opt_ LPVOID lpParentMessageData)
 {
 	if (!lpMessage) return;
 
 	LPVOID lpData = NULL;
 	BeginMessageWork(lpMessage, lpParentMessageData, &lpData);
 	ProcessRecipients(lpMessage,lpData);
-	ProcessAttachments(lpMessage,lpData);
+	ProcessAttachments(lpMessage,bHasAttach,lpData);
 	EndMessageWork(lpMessage,lpData);
 } // CMAPIProcessor::ProcessMessage
 
@@ -391,13 +418,13 @@ void CMAPIProcessor::ProcessRecipients(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpD
 	if (lpRecipTable)
 	{
 		ULONG i = 0;
-		for (i = 0;;i++)
+		for (;;)
 		{
 			hRes = S_OK;
 			if (lpRows) FreeProws(lpRows);
 			lpRows = NULL;
 			WC_H(lpRecipTable->QueryRows(
-				1,
+				255,
 				NULL,
 				&lpRows));
 			if (FAILED(hRes))
@@ -407,7 +434,11 @@ void CMAPIProcessor::ProcessRecipients(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpD
 			}
 			if (!lpRows || !lpRows->cRows) break;
 
-			DoMessagePerRecipientWork(lpMessage,lpData,lpRows->aRow,i);
+			ULONG iRow = 0;
+			for (iRow = 0 ; iRow < lpRows->cRows ; iRow++)
+			{
+				DoMessagePerRecipientWork(lpMessage,lpData,&lpRows->aRow[iRow],i++);
+			}
 		}
 
 		if (lpRows) FreeProws(lpRows);
@@ -417,31 +448,50 @@ void CMAPIProcessor::ProcessRecipients(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpD
 	EndRecipientWork(lpMessage,lpData);
 } // CMAPIProcessor::ProcessRecipients
 
-void CMAPIProcessor::ProcessAttachments(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData)
+void CMAPIProcessor::ProcessAttachments(_In_ LPMESSAGE lpMessage, BOOL bHasAttach, _In_ LPVOID lpData)
 {
 	if (!lpMessage) return;
 
+	enum {attPR_ATTACH_NUM,
+		atPR_ATTACH_METHOD,
+		attPR_ATTACH_FILENAME,
+		attNUM_COLS};
+	static SizedSPropTagArray(attNUM_COLS,attCols) = {attNUM_COLS,
+		PR_ATTACH_NUM,
+		PR_ATTACH_METHOD,
+		PR_ATTACH_FILENAME,
+	};
 	HRESULT			hRes = S_OK;
 	LPMAPITABLE		lpAttachTable = NULL;
 	LPSRowSet		lpRows = NULL;
 
 	BeginAttachmentWork(lpMessage,lpData);
+	
+	// Only get the attachment table if PR_HASATTACH was true or didn't exist.
+	if (bHasAttach)
+	{
+		// get the attachment table
+		WC_H(lpMessage->GetAttachmentTable(
+			NULL,
+			&lpAttachTable));
+	}
 
-	// get the attachment table
-	WC_H(lpMessage->GetAttachmentTable(
-		NULL,
-		&lpAttachTable));
+	if (SUCCEEDED(hRes) && lpAttachTable)
+	{
+		// Make sure we have the columns we need
+		WC_H(lpAttachTable->SetColumns((LPSPropTagArray)&attCols, TBL_BATCH));
+	}
 
-	if (lpAttachTable)
+	if (SUCCEEDED(hRes) && lpAttachTable)
 	{
 		ULONG i = 0;
-		for (i = 0;;i++)
+		for (;;)
 		{
 			hRes = S_OK;
 			if (lpRows) FreeProws(lpRows);
 			lpRows = NULL;
 			WC_H(lpAttachTable->QueryRows(
-				1,
+				255,
 				NULL,
 				&lpRows));
 			if (FAILED(hRes))
@@ -451,51 +501,56 @@ void CMAPIProcessor::ProcessAttachments(_In_ LPMESSAGE lpMessage, _In_ LPVOID lp
 			}
 			if (!lpRows || !lpRows->cRows) break;
 
-			LPSPropValue lpAttachNum = NULL;
-			lpAttachNum = PpropFindProp(
-				lpRows->aRow->lpProps,
-				lpRows->aRow->cValues,
-				PR_ATTACH_NUM);
-
-			if (lpAttachNum)
+			ULONG iRow = 0;
+			for (iRow = 0 ; iRow < lpRows->cRows ; iRow++)
 			{
-				LPATTACH lpAttach = NULL;
-				WC_H(lpMessage->OpenAttach(
-					lpAttachNum->Value.l,
-					NULL,
-					MAPI_BEST_ACCESS,
-					(LPATTACH*)&lpAttach));
-				hRes = S_OK;
+				LPSPropValue lpAttachNum = NULL;
+				lpAttachNum = PpropFindProp(
+					lpRows->aRow[iRow].lpProps,
+					lpRows->aRow[iRow].cValues,
+					PR_ATTACH_NUM);
 
-				DoMessagePerAttachmentWork(lpMessage,lpData,lpRows->aRow,lpAttach,i);
-				// Check if the attachment is an embedded message - if it is, parse it as such!
-				LPSPropValue lpAttachMethod = NULL;
-
-				lpAttachMethod = PpropFindProp(
-					lpRows->aRow->lpProps,
-					lpRows->aRow->cValues,
-					PR_ATTACH_METHOD);
-
-				if (lpAttachMethod && ATTACH_EMBEDDED_MSG == lpAttachMethod->Value.l)
+				if (lpAttachNum)
 				{
-					LPMESSAGE lpAttachMsg = NULL;
+					LPATTACH lpAttach = NULL;
+					WC_H(lpMessage->OpenAttach(
+						lpAttachNum->Value.l,
+						NULL,
+						MAPI_BEST_ACCESS,
+						(LPATTACH*)&lpAttach));
+					hRes = S_OK;
 
-					WC_H(lpAttach->OpenProperty(
-						PR_ATTACH_DATA_OBJ,
-						(LPIID)&IID_IMessage,
-						0,
-						NULL, // MAPI_MODIFY,
-						(LPUNKNOWN *)&lpAttachMsg));
-					if (lpAttachMsg)
+					DoMessagePerAttachmentWork(lpMessage,lpData,&lpRows->aRow[iRow],lpAttach,i++);
+					// Check if the attachment is an embedded message - if it is, parse it as such!
+					LPSPropValue lpAttachMethod = NULL;
+
+					lpAttachMethod = PpropFindProp(
+						lpRows->aRow->lpProps,
+						lpRows->aRow->cValues,
+						PR_ATTACH_METHOD);
+
+					if (lpAttachMethod && ATTACH_EMBEDDED_MSG == lpAttachMethod->Value.l)
 					{
-						ProcessMessage(lpAttachMsg,lpData);
-						lpAttachMsg->Release();
+						LPMESSAGE lpAttachMsg = NULL;
+
+						WC_H(lpAttach->OpenProperty(
+							PR_ATTACH_DATA_OBJ,
+							(LPIID)&IID_IMessage,
+							0,
+							NULL, // MAPI_MODIFY,
+							(LPUNKNOWN *)&lpAttachMsg));
+						if (lpAttachMsg)
+						{
+							// Just assume this message might have attachments
+							ProcessMessage(lpAttachMsg,true,lpData);
+							lpAttachMsg->Release();
+						}
 					}
-				}
-				if (lpAttach)
-				{
-					lpAttach->Release();
-					lpAttach = NULL;
+					if (lpAttach)
+					{
+						lpAttach->Release();
+						lpAttach = NULL;
+					}
 				}
 			}
 		}

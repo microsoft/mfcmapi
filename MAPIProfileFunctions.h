@@ -6,8 +6,8 @@ void LaunchProfileWizard(
 						 _In_ HWND hParentWnd,
 						 ULONG ulFlags,
 						 _In_z_ LPCSTR FAR * lppszServiceNameToAdd,
-						 ULONG cbBufferMax,
-						 _In_z_count_(cbBufferMax) LPSTR lpszNewProfileName);
+						 ULONG cchBufferMax,
+						 _Out_cap_(cchBufferMax) LPSTR lpszNewProfileName);
 
 _Check_return_ HRESULT HrMAPIProfileExists(
 	_In_ LPPROFADMIN lpProfAdmin,

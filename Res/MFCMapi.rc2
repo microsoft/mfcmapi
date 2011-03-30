@@ -740,23 +740,6 @@ IDS_STRUCTURERESULTS             "Structure Parser"
 IDS_STRUCTURERESULTSPROMPT       "Results of parsing binary property as a structure"
 IDS_PARSEDSTRUCTURE              "Parsed Structure"
 IDS_STRUCTURES                   "Structures"
-IDS_STTIMEZONEDEFINITION         "Time Zone Definition"
-IDS_STTIMEZONE                   "Time Zone"
-IDS_STSECURITYDESCRIPTOR         "Security Descriptor"
-IDS_STEXTENDEDFOLDERFLAGS        "Extended Folder Flags"
-IDS_STAPPOINTMENTRECURRENCEPATTERN "Appointment Recurrence Pattern"
-IDS_STRECURRENCEPATTERN          "Recurrence Pattern"
-IDS_STREPORTTAG                  "Report Tag"
-IDS_STCONVERSATIONINDEX          "Conversation Index"
-IDS_STTASKASSIGNERS              "Task Assigners"
-IDS_STGLOBALOBJECTID             "Global Object Id"
-IDS_STENTRYID                    "Entry Id"
-IDS_STENTRYLIST                  "Entry List"
-IDS_STPROPERTY                   "Property"
-IDS_STRESTRICTION                "Restriction"
-IDS_STRULECONDITION              "Rule Condition"
-IDS_STEXTENDEDRULECONDITION      "Extended Rule Condition"
-IDS_STSEARCHFOLDERDEFINITION     "Search Folder Definition"
 IDS_COUNTNAMEDPROPS              "Count Named Props"
 IDS_COUNTNAMEDPROPSPROMPT        "Count of how many named property mappings exist and the highest \r\n\
 named property found in the selected store. Both are found using\r\n\
@@ -764,16 +747,8 @@ a binary search of the named property range (0x8000-0xFFFF).\r\n\
 \r\n\
 The Edit Given Property menu item may be used to further examine\r\n\
 existing named property mappings.\r\n"
-IDS_STNOPARSING                  "No parsing"
-IDS_STPROPERTYDEFINITIONSTREAM   "Property Definition Stream"
-IDS_STADDITIONALRENENTRYIDSEX    "Additional Ren Entry IDs Ex"
-IDS_STFLATENTRYLIST              "Flat Entry List"
 IDS_STLONGRTIME                  "RTime"
-IDS_STWEBVIEWPERSISTSTREAM       "Web View Persistence Object Stream"
-IDS_STRECIPIENTROWSTREAM         "Recipient Row Stream"
-IDS_STFOLDERUSERFIELDS           "Folder User Fields Stream"
-IDS_STSID                        "SID"
-IDS_STNICKNAMECACHE              "Nickname Cache"
+IDS_STRULEID                     "Rule ID"
 
 // AbDlg.cpp
 IDS_FLAGS "Flags"
@@ -969,6 +944,7 @@ IDS_REGKEY_ALLOW_PERSIST_CACHE "Allow caching of IPersistMessage objects when op
 IDS_REGKEY_USE_IMAPIPROGRESS "Pass IMAPIProgress implementation to functions that take it"
 IDS_REGKEY_USE_MESSAGERAW "Use IID_IMessageRaw when opening messages"
 IDS_REGKEY_HEAPENABLETERMINATIONONCORRUPTION "Terminate on heap corruption (requires restart)"
+IDS_REGKEY_LOADADDINS "Load Add-Ins (requires restart)"
 // RestrictEditor.cpp
 IDS_RELOP "relop"
 IDS_ULPROPTAG1 "ulPropTag1"
@@ -1211,7 +1187,7 @@ IDS_COPYFOLDERFAILED "CopyFolder failed."
 IDS_ONACTIVENEXTFAILED "OnActivateNext failed."
 IDS_GETPROPSNULLFAILED "GetProps(NULL) failed"
 IDS_PROPERTYNOTFOUND "Property not found."
-IDS_STREAMNOTSUPPORTED "This property does not support the IID_IStream interface."
+IDS_CANNOTOPENSTREAM "Could not open stream interface.\r\nError Code: %1!ws! == 0x%2!08X!"
 IDS_DISPLAYNAMENOTFOUND "Display Name Not Found"
 IDS_NOCONVERTERSESSION "IConverterSession not found. This interface is only supported by Outlook 2003 and higher."
 
@@ -1546,6 +1522,8 @@ IDS_NICKNAMEROWCOUNT "\r\nRow Count = %1!d!"
 IDS_NICKNAMEROWS "\r\nRow %1!d!\r\n\
 cValues = 0x%2!08X! = %2!d!\r\n"
 IDS_NICKNAMEFOOTER "\r\nMetadata 2 = "
+IDS_RULEIDFORMATLABEL "Rule ID: %1!X!-%2!08X!"
+IDS_RULEIDFORMAT "%1!X!-%2!08X!"
 
 // For InsertColumn
 IDS_ENTRY "Entry"
@@ -2042,7 +2020,6 @@ IDS_EDPROBLEMARRAY "Problem array:\r\n%s"
 IDS_EDMAPIERROR "LPMAPIERROR:\r\n%s"
 IDS_EDTNEFPROBLEMARRAY "TNEF Problem array:\r\n%s"
 IDS_EDUNKNOWNATTMETHOD "Unknown attachment method"
-IDS_EDWRAPEXNOTFOUND "WrapCompressedRTFStreamEx not found as export."
 IDS_EDGETMAILBOXTABLEFAILED "%s failed.\r\n\
 Here are some known causes for this.\r\n\
 MAPI_E_NO_ACCESS: The user does not have permissions. Try again with an administrative account.\r\n\
