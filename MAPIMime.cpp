@@ -5,6 +5,7 @@
 #include "Guids.h"
 #include "Editor.h"
 #include "ImportProcs.h"
+#include "ExtraPropTags.h"
 
 _Check_return_ HRESULT ImportEMLToIMessage(
 	_In_z_ LPCWSTR lpszEMLFile,
@@ -13,7 +14,7 @@ _Check_return_ HRESULT ImportEMLToIMessage(
 	BOOL bApply,
 	HCHARSET hCharSet,
 	CSETAPPLYTYPE cSetApplyType,
-	_In_ LPADRBOOK lpAdrBook)
+	_In_opt_ LPADRBOOK lpAdrBook)
 {
 	if (!lpszEMLFile || !lpMsg) return MAPI_E_INVALID_PARAMETER;
 
@@ -61,8 +62,6 @@ _Check_return_ HRESULT ImportEMLToIMessage(
 
 		if (lpEMLStm) lpEMLStm->Release();
 	}
-	// If we failed to get the converter, just return OK so we don't keep getting errors.
-	if (REGDB_E_CLASSNOTREG == hRes) hRes = S_OK;
 
 	if (lpConverter) lpConverter->Release();
 
@@ -70,7 +69,7 @@ _Check_return_ HRESULT ImportEMLToIMessage(
 } // ImportEMLToIMessage
 
 _Check_return_ HRESULT ExportIMessageToEML(_In_ LPMESSAGE lpMsg, _In_z_ LPCWSTR lpszEMLFile, ULONG ulConvertFlags,
-										   ENCODINGTYPE et, MIMESAVETYPE mst, ULONG ulWrapLines, _In_ LPADRBOOK lpAdrBook)
+										   ENCODINGTYPE et, MIMESAVETYPE mst, ULONG ulWrapLines, _In_opt_ LPADRBOOK lpAdrBook)
 {
 	if (!lpszEMLFile || !lpMsg) return MAPI_E_INVALID_PARAMETER;
 
@@ -143,9 +142,6 @@ _Check_return_ HRESULT ExportIMessageToEML(_In_ LPMESSAGE lpMsg, _In_z_ LPCWSTR 
 			if (lpMimeStm) lpMimeStm->Release();
 		}
 	}
-	// If we failed to get the converter, just return OK so we don't keep getting errors.
-	if (REGDB_E_CLASSNOTREG == hRes) hRes = S_OK;
-
 	if (lpConverter) lpConverter->Release();
 
 	return hRes;
@@ -157,7 +153,7 @@ _Check_return_ HRESULT ConvertEMLToMSG(_In_z_ LPCWSTR lpszEMLFile,
 									   BOOL bApply,
 									   HCHARSET hCharSet,
 									   CSETAPPLYTYPE cSetApplyType,
-									   _In_ LPADRBOOK lpAdrBook,
+									   _In_opt_ LPADRBOOK lpAdrBook,
 									   BOOL bUnicode)
 {
 	if (!lpszEMLFile || !lpszMSGFile) return MAPI_E_INVALID_PARAMETER;
@@ -195,7 +191,7 @@ _Check_return_ HRESULT ConvertMSGToEML(_In_z_ LPCWSTR lpszMSGFile,
 									   ENCODINGTYPE et,
 									   MIMESAVETYPE mst,
 									   ULONG ulWrapLines,
-									   _In_ LPADRBOOK lpAdrBook)
+									   _In_opt_ LPADRBOOK lpAdrBook)
 {
 	if (!lpszEMLFile || !lpszMSGFile) return MAPI_E_INVALID_PARAMETER;
 
@@ -220,6 +216,7 @@ _Check_return_ HRESULT ConvertMSGToEML(_In_z_ LPCWSTR lpszMSGFile,
 	return hRes;
 } // ConvertMSGToEML
 
+#ifndef MRMAPI
 _Check_return_ HRESULT GetConversionToEMLOptions(_In_ CWnd* pParentWnd,
 												 _Out_ ULONG* lpulConvertFlags,
 												 _Out_ ENCODINGTYPE* lpet,
@@ -301,14 +298,13 @@ _Check_return_ HRESULT GetConversionFromEMLOptions(_In_ CWnd* pParentWnd,
 		*lpulConvertFlags = MyData.GetHex(0);
 		if (MyData.GetCheck(1))
 		{
-			if (!pfnMimeOleGetCodePageCharset) return MAPI_E_INVALID_PARAMETER;
 			if (SUCCEEDED(hRes)) *pDoApply = true;
 			*pcSetApplyType = (CSETAPPLYTYPE) MyData.GetDecimal(4);
 			if (*pcSetApplyType > CSET_APPLY_TAG_ALL) return MAPI_E_INVALID_PARAMETER;
 			ULONG ulCodePage = MyData.GetDecimal(2);
 			CHARSETTYPE cCharSetType = (CHARSETTYPE) MyData.GetDecimal(3);
 			if (cCharSetType > CHARSET_WEB) return MAPI_E_INVALID_PARAMETER;
-			EC_H(pfnMimeOleGetCodePageCharset(ulCodePage,cCharSetType,phCharSet));
+			EC_H(MyMimeOleGetCodePageCharset(ulCodePage,cCharSetType,phCharSet));
 		}
 		*pDoAdrBook = MyData.GetCheck(5);
 		if (pbUnicode)
@@ -318,3 +314,4 @@ _Check_return_ HRESULT GetConversionFromEMLOptions(_In_ CWnd* pParentWnd,
 	}
 	return hRes;
 } // GetConversionFromEMLOptions
+#endif

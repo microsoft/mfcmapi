@@ -5,7 +5,6 @@
 #include "MapiFunctions.h"
 #include "InterpretProp.h"
 #include "InterpretProp2.h"
-#include "PropTagArray.h"
 #include "DbgView.h"
 #include "SmartView.h"
 #include "ColumnTags.h"
@@ -179,11 +178,15 @@ void _Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, BOOL bPrintThreadTime, _In_op
 				stLocalTime.wYear,
 				ulDbgLvl));
 			OutputDebugString(szThreadTime);
+#ifndef MRMAPI
 			OutputToDbgView(szThreadTime);
+#endif
 		}
 
 		OutputDebugString(szMsg);
+#ifndef MRMAPI
 		OutputToDbgView(szMsg);
+#endif
 		OutputToConsole(szMsg);
 
 		// print to to our debug output log file
@@ -359,7 +362,7 @@ void _OutputFormInfo(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMINFO l
 	EC_H(GetPropsNULL(lpMAPIFormInfo,fMapiUnicode,&ulPropVals,&lpPropVals));
 	if (lpPropVals)
 	{
-		_OutputProperties(ulDbgLvl,fFile,ulPropVals,lpPropVals,lpMAPIFormInfo);
+		_OutputProperties(ulDbgLvl,fFile,ulPropVals,lpPropVals,lpMAPIFormInfo,false);
 		MAPIFreeBuffer(lpPropVals);
 	}
 
@@ -611,7 +614,7 @@ void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify, _
 
 				Outputf(ulDbgLvl,fFile,true,_T("lpNotifications[%d].info.newmail.ulMessageFlags = 0x%08X"),i,
 					lpNotifications[i].info.newmail.ulMessageFlags);
-				InterpretFlags(PROP_ID(PR_MESSAGE_FLAGS),lpNotifications[i].info.newmail.ulMessageFlags,&szFlags);
+				InterpretNumberAsStringProp(lpNotifications[i].info.newmail.ulMessageFlags,PR_MESSAGE_FLAGS,&szFlags);
 				if (szFlags)
 				{
 					Outputf(ulDbgLvl,fFile,false,_T(" = %s"),szFlags);
@@ -639,11 +642,13 @@ void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify, _
 				Outputf(ulDbgLvl,fFile,true,_T("lpNotifications[%d].info.tab.propIndex = \n"),i);
 				_OutputProperty(ulDbgLvl,fFile,
 					&lpNotifications[i].info.tab.propIndex,
-					NULL);
+					NULL,
+					false);
 				Outputf(ulDbgLvl,fFile,true,_T("lpNotifications[%d].info.tab.propPrior = \n"),i);
 				_OutputProperty(ulDbgLvl,fFile,
 					&lpNotifications[i].info.tab.propPrior,
-					NULL);
+					NULL,
+					false);
 				Outputf(ulDbgLvl,fFile,true,_T("lpNotifications[%d].info.tab.row = \n"),i);
 				_OutputSRow(ulDbgLvl,fFile,
 					&lpNotifications[i].info.tab.row,
@@ -677,7 +682,7 @@ void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify, _
 				Outputf(ulDbgLvl,fFile,true,_T("lpNotifications[%d].info.obj.ulObjType = 0x%08X"),i,
 					lpNotifications[i].info.obj.ulObjType);
 
-				InterpretFlags(PROP_ID(PR_OBJECT_TYPE),lpNotifications[i].info.obj.ulObjType, &szFlags);
+				InterpretNumberAsStringProp(lpNotifications[i].info.obj.ulObjType, PR_OBJECT_TYPE, &szFlags);
 				if (szFlags)
 				{
 					Outputf(ulDbgLvl,fFile,false,_T(" = %s"),
@@ -719,12 +724,24 @@ void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify, _
 	Outputf(ulDbgLvl,fFile,true,_T("End dumping notifications.\n"));
 } // _OutputNotifications
 
-void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpProp, _In_opt_ LPMAPIPROP lpObj)
+void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpProp, _In_opt_ LPMAPIPROP lpObj, BOOL bRetryStreamProps)
 {
 	CHKPARAM;
 	EARLYABORT;
 
 	if (!lpProp) return;
+
+	HRESULT hRes = S_OK;
+	LPSPropValue lpLargeProp = NULL;
+
+	if (PT_ERROR == PROP_TYPE(lpProp->ulPropTag) && MAPI_E_NOT_ENOUGH_MEMORY == lpProp->Value.err && lpObj && bRetryStreamProps)
+	{
+		WC_H(GetLargeBinaryProp(lpObj,lpProp->ulPropTag,&lpLargeProp));
+		if (SUCCEEDED(hRes) && lpLargeProp && PT_ERROR != PROP_TYPE(lpLargeProp->ulPropTag))
+		{
+			lpProp = lpLargeProp;
+		}
+	}
 
 	CString PropType;
 
@@ -803,9 +820,10 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 	delete[] szExactMatches;
 	FreeNameIDStrings(szNamedPropName, szNamedPropGUID, NULL);
 	delete[] szSmartView;
+	MAPIFreeBuffer(lpLargeProp);
 } // _OutputProperty
 
-void _OutputProperties(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cProps, _In_count_(cProps) LPSPropValue lpProps, _In_opt_ LPMAPIPROP lpObj)
+void _OutputProperties(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cProps, _In_count_(cProps) LPSPropValue lpProps, _In_opt_ LPMAPIPROP lpObj, BOOL bRetryStreamProps)
 {
 	CHKPARAM;
 	EARLYABORT;
@@ -817,25 +835,37 @@ void _OutputProperties(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cProps, _In_c
 		return;
 	}
 
-	// sort the list first
-	// insertion sort on lpProps
-	ULONG iUnsorted = 0;
-	ULONG iLoc = 0;
-	for (iUnsorted = 1; iUnsorted < cProps; iUnsorted++)
-	{
-		SPropValue NextItem = lpProps[iUnsorted];
-		for (iLoc = iUnsorted; iLoc > 0; iLoc--)
-		{
-			if (lpProps[iLoc-1].ulPropTag < NextItem.ulPropTag) break;
-			lpProps[iLoc] = lpProps[iLoc-1];
-		}
-		lpProps[iLoc] = NextItem;
-	}
+	// Copy the list before we sort it or else we affect the caller
+	// Don't worry about linked memory - we just need to sort the index
+	LPSPropValue lpSortedProps = NULL;
+	size_t cbProps = cProps * sizeof(SPropValue);
+	MAPIAllocateBuffer((ULONG) cbProps,(LPVOID*) &lpSortedProps);
 
-	for (i = 0;i<cProps;i++)
+	if (lpSortedProps)
 	{
-		_OutputProperty(ulDbgLvl, fFile, &lpProps[i], lpObj);
+		memcpy(lpSortedProps,lpProps,cbProps);
+
+		// sort the list first
+		// insertion sort on lpSortedProps
+		ULONG iUnsorted = 0;
+		ULONG iLoc = 0;
+		for (iUnsorted = 1; iUnsorted < cProps; iUnsorted++)
+		{
+			SPropValue NextItem = lpSortedProps[iUnsorted];
+			for (iLoc = iUnsorted; iLoc > 0; iLoc--)
+			{
+				if (lpSortedProps[iLoc-1].ulPropTag < NextItem.ulPropTag) break;
+				lpSortedProps[iLoc] = lpSortedProps[iLoc-1];
+			}
+			lpSortedProps[iLoc] = NextItem;
+		}
+
+		for (i = 0;i<cProps;i++)
+		{
+			_OutputProperty(ulDbgLvl, fFile, &lpSortedProps[i], lpObj, bRetryStreamProps);
+		}
 	}
+	MAPIFreeBuffer(lpSortedProps);
 } // _OutputProperties
 
 void _OutputSRow(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSRow lpSRow, _In_opt_ LPMAPIPROP lpObj)
@@ -855,7 +885,7 @@ void _OutputSRow(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSRow lpSRow, _In_o
 		return;
 	}
 
-	_OutputProperties(ulDbgLvl, fFile, lpSRow->cValues, lpSRow->lpProps,lpObj);
+	_OutputProperties(ulDbgLvl, fFile, lpSRow->cValues, lpSRow->lpProps,lpObj,false);
 } // _OutputSRow
 
 void _OutputSRowSet(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSRowSet lpRowSet, _In_opt_ LPMAPIPROP lpObj)
@@ -892,7 +922,7 @@ void _OutputRestriction(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSRestrictio
 	_Output(ulDbgLvl, fFile, true, RestrictionToString(lpRes,lpObj));
 } // _OutputRestriction
 
-#define MAXBYTES 256
+#define MAXBYTES 4096
 void _OutputStream(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSTREAM lpStream)
 {
 	CHKPARAM;
@@ -930,7 +960,6 @@ void _OutputStream(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSTREAM lpStream)
 		}
 	}
 	while (ulNumBytes > 0);
-
 } // _OutputStream
 
 void _OutputVersion(ULONG ulDbgLvl, _In_opt_ FILE* fFile)

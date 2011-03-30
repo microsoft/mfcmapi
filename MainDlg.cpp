@@ -91,6 +91,7 @@ BEGIN_MESSAGE_MAP(CMainDlg, CContentsTableDlg)
 	ON_COMMAND(ID_QUERYDEFAULTMESSAGEOPT,OnQueryDefaultMessageOpt)
 	ON_COMMAND(ID_QUERYDEFAULTRECIPOPT,OnQueryDefaultRecipOpt)
 	ON_COMMAND(ID_QUERYIDENTITY, OnQueryIdentity)
+	ON_COMMAND(ID_RESOLVEMESSAGECLASS, OnResolveMessageClass)
 	ON_COMMAND(ID_SELECTFORM, OnSelectForm)
 	ON_COMMAND(ID_SELECTFORMCONTAINER, OnSelectFormContainer)
 	ON_COMMAND(ID_SETDEFAULTSTORE, OnSetDefaultStore)
@@ -150,6 +151,7 @@ void CMainDlg::OnInitMenu(_In_ CMenu* pMenu)
 		pMenu->EnableMenuItem(ID_QUERYDEFAULTRECIPOPT,DIM(lpMAPISession));
 		pMenu->EnableMenuItem(ID_QUERYIDENTITY,DIM(lpMAPISession));
 		pMenu->EnableMenuItem(ID_OPENFORMCONTAINER,DIM(lpMAPISession));
+		pMenu->EnableMenuItem(ID_RESOLVEMESSAGECLASS,DIM(lpMAPISession));
 		pMenu->EnableMenuItem(ID_SELECTFORM,DIM(lpMAPISession));
 		pMenu->EnableMenuItem(ID_SELECTFORMCONTAINER,DIM(lpMAPISession));
 
@@ -909,48 +911,32 @@ void CMainDlg::OnLogonWithFlags()
 	}
 } // CMainDlg::OnLogonWithFlags
 
+void CMainDlg::OnResolveMessageClass()
+{
+	HRESULT hRes = S_OK;
+	if (!m_lpMapiObjects || !m_lpPropDisplay) return;
+
+	LPMAPIFORMINFO lpMAPIFormInfo = NULL;
+	ResolveMessageClass(m_lpMapiObjects, NULL, &lpMAPIFormInfo);
+	if (lpMAPIFormInfo)
+	{
+		EC_H(m_lpPropDisplay->SetDataSource(lpMAPIFormInfo,NULL,false));
+		lpMAPIFormInfo->Release();
+	}
+} // CMainDlg::OnResolveMessageClass
+
 void CMainDlg::OnSelectForm()
 {
 	HRESULT			hRes = S_OK;
-	LPMAPIFORMMGR	lpMAPIFormMgr = NULL;
 	LPMAPIFORMINFO	lpMAPIFormInfo = NULL;
 
 	if (!m_lpMapiObjects || !m_lpPropDisplay) return;
-
-	LPMAPISESSION lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
-	if (!lpMAPISession) return;
-
-	EC_H(MAPIOpenFormMgr(lpMAPISession,&lpMAPIFormMgr));
-	if (lpMAPIFormMgr)
+	SelectForm(m_lpMapiObjects, NULL, &lpMAPIFormInfo);
+	if (lpMAPIFormInfo)
 	{
-		// Apparently, SelectForm doesn't support unicode
-		// CString doesn't provide a way to extract just ANSI strings, so we do this manually
-		CHAR szTitle[256];
-		int iRet = NULL;
-		EC_D(iRet,LoadStringA(GetModuleHandle(NULL),
-			IDS_SELECTFORMPROPS,
-			szTitle,
-			_countof(szTitle)));
-#pragma warning(push)
-#pragma warning(disable:4616)
-#pragma warning(disable:6276)
-		EC_H_CANCEL(lpMAPIFormMgr->SelectForm(
-			(ULONG_PTR)m_hWnd,
-			0, // fMapiUnicode,
-			(LPCTSTR) szTitle,
-			NULL,
-			&lpMAPIFormInfo));
-#pragma warning(pop)
-
-		if (lpMAPIFormInfo)
-		{
-			// TODO: Put some code in here which works with the returned Form Info pointer
-			EC_H(m_lpPropDisplay->SetDataSource(lpMAPIFormInfo,NULL,false));
-			DebugPrintFormInfo(DBGForms,lpMAPIFormInfo);
-			lpMAPIFormInfo->Release();
-		}
-
-		lpMAPIFormMgr->Release();
+		// TODO: Put some code in here which works with the returned Form Info pointer
+		EC_H(m_lpPropDisplay->SetDataSource(lpMAPIFormInfo,NULL,false));
+		lpMAPIFormInfo->Release();
 	}
 } // CMainDlg::OnSelectForm
 

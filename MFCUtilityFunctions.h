@@ -55,3 +55,5 @@ void DisplayMailboxTable(_In_ CParentWnd*	lpParent,
 						 _In_ CMapiObjects* lpMapiObjects);
 void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
 							  _In_ CMapiObjects* lpMapiObjects);
+void ResolveMessageClass(_In_ CMapiObjects* lpMapiObjects, _In_opt_ LPMAPIFOLDER lpMAPIFolder, _Out_ LPMAPIFORMINFO* lppMAPIFormInfo);
+void SelectForm(_In_ CMapiObjects* lpMapiObjects, _In_opt_ LPMAPIFOLDER lpMAPIFolder, _Out_ LPMAPIFORMINFO* lppMAPIFormInfo);

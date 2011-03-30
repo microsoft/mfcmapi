@@ -99,6 +99,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Local Form Container..."      ID_MAPIOPENLOCALFORMCONTAINER
         MENUITEM "Open Form Container..."       ID_OPENFORMCONTAINER
+        MENUITEM "Resolve Message Class..."     ID_RESOLVEMESSAGECLASS
         MENUITEM "Select Form...",              ID_SELECTFORM
         MENUITEM "Select Form Container...",    ID_SELECTFORMCONTAINER
     END
@@ -213,6 +214,7 @@ BEGIN
         MENUITEM "Load From EML...",            ID_LOADFROMEML
         MENUITEM "Load From MSG...",            ID_LOADFROMMSG
         MENUITEM "Load From TNEF...",           ID_LOADFROMTNEF
+        MENUITEM "Resolve Message Class..."     ID_RESOLVEMESSAGECLASS
         MENUITEM "Select Form...",              ID_SELECTFORM
         MENUITEM "Send Bulk Mail From Folder",  ID_SENDBULKMAIL
         MENUITEM "Save Folder Contents as Text Files",
@@ -482,6 +484,7 @@ BEGIN
         MENUITEM "Delete Folder",               ID_DELETESELECTEDITEM
         MENUITEM "Empty Items and Subfolders from Folder...", ID_EMPTYFOLDER
         MENUITEM "Open Form Container..."       ID_OPENFORMCONTAINER
+        MENUITEM "Resolve Message Class..."     ID_RESOLVEMESSAGECLASS
         MENUITEM "Select Form...",              ID_SELECTFORM
         MENUITEM "Resend All Embedded (NDR) Messages", ID_RESENDALLMESSAGES
         MENUITEM "Reset Permissions On Folder Contents",
@@ -533,6 +536,7 @@ BEGIN
     MENUITEM "Delete Folder",               ID_DELETESELECTEDITEM
     MENUITEM "Empty Items and Subfolders from Folder...", ID_EMPTYFOLDER
     MENUITEM "Open Form Container..."       ID_OPENFORMCONTAINER
+    MENUITEM "Resolve Message Class..."     ID_RESOLVEMESSAGECLASS
     MENUITEM "Select Form...",              ID_SELECTFORM
     MENUITEM "Resend All Embedded (NDR) Messages", ID_RESENDALLMESSAGES
     MENUITEM "Reset Permissions On Folder Contents",

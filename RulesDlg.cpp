@@ -7,6 +7,7 @@
 #include "MapiObjects.h"
 #include "ColumnTags.h"
 #include "SingleMAPIPropListCtrl.h"
+#include "ImportProcs.h"
 
 static TCHAR* CLASS = _T("CRulesDlg");
 
@@ -190,8 +191,7 @@ _Check_return_ HRESULT CRulesDlg::GetSelectedItems(ULONG ulFlags, ULONG ulRowFla
 									}
 								}
 
-								// This relies on our augmented PropCopyMore that understands PT_SRESTRICTION and PT_ACTIONS
-								EC_H(PropCopyMore(
+								EC_H(MyPropCopyMore(
 									&lpTempList->aEntries[iArrayPos].rgPropVals[ulDst],
 									&lpData->lpSourceProps[ulSrc],
 									MAPIAllocateMore,

@@ -224,13 +224,6 @@ typedef struct {
 	/****** MAPI_NATIVE_BODY_TYPE_PLAINTEXT		((ULONG) 0x00000004) mapidefs.h */
 } RTF_WCSRETINFO;
 
-// http://msdn2.microsoft.com/en-us/library/bb905291.aspx
-typedef HRESULT (STDMETHODCALLTYPE WRAPCOMPRESSEDRTFSTREAMEX) (
-	IStream * pCompressedRTFStream, CONST RTF_WCSINFO * pWCSInfo,
-	IStream ** ppUncompressedRTFStream, RTF_WCSRETINFO * pRetInfo);
-
-typedef WRAPCOMPRESSEDRTFSTREAMEX *LPWRAPCOMPRESSEDRTFSTREAMEX;
-
 #define MAPI_NATIVE_BODY					0x00010000
 
 /* out param type infomation for WrapCompressedRTFStreamEx */
@@ -281,14 +274,6 @@ typedef HRESULT (STDMETHODCALLTYPE GETTHEMEMARGINS)
  OPTIONAL RECT *prc,
  OUT MARGINS *pMargins);
 typedef GETTHEMEMARGINS FAR * LPGETTHEMEMARGINS;
-
-typedef HRESULT (STDMETHODCALLTYPE MIMEOLEGETCODEPAGECHARSET)
-(
- CODEPAGEID cpiCodePage,
- CHARSETTYPE ctCsetType,
- LPHCHARSET phCharset
- );
-typedef MIMEOLEGETCODEPAGECHARSET FAR * LPMIMEOLEGETCODEPAGECHARSET;
 
 typedef HRESULT (STDMETHODCALLTYPE MSIPROVIDEQUALIFIEDCOMPONENT)
 (
@@ -513,16 +498,8 @@ DECLARE_MAPI_INTERFACE_PTR(IExchangeManageStore5, LPEXCHANGEMANAGESTORE5);
 const WORD TZRULE_FLAG_RECUR_CURRENT_TZREG  = 0x0001; // see dispidApptTZDefRecur
 const WORD TZRULE_FLAG_EFFECTIVE_TZREG      = 0x0002;
 
-const ULONG	TZ_MAX_RULES		= 1024;
-const BYTE	TZ_BIN_VERSION_MAJOR	= 0x02;
-const BYTE	TZ_BIN_VERSION_MINOR	= 0x01;
-
 // http://blogs.msdn.com/stephen_griffin/archive/2007/03/19/mapi-and-exchange-2007.aspx
 #define CONNECT_IGNORE_NO_PF					((ULONG)0x8000)
-
-// http://blogs.msdn.com/stephen_griffin/archive/2008/04/01/new-restriction-types-seen-in-wrapped-psts.aspx
-#define RES_COUNT			((ULONG) 0x0000000B)
-#define RES_ANNOTATION		((ULONG) 0x0000000C)
 
 #define TABLE_SORT_CATEG_MAX ((ULONG) 0x00000004)
 #define TABLE_SORT_CATEG_MIN ((ULONG) 0x00000008)

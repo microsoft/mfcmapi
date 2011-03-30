@@ -48,6 +48,7 @@ private:
 	void OnOpenFormContainer();
 	void OnSaveFolderContentsAsMSG();
 	void OnSaveFolderContentsAsTextFiles();
+	void OnResolveMessageClass();
 	void OnSelectForm();
 	void OnSetReceiveFolder();
 	void OnResendAllMessages();

@@ -82,6 +82,7 @@ _Check_return_ BOOL CFolderDlg::HandleMenu(WORD wMenuSelect)
 	case ID_LOADFROMMSG: OnLoadFromMSG(); return true;
 	case ID_LOADFROMTNEF: OnLoadFromTNEF(); return true;
 	case ID_LOADFROMEML: OnLoadFromEML(); return true;
+	case ID_RESOLVEMESSAGECLASS: OnResolveMessageClass(); return true;
 	case ID_SELECTFORM: OnSelectForm(); return true;
 	case ID_MANUALRESOLVE: OnManualResolve(); return true;
 	case ID_SAVEFOLDERCONTENTSASTEXTFILES: OnSaveFolderContentsAsTextFiles(); return true;
@@ -238,6 +239,7 @@ void CFolderDlg::OnInitMenu(_In_ CMenu* pMenu)
 		pMenu->EnableMenuItem(ID_GETPROPSUSINGLONGTERMEID,DIMMSNOK(iNumSel));
 		pMenu->EnableMenuItem(ID_EXECUTEVERBONFORM,DIMMSNOK(iNumSel));
 
+		pMenu->EnableMenuItem(ID_RESOLVEMESSAGECLASS,DIM(lpMAPISession));
 		pMenu->EnableMenuItem(ID_SELECTFORM,DIM(lpMAPISession));
 
 		pMenu->EnableMenuItem(ID_DISPLAYACLTABLE,DIM(m_lpContainer));
@@ -825,48 +827,31 @@ void CFolderDlg::OnLoadFromMSG()
 	}
 } // CFolderDlg::OnLoadFromMSG
 
+void CFolderDlg::OnResolveMessageClass()
+{
+	if (!m_lpMapiObjects) return;
+
+	LPMAPIFORMINFO lpMAPIFormInfo = NULL;
+	ResolveMessageClass(m_lpMapiObjects, (LPMAPIFOLDER)m_lpContainer, &lpMAPIFormInfo);
+	if (lpMAPIFormInfo)
+	{
+		OnUpdateSingleMAPIPropListCtrl(lpMAPIFormInfo, NULL);
+		lpMAPIFormInfo->Release();
+	}
+} // CFolderDlg::OnResolveMessageClass
+
 void CFolderDlg::OnSelectForm()
 {
-	HRESULT			hRes = S_OK;
-	LPMAPIFORMMGR	lpMAPIFormMgr = NULL;
-	LPMAPIFORMINFO	lpMAPIFormInfo = NULL;
+	LPMAPIFORMINFO lpMAPIFormInfo = NULL;
 
 	if (!m_lpMapiObjects) return;
 
-	LPMAPISESSION	lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
-	if (!lpMAPISession) return;
-
-	EC_H(MAPIOpenFormMgr(lpMAPISession,&lpMAPIFormMgr));
-
-	if (lpMAPIFormMgr)
+	SelectForm(m_lpMapiObjects, (LPMAPIFOLDER)m_lpContainer, &lpMAPIFormInfo);
+	if (lpMAPIFormInfo)
 	{
-		// CString doesn't provide a way to extract just ANSI strings, so we do this manually
-		CHAR szTitle[256];
-		int iRet = NULL;
-		EC_D(iRet,LoadStringA(GetModuleHandle(NULL),
-			IDS_SELECTFORMCREATE,
-			szTitle,
-			_countof(szTitle)));
-#pragma warning(push)
-#pragma warning(disable:4616)
-#pragma warning(disable:6276)
-		// SelectForm doesn't support unicode in Outlook XP and earlier
-		EC_H_CANCEL(lpMAPIFormMgr->SelectForm(
-			(ULONG_PTR)m_hWnd,
-			0, // fMapiUnicode,
-			(LPCTSTR) szTitle, // title
-			(LPMAPIFOLDER)m_lpContainer,
-			&lpMAPIFormInfo));
-#pragma warning(pop)
-
-		if (lpMAPIFormInfo)
-		{
-			OnUpdateSingleMAPIPropListCtrl(lpMAPIFormInfo, NULL);
-			// TODO: Put some code in here which works with the returned Form Info pointer
-			DebugPrintFormInfo(DBGForms,lpMAPIFormInfo);
-			lpMAPIFormInfo->Release();
-		}
-		lpMAPIFormMgr->Release();
+		OnUpdateSingleMAPIPropListCtrl(lpMAPIFormInfo, NULL);
+		// TODO: Put some code in here which works with the returned Form Info pointer
+		lpMAPIFormInfo->Release();
 	}
 } // CFolderDlg::OnSelectForm
 
@@ -1583,7 +1568,8 @@ void CFolderDlg::OnSaveMessageToFile()
 						{
 							CDumpStore MyDumpStore;
 							MyDumpStore.InitMessagePath(dlgFilePicker.GetFileName());
-							MyDumpStore.ProcessMessage(lpMessage,NULL);
+							// Just assume this message might have attachments
+							MyDumpStore.ProcessMessage(lpMessage,true,NULL);
 						}
 						break;
 					case 1:

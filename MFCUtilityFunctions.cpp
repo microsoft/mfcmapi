@@ -12,11 +12,11 @@
 #include "AbDlg.h"
 #include "Editor.h"
 #include "SingleMAPIPropListCtrl.h"
-#include "InterpretProp2.h"
 #include "AclDlg.h"
 #include "RulesDlg.h"
 #include "MailboxTableDlg.h"
 #include "PublicFolderTableDlg.h"
+#include "SmartView.h"
 
 _Check_return_ HRESULT DisplayObject(
 					  _In_ LPMAPIPROP lpUnk,
@@ -43,7 +43,7 @@ _Check_return_ HRESULT DisplayObject(
 	lpHostDlg->OnUpdateSingleMAPIPropListCtrl(lpUnk, NULL);
 
 	LPTSTR szFlags = NULL;
-	InterpretFlags(PROP_ID(PR_OBJECT_TYPE), ulObjType, &szFlags);
+	InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE, &szFlags);
 	DebugPrint(DBGGeneric,_T("DisplayObject asked to display %p, with ObjectType of 0x%08X and MAPI type of 0x%08X = %s\n"),
 		lpUnk,
 		tType,
@@ -151,7 +151,7 @@ _Check_return_ HRESULT DisplayObject(
 		// #define MAPI_SESSION	((ULONG) 0x0000000B)	/* Session */
 		// #define MAPI_FORMINFO	((ULONG) 0x0000000C)	/* Form Information */
 	default:
-		InterpretFlags(PROP_ID(PR_OBJECT_TYPE), ulObjType, &szFlags);
+		InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE, &szFlags);
 		DebugPrint(DBGGeneric,
 			_T("DisplayObject: Object type: 0x%08X = %s not implemented\r\n") // STRING_OK
 			_T("This is not an error. It just means no specialized viewer has been implemented for this object type."), // STRING_OK
@@ -346,7 +346,7 @@ _Check_return_ HRESULT DisplayExchangeTable(
 				}
 
 				if (MAPI_E_USER_CANCEL == hRes)
-					hRes = S_OK;  // don't propogate the error past here
+					hRes = S_OK; // don't propogate the error past here
 
 				break;
 			}
@@ -879,3 +879,89 @@ void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
 	}
 	if (lpPrivateMDB) lpPrivateMDB->Release();
 } // DisplayPublicFolderTable
+
+void ResolveMessageClass(_In_ CMapiObjects* lpMapiObjects, _In_opt_ LPMAPIFOLDER lpMAPIFolder, _Out_ LPMAPIFORMINFO* lppMAPIFormInfo)
+{
+	HRESULT	hRes = S_OK;
+	LPMAPIFORMMGR lpMAPIFormMgr = NULL;
+	if (!lpMapiObjects || !lppMAPIFormInfo) return;
+
+	LPMAPISESSION lpMAPISession = lpMapiObjects->GetSession(); // do not release
+	if (!lpMAPISession) return;
+
+	EC_H(MAPIOpenFormMgr(lpMAPISession,&lpMAPIFormMgr));
+	if (lpMAPIFormMgr)
+	{
+		DebugPrint(DBGForms,_T("OnResolveMessageClass: resolving message class\n"));
+		CEditor MyData(
+			NULL,
+			IDS_RESOLVECLASS,
+			IDS_RESOLVECLASSPROMPT,
+			(ULONG) 2,
+			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+		MyData.InitSingleLine(0,IDS_CLASS,NULL,false);
+		MyData.InitSingleLine(1,IDS_FLAGS,NULL,false);
+
+		WC_H(MyData.DisplayDialog());
+		if (S_OK == hRes)
+		{
+			LPSTR szClass = MyData.GetStringA(0); // ResolveMessageClass requires an ANSI string
+			ULONG ulFlags = MyData.GetHex(1);
+			if (szClass)
+			{
+				LPMAPIFORMINFO lpMAPIFormInfo = NULL;
+				DebugPrint(DBGForms,_T("OnResolveMessageClass: Calling ResolveMessageClass(\"%hs\",0x%08X)\n"),szClass,ulFlags); // STRING_OK
+				EC_H(lpMAPIFormMgr->ResolveMessageClass(szClass,ulFlags,lpMAPIFolder,&lpMAPIFormInfo));
+				if (lpMAPIFormInfo)
+				{
+					DebugPrintFormInfo(DBGForms,lpMAPIFormInfo);
+					*lppMAPIFormInfo = lpMAPIFormInfo;
+				}
+			}
+		}
+		lpMAPIFormMgr->Release();
+	}
+} // ResolveMessageClass
+
+void SelectForm(_In_ CMapiObjects* lpMapiObjects, _In_opt_ LPMAPIFOLDER lpMAPIFolder, _Out_ LPMAPIFORMINFO* lppMAPIFormInfo)
+{
+	HRESULT hRes = S_OK;
+	LPMAPIFORMMGR lpMAPIFormMgr = NULL;
+
+	if (!lpMapiObjects || !lppMAPIFormInfo) return;
+
+	LPMAPISESSION lpMAPISession = lpMapiObjects->GetSession(); // do not release
+	if (!lpMAPISession) return;
+
+	EC_H(MAPIOpenFormMgr(lpMAPISession,&lpMAPIFormMgr));
+
+	if (lpMAPIFormMgr)
+	{
+		LPMAPIFORMINFO lpMAPIFormInfo = NULL;
+		// Apparently, SelectForm doesn't support unicode
+		// CString doesn't provide a way to extract just ANSI strings, so we do this manually
+		CHAR szTitle[256];
+		int iRet = NULL;
+		EC_D(iRet,LoadStringA(GetModuleHandle(NULL),
+			IDS_SELECTFORMPROPS,
+			szTitle,
+			_countof(szTitle)));
+#pragma warning(push)
+#pragma warning(disable:4616)
+#pragma warning(disable:6276)
+		EC_H_CANCEL(lpMAPIFormMgr->SelectForm(
+			NULL,
+			0, // fMapiUnicode,
+			(LPCTSTR) szTitle,
+			lpMAPIFolder,
+			&lpMAPIFormInfo));
+#pragma warning(pop)
+
+		if (lpMAPIFormInfo)
+		{
+			DebugPrintFormInfo(DBGForms,lpMAPIFormInfo);
+			*lppMAPIFormInfo = lpMAPIFormInfo;
+		}
+		lpMAPIFormMgr->Release();
+	}
+} // SelectForm

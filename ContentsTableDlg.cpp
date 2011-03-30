@@ -15,7 +15,7 @@
 #include "InterpretProp2.h"
 #include "RestrictEditor.h"
 #include "PropertyTagEditor.h"
-#include "PropTagArray.h"
+#include "ExtraPropTags.h"
 #include "AttachmentsDlg.h"
 #include "RecipientsDlg.h"
 

@@ -5,7 +5,6 @@
 #include "PropertyTagEditor.h"
 #include "InterpretProp.h"
 #include "InterpretProp2.h"
-#include "PropTagArray.h"
 #include "MAPIFunctions.h"
 #include "NamedPropCache.h"
 

@@ -2,8 +2,9 @@
 #include "InterpretProp.h"
 #include "MAPIFunctions.h"
 #include "InterpretProp2.h"
-#include "PropTagArray.h"
+#include "ExtraPropTags.h"
 #include "NamedPropCache.h"
+#include "SmartView.h"
 
 static const char pBase64[] = {
 	0x3e, 0x7f, 0x7f, 0x7f, 0x3f, 0x34, 0x35, 0x36,
@@ -204,31 +205,16 @@ _Check_return_ CString BinToHexString(_In_ LPSBinary lpBin, BOOL bPrependCB)
 
 	CString HexString;
 
-	if (!lpBin->cb)
-	{
-		if (bPrependCB)
-		{
-			HexString.Format(_T("cb: 0 lpb: NULL")); // STRING_OK
-		}
-		return HexString;
-	}
-
 	LPTSTR szBin = NULL;
 	MyHexFromBin(
 		lpBin->lpb,
 		lpBin->cb,
+		bPrependCB,
 		&szBin);
 
 	if (szBin)
 	{
-		if (bPrependCB)
-		{
-			HexString.Format(_T("cb: %d lpb: %s"),lpBin->cb,szBin); // STRING_OK
-		}
-		else
-		{
-			HexString = szBin;
-		}
+		HexString = szBin;
 		delete[] szBin;
 	}
 	return HexString;
@@ -602,7 +588,7 @@ void RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj, U
 				szProp,
 				szAltProp);
 			*PropString += szTmp;
-			InterpretFlags(lpRes->res.resProperty.lpProp, &szFlags);
+			InterpretNumberAsString(lpRes->res.resProperty.lpProp->Value,lpRes->res.resProperty.lpProp->ulPropTag,NULL,NULL,NULL,false,&szFlags);
 			if (szFlags)
 			{
 				szTmp.FormatMessage(IDS_RESPROPPROPFLAGS,szTabs,szFlags);
@@ -623,7 +609,7 @@ void RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj, U
 		delete[] szFlags;
 		szFlags = NULL;
 		*PropString += szTmp;
-		InterpretFlags(PROP_ID(lpRes->res.resBitMask.ulPropTag), lpRes->res.resBitMask.ulMask, &szFlags);
+		InterpretNumberAsStringProp(lpRes->res.resBitMask.ulMask, lpRes->res.resBitMask.ulPropTag, &szFlags);
 		if (szFlags)
 		{
 			szTmp.FormatMessage(IDS_RESBITMASKFLAGS,szFlags);

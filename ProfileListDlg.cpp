@@ -80,7 +80,6 @@ void CProfileListDlg::OnInitMenu(_In_ CMenu* pMenu)
 			pMenu->EnableMenuItem(ID_ADDSERVICETOPROFILE,DIMMSOK(iNumSel));
 			pMenu->EnableMenuItem(ID_SETDEFAULTPROFILE,DIMMSNOK(iNumSel));
 		}
-		pMenu->EnableMenuItem(ID_LAUNCHPROFILEWIZARD,DIM(pfnLaunchWizard));
 	}
 	CContentsTableDlg::OnInitMenu(pMenu);
 } // CProfileListDlg::OnInitMenu

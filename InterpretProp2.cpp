@@ -451,27 +451,11 @@ _Check_return_ LPWSTR NameIDToPropName(_In_ LPMAPINAMEID lpNameID)
 	return NULL;
 } // NameIDToPropName
 
-// Interprets a flag found in lpProp and returns a string allocated with new
-// Free the string with delete[]
-// Will not return a string if the lpProp is not a PT_LONG/PT_I2 or we don't recognize the property
-void InterpretFlags(_In_ LPSPropValue lpProp, _Deref_out_opt_z_ LPTSTR* szFlagString)
-{
-	if (szFlagString) *szFlagString = NULL;
-	if (!lpProp || !szFlagString)
-	{
-		return;
-	}
-	if (PROP_TYPE(lpProp->ulPropTag) == PT_LONG)
-		InterpretFlags(PROP_ID(lpProp->ulPropTag),lpProp->Value.ul,szFlagString);
-	else if (PROP_TYPE(lpProp->ulPropTag) == PT_I2)
-		InterpretFlags(PROP_ID(lpProp->ulPropTag),lpProp->Value.i,szFlagString);
-} // InterpretFlags
-
 // Interprets a flag value according to a flag name and returns a string
 // allocated with new
 // Free the string with delete[]
 // Will not return a string if the flag name is not recognized
-void InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, _Deref_out_opt_z_ LPTSTR* szFlagString)
+void InterpretFlags(const enum __NonPropFlag ulFlagName, const LONG lFlagValue, _Deref_out_opt_z_ LPTSTR* szFlagString)
 {
 	InterpretFlags(ulFlagName, lFlagValue, _T(""), szFlagString);
 } // InterpretFlags
@@ -792,10 +776,11 @@ _Check_return_ HRESULT GetLargeBinaryProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPr
 	SizedSPropTagArray(1, sptaBuffer) = {1,{ulPropTag}};
 	*lppProp = NULL;
 
-	WC_H(lpMAPIProp->GetProps((LPSPropTagArray)&sptaBuffer, 0, &cValues, &lpPropArray));
+	WC_H_GETPROPS(lpMAPIProp->GetProps((LPSPropTagArray)&sptaBuffer, 0, &cValues, &lpPropArray));
 
 	if (lpPropArray && PT_ERROR == PROP_TYPE(lpPropArray->ulPropTag) && MAPI_E_NOT_ENOUGH_MEMORY == lpPropArray->Value.err)
 	{
+		DebugPrint(DBGGeneric,_T("GetLargeBinaryProp property reported in GetProps as large.\n"));
 		MAPIFreeBuffer(lpPropArray);
 		lpPropArray = NULL;
 		// need to get the data as a stream
@@ -846,7 +831,12 @@ _Check_return_ HRESULT GetLargeBinaryProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPr
 	}
 	else if (lpPropArray && cValues == 1 && lpPropArray->ulPropTag == ulPropTag)
 	{
+		DebugPrint(DBGGeneric,_T("GetLargeBinaryProp GetProps found property.\n"));
 		bSuccess = true;
+	}
+	else if (lpPropArray && PT_ERROR == PROP_TYPE(lpPropArray->ulPropTag))
+	{
+		DebugPrint(DBGGeneric,_T("GetLargeBinaryProp GetProps reported property as error 0x%08X.\n"),lpPropArray->Value.err);
 	}
 
 	if (bSuccess)

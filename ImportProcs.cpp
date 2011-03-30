@@ -129,6 +129,12 @@ typedef HRESULT (STDMETHODCALLTYPE WRAPCOMPRESSEDRTFSTREAM) (
 	LPSTREAM lpCompressedRTFStream, ULONG ulFlags, LPSTREAM FAR * lpUncompressedRTFStream);
 typedef WRAPCOMPRESSEDRTFSTREAM *LPWRAPCOMPRESSEDRTFSTREAM;
 
+// http://msdn2.microsoft.com/en-us/library/bb905291.aspx
+typedef HRESULT (STDMETHODCALLTYPE WRAPCOMPRESSEDRTFSTREAMEX) (
+	IStream * pCompressedRTFStream, CONST RTF_WCSINFO * pWCSInfo,
+	IStream ** ppUncompressedRTFStream, RTF_WCSRETINFO * pRetInfo);
+typedef WRAPCOMPRESSEDRTFSTREAMEX *LPWRAPCOMPRESSEDRTFSTREAMEX;
+
 typedef SCODE (STDMETHODCALLTYPE HRVALIDATEIPMSUBTREE)(
 	LPMDB lpMDB, ULONG ulFlags,
 	ULONG FAR *lpcValues, LPSPropValue FAR *lppValues,
@@ -212,6 +218,14 @@ typedef BOOL (WINAPI HEAPSETINFORMATION) (
     PVOID HeapInformation,
     SIZE_T HeapInformationLength);
 typedef HEAPSETINFORMATION FAR * LPHEAPSETINFORMATION;
+
+typedef HRESULT (STDMETHODCALLTYPE MIMEOLEGETCODEPAGECHARSET)
+(
+ CODEPAGEID cpiCodePage,
+ CHARSETTYPE ctCsetType,
+ LPHCHARSET phCharset
+ );
+typedef MIMEOLEGETCODEPAGECHARSET FAR * LPMIMEOLEGETCODEPAGECHARSET;
 
 LPEDITSECURITY				pfnEditSecurity = NULL;
 
@@ -469,7 +483,6 @@ void ImportProcs()
 	LoadProc(_T("uxtheme.dll"), &hModUxTheme, "OpenThemeData", (FARPROC*) &pfnOpenThemeData); // STRING_OK;
 	LoadProc(_T("uxtheme.dll"), &hModUxTheme, "CloseThemeData", (FARPROC*) &pfnCloseThemeData); // STRING_OK;
 	LoadProc(_T("uxtheme.dll"), &hModUxTheme, "GetThemeMargins", (FARPROC*) &pfnGetThemeMargins); // STRING_OK;
-	LoadProc(_T("inetcomm.dll"), &hModInetComm, "MimeOleGetCodePageCharset", (FARPROC*) &pfnMimeOleGetCodePageCharset); // STRING_OK;
 #ifdef _UNICODE
 	LoadProc(_T("msi.dll"), &hModMSI, "MsiProvideQualifiedComponentW", (FARPROC*) &pfnMsiProvideQualifiedComponent); // STRING_OK;
 	LoadProc(_T("msi.dll"), &hModMSI, "MsiGetFileVersionW", (FARPROC*) &pfnMsiGetFileVersion); // STRING_OK;
@@ -639,8 +652,10 @@ void GetMAPIPath(_In_opt_z_ LPCTSTR szClient, _Inout_z_count_(cchMAPIPath) LPTST
 	delete[] szAppLCID;
 } // GetMAPIPath
 
+static BOOL bMAPILoaded = false;
 void AutoLoadMAPI()
 {
+	if (bMAPILoaded) return;
 	DebugPrint(DBGLoadLibrary,_T("AutoLoadMAPI - loading MAPI exports\n"));
 
 	// Attempt load default MAPI first if we have one
@@ -661,6 +676,7 @@ void AutoLoadMAPI()
 	if (!hModMAPI) hModMAPI = LoadFromSystemDir(_T("mapi32.dll")); // STRING_OK
 	// If hModMAPI is the same as hModMSMAPI, then we don't need to try it again
 	if (hModMAPI && hModMAPI != hModMSMAPI) LoadMAPIFuncs(hModMAPI);
+	bMAPILoaded = true;
 } // AutoLoadMAPI
 
 void UnloadMAPI()
@@ -717,6 +733,7 @@ void UnloadMAPI()
 	if (hModMAPI) WC_B(FreeLibrary(hModMAPI));
 	hModMAPI = NULL;
 	hRes = S_OK;
+	bMAPILoaded = false;
 } // UnloadMAPI
 
 struct MAPI_FUNC_ENTRY
@@ -1277,7 +1294,7 @@ _Check_return_ STDAPI HrCopyActions(
 				break;
 
 			case OP_TAG:			// propTag
-				WC_H(PropCopyMore(
+				WC_H(MyPropCopyMore(
 					&lpActDst->propTag,
 					&lpActSrc->propTag,
 					MAPIAllocateMore,
@@ -1496,10 +1513,10 @@ _Check_return_ STDAPI HrCopyRestriction(
 // This augmented PropCopyMore is implicitly tied to the built-in MAPIAllocateMore and MAPIAllocateBuffer through
 // the calls to HrCopyRestriction and HrCopyActions. Rewriting those functions to accept function pointers is
 // expensive for no benefit here. So if you borrow this code, be careful if you plan on using other allocators.
-STDAPI_(SCODE) PropCopyMore(LPSPropValue lpSPropValueDest,
-							LPSPropValue lpSPropValueSrc,
-							ALLOCATEMORE * lpfAllocMore,
-							LPVOID lpvObject)
+_Check_return_ STDAPI_(SCODE) MyPropCopyMore(_In_ LPSPropValue lpSPropValueDest,
+											 _In_ LPSPropValue lpSPropValueSrc,
+											 _In_ ALLOCATEMORE * lpfAllocMore,
+											 _In_ LPVOID lpvObject)
 {
 	CHECKLOAD(pfnPropCopyMore);
 	if (!pfnPropCopyMore) return MAPI_E_CALL_FAILED;
@@ -1537,7 +1554,7 @@ STDAPI_(SCODE) PropCopyMore(LPSPropValue lpSPropValueDest,
 		hRes = pfnPropCopyMore(lpSPropValueDest,lpSPropValueSrc,lpfAllocMore,lpvObject);
 	}
 	return hRes;
-} // PropCopyMore
+} // MyPropCopyMore
 
 STDAPI_(HRESULT) WrapCompressedRTFStream(LPSTREAM lpCompressedRTFStream,
 										 ULONG ulFlags,
@@ -1550,6 +1567,20 @@ STDAPI_(HRESULT) WrapCompressedRTFStream(LPSTREAM lpCompressedRTFStream,
 		lpUncompressedRTFStream);
 	return MAPI_E_CALL_FAILED;
 } // WrapCompressedRTFStream
+
+STDAPI_(HRESULT) WrapCompressedRTFStreamEx(LPSTREAM pCompressedRTFStream,
+										   CONST RTF_WCSINFO * pWCSInfo,
+										   LPSTREAM* ppUncompressedRTFStream,
+										   RTF_WCSRETINFO * pRetInfo)
+{
+	CHECKLOAD(pfnWrapEx);
+	if (pfnWrapEx) return pfnWrapEx(
+		pCompressedRTFStream,
+		pWCSInfo,
+		ppUncompressedRTFStream,
+		pRetInfo);
+	return MAPI_E_CALL_FAILED;
+} // WrapCompressedRTFStreamEx
 
 STDMETHODIMP MAPILogonEx(ULONG_PTR ulUIParam,
 						 LPTSTR lpszProfileName,
@@ -1699,6 +1730,22 @@ int WINAPI MNLS_lstrlenW(LPCWSTR lpString)
 	return 0;
 } // MNLS_lstrlenW
 
+STDAPI LaunchWizard(HWND hParentWnd,
+					ULONG ulFlags,
+					LPCSTR FAR * lppszServiceNameToAdd,
+					ULONG cchBufferMax,
+					_Out_cap_(cchBufferMax) LPSTR lpszNewProfileName)
+{
+	CHECKLOAD(pfnLaunchWizard);
+	if (pfnLaunchWizard) return pfnLaunchWizard(
+		hParentWnd,
+		ulFlags,
+		(LPCTSTR FAR *) lppszServiceNameToAdd,
+		cchBufferMax,
+		(LPTSTR) lpszNewProfileName);
+	return MAPI_E_CALL_FAILED;
+} // LaunchWizard
+
 void WINAPI MyHeapSetInformation(_In_opt_ HANDLE HeapHandle,
 								 _In_ HEAP_INFORMATION_CLASS HeapInformationClass,
 								 _In_opt_count_(HeapInformationLength) PVOID HeapInformation,
@@ -1711,3 +1758,17 @@ void WINAPI MyHeapSetInformation(_In_opt_ HANDLE HeapHandle,
 
 	if (pfnHeapSetInformation) pfnHeapSetInformation(HeapHandle,HeapInformationClass,HeapInformation,HeapInformationLength);
 } // MyHeapSetInformation
+
+HRESULT WINAPI MyMimeOleGetCodePageCharset(
+	CODEPAGEID cpiCodePage,
+	CHARSETTYPE ctCsetType,
+	LPHCHARSET phCharset)
+{
+	if (!pfnMimeOleGetCodePageCharset)
+	{
+		LoadProc(_T("inetcomm.dll"), &hModInetComm, "MimeOleGetCodePageCharset", (FARPROC*) &pfnMimeOleGetCodePageCharset); // STRING_OK;
+	}
+
+	if (pfnMimeOleGetCodePageCharset) return pfnMimeOleGetCodePageCharset(cpiCodePage,ctCsetType,phCharset);
+	return MAPI_E_CALL_FAILED;
+} // MyMimeOleGetCodePageCharset

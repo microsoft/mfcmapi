@@ -10,7 +10,6 @@
 #include "InterpretProp2.h"
 #include "ImportProcs.h"
 #include "ExtraPropTags.h"
-#include "PropTagArray.h"
 
 CDumpStore::CDumpStore()
 {
@@ -23,6 +22,8 @@ CDumpStore::CDumpStore()
 	m_fFolderProps = NULL;
 	m_fFolderContents = NULL;
 	m_fMailboxTable = NULL;
+
+	m_bRetryStreamProps = false;
 } // CDumpStore::CDumpStore
 
 CDumpStore::~CDumpStore()
@@ -73,6 +74,11 @@ void CDumpStore::InitMailboxTablePathRoot(_In_z_ LPCWSTR szMailboxTablePathRoot)
 		m_szMailboxTablePathRoot[0] = L'\0';
 	}
 } // CDumpStore::InitMailboxTablePathRoot
+
+void CDumpStore::EnableStreamRetry()
+{
+	m_bRetryStreamProps = true;
+} // CDumpStore::EnableStreamRetry
 
 // --------------------------------------------------------------------------------- //
 
@@ -212,7 +218,7 @@ void CDumpStore::BeginFolderWork()
 	{
 		OutputToFile(m_fFolderProps,_T("<properties listtype=\"summary\">\n"));
 
-		OutputPropertiesToFile(m_fFolderProps, cValues, lpAllProps, m_lpFolder);
+		OutputPropertiesToFile(m_fFolderProps, cValues, lpAllProps, m_lpFolder, m_bRetryStreamProps);
 
 		OutputToFile(m_fFolderProps,_T("</properties>\n"));
 
@@ -282,6 +288,89 @@ void CDumpStore::EndContentsTableWork()
 	m_fFolderContents = NULL;
 } // CDumpStore::EndContentsTableWork
 
+// TODO: This fails in unicode builds since PR_RTF_COMPRESSED is always ascii.
+void OutputBody(FILE* fMessageProps, LPMESSAGE lpMessage, ULONG ulBodyTag, LPTSTR szBodyName, BOOL bWrapEx, ULONG ulCPID)
+{
+	HRESULT hRes = S_OK;
+	LPSTREAM lpStream = NULL;
+	LPSTREAM lpRTFUncompressed = NULL;
+	LPSTREAM lpOutputStream = NULL;
+
+	WC_H(lpMessage->OpenProperty(
+		ulBodyTag,
+		&IID_IStream,
+		STGM_READ,
+		NULL,
+		(LPUNKNOWN *) &lpStream));
+	// The only error we suppress is MAPI_E_NOT_FOUND, so if a body type isn't in the output, it wasn't on the message
+	if (MAPI_E_NOT_FOUND != hRes)
+	{
+		OutputToFilef(fMessageProps,_T("<body property=\"%s\""),szBodyName);
+		if (!lpStream)
+		{
+			OutputToFilef(fMessageProps,_T(" error=\"0x%08X\">\n"),hRes);
+		}
+		else
+		{
+			if (PR_RTF_COMPRESSED != ulBodyTag)
+			{
+				lpOutputStream = lpStream;
+			}
+			else // If we're outputting RTF, we need to wrap it first
+			{
+				if (bWrapEx)
+				{
+					ULONG ulStreamFlags = NULL;
+					WC_H(WrapStreamForRTF(
+						lpStream,
+						true,
+						MAPI_NATIVE_BODY,
+						ulCPID,
+						CP_ACP, // requesting ANSI code page - check if this will be valid in UNICODE builds
+						&lpRTFUncompressed,
+						&ulStreamFlags));
+					LPTSTR szFlags = NULL;
+					InterpretFlags(flagStreamFlag, ulStreamFlags, &szFlags);
+					OutputToFilef(fMessageProps,_T(" ulStreamFlags = \"0x%08X\" szStreamFlags= \"%s\""),ulStreamFlags,szFlags);
+					delete[] szFlags;
+					szFlags = NULL;
+					OutputToFilef(fMessageProps,_T(" CodePageIn = \"%d\" CodePageOut = \"%d\""),ulCPID,CP_ACP);
+				}
+				else
+				{
+					WC_H(WrapStreamForRTF(
+						lpStream,
+						false,
+						NULL,
+						NULL,
+						NULL,
+						&lpRTFUncompressed,
+						NULL));
+				}
+				if (!lpRTFUncompressed || FAILED(hRes))
+				{
+					OutputToFilef(fMessageProps,_T(" rtfWrapError=\"0x%08X\""),hRes);
+				}
+				else
+				{
+					lpOutputStream = lpRTFUncompressed;
+				}
+			}
+
+			OutputToFile(fMessageProps,_T(">\n"));
+			if (lpOutputStream)
+			{
+				OutputCDataOpen(DBGNoDebug,fMessageProps);
+				OutputStreamToFile(fMessageProps, lpOutputStream);
+				OutputCDataClose(DBGNoDebug,fMessageProps);
+			}
+		}
+		OutputToFile(fMessageProps,_T("</body>\n"));
+	}
+	if (lpRTFUncompressed) lpRTFUncompressed->Release();
+	if (lpStream) lpStream->Release();
+} // OutputBody
+
 void CDumpStore::BeginMessageWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpParentMessageData, _Deref_out_ LPVOID* lpData)
 {
 	if (!lpMessage || !lpData) return;
@@ -293,35 +382,25 @@ void CDumpStore::BeginMessageWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpParent
 
 	LPMESSAGEDATA lpMsgData = (LPMESSAGEDATA) *lpData;
 
-	enum {ePR_MESSAGE_CLASS,
-		ePR_MESSAGE_DELIVERY_TIME,
-		ePR_SUBJECT_W,
-		ePR_SENDER_ADDRTYPE,
-		ePR_SENDER_EMAIL_ADDRESS,
-		ePR_INTERNET_CPID,
-		ePR_ENTRYID,
-		ePR_SEARCH_KEY,
-		NUM_COLS};
-	// These tags represent the message information we would like to pick up
-	static SizedSPropTagArray(NUM_COLS,sptCols) = { NUM_COLS,
-		PR_MESSAGE_CLASS,
-		PR_MESSAGE_DELIVERY_TIME,
-		PR_SUBJECT_W,
-		PR_SENDER_ADDRTYPE,
-		PR_SENDER_EMAIL_ADDRESS,
-		PR_INTERNET_CPID,
-		PR_ENTRYID,
-		PR_SEARCH_KEY
-	};
+	LPSPropValue lpAllProps = NULL;
+	LPSPropValue lpTemp = NULL;
+	ULONG cValues = 0L;
 
-	LPSPropValue	lpPropsMsg = NULL;
-	ULONG			cValues = 0L;
-
-	WC_H_GETPROPS(lpMessage->GetProps(
-		(LPSPropTagArray)&sptCols,
-		0L,
+	// Get all props, asking for UNICODE string properties
+	WC_H_GETPROPS(GetPropsNULL(lpMessage,
+		MAPI_UNICODE,
 		&cValues,
-		&lpPropsMsg));
+		&lpAllProps));
+	if (hRes == MAPI_E_BAD_CHARWIDTH)
+	{
+		// Didn't like MAPI_UNICODE - fall back
+		hRes = S_OK;
+
+		WC_H_GETPROPS(GetPropsNULL(lpMessage,
+			NULL,
+			&cValues,
+			&lpAllProps));
+	}
 
 	lpMsgData->szFilePath[0] = NULL;
 	// If we've got a parent message, we're an attachment - use attachment filename logic
@@ -355,17 +434,31 @@ void CDumpStore::BeginMessageWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpParent
 	else
 	{
 		LPCWSTR szSubj = NULL; // BuildFileNameAndPath will substitute a subject if we don't find one
+		LPWSTR szTemp = NULL;
 		LPSBinary lpSearchKey = NULL;
 
-		if (CheckStringProp(&lpPropsMsg[ePR_SUBJECT_W],PT_UNICODE))
+		lpTemp = PpropFindProp(lpAllProps,cValues,PR_SUBJECT_W);
+		if (lpTemp && CheckStringProp(lpTemp,PT_UNICODE))
 		{
-			szSubj = lpPropsMsg[ePR_SUBJECT_W].Value.lpszW;
+			szSubj = lpTemp->Value.lpszW;
 		}
-		if (PR_SEARCH_KEY == lpPropsMsg[ePR_SEARCH_KEY].ulPropTag)
+		else
 		{
-			lpSearchKey = &lpPropsMsg[ePR_SEARCH_KEY].Value.bin;
+			lpTemp = PpropFindProp(lpAllProps,cValues,PR_SUBJECT_A);
+			if (lpTemp && CheckStringProp(lpTemp,PT_STRING8))
+			{
+				WC_H(AnsiToUnicode(lpTemp->Value.lpszA,&szTemp));
+				if (SUCCEEDED(hRes)) szSubj = szTemp;
+				hRes = S_OK;
+			}
+		}
+		lpTemp = PpropFindProp(lpAllProps,cValues,PR_SEARCH_KEY);
+		if (lpTemp && PR_SEARCH_KEY == lpTemp->ulPropTag)
+		{
+			lpSearchKey = &lpTemp->Value.bin;
 		}
 		WC_H(BuildFileNameAndPath(lpMsgData->szFilePath,_countof(lpMsgData->szFilePath),L".xml",4,szSubj,lpSearchKey,m_szFolderPath)); // STRING_OK
+		delete[] szTemp;
 	}
 
 	DebugPrint(DBGGeneric,_T("OutputMessagePropertiesToFile: Saving %p to \"%ws\"\n"),lpMessage,lpMsgData->szFilePath);
@@ -375,159 +468,57 @@ void CDumpStore::BeginMessageWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpParent
 	{
 		OutputToFile(lpMsgData->fMessageProps,_T("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n"));
 		OutputToFile(lpMsgData->fMessageProps,_T("<message>\n"));
-		if (lpPropsMsg)
+		if (lpAllProps)
 		{
 			OutputToFile(lpMsgData->fMessageProps,_T("<properties listtype=\"summary\">\n"));
+#define NUMPROPS 8
+			static SizedSPropTagArray(NUMPROPS,sptCols) = { NUMPROPS,
+				PR_MESSAGE_CLASS_W,
+				PR_SUBJECT_W,
+				PR_SENDER_ADDRTYPE_W,
+				PR_SENDER_EMAIL_ADDRESS_W,
+				PR_MESSAGE_DELIVERY_TIME,
+				PR_ENTRYID,
+				PR_SEARCH_KEY,
+				PR_INTERNET_CPID,
+			};
 
-			OutputPropertiesToFile(lpMsgData->fMessageProps, cValues, lpPropsMsg, lpMessage);
+			ULONG i = 0;
+			for (i = 0 ; i < NUMPROPS ; i++)
+			{
+				lpTemp = PpropFindProp(lpAllProps,cValues,sptCols.aulPropTag[i]);
+				if (lpTemp)
+				{
+					OutputPropertyToFile(lpMsgData->fMessageProps, lpTemp, lpMessage, m_bRetryStreamProps);
+				}
+			}
 
 			OutputToFile(lpMsgData->fMessageProps,_T("</properties>\n"));
-			MAPIFreeBuffer(lpPropsMsg);
 		}
 
-		hRes = S_OK; // we've logged our warning if we had one - mask it now.
-
-		LPSTREAM lpStream = NULL;
 		// Log Body
-		WC_H(lpMessage->OpenProperty(
-			PR_BODY,
-			&IID_IStream,
-			STGM_READ,
-			NULL,
-			(LPUNKNOWN *) &lpStream));
-		if (lpStream)
+		OutputBody(lpMsgData->fMessageProps, lpMessage, PR_BODY, _T("PR_BODY"), false, NULL);
+		OutputBody(lpMsgData->fMessageProps, lpMessage, PR_BODY_HTML, _T("PR_BODY_HTML"),  false, NULL);
+		OutputBody(lpMsgData->fMessageProps, lpMessage, PR_RTF_COMPRESSED, _T("PR_RTF_COMPRESSED"), false, NULL);
+
+		ULONG ulInCodePage = CP_ACP; // picking CP_ACP as our default
+		lpTemp = PpropFindProp(lpAllProps,cValues,PR_INTERNET_CPID);
+		if (lpTemp && PR_INTERNET_CPID == lpTemp->ulPropTag)
 		{
-			OutputToFile(lpMsgData->fMessageProps,_T("<body property=\"PR_BODY\">\n"));
-			OutputCDataOpen(DBGNoDebug,lpMsgData->fMessageProps);
-			OutputStreamToFile(lpMsgData->fMessageProps, lpStream);
-			lpStream->Release();
-			lpStream = NULL;
-			OutputCDataClose(DBGNoDebug,lpMsgData->fMessageProps);
-			OutputToFile(lpMsgData->fMessageProps,_T("</body>\n"));
+			ulInCodePage = lpTemp->Value.l;
 		}
+		OutputBody(lpMsgData->fMessageProps, lpMessage, PR_RTF_COMPRESSED, _T("WrapCompressedRTFEx best body"), true, ulInCodePage);
 
-		hRes = S_OK; // we've logged our warning if we had one - mask it now.
-
-		// Log HTML Body
-		WC_H(lpMessage->OpenProperty(
-			PR_BODY_HTML,
-			&IID_IStream,
-			STGM_READ,
-			NULL,
-			(LPUNKNOWN *) &lpStream));
-		if (lpStream)
-		{
-			OutputToFile(lpMsgData->fMessageProps,_T("<body property=\"PR_BODY_HTML\">\n"));
-			OutputCDataOpen(DBGNoDebug,lpMsgData->fMessageProps);
-			OutputStreamToFile(lpMsgData->fMessageProps, lpStream);
-			lpStream->Release();
-			lpStream = NULL;
-			OutputCDataClose(DBGNoDebug,lpMsgData->fMessageProps);
-			OutputToFile(lpMsgData->fMessageProps,_T("</body>\n"));
-		}
-		OutputToFile(lpMsgData->fMessageProps,_T("\n"));
-
-
-		hRes = S_OK; // we've logged our warning if we had one - mask it now.
-
-		// Log RTF Body
-		LPSTREAM lpRTFUncompressed = NULL;
-
-		// TODO: This fails in unicode builds since PR_RTF_COMPRESSED is always ascii.
-		WC_H(lpMessage->OpenProperty(
-			PR_RTF_COMPRESSED,
-			&IID_IStream,
-			STGM_READ,
-			NULL,
-			(LPUNKNOWN *)&lpStream));
-		if (lpStream)
-		{
-			WC_H(WrapStreamForRTF(
-				lpStream,
-				false,
-				NULL,
-				NULL,
-				NULL,
-				&lpRTFUncompressed,
-				NULL));
-			if (lpRTFUncompressed)
-			{
-				OutputToFile(lpMsgData->fMessageProps,_T("<body property=\"PR_RTF_COMPRESSED\">\n"));
-				OutputCDataOpen(DBGNoDebug,lpMsgData->fMessageProps);
-				OutputStreamToFile(lpMsgData->fMessageProps, lpRTFUncompressed);
-				lpRTFUncompressed->Release();
-				lpRTFUncompressed = NULL;
-				OutputCDataClose(DBGNoDebug,lpMsgData->fMessageProps);
-				OutputToFile(lpMsgData->fMessageProps,_T("</body>\n"));
-			}
-			lpStream->Release();
-			lpStream = NULL;
-		}
-
-		if (pfnWrapEx)
-		{
-			// Log best Body using WrapCompressedRTFEx
-			WC_H(lpMessage->OpenProperty(
-				PR_RTF_COMPRESSED,
-				&IID_IStream,
-				STGM_READ,
-				NULL,
-				(LPUNKNOWN *)&lpStream));
-			if (lpStream)
-			{
-				ULONG ulStreamFlags = NULL;
-				ULONG ulInCodePage = CP_ACP; // picking CP_ACP as our default
-
-				if (PT_LONG == PROP_TYPE(lpPropsMsg[ePR_INTERNET_CPID].ulPropTag))
-				{
-					ulInCodePage = lpPropsMsg[ePR_INTERNET_CPID].Value.l;
-				}
-				WC_H(WrapStreamForRTF(
-					lpStream,
-					true,
-					MAPI_NATIVE_BODY,
-					ulInCodePage,
-					CP_ACP, // requesting ANSI code page - check if this will be valid in UNICODE builds
-					&lpRTFUncompressed,
-					&ulStreamFlags));
-				if (lpRTFUncompressed)
-				{
-					OutputToFile(lpMsgData->fMessageProps,_T("<body property=\"WrapCompressedRTFEx best body\""));
-					LPTSTR szFlags = NULL;
-					InterpretFlags(flagStreamFlag, ulStreamFlags, &szFlags);
-					OutputToFilef(lpMsgData->fMessageProps,_T(" ulStreamFlags = \"0x%08X\" szStreamFlags= \"%s\""),ulStreamFlags,szFlags);
-					delete[] szFlags;
-					szFlags = NULL;
-					OutputToFilef(lpMsgData->fMessageProps,_T(" CodePageIn = \"%d\" CodePageOut = \"%d\">\n"),ulInCodePage,CP_ACP);
-					OutputCDataOpen(DBGNoDebug,lpMsgData->fMessageProps);
-					OutputStreamToFile(lpMsgData->fMessageProps, lpRTFUncompressed);
-					lpRTFUncompressed->Release();
-					lpRTFUncompressed = NULL;
-					OutputCDataClose(DBGNoDebug,lpMsgData->fMessageProps);
-					OutputToFile(lpMsgData->fMessageProps,_T("</body>\n"));
-				}
-				lpStream->Release();
-				lpStream = NULL;
-			}
-		}
-
-		hRes = S_OK; // we've logged our warning if we had one - mask it now.
-
-		LPSPropValue lpAllProps = NULL;
-		WC_H_GETPROPS(GetPropsNULL(lpMessage,
-			fMapiUnicode,
-			&cValues,
-			&lpAllProps));
 		if (lpAllProps)
 		{
 			OutputToFile(lpMsgData->fMessageProps,_T("<properties listtype=\"FullPropList\">\n"));
 
-			OutputPropertiesToFile(lpMsgData->fMessageProps, cValues, lpAllProps, lpMessage);
+			OutputPropertiesToFile(lpMsgData->fMessageProps, cValues, lpAllProps, lpMessage, m_bRetryStreamProps);
 
 			OutputToFile(lpMsgData->fMessageProps,_T("</properties>\n"));
-			MAPIFreeBuffer(lpAllProps);
 		}
 	}
+	MAPIFreeBuffer(lpAllProps);
 } // CDumpStore::BeginMessageWork
 
 void CDumpStore::BeginRecipientWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID lpData)
@@ -581,7 +572,7 @@ void CDumpStore::DoMessagePerAttachmentWork(_In_ LPMESSAGE lpMessage, _In_ LPVOI
 
 	OutputToFilef(lpMsgData->fMessageProps,_T("<attachment num=\"0x%08X\" filename=\""),ulCurRow);
 
-	if (CheckStringProp(lpAttachName,PT_TSTRING))
+	if (lpAttachName && CheckStringProp(lpAttachName,PT_TSTRING))
 		OutputToFile(lpMsgData->fMessageProps,lpAttachName->Value.LPSZ);
 	else
 		OutputToFile(lpMsgData->fMessageProps,_T("PR_ATTACH_FILENAME not found"));
@@ -607,7 +598,7 @@ void CDumpStore::DoMessagePerAttachmentWork(_In_ LPMESSAGE lpMessage, _In_ LPVOI
 			hRes = S_OK;
 
 			OutputToFile(lpMsgData->fMessageProps,_T("\t<getprops>\n"));
-			OutputPropertiesToFile(lpMsgData->fMessageProps,ulAllProps,lpAllProps,lpMessage);
+			OutputPropertiesToFile(lpMsgData->fMessageProps,ulAllProps,lpAllProps,lpMessage,m_bRetryStreamProps);
 			OutputToFile(lpMsgData->fMessageProps,_T("\t</getprops>\n"));
 
 		}

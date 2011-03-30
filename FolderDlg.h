@@ -46,6 +46,7 @@ private:
 	void OnRemoveOneOff();
 	void OnRTFSync();
 	void OnSaveFolderContentsAsTextFiles();
+	void OnResolveMessageClass();
 	void OnSelectForm();
 	void OnSendBulkMail();
 	void OnSaveMessageToFile();

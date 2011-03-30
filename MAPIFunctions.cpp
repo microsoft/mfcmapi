@@ -11,6 +11,7 @@
 #include "MAPIProgress.h"
 #include "Guids.h"
 #include "NamedPropCache.h"
+#include "SmartView.h"
 
 // I don't use MAPIOID.h, which is needed to deal with PR_ATTACH_TAG, but if I did, here's how to include it
 /*
@@ -80,6 +81,7 @@ _Check_return_ HRESULT CallOpenEntry(
 			&lpUnk));
 		if (MAPI_E_UNKNOWN_FLAGS == hRes && ulNoCacheFlags)
 		{
+			DebugPrint(DBGGeneric,_T("CallOpenEntry 2nd attempt: Calling OpenEntry on MDB with ulFlags = 0x%X\n"),ulNoCacheFlags);
 			hRes = S_OK;
 			if (lpUnk) (lpUnk)->Release();
 			lpUnk = NULL;
@@ -110,6 +112,7 @@ _Check_return_ HRESULT CallOpenEntry(
 			&lpUnk));
 		if (MAPI_E_UNKNOWN_FLAGS == hRes && ulNoCacheFlags)
 		{
+			DebugPrint(DBGGeneric,_T("CallOpenEntry 2nd attempt: Calling OpenEntry on AB with ulFlags = 0x%X\n"),ulNoCacheFlags);
 			hRes = S_OK;
 			if (lpUnk) (lpUnk)->Release();
 			lpUnk = NULL;
@@ -141,6 +144,7 @@ _Check_return_ HRESULT CallOpenEntry(
 			&lpUnk));
 		if (MAPI_E_UNKNOWN_FLAGS == hRes && ulNoCacheFlags)
 		{
+			DebugPrint(DBGGeneric,_T("CallOpenEntry 2nd attempt: Calling OpenEntry on Container with ulFlags = 0x%X\n"),ulNoCacheFlags);
 			hRes = S_OK;
 			if (lpUnk) (lpUnk)->Release();
 			lpUnk = NULL;
@@ -172,6 +176,7 @@ _Check_return_ HRESULT CallOpenEntry(
 			&lpUnk));
 		if (MAPI_E_UNKNOWN_FLAGS == hRes && ulNoCacheFlags)
 		{
+			DebugPrint(DBGGeneric,_T("CallOpenEntry 2nd attempt: Calling OpenEntry on Session with ulFlags = 0x%X\n"),ulNoCacheFlags);
 			hRes = S_OK;
 			if (lpUnk) (lpUnk)->Release();
 			lpUnk = NULL;
@@ -193,7 +198,7 @@ _Check_return_ HRESULT CallOpenEntry(
 	if (lpUnk)
 	{
 		LPTSTR szFlags = NULL;
-		InterpretFlags(PROP_ID(PR_OBJECT_TYPE), ulObjType, &szFlags);
+		InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE, &szFlags);
 		DebugPrint(DBGGeneric,_T("OnOpenEntryID: Got object (%p) of type 0x%08X = %s\n"),lpUnk,ulObjType,szFlags);
 		delete[] szFlags;
 		szFlags = NULL;
@@ -538,8 +543,7 @@ _Check_return_ HRESULT CopyFolderRules(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LPMAP
 									}
 								}
 
-								// This relies on our augmented PropCopyMore that understands PT_SRESTRICTION and PT_ACTIONS
-								EC_H(PropCopyMore(
+								EC_H(MyPropCopyMore(
 									&lpTempList->aEntries[iArrayPos].rgPropVals[ulDst],
 									&lpRows->aRow[iArrayPos].lpProps[ulSrc],
 									MAPIAllocateMore,
@@ -1175,7 +1179,7 @@ _Check_return_ HRESULT GetPropsNULL(_In_ LPMAPIPROP lpMAPIProp, ULONG ulFlags, _
 		DebugPrint(DBGGeneric, _T("GetPropsNULL: Calling GetProps(NULL) on %p\n"),lpMAPIProp);
 	}
 
-	WC_H(lpMAPIProp->GetProps(
+	WC_H_GETPROPS(lpMAPIProp->GetProps(
 		lpTags,
 		ulFlags,
 		lpcValues,
@@ -1295,45 +1299,90 @@ _Check_return_ BOOL IsDuplicateProp(_In_ LPSPropTagArray lpArray, ULONG ulPropTa
 	return FALSE;
 } // IsDuplicateProp
 
+// Count of characters in 'cb:  lpb: '
+#define CBPREPEND 10
 // returns pointer to a string
 // delete with delete[]
-void MyHexFromBin(_In_opt_count_(cb) LPBYTE lpb, size_t cb, _Deref_out_opt_z_ LPTSTR* lpsz)
+void MyHexFromBin(_In_opt_count_(cb) LPBYTE lpb, size_t cb, BOOL bPrependCB, _Deref_out_opt_z_ LPTSTR* lpsz)
 {
 	ULONG i = 0;
-	ULONG iBinPos = 0;
 	if (!lpsz)
 	{
 		DebugPrint(DBGGeneric, _T("MyHexFromBin called with null lpsz\n"));
 		return;
 	}
 	*lpsz = NULL;
-	if (!lpb || !cb)
+	if (!bPrependCB && (!lpb || !cb))
 	{
 		DebugPrint(DBGGeneric, _T("MyHexFromBin called with null lpb or null cb\n"));
 		return;
 	}
-	*lpsz = new TCHAR[1+2*cb];
+	size_t cchOut = 1;
+	
+	// We might be given a cb without an lpb. We want to print the count, but won't need space for the string.
+	if (lpb) cchOut += 2*cb;
+
+	ULONG cchCB = 0;
+	if (bPrependCB)
+	{
+		size_t cbTemp = cb;
+		cchOut += CBPREPEND;
+
+		// Account for 0 and 'NULL'
+		if (!cb)
+		{
+			cchCB = 1;
+		}
+		if (!lpb)
+		{
+			cchOut += 4;
+		}
+
+		// Count how many digits we need for cb
+		while (cbTemp > 0)
+		{
+			cbTemp /= 10;
+			cchCB += 1;
+		}
+		cchOut += cchCB; 
+	}
+
+	*lpsz = new TCHAR[cchOut];
 	if (*lpsz)
 	{
-		memset(*lpsz, 0, 1+2*cb);
-		for (i = 0; i < cb; i++)
+		TCHAR* lpszCur = *lpsz;
+		memset(*lpsz, 0, cchOut);
+		if (bPrependCB)
 		{
-			BYTE bLow;
-			BYTE bHigh;
-			TCHAR szLow;
-			TCHAR szHigh;
-
-			bLow = (BYTE) ((lpb[i]) & 0xf);
-			bHigh = (BYTE) ((lpb[i] >> 4) & 0xf);
-			szLow = (TCHAR) ((bLow <= 0x9) ? _T('0') + bLow : _T('A') + bLow - 0xa);
-			szHigh = (TCHAR) ((bHigh <= 0x9) ? _T('0') + bHigh : _T('A') + bHigh - 0xa);
-
-			(*lpsz)[iBinPos] = szHigh;
-			(*lpsz)[iBinPos+1] = szLow;
-
-			iBinPos += 2;
+			StringCchPrintf(*lpsz, cchOut, _T("cb: %d lpb: "), cb);
+			lpszCur += CBPREPEND + cchCB;
 		}
-		(*lpsz)[iBinPos] = _T('\0');
+		if (!cb || !lpb)
+		{
+			memcpy(lpszCur,_T("NULL"),4);
+			lpszCur += 4;
+		}
+		else
+		{
+			for (i = 0; i < cb; i++)
+			{
+				BYTE bLow;
+				BYTE bHigh;
+				TCHAR szLow;
+				TCHAR szHigh;
+
+				bLow = (BYTE) ((lpb[i]) & 0xf);
+				bHigh = (BYTE) ((lpb[i] >> 4) & 0xf);
+				szLow = (TCHAR) ((bLow <= 0x9) ? _T('0') + bLow : _T('A') + bLow - 0xa);
+				szHigh = (TCHAR) ((bHigh <= 0x9) ? _T('0') + bHigh : _T('A') + bHigh - 0xa);
+
+				*lpszCur = szHigh;
+				lpszCur++;
+				*lpszCur = szLow;
+				lpszCur++;
+			}
+		}
+		*lpszCur = _T('\0');
 	}
 } // MyHexFromBin
 
@@ -1641,6 +1690,7 @@ _Check_return_ HRESULT ResendSingleMessage(
 	_In_ HWND hWnd)
 {
 	HRESULT			hRes = S_OK;
+	HRESULT			hResRet = S_OK;
 	LPATTACH		lpAttach = NULL;
 	LPMESSAGE		lpAttachMsg = NULL;
 	LPMAPITABLE		lpAttachTable = NULL;
@@ -1648,8 +1698,8 @@ _Check_return_ HRESULT ResendSingleMessage(
 	LPMESSAGE		lpNewMessage = NULL;
 	LPSPropTagArray lpsMessageTags = NULL;
 	LPSPropProblemArray lpsPropProbs = NULL;
-	ULONG			ulProp;
-	SPropValue		sProp;
+	ULONG			ulProp = NULL;
+	SPropValue		sProp = {0};
 
 	enum {atPR_ATTACH_METHOD,
 		atPR_ATTACH_NUM,
@@ -1682,6 +1732,8 @@ _Check_return_ HRESULT ResendSingleMessage(
 		// Now we iterate through each of the attachments
 		if (!FAILED(hRes)) for (;;)
 		{
+			// Remember the first error code we hit so it will bubble up
+			if (FAILED(hRes) && SUCCEEDED(hResRet)) hResRet = hRes;
 			hRes = S_OK;
 			if (pRows) FreeProws(pRows);
 			pRows = NULL;
@@ -1740,7 +1792,7 @@ _Check_return_ HRESULT ResendSingleMessage(
 				MAPIFreeBuffer(lpsMessageTags);
 				lpsMessageTags = NULL;
 				EC_H(lpAttachMsg->GetPropList(0, &lpsMessageTags));
-				if (lpsMessageTags) continue;
+				if (!lpsMessageTags) continue;
 
 				DebugPrint(DBGGeneric,_T("Copying properties to new message.\n"));
 				if (!FAILED(hRes)) for(ulProp = 0; ulProp < lpsMessageTags->cValues; ulProp++)
@@ -1794,7 +1846,7 @@ _Check_return_ HRESULT ResendSingleMessage(
 				DebugPrint(DBGGeneric,_T("Setting PR_DELETE_AFTER_SUBMIT to TRUE.\n"));
 				EC_H(HrSetOneProp(lpNewMessage,&sProp));
 
-				SPropTagArray sPropTagArray;
+				SPropTagArray sPropTagArray = {0};
 
 				sPropTagArray.cValues = 1;
 				sPropTagArray.aulPropTag[0] = PR_SENTMAIL_ENTRYID;
@@ -1806,8 +1858,6 @@ _Check_return_ HRESULT ResendSingleMessage(
 
 				DebugPrint(DBGGeneric,_T("Submitting new message.\n"));
 				EC_H(lpNewMessage->SubmitMessage(0));
-
-				DebugPrint(DBGGeneric,_T("Message resent successfully.\n"));
 			}
 			else
 			{
@@ -1822,6 +1872,7 @@ _Check_return_ HRESULT ResendSingleMessage(
 	if (lpAttach) lpAttach->Release();
 	if (pRows) FreeProws(pRows);
 	if (lpAttachTable) lpAttachTable->Release();
+	if (FAILED(hResRet)) return hResRet;
 	return hRes;
 } // ResendSingleMessage
 
@@ -2016,6 +2067,13 @@ _Check_return_ HRESULT SendTestMessage(
 	return hRes;
 } // SendTestMessage
 
+// Declaration missing from headers
+STDAPI_(HRESULT) WrapCompressedRTFStreamEx(
+	IStream* pCompressedRTFStream,
+	CONST RTF_WCSINFO * pWCSInfo,
+	IStream** ppUncompressedRTFStream,
+	RTF_WCSRETINFO * pRetInfo);
+
 _Check_return_ HRESULT WrapStreamForRTF(
 										_In_ LPSTREAM lpCompressedRTFStream,
 										BOOL bUseWrapEx,
@@ -2037,29 +2095,22 @@ _Check_return_ HRESULT WrapStreamForRTF(
 	}
 	else
 	{
-		if (pfnWrapEx)
-		{
-			RTF_WCSINFO wcsinfo = {0};
-			RTF_WCSRETINFO retinfo = {0};
+		RTF_WCSINFO wcsinfo = {0};
+		RTF_WCSRETINFO retinfo = {0};
 
-			retinfo.size = sizeof(RTF_WCSRETINFO);
+		retinfo.size = sizeof(RTF_WCSRETINFO);
 
-			wcsinfo.size = sizeof (RTF_WCSINFO);
-			wcsinfo.ulFlags = ulFlags;
-			wcsinfo.ulInCodePage = ulInCodePage;			// Get ulCodePage from PR_INTERNET_CPID on the IMessage
-			wcsinfo.ulOutCodePage = ulOutCodePage;			// Desired code page for return
+		wcsinfo.size = sizeof (RTF_WCSINFO);
+		wcsinfo.ulFlags = ulFlags;
+		wcsinfo.ulInCodePage = ulInCodePage;			// Get ulCodePage from PR_INTERNET_CPID on the IMessage
+		wcsinfo.ulOutCodePage = ulOutCodePage;			// Desired code page for return
 
-			WC_H(pfnWrapEx(
-				lpCompressedRTFStream,
-				&wcsinfo,
-				lpUncompressedRTFStream,
-				&retinfo));
-			if (pulStreamFlags) *pulStreamFlags = retinfo.ulStreamFlags;
-		}
-		else
-		{
-			ErrDialog(__FILE__,__LINE__,IDS_EDWRAPEXNOTFOUND);
-		}
+		WC_H(WrapCompressedRTFStreamEx(
+			lpCompressedRTFStream,
+			&wcsinfo,
+			lpUncompressedRTFStream,
+			&retinfo));
+		if (pulStreamFlags) *pulStreamFlags = retinfo.ulStreamFlags;
 	}
 
 	return hRes;
@@ -2374,7 +2425,7 @@ _Check_return_ DWORD ComputeStoreHash(ULONG cbStoreEID, _In_ LPBYTE pbStoreEID, 
 	return dwHash;
 } // ComputeStoreHash
 
-const WORD kwBaseOffset = 0xAC00;  // Hangul char range (AC00-D7AF)
+const WORD kwBaseOffset = 0xAC00; // Hangul char range (AC00-D7AF)
 // Allocates with new, free with delete[]
 _Check_return_ LPWSTR EncodeID(ULONG cbEID, _In_ LPENTRYID rgbID)
 {

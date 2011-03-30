@@ -15,7 +15,8 @@
 #include "SingleMAPIPropListCtrl.h"
 #include "TagArrayEditor.h"
 #include "Guids.h"
-#include "PropTagArray.h"
+#include "ExtraPropTags.h"
+#include "Smartview.h"
 #include <process.h>
 
 static TCHAR* CLASS = _T("CContentsTableListCtrl");
@@ -1073,7 +1074,7 @@ void CContentsTableListCtrl::SetRowStrings(int iRow, _In_ LPSRow lpsRowData)
 
 				InterpretProp(pProp,&PropString,NULL);
 
-				InterpretFlags(pProp, &szFlags);
+				InterpretNumberAsString(pProp->Value,pProp->ulPropTag,NULL,NULL,NULL,false,&szFlags);
 				if (szFlags)
 				{
 					PropString += _T(" ("); // STRING_OK

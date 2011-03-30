@@ -7,9 +7,8 @@
 
 STDMETHODIMP OpenPropFromMDB(LPMDB lpMDB, ULONG ulPropTag, LPMAPIFOLDER *lpFolder)
 {
-	HRESULT			hRes = S_OK;
-	ULONG			ulObjType = 0;
-	LPSPropValue	lpEIDProp = NULL;
+	HRESULT hRes = S_OK;
+	LPSPropValue lpEIDProp = NULL;
 
 	*lpFolder = NULL;
 
@@ -39,7 +38,51 @@ STDMETHODIMP OpenPropFromMDB(LPMDB lpMDB, ULONG ulPropTag, LPMAPIFOLDER *lpFolde
 
 	MAPIFreeBuffer(lpEIDProp);
 	return hRes;
-}
+} // OpenPropFromMDB
+
+STDMETHODIMP OpenLocalFreeBusy(LPMDB lpMDB, LPMAPIFOLDER *lpFolder)
+{
+	HRESULT hRes = S_OK;
+	LPMAPIFOLDER lpInbox = NULL;
+
+	*lpFolder = NULL;
+
+	WC_H(GetInbox(lpMDB, &lpInbox));
+
+	if (SUCCEEDED(hRes) && lpInbox)
+	{
+		LPSPropValue lpFBProp = NULL;
+		WC_H(HrGetOneProp(lpInbox,PR_FREEBUSY_ENTRYIDS,&lpFBProp));
+		if (SUCCEEDED(hRes) &&
+			lpFBProp &&
+			PT_MV_BINARY == PROP_TYPE(lpFBProp->ulPropTag) &&
+			lpFBProp->Value.MVbin.cValues  >= 3 &&
+			lpFBProp->Value.MVbin.lpbin[3].cb > 0)
+		{
+			LPMAPIFOLDER lpTemp = NULL;
+
+			WC_H(CallOpenEntry(
+				lpMDB,
+				NULL,
+				NULL,
+				NULL,
+				lpFBProp->Value.MVbin.lpbin[3].cb,
+				(LPENTRYID) lpFBProp->Value.MVbin.lpbin[3].lpb,
+				NULL,
+				MAPI_BEST_ACCESS,
+				NULL,
+				(LPUNKNOWN*)&lpTemp));
+			if (SUCCEEDED(hRes) && lpTemp)
+			{
+				*lpFolder = lpTemp;
+			}
+		}
+		MAPIFreeBuffer(lpFBProp);
+	}
+	if (lpInbox) lpInbox->Release();
+
+	return hRes;
+} // OpenLocalFreeBusy
 
 STDMETHODIMP OpenDefaultFolder(ULONG ulFolder, LPMDB lpMDB, LPMAPIFOLDER *lpFolder)
 {
@@ -93,6 +136,9 @@ STDMETHODIMP OpenDefaultFolder(ULONG ulFolder, LPMDB lpMDB, LPMAPIFOLDER *lpFold
 	case DEFAULT_INBOX:
 		hRes = GetInbox(lpMDB, lpFolder);
 		break;
+	case DEFAULT_LOCALFREEBUSY:
+		hRes = OpenLocalFreeBusy(lpMDB, lpFolder);
+		break;
 	default:
 		hRes = MAPI_E_INVALID_PARAMETER;
 	}
@@ -112,12 +158,7 @@ void DumpExchangeTable(_In_z_ LPWSTR lpszProfile, _In_ ULONG ulPropTag, _In_ ULO
 
 	WC_H(MAPIInitialize(NULL));
 
-	ULONG ulFlags = MAPI_EXTENDED | MAPI_NO_MAIL | MAPI_UNICODE | MAPI_NEW_SESSION;
-	if (!lpszProfile) ulFlags |= MAPI_USE_DEFAULT;
-
-	WC_H(MAPILogonEx(NULL, (LPTSTR) lpszProfile, NULL,
-		ulFlags,
-		&lpMAPISession));
+	WC_H(MrMAPILogonEx(lpszProfile,&lpMAPISession));
 
 	if (lpMAPISession)
 	{

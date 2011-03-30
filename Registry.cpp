@@ -33,6 +33,7 @@ __RegKeys RegKeys[] = {
 	{_T("UseIMAPIProgress"),			regDWORD,regoptCheck,		false		,0,_T(""),_T(""),false,	IDS_REGKEY_USE_IMAPIPROGRESS}, // STRING_OK
 	{_T("UseMessageRaw"),				regDWORD,regoptCheck,		false		,0,_T(""),_T(""),false,	IDS_REGKEY_USE_MESSAGERAW}, // STRING_OK
 	{_T("HeapEnableTerminationOnCorruption"),regDWORD,regoptCheck,	true		,0,_T(""),_T(""),false,	IDS_REGKEY_HEAPENABLETERMINATIONONCORRUPTION}, // STRING_OK
+	{_T("LoadAddIns"),					regDWORD,regoptCheck,		true		,0,_T(""),_T(""),false,	IDS_REGKEY_LOADADDINS}, // STRING_OK
 	{_T("DisplayAboutDialog"),			regDWORD,regoptCheck,		true		,0,_T(""),_T(""),false,	NULL}, // STRING_OK
 	{_T("PropertyColumnOrder"),			regSTRING,regoptCheck,		0			,0,_T(""),_T(""),false,	NULL}, // STRING_OK
 	// {KeyName,							keytype,opttype,			defaultDWORD,0,defaultString,NULL,bRefresh,IDS_REGKEY_*} // Regkey template
@@ -163,7 +164,10 @@ _Check_return_ HRESULT HrGetRegistryValueA(
 			}
 		}
 	}
-	else hRes = MAPI_E_INVALID_PARAMETER;
+	else if (SUCCEEDED(hRes))
+	{
+		hRes = MAPI_E_INVALID_PARAMETER;
+	}
 
 	return hRes;
 } // HrGetRegistryValueA
@@ -382,9 +386,9 @@ _Check_return_ HKEY CreateRootKey()
 
 		// Add the ACL to the security descriptor.
 		EC_B(SetSecurityDescriptorDacl(pSD,
-			TRUE,     // bDaclPresent flag
+			TRUE,    // bDaclPresent flag
 			pACL,
-			FALSE));   // not a default DACL
+			FALSE)); // not a default DACL
 	}
 
 	// Initialize a security attributes structure.

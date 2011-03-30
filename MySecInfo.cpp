@@ -8,7 +8,6 @@
 #include "InterpretProp.h"
 #include "InterpretProp2.h"
 #include "ExtraPropTags.h"
-#include "PropTagArray.h"
 
 static TCHAR* CLASS = _T("CMySecInfo");
 

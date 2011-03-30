@@ -1,5 +1,6 @@
 #pragma once
-// MMPropTag.h : Smart View parsing for MrMAPI
+// MMErr.h : Error code parsing for MrMAPI
+
 extern ERROR_ARRAY_ENTRY g_ErrorArray[];
 extern ULONG g_ulErrorArray;
 

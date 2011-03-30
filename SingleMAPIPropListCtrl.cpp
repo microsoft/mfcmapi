@@ -1241,7 +1241,7 @@ _Check_return_ HRESULT ConcatLPSPropValue(
 
 	if (ulNewArraySize)
 	{
-		// Allocate the base array - PropCopyMore will allocmore as needed for string/bin/etc
+		// Allocate the base array - MyPropCopyMore will allocmore as needed for string/bin/etc
 		EC_H(MAPIAllocateBuffer(ulNewArraySize*sizeof(SPropValue),(LPVOID*) &lpNewArray));
 
 		if (SUCCEEDED(hRes) && lpNewArray)
@@ -1256,7 +1256,7 @@ _Check_return_ HRESULT ConcatLPSPropValue(
 						ulTargetArray,
 						CHANGE_PROP_TYPE(lpVal1[ulSourceArray].ulPropTag,PT_UNSPECIFIED)))
 					{
-						EC_H(PropCopyMore(
+						EC_H(MyPropCopyMore(
 							&lpNewArray[ulTargetArray],
 							&lpVal1[ulSourceArray],
 							MAPIAllocateMore,
@@ -1286,7 +1286,7 @@ _Check_return_ HRESULT ConcatLPSPropValue(
 							hRes = MAPI_E_CALL_FAILED;
 							break;
 						}
-						EC_H(PropCopyMore(
+						EC_H(MyPropCopyMore(
 							&lpNewArray[ulTargetArray],
 							&lpVal2[ulSourceArray],
 							MAPIAllocateMore,
@@ -1482,61 +1482,58 @@ void CSingleMAPIPropListCtrl::OnEditPropAsStream(ULONG ulType, BOOL bEditAsRTF)
 
 	if (bEditAsRTF)
 	{
-		if (pfnWrapEx)
+		CEditor MyPrompt(
+			this,
+			IDS_USEWRAPEX,
+			IDS_USEWRAPEXPROMPT,
+			1,
+			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+		MyPrompt.InitCheck(0,IDS_USEWRAPEX,true,false);
+
+		WC_H(MyPrompt.DisplayDialog());
+		if (S_OK == hRes)
 		{
-			CEditor MyPrompt(
-				this,
-				IDS_USEWRAPEX,
-				IDS_USEWRAPEXPROMPT,
-				1,
-				CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-			MyPrompt.InitCheck(0,IDS_USEWRAPEX,true,false);
-
-			WC_H(MyPrompt.DisplayDialog());
-			if (S_OK == hRes)
+			if (MyPrompt.GetCheck(0))
 			{
-				if (MyPrompt.GetCheck(0))
+				bUseWrapEx = true;
+				SPropTagArray pTag = {0};
+				pTag.cValues = 1;
+				pTag.aulPropTag[0] = PR_INTERNET_CPID;
+				ULONG ulPropVal = NULL;
+				LPSPropValue lpProp = NULL;
+
+				WC_H(m_lpMAPIProp->GetProps(
+					&pTag,
+					fMapiUnicode,
+					&ulPropVal,
+					&lpProp));
+				if (lpProp && 1 == ulPropVal && PT_LONG == PROP_TYPE(lpProp[0].ulPropTag))
 				{
-					bUseWrapEx = true;
-					SPropTagArray pTag = {0};
-					pTag.cValues = 1;
-					pTag.aulPropTag[0] = PR_INTERNET_CPID;
-					ULONG ulPropVal = NULL;
-					LPSPropValue lpProp = NULL;
+					ulInCodePage = lpProp[0].Value.l;
+				}
 
-					WC_H(m_lpMAPIProp->GetProps(
-						&pTag,
-						fMapiUnicode,
-						&ulPropVal,
-						&lpProp));
-					if (lpProp && 1 == ulPropVal && PT_LONG == PROP_TYPE(lpProp[0].ulPropTag))
-					{
-						ulInCodePage = lpProp[0].Value.l;
-					}
+				MAPIFreeBuffer(lpProp);
 
-					MAPIFreeBuffer(lpProp);
+				CEditor MyPrompt2(
+					this,
+					IDS_WRAPEXFLAGS,
+					IDS_WRAPEXFLAGSPROMPT,
+					3,
+					CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+				MyPrompt2.InitSingleLine(0,IDS_WRAPEXFLAGS,NULL,false);
+				MyPrompt2.SetHex(0,MAPI_NATIVE_BODY);
+				MyPrompt2.InitSingleLine(1,IDS_ULINCODEPAGE,NULL,false);
+				MyPrompt2.SetDecimal(1,ulInCodePage);
+				MyPrompt2.InitSingleLine(2,IDS_ULOUTCODEPAGE,NULL,false);
+				MyPrompt2.SetDecimal(2,0);
 
-					CEditor MyPrompt2(
-						this,
-						IDS_WRAPEXFLAGS,
-						IDS_WRAPEXFLAGSPROMPT,
-						3,
-						CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-					MyPrompt2.InitSingleLine(0,IDS_WRAPEXFLAGS,NULL,false);
-					MyPrompt2.SetHex(0,MAPI_NATIVE_BODY);
-					MyPrompt2.InitSingleLine(1,IDS_ULINCODEPAGE,NULL,false);
-					MyPrompt2.SetDecimal(1,ulInCodePage);
-					MyPrompt2.InitSingleLine(2,IDS_ULOUTCODEPAGE,NULL,false);
-					MyPrompt2.SetDecimal(2,0);
+				WC_H(MyPrompt2.DisplayDialog());
 
-					WC_H(MyPrompt2.DisplayDialog());
-
-					if (S_OK == hRes)
-					{
-						ulRTFFlags = MyPrompt2.GetHex(0);
-						ulInCodePage = MyPrompt2.GetDecimal(1);
-						ulOutCodePage = MyPrompt2.GetDecimal(2);
-					}
+				if (S_OK == hRes)
+				{
+					ulRTFFlags = MyPrompt2.GetHex(0);
+					ulInCodePage = MyPrompt2.GetDecimal(1);
+					ulOutCodePage = MyPrompt2.GetDecimal(2);
 				}
 			}
 		}
@@ -1613,7 +1610,7 @@ void CSingleMAPIPropListCtrl::OnParseProperty()
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 		// Skip the first entry in g_uidParsingTypesDropDown, which is 'No Parsing'
-		MyStructurePicker.InitDropDown(0,IDS_STRUCTURES,g_cuidParsingTypes-1,&g_uidParsingTypes[1],true);
+		MyStructurePicker.InitDropDownArray(0,IDS_STRUCTURES,g_cuidParsingTypes-1,&g_uidParsingTypes[1],true);
 		WC_H(MyStructurePicker.DisplayDialog());
 		if (S_OK == hRes)
 		{

@@ -349,7 +349,8 @@ BOOL CEditor::OnInitDialog()
 	CFont* pFont = NULL; // will get this as soon as we've got a button to get it from
 	SIZE sizeText = {0};
 
-	for (ULONG i = 0 ; i < m_cControls ; i++)
+	ULONG i = 0;
+	for (i = 0 ; i < m_cControls ; i++)
 	{
 		UINT iCurIDLabel	= IDC_PROP_CONTROL_ID_BASE+2*i;
 		UINT iCurIDControl	= IDC_PROP_CONTROL_ID_BASE+2*i+1;
@@ -504,9 +505,10 @@ BOOL CEditor::OnInitDialog()
 					this,
 					iCurIDControl));
 				m_lpControls[i].UI.lpDropDown->DropDown.SetFont(GetFont());
+				ULONG iDropNum = 0;
 				if (m_lpControls[i].UI.lpDropDown->lpuidDropList)
 				{
-					for (ULONG iDropNum=0 ; iDropNum < m_lpControls[i].UI.lpDropDown->ulDropList ; iDropNum++)
+					for (iDropNum=0 ; iDropNum < m_lpControls[i].UI.lpDropDown->ulDropList ; iDropNum++)
 					{
 						CString szDropString;
 						EC_B(szDropString.LoadString(m_lpControls[i].UI.lpDropDown->lpuidDropList[iDropNum]));
@@ -518,16 +520,39 @@ BOOL CEditor::OnInitDialog()
 							m_lpControls[i].UI.lpDropDown->lpuidDropList[iDropNum]);
 					}
 				}
+				else if (m_lpControls[i].UI.lpDropDown->lpnaeDropList)
+				{
+					for (iDropNum=0 ; iDropNum < m_lpControls[i].UI.lpDropDown->ulDropList ; iDropNum++)
+					{
+#ifdef UNICODE
+						m_lpControls[i].UI.lpDropDown->DropDown.InsertString(
+							iDropNum,
+							m_lpControls[i].UI.lpDropDown->lpnaeDropList[iDropNum].lpszName);
+#else
+						LPSTR szAnsiName = NULL;
+						EC_H(UnicodeToAnsi(m_lpControls[i].UI.lpDropDown->lpnaeDropList[iDropNum].lpszName,&szAnsiName));
+						if (SUCCEEDED(hRes))
+						{
+							m_lpControls[i].UI.lpDropDown->DropDown.InsertString(
+								iDropNum,
+								szAnsiName);
+						}
+						delete[] szAnsiName;
+#endif
+						m_lpControls[i].UI.lpDropDown->DropDown.SetItemData(
+							iDropNum,
+							m_lpControls[i].UI.lpDropDown->lpnaeDropList[iDropNum].ulValue);
+					}
+				}
 				m_lpControls[i].UI.lpDropDown->DropDown.SetCurSel(0);
 
 				// If this is a GUID list, load up our list of guids
 				if (m_lpControls[i].UI.lpDropDown->bGUID)
 				{
-					ULONG ulDropNum = 0;
-					for (ulDropNum=0 ; ulDropNum < ulPropGuidArray ; ulDropNum++)
+					for (iDropNum=0 ; iDropNum < ulPropGuidArray ; iDropNum++)
 					{
-						LPTSTR szGUID = GUIDToStringAndName(PropGuidArray[ulDropNum].lpGuid);
-						InsertDropString(i,ulDropNum,szGUID);
+						LPTSTR szGUID = GUIDToStringAndName(PropGuidArray[iDropNum].lpGuid);
+						InsertDropString(i,iDropNum,szGUID);
 						delete[] szGUID;
 					}
 				}
@@ -642,7 +667,8 @@ BOOL CEditor::OnInitDialog()
 void CEditor::OnOK()
 {
 	// save data from the UI back into variables that we can query later
-	for (ULONG j = 0 ; j < m_cControls ; j++)
+	ULONG j = 0;
+	for (j = 0 ; j < m_cControls ; j++)
 	{
 		switch (m_lpControls[j].ulCtrlType)
 		{
@@ -760,7 +786,8 @@ _Check_return_ SIZE CEditor::ComputeWorkArea(SIZE sScreen)
 	CDC* dcSB = m_Prompt.GetDC();
 	CFont* pFont = dcSB->SelectObject(m_Prompt.GetFont());
 
-	for (int i = 0; i<iPromptLineCount ; i++)
+	int i = 0;
+	for (i = 0; i<iPromptLineCount ; i++)
 	{
 		// length of line i:
 		int len = m_Prompt.LineLength(m_Prompt.LineIndex(i));
@@ -1135,7 +1162,8 @@ void CEditor::OnSize(UINT nType, int cx, int cy)
 	}
 
 
-	for (ULONG j = 0 ; j < m_cControls ; j++)
+	ULONG j = 0;
+	for (j = 0 ; j < m_cControls ; j++)
 	{
 		if (m_lpControls[j].bUseLabelControl)
 		{
@@ -1261,7 +1289,8 @@ void CEditor::CreateControls(ULONG ulCount)
 	}
 	if (m_lpControls)
 	{
-		for (ULONG i = 0 ; i < m_cControls ; i++)
+		ULONG i = 0;
+		for (i = 0 ; i < m_cControls ; i++)
 		{
 			m_lpControls[i].ulCtrlType = CTRL_EDIT;
 			m_lpControls[i].UI.lpEdit = NULL;
@@ -1273,7 +1302,8 @@ void CEditor::DeleteControls()
 {
 	if (m_lpControls)
 	{
-		for (ULONG i = 0 ; i < m_cControls ; i++)
+		ULONG i = 0;
+		for (i = 0 ; i < m_cControls ; i++)
 		{
 			switch (m_lpControls[i].ulCtrlType)
 			{
@@ -1470,6 +1500,7 @@ void CEditor::SetBinary(ULONG i, _In_opt_count_(cb) LPBYTE lpb, size_t cb)
 	MyHexFromBin(
 		lpb,
 		cb,
+		false,
 		&lpszStr);
 
 	// If lpszStr happens to be NULL, SetString will deal with it
@@ -2016,6 +2047,17 @@ void CEditor::InitDropDown(ULONG i, UINT uidLabel, ULONG ulDropList, _In_opt_cou
 		m_lpControls[i].UI.lpDropDown->bGUID = false;
 	}
 } // CEditor::InitDropDown
+
+void CEditor::InitDropDownArray(ULONG i, UINT uidLabel, ULONG ulDropList, _In_opt_count_(ulDropList) LPNAME_ARRAY_ENTRY lpnaeDropList, BOOL bReadOnly)
+{
+	if (INVALIDRANGE(i)) return;
+	InitDropDown(i, uidLabel, ulDropList, NULL, bReadOnly);
+
+	if (m_lpControls[i].UI.lpDropDown)
+	{
+		m_lpControls[i].UI.lpDropDown->lpnaeDropList = lpnaeDropList;
+	}
+} // CEditor::InitDropDownArray
 
 void CEditor::InitGUIDDropDown(ULONG i, UINT uidLabel, BOOL bReadOnly)
 {

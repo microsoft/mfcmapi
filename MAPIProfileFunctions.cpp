@@ -8,36 +8,40 @@
 #include "ExtraPropTags.h"
 #include "Guids.h"
 
+// This declaration is missing from the MAPI headers
+STDAPI STDAPICALLTYPE LaunchWizard(HWND hParentWnd,
+									ULONG ulFlags,
+									LPCSTR FAR * lppszServiceNameToAdd,
+									ULONG cchBufferMax,
+									_Out_cap_(cchBufferMax) LPSTR lpszNewProfileName);
+
 void LaunchProfileWizard(
 						 _In_ HWND hParentWnd,
 						 ULONG ulFlags,
 						 _In_z_ LPCSTR FAR * lppszServiceNameToAdd,
-						 ULONG cbBufferMax,
-						 _In_z_count_(cbBufferMax) LPSTR lpszNewProfileName)
+						 ULONG cchBufferMax,
+						 _Out_cap_(cchBufferMax) LPSTR lpszNewProfileName)
 {
-	HRESULT		hRes = S_OK;
+	HRESULT hRes = S_OK;
 
 	DebugPrint(DBGGeneric,_T("LaunchProfileWizard: Using LAUNCHWIZARDENTRY to launch wizard API.\n"));
 
-	if (pfnLaunchWizard)
+	// Call LaunchWizard to add the service.
+	WC_H(LaunchWizard(
+		hParentWnd,
+		ulFlags,
+		lppszServiceNameToAdd,
+		cchBufferMax,
+		lpszNewProfileName));
+	if (MAPI_E_CALL_FAILED == hRes)
 	{
-		// Call LaunchWizard to add the service.
-		WC_H(pfnLaunchWizard(
-			hParentWnd,
-			ulFlags,
-			(LPCTSTR FAR *) lppszServiceNameToAdd,
-			cbBufferMax,
-			(LPTSTR) lpszNewProfileName));
-		if (MAPI_E_CALL_FAILED == hRes)
-		{
-			CHECKHRESMSG(hRes,IDS_LAUNCHWIZARDFAILED);
-		}
-		else CHECKHRES(hRes);
+		CHECKHRESMSG(hRes,IDS_LAUNCHWIZARDFAILED);
+	}
+	else CHECKHRES(hRes);
 
-		if (SUCCEEDED(hRes))
-		{
-			DebugPrint(DBGGeneric,_T("LaunchProfileWizard: Profile \"%hs\" configured.\n"),lpszNewProfileName);
-		}
+	if (SUCCEEDED(hRes))
+	{
+		DebugPrint(DBGGeneric,_T("LaunchProfileWizard: Profile \"%hs\" configured.\n"),lpszNewProfileName);
 	}
 } // LaunchProfileWizard
 
@@ -970,7 +974,7 @@ _Check_return_ HRESULT OpenProfileSection(_In_ LPPROVIDERADMIN lpProviderAdmin, 
 		hRes = S_OK;
 
 		// We only do this hack as a last resort - it can crash some versions of Outlook, but is required for Exchange
-		*(((BYTE*)lpProviderAdmin) + 0x60) = 0x2;  // Use at your own risk! NOT SUPPORTED!
+		*(((BYTE*)lpProviderAdmin) + 0x60) = 0x2; // Use at your own risk! NOT SUPPORTED!
 
 		WC_H(lpProviderAdmin->OpenProfileSection(
 			(LPMAPIUID) lpProviderUID->lpb,

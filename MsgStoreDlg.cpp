@@ -122,6 +122,7 @@ BEGIN_MESSAGE_MAP(CMsgStoreDlg, CHierarchyTableDlg)
 	ON_COMMAND(ID_EMPTYFOLDER, OnEmptyFolder)
 	ON_COMMAND(ID_DELETESELECTEDITEM, OnDeleteSelectedItem)
 	ON_COMMAND(ID_OPENFORMCONTAINER, OnOpenFormContainer)
+	ON_COMMAND(ID_RESOLVEMESSAGECLASS, OnResolveMessageClass)
 	ON_COMMAND(ID_SELECTFORM, OnSelectForm)
 	ON_COMMAND(ID_RESENDALLMESSAGES, OnResendAllMessages)
 	ON_COMMAND(ID_RESETPERMISSIONSONITEMS, OnResetPermissionsOnItems)
@@ -159,6 +160,7 @@ void CMsgStoreDlg::OnInitMenu(_In_ CMenu* pMenu)
 	pMenu->EnableMenuItem(ID_DISPLAYRULESTABLE,DIM(bItemSelected));
 	pMenu->EnableMenuItem(ID_EMPTYFOLDER,DIM(bItemSelected));
 	pMenu->EnableMenuItem(ID_OPENFORMCONTAINER,DIM(bItemSelected));
+	pMenu->EnableMenuItem(ID_RESOLVEMESSAGECLASS,DIM(bItemSelected));
 	pMenu->EnableMenuItem(ID_SELECTFORM,DIM(bItemSelected));
 	pMenu->EnableMenuItem(ID_SAVEFOLDERCONTENTSASMSG,DIM(bItemSelected));
 	pMenu->EnableMenuItem(ID_SAVEFOLDERCONTENTSASTEXTFILES,DIM(bItemSelected));
@@ -312,51 +314,41 @@ void CMsgStoreDlg::OnDisplayRulesTable()
 	}
 } // CMsgStoreDlg::OnDisplayRulesTable
 
-void CMsgStoreDlg::OnSelectForm()
+void CMsgStoreDlg::OnResolveMessageClass()
 {
-	HRESULT			hRes = S_OK;
-	LPMAPIFORMMGR	lpMAPIFormMgr = NULL;
-	LPMAPIFORMINFO	lpMAPIFormInfo = NULL;
-
+	HRESULT hRes = S_OK;
 	if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl || !m_lpPropDisplay) return;
-
-	LPMAPISESSION lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
-	if (!lpMAPISession) return;
 
 	LPMAPIFOLDER lpMAPIFolder = (LPMAPIFOLDER) m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY);
 
 	if (lpMAPIFolder)
 	{
-		EC_H(MAPIOpenFormMgr(lpMAPISession,&lpMAPIFormMgr));
-
-		if (lpMAPIFormMgr)
+		LPMAPIFORMINFO lpMAPIFormInfo = NULL;
+		ResolveMessageClass(m_lpMapiObjects, lpMAPIFolder, &lpMAPIFormInfo);
+		if (lpMAPIFormInfo)
 		{
-			// Apparently, SelectForm doesn't support unicode
-			// CString doesn't provide a way to extract just ANSI strings, so we do this manually
-			CHAR szTitle[256];
-			int iRet = NULL;
-			EC_D(iRet,LoadStringA(GetModuleHandle(NULL),
-				IDS_SELECTFORMPROPS,
-				szTitle,
-				_countof(szTitle)));
-#pragma warning(push)
-#pragma warning(disable:4616)
-#pragma warning(disable:6276)
-			EC_H_CANCEL(lpMAPIFormMgr->SelectForm(
-				(ULONG_PTR)m_hWnd,
-				0, // fMapiUnicode,
-				(LPCTSTR) szTitle,
-				lpMAPIFolder,
-				&lpMAPIFormInfo));
-#pragma warning(pop)
+			EC_H(m_lpPropDisplay->SetDataSource(lpMAPIFormInfo,NULL,false));
+			lpMAPIFormInfo->Release();
+		}
+		lpMAPIFolder->Release();
+	}
+} // CMsgStoreDlg::OnResolveMessageClass
 
-			if (lpMAPIFormInfo)
-			{
-				EC_H(m_lpPropDisplay->SetDataSource(lpMAPIFormInfo,NULL,false));
-				DebugPrintFormInfo(DBGForms,lpMAPIFormInfo);
-				lpMAPIFormInfo->Release();
-			}
-			lpMAPIFormMgr->Release();
+void CMsgStoreDlg::OnSelectForm()
+{
+	HRESULT			hRes = S_OK;
+	LPMAPIFORMINFO	lpMAPIFormInfo = NULL;
+
+	if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl || !m_lpPropDisplay) return;
+
+	LPMAPIFOLDER lpMAPIFolder = (LPMAPIFOLDER) m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY);
+	if (lpMAPIFolder)
+	{
+		SelectForm(m_lpMapiObjects, lpMAPIFolder, &lpMAPIFormInfo);
+		if (lpMAPIFormInfo)
+		{
+			EC_H(m_lpPropDisplay->SetDataSource(lpMAPIFormInfo,NULL,false));
+			lpMAPIFormInfo->Release();
 		}
 		lpMAPIFolder->Release();
 	}

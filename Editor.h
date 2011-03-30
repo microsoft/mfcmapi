@@ -25,6 +25,7 @@ struct DropDownStruct
 	CComboBox	DropDown; // UI Control
 	ULONG		ulDropList; // count of entries in szDropList
 	UINT*		lpuidDropList;
+	LPNAME_ARRAY_ENTRY lpnaeDropList;
 	int			iDropSelection;
 	DWORD_PTR	iDropSelectionValue;
 	CString		lpszSelectionString;
@@ -111,6 +112,7 @@ public:
 	void InitSingleLine(ULONG i, UINT uidLabel, UINT uidVal, BOOL bReadOnly);
 	void InitCheck(ULONG i, UINT uidLabel, BOOL bVal, BOOL bReadOnly);
 	void InitDropDown(ULONG i, UINT uidLabel, ULONG ulDropList, _In_opt_count_(ulDropList) UINT* lpuidDropList, BOOL bReadOnly);
+	void InitDropDownArray(ULONG i, UINT uidLabel, ULONG ulDropList, _In_opt_count_(ulDropList) LPNAME_ARRAY_ENTRY lpnaeDropList, BOOL bReadOnly);
 	void InitGUIDDropDown(ULONG i, UINT uidLabel, BOOL bReadOnly);
 	void SetStringA(ULONG i, _In_opt_z_ LPCSTR szMsg, size_t cchsz = -1);
 	void SetStringW(ULONG i, _In_opt_z_ LPCWSTR szMsg, size_t cchsz = -1);

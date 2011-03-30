@@ -1,6 +1,6 @@
 #pragma once
 
-extern UINT g_uidParsingTypes[];
+extern NAME_ARRAY_ENTRY g_uidParsingTypes[];
 extern ULONG g_cuidParsingTypes;
 
 // lpszSmartView allocated with new, delete with delete[]
@@ -12,15 +12,10 @@ void InterpretPropSmartView(_In_ LPSPropValue lpProp, // required property value
 							_Deref_out_opt_z_ LPTSTR* lpszSmartView); // Built from lpProp & lpMAPIProp
 
 void InterpretBinaryAsString(SBinary myBin, DWORD_PTR iStructType, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_z_ LPTSTR* lpszResultString);
+void InterpretNumberAsString(_PV pV, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_z_ LPWSTR lpszPropNameString, _In_opt_ LPGUID lpguidNamedProp, BOOL bLabel, _Deref_out_opt_z_ LPTSTR* lpszResultString);
+void InterpretNumberAsStringProp(ULONG ulVal, ULONG ulPropTag, _Deref_out_opt_z_ LPTSTR* lpszResultString);
 
 // Nothing below this point actually needs to be public. It's only used internally by InterpretPropSmartView
-
-// Functions to parse PT_LONG/PT-I2 properties
-
-_Check_return_ CString RTimeToString(DWORD rTime);
-_Check_return_ LPTSTR RTimeToSzString(DWORD rTime);
-
-// End: Functions to parse PT_LONG/PT-I2 properties
 
 // Functions to parse PT_BINARY properties
 
