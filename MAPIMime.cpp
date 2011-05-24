@@ -11,7 +11,7 @@ _Check_return_ HRESULT ImportEMLToIMessage(
 	_In_z_ LPCWSTR lpszEMLFile,
 	_In_ LPMESSAGE lpMsg,
 	ULONG ulConvertFlags,
-	BOOL bApply,
+	bool bApply,
 	HCHARSET hCharSet,
 	CSETAPPLYTYPE cSetApplyType,
 	_In_opt_ LPADRBOOK lpAdrBook)
@@ -105,7 +105,7 @@ _Check_return_ HRESULT ExportIMessageToEML(_In_ LPMESSAGE lpMsg, _In_z_ LPCWSTR 
 		{
 			LPSTREAM lpMimeStm = NULL;
 
-			EC_H(CreateStreamOnHGlobal(NULL, TRUE, &lpMimeStm));
+			EC_H(CreateStreamOnHGlobal(NULL, true, &lpMimeStm));
 			if (SUCCEEDED(hRes) && lpMimeStm)
 			{
 				// Per the docs for MAPIToMIMEStm, CCSF_SMTP must always be set
@@ -150,11 +150,11 @@ _Check_return_ HRESULT ExportIMessageToEML(_In_ LPMESSAGE lpMsg, _In_z_ LPCWSTR 
 _Check_return_ HRESULT ConvertEMLToMSG(_In_z_ LPCWSTR lpszEMLFile,
 									   _In_z_ LPCWSTR lpszMSGFile,
 									   ULONG ulConvertFlags,
-									   BOOL bApply,
+									   bool bApply,
 									   HCHARSET hCharSet,
 									   CSETAPPLYTYPE cSetApplyType,
 									   _In_opt_ LPADRBOOK lpAdrBook,
-									   BOOL bUnicode)
+									   bool bUnicode)
 {
 	if (!lpszEMLFile || !lpszMSGFile) return MAPI_E_INVALID_PARAMETER;
 
@@ -222,7 +222,7 @@ _Check_return_ HRESULT GetConversionToEMLOptions(_In_ CWnd* pParentWnd,
 												 _Out_ ENCODINGTYPE* lpet,
 												 _Out_ MIMESAVETYPE* lpmst,
 												 _Out_ ULONG* lpulWrapLines,
-												 _Out_ BOOL* pDoAdrBook)
+												 _Out_ bool* pDoAdrBook)
 {
 	if (!lpulConvertFlags || !lpet || !lpmst || !lpulWrapLines || !pDoAdrBook) return MAPI_E_INVALID_PARAMETER;
 	HRESULT hRes = S_OK;
@@ -261,11 +261,11 @@ _Check_return_ HRESULT GetConversionToEMLOptions(_In_ CWnd* pParentWnd,
 
 _Check_return_ HRESULT GetConversionFromEMLOptions(_In_ CWnd* pParentWnd,
 												   _Out_ ULONG* lpulConvertFlags,
-												   _Out_ BOOL* pDoAdrBook,
-												   _Out_ BOOL* pDoApply,
+												   _Out_ bool* pDoAdrBook,
+												   _Out_ bool* pDoApply,
 												   _Out_ HCHARSET* phCharSet,
 												   _Out_ CSETAPPLYTYPE* pcSetApplyType,
-												   _Out_opt_ BOOL* pbUnicode)
+												   _Out_opt_ bool* pbUnicode)
 {
 	if (!lpulConvertFlags || !pDoAdrBook || !pDoApply || !phCharSet || !pcSetApplyType) return MAPI_E_INVALID_PARAMETER;
 	HRESULT hRes = S_OK;

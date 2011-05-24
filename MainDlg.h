@@ -25,7 +25,7 @@ private:
 		_In_ LPADDINMENUPARAMS lpParams,
 		_In_ LPMAPIPROP lpMAPIProp,
 		_In_ LPMAPICONTAINER lpContainer);
-	_Check_return_ BOOL HandleMenu(WORD wMenuSelect);
+	_Check_return_ bool HandleMenu(WORD wMenuSelect);
 	_Check_return_ HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp);
 	void OnDisplayItem();
 	void OnInitMenu(_In_ CMenu* pMenu);

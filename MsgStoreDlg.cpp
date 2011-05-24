@@ -139,7 +139,7 @@ void CMsgStoreDlg::OnInitMenu(_In_ CMenu* pMenu)
 	if (!pMenu) return;
 
 	LPMDB	lpMDB = NULL;
-	BOOL	bItemSelected = m_lpHierarchyTableTreeCtrl && m_lpHierarchyTableTreeCtrl->IsItemSelected();
+	bool	bItemSelected = m_lpHierarchyTableTreeCtrl && m_lpHierarchyTableTreeCtrl->IsItemSelected();
 
 	if (m_lpMapiObjects)
 	{
@@ -417,7 +417,7 @@ void CMsgStoreDlg::HandleCopy()
 	if (lpMAPISourceFolder) lpMAPISourceFolder->Release();
 } // CMsgStoreDlg::HandleCopy
 
-_Check_return_ BOOL CMsgStoreDlg::HandlePaste()
+_Check_return_ bool CMsgStoreDlg::HandlePaste()
 {
 	if (CBaseDialog::HandlePaste()) return true;
 
@@ -449,7 +449,7 @@ _Check_return_ BOOL CMsgStoreDlg::HandlePaste()
 		WC_H(MyData.DisplayDialog());
 		if (S_OK == hRes)
 		{
-			BOOL bPasteContents = MyData.GetCheck(0);
+			bool bPasteContents = MyData.GetCheck(0);
 			if (bPasteContents) OnPasteFolderContents();
 			else OnPasteFolder();
 		}
@@ -518,10 +518,17 @@ void CMsgStoreDlg::OnPasteFolder()
 
 	if (!m_lpMapiObjects) return;
 
-	enum {NAME,EID,NUM_COLS};
-	SizedSPropTagArray(NUM_COLS,sptaSrcFolder) = { NUM_COLS, {
+	enum
+	{
+		NAME,
+		EID,
+		NUM_COLS
+	};
+	static const SizedSPropTagArray(NUM_COLS,sptaSrcFolder) =
+	{
+		NUM_COLS,
 		PR_DISPLAY_NAME,
-		PR_ENTRYID}
+		PR_ENTRYID
 	};
 
 	DebugPrintEx(DBGGeneric,CLASS,_T("OnPasteFolder"),_T("\n"));
@@ -994,8 +1001,8 @@ void CMsgStoreDlg::OnSaveFolderContentsAsMSG()
 			EC_H(SaveFolderContentsToMSG(
 				lpMAPIFolder,
 				szFilePath,
-				MyData.GetCheck(0)?TRUE:FALSE,
-				MyData.GetCheck(1)?TRUE:FALSE,
+				MyData.GetCheck(0)?true:false,
+				MyData.GetCheck(1)?true:false,
 				m_hWnd));
 		}
 	}
@@ -1144,10 +1151,17 @@ void CMsgStoreDlg::OnRestoreDeletedFolder()
 
 	if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return;
 
-	enum {NAME,EID,NUM_COLS};
-	SizedSPropTagArray(NUM_COLS,sptaSrcFolder) = { NUM_COLS, {
+	enum
+	{
+		NAME,
+		EID,
+		NUM_COLS
+	};
+	static const SizedSPropTagArray(NUM_COLS,sptaSrcFolder) =
+	{
+		NUM_COLS,
 		PR_DISPLAY_NAME,
-		PR_ENTRYID}
+		PR_ENTRYID
 	};
 
 	LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release

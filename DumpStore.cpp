@@ -289,7 +289,7 @@ void CDumpStore::EndContentsTableWork()
 } // CDumpStore::EndContentsTableWork
 
 // TODO: This fails in unicode builds since PR_RTF_COMPRESSED is always ascii.
-void OutputBody(FILE* fMessageProps, LPMESSAGE lpMessage, ULONG ulBodyTag, LPTSTR szBodyName, BOOL bWrapEx, ULONG ulCPID)
+void OutputBody(FILE* fMessageProps, LPMESSAGE lpMessage, ULONG ulBodyTag, LPTSTR szBodyName, bool bWrapEx, ULONG ulCPID)
 {
 	HRESULT hRes = S_OK;
 	LPSTREAM lpStream = NULL;
@@ -472,7 +472,9 @@ void CDumpStore::BeginMessageWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpParent
 		{
 			OutputToFile(lpMsgData->fMessageProps,_T("<properties listtype=\"summary\">\n"));
 #define NUMPROPS 8
-			static SizedSPropTagArray(NUMPROPS,sptCols) = { NUMPROPS,
+			static const SizedSPropTagArray(NUMPROPS,sptCols) =
+			{
+				NUMPROPS,
 				PR_MESSAGE_CLASS_W,
 				PR_SUBJECT_W,
 				PR_SENDER_ADDRTYPE_W,

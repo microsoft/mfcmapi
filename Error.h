@@ -53,7 +53,7 @@ struct ERROR_ARRAY_ENTRY
 	ULONG	ulErrorName;
 	LPCWSTR lpszName;
 };
-typedef ERROR_ARRAY_ENTRY FAR * LPERROR_ARRAY_ENTRY;
+typedef ERROR_ARRAY_ENTRY* LPERROR_ARRAY_ENTRY;
 
 // Macros for debug output
 #define CHECKHRES(hRes) (CheckHResFn(hRes,"",NULL,__FILE__,__LINE__))

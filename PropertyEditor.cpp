@@ -10,16 +10,16 @@
 _Check_return_ HRESULT DisplayPropertyEditor(_In_ CWnd* pParentWnd,
 											 UINT uidTitle,
 											 UINT uidPrompt,
-											 BOOL bIsAB,
+											 bool bIsAB,
 											 _In_opt_ LPVOID lpAllocParent,
 											 _In_opt_ LPMAPIPROP lpMAPIProp,
 											 ULONG ulPropTag,
-											 BOOL bMVRow,
+											 bool bMVRow,
 											 _In_opt_ LPSPropValue lpsPropValue,
 											 _Inout_opt_ LPSPropValue* lpNewValue)
 {
 	HRESULT hRes = S_OK;
-	BOOL bShouldFreeInputValue = false;
+	bool bShouldFreeInputValue = false;
 
 	// We got a MAPI prop object and no input value, go look one up
 	if (lpMAPIProp && !lpsPropValue)
@@ -102,8 +102,8 @@ CPropertyEditor::CPropertyEditor(
 								 _In_ CWnd* pParentWnd,
 								 UINT uidTitle,
 								 UINT uidPrompt,
-								 BOOL bIsAB,
-								 BOOL bMVRow,
+								 bool bIsAB,
+								 bool bMVRow,
 								 _In_opt_ LPVOID lpAllocParent,
 								 _In_opt_ LPMAPIPROP lpMAPIProp,
 								 ULONG ulPropTag,
@@ -203,7 +203,7 @@ void CPropertyEditor::CreatePropertyControls()
 
 void CPropertyEditor::InitPropertyControls()
 {
-	LPTSTR szSmartView = NULL;
+	LPWSTR szSmartView = NULL;
 
 	InterpretPropSmartView(m_lpsInputValue,
 		m_lpMAPIProp,
@@ -228,7 +228,7 @@ void CPropertyEditor::InitPropertyControls()
 		}
 		break;
 	case(PT_BOOLEAN):
-		InitCheck(0,IDS_BOOLEAN,m_lpsInputValue?m_lpsInputValue->Value.b:false,false);
+		InitCheck(0,IDS_BOOLEAN,m_lpsInputValue?(0 != m_lpsInputValue->Value.b):false,false);
 		break;
 	case(PT_DOUBLE):
 		InitSingleLine(0,IDS_DOUBLE,NULL,false);
@@ -334,7 +334,7 @@ void CPropertyEditor::InitPropertyControls()
 			SetDecimal(0,m_lpsInputValue->Value.i);
 			SetHex(1,m_lpsInputValue->Value.i);
 
-			if (szSmartView) SetString(2,szSmartView);
+			if (szSmartView) SetStringW(2,szSmartView);
 		}
 		else
 		{
@@ -370,13 +370,13 @@ void CPropertyEditor::InitPropertyControls()
 			InitMultiLine(1,IDS_BIN,BinToHexString(&m_lpsInputValue->Value.bin,false),false);
 			InitMultiLine(2,IDS_TEXT,NULL,false);
 			SetStringA(2,(LPCSTR)m_lpsInputValue->Value.bin.lpb,m_lpsInputValue->Value.bin.cb+1);
-			InitMultiLine(3,IDS_COLSMART_VIEW,szSmartView,true);
+			InitMultiLineW(3,IDS_COLSMART_VIEW,szSmartView,true);
 		}
 		else
 		{
 			InitMultiLine(1,IDS_BIN,NULL,false);
 			InitMultiLine(2,IDS_TEXT,NULL,false);
-			InitMultiLine(3,IDS_COLSMART_VIEW,szSmartView,true);
+			InitMultiLineW(3,IDS_COLSMART_VIEW,szSmartView,true);
 		}
 		break;
 	case(PT_LONG):
@@ -387,7 +387,7 @@ void CPropertyEditor::InitPropertyControls()
 		{
 			SetStringf(0,_T("%u"),m_lpsInputValue->Value.l); // STRING_OK
 			SetHex(1,m_lpsInputValue->Value.l);
-			if (szSmartView) SetString(2,szSmartView);
+			if (szSmartView) SetStringW(2,szSmartView);
 		}
 		else
 		{
@@ -507,7 +507,7 @@ void CPropertyEditor::WriteStringsToSPropValue()
 
 	if (m_lpsOutputValue)
 	{
-		BOOL bFailed = false; // set true if we fail to get a prop and have to clean up memory
+		bool bFailed = false; // set true if we fail to get a prop and have to clean up memory
 		m_lpsOutputValue->ulPropTag = m_ulPropTag;
 		m_lpsOutputValue->dwAlignPad = NULL;
 		switch (PROP_TYPE(m_ulPropTag))
@@ -572,7 +572,7 @@ void CPropertyEditor::WriteStringsToSPropValue()
 			break;
 		case(PT_BOOLEAN):
 			{
-				BOOL bVal = false;
+				bool bVal = false;
 				bVal = GetCheckUseControl(0);
 				m_lpsOutputValue->Value.b = (unsigned short) bVal;
 			}
@@ -757,7 +757,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 				SetDecimal(0,iVal);
 			}
 
-			LPTSTR szSmartView = NULL;
+			LPWSTR szSmartView = NULL;
 			SPropValue sProp = {0};
 			sProp.ulPropTag = m_ulPropTag;
 			sProp.Value.i = iVal;
@@ -769,7 +769,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 				m_bMVRow,
 				&szSmartView);
 
-			if (szSmartView) SetString(2,szSmartView);
+			if (szSmartView) SetStringW(2,szSmartView);
 			delete[] szSmartView;
 			szSmartView = NULL;
 		}
@@ -789,7 +789,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 				SetStringf(0,_T("%u"),lVal); // STRING_OK
 			}
 
-			LPTSTR szSmartView = NULL;
+			LPWSTR szSmartView = NULL;
 			SPropValue sProp = {0};
 			sProp.ulPropTag = m_ulPropTag;
 			sProp.Value.l = lVal;
@@ -801,7 +801,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 				m_bMVRow,
 				&szSmartView);
 
-			if (szSmartView) SetString(2,szSmartView);
+			if (szSmartView) SetStringW(2,szSmartView);
 			delete[] szSmartView;
 			szSmartView = NULL;
 		}
@@ -892,7 +892,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 			Bin.cb = (ULONG) cb;
 			SetSize(0, cb);
 
-			LPTSTR szSmartView = NULL;
+			LPWSTR szSmartView = NULL;
 			SPropValue sProp = {0};
 			sProp.ulPropTag = m_ulPropTag;
 			sProp.Value.bin = Bin;
@@ -904,7 +904,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 				m_bMVRow,
 				&szSmartView);
 
-			SetString(3,szSmartView);
+			SetStringW(3,szSmartView);
 			delete[] szSmartView;
 			szSmartView = NULL;
 
@@ -995,7 +995,7 @@ CMultiValuePropertyEditor::CMultiValuePropertyEditor(
 	_In_ CWnd* pParentWnd,
 	UINT uidTitle,
 	UINT uidPrompt,
-	BOOL bIsAB,
+	bool bIsAB,
 	_In_opt_ LPVOID lpAllocParent,
 	_In_opt_ LPMAPIPROP lpMAPIProp,
 	ULONG ulPropTag,
@@ -1340,7 +1340,7 @@ _Check_return_ LPSPropValue CMultiValuePropertyEditor::DetachModifiedSPropValue(
 	return m_lpRet;
 } // CMultiValuePropertyEditor::DetachModifiedSPropValue
 
-_Check_return_ BOOL CMultiValuePropertyEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData)
+_Check_return_ bool CMultiValuePropertyEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData)
 {
 	if (!lpData) return false;
 	if (!IsValidList(ulListNum)) return false;
@@ -1458,7 +1458,7 @@ void CMultiValuePropertyEditor::UpdateListRow(_In_ LPSPropValue lpProp, ULONG ul
 	if (PT_MV_LONG == PROP_TYPE(m_ulPropTag) ||
 		PT_MV_BINARY == PROP_TYPE(m_ulPropTag))
 	{
-		LPTSTR szSmartView = NULL;
+		LPWSTR szSmartView = NULL;
 
 		InterpretPropSmartView(lpProp,
 			m_lpMAPIProp,
@@ -1467,7 +1467,7 @@ void CMultiValuePropertyEditor::UpdateListRow(_In_ LPSPropValue lpProp, ULONG ul
 			true,
 			&szSmartView);
 
-		if (szSmartView) SetListString(ulListNum,iMVCount,3,szSmartView);
+		if (szSmartView) SetListStringW(ulListNum,iMVCount,3,szSmartView);
 		delete[] szSmartView;
 		szSmartView = NULL;
 	}
@@ -1484,14 +1484,14 @@ void CMultiValuePropertyEditor::UpdateSmartView(ULONG ulListNum)
 	{
 		WriteMultiValueStringsToSPropValue(ulListNum, (LPVOID) lpsProp, lpsProp);
 
-		LPTSTR szSmartView = NULL;
+		LPWSTR szSmartView = NULL;
 		InterpretPropSmartView(lpsProp,
 			m_lpMAPIProp,
 			NULL,
 			NULL,
 			true,
 			&szSmartView);
-		if (szSmartView) SetString(1,szSmartView);
+		if (szSmartView) SetStringW(1,szSmartView);
 		delete[] szSmartView;
 	}
 	MAPIFreeBuffer(lpsProp);

@@ -15,7 +15,7 @@ BEGIN_MESSAGE_MAP(CSortHeader, CHeaderCtrl)
 	ON_MESSAGE(WM_MFCMAPI_SAVECOLUMNORDERHEADER, msgOnSaveColumnOrder)
 END_MESSAGE_MAP()
 
-_Check_return_ BOOL CSortHeader::Init(_In_ CHeaderCtrl *pHeader, _In_ HWND hwndParent)
+_Check_return_ bool CSortHeader::Init(_In_ CHeaderCtrl *pHeader, _In_ HWND hwndParent)
 {
 	if (!pHeader) return false;
 

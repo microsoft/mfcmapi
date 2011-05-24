@@ -280,7 +280,7 @@ void CAbDlg::HandleCopy()
 	m_lpMapiObjects->SetABEntriesToCopy(lpEIDs);
 } // CAbDlg::HandleCopy
 
-_Check_return_ BOOL CAbDlg::HandlePaste()
+_Check_return_ bool CAbDlg::HandlePaste()
 {
 	if (CBaseDialog::HandlePaste()) return true;
 

@@ -110,7 +110,7 @@ BEGIN_MESSAGE_MAP(CMainDlg, CContentsTableDlg)
 	ON_COMMAND(ID_CONVERTEMLTOMSG, OnConvertEMLToMSG)
 END_MESSAGE_MAP()
 
-_Check_return_ BOOL CMainDlg::HandleMenu(WORD wMenuSelect)
+_Check_return_ bool CMainDlg::HandleMenu(WORD wMenuSelect)
 {
 	DebugPrint(DBGMenu,_T("CMainDlg::HandleMenu wMenuSelect = 0x%X = %d\n"),wMenuSelect,wMenuSelect);
 	return CContentsTableDlg::HandleMenu(wMenuSelect);
@@ -122,7 +122,8 @@ void CMainDlg::OnInitMenu(_In_ CMenu* pMenu)
 	{
 		LPMAPISESSION	lpMAPISession = NULL;
 		LPADRBOOK		lpAddrBook = NULL;
-		BOOL			bMAPIInitialized = false;
+		bool			bMAPIInitialized = false;
+		HMODULE			hMAPI = GetMAPIHandle();
 		if (m_lpMapiObjects)
 		{
 			// Don't care if these fail
@@ -130,11 +131,12 @@ void CMainDlg::OnInitMenu(_In_ CMenu* pMenu)
 			lpAddrBook = m_lpMapiObjects->GetAddrBook(false); // do not release
 			bMAPIInitialized = m_lpMapiObjects->bMAPIInitialized();
 		}
-		BOOL bInLoadOp = m_lpContentsTableListCtrl && m_lpContentsTableListCtrl->IsLoading();
+		bool bInLoadOp = m_lpContentsTableListCtrl && m_lpContentsTableListCtrl->IsLoading();
 
-		pMenu->EnableMenuItem(ID_LOADMAPI,DIM(!hModMSMAPI && !hModMAPI && !bInLoadOp));
-		pMenu->EnableMenuItem(ID_UNLOADMAPI,DIM((hModMSMAPI || hModMAPI) && !bInLoadOp));
-		pMenu->CheckMenuItem(ID_LOADMAPI,CHECK((hModMSMAPI || hModMAPI) && !bInLoadOp));
+
+		pMenu->EnableMenuItem(ID_LOADMAPI,DIM(!hMAPI && !bInLoadOp));
+		pMenu->EnableMenuItem(ID_UNLOADMAPI,DIM(hMAPI && !bInLoadOp));
+		pMenu->CheckMenuItem(ID_LOADMAPI,CHECK(hMAPI && !bInLoadOp));
 		pMenu->EnableMenuItem(ID_MAPIINITIALIZE,DIM(!bMAPIInitialized && !bInLoadOp));
 		pMenu->EnableMenuItem(ID_MAPIUNINITIALIZE,DIM(bMAPIInitialized && !bInLoadOp));
 		pMenu->CheckMenuItem(ID_MAPIINITIALIZE,CHECK(bMAPIInitialized && !bInLoadOp));
@@ -1073,10 +1075,10 @@ void CMainDlg::OnLoadMAPI()
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		UnloadMAPI(); // get rid of what we already got
-		EC_D(hModMSMAPI,MyLoadLibrary(MyData.GetString(0)));
-		hModMAPI = hModMSMAPI; // Ensure we only use the user specified mapi binary
-		if (hModMSMAPI) LoadMAPIFuncs(hModMSMAPI);
+		HMODULE hMAPI = NULL;
+		UnLoadPrivateMAPI();
+		EC_D(hMAPI,MyLoadLibrary(MyData.GetString(0)));
+		SetMAPIHandle(hMAPI);
 	}
 } // CMainDlg::OnLoadMAPI
 
@@ -1094,7 +1096,7 @@ void CMainDlg::OnUnloadMAPI()
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		UnloadMAPI();
+		UnLoadPrivateMAPI();
 	}
 } // CMainDlg::OnUnloadMAPI
 
@@ -1429,7 +1431,7 @@ void CMainDlg::OnIsAttachmentBlocked()
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		BOOL bBlocked = false;
+		bool bBlocked = false;
 		EC_H(IsAttachmentBlocked(lpMAPISession,MyData.GetStringW(0),&bBlocked));
 		if (SUCCEEDED(hRes))
 		{
@@ -1455,9 +1457,12 @@ void CMainDlg::OnShowProfiles()
 	LPMAPITABLE lpProfTable = NULL;
 
 	if (!m_lpMapiObjects) return;
-	LPPROFADMIN lpProfAdmin = m_lpMapiObjects->GetProfAdmin(); // do not release
+	m_lpMapiObjects->MAPIInitialize(NULL);
 
+	LPPROFADMIN lpProfAdmin = NULL;
+	EC_H(MAPIAdminProfiles(0, &lpProfAdmin));
 	if (!lpProfAdmin) return;
+
 	EC_H(lpProfAdmin->GetProfileTable(
 		0, // fMapiUnicode is not supported
 		&lpProfTable));
@@ -1471,6 +1476,7 @@ void CMainDlg::OnShowProfiles()
 
 		lpProfTable->Release();
 	}
+	lpProfAdmin->Release();
 } // CMainDlg::OnShowProfiles
 
 void CMainDlg::OnLaunchProfileWizard()
@@ -1499,7 +1505,7 @@ void CMainDlg::OnLaunchProfileWizard()
 		LaunchProfileWizard(
 			m_hWnd,
 			MyData.GetHex(0),
-			(LPCSTR FAR *) szServices,
+			(LPCSTR*) szServices,
 			_countof(szProfName),
 			szProfName);
 	}
@@ -1580,7 +1586,7 @@ void CMainDlg::OnViewMSGProperties()
 	EC_B(szFileSpec.LoadString(IDS_MSGFILES));
 
 	EC_D_DIALOG(dlgFilePicker.DisplayDialog(
-		TRUE,
+		true,
 		L"msg", // STRING_OK
 		NULL,
 		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_FILEMUSTEXIST,
@@ -1610,7 +1616,7 @@ void CMainDlg::OnConvertMSGToEML()
 	ENCODINGTYPE et = IET_UNKNOWN;
 	MIMESAVETYPE mst = USE_DEFAULT_SAVETYPE;
 	ULONG ulWrapLines = USE_DEFAULT_WRAPPING;
-	BOOL bDoAdrBook = false;
+	bool bDoAdrBook = false;
 
 	WC_H(GetConversionToEMLOptions(this,&ulConvertFlags,&et,&mst,&ulWrapLines,&bDoAdrBook));
 	if (S_OK == hRes)
@@ -1625,7 +1631,7 @@ void CMainDlg::OnConvertMSGToEML()
 		EC_B(szFileSpec.LoadString(IDS_MSGFILES));
 
 		EC_D_DIALOG(dlgFilePickerMSG.DisplayDialog(
-			TRUE,
+			true,
 			L"msg", // STRING_OK
 			NULL,
 			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_FILEMUSTEXIST,
@@ -1638,7 +1644,7 @@ void CMainDlg::OnConvertMSGToEML()
 			CFileDialogExW dlgFilePickerEML;
 
 			EC_D_DIALOG(dlgFilePickerEML.DisplayDialog(
-				TRUE,
+				true,
 				L"eml", // STRING_OK
 				NULL,
 				OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
@@ -1667,9 +1673,9 @@ void CMainDlg::OnConvertEMLToMSG()
 
 	HRESULT	hRes = S_OK;
 	ULONG ulConvertFlags = CCSF_SMTP;
-	BOOL bDoAdrBook = false;
-	BOOL bDoApply = false;
-	BOOL bUnicode = false;
+	bool bDoAdrBook = false;
+	bool bDoApply = false;
+	bool bUnicode = false;
 	HCHARSET hCharSet = NULL;
 	CSETAPPLYTYPE cSetApplyType = CSET_APPLY_UNTAGGED;
 	WC_H(GetConversionFromEMLOptions(this,&ulConvertFlags,&bDoAdrBook,&bDoApply,&hCharSet,&cSetApplyType,&bUnicode));
@@ -1686,7 +1692,7 @@ void CMainDlg::OnConvertEMLToMSG()
 		CFileDialogExW dlgFilePickerEML;
 
 		EC_D_DIALOG(dlgFilePickerEML.DisplayDialog(
-			TRUE,
+			true,
 			L"eml", // STRING_OK
 			NULL,
 			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_FILEMUSTEXIST,
@@ -1698,7 +1704,7 @@ void CMainDlg::OnConvertEMLToMSG()
 
 			CFileDialogExW dlgFilePickerMSG;
 			EC_D_DIALOG(dlgFilePickerMSG.DisplayDialog(
-				TRUE,
+				true,
 				L"msg", // STRING_OK
 				NULL,
 				OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
@@ -1754,9 +1760,9 @@ void CMainDlg::OnComputeGivenStoreHash()
 
 			MAPIUID emsmdbUID = {0};
 			LPPROFSECT lpProfSect = NULL;
-			BOOL fPublicExchangeStore  = FExchangePublicStore((LPMAPIUID)lpProviderUID->lpb);
-			BOOL fPrivateExchangeStore = FExchangePrivateStore((LPMAPIUID)lpProviderUID->lpb);
-			BOOL fCached = false;
+			bool fPublicExchangeStore  = FExchangePublicStore((LPMAPIUID)lpProviderUID->lpb);
+			bool fPrivateExchangeStore = FExchangePrivateStore((LPMAPIUID)lpProviderUID->lpb);
+			bool fCached = false;
 			LPSPropValue lpConfigProp = NULL;
 			LPSPropValue lpPathPropA = NULL;
 			LPSPropValue lpPathPropW = NULL;

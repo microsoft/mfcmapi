@@ -28,8 +28,8 @@ _Check_return_ HRESULT ConcatSPropTagArrays(
 	_In_opt_ LPSPropTagArray lpArray2,
 	_Deref_out_opt_ LPSPropTagArray *lpNewArray);
 _Check_return_ HRESULT CopyPropertyAsStream(_In_ LPMAPIPROP lpSourcePropObj, _In_ LPMAPIPROP lpTargetPropObj, ULONG ulSourceTag, ULONG ulTargetTag);
-_Check_return_ HRESULT CopyFolderContents(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LPMAPIFOLDER lpDestFolder, BOOL bCopyAssociatedContents, BOOL bMove, BOOL bSingleCall, _In_ HWND hWnd);
-_Check_return_ HRESULT CopyFolderRules(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LPMAPIFOLDER lpDestFolder, BOOL bReplace);
+_Check_return_ HRESULT CopyFolderContents(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LPMAPIFOLDER lpDestFolder, bool bCopyAssociatedContents, bool bMove, bool bSingleCall, _In_ HWND hWnd);
+_Check_return_ HRESULT CopyFolderRules(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LPMAPIFOLDER lpDestFolder, bool bReplace);
 _Check_return_ HRESULT CopySBinary(_Out_ LPSBinary psbDest, _In_ const LPSBinary psbSrc, _In_ LPVOID lpParent);
 _Check_return_ HRESULT CopyStringA(_Deref_out_z_ LPSTR* lpszDestination, _In_z_ LPCSTR szSource, _In_opt_ LPVOID pParent);
 _Check_return_ HRESULT CopyStringW(_Deref_out_z_ LPWSTR* lpszDestination, _In_z_ LPCWSTR szSource, _In_opt_ LPVOID pParent);
@@ -49,17 +49,17 @@ _Check_return_ HRESULT CreateRangeRestriction(ULONG ulPropTag,
 											  _Deref_out_opt_ LPSRestriction* lppRes);
 _Check_return_ HRESULT DeleteProperty(_In_ LPMAPIPROP lpMAPIProp,ULONG ulPropTag);
 _Check_return_ HRESULT DeleteToDeletedItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLDER lpSourceFolder, _In_ LPENTRYLIST lpEIDs, _In_ HWND hWnd);
-_Check_return_ BOOL    FindPropInPropTagArray(_In_ LPSPropTagArray lpspTagArray, ULONG ulPropToFind, _Out_ ULONG* lpulRowFound);
+_Check_return_ bool    FindPropInPropTagArray(_In_ LPSPropTagArray lpspTagArray, ULONG ulPropToFind, _Out_ ULONG* lpulRowFound);
 _Check_return_ ULONG   GetMAPIObjectType(_In_opt_ LPMAPIPROP lpMAPIProp);
 _Check_return_ HRESULT GetInbox(_In_ LPMDB lpMDB, _Deref_out_opt_ LPMAPIFOLDER* lpInbox);
 _Check_return_ HRESULT GetParentFolder(_In_ LPMAPIFOLDER lpChildFolder, _In_ LPMDB lpMDB, _Deref_out_opt_ LPMAPIFOLDER* lpParentFolder);
 _Check_return_ HRESULT GetPropsNULL(_In_ LPMAPIPROP lpMAPIProp, ULONG ulFlags, _Out_ ULONG* lpcValues, _Deref_out_opt_ LPSPropValue* lppPropArray);
 _Check_return_ HRESULT GetSpecialFolder(_In_ LPMDB lpMDB, ULONG ulFolderPropTag, _Deref_out_opt_ LPMAPIFOLDER *lpSpecialFolder);
-_Check_return_ HRESULT IsAttachmentBlocked(_In_ LPMAPISESSION lpMAPISession, _In_z_ LPCWSTR pwszFileName, _Out_ BOOL* pfBlocked);
-_Check_return_ BOOL    IsDuplicateProp(_In_ LPSPropTagArray lpArray, ULONG ulPropTag);
-void    MyHexFromBin(_In_opt_count_(cb) LPBYTE lpb, size_t cb, BOOL bPrependCB, _Deref_out_opt_z_ LPTSTR* lpsz);
-_Check_return_ BOOL MyBinFromHex(_In_z_ LPCTSTR lpsz, _Inout_opt_count_(*lpcb) LPBYTE lpb, _Inout_ ULONG* lpcb);
-_Check_return_ HRESULT RemoveOneOff(_In_ LPMESSAGE lpMessage, BOOL bRemovePropDef);
+_Check_return_ HRESULT IsAttachmentBlocked(_In_ LPMAPISESSION lpMAPISession, _In_z_ LPCWSTR pwszFileName, _Out_ bool* pfBlocked);
+_Check_return_ bool    IsDuplicateProp(_In_ LPSPropTagArray lpArray, ULONG ulPropTag);
+void    MyHexFromBin(_In_opt_count_(cb) LPBYTE lpb, size_t cb, bool bPrependCB, _Deref_out_opt_z_ LPTSTR* lpsz);
+_Check_return_ bool MyBinFromHex(_In_z_ LPCTSTR lpsz, _Inout_opt_count_(*lpcb) LPBYTE lpb, _Inout_ ULONG* lpcb);
+_Check_return_ HRESULT RemoveOneOff(_In_ LPMESSAGE lpMessage, bool bRemovePropDef);
 _Check_return_ HRESULT ResendMessages(
 									  _In_ LPMAPIFOLDER lpFolder,
 									  _In_ HWND hWnd);
@@ -80,23 +80,24 @@ _Check_return_ HRESULT SendTestMessage(
 									   _In_z_ LPCTSTR szSubject);
 _Check_return_ HRESULT WrapStreamForRTF(
 										_In_ LPSTREAM lpCompressedRTFStream,
-										BOOL bUseWrapEx,
+										bool bUseWrapEx,
 										ULONG ulFlags,
 										ULONG ulInCodePage,
 										ULONG ulOutCodePage,
-										_Deref_out_ LPSTREAM FAR * lpUncompressedRTFStream,
-										_Out_opt_ ULONG FAR * pulStreamFlags);
+										_Deref_out_ LPSTREAM* lpUncompressedRTFStream,
+										_Out_opt_ ULONG* pulStreamFlags);
 
 _Check_return_ HRESULT GetNamedPropsByGUID(_In_ LPMAPIPROP lpSource, _In_ LPGUID lpPropSetGUID, _Deref_out_ LPSPropTagArray * lpOutArray);
-_Check_return_ HRESULT CopyNamedProps(_In_ LPMAPIPROP lpSource, _In_ LPGUID lpPropSetGUID, BOOL bDoMove, BOOL bDoNoReplace, _In_ LPMAPIPROP lpTarget, _In_ HWND hWnd);
+_Check_return_ HRESULT CopyNamedProps(_In_ LPMAPIPROP lpSource, _In_ LPGUID lpPropSetGUID, bool bDoMove, bool bDoNoReplace, _In_ LPMAPIPROP lpTarget, _In_ HWND hWnd);
 
 // Unicode support
 _Check_return_ HRESULT AnsiToUnicode(_In_z_ LPCSTR pszA, _Out_z_cap_(cchszA) LPWSTR* ppszW, size_t cchszA = -1);
 _Check_return_ HRESULT UnicodeToAnsi(_In_z_ LPCWSTR pszW, _Out_z_cap_(cchszW) LPSTR* ppszA, size_t cchszW = -1);
 
-_Check_return_ BOOL CheckStringProp(_In_opt_ LPSPropValue lpProp, ULONG ulPropType);
-_Check_return_ DWORD ComputeStoreHash(ULONG cbStoreEID, _In_ LPBYTE pbStoreEID, _In_opt_z_ LPCSTR pszFileName, _In_opt_z_ LPCWSTR pwzFileName, BOOL bPublicStore);
+_Check_return_ bool CheckStringProp(_In_opt_ LPSPropValue lpProp, ULONG ulPropType);
+_Check_return_ DWORD ComputeStoreHash(ULONG cbStoreEID, _In_ LPBYTE pbStoreEID, _In_opt_z_ LPCSTR pszFileName, _In_opt_z_ LPCWSTR pwzFileName, bool bPublicStore);
 _Check_return_ LPWSTR EncodeID(ULONG cbEID, _In_ LPENTRYID rgbID);
+_Check_return_ LPWSTR DecodeID(ULONG cbBuffer, _In_ LPBYTE lpbBuffer);
 
 HRESULT HrEmsmdbUIDFromStore(_In_ LPMAPISESSION pmsess,
 							 _In_ MAPIUID const * const puidService,

@@ -49,7 +49,7 @@ void DisplayContextMenu(UINT uiClassMenu, UINT uiControlMenu, _In_ CWnd* pParent
 _Check_return_ int GetEditHeight(_In_ HWND hwndEdit);
 _Check_return_ int GetTextHeight(_In_ HWND hwndEdit);
 
-_Check_return_ BOOL bShouldCancel(_In_opt_ CWnd* cWnd, HRESULT hRes);
+_Check_return_ bool bShouldCancel(_In_opt_ CWnd* cWnd, HRESULT hRes);
 
 void DisplayMailboxTable(_In_ CParentWnd*	lpParent,
 						 _In_ CMapiObjects* lpMapiObjects);

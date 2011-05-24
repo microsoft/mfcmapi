@@ -162,7 +162,6 @@ ID_EDITPROPERTYASUNICODESTREAM					"Interpret property as a Unicode stream for e
 ID_EDITRESTRICTION								"Edit current restriction or create a new one"
 ID_EDITSEARCHCRITERIA							"Edit search criteria using GetSearchCriteria and SetSearchCriteria"
 ID_EMPTYFOLDER									"Call IMAPFolder::EmptyFolder"
-ID_ENCODEID										"Encode an entry ID for a MAPI Protocol Host URL"
 ID_EXECUTEVERBONFORM							"Execute a verb on selected forms"
 ID_FASTSHUTDOWN									"Check for Fast Shutdown support and attempt a Fast Shutdown."
 ID_FINDALLNAMEDPROPS							"Find all current named property mappings and add them to the current property view as 'extra' properties."
@@ -323,8 +322,6 @@ IDS_NOTIFICATIONSPROMPT          "Enter Entry ID (leave blank to get store wide 
 Set ulEventMask"
 IDS_COMPUTESTOREHASH             "Compute Store Hash"
 IDS_COMPUTESTOREHASHPROMPT       "Enter store entry ID and file name"
-IDS_ENCODEID                     "Encode ID"
-IDS_ENCODEIDPROMPT               "Encode ID Prompt"
 IDS_OUTLOOKVERSIONTITLE          "Outlook Version"
 IDS_OUTLOOKVERSIONPROMPT         "Outlook path, version and language obtained through MsiProvideQualifiedComponent and MsiGetFileVersion"
 IDS_OUTLOOKVERSIONLABELVER       "Version:"
@@ -639,6 +636,8 @@ IDS_PSTPATH                      "PST Path"
 IDS_PSTPATHPROMPT                "Confirm or edit the PST path, and set password if desired"
 IDS_PSTDOPW                      "Set a password on the PST"
 IDS_PSTPW                        "PST Password"
+IDS_OPENPROFILE                  "Open Profile"
+IDS_OPENPROFILEPROMPT            "Profile Name"
 // propertyeditor.cpp
 IDS_EDITROW                      "Edit Row"
 IDS_EDITROWPROMPT                "Edit single row"
@@ -945,6 +944,8 @@ IDS_REGKEY_USE_IMAPIPROGRESS "Pass IMAPIProgress implementation to functions tha
 IDS_REGKEY_USE_MESSAGERAW "Use IID_IMessageRaw when opening messages"
 IDS_REGKEY_HEAPENABLETERMINATIONONCORRUPTION "Terminate on heap corruption (requires restart)"
 IDS_REGKEY_LOADADDINS "Load Add-Ins (requires restart)"
+IDS_REGKEY_FORCEOUTLOOKMAPI "Force Outlook's MAPI"
+
 // RestrictEditor.cpp
 IDS_RELOP "relop"
 IDS_ULPROPTAG1 "ulPropTag1"
@@ -1254,6 +1255,7 @@ IDS_MAPIERRUNICODE "ulVersion = 0x%1!X!\r\nlpszError = %2!ws!\r\nlpszComponent =
 IDS_MAPIERRANSI    "ulVersion = 0x%1!X!\r\nlpszError = %2!hs!\r\nlpszComponent = %3!hs!\r\nulLowLevelError = 0x%4!X! = %5!ws!\r\nulContext = 0x%6!X!"
 IDS_TNEFPROBARRAY "Component: 0x%1!08X!\r\nAttribute: 0x%2!08X!\r\n%3\r\nError: 0x%4!08X! = %5!ws!\r\n"
 IDS_NULLRES "lpRes was NULL\r\n"
+IDS_RESDEPTHEXCEEDED "Restriction nested too many (100) levels.\r\n"
 IDS_RESTYPE "%1lpRes->rt = 0x%2!X! = %3\r\n"
 
 IDS_RESCOMPARE "%1lpRes->res.resCompareProps.relop = %2 = 0x%3!08X!\r\n\
@@ -1283,11 +1285,11 @@ IDS_RESPROP "%1lpRes->res.resProperty.relop = %2 = 0x%3!08X!\r\n\
 IDS_RESPROPPROP "%1lpRes->res.resProperty.lpProp->ulPropTag = %2\r\n\
 %1lpRes->res.resProperty.lpProp->Value = %3\r\n\
 %1\tAlt: %4\r\n"
-IDS_RESPROPPROPFLAGS "%1\tFlags: %2\r\n"
+IDS_RESPROPPROPFLAGS "%1\tFlags: %2!ws!\r\n"
 
 IDS_RESBITMASK "%1lpRes->res.resBitMask.relBMR = %2 = 0x%3!08X!\r\n\
 %1lpRes->res.resBitMask.ulMask = 0x%4!08X!"
-IDS_RESBITMASKFLAGS ": %1"
+IDS_RESBITMASKFLAGS ": %1!ws!"
 IDS_RESBITMASKTAG "\r\n%1lpRes->res.resBitMask.ulPropTag = %2\r\n"
 
 IDS_RESSIZE "%1lpRes->res.resSize.relop = %2 = 0x%3!08X!\r\n\
@@ -1674,7 +1676,7 @@ IDS_CONVERTCODEPAGE "Code Page For Conversion"
 IDS_CONVERTCHARSETTYPE "Character Set Type"
 IDS_CONVERTCHARSETAPPLYTYPE "Character Set Apply Type"
 
-IDS_ARPHEADER "%1\r\nAppointment Recurrence Pattern: \r\n\
+IDS_ARPHEADER "%1!ws!\r\nAppointment Recurrence Pattern: \r\n\
 ReaderVersion2: 0x%2!08X!\r\n\
 WriterVersion2: 0x%3!08X!\r\n\
 StartTimeOffset: 0x%4!08X! = %4!d! = %5\r\n\
@@ -1690,7 +1692,7 @@ IDS_ARPEXSUBJECT "ExceptionInfo[%1!d!].SubjectLength: 0x%2!04X! = %2!d!\r\n\
 ExceptionInfo[%1!d!].SubjectLength2: 0x%3!04X! = %3!d!\r\n\
 ExceptionInfo[%1!d!].Subject: ""%4!hs!""\r\n"
 
-IDS_ARPEXMEETINGTYPE "ExceptionInfo[%1!d!].MeetingType: 0x%2!08X! = %3\r\n"
+IDS_ARPEXMEETINGTYPE "ExceptionInfo[%1!d!].MeetingType: 0x%2!08X! = %3!ws!\r\n"
 IDS_ARPEXREMINDERDELTA "ExceptionInfo[%1!d!].ReminderDelta: 0x%2!08X!\r\n"
 IDS_ARPEXREMINDERSET "ExceptionInfo[%1!d!].ReminderSet: 0x%2!08X!\r\n"
 
@@ -1698,14 +1700,14 @@ IDS_ARPEXLOCATION "ExceptionInfo[%1!d!].LocationLength: 0x%2!04X! = %2!d!\r\n\
 ExceptionInfo[%1!d!].LocationLength2: 0x%3!04X! = %3!d!\r\n\
 ExceptionInfo[%1!d!].Location: ""%4!hs!""\r\n"
 
-IDS_ARPEXBUSYSTATUS "ExceptionInfo[%1!d!].BusyStatus: 0x%2!08X! = %3\r\n"
+IDS_ARPEXBUSYSTATUS "ExceptionInfo[%1!d!].BusyStatus: 0x%2!08X! = %3!ws!\r\n"
 IDS_ARPEXATTACHMENT "ExceptionInfo[%1!d!].Attachment: 0x%2!08X!\r\n"
 IDS_ARPEXSUBTYPE "ExceptionInfo[%1!d!].SubType: 0x%2!08X!\r\n"
 IDS_ARPEXAPPOINTMENTCOLOR "ExceptionInfo[%1!d!].AppointmentColor: 0x%2!08X!\r\n"
 IDS_ARPRESERVED1 "ReservedBlock1Size: 0x%1!08X!\r\n"
 
 IDS_ARPEXCHANGEHIGHLIGHT "ExtendedException[%1!d!].ChangeHighlight.ChangeHighlightSize: 0x%2!08X!\r\n\
-ExtendedException[%1!d!].ChangeHighlight.ChangeHighlightValue: 0x%3!08X! = %4\r\n"
+ExtendedException[%1!d!].ChangeHighlight.ChangeHighlightValue: 0x%3!08X! = %4!ws!\r\n"
 
 IDS_ARPEXCHANGEHIGHLIGHTRESERVED "ExtendedException[%1!d!].ChangeHighlight.Reserved: "
 IDS_ARPEXRESERVED1 "ExtendedException[%1!d!].ReservedBlockEE1Size: 0x%2!08X!\r\n"
@@ -1854,7 +1856,7 @@ abFlags[2..3] = 0x%5!02X!%6!02X!\r\n"
 IDS_ENTRYIDPROVIDERGUID "Provider GUID = %1"
 
 IDS_ENTRYIDEXCHANGEADDRESSDATA "\r\nVersion = 0x%1!08X! = %2\r\n\
-Type = 0x%3!08X! = %4\r\n\
+Type = 0x%3!08X! = %4!ws!\r\n\
 X500DN = %5!hs!"
 
 IDS_ENTRYIDCONTACTADDRESSDATA "\r\nVersion = 0x%1!08X! = %2\r\n\
@@ -1868,7 +1870,7 @@ DLLFileName = %5!hs!"
 
 IDS_ENTRYIDMAPIMESSAGESTOREEXCHANGEDATA "\r\nWrapped Flags = 0x%1!08X!\r\n\
 WrappedProviderUID = %2\r\n\
-WrappedType = 0x%3!08X! = %4\r\n\
+WrappedType = 0x%3!08X! = %4!ws!\r\n\
 ServerShortname = %5!hs!\r\n\
 MailboxDN = %6!hs!"
 
@@ -1894,7 +1896,7 @@ IDS_ENTRYIDWRAPPEDENTRYIDDATA "\r\nWrapped Entry Type = 0x%1!02X! = %2\r\n"
 IDS_PROPERTYDATAHEADER "Property[%1!d!]\r\n\
 Property = 0x%2!08X!\r\n"
 IDS_PROPERTYDATA "PropString = %1 AltPropString = %2\r\n"
-IDS_PROPERTYDATASMARTVIEW "Smart View: %1\r\n"
+IDS_PROPERTYDATASMARTVIEW "Smart View: %1!ws!\r\n"
 IDS_PROPERTYDATAEXACTMATCHES "Exact Matches: %1\r\n"
 IDS_PROPERTYDATAPARTIALMATCHES "Partial Matches: %1\r\n"
 
@@ -1922,7 +1924,7 @@ IDS_RULENAMEPROPSIZE "\r\n\tNameSize = 0x%1!02X!\
 
 IDS_SFDEFINITIONHEADER "Search Folder Definition:\r\n\
 Version = 0x%1!08X!\r\n\
-Flags = 0x%2!08X! = %3\r\n\
+Flags = 0x%2!08X! = %3!ws!\r\n\
 Numeric Search = 0x%4!08X!\r\n\
 Text Search Length = 0x%5!02X!"
 IDS_SFDEFINITIONTEXTSEARCH "\r\nText Search Length Extended = 0x%1!04X!\r\n\
@@ -1938,8 +1940,7 @@ IDS_SFDEFINITIONFOLDERLIST2 "\r\nFolderList2 = \r\n"
 IDS_SFDEFINITIONADDRESSCOUNT "\r\nAddressCount = 0x%1!08X!"
 IDS_SFDEFINITIONADDRESSES "\r\nAddresses[%1!d!].PropertyCount = 0x%2!08X!\r\n\
 Addresses[%3!d!].Pad = 0x%4!08X!"
-IDS_SFDEFINITIONPROPERTIES "\r\nProperties[%1!d!]:\r\n\
-%2"
+IDS_SFDEFINITIONPROPERTIES "\r\nProperties[%1!d!]:\r\n"
 IDS_SFDEFINITIONSKIPLEN2 "\r\nSkipLen2 = 0x%1!08X!"
 IDS_SFDEFINITIONSKIPBYTES2 "\r\nSkipBytes2 = "
 IDS_SFDEFINITIONADVANCEDSEARCHLEN "\r\nAdvancedSearchLen = 0x%1!08X!"

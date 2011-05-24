@@ -55,7 +55,9 @@ _Check_return_ HRESULT AddOneOffAddress(
 	LPADRBOOK lpAddrBook = NULL;
 	LPENTRYID lpEID = NULL;
 
-	enum {NAME,
+	enum
+	{
+		NAME,
 		ADDR,
 		EMAIL,
 		RECIP,
@@ -135,7 +137,9 @@ _Check_return_ HRESULT AddRecipient(
 	LPADRLIST		lpAdrList = NULL; // ModifyRecips takes LPADRLIST
 	LPADRBOOK		lpAddrBook = NULL;
 
-	enum {NAME,
+	enum
+	{
+		NAME,
 		RECIP,
 		NUM_RECIP_PROPS
 	};
@@ -309,30 +313,29 @@ _Check_return_ HRESULT ManualResolve(
 	LPMAPITABLE		pTable = NULL;
 	LPSPropValue	lpFoundRow = NULL;
 
-	enum {abcPR_ENTRYID,
+	enum
+	{
+		abcPR_ENTRYID,
 		abcPR_DISPLAY_NAME,
-		abcNUM_COLS};
+		abcNUM_COLS
+	};
 
-	static SizedSPropTagArray(abcNUM_COLS,abcCols) = {abcNUM_COLS,
+	static const SizedSPropTagArray(abcNUM_COLS,abcCols) =
+	{
+		abcNUM_COLS,
 		PR_ENTRYID,
 		PR_DISPLAY_NAME,
 	};
 
-	enum {abPR_ENTRYID,
+	enum
+	{
+		abPR_ENTRYID,
 		abPR_DISPLAY_NAME,
 		abPR_RECIPIENT_TYPE,
 		abPR_ADDRTYPE,
 		abPR_DISPLAY_TYPE,
 		abPropTagToCompare,
-		abNUM_COLS};
-
-	static SizedSPropTagArray(abNUM_COLS,abCols) = {abNUM_COLS,
-		PR_ENTRYID,
-		PR_DISPLAY_NAME,
-		PR_RECIPIENT_TYPE,
-		PR_ADDRTYPE,
-		PR_DISPLAY_TYPE,
-		PropTagToCompare
+		abNUM_COLS
 	};
 
 	if (!lpMAPISession) return MAPI_E_INVALID_PARAMETER;
@@ -500,15 +503,20 @@ _Check_return_ HRESULT SearchContentsTableForName(
 
 	LPSRowSet		pRows = NULL;
 
-	enum {abPR_ENTRYID,
+	enum
+	{
+		abPR_ENTRYID,
 		abPR_DISPLAY_NAME,
 		abPR_RECIPIENT_TYPE,
 		abPR_ADDRTYPE,
 		abPR_DISPLAY_TYPE,
 		abPropTagToCompare,
-		abNUM_COLS};
+		abNUM_COLS
+	};
 
-	static SizedSPropTagArray(abNUM_COLS,abCols) = {abNUM_COLS,
+	const SizedSPropTagArray(abNUM_COLS,abCols) =
+	{
+		abNUM_COLS,
 		PR_ENTRYID,
 		PR_DISPLAY_NAME,
 		PR_RECIPIENT_TYPE,

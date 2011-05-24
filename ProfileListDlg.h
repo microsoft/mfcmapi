@@ -36,8 +36,9 @@ private:
 	void OnLaunchProfileWizard();
 	void OnRemoveServicesFromMAPISVC();
 	void OnSetDefaultProfile();
+	void OnOpenProfileByName();
 
-	void AddPSTToProfile(BOOL bUnicodePST);
+	void AddPSTToProfile(bool bUnicodePST);
 
 	DECLARE_MESSAGE_MAP()
 };

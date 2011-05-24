@@ -3,7 +3,8 @@
 
 #define ulNoMatch 0xffffffff
 
-enum CmdMode {
+enum CmdMode
+{
 	cmdmodeUnknown = 0,
 	cmdmodePropTag,
 	cmdmodeGuid,
@@ -19,17 +20,18 @@ enum CmdMode {
 struct MYOPTIONS
 {
 	CmdMode Mode;
-	BOOL  bDoPartialSearch;
-	BOOL  bDoType;
-	BOOL  bDoDispid;
-	BOOL  bDoDecimal;
-	BOOL  bBinaryFile;
-	BOOL  bDoContents;
-	BOOL  bDoAssociatedContents;
-	BOOL  bRetryStreamProps;
-	BOOL  bVerbose;
-	BOOL  bNoAddins;
-	BOOL  bOnline;
+	bool  bHelp;
+	bool  bDoPartialSearch;
+	bool  bDoType;
+	bool  bDoDispid;
+	bool  bDoDecimal;
+	bool  bBinaryFile;
+	bool  bDoContents;
+	bool  bDoAssociatedContents;
+	bool  bRetryStreamProps;
+	bool  bVerbose;
+	bool  bNoAddins;
+	bool  bOnline;
 	LPWSTR lpszUnswitchedOption;
 	LPWSTR lpszProfile;
 	ULONG ulTypeNum;
@@ -47,10 +49,10 @@ struct MYOPTIONS
 };
 
 void InitMFC();
-HRESULT MrMAPILogonEx(LPCWSTR lpszProfile, LPMAPISESSION FAR* lppSession);
+HRESULT MrMAPILogonEx(_In_opt_z_ LPCWSTR lpszProfile, _Deref_out_opt_ LPMAPISESSION* lppSession);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Command line interface functions
 ////////////////////////////////////////////////////////////////////////////////
 
-void DisplayUsage();
+void DisplayUsage(BOOL bFull);

@@ -1,7 +1,5 @@
 #include "stdafx.h"
 #include "registry.h"
-#include <Aclapi.h>
-#include "MAPIFunctions.h"
 
 // Keep this in sync with REGKEYNAMES
 __RegKeys RegKeys[] = {
@@ -34,9 +32,10 @@ __RegKeys RegKeys[] = {
 	{_T("UseMessageRaw"),				regDWORD,regoptCheck,		false		,0,_T(""),_T(""),false,	IDS_REGKEY_USE_MESSAGERAW}, // STRING_OK
 	{_T("HeapEnableTerminationOnCorruption"),regDWORD,regoptCheck,	true		,0,_T(""),_T(""),false,	IDS_REGKEY_HEAPENABLETERMINATIONONCORRUPTION}, // STRING_OK
 	{_T("LoadAddIns"),					regDWORD,regoptCheck,		true		,0,_T(""),_T(""),false,	IDS_REGKEY_LOADADDINS}, // STRING_OK
+	{_T("ForceOutlookMAPI"),			regDWORD,regoptCheck,		false		,0,_T(""),_T(""),false,	IDS_REGKEY_FORCEOUTLOOKMAPI}, // STRING_OK
 	{_T("DisplayAboutDialog"),			regDWORD,regoptCheck,		true		,0,_T(""),_T(""),false,	NULL}, // STRING_OK
 	{_T("PropertyColumnOrder"),			regSTRING,regoptCheck,		0			,0,_T(""),_T(""),false,	NULL}, // STRING_OK
-	// {KeyName,							keytype,opttype,			defaultDWORD,0,defaultString,NULL,bRefresh,IDS_REGKEY_*} // Regkey template
+	// {KeyName,						keytype,opttype,			defaultDWORD,0,defaultString,NULL,bRefresh,IDS_REGKEY_*} // Regkey template
 };
 
 void SetDefaults()
@@ -347,57 +346,6 @@ _Check_return_ HKEY CreateRootKey()
 	if (SUCCEEDED(hRes) && hkSub) return hkSub;
 
 	hRes = S_OK;
-
-	PSID pEveryoneSID = NULL;
-	PACL pACL = NULL;
-	PSECURITY_DESCRIPTOR pSD = NULL;
-	EXPLICIT_ACCESS ea[2];
-	SID_IDENTIFIER_AUTHORITY SIDAuthWorld = SECURITY_WORLD_SID_AUTHORITY;
-	SECURITY_ATTRIBUTES sa = {0};
-
-	// Create a well-known SID for the Everyone group.
-	EC_B(AllocateAndInitializeSid(
-		&SIDAuthWorld,
-		1,
-		SECURITY_WORLD_RID,
-		0, 0, 0, 0, 0, 0, 0,
-		&pEveryoneSID));
-
-	// Initialize an EXPLICIT_ACCESS structure for an ACE.
-	// The ACE will allow Everyone full control to the key.
-	ZeroMemory(ea, sizeof(EXPLICIT_ACCESS));
-	ea[0].grfAccessPermissions = KEY_ALL_ACCESS;
-	ea[0].grfAccessMode = SET_ACCESS;
-	ea[0].grfInheritance= SUB_CONTAINERS_AND_OBJECTS_INHERIT;
-	ea[0].Trustee.TrusteeForm = TRUSTEE_IS_SID;
-	ea[0].Trustee.TrusteeType = TRUSTEE_IS_WELL_KNOWN_GROUP;
-	ea[0].Trustee.ptstrName  = (LPTSTR) pEveryoneSID;
-
-	// Create a new ACL that contains the new ACEs.
-	EC_W32(SetEntriesInAcl(1, ea, NULL, &pACL));
-
-	// Initialize a security descriptor.
-	EC_D(pSD, LocalAlloc(LPTR,
-		SECURITY_DESCRIPTOR_MIN_LENGTH));
-
-	if (pSD)
-	{
-		EC_B(InitializeSecurityDescriptor(pSD, SECURITY_DESCRIPTOR_REVISION));
-
-		// Add the ACL to the security descriptor.
-		EC_B(SetSecurityDescriptorDacl(pSD,
-			TRUE,    // bDaclPresent flag
-			pACL,
-			FALSE)); // not a default DACL
-	}
-
-	// Initialize a security attributes structure.
-	sa.nLength = sizeof (SECURITY_ATTRIBUTES);
-	sa.lpSecurityDescriptor = pSD;
-	sa.bInheritHandle = FALSE;
-
-	// Use the security attributes to set the security descriptor
-	// when you create a key.
 	WC_W32(RegCreateKeyEx(
 		HKEY_CURRENT_USER,
 		RKEY_ROOT,
@@ -405,13 +353,9 @@ _Check_return_ HKEY CreateRootKey()
 		_T(""),
 		0,
 		KEY_READ | KEY_WRITE,
-		&sa,
+		NULL,
 		&hkSub,
 		NULL));
-
-	if (pEveryoneSID) FreeSid(pEveryoneSID);
-	LocalFree(pACL);
-	LocalFree(pSD);
 
 	return hkSub;
 } // CreateRootKey

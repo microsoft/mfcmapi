@@ -82,18 +82,20 @@ public:
 	STDMETHODIMP_(ULONG)	Release();
 
 	// Exported manipulation functions
-	_Check_return_ HRESULT       Create(_In_ CWnd* pCreateParent, ULONG ulFlags, UINT nID, BOOL bImages);
+	_Check_return_ HRESULT       Create(_In_ CWnd* pCreateParent, ULONG ulFlags, UINT nID, bool bImages);
 	void          AutoSizeColumns();
-	void          DeleteAllColumns(BOOL bShutdown = false);
+	void          DeleteAllColumns(bool bShutdown = false);
 	void          SetSelectedItem(int iItem);
 	void          SortClickedColumn();
 	_Check_return_ SortListData* InsertRow(int iRow, _In_z_ LPTSTR szText);
 	void SetItemText(int nItem, int nSubItem, _In_z_ LPCTSTR lpszText);
+	void SetItemTextA(int nItem, int nSubItem, _In_z_ LPCSTR lpszText);
+	void SetItemTextW(int nItem, int nSubItem, _In_z_ LPCWSTR lpszText);
 
 protected:
-	void          MySetRedraw(BOOL bRedraw);
+	void          MySetRedraw(bool bRedraw);
 	_Check_return_ SortListData* InsertRow(int iRow, _In_z_ LPTSTR szText, int iIndent, int iImage);
-	void          FakeClickColumn(int iColumn, BOOL bSortUp);
+	void          FakeClickColumn(int iColumn, bool bSortUp);
 
 	// protected since derived classes need to call the base implementation
 	_Check_return_ virtual LRESULT	WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
@@ -111,11 +113,11 @@ private:
 	LONG		m_cRef;
 	int			m_iRedrawCount;
 	CImageList	m_ImageList;
-	BOOL		m_bHaveSorted;
-	BOOL		m_bHeaderSubclassed;
+	bool		m_bHaveSorted;
+	bool		m_bHeaderSubclassed;
 	CSortHeader	m_cSortHeader;
 	int			m_iClickedColumn;
-	BOOL		m_bSortUp;
+	bool		m_bSortUp;
 
 	DECLARE_MESSAGE_MAP()
 };

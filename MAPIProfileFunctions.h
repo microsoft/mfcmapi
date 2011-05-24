@@ -5,7 +5,7 @@
 void LaunchProfileWizard(
 						 _In_ HWND hParentWnd,
 						 ULONG ulFlags,
-						 _In_z_ LPCSTR FAR * lppszServiceNameToAdd,
+						 _In_z_ LPCSTR* lppszServiceNameToAdd,
 						 ULONG cchBufferMax,
 						 _Out_cap_(cchBufferMax) LPSTR lpszNewProfileName);
 
@@ -32,10 +32,10 @@ _Check_return_ HRESULT HrAddExchangeToProfile(
 
 _Check_return_ HRESULT HrAddPSTToProfile(
 	_In_ ULONG_PTR ulUIParam, // hwnd for CreateMsgService
-	BOOL bUnicodePST,
+	bool bUnicodePST,
 	_In_z_ LPCTSTR lpszPSTPath, // PST name
 	_In_z_ LPCSTR lpszProfileName, // profile name
-	BOOL bPasswordSet, // whether or not to include a password
+	bool bPasswordSet, // whether or not to include a password
 	_In_z_ LPCSTR lpszPassword); // password to include
 
 _Check_return_ HRESULT HrRemoveProfile(
@@ -54,16 +54,16 @@ void GetMAPISVCPath(_Inout_z_count_(cchMAPIDir) LPTSTR szMAPIDir, ULONG cchMAPID
 void DisplayMAPISVCPath(_In_ CWnd* pParentWnd);
 
 // http://msdn2.microsoft.com/en-us/library/bb820969.aspx
-typedef struct
+struct EXCHANGE_STORE_VERSION_NUM
 {
 	WORD	wMajorVersion;
 	WORD	wMinorVersion;
 	WORD	wBuild;
 	WORD	wMinorBuild;
-} EXCHANGE_STORE_VERSION_NUM;
+};
 
 _Check_return_ HRESULT GetProfileServiceVersion(_In_z_ LPCSTR lpszProfileName,
 												_Out_ ULONG* lpulServerVersion,
 												_Out_ EXCHANGE_STORE_VERSION_NUM* lpStoreVersion,
-												_Out_ BOOL* lpbFoundServerVersion,
-												_Out_ BOOL* lpbFoundServerFullVersion);
+												_Out_ bool* lpbFoundServerVersion,
+												_Out_ bool* lpbFoundServerFullVersion);

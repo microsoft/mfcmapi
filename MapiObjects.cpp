@@ -19,7 +19,7 @@ public:
 
 	void MAPIInitialize(ULONG ulFlags);
 	void MAPIUninitialize();
-	_Check_return_ BOOL bMAPIInitialized();
+	_Check_return_ bool bMAPIInitialized();
 
 	void SetABEntriesToCopy(_In_ LPENTRYLIST lpEBEntriesToCopy);
 	_Check_return_ LPENTRYLIST GetABEntriesToCopy();
@@ -54,14 +54,14 @@ private:
 	ULONG			m_ulNumAttachments;
 	LPMAPIFOLDER	m_lpSourceParent;
 	LPMAPIPROP		m_lpSourcePropObject;
-	BOOL			m_bMAPIInitialized;
+	bool			m_bMAPIInitialized;
 };
 
 CGlobalCache::CGlobalCache()
 {
 	TRACE_CONSTRUCTOR(GCCLASS);
 	m_cRef = 1;
-	m_bMAPIInitialized = FALSE;
+	m_bMAPIInitialized = false;
 
 	m_lpMessagesToCopy = NULL;
 	m_lpFolderToCopy = NULL;
@@ -106,7 +106,7 @@ void CGlobalCache::MAPIInitialize(ULONG ulFlags)
 		WC_H(::MAPIInitialize(&mapiInit));
 		if (SUCCEEDED(hRes))
 		{
-			m_bMAPIInitialized = TRUE;
+			m_bMAPIInitialized = true;
 		}
 		else
 		{
@@ -123,11 +123,11 @@ void CGlobalCache::MAPIUninitialize()
 	if (m_bMAPIInitialized)
 	{
 		::MAPIUninitialize();
-		m_bMAPIInitialized = FALSE;
+		m_bMAPIInitialized = false;
 	}
 } // CGlobalCache::MAPIUninitialize
 
-_Check_return_ BOOL CGlobalCache::bMAPIInitialized()
+_Check_return_ bool CGlobalCache::bMAPIInitialized()
 {
 	return m_bMAPIInitialized;
 } // CGlobalCache::bMAPIInitialized
@@ -263,7 +263,6 @@ CMapiObjects::CMapiObjects(_In_opt_ CMapiObjects *OldMapiObjects)
 	m_lpAddrBook = NULL;
 	m_lpMDB = NULL;
 	m_lpMAPISession = NULL;
-	m_lpProfAdmin = NULL;
 
 	// If we were passed a valid object, make copies of its interfaces.
 	if (OldMapiObjects)
@@ -276,9 +275,6 @@ CMapiObjects::CMapiObjects(_In_opt_ CMapiObjects *OldMapiObjects)
 
 		m_lpAddrBook = OldMapiObjects->m_lpAddrBook;
 		if (m_lpAddrBook) m_lpAddrBook->AddRef();
-
-		m_lpProfAdmin = OldMapiObjects->m_lpProfAdmin;
-		if (m_lpProfAdmin) m_lpProfAdmin->AddRef();
 
 		m_lpGlobalCache = OldMapiObjects->m_lpGlobalCache;
 		if (m_lpGlobalCache) m_lpGlobalCache->AddRef();
@@ -295,7 +291,6 @@ CMapiObjects::~CMapiObjects()
 	if (m_lpAddrBook) m_lpAddrBook->Release();
 	if (m_lpMDB) m_lpMDB->Release();
 	if (m_lpMAPISession) m_lpMAPISession->Release();
-	if (m_lpProfAdmin) m_lpProfAdmin->Release();
 
 	// Must be last - uninitializes MAPI
 	if (m_lpGlobalCache) m_lpGlobalCache->Release();
@@ -355,17 +350,6 @@ _Check_return_ LPMAPISESSION CMapiObjects::GetSession()
 	return m_lpMAPISession;
 } // CMapiObjects::GetSession
 
-_Check_return_ LPPROFADMIN CMapiObjects::GetProfAdmin()
-{
-	if (!m_lpProfAdmin)
-	{
-		HRESULT hRes = S_OK;
-		this->MAPIInitialize(NULL);
-		EC_H(MAPIAdminProfiles(0, &m_lpProfAdmin));
-	}
-	return m_lpProfAdmin;
-} // CMapiObjects::GetProfAdmin
-
 void CMapiObjects::SetMDB(_In_opt_ LPMDB lpMDB)
 {
 	DebugPrintEx(DBGGeneric,CLASS,_T("SetMDB"),_T("replacing %p with %p\n"),m_lpMDB,lpMDB);
@@ -387,7 +371,7 @@ void CMapiObjects::SetAddrBook(_In_opt_ LPADRBOOK lpAddrBook)
 	if (m_lpAddrBook) m_lpAddrBook->AddRef();
 } // CMapiObjects::SetAddrBook
 
-_Check_return_ LPADRBOOK CMapiObjects::GetAddrBook(BOOL bForceOpen)
+_Check_return_ LPADRBOOK CMapiObjects::GetAddrBook(bool bForceOpen)
 {
 	// if we haven't opened the address book yet and we have a session, open it now
 	if (!m_lpAddrBook && m_lpMAPISession && bForceOpen)
@@ -418,7 +402,7 @@ void CMapiObjects::MAPIUninitialize()
 	}
 } // CMapiObjects::MAPIUninitialize
 
-_Check_return_ BOOL CMapiObjects::bMAPIInitialized()
+_Check_return_ bool CMapiObjects::bMAPIInitialized()
 {
 	if (m_lpGlobalCache)
 	{

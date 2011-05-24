@@ -6,7 +6,7 @@
 #include "DumpStore.h"
 #include "File.h"
 
-void DumpContentsTable(_In_z_ LPWSTR lpszProfile, _In_z_ LPWSTR lpszDir, _In_ BOOL bContents, _In_ BOOL bAssociated, _In_ BOOL bRetryStreamProps, _In_ ULONG ulFolder)
+void DumpContentsTable(_In_z_ LPWSTR lpszProfile, _In_z_ LPWSTR lpszDir, _In_ bool bContents, _In_ bool bAssociated, _In_ bool bRetryStreamProps, _In_ ULONG ulFolder)
 {
 	InitMFC();
 	HRESULT hRes = S_OK;
@@ -48,7 +48,7 @@ void DumpContentsTable(_In_z_ LPWSTR lpszProfile, _In_z_ LPWSTR lpszDir, _In_ BO
 	MAPIUninitialize();
 } // DumpContentsTable
 
-void DumpMSG(_In_z_ LPCWSTR lpszMSGFile, _In_z_ LPCWSTR lpszXMLFile, _In_ BOOL bRetryStreamProps)
+void DumpMSG(_In_z_ LPCWSTR lpszMSGFile, _In_z_ LPCWSTR lpszXMLFile, _In_ bool bRetryStreamProps)
 {
 	InitMFC();
 	HRESULT hRes = S_OK;

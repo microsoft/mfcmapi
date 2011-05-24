@@ -1725,6 +1725,8 @@ NAME_ARRAY_ENTRY g_PropTagArray[] =
 	{0x3d13001f,	L"PidTagServiceInstallId" },
 	{0x3d150102,	L"PR_EMSMDB_SECTION_UID" },
 	{0x3d150102,	L"PidTagExchangeProfileSectionId" },
+	{0x3d1c0003,	L"PR_AB_SEARCH_PATH_CUSTOMIZATION" },
+	{0x3d1c0003,	L"PidTagAbSearchPathCustomization" },
 	{0x3d1c000b,	L"PR_AB_CHOOSE_DIRECTORY_AUTOMATICALLY" },
 	{0x3d1c000b,	L"PidTagAbChooseDirectoryAutomatically" },
 	{0x3d210102,	L"PR_ADMIN_SECURITY_DESCRIPTOR" },

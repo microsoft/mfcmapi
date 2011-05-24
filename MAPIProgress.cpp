@@ -99,7 +99,7 @@ _Check_return_ STDMETHODIMP CMAPIProgress::Progress(ULONG ulValue, ULONG ulCount
 	return S_OK;
 } // CMAPIProgress::Progress
 
-_Check_return_ STDMETHODIMP CMAPIProgress::GetFlags(_Inout_ ULONG FAR* lpulFlags)
+_Check_return_ STDMETHODIMP CMAPIProgress::GetFlags(_Inout_ ULONG* lpulFlags)
 {
 	if(!lpulFlags)
 	{
@@ -112,7 +112,7 @@ _Check_return_ STDMETHODIMP CMAPIProgress::GetFlags(_Inout_ ULONG FAR* lpulFlags
 	return S_OK;
 } // CMAPIProgress::GetFlags
 
-_Check_return_ STDMETHODIMP CMAPIProgress::GetMax(_Inout_ ULONG FAR* lpulMax)
+_Check_return_ STDMETHODIMP CMAPIProgress::GetMax(_Inout_ ULONG* lpulMax)
 {
 	if(!lpulMax)
 		return MAPI_E_INVALID_PARAMETER;
@@ -123,7 +123,7 @@ _Check_return_ STDMETHODIMP CMAPIProgress::GetMax(_Inout_ ULONG FAR* lpulMax)
 	return S_OK;
 } // CMAPIProgress::GetMax
 
-_Check_return_ STDMETHODIMP CMAPIProgress::GetMin(_Inout_ ULONG FAR* lpulMin)
+_Check_return_ STDMETHODIMP CMAPIProgress::GetMin(_Inout_ ULONG* lpulMin)
 {
 	if(!lpulMin)
 		return MAPI_E_INVALID_PARAMETER;
@@ -134,7 +134,7 @@ _Check_return_ STDMETHODIMP CMAPIProgress::GetMin(_Inout_ ULONG FAR* lpulMin)
 	return S_OK;
 } // CMAPIProgress::GetMin
 
-_Check_return_ STDMETHODIMP CMAPIProgress::SetLimits(_Inout_ ULONG FAR* lpulMin, _Inout_ ULONG FAR* lpulMax, _Inout_ ULONG FAR* lpulFlags)
+_Check_return_ STDMETHODIMP CMAPIProgress::SetLimits(_Inout_ ULONG* lpulMin, _Inout_ ULONG* lpulMax, _Inout_ ULONG* lpulFlags)
 {
 	OutputState(_T("SetLimits"));
 

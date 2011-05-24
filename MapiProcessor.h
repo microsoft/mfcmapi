@@ -9,14 +9,13 @@ It calls worker functions to do the customizable work on each object
 These worker functions are intended to be overridden by specialized classes inheriting from this class
 */
 
-typedef struct _FolderNode	FAR * LPFOLDERNODE;
-
-typedef struct _FolderNode
+typedef struct FolderNode* LPFOLDERNODE;
+struct FolderNode
 {
 	LPSBinary		lpFolderEID;
 	LPTSTR			szFolderOffsetPath;
 	LPFOLDERNODE	lpNextFolder;
-} FolderNode;
+};
 
 class CMAPIProcessor
 {
@@ -32,8 +31,8 @@ public:
 	// Processing functions
 	void ProcessMailboxTable(_In_z_ LPCTSTR szExchangeServerName);
 	void ProcessStore();
-	void ProcessFolders(BOOL bDoRegular, BOOL bDoAssociated, BOOL bDoDescent);
-	void ProcessMessage(_In_ LPMESSAGE lpMessage, BOOL bHasAttach, _In_opt_ LPVOID lpParentMessageData);
+	void ProcessFolders(bool bDoRegular, bool bDoAssociated, bool bDoDescent);
+	void ProcessMessage(_In_ LPMESSAGE lpMessage, bool bHasAttach, _In_opt_ LPVOID lpParentMessageData);
 
 protected:
 	LPMAPISESSION	m_lpSession;
@@ -74,10 +73,10 @@ private:
 	virtual void EndAttachmentWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData);
 	virtual void EndMessageWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData);
 
-	void ProcessFolder(BOOL bDoRegular, BOOL bDoAssociated, BOOL bDoDescent);
+	void ProcessFolder(bool bDoRegular, bool bDoAssociated, bool bDoDescent);
 	void ProcessContentsTable(ULONG ulFlags);
 	void ProcessRecipients(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData);
-	void ProcessAttachments(_In_ LPMESSAGE lpMessage, BOOL bHasAttach, _In_ LPVOID lpData);
+	void ProcessAttachments(_In_ LPMESSAGE lpMessage, bool bHasAttach, _In_ LPVOID lpData);
 
 	// FolderList functions
 	// Add a new node to the end of the folder list

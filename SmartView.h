@@ -8,12 +8,12 @@ void InterpretPropSmartView(_In_ LPSPropValue lpProp, // required property value
 							_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
 							_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
 							_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
-							BOOL bMVRow, // did the row come from a MV prop?
-							_Deref_out_opt_z_ LPTSTR* lpszSmartView); // Built from lpProp & lpMAPIProp
+							bool bMVRow, // did the row come from a MV prop?
+							_Deref_out_opt_z_ LPWSTR* lpszSmartView); // Built from lpProp & lpMAPIProp
 
-void InterpretBinaryAsString(SBinary myBin, DWORD_PTR iStructType, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_z_ LPTSTR* lpszResultString);
-void InterpretNumberAsString(_PV pV, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_z_ LPWSTR lpszPropNameString, _In_opt_ LPGUID lpguidNamedProp, BOOL bLabel, _Deref_out_opt_z_ LPTSTR* lpszResultString);
-void InterpretNumberAsStringProp(ULONG ulVal, ULONG ulPropTag, _Deref_out_opt_z_ LPTSTR* lpszResultString);
+void InterpretBinaryAsString(SBinary myBin, DWORD_PTR iStructType, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_z_ LPWSTR* lpszResultString);
+void InterpretNumberAsString(_PV pV, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_z_ LPWSTR lpszPropNameString, _In_opt_ LPGUID lpguidNamedProp, bool bLabel, _Deref_out_opt_z_ LPWSTR* lpszResultString);
+void InterpretNumberAsStringProp(ULONG ulVal, ULONG ulPropTag, _Deref_out_opt_z_ LPWSTR* lpszResultString);
 
 // Nothing below this point actually needs to be public. It's only used internally by InterpretPropSmartView
 
@@ -24,7 +24,7 @@ void InterpretNumberAsStringProp(ULONG ulVal, ULONG ulPropTag, _Deref_out_opt_z_
 // =====================
 //   This structure specifies the details of the recurrence type
 //
-typedef union
+union PatternTypeSpecificStruct
 {
 	DWORD WeekRecurrencePattern;
 	DWORD MonthRecurrencePattern;
@@ -33,13 +33,13 @@ typedef union
 		DWORD DayOfWeek;
 		DWORD N;
 	} MonthNthRecurrencePattern;
-} PatternTypeSpecificStruct;
+};
 
 // RecurrencePatternStruct
 // =====================
 //   This structure specifies a recurrence pattern.
 //
-typedef struct
+struct RecurrencePatternStruct
 {
 	WORD ReaderVersion;
 	WORD WriterVersion;
@@ -61,20 +61,20 @@ typedef struct
 	DWORD EndDate;
 	size_t JunkDataSize;
 	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
-} RecurrencePatternStruct;
+};
 
 // Allocates return value with new. Clean up with DeleteRecurrencePatternStruct.
 _Check_return_ RecurrencePatternStruct* BinToRecurrencePatternStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
 _Check_return_ RecurrencePatternStruct* BinToRecurrencePatternStructWithSize(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, _Out_opt_ size_t* lpcbBytesRead);
 void DeleteRecurrencePatternStruct(_In_ RecurrencePatternStruct* prpPattern);
 // result allocated with new, clean up with delete[]
-_Check_return_ LPTSTR RecurrencePatternStructToString(_In_ RecurrencePatternStruct* prpPattern);
+_Check_return_ LPWSTR RecurrencePatternStructToString(_In_ RecurrencePatternStruct* prpPattern);
 
 // ExceptionInfoStruct
 // =====================
 //   This structure specifies an exception
 //
-typedef struct
+struct ExceptionInfoStruct
 {
 	DWORD StartDateTime;
 	DWORD EndDateTime;
@@ -93,20 +93,20 @@ typedef struct
 	DWORD Attachment;
 	DWORD SubType;
 	DWORD AppointmentColor;
-} ExceptionInfoStruct;
+};
 
-typedef struct
+struct ChangeHighlightStruct
 {
 	DWORD ChangeHighlightSize;
 	DWORD ChangeHighlightValue;
 	LPBYTE Reserved;
-} ChangeHighlightStruct;
+};
 
 // ExtendedExceptionStruct
 // =====================
 //   This structure specifies additional information about an exception
 //
-typedef struct
+struct ExtendedExceptionStruct
 {
 	ChangeHighlightStruct ChangeHighlight;
 	DWORD ReservedBlockEE1Size;
@@ -120,14 +120,14 @@ typedef struct
 	LPWSTR WideCharLocation;
 	DWORD ReservedBlockEE2Size;
 	LPBYTE ReservedBlockEE2;
-} ExtendedExceptionStruct;
+};
 
 // AppointmentRecurrencePatternStruct
 // =====================
 //   This structure specifies a recurrence pattern for a calendar object
 //   including information about exception property values.
 //
-typedef struct
+struct AppointmentRecurrencePatternStruct
 {
 	RecurrencePatternStruct* RecurrencePattern;
 	DWORD ReaderVersion2;
@@ -143,22 +143,22 @@ typedef struct
 	LPBYTE ReservedBlock2;
 	size_t JunkDataSize;
 	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
-} AppointmentRecurrencePatternStruct;
+};
 
 // Allocates return value with new. Clean up with DeleteAppointmentRecurrencePatternStruct.
 _Check_return_ AppointmentRecurrencePatternStruct* BinToAppointmentRecurrencePatternStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
 void DeleteAppointmentRecurrencePatternStruct(_In_ AppointmentRecurrencePatternStruct* parpPattern);
 // result allocated with new, clean up with delete[]
-_Check_return_ LPTSTR AppointmentRecurrencePatternStructToString(_In_ AppointmentRecurrencePatternStruct* parpPattern);
+_Check_return_ LPWSTR AppointmentRecurrencePatternStructToString(_In_ AppointmentRecurrencePatternStruct* parpPattern);
 
-void SDBinToString(SBinary myBin, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_z_ LPTSTR* lpszResultString);
-void SIDBinToString(SBinary myBin, _Deref_out_z_ LPTSTR* lpszResultString);
+void SDBinToString(SBinary myBin, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_z_ LPWSTR* lpszResultString);
+void SIDBinToString(SBinary myBin, _Deref_out_z_ LPWSTR* lpszResultString);
 
 // ExtendedFlagStruct
 // =====================
 //   This structure specifies an Extended Flag
 //
-typedef struct
+struct ExtendedFlagStruct
 {
 	BYTE Id;
 	BYTE Cb;
@@ -170,25 +170,25 @@ typedef struct
 		DWORD ToDoFolderVersion;
 	} Data;
 	BYTE* lpUnknownData;
-} ExtendedFlagStruct;
+};
 
 // ExtendedFlagsStruct
 // =====================
 //   This structure specifies an array of Extended Flags
 //
-typedef struct
+struct ExtendedFlagsStruct
 {
 	ULONG ulNumFlags;
 	ExtendedFlagStruct* pefExtendedFlags;
 	size_t JunkDataSize;
 	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
-} ExtendedFlagsStruct;
+};
 
 // Allocates return value with new. Clean up with DeleteExtendedFlagsStruct.
 _Check_return_ ExtendedFlagsStruct* BinToExtendedFlagsStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
 void DeleteExtendedFlagsStruct(_In_ ExtendedFlagsStruct* pefExtendedFlags);
 // result allocated with new, clean up with delete[]
-_Check_return_ LPTSTR ExtendedFlagsStructToString(_In_ ExtendedFlagsStruct* pefExtendedFlags);
+_Check_return_ LPWSTR ExtendedFlagsStructToString(_In_ ExtendedFlagsStruct* pefExtendedFlags);
 
 // TimeZoneStruct
 // =====================
@@ -198,7 +198,7 @@ _Check_return_ LPTSTR ExtendedFlagsStructToString(_In_ ExtendedFlagsStruct* pefE
 //   TIME_ZONE_INFORMATION documented in MSDN, except that the strings
 //   describing the names 'daylight' and 'standard' time are omitted.
 //
-typedef struct
+struct TimeZoneStruct
 {
 	DWORD lBias; // offset from GMT
 	DWORD lStandardBias; // offset from bias during standard time
@@ -209,13 +209,13 @@ typedef struct
 	SYSTEMTIME stDaylightDate; // time to switch to daylight time
 	size_t JunkDataSize;
 	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
-} TimeZoneStruct;
+};
 
 // Allocates return value with new. Clean up with DeleteTimeZoneStruct.
 _Check_return_ TimeZoneStruct* BinToTimeZoneStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
 void DeleteTimeZoneStruct(_In_ TimeZoneStruct* ptzTimeZone);
 // result allocated with new, clean up with delete[]
-_Check_return_ LPTSTR TimeZoneStructToString(_In_ TimeZoneStruct* ptzTimeZone);
+_Check_return_ LPWSTR TimeZoneStructToString(_In_ TimeZoneStruct* ptzTimeZone);
 
 // TZRule
 // =====================
@@ -223,7 +223,7 @@ _Check_return_ LPTSTR TimeZoneStructToString(_In_ TimeZoneStruct* ptzTimeZone);
 //   savings shift occurs, and in addition, the year in which that
 //   timezone rule came into effect.
 //
-typedef struct
+struct TZRule
 {
 	BYTE bMajorVersion;
 	BYTE bMinorVersion;
@@ -236,14 +236,14 @@ typedef struct
 	DWORD lDaylightBias; // offset from bias during daylight time
 	SYSTEMTIME stStandardDate; // time to switch to standard time
 	SYSTEMTIME stDaylightDate; // time to switch to daylight time
-} TZRule;
+};
 
 // TimeZoneDefinitionStruct
 // =====================
 //   This represents an entire timezone including all historical, current
 //   and future timezone shift rules for daylight savings time, etc.
 //
-typedef struct
+struct TimeZoneDefinitionStruct
 {
 	BYTE bMajorVersion;
 	BYTE bMinorVersion;
@@ -255,20 +255,20 @@ typedef struct
 	TZRule* lpTZRule;
 	size_t JunkDataSize;
 	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
-} TimeZoneDefinitionStruct;
+};
 
 // Allocates return value with new. Clean up with DeleteTimeZoneDefinitionStruct.
 _Check_return_ TimeZoneDefinitionStruct* BinToTimeZoneDefinitionStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
 void DeleteTimeZoneDefinitionStruct(_In_ TimeZoneDefinitionStruct* ptzdTimeZoneDefinition);
 // result allocated with new, clean up with delete[]
-_Check_return_ LPTSTR TimeZoneDefinitionStructToString(_In_ TimeZoneDefinitionStruct* ptzdTimeZoneDefinition);
+_Check_return_ LPWSTR TimeZoneDefinitionStructToString(_In_ TimeZoneDefinitionStruct* ptzdTimeZoneDefinition);
 
 // [MS-OXOMSG].pdf
 // ReportTagStruct
 // =====================
 //   This structure specifies a report tag for a mail object
 //
-typedef struct
+struct ReportTagStruct
 {
 	CHAR Cookie[9]; // 8 characters + NULL terminator
 	DWORD Version;
@@ -286,32 +286,32 @@ typedef struct
 	LPSTR lpszAnsiText;
 	size_t JunkDataSize;
 	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
-} ReportTagStruct;
+};
 
 // Allocates return value with new. Clean up with DeleteReportTagStruct.
 _Check_return_ ReportTagStruct* BinToReportTagStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
 void DeleteReportTagStruct(_In_ ReportTagStruct* prtReportTag);
 // result allocated with new, clean up with delete[]
-_Check_return_ LPTSTR ReportTagStructToString(_In_ ReportTagStruct* prtReportTag);
+_Check_return_ LPWSTR ReportTagStructToString(_In_ ReportTagStruct* prtReportTag);
 
 // [MS-OXOMSG].pdf
 // ResponseLevelStruct
 // =====================
 //   This structure specifies the response levels for a conversation index
 //
-typedef struct
+struct ResponseLevelStruct
 {
-	BOOL DeltaCode;
+	bool DeltaCode;
 	DWORD TimeDelta;
 	BYTE Random;
 	BYTE ResponseLevel;
-} ResponseLevelStruct;
+};
 
 // ConversationIndexStruct
 // =====================
 //   This structure specifies a report tag for a mail object
 //
-typedef struct
+struct ConversationIndexStruct
 {
 	BYTE UnnamedByte;
 	FILETIME ftCurrent;
@@ -320,20 +320,20 @@ typedef struct
 	ResponseLevelStruct* lpResponseLevels;
 	size_t JunkDataSize;
 	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
-} ConversationIndexStruct;
+};
 
 // Allocates return value with new. Clean up with DeleteConversationIndexStruct.
 _Check_return_ ConversationIndexStruct* BinToConversationIndexStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
 void DeleteConversationIndexStruct(_In_ ConversationIndexStruct* pciConversationIndex);
 // result allocated with new, clean up with delete[]
-_Check_return_ LPTSTR ConversationIndexStructToString(_In_ ConversationIndexStruct* pciConversationIndex);
+_Check_return_ LPWSTR ConversationIndexStructToString(_In_ ConversationIndexStruct* pciConversationIndex);
 
 // [MS-OXOTASK].pdf
 // TaskAssignerStruct
 // =====================
 //   This structure specifies single task assigner
 //
-typedef struct
+struct TaskAssignerStruct
 {
 	DWORD cbAssigner;
 	ULONG cbEntryID;
@@ -342,31 +342,31 @@ typedef struct
 	LPWSTR wzDisplayName;
 	size_t JunkDataSize;
 	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
-} TaskAssignerStruct;
+};
 
 // TaskAssignersStruct
 // =====================
 //   This structure specifies an array of task assigners
 //
-typedef struct
+struct TaskAssignersStruct
 {
 	DWORD cAssigners;
 	TaskAssignerStruct* lpTaskAssigners;
 	size_t JunkDataSize;
 	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
-} TaskAssignersStruct;
+};
 
 // Allocates return value with new. Clean up with DeleteTaskAssignersStruct.
 _Check_return_ TaskAssignersStruct* BinToTaskAssignersStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
 void DeleteTaskAssignersStruct(_In_ TaskAssignersStruct* ptaTaskAssigners);
 // result allocated with new, clean up with delete[]
-_Check_return_ LPTSTR TaskAssignersStructToString(_In_ TaskAssignersStruct* ptaTaskAssigners);
+_Check_return_ LPWSTR TaskAssignersStructToString(_In_ TaskAssignersStruct* ptaTaskAssigners);
 
 // GlobalObjectIdStruct
 // =====================
 //   This structure specifies a Global Object Id
 //
-typedef struct
+struct GlobalObjectIdStruct
 {
 	BYTE Id[16];
 	WORD Year;
@@ -378,15 +378,16 @@ typedef struct
 	LPBYTE lpData;
 	size_t JunkDataSize;
 	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
-} GlobalObjectIdStruct;
+};
 
 // Allocates return value with new. Clean up with DeleteGlobalObjectIdStruct.
 _Check_return_ GlobalObjectIdStruct* BinToGlobalObjectIdStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
 void DeleteGlobalObjectIdStruct(_In_ GlobalObjectIdStruct* pgoidGlobalObjectId);
 // result allocated with new, clean up with delete[]
-_Check_return_ LPTSTR GlobalObjectIdStructToString(_In_ GlobalObjectIdStruct* pgoidGlobalObjectId);
+_Check_return_ LPWSTR GlobalObjectIdStructToString(_In_ GlobalObjectIdStruct* pgoidGlobalObjectId);
 
-enum EIDStructType {
+enum EIDStructType
+{
 	eidtUnknown = 0,
 	eidtShortTerm,
 	eidtFolder,
@@ -403,8 +404,7 @@ enum EIDStructType {
 // =====================
 //   This structure specifies an Entry Id
 //
-struct EntryIdStruct;
-typedef struct EntryIdStruct
+struct EntryIdStruct
 {
 	BYTE abFlags[4];
 	BYTE ProviderUID[16];
@@ -438,7 +438,7 @@ typedef struct EntryIdStruct
 			BYTE Version;
 			BYTE Flag;
 			LPSTR DLLFileName;
-			BOOL bIsExchange;
+			bool bIsExchange;
 			ULONG WrappedFlags;
 			BYTE WrappedProviderUID[16];
 			ULONG WrappedType;
@@ -486,60 +486,60 @@ typedef struct EntryIdStruct
 	} ProviderData;
 	size_t JunkDataSize;
 	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
-} EntryIdStruct;
+};
 
 // Allocates return value with new. Clean up with DeleteEntryIdStruct.
 _Check_return_ EntryIdStruct* BinToEntryIdStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
 _Check_return_ EntryIdStruct* BinToEntryIdStructWithSize(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, _Out_opt_ size_t* lpcbBytesRead);
 void DeleteEntryIdStruct(_In_ EntryIdStruct* peidEntryId);
 // result allocated with new, clean up with delete[]
-_Check_return_ LPTSTR EntryIdStructToString(_In_ EntryIdStruct* peidEntryId);
+_Check_return_ LPWSTR EntryIdStructToString(_In_ EntryIdStruct* peidEntryId);
 
 // PropertyStruct
 // =====================
 //   This structure specifies an array of Properties
 //
-typedef struct
+struct PropertyStruct
 {
 	DWORD PropCount;
 	LPSPropValue Prop;
 
 	size_t JunkDataSize;
 	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
-} PropertyStruct;
+};
 
 // Allocates return value with new. Clean up with DeletePropertyStruct.
-_Check_return_ PropertyStruct* BinToPropertyStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, DWORD dwPropCount);
+_Check_return_ PropertyStruct* BinToPropertyStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
 // Allocates return value with new. Clean up with DeletePropertyStruct.
-_Check_return_ LPSPropValue BinToSPropValue(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, DWORD dwPropCount, _Out_ size_t* lpcbBytesRead, BOOL bStringPropsExcludeLength);
+_Check_return_ LPSPropValue BinToSPropValue(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, DWORD dwPropCount, _Out_ size_t* lpcbBytesRead, bool bStringPropsExcludeLength);
 // Neuters an array of SPropValues - caller must use delete to delete the SPropValue
 void DeleteSPropVal(ULONG cVal, _In_count_(cVal) LPSPropValue lpsPropVal);
 void DeletePropertyStruct(_In_ PropertyStruct* ppProperty);
 // result allocated with new, clean up with delete[]
-_Check_return_ LPTSTR PropertyStructToString(_In_ PropertyStruct* ppProperty);
+_Check_return_ LPWSTR PropertyStructToString(_In_ PropertyStruct* ppProperty);
 
 // RestrictionStruct
 // =====================
 //   This structure specifies a Restriction
 //
-typedef struct
+struct RestrictionStruct
 {
 	LPSRestriction lpRes;
 
 	size_t JunkDataSize;
 	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
-} RestrictionStruct;
+};
 
 // Allocates return value with new. Clean up with DeleteRestrictionStruct.
 _Check_return_ RestrictionStruct* BinToRestrictionStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
 _Check_return_ RestrictionStruct* BinToRestrictionStructWithSize(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, _Out_opt_ size_t* lpcbBytesRead);
 // Caller allocates with new. Clean up with DeleteRestriction and delete[].
-void BinToRestriction(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, _Out_ size_t* lpcbBytesRead, _In_ LPSRestriction psrRestriction, BOOL bRuleCondition, BOOL bExtendedCount);
+bool BinToRestriction(ULONG ulDepth, ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, _Out_ size_t* lpcbBytesRead, _In_ LPSRestriction psrRestriction, bool bRuleCondition, bool bExtendedCount);
 // Neuters an SRestriction - caller must use delete to delete the SRestriction
 void DeleteRestriction(_In_ LPSRestriction lpRes);
 void DeleteRestrictionStruct(_In_ RestrictionStruct* prRestriction);
 // result allocated with new, clean up with delete[]
-_Check_return_ LPTSTR RestrictionStructToString(_In_ RestrictionStruct* prRestriction);
+_Check_return_ LPWSTR RestrictionStructToString(_In_ RestrictionStruct* prRestriction);
 
 // http://msdn.microsoft.com/en-us/library/ee158295.aspx
 // http://msdn.microsoft.com/en-us/library/ee179073.aspx
@@ -549,66 +549,66 @@ _Check_return_ LPTSTR RestrictionStructToString(_In_ RestrictionStruct* prRestri
 // =====================
 //   This structure specifies a Property Name
 //
-typedef struct
+struct PropertyNameStruct
 {
 	BYTE Kind;
 	GUID Guid;
 	DWORD LID;
 	BYTE NameSize;
 	LPWSTR Name;
-} PropertyNameStruct;
+};
 
 // [MS-OXORULE]
 // NamedPropertyInformationStruct
 // =====================
 //   This structure specifies named property information for a rule condition
 //
-typedef struct
+struct NamedPropertyInformationStruct
 {
 	WORD NoOfNamedProps;
 	WORD* PropId;
 	DWORD NamedPropertiesSize;
 	PropertyNameStruct* PropertyName;
-} NamedPropertyInformationStruct;
+};
 
 // [MS-OXORULE]
 // RuleConditionStruct
 // =====================
 //   This structure specifies a Rule Condition
 //
-typedef struct
+struct RuleConditionStruct
 {
 	NamedPropertyInformationStruct NamedPropertyInformation;
 	LPSRestriction lpRes;
 
 	size_t JunkDataSize;
 	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
-} RuleConditionStruct;
+};
 
 // Rule Condition - these are used in rules messages
-void RuleConditionToString(SBinary myBin, _Deref_out_opt_z_ LPTSTR* lpszResultString, BOOL bExtended);
+void RuleConditionToString(SBinary myBin, _Deref_out_opt_z_ LPWSTR* lpszResultString, bool bExtended);
 // Allocates return value with new. Clean up with DeleteRuleConditionStruct.
-_Check_return_ RuleConditionStruct* BinToRuleConditionStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, _Out_opt_ size_t* lpcbBytesRead, BOOL bExtended);
+_Check_return_ RuleConditionStruct* BinToRuleConditionStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, _Out_opt_ size_t* lpcbBytesRead, bool bExtended);
 void DeleteRuleConditionStruct(_In_ RuleConditionStruct* prcRuleCondition);
 // result allocated with new, clean up with delete[]
-_Check_return_ LPTSTR RuleConditionStructToString(_In_ RuleConditionStruct* prcRuleCondition, BOOL bExtended);
+_Check_return_ LPWSTR RuleConditionStructToString(_In_ RuleConditionStruct* prcRuleCondition, bool bExtended);
 
 // EntryListEntryStruct
 // =====================
 //   This structure specifies an Entry in an Entry List
 //
-typedef struct EntryListEntryStruct
+struct EntryListEntryStruct
 {
 	DWORD EntryLength;
 	DWORD EntryLengthPad;
 	EntryIdStruct* EntryId;
-} EntryListEntryStruct;
+};
 
 // EntryListStruct
 // =====================
 //   This structure specifies an Entry List
 //
-typedef struct EntryListStruct
+struct EntryListStruct
 {
 	DWORD EntryCount;
 	DWORD Pad;
@@ -617,30 +617,30 @@ typedef struct EntryListStruct
 
 	size_t JunkDataSize;
 	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
-} EntryListStruct;
+};
 
 // Allocates return value with new. Clean up with DeleteEntryListStruct.
 _Check_return_ EntryListStruct* BinToEntryListStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
 void DeleteEntryListStruct(_In_ EntryListStruct* pelEntryList);
 // result allocated with new, clean up with delete[]
-_Check_return_ LPTSTR EntryListStructToString(_In_ EntryListStruct* pelEntryList);
+_Check_return_ LPWSTR EntryListStructToString(_In_ EntryListStruct* pelEntryList);
 
 // AddressListEntryStruct
 // =====================
 //   This structure specifies an entry in an Address List
 //
-typedef struct
+struct AddressListEntryStruct
 {
 	DWORD PropertyCount;
 	DWORD Pad;
 	PropertyStruct Properties;
-} AddressListEntryStruct;
+};
 
 // SearchFolderDefinitionStruct
 // =====================
 //   This structure specifies a Search Folder Definition
 //
-typedef struct
+struct SearchFolderDefinitionStruct
 {
 	DWORD Version;
 	DWORD Flags;
@@ -667,51 +667,51 @@ typedef struct
 	LPBYTE SkipBytes3;
 	size_t JunkDataSize;
 	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
-} SearchFolderDefinitionStruct;
+};
 
 // Allocates return value with new. Clean up with DeleteSearchFolderDefinitionStruct.
 _Check_return_ SearchFolderDefinitionStruct* BinToSearchFolderDefinitionStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
 void DeleteSearchFolderDefinitionStruct(_In_ SearchFolderDefinitionStruct* psfdSearchFolderDefinition);
 // result allocated with new, clean up with delete[]
-_Check_return_ LPTSTR SearchFolderDefinitionStructToString(_In_ SearchFolderDefinitionStruct* psfdSearchFolderDefinition);
+_Check_return_ LPWSTR SearchFolderDefinitionStructToString(_In_ SearchFolderDefinitionStruct* psfdSearchFolderDefinition);
 
 // PackedUnicodeString
 // =====================
 //   This structure specifies a Packed Unicode String
 //
-typedef struct
+struct PackedUnicodeString
 {
 	BYTE cchLength;
 	WORD cchExtendedLength;
 	LPWSTR szCharacters;
-} PackedUnicodeString;
+};
 
 // PackedAnsiString
 // =====================
 //   This structure specifies a Packed Ansi String
 //
-typedef struct
+struct PackedAnsiString
 {
 	BYTE cchLength;
 	WORD cchExtendedLength;
 	LPSTR szCharacters;
-} PackedAnsiString;
+};
 
 // SkipBlock
 // =====================
 //   This structure specifies a Skip Block
 //
-typedef struct
+struct SkipBlock
 {
 	DWORD dwSize;
 	BYTE* lpbContent;
-} SkipBlock;
+};
 
 // FieldDefinition
 // =====================
 //   This structure specifies a Field Definition
 //
-typedef struct
+struct FieldDefinition
 {
 	DWORD dwFlags;
 	WORD wVT;
@@ -726,13 +726,13 @@ typedef struct
 	DWORD dwInternalType;
 	DWORD dwSkipBlockCount;
 	SkipBlock* psbSkipBlocks;
-} FieldDefinition;
+};
 
 // PropertyDefinitionStreamStruct
 // =====================
 //   This structure specifies a Property Definition Stream
 //
-typedef struct
+struct PropertyDefinitionStreamStruct
 {
 	WORD wVersion;
 	DWORD dwFieldDefinitionCount;
@@ -740,30 +740,30 @@ typedef struct
 
 	size_t JunkDataSize;
 	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
-} PropertyDefinitionStreamStruct;
+};
 
 // Allocates return value with new. Clean up with DeletePropertyDefinitionStreamStruct.
 _Check_return_ PropertyDefinitionStreamStruct* BinToPropertyDefinitionStreamStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
 void DeletePropertyDefinitionStreamStruct(_In_ PropertyDefinitionStreamStruct* ppdsPropertyDefinitionStream);
 // result allocated with new, clean up with delete[]
-_Check_return_ LPTSTR PropertyDefinitionStreamStructToString(_In_ PropertyDefinitionStreamStruct* ppdsPropertyDefinitionStream);
+_Check_return_ LPWSTR PropertyDefinitionStreamStructToString(_In_ PropertyDefinitionStreamStruct* ppdsPropertyDefinitionStream);
 
 // PersistElement
 // =====================
 //   This structure specifies a Persist Element block
 //
-typedef struct
+struct PersistElement
 {
 	WORD wElementID;
 	WORD wElementDataSize;
 	LPBYTE lpbElementData;
-} PersistElement;
+};
 
 // PersistData
 // =====================
 //   This structure specifies a Persist Data block
 //
-typedef struct
+struct PersistData
 {
 	WORD wPersistID;
 	WORD wDataElementsSize;
@@ -772,20 +772,20 @@ typedef struct
 
 	size_t JunkDataSize;
 	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
-} PersistData;
+};
 
 // AdditionalRenEntryIDsStruct
 // =====================
 //   This structure specifies a Additional Ren Entry ID blob
 //
-typedef struct
+struct AdditionalRenEntryIDsStruct
 {
 	WORD wPersistDataCount;
 	PersistData* ppdPersistData;
 
 	size_t JunkDataSize;
 	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
-} AdditionalRenEntryIDsStruct;
+};
 
 // Allocates return value with new. Clean up with DeleteAdditionalRenEntryIDsStruct.
 void BinToPersistData(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, _Out_ size_t* lpcbBytesRead, _Out_ PersistData* ppdPersistData);
@@ -793,26 +793,26 @@ void BinToPersistData(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, _Out_ size_t*
 _Check_return_ AdditionalRenEntryIDsStruct* BinToAdditionalRenEntryIDsStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
 void DeleteAdditionalRenEntryIDsStruct(_In_ AdditionalRenEntryIDsStruct* pareiAdditionalRenEntryIDs);
 // result allocated with new, clean up with delete[]
-_Check_return_ LPTSTR AdditionalRenEntryIDsStructToString(_In_ AdditionalRenEntryIDsStruct* pareiAdditionalRenEntryIDs);
+_Check_return_ LPWSTR AdditionalRenEntryIDsStructToString(_In_ AdditionalRenEntryIDsStruct* pareiAdditionalRenEntryIDs);
 
 // FlatEntryIDStruct
 // =====================
 //   This structure specifies a Flat Entry ID in a Flat Entry List blob
 //
-typedef struct
+struct FlatEntryIDStruct
 {
 	DWORD dwSize;
 	EntryIdStruct* lpEntryID;
 
 	size_t JunkDataSize;
 	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
-} FlatEntryIDStruct;
+};
 
 // FlatEntryListStruct
 // =====================
 //   This structure specifies a Flat Entry List blob
 //
-typedef struct
+struct FlatEntryListStruct
 {
 	DWORD cEntries;
 	DWORD cbEntries;
@@ -820,19 +820,19 @@ typedef struct
 
 	size_t JunkDataSize;
 	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
-} FlatEntryListStruct;
+};
 
 // Allocates return value with new. Clean up with DeleteFlatEntryListStruct.
 _Check_return_ FlatEntryListStruct* BinToFlatEntryListStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
 void DeleteFlatEntryListStruct(_In_ FlatEntryListStruct* pfelFlatEntryList);
 // result allocated with new, clean up with delete[]
-_Check_return_ LPTSTR FlatEntryListStructToString(_In_ FlatEntryListStruct* pfelFlatEntryList);
+_Check_return_ LPWSTR FlatEntryListStructToString(_In_ FlatEntryListStruct* pfelFlatEntryList);
 
 // WebViewPersistStruct
 // =====================
 //   This structure specifies a single Web View Persistance Object
 //
-typedef struct
+struct WebViewPersistStruct
 {
 	DWORD dwVersion;
 	DWORD dwType;
@@ -840,50 +840,50 @@ typedef struct
 	DWORD dwUnused[7];
 	DWORD cbData;
 	LPBYTE lpData;
-} WebViewPersistStruct;
+};
 
 // WebViewPersistStreamStruct
 // =====================
 //   This structure specifies a Web View Persistance Object stream struct
 //
-typedef struct
+struct WebViewPersistStreamStruct
 {
 	DWORD cWebViews;
 	WebViewPersistStruct* lpWebViews;
 	size_t JunkDataSize;
 	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
-} WebViewPersistStreamStruct;
+};
 
 // Allocates return value with new. Clean up with DeleteWebViewPersistStreamStruct.
 _Check_return_ WebViewPersistStreamStruct* BinToWebViewPersistStreamStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
 void DeleteWebViewPersistStreamStruct(_In_ WebViewPersistStreamStruct* pwvpsWebViewPersistStream);
 // result allocated with new, clean up with delete[]
-_Check_return_ LPTSTR WebViewPersistStreamStructToString(_In_ WebViewPersistStreamStruct* pwvpsWebViewPersistStream);
+_Check_return_ LPWSTR WebViewPersistStreamStructToString(_In_ WebViewPersistStreamStruct* pwvpsWebViewPersistStream);
 
 // RecipientRowStreamStruct
 // =====================
 //   This structure specifies an recipient row stream struct
 //
-typedef struct
+struct RecipientRowStreamStruct
 {
 	DWORD cVersion;
 	DWORD cRowCount;
 	LPADRENTRY lpAdrEntry;
 	size_t JunkDataSize;
 	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
-} RecipientRowStreamStruct;
+};
 
 // Allocates return value with new. Clean up with DeleteRecipientRowStreamStruct.
 _Check_return_ RecipientRowStreamStruct* BinToRecipientRowStreamStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
 void DeleteRecipientRowStreamStruct(_In_ RecipientRowStreamStruct* prrsRecipientRowStream);
 // result allocated with new, clean up with delete[]
-_Check_return_ LPTSTR RecipientRowStreamStructToString(_In_ RecipientRowStreamStruct* prrsRecipientRowStream);
+_Check_return_ LPWSTR RecipientRowStreamStructToString(_In_ RecipientRowStreamStruct* prrsRecipientRowStream);
 
 // FolderFieldDefinitionCommon
 // =====================
 //   This structure specifies a folder field definition common struct
 //
-typedef struct
+struct FolderFieldDefinitionCommon
 {
 	GUID PropSetGuid;
 	DWORD fcapm;
@@ -893,75 +893,75 @@ typedef struct
 	DWORD iFmt;
 	WORD wszFormulaLength;
 	LPWSTR wszFormula;
-} FolderFieldDefinitionCommon;
+};
 
 // FolderFieldDefinitionA
 // =====================
 //   This structure specifies a folder field definition ANSI struct
 //
-typedef struct
+struct FolderFieldDefinitionA
 {
 	DWORD FieldType;
 	WORD FieldNameLength;
 	LPSTR FieldName;
 	FolderFieldDefinitionCommon Common;
-} FolderFieldDefinitionA;
+};
 
 // FolderFieldDefinitionW
 // =====================
 //   This structure specifies a folder field definition Unicode struct
 //
-typedef struct
+struct FolderFieldDefinitionW
 {
 	DWORD FieldType;
 	WORD FieldNameLength;
 	LPWSTR FieldName;
 	FolderFieldDefinitionCommon Common;
-} FolderFieldDefinitionW;
+};
 
 // FolderUserFieldA
 // =====================
 //   This structure specifies a folder user field ANSI stream struct
 //
-typedef struct
+struct FolderUserFieldA
 {
 	DWORD FieldDefinitionCount;
 	FolderFieldDefinitionA* FieldDefinitions;
-} FolderUserFieldA;
+};
 
 // FolderUserFieldW
 // =====================
 //   This structure specifies a folder user field Unicode stream struct
 //
-typedef struct
+struct FolderUserFieldW
 {
 	DWORD FieldDefinitionCount;
 	FolderFieldDefinitionW* FieldDefinitions;
-} FolderUserFieldW;
+};
 
 // FolderUserFieldStreamStruct
 // =====================
 //   This structure specifies a folder user field stream struct
 //
-typedef struct
+struct FolderUserFieldStreamStruct
 {
 	FolderUserFieldA FolderUserFieldsAnsi;
 	FolderUserFieldW FolderUserFieldsUnicode;
 	size_t JunkDataSize;
 	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
-} FolderUserFieldStreamStruct;
+};
 
 // Allocates return value with new. Clean up with DeleteFolderUserFieldStreamStruct.
 _Check_return_ FolderUserFieldStreamStruct* BinToFolderUserFieldStreamStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
 void DeleteFolderUserFieldStreamStruct(_In_ FolderUserFieldStreamStruct* pfufsFolderUserFieldStream);
 // result allocated with new, clean up with delete[]
-_Check_return_ LPTSTR FolderUserFieldStreamStructToString(_In_ FolderUserFieldStreamStruct* pfufsFolderUserFieldStream);
+_Check_return_ LPWSTR FolderUserFieldStreamStructToString(_In_ FolderUserFieldStreamStruct* pfufsFolderUserFieldStream);
 
 // NickNameCacheStruct
 // =====================
 //   This structure specifies a nickname cache struct
 //
-typedef struct
+struct NickNameCacheStruct
 {
 	BYTE Metadata1[12];
 	DWORD cRowCount;
@@ -969,11 +969,11 @@ typedef struct
 	BYTE Metadata2[12];
 	size_t JunkDataSize;
 	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
-} NickNameCacheStruct;
+};
 
 // Allocates return value with new. Clean up with DeleteNickNameCacheStruct.
 _Check_return_ NickNameCacheStruct* BinToNickNameCacheStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
 void DeleteNickNameCacheStruct(_In_ NickNameCacheStruct* pfufsNickNameCache);
 // result allocated with new, clean up with delete[]
-_Check_return_ LPTSTR NickNameCacheStructToString(_In_ NickNameCacheStruct* pfufsNickNameCache);
+_Check_return_ LPWSTR NickNameCacheStructToString(_In_ NickNameCacheStruct* pfufsNickNameCache);
 // End Functions to parse PT_BINARY properties

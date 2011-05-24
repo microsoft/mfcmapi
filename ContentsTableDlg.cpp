@@ -79,7 +79,7 @@ CContentsTableDlg::~CContentsTableDlg()
 	m_lpContentsTable = NULL;
 } // CContentsTableDlg::~CContentsTableDlg
 
-_Check_return_ BOOL CContentsTableDlg::HandleMenu(WORD wMenuSelect)
+_Check_return_ bool CContentsTableDlg::HandleMenu(WORD wMenuSelect)
 {
 	DebugPrint(DBGMenu,_T("CContentsTableDlg::HandleMenu wMenuSelect = 0x%X = %d\n"),wMenuSelect,wMenuSelect);
 	switch (wMenuSelect)
@@ -371,14 +371,20 @@ void CContentsTableDlg::OnCreateMessageRestriction()
 
 	// These are the properties we're going to copy off of the current message and store
 	// in some object level variables
-	enum{frPR_SUBJECT,
+	enum
+	{
+		frPR_SUBJECT,
 		frPR_CLIENT_SUBMIT_TIME,
 		frPR_MESSAGE_DELIVERY_TIME,
-		frNUMCOLS};
-	SizedSPropTagArray(frNUMCOLS,sptFRCols) = {frNUMCOLS,
+		frNUMCOLS
+	};
+	static const SizedSPropTagArray(frNUMCOLS,sptFRCols) =
+	{
+		frNUMCOLS,
 		PR_SUBJECT,
 		PR_CLIENT_SUBMIT_TIME,
-		PR_MESSAGE_DELIVERY_TIME};
+		PR_MESSAGE_DELIVERY_TIME
+	};
 
 	if (!m_lpContentsTableListCtrl) return;
 
@@ -666,7 +672,7 @@ void CContentsTableDlg::OnOutputTable()
 	CFileDialogExW dlgFilePicker;
 
 	EC_D_DIALOG(dlgFilePicker.DisplayDialog(
-		FALSE, // Save As dialog
+		false, // Save As dialog
 		L"txt", // STRING_OK
 		L"table.txt", // STRING_OK
 		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
@@ -743,7 +749,7 @@ void CContentsTableDlg::OnSortTable()
 		lpMySortOrders->cSorts = cSorts;
 		lpMySortOrders->cCategories = cCategories;
 		lpMySortOrders->cExpanded = cExpanded;
-		BOOL bNoError = true;
+		bool bNoError = true;
 
 		ULONG i = 0;
 		for (i = 0 ; i < cSorts ; i++)
@@ -844,7 +850,7 @@ _Check_return_ HRESULT CContentsTableDlg::OpenItemProp(int iSelectedItem, __mfcm
 	return hRes;
 } // CContentsTableDlg::OpenItemProp
 
-_Check_return_ HRESULT CContentsTableDlg::OpenAttachmentsFromMessage(_In_ LPMESSAGE lpMessage, BOOL fSaveMessageAtClose)
+_Check_return_ HRESULT CContentsTableDlg::OpenAttachmentsFromMessage(_In_ LPMESSAGE lpMessage, bool fSaveMessageAtClose)
 {
 	HRESULT hRes = S_OK;
 	LPMAPITABLE	lpTable = NULL;
@@ -897,7 +903,7 @@ _Check_return_ HRESULT CContentsTableDlg::OpenRecipientsFromMessage(LPMESSAGE lp
 	return hRes;
 } // CContentsTableDlg::OpenRecipientsFromMessage
 
-_Check_return_ BOOL CContentsTableDlg::HandleAddInMenu(WORD wMenuSelect)
+_Check_return_ bool CContentsTableDlg::HandleAddInMenu(WORD wMenuSelect)
 {
 	if (wMenuSelect < ID_ADDINMENU || ID_ADDINMENU+m_ulAddInMenuItems < wMenuSelect) return false;
 	if (!m_lpContentsTableListCtrl) return false;

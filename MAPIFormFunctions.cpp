@@ -120,11 +120,19 @@ _Check_return_ HRESULT OpenMessageNonModal(
 	ULONG					ulMessageStatus = NULL;
 	LPMAPIVIEWCONTEXT		lpViewContextTemp = NULL;
 
-	enum {FLAGS,CLASS,EID,NUM_COLS};
-	SizedSPropTagArray(NUM_COLS,sptaShowForm) = { NUM_COLS, {
+	enum
+	{
+		FLAGS,
+		CLASS,
+		EID,
+		NUM_COLS
+	};
+	static const SizedSPropTagArray(NUM_COLS,sptaShowForm) =
+	{
+		NUM_COLS,
 		PR_MESSAGE_FLAGS,
-			PR_MESSAGE_CLASS_A,
-			PR_ENTRYID}
+		PR_MESSAGE_CLASS_A,
+		PR_ENTRYID
 	};
 
 	if (!lpMessage || !lpMAPISession || !lpSourceFolder) return MAPI_E_INVALID_PARAMETER;
@@ -228,12 +236,21 @@ _Check_return_ HRESULT OpenMessageModal(_In_ LPMAPIFOLDER lpParentFolder,
 	ULONG_PTR		Token = NULL;
 	ULONG			ulMessageStatus = NULL;
 
-	enum {FLAGS,CLASS,ACCESS,EID,NUM_COLS};
-	SizedSPropTagArray(NUM_COLS,sptaShowForm) = { NUM_COLS, {
+	enum
+	{
+		FLAGS,
+		CLASS,
+		ACCESS,
+		EID,
+		NUM_COLS
+	};
+	static const SizedSPropTagArray(NUM_COLS,sptaShowForm) =
+	{
+		NUM_COLS,
 		PR_MESSAGE_FLAGS,
-			PR_MESSAGE_CLASS_A,
-			PR_ACCESS,
-			PR_ENTRYID}
+		PR_MESSAGE_CLASS_A,
+		PR_ACCESS,
+		PR_ENTRYID
 	};
 
 	if (!lpMessage || !lpParentFolder || !lpMAPISession || !lpMDB) return MAPI_E_INVALID_PARAMETER;

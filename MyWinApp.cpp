@@ -18,7 +18,7 @@ CMyWinApp theApp;
 CMyWinApp::CMyWinApp()
 {
 	// Assume true if we don't find a reg key set to false.
-	BOOL bTerminateOnCorruption = true;
+	bool bTerminateOnCorruption = true;
 
 	HKEY hRootKey = NULL;
 	LONG lStatus = ERROR_SUCCESS;
@@ -74,5 +74,5 @@ _Check_return_ BOOL CMyWinApp::InitInstance()
 		pWnd->Release();
 	}
 
-	return TRUE;
+	return true;
 } // CMyWinApp::InitInstance

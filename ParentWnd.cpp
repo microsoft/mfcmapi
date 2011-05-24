@@ -76,6 +76,8 @@ CParentWnd::CParentWnd()
 		NULL,
 		NULL);
 
+	ForceOutlookMAPI(0 != RegKeys[regkeyFORCEOUTLOOKMAPI].ulCurDWORD);
+
 	LoadAddIns();
 
 	// Notice we never create a window here!

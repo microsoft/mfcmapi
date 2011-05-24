@@ -12,9 +12,9 @@ public:
 		UINT uidPrompt,
 		_In_ LPMAPIPROP lpMAPIProp,
 		ULONG ulPropTag,
-		BOOL bIsAB,
-		BOOL bEditPropAsRTF,
-		BOOL bUseWrapEx,
+		bool bIsAB,
+		bool bEditPropAsRTF,
+		bool bUseWrapEx,
 		ULONG ulRTFFlags,
 		ULONG ulInCodePage,
 		ULONG ulOutCodePage);
@@ -30,8 +30,8 @@ private:
 	// source variables
 	LPMAPIPROP	m_lpMAPIProp;
 	ULONG		m_ulPropTag;
-	BOOL		m_bIsAB; // whether the tag is from the AB or not
-	BOOL		m_bUseWrapEx;
+	bool		m_bIsAB; // whether the tag is from the AB or not
+	bool		m_bUseWrapEx;
 	ULONG		m_ulRTFFlags;
 	ULONG		m_ulInCodePage;
 	ULONG		m_ulOutCodePage;
@@ -43,7 +43,7 @@ private:
 	UINT		m_iCodePageBox;
 	UINT		m_iBinBox;
 	UINT		m_iSmartViewBox;
-	BOOL		m_bWriteAllowed;
-	BOOL		m_bDoSmartView;
+	bool		m_bWriteAllowed;
+	bool		m_bDoSmartView;
 	ULONG		m_ulEditorType;
 };

@@ -90,7 +90,7 @@ _Check_return_ HRESULT GetDirectoryPath(_Inout_z_ LPWSTR szPath)
 } // GetDirectoryPath
 
 // Opens storage with best access
-_Check_return_ HRESULT MyStgOpenStorage(_In_z_ LPCWSTR szMessageFile, BOOL bBestAccess, _Deref_out_ LPSTORAGE* lppStorage)
+_Check_return_ HRESULT MyStgOpenStorage(_In_z_ LPCWSTR szMessageFile, bool bBestAccess, _Deref_out_ LPSTORAGE* lppStorage)
 {
 	if (!lppStorage) return MAPI_E_INVALID_PARAMETER;
 	DebugPrint(DBGGeneric,_T("MyStgOpenStorage: Opening \"%ws\", bBestAccess == %s\n"),szMessageFile,bBestAccess?_T("True"):_T("False"));
@@ -159,31 +159,33 @@ _Check_return_ HRESULT LoadFromMSG(_In_z_ LPCWSTR szMessageFile, _In_ LPMESSAGE 
 {
 	HRESULT				hRes = S_OK;
 	LPMESSAGE			pIMsg = NULL;
-	SizedSPropTagArray	(18, excludeTags);
 
 	// Specify properties to exclude in the copy operation. These are
 	// the properties that Exchange excludes to save bits and time.
 	// Should not be necessary to exclude these, but speeds the process
 	// when a lot of messages are being copied.
-	excludeTags.cValues = 18;
-	excludeTags.aulPropTag[0] = PR_REPLICA_VERSION;
-	excludeTags.aulPropTag[1] = PR_DISPLAY_BCC;
-	excludeTags.aulPropTag[2] = PR_DISPLAY_CC;
-	excludeTags.aulPropTag[3] = PR_DISPLAY_TO;
-	excludeTags.aulPropTag[4] = PR_ENTRYID;
-	excludeTags.aulPropTag[5] = PR_MESSAGE_SIZE;
-	excludeTags.aulPropTag[6] = PR_PARENT_ENTRYID;
-	excludeTags.aulPropTag[7] = PR_RECORD_KEY;
-	excludeTags.aulPropTag[8] = PR_STORE_ENTRYID;
-	excludeTags.aulPropTag[9] = PR_STORE_RECORD_KEY;
-	excludeTags.aulPropTag[10] = PR_MDB_PROVIDER;
-	excludeTags.aulPropTag[11] = PR_ACCESS;
-	excludeTags.aulPropTag[12] = PR_HASATTACH;
-	excludeTags.aulPropTag[13] = PR_OBJECT_TYPE;
-	excludeTags.aulPropTag[14] = PR_ACCESS_LEVEL;
-	excludeTags.aulPropTag[15] = PR_HAS_NAMED_PROPERTIES;
-	excludeTags.aulPropTag[16] = PR_REPLICA_SERVER;
-	excludeTags.aulPropTag[17] = PR_HAS_DAMS;
+	static const SizedSPropTagArray	(18, excludeTags) =
+	{
+		18,
+		PR_REPLICA_VERSION,
+		PR_DISPLAY_BCC,
+		PR_DISPLAY_CC,
+		PR_DISPLAY_TO,
+		PR_ENTRYID,
+		PR_MESSAGE_SIZE,
+		PR_PARENT_ENTRYID,
+		PR_RECORD_KEY,
+		PR_STORE_ENTRYID,
+		PR_STORE_RECORD_KEY,
+		PR_MDB_PROVIDER,
+		PR_ACCESS,
+		PR_HASATTACH,
+		PR_OBJECT_TYPE,
+		PR_ACCESS_LEVEL,
+		PR_HAS_NAMED_PROPERTIES,
+		PR_REPLICA_SERVER,
+		PR_HAS_DAMS
+	};
 
 	EC_H(LoadMSGToMessage(szMessageFile,&pIMsg));
 
@@ -233,9 +235,11 @@ _Check_return_ HRESULT LoadFromTNEF(_In_z_ LPCWSTR szMessageFile, _In_ LPADRBOOK
 	if (!szMessageFile | !lpAdrBook | !lpMessage) return MAPI_E_INVALID_PARAMETER;
 	static WORD dwKey = (WORD)::GetTickCount();
 
-	enum { ulNumTNEFExcludeProps = 1 };
-	const static SizedSPropTagArray(
-		ulNumTNEFExcludeProps, lpPropTnefExcludeArray ) =
+	enum
+	{
+		ulNumTNEFExcludeProps = 1
+	};
+	static const SizedSPropTagArray(ulNumTNEFExcludeProps, lpPropTnefExcludeArray) =
 	{
 		ulNumTNEFExcludeProps,
 		PR_URL_COMP_NAME
@@ -302,10 +306,16 @@ _Check_return_ HRESULT BuildFileName(_Inout_z_count_(cchFileOut) LPWSTR szFileOu
 
 	if (!lpMessage || !szFileOut) return MAPI_E_INVALID_PARAMETER;
 
-	enum {ePR_SUBJECT_W, ePR_SEARCH_KEY,NUM_COLS};
-	SizedSPropTagArray(NUM_COLS,sptaMessageProps) = { NUM_COLS, {
+	enum
+	{
+		ePR_SUBJECT_W,
+		ePR_SEARCH_KEY,NUM_COLS
+	};
+	static const SizedSPropTagArray(NUM_COLS,sptaMessageProps) =
+	{
+		NUM_COLS,
 		PR_SUBJECT_W,
-		PR_SEARCH_KEY}
+		PR_SEARCH_KEY
 	};
 
 	// Get subject line of message
@@ -471,19 +481,24 @@ _Check_return_ HRESULT SanitizeFileNameW(
 	return hRes;
 } // SanitizeFileNameW
 
-_Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_z_ LPCWSTR szPathName, BOOL bAssoc, BOOL bUnicode, HWND hWnd)
+_Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_z_ LPCWSTR szPathName, bool bAssoc, bool bUnicode, HWND hWnd)
 {
 	HRESULT			hRes = S_OK;
 	LPMAPITABLE		lpFolderContents = NULL;
 	LPMESSAGE		lpMessage = NULL;
 	LPSRowSet		pRows = NULL;
 
-	enum {fldPR_ENTRYID,
+	enum
+	{
+		fldPR_ENTRYID,
 		fldPR_SUBJECT_W,
 		fldPR_SEARCH_KEY,
-		fldNUM_COLS};
+		fldNUM_COLS
+	};
 
-	static SizedSPropTagArray(fldNUM_COLS,fldCols) = {fldNUM_COLS,
+	static const SizedSPropTagArray(fldNUM_COLS,fldCols) =
+	{
+		fldNUM_COLS,
 		PR_ENTRYID,
 		PR_SUBJECT_W,
 		PR_SEARCH_KEY
@@ -654,7 +669,7 @@ _Check_return_ HRESULT STDAPICALLTYPE MyStgCreateStorageEx(IN const WCHAR* pName
 	return hRes;
 } // MyStgCreateStorageEx
 
-_Check_return_ HRESULT CreateNewMSG(_In_z_ LPCWSTR szFileName, BOOL bUnicode, _Deref_out_ LPMESSAGE* lppMessage, _Deref_out_ LPSTORAGE* lppStorage)
+_Check_return_ HRESULT CreateNewMSG(_In_z_ LPCWSTR szFileName, bool bUnicode, _Deref_out_ LPMESSAGE* lppMessage, _Deref_out_ LPSTORAGE* lppStorage)
 {
 	if (!szFileName || !lppMessage || !lppStorage) return MAPI_E_INVALID_PARAMETER;
 
@@ -721,7 +736,7 @@ _Check_return_ HRESULT CreateNewMSG(_In_z_ LPCWSTR szFileName, BOOL bUnicode, _D
 	return hRes;
 } // CreateNewMSG
 
-_Check_return_ HRESULT SaveToMSG(_In_ LPMESSAGE lpMessage, _In_z_ LPCWSTR szFileName, BOOL bUnicode, HWND hWnd)
+_Check_return_ HRESULT SaveToMSG(_In_ LPMESSAGE lpMessage, _In_z_ LPCWSTR szFileName, bool bUnicode, HWND hWnd)
 {
 	HRESULT hRes = S_OK;
 	LPSTORAGE pStorage = NULL;
@@ -738,15 +753,17 @@ _Check_return_ HRESULT SaveToMSG(_In_ LPMESSAGE lpMessage, _In_z_ LPCWSTR szFile
 		// the properties that Exchange excludes to save bits and time.
 		// Should not be necessary to exclude these, but speeds the process
 		// when a lot of messages are being copied.
-		SizedSPropTagArray (7, excludeTags);
-		excludeTags.cValues = 7;
-		excludeTags.aulPropTag[0] = PR_ACCESS;
-		excludeTags.aulPropTag[1] = PR_BODY;
-		excludeTags.aulPropTag[2] = PR_RTF_SYNC_BODY_COUNT;
-		excludeTags.aulPropTag[3] = PR_RTF_SYNC_BODY_CRC;
-		excludeTags.aulPropTag[4] = PR_RTF_SYNC_BODY_TAG;
-		excludeTags.aulPropTag[5] = PR_RTF_SYNC_PREFIX_COUNT;
-		excludeTags.aulPropTag[6] = PR_RTF_SYNC_TRAILING_COUNT;
+		static const SizedSPropTagArray (7, excludeTags) =
+		{
+			7,
+			PR_ACCESS,
+			PR_BODY,
+			PR_RTF_SYNC_BODY_COUNT,
+			PR_RTF_SYNC_BODY_CRC,
+			PR_RTF_SYNC_BODY_TAG,
+			PR_RTF_SYNC_PREFIX_COUNT,
+			PR_RTF_SYNC_TRAILING_COUNT
+		};
 
 		LPSPropProblemArray lpProblems = NULL;
 
@@ -787,18 +804,22 @@ _Check_return_ HRESULT SaveToTNEF(_In_ LPMESSAGE lpMessage, _In_ LPADRBOOK lpAdr
 {
 	HRESULT hRes = S_OK;
 
-	enum { ulNumTNEFIncludeProps = 2 };
-	const static SizedSPropTagArray(
-		ulNumTNEFIncludeProps, lpPropTnefIncludeArray ) =
+	enum
+	{
+		ulNumTNEFIncludeProps = 2
+	};
+	static const SizedSPropTagArray(ulNumTNEFIncludeProps, lpPropTnefIncludeArray ) =
 	{
 		ulNumTNEFIncludeProps,
 		PR_MESSAGE_RECIPIENTS,
 		PR_ATTACH_DATA_BIN
 	};
 
-	enum { ulNumTNEFExcludeProps = 1 };
-	const static SizedSPropTagArray(
-		ulNumTNEFExcludeProps, lpPropTnefExcludeArray ) =
+	enum
+	{
+		ulNumTNEFExcludeProps = 1
+	};
+	static const SizedSPropTagArray(ulNumTNEFExcludeProps, lpPropTnefExcludeArray ) =
 	{
 		ulNumTNEFExcludeProps,
 		PR_URL_COMP_NAME
@@ -886,9 +907,18 @@ _Check_return_ HRESULT DeleteAttachments(_In_ LPMESSAGE lpMessage, _In_opt_z_ LP
 	LPSRowSet		pRows = NULL;
 	ULONG			iRow;
 
-	enum {ATTACHNUM,ATTACHNAME,NUM_COLS};
-	static SizedSPropTagArray(NUM_COLS,sptAttachTableCols) = {NUM_COLS,
-		PR_ATTACH_NUM, PR_ATTACH_LONG_FILENAME};
+	enum
+	{
+		ATTACHNUM,
+		ATTACHNAME,
+		NUM_COLS
+	};
+	static const SizedSPropTagArray(NUM_COLS,sptAttachTableCols) =
+	{
+		NUM_COLS,
+		PR_ATTACH_NUM,
+		PR_ATTACH_LONG_FILENAME
+	};
 
 	if (!lpMessage) return MAPI_E_INVALID_PARAMETER;
 
@@ -921,7 +951,7 @@ _Check_return_ HRESULT DeleteAttachments(_In_ LPMESSAGE lpMessage, _In_opt_z_ LP
 
 			if (pRows)
 			{
-				BOOL bDirty = FALSE;
+				bool bDirty = false;
 
 				if (!FAILED(hRes)) for (iRow = 0; iRow < pRows -> cRows; iRow++)
 				{
@@ -946,7 +976,7 @@ _Check_return_ HRESULT DeleteAttachments(_In_ LPMESSAGE lpMessage, _In_opt_z_ LP
 						lpProgress ? ATTACH_DIALOG : 0));
 
 					if(SUCCEEDED(hRes))
-						bDirty = TRUE;
+						bDirty = true;
 
 					if(lpProgress)
 						lpProgress->Release();
@@ -980,9 +1010,16 @@ _Check_return_ HRESULT WriteAttachmentsToFile(_In_ LPMESSAGE lpMessage, HWND hWn
 	ULONG			iRow;
 	LPATTACH		lpAttach = NULL;
 
-	enum {ATTACHNUM,NUM_COLS};
-	static SizedSPropTagArray(NUM_COLS,sptAttachTableCols) = {NUM_COLS,
-		PR_ATTACH_NUM};
+	enum
+	{
+		ATTACHNUM,
+		NUM_COLS
+	};
+	static const SizedSPropTagArray(NUM_COLS,sptAttachTableCols) =
+	{
+		NUM_COLS,
+		PR_ATTACH_NUM
+	};
 
 	if (!lpMessage) return MAPI_E_INVALID_PARAMETER;
 
@@ -1048,7 +1085,7 @@ _Check_return_ HRESULT WriteAttachmentsToFile(_In_ LPMESSAGE lpMessage, HWND hWn
 } // WriteAttachmentsToFile
 #endif
 
-_Check_return_ HRESULT WriteEmbeddedMSGToFile(_In_ LPATTACH lpAttach, _In_z_ LPCWSTR szFileName, BOOL bUnicode, HWND hWnd)
+_Check_return_ HRESULT WriteEmbeddedMSGToFile(_In_ LPATTACH lpAttach, _In_z_ LPCWSTR szFileName, bool bUnicode, HWND hWnd)
 {
 	HRESULT			hRes = S_OK;
 	LPMESSAGE		lpAttachMsg = NULL;
@@ -1229,12 +1266,21 @@ _Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd)
 	WCHAR			szFileName[MAX_PATH] = {0};
 	INT_PTR			iDlgRet = 0;
 
-	enum {ATTACH_METHOD,ATTACH_LONG_FILENAME_W,ATTACH_FILENAME_W,DISPLAY_NAME_W,NUM_COLS};
-	SizedSPropTagArray(NUM_COLS,sptaAttachProps) = { NUM_COLS, {
+	enum
+	{
+		ATTACH_METHOD,
+		ATTACH_LONG_FILENAME_W,
+		ATTACH_FILENAME_W,
+		DISPLAY_NAME_W,
+		NUM_COLS
+	};
+	static const SizedSPropTagArray(NUM_COLS,sptaAttachProps) =
+	{
+		NUM_COLS,
 		PR_ATTACH_METHOD,
-			PR_ATTACH_LONG_FILENAME_W,
-			PR_ATTACH_FILENAME_W,
-			PR_DISPLAY_NAME_W}
+		PR_ATTACH_LONG_FILENAME_W,
+		PR_ATTACH_FILENAME_W,
+		PR_DISPLAY_NAME_W
 	};
 
 	if (!lpAttach) return MAPI_E_INVALID_PARAMETER;
@@ -1284,7 +1330,7 @@ _Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd)
 				DebugPrint(DBGGeneric,_T("WriteAttachmentToFile: Prompting with \"%ws\"\n"),szFileName);
 
 				EC_D_DIALOG(dlgFilePicker.DisplayDialog(
-					FALSE,
+					false,
 					L"txt", // STRING_OK
 					szFileName,
 					OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
@@ -1306,7 +1352,7 @@ _Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd)
 				DebugPrint(DBGGeneric,_T("WriteAttachmentToFile: Prompting with \"%ws\"\n"),szFileName);
 
 				EC_D_DIALOG(dlgFilePicker.DisplayDialog(
-					FALSE,
+					false,
 					L"msg", // STRING_OK
 					szFileName,
 					OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
@@ -1326,7 +1372,7 @@ _Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd)
 
 				DebugPrint(DBGGeneric,_T("WriteAttachmentToFile: Prompting with \"%ws\"\n"),szFileName);
 				EC_D_DIALOG(dlgFilePicker.DisplayDialog(
-					FALSE,
+					false,
 					NULL,
 					szFileName,
 					OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,

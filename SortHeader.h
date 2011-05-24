@@ -3,21 +3,20 @@
 
 #include "InterpretProp.h"
 
-typedef struct _HeaderData	FAR * LPHEADERDATA;
-
-typedef struct _HeaderData
+struct HeaderData
 {
 	ULONG	ulTagArrayRow;
 	ULONG	ulPropTag;
-	BOOL	bIsAB;
+	bool	bIsAB;
 	TCHAR	szTipString[TAG_MAX_LEN];
-} HeaderData;
+};
+typedef HeaderData* LPHEADERDATA;
 
 class CSortHeader : public CHeaderCtrl
 {
 public:
 	CSortHeader();
-	_Check_return_ BOOL Init(_In_ CHeaderCtrl *pHeader, _In_ HWND hwndParent);
+	_Check_return_ bool Init(_In_ CHeaderCtrl *pHeader, _In_ HWND hwndParent);
 
 private:
 	_Check_return_ LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
@@ -29,7 +28,7 @@ private:
 	HWND		m_hwndTip;
 	TOOLINFO	m_ti;
 	HWND		m_hwndParent;
-	BOOL		m_bTooltipDisplayed;
+	bool		m_bTooltipDisplayed;
 
 	DECLARE_MESSAGE_MAP()
 };

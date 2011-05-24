@@ -11,7 +11,7 @@ public:
 		_In_ CMapiObjects* lpMapiObjects,
 		_In_ LPMAPITABLE	lpMAPITable,
 		_In_ LPMESSAGE lpMessage,
-		BOOL bSaveMessageAtClose);
+		bool bSaveMessageAtClose);
 	virtual ~CAttachmentsDlg();
 
 private:
@@ -21,7 +21,7 @@ private:
 		_In_ LPMAPIPROP lpMAPIProp,
 		_In_ LPMAPICONTAINER lpContainer);
 	void HandleCopy();
-	_Check_return_ BOOL HandlePaste();
+	_Check_return_ bool HandlePaste();
 	void OnDeleteSelectedItem();
 	void OnInitMenu(_In_ CMenu* pMenu);
 	_Check_return_ HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp);
@@ -39,9 +39,9 @@ private:
 
 	LPATTACH	m_lpAttach;
 	LPMESSAGE	m_lpMessage;
-	BOOL		m_bDisplayAttachAsEmbeddedMessage;
-	BOOL		m_bUseMapiModifyOnEmbeddedMessage;
-	BOOL		m_bSaveMessageAtClose;
+	bool		m_bDisplayAttachAsEmbeddedMessage;
+	bool		m_bUseMapiModifyOnEmbeddedMessage;
+	bool		m_bSaveMessageAtClose;
 
 	DECLARE_MESSAGE_MAP()
 };

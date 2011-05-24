@@ -85,6 +85,6 @@ _Check_return_ HRESULT OpenPublicMessageStore(
 							   _Deref_out_opt_ LPMDB* lppPublicMDB);
 _Check_return_ HRESULT OpenStoreFromMAPIProp(_In_ LPMAPISESSION lpMAPISession, _In_ LPMAPIPROP lpMAPIProp, _Deref_out_ LPMDB* lpMDB);
 
-_Check_return_ BOOL StoreSupportsManageStore(_In_ LPMDB lpMDB);
+_Check_return_ bool StoreSupportsManageStore(_In_ LPMDB lpMDB);
 
 _Check_return_ HRESULT HrUnWrapMDB(_In_ LPMDB lpMDBIn, _Deref_out_ LPMDB* lppMDBOut);

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "FileDialogEx.h"
 
-_Check_return_ static BOOL IsWin2000();
+_Check_return_ static bool IsWin2000();
 
 ///////////////////////////////////////////////////////////////////////////
 // CFileDialogExA / CFileDialogExW
@@ -19,7 +19,7 @@ CFileDialogExA::~CFileDialogExA()
 	delete[] m_szBigBuff;
 } // CFileDialogExA::~CFileDialogExA
 
-_Check_return_ INT_PTR CFileDialogExA::DisplayDialog(BOOL bOpenFileDialog, // TRUE for open, FALSE for FileSaveAs
+_Check_return_ INT_PTR CFileDialogExA::DisplayDialog(bool bOpenFileDialog, // true for open, false for FileSaveAs
 									  _In_opt_z_ LPCSTR lpszDefExt,
 									  _In_opt_z_ LPCSTR lpszFileName,
 									  DWORD dwFlags,
@@ -153,7 +153,7 @@ CFileDialogExW::~CFileDialogExW()
 	delete[] m_szBigBuff;
 } // CFileDialogExW::~CFileDialogExW
 
-_Check_return_ INT_PTR CFileDialogExW::DisplayDialog(BOOL bOpenFileDialog, // TRUE for open, FALSE for FileSaveAs
+_Check_return_ INT_PTR CFileDialogExW::DisplayDialog(bool bOpenFileDialog, // true for open, false for FileSaveAs
 									  _In_opt_z_ LPCWSTR lpszDefExt,
 									  _In_opt_z_ LPCWSTR lpszFileName,
 									  DWORD dwFlags,
@@ -276,7 +276,7 @@ _Check_return_ LPWSTR CFileDialogExW::GetNextFileName()
 	return strPath;
 } // CFileDialogExW::GetNextFileName
 
-_Check_return_ BOOL IsWin2000()
+_Check_return_ bool IsWin2000()
 {
 	OSVERSIONINFOEX osvi;
 	HRESULT hRes = S_OK;
@@ -296,7 +296,7 @@ _Check_return_ BOOL IsWin2000()
 		hRes = S_OK;
 		osvi.dwOSVersionInfoSize = sizeof (OSVERSIONINFO);
 		EC_B(GetVersionEx((OSVERSIONINFO*) &osvi));
-		if (S_OK != hRes) return FALSE;
+		if (S_OK != hRes) return false;
 	}
 
 	switch (osvi.dwPlatformId)
@@ -304,9 +304,9 @@ _Check_return_ BOOL IsWin2000()
 	case VER_PLATFORM_WIN32_NT:
 
 		if (osvi.dwMajorVersion >= 5)
-			return TRUE;
+			return true;
 
 		break;
 	}
-	return FALSE;
+	return false;
 } // IsWin2000

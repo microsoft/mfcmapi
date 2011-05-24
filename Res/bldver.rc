@@ -7,7 +7,7 @@
 #define rmj 6
 #define rmm 0
 #define rup 0
-#define rmn 1025
+#define rmn 1026
 
 #define MAKEFILEVERSION(_rmaj, _rmin, _bmaj, _bmin)    #_rmaj "." #_rmin "." #_bmaj "." #_bmin "\0"
 #define MAKEFILEVERSIONSTR(_rmaj, _rmin, _bmaj, _bmin) MAKEFILEVERSION(_rmaj, _rmin, _bmaj, _bmin)

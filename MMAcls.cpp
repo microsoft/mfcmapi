@@ -40,7 +40,7 @@ STDMETHODIMP OpenPropFromMDB(LPMDB lpMDB, ULONG ulPropTag, LPMAPIFOLDER *lpFolde
 	return hRes;
 } // OpenPropFromMDB
 
-STDMETHODIMP OpenLocalFreeBusy(LPMDB lpMDB, LPMAPIFOLDER *lpFolder)
+STDMETHODIMP OpenLocalFreeBusy(_In_ LPMDB lpMDB, _Deref_out_opt_ LPMAPIFOLDER *lpFolder)
 {
 	HRESULT hRes = S_OK;
 	LPMAPIFOLDER lpInbox = NULL;
@@ -84,7 +84,7 @@ STDMETHODIMP OpenLocalFreeBusy(LPMDB lpMDB, LPMAPIFOLDER *lpFolder)
 	return hRes;
 } // OpenLocalFreeBusy
 
-STDMETHODIMP OpenDefaultFolder(ULONG ulFolder, LPMDB lpMDB, LPMAPIFOLDER *lpFolder)
+STDMETHODIMP OpenDefaultFolder(_In_ ULONG ulFolder, _In_ LPMDB lpMDB, _Deref_out_opt_ LPMAPIFOLDER *lpFolder)
 {
 	HRESULT			hRes = S_OK;
 
@@ -176,7 +176,7 @@ void DumpExchangeTable(_In_z_ LPWSTR lpszProfile, _In_ ULONG ulPropTag, _In_ ULO
 			(LPGUID)&IID_IExchangeModifyTable,
 			0,
 			MAPI_DEFERRED_ERRORS,
-			(LPUNKNOWN FAR *)&lpExchTbl));
+			(LPUNKNOWN*)&lpExchTbl));
 	}
 	if (lpExchTbl)
 	{

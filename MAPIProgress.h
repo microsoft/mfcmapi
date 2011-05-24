@@ -15,10 +15,10 @@ private:
 
 	// IMAPIProgress
 	_Check_return_ STDMETHODIMP Progress(ULONG ulValue, ULONG ulCount, ULONG ulTotal);
-	_Check_return_ STDMETHODIMP GetFlags(_Inout_ ULONG FAR* lpulFlags);
-	_Check_return_ STDMETHODIMP GetMax(_Inout_ ULONG FAR* lpulMax);
-	_Check_return_ STDMETHODIMP GetMin(_Inout_ ULONG FAR* lpulMin);
-	_Check_return_ STDMETHODIMP SetLimits(_Inout_ ULONG FAR* lpulMin, _Inout_ ULONG FAR* lpulMax, _Inout_ ULONG FAR* lpulFlags);
+	_Check_return_ STDMETHODIMP GetFlags(_Inout_ ULONG* lpulFlags);
+	_Check_return_ STDMETHODIMP GetMax(_Inout_ ULONG* lpulMax);
+	_Check_return_ STDMETHODIMP GetMin(_Inout_ ULONG* lpulMin);
+	_Check_return_ STDMETHODIMP SetLimits(_Inout_ ULONG* lpulMin, _Inout_ ULONG* lpulMax, _Inout_ ULONG* lpulFlags);
 
 	void OutputState(_In_z_ LPTSTR lpszFunction);
 

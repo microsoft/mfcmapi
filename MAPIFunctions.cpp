@@ -197,9 +197,9 @@ _Check_return_ HRESULT CallOpenEntry(
 
 	if (lpUnk)
 	{
-		LPTSTR szFlags = NULL;
+		LPWSTR szFlags = NULL;
 		InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE, &szFlags);
-		DebugPrint(DBGGeneric,_T("OnOpenEntryID: Got object (%p) of type 0x%08X = %s\n"),lpUnk,ulObjType,szFlags);
+		DebugPrint(DBGGeneric,_T("OnOpenEntryID: Got object (%p) of type 0x%08X = %ws\n"),lpUnk,ulObjType,szFlags);
 		delete[] szFlags;
 		szFlags = NULL;
 		*lppUnk = lpUnk;
@@ -323,17 +323,22 @@ _Check_return_ HRESULT ConcatSPropTagArrays(
 // May not behave correctly if lpSrcFolder == lpDestFolder
 // We can check that the pointers aren't equal, but they could be different
 // and still refer to the same folder.
-_Check_return_ HRESULT CopyFolderContents(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LPMAPIFOLDER lpDestFolder, BOOL bCopyAssociatedContents, BOOL bMove, BOOL bSingleCall, _In_ HWND hWnd)
+_Check_return_ HRESULT CopyFolderContents(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LPMAPIFOLDER lpDestFolder, bool bCopyAssociatedContents, bool bMove, bool bSingleCall, _In_ HWND hWnd)
 {
 	HRESULT			hRes = S_OK;
 	LPMAPITABLE		lpSrcContents = NULL;
 	LPSRowSet		pRows = NULL;
 	ULONG			ulRowsCopied = 0;
 
-	enum {fldPR_ENTRYID,
-		fldNUM_COLS};
+	enum
+	{
+		fldPR_ENTRYID,
+		fldNUM_COLS
+	};
 
-	static SizedSPropTagArray(fldNUM_COLS,fldCols) = {fldNUM_COLS,
+	static const SizedSPropTagArray(fldNUM_COLS,fldCols) =
+	{
+		fldNUM_COLS,
 		PR_ENTRYID,
 	};
 
@@ -457,7 +462,7 @@ _Check_return_ HRESULT CopyFolderContents(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LP
 	return hRes;
 } // CopyFolderContents
 
-_Check_return_ HRESULT CopyFolderRules(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LPMAPIFOLDER lpDestFolder, BOOL bReplace)
+_Check_return_ HRESULT CopyFolderRules(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LPMAPIFOLDER lpDestFolder, bool bReplace)
 {
 	if (!lpSrcFolder || !lpDestFolder) return MAPI_E_INVALID_PARAMETER;
 	HRESULT					hRes = S_OK;
@@ -469,14 +474,14 @@ _Check_return_ HRESULT CopyFolderRules(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LPMAP
 		(LPGUID)&IID_IExchangeModifyTable,
 		0,
 		MAPI_DEFERRED_ERRORS,
-		(LPUNKNOWN FAR *)&lpSrcTbl));
+		(LPUNKNOWN*)&lpSrcTbl));
 
 	EC_H(lpDestFolder->OpenProperty(
 		PR_RULES_TABLE,
 		(LPGUID)&IID_IExchangeModifyTable,
 		0,
 		MAPI_DEFERRED_ERRORS,
-		(LPUNKNOWN FAR *)&lpDstTbl));
+		(LPUNKNOWN*)&lpDstTbl));
 
 	if (lpSrcTbl && lpDstTbl)
 	{
@@ -485,7 +490,9 @@ _Check_return_ HRESULT CopyFolderRules(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LPMAP
 
 		if (lpTable)
 		{
-			static SizedSPropTagArray(9,ruleTags) = {9,
+			static const SizedSPropTagArray(9,ruleTags) =
+			{
+				9,
 				PR_RULE_ACTIONS,
 				PR_RULE_CONDITION,
 				PR_RULE_LEVEL,
@@ -974,7 +981,11 @@ _Check_return_ HRESULT DeleteToDeletedItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLDER 
 	LPSPropValue pProps = NULL;
 	LPMAPIFOLDER lpWasteFolder = NULL;
 
-	static SizedSPropTagArray(1, sptWastebasket) = {1,PR_IPM_WASTEBASKET_ENTRYID};
+	static const SizedSPropTagArray(1, sptWastebasket) =
+	{
+		1,
+		PR_IPM_WASTEBASKET_ENTRYID
+	};
 
 	if (!lpMDB || !lpSourceFolder || !lpEIDs) return MAPI_E_INVALID_PARAMETER;
 
@@ -1030,20 +1041,20 @@ _Check_return_ HRESULT DeleteToDeletedItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLDER 
 	return hRes;
 } // DeleteToDeletedItems
 
-_Check_return_ BOOL FindPropInPropTagArray(_In_ LPSPropTagArray lpspTagArray, ULONG ulPropToFind, _Out_ ULONG* lpulRowFound)
+_Check_return_ bool FindPropInPropTagArray(_In_ LPSPropTagArray lpspTagArray, ULONG ulPropToFind, _Out_ ULONG* lpulRowFound)
 {
 	ULONG i = 0;
 	*lpulRowFound = 0;
-	if (!lpspTagArray) return FALSE;
+	if (!lpspTagArray) return false;
 	for (i = 0 ; i < lpspTagArray->cValues ; i++)
 	{
 		if (PROP_ID(ulPropToFind) == PROP_ID(lpspTagArray->aulPropTag[i]))
 		{
 			*lpulRowFound = i;
-			return TRUE;
+			return true;
 		}
 	}
-	return FALSE;
+	return false;
 } // FindPropInPropTagArray
 
 // See list of types (like MAPI_FOLDER) in mapidefs.h
@@ -1116,9 +1127,15 @@ _Check_return_ HRESULT GetParentFolder(_In_ LPMAPIFOLDER lpChildFolder, _In_ LPM
 
 	if (!lpChildFolder) return MAPI_E_INVALID_PARAMETER;
 
-	enum {PARENTEID,NUM_COLS};
-	SizedSPropTagArray(NUM_COLS,sptaSrcFolder) = { NUM_COLS, {
-		PR_PARENT_ENTRYID}
+	enum
+	{
+		PARENTEID,
+		NUM_COLS
+	};
+	static const SizedSPropTagArray(NUM_COLS,sptaSrcFolder) =
+	{
+		NUM_COLS,
+		PR_PARENT_ENTRYID
 	};
 
 	// Get PR_PARENT_ENTRYID
@@ -1256,13 +1273,13 @@ _Check_return_ HRESULT GetSpecialFolder(_In_ LPMDB lpMDB, ULONG ulFolderPropTag,
 	return hRes;
 } // GetSpecialFolder
 
-_Check_return_ HRESULT IsAttachmentBlocked(_In_ LPMAPISESSION lpMAPISession, _In_z_ LPCWSTR pwszFileName, _Out_ BOOL* pfBlocked)
+_Check_return_ HRESULT IsAttachmentBlocked(_In_ LPMAPISESSION lpMAPISession, _In_z_ LPCWSTR pwszFileName, _Out_ bool* pfBlocked)
 {
 	if (!lpMAPISession || !pwszFileName || !pfBlocked) return MAPI_E_INVALID_PARAMETER;
 
 	HRESULT hRes = S_OK;
 	IAttachmentSecurity* lpAttachSec = NULL;
-	BOOL bBlocked = false;
+	bool bBlocked = false;
 
 	EC_H(lpMAPISession->QueryInterface(IID_IAttachmentSecurity,(void**)&lpAttachSec));
 	if (SUCCEEDED(hRes) && lpAttachSec)
@@ -1275,11 +1292,11 @@ _Check_return_ HRESULT IsAttachmentBlocked(_In_ LPMAPISESSION lpMAPISession, _In
 	return hRes;
 } // IsAttachmentBlocked
 
-_Check_return_ BOOL IsDuplicateProp(_In_ LPSPropTagArray lpArray, ULONG ulPropTag)
+_Check_return_ bool IsDuplicateProp(_In_ LPSPropTagArray lpArray, ULONG ulPropTag)
 {
 	ULONG i = 0;
 
-	if (!lpArray) return FALSE;
+	if (!lpArray) return false;
 
 	for (i = 0; i < lpArray->cValues; i++)
 	{
@@ -1287,23 +1304,23 @@ _Check_return_ BOOL IsDuplicateProp(_In_ LPSPropTagArray lpArray, ULONG ulPropTa
 		if (RegKeys[regkeyALLOW_DUPE_COLUMNS].ulCurDWORD)
 		{
 			if (lpArray->aulPropTag[i] == ulPropTag)
-				return TRUE;
+				return true;
 		}
 		else
 		{
 			if (PROP_ID(lpArray->aulPropTag[i]) == PROP_ID(ulPropTag))
-				return TRUE;
+				return true;
 		}
 	}
 
-	return FALSE;
+	return false;
 } // IsDuplicateProp
 
 // Count of characters in 'cb:  lpb: '
 #define CBPREPEND 10
 // returns pointer to a string
 // delete with delete[]
-void MyHexFromBin(_In_opt_count_(cb) LPBYTE lpb, size_t cb, BOOL bPrependCB, _Deref_out_opt_z_ LPTSTR* lpsz)
+void MyHexFromBin(_In_opt_count_(cb) LPBYTE lpb, size_t cb, bool bPrependCB, _Deref_out_opt_z_ LPTSTR* lpsz)
 {
 	ULONG i = 0;
 	if (!lpsz)
@@ -1354,12 +1371,12 @@ void MyHexFromBin(_In_opt_count_(cb) LPBYTE lpb, size_t cb, BOOL bPrependCB, _De
 		memset(*lpsz, 0, cchOut);
 		if (bPrependCB)
 		{
-			StringCchPrintf(*lpsz, cchOut, _T("cb: %d lpb: "), cb);
+			StringCchPrintf(*lpsz, cchOut, _T("cb: %d lpb: "), cb); // STRING_OK
 			lpszCur += CBPREPEND + cchCB;
 		}
 		if (!cb || !lpb)
 		{
-			memcpy(lpszCur,_T("NULL"),4);
+			memcpy(lpszCur,_T("NULL"),4); // STRING_OK
 			lpszCur += 4;
 		}
 		else
@@ -1389,7 +1406,7 @@ void MyHexFromBin(_In_opt_count_(cb) LPBYTE lpb, size_t cb, BOOL bPrependCB, _De
 // Pass NULL for lpb and a pointer to a count to find out how much memory to allocate
 // Returns false if the string cannot be converted
 // If lpb is passed, lpcb must point to the size in bytes of lpb
-_Check_return_ BOOL MyBinFromHex(_In_z_ LPCTSTR lpsz, _Inout_opt_count_(*lpcb) LPBYTE lpb, _Inout_ ULONG* lpcb)
+_Check_return_ bool MyBinFromHex(_In_z_ LPCTSTR lpsz, _Inout_opt_count_(*lpcb) LPBYTE lpb, _Inout_ ULONG* lpcb)
 {
 	HRESULT hRes = S_OK;
 	size_t cchStrLen = NULL;
@@ -1488,7 +1505,7 @@ dispidCustomFlag}; // dispidCustomFlag must remain last in list
 
 #define ulNumOneOffIDs (_countof(aulOneOffIDs))
 
-_Check_return_ HRESULT RemoveOneOff(_In_ LPMESSAGE lpMessage, BOOL bRemovePropDef)
+_Check_return_ HRESULT RemoveOneOff(_In_ LPMESSAGE lpMessage, bool bRemovePropDef)
 {
 	if (!lpMessage) return MAPI_E_INVALID_PARAMETER;
 	DebugPrint(DBGNamedProp,_T("RemoveOneOff - removing one off named properties.\n"));
@@ -1596,12 +1613,15 @@ _Check_return_ HRESULT ResendMessages(_In_ LPMAPIFOLDER lpFolder, _In_ HWND hWnd
 	// You define a SPropTagArray array here using the SizedSPropTagArray Macro
 	// This enum will allows you to access portions of the array by a name instead of a number.
 	// If more tags are added to the array, appropriate constants need to be added to the enum.
-	enum {
+	enum
+	{
 		ePR_ENTRYID,
 		NUM_COLS
 	};
 	// These tags represent the message information we would like to pick up
-	static SizedSPropTagArray(NUM_COLS,sptCols) = { NUM_COLS,
+	static const SizedSPropTagArray(NUM_COLS,sptCols) =
+	{
+		NUM_COLS,
 		PR_ENTRYID
 	};
 
@@ -1701,18 +1721,25 @@ _Check_return_ HRESULT ResendSingleMessage(
 	ULONG			ulProp = NULL;
 	SPropValue		sProp = {0};
 
-	enum {atPR_ATTACH_METHOD,
+	enum
+	{
+		atPR_ATTACH_METHOD,
 		atPR_ATTACH_NUM,
 		atPR_DISPLAY_NAME,
-		atNUM_COLS};
+		atNUM_COLS
+	};
 
-	static SizedSPropTagArray(atNUM_COLS,atCols) = {atNUM_COLS,
+	static const SizedSPropTagArray(atNUM_COLS,atCols) =
+	{
+		atNUM_COLS,
 		PR_ATTACH_METHOD,
 		PR_ATTACH_NUM,
 		PR_DISPLAY_NAME
 	};
 
-	static SizedSPropTagArray(2,atObjs) = {2,
+	static const SizedSPropTagArray(2,atObjs) =
+	{
+		2,
 		PR_MESSAGE_RECIPIENTS,
 		PR_MESSAGE_ATTACHMENTS
 	};
@@ -1841,9 +1868,9 @@ _Check_return_ HRESULT ResendSingleMessage(
 
 				sProp.dwAlignPad = 0;
 				sProp.ulPropTag = PR_DELETE_AFTER_SUBMIT;
-				sProp.Value.b = TRUE;
+				sProp.Value.b = true;
 
-				DebugPrint(DBGGeneric,_T("Setting PR_DELETE_AFTER_SUBMIT to TRUE.\n"));
+				DebugPrint(DBGGeneric,_T("Setting PR_DELETE_AFTER_SUBMIT to true.\n"));
 				EC_H(HrSetOneProp(lpNewMessage,&sProp));
 
 				SPropTagArray sPropTagArray = {0};
@@ -1889,10 +1916,15 @@ _Check_return_ HRESULT ResetPermissionsOnItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLD
 	CWaitCursor		Wait; // Change the mouse to an hourglass while we work.
 	int				i = 0;
 
-	enum {eidPR_ENTRYID,
-		eidNUM_COLS};
+	enum
+	{
+		eidPR_ENTRYID,
+		eidNUM_COLS
+	};
 
-	static SizedSPropTagArray(eidNUM_COLS,eidCols) = {eidNUM_COLS,
+	static const SizedSPropTagArray(eidNUM_COLS,eidCols) =
+	{
+		eidNUM_COLS,
 		PR_ENTRYID,
 	};
 
@@ -1933,64 +1965,67 @@ _Check_return_ HRESULT ResetPermissionsOnItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLD
 		}
 		else CHECKHRES(hRes);
 
-		EC_H(lpContentsTable->SetColumns(
-			(LPSPropTagArray) &eidCols,
-			TBL_BATCH));
-
-		// go to the first row
-		EC_H(lpContentsTable->SeekRow(
-			BOOKMARK_BEGINNING,
-			0,
-			NULL));
-		hRes = S_OK; // don't let failure here fail the whole op
-
-		// get rows and delete PR_NT_SECURITY_DESCRIPTOR
-		if (!FAILED(hRes)) for (;;)
+		if (SUCCEEDED(hRes) && lpContentsTable)
 		{
-			hRes = S_OK;
-			if (pRows) FreeProws(pRows);
-			pRows = NULL;
-			// Pull back a sizable block of rows to modify
-			EC_H(lpContentsTable->QueryRows(
-				200,
-				NULL,
-				&pRows));
-			if (!FAILED(hRes) || !pRows || !pRows->cRows) break;
+			EC_H(lpContentsTable->SetColumns(
+				(LPSPropTagArray) &eidCols,
+				TBL_BATCH));
 
-			for(iCurPropRow = 0;iCurPropRow<pRows->cRows;iCurPropRow++)
+			// go to the first row
+			EC_H(lpContentsTable->SeekRow(
+				BOOKMARK_BEGINNING,
+				0,
+				NULL));
+			hRes = S_OK; // don't let failure here fail the whole op
+
+			// get rows and delete PR_NT_SECURITY_DESCRIPTOR
+			if (!FAILED(hRes)) for (;;)
 			{
 				hRes = S_OK;
-				if (lpMessage) lpMessage->Release();
-				lpMessage = NULL;
+				if (pRows) FreeProws(pRows);
+				pRows = NULL;
+				// Pull back a sizable block of rows to modify
+				EC_H(lpContentsTable->QueryRows(
+					200,
+					NULL,
+					&pRows));
+				if (!FAILED(hRes) || !pRows || !pRows->cRows) break;
 
-				WC_H(CallOpenEntry(
-					lpMDB,
-					NULL,
-					NULL,
-					NULL,
-					pRows->aRow[iCurPropRow].lpProps[eidPR_ENTRYID].Value.bin.cb,
-					(LPENTRYID)pRows->aRow[iCurPropRow].lpProps[eidPR_ENTRYID].Value.bin.lpb,
-					NULL,
-					MAPI_BEST_ACCESS,
-					NULL,
-					(LPUNKNOWN*)&lpMessage));
-				if (FAILED(hRes))
+				for(iCurPropRow = 0;iCurPropRow<pRows->cRows;iCurPropRow++)
 				{
-					hResOverall = hRes;
-					continue;
-				}
+					hRes = S_OK;
+					if (lpMessage) lpMessage->Release();
+					lpMessage = NULL;
 
-				WC_H(DeleteProperty(lpMessage,PR_NT_SECURITY_DESCRIPTOR));
-				if (FAILED(hRes))
-				{
-					hResOverall = hRes;
-					continue;
-				}
+					WC_H(CallOpenEntry(
+						lpMDB,
+						NULL,
+						NULL,
+						NULL,
+						pRows->aRow[iCurPropRow].lpProps[eidPR_ENTRYID].Value.bin.cb,
+						(LPENTRYID)pRows->aRow[iCurPropRow].lpProps[eidPR_ENTRYID].Value.bin.lpb,
+						NULL,
+						MAPI_BEST_ACCESS,
+						NULL,
+						(LPUNKNOWN*)&lpMessage));
+					if (FAILED(hRes))
+					{
+						hResOverall = hRes;
+						continue;
+					}
 
-				iItemCount++;
+					WC_H(DeleteProperty(lpMessage,PR_NT_SECURITY_DESCRIPTOR));
+					if (FAILED(hRes))
+					{
+						hResOverall = hRes;
+						continue;
+					}
+
+					iItemCount++;
+				}
 			}
+			DebugPrint(DBGGeneric,_T("ResetPermissionsOnItems reset permissions on %d items\n"),iItemCount);
 		}
-		DebugPrint(DBGGeneric,_T("ResetPermissionsOnItems reset permissions on %d items\n"),iItemCount);
 	}
 
 	if (pRows) FreeProws(pRows);
@@ -2025,9 +2060,9 @@ _Check_return_ HRESULT SendTestMessage(
 
 		sProp.dwAlignPad = 0;
 		sProp.ulPropTag = PR_DELETE_AFTER_SUBMIT;
-		sProp.Value.b = TRUE;
+		sProp.Value.b = true;
 
-		DebugPrint(DBGGeneric,_T("Setting PR_DELETE_AFTER_SUBMIT to TRUE.\n"));
+		DebugPrint(DBGGeneric,_T("Setting PR_DELETE_AFTER_SUBMIT to true.\n"));
 		EC_H(HrSetOneProp(lpNewMessage,&sProp));
 
 		sProp.dwAlignPad = 0;
@@ -2076,12 +2111,12 @@ STDAPI_(HRESULT) WrapCompressedRTFStreamEx(
 
 _Check_return_ HRESULT WrapStreamForRTF(
 										_In_ LPSTREAM lpCompressedRTFStream,
-										BOOL bUseWrapEx,
+										bool bUseWrapEx,
 										ULONG ulFlags,
 										ULONG ulInCodePage,
 										ULONG ulOutCodePage,
-										_Deref_out_ LPSTREAM FAR* lpUncompressedRTFStream,
-										_Out_opt_ ULONG FAR* pulStreamFlags)
+										_Deref_out_ LPSTREAM* lpUncompressedRTFStream,
+										_Out_opt_ ULONG* pulStreamFlags)
 {
 	if (!lpCompressedRTFStream || !lpUncompressedRTFStream) return MAPI_E_INVALID_PARAMETER;
 	HRESULT hRes = S_OK;
@@ -2116,7 +2151,7 @@ _Check_return_ HRESULT WrapStreamForRTF(
 	return hRes;
 } // WrapStreamForRTF
 
-_Check_return_ HRESULT CopyNamedProps(_In_ LPMAPIPROP lpSource, _In_ LPGUID lpPropSetGUID, BOOL bDoMove, BOOL bDoNoReplace, _In_ LPMAPIPROP lpTarget, _In_ HWND hWnd)
+_Check_return_ HRESULT CopyNamedProps(_In_ LPMAPIPROP lpSource, _In_ LPGUID lpPropSetGUID, bool bDoMove, bool bDoNoReplace, _In_ LPMAPIPROP lpTarget, _In_ HWND hWnd)
 {
 	if((!lpSource) || (!lpTarget)) return MAPI_E_INVALID_PARAMETER;
 
@@ -2315,7 +2350,7 @@ _Check_return_ HRESULT UnicodeToAnsi(_In_z_ LPCWSTR pszW, _Out_z_cap_(cchszW) LP
 	return hRes;
 } // UnicodeToAnsi
 
-_Check_return_ BOOL CheckStringProp(_In_opt_ LPSPropValue lpProp, ULONG ulPropType)
+_Check_return_ bool CheckStringProp(_In_opt_ LPSPropValue lpProp, ULONG ulPropType)
 {
 	if (PT_STRING8 != ulPropType && PT_UNICODE != ulPropType)
 	{
@@ -2361,7 +2396,7 @@ _Check_return_ BOOL CheckStringProp(_In_opt_ LPSPropValue lpProp, ULONG ulPropTy
 	return true;
 } // CheckStringProp
 
-_Check_return_ DWORD ComputeStoreHash(ULONG cbStoreEID, _In_ LPBYTE pbStoreEID, _In_opt_z_ LPCSTR pszFileName, _In_opt_z_ LPCWSTR pwzFileName, BOOL bPublicStore)
+_Check_return_ DWORD ComputeStoreHash(ULONG cbStoreEID, _In_ LPBYTE pbStoreEID, _In_opt_z_ LPCSTR pszFileName, _In_opt_z_ LPCWSTR pwzFileName, bool bPublicStore)
 {
 	DWORD  dwHash = 0;
 	ULONG  cdw    = 0;
@@ -2455,6 +2490,48 @@ _Check_return_ LPWSTR EncodeID(ULONG cbEID, _In_ LPENTRYID rgbID)
 	return pwzIDEncoded;
 } // EncodeID
 
+_Check_return_ LPWSTR DecodeID(ULONG cbBuffer, _In_ LPBYTE lpbBuffer)
+{
+	if (cbBuffer % 2) return NULL;
+
+	ULONG i = 0;
+	ULONG cbDecodedBuffer = cbBuffer / 2;
+	LPWSTR lpwzSrc = NULL;
+	LPBYTE lpDst = NULL;
+	LPBYTE lpDecoded = NULL;
+
+	// Allocate memory for lpDecoded
+	lpDecoded = new BYTE[cbBuffer/2];
+	if (!lpDecoded) return NULL;
+
+	// Subtract kwBaseOffset from every character and place result in lpDecoded
+	for (i = 0, lpwzSrc = (LPWSTR)lpbBuffer, lpDst = lpDecoded;
+		i < cbDecodedBuffer; 	i++, lpwzSrc++, lpDst++)
+	{
+		*lpDst = (BYTE) (*lpwzSrc - kwBaseOffset);
+	}
+
+	LPTSTR szBin = NULL;
+	MyHexFromBin(
+		lpDecoded,
+		cbDecodedBuffer,
+		true,
+		&szBin);
+	delete[] lpDecoded;
+#ifdef UNICODE
+	return szBin;
+#else
+	HRESULT hRes = S_OK;
+	LPWSTR szBinW = NULL;
+	if (szBin)
+	{
+		EC_H(AnsiToUnicode(szBin,&szBinW));
+		delete[] szBin;
+	}
+	return szBinW;
+#endif
+} // DecodeID
+
 HRESULT HrEmsmdbUIDFromStore(_In_ LPMAPISESSION pmsess,
 							 _In_ MAPIUID const * const puidService,
 							 _Out_opt_ MAPIUID* pEmsmdbUID)
@@ -2469,7 +2546,12 @@ HRESULT HrEmsmdbUIDFromStore(_In_ LPMAPISESSION pmsess,
 	LPSERVICEADMIN spSvcAdmin = NULL;
 	LPMAPITABLE spmtab = NULL;
 
-	enum { eEntryID = 0, eSectionUid, eMax };
+	enum
+	{
+		eEntryID = 0,
+		eSectionUid,
+		eMax
+	};
 	static const SizedSPropTagArray(eMax, tagaCols) =
 	{
 		eMax,

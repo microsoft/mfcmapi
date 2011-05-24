@@ -36,7 +36,7 @@ private:
 	void CalcSplitPos();
 
 	CBaseDialog*	m_lpHostDlg;
-	BOOL			m_bTracking;
+	bool			m_bTracking;
 	FLOAT			m_flSplitPercent;
 	CWnd*			m_PaneOne;
 	CWnd*			m_PaneTwo;

@@ -4,17 +4,18 @@
 // NamedPropCacheEntry
 // =====================
 //   An entry in the named property cache
-typedef struct _NamedPropCacheEntry
+struct NamedPropCacheEntry
 {
 	ULONG ulPropID;         // MAPI ID (ala PROP_ID) for a named property
 	LPMAPINAMEID lpmniName; // guid, kind, value
 	ULONG cbSig;            // Size and...
 	LPBYTE lpSig;           // Value of PR_MAPPING_SIGNATURE
-	BOOL bStringsCached;    // We have cached strings
+	bool bStringsCached;    // We have cached strings
 	LPTSTR lpszPropName;    // Cached strings
 	LPTSTR lpszPropGUID;    //
 	LPTSTR lpszDASL;        //
-} NamedPropCacheEntry, * LPNAMEDPROPCACHEENTRY;
+};
+typedef NamedPropCacheEntry *LPNAMEDPROPCACHEENTRY;
 
 // Cache initializes on demand. Uninitialize on program shutdown.
 void UninitializeNamedPropCache();
@@ -40,7 +41,7 @@ _Check_return_ HRESULT GetIDsFromNames(_In_ LPMAPIPROP lpMAPIProp,
 									   ULONG ulFlags,
 									   _Out_ _Deref_post_cap_(cPropNames) LPSPropTagArray* lppPropTags);
 
-_Check_return_ inline BOOL fCacheNamedProps()
+_Check_return_ inline bool fCacheNamedProps()
 {
 	return RegKeys[regkeyCACHE_NAME_DPROPS].ulCurDWORD != 0;
 } // fCacheNamedProps

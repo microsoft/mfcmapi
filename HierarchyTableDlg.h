@@ -35,7 +35,7 @@ private:
 		_In_opt_ LPMAPICONTAINER lpContainer);
 
 	// Overrides from base class
-	_Check_return_ BOOL HandleAddInMenu(WORD wMenuSelect);
+	_Check_return_ bool HandleAddInMenu(WORD wMenuSelect);
 	void OnCancel();
 	_Check_return_ BOOL OnInitDialog();
 	void OnRefreshView();

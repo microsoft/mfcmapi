@@ -3,7 +3,8 @@
 
 #include <Aclui.h>
 
-enum eAceType {
+enum eAceType
+{
 	acetypeContainer,
 	acetypeMessage,
 	acetypeFreeBusy
@@ -51,7 +52,7 @@ private:
 	WCHAR		m_wszObject[64];
 };
 
-_Check_return_ BOOL GetTextualSid(
+_Check_return_ bool GetTextualSid(
 				   _In_ PSID pSid, // binary SID
 				   _Out_opt_z_cap_(*lpdwBufferLen) LPTSTR TextualSid, // buffer for Textual representation of SID
 				   _Inout_ LPDWORD lpdwBufferLen // required/provided TextualSid buffersize

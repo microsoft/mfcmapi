@@ -26,8 +26,8 @@ private:
 		_In_ LPMAPIPROP lpMAPIProp,
 		_In_ LPMAPICONTAINER lpContainer);
 	void HandleCopy();
-	_Check_return_ BOOL HandleMenu(WORD wMenuSelect);
-	_Check_return_ BOOL HandlePaste();
+	_Check_return_ bool HandleMenu(WORD wMenuSelect);
+	_Check_return_ bool HandlePaste();
 	void OnDeleteSelectedItem();
 	void OnDisplayItem();
 	void OnInitMenu(_In_ CMenu* pMenu);
@@ -63,7 +63,7 @@ private:
 	_Check_return_ HRESULT OnSaveAttachments(int iItem, _In_ SortListData* lpData);
 	_Check_return_ HRESULT OnSubmitMessage(int iItem, _In_ SortListData* lpData);
 
-	_Check_return_ BOOL MultiSelectComplex(WORD wMenuSelect);
-	_Check_return_ BOOL MultiSelectSimple(WORD wMenuSelect);
+	_Check_return_ bool MultiSelectComplex(WORD wMenuSelect);
+	_Check_return_ bool MultiSelectSimple(WORD wMenuSelect);
 	void NewSpecialItem(WORD wMenuSelect);
 };

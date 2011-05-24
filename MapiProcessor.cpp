@@ -159,7 +159,7 @@ void CMAPIProcessor::ProcessStore()
 	EndStoreWork();
 } // CMAPIProcessor::ProcessStore
 
-void CMAPIProcessor::ProcessFolders(BOOL bDoRegular, BOOL bDoAssociated, BOOL bDoDescent)
+void CMAPIProcessor::ProcessFolders(bool bDoRegular, bool bDoAssociated, bool bDoDescent)
 {
 	BeginProcessFoldersWork();
 
@@ -177,9 +177,9 @@ void CMAPIProcessor::ProcessFolders(BOOL bDoRegular, BOOL bDoAssociated, BOOL bD
 	EndProcessFoldersWork();
 } // CMAPIProcessor::ProcessFolders
 
-void CMAPIProcessor::ProcessFolder(BOOL bDoRegular,
-								   BOOL bDoAssociated,
-								   BOOL bDoDescent)
+void CMAPIProcessor::ProcessFolder(bool bDoRegular,
+								   bool bDoAssociated,
+								   bool bDoDescent)
 {
 	if (!m_lpMDB || !m_lpFolder) return;
 
@@ -206,8 +206,17 @@ void CMAPIProcessor::ProcessFolder(BOOL bDoRegular,
 		WC_H(m_lpFolder->GetHierarchyTable(fMapiUnicode,&lpHierarchyTable));
 		if (lpHierarchyTable)
 		{
-			enum{NAME,EID,SUBFOLDERS,FLAGS,NUMCOLS};
-			SizedSPropTagArray(NUMCOLS,sptHierarchyCols) = {NUMCOLS,
+			enum
+			{
+				NAME,
+				EID,
+				SUBFOLDERS,
+				FLAGS,
+				NUMCOLS
+			};
+			static const SizedSPropTagArray(NUMCOLS,sptHierarchyCols) =
+			{
+				NUMCOLS,
 				PR_DISPLAY_NAME,
 				PR_ENTRYID,
 				PR_SUBFOLDERS,
@@ -286,14 +295,19 @@ void CMAPIProcessor::ProcessContentsTable(ULONG ulFlags)
 {
 	if (!m_lpFolder) return;
 
-	enum {contPR_SUBJECT,
+	enum
+	{
+		contPR_SUBJECT,
 		contPR_MESSAGE_CLASS,
 		contPR_MESSAGE_DELIVERY_TIME,
 		contPR_HASATTACH,
 		contPR_ENTRYID,
 		contPR_SEARCH_KEY,
-		contNUM_COLS};
-	static SizedSPropTagArray(contNUM_COLS,contCols) = {contNUM_COLS,
+		contNUM_COLS
+	};
+	static const SizedSPropTagArray(contNUM_COLS,contCols) =
+	{
+		contNUM_COLS,
 		PR_MESSAGE_CLASS,
 		PR_SUBJECT,
 		PR_MESSAGE_DELIVERY_TIME,
@@ -367,14 +381,14 @@ void CMAPIProcessor::ProcessContentsTable(ULONG ulFlags)
 				if (lpMessage)
 				{
 					LPSPropValue lpMsgHasAttach = NULL;
-					BOOL bHasAttach = true;
+					bool bHasAttach = true;
 					lpMsgHasAttach = PpropFindProp(
 						lpRows->aRow[iRow].lpProps,
 						lpRows->aRow[iRow].cValues,
 						PR_HASATTACH);
 					if (lpMsgHasAttach)
 					{
-						bHasAttach = lpMsgHasAttach->Value.b;
+						bHasAttach = (0 != lpMsgHasAttach->Value.b);
 					}
 					ProcessMessage(lpMessage, bHasAttach, NULL);
 					lpMessage->Release();
@@ -390,7 +404,7 @@ void CMAPIProcessor::ProcessContentsTable(ULONG ulFlags)
 	EndContentsTableWork();
 } // CMAPIProcessor::ProcessContentsTable
 
-void CMAPIProcessor::ProcessMessage(_In_ LPMESSAGE lpMessage, BOOL bHasAttach, _In_opt_ LPVOID lpParentMessageData)
+void CMAPIProcessor::ProcessMessage(_In_ LPMESSAGE lpMessage, bool bHasAttach, _In_opt_ LPVOID lpParentMessageData)
 {
 	if (!lpMessage) return;
 
@@ -448,15 +462,20 @@ void CMAPIProcessor::ProcessRecipients(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpD
 	EndRecipientWork(lpMessage,lpData);
 } // CMAPIProcessor::ProcessRecipients
 
-void CMAPIProcessor::ProcessAttachments(_In_ LPMESSAGE lpMessage, BOOL bHasAttach, _In_ LPVOID lpData)
+void CMAPIProcessor::ProcessAttachments(_In_ LPMESSAGE lpMessage, bool bHasAttach, _In_ LPVOID lpData)
 {
 	if (!lpMessage) return;
 
-	enum {attPR_ATTACH_NUM,
+	enum
+	{
+		attPR_ATTACH_NUM,
 		atPR_ATTACH_METHOD,
 		attPR_ATTACH_FILENAME,
-		attNUM_COLS};
-	static SizedSPropTagArray(attNUM_COLS,attCols) = {attNUM_COLS,
+		attNUM_COLS
+	};
+	static const SizedSPropTagArray(attNUM_COLS,attCols) =
+	{
+		attNUM_COLS,
 		PR_ATTACH_NUM,
 		PR_ATTACH_METHOD,
 		PR_ATTACH_FILENAME,
@@ -504,6 +523,7 @@ void CMAPIProcessor::ProcessAttachments(_In_ LPMESSAGE lpMessage, BOOL bHasAttac
 			ULONG iRow = 0;
 			for (iRow = 0 ; iRow < lpRows->cRows ; iRow++)
 			{
+				hRes = S_OK;
 				LPSPropValue lpAttachNum = NULL;
 				lpAttachNum = PpropFindProp(
 					lpRows->aRow[iRow].lpProps,
@@ -518,7 +538,6 @@ void CMAPIProcessor::ProcessAttachments(_In_ LPMESSAGE lpMessage, BOOL bHasAttac
 						NULL,
 						MAPI_BEST_ACCESS,
 						(LPATTACH*)&lpAttach));
-					hRes = S_OK;
 
 					DoMessagePerAttachmentWork(lpMessage,lpData,&lpRows->aRow[iRow],lpAttach,i++);
 					// Check if the attachment is an embedded message - if it is, parse it as such!
@@ -529,7 +548,7 @@ void CMAPIProcessor::ProcessAttachments(_In_ LPMESSAGE lpMessage, BOOL bHasAttac
 						lpRows->aRow->cValues,
 						PR_ATTACH_METHOD);
 
-					if (lpAttachMethod && ATTACH_EMBEDDED_MSG == lpAttachMethod->Value.l)
+					if (lpAttach && lpAttachMethod && ATTACH_EMBEDDED_MSG == lpAttachMethod->Value.l)
 					{
 						LPMESSAGE lpAttachMsg = NULL;
 

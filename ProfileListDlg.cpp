@@ -64,6 +64,7 @@ BEGIN_MESSAGE_MAP(CProfileListDlg, CContentsTableDlg)
 	ON_COMMAND(ID_GETPROFILESERVERVERSION,OnGetProfileServiceVersion)
 	ON_COMMAND(ID_CREATEPROFILE,OnCreateProfile)
 	ON_COMMAND(ID_SETDEFAULTPROFILE,OnSetDefaultProfile)
+	ON_COMMAND(ID_OPENPROFILEBYNAME,OnOpenProfileByName)
 END_MESSAGE_MAP()
 
 void CProfileListDlg::OnInitMenu(_In_ CMenu* pMenu)
@@ -105,8 +106,8 @@ void CProfileListDlg::OnRefreshView()
 		dfNormal,
 		NULL));
 
-	LPPROFADMIN lpProfAdmin = m_lpMapiObjects->GetProfAdmin(); // do not release
-
+	LPPROFADMIN lpProfAdmin = NULL;
+	EC_H(MAPIAdminProfiles(0, &lpProfAdmin));
 	if (!lpProfAdmin) return;
 
 	EC_H(lpProfAdmin->GetProfileTable(
@@ -122,6 +123,7 @@ void CProfileListDlg::OnRefreshView()
 
 		lpProfTable->Release();
 	}
+	lpProfAdmin->Release();
 } // CProfileListDlg::OnRefreshView
 
 void CProfileListDlg::OnDisplayItem()
@@ -173,7 +175,7 @@ void CProfileListDlg::OnLaunchProfileWizard()
 		LaunchProfileWizard(
 			m_hWnd,
 			MyData.GetHex(0),
-			(LPCSTR FAR *) szServices,
+			(LPCSTR*) szServices,
 			_countof(szProfName),
 			szProfName);
 		OnRefreshView(); // Update the view since we don't have notifications here.
@@ -248,7 +250,7 @@ void CProfileListDlg::OnAddExchangeToProfile()
 	}
 } // CProfileListDlg::OnAddExchangeToProfile
 
-void CProfileListDlg::AddPSTToProfile(BOOL bUnicodePST)
+void CProfileListDlg::AddPSTToProfile(bool bUnicodePST)
 {
 	HRESULT			hRes = S_OK;
 	int				iItem = -1;
@@ -262,7 +264,7 @@ void CProfileListDlg::AddPSTToProfile(BOOL bUnicodePST)
 
 	CFileDialogEx dlgFilePicker;
 	EC_D_DIALOG(dlgFilePicker.DisplayDialog(
-		TRUE,
+		true,
 		_T("pst"), // STRING_OK
 		NULL,
 		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
@@ -292,7 +294,7 @@ void CProfileListDlg::AddPSTToProfile(BOOL bUnicodePST)
 			if (S_OK == hRes)
 			{
 				LPTSTR szPath = MyFile.GetString(0);
-				BOOL bPasswordSet = MyFile.GetCheck(1);
+				bool bPasswordSet = MyFile.GetCheck(1);
 				LPSTR szPwd = MyFile.GetStringA(2);
 
 				DebugPrintEx(DBGGeneric,CLASS,_T("AddPSTToProfile"),_T("Adding PST \"%s\" to profile \"%hs\", bUnicodePST = 0x%X\n, bPasswordSet = 0x%X, password = \"%hs\"\n"),
@@ -434,8 +436,8 @@ void CProfileListDlg::OnGetProfileServiceVersion()
 
 		ULONG ulServerVersion = 0;
 		EXCHANGE_STORE_VERSION_NUM storeVersion = {0};
-		BOOL bFoundServerVersion = false;
-		BOOL bFoundServerFullVersion = false;
+		bool bFoundServerVersion = false;
+		bool bFoundServerFullVersion = false;
 
 		WC_H(GetProfileServiceVersion(lpListData->data.Contents.szProfileDisplayName,
 			&ulServerVersion,
@@ -517,3 +519,31 @@ void CProfileListDlg::OnSetDefaultProfile()
 		OnRefreshView(); // Update the view since we don't have notifications here.
 	}
 } // CProfileListDlg::OnSetDefaultProfile
+
+void CProfileListDlg::OnOpenProfileByName()
+{
+	HRESULT hRes = S_OK;
+	CHAR* szProfileName = NULL;
+
+	CEditor MyData(
+		this,
+		IDS_OPENPROFILE,
+		NULL,
+		1,
+		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+	MyData.InitSingleLine(0,IDS_OPENPROFILEPROMPT,NULL,false);
+
+	WC_H(MyData.DisplayDialog());
+
+	if (S_OK == hRes)
+	{
+		szProfileName = MyData.GetStringA(0);
+		if (szProfileName)
+		{
+			new CMsgServiceTableDlg(
+				m_lpParent,
+				m_lpMapiObjects,
+				szProfileName);
+		}
+	}
+} // CProfileListDlg::OnOpenProfileByName

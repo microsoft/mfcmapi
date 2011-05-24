@@ -6,11 +6,11 @@
 _Check_return_ HRESULT DisplayPropertyEditor(_In_ CWnd* pParentWnd,
 											 UINT uidTitle,
 											 UINT uidPrompt,
-											 BOOL bIsAB,
+											 bool bIsAB,
 											 _In_opt_ LPVOID lpAllocParent,
 											 _In_opt_ LPMAPIPROP lpMAPIProp,
 											 ULONG ulPropTag,
-											 BOOL bMVRow,
+											 bool bMVRow,
 											 _In_opt_ LPSPropValue lpsPropValue,
 											 _Inout_opt_ LPSPropValue* lpNewValue);
 
@@ -21,8 +21,8 @@ public:
 		_In_ CWnd* pParentWnd,
 		UINT uidTitle,
 		UINT uidPrompt,
-		BOOL bIsAB,
-		BOOL bMVRow,
+		bool bIsAB,
+		bool bMVRow,
 		_In_opt_ LPVOID lpAllocParent,
 		_In_opt_ LPMAPIPROP lpMAPIProp,
 		ULONG ulPropTag,
@@ -44,11 +44,11 @@ private:
 	// source variables
 	LPMAPIPROP		m_lpMAPIProp;
 	ULONG			m_ulPropTag;
-	BOOL			m_bIsAB; // whether the tag is from the AB or not
+	bool			m_bIsAB; // whether the tag is from the AB or not
 	LPSPropValue	m_lpsInputValue;
 	LPSPropValue	m_lpsOutputValue;
-	BOOL			m_bDirty;
-	BOOL			m_bMVRow; // whether this row came from a multivalued property. Used for smart view parsing.
+	bool			m_bDirty;
+	bool			m_bMVRow; // whether this row came from a multivalued property. Used for smart view parsing.
 
 	// all calls to MAPIAllocateMore will use m_lpAllocParent
 	// this is not something to be freed
@@ -62,7 +62,7 @@ public:
 		_In_ CWnd* pParentWnd,
 		UINT uidTitle,
 		UINT uidPrompt,
-		BOOL bIsAB,
+		bool bIsAB,
 		_In_opt_ LPVOID lpAllocParent,
 		_In_opt_ LPMAPIPROP lpMAPIProp,
 		ULONG ulPropTag,
@@ -74,7 +74,7 @@ public:
 
 private:
 	// Use this function to implement list editing
-	_Check_return_ BOOL DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData);
+	_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData);
 	_Check_return_ BOOL OnInitDialog();
 	void CreatePropertyControls();
 	void InitPropertyControls();
@@ -89,7 +89,7 @@ private:
 	// source variables
 	LPMAPIPROP		m_lpMAPIProp;
 	ULONG			m_ulPropTag;
-	BOOL			m_bIsAB; // whether the tag is from the AB or not
+	bool			m_bIsAB; // whether the tag is from the AB or not
 	LPSPropValue	m_lpsInputValue;
 	LPSPropValue	m_lpsOutputValue;
 

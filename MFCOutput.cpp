@@ -17,7 +17,7 @@ void OpenDebugFile()
 	CloseDebugFile();
 
 	// only open the file if we really need to
-	if (RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD == TRUE)
+	if (0 != RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD)
 	{
 #ifdef UNICODE
 		g_fDebugFile = OpenFile(RegKeys[regkeyDEBUG_FILE_NAME].szCurSTRING,false);
@@ -50,10 +50,10 @@ void SetDebugLevel(ULONG ulDbgLvl)
 // gonna set the new value
 // gonna ensure our debug output file is open if we need it, closed if we don't
 // gonna output some text if we just toggled on
-void SetDebugOutputToFile(BOOL bDoOutput)
+void SetDebugOutputToFile(bool bDoOutput)
 {
 	// save our old value
-	BOOL bOldDoOutput = RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD;
+	bool bOldDoOutput = (0 != RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD);
 
 	// set the new value
 	RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD = bDoOutput;
@@ -81,7 +81,7 @@ void SetDebugOutputToFile(BOOL bDoOutput)
 // quick check to see if we have anything to print - so we can avoid executing the call
 #define EARLYABORT {if (!fFile && !RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD && !fIsSet(ulDbgLvl)) return;}
 
-_Check_return_ FILE* OpenFile(_In_z_ LPCWSTR szFileName, BOOL bNewFile)
+_Check_return_ FILE* OpenFile(_In_z_ LPCWSTR szFileName, bool bNewFile)
 {
 	static TCHAR szErr[256]; // buffer for catastrophic failures
 	FILE* fOut = NULL;
@@ -141,7 +141,7 @@ void OutputToConsole(_In_z_ LPCTSTR szMsg)
 #endif
 
 // The root of all debug output - call no debug output functions besides OutputDebugString from here!
-void _Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, BOOL bPrintThreadTime, _In_opt_z_ LPCTSTR szMsg)
+void _Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, _In_opt_z_ LPCTSTR szMsg)
 {
 	CHKPARAM;
 	EARLYABORT;
@@ -204,7 +204,7 @@ void _Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, BOOL bPrintThreadTime, _In_op
 	}
 } // _Output
 
-void __cdecl Outputf(ULONG ulDbgLvl, _In_opt_ FILE* fFile, BOOL bPrintThreadTime, _Printf_format_string_ LPCTSTR szMsg, ...)
+void __cdecl Outputf(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, _Printf_format_string_ LPCTSTR szMsg, ...)
 {
 	CHKPARAM;
 	EARLYABORT;
@@ -544,6 +544,7 @@ void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify, _
 	Outputf(ulDbgLvl,fFile,true,_T("Dumping %d notifications.\n"), cNotify);
 
 	LPTSTR szFlags = NULL;
+	LPWSTR szPropNum = NULL;
 
 	for (ULONG i=0; i<cNotify; i++)
 	{
@@ -614,13 +615,13 @@ void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify, _
 
 				Outputf(ulDbgLvl,fFile,true,_T("lpNotifications[%d].info.newmail.ulMessageFlags = 0x%08X"),i,
 					lpNotifications[i].info.newmail.ulMessageFlags);
-				InterpretNumberAsStringProp(lpNotifications[i].info.newmail.ulMessageFlags,PR_MESSAGE_FLAGS,&szFlags);
-				if (szFlags)
+				InterpretNumberAsStringProp(lpNotifications[i].info.newmail.ulMessageFlags,PR_MESSAGE_FLAGS,&szPropNum);
+				if (szPropNum)
 				{
-					Outputf(ulDbgLvl,fFile,false,_T(" = %s"),szFlags);
+					Outputf(ulDbgLvl,fFile,false,_T(" = %ws"),szPropNum);
 				}
-				delete[] szFlags;
-				szFlags = NULL;
+				delete[] szPropNum;
+				szPropNum = NULL;
 				Outputf(ulDbgLvl,fFile,false,_T("\n"));
 			}
 			break;
@@ -682,14 +683,14 @@ void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify, _
 				Outputf(ulDbgLvl,fFile,true,_T("lpNotifications[%d].info.obj.ulObjType = 0x%08X"),i,
 					lpNotifications[i].info.obj.ulObjType);
 
-				InterpretNumberAsStringProp(lpNotifications[i].info.obj.ulObjType, PR_OBJECT_TYPE, &szFlags);
-				if (szFlags)
+				InterpretNumberAsStringProp(lpNotifications[i].info.obj.ulObjType, PR_OBJECT_TYPE, &szPropNum);
+				if (szPropNum)
 				{
-					Outputf(ulDbgLvl,fFile,false,_T(" = %s"),
-						szFlags);
+					Outputf(ulDbgLvl,fFile,false,_T(" = %ws"),
+						szPropNum);
 				}
-				delete[] szFlags;
-				szFlags = NULL;
+				delete[] szPropNum;
+				szPropNum = NULL;
 
 				Outputf(ulDbgLvl,fFile,false,_T("\n"));
 				Outputf(ulDbgLvl,fFile,true,_T("lpNotifications[%d].info.obj.lpPropTagArray = \n"),i);
@@ -724,7 +725,7 @@ void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify, _
 	Outputf(ulDbgLvl,fFile,true,_T("End dumping notifications.\n"));
 } // _OutputNotifications
 
-void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpProp, _In_opt_ LPMAPIPROP lpObj, BOOL bRetryStreamProps)
+void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpProp, _In_opt_ LPMAPIPROP lpObj, bool bRetryStreamProps)
 {
 	CHKPARAM;
 	EARLYABORT;
@@ -751,7 +752,7 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 	CString AltPropString;
 	LPTSTR szExactMatches = NULL;
 	LPTSTR szPartialMatches = NULL;
-	LPTSTR szSmartView = NULL;
+	LPWSTR szSmartView = NULL;
 	LPTSTR szNamedPropName = NULL;
 	LPTSTR szNamedPropGUID = NULL;
 
@@ -794,7 +795,7 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 	case PT_SRESTRICTION:
 	case PT_ACTIONS:
 		{
-			OutputXMLCDataValue(ulDbgLvl,fFile,PropXMLNames[pcPROPVAL].uidName,(LPCTSTR) PropString,2);
+			OutputXMLCDataValue(ulDbgLvl,fFile,PropXMLNames[pcPROPVAL].uidName,(LPTSTR) (LPCTSTR) PropString,2);
 			OutputXMLValue(ulDbgLvl,fFile,PropXMLNames[pcPROPVALALT].uidName,(LPCTSTR) AltPropString,2);
 			break;
 		}
@@ -802,7 +803,7 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 	case PT_MV_BINARY:
 		{
 			OutputXMLValue(ulDbgLvl,fFile,PropXMLNames[pcPROPVAL].uidName,(LPCTSTR) PropString,2);
-			OutputXMLCDataValue(ulDbgLvl,fFile,PropXMLNames[pcPROPVALALT].uidName,(LPCTSTR) AltPropString,2);
+			OutputXMLCDataValue(ulDbgLvl,fFile,PropXMLNames[pcPROPVALALT].uidName,(LPTSTR) (LPCTSTR) AltPropString,2);
 			break;
 		}
 	default:
@@ -813,7 +814,18 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 		}
 	}
 
-	if (szSmartView) OutputXMLCDataValue(ulDbgLvl,fFile,PropXMLNames[pcPROPSMARTVIEW].uidName,szSmartView,2);
+	if (szSmartView)
+	{
+		// Eventually we should remove this split, but right now, OutputXMLCDataValue is too expensive to recode
+#ifdef UNICODE
+		OutputXMLCDataValue(ulDbgLvl,fFile,PropXMLNames[pcPROPSMARTVIEW].uidName,szSmartView,2);
+#else
+		LPSTR szSmartViewA = NULL;
+		(void) UnicodeToAnsi(szSmartView,&szSmartViewA);
+		OutputXMLCDataValue(ulDbgLvl,fFile,PropXMLNames[pcPROPSMARTVIEW].uidName,szSmartViewA,2);
+		delete[] szSmartViewA;
+#endif
+	}
 	_Output(ulDbgLvl,fFile,false,_T("\t</property>\n"));
 
 	delete[] szPartialMatches;
@@ -823,7 +835,7 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 	MAPIFreeBuffer(lpLargeProp);
 } // _OutputProperty
 
-void _OutputProperties(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cProps, _In_count_(cProps) LPSPropValue lpProps, _In_opt_ LPMAPIPROP lpObj, BOOL bRetryStreamProps)
+void _OutputProperties(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cProps, _In_count_(cProps) LPSPropValue lpProps, _In_opt_ LPMAPIPROP lpObj, bool bRetryStreamProps)
 {
 	CHKPARAM;
 	EARLYABORT;
@@ -1015,7 +1027,7 @@ void _OutputVersion(ULONG ulDbgLvl, _In_opt_ FILE* fFile)
 
 				if (S_OK == hRes && lpTranslate)
 				{
-					for (iCodePages=0; iCodePages < (cbTranslate/sizeof(struct LANGANDCODEPAGE)); iCodePages++)
+					for (iCodePages=0; iCodePages < (cbTranslate/sizeof(LANGANDCODEPAGE)); iCodePages++)
 					{
 						hRes = S_OK;
 						EC_H(StringCchPrintf(
@@ -1096,7 +1108,30 @@ void OutputCDataClose(ULONG ulDbgLvl, _In_opt_ FILE* fFile)
 	_Output(ulDbgLvl,fFile,false,_T("]]>\n"));
 } // OutputCDataClose
 
-void OutputXMLCDataValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, _In_z_ LPCTSTR szValue, int iIndent)
+void ScrubStringForXML(_In_z_ LPTSTR szString)
+{
+	size_t cchString = 0;
+	size_t i = 0;
+
+	HRESULT hRes = S_OK;
+	WC_H(StringCchLength(szString,STRSAFE_MAX_CCH,&cchString));
+
+	for (i =0 ; i < cchString ; i++)
+	{
+		switch(szString[i])
+		{
+		case _T('\t'):
+		case _T('\r'):
+		case _T('\n'):
+			break;
+		default:
+			if (szString[i] < 0x20) szString[i] = _T('.');
+			break;
+		}
+	}
+} // ScrubStringForXML
+
+void OutputXMLCDataValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, _In_z_ LPTSTR szValue, int iIndent)
 {
 	CHKPARAM;
 	EARLYABORT;
@@ -1112,8 +1147,9 @@ void OutputXMLCDataValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, _In_
 	for (i = 0;i<iIndent;i++) _Output(ulDbgLvl,fFile,false,_T("\t"));
 	Outputf(ulDbgLvl,fFile,false,_T("<%s>"),(LPCTSTR) szTag);
 	OutputCDataOpen(ulDbgLvl,fFile);
+	ScrubStringForXML(szValue);
 	_Output(ulDbgLvl,fFile,false,szValue);
 	OutputCDataClose(ulDbgLvl,fFile);
-	for (i = 0;i<iIndent;i++) OutputToFile(fFile,_T("\t"));
+	for (i = 0;i<iIndent;i++) _Output(ulDbgLvl,fFile,false,_T("\t"));
 	Outputf(ulDbgLvl,fFile,false,_T("</%s>\n"),(LPCTSTR) szTag);
 } // OutputXMLCDataValue

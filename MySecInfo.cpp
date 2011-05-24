@@ -150,7 +150,7 @@ STDMETHODIMP CMySecInfo::GetObjectInformation(_In_ PSI_OBJECT_INFO pObjectInfo )
 {
 	DebugPrint(DBGGeneric,_T("CMySecInfo::GetObjectInformation\n"));
 	HRESULT hRes = S_OK;
-	BOOL bAllowEdits = false;
+	bool bAllowEdits = false;
 
 	HKEY hRootKey = NULL;
 
@@ -369,7 +369,7 @@ _Check_return_ STDMETHODIMP CMySecInfo::LookupSids(ULONG /*cSids*/, _In_count_(c
 	return E_NOTIMPL;
 } // CMySecInfo::LookupSids
 
-_Check_return_ BOOL GetTextualSid(
+_Check_return_ bool GetTextualSid(
 				   _In_ PSID pSid,            // binary SID
 				   _Out_opt_z_cap_(*lpdwBufferLen) LPTSTR TextualSid,    // buffer for Textual representation of SID
 				   _Inout_ LPDWORD lpdwBufferLen // required/provided TextualSid buffersize
@@ -383,7 +383,7 @@ _Check_return_ BOOL GetTextualSid(
 	DWORD dwSidSize = 0;
 
 	// Validate the binary SID.
-	if(!IsValidSid(pSid)) return FALSE;
+	if(!IsValidSid(pSid)) return false;
 
 	// Get the identifier authority value from the SID.
 	psia = GetSidIdentifierAuthority(pSid);
@@ -401,7 +401,7 @@ _Check_return_ BOOL GetTextualSid(
 	{
 		*lpdwBufferLen = dwSidSize;
 		SetLastError(ERROR_INSUFFICIENT_BUFFER);
-		return FALSE;
+		return false;
 	}
 
 	// Add 'S' prefix and revision number to the string.
@@ -445,7 +445,7 @@ _Check_return_ BOOL GetTextualSid(
 			*GetSidSubAuthority(pSid, dwCounter)));
 	}
 
-	return TRUE;
+	return true;
 } // GetTextualSid
 
 void ACEToString(_In_ void* pACE, eAceType acetype, _In_ CString *AceString)
@@ -459,7 +459,7 @@ void ACEToString(_In_ void* pACE, eAceType acetype, _In_ CString *AceString)
 	GUID	ObjectType = {0};
 	GUID	InheritedObjectType = {0};
 	SID*	SidStart = NULL;
-	BOOL	bObjectFound = false;
+	bool	bObjectFound = false;
 
 	if (!pACE || !AceString) return;
 

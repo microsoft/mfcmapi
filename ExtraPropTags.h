@@ -427,7 +427,8 @@ enum __NonPropFlag
 
 // http://msdn2.microsoft.com/en-us/library/bb821036.aspx
 #define PR_FLAG_STATUS PROP_TAG( PT_LONG, 0x1090 )
-enum FollowUpStatus {
+enum FollowUpStatus
+{
 	flwupNone = 0,
 	flwupComplete,
 	flwupMarked
@@ -435,7 +436,8 @@ enum FollowUpStatus {
 
 // http://msdn2.microsoft.com/en-us/library/bb821062.aspx
 #define PR_FOLLOWUP_ICON PROP_TAG( PT_LONG, 0x1095 )
-typedef enum OlFlagIcon {
+enum OlFlagIcon
+{
 	olNoFlagIcon=0,
 	olPurpleFlagIcon=1,
 	olOrangeFlagIcon=2,
@@ -443,10 +445,11 @@ typedef enum OlFlagIcon {
 	olYellowFlagIcon=4,
 	olBlueFlagIcon=5,
 	olRedFlagIcon=6,
-} OlFlagIcon;
+};
 
 // http://msdn2.microsoft.com/en-us/library/bb821130.aspx
-enum Gender {
+enum Gender
+{
 	genderMin = 0,
 	genderUnspecified = genderMin,
 	genderFemale,
@@ -537,7 +540,8 @@ enum Gender {
 
 // [MS-OXOSRCH].pdf
 #define PR_WB_SF_STORAGE_TYPE PROP_TAG(PT_LONG, 0x6846)
-enum t_SmartFolderStorageType {
+enum t_SmartFolderStorageType
+{
 	SFST_NUMBER = 0x01,			// for template's data (numbers)
 	SFST_TEXT = 0x02,			// for template's data (strings)
 	SFST_BINARY = 0x04,			// for template's data (binary form, such as entry id, etc.)
@@ -554,12 +558,13 @@ enum t_SmartFolderStorageType {
 
 // [MS-OXOCAL].pdf
 #define dispidBusyStatus 0x8205
-typedef enum OlBusyStatus {
+enum OlBusyStatus
+{
 	olFree=0,
 	olTentative=1,
 	olBusy=2,
 	olOutOfOffice=3,
-} OlBusyStatus;
+};
 #define dispidApptAuxFlags 0x8207
 #define	auxApptFlagCopied 0x0001
 #define	auxApptFlagForceMtgResponse 0x0002
@@ -582,11 +587,12 @@ typedef enum OlBusyStatus {
 #define rectypeYearly	(int) 4
 
 #define dispidConfType 0x8241
-typedef enum {
+enum confType
+{
 	confNetMeeting = 0,
 	confNetShow,
 	confExchange
-} confType;
+};
 
 #define dispidChangeHighlight 0x8204
 #define BIT_CH_START		0x00000001
@@ -649,7 +655,8 @@ typedef enum {
 // [MS-OXOCNTC].pdf
 #define dispidFileUnderId 0x8006
 #define dispidFileUnderList 0x8026
-enum {
+enum
+{
 	FILEUNDERID_NONE = 0,
 	FILEUNDERID_CUSTOM = 0xffffffff,
 	FILEUNDERID_CALLINIT = 0xfffffffe,
@@ -670,11 +677,17 @@ enum {
 
 #define dispidPostalAddressId 0x8022
 enum PostalAddressIndex
-{ ADDRESS_NONE = 0, ADDRESS_HOME, ADDRESS_WORK, ADDRESS_OTHER };
+{
+	ADDRESS_NONE = 0,
+	ADDRESS_HOME,
+	ADDRESS_WORK,
+	ADDRESS_OTHER
+};
 
 // [MS_OXOTASK].pdf
 #define dispidTaskMode 0x8518
-enum TaskDelegMsgType {
+enum TaskDelegMsgType
+{
 	tdmtNothing = 0,	// The task object is not assigned.
 	tdmtTaskReq,		// The task object is embedded in a task request.
 	tdmtTaskAcc,		// The task object has been accepted by the task assignee.
@@ -684,7 +697,8 @@ enum TaskDelegMsgType {
 };
 
 #define dispidTaskStatus 0x8101
-enum TaskStatusValue {
+enum TaskStatusValue
+{
 	tsvNotStarted = 0, // The user has not started work on the task object. If this value is set,
 	                   // dispidPercentComplete MUST be 0.0.
 	tsvInProgress,     // The user’s work on this task object is in progress. If this value is set,
@@ -697,7 +711,8 @@ enum TaskStatusValue {
 };
 
 #define dispidTaskState 0x8113
-enum TaskDelegState {
+enum TaskDelegState
+{
 	tdsNOM = 0, // This task object was created to correspond to a task object that was
 	            // embedded in a task rejection but could not be found locally.
 	tdsOWNNEW,  // The task object is not assigned.
@@ -707,7 +722,8 @@ enum TaskDelegState {
 };
 
 #define dispidTaskHistory 0x811A
-enum TaskHistory {
+enum TaskHistory
+{
 	thNone = 0,       // No changes were made.
 	thAccepted,       // The task assignee accepted this task object.
 	thDeclined,       // The task assignee rejected this task object.
@@ -717,7 +733,8 @@ enum TaskHistory {
 };
 
 #define dispidTaskMultRecips 0x8120
-enum TaskMultRecips {
+enum TaskMultRecips
+{
 	tmrNone				= 0x0000,	// none
 	tmrSent				= 0x0001,	// The task object has multiple primary recipients.
 	tmrRcvd				= 0x0002,	// Although the 'Sent' hint was not present, the client detected
@@ -726,14 +743,16 @@ enum TaskMultRecips {
 };
 
 #define dispidTaskOwnership 0x8129
-enum TaskOwnershipValue {
+enum TaskOwnershipValue
+{
 	tovNew,   // The task object is not assigned.
 	tovDeleg, // The task object is the task assigner’s copy of the task object.
 	tovMe     // The task object is the task assignee’s copy of the task object.
 };
 
 #define dispidTaskDelegValue 0x812A
-enum TaskDelegValue {
+enum TaskDelegValue
+{
 	tdvNone,      // The task object is not assigned.
 	tdvUnknown,   // The task object’s acceptance status is unknown.
 	tdvAccepted,  // The task assignee has accepted the task object. This value is set when
@@ -747,7 +766,8 @@ enum TaskDelegValue {
 
 // [MS-OXOMSG].pdf
 #define dispidSniffState 0x851A
-enum SniffState {
+enum SniffState
+{
 	ssNone,    // Don't auto-process the message.
 	ssOnSniff, // Process the message automatically or when the message is opened.
 	ssOnOpen   // Process when the message is opened only.
@@ -767,13 +787,13 @@ enum SniffState {
 #define dispidApptTZDefRecur 0x8260
 
 #define PR_EXTENDED_FOLDER_FLAGS PROP_TAG(PT_BINARY, 0x36DA)
-typedef enum ExtendedFolderPropByte
+enum ExtendedFolderPropByte
 {
 	EFPB_FLAGS						= 1,
 	EFPB_CLSIDID					= 2,
 	EFPB_SFTAG						= 3,
 	EFPB_TODO_VERSION				= 5,
-} EFPB;
+};
 // possible values for PR_EXTENDED_FOLDER_FLAGS
 enum
 {
@@ -931,7 +951,7 @@ enum
 #define PDO_FT_SWITCH		0x00000020	// This field is of type Combination and has the Showing only the first non-empty field, ignoring subsequent ones option selected in the Combination Formula Field dialog box.
 #define PDO_PRINT_SAVEAS_DEF	0x000000040	// This flag is not used
 
-typedef enum
+enum iTypeEnum
 {
 	iTypeUnknown = -1,
 	iTypeString,		// 0
@@ -949,7 +969,7 @@ typedef enum
 	iTypeConcat,		// 12
 	iTypeKeywords,		// 13
 	iTypeInteger,		// 14
-} iTypeEnum;
+};
 
 // [MS-OXOSFLD].pdf
 #define PR_ADDITIONAL_REN_ENTRYIDS_EX PROP_TAG( PT_BINARY, 0x36d9)
@@ -1000,14 +1020,14 @@ typedef enum
 
 // http://msdn.microsoft.com/en-us/library/ee218029(EXCHG.80).aspx
 #define PR_NATIVE_BODY_INFO PROP_TAG( PT_LONG, 0x1016)
-typedef enum
+enum NBI
 {
 	nbiUndefined = 0,
 	nbiPlainText,
 	nbiRtfCompressed,
 	nbiHtml,
 	nbiClearSigned,
-} NBI;
+};
 
 #define ptagSenderFlags PROP_TAG( PT_LONG, 0x4019)
 #define ptagSentRepresentingFlags PROP_TAG( PT_LONG, 0x401A)
@@ -1106,12 +1126,12 @@ enum PictureCompressLevel
 
 // http://msdn.microsoft.com/en-us/library/dd941362.aspx
 #define dispidOfflineStatus 0x85B9
-typedef enum _MSOCOST
-	{
+enum MSOCOST
+{
 	costNil,
 	costCheckedOut,
 	costSimpleOffline
-	} MSOCOST;
+};
 
 // http://msdn.microsoft.com/en-us/library/ff368035(EXCHG.80).aspx
 #define dispidClientIntent 0x0015
@@ -1147,6 +1167,16 @@ enum ClientIntent
 
 // http://blogs.msdn.com/b/stephen_griffin/archive/2010/09/13/you-chose-wisely.aspx
 #define PR_AB_CHOOSE_DIRECTORY_AUTOMATICALLY PROP_TAG( PT_BOOLEAN, 0x3D1C)
+
+// http://blogs.msdn.com/b/stephen_griffin/archive/2011/04/13/setsearchpath-not-really.aspx
+#define PR_AB_SEARCH_PATH_CUSTOMIZATION PROP_TAG( PT_LONG, 0x3D1B)
+enum SearchPathReorderType
+{
+	SEARCHPATHREORDERTYPE_RAW = 0,
+	SEARCHPATHREORDERTYPE_ACCT_PREFERGAL,
+	SEARCHPATHREORDERTYPE_ACCT_PREFERCONTACTS,
+};
+
 
 #define PR_USERFIELDS PROP_TAG( PT_BINARY, 0x36E3)
 

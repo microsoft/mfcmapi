@@ -217,7 +217,7 @@ void CHexEditor::UpdateParser()
 	// Find out how to interpret the data
 	DWORD_PTR iStructType = GetDropDownSelectionValue(HEXED_PICKER);
 
-	LPTSTR szString = NULL;
+	LPWSTR szString = NULL;
 	if (iStructType)
 	{
 		SBinary Bin = {0};
@@ -231,7 +231,7 @@ void CHexEditor::UpdateParser()
 
 	if (szString)
 	{
-		SetString(HEXED_SMARTVIEW,szString);
+		SetStringW(HEXED_SMARTVIEW,szString);
 
 		delete[] szString;
 	}

@@ -195,7 +195,7 @@ _Check_return_ LRESULT CAboutDlg::WindowProc(UINT message, WPARAM wParam, LPARAM
 	switch (message)
 	{
 	case WM_HELP:
-		return TRUE;
+		return true;
 		break;
 	} // end switch
 	return CDialog::WindowProc(message,wParam,lParam);

@@ -30,13 +30,13 @@ _Check_return_ HRESULT LoadMSGToMessage(_In_z_ LPCWSTR szMessageFile, _Deref_out
 _Check_return_ HRESULT LoadFromMSG(_In_z_ LPCWSTR szMessageFile, _In_ LPMESSAGE lpMessage, HWND hWnd);
 _Check_return_ HRESULT LoadFromTNEF(_In_z_ LPCWSTR szMessageFile, _In_ LPADRBOOK lpAdrBook, _In_ LPMESSAGE lpMessage);
 
-_Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_z_ LPCWSTR szPathName, BOOL bAssoc, BOOL bUnicode, HWND hWnd);
+_Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_z_ LPCWSTR szPathName, bool bAssoc, bool bUnicode, HWND hWnd);
 _Check_return_ HRESULT SaveToEML(_In_ LPMESSAGE lpMessage, _In_z_ LPCWSTR szFileName);
-_Check_return_ HRESULT CreateNewMSG(_In_z_ LPCWSTR szFileName, BOOL bUnicode, _Deref_out_ LPMESSAGE* lppMessage, _Deref_out_ LPSTORAGE* lppStorage);
-_Check_return_ HRESULT SaveToMSG(_In_ LPMESSAGE lpMessage, _In_z_ LPCWSTR szFileName, BOOL bUnicode, HWND hWnd);
+_Check_return_ HRESULT CreateNewMSG(_In_z_ LPCWSTR szFileName, bool bUnicode, _Deref_out_ LPMESSAGE* lppMessage, _Deref_out_ LPSTORAGE* lppStorage);
+_Check_return_ HRESULT SaveToMSG(_In_ LPMESSAGE lpMessage, _In_z_ LPCWSTR szFileName, bool bUnicode, HWND hWnd);
 _Check_return_ HRESULT SaveToTNEF(_In_ LPMESSAGE lpMessage, _In_ LPADRBOOK lpAdrBook, _In_z_ LPCWSTR szFileName);
 
 _Check_return_ HRESULT DeleteAttachments(_In_ LPMESSAGE lpMessage, _In_opt_z_ LPCTSTR szAttName, HWND hWnd);
 _Check_return_ HRESULT WriteAttachmentsToFile(_In_ LPMESSAGE lpMessage, HWND hWnd);
 _Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd);
-_Check_return_ HRESULT WriteEmbeddedMSGToFile(_In_ LPATTACH lpAttach,_In_z_ LPCWSTR szFileName, BOOL bUnicode, HWND hWnd);
+_Check_return_ HRESULT WriteEmbeddedMSGToFile(_In_ LPATTACH lpAttach,_In_z_ LPCWSTR szFileName, bool bUnicode, HWND hWnd);

@@ -89,7 +89,7 @@ struct _PropListData
 
 struct _MVPropData
 {
-	union _PV	val; // Allocated with MAPIAllocateMore
+	_PV val; // Allocated with MAPIAllocateMore
 };
 
 struct _TagData
@@ -124,7 +124,7 @@ struct _NodeData
 	LPMAPITABLE			lpHierarchyTable; // Object - free with Release
 	CAdviseSink*		lpAdviseSink; // Object - free with Release
 	ULONG_PTR			ulAdviseConnection;
-	ULONG				bSubfolders; // this is intentionally ULONG instead of BOOL
+	ULONG				bSubfolders; // this is intentionally ULONG instead of bool
 	ULONG				ulContainerFlags;
 };
 
@@ -147,7 +147,7 @@ struct SortListData
 	} data;
 	ULONG			cSourceProps;
 	LPSPropValue	lpSourceProps; // Stolen from lpsRowData in CContentsTableListCtrl::BuildDataItem - free with MAPIFreeBuffer
-	BOOL			bItemFullyLoaded;
+	bool			bItemFullyLoaded;
 };
 
 // Macros to assist in OnInitMenu
@@ -204,7 +204,7 @@ struct SortListData
 
 // Definitions for WrapCompressedRTFStreamEx in param for WrapCompressedRTFStreamEX
 // http://msdn2.microsoft.com/en-us/library/bb905293.aspx
-typedef struct {
+struct RTF_WCSINFO {
 	ULONG		size;		// Size of the structure
 	ULONG		ulFlags;
 	/****** MAPI_MODIFY					((ULONG) 0x00000001) above */
@@ -212,17 +212,17 @@ typedef struct {
 	/****** MAPI_NATIVE_BODY			((ULONG) 0x00010000) mapidefs.h   Only used for reading*/
 	ULONG		ulInCodePage;	// Codepage of the message, used when passing MAPI_NATIVE_BODY, ignored otherwise
 	ULONG		ulOutCodePage;	// Codepage of the Returned Stream, used when passing MAPI_NATIVE_BODY, ignored otherwise
-} RTF_WCSINFO;
+};
 
 // out param type information for WrapCompressedRTFStreamEX
 // http://msdn2.microsoft.com/en-us/library/bb905294.aspx
-typedef struct {
+struct RTF_WCSRETINFO {
 	ULONG       size;	// Size of the structure
 	ULONG		ulStreamFlags;
 	/****** MAPI_NATIVE_BODY_TYPE_RTF			((ULONG) 0x00000001) mapidefs.h */
 	/****** MAPI_NATIVE_BODY_TYPE_HTML			((ULONG) 0x00000002) mapidefs.h */
 	/****** MAPI_NATIVE_BODY_TYPE_PLAINTEXT		((ULONG) 0x00000004) mapidefs.h */
-} RTF_WCSRETINFO;
+};
 
 #define MAPI_NATIVE_BODY					0x00010000
 
@@ -232,12 +232,12 @@ typedef struct {
 #define MAPI_NATIVE_BODY_TYPE_PLAINTEXT		0x00000004
 
 // For EditSecurity
-typedef BOOL (STDAPICALLTYPE EDITSECURITY)
+typedef bool (STDAPICALLTYPE EDITSECURITY)
 (
  HWND hwndOwner,
  LPSECURITYINFO psi
  );
-typedef EDITSECURITY FAR * LPEDITSECURITY;
+typedef EDITSECURITY* LPEDITSECURITY;
 
 // For StgCreateStorageEx
 typedef HRESULT (STDAPICALLTYPE STGCREATESTORAGEEX)
@@ -250,19 +250,19 @@ typedef HRESULT (STDAPICALLTYPE STGCREATESTORAGEEX)
  IN  void * reserved,
  IN  REFIID riid,
  OUT void ** ppObjectOpen);
-typedef STGCREATESTORAGEEX FAR * LPSTGCREATESTORAGEEX;
+typedef STGCREATESTORAGEEX* LPSTGCREATESTORAGEEX;
 
 // For Themes
 typedef HTHEME (STDMETHODCALLTYPE OPENTHEMEDATA)
 (
  HWND hwnd,
  LPCWSTR pszClassList);
-typedef OPENTHEMEDATA FAR * LPOPENTHEMEDATA;
+typedef OPENTHEMEDATA* LPOPENTHEMEDATA;
 
 typedef HTHEME (STDMETHODCALLTYPE CLOSETHEMEDATA)
 (
  HTHEME hTheme);
-typedef CLOSETHEMEDATA FAR * LPCLOSETHEMEDATA;
+typedef CLOSETHEMEDATA* LPCLOSETHEMEDATA;
 
 typedef HRESULT (STDMETHODCALLTYPE GETTHEMEMARGINS)
 (
@@ -273,7 +273,7 @@ typedef HRESULT (STDMETHODCALLTYPE GETTHEMEMARGINS)
  int iPropId,
  OPTIONAL RECT *prc,
  OUT MARGINS *pMargins);
-typedef GETTHEMEMARGINS FAR * LPGETTHEMEMARGINS;
+typedef GETTHEMEMARGINS* LPGETTHEMEMARGINS;
 
 typedef HRESULT (STDMETHODCALLTYPE MSIPROVIDEQUALIFIEDCOMPONENT)
 (
@@ -283,7 +283,7 @@ typedef HRESULT (STDMETHODCALLTYPE MSIPROVIDEQUALIFIEDCOMPONENT)
  LPTSTR      lpPathBuf,
  LPDWORD     pcchPathBuf
  );
-typedef MSIPROVIDEQUALIFIEDCOMPONENT FAR * LPMSIPROVIDEQUALIFIEDCOMPONENT;
+typedef MSIPROVIDEQUALIFIEDCOMPONENT* LPMSIPROVIDEQUALIFIEDCOMPONENT;
 
 typedef HRESULT (STDMETHODCALLTYPE MSIGETFILEVERSION)
 (
@@ -293,11 +293,11 @@ typedef HRESULT (STDMETHODCALLTYPE MSIGETFILEVERSION)
  LPTSTR    lpLangBuf,
  LPDWORD   pcchLangBuf
  );
-typedef MSIGETFILEVERSION FAR * LPMSIGETFILEVERSION;
+typedef MSIGETFILEVERSION* LPMSIGETFILEVERSION;
 
 // http://msdn2.microsoft.com/en-us/library/bb820924.aspx
 #pragma pack(4)
-typedef struct _contab_entryid
+struct CONTAB_ENTRYID
 {
 	BYTE misc1[4];
 	MAPIUID misc2;
@@ -307,7 +307,8 @@ typedef struct _contab_entryid
 	// EntryID of contact in store.
 	ULONG cbeid;
 	BYTE abeid[1];
-} CONTAB_ENTRYID, *LPCONTAB_ENTRYID;
+};
+typedef CONTAB_ENTRYID* LPCONTAB_ENTRYID;
 #pragma pack()
 
 // http://msdn2.microsoft.com/en-us/library/bb820951.aspx
@@ -394,7 +395,7 @@ static DWORD g_lcid = MAKELCID(MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), SOR
 // http://msdn2.microsoft.com/en-us/library/bb820933.aspx
 #define MAPI_IATTACHMENTSECURITY_METHODS(IPURE) \
 	MAPIMETHOD(IsAttachmentBlocked) \
-	(LPCWSTR pwszFileName, BOOL *pfBlocked) IPURE;
+	(LPCWSTR pwszFileName, bool *pfBlocked) IPURE;
 
 DECLARE_MAPI_INTERFACE_(IAttachmentSecurity, IUnknown)
 {
@@ -416,10 +417,10 @@ DECLARE_MAPI_INTERFACE_(IAttachmentSecurity, IUnknown)
 // are required to send notifications regarding the process that is pushing.
 #define INDEXING_SEARCH_OWNER		((ULONG) 0x00000001)
 
-typedef struct _INDEX_SEARCH_PUSHER_PROCESS
+struct INDEX_SEARCH_PUSHER_PROCESS
 {
 	DWORD		dwPID;			// PID for process pushing
-} INDEX_SEARCH_PUSHER_PROCESS;
+};
 
 // http://blogs.msdn.com/stephen_griffin/archive/2006/05/11/595338.aspx
 #define STORE_FULLTEXT_QUERY_OK ((ULONG) 0x02000000)
@@ -462,13 +463,13 @@ typedef struct _INDEX_SEARCH_PUSHER_PROCESS
 	MAPIMETHOD(GetMailboxTableEx)									\
 	(THIS_	LPSTR						lpszServerName,				\
 	LPGUID						lpguidMdb,					\
-	LPMAPITABLE FAR *			lppTable,					\
+	LPMAPITABLE*			lppTable,					\
 	ULONG						ulFlags,					\
 	UINT						uOffset) IPURE;				\
 	MAPIMETHOD(GetPublicFolderTableEx)								\
 	(THIS_	LPSTR						lpszServerName,				\
 	LPGUID						lpguidMdb,					\
-	LPMAPITABLE FAR *			lppTable,					\
+	LPMAPITABLE*			lppTable,					\
 	ULONG						ulFlags,					\
 	UINT						uOffset) IPURE;				\
 

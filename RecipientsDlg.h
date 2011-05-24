@@ -31,7 +31,7 @@ private:
 	void OnViewRecipientABEntry();
 
 	LPMESSAGE m_lpMessage;
-	BOOL m_bViewRecipientABEntry;
+	bool m_bViewRecipientABEntry;
 
 	DECLARE_MESSAGE_MAP()
 };
