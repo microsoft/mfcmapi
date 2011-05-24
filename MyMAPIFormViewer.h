@@ -27,26 +27,26 @@ public:
 	_Check_return_ STDMETHODIMP GetLastError(
 		HRESULT hResult,
 		ULONG ulFlags,
-		_Deref_out_ LPMAPIERROR FAR * lppMAPIError);
+		_Deref_out_ LPMAPIERROR* lppMAPIError);
 
 	// IMAPIMessageSite
 	_Check_return_ STDMETHODIMP GetSession (
-		_Deref_out_opt_ LPMAPISESSION FAR * ppSession);
+		_Deref_out_opt_ LPMAPISESSION* ppSession);
 	_Check_return_ STDMETHODIMP GetStore (
-		_Deref_out_opt_ LPMDB FAR * ppStore);
+		_Deref_out_opt_ LPMDB* ppStore);
 	_Check_return_ STDMETHODIMP GetFolder (
-		_Deref_out_opt_ LPMAPIFOLDER FAR * ppFolder);
+		_Deref_out_opt_ LPMAPIFOLDER* ppFolder);
 	_Check_return_ STDMETHODIMP GetMessage (
-		_Deref_out_opt_ LPMESSAGE FAR * ppmsg);
+		_Deref_out_opt_ LPMESSAGE* ppmsg);
 	_Check_return_ STDMETHODIMP GetFormManager (
-		_Deref_out_ LPMAPIFORMMGR FAR * ppFormMgr);
+		_Deref_out_ LPMAPIFORMMGR* ppFormMgr);
 	_Check_return_ STDMETHODIMP NewMessage (
 		ULONG fComposeInFolder,
 		_In_ LPMAPIFOLDER pFolderFocus,
 		_In_ LPPERSISTMESSAGE pPersistMessage,
-		_Deref_out_opt_ LPMESSAGE FAR * ppMessage,
-		_Deref_out_opt_ LPMAPIMESSAGESITE FAR * ppMessageSite,
-		_Deref_out_opt_ LPMAPIVIEWCONTEXT FAR * ppViewContext);
+		_Deref_out_opt_ LPMESSAGE* ppMessage,
+		_Deref_out_opt_ LPMAPIMESSAGESITE* ppMessageSite,
+		_Deref_out_opt_ LPMAPIVIEWCONTEXT* ppViewContext);
 	_Check_return_ STDMETHODIMP CopyMessage (
 		_In_ LPMAPIFOLDER pFolderDestination);
 	_Check_return_ STDMETHODIMP MoveMessage (
@@ -79,11 +79,11 @@ public:
 		_In_ LPCRECT prcPosRect);
 	_Check_return_ STDMETHODIMP GetPrintSetup(
 		ULONG ulFlags,
-		_Deref_out_ LPFORMPRINTSETUP FAR * lppFormPrintSetup);
+		_Deref_out_ LPFORMPRINTSETUP* lppFormPrintSetup);
 	_Check_return_ STDMETHODIMP GetSaveStream(
-		_Out_ ULONG FAR * pulFlags,
-		_Out_ ULONG FAR * pulFormat,
-		_Deref_out_ LPSTREAM FAR * ppstm);
+		_Out_ ULONG* pulFlags,
+		_Out_ ULONG* pulFormat,
+		_Deref_out_ LPSTREAM* ppstm);
 	_Check_return_ STDMETHODIMP GetViewStatus(
 		_In_ LPULONG lpulStatus);
 

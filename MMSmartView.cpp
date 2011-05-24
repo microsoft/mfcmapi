@@ -74,17 +74,25 @@ void DoSmartView(_In_ MYOPTIONS ProgOpts)
 #endif
 				}
 
-				LPTSTR szString = NULL;
+				LPWSTR szString = NULL;
 				InterpretBinaryAsString(Bin,ulStructType,NULL,NULL,&szString);
 				if (szString)
 				{
 					if (fOut)
 					{
-						_fputts(szString,fOut);
+						// Without this split, the ANSI build writes out UNICODE files
+#ifdef UNICODE
+						fputws(szString,fOut);
+#else
+						LPSTR szStringA = NULL;
+						(void) UnicodeToAnsi(szString,&szStringA);
+						fputs(szStringA,fOut);
+						delete[] szStringA;
+#endif
 					}
 					else
 					{
-						_tprintf(_T("%s\n"),szString);
+						_tprintf(_T("%ws\n"),szString);
 					}
 				}
 				delete[] szString;

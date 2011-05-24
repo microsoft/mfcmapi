@@ -271,6 +271,7 @@ BEGIN
     POPUP "&Actions"
     BEGIN
         MENUITEM "Open Profile",                ID_DISPLAYSELECTEDITEM
+        MENUITEM "Open Profile by Name...",     ID_OPENPROFILEBYNAME
         MENUITEM "Set Default Profile",         ID_SETDEFAULTPROFILE
         MENUITEM "Create Profile",              ID_CREATEPROFILE
         MENUITEM SEPARATOR
@@ -660,7 +661,6 @@ BEGIN
     MENUITEM "Open Entry ID...",            ID_OPENENTRYID
     MENUITEM "Compare Entry IDs...",        ID_COMPAREENTRYIDS
     MENUITEM "Compute Store Hash...",       ID_COMPUTESTOREHASH
-    MENUITEM "Encode ID...",                ID_ENCODEID
     MENUITEM SEPARATOR
     MENUITEM "Advise For Notifications",    ID_NOTIFICATIONSON
     MENUITEM "Unadvise",                    ID_NOTIFICATIONSOFF

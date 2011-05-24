@@ -4,12 +4,14 @@
 #pragma once
 #define RKEY_ROOT _T("SOFTWARE\\Microsoft\\MFCMAPI") // STRING_OK
 
-enum __REGKEYTYPES {
+enum __REGKEYTYPES
+{
 	regDWORD,
 	regSTRING
 };
 
-enum __REGOPTIONTYPE {
+enum __REGOPTIONTYPE
+{
 	regoptCheck,
 	regoptString,
 	regoptStringHex,
@@ -25,12 +27,13 @@ struct __RegKeys
 	ULONG	ulCurDWORD;
 	TCHAR	szDefSTRING[MAX_PATH];
 	TCHAR	szCurSTRING[MAX_PATH];
-	BOOL	bRefresh;
+	bool	bRefresh;
 	UINT	uiOptionsPrompt;
 };
 
 // Registry key Names
-enum REGKEYNAMES {
+enum REGKEYNAMES
+{
 	regkeyDEBUG_TAG,
 	regkeyDEBUG_TO_FILE,
 	regkeyDEBUG_FILE_NAME,
@@ -56,6 +59,7 @@ enum REGKEYNAMES {
 	regkeyUSE_MESSAGERAW,
 	regkeyHEAPENABLETERMINATIONONCORRUPTION,
 	regkeyLOADADDINS,
+	regkeyFORCEOUTLOOKMAPI,
 	regkeyDISPLAY_ABOUT_DIALOG,
 	regkeyPROP_COLUMN_ORDER,
 	NUMRegKeys

@@ -42,9 +42,9 @@ _Check_return_ HRESULT DisplayObject(
 
 	lpHostDlg->OnUpdateSingleMAPIPropListCtrl(lpUnk, NULL);
 
-	LPTSTR szFlags = NULL;
+	LPWSTR szFlags = NULL;
 	InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE, &szFlags);
-	DebugPrint(DBGGeneric,_T("DisplayObject asked to display %p, with ObjectType of 0x%08X and MAPI type of 0x%08X = %s\n"),
+	DebugPrint(DBGGeneric,_T("DisplayObject asked to display %p, with ObjectType of 0x%08X and MAPI type of 0x%08X = %ws\n"),
 		lpUnk,
 		tType,
 		ulObjType,
@@ -153,7 +153,7 @@ _Check_return_ HRESULT DisplayObject(
 	default:
 		InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE, &szFlags);
 		DebugPrint(DBGGeneric,
-			_T("DisplayObject: Object type: 0x%08X = %s not implemented\r\n") // STRING_OK
+			_T("DisplayObject: Object type: 0x%08X = %ws not implemented\r\n") // STRING_OK
 			_T("This is not an error. It just means no specialized viewer has been implemented for this object type."), // STRING_OK
 			ulObjType,
 			szFlags);
@@ -310,7 +310,7 @@ _Check_return_ HRESULT DisplayExchangeTable(
 		(LPGUID)&IID_IExchangeModifyTable,
 		0,
 		MAPI_DEFERRED_ERRORS,
-		(LPUNKNOWN FAR *)&lpExchTbl));
+		(LPUNKNOWN*)&lpExchTbl));
 
 	if (lpExchTbl)
 	{
@@ -395,11 +395,11 @@ void UpdateMenuString(_In_ CWnd *cWnd, UINT uiMenuTag, UINT uidNewString)
 	EC_B(SetMenuItemInfo(
 		hMenu,
 		uiMenuTag,
-		FALSE,
+		false,
 		&MenuInfo));
 } // UpdateMenuString
 
-_Check_return_ BOOL MergeMenu(_In_ CMenu * pMenuDestination, _In_ const CMenu * pMenuAdd)
+_Check_return_ bool MergeMenu(_In_ CMenu * pMenuDestination, _In_ const CMenu * pMenuAdd)
 {
 	HRESULT hRes = S_OK;
 	int iMenuDestItemCount = pMenuDestination->GetMenuItemCount();
@@ -556,9 +556,9 @@ _Check_return_ int GetTextHeight(_In_ HWND hwndEdit)
 	return iHeight;
 } // GetTextHeight
 
-_Check_return_ BOOL bShouldCancel(_In_opt_ CWnd* cWnd, HRESULT hResPrev)
+_Check_return_ bool bShouldCancel(_In_opt_ CWnd* cWnd, HRESULT hResPrev)
 {
-	BOOL bGotError = false;
+	bool bGotError = false;
 
 	if (S_OK != hResPrev)
 	{
@@ -677,7 +677,7 @@ void DisplayMailboxTable(_In_ CParentWnd*	lpParent,
 				case 2:
 					{
 						GUID MyGUID = {0};
-						BOOL bHaveGUID = false;
+						bool bHaveGUID = false;
 
 						LPTSTR pszGUID = NULL;
 						pszGUID = MyData.GetString(2);
@@ -823,7 +823,7 @@ void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
 				case 2:
 					{
 						GUID MyGUID = {0};
-						BOOL bHaveGUID = false;
+						bool bHaveGUID = false;
 
 						LPTSTR pszGUID = NULL;
 						pszGUID = MyData.GetString(3);

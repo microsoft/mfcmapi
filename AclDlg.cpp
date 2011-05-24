@@ -21,7 +21,7 @@ static TCHAR* CLASS = _T("CAclDlg");
 CAclDlg::CAclDlg(_In_ CParentWnd* pParentWnd,
 				 _In_ CMapiObjects* lpMapiObjects,
 				 _In_ LPEXCHANGEMODIFYTABLE lpExchTbl,
-				 BOOL fFreeBusyVisible)
+				 bool fFreeBusyVisible)
 				 : CContentsTableDlg(pParentWnd,
 				 lpMapiObjects,
 				 (fFreeBusyVisible ? IDS_ACLFBTABLE : IDS_ACLTABLE),

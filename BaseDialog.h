@@ -22,7 +22,7 @@ public:
 	STDMETHODIMP_(ULONG) Release();
 
 	void OnUpdateSingleMAPIPropListCtrl(_In_opt_ LPMAPIPROP lpMAPIProp, _In_opt_ SortListData* lpListData);
-	_Check_return_ BOOL HandleKeyDown(UINT nChar, BOOL bShift, BOOL bCtrl, BOOL bMenu);
+	_Check_return_ bool HandleKeyDown(UINT nChar, bool bShift, bool bCtrl, bool bMenu);
 
 	void UpdateTitleBarText(_In_opt_z_ LPCTSTR szMsg);
 	void UpdateStatusBarText(__StatusPaneEnum nPos, _In_z_ LPCTSTR szMsg);
@@ -35,8 +35,8 @@ protected:
 	// Overrides called by child classes
 	virtual void CreateDialogAndMenu(UINT nIDMenuResource);
 	virtual void EnableAddInMenus(_In_ CMenu* pMenu, ULONG ulMenu, _In_ LPMENUITEM lpAddInMenu, UINT uiEnable);
-	_Check_return_ virtual BOOL HandleMenu(WORD wMenuSelect);
-	_Check_return_ virtual BOOL HandlePaste();
+	_Check_return_ virtual bool HandleMenu(WORD wMenuSelect);
+	_Check_return_ virtual bool HandlePaste();
 	virtual void OnCancel();
 	_Check_return_ virtual BOOL OnInitDialog();
 	virtual void OnInitMenu(_In_opt_ CMenu* pMenu);
@@ -45,7 +45,7 @@ protected:
 
 	ULONG						m_ulAddInContext;
 	ULONG						m_ulAddInMenuItems;
-	BOOL						m_bIsAB;
+	bool						m_bIsAB;
 	CSingleMAPIPropListCtrl*	m_lpPropDisplay;
 	CFakeSplitter*				m_lpFakeSplitter;
 	CString						m_szTitle;
@@ -54,7 +54,7 @@ protected:
 	CParentWnd*					m_lpParent;
 
 private:
-	_Check_return_ virtual BOOL HandleAddInMenu(WORD wMenuSelect);
+	_Check_return_ virtual bool HandleAddInMenu(WORD wMenuSelect);
 	virtual void HandleCopy();
 	virtual void OnDeleteSelectedItem();
 	virtual void OnEscHit();
@@ -72,7 +72,6 @@ private:
 	void OnCompareEntryIDs();
 	void OnComputeStoreHash();
 	void OnDispatchNotifications();
-	void OnEncodeID();
 	void OnHelp();
 	void OnHexEditor();
 	void OnNotificationsOff();
@@ -90,7 +89,7 @@ private:
 	LONG			m_cRef;
 	HICON			m_hIcon;
 	CStatusBarCtrl	m_StatusBar;
-	BOOL			m_bDisplayingMenuText;
+	bool			m_bDisplayingMenuText;
 	CString			m_szMenuDisplacedText;
 	CAdviseSink*	m_lpBaseAdviseSink;
 	ULONG_PTR		m_ulBaseAdviseConnection;

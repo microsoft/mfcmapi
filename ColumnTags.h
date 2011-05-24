@@ -10,7 +10,8 @@
 // properties used by ContentsTableListCtrl objects.
 
 // Default properties and columns
-enum {
+enum
+{
 	deftagPR_INSTANCE_KEY,
 	deftagPR_ENTRYID,
 	deftagPR_ROW_TYPE,
@@ -23,7 +24,8 @@ enum {
 };
 
 // These tags represent the default information we would like to pick up
-static SizedSPropTagArray(DEFTAGS_NUM_COLS,sptDEFCols) = {
+static const SizedSPropTagArray(DEFTAGS_NUM_COLS,sptDEFCols) =
+{
 	DEFTAGS_NUM_COLS,
 	PR_INSTANCE_KEY,
 	PR_ENTRYID,
@@ -44,7 +46,8 @@ static TagNames DEFColumns[] = {
 #define NUMDEFCOLUMNS _countof(DEFColumns)
 
 // Message store properties and columns
-enum {
+enum
+{
 	storetagPR_INSTANCE_KEY,
 	storetagPR_DISPLAY_NAME,
 	storetagPR_ENTRY_ID,
@@ -61,7 +64,8 @@ enum {
 };
 
 // These tags represent the message store information we would like to pick up
-static SizedSPropTagArray(STORETAGS_NUM_COLS,sptSTORECols) = {
+static const SizedSPropTagArray(STORETAGS_NUM_COLS,sptSTORECols) =
+{
 	STORETAGS_NUM_COLS,
 	PR_INSTANCE_KEY,
 	PR_DISPLAY_NAME,
@@ -89,7 +93,8 @@ static TagNames STOREColumns[] = {
 #define NUMSTORECOLUMNS _countof(STOREColumns)
 
 // Message properties and columns
-enum {
+enum
+{
 	msgtagPR_INSTANCE_KEY,
 	msgtagPR_ENTRYID,
 	msgtagPR_LONGTERM_ENTRYID_FROM_TABLE,
@@ -111,7 +116,8 @@ enum {
 };
 
 // These tags represent the message information we would like to pick up
-static SizedSPropTagArray(MSGTAGS_NUM_COLS,sptMSGCols) = {
+static const SizedSPropTagArray(MSGTAGS_NUM_COLS,sptMSGCols) =
+{
 	MSGTAGS_NUM_COLS,
 	PR_INSTANCE_KEY,
 	PR_ENTRYID,
@@ -154,7 +160,8 @@ static TagNames MSGColumns[] = {
 
 
 // Address Book entry properties and columns
-enum {
+enum
+{
 	abtagPR_INSTANCE_KEY,
 	abtagPR_ENTRYID,
 	abtagPR_DISPLAY_NAME,
@@ -166,7 +173,8 @@ enum {
 };
 
 // These tags represent the address book information we would like to pick up
-static SizedSPropTagArray(ABTAGS_NUM_COLS,sptABCols) = {
+static const SizedSPropTagArray(ABTAGS_NUM_COLS,sptABCols) =
+{
 	ABTAGS_NUM_COLS,
 	PR_INSTANCE_KEY,
 	PR_ENTRYID,
@@ -189,7 +197,8 @@ static TagNames ABColumns[] = {
 
 
 // Attachment properties and columns
-enum {
+enum
+{
 	attachtagPR_INSTANCE_KEY,
 	attachtagPR_ATTACH_NUM,
 	attachtagPR_ATTACH_METHOD,
@@ -199,7 +208,8 @@ enum {
 };
 
 // These tags represent the attachment information we would like to pick up
-static SizedSPropTagArray(ATTACHTAGS_NUM_COLS,sptATTACHCols) = {
+static const SizedSPropTagArray(ATTACHTAGS_NUM_COLS,sptATTACHCols) =
+{
 	ATTACHTAGS_NUM_COLS,
 	PR_INSTANCE_KEY,
 	PR_ATTACH_NUM,
@@ -218,7 +228,8 @@ static TagNames ATTACHColumns[] = {
 
 
 // Mailbox properties and columns
-enum {
+enum
+{
 	mbxtagPR_INSTANCE_KEY,
 	mbxtagPR_DISPLAY_NAME,
 	mbxtagPR_EMAIL_ADDRESS,
@@ -244,7 +255,8 @@ enum {
 };
 
 // These tags represent the mailbox information we would like to pick up
-static SizedSPropTagArray(MBXTAGS_NUM_COLS,sptMBXCols) = {
+static const SizedSPropTagArray(MBXTAGS_NUM_COLS,sptMBXCols) =
+{
 	MBXTAGS_NUM_COLS,
 	PR_INSTANCE_KEY,
 	PR_DISPLAY_NAME,
@@ -296,7 +308,8 @@ static TagNames MBXColumns[] = {
 
 
 // Public Folder properties and columns
-enum {
+enum
+{
 	pftagPR_INSTANCE_KEY,
 	pftagPR_DISPLAY_NAME,
 	pftagPR_ASSOC_CONTENT_COUNT,
@@ -334,7 +347,8 @@ enum {
 };
 
 // These tags represent the PF information we would like to pick up
-static SizedSPropTagArray(PFTAGS_NUM_COLS,sptPFCols) = {
+static const SizedSPropTagArray(PFTAGS_NUM_COLS,sptPFCols) =
+{
 	PFTAGS_NUM_COLS,
 	PR_INSTANCE_KEY,
 	PR_DISPLAY_NAME,
@@ -381,7 +395,8 @@ static TagNames PFColumns[] = {
 
 
 // Status table properties and columns
-enum {
+enum
+{
 	statustagPR_INSTANCE_KEY,
 	statustagPR_ENTRYID,
 	statustagPR_DISPLAY_NAME,
@@ -398,7 +413,8 @@ enum {
 };
 
 // These tags represent the status information we would like to pick up
-static SizedSPropTagArray(STATUSTAGS_NUM_COLS,sptSTATUSCols) = {
+static const SizedSPropTagArray(STATUSTAGS_NUM_COLS,sptSTATUSCols) =
+{
 	STATUSTAGS_NUM_COLS,
 	PR_INSTANCE_KEY,
 	PR_ENTRYID,
@@ -429,7 +445,8 @@ static TagNames STATUSColumns[] = {
 
 
 // Receive table properties and columns
-enum {
+enum
+{
 	receivetagPR_INSTANCE_KEY,
 	receivetagPR_ENTRYID,
 	receivetagPR_MESSAGE_CLASS,
@@ -438,7 +455,8 @@ enum {
 };
 
 // These tags represent the receive table information we would like to pick up
-static SizedSPropTagArray(RECEIVETAGS_NUM_COLS,sptRECEIVECols) = {
+static const SizedSPropTagArray(RECEIVETAGS_NUM_COLS,sptRECEIVECols) =
+{
 	RECEIVETAGS_NUM_COLS,
 	PR_INSTANCE_KEY,
 	PR_ENTRYID,
@@ -454,7 +472,8 @@ static TagNames RECEIVEColumns[] = {
 
 
 // Hierarchy table properties and columns
-enum {
+enum
+{
 	hiertagPR_DISPLAY_NAME,
 	hiertagPR_INSTANCE_KEY,
 	hiertagPR_DEPTH,
@@ -463,7 +482,8 @@ enum {
 };
 
 // These tags represent the hierarchy information we would like to pick up
-static SizedSPropTagArray(HIERARCHYTAGS_NUM_COLS,sptHIERARCHYCols) = {
+static const SizedSPropTagArray(HIERARCHYTAGS_NUM_COLS,sptHIERARCHYCols) =
+{
 	HIERARCHYTAGS_NUM_COLS,
 	PR_DISPLAY_NAME,
 	PR_INSTANCE_KEY,
@@ -480,14 +500,16 @@ static TagNames HIERARCHYColumns[] = {
 
 
 // Profile list properties and columns
-enum {
+enum
+{
 	proflisttagPR_INSTANCE_KEY,
 	proflisttagPR_DISPLAY_NAME,
 	PROFLISTTAGS_NUM_COLS
 };
 
 // These tags represent the profile information we would like to pick up
-static SizedSPropTagArray(PROFLISTTAGS_NUM_COLS,sptPROFLISTCols) = {
+static const SizedSPropTagArray(PROFLISTTAGS_NUM_COLS,sptPROFLISTCols) =
+{
 	PROFLISTTAGS_NUM_COLS,
 	PR_INSTANCE_KEY,
 	PR_DISPLAY_NAME_A,
@@ -501,14 +523,16 @@ static TagNames PROFLISTColumns[] = {
 
 
 // Service list properties and columns
-enum {
+enum
+{
 	servicetagPR_INSTANCE_KEY,
 	servicetagPR_DISPLAY_NAME,
 	SERVICETAGS_NUM_COLS
 };
 
 // These tags represent the service information we would like to pick up
-static SizedSPropTagArray(SERVICETAGS_NUM_COLS,sptSERVICECols) = {
+static const SizedSPropTagArray(SERVICETAGS_NUM_COLS,sptSERVICECols) =
+{
 	SERVICETAGS_NUM_COLS,
 	PR_INSTANCE_KEY,
 	PR_DISPLAY_NAME,
@@ -522,14 +546,16 @@ static TagNames SERVICEColumns[] = {
 
 
 // Provider list properties and columns
-enum {
+enum
+{
 	providertagPR_INSTANCE_KEY,
 	providertagPR_DISPLAY_NAME,
 	PROVIDERTAGS_NUM_COLS
 };
 
 // These tags represent the provider information we would like to pick up
-static SizedSPropTagArray(PROVIDERTAGS_NUM_COLS,sptPROVIDERCols) = {
+static const SizedSPropTagArray(PROVIDERTAGS_NUM_COLS,sptPROVIDERCols) =
+{
 	PROVIDERTAGS_NUM_COLS,
 	PR_INSTANCE_KEY,
 	PR_DISPLAY_NAME,
@@ -543,14 +569,16 @@ static TagNames PROVIDERColumns[] = {
 
 
 // Rules properties and columns
-enum {
+enum
+{
 	ruletagPR_INSTANCE_KEY,
 	ruletagPR_RULE_NAME,
 	RULETAGS_NUM_COLS
 };
 
 // These tags represent the rules information we would like to pick up
-static SizedSPropTagArray(RULETAGS_NUM_COLS,sptRULECols) = {
+static const SizedSPropTagArray(RULETAGS_NUM_COLS,sptRULECols) =
+{
 	RULETAGS_NUM_COLS,
 	PR_INSTANCE_KEY,
 	PR_RULE_NAME
@@ -564,14 +592,16 @@ static TagNames RULEColumns[] = {
 
 
 // ACL properties and columns
-enum {
+enum
+{
 	acltagPR_MEMBER_ID,
 	acltagPR_MEMBER_RIGHTS,
 	ACLTAGS_NUM_COLS
 };
 
 // These tags represent the ACL information we would like to pick up
-static SizedSPropTagArray(ACLTAGS_NUM_COLS,sptACLCols) = {
+static const SizedSPropTagArray(ACLTAGS_NUM_COLS,sptACLCols) =
+{
 	ACLTAGS_NUM_COLS,
 	PR_MEMBER_ID,
 	PR_MEMBER_RIGHTS
@@ -585,7 +615,8 @@ static TagNames ACLColumns[] = {
 
 
 // These structures define the columns used in SingleMAPIPropListCtrl
-enum {
+enum
+{
 	pcPROPEXACTNAMES,
 	pcPROPPARTIALNAMES,
 	pcPROPTAG,

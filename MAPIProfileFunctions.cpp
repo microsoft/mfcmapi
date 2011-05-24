@@ -11,14 +11,14 @@
 // This declaration is missing from the MAPI headers
 STDAPI STDAPICALLTYPE LaunchWizard(HWND hParentWnd,
 									ULONG ulFlags,
-									LPCSTR FAR * lppszServiceNameToAdd,
+									LPCSTR* lppszServiceNameToAdd,
 									ULONG cchBufferMax,
 									_Out_cap_(cchBufferMax) LPSTR lpszNewProfileName);
 
 void LaunchProfileWizard(
 						 _In_ HWND hParentWnd,
 						 ULONG ulFlags,
-						 _In_z_ LPCSTR FAR * lppszServiceNameToAdd,
+						 _In_z_ LPCSTR* lppszServiceNameToAdd,
 						 ULONG cchBufferMax,
 						 _Out_cap_(cchBufferMax) LPSTR lpszNewProfileName)
 {
@@ -111,13 +111,13 @@ void GetMAPISVCPath(_Inout_z_count_(cchMAPIDir) LPTSTR szMAPIDir, ULONG cchMAPID
 	}
 } // GetMAPISVCPath
 
-typedef struct
+struct SERVICESINIREC
 {
 	LPTSTR lpszSection;
 	LPTSTR lpszKey;
 	ULONG ulKey;
 	LPTSTR lpszValue;
-} SERVICESINIREC;
+};
 
 static SERVICESINIREC aEMSServicesIni[] =
 {
@@ -408,18 +408,17 @@ void RemoveServicesFromMapiSvcInf()
 #define MARKER_STRING "MFCMAPI Existing Provider Marker" // STRING_OK
 // Walk through providers and add/remove our tag
 // bAddMark of true will add tag, bAddMark of false will remove it
-_Check_return_ HRESULT HrMarkExistingProviders(_In_ LPSERVICEADMIN lpServiceAdmin, BOOL bAddMark)
+_Check_return_ HRESULT HrMarkExistingProviders(_In_ LPSERVICEADMIN lpServiceAdmin, bool bAddMark)
 {
 	HRESULT			hRes = S_OK;
 	LPMAPITABLE		lpProviderTable = NULL;
 
 	if (!lpServiceAdmin) return MAPI_E_INVALID_PARAMETER;
 
-	SizedSPropTagArray(1, pTagUID) =
+	static const SizedSPropTagArray(1, pTagUID) =
 	{
 		1,
-		{PR_SERVICE_UID
-		}
+		PR_SERVICE_UID
 	};
 
 	EC_H(lpServiceAdmin->GetMsgServiceTable(0, &lpProviderTable));
@@ -493,11 +492,10 @@ _Check_return_ HRESULT HrFindUnmarkedProvider(_In_ LPSERVICEADMIN lpServiceAdmin
 
 	*lpRowSet = NULL;
 
-	SizedSPropTagArray(1, pTagUID) =
+	static const SizedSPropTagArray(1, pTagUID) =
 	{
 		1,
-		{PR_SERVICE_UID
-		}
+		PR_SERVICE_UID
 	};
 
 	EC_H(lpServiceAdmin->GetMsgServiceTable(0, &lpProviderTable));
@@ -698,10 +696,10 @@ _Check_return_ HRESULT HrAddExchangeToProfile(
 
 _Check_return_ HRESULT HrAddPSTToProfile(
 	_In_ ULONG_PTR ulUIParam, // hwnd for CreateMsgService
-	BOOL bUnicodePST,
+	bool bUnicodePST,
 	_In_z_ LPCTSTR lpszPSTPath, // PST name
 	_In_z_ LPCSTR lpszProfileName, // profile name
-	BOOL bPasswordSet, // whether or not to include a password
+	bool bPasswordSet, // whether or not to include a password
 	_In_z_ LPCSTR lpszPassword) // password to include
 {
 	HRESULT			hRes = S_OK;
@@ -827,12 +825,10 @@ _Check_return_ HRESULT HrMAPIProfileExists(
 	LPSPropValue lpProp = NULL;
 	ULONG i = 0;
 
-	SizedSPropTagArray(1, rgPropTag) =
+	static const SizedSPropTagArray(1, rgPropTag) =
 	{
 		1,
-		{
-			PR_DISPLAY_NAME_A
-		}
+		PR_DISPLAY_NAME_A
 	};
 
 	DebugPrint(DBGGeneric,_T("HrMAPIProfileExists()\n"));
@@ -988,8 +984,8 @@ _Check_return_ HRESULT OpenProfileSection(_In_ LPPROVIDERADMIN lpProviderAdmin, 
 _Check_return_ HRESULT GetProfileServiceVersion(_In_z_ LPCSTR lpszProfileName,
 												_Out_ ULONG* lpulServerVersion,
 												_Out_ EXCHANGE_STORE_VERSION_NUM* lpStoreVersion,
-												_Out_ BOOL* lpbFoundServerVersion,
-												_Out_ BOOL* lpbFoundServerFullVersion)
+												_Out_ bool* lpbFoundServerVersion,
+												_Out_ bool* lpbFoundServerFullVersion)
 {
 	if (!lpszProfileName
 		|| !lpulServerVersion

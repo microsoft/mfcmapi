@@ -16,7 +16,7 @@ CTagArrayEditor::CTagArrayEditor(
 								 UINT uidTitle,
 								 UINT uidPrompt,
 								 _In_opt_ LPSPropTagArray lpTagArray,
-								 BOOL bIsAB,
+								 bool bIsAB,
 								 _In_ LPMAPIPROP lpMAPIProp):
 CEditor(pParentWnd,uidTitle,uidPrompt,0,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL)
 {
@@ -56,7 +56,7 @@ void CTagArrayEditor::OnOK()
 	CDialog::OnOK(); // don't need to call CEditor::OnOK
 } // CTagArrayEditor::OnOK
 
-_Check_return_ BOOL CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData)
+_Check_return_ bool CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData)
 {
 	if (!IsValidList(ulListNum)) return false;
 	if (!lpData) return false;

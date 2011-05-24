@@ -3,8 +3,6 @@
 
 #pragma once
 
-extern HMODULE	hModMSMAPI;
-extern HMODULE	hModMAPI;
 extern LPEDITSECURITY				pfnEditSecurity;
 extern LPSTGCREATESTORAGEEX			pfnStgCreateStorageEx;
 extern LPOPENTHEMEDATA				pfnOpenThemeData;
@@ -20,14 +18,19 @@ void LoadRichEd();
 void ImportProcs();
 
 void GetMAPIPath(_In_opt_z_ LPCTSTR szClient, _Inout_z_count_(cchMAPIPath) LPTSTR szMAPIPath, ULONG cchMAPIPath);
-void AutoLoadMAPI();
-void UnloadMAPI();
-void LoadMAPIFuncs(HMODULE hMod);
+
+// Exported from StubUtils.cpp
+HMODULE GetMAPIHandle();
+void UnLoadPrivateMAPI();
+void ForceOutlookMAPI(bool fForce);
+void SetMAPIHandle(HMODULE hinstMAPI);
+HMODULE GetPrivateMAPI();
+bool GetComponentPath(LPCSTR szComponent, LPSTR szQualifier, LPSTR szDllPath, DWORD cchBufferSize, bool fInstall);
 
 _Check_return_ STDAPI HrCopyRestriction(
 						 _In_ LPSRestriction lpResSrc, // source restriction ptr
 						 _In_opt_ LPVOID lpObject, // ptr to existing MAPI buffer
-						 _In_ LPSRestriction FAR * lppResDest // dest restriction buffer ptr
+						 _In_ LPSRestriction* lppResDest // dest restriction buffer ptr
 						 );
 
 _Check_return_ HRESULT HrCopyRestrictionArray(
@@ -42,7 +45,7 @@ _Check_return_ STDMETHODIMP MyOpenStreamOnFile(_In_ LPALLOCATEBUFFER lpAllocateB
 								ULONG ulFlags,
 								_In_z_ LPCWSTR lpszFileName,
 								_In_opt_z_ LPCWSTR /*lpszPrefix*/,
-								_Out_ LPSTREAM FAR * lppStream);
+								_Out_ LPSTREAM* lppStream);
 
 void WINAPI MyHeapSetInformation(_In_opt_ HANDLE HeapHandle,
 								 _In_ HEAP_INFORMATION_CLASS HeapInformationClass,

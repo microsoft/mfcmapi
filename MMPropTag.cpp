@@ -210,7 +210,7 @@ void PrintType(_In_ ULONG ulPropTag)
 
 	// Do a linear search through PropTypeArray - ulPropTypeArray will be small
 	ULONG ulMatch = 0;
-	BOOL bFound = false;
+	bool bFound = false;
 
 	for (ulMatch = 0 ; ulMatch < ulPropTypeArray ; ulMatch++)
 	{
@@ -326,7 +326,7 @@ void PrintTagFromName(_In_z_ LPCWSTR lpszPropName)
 	if (!lpszPropName) return;
 
 	ULONG ulCur = 0;
-	BOOL bMatchFound = false;
+	bool bMatchFound = false;
 
 	for (ulCur = 0 ; ulCur < ulPropTagArray ; ulCur++)
 	{
@@ -500,7 +500,7 @@ void PrintDispIDFromName(_In_z_ LPCWSTR lpszDispIDName)
 	if (!lpszDispIDName) return;
 
 	ULONG ulCur = 0;
-	BOOL bMatchFound = false;
+	bool bMatchFound = false;
 
 	for (ulCur = 0 ; ulCur < ulNameIDArray ; ulCur++)
 	{
@@ -597,20 +597,13 @@ void DoPropTags(_In_ MYOPTIONS ProgOpts)
 
 	if (ProgOpts.bDoPartialSearch)
 	{
-		if (ProgOpts.bDoType && ulNoMatch == ProgOpts.ulTypeNum)
+		if (ProgOpts.bDoDispid)
 		{
-			DisplayUsage();
+			PrintDispIDFromPartialName(lpszPropName,ProgOpts.ulTypeNum);
 		}
 		else
 		{
-			if (ProgOpts.bDoDispid)
-			{
-				PrintDispIDFromPartialName(lpszPropName,ProgOpts.ulTypeNum);
-			}
-			else
-			{
-				PrintTagFromPartialName(lpszPropName,ProgOpts.ulTypeNum);
-			}
+			PrintTagFromPartialName(lpszPropName,ProgOpts.ulTypeNum);
 		}
 	}
 	// If we weren't asked about a property, maybe we were asked about types

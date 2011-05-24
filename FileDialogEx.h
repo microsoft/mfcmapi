@@ -8,12 +8,14 @@ struct OPENFILENAMEEXW : public OPENFILENAMEW {};
 // Windows 2000 version of OPENFILENAME.
 // The new version has three extra members.
 // This is copied from commdlg.h
-struct OPENFILENAMEEXA : public OPENFILENAMEA {
+struct OPENFILENAMEEXA : public OPENFILENAMEA
+{
 	void*         pvReserved;
 	DWORD         dwReserved;
 	DWORD         FlagsEx;
 };
-struct OPENFILENAMEEXW : public OPENFILENAMEW {
+struct OPENFILENAMEEXW : public OPENFILENAMEW
+{
 	void*         pvReserved;
 	DWORD         dwReserved;
 	DWORD         FlagsEx;
@@ -26,7 +28,7 @@ public:
 	CFileDialogExA();
 	~CFileDialogExA();
 
-	_Check_return_ INT_PTR DisplayDialog(BOOL bOpenFileDialog, // TRUE for open, FALSE for FileSaveAs
+	_Check_return_ INT_PTR DisplayDialog(bool bOpenFileDialog, // true for open, false for FileSaveAs
 		_In_opt_z_ LPCSTR lpszDefExt = NULL,
 		_In_opt_z_ LPCSTR lpszFileName = NULL,
 		DWORD dwFlags = OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
@@ -40,7 +42,7 @@ public:
 	_Check_return_ LPSTR GetNextFileName();
 
 private:
-	BOOL m_bOpenFileDialog;
+	bool m_bOpenFileDialog;
 	CHAR m_szFileName[_MAX_PATH]; // contains full path name after return
 
 	OPENFILENAMEEXA	m_ofn; // Windows 2000 version of OPENFILENAME
@@ -55,7 +57,7 @@ public:
 	CFileDialogExW();
 	~CFileDialogExW();
 
-	_Check_return_ INT_PTR DisplayDialog(BOOL bOpenFileDialog, // TRUE for open, FALSE for FileSaveAs
+	_Check_return_ INT_PTR DisplayDialog(bool bOpenFileDialog, // true for open, false for FileSaveAs
 		_In_opt_z_ LPCWSTR lpszDefExt = NULL,
 		_In_opt_z_ LPCWSTR lpszFileName = NULL,
 		DWORD dwFlags = OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
@@ -69,7 +71,7 @@ public:
 	_Check_return_ LPWSTR GetNextFileName();
 
 private:
-	BOOL m_bOpenFileDialog;
+	bool m_bOpenFileDialog;
 	WCHAR m_szFileName[_MAX_PATH]; // contains full path name after return
 
 	OPENFILENAMEEXW	m_ofn; // Windows 2000 version of OPENFILENAME

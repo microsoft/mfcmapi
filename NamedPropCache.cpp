@@ -8,7 +8,7 @@
 ULONG g_ulNamedPropCacheSize = 0;
 ULONG g_ulNamedPropCacheNumEntries = 0;
 LPNAMEDPROPCACHEENTRY g_lpNamedPropCache = NULL;
-BOOL g_bNamedPropCacheInitialized = false;
+bool g_bNamedPropCacheInitialized = false;
 
 // Initial size of the named prop cache
 #define NAMED_PROP_CACHE_ENTRY_COUNT 32
@@ -36,7 +36,7 @@ void UninitializeNamedPropCache()
 	delete[] g_lpNamedPropCache;
 } // UninitializeNamedPropCache
 
-_Check_return_ BOOL InitializeNamedPropCache()
+_Check_return_ bool InitializeNamedPropCache()
 {
 	// Already initialized
 	if (g_bNamedPropCacheInitialized) return true;

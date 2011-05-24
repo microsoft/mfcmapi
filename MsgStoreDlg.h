@@ -26,7 +26,7 @@ private:
 		_In_ LPMAPIPROP lpMAPIProp,
 		_In_ LPMAPICONTAINER lpContainer);
 	void HandleCopy();
-	_Check_return_ BOOL HandlePaste();
+	_Check_return_ bool HandlePaste();
 	void OnInitMenu(_In_ CMenu* pMenu);
 
 	// Menu items

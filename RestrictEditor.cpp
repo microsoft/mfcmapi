@@ -485,7 +485,7 @@ public:
 	_Check_return_ ULONG			GetResCount();
 
 private:
-	_Check_return_ BOOL DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData);
+	_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData);
 	_Check_return_ BOOL OnInitDialog();
 	void InitListFromRestriction(ULONG ulListNum, _In_ LPSRestriction lpRes);
 	void OnOK();
@@ -585,7 +585,7 @@ void CResAndOrEditor::InitListFromRestriction(ULONG ulListNum, _In_ LPSRestricti
 	ResizeList(ulListNum,false);
 } // CResAndOrEditor::InitListFromRestriction
 
-_Check_return_ BOOL CResAndOrEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData)
+_Check_return_ bool CResAndOrEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData)
 {
 	if (!lpData) return false;
 	if (!IsValidList(ulListNum)) return false;
@@ -673,7 +673,7 @@ public:
 
 private:
 	void           OnEditAction1();
-	_Check_return_ BOOL           DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData);
+	_Check_return_ bool           DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData);
 	_Check_return_ BOOL           OnInitDialog();
 	void           InitListFromPropArray(ULONG ulListNum, ULONG cProps, _In_count_(cProps) LPSPropValue lpProps);
 	_Check_return_ LPSRestriction GetSourceRes();
@@ -795,7 +795,7 @@ void CResCommentEditor::OnEditAction1()
 	}
 } // CResCommentEditor::OnEditAction1
 
-_Check_return_ BOOL CResCommentEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData)
+_Check_return_ bool CResCommentEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData)
 {
 	if (!lpData) return false;
 	if (!IsValidList(ulListNum)) return false;
@@ -1439,7 +1439,7 @@ void CCriteriaEditor::OnEditAction1()
 	}
 } // CCriteriaEditor::OnEditAction1
 
-_Check_return_ BOOL CCriteriaEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData)
+_Check_return_ bool CCriteriaEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData)
 {
 	if (!lpData) return false;
 	if (!IsValidList(ulListNum)) return false;

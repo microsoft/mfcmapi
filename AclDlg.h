@@ -10,7 +10,7 @@ public:
 		_In_ CParentWnd* pParentWnd,
 		_In_ CMapiObjects* lpMapiObjects,
 		_In_ LPEXCHANGEMODIFYTABLE lpExchTbl,
-		BOOL bFreeBusyVisible);
+		bool bFreeBusyVisible);
 	virtual ~CAclDlg();
 
 private:

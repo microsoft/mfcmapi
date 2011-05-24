@@ -12,7 +12,7 @@ public:
 		UINT uidTitle,
 		UINT uidPrompt,
 		ULONG ulPropTag,
-		BOOL bIncludeABProps,
+		bool bIncludeABProps,
 		_In_ LPMAPIPROP lpMAPIProp,
 		_In_ CWnd* pParentWnd);
 	virtual ~CPropertyTagEditor();
@@ -26,10 +26,10 @@ private:
 	_Check_return_ BOOL  OnInitDialog();
 	void  PopulateFields(ULONG ulSkipField);
 	_Check_return_ ULONG GetSelectedPropType();
-	void  LookupNamedProp(ULONG ulSkipField, BOOL bCreate);
+	void  LookupNamedProp(ULONG ulSkipField, bool bCreate);
 
 	ULONG		m_ulPropTag;
-	BOOL		m_bIncludeABProps;
+	bool		m_bIncludeABProps;
 	LPMAPIPROP	m_lpMAPIProp;
 };
 
@@ -37,7 +37,7 @@ class CPropertySelector : public CEditor
 {
 public:
 	CPropertySelector(
-		BOOL bIncludeABProps,
+		bool bIncludeABProps,
 		_In_ LPMAPIPROP lpMAPIProp,
 		_In_ CWnd* pParentWnd);
 	virtual ~CPropertySelector();
@@ -46,10 +46,10 @@ public:
 
 private:
 	_Check_return_ BOOL OnInitDialog();
-	_Check_return_ BOOL DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData);
+	_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData);
 	void OnOK();
 
 	ULONG		m_ulPropTag;
-	BOOL		m_bIncludeABProps;
+	bool		m_bIncludeABProps;
 	LPMAPIPROP	m_lpMAPIProp;
 };

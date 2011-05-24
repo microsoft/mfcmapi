@@ -26,7 +26,7 @@ CPropertyTagEditor::CPropertyTagEditor(
 									   UINT uidTitle,
 									   UINT uidPrompt,
 									   ULONG ulPropTag,
-									   BOOL bIncludeABProps,
+									   bool bIncludeABProps,
 									   _In_ LPMAPIPROP lpMAPIProp,
 									   _In_ CWnd* pParentWnd):
 CEditor(pParentWnd,
@@ -131,7 +131,7 @@ void CPropertyTagEditor::OnEditAction2()
 	PopulateFields(NOSKIPFIELD);
 } // CPropertyTagEditor::OnEditAction2
 
-void CPropertyTagEditor::LookupNamedProp(ULONG ulSkipField, BOOL bCreate)
+void CPropertyTagEditor::LookupNamedProp(ULONG ulSkipField, bool bCreate)
 {
 	HRESULT hRes = S_OK;
 
@@ -437,7 +437,7 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField)
 //////////////////////////////////////////////////////////////////////////////////////
 
 CPropertySelector::CPropertySelector(
-									 BOOL bIncludeABProps,
+									 bool bIncludeABProps,
 									 _In_ LPMAPIPROP lpMAPIProp,
 									 _In_ CWnd* pParentWnd):
 CEditor(pParentWnd,IDS_PROPSELECTOR,IDS_PROPSELECTORPROMPT,0,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL)
@@ -520,7 +520,7 @@ void CPropertySelector::OnOK()
 
 // We're not actually editing the list here - just overriding this to allow double-click
 // So it's OK to return false
-_Check_return_ BOOL CPropertySelector::DoListEdit(ULONG /*ulListNum*/, int /*iItem*/, SortListData* /*lpData*/)
+_Check_return_ bool CPropertySelector::DoListEdit(ULONG /*ulListNum*/, int /*iItem*/, SortListData* /*lpData*/)
 {
 	OnOK();
 	return false;

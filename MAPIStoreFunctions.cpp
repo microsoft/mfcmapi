@@ -490,8 +490,14 @@ _Check_return_ HRESULT OpenDefaultMessageStore(
 	static SRestriction	sres;
 	SPropValue			spv;
 
-	enum {EID,NUM_COLS};
-	static SizedSPropTagArray(NUM_COLS,sptEIDCol) = {NUM_COLS,
+	enum
+	{
+		EID,
+		NUM_COLS
+	};
+	static const SizedSPropTagArray(NUM_COLS,sptEIDCol) =
+	{
+		NUM_COLS,
 		PR_ENTRYID,
 	};
 	if (!lpMAPISession) return MAPI_E_INVALID_PARAMETER;
@@ -505,7 +511,7 @@ _Check_return_ HRESULT OpenDefaultMessageStore(
 	sres.res.resProperty.lpProp = &spv; // prop tag to compare against
 
 	spv.ulPropTag = PR_DEFAULT_STORE; // tag type
-	spv.Value.b	= TRUE; // tag value
+	spv.Value.b	= true; // tag value
 
 	EC_H(HrQueryAllRows(
 		pStoresTbl,						// table to query
@@ -709,8 +715,15 @@ _Check_return_ HRESULT OpenMessageStoreGUID(_In_ LPMAPISESSION lpMAPISession,
 	ULONG		ulRowNum;
 	HRESULT		hRes = S_OK;
 
-	enum {EID,STORETYPE,NUM_COLS};
-	static SizedSPropTagArray(NUM_COLS,sptCols) = {NUM_COLS,
+	enum
+	{
+		EID,
+		STORETYPE,
+		NUM_COLS
+	};
+	static const SizedSPropTagArray(NUM_COLS,sptCols) =
+	{
+		NUM_COLS,
 		PR_ENTRYID,
 		PR_MDB_PROVIDER
 	};
@@ -842,7 +855,7 @@ _Check_return_ HRESULT OpenStoreFromMAPIProp(_In_ LPMAPISESSION lpMAPISession, _
 	return hRes;
 } // OpenStoreFromMAPIProp
 
-_Check_return_ BOOL StoreSupportsManageStore(_In_ LPMDB lpMDB)
+_Check_return_ bool StoreSupportsManageStore(_In_ LPMDB lpMDB)
 {
 	HRESULT					hRes = S_OK;
 	LPEXCHANGEMANAGESTORE	lpIManageStore = NULL;

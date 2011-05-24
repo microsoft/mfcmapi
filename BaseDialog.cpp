@@ -148,7 +148,7 @@ _Check_return_ BOOL CBaseDialog::OnInitDialog()
 
 	EC_B(m_StatusBar.SetParts(STATUSBARNUMPANES,StatusWidth));
 
-	SetIcon(m_hIcon, FALSE); // Set small icon - large icon isn't used
+	SetIcon(m_hIcon, false); // Set small icon - large icon isn't used
 
 	m_lpFakeSplitter = new CFakeSplitter(this);
 
@@ -200,7 +200,7 @@ void CBaseDialog::CreateDialogAndMenu(UINT nIDMenuResource)
 	// We add a different file menu if the custom menu already has ID_DISPLAYSELECTEDITEM on it
 	HMENU hMenu = ::GetMenu(this->m_hWnd);
 
-	BOOL bOpenExists  = FALSE;
+	bool bOpenExists  = false;
 	if (hMenu)
 	{
 		bOpenExists = (GetMenuState(
@@ -224,7 +224,7 @@ void CBaseDialog::CreateDialogAndMenu(UINT nIDMenuResource)
 	MenuToAdd.Detach();
 } // CBaseDialog::CreateDialogAndMenu
 
-_Check_return_ BOOL CBaseDialog::HandleMenu(WORD wMenuSelect)
+_Check_return_ bool CBaseDialog::HandleMenu(WORD wMenuSelect)
 {
 	DebugPrint(DBGMenu,_T("CBaseDialog::HandleMenu wMenuSelect = 0x%X = %d\n"),wMenuSelect,wMenuSelect);
 	switch (wMenuSelect)
@@ -234,7 +234,6 @@ _Check_return_ BOOL CBaseDialog::HandleMenu(WORD wMenuSelect)
 	case ID_COMPAREENTRYIDS: OnCompareEntryIDs(); return true;
 	case ID_OPENENTRYID: OnOpenEntryID(NULL); return true;
 	case ID_COMPUTESTOREHASH: OnComputeStoreHash(); return true;
-	case ID_ENCODEID: OnEncodeID(); return true;
 	case ID_COPY: HandleCopy(); return true;
 	case ID_PASTE: (void) HandlePaste(); return true;
 	case ID_OUTLOOKVERSION: OnOutlookVersion(); return true;
@@ -289,7 +288,7 @@ void CBaseDialog::OnMenuSelect(UINT nItemID, UINT nFlags, HMENU /*hSysMenu*/)
 	}
 } // CBaseDialog::OnMenuSelect
 
-_Check_return_ BOOL CBaseDialog::HandleKeyDown(UINT nChar, BOOL bShift, BOOL bCtrl, BOOL bMenu)
+_Check_return_ bool CBaseDialog::HandleKeyDown(UINT nChar, bool bShift, bool bCtrl, bool bMenu)
 {
 	DebugPrintEx(DBGMenu,CLASS,_T("HandleKeyDown"),_T("nChar = 0x%0X, bShift = 0x%X, bCtrl = 0x%X, bMenu = 0x%X\n"),
 		nChar,bShift, bCtrl, bMenu);
@@ -403,7 +402,7 @@ void CBaseDialog::OnOptions()
 	{
 		if (regoptCheck == RegKeys[ulReg].ulRegOptType)
 		{
-			MyData.InitCheck(ulReg,RegKeys[ulReg].uiOptionsPrompt,RegKeys[ulReg].ulCurDWORD,false);
+			MyData.InitCheck(ulReg,RegKeys[ulReg].uiOptionsPrompt,(0 != RegKeys[ulReg].ulCurDWORD),false);
 		}
 		else if (regoptString == RegKeys[ulReg].ulRegOptType)
 		{
@@ -426,7 +425,7 @@ void CBaseDialog::OnOptions()
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		BOOL bNeedPropRefresh = false;
+		bool bNeedPropRefresh = false;
 		// need to grab this FIRST
 		EC_H(StringCchCopy(RegKeys[regkeyDEBUG_FILE_NAME].szCurSTRING,_countof(RegKeys[regkeyDEBUG_FILE_NAME].szCurSTRING),MyData.GetString(regkeyDEBUG_FILE_NAME)));
 
@@ -462,6 +461,8 @@ void CBaseDialog::OnOptions()
 		// Commit our values to the registry
 		WriteToRegistry();
 
+		ForceOutlookMAPI(0 != RegKeys[regkeyFORCEOUTLOOKMAPI].ulCurDWORD);
+
 		if (bNeedPropRefresh && m_lpPropDisplay)
 			WC_H(m_lpPropDisplay->RefreshMAPIPropList());
 	}
@@ -478,7 +479,7 @@ void CBaseDialog::HandleCopy()
 	DebugPrintEx(DBGGeneric,CLASS,_T("HandleCopy"),_T("\n"));
 } // CBaseDialog::HandleCopy
 
-_Check_return_ BOOL CBaseDialog::HandlePaste()
+_Check_return_ bool CBaseDialog::HandlePaste()
 {
 	DebugPrintEx(DBGGeneric,CLASS,_T("HandlePaste"),_T("\n"));
 	ULONG ulStatus = m_lpMapiObjects->GetBufferStatus();
@@ -628,7 +629,7 @@ void CBaseDialog::OnSize(UINT/* nType*/, int cx, int cy)
 		iNewCY, // new y
 		cx,
 		iHeight,
-		FALSE);
+		false);
 
 	if (m_lpFakeSplitter && m_lpFakeSplitter->m_hWnd)
 	{
@@ -637,7 +638,7 @@ void CBaseDialog::OnSize(UINT/* nType*/, int cx, int cy)
 			0, // new y
 			cx, // new width
 			iNewCY-1, // new height
-			TRUE);
+			true);
 	}
 } // CBaseDialog::OnSize
 
@@ -951,9 +952,9 @@ void CBaseDialog::OnOpenEntryID(_In_opt_ LPSBinary lpBin)
 
 		if (lpUnk)
 		{
-			LPTSTR szFlags = NULL;
+			LPWSTR szFlags = NULL;
 			InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE, &szFlags);
-			DebugPrint(DBGGeneric,_T("OnOpenEntryID: Got object (%p) of type 0x%08X = %s\n"),lpUnk,ulObjType,szFlags);
+			DebugPrint(DBGGeneric,_T("OnOpenEntryID: Got object (%p) of type 0x%08X = %ws\n"),lpUnk,ulObjType,szFlags);
 			delete[] szFlags;
 			szFlags = NULL;
 
@@ -1097,54 +1098,6 @@ void CBaseDialog::OnComputeStoreHash()
 
 	delete[] lpEntryID;
 } // CBaseDialog::OnComputeStoreHash
-
-void CBaseDialog::OnEncodeID()
-{
-	HRESULT hRes = S_OK;
-
-	CEditor MyEID(
-		this,
-		IDS_ENCODEID,
-		IDS_ENCODEIDPROMPT,
-		2,
-		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-
-	MyEID.InitSingleLine(0,IDS_EID,NULL,false);
-	MyEID.InitCheck(1,IDS_EIDBASE64ENCODED,false,false);
-
-	WC_H(MyEID.DisplayDialog());
-	if (S_OK != hRes) return;
-
-	// Get the entry ID as a binary
-	LPENTRYID lpEntryID = NULL;
-	size_t cbBin = NULL;
-	EC_H(MyEID.GetEntryID(0,MyEID.GetCheck(1),&cbBin,&lpEntryID));
-
-	LPWSTR szEncoded = EncodeID((ULONG) cbBin,lpEntryID);
-
-	if (szEncoded)
-	{
-		CEditor Result(
-			this,
-			IDS_ENCODEDID,
-			IDS_ENCODEDID,
-			(ULONG) 3,
-			CEDITOR_BUTTON_OK);
-		Result.InitSingleLine(0,IDS_UNISTRING,NULL,true);
-		Result.SetStringW(0,szEncoded);
-		size_t cchEncoded = NULL;
-		WC_H(StringCchLengthW(szEncoded,STRSAFE_MAX_CCH,&cchEncoded));
-		Result.InitSingleLine(1,IDS_CCH,NULL,true);
-		Result.SetHex(1,(ULONG) cchEncoded);
-		Result.InitMultiLine(2,IDS_HEX,NULL,true);
-		Result.SetBinary(2,(LPBYTE)szEncoded,cchEncoded);
-
-		(void) Result.DisplayDialog();
-		delete[] szEncoded;
-	}
-
-	delete[] lpEntryID;
-} // CBaseDialog::OnEncodeID
 
 void CBaseDialog::OnNotificationsOn()
 {
@@ -1296,7 +1249,7 @@ void CBaseDialog::OnDispatchNotifications()
 	EC_H(HrDispatchNotifications(NULL));
 } // CBaseDialog::OnDispatchNotifications
 
-_Check_return_ BOOL CBaseDialog::HandleAddInMenu(WORD wMenuSelect)
+_Check_return_ bool CBaseDialog::HandleAddInMenu(WORD wMenuSelect)
 {
 	DebugPrintEx(DBGAddInPlumbing,CLASS,_T("HandleAddInMenu"),_T("wMenuSelect = 0x%08X\n"),wMenuSelect);
 	return false;

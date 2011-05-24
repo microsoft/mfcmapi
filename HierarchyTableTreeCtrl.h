@@ -28,7 +28,7 @@ public:
 	_Check_return_ LPMAPICONTAINER GetSelectedContainer(__mfcmapiModifyEnum bModify);
 	_Check_return_ LPSBinary       GetSelectedItemEID();
 	_Check_return_ SortListData*   GetSelectedItemData();
-	_Check_return_ BOOL            IsItemSelected();
+	_Check_return_ bool            IsItemSelected();
 
 private:
 	// Overrides from base class
@@ -38,7 +38,7 @@ private:
 	_Check_return_ HRESULT     ExpandNode(HTREEITEM Parent);
 	_Check_return_ HTREEITEM   FindNode(_In_ LPSBinary lpInstance, HTREEITEM hParent);
 	void        GetContainer(HTREEITEM Item, __mfcmapiModifyEnum bModify, _In_ LPMAPICONTAINER *lpContainer);
-	_Check_return_ LPMAPITABLE GetHierarchyTable(HTREEITEM hItem, _In_opt_ LPMAPICONTAINER lpMAPIContainer, BOOL bGetTable);
+	_Check_return_ LPMAPITABLE GetHierarchyTable(HTREEITEM hItem, _In_opt_ LPMAPICONTAINER lpMAPIContainer, bool bGetTable);
 	void        OnContextMenu(_In_ CWnd *pWnd, CPoint pos);
 	void        OnDblclk(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 	void        OnDeleteItem(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
@@ -61,8 +61,8 @@ private:
 		ULONG		bSubfolders,
 		ULONG		ulContainerFlags,
 		HTREEITEM	hParent,
-		BOOL		bDoNotifs);
-	void AddNode(_In_ LPSRow lpsRow, HTREEITEM hParent, BOOL bGetTable);
+		bool		bDoNotifs);
+	void AddNode(_In_ LPSRow lpsRow, HTREEITEM hParent, bool bGetTable);
 
 	// Custom messages
 	_Check_return_ LRESULT msgOnAddItem(WPARAM wParam, LPARAM lParam);
@@ -77,7 +77,7 @@ private:
 	ULONG				m_ulContainerType;
 	ULONG				m_ulDisplayFlags;
 	UINT				m_nIDContextMenu;
-	BOOL				m_bItemSelected;
+	bool				m_bItemSelected;
 
 	DECLARE_MESSAGE_MAP()
 };

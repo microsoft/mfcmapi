@@ -7,7 +7,7 @@ void OpenDebugFile();
 void CloseDebugFile();
 _Check_return_ ULONG GetDebugLevel();
 void SetDebugLevel(ULONG ulDbgLvl);
-void SetDebugOutputToFile(BOOL bDoOutput);
+void SetDebugOutputToFile(bool bDoOutput);
 
 // New system for debug output: When outputting debug output, a tag is included - if that tag is
 // set in RegKeys[regkeyDEBUG_TAG].ulCurDWORD, then we do the output. Otherwise, we ditch it.
@@ -44,11 +44,11 @@ void SetDebugOutputToFile(BOOL bDoOutput);
 
 #define fIsSet(ulTag)	(((ulTag) != DBGNoDebug) && (RegKeys[regkeyDEBUG_TAG].ulCurDWORD & (ulTag)))
 
-_Check_return_ FILE* OpenFile(_In_z_ LPCWSTR szFileName,BOOL bNewFile);
+_Check_return_ FILE* OpenFile(_In_z_ LPCWSTR szFileName,bool bNewFile);
 void CloseFile(_In_opt_ FILE* fFile);
 
-void _Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, BOOL bPrintThreadTime, _In_opt_z_ LPCTSTR szMsg);
-void __cdecl Outputf(ULONG ulDbgLvl, _In_opt_ FILE* fFile, BOOL bPrintThreadTime, _Printf_format_string_ LPCTSTR szMsg, ...);
+void _Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, _In_opt_z_ LPCTSTR szMsg);
+void __cdecl Outputf(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, _Printf_format_string_ LPCTSTR szMsg, ...);
 
 #define OutputToFile(fFile, szMsg) _Output((DBGNoDebug), (fFile), true, (szMsg))
 void __cdecl OutputToFilef(_In_opt_ FILE* fFile, _Printf_format_string_ LPCTSTR szMsg, ...);
@@ -66,8 +66,8 @@ void __cdecl DebugPrintEx(ULONG ulDbgLvl, _In_z_ LPCTSTR szClass, _In_z_ LPCTSTR
 // We'll use macros to make these calls so the code will read right
 
 void _OutputBinary(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSBinary lpBin);
-void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpProp, _In_opt_ LPMAPIPROP lpObj, BOOL bRetryStreamProps);
-void _OutputProperties(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cProps, _In_count_(cProps) LPSPropValue lpProps, _In_opt_ LPMAPIPROP lpObj, BOOL bRetryStreamProps);
+void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpProp, _In_opt_ LPMAPIPROP lpObj, bool bRetryStreamProps);
+void _OutputProperties(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cProps, _In_count_(cProps) LPSPropValue lpProps, _In_opt_ LPMAPIPROP lpObj, bool bRetryStreamProps);
 void _OutputSRow(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSRow lpSRow, _In_opt_ LPMAPIPROP lpObj);
 void _OutputSRowSet(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSRowSet lpRowSet, _In_opt_ LPMAPIPROP lpObj);
 void _OutputRestriction(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj);
@@ -114,7 +114,7 @@ void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify,  
 void OutputXMLValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, _In_opt_z_ LPCTSTR szValue, int iIndent);
 void OutputCDataOpen(ULONG ulDbgLvl, _In_opt_ FILE* fFile);
 void OutputCDataClose(ULONG ulDbgLvl, _In_opt_ FILE* fFile);
-void OutputXMLCDataValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, _In_z_ LPCTSTR szValue, int iIndent);
+void OutputXMLCDataValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, _In_z_ LPTSTR szValue, int iIndent);
 
 #define OutputXMLValueToFile(fFile, uidTag, szValue, iIndent)		OutputXMLValue(DBGNoDebug, fFile, uidTag, szValue, iIndent)
 #define OutputXMLCDataValueToFile(fFile, uidTag, szValue, iIndent)	OutputXMLCDataValue(DBGNoDebug, fFile, uidTag, szValue, iIndent)

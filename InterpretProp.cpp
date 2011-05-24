@@ -155,9 +155,9 @@ _Check_return_ HRESULT Base64Encode(size_t cbSourceBuf, _In_count_(cbSourceBuf) 
 	return hRes;
 } // Base64Encode
 
-_Check_return_ CString BinToTextString(_In_ LPSBinary lpBin, BOOL bMultiLine)
+_Check_return_ CString BinToTextString(_In_ LPSBinary lpBin, bool bMultiLine)
 {
-	if (!lpBin) return _T("");
+	if (!lpBin || !lpBin->cb || !lpBin->lpb) return _T("");
 
 	CString StringAsText;
 	LPTSTR szBin = NULL;
@@ -199,7 +199,7 @@ _Check_return_ CString BinToTextString(_In_ LPSBinary lpBin, BOOL bMultiLine)
 	return StringAsText;
 } // BinToTextString
 
-_Check_return_ CString BinToHexString(_In_ LPSBinary lpBin, BOOL bPrependCB)
+_Check_return_ CString BinToHexString(_In_ LPSBinary lpBin, bool bPrependCB)
 {
 	if (!lpBin) return _T("");
 
@@ -257,7 +257,7 @@ _Check_return_ HRESULT StringToGUID(_In_z_ LPCTSTR szGUID, _Inout_ LPGUID lpGUID
 	return StringToGUID(szGUID, false, lpGUID);
 } // StringToGUID
 
-_Check_return_ HRESULT StringToGUID(_In_z_ LPCTSTR szGUID, BOOL bByteSwapped, _Inout_ LPGUID lpGUID)
+_Check_return_ HRESULT StringToGUID(_In_z_ LPCTSTR szGUID, bool bByteSwapped, _Inout_ LPGUID lpGUID)
 {
 	HRESULT hRes = S_OK;
 	if (!szGUID || !lpGUID) return MAPI_E_INVALID_PARAMETER;
@@ -294,7 +294,7 @@ _Check_return_ CString CurrencyToString(CURRENCY curVal)
 	return szCur;
 } // CurrencyToString
 
-_Check_return_ CString TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, BOOL bIsAB, BOOL bSingleLine)
+_Check_return_ CString TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB, bool bSingleLine)
 {
 	CString szRet;
 	CString szTemp;
@@ -455,6 +455,9 @@ _Check_return_ CString TnefProblemArrayToString(_In_ LPSTnefProblemArray lpError
 	return szOut;
 } // TnefProblemArrayToString
 
+// There may be restrictions with over 100 nested levels, but we're not going to try to parse them
+#define _MaxRestrictionNesting 100
+
 void RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj, ULONG ulTabLevel, _In_ CString *PropString)
 {
 	if (!PropString) return;
@@ -465,6 +468,11 @@ void RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj, U
 	if (!lpRes)
 	{
 		PropString->FormatMessage(IDS_NULLRES);
+		return;
+	}
+	if (ulTabLevel > _MaxRestrictionNesting)
+	{
+		PropString->FormatMessage(IDS_RESDEPTHEXCEEDED);
 		return;
 	}
 	CString szTmp;
@@ -478,6 +486,7 @@ void RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj, U
 	}
 
 	LPTSTR szFlags = NULL;
+	LPWSTR szPropNum = NULL;
 	InterpretFlags(flagRestrictionType, lpRes->rt, &szFlags);
 	szTmp.FormatMessage(IDS_RESTYPE,szTabs,lpRes->rt,szFlags);
 	*PropString += szTmp;
@@ -588,12 +597,12 @@ void RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj, U
 				szProp,
 				szAltProp);
 			*PropString += szTmp;
-			InterpretNumberAsString(lpRes->res.resProperty.lpProp->Value,lpRes->res.resProperty.lpProp->ulPropTag,NULL,NULL,NULL,false,&szFlags);
-			if (szFlags)
+			InterpretNumberAsString(lpRes->res.resProperty.lpProp->Value,lpRes->res.resProperty.lpProp->ulPropTag,NULL,NULL,NULL,false,&szPropNum);
+			if (szPropNum)
 			{
-				szTmp.FormatMessage(IDS_RESPROPPROPFLAGS,szTabs,szFlags);
-				delete[] szFlags;
-				szFlags = NULL;
+				szTmp.FormatMessage(IDS_RESPROPPROPFLAGS,szTabs,szPropNum);
+				delete[] szPropNum;
+				szPropNum = NULL;
 				*PropString += szTmp;
 			}
 		}
@@ -609,12 +618,12 @@ void RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj, U
 		delete[] szFlags;
 		szFlags = NULL;
 		*PropString += szTmp;
-		InterpretNumberAsStringProp(lpRes->res.resBitMask.ulMask, lpRes->res.resBitMask.ulPropTag, &szFlags);
-		if (szFlags)
+		InterpretNumberAsStringProp(lpRes->res.resBitMask.ulMask, lpRes->res.resBitMask.ulPropTag, &szPropNum);
+		if (szPropNum)
 		{
-			szTmp.FormatMessage(IDS_RESBITMASKFLAGS,szFlags);
-			delete[] szFlags;
-			szFlags = NULL;
+			szTmp.FormatMessage(IDS_RESBITMASKFLAGS,szPropNum);
+			delete[] szPropNum;
+			szPropNum = NULL;
 			*PropString += szTmp;
 		}
 		szTmp.FormatMessage(
@@ -937,7 +946,7 @@ void FileTimeToString(_In_ FILETIME* lpFileTime, _In_ CString *PropString, _In_o
 
 	if (!lpFileTime) return;
 
-	WC_B(FileTimeToSystemTime((FILETIME FAR *) lpFileTime,&SysTime));
+	WC_B(FileTimeToSystemTime((FILETIME*) lpFileTime,&SysTime));
 
 	if (S_OK == hRes && PropString)
 	{
@@ -1199,7 +1208,7 @@ _Check_return_ CString TypeToString(ULONG ulPropTag)
 	}
 
 	ULONG ulCur = 0;
-	BOOL bTypeFound = false;
+	bool bTypeFound = false;
 
 	for (ulCur = 0 ; ulCur < ulPropTypeArray ; ulCur++)
 	{

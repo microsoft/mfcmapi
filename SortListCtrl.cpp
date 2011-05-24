@@ -54,7 +54,7 @@ CSortListCtrl::CSortListCtrl()
 	m_iRedrawCount = 0;
 	m_iClickedColumn = 0;
 	m_bSortUp = false;
-	m_bHaveSorted = FALSE;
+	m_bHaveSorted = false;
 	m_bHeaderSubclassed = false;
 } // CSortListCtrl::CSortListCtrl
 
@@ -86,7 +86,7 @@ BEGIN_MESSAGE_MAP(CSortListCtrl, CListCtrl)
 	ON_NOTIFY_REFLECT(LVN_DELETEITEM, OnDeleteItem)
 END_MESSAGE_MAP()
 
-_Check_return_ HRESULT CSortListCtrl::Create(_In_ CWnd* pCreateParent, ULONG ulFlags, UINT nID, BOOL bImages)
+_Check_return_ HRESULT CSortListCtrl::Create(_In_ CWnd* pCreateParent, ULONG ulFlags, UINT nID, bool bImages)
 {
 	HRESULT hRes = S_OK;
 	EC_B(CListCtrl::Create(
@@ -159,7 +159,7 @@ _Check_return_ LRESULT CSortListCtrl::WindowProc(UINT message, WPARAM wParam, LP
 	case WM_ERASEBKGND:
 		{
 			CListCtrl::OnEraseBkgnd((CDC*) wParam);
-			return TRUE;
+			return true;
 			break;
 		}
 	case WM_DESTROY:
@@ -173,7 +173,7 @@ _Check_return_ LRESULT CSortListCtrl::WindowProc(UINT message, WPARAM wParam, LP
 
 void CSortListCtrl::OnDeleteAllItems(NMHDR* /*pNMHDR*/, LRESULT* pResult)
 {
-	*pResult = FALSE; // make sure we get LVN_DELETEITEM for all items
+	*pResult = false; // make sure we get LVN_DELETEITEM for all items
 } // CSortListCtrl::OnDeleteAllItems
 
 void CSortListCtrl::OnDeleteItem(NMHDR* pNMHDR, LRESULT* pResult)
@@ -220,21 +220,21 @@ _Check_return_ SortListData* CSortListCtrl::InsertRow(int iRow, _In_z_ LPTSTR sz
 	return lpData;
 } // CSortListCtrl::InsertRow
 
-void CSortListCtrl::MySetRedraw(BOOL bRedraw)
+void CSortListCtrl::MySetRedraw(bool bRedraw)
 {
 	if (bRedraw)
 	{
 		m_iRedrawCount--;
 		if (0 >= m_iRedrawCount)
 		{
-			SetRedraw(TRUE);
+			SetRedraw(true);
 		}
 	}
 	else
 	{
 		if (0 == m_iRedrawCount)
 		{
-			SetRedraw(FALSE);
+			SetRedraw(false);
 		}
 		m_iRedrawCount++;
 	}
@@ -246,11 +246,11 @@ enum __SortStyle
 	SORTSTYLE_NUMERIC
 };
 
-typedef struct _SortInfo
+struct SortInfo
 {
-	BOOL		bSortUp;
+	bool		bSortUp;
 	__SortStyle	sortstyle;
-} SortInfo;
+};
 
 #define sortEqual 0
 #define sort1First -1
@@ -326,8 +326,8 @@ void CSortListCtrl::SortClickedColumn()
 	lpMyHeader = GetHeaderCtrl();
 	if (lpMyHeader)
 	{
-		static BOOL bIsXP = false;
-		static BOOL bVersionCheck = false;
+		static bool bIsXP = false;
+		static bool bVersionCheck = false;
 
 		if (!bVersionCheck)
 		{
@@ -507,7 +507,7 @@ void CSortListCtrl::OnColumnClick(int iColumn)
 } // CSortListCtrl::OnColumnClick
 
 // Used by child classes to force a sort order on a column
-void CSortListCtrl::FakeClickColumn(int iColumn, BOOL bSortUp)
+void CSortListCtrl::FakeClickColumn(int iColumn, bool bSortUp)
 {
 	m_iClickedColumn = iColumn;
 	m_bSortUp = bSortUp;
@@ -518,12 +518,12 @@ void CSortListCtrl::AutoSizeColumn(int iColumn, int iMinWidth, int iMaxWidth)
 {
 	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
-	MySetRedraw(FALSE);
+	MySetRedraw(false);
 	SetColumnWidth(iColumn,LVSCW_AUTOSIZE_USEHEADER);
 	int width = GetColumnWidth(iColumn);
 	if (iMaxWidth && width > iMaxWidth) SetColumnWidth(iColumn,iMaxWidth);
 	else if (width < iMinWidth) SetColumnWidth(iColumn,iMinWidth);
-	MySetRedraw(TRUE);
+	MySetRedraw(true);
 } // CSortListCtrl::AutoSizeColumn
 
 void CSortListCtrl::AutoSizeColumns()
@@ -535,16 +535,16 @@ void CSortListCtrl::AutoSizeColumns()
 	lpMyHeader = GetHeaderCtrl();
 	if (lpMyHeader)
 	{
-		MySetRedraw(FALSE);
+		MySetRedraw(false);
 		for (int i = 0;i<lpMyHeader->GetItemCount();i++)
 		{
 			AutoSizeColumn(i,100,150);
 		}
-		MySetRedraw(TRUE);
+		MySetRedraw(true);
 	}
 } // CSortListCtrl::AutoSizeColumns
 
-void CSortListCtrl::DeleteAllColumns(BOOL bShutdown)
+void CSortListCtrl::DeleteAllColumns(bool bShutdown)
 {
 	HRESULT			hRes = S_OK;
 	CHeaderCtrl*	lpMyHeader = NULL;
@@ -556,7 +556,7 @@ void CSortListCtrl::DeleteAllColumns(BOOL bShutdown)
 	lpMyHeader = GetHeaderCtrl();
 	if (lpMyHeader)
 	{
-		if (!bShutdown) MySetRedraw(FALSE);
+		if (!bShutdown) MySetRedraw(false);
 
 		// Delete all of the old column headers
 		int iColCount = lpMyHeader->GetItemCount();
@@ -576,7 +576,7 @@ void CSortListCtrl::DeleteAllColumns(BOOL bShutdown)
 				if (!bShutdown) EC_B(DeleteColumn(iCol));
 			}
 		}
-		if (!bShutdown) MySetRedraw(TRUE);
+		if (!bShutdown) MySetRedraw(true);
 	}
 } // CSortListCtrl::DeleteAllColumns
 
@@ -601,15 +601,50 @@ _Check_return_ UINT CSortListCtrl::OnGetDlgCode()
 
 void CSortListCtrl::SetItemText(int nItem, int nSubItem, _In_z_ LPCTSTR lpszText)
 {
+#ifdef UNICODE
+	SetItemTextW(nItem, nSubItem, lpszText);
+#else
+	SetItemTextA(nItem, nSubItem, lpszText);
+#endif
+} // CSortListCtrl::SetItemText
+
+void CSortListCtrl::SetItemTextA(int nItem, int nSubItem, _In_z_ LPCSTR lpszText)
+{
 	// Remove any whitespace before setting in the list
-	LPTSTR szWhitespace = (LPTSTR) _tcspbrk(lpszText,_T("\r\n\t")); // STRING_OK
+	LPSTR szWhitespace = (LPSTR) strpbrk(lpszText,"\r\n\t"); // STRING_OK
 	while (szWhitespace != NULL)
 	{
-		szWhitespace[0] = _T(' ');
-		szWhitespace = (LPTSTR) _tcspbrk(szWhitespace,_T("\r\n\t")); // STRING_OK
+		szWhitespace[0] = ' ';
+		szWhitespace = (LPSTR) strpbrk(szWhitespace,"\r\n\t"); // STRING_OK
 	}
+#ifdef UNICODE
+	LPWSTR lpszTextW = NULL;
+	(void) AnsiToUnicode(lpszText,&lpszTextW);
+	(void) CListCtrl::SetItemText(nItem,nSubItem,lpszTextW);
+	delete[] lpszTextW;
+#else
 	(void) CListCtrl::SetItemText(nItem,nSubItem,lpszText);
-} // CSortListCtrl::SetItemText
+#endif
+} // CSortListCtrl::SetItemTextA
+
+void CSortListCtrl::SetItemTextW(int nItem, int nSubItem, _In_z_ LPCWSTR lpszText)
+{
+	// Remove any whitespace before setting in the list
+	LPWSTR szWhitespace = (LPWSTR) wcspbrk(lpszText,L"\r\n\t"); // STRING_OK
+	while (szWhitespace != NULL)
+	{
+		szWhitespace[0] = L' ';
+		szWhitespace = (LPWSTR) wcspbrk(szWhitespace,L"\r\n\t"); // STRING_OK
+	}
+#ifdef UNICODE
+	(void) CListCtrl::SetItemText(nItem,nSubItem,lpszText);
+#else
+	LPSTR lpszTextA = NULL;
+	(void) UnicodeToAnsi(lpszText,&lpszTextA);
+	(void) CListCtrl::SetItemText(nItem,nSubItem,lpszTextA);
+	delete[] lpszTextA;
+#endif
+} // CSortListCtrl::SetItemTextW
 
 // if asked to select the item after the last item - will select the last item.
 void CSortListCtrl::SetSelectedItem(int iItem)

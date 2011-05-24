@@ -20,7 +20,7 @@ struct NAME_ARRAY_ENTRY
 	ULONG ulValue;
 	LPWSTR lpszName;
 };
-typedef NAME_ARRAY_ENTRY FAR * LPNAME_ARRAY_ENTRY;
+typedef NAME_ARRAY_ENTRY* LPNAME_ARRAY_ENTRY;
 
 // Guids - used by GetPropGuids
 struct GUID_ARRAY_ENTRY
@@ -28,7 +28,7 @@ struct GUID_ARRAY_ENTRY
 	LPCGUID	lpGuid;
 	LPWSTR	lpszName;
 };
-typedef GUID_ARRAY_ENTRY FAR * LPGUID_ARRAY_ENTRY;
+typedef GUID_ARRAY_ENTRY* LPGUID_ARRAY_ENTRY;
 
 // Named property mappings - used by GetNameIDs
 struct NAMEID_ARRAY_ENTRY
@@ -39,7 +39,7 @@ struct NAMEID_ARRAY_ENTRY
 	ULONG   ulType;
 	LPWSTR  lpszArea;
 };
-typedef NAMEID_ARRAY_ENTRY FAR * LPNAMEID_ARRAY_ENTRY;
+typedef NAMEID_ARRAY_ENTRY* LPNAMEID_ARRAY_ENTRY;
 
 // Types of flag array entries
 enum __FlagType
@@ -93,7 +93,7 @@ struct FLAG_ARRAY_ENTRY
 	ULONG	ulFlagType;
 	LPCWSTR lpszName;
 };
-typedef FLAG_ARRAY_ENTRY FAR * LPFLAG_ARRAY_ENTRY;
+typedef FLAG_ARRAY_ENTRY* LPFLAG_ARRAY_ENTRY;
 
 enum __ParsingTypeEnum
 {
@@ -101,6 +101,8 @@ enum __ParsingTypeEnum
 	IDS_STADDITIONALRENENTRYIDSEX,
 	IDS_STAPPOINTMENTRECURRENCEPATTERN,
 	IDS_STCONVERSATIONINDEX,
+	IDS_STDECODEENTRYID,
+	IDS_STENCODEENTRYID,
 	IDS_STENTRYID,
 	IDS_STENTRYLIST,
 	IDS_STEXTENDEDFOLDERFLAGS,
@@ -129,9 +131,9 @@ struct SMARTVIEW_PARSER_ARRAY_ENTRY
 {
 	ULONG	ulIndex;
 	ULONG	iStructType;
-	BOOL	bMV;
+	bool	bMV;
 };
-typedef SMARTVIEW_PARSER_ARRAY_ENTRY FAR * LPSMARTVIEW_PARSER_ARRAY_ENTRY;
+typedef SMARTVIEW_PARSER_ARRAY_ENTRY* LPSMARTVIEW_PARSER_ARRAY_ENTRY;
 
 #define BINARY_STRUCTURE_ENTRY(_fName,_fType) {PROP_ID((_fName)),(_fType),false},
 #define NAMEDPROP_BINARY_STRUCTURE_ENTRY(_fName,_fGuid,_fType) {PROP_TAG((guid##_fGuid),(_fName)),(_fType),false},
@@ -198,8 +200,8 @@ typedef SMARTVIEW_PARSER_ARRAY_ENTRY FAR * LPSMARTVIEW_PARSER_ARRAY_ENTRY;
 	MENU_FLAGS_FOLDER_ASSOC| \
 	MENU_FLAGS_DELETED
 
-struct _AddIn;
-typedef _AddIn FAR * LPADDIN;
+struct _AddIn; // forward
+typedef _AddIn* LPADDIN;
 
 // Used by GetMenus
 struct _MenuItem
@@ -211,7 +213,7 @@ struct _MenuItem
 	ULONG	ulID;		// Menu ID (For each add-in, each ulID must be unique for each menu item)
 	LPADDIN lpAddIn;	// Pointer to AddIn structure, set by LoadAddIn - must be NULL in return from GetMenus
 };
-typedef _MenuItem FAR * LPMENUITEM;
+typedef _MenuItem* LPMENUITEM;
 
 // Used in CallMenu
 struct _AddInMenuParams
@@ -238,7 +240,7 @@ struct _AddInMenuParams
 	LPSRow                lpRow;
 	LPMAPIPROP            lpMAPIProp; // the selected MAPI object - only used in MENU_CONTEXT_PROPERTY context
 };
-typedef _AddInMenuParams FAR * LPADDINMENUPARAMS;
+typedef _AddInMenuParams* LPADDINMENUPARAMS;
 
 // used in _AddInDialogControl and _AddInDialogControlResult
 enum __AddInControlType
@@ -254,16 +256,16 @@ enum __AddInControlType
 struct _AddInDialogControl
 {
 	__AddInControlType cType; // Type of the control
-	BOOL bReadOnly; // Whether the control should be read-only or read-write
-	BOOL bMultiLine; // Whether the control should be single or multiple lines. ADDIN_CTRL_EDIT_* only.
-	BOOL bDefaultCheckState; // Default state for a check box. ADDIN_CTRL_CHECK only.
+	bool bReadOnly; // Whether the control should be read-only or read-write
+	bool bMultiLine; // Whether the control should be single or multiple lines. ADDIN_CTRL_EDIT_* only.
+	bool bDefaultCheckState; // Default state for a check box. ADDIN_CTRL_CHECK only.
 	ULONG ulDefaultNum; // Default value for an edit control. ADDIN_CTRL_EDIT_NUM_DECIMAL and ADDIN_CTRL_EDIT_NUM_HEX only.
 	LPWSTR szLabel; // Text label for the control. Valid for all controls.
 	LPWSTR szDefaultText; // Default value for an edit control. ADDIN_CTRL_EDIT_TEXT only.
 	size_t cbBin; // Count of bytes in lpBin. ADDIN_CTRL_EDIT_BINARY only.
 	LPBYTE lpBin; // Array of bytes to be rendered in edit control. ADDIN_CTRL_EDIT_BINARY only.
 };
-typedef _AddInDialogControl FAR * LPADDINDIALOGCONTROL;
+typedef _AddInDialogControl* LPADDINDIALOGCONTROL;
 
 // Values for ulButtonFlags in _AddInDialog. May be combined.
 #define CEDITOR_BUTTON_OK		0x00000001 // Display an OK button
@@ -278,19 +280,19 @@ struct _AddInDialog
 	ULONG ulNumControls; // Number of entries in lpDialogControls
 	LPADDINDIALOGCONTROL lpDialogControls; // Array of _AddInDialogControl indicating which controls should be present
 };
-typedef _AddInDialog FAR * LPADDINDIALOG;
+typedef _AddInDialog* LPADDINDIALOG;
 
 // Used in _AddInDialogResult
 struct _AddInDialogControlResult
 {
 	__AddInControlType cType; // Type of the control
-	BOOL bCheckState; // Value of a check box. ADDIN_CTRL_CHECK only.
+	bool bCheckState; // Value of a check box. ADDIN_CTRL_CHECK only.
 	LPWSTR szText; // Value of an edit box. ADDIN_CTRL_EDIT_TEXT only.
 	ULONG ulVal; // Value of an edit box. ADDIN_CTRL_EDIT_NUM_DECIMAL and ADDIN_CTRL_EDIT_NUM_HEX only.
 	size_t cbBin; // Count of bytes in lpBin. ADDIN_CTRL_EDIT_BINARY only.
 	LPBYTE lpBin; // Array of bytes read from edit control. ADDIN_CTRL_EDIT_BINARY only.
 };
-typedef _AddInDialogControlResult FAR * LPADDINDIALOGCONTROLRESULT;
+typedef _AddInDialogControlResult* LPADDINDIALOGCONTROLRESULT;
 
 // Returned by ComplexDialog. To be freed by FreeDialogResult.
 struct _AddInDialogResult
@@ -298,7 +300,7 @@ struct _AddInDialogResult
 	ULONG ulNumControls; // Number of entries in lpDialogControlResults
 	LPADDINDIALOGCONTROLRESULT lpDialogControlResults; // Array of _AddInDialogControlResult with final values from the dialog
 };
-typedef _AddInDialogResult FAR * LPADDINDIALOGRESULT;
+typedef _AddInDialogResult* LPADDINDIALOGRESULT;
 
 // Functions exported by MFCMAPI
 
@@ -308,11 +310,11 @@ typedef _AddInDialogResult FAR * LPADDINDIALOGRESULT;
 //        Uses the DbgAddIn tag (0x00010000) for printing. This tag must be set in MFCMAPI to get output.
 #define szAddInLog "AddInLog" // STRING_OK
 typedef void (STDMETHODVCALLTYPE ADDINLOG)(
-	BOOL bPrintThreadTime, // whether to print the thread and time banner.
+	bool bPrintThreadTime, // whether to print the thread and time banner.
 	_Printf_format_string_ LPWSTR szMsg, // the message to be printed. Uses printf syntax.
 	... // optional printf style parameters
 	);
-typedef ADDINLOG FAR *LPADDINLOG;
+typedef ADDINLOG* LPADDINLOG;
 
 // Function: SimpleDialog
 // Use: Hooks MFCMAPI's CEditor class to display a simple dialog.
@@ -323,7 +325,7 @@ typedef HRESULT (STDMETHODVCALLTYPE SIMPLEDIALOG)(
 	_Printf_format_string_ LPWSTR szMsg, // the message to be printed. Uses printf syntax.
 	... // optional printf style parameters
 	);
-typedef SIMPLEDIALOG FAR *LPSIMPLEDIALOG;
+typedef SIMPLEDIALOG* LPSIMPLEDIALOG;
 
 // Function: ComplexDialog
 // Use: Hooks MFCMAPI's CEditor class to display a complex dialog. 'Complex' means the dialog has controls.
@@ -333,7 +335,7 @@ typedef HRESULT (_cdecl COMPLEXDIALOG)(
 									   _Out_ LPADDINDIALOGRESULT* lppDialogResult // Out, Optional - array of _AddInDialogControlResult structures with the values of the dialog when it was closed
 									                                        // Must be freed with FreeDialogResult
 									   );
-typedef COMPLEXDIALOG FAR *LPCOMPLEXDIALOG;
+typedef COMPLEXDIALOG* LPCOMPLEXDIALOG;
 
 // Function: FreeDialogResult
 // Use: Free lppDialogResult returned by ComplexDialog
@@ -342,7 +344,7 @@ typedef COMPLEXDIALOG FAR *LPCOMPLEXDIALOG;
 typedef void (_cdecl FREEDIALOGRESULT)(
 									   _In_ LPADDINDIALOGRESULT lpDialogResult // _AddInDialogControlResult array to be freed
 									   );
-typedef FREEDIALOGRESULT FAR *LPFREEDIALOGRESULT;
+typedef FREEDIALOGRESULT* LPFREEDIALOGRESULT;
 
 // Function: GetMAPIModule
 // Use: Get a handle to MAPI so the add-in does not have to link mapi32.lib
@@ -353,9 +355,9 @@ typedef FREEDIALOGRESULT FAR *LPFREEDIALOGRESULT;
 #define szGetMAPIModule "GetMAPIModule" // STRING_OK
 typedef void (_cdecl GETMAPIMODULE)(
 									_In_ HMODULE* lphModule,
-									BOOL bForce
+									bool bForce
 									);
-typedef GETMAPIMODULE FAR *LPGETMAPIMODULE;
+typedef GETMAPIMODULE* LPGETMAPIMODULE;
 
 // End functions exported by MFCMAPI
 
@@ -368,13 +370,13 @@ typedef GETMAPIMODULE FAR *LPGETMAPIMODULE;
 typedef void (STDMETHODCALLTYPE LOADADDIN)(
 	_In_z_ LPWSTR* szTitle // Name of the add-in
 	);
-typedef LOADADDIN FAR *LPLOADADDIN;
+typedef LOADADDIN* LPLOADADDIN;
 
 // Function: UnloadAddIn
 // Use: Let the add-in know we're done - it can free any resources it has allocated
 #define szUnloadAddIn "UnloadAddIn" // STRING_OK
 typedef void (STDMETHODCALLTYPE UNLOADADDIN)();
-typedef UNLOADADDIN FAR *LPUNLOADADDIN;
+typedef UNLOADADDIN* LPUNLOADADDIN;
 
 // Function: GetMenus
 // Use: Returns static array of menu information
@@ -383,7 +385,7 @@ typedef void (STDMETHODCALLTYPE GETMENUS)(
 	_In_ ULONG* lpulMenu, // Count of _MenuItem structures in lppMenu
 	_In_ LPMENUITEM* lppMenu // Array of _MenuItem structures describing menu items
 	);
-typedef GETMENUS FAR *LPGETMENUS;
+typedef GETMENUS* LPGETMENUS;
 
 // Function: CallMenu
 // Use: Calls back to AddIn with a menu choice - addin will decode and invoke
@@ -391,7 +393,7 @@ typedef GETMENUS FAR *LPGETMENUS;
 typedef HRESULT (STDMETHODCALLTYPE CALLMENU)(
 	_In_ LPADDINMENUPARAMS lpParams	// Everything the add-in needs to know
 	);
-typedef CALLMENU FAR *LPCALLMENU;
+typedef CALLMENU* LPCALLMENU;
 
 // Function: GetPropTags
 // Use: Returns a static array of property names for MFCMAPI to use in decoding properties
@@ -400,7 +402,7 @@ typedef void (STDMETHODCALLTYPE GETPROPTAGS)(
 	_In_ ULONG* lpulPropTags, // Number of entries in lppPropTags
 	_In_ LPNAME_ARRAY_ENTRY* lppPropTags // Array of NAME_ARRAY_ENTRY structures
 	);
-typedef GETPROPTAGS FAR *LPGETPROPTAGS;
+typedef GETPROPTAGS* LPGETPROPTAGS;
 
 // Function: GetPropTypes
 // Use: Returns a static array of property types for MFCMAPI to use in decoding properties
@@ -409,7 +411,7 @@ typedef void (STDMETHODCALLTYPE GETPROPTYPES)(
 	_In_ ULONG* lpulPropTypes, // Number of entries in lppPropTypes
 	_In_ LPNAME_ARRAY_ENTRY* lppPropTypes // Array of NAME_ARRAY_ENTRY structures
 	);
-typedef GETPROPTYPES FAR *LPGETPROPTYPES;
+typedef GETPROPTYPES* LPGETPROPTYPES;
 
 // Function: GetPropGuids
 // Use: Returns a static array of property guids for MFCMAPI to use in decoding properties
@@ -418,7 +420,7 @@ typedef void (STDMETHODCALLTYPE GETPROPGUIDS)(
 	_In_ ULONG* lpulPropGuids, // Number of entries in lppPropGuids
 	_In_ LPGUID_ARRAY_ENTRY* lppPropGuids // Array of GUID_ARRAY_ENTRY structures
 	);
-typedef GETPROPGUIDS FAR *LPGETPROPGUIDS;
+typedef GETPROPGUIDS* LPGETPROPGUIDS;
 
 // Function: GetNameIDs
 // Use: Returns a static array of named property mappings for MFCMAPI to use in decoding properties
@@ -427,7 +429,7 @@ typedef void (STDMETHODCALLTYPE GETNAMEIDS)(
 	_In_ ULONG* lpulNameIDs, // Number of entries in lppNameIDs
 	_In_ LPNAMEID_ARRAY_ENTRY* lppNameIDs // Array of NAMEID_ARRAY_ENTRY structures
 	);
-typedef GETNAMEIDS FAR *LPGETNAMEIDS;
+typedef GETNAMEIDS* LPGETNAMEIDS;
 
 // Function: GetPropFlags
 // Use: Returns a static array of flag parsing information for MFCMAPI to use in decoding properties
@@ -436,7 +438,7 @@ typedef void (STDMETHODCALLTYPE GETPROPFLAGS)(
 	_In_ ULONG* lpulPropFlags, // Number of entries in lppPropFlags
 	_In_ LPFLAG_ARRAY_ENTRY* lppPropFlags // Array of FLAG_ARRAY_ENTRY structures
 	);
-typedef GETPROPFLAGS FAR *LPGETPROPFLAGS;
+typedef GETPROPFLAGS* LPGETPROPFLAGS;
 
 // Function: GetSmartViewParserArray
 // Use: Returns a static array of SmartView parsers for MFCMAPI to use in SmartView parsing
@@ -445,14 +447,14 @@ typedef void (STDMETHODCALLTYPE GETSMARTVIEWPARSERARRAY)(
 	_In_ ULONG* lpulSmartViewParserArray, // Number of entries in lppSmartViewParserArray
 	_In_ LPSMARTVIEW_PARSER_ARRAY_ENTRY* lppSmartViewParserArray // Array of SMARTVIEW_PARSER_ARRAY_ENTRY structures
 	);
-typedef GETSMARTVIEWPARSERARRAY FAR *LPGETSMARTVIEWPARSERARRAY;
+typedef GETSMARTVIEWPARSERARRAY* LPGETSMARTVIEWPARSERARRAY;
 
 // Function: GetAPIVersion
 // Use: Returns version number of the API used by the add-in
 // Notes: MUST return MFCMAPI_HEADER_CURRENT_VERSION
 #define szGetAPIVersion "GetAPIVersion" // STRING_OK
 typedef ULONG (STDMETHODCALLTYPE GETAPIVERSION)();
-typedef GETAPIVERSION FAR *LPGETAPIVERSION;
+typedef GETAPIVERSION* LPGETAPIVERSION;
 
 // Structure used internally by MFCMAPI to track information on loaded Add-Ins. While it is accessible
 // by the add-in through the CallMenu function, it should only be consulted for debugging purposes.
@@ -480,11 +482,11 @@ struct _AddIn
 
 // Everything below this point is internal to MFCMAPI and should be removed from this header when including it in an add-in
 
-EXTERN_C __declspec(dllexport) void __cdecl AddInLog(BOOL bPrintThreadTime, _Printf_format_string_ LPWSTR szMsg, ...);
+EXTERN_C __declspec(dllexport) void __cdecl AddInLog(bool bPrintThreadTime, _Printf_format_string_ LPWSTR szMsg, ...);
 EXTERN_C _Check_return_ __declspec(dllexport) HRESULT __cdecl SimpleDialog(_In_z_ LPWSTR szTitle, _Printf_format_string_ LPWSTR szMsg, ...);
 EXTERN_C _Check_return_ __declspec(dllexport) HRESULT __cdecl ComplexDialog(_In_ LPADDINDIALOG lpDialog, _Out_ LPADDINDIALOGRESULT* lppDialogResult);
 EXTERN_C __declspec(dllexport) void __cdecl FreeDialogResult(_In_ LPADDINDIALOGRESULT lpDialogResult);
-EXTERN_C __declspec(dllexport) void __cdecl GetMAPIModule(_In_ HMODULE* lphModule, BOOL bForce);
+EXTERN_C __declspec(dllexport) void __cdecl GetMAPIModule(_In_ HMODULE* lphModule, bool bForce);
 
 void LoadAddIns();
 void UnloadAddIns();

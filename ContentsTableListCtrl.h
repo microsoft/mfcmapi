@@ -16,7 +16,7 @@ public:
 		ULONG ulNumExtraDisplayColumns,
 		_In_count_(ulNumExtraDisplayColumns) TagNames* lpExtraDisplayColumns,
 		UINT nIDContextMenu,
-		BOOL bIsAB,
+		bool bIsAB,
 		_In_ CContentsTableDlg* lpHostDlg);
 	virtual ~CContentsTableListCtrl();
 
@@ -40,16 +40,16 @@ public:
 	void    OnOutputTable(_In_z_ LPCWSTR szFileName);
 	_Check_return_ HRESULT SetSortTable(_In_ LPSSortOrderSet lpSortOrderSet, ULONG ulFlags);
 	_Check_return_ HRESULT SetUIColumns(_In_ LPSPropTagArray lpTags);
-	_Check_return_ BOOL    IsLoading();
+	_Check_return_ bool    IsLoading();
 	void    ClearLoading();
 	void    SetRestriction(_In_opt_ LPSRestriction lpRes);
 	_Check_return_ LPSRestriction GetRestriction();
 	_Check_return_ __mfcmapiRestrictionTypeEnum GetRestrictionType();
 	void    SetRestrictionType(__mfcmapiRestrictionTypeEnum RestrictionType);
 	_Check_return_ ULONG   GetContainerType();
-	_Check_return_ BOOL    IsAdviseSet();
-	_Check_return_ BOOL    IsContentsTableSet();
-	void    DoSetColumns(BOOL bAddExtras, BOOL bDisplayEditor, BOOL bQueryFlags, BOOL bDoRefresh);
+	_Check_return_ bool    IsAdviseSet();
+	_Check_return_ bool    IsContentsTableSet();
+	void    DoSetColumns(bool bAddExtras, bool bDisplayEditor, bool bQueryFlags, bool bDoRefresh);
 	void    GetStatus();
 
 private:
@@ -67,7 +67,7 @@ private:
 	_Check_return_ int     FindRow(_In_ LPSBinary lpInstance);
 	_Check_return_ int     GetNextSelectedItemNum(_Inout_opt_ int *iCurItem);
 	_Check_return_ HRESULT LoadContentsTableIntoView();
-	_Check_return_ HRESULT RefreshItem(int iRow, _In_ LPSRow lpsRowData, BOOL bItemExists);
+	_Check_return_ HRESULT RefreshItem(int iRow, _In_ LPSRow lpsRowData, bool bItemExists);
 	void    SelectAll();
 	void    SetRowStrings(int iRow, _In_ LPSRow lpsRowData);
 
@@ -90,8 +90,8 @@ private:
 	ULONG				m_ulNumExtraDisplayColumns;
 	ULONG				m_ulDisplayNameColumn;
 	UINT				m_nIDContextMenu;
-	BOOL				m_bIsAB;
-	BOOL				m_bInLoadOp;
+	bool				m_bIsAB;
+	bool				m_bInLoadOp;
 	LPSRestriction		m_lpRes;
 	ULONG				m_ulContainerType;
 	CAdviseSink*		m_lpAdviseSink;

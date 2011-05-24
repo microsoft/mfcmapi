@@ -3,15 +3,13 @@
 
 #include "MAPIProcessor.h"
 
-typedef struct _MessageData	FAR * LPMESSAGEDATA;
-
-typedef struct _MessageData
+struct MessageData
 {
 	WCHAR	szFilePath[MAX_PATH]; // Holds file name prepended with path
 	FILE* fMessageProps;
 	ULONG ulCurAttNum;
-} MessageData;
-
+};
+typedef MessageData* LPMESSAGEDATA;
 
 class CDumpStore : public CMAPIProcessor
 {
@@ -59,5 +57,5 @@ private:
 	FILE* m_fFolderContents;
 	FILE* m_fMailboxTable;
 
-	BOOL m_bRetryStreamProps;
+	bool m_bRetryStreamProps;
 };

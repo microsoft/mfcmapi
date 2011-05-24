@@ -23,10 +23,9 @@ public:
 	STDMETHODIMP_(ULONG) AddRef();
 	STDMETHODIMP_(ULONG) Release();
 
-	_Check_return_ LPADRBOOK     GetAddrBook(BOOL bForceOpen);
+	_Check_return_ LPADRBOOK     GetAddrBook(bool bForceOpen);
 	_Check_return_ LPMDB         GetMDB();
 	_Check_return_ LPMAPISESSION GetSession();
-	_Check_return_ LPPROFADMIN   GetProfAdmin();
 
 	void SetAddrBook(_In_opt_ LPADRBOOK lpAddrBook);
 	void SetMDB(_In_opt_ LPMDB lppMDB);
@@ -55,13 +54,12 @@ public:
 
 	void MAPIInitialize(ULONG ulFlags);
 	void MAPIUninitialize();
-	_Check_return_ BOOL bMAPIInitialized();
+	_Check_return_ bool bMAPIInitialized();
 
 private:
 	LONG			m_cRef;
 	LPMDB			m_lpMDB;
 	LPMAPISESSION	m_lpMAPISession;
 	LPADRBOOK		m_lpAddrBook;
-	LPPROFADMIN		m_lpProfAdmin;
 	CGlobalCache*	m_lpGlobalCache;
 };

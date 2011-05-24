@@ -23,7 +23,7 @@ private:
 	_Check_return_ virtual BOOL CheckAutoCenter();
 	CParentWnd* m_lpNonModalParent;
 	CWnd* m_hwndCenteringWindow;
-	BOOL m_bPaused;
+	bool m_bPaused;
 };
 
 CDbgView* g_DgbView = NULL;

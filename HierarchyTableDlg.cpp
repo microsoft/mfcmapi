@@ -78,7 +78,7 @@ void CHierarchyTableDlg::OnInitMenu(_In_ CMenu* pMenu)
 	{
 		if (m_lpHierarchyTableTreeCtrl)
 		{
-			BOOL bItemSelected = m_lpHierarchyTableTreeCtrl->IsItemSelected();
+			bool bItemSelected = m_lpHierarchyTableTreeCtrl->IsItemSelected();
 			pMenu->EnableMenuItem(ID_DISPLAYSELECTEDITEM,DIM(bItemSelected));
 			pMenu->EnableMenuItem(ID_DISPLAYHIERARCHYTABLE,DIM(bItemSelected));
 			pMenu->EnableMenuItem(ID_EDITSEARCHCRITERIA,DIM(bItemSelected));
@@ -290,7 +290,7 @@ _Check_return_ BOOL CHierarchyTableDlg::PreTranslateMessage(_In_ MSG* pMsg)
 		if (edit)
 		{
 			edit->SendMessage(WM_KEYDOWN, pMsg->wParam, pMsg->lParam);
-			return TRUE;
+			return true;
 		}
 	}
 	return CDialog::PreTranslateMessage(pMsg);
@@ -305,7 +305,7 @@ void CHierarchyTableDlg::OnRefreshView()
 		EC_H(m_lpHierarchyTableTreeCtrl->RefreshHierarchyTable());
 } // CHierarchyTableDlg::OnRefreshView
 
-_Check_return_ BOOL CHierarchyTableDlg::HandleAddInMenu(WORD wMenuSelect)
+_Check_return_ bool CHierarchyTableDlg::HandleAddInMenu(WORD wMenuSelect)
 {
 	if (wMenuSelect < ID_ADDINMENU || ID_ADDINMENU+m_ulAddInMenuItems < wMenuSelect) return false;
 	if (!m_lpHierarchyTableTreeCtrl) return false;

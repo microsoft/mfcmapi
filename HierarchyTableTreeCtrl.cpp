@@ -44,7 +44,7 @@ CHierarchyTableTreeCtrl::CHierarchyTableTreeCtrl(
 
 	m_ulDisplayFlags = ulDisplayFlags;
 
-	m_bItemSelected = FALSE;
+	m_bItemSelected = false;
 
 	m_nIDContextMenu = nIDContextMenu;
 
@@ -114,7 +114,7 @@ _Check_return_ LRESULT CHierarchyTableTreeCtrl::WindowProc(UINT message, WPARAM 
 	case WM_ERASEBKGND:
 		{
 			CTreeCtrl::OnEraseBkgnd((CDC*) wParam);
-			return TRUE;
+			return true;
 			break;
 		}
 	} // end switch
@@ -129,9 +129,9 @@ _Check_return_ HRESULT CHierarchyTableTreeCtrl::RefreshHierarchyTable()
 	HRESULT			hRes = S_OK;
 
 	// Turn off redraw while we work on the window
-	SetRedraw(FALSE);
+	SetRedraw(false);
 
-	m_bItemSelected = FALSE; // clear this just in case
+	m_bItemSelected = false; // clear this just in case
 
 	EC_B(DeleteItem(GetRootItem()));
 
@@ -141,7 +141,7 @@ _Check_return_ HRESULT CHierarchyTableTreeCtrl::RefreshHierarchyTable()
 	if (m_lpHostDlg) m_lpHostDlg->OnUpdateSingleMAPIPropListCtrl(NULL, NULL);
 
 	// Turn redraw back on to update our view
-	SetRedraw(TRUE);
+	SetRedraw(true);
 	return hRes;
 } // CHierarchyTableTreeCtrl::RefreshHierarchyTable
 
@@ -189,7 +189,9 @@ _Check_return_ HRESULT CHierarchyTableTreeCtrl::AddRootNode(_In_ LPMAPICONTAINER
 		htPR_CONTAINER_FLAGS,
 		htNUMCOLS
 	};
-	SizedSPropTagArray(htNUMCOLS,sptHTCols) = {htNUMCOLS,
+	static const SizedSPropTagArray(htNUMCOLS,sptHTCols) =
+	{
+		htNUMCOLS,
 		PR_ENTRYID,
 		PR_DISPLAY_NAME,
 		PR_CONTAINER_FLAGS
@@ -255,7 +257,7 @@ void CHierarchyTableTreeCtrl::AddNode(ULONG			cProps,
 									  ULONG			bSubfolders,
 									  ULONG			ulContainerFlags,
 									  HTREEITEM		hParent,
-									  BOOL			bGetTable)
+									  bool			bGetTable)
 {
 	HRESULT		hRes = S_OK;
 	SortListData*	lpData = NULL;
@@ -324,7 +326,7 @@ void CHierarchyTableTreeCtrl::AddNode(ULONG			cProps,
 	// NB: We don't free lpData because we have passed it off to the tree
 } // CHierarchyTableTreeCtrl::AddNode
 
-void CHierarchyTableTreeCtrl::AddNode(_In_ LPSRow lpsRow, HTREEITEM hParent, BOOL bGetTable)
+void CHierarchyTableTreeCtrl::AddNode(_In_ LPSRow lpsRow, HTREEITEM hParent, bool bGetTable)
 {
 	if (!lpsRow) return;
 
@@ -380,7 +382,7 @@ void CHierarchyTableTreeCtrl::AddNode(_In_ LPSRow lpsRow, HTREEITEM hParent, BOO
 		bGetTable);
 } // CHierarchyTableTreeCtrl::AddNode
 
-_Check_return_ LPMAPITABLE CHierarchyTableTreeCtrl::GetHierarchyTable(HTREEITEM hItem, _In_opt_ LPMAPICONTAINER lpMAPIContainer, BOOL bRegNotifs)
+_Check_return_ LPMAPITABLE CHierarchyTableTreeCtrl::GetHierarchyTable(HTREEITEM hItem, _In_opt_ LPMAPICONTAINER lpMAPIContainer, bool bRegNotifs)
 {
 	HRESULT		hRes = S_OK;
 	SortListData*	lpData = NULL;
@@ -413,13 +415,24 @@ _Check_return_ LPMAPITABLE CHierarchyTableTreeCtrl::GetHierarchyTable(HTREEITEM 
 
 			if (lpHierarchyTable)
 			{
-				enum {NAME,EID,INSTANCE,SUBFOLDERS,FLAGS,NUMCOLS};
-				SizedSPropTagArray(NUMCOLS,sptHierarchyCols) = {NUMCOLS,
+				enum
+				{
+					NAME,
+					EID,
+					INSTANCE,
+					SUBFOLDERS,
+					FLAGS,
+					NUMCOLS
+				};
+				static const SizedSPropTagArray(NUMCOLS,sptHierarchyCols) =
+				{
+					NUMCOLS,
 					PR_DISPLAY_NAME,
 					PR_ENTRYID,
 					PR_INSTANCE_KEY,
 					PR_SUBFOLDERS,
-					PR_CONTAINER_FLAGS};
+					PR_CONTAINER_FLAGS
+				};
 
 				EC_H(lpHierarchyTable->SetColumns(
 					(LPSPropTagArray) &sptHierarchyCols,
@@ -494,7 +507,7 @@ _Check_return_ HRESULT CHierarchyTableTreeCtrl::ExpandNode(HTREEITEM hParent)
 	if (!m_hWnd) return S_OK;
 	if (!hParent) return MAPI_E_INVALID_PARAMETER;
 
-	lpHierarchyTable = GetHierarchyTable(hParent,NULL,RegKeys[regkeyHIER_EXPAND_NOTIFS].ulCurDWORD);
+	lpHierarchyTable = GetHierarchyTable(hParent,NULL,(0 != RegKeys[regkeyHIER_EXPAND_NOTIFS].ulCurDWORD));
 
 	if (lpHierarchyTable)
 	{
@@ -599,7 +612,9 @@ void CHierarchyTableTreeCtrl::UpdateSelectionUI(HTREEITEM hItem)
 		htPR_DELETED_ASSOC_MSG_COUNT,
 		htNUMCOLS
 	};
-	SizedSPropTagArray(htNUMCOLS,sptHTCols) = {htNUMCOLS,
+	static const SizedSPropTagArray(htNUMCOLS,sptHTCols) =
+	{
+		htNUMCOLS,
 		PR_CONTENT_COUNT,
 		PR_ASSOC_CONTENT_COUNT,
 		PR_DELETED_FOLDER_COUNT,
@@ -613,7 +628,7 @@ void CHierarchyTableTreeCtrl::UpdateSelectionUI(HTREEITEM hItem)
 	GetContainer(hItem,mfcmapiREQUEST_MODIFY, &lpMAPIContainer);
 
 	// make sure we've gotten the hierarchy table for this node
-	(void) GetHierarchyTable(hItem,lpMAPIContainer,RegKeys[regkeyHIER_EXPAND_NOTIFS].ulCurDWORD);
+	(void) GetHierarchyTable(hItem,lpMAPIContainer,(0 != RegKeys[regkeyHIER_EXPAND_NOTIFS].ulCurDWORD));
 
 	if (SUCCEEDED(hRes) && m_lpHostDlg && lpMAPIContainer)
 	{
@@ -681,7 +696,7 @@ void CHierarchyTableTreeCtrl::UpdateSelectionUI(HTREEITEM hItem)
 	if (lpMAPIContainer) lpMAPIContainer->Release();
 } // CHierarchyTableTreeCtrl::UpdateSelectionUI
 
-_Check_return_ BOOL CHierarchyTableTreeCtrl::IsItemSelected()
+_Check_return_ bool CHierarchyTableTreeCtrl::IsItemSelected()
 {
 	return m_bItemSelected;
 } // CHierarchyTableTreeCtrl::IsItemSelected
@@ -692,13 +707,13 @@ void CHierarchyTableTreeCtrl::OnSelChanged(_In_ NMHDR* pNMHDR, _In_ LRESULT* pRe
 
 	if (pNMTV && pNMTV->itemNew.hItem)
 	{
-		m_bItemSelected = TRUE;
+		m_bItemSelected = true;
 
 		UpdateSelectionUI(pNMTV->itemNew.hItem);
 	}
 	else
 	{
-		m_bItemSelected = FALSE;
+		m_bItemSelected = false;
 	}
 
 	*pResult = 0;
@@ -743,9 +758,9 @@ void CHierarchyTableTreeCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	DebugPrintEx(DBGMenu,CLASS,_T("OnKeyDown"),_T("0x%X\n"),nChar);
 
-	ULONG bCtrlPressed = GetKeyState(VK_CONTROL) <0;
-	ULONG bShiftPressed = GetKeyState(VK_SHIFT) <0;
-	ULONG bMenuPressed = GetKeyState(VK_MENU) <0;
+	bool bCtrlPressed = GetKeyState(VK_CONTROL) <0;
+	bool bShiftPressed = GetKeyState(VK_SHIFT) <0;
+	bool bMenuPressed = GetKeyState(VK_MENU) <0;
 
 	if (!bMenuPressed)
 	{

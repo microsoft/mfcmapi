@@ -104,7 +104,8 @@ void CMsgServiceTableDlg::OnRefreshView()
 	if (m_lpServiceAdmin) m_lpServiceAdmin->Release();
 	m_lpServiceAdmin = NULL;
 
-	LPPROFADMIN lpProfAdmin = m_lpMapiObjects->GetProfAdmin(); // do not release
+	LPPROFADMIN lpProfAdmin = NULL;
+	EC_H(MAPIAdminProfiles(0, &lpProfAdmin));
 
 	if (lpProfAdmin)
 	{
@@ -136,6 +137,7 @@ void CMsgServiceTableDlg::OnRefreshView()
 				lpServiceTable->Release();
 			}
 		}
+		lpProfAdmin->Release();
 	}
 } // CMsgServiceTableDlg::OnRefreshView
 

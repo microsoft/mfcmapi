@@ -242,7 +242,7 @@ void CFormContainerDlg::OnInstallForm()
 		CFileDialogExA dlgFilePicker;
 
 		EC_D_DIALOG(dlgFilePicker.DisplayDialog(
-			TRUE,
+			true,
 			"cfg", // STRING_OK
 			NULL,
 			OFN_FILEMUSTEXIST | OFN_ALLOWMULTISELECT,
@@ -362,7 +362,7 @@ void CFormContainerDlg::OnResolveMultipleMessageClasses()
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		BOOL bCancel = false;
+		bool bCancel = false;
 		ULONG ulNumClasses = MyData.GetDecimal(0);
 		ULONG ulFlags = MyData.GetHex(1);
 		LPSMESSAGECLASSARRAY lpMSGClassArray = NULL;

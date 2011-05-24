@@ -10,8 +10,8 @@ void LogError(
 			  _In_z_ LPCSTR szFile,
 			  int iLine,
 			  _In_opt_z_ LPCSTR szFunction,
-			  BOOL bShowDialog,
-			  BOOL bErrorMsgFromSystem)
+			  bool bShowDialog,
+			  bool bErrorMsgFromSystem)
 {
 	// Get our error message if we have one
 	CString szErrorMsg;

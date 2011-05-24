@@ -45,7 +45,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="0"
+				Optimization="2"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories=".\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE"
@@ -74,7 +74,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="/debugtype:cv,fixup"
+				AdditionalOptions="/debugtype:cv,fixup /safeseh"
 				AdditionalDependencies="version.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -137,7 +137,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="0"
+				Optimization="2"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories=".\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE"
@@ -226,7 +226,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="0"
+				Optimization="2"
 				AdditionalIncludeDirectories=".\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;UNICODE;_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
@@ -254,7 +254,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="/debugtype:cv,fixup"
+				AdditionalOptions="/debugtype:cv,fixup /safeseh"
 				AdditionalDependencies="version.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -316,7 +316,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="0"
+				Optimization="2"
 				AdditionalIncludeDirectories=".\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;UNICODE;_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
@@ -434,7 +434,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="/debugtype:cv,fixup"
+				AdditionalOptions="/debugtype:cv,fixup /safeseh"
 				AdditionalDependencies="version.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -613,7 +613,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="/debugtype:cv,fixup"
+				AdditionalOptions="/debugtype:cv,fixup /safeseh"
 				AdditionalDependencies="version.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -765,7 +765,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="0"
+				Optimization="2"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories=".\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;MRMAPI"
@@ -794,7 +794,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="/debugtype:cv,fixup"
+				AdditionalOptions="/debugtype:cv,fixup /safeseh"
 				AdditionalDependencies="version.lib"
 				OutputFile="$(OutDir)\MrMAPI.exe"
 				LinkIncremental="1"
@@ -859,7 +859,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="0"
+				Optimization="2"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories=".\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;MRMAPI"
@@ -2474,6 +2474,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\MapiStubLibrary.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\MAPIStoreFunctions.cpp"
 				>
 			</File>
@@ -3486,6 +3490,10 @@
 						Name="VCCLCompilerTool"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\StubUtils.cpp"
+				>
 			</File>
 			<File
 				RelativePath=".\TagArrayEditor.cpp"

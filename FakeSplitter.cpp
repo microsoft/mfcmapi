@@ -25,7 +25,7 @@ CFakeSplitter::CFakeSplitter(
 	HRESULT hRes = S_OK;
 	CRect pRect;
 
-	m_bTracking = FALSE;
+	m_bTracking = false;
 
 	m_lpHostDlg = lpHostDlg;
 	m_lpHostDlg->AddRef();
@@ -90,11 +90,11 @@ _Check_return_ LRESULT CFakeSplitter::WindowProc(UINT message, WPARAM wParam, LP
 	switch (message)
 	{
 	case WM_HELP:
-		return TRUE;
+		return true;
 		break;
 	case WM_ERASEBKGND:
 		{
-			return TRUE;
+			return true;
 			break;
 		}
 	case WM_LBUTTONUP:
@@ -106,7 +106,7 @@ _Check_return_ LRESULT CFakeSplitter::WindowProc(UINT message, WPARAM wParam, LP
 		}
 	case WM_LBUTTONDOWN:
 		{
-			if (m_bTracking) return TRUE;
+			if (m_bTracking) return true;
 			StartTracking(HitTest(LOWORD(lParam),HIWORD(lParam)));
 			return NULL;
 			break;
@@ -115,7 +115,7 @@ _Check_return_ LRESULT CFakeSplitter::WindowProc(UINT message, WPARAM wParam, LP
 		{
 			if (LOWORD(lParam) == HTCLIENT &&
 				(HWND) wParam == this->m_hWnd &&
-				!m_bTracking) return TRUE; // we will handle it in the mouse move
+				!m_bTracking) return true; // we will handle it in the mouse move
 			break;
 		}
 
@@ -315,7 +315,7 @@ void CFakeSplitter::StartTracking(int ht)
 	EC_B(RedrawWindow(NULL, NULL, RDW_ALLCHILDREN | RDW_UPDATENOW));
 
 	// set tracking state and appropriate cursor
-	m_bTracking = TRUE;
+	m_bTracking = true;
 } // CFakeSplitter::StartTracking
 
 void CFakeSplitter::StopTracking()
@@ -325,7 +325,7 @@ void CFakeSplitter::StopTracking()
 
 	ReleaseCapture();
 
-	m_bTracking = FALSE;
+	m_bTracking = false;
 } // CFakeSplitter::StopTracking
 
 // See CSplitterWnd::OnPaint to see where I swiped this code.

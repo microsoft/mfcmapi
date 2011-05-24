@@ -21,7 +21,7 @@ CAttachmentsDlg::CAttachmentsDlg(
 								 _In_ CMapiObjects* lpMapiObjects,
 								 _In_ LPMAPITABLE lpMAPITable,
 								 _In_ LPMESSAGE lpMessage,
-								 BOOL bSaveMessageAtClose
+								 bool bSaveMessageAtClose
 								 ):
 CContentsTableDlg(
 				  pParentWnd,
@@ -39,8 +39,8 @@ CContentsTableDlg(
 	m_lpMessage = lpMessage;
 	if (m_lpMessage) m_lpMessage->AddRef();
 
-	m_bDisplayAttachAsEmbeddedMessage = FALSE;
-	m_bUseMapiModifyOnEmbeddedMessage = FALSE;
+	m_bDisplayAttachAsEmbeddedMessage = false;
+	m_bUseMapiModifyOnEmbeddedMessage = false;
 	m_bSaveMessageAtClose = bSaveMessageAtClose;
 	m_lpAttach = NULL;
 
@@ -202,7 +202,7 @@ void CAttachmentsDlg::HandleCopy()
 	}
 } // CAttachmentsDlg::HandleCopy
 
-_Check_return_ BOOL CAttachmentsDlg::HandlePaste()
+_Check_return_ bool CAttachmentsDlg::HandlePaste()
 {
 	if (CBaseDialog::HandlePaste()) return true;
 

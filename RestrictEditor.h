@@ -29,7 +29,7 @@ private:
 
 	// output variable
 	LPSRestriction			m_lpOutputRes;
-	BOOL					m_bModified;
+	bool					m_bModified;
 };
 
 
@@ -49,7 +49,7 @@ public:
 
 private:
 	// Use this function to implement list editing
-	_Check_return_ BOOL  DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData);
+	_Check_return_ bool  DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData);
 	void  OnEditAction1();
 	_Check_return_ BOOL  OnInitDialog();
 	_Check_return_ ULONG HandleChange(UINT nID);

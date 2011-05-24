@@ -2,7 +2,7 @@
 
 // Function to convert property tags to their names
 // Free lpszExactMatch and lpszPartialMatches with MAPIFreeBuffer
-_Check_return_ HRESULT PropTagToPropName(ULONG ulPropTag, BOOL bIsAB, _Deref_opt_out_opt_z_ LPTSTR* lpszExactMatch, _Deref_opt_out_opt_z_ LPTSTR* lpszPartialMatches);
+_Check_return_ HRESULT PropTagToPropName(ULONG ulPropTag, bool bIsAB, _Deref_opt_out_opt_z_ LPTSTR* lpszExactMatch, _Deref_opt_out_opt_z_ LPTSTR* lpszPartialMatches);
 
 _Check_return_ HRESULT PropNameToPropTag(_In_z_ LPCTSTR lpszPropName, _Out_ ULONG* ulPropTag);
 _Check_return_ ULONG PropTypeNameToPropTypeW(_In_z_ LPCWSTR lpszPropType);
@@ -18,9 +18,10 @@ void GUIDNameToGUID(_In_z_ LPCTSTR szGUID, _Deref_out_opt_ LPCGUID* lpGUID);
 
 _Check_return_ LPWSTR NameIDToPropName(_In_ LPMAPINAMEID lpNameID);
 
-void InterpretFlags(const enum __NonPropFlag ulFlagName, const LONG lFlagValue, _Deref_out_opt_z_ LPTSTR* szFlagString);
+enum __NonPropFlag; // forward
+void InterpretFlags(const __NonPropFlag ulFlagName, const LONG lFlagValue, _Deref_out_opt_z_ LPTSTR* szFlagString);
 void InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, _In_z_ LPCTSTR szPrefix, _Deref_out_opt_z_ LPTSTR* szFlagString);
-_Check_return_ CString AllFlagsToString(const ULONG ulFlagName, BOOL bHex);
+_Check_return_ CString AllFlagsToString(const ULONG ulFlagName, bool bHex);
 
 // Uber property interpreter - given an LPSPropValue, produces all manner of strings
 // All LPTSTR strings allocated with new, delete with delete[]
@@ -29,7 +30,7 @@ void InterpretProp(_In_opt_ LPSPropValue lpProp, // optional property value
 				   _In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
 				   _In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
 				   _In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
-				   BOOL bIsAB, // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
+				   bool bIsAB, // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
 				   _Deref_out_opt_z_ LPTSTR* lpszNameExactMatches, // Built from ulPropTag & bIsAB
 				   _Deref_out_opt_z_ LPTSTR* lpszNamePartialMatches, // Built from ulPropTag & bIsAB
 				   _In_opt_ CString* PropType, // Built from ulPropTag

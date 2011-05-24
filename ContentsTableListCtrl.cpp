@@ -32,7 +32,7 @@ CContentsTableListCtrl::CContentsTableListCtrl(
 	ULONG ulNumExtraDisplayColumns,
 	_In_count_(ulNumExtraDisplayColumns) TagNames *lpExtraDisplayColumns,
 	UINT nIDContextMenu,
-	BOOL bIsAB,
+	bool bIsAB,
 	_In_ CContentsTableDlg *lpHostDlg)
 	:CSortListCtrl()
 {
@@ -43,7 +43,7 @@ CContentsTableListCtrl::CContentsTableListCtrl(
 	EC_H(Create(pCreateParent,NULL,IDC_LIST_CTRL,true));
 
 	m_bAbortLoad = false; // no need to synchronize this - the thread hasn't started yet
-	m_bInLoadOp = FALSE;
+	m_bInLoadOp = false;
 	m_LoadThreadHandle = NULL;
 
 	// We borrow our parent's Mapi objects
@@ -140,7 +140,7 @@ _Check_return_ ULONG CContentsTableListCtrl::GetContainerType()
 	return m_ulContainerType;
 } // CContentsTableListCtrl::GetContainerType
 
-_Check_return_ BOOL CContentsTableListCtrl::IsContentsTableSet()
+_Check_return_ bool CContentsTableListCtrl::IsContentsTableSet()
 {
 	return m_lpContentsTable?true:false;
 } // CContentsTableListCtrl::IsContentsTableSet
@@ -184,7 +184,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::SetContentsTable(
 		// Set up the columns on the new contents table
 		DoSetColumns(
 			true,
-			RegKeys[regkeyEDIT_COLUMNS_ON_LOAD].ulCurDWORD,
+			(0 != RegKeys[regkeyEDIT_COLUMNS_ON_LOAD].ulCurDWORD),
 			false,
 			false);
 
@@ -278,7 +278,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::SetUIColumns(_In_ LPSPropTagArray
 	}
 
 	DebugPrintEx(DBGGeneric,CLASS,_T("SetColumns"),_T("calculating and inserting column headers\n"));
-	MySetRedraw(FALSE);
+	MySetRedraw(false);
 
 	// Delete all of the old column headers
 	DeleteAllColumns();
@@ -290,11 +290,11 @@ _Check_return_ HRESULT CContentsTableListCtrl::SetUIColumns(_In_ LPSPropTagArray
 
 	DebugPrintEx(DBGGeneric,CLASS,_T("SetColumns"),_T("Done inserting column headers\n"));
 
-	MySetRedraw(TRUE);
+	MySetRedraw(true);
 	return hRes;
 } // CContentsTableListCtrl::SetUIColumns
 
-void CContentsTableListCtrl::DoSetColumns(BOOL bAddExtras, BOOL bDisplayEditor, BOOL bQueryFlags, BOOL bDoRefresh)
+void CContentsTableListCtrl::DoSetColumns(bool bAddExtras, bool bDisplayEditor, bool bQueryFlags, bool bDoRefresh)
 {
 	HRESULT			hRes = S_OK;
 
@@ -585,8 +585,6 @@ _Check_return_ HRESULT CContentsTableListCtrl::ApplyRestriction()
 	return hRes;
 } // CContentsTableListCtrl::ApplyRestriction
 
-enum LoadTableStateEnum { ltsWorking, ltsDone};
-
 struct ThreadLoadTableInfo
 {
 	HWND							hWndHost;
@@ -751,7 +749,7 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 	return 0;
 } // ThreadFuncLoadTable
 
-_Check_return_ BOOL CContentsTableListCtrl::IsLoading()
+_Check_return_ bool CContentsTableListCtrl::IsLoading()
 {
 	return m_bInLoadOp;
 } // CContentsTableListCtrl::IsLoading
@@ -778,7 +776,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::LoadContentsTableIntoView()
 	m_LoadThreadHandle = NULL;
 
 	if (!m_lpContentsTable) return S_OK;
-	m_bInLoadOp = TRUE;
+	m_bInLoadOp = true;
 	// Do not call return after this point!
 
 	ThreadLoadTableInfo* lpThreadInfo = 0;
@@ -825,7 +823,7 @@ void CContentsTableListCtrl::OnCancelTableLoad()
 	// Wait here until the thread we spun off has shut down
 	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 	DWORD dwRet = 0;
-	BOOL bVKF5Hit = false;
+	bool bVKF5Hit = false;
 
 	// See if the thread is still active
 	while (m_LoadThreadHandle) // this won't change, but if it's NULL, we just skip the loop
@@ -838,7 +836,7 @@ void CContentsTableListCtrl::OnCancelTableLoad()
 		dwRet = MsgWaitForMultipleObjects(
 			1,
 			&m_LoadThreadHandle,
-			FALSE,
+			false,
 			INFINITE,
 			QS_ALLINPUT);
 		if (dwRet == (WAIT_OBJECT_0 + 0)) break;
@@ -1069,7 +1067,7 @@ void CContentsTableListCtrl::SetRowStrings(int iRow, _In_ LPSRow lpsRowData)
 			if (ulCol < lpsRowData->cValues)
 			{
 				CString PropString;
-				LPTSTR szFlags = NULL;
+				LPWSTR szFlags = NULL;
 				LPSPropValue pProp = &lpsRowData->lpProps[ulCol];
 
 				InterpretProp(pProp,&PropString,NULL);
@@ -1169,7 +1167,7 @@ void GetDepthAndImage(_In_ LPSRow lpsRowData, _In_ ULONG* lpulDepth, _In_ ULONG*
 	if (lpulImage) *lpulImage = ulImage;
 } // GetDepthAndImage
 
-_Check_return_ HRESULT CContentsTableListCtrl::RefreshItem(int iRow, _In_ LPSRow lpsRowData, BOOL bItemExists)
+_Check_return_ HRESULT CContentsTableListCtrl::RefreshItem(int iRow, _In_ LPSRow lpsRowData, bool bItemExists)
 {
 	HRESULT			hRes = S_OK;
 	SortListData*	lpData = 0;
@@ -1221,9 +1219,9 @@ void CContentsTableListCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	DebugPrintEx(DBGMenu,CLASS,_T("OnKeyDown"),_T("0x%X\n"),nChar);
 
 	if (!m_lpHostDlg) return;
-	ULONG bCtrlPressed = GetKeyState(VK_CONTROL) < 0;
-	ULONG bShiftPressed = GetKeyState(VK_SHIFT) < 0;
-	ULONG bMenuPressed = GetKeyState(VK_MENU) < 0;
+	bool bCtrlPressed = GetKeyState(VK_CONTROL) < 0;
+	bool bShiftPressed = GetKeyState(VK_SHIFT) < 0;
+	bool bMenuPressed = GetKeyState(VK_MENU) < 0;
 
 	if (!bMenuPressed)
 	{
@@ -1476,13 +1474,13 @@ void CContentsTableListCtrl::SelectAll()
 	int iIndex = 0;
 	DebugPrintEx(DBGGeneric,CLASS,_T("SelectAll"),_T("\n"));
 	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
-	MySetRedraw(FALSE);
+	MySetRedraw(false);
 	for (iIndex = 0;iIndex < GetItemCount();iIndex++)
 	{
 		EC_B(SetItemState(iIndex,LVIS_SELECTED,LVIS_SELECTED | LVIS_FOCUSED));
 		hRes = S_OK;
 	}
-	MySetRedraw(TRUE);
+	MySetRedraw(true);
 	if (m_lpHostDlg)
 		m_lpHostDlg->OnUpdateSingleMAPIPropListCtrl(NULL, NULL);
 } // CContentsTableListCtrl::SelectAll
@@ -1573,7 +1571,7 @@ void CContentsTableListCtrl::OnItemChanged(_In_ NMHDR* pNMHDR, _In_ LRESULT* pRe
 	}
 } // CContentsTableListCtrl::OnItemChanged
 
-_Check_return_ BOOL CContentsTableListCtrl::IsAdviseSet()
+_Check_return_ bool CContentsTableListCtrl::IsAdviseSet()
 {
 	return m_lpAdviseSink?true:false;
 } // CContentsTableListCtrl::IsAdviseSet
@@ -1688,7 +1686,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::DoExpandCollapse()
 		lpData->data.Contents.ulRowType == TBL_EMPTY_CATEGORY)
 		return S_FALSE;
 
-	BOOL bDidWork = false;
+	bool bDidWork = false;
 	LVITEM lvItem = {0};
 	lvItem.iItem = iItem;
 	lvItem.iSubItem = 0;
@@ -1905,7 +1903,7 @@ _Check_return_ LRESULT	CContentsTableListCtrl::msgOnModifyItem(WPARAM wParam, LP
 			MAPIAllocateBuffer,
 			&NewRow.lpProps));
 
-		EC_H(RefreshItem(iItem,&NewRow,TRUE));
+		EC_H(RefreshItem(iItem,&NewRow,true));
 	}
 
 	return hRes;

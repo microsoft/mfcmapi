@@ -63,7 +63,7 @@ CFolderDlg::~CFolderDlg()
 	TRACE_DESTRUCTOR(CLASS);
 } // CFolderDlg::~CFolderDlg
 
-_Check_return_ BOOL CFolderDlg::HandleMenu(WORD wMenuSelect)
+_Check_return_ bool CFolderDlg::HandleMenu(WORD wMenuSelect)
 {
 	DebugPrint(DBGMenu,_T("CFolderDlg::HandleMenu wMenuSelect = 0x%X = %d\n"),wMenuSelect,wMenuSelect);
 	HRESULT hRes = S_OK;
@@ -101,9 +101,9 @@ _Check_return_ BOOL CFolderDlg::HandleMenu(WORD wMenuSelect)
 	case ID_GETPROPSUSINGLONGTERMEID: OnGetPropsUsingLongTermEID(); return true;
 	}
 
-	if (MultiSelectSimple(wMenuSelect)) return TRUE;
+	if (MultiSelectSimple(wMenuSelect)) return true;
 
-	if (MultiSelectComplex(wMenuSelect)) return TRUE;
+	if (MultiSelectComplex(wMenuSelect)) return true;
 
 	return CContentsTableDlg::HandleMenu(wMenuSelect);
 } // CFolderDlg::HandleMenu
@@ -114,7 +114,7 @@ typedef HRESULT (CFolderDlg::* LPSIMPLEMULTI)
 	SortListData*	lpData
 );
 
-_Check_return_ BOOL CFolderDlg::MultiSelectSimple(WORD wMenuSelect)
+_Check_return_ bool CFolderDlg::MultiSelectSimple(WORD wMenuSelect)
 {
 	LPSIMPLEMULTI	lpFunc = NULL;
 	HRESULT			hRes = S_OK;
@@ -170,27 +170,27 @@ _Check_return_ BOOL CFolderDlg::MultiSelectSimple(WORD wMenuSelect)
 					hRes = S_OK;
 				}
 			}
-			return TRUE;
+			return true;
 		}
 	}
-	return FALSE;
+	return false;
 } // CFolderDlg::MultiSelectSimple
 
-_Check_return_ BOOL CFolderDlg::MultiSelectComplex(WORD wMenuSelect)
+_Check_return_ bool CFolderDlg::MultiSelectComplex(WORD wMenuSelect)
 {
 	switch (wMenuSelect)
 	{
-	case ID_ADDTESTADDRESS: OnAddOneOffAddress(); return TRUE;
-	case ID_DELETESELECTEDITEM: OnDeleteSelectedItem(); return TRUE;
-	case ID_REMOVEONEOFF: OnRemoveOneOff(); return TRUE;
-	case ID_RTFSYNC: OnRTFSync(); return TRUE;
-	case ID_SAVEMESSAGETOFILE: OnSaveMessageToFile(); return TRUE;
-	case ID_SETREADFLAG: OnSetReadFlag(); return TRUE;
-	case ID_SETMESSAGESTATUS: OnSetMessageStatus(); return TRUE;
-	case ID_GETMESSAGEOPTIONS: OnGetMessageOptions(); return TRUE;
-	case ID_DELETEATTACHMENTS: OnDeleteAttachments(); return TRUE;
+	case ID_ADDTESTADDRESS: OnAddOneOffAddress(); return true;
+	case ID_DELETESELECTEDITEM: OnDeleteSelectedItem(); return true;
+	case ID_REMOVEONEOFF: OnRemoveOneOff(); return true;
+	case ID_RTFSYNC: OnRTFSync(); return true;
+	case ID_SAVEMESSAGETOFILE: OnSaveMessageToFile(); return true;
+	case ID_SETREADFLAG: OnSetReadFlag(); return true;
+	case ID_SETMESSAGESTATUS: OnSetMessageStatus(); return true;
+	case ID_GETMESSAGEOPTIONS: OnGetMessageOptions(); return true;
+	case ID_DELETEATTACHMENTS: OnDeleteAttachments(); return true;
 	}
-	return FALSE;
+	return false;
 } // CFolderDlg::MultiSelectComplex
 
 /////////////////////////////////////////////////////////////////////////////
@@ -386,7 +386,7 @@ void CFolderDlg::HandleCopy()
 	m_lpMapiObjects->SetMessagesToCopy(lpEIDs,(LPMAPIFOLDER) m_lpContainer);
 } // CFolderDlg::HandleCopy
 
-_Check_return_ BOOL CFolderDlg::HandlePaste()
+_Check_return_ bool CFolderDlg::HandlePaste()
 {
 	if (CBaseDialog::HandlePaste()) return true;
 
@@ -445,15 +445,17 @@ _Check_return_ BOOL CFolderDlg::HandlePaste()
 				// the properties that Exchange excludes to save bits and time.
 				// Should not be necessary to exclude these, but speeds the process
 				// when a lot of messages are being copied.
-				SizedSPropTagArray (7, excludeTags);
-				excludeTags.cValues = 7;
-				excludeTags.aulPropTag[0] = PR_ACCESS;
-				excludeTags.aulPropTag[1] = PR_BODY;
-				excludeTags.aulPropTag[2] = PR_RTF_SYNC_BODY_COUNT;
-				excludeTags.aulPropTag[3] = PR_RTF_SYNC_BODY_CRC;
-				excludeTags.aulPropTag[4] = PR_RTF_SYNC_BODY_TAG;
-				excludeTags.aulPropTag[5] = PR_RTF_SYNC_PREFIX_COUNT;
-				excludeTags.aulPropTag[6] = PR_RTF_SYNC_TRAILING_COUNT;
+				static const SizedSPropTagArray (7, excludeTags) =
+				{
+					7,
+					PR_ACCESS,
+					PR_BODY,
+					PR_RTF_SYNC_BODY_COUNT,
+					PR_RTF_SYNC_BODY_CRC,
+					PR_RTF_SYNC_BODY_TAG,
+					PR_RTF_SYNC_PREFIX_COUNT,
+					PR_RTF_SYNC_TRAILING_COUNT
+				};
 
 				CTagArrayEditor MyEditor(
 					this,
@@ -613,7 +615,7 @@ void CFolderDlg::OnDeleteSelectedItem()
 	EC_H(OpenDefaultMessageStore(lpMAPISession, &lpMDB));
 	if (!lpMDB) return;
 
-	BOOL	bMove = false;
+	bool	bMove = false;
 	ULONG	ulFlag = MESSAGE_DIALOG;
 
 	if (m_ulDisplayFlags & dfDeleted)
@@ -622,7 +624,7 @@ void CFolderDlg::OnDeleteSelectedItem()
 	}
 	else
 	{
-		BOOL bShift = !(GetKeyState(VK_SHIFT) < 0);
+		bool bShift = !(GetKeyState(VK_SHIFT) < 0);
 
 		CEditor MyData(
 			this,
@@ -758,7 +760,7 @@ void CFolderDlg::OnLoadFromMSG()
 
 	CFileDialogExW dlgFilePicker;
 	EC_D_DIALOG(dlgFilePicker.DisplayDialog(
-		TRUE,
+		true,
 		L"msg", // STRING_OK
 		NULL,
 		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_FILEMUSTEXIST | OFN_ALLOWMULTISELECT,
@@ -1378,7 +1380,7 @@ void CFolderDlg::OnRTFSync()
 	if (S_OK == hRes)
 	{
 		LPMESSAGE	lpMessage = NULL;
-		BOOL		bMessageUpdated = FALSE;
+		BOOL		bMessageUpdated = false;
 
 		int iItem = m_lpContentsTableListCtrl->GetNextItem(
 			-1,
@@ -1552,7 +1554,7 @@ void CFolderDlg::OnSaveMessageToFile()
 				CFileDialogExW dlgFilePicker;
 
 				EC_D_DIALOG(dlgFilePicker.DisplayDialog(
-					FALSE,
+					false,
 					szExt,
 					szFileName,
 					OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
@@ -1587,7 +1589,7 @@ void CFolderDlg::OnSaveMessageToFile()
 							ENCODINGTYPE et = IET_UNKNOWN;
 							MIMESAVETYPE mst = USE_DEFAULT_SAVETYPE;
 							ULONG ulWrapLines = USE_DEFAULT_WRAPPING;
-							BOOL bDoAdrBook = false;
+							bool bDoAdrBook = false;
 
 							EC_H(GetConversionToEMLOptions(this,&ulConvertFlags,&et,&mst,&ulWrapLines,&bDoAdrBook));
 							if (S_OK == hRes)
@@ -1656,7 +1658,7 @@ void CFolderDlg::OnLoadFromTNEF()
 
 		CFileDialogExW dlgFilePicker;
 		EC_D_DIALOG(dlgFilePicker.DisplayDialog(
-			TRUE,
+			true,
 			L"tnef", // STRING_OK
 			NULL,
 			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_FILEMUSTEXIST | OFN_ALLOWMULTISELECT,
@@ -1702,8 +1704,8 @@ void CFolderDlg::OnLoadFromEML()
 	INT_PTR			iDlgRet = IDOK;
 
 	ULONG ulConvertFlags = CCSF_SMTP;
-	BOOL bDoAdrBook = false;
-	BOOL bDoApply = false;
+	bool bDoAdrBook = false;
+	bool bDoApply = false;
 	HCHARSET hCharSet = NULL;
 	CSETAPPLYTYPE cSetApplyType = CSET_APPLY_UNTAGGED;
 	WC_H(GetConversionFromEMLOptions(this,&ulConvertFlags,&bDoAdrBook,&bDoApply,&hCharSet,&cSetApplyType,NULL));
@@ -1717,7 +1719,7 @@ void CFolderDlg::OnLoadFromEML()
 
 		EC_B(szFileSpec.LoadString(IDS_EMLFILES));
 		EC_D_DIALOG(dlgFilePicker.DisplayDialog(
-			TRUE,
+			true,
 			L"eml", // STRING_OK
 			NULL,
 			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_FILEMUSTEXIST | OFN_ALLOWMULTISELECT,

@@ -29,14 +29,14 @@ struct DropDownStruct
 	int			iDropSelection;
 	DWORD_PTR	iDropSelectionValue;
 	CString		lpszSelectionString;
-	BOOL		bGUID;
-	BOOL		bActive;
+	bool		bGUID;
+	bool		bActive;
 };
 
 struct CheckStruct
 {
 	CButton	Check; // UI Control
-	BOOL	bCheckValue;
+	bool	bCheckValue;
 };
 
 struct EditStruct
@@ -46,7 +46,7 @@ struct EditStruct
 	LPWSTR			lpszW;
 	LPSTR			lpszA; // on demand conversion of lpszW
 	size_t			cchsz; // length of string - maintained to preserve possible internal NULLs, includes NULL terminator
-	BOOL			bMultiline;
+	bool			bMultiline;
 };
 
 struct __ListButtons
@@ -60,15 +60,15 @@ struct ListStruct
 	CSortListCtrl	List;
 
 	CButton			ButtonArray[NUMLISTBUTTONS];
-	BOOL			bDirty;
-	BOOL			bAllowSort;
+	bool			bDirty;
+	bool			bAllowSort;
 };
 
 struct ControlStruct
 {
 	ULONG	ulCtrlType;
-	BOOL	bReadOnly;
-	BOOL	bUseLabelControl; // whether to use an extra label control - some controls will use szLabel on their own (checkbox)
+	bool	bReadOnly;
+	bool	bUseLabelControl; // whether to use an extra label control - some controls will use szLabel on their own (checkbox)
 	CEdit	Label; // UI Control
 	UINT	uidLabel; // Label to load
 	CString	szLabel; // Text to push into UI in OnInitDialog
@@ -107,19 +107,25 @@ public:
 	// These functions can be used to set up a data editing dialog
 	void CreateControls(ULONG ulCount);
 	void SetPromptPostFix(_In_opt_z_ LPCTSTR szMsg);
-	void InitMultiLine(ULONG i, UINT uidLabel, _In_opt_z_ LPCTSTR szVal, BOOL bReadOnly);
-	void InitSingleLineSz(ULONG i, UINT uidLabel, _In_opt_z_ LPCTSTR szVal, BOOL bReadOnly);
-	void InitSingleLine(ULONG i, UINT uidLabel, UINT uidVal, BOOL bReadOnly);
-	void InitCheck(ULONG i, UINT uidLabel, BOOL bVal, BOOL bReadOnly);
-	void InitDropDown(ULONG i, UINT uidLabel, ULONG ulDropList, _In_opt_count_(ulDropList) UINT* lpuidDropList, BOOL bReadOnly);
-	void InitDropDownArray(ULONG i, UINT uidLabel, ULONG ulDropList, _In_opt_count_(ulDropList) LPNAME_ARRAY_ENTRY lpnaeDropList, BOOL bReadOnly);
-	void InitGUIDDropDown(ULONG i, UINT uidLabel, BOOL bReadOnly);
+	void InitMultiLineA(ULONG i, UINT uidLabel, _In_opt_z_ LPCSTR szVal, bool bReadOnly);
+	void InitMultiLineW(ULONG i, UINT uidLabel, _In_opt_z_ LPCWSTR szVal, bool bReadOnly);
+	void InitSingleLineSzA(ULONG i, UINT uidLabel, _In_opt_z_ LPCSTR szVal, bool bReadOnly);
+	void InitSingleLineSzW(ULONG i, UINT uidLabel, _In_opt_z_ LPCWSTR szVal, bool bReadOnly);
+	void InitSingleLine(ULONG i, UINT uidLabel, UINT uidVal, bool bReadOnly);
+	void InitCheck(ULONG i, UINT uidLabel, bool bVal, bool bReadOnly);
+	void InitDropDown(ULONG i, UINT uidLabel, ULONG ulDropList, _In_opt_count_(ulDropList) UINT* lpuidDropList, bool bReadOnly);
+	void InitDropDownArray(ULONG i, UINT uidLabel, ULONG ulDropList, _In_opt_count_(ulDropList) LPNAME_ARRAY_ENTRY lpnaeDropList, bool bReadOnly);
+	void InitGUIDDropDown(ULONG i, UINT uidLabel, bool bReadOnly);
 	void SetStringA(ULONG i, _In_opt_z_ LPCSTR szMsg, size_t cchsz = -1);
 	void SetStringW(ULONG i, _In_opt_z_ LPCWSTR szMsg, size_t cchsz = -1);
 #ifdef UNICODE
-#define SetString  SetStringW
+#define SetString SetStringW
+#define InitMultiLine InitMultiLineW
+#define InitSingleLineSz InitSingleLineSzW
 #else
-#define SetString  SetStringA
+#define SetString SetStringA
+#define InitMultiLine InitMultiLineA
+#define InitSingleLineSz InitSingleLineSzA
 #endif
 	void __cdecl SetStringf(ULONG i, _Printf_format_string_ LPCTSTR szMsg, ...);
 	void LoadString(ULONG i, UINT uidMsg);
@@ -137,11 +143,11 @@ public:
 #endif
 	_Check_return_ ULONG GetHex(ULONG i);
 	_Check_return_ ULONG GetDecimal(ULONG i);
-	_Check_return_ BOOL  GetCheck(ULONG i);
+	_Check_return_ bool  GetCheck(ULONG i);
 	_Check_return_ int   GetDropDown(ULONG i);
 	_Check_return_ DWORD_PTR GetDropDownValue(ULONG i);
-	_Check_return_ HRESULT GetEntryID(ULONG i, BOOL bIsBase64, _Out_ size_t* cbBin, _Out_ LPENTRYID* lpEID);
-	_Check_return_ BOOL  GetSelectedGUID(ULONG iControl, BOOL bByteSwapped, _In_ LPGUID lpSelectedGUID);
+	_Check_return_ HRESULT GetEntryID(ULONG i, bool bIsBase64, _Out_ size_t* cbBin, _Out_ LPENTRYID* lpEID);
+	_Check_return_ bool  GetSelectedGUID(ULONG iControl, bool bByteSwapped, _In_ LPGUID lpSelectedGUID);
 
 	// AddIn functions
 	void SetAddInTitle(_In_z_ LPWSTR szTitle);
@@ -149,24 +155,30 @@ public:
 
 protected:
 	// Functions used by derived classes during init
-	void InitList(ULONG i, UINT uidLabel, BOOL bAllowSort, BOOL bReadOnly);
+	void InitList(ULONG i, UINT uidLabel, bool bAllowSort, bool bReadOnly);
 	void InitEditFromBinaryStream(ULONG iControl, _In_ LPSTREAM lpStreamIn);
 	void InsertColumn(ULONG ulListNum, int nCol, UINT uidText);
 	void SetSize(ULONG i, size_t cb);
 	void SetDropDownSelection(ULONG i, _In_opt_z_ LPCTSTR szText);
-	void SetListString(ULONG iControl, ULONG iListRow, ULONG iListCol, _In_opt_z_ LPCTSTR szListString);
+	void SetListStringA(ULONG iControl, ULONG iListRow, ULONG iListCol, _In_opt_z_ LPCSTR szListString);
+	void SetListStringW(ULONG iControl, ULONG iListRow, ULONG iListCol, _In_opt_z_ LPCWSTR szListString);
+#ifdef UNICODE
+#define SetListString SetListStringW
+#else
+#define SetListString SetListStringA
+#endif
 	_Check_return_ SortListData* InsertListRow(ULONG iControl, int iRow, _In_z_ LPCTSTR szText);
 	void InsertDropString(ULONG iControl, int iRow, _In_z_ LPCTSTR szText);
 	void SetEditReadOnly(ULONG iControl);
 	void ClearList(ULONG iControl);
-	void ResizeList(ULONG uControl, BOOL bSort);
+	void ResizeList(ULONG uControl, bool bSort);
 
 	// Functions used by derived classes during handle change events
 	_Check_return_ CString GetDropStringUseControl(ULONG iControl);
 	_Check_return_ CString GetStringUseControl(ULONG iControl);
 	_Check_return_ ULONG   GetHexUseControl(ULONG i);
-	_Check_return_ BOOL    GetBinaryUseControl(ULONG i, _Out_ size_t* cbBin, _Out_ LPBYTE* lpBin);
-	_Check_return_ BOOL    GetCheckUseControl(ULONG iControl);
+	_Check_return_ bool    GetBinaryUseControl(ULONG i, _Out_ size_t* cbBin, _Out_ LPBYTE* lpBin);
+	_Check_return_ bool    GetCheckUseControl(ULONG iControl);
 	_Check_return_ LPSTR   GetEditBoxTextA(ULONG iControl, _Out_ size_t* lpcchText = NULL);
 	_Check_return_ LPWSTR  GetEditBoxTextW(ULONG iControl, _Out_ size_t* lpcchText = NULL);
 	_Check_return_ int     GetDropDownSelection(ULONG iControl);
@@ -174,17 +186,17 @@ protected:
 	_Check_return_ ULONG   GetListCount(ULONG iControl);
 	_Check_return_ SortListData* GetListRowData(ULONG iControl, int iRow);
 	_Check_return_ SortListData* GetSelectedListRowData(ULONG iControl);
-	_Check_return_ BOOL    ListDirty(ULONG iControl);
-	_Check_return_ BOOL    EditDirty(ULONG iControl);
+	_Check_return_ bool    ListDirty(ULONG iControl);
+	_Check_return_ bool    EditDirty(ULONG iControl);
 	void    AppendString(ULONG i, _In_z_ LPCTSTR szMsg);
 	void    ClearView(ULONG i);
 
 	// Called to enable/disable buttons based on number of items
 	void UpdateListButtons();
-	_Check_return_ BOOL IsValidDropDown(ULONG ulNum);
-	_Check_return_ BOOL IsValidEdit(ULONG ulNum);
-	_Check_return_ BOOL IsValidList(ULONG ulNum);
-	_Check_return_ BOOL IsValidCheck(ULONG iControl);
+	_Check_return_ bool IsValidDropDown(ULONG ulNum);
+	_Check_return_ bool IsValidEdit(ULONG ulNum);
+	_Check_return_ bool IsValidList(ULONG ulNum);
+	_Check_return_ bool IsValidCheck(ULONG iControl);
 	_Check_return_ BOOL OnInitDialog();
 	void OnOK();
 	void OnContextMenu(_In_ CWnd *pWnd, CPoint pos);
@@ -200,7 +212,7 @@ private:
 
 	// Use this function to implement list editing
 	// return true to indicate the entry was changed, false to indicate it was not
-	_Check_return_ virtual BOOL DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData);
+	_Check_return_ virtual bool DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData);
 
 	// private constructor invoked from public constructors
 	void Constructor(
@@ -229,12 +241,12 @@ private:
 	// List functions and data
 	void    OnMoveListEntryDown(ULONG ulListNum);
 	void    OnAddListEntry(ULONG ulListNum);
-	_Check_return_ BOOL    OnEditListEntry(ULONG ulListNum);
-	void    OnDeleteListEntry(ULONG ulListNum, BOOL bDoDirty);
+	_Check_return_ bool    OnEditListEntry(ULONG ulListNum);
+	void    OnDeleteListEntry(ULONG ulListNum, bool bDoDirty);
 	void    OnMoveListEntryUp(ULONG ulListNum);
 	void    OnMoveListEntryToBottom(ULONG ulListNum);
 	void    OnMoveListEntryToTop(ULONG ulListNum);
-	_Check_return_ BOOL    IsValidListWithButtons(ULONG ulNum);
+	_Check_return_ bool    IsValidListWithButtons(ULONG ulNum);
 	ULONG	m_ulListNum; // Only supporting one list right now - this is the control number for it
 
 	// Our UI controls. Only valid during display.

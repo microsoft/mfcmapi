@@ -151,7 +151,7 @@ STDMETHODIMP_(ULONG) CMyMAPIFormViewer::Release()
 ///////////////////////////////////////////////////////////////////////////////
 // IMAPIMessageSite implementation
 ///////////////////////////////////////////////////////////////////////////////
-_Check_return_ STDMETHODIMP CMyMAPIFormViewer::GetSession(_Deref_out_opt_ LPMAPISESSION FAR * ppSession)
+_Check_return_ STDMETHODIMP CMyMAPIFormViewer::GetSession(_Deref_out_opt_ LPMAPISESSION* ppSession)
 {
 	DebugPrintEx(DBGFormViewer,CLASS,_T("GetSession"),_T("\n"));
 	if (ppSession) *ppSession = m_lpMAPISession;
@@ -166,7 +166,7 @@ _Check_return_ STDMETHODIMP CMyMAPIFormViewer::GetSession(_Deref_out_opt_ LPMAPI
 	}
 } // CMyMAPIFormViewer::GetSession
 
-_Check_return_ STDMETHODIMP CMyMAPIFormViewer::GetStore(_Deref_out_opt_ LPMDB FAR * ppStore)
+_Check_return_ STDMETHODIMP CMyMAPIFormViewer::GetStore(_Deref_out_opt_ LPMDB* ppStore)
 {
 	DebugPrintEx(DBGFormViewer,CLASS,_T("GetStore"),_T("\n"));
 	if (ppStore) *ppStore = m_lpMDB;
@@ -181,7 +181,7 @@ _Check_return_ STDMETHODIMP CMyMAPIFormViewer::GetStore(_Deref_out_opt_ LPMDB FA
 	}
 } // CMyMAPIFormViewer::GetStore
 
-_Check_return_ STDMETHODIMP CMyMAPIFormViewer::GetFolder(_Deref_out_opt_ LPMAPIFOLDER FAR * ppFolder)
+_Check_return_ STDMETHODIMP CMyMAPIFormViewer::GetFolder(_Deref_out_opt_ LPMAPIFOLDER* ppFolder)
 {
 	DebugPrintEx(DBGFormViewer,CLASS,_T("GetFolder"),_T("\n"));
 	if (ppFolder) *ppFolder = m_lpFolder;
@@ -196,7 +196,7 @@ _Check_return_ STDMETHODIMP CMyMAPIFormViewer::GetFolder(_Deref_out_opt_ LPMAPIF
 	}
 } // CMyMAPIFormViewer::GetFolder
 
-_Check_return_ STDMETHODIMP CMyMAPIFormViewer::GetMessage(_Deref_out_opt_ LPMESSAGE FAR * ppmsg)
+_Check_return_ STDMETHODIMP CMyMAPIFormViewer::GetMessage(_Deref_out_opt_ LPMESSAGE* ppmsg)
 {
 	DebugPrintEx(DBGFormViewer,CLASS,_T("GetMessage"),_T("\n"));
 	if (ppmsg) *ppmsg = m_lpMessage;
@@ -211,7 +211,7 @@ _Check_return_ STDMETHODIMP CMyMAPIFormViewer::GetMessage(_Deref_out_opt_ LPMESS
 	}
 } // CMyMAPIFormViewer::GetMessage
 
-_Check_return_ STDMETHODIMP CMyMAPIFormViewer::GetFormManager(_Deref_out_ LPMAPIFORMMGR FAR * ppFormMgr)
+_Check_return_ STDMETHODIMP CMyMAPIFormViewer::GetFormManager(_Deref_out_ LPMAPIFORMMGR* ppFormMgr)
 {
 	HRESULT hRes = S_OK;
 	DebugPrintEx(DBGFormViewer,CLASS,_T("GetFormManager"),_T("\n"));
@@ -222,9 +222,9 @@ _Check_return_ STDMETHODIMP CMyMAPIFormViewer::GetFormManager(_Deref_out_ LPMAPI
 _Check_return_ STDMETHODIMP CMyMAPIFormViewer::NewMessage(ULONG fComposeInFolder,
 										   _In_ LPMAPIFOLDER pFolderFocus,
 										   _In_ LPPERSISTMESSAGE pPersistMessage,
-										   _Deref_out_opt_ LPMESSAGE FAR * ppMessage,
-										   _Deref_out_opt_ LPMAPIMESSAGESITE FAR * ppMessageSite,
-										   _Deref_out_opt_ LPMAPIVIEWCONTEXT FAR * ppViewContext)
+										   _Deref_out_opt_ LPMESSAGE* ppMessage,
+										   _Deref_out_opt_ LPMAPIMESSAGESITE* ppMessageSite,
+										   _Deref_out_opt_ LPMAPIVIEWCONTEXT* ppViewContext)
 {
 	DebugPrintEx(DBGFormViewer,CLASS,_T("NewMessage"),_T("fComposeInFolder = 0x%X pFolderFocus = %p, pPersistMessage = %p\n"),fComposeInFolder,pFolderFocus,pPersistMessage);
 	HRESULT hRes = S_OK;
@@ -233,7 +233,7 @@ _Check_return_ STDMETHODIMP CMyMAPIFormViewer::NewMessage(ULONG fComposeInFolder
 	*ppMessageSite = NULL;
 	if (ppViewContext) *ppViewContext = NULL;
 
-	if ((fComposeInFolder == FALSE) || !pFolderFocus)
+	if ((fComposeInFolder == false) || !pFolderFocus)
 	{
 		pFolderFocus = m_lpFolder;
 	}
@@ -297,7 +297,7 @@ _Check_return_ STDMETHODIMP CMyMAPIFormViewer::SaveMessage()
 
 	EC_H(m_lpPersistMessage->Save(
 		NULL, // m_lpMessage,
-		TRUE));
+		true));
 	if (FAILED(hRes))
 	{
 		LPMAPIERROR lpErr = NULL;
@@ -326,7 +326,7 @@ _Check_return_ STDMETHODIMP CMyMAPIFormViewer::SubmitMessage(ULONG ulFlags)
 
 	EC_H(m_lpPersistMessage->Save(
 		m_lpMessage,
-		TRUE));
+		true));
 	if (FAILED(hRes))
 	{
 		LPMAPIERROR lpErr = NULL;
@@ -367,7 +367,7 @@ _Check_return_ STDMETHODIMP CMyMAPIFormViewer::GetSiteStatus(_Inout_ LPULONG lpu
 
 _Check_return_ STDMETHODIMP CMyMAPIFormViewer::GetLastError(HRESULT hResult,
 											 ULONG ulFlags,
-											 _Deref_out_ LPMAPIERROR FAR * /*lppMAPIError*/)
+											 _Deref_out_ LPMAPIERROR* /*lppMAPIError*/)
 {
 	DebugPrintEx(DBGFormViewer,CLASS,_T("GetLastError"),_T("hResult = 0x%08X, ulFlags = 0x%08X\n"),hResult,ulFlags);
 	return MAPI_E_NO_SUPPORT;
@@ -444,12 +444,16 @@ _Check_return_ HRESULT CMyMAPIFormViewer::SetPersist(_In_opt_ LPMAPIFORM lpForm,
 	HRESULT hRes = S_OK;
 	ShutdownPersist();
 
-	SizedSPropTagArray(1, sptaFlags) = {1,{PR_MESSAGE_FLAGS}};
+	static const SizedSPropTagArray(1, sptaFlags) =
+	{
+		1,
+		PR_MESSAGE_FLAGS
+	};
 	ULONG			cValues		= 0L;
 	LPSPropValue	lpPropArray	= NULL;
 
 	EC_H(m_lpMessage->GetProps((LPSPropTagArray)&sptaFlags, 0, &cValues, &lpPropArray));
-	BOOL bComposing = (lpPropArray && (lpPropArray->Value.l & MSGFLAG_UNSENT));
+	bool bComposing = (lpPropArray && (lpPropArray->Value.l & MSGFLAG_UNSENT));
 	MAPIFreeBuffer(lpPropArray);
 
 	if (bComposing && !RegKeys[regkeyALLOW_PERSIST_CACHE].ulCurDWORD)
@@ -537,16 +541,23 @@ _Check_return_ STDMETHODIMP CMyMAPIFormViewer::ActivateNext(ULONG ulDir,
 	DebugPrintEx(DBGFormViewer,CLASS,_T("ActivateNext"),_T("ulDir = 0x%X\n"),ulDir);
 	HRESULT	hRes = S_OK;
 
-	enum {ePR_MESSAGE_FLAGS,ePR_MESSAGE_CLASS_A,NUM_COLS};
-	SizedSPropTagArray(NUM_COLS,sptaShowForm) = { NUM_COLS, {
+	enum
+	{
+		ePR_MESSAGE_FLAGS,
+		ePR_MESSAGE_CLASS_A,
+		NUM_COLS
+	};
+	static const SizedSPropTagArray(NUM_COLS,sptaShowForm) =
+	{
+		NUM_COLS,
 		PR_MESSAGE_FLAGS,
-			PR_MESSAGE_CLASS_A}
+		PR_MESSAGE_CLASS_A
 	};
 
 	int			iNewItem = -1;
 	LPMESSAGE	lpNewMessage = NULL;
 	ULONG		ulMessageStatus = NULL;
-	BOOL		bUsedCurrentSite = false;
+	bool		bUsedCurrentSite = false;
 
 	WC_H(GetNextMessage(ulDir,&iNewItem,&ulMessageStatus,&lpNewMessage));
 	if (lpNewMessage)
@@ -634,15 +645,15 @@ _Check_return_ STDMETHODIMP CMyMAPIFormViewer::ActivateNext(ULONG ulDir,
 } // CMyMAPIFormViewer::ActivateNext
 
 _Check_return_ STDMETHODIMP CMyMAPIFormViewer::GetPrintSetup(ULONG ulFlags,
-											  _Deref_out_ LPFORMPRINTSETUP FAR * /*lppFormPrintSetup*/)
+											  _Deref_out_ LPFORMPRINTSETUP* /*lppFormPrintSetup*/)
 {
 	DebugPrintEx(DBGFormViewer,CLASS,_T("GetPrintSetup"),_T("ulFlags = 0x%08X\n"),ulFlags);
 	return MAPI_E_NO_SUPPORT;
 } // CMyMAPIFormViewer::GetPrintSetup
 
-_Check_return_ STDMETHODIMP CMyMAPIFormViewer::GetSaveStream(_Out_ ULONG FAR * /*pulFlags*/,
-											  _Out_ ULONG FAR * /*pulFormat*/,
-											  _Deref_out_ LPSTREAM FAR * /*ppstm*/)
+_Check_return_ STDMETHODIMP CMyMAPIFormViewer::GetSaveStream(_Out_ ULONG* /*pulFlags*/,
+											  _Out_ ULONG* /*pulFormat*/,
+											  _Deref_out_ LPSTREAM* /*ppstm*/)
 {
 	DebugPrintEx(DBGFormViewer,CLASS,_T("GetSaveStream"),_T("\n"));
 	return MAPI_E_NO_SUPPORT;

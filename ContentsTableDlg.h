@@ -27,7 +27,7 @@ public:
 protected:
 	// Overrides from base class
 	void CreateDialogAndMenu(UINT nIDMenuResource);
-	_Check_return_ BOOL HandleMenu(WORD wMenuSelect);
+	_Check_return_ bool HandleMenu(WORD wMenuSelect);
 	_Check_return_ BOOL OnInitDialog();
 	void OnInitMenu(_In_opt_ CMenu* pMenu);
 	void OnRefreshView();
@@ -35,7 +35,7 @@ protected:
 	virtual void OnDisplayItem();
 
 	void SetRestrictionType(__mfcmapiRestrictionTypeEnum RestrictionType);
-	_Check_return_ HRESULT OpenAttachmentsFromMessage(_In_ LPMESSAGE lpMessage, BOOL fSaveMessageAtClose);
+	_Check_return_ HRESULT OpenAttachmentsFromMessage(_In_ LPMESSAGE lpMessage, bool fSaveMessageAtClose);
 	_Check_return_ HRESULT OpenRecipientsFromMessage(_In_ LPMESSAGE lpMessage);
 
 	CContentsTableListCtrl*	m_lpContentsTableListCtrl;
@@ -49,7 +49,7 @@ private:
 		_In_opt_ LPMAPICONTAINER lpContainer);
 
 	// Overrides from base class
-	_Check_return_ BOOL HandleAddInMenu(WORD wMenuSelect);
+	_Check_return_ bool HandleAddInMenu(WORD wMenuSelect);
 	void OnCancel();
 	void OnEscHit();
 

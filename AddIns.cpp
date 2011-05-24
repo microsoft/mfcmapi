@@ -989,7 +989,7 @@ void MergeAddInArrays()
 			for (i = 0;i < lpCurAddIn->ulPropGuids;i++)
 			{
 				ULONG iCur = 0;
-				BOOL bDupe = false;
+				bool bDupe = false;
 				// Since this array isn't sorted, we have to compare against all valid entries for dupes
 				for (iCur = 0;iCur < ulCurPropGuid;iCur++)
 				{
@@ -1019,7 +1019,7 @@ void MergeAddInArrays()
 	DebugPrint(DBGAddInPlumbing,_T("Done merging add-in arrays\n"));
 } // MergeAddInArrays
 
-__declspec(dllexport) void __cdecl AddInLog(BOOL bPrintThreadTime, _Printf_format_string_ LPWSTR szMsg, ...)
+__declspec(dllexport) void __cdecl AddInLog(bool bPrintThreadTime, _Printf_format_string_ LPWSTR szMsg, ...)
 {
 	if (!fIsSet(DBGAddIn)) return;
 	HRESULT hRes = S_OK;
@@ -1309,23 +1309,14 @@ __declspec(dllexport) void __cdecl FreeDialogResult(_In_ LPADDINDIALOGRESULT lpD
 } // FreeDialogResult
 #endif
 
-__declspec(dllexport) void __cdecl GetMAPIModule(_In_ HMODULE* lphModule, BOOL bForce)
+__declspec(dllexport) void __cdecl GetMAPIModule(_In_ HMODULE* lphModule, bool bForce)
 {
 	if (!lphModule) return;
-	*lphModule = NULL;
-	if (hModMSMAPI)
+	*lphModule = GetMAPIHandle();
+	if (!*lphModule && bForce)
 	{
-		*lphModule = hModMSMAPI;
-	}
-	else if (hModMAPI)
-	{
-		*lphModule = hModMSMAPI;
-	}
-	else if (bForce)
-	{
-		// No MAPI loaded - load it then try again
-		AutoLoadMAPI();
-		GetMAPIModule(lphModule,false);
+		// No MAPI loaded - load it
+		*lphModule = GetPrivateMAPI();
 	}
 } // GetMAPIModule
 

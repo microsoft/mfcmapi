@@ -5,14 +5,14 @@ _Check_return_ HRESULT Base64Decode(_In_z_ LPCTSTR szEncodedStr, _Inout_ size_t*
 _Check_return_ HRESULT Base64Encode(size_t cbSourceBuf, _In_count_(cbSourceBuf) LPBYTE lpSourceBuffer, _Inout_ size_t* cchEncodedStr, _Out_ _Deref_post_cap_(*cchEncodedStr) LPTSTR* szEncodedStr);
 
 // Function to create strings representing properties
-_Check_return_ CString BinToTextString(_In_ LPSBinary lpBin, BOOL bMultiLine);
+_Check_return_ CString BinToTextString(_In_ LPSBinary lpBin, bool bMultiLine);
 
-_Check_return_ CString BinToHexString(_In_ LPSBinary lpBin, BOOL bPrependCB);
+_Check_return_ CString BinToHexString(_In_ LPSBinary lpBin, bool bPrependCB);
 
 void FileTimeToString(_In_ FILETIME* lpFileTime, _In_ CString *PropString, _In_opt_ CString *AltPropString);
 
 #define TAG_MAX_LEN 1024 // Max I've seen in testing is 546 - bit more to be safe
-_Check_return_ CString TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, BOOL bIsAB, BOOL bSingleLine);
+_Check_return_ CString TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB, bool bSingleLine);
 _Check_return_ CString TypeToString(ULONG ulPropTag);
 _Check_return_ CString ProblemArrayToString(_In_ LPSPropProblemArray lpProblems);
 _Check_return_ CString MAPIErrToString(ULONG ulFlags, _In_ LPMAPIERROR lpErr);
@@ -42,7 +42,7 @@ void FreeNameIDStrings(_In_opt_z_ LPTSTR lpszPropName,
 _Check_return_ LPTSTR GUIDToString(_In_opt_ LPCGUID lpGUID);
 
 _Check_return_ HRESULT StringToGUID(_In_z_ LPCTSTR szGUID, _Inout_ LPGUID lpGUID);
-_Check_return_ HRESULT StringToGUID(_In_z_ LPCTSTR szGUID, BOOL bByteSwapped, _Inout_ LPGUID lpGUID);
+_Check_return_ HRESULT StringToGUID(_In_z_ LPCTSTR szGUID, bool bByteSwapped, _Inout_ LPGUID lpGUID);
 
 _Check_return_ CString CurrencyToString(CURRENCY curVal);
 

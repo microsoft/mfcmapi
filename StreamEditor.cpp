@@ -26,9 +26,9 @@ CStreamEditor::CStreamEditor(
 							 UINT uidPrompt,
 							 _In_ LPMAPIPROP lpMAPIProp,
 							 ULONG ulPropTag,
-							 BOOL bIsAB,
-							 BOOL bEditPropAsRTF,
-							 BOOL bUseWrapEx,
+							 bool bIsAB,
+							 bool bEditPropAsRTF,
+							 bool bUseWrapEx,
 							 ULONG ulRTFFlags,
 							 ULONG ulInCodePage,
 							 ULONG ulOutCodePage):
@@ -310,7 +310,6 @@ _Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
 
 				SetBinary(m_iBinBox, (LPBYTE) lpszW, cchStr * sizeof(WCHAR));
 				SetSize(m_iCBBox, cchStr * sizeof(WCHAR));
-				delete[] lpszW;
 				break;
 			}
 		}
@@ -344,7 +343,7 @@ _Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
 	{
 		if (!cb && !lpb) (void) GetBinaryUseControl(m_iBinBox,&cb,&lpb);
 
-		LPTSTR szSmartView = NULL;
+		LPWSTR szSmartView = NULL;
 		SBinary Bin = {0};
 		Bin.cb = (ULONG) cb;
 		Bin.lpb = lpb;
@@ -359,7 +358,7 @@ _Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
 			NULL,
 			false,
 			&szSmartView);
-		SetString(m_iSmartViewBox,szSmartView);
+		SetStringW(m_iSmartViewBox,szSmartView);
 		delete[] szSmartView;
 	}
 	delete[] lpb;

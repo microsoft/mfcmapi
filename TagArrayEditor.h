@@ -11,7 +11,7 @@ public:
 		UINT uidTitle,
 		UINT uidPrompt,
 		_In_opt_ LPSPropTagArray lpTagArray,
-		BOOL bIsAB,
+		bool bIsAB,
 		_In_ LPMAPIPROP	lpMAPIProp);
 	virtual ~CTagArrayEditor();
 
@@ -19,7 +19,7 @@ public:
 
 private:
 	// Use this function to implement list editing
-	_Check_return_ BOOL DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData);
+	_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData);
 	_Check_return_ BOOL OnInitDialog();
 	void OnOK();
 
@@ -29,6 +29,6 @@ private:
 	// source variables
 	LPSPropTagArray	m_lpTagArray;
 	LPSPropTagArray	m_lpOutputTagArray;
-	BOOL			m_bIsAB; // whether the tag is from the AB or not
+	bool			m_bIsAB; // whether the tag is from the AB or not
 	LPMAPIPROP		m_lpMAPIProp;
 };
