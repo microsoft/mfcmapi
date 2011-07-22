@@ -1,152 +1,9 @@
 #include "stdafx.h"
 #include "MrMAPI.h"
 #include "MMAcls.h"
-#include "MAPIFunctions.h"
-#include "MAPIStoreFunctions.h"
-#include "ExtraPropTags.h"
+#include "MMFolder.h"
 
-STDMETHODIMP OpenPropFromMDB(LPMDB lpMDB, ULONG ulPropTag, LPMAPIFOLDER *lpFolder)
-{
-	HRESULT hRes = S_OK;
-	LPSPropValue lpEIDProp = NULL;
-
-	*lpFolder = NULL;
-
-	WC_H(HrGetOneProp(lpMDB, ulPropTag, &lpEIDProp));
-
-	// Open whatever folder we got..
-	if (SUCCEEDED(hRes) && lpEIDProp)
-	{
-		LPMAPIFOLDER	lpTemp = NULL;
-
-		WC_H(CallOpenEntry(
-			lpMDB,
-			NULL,
-			NULL,
-			NULL,
-			lpEIDProp->Value.bin.cb,
-			(LPENTRYID) lpEIDProp->Value.bin.lpb,
-			NULL,
-			MAPI_BEST_ACCESS,
-			NULL,
-			(LPUNKNOWN*)&lpTemp));
-		if (SUCCEEDED(hRes) && lpTemp)
-		{
-			*lpFolder = lpTemp;
-		}
-	}
-
-	MAPIFreeBuffer(lpEIDProp);
-	return hRes;
-} // OpenPropFromMDB
-
-STDMETHODIMP OpenLocalFreeBusy(_In_ LPMDB lpMDB, _Deref_out_opt_ LPMAPIFOLDER *lpFolder)
-{
-	HRESULT hRes = S_OK;
-	LPMAPIFOLDER lpInbox = NULL;
-
-	*lpFolder = NULL;
-
-	WC_H(GetInbox(lpMDB, &lpInbox));
-
-	if (SUCCEEDED(hRes) && lpInbox)
-	{
-		LPSPropValue lpFBProp = NULL;
-		WC_H(HrGetOneProp(lpInbox,PR_FREEBUSY_ENTRYIDS,&lpFBProp));
-		if (SUCCEEDED(hRes) &&
-			lpFBProp &&
-			PT_MV_BINARY == PROP_TYPE(lpFBProp->ulPropTag) &&
-			lpFBProp->Value.MVbin.cValues  >= 3 &&
-			lpFBProp->Value.MVbin.lpbin[3].cb > 0)
-		{
-			LPMAPIFOLDER lpTemp = NULL;
-
-			WC_H(CallOpenEntry(
-				lpMDB,
-				NULL,
-				NULL,
-				NULL,
-				lpFBProp->Value.MVbin.lpbin[3].cb,
-				(LPENTRYID) lpFBProp->Value.MVbin.lpbin[3].lpb,
-				NULL,
-				MAPI_BEST_ACCESS,
-				NULL,
-				(LPUNKNOWN*)&lpTemp));
-			if (SUCCEEDED(hRes) && lpTemp)
-			{
-				*lpFolder = lpTemp;
-			}
-		}
-		MAPIFreeBuffer(lpFBProp);
-	}
-	if (lpInbox) lpInbox->Release();
-
-	return hRes;
-} // OpenLocalFreeBusy
-
-STDMETHODIMP OpenDefaultFolder(_In_ ULONG ulFolder, _In_ LPMDB lpMDB, _Deref_out_opt_ LPMAPIFOLDER *lpFolder)
-{
-	HRESULT			hRes = S_OK;
-
-	if (!lpMDB || !lpFolder)
-	{
-		return MAPI_E_INVALID_PARAMETER;
-	}
-
-	*lpFolder = NULL;
-
-	switch(ulFolder)
-	{
-	case DEFAULT_CALENDAR:
-		hRes = GetSpecialFolder(lpMDB,PR_IPM_APPOINTMENT_ENTRYID,lpFolder);
-		break;
-	case DEFAULT_CONTACTS:
-		hRes = GetSpecialFolder(lpMDB,PR_IPM_CONTACT_ENTRYID,lpFolder);
-		break;
-	case DEFAULT_JOURNAL:
-		hRes = GetSpecialFolder(lpMDB,PR_IPM_JOURNAL_ENTRYID,lpFolder);
-		break;
-	case DEFAULT_NOTES:
-		hRes = GetSpecialFolder(lpMDB,PR_IPM_NOTE_ENTRYID,lpFolder);
-		break;
-	case DEFAULT_TASKS:
-		hRes = GetSpecialFolder(lpMDB,PR_IPM_TASK_ENTRYID,lpFolder);
-		break;
-	case DEFAULT_REMINDERS:
-		hRes = GetSpecialFolder(lpMDB,PR_REM_ONLINE_ENTRYID,lpFolder);
-		break;
-	case DEFAULT_DRAFTS:
-		hRes = GetSpecialFolder(lpMDB,PR_IPM_DRAFTS_ENTRYID,lpFolder);
-		break;
-	case DEFAULT_SENTITEMS:
-		hRes = OpenPropFromMDB(lpMDB,PR_IPM_SENTMAIL_ENTRYID,lpFolder);
-		break;
-	case DEFAULT_OUTBOX:
-		hRes = OpenPropFromMDB(lpMDB,PR_IPM_OUTBOX_ENTRYID,lpFolder);
-		break;
-	case DEFAULT_DELETEDITEMS:
-		hRes = OpenPropFromMDB(lpMDB,PR_IPM_WASTEBASKET_ENTRYID,lpFolder);
-		break;
-	case DEFAULT_FINDER:
-		hRes = OpenPropFromMDB(lpMDB,PR_FINDER_ENTRYID,lpFolder);
-		break;
-	case DEFAULT_IPM_SUBTREE:
-		hRes = OpenPropFromMDB(lpMDB,PR_IPM_SUBTREE_ENTRYID,lpFolder);
-		break;
-	case DEFAULT_INBOX:
-		hRes = GetInbox(lpMDB, lpFolder);
-		break;
-	case DEFAULT_LOCALFREEBUSY:
-		hRes = OpenLocalFreeBusy(lpMDB, lpFolder);
-		break;
-	default:
-		hRes = MAPI_E_INVALID_PARAMETER;
-	}
-
-	return hRes;
-} // OpenDefaultFolder
-
-void DumpExchangeTable(_In_z_ LPWSTR lpszProfile, _In_ ULONG ulPropTag, _In_ ULONG ulFolder)
+void DumpExchangeTable(_In_z_ LPWSTR lpszProfile, _In_ ULONG ulPropTag, _In_ ULONG ulFolder, _In_z_ LPWSTR lpszFolder)
 {
 	InitMFC();
 	HRESULT hRes = S_OK;
@@ -162,11 +19,18 @@ void DumpExchangeTable(_In_z_ LPWSTR lpszProfile, _In_ ULONG ulPropTag, _In_ ULO
 
 	if (lpMAPISession)
 	{
-		WC_H(OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpMDB));
+		WC_H(OpenExchangeOrDefaultMessageStore(lpMAPISession, &lpMDB));
 	}
 	if (lpMDB)
 	{
-		WC_H(OpenDefaultFolder(ulFolder,lpMDB,&lpFolder));
+		if (lpszFolder)
+		{
+			WC_H(HrMAPIOpenFolderExW(lpMDB, lpszFolder, &lpFolder));
+		}
+		else
+		{
+			WC_H(OpenDefaultFolder(ulFolder,lpMDB,&lpFolder));
+		}
 	}
 	if (lpFolder)
 	{
@@ -198,5 +62,5 @@ void DumpExchangeTable(_In_z_ LPWSTR lpszProfile, _In_ ULONG ulPropTag, _In_ ULO
 
 void DoAcls(_In_ MYOPTIONS ProgOpts)
 {
-	DumpExchangeTable(ProgOpts.lpszProfile,PR_ACL_TABLE,ProgOpts.ulFolder);
+	DumpExchangeTable(ProgOpts.lpszProfile,PR_ACL_TABLE,ProgOpts.ulFolder,ProgOpts.lpszFolderPath);
 } // DoAcls

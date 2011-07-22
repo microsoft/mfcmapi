@@ -1,9 +1,6 @@
+#pragma once
+
 // guids.h: where our guids are defined
-
-#include "stdafx.h"
-
-#ifndef MFCMAPIGUID_INCLUDED
-#define MFCMAPIGUID_INCLUDED
 
 DEFINE_GUID(CLSID_MailMessage,
 			0x00020D0B,
@@ -127,5 +124,3 @@ DEFINE_GUID(IID_IMAPISecureMessage, 0x253cc320, 0xeab6, 0x11d0, 0x82, 0x22, 0, 0
 
 // IMAPIGetSession
 DEFINE_GUID(IID_IMAPIGetSession, 0x614ab435, 0x491d, 0x4f5b, 0xa8, 0xb4, 0x60, 0xeb, 0x3, 0x10, 0x30, 0xc6);
-
-#endif // MFCMAPIGUID_INCLUDED

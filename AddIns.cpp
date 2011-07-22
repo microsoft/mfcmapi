@@ -366,7 +366,7 @@ void LoadAddIns()
 				}
 				else
 				{
-					while (true)
+					for (;;)
 					{
 						hRes = S_OK;
 						DebugPrint(DBGAddInPlumbing,_T("Examining \"%s\"\n"),FindFileData.cFileName);

@@ -41,7 +41,4 @@
 #endif
 #include <EDKGUID.H>
 
-#ifdef MFCMAPIGUID_INCLUDED
-#undef MFCMAPIGUID_INCLUDED
-#endif
 #include "guids.h"

@@ -1139,8 +1139,8 @@ void InterpretProp(_In_ LPSPropValue lpProp, _In_opt_ CString *PropString, _In_o
 			tmpPropString.FormatMessage(IDS_OBJECT);
 			break;
 		case(PT_I8): // LARGE_INTEGER
-			tmpPropString.Format(_T("%I64d"),lpProp->Value.li.QuadPart); // STRING_OK
-			tmpAltPropString.Format(_T("0x%08X:0x%08X"),(int)(lpProp->Value.li.HighPart),(int)lpProp->Value.li.LowPart); // STRING_OK
+			tmpPropString.Format(_T("0x%08X:0x%08X"),(int)(lpProp->Value.li.HighPart),(int)lpProp->Value.li.LowPart); // STRING_OK
+			tmpAltPropString.Format(_T("%I64d"),lpProp->Value.li.QuadPart); // STRING_OK
 			break;
 		case(PT_STRING8):
 			// CString overloads '=' to handle conversions

@@ -42,7 +42,8 @@ void SetDebugOutputToFile(bool bDoOutput);
 #define DBGAll								((ULONG) 0x0000ffff)
 #define DBGSuperVerbose						((ULONG) 0xffffffff)
 
-#define fIsSet(ulTag)	(((ulTag) != DBGNoDebug) && (RegKeys[regkeyDEBUG_TAG].ulCurDWORD & (ulTag)))
+#define fIsSet(ulTag) (RegKeys[regkeyDEBUG_TAG].ulCurDWORD & (ulTag))
+#define fIsSetv(ulTag) (((ulTag) != DBGNoDebug) && (RegKeys[regkeyDEBUG_TAG].ulCurDWORD & (ulTag)))
 
 _Check_return_ FILE* OpenFile(_In_z_ LPCWSTR szFileName,bool bNewFile);
 void CloseFile(_In_opt_ FILE* fFile);
@@ -118,3 +119,9 @@ void OutputXMLCDataValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, _In_
 
 #define OutputXMLValueToFile(fFile, uidTag, szValue, iIndent)		OutputXMLValue(DBGNoDebug, fFile, uidTag, szValue, iIndent)
 #define OutputXMLCDataValueToFile(fFile, uidTag, szValue, iIndent)	OutputXMLCDataValue(DBGNoDebug, fFile, uidTag, szValue, iIndent)
+
+#ifdef MRMAPI
+#define OutputToConsole _tprintf
+#else
+#define OutputToConsole __noop
+#endif

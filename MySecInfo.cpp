@@ -135,7 +135,7 @@ STDMETHODIMP_(ULONG) CMySecInfo::AddRef()
 {
 	LONG lCount = InterlockedIncrement(&m_cRef);
 	TRACE_ADDREF(CLASS,lCount);
-	return m_cRef;
+	return lCount;
 } // CMySecInfo::AddRef
 
 STDMETHODIMP_(ULONG) CMySecInfo::Release()
@@ -383,7 +383,7 @@ _Check_return_ bool GetTextualSid(
 	DWORD dwSidSize = 0;
 
 	// Validate the binary SID.
-	if(!IsValidSid(pSid)) return false;
+	if (!IsValidSid(pSid)) return false;
 
 	// Get the identifier authority value from the SID.
 	psia = GetSidIdentifierAuthority(pSid);
@@ -661,7 +661,7 @@ _Check_return_ HRESULT SDToString(_In_ LPBYTE lpBuf, eAceType acetype, _In_ CStr
 			sizeof(ACLSizeInfo),
 			AclSizeInformation));
 
-		for(DWORD i = 0 ; i < ACLSizeInfo.AceCount ; i++)
+		for (DWORD i = 0 ; i < ACLSizeInfo.AceCount ; i++)
 		{
 			CString szTmpString;
 			void*	pACE = NULL;

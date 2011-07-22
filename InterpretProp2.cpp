@@ -215,7 +215,7 @@ _Check_return_ HRESULT PropTagToPropName(ULONG ulPropTag, bool bIsAB, _Deref_opt
 	return hRes;
 } // PropTagToPropName
 
-_Check_return_ HRESULT PropNameToPropTag(_In_z_ LPCTSTR lpszPropName, _Out_ ULONG* ulPropTag)
+_Check_return_ HRESULT PropNameToPropTagW(_In_z_ LPCWSTR lpszPropName, _Out_ ULONG* ulPropTag)
 {
 	if (!lpszPropName || !ulPropTag) return MAPI_E_INVALID_PARAMETER;
 
@@ -224,31 +224,38 @@ _Check_return_ HRESULT PropNameToPropTag(_In_z_ LPCTSTR lpszPropName, _Out_ ULON
 
 	*ulPropTag = NULL;
 	if (!ulPropTagArray || !PropTagArray) return S_OK;
-
-#ifdef UNICODE
 	LPCWSTR szPropName = lpszPropName;
-#else
+
+	for (ulCur = 0 ; ulCur < ulPropTagArray ; ulCur++)
+	{
+		if (0 == lstrcmpiW(szPropName,PropTagArray[ulCur].lpszName))
+		{
+			*ulPropTag = PropTagArray[ulCur].ulValue;
+			break;
+		}
+	}
+
+	return hRes;
+} // PropNameToPropTagW
+
+_Check_return_ HRESULT PropNameToPropTagA(_In_z_ LPCSTR lpszPropName, _Out_ ULONG* ulPropTag)
+{
+	if (!lpszPropName || !ulPropTag) return MAPI_E_INVALID_PARAMETER;
+
+	HRESULT hRes = S_OK;
+
+	*ulPropTag = NULL;
+	if (!ulPropTagArray || !PropTagArray) return S_OK;
+
 	LPWSTR szPropName = NULL;
 	EC_H(AnsiToUnicode(lpszPropName,&szPropName));
 	if (SUCCEEDED(hRes))
 	{
-#endif
-
-		for (ulCur = 0 ; ulCur < ulPropTagArray ; ulCur++)
-		{
-			if (0 == lstrcmpiW(szPropName,PropTagArray[ulCur].lpszName))
-			{
-				*ulPropTag = PropTagArray[ulCur].ulValue;
-				break;
-			}
-		}
-
-#ifndef UNICODE
+		EC_H(PropNameToPropTagW(szPropName,ulPropTag));
 	}
 	delete[] szPropName;
-#endif
 	return hRes;
-} // PropNameToPropTag
+} // PropNameToPropTagA
 
 _Check_return_ ULONG PropTypeNameToPropTypeA(_In_z_ LPCSTR lpszPropType)
 {

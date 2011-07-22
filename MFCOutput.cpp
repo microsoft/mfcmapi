@@ -79,7 +79,7 @@ void SetDebugOutputToFile(bool bDoOutput)
 #define CHKPARAM ASSERT(DBGNoDebug != ulDbgLvl || fFile)
 
 // quick check to see if we have anything to print - so we can avoid executing the call
-#define EARLYABORT {if (!fFile && !RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD && !fIsSet(ulDbgLvl)) return;}
+#define EARLYABORT {if (!fFile && !RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD && !fIsSetv(ulDbgLvl)) return;}
 
 _Check_return_ FILE* OpenFile(_In_z_ LPCWSTR szFileName, bool bNewFile)
 {
@@ -131,15 +131,6 @@ void CloseFile(_In_opt_ FILE* fFile)
 	if (fFile) fclose(fFile);
 } // CloseFile
 
-#ifdef MRMAPI
-void OutputToConsole(_In_z_ LPCTSTR szMsg)
-{
-	_tprintf(szMsg);
-} // OutputToConsole
-#else
-#define OutputToConsole __noop
-#endif
-
 // The root of all debug output - call no debug output functions besides OutputDebugString from here!
 void _Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, _In_opt_z_ LPCTSTR szMsg)
 {
@@ -152,7 +143,7 @@ void _Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, _In_op
 	if (!szMsg) return; // nothing to print? Cool!
 
 	// print to debug output
-	if (fIsSet(ulDbgLvl))
+	if (fIsSetv(ulDbgLvl))
 	{
 		// Compute current time and thread for a time stamp
 		TCHAR		szThreadTime[MAX_PATH];
@@ -262,7 +253,7 @@ void __cdecl DebugPrint(ULONG ulDbgLvl, _Printf_format_string_ LPCTSTR szMsg,...
 {
 	HRESULT hRes = S_OK;
 
-	if (!fIsSet(ulDbgLvl) && !RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD) return;
+	if (!fIsSetv(ulDbgLvl) && !RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD) return;
 
 	va_list argList = NULL;
 	va_start(argList, szMsg);
@@ -284,7 +275,7 @@ void __cdecl DebugPrintEx(ULONG ulDbgLvl, _In_z_ LPCTSTR szClass, _In_z_ LPCTSTR
 	HRESULT hRes = S_OK;
 	static TCHAR szMsgEx[1024];
 
-	if (!fIsSet(ulDbgLvl) && !RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD) return;
+	if (!fIsSetv(ulDbgLvl) && !RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD) return;
 
 	hRes = StringCchPrintf(szMsgEx,_countof(szMsgEx),_T("%s::%s %s"),szClass, szFunc, szMsg); // STRING_OK
 	if (hRes == S_OK)

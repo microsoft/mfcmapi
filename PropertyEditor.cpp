@@ -174,11 +174,11 @@ void CPropertyEditor::CreatePropertyControls()
 	case(PT_ERROR):
 		CreateControls(2);
 		break;
+	case(PT_I8):
 	case(PT_BINARY):
 		CreateControls(4);
 		break;
 	case(PT_CURRENCY):
-	case(PT_I8):
 	case(PT_LONG):
 	case(PT_I2):
 	case(PT_SYSTIME):
@@ -347,12 +347,14 @@ void CPropertyEditor::InitPropertyControls()
 		InitSingleLine(0,IDS_HIGHPART,NULL,false);
 		InitSingleLine(1,IDS_LOWPART,NULL,false);
 		InitSingleLine(2,IDS_DECIMAL,NULL,false);
+		InitMultiLine(3,IDS_COLSMART_VIEW,NULL,true);
 
 		if (m_lpsInputValue)
 		{
 			SetHex(0,(int) m_lpsInputValue->Value.li.HighPart);
 			SetHex(1,(int) m_lpsInputValue->Value.li.LowPart);
 			SetStringf(2,_T("%I64d"),m_lpsInputValue->Value.li.QuadPart); // STRING_OK
+			if (szSmartView) SetStringW(3,szSmartView);
 		}
 		else
 		{
@@ -566,7 +568,7 @@ void CPropertyEditor::WriteStringsToSPropValue()
 			{
 				SCODE errVal = 0;
 				szTmpString = GetStringUseControl(0);
-				errVal = (SCODE) _tcstoul(szTmpString,NULL,0);
+				errVal = (SCODE) _tcstoul(szTmpString,NULL,16);
 				m_lpsOutputValue->Value.err = errVal;
 			}
 			break;
@@ -581,9 +583,9 @@ void CPropertyEditor::WriteStringsToSPropValue()
 			{
 				LARGE_INTEGER liVal = {0};
 				szTmpString = GetStringUseControl(0);
-				liVal.HighPart = (long) _tcstoul(szTmpString,NULL,0);
+				liVal.HighPart = (long) _tcstoul(szTmpString,NULL,16);
 				szTmpString = GetStringUseControl(1);
-				liVal.LowPart = (long) _tcstoul(szTmpString,NULL,0);
+				liVal.LowPart = (long) _tcstoul(szTmpString,NULL,16);
 				m_lpsOutputValue->Value.li = liVal;
 			}
 			break;
@@ -833,9 +835,9 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 			if (0 == i || 1 == i)
 			{
 				szTmpString = GetStringUseControl(0);
-				liVal.HighPart = (long) _tcstoul(szTmpString,NULL,0);
+				liVal.HighPart = (long) _tcstoul(szTmpString,NULL,16);
 				szTmpString = GetStringUseControl(1);
-				liVal.LowPart = (long) _tcstoul(szTmpString,NULL,0);
+				liVal.LowPart = (long) _tcstoul(szTmpString,NULL,16);
 				SetStringf(2,_T("%I64d"),liVal.QuadPart); // STRING_OK
 			}
 			else if (2 == i)
@@ -845,6 +847,22 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 				SetHex(0,(int) liVal.HighPart);
 				SetHex(1,(int) liVal.LowPart);
 			}
+
+			LPWSTR szSmartView = NULL;
+			SPropValue sProp = {0};
+			sProp.ulPropTag = m_ulPropTag;
+			sProp.Value.li = liVal;
+
+			InterpretPropSmartView(&sProp,
+				m_lpMAPIProp,
+				NULL,
+				NULL,
+				m_bMVRow,
+				&szSmartView);
+
+			if (szSmartView) SetStringW(3,szSmartView);
+			delete[] szSmartView;
+			szSmartView = NULL;
 		}
 		break;
 	case(PT_SYSTIME): // components are unsigned hex

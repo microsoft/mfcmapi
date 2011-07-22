@@ -20,6 +20,8 @@ public:
 	void InitMessagePath(_In_z_ LPCWSTR szMessageFileName);
 	void InitFolderPathRoot(_In_z_ LPCWSTR szFolderPathRoot);
 	void InitMailboxTablePathRoot(_In_z_ LPCWSTR szMailboxTablePathRoot);
+	void EnableMSG();
+	void EnableList();
 	void EnableStreamRetry();
 
 private:
@@ -36,14 +38,14 @@ private:
 	virtual void EndFolderWork();
 
 	virtual void BeginContentsTableWork(ULONG ulFlags, ULONG ulCountRows);
-	virtual void DoContentsTablePerRowWork(_In_ LPSRow lpSRow, ULONG ulCurRow);
+	virtual bool DoContentsTablePerRowWork(_In_ LPSRow lpSRow, ULONG ulCurRow);
 	virtual void EndContentsTableWork();
 
-	virtual void BeginMessageWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpParentMessageData, _Deref_out_ LPVOID* lpData);
-	virtual void BeginRecipientWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData);
+	virtual bool BeginMessageWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpParentMessageData, _Deref_out_ LPVOID* lpData);
+	virtual bool BeginRecipientWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData);
 	virtual void DoMessagePerRecipientWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData, _In_ LPSRow lpSRow, ULONG ulCurRow);
 	virtual void EndRecipientWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData);
-	virtual void BeginAttachmentWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData);
+	virtual bool BeginAttachmentWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData);
 	virtual void DoMessagePerAttachmentWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData, _In_ LPSRow lpSRow, _In_ LPATTACH lpAttach, ULONG ulCurRow);
 	virtual void EndAttachmentWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData);
 	virtual void EndMessageWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData);
@@ -57,5 +59,7 @@ private:
 	FILE* m_fFolderContents;
 	FILE* m_fMailboxTable;
 
+	bool m_bOutputMSG;
+	bool m_bOutputList;
 	bool m_bRetryStreamProps;
 };

@@ -306,7 +306,7 @@ _Check_return_ HRESULT HrSetProfileParameters(_In_ SERVICESINIREC *lpServicesIni
 
 		n = 0;
 
-		while(lpServicesIni[n].lpszSection != NULL)
+		while (lpServicesIni[n].lpszSection != NULL)
 		{
 			LPTSTR lpszProp = lpServicesIni[n].lpszKey;
 			LPTSTR lpszValue = lpServicesIni[n].lpszValue;
