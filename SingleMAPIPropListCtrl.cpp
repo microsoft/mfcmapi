@@ -1723,7 +1723,7 @@ void CSingleMAPIPropListCtrl::OnPasteProperty()
 
 					ULONG ulCopyFlags = MyCopyData.GetHex(1);
 
-					if(lpProgress)
+					if (lpProgress)
 						ulCopyFlags |= MAPI_DIALOG;
 
 					EC_H(lpSourcePropObj->CopyProps(
@@ -1735,7 +1735,7 @@ void CSingleMAPIPropListCtrl::OnPasteProperty()
 						ulCopyFlags,
 						&lpProblems));
 
-					if(lpProgress)
+					if (lpProgress)
 						lpProgress->Release();
 
 					lpProgress = NULL;
@@ -1830,7 +1830,7 @@ void CSingleMAPIPropListCtrl::OnCopyTo()
 
 			ULONG ulCopyFlags = MyData.GetHex(1);
 
-			if(lpProgress)
+			if (lpProgress)
 				ulCopyFlags |= MAPI_DIALOG;
 
 			EC_H(lpSourcePropObj->CopyTo(
@@ -1845,7 +1845,7 @@ void CSingleMAPIPropListCtrl::OnCopyTo()
 				&lpProblems));
 			MAPIFreeBuffer(lpTagArray);
 
-			if(lpProgress)
+			if (lpProgress)
 				lpProgress->Release();
 
 			lpProgress = NULL;
@@ -2083,7 +2083,7 @@ void CSingleMAPIPropListCtrl::OnPasteNamedProps()
 					&ulObjType,
 					(LPUNKNOWN*)&lpSource));
 
-				if(S_OK == hRes && MAPI_MESSAGE == ulObjType && lpSource)
+				if (S_OK == hRes && MAPI_MESSAGE == ulObjType && lpSource)
 				{
 					EC_H(CopyNamedProps(
 						lpSource,

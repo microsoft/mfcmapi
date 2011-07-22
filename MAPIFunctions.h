@@ -52,11 +52,14 @@ _Check_return_ HRESULT DeleteToDeletedItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLDER 
 _Check_return_ bool    FindPropInPropTagArray(_In_ LPSPropTagArray lpspTagArray, ULONG ulPropToFind, _Out_ ULONG* lpulRowFound);
 _Check_return_ ULONG   GetMAPIObjectType(_In_opt_ LPMAPIPROP lpMAPIProp);
 _Check_return_ HRESULT GetInbox(_In_ LPMDB lpMDB, _Deref_out_opt_ LPMAPIFOLDER* lpInbox);
+_Check_return_ HRESULT GetInbox(_In_ LPMDB lpMDB, _Out_opt_ ULONG* lpcbeid, _Deref_out_opt_ LPENTRYID* lppeid);
 _Check_return_ HRESULT GetParentFolder(_In_ LPMAPIFOLDER lpChildFolder, _In_ LPMDB lpMDB, _Deref_out_opt_ LPMAPIFOLDER* lpParentFolder);
 _Check_return_ HRESULT GetPropsNULL(_In_ LPMAPIPROP lpMAPIProp, ULONG ulFlags, _Out_ ULONG* lpcValues, _Deref_out_opt_ LPSPropValue* lppPropArray);
 _Check_return_ HRESULT GetSpecialFolder(_In_ LPMDB lpMDB, ULONG ulFolderPropTag, _Deref_out_opt_ LPMAPIFOLDER *lpSpecialFolder);
+_Check_return_ HRESULT GetSpecialFolderEID(_In_ LPMDB lpMDB, ULONG ulFolderPropTag, _Out_opt_ ULONG* lpcbeid, _Deref_out_opt_ LPENTRYID* lppeid);
 _Check_return_ HRESULT IsAttachmentBlocked(_In_ LPMAPISESSION lpMAPISession, _In_z_ LPCWSTR pwszFileName, _Out_ bool* pfBlocked);
 _Check_return_ bool    IsDuplicateProp(_In_ LPSPropTagArray lpArray, ULONG ulPropTag);
+_Check_return_ HRESULT ManuallyEmptyFolder(_In_ LPMAPIFOLDER lpFolder, BOOL bAssoc, BOOL bHardDelete);
 void    MyHexFromBin(_In_opt_count_(cb) LPBYTE lpb, size_t cb, bool bPrependCB, _Deref_out_opt_z_ LPTSTR* lpsz);
 _Check_return_ bool MyBinFromHex(_In_z_ LPCTSTR lpsz, _Inout_opt_count_(*lpcb) LPBYTE lpb, _Inout_ ULONG* lpcb);
 _Check_return_ HRESULT RemoveOneOff(_In_ LPMESSAGE lpMessage, bool bRemovePropDef);

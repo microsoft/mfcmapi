@@ -44,7 +44,7 @@ CFakeSplitter::CFakeSplitter(
 
 	WNDCLASSEX wc = {0};
 	HINSTANCE hInst = AfxGetInstanceHandle();
-	if(!(::GetClassInfoEx(hInst, _T("FakeSplitter"), &wc))) // STRING_OK
+	if (!(::GetClassInfoEx(hInst, _T("FakeSplitter"), &wc))) // STRING_OK
 	{
 		wc.cbSize  = sizeof(wc);
 		wc.style   = 0; // not passing CS_VREDRAW | CS_HREDRAW fixes flicker

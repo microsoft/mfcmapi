@@ -48,7 +48,6 @@ void DoSmartView(_In_ MYOPTIONS ProgOpts)
 				}
 				else
 				{
-					HRESULT hRes = S_OK;
 					LPTSTR szIn = NULL;
 #ifdef UNICODE
 					EC_H(AnsiToUnicode((LPCSTR) lpbIn,&szIn));

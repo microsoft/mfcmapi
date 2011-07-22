@@ -150,31 +150,6 @@ _Check_return_ BOOL CContentsTableDlg::OnInitDialog()
 		EC_H(m_lpContainer->GetContentsTable(
 			ulFlags,
 			&m_lpContentsTable));
-		if (hRes == MAPI_E_NO_ACCESS)
-		{
-			WARNHRESMSG(hRes,IDS_GETCONTENTSNOACCESS);
-			m_lpContentsTable = NULL;
-		}
-		else if (hRes == MAPI_E_CALL_FAILED)
-		{
-			WARNHRESMSG(hRes,IDS_GETCONTENTSFAILED);
-			m_lpContentsTable = NULL;
-		}
-		else if (hRes == MAPI_E_NO_SUPPORT)
-		{
-			WARNHRESMSG(hRes,IDS_GETCONTENTSNOTSUPPORTED);
-			m_lpContentsTable = NULL;
-		}
-		else if (hRes == MAPI_E_UNKNOWN_FLAGS)
-		{
-			WARNHRESMSG(hRes,IDS_GETCONTENTSBADFLAG);
-			m_lpContentsTable = NULL;
-		}
-		else if (hRes == MAPI_E_INVALID_PARAMETER)
-		{
-			WARNHRESMSG(hRes,IDS_GETCONTENTSBADPARAM);
-			m_lpContentsTable = NULL;
-		}
 	}
 
 	UpdateTitleBarText(NULL);
@@ -948,7 +923,7 @@ _Check_return_ bool CContentsTableDlg::HandleAddInMenu(WORD wMenuSelect)
 	{
 		// Add appropriate flag to context
 		MyAddInMenuParams.ulCurrentFlags |= (ulFlags & (MENU_FLAGS_SINGLESELECT|MENU_FLAGS_MULTISELECT));
-		while (true)
+		for (;;)
 		{
 			SortListData* lpData = (SortListData*) m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 			if (-1 == iItem) break;

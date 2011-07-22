@@ -1230,25 +1230,23 @@ void CEditor::OnSize(UINT nType, int cx, int cy)
 				{
 					// buttons go below the list:
 					iCYTop += m_iMargin;
-					if (NUMLISTBUTTONS)
+
+					int iSlotWidth = iFullWidth/NUMLISTBUTTONS;
+					int iOffset = (iSlotWidth - m_iButtonWidth)/2;
+					int iButton = 0;
+
+					for (iButton = 0 ; iButton < NUMLISTBUTTONS ; iButton++)
 					{
-						int iSlotWidth = iFullWidth/NUMLISTBUTTONS;
-						int iOffset = (iSlotWidth - m_iButtonWidth)/2;
-						int iButton = 0;
-
-						for (iButton = 0 ; iButton < NUMLISTBUTTONS ; iButton++)
-						{
-							EC_B(m_lpControls[j].UI.lpList->ButtonArray[iButton].SetWindowPos(
-								0,
-								m_iMargin+iSlotWidth * iButton + iOffset,
-								iCYTop, // new y
-								m_iButtonWidth,
-								m_iButtonHeight,
-								SWP_NOZORDER));
-						}
-
-						iCYTop += m_iButtonHeight;
+						EC_B(m_lpControls[j].UI.lpList->ButtonArray[iButton].SetWindowPos(
+							0,
+							m_iMargin+iSlotWidth * iButton + iOffset,
+							iCYTop, // new y
+							m_iButtonWidth,
+							m_iButtonHeight,
+							SWP_NOZORDER));
 					}
+
+					iCYTop += m_iButtonHeight;
 				}
 			}
 			break;
@@ -2161,7 +2159,7 @@ void CEditor::OnPaint()
 	CDC* dc = NULL;
 	EC_D(dc,BeginPaint(&ps));
 
-	if(dc && !IsZoomed())
+	if (dc && !IsZoomed())
 	{
 		CRect rc;
 		GetClientRect(&rc);

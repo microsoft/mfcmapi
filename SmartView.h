@@ -14,6 +14,7 @@ void InterpretPropSmartView(_In_ LPSPropValue lpProp, // required property value
 void InterpretBinaryAsString(SBinary myBin, DWORD_PTR iStructType, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_z_ LPWSTR* lpszResultString);
 void InterpretNumberAsString(_PV pV, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_z_ LPWSTR lpszPropNameString, _In_opt_ LPGUID lpguidNamedProp, bool bLabel, _Deref_out_opt_z_ LPWSTR* lpszResultString);
 void InterpretNumberAsStringProp(ULONG ulVal, ULONG ulPropTag, _Deref_out_opt_z_ LPWSTR* lpszResultString);
+_Check_return_ LPWSTR FidMidToSzString(LONGLONG llID, bool bLabel);
 
 // Nothing below this point actually needs to be public. It's only used internally by InterpretPropSmartView
 
@@ -400,6 +401,15 @@ enum EIDStructType
 	eidtWAB,
 };
 
+struct MDB_STORE_EID_V2
+{
+	ULONG ulMagic; // MDB_STORE_EID_V2_MAGIC
+	ULONG ulSize; // size of this struct plus the size of szServerDN and wszServerFQDN
+	ULONG ulVersion; // MDB_STORE_EID_V2_VERSION
+	ULONG ulOffsetDN; // offset past the beginning of the MDB_STORE_EID_V2 struct where szServerDN starts
+	ULONG ulOffsetFQDN; // offset past the beginning of the MDB_STORE_EID_V2 struct where wszServerFQDN starts
+};
+
 // EntryIdStruct
 // =====================
 //   This structure specifies an Entry Id
@@ -444,6 +454,11 @@ struct EntryIdStruct
 			ULONG WrappedType;
 			LPSTR ServerShortname;
 			LPSTR MailboxDN;
+			BOOL bV2;
+			MDB_STORE_EID_V2 v2;
+			LPSTR v2DN;
+			LPWSTR v2FQDN;
+			BYTE v2Reserved[2];
 		} MessageDatabaseObject;
 		struct
 		{
@@ -963,10 +978,14 @@ _Check_return_ LPWSTR FolderUserFieldStreamStructToString(_In_ FolderUserFieldSt
 //
 struct NickNameCacheStruct
 {
-	BYTE Metadata1[12];
+	BYTE Metadata1[4];
+	ULONG ulMajorVersion;
+	ULONG ulMinorVersion;
 	DWORD cRowCount;
 	LPSRow lpRows;
-	BYTE Metadata2[12];
+	ULONG cbEI;
+	LPBYTE lpbEI;
+	BYTE Metadata2[8];
 	size_t JunkDataSize;
 	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
 };

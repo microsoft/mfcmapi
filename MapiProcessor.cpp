@@ -13,6 +13,7 @@ CMAPIProcessor::CMAPIProcessor()
 	m_szFolderOffset = NULL;
 	m_lpListHead = NULL;
 	m_lpListTail = NULL;
+	m_lpResFolderContents = NULL;
 } // CMAPIProcessor::CMAPIProcessor
 
 CMAPIProcessor::~CMAPIProcessor()
@@ -50,6 +51,13 @@ void CMAPIProcessor::InitFolder(_In_ LPMAPIFOLDER lpFolder)
 	WC_H(CopyString(&m_szFolderOffset,_T("\\"),NULL)); // STRING_OK
 } // CMAPIProcessor::InitFolder
 
+void CMAPIProcessor::InitFolderContentsRestriction(_In_opt_ LPSRestriction lpRes)
+{
+	// If we ever need to hold this past the scope of the caller we'll need to copy the restriction.
+	// For now, just grab a pointer.
+	m_lpResFolderContents = lpRes;
+} // CMAPIProcessor::InitFolderContentsRestriction
+
 // --------------------------------------------------------------------------------- //
 
 // Server name MUST be passed
@@ -84,6 +92,7 @@ void CMAPIProcessor::ProcessMailboxTable(
 		{
 			WC_H(lpMailBoxTable->SetColumns((LPSPropTagArray)&sptMBXCols,NULL));
 			hRes = S_OK;
+
 			// go to the first row
 			WC_H(lpMailBoxTable->SeekRow(
 				BOOKMARK_BEGINNING,
@@ -163,19 +172,33 @@ void CMAPIProcessor::ProcessFolders(bool bDoRegular, bool bDoAssociated, bool bD
 {
 	BeginProcessFoldersWork();
 
-	if (!m_lpFolder)
+	if (ContinueProcessingFolders())
 	{
-		OpenFirstFolderInList();
-	}
+		if (!m_lpFolder)
+		{
+			OpenFirstFolderInList();
+		}
 
-	while (m_lpFolder)
-	{
-		DoProcessFoldersPerFolderWork();
-		ProcessFolder(bDoRegular, bDoAssociated, bDoDescent);
-		OpenFirstFolderInList();
+		while (m_lpFolder)
+		{
+			DoProcessFoldersPerFolderWork();
+			ProcessFolder(bDoRegular, bDoAssociated, bDoDescent);
+			if (!ContinueProcessingFolders()) break;
+			OpenFirstFolderInList();
+		}
 	}
 	EndProcessFoldersWork();
 } // CMAPIProcessor::ProcessFolders
+
+bool CMAPIProcessor::ContinueProcessingFolders()
+{
+	return true;
+} // CMAPIProcessor::ContinueProcessingFolders
+
+bool CMAPIProcessor::ShouldProcessContentsTable()
+{
+	return true;
+} // CMAPIProcessor::ShouldProcessContentsTable
 
 void CMAPIProcessor::ProcessFolder(bool bDoRegular,
 								   bool bDoAssociated,
@@ -187,12 +210,12 @@ void CMAPIProcessor::ProcessFolder(bool bDoRegular,
 
 	BeginFolderWork();
 
-	if (bDoRegular)
+	if (bDoRegular && ShouldProcessContentsTable())
 	{
 		ProcessContentsTable(NULL);
 	}
 
-	if (bDoAssociated)
+	if (bDoAssociated && ShouldProcessContentsTable())
 	{
 		ProcessContentsTable(MAPI_ASSOCIATED);
 	}
@@ -220,7 +243,8 @@ void CMAPIProcessor::ProcessFolder(bool bDoRegular,
 				PR_DISPLAY_NAME,
 				PR_ENTRYID,
 				PR_SUBFOLDERS,
-				PR_CONTAINER_FLAGS};
+				PR_CONTAINER_FLAGS,
+			};
 
 			LPSRowSet lpRows = NULL;
 			// If I don't do this, the MSPST provider can blow chunks (MAPI_E_EXTENDED_ERROR) for some folders when I get a row
@@ -303,6 +327,8 @@ void CMAPIProcessor::ProcessContentsTable(ULONG ulFlags)
 		contPR_HASATTACH,
 		contPR_ENTRYID,
 		contPR_SEARCH_KEY,
+		contPR_RECORD_KEY,
+		contPidTagMid,
 		contNUM_COLS
 	};
 	static const SizedSPropTagArray(contNUM_COLS,contCols) =
@@ -314,6 +340,8 @@ void CMAPIProcessor::ProcessContentsTable(ULONG ulFlags)
 		PR_HASATTACH,
 		PR_ENTRYID,
 		PR_SEARCH_KEY,
+		PR_RECORD_KEY,
+		PidTagMid,
 	};
 	HRESULT	hRes = S_OK;
 
@@ -325,6 +353,13 @@ void CMAPIProcessor::ProcessContentsTable(ULONG ulFlags)
 	if (SUCCEEDED(hRes) && lpContentsTable)
 	{
 		WC_H(lpContentsTable->SetColumns((LPSPropTagArray)&contCols, TBL_BATCH));
+	}
+
+	if (SUCCEEDED(hRes) && lpContentsTable && m_lpResFolderContents)
+	{
+		DebugPrintRestriction(DBGGeneric,m_lpResFolderContents,NULL);
+		WC_H(lpContentsTable->Restrict(m_lpResFolderContents,TBL_BATCH));
+		hRes = S_OK;
 	}
 
 	if (SUCCEEDED(hRes) && lpContentsTable)
@@ -355,7 +390,7 @@ void CMAPIProcessor::ProcessContentsTable(ULONG ulFlags)
 			ULONG iRow = 0;
 			for (iRow = 0 ; iRow < lpRows->cRows ; iRow++)
 			{
-				DoContentsTablePerRowWork(&lpRows->aRow[iRow], i++);
+				if (!DoContentsTablePerRowWork(&lpRows->aRow[iRow], i++)) continue;
 
 				LPSPropValue lpMsgEID = NULL;
 				lpMsgEID = PpropFindProp(
@@ -409,10 +444,12 @@ void CMAPIProcessor::ProcessMessage(_In_ LPMESSAGE lpMessage, bool bHasAttach, _
 	if (!lpMessage) return;
 
 	LPVOID lpData = NULL;
-	BeginMessageWork(lpMessage, lpParentMessageData, &lpData);
-	ProcessRecipients(lpMessage,lpData);
-	ProcessAttachments(lpMessage,bHasAttach,lpData);
-	EndMessageWork(lpMessage,lpData);
+	if (BeginMessageWork(lpMessage, lpParentMessageData, &lpData))
+	{
+		ProcessRecipients(lpMessage,lpData);
+		ProcessAttachments(lpMessage,bHasAttach,lpData);
+		EndMessageWork(lpMessage,lpData);
+	}
 } // CMAPIProcessor::ProcessMessage
 
 void CMAPIProcessor::ProcessRecipients(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData)
@@ -423,7 +460,7 @@ void CMAPIProcessor::ProcessRecipients(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpD
 	LPMAPITABLE		lpRecipTable = NULL;
 	LPSRowSet		lpRows = NULL;
 
-	BeginRecipientWork(lpMessage,lpData);
+	if (!BeginRecipientWork(lpMessage,lpData)) return;
 
 	// get the recipient table
 	WC_H(lpMessage->GetRecipientTable(
@@ -484,7 +521,7 @@ void CMAPIProcessor::ProcessAttachments(_In_ LPMESSAGE lpMessage, bool bHasAttac
 	LPMAPITABLE		lpAttachTable = NULL;
 	LPSRowSet		lpRows = NULL;
 
-	BeginAttachmentWork(lpMessage,lpData);
+	if (!BeginAttachmentWork(lpMessage,lpData)) return;
 	
 	// Only get the attachment table if PR_HASATTACH was true or didn't exist.
 	if (bHasAttach)
@@ -615,48 +652,43 @@ void CMAPIProcessor::AddFolderToFolderList(_In_opt_ LPSBinary lpFolderEID, _In_z
 } // CMAPIProcessor::AddFolderToFolderList
 
 // Call OpenEntry on the first folder in the list, remove it from the list
+// If we fail to open a folder, move on to the next item in the list
 void CMAPIProcessor::OpenFirstFolderInList()
 {
+	HRESULT hRes = S_OK;
+	LPMAPIFOLDER lpFolder = NULL;
 	MAPIFreeBuffer(m_szFolderOffset);
 	m_szFolderOffset = NULL;
 
 	if (m_lpFolder) m_lpFolder->Release();
 	m_lpFolder = NULL;
 
-	if (!m_lpListHead) return;
-	SBinary sBin = {0};
-
-	if (m_lpListHead->lpFolderEID)
+	// loop over nodes until we open one or run out
+	while (!lpFolder && m_lpListHead)
 	{
-		sBin.cb = m_lpListHead->lpFolderEID->cb;
-		sBin.lpb = m_lpListHead->lpFolderEID->lpb;
+		hRes = S_OK;
+
+		WC_H(CallOpenEntry(
+			m_lpMDB,
+			NULL,
+			NULL,
+			NULL,
+			m_lpListHead->lpFolderEID,
+			NULL,
+			MAPI_BEST_ACCESS,
+			NULL,
+			(LPUNKNOWN*)&lpFolder));
+		if (m_lpListHead->szFolderOffsetPath)
+		{
+			WC_H(CopyString(&m_szFolderOffset,m_lpListHead->szFolderOffsetPath,NULL));
+		}
+
+		LPFOLDERNODE lpTempNode = NULL;
+		lpTempNode = m_lpListHead;
+		m_lpListHead = m_lpListHead->lpNextFolder;
+		if (m_lpListHead == lpTempNode) m_lpListTail = NULL;
+		MAPIFreeBuffer(lpTempNode);
 	}
-
-	HRESULT hRes = S_OK;
-	if (m_lpListHead->szFolderOffsetPath)
-	{
-		WC_H(CopyString(&m_szFolderOffset,m_lpListHead->szFolderOffsetPath,NULL));
-	}
-
-	LPMAPIFOLDER lpFolder = NULL;
-	WC_H(CallOpenEntry(
-		m_lpMDB,
-		NULL,
-		NULL,
-		NULL,
-		sBin.cb,
-		(LPENTRYID) sBin.lpb,
-		NULL,
-		MAPI_BEST_ACCESS,
-		NULL,
-		(LPUNKNOWN*)&lpFolder));
-
-	LPFOLDERNODE lpTempNode = NULL;
-	lpTempNode = m_lpListHead;
-	m_lpListHead = m_lpListHead->lpNextFolder;
-	if (m_lpListHead == lpTempNode) m_lpListTail = NULL;
-
-	MAPIFreeBuffer(lpTempNode);
 
 	m_lpFolder = lpFolder;
 } // CMAPIProcessor::OpenFirstFolderInList
@@ -727,20 +759,23 @@ void CMAPIProcessor::BeginContentsTableWork(ULONG /*ulFlags*/, ULONG /*ulCountRo
 {
 } // CMAPIProcessor::BeginContentsTableWork
 
-void CMAPIProcessor::DoContentsTablePerRowWork(_In_ LPSRow /*lpSRow*/, ULONG /*ulCurRow*/)
+bool CMAPIProcessor::DoContentsTablePerRowWork(_In_ LPSRow /*lpSRow*/, ULONG /*ulCurRow*/)
 {
+	return true; // Keep processing
 } // CMAPIProcessor::DoContentsTablePerRowWork
 
 void CMAPIProcessor::EndContentsTableWork()
 {
 } // CMAPIProcessor::EndContentsTableWork
 
-void CMAPIProcessor::BeginMessageWork(_In_ LPMESSAGE /*lpMessage*/, _In_opt_ LPVOID /*lpParentMessageData*/, _Deref_out_ LPVOID* /*lpData*/)
+bool CMAPIProcessor::BeginMessageWork(_In_ LPMESSAGE /*lpMessage*/, _In_opt_ LPVOID /*lpParentMessageData*/, _Deref_out_ LPVOID* /*lpData*/)
 {
+	return true; // Keep processing
 } // CMAPIProcessor::BeginMessageWork
 
-void CMAPIProcessor::BeginRecipientWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID /*lpData*/)
+bool CMAPIProcessor::BeginRecipientWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID /*lpData*/)
 {
+	return true; // Keep processing
 } // CMAPIProcessor::BeginRecipientWork
 
 void CMAPIProcessor::DoMessagePerRecipientWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID /*lpData*/, _In_ LPSRow /*lpSRow*/, ULONG /*ulCurRow*/)
@@ -751,8 +786,9 @@ void CMAPIProcessor::EndRecipientWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID 
 {
 } // CMAPIProcessor::EndRecipientWork
 
-void CMAPIProcessor::BeginAttachmentWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID /*lpData*/)
+bool CMAPIProcessor::BeginAttachmentWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID /*lpData*/)
 {
+	return true; // Keep processing
 } // CMAPIProcessor::BeginAttachmentWork
 
 void CMAPIProcessor::DoMessagePerAttachmentWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID /*lpData*/, _In_ LPSRow /*lpSRow*/, _In_ LPATTACH /*lpAttach*/, ULONG /*ulCurRow*/)

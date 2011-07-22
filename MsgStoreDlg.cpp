@@ -489,7 +489,7 @@ void CMsgStoreDlg::OnPasteMessages()
 
 			LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIFolder::CopyMessages"), m_hWnd); // STRING_OK
 
-			if(lpProgress)
+			if (lpProgress)
 				ulMoveMessage |= MESSAGE_DIALOG;
 
 			EC_H(lpMAPISourceFolder->CopyMessages(
@@ -500,7 +500,7 @@ void CMsgStoreDlg::OnPasteMessages()
 				lpProgress,
 				ulMoveMessage));
 
-			if(lpProgress)
+			if (lpProgress)
 				lpProgress->Release();
 
 			lpProgress = NULL;
@@ -583,11 +583,11 @@ void CMsgStoreDlg::OnPasteFolder()
 			LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIFolder::CopyFolder"), m_hWnd); // STRING_OK
 
 			ULONG ulCopyFlags = fMapiUnicode;
-			if(MyData.GetCheck(1))
+			if (MyData.GetCheck(1))
 				ulCopyFlags |= COPY_SUBFOLDERS;
-			if(MyData.GetCheck(2))
+			if (MyData.GetCheck(2))
 				ulCopyFlags |= FOLDER_MOVE;
-			if(lpProgress)
+			if (lpProgress)
 				ulCopyFlags |= FOLDER_DIALOG;
 
 			hRes = lpCopyRoot->CopyFolder(
@@ -607,7 +607,7 @@ void CMsgStoreDlg::OnPasteFolder()
 			}
 			else CHECKHRESMSG(hRes,IDS_COPYFOLDERFAILED);
 
-			if(lpProgress)
+			if (lpProgress)
 				lpProgress->Release();
 
 			lpProgress = NULL;
@@ -863,43 +863,50 @@ void CMsgStoreDlg::OnEmptyFolder()
 	if (!m_lpHierarchyTableTreeCtrl) return;
 
 	// Find the highlighted item
-	LPMAPIFOLDER lpMAPIFolderToDelete = (LPMAPIFOLDER) m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY);
+	LPMAPIFOLDER lpMAPIFolderToEmpty = (LPMAPIFOLDER) m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY);
 
-	if (lpMAPIFolderToDelete)
+	if (lpMAPIFolderToEmpty)
 	{
 		CEditor MyData(
 			this,
 			IDS_DELETEITEMSANDSUB,
 			IDS_DELETEITEMSANDSUBPROMPT,
-			2,
+			3,
 			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 		MyData.InitCheck(0,IDS_DELASSOCIATED,false,false);
 		MyData.InitCheck(1,IDS_HARDDELETION,false,false);
+		MyData.InitCheck(2,IDS_MANUALLYEMPTYFOLDER,false,false);
 
 		WC_H(MyData.DisplayDialog());
 		if (S_OK == hRes)
 		{
-			ulFlags = MyData.GetCheck(0)?DEL_ASSOCIATED:0;
-			ulFlags |= MyData.GetCheck(1)?DELETE_HARD_DELETE:0;
+			if (MyData.GetCheck(2))
+			{
+				EC_H(ManuallyEmptyFolder(lpMAPIFolderToEmpty,MyData.GetCheck(0),MyData.GetCheck(1)));
+			}
+			else
+			{
+				ulFlags = MyData.GetCheck(0)?DEL_ASSOCIATED:0;
+				ulFlags |= MyData.GetCheck(1)?DELETE_HARD_DELETE:0;
+				LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIFolder::EmptyFolder"), m_hWnd); // STRING_OK
 
-			LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIFolder::EmptyFolder"), m_hWnd); // STRING_OK
+				if (lpProgress)
+					ulFlags |= FOLDER_DIALOG;
 
-			if(lpProgress)
-				ulFlags |= FOLDER_DIALOG;
+				DebugPrintEx(DBGGeneric,CLASS,_T("OnEmptyFolder"),_T("Calling EmptyFolder on %p, ulFlags = 0x%08X.\n"),lpMAPIFolderToEmpty,ulFlags);
 
-			DebugPrintEx(DBGGeneric,CLASS,_T("OnEmptyFolder"),_T("Calling EmptyFolder on %p, ulFlags = 0x%08X.\n"),lpMAPIFolderToDelete,ulFlags);
+				EC_H(lpMAPIFolderToEmpty->EmptyFolder(
+					lpProgress ? (ULONG_PTR)m_hWnd : NULL,
+					lpProgress,
+					ulFlags));
 
-			EC_H(lpMAPIFolderToDelete->EmptyFolder(
-				lpProgress ? (ULONG_PTR)m_hWnd : NULL,
-				lpProgress,
-				ulFlags));
+				if (lpProgress)
+					lpProgress->Release();
 
-			if(lpProgress)
-				lpProgress->Release();
-
-			lpProgress = NULL;
+				lpProgress = NULL;
+			}
 		}
-		lpMAPIFolderToDelete->Release();
+		lpMAPIFolderToEmpty->Release();
 	}
 } // CMsgStoreDlg::OnEmptyFolder
 
@@ -946,7 +953,7 @@ void CMsgStoreDlg::OnDeleteSelectedItem()
 
 				LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIFolder::DeleteFolder"), m_hWnd); // STRING_OK
 
-				if(lpProgress)
+				if (lpProgress)
 					ulFlags |= FOLDER_DIALOG;
 
 				EC_H(lpParentFolder->DeleteFolder(
@@ -956,7 +963,7 @@ void CMsgStoreDlg::OnDeleteSelectedItem()
 					lpProgress,
 					ulFlags));
 
-				if(lpProgress)
+				if (lpProgress)
 					lpProgress->Release();
 
 				lpProgress = NULL;
@@ -1216,7 +1223,7 @@ void CMsgStoreDlg::OnRestoreDeletedFolder()
 
 			ULONG ulCopyFlags = fMapiUnicode | (MyData.GetCheck(1)?COPY_SUBFOLDERS:0);
 
-			if(lpProgress)
+			if (lpProgress)
 				ulCopyFlags |= FOLDER_DIALOG;
 
 			hRes = lpCopyRoot->CopyFolder(
@@ -1239,7 +1246,7 @@ void CMsgStoreDlg::OnRestoreDeletedFolder()
 			}
 			else CHECKHRESMSG(hRes,IDS_COPYFOLDERFAILED);
 
-			if(lpProgress)
+			if (lpProgress)
 				lpProgress->Release();
 
 			lpProgress = NULL;

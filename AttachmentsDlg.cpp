@@ -325,7 +325,7 @@ void CAttachmentsDlg::OnDeleteSelectedItem()
 					lpProgress,
 					lpProgress ? ATTACH_DIALOG : 0));
 
-				if(lpProgress)
+				if (lpProgress)
 					lpProgress->Release();
 
 				lpProgress = NULL;

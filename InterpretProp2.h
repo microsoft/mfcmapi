@@ -4,7 +4,13 @@
 // Free lpszExactMatch and lpszPartialMatches with MAPIFreeBuffer
 _Check_return_ HRESULT PropTagToPropName(ULONG ulPropTag, bool bIsAB, _Deref_opt_out_opt_z_ LPTSTR* lpszExactMatch, _Deref_opt_out_opt_z_ LPTSTR* lpszPartialMatches);
 
-_Check_return_ HRESULT PropNameToPropTag(_In_z_ LPCTSTR lpszPropName, _Out_ ULONG* ulPropTag);
+_Check_return_ HRESULT PropNameToPropTagW(_In_z_ LPCWSTR lpszPropName, _Out_ ULONG* ulPropTag);
+_Check_return_ HRESULT PropNameToPropTagA(_In_z_ LPCSTR lpszPropName, _Out_ ULONG* ulPropTag);
+#ifdef UNICODE
+#define PropNameToPropTag PropNameToPropTagW
+#else
+#define PropNameToPropTag PropNameToPropTagA
+#endif
 _Check_return_ ULONG PropTypeNameToPropTypeW(_In_z_ LPCWSTR lpszPropType);
 _Check_return_ ULONG PropTypeNameToPropTypeA(_In_z_ LPCSTR lpszPropType);
 #ifdef UNICODE

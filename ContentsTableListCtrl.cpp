@@ -1268,7 +1268,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::GetSelectedItemEIDs(_Deref_out_op
 			int iArrayPos = 0;
 			int iSelectedItem = -1;
 
-			for(iArrayPos = 0 ; iArrayPos < iNumItems ; iArrayPos++)
+			for (iArrayPos = 0 ; iArrayPos < iNumItems ; iArrayPos++)
 			{
 				lpTempList->lpbin[iArrayPos].cb = 0;
 				lpTempList->lpbin[iArrayPos].lpb = NULL;

@@ -27,6 +27,7 @@ public:
 	void InitSession(_In_ LPMAPISESSION lpSession);
 	void InitMDB(_In_ LPMDB lpMDB);
 	void InitFolder(_In_ LPMAPIFOLDER lpFolder);
+	void InitFolderContentsRestriction(_In_opt_ LPSRestriction lpRes);
 
 	// Processing functions
 	void ProcessMailboxTable(_In_z_ LPCTSTR szExchangeServerName);
@@ -49,6 +50,8 @@ private:
 	virtual void BeginStoreWork();
 	virtual void EndStoreWork();
 
+	virtual bool ContinueProcessingFolders();
+	virtual bool ShouldProcessContentsTable();
 	virtual void BeginProcessFoldersWork();
 	virtual void DoProcessFoldersPerFolderWork();
 	virtual void EndProcessFoldersWork();
@@ -58,17 +61,23 @@ private:
 	virtual void EndFolderWork();
 
 	virtual void BeginContentsTableWork(ULONG ulFlags, ULONG ulCountRows);
-	virtual void DoContentsTablePerRowWork(_In_ LPSRow lpSRow, ULONG ulCurRow);
+	// Called from ProcessContentsTable. If true is returned, ProcessContentsTable will continue
+	// processing the message, calling OpenEntry and ProcessMessage. If false is returned,
+	// ProcessContentsTable will stop processing the message.
+	virtual bool DoContentsTablePerRowWork(_In_ LPSRow lpSRow, ULONG ulCurRow);
 	virtual void EndContentsTableWork();
 
 	// lpData is allocated and returned by BeginMessageWork
 	// If used, it should be cleaned up EndMessageWork
 	// This allows implementations of these functions to avoid global variables
-	virtual void BeginMessageWork(_In_ LPMESSAGE lpMessage, _In_opt_ LPVOID lpParentMessageData, _Deref_out_ LPVOID* lpData);
-	virtual void BeginRecipientWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData);
+	// The Begin functions return true if work should continue
+	// Do and End functions will only be called if Begin returned true
+	// If BeginMessageWork returns false, we'll never call the recipient or attachment functions
+	virtual bool BeginMessageWork(_In_ LPMESSAGE lpMessage, _In_opt_ LPVOID lpParentMessageData, _Deref_out_ LPVOID* lpData);
+	virtual bool BeginRecipientWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData);
 	virtual void DoMessagePerRecipientWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData, _In_ LPSRow lpSRow, ULONG ulCurRow);
 	virtual void EndRecipientWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData);
-	virtual void BeginAttachmentWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData);
+	virtual bool BeginAttachmentWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData);
 	virtual void DoMessagePerAttachmentWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData, _In_ LPSRow lpSRow, _In_ LPATTACH lpAttach, ULONG ulCurRow);
 	virtual void EndAttachmentWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData);
 	virtual void EndMessageWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData);
@@ -91,4 +100,6 @@ private:
 	// Folder list pointers
 	LPFOLDERNODE m_lpListHead;
 	LPFOLDERNODE m_lpListTail;
+
+	LPSRestriction m_lpResFolderContents;
 };

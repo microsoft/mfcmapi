@@ -8,8 +8,12 @@
 #define VC_EXTRALEAN	// Exclude rarely-used stuff from Windows headers
 
 #include <sal.h>
+// A bug in annotations in shobjidl.h forces us to disable 6387 to include afxwin.h
+#pragma warning(push)
+#pragma warning(disable:6387)
 #include <afxwin.h>		// MFC core and standard components
-#include <afxext.h>		// MFC extensions
+#pragma warning(pop)
+//#include <afxext.h>		// MFC extensions
 #include <afxcmn.h>		// MFC support for Windows Common Controls
 
 // Safe String handling header

@@ -315,7 +315,7 @@ _Check_return_ bool CAbDlg::HandlePaste()
 				lpProgress,
 				MyData.GetHex(0)));
 
-			if(lpProgress)
+			if (lpProgress)
 				lpProgress->Release();
 
 			lpProgress = NULL;

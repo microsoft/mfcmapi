@@ -747,7 +747,8 @@ a binary search of the named property range (0x8000-0xFFFF).\r\n\
 The Edit Given Property menu item may be used to further examine\r\n\
 existing named property mappings.\r\n"
 IDS_STLONGRTIME                  "RTime"
-IDS_STRULEID                     "Rule ID"
+IDS_STPTI8                       "I8"
+IDS_STSFIDMID                    "Fid/Mid"
 
 // AbDlg.cpp
 IDS_FLAGS "Flags"
@@ -871,6 +872,7 @@ IDS_FOLDERCOMMENT "Folder Comment:"
 IDS_PASSOPENIFEXISTS "Pass OPEN_IF_EXISTS"
 IDS_DELASSOCIATED "DEL_ASSOCIATED"
 IDS_HARDDELETION "Hard Deletion"
+IDS_MANUALLYEMPTYFOLDER "Delete items manually"
 IDS_SAVEASSOCIATED "Save associated items"
 IDS_SAVEUNICODE "Save as Unicode MSG"
 IDS_RECURSESUBFOLDERS "Recurse into subfolders"
@@ -1149,16 +1151,10 @@ IDS_ERRFORMATSTRING    "Error: %1\r\nCode: %2!ws! == 0x%3!08X!\r\nFunction %4!hs
 IDS_WARNFORMATSTRING "Warning: %1\r\nCode: %2!ws! == 0x%3!08X!\r\nFunction %4!hs!\r\nFile %5!hs!\r\nLine %6!d!"
 IDS_ATTNOTEMBEDDEDMSG "Attachment is not an embedded message!"
 IDS_USERCANCELLED "User cancelled!"
-IDS_GETCONTENTSNOACCESS "We don't have access permissions to this container!"
-IDS_GETCONTENTSFAILED "Failed to get the contents table."
-IDS_GETCONTENTSNOTSUPPORTED "This container does not support a contents table!"
-IDS_GETCONTENTSBADFLAG "This container does not support an associated contents table or deleted items!"
-IDS_GETCONTENTSBADPARAM "Perhaps this is not a distribution list?"
 IDS_EXPANDCOLLAPSEFAILED "DoExpandCollapse failed"
 IDS_TABLENOSUPPORTRES "Table didn't support restrictions!"
 IDS_COLOUTOFRANGE "ulCol out of range"
 IDS_TITLEPROPNOTFOUND "Property for title bar not found!"
-IDS_DUMPFOLDERGETPROPFAILED "OutputFolderPropertiesToFile: GetProps failed."
 IDS_OPENMSGFAILED "Failed to open message."
 IDS_ERRORSENDINGMSGS "Encountered error sending test messages. Not sending any more."
 IDS_NOITEMSELECTED "No item selected."
@@ -1174,11 +1170,9 @@ IDS_UNKNOWNCONTAINERTYPE "Possibly an unknown container type."
 IDS_NOCONTAINER "No Container!"
 IDS_NOFORMMANAGER "Couldn't open the MAPI Form Manager"
 IDS_NOCLASSHANDLER "Could not find handler for message class"
-IDS_ACCESSDENIED "Access Denied"
-IDS_PROPDELETIONNOTSUPPORTED "This object does not support property deletion."
 IDS_NOPROPLIST "Couldn't get property list from object"
-IDS_GETSPECIALFOLDERINBOXMISSINGPROP "GetSpecialFolder: Failed to get property from Inbox"
-IDS_GETSPECIALFOLDERROOTMISSINGPROP "GetSpecialFolder: Failed to get property from Root Folder"
+IDS_GETSPECIALFOLDERINBOXMISSINGPROP "GetSpecialFolderEID: Failed to get property from Inbox"
+IDS_GETSPECIALFOLDERROOTMISSINGPROP "GetSpecialFolderEID: Failed to get property from Root Folder"
 IDS_LAUNCHWIZARDFAILED "Failed to configure profile, perhaps because MAPI is requiring the use of mlcfg.cpl from system32, and it doesn't exist. Use Profile Action menu to create profiles and add Exchange services instead."
 IDS_CREATEMSGSERVICEFAILED "Could not add service to profile. Perhaps service is not in MAPISVC.INF?"
 IDS_DUPLICATEPROFILE "Failed to create profile, most likely because profile with this name already exists"
@@ -1520,12 +1514,17 @@ wszFormulaLength = 0x%13!04X! = %13!d!\r\n\
 wszFormula = %14!ws!"
 IDS_NICKNAMEHEADER "Nickname Cache\r\n\
 Metadata1 = "
-IDS_NICKNAMEROWCOUNT "\r\nRow Count = %1!d!"
+IDS_NICKNAMEROWCOUNT "\r\nMajor Version = %1!d!\r\n\
+Minor Version = %2!d!\r\n\
+Row Count = %3!d!"
 IDS_NICKNAMEROWS "\r\nRow %1!d!\r\n\
 cValues = 0x%2!08X! = %2!d!\r\n"
+IDS_NICKNAMEEXTRAINFO "\r\nExtra Info = "
 IDS_NICKNAMEFOOTER "\r\nMetadata 2 = "
-IDS_RULEIDFORMATLABEL "Rule ID: %1!X!-%2!08X!"
-IDS_RULEIDFORMAT "%1!X!-%2!08X!"
+IDS_PTI8FORMATLABEL "I8: %1!X!-%2!08X!"
+IDS_PTI8FORMAT "%1!X!-%2!08X!"
+IDS_FIDMIDFORMATLABEL "Fid/Mid: %1!X!-%2!I64X!"
+IDS_FIDMIDFORMAT "%1!X!-%2!I64X!"
 
 // For InsertColumn
 IDS_ENTRY "Entry"
@@ -1873,6 +1872,15 @@ WrappedProviderUID = %2\r\n\
 WrappedType = 0x%3!08X! = %4!ws!\r\n\
 ServerShortname = %5!hs!\r\n\
 MailboxDN = %6!hs!"
+
+IDS_ENTRYIDMAPIMESSAGESTOREEXCHANGEDATAV2 "\r\nMagic = 0x%1!08X! = %2\r\n\
+Size = 0x%3!08X! = %3!d!\r\n\
+Version = 0x%4!08X! = %5\r\n\
+OffsetDN = 0x%6!08X!\r\n\
+OffsetFQDN = 0x%7!08X!\r\n\
+DN = %8!hs!\r\n\
+FQDN = %9!ws!\r\n\
+Reserved Bytes = "
 
 IDS_ENTRYIDEXCHANGEFOLDERDATA "\r\nFolder Type = 0x%1!04X! = %2\r\n\
 Database GUID = %3\r\n\

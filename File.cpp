@@ -206,7 +206,7 @@ _Check_return_ HRESULT LoadFromMSG(_In_z_ LPCWSTR szMessageFile, _In_ LPMESSAGE 
 			lpProgress ? MAPI_DIALOG : 0,
 			&lpProblems));
 
-		if(lpProgress)
+		if (lpProgress)
 			lpProgress->Release();
 
 		lpProgress = NULL;
@@ -302,20 +302,21 @@ _Check_return_ HRESULT BuildFileName(_Inout_z_count_(cchFileOut) LPWSTR szFileOu
 	ULONG ulProps = NULL;
 	LPSPropValue lpProps = NULL;
 	LPWSTR szSubj = NULL;
-	LPSBinary lpSearchKey = NULL;
+	LPSBinary lpRecordKey = NULL;
 
 	if (!lpMessage || !szFileOut) return MAPI_E_INVALID_PARAMETER;
 
 	enum
 	{
 		ePR_SUBJECT_W,
-		ePR_SEARCH_KEY,NUM_COLS
+		ePR_RECORD_KEY,
+		NUM_COLS
 	};
 	static const SizedSPropTagArray(NUM_COLS,sptaMessageProps) =
 	{
 		NUM_COLS,
 		PR_SUBJECT_W,
-		PR_SEARCH_KEY
+		PR_RECORD_KEY
 	};
 
 	// Get subject line of message
@@ -332,9 +333,9 @@ _Check_return_ HRESULT BuildFileName(_Inout_z_count_(cchFileOut) LPWSTR szFileOu
 	{
 		szSubj = lpProps[ePR_SUBJECT_W].Value.lpszW;
 	}
-	if (PR_SEARCH_KEY == lpProps[ePR_SEARCH_KEY].ulPropTag)
+	if (PR_RECORD_KEY == lpProps[ePR_RECORD_KEY].ulPropTag)
 	{
-		lpSearchKey = &lpProps[ePR_SEARCH_KEY].Value.bin;
+		lpRecordKey = &lpProps[ePR_RECORD_KEY].Value.bin;
 	}
 
 	EC_H(BuildFileNameAndPath(
@@ -343,7 +344,7 @@ _Check_return_ HRESULT BuildFileName(_Inout_z_count_(cchFileOut) LPWSTR szFileOu
 		szExt,
 		cchExt,
 		szSubj,
-		lpSearchKey,
+		lpRecordKey,
 		NULL));
 
 	MAPIFreeBuffer(lpProps);
@@ -492,7 +493,7 @@ _Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_z
 	{
 		fldPR_ENTRYID,
 		fldPR_SUBJECT_W,
-		fldPR_SEARCH_KEY,
+		fldPR_RECORD_KEY,
 		fldNUM_COLS
 	};
 
@@ -501,7 +502,7 @@ _Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_z
 		fldNUM_COLS,
 		PR_ENTRYID,
 		PR_SUBJECT_W,
-		PR_SEARCH_KEY
+		PR_RECORD_KEY
 	};
 
 	if (!lpFolder || !szPathName) return MAPI_E_INVALID_PARAMETER;
@@ -549,7 +550,7 @@ _Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_z
 					(LPUNKNOWN*)&lpMessage));
 				if (!lpMessage) continue;
 
-				WCHAR szFileName[MAX_PATH];
+				WCHAR szFileName[MAX_PATH] = {0};
 
 				LPCWSTR szSubj = L"UnknownSubject"; // STRING_OK
 
@@ -557,7 +558,7 @@ _Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_z
 				{
 					szSubj = pRows->aRow->lpProps[fldPR_SUBJECT_W].Value.lpszW;
 				}
-				EC_H(BuildFileNameAndPath(szFileName,_countof(szFileName),L".msg",4,szSubj,&pRows->aRow->lpProps[fldPR_SEARCH_KEY].Value.bin,szPathName)); // STRING_OK
+				EC_H(BuildFileNameAndPath(szFileName,_countof(szFileName),L".msg",4,szSubj,&pRows->aRow->lpProps[fldPR_RECORD_KEY].Value.bin,szPathName)); // STRING_OK
 
 				DebugPrint(DBGGeneric,_T("Saving to = \"%ws\"\n"),szFileName);
 
@@ -779,7 +780,7 @@ _Check_return_ HRESULT SaveToMSG(_In_ LPMESSAGE lpMessage, _In_z_ LPCWSTR szFile
 			lpProgress ? MAPI_DIALOG : 0,
 			&lpProblems));
 
-		if(lpProgress)
+		if (lpProgress)
 			lpProgress->Release();
 
 		lpProgress = NULL;
@@ -975,10 +976,10 @@ _Check_return_ HRESULT DeleteAttachments(_In_ LPMESSAGE lpMessage, _In_opt_z_ LP
 						lpProgress,
 						lpProgress ? ATTACH_DIALOG : 0));
 
-					if(SUCCEEDED(hRes))
+					if (SUCCEEDED(hRes))
 						bDirty = true;
 
-					if(lpProgress)
+					if (lpProgress)
 						lpProgress->Release();
 
 					lpProgress = NULL;

@@ -390,7 +390,7 @@ _Check_return_ HRESULT CopyFolderContents(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LP
 
 			ULONG ulCopyFlags = bMove ? MESSAGE_MOVE : 0;
 
-			if(lpProgress)
+			if (lpProgress)
 				ulCopyFlags |= MESSAGE_DIALOG;
 
 			EC_H(lpSrcFolder->CopyMessages(
@@ -402,7 +402,7 @@ _Check_return_ HRESULT CopyFolderContents(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LP
 				ulCopyFlags));
 			MAPIFreeBuffer(sbaEID.lpbin);
 
-			if(lpProgress)
+			if (lpProgress)
 				lpProgress->Release();
 
 			lpProgress = NULL;
@@ -433,7 +433,7 @@ _Check_return_ HRESULT CopyFolderContents(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LP
 
 					ULONG ulCopyFlags = bMove ? MESSAGE_MOVE : 0;
 
-					if(lpProgress)
+					if (lpProgress)
 						ulCopyFlags |= MESSAGE_DIALOG;
 
 					EC_H(lpSrcFolder->CopyMessages(
@@ -446,7 +446,7 @@ _Check_return_ HRESULT CopyFolderContents(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LP
 
 					if (S_OK == hRes) DebugPrint(DBGGeneric,_T("Message Copied\n"));
 
-					if(lpProgress)
+					if (lpProgress)
 						lpProgress->Release();
 
 					lpProgress = NULL;
@@ -950,14 +950,6 @@ _Check_return_ HRESULT DeleteProperty(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTa
 	EC_H(lpMAPIProp->DeleteProps(
 		&ptaTag,
 		&pProbArray));
-	if (MAPI_E_NO_ACCESS == hRes)
-	{
-		CHECKHRESMSG(hRes,IDS_ACCESSDENIED);
-	}
-	else if (MAPI_E_NO_SUPPORT == hRes)
-	{
-		CHECKHRESMSG(hRes,IDS_PROPDELETIONNOTSUPPORTED);
-	}
 
 	if (S_OK == hRes && pProbArray)
 	{
@@ -1019,7 +1011,7 @@ _Check_return_ HRESULT DeleteToDeletedItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLDER 
 
 		ULONG ulCopyFlags = MESSAGE_MOVE;
 
-		if(lpProgress)
+		if (lpProgress)
 			ulCopyFlags |= MESSAGE_DIALOG;
 
 		EC_H(lpSourceFolder->CopyMessages(
@@ -1030,7 +1022,7 @@ _Check_return_ HRESULT DeleteToDeletedItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLDER 
 			lpProgress,
 			ulCopyFlags));
 
-		if(lpProgress)
+		if (lpProgress)
 			lpProgress->Release();
 
 		lpProgress = NULL;
@@ -1088,14 +1080,9 @@ _Check_return_ HRESULT GetInbox(_In_ LPMDB lpMDB, _Deref_out_opt_ LPMAPIFOLDER* 
 
 	*lpInbox = NULL;
 
-	if (!lpMDB) return MAPI_E_INVALID_PARAMETER;
+	if (!lpMDB || !lpInbox) return MAPI_E_INVALID_PARAMETER;
 
-	EC_H(lpMDB->GetReceiveFolder(
-		_T("IPM.Note"), // STRING_OK this is the class of message we want
-		fMapiUnicode, // flags
-		&cbInboxEID, // size and...
-		(LPENTRYID *) &lpInboxEID, // value of entry ID
-		NULL)); // returns a message class if not NULL
+	EC_H(GetInbox(lpMDB,&cbInboxEID,&lpInboxEID));
 
 	if (cbInboxEID && lpInboxEID)
 	{
@@ -1111,6 +1098,37 @@ _Check_return_ HRESULT GetInbox(_In_ LPMDB lpMDB, _Deref_out_opt_ LPMAPIFOLDER* 
 			MAPI_BEST_ACCESS,
 			NULL,
 			(LPUNKNOWN*)lpInbox));
+	}
+
+	MAPIFreeBuffer(lpInboxEID);
+	return hRes;
+} // GetInbox
+
+_Check_return_ HRESULT GetInbox(_In_ LPMDB lpMDB, _Out_opt_ ULONG* lpcbeid, _Deref_out_opt_ LPENTRYID* lppeid)
+{
+	HRESULT			hRes = S_OK;
+	ULONG			cbInboxEID = NULL;
+	LPENTRYID		lpInboxEID = NULL;
+
+	DebugPrint(DBGGeneric, _T("GetInbox: getting Inbox from %p\n"),lpMDB);
+
+	if (!lpMDB || !lpcbeid || !lppeid) return MAPI_E_INVALID_PARAMETER;
+
+	EC_H(lpMDB->GetReceiveFolder(
+		_T("IPM.Note"), // STRING_OK this is the class of message we want
+		fMapiUnicode, // flags
+		&cbInboxEID, // size and...
+		&lpInboxEID, // value of entry ID
+		NULL)); // returns a message class if not NULL
+
+	if (cbInboxEID && lpInboxEID)
+	{
+		WC_H(MAPIAllocateBuffer(cbInboxEID, (LPVOID*)lppeid));
+		if (SUCCEEDED(hRes))
+		{
+			*lpcbeid = cbInboxEID;
+			CopyMemory(*lppeid, lpInboxEID, *lpcbeid);
+		}
 	}
 
 	MAPIFreeBuffer(lpInboxEID);
@@ -1206,16 +1224,14 @@ _Check_return_ HRESULT GetPropsNULL(_In_ LPMAPIPROP lpMAPIProp, ULONG ulFlags, _
 	return hRes;
 } // GetPropsNULL
 
-_Check_return_ HRESULT GetSpecialFolder(_In_ LPMDB lpMDB, ULONG ulFolderPropTag, _Deref_out_opt_ LPMAPIFOLDER *lpSpecialFolder)
+_Check_return_ HRESULT GetSpecialFolderEID(_In_ LPMDB lpMDB, ULONG ulFolderPropTag, _Out_opt_ ULONG* lpcbeid, _Deref_out_opt_ LPENTRYID* lppeid)
 {
-	HRESULT			hRes = S_OK;
-	LPMAPIFOLDER	lpInbox = NULL;
+	HRESULT hRes = S_OK;
+	LPMAPIFOLDER lpInbox = NULL;
 
-	*lpSpecialFolder = NULL;
+	DebugPrint(DBGGeneric, _T("GetSpecialFolderEID: getting 0x%X from %p\n"),ulFolderPropTag,lpMDB);
 
-	DebugPrint(DBGGeneric, _T("GetSpecialFolder: getting 0x%X from %p\n"),ulFolderPropTag,lpMDB);
-
-	if (!lpMDB) return MAPI_E_INVALID_PARAMETER;
+	if (!lpMDB || !lpcbeid || !lppeid) return MAPI_E_INVALID_PARAMETER;
 
 	LPSPropValue lpProp = NULL;
 	WC_H(GetInbox(lpMDB,&lpInbox));
@@ -1251,13 +1267,44 @@ _Check_return_ HRESULT GetSpecialFolder(_In_ LPMDB lpMDB, ULONG ulFolderPropTag,
 
 	if (lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag) && lpProp->Value.bin.cb)
 	{
+		WC_H(MAPIAllocateBuffer(lpProp->Value.bin.cb, (LPVOID*)lppeid));
+		if (SUCCEEDED(hRes))
+		{
+			*lpcbeid = lpProp->Value.bin.cb;
+			CopyMemory(*lppeid, lpProp->Value.bin.lpb, *lpcbeid);
+		}
+	}
+	if (MAPI_E_NOT_FOUND == hRes)
+	{
+		DebugPrint(DBGGeneric,_T("Special folder not found.\n"));
+	}
+	MAPIFreeBuffer(lpProp);
+	return hRes;
+} // GetSpecialFolderEID
+
+_Check_return_ HRESULT GetSpecialFolder(_In_ LPMDB lpMDB, ULONG ulFolderPropTag, _Deref_out_opt_ LPMAPIFOLDER *lpSpecialFolder)
+{
+	HRESULT hRes = S_OK;
+
+	*lpSpecialFolder = NULL;
+
+	DebugPrint(DBGGeneric, _T("GetSpecialFolder: getting 0x%X from %p\n"),ulFolderPropTag,lpMDB);
+
+	if (!lpMDB || !lpSpecialFolder) return MAPI_E_INVALID_PARAMETER;
+
+	ULONG cb = NULL;
+	LPENTRYID lpeid = NULL;
+	EC_H(GetSpecialFolderEID(lpMDB,ulFolderPropTag,&cb,&lpeid));
+
+	if (SUCCEEDED(hRes))
+	{
 		WC_H(CallOpenEntry(
 			lpMDB,
 			NULL,
 			NULL,
 			NULL,
-			lpProp->Value.bin.cb,
-			(LPENTRYID) lpProp->Value.bin.lpb,
+			cb,
+			lpeid,
 			NULL,
 			MAPI_BEST_ACCESS,
 			NULL,
@@ -1269,7 +1316,6 @@ _Check_return_ HRESULT GetSpecialFolder(_In_ LPMDB lpMDB, ULONG ulFolderPropTag,
 		if (*lpSpecialFolder) (*lpSpecialFolder)->Release();
 		*lpSpecialFolder = NULL;
 	}
-	MAPIFreeBuffer(lpProp);
 	return hRes;
 } // GetSpecialFolder
 
@@ -1315,6 +1361,86 @@ _Check_return_ bool IsDuplicateProp(_In_ LPSPropTagArray lpArray, ULONG ulPropTa
 
 	return false;
 } // IsDuplicateProp
+
+_Check_return_ HRESULT ManuallyEmptyFolder(_In_ LPMAPIFOLDER lpFolder, BOOL bAssoc, BOOL bHardDelete)
+{
+	if (!lpFolder) return MAPI_E_INVALID_PARAMETER;
+
+	LPSRowSet pRows = NULL;
+	HRESULT hRes = S_OK;
+	ULONG iItemCount = 0;
+	ULONG iCurPropRow = 0;
+	LPMAPITABLE lpContentsTable = NULL;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
+
+	enum
+	{
+		eidPR_ENTRYID,
+		eidNUM_COLS
+	};
+
+	static const SizedSPropTagArray(eidNUM_COLS,eidCols) =
+	{
+		eidNUM_COLS,
+		PR_ENTRYID,
+	};
+
+	// Get the table of contents of the folder
+	WC_H(lpFolder->GetContentsTable(
+		bAssoc?MAPI_ASSOCIATED:NULL,
+		&lpContentsTable));
+
+	if (SUCCEEDED(hRes) && lpContentsTable)
+	{
+		EC_H(lpContentsTable->SetColumns(
+			(LPSPropTagArray) &eidCols,
+			TBL_BATCH));
+
+		// go to the first row
+		EC_H(lpContentsTable->SeekRow(
+			BOOKMARK_BEGINNING,
+			0,
+			NULL));
+		hRes = S_OK; // don't let failure here fail the whole op
+
+		// get rows and delete messages one at a time (slow, but might work when batch deletion fails)
+		if (!FAILED(hRes)) for (;;)
+		{
+			hRes = S_OK;
+			if (pRows) FreeProws(pRows);
+			pRows = NULL;
+			// Pull back a sizable block of rows to delete
+			EC_H(lpContentsTable->QueryRows(
+				200,
+				NULL,
+				&pRows));
+			if (FAILED(hRes) || !pRows || !pRows->cRows) break;
+
+			for (iCurPropRow = 0; iCurPropRow<pRows->cRows; iCurPropRow++)
+			{
+				if (pRows->aRow[iCurPropRow].lpProps &&
+					PR_ENTRYID == pRows->aRow[iCurPropRow].lpProps[eidPR_ENTRYID].ulPropTag)
+				{
+					hRes = S_OK;
+					ENTRYLIST eid = {0};
+					eid.cValues = 1;
+					eid.lpbin = &pRows->aRow[iCurPropRow].lpProps[eidPR_ENTRYID].Value.bin;
+					WC_H(lpFolder->DeleteMessages(
+						&eid,
+						NULL,
+						NULL,
+						bHardDelete?DELETE_HARD_DELETE:NULL));
+					if (SUCCEEDED(hRes)) iItemCount++;
+				}
+			}
+		}
+		DebugPrint(DBGGeneric,_T("ManuallyEmptyFolder deleted %d items\n"),iItemCount);
+	}
+
+	if (pRows) FreeProws(pRows);
+	if (lpContentsTable) lpContentsTable->Release();
+	return hRes;
+} // ManuallyEmptyFolder
 
 // Count of characters in 'cb:  lpb: '
 #define CBPREPEND 10
@@ -1822,7 +1948,7 @@ _Check_return_ HRESULT ResendSingleMessage(
 				if (!lpsMessageTags) continue;
 
 				DebugPrint(DBGGeneric,_T("Copying properties to new message.\n"));
-				if (!FAILED(hRes)) for(ulProp = 0; ulProp < lpsMessageTags->cValues; ulProp++)
+				if (!FAILED(hRes)) for (ulProp = 0; ulProp < lpsMessageTags->cValues; ulProp++)
 				{
 					hRes = S_OK;
 					// it would probably be quicker to use this loop to construct an array of properties
@@ -1861,7 +1987,7 @@ _Check_return_ HRESULT ResendSingleMessage(
 					continue;
 				}
 
-				if(lpProgress)
+				if (lpProgress)
 					lpProgress->Release();
 
 				lpProgress = NULL;
@@ -1940,30 +2066,9 @@ _Check_return_ HRESULT ResetPermissionsOnItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLD
 		if (lpContentsTable) lpContentsTable->Release();
 		lpContentsTable = NULL;
 		// Get the table of contents of the folder
-		WC_H(lpMAPIFolder->GetContentsTable(
+		EC_H(lpMAPIFolder->GetContentsTable(
 			ulFlags,
 			&lpContentsTable));
-		if (hRes == MAPI_E_NO_ACCESS)
-		{
-			CHECKHRESMSG(hRes,IDS_GETCONTENTSNOACCESS);
-			lpContentsTable = NULL;
-		}
-		else if (hRes == MAPI_E_CALL_FAILED)
-		{
-			CHECKHRESMSG(hRes,IDS_GETCONTENTSFAILED);
-			lpContentsTable = NULL;
-		}
-		else if (hRes == MAPI_E_NO_SUPPORT)
-		{
-			CHECKHRESMSG(hRes,IDS_GETCONTENTSNOTSUPPORTED);
-			lpContentsTable = NULL;
-		}
-		else if (hRes == MAPI_E_UNKNOWN_FLAGS)
-		{
-			CHECKHRESMSG(hRes,IDS_GETCONTENTSBADFLAG);
-			lpContentsTable = NULL;
-		}
-		else CHECKHRES(hRes);
 
 		if (SUCCEEDED(hRes) && lpContentsTable)
 		{
@@ -1989,9 +2094,9 @@ _Check_return_ HRESULT ResetPermissionsOnItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLD
 					200,
 					NULL,
 					&pRows));
-				if (!FAILED(hRes) || !pRows || !pRows->cRows) break;
+				if (FAILED(hRes) || !pRows || !pRows->cRows) break;
 
-				for(iCurPropRow = 0;iCurPropRow<pRows->cRows;iCurPropRow++)
+				for (iCurPropRow = 0;iCurPropRow<pRows->cRows;iCurPropRow++)
 				{
 					hRes = S_OK;
 					if (lpMessage) lpMessage->Release();
@@ -2153,7 +2258,7 @@ _Check_return_ HRESULT WrapStreamForRTF(
 
 _Check_return_ HRESULT CopyNamedProps(_In_ LPMAPIPROP lpSource, _In_ LPGUID lpPropSetGUID, bool bDoMove, bool bDoNoReplace, _In_ LPMAPIPROP lpTarget, _In_ HWND hWnd)
 {
-	if((!lpSource) || (!lpTarget)) return MAPI_E_INVALID_PARAMETER;
+	if ((!lpSource) || (!lpTarget)) return MAPI_E_INVALID_PARAMETER;
 
 	HRESULT			hRes = S_OK;
 	LPSPropTagArray	lpPropTags = NULL;
@@ -2169,7 +2274,7 @@ _Check_return_ HRESULT CopyNamedProps(_In_ LPMAPIPROP lpSource, _In_ LPGUID lpPr
 
 		LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIProp::CopyProps"), hWnd); // STRING_OK
 
-		if(lpProgress)
+		if (lpProgress)
 			ulFlags |= MAPI_DIALOG;
 
 		EC_H(lpSource->CopyProps(lpPropTags,
@@ -2180,7 +2285,7 @@ _Check_return_ HRESULT CopyNamedProps(_In_ LPMAPIPROP lpSource, _In_ LPGUID lpPr
 			ulFlags,
 			&lpProblems));
 
-		if(lpProgress)
+		if (lpProgress)
 			lpProgress->Release();
 
 		lpProgress = NULL;
@@ -2196,7 +2301,7 @@ _Check_return_ HRESULT CopyNamedProps(_In_ LPMAPIPROP lpSource, _In_ LPGUID lpPr
 
 _Check_return_ HRESULT GetNamedPropsByGUID(_In_ LPMAPIPROP lpSource, _In_ LPGUID lpPropSetGUID, _Deref_out_ LPSPropTagArray* lpOutArray)
 {
-	if(!lpSource || !lpPropSetGUID || lpOutArray)
+	if (!lpSource || !lpPropSetGUID || lpOutArray)
 		return MAPI_E_INVALID_PARAMETER;
 
 	HRESULT hRes = S_OK;
@@ -2206,7 +2311,7 @@ _Check_return_ HRESULT GetNamedPropsByGUID(_In_ LPMAPIPROP lpSource, _In_ LPGUID
 
 	WC_H(lpSource->GetPropList(0, &lpAllProps));
 
-	if(S_OK == hRes && lpAllProps)
+	if (S_OK == hRes && lpAllProps)
 	{
 		ULONG			cProps = 0;
 		LPMAPINAMEID*	lppNameIDs = NULL;
@@ -2218,7 +2323,7 @@ _Check_return_ HRESULT GetNamedPropsByGUID(_In_ LPMAPIPROP lpSource, _In_ LPGUID
 			&cProps,
 			&lppNameIDs));
 
-		if(S_OK == hRes && lppNameIDs)
+		if (S_OK == hRes && lppNameIDs)
 		{
 			ULONG i = 0;
 			ULONG ulNumProps = 0; // count of props that match our guid

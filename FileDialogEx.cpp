@@ -104,7 +104,7 @@ _Check_return_ LPSTR CFileDialogExA::GetNextFileName()
 		}
 
 		// find char pos after first Delimiter
-		while(*lpsz != '\0') lpsz = CharNextA(lpsz);
+		while (*lpsz != '\0') lpsz = CharNextA(lpsz);
 		lpsz++;
 
 		// if single selection then return only selection
@@ -119,7 +119,7 @@ _Check_return_ LPSTR CFileDialogExA::GetNextFileName()
 	LPSTR strFileName = lpsz;
 
 	// find char pos at next Delimiter
-	while(*lpsz != '\0') lpsz = CharNextA(lpsz);
+	while (*lpsz != '\0') lpsz = CharNextA(lpsz);
 	lpsz++;
 
 	if (*lpsz == '\0') // if double terminated then done
@@ -238,7 +238,7 @@ _Check_return_ LPWSTR CFileDialogExW::GetNextFileName()
 		}
 
 		// find char pos after first Delimiter
-		while(*lpsz != L'\0') lpsz = CharNextW(lpsz);
+		while (*lpsz != L'\0') lpsz = CharNextW(lpsz);
 		lpsz++;
 
 		// if single selection then return only selection
@@ -253,7 +253,7 @@ _Check_return_ LPWSTR CFileDialogExW::GetNextFileName()
 	LPWSTR strFileName = lpsz;
 
 	// find char pos at next Delimiter
-	while(*lpsz != L'\0') lpsz = CharNextW(lpsz);
+	while (*lpsz != L'\0') lpsz = CharNextW(lpsz);
 	lpsz++;
 
 	if (*lpsz == L'\0') // if double terminated then done

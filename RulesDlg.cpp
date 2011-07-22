@@ -156,7 +156,7 @@ _Check_return_ HRESULT CRulesDlg::GetSelectedItems(ULONG ulFlags, ULONG ulRowFla
 		int iArrayPos = 0;
 		int iSelectedItem = -1;
 
-		for(iArrayPos = 0 ; iArrayPos < iNumItems ; iArrayPos++)
+		for (iArrayPos = 0 ; iArrayPos < iNumItems ; iArrayPos++)
 		{
 			lpTempList->aEntries[iArrayPos].ulRowFlags = ulRowFlags;
 			lpTempList->aEntries[iArrayPos].cValues = 0;
