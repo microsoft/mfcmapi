@@ -27,6 +27,7 @@ struct MYOPTIONS
 	bool bDoType;
 	bool bDoDispid;
 	bool bDoDecimal;
+	bool bDoFlag;
 	bool bBinaryFile;
 	bool bDoContents;
 	bool bDoAssociatedContents;
@@ -53,6 +54,7 @@ struct MYOPTIONS
 	ULONG ulWrapLines;
 	ULONG ulEncodingType;
 	ULONG ulCodePage;
+	ULONG ulFlagValue;
 	CHARSETTYPE cSetType;
 	CSETAPPLYTYPE cSetApplyType;
 };

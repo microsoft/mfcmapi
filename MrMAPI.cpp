@@ -49,7 +49,7 @@ _Check_return_ HRESULT OpenExchangeOrDefaultMessageStore(
 	*lppMDB = NULL;
 
 	WC_H(OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpMDB));
-	if (FAILED(hRes) || &lpMDB)
+	if (FAILED(hRes) || !lpMDB)
 	{
 		hRes = S_OK;
 		WC_H(OpenDefaultMessageStore(lpMAPISession,&lpMDB));
@@ -109,6 +109,7 @@ enum __CommandLineSwitch
 	switchChildFolders,       // '-chi'
 	switchFid,                // '-fi'
 	switchMid,                // '-mid'
+	switchFlag,               // '-flag'
 };
 
 struct COMMANDLINE_SWITCH
@@ -161,6 +162,7 @@ COMMANDLINE_SWITCH g_Switches[] =
 	{switchChildFolders,       "ChildFolders"},
 	{switchFid,                "FID"},
 	{switchMid,                "MID"},
+	{switchFlag,               "Flag"},
 // If we want to add aliases for any switches, add them here
 };
 ULONG g_ulSwitches = _countof(g_Switches);
@@ -195,12 +197,14 @@ void DisplayUsage(BOOL bFull)
 	}
 	printf("Usage:\n");
 	printf("   MrMAPI -%s\n",g_Switches[switchHelp].szSwitch);
-	printf("   MrMAPI [-%s] [-%s] [-%s] [-%s <type>] <number>|<name>\n",
+	printf("   MrMAPI [-%s] [-%s] [-%s] [-%s <type>] <property number>|<property name>\n",
 		g_Switches[switchSearch].szSwitch,g_Switches[switchDispid].szSwitch,g_Switches[switchDecimal].szSwitch,g_Switches[switchType].szSwitch);
 	printf("   MrMAPI -%s\n",g_Switches[switchGuid].szSwitch);
 	printf("   MrMAPI -%s <error>\n",g_Switches[switchError].szSwitch);
 	printf("   MrMAPI -%s <type> -%s <input file> [-%s] [-%s <output file>]\n",
 		g_Switches[switchParser].szSwitch,g_Switches[switchInput].szSwitch,g_Switches[switchBinary].szSwitch,g_Switches[switchOutput].szSwitch);
+	printf("   MrMAPI -%s <flag value> [-%s] [-%s] <property number>|<property name>\n",
+		g_Switches[switchFlag].szSwitch,g_Switches[switchDispid].szSwitch,g_Switches[switchDecimal].szSwitch);
 	printf("   MrMAPI -%s [-%s <profile>] [-%s <folder>]\n",g_Switches[switchRule].szSwitch,g_Switches[switchProfile].szSwitch,g_Switches[switchFolder].szSwitch);
 	printf("   MrMAPI -%s [-%s <profile>] [-%s <folder>]\n",g_Switches[switchAcl].szSwitch,g_Switches[switchProfile].szSwitch,g_Switches[switchFolder].szSwitch);
 	printf("   MrMAPI [-%s | -%s] [-%s <profile>] [-%s <folder>] [-%s <output directory>]\n",
@@ -239,6 +243,10 @@ void DisplayUsage(BOOL bFull)
 		printf("           With no parameters prints list of known types.\n");
 		printf("           When combined with -S, restrict output to given type.\n");
 		printf("   -G   (or -%s) Display list of known guids.\n",g_Switches[switchGuid].szSwitch);
+		printf("\n");
+		printf("   Flag Lookup:\n");
+		printf("   -Fl  (or -%s) Look up flags for specified property.\n",g_Switches[switchFlag].szSwitch);
+		printf("           May be combined with -D and -N switches, but all flag values must be in hex.\n");
 		printf("\n");
 		printf("   Error Parsing:\n");
 		printf("   -E   (or -%s) Map an error code to its name and vice versa.\n",g_Switches[switchError].szSwitch);
@@ -502,6 +510,14 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 				i++;
 			}
 			break;
+		case switchFlag:
+			if (!bSetMode(&pRunOpts->Mode,cmdmodePropTag)) return false;
+			pRunOpts->bDoFlag = true;
+			// If we have a next argument and it's not an option, parse it as a flag
+			if (argc <= i+1 || switchNoSwitch != ParseArgument(argv[i+1])) return false;
+			pRunOpts->ulFlagValue = strtoul(argv[i+1],&szEndPtr,16);
+			i++;
+			break;
 		// GUID
 		case switchGuid:
 			if (!bSetMode(&pRunOpts->Mode,cmdmodeGuid)) return false;
@@ -678,6 +694,7 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 		if (pRunOpts->bDoType && !pRunOpts->bDoPartialSearch && (pRunOpts->lpszUnswitchedOption != NULL)) return false;
 		if (!pRunOpts->bDoType && !pRunOpts->bDoPartialSearch && (pRunOpts->lpszUnswitchedOption == NULL)) return false;
 		if (pRunOpts->bDoPartialSearch && pRunOpts->bDoType && ulNoMatch == pRunOpts->ulTypeNum) return false;
+		if (pRunOpts->bDoFlag && (pRunOpts->bDoPartialSearch || pRunOpts->bDoType)) return false;
 		break;
 	case cmdmodeGuid:
 		// Nothing to check

@@ -12,9 +12,10 @@ void InterpretPropSmartView(_In_ LPSPropValue lpProp, // required property value
 							_Deref_out_opt_z_ LPWSTR* lpszSmartView); // Built from lpProp & lpMAPIProp
 
 void InterpretBinaryAsString(SBinary myBin, DWORD_PTR iStructType, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_z_ LPWSTR* lpszResultString);
-void InterpretNumberAsString(_PV pV, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_z_ LPWSTR lpszPropNameString, _In_opt_ LPGUID lpguidNamedProp, bool bLabel, _Deref_out_opt_z_ LPWSTR* lpszResultString);
+void InterpretNumberAsString(_PV pV, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_z_ LPWSTR lpszPropNameString, _In_opt_ LPCGUID lpguidNamedProp, bool bLabel, _Deref_out_opt_z_ LPWSTR* lpszResultString);
 void InterpretNumberAsStringProp(ULONG ulVal, ULONG ulPropTag, _Deref_out_opt_z_ LPWSTR* lpszResultString);
-_Check_return_ LPWSTR FidMidToSzString(LONGLONG llID, bool bLabel);
+void InterpretNumberAsStringNamedProp(ULONG ulVal, ULONG ulPropNameID, _In_opt_ LPCGUID lpguidNamedProp, _Deref_out_opt_z_ LPWSTR* lpszResultString);
+	_Check_return_ LPWSTR FidMidToSzString(LONGLONG llID, bool bLabel);
 
 // Nothing below this point actually needs to be public. It's only used internally by InterpretPropSmartView
 

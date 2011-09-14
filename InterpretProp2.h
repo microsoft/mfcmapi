@@ -1,5 +1,15 @@
 #pragma once
 
+#define PROP_TAG_MASK 0xffff0000
+void FindTagArrayMatches(_In_ ULONG ulTarget,
+	bool bAB,
+	_In_count_(ulMyArray) NAME_ARRAY_ENTRY_V2* MyArray,
+	_In_ ULONG ulMyArray,
+	_Out_ ULONG* lpulNumExacts,
+	_Out_ ULONG* lpulFirstExact,
+	_Out_ ULONG* lpulNumPartials,
+	_Out_ ULONG* lpulFirstPartial);
+
 // Function to convert property tags to their names
 // Free lpszExactMatch and lpszPartialMatches with MAPIFreeBuffer
 _Check_return_ HRESULT PropTagToPropName(ULONG ulPropTag, bool bIsAB, _Deref_opt_out_opt_z_ LPTSTR* lpszExactMatch, _Deref_opt_out_opt_z_ LPTSTR* lpszPartialMatches);

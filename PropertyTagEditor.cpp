@@ -263,7 +263,6 @@ _Check_return_ ULONG CPropertyTagEditor::GetSelectedPropType()
 
 _Check_return_ ULONG CPropertyTagEditor::HandleChange(UINT nID)
 {
-	HRESULT hRes = S_OK;
 	ULONG i = CEditor::HandleChange(nID);
 
 	if ((ULONG) -1 == i) return (ULONG) -1;
@@ -272,25 +271,7 @@ _Check_return_ ULONG CPropertyTagEditor::HandleChange(UINT nID)
 	{
 	case(PROPTAG_TAG): // Prop tag changed
 		{
-			CString szTag;
-			szTag = GetStringUseControl(PROPTAG_TAG);
-			LPTSTR szEnd = NULL;
-			ULONG ulTag = _tcstoul((LPCTSTR) szTag,&szEnd,16);
-
-			if (*szEnd != NULL) // If we didn't consume the whole string, try a lookup
-			{
-				EC_H(PropNameToPropTag((LPCTSTR) szTag,&ulTag));
-			}
-
-			// Figure if this is a full tag or just an ID
-			if (ulTag & 0xffff0000) // Full prop tag
-			{
-				m_ulPropTag = ulTag;
-			}
-			else // Just an ID
-			{
-				m_ulPropTag = PROP_TAG(PT_UNSPECIFIED,ulTag);
-			}
+			m_ulPropTag = GetPropTagUseControl(PROPTAG_TAG);
 		}
 		break;
 	case(PROPTAG_ID): // Prop ID changed

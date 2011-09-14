@@ -462,6 +462,7 @@ void CBaseDialog::OnOptions()
 		WriteToRegistry();
 
 		ForceOutlookMAPI(0 != RegKeys[regkeyFORCEOUTLOOKMAPI].ulCurDWORD);
+		ForceSystemMAPI(0 != RegKeys[regkeyFORCESYSTEMMAPI].ulCurDWORD);
 
 		if (bNeedPropRefresh && m_lpPropDisplay)
 			WC_H(m_lpPropDisplay->RefreshMAPIPropList());

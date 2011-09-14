@@ -3,119 +3,8 @@
 #include "MrMAPI.h"
 #include <shlwapi.h>
 #include "guids.h"
-
-// Searches an array for a target number.
-// Search is done with a mask
-// Partial matches are those that match with the mask applied
-// Exact matches are those that match without the mask applied
-// lpUlNumPartials will exclude count of exact matches
-// if it want just the true partial matches.
-// If no hits, then ulNoMatch should be returned for lpulFirstExact and/or lpulFirstPartial
-void FindTagArrayMatches(_In_ ULONG ulTarget,
-						 _In_count_(ulMyArray) NAME_ARRAY_ENTRY* MyArray,
-						 _In_ ULONG ulMyArray,
-						 _Out_ ULONG* lpulNumExacts,
-						 _Out_ ULONG* lpulFirstExact,
-						 _Out_ ULONG* lpulNumPartials,
-						 _Out_ ULONG* lpulFirstPartial)
-{
-	ULONG ulLowerBound = 0;
-	ULONG ulUpperBound = ulMyArray-1; // ulMyArray-1 is the last entry
-	ULONG ulMidPoint = (ulUpperBound+ulLowerBound)/2;
-	ULONG ulFirstMatch = ulNoMatch;
-	ULONG ulLastMatch = ulNoMatch;
-	ULONG ulFirstExactMatch = ulNoMatch;
-	ULONG ulLastExactMatch = ulNoMatch;
-	ULONG ulMaskedTarget = ulTarget & 0xffff0000;
-
-	if (lpulNumExacts) *lpulNumExacts = 0;
-	if (lpulFirstExact) *lpulFirstExact = ulNoMatch;
-	if (lpulNumPartials) *lpulNumPartials = 0;
-	if (lpulFirstPartial) *lpulFirstPartial = ulNoMatch;
-
-	// find A partial match
-	while (ulUpperBound - ulLowerBound > 1)
-	{
-		if (ulMaskedTarget == (0xffff0000 & MyArray[ulMidPoint].ulValue))
-		{
-			ulFirstMatch = ulMidPoint;
-			break;
-		}
-
-		if (ulMaskedTarget < (0xffff0000 & MyArray[ulMidPoint].ulValue))
-		{
-			ulUpperBound = ulMidPoint;
-		}
-		else if (ulMaskedTarget > (0xffff0000 & MyArray[ulMidPoint].ulValue))
-		{
-			ulLowerBound = ulMidPoint;
-		}
-		ulMidPoint = (ulUpperBound+ulLowerBound)/2;
-	}
-
-	// When we get down to two points, we may have only checked one of them
-	// Make sure we've checked the other
-	if (ulMaskedTarget == (0xffff0000 & MyArray[ulUpperBound].ulValue))
-	{
-		ulFirstMatch = ulUpperBound;
-	}
-	else if (ulMaskedTarget == (0xffff0000 & MyArray[ulLowerBound].ulValue))
-	{
-		ulFirstMatch = ulLowerBound;
-	}
-
-	// Check that we got a match
-	if (ulNoMatch != ulFirstMatch)
-	{
-		ulLastMatch = ulFirstMatch; // Remember the last match we've found so far
-
-		// Scan backwards to find the first partial match
-		while (ulFirstMatch > 0 && ulMaskedTarget == (0xffff0000 & MyArray[ulFirstMatch-1].ulValue))
-		{
-			ulFirstMatch = ulFirstMatch - 1;
-		}
-
-		// Scan forwards to find the real last partial match
-		// Last entry in the array is ulPropTagArray-1
-		while (ulLastMatch+1 < ulMyArray && ulMaskedTarget == (0xffff0000 & MyArray[ulLastMatch+1].ulValue))
-		{
-			ulLastMatch = ulLastMatch + 1;
-		}
-
-		// Scan to see if we have any exact matches
-		ULONG ulCur;
-		for (ulCur = ulFirstMatch ; ulCur <= ulLastMatch ; ulCur++)
-		{
-			if (ulTarget == MyArray[ulCur].ulValue)
-			{
-				ulFirstExactMatch = ulCur;
-				break;
-			}
-		}
-
-		ULONG ulNumExacts = 0;
-
-		if (ulNoMatch != ulFirstExactMatch)
-		{
-			for (ulCur = ulFirstExactMatch ; ulCur <= ulLastMatch ; ulCur++)
-			{
-				if (ulTarget == MyArray[ulCur].ulValue)
-				{
-					ulLastExactMatch = ulCur;
-				}
-				else break;
-			}
-			ulNumExacts = ulLastExactMatch - ulFirstExactMatch + 1;
-		}
-
-		ULONG ulNumPartials = ulLastMatch - ulFirstMatch + 1 - ulNumExacts;
-
-		if (lpulNumExacts) *lpulNumExacts = ulNumExacts;
-		if (lpulFirstExact) *lpulFirstExact = ulFirstExactMatch;
-		if (lpulNumPartials) *lpulNumPartials = ulNumPartials;
-		if (lpulFirstPartial) *lpulFirstPartial = ulFirstMatch;
-	}
-} // FindTagArrayMatches
+#include "SmartView.h"
+#include "InterpretProp2.h"
 
 // Searches a NAMEID_ARRAY_ENTRY array for a target dispid.
 // Exact matches are those that match
@@ -268,26 +157,19 @@ void PrintTag(_In_ ULONG ulRow)
 void PrintTagFromNum(_In_ ULONG ulPropTag)
 {
 	ULONG ulPropID = NULL;
-	ULONG ulPropType = NULL;
 	ULONG ulNumExacts = NULL;
 	ULONG ulFirstExactMatch = ulNoMatch;
 	ULONG ulNumPartials = NULL;
 	ULONG ulFirstPartial = ulNoMatch;
 
-	// determine the prop ID we're seeking
 	if (ulPropTag & 0xffff0000) // dealing with a full prop tag
 	{
-		ulPropID   = PROP_ID(ulPropTag);
-		ulPropType = PROP_TYPE(ulPropTag);
+		ulPropID = PROP_ID(ulPropTag);
 	}
 	else
 	{
-		ulPropID   = ulPropTag;
-		ulPropType = PT_UNSPECIFIED;
+		ulPropID = ulPropTag;
 	}
-
-	// put everything back together
-	ulPropTag = PROP_TAG(ulPropType,ulPropID);
 
 	printf("Property tag 0x%08X:\n",ulPropTag);
 
@@ -297,7 +179,7 @@ void PrintTagFromNum(_In_ ULONG ulPropTag)
 		printf("Only trust the following output if this property is known to be an address book property.\n");
 	}
 
-	FindTagArrayMatches(ulPropTag,PropTagArray,ulPropTagArray,&ulNumExacts,&ulFirstExactMatch,&ulNumPartials,&ulFirstPartial);
+	FindTagArrayMatches(ulPropTag,true,PropTagArray,ulPropTagArray,&ulNumExacts,&ulFirstExactMatch,&ulNumPartials,&ulFirstPartial);
 
 	ULONG ulCur = NULL;
 	if (ulNumExacts > 0)
@@ -341,7 +223,7 @@ void PrintTagFromName(_In_z_ LPCWSTR lpszPropName)
 			ULONG ulNumPartials = NULL;
 			ULONG ulFirstPartial = ulNoMatch;
 
-			FindTagArrayMatches(PropTagArray[ulExactMatch].ulValue,PropTagArray,ulPropTagArray,&ulNumExacts,&ulFirstExactMatch,&ulNumPartials,&ulFirstPartial);
+			FindTagArrayMatches(PropTagArray[ulExactMatch].ulValue,true,PropTagArray,ulPropTagArray,&ulNumExacts,&ulFirstExactMatch,&ulNumPartials,&ulFirstPartial);
 
 			// We're gonna skip at least one, so only print if we have more than one
 			if (ulNumExacts > 1)
@@ -493,7 +375,7 @@ void PrintDispIDFromNum(_In_ ULONG ulDispID)
 			PrintDispID(ulCur);
 		}
 	}
-} // PrintTagFromNum
+} // PrintDispIDFromNum
 
 void PrintDispIDFromName(_In_z_ LPCWSTR lpszDispIDName)
 {
@@ -554,6 +436,79 @@ void PrintDispIDFromPartialName(_In_opt_z_ LPCWSTR lpszDispIDName, _In_ ULONG ul
 	printf("Found %d matches.\n",ulNumMatches);
 } // PrintDispIDFromPartialName
 
+void PrintFlag(_In_ ULONG ulPropNum, _In_opt_z_ LPCWSTR lpszPropName, _In_ bool bIsDispid, _In_ ULONG ulFlagValue)
+{
+	LPWSTR szFlags = NULL;
+	ULONG ulCur = 0;
+	if (bIsDispid)
+	{
+		if (ulPropNum)
+		{
+			for (ulCur = 0 ; ulCur < ulNameIDArray ; ulCur++)
+			{
+				if (ulPropNum == (ULONG) NameIDArray[ulCur].lValue)
+				{
+					break;
+				}
+			}
+		}
+		else
+		{
+			for (ulCur = 0 ; ulCur < ulNameIDArray ; ulCur++)
+			{
+				if (0 == lstrcmpiW(lpszPropName,NameIDArray[ulCur].lpszName))
+				{
+					break;
+				}
+			}
+		}
+		if (ulCur != ulNameIDArray)
+		{
+			printf("Found named property %ws (0x%04X) ",NameIDArray[ulCur].lpszName, NameIDArray[ulCur].lValue);
+			PrintGUID(NameIDArray[ulCur].lpGuid);
+			printf(".\n");
+			InterpretNumberAsStringNamedProp(ulFlagValue,NameIDArray[ulCur].lValue, NameIDArray[ulCur].lpGuid,&szFlags);
+		}
+	}
+	else
+	{
+		if (ulPropNum)
+		{
+			for (ulCur = 0 ; ulCur < ulPropTagArray ; ulCur++)
+			{
+				if (ulPropNum == PropTagArray[ulCur].ulValue)
+				{
+					break;
+				}
+			}
+		}
+		else
+		{
+			for (ulCur = 0 ; ulCur < ulPropTagArray ; ulCur++)
+			{
+				if (0 == lstrcmpiW(lpszPropName,PropTagArray[ulCur].lpszName))
+				{
+					break;
+				}
+			}
+		}
+		if (ulCur != ulPropTagArray)
+		{
+			printf("Found property %ws (0x%08X).\n",PropTagArray[ulCur].lpszName, PropTagArray[ulCur].ulValue);
+			InterpretNumberAsStringProp(ulFlagValue,PropTagArray[ulCur].ulValue,&szFlags);
+		}
+	}
+	if (szFlags)
+	{
+		printf("0x%08X = %ws\n",ulFlagValue,szFlags);
+		delete[] szFlags;
+	}
+	else
+	{
+		printf("No flag parsing found.\n");
+	}
+} // PrintFlag
+
 void DoPropTags(_In_ MYOPTIONS ProgOpts)
 {
 	ULONG ulPropNum = NULL;
@@ -574,28 +529,12 @@ void DoPropTags(_In_ MYOPTIONS ProgOpts)
 		ulPropNum = ulArg;
 	}
 
-	if (!ProgOpts.bDoDispid)
+	if (ProgOpts.bDoFlag)
 	{
-		// Canonicalize our prop tag a smidge
-		ULONG ulPropID = NULL;
-		ULONG ulPropType = NULL;
+		PrintFlag(ulPropNum,lpszPropName,ProgOpts.bDoDispid,ProgOpts.ulFlagValue);
 
-		if (ulPropNum & 0xffff0000) // dealing with a full prop tag
-		{
-			ulPropID   = PROP_ID(ulPropNum);
-			ulPropType = PROP_TYPE(ulPropNum);
-		}
-		else
-		{
-			ulPropID   = ulPropNum;
-			ulPropType = PT_UNSPECIFIED;
-		}
-
-		// put everything back together
-		ulPropNum = PROP_TAG(ulPropType,ulPropID);
 	}
-
-	if (ProgOpts.bDoPartialSearch)
+	else if (ProgOpts.bDoPartialSearch)
 	{
 		if (ProgOpts.bDoDispid)
 		{

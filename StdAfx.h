@@ -13,7 +13,6 @@
 #pragma warning(disable:6387)
 #include <afxwin.h>		// MFC core and standard components
 #pragma warning(pop)
-//#include <afxext.h>		// MFC extensions
 #include <afxcmn.h>		// MFC support for Windows Common Controls
 
 // Safe String handling header

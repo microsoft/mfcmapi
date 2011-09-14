@@ -128,7 +128,7 @@ ULONG ulNumStructArray = _countof(g_NumStructArray);
 _Check_return_ ULONG BuildFlagIndexFromTag(ULONG ulPropTag,
 										   ULONG ulPropNameID,
 										   _In_opt_z_ LPWSTR lpszPropNameString,
-										   _In_opt_ LPGUID lpguidNamedProp)
+										   _In_opt_ LPCGUID lpguidNamedProp)
 {
 	ULONG ulPropID = PROP_ID(ulPropTag);
 
@@ -163,7 +163,7 @@ _Check_return_ ULONG BuildFlagIndexFromTag(ULONG ulPropTag,
 	return NULL;
 } // BuildFlagIndexFromTag
 
-_Check_return_ ULONG FindSmartViewParserForProp(_In_count_(ulParserArray) LPSMARTVIEW_PARSER_ARRAY_ENTRY lpParserArray, ULONG ulParserArray, const ULONG ulPropTag, const ULONG ulPropNameID, _In_opt_ const LPGUID lpguidNamedProp)
+_Check_return_ ULONG FindSmartViewParserForProp(_In_count_(ulParserArray) LPSMARTVIEW_PARSER_ARRAY_ENTRY lpParserArray, ULONG ulParserArray, const ULONG ulPropTag, const ULONG ulPropNameID, _In_opt_ const LPCGUID lpguidNamedProp)
 {
 	if (!lpParserArray) return 0;
 	ULONG	ulCurEntry = 0;
@@ -310,7 +310,7 @@ void InterpretNumberAsStringProp(ULONG ulVal, ULONG ulPropTag, _Deref_out_opt_z_
 	InterpretNumberAsString(pV, ulPropTag, NULL, NULL, NULL, false, lpszResultString);
 } // InterpretNumberAsStringProp
 
-void InterpretNumberAsStringNamedProp(ULONG ulVal, ULONG ulPropNameID, _In_opt_ LPGUID lpguidNamedProp, _Deref_out_opt_z_ LPWSTR* lpszResultString)
+void InterpretNumberAsStringNamedProp(ULONG ulVal, ULONG ulPropNameID, _In_opt_ LPCGUID lpguidNamedProp, _Deref_out_opt_z_ LPWSTR* lpszResultString)
 {
 	_PV pV = {0};
 	pV.ul = ulVal;
@@ -321,7 +321,7 @@ void InterpretNumberAsStringNamedProp(ULONG ulVal, ULONG ulPropNameID, _In_opt_ 
 // Free the string with delete[]
 // Will not return a string if the lpProp is not a PT_LONG/PT_I2/PT_I8 or we don't recognize the property
 // Will use named property details to look up named property flags
-void InterpretNumberAsString(_PV pV, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_z_ LPWSTR lpszPropNameString, _In_opt_ LPGUID lpguidNamedProp, bool bLabel, _Deref_out_opt_z_ LPWSTR* lpszResultString)
+void InterpretNumberAsString(_PV pV, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_z_ LPWSTR lpszPropNameString, _In_opt_ LPCGUID lpguidNamedProp, bool bLabel, _Deref_out_opt_z_ LPWSTR* lpszResultString)
 {
 	if (lpszResultString) *lpszResultString = NULL;
 	if (!ulPropTag || !lpszResultString)
@@ -2625,11 +2625,27 @@ void BinToTypedEntryIdStruct(EIDStructType ulType, ULONG cbBin, _In_count_(cbBin
 					(LPBYTE) &lpEID->ProviderData.MessageDatabaseObject.WrappedProviderUID);
 				Parser.GetDWORD(&lpEID->ProviderData.MessageDatabaseObject.WrappedType);
 				Parser.GetStringA(&lpEID->ProviderData.MessageDatabaseObject.ServerShortname);
-				if (!(lpEID->ProviderData.MessageDatabaseObject.WrappedType & OPENSTORE_PUBLIC))
+
+				lpEID->ProviderData.MessageDatabaseObject.bV2 = false;
+
+				// Test if we have a magic value. Some PF EIDs also have a mailbox DN and we need to accomodate them
+				if (lpEID->ProviderData.MessageDatabaseObject.WrappedType & OPENSTORE_PUBLIC)
+				{
+					cbRead = Parser.GetCurrentOffset();
+					Parser.GetDWORD(&lpEID->ProviderData.MessageDatabaseObject.v2.ulMagic);
+					if (MDB_STORE_EID_V2_MAGIC == lpEID->ProviderData.MessageDatabaseObject.v2.ulMagic)
+					{
+						lpEID->ProviderData.MessageDatabaseObject.bV2 = true;
+					}
+					Parser.SetCurrentOffset(cbRead);
+				}
+
+				// Either we're not a PF eid, or this PF EID wasn't followed directly by a magic value
+				if (!(lpEID->ProviderData.MessageDatabaseObject.WrappedType & OPENSTORE_PUBLIC) ||
+					!lpEID->ProviderData.MessageDatabaseObject.bV2)
 				{
 					Parser.GetStringA(&lpEID->ProviderData.MessageDatabaseObject.MailboxDN);
 				}
-				lpEID->ProviderData.MessageDatabaseObject.bV2 = false;
 				if (Parser.RemainingBytes() >= sizeof(MDB_STORE_EID_V2) + sizeof(WCHAR))
 				{
 					lpEID->ProviderData.MessageDatabaseObject.bV2 = true;

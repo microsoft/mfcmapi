@@ -947,6 +947,7 @@ IDS_REGKEY_USE_MESSAGERAW "Use IID_IMessageRaw when opening messages"
 IDS_REGKEY_HEAPENABLETERMINATIONONCORRUPTION "Terminate on heap corruption (requires restart)"
 IDS_REGKEY_LOADADDINS "Load Add-Ins (requires restart)"
 IDS_REGKEY_FORCEOUTLOOKMAPI "Force Outlook's MAPI"
+IDS_REGKEY_FORCESYSTEMMAPI "Force System MAPI"
 
 // RestrictEditor.cpp
 IDS_RELOP "relop"
@@ -1089,6 +1090,7 @@ Supported tags:\n\
 0x00010000 DBGAddIn\n\
 0x00020000 DBGStream\n\
 0x00040000 DBGSmartView\n\
+0x00080000 DBGLoadMAPI\n\
 0x80000000 DBGMenu"
 
 IDS_DISPLAYABOUTCHECK "Display at startup"

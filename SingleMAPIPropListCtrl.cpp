@@ -1095,8 +1095,9 @@ void CSingleMAPIPropListCtrl::CountNamedProps()
 		CEDITOR_BUTTON_OK);
 	if (ulHighestKnown)
 	{
-		tag.aulPropTag[0] = PROP_TAG(NULL,ulCurrent);
+		tag.aulPropTag[0] = PROP_TAG(NULL,ulHighestKnown);
 
+		hRes = S_OK;
 		WC_H(GetNamesFromIDs(m_lpMAPIProp,
 			&lptag,
 			NULL,

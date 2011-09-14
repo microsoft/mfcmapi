@@ -959,3 +959,9 @@ enum SearchPathReorderType
 
 #define MDB_STORE_EID_V2_VERSION (0x1)
 #define MDB_STORE_EID_V2_MAGIC (0xf32135d8)
+
+// http://blogs.msdn.com/b/dvespa/archive/2009/03/16/how-to-sign-or-encrypt-a-message-programmatically-from-oom.aspx
+#define PR_SECURITY_FLAGS       PROP_TAG(PT_LONG, 0x6E01)
+#define SECFLAG_NONE            0x0000       // Message has no security
+#define SECFLAG_ENCRYPTED       0x0001       // Message is sealed
+#define SECFLAG_SIGNED          0x0002       // Message is signed

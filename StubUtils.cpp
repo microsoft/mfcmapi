@@ -5,6 +5,9 @@
 #include <winreg.h>
 #include <stdlib.h>
 
+// Included for MFCMAPI tracing
+#include "MFCOutput.h"
+#include "ImportProcs.h"
 
 /*
  *  MAPI Stub Utilities
@@ -29,7 +32,6 @@
 HMODULE GetPrivateMAPI();
 void UnLoadPrivateMAPI();
 void ForceOutlookMAPI();
-
 
 const WCHAR WszKeyNameMailClient[] = L"Software\\Clients\\Mail";
 const WCHAR WszKeyNameMSI[] = L"Software\\Clients\\Mail\\Microsoft Outlook";
@@ -73,6 +75,8 @@ volatile ULONG g_ulDllSequenceNum = 1;
 //  Outlook and its MAPI DLLs
 static bool s_fForceOutlookMAPI = false;
 
+// Whether or not we should ignore the registry and load MAPI from the system directory
+static bool s_fForceSystemMAPI = false;
 
 // Constants for use with GetInstalledLCID API
 #define	lastUILanguage		0
@@ -92,6 +96,79 @@ static bool s_fForceOutlookMAPI = false;
 #define LOADLIBMSI_IGNORE_PRIOR         0x20000000
 #define LOADLIBMSI_FLAG_MASK            0xFF000000
 
+LCID GetLCID(HKEY hkMAPI1, HKEY hkPolicy, HKEY hkSoftware, LPCWSTR wszMSI, LPCWSTR wszLCID)
+{
+	HRESULT hRes = S_OK;
+	WCHAR rgwchMSILCID[(MAX_PATH * 2) + 10];
+	DWORD dwSize = NULL;
+	DWORD dwType = 0;
+
+	HKEY hkSoftwareLcid = NULL;
+	HKEY hkPolicyLcid = NULL;
+	LCID lcid = 0;
+	bool bFound = false;
+
+	dwSize = sizeof(rgwchMSILCID);
+	hRes = RegQueryValueExW(hkMAPI1, wszLCID, 0, &dwType,
+		(LPBYTE)rgwchMSILCID, &dwSize);
+	if ((ERROR_SUCCESS == hRes) && (REG_MULTI_SZ == dwType))
+	{
+		DebugPrint(DBGLoadMAPI,_T("GetLCID: %ws:%ws, rgwchMSILCID = %ws\n"),wszMSI,wszLCID,rgwchMSILCID);
+		// Read the key
+		LPWSTR szKey = NULL;
+
+		// Check policy hive first
+		if (RegOpenKeyExW(hkPolicy, rgwchMSILCID, 0, KEY_READ,
+			&hkPolicyLcid) != ERROR_SUCCESS)
+		{
+			hkPolicyLcid = NULL;
+		}
+
+		if (RegOpenKeyExW(hkSoftware, rgwchMSILCID, 0, KEY_READ,
+			&hkSoftwareLcid) != ERROR_SUCCESS)
+		{
+			hkSoftwareLcid = NULL;
+		}
+		dwSize = sizeof(lcid);
+		szKey = &rgwchMSILCID[wcslen(rgwchMSILCID)+1];
+		DebugPrint(DBGLoadMAPI,_T("GetLCID: %ws:%ws, szKey = %ws\n"),wszMSI,wszLCID,szKey);
+		if (hkPolicyLcid)
+		{
+			if (ERROR_SUCCESS == RegQueryValueExW(hkPolicyLcid, szKey, 0, &dwType, (LPBYTE)&lcid, &dwSize))
+			{
+				if (REG_DWORD == dwType)
+				{
+					DebugPrint(DBGLoadMAPI,_T("GetLCID: Found lcid under policy key.\n"));
+					bFound = true;
+				}
+			}
+		}
+		if (!bFound && hkSoftwareLcid)
+		{
+			if (ERROR_SUCCESS == RegQueryValueExW(hkSoftwareLcid, szKey, 0, &dwType, (LPBYTE)&lcid, &dwSize))
+			{
+				if (REG_DWORD == dwType)
+				{
+					DebugPrint(DBGLoadMAPI,_T("GetLCID: Found lcid under software key.\n"));
+					bFound = true;
+				}
+			}
+		}
+	}
+
+	if (NULL != hkPolicyLcid)
+	{
+		RegCloseKey(hkPolicyLcid);
+		hkPolicyLcid = NULL;
+	}
+	if (NULL != hkSoftwareLcid)
+	{
+		RegCloseKey(hkSoftwareLcid);
+		hkSoftwareLcid = NULL;
+	}
+	DebugPrint(DBGLoadMAPI,_T("Exit GetLCID: lcid = 0x%08X\n"),lcid);
+	return bFound?lcid:0;
+} // GetLCID
 
 /*
  *  GetOutlookLCID
@@ -103,297 +180,56 @@ static bool s_fForceOutlookMAPI = false;
  */
 LCID GetOutlookLCID()
 {
-	HRESULT hr = S_OK;
-	DWORD dwSize;
-	DWORD dwSize2;
-	DWORD dwType;
-	HKEY hkMAPI1 = NULL;
-	HKEY hkMAPI2 = NULL;
+	DebugPrint(DBGLoadMAPI,_T("Enter GetOutlookLCID\n"));
+	HKEY hkMAPI = NULL;
 	HKEY hkSoftware = NULL;
 	HKEY hkPolicy = NULL;
 	HKEY hkSoftwareLcid = NULL;
 	HKEY hkPolicyLcid = NULL;
-	WCHAR rgwchMSILCID[(MAX_PATH * 2) + 10];
-	LCID  lcid = 0;
+	LCID lcid = 0;
 
 	if (RegOpenKeyExW(HKEY_CURRENT_USER, WszKeyNamePolicy, 0, KEY_READ,
-					  &hkPolicy) != ERROR_SUCCESS)
+		&hkPolicy) != ERROR_SUCCESS)
 	{
 		hkPolicy = NULL;
 	}
 	if (RegOpenKeyExW(HKEY_CURRENT_USER, WszKeyNameSoftware, 0, KEY_READ,
-					  &hkSoftware) != ERROR_SUCCESS)
+		&hkSoftware) != ERROR_SUCCESS)
 	{
-		hkSoftware= NULL;
+		hkSoftware = NULL;
 	}
-	if ((hkSoftware == NULL) && (hkPolicy == NULL))
+	if ((hkSoftware != NULL) || (hkPolicy != NULL))
 	{
-		lcid =0;
-		goto Done;
-	}
-
-	// Check the Current user tree
-	if (RegOpenKeyExW(HKEY_CURRENT_USER, WszKeyNameMSI, 0, KEY_READ,
-					  &hkMAPI1) == ERROR_SUCCESS)
-	{
-		dwSize = sizeof(rgwchMSILCID);
-		hr = RegQueryValueExW(hkMAPI1, WszValueNameLCID, 0, &dwType,
-							  (LPBYTE)rgwchMSILCID, &dwSize);
-		if ((ERROR_SUCCESS == hr) && (REG_MULTI_SZ == dwType))
+		// Check the Current user tree
+		if (RegOpenKeyExW(HKEY_CURRENT_USER, WszKeyNameMSI, 0, KEY_READ,
+			&hkMAPI) == ERROR_SUCCESS)
 		{
-			// Read the key
-			LPWSTR szKey = NULL;
+			lcid = GetLCID(hkMAPI,hkPolicy,hkSoftware,WszKeyNameMSI,WszValueNameLCID);
 
-			// Check policy hive first
-			if (RegOpenKeyExW(hkPolicy, rgwchMSILCID, 0, KEY_READ,
-							  &hkPolicyLcid) != ERROR_SUCCESS)
-			{
-				hkPolicyLcid = NULL;
-			}
-
-			if (RegOpenKeyExW(hkSoftware, rgwchMSILCID, 0, KEY_READ,
-							  &hkSoftwareLcid) != ERROR_SUCCESS)
-			{
-				hkSoftwareLcid = NULL;
-			}
-			dwSize = sizeof(lcid);
-			dwSize2 = sizeof(lcid);
-			szKey = &rgwchMSILCID[wcslen(rgwchMSILCID)+1];
-			if ( (hkPolicyLcid &&
-					(RegQueryValueExW(hkPolicyLcid, szKey, 0, &dwType,  (LPBYTE)&lcid, &dwSize) == ERROR_SUCCESS) &&
-					(REG_DWORD == dwType) ) ||
-					(hkSoftwareLcid &&
-					 (RegQueryValueExW(hkSoftwareLcid, szKey, 0, &dwType,
-									   (LPBYTE)&lcid, &dwSize2) == ERROR_SUCCESS) &&
-					 (REG_DWORD == dwType) ))
-			{
-				goto Done;
-			}
-			if (NULL != hkPolicyLcid)
-			{
-				RegCloseKey(hkPolicyLcid);
-				hkPolicyLcid = NULL;
-			}
-			if (NULL != hkSoftwareLcid)
-			{
-				RegCloseKey(hkSoftwareLcid);
-				hkSoftwareLcid = NULL;
-			}
+			// Now try the office key
+			if (!lcid) lcid = GetLCID(hkMAPI,hkPolicy,hkSoftware,WszKeyNameMSI,WszValueNameOfficeLCID);
 		}
 
-		// Now try the office key
-		dwSize = sizeof(rgwchMSILCID);
-		hr = RegQueryValueExW(hkMAPI1, WszValueNameOfficeLCID, 0, &dwType,
-							  (LPBYTE)rgwchMSILCID, &dwSize);
-		if ((ERROR_SUCCESS == hr) && (REG_MULTI_SZ == dwType))
+		// Check the local machine tree
+		if (!lcid && RegOpenKeyExW(HKEY_LOCAL_MACHINE, WszKeyNameMSI, 0, KEY_READ,
+			&hkMAPI) == ERROR_SUCCESS)
 		{
-			// Read the key
-			LPWSTR szKey = NULL;
+			lcid = GetLCID(hkMAPI,hkPolicy,hkSoftware,WszKeyNameMSI,WszValueNameLCID);
 
-			// Check policy hive first
-			if (RegOpenKeyExW(hkPolicy, rgwchMSILCID, 0, KEY_READ,
-							  &hkPolicyLcid) != ERROR_SUCCESS)
-			{
-				hkPolicyLcid = NULL;
-			}
-
-			if (RegOpenKeyExW(hkSoftware, rgwchMSILCID, 0, KEY_READ,
-							  &hkSoftwareLcid) != ERROR_SUCCESS)
-			{
-				hkSoftwareLcid = NULL;
-			}
-			dwSize = sizeof(lcid);
-			dwSize2 = sizeof(lcid);
-			szKey = &rgwchMSILCID[wcslen(rgwchMSILCID)+1];
-			if ( (hkPolicyLcid &&
-					(RegQueryValueExW(hkPolicyLcid, szKey, 0, &dwType,  (LPBYTE)&lcid, &dwSize) == ERROR_SUCCESS) &&
-					(REG_DWORD == dwType) ) ||
-					(hkSoftwareLcid &&
-					 (RegQueryValueExW(hkSoftwareLcid, szKey, 0, &dwType,
-									   (LPBYTE)&lcid, &dwSize2) == ERROR_SUCCESS) &&
-					 (REG_DWORD == dwType) ))
-			{
-				goto Done;
-			}
-			if (NULL != hkPolicyLcid)
-			{
-				RegCloseKey(hkPolicyLcid);
-				hkPolicyLcid = NULL;
-			}
-			if (NULL != hkSoftwareLcid)
-			{
-				RegCloseKey(hkSoftwareLcid);
-				hkSoftwareLcid = NULL;
-			}
+			// Now try the office key
+			if (!lcid) lcid = GetLCID(hkMAPI,hkPolicy,hkSoftware,WszKeyNameMSI,WszValueNameOfficeLCID);
 		}
-		lcid = 0;
 	}
 
-	// Check the local machine tree
-	if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, WszKeyNameMSI, 0, KEY_READ,
-					  &hkMAPI1) == ERROR_SUCCESS)
-	{
-		dwSize = sizeof(rgwchMSILCID);
-		hr = RegQueryValueExW(hkMAPI1, WszValueNameLCID, 0, &dwType,
-							  (LPBYTE)rgwchMSILCID, &dwSize);
-		if ((ERROR_SUCCESS == hr) && (REG_MULTI_SZ == dwType))
-		{
-			// Read the key
-			LPWSTR szKey = NULL;
+	if (NULL != hkMAPI) RegCloseKey(hkMAPI);
+	if (NULL != hkPolicy) RegCloseKey(hkPolicy);
+	if (NULL != hkSoftware) RegCloseKey(hkSoftware);
+	if (NULL != hkPolicyLcid) RegCloseKey(hkPolicyLcid);
+	if (NULL != hkSoftwareLcid) RegCloseKey(hkSoftwareLcid);
 
-			// Check policy hive first
-			if (RegOpenKeyExW(hkPolicy, rgwchMSILCID, 0, KEY_READ,
-							  &hkPolicyLcid) != ERROR_SUCCESS)
-			{
-				hkPolicyLcid = NULL;
-			}
-
-			if (RegOpenKeyExW(hkSoftware, rgwchMSILCID, 0, KEY_READ,
-							  &hkSoftwareLcid) != ERROR_SUCCESS)
-			{
-				hkSoftwareLcid = NULL;
-			}
-			dwSize = sizeof(lcid);
-			dwSize2 = sizeof(lcid);
-			szKey = &rgwchMSILCID[wcslen(rgwchMSILCID)+1];
-			if ( (hkSoftwareLcid &&
-					(RegQueryValueExW(hkSoftwareLcid, szKey, 0, &dwType,  (LPBYTE)&lcid, &dwSize) == ERROR_SUCCESS) &&
-					(REG_DWORD == dwType) ) ||
-					(hkPolicyLcid &&
-					 (RegQueryValueExW(hkPolicyLcid, szKey, 0, &dwType,
-									   (LPBYTE)&lcid, &dwSize2) == ERROR_SUCCESS) &&
-					 (REG_DWORD == dwType) ))
-			{
-				goto Done;
-			}
-			if (NULL != hkPolicyLcid)
-			{
-				RegCloseKey(hkPolicyLcid);
-				hkPolicyLcid = NULL;
-			}
-			if (NULL != hkSoftwareLcid)
-			{
-				RegCloseKey(hkSoftwareLcid);
-				hkSoftwareLcid = NULL;
-			}
-		}
-		lcid = 0;
-	}
-
-	if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, WszKeyNameMSI, 0, KEY_READ,
-					  &hkMAPI1) == ERROR_SUCCESS)
-	{
-		dwSize = sizeof(rgwchMSILCID);
-		hr = RegQueryValueExW(hkMAPI1, WszValueNameOfficeLCID, 0, &dwType,
-							  (LPBYTE)rgwchMSILCID, &dwSize);
-		if ((ERROR_SUCCESS == hr) && (REG_MULTI_SZ == dwType))
-		{
-			// Read the key
-			LPWSTR szKey = NULL;
-
-			// Check policy hive first
-			if (RegOpenKeyExW(hkPolicy, rgwchMSILCID, 0, KEY_READ,
-							  &hkPolicyLcid) != ERROR_SUCCESS)
-			{
-				hkPolicyLcid = NULL;
-			}
-
-			if (RegOpenKeyExW(hkSoftware, rgwchMSILCID, 0, KEY_READ,
-							  &hkSoftwareLcid) != ERROR_SUCCESS)
-			{
-				hkSoftwareLcid = NULL;
-			}
-			dwSize = sizeof(lcid);
-			dwSize2 = sizeof(lcid);
-			szKey = &rgwchMSILCID[wcslen(rgwchMSILCID)+1];
-			if ( (hkSoftwareLcid &&
-					(RegQueryValueExW(hkSoftwareLcid, szKey, 0, &dwType,  (LPBYTE)&lcid, &dwSize) == ERROR_SUCCESS) &&
-					(REG_DWORD == dwType) ) ||
-					(hkPolicyLcid &&
-					 (RegQueryValueExW(hkPolicyLcid, szKey, 0, &dwType,
-									   (LPBYTE)&lcid, &dwSize2) == ERROR_SUCCESS) &&
-					 (REG_DWORD == dwType) ))
-			{
-				goto Done;
-			}
-			if (NULL != hkPolicyLcid)
-			{
-				RegCloseKey(hkPolicyLcid);
-				hkPolicyLcid = NULL;
-			}
-			if (NULL != hkSoftwareLcid)
-			{
-				RegCloseKey(hkSoftwareLcid);
-				hkSoftwareLcid = NULL;
-			}
-		}
-
-		// Now try the office key
-		dwSize = sizeof(rgwchMSILCID);
-		hr = RegQueryValueExW(hkMAPI1, WszValueNameOfficeLCID, 0, &dwType,
-							  (LPBYTE)rgwchMSILCID, &dwSize);
-		if ((ERROR_SUCCESS == hr) && (REG_MULTI_SZ == dwType))
-		{
-			// Read the key
-			LPWSTR szKey = NULL;
-
-			// Check policy hive first
-			if (RegOpenKeyExW(hkPolicy, rgwchMSILCID, 0, KEY_READ,
-							  &hkPolicyLcid) != ERROR_SUCCESS)
-			{
-				hkPolicyLcid = NULL;
-			}
-
-			if (RegOpenKeyExW(hkSoftware, rgwchMSILCID, 0, KEY_READ,
-							  &hkSoftwareLcid) != ERROR_SUCCESS)
-			{
-				hkSoftwareLcid = NULL;
-			}
-			dwSize = sizeof(lcid);
-			dwSize2 = sizeof(lcid);
-			szKey = &rgwchMSILCID[wcslen(rgwchMSILCID)+1];
-			if ( (hkSoftwareLcid &&
-					(RegQueryValueExW(hkSoftwareLcid, szKey, 0, &dwType,  (LPBYTE)&lcid, &dwSize) == ERROR_SUCCESS) &&
-					(REG_DWORD == dwType) ) ||
-					(hkPolicyLcid &&
-					 (RegQueryValueExW(hkPolicyLcid, szKey, 0, &dwType,
-									   (LPBYTE)&lcid, &dwSize2) == ERROR_SUCCESS) &&
-					 (REG_DWORD == dwType) ))
-			{
-				goto Done;
-			}
-			if (NULL != hkPolicyLcid)
-			{
-				RegCloseKey(hkPolicyLcid);
-				hkPolicyLcid = NULL;
-			}
-			if (NULL != hkSoftwareLcid)
-			{
-				RegCloseKey(hkSoftwareLcid);
-				hkSoftwareLcid = NULL;
-			}
-		}
-		lcid = 0;
-	}
-
-Done:
-	if (NULL != hkMAPI1)
-		RegCloseKey(hkMAPI1);
-
-	if (NULL != hkMAPI2)
-		RegCloseKey(hkMAPI2);
-	if (NULL != hkPolicy)
-		RegCloseKey(hkPolicy);
-	if (NULL != hkSoftware)
-		RegCloseKey(hkSoftware);
-	if (NULL != hkPolicyLcid)
-		RegCloseKey(hkPolicyLcid);
-	if (NULL != hkSoftwareLcid)
-		RegCloseKey(hkSoftwareLcid);
-
+	DebugPrint(DBGLoadMAPI,_T("Exit GetOutlookLCID: lcid = 0x%08X\n"),lcid);
 	return lcid;
-}
-
+} // GetOutlookLCID
 
 /*
  *  GetInstalledLCID
@@ -408,6 +244,7 @@ Done:
  */
 LCID GetInstalledLCID(int langType)
 {
+	DebugPrint(DBGLoadMAPI,_T("Enter GetInstalledLCID: langType = 0x%08X\n"),langType);
 	LCID  lcid = 0;
 
 	switch (langType)
@@ -427,10 +264,9 @@ LCID GetInstalledLCID(int langType)
 		break;
 	}
 
+	DebugPrint(DBGLoadMAPI,_T("Exit GetInstalledLCID: lcid = 0x%08X\n"),lcid);
 	return lcid;
-}
-
-
+} // GetInstalledLCID
 
 /*
  *  LoadLibraryRegW
@@ -454,6 +290,8 @@ LCID GetInstalledLCID(int langType)
 inline HMODULE LoadLibraryRegW(LPCWSTR wszDLL, DWORD dwFlags, HKEY hKeyRoot,
 								 LPCWSTR wszRegRoot, LPCWSTR wszRegValue)
 {
+	DebugPrint(DBGLoadMAPI,_T("Enter LoadLibraryRegW: wszDLL = %ws, dwFlags = 0x%08X, hKeyRoot = %p, wszRegRoot = %ws, wszRegValue = %ws\n"),
+		wszDLL,dwFlags,hKeyRoot,wszRegRoot,wszRegValue);
 	DWORD           cch;
 	DWORD           cchDLL;
 	DWORD           dwFileAtt;
@@ -467,7 +305,6 @@ inline HMODULE LoadLibraryRegW(LPCWSTR wszDLL, DWORD dwFlags, HKEY hKeyRoot,
 	WCHAR           rgwchFullPath[MAX_PATH];
 	WCHAR           rgwchRegPath[MAX_PATH];
 	WCHAR           rgwchTestPath[MAX_PATH];
-
 
 	// Try to open the registry
 	dwErr = RegOpenKeyExW(hKeyRoot, wszRegRoot, 0, KEY_QUERY_VALUE, &hKey);
@@ -494,6 +331,7 @@ inline HMODULE LoadLibraryRegW(LPCWSTR wszDLL, DWORD dwFlags, HKEY hKeyRoot,
 	//  calls includes the NULL terminator
 
 	pwszPath = rgwchRegPath;
+	DebugPrint(DBGLoadMAPI,_T("LoadLibraryRegW: rgwchRegPath = %ws\n"),rgwchRegPath);
 
 	// Expand any environment strings which may be present
 
@@ -513,6 +351,7 @@ inline HMODULE LoadLibraryRegW(LPCWSTR wszDLL, DWORD dwFlags, HKEY hKeyRoot,
 		//  length.
 
 		pwszPath = rgwchExpandPath;
+		DebugPrint(DBGLoadMAPI,_T("LoadLibraryRegW: rgwchExpandPath = %ws\n"),rgwchExpandPath);
 	}
 	cch = lstrlenW(pwszPath);
 
@@ -558,6 +397,7 @@ inline HMODULE LoadLibraryRegW(LPCWSTR wszDLL, DWORD dwFlags, HKEY hKeyRoot,
 			// Build up the full path in the buffer
 
 			wcscpy_s((pwszPath + cch), MAX_PATH - cch, wszDLL);
+			DebugPrint(DBGLoadMAPI,_T("LoadLibraryRegW: Dir built pwszPath = %ws\n"),pwszPath);
 		}
 		else
 		{
@@ -576,6 +416,7 @@ inline HMODULE LoadLibraryRegW(LPCWSTR wszDLL, DWORD dwFlags, HKEY hKeyRoot,
 				goto Exit;
 			}
 			pwszPath = rgwchFullPath;
+			DebugPrint(DBGLoadMAPI,_T("LoadLibraryRegW: rgwchFullPath = %ws\n"),rgwchFullPath);
 
 			// Make sure the everything will fit
 
@@ -594,6 +435,7 @@ inline HMODULE LoadLibraryRegW(LPCWSTR wszDLL, DWORD dwFlags, HKEY hKeyRoot,
 				wszDLL++;
 			}
 			wcscpy_s(pwchFileName, MAX_PATH - cch, wszDLL);
+			DebugPrint(DBGLoadMAPI,_T("LoadLibraryRegW: file built pwchFileName = %ws\n"),pwchFileName);
 		}
 	}
 
@@ -606,6 +448,7 @@ inline HMODULE LoadLibraryRegW(LPCWSTR wszDLL, DWORD dwFlags, HKEY hKeyRoot,
 		cch = GetFullPathNameW(pwszPath, _countof(rgwchTestPath),
 							   rgwchTestPath, &pwchFileName);
 		pwszPath = rgwchTestPath;
+		DebugPrint(DBGLoadMAPI,_T("LoadLibraryRegW: rgwchTestPath = %ws\n"),rgwchTestPath);
 
 		// Check to see if it is already ordered
 
@@ -626,6 +469,7 @@ inline HMODULE LoadLibraryRegW(LPCWSTR wszDLL, DWORD dwFlags, HKEY hKeyRoot,
 
 	// Try to load the DLL
 
+	DebugPrint(DBGLoadMAPI,_T("LoadLibraryRegW: Loading pwszPath = %ws\n"),pwszPath);
 	hInstRet = LoadLibraryW(pwszPath);
 
 Exit:
@@ -649,9 +493,9 @@ Exit:
 	{
 		RegCloseKey(hKey);
 	}
+	DebugPrint(DBGLoadMAPI,_T("Exit LoadLibraryRegW: hInstRet = %p\n"),hInstRet);
 	return hInstRet;
-}
-
+} // LoadLibraryRegW
 
 /*
  *  FindFileMSIW
@@ -682,6 +526,8 @@ inline DWORD FindFileMSIW(LPCWSTR wszFilePath, DWORD dwFlags, LPCWSTR wszProduct
 						  LPCWSTR wszComponent, LPCWSTR wszFeatQual, DWORD dwInstallMode,
 						  LPWSTR wszDest, DWORD* pcchDest)
 {
+	DebugPrint(DBGLoadMAPI,_T("Enter FindFileMSIW: wszFilePath = %ws, dwFlags = 0x%08X, wszProduct = %ws, wszComponent = %ws, wszFeatQual = %ws, dwInstallMode = 0x%08X\n"),
+		wszFilePath,dwFlags,wszProduct,wszComponent,wszFeatQual,dwInstallMode);
 	DWORD           cchCompPath;
 	DWORD           cchDestPath;
 	DWORD           dwFileAtt;
@@ -703,8 +549,6 @@ inline DWORD FindFileMSIW(LPCWSTR wszFilePath, DWORD dwFlags, LPCWSTR wszProduct
 		fRetry = TRUE;
 		dwInstallModeFirstTry = (DWORD)INSTALLMODE_EXISTING;
 	}
-
-
 
 	// Use the appropriate format of MSI to locate the component path
 
@@ -733,6 +577,7 @@ inline DWORD FindFileMSIW(LPCWSTR wszFilePath, DWORD dwFlags, LPCWSTR wszProduct
 		{
 			goto Exit;
 		}
+		DebugPrint(DBGLoadMAPI,_T("FindFileMSIW: %ws:%ws rgwchCompPath = %ws\n"),wszComponent,wszFeatQual,rgwchCompPath);
 	}
 	else
 	{
@@ -754,11 +599,11 @@ inline DWORD FindFileMSIW(LPCWSTR wszFilePath, DWORD dwFlags, LPCWSTR wszProduct
 										 &cchCompPath);
 		}
 
-
 		if (ERROR_SUCCESS != dwErr)
 		{
 			goto Exit;
 		}
+		DebugPrint(DBGLoadMAPI,_T("FindFileMSIW: %ws:%ws:%ws rgwchCompPath = %ws\n"),wszProduct,wszFeatQual,wszComponent,rgwchCompPath);
 	}
 
 	// Make sure that we have a good path
@@ -864,9 +709,9 @@ inline DWORD FindFileMSIW(LPCWSTR wszFilePath, DWORD dwFlags, LPCWSTR wszProduct
 	*pcchDest = cchDestPath;
 
 Exit:
+	DebugPrint(DBGLoadMAPI,_T("Exit FindFileMSIW: dwErr = 0x%08X, wszDest = %ws\n"),dwErr,wszDest);
 	return dwErr;
-}
-
+} // FindFileMSIW
 
 /*
  *  LoadLibraryMSIExW
@@ -893,6 +738,8 @@ inline HMODULE LoadLibraryMSIExW(LPCWSTR wszDLLPath, HANDLE /* hFile */,
 								   LPCWSTR wszComponent, LPCWSTR wszFeatQual,
 								   DWORD dwInstallMode)
 {
+	DebugPrint(DBGLoadMAPI,_T("Enter LoadLibraryMSIExW: wszDLLPath = %ws, dwFlags = 0x%08X, wszProduct = %ws, wszComponent = %ws, wszFeatQual = %ws, dwInstallMode = 0x%08X\n"),
+		wszDLLPath,dwFlags,wszProduct,wszComponent,wszFeatQual,dwInstallMode);
 	DWORD           cchCompPath;
 	DWORD           dwErr = ERROR_SUCCESS;
 	HMODULE         hInstDLL = NULL;
@@ -910,6 +757,7 @@ inline HMODULE LoadLibraryMSIExW(LPCWSTR wszDLLPath, HANDLE /* hFile */,
 	{
 		goto Exit;
 	}
+	DebugPrint(DBGLoadMAPI,_T("LoadLibraryMSIExW: rgwchCompPath = %ws\n"),rgwchCompPath);
 
 	// If we are supposed to, see if the DLL is already loaded in memory
 
@@ -923,6 +771,7 @@ inline HMODULE LoadLibraryMSIExW(LPCWSTR wszDLLPath, HANDLE /* hFile */,
 
 		cchFullPath = GetFullPathNameW(rgwchCompPath, _countof(rgwchFullPath),
 									   rgwchFullPath, &pwchFile);
+		DebugPrint(DBGLoadMAPI,_T("LoadLibraryMSIExW: rgwchFullPath = %ws\n"),rgwchFullPath);
 
 		// Check to see if it is already ordered
 
@@ -939,6 +788,7 @@ inline HMODULE LoadLibraryMSIExW(LPCWSTR wszDLLPath, HANDLE /* hFile */,
 
 	// Load the DLL
 
+	DebugPrint(DBGLoadMAPI,_T("LoadLibraryMSIExW: Loading rgwchCompPath = %ws\n"),rgwchCompPath);
 	hInstDLL = LoadLibraryExW(rgwchCompPath, NULL,
 							  (dwFlags & ~LOADLIBMSI_FLAG_MASK));
 
@@ -947,6 +797,7 @@ Exit:
 
 	if ((NULL == hInstDLL) && (dwFlags & LOADLIBMSI_LOAD_ALWAYS))
 	{
+		DebugPrint(DBGLoadMAPI,_T("LoadLibraryMSIExW: Loading wszDLLPath = %ws\n"),wszDLLPath);
 		hInstDLL = LoadLibraryExW(wszDLLPath, NULL,
 								  (dwFlags & ~LOADLIBMSI_FLAG_MASK));
 		dwErr = ERROR_SUCCESS;
@@ -958,8 +809,9 @@ Exit:
 	{
 		SetLastError(dwErr);
 	}
+	DebugPrint(DBGLoadMAPI,_T("Exit FindFileMSIW: hInstDLL = %p\n"),hInstDLL);
 	return hInstDLL;
-}
+} // LoadLibraryMSIExW
 
 /*
  *  LoadLibraryLangMSIW
@@ -981,6 +833,8 @@ HMODULE LoadLibraryLangMSIW(LPCWSTR wszDLLPath, DWORD dwFlags,
 							  LPCWSTR wszComponent, LPCWSTR wszQualFormat,
 							  DWORD dwInstallMode, LCID* plcid)
 {
+	DebugPrint(DBGLoadMAPI,_T("Enter LoadLibraryLangMSIW: wszDLLPath = %ws, dwFlags = 0x%08X, wszComponent = %ws, wszFeatQual = %ws, dwInstallMode = 0x%08X\n"),
+		wszDLLPath,dwFlags,wszComponent,wszQualFormat,dwInstallMode);
 	HMODULE         hInstDLL = NULL;
 	int             iLCID;
 	LCID            lcid = 0;
@@ -1014,21 +868,20 @@ HMODULE LoadLibraryLangMSIW(LPCWSTR wszDLLPath, DWORD dwFlags,
 	{
 		*plcid = lcid;
 	}
+	DebugPrint(DBGLoadMAPI,_T("Exit LoadLibraryLangMSIW: hInstDLL = %p, lcid = 0x%08X\n"),hInstDLL,lcid);
 	return hInstDLL;
-}
+} // LoadLibraryLangMSIW
 
-
-
-static volatile HMODULE		g_hinstMAPI = NULL;
-
+static volatile HMODULE g_hinstMAPI = NULL;
 
 __inline HMODULE GetMAPIHandle()
 {
 	return g_hinstMAPI;
-}
+} // GetMAPIHandle
 
 void SetMAPIHandle(HMODULE hinstMAPI)
 {
+	DebugPrint(DBGLoadMAPI,_T("Enter SetMAPIHandle: hinstMAPI = %p\n"),hinstMAPI);
 	HMODULE	hinstNULL = NULL;
 	HMODULE	hinstToFree = NULL;
 
@@ -1054,10 +907,12 @@ void SetMAPIHandle(HMODULE hinstMAPI)
 	{
 		FreeLibrary(hinstToFree);
 	}
-}
+	DebugPrint(DBGLoadMAPI,_T("Exit SetMAPIHandle\n"));
+} // SetMAPIHandle
 
 __inline bool __stdcall FFileExistW( LPCWSTR wzFileName )
 {
+	DebugPrint(DBGLoadMAPI,_T("Enter FFileExistW: wzFileName = %ws\n"),wzFileName);
 	DWORD attr;
 
 	if (NULL == wzFileName)
@@ -1065,12 +920,13 @@ __inline bool __stdcall FFileExistW( LPCWSTR wzFileName )
 
 	attr = GetFileAttributesW( wzFileName );
 
+	DebugPrint(DBGLoadMAPI,_T("Exit FFileExistW: attr = 0x%08X, return = %s\n"),attr,( ( attr != INVALID_FILE_ATTRIBUTES ) && ( ( attr & FILE_ATTRIBUTE_DIRECTORY ) == 0 ) )?_T("true"):_T("false"));
 	return ( ( attr != INVALID_FILE_ATTRIBUTES ) && ( ( attr & FILE_ATTRIBUTE_DIRECTORY ) == 0 ) );
-}
-
+} // FFileExistW
 
 bool FCanUseDefaultOldMapiPath(HMODULE * pInstMAPI)
 {
+	DebugPrint(DBGLoadMAPI,_T("Enter FCanUseDefaultOldMapiPath\n"));
 	HRESULT             hr;
 	DWORD               cbSize;
 	DWORD               dwType;
@@ -1089,6 +945,7 @@ bool FCanUseDefaultOldMapiPath(HMODULE * pInstMAPI)
 		{
 			swprintf_s(rgwchQualFormat, _countof(rgwchQualFormat), WszMAPIPathFormat, lcid,
 					   WszMSMAPI32DLL);
+			DebugPrint(DBGLoadMAPI,_T("FCanUseDefaultOldMapiPath: rgwchQualFormat = %ws\n"),rgwchQualFormat);
 			hMAPI = LoadLibraryRegW(rgwchQualFormat,
 									LOADLIBMSI_IGNORE_PRIOR,
 									HKEY_LOCAL_MACHINE, WszCurVersion,
@@ -1117,8 +974,10 @@ bool FCanUseDefaultOldMapiPath(HMODULE * pInstMAPI)
 								  (LPBYTE)rgwchMSIComp, &cbSize);
 			if ((ERROR_SUCCESS == hr) && (REG_SZ == dwType))
 			{
+				DebugPrint(DBGLoadMAPI,_T("FCanUseDefaultOldMapiPath: %ws:%ws rgwchMSIComp = %ws\n"),WszKeyNameMSI,WszValueNameMSI,rgwchMSIComp);
 				// Try to use MSI to locate and load the correct DLL
 				wcscpy_s(rgwchQualFormat, _countof(rgwchQualFormat), WszFullQualifier);
+				DebugPrint(DBGLoadMAPI,_T("FCanUseDefaultOldMapiPath: rgwchQualFormat(full) = %ws\n"),rgwchQualFormat);
 				hMAPI = LoadLibraryLangMSIW(NULL, 0, rgwchMSIComp,
 											rgwchQualFormat,
 											(DWORD)INSTALLMODE_EXISTING,
@@ -1127,6 +986,7 @@ bool FCanUseDefaultOldMapiPath(HMODULE * pInstMAPI)
 				{
 					// Try to get the component without the qualification
 					wcscpy_s(rgwchQualFormat, _countof(rgwchQualFormat), WszShortQualifier);
+					DebugPrint(DBGLoadMAPI,_T("FCanUseDefaultOldMapiPath: rgwchQualFormat(short) = %ws\n"),rgwchQualFormat);
 					hMAPI = LoadLibraryLangMSIW(NULL, 0, rgwchMSIComp,
 												rgwchQualFormat,
 												(DWORD)INSTALLMODE_EXISTING,
@@ -1140,13 +1000,15 @@ bool FCanUseDefaultOldMapiPath(HMODULE * pInstMAPI)
 	if (hMAPI)
 	{
 		*pInstMAPI = hMAPI;
+		DebugPrint(DBGLoadMAPI,_T("Exit FCanUseDefaultOldMapiPath: return = true, hMAPI = %p\n"),hMAPI);
 		return TRUE;
 	}
 	else
 	{
+		DebugPrint(DBGLoadMAPI,_T("Exit FCanUseDefaultOldMapiPath: return = false\n"));
 		return FALSE;
 	}
-}
+} // FCanUseDefaultOldMapiPath
 
 /*
  *  RegQueryWszExpand
@@ -1154,6 +1016,8 @@ bool FCanUseDefaultOldMapiPath(HMODULE * pInstMAPI)
  */
 DWORD RegQueryWszExpand(HKEY hKey, LPCWSTR lpValueName, LPWSTR lpValue, DWORD cchValueLen)
 {
+	DebugPrint(DBGLoadMAPI,_T("Enter RegQueryWszExpand: hKey = %p, lpValueName = %ws, lpValue = %ws, cchValueLen = 0x%08X\n"),
+		hKey,lpValueName,lpValue,cchValueLen);
 	DWORD dwErr = ERROR_SUCCESS;
 	DWORD dwType = 0;
 
@@ -1164,6 +1028,7 @@ DWORD RegQueryWszExpand(HKEY hKey, LPCWSTR lpValueName, LPWSTR lpValue, DWORD cc
 
 	if (dwErr == ERROR_SUCCESS)
 	{
+		DebugPrint(DBGLoadMAPI,_T("RegQueryWszExpand: rgchValue = %ws\n"),rgchValue);
 		if (dwType == REG_EXPAND_SZ)
 		{
 			// Expand the strings
@@ -1173,6 +1038,7 @@ DWORD RegQueryWszExpand(HKEY hKey, LPCWSTR lpValueName, LPWSTR lpValue, DWORD cc
 				dwErr = ERROR_INSUFFICIENT_BUFFER;
 				goto Exit;
 			}
+			DebugPrint(DBGLoadMAPI,_T("RegQueryWszExpand: rgchValue(expanded) = %ws\n"),rgchValue);
 		}
 		else if (dwType == REG_SZ)
 		{
@@ -1180,8 +1046,9 @@ DWORD RegQueryWszExpand(HKEY hKey, LPCWSTR lpValueName, LPWSTR lpValue, DWORD cc
 		}
 	}
 Exit:
+	DebugPrint(DBGLoadMAPI,_T("Exit RegQueryWszExpand: dwErr = 0x%08X\n"),dwErr);
 	return dwErr;
-}
+} // RegQueryWszExpand
 
 /*
  *  GetComponentPath
@@ -1191,6 +1058,8 @@ Exit:
  */
 bool GetComponentPath(LPCSTR szComponent, LPSTR szQualifier, LPSTR szDllPath, DWORD cchBufferSize, bool fInstall)
 {
+	DebugPrint(DBGLoadMAPI,_T("Enter GetComponentPath: szComponent = %hs, szQualifier = %hs, cchBufferSize = 0x%08X, fInstall = 0x%08X\n"),
+		szComponent,szQualifier,cchBufferSize,fInstall);
 	HMODULE hMapiStub = NULL;
 	bool fReturn = FALSE;
 
@@ -1205,13 +1074,14 @@ bool GetComponentPath(LPCSTR szComponent, LPSTR szQualifier, LPSTR szDllPath, DW
 		FGetComponentPathType pFGetCompPath = (FGetComponentPathType)GetProcAddress(hMapiStub, SzFGetComponentPath);
 
 		fReturn = pFGetCompPath(szComponent, szQualifier, szDllPath, cchBufferSize, fInstall);
+		DebugPrint(DBGLoadMAPI,_T("GetComponentPath: szDllPath = %hs\n"),szDllPath);
 
 		FreeLibrary(hMapiStub);
 	}
 
+	DebugPrint(DBGLoadMAPI,_T("Exit GetComponentPath: fReturn = 0x%08X\n"),fReturn);
 	return fReturn;
-}
-
+} // GetComponentPath
 
 /*
  *  LoadMailClientFromMSIData
@@ -1219,6 +1089,7 @@ bool GetComponentPath(LPCSTR szComponent, LPSTR szQualifier, LPSTR szDllPath, DW
  */
 HMODULE LoadMailClientFromMSIData(HKEY hkeyMapiClient)
 {
+	DebugPrint(DBGLoadMAPI,_T("Enter LoadMailClientFromMSIData: hkeyMapiClient = %p\n"),hkeyMapiClient);
 	HMODULE		hinstMapi = NULL;
 	CHAR		rgchMSIComponentID[MAX_PATH];
 	CHAR		rgchMSIApplicationLCID[MAX_PATH];
@@ -1236,11 +1107,13 @@ HMODULE LoadMailClientFromMSIData(HKEY hkeyMapiClient)
 		if (GetComponentPath(rgchMSIComponentID, rgchMSIApplicationLCID, 
 			rgchComponentPath, _countof(rgchComponentPath), FALSE))
 		{
+			DebugPrint(DBGLoadMAPI,_T("LoadMailClientFromMSIData: Loading %hs\n"),rgchComponentPath);
 			hinstMapi = LoadLibraryA(rgchComponentPath);
 		}
 	}
+	DebugPrint(DBGLoadMAPI,_T("Exit LoadMailClientFromMSIData: hinstMapi = %p\n"),hinstMapi);
 	return hinstMapi;
-}
+} // LoadMailClientFromMSIData
 
 /*
  *  LoadMailClientFromDllPath
@@ -1248,6 +1121,7 @@ HMODULE LoadMailClientFromMSIData(HKEY hkeyMapiClient)
  */
 HMODULE LoadMailClientFromDllPath(HKEY hkeyMapiClient)
 {
+	DebugPrint(DBGLoadMAPI,_T("Enter LoadMailClientFromDllPath: hkeyMapiClient = %p\n"),hkeyMapiClient);
 	HMODULE		hinstMapi = NULL;
 	WCHAR		rgchDllPath[MAX_PATH];
 
@@ -1255,6 +1129,7 @@ HMODULE LoadMailClientFromDllPath(HKEY hkeyMapiClient)
 
 	if (ERROR_SUCCESS == RegQueryWszExpand(	hkeyMapiClient, WszValueNameDllPathEx, rgchDllPath, dwSizeDllPath))
 	{
+		DebugPrint(DBGLoadMAPI,_T("LoadMailClientFromDllPath: DllPathEx = %ws\n"),rgchDllPath);
 		hinstMapi = LoadLibraryW(rgchDllPath);
 	}
 
@@ -1263,11 +1138,13 @@ HMODULE LoadMailClientFromDllPath(HKEY hkeyMapiClient)
 		dwSizeDllPath = _countof(rgchDllPath);
 		if (ERROR_SUCCESS == RegQueryWszExpand(	hkeyMapiClient, WszValueNameDllPath, rgchDllPath, dwSizeDllPath))
 		{
+			DebugPrint(DBGLoadMAPI,_T("LoadMailClientFromDllPath: DllPath = %ws\n"),rgchDllPath);
 			hinstMapi = LoadLibraryW(rgchDllPath);
 		}
 	}
+	DebugPrint(DBGLoadMAPI,_T("Exit LoadMailClientFromDllPath: hinstMapi = %p\n"),hinstMapi);
 	return hinstMapi;
-}
+} // LoadMailClientFromDllPath
 
 /*
  *  LoadDefaultNonOutlookMapiClient
@@ -1276,6 +1153,7 @@ HMODULE LoadMailClientFromDllPath(HKEY hkeyMapiClient)
  */
 HMODULE LoadDefaultNonOutlookMapiClient()
 {
+	DebugPrint(DBGLoadMAPI,_T("Enter LoadDefaultNonOutlookMapiClient\n"));
 	HMODULE		hinstMapi = NULL;
 	DWORD		dwType;
 	HKEY 		hkey = NULL, hkeyMapiClient = NULL;
@@ -1300,6 +1178,7 @@ HMODULE LoadDefaultNonOutlookMapiClient()
 			if (dwType != REG_SZ)
 				goto Error;
 
+			DebugPrint(DBGLoadMAPI,_T("LoadDefaultNonOutlookMapiClient: HKLM\\%ws = %ws\n"),WszKeyNameMailClient,rgchMailClient);
 			if (0 == wcscmp(rgchMailClient, WszOutlookMapiClientName))
 				goto Error;
 
@@ -1318,8 +1197,9 @@ HMODULE LoadDefaultNonOutlookMapiClient()
 	}
 
 Error:
+	DebugPrint(DBGLoadMAPI,_T("Exit LoadDefaultNonOutlookMapiClient: hinstMapi = %p\n"),hinstMapi);
 	return hinstMapi;
-}
+} // LoadDefaultNonOutlookMapiClient
 
 /*
  *  LoadMAPIFromSystemDir
@@ -1327,21 +1207,24 @@ Error:
  */
 HMODULE LoadMAPIFromSystemDir()
 {
+	DebugPrint(DBGLoadMAPI,_T("Enter LoadMAPIFromSystemDir\n"));
 	WCHAR szSystemDir[MAX_PATH] = {0};
 
 	if (GetSystemDirectoryW(szSystemDir, MAX_PATH))
 	{
 		WCHAR szDLLPath[MAX_PATH] = {0};
 		swprintf_s(szDLLPath, _countof(szDLLPath), WszMAPISystemPath, szSystemDir, WszMapi32);
+		DebugPrint(DBGLoadMAPI,_T("LoadMAPIFromSystemDir: loading %ws\n"),szDLLPath);
 		return LoadLibraryW(szDLLPath);
 	}
 
+	DebugPrint(DBGLoadMAPI,_T("Exit LoadMAPIFromSystemDir: loading nothing\n"));
 	return NULL;
-}
-
+} // LoadMAPIFromSystemDir
 
 HMODULE GetDefaultMapiHandle()
 {
+	DebugPrint(DBGLoadMAPI,_T("Enter GetDefaultMapiHandle\n"));
 	size_t	cchRemain;
 	DWORD	dwSize;
 	DWORD	dwType;
@@ -1355,8 +1238,12 @@ HMODULE GetDefaultMapiHandle()
 
 	// Try to respect the machine's default MAPI client settings.  If the active MAPI provider
 	//  is Outlook, don't load and instead run the logic below
-	if (!s_fForceOutlookMAPI)
+	if (!s_fForceOutlookMAPI && !s_fForceSystemMAPI)
 		hinstMapi = LoadDefaultNonOutlookMapiClient();
+
+	// Load MAPI from the system directory
+	if (!hinstMapi && s_fForceSystemMAPI)
+		hinstMapi = LoadMAPIFromSystemDir();
 
 	// If we've successfully loaded the default MAPI provider, then we are done 
 	if (hinstMapi)
@@ -1381,6 +1268,7 @@ HMODULE GetDefaultMapiHandle()
 			if (dwType != REG_SZ)
 				goto Error;
 
+			DebugPrint(DBGLoadMAPI,_T("GetDefaultMapiHandle: %ws = %ws\n"),WszOutlookAppPath,rgchOutlookDir);
 			// remove outlook.exe from end of path
 			_wcslwr_s(rgchOutlookDir, _countof(rgchOutlookDir));
 			WCHAR * pCutHere = wcsstr(rgchOutlookDir, WszOutlookExe);
@@ -1402,16 +1290,19 @@ HMODULE GetDefaultMapiHandle()
 			}
 			if (SUCCEEDED(wcscpy_s(wzRemain, cchRemain, WszPrivateMAPI)))
 			{
+				DebugPrint(DBGLoadMAPI,_T("GetDefaultMapiHandle: Looking for %ws\n"),wzPath);
 				fDefault = FFileExistW(wzPath); // return the existence of the file
 			}
 			// If we failed to load olmapi32, try msmapi32
 			if (!fDefault && FCanUseDefaultOldMapiPath(&hinstMapi))
 			{
+				DebugPrint(DBGLoadMAPI,_T("GetDefaultMapiHandle: Looking for %ws\n"),wzPath);
 				fDefault = FFileExistW(wzPath); // return the existence of the file
 			}
 
 			if (fDefault)
 			{
+				DebugPrint(DBGLoadMAPI,_T("GetDefaultMapiHandle: Loading %ws\n"),wzPath);
 				hinstMapi = LoadLibraryW(wzPath);
 			}
 			// Restore the DLL path
@@ -1432,9 +1323,9 @@ Error:
 		RegCloseKey(hkey);
 	}
 
+	DebugPrint(DBGLoadMAPI,_T("Exit LoadDefaultNonOutlookMapiClient: hinstMapi = %p\n"),hinstMapi);
 	return hinstMapi;
-}
-
+} // GetDefaultMapiHandle
 
 /*------------------------------------------------------------------------------
     Attach to wzMapiDll(olmapi32.dll/msmapi32.dll) if it is already loaded in the
@@ -1442,14 +1333,16 @@ Error:
 ------------------------------------------------------------------------------*/
 HMODULE AttachToMAPIDll(const WCHAR *wzMapiDll)
 {
+	DebugPrint(DBGLoadMAPI,_T("Enter AttachToMAPIDll: wzMapiDll = %ws\n"),wzMapiDll);
 	HMODULE	hinstPrivateMAPI = NULL;
-	GetModuleHandleExW(0UL, wzMapiDll, &hinstPrivateMAPI);
+	MyGetModuleHandleExW(0UL, wzMapiDll, &hinstPrivateMAPI);
+	DebugPrint(DBGLoadMAPI,_T("Exit AttachToMAPIDll: hinstPrivateMAPI = %p\n"),hinstPrivateMAPI);
 	return hinstPrivateMAPI;
-}
-
+} // AttachToMAPIDll
 
 void UnLoadPrivateMAPI()
 {
+	DebugPrint(DBGLoadMAPI,_T("Enter UnLoadPrivateMAPI\n"));
 	HMODULE hinstPrivateMAPI = NULL;
 
 	hinstPrivateMAPI = GetMAPIHandle();
@@ -1457,16 +1350,24 @@ void UnLoadPrivateMAPI()
 	{
 		SetMAPIHandle(NULL);
 	}
-}
+	DebugPrint(DBGLoadMAPI,_T("Exit UnLoadPrivateMAPI\n"));
+} // UnLoadPrivateMAPI
 
 void ForceOutlookMAPI(bool fForce)
 {
+	DebugPrint(DBGLoadMAPI,_T("ForceOutlookMAPI: fForce = 0x%08X\n"),fForce);
 	s_fForceOutlookMAPI = fForce;
-}
+} // ForceOutlookMAPI
 
+void ForceSystemMAPI(bool fForce)
+{
+	DebugPrint(DBGLoadMAPI,_T("ForceSystemMAPI: fForce = 0x%08X\n"),fForce);
+	s_fForceSystemMAPI = fForce;
+} // ForceSystemMAPI
 
 HMODULE GetPrivateMAPI()
 {
+	DebugPrint(DBGLoadMAPI,_T("Enter GetPrivateMAPI\n"));
 	HMODULE hinstPrivateMAPI = GetMAPIHandle();
 
 	if (NULL == hinstPrivateMAPI)
@@ -1496,8 +1397,10 @@ HMODULE GetPrivateMAPI()
 		// Reason - if for any reason there is an instance already loaded, SetMAPIHandle()
 		// will free the new one and reuse the old one
 		// So we fetch the instance from the global again
+		DebugPrint(DBGLoadMAPI,_T("Exit GetPrivateMAPI: Returning GetMAPIHandle()\n"));
 		return GetMAPIHandle();
 	}
 
+	DebugPrint(DBGLoadMAPI,_T("Exit GetPrivateMAPI, hinstPrivateMAPI = %p\n"),hinstPrivateMAPI);
 	return hinstPrivateMAPI;
-}
+} // GetPrivateMAPI

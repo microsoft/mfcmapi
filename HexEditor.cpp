@@ -90,7 +90,6 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 	if ((ULONG) -1 == i) return (ULONG) -1;
 
 	CString szTmpString;
-	SBinary Bin = {0};
 	LPBYTE	lpb = NULL;
 	size_t	cb = 0;
 	LPTSTR	szEncodeStr = NULL;
@@ -145,12 +144,14 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 
 			if (S_OK == hRes)
 			{
-				Bin.lpb = lpb;
-				Bin.cb = (ULONG) cb;
 				SetStringA(HEXED_ANSI, (LPCSTR)lpb, cb);
 				if (!(cb % 2)) // Set Unicode String
 				{
 					SetStringW(HEXED_UNICODE, (LPWSTR)lpb, cb/sizeof(WCHAR));
+				}
+				else
+				{
+					SetString(HEXED_UNICODE,_T(""));
 				}
 				SetBinary(HEXED_HEX, lpb, cb);
 			}
