@@ -33,6 +33,7 @@ __RegKeys RegKeys[] = {
 	{_T("HeapEnableTerminationOnCorruption"),regDWORD,regoptCheck,	true		,0,_T(""),_T(""),false,	IDS_REGKEY_HEAPENABLETERMINATIONONCORRUPTION}, // STRING_OK
 	{_T("LoadAddIns"),					regDWORD,regoptCheck,		true		,0,_T(""),_T(""),false,	IDS_REGKEY_LOADADDINS}, // STRING_OK
 	{_T("ForceOutlookMAPI"),			regDWORD,regoptCheck,		false		,0,_T(""),_T(""),false,	IDS_REGKEY_FORCEOUTLOOKMAPI}, // STRING_OK
+	{_T("ForceSystemMAPI"),				regDWORD,regoptCheck,		false		,0,_T(""),_T(""),false,	IDS_REGKEY_FORCESYSTEMMAPI}, // STRING_OK
 	{_T("DisplayAboutDialog"),			regDWORD,regoptCheck,		true		,0,_T(""),_T(""),false,	NULL}, // STRING_OK
 	{_T("PropertyColumnOrder"),			regSTRING,regoptCheck,		0			,0,_T(""),_T(""),false,	NULL}, // STRING_OK
 	// {KeyName,						keytype,opttype,			defaultDWORD,0,defaultString,NULL,bRefresh,IDS_REGKEY_*} // Regkey template

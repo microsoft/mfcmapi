@@ -143,10 +143,11 @@ public:
 #endif
 	_Check_return_ ULONG GetHex(ULONG i);
 	_Check_return_ ULONG GetDecimal(ULONG i);
+	_Check_return_ ULONG GetPropTag(ULONG i);
 	_Check_return_ bool  GetCheck(ULONG i);
 	_Check_return_ int   GetDropDown(ULONG i);
 	_Check_return_ DWORD_PTR GetDropDownValue(ULONG i);
-	_Check_return_ HRESULT GetEntryID(ULONG i, bool bIsBase64, _Out_ size_t* cbBin, _Out_ LPENTRYID* lpEID);
+	_Check_return_ HRESULT GetEntryID(ULONG i, bool bIsBase64, _Out_ size_t* lpcbBin, _Out_ LPENTRYID* lpEID);
 	_Check_return_ bool  GetSelectedGUID(ULONG iControl, bool bByteSwapped, _In_ LPGUID lpSelectedGUID);
 
 	// AddIn functions
@@ -177,6 +178,7 @@ protected:
 	_Check_return_ CString GetDropStringUseControl(ULONG iControl);
 	_Check_return_ CString GetStringUseControl(ULONG iControl);
 	_Check_return_ ULONG   GetHexUseControl(ULONG i);
+	_Check_return_ ULONG   GetPropTagUseControl(ULONG iControl);
 	_Check_return_ bool    GetBinaryUseControl(ULONG i, _Out_ size_t* cbBin, _Out_ LPBYTE* lpBin);
 	_Check_return_ bool    GetCheckUseControl(ULONG iControl);
 	_Check_return_ LPSTR   GetEditBoxTextA(ULONG iControl, _Out_ size_t* lpcchText = NULL);

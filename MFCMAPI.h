@@ -22,6 +22,14 @@ struct NAME_ARRAY_ENTRY
 };
 typedef NAME_ARRAY_ENTRY* LPNAME_ARRAY_ENTRY;
 
+struct NAME_ARRAY_ENTRY_V2
+{
+	ULONG ulValue;
+	ULONG ulSortOrder;
+	LPWSTR lpszName;
+};
+typedef NAME_ARRAY_ENTRY_V2* LPNAME_ARRAY_ENTRY_V2;
+
 // Guids - used by GetPropGuids
 struct GUID_ARRAY_ENTRY
 {
@@ -404,6 +412,15 @@ typedef void (STDMETHODCALLTYPE GETPROPTAGS)(
 	);
 typedef GETPROPTAGS* LPGETPROPTAGS;
 
+// Function: GetPropTagsV2
+// Use: Returns a static array of property names for MFCMAPI to use in decoding properties
+#define szGetPropTagsV2 "GetPropTagsV2" // STRING_OK
+typedef void (STDMETHODCALLTYPE GETPROPTAGSV2)(
+	_In_ ULONG* lpulPropTags, // Number of entries in lppPropTags
+	_In_ LPNAME_ARRAY_ENTRY_V2* lppPropTags // Array of NAME_ARRAY_ENTRY_V2 structures
+	);
+typedef GETPROPTAGSV2* LPGETPROPTAGSV2;
+
 // Function: GetPropTypes
 // Use: Returns a static array of property types for MFCMAPI to use in decoding properties
 #define szGetPropTypes "GetPropTypes" // STRING_OK
@@ -467,9 +484,9 @@ struct _AddIn
 	ULONG                          ulMenu;             // Count of menu items exposed by add-in
 	LPMENUITEM                     lpMenu;             // Array of menu items exposed by add-in
 	ULONG                          ulPropTags;         // Count of property tags exposed by add-in
-	LPNAME_ARRAY_ENTRY             lpPropTags;         // Array of property tags exposed by add-in
-	ULONG                          ulPropTypes;        // Count of property tags exposed by add-in
-	LPNAME_ARRAY_ENTRY             lpPropTypes;        // Array of property tags exposed by add-in
+	LPNAME_ARRAY_ENTRY_V2          lpPropTags;         // Array of property tags exposed by add-in
+	ULONG                          ulPropTypes;        // Count of property types exposed by add-in
+	LPNAME_ARRAY_ENTRY             lpPropTypes;        // Array of property types exposed by add-in
 	ULONG                          ulPropGuids;        // Count of property guids exposed by add-in
 	LPGUID_ARRAY_ENTRY             lpPropGuids;        // Array of property guids exposed by add-in
 	ULONG                          ulNameIDs;          // Count of named property mappings exposed by add-in
@@ -478,6 +495,7 @@ struct _AddIn
 	LPFLAG_ARRAY_ENTRY             lpPropFlags;        // Array of flags exposed by add-in
 	ULONG                          ulSmartViewParsers; // Count of Smart View parsers exposed by add-in
 	LPSMARTVIEW_PARSER_ARRAY_ENTRY lpSmartViewParsers; // Array of Smart View parsers exposed by add-in
+	BOOL                           bLegacyPropTags;    // Flag tracking if legacy property tags have been loaded and upconverted
 };
 
 // Everything below this point is internal to MFCMAPI and should be removed from this header when including it in an add-in
@@ -496,7 +514,7 @@ void InvokeAddInMenu(_In_opt_ LPADDINMENUPARAMS lpParams);
 void MergeAddInArrays();
 _Check_return_ LPNAMEID_ARRAY_ENTRY GetDispIDFromName(_In_z_ LPCWSTR lpszDispIDName);
 
-extern LPNAME_ARRAY_ENTRY PropTagArray;
+extern LPNAME_ARRAY_ENTRY_V2 PropTagArray;
 extern ULONG ulPropTagArray;
 
 extern LPNAME_ARRAY_ENTRY PropTypeArray;

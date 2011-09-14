@@ -2373,6 +2373,7 @@ _Check_return_ HRESULT AnsiToUnicode(_In_z_ LPCSTR pszA, _Out_z_cap_(cchszA) LPW
 	if (!ppszW) return MAPI_E_INVALID_PARAMETER;
 	*ppszW = NULL;
 	if (NULL == pszA) return S_OK;
+	if (!cchszA) return S_OK;
 
 	// Get our buffer size
 	int iRet = 0;

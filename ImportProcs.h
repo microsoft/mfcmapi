@@ -23,6 +23,7 @@ void GetMAPIPath(_In_opt_z_ LPCTSTR szClient, _Inout_z_count_(cchMAPIPath) LPTST
 HMODULE GetMAPIHandle();
 void UnLoadPrivateMAPI();
 void ForceOutlookMAPI(bool fForce);
+void ForceSystemMAPI(bool fForce);
 void SetMAPIHandle(HMODULE hinstMAPI);
 HMODULE GetPrivateMAPI();
 bool GetComponentPath(LPCSTR szComponent, LPSTR szQualifier, LPSTR szDllPath, DWORD cchBufferSize, bool fInstall);
@@ -61,3 +62,8 @@ HRESULT WINAPI MyMimeOleGetCodePageCharset(
 	CODEPAGEID cpiCodePage,
 	CHARSETTYPE ctCsetType,
 	LPHCHARSET phCharset);
+
+BOOL WINAPI MyGetModuleHandleExW(
+	DWORD dwFlags,
+	LPCWSTR lpModuleName,
+	HMODULE* phModule);

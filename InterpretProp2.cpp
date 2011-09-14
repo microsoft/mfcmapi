@@ -7,100 +7,98 @@
 #define ulNoMatch 0xffffffff
 static WCHAR szPropSeparator[] = L", "; // STRING_OK
 
-// lpszExactMatch and lpszPartialMatches allocated with new
-// clean up with delete[]
-_Check_return_ HRESULT PropTagToPropName(ULONG ulPropTag, bool bIsAB, _Deref_opt_out_opt_z_ LPTSTR* lpszExactMatch, _Deref_opt_out_opt_z_ LPTSTR* lpszPartialMatches)
+// Searches an array for a target number.
+// Search is done with a mask
+// Partial matches are those that match with the mask applied
+// Exact matches are those that match without the mask applied
+// lpUlNumPartials will exclude count of exact matches
+// if it wants just the true partial matches.
+// If no hits, then ulNoMatch should be returned for lpulFirstExact and/or lpulFirstPartial
+void FindTagArrayMatches(_In_ ULONG ulTarget,
+						 bool bIsAB,
+						 _In_count_(ulMyArray) NAME_ARRAY_ENTRY_V2* MyArray,
+						 _In_ ULONG ulMyArray,
+						 _Out_ ULONG* lpulNumExacts,
+						 _Out_ ULONG* lpulFirstExact,
+						 _Out_ ULONG* lpulNumPartials,
+						 _Out_ ULONG* lpulFirstPartial)
 {
-	if (!lpszExactMatch && !lpszPartialMatches) return MAPI_E_INVALID_PARAMETER;
+	if (!(ulTarget & PROP_TAG_MASK)) // not dealing with a full prop tag
+	{
+		ulTarget = PROP_TAG(PT_UNSPECIFIED,ulTarget);
+	}
 
-	HRESULT hRes = S_OK;
-	ULONG ulPropID = NULL;
-	ULONG ulPropType = NULL;
 	ULONG ulLowerBound = 0;
-	ULONG ulUpperBound = ulPropTagArray-1; // ulPropTagArray-1 is the last entry
+	ULONG ulUpperBound = ulMyArray-1; // ulMyArray-1 is the last entry
 	ULONG ulMidPoint = (ulUpperBound+ulLowerBound)/2;
 	ULONG ulFirstMatch = ulNoMatch;
 	ULONG ulLastMatch = ulNoMatch;
 	ULONG ulFirstExactMatch = ulNoMatch;
 	ULONG ulLastExactMatch = ulNoMatch;
+	ULONG ulMaskedTarget = ulTarget & PROP_TAG_MASK;
 
-	if (lpszExactMatch) *lpszExactMatch = NULL;
-	if (lpszPartialMatches) *lpszPartialMatches = NULL;
+	if (lpulNumExacts) *lpulNumExacts = 0;
+	if (lpulFirstExact) *lpulFirstExact = ulNoMatch;
+	if (lpulNumPartials) *lpulNumPartials = 0;
+	if (lpulFirstPartial) *lpulFirstPartial = ulNoMatch;
 
-	if (!ulPropTagArray || !PropTagArray) return S_OK;
+	// Short circuit property IDs with the high bit set if bIsAB wasn't passed
+	if (!bIsAB && (ulTarget & 0x80000000)) return;
 
-	// determine the prop ID we're seeking
-	if (ulPropTag & 0xffff0000) // dealing with a full prop tag
-	{
-		ulPropID   = PROP_ID(ulPropTag);
-		ulPropType = PROP_TYPE(ulPropTag);
-	}
-	else
-	{
-		ulPropID   = ulPropTag;
-		ulPropType = PT_UNSPECIFIED;
-	}
-
-	// short circuit property IDs with the high bit set if bIsAB wasn't passed
-	if (!bIsAB && (ulPropID & 0x8000)) return hRes;
-
-	// put everything back together
-	ulPropTag = PROP_TAG(ulPropType,ulPropID);
-
-	// find A match
+	// Find A partial match
 	while (ulUpperBound - ulLowerBound > 1)
 	{
-		if (ulPropID == PROP_ID(PropTagArray[ulMidPoint].ulValue))
+		if (ulMaskedTarget == (PROP_TAG_MASK & MyArray[ulMidPoint].ulValue))
 		{
 			ulFirstMatch = ulMidPoint;
 			break;
 		}
 
-		if (ulPropID < PROP_ID(PropTagArray[ulMidPoint].ulValue))
+		if (ulMaskedTarget < (PROP_TAG_MASK & MyArray[ulMidPoint].ulValue))
 		{
 			ulUpperBound = ulMidPoint;
 		}
-		else if (ulPropID > PROP_ID(PropTagArray[ulMidPoint].ulValue))
+		else if (ulMaskedTarget > (PROP_TAG_MASK & MyArray[ulMidPoint].ulValue))
 		{
 			ulLowerBound = ulMidPoint;
 		}
 		ulMidPoint = (ulUpperBound+ulLowerBound)/2;
 	}
 
-	// when we get down to two points, we may have only checked one of them
-	// make sure we've checked the other
-	if (ulPropID == PROP_ID(PropTagArray[ulUpperBound].ulValue))
+	// When we get down to two points, we may have only checked one of them
+	// Make sure we've checked the other
+	if (ulMaskedTarget == (PROP_TAG_MASK & MyArray[ulUpperBound].ulValue))
 	{
 		ulFirstMatch = ulUpperBound;
 	}
-	else if (ulPropID == PROP_ID(PropTagArray[ulLowerBound].ulValue))
+	else if (ulMaskedTarget == (PROP_TAG_MASK & MyArray[ulLowerBound].ulValue))
 	{
 		ulFirstMatch = ulLowerBound;
 	}
 
-	// check that we got a match
+	// Check that we got a match
 	if (ulNoMatch != ulFirstMatch)
 	{
-		ulLastMatch = ulFirstMatch; // remember the last match we've found so far
+		ulLastMatch = ulFirstMatch; // Remember the last match we've found so far
 
-		// scan backwards to find the first match
-		while (ulFirstMatch > 0 && ulPropID == PROP_ID(PropTagArray[ulFirstMatch-1].ulValue))
+		// Scan backwards to find the first partial match
+		while (ulFirstMatch > 0 && ulMaskedTarget == (PROP_TAG_MASK & MyArray[ulFirstMatch-1].ulValue))
 		{
 			ulFirstMatch = ulFirstMatch - 1;
 		}
 
-		// scan forwards to find the real last match
-		// Last entry in the array is ulPropTagArray-1
-		while (ulLastMatch+1 < ulPropTagArray && ulPropID == PROP_ID(PropTagArray[ulLastMatch+1].ulValue))
+		// Scan forwards to find the real last partial match
+		// Last entry in the array is ulMyArray-1
+		while (ulLastMatch+1 < ulMyArray && ulMaskedTarget == (PROP_TAG_MASK & MyArray[ulLastMatch+1].ulValue))
 		{
 			ulLastMatch = ulLastMatch + 1;
 		}
 
-		// scan to see if we have any exact matches
+		// Scan to see if we have any exact matches
 		ULONG ulCur;
 		for (ulCur = ulFirstMatch ; ulCur <= ulLastMatch ; ulCur++)
 		{
-			if (ulPropTag == PropTagArray[ulCur].ulValue)
+			if (ulTarget == MyArray[ulCur].ulValue)
 			{
 				ulFirstExactMatch = ulCur;
 				break;
@@ -113,7 +111,7 @@ _Check_return_ HRESULT PropTagToPropName(ULONG ulPropTag, bool bIsAB, _Deref_opt
 		{
 			for (ulCur = ulFirstExactMatch ; ulCur <= ulLastMatch ; ulCur++)
 			{
-				if (ulPropTag == PropTagArray[ulCur].ulValue)
+				if (ulTarget == MyArray[ulCur].ulValue)
 				{
 					ulLastExactMatch = ulCur;
 				}
@@ -122,25 +120,77 @@ _Check_return_ HRESULT PropTagToPropName(ULONG ulPropTag, bool bIsAB, _Deref_opt
 			ulNumExacts = ulLastExactMatch - ulFirstExactMatch + 1;
 		}
 
-		if (lpszExactMatch && ulNumExacts > 0 && ulNoMatch != ulFirstExactMatch)
+		ULONG ulNumPartials = ulLastMatch - ulFirstMatch + 1 - ulNumExacts;
+
+		if (lpulNumExacts) *lpulNumExacts = ulNumExacts;
+		if (lpulFirstExact) *lpulFirstExact = ulFirstExactMatch;
+		if (lpulNumPartials) *lpulNumPartials = ulNumPartials;
+		if (lpulFirstPartial) *lpulFirstPartial = ulFirstMatch;
+	}
+} // FindTagArrayMatches
+
+// Compare tag sort order. 
+int CompareTagsSortOrder(_In_ const void* a1, _In_ const void* a2)
+{
+	LPNAME_ARRAY_ENTRY_V2 lpTag1 = &PropTagArray[* (LPULONG) a1];
+	LPNAME_ARRAY_ENTRY_V2 lpTag2 = &PropTagArray[* (LPULONG) a2];;
+
+	if (lpTag1->ulSortOrder < lpTag2->ulSortOrder) return 1;
+	if (lpTag1->ulSortOrder == lpTag2->ulSortOrder)
+	{
+		return wcscmp(lpTag1->lpszName,lpTag2->lpszName);
+	}
+	return -1;
+} // CompareTagsSortOrder
+
+// lpszExactMatch and lpszPartialMatches allocated with new
+// clean up with delete[]
+// The compiler gets confused by the qsort call and thinks lpulPartials is smaller than it really is.
+// Then it complains when I write to the 'bad' memory, even though it's definitely good.
+// This is a bug in SAL, so I'm disabling the warning.
+#pragma warning(push)
+#pragma warning(disable:6385)
+_Check_return_ HRESULT PropTagToPropName(ULONG ulPropTag, bool bIsAB, _Deref_opt_out_opt_z_ LPTSTR* lpszExactMatch, _Deref_opt_out_opt_z_ LPTSTR* lpszPartialMatches)
+{
+	if (!lpszExactMatch && !lpszPartialMatches) return MAPI_E_INVALID_PARAMETER;
+
+	HRESULT hRes = S_OK;
+	ULONG ulNumExacts = NULL;
+	ULONG ulFirstExactMatch = ulNoMatch;
+	ULONG ulNumPartials = NULL;
+	ULONG ulFirstPartial = ulNoMatch;
+	ULONG ulCur = NULL;
+	ULONG i = 0;
+
+	FindTagArrayMatches(ulPropTag,bIsAB,PropTagArray,ulPropTagArray,&ulNumExacts,&ulFirstExactMatch,&ulNumPartials,&ulFirstPartial);
+
+	if (lpszExactMatch && ulNumExacts > 0 && ulNoMatch != ulFirstExactMatch)
+	{
+		ULONG ulLastExactMatch = ulFirstExactMatch+ulNumExacts-1;
+		ULONG* lpulExacts = new ULONG[ulNumExacts];
+		if (lpulExacts)
 		{
+			memset(lpulExacts,0,ulNumExacts*sizeof(ULONG));
 			size_t cchExact = 1 + (ulNumExacts - 1) * (_countof(szPropSeparator) - 1);
 			for (ulCur = ulFirstExactMatch ; ulCur <= ulLastExactMatch ; ulCur++)
 			{
 				size_t cchLen = 0;
 				EC_H(StringCchLengthW(PropTagArray[ulCur].lpszName,STRSAFE_MAX_CCH,&cchLen));
 				cchExact += cchLen;
+				if (i < ulNumExacts) lpulExacts[i] = ulCur;
+				i++;
 			}
 
-			LPWSTR szExactMatch = NULL;
-			szExactMatch = new WCHAR[cchExact];
+			qsort(lpulExacts,i,sizeof(ULONG),&CompareTagsSortOrder);
+
+			LPWSTR szExactMatch = new WCHAR[cchExact];
 			if (szExactMatch)
 			{
 				szExactMatch[0] = _T('\0');
-				for (ulCur = ulFirstExactMatch ; ulCur <= ulLastExactMatch ; ulCur++)
+				for (i = 0 ; i < ulNumExacts ; i++)
 				{
-					EC_H(StringCchCatW(szExactMatch,cchExact,PropTagArray[ulCur].lpszName));
-					if (ulCur < ulLastExactMatch)
+					EC_H(StringCchCatW(szExactMatch,cchExact,PropTagArray[lpulExacts[i]].lpszName));
+					if (i+1 < ulNumExacts)
 					{
 						EC_H(StringCchCatW(szExactMatch,cchExact,szPropSeparator));
 					}
@@ -161,33 +211,41 @@ _Check_return_ HRESULT PropTagToPropName(ULONG ulPropTag, bool bIsAB, _Deref_opt
 				}
 			}
 		}
+		delete[] lpulExacts;
+	}
 
-		ULONG ulNumPartials = ulLastMatch - ulFirstMatch + 1 - ulNumExacts;
-
-		if (lpszPartialMatches && ulNumPartials > 0 && lpszPartialMatches)
+	if (lpszPartialMatches && ulNumPartials > 0 && lpszPartialMatches)
+	{
+		ULONG* lpulPartials = new ULONG[ulNumPartials];
+		if (lpulPartials)
 		{
+			memset(lpulPartials,0,ulNumPartials*sizeof(ULONG));
 			// let's build lpszPartialMatches
 			// see how much space we need - initialize cchPartial with space for separators and NULL terminator
 			// note - ulNumPartials-1 is the number of spaces we need...
+			ULONG ulLastMatch = ulFirstPartial+ulNumPartials+ulNumExacts-1;
 			size_t cchPartial = 1 + (ulNumPartials - 1) * (_countof(szPropSeparator) - 1);
-			for (ulCur = ulFirstMatch ; ulCur <= ulLastMatch ; ulCur++)
+			i = 0;
+			for (ulCur = ulFirstPartial ; ulCur <= ulLastMatch ; ulCur++)
 			{
 				if (ulPropTag == PropTagArray[ulCur].ulValue) continue; // skip our exact matches
 				size_t cchLen = 0;
 				EC_H(StringCchLengthW(PropTagArray[ulCur].lpszName,STRSAFE_MAX_CCH,&cchLen));
 				cchPartial += cchLen;
+				if (i < ulNumPartials) lpulPartials[i] = ulCur;
+				i++;
 			}
 
-			LPWSTR szPartialMatches = NULL;
-			szPartialMatches = new WCHAR[cchPartial];
+			qsort(lpulPartials,i,sizeof(ULONG),&CompareTagsSortOrder);
+
+			LPWSTR szPartialMatches = new WCHAR[cchPartial];
 			if (szPartialMatches)
 			{
 				szPartialMatches[0] = _T('\0');
 				ULONG ulNumSeparators = 1; // start at 1 so we print one less than we print strings
-				for (ulCur = ulFirstMatch ; ulCur <= ulLastMatch ; ulCur++)
+				for (i = 0 ; i < ulNumPartials ; i++)
 				{
-					if (ulPropTag == PropTagArray[ulCur].ulValue) continue; // skip our exact matches
-					EC_H(StringCchCatW(szPartialMatches,cchPartial,PropTagArray[ulCur].lpszName));
+					EC_H(StringCchCatW(szPartialMatches,cchPartial,PropTagArray[lpulPartials[i]].lpszName));
 					if (ulNumSeparators < ulNumPartials)
 					{
 						EC_H(StringCchCatW(szPartialMatches,cchPartial,szPropSeparator));
@@ -210,10 +268,12 @@ _Check_return_ HRESULT PropTagToPropName(ULONG ulPropTag, bool bIsAB, _Deref_opt
 				}
 			}
 		}
+		delete[] lpulPartials;
 	}
 
 	return hRes;
 } // PropTagToPropName
+#pragma warning(pop)
 
 _Check_return_ HRESULT PropNameToPropTagW(_In_z_ LPCWSTR lpszPropName, _Out_ ULONG* ulPropTag)
 {
@@ -411,9 +471,9 @@ _Check_return_ LPWSTR NameIDToPropName(_In_ LPMAPINAMEID lpNameID)
 		size_t cchLen = 0;
 		if (NameIDArray[ulCur].lValue != lpNameID->Kind.lID) break;
 		// We don't acknowledge array entries without guids
-		if (!NameIDArray[ulCur].lpGuid) break;
+		if (!NameIDArray[ulCur].lpGuid) continue;
 		// But if we weren't asked about a guid, we don't check one
-		if (lpNameID->lpguid && !IsEqualGUID(*lpNameID->lpguid,*NameIDArray[ulCur].lpGuid)) break;
+		if (lpNameID->lpguid && !IsEqualGUID(*lpNameID->lpguid,*NameIDArray[ulCur].lpGuid)) continue;
 
 		EC_H(StringCchLengthW(NameIDArray[ulCur].lpszName,STRSAFE_MAX_CCH,&cchLen));
 		cchResultString += cchLen;
@@ -435,9 +495,9 @@ _Check_return_ LPWSTR NameIDToPropName(_In_ LPMAPINAMEID lpNameID)
 		{
 			if (NameIDArray[ulCur].lValue != lpNameID->Kind.lID) break;
 			// We don't acknowledge array entries without guids
-			if (!NameIDArray[ulCur].lpGuid) break;
+			if (!NameIDArray[ulCur].lpGuid) continue;
 			// But if we weren't asked about a guid, we don't check one
-			if (lpNameID->lpguid && !IsEqualGUID(*lpNameID->lpguid,*NameIDArray[ulCur].lpGuid)) break;
+			if (lpNameID->lpguid && !IsEqualGUID(*lpNameID->lpguid,*NameIDArray[ulCur].lpGuid)) continue;
 
 			EC_H(StringCchCatW(szResultString,cchResultString,NameIDArray[ulCur].lpszName));
 			if (--ulNumMatches > 0)
@@ -762,7 +822,9 @@ void InterpretProp(_In_opt_ LPSPropValue lpProp, // optional property value
 		if (PropString || AltPropString)
 			InterpretProp(lpProp,PropString,AltPropString);
 	}
-	MAPIFreeBuffer(lppPropNames);
+
+	// Avoid making the call if we don't have to so we don't accidently depend on MAPI
+	if (lppPropNames) MAPIFreeBuffer(lppPropNames);
 } // InterpretProp
 
 // Returns LPSPropValue with value of a binary property

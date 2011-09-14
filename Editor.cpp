@@ -1442,14 +1442,16 @@ void CEditor::SetStringW(ULONG i, _In_opt_z_ LPCWSTR szMsg, size_t cchsz)
 	if (-1 == cchszW)
 	{
 		EC_H(StringCchLengthW(szMsg,STRSAFE_MAX_CCH,&cchszW));
-		cchszW++;
 	}
-	m_lpControls[i].UI.lpEdit->lpszW = new WCHAR[cchszW];
-	m_lpControls[i].UI.lpEdit->cchsz = cchszW;
+
+	// add one for a NULL terminator
+	m_lpControls[i].UI.lpEdit->cchsz = cchszW+1;
+	m_lpControls[i].UI.lpEdit->lpszW = new WCHAR[cchszW+1];
 
 	if (m_lpControls[i].UI.lpEdit->lpszW)
 	{
 		memcpy(m_lpControls[i].UI.lpEdit->lpszW, szMsg, cchszW * sizeof(WCHAR));
+		m_lpControls[i].UI.lpEdit->lpszW[cchszW] = NULL;
 	}
 
 	SetEditBoxText(i);
@@ -1554,12 +1556,12 @@ _Check_return_ bool CEditor::GetCheckUseControl(ULONG iControl)
 // converts string in a text(edit) control into an entry ID
 // Can base64 decode if needed
 // entryID is allocated with new, free with delete[]
-_Check_return_ HRESULT CEditor::GetEntryID(ULONG i, bool bIsBase64, _Out_ size_t* cbBin, _Out_ LPENTRYID* lppEID)
+_Check_return_ HRESULT CEditor::GetEntryID(ULONG i, bool bIsBase64, _Out_ size_t* lpcbBin, _Out_ LPENTRYID* lppEID)
 {
 	if (!IsValidEdit(i)) return MAPI_E_INVALID_PARAMETER;
-	if (!cbBin || !lppEID) return MAPI_E_INVALID_PARAMETER;
+	if (!lpcbBin || !lppEID) return MAPI_E_INVALID_PARAMETER;
 
-	*cbBin = NULL;
+	*lpcbBin = NULL;
 	*lppEID = NULL;
 
 	HRESULT	hRes = S_OK;
@@ -1569,22 +1571,22 @@ _Check_return_ HRESULT CEditor::GetEntryID(ULONG i, bool bIsBase64, _Out_ size_t
 	{
 		if (bIsBase64) // entry was BASE64 encoded
 		{
-			EC_H(Base64Decode(szString,cbBin,(LPBYTE*) lppEID));
+			EC_H(Base64Decode(szString,lpcbBin,(LPBYTE*) lppEID));
 		}
 		else // Entry was hexized string
 		{
 			if (MyBinFromHex(
 				(LPCTSTR) szString,
 				NULL,
-				(ULONG*) cbBin))
+				(ULONG*) lpcbBin) && *lpcbBin)
 			{
-				*lppEID = (LPENTRYID) new BYTE[*cbBin];
+				*lppEID = (LPENTRYID) new BYTE[*lpcbBin];
 				if (*lppEID)
 				{
 					EC_B(MyBinFromHex(
 						szString,
 						(LPBYTE) *lppEID,
-						(ULONG*) cbBin));
+						(ULONG*) lpcbBin));
 				}
 			}
 		}
@@ -1912,12 +1914,68 @@ _Check_return_ ULONG CEditor::GetHexUseControl(ULONG i)
 	return _tcstoul((LPCTSTR) szTmpString,NULL,16);
 } // CEditor::GetHexUseControl
 
+_Check_return_ ULONG CEditor::GetPropTagUseControl(ULONG i)
+{
+	if (!IsValidEdit(i)) return 0;
+
+	HRESULT hRes = S_OK;
+	ULONG ulPropTag = NULL;
+	CString szTag;
+	szTag = GetStringUseControl(i);
+	LPTSTR szEnd = NULL;
+	ULONG ulTag = _tcstoul((LPCTSTR) szTag,&szEnd,16);
+
+	if (*szEnd != NULL) // If we didn't consume the whole string, try a lookup
+	{
+		EC_H(PropNameToPropTag((LPCTSTR) szTag,&ulTag));
+	}
+
+	// Figure if this is a full tag or just an ID
+	if (ulTag & PROP_TAG_MASK) // Full prop tag
+	{
+		ulPropTag = ulTag;
+	}
+	else // Just an ID
+	{
+		ulPropTag = PROP_TAG(PT_UNSPECIFIED,ulTag);
+	}
+	return ulPropTag;
+} // CEditor::GetPropTagUseControl
+
+_Check_return_ ULONG CEditor::GetPropTag(ULONG i)
+{
+	if (!IsValidEdit(i)) return 0;
+
+	HRESULT hRes = S_OK;
+	ULONG ulPropTag = NULL;
+	LPWSTR szTag = m_lpControls[i].UI.lpEdit->lpszW;
+	LPWSTR szEnd = NULL;
+	ULONG ulTag = wcstoul(szTag,&szEnd,16);
+
+	if (*szEnd != NULL) // If we didn't consume the whole string, try a lookup
+	{
+		EC_H(PropNameToPropTagW(szTag,&ulTag));
+	}
+
+	// Figure if this is a full tag or just an ID
+	if (ulTag & PROP_TAG_MASK) // Full prop tag
+	{
+		ulPropTag = ulTag;
+	}
+	else // Just an ID
+	{
+		ulPropTag = PROP_TAG(PT_UNSPECIFIED,ulTag);
+	}
+	return ulPropTag;
+} // CEditor::GetPropTag
+
 _Check_return_ ULONG CEditor::GetDecimal(ULONG i)
 {
 	if (!IsValidEdit(i)) return 0;
 
 	return wcstoul(m_lpControls[i].UI.lpEdit->lpszW,NULL,10);
 } // CEditor::GetDecimal
+
 
 _Check_return_ bool CEditor::GetCheck(ULONG i)
 {

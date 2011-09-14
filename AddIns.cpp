@@ -30,7 +30,7 @@ ULONG g_ulSmartViewParserArray = _countof(g_SmartViewParserArray);
 LPNAME_ARRAY_ENTRY PropTypeArray = NULL;
 ULONG ulPropTypeArray = NULL;
 
-LPNAME_ARRAY_ENTRY PropTagArray = NULL;
+LPNAME_ARRAY_ENTRY_V2 PropTagArray = NULL;
 ULONG ulPropTagArray = NULL;
 
 LPGUID_ARRAY_ENTRY PropGuidArray = NULL;
@@ -58,6 +58,38 @@ _Check_return_ ULONG GetAddinVersion(HMODULE hMod)
 	// Default case for unversioned add-ins
 	return MFCMAPI_HEADER_V1;
 } // GetAddinVersion
+
+// Load NAME_ARRAY_ENTRY style props from the add-in and upconvert them to V2
+void LoadLegacyPropTags(
+	HMODULE hMod,
+	_In_ ULONG* lpulPropTags, // Number of entries in lppPropTags
+	_In_ LPNAME_ARRAY_ENTRY_V2* lppPropTags // Array of NAME_ARRAY_ENTRY_V2 structures
+	)
+{
+	HRESULT hRes = S_OK;
+	LPGETPROPTAGS pfnGetPropTags = NULL;
+	LPNAME_ARRAY_ENTRY lpPropTags = NULL;
+	WC_D(pfnGetPropTags, (LPGETPROPTAGS) GetProcAddress(hMod,szGetPropTags));
+	if (pfnGetPropTags)
+	{
+		pfnGetPropTags(lpulPropTags,&lpPropTags);
+		if (lpPropTags && *lpulPropTags)
+		{
+			LPNAME_ARRAY_ENTRY_V2 lpPropTagsV2 = new NAME_ARRAY_ENTRY_V2[*lpulPropTags];
+			if (lpPropTagsV2)
+			{
+				ULONG i = 0;
+				for (i = 0 ; i < *lpulPropTags ; i++)
+				{
+					lpPropTagsV2[i].lpszName = lpPropTags[i].lpszName;
+					lpPropTagsV2[i].ulValue = lpPropTags[i].ulValue;
+					lpPropTagsV2[i].ulSortOrder = 0;
+				}
+				*lppPropTags = lpPropTagsV2;
+			}
+		}
+	}
+} // LoadLegacyPropTags
 
 void LoadSingleAddIn(_In_ LPADDIN lpAddIn, HMODULE hMod, _In_ LPLOADADDIN pfnLoadAddIn)
 {
@@ -105,12 +137,19 @@ void LoadSingleAddIn(_In_ LPADDIN lpAddIn, HMODULE hMod, _In_ LPLOADADDIN pfnLoa
 	}
 
 	hRes = S_OK;
-	LPGETPROPTAGS pfnGetPropTags = NULL;
-	WC_D(pfnGetPropTags, (LPGETPROPTAGS) GetProcAddress(hMod,szGetPropTags));
-	if (pfnGetPropTags)
+	lpAddIn->bLegacyPropTags = false;
+	LPGETPROPTAGSV2 pfnGetPropTagsV2 = NULL;
+	WC_D(pfnGetPropTagsV2, (LPGETPROPTAGSV2) GetProcAddress(hMod,szGetPropTagsV2));
+	if (pfnGetPropTagsV2)
 	{
-		pfnGetPropTags(&lpAddIn->ulPropTags,&lpAddIn->lpPropTags);
+		pfnGetPropTagsV2(&lpAddIn->ulPropTags,&lpAddIn->lpPropTags);
 	}
+	else
+	{
+		LoadLegacyPropTags(hMod,&lpAddIn->ulPropTags,&lpAddIn->lpPropTags);
+		lpAddIn->bLegacyPropTags = true;
+	}
+
 
 	hRes = S_OK;
 	LPGETPROPTYPES pfnGetPropTypes = NULL;
@@ -500,6 +539,10 @@ void UnloadAddIns()
 		while (lpCurAddIn)
 		{
 			DebugPrint(DBGAddInPlumbing,_T("Freeing add-in\n"));
+			if (lpCurAddIn->bLegacyPropTags)
+			{
+				delete[] lpCurAddIn->lpPropTags;
+			}
 			if (lpCurAddIn->hMod)
 			{
 				HRESULT hRes = S_OK;
@@ -659,11 +702,25 @@ void InvokeAddInMenu(_In_opt_ LPADDINMENUPARAMS lpParams)
 	WC_H(lpParams->lpAddInMenu->lpAddIn->pfnCallMenu(lpParams));
 } // InvokeAddInMenu
 
-// Compare tag arrays. Also works on type arrays.
+// Compare type arrays.
+int CompareTypes(_In_ const void* a1, _In_ const void* a2)
+{
+	LPNAME_ARRAY_ENTRY lpType1 = (LPNAME_ARRAY_ENTRY) a1;
+	LPNAME_ARRAY_ENTRY lpType2 = (LPNAME_ARRAY_ENTRY) a2;
+
+	if (lpType1->ulValue > lpType2->ulValue) return 1;
+	if (lpType1->ulValue == lpType2->ulValue)
+	{
+		return wcscmp(lpType1->lpszName,lpType2->lpszName);
+	}
+	return -1;
+} // CompareTypes
+
+// Compare tag arrays. Pay no attention to sort order - we'll sort on sort order during output.
 int CompareTags(_In_ const void* a1, _In_ const void* a2)
 {
-	LPNAME_ARRAY_ENTRY lpTag1 = (LPNAME_ARRAY_ENTRY) a1;
-	LPNAME_ARRAY_ENTRY lpTag2 = (LPNAME_ARRAY_ENTRY) a2;
+	LPNAME_ARRAY_ENTRY_V2 lpTag1 = (LPNAME_ARRAY_ENTRY_V2) a1;
+	LPNAME_ARRAY_ENTRY_V2 lpTag2 = (LPNAME_ARRAY_ENTRY_V2) a2;
 
 	if (lpTag1->ulValue > lpTag2->ulValue) return 1;
 	if (lpTag1->ulValue == lpTag2->ulValue)
@@ -917,27 +974,27 @@ void MergeAddInArrays()
 	{
 		if (lpCurAddIn->ulPropTypes)
 		{
-			qsort(lpCurAddIn->lpPropTypes,lpCurAddIn->ulPropTypes,sizeof(NAME_ARRAY_ENTRY),&CompareTags);
+			qsort(lpCurAddIn->lpPropTypes,lpCurAddIn->ulPropTypes,sizeof(NAME_ARRAY_ENTRY),&CompareTypes);
 			LPNAME_ARRAY_ENTRY newPropTypeArray = NULL;
 			size_t ulnewPropTypeArray = NULL;
 			MergeArrays(PropTypeArray,ulPropTypeArray,
 				lpCurAddIn->lpPropTypes,lpCurAddIn->ulPropTypes,
 				(LPVOID*) &newPropTypeArray,&ulnewPropTypeArray,
 				sizeof(NAME_ARRAY_ENTRY),
-				CompareTags);
+				CompareTypes);
 			if (PropTypeArray != g_PropTypeArray) delete[] PropTypeArray;
 			PropTypeArray = newPropTypeArray;
 			ulPropTypeArray = (ULONG) ulnewPropTypeArray;
 		}
 		if (lpCurAddIn->ulPropTags)
 		{
-			qsort(lpCurAddIn->lpPropTags,lpCurAddIn->ulPropTags,sizeof(NAME_ARRAY_ENTRY),&CompareTags);
-			LPNAME_ARRAY_ENTRY newPropTagArray = NULL;
+			qsort(lpCurAddIn->lpPropTags,lpCurAddIn->ulPropTags,sizeof(NAME_ARRAY_ENTRY_V2),&CompareTags);
+			LPNAME_ARRAY_ENTRY_V2 newPropTagArray = NULL;
 			size_t ulnewPropTagArray = NULL;
 			MergeArrays(PropTagArray,ulPropTagArray,
 				lpCurAddIn->lpPropTags,lpCurAddIn->ulPropTags,
 				(LPVOID*) &newPropTagArray,&ulnewPropTagArray,
-				sizeof(NAME_ARRAY_ENTRY),
+				sizeof(NAME_ARRAY_ENTRY_V2),
 				CompareTags);
 			if (PropTagArray != g_PropTagArray) delete[] PropTagArray;
 			PropTagArray = newPropTagArray;

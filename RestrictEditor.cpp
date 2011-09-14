@@ -64,11 +64,11 @@ _Check_return_ ULONG CResCompareEditor::HandleChange(UINT nID)
 	}
 	else if (2 == i)
 	{
-		SetString(3,TagToString(GetHexUseControl(2),NULL,false,true));
+		SetString(3,TagToString(GetPropTagUseControl(2),NULL,false,true));
 	}
 	else if (4 == i)
 	{
-		SetString(5,TagToString(GetHexUseControl(4),NULL,false,true));
+		SetString(5,TagToString(GetPropTagUseControl(4),NULL,false,true));
 	}
 	return i;
 } // CResCompareEditor::HandleChange
@@ -182,12 +182,11 @@ _Check_return_ ULONG CResCombinedEditor::HandleChange(UINT nID)
 	}
 	else if (2 == i)
 	{
-		SetString(3,TagToString(GetHexUseControl(2),NULL,false,true));
+		SetString(3,TagToString(GetPropTagUseControl(2),NULL,false,true));
 	}
 	else if (4 == i)
 	{
-		ULONG ulNewPropTag = GetHexUseControl(4);
-		SetString(5,TagToString(ulNewPropTag,NULL,false,true));
+		SetString(5,TagToString(GetPropTagUseControl(4),NULL,false,true));
 		m_lpOldProp = NULL;
 		m_lpNewProp = NULL;
 		SetString(6,NULL);
@@ -220,7 +219,7 @@ void CResCombinedEditor::OnEditAction1()
 		false,
 		m_lpAllocParent,
 		NULL,
-		GetHexUseControl(4),
+		GetPropTagUseControl(4),
 		false,
 		lpEditProp,
 		&lpOutProp));
@@ -292,7 +291,7 @@ _Check_return_ ULONG CResBitmaskEditor::HandleChange(UINT nID)
 	}
 	else if (2 == i)
 	{
-		SetString(3,TagToString(GetHexUseControl(2),NULL,false,true));
+		SetString(3,TagToString(GetPropTagUseControl(2),NULL,false,true));
 	}
 	return i;
 } // CResBitmaskEditor::HandleChange
@@ -351,7 +350,7 @@ _Check_return_ ULONG CResSizeEditor::HandleChange(UINT nID)
 	}
 	else if (2 == i)
 	{
-		SetString(3,TagToString(GetHexUseControl(2),NULL,false,true));
+		SetString(3,TagToString(GetPropTagUseControl(2),NULL,false,true));
 	}
 	return i;
 } // CResSizeEditor::HandleChange
@@ -386,7 +385,7 @@ _Check_return_ ULONG CResExistEditor::HandleChange(UINT nID)
 
 	if (0 == i)
 	{
-		SetString(1,TagToString(GetHexUseControl(0),NULL,false,true));
+		SetString(1,TagToString(GetPropTagUseControl(0),NULL,false,true));
 	}
 	return i;
 } // CResExistEditor::HandleChange
@@ -440,7 +439,7 @@ _Check_return_ ULONG CResSubResEditor::HandleChange(UINT nID)
 
 	if (0 == i)
 	{
-		SetString(1,TagToString(GetHexUseControl(0),NULL,false,true));
+		SetString(1,TagToString(GetPropTagUseControl(0),NULL,false,true));
 	}
 	return i;
 } // CResSubResEditor::HandleChange
@@ -1087,8 +1086,8 @@ void CRestrictEditor::OnEditAction1()
 			{
 				m_lpOutputRes->rt = lpSourceRes->rt;
 				m_lpOutputRes->res.resCompareProps.relop = MyEditor.GetHex(0);
-				m_lpOutputRes->res.resCompareProps.ulPropTag1 = MyEditor.GetHex(2);
-				m_lpOutputRes->res.resCompareProps.ulPropTag2 = MyEditor.GetHex(4);
+				m_lpOutputRes->res.resCompareProps.ulPropTag1 = MyEditor.GetPropTag(2);
+				m_lpOutputRes->res.resCompareProps.ulPropTag2 = MyEditor.GetPropTag(4);
 			}
 		}
 		break;
@@ -1151,7 +1150,7 @@ void CRestrictEditor::OnEditAction1()
 			{
 				m_lpOutputRes->rt = lpSourceRes->rt;
 				m_lpOutputRes->res.resContent.ulFuzzyLevel = MyEditor.GetHex(0);
-				m_lpOutputRes->res.resContent.ulPropTag = MyEditor.GetHex(2);
+				m_lpOutputRes->res.resContent.ulPropTag = MyEditor.GetPropTag(2);
 
 				// Since m_lpOutputRes->res.resContent.lpProp was owned by an m_lpAllocParent, we don't free it directly
 				m_lpOutputRes->res.resContent.lpProp = MyEditor.DetachModifiedSPropValue();
@@ -1185,7 +1184,7 @@ void CRestrictEditor::OnEditAction1()
 			{
 				m_lpOutputRes->rt = lpSourceRes->rt;
 				m_lpOutputRes->res.resBitMask.relBMR = MyEditor.GetHex(0);
-				m_lpOutputRes->res.resBitMask.ulPropTag = MyEditor.GetHex(2);
+				m_lpOutputRes->res.resBitMask.ulPropTag = MyEditor.GetPropTag(2);
 				m_lpOutputRes->res.resBitMask.ulMask = MyEditor.GetHex(4);
 			}
 		}
@@ -1202,7 +1201,7 @@ void CRestrictEditor::OnEditAction1()
 			{
 				m_lpOutputRes->rt = lpSourceRes->rt;
 				m_lpOutputRes->res.resSize.relop = MyEditor.GetHex(0);
-				m_lpOutputRes->res.resSize.ulPropTag = MyEditor.GetHex(2);
+				m_lpOutputRes->res.resSize.ulPropTag = MyEditor.GetPropTag(2);
 				m_lpOutputRes->res.resSize.cb = MyEditor.GetHex(4);
 			}
 		}
@@ -1216,7 +1215,7 @@ void CRestrictEditor::OnEditAction1()
 			if (S_OK == hRes)
 			{
 				m_lpOutputRes->rt = lpSourceRes->rt;
-				m_lpOutputRes->res.resExist.ulPropTag = MyEditor.GetHex(0);
+				m_lpOutputRes->res.resExist.ulPropTag = MyEditor.GetPropTag(0);
 				m_lpOutputRes->res.resExist.ulReserved1 = 0;
 				m_lpOutputRes->res.resExist.ulReserved2 = 0;
 			}

@@ -22,6 +22,12 @@ typedef bool (WINAPI HEAPSETINFORMATION) (
     SIZE_T HeapInformationLength);
 typedef HEAPSETINFORMATION* LPHEAPSETINFORMATION;
 
+typedef bool (WINAPI GETMODULEHANDLEEXW) (
+    DWORD    dwFlags,
+    LPCWSTR lpModuleName,
+    HMODULE* phModule);
+typedef GETMODULEHANDLEEXW* LPGETMODULEHANDLEEXW;
+
 typedef HRESULT (STDMETHODCALLTYPE MIMEOLEGETCODEPAGECHARSET)
 (
  CODEPAGEID cpiCodePage,
@@ -70,6 +76,7 @@ LPMSIPROVIDEQUALIFIEDCOMPONENTW pfnMsiProvideQualifiedComponentW = NULL;
 
 // From kernel32.dll
 LPHEAPSETINFORMATION pfnHeapSetInformation = NULL;
+LPGETMODULEHANDLEEXW pfnGetModuleHandleExW = NULL;
 
 // Exists to allow some logging
 _Check_return_ HMODULE MyLoadLibrary(_In_z_ LPCTSTR lpszLibFileName)
@@ -972,3 +979,18 @@ STDAPI_(UINT) MsiProvideQualifiedComponentW(
 	if (pfnMsiProvideQualifiedComponentW) return pfnMsiProvideQualifiedComponentW(szCategory,szQualifier,dwInstallMode,lpPathBuf,pcchPathBuf);
 	return ERROR_NOT_SUPPORTED;
 } // MsiProvideQualifiedComponentW
+
+BOOL WINAPI MyGetModuleHandleExW(
+	DWORD dwFlags,
+	LPCWSTR lpModuleName,
+	HMODULE* phModule)
+{
+	if (!pfnGetModuleHandleExW)
+	{
+		LoadProc(_T("kernel32.dll"), &hModMSI, "GetModuleHandleExW", (FARPROC*) &pfnGetModuleHandleExW); // STRING_OK;
+	}
+
+	if (pfnGetModuleHandleExW) return pfnGetModuleHandleExW(dwFlags,lpModuleName,phModule);
+	*phModule = GetModuleHandleW(lpModuleName);
+	return (*phModule != NULL);
+} // MyGetModuleHandleExW
