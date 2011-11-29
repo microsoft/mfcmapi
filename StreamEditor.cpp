@@ -130,7 +130,7 @@ _Check_return_ BOOL CStreamEditor::OnInitDialog()
 void CStreamEditor::OnOK()
 {
 	WriteTextStreamToProperty();
-	CDialog::OnOK(); // don't need to call CEditor::OnOK
+	CMyDialog::OnOK(); // don't need to call CEditor::OnOK
 } // CStreamEditor::OnOK
 
 void CStreamEditor::ReadTextStreamFromProperty()

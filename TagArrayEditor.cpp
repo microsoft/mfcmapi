@@ -53,7 +53,7 @@ _Check_return_ BOOL CTagArrayEditor::OnInitDialog()
 void CTagArrayEditor::OnOK()
 {
 	WriteListToTagArray(0);
-	CDialog::OnOK(); // don't need to call CEditor::OnOK
+	CMyDialog::OnOK(); // don't need to call CEditor::OnOK
 } // CTagArrayEditor::OnOK
 
 _Check_return_ bool CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData)

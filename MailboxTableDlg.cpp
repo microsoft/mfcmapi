@@ -10,6 +10,7 @@
 #include "SingleMAPIPropListCtrl.h"
 #include "ColumnTags.h"
 #include "MFCUtilityFunctions.h"
+#include "UIFunctions.h"
 #include "Editor.h"
 #include "PropertyTagEditor.h"
 #include "InterpretProp2.h"
@@ -75,7 +76,7 @@ void CMailboxTableDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 	CContentsTableDlg::CreateDialogAndMenu(nIDMenuResource);
 
 	UpdateMenuString(
-		this,
+		m_hWnd,
 		ID_CREATEPROPERTYSTRINGRESTRICTION,
 		IDS_MBRESMENU);
 } // CMailboxTableDlg::CreateDialogAndMenu

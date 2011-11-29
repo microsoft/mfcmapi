@@ -493,8 +493,8 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">
     <ClCompile>
-      <Optimization>Disabled</Optimization>
-      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <AdditionalIncludeDirectories>.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;MRMAPI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
@@ -579,11 +579,11 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="AdviseSink.h" />
     <ClInclude Include="AttachmentsDlg.h" />
     <ClInclude Include="BaseDialog.h" />
-    <ClInclude Include="bldver.h" />
     <ClInclude Include="ColumnTags.h" />
     <ClInclude Include="ContentsTableDlg.h" />
     <ClInclude Include="ContentsTableListCtrl.h" />
     <ClInclude Include="DbgView.h" />
+    <ClInclude Include="Dialog.h" />
     <ClInclude Include="DumpStore.h" />
     <ClInclude Include="Editor.h" />
     <ClInclude Include="Enums.h" />
@@ -746,6 +746,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="StreamEditor.h" />
     <ClInclude Include="TagArrayEditor.h" />
+    <ClInclude Include="UIFunctions.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Res\bldver.rc">
@@ -763,10 +764,13 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ResourceCompile Include="MFCMapi.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Res\down.bmp" />
+    <None Include="Res\MFCMAPI64x64_logo.bmp" />
+    <None Include="Res\advise.bmp" />
     <None Include="MFCMapi.ico" />
+    <None Include="Res\icons.bmp" />
     <None Include="res\MFCMapi.rc2" />
-    <None Include="Res\up.bmp" />
+    <None Include="res\splith.cur" />
+    <None Include="res\splitv.cur" />
     <None Include="Issues.txt" />
     <None Include="ReadMe.txt" />
   </ItemGroup>
@@ -809,6 +813,10 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="DbgView.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Dialog.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
     </ClCompile>
@@ -1069,6 +1077,10 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     </ClCompile>
     <ClCompile Include="StubUtils.cpp" />
     <ClCompile Include="TagArrayEditor.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="UIFunctions.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
     </ClCompile>

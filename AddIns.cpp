@@ -7,6 +7,9 @@
 #include "MAPIFunctions.h"
 #include "Editor.h"
 #include "Guids.h"
+#ifndef MRMAPI
+#include "UIFunctions.h"
+#endif
 
 // Our built in arrays, which get merged into the arrays declared in mfcmapi.h
 #include "GenTagArray.h"
@@ -567,6 +570,7 @@ void UnloadAddIns()
 	DebugPrint(DBGAddInPlumbing,_T("Done unloading AddIns\n"));
 } // UnloadAddIns
 
+#ifndef MRMAPI
 // Adds menu items appropriate to the context
 // Returns number of menu items added
 ULONG ExtendAddInMenu(HMENU hMenu, ULONG ulAddInContext)
@@ -607,46 +611,39 @@ ULONG ExtendAddInMenu(HMENU hMenu, ULONG ulAddInContext)
 					}
 					if (lpCurAddIn->lpMenu[ulMenu].ulContext & ulAddInContext)
 					{
+						// Add the Add-Ins menu if we haven't added it already
 						if (!hAddInMenu)
 						{
 							WCHAR szAddInTitle[8] = {0}; // The length of IDS_ADDINSMENU
 							int iRet = NULL;
-							// CString doesn't provide a way to extract just Unicode strings, so we do this manually
 							EC_D(iRet,LoadStringW(GetModuleHandle(NULL),
 								IDS_ADDINSMENU,
 								szAddInTitle,
 								_countof(szAddInTitle)));
 
 							hAddInMenu = CreatePopupMenu();
-
-							MENUITEMINFOW topMenu = {0};
-							topMenu.cbSize = sizeof(MENUITEMINFO);
-							topMenu.fMask = MIIM_SUBMENU|MIIM_TYPE|MIIM_STATE|MIIM_ID;
-							topMenu.hSubMenu = hAddInMenu;
-							topMenu.fState = MFS_ENABLED;
-							topMenu.dwTypeData = szAddInTitle;
-							EC_B(InsertMenuItemW(
+							::InsertMenuW(
 								hMenu,
 								(UINT) -1,
-								MF_BYPOSITION | MF_POPUP | MF_STRING,
-								&topMenu));
+								MF_BYPOSITION | MF_POPUP | MF_ENABLED,
+								(UINT_PTR) hAddInMenu,
+								(LPCWSTR) szAddInTitle);
 						}
+
+						// Now add each of the menu entries
 						if (SUCCEEDED(hRes))
 						{
-							MENUITEMINFOW subMenu = {0};
-							subMenu.cbSize = sizeof(MENUITEMINFO);
-							subMenu.fMask = MIIM_TYPE|MIIM_STATE|MIIM_ID|MIIM_DATA;
-							subMenu.fType = MFT_STRING;
-							subMenu.fState = MFS_ENABLED;
-							subMenu.wID = uidCurMenu;
-							subMenu.dwTypeData = lpCurAddIn->lpMenu[ulMenu].szMenu;
-							subMenu.dwItemData = (ULONG_PTR) &lpCurAddIn->lpMenu[ulMenu];
+							LPMENUENTRY lpMenu = CreateMenuEntry(lpCurAddIn->lpMenu[ulMenu].szMenu);
+							if (lpMenu)
+							{
+								lpMenu->m_AddInData = (ULONG_PTR) &lpCurAddIn->lpMenu[ulMenu];
+							}
 
-							EC_B(InsertMenuItemW(
+							EC_B(AppendMenu(
 								hAddInMenu,
-								(UINT) -1,
-								MF_BYPOSITION | MF_POPUP | MF_STRING,
-								&subMenu));
+								MF_ENABLED | MF_OWNERDRAW,
+								uidCurMenu,
+								(LPCTSTR) lpMenu));
 							uidCurMenu++;
 						}
 					}
@@ -655,7 +652,6 @@ ULONG ExtendAddInMenu(HMENU hMenu, ULONG ulAddInContext)
 			lpCurAddIn = lpCurAddIn->lpNextAddIn;
 		}
 	}
-	if (hAddInMenu) DestroyMenu(hAddInMenu);
 	DebugPrint(DBGAddInPlumbing,_T("Done extending menus\n"));
 	return uidCurMenu-ID_ADDINMENU;
 } // ExtendAddInMenu
@@ -674,7 +670,12 @@ LPMENUITEM GetAddinMenuItem(HWND hWnd, UINT uidMsg)
 		uidMsg,
 		false,
 		&subMenu));
-	return (LPMENUITEM) subMenu.dwItemData;
+	if (subMenu.dwItemData)
+	{
+		return (LPMENUITEM) ((LPMENUENTRY) subMenu.dwItemData)->m_AddInData;
+	}
+
+	return NULL;
 } // GetAddinMenuItem
 
 void InvokeAddInMenu(_In_opt_ LPADDINMENUPARAMS lpParams)
@@ -701,6 +702,7 @@ void InvokeAddInMenu(_In_opt_ LPADDINMENUPARAMS lpParams)
 
 	WC_H(lpParams->lpAddInMenu->lpAddIn->pfnCallMenu(lpParams));
 } // InvokeAddInMenu
+#endif // MRMAPI
 
 // Compare type arrays.
 int CompareTypes(_In_ const void* a1, _In_ const void* a2)

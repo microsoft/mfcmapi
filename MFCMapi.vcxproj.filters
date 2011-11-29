@@ -36,9 +36,6 @@
     <ClInclude Include="BaseDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="bldver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ColumnTags.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -49,6 +46,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DbgView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DumpStore.h">
@@ -237,6 +237,9 @@
     <ClInclude Include="TagArrayEditor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="UIFunctions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Res\bldver.rc">
@@ -247,20 +250,29 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Res\down.bmp">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="MFCMapi.ico">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="res\MFCMapi.rc2">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="Res\up.bmp">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="Issues.txt" />
     <None Include="ReadMe.txt" />
+    <None Include="Res\icons.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\splitv.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\splith.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Res\advise.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Res\MFCMAPI64x64_logo.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ABContDlg.cpp">
@@ -294,6 +306,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DbgView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DumpStore.cpp">
@@ -480,6 +495,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MMFolder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFunctions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

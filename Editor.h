@@ -1,8 +1,9 @@
 #pragma once
-// Editor.h : Generic edit dialog built on CDialog
+// Editor.h : Generic edit dialog built on CMyDialog
 
 class CParentWnd;
 
+#include "Dialog.h"
 #include "enums.h"
 #include "SortListCtrl.h"
 
@@ -82,7 +83,7 @@ struct ControlStruct
 	} UI;
 };
 
-class CEditor : public CDialog
+class CEditor : public CMyDialog
 {
 public:
 	// Main Edit Constructor
@@ -232,7 +233,6 @@ private:
 	void    OnSetDefaultSize();
 	_Check_return_ SIZE    ComputeWorkArea(SIZE sScreen);
 	_Check_return_ LRESULT OnNcHitTest(CPoint point);
-	void    OnPaint();
 	_Check_return_ LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 
 	void    GetEditBoxText(ULONG i);

@@ -40,6 +40,7 @@ private:
 	void        GetContainer(HTREEITEM Item, __mfcmapiModifyEnum bModify, _In_ LPMAPICONTAINER *lpContainer);
 	_Check_return_ LPMAPITABLE GetHierarchyTable(HTREEITEM hItem, _In_opt_ LPMAPICONTAINER lpMAPIContainer, bool bGetTable);
 	void        OnContextMenu(_In_ CWnd *pWnd, CPoint pos);
+	void        OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 	void        OnDblclk(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 	void        OnDeleteItem(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 	void        OnEndLabelEdit(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
@@ -53,15 +54,10 @@ private:
 	// Node insertion
 	_Check_return_ HRESULT AddRootNode(_In_ LPMAPICONTAINER lpMAPIContainer);
 	void AddNode(
-		ULONG			cProps,
-		_In_opt_ LPSPropValue	lpProps,
 		_In_ LPCTSTR szName,
-		_In_opt_ LPSBinary	lpEntryID,
-		_In_opt_ LPSBinary	lpInstanceKey,
-		ULONG		bSubfolders,
-		ULONG		ulContainerFlags,
-		HTREEITEM	hParent,
-		bool		bDoNotifs);
+		HTREEITEM hParent,
+		SortListData* lpData,
+		bool bGetTable);
 	void AddNode(_In_ LPSRow lpsRow, HTREEITEM hParent, bool bGetTable);
 
 	// Custom messages
@@ -78,6 +74,9 @@ private:
 	ULONG				m_ulDisplayFlags;
 	UINT				m_nIDContextMenu;
 	bool				m_bItemSelected;
+	bool				m_bShuttingDown;
+	HTREEITEM			m_hItemCurHover;
+	bool				m_HoverButton;
 
 	DECLARE_MESSAGE_MAP()
 };

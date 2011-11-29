@@ -614,7 +614,7 @@ _Check_return_ bool CResAndOrEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 // Create our LPSRestriction array from the dialog here
 void CResAndOrEditor::OnOK()
 {
-	CDialog::OnOK(); // don't need to call CEditor::OnOK
+	CMyDialog::OnOK(); // don't need to call CEditor::OnOK
 
 	if (!IsValidList(0)) return;
 	LPSRestriction  lpNewResArray = NULL;
@@ -852,7 +852,7 @@ _Check_return_ bool CResCommentEditor::DoListEdit(ULONG ulListNum, int iItem, _I
 
 void CResCommentEditor::OnOK()
 {
-	CDialog::OnOK(); // don't need to call CEditor::OnOK
+	CMyDialog::OnOK(); // don't need to call CEditor::OnOK
 	if (!IsValidList(0)) return;
 
 	LPSPropValue lpNewCommentProp = NULL;
@@ -993,7 +993,7 @@ _Check_return_ LPSRestriction CRestrictEditor::GetSourceRes()
 // Create our LPSRestriction from the dialog here
 void CRestrictEditor::OnOK()
 {
-	CDialog::OnOK(); // don't need to call CEditor::OnOK
+	CMyDialog::OnOK(); // don't need to call CEditor::OnOK
 } // CRestrictEditor::OnOK
 
 _Check_return_ LPSRestriction CRestrictEditor::DetachModifiedSRestriction()
@@ -1501,7 +1501,7 @@ _Check_return_ bool CCriteriaEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 
 void CCriteriaEditor::OnOK()
 {
-	CDialog::OnOK(); // don't need to call CEditor::OnOK
+	CMyDialog::OnOK(); // don't need to call CEditor::OnOK
 	if (!IsValidList(LISTNUM)) return;
 	ULONG ulValues = GetListCount(LISTNUM);
 

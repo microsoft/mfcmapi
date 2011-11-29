@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "FakeSplitter.h"
 #include "BaseDialog.h"
+#include "UIFunctions.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CFakeSplitter
@@ -15,7 +16,6 @@ enum FakesSplitHitTestValue
 	noHit                   = 0,
 	SplitterHit             = 1
 };
-
 
 CFakeSplitter::CFakeSplitter(
 							 _In_ CBaseDialog *lpHostDlg
@@ -34,7 +34,7 @@ CFakeSplitter::CFakeSplitter(
 
 	m_flSplitPercent = 0.5;
 
-	m_iSplitWidth = 6;
+	m_iSplitWidth = 7;
 
 	m_PaneOne = NULL;
 	m_PaneTwo = NULL;
@@ -50,8 +50,7 @@ CFakeSplitter::CFakeSplitter(
 		wc.style   = 0; // not passing CS_VREDRAW | CS_HREDRAW fixes flicker
 		wc.lpszClassName = _T("FakeSplitter"); // STRING_OK
 		wc.lpfnWndProc = ::DefWindowProc;
-
-		WC_D(wc.hbrBackground, (HBRUSH) GetStockObject(BLACK_BRUSH)); // helps spot flashing
+		wc.hbrBackground = GetSysBrush(cBitmapTransparency); // helps spot flashing
 
 		RegisterClassEx(&wc);
 	}
@@ -70,11 +69,17 @@ CFakeSplitter::CFakeSplitter(
 	// Necessary for TAB to work. Without this, all TABS get stuck on the fake splitter control
 	// instead of passing to the children. Haven't tested with nested splitters.
 	EC_B(ModifyStyleEx(0,WS_EX_CONTROLPARENT));
+
+	// Load split cursors
+	EC_D(m_hSplitCursorV,::LoadCursor(GetModuleHandle(NULL), MAKEINTRESOURCE(IDC_SPLITV)));
+	EC_D(m_hSplitCursorH,::LoadCursor(GetModuleHandle(NULL), MAKEINTRESOURCE(IDC_SPLITH)));
 } // CFakeSplitter::CFakeSplitter
 
 CFakeSplitter::~CFakeSplitter()
 {
 	TRACE_DESTRUCTOR(CLASS);
+	(void)::DestroyCursor(m_hSplitCursorH);
+	(void)::DestroyCursor(m_hSplitCursorV);
 	DestroyWindow();
 	if (m_lpHostDlg) m_lpHostDlg->Release();
 } // CFakeSplitter::~CFakeSplitter
@@ -144,7 +149,6 @@ void CFakeSplitter::OnSize(UINT /*nType*/, int cx, int cy)
 
 	if (hdwp)
 	{
-		cy--;
 		if (m_PaneOne && m_PaneOne->m_hWnd)
 		{
 			CRect r1;
@@ -166,16 +170,16 @@ void CFakeSplitter::OnSize(UINT /*nType*/, int cx, int cy)
 				r2.SetRect(
 					m_iSplitPos+m_iSplitWidth, // new x
 					0, // new y
-					cx, // - iSplitPos-m_iSplitWidth, // new width
-					cy); // new height
+					cx, // bottom right corner
+					cy); // bottom right corner
 			}
 			else
 			{
 				r2.SetRect(
 					0, // new x
 					m_iSplitPos+m_iSplitWidth, // new y
-					cx, // new width
-					cy); // new height
+					cx, // bottom right corner
+					cy); // bottom right corner
 			}
 			DeferWindowPos(hdwp,m_PaneTwo->m_hWnd,0,r2.left,r2.top,r2.Width(),r2.Height(),SWP_NOZORDER);
 		}
@@ -263,20 +267,8 @@ void CFakeSplitter::OnMouseMove(UINT /*nFlags*/, CPoint point)
 
 	if (SplitterHit == HitTest(point.x, point.y))
 	{
-		HCURSOR hSplitCursor;
-		if (SplitHorizontal == m_SplitType)
-		{
-			EC_D(hSplitCursor,::LoadCursor(NULL, IDC_SIZEWE));
-		}
-		else
-		{
-			EC_D(hSplitCursor,::LoadCursor(NULL, IDC_SIZENS));
-		}
-		if (hSplitCursor)
-		{
-			::SetCursor(hSplitCursor);
-			EC_B(::DestroyCursor(hSplitCursor)); // destroy after being set
-		}
+		// This looks backwards, but it is not. A horizontal split needs the vertical cursor
+		::SetCursor(SplitHorizontal == m_SplitType?m_hSplitCursorV:m_hSplitCursorH);
 	}
 
 	if (m_bTracking)
@@ -316,6 +308,9 @@ void CFakeSplitter::StartTracking(int ht)
 
 	// set tracking state and appropriate cursor
 	m_bTracking = true;
+
+	// Force redraw to get our tracking gripper
+	SetPercent(m_flSplitPercent);
 } // CFakeSplitter::StartTracking
 
 void CFakeSplitter::StopTracking()
@@ -326,47 +321,67 @@ void CFakeSplitter::StopTracking()
 	ReleaseCapture();
 
 	m_bTracking = false;
+
+	// Force redraw to get our non-tracking gripper
+	SetPercent(m_flSplitPercent);
 } // CFakeSplitter::StopTracking
 
-// See CSplitterWnd::OnPaint to see where I swiped this code.
 void CFakeSplitter::OnPaint()
 {
-	HRESULT hRes = S_OK;
-	PAINTSTRUCT ps;
-	CDC* dc = NULL;
-	EC_D(dc,BeginPaint(&ps));
-
-	if (dc)
+	PAINTSTRUCT ps = {0};
+	::BeginPaint(m_hWnd, &ps);
+	if (ps.hdc)
 	{
-		CRect rect = ps.rcPaint;
-
-		// Shouldn't need to worry about this now - InvalidateRect took care of it for us
-		// Draw the splitter bar
-		if (SplitHorizontal == m_SplitType)
+		HDC hdc = CreateCompatibleDC(ps.hdc);
+		HBITMAP hbm = CreateCompatibleBitmap(
+			ps.hdc,
+			ps.rcPaint.right - ps.rcPaint.left,
+			ps.rcPaint.bottom - ps.rcPaint.top);
+		if (hdc && hbm)
 		{
-			rect.left = m_iSplitPos;
-			rect.right = m_iSplitPos + m_iSplitWidth;
-		}
-		else
-		{
-			rect.top = m_iSplitPos;
-			rect.bottom = m_iSplitPos + m_iSplitWidth;
-		}
+			HGDIOBJ hbmOld = ::SelectObject(hdc, hbm);
+			RECT rcSplitter = ps.rcPaint;
+			OffsetRect(&rcSplitter, -rcSplitter.left, -rcSplitter.top);
 
-		dc->Draw3dRect(rect, ::GetSysColor(COLOR_BTNHIGHLIGHT), ::GetSysColor(COLOR_BTNSHADOW));
+			::FillRect(hdc, &rcSplitter, GetSysBrush(cBackground));
 
-		if (SplitHorizontal == m_SplitType)
-		{
-			rect.InflateRect(-1,0,-1,0);
-		}
-		else
-		{
-			rect.InflateRect(0,-1,0,-1);
-		}
+			POINT pts[2]; // 0 is left top, 1 is right bottom
+			if (SplitHorizontal == m_SplitType)
+			{
+				pts[0].x = (rcSplitter.left + rcSplitter.right)/2;
+				pts[0].y = rcSplitter.top;
+				pts[1].x = pts[0].x;
+				pts[1].y = rcSplitter.bottom;
+			}
+			else
+			{
+				pts[0].x = rcSplitter.left;
+				pts[0].y = (rcSplitter.top + rcSplitter.bottom)/2;
+				pts[1].x = rcSplitter.right;
+				pts[1].y = pts[0].y;
+			}
 
-		// Draw3dRect only draws the edges: fill the middle
-		dc->FillSolidRect(rect, ::GetSysColor(COLOR_BTNFACE));
+			// Draw the splitter bar
+			HGDIOBJ hpenOld = ::SelectObject(hdc, GetPen(m_bTracking?cSolidPen:cDashedPen));
+			::MoveToEx(hdc, pts[0].x, pts[0].y, NULL);
+			::LineTo(hdc, pts[1].x, pts[1].y);
+			(void) ::SelectObject(hdc, hpenOld);
+
+			BitBlt(
+				ps.hdc,
+				ps.rcPaint.left,
+				ps.rcPaint.top,
+				ps.rcPaint.right - ps.rcPaint.left,
+				ps.rcPaint.bottom - ps.rcPaint.top,
+				hdc,
+				0,
+				0,
+				SRCCOPY);
+			(void) ::SelectObject(hdc, hbmOld);
+		}
+		if (hdc) DeleteDC(hdc);
+		if (hbm) DeleteObject(hbm);
 	}
 
-	EndPaint(&ps);
+	::EndPaint(m_hWnd, &ps);
 } // CFakeSplitter::OnPaint

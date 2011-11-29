@@ -8,13 +8,13 @@ extern LPSTGCREATESTORAGEEX			pfnStgCreateStorageEx;
 extern LPOPENTHEMEDATA				pfnOpenThemeData;
 extern LPCLOSETHEMEDATA				pfnCloseThemeData;
 extern LPGETTHEMEMARGINS			pfnGetThemeMargins;
+extern LPSETWINDOWTHEME				pfnSetWindowTheme;
 extern LPMSIPROVIDEQUALIFIEDCOMPONENT pfnMsiProvideQualifiedComponent;
 extern LPMSIGETFILEVERSION			pfnMsiGetFileVersion;
 
 _Check_return_ HMODULE LoadFromSystemDir(_In_z_ LPTSTR szDLLName);
 
 _Check_return_ HMODULE MyLoadLibrary(_In_z_ LPCTSTR lpszLibFileName);
-void LoadRichEd();
 void ImportProcs();
 
 void GetMAPIPath(_In_opt_z_ LPCTSTR szClient, _Inout_z_count_(cchMAPIPath) LPTSTR szMAPIPath, ULONG cchMAPIPath);

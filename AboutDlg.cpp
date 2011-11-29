@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "AboutDlg.h"
 #include "ParentWnd.h"
+#include "UIFunctions.h"
 
 void DisplayAboutDlg(_In_ CWnd* lpParentWnd)
 {
@@ -18,12 +19,9 @@ static TCHAR* CLASS = _T("CAboutDlg");
 
 CAboutDlg::CAboutDlg(
 					 _In_ CWnd* pParentWnd
-					 ):CDialog(IDD_ABOUT,pParentWnd)
+					 ):CMyDialog(IDD_ABOUT,pParentWnd)
 {
 	TRACE_CONSTRUCTOR(CLASS);
-	HRESULT hRes = S_OK;
-	// Note that LoadIcon does not require a subsequent DestroyIcon in Win32
-	EC_D(m_hIcon,AfxGetApp()->LoadIcon(IDR_MAINFRAME));
 } // CAboutDlg::CAboutDlg
 
 CAboutDlg::~CAboutDlg()
@@ -34,15 +32,15 @@ CAboutDlg::~CAboutDlg()
 _Check_return_ BOOL CAboutDlg::OnInitDialog()
 {
 	HRESULT hRes = S_OK;
-	BOOL bRet = CDialog::OnInitDialog();
+	BOOL bRet = CMyDialog::OnInitDialog();
 	TCHAR szFullPath[256];
 	DWORD dwVerHnd = 0;
 	DWORD dwRet = 0;
 	DWORD dwVerInfoSize = 0;
 	DWORD dwCheckHeight = GetSystemMetrics(SM_CYMENUCHECK);
 	DWORD dwBorder = GetSystemMetrics(SM_CXEDGE);
-
-	int		iRet = 0;
+	int i = 0;
+	int iRet = 0;
 	static TCHAR szProductName[128];
 
 	WC_D(iRet,LoadString(
@@ -57,11 +55,24 @@ _Check_return_ BOOL CAboutDlg::OnInitDialog()
 	CRect MyBarRect;
 	CRect MyCheckRect;
 
+	int iTextHeight = GetTextHeight(m_hWnd);
+	// Position our about text with proper height
+	for (i = IDD_ABOUTVERFIRST; i <= IDD_ABOUTVERLAST; i++)
+	{
+		HWND hWndAboutText = ::GetDlgItem(m_hWnd, i);
+		RECT rcText = {0};
+		::GetWindowRect(hWndAboutText, &rcText);
+		::MapWindowPoints(NULL, m_hWnd, (LPPOINT) &rcText, 2);
+		rcText.top = 5 + iTextHeight * (i - IDD_ABOUTVERFIRST);
+		rcText.bottom = rcText.top + iTextHeight;
+		::MoveWindow(hWndAboutText, rcText.left, rcText.top, rcText.right - rcText.left, rcText.bottom - rcText.top, false);
+	}
+
 	// Find the shape of our client window
 	GetClientRect(&MyTextRect);
 
-	// Get Screen coords for the last bar
-	CWnd* dlgWnd = GetDlgItem(IDD_BLACKBARLAST);
+	// Get Screen coords for the last control
+	CWnd* dlgWnd = GetDlgItem(IDD_ABOUTVERLAST);
 	if (dlgWnd) dlgWnd->GetWindowRect(&MyBarRect);
 	// Convert those to client coords we need
 	ScreenToClient(&MyBarRect);
@@ -77,6 +88,7 @@ _Check_return_ BOOL CAboutDlg::OnInitDialog()
 		| WS_VISIBLE
 		| WS_HSCROLL
 		| WS_VSCROLL
+		| WS_BORDER
 		| ES_AUTOHSCROLL
 		| ES_AUTOVSCROLL
 		| ES_MULTILINE
@@ -84,11 +96,16 @@ _Check_return_ BOOL CAboutDlg::OnInitDialog()
 		MyTextRect,
 		this,
 		IDD_HELP));
+	m_HelpText.ModifyStyleEx(WS_EX_CLIENTEDGE, 0, 0);
+	::SendMessage(m_HelpText.m_hWnd, EM_SETEVENTMASK,NULL, ENM_LINK);
+	::SendMessage(m_HelpText.m_hWnd, EM_AUTOURLDETECT,true, NULL);
+	m_HelpText.SetBackgroundColor(false, MyGetSysColor(cBackground));
+	m_HelpText.SetFont(GetFont());
+	ClearEditFormatting(m_HelpText.m_hWnd);
 
 	CString szHelpText;
 	szHelpText.FormatMessage(IDS_HELPTEXT,szProductName);
 	m_HelpText.SetWindowText(szHelpText);
-	m_HelpText.SetFont(GetFont());
 
 	MyCheckRect.SetRect(
 		MyTextRect.left,
@@ -107,7 +124,6 @@ _Check_return_ BOOL CAboutDlg::OnInitDialog()
 		this,
 		IDD_DISPLAYABOUT));
 	m_DisplayAboutCheck.SetCheck(RegKeys[regkeyDISPLAY_ABOUT_DIALOG].ulCurDWORD?BST_CHECKED:BST_UNCHECKED);
-	m_DisplayAboutCheck.SetFont(GetFont());
 	CString szDisplayAboutCheck;
 	EC_B(szDisplayAboutCheck.LoadString(IDS_DISPLAYABOUTCHECK));
 	m_DisplayAboutCheck.SetWindowText(szDisplayAboutCheck);
@@ -118,7 +134,6 @@ _Check_return_ BOOL CAboutDlg::OnInitDialog()
 	if (dwVerInfoSize)
 	{
 		// If we were able to get the information, process it.
-		int i = 0;
 		size_t cchRoot = 0;
 
 		BYTE* pbData = NULL;
@@ -197,13 +212,38 @@ _Check_return_ LRESULT CAboutDlg::WindowProc(UINT message, WPARAM wParam, LPARAM
 	case WM_HELP:
 		return true;
 		break;
+	case WM_NOTIFY:
+		{
+			ENLINK* lpel = (ENLINK*) lParam;
+			if (lpel)
+			{
+				switch (lpel->nmhdr.code)
+				{
+				case EN_LINK:
+					{
+						if (WM_LBUTTONUP == lpel->msg)
+						{
+							TCHAR szLink[128] = {0};
+							TEXTRANGE tr = {0};
+							tr.lpstrText = szLink;
+							tr.chrg = lpel->chrg;
+							::SendMessage(lpel->nmhdr.hwndFrom, EM_GETTEXTRANGE, NULL, (LPARAM) &tr);
+							ShellExecute(NULL, _T("open"), szLink, NULL, NULL, SW_SHOWNORMAL); // STRING_OK
+						}
+						return NULL;
+					}
+					break;
+				}
+			}
+			break;
+		}
 	} // end switch
-	return CDialog::WindowProc(message,wParam,lParam);
+	return CMyDialog::WindowProc(message,wParam,lParam);
 } // CAboutDlg::WindowProc
 
 void CAboutDlg::OnOK()
 {
-	CDialog::OnOK();
+	CMyDialog::OnOK();
 	int iCheckState = m_DisplayAboutCheck.GetCheck();
 
 	if (BST_CHECKED == iCheckState)

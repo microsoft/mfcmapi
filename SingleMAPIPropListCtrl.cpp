@@ -8,6 +8,7 @@
 #include "MAPIFunctions.h"
 #include "ColumnTags.h"
 #include "MFCUtilityFunctions.h"
+#include "UIFunctions.h"
 #include "MapiObjects.h"
 #include "MySecInfo.h"
 #include "Editor.h"
@@ -276,7 +277,7 @@ _Check_return_ HRESULT CSingleMAPIPropListCtrl::LoadMAPIPropList()
 		(!m_lpMAPIProp || RegKeys[regkeyUSE_ROW_DATA_FOR_SINGLEPROPLIST].ulCurDWORD))
 	{
 		if (m_lpHostDlg)
-			m_lpHostDlg->UpdateStatusBarText(STATUSRIGHTPANE,IDS_PROPSFROMROW);
+			m_lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT,IDS_PROPSFROMROW);
 
 		ulProps = GetCountPropVals();
 		lpPropsToAdd = lpPropVals;
@@ -284,7 +285,7 @@ _Check_return_ HRESULT CSingleMAPIPropListCtrl::LoadMAPIPropList()
 	else if (m_lpMAPIProp)
 	{
 		if (m_lpHostDlg)
-			m_lpHostDlg->UpdateStatusBarText(STATUSRIGHTPANE,IDS_PROPSFROMGETPROPS);
+			m_lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT,IDS_PROPSFROMGETPROPS);
 		if (RegKeys[regkeyDO_GETPROPS].ulCurDWORD)
 		{
 			// Can't use EC_H_GETPROPS because I want to suppress MAPI_E_CALL_FAILED as well
@@ -515,7 +516,7 @@ _Check_return_ HRESULT CSingleMAPIPropListCtrl::RefreshMAPIPropList()
 	MySetRedraw(true);
 
 	if (m_lpHostDlg)
-		m_lpHostDlg->UpdateStatusBarText(STATUSMIDDLEPANE,IDS_STATUSTEXTNUMPROPS,GetItemCount());
+		m_lpHostDlg->UpdateStatusBarText(STATUSDATA2,IDS_STATUSTEXTNUMPROPS,GetItemCount());
 
 	return hRes;
 } // CSingleMAPIPropListCtrl::RefreshMAPIPropList
@@ -926,7 +927,7 @@ void CSingleMAPIPropListCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 void CSingleMAPIPropListCtrl::OnContextMenu(_In_ CWnd* /*pWnd*/, CPoint pos)
 {
-	DisplayContextMenu(IDR_MENU_PROPERTY_POPUP,NULL,this->m_lpHostDlg,pos.x, pos.y);
+	DisplayContextMenu(IDR_MENU_PROPERTY_POPUP,NULL,m_lpHostDlg->m_hWnd,pos.x, pos.y);
 } // CSingleMAPIPropListCtrl::OnContextMenu
 
 void CSingleMAPIPropListCtrl::FindAllNamedProps()

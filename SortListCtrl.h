@@ -98,7 +98,7 @@ protected:
 	void          FakeClickColumn(int iColumn, bool bSortUp);
 
 	// protected since derived classes need to call the base implementation
-	_Check_return_ virtual LRESULT	WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	_Check_return_ virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 
 private:
 	// Overrides from base class
@@ -108,6 +108,7 @@ private:
 	void OnDeleteAllItems(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 	void OnDeleteItem(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 	void AutoSizeColumn(int iColumn, int iMinWidth, int iMaxWidth);
+	void OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 	_Check_return_ static int CALLBACK MyCompareProc(_In_ LPARAM lParam1, _In_ LPARAM lParam2, _In_ LPARAM lParamSort);
 
 	LONG		m_cRef;
@@ -118,6 +119,7 @@ private:
 	CSortHeader	m_cSortHeader;
 	int			m_iClickedColumn;
 	bool		m_bSortUp;
+	int			m_iItemCur;
 
 	DECLARE_MESSAGE_MAP()
 };

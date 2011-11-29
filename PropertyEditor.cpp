@@ -157,7 +157,7 @@ void CPropertyEditor::OnOK()
 
 	// Write the property to the object if we're not editing a row of a MV property
 	if (!m_bMVRow) WriteSPropValueToObject();
-	CDialog::OnOK(); // don't need to call CEditor::OnOK
+	CMyDialog::OnOK(); // don't need to call CEditor::OnOK
 } // CPropertyEditor::OnOK
 
 void CPropertyEditor::CreatePropertyControls()
@@ -1065,7 +1065,7 @@ void CMultiValuePropertyEditor::OnOK()
 	// This is where we write our changes back
 	WriteMultiValueStringsToSPropValue(0);
 	WriteSPropValueToObject();
-	CDialog::OnOK(); // don't need to call CEditor::OnOK
+	CMyDialog::OnOK(); // don't need to call CEditor::OnOK
 } // CMultiValuePropertyEditor::OnOK
 
 void CMultiValuePropertyEditor::CreatePropertyControls()

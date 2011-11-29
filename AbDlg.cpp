@@ -8,6 +8,7 @@
 #include "SingleMAPIPropListCtrl.h"
 #include "ColumnTags.h"
 #include "MFCUtilityFunctions.h"
+#include "UIFunctions.h"
 #include "Editor.h"
 #include "MAPIABFunctions.h"
 #include "MAPIProgress.h"
@@ -67,7 +68,7 @@ void CAbDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 	CContentsTableDlg::CreateDialogAndMenu(nIDMenuResource);
 
 	UpdateMenuString(
-		this,
+		m_hWnd,
 		ID_CREATEPROPERTYSTRINGRESTRICTION,
 		IDS_ABRESMENU);
 } // CAbDlg::CreateDialogAndMenu
@@ -117,7 +118,7 @@ void CAbDlg::OnDisplayDetails()
 
 				// Have to pass DIALOG_MODAL according to
 				// http://support.microsoft.com/kb/171637
-				EC_H(lpAddrBook->Details(
+				EC_H_CANCEL(lpAddrBook->Details(
 					&ulUIParam,
 					NULL,
 					NULL,

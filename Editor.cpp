@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "Editor.h"
-#include "MFCUtilityFunctions.h"
+#include "UIFunctions.h"
 #include "MAPIFunctions.h"
 #include "InterpretProp.h"
 #include "InterpretProp2.h"
@@ -100,7 +100,7 @@ CEditor::CEditor(
 				 UINT uidTitle,
 				 UINT uidPrompt,
 				 ULONG ulNumFields,
-				 ULONG ulButtonFlags):CDialog(IDD_BLANK_DIALOG,pParentWnd)
+				 ULONG ulButtonFlags):CMyDialog(IDD_BLANK_DIALOG,pParentWnd)
 {
 	Constructor(pParentWnd,
 		uidTitle,
@@ -118,7 +118,7 @@ CEditor::CEditor(
 				 ULONG ulNumFields,
 				 ULONG ulButtonFlags,
 				 UINT uidActionButtonText1,
-				 UINT uidActionButtonText2):CDialog(IDD_BLANK_DIALOG,pParentWnd)
+				 UINT uidActionButtonText2):CMyDialog(IDD_BLANK_DIALOG,pParentWnd)
 {
 	Constructor(pParentWnd,
 		uidTitle,
@@ -188,10 +188,9 @@ CEditor::~CEditor()
 	DeleteControls();
 } // CEditor::~CEditor
 
-BEGIN_MESSAGE_MAP(CEditor, CDialog)
+BEGIN_MESSAGE_MAP(CEditor, CMyDialog)
 	ON_WM_SIZE()
 	ON_WM_GETMINMAXINFO()
-	ON_WM_PAINT()
 	ON_WM_NCHITTEST()
 	ON_WM_CONTEXTMENU()
 END_MESSAGE_MAP()
@@ -204,7 +203,6 @@ _Check_return_ LRESULT CEditor::WindowProc(UINT message, WPARAM wParam, LPARAM l
 		DisplayAboutDlg(this);
 		return true;
 		break;
-
 		// I can handle notify messages for my child list control since I am the parent window
 		// This makes it easy for me to customize the child control to do what I want
 	case WM_NOTIFY:
@@ -255,24 +253,35 @@ _Check_return_ LRESULT CEditor::WindowProc(UINT message, WPARAM wParam, LPARAM l
 			}
 			break;
 		}
+	case WM_ERASEBKGND:
+		{
+			RECT rect = {0};
+			::GetClientRect(m_hWnd, &rect);
+			HGDIOBJ hOld = ::SelectObject((HDC)wParam, GetSysBrush(cBackground));
+			BOOL bRet = ::PatBlt((HDC) wParam, 0, 0, rect.right - rect.left, rect.bottom - rect.top, PATCOPY);
+			::SelectObject((HDC)wParam, hOld);
+			return bRet;
+		}
+		break;
 	} // end switch
-	return CDialog::WindowProc(message,wParam,lParam);
+	return CMyDialog::WindowProc(message,wParam,lParam);
 } // CEditor::WindowProc
 
 void CEditor::OnContextMenu(_In_ CWnd* pWnd, CPoint pos)
 {
-	HRESULT hRes = S_OK;
-	CMenu pContext;
-	EC_B(pContext.LoadMenu(IDR_MENU_RICHEDIT_POPUP));
-	CMenu* pPopup = pContext.GetSubMenu(0);
-
-	if (pPopup)
+	HMENU hContext = LoadMenu(NULL,MAKEINTRESOURCE(IDR_MENU_RICHEDIT_POPUP));
+	if (hContext)
 	{
-		DWORD dwCommand = pPopup->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pos.x, pos.y, pWnd);
-		(void)::SendMessage(pWnd->m_hWnd, dwCommand, (WPARAM) 0, (LPARAM) (EM_SETSEL == dwCommand)?-1:0);
+		HMENU hPopup = GetSubMenu(hContext,0);
+		if (hPopup)
+		{
+			ConvertMenuOwnerDraw(hPopup, false);
+			DWORD dwCommand = ::TrackPopupMenu(hPopup,TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pos.x, pos.y, NULL,pWnd->m_hWnd,NULL);
+			DeleteMenuEntries(hPopup);
+			(void) ::SendMessage(pWnd->m_hWnd, dwCommand, (WPARAM) 0, (LPARAM) (EM_SETSEL == dwCommand)?-1:0);
+		}
+		::DestroyMenu(hContext);
 	}
-
-	EC_B(pContext.DestroyMenu());
 } // CEditor::OnContextMenu
 
 // AddIn functions
@@ -309,7 +318,7 @@ BOOL CEditor::OnInitDialog()
 	CString szPostfix;
 	CString szFullString;
 
-	BOOL bRet = CDialog::OnInitDialog();
+	BOOL bRet = CMyDialog::OnInitDialog();
 
 	EC_B(szPostfix.LoadString(m_uidTitle));
 	m_szTitle = szPostfix+m_szAddInTitle;
@@ -338,7 +347,8 @@ BOOL CEditor::OnInitDialog()
 		this,
 		IDC_PROMPT));
 	m_Prompt.SetWindowText(szFullString);
-	m_Prompt.SetFont(GetFont());
+	::SendMessageA(m_Prompt.m_hWnd, WM_SETFONT, (WPARAM) GetSegoeFont(), false);
+	::SendMessage(m_Prompt.m_hWnd, EM_SETMARGINS, EC_LEFTMARGIN | EC_RIGHTMARGIN, 0);
 
 	// we'll update this along the way
 	m_iButtonWidth = 50;
@@ -374,7 +384,6 @@ BOOL CEditor::OnInitDialog()
 				this,
 				iCurIDLabel));
 			m_lpControls[i].Label.SetWindowText(m_lpControls[i].szLabel);
-			m_lpControls[i].Label.SetFont(GetFont());
 		}
 
 		m_lpControls[i].nID = iCurIDControl;
@@ -397,19 +406,21 @@ BOOL CEditor::OnInitDialog()
 					CRect(0,0,0,0),
 					this,
 					iCurIDControl));
+				SetWindowSubclass(m_lpControls[i].UI.lpEdit->EditBox.m_hWnd, DrawEditProc, 0, 0);
+				m_lpControls[i].UI.lpEdit->EditBox.ModifyStyleEx(WS_EX_CLIENTEDGE, 0, 0);
+				m_lpControls[i].UI.lpEdit->EditBox.SetBackgroundColor(false, MyGetSysColor(cBackground));
 				if (m_lpControls[i].bReadOnly) SetEditReadOnly(i);
+				ClearEditFormatting(m_lpControls[i].UI.lpEdit->EditBox.m_hWnd);
 
 				// Set maximum text size
 				// Use -1 to allow for VERY LARGE strings
-				(void)::SendMessage(
+				(void) ::SendMessage(
 					m_lpControls[i].UI.lpEdit->EditBox.m_hWnd,
 					EM_EXLIMITTEXT,
 					(WPARAM) 0,
 					(LPARAM) -1);
 
 				SetEditBoxText(i);
-
-				m_lpControls[i].UI.lpEdit->EditBox.SetFont(GetFont());
 
 				m_lpControls[i].UI.lpEdit->EditBox.SetEventMask(ENM_CHANGE);
 
@@ -433,7 +444,6 @@ BOOL CEditor::OnInitDialog()
 					iCurIDControl));
 				m_lpControls[i].UI.lpCheck->Check.SetCheck(
 					m_lpControls[i].UI.lpCheck->bCheckValue);
-				m_lpControls[i].UI.lpCheck->Check.SetFont(GetFont());
 				m_lpControls[i].UI.lpCheck->Check.SetWindowText(
 					m_lpControls[i].szLabel);
 			}
@@ -445,8 +455,6 @@ BOOL CEditor::OnInitDialog()
 				if (!m_lpControls[i].UI.lpList->bAllowSort)
 					dwListStyle |= LVS_NOSORTHEADER;
 				EC_H(m_lpControls[i].UI.lpList->List.Create(this,dwListStyle,iCurIDControl,false));
-
-				m_lpControls[i].UI.lpList->List.SetFont(GetFont());
 
 				// read only lists don't need buttons
 				if (!m_lpControls[i].bReadOnly)
@@ -498,13 +506,15 @@ BOOL CEditor::OnInitDialog()
 					| WS_BORDER
 					| WS_VISIBLE
 					| WS_VSCROLL
+					| CBS_OWNERDRAWFIXED
+					| CBS_HASSTRINGS
 					| CBS_AUTOHSCROLL
 					| CBS_DISABLENOSCROLL
 					| dwDropStyle,
 					CRect(0,0,0,0),
 					this,
 					iCurIDControl));
-				m_lpControls[i].UI.lpDropDown->DropDown.SetFont(GetFont());
+
 				ULONG iDropNum = 0;
 				if (m_lpControls[i].UI.lpDropDown->lpuidDropList)
 				{
@@ -695,7 +705,7 @@ void CEditor::OnOK()
 			break;
 		}
 	}
-	CDialog::OnOK();
+	CMyDialog::OnOK();
 } // CEditor::OnOK
 
 // This should work whether the editor is active/displayed or not
@@ -778,30 +788,30 @@ _Check_return_ SIZE CEditor::ComputeWorkArea(SIZE sScreen)
 
 	CRect OldRect;
 	m_Prompt.GetRect(OldRect);
-	// make the edit rect big so we can get an accurate line count
-	m_Prompt.SetRectNP(CRect(0,0,MAX_WIDTH,sScreen.cy));
+	// Make the edit rect big so we can get an accurate line count
+	m_Prompt.SetRectNP(CRect(0, 0, MAX_WIDTH, sScreen.cy));
 
 	int iPromptLineCount = m_Prompt.GetLineCount();
 
-	CDC* dcSB = m_Prompt.GetDC();
-	CFont* pFont = dcSB->SelectObject(m_Prompt.GetFont());
+	HDC hdc = ::GetDC(m_hWnd);
+	HGDIOBJ hfontOld = ::SelectObject(hdc, GetSegoeFont());
 
 	int i = 0;
-	for (i = 0; i<iPromptLineCount ; i++)
+	for (i = 0; i < iPromptLineCount; i++)
 	{
 		// length of line i:
 		int len = m_Prompt.LineLength(m_Prompt.LineIndex(i));
 		if (len)
 		{
 			LPTSTR szLine = new TCHAR[len+1];
-			memset(szLine,0,len+1);
+			memset(szLine, 0, len + 1);
 
 			m_Prompt.GetLine(i, szLine, len);
 
-			// this call fails miserably if we don't select a font above
-			SIZE sizeText = dcSB->GetTabbedTextExtent(szLine,0,0);
+			SIZE sizeText = {0};
+			::GetTextExtentPoint32(hdc, szLine, len, &sizeText);
 			delete[] szLine;
-			cx = max(cx,sizeText.cx);
+			cx = max(cx, sizeText.cx);
 		}
 	}
 
@@ -810,10 +820,10 @@ _Check_return_ SIZE CEditor::ComputeWorkArea(SIZE sScreen)
 	for (j = 0 ; j < m_cControls ; j++)
 	{
 		SIZE sizeText = {0};
-		sizeText = dcSB->GetTabbedTextExtent(m_lpControls[j].szLabel,0,0);
+		::GetTextExtentPoint32(hdc, m_lpControls[j].szLabel, m_lpControls[j].szLabel.GetLength(), &sizeText);
 		if (CTRL_CHECK == m_lpControls[j].ulCtrlType)
 		{
-			sizeText.cx += ::GetSystemMetrics(SM_CXMENUCHECK);
+			sizeText.cx += ::GetSystemMetrics(SM_CXMENUCHECK) + GetSystemMetrics(SM_CXEDGE);
 		}
 		cx = max(cx,sizeText.cx);
 
@@ -824,110 +834,44 @@ _Check_return_ SIZE CEditor::ComputeWorkArea(SIZE sScreen)
 			ULONG iDropString = 0;
 			for (iDropString = 0; iDropString < m_lpControls[j].UI.lpDropDown->ulDropList; iDropString++)
 			{
+				SIZE sizeDrop = {0};
 				CString szDropString;
 				m_lpControls[j].UI.lpDropDown->DropDown.GetLBText(iDropString,szDropString);
-				int cxDropString = dcSB->GetTextExtent(szDropString).cx;
-				cxDropDown = max(cxDropDown, cxDropString);
+				::GetTextExtentPoint32(hdc, szDropString, szDropString.GetLength(), &sizeDrop);
+				cxDropDown = max(cxDropDown, sizeDrop.cx);
 			}
 
-			// Add scroll bar
-			cxDropDown += ::GetSystemMetrics(SM_CXVSCROLL);
+			// Add scroll bar and margins for our frame
+			cxDropDown += ::GetSystemMetrics(SM_CXVSCROLL) + 2 * GetSystemMetrics(SM_CXFIXEDFRAME);
 
-			cx = max(cx,cxDropDown);
+			cx = max(cx, cxDropDown);
 		}
 	}
 
-	dcSB->SelectObject(pFont);
-	m_Prompt.ReleaseDC(dcSB);
+	(void) ::SelectObject(hdc, hfontOld);
+	::ReleaseDC(m_hWnd, hdc);
 
 	m_Prompt.SetRectNP(OldRect); // restore the old edit rectangle
 
-	// Add internal margin for the edit controls - can't find a metric for this
-	cx += 6;
+	HDC myHDC = ::GetDC(m_hWnd);
+	HFONT hOldFont = (HFONT) ::SelectObject(myHDC, GetSegoeFont());
+	int iCaptionWidth = NULL;
 
-	// cx now contains the width of the widest prompt string or control
-	// Add a margin around that to frame our controls in the client area:
-	cx += 2 * m_iMargin;
+	SIZE sizeTitle = {0};
+	::GetTextExtentPoint32(hdc, m_szTitle, m_szTitle.GetLength(), &sizeTitle);
+	iCaptionWidth = sizeTitle.cx;
 
-	// Insanely overly complicated code to determine how wide a title bar needs to be
-	HRESULT hRes = S_OK;
-	NONCLIENTMETRICS ncm = {0};
+	int iIconWidth = GetSystemMetrics(SM_CXFIXEDFRAME) + GetSystemMetrics(SM_CXSMICON);
+	int iButtonsWidth = GetSystemMetrics(SM_CXBORDER) + 3 * GetSystemMetrics(SM_CYSIZE);
 
-	// Get the system metrics.
-	ncm.cbSize = sizeof(NONCLIENTMETRICS);
-	EC_B(SystemParametersInfo(SPI_GETNONCLIENTMETRICS, 0, &ncm, 0));
+	iCaptionWidth += iIconWidth + iButtonsWidth;
 
-	if (SUCCEEDED(hRes))
-	{
-		HDC myHDC = ::GetDC(NULL);
-		HFONT titleFont = NULL;
-		titleFont = ::CreateFontIndirect(&ncm.lfCaptionFont);
-		HFONT hOldFont = (HFONT) ::SelectObject(myHDC,titleFont);
-		int sizeTitle = NULL;
-		EC_D(sizeTitle,LOWORD(GetTabbedTextExtent(myHDC,(LPCTSTR) m_szTitle, m_szTitle.GetLength(),0,0)));
-
-		// Awesome reference here
-		// http://shellrevealed.com/blogs/shellblog/archive/2006/10/12/Frequently-asked-questions-about-the-Aero-Basic-window-frame.aspx
-		int iEdge = ::GetSystemMetrics(SM_CXEDGE);
-		int iBtn  = ::GetSystemMetrics(SM_CXSIZE);
-		int iIcon = ::GetSystemMetrics(SM_CXSMICON);
-		// Non theme guess of how much space we need around the title text
-		int iMargins = 5; // Confirmed on NT, where themes ('Visual Styles') don't exist
-
-		int iSizeButtons = 0;
-		iSizeButtons =
-			// Testing with non themes shows there's some min width observed as the icon size goes down
-			// This seems to capture it - I wish this stuff was documented somewhere
-			max(iIcon,::GetSystemMetrics(SM_CXSMSIZE)) // application icon
-			+ 3*(iBtn-iEdge) // min,max,close icons
-			+ 3*iEdge // gaps between icons (beginning+end+between close and max)
-			+ iMargins; // space before and after title text
-
-		// If we have themes, we're gonna calculate our space a bit differently
-		if (pfnOpenThemeData && pfnCloseThemeData && pfnGetThemeMargins)
-		{
-			HTHEME _hTheme = NULL;
-			_hTheme = pfnOpenThemeData(NULL, L"Window"); // STRING_OK
-			if (_hTheme)
-			{
-				// Concession to Vista Aero and its funky buttons - don't wanna call WM_GETTITLEBARINFOEX here
-				int iStupidFunkyAeroButtons = 3;
-
-				// Different themes have different margins around the caption text - fetch it
-				// No error case here - will default to the non-theme margins
-				MARGINS marCaptionText = {0};
-				if (SUCCEEDED(pfnGetThemeMargins(
-					_hTheme,
-					NULL, // myHDC,
-					WP_CAPTION,
-					CS_ACTIVE,
-					TMT_CAPTIONMARGINS,
-					NULL,
-					&marCaptionText)))
-				{
-					iMargins = marCaptionText.cxLeftWidth + marCaptionText.cxRightWidth;
-				}
-				iSizeButtons =
-					iIcon // application icon - themes are fine with this value no matter what the size
-					+ 3*(iBtn-2*iEdge) // min,max,close icons
-					+ 4*iEdge // gaps between icons (beginning+end+between close and max+between min and max)
-					+ iMargins // space before and after title text
-					+ iStupidFunkyAeroButtons;
-
-				pfnCloseThemeData(_hTheme);
-			}
-		}
-
-		sizeTitle += iSizeButtons;
-
-		cx = max(cx,sizeTitle);
-		::SelectObject(myHDC,hOldFont);
-		if (titleFont) ::DeleteObject(titleFont);
-		::ReleaseDC(NULL,myHDC);
-	}
+	cx = max(cx, iCaptionWidth);
+	::SelectObject(myHDC, hOldFont);
+	::ReleaseDC(m_hWnd, myHDC);
 
 	// throw all that work out if we have enough buttons
-	cx = max(cx,(int)(m_cButtons*m_iButtonWidth + m_iMargin*(m_cButtons+1)));
+	cx = max(cx, (int)(m_cButtons*m_iButtonWidth + m_iMargin*(m_cButtons+1)));
 	// whatever cx we computed, bump it up if we need space for list buttons
 	if (NOLIST != m_ulListNum) // Don't check bReadOnly - we want all list dialogs BIG
 	{
@@ -1000,14 +944,14 @@ void CEditor::OnSetDefaultSize()
 	HRESULT hRes = S_OK;
 
 	CRect rcMaxScreen;
-	EC_B(SystemParametersInfo(SPI_GETWORKAREA,NULL,(LPVOID)(LPRECT)rcMaxScreen,NULL));
+	EC_B(SystemParametersInfo(SPI_GETWORKAREA, NULL, (LPVOID)(LPRECT)rcMaxScreen, NULL));
 	int cxFullScreen = rcMaxScreen.Width();
 	int cyFullScreen = rcMaxScreen.Height();
 
-	SIZE sScreen = {cxFullScreen,cyFullScreen};
+	SIZE sScreen = {cxFullScreen, cyFullScreen};
 	SIZE sArea = ComputeWorkArea(sScreen);
 	// inflate the rectangle according to the title bar, border, etc...
-	CRect MyRect(0,0,sArea.cx,sArea.cy);
+	CRect MyRect(0, 0, sArea.cx, sArea.cy);
 	// Add width and height for the nonclient frame - all previous calculations were done without it
 	// This is a call to AdjustWindowRectEx
 	CalcWindowRect(MyRect);
@@ -1046,6 +990,7 @@ void CEditor::OnGetMinMaxInfo(_Inout_ MINMAXINFO* lpMMI)
 	lpMMI->ptMinTrackSize.y = m_iMinHeight;
 } // CEditor::OnGetMinMaxInfo
 
+// Artificially expand our gripper region to make it easier to expand dialogs
 _Check_return_ LRESULT CEditor::OnNcHitTest(CPoint point)
 {
 	CRect gripRect;
@@ -1053,24 +998,24 @@ _Check_return_ LRESULT CEditor::OnNcHitTest(CPoint point)
 	gripRect.left = gripRect.right - ::GetSystemMetrics(SM_CXHSCROLL);
 	gripRect.top  = gripRect.bottom - ::GetSystemMetrics(SM_CYVSCROLL);
 	// Test to see if the cursor is within the 'gripper'
-	// bitmap, and tell the system that the user is over
+	// area, and tell the system that the user is over
 	// the lower right-hand corner if it is.
 	if (gripRect.PtInRect(point))
 	{
-		return HTBOTTOMRIGHT ;
+		return HTBOTTOMRIGHT;
 	}
 	else
 	{
-		return CDialog::OnNcHitTest(point) ;
+		return CMyDialog::OnNcHitTest(point);
 	}
 } // CEditor::OnNcHitTest
 
 void CEditor::OnSize(UINT nType, int cx, int cy)
 {
 	HRESULT hRes = S_OK;
-	CDialog::OnSize(nType, cx, cy);
+	CMyDialog::OnSize(nType, cx, cy);
 
-	int iFullWidth = cx - 2 * m_iMargin;
+	int iFullWidth = cx;
 
 	int iPromptLineCount = m_Prompt.GetLineCount();
 
@@ -1080,7 +1025,7 @@ void CEditor::OnSize(UINT nType, int cx, int cy)
 	// Position prompt at top
 	EC_B(m_Prompt.SetWindowPos(
 		0, // z-order
-		m_iMargin, // new x
+		0, // new x
 		m_iMargin, // new y
 		iFullWidth, // Full width
 		m_iTextHeight * iPromptLineCount,
@@ -1159,7 +1104,6 @@ void CEditor::OnSize(UINT nType, int cx, int cy)
 		iListHeight = iMultiHeight - m_iButtonHeight - m_iMargin;
 	}
 
-
 	ULONG j = 0;
 	for (j = 0 ; j < m_cControls ; j++)
 	{
@@ -1167,7 +1111,7 @@ void CEditor::OnSize(UINT nType, int cx, int cy)
 		{
 			EC_B(m_lpControls[j].Label.SetWindowPos(
 				0,
-				m_iMargin, // new x
+				0, // new x
 				iCYTop, // new y
 				iFullWidth, // new width
 				m_iTextHeight, // new height
@@ -1191,7 +1135,7 @@ void CEditor::OnSize(UINT nType, int cx, int cy)
 				}
 				EC_B(m_lpControls[j].UI.lpEdit->EditBox.SetWindowPos(
 					0,
-					m_iMargin, // new x
+					0, // new x
 					iCYTop, // new y
 					iFullWidth, // new width
 					iViewHeight, // new height
@@ -1206,7 +1150,7 @@ void CEditor::OnSize(UINT nType, int cx, int cy)
 			{
 				EC_B(m_lpControls[j].UI.lpCheck->Check.SetWindowPos(
 					0,
-					m_iMargin, // new x
+					0, // new x
 					iCYTop, // new y
 					iFullWidth, // new width
 					m_iButtonHeight, // new height
@@ -1219,7 +1163,7 @@ void CEditor::OnSize(UINT nType, int cx, int cy)
 			{
 				EC_B(m_lpControls[j].UI.lpList->List.SetWindowPos(
 					0,
-					m_iMargin, // new x
+					0, // new x
 					iCYTop, // new y
 					iFullWidth, // new width
 					iListHeight, // new height
@@ -1260,7 +1204,7 @@ void CEditor::OnSize(UINT nType, int cx, int cy)
 
 				EC_B(m_lpControls[j].UI.lpDropDown->DropDown.SetWindowPos(
 					0,
-					m_iMargin, // new x
+					0, // new x
 					iCYTop, // new y
 					iFullWidth, // new width
 					m_iEditHeight*(ulDrops), // new height
@@ -1666,7 +1610,7 @@ void CEditor::SetEditReadOnly(ULONG iControl)
 {
 	if (!IsValidEdit(iControl)) return;
 
-	m_lpControls[iControl].UI.lpEdit->EditBox.SetBackgroundColor(false,GetSysColor(COLOR_BTNFACE));
+	m_lpControls[iControl].UI.lpEdit->EditBox.SetBackgroundColor(false, MyGetSysColor(cBackgroundDisabled));
 	m_lpControls[iControl].UI.lpEdit->EditBox.SetReadOnly();
 } // CEditor::SetEditReadOnly
 
@@ -2202,33 +2146,8 @@ _Check_return_ ULONG CEditor::HandleChange(UINT nID)
 	}
 	if (!bHandleMatched) return (ULONG) -1;
 
-	if (CTRL_EDIT == m_lpControls[i].ulCtrlType)
-	{
-		m_lpControls[i].UI.lpEdit->EditBox.SetFont(GetFont());
-	}
 	return i;
 } // CEditor::HandleChange
-
-// draw the grippy thing
-void CEditor::OnPaint()
-{
-	HRESULT hRes = S_OK;
-	PAINTSTRUCT ps;
-	CDC* dc = NULL;
-	EC_D(dc,BeginPaint(&ps));
-
-	if (dc && !IsZoomed())
-	{
-		CRect rc;
-		GetClientRect(&rc);
-
-		rc.left = rc.right - ::GetSystemMetrics(SM_CXHSCROLL);
-		rc.top = rc.bottom - ::GetSystemMetrics(SM_CYVSCROLL);
-
-		dc->DrawFrameControl(rc, DFC_SCROLL, DFCS_SCROLLSIZEGRIP);
-	}
-	EndPaint(&ps);
-} // CEditor::OnPaint
 
 _Check_return_ bool CEditor::IsValidDropDown(ULONG ulNum)
 {

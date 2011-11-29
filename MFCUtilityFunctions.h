@@ -42,13 +42,6 @@ _Check_return_ HRESULT DisplayTable(
 					 ObjectType tType,
 					 _In_ CBaseDialog* lpHostDlg);
 
-void UpdateMenuString(_In_ CWnd* cWnd, UINT uiMenuTag, UINT uidNewString);
-
-void DisplayContextMenu(UINT uiClassMenu, UINT uiControlMenu, _In_ CWnd* pParent, int x, int y);
-
-_Check_return_ int GetEditHeight(_In_ HWND hwndEdit);
-_Check_return_ int GetTextHeight(_In_ HWND hwndEdit);
-
 _Check_return_ bool bShouldCancel(_In_opt_ CWnd* cWnd, HRESULT hRes);
 
 void DisplayMailboxTable(_In_ CParentWnd*	lpParent,
@@ -56,4 +49,4 @@ void DisplayMailboxTable(_In_ CParentWnd*	lpParent,
 void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
 							  _In_ CMapiObjects* lpMapiObjects);
 void ResolveMessageClass(_In_ CMapiObjects* lpMapiObjects, _In_opt_ LPMAPIFOLDER lpMAPIFolder, _Out_ LPMAPIFORMINFO* lppMAPIFormInfo);
-void SelectForm(_In_ CMapiObjects* lpMapiObjects, _In_opt_ LPMAPIFOLDER lpMAPIFolder, _Out_ LPMAPIFORMINFO* lppMAPIFormInfo);
+void SelectForm(_In_ HWND hWnd, _In_ CMapiObjects* lpMapiObjects, _In_opt_ LPMAPIFOLDER lpMAPIFolder, _Out_ LPMAPIFORMINFO* lppMAPIFormInfo);

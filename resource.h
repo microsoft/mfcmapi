@@ -1,5 +1,3 @@
-// Some trees use bldver.h to maintain some definitions. Do not remove.
-#include "bldver.h"
 // Microsoft Developer Studio generated include file.
 // Used by MFCMapi.rc
 //
@@ -8,9 +6,9 @@
 #define IDC_STATUS_BAR                  103
 #define IDC_FAKE_SPLITTER               105
 #define IDR_MAINFRAME                   108
-#define IDB_UP                          137
-#define IDB_DOWN                        138
 #define IDB_ICONS                       139
+#define IDB_MFCMAPILOGO                 140
+#define IDB_ADVISE                      141
 #define IDR_MENU_MAIN                   150
 #define IDR_MENU_FOLDER                 151
 #define IDR_MENU_AB_VIEW                152
@@ -19,8 +17,7 @@
 #define IDR_MENU_MSGSERVICE             155
 #define IDR_MENU_PROFILE                156
 #define IDR_MENU_PROPERTY               157
-#define IDR_MENU_OTHER                  158
-#define IDR_MENU_FILE                   159
+#define IDR_MENU_TOOLS                  158
 #define IDR_MENU_TABLE                  160
 #define IDR_MENU_HIERARCHY_TABLE        161
 #define IDR_MENU_MESSAGESTORE_POPUP     162
@@ -32,7 +29,6 @@
 #define IDR_MENU_MSGSERVICE_POPUP       168
 #define IDR_MENU_PROPERTY_POPUP         169
 #define IDR_MENU_DEFAULT_POPUP          170
-#define IDR_MENU_FILE_OPEN              171
 #define IDR_MENU_RECIPIENTS             172
 #define IDR_MENU_RECIPIENTS_POPUP       173
 #define IDR_MENU_PROVIDER               174
@@ -63,22 +59,11 @@
 
 // Keep this in sync with dialog in mfcmapi.rc2
 #define IDD_ABOUTVERFIRST               300
-#ifdef PRIVATE_BUILD
-#define IDD_ABOUTVERLAST                IDD_ABOUTVERFIRST+4
-#else
 #define IDD_ABOUTVERLAST                IDD_ABOUTVERFIRST+3
-#endif
-
-// Keep this in sync with dialog in mfcmapi.rc2
-#define IDD_BLACKBARFIRST               501
-#ifdef PRIVATE_BUILD
-#define IDD_BLACKBARLAST                IDD_BLACKBARFIRST+1
-#else
-#define IDD_BLACKBARLAST                IDD_BLACKBARFIRST
-#endif
 
 #define IDD_DISPLAYABOUT                600
-
+#define IDC_SPLITV                      601
+#define IDC_SPLITH                      602
 
 #define IDC_PROMPT                      1001
 #define IDC_PROP_CONTROL_ID_BASE        1050
@@ -179,6 +164,7 @@
 #define ID_MODIFYEXTRAPROPS 41206
 #define ID_MODIFYRECIPIENT 41207
 #define ID_MODIFYSELECTEDITEM 41208
+#define ID_MYHELP 41209
 #define ID_NEW_APPOINTMENT 41301
 #define ID_NEW_CONTACT 41302
 #define ID_NEW_CUSTOMFORM 41303
@@ -274,11 +260,7 @@
 
 // Keep this in sync with stringtable in mfcmapi.rc2
 #define IDS_VER_FIRST                   33501
-#ifdef PRIVATE_BUILD
-#define IDS_VER_LAST                    IDS_VER_FIRST+9
-#else
 #define IDS_VER_LAST                    IDS_VER_FIRST+8
-#endif
 
 // Next default values for new objects
 //
@@ -721,10 +703,8 @@
 #define IDS_REGKEY_DEBUG_FILE_NAME 35176
 #define IDS_REGKEY_THROTTLE_LEVEL 35177
 #define IDS_REGKEY_PARSED_NAMED_PROPS 35178
-#define IDS_REGKEY_HIER_NOTIFS 35179
 #define IDS_REGKEY_HIER_EXPAND_NOTIFS 35180
 #define IDS_REGKEY_HIER_ROOT_NOTIFS 35181
-#define IDS_REGKEY_HIER_NODE_LOAD_COUNT 35182
 #define IDS_REGKEY_DO_GETPROPS 35183
 #define IDS_REGKEY_ALLOW_DUPE_COLUMNS 35184
 #define IDS_REGKEY_USE_ROW_DATA_FOR_SINGLEPROPLIST 35185
@@ -766,7 +746,7 @@
 #define IDS_DISPLAYABOUTCHECK 35223
 #define IDS_FILEMENU 35224
 #define IDS_PROPERTYMENU 35225
-#define IDS_OTHERMENU 35226
+#define IDS_TOOLSMENU 35226
 #define IDS_TABLEMENU 35227
 #define IDS_HIERARCHYTABLEMENU 35228
 #define IDS_PROPSFROMROW 35229
@@ -1312,3 +1292,5 @@
 #define IDS_MANUALLYEMPTYFOLDER 35786
 #define IDS_ENTRYIDMAPIMESSAGESTOREEXCHANGEDATAV2 35787
 #define IDS_REGKEY_FORCESYSTEMMAPI 35788
+#define IDS_CLOSE 35789
+#define IDS_EXIT 35790

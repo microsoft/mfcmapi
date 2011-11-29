@@ -61,5 +61,6 @@ GUID_ARRAY_ENTRY g_PropGuidArray[] =
 	GUID_ENTRY(muidOOP)
 	GUID_ENTRY(IID_IAttachmentSecurity)
 	GUID_ENTRY(muidEMSAB)
+	{(LPGUID) pbGlobalProfileSectionGuid, L"pbGlobalProfileSectionGuid"}, // STRING_OK
 	GUID_ENTRY(WAB_GUID)
 };

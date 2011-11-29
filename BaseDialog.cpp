@@ -12,6 +12,7 @@
 #include "HexEditor.h"
 #include "DbgView.h"
 #include "MFCUtilityFunctions.h"
+#include "UIFunctions.h"
 #include "MAPIFunctions.h"
 #include "InterpretProp2.h"
 #include "AboutDlg.h"
@@ -27,7 +28,7 @@ CBaseDialog::CBaseDialog(
 						 _In_ CParentWnd* pParentWnd,
 						 _In_ CMapiObjects* lpMapiObjects, // Pass NULL to create a new m_lpMapiObjects,
 						 ULONG ulAddInContext
-						 ) : CDialog()
+						 ) : CMyDialog()
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	HRESULT hRes = S_OK;
@@ -46,6 +47,8 @@ CBaseDialog::CBaseDialog(
 	m_cRef = 1;
 	m_lpPropDisplay = NULL;
 	m_lpFakeSplitter = NULL;
+	// Let the parent know we have a status bar so we can draw our border correctly
+	SetStatusHeight(GetSystemMetrics(SM_CXSIZEFRAME) + GetTextHeight(::GetDesktopWindow()));
 
 	m_lpParent = pParentWnd;
 	if (m_lpParent) m_lpParent->AddRef();
@@ -61,7 +64,11 @@ CBaseDialog::~CBaseDialog()
 {
 	TRACE_DESTRUCTOR(CLASS);
 	HMENU hMenu = ::GetMenu(this->m_hWnd);
-	if (hMenu) DestroyMenu(hMenu);
+	if (hMenu)
+	{
+		DeleteMenuEntries(hMenu);
+		DestroyMenu(hMenu);
+	}
 
 	DestroyWindow();
 	OnNotificationsOff();
@@ -87,7 +94,7 @@ STDMETHODIMP_(ULONG) CBaseDialog::Release()
 	return lCount;
 } // CBaseDialog::Release
 
-BEGIN_MESSAGE_MAP(CBaseDialog, CDialog)
+BEGIN_MESSAGE_MAP(CBaseDialog, CMyDialog)
 	ON_WM_ACTIVATE()
 	ON_WM_INITMENU()
 	ON_WM_MENUSELECT()
@@ -95,7 +102,7 @@ BEGIN_MESSAGE_MAP(CBaseDialog, CDialog)
 
 	ON_COMMAND(ID_OPTIONS, OnOptions)
 	ON_COMMAND(ID_OPENMAINWINDOW, OnOpenMainWindow)
-	ON_COMMAND(ID_HELP,OnHelp)
+	ON_COMMAND(ID_MYHELP, OnHelp)
 
 	ON_COMMAND(ID_NOTIFICATIONSOFF, OnNotificationsOff)
 	ON_COMMAND(ID_NOTIFICATIONSON, OnNotificationsOn)
@@ -116,37 +123,30 @@ _Check_return_ LRESULT CBaseDialog::WindowProc(UINT message, WPARAM wParam, LPAR
 			if (HandleMenu(idFrom)) return S_OK;
 			break;
 		}
+	case WM_PAINT:
+		{
+			// Paint the status, then let the rest draw itself.
+			DrawStatus(
+				m_hWnd,
+				GetStatusHeight(),
+				(LPCTSTR) m_StatusMessages[STATUSDATA1],
+				m_StatusWidth[STATUSDATA1],
+				(LPCTSTR) m_StatusMessages[STATUSDATA2],
+				m_StatusWidth[STATUSDATA2],
+				(LPCTSTR) m_StatusMessages[STATUSINFOTEXT]);
+			break;
+		}
 	} // end switch
-	return CDialog::WindowProc(message,wParam,lParam);
+	return CMyDialog::WindowProc(message,wParam,lParam);
 } // CBaseDialog::WindowProc
-
-// MFC will call this function to check if it ought to center the dialog
-// We'll tell it no, but also place the dialog where we want it.
-_Check_return_ BOOL CBaseDialog::CheckAutoCenter()
-{
-	CenterWindow(GetActiveWindow());
-	return false;
-} // CBaseDialog::CheckAutoCenter
 
 _Check_return_ BOOL CBaseDialog::OnInitDialog()
 {
-	HRESULT hRes = S_OK;
-
 	UpdateTitleBarText(NULL);
 
-	EC_B(m_StatusBar.Create(
-		WS_CHILD
-		| WS_CLIPSIBLINGS
-		| WS_VISIBLE
-		| CCS_BOTTOM
-		| SBARS_SIZEGRIP,
-		CRect(0,0,0,0),
-		this,
-		IDC_STATUS_BAR));
-
-	int StatusWidth[STATUSBARNUMPANES] = {0,0,-1};
-
-	EC_B(m_StatusBar.SetParts(STATUSBARNUMPANES,StatusWidth));
+	m_StatusWidth[STATUSDATA1] = 0;
+	m_StatusWidth[STATUSDATA2] = 0;
+	m_StatusWidth[STATUSINFOTEXT] = -1;
 
 	SetIcon(m_hIcon, false); // Set small icon - large icon isn't used
 
@@ -159,69 +159,60 @@ _Check_return_ BOOL CBaseDialog::OnInitDialog()
 		if (m_lpPropDisplay)
 			m_lpFakeSplitter->SetPaneTwo(m_lpPropDisplay);
 	}
-
 	return false;
 } // CBaseDialog::OnInitDialog
 
-void CBaseDialog::CreateDialogAndMenu(UINT nIDMenuResource)
+void CBaseDialog::CreateDialogAndMenu(UINT nIDMenuResource, UINT uiClassMenuResource, UINT uidClassMenuTitle)
 {
-	HRESULT hRes = S_OK;
-	CMenu MenuToAdd;
-
 	DebugPrintEx(DBGCreateDialog,CLASS,_T("CreateDialogAndMenu"),_T("id = 0x%X\n"),nIDMenuResource);
 
 	m_lpszTemplateName = MAKEINTRESOURCE(IDD_BLANK_DIALOG);
 
-	HINSTANCE hInst = AfxFindResourceHandle(m_lpszTemplateName, RT_DIALOG);
-	HRSRC hResource = NULL;
-	EC_D(hResource,::FindResource(hInst, m_lpszTemplateName, RT_DIALOG));
-	HGLOBAL hTemplate = NULL;
-	if (hResource)
-	{
-		EC_D(hTemplate,LoadResource(hInst, hResource));
-		if (hTemplate)
-		{
-			LPCDLGTEMPLATE lpDialogTemplate = (LPCDLGTEMPLATE)LockResource(hTemplate);
-			EC_B(CreateDlgIndirect(lpDialogTemplate, m_lpParent, hInst));
-		}
-	}
+	DisplayParentedDialog(NULL,NULL);
 
+	HMENU hMenu = NULL;
 	if (nIDMenuResource)
 	{
-		EC_B(MenuToAdd.LoadMenu(nIDMenuResource));
+		hMenu = ::LoadMenu(NULL,MAKEINTRESOURCE(nIDMenuResource));
 	}
 	else
 	{
-		EC_B(MenuToAdd.CreateMenu());
+		hMenu = ::CreateMenu();
 	}
 
-	EC_B(SetMenu(&MenuToAdd));
+	HMENU hMenuOld = ::GetMenu(m_hWnd);
+	if (hMenuOld) ::DestroyMenu(hMenuOld);
+	::SetMenu(m_hWnd,hMenu);
 
-	// We add a different file menu if the custom menu already has ID_DISPLAYSELECTEDITEM on it
-	HMENU hMenu = ::GetMenu(this->m_hWnd);
+	AddMenu(hMenu,IDR_MENU_PROPERTY,IDS_PROPERTYMENU,(UINT)-1);
 
-	bool bOpenExists  = false;
-	if (hMenu)
-	{
-		bOpenExists = (GetMenuState(
-			hMenu,
-			ID_DISPLAYSELECTEDITEM,
-			MF_BYCOMMAND) == -1)? false:true;
-
-	}
-	if (bOpenExists)
-		AddMenu(IDR_MENU_FILE,IDS_FILEMENU,0);
-	else
-		AddMenu(IDR_MENU_FILE_OPEN,IDS_FILEMENU,0);
-
-	AddMenu(IDR_MENU_PROPERTY,IDS_PROPERTYMENU,(UINT)-1);
-
-	AddMenu(IDR_MENU_OTHER,IDS_OTHERMENU,(UINT)-1);
+	AddMenu(hMenu,uiClassMenuResource,uidClassMenuTitle,(UINT)-1);
 
 	m_ulAddInMenuItems = ExtendAddInMenu(hMenu, m_ulAddInContext);
 
-	// Detach the CMenu object from the menu so cleanup of the CMenu won't affect us
-	MenuToAdd.Detach();
+	AddMenu(hMenu,IDR_MENU_TOOLS,IDS_TOOLSMENU,(UINT)-1);
+
+	HMENU hSub = ::GetSubMenu(hMenu,0);
+	::AppendMenu(hSub,MF_SEPARATOR,NULL,NULL);
+	WCHAR szExit[16] = {0};
+	int iRet = NULL;
+	iRet = LoadStringW(GetModuleHandle(NULL),
+		IDS_EXIT,
+		szExit,
+		_countof(szExit));
+	::AppendMenuW(hSub,MF_ENABLED | MF_STRING, IDCANCEL, szExit);
+
+	// Make sure the menu background is filled in the right color
+	MENUINFO mi = {0};
+	mi.cbSize = sizeof(MENUINFO);
+	mi.fMask = MIM_BACKGROUND;
+	mi.hbrBack = GetSysBrush(cBackground);
+	::SetMenuInfo(hMenu,&mi);
+
+	ConvertMenuOwnerDraw(hMenu, true);
+
+	// We're done - force our new menu on screen
+	DrawMenuBar();
 } // CBaseDialog::CreateDialogAndMenu
 
 _Check_return_ bool CBaseDialog::HandleMenu(WORD wMenuSelect)
@@ -246,21 +237,27 @@ _Check_return_ bool CBaseDialog::HandleMenu(WORD wMenuSelect)
 
 void CBaseDialog::OnInitMenu(_In_opt_ CMenu* pMenu)
 {
+	bool bMAPIInitialized = false;
+	if (m_lpMapiObjects)
+	{
+		bMAPIInitialized = m_lpMapiObjects->bMAPIInitialized();
+	}
 	if (pMenu)
 	{
 		if (m_lpPropDisplay) m_lpPropDisplay->InitMenu(pMenu);
-		pMenu->EnableMenuItem(ID_NOTIFICATIONSON,DIM(!m_lpBaseAdviseSink));
+		pMenu->EnableMenuItem(ID_NOTIFICATIONSON,DIM(bMAPIInitialized && !m_lpBaseAdviseSink));
 		pMenu->CheckMenuItem(ID_NOTIFICATIONSON,CHECK(m_lpBaseAdviseSink));
 		pMenu->EnableMenuItem(ID_NOTIFICATIONSOFF,DIM(m_lpBaseAdviseSink));
+		pMenu->EnableMenuItem(ID_DISPATCHNOTIFICATIONS,DIM(bMAPIInitialized));
 	}
-	CDialog::OnInitMenu(pMenu);
+	CMyDialog::OnInitMenu(pMenu);
 } // CBaseDialog::OnInitMenu
 
 // Checks flags on add-in menu items to ensure they should be enabled
 // Override to support context sensitive scenarios
-void CBaseDialog::EnableAddInMenus(_In_ CMenu* pMenu, ULONG ulMenu, LPMENUITEM /*lpAddInMenu*/, UINT uiEnable)
+void CBaseDialog::EnableAddInMenus(_In_ HMENU hMenu, ULONG ulMenu, LPMENUITEM /*lpAddInMenu*/, UINT uiEnable)
 {
-	if (pMenu) pMenu->EnableMenuItem(ulMenu,uiEnable);
+	if (hMenu) ::EnableMenuItem(hMenu,ulMenu,uiEnable);
 } // CBaseDialog::EnableAddInMenus
 
 // Help strings can be found in mfcmapi.rc2
@@ -269,13 +266,12 @@ void CBaseDialog::OnMenuSelect(UINT nItemID, UINT nFlags, HMENU /*hSysMenu*/)
 {
 	if (!m_bDisplayingMenuText)
 	{
-		int nType = 0;
-		m_szMenuDisplacedText = m_StatusBar.GetText(STATUSRIGHTPANE, &nType);
+		m_szMenuDisplacedText = m_StatusMessages[STATUSINFOTEXT];
 	}
 
 	if (nItemID && !(nFlags & (MF_SEPARATOR | MF_POPUP)))
 	{
-		UpdateStatusBarText(STATUSRIGHTPANE,nItemID); // This will LoadString the menu help text for us
+		UpdateStatusBarText(STATUSINFOTEXT,nItemID); // This will LoadString the menu help text for us
 		m_bDisplayingMenuText = true;
 	}
 	else
@@ -284,7 +280,7 @@ void CBaseDialog::OnMenuSelect(UINT nItemID, UINT nFlags, HMENU /*hSysMenu*/)
 	}
 	if (!m_bDisplayingMenuText)
 	{
-		UpdateStatusBarText(STATUSRIGHTPANE,m_szMenuDisplacedText);
+		UpdateStatusBarText(STATUSINFOTEXT,m_szMenuDisplacedText);
 	}
 } // CBaseDialog::OnMenuSelect
 
@@ -335,6 +331,12 @@ _Check_return_ bool CBaseDialog::HandleKeyDown(UINT nChar, bool bShift, bool bCt
 		if (bCtrl)
 		{
 			(void) HandlePaste(); return true;
+		}
+		break;
+	case 'O':
+		if (bCtrl)
+		{
+			OnOptions(); return true;
 		}
 		break;
 	case VK_F5:
@@ -523,131 +525,108 @@ void CBaseDialog::OnUpdateSingleMAPIPropListCtrl(_In_opt_ LPMAPIPROP lpMAPIProp,
 	}
 } // CBaseDialog::OnUpdateSingleMAPIPropListCtrl
 
-void CBaseDialog::AddMenu(UINT uiResource, UINT uidTitle, UINT uiPos)
+void CBaseDialog::AddMenu(HMENU hMenuBar, UINT uiResource, UINT uidTitle, UINT uiPos)
 {
-	HRESULT hRes = S_OK;
-	CMenu MyMenu;
+	HMENU hMenuToAdd = ::LoadMenu(NULL,MAKEINTRESOURCE(uiResource));
 
-	EC_B(MyMenu.LoadMenu(uiResource));
-
-	HMENU hMenu = ::GetMenu(this->m_hWnd);
-
-	if (hMenu)
+	if (hMenuBar && hMenuToAdd)
 	{
 		CString szTitle;
-		EC_B(szTitle.LoadString(uidTitle));
-		EC_B(InsertMenu(
-			hMenu,
-			uiPos,
-			MF_BYPOSITION | MF_POPUP,
-			(UINT_PTR) MyMenu.m_hMenu,
-			szTitle));
+		(void) szTitle.LoadString(uidTitle);
+		::InsertMenu(hMenuBar, uiPos, MF_BYPOSITION | MF_POPUP, (UINT_PTR) hMenuToAdd, (LPCTSTR) szTitle);
 		if (IDR_MENU_PROPERTY == uiResource)
 		{
-			(void) ExtendAddInMenu(MyMenu.m_hMenu, MENU_CONTEXT_PROPERTY);
+			(void) ExtendAddInMenu(hMenuToAdd, MENU_CONTEXT_PROPERTY);
 		}
 	}
-
-	DrawMenuBar();
 } // CBaseDialog::AddMenu
 
 void CBaseDialog::OnActivate(UINT nState, _In_ CWnd* pWndOther, BOOL bMinimized)
 {
 	HRESULT hRes = S_OK;
-	CDialog::OnActivate(nState, pWndOther, bMinimized);
+	CMyDialog::OnActivate(nState, pWndOther, bMinimized);
 	if (nState == 1 && !bMinimized) EC_B(RedrawWindow());
 } // CBaseDialog::OnActivate
 
 void CBaseDialog::SetStatusWidths()
 {
-	HRESULT hRes = S_OK;
-
-	int StatusWidth[STATUSBARNUMPANES] = {0};
-
-	EC_B(m_StatusBar.GetParts(STATUSBARNUMPANES,StatusWidth));
-
-	int nType = 0;
-
 	// Get the width of the strings
-	int iLeftLen = m_StatusBar.GetTextLength(STATUSLEFTPANE, &nType);
-	int iMidLen = m_StatusBar.GetTextLength(STATUSMIDDLEPANE, &nType);
+	int iData1Len = m_StatusMessages[STATUSDATA1].GetLength();
+	int iData2Len = m_StatusMessages[STATUSDATA2].GetLength();
 
-	TCHAR* szText = new TCHAR[1 + max(iLeftLen,iMidLen)];
-
-	if (szText)
+	SIZE sizeData1 = {0};
+	SIZE sizeData2 = {0};
+	if (iData1Len || iData2Len)
 	{
-		CDC* dcSB = m_StatusBar.GetDC();
-		CFont* pFont = dcSB->SelectObject(m_StatusBar.GetFont());
+		HDC hdc = ::GetDC(m_hWnd);
+		if (hdc)
+		{
+			HGDIOBJ hfontOld = NULL;
+			hfontOld = ::SelectObject(hdc, GetSegoeFontBold());
 
-		m_StatusBar.GetText(szText, STATUSLEFTPANE, &nType );
-		// this call fails miserably if we don't select a font above
-		SIZE sizeLeft = dcSB->GetTabbedTextExtent(szText,0,0);
+			if (iData1Len)
+			{
+				::GetTextExtentPoint32(hdc, (LPCTSTR) m_StatusMessages[STATUSDATA1], iData1Len, &sizeData1);
+			}
 
-		m_StatusBar.GetText(szText, STATUSMIDDLEPANE, &nType );
-		// this call fails miserably if we don't select a font above
-		SIZE sizeMid = dcSB->GetTabbedTextExtent(szText,0,0);
+			if (iData2Len)
+			{
+				::GetTextExtentPoint32(hdc, (LPCTSTR) m_StatusMessages[STATUSDATA2], iData2Len, &sizeData2);
+			}
 
-		dcSB->SelectObject(pFont);
-		m_StatusBar.ReleaseDC(dcSB);
-
-		int nHorz = 0;
-		int nVert = 0;
-		int nSpacing = 0;
-
-		EC_B(m_StatusBar.GetBorders(nHorz, nVert, nSpacing));
-
-		int iLeftWidth = sizeLeft.cx+4*nSpacing;
-		int iMidWidth = sizeMid.cx+4*nSpacing;
-
-		StatusWidth[STATUSLEFTPANE] = iLeftWidth;
-		StatusWidth[STATUSMIDDLEPANE] = iLeftWidth + iMidWidth;
-		StatusWidth[STATUSRIGHTPANE] = -1;
-
-		EC_B(m_StatusBar.SetParts(STATUSBARNUMPANES,StatusWidth));
-
-		m_StatusBar.Invalidate(); // force a redraw
-
+			hfontOld = ::SelectObject(hdc, hfontOld);
+			::ReleaseDC(m_hWnd, hdc);
+		}
 	}
-	delete[] szText;
+
+	int nSpacing = GetSystemMetrics(SM_CXEDGE);
+
+	int iWidthData1 = 0;
+	int iWidthData2 = 0;
+	if (sizeData1.cx) iWidthData1 = sizeData1.cx+4*nSpacing;
+	if (sizeData2.cx) iWidthData2 = sizeData2.cx+4*nSpacing;
+
+	m_StatusWidth[STATUSDATA1] = iWidthData1;
+	m_StatusWidth[STATUSDATA2] = iWidthData2;
+	m_StatusWidth[STATUSINFOTEXT] = -1;
+	RECT rcStatus = {0};
+	::GetClientRect(m_hWnd, &rcStatus);
+	rcStatus.top = rcStatus.bottom - GetStatusHeight();
+	::InvalidateRect(m_hWnd, &rcStatus, false);
 } // CBaseDialog::SetStatusWidths
 
 void CBaseDialog::OnSize(UINT/* nType*/, int cx, int cy)
 {
 	HRESULT hRes = S_OK;
+	HDWP hdwp = NULL;
 
-	SetStatusWidths();
+	WC_D(hdwp, BeginDeferWindowPos(1));
 
-	CRect StatusRect;
-
-	// Figure out how tall the status bar is before we move it:
-	EC_B(m_StatusBar.GetRect(STATUSRIGHTPANE,&StatusRect));
-
-	int iHeight = StatusRect.Height();
-	int iNewCY = cy-iHeight;
-
-	m_StatusBar.MoveWindow(
-		0, // new x
-		iNewCY, // new y
-		cx,
-		iHeight,
-		false);
-
-	if (m_lpFakeSplitter && m_lpFakeSplitter->m_hWnd)
+	if (hdwp)
 	{
-		m_lpFakeSplitter->MoveWindow(
-			0, // new x
-			0, // new y
-			cx, // new width
-			iNewCY-1, // new height
-			true);
+		int iHeight = GetStatusHeight();
+		int iNewCY = cy-iHeight;
+		RECT rcStatus = {0};
+		::GetClientRect(m_hWnd, &rcStatus);
+		if (rcStatus.bottom - rcStatus.top > iHeight)
+		{
+			rcStatus.top = rcStatus.bottom - iHeight;
+		}
+		// Tell the status bar it needs repainting
+		::InvalidateRect(m_hWnd, &rcStatus, false);
+
+		if (m_lpFakeSplitter && m_lpFakeSplitter->m_hWnd)
+		{
+			DeferWindowPos(hdwp,m_lpFakeSplitter->m_hWnd,NULL,0,0,cx,iNewCY,SWP_NOZORDER);
+		}
+
+		WC_B(EndDeferWindowPos(hdwp));
 	}
 } // CBaseDialog::OnSize
 
 void CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, _In_z_ LPCTSTR szMsg)
 {
-	HRESULT hRes = S_OK;
-	// set the status bar
-	EC_B(m_StatusBar.SetText(szMsg,nPos,0)); // SBT_NOBORDERS??
+	if (nPos < STATUSBARNUMPANES) m_StatusMessages[nPos] = szMsg;
 
 	SetStatusWidths();
 } // CBaseDialog::UpdateStatusBarText
@@ -854,6 +833,7 @@ void CBaseDialog::OnOutlookVersion()
 	}
 	delete[] lpszPath;
 	delete[] lpszVer;
+	delete[] lpszLang;
 
 	WC_H(MyEID.DisplayDialog());
 } // CBaseDialog::OnOutlookVersion

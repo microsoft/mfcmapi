@@ -2047,6 +2047,10 @@
 				RelativePath=".\TagArrayEditor.h"
 				>
 			</File>
+			<File
+				RelativePath=".\UIFunctions.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
@@ -3829,6 +3833,26 @@
 			</File>
 			<File
 				RelativePath=".\TagArrayEditor.cpp"
+				>
+				<FileConfiguration
+					Name="MrMAPI|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="MrMAPI|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\UIFunctions.cpp"
 				>
 				<FileConfiguration
 					Name="MrMAPI|Win32"

@@ -24,11 +24,18 @@ private:
 
 	// Custom messages
 	_Check_return_ LRESULT msgOnSaveColumnOrder(WPARAM wParam, LPARAM lParam);
+	void OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
+	void OnBeginTrack(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
+	void OnEndTrack(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
+	void OnTrack(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 
 	HWND		m_hwndTip;
 	TOOLINFO	m_ti;
 	HWND		m_hwndParent;
 	bool		m_bTooltipDisplayed;
+	BOOL		m_bInTrack;
+	int			m_iTrack;
+	int			m_iHeaderHeight;
 
 	DECLARE_MESSAGE_MAP()
 };

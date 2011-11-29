@@ -6,7 +6,7 @@
 #include "MapiObjects.h"
 #include "ContentsTableDlg.h"
 #include "MAPIFunctions.h"
-#include "MFCUtilityFunctions.h"
+#include "UIFunctions.h"
 #include "InterpretProp.h"
 #include "AboutDlg.h"
 #include "SortHeader.h"
@@ -56,6 +56,7 @@ CSortListCtrl::CSortListCtrl()
 	m_bSortUp = false;
 	m_bHaveSorted = false;
 	m_bHeaderSubclassed = false;
+	m_iItemCur = -1;
 } // CSortListCtrl::CSortListCtrl
 
 CSortListCtrl::~CSortListCtrl()
@@ -82,8 +83,10 @@ STDMETHODIMP_(ULONG) CSortListCtrl::Release()
 BEGIN_MESSAGE_MAP(CSortListCtrl, CListCtrl)
 	ON_WM_KEYDOWN()
 	ON_WM_GETDLGCODE()
+	ON_WM_DRAWITEM()
 	ON_NOTIFY_REFLECT(LVN_DELETEALLITEMS, OnDeleteAllItems)
 	ON_NOTIFY_REFLECT(LVN_DELETEITEM, OnDeleteItem)
+	ON_NOTIFY_REFLECT(NM_CUSTOMDRAW, OnCustomDraw)
 END_MESSAGE_MAP()
 
 _Check_return_ HRESULT CSortListCtrl::Create(_In_ CWnd* pCreateParent, ULONG ulFlags, UINT nID, bool bImages)
@@ -93,16 +96,18 @@ _Check_return_ HRESULT CSortListCtrl::Create(_In_ CWnd* pCreateParent, ULONG ulF
 		ulFlags
 		| LVS_REPORT
 		| LVS_SHOWSELALWAYS
-		// | LVS_NOSORTHEADER // Put this back in to kill the 'clickable' headers
 		| WS_TABSTOP
 		| WS_CHILD
-		// | WS_BORDER
-		// | WS_CLIPCHILDREN // if this is passed, the header control doesn't get updated properly
+		| WS_CLIPCHILDREN
 		| WS_CLIPSIBLINGS
 		| WS_VISIBLE,
 		CRect(0,0,0,0), // size doesn't matter
 		pCreateParent,
 		nID));
+	ListView_SetBkColor(m_hWnd, MyGetSysColor(cBackground));
+	ListView_SetTextBkColor(m_hWnd, MyGetSysColor(cBackground));
+	ListView_SetTextColor(m_hWnd, MyGetSysColor(cText));
+	::SendMessageA(m_hWnd, WM_SETFONT, (WPARAM) GetSegoeFont(), false);
 
 	SetExtendedStyle(GetExtendedStyle() | LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_INFOTIP);
 
@@ -113,7 +118,7 @@ _Check_return_ HRESULT CSortListCtrl::Create(_In_ CWnd* pCreateParent, ULONG ulF
 
 		CBitmap myBitmap;
 		myBitmap.LoadBitmap(IDB_ICONS);
-		m_ImageList.Add(&myBitmap, RGB(255, 0, 255));
+		m_ImageList.Add(&myBitmap, MyGetSysColor(cBitmapTransparency));
 
 		SetImageList(&m_ImageList,LVSIL_SMALL);
 	}
@@ -123,7 +128,8 @@ _Check_return_ HRESULT CSortListCtrl::Create(_In_ CWnd* pCreateParent, ULONG ulF
 
 _Check_return_ LRESULT CSortListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
-	LRESULT lResult = NULL;
+	int iItemCur = m_iItemCur;
+	HRESULT hRes = S_OK;
 
 	switch (message)
 	{
@@ -134,42 +140,90 @@ _Check_return_ LRESULT CSortListCtrl::WindowProc(UINT message, WPARAM wParam, LP
 		{
 			LPNMHDR pHdr = (LPNMHDR) lParam;
 
-			switch(pHdr->code)
+			switch (pHdr->code)
 			{
 			case HDN_ITEMCLICKA:
 			case HDN_ITEMCLICKW:
 				OnColumnClick(((LPNMHEADERW)pHdr)->iItem);
-				return lResult;
+				return NULL;
 				break;
 			case HDN_DIVIDERDBLCLICKA:
 			case HDN_DIVIDERDBLCLICKW:
 				AutoSizeColumn(((LPNMHEADERW)pHdr)->iItem,0,0);
-				return lResult;
+				return NULL;
 				break;
 			}
 			break; // WM_NOTIFY
 		}
-	case WM_PAINT: // TODO: Find a MUCH better message to host this on
+	case WM_SHOWWINDOW:
 		// subclass the header
 		if (!m_bHeaderSubclassed)
 		{
 			m_bHeaderSubclassed = m_cSortHeader.Init(GetHeaderCtrl(),GetSafeHwnd());
 		}
 		break;
-	case WM_ERASEBKGND:
-		{
-			CListCtrl::OnEraseBkgnd((CDC*) wParam);
-			return true;
-			break;
-		}
 	case WM_DESTROY:
 		{
 			DeleteAllColumns(true);
 			break;
 		}
+	case WM_MOUSEMOVE:
+		{
+			LVHITTESTINFO  lvHitTestInfo = {0};
+			lvHitTestInfo.pt.x = GET_X_LPARAM(lParam);
+			lvHitTestInfo.pt.y = GET_Y_LPARAM(lParam);
+
+			WC_B(::SendMessage(m_hWnd, LVM_HITTEST, 0, (LPARAM) &lvHitTestInfo));
+			// Hover highlight
+			if (lvHitTestInfo.flags & LVHT_ONITEM)
+			{
+				if (iItemCur != lvHitTestInfo.iItem)
+				{
+					DrawListItemFrame(m_hWnd, NULL, lvHitTestInfo.iItem, LVIS_GLOW);
+					if (-1 != iItemCur)
+					{
+						m_iItemCur = -1;
+						DrawListItemFrame(m_hWnd, NULL, iItemCur, NULL);
+					}
+					m_iItemCur = lvHitTestInfo.iItem;
+
+					TRACKMOUSEEVENT tmEvent = {0};
+					tmEvent.cbSize = sizeof(TRACKMOUSEEVENT);
+					tmEvent.dwFlags = TME_LEAVE;
+					tmEvent.hwndTrack = m_hWnd;
+
+					EC_B(TrackMouseEvent(&tmEvent));
+				}
+			}
+			else
+			{
+				if (-1 != iItemCur)
+				{
+					m_iItemCur = -1;
+					DrawListItemFrame(m_hWnd, NULL, iItemCur, NULL);
+				}
+			}
+			break;
+		}
+		case WM_MOUSELEAVE:
+			{
+				// Turn off any hot highlighting
+				if (-1 != iItemCur)
+				{
+					m_iItemCur = -1;
+					DrawListItemFrame(m_hWnd, NULL, iItemCur, NULL);
+				}
+			}
+			break;
 	} // end switch
 	return CListCtrl::WindowProc(message,wParam,lParam);
 } // CSortListCtrl::WindowProc
+
+// Override for list item painting
+void CSortListCtrl::OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
+{
+	CustomDrawList(pNMHDR, pResult, m_iItemCur);
+} // CSortListCtrl::OnCustomDraw
 
 void CSortListCtrl::OnDeleteAllItems(NMHDR* /*pNMHDR*/, LRESULT* pResult)
 {
@@ -326,55 +380,19 @@ void CSortListCtrl::SortClickedColumn()
 	lpMyHeader = GetHeaderCtrl();
 	if (lpMyHeader)
 	{
-		static bool bIsXP = false;
-		static bool bVersionCheck = false;
-
-		if (!bVersionCheck)
-		{
-			// check windows XP
-			OSVERSIONINFOEX info;
-			ZeroMemory(&info, sizeof(OSVERSIONINFOEX));
-			info.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-			if (GetVersionEx((OSVERSIONINFO*)&info))
-				bIsXP = (info.dwMajorVersion > 5) |
-				(info.dwMajorVersion == 5 && info.dwMinorVersion >= 1);
-			bVersionCheck = true;
-		}
-
-		// Just in case we got any old bitmaps to clear
+		// Clear previous sorts
 		for (int i = 0 ; i < lpMyHeader->GetItemCount(); i++)
 		{
-			hdItem.mask = HDI_FORMAT | HDI_BITMAP;
+			hdItem.mask = HDI_FORMAT;
 			EC_B(lpMyHeader->GetItem(i,&hdItem));
-
-			hdItem.fmt &= ~(HDF_BITMAP | HDF_BITMAP_ON_RIGHT);
-			if (bIsXP)
-				hdItem.fmt &= ~(HDF_SORTUP | HDF_SORTDOWN);
-			if (hdItem.hbm != 0)
-			{
-				DeleteObject(hdItem.hbm);
-				hdItem.hbm = 0;
-			}
+			hdItem.fmt &= ~(HDF_SORTUP | HDF_SORTDOWN);
 			lpMyHeader->SetItem(i, &hdItem);
 		}
 
-		hdItem.mask = HDI_FORMAT | HDI_BITMAP;
+		hdItem.mask = HDI_FORMAT;
 		lpMyHeader->GetItem(m_iClickedColumn, &hdItem);
-		if (hdItem.hbm != 0)
-		{
-			DeleteObject(hdItem.hbm);
-			hdItem.hbm = 0;
-		}
-		hdItem.fmt |= HDF_BITMAP | HDF_BITMAP_ON_RIGHT ;
-		if (!bIsXP)
-		{
-			EC_D(hdItem.hbm, (HBITMAP) LoadImage(AfxGetInstanceHandle(), MAKEINTRESOURCE(m_bSortUp ? IDB_UP : IDB_DOWN), IMAGE_BITMAP, 0, 0, LR_LOADMAP3DCOLORS));
-		}
-		else
-		{
-			hdItem.fmt &= ~(HDF_SORTUP | HDF_SORTDOWN);
-			hdItem.fmt |= m_bSortUp ? HDF_SORTUP : HDF_SORTDOWN;
-		}
+		hdItem.fmt &= ~(HDF_SORTUP | HDF_SORTDOWN);
+		hdItem.fmt |= m_bSortUp ? HDF_SORTUP : HDF_SORTDOWN;
 		lpMyHeader->SetItem(m_iClickedColumn, &hdItem);
 
 		hdItem.mask = HDI_LPARAM;

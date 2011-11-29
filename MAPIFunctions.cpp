@@ -1325,7 +1325,7 @@ _Check_return_ HRESULT IsAttachmentBlocked(_In_ LPMAPISESSION lpMAPISession, _In
 
 	HRESULT hRes = S_OK;
 	IAttachmentSecurity* lpAttachSec = NULL;
-	bool bBlocked = false;
+	BOOL bBlocked = false;
 
 	EC_H(lpMAPISession->QueryInterface(IID_IAttachmentSecurity,(void**)&lpAttachSec));
 	if (SUCCEEDED(hRes) && lpAttachSec)
@@ -1334,7 +1334,7 @@ _Check_return_ HRESULT IsAttachmentBlocked(_In_ LPMAPISESSION lpMAPISession, _In
 	}
 	if (lpAttachSec) lpAttachSec->Release();
 
-	*pfBlocked = bBlocked;
+	*pfBlocked = !!bBlocked;
 	return hRes;
 } // IsAttachmentBlocked
 
@@ -1476,7 +1476,7 @@ void MyHexFromBin(_In_opt_count_(cb) LPBYTE lpb, size_t cb, bool bPrependCB, _De
 		{
 			cchCB = 1;
 		}
-		if (!lpb)
+		if (!cb || !lpb)
 		{
 			cchOut += 4;
 		}
@@ -1540,7 +1540,7 @@ _Check_return_ bool MyBinFromHex(_In_z_ LPCTSTR lpsz, _Inout_opt_count_(*lpcb) L
 	ULONG iBinPos = 0;
 	TCHAR szTmp[3] = {0};
 	szTmp[2] = 0;
-	TCHAR szJunk[] = _T("\r\n\t -.\\/'{}`"); // STRING_OK
+	TCHAR szJunk[] = _T("\r\n\t -.,\\/'{}`"); // STRING_OK
 
 	if (!lpcb)
 	{
