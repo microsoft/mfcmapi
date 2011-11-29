@@ -64,6 +64,7 @@ void CRecipientsDlg::OnInitMenu(_In_ CMenu* pMenu)
 		{
 			int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
 			pMenu->EnableMenuItem(ID_DELETESELECTEDITEM,DIMMSOK(iNumSel));
+			pMenu->EnableMenuItem(ID_RECIPOPTIONS,DIMMSOK(1 == iNumSel));
 			pMenu->EnableMenuItem(ID_MODIFYRECIPIENT,
 				DIM(1 == iNumSel && m_lpPropDisplay && m_lpPropDisplay->IsModifiedPropVals()));
 		}

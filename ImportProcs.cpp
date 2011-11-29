@@ -3,7 +3,6 @@
 #include "MAPIFunctions.h"
 
 HMODULE	hModAclui = NULL;
-HMODULE hModRichEd20 = NULL;
 HMODULE hModOle32 = NULL;
 HMODULE hModUxTheme = NULL;
 HMODULE hModInetComm = NULL;
@@ -64,6 +63,7 @@ LPSTGCREATESTORAGEEX		pfnStgCreateStorageEx = NULL;
 LPOPENTHEMEDATA				pfnOpenThemeData = NULL;
 LPCLOSETHEMEDATA			pfnCloseThemeData = NULL;
 LPGETTHEMEMARGINS			pfnGetThemeMargins = NULL;
+LPSETWINDOWTHEME			pfnSetWindowTheme = NULL;
 
 // From inetcomm.dll
 LPMIMEOLEGETCODEPAGECHARSET pfnMimeOleGetCodePageCharset = NULL;
@@ -114,77 +114,6 @@ void LoadProc(LPTSTR szModule, HMODULE* lphModule, LPSTR szEntryPoint, FARPROC* 
 		szEntryPoint));
 } // LoadProc
 
-// We do this to avoid certain problems Outlook 11's MAPI has when the system RichEd is loaded.
-// Note that we don't worry about ever unloading this
-void LoadRichEd()
-{
-	if (hModRichEd20) return;
-	HRESULT hRes = S_OK;
-	HKEY hCurrentVersion = NULL;
-
-	WC_W32(RegOpenKeyEx(
-		HKEY_LOCAL_MACHINE,
-		_T("Software\\Microsoft\\Windows\\CurrentVersion"), // STRING_OK
-		NULL,
-		KEY_READ,
-		&hCurrentVersion));
-	hRes = S_OK;
-
-	if (hCurrentVersion)
-	{
-		DWORD dwKeyType = NULL;
-		LPTSTR szCF = NULL;
-
-		WC_H(HrGetRegistryValue(
-			hCurrentVersion,
-			_T("CommonFilesDir"), // STRING_OK
-			&dwKeyType,
-			(LPVOID*) &szCF));
-		hRes = S_OK;
-
-		if (szCF)
-		{
-			size_t cchCF = NULL;
-			size_t cchOffice11 = NULL;
-
-			LPTSTR szOffice11RichEd = _T("\\Microsoft Shared\\office11\\riched20.dll"); // STRING_OK
-
-			EC_H(StringCchLength(szCF,STRSAFE_MAX_CCH,&cchCF));
-			EC_H(StringCchLength(szOffice11RichEd,STRSAFE_MAX_CCH,&cchOffice11));
-
-			LPTSTR szRichEdFullPath = NULL;
-			szRichEdFullPath = new TCHAR[cchOffice11+cchCF+1];
-
-			if (szRichEdFullPath)
-			{
-				EC_H(StringCchPrintf(szRichEdFullPath,cchOffice11+cchCF+1,_T("%s%s"),szCF,szOffice11RichEd)); // STRING_OK
-				hModRichEd20 = MyLoadLibrary(szRichEdFullPath);
-				delete[] szRichEdFullPath;
-			}
-
-			if (!hModRichEd20)
-			{
-				LPTSTR szOffice11RichEdDebug = _T("\\Microsoft Shared Debug\\office11\\riched20.dll"); // STRING_OK
-				EC_H(StringCchLength(szOffice11RichEdDebug,STRSAFE_MAX_CCH,&cchOffice11));
-
-				LPTSTR szRichEdDebugFullPath = NULL;
-				szRichEdDebugFullPath = new TCHAR[cchOffice11+cchCF+1];
-
-				if (szRichEdDebugFullPath)
-				{
-					EC_H(StringCchPrintf(szRichEdDebugFullPath,cchOffice11+cchCF+1,_T("%s%s"),szCF,szOffice11RichEdDebug)); // STRING_OK
-					hModRichEd20 = MyLoadLibrary(szRichEdDebugFullPath);
-					delete[] szRichEdDebugFullPath;
-				}
-			}
-
-			delete[] szCF;
-		}
-
-		EC_W32(RegCloseKey(hCurrentVersion));
-	}
-} // LoadRichEd
-
 _Check_return_ HMODULE LoadFromSystemDir(_In_z_ LPTSTR szDLLName)
 {
 	if (!szDLLName) return NULL;
@@ -219,6 +148,7 @@ void ImportProcs()
 	LoadProc(_T("uxtheme.dll"), &hModUxTheme, "OpenThemeData", (FARPROC*) &pfnOpenThemeData); // STRING_OK;
 	LoadProc(_T("uxtheme.dll"), &hModUxTheme, "CloseThemeData", (FARPROC*) &pfnCloseThemeData); // STRING_OK;
 	LoadProc(_T("uxtheme.dll"), &hModUxTheme, "GetThemeMargins", (FARPROC*) &pfnGetThemeMargins); // STRING_OK;
+	LoadProc(_T("uxtheme.dll"), &hModUxTheme, "SetWindowTheme", (FARPROC*) &pfnSetWindowTheme); // STRING_OK;
 #ifdef _UNICODE
 	LoadProc(_T("msi.dll"), &hModMSI, "MsiProvideQualifiedComponentW", (FARPROC*) &pfnMsiProvideQualifiedComponent); // STRING_OK;
 	LoadProc(_T("msi.dll"), &hModMSI, "MsiGetFileVersionW", (FARPROC*) &pfnMsiGetFileVersion); // STRING_OK;

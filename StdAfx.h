@@ -54,9 +54,7 @@ typedef ULONG (STDAPICALLTYPE FREEBUFFER)(
 #define CHARFORMAT CHARFORMATW
 #endif
 
-// Some trees use bldver.h to maintain some definitions. Do not remove.
-#include "bldver.h"
-#include "resource.h"		// main symbols
+#include "resource.h" // main symbols
 
 #include "MFCOutput.h"
 #include "registry.h"
@@ -127,8 +125,7 @@ struct _NodeData
 	LPMAPITABLE			lpHierarchyTable; // Object - free with Release
 	CAdviseSink*		lpAdviseSink; // Object - free with Release
 	ULONG_PTR			ulAdviseConnection;
-	ULONG				bSubfolders; // this is intentionally ULONG instead of bool
-	ULONG				ulContainerFlags;
+	LONG				cSubfolders; // -1 for unknown, 0 for no subfolders, >0 for at least one subfolder
 };
 
 struct SortListData
@@ -278,6 +275,14 @@ typedef HRESULT (STDMETHODCALLTYPE GETTHEMEMARGINS)
  OUT MARGINS *pMargins);
 typedef GETTHEMEMARGINS* LPGETTHEMEMARGINS;
 
+typedef HRESULT (STDMETHODCALLTYPE SETWINDOWTHEME)
+(
+__in  HWND hwnd,
+__in  LPCWSTR pszSubAppName,
+__in  LPCWSTR pszSubIdList
+);
+typedef SETWINDOWTHEME* LPSETWINDOWTHEME;
+
 typedef HRESULT (STDMETHODCALLTYPE MSIPROVIDEQUALIFIEDCOMPONENT)
 (
  LPCTSTR     szCategory,
@@ -398,7 +403,7 @@ static DWORD g_lcid = MAKELCID(MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), SOR
 // http://msdn2.microsoft.com/en-us/library/bb820933.aspx
 #define MAPI_IATTACHMENTSECURITY_METHODS(IPURE) \
 	MAPIMETHOD(IsAttachmentBlocked) \
-	(LPCWSTR pwszFileName, bool *pfBlocked) IPURE;
+	(LPCWSTR pwszFileName, BOOL *pfBlocked) IPURE;
 
 DECLARE_MAPI_INTERFACE_(IAttachmentSecurity, IUnknown)
 {

@@ -43,6 +43,8 @@ private:
 	int				m_iSplitWidth;
 	int				m_iSplitPos;
 	SplitType		m_SplitType;
+	HCURSOR			m_hSplitCursorV;
+	HCURSOR			m_hSplitCursorH;
 
 	DECLARE_MESSAGE_MAP()
 };

@@ -933,7 +933,7 @@ void CMainDlg::OnSelectForm()
 	LPMAPIFORMINFO	lpMAPIFormInfo = NULL;
 
 	if (!m_lpMapiObjects || !m_lpPropDisplay) return;
-	SelectForm(m_lpMapiObjects, NULL, &lpMAPIFormInfo);
+	SelectForm(m_hWnd, m_lpMapiObjects, NULL, &lpMAPIFormInfo);
 	if (lpMAPIFormInfo)
 	{
 		// TODO: Put some code in here which works with the returned Form Info pointer

@@ -93,7 +93,7 @@ void CHierarchyTableDlg::OnInitMenu(_In_ CMenu* pMenu)
 
 				if ((ulFlags & MENU_FLAGS_MULTISELECT) && !bItemSelected) uiEnable = MF_GRAYED;
 				if ((ulFlags & MENU_FLAGS_SINGLESELECT) && !bItemSelected) uiEnable = MF_GRAYED;
-				EnableAddInMenus(pMenu, ulMenu, lpAddInMenu, uiEnable);
+				EnableAddInMenus(pMenu->m_hMenu, ulMenu, lpAddInMenu, uiEnable);
 			}
 		}
 
@@ -264,9 +264,7 @@ void CHierarchyTableDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 	HRESULT hRes = S_OK;
 
 	DebugPrintEx(DBGCreateDialog,CLASS,_T("CreateDialogAndMenu"),_T("id = 0x%X\n"),nIDMenuResource);
-	CBaseDialog::CreateDialogAndMenu(nIDMenuResource);
-
-	AddMenu(IDR_MENU_HIERARCHY_TABLE,IDS_HIERARCHYTABLE,(UINT)-1);
+	CBaseDialog::CreateDialogAndMenu(nIDMenuResource,IDR_MENU_HIERARCHY_TABLE,IDS_HIERARCHYTABLE);
 
 	if (m_lpHierarchyTableTreeCtrl)
 	{
@@ -293,7 +291,7 @@ _Check_return_ BOOL CHierarchyTableDlg::PreTranslateMessage(_In_ MSG* pMsg)
 			return true;
 		}
 	}
-	return CDialog::PreTranslateMessage(pMsg);
+	return CMyDialog::PreTranslateMessage(pMsg);
 } // CHierarchyTableDlg::PreTranslateMessage(MSG* pMsg)
 
 void CHierarchyTableDlg::OnRefreshView()

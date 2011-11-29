@@ -7,9 +7,10 @@ class CFakeSplitter;
 class CParentWnd;
 class CAdviseSink;
 
+#include "Dialog.h"
 #include "enums.h"
 
-class CBaseDialog : public CDialog
+class CBaseDialog : public CMyDialog
 {
 public:
 	CBaseDialog(
@@ -33,15 +34,13 @@ public:
 
 protected:
 	// Overrides called by child classes
-	virtual void CreateDialogAndMenu(UINT nIDMenuResource);
-	virtual void EnableAddInMenus(_In_ CMenu* pMenu, ULONG ulMenu, _In_ LPMENUITEM lpAddInMenu, UINT uiEnable);
+	virtual void CreateDialogAndMenu(UINT nIDMenuResource, UINT uiClassMenuResource, UINT uidClassMenuTitle);
+	virtual void EnableAddInMenus(_In_ HMENU hMenu, ULONG ulMenu, _In_ LPMENUITEM lpAddInMenu, UINT uiEnable);
 	_Check_return_ virtual bool HandleMenu(WORD wMenuSelect);
 	_Check_return_ virtual bool HandlePaste();
 	virtual void OnCancel();
 	_Check_return_ virtual BOOL OnInitDialog();
 	virtual void OnInitMenu(_In_opt_ CMenu* pMenu);
-
-	void AddMenu(UINT uiResource, UINT uidTitle, UINT uiPos);
 
 	ULONG						m_ulAddInContext;
 	ULONG						m_ulAddInMenuItems;
@@ -55,11 +54,11 @@ protected:
 
 private:
 	_Check_return_ virtual bool HandleAddInMenu(WORD wMenuSelect);
+	void AddMenu(HMENU hMenuBar, UINT uiResource, UINT uidTitle, UINT uiPos);
 	virtual void HandleCopy();
 	virtual void OnDeleteSelectedItem();
 	virtual void OnEscHit();
 	virtual void OnRefreshView();
-	_Check_return_ virtual BOOL CheckAutoCenter();
 
 	// Overrides from base class
 	_Check_return_ LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
@@ -88,7 +87,8 @@ private:
 
 	LONG			m_cRef;
 	HICON			m_hIcon;
-	CStatusBarCtrl	m_StatusBar;
+	CString			m_StatusMessages[STATUSBARNUMPANES];
+	int 			m_StatusWidth[STATUSBARNUMPANES];
 	bool			m_bDisplayingMenuText;
 	CString			m_szMenuDisplacedText;
 	CAdviseSink*	m_lpBaseAdviseSink;

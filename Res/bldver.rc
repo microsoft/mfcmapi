@@ -2,18 +2,16 @@
 	#error this file is not editable by Microsoft Visual C++
 #endif // APSTUDIO_INVOKED
 
-#include "..\bldver.h"
-
-#define rmj 6
+#define rmj 15
 #define rmm 0
 #define rup 0
-#define rmn 1028
+#define rmn 1029
 
 #define MAKEFILEVERSION(_rmaj, _rmin, _bmaj, _bmin)    #_rmaj "." #_rmin "." #_bmaj "." #_bmin "\0"
 #define MAKEFILEVERSIONSTR(_rmaj, _rmin, _bmaj, _bmin) MAKEFILEVERSION(_rmaj, _rmin, _bmaj, _bmin)
 /* Define file version and project version */
 
-// Ensure we're called MFCMAPI instead of "MAPI Editor"
+// Ensure we're called MFCMAPI
 #undef RC_PRODUCT_NAME
 #ifdef MRMAPI
 #define RC_PRODUCT_NAME               "MrMAPI"
@@ -28,9 +26,6 @@
 #define RC_VERSION_PRODUCT_NAME     RC_PRODUCT_NAME "\0"
 #define RC_VERSION_LEGAL_COPYRIGHT  "Copyright \251 " VER_LEGALCOPYRIGHT_YEARS " Microsoft Corporation. All rights reserved.\0"
 #define RC_VERSION_LEGAL_TRADEMARKS "Microsoft\256 is a registered trademark of Microsoft Corporation.\0"
-#ifdef PRIVATE_BUILD
-#define BUILD_PRIVATE               "\0"
-#endif
 
 #ifndef DS_SHELLFONT
 #error "Compilation requires the February 2003 or later Microsoft SDK"
@@ -72,9 +67,6 @@ BEGIN
             VALUE "ProductName", RC_VERSION_PRODUCT_NAME
             VALUE "FileVersion", INET_VERSION
             VALUE "ProductVersion", INET_VERSION
-#ifdef PRIVATE_BUILD
-            VALUE "PrivateBuild", BUILD_PRIVATE
-#endif
         END
     END
     BLOCK "VarFileInfo"

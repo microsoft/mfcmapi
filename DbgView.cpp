@@ -17,12 +17,10 @@ public:
 private:
 	_Check_return_ ULONG HandleChange(UINT nID);
 	void  OnEditAction1();
+	void  OnEditAction2();
 
 	void OnOK();
 	void OnCancel();
-	_Check_return_ virtual BOOL CheckAutoCenter();
-	CParentWnd* m_lpNonModalParent;
-	CWnd* m_hwndCenteringWindow;
 	bool m_bPaused;
 };
 
@@ -51,7 +49,7 @@ enum __DbgViewFields
 static TCHAR* CLASS = _T("CDbgView");
 
 CDbgView::CDbgView(_In_ CParentWnd* pParentWnd):
-CEditor(pParentWnd,IDS_DBGVIEW,IDS_DBGVIEWPROMPT,0,CEDITOR_BUTTON_CANCEL|CEDITOR_BUTTON_ACTION1,IDS_CLEAR,NULL)
+CEditor(pParentWnd,IDS_DBGVIEW,IDS_DBGVIEWPROMPT,0,CEDITOR_BUTTON_ACTION1|CEDITOR_BUTTON_ACTION2,IDS_CLEAR,IDS_CLOSE)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	CreateControls(DBGVIEW_NUMFIELDS);
@@ -60,34 +58,12 @@ CEditor(pParentWnd,IDS_DBGVIEW,IDS_DBGVIEWPROMPT,0,CEDITOR_BUTTON_CANCEL|CEDITOR
 	InitCheck(DBGVIEW_PAUSE,IDS_PAUSE,false,false);
 	InitMultiLine(DBGVIEW_VIEW,NULL,NULL,true);
 	m_bPaused = false;
-
-	HRESULT hRes = S_OK;
-	m_lpszTemplateName = MAKEINTRESOURCE(IDD_BLANK_DIALOG);
-
-	m_lpNonModalParent = pParentWnd;
-	if (m_lpNonModalParent) m_lpNonModalParent->AddRef();
-
-	m_hwndCenteringWindow = GetActiveWindow();
-
-	HINSTANCE hInst = AfxFindResourceHandle(m_lpszTemplateName, RT_DIALOG);
-	HRSRC hResource = NULL;
-	EC_D(hResource,::FindResource(hInst, m_lpszTemplateName, RT_DIALOG));
-	if (hResource)
-	{
-		HGLOBAL hTemplate = NULL;
-		EC_D(hTemplate,LoadResource(hInst, hResource));
-		if (hTemplate)
-		{
-			LPCDLGTEMPLATE lpDialogTemplate = (LPCDLGTEMPLATE)LockResource(hTemplate);
-			EC_B(CreateDlgIndirect(lpDialogTemplate, m_lpNonModalParent, hInst));
-		}
-	}
+	DisplayParentedDialog(pParentWnd,800);
 } // CDbgView::CDbgView
 
 CDbgView::~CDbgView()
 {
 	TRACE_DESTRUCTOR(CLASS);
-	if (m_lpNonModalParent) m_lpNonModalParent->Release();
 	g_DgbView = NULL;
 } // CDbgView::~CDbgView
 
@@ -101,16 +77,6 @@ void CDbgView::OnCancel()
 	ShowWindow(SW_HIDE);
 	delete this;
 } // CDbgView::OnCancel
-
-// MFC will call this function to check if it ought to center the dialog
-// We'll tell it no, but also place the dialog where we want it.
-_Check_return_ BOOL CDbgView::CheckAutoCenter()
-{
-	// We can make the debug viewer wider - OnSize will fix the height for us
-	SetWindowPos(NULL,0,0,800,0,NULL);
-	CenterWindow(m_hwndCenteringWindow);
-	return false;
-} // CDbgView::CheckAutoCenter
 
 _Check_return_ ULONG CDbgView::HandleChange(UINT nID)
 {
@@ -143,6 +109,12 @@ _Check_return_ ULONG CDbgView::HandleChange(UINT nID)
 void CDbgView::OnEditAction1()
 {
 	ClearView(DBGVIEW_VIEW);
+} // CDbgView::OnEditAction1
+
+// Close
+void CDbgView::OnEditAction2()
+{
+	OnCancel();
 } // CDbgView::OnEditAction1
 
 void CDbgView::AppendText(_In_z_ LPCTSTR szMsg)

@@ -3,16 +3,24 @@
 
 #include "stdafx.h"
 #include "SortHeader.h"
+#include "UIFunctions.h"
 
 CSortHeader::CSortHeader()
 {
 	m_hwndTip = NULL;
 	m_hwndParent = NULL;
+	m_bInTrack = false;
+	m_iTrack = -1;
+	m_iHeaderHeight = 0;
 	ZeroMemory(&m_ti,sizeof(TOOLINFO));
 } // CSortHeader::CSortHeader
 
 BEGIN_MESSAGE_MAP(CSortHeader, CHeaderCtrl)
 	ON_MESSAGE(WM_MFCMAPI_SAVECOLUMNORDERHEADER, msgOnSaveColumnOrder)
+	ON_NOTIFY_REFLECT(NM_CUSTOMDRAW, OnCustomDraw)
+	ON_NOTIFY_REFLECT(HDN_BEGINTRACK, OnBeginTrack)
+	ON_NOTIFY_REFLECT(HDN_ENDTRACK, OnEndTrack)
+	ON_NOTIFY_REFLECT(HDN_ITEMCHANGED, OnTrack)
 END_MESSAGE_MAP()
 
 _Check_return_ bool CSortHeader::Init(_In_ CHeaderCtrl *pHeader, _In_ HWND hwndParent)
@@ -41,7 +49,7 @@ void CSortHeader::RegisterHeaderTooltip()
 			WS_EX_TOPMOST,
 			TOOLTIPS_CLASS,
 			NULL,
-			TTS_NOPREFIX | TTS_ALWAYSTIP | TTS_BALLOON,
+			TTS_NOPREFIX | TTS_ALWAYSTIP,
 			CW_USEDEFAULT,
 			CW_USEDEFAULT,
 			CW_USEDEFAULT,
@@ -82,6 +90,11 @@ _Check_return_ LRESULT CSortHeader::WindowProc(UINT message, WPARAM wParam, LPAR
 	{
 		switch (message)
 		{
+		case WM_ERASEBKGND:
+			{
+				return true;
+				break;
+			}
 		case WM_MOUSEMOVE:
 			{
 				// This covers the case where we move from one header to another, but don't leave the control
@@ -91,9 +104,7 @@ _Check_return_ LRESULT CSortHeader::WindowProc(UINT message, WPARAM wParam, LPAR
 					hdHitTestInfo.pt.x = GET_X_LPARAM(lParam);
 					hdHitTestInfo.pt.y = GET_Y_LPARAM(lParam);
 
-					EC_B(::SendMessage(m_hWnd, HDM_HITTEST, 0, (LPARAM) &hdHitTestInfo));
-
-					// Turn off the tooltip if we're not on a column header
+					WC_B(::SendMessage(m_hWnd, HDM_HITTEST, 0, (LPARAM) &hdHitTestInfo));
 					if (!(hdHitTestInfo.flags & HHT_ONHEADER))
 					{
 						// We were displaying a tooltip, but we're now on empty space in the header. Turn it off.
@@ -179,3 +190,45 @@ _Check_return_ LRESULT CSortHeader::msgOnSaveColumnOrder(WPARAM /*wParam*/, LPAR
 	}
 	return S_OK;
 } // CSortHeader::msgOnSaveColumnOrder
+
+void CSortHeader::OnBeginTrack(_In_ NMHDR* pNMHDR, _In_ LRESULT* /*pResult*/)
+{
+	RECT rcHeader = {0};
+	if (!pNMHDR) return;
+	LPNMHEADER pHdr = (LPNMHEADER) pNMHDR;
+	Header_GetItemRect(pHdr->hdr.hwndFrom, pHdr->iItem, &rcHeader);
+	m_bInTrack = true;
+	m_iTrack = rcHeader.right;
+	m_iHeaderHeight = rcHeader.bottom-rcHeader.top;
+	DrawTrackingBar(pHdr->hdr.hwndFrom, m_hwndParent, m_iTrack, m_iHeaderHeight, false);
+} // CSortHeader::OnBeginTrack
+
+void CSortHeader::OnEndTrack(_In_ NMHDR* pNMHDR, _In_ LRESULT* /*pResult*/)
+{
+	if (m_bInTrack)
+	{
+		DrawTrackingBar(pNMHDR->hwndFrom, m_hwndParent, m_iTrack, m_iHeaderHeight, true);
+	}
+	m_bInTrack = false;
+} // CSortHeader::OnEndTrack
+
+void CSortHeader::OnTrack(_In_ NMHDR* pNMHDR, _In_ LRESULT* /*pResult*/)
+{
+	if (m_bInTrack && pNMHDR)
+	{
+		RECT rcHeader = {0};
+		LPNMHEADER pHdr = (LPNMHEADER) pNMHDR;
+		Header_GetItemRect(pHdr->hdr.hwndFrom, pHdr->iItem, &rcHeader);
+		if (m_iTrack != rcHeader.right)
+		{
+			DrawTrackingBar(pHdr->hdr.hwndFrom, m_hwndParent, m_iTrack, m_iHeaderHeight, true);
+			m_iTrack = rcHeader.right;
+			DrawTrackingBar(pHdr->hdr.hwndFrom, m_hwndParent, m_iTrack, m_iHeaderHeight, false);
+		}
+	}
+} // CSortHeader::OnTrack
+
+void CSortHeader::OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
+{
+	CustomDrawHeader(pNMHDR, pResult);
+} // CSortHeader::OnCustomDraw

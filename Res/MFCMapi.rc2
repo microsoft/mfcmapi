@@ -27,9 +27,9 @@
 #endif
 
 #ifdef _WIN64
-#define RC_VERSION_BITNESS             " x64 Build"
+#define RC_VERSION_BITNESS             " x64"
 #else
-#define RC_VERSION_BITNESS             " x86 Build"
+#define RC_VERSION_BITNESS             " x86"
 #endif
 
 #ifdef _DEBUG
@@ -42,30 +42,24 @@
 #include "bldver.rc"
 
 // Keep in sync with definition of IDD_ABOUTVERLAST
-IDD_ABOUT DIALOG DISCARDABLE  0, 0, 400, 200
+IDD_ABOUT DIALOGEX DISCARDABLE  0, 0, 400, 200
 STYLE DS_MODALFRAME | WS_CAPTION | WS_SYSMENU | DS_SHELLFONT
-CAPTION "" // About Microsoft Exchange Server MAPI Editor
-FONT 8, "MS Shell Dlg"
+CAPTION "" // About MFCMAPI
+FONT 8, "Segoe UI"
 BEGIN
-    DEFPUSHBUTTON   "OK",				IDOK,               317, 2, 54,14,WS_GROUP
-    ICON            IDR_MAINFRAME,		IDC_STATIC,           3, 2, 21,20
-    LTEXT           "ProductName",		IDD_ABOUTVERFIRST,   29, 2,287, 8
-    LTEXT           "FileDescription",	IDD_ABOUTVERFIRST+1, 29,11,287, 8
-    LTEXT           "FileVersion",		IDD_ABOUTVERFIRST+2, 29,20,287, 8
-    LTEXT           "LegalCopyright",	IDD_ABOUTVERFIRST+3, 29,29,287, 8
-    CONTROL         "",IDD_BLACKBARFIRST,"Static",	SS_BLACKRECT,        29,38,342, 1
-#ifdef PRIVATE_BUILD
-    LTEXT           "PrivateBuild",		IDD_ABOUTVERFIRST+4, 29,44,287, 8
-    CONTROL         "",IDD_BLACKBARFIRST+1,"Static",	SS_BLACKRECT,        29,58,342, 1
-#endif
+    DEFPUSHBUTTON   "OK",				IDOK,               327, 15, 54,14,WS_GROUP
+    CONTROL         IDB_MFCMAPILOGO,	IDC_STATIC,"Static",SS_BITMAP,1,2,64,64
+    LTEXT           "ProductName",		IDD_ABOUTVERFIRST,   50,0,263, 0
+    LTEXT           "FileDescription",	IDD_ABOUTVERFIRST+1, 50,0,263, 0
+    LTEXT           "FileVersion",		IDD_ABOUTVERFIRST+2, 50,0,263, 0
+    LTEXT           "LegalCopyright",	IDD_ABOUTVERFIRST+3, 50,0,350, 0
 END
-
 
 IDD_BLANK_DIALOG DIALOGEX 0, 0, 456, 294
 STYLE WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_VISIBLE | WS_CAPTION | WS_SYSMENU |
     WS_THICKFRAME | WS_CLIPCHILDREN | DS_SHELLFONT
 EXSTYLE WS_EX_CONTROLPARENT
-FONT 8, "MS Shell Dlg"
+FONT 8, "Segoe UI"
 BEGIN
 END
 
@@ -111,7 +105,7 @@ ID_ADDTESTADDRESS								"Add a one-off recipient to the TO line of the selected
 ID_APPLYFINDROW									"Apply a restriction using FindRow"
 ID_APPLYRESTRICTION								"Apply a restriction by calling Restrict on the contents table"
 ID_ATTACHMENTPROPERTIES							"Display the attachment table of the message"
-ID_CALCFORMPOPSET								"Calc form propset"
+ID_CALCFORMPOPSET								"Calculate form propset"
 ID_CANCELTABLELOAD								"Cancel load of table"
 ID_CLEARRESTRICTION								"Remove the FindRow or Restrict restriction from the contents table"
 ID_CLOSEADDRESSBOOK								"Close the global reference to the address book"
@@ -170,7 +164,7 @@ ID_GETMAPISVCINF								"Use FGetComponentPath to locate MAPISVC.INF"
 ID_GETPROFILESERVERVERSION						"Get Exchange server version of selected profile"
 ID_GETPROPSUSINGLONGTERMEID						"Open item with PR_LONGTERM_ENTRYID_FROM_TABLE and display properties."
 ID_GETSTATUS									"Call IMAPITable::GetStatus"
-ID_HELP											"Display Help/Splash Screen"
+ID_MYHELP										"Display Help/Splash Screen"
 ID_HEXEDITOR									"Open Hex Editor"
 ID_INSTALLFORM									"Install form"
 ID_ISATTACHMENTBLOCKED							"Determine if a particular filename would be blocked"
@@ -770,7 +764,7 @@ IDS_EIDISCONTAB "EntryID is CONTAB_ENTRYID"
 IDS_EID1 "Entry ID 1:"
 IDS_EID2 "Entry ID 2:"
 IDS_OBJECTFORCOMPAREEID "Object to call CompareEntryIDs on"
-IDS_ULEVENTMASK "ulEventMask :"
+IDS_ULEVENTMASK "ulEventMask:"
 IDS_OBJECTFORADVISE "Object to call Advise on"
 IDS_STOREEID "Store Entry ID"
 IDS_STOREHASH "Store Hash"
@@ -805,7 +799,7 @@ IDS_FILENAME "File Name"
 IDS_DELSTYLE "Deletion style"
 IDS_LOADSTYLE "Load style"
 IDS_LOCATIONOFFORM "Location of form"
-IDS_FORMTYPE "Form type :"
+IDS_FORMTYPE "Form type:"
 IDS_VERB "Verb"
 IDS_REMOVEPROPDEFSTREAM "Remove property definition stream"
 IDS_FORMATTOSAVEMESSAGE "Format to save message"
@@ -921,33 +915,31 @@ IDS_NAMEPROPGUID "Named Property GUID"
 IDS_MAPICREATE "MAPI_CREATE"
 IDS_KNOWNPROPTAGS "Known Property Tags"
 // Registry.cpp
-IDS_REGKEY_DEBUG_TAG "Debug Output Tags (0 = None, ffff = Verbose. See Help.)"
-IDS_REGKEY_DEBUG_TO_FILE "Enable Debug Output to File"
-IDS_REGKEY_DEBUG_FILE_NAME "Debug Output File:"
-IDS_REGKEY_THROTTLE_LEVEL "Throttle Level: If nonzero, limits the number of rows displayed in tables:"
-IDS_REGKEY_PARSED_NAMED_PROPS "Parse Named Properties"
-IDS_REGKEY_HIER_NOTIFS "Register Notifications on Hierarchy Tables During Load"
-IDS_REGKEY_HIER_EXPAND_NOTIFS "Register Notifications on Hierarchy Tables During Node Expansion or Selection"
-IDS_REGKEY_HIER_ROOT_NOTIFS "Allow Notifications on Root Container (may cause infinite loop in some Address Books)"
-IDS_REGKEY_HIER_NODE_LOAD_COUNT "Hierarchy Node Load Count: If nonzero, limits the number of child nodes for which the hierarchy table is automatically loaded:"
-IDS_REGKEY_DO_SMART_VIEW "Do Smart View processing on properties."
-IDS_REGKEY_DO_GETPROPS "Perform GetProps call on objects when selecting or displaying. Extra properties will still display if unchecked."
-IDS_REGKEY_ALLOW_DUPE_COLUMNS "Allow duplicate columns of different types."
-IDS_REGKEY_USE_ROW_DATA_FOR_SINGLEPROPLIST "Use row data for property pane instead of calling GetProps."
-IDS_REGKEY_DO_COLUMN_NAMES "Use nice names for certain column headers and pull them to the front of the view"
+IDS_REGKEY_DEBUG_TAG "Debug output tags (0 = None, ffff = Verbose. See help.)"
+IDS_REGKEY_DEBUG_TO_FILE "Enable debug output to file"
+IDS_REGKEY_DEBUG_FILE_NAME "Debug output file:"
+IDS_REGKEY_THROTTLE_LEVEL "Throttle level (if nonzero, limits the number of rows displayed in tables):"
+IDS_REGKEY_PARSED_NAMED_PROPS "Parse named properties"
+IDS_REGKEY_HIER_EXPAND_NOTIFS "Register notifications on hierarchy tables during node expansion or selection"
+IDS_REGKEY_HIER_ROOT_NOTIFS "Allow root container notifications (may cause infinite loop in address book)"
+IDS_REGKEY_DO_SMART_VIEW "Enable Smart view"
+IDS_REGKEY_DO_GETPROPS "Call GetProps when selecting or displaying (extra properties will still display)"
+IDS_REGKEY_ALLOW_DUPE_COLUMNS "Allow duplicate columns of different types"
+IDS_REGKEY_USE_ROW_DATA_FOR_SINGLEPROPLIST "Use row data for properties instead of GetProps"
+IDS_REGKEY_DO_COLUMN_NAMES "Nice column names"
 IDS_REGKEY_EDIT_COLUMNS_ON_LOAD "When loading tables, display SetColumns edit dialog"
-IDS_REGKEY_USE_GETPROPLIST "Use GetPropList to get property list for GetProps call (otherwise use NULL tag list)"
-IDS_REGKEY_GETPROPNAMES_ON_ALL_PROPS "Parse Named Properties for All Props (including those below 0x8000)"
-IDS_REGKEY_CACHE_NAMED_PROPS "Cache named property mappings from GetNamesFromIDs and GetIDsFromNames"
+IDS_REGKEY_USE_GETPROPLIST "Use GetPropList for GetProps call (otherwise use NULL tag list)"
+IDS_REGKEY_GETPROPNAMES_ON_ALL_PROPS "Parse named properties for all props (including those below 0x8000)"
+IDS_REGKEY_CACHE_NAMED_PROPS "Cache named property mappings"
 IDS_REGKEY_MDB_ONLINE "Use MDB_ONLINE when calling OpenMsgStore"
 IDS_REGKEY_MAPI_NO_CACHE "Use MAPI_NO_CACHE when calling OpenEntry"
-IDS_REGKEY_ALLOW_PERSIST_CACHE "Allow caching of IPersistMessage objects when opening Outlook forms in compose mode, which may prevent shutdown of certain versions of Outlook"
-IDS_REGKEY_USE_IMAPIPROGRESS "Pass IMAPIProgress implementation to functions that take it"
+IDS_REGKEY_ALLOW_PERSIST_CACHE "Cache IPersistMessage when opening forms in compose mode"
+IDS_REGKEY_USE_IMAPIPROGRESS "Enable IMAPIProgress tracing"
 IDS_REGKEY_USE_MESSAGERAW "Use IID_IMessageRaw when opening messages"
 IDS_REGKEY_HEAPENABLETERMINATIONONCORRUPTION "Terminate on heap corruption (requires restart)"
-IDS_REGKEY_LOADADDINS "Load Add-Ins (requires restart)"
+IDS_REGKEY_LOADADDINS "Load add-ins (requires restart)"
 IDS_REGKEY_FORCEOUTLOOKMAPI "Force Outlook's MAPI"
-IDS_REGKEY_FORCESYSTEMMAPI "Force System MAPI"
+IDS_REGKEY_FORCESYSTEMMAPI "Force system MAPI"
 
 // RestrictEditor.cpp
 IDS_RELOP "relop"
@@ -1023,14 +1015,18 @@ IDS_BASEDIALOG "BaseDialog"
 IDS_HELPTEXT "%1 Usage notes\n\
 \n\
 Visit http://mfcmapi.codeplex.com for more information, bug reports, and the latest builds.\n\
+For the latest blog entries, visit http://blogs.msdn.com/b/stephen_griffin/archive/tags/mfcmapi.\n\
 \n\
-Getting Started: Select Session\\Logon and Display Store Table to open a profile\n\
+Become a fan on Facebook! http://www.facebook.com/MFCMAPI.\n\
+\n\
+Getting Started: Select Session\\Logon to open a profile\n\
 \n\
 Keyboard Shortcuts:\n\
 All Panes\n\
 \tF1\t\t: Display this help screen\n\
 \tCtrl+D\t\t: Display Debug Viewer\n\
 \tCtrl+H\t\t: Display Hex Editor\n\
+\tCtrl+O\t\t: Display Options\n\
 \n\
 Table View Pane\n\
 \tF5\t\t\t: Refresh/reload table\n\
@@ -1047,27 +1043,25 @@ Table View Pane\n\
 Hierarchy/Tree View Pane\n\
 \tF5\t\t: Refresh/reload tree\n\
 \tEnter\t\t: Open and display selected node\n\
-\tCtrl+Enter\t\t: Open and display associated contents\n\
+\tCtrl+Enter\t: Open and display associated contents\n\
 \tDel, Ctrl+X\t: Delete selected node\n\
 \tCtrl+S\t\t: Save currently displayed properties to a file\n\
 \n\
 Property View Pane\n\
 \tF5\t\t: Refresh/reload property list\n\
 \tCtrl+E, Enter\t: Edit selected property\n\
-\tCtrl+Enter\t\t: Open property as EntryID or Object\n\
+\tCtrl+Enter\t: Open property as EntryID or Object\n\
 \tCtrl+C\t\t: Copy selected property\n\
 \tCtrl+V\t\t: Paste selected property\n\
 \tDel\t\t: Delete selected property\n\
 \tCtrl+X\t\t: Delete selected property\n\
 \tCtrl+S\t\t: Save properties to a file\n\
 \n\
-Bold In Tree View: Depending on options set in the options dialog, %1\n\
-\tmay register for advise sink notifications on various folders. As an aid to troubleshooting,\n\
-\tif the registration was successful, then the folder is rendered in bold type.\n\
+Bold In Tree View: The currently selected item will be bolded.\n\
 \n\
-Options Dialog: Please review Other\\Options for various options.\n\
+Options Dialog: Please review Tools\\Options for various options.\n\
 \n\
-Debug Output supports various tags. All Output includes the tag number used to print it.\n\
+Debug Output supports various tags. All output includes the tag number used to print it.\n\
 The output can be excluded by removing the tag from the options page.\n\
 Supported tags:\n\
 0x00000000 DBGNoDebug\n\
@@ -1091,6 +1085,7 @@ Supported tags:\n\
 0x00020000 DBGStream\n\
 0x00040000 DBGSmartView\n\
 0x00080000 DBGLoadMAPI\n\
+0x00100000 DBGHierarchy\n\
 0x80000000 DBGMenu"
 
 IDS_DISPLAYABOUTCHECK "Display at startup"
@@ -1099,10 +1094,11 @@ IDS_ABRESMENU "Search For Address Book Entry Using Restriction"
 IDS_MBRESMENU "Search For Mailbox Name Using Restriction"
 IDS_PFRESMENU "Search For Public Folder Using Restriction"
 IDS_FILEMENU "&File"
-IDS_PROPERTYMENU "&Property Pane"
-IDS_OTHERMENU "&Other"
+IDS_PROPERTYMENU "&Property"
+IDS_TOOLSMENU "Tools"
 IDS_TABLEMENU "&Table"
 IDS_ADDINSMENU "&AddIns"
+IDS_EXIT "E&xit"
 IDS_HIERARCHYTABLEMENU "&Hierarchy Table"
 IDS_PROPSFROMROW "Properties from the row in the table"
 IDS_PROPSFROMGETPROPS "Properties from IMAPIProp::GetProps()"
@@ -1217,6 +1213,7 @@ IDS_ACTIONCREATENAMEDPROP "Create Named Property"
 IDS_ACTIONEDITPROP "Edit Prop Value"
 IDS_ACTIONEDITRES "Edit Restriction"
 IDS_CLEAR "Clear"
+IDS_CLOSE "Close"
 IDS_PAUSE "Pause"
 
 IDS_DIRPROMPT "Choose directory to save to"
@@ -1569,7 +1566,7 @@ IDS_COLEID "EID"
 IDS_COLEXACTNAMES "ExactNames"
 IDS_COLFILENAME "File Name"
 IDS_COLSMARTVIEW "SmartView"
-IDS_COLSMART_VIEW "Smart View"
+IDS_COLSMART_VIEW "Smart view"
 IDS_COLFROM "From"
 IDS_COLIDENTITY "Identity"
 IDS_COLINSTANCEKEY "Instance Key"
@@ -1584,16 +1581,16 @@ IDS_COLMEMBERRIGHTS "Member Rights"
 IDS_COLMESSAGECLASS "Message Class"
 IDS_COLMESSAGESIZE "Message Size"
 IDS_COLMETHOD "Method"
-IDS_COLNAMED_PROP_GUID "Named Prop GUID"
-IDS_COLNAMED_PROP_NAME "Named Prop Name"
+IDS_COLNAMED_PROP_GUID "Named prop GUID"
+IDS_COLNAMED_PROP_NAME "Named prop name"
 IDS_COLNAMEDPROPGUID "NamedPropGUID"
 IDS_COLNAMEDPROPNAME "NamedPropName"
 IDS_COLNTUSER "NT User"
 IDS_COLNUM "Num"
 IDS_COLOBJECTTYPE "Object Type"
-IDS_COLOTHERNAMES "Other Names"
+IDS_COLOTHERNAMES "Other names"
 IDS_COLPARTIALNAMES "PartialNames"
-IDS_COLPROPERTYNAMES "Property Name(s)"
+IDS_COLPROPERTYNAMES "Property name(s)"
 IDS_COLPROVIDERDISPLAY "Provider"
 IDS_COLPROVIDERDLL "Provider DLL"
 IDS_COLQUOTARECEIVE "Quota Receive"
@@ -1614,7 +1611,7 @@ IDS_COLTAG "Tag"
 IDS_COLTO "To"
 IDS_COLTYPE "Type"
 IDS_COLVALUE "Value"
-IDS_COLVALUEALTERNATEVIEW "Value - Alternate view"
+IDS_COLVALUEALTERNATEVIEW "Value (alternate view)"
 IDS_COLDELSIZEEX "Deleted Size"
 IDS_COLDELNORMALSIZEEX "Deleted Normal Size"
 IDS_COLDELASSOCSIZEEX "Deleted Assoc Size"
@@ -2086,11 +2083,11 @@ Here are some known causes for this.\r\n\
 #endif
 
 // UpdateStatusBarText - use printf style formatting
-IDS_STATUSTEXTNUMITEMS "Number of items: %d"
-IDS_STATUSTEXTNUMPROPS "Number of Properties: %d"
+IDS_STATUSTEXTNUMITEMS "Items: %d"
+IDS_STATUSTEXTNUMPROPS "Properties: %d"
 IDS_STATUSTEXTNOFOLDER "Could not open folder or get properties"
-IDS_STATUSTEXTCONTENTCOUNTS "Contents: %d, Assoc. Contents: %d"
-IDS_STATUSTEXTDELETEDCOUNTS "Deleted Items: %d, Deleted Assoc. Items: %d, Deleted Subfolders: %d"
+IDS_STATUSTEXTCONTENTCOUNTS "Contents: %d Assoc. Contents: %d"
+IDS_STATUSTEXTDELETEDCOUNTS "Deleted Items: %d Deleted Assoc. Items: %d Deleted Subfolders: %d"
 
 SC_CLOSE "Close window."
 SC_RESTORE "Restore window."

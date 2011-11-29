@@ -162,9 +162,7 @@ void CContentsTableDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 	HRESULT hRes = S_OK;
 
 	DebugPrintEx(DBGCreateDialog,CLASS,_T("CreateDialogAndMenu"),_T("id = 0x%X\n"),nIDMenuResource);
-	CBaseDialog::CreateDialogAndMenu(nIDMenuResource);
-
-	AddMenu(IDR_MENU_TABLE,IDS_TABLEMENU,(UINT)-1);
+	CBaseDialog::CreateDialogAndMenu(nIDMenuResource,IDR_MENU_TABLE,IDS_TABLEMENU);
 
 	if (m_lpContentsTableListCtrl && m_lpContentsTable)
 	{
@@ -239,7 +237,7 @@ void CContentsTableDlg::OnInitMenu(_In_opt_ CMenu* pMenu)
 
 			if ((ulFlags & MENU_FLAGS_SINGLESELECT) && iNumSel != 1) uiEnable = MF_GRAYED;
 			if ((ulFlags & MENU_FLAGS_MULTISELECT) && !iNumSel) uiEnable = MF_GRAYED;
-			EnableAddInMenus(pMenu, ulMenu, lpAddInMenu, uiEnable);
+			EnableAddInMenus(pMenu->m_hMenu, ulMenu, lpAddInMenu, uiEnable);
 		}
 	}
 	CBaseDialog::OnInitMenu(pMenu);

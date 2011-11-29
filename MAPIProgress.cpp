@@ -93,7 +93,7 @@ _Check_return_ STDMETHODIMP CMAPIProgress::Progress(ULONG ulValue, ULONG ulCount
 		CString szStatusText;
 
 		szStatusText.FormatMessage(IDS_PERCENTLOADED, m_szContext, iPercent);
-		(void)::SendMessage(m_hWnd, WM_MFCMAPI_UPDATESTATUSBAR, STATUSRIGHTPANE, (LPARAM)(LPCTSTR) szStatusText);
+		(void)::SendMessage(m_hWnd, WM_MFCMAPI_UPDATESTATUSBAR, STATUSINFOTEXT, (LPARAM)(LPCTSTR) szStatusText);
 	}
 
 	return S_OK;

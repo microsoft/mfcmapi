@@ -372,190 +372,6 @@ _Check_return_ HRESULT DisplayExchangeTable(
 	return hRes;
 } // DisplayExchangeTable
 
-void UpdateMenuString(_In_ CWnd *cWnd, UINT uiMenuTag, UINT uidNewString)
-{
-	HRESULT hRes = S_OK;
-
-	CString szNewString;
-	EC_B(szNewString.LoadString(uidNewString));
-
-	DebugPrint(DBGMenu,_T("UpdateMenuString: Changing menu item 0x%X on window %p to \"%s\"\n"),uiMenuTag,cWnd,(LPCTSTR) szNewString);
-	HMENU hMenu = ::GetMenu(cWnd->m_hWnd);
-
-	if (!hMenu) return;
-
-	MENUITEMINFO MenuInfo = {0};
-
-	ZeroMemory(&MenuInfo,sizeof(MENUITEMINFO));
-
-	MenuInfo.cbSize = sizeof(MENUITEMINFO);
-	MenuInfo.fMask = MIIM_STRING;
-	MenuInfo.dwTypeData = (LPTSTR)(LPCTSTR)szNewString;
-
-	EC_B(SetMenuItemInfo(
-		hMenu,
-		uiMenuTag,
-		false,
-		&MenuInfo));
-} // UpdateMenuString
-
-_Check_return_ bool MergeMenu(_In_ CMenu * pMenuDestination, _In_ const CMenu * pMenuAdd)
-{
-	HRESULT hRes = S_OK;
-	int iMenuDestItemCount = pMenuDestination->GetMenuItemCount();
-	int iMenuAddItemCount = pMenuAdd->GetMenuItemCount();
-
-	if (iMenuAddItemCount == 0) return true;
-
-	if (iMenuDestItemCount > 0) pMenuDestination->AppendMenu(MF_SEPARATOR);
-
-	for (int iLoop = 0; iLoop < iMenuAddItemCount; iLoop++ )
-	{
-		CString sMenuAddString;
-		pMenuAdd->GetMenuString(iLoop, sMenuAddString, MF_BYPOSITION);
-
-		CMenu* pSubMenu = pMenuAdd->GetSubMenu(iLoop);
-
-		if (!pSubMenu)
-		{
-			UINT nState = pMenuAdd->GetMenuState( iLoop, MF_BYPOSITION );
-			UINT nItemID = pMenuAdd->GetMenuItemID( iLoop );
-
-			EC_B(pMenuDestination->AppendMenu(nState, nItemID, sMenuAddString));
-			if (FAILED(hRes)) return false;
-			iMenuDestItemCount++;
-		}
-		else
-		{
-			int iInsertPosDefault = pMenuDestination->GetMenuItemCount();
-
-			CMenu NewPopupMenu;
-			EC_B(NewPopupMenu.CreatePopupMenu());
-			if (FAILED(hRes)) return false;
-
-			EC_B(MergeMenu(&NewPopupMenu, pSubMenu));
-			if (FAILED(hRes)) return false;
-
-			HMENU hNewMenu = NewPopupMenu.GetSafeHmenu();
-
-			EC_B(pMenuDestination->InsertMenu(
-				iInsertPosDefault,
-				MF_BYPOSITION | MF_POPUP | MF_ENABLED,
-				(UINT_PTR)hNewMenu,
-				sMenuAddString));
-			if (FAILED(hRes)) return false;
-			iMenuDestItemCount++;
-		}
-	}
-
-	return SUCCEEDED(hRes);
-} // MergeMenu
-
-void DisplayContextMenu(UINT uiClassMenu, UINT uiControlMenu, _In_ CWnd* pParent, int x, int y)
-{
-	HRESULT hRes = S_OK;
-	CMenu pPopup;
-	CMenu pContext;
-	EC_B(pPopup.CreateMenu());
-	EC_B(pContext.LoadMenu(uiClassMenu));
-
-
-	EC_B(InsertMenu(
-		pPopup.m_hMenu,
-		0,
-		MF_BYPOSITION | MF_POPUP,
-		(UINT_PTR) pContext.m_hMenu,
-		_T("")));
-
-	CMenu* pRealPopup = pPopup.GetSubMenu(0);
-
-	if (pRealPopup)
-	{
-		if (uiControlMenu)
-		{
-			CMenu pAppended;
-			EC_B(pAppended.LoadMenu(uiControlMenu));
-			EC_B(MergeMenu(pRealPopup,&pAppended));
-			EC_B(pAppended.DestroyMenu());
-		}
-
-		if (IDR_MENU_PROPERTY_POPUP == uiClassMenu)
-		{
-			(void) ExtendAddInMenu(pRealPopup->m_hMenu, MENU_CONTEXT_PROPERTY);
-		}
-
-		EC_B(pRealPopup->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, x, y, pParent));
-	}
-
-	EC_B(pContext.DestroyMenu());
-	EC_B(pPopup.DestroyMenu());
-} // DisplayContextMenu
-
-_Check_return_ int GetEditHeight(_In_ HWND hwndEdit)
-{
-	HRESULT		hRes = S_OK;
-	HFONT		hSysFont = 0;
-	HFONT		hOldFont = 0;
-	HDC			hdc = 0;
-	TEXTMETRIC	tmFont = {0};
-	TEXTMETRIC	tmSys = {0};
-	int			iHeight = 0;
-
-	// Get the DC for the edit control.
-	EC_D(hdc, GetDC(hwndEdit));
-
-	if (hdc)
-	{
-		// Get the metrics for the current font.
-		EC_B(::GetTextMetrics(hdc, &tmFont));
-
-		// Get the metrics for the system font.
-		WC_D(hSysFont, (HFONT) GetStockObject(SYSTEM_FONT));
-		if (hSysFont)
-		{
-			hOldFont = (HFONT) SelectObject(hdc, hSysFont);
-			EC_B(::GetTextMetrics(hdc, &tmSys));
-
-			// Select the original font back into the DC and release the DC.
-			SelectObject(hdc, hOldFont);
-			DeleteObject(hSysFont);
-		}
-		ReleaseDC(hwndEdit, hdc);
-	}
-
-	// Calculate the new height for the edit control.
-	iHeight =
-		tmFont.tmHeight
-		// + tmFont.tmExternalLeading
-		// + (min(tmFont.tmHeight, tmSys.tmHeight)/2)
-		+ 2 * GetSystemMetrics(SM_CYFIXEDFRAME) // Adjust for the edit border
-		+ 2 * GetSystemMetrics(SM_CXEDGE); // Adjust for the edit border
-	return iHeight;
-} // GetEditHeight
-
-_Check_return_ int GetTextHeight(_In_ HWND hwndEdit)
-{
-	HRESULT		hRes = S_OK;
-	HDC			hdc = 0;
-	TEXTMETRIC	tmFont = {0};
-	int			iHeight = 0;
-
-	// Get the DC for the edit control.
-	EC_D(hdc, GetDC(hwndEdit));
-
-	if (hdc)
-	{
-		// Get the metrics for the current font.
-		EC_B(::GetTextMetrics(hdc, &tmFont));
-
-		ReleaseDC(hwndEdit, hdc);
-	}
-
-	// Calculate the new height for the edit control.
-	iHeight = tmFont.tmHeight - tmFont.tmInternalLeading;
-	return iHeight;
-} // GetTextHeight
-
 _Check_return_ bool bShouldCancel(_In_opt_ CWnd* cWnd, HRESULT hResPrev)
 {
 	bool bGotError = false;
@@ -923,7 +739,7 @@ void ResolveMessageClass(_In_ CMapiObjects* lpMapiObjects, _In_opt_ LPMAPIFOLDER
 	}
 } // ResolveMessageClass
 
-void SelectForm(_In_ CMapiObjects* lpMapiObjects, _In_opt_ LPMAPIFOLDER lpMAPIFolder, _Out_ LPMAPIFORMINFO* lppMAPIFormInfo)
+void SelectForm(_In_ HWND hWnd, _In_ CMapiObjects* lpMapiObjects, _In_opt_ LPMAPIFOLDER lpMAPIFolder, _Out_ LPMAPIFORMINFO* lppMAPIFormInfo)
 {
 	HRESULT hRes = S_OK;
 	LPMAPIFORMMGR lpMAPIFormMgr = NULL;
@@ -950,7 +766,7 @@ void SelectForm(_In_ CMapiObjects* lpMapiObjects, _In_opt_ LPMAPIFOLDER lpMAPIFo
 #pragma warning(disable:4616)
 #pragma warning(disable:6276)
 		EC_H_CANCEL(lpMAPIFormMgr->SelectForm(
-			NULL,
+			(ULONG_PTR) hWnd,
 			0, // fMapiUnicode,
 			(LPCTSTR) szTitle,
 			lpMAPIFolder,

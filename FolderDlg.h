@@ -20,7 +20,7 @@ public:
 
 private:
 	// Overrides from base class
-	void EnableAddInMenus(_In_ CMenu* pMenu, ULONG ulMenu, _In_ LPMENUITEM lpAddInMenu, UINT uiEnable);
+	void EnableAddInMenus(_In_ HMENU hMenu, ULONG ulMenu, _In_ LPMENUITEM lpAddInMenu, UINT uiEnable);
 	void HandleAddInMenuSingle(
 		_In_ LPADDINMENUPARAMS lpParams,
 		_In_ LPMAPIPROP lpMAPIProp,

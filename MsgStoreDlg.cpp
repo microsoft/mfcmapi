@@ -344,7 +344,7 @@ void CMsgStoreDlg::OnSelectForm()
 	LPMAPIFOLDER lpMAPIFolder = (LPMAPIFOLDER) m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY);
 	if (lpMAPIFolder)
 	{
-		SelectForm(m_lpMapiObjects, lpMAPIFolder, &lpMAPIFormInfo);
+		SelectForm(m_hWnd, m_lpMapiObjects, lpMAPIFolder, &lpMAPIFormInfo);
 		if (lpMAPIFormInfo)
 		{
 			EC_H(m_lpPropDisplay->SetDataSource(lpMAPIFormInfo,NULL,false));
@@ -920,7 +920,13 @@ void CMsgStoreDlg::OnDeleteSelectedItem()
 
 	ULONG bShiftPressed = GetKeyState(VK_SHIFT) <0;
 
-	lpItemEID = m_lpHierarchyTableTreeCtrl->GetSelectedItemEID(); // never free this!!!!!
+	HTREEITEM hItem = m_lpHierarchyTableTreeCtrl->GetSelectedItem();
+	if (hItem)
+	{
+		SortListData* lpData = (SortListData*) m_lpHierarchyTableTreeCtrl->GetItemData(hItem);
+		if (lpData) lpItemEID = lpData->data.Node.lpEntryID;
+	}
+
 	if (!lpItemEID) return;
 
 	LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release
@@ -962,6 +968,9 @@ void CMsgStoreDlg::OnDeleteSelectedItem()
 					lpProgress ? (ULONG_PTR)m_hWnd : NULL,
 					lpProgress,
 					ulFlags));
+
+				// Delete the item from the UI since we cannot rely on notifications to handle this for us
+				WC_B(m_lpHierarchyTableTreeCtrl->DeleteItem(hItem));
 
 				if (lpProgress)
 					lpProgress->Release();

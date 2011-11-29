@@ -7,7 +7,7 @@
 #include "MapiObjects.h"
 #include "ContentsTableDlg.h"
 #include "MAPIFunctions.h"
-#include "MFCUtilityFunctions.h"
+#include "UIFunctions.h"
 #include "AdviseSink.h"
 #include "InterpretProp.h"
 #include "InterpretProp2.h"
@@ -125,14 +125,7 @@ _Check_return_ LRESULT CContentsTableListCtrl::WindowProc(UINT message, WPARAM w
 
 void CContentsTableListCtrl::OnContextMenu(_In_ CWnd* /*pWnd*/, CPoint pos)
 {
-	if (m_nIDContextMenu)
-	{
-		DisplayContextMenu(m_nIDContextMenu,IDR_MENU_TABLE,m_lpHostDlg, pos.x, pos.y);
-	}
-	else
-	{
-		DisplayContextMenu(IDR_MENU_DEFAULT_POPUP,IDR_MENU_TABLE,m_lpHostDlg, pos.x, pos.y);
-	}
+	DisplayContextMenu(m_nIDContextMenu,IDR_MENU_TABLE,m_lpHostDlg->m_hWnd, pos.x, pos.y);
 } // CContentsTableListCtrl::OnContextMenu
 
 _Check_return_ ULONG CContentsTableListCtrl::GetContainerType()
@@ -623,9 +616,9 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 	// required on da new thread before we do any MAPI work
 	EC_H(MAPIInitialize(NULL));
 
-	(void)::SendMessage(hWndHost,WM_MFCMAPI_CLEARSINGLEMAPIPROPLIST,NULL,NULL);
+	(void) ::SendMessage(hWndHost,WM_MFCMAPI_CLEARSINGLEMAPIPROPLIST,NULL,NULL);
 	szStatusText.Format(IDS_STATUSTEXTNUMITEMS,lpListCtrl->GetItemCount());
-	(void)::SendMessage(hWndHost,WM_MFCMAPI_UPDATESTATUSBAR,STATUSLEFTPANE,(LPARAM)(LPCTSTR) szStatusText);
+	(void) ::SendMessage(hWndHost,WM_MFCMAPI_UPDATESTATUSBAR,STATUSDATA1,(LPARAM)(LPCTSTR) szStatusText);
 
 	// potentially lengthy op - check abort before and after
 	CHECKABORT(WC_H(lpListCtrl->ApplyRestriction()));
@@ -650,7 +643,7 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 		ulThrottleLevel = RegKeys[regkeyTHROTTLE_LEVEL].ulCurDWORD;
 
 		szStatusText.FormatMessage(IDS_LOADINGITEMS,0,ulTotal);
-		(void)::SendMessage(hWndHost,WM_MFCMAPI_UPDATESTATUSBAR,STATUSMIDDLEPANE,(LPARAM)(LPCTSTR) szStatusText);
+		(void) ::SendMessage(hWndHost,WM_MFCMAPI_UPDATESTATUSBAR,STATUSDATA2,(LPARAM)(LPCTSTR) szStatusText);
 	}
 
 	LPSRestriction lpRes = lpListCtrl->GetRestriction();
@@ -659,7 +652,7 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 	{
 		BREAKONABORT;
 		EC_B(szStatusText.LoadString(IDS_ESCSTOPLOADING));
-		(void)::SendMessage(hWndHost,WM_MFCMAPI_UPDATESTATUSBAR,STATUSRIGHTPANE,(LPARAM)(LPCTSTR) szStatusText);
+		(void) ::SendMessage(hWndHost,WM_MFCMAPI_UPDATESTATUSBAR,STATUSINFOTEXT,(LPARAM)(LPCTSTR) szStatusText);
 		hRes = S_OK;
 		if (pRows) FreeProws(pRows);
 		pRows = NULL;
@@ -704,10 +697,10 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 			hRes = S_OK;
 			BREAKONABORT; // This check is cheap enough not to be a perf concern anymore
 			szStatusText.FormatMessage(IDS_LOADINGITEMS,iCurListBoxRow+1,ulTotal);
-			(void)::SendMessage(hWndHost,WM_MFCMAPI_UPDATESTATUSBAR,STATUSMIDDLEPANE,(LPARAM)(LPCTSTR) szStatusText);
+			(void) ::SendMessage(hWndHost,WM_MFCMAPI_UPDATESTATUSBAR,STATUSDATA2,(LPARAM)(LPCTSTR) szStatusText);
 
 			DebugPrintEx(DBGGeneric,CLASS,_T("ThreadFuncLoadTable"),_T("Asking to add %p to %d\n"),&pRows->aRow[iCurPropRow],iCurListBoxRow);
-			(void)::SendMessage(lpListCtrl->m_hWnd,WM_MFCMAPI_THREADADDITEM,iCurListBoxRow,(LPARAM)&pRows->aRow[iCurPropRow]);
+			(void) ::SendMessage(lpListCtrl->m_hWnd,WM_MFCMAPI_THREADADDITEM,iCurListBoxRow,(LPARAM)&pRows->aRow[iCurPropRow]);
 			if (FAILED(hRes)) continue;
 			iCurListBoxRow++;
 		}
@@ -722,14 +715,14 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 	if (bABORTSET)
 	{
 		EC_B(szStatusText.LoadString(IDS_TABLELOADCANCELLED));
-		(void)::SendMessage(hWndHost,WM_MFCMAPI_UPDATESTATUSBAR,STATUSRIGHTPANE,(LPARAM)(LPCTSTR) szStatusText);
+		(void) ::SendMessage(hWndHost,WM_MFCMAPI_UPDATESTATUSBAR,STATUSINFOTEXT,(LPARAM)(LPCTSTR) szStatusText);
 	}
 	else
 	{
 		EC_B(szStatusText.LoadString(IDS_TABLELOADED));
-		(void)::SendMessage(hWndHost,WM_MFCMAPI_UPDATESTATUSBAR,STATUSRIGHTPANE,(LPARAM)(LPCTSTR) szStatusText);
+		(void) ::SendMessage(hWndHost,WM_MFCMAPI_UPDATESTATUSBAR,STATUSINFOTEXT,(LPARAM)(LPCTSTR) szStatusText);
 	}
-	(void)::SendMessage(hWndHost,WM_MFCMAPI_UPDATESTATUSBAR,STATUSMIDDLEPANE,(LPARAM)_T(""));
+	(void) ::SendMessage(hWndHost,WM_MFCMAPI_UPDATESTATUSBAR,STATUSDATA2,(LPARAM)_T(""));
 	DebugPrintEx(DBGGeneric,CLASS,_T("ThreadFuncLoadTable"),_T("added %d items\n"),iCurListBoxRow);
 
 	DebugPrintEx(DBGGeneric,CLASS,_T("ThreadFuncLoadTable"),_T("Releasing pointers.\n"));
@@ -1209,7 +1202,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::AddItemToListBox(int iRow, _In_ L
 	EC_H(RefreshItem(iRow,lpsRowToAdd,false));
 
 	if (m_lpHostDlg)
-		m_lpHostDlg->UpdateStatusBarText(STATUSLEFTPANE,IDS_STATUSTEXTNUMITEMS,GetItemCount());
+		m_lpHostDlg->UpdateStatusBarText(STATUSDATA1,IDS_STATUSTEXTNUMITEMS,GetItemCount());
 
 	return hRes;
 } // CContentsTableListCtrl::AddItemToListBox
@@ -1874,7 +1867,7 @@ _Check_return_ LRESULT	CContentsTableListCtrl::msgOnDeleteItem(WPARAM wParam, LP
 		m_lpHostDlg->OnUpdateSingleMAPIPropListCtrl(NULL, NULL);
 	}
 
-	m_lpHostDlg->UpdateStatusBarText(STATUSLEFTPANE,IDS_STATUSTEXTNUMITEMS,iCount);
+	m_lpHostDlg->UpdateStatusBarText(STATUSDATA1,IDS_STATUSTEXTNUMITEMS,iCount);
 	return hRes;
 } // CContentsTableListCtrl::msgOnDeleteItem
 

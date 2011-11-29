@@ -263,7 +263,7 @@ void CFolderDlg::OnInitMenu(_In_ CMenu* pMenu)
 
 // Checks flags on add-in menu items to ensure they should be enabled
 // Override to support context sensitive scenarios
-void CFolderDlg::EnableAddInMenus(_In_ CMenu* pMenu, ULONG ulMenu, _In_ LPMENUITEM lpAddInMenu, UINT uiEnable)
+void CFolderDlg::EnableAddInMenus(_In_ HMENU hMenu, ULONG ulMenu, _In_ LPMENUITEM lpAddInMenu, UINT uiEnable)
 {
 	if (lpAddInMenu)
 	{
@@ -280,7 +280,7 @@ void CFolderDlg::EnableAddInMenus(_In_ CMenu* pMenu, ULONG ulMenu, _In_ LPMENUIT
 			if (!(m_ulDisplayFlags == dfNormal)) uiEnable = MF_GRAYED;
 		}
 	}
-	if (pMenu) pMenu->EnableMenuItem(ulMenu,uiEnable);
+	if (hMenu) ::EnableMenuItem(hMenu,ulMenu,uiEnable);
 } // CFolderDlg::EnableAddInMenus
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -848,7 +848,7 @@ void CFolderDlg::OnSelectForm()
 
 	if (!m_lpMapiObjects) return;
 
-	SelectForm(m_lpMapiObjects, (LPMAPIFOLDER)m_lpContainer, &lpMAPIFormInfo);
+	SelectForm(m_hWnd, m_lpMapiObjects, (LPMAPIFOLDER)m_lpContainer, &lpMAPIFormInfo);
 	if (lpMAPIFormInfo)
 	{
 		OnUpdateSingleMAPIPropListCtrl(lpMAPIFormInfo, NULL);

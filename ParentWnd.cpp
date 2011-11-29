@@ -6,6 +6,7 @@
 #include "ImportProcs.h"
 #include "MyWinApp.h"
 #include "NamedPropCache.h"
+#include "UIFunctions.h"
 
 extern CMyWinApp theApp;
 
@@ -54,16 +55,17 @@ CParentWnd::CParentWnd()
 	// After this call we may output to the debug file
 	OpenDebugFile();
 	DebugPrintVersion(DBGVersionBanner);
-	// Trick to get the new button working on the MAPILogonEx dialog with Outlook 11
-	// This trick doesn't appear to be necessary with Outlook 12
-	// First part is to load Office's RichEd20.dll
-	LoadRichEd();
+	// Force the system riched20 so we don't load office's version.
+	(void) LoadFromSystemDir(_T("riched20.dll")); // STRING_OK
 	// Second part is to load rundll32.exe
 	// Don't plan on unloading this, so don't care about the return value
 	(void) LoadFromSystemDir(_T("rundll32.exe")); // STRING_OK
 
 	// Load DLLS and get functions from them
 	ImportProcs();
+
+	// Initialize objects for theming
+	InitializeGDI();
 
 	m_cRef = 1;
 
@@ -90,6 +92,7 @@ CParentWnd::~CParentWnd()
 	// Since we didn't create a window, we can't call DestroyWindow to let MFC know we're done.
 	// We call AfxPostQuitMessage instead
 	TRACE_DESTRUCTOR(CLASS);
+	UninitializeGDI();
 	UnloadAddIns();
 	if (m_hwinEventHook) UnhookWinEvent(m_hwinEventHook);
 	UninitializeNamedPropCache();
