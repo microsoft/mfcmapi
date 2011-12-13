@@ -58,4 +58,4 @@ _Check_return_ bool GetTextualSid(
 				   _Inout_ LPDWORD lpdwBufferLen // required/provided TextualSid buffersize
 				   );
 
-_Check_return_ HRESULT SDToString(_In_ LPBYTE lpBuf, eAceType acetype, _In_ CString *SDString, _In_ CString *sdInfo);
+_Check_return_ HRESULT SDToString(_In_count_(cbBuf) LPBYTE lpBuf, ULONG cbBuf, eAceType acetype, _In_ CString *SDString, _In_ CString *sdInfo);

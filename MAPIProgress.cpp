@@ -6,14 +6,14 @@
 static TCHAR* CLASS = _T("CMAPIProgress");
 
 #ifdef MRMAPI
-_Check_return_ CMAPIProgress* GetMAPIProgress(_In_z_ LPTSTR /*lpszContext*/, _In_ HWND /*hWnd*/)
+_Check_return_ CMAPIProgress* GetMAPIProgress(_In_z_ LPCTSTR /*lpszContext*/, _In_ HWND /*hWnd*/)
 {
 	return NULL;
 } // GetMAPIProgress
 #endif
 
 #ifndef MRMAPI
-_Check_return_ CMAPIProgress* GetMAPIProgress(_In_z_ LPTSTR lpszContext, _In_ HWND hWnd)
+_Check_return_ CMAPIProgress* GetMAPIProgress(_In_z_ LPCTSTR lpszContext, _In_ HWND hWnd)
 {
 	if (RegKeys[regkeyUSE_IMAPIPROGRESS].ulCurDWORD)
 	{
@@ -187,7 +187,7 @@ _Check_return_ STDMETHODIMP CMAPIProgress::SetLimits(_Inout_ ULONG* lpulMin, _In
 	return S_OK;
 } // CMAPIProgress::SetLimits
 
-void CMAPIProgress::OutputState(_In_z_ LPTSTR lpszFunction)
+void CMAPIProgress::OutputState(_In_z_ LPCTSTR lpszFunction)
 {
 	DebugPrint(DBGGeneric,_T("%s::%s(%s) - Current Values: Min = %d, Max = %d, Flags = %d\n"),
 		CLASS, lpszFunction, (LPCTSTR) m_szContext, m_ulMin, m_ulMax, m_ulFlags);

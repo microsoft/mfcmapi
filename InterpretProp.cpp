@@ -1380,14 +1380,14 @@ void NameIDToStrings(_In_ LPMAPINAMEID lpNameID,
 				// Compiler Error C2017 - Can occur (falsly) when escape sequences are stringized, as EC_H will do here
 #define __BADSTRING _T("sz: \"%hs\" %s") // STRING_OK
 				EC_H(StringCchPrintf(szPropName,7+cchShortLen+25,__BADSTRING,
-					lpNameID->Kind.lpwstrName,szComment));
+					(LPSTR) lpNameID->Kind.lpwstrName, (LPCTSTR) szComment));
 			}
 			szDASL = new TCHAR[CCH_DASL_STRING+cchShortLen];
 			if (szDASL)
 			{
 				EC_H(StringCchPrintf(szDASL,CCH_DASL_STRING+cchShortLen,_T("string/%s/%hs"), // STRING_OK
 					szDASLGuid,
-					lpNameID->Kind.lpwstrName));
+					(LPSTR) lpNameID->Kind.lpwstrName));
 			}
 		}
 	}

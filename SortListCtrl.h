@@ -87,14 +87,14 @@ public:
 	void          DeleteAllColumns(bool bShutdown = false);
 	void          SetSelectedItem(int iItem);
 	void          SortClickedColumn();
-	_Check_return_ SortListData* InsertRow(int iRow, _In_z_ LPTSTR szText);
+	_Check_return_ SortListData* InsertRow(int iRow, _In_z_ LPCTSTR szText);
 	void SetItemText(int nItem, int nSubItem, _In_z_ LPCTSTR lpszText);
 	void SetItemTextA(int nItem, int nSubItem, _In_z_ LPCSTR lpszText);
 	void SetItemTextW(int nItem, int nSubItem, _In_z_ LPCWSTR lpszText);
 
 protected:
 	void          MySetRedraw(bool bRedraw);
-	_Check_return_ SortListData* InsertRow(int iRow, _In_z_ LPTSTR szText, int iIndent, int iImage);
+	_Check_return_ SortListData* InsertRow(int iRow, _In_z_ LPCTSTR szText, int iIndent, int iImage);
 	void          FakeClickColumn(int iColumn, bool bSortUp);
 
 	// protected since derived classes need to call the base implementation

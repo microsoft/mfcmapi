@@ -101,7 +101,7 @@ _Check_return_ BOOL CAboutDlg::OnInitDialog()
 	::SendMessage(m_HelpText.m_hWnd, EM_AUTOURLDETECT,true, NULL);
 	m_HelpText.SetBackgroundColor(false, MyGetSysColor(cBackground));
 	m_HelpText.SetFont(GetFont());
-	ClearEditFormatting(m_HelpText.m_hWnd);
+	ClearEditFormatting(m_HelpText.m_hWnd, false); // Lie. This control is read only, but we render it as if it wasn't.
 
 	CString szHelpText;
 	szHelpText.FormatMessage(IDS_HELPTEXT,szProductName);
@@ -237,6 +237,16 @@ _Check_return_ LRESULT CAboutDlg::WindowProc(UINT message, WPARAM wParam, LPARAM
 			}
 			break;
 		}
+	case WM_ERASEBKGND:
+		{
+			RECT rect = {0};
+			::GetClientRect(m_hWnd, &rect);
+			HGDIOBJ hOld = ::SelectObject((HDC)wParam, GetSysBrush(cBackground));
+			BOOL bRet = ::PatBlt((HDC) wParam, 0, 0, rect.right - rect.left, rect.bottom - rect.top, PATCOPY);
+			::SelectObject((HDC)wParam, hOld);
+			return bRet;
+		}
+		break;
 	} // end switch
 	return CMyDialog::WindowProc(message,wParam,lParam);
 } // CAboutDlg::WindowProc

@@ -585,8 +585,8 @@ _Check_return_ HRESULT HrAddServiceToProfile(
 	if (!lpProfAdmin) return hRes;
 
 	EC_H(lpProfAdmin->AdminServices(
-		(LPTSTR)lpszProfileName,
-		_T(""),
+		(LPTSTR) lpszProfileName,
+		(LPTSTR) _T(""),
 		0,
 		0,
 		&lpServiceAdmin));
@@ -1007,8 +1007,8 @@ _Check_return_ HRESULT GetProfileServiceVersion(_In_z_ LPCSTR lpszProfileName,
 	if (!lpProfAdmin) return hRes;
 
 	EC_H(lpProfAdmin->AdminServices(
-		(LPTSTR)lpszProfileName,
-		_T(""),
+		(LPTSTR) lpszProfileName,
+		(LPTSTR) _T(""),
 		0,
 		0,
 		&lpServiceAdmin));

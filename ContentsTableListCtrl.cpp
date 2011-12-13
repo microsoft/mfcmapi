@@ -617,7 +617,7 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 	EC_H(MAPIInitialize(NULL));
 
 	(void) ::SendMessage(hWndHost,WM_MFCMAPI_CLEARSINGLEMAPIPROPLIST,NULL,NULL);
-	szStatusText.Format(IDS_STATUSTEXTNUMITEMS,lpListCtrl->GetItemCount());
+	szStatusText.FormatMessage(IDS_STATUSTEXTNUMITEMS,lpListCtrl->GetItemCount());
 	(void) ::SendMessage(hWndHost,WM_MFCMAPI_UPDATESTATUSBAR,STATUSDATA1,(LPARAM)(LPCTSTR) szStatusText);
 
 	// potentially lengthy op - check abort before and after
@@ -1202,7 +1202,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::AddItemToListBox(int iRow, _In_ L
 	EC_H(RefreshItem(iRow,lpsRowToAdd,false));
 
 	if (m_lpHostDlg)
-		m_lpHostDlg->UpdateStatusBarText(STATUSDATA1,IDS_STATUSTEXTNUMITEMS,GetItemCount());
+		m_lpHostDlg->UpdateStatusBarText(STATUSDATA1, IDS_STATUSTEXTNUMITEMS, GetItemCount(), 0, 0);
 
 	return hRes;
 } // CContentsTableListCtrl::AddItemToListBox
@@ -1771,7 +1771,7 @@ void CContentsTableListCtrl::OnOutputTable(_In_z_ LPCWSTR szFileName)
 {
 	if (m_bInLoadOp) return;
 	FILE* fTable = NULL;
-	fTable = OpenFile(szFileName,true);
+	fTable = MyOpenFile(szFileName, true);
 	if (fTable)
 	{
 		OutputTableToFile(fTable,m_lpContentsTable);
@@ -1867,7 +1867,7 @@ _Check_return_ LRESULT	CContentsTableListCtrl::msgOnDeleteItem(WPARAM wParam, LP
 		m_lpHostDlg->OnUpdateSingleMAPIPropListCtrl(NULL, NULL);
 	}
 
-	m_lpHostDlg->UpdateStatusBarText(STATUSDATA1,IDS_STATUSTEXTNUMITEMS,iCount);
+	m_lpHostDlg->UpdateStatusBarText(STATUSDATA1, IDS_STATUSTEXTNUMITEMS, iCount, 0, 0);
 	return hRes;
 } // CContentsTableListCtrl::msgOnDeleteItem
 

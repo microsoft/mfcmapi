@@ -98,9 +98,9 @@ _Check_return_ HRESULT AnsiToUnicode(_In_z_ LPCSTR pszA, _Out_z_cap_(cchszA) LPW
 _Check_return_ HRESULT UnicodeToAnsi(_In_z_ LPCWSTR pszW, _Out_z_cap_(cchszW) LPSTR* ppszA, size_t cchszW = -1);
 
 _Check_return_ bool CheckStringProp(_In_opt_ LPSPropValue lpProp, ULONG ulPropType);
-_Check_return_ DWORD ComputeStoreHash(ULONG cbStoreEID, _In_ LPBYTE pbStoreEID, _In_opt_z_ LPCSTR pszFileName, _In_opt_z_ LPCWSTR pwzFileName, bool bPublicStore);
+_Check_return_ DWORD ComputeStoreHash(ULONG cbStoreEID, _In_count_(cbStoreEID) LPBYTE pbStoreEID, _In_opt_z_ LPCSTR pszFileName, _In_opt_z_ LPCWSTR pwzFileName, bool bPublicStore);
 _Check_return_ LPWSTR EncodeID(ULONG cbEID, _In_ LPENTRYID rgbID);
-_Check_return_ LPWSTR DecodeID(ULONG cbBuffer, _In_ LPBYTE lpbBuffer);
+_Check_return_ LPWSTR DecodeID(ULONG cbBuffer, _In_count_(cbBuffer) LPBYTE lpbBuffer);
 
 HRESULT HrEmsmdbUIDFromStore(_In_ LPMAPISESSION pmsess,
 							 _In_ MAPIUID const * const puidService,

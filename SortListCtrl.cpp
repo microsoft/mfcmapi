@@ -243,12 +243,12 @@ void CSortListCtrl::OnDeleteItem(NMHDR* pNMHDR, LRESULT* pResult)
 	*pResult = 0;
 } // CSortListCtrl::OnDeleteItem
 
-_Check_return_ SortListData* CSortListCtrl::InsertRow(int iRow, LPTSTR szText)
+_Check_return_ SortListData* CSortListCtrl::InsertRow(int iRow, LPCTSTR szText)
 {
-	return InsertRow(iRow,szText,0,0);
+	return InsertRow(iRow, szText, 0, 0);
 } // CSortListCtrl::InsertRow
 
-_Check_return_ SortListData* CSortListCtrl::InsertRow(int iRow, _In_z_ LPTSTR szText, int iIndent, int iImage)
+_Check_return_ SortListData* CSortListCtrl::InsertRow(int iRow, _In_z_ LPCTSTR szText, int iIndent, int iImage)
 {
 	HRESULT			hRes = S_OK;
 	SortListData*	lpData = NULL;
@@ -265,7 +265,7 @@ _Check_return_ SortListData* CSortListCtrl::InsertRow(int iRow, _In_z_ LPTSTR sz
 	lvItem.iItem = iRow;
 	lvItem.iSubItem = 0;
 	lvItem.mask = LVIF_TEXT | LVIF_PARAM | LVIF_INDENT | LVIF_IMAGE;
-	lvItem.pszText = szText;
+	lvItem.pszText = (LPTSTR) szText;
 	lvItem.iIndent = iIndent;
 	lvItem.iImage = iImage;
 	lvItem.lParam = (LPARAM) lpData;

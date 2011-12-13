@@ -239,7 +239,7 @@ STDMETHODIMP CMySecInfo::GetSecurity(SECURITY_INFORMATION /*RequestedInformation
 			// Dump our SD
 			CString szDACL;
 			CString szInfo;
-			EC_H(SDToString(lpSDBuffer,m_acetype,&szDACL,&szInfo));
+			EC_H(SDToString(lpSDBuffer, cbSBBuffer, m_acetype, &szDACL, &szInfo));
 
 			DebugPrint(DBGGeneric,_T("sdInfo: %s\nszDACL: %s\n"), (LPCTSTR) szInfo, (LPCTSTR) szDACL);
 		}
@@ -620,7 +620,7 @@ void ACEToString(_In_ void* pACE, eAceType acetype, _In_ CString *AceString)
 	}
 } // ACEToString
 
-_Check_return_ HRESULT SDToString(_In_ LPBYTE lpBuf, eAceType acetype, _In_ CString *SDString, _In_ CString *sdInfo)
+_Check_return_ HRESULT SDToString(_In_count_(cbBuf) LPBYTE lpBuf, ULONG cbBuf, eAceType acetype, _In_ CString *SDString, _In_ CString *sdInfo)
 {
 	HRESULT hRes = S_OK;
 	BOOL bValidDACL = false;
@@ -629,6 +629,7 @@ _Check_return_ HRESULT SDToString(_In_ LPBYTE lpBuf, eAceType acetype, _In_ CStr
 	PSECURITY_DESCRIPTOR pSecurityDescriptor = NULL;
 
 	if (!lpBuf || !SDString) return MAPI_E_NOT_FOUND;
+	if (CbSecurityDescriptorHeader(lpBuf) > cbBuf) return MAPI_E_NOT_FOUND;
 
 	pSecurityDescriptor = SECURITY_DESCRIPTOR_OF(lpBuf);
 

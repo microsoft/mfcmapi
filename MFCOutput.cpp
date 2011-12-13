@@ -20,11 +20,11 @@ void OpenDebugFile()
 	if (0 != RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD)
 	{
 #ifdef UNICODE
-		g_fDebugFile = OpenFile(RegKeys[regkeyDEBUG_FILE_NAME].szCurSTRING,false);
+		g_fDebugFile = MyOpenFile(RegKeys[regkeyDEBUG_FILE_NAME].szCurSTRING, false);
 #else
 		LPWSTR szDebugFileW = NULL;
 		(void) AnsiToUnicode(RegKeys[regkeyDEBUG_FILE_NAME].szCurSTRING,&szDebugFileW);
-		g_fDebugFile = OpenFile(szDebugFileW,false);
+		g_fDebugFile = MyOpenFile(szDebugFileW, false);
 		delete[] szDebugFileW;
 #endif
 	}
@@ -81,7 +81,7 @@ void SetDebugOutputToFile(bool bDoOutput)
 // quick check to see if we have anything to print - so we can avoid executing the call
 #define EARLYABORT {if (!fFile && !RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD && !fIsSetv(ulDbgLvl)) return;}
 
-_Check_return_ FILE* OpenFile(_In_z_ LPCWSTR szFileName, bool bNewFile)
+_Check_return_ FILE* MyOpenFile(_In_z_ LPCWSTR szFileName, bool bNewFile)
 {
 	static TCHAR szErr[256]; // buffer for catastrophic failures
 	FILE* fOut = NULL;
@@ -124,7 +124,7 @@ _Check_return_ FILE* OpenFile(_In_z_ LPCWSTR szFileName, bool bNewFile)
 		LocalFree(szSysErr);
 		return NULL;
 	}
-} // OpenFile
+} // MyOpenFile
 
 void CloseFile(_In_opt_ FILE* fFile)
 {

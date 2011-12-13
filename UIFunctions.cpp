@@ -18,9 +18,6 @@ enum myColor
 	cBlack,
 	cCyan,
 	cMagenta,
-	cOrange,
-	cMedOrange,
-	cLightOrange,
 	cColorEnd
 };
 
@@ -32,9 +29,6 @@ COLORREF g_Colors[cColorEnd] =
 	RGB(0x00, 0x00, 0x00), // cBlack
 	RGB(0x00, 0xFF, 0xFF), // cCyan
 	RGB(0xFF, 0x00, 0xFF), // cMagenta
-	RGB(0xFF, 0x99, 0x33), // cOrange
-	RGB(0xFF, 0xB3, 0x23), // cMedOrange
-	RGB(0xFF, 0xD0, 0xA0), // cLightOrange
 };
 
 // Fixed mapping of UI elements to colors
@@ -44,8 +38,8 @@ COLORREF g_Colors[cColorEnd] =
 myColor g_FixedColors[cUIEnd] =
 {
 	cWhite, // cBackground
-	cLightOrange, // cBackgroundDisabled
-	cOrange, // cGlow
+	cGrey, // cBackgroundDisabled
+	cBlack, // cGlow
 	cBlack, // cFrameSelected
 	cGrey, // cFrameUnselected
 	cGrey, // cArrow
@@ -56,18 +50,19 @@ myColor g_FixedColors[cUIEnd] =
 };
 
 // Mapping of UI elements to system colors
+
 // NULL entries will get the fixed mapping from g_FixedColors
 int g_SysColors[cUIEnd] =
 {
 	COLOR_WINDOW, // cBackground
-	NULL, // cBackgroundDisabled
-	NULL, // cGlow
+	COLOR_WINDOWFRAME, // cBackgroundDisabled
+	COLOR_WINDOWFRAME, // cGlow
 	COLOR_WINDOWTEXT, // cFrameSelected
 	COLOR_3DLIGHT, // cFrameUnselected
 	COLOR_GRAYTEXT, // cArrow
 	COLOR_WINDOWTEXT, // cText
 	COLOR_GRAYTEXT, // cTextDisabled
-	NULL, // cTextInverted
+	COLOR_WINDOW, // cTextInverted
 	NULL, // cBitmapTransparency
 };
 
@@ -428,7 +423,7 @@ int CALLBACK EnumFontFamExProcW(
 } // EnumFontFamExProcW
 
 // This font is not cached and must be delete manually
-HFONT GetFont(_In_z_ LPWSTR szFont)
+HFONT GetFont(_In_z_ LPCWSTR szFont)
 {
 	HFONT hFont = 0;
 	LOGFONTW lfFont = {0};
@@ -438,10 +433,12 @@ HFONT GetFont(_In_z_ LPWSTR szFont)
 	EnumFontFamiliesExW(GetDC(NULL), &lfFont, (FONTENUMPROCW) EnumFontFamExProcW, (LPARAM) &hFont, 0);
 	if (hFont) return hFont;
 
-	// If we can't get our font, fallback to a stock font
+	// If we can't get our font, fallback to a system font
 	static LOGFONTW lf = {0};
-	// This gets the font 'MS Shell Dlg' in testing
-	GetObjectW(GetStockObject(DEFAULT_GUI_FONT), sizeof(lf), &lf);
+	NONCLIENTMETRICSW ncm = {0};
+	ncm.cbSize = sizeof(ncm);
+	SystemParametersInfoW(SPI_GETNONCLIENTMETRICS, NULL, &ncm, NULL);
+	lf = ncm.lfMessageFont;
 
 	// Create the font, and then return its handle.
 	hFont = CreateFontW(lf.lfHeight, lf.lfWidth,
@@ -594,35 +591,51 @@ void DrawSegoeTextA(
 // We have to force load the system riched20 to ensure this doesn't break since
 // Office's riched20 apparently doesn't handle CFM_COLOR at all.
 // Sets our text color, script, and turns off bold, italic, etc formatting.
-void ClearEditFormatting(_In_ HWND hWnd)
+void ClearEditFormatting(_In_ HWND hWnd, bool bReadOnly)
 {
 	CHARFORMAT2 cf;
 	ZeroMemory(&cf, sizeof(cf));
 	cf.cbSize = sizeof(cf);
 	cf.dwMask = CFM_COLOR | CFM_FACE | CFM_BOLD | CFM_ITALIC | CFM_UNDERLINE | CFM_STRIKEOUT;
-	cf.crTextColor = MyGetSysColor(cText);
+	cf.crTextColor = MyGetSysColor(bReadOnly ? cTextInverted : cText);
 	StringCchCopy(cf.szFaceName, _countof(cf.szFaceName), SEGOE);
 	(void) ::SendMessage(hWnd, EM_SETCHARFORMAT, SCF_ALL, (LPARAM)&cf);
 } // ClearEditFormatting
 
+// Lighten the colors of the base, being careful not to overflow
+COLORREF LightColor(COLORREF crBase)
+{
+	double f = 1.1;
+	BYTE bRed   = (BYTE) (GetRValue(crBase) * f);
+	BYTE bGreen = (BYTE) (GetGValue(crBase) * f);
+	BYTE bBlue  = (BYTE) (GetBValue(crBase) * f);
+	if (bRed   < GetRValue(crBase)) bRed   = 0xff;
+	if (bGreen < GetGValue(crBase)) bGreen = 0xff;
+	if (bBlue  < GetBValue(crBase)) bBlue  = 0xff;
+	return RGB(bRed, bGreen, bBlue);
+} // LightColor
+
 void GradientFillRect(_In_ HDC hdc, RECT rc)
 {
 	// Gradient fill the background
+	COLORREF crGlow = MyGetSysColor(cGlow);
+	COLORREF crLightGlow = LightColor(crGlow);
+
 	TRIVERTEX vertex[2] = {0};
-	// Medium orange at the top
+	// Light at the top
 	vertex[0].x     = rc.left;
 	vertex[0].y     = rc.top;
-	vertex[0].Red   = GetRValue(g_Colors[cMedOrange]) << 8;
-	vertex[0].Green = GetGValue(g_Colors[cMedOrange]) << 8;
-	vertex[0].Blue  = GetBValue(g_Colors[cMedOrange]) << 8;
+	vertex[0].Red   = GetRValue(crLightGlow) << 8;
+	vertex[0].Green = GetGValue(crLightGlow) << 8;
+	vertex[0].Blue  = GetBValue(crLightGlow) << 8;
 	vertex[0].Alpha = 0x0000;
 
-	// Dark orange at the bottom
+	// Dark at the bottom
 	vertex[1].x     = rc.right;
 	vertex[1].y     = rc.bottom;
-	vertex[1].Red   = GetRValue(g_Colors[cOrange]) << 8;
-	vertex[1].Green = GetGValue(g_Colors[cOrange]) << 8;
-	vertex[1].Blue  = GetBValue(g_Colors[cOrange]) << 8;
+	vertex[1].Red   = GetRValue(crGlow) << 8;
+	vertex[1].Green = GetGValue(crGlow) << 8;
+	vertex[1].Blue  = GetBValue(crGlow) << 8;
 	vertex[1].Alpha = 0x0000;
 
 	// Create a GRADIENT_RECT structure that references the TRIVERTEX vertices. 
@@ -791,11 +804,18 @@ void DrawTreeItemFrame(_In_ HWND hWnd, HTREEITEM hItem, bool bDraw)
 	::GetClientRect(hWnd, &rectTree);
 	rect.left = rectTree.left;
 	rect.right = rectTree.right;
-	HDC hdc = ::GetDC(hWnd);
-	if (hdc)
+	if (bDraw)
 	{
-		::FrameRect(hdc, &rect, GetSysBrush(bDraw ? cGlow : cBackground));
-		::ReleaseDC(hWnd, hdc);
+		HDC hdc = ::GetDC(hWnd);
+		if (hdc)
+		{
+			::FrameRect(hdc, &rect, GetSysBrush(cGlow));
+			::ReleaseDC(hWnd, hdc);
+		}
+	}
+	else
+	{
+		::InvalidateRect(hWnd, &rect, false);
 	}
 } // DrawTreeItemFrame
 
@@ -1389,7 +1409,7 @@ void DrawComboBox(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
 	DrawSegoeText(
 		lpDrawItemStruct->hDC,
 		szText,
-		MyGetSysColor(cText),
+		MyGetSysColor(bHot ? cTextInverted : cText),
 		&lpDrawItemStruct->rcItem,
 		false,
 		DT_LEFT | DT_SINGLELINE | DT_VCENTER);
@@ -1514,6 +1534,7 @@ void DrawWindowFrame(_In_ HWND hWnd, bool bActive, int iStatusHeight)
 			iStatusHeight = rcClient.bottom - rcClient.top;
 		}
 
+		int cxPaddedBorder = GetSystemMetrics(SM_CXPADDEDBORDER);
 		int cxFixedFrame = GetSystemMetrics(SM_CXFIXEDFRAME);
 		int cyFixedFrame = GetSystemMetrics(SM_CYFIXEDFRAME);
 		int cxSizeFrame = GetSystemMetrics(SM_CXSIZEFRAME);
@@ -1524,6 +1545,13 @@ void DrawWindowFrame(_In_ HWND hWnd, bool bActive, int iStatusHeight)
 
 		int cxFrame = bThickFrame?cxSizeFrame:cxFixedFrame;
 		int cyFrame = bThickFrame?cySizeFrame:cyFixedFrame;
+
+		// If padded borders are in effect, we fall back to a single width for both thick and thin frames
+		if (cxPaddedBorder)
+		{
+			cxFrame = cxSizeFrame + cxPaddedBorder;
+			cyFrame = cySizeFrame + cxPaddedBorder;
+		}
 
 		// The menu and caption have odd borders we've not painted yet - compute rectangles so we can paint them
 		RECT rcFullCaption = {0};

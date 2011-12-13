@@ -12,7 +12,7 @@ extern LPSETWINDOWTHEME				pfnSetWindowTheme;
 extern LPMSIPROVIDEQUALIFIEDCOMPONENT pfnMsiProvideQualifiedComponent;
 extern LPMSIGETFILEVERSION			pfnMsiGetFileVersion;
 
-_Check_return_ HMODULE LoadFromSystemDir(_In_z_ LPTSTR szDLLName);
+_Check_return_ HMODULE LoadFromSystemDir(_In_z_ LPCTSTR szDLLName);
 
 _Check_return_ HMODULE MyLoadLibrary(_In_z_ LPCTSTR lpszLibFileName);
 void ImportProcs();

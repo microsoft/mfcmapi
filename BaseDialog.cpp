@@ -271,7 +271,7 @@ void CBaseDialog::OnMenuSelect(UINT nItemID, UINT nFlags, HMENU /*hSysMenu*/)
 
 	if (nItemID && !(nFlags & (MF_SEPARATOR | MF_POPUP)))
 	{
-		UpdateStatusBarText(STATUSINFOTEXT,nItemID); // This will LoadString the menu help text for us
+		UpdateStatusBarText(STATUSINFOTEXT, nItemID, 0, 0, 0); // This will LoadString the menu help text for us
 		m_bDisplayingMenuText = true;
 	}
 	else
@@ -280,7 +280,7 @@ void CBaseDialog::OnMenuSelect(UINT nItemID, UINT nFlags, HMENU /*hSysMenu*/)
 	}
 	if (!m_bDisplayingMenuText)
 	{
-		UpdateStatusBarText(STATUSINFOTEXT,m_szMenuDisplacedText);
+		UpdateStatusBarText(STATUSINFOTEXT, m_szMenuDisplacedText);
 	}
 } // CBaseDialog::OnMenuSelect
 
@@ -631,7 +631,7 @@ void CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, _In_z_ LPCTSTR szMs
 	SetStatusWidths();
 } // CBaseDialog::UpdateStatusBarText
 
-void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg, ...)
+void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg, ULONG ulParam1, ULONG ulParam2, ULONG ulParam3)
 {
 	CString szStatBarString;
 
@@ -647,10 +647,7 @@ void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg
 		WC_B(szMsg.LoadString(uidMsg));
 		if (FAILED(hRes)) DebugPrintEx(DBGMenu,CLASS,_T("UpdateStatusBarText"),_T("Cannot find menu item 0x%08X\n"),uidMsg);
 
-		va_list argList = NULL;
-		va_start(argList, uidMsg);
-		szStatBarString.FormatV(szMsg, argList);
-		va_end(argList);
+		szStatBarString.FormatMessage(szMsg, ulParam1, ulParam2, ulParam3);
 	}
 
 	UpdateStatusBarText(nPos,szStatBarString);

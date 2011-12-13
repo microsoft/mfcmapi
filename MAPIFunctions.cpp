@@ -1115,7 +1115,7 @@ _Check_return_ HRESULT GetInbox(_In_ LPMDB lpMDB, _Out_opt_ ULONG* lpcbeid, _Der
 	if (!lpMDB || !lpcbeid || !lppeid) return MAPI_E_INVALID_PARAMETER;
 
 	EC_H(lpMDB->GetReceiveFolder(
-		_T("IPM.Note"), // STRING_OK this is the class of message we want
+		(LPTSTR) _T("IPM.Note"), // STRING_OK this is the class of message we want
 		fMapiUnicode, // flags
 		&cbInboxEID, // size and...
 		&lpInboxEID, // value of entry ID
@@ -2502,7 +2502,7 @@ _Check_return_ bool CheckStringProp(_In_opt_ LPSPropValue lpProp, ULONG ulPropTy
 	return true;
 } // CheckStringProp
 
-_Check_return_ DWORD ComputeStoreHash(ULONG cbStoreEID, _In_ LPBYTE pbStoreEID, _In_opt_z_ LPCSTR pszFileName, _In_opt_z_ LPCWSTR pwzFileName, bool bPublicStore)
+_Check_return_ DWORD ComputeStoreHash(ULONG cbStoreEID, _In_count_(cbStoreEID) LPBYTE pbStoreEID, _In_opt_z_ LPCSTR pszFileName, _In_opt_z_ LPCWSTR pwzFileName, bool bPublicStore)
 {
 	DWORD  dwHash = 0;
 	ULONG  cdw    = 0;
@@ -2596,7 +2596,7 @@ _Check_return_ LPWSTR EncodeID(ULONG cbEID, _In_ LPENTRYID rgbID)
 	return pwzIDEncoded;
 } // EncodeID
 
-_Check_return_ LPWSTR DecodeID(ULONG cbBuffer, _In_ LPBYTE lpbBuffer)
+_Check_return_ LPWSTR DecodeID(ULONG cbBuffer, _In_count_(cbBuffer) LPBYTE lpbBuffer)
 {
 	if (cbBuffer % 2) return NULL;
 
