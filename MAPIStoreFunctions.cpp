@@ -58,7 +58,7 @@ _Check_return_ HRESULT BuildServerDN(
 	HRESULT hRes = S_OK;
 	if (!lpszServerDN) return MAPI_E_INVALID_PARAMETER;
 
-	static LPTSTR szPre = _T("/cn=Configuration/cn=Servers/cn="); // STRING_OK
+	static LPCTSTR szPre = _T("/cn=Configuration/cn=Servers/cn="); // STRING_OK
 	size_t cbPreLen = 0;
 	size_t cbServerLen = 0;
 	size_t cbPostLen = 0;

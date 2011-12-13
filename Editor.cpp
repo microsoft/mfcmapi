@@ -410,7 +410,7 @@ BOOL CEditor::OnInitDialog()
 				m_lpControls[i].UI.lpEdit->EditBox.ModifyStyleEx(WS_EX_CLIENTEDGE, 0, 0);
 				m_lpControls[i].UI.lpEdit->EditBox.SetBackgroundColor(false, MyGetSysColor(cBackground));
 				if (m_lpControls[i].bReadOnly) SetEditReadOnly(i);
-				ClearEditFormatting(m_lpControls[i].UI.lpEdit->EditBox.m_hWnd);
+				ClearEditFormatting(m_lpControls[i].UI.lpEdit->EditBox.m_hWnd, m_lpControls[i].bReadOnly);
 
 				// Set maximum text size
 				// Use -1 to allow for VERY LARGE strings
@@ -969,8 +969,10 @@ void CEditor::OnSetDefaultSize()
 	}
 
 	// worst case, don't go bigger than the screen
-	m_iMinWidth = min(MyRect.Width(),cxFullScreen);
-	m_iMinHeight = min(MyRect.Height(),cyFullScreen);
+	m_iMinWidth = MyRect.Width();
+	m_iMinHeight = MyRect.Height();
+	m_iMinWidth = min(m_iMinWidth,cxFullScreen);
+	m_iMinHeight = min(m_iMinHeight,cyFullScreen);
 
 	// worst case v2, don't go bigger than MAX_WIDTH pixels wide
 	m_iMinWidth = min(m_iMinWidth,MAX_WIDTH);

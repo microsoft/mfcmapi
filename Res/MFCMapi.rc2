@@ -699,8 +699,8 @@ Interfaces (abbreviated list)\r\n\
 {0002030B-0000-0000-C000-000000000046} IID_IMAPIContainer\r\n\
 {0002030C-0000-0000-C000-000000000046} IID_IMAPIFolder"
 IDS_COPYTO                       "CopyTo"
-IDS_EXTRAPROPS                   "Extra Properties"
-IDS_EXTRAPROPSPROMPT             "Edit the set of extra properties"
+IDS_EXTRAPROPS                   "Additional Properties"
+IDS_EXTRAPROPSPROMPT             "Edit the set of Additional properties"
 IDS_EDITGIVENPROP                "Edit Given Property"
 IDS_OPENPROPASTABLE              "Open Property As Table"
 IDS_OPENPROPASTABLEPROMPT        "Check box to use IExchangeModifyTable interface"
@@ -923,7 +923,7 @@ IDS_REGKEY_PARSED_NAMED_PROPS "Parse named properties"
 IDS_REGKEY_HIER_EXPAND_NOTIFS "Register notifications on hierarchy tables during node expansion or selection"
 IDS_REGKEY_HIER_ROOT_NOTIFS "Allow root container notifications (may cause infinite loop in address book)"
 IDS_REGKEY_DO_SMART_VIEW "Enable Smart view"
-IDS_REGKEY_DO_GETPROPS "Call GetProps when selecting or displaying (extra properties will still display)"
+IDS_REGKEY_DO_GETPROPS "Call GetProps when selecting or displaying (additional properties will still display)"
 IDS_REGKEY_ALLOW_DUPE_COLUMNS "Allow duplicate columns of different types"
 IDS_REGKEY_USE_ROW_DATA_FOR_SINGLEPROPLIST "Use row data for properties instead of GetProps"
 IDS_REGKEY_DO_COLUMN_NAMES "Nice column names"
@@ -2082,12 +2082,12 @@ Here are some known causes for this.\r\n\
 \tSee http://msdn.microsoft.com/en-gb/library/dd162409.aspx for information on setting the Default Mail Client."
 #endif
 
-// UpdateStatusBarText - use printf style formatting
-IDS_STATUSTEXTNUMITEMS "Items: %d"
-IDS_STATUSTEXTNUMPROPS "Properties: %d"
+// UpdateStatusBarText - use FormatMessage style formatting
+IDS_STATUSTEXTNUMITEMS "Items: %1!d!"
+IDS_STATUSTEXTNUMPROPS "Properties: %1!d!"
 IDS_STATUSTEXTNOFOLDER "Could not open folder or get properties"
-IDS_STATUSTEXTCONTENTCOUNTS "Contents: %d Assoc. Contents: %d"
-IDS_STATUSTEXTDELETEDCOUNTS "Deleted Items: %d Deleted Assoc. Items: %d Deleted Subfolders: %d"
+IDS_STATUSTEXTCONTENTCOUNTS "Contents: %1!d! Assoc. Contents: %2!d!"
+IDS_STATUSTEXTDELETEDCOUNTS "Deleted Items: %1!d! Deleted Assoc. Items: %2!d! Deleted Subfolders: %3!d!"
 
 SC_CLOSE "Close window."
 SC_RESTORE "Restore window."

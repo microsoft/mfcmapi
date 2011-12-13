@@ -50,7 +50,7 @@ _Check_return_ HPEN GetPen(uiPen up);
 
 HBITMAP GetBitmap(uiBitmap ub);
 
-void ClearEditFormatting(_In_ HWND hWnd);
+void ClearEditFormatting(_In_ HWND hWnd, bool bReadOnly);
 
 // Application-specific owner-drawn menu info struct. Owner-drawn data 
 // is a pointer to one of these. MSAAMENUINFO must be the first 

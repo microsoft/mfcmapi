@@ -349,7 +349,7 @@ _Check_return_ HKEY CreateRootKey()
 		HKEY_CURRENT_USER,
 		RKEY_ROOT,
 		0,
-		_T(""),
+		NULL,
 		0,
 		KEY_READ | KEY_WRITE,
 		NULL,

@@ -277,7 +277,7 @@ _Check_return_ HRESULT CSingleMAPIPropListCtrl::LoadMAPIPropList()
 		(!m_lpMAPIProp || RegKeys[regkeyUSE_ROW_DATA_FOR_SINGLEPROPLIST].ulCurDWORD))
 	{
 		if (m_lpHostDlg)
-			m_lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT,IDS_PROPSFROMROW);
+			m_lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, IDS_PROPSFROMROW, 0, 0, 0);
 
 		ulProps = GetCountPropVals();
 		lpPropsToAdd = lpPropVals;
@@ -285,7 +285,7 @@ _Check_return_ HRESULT CSingleMAPIPropListCtrl::LoadMAPIPropList()
 	else if (m_lpMAPIProp)
 	{
 		if (m_lpHostDlg)
-			m_lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT,IDS_PROPSFROMGETPROPS);
+			m_lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, IDS_PROPSFROMGETPROPS, 0, 0, 0);
 		if (RegKeys[regkeyDO_GETPROPS].ulCurDWORD)
 		{
 			// Can't use EC_H_GETPROPS because I want to suppress MAPI_E_CALL_FAILED as well
@@ -516,7 +516,7 @@ _Check_return_ HRESULT CSingleMAPIPropListCtrl::RefreshMAPIPropList()
 	MySetRedraw(true);
 
 	if (m_lpHostDlg)
-		m_lpHostDlg->UpdateStatusBarText(STATUSDATA2,IDS_STATUSTEXTNUMPROPS,GetItemCount());
+		m_lpHostDlg->UpdateStatusBarText(STATUSDATA2, IDS_STATUSTEXTNUMPROPS, GetItemCount(), 0, 0);
 
 	return hRes;
 } // CSingleMAPIPropListCtrl::RefreshMAPIPropList
@@ -784,7 +784,7 @@ void CSingleMAPIPropListCtrl::SavePropsToXML()
 		if (szFileName)
 		{
 			FILE* fProps = NULL;
-			fProps = OpenFile(szFileName,true);
+			fProps = MyOpenFile(szFileName, true);
 			if (fProps)
 			{
 				DebugPrintEx(DBGGeneric,CLASS,_T("SavePropsToXML"),_T("saving to %ws\n"),szFileName);

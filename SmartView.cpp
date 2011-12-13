@@ -1444,6 +1444,7 @@ void SDBinToString(SBinary myBin, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTa
 	if (!lpszResultString) return;
 	HRESULT hRes = S_OK;
 	LPBYTE lpSDToParse = myBin.lpb;
+	ULONG ulSDToParse = myBin.cb;
 
 	if (lpSDToParse)
 	{
@@ -1465,7 +1466,7 @@ void SDBinToString(SBinary myBin, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTa
 		CString szInfo;
 		CString szTmp;
 
-		EC_H(SDToString(lpSDToParse, acetype, &szDACL, &szInfo));
+		EC_H(SDToString(lpSDToParse, ulSDToParse, acetype, &szDACL, &szInfo));
 
 		LPTSTR szFlags = NULL;
 		InterpretFlags(flagSecurityVersion, SECURITY_DESCRIPTOR_VERSION(lpSDToParse), &szFlags);
@@ -4059,10 +4060,12 @@ EntryListStruct* BinToEntryListStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBi
 			for (i = 0 ; i < elEntryList.EntryCount ; i++)
 			{
 				size_t cbOffset = Parser.GetCurrentOffset();
+				size_t cbRemainingBytes = Parser.RemainingBytes();
+				cbRemainingBytes = min(elEntryList.Entry[i].EntryLength, cbRemainingBytes);
 				elEntryList.Entry[i].EntryId = BinToEntryIdStruct(
-					(ULONG) min(elEntryList.Entry[i].EntryLength,Parser.RemainingBytes()),
+					(ULONG) cbRemainingBytes,
 					lpBin+cbOffset);
-				Parser.Advance(min(elEntryList.Entry[i].EntryLength,Parser.RemainingBytes()));
+				Parser.Advance(cbRemainingBytes);
 			}
 		}
 	}
@@ -4183,10 +4186,12 @@ SearchFolderDefinitionStruct* BinToSearchFolderDefinitionStruct(ULONG cbBin, _In
 	if (sfdSearchFolderDefinition.FolderList2Length)
 	{
 		cbOffset = Parser.GetCurrentOffset();
+		size_t cbRemainingBytes = Parser.RemainingBytes();
+		cbRemainingBytes = min(sfdSearchFolderDefinition.FolderList2Length, cbRemainingBytes);
 		sfdSearchFolderDefinition.FolderList2 = BinToEntryListStruct(
-			(ULONG) min(sfdSearchFolderDefinition.FolderList2Length,Parser.RemainingBytes()),
+			(ULONG) cbRemainingBytes,
 			lpBin+cbOffset);
-		Parser.Advance(min(sfdSearchFolderDefinition.FolderList2Length,Parser.RemainingBytes()));
+		Parser.Advance(cbRemainingBytes);
 	}
 
 	if (SFST_BINARY & sfdSearchFolderDefinition.Flags)
@@ -5042,10 +5047,11 @@ _Check_return_ FlatEntryListStruct* BinToFlatEntryListStruct(ULONG cbBin, _In_co
 				// Size here will be the length of the serialized entry ID
 				// We'll have to round it up to a multiple of 4 to read off padding
 				Parser.GetDWORD(&felFlatEntryList.pEntryIDs[iFlatEntryList].dwSize);
-				ULONG ulSize = min(felFlatEntryList.pEntryIDs[iFlatEntryList].dwSize,(ULONG) Parser.RemainingBytes());
+				size_t ulSize = Parser.RemainingBytes();
+				ulSize = min(felFlatEntryList.pEntryIDs[iFlatEntryList].dwSize,ulSize);
 
 				felFlatEntryList.pEntryIDs[iFlatEntryList].lpEntryID = BinToEntryIdStruct(
-					ulSize,
+					(ULONG) ulSize,
 					lpBin+Parser.GetCurrentOffset());
 				Parser.Advance(ulSize);
 

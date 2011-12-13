@@ -209,12 +209,12 @@ class CFileList
 		DLLEntry* lpNext;
 	};
 public:
-	CFileList(_In_z_ LPTSTR szKey);
+	CFileList(_In_z_ LPCTSTR szKey);
 	~CFileList();
 	void AddToList(_In_z_ LPTSTR szDLL);
 	bool IsOnList(_In_z_ LPTSTR szDLL);
 
-	LPTSTR m_szKey;
+	LPCTSTR m_szKey;
 	HKEY m_hRootKey;
 	DLLEntry* m_lpList;
 };
@@ -223,7 +223,7 @@ public:
 #define SEPARATOR _T(";") // STRING_OK
 
 // Read in registry and build a list of invalid add-in DLLs
-CFileList::CFileList(_In_z_ LPTSTR szKey)
+CFileList::CFileList(_In_z_ LPCTSTR szKey)
 {
 	HRESULT hRes = S_OK;
 	LPTSTR lpszReg = NULL;
@@ -244,11 +244,12 @@ CFileList::CFileList(_In_z_ LPTSTR szKey)
 
 	if (lpszReg)
 	{
-		LPTSTR szDLL = _tcstok(lpszReg,SEPARATOR);
+		LPTSTR szContext = NULL;
+		LPTSTR szDLL = _tcstok_s(lpszReg ,SEPARATOR, &szContext);
 		while (szDLL)
 		{
 			AddToList(szDLL);
-			szDLL = _tcstok(NULL,SEPARATOR);
+			szDLL = _tcstok_s(NULL, SEPARATOR, &szContext);
 		}
 	}
 	delete[] lpszReg;
@@ -705,7 +706,7 @@ void InvokeAddInMenu(_In_opt_ LPADDINMENUPARAMS lpParams)
 #endif // MRMAPI
 
 // Compare type arrays.
-int CompareTypes(_In_ const void* a1, _In_ const void* a2)
+int _cdecl CompareTypes(_In_ const void* a1, _In_ const void* a2)
 {
 	LPNAME_ARRAY_ENTRY lpType1 = (LPNAME_ARRAY_ENTRY) a1;
 	LPNAME_ARRAY_ENTRY lpType2 = (LPNAME_ARRAY_ENTRY) a2;
@@ -719,7 +720,7 @@ int CompareTypes(_In_ const void* a1, _In_ const void* a2)
 } // CompareTypes
 
 // Compare tag arrays. Pay no attention to sort order - we'll sort on sort order during output.
-int CompareTags(_In_ const void* a1, _In_ const void* a2)
+int _cdecl CompareTags(_In_ const void* a1, _In_ const void* a2)
 {
 	LPNAME_ARRAY_ENTRY_V2 lpTag1 = (LPNAME_ARRAY_ENTRY_V2) a1;
 	LPNAME_ARRAY_ENTRY_V2 lpTag2 = (LPNAME_ARRAY_ENTRY_V2) a2;
@@ -732,7 +733,7 @@ int CompareTags(_In_ const void* a1, _In_ const void* a2)
 	return -1;
 } // CompareTags
 
-int CompareNameID(_In_ const void* a1, _In_ const void* a2)
+int _cdecl CompareNameID(_In_ const void* a1, _In_ const void* a2)
 {
 	LPNAMEID_ARRAY_ENTRY lpID1 = (LPNAMEID_ARRAY_ENTRY) a1;
 	LPNAMEID_ARRAY_ENTRY lpID2 = (LPNAMEID_ARRAY_ENTRY) a2;
@@ -747,7 +748,7 @@ int CompareNameID(_In_ const void* a1, _In_ const void* a2)
 	return -1;
 } // CompareNameID
 
-int CompareSmartViewParser(_In_ const void* a1, _In_ const void* a2)
+int _cdecl CompareSmartViewParser(_In_ const void* a1, _In_ const void* a2)
 {
 	LPSMARTVIEW_PARSER_ARRAY_ENTRY lpParser1 = (LPSMARTVIEW_PARSER_ARRAY_ENTRY) a1;
 	LPSMARTVIEW_PARSER_ARRAY_ENTRY lpParser2 = (LPSMARTVIEW_PARSER_ARRAY_ENTRY) a2;
@@ -774,7 +775,7 @@ void MergeArrays(
     _Out_ _Deref_post_bytecap_x_(*lpcOut * width) LPVOID* lpOut,
     _Out_ size_t* lpcOut,
     _In_ size_t width,
-    _In_ int (*comp)(const void *, const void *))
+    _In_ int (_cdecl *comp)(const void *, const void *))
 {
 	if (!In1 && !In2) return;
 	if (!lpOut || !lpcOut) return;
@@ -963,9 +964,12 @@ void MergeAddInArrays()
 	if (ulAddInPropGuidArray != g_ulPropGuidArray)
 	{
 		PropGuidArray = new GUID_ARRAY_ENTRY[ulAddInPropGuidArray];
-		for (i = 0 ; i < g_ulPropGuidArray ; i++)
+		if (PropGuidArray)
 		{
-			PropGuidArray[i] = g_PropGuidArray[i];
+			for (i = 0 ; i < g_ulPropGuidArray ; i++)
+			{
+				PropGuidArray[i] = g_PropGuidArray[i];
+			}
 		}
 	}
 

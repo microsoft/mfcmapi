@@ -130,7 +130,7 @@ void FindTagArrayMatches(_In_ ULONG ulTarget,
 } // FindTagArrayMatches
 
 // Compare tag sort order. 
-int CompareTagsSortOrder(_In_ const void* a1, _In_ const void* a2)
+int _cdecl CompareTagsSortOrder(_In_ const void* a1, _In_ const void* a2)
 {
 	LPNAME_ARRAY_ENTRY_V2 lpTag1 = &PropTagArray[* (LPULONG) a1];
 	LPNAME_ARRAY_ENTRY_V2 lpTag2 = &PropTagArray[* (LPULONG) a2];;

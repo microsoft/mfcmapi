@@ -98,7 +98,7 @@ _Check_return_ HMODULE MyLoadLibrary(_In_z_ LPCTSTR lpszLibFileName)
 
 // Loads szModule at the handle given by lphModule, then looks for szEntryPoint.
 // Will not load a module or entry point twice
-void LoadProc(LPTSTR szModule, HMODULE* lphModule, LPSTR szEntryPoint, FARPROC* lpfn)
+void LoadProc(LPCTSTR szModule, HMODULE* lphModule, LPCSTR szEntryPoint, FARPROC* lpfn)
 {
 	if (!szEntryPoint || !lpfn || !lphModule) return;
 	if (*lpfn) return;
@@ -114,7 +114,7 @@ void LoadProc(LPTSTR szModule, HMODULE* lphModule, LPSTR szEntryPoint, FARPROC* 
 		szEntryPoint));
 } // LoadProc
 
-_Check_return_ HMODULE LoadFromSystemDir(_In_z_ LPTSTR szDLLName)
+_Check_return_ HMODULE LoadFromSystemDir(_In_z_ LPCTSTR szDLLName)
 {
 	if (!szDLLName) return NULL;
 

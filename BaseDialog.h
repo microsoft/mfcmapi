@@ -27,7 +27,7 @@ public:
 
 	void UpdateTitleBarText(_In_opt_z_ LPCTSTR szMsg);
 	void UpdateStatusBarText(__StatusPaneEnum nPos, _In_z_ LPCTSTR szMsg);
-	void __cdecl UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg, ...);
+	void __cdecl UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg, ULONG ulParam1, ULONG ulParam2, ULONG ulParam3);
 	void OnOpenEntryID(_In_opt_ LPSBinary lpBin);
 	_Check_return_ CParentWnd* GetParentWnd();
 	_Check_return_ CMapiObjects* GetMapiObjects();

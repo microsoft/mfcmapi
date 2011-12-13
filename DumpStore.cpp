@@ -102,7 +102,7 @@ void CDumpStore::BeginMailboxTableWork(_In_z_ LPCTSTR szExchangeServerName)
 	WC_H(StringCchPrintfW(szTableContentsFile,_countof(szTableContentsFile),
 		L"%s\\MAILBOX_TABLE.xml", // STRING_OK
 		m_szMailboxTablePathRoot));
-	m_fMailboxTable = OpenFile(szTableContentsFile,true);
+	m_fMailboxTable = MyOpenFile(szTableContentsFile, true);
 	if (m_fMailboxTable)
 	{
 		OutputToFile(m_fMailboxTable,_T("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n"));
@@ -214,7 +214,7 @@ void CDumpStore::BeginFolderWork()
 	WC_H(StringCchPrintfW(szFolderPropsFile,_countof(szFolderPropsFile),
 		L"%sFOLDER_PROPS.xml", // STRING_OK
 		m_szFolderPath));
-	m_fFolderProps = OpenFile(szFolderPropsFile,true);
+	m_fFolderProps = MyOpenFile(szFolderPropsFile, true);
 	if (!m_fFolderProps) return;
 
 	OutputToFile(m_fFolderProps,_T("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n"));
@@ -281,7 +281,7 @@ void CDumpStore::BeginContentsTableWork(ULONG ulFlags, ULONG ulCountRows)
 	WC_H(StringCchPrintfW(szContentsTableFile,_countof(szContentsTableFile),
 		(ulFlags & MAPI_ASSOCIATED)?L"%sASSOCIATED_CONTENTS_TABLE.xml":L"%sCONTENTS_TABLE.xml", // STRING_OK
 		m_szFolderPath));
-	m_fFolderContents = OpenFile(szContentsTableFile,true);
+	m_fFolderContents = MyOpenFile(szContentsTableFile, true);
 	if (m_fFolderContents)
 	{
 		OutputToFile(m_fFolderContents,_T("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n"));
@@ -308,7 +308,7 @@ void OutputMessageList(
 	LPSPropValue lpTemp = NULL;
 	LPSPropValue lpMessageClass = NULL;
 	LPWSTR szTemp = NULL;
-	LPWSTR szExt = L".xml"; // STRING_OK
+	LPCWSTR szExt = L".xml"; // STRING_OK
 	if (bOutputMSG) szExt = L".msg"; // STRING_OK
 
 	// Get required properties from the message
@@ -381,7 +381,7 @@ void CDumpStore::EndContentsTableWork()
 } // CDumpStore::EndContentsTableWork
 
 // TODO: This fails in unicode builds since PR_RTF_COMPRESSED is always ascii.
-void OutputBody(_In_ FILE* fMessageProps, _In_ LPMESSAGE lpMessage, ULONG ulBodyTag, _In_z_ LPTSTR szBodyName, bool bWrapEx, ULONG ulCPID)
+void OutputBody(_In_ FILE* fMessageProps, _In_ LPMESSAGE lpMessage, ULONG ulBodyTag, _In_z_ LPCTSTR szBodyName, bool bWrapEx, ULONG ulCPID)
 {
 	HRESULT hRes = S_OK;
 	LPSTREAM lpStream = NULL;
@@ -560,7 +560,7 @@ void OutputMessageXML(
 	}
 
 	DebugPrint(DBGGeneric,_T("OutputMessagePropertiesToFile: Saving %p to \"%ws\"\n"),lpMessage,lpMsgData->szFilePath);
-	lpMsgData->fMessageProps = OpenFile(lpMsgData->szFilePath,true);
+	lpMsgData->fMessageProps = MyOpenFile(lpMsgData->szFilePath, true);
 
 	if (lpMsgData->fMessageProps)
 	{

@@ -232,7 +232,7 @@ _Check_return_ HRESULT LoadFromTNEF(_In_z_ LPCWSTR szMessageFile, _In_ LPADRBOOK
 	LPSTnefProblemArray	lpError = NULL;
 	LPSTREAM			lpBodyStream = NULL;
 
-	if (!szMessageFile | !lpAdrBook | !lpMessage) return MAPI_E_INVALID_PARAMETER;
+	if (!szMessageFile || !lpAdrBook || !lpMessage) return MAPI_E_INVALID_PARAMETER;
 	static WORD dwKey = (WORD)::GetTickCount();
 
 	enum

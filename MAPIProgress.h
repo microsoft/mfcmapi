@@ -20,7 +20,7 @@ private:
 	_Check_return_ STDMETHODIMP GetMin(_Inout_ ULONG* lpulMin);
 	_Check_return_ STDMETHODIMP SetLimits(_Inout_ ULONG* lpulMin, _Inout_ ULONG* lpulMax, _Inout_ ULONG* lpulFlags);
 
-	void OutputState(_In_z_ LPTSTR lpszFunction);
+	void OutputState(_In_z_ LPCTSTR lpszFunction);
 
 	LONG		m_cRef;
 	ULONG		m_ulMin;
@@ -30,4 +30,4 @@ private:
 	HWND		m_hWnd;
 };
 
-_Check_return_ CMAPIProgress* GetMAPIProgress(_In_z_ LPTSTR lpszContext, _In_ HWND hWnd);
+_Check_return_ CMAPIProgress* GetMAPIProgress(_In_z_ LPCTSTR lpszContext, _In_ HWND hWnd);
