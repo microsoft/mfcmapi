@@ -128,7 +128,7 @@ CEditor(pParentWnd,uidTitle,uidPrompt,0,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL)
 	if (!m_lpsInputValue) m_bDirty = true;
 
 	CString szPromptPostFix;
-	szPromptPostFix.Format(_T("\r\n%s"),(LPCTSTR) TagToString(m_ulPropTag | (m_bMVRow?MV_FLAG:NULL),m_lpMAPIProp,m_bIsAB,false)); // STRING_OK
+	szPromptPostFix.Format(_T("%s%s"),uidPrompt?_T("\r\n"):_T(""), (LPCTSTR) TagToString(m_ulPropTag | (m_bMVRow?MV_FLAG:NULL),m_lpMAPIProp,m_bIsAB,false)); // STRING_OK
 
 	SetPromptPostFix(szPromptPostFix);
 
@@ -328,7 +328,7 @@ void CPropertyEditor::InitPropertyControls()
 	case(PT_I2):
 		InitSingleLine(0,IDS_SIGNEDDECIMAL,NULL,false);
 		InitSingleLine(1,IDS_HEX,NULL,false);
-		InitMultiLine(2,IDS_COLSMART_VIEW,NULL,true);
+		InitMultiLine(2,IDS_SMARTVIEW,NULL,true);
 		if (m_lpsInputValue)
 		{
 			SetDecimal(0,m_lpsInputValue->Value.i);
@@ -347,7 +347,7 @@ void CPropertyEditor::InitPropertyControls()
 		InitSingleLine(0,IDS_HIGHPART,NULL,false);
 		InitSingleLine(1,IDS_LOWPART,NULL,false);
 		InitSingleLine(2,IDS_DECIMAL,NULL,false);
-		InitMultiLine(3,IDS_COLSMART_VIEW,NULL,true);
+		InitMultiLine(3,IDS_SMARTVIEW,NULL,true);
 
 		if (m_lpsInputValue)
 		{
@@ -372,19 +372,19 @@ void CPropertyEditor::InitPropertyControls()
 			InitMultiLine(1,IDS_BIN,BinToHexString(&m_lpsInputValue->Value.bin,false),false);
 			InitMultiLine(2,IDS_TEXT,NULL,false);
 			SetStringA(2,(LPCSTR)m_lpsInputValue->Value.bin.lpb,m_lpsInputValue->Value.bin.cb+1);
-			InitMultiLineW(3,IDS_COLSMART_VIEW,szSmartView,true);
+			InitMultiLineW(3,IDS_SMARTVIEW,szSmartView,true);
 		}
 		else
 		{
 			InitMultiLine(1,IDS_BIN,NULL,false);
 			InitMultiLine(2,IDS_TEXT,NULL,false);
-			InitMultiLineW(3,IDS_COLSMART_VIEW,szSmartView,true);
+			InitMultiLineW(3,IDS_SMARTVIEW,szSmartView,true);
 		}
 		break;
 	case(PT_LONG):
 		InitSingleLine(0,IDS_UNSIGNEDDECIMAL,NULL,false);
 		InitSingleLine(1,IDS_HEX,NULL,false);
-		InitMultiLine(2,IDS_COLSMART_VIEW,NULL,true);
+		InitMultiLine(2,IDS_SMARTVIEW,NULL,true);
 		if (m_lpsInputValue)
 		{
 			SetStringf(0,_T("%u"),m_lpsInputValue->Value.l); // STRING_OK
@@ -1087,7 +1087,7 @@ void CMultiValuePropertyEditor::InitPropertyControls()
 	if (PT_MV_BINARY == PROP_TYPE(m_ulPropTag) ||
 		PT_MV_LONG == PROP_TYPE(m_ulPropTag))
 	{
-		InitMultiLine(1,IDS_COLSMART_VIEW,NULL,true);
+		InitMultiLine(1,IDS_SMARTVIEW,NULL,true);
 	}
 } // CMultiValuePropertyEditor::InitPropertyControls
 
@@ -1102,7 +1102,7 @@ void CMultiValuePropertyEditor::ReadMultiValueStringsFromProperty(ULONG ulListNu
 	if (PT_MV_LONG == PROP_TYPE(m_ulPropTag) ||
 		PT_MV_BINARY == PROP_TYPE(m_ulPropTag))
 	{
-		InsertColumn(ulListNum,3,IDS_COLSMART_VIEW);
+		InsertColumn(ulListNum,3,IDS_SMARTVIEW);
 	}
 
 	if (!m_lpsInputValue) return;
@@ -1373,7 +1373,7 @@ _Check_return_ bool CMultiValuePropertyEditor::DoListEdit(ULONG ulListNum, int i
 	WC_H(DisplayPropertyEditor(
 		this,
 		IDS_EDITROW,
-		IDS_EDITROWPROMPT,
+		NULL,
 		m_bIsAB,
 		NULL, // not passing an allocation parent because we know we're gonna free the result
 		m_lpMAPIProp,

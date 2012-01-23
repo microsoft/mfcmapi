@@ -20,7 +20,7 @@ enum __HexEditorFields
 };
 
 CHexEditor::CHexEditor(_In_ CParentWnd* pParentWnd):
-CEditor(pParentWnd,IDS_HEXEDITOR,IDS_HEXEDITORPROMPT,0,CEDITOR_BUTTON_OK)
+CEditor(pParentWnd,IDS_HEXEDITOR,NULL,0,CEDITOR_BUTTON_OK)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	CreateControls(8);
@@ -30,8 +30,8 @@ CEditor(pParentWnd,IDS_HEXEDITOR,IDS_HEXEDITORPROMPT,0,CEDITOR_BUTTON_OK)
 	InitMultiLine(HEXED_BASE64,IDS_BASE64STRING,NULL,false);
 	InitSingleLine(HEXED_CB,IDS_CB,NULL,true);
 	InitMultiLine(HEXED_HEX,IDS_HEX,NULL,false);
-	InitDropDownArray(HEXED_PICKER,IDS_STRUCTUREPICKERPROMPT,g_cuidParsingTypes,g_uidParsingTypes,true);
-	InitMultiLine(HEXED_SMARTVIEW,IDS_PARSEDSTRUCTURE,NULL,true);
+	InitDropDownArray(HEXED_PICKER,IDS_SMARTVIEW,g_cuidParsingTypes,g_uidParsingTypes,true);
+	InitMultiLine(HEXED_SMARTVIEW,NULL,NULL,true);
 	DisplayParentedDialog(pParentWnd,1000);
 } // CHexEditor::CHexEditor
 
@@ -50,6 +50,17 @@ void CHexEditor::OnCancel()
 {
 	OnOK();
 } // CHexEditor::OnCancel
+
+void CleanString(_In_ CString* lpString)
+{
+	if (!lpString) return;
+
+	// remove any whitespace
+	lpString->Replace(_T("\r"), _T("")); // STRING_OK
+	lpString->Replace(_T("\n"), _T("")); // STRING_OK
+	lpString->Replace(_T("\t"), _T("")); // STRING_OK
+	lpString->Replace(_T(" "), _T("")); // STRING_OK
+} // CleanString
 
 _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 {

@@ -14,6 +14,8 @@ CMAPIProcessor::CMAPIProcessor()
 	m_lpListHead = NULL;
 	m_lpListTail = NULL;
 	m_lpResFolderContents = NULL;
+	m_lpSort = NULL;
+	m_ulCount = NULL;
 } // CMAPIProcessor::CMAPIProcessor
 
 CMAPIProcessor::~CMAPIProcessor()
@@ -57,6 +59,18 @@ void CMAPIProcessor::InitFolderContentsRestriction(_In_opt_ LPSRestriction lpRes
 	// For now, just grab a pointer.
 	m_lpResFolderContents = lpRes;
 } // CMAPIProcessor::InitFolderContentsRestriction
+
+void CMAPIProcessor::InitMaxOutput(_In_ ULONG ulCount)
+{
+	m_ulCount = ulCount;
+} // CMAPIProcessor::InitMaxOutput
+
+void CMAPIProcessor::InitSortOrder(_In_ LPSSortOrderSet lpSort)
+{
+	// If we ever need to hold this past the scope of the caller we'll need to copy the sort order.
+	// For now, just grab a pointer.
+	m_lpSort = lpSort;
+} // CMAPIProcessor::InitSortOrder
 
 // --------------------------------------------------------------------------------- //
 
@@ -362,6 +376,12 @@ void CMAPIProcessor::ProcessContentsTable(ULONG ulFlags)
 		hRes = S_OK;
 	}
 
+	if (SUCCEEDED(hRes) && lpContentsTable && m_lpSort)
+	{
+		WC_H(lpContentsTable->SortTable(m_lpSort, TBL_BATCH));
+		hRes = S_OK;
+	}
+
 	if (SUCCEEDED(hRes) && lpContentsTable)
 	{
 		ULONG ulCountRows = 0;
@@ -373,6 +393,8 @@ void CMAPIProcessor::ProcessContentsTable(ULONG ulFlags)
 		ULONG i = 0;
 		for (;;)
 		{
+			// If we've output enough rows, stop
+			if (m_ulCount && (i >= m_ulCount)) break;
 			hRes = S_OK;
 			if (lpRows) FreeProws(lpRows);
 			lpRows = NULL;
@@ -390,6 +412,8 @@ void CMAPIProcessor::ProcessContentsTable(ULONG ulFlags)
 			ULONG iRow = 0;
 			for (iRow = 0 ; iRow < lpRows->cRows ; iRow++)
 			{
+				// If we've output enough rows, stop
+				if (m_ulCount && (i >= m_ulCount)) break;
 				if (!DoContentsTablePerRowWork(&lpRows->aRow[iRow], i++)) continue;
 
 				LPSPropValue lpMsgEID = NULL;

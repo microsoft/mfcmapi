@@ -671,7 +671,7 @@ void DumpHierachyTable(
 	if (lpMDB) lpMDB->Release();
 	if (lpMAPISession) lpMAPISession->Release();
 	MAPIUninitialize();
-} // DumpContentsTable
+} // DumpHierachyTable
 
 void DoChildFolders(_In_ MYOPTIONS ProgOpts)
 {

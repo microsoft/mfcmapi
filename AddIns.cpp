@@ -1181,7 +1181,6 @@ _Check_return_ __declspec(dllexport) HRESULT __cdecl ComplexDialog(_In_ LPADDIND
 	{
 		for (i = 0 ; i < lpDialog->ulNumControls ; i++)
 		{
-			MyComplexDialog.SetAddInLabel(i,lpDialog->lpDialogControls[i].szLabel);
 			switch (lpDialog->lpDialogControls[i].cType)
 			{
 			case ADDIN_CTRL_CHECK:
@@ -1273,6 +1272,9 @@ _Check_return_ __declspec(dllexport) HRESULT __cdecl ComplexDialog(_In_ LPADDIND
 					break;
 				}
 			}
+
+			// Do this after initializing controls so we have our label status set correctly.
+			MyComplexDialog.SetAddInLabel(i,lpDialog->lpDialogControls[i].szLabel);
 		}
 	}
 

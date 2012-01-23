@@ -48,16 +48,93 @@ int CMyDialog::GetStatusHeight()
 	return m_iStatusHeight;
 } // CMyDialog::GetStatusHeight
 
+// Performs an NC hittest using coordinates from WM_MOUSE* messages
+int NCHitTestMouse(HWND hWnd, LPARAM lParam)
+{
+	POINT pt = {GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
+	(void) ::MapWindowPoints(hWnd, NULL, &pt, 1); // Map our client point to the screen
+	lParam = MAKELONG(pt.x, pt.y);
+	return (int) ::SendMessage(hWnd, WM_NCHITTEST, NULL, lParam);
+} // NCHitTestMouse
+
+bool DepressSystemButton(HWND hWnd, int iHitTest)
+{
+	bool bDepressed = true;
+	DrawSystemButtons(hWnd, NULL, iHitTest);
+	SetCapture(hWnd);
+	for (;;)
+	{
+		MSG msg = {0};
+		if (::PeekMessage(&msg, hWnd, WM_MOUSEFIRST, WM_MOUSELAST, PM_REMOVE))
+		{
+			switch (msg.message)
+			{
+			case WM_LBUTTONUP:
+				{
+					if (bDepressed)
+						DrawSystemButtons(hWnd, NULL, NULL);
+					ReleaseCapture();
+					if (NCHitTestMouse(hWnd, msg.lParam) == iHitTest) return true;
+					return false;
+				}
+				break;
+			case WM_MOUSEMOVE:
+				{
+					if (NCHitTestMouse(hWnd, msg.lParam) == iHitTest)
+					{
+						DrawSystemButtons(hWnd, NULL, iHitTest);
+					}
+					else
+					{
+						DrawSystemButtons(hWnd, NULL, NULL);
+					}
+				}
+				break;
+			}
+		}
+	}
+} // DepressSystemButton
+
 #define WM_NCUAHDRAWCAPTION     0x00AE
 #define WM_NCUAHDRAWFRAME       0x00AF
 
 _Check_return_ LRESULT CMyDialog::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
+	LRESULT lRes = 0;
+	if (HandleControlUI(message, wParam, lParam, &lRes)) return lRes;
+
 	switch (message)
 	{
 	case WM_NCUAHDRAWCAPTION:
 	case WM_NCUAHDRAWFRAME:
 		return 0;
+		break;
+	case WM_NCLBUTTONDOWN:
+		switch (wParam)
+		{
+		case HTCLOSE:
+		case HTMAXBUTTON:
+		case HTMINBUTTON:
+			{
+				if (DepressSystemButton(m_hWnd, (int) wParam))
+				{
+					switch (wParam)
+					{
+					case HTCLOSE:
+						::SendMessageA(m_hWnd, WM_SYSCOMMAND, SC_CLOSE, NULL);
+						break;
+					case HTMAXBUTTON:
+						::SendMessageA(m_hWnd, WM_SYSCOMMAND, ::IsZoomed(m_hWnd) ? SC_RESTORE : SC_MAXIMIZE, NULL);
+						break;
+					case HTMINBUTTON:
+						::SendMessageA(m_hWnd, WM_SYSCOMMAND, SC_MINIMIZE, NULL);
+						break;
+					}
+				}
+				return 0;
+				break;
+			}
+		}
 		break;
 	case WM_NCACTIVATE:
 		// Pass -1 to DefWindowProc to signal we do not want our client repainted.
@@ -70,41 +147,21 @@ _Check_return_ LRESULT CMyDialog::WindowProc(UINT message, WPARAM wParam, LPARAM
 		return true;
 		break;
 	case WM_NCPAINT:
-		CDialog::WindowProc(message, wParam, lParam);
 		DrawWindowFrame(m_hWnd, true, m_iStatusHeight);
 		return 0;
 		break;
-	case WM_ERASEBKGND:
-		return true;
 	case WM_CREATE:
 		if (pfnSetWindowTheme) (void) pfnSetWindowTheme(m_hWnd, L"", L"");
-		break;
-	case WM_CTLCOLORSTATIC:
-	case WM_CTLCOLOREDIT:
 		{
-			HDC hdc = (HDC) wParam;
-			if (hdc)
-			{
-				::SetTextColor(hdc, MyGetSysColor(cText));
-				::SetBkMode(hdc, TRANSPARENT);
-				::SelectObject(hdc, GetSegoeFont());
-			}
-			return (LRESULT) GetSysBrush(cBackground);
+			// These calls force Windows to initialize the system menu for this window.
+			// This avoids repaints whenever the system menu is later accessed.
+			// We eliminate classic mode visual artifacts with this call.
+			(void) ::GetSystemMenu(m_hWnd, false);
+			MENUBARINFO mbi = {0};
+			mbi.cbSize = sizeof(mbi);
+			(void) ::GetMenuBarInfo(m_hWnd, OBJID_SYSMENU, 0, &mbi);
 		}
 		break;
-	case WM_NOTIFY:
-		{
-			LRESULT lResult = NULL;
-			LPNMHDR pHdr = (LPNMHDR) lParam;
-
-			switch (pHdr->code)
-			{
-			// Paint Buttons
-			case NM_CUSTOMDRAW:
-				if (CustomDrawButton(pHdr, &lResult)) return lResult;
-			}
-			break;
-		}
 	} // end switch
 	return CDialog::WindowProc(message, wParam, lParam);
 } // CMyDialog::WindowProc

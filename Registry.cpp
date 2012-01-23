@@ -15,7 +15,7 @@ __RegKeys RegKeys[] = {
 	{_T("ThrottleLevel"),				regDWORD,regoptStringDec,	0			,0,_T(""),_T(""),false,	IDS_REGKEY_THROTTLE_LEVEL}, // STRING_OK
 	{_T("HierExpandNotifications"),		regDWORD,regoptCheck,		true		,0,_T(""),_T(""),false,	IDS_REGKEY_HIER_EXPAND_NOTIFS}, // STRING_OK
 	{_T("HierRootNotifs"),				regDWORD,regoptCheck,		false		,0,_T(""),_T(""),false,	IDS_REGKEY_HIER_ROOT_NOTIFS}, // STRING_OK
-	{_T("DoSmartView"),					regDWORD,regoptCheck,		true		,0,_T(""),_T(""),false,	IDS_REGKEY_DO_SMART_VIEW}, // STRING_OK
+	{_T("DoSmartView"),					regDWORD,regoptCheck,		true		,0,_T(""),_T(""),true,	IDS_REGKEY_DO_SMART_VIEW}, // STRING_OK
 	{_T("DoGetProps"),					regDWORD,regoptCheck,		true		,0,_T(""),_T(""),true,	IDS_REGKEY_DO_GETPROPS}, // STRING_OK
 	{_T("UseGetPropList"),				regDWORD,regoptCheck,		true		,0,_T(""),_T(""),true,	IDS_REGKEY_USE_GETPROPLIST}, // STRING_OK
 	{_T("CacheNamedProps"),				regDWORD,regoptCheck,		true		,0,_T(""),_T(""),false,	IDS_REGKEY_CACHE_NAMED_PROPS}, // STRING_OK

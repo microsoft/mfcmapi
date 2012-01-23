@@ -15,6 +15,7 @@ void DumpContentsTable(
 	_In_ bool bList,
 	_In_ ULONG ulFolder,
 	_In_z_ LPWSTR lpszFolder,
+	_In_ ULONG ulCount,
 	_In_opt_ LPSRestriction lpRes)
 {
 	InitMFC();
@@ -24,6 +25,7 @@ void DumpContentsTable(
 	if (bMSG) DebugPrint(DBGGeneric,"DumpContentsTable: Outputting as MSG\n");
 	if (bRetryStreamProps) DebugPrint(DBGGeneric,"DumpContentsTable: Will retry stream properties\n");
 	if (bList) DebugPrint(DBGGeneric,"DumpContentsTable: List only mode\n");
+	if (ulCount) DebugPrint(DBGGeneric,"DumpContentsTable: Limiting output to %d messages.\n", ulCount);
 	HRESULT hRes = S_OK;
 	LPMAPISESSION lpMAPISession = NULL;
 	LPMDB lpMDB = NULL;
@@ -50,12 +52,23 @@ void DumpContentsTable(
 	if (lpFolder)
 	{
 		CDumpStore MyDumpStore;
+		SSortOrderSet SortOrder = {0};
 		MyDumpStore.InitMDB(lpMDB);
 		MyDumpStore.InitFolder(lpFolder);
 		MyDumpStore.InitFolderPathRoot(lpszDir);
 		MyDumpStore.InitFolderContentsRestriction(lpRes);
 		if (bMSG) MyDumpStore.EnableMSG();
 		if (bList) MyDumpStore.EnableList();
+		if (ulCount)
+		{
+			MyDumpStore.InitMaxOutput(ulCount);
+			SortOrder.cSorts = 1;
+			SortOrder.cCategories = 0;
+			SortOrder.cExpanded = 0;
+			SortOrder.aSort[0].ulPropTag = PR_MESSAGE_DELIVERY_TIME;
+			SortOrder.aSort[0].ulOrder = TABLE_SORT_DESCEND;
+			MyDumpStore.InitSortOrder(&SortOrder);
+		}
 		if (bRetryStreamProps) MyDumpStore.EnableStreamRetry();
 		MyDumpStore.ProcessFolders(
 			bContents,
@@ -157,6 +170,7 @@ void DoContents(_In_ MYOPTIONS ProgOpts)
 		ProgOpts.bList,
 		ProgOpts.ulFolder,
 		ProgOpts.lpszFolderPath,
+		ProgOpts.ulCount,
 		lpRes);
 } // DoContents
 

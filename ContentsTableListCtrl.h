@@ -49,7 +49,7 @@ public:
 	_Check_return_ ULONG   GetContainerType();
 	_Check_return_ bool    IsAdviseSet();
 	_Check_return_ bool    IsContentsTableSet();
-	void    DoSetColumns(bool bAddExtras, bool bDisplayEditor, bool bQueryFlags, bool bDoRefresh);
+	void    DoSetColumns(bool bAddExtras, bool bDisplayEditor, bool bQueryFlags);
 	void    GetStatus();
 
 private:

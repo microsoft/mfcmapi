@@ -74,21 +74,21 @@ IDR_MENU_MAIN MENU DISCARDABLE
 BEGIN
 	POPUP "&Session"
 	BEGIN
-		MENUITEM "Logon",                       ID_LOGONANDDISPLAYSTORES
+		MENUITEM "Logon...",                    ID_LOGONANDDISPLAYSTORES
 		MENUITEM "&Logoff",                     ID_LOGOFF
 		POPUP "Advanced logon"
 		BEGIN
-			MENUITEM "&Logon only (does not display stores)", ID_LOGON
-			MENUITEM "Logon with flags",            ID_LOGONWITHFLAGS
+			MENUITEM "&Logon only (does not display stores)...", ID_LOGON
+			MENUITEM "Logon with flags...",         ID_LOGONWITHFLAGS
 			MENUITEM "Display message store table", ID_OPENMESSAGESTORETABLE
 			MENUITEM "View status table...",        ID_VIEWSTATUSTABLE
-			MENUITEM "Logoff with flags",           ID_LOGOFFWITHFLAGS
+			MENUITEM "Logoff with flags...",        ID_LOGOFFWITHFLAGS
 		END
 		POPUP "MAPI initialization"
 		BEGIN
 			MENUITEM "Load MAPI",                   ID_LOADMAPI
 			MENUITEM "Unload MAPI",                 ID_UNLOADMAPI
-			MENUITEM "MAPIInitialize",              ID_MAPIINITIALIZE
+			MENUITEM "MAPIInitialize...",           ID_MAPIINITIALIZE
 			MENUITEM "MAPIUninitialize",            ID_MAPIUNINITIALIZE
 			MENUITEM "Fast shutdown",               ID_FASTSHUTDOWN
 		END
@@ -102,8 +102,8 @@ BEGIN
 		BEGIN
 			MENUITEM "Open default directory",      ID_OPENDEFAULTDIR
 			MENUITEM "Open PAB",                    ID_OPENPAB
-			MENUITEM "QueryDefaultRecipOpt",        ID_QUERYDEFAULTRECIPOPT
-			MENUITEM "QueryIdentity",               ID_QUERYIDENTITY
+			MENUITEM "QueryDefaultRecipOpt...",     ID_QUERYDEFAULTRECIPOPT
+			MENUITEM "QueryIdentity...",            ID_QUERYIDENTITY
 		END
 	END
 	POPUP "&MDB"
@@ -113,7 +113,7 @@ BEGIN
 		BEGIN
 			MENUITEM "Open &default message store...",
 			                                        ID_OPENDEFAULTMESSAGESTORE
-			MENUITEM "Set default store",           ID_SETDEFAULTSTORE
+			MENUITEM "Set default store...",        ID_SETDEFAULTSTORE
 		END
 		MENUITEM "Open deleted folders...",     ID_OPENSELECTEDSTOREDELETEDFOLDERS
 		POPUP "Open other mailboxes"
@@ -136,23 +136,23 @@ BEGIN
 		MENUITEM "Show &profiles",              ID_SHOWPROFILES
 		POPUP "Advanced profile"
 		BEGIN
-			MENUITEM "Launch profile wizard",       ID_LAUNCHPROFILEWIZARD
+			MENUITEM "Launch profile wizard...",            ID_LAUNCHPROFILEWIZARD
 			MENUITEM SEPARATOR
-			MENUITEM "Get MAPISVC.inf path",              ID_GETMAPISVCINF
-			MENUITEM "Add services to MAPISVC.inf ",      ID_ADDSERVICESTOMAPISVCINF
-			MENUITEM "Remove services from MAPISVC.inf ", ID_REMOVESERVICESFROMMAPISVCINF
+			MENUITEM "Get MAPISVC.inf path...",             ID_GETMAPISVCINF
+			MENUITEM "Add services to MAPISVC.inf...",      ID_ADDSERVICESTOMAPISVCINF
+			MENUITEM "Remove services from MAPISVC.inf...", ID_REMOVESERVICESFROMMAPISVCINF
 		END
 	END
 	POPUP "&Advanced"
 	BEGIN
 		POPUP "&Import / Export"
 		BEGIN
-			MENUITEM "View properties of MSG file", ID_VIEWMSGPROPERTIES
-			MENUITEM "Convert MSG to EML",          ID_CONVERTMSGTOEML
-			MENUITEM "Convert EML to MSG",          ID_CONVERTEMLTOMSG
+			MENUITEM "View properties of MSG file...", ID_VIEWMSGPROPERTIES
+			MENUITEM "Convert MSG to EML...",          ID_CONVERTMSGTOEML
+			MENUITEM "Convert EML to MSG...",          ID_CONVERTEMLTOMSG
 			MENUITEM SEPARATOR
-			MENUITEM "Export store contents to text (SLOW)", ID_DUMPSTORECONTENTS
-			MENUITEM "Export server contents to text (VERY SLOW)",
+			MENUITEM "Export store contents to text (SLOW)...", ID_DUMPSTORECONTENTS
+			MENUITEM "Export server contents to text (VERY SLOW)...",
 			                                        ID_DUMPSERVERCONTENTSTOTEXT
 		END
 		POPUP "Forms"
@@ -164,23 +164,23 @@ BEGIN
 			MENUITEM "Select form container...",    ID_SELECTFORMCONTAINER
 		END
 		MENUITEM "Is attachment blocked..."     ID_ISATTACHMENTBLOCKED
-		MENUITEM "QueryDefaultMessageOpt",      ID_QUERYDEFAULTMESSAGEOPT
+		MENUITEM "QueryDefaultMessageOpt...",   ID_QUERYDEFAULTMESSAGEOPT
 	END
 END
 
 IDR_MENU_MAIN_POPUP MENU DISCARDABLE
 BEGIN
 	MENUITEM "Open store",                  ID_DISPLAYSELECTEDITEM
-	MENUITEM "Export store contents to text (SLOW)", ID_DUMPSTORECONTENTS
+	MENUITEM "Export store contents to text (SLOW)...", ID_DUMPSTORECONTENTS
 	MENUITEM SEPARATOR
 	MENUITEM "&Logoff",                     ID_LOGOFF
 	MENUITEM SEPARATOR
 	POPUP "Advanced"
 	BEGIN
 		MENUITEM "Set default store",           ID_SETDEFAULTSTORE
-		MENUITEM "Logoff with flags",           ID_LOGOFFWITHFLAGS
+		MENUITEM "Logoff with flags...",        ID_LOGOFFWITHFLAGS
 		MENUITEM "Open deleted folders...",     ID_OPENSELECTEDSTOREDELETEDFOLDERS
-		MENUITEM "Compute store hash",          ID_COMPUTEGIVENSTOREHASH
+		MENUITEM "Compute store hash...",       ID_COMPUTEGIVENSTOREHASH
 	END
 END
 
@@ -197,14 +197,14 @@ BEGIN
 		MENUITEM "Export message...",           ID_SAVEMESSAGETOFILE
 		MENUITEM SEPARATOR
 		MENUITEM "Copy messages",               ID_COPY
-		MENUITEM "Paste messages",              ID_PASTE
+		MENUITEM "Paste messages...",           ID_PASTE
 		MENUITEM "&Delete message",             ID_DELETESELECTEDITEM
 		MENUITEM SEPARATOR
 		POPUP "Recipients"
 		BEGIN
 			MENUITEM "Display recipient table",     ID_RECIPIENTPROPERTIES
-			MENUITEM "&Add test address",           ID_ADDTESTADDRESS
-			MENUITEM "Manual &resolve",             ID_MANUALRESOLVE
+			MENUITEM "&Add test address...",        ID_ADDTESTADDRESS
+			MENUITEM "Manual &resolve...",          ID_MANUALRESOLVE
 		END
 		POPUP "Attachments"
 		BEGIN
@@ -214,22 +214,22 @@ BEGIN
 		END
 		POPUP "Submit"
 		BEGIN
-			MENUITEM "Submit message",              ID_SUBMITMESSAGE
-			MENUITEM "Resend embedded NDR message", ID_RESENDMESSAGE
+			MENUITEM "Submit message...",           ID_SUBMITMESSAGE
 			MENUITEM "Abort submit",                ID_ABORTSUBMIT
+			MENUITEM "Resend embedded NDR message...", ID_RESENDMESSAGE
 		END
 		POPUP "Advanced"
 		BEGIN
-			MENUITEM "Execute verb on form",        ID_EXECUTEVERBONFORM
+			MENUITEM "Execute verb on form...",     ID_EXECUTEVERBONFORM
 			MENUITEM "Get props using longterm EID", ID_GETPROPSUSINGLONGTERMEID
 			MENUITEM "Open message (modal)",        ID_OPENMODAL
 			MENUITEM "Remove one off properties"    ID_REMOVEONEOFF
-			MENUITEM "RTFSync",                     ID_RTFSYNC
+			MENUITEM "RTFSync...",                     ID_RTFSYNC
 			MENUITEM SEPARATOR
-			MENUITEM "Get message options",         ID_GETMESSAGEOPTIONS
-			MENUITEM "Get message status",          ID_GETMESSAGESTATUS
-			MENUITEM "Set message status",          ID_SETMESSAGESTATUS
-			MENUITEM "Set read flag",               ID_SETREADFLAG
+			MENUITEM "Get message options...",      ID_GETMESSAGEOPTIONS
+			MENUITEM "Get message status...",       ID_GETMESSAGESTATUS
+			MENUITEM "Set message status...",       ID_SETMESSAGESTATUS
+			MENUITEM "Set read flag...",            ID_SETREADFLAG
 		END
 	END
 	POPUP "&Folder"
@@ -245,7 +245,7 @@ BEGIN
 			MENUITEM "Custom form (enter or select class)...", ID_NEW_CUSTOMFORM
 			MENUITEM "Generic message (not displayed)", ID_NEW_MESSAGE
 		END
-		MENUITEM "Export folder",           ID_SAVEFOLDERCONTENTSASTEXTFILES
+		MENUITEM "Export folder...",           ID_SAVEFOLDERCONTENTSASTEXTFILES
 		POPUP "Import"
 		BEGIN
 			MENUITEM "From EML...",            ID_LOADFROMEML
@@ -258,7 +258,7 @@ BEGIN
 			MENUITEM "Display ACL table...",        ID_DISPLAYACLTABLE
 			MENUITEM "Resolve message class..."     ID_RESOLVEMESSAGECLASS
 			MENUITEM "Select form...",              ID_SELECTFORM
-			MENUITEM "Send bulk mail from folder",  ID_SENDBULKMAIL
+			MENUITEM "Send bulk mail from folder...", ID_SENDBULKMAIL
 		END
 	END
 END
@@ -269,14 +269,14 @@ BEGIN
 	MENUITEM "Export message...",           ID_SAVEMESSAGETOFILE
 	MENUITEM SEPARATOR
 	MENUITEM "Copy messages",               ID_COPY
-	MENUITEM "Paste messages",              ID_PASTE
+	MENUITEM "Paste messages...",           ID_PASTE
 	MENUITEM "&Delete message",             ID_DELETESELECTEDITEM
 	MENUITEM SEPARATOR
 	POPUP "Recipients"
 	BEGIN
 		MENUITEM "Display recipient table",     ID_RECIPIENTPROPERTIES
-		MENUITEM "&Add test address",           ID_ADDTESTADDRESS
-		MENUITEM "Manual &resolve",             ID_MANUALRESOLVE
+		MENUITEM "&Add test address...",        ID_ADDTESTADDRESS
+		MENUITEM "Manual &resolve...",          ID_MANUALRESOLVE
 	END
 	POPUP "Attachments"
 	BEGIN
@@ -286,21 +286,21 @@ BEGIN
 	END
 	POPUP "Submit"
 	BEGIN
-		MENUITEM "Submit message",              ID_SUBMITMESSAGE
+		MENUITEM "Submit message...",           ID_SUBMITMESSAGE
 		MENUITEM "Abort submit",                ID_ABORTSUBMIT
-		MENUITEM "Resend embedded NDR message", ID_RESENDMESSAGE
+		MENUITEM "Resend embedded NDR message...", ID_RESENDMESSAGE
 	END
 	POPUP "Advanced"
 	BEGIN
-		MENUITEM "Execute verb on form",        ID_EXECUTEVERBONFORM
+		MENUITEM "Execute verb on form...",     ID_EXECUTEVERBONFORM
 		MENUITEM "Get props using longterm EID", ID_GETPROPSUSINGLONGTERMEID
 		MENUITEM "Open message (modal)",        ID_OPENMODAL
 		MENUITEM "Remove one off properties"    ID_REMOVEONEOFF
-		MENUITEM "RTFSync",                     ID_RTFSYNC
+		MENUITEM "RTFSync...",                  ID_RTFSYNC
 		MENUITEM SEPARATOR
-		MENUITEM "Get message options",         ID_GETMESSAGEOPTIONS
-		MENUITEM "Get message status",          ID_GETMESSAGESTATUS
-		MENUITEM "Set message status",          ID_SETMESSAGESTATUS
+		MENUITEM "Get message options...",      ID_GETMESSAGEOPTIONS
+		MENUITEM "Get message status...",       ID_GETMESSAGESTATUS
+		MENUITEM "Set message status...",       ID_SETMESSAGESTATUS
 		MENUITEM "Set read flag",               ID_SETREADFLAG
 	END
 END
@@ -310,25 +310,25 @@ BEGIN
 	POPUP "&Actions"
 	BEGIN
 		MENUITEM "Open profile",                ID_DISPLAYSELECTEDITEM
-		MENUITEM "Create profile",              ID_CREATEPROFILE
+		MENUITEM "Create profile...",           ID_CREATEPROFILE
 		MENUITEM "Delete profile",              ID_DELETESELECTEDITEM
 		POPUP "Services"
 		BEGIN
-			MENUITEM "Add exchange mailbox",        ID_ADDEXCHANGETOPROFILE
-			MENUITEM "Add PST",                     ID_ADDPSTTOPROFILE
-			MENUITEM "Add unicode PST",             ID_ADDUNICODEPSTTOPROFILE
+			MENUITEM "Add exchange mailbox...",     ID_ADDEXCHANGETOPROFILE
+			MENUITEM "Add PST...",                  ID_ADDPSTTOPROFILE
+			MENUITEM "Add unicode PST...",          ID_ADDUNICODEPSTTOPROFILE
 			MENUITEM "Add service...",              ID_ADDSERVICETOPROFILE
 		END
 		POPUP "Advanced"
 		BEGIN
 			MENUITEM "Open profile by name...",     ID_OPENPROFILEBYNAME
-			MENUITEM "Launch profile wizard",       ID_LAUNCHPROFILEWIZARD
+			MENUITEM "Launch profile wizard...",    ID_LAUNCHPROFILEWIZARD
 			MENUITEM "Set default profile",         ID_SETDEFAULTPROFILE
-			MENUITEM "Get profile server version",  ID_GETPROFILESERVERVERSION
+			MENUITEM "Get profile server version...", ID_GETPROFILESERVERVERSION
 			MENUITEM SEPARATOR
-			MENUITEM "Get MAPISVC.inf path",              ID_GETMAPISVCINF
-			MENUITEM "Add services to MAPISVC.inf ",      ID_ADDSERVICESTOMAPISVCINF
-			MENUITEM "Remove services from MAPISVC.inf ", ID_REMOVESERVICESFROMMAPISVCINF
+			MENUITEM "Get MAPISVC.inf path...",              ID_GETMAPISVCINF
+			MENUITEM "Add services to MAPISVC.inf...",      ID_ADDSERVICESTOMAPISVCINF
+			MENUITEM "Remove services from MAPISVC.inf...", ID_REMOVESERVICESFROMMAPISVCINF
 		END
 	END
 END
@@ -337,13 +337,13 @@ IDR_MENU_PROFILE_POPUP MENU DISCARDABLE
 BEGIN
 	MENUITEM "Open profile",                ID_DISPLAYSELECTEDITEM
 	MENUITEM "Set default profile",         ID_SETDEFAULTPROFILE
-	MENUITEM "Get profile server version",  ID_GETPROFILESERVERVERSION
+	MENUITEM "Get profile server version...", ID_GETPROFILESERVERVERSION
 	MENUITEM "Delete profile",              ID_DELETESELECTEDITEM
 	POPUP "Services"
 	BEGIN
-		MENUITEM "Add exchange mailbox",        ID_ADDEXCHANGETOPROFILE
-		MENUITEM "Add PST",                     ID_ADDPSTTOPROFILE
-		MENUITEM "Add unicode PST",             ID_ADDUNICODEPSTTOPROFILE
+		MENUITEM "Add exchange mailbox...",     ID_ADDEXCHANGETOPROFILE
+		MENUITEM "Add PST...",                  ID_ADDPSTTOPROFILE
+		MENUITEM "Add unicode PST...",          ID_ADDUNICODEPSTTOPROFILE
 		MENUITEM "Add service...",              ID_ADDSERVICETOPROFILE
 	END
 END
@@ -354,7 +354,7 @@ BEGIN
 	BEGIN
 		MENUITEM "Open service",                ID_DISPLAYSELECTEDITEM
 		MENUITEM "Delete service",              ID_DELETESELECTEDITEM
-		MENUITEM "Configure service",           ID_CONFIGUREMSGSERVICE
+		MENUITEM "Configure service...",        ID_CONFIGUREMSGSERVICE
 		MENUITEM SEPARATOR
 		MENUITEM "OpenProfileSection",          ID_OPENPROFILESECTION
 	END
@@ -364,7 +364,7 @@ IDR_MENU_MSGSERVICE_POPUP MENU DISCARDABLE
 BEGIN
 	MENUITEM "Open service",                ID_DISPLAYSELECTEDITEM
 	MENUITEM "Delete service",              ID_DELETESELECTEDITEM
-	MENUITEM "Configure service",           ID_CONFIGUREMSGSERVICE
+	MENUITEM "Configure service...",        ID_CONFIGUREMSGSERVICE
 END
 
 IDR_MENU_PROVIDER MENU DISCARDABLE
@@ -381,11 +381,11 @@ BEGIN
 	BEGIN
 		MENUITEM "Open",                        ID_DISPLAYSELECTEDITEM
 		MENUITEM "Copy",                        ID_COPY
-		MENUITEM "Paste",                       ID_PASTE
+		MENUITEM "Paste...",                    ID_PASTE
 		MENUITEM "Delete",                      ID_DELETESELECTEDITEM
 		POPUP "Advanced"
 		BEGIN
-			MENUITEM "Display details",             ID_DISPLAYDETAILS
+			MENUITEM "Display details...",          ID_DISPLAYDETAILS
 			MENUITEM "Open contact",                ID_OPENCONTACT
 			MENUITEM "Open &manager",               ID_OPENMANAGER
 			MENUITEM "Open &owner",                 ID_OPENOWNER
@@ -397,11 +397,11 @@ IDR_MENU_AB_VIEW_POPUP MENU DISCARDABLE
 BEGIN
 	MENUITEM "Open",                        ID_DISPLAYSELECTEDITEM
 	MENUITEM "Copy",                        ID_COPY
-	MENUITEM "Paste",                       ID_PASTE
+	MENUITEM "Paste...",                    ID_PASTE
 	MENUITEM "Delete",                      ID_DELETESELECTEDITEM
 	POPUP "Advanced"
 	BEGIN
-		MENUITEM "Display details",             ID_DISPLAYDETAILS
+		MENUITEM "Display details...",          ID_DISPLAYDETAILS
 		MENUITEM "Open contact",                ID_OPENCONTACT
 		MENUITEM "Open &manager",               ID_OPENMANAGER
 		MENUITEM "Open &owner",                 ID_OPENOWNER
@@ -522,11 +522,11 @@ BEGIN
 		POPUP "Export folder"
 		BEGIN
 			MENUITEM "As MSG files...",             ID_SAVEFOLDERCONTENTSASMSG
-			MENUITEM "As text files",               ID_SAVEFOLDERCONTENTSASTEXTFILES
+			MENUITEM "As text files...",            ID_SAVEFOLDERCONTENTSASTEXTFILES
 		END
 		MENUITEM SEPARATOR
 		MENUITEM "&Copy",                       ID_COPY
-		MENUITEM "&Paste",                      ID_PASTE
+		MENUITEM "&Paste...",                   ID_PASTE
 		MENUITEM "Paste rules",                 ID_PASTE_RULES
 		MENUITEM SEPARATOR
 		MENUITEM "Create &subfolder",           ID_CREATESUBFOLDER
@@ -546,11 +546,11 @@ BEGIN
 	END
 	POPUP "&MDB"
 	BEGIN
-		MENUITEM "&Validate IPM subtree",       ID_VALIDATEIPMSUBTREE
+		MENUITEM "&Validate IPM subtree...",    ID_VALIDATEIPMSUBTREE
 		POPUP "Display"
 		BEGIN
 			MENUITEM "&Mailbox table...",           ID_DISPLAYMAILBOXTABLE
-			MENUITEM "&Outgoing queue",             ID_DISPLAYOUTGOINGQUEUE
+			MENUITEM "&Outgoing queue...",          ID_DISPLAYOUTGOINGQUEUE
 			MENUITEM "&Receive folder table...",    ID_DISPLAYRECEIVEFOLDERTABLE
 		END
 	END
@@ -570,11 +570,11 @@ BEGIN
 	POPUP "Export folder"
 	BEGIN
 		MENUITEM "As MSG files...",             ID_SAVEFOLDERCONTENTSASMSG
-		MENUITEM "As Text files",               ID_SAVEFOLDERCONTENTSASTEXTFILES
+		MENUITEM "As text files...",            ID_SAVEFOLDERCONTENTSASTEXTFILES
 	END
 	MENUITEM SEPARATOR
 	MENUITEM "&Copy",                       ID_COPY
-	MENUITEM "&Paste",                      ID_PASTE
+	MENUITEM "&Paste...",                   ID_PASTE
 	MENUITEM "Paste rules",                 ID_PASTE_RULES
 	MENUITEM SEPARATOR
 	MENUITEM "Create &subfolder",           ID_CREATESUBFOLDER
@@ -650,14 +650,14 @@ BEGIN
 			MENUITEM "ASCII...",                    ID_EDITPROPERTYASASCIISTREAM
 			MENUITEM "Unicode...",                  ID_EDITPROPERTYASUNICODESTREAM
 			MENUITEM "RTF...",                      ID_EDITPROPERTYASPRRTFCOMPRESSEDSTREAM
-			MENUITEM "Binary",                      ID_EDITPROPASBINARYSTREAM
+			MENUITEM "Binary...",                   ID_EDITPROPASBINARYSTREAM
 		END
 		MENUITEM SEPARATOR
 		MENUITEM "Smart view...",               ID_PARSEPROPERTY
 		MENUITEM "&Open as entry ID or object", ID_OPEN_PROPERTY
 		MENUITEM SEPARATOR
 		MENUITEM "Copy property",               ID_COPY_PROPERTY
-		MENUITEM "Paste property",              ID_PASTE_PROPERTY
+		MENUITEM "Paste property...",           ID_PASTE_PROPERTY
 		MENUITEM "Paste named properties...",   ID_PASTE_NAMEDPROPS
 		MENUITEM "&Delete property",            ID_DELETEPROPERTY
 		MENUITEM SEPARATOR
@@ -670,8 +670,8 @@ BEGIN
 	MENUITEM SEPARATOR
 	POPUP "Advanced"
 	BEGIN
-		MENUITEM "Find all named props (SLOW)",   ID_FINDALLNAMEDPROPS
-		MENUITEM "Count named props",             ID_COUNTNAMEDPROPS
+		MENUITEM "Find all named props (SLOW)...", ID_FINDALLNAMEDPROPS
+		MENUITEM "Count named props...",           ID_COUNTNAMEDPROPS
 		MENUITEM SEPARATOR
 		MENUITEM "Call CopyTo...",                ID_COPYTO
 		MENUITEM "Edit given property...",        ID_EDITGIVENPROPERTY
@@ -687,14 +687,14 @@ BEGIN
 		MENUITEM "ASCII...",                    ID_EDITPROPERTYASASCIISTREAM
 		MENUITEM "Unicode...",                  ID_EDITPROPERTYASUNICODESTREAM
 		MENUITEM "RTF...",                      ID_EDITPROPERTYASPRRTFCOMPRESSEDSTREAM
-		MENUITEM "Binary",                      ID_EDITPROPASBINARYSTREAM
+		MENUITEM "Binary...",                   ID_EDITPROPASBINARYSTREAM
 	END
 	MENUITEM SEPARATOR
 	MENUITEM "Smart view...",               ID_PARSEPROPERTY
 	MENUITEM "&Open as entry ID or object", ID_OPEN_PROPERTY
 	MENUITEM SEPARATOR
 	MENUITEM "Copy property",               ID_COPY_PROPERTY
-	MENUITEM "Paste property",              ID_PASTE_PROPERTY
+	MENUITEM "Paste property...",           ID_PASTE_PROPERTY
 	MENUITEM "Paste named properties...",   ID_PASTE_NAMEDPROPS
 	MENUITEM "&Delete property",            ID_DELETEPROPERTY
 	MENUITEM SEPARATOR
@@ -706,7 +706,7 @@ END
 
 IDR_MENU_TOOLS MENU DISCARDABLE
 BEGIN
-	MENUITEM "Options",                     ID_OPTIONS
+	MENUITEM "Options...",                  ID_OPTIONS
 	MENUITEM SEPARATOR
 	MENUITEM "Debug view...",               ID_DBGVIEW
 	MENUITEM "Hex editor...",               ID_HEXEDITOR
@@ -718,26 +718,26 @@ BEGIN
 	END
 	POPUP "Notifications"
 	BEGIN
-		MENUITEM "Advise for notifications",    ID_NOTIFICATIONSON
+		MENUITEM "Advise for notifications...", ID_NOTIFICATIONSON
 		MENUITEM "Unadvise",                    ID_NOTIFICATIONSOFF
 		MENUITEM "Dispatch notifications",      ID_DISPATCHNOTIFICATIONS
 	END
 	MENUITEM SEPARATOR
 	MENUITEM "Open main window",            ID_OPENMAINWINDOW
-	MENUITEM "Outlook version",             ID_OUTLOOKVERSION
+	MENUITEM "Outlook version...",          ID_OUTLOOKVERSION
 	MENUITEM SEPARATOR
-	MENUITEM "&Help",                       ID_MYHELP
+	MENUITEM "&Help...",                    ID_MYHELP
 END
 
 IDR_MENU_TABLE MENU DISCARDABLE
 BEGIN
 	MENUITEM "Cancel table load",           ID_CANCELTABLELOAD
 	MENUITEM "&Refresh view",               ID_REFRESHVIEW
-	MENUITEM "Export table",                ID_OUTPUTTABLE
+	MENUITEM "Export table...",             ID_OUTPUTTABLE
 	MENUITEM SEPARATOR
-	MENUITEM "Get table status",            ID_GETSTATUS
-	MENUITEM "Set columns",                 ID_SETCOLUMNS
-	MENUITEM "Sort table",                  ID_SORTTABLE
+	MENUITEM "Get table status...",         ID_GETSTATUS
+	MENUITEM "Set columns...",              ID_SETCOLUMNS
+	MENUITEM "Sort table...",               ID_SORTTABLE
 	MENUITEM SEPARATOR
 	POPUP "Table notifications"
 	BEGIN
@@ -808,6 +808,10 @@ IDC_SPLITV              CURSOR  DISCARDABLE     "res\\splitv.cur"
 IDC_SPLITH              CURSOR  DISCARDABLE     "res\\splith.cur"
 IDB_MFCMAPILOGO         BITMAP  DISCARDABLE     "res\\MFCMAPI64x64_Logo.bmp"
 IDB_ADVISE              BITMAP  DISCARDABLE     "res\\advise.bmp"
+IDB_CLOSE               BITMAP  DISCARDABLE     "res\\close.bmp"
+IDB_MAXIMIZE            BITMAP  DISCARDABLE     "res\\maximize.bmp"
+IDB_MINIMIZE            BITMAP  DISCARDABLE     "res\\minimize.bmp"
+IDB_RESTORE             BITMAP  DISCARDABLE     "res\\restore.bmp"
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
 

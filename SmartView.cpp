@@ -31,7 +31,7 @@ _Check_return_ LPWSTR PTI8ToSzString(LARGE_INTEGER liI8, bool bLabel);
 
 // After 'No Parsing', these are in alphabetical order
 NAME_ARRAY_ENTRY g_uidParsingTypes[] = {
-	{IDS_STNOPARSING,L"No Parsing"}, // STRING_OK
+	{IDS_STNOPARSING,L"Choose Smart View Parser"}, // STRING_OK
 	{IDS_STADDITIONALRENENTRYIDSEX,L"Additional Ren Entry IDs Ex"}, // STRING_OK
 	{IDS_STAPPOINTMENTRECURRENCEPATTERN,L"Appointment Recurrence Pattern"}, // STRING_OK
 	{IDS_STCONVERSATIONINDEX,L"Conversation Index"}, // STRING_OK
@@ -1466,7 +1466,7 @@ void SDBinToString(SBinary myBin, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTa
 		CString szInfo;
 		CString szTmp;
 
-		EC_H(SDToString(lpSDToParse, ulSDToParse, acetype, &szDACL, &szInfo));
+		WC_H(SDToString(lpSDToParse, ulSDToParse, acetype, &szDACL, &szInfo));
 
 		LPTSTR szFlags = NULL;
 		InterpretFlags(flagSecurityVersion, SECURITY_DESCRIPTOR_VERSION(lpSDToParse), &szFlags);

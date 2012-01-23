@@ -28,6 +28,8 @@ public:
 	void InitMDB(_In_ LPMDB lpMDB);
 	void InitFolder(_In_ LPMAPIFOLDER lpFolder);
 	void InitFolderContentsRestriction(_In_opt_ LPSRestriction lpRes);
+	void InitMaxOutput(_In_ ULONG ulCount);
+	void InitSortOrder(_In_ LPSSortOrderSet lpSort);
 
 	// Processing functions
 	void ProcessMailboxTable(_In_z_ LPCTSTR szExchangeServerName);
@@ -102,4 +104,6 @@ private:
 	LPFOLDERNODE m_lpListTail;
 
 	LPSRestriction m_lpResFolderContents;
+	LPSSortOrderSet m_lpSort;
+	ULONG m_ulCount; // Limit on the number of messages processed per folder
 };

@@ -55,6 +55,7 @@ struct MYOPTIONS
 	ULONG ulEncodingType;
 	ULONG ulCodePage;
 	ULONG ulFlagValue;
+	ULONG ulCount;
 	CHARSETTYPE cSetType;
 	CSETAPPLYTYPE cSetApplyType;
 };

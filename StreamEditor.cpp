@@ -108,7 +108,7 @@ CEditor(pParentWnd,uidTitle,uidPrompt,0,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL)
 	InitMultiLine(m_iBinBox,IDS_STREAMBIN,NULL,false);
 	if (m_bDoSmartView)
 	{
-		InitMultiLine(m_iSmartViewBox,IDS_COLSMART_VIEW,NULL,true);
+		InitMultiLine(m_iSmartViewBox,IDS_SMARTVIEW,NULL,true);
 	}
 } // CStreamEditor::CStreamEditor
 

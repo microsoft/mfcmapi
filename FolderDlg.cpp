@@ -298,7 +298,7 @@ void CFolderDlg::OnAddOneOffAddress()
 	CEditor MyData(
 		this,
 		IDS_ADDONEOFF,
-		IDS_ADDONEOFFPROMPT,
+		NULL,
 		4,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 
@@ -1959,7 +1959,7 @@ _Check_return_ HRESULT CFolderDlg::OnGetMessageStatus(int /*iItem*/, _In_ SortLi
 		CEditor MyStatus(
 			this,
 			IDS_MESSAGESTATUS,
-			IDS_MESSAGESTATUS,
+			NULL,
 			1,
 			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 		MyStatus.InitSingleLine(0,IDS_MESSAGESTATUS,NULL,true);

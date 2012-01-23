@@ -37,8 +37,9 @@ _Check_return_ BOOL CAboutDlg::OnInitDialog()
 	DWORD dwVerHnd = 0;
 	DWORD dwRet = 0;
 	DWORD dwVerInfoSize = 0;
-	DWORD dwCheckHeight = GetSystemMetrics(SM_CYMENUCHECK);
-	DWORD dwBorder = GetSystemMetrics(SM_CXEDGE);
+	int iTextHeight = GetTextHeight(m_hWnd);
+	int iCheckHeight = iTextHeight + GetSystemMetrics(SM_CYEDGE)*2;
+	int iMargin = GetSystemMetrics(SM_CXHSCROLL)/2+1;
 	int i = 0;
 	int iRet = 0;
 	static TCHAR szProductName[128];
@@ -51,36 +52,40 @@ _Check_return_ BOOL CAboutDlg::OnInitDialog()
 
 	SetWindowText(szProductName);
 
-	CRect MyTextRect;
-	CRect MyBarRect;
-	CRect MyCheckRect;
+	RECT rcClient = {0};
+	RECT rcIcon = {0};
+	RECT rcButton = {0};
+	RECT rcText = {0};
+	RECT rcHelpText = {0};
+	RECT rcCheck = {0};
 
-	int iTextHeight = GetTextHeight(m_hWnd);
+	::GetClientRect(m_hWnd, &rcClient);
+
+	HWND hWndIcon = ::GetDlgItem(m_hWnd, IDC_STATIC);
+	::GetWindowRect(hWndIcon, &rcIcon);
+	::OffsetRect(&rcIcon, iMargin - rcIcon.left, iMargin - rcIcon.top);
+	::MoveWindow(hWndIcon, rcIcon.left, rcIcon.top, rcIcon.right - rcIcon.left, rcIcon.bottom - rcIcon.top, false);
+
+	HWND hWndButton = ::GetDlgItem(m_hWnd, IDOK);
+	::GetWindowRect(hWndButton, &rcButton);
+	::OffsetRect(&rcButton, rcClient.right - rcButton.right - iMargin, iMargin + ((IDD_ABOUTVERLAST - IDD_ABOUTVERFIRST + 1) * iTextHeight - iCheckHeight) / 2 - rcButton.top);
+	::MoveWindow(hWndButton, rcButton.left, rcButton.top, rcButton.right - rcButton.left, rcButton.bottom - rcButton.top, false);
+
 	// Position our about text with proper height
+	rcText.left = rcIcon.right + iMargin;
+	rcText.right = rcButton.left - iMargin;
 	for (i = IDD_ABOUTVERFIRST; i <= IDD_ABOUTVERLAST; i++)
 	{
 		HWND hWndAboutText = ::GetDlgItem(m_hWnd, i);
-		RECT rcText = {0};
-		::GetWindowRect(hWndAboutText, &rcText);
-		::MapWindowPoints(NULL, m_hWnd, (LPPOINT) &rcText, 2);
-		rcText.top = 5 + iTextHeight * (i - IDD_ABOUTVERFIRST);
+		rcText.top = rcIcon.top + iTextHeight * (i - IDD_ABOUTVERFIRST);
 		rcText.bottom = rcText.top + iTextHeight;
 		::MoveWindow(hWndAboutText, rcText.left, rcText.top, rcText.right - rcText.left, rcText.bottom - rcText.top, false);
 	}
 
-	// Find the shape of our client window
-	GetClientRect(&MyTextRect);
-
-	// Get Screen coords for the last control
-	CWnd* dlgWnd = GetDlgItem(IDD_ABOUTVERLAST);
-	if (dlgWnd) dlgWnd->GetWindowRect(&MyBarRect);
-	// Convert those to client coords we need
-	ScreenToClient(&MyBarRect);
-	MyTextRect.DeflateRect(
-		dwBorder,
-		MyBarRect.bottom+dwBorder*2,
-		dwBorder,
-		dwBorder+dwCheckHeight+dwBorder*2);
+	rcHelpText.left = rcClient.left + iMargin;
+	rcHelpText.top = rcText.bottom + iMargin * 2;
+	rcHelpText.right = rcClient.right - iMargin;
+	rcHelpText.bottom = rcClient.bottom - iMargin * 2 - iCheckHeight;
 
 	EC_B(m_HelpText.Create(
 		WS_TABSTOP
@@ -93,7 +98,7 @@ _Check_return_ BOOL CAboutDlg::OnInitDialog()
 		| ES_AUTOVSCROLL
 		| ES_MULTILINE
 		| ES_READONLY,
-		MyTextRect,
+		rcHelpText,
 		this,
 		IDD_HELP));
 	m_HelpText.ModifyStyleEx(WS_EX_CLIENTEDGE, 0, 0);
@@ -107,11 +112,9 @@ _Check_return_ BOOL CAboutDlg::OnInitDialog()
 	szHelpText.FormatMessage(IDS_HELPTEXT,szProductName);
 	m_HelpText.SetWindowText(szHelpText);
 
-	MyCheckRect.SetRect(
-		MyTextRect.left,
-		MyTextRect.bottom+dwBorder,
-		MyTextRect.right,
-		MyTextRect.bottom+dwCheckHeight+dwBorder*2);
+	rcCheck = rcHelpText;
+	rcCheck.top = rcHelpText.bottom + iMargin;
+	rcCheck.bottom = rcCheck.top + iCheckHeight;
 
 	EC_B(m_DisplayAboutCheck.Create(
 		NULL,
@@ -120,7 +123,7 @@ _Check_return_ BOOL CAboutDlg::OnInitDialog()
 		| WS_CLIPSIBLINGS
 		| WS_VISIBLE
 		| BS_AUTOCHECKBOX,
-		MyCheckRect,
+		rcCheck,
 		this,
 		IDD_DISPLAYABOUT));
 	m_DisplayAboutCheck.SetCheck(RegKeys[regkeyDISPLAY_ABOUT_DIALOG].ulCurDWORD?BST_CHECKED:BST_UNCHECKED);

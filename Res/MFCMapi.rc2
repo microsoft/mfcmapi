@@ -179,9 +179,10 @@ ID_LOGON										"Call MAPILogonEx. Do not open message store table."
 ID_LOGONANDDISPLAYSTORES						"Log on to MAPI and display message store table"
 ID_LOGONWITHFLAGS								"Prompt for flags to use for MAPILogonEx."
 ID_MAPIINITIALIZE								"Call MAPIInitialize with flags"
+ID_MAPIOPENLOCALFORMCONTAINER					"Call MAPIOpenLocalFormContainer"
 ID_MAPIUNINITIALIZE								"Call MAPIUninitialize"
 ID_MANUALRESOLVE								"Use manual name resolution to add an address to a message"
-ID_MODIFYEXTRAPROPS								"Modify the list of 'extra' properties in the property view"
+ID_MODIFYEXTRAPROPS								"Modify the list of additional properties in the property view"
 ID_MODIFYRECIPIENT								"Commit changes to selected recipient using ModifyRecipients"
 ID_MODIFYSELECTEDITEM							"Save changes to selected rows/items"
 ID_NEW_APPOINTMENT								"Create and display new IPM.APPOINTMENT in Calendar folder"
@@ -294,22 +295,16 @@ IDS_ACLADDITEMPROMPT             "Add which user?\r\n\
 \r\n\
 Specify PR_MEMBER_RIGHTS mask"
 // basedialog.cpp
-IDS_SETOPTS                      "Set Options"
-IDS_SETOPTSPROMPT                "Options for %1"
+IDS_SETOPTS                      "Options"
 IDS_OPENEID                      "Open Entry ID"
-IDS_OPENEIDPROMPT                "This function will attempt to interpret a binary string as an Entry ID.\r\n\
+IDS_OPENEIDPROMPT                "This function will attempt to interpret a hex encoded binary string as an Entry ID.\r\n\
 The Entry ID will be passed to each selected interface in turn, until the object\r\n\
 is successfully opened or all selected interfaces have been attempted.\r\n\
-Then, if a viewer has been implemented for the object, the object will be displayed in the viewer.\r\n\
-Otherwise, a message indicating no viewer has been implemented will be displayed.\r\n\
-Either way, the properties of the object, obtained via GetProps, will be rendered in the property viewer.\r\n\
-\r\n\
-Enter Entry ID as a binary string"
+The object will then be displayed in a new window.\r\n\
+The properties of the object will be displayed in the property viewer."
 IDS_COMPAREEIDS                  "Compare Entry IDs"
-IDS_COMPAREEIDSPROMPTS           "This function will attempt to interpret binary strings as an Entry ID.\r\n\
-The Entry IDs will be passed to the selected interface's implementation of CompareEntryIDs\r\n\
-\r\n\
-Enter Entry IDs as binary strings"
+IDS_COMPAREEIDSPROMPTS           "This function will attempt to interpret hex encoded binary strings as an Entry ID.\r\n\
+The Entry IDs will be passed to the selected interface's implementation of CompareEntryIDs."
 IDS_COMPAREEIDSRESULT            "CompareEntryIDs result"
 IDS_NOTIFICATIONS                "Notifications"
 IDS_NOTIFICATIONSPROMPT          "Enter Entry ID (leave blank to get store wide notifications)\r\n\
@@ -361,10 +356,8 @@ IDS_LARGENUMROWSPROMPT           "The number of rows in this table either exceed
 Click OK to display the specified number of rows."
 // DbgView.cpp
 IDS_DBGVIEW                      "Debug Viewer"
-IDS_DBGVIEWPROMPT                "Control debug output using tags."
 // folderdlg.cpp
 IDS_ADDONEOFF                    "Add One Off Recipient"
-IDS_ADDONEOFFPROMPT              "Enter values for address"
 IDS_COPYMESSAGE                  "Copy Message"
 IDS_COPYMESSAGEPROMPT            "Check box to move message instead"
 IDS_TAGSTOEXCLUDE                "Tags To Exclude"
@@ -447,7 +440,6 @@ IDS_GETDISPLAY                   "GetDisplay"
 IDS_GETDISPLAYPROMPT             "Result of GetDisplay call"
 // hexeditor.cpp
 IDS_HEXEDITOR                    "Hex Editor"
-IDS_HEXEDITORPROMPT              "Type strings to edit"
 // hierarchytabledlg.cpp
 IDS_DISPLAYHIEARCHYTABLE         "Display Hierarchy Table"
 IDS_DISPLAYHIEARCHYTABLEPROMPT   "Check box to pass CONVENIENT_DEPTH."
@@ -485,20 +477,22 @@ IDS_SERVERNAMEPROMPT             "Type name of server"
 IDS_PROFFORMAPILOGON             "Profile For MAPILogonEx"
 IDS_PROFFORMAPILOGONPROMPT       "Type profile name and flags:\r\n\
 \r\n\
-0x00000001 MAPI_LOGON_UI          Display logon UI\r\n\
-0x00000002 MAPI_NEW_SESSION       Don't use shared session\r\n\
-0x00000008 MAPI_ALLOW_OTHERS      Make this a shared session\r\n\
-0x00000010 MAPI_EXPLICIT_PROFILE  Don't use default profile\r\n\
-0x00000020 MAPI_EXTENDED          Extended MAPI Logon\r\n\
-0x00000040 MAPI_USE_DEFAULT       Use the default profile\r\n\
-0x00001000 MAPI_FORCE_DOWNLOAD    Get new mail before return\r\n\
-0x00002000 MAPI_SERVICE_UI_ALWAYS Do logon UI in all providers\r\n\
-0x00008000 MAPI_NO_MAIL           Do not activate transports\r\n\
-0x00010000 MAPI_NT_SERVICE        Allow logon from an NT service\r\n\
-0x00020000 MAPI_PASSWORD_UI       Display password UI only\r\n\
-0x00100000 MAPI_TIMEOUT_SHORT     Minimal wait for logon resources\r\n\
-0x00200000 MAPI_BG_SESSION        Client intends to operate on a background thread\r\n\
-MAPI_EXTENDED | MAPI_ALLOW_OTHERS | MAPI_NEW_SESSION | MAPI_LOGON_UI | MAPI_EXPLICIT_PROFILE == 0x3b\r\n\
+0x00000001 MAPI_LOGON_UI\t\tDisplay logon UI\r\n\
+0x00000002 MAPI_NEW_SESSION\tDon't use shared session\r\n\
+0x00000008 MAPI_ALLOW_OTHERS\tMake this a shared session\r\n\
+0x00000010 MAPI_EXPLICIT_PROFILE\tDon't use default profile\r\n\
+0x00000020 MAPI_EXTENDED\t\tExtended MAPI Logon\r\n\
+0x00000040 MAPI_USE_DEFAULT\tUse the default profile\r\n\
+0x00001000 MAPI_FORCE_DOWNLOAD\tGet new mail before return\r\n\
+0x00002000 MAPI_SERVICE_UI_ALWAYS\tDo logon UI in all providers\r\n\
+0x00008000 MAPI_NO_MAIL\t\tDo not activate transports\r\n\
+0x00010000 MAPI_NT_SERVICE\t\tAllow logon from an NT service\r\n\
+0x00020000 MAPI_PASSWORD_UI\tDisplay password UI only\r\n\
+0x00100000 MAPI_TIMEOUT_SHORT\tMinimal wait for logon resources\r\n\
+0x00200000 MAPI_BG_SESSION\t\tClient intends to operate on a background thread\r\n\
+\r\n\
+Examples:\r\n\
+Default: MAPI_EXTENDED | MAPI_ALLOW_OTHERS | MAPI_NEW_SESSION | MAPI_LOGON_UI | MAPI_EXPLICIT_PROFILE == 0x3B\r\n\
 Shared Profile: MAPI_EXTENDED | MAPI_ALLOW_OTHERS | MAPI_LOGON_UI | MAPI_NO_MAIL == 0x8039"
 IDS_LOGOFF                       "Logoff flags"
 IDS_LOGOFFPROMPT                 "Enter flags for IMAPISession->Logoff\r\n\
@@ -553,8 +547,7 @@ IDS_SETDEFSTOREPROMPT            "Enter flags for SetDefaultStore (flags are mut
 0x00000008 MAPI_PRIMARY_STORE          Used by some clients\r\n\
 0x00000010 MAPI_SECONDARY_STORE        Used by some clients"
 IDS_LAUNCHPROFWIZ                "Launch Profile Wizard"
-IDS_LAUNCHPROFWIZPROMPT          "Enter flags for LaunchWizard:\r\n\
-\r\n\
+IDS_LAUNCHPROFWIZPROMPT          "Flags for LaunchWizard:\r\n\
 0x00000001 MAPI_PW_FIRST_PROFILE\r\n\
 0x00000002 MAPI_PW_LAUNCHED_BY_CONFIG\r\n\
 0x00000004 MAPI_PW_ADD_SERVICE_ONLY\r\n\
@@ -634,14 +627,11 @@ IDS_OPENPROFILE                  "Open Profile"
 IDS_OPENPROFILEPROMPT            "Profile Name"
 // propertyeditor.cpp
 IDS_EDITROW                      "Edit Row"
-IDS_EDITROWPROMPT                "Edit single row"
 // propertytageditor.cpp
 IDS_PROPTAGEDITOR                "Property Tag Editor"
-IDS_PROPTAGEDITORPROMPT          "Fill out property tag information"
 IDS_CALLGETIDSFROMNAMES          "Call GetIDsFromNames"
 IDS_CALLGETIDSFROMNAMESPROMPT    "Check box to pass MAPI_CREATE"
 IDS_PROPSELECTOR                 "Property Selector"
-IDS_PROPSELECTORPROMPT           "Select property tag"
 // publicfoldertabledlg.cpp
 IDS_PFSEARCHCRITERIAPROMPT       "Type portion of name to find\r\n\
 ulFuzzyLevel Flags:"
@@ -651,7 +641,6 @@ IDS_RESEDCOMPPROMPT              "Edit Compare Property restriction"
 IDS_RESEDCONTPROMPT              "Edit Content restriction"
 IDS_RESEDPROPPROMPT              "Edit Property restriction"
 IDS_PROPEDITOR                   "Property Editor"
-IDS_PROPEDITORPROMPT             "Edit property"
 IDS_RESEDBITPROMPT               "Edit Bitmask restriction"
 IDS_RESEDSIZEPROMPT              "Edit Size restriction"
 IDS_RESEDEXISTPROMPT             "Edit Exist Restriction"
@@ -700,7 +689,6 @@ Interfaces (abbreviated list)\r\n\
 {0002030C-0000-0000-C000-000000000046} IID_IMAPIFolder"
 IDS_COPYTO                       "CopyTo"
 IDS_EXTRAPROPS                   "Additional Properties"
-IDS_EXTRAPROPSPROMPT             "Edit the set of Additional properties"
 IDS_EDITGIVENPROP                "Edit Given Property"
 IDS_OPENPROPASTABLE              "Open Property As Table"
 IDS_OPENPROPASTABLEPROMPT        "Check box to use IExchangeModifyTable interface"
@@ -727,12 +715,8 @@ IDS_PROFILESERVERVERSIONMINOR    "Minor Version"
 IDS_PROFILESERVERVERSIONBUILD    "Major Build"
 IDS_PROFILESERVERVERSIONMINORBUILD "Minor Build"
 IDS_NOTFOUND                     "<not found>"
-IDS_STRUCTUREPICKER              "Structure Picker"
-IDS_STRUCTUREPICKERPROMPT        "Pick which structure to interpret"
-IDS_STRUCTURERESULTS             "Structure Parser"
-IDS_STRUCTURERESULTSPROMPT       "Results of parsing binary property as a structure"
-IDS_PARSEDSTRUCTURE              "Parsed Structure"
-IDS_STRUCTURES                   "Structures"
+IDS_SMARTVIEW                    "Smart View"
+IDS_STRUCTURES                   "Select Smart View"
 IDS_COUNTNAMEDPROPS              "Count Named Props"
 IDS_COUNTNAMEDPROPSPROMPT        "Count of how many named property mappings exist and the highest \r\n\
 named property found in the selected store. Both are found using\r\n\
@@ -813,11 +797,11 @@ IDS_STATUSINHEX "Status (in hex):"
 IDS_CLASS "Class:"
 IDS_NUMBER "Number:"
 // HexEditor.cpp
-IDS_ANSISTRING "Ansi String"
-IDS_UNISTRING "Unicode String"
-IDS_CCH "Cch"
-IDS_BASE64STRING "Base64 String"
-IDS_CB "Cb"
+IDS_ANSISTRING "Ansi"
+IDS_UNISTRING "Unicode"
+IDS_CCH "Count of characters"
+IDS_BASE64STRING "Base 64"
+IDS_CB "Count of bytes"
 IDS_HEX "Hex"
 // HierarchyTableDlg.cpp
 IDS_CONVENIENTDEPTH "CONVENIENT_DEPTH"
@@ -885,7 +869,7 @@ IDS_BOOLEAN "Boolean"
 IDS_DOUBLE "Double"
 IDS_OBJECT "Object"
 IDS_FLOAT "Float"
-IDS_BIN "Bin"
+IDS_BIN "Binary"
 IDS_HI "Hi (decimal)"
 IDS_LO "Lo (decimal)"
 IDS_CURRENCY "Currency"
@@ -915,31 +899,31 @@ IDS_NAMEPROPGUID "Named Property GUID"
 IDS_MAPICREATE "MAPI_CREATE"
 IDS_KNOWNPROPTAGS "Known Property Tags"
 // Registry.cpp
-IDS_REGKEY_DEBUG_TAG "Debug output tags (0 = None, ffff = Verbose. See help.)"
+IDS_REGKEY_DEBUG_TAG "Debug flags (0 = None, ffff = Verbose. See help.):"
 IDS_REGKEY_DEBUG_TO_FILE "Enable debug output to file"
 IDS_REGKEY_DEBUG_FILE_NAME "Debug output file:"
-IDS_REGKEY_THROTTLE_LEVEL "Throttle level (if nonzero, limits the number of rows displayed in tables):"
 IDS_REGKEY_PARSED_NAMED_PROPS "Parse named properties"
-IDS_REGKEY_HIER_EXPAND_NOTIFS "Register notifications on hierarchy tables during node expansion or selection"
-IDS_REGKEY_HIER_ROOT_NOTIFS "Allow root container notifications (may cause infinite loop in address book)"
-IDS_REGKEY_DO_SMART_VIEW "Enable Smart view"
-IDS_REGKEY_DO_GETPROPS "Call GetProps when selecting or displaying (additional properties will still display)"
+IDS_REGKEY_GETPROPNAMES_ON_ALL_PROPS "Parse named properties for all props (including those below 0x8000)"
+IDS_REGKEY_THROTTLE_LEVEL "Limit displayed table rows:"
+IDS_REGKEY_HIER_EXPAND_NOTIFS "Register for notifications when you navigate to a folder"
+IDS_REGKEY_HIER_ROOT_NOTIFS "Allow notifications on root container (may cause infinite loop in address book)"
+IDS_REGKEY_DO_SMART_VIEW "Enable Smart View"
+IDS_REGKEY_DO_GETPROPS "Make a GetProps call when selecting or displaying an item"
+IDS_REGKEY_USE_GETPROPLIST "Use GetPropList for GetProps call (otherwise use NULL tag list)"
+IDS_REGKEY_CACHE_NAMED_PROPS "Cache named property mappings"
 IDS_REGKEY_ALLOW_DUPE_COLUMNS "Allow duplicate columns of different types"
 IDS_REGKEY_USE_ROW_DATA_FOR_SINGLEPROPLIST "Use row data for properties instead of GetProps"
-IDS_REGKEY_DO_COLUMN_NAMES "Nice column names"
-IDS_REGKEY_EDIT_COLUMNS_ON_LOAD "When loading tables, display SetColumns edit dialog"
-IDS_REGKEY_USE_GETPROPLIST "Use GetPropList for GetProps call (otherwise use NULL tag list)"
-IDS_REGKEY_GETPROPNAMES_ON_ALL_PROPS "Parse named properties for all props (including those below 0x8000)"
-IDS_REGKEY_CACHE_NAMED_PROPS "Cache named property mappings"
-IDS_REGKEY_MDB_ONLINE "Use MDB_ONLINE when calling OpenMsgStore"
-IDS_REGKEY_MAPI_NO_CACHE "Use MAPI_NO_CACHE when calling OpenEntry"
+IDS_REGKEY_DO_COLUMN_NAMES "Use 'nice' column names"
+IDS_REGKEY_EDIT_COLUMNS_ON_LOAD "When loading tables, display the SetColumns edit dialog"
+IDS_REGKEY_MDB_ONLINE "Use the MDB_ONLINE flag when calling OpenMsgStore"
+IDS_REGKEY_MAPI_NO_CACHE "Use the MAPI_NO_CACHE flag when calling OpenEntry"
 IDS_REGKEY_ALLOW_PERSIST_CACHE "Cache IPersistMessage when opening forms in compose mode"
 IDS_REGKEY_USE_IMAPIPROGRESS "Enable IMAPIProgress tracing"
 IDS_REGKEY_USE_MESSAGERAW "Use IID_IMessageRaw when opening messages"
 IDS_REGKEY_HEAPENABLETERMINATIONONCORRUPTION "Terminate on heap corruption (requires restart)"
 IDS_REGKEY_LOADADDINS "Load add-ins (requires restart)"
-IDS_REGKEY_FORCEOUTLOOKMAPI "Force Outlook's MAPI"
-IDS_REGKEY_FORCESYSTEMMAPI "Force system MAPI"
+IDS_REGKEY_FORCEOUTLOOKMAPI "Force the use of Outlook's MAPI files"
+IDS_REGKEY_FORCESYSTEMMAPI "Force the use of the system's MAPI files"
 
 // RestrictEditor.cpp
 IDS_RELOP "relop"
@@ -1011,6 +995,9 @@ IDS_RECIPIENTS "Recipients"
 IDS_RULESTABLE "Rules Table"
 IDS_TABLEASCONTENTS "IMAPITable as Contents Table"
 IDS_BASEDIALOG "BaseDialog"
+
+IDS_HELPTEXTSTARTHERE "Click Session/Logon to begin."
+IDS_HELPTEXTNOPROPS "Select an item to display properties."
 
 IDS_HELPTEXT "%1 Usage notes\n\
 \n\
@@ -1100,8 +1087,8 @@ IDS_TABLEMENU "&Table"
 IDS_ADDINSMENU "&AddIns"
 IDS_EXIT "E&xit"
 IDS_HIERARCHYTABLEMENU "&Hierarchy Table"
-IDS_PROPSFROMROW "Properties from the row in the table"
-IDS_PROPSFROMGETPROPS "Properties from IMAPIProp::GetProps()"
+IDS_PROPSFROMROW "Properties retrieved from row"
+IDS_PROPSFROMGETPROPS "Properties retrieved from item"
 
 // Dropdowns
 IDS_DDMESSAGESTORE "Message Store"
@@ -1141,7 +1128,7 @@ IDD_LISTDELETE "Delete"
 IDD_LISTMOVETOTOP "Move To Top"
 IDD_LISTMOVEUP "Move Up"
 
-IDS_OK "Ok"
+IDS_OK "OK"
 IDS_CANCEL "Cancel"
 
 // Error messages
@@ -1566,7 +1553,6 @@ IDS_COLEID "EID"
 IDS_COLEXACTNAMES "ExactNames"
 IDS_COLFILENAME "File Name"
 IDS_COLSMARTVIEW "SmartView"
-IDS_COLSMART_VIEW "Smart view"
 IDS_COLFROM "From"
 IDS_COLIDENTITY "Identity"
 IDS_COLINSTANCEKEY "Instance Key"

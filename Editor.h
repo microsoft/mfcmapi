@@ -70,10 +70,16 @@ struct ControlStruct
 	ULONG	ulCtrlType;
 	bool	bReadOnly;
 	bool	bUseLabelControl; // whether to use an extra label control - some controls will use szLabel on their own (checkbox)
-	CEdit	Label; // UI Control
+	UINT	uiTopMargin; // Spacing above the control
+	UINT	uiLabelHeight; // Height of the label
+	UINT	uiHeight; // Height of the control
+	UINT	uiBottomMargin; // Spacing below the control
+	UINT	uiButtonHeight; // Height of buttons below the control
+	UINT	uiLines; // Non-zero for controls of variable height, represents the number of 'lines' this control should get in the minimum layout
 	UINT	uidLabel; // Label to load
-	CString	szLabel; // Text to push into UI in OnInitDialog
 	UINT	nID; // id for matching change notifications back to controls
+	CEdit	Label; // UI Control
+	CString	szLabel; // Text to push into UI in OnInitDialog
 	union
 	{
 		CheckStruct*	lpCheck;
@@ -179,6 +185,7 @@ protected:
 	_Check_return_ CString GetDropStringUseControl(ULONG iControl);
 	_Check_return_ CString GetStringUseControl(ULONG iControl);
 	_Check_return_ ULONG   GetHexUseControl(ULONG i);
+	_Check_return_ ULONG   GetDecimalUseControl(ULONG i);
 	_Check_return_ ULONG   GetPropTagUseControl(ULONG iControl);
 	_Check_return_ bool    GetBinaryUseControl(ULONG i, _Out_ size_t* cbBin, _Out_ LPBYTE* lpBin);
 	_Check_return_ bool    GetCheckUseControl(ULONG iControl);
@@ -206,6 +213,8 @@ protected:
 
 	// protected since derived classes need to call the base implementation
 	_Check_return_ virtual ULONG HandleChange(UINT nID);
+
+	void EnableScroll();
 
 private:
 	// Overridable functions
@@ -252,17 +261,12 @@ private:
 	ULONG	m_ulListNum; // Only supporting one list right now - this is the control number for it
 
 	// Our UI controls. Only valid during display.
+	bool	m_bHasPrompt;
 	CEdit	m_Prompt;
 	CButton	m_OkButton;
 	CButton	m_ActionButton1;
 	CButton	m_ActionButton2;
 	CButton	m_CancelButton;
-	ULONG	m_cSingleLineBoxes;
-	ULONG	m_cMultiLineBoxes;
-	ULONG	m_cCheckBoxes;
-	ULONG	m_cDropDowns;
-	ULONG	m_cListBoxes;
-	ULONG	m_cLabels;
 	ULONG	m_cButtons;
 
 	// Variables that get set in the constructor
@@ -270,6 +274,7 @@ private:
 
 	// Size calculations
 	int		m_iMargin;
+	int		m_iSideMargin;
 	int		m_iButtonWidth;
 	int		m_iEditHeight;
 	int		m_iTextHeight;
@@ -291,7 +296,12 @@ private:
 	ControlStruct*	m_lpControls; // array of controls
 	ULONG			m_cControls; // count of controls
 
+	bool m_bEnableScroll;
+	CWnd m_ScrollWindow;
+	HWND m_hWndVertScroll;
+	bool m_bScrollVisible;
+
+	int m_iScrollClient;
+
 	DECLARE_MESSAGE_MAP()
 };
-
-void CleanString(_In_ CString* lpString);
