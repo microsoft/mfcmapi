@@ -4,15 +4,20 @@
 enum uiColor
 {
 	cBackground,
-	cBackgroundDisabled,
+	cBackgroundReadOnly,
 	cGlow,
+	cGlowBackground,
+	cGlowText,
 	cFrameSelected,
 	cFrameUnselected,
 	cArrow,
 	cText,
 	cTextDisabled,
-	cTextInverted,
-	cBitmapTransparency,
+	cTextReadOnly,
+	cBitmapTransBack,
+	cBitmapTransFore,
+	cStatus,
+	cStatusText,
 	cUIEnd
 };
 
@@ -27,7 +32,28 @@ enum uiPen
 enum uiBitmap
 {
 	cNotify,
+	cClose,
+	cMinimize,
+	cMaximize,
+	cRestore,
 	cBitmapEnd
+};
+
+class CDoubleBuffer
+{
+private:
+	HDC m_hdcMem;
+	HBITMAP m_hbmpMem;
+	HDC m_hdcPaint;
+	RECT m_rcPaint;
+
+	void Cleanup();
+
+public:
+	CDoubleBuffer();
+	~CDoubleBuffer();
+	void Begin(_Inout_ HDC& hdc, _In_ RECT* prcPaint);
+	void End(_Inout_ HDC& hdc);
 };
 
 void InitializeGDI();
@@ -90,9 +116,6 @@ void DrawExpandTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ HTREEITEM hItem, bool
 void CustomDrawHeader(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 void DrawTrackingBar(_In_ HWND hWndHeader, _In_ HWND hWndList, int x, int iHeaderHeight, bool bRedraw);
 
-// Button
-bool CustomDrawButton(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
-
 // Menu and Combo box
 void MeasureItem(_In_ LPMEASUREITEMSTRUCT lpMeasureItemStruct);
 void DrawItem(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct);
@@ -107,5 +130,11 @@ void DrawStatus(
 	int iStatusData2,
 	LPCTSTR szStatusInfo);
 
-// Window frame
+void DrawSystemButtons(_In_ HWND hWnd, _In_opt_ HDC hdc, int iHitTest);
 void DrawWindowFrame(_In_ HWND hWnd, bool bActive, int iStatusHeight);
+
+// Winproc handler for custom controls
+_Check_return_ bool HandleControlUI(UINT message, WPARAM wParam, LPARAM lParam, _Out_ LRESULT* lpResult);
+
+// Help Text
+void DrawHelpText(_In_ HWND hWnd, _In_ UINT uIDText);

@@ -22,7 +22,7 @@ static TCHAR* CLASS = _T("CParentWnd");
 // Only CSingleMAPIPropListCtrl handles that, so we'll only get hits when the header for
 // a particular CSingleMAPIPropListCtrl gets changed.
 // We can't throw to the CSingleMAPIPropListCtrl directly since we don't have a handle here for it
-VOID CALLBACK MyWinEventProc(
+void CALLBACK MyWinEventProc(
 							 HWINEVENTHOOK /*hWinEventHook*/,
 							 DWORD event,
 							 _In_ HWND hwnd,

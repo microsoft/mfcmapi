@@ -110,6 +110,7 @@ enum __CommandLineSwitch
 	switchFid,                // '-fi'
 	switchMid,                // '-mid'
 	switchFlag,               // '-flag'
+	switchRecent,             // '-recent'
 };
 
 struct COMMANDLINE_SWITCH
@@ -163,6 +164,7 @@ COMMANDLINE_SWITCH g_Switches[] =
 	{switchFid,                "FID"},
 	{switchMid,                "MID"},
 	{switchFlag,               "Flag"},
+	{switchRecent,             "Recent"},
 // If we want to add aliases for any switches, add them here
 };
 ULONG g_ulSwitches = _countof(g_Switches);
@@ -209,8 +211,8 @@ void DisplayUsage(BOOL bFull)
 	printf("   MrMAPI -%s [-%s <profile>] [-%s <folder>]\n",g_Switches[switchAcl].szSwitch,g_Switches[switchProfile].szSwitch,g_Switches[switchFolder].szSwitch);
 	printf("   MrMAPI [-%s | -%s] [-%s <profile>] [-%s <folder>] [-%s <output directory>]\n",
 		g_Switches[switchContents].szSwitch,g_Switches[switchAssociatedContents].szSwitch,g_Switches[switchProfile].szSwitch,g_Switches[switchFolder].szSwitch,g_Switches[switchOutput].szSwitch);
-	printf("          [-%s <subject>] [-%s <message class>] [-%s] [-%s]\n",
-		g_Switches[switchSubject].szSwitch, g_Switches[switchMessageClass].szSwitch, g_Switches[switchMSG].szSwitch, g_Switches[switchList].szSwitch);
+	printf("          [-%s <subject>] [-%s <message class>] [-%s] [-%s] [-%s <count>]\n",
+		g_Switches[switchSubject].szSwitch, g_Switches[switchMessageClass].szSwitch, g_Switches[switchMSG].szSwitch, g_Switches[switchList].szSwitch, g_Switches[switchRecent].szSwitch);
 	printf("   MrMAPI -%s [-%s <profile>] [-%s <folder>]\n",g_Switches[switchChildFolders].szSwitch,g_Switches[switchProfile].szSwitch,g_Switches[switchFolder].szSwitch);
 	printf("   MrMAPI -%s -%s <path to input file> -%s <path to output file>\n",
 		g_Switches[switchXML].szSwitch,g_Switches[switchInput].szSwitch,g_Switches[switchOutput].szSwitch);
@@ -269,6 +271,7 @@ void DisplayUsage(BOOL bFull)
 		printf("   -Me  (or -%s) Message class of messages to output.\n",g_Switches[switchMessageClass].szSwitch);
 		printf("   -Ms  (or -%s) Output as .MSG instead of XML.\n",g_Switches[switchMSG].szSwitch);
 		printf("   -L   (or -%s) List details to screen and do not output files.\n",g_Switches[switchList].szSwitch);
+		printf("   -Re  (or -%s) Restrict output to the 'count' most recent messages.\n",g_Switches[switchRecent].szSwitch);
 		printf("\n");
 		printf("   Child Folders:\n");
 		printf("   -Chi (or -%s) Display child folders of selected folder.\n",g_Switches[switchChildFolders].szSwitch);
@@ -573,6 +576,12 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 		case switchList:
 			if (!bSetMode(&pRunOpts->Mode,cmdmodeContents)) return false;
 			pRunOpts->bList = true;
+			break;
+		case switchRecent:
+			if (!bSetMode(&pRunOpts->Mode, cmdmodeContents)) return false;
+			if (argc <= i+1 || switchNoSwitch != ParseArgument(argv[i+1])) return false;
+			pRunOpts->ulCount = strtoul(argv[i+1], &szEndPtr,10);
+			i++;
 			break;
 		// XML
 		case switchXML:

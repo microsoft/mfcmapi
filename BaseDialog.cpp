@@ -21,6 +21,7 @@
 #include <msi.h>
 #include "ImportProcs.h"
 #include "SmartView.h"
+#include "Options.h"
 
 static TCHAR* CLASS = _T("CBaseDialog");
 
@@ -380,94 +381,22 @@ void CBaseDialog::OnEscHit()
 
 void CBaseDialog::OnOptions()
 {
-	HRESULT	hRes = S_OK;
-	DebugPrintEx(DBGGeneric,CLASS,_T("OnOptions"),_T("Building option sheet - creating editor\n"));
+	bool bNiceNamesBefore = 0 != RegKeys[regkeyDO_COLUMN_NAMES].ulCurDWORD;
+	bool bNeedPropRefresh = DisplayOptionsDlg(this);
+	bool bNiceNamesAfter = 0 != RegKeys[regkeyDO_COLUMN_NAMES].ulCurDWORD;
+	HRESULT hRes = S_OK;
+	bool bResetColumns = false;
 
-	CString szProduct;
-	CString szPrompt;
-	EC_B(szProduct.LoadString(ID_PRODUCTNAME));
-	szPrompt.FormatMessage(IDS_SETOPTSPROMPT,szProduct);
-
-	CEditor MyData(
-		this,
-		IDS_SETOPTS,
-		NULL,
-		NumRegOptionKeys,
-		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-	MyData.SetPromptPostFix(szPrompt);
-
-	DebugPrintEx(DBGGeneric,CLASS,_T("OnOptions"),_T("Building option sheet - adding fields\n"));
-
-	ULONG ulReg = 0;
-
-	for (ulReg = 0 ; ulReg < NumRegOptionKeys ; ulReg++)
+	if (bNiceNamesBefore != bNiceNamesAfter)
 	{
-		if (regoptCheck == RegKeys[ulReg].ulRegOptType)
-		{
-			MyData.InitCheck(ulReg,RegKeys[ulReg].uiOptionsPrompt,(0 != RegKeys[ulReg].ulCurDWORD),false);
-		}
-		else if (regoptString == RegKeys[ulReg].ulRegOptType)
-		{
-			MyData.InitSingleLineSz(ulReg,RegKeys[ulReg].uiOptionsPrompt,RegKeys[ulReg].szCurSTRING,false);
-		}
-		else if (regoptStringHex == RegKeys[ulReg].ulRegOptType)
-		{
-			MyData.InitSingleLine(ulReg,RegKeys[ulReg].uiOptionsPrompt,NULL,false);
-			MyData.SetHex(ulReg,RegKeys[ulReg].ulCurDWORD);
-		}
-		else if (regoptStringDec == RegKeys[ulReg].ulRegOptType)
-		{
-			MyData.InitSingleLine(ulReg,RegKeys[ulReg].uiOptionsPrompt,NULL,false);
-			MyData.SetDecimal(ulReg,RegKeys[ulReg].ulCurDWORD);
-		}
+		// We check if this worked so we don't refresh the prop list after resetting the top pane
+		// But, if we're a tree view, this won't work at all, so we'll still want to reset props if needed
+		bResetColumns = false != ::SendMessage(m_hWnd, WM_MFCMAPI_RESETCOLUMNS, 0, 0);
 	}
 
-	DebugPrintEx(DBGGeneric,CLASS,_T("OnOptions"),_T("Done building option sheet - displaying dialog\n"));
-
-	WC_H(MyData.DisplayDialog());
-	if (S_OK == hRes)
+	if (!bResetColumns && bNeedPropRefresh)
 	{
-		bool bNeedPropRefresh = false;
-		// need to grab this FIRST
-		EC_H(StringCchCopy(RegKeys[regkeyDEBUG_FILE_NAME].szCurSTRING,_countof(RegKeys[regkeyDEBUG_FILE_NAME].szCurSTRING),MyData.GetString(regkeyDEBUG_FILE_NAME)));
-
-		if (MyData.GetHex(regkeyDEBUG_TAG) != RegKeys[regkeyDEBUG_TAG].ulCurDWORD)
-		{
-			SetDebugLevel(MyData.GetHex(regkeyDEBUG_TAG));
-			DebugPrintVersion(DBGVersionBanner);
-		}
-
-		SetDebugOutputToFile(MyData.GetCheck(regkeyDEBUG_TO_FILE));
-
-		// Remaining options require no special handling - loop through them
-		for (ulReg = 0 ; ulReg < NumRegOptionKeys ; ulReg++)
-		{
-			if (regoptCheck == RegKeys[ulReg].ulRegOptType)
-			{
-				if (RegKeys[ulReg].bRefresh && RegKeys[ulReg].ulCurDWORD != (ULONG) MyData.GetCheck(ulReg))
-				{
-					bNeedPropRefresh = true;
-				}
-				RegKeys[ulReg].ulCurDWORD = MyData.GetCheck(ulReg);
-			}
-			else if (regoptStringHex == RegKeys[ulReg].ulRegOptType)
-			{
-				RegKeys[ulReg].ulCurDWORD = MyData.GetHex(ulReg);
-			}
-			else if (regoptStringDec == RegKeys[ulReg].ulRegOptType)
-			{
-				RegKeys[ulReg].ulCurDWORD = MyData.GetDecimal(ulReg);
-			}
-		}
-
-		// Commit our values to the registry
-		WriteToRegistry();
-
-		ForceOutlookMAPI(0 != RegKeys[regkeyFORCEOUTLOOKMAPI].ulCurDWORD);
-		ForceSystemMAPI(0 != RegKeys[regkeyFORCESYSTEMMAPI].ulCurDWORD);
-
-		if (bNeedPropRefresh && m_lpPropDisplay)
-			WC_H(m_lpPropDisplay->RefreshMAPIPropList());
+		if (m_lpPropDisplay) WC_H(m_lpPropDisplay->RefreshMAPIPropList());
 	}
 } // CBaseDialog::OnOptions
 

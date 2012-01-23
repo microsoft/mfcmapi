@@ -202,6 +202,9 @@ struct SortListData
 #define WM_MFCMAPI_SAVECOLUMNORDERHEADER	WM_APP+10
 #define WM_MFCMAPI_SAVECOLUMNORDERLIST		WM_APP+11
 
+// Used by CContentsTableDlg
+#define WM_MFCMAPI_RESETCOLUMNS				WM_APP+12
+
 // Definitions for WrapCompressedRTFStreamEx in param for WrapCompressedRTFStreamEX
 // http://msdn2.microsoft.com/en-us/library/bb905293.aspx
 struct RTF_WCSINFO {

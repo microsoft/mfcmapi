@@ -192,6 +192,7 @@ BEGIN_MESSAGE_MAP(CContentsTableDlg, CBaseDialog)
 	ON_COMMAND(ID_SORTTABLE, OnSortTable)
 	ON_COMMAND(ID_TABLENOTIFICATIONON, OnNotificationOn)
 	ON_COMMAND(ID_TABLENOTIFICATIONOFF, OnNotificationOff)
+	ON_MESSAGE(WM_MFCMAPI_RESETCOLUMNS, msgOnResetColumns)
 END_MESSAGE_MAP()
 
 void CContentsTableDlg::OnInitMenu(_In_opt_ CMenu* pMenu)
@@ -670,7 +671,6 @@ void CContentsTableDlg::OnSetColumns()
 	m_lpContentsTableListCtrl->DoSetColumns(
 		false,
 		true,
-		true,
 		true);
 } // CContentsTableDlg::OnSetColumns
 
@@ -975,3 +975,21 @@ void CContentsTableDlg::HandleAddInMenuSingle(
 
 	InvokeAddInMenu(lpParams);
 } // CContentsTableDlg::HandleAddInMenuSingle
+
+// WM_MFCMAPI_RESETCOLUMNS
+// Returns true if we reset columns, false otherwise
+_Check_return_ LRESULT	CContentsTableDlg::msgOnResetColumns(WPARAM /*wParam*/, LPARAM /*lParam*/)
+{
+	DebugPrintEx(DBGGeneric,CLASS,_T("msgOnResetColumns"),_T("Received message reset columns\n"));
+
+	if (m_lpContentsTableListCtrl)
+	{
+		m_lpContentsTableListCtrl->DoSetColumns(
+			true,
+			false,
+			false);
+		return true;
+	}
+
+	return false;
+} // CContentsTableDlg::msgOnRefreshTableFull

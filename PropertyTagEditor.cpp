@@ -31,7 +31,7 @@ CPropertyTagEditor::CPropertyTagEditor(
 									   _In_ CWnd* pParentWnd):
 CEditor(pParentWnd,
 		uidTitle?uidTitle:IDS_PROPTAGEDITOR,
-		uidPrompt?uidPrompt:IDS_PROPTAGEDITORPROMPT,
+		uidPrompt,
 		0,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL|CEDITOR_BUTTON_ACTION1|(lpMAPIProp?CEDITOR_BUTTON_ACTION2:0),
 		IDS_ACTIONSELECTPTAG,
@@ -421,7 +421,7 @@ CPropertySelector::CPropertySelector(
 									 bool bIncludeABProps,
 									 _In_ LPMAPIPROP lpMAPIProp,
 									 _In_ CWnd* pParentWnd):
-CEditor(pParentWnd,IDS_PROPSELECTOR,IDS_PROPSELECTORPROMPT,0,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL)
+CEditor(pParentWnd,IDS_PROPSELECTOR,0,0,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	m_ulPropTag = PR_NULL;

@@ -2704,6 +2704,8 @@ NAME_ARRAY_ENTRY_V2 g_PropTagArray[] =
 	{0x7c070102, 0x1, L"PidTagRoamingDictionary" },
 	{0x7c080102, 0x2, L"PR_ROAMING_XMLSTREAM" },
 	{0x7c080102, 0x1, L"PidTagRoamingXmlStream" },
+	{0x7c090102, 0x2, L"PR_ROAMING_BINARYSTREAM" },
+	{0x7c090102, 0x1, L"PidTagRoamingBinary" },
 	{0x7c0a000b, 0x1, L"PR_STORE_SLOWLINK" },
 	{0x7d01000b, 0x2, L"PR_PROCESSED" },
 	{0x7d01000b, 0x1, L"PidTagProcessed" },

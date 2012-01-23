@@ -66,6 +66,9 @@ private:
 	void OnSetColumns();
 	void OnSortTable();
 
+	// Custom messages
+	_Check_return_ LRESULT msgOnResetColumns(WPARAM wParam, LPARAM lParam);
+
 	// Values held only for use in InitDialog to create our CContentsTableListCtrl
 	ULONG			m_iNumExtraDisplayColumns;
 	TagNames*		m_lpExtraDisplayColumns;

@@ -629,11 +629,10 @@ _Check_return_ HRESULT SDToString(_In_count_(cbBuf) LPBYTE lpBuf, ULONG cbBuf, e
 	PSECURITY_DESCRIPTOR pSecurityDescriptor = NULL;
 
 	if (!lpBuf || !SDString) return MAPI_E_NOT_FOUND;
-	if (CbSecurityDescriptorHeader(lpBuf) > cbBuf) return MAPI_E_NOT_FOUND;
 
 	pSecurityDescriptor = SECURITY_DESCRIPTOR_OF(lpBuf);
 
-	if (!IsValidSecurityDescriptor(pSecurityDescriptor))
+	if (CbSecurityDescriptorHeader(lpBuf) > cbBuf || !IsValidSecurityDescriptor(pSecurityDescriptor))
 	{
 		SDString->FormatMessage(IDS_INVALIDSD);
 		return S_OK;

@@ -9,6 +9,10 @@
 #define IDB_ICONS                       139
 #define IDB_MFCMAPILOGO                 140
 #define IDB_ADVISE                      141
+#define IDB_CLOSE                       142
+#define IDB_MAXIMIZE                    143
+#define IDB_MINIMIZE                    144
+#define IDB_RESTORE                     145
 #define IDR_MENU_MAIN                   150
 #define IDR_MENU_FOLDER                 151
 #define IDR_MENU_AB_VIEW                152
@@ -363,7 +367,6 @@
 #define	IDS_DELETEABENTRYPROMPT         33689
 #define	IDS_CALLCOPYENTRIESPROMPT       33690
 #define	IDS_ABSEARCHCRITERIAPROMPT      33691
-#define	IDS_SETOPTSPROMPT               33692
 #define	IDS_OPENEIDPROMPT               33693
 #define	IDS_NOTIFICATIONSPROMPT         33694
 #define	IDS_CONTSEARCHCRITERIAPROMPT    33695
@@ -371,7 +374,6 @@
 #define	IDS_SETCOLUMNSPROMPT            33697
 #define	IDS_GETSTATUSPROMPT             33698
 #define	IDS_LARGENUMROWSPROMPT          33700
-#define	IDS_ADDONEOFFPROMPT             33701
 #define	IDS_COPYMESSAGEPROMPT           33702
 #define	IDS_DELETEATTACHMENTSPROMPT     33703
 #define	IDS_DELETEITEMPROMPT            33704
@@ -386,7 +388,6 @@
 #define	IDS_SETREADFLAGPROMPT           33713
 #define	IDS_ADDRESSTYPEPROMPT           33714
 #define	IDS_SETMSGSTATUSPROMPT          33715
-#define	IDS_HEXEDITORPROMPT             33716
 #define	IDS_DISPLAYHIEARCHYTABLEPROMPT  33717
 #define	IDS_CALLSETSEARCHCRITERIAPROMPT 33718
 #define	IDS_MBSEARCHCRITERIAPROMPT      33719
@@ -415,9 +416,7 @@
 #define	IDS_NEWEXPROFPROMPT             33744
 #define	IDS_NEWSERVICEPROMPT            33745
 #define	IDS_NEWPROFPROMPT               33746
-#define	IDS_PROPTAGEDITORPROMPT         33747
 #define	IDS_CALLGETIDSFROMNAMESPROMPT   33748
-#define	IDS_PROPSELECTORPROMPT          33749
 #define	IDS_PFSEARCHCRITERIAPROMPT      33750
 #define	IDS_RESEDCOMPPROMPT             33751
 #define	IDS_RESEDCONTPROMPT             33752
@@ -443,10 +442,7 @@
 #define IDS_COLUMNSETPROMPT             33773
 #define IDS_SORTTABLEPROMPT1            33774
 #define IDS_TAGSTOEXCLUDEPROMPT         33775
-#define IDS_EDITROWPROMPT               33776
-#define IDS_PROPEDITORPROMPT            33777
 #define IDS_STREAMEDITORPROMPT          33778
-#define IDS_EXTRAPROPSPROMPT            33779
 #define IDS_ACLADDITEM                  33780
 #define IDS_ACLADDITEMPROMPT            33781
 #define IDS_COMPAREEIDS                 33782
@@ -500,11 +496,7 @@
 #define IDS_NOTFOUND                    33837
 #define IDS_COMPUTESTOREHASH            33838
 #define IDS_COMPUTESTOREHASHPROMPT      33839
-#define IDS_STRUCTUREPICKER             33842
-#define IDS_STRUCTUREPICKERPROMPT       33843
-#define IDS_STRUCTURERESULTS            33844
-#define IDS_STRUCTURERESULTSPROMPT      33845
-#define IDS_PARSEDSTRUCTURE             33846
+#define IDS_SMARTVIEW                   33842
 #define IDS_STRUCTURES                  33847
 #define IDS_PSTPATH                     33860
 #define IDS_PSTPATHPROMPT               33861
@@ -520,12 +512,13 @@
 #define IDS_COUNTNAMEDPROPS             33875
 #define IDS_COUNTNAMEDPROPSPROMPT       33876
 #define IDS_DBGVIEW                     33883
-#define IDS_DBGVIEWPROMPT               33884
 #define IDS_STLONGRTIME                 33885
 #define IDS_STPTI8                      33886
 #define IDS_OPENPROFILE                 33887
 #define IDS_OPENPROFILEPROMPT           33888
 #define IDS_STSFIDMID                   33889
+#define IDS_HELPTEXTSTARTHERE           33890
+#define IDS_HELPTEXTNOPROPS             33891
 
 // 35001 through 36000 are dialog labels and other random strings
 #define IDS_FLAGS 35001
@@ -1122,7 +1115,6 @@
 #define IDS_RPMODIFIEDINSTANCECOUNT 35614
 #define IDS_RPMODIFIEDINSTANCEDATES 35615
 #define IDS_RPDATE 35616
-#define IDS_COLSMART_VIEW 35617
 #define IDS_FLAGS_PREFIX 35618
 #define IDS_JUNKDATASIZE 35619
 #define IDS_EXTENDEDFLAGSHEADER 35620

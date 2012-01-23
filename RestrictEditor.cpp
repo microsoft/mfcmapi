@@ -215,7 +215,7 @@ void CResCombinedEditor::OnEditAction1()
 	WC_H(DisplayPropertyEditor(
 		this,
 		IDS_PROPEDITOR,
-		IDS_PROPEDITORPROMPT,
+		NULL,
 		false,
 		m_lpAllocParent,
 		NULL,
@@ -826,7 +826,7 @@ _Check_return_ bool CResCommentEditor::DoListEdit(ULONG ulListNum, int iItem, _I
 	WC_H(DisplayPropertyEditor(
 		this,
 		IDS_PROPEDITOR,
-		IDS_PROPEDITORPROMPT,
+		NULL,
 		false,
 		m_lpAllocParent,
 		NULL,

@@ -119,6 +119,27 @@ BEGIN_MESSAGE_MAP(CSingleMAPIPropListCtrl, CSortListCtrl)
 	ON_MESSAGE(WM_MFCMAPI_SAVECOLUMNORDERLIST, msgOnSaveColumnOrder)
 END_MESSAGE_MAP()
 
+_Check_return_ LRESULT CSingleMAPIPropListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	switch (message)
+	{
+	case WM_ERASEBKGND:
+		if (!m_lpMAPIProp && !m_lpSourceData)
+		{
+			return true;
+		}
+		break;
+	case WM_PAINT:
+		if (!m_lpMAPIProp && !m_lpSourceData)
+		{
+			DrawHelpText(m_hWnd, IDS_HELPTEXTNOPROPS);
+			return true;
+		}
+		break;
+	} // end switch
+	return CSortListCtrl::WindowProc(message,wParam,lParam);
+} // CSingleMAPIPropListCtrl::WindowProc
+
 /////////////////////////////////////////////////////////////////////////////
 // CSingleMAPIPropListCtrl message handlers
 
@@ -1438,7 +1459,7 @@ void CSingleMAPIPropListCtrl::OnEditGivenProp(ULONG ulPropTag)
 	WC_H(DisplayPropertyEditor(
 		this,
 		IDS_PROPEDITOR,
-		IDS_PROPEDITORPROMPT,
+		NULL,
 		m_bIsAB,
 		lpSourceArray,
 		m_lpMAPIProp,
@@ -1610,8 +1631,8 @@ void CSingleMAPIPropListCtrl::OnParseProperty()
 		DWORD_PTR iStructType = NULL;
 		CEditor MyStructurePicker(
 			this,
-			IDS_STRUCTUREPICKER,
-			IDS_STRUCTUREPICKERPROMPT,
+			IDS_SMARTVIEW,
+			NULL,
 			1,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
@@ -1634,13 +1655,13 @@ void CSingleMAPIPropListCtrl::OnParseProperty()
 			{
 				CEditor MyResults(
 					this,
-					IDS_STRUCTURERESULTS,
-					IDS_STRUCTURERESULTSPROMPT,
+					IDS_SMARTVIEW,
+					NULL,
 					2,
 					CEDITOR_BUTTON_OK);
 				MyResults.InitSingleLine(0,IDS_PROPTAG,NULL,true);
 				MyResults.SetHex(0,ulPropTag);
-				MyResults.InitMultiLine(1,IDS_PARSEDSTRUCTURE,NULL,true);
+				MyResults.InitMultiLine(1,IDS_SMARTVIEW,NULL,true);
 				MyResults.SetStringW(1,szString);
 
 				WC_H(MyResults.DisplayDialog());
@@ -1948,7 +1969,7 @@ void CSingleMAPIPropListCtrl::OnModifyExtraProps()
 	CTagArrayEditor MyTagArrayEditor(
 		this,
 		IDS_EXTRAPROPS,
-		IDS_EXTRAPROPSPROMPT,
+		NULL,
 		m_sptExtraProps,
 		m_bIsAB,
 		m_lpMAPIProp);

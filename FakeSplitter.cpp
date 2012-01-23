@@ -50,7 +50,7 @@ CFakeSplitter::CFakeSplitter(
 		wc.style   = 0; // not passing CS_VREDRAW | CS_HREDRAW fixes flicker
 		wc.lpszClassName = _T("FakeSplitter"); // STRING_OK
 		wc.lpfnWndProc = ::DefWindowProc;
-		wc.hbrBackground = GetSysBrush(cBitmapTransparency); // helps spot flashing
+		wc.hbrBackground = GetSysBrush(cBitmapTransBack); // helps spot flashing
 
 		RegisterClassEx(&wc);
 	}
@@ -332,55 +332,38 @@ void CFakeSplitter::OnPaint()
 	::BeginPaint(m_hWnd, &ps);
 	if (ps.hdc)
 	{
-		HDC hdc = CreateCompatibleDC(ps.hdc);
-		HBITMAP hbm = CreateCompatibleBitmap(
-			ps.hdc,
-			ps.rcPaint.right - ps.rcPaint.left,
-			ps.rcPaint.bottom - ps.rcPaint.top);
-		if (hdc && hbm)
+		RECT rcWin = {0};
+		::GetClientRect(m_hWnd, &rcWin);
+		CDoubleBuffer db;
+		HDC hdc = ps.hdc;
+		db.Begin(hdc, &rcWin);
+
+		RECT rcSplitter = rcWin;
+		::FillRect(hdc, &rcSplitter, GetSysBrush(cBackground));
+
+		POINT pts[2]; // 0 is left top, 1 is right bottom
+		if (SplitHorizontal == m_SplitType)
 		{
-			HGDIOBJ hbmOld = ::SelectObject(hdc, hbm);
-			RECT rcSplitter = ps.rcPaint;
-			OffsetRect(&rcSplitter, -rcSplitter.left, -rcSplitter.top);
-
-			::FillRect(hdc, &rcSplitter, GetSysBrush(cBackground));
-
-			POINT pts[2]; // 0 is left top, 1 is right bottom
-			if (SplitHorizontal == m_SplitType)
-			{
-				pts[0].x = (rcSplitter.left + rcSplitter.right)/2;
-				pts[0].y = rcSplitter.top;
-				pts[1].x = pts[0].x;
-				pts[1].y = rcSplitter.bottom;
-			}
-			else
-			{
-				pts[0].x = rcSplitter.left;
-				pts[0].y = (rcSplitter.top + rcSplitter.bottom)/2;
-				pts[1].x = rcSplitter.right;
-				pts[1].y = pts[0].y;
-			}
-
-			// Draw the splitter bar
-			HGDIOBJ hpenOld = ::SelectObject(hdc, GetPen(m_bTracking?cSolidPen:cDashedPen));
-			::MoveToEx(hdc, pts[0].x, pts[0].y, NULL);
-			::LineTo(hdc, pts[1].x, pts[1].y);
-			(void) ::SelectObject(hdc, hpenOld);
-
-			BitBlt(
-				ps.hdc,
-				ps.rcPaint.left,
-				ps.rcPaint.top,
-				ps.rcPaint.right - ps.rcPaint.left,
-				ps.rcPaint.bottom - ps.rcPaint.top,
-				hdc,
-				0,
-				0,
-				SRCCOPY);
-			(void) ::SelectObject(hdc, hbmOld);
+			pts[0].x = m_iSplitPos + m_iSplitWidth / 2;
+			pts[0].y = rcSplitter.top;
+			pts[1].x = pts[0].x;
+			pts[1].y = rcSplitter.bottom;
 		}
-		if (hdc) DeleteDC(hdc);
-		if (hbm) DeleteObject(hbm);
+		else
+		{
+			pts[0].x = rcSplitter.left;
+			pts[0].y = m_iSplitPos + m_iSplitWidth / 2;
+			pts[1].x = rcSplitter.right;
+			pts[1].y = pts[0].y;
+		}
+
+		// Draw the splitter bar
+		HGDIOBJ hpenOld = ::SelectObject(hdc, GetPen(m_bTracking?cSolidPen:cDashedPen));
+		::MoveToEx(hdc, pts[0].x, pts[0].y, NULL);
+		::LineTo(hdc, pts[1].x, pts[1].y);
+		(void) ::SelectObject(hdc, hpenOld);
+
+		db.End(hdc);
 	}
 
 	::EndPaint(m_hWnd, &ps);

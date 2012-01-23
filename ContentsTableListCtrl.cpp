@@ -18,6 +18,7 @@
 #include "ExtraPropTags.h"
 #include "Smartview.h"
 #include <process.h>
+#include "UIFunctions.h"
 
 static TCHAR* CLASS = _T("CContentsTableListCtrl");
 
@@ -40,7 +41,7 @@ CContentsTableListCtrl::CContentsTableListCtrl(
 
 	HRESULT hRes = S_OK;
 
-	EC_H(Create(pCreateParent,NULL,IDC_LIST_CTRL,true));
+	EC_H(Create(pCreateParent, LVS_NOCOLUMNHEADER, IDC_LIST_CTRL, true));
 
 	m_bAbortLoad = false; // no need to synchronize this - the thread hasn't started yet
 	m_bInLoadOp = false;
@@ -95,13 +96,25 @@ BEGIN_MESSAGE_MAP(CContentsTableListCtrl, CSortListCtrl)
 	ON_MESSAGE(WM_MFCMAPI_REFRESHTABLE, msgOnRefreshTable)
 END_MESSAGE_MAP()
 
-// Some message handling is not worth breaking out into separate functions.
 _Check_return_ LRESULT CContentsTableListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	HRESULT hRes = S_OK;
 
 	switch (message)
 	{
+	case WM_ERASEBKGND:
+		if (!m_lpContentsTable)
+		{
+			return true;
+		}
+		break;
+	case WM_PAINT:
+		if (!m_lpContentsTable)
+		{
+			DrawHelpText(m_hWnd, IDS_HELPTEXTSTARTHERE);
+			return true;
+		}
+		break;
 	case WM_LBUTTONDBLCLK:
 		WC_H(DoExpandCollapse());
 		if (S_FALSE == hRes)
@@ -164,35 +177,15 @@ _Check_return_ HRESULT CContentsTableListCtrl::SetContentsTable(
 
 		m_lpContentsTable->Release();
 		m_lpContentsTable = NULL;
-
-		// Clear out the selected item view since we have a new contents table
-		if (m_lpHostDlg)
-			m_lpHostDlg->OnUpdateSingleMAPIPropListCtrl(NULL, NULL);
 	}
 	m_lpContentsTable = lpContentsTable;
-	if (m_lpContentsTable)
-	{
-		m_lpContentsTable->AddRef();
+	if (m_lpContentsTable) m_lpContentsTable->AddRef();
 
-		// Set up the columns on the new contents table
-		DoSetColumns(
-			true,
-			(0 != RegKeys[regkeyEDIT_COLUMNS_ON_LOAD].ulCurDWORD),
-			false,
-			false);
-
-		// Turn on notification...
-		WC_H(NotificationOn());
-		hRes = S_OK;
-	}
-	else
-	{
-		// Delete all of the old column headers
-		// This way, when we clear a view, we clean up all the header data
-		DeleteAllColumns();
-	}
-	// ...and pull the list into our nicely formatted table!
-	EC_H(RefreshTable());
+	// Set up the columns on the new contents table and refresh!
+	DoSetColumns(
+		true,
+		(0 != RegKeys[regkeyEDIT_COLUMNS_ON_LOAD].ulCurDWORD),
+		false);
 
 	return hRes;
 } // CContentsTableListCtrl::SetContentsTable
@@ -287,11 +280,22 @@ _Check_return_ HRESULT CContentsTableListCtrl::SetUIColumns(_In_ LPSPropTagArray
 	return hRes;
 } // CContentsTableListCtrl::SetUIColumns
 
-void CContentsTableListCtrl::DoSetColumns(bool bAddExtras, bool bDisplayEditor, bool bQueryFlags, bool bDoRefresh)
+void CContentsTableListCtrl::DoSetColumns(bool bAddExtras, bool bDisplayEditor, bool bQueryFlags)
 {
 	HRESULT			hRes = S_OK;
 
-	if (!IsContentsTableSet()) return;
+	// Clear out the selected item view since we have a new contents table
+	if (m_lpHostDlg)
+		m_lpHostDlg->OnUpdateSingleMAPIPropListCtrl(NULL, NULL);
+
+	if (!IsContentsTableSet())
+	{
+		// Make sure we're clear
+		DeleteAllColumns();
+		ModifyStyle(0, LVS_NOCOLUMNHEADER);
+		EC_H(RefreshTable());
+		return;
+	}
 
 	// these arrays get allocated during the func and need to be freed
 	LPSPropTagArray lpConcatTagArray = NULL;
@@ -307,11 +311,16 @@ void CContentsTableListCtrl::DoSetColumns(bool bAddExtras, bool bDisplayEditor, 
 	CWaitCursor		Wait; // Change the mouse to an hourglass while we work.
 
 	DebugPrintEx(DBGGeneric,CLASS,_T("DoSetColumns"),
-		_T("bAddExtras = %d, bDisplayEditor = %d, bQueryFlags = %d, bDoRefresh = %d\n"), // STRING_OK
-		bAddExtras,
+		_T("bbDisplayEditor = %d, bQueryFlags = %d\n"), // STRING_OK
 		bDisplayEditor,
-		bQueryFlags,
-		bDoRefresh);
+		bQueryFlags);
+
+	ModifyStyle(LVS_NOCOLUMNHEADER, 0);
+
+	// Cycle our notification, turning off the old one if necessary
+	NotificationOff();
+	WC_H(NotificationOn());
+	hRes = S_OK;
 
 	if (bQueryFlags)
 	{
@@ -390,7 +399,7 @@ void CContentsTableListCtrl::DoSetColumns(bool bAddExtras, bool bDisplayEditor, 
 			lpFinalTagArray,
 			ulSetColumnFlags)); // Flags
 		EC_H(SetUIColumns(lpFinalTagArray));
-		if (bDoRefresh) EC_H(RefreshTable());
+		EC_H(RefreshTable());
 	}
 
 	MAPIFreeBuffer(lpModifiedTags);

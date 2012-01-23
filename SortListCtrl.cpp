@@ -118,7 +118,7 @@ _Check_return_ HRESULT CSortListCtrl::Create(_In_ CWnd* pCreateParent, ULONG ulF
 
 		CBitmap myBitmap;
 		myBitmap.LoadBitmap(IDB_ICONS);
-		m_ImageList.Add(&myBitmap, MyGetSysColor(cBitmapTransparency));
+		m_ImageList.Add(&myBitmap, MyGetSysColor(cBitmapTransBack));
 
 		SetImageList(&m_ImageList,LVSIL_SMALL);
 	}
@@ -574,14 +574,13 @@ void CSortListCtrl::DeleteAllColumns(bool bShutdown)
 	lpMyHeader = GetHeaderCtrl();
 	if (lpMyHeader)
 	{
-		if (!bShutdown) MySetRedraw(false);
-
 		// Delete all of the old column headers
 		int iColCount = lpMyHeader->GetItemCount();
 		// Delete from right to left, which is faster than left to right
 		int iCol = NULL;
 		if (iColCount)
 		{
+			if (!bShutdown) MySetRedraw(false);
 			for (iCol = iColCount-1;iCol >= 0 ; iCol--)
 			{
 				hdItem.mask = HDI_LPARAM;
@@ -593,8 +592,8 @@ void CSortListCtrl::DeleteAllColumns(bool bShutdown)
 
 				if (!bShutdown) EC_B(DeleteColumn(iCol));
 			}
+			if (!bShutdown) MySetRedraw(true);
 		}
-		if (!bShutdown) MySetRedraw(true);
 	}
 } // CSortListCtrl::DeleteAllColumns
 
