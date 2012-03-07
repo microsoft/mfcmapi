@@ -9,6 +9,7 @@
 #include "SmartView.h"
 #include "ColumnTags.h"
 
+LPCTSTR g_szXMLHeader = _T("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n");
 FILE* g_fDebugFile = NULL;
 
 void OpenDebugFile()
@@ -131,14 +132,41 @@ void CloseFile(_In_opt_ FILE* fFile)
 	if (fFile) fclose(fFile);
 } // CloseFile
 
+// Allocated with new, clean with delete[]
+LPTSTR StripCarriage(_In_z_ LPCTSTR szString)
+{
+	size_t dwLen = _tcslen(szString);
+	LPTSTR szNewString = new TCHAR[dwLen+1];
+	if (szNewString)
+	{
+		size_t iSrc = 0;
+		size_t iDest = 0;
+		for (iSrc = 0 ; iSrc < dwLen ; iSrc++)
+		{
+			if (_T('\r') != szString[iSrc])
+				szNewString[iDest++] = szString[iSrc];
+		}
+		szNewString[iDest] = _T('\0');
+	}
+	return szNewString;
+} // StripCarriage
+
+void WriteFile(_In_ FILE* fFile, _In_z_ LPCTSTR szString)
+{
+	LPTSTR szOut = StripCarriage(szString);
+	if (szOut)
+	{
+		_fputts(szOut, fFile);
+		delete[] szOut;
+	}
+} // WriteFile
+
 // The root of all debug output - call no debug output functions besides OutputDebugString from here!
 void _Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, _In_opt_z_ LPCTSTR szMsg)
 {
 	CHKPARAM;
 	EARLYABORT;
 	static TCHAR szErr[64]; // buffer for catastrophic failures
-
-	HRESULT hRes = S_OK;
 
 	if (!szMsg) return; // nothing to print? Cool!
 
@@ -155,7 +183,7 @@ void _Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, _In_op
 			GetSystemTime(&stLocalTime);
 			GetSystemTimeAsFileTime(&ftLocalTime);
 
-			EC_H(StringCchPrintf(szThreadTime,
+			(void) StringCchPrintf(szThreadTime,
 				_countof(szThreadTime),
 				_T("0x%04x %02d:%02d:%02d.%03d%s  %02d-%02d-%4d 0x%08X: "), // STRING_OK
 				GetCurrentThreadId(),
@@ -167,7 +195,7 @@ void _Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, _In_op
 				stLocalTime.wMonth,
 				stLocalTime.wDay,
 				stLocalTime.wYear,
-				ulDbgLvl));
+				ulDbgLvl);
 			OutputDebugString(szThreadTime);
 #ifndef MRMAPI
 			OutputToDbgView(szThreadTime);
@@ -175,23 +203,29 @@ void _Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, _In_op
 		}
 
 		OutputDebugString(szMsg);
-#ifndef MRMAPI
+#ifdef MRMAPI
+		LPTSTR szOut = StripCarriage(szMsg);
+		if (szOut)
+		{
+			_tprintf(szOut);
+			delete[] szOut;
+		}
+#else
 		OutputToDbgView(szMsg);
 #endif
-		OutputToConsole(szMsg);
 
 		// print to to our debug output log file
 		if (RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD && g_fDebugFile)
 		{
-			if (bPrintThreadTime) _fputts(szThreadTime,g_fDebugFile);
-			_fputts(szMsg,g_fDebugFile);
+			if (bPrintThreadTime) WriteFile(g_fDebugFile, szThreadTime);
+			WriteFile(g_fDebugFile, szMsg);
 		}
 	}
 
 	// If we were given a file - send the output there
 	if (fFile)
 	{
-		_fputts(szMsg,fFile);
+		WriteFile(fFile, szMsg);
 	}
 } // _Output
 
@@ -357,7 +391,7 @@ void _OutputFormInfo(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMINFO l
 		MAPIFreeBuffer(lpPropVals);
 	}
 
-	EC_H(lpMAPIFormInfo->CalcVerbSet(NULL, &lpMAPIVerbArray)); // API doesn't support Unicode
+	EC_MAPI(lpMAPIFormInfo->CalcVerbSet(NULL, &lpMAPIVerbArray)); // API doesn't support Unicode
 
 	if (lpMAPIVerbArray)
 	{
@@ -399,7 +433,7 @@ void _OutputFormInfo(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMINFO l
 	}
 
 	hRes = S_OK;
-	EC_H(lpMAPIFormInfo->CalcFormPropSet(NULL, &lpMAPIFormPropArray)); // API doesn't support Unicode
+	EC_MAPI(lpMAPIFormInfo->CalcFormPropSet(NULL, &lpMAPIFormPropArray)); // API doesn't support Unicode
 
 	if (lpMAPIFormPropArray)
 	{
@@ -491,12 +525,12 @@ void _OutputTable(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPITABLE lpMAPIT
 	HRESULT			hRes = S_OK;
 	LPSRowSet		lpRows = NULL;
 
-	EC_H(lpMAPITable->SeekRow(
+	EC_MAPI(lpMAPITable->SeekRow(
 		BOOKMARK_BEGINNING,
 		0,
 		NULL));
 	hRes = S_OK; // don't let failure here fail the whole op
-	_Output(ulDbgLvl,fFile,false,_T("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n"));
+	_Output(ulDbgLvl,fFile,false, g_szXMLHeader);
 	_Output(ulDbgLvl,fFile,false,_T("<table>\n"));
 
 	for (;;)
@@ -505,7 +539,7 @@ void _OutputTable(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPITABLE lpMAPIT
 
 		FreeProws(lpRows);
 		lpRows = NULL;
-		EC_H(lpMAPITable->QueryRows(
+		EC_MAPI(lpMAPITable->QueryRows(
 			20,
 			NULL,
 			&lpRows));
@@ -950,7 +984,7 @@ void _OutputStream(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSTREAM lpStream)
 	{
 		hRes = S_OK;
 		ulNumBytes = 0;
-		EC_H(lpStream->Read(
+		EC_MAPI(lpStream->Read(
 			bBuf,
 			MAXBYTES,
 			&ulNumBytes));

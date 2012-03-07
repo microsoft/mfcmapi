@@ -88,6 +88,8 @@ BEGIN
 		BEGIN
 			MENUITEM "Load MAPI",                   ID_LOADMAPI
 			MENUITEM "Unload MAPI",                 ID_UNLOADMAPI
+			MENUITEM "Display MAPI path",           ID_DISPLAYMAPIPATH
+			MENUITEM SEPARATOR
 			MENUITEM "MAPIInitialize...",           ID_MAPIINITIALIZE
 			MENUITEM "MAPIUninitialize",            ID_MAPIUNINITIALIZE
 			MENUITEM "Fast shutdown",               ID_FASTSHUTDOWN

@@ -3,21 +3,42 @@
 #include "Editor.h"
 #include "ErrorArray.h"
 
-// This function WILL _Output if it is called
-void LogError(
+void LogFunctionCall(
 			  HRESULT hRes,
-			  UINT uidErrorMsg,
-			  _In_z_ LPCSTR szFile,
-			  int iLine,
-			  _In_opt_z_ LPCSTR szFunction,
+			  HRESULT hrIgnore,
 			  bool bShowDialog,
-			  bool bErrorMsgFromSystem)
+			  bool bMAPICall,
+			  bool bSystemCall,
+			  UINT uidErrorMsg,
+			  _In_opt_z_ LPCSTR szFunction,
+			  _In_z_ LPCSTR szFile,
+			  int iLine)
 {
+	if (fIsSet(DBGMAPIFunctions) && bMAPICall)
+	{
+		CString szFunctionString;
+		szFunctionString.FormatMessage(
+			IDS_FUNCTION,
+			szFile,
+			iLine,
+			szFunction);
+
+		_Output(DBGMAPIFunctions, NULL, true, szFunctionString);
+		_Output(DBGMAPIFunctions, NULL, false, _T("\n"));
+	}
+
+	// Check if we have no work to do
+	if (S_OK == hRes || hrIgnore == hRes) return;
+#ifdef MRMAPI
+	if (!fIsSet(DBGHRes)) return;
+#else
+	if (!fIsSet(DBGHRes) && !bShowDialog) return;
+#endif
+
 	// Get our error message if we have one
 	CString szErrorMsg;
-	if (bErrorMsgFromSystem)
+	if (bSystemCall)
 	{
-		// We do this ourselves because CString doesn't know how to
 		LPTSTR szErr = NULL;
 		FormatMessage(
 			FORMAT_MESSAGE_ALLOCATE_BUFFER|FORMAT_MESSAGE_FROM_SYSTEM,
@@ -58,48 +79,15 @@ void LogError(
 		(void) Err.DisplayDialog();
 #endif
 	}
-} // LogError
+} // LogFunctionCall
 
-void CheckHResFn(HRESULT hRes, _In_opt_z_ LPCSTR szFunction, UINT uidErrorMsg, _In_z_ LPCSTR szFile, int iLine)
-{
-	if (S_OK == hRes) return;
-	LogError(hRes,uidErrorMsg,szFile,iLine,szFunction,true,false);
-} // CheckHResFn
-
-// Warn logs an error but never displays a dialog
-// We can log MAPI_W errors along with normal ones
-void WarnHResFn(HRESULT hRes, _In_opt_z_ LPCSTR szFunction, UINT uidErrorMsg, _In_z_ LPCSTR szFile, int iLine)
-{
-	if (fIsSet(DBGHRes) && S_OK != hRes)
-	{
-		LogError(hRes,uidErrorMsg,szFile,iLine,szFunction,false,false);
-	}
-} // WarnHResFn
-
-_Check_return_ HRESULT DialogOnWin32Error(_In_z_ LPCSTR szFile, int iLine, _In_z_ LPCSTR szFunction)
-{
-	DWORD dwErr = GetLastError();
-	if (0 == dwErr) return S_OK;
-
-	HRESULT hRes = HRESULT_FROM_WIN32(dwErr);
-	if (S_OK == hRes) return S_OK;
-	LogError(hRes,dwErr,szFile,iLine,szFunction,true,true);
-
-	return hRes;
-} // DialogOnWin32Error
-
-_Check_return_ HRESULT WarnOnWin32Error(_In_z_ LPCSTR szFile, int iLine, _In_z_ LPCSTR szFunction)
+_Check_return_ HRESULT CheckWin32Error(bool bDisplayDialog, _In_z_ LPCSTR szFile, int iLine, _In_z_ LPCSTR szFunction)
 {
 	DWORD dwErr = GetLastError();
 	HRESULT hRes = HRESULT_FROM_WIN32(dwErr);
-
-	if (fIsSet(DBGHRes) && S_OK != hRes)
-	{
-		LogError(hRes,dwErr,szFile,iLine,szFunction,false,true);
-	}
-
+	LogFunctionCall(hRes, NULL, bDisplayDialog, false, true, dwErr, szFunction, szFile, iLine);
 	return hRes;
-} // WarnOnWin32Error
+} // CheckWin32Error
 
 void __cdecl ErrDialog(_In_z_ LPCSTR szFile, int iLine, UINT uidErrorFmt, ...)
 {

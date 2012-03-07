@@ -67,13 +67,13 @@ _Check_return_ HRESULT AddOneOffAddress(
 
 	if (!lpMessage || !lpMAPISession) return MAPI_E_INVALID_PARAMETER;
 
-	EC_H(lpMAPISession->OpenAddressBook(
+	EC_MAPI(lpMAPISession->OpenAddressBook(
 		NULL,
 		NULL,
 		NULL,
 		&lpAddrBook));
 
-	EC_H(HrAllocAdrList(NUM_RECIP_PROPS,&lpAdrList));
+	EC_MAPI(HrAllocAdrList(NUM_RECIP_PROPS,&lpAdrList));
 
 	// Setup the One Time recipient by indicating how many recipients
 	// and how many properties will be set on each recipient.
@@ -99,7 +99,7 @@ _Check_return_ HRESULT AddOneOffAddress(
 		lpAdrList->aEntries[0].rgPropVals[EID].ulPropTag = PR_ENTRYID;
 
 		// Create the One-off address and get an EID for it.
-		EC_H(lpAddrBook->CreateOneOff(
+		EC_MAPI(lpAddrBook->CreateOneOff(
 			lpAdrList-> aEntries[0].rgPropVals[NAME].Value.LPSZ,
 			lpAdrList-> aEntries[0].rgPropVals[ADDR].Value.LPSZ,
 			lpAdrList-> aEntries[0].rgPropVals[EMAIL].Value.LPSZ,
@@ -108,7 +108,7 @@ _Check_return_ HRESULT AddOneOffAddress(
 			&lpEID));
 		lpAdrList->aEntries[0].rgPropVals[EID].Value.bin.lpb = (LPBYTE) lpEID;
 
-		EC_H(lpAddrBook->ResolveName(
+		EC_MAPI(lpAddrBook->ResolveName(
 			0L,
 			fMapiUnicode,
 			NULL,
@@ -116,9 +116,9 @@ _Check_return_ HRESULT AddOneOffAddress(
 
 		// If everything goes right, add the new recipient to the message
 		// object passed into us.
-		EC_H(lpMessage->ModifyRecipients(MODRECIP_ADD,lpAdrList));
+		EC_MAPI(lpMessage->ModifyRecipients(MODRECIP_ADD,lpAdrList));
 
-		EC_H(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+		EC_MAPI(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 	}
 
 	MAPIFreeBuffer(lpEID);
@@ -146,13 +146,13 @@ _Check_return_ HRESULT AddRecipient(
 
 	if (!lpMessage || !lpMAPISession) return MAPI_E_INVALID_PARAMETER;
 
-	EC_H(lpMAPISession->OpenAddressBook(
+	EC_MAPI(lpMAPISession->OpenAddressBook(
 		NULL,
 		NULL,
 		NULL,
 		&lpAddrBook));
 
-	EC_H(HrAllocAdrList(NUM_RECIP_PROPS,&lpAdrList));
+	EC_MAPI(HrAllocAdrList(NUM_RECIP_PROPS,&lpAdrList));
 
 	if (lpAdrList)
 	{
@@ -168,7 +168,7 @@ _Check_return_ HRESULT AddRecipient(
 		lpAdrList->aEntries[0].rgPropVals[RECIP].ulPropTag = PR_RECIPIENT_TYPE;
 		lpAdrList->aEntries[0].rgPropVals[RECIP].Value.l = ulRecipientType;
 
-		EC_H(lpAddrBook->ResolveName(
+		EC_MAPI(lpAddrBook->ResolveName(
 			0L,
 			fMapiUnicode,
 			NULL,
@@ -176,9 +176,9 @@ _Check_return_ HRESULT AddRecipient(
 
 		// If everything goes right, add the new recipient to the message
 		// object passed into us.
-		EC_H(lpMessage->ModifyRecipients(MODRECIP_ADD,lpAdrList));
+		EC_MAPI(lpMessage->ModifyRecipients(MODRECIP_ADD,lpAdrList));
 
-		EC_H(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+		EC_MAPI(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 	}
 
 	if (lpAdrList) FreePadrlist(lpAdrList);
@@ -288,7 +288,7 @@ _Check_return_ HRESULT GetABContainerTable(_In_ LPADRBOOK lpAdrBook, _Deref_out_
 	if (lpABRootContainer)
 	{
 		// Get a table of all of the Address Books.
-		EC_H(lpABRootContainer->GetHierarchyTable(CONVENIENT_DEPTH | fMapiUnicode, &lpTable));
+		EC_MAPI(lpABRootContainer->GetHierarchyTable(CONVENIENT_DEPTH | fMapiUnicode, &lpTable));
 		*lpABContainerTable = lpTable;
 		lpABRootContainer->Release();
 	}
@@ -342,7 +342,7 @@ _Check_return_ HRESULT ManualResolve(
 
 	DebugPrint(DBGGeneric,_T("ManualResolve: Asked to resolve \"%s\"\n"),szName);
 
-	EC_H(lpMAPISession->OpenAddressBook(
+	EC_MAPI(lpMAPISession->OpenAddressBook(
 		NULL,
 		NULL,
 		NULL,
@@ -353,7 +353,7 @@ _Check_return_ HRESULT ManualResolve(
 	if (lpABContainerTable)
 	{
 		// Restrict the table to the properties that we are interested in.
-		EC_H(lpABContainerTable->SetColumns((LPSPropTagArray)&abcCols, TBL_BATCH));
+		EC_MAPI(lpABContainerTable->SetColumns((LPSPropTagArray)&abcCols, TBL_BATCH));
 
 		if (!FAILED(hRes)) for (;;)
 		{
@@ -361,7 +361,7 @@ _Check_return_ HRESULT ManualResolve(
 
 			FreeProws(lpABRow);
 			lpABRow = NULL;
-			EC_H(lpABContainerTable->QueryRows(
+			EC_MAPI(lpABContainerTable->QueryRows(
 				1,
 				NULL,
 				&lpABRow));
@@ -394,7 +394,7 @@ _Check_return_ HRESULT ManualResolve(
 				{
 					if (pTable) pTable->Release();
 					pTable = NULL;
-					WC_H(lpABContainer->GetContentsTable(fMapiUnicode, &pTable));
+					WC_MAPI(lpABContainer->GetContentsTable(fMapiUnicode, &pTable));
 					if (!pTable)
 					{
 						DebugPrint(DBGGeneric,_T("ManualResolve: Container did not support contents table\n"));
@@ -468,14 +468,14 @@ _Check_return_ HRESULT ManualResolve(
 					pProp->ulPropTag = PR_DISPLAY_TYPE;
 					pProp->Value.l = lpFoundRow[abPR_DISPLAY_TYPE].Value.l;
 
-					EC_H(lpMessage->ModifyRecipients(
+					EC_MAPI(lpMessage->ModifyRecipients(
 						MODRECIP_ADD,
 						lpAdrList));
 
 					if (lpAdrList) FreePadrlist(lpAdrList);
 					lpAdrList = NULL;
 
-					EC_H(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+					EC_MAPI(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 
 					// since we're done with our work, let's get out of here.
 					break;
@@ -539,16 +539,16 @@ _Check_return_ HRESULT SearchContentsTableForName(
 		NULL,
 		&lpSRes));
 
-	EC_H(pTable->SetColumns((LPSPropTagArray)&abCols, TBL_BATCH));
+	EC_MAPI(pTable->SetColumns((LPSPropTagArray)&abCols, TBL_BATCH));
 
 	// Jump to the top of the table...
-	EC_H(pTable->SeekRow(
+	EC_MAPI(pTable->SeekRow(
 		BOOKMARK_BEGINNING,
 		0,
 		NULL));
 
 	// ..and jump to the first matching entry in the table
-	EC_H(pTable->Restrict(
+	EC_MAPI(pTable->Restrict(
 		lpSRes,
 		NULL
 		));
@@ -559,7 +559,7 @@ _Check_return_ HRESULT SearchContentsTableForName(
 		hRes = S_OK;
 		if (pRows) FreeProws(pRows);
 		pRows = NULL;
-		EC_H(pTable->QueryRows(
+		EC_MAPI(pTable->QueryRows(
 			1,
 			NULL,
 			&pRows));
@@ -575,7 +575,7 @@ _Check_return_ HRESULT SearchContentsTableForName(
 			{
 				DebugPrint(DBGGeneric,_T("SearchContentsTableForName: This is an exact match!\n"));
 				// We found a match! Return it!
-				EC_H(ScDupPropset(
+				EC_MAPI(ScDupPropset(
 					abNUM_COLS,
 					pRows->aRow->lpProps,
 					MAPIAllocateBuffer,

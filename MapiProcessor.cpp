@@ -104,11 +104,11 @@ void CMAPIProcessor::ProcessMailboxTable(
 			&lpMailBoxTable));
 		if (lpMailBoxTable)
 		{
-			WC_H(lpMailBoxTable->SetColumns((LPSPropTagArray)&sptMBXCols,NULL));
+			WC_MAPI(lpMailBoxTable->SetColumns((LPSPropTagArray)&sptMBXCols,NULL));
 			hRes = S_OK;
 
 			// go to the first row
-			WC_H(lpMailBoxTable->SeekRow(
+			WC_MAPI(lpMailBoxTable->SeekRow(
 				BOOKMARK_BEGINNING,
 				0,
 				NULL));
@@ -120,7 +120,7 @@ void CMAPIProcessor::ProcessMailboxTable(
 				lpRows = NULL;
 
 				hRes = S_OK;
-				WC_H(lpMailBoxTable->QueryRows(
+				WC_MAPI(lpMailBoxTable->QueryRows(
 					1,
 					NULL,
 					&lpRows));
@@ -134,7 +134,7 @@ void CMAPIProcessor::ProcessMailboxTable(
 
 				if (m_lpMDB)
 				{
-					WC_H(m_lpMDB->StoreLogoff(&ulFlags));
+					WC_MAPI(m_lpMDB->StoreLogoff(&ulFlags));
 					m_lpMDB->Release();
 					m_lpMDB = NULL;
 					hRes = S_OK;
@@ -160,7 +160,7 @@ void CMAPIProcessor::ProcessMailboxTable(
 
 	if (m_lpMDB)
 	{
-		WC_H(m_lpMDB->StoreLogoff(&ulFlags));
+		WC_MAPI(m_lpMDB->StoreLogoff(&ulFlags));
 		m_lpMDB->Release();
 		m_lpMDB = NULL;
 	}
@@ -240,7 +240,7 @@ void CMAPIProcessor::ProcessFolder(bool bDoRegular,
 		LPMAPITABLE lpHierarchyTable = NULL;
 		// We need to walk down the tree
 		// and get the list of kids of the folder
-		WC_H(m_lpFolder->GetHierarchyTable(fMapiUnicode,&lpHierarchyTable));
+		WC_MAPI(m_lpFolder->GetHierarchyTable(fMapiUnicode,&lpHierarchyTable));
 		if (lpHierarchyTable)
 		{
 			enum
@@ -263,12 +263,12 @@ void CMAPIProcessor::ProcessFolder(bool bDoRegular,
 			LPSRowSet lpRows = NULL;
 			// If I don't do this, the MSPST provider can blow chunks (MAPI_E_EXTENDED_ERROR) for some folders when I get a row
 			// For some reason, this fixes it.
-			WC_H(lpHierarchyTable->SetColumns(
+			WC_MAPI(lpHierarchyTable->SetColumns(
 				(LPSPropTagArray) &sptHierarchyCols,
 				TBL_BATCH));
 
 			// go to the first row
-			WC_H(lpHierarchyTable->SeekRow(
+			WC_MAPI(lpHierarchyTable->SeekRow(
 				BOOKMARK_BEGINNING,
 				0,
 				NULL));
@@ -278,7 +278,7 @@ void CMAPIProcessor::ProcessFolder(bool bDoRegular,
 				hRes = S_OK;
 				if (lpRows) FreeProws(lpRows);
 				lpRows = NULL;
-				WC_H(lpHierarchyTable->QueryRows(
+				WC_MAPI(lpHierarchyTable->QueryRows(
 					1,
 					NULL,
 					&lpRows));
@@ -361,31 +361,31 @@ void CMAPIProcessor::ProcessContentsTable(ULONG ulFlags)
 
 	LPMAPITABLE lpContentsTable = NULL;
 
-	WC_H(m_lpFolder->GetContentsTable(
+	WC_MAPI(m_lpFolder->GetContentsTable(
 		ulFlags | fMapiUnicode,
 		&lpContentsTable));
 	if (SUCCEEDED(hRes) && lpContentsTable)
 	{
-		WC_H(lpContentsTable->SetColumns((LPSPropTagArray)&contCols, TBL_BATCH));
+		WC_MAPI(lpContentsTable->SetColumns((LPSPropTagArray)&contCols, TBL_BATCH));
 	}
 
 	if (SUCCEEDED(hRes) && lpContentsTable && m_lpResFolderContents)
 	{
 		DebugPrintRestriction(DBGGeneric,m_lpResFolderContents,NULL);
-		WC_H(lpContentsTable->Restrict(m_lpResFolderContents,TBL_BATCH));
+		WC_MAPI(lpContentsTable->Restrict(m_lpResFolderContents,TBL_BATCH));
 		hRes = S_OK;
 	}
 
 	if (SUCCEEDED(hRes) && lpContentsTable && m_lpSort)
 	{
-		WC_H(lpContentsTable->SortTable(m_lpSort, TBL_BATCH));
+		WC_MAPI(lpContentsTable->SortTable(m_lpSort, TBL_BATCH));
 		hRes = S_OK;
 	}
 
 	if (SUCCEEDED(hRes) && lpContentsTable)
 	{
 		ULONG ulCountRows = 0;
-		WC_H(lpContentsTable->GetRowCount(0,&ulCountRows));
+		WC_MAPI(lpContentsTable->GetRowCount(0,&ulCountRows));
 
 		BeginContentsTableWork(ulFlags,ulCountRows);
 
@@ -398,7 +398,7 @@ void CMAPIProcessor::ProcessContentsTable(ULONG ulFlags)
 			hRes = S_OK;
 			if (lpRows) FreeProws(lpRows);
 			lpRows = NULL;
-			WC_H(lpContentsTable->QueryRows(
+			WC_MAPI(lpContentsTable->QueryRows(
 				255,
 				NULL,
 				&lpRows));
@@ -487,7 +487,7 @@ void CMAPIProcessor::ProcessRecipients(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpD
 	if (!BeginRecipientWork(lpMessage,lpData)) return;
 
 	// get the recipient table
-	WC_H(lpMessage->GetRecipientTable(
+	WC_MAPI(lpMessage->GetRecipientTable(
 		NULL,
 		&lpRecipTable));
 	if (lpRecipTable)
@@ -498,7 +498,7 @@ void CMAPIProcessor::ProcessRecipients(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpD
 			hRes = S_OK;
 			if (lpRows) FreeProws(lpRows);
 			lpRows = NULL;
-			WC_H(lpRecipTable->QueryRows(
+			WC_MAPI(lpRecipTable->QueryRows(
 				255,
 				NULL,
 				&lpRows));
@@ -551,7 +551,7 @@ void CMAPIProcessor::ProcessAttachments(_In_ LPMESSAGE lpMessage, bool bHasAttac
 	if (bHasAttach)
 	{
 		// get the attachment table
-		WC_H(lpMessage->GetAttachmentTable(
+		WC_MAPI(lpMessage->GetAttachmentTable(
 			NULL,
 			&lpAttachTable));
 	}
@@ -559,7 +559,7 @@ void CMAPIProcessor::ProcessAttachments(_In_ LPMESSAGE lpMessage, bool bHasAttac
 	if (SUCCEEDED(hRes) && lpAttachTable)
 	{
 		// Make sure we have the columns we need
-		WC_H(lpAttachTable->SetColumns((LPSPropTagArray)&attCols, TBL_BATCH));
+		WC_MAPI(lpAttachTable->SetColumns((LPSPropTagArray)&attCols, TBL_BATCH));
 	}
 
 	if (SUCCEEDED(hRes) && lpAttachTable)
@@ -570,7 +570,7 @@ void CMAPIProcessor::ProcessAttachments(_In_ LPMESSAGE lpMessage, bool bHasAttac
 			hRes = S_OK;
 			if (lpRows) FreeProws(lpRows);
 			lpRows = NULL;
-			WC_H(lpAttachTable->QueryRows(
+			WC_MAPI(lpAttachTable->QueryRows(
 				255,
 				NULL,
 				&lpRows));
@@ -594,7 +594,7 @@ void CMAPIProcessor::ProcessAttachments(_In_ LPMESSAGE lpMessage, bool bHasAttac
 				if (lpAttachNum)
 				{
 					LPATTACH lpAttach = NULL;
-					WC_H(lpMessage->OpenAttach(
+					WC_MAPI(lpMessage->OpenAttach(
 						lpAttachNum->Value.l,
 						NULL,
 						MAPI_BEST_ACCESS,
@@ -613,7 +613,7 @@ void CMAPIProcessor::ProcessAttachments(_In_ LPMESSAGE lpMessage, bool bHasAttac
 					{
 						LPMESSAGE lpAttachMsg = NULL;
 
-						WC_H(lpAttach->OpenProperty(
+						WC_MAPI(lpAttach->OpenProperty(
 							PR_ATTACH_DATA_OBJ,
 							(LPIID)&IID_IMessage,
 							0,

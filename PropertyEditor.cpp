@@ -29,7 +29,7 @@ _Check_return_ HRESULT DisplayPropertyEditor(_In_ CWnd* pParentWnd,
 		sTag.aulPropTag[0] = (PT_ERROR == PROP_TYPE(ulPropTag))?CHANGE_PROP_TYPE(ulPropTag,PT_UNSPECIFIED):ulPropTag;
 		ULONG ulValues = NULL;
 
-		WC_H(lpMAPIProp->GetProps(&sTag,NULL,&ulValues,&lpsPropValue));
+		WC_MAPI(lpMAPIProp->GetProps(&sTag,NULL,&ulValues,&lpsPropValue));
 
 		// Suppress MAPI_E_NOT_FOUND error when the source type is non error
 		if (lpsPropValue &&
@@ -712,7 +712,7 @@ void CPropertyEditor::WriteSPropValueToObject()
 
 	LPSPropProblemArray lpProblemArray = NULL;
 
-	EC_H(m_lpMAPIProp->SetProps(
+	EC_MAPI(m_lpMAPIProp->SetProps(
 		1,
 		m_lpsOutputValue,
 		&lpProblemArray));
@@ -720,7 +720,7 @@ void CPropertyEditor::WriteSPropValueToObject()
 	EC_PROBLEMARRAY(lpProblemArray);
 	MAPIFreeBuffer(lpProblemArray);
 
-	EC_H(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
+	EC_MAPI(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
 } // CPropertyEditor::WriteSPropValueToObject
 
 // Callers beware: Detatches and returns the modified prop value - this must be MAPIFreeBuffered!
@@ -1339,7 +1339,7 @@ void CMultiValuePropertyEditor::WriteSPropValueToObject()
 
 	LPSPropProblemArray lpProblemArray = NULL;
 
-	EC_H(m_lpMAPIProp->SetProps(
+	EC_MAPI(m_lpMAPIProp->SetProps(
 		1,
 		m_lpsOutputValue,
 		&lpProblemArray));
@@ -1347,7 +1347,7 @@ void CMultiValuePropertyEditor::WriteSPropValueToObject()
 	EC_PROBLEMARRAY(lpProblemArray);
 	MAPIFreeBuffer(lpProblemArray);
 
-	EC_H(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
+	EC_MAPI(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
 } // CMultiValuePropertyEditor::WriteSPropValueToObject
 
 // Callers beware: Detatches and returns the modified prop value - this must be MAPIFreeBuffered!

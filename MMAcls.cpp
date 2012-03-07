@@ -1,41 +1,27 @@
 #include "stdafx.h"
 #include "MrMAPI.h"
 #include "MMAcls.h"
-#include "MMFolder.h"
+#include "MMStore.h"
 
 void DumpExchangeTable(_In_z_ LPWSTR lpszProfile, _In_ ULONG ulPropTag, _In_ ULONG ulFolder, _In_z_ LPWSTR lpszFolder)
 {
 	InitMFC();
 	HRESULT hRes = S_OK;
 	LPMAPISESSION lpMAPISession = NULL;
-	LPMDB lpMDB = NULL;
 	LPMAPIFOLDER lpFolder = NULL;
 	LPEXCHANGEMODIFYTABLE lpExchTbl = NULL;
 	LPMAPITABLE lpTbl = NULL;
 
-	WC_H(MAPIInitialize(NULL));
+	WC_MAPI(MAPIInitialize(NULL));
 
 	WC_H(MrMAPILogonEx(lpszProfile,&lpMAPISession));
 
-	if (lpMAPISession)
-	{
-		WC_H(OpenExchangeOrDefaultMessageStore(lpMAPISession, &lpMDB));
-	}
-	if (lpMDB)
-	{
-		if (lpszFolder)
-		{
-			WC_H(HrMAPIOpenFolderExW(lpMDB, lpszFolder, &lpFolder));
-		}
-		else
-		{
-			WC_H(OpenDefaultFolder(ulFolder,lpMDB,&lpFolder));
-		}
-	}
+	WC_H(HrMAPIOpenStoreAndFolder(lpMAPISession, ulFolder, lpszFolder, NULL, &lpFolder));
+
 	if (lpFolder)
 	{
 		// Open the table in an IExchangeModifyTable interface
-		WC_H(lpFolder->OpenProperty(
+		WC_MAPI(lpFolder->OpenProperty(
 			ulPropTag,
 			(LPGUID)&IID_IExchangeModifyTable,
 			0,
@@ -44,7 +30,7 @@ void DumpExchangeTable(_In_z_ LPWSTR lpszProfile, _In_ ULONG ulPropTag, _In_ ULO
 	}
 	if (lpExchTbl)
 	{
-		WC_H(lpExchTbl->GetTable(NULL,&lpTbl));
+		WC_MAPI(lpExchTbl->GetTable(NULL,&lpTbl));
 	}
 	if (lpTbl)
 	{
@@ -55,7 +41,6 @@ void DumpExchangeTable(_In_z_ LPWSTR lpszProfile, _In_ ULONG ulPropTag, _In_ ULO
 	if (lpTbl) lpTbl->Release();
 	if (lpExchTbl) lpExchTbl->Release();
 	if (lpFolder) lpFolder->Release();
-	if (lpMDB) lpMDB->Release();
 	if (lpMAPISession) lpMAPISession->Release();
 	MAPIUninitialize();
 } // DumpExchangeTable

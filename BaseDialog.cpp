@@ -866,7 +866,7 @@ void CBaseDialog::OnOpenEntryID(_In_opt_ LPSBinary lpBin)
 			szFlags = NULL;
 
 			LPMAPIPROP lpTemp = NULL;
-			WC_H(lpUnk->QueryInterface(IID_IMAPIProp,(LPVOID*) &lpTemp));
+			WC_MAPI(lpUnk->QueryInterface(IID_IMAPIProp,(LPVOID*) &lpTemp));
 			if (lpTemp)
 			{
 				WC_H(DisplayObject(
@@ -934,13 +934,13 @@ void CBaseDialog::OnCompareEntryIDs()
 	switch (MyEIDs.GetDropDown(2))
 	{
 	case 0: // Message Store
-		EC_H(lpMDB->CompareEntryIDs((ULONG)cbBin1,lpEntryID1,(ULONG)cbBin2,lpEntryID2,NULL,&ulResult));
+		EC_MAPI(lpMDB->CompareEntryIDs((ULONG)cbBin1,lpEntryID1,(ULONG)cbBin2,lpEntryID2,NULL,&ulResult));
 		break;
 	case 1: // Session
-		EC_H(lpMAPISession->CompareEntryIDs((ULONG)cbBin1,lpEntryID1,(ULONG)cbBin2,lpEntryID2,NULL,&ulResult));
+		EC_MAPI(lpMAPISession->CompareEntryIDs((ULONG)cbBin1,lpEntryID1,(ULONG)cbBin2,lpEntryID2,NULL,&ulResult));
 		break;
 	case 2: // Address Book
-		EC_H(lpAB->CompareEntryIDs((ULONG)cbBin1,lpEntryID1,(ULONG)cbBin2,lpEntryID2,NULL,&ulResult));
+		EC_MAPI(lpAB->CompareEntryIDs((ULONG)cbBin1,lpEntryID1,(ULONG)cbBin2,lpEntryID2,NULL,&ulResult));
 		break;
 	}
 
@@ -1057,7 +1057,7 @@ void CBaseDialog::OnNotificationsOn()
 			switch (MyData.GetDropDown(2))
 			{
 			case 0:
-				EC_H(lpMDB->Advise(
+				EC_MAPI(lpMDB->Advise(
 					(ULONG) cbBin,
 					lpEntryID,
 					MyData.GetHex(1),
@@ -1066,7 +1066,7 @@ void CBaseDialog::OnNotificationsOn()
 				m_ulBaseAdviseObjectType = MAPI_STORE;
 				break;
 			case 1:
-				EC_H(lpMAPISession->Advise(
+				EC_MAPI(lpMAPISession->Advise(
 					(ULONG) cbBin,
 					lpEntryID,
 					MyData.GetHex(1),
@@ -1075,7 +1075,7 @@ void CBaseDialog::OnNotificationsOn()
 				m_ulBaseAdviseObjectType = MAPI_SESSION;
 				break;
 			case 2:
-				EC_H(lpAB->Advise(
+				EC_MAPI(lpAB->Advise(
 					(ULONG) cbBin,
 					lpEntryID,
 					MyData.GetHex(1),
@@ -1091,7 +1091,7 @@ void CBaseDialog::OnNotificationsOn()
 				{
 					// Try to trigger some RPC to get the notifications going
 					LPSPropValue lpProp = NULL;
-					WC_H(HrGetOneProp(
+					WC_MAPI(HrGetOneProp(
 						lpMDB,
 						PR_TEST_LINE_SPEED,
 						&lpProp));
@@ -1126,19 +1126,19 @@ void CBaseDialog::OnNotificationsOff()
 		case MAPI_SESSION:
 			{
 				LPMAPISESSION lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
-				if (lpMAPISession) EC_H(lpMAPISession->Unadvise(m_ulBaseAdviseConnection));
+				if (lpMAPISession) EC_MAPI(lpMAPISession->Unadvise(m_ulBaseAdviseConnection));
 			}
 			break;
 		case MAPI_STORE:
 			{
 				LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release
-				if (lpMDB) EC_H(lpMDB->Unadvise(m_ulBaseAdviseConnection));
+				if (lpMDB) EC_MAPI(lpMDB->Unadvise(m_ulBaseAdviseConnection));
 			}
 			break;
 		case MAPI_ADDRBOOK:
 			{
 				LPADRBOOK lpAB = m_lpMapiObjects->GetAddrBook(false); // do not release
-				if (lpAB) EC_H(lpAB->Unadvise(m_ulBaseAdviseConnection));
+				if (lpAB) EC_MAPI(lpAB->Unadvise(m_ulBaseAdviseConnection));
 			}
 			break;
 		}
@@ -1153,7 +1153,7 @@ void CBaseDialog::OnDispatchNotifications()
 {
 	HRESULT hRes = S_OK;
 
-	EC_H(HrDispatchNotifications(NULL));
+	EC_MAPI(HrDispatchNotifications(NULL));
 } // CBaseDialog::OnDispatchNotifications
 
 _Check_return_ bool CBaseDialog::HandleAddInMenu(WORD wMenuSelect)

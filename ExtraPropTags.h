@@ -675,6 +675,7 @@ enum
 #define dispidSharingBindingEid 0x8A2D
 #define dispidSharingIndexEid 0x8A2E
 #define dispidSharingParentBindingEid 0x8A5C
+#define dispidVerbStream 0x8520
 
 // Property Definition Stream
 #define	PropDefV1			0x102
@@ -953,6 +954,7 @@ enum SearchPathReorderType
 #define CCSF_PLAIN_TEXT_ONLY  0x1000 // the converter should just send plain text
 #define CCSF_NO_MSGID         0x4000 // don't include Message-Id field in outgoing messages
 #define CCSF_EMBEDDED_MESSAGE 0x8000 // sent/unsent information is persisted in X-Unsent
+#define CCSF_PRESERVE_SOURCE  0x40000 // don't modify the source message
 
 #define PidTagFolderId PROP_TAG(PT_I8, 0x6748)
 #define PidTagMid PROP_TAG(PT_I8, 0x674A)

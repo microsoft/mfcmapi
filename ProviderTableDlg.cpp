@@ -116,7 +116,7 @@ void CProviderTableDlg::OnOpenProfileSection()
 	if (lpProfSect)
 	{
 		LPMAPIPROP lpTemp = NULL;
-		EC_H(lpProfSect->QueryInterface(IID_IMAPIProp,(LPVOID*) &lpTemp));
+		EC_MAPI(lpProfSect->QueryInterface(IID_IMAPIProp,(LPVOID*) &lpTemp));
 		if (lpTemp)
 		{
 			EC_H(DisplayObject(

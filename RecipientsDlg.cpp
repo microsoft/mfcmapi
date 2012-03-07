@@ -148,7 +148,7 @@ void CRecipientsDlg::OnDeleteSelectedItem()
 				}
 			}
 
-			EC_H(m_lpMessage->ModifyRecipients(
+			EC_MAPI(m_lpMessage->ModifyRecipients(
 				MODRECIP_REMOVE,
 				lpAdrList));
 
@@ -179,14 +179,14 @@ void CRecipientsDlg::OnModifyRecipients()
 		adrList.aEntries[0].cValues = m_lpPropDisplay->GetCountPropVals();
 
 		ULONG ulSizeProps = NULL;
-		EC_H(ScCountProps(
+		EC_MAPI(ScCountProps(
 			adrList.aEntries[0].cValues,
 			lpProps,
 			&ulSizeProps));
 
 		EC_H(MAPIAllocateBuffer(ulSizeProps,(LPVOID*) &adrList.aEntries[0].rgPropVals));
 
-		EC_H(ScCopyProps(
+		EC_MAPI(ScCopyProps(
 			adrList.aEntries[0].cValues,
 			lpProps,
 			adrList.aEntries[0].rgPropVals,
@@ -194,7 +194,7 @@ void CRecipientsDlg::OnModifyRecipients()
 
 		DebugPrintEx(DBGGeneric,CLASS,_T("OnModifyRecipients"),_T("Committing changes for current selection\n"));
 
-		EC_H(m_lpMessage->ModifyRecipients(
+		EC_MAPI(m_lpMessage->ModifyRecipients(
 			MODRECIP_MODIFY,
 			&adrList));
 
@@ -226,7 +226,7 @@ void CRecipientsDlg::OnRecipOptions()
 			adrEntry.rgPropVals = lpProps;
 			DebugPrintEx(DBGGeneric,CLASS,_T("OnRecipOptions"),_T("Calling RecipOptions\n"));
 
-			EC_H(lpAB->RecipOptions(
+			EC_MAPI(lpAB->RecipOptions(
 				(ULONG_PTR) m_hWnd,
 				NULL,
 				&adrEntry));
@@ -234,7 +234,7 @@ void CRecipientsDlg::OnRecipOptions()
 			if (MAPI_W_ERRORS_RETURNED == hRes)
 			{
 				LPMAPIERROR lpErr = NULL;
-				hRes = lpAB->GetLastError(hRes,fMapiUnicode,&lpErr);
+				WC_MAPI(lpAB->GetLastError(hRes,fMapiUnicode,&lpErr));
 				if (lpErr)
 				{
 					EC_MAPIERR(fMapiUnicode,lpErr);
@@ -259,7 +259,7 @@ void CRecipientsDlg::OnRecipOptions()
 				// but output to file is complete
 				_Output(DBGGeneric,NULL,false,(LPCTSTR)szAdrList);
 
-				EC_H(m_lpMessage->ModifyRecipients(
+				EC_MAPI(m_lpMessage->ModifyRecipients(
 					MODRECIP_MODIFY,
 					&adrList));
 
@@ -275,6 +275,6 @@ void CRecipientsDlg::OnSaveChanges()
 	{
 		HRESULT hRes = S_OK;
 
-		EC_H(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+		EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 	}
 } // CRecipientsDlg::OnSaveChanges

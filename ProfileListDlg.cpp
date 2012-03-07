@@ -107,10 +107,10 @@ void CProfileListDlg::OnRefreshView()
 		NULL));
 
 	LPPROFADMIN lpProfAdmin = NULL;
-	EC_H(MAPIAdminProfiles(0, &lpProfAdmin));
+	EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
 	if (!lpProfAdmin) return;
 
-	EC_H(lpProfAdmin->GetProfileTable(
+	EC_MAPI(lpProfAdmin->GetProfileTable(
 		0, // fMapiUnicode is not supported
 		&lpProfTable));
 

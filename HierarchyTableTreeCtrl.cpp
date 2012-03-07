@@ -560,13 +560,13 @@ _Check_return_ LPMAPITABLE CHierarchyTableTreeCtrl::GetHierarchyTable(HTREEITEM 
 
 			// on the AB, something about this call triggers table reloads on the parent hierarchy table
 			// no idea why they're triggered - doesn't happen for all AB providers
-			WC_H(lpMAPIContainer->GetHierarchyTable(
+			WC_MAPI(lpMAPIContainer->GetHierarchyTable(
 				(m_ulDisplayFlags & dfDeleted?SHOW_SOFT_DELETES:NULL) | fMapiUnicode,
 				&lpHierarchyTable));
 
 			if (lpHierarchyTable)
 			{
-				EC_H(lpHierarchyTable->SetColumns(
+				EC_MAPI(lpHierarchyTable->SetColumns(
 					(LPSPropTagArray) &sptHTCols,
 					TBL_BATCH));
 			}
@@ -587,7 +587,7 @@ _Check_return_ LPMAPITABLE CHierarchyTableTreeCtrl::GetHierarchyTable(HTREEITEM 
 
 			if (lpData->data.Node.lpAdviseSink)
 			{
-				WC_H(lpData->data.Node.lpHierarchyTable->Advise(
+				WC_MAPI(lpData->data.Node.lpHierarchyTable->Advise(
 					fnevTableModified,
 					(IMAPIAdviseSink *)lpData->data.Node.lpAdviseSink,
 					&lpData->data.Node.ulAdviseConnection));
@@ -605,7 +605,7 @@ _Check_return_ LPMAPITABLE CHierarchyTableTreeCtrl::GetHierarchyTable(HTREEITEM 
 					{
 						LPSPropValue	lpProp = NULL;
 						// Try to trigger some RPC to get the notifications going
-						WC_H(HrGetOneProp(
+						WC_MAPI(HrGetOneProp(
 							lpMDB,
 							PR_TEST_LINE_SPEED,
 							&lpProp));
@@ -641,7 +641,7 @@ _Check_return_ HRESULT CHierarchyTableTreeCtrl::ExpandNode(HTREEITEM hParent)
 	if (lpHierarchyTable)
 	{
 		// go to the first row
-		EC_H(lpHierarchyTable->SeekRow(
+		EC_MAPI(lpHierarchyTable->SeekRow(
 			BOOKMARK_BEGINNING,
 			0,
 			NULL));
@@ -656,7 +656,7 @@ _Check_return_ HRESULT CHierarchyTableTreeCtrl::ExpandNode(HTREEITEM hParent)
 			// Note - we're saving the rows off in AddNode, so we don't FreeProws this...we just MAPIFreeBuffer the array
 			if (pRows) MAPIFreeBuffer(pRows);
 			pRows = NULL;
-			EC_H(lpHierarchyTable->QueryRows(
+			EC_MAPI(lpHierarchyTable->QueryRows(
 				1,
 				NULL,
 				&pRows));
@@ -710,7 +710,7 @@ void CHierarchyTableTreeCtrl::OnGetDispInfo(_In_ NMHDR* pNMHDR, _In_ LRESULT* pR
 					lpDispInfo->item.cChildren = 1;
 					HRESULT hRes = S_OK;
 					ULONG ulRowCount = NULL;
-					WC_H(lpHierarchyTable->GetRowCount(
+					WC_MAPI(lpHierarchyTable->GetRowCount(
 						NULL,
 						&ulRowCount));
 					if (S_OK == hRes && !ulRowCount)
@@ -850,7 +850,7 @@ void CHierarchyTableTreeCtrl::OnEndLabelEdit(_In_ NMHDR* pNMHDR, _In_ LRESULT* p
 	sDisplayName.ulPropTag = PR_DISPLAY_NAME;
 	sDisplayName.Value.LPSZ = pTVDispInfo->item.pszText;
 
-	EC_H(HrSetOneProp(lpMAPIContainer,&sDisplayName));
+	EC_MAPI(HrSetOneProp(lpMAPIContainer,&sDisplayName));
 
 	lpMAPIContainer->Release();
 } // CHierarchyTableTreeCtrl::OnEndLabelEdit
@@ -1182,7 +1182,7 @@ _Check_return_ LRESULT CHierarchyTableTreeCtrl::msgOnAddItem(WPARAM wParam, LPAR
 		SRow NewRow = {0};
 		NewRow.cValues = tab->row.cValues;
 		NewRow.ulAdrEntryPad = tab->row.ulAdrEntryPad;
-		WC_H(ScDupPropset(
+		WC_MAPI(ScDupPropset(
 			tab->row.cValues,
 			tab->row.lpProps,
 			MAPIAllocateBuffer,
@@ -1264,7 +1264,7 @@ _Check_return_ LRESULT CHierarchyTableTreeCtrl::msgOnModifyItem(WPARAM wParam, L
 		SRow NewRow = {0};
 		NewRow.cValues = tab->row.cValues;
 		NewRow.ulAdrEntryPad = tab->row.ulAdrEntryPad;
-		WC_H(ScDupPropset(
+		WC_MAPI(ScDupPropset(
 			tab->row.cValues,
 			tab->row.lpProps,
 			MAPIAllocateBuffer,
@@ -1310,7 +1310,7 @@ _Check_return_ LRESULT CHierarchyTableTreeCtrl::msgOnRefreshTable(WPARAM wParam,
 				if (lpData->data.Node.lpHierarchyTable)
 				{
 					ULONG ulRowCount = NULL;
-					WC_H(lpData->data.Node.lpHierarchyTable->GetRowCount(
+					WC_MAPI(lpData->data.Node.lpHierarchyTable->GetRowCount(
 						NULL,
 						&ulRowCount));
 					if (S_OK != hRes || ulRowCount)

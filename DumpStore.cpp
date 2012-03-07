@@ -105,7 +105,7 @@ void CDumpStore::BeginMailboxTableWork(_In_z_ LPCTSTR szExchangeServerName)
 	m_fMailboxTable = MyOpenFile(szTableContentsFile, true);
 	if (m_fMailboxTable)
 	{
-		OutputToFile(m_fMailboxTable,_T("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n"));
+		OutputToFile(m_fMailboxTable, g_szXMLHeader);
 		OutputToFilef(m_fMailboxTable,_T("<mailboxtable server=\"%s\">\n"),szExchangeServerName);
 	}
 } // CDumpStore::BeginMailboxTableWork
@@ -217,7 +217,7 @@ void CDumpStore::BeginFolderWork()
 	m_fFolderProps = MyOpenFile(szFolderPropsFile, true);
 	if (!m_fFolderProps) return;
 
-	OutputToFile(m_fFolderProps,_T("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n"));
+	OutputToFile(m_fFolderProps, g_szXMLHeader);
 	OutputToFile(m_fFolderProps,_T("<folderprops>\n"));
 
 	LPSPropValue	lpAllProps = NULL;
@@ -271,7 +271,7 @@ void CDumpStore::BeginContentsTableWork(ULONG ulFlags, ULONG ulCountRows)
 	if (!m_szFolderPathRoot) return;
 	if (m_bOutputList)
 	{
-		OutputToConsole("Subject, Message Class, Filename\n");
+		_tprintf(_T("Subject, Message Class, Filename\n"));
 		return;
 	}
 
@@ -284,7 +284,7 @@ void CDumpStore::BeginContentsTableWork(ULONG ulFlags, ULONG ulCountRows)
 	m_fFolderContents = MyOpenFile(szContentsTableFile, true);
 	if (m_fFolderContents)
 	{
-		OutputToFile(m_fFolderContents,_T("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n"));
+		OutputToFile(m_fFolderContents, g_szXMLHeader);
 		OutputToFilef(m_fFolderContents,_T("<ContentsTable TableType=\"%s\" messagecount=\"0x%08X\">\n"),
 			(ulFlags & MAPI_ASSOCIATED)?_T("Associated Contents"):_T("Contents"), // STRING_OK
 			ulCountRows);
@@ -336,19 +336,19 @@ void OutputMessageList(
 
 	WC_H(BuildFileNameAndPath(szFileName,_countof(szFileName),szExt,4,szSubj,lpRecordKey,szFolderPath));
 
-	OutputToConsole(_T("\"%ws\""),szSubj?szSubj:L"");
+	_tprintf(_T("\"%ws\""),szSubj?szSubj:L"");
 	if (lpMessageClass)
 	{
 		if (PT_STRING8 == PROP_TYPE(lpMessageClass->ulPropTag))
 		{
-			OutputToConsole(_T(",\"%hs\""),lpMessageClass->Value.lpszA?lpMessageClass->Value.lpszA:"");
+			_tprintf(_T(",\"%hs\""),lpMessageClass->Value.lpszA?lpMessageClass->Value.lpszA:"");
 		}
 		else if (PT_UNICODE == PROP_TYPE(lpMessageClass->ulPropTag))
 		{
-			OutputToConsole(_T(",\"%ws\""),lpMessageClass->Value.lpszW?lpMessageClass->Value.lpszW:L"");
+			_tprintf(_T(",\"%ws\""),lpMessageClass->Value.lpszW?lpMessageClass->Value.lpszW:L"");
 		}
 	}
-	OutputToConsole(_T(",\"%ws\"\n"),szFileName);
+	_tprintf(_T(",\"%ws\"\n"),szFileName);
 	delete[] szTemp;
 } // OutputMessageList
 
@@ -388,7 +388,7 @@ void OutputBody(_In_ FILE* fMessageProps, _In_ LPMESSAGE lpMessage, ULONG ulBody
 	LPSTREAM lpRTFUncompressed = NULL;
 	LPSTREAM lpOutputStream = NULL;
 
-	WC_H(lpMessage->OpenProperty(
+	WC_MAPI(lpMessage->OpenProperty(
 		ulBodyTag,
 		&IID_IStream,
 		STGM_READ,
@@ -564,7 +564,7 @@ void OutputMessageXML(
 
 	if (lpMsgData->fMessageProps)
 	{
-		OutputToFile(lpMsgData->fMessageProps,_T("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n"));
+		OutputToFile(lpMsgData->fMessageProps, g_szXMLHeader);
 		OutputToFile(lpMsgData->fMessageProps,_T("<message>\n"));
 		if (lpAllProps)
 		{

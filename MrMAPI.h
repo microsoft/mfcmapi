@@ -17,6 +17,7 @@ enum CmdMode
 	cmdmodeXML,
 	cmdmodeChildFolders,
 	cmdmodeFidMid,
+	cmdmodeStoreProperties,
 };
 
 struct MYOPTIONS
@@ -48,6 +49,7 @@ struct MYOPTIONS
 	LPWSTR lpszFolderPath;
 	LPWSTR lpszFid;
 	LPWSTR lpszMid;
+	LPWSTR lpszStore;
 	ULONG ulFolder;
 	ULONG ulMAPIMIMEFlags;
 	ULONG ulConvertFlags;

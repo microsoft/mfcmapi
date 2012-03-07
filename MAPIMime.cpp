@@ -40,22 +40,22 @@ _Check_return_ HRESULT ImportEMLToIMessage(
 		{
 			if (lpAdrBook)
 			{
-				EC_H(lpConverter->SetAdrBook(lpAdrBook));
+				EC_MAPI(lpConverter->SetAdrBook(lpAdrBook));
 			}
 			if (SUCCEEDED(hRes) && bApply)
 			{
-				EC_H(lpConverter->SetCharset(bApply,hCharSet,cSetApplyType));
+				EC_MAPI(lpConverter->SetCharset(bApply,hCharSet,cSetApplyType));
 			}
 			if (SUCCEEDED(hRes))
 			{
 				// We'll make the user ensure CCSF_SMTP is passed
-				EC_H(lpConverter->MIMEToMAPI(lpEMLStm,
+				EC_MAPI(lpConverter->MIMEToMAPI(lpEMLStm,
 					lpMsg,
 					NULL, // Must be NULL
 					ulConvertFlags));
 				if (SUCCEEDED(hRes))
 				{
-					EC_H(lpMsg->SaveChanges(NULL));
+					EC_MAPI(lpMsg->SaveChanges(NULL));
 				}
 			}
 		}
@@ -86,19 +86,19 @@ _Check_return_ HRESULT ExportIMessageToEML(_In_ LPMESSAGE lpMsg, _In_z_ LPCWSTR 
 	{
 		if (lpAdrBook)
 		{
-			EC_H(lpConverter->SetAdrBook(lpAdrBook));
+			EC_MAPI(lpConverter->SetAdrBook(lpAdrBook));
 		}
 		if (SUCCEEDED(hRes) && et != IET_UNKNOWN)
 		{
-			EC_H(lpConverter->SetEncoding(et));
+			EC_MAPI(lpConverter->SetEncoding(et));
 		}
 		if (SUCCEEDED(hRes) && mst != USE_DEFAULT_SAVETYPE)
 		{
-			EC_H(lpConverter->SetSaveFormat(mst));
+			EC_MAPI(lpConverter->SetSaveFormat(mst));
 		}
 		if (SUCCEEDED(hRes) && ulWrapLines != USE_DEFAULT_WRAPPING)
 		{
-			EC_H(lpConverter->SetTextWrapping(ulWrapLines != 0 ? true : false, ulWrapLines));
+			EC_MAPI(lpConverter->SetTextWrapping(ulWrapLines != 0 ? true : false, ulWrapLines));
 		}
 
 		if (SUCCEEDED(hRes))
@@ -110,7 +110,7 @@ _Check_return_ HRESULT ExportIMessageToEML(_In_ LPMESSAGE lpMsg, _In_z_ LPCWSTR 
 			{
 				// Per the docs for MAPIToMIMEStm, CCSF_SMTP must always be set
 				// But we're gonna make the user ensure that, so we don't or it in here
-				EC_H(lpConverter->MAPIToMIMEStm(lpMsg, lpMimeStm, ulConvertFlags));
+				EC_MAPI(lpConverter->MAPIToMIMEStm(lpMsg, lpMimeStm, ulConvertFlags));
 				if (SUCCEEDED(hRes))
 				{
 					LPSTREAM lpFileStm = NULL;
@@ -124,13 +124,13 @@ _Check_return_ HRESULT ExportIMessageToEML(_In_ LPMESSAGE lpMsg, _In_z_ LPCWSTR 
 					if (SUCCEEDED(hRes) && lpFileStm)
 					{
 						LARGE_INTEGER dwBegin = {0};
-						EC_H(lpMimeStm->Seek(dwBegin, STREAM_SEEK_SET, NULL));
+						EC_MAPI(lpMimeStm->Seek(dwBegin, STREAM_SEEK_SET, NULL));
 						if (SUCCEEDED(hRes))
 						{
-							EC_H(lpMimeStm->CopyTo(lpFileStm, ULARGE_MAX, NULL, NULL));
+							EC_MAPI(lpMimeStm->CopyTo(lpFileStm, ULARGE_MAX, NULL, NULL));
 							if (SUCCEEDED(hRes))
 							{
-								EC_H(lpFileStm->Commit(STGC_DEFAULT));
+								EC_MAPI(lpFileStm->Commit(STGC_DEFAULT));
 							}
 						}
 					}
@@ -175,7 +175,7 @@ _Check_return_ HRESULT ConvertEMLToMSG(_In_z_ LPCWSTR lpszEMLFile,
 			lpAdrBook));
 		if (SUCCEEDED(hRes))
 		{
-			EC_H(pStorage->Commit(STGC_DEFAULT));
+			EC_MAPI(pStorage->Commit(STGC_DEFAULT));
 		}
 	}
 

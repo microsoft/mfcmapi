@@ -266,7 +266,7 @@ _Check_return_ HRESULT DisplayTable(
 	if (!lpHostDlg || !lpMAPIProp) return MAPI_E_INVALID_PARAMETER;
 	if (PT_OBJECT != PROP_TYPE(ulPropTag)) return MAPI_E_INVALID_TYPE;
 
-	EC_H(lpMAPIProp->OpenProperty(
+	EC_MAPI(lpMAPIProp->OpenProperty(
 		ulPropTag,
 		&IID_IMAPITable,
 		0,
@@ -305,7 +305,7 @@ _Check_return_ HRESULT DisplayExchangeTable(
 	if (!lpParentWnd) return MAPI_E_INVALID_PARAMETER;
 
 	// Open the table in an IExchangeModifyTable interface
-	EC_H(lpMAPIProp->OpenProperty(
+	EC_MAPI(lpMAPIProp->OpenProperty(
 		ulPropTag,
 		(LPGUID)&IID_IExchangeModifyTable,
 		0,
@@ -354,7 +354,7 @@ _Check_return_ HRESULT DisplayExchangeTable(
 			{
 				// Open a MAPI table on the Exchange table property. This table can be
 				// read to determine what the Exchange table looks like.
-				EC_H(lpExchTbl->GetTable(0, &lpMAPITable));
+				EC_MAPI(lpExchTbl->GetTable(0, &lpMAPITable));
 
 				if (lpMAPITable)
 				{
@@ -705,7 +705,7 @@ void ResolveMessageClass(_In_ CMapiObjects* lpMapiObjects, _In_opt_ LPMAPIFOLDER
 	LPMAPISESSION lpMAPISession = lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
-	EC_H(MAPIOpenFormMgr(lpMAPISession,&lpMAPIFormMgr));
+	EC_MAPI(MAPIOpenFormMgr(lpMAPISession,&lpMAPIFormMgr));
 	if (lpMAPIFormMgr)
 	{
 		DebugPrint(DBGForms,_T("OnResolveMessageClass: resolving message class\n"));
@@ -727,7 +727,7 @@ void ResolveMessageClass(_In_ CMapiObjects* lpMapiObjects, _In_opt_ LPMAPIFOLDER
 			{
 				LPMAPIFORMINFO lpMAPIFormInfo = NULL;
 				DebugPrint(DBGForms,_T("OnResolveMessageClass: Calling ResolveMessageClass(\"%hs\",0x%08X)\n"),szClass,ulFlags); // STRING_OK
-				EC_H(lpMAPIFormMgr->ResolveMessageClass(szClass,ulFlags,lpMAPIFolder,&lpMAPIFormInfo));
+				EC_MAPI(lpMAPIFormMgr->ResolveMessageClass(szClass,ulFlags,lpMAPIFolder,&lpMAPIFormInfo));
 				if (lpMAPIFormInfo)
 				{
 					DebugPrintFormInfo(DBGForms,lpMAPIFormInfo);
@@ -749,7 +749,7 @@ void SelectForm(_In_ HWND hWnd, _In_ CMapiObjects* lpMapiObjects, _In_opt_ LPMAP
 	LPMAPISESSION lpMAPISession = lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
-	EC_H(MAPIOpenFormMgr(lpMAPISession,&lpMAPIFormMgr));
+	EC_MAPI(MAPIOpenFormMgr(lpMAPISession,&lpMAPIFormMgr));
 
 	if (lpMAPIFormMgr)
 	{

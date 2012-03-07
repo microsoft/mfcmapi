@@ -230,7 +230,7 @@ void DumpFidMid(
 	LPMDB lpMDB = NULL;
 	LPMAPIFOLDER lpFolder = NULL;
 
-	WC_H(MAPIInitialize(NULL));
+	WC_MAPI(MAPIInitialize(NULL));
 
 	WC_H(MrMAPILogonEx(lpszProfile,&lpMAPISession));
 	if (lpMAPISession)

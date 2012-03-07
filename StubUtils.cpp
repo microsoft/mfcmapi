@@ -50,7 +50,6 @@ const WCHAR WszOutlookMapiClientName[] = L"Microsoft Outlook";
 const WCHAR WszValueNameMSI[] = L"MSIComponentID";
 const WCHAR WszCurVersion[] = L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion";
 const WCHAR WszCommonFiles[] = L"CommonFilesDir";
-const WCHAR WszMSMAPI32DLL[] = L"MSMAPI32.DLL";
 const WCHAR WszMAPIPathFormat[] = L"System\\MSMAPI\\%d\\%s";
 const WCHAR WszFullQualifier[] = L"%lu\\NT";
 const WCHAR WszShortQualifier[] = L"%lu";
@@ -60,8 +59,8 @@ static const WCHAR WszOutlookAppPath[] = L"SOFTWARE\\Microsoft\\Windows\\Current
 
 static const WCHAR WszOutlookExe[] = L"outlook.exe";
 
-static const WCHAR WszPrivateMAPI[] = L"olmapi32.dll";
-static const WCHAR WszPrivateMAPI_11[] = L"msmapi32.dll";
+static const WCHAR WszOlMAPI32DLL[] = L"olmapi32.dll";
+static const WCHAR WszMSMAPI32DLL[] = L"msmapi32.dll";
 static const WCHAR WszMapi32[] = L"mapi32.dll";
 static const WCHAR WszMapiStub[] = L"mapistub.dll";
 
@@ -85,16 +84,23 @@ static bool s_fForceSystemMAPI = false;
 #define	defaultLanguage		3
 #define	MAX_LANGLOADORDER	4
 
-// MSI aware FindFile API flags
-#define FINDFILEMSI_FIND_QUALIFIED      0x00000001
-// Skip the INSTALLMODE_DEFAULT => INSTALLMODE_EXISTING + INSTALLMODE_DEFAULT
-#define FINDFILEMSI_SKIP_OPTIMIZATION_FOR_EXISTING 0x80000000
-
-// Basic MSI capable LoadLibrary implementation
-#define LOADLIBMSI_LOAD_QUALIFIED       0x80000000
-#define LOADLIBMSI_LOAD_ALWAYS          0x40000000
-#define LOADLIBMSI_IGNORE_PRIOR         0x20000000
-#define LOADLIBMSI_FLAG_MASK            0xFF000000
+// Exists to allow some logging
+_Check_return_ HMODULE MyLoadLibraryW(_In_z_ LPCWSTR lpszLibFileName)
+{
+	HMODULE hMod = NULL;
+	HRESULT hRes = S_OK;
+	DebugPrint(DBGLoadLibrary,_T("MyLoadLibrary - loading \"%ws\"\n"),lpszLibFileName);
+	WC_D(hMod,LoadLibraryW(lpszLibFileName));
+	if (hMod)
+	{
+		DebugPrint(DBGLoadLibrary,_T("MyLoadLibrary - \"%ws\" loaded at %p\n"),lpszLibFileName,hMod);
+	}
+	else
+	{
+		DebugPrint(DBGLoadLibrary,_T("MyLoadLibrary - \"%ws\" failed to load\n"),lpszLibFileName);
+	}
+	return hMod;
+} // MyLoadLibrary
 
 LCID GetLCID(HKEY hkMAPI1, HKEY hkPolicy, HKEY hkSoftware, LPCWSTR wszMSI, LPCWSTR wszLCID)
 {
@@ -239,7 +245,7 @@ LCID GetOutlookLCID()
  *  the registry.
  *
  *  Arguments:
- *      int          szLangType      Type of LCID to retrieve
+ *      int          LangType      Type of LCID to retrieve
  *
  */
 LCID GetInstalledLCID(int langType)
@@ -272,14 +278,12 @@ LCID GetInstalledLCID(int langType)
  *  LoadLibraryRegW
  *
  *  Purpose:
- *  Retrieves a path from the registry, adds the provided DLL name (replacing
+ *  Retrieves a path from HKLM, adds the provided DLL name (replacing
  *  a file name if already present) and attempts to load the library.
  *
  *  Arguments:
  *      LPCSTR      szDLL        Additional DLL path information.  May be NULL.
  *                                 Will replace any filename (if present)
- *      DWORD       dwFlags      Flags
- *      HKEY        hKey         Key to check
  *      LPCWSTR     wszRegRoot   Sub-key to check
  *      LPCWSTR     wszRegValue  Registry value to actually use
  *
@@ -287,11 +291,10 @@ LCID GetInstalledLCID(int langType)
  *      HMODULE
  *
  */
-inline HMODULE LoadLibraryRegW(LPCWSTR wszDLL, DWORD dwFlags, HKEY hKeyRoot,
-								 LPCWSTR wszRegRoot, LPCWSTR wszRegValue)
+inline HMODULE LoadLibraryRegW(LPCWSTR wszDLL, LPCWSTR wszRegRoot, LPCWSTR wszRegValue)
 {
-	DebugPrint(DBGLoadMAPI,_T("Enter LoadLibraryRegW: wszDLL = %ws, dwFlags = 0x%08X, hKeyRoot = %p, wszRegRoot = %ws, wszRegValue = %ws\n"),
-		wszDLL,dwFlags,hKeyRoot,wszRegRoot,wszRegValue);
+	DebugPrint(DBGLoadMAPI,_T("Enter LoadLibraryRegW: wszDLL = %ws, wszRegRoot = %ws, wszRegValue = %ws\n"),
+		wszDLL,wszRegRoot,wszRegValue);
 	DWORD           cch;
 	DWORD           cchDLL;
 	DWORD           dwFileAtt;
@@ -304,10 +307,9 @@ inline HMODULE LoadLibraryRegW(LPCWSTR wszDLL, DWORD dwFlags, HKEY hKeyRoot,
 	WCHAR           rgwchExpandPath[MAX_PATH];
 	WCHAR           rgwchFullPath[MAX_PATH];
 	WCHAR           rgwchRegPath[MAX_PATH];
-	WCHAR           rgwchTestPath[MAX_PATH];
 
 	// Try to open the registry
-	dwErr = RegOpenKeyExW(hKeyRoot, wszRegRoot, 0, KEY_QUERY_VALUE, &hKey);
+	dwErr = RegOpenKeyExW(HKEY_LOCAL_MACHINE, wszRegRoot, 0, KEY_QUERY_VALUE, &hKey);
 	if (ERROR_SUCCESS != dwErr)
 	{
 		goto Exit;
@@ -439,52 +441,11 @@ inline HMODULE LoadLibraryRegW(LPCWSTR wszDLL, DWORD dwFlags, HKEY hKeyRoot,
 		}
 	}
 
-	// If we are supposed to, see if the DLL is already loaded in memory
-
-	if (!(dwFlags & LOADLIBMSI_IGNORE_PRIOR))
-	{
-		// Get the file name from the full path
-
-		cch = GetFullPathNameW(pwszPath, _countof(rgwchTestPath),
-							   rgwchTestPath, &pwchFileName);
-		pwszPath = rgwchTestPath;
-		DebugPrint(DBGLoadMAPI,_T("LoadLibraryRegW: rgwchTestPath = %ws\n"),rgwchTestPath);
-
-		// Check to see if it is already ordered
-
-		hInstRet = (HMODULE)GetModuleHandleW(pwchFileName);
-		if (NULL != hInstRet)
-		{
-			if (GetModuleFileNameW(hInstRet, rgwchRegPath,
-								   _countof(rgwchRegPath)) == 0)
-			{
-				hInstRet = NULL;
-			}
-			else
-			{
-				pwszPath = rgwchRegPath;
-			}
-		}
-	}
-
 	// Try to load the DLL
-
 	DebugPrint(DBGLoadMAPI,_T("LoadLibraryRegW: Loading pwszPath = %ws\n"),pwszPath);
-	hInstRet = LoadLibraryW(pwszPath);
+	hInstRet = MyLoadLibraryW(pwszPath);
 
 Exit:
-	// If we did not get the DLL and we have been told to always load it,
-	//  try to see if it is on the path
-
-	if ((NULL == hInstRet) && (NULL != wszDLL) &&
-			(dwFlags & LOADLIBMSI_LOAD_ALWAYS))
-	{
-		// Try to load the DLL based just on the basic DLL information
-
-		hInstRet = LoadLibraryW(wszDLL);
-		dwErr = ERROR_SUCCESS;
-	}
-
 	if (ERROR_SUCCESS != dwErr)
 	{
 		SetLastError(dwErr);
@@ -502,18 +463,12 @@ Exit:
  *
  *  Purpose:
  *  Uses MSI to lookup and locate a file based on the published component that
- *  it is in.  Can install the file if the correct MSI flags are passed.
+ *  it is in.
  *
  *  Arguments:
- *      LPCSTR          szFilePath       Path to the file (assumed to be
- *                                        relative to the path returned
- *                                        by the component)- May be NULL
- *      DWORD           dwFlags          Flags
- *      LPCWSTR         wszProduct       Product name for MSI
  *      LPCWSTR         wszComponent     Component name for MSI
  *      LPCWSTR         wszFeatQual      Feature name for standard MSI call,
  *                                        qualifier for qualified call
- *      DWORD           dwInstallMode    MSI installation mode
  *      LPWSTR          wszDest          Resulting path
  *      DWORD*          pcchDest         IN: Size of buffer
  *                                       OUT: Length of path
@@ -522,89 +477,32 @@ Exit:
  *      DWORD   Error if any
  *
  */
-inline DWORD FindFileMSIW(LPCWSTR wszFilePath, DWORD dwFlags, LPCWSTR wszProduct,
-						  LPCWSTR wszComponent, LPCWSTR wszFeatQual, DWORD dwInstallMode,
+inline DWORD FindFileMSIW(LPCWSTR wszComponent, LPCWSTR wszFeatQual,
 						  LPWSTR wszDest, DWORD* pcchDest)
 {
-	DebugPrint(DBGLoadMAPI,_T("Enter FindFileMSIW: wszFilePath = %ws, dwFlags = 0x%08X, wszProduct = %ws, wszComponent = %ws, wszFeatQual = %ws, dwInstallMode = 0x%08X\n"),
-		wszFilePath,dwFlags,wszProduct,wszComponent,wszFeatQual,dwInstallMode);
+	DebugPrint(DBGLoadMAPI,_T("Enter FindFileMSIW: wszComponent = %ws, wszFeatQual = %ws\n"),
+		wszComponent,wszFeatQual);
 	DWORD           cchCompPath;
 	DWORD           cchDestPath;
 	DWORD           dwFileAtt;
 	DWORD           dwErr;
 	WCHAR*          pwchDestPath;
 	WCHAR*          pwchFile;
-	WCHAR           rgwchTempPath[MAX_PATH * 2];
 	WCHAR           rgwchCompPath[MAX_PATH * 2];
-	DWORD           dwInstallModeFirstTry = dwInstallMode;
-	bool            fRetry = FALSE;
-
-	//
-	// Turn ON the INSTALLMODE_EXISTING optimization if
-	// the INSTALLMODE_EXISTING optimization is NOT Overridden,
-	//
-	if ( (!( dwFlags & FINDFILEMSI_SKIP_OPTIMIZATION_FOR_EXISTING)) &&
-			( ((DWORD)INSTALLMODE_DEFAULT) == dwInstallMode) )
-	{
-		fRetry = TRUE;
-		dwInstallModeFirstTry = (DWORD)INSTALLMODE_EXISTING;
-	}
 
 	// Use the appropriate format of MSI to locate the component path
 
 	cchCompPath = _countof(rgwchCompPath);
-	if (dwFlags & FINDFILEMSI_FIND_QUALIFIED)
+
+	// Call MSI to provide the qualified component
+	dwErr = MsiProvideQualifiedComponentW(wszComponent, wszFeatQual,
+		(DWORD) INSTALLMODE_EXISTING, rgwchCompPath,
+		&cchCompPath);
+	if (ERROR_SUCCESS != dwErr)
 	{
-		// Call MSI to provide the qualified component
-
-		//
-		// If we are given an INSTALLMODE_DEFAULT, then first try INSTALLMODE_EXISTING,
-		// and if that fails then try INSTALLMODE_DEFAULT.
-		//
-
-		dwErr = MsiProvideQualifiedComponentW(wszComponent, wszFeatQual,
-											  dwInstallModeFirstTry, rgwchCompPath,
-											  &cchCompPath);
-
-		if ( fRetry && (ERROR_FILE_NOT_FOUND == dwErr) )
-		{
-			dwErr = MsiProvideQualifiedComponentW(wszComponent, wszFeatQual,
-												  dwInstallMode, rgwchCompPath,
-												  &cchCompPath);
-		}
-
-		if (ERROR_SUCCESS != dwErr)
-		{
-			goto Exit;
-		}
-		DebugPrint(DBGLoadMAPI,_T("FindFileMSIW: %ws:%ws rgwchCompPath = %ws\n"),wszComponent,wszFeatQual,rgwchCompPath);
+		goto Exit;
 	}
-	else
-	{
-		// Call MSI to provide the feature
-
-		//
-		// If we are given an INSTALLMODE_DEFAULT, then first try INSTALLMODE_EXISTING,
-		// and if that fails then try INSTALLMODE_DEFAULT.
-		//
-
-		dwErr = MsiProvideComponentW(wszProduct, wszFeatQual, wszComponent,
-									 dwInstallModeFirstTry, rgwchCompPath,
-									 &cchCompPath);
-
-		if ( fRetry && (ERROR_FILE_NOT_FOUND == dwErr) )
-		{
-			dwErr = MsiProvideComponentW(wszProduct, wszFeatQual, wszComponent,
-										 dwInstallMode, rgwchCompPath,
-										 &cchCompPath);
-		}
-
-		if (ERROR_SUCCESS != dwErr)
-		{
-			goto Exit;
-		}
-		DebugPrint(DBGLoadMAPI,_T("FindFileMSIW: %ws:%ws:%ws rgwchCompPath = %ws\n"),wszProduct,wszFeatQual,wszComponent,rgwchCompPath);
-	}
+	DebugPrint(DBGLoadMAPI,_T("FindFileMSIW: %ws:%ws rgwchCompPath = %ws\n"),wszComponent,wszFeatQual,rgwchCompPath);
 
 	// Make sure that we have a good path
 
@@ -618,81 +516,17 @@ inline DWORD FindFileMSIW(LPCWSTR wszFilePath, DWORD dwFlags, LPCWSTR wszProduct
 		goto Exit;
 	}
 
-	// If we were handed a DLL name, make sure that we have a path to
-	//  it
-
-	if (NULL != wszFilePath)
+	// Make sure we have a file and not a directory
+	if (FILE_ATTRIBUTE_DIRECTORY & dwFileAtt)
 	{
-		DWORD           cchFileName;
-		DWORD           cchTempBuff;
-
-		// MSI can return general paths or paths to the principle file, if
-		//  we have the file then we want to make sure we replace it with
-		//  the correct file name
-
-		if (!(FILE_ATTRIBUTE_DIRECTORY & dwFileAtt))
-		{
-
-			// We know we do not have a directory so break the path into
-			//  path and file
-
-			cchCompPath = GetFullPathNameW(rgwchCompPath, _countof(rgwchTempPath),
-										   rgwchTempPath, &pwchFile);
-			if ((0 == cchCompPath) || (_countof(rgwchTempPath) < cchCompPath))
-			{
-				dwErr = ERROR_FILENAME_EXCED_RANGE;
-				goto Exit;
-			}
-			*pwchFile = L'\0';
-
-			// Record where we pick the path up from
-
-			pwchDestPath = rgwchTempPath;
-			cchDestPath = (DWORD)(pwchFile - rgwchTempPath);
-		}
-		else
-		{
-			pwchDestPath = rgwchCompPath;
-			cchDestPath = cchCompPath;
-		}
-
-		// Make sure that the path name is properly terminated
-
-		if (L'\\' != pwchDestPath[cchDestPath - 1])
-		{
-			pwchDestPath[cchDestPath] = L'\\';
-			cchDestPath++;
-		}
-
-		// Build up a path name
-
-		cchTempBuff = (DWORD) min(_countof(rgwchCompPath), _countof(rgwchTempPath));
-		cchFileName = lstrlenW(wszFilePath);
-		if (cchTempBuff <= (cchDestPath + cchFileName))
-		{
-			dwErr = ERROR_FILENAME_EXCED_RANGE;
-			goto Exit;
-		}
-		wcscpy_s(&(pwchDestPath[cchDestPath]), cchTempBuff - cchDestPath, wszFilePath);
+		dwErr = ERROR_FILE_NOT_FOUND;
+		goto Exit;
 	}
-	else
-	{
-		// Make sure we have a file and not a directory
 
-		if (FILE_ATTRIBUTE_DIRECTORY & dwFileAtt)
-		{
-			dwErr = ERROR_FILE_NOT_FOUND;
-			goto Exit;
-		}
-
-		// Set-up the pointers for the final cleanup
-
-		pwchDestPath = rgwchCompPath;
-		cchDestPath = cchCompPath;
-	}
+	// Set-up the pointers for the final cleanup
+	pwchDestPath = rgwchCompPath;
 
 	// Locate the file name from the path
-
 	cchDestPath = GetFullPathNameW(pwchDestPath, *pcchDest, wszDest, &pwchFile);
 	if (0 == cchDestPath)
 	{
@@ -721,88 +555,55 @@ Exit:
  *  Installer to install the DLL if necessary.
  *
  *  Arguments:
- *      LPCWSTR         wszDLLPath      DLL to load (may be a relative path)
- *      HANDLE          hFile           Must be NULL
- *      DWORD           dwFlags         Standard LoadLibraryEx flags
- *      LPCWSTR         wszProduct      Product name for MSI
  *      LPCWSTR         wszComponent    Component name for MSI
  *      LPCWSTR         wszFeatQual     Feature name for standard MSI call,
  *                                        qualifier if doing a qualified
  *                                        install.
- *      DWORD           dwInstallMode   MSI installation mode
- *
  */
-
-inline HMODULE LoadLibraryMSIExW(LPCWSTR wszDLLPath, HANDLE /* hFile */,
-								   DWORD dwFlags, LPCWSTR wszProduct,
-								   LPCWSTR wszComponent, LPCWSTR wszFeatQual,
-								   DWORD dwInstallMode)
+inline HMODULE LoadLibraryMSIExW(LPCWSTR wszComponent, LPCWSTR wszFeatQual)
 {
-	DebugPrint(DBGLoadMAPI,_T("Enter LoadLibraryMSIExW: wszDLLPath = %ws, dwFlags = 0x%08X, wszProduct = %ws, wszComponent = %ws, wszFeatQual = %ws, dwInstallMode = 0x%08X\n"),
-		wszDLLPath,dwFlags,wszProduct,wszComponent,wszFeatQual,dwInstallMode);
+	DebugPrint(DBGLoadMAPI,_T("Enter LoadLibraryMSIExW: wszComponent = %ws, wszFeatQual = %ws\n"),
+		wszComponent,wszFeatQual);
 	DWORD           cchCompPath;
 	DWORD           dwErr = ERROR_SUCCESS;
 	HMODULE         hInstDLL = NULL;
 	WCHAR           rgwchCompPath[MAX_PATH];
 
 	// Get a path to the file
-
 	cchCompPath = _countof(rgwchCompPath);
-	dwErr = FindFileMSIW(wszDLLPath,
-						 ((dwFlags & LOADLIBMSI_LOAD_QUALIFIED) ?
-						  FINDFILEMSI_FIND_QUALIFIED : 0),
-						 wszProduct, wszComponent, wszFeatQual, dwInstallMode,
-						 rgwchCompPath, &cchCompPath);
+	dwErr = FindFileMSIW(wszComponent, wszFeatQual, rgwchCompPath, &cchCompPath);
 	if (ERROR_SUCCESS != dwErr)
 	{
 		goto Exit;
 	}
 	DebugPrint(DBGLoadMAPI,_T("LoadLibraryMSIExW: rgwchCompPath = %ws\n"),rgwchCompPath);
 
-	// If we are supposed to, see if the DLL is already loaded in memory
+	// See if the DLL is already loaded in memory
+	DWORD           cchFullPath;
+	WCHAR*          pwchFile;
+	WCHAR           rgwchFullPath[MAX_PATH];
 
-	if (!(dwFlags & LOADLIBMSI_IGNORE_PRIOR))
+	// Get the file name from the full path
+	cchFullPath = GetFullPathNameW(rgwchCompPath, _countof(rgwchFullPath),
+									rgwchFullPath, &pwchFile);
+	DebugPrint(DBGLoadMAPI,_T("LoadLibraryMSIExW: rgwchFullPath = %ws\n"),rgwchFullPath);
+
+	// Check to see if it is already ordered
+	hInstDLL = (HMODULE)GetModuleHandleW(pwchFile);
+	if (NULL != hInstDLL)
 	{
-		DWORD           cchFullPath;
-		WCHAR*          pwchFile;
-		WCHAR           rgwchFullPath[MAX_PATH];
-
-		// Get the file name from the full path
-
-		cchFullPath = GetFullPathNameW(rgwchCompPath, _countof(rgwchFullPath),
-									   rgwchFullPath, &pwchFile);
-		DebugPrint(DBGLoadMAPI,_T("LoadLibraryMSIExW: rgwchFullPath = %ws\n"),rgwchFullPath);
-
-		// Check to see if it is already ordered
-
-		hInstDLL = (HMODULE)GetModuleHandleW(pwchFile);
-		if (NULL != hInstDLL)
+		if (GetModuleFileNameW(hInstDLL, rgwchCompPath,
+								_countof(rgwchCompPath)) == 0)
 		{
-			if (GetModuleFileNameW(hInstDLL, rgwchCompPath,
-								   _countof(rgwchCompPath)) == 0)
-			{
-				hInstDLL = NULL;
-			}
+			hInstDLL = NULL;
 		}
 	}
 
 	// Load the DLL
-
 	DebugPrint(DBGLoadMAPI,_T("LoadLibraryMSIExW: Loading rgwchCompPath = %ws\n"),rgwchCompPath);
-	hInstDLL = LoadLibraryExW(rgwchCompPath, NULL,
-							  (dwFlags & ~LOADLIBMSI_FLAG_MASK));
+	hInstDLL = MyLoadLibraryW(rgwchCompPath);
 
 Exit:
-	// See if we are supposed to try and always load
-
-	if ((NULL == hInstDLL) && (dwFlags & LOADLIBMSI_LOAD_ALWAYS))
-	{
-		DebugPrint(DBGLoadMAPI,_T("LoadLibraryMSIExW: Loading wszDLLPath = %ws\n"),wszDLLPath);
-		hInstDLL = LoadLibraryExW(wszDLLPath, NULL,
-								  (dwFlags & ~LOADLIBMSI_FLAG_MASK));
-		dwErr = ERROR_SUCCESS;
-	}
-
 	// Record any error that we have
 
 	if (ERROR_SUCCESS != dwErr)
@@ -821,27 +622,21 @@ Exit:
  *  correct UI language is loaded.
  *
  *  Arguments:
- *      LPCWSTR         wszDLLPath      DLL to load (may be a relative path)
- *      DWORD           dwFlags         LoadLibraryMSI flags
  *      LPCWSTR         wszComponent    Component name for MSI
  *      LPCWSTR         wszQualFormat   'printf' style string for formatting
  *                                        the qualifier with the LCID
  *      DWORD           dwInstallMode   MSI installation mode
- *
  */
-HMODULE LoadLibraryLangMSIW(LPCWSTR wszDLLPath, DWORD dwFlags,
-							  LPCWSTR wszComponent, LPCWSTR wszQualFormat,
-							  DWORD dwInstallMode, LCID* plcid)
+HMODULE LoadLibraryLangMSIW(LPCWSTR wszComponent, LPCWSTR wszQualFormat, LCID* plcid)
 {
-	DebugPrint(DBGLoadMAPI,_T("Enter LoadLibraryLangMSIW: wszDLLPath = %ws, dwFlags = 0x%08X, wszComponent = %ws, wszFeatQual = %ws, dwInstallMode = 0x%08X\n"),
-		wszDLLPath,dwFlags,wszComponent,wszQualFormat,dwInstallMode);
+	DebugPrint(DBGLoadMAPI,_T("Enter LoadLibraryLangMSIW: wszComponent = %ws, wszFeatQual = %ws\n"),
+		wszComponent,wszQualFormat);
 	HMODULE         hInstDLL = NULL;
 	int             iLCID;
 	LCID            lcid = 0;
 	WCHAR           rgwchQualifier[32];
 
 	// Try to use MSI to locate the correct DLL to use
-
 	*plcid = 0;
 	for (iLCID = 0; iLCID < MAX_LANGLOADORDER; iLCID++)
 	{
@@ -855,10 +650,7 @@ HMODULE LoadLibraryLangMSIW(LPCWSTR wszDLLPath, DWORD dwFlags,
 
 		// Build up the qualifier string
 		swprintf_s(rgwchQualifier, _countof(rgwchQualifier), wszQualFormat, lcid);
-		hInstDLL = LoadLibraryMSIExW(wszDLLPath, NULL,
-									 (dwFlags | LOADLIBMSI_LOAD_QUALIFIED),
-									 NULL, wszComponent, rgwchQualifier,
-									 dwInstallMode);
+		hInstDLL = LoadLibraryMSIExW(wszComponent, rgwchQualifier);
 		if (NULL != hInstDLL)
 		{
 			break;
@@ -924,9 +716,9 @@ __inline bool __stdcall FFileExistW( LPCWSTR wzFileName )
 	return ( ( attr != INVALID_FILE_ATTRIBUTES ) && ( ( attr & FILE_ATTRIBUTE_DIRECTORY ) == 0 ) );
 } // FFileExistW
 
-bool FCanUseDefaultOldMapiPath(HMODULE * pInstMAPI)
+HMODULE LoadOldDefaultMapiPath()
 {
-	DebugPrint(DBGLoadMAPI,_T("Enter FCanUseDefaultOldMapiPath\n"));
+	DebugPrint(DBGLoadMAPI,_T("Enter LoadOldDefaultMapiPath\n"));
 	HRESULT             hr;
 	DWORD               cbSize;
 	DWORD               dwType;
@@ -945,10 +737,9 @@ bool FCanUseDefaultOldMapiPath(HMODULE * pInstMAPI)
 		{
 			swprintf_s(rgwchQualFormat, _countof(rgwchQualFormat), WszMAPIPathFormat, lcid,
 					   WszMSMAPI32DLL);
-			DebugPrint(DBGLoadMAPI,_T("FCanUseDefaultOldMapiPath: rgwchQualFormat = %ws\n"),rgwchQualFormat);
+			DebugPrint(DBGLoadMAPI,_T("LoadOldDefaultMapiPath: rgwchQualFormat = %ws\n"),rgwchQualFormat);
 			hMAPI = LoadLibraryRegW(rgwchQualFormat,
-									LOADLIBMSI_IGNORE_PRIOR,
-									HKEY_LOCAL_MACHINE, WszCurVersion,
+									WszCurVersion,
 									WszCommonFiles);
 
 			if (NULL != hMAPI)
@@ -961,7 +752,6 @@ bool FCanUseDefaultOldMapiPath(HMODULE * pInstMAPI)
 	// If we cannot pick up MAPI directly, consider using the MSI
 	//  component registered in the Outlook mail clients section
 	//  to try and locate MAPI or OMI
-
 	if (NULL == hMAPI)
 	{
 		if ((RegOpenKeyExW(HKEY_CURRENT_USER, WszKeyNameMSI, 0, KEY_READ,
@@ -974,23 +764,17 @@ bool FCanUseDefaultOldMapiPath(HMODULE * pInstMAPI)
 								  (LPBYTE)rgwchMSIComp, &cbSize);
 			if ((ERROR_SUCCESS == hr) && (REG_SZ == dwType))
 			{
-				DebugPrint(DBGLoadMAPI,_T("FCanUseDefaultOldMapiPath: %ws:%ws rgwchMSIComp = %ws\n"),WszKeyNameMSI,WszValueNameMSI,rgwchMSIComp);
+				DebugPrint(DBGLoadMAPI,_T("LoadOldDefaultMapiPath: %ws:%ws rgwchMSIComp = %ws\n"),WszKeyNameMSI,WszValueNameMSI,rgwchMSIComp);
 				// Try to use MSI to locate and load the correct DLL
 				wcscpy_s(rgwchQualFormat, _countof(rgwchQualFormat), WszFullQualifier);
-				DebugPrint(DBGLoadMAPI,_T("FCanUseDefaultOldMapiPath: rgwchQualFormat(full) = %ws\n"),rgwchQualFormat);
-				hMAPI = LoadLibraryLangMSIW(NULL, 0, rgwchMSIComp,
-											rgwchQualFormat,
-											(DWORD)INSTALLMODE_EXISTING,
-											&lcid);
+				DebugPrint(DBGLoadMAPI,_T("LoadOldDefaultMapiPath: rgwchQualFormat(full) = %ws\n"),rgwchQualFormat);
+				hMAPI = LoadLibraryLangMSIW(rgwchMSIComp, rgwchQualFormat, &lcid);
 				if (NULL == hMAPI)
 				{
 					// Try to get the component without the qualification
 					wcscpy_s(rgwchQualFormat, _countof(rgwchQualFormat), WszShortQualifier);
-					DebugPrint(DBGLoadMAPI,_T("FCanUseDefaultOldMapiPath: rgwchQualFormat(short) = %ws\n"),rgwchQualFormat);
-					hMAPI = LoadLibraryLangMSIW(NULL, 0, rgwchMSIComp,
-												rgwchQualFormat,
-												(DWORD)INSTALLMODE_EXISTING,
-												&lcid);
+					DebugPrint(DBGLoadMAPI,_T("LoadOldDefaultMapiPath: rgwchQualFormat(short) = %ws\n"),rgwchQualFormat);
+					hMAPI = LoadLibraryLangMSIW(rgwchMSIComp, rgwchQualFormat, &lcid);
 				}
 			}
 			RegCloseKey(hkMAPI);
@@ -999,16 +783,15 @@ bool FCanUseDefaultOldMapiPath(HMODULE * pInstMAPI)
 
 	if (hMAPI)
 	{
-		*pInstMAPI = hMAPI;
-		DebugPrint(DBGLoadMAPI,_T("Exit FCanUseDefaultOldMapiPath: return = true, hMAPI = %p\n"),hMAPI);
-		return TRUE;
+		DebugPrint(DBGLoadMAPI,_T("Exit LoadOldDefaultMapiPath: hMAPI = %p\n"),hMAPI);
+		return hMAPI;
 	}
 	else
 	{
-		DebugPrint(DBGLoadMAPI,_T("Exit FCanUseDefaultOldMapiPath: return = false\n"));
-		return FALSE;
+		DebugPrint(DBGLoadMAPI,_T("Exit LoadOldDefaultMapiPath: MAPI not loaded\n"));
+		return NULL;
 	}
-} // FCanUseDefaultOldMapiPath
+} // LoadOldDefaultMapiPath
 
 /*
  *  RegQueryWszExpand
@@ -1054,7 +837,6 @@ Exit:
  *  GetComponentPath
  *		Wrapper around mapi32.dll->FGetComponentPath which maps an MSI component ID to 
  *		a DLL location from the default MAPI client registration values
- *
  */
 bool GetComponentPath(LPCSTR szComponent, LPSTR szQualifier, LPSTR szDllPath, DWORD cchBufferSize, bool fInstall)
 {
@@ -1065,9 +847,9 @@ bool GetComponentPath(LPCSTR szComponent, LPSTR szQualifier, LPSTR szDllPath, DW
 
 	typedef bool (STDAPICALLTYPE *FGetComponentPathType)(LPCSTR, LPSTR, LPSTR, DWORD, bool);
 
-	hMapiStub = LoadLibraryW(WszMapi32);
+	hMapiStub = MyLoadLibraryW(WszMapi32);
 	if (!hMapiStub)
-		hMapiStub = LoadLibraryW(WszMapiStub);
+		hMapiStub = MyLoadLibraryW(WszMapiStub);
 
 	if (hMapiStub)
 	{
@@ -1130,7 +912,7 @@ HMODULE LoadMailClientFromDllPath(HKEY hkeyMapiClient)
 	if (ERROR_SUCCESS == RegQueryWszExpand(	hkeyMapiClient, WszValueNameDllPathEx, rgchDllPath, dwSizeDllPath))
 	{
 		DebugPrint(DBGLoadMAPI,_T("LoadMailClientFromDllPath: DllPathEx = %ws\n"),rgchDllPath);
-		hinstMapi = LoadLibraryW(rgchDllPath);
+		hinstMapi = MyLoadLibraryW(rgchDllPath);
 	}
 
 	if (!hinstMapi)
@@ -1139,7 +921,7 @@ HMODULE LoadMailClientFromDllPath(HKEY hkeyMapiClient)
 		if (ERROR_SUCCESS == RegQueryWszExpand(	hkeyMapiClient, WszValueNameDllPath, rgchDllPath, dwSizeDllPath))
 		{
 			DebugPrint(DBGLoadMAPI,_T("LoadMailClientFromDllPath: DllPath = %ws\n"),rgchDllPath);
-			hinstMapi = LoadLibraryW(rgchDllPath);
+			hinstMapi = MyLoadLibraryW(rgchDllPath);
 		}
 	}
 	DebugPrint(DBGLoadMAPI,_T("Exit LoadMailClientFromDllPath: hinstMapi = %p\n"),hinstMapi);
@@ -1215,7 +997,7 @@ HMODULE LoadMAPIFromSystemDir()
 		WCHAR szDLLPath[MAX_PATH] = {0};
 		swprintf_s(szDLLPath, _countof(szDLLPath), WszMAPISystemPath, szSystemDir, WszMapi32);
 		DebugPrint(DBGLoadMAPI,_T("LoadMAPIFromSystemDir: loading %ws\n"),szDLLPath);
-		return LoadLibraryW(szDLLPath);
+		return MyLoadLibraryW(szDLLPath);
 	}
 
 	DebugPrint(DBGLoadMAPI,_T("Exit LoadMAPIFromSystemDir: loading nothing\n"));
@@ -1228,7 +1010,6 @@ HMODULE GetDefaultMapiHandle()
 	size_t	cchRemain;
 	DWORD	dwSize;
 	DWORD	dwType;
-	bool	fDefault = FALSE;
 	HKEY 	hkey = NULL;
 	WCHAR	rgchOutlookDir[MAX_PATH];
 	LPWSTR	wzRemain;
@@ -1285,26 +1066,24 @@ HMODULE GetDefaultMapiHandle()
 			if (FALSE == SetDllDirectoryW(wzPath))
 			{
 				// If we fail, then we can't use this path for loading dlls
-				fDefault = FALSE;
 				goto Error;
 			}
-			if (SUCCEEDED(wcscpy_s(wzRemain, cchRemain, WszPrivateMAPI)))
+			if (SUCCEEDED(wcscpy_s(wzRemain, cchRemain, WszOlMAPI32DLL)))
 			{
 				DebugPrint(DBGLoadMAPI,_T("GetDefaultMapiHandle: Looking for %ws\n"),wzPath);
-				fDefault = FFileExistW(wzPath); // return the existence of the file
+				if (FFileExistW(wzPath)) // return the existence of the file
+					hinstMapi = MyLoadLibraryW(wzPath);
 			}
 			// If we failed to load olmapi32, try msmapi32
-			if (!fDefault && FCanUseDefaultOldMapiPath(&hinstMapi))
+			if (!hinstMapi)
 			{
-				DebugPrint(DBGLoadMAPI,_T("GetDefaultMapiHandle: Looking for %ws\n"),wzPath);
-				fDefault = FFileExistW(wzPath); // return the existence of the file
+				hinstMapi = LoadOldDefaultMapiPath();
+				if (hinstMapi)
+				{
+					DebugPrint(DBGLoadMAPI,_T("GetDefaultMapiHandle: Found MAPI via path logic\n"));
+				}
 			}
 
-			if (fDefault)
-			{
-				DebugPrint(DBGLoadMAPI,_T("GetDefaultMapiHandle: Loading %ws\n"),wzPath);
-				hinstMapi = LoadLibraryW(wzPath);
-			}
 			// Restore the DLL path
 			SetDllDirectoryW(NULL);
 		}
@@ -1373,13 +1152,13 @@ HMODULE GetPrivateMAPI()
 	if (NULL == hinstPrivateMAPI)
 	{
 		// First, try to attach to olmapi32.dll if it's loaded in the process
-		hinstPrivateMAPI = AttachToMAPIDll(WszPrivateMAPI);
+		hinstPrivateMAPI = AttachToMAPIDll(WszOlMAPI32DLL);
 
 		// If that fails try msmapi32.dll, for Outlook 11 and below
 		//  Only try this in the static lib, otherwise msmapi32.dll will attach to itself.
 		if (NULL == hinstPrivateMAPI)
 		{
-			hinstPrivateMAPI = AttachToMAPIDll(WszPrivateMAPI_11);
+			hinstPrivateMAPI = AttachToMAPIDll(WszMSMAPI32DLL);
 		}
 
 		// If MAPI isn't loaded in the process yet, then find the path to the DLL and

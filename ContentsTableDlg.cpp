@@ -119,7 +119,7 @@ _Check_return_ BOOL CContentsTableDlg::OnInitDialog()
 	if (m_lpContainer)
 	{
 		// Get a property for the title bar
-		WC_H(HrGetOneProp(
+		WC_MAPI(HrGetOneProp(
 			m_lpContainer,
 			PR_DISPLAY_NAME,
 			&lpProp));
@@ -147,7 +147,7 @@ _Check_return_ BOOL CContentsTableDlg::OnInitDialog()
 
 		hRes = S_OK;
 		// Get the table of contents of the IMAPIContainer!!!
-		EC_H(m_lpContainer->GetContentsTable(
+		EC_MAPI(m_lpContainer->GetContentsTable(
 			ulFlags,
 			&m_lpContentsTable));
 	}
@@ -784,7 +784,7 @@ void CContentsTableDlg::OnSortTable()
 
 		if (bNoError)
 		{
-			EC_H(m_lpContentsTableListCtrl->SetSortTable(
+			EC_MAPI(m_lpContentsTableListCtrl->SetSortTable(
 				lpMySortOrders,
 				(MyData.GetCheck(3)?TBL_ASYNC:0) | (MyData.GetCheck(4)?TBL_BATCH: 0) // flags
 				));
@@ -830,7 +830,7 @@ _Check_return_ HRESULT CContentsTableDlg::OpenAttachmentsFromMessage(_In_ LPMESS
 
 	if (NULL == lpMessage) return MAPI_E_INVALID_PARAMETER;
 
-	EC_H(lpMessage->OpenProperty(
+	EC_MAPI(lpMessage->OpenProperty(
 		PR_MESSAGE_ATTACHMENTS,
 		&IID_IMAPITable,
 		0,
@@ -856,7 +856,7 @@ _Check_return_ HRESULT CContentsTableDlg::OpenRecipientsFromMessage(LPMESSAGE lp
 	HRESULT hRes = S_OK;
 	LPMAPITABLE	lpTable = NULL;
 
-	EC_H(lpMessage->OpenProperty(
+	EC_MAPI(lpMessage->OpenProperty(
 		PR_MESSAGE_RECIPIENTS,
 		&IID_IMAPITable,
 		0,

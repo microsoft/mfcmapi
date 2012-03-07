@@ -43,7 +43,7 @@ _Check_return_ HRESULT CreateAndDisplayNewMailInFolder(
 		IDS_NOCLASSHANDLER);
 	if (lpMAPIFormInfo)
 	{
-		EC_H(lpMAPIFormMgr->CreateForm(
+		EC_MAPI(lpMAPIFormMgr->CreateForm(
 			(ULONG_PTR) hwndParent, // parent window
 			MAPI_DIALOG, // display status window
 			lpMAPIFormInfo, // form info
@@ -54,7 +54,7 @@ _Check_return_ HRESULT CreateAndDisplayNewMailInFolder(
 		{
 			LPMESSAGE lpMessage = NULL;
 			// Get a message
-			EC_H(lpFolder->CreateMessage(
+			EC_MAPI(lpFolder->CreateMessage(
 				NULL, // default interface
 				0, // flags
 				&lpMessage));
@@ -73,19 +73,19 @@ _Check_return_ HRESULT CreateAndDisplayNewMailInFolder(
 				if (lpMAPIFormViewer)
 				{
 					// put everything together with the default info
-					EC_H(lpPersistMessage->InitNew(
+					EC_MAPI(lpPersistMessage->InitNew(
 						(LPMAPIMESSAGESITE) lpMAPIFormViewer,
 						lpMessage));
 
 					LPMAPIFORM lpForm = NULL;
-					EC_H(lpPersistMessage->QueryInterface(IID_IMAPIForm,(LPVOID*) &lpForm));
+					EC_MAPI(lpPersistMessage->QueryInterface(IID_IMAPIForm,(LPVOID*) &lpForm));
 
 					if (lpForm)
 					{
-						EC_H(lpForm->SetViewContext(
+						EC_MAPI(lpForm->SetViewContext(
 							(LPMAPIVIEWCONTEXT) lpMAPIFormViewer));
 
-						EC_H(lpMAPIFormViewer->CallDoVerb(
+						EC_MAPI(lpMAPIFormViewer->CallDoVerb(
 							lpForm,
 							EXCHIVERB_OPEN,
 							NULL)); // Not passing a RECT here so we'll try to use the default for the form
@@ -146,7 +146,7 @@ _Check_return_ HRESULT OpenMessageNonModal(
 
 	if (lpspvaShow)
 	{
-		EC_H(lpSourceFolder->GetMessageStatus(
+		EC_MAPI(lpSourceFolder->GetMessageStatus(
 			lpspvaShow[EID].Value.bin.cb,
 			(LPENTRYID)lpspvaShow[EID].Value.bin.lpb,
 			0,
@@ -167,7 +167,7 @@ _Check_return_ HRESULT OpenMessageNonModal(
 			LPMAPIFORMMGR lpMAPIFormMgr = NULL;
 			LPMAPIFORM lpForm = NULL;
 
-			EC_H(lpMAPIFormViewer->GetFormManager(&lpMAPIFormMgr));
+			EC_MAPI(lpMAPIFormViewer->GetFormManager(&lpMAPIFormMgr));
 
 			if (lpMAPIFormMgr)
 			{
@@ -175,7 +175,7 @@ _Check_return_ HRESULT OpenMessageNonModal(
 					lpspvaShow[CLASS].Value.lpszA,
 					ulMessageStatus,
 					lpspvaShow[FLAGS].Value.ul);
-				EC_H(lpMAPIFormMgr->LoadForm(
+				EC_MAPI(lpMAPIFormMgr->LoadForm(
 					(ULONG_PTR) hwndParent,
 					0, // flags
 					lpspvaShow[CLASS].Value.lpszA,
@@ -193,12 +193,12 @@ _Check_return_ HRESULT OpenMessageNonModal(
 
 			if (lpForm)
 			{
-				EC_H(lpMAPIFormViewer->CallDoVerb(
+				EC_MAPI(lpMAPIFormViewer->CallDoVerb(
 					lpForm,
 					lVerb,
 					lpRect));
 				// Fix for unknown typed freedocs.
-				WC_H(lpForm->GetViewContext(&lpViewContextTemp));
+				WC_MAPI(lpForm->GetViewContext(&lpViewContextTemp));
 				if (SUCCEEDED(hRes)){
 					if (lpViewContextTemp){
 						// If we got a pointer back, we'll just release it and continue.
@@ -206,7 +206,7 @@ _Check_return_ HRESULT OpenMessageNonModal(
 					}
 					else{
 						// If the pointer came back NULL, then we need to call ShutdownForm but don't release.
-						WC_H(lpForm->ShutdownForm(SAVEOPTS_NOSAVE));
+						WC_MAPI(lpForm->ShutdownForm(SAVEOPTS_NOSAVE));
 					}
 				}
 				else
@@ -264,14 +264,14 @@ _Check_return_ HRESULT OpenMessageModal(_In_ LPMAPIFOLDER lpParentFolder,
 
 	if (lpspvaShow)
 	{
-		EC_H(lpParentFolder->GetMessageStatus(
+		EC_MAPI(lpParentFolder->GetMessageStatus(
 			lpspvaShow[EID].Value.bin.cb,
 			(LPENTRYID)lpspvaShow[EID].Value.bin.lpb,
 			0,
 			&ulMessageStatus));
 
 		// set up the 'display message' form
-		EC_H(lpMAPISession->PrepareForm(
+		EC_MAPI(lpMAPISession->PrepareForm(
 			NULL, // default interface
 			lpMessage, // message to open
 			&Token)); // basically, the pointer to the form

@@ -12,6 +12,7 @@
 #include "MMPropTag.h"
 #include "MMRules.h"
 #include "MMSmartView.h"
+#include "MMStore.h"
 #include "MMMapiMime.h"
 #include <shlwapi.h>
 #include "ImportProcs.h"
@@ -33,7 +34,7 @@ _Check_return_ HRESULT MrMAPILogonEx(_In_opt_z_ LPCWSTR lpszProfile, _Deref_out_
 	ULONG ulFlags = MAPI_EXTENDED | MAPI_NO_MAIL | MAPI_UNICODE | MAPI_NEW_SESSION;
 	if (!lpszProfile) ulFlags |= MAPI_USE_DEFAULT;
 
-	WC_H(MAPILogonEx(NULL, (LPTSTR) lpszProfile, NULL,
+	WC_MAPI(MAPILogonEx(NULL, (LPTSTR) lpszProfile, NULL,
 		ulFlags,
 		lppSession));
 	return hRes;
@@ -111,6 +112,7 @@ enum __CommandLineSwitch
 	switchMid,                // '-mid'
 	switchFlag,               // '-flag'
 	switchRecent,             // '-recent'
+	switchStore,              // '-store'
 };
 
 struct COMMANDLINE_SWITCH
@@ -165,6 +167,7 @@ COMMANDLINE_SWITCH g_Switches[] =
 	{switchMid,                "MID"},
 	{switchFlag,               "Flag"},
 	{switchRecent,             "Recent"},
+	{switchStore,              "Store"},
 // If we want to add aliases for any switches, add them here
 };
 ULONG g_ulSwitches = _countof(g_Switches);
@@ -209,7 +212,7 @@ void DisplayUsage(BOOL bFull)
 		g_Switches[switchFlag].szSwitch,g_Switches[switchDispid].szSwitch,g_Switches[switchDecimal].szSwitch);
 	printf("   MrMAPI -%s [-%s <profile>] [-%s <folder>]\n",g_Switches[switchRule].szSwitch,g_Switches[switchProfile].szSwitch,g_Switches[switchFolder].szSwitch);
 	printf("   MrMAPI -%s [-%s <profile>] [-%s <folder>]\n",g_Switches[switchAcl].szSwitch,g_Switches[switchProfile].szSwitch,g_Switches[switchFolder].szSwitch);
-	printf("   MrMAPI [-%s | -%s] [-%s <profile>] [-%s <folder>] [-%s <output directory>]\n",
+	printf("   MrMAPI -%s | -%s [-%s <profile>] [-%s <folder>] [-%s <output directory>]\n",
 		g_Switches[switchContents].szSwitch,g_Switches[switchAssociatedContents].szSwitch,g_Switches[switchProfile].szSwitch,g_Switches[switchFolder].szSwitch,g_Switches[switchOutput].szSwitch);
 	printf("          [-%s <subject>] [-%s <message class>] [-%s] [-%s] [-%s <count>]\n",
 		g_Switches[switchSubject].szSwitch, g_Switches[switchMessageClass].szSwitch, g_Switches[switchMSG].szSwitch, g_Switches[switchList].szSwitch, g_Switches[switchRecent].szSwitch);
@@ -218,6 +221,8 @@ void DisplayUsage(BOOL bFull)
 		g_Switches[switchXML].szSwitch,g_Switches[switchInput].szSwitch,g_Switches[switchOutput].szSwitch);
 	printf("   MrMAPI -%s [fid] [-%s [mid]] [-%s <profile>]\n",
 		g_Switches[switchFid].szSwitch,g_Switches[switchMid].szSwitch,g_Switches[switchProfile].szSwitch);
+	printf("   MrMAPI -%s [-%s <profile>]\n",
+		g_Switches[switchStore].szSwitch,g_Switches[switchProfile].szSwitch);
 	printf("   MrMAPI -%s | -%s -%s <path to input file> -%s <path to output file> [-%s <conversion flags>]\n",
 		g_Switches[switchMAPI].szSwitch,g_Switches[switchMIME].szSwitch,g_Switches[switchInput].szSwitch,g_Switches[switchOutput].szSwitch,g_Switches[switchCCSFFlags].szSwitch);
 	printf("          [-%s] [-%s <Decimal number of characters>] [-%s <Decimal number indicating encoding>]\n",
@@ -285,6 +290,9 @@ void DisplayUsage(BOOL bFull)
 		printf("   -Mid (or -%s) Message ID (MID) to search for.\n",g_Switches[switchMid].szSwitch);
 		printf("           If -%s is specified without a MID, display all messages in folders specified by the FID parameter.\n",g_Switches[switchMid].szSwitch);
 		printf("\n");
+		printf("   Store Properties\n");
+		printf("   -St  (or -%s) Output properties of a store as XML.\n",g_Switches[switchStore].szSwitch);
+		printf("\n");
 		printf("   MAPI <-> MIME Conversion:\n");
 		printf("   -Ma  (or -%s) Convert an EML file to MAPI format (MSG file).\n",g_Switches[switchMAPI].szSwitch);
 		printf("   -Mi  (or -%s) Convert an MSG file to MIME format (EML file).\n",g_Switches[switchMIME].szSwitch);
@@ -297,12 +305,13 @@ void DisplayUsage(BOOL bFull)
 		printf("                CCSF_INCLUDE_BCC: 0x20\n");
 		printf("                CCSF_USE_RTF:     0x80\n");
 		printf("              MAPI -> MIME:\n");
-		printf("                CCSF_NOHEADERS:        0x0004\n");
-		printf("                CCSF_USE_TNEF:         0x0010\n");
-		printf("                CCSF_8BITHEADERS:      0x0040\n");
-		printf("                CCSF_PLAIN_TEXT_ONLY:  0x1000\n");
-		printf("                CCSF_NO_MSGID:         0x4000\n");
-		printf("                CCSF_EMBEDDED_MESSAGE: 0x8000\n");
+		printf("                CCSF_NOHEADERS:        0x00004\n");
+		printf("                CCSF_USE_TNEF:         0x00010\n");
+		printf("                CCSF_8BITHEADERS:      0x00040\n");
+		printf("                CCSF_PLAIN_TEXT_ONLY:  0x01000\n");
+		printf("                CCSF_NO_MSGID:         0x04000\n");
+		printf("                CCSF_EMBEDDED_MESSAGE: 0x08000\n");
+		printf("                CCSF_PRESERVE_SOURCE:  0x40000\n");
 		printf("   -Rf  (or -%s) (MAPI->MIME only) Indicates the EML should be generated in RFC822 format.\n",g_Switches[switchRFC822].szSwitch);
 		printf("           If not present, RFC1521 is used instead.\n");
 		printf("   -W   (or -%s) (MAPI->MIME only) Indicates the maximum number of characters in each line in the\n",g_Switches[switchWrap].szSwitch);
@@ -340,6 +349,8 @@ void DisplayUsage(BOOL bFull)
 		printf("              \"Top of Information Store\\Calendar\"\n");
 		printf("           Path may be preceeded by entry IDs for special folders using @ notation:\n");
 		printf("              \"@PR_IPM_SUBTREE_ENTRYID\\Calendar\"\n");
+		printf("           Path may further be preceeded by store number using # notation:\n");
+		printf("              \"#0\\@PR_IPM_SUBTREE_ENTRYID\\Calendar\"\n");
 		printf("           MrMAPI's special folder constants may also be used:\n");
 		printf("              \"@12\\Calendar\"\n");
 		printf("              \"@1\"\n");
@@ -609,6 +620,13 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 				EC_H(AnsiToUnicode("",&pRunOpts->lpszMid)); // STRING_OK
 			}
 			break;
+		// Store Properties:
+		case switchStore:
+			if (!bSetMode(&pRunOpts->Mode, cmdmodeStoreProperties)) return false;
+			if (argc <= i+1 || switchNoSwitch != ParseArgument(argv[i+1])) break;
+			EC_H(AnsiToUnicode(argv[i+1], &pRunOpts->lpszStore));
+			i++;
+			break;
 		// Child Folders
 		case switchChildFolders:
 			if (!bSetMode(&pRunOpts->Mode,cmdmodeChildFolders)) return false;
@@ -829,6 +847,9 @@ void main(_In_ int argc, _In_count_(argc) char * argv[])
 			break;
 		case cmdmodeFidMid:
 			DoFidMid(ProgOpts);
+			break;
+		case cmdmodeStoreProperties:
+			DoStore(ProgOpts);
 			break;
 		case cmdmodeMAPIMIME:
 			DoMAPIMIME(ProgOpts);

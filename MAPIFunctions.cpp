@@ -72,7 +72,7 @@ _Check_return_ HRESULT CallOpenEntry(
 	if (lpMDB)
 	{
 		DebugPrint(DBGGeneric,_T("CallOpenEntry: Calling OpenEntry on MDB with ulFlags = 0x%X\n"),ulFlags);
-		WC_H(lpMDB->OpenEntry(
+		WC_MAPI(lpMDB->OpenEntry(
 			cbEntryID,
 			lpEntryID,
 			lpInterface,
@@ -85,7 +85,7 @@ _Check_return_ HRESULT CallOpenEntry(
 			hRes = S_OK;
 			if (lpUnk) (lpUnk)->Release();
 			lpUnk = NULL;
-			WC_H(lpMDB->OpenEntry(
+			WC_MAPI(lpMDB->OpenEntry(
 				cbEntryID,
 				lpEntryID,
 				lpInterface,
@@ -103,7 +103,7 @@ _Check_return_ HRESULT CallOpenEntry(
 	{
 		hRes = S_OK;
 		DebugPrint(DBGGeneric,_T("CallOpenEntry: Calling OpenEntry on AB with ulFlags = 0x%X\n"),ulFlags);
-		WC_H(lpAB->OpenEntry(
+		WC_MAPI(lpAB->OpenEntry(
 			cbEntryID,
 			lpEntryID,
 			NULL, // no interface
@@ -116,7 +116,7 @@ _Check_return_ HRESULT CallOpenEntry(
 			hRes = S_OK;
 			if (lpUnk) (lpUnk)->Release();
 			lpUnk = NULL;
-			WC_H(lpAB->OpenEntry(
+			WC_MAPI(lpAB->OpenEntry(
 				cbEntryID,
 				lpEntryID,
 				NULL, // no interface
@@ -135,7 +135,7 @@ _Check_return_ HRESULT CallOpenEntry(
 	{
 		hRes = S_OK;
 		DebugPrint(DBGGeneric,_T("CallOpenEntry: Calling OpenEntry on Container with ulFlags = 0x%X\n"),ulFlags);
-		WC_H(lpContainer->OpenEntry(
+		WC_MAPI(lpContainer->OpenEntry(
 			cbEntryID,
 			lpEntryID,
 			lpInterface,
@@ -148,7 +148,7 @@ _Check_return_ HRESULT CallOpenEntry(
 			hRes = S_OK;
 			if (lpUnk) (lpUnk)->Release();
 			lpUnk = NULL;
-			WC_H(lpContainer->OpenEntry(
+			WC_MAPI(lpContainer->OpenEntry(
 				cbEntryID,
 				lpEntryID,
 				lpInterface,
@@ -167,7 +167,7 @@ _Check_return_ HRESULT CallOpenEntry(
 	{
 		hRes = S_OK;
 		DebugPrint(DBGGeneric,_T("CallOpenEntry: Calling OpenEntry on Session with ulFlags = 0x%X\n"),ulFlags);
-		WC_H(lpMAPISession->OpenEntry(
+		WC_MAPI(lpMAPISession->OpenEntry(
 			cbEntryID,
 			lpEntryID,
 			lpInterface,
@@ -180,7 +180,7 @@ _Check_return_ HRESULT CallOpenEntry(
 			hRes = S_OK;
 			if (lpUnk) (lpUnk)->Release();
 			lpUnk = NULL;
-			WC_H(lpMAPISession->OpenEntry(
+			WC_MAPI(lpMAPISession->OpenEntry(
 				cbEntryID,
 				lpEntryID,
 				lpInterface,
@@ -351,16 +351,16 @@ _Check_return_ HRESULT CopyFolderContents(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LP
 
 	if (!lpSrcFolder || !lpDestFolder) return MAPI_E_INVALID_PARAMETER;
 
-	EC_H(lpSrcFolder->GetContentsTable(
+	EC_MAPI(lpSrcFolder->GetContentsTable(
 		fMapiUnicode | (bCopyAssociatedContents?MAPI_ASSOCIATED:NULL),
 		&lpSrcContents));
 
 	if (lpSrcContents)
 	{
-		EC_H(lpSrcContents->SetColumns((LPSPropTagArray)&fldCols, TBL_BATCH));
+		EC_MAPI(lpSrcContents->SetColumns((LPSPropTagArray)&fldCols, TBL_BATCH));
 
 		ULONG			ulRowCount = 0;
-		EC_H(lpSrcContents->GetRowCount(0,&ulRowCount));
+		EC_MAPI(lpSrcContents->GetRowCount(0,&ulRowCount));
 
 		if (bSingleCall && ulRowCount < ULONG_MAX/sizeof(SBinary))
 		{
@@ -374,7 +374,7 @@ _Check_return_ HRESULT CopyFolderContents(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LP
 				hRes = S_OK;
 				if (pRows) FreeProws(pRows);
 				pRows = NULL;
-				EC_H(lpSrcContents->QueryRows(
+				EC_MAPI(lpSrcContents->QueryRows(
 					1,
 					NULL,
 					&pRows));
@@ -393,7 +393,7 @@ _Check_return_ HRESULT CopyFolderContents(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LP
 			if (lpProgress)
 				ulCopyFlags |= MESSAGE_DIALOG;
 
-			EC_H(lpSrcFolder->CopyMessages(
+			EC_MAPI(lpSrcFolder->CopyMessages(
 				&sbaEID,
 				&IID_IMAPIFolder,
 				lpDestFolder,
@@ -414,7 +414,7 @@ _Check_return_ HRESULT CopyFolderContents(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LP
 				hRes = S_OK;
 				if (pRows) FreeProws(pRows);
 				pRows = NULL;
-				EC_H(lpSrcContents->QueryRows(
+				EC_MAPI(lpSrcContents->QueryRows(
 					1,
 					NULL,
 					&pRows));
@@ -436,7 +436,7 @@ _Check_return_ HRESULT CopyFolderContents(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LP
 					if (lpProgress)
 						ulCopyFlags |= MESSAGE_DIALOG;
 
-					EC_H(lpSrcFolder->CopyMessages(
+					EC_MAPI(lpSrcFolder->CopyMessages(
 						&sbaEID,
 						&IID_IMAPIFolder,
 						lpDestFolder,
@@ -469,14 +469,14 @@ _Check_return_ HRESULT CopyFolderRules(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LPMAP
 	LPEXCHANGEMODIFYTABLE	lpSrcTbl = NULL;
 	LPEXCHANGEMODIFYTABLE	lpDstTbl = NULL;
 
-	EC_H(lpSrcFolder->OpenProperty(
+	EC_MAPI(lpSrcFolder->OpenProperty(
 		PR_RULES_TABLE,
 		(LPGUID)&IID_IExchangeModifyTable,
 		0,
 		MAPI_DEFERRED_ERRORS,
 		(LPUNKNOWN*)&lpSrcTbl));
 
-	EC_H(lpDestFolder->OpenProperty(
+	EC_MAPI(lpDestFolder->OpenProperty(
 		PR_RULES_TABLE,
 		(LPGUID)&IID_IExchangeModifyTable,
 		0,
@@ -504,11 +504,11 @@ _Check_return_ HRESULT CopyFolderRules(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LPMAP
 				PR_RULE_USER_FLAGS,
 			};
 
-			EC_H(lpTable->SetColumns((LPSPropTagArray)&ruleTags,0));
+			EC_MAPI(lpTable->SetColumns((LPSPropTagArray)&ruleTags,0));
 
 			LPSRowSet lpRows = NULL;
 
-			EC_H(HrQueryAllRows(
+			EC_MAPI(HrQueryAllRows(
 				lpTable,
 				NULL,
 				NULL,
@@ -563,7 +563,7 @@ _Check_return_ HRESULT CopyFolderRules(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LPMAP
 					ULONG ulFlags = 0;
 					if (bReplace) ulFlags = ROWLIST_REPLACE;
 
-					EC_H(lpDstTbl->ModifyTable(ulFlags,lpTempList));
+					EC_MAPI(lpDstTbl->ModifyTable(ulFlags,lpTempList));
 
 					MAPIFreeBuffer(lpTempList);
 				}
@@ -596,14 +596,14 @@ _Check_return_ HRESULT CopyPropertyAsStream(_In_ LPMAPIPROP lpSourcePropObj,
 	if (!lpSourcePropObj || !lpTargetPropObj || !ulSourceTag || !ulTargetTag) return MAPI_E_INVALID_PARAMETER;
 	if (PROP_TYPE(ulSourceTag) != PROP_TYPE(ulTargetTag)) return MAPI_E_INVALID_PARAMETER;
 
-	EC_H(lpSourcePropObj->OpenProperty(
+	EC_MAPI(lpSourcePropObj->OpenProperty(
 		ulSourceTag,
 		&IID_IStream,
 		STGM_READ | STGM_DIRECT,
 		NULL,
 		(LPUNKNOWN *)&lpStmSource));
 
-	EC_H(lpTargetPropObj->OpenProperty(
+	EC_MAPI(lpTargetPropObj->OpenProperty(
 		ulTargetTag,
 		&IID_IStream,
 		STGM_READWRITE | STGM_DIRECT,
@@ -615,14 +615,14 @@ _Check_return_ HRESULT CopyPropertyAsStream(_In_ LPMAPIPROP lpSourcePropObj,
 		li.QuadPart = 0;
 		uli.QuadPart = MAXLONGLONG;
 
-		EC_H(lpStmSource->Seek(li,STREAM_SEEK_SET,NULL));
+		EC_MAPI(lpStmSource->Seek(li,STREAM_SEEK_SET,NULL));
 
-		EC_H(lpStmTarget->Seek(li,STREAM_SEEK_SET,NULL));
+		EC_MAPI(lpStmTarget->Seek(li,STREAM_SEEK_SET,NULL));
 
-		EC_H(lpStmSource->CopyTo(lpStmTarget,uli,&ulBytesRead,&ulBytesWritten));
+		EC_MAPI(lpStmSource->CopyTo(lpStmTarget,uli,&ulBytesRead,&ulBytesWritten));
 
 		// This may not be necessary since we opened with STGM_DIRECT
-		EC_H(lpStmTarget->Commit(STGC_DEFAULT));
+		EC_MAPI(lpStmTarget->Commit(STGC_DEFAULT));
 	}
 
 	if (lpStmTarget) lpStmTarget->Release();
@@ -947,7 +947,7 @@ _Check_return_ HRESULT DeleteProperty(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTa
 
 	DebugPrint(DBGGeneric,_T("DeleteProperty: Deleting prop 0x%08X from MAPI item %p.\n"),ulPropTag,lpMAPIProp);
 
-	EC_H(lpMAPIProp->DeleteProps(
+	EC_MAPI(lpMAPIProp->DeleteProps(
 		&ptaTag,
 		&pProbArray));
 
@@ -958,7 +958,7 @@ _Check_return_ HRESULT DeleteProperty(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTa
 
 	if (SUCCEEDED(hRes))
 	{
-		EC_H(lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
+		EC_MAPI(lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
 	}
 	MAPIFreeBuffer(pProbArray);
 
@@ -1014,7 +1014,7 @@ _Check_return_ HRESULT DeleteToDeletedItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLDER 
 		if (lpProgress)
 			ulCopyFlags |= MESSAGE_DIALOG;
 
-		EC_H(lpSourceFolder->CopyMessages(
+		EC_MAPI(lpSourceFolder->CopyMessages(
 			lpEIDs,
 			NULL, // default interface
 			lpWasteFolder,
@@ -1058,7 +1058,7 @@ _Check_return_ ULONG GetMAPIObjectType(_In_opt_ LPMAPIPROP lpMAPIProp)
 
 	if (!lpMAPIProp) return 0; // 0's not a valid Object type
 
-	WC_H(HrGetOneProp(
+	WC_MAPI(HrGetOneProp(
 		lpMAPIProp,
 		PR_OBJECT_TYPE,
 		&lpProp));
@@ -1114,7 +1114,7 @@ _Check_return_ HRESULT GetInbox(_In_ LPMDB lpMDB, _Out_opt_ ULONG* lpcbeid, _Der
 
 	if (!lpMDB || !lpcbeid || !lppeid) return MAPI_E_INVALID_PARAMETER;
 
-	EC_H(lpMDB->GetReceiveFolder(
+	EC_MAPI(lpMDB->GetReceiveFolder(
 		(LPTSTR) _T("IPM.Note"), // STRING_OK this is the class of message we want
 		fMapiUnicode, // flags
 		&cbInboxEID, // size and...
@@ -1193,14 +1193,14 @@ _Check_return_ HRESULT GetPropsNULL(_In_ LPMAPIPROP lpMAPIProp, ULONG ulFlags, _
 	if (RegKeys[regkeyUSE_GETPROPLIST].ulCurDWORD)
 	{
 		DebugPrint(DBGGeneric, _T("GetPropsNULL: Calling GetPropList on %p\n"),lpMAPIProp);
-		WC_H(lpMAPIProp->GetPropList(
+		WC_MAPI(lpMAPIProp->GetPropList(
 			ulFlags,
 			&lpTags));
 
 		if (MAPI_E_BAD_CHARWIDTH == hRes)
 		{
 			hRes = S_OK;
-			EC_H(lpMAPIProp->GetPropList(
+			EC_MAPI(lpMAPIProp->GetPropList(
 				NULL,
 				&lpTags));
 		}
@@ -1327,10 +1327,10 @@ _Check_return_ HRESULT IsAttachmentBlocked(_In_ LPMAPISESSION lpMAPISession, _In
 	IAttachmentSecurity* lpAttachSec = NULL;
 	BOOL bBlocked = false;
 
-	EC_H(lpMAPISession->QueryInterface(IID_IAttachmentSecurity,(void**)&lpAttachSec));
+	EC_MAPI(lpMAPISession->QueryInterface(IID_IAttachmentSecurity,(void**)&lpAttachSec));
 	if (SUCCEEDED(hRes) && lpAttachSec)
 	{
-		EC_H(lpAttachSec->IsAttachmentBlocked(pwszFileName,&bBlocked));
+		EC_MAPI(lpAttachSec->IsAttachmentBlocked(pwszFileName,&bBlocked));
 	}
 	if (lpAttachSec) lpAttachSec->Release();
 
@@ -1386,18 +1386,18 @@ _Check_return_ HRESULT ManuallyEmptyFolder(_In_ LPMAPIFOLDER lpFolder, BOOL bAss
 	};
 
 	// Get the table of contents of the folder
-	WC_H(lpFolder->GetContentsTable(
+	WC_MAPI(lpFolder->GetContentsTable(
 		bAssoc?MAPI_ASSOCIATED:NULL,
 		&lpContentsTable));
 
 	if (SUCCEEDED(hRes) && lpContentsTable)
 	{
-		EC_H(lpContentsTable->SetColumns(
+		EC_MAPI(lpContentsTable->SetColumns(
 			(LPSPropTagArray) &eidCols,
 			TBL_BATCH));
 
 		// go to the first row
-		EC_H(lpContentsTable->SeekRow(
+		EC_MAPI(lpContentsTable->SeekRow(
 			BOOKMARK_BEGINNING,
 			0,
 			NULL));
@@ -1410,7 +1410,7 @@ _Check_return_ HRESULT ManuallyEmptyFolder(_In_ LPMAPIFOLDER lpFolder, BOOL bAss
 			if (pRows) FreeProws(pRows);
 			pRows = NULL;
 			// Pull back a sizable block of rows to delete
-			EC_H(lpContentsTable->QueryRows(
+			EC_MAPI(lpContentsTable->QueryRows(
 				200,
 				NULL,
 				&pRows));
@@ -1425,7 +1425,7 @@ _Check_return_ HRESULT ManuallyEmptyFolder(_In_ LPMAPIFOLDER lpFolder, BOOL bAss
 					ENTRYLIST eid = {0};
 					eid.cValues = 1;
 					eid.lpbin = &pRows->aRow[iCurPropRow].lpProps[eidPR_ENTRYID].Value.bin;
-					WC_H(lpFolder->DeleteMessages(
+					WC_MAPI(lpFolder->DeleteMessages(
 						&eid,
 						NULL,
 						NULL,
@@ -1671,7 +1671,7 @@ _Check_return_ HRESULT RemoveOneOff(_In_ LPMESSAGE lpMessage, bool bRemovePropDe
 			lpTags->cValues = lpTags->cValues-1;
 		}
 
-		EC_H(lpMessage->DeleteProps(
+		EC_MAPI(lpMessage->DeleteProps(
 			lpTags,
 			&lpProbArray));
 		if (SUCCEEDED(hRes))
@@ -1689,7 +1689,7 @@ _Check_return_ HRESULT RemoveOneOff(_In_ LPMESSAGE lpMessage, bool bRemovePropDe
 			pTag.cValues = 1;
 			pTag.aulPropTag[0] = CHANGE_PROP_TYPE(lpTags->aulPropTag[ulNumOneOffIDs-1],PT_LONG);
 
-			WC_H(lpMessage->GetProps(
+			WC_MAPI(lpMessage->GetProps(
 				&pTag,
 				fMapiUnicode,
 				&cProp,
@@ -1703,7 +1703,7 @@ _Check_return_ HRESULT RemoveOneOff(_In_ LPMESSAGE lpMessage, bool bRemovePropDe
 				{
 					lpCustomFlag->Value.l = lpCustomFlag->Value.l & ~(INSP_PROPDEFINITION);
 				}
-				EC_H(lpMessage->SetProps(
+				EC_MAPI(lpMessage->SetProps(
 					1,
 					lpCustomFlag,
 					&lpProbArray2));
@@ -1715,7 +1715,7 @@ _Check_return_ HRESULT RemoveOneOff(_In_ LPMESSAGE lpMessage, bool bRemovePropDe
 			}
 			hRes = S_OK;
 
-			EC_H(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+			EC_MAPI(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 
 			if (SUCCEEDED(hRes))
 			{
@@ -1753,11 +1753,11 @@ _Check_return_ HRESULT ResendMessages(_In_ LPMAPIFOLDER lpFolder, _In_ HWND hWnd
 
 	if (!lpFolder) return MAPI_E_INVALID_PARAMETER;
 
-	EC_H(lpFolder->GetContentsTable(0,&lpContentsTable));
+	EC_MAPI(lpFolder->GetContentsTable(0,&lpContentsTable));
 
 	if (lpContentsTable)
 	{
-		EC_H(HrQueryAllRows(
+		EC_MAPI(HrQueryAllRows(
 			lpContentsTable,
 			(LPSPropTagArray) &sptCols,
 			NULL, // restriction...we're not using this parameter
@@ -1874,13 +1874,13 @@ _Check_return_ HRESULT ResendSingleMessage(
 
 	DebugPrint(DBGGeneric,_T("ResendSingleMessage: Checking message for embedded messages\n"));
 
-	EC_H(lpMessage->GetAttachmentTable(
+	EC_MAPI(lpMessage->GetAttachmentTable(
 		NULL,
 		&lpAttachTable));
 
 	if (lpAttachTable)
 	{
-		EC_H(lpAttachTable->SetColumns((LPSPropTagArray)&atCols, TBL_BATCH));
+		EC_MAPI(lpAttachTable->SetColumns((LPSPropTagArray)&atCols, TBL_BATCH));
 
 		// Now we iterate through each of the attachments
 		if (!FAILED(hRes)) for (;;)
@@ -1890,7 +1890,7 @@ _Check_return_ HRESULT ResendSingleMessage(
 			hRes = S_OK;
 			if (pRows) FreeProws(pRows);
 			pRows = NULL;
-			EC_H(lpAttachTable->QueryRows(
+			EC_MAPI(lpAttachTable->QueryRows(
 				1,
 				NULL,
 				&pRows));
@@ -1903,7 +1903,7 @@ _Check_return_ HRESULT ResendSingleMessage(
 
 				if (lpAttach) lpAttach->Release();
 				lpAttach = NULL;
-				EC_H(lpMessage->OpenAttach(
+				EC_MAPI(lpMessage->OpenAttach(
 					pRows->aRow->lpProps[atPR_ATTACH_NUM].Value.l,
 					NULL,
 					MAPI_BEST_ACCESS,
@@ -1912,7 +1912,7 @@ _Check_return_ HRESULT ResendSingleMessage(
 
 				if (lpAttachMsg) lpAttachMsg->Release();
 				lpAttachMsg = NULL;
-				EC_H(lpAttach->OpenProperty(
+				EC_MAPI(lpAttach->OpenProperty(
 					PR_ATTACH_DATA_OBJ,
 					(LPIID)&IID_IMessage,
 					0,
@@ -1935,16 +1935,16 @@ _Check_return_ HRESULT ResendSingleMessage(
 				DebugPrint(DBGGeneric,_T("Creating new message.\n"));
 				if (lpNewMessage) lpNewMessage->Release();
 				lpNewMessage= NULL;
-				EC_H(lpFolder->CreateMessage(NULL, 0, &lpNewMessage));
+				EC_MAPI(lpFolder->CreateMessage(NULL, 0, &lpNewMessage));
 				if (!lpNewMessage) continue;
 
-				EC_H(lpNewMessage->SaveChanges(KEEP_OPEN_READWRITE));
+				EC_MAPI(lpNewMessage->SaveChanges(KEEP_OPEN_READWRITE));
 
 				// Copy all the transmission properties
 				DebugPrint(DBGGeneric,_T("Getting list of properties.\n"));
 				MAPIFreeBuffer(lpsMessageTags);
 				lpsMessageTags = NULL;
-				EC_H(lpAttachMsg->GetPropList(0, &lpsMessageTags));
+				EC_MAPI(lpAttachMsg->GetPropList(0, &lpsMessageTags));
 				if (!lpsMessageTags) continue;
 
 				DebugPrint(DBGGeneric,_T("Copying properties to new message.\n"));
@@ -1957,21 +1957,21 @@ _Check_return_ HRESULT ResendSingleMessage(
 					{
 						LPSPropValue lpProp = NULL;
 						DebugPrint(DBGGeneric,_T("Copying 0x%08X\n"),lpsMessageTags->aulPropTag[ulProp]);
-						WC_H(HrGetOneProp(lpAttachMsg,lpsMessageTags->aulPropTag[ulProp],&lpProp));
+						WC_MAPI(HrGetOneProp(lpAttachMsg,lpsMessageTags->aulPropTag[ulProp],&lpProp));
 
-						WC_H(HrSetOneProp(lpNewMessage,lpProp));
+						WC_MAPI(HrSetOneProp(lpNewMessage,lpProp));
 
 						MAPIFreeBuffer(lpProp);
 					}
 				}
 
-				EC_H(lpNewMessage->SaveChanges(KEEP_OPEN_READWRITE));
+				EC_MAPI(lpNewMessage->SaveChanges(KEEP_OPEN_READWRITE));
 
 				DebugPrint(DBGGeneric,_T("Copying recipients and attachments to new message.\n"));
 
 				LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIProp::CopyProps"), hWnd); // STRING_OK
 
-				EC_H(lpAttachMsg->CopyProps(
+				EC_MAPI(lpAttachMsg->CopyProps(
 					(LPSPropTagArray)&atObjs,
 					lpProgress ? (ULONG_PTR)hWnd : NULL,
 					lpProgress,
@@ -1997,7 +1997,7 @@ _Check_return_ HRESULT ResendSingleMessage(
 				sProp.Value.b = true;
 
 				DebugPrint(DBGGeneric,_T("Setting PR_DELETE_AFTER_SUBMIT to true.\n"));
-				EC_H(HrSetOneProp(lpNewMessage,&sProp));
+				EC_MAPI(HrSetOneProp(lpNewMessage,&sProp));
 
 				SPropTagArray sPropTagArray = {0};
 
@@ -2005,12 +2005,12 @@ _Check_return_ HRESULT ResendSingleMessage(
 				sPropTagArray.aulPropTag[0] = PR_SENTMAIL_ENTRYID;
 
 				DebugPrint(DBGGeneric,_T("Deleting PR_SENTMAIL_ENTRYID\n"));
-				EC_H(lpNewMessage->DeleteProps(&sPropTagArray,NULL));
+				EC_MAPI(lpNewMessage->DeleteProps(&sPropTagArray,NULL));
 
-				EC_H(lpNewMessage->SaveChanges(KEEP_OPEN_READWRITE));
+				EC_MAPI(lpNewMessage->SaveChanges(KEEP_OPEN_READWRITE));
 
 				DebugPrint(DBGGeneric,_T("Submitting new message.\n"));
-				EC_H(lpNewMessage->SubmitMessage(0));
+				EC_MAPI(lpNewMessage->SubmitMessage(0));
 			}
 			else
 			{
@@ -2066,18 +2066,18 @@ _Check_return_ HRESULT ResetPermissionsOnItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLD
 		if (lpContentsTable) lpContentsTable->Release();
 		lpContentsTable = NULL;
 		// Get the table of contents of the folder
-		EC_H(lpMAPIFolder->GetContentsTable(
+		EC_MAPI(lpMAPIFolder->GetContentsTable(
 			ulFlags,
 			&lpContentsTable));
 
 		if (SUCCEEDED(hRes) && lpContentsTable)
 		{
-			EC_H(lpContentsTable->SetColumns(
+			EC_MAPI(lpContentsTable->SetColumns(
 				(LPSPropTagArray) &eidCols,
 				TBL_BATCH));
 
 			// go to the first row
-			EC_H(lpContentsTable->SeekRow(
+			EC_MAPI(lpContentsTable->SeekRow(
 				BOOKMARK_BEGINNING,
 				0,
 				NULL));
@@ -2090,7 +2090,7 @@ _Check_return_ HRESULT ResetPermissionsOnItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLD
 				if (pRows) FreeProws(pRows);
 				pRows = NULL;
 				// Pull back a sizable block of rows to modify
-				EC_H(lpContentsTable->QueryRows(
+				EC_MAPI(lpContentsTable->QueryRows(
 					200,
 					NULL,
 					&pRows));
@@ -2154,7 +2154,7 @@ _Check_return_ HRESULT SendTestMessage(
 
 	if (!lpMAPISession || !lpFolder) return MAPI_E_INVALID_PARAMETER;
 
-	EC_H(lpFolder->CreateMessage(
+	EC_MAPI(lpFolder->CreateMessage(
 		NULL, // default interface
 		0, // flags
 		&lpNewMessage));
@@ -2168,21 +2168,21 @@ _Check_return_ HRESULT SendTestMessage(
 		sProp.Value.b = true;
 
 		DebugPrint(DBGGeneric,_T("Setting PR_DELETE_AFTER_SUBMIT to true.\n"));
-		EC_H(HrSetOneProp(lpNewMessage,&sProp));
+		EC_MAPI(HrSetOneProp(lpNewMessage,&sProp));
 
 		sProp.dwAlignPad = 0;
 		sProp.ulPropTag = PR_BODY;
 		sProp.Value.LPSZ = (LPTSTR) szBody;
 
 		DebugPrint(DBGGeneric,_T("Setting PR_BODY to %s.\n"),szBody);
-		EC_H(HrSetOneProp(lpNewMessage,&sProp));
+		EC_MAPI(HrSetOneProp(lpNewMessage,&sProp));
 
 		sProp.dwAlignPad = 0;
 		sProp.ulPropTag = PR_SUBJECT;
 		sProp.Value.LPSZ = (LPTSTR) szSubject;
 
 		DebugPrint(DBGGeneric,_T("Setting PR_SUBJECT to %s.\n"),szSubject);
-		EC_H(HrSetOneProp(lpNewMessage,&sProp));
+		EC_MAPI(HrSetOneProp(lpNewMessage,&sProp));
 
 		SPropTagArray sPropTagArray;
 
@@ -2190,7 +2190,7 @@ _Check_return_ HRESULT SendTestMessage(
 		sPropTagArray.aulPropTag[0] = PR_SENTMAIL_ENTRYID;
 
 		DebugPrint(DBGGeneric,_T("Deleting PR_SENTMAIL_ENTRYID\n"));
-		EC_H(lpNewMessage->DeleteProps(&sPropTagArray,NULL));
+		EC_MAPI(lpNewMessage->DeleteProps(&sPropTagArray,NULL));
 
 		DebugPrint(DBGGeneric,_T("Adding recipient: %s.\n"),szRecipient);
 		EC_H(AddRecipient(
@@ -2200,7 +2200,7 @@ _Check_return_ HRESULT SendTestMessage(
 			MAPI_TO));
 
 		DebugPrint(DBGGeneric,_T("Submitting message\n"));
-		EC_H(lpNewMessage->SubmitMessage(NULL));
+		EC_MAPI(lpNewMessage->SubmitMessage(NULL));
 	}
 
 	if (lpNewMessage) lpNewMessage->Release();
@@ -2228,7 +2228,7 @@ _Check_return_ HRESULT WrapStreamForRTF(
 
 	if (!bUseWrapEx)
 	{
-		WC_H(WrapCompressedRTFStream(
+		WC_MAPI(WrapCompressedRTFStream(
 			lpCompressedRTFStream,
 			ulFlags,
 			lpUncompressedRTFStream));
@@ -2245,7 +2245,7 @@ _Check_return_ HRESULT WrapStreamForRTF(
 		wcsinfo.ulInCodePage = ulInCodePage;			// Get ulCodePage from PR_INTERNET_CPID on the IMessage
 		wcsinfo.ulOutCodePage = ulOutCodePage;			// Desired code page for return
 
-		WC_H(WrapCompressedRTFStreamEx(
+		WC_MAPI(WrapCompressedRTFStreamEx(
 			lpCompressedRTFStream,
 			&wcsinfo,
 			lpUncompressedRTFStream,
@@ -2277,7 +2277,7 @@ _Check_return_ HRESULT CopyNamedProps(_In_ LPMAPIPROP lpSource, _In_ LPGUID lpPr
 		if (lpProgress)
 			ulFlags |= MAPI_DIALOG;
 
-		EC_H(lpSource->CopyProps(lpPropTags,
+		EC_MAPI(lpSource->CopyProps(lpPropTags,
 			lpProgress ? (ULONG_PTR)hWnd : NULL,
 			lpProgress,
 			&IID_IMAPIProp,
@@ -2309,7 +2309,7 @@ _Check_return_ HRESULT GetNamedPropsByGUID(_In_ LPMAPIPROP lpSource, _In_ LPGUID
 
 	*lpOutArray = NULL;
 
-	WC_H(lpSource->GetPropList(0, &lpAllProps));
+	WC_MAPI(lpSource->GetPropList(0, &lpAllProps));
 
 	if (S_OK == hRes && lpAllProps)
 	{
@@ -2667,13 +2667,13 @@ HRESULT HrEmsmdbUIDFromStore(_In_ LPMAPISESSION pmsess,
 		}
 	};
 
-	EC_H(pmsess->AdminServices(0, (LPSERVICEADMIN*)&spSvcAdmin));
+	EC_MAPI(pmsess->AdminServices(0, (LPSERVICEADMIN*)&spSvcAdmin));
 	if (spSvcAdmin)
 	{
-		EC_H(spSvcAdmin->GetMsgServiceTable(0, &spmtab));
+		EC_MAPI(spSvcAdmin->GetMsgServiceTable(0, &spmtab));
 		if (spmtab)
 		{
-			EC_H(spmtab->SetColumns((LPSPropTagArray)&tagaCols, TBL_BATCH));
+			EC_MAPI(spmtab->SetColumns((LPSPropTagArray)&tagaCols, TBL_BATCH));
 
 			mres.rt = RES_PROPERTY;
 			mres.res.resProperty.relop = RELOP_EQ;
@@ -2683,8 +2683,8 @@ HRESULT HrEmsmdbUIDFromStore(_In_ LPMAPISESSION pmsess,
 			mval.Value.bin.cb = sizeof(*puidService);
 			mval.Value.bin.lpb = (LPBYTE)puidService;
 
-			EC_H(spmtab->Restrict(&mres, 0));
-			EC_H(spmtab->QueryRows(10, 0, &pRows));
+			EC_MAPI(spmtab->Restrict(&mres, 0));
+			EC_MAPI(spmtab->QueryRows(10, 0, &pRows));
 
 			if (SUCCEEDED(hRes) && pRows && pRows->cRows)
 			{

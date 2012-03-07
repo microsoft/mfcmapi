@@ -77,7 +77,7 @@ void CAbContDlg::OnSetDefaultDir()
 		LPADRBOOK lpAddrBook = m_lpMapiObjects->GetAddrBook(false); // Do not release
 		if (lpAddrBook)
 		{
-			EC_H(lpAddrBook->SetDefaultDir(
+			EC_MAPI(lpAddrBook->SetDefaultDir(
 				lpItemEID->cb,
 				(LPENTRYID)lpItemEID->lpb));
 		}
@@ -99,7 +99,7 @@ void CAbContDlg::OnSetPAB()
 		LPADRBOOK lpAddrBook = m_lpMapiObjects->GetAddrBook(false); // do not release
 		if (lpAddrBook)
 		{
-			EC_H(lpAddrBook->SetPAB(
+			EC_MAPI(lpAddrBook->SetPAB(
 				lpItemEID->cb,
 				(LPENTRYID)lpItemEID->lpb));
 		}

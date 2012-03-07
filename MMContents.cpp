@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "MrMAPI.h"
-#include "MMContents.h"
+#include "MMStore.h"
 #include "MMFolder.h"
 #include "DumpStore.h"
 #include "File.h"
@@ -31,24 +31,11 @@ void DumpContentsTable(
 	LPMDB lpMDB = NULL;
 	LPMAPIFOLDER lpFolder = NULL;
 
-	WC_H(MAPIInitialize(NULL));
+	WC_MAPI(MAPIInitialize(NULL));
 
 	WC_H(MrMAPILogonEx(lpszProfile,&lpMAPISession));
-	if (lpMAPISession)
-	{
-		WC_H(OpenExchangeOrDefaultMessageStore(lpMAPISession, &lpMDB));
-	}
-	if (lpMDB)
-	{
-		if (lpszFolder)
-		{
-			WC_H(HrMAPIOpenFolderExW(lpMDB, lpszFolder, &lpFolder));
-		}
-		else
-		{
-			WC_H(OpenDefaultFolder(ulFolder,lpMDB,&lpFolder));
-		}
-	}
+	WC_H(HrMAPIOpenStoreAndFolder(lpMAPISession, ulFolder, lpszFolder, &lpMDB, &lpFolder));
+
 	if (lpFolder)
 	{
 		CDumpStore MyDumpStore;
@@ -88,7 +75,7 @@ void DumpMSG(_In_z_ LPCWSTR lpszMSGFile, _In_z_ LPCWSTR lpszXMLFile, _In_ bool b
 	HRESULT hRes = S_OK;
 	LPMESSAGE lpMessage = NULL;
 
-	WC_H(MAPIInitialize(NULL));
+	WC_MAPI(MAPIInitialize(NULL));
 
 	WC_H(LoadMSGToMessage(lpszMSGFile, &lpMessage));
 

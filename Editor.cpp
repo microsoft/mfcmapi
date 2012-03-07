@@ -66,7 +66,7 @@ _Check_return_ static DWORD CALLBACK EditStreamReadCallBack(
 
 	if (pbTempBuff)
 	{
-		EC_H(stmData->Read(pbTempBuff,cbTemp,&cbTempRead));
+		EC_MAPI(stmData->Read(pbTempBuff,cbTemp,&cbTempRead));
 		DebugPrint(DBGStream,_T("EditStreamReadCallBack: read %d bytes\n"),cbTempRead);
 
 		memset(pbBuff, 0, cbTempRead*2);
@@ -1626,6 +1626,8 @@ void CEditor::SetStringA(ULONG i, _In_opt_z_ LPCSTR szMsg, size_t cchsz)
 } // CEditor::SetStringA
 
 // Sets m_lpControls[i].UI.lpEdit->lpszW
+// cchsz may or may not include the NULL terminator (if one is present)
+// If it is missing, we'll make sure we add it
 void CEditor::SetStringW(ULONG i, _In_opt_z_ LPCWSTR szMsg, size_t cchsz)
 {
 	if (!IsValidEdit(i)) return;
@@ -1640,6 +1642,13 @@ void CEditor::SetStringW(ULONG i, _In_opt_z_ LPCWSTR szMsg, size_t cchsz)
 	{
 		EC_H(StringCchLengthW(szMsg,STRSAFE_MAX_CCH,&cchszW));
 	}
+	// If we were passed a NULL terminated string,
+	// cchszW counts the NULL terminator. Back off one.
+	else if (cchszW && szMsg[cchszW-1] == NULL)
+	{
+		cchszW--;
+	}
+	// cchszW is now the length of our string not counting the NULL terminator
 
 	// add one for a NULL terminator
 	m_lpControls[i].UI.lpEdit->cchsz = cchszW+1;

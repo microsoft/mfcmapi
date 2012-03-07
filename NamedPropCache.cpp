@@ -649,7 +649,7 @@ _Check_return_ HRESULT GetIDsFromNames(_In_ LPMAPIPROP lpMAPIProp,
 
 	LPSPropValue lpProp = NULL;
 
-	WC_H(HrGetOneProp(lpMAPIProp,PR_MAPPING_SIGNATURE,&lpProp));
+	WC_MAPI(HrGetOneProp(lpMAPIProp,PR_MAPPING_SIGNATURE,&lpProp));
 
 	if (SUCCEEDED(hRes) && lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag))
 	{

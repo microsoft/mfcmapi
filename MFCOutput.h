@@ -3,6 +3,8 @@
 //
 // Output (to File/Debug) functions
 
+extern LPCTSTR g_szXMLHeader;
+
 void OpenDebugFile();
 void CloseDebugFile();
 _Check_return_ ULONG GetDebugLevel();
@@ -38,6 +40,7 @@ void SetDebugOutputToFile(bool bDoOutput);
 #define DBGSmartView						((ULONG) 0x00040000)
 #define DBGLoadMAPI							((ULONG) 0x00080000)
 #define DBGHierarchy						((ULONG) 0x00100000)
+#define DBGMAPIFunctions					((ULONG) 0x40000000)
 #define DBGMenu								((ULONG) 0x80000000)
 
 // Super verbose is really overkill - scale back for our ALL default
@@ -121,9 +124,3 @@ void OutputXMLCDataValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, _In_
 
 #define OutputXMLValueToFile(fFile, uidTag, szValue, iIndent)		OutputXMLValue(DBGNoDebug, fFile, uidTag, szValue, iIndent)
 #define OutputXMLCDataValueToFile(fFile, uidTag, szValue, iIndent)	OutputXMLCDataValue(DBGNoDebug, fFile, uidTag, szValue, iIndent)
-
-#ifdef MRMAPI
-#define OutputToConsole _tprintf
-#else
-#define OutputToConsole __noop
-#endif

@@ -103,7 +103,7 @@ void CAclDlg::OnRefreshView()
 		LPMAPITABLE lpMAPITable = NULL;
 		// Open a MAPI table on the Exchange table property. This table can be
 		// read to determine what the Exchange table looks like.
-		EC_H(m_lpExchTbl->GetTable(m_ulTableFlags, &lpMAPITable));
+		EC_MAPI(m_lpExchTbl->GetTable(m_ulTableFlags, &lpMAPITable));
 
 		if (lpMAPITable)
 		{
@@ -164,7 +164,7 @@ void CAclDlg::OnAddItem()
 			lpNewItem->aEntries[0].rgPropVals[1].ulPropTag = PR_MEMBER_RIGHTS;
 			lpNewItem->aEntries[0].rgPropVals[1].Value.ul = MyData.GetHex(1);
 
-			EC_H(m_lpExchTbl->ModifyTable(
+			EC_MAPI(m_lpExchTbl->ModifyTable(
 				m_ulTableFlags,
 				lpNewItem));
 			MAPIFreeBuffer(lpNewItem);
@@ -187,7 +187,7 @@ void CAclDlg::OnDeleteSelectedItem()
 
 	if (lpSelectedItems)
 	{
-		EC_H(m_lpExchTbl->ModifyTable(
+		EC_MAPI(m_lpExchTbl->ModifyTable(
 			m_ulTableFlags,
 			lpSelectedItems));
 		MAPIFreeBuffer(lpSelectedItems);
@@ -208,7 +208,7 @@ void CAclDlg::OnModifySelectedItem()
 
 	if (lpSelectedItems)
 	{
-		EC_H(m_lpExchTbl->ModifyTable(
+		EC_MAPI(m_lpExchTbl->ModifyTable(
 			m_ulTableFlags,
 			lpSelectedItems));
 		MAPIFreeBuffer(lpSelectedItems);

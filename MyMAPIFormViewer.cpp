@@ -215,7 +215,7 @@ _Check_return_ STDMETHODIMP CMyMAPIFormViewer::GetFormManager(_Deref_out_ LPMAPI
 {
 	HRESULT hRes = S_OK;
 	DebugPrintEx(DBGFormViewer,CLASS,_T("GetFormManager"),_T("\n"));
-	EC_H(MAPIOpenFormMgr(m_lpMAPISession,ppFormMgr));
+	EC_MAPI(MAPIOpenFormMgr(m_lpMAPISession,ppFormMgr));
 	return hRes;
 } // CMyMAPIFormViewer::GetFormManager
 
@@ -240,7 +240,7 @@ _Check_return_ STDMETHODIMP CMyMAPIFormViewer::NewMessage(ULONG fComposeInFolder
 
 	if (pFolderFocus)
 	{
-		EC_H(pFolderFocus->CreateMessage(
+		EC_MAPI(pFolderFocus->CreateMessage(
 			NULL, // IID
 			NULL, // flags
 			ppMessage));
@@ -295,13 +295,13 @@ _Check_return_ STDMETHODIMP CMyMAPIFormViewer::SaveMessage()
 
 	if (!m_lpPersistMessage || !m_lpMessage) return MAPI_E_INVALID_PARAMETER;
 
-	EC_H(m_lpPersistMessage->Save(
+	EC_MAPI(m_lpPersistMessage->Save(
 		NULL, // m_lpMessage,
 		true));
 	if (FAILED(hRes))
 	{
 		LPMAPIERROR lpErr = NULL;
-		hRes = m_lpPersistMessage->GetLastError(hRes,fMapiUnicode,&lpErr);
+		WC_MAPI(m_lpPersistMessage->GetLastError(hRes,fMapiUnicode,&lpErr));
 		if (lpErr)
 		{
 			EC_MAPIERR(fMapiUnicode,lpErr);
@@ -311,8 +311,8 @@ _Check_return_ STDMETHODIMP CMyMAPIFormViewer::SaveMessage()
 	}
 	else
 	{
-		EC_H(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
-		EC_H(m_lpPersistMessage->SaveCompleted(NULL));
+		EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+		EC_MAPI(m_lpPersistMessage->SaveCompleted(NULL));
 	}
 
 	return hRes;
@@ -324,13 +324,13 @@ _Check_return_ STDMETHODIMP CMyMAPIFormViewer::SubmitMessage(ULONG ulFlags)
 	HRESULT hRes = S_OK;
 	if (!m_lpPersistMessage || !m_lpMessage) return MAPI_E_INVALID_PARAMETER;
 
-	EC_H(m_lpPersistMessage->Save(
+	EC_MAPI(m_lpPersistMessage->Save(
 		m_lpMessage,
 		true));
 	if (FAILED(hRes))
 	{
 		LPMAPIERROR lpErr = NULL;
-		hRes = m_lpPersistMessage->GetLastError(hRes,fMapiUnicode,&lpErr);
+		WC_MAPI(m_lpPersistMessage->GetLastError(hRes,fMapiUnicode,&lpErr));
 		if (lpErr)
 		{
 			EC_MAPIERR(fMapiUnicode,lpErr);
@@ -340,9 +340,9 @@ _Check_return_ STDMETHODIMP CMyMAPIFormViewer::SubmitMessage(ULONG ulFlags)
 	}
 	else
 	{
-		EC_H(m_lpPersistMessage->HandsOffMessage());
+		EC_MAPI(m_lpPersistMessage->HandsOffMessage());
 
-		EC_H(m_lpMessage->SubmitMessage(NULL));
+		EC_MAPI(m_lpMessage->SubmitMessage(NULL));
 	}
 
 	m_lpMessage->Release();
@@ -452,7 +452,7 @@ _Check_return_ HRESULT CMyMAPIFormViewer::SetPersist(_In_opt_ LPMAPIFORM lpForm,
 	ULONG			cValues		= 0L;
 	LPSPropValue	lpPropArray	= NULL;
 
-	EC_H(m_lpMessage->GetProps((LPSPropTagArray)&sptaFlags, 0, &cValues, &lpPropArray));
+	EC_MAPI(m_lpMessage->GetProps((LPSPropTagArray)&sptaFlags, 0, &cValues, &lpPropArray));
 	bool bComposing = (lpPropArray && (lpPropArray->Value.l & MSGFLAG_UNSENT));
 	MAPIFreeBuffer(lpPropArray);
 
@@ -474,7 +474,7 @@ _Check_return_ HRESULT CMyMAPIFormViewer::SetPersist(_In_opt_ LPMAPIFORM lpForm,
 	}
 	else if (lpForm)
 	{
-		EC_H(lpForm->QueryInterface(IID_IPersistMessage ,(LPVOID *)&m_lpPersistMessage));
+		EC_MAPI(lpForm->QueryInterface(IID_IPersistMessage ,(LPVOID *)&m_lpPersistMessage));
 	}
 
 	return hRes;
@@ -490,7 +490,7 @@ HRESULT CMyMAPIFormViewer::CallDoVerb(_In_ LPMAPIFORM lpMapiForm,
 		WC_H(SetPersist(lpMapiForm,NULL));
 	}
 
-	WC_H(lpMapiForm->DoVerb(
+	WC_MAPI(lpMapiForm->DoVerb(
 		lVerb,
 		// (IMAPIViewContext *) this, // view context
 		NULL, // view context
@@ -505,7 +505,7 @@ HRESULT CMyMAPIFormViewer::CallDoVerb(_In_ LPMAPIFORM lpMapiForm,
 		Rect.right = 500;
 		Rect.top = 0;
 		Rect.bottom = 400;
-		EC_H(lpMapiForm->DoVerb(
+		EC_MAPI(lpMapiForm->DoVerb(
 			lVerb,
 			// (IMAPIViewContext *) this, // view context
 			NULL, // view context
@@ -581,7 +581,7 @@ _Check_return_ STDMETHODIMP CMyMAPIFormViewer::ActivateNext(ULONG ulDir,
 					ulMessageStatus,
 					lpspvaShow[ePR_MESSAGE_FLAGS].Value.ul);
 
-				WC_H(m_lpMapiFormAdviseSink->OnActivateNext(
+				WC_MAPI(m_lpMapiFormAdviseSink->OnActivateNext(
 					lpspvaShow[ePR_MESSAGE_CLASS_A].Value.lpszA,
 					ulMessageStatus, // message status
 					lpspvaShow[ePR_MESSAGE_FLAGS].Value.ul, // message flags
@@ -739,7 +739,7 @@ _Check_return_ HRESULT CMyMAPIFormViewer::GetNextMessage(
 					NULL,
 					(LPUNKNOWN*)ppMessage));
 
-				EC_H(m_lpFolder->GetMessageStatus(
+				EC_MAPI(m_lpFolder->GetMessageStatus(
 					lpEID->cb,
 					(LPENTRYID)lpEID->lpb,
 					0,
