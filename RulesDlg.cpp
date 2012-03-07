@@ -84,7 +84,7 @@ void CRulesDlg::OnRefreshView()
 		LPMAPITABLE lpMAPITable = NULL;
 		// Open a MAPI table on the Exchange table property. This table can be
 		// read to determine what the Exchange table looks like.
-		EC_H(m_lpExchTbl->GetTable(0, &lpMAPITable));
+		EC_MAPI(m_lpExchTbl->GetTable(0, &lpMAPITable));
 
 		if (lpMAPITable)
 		{
@@ -109,7 +109,7 @@ void CRulesDlg::OnDeleteSelectedItem()
 
 	if (lpSelectedItems)
 	{
-		EC_H(m_lpExchTbl->ModifyTable(
+		EC_MAPI(m_lpExchTbl->ModifyTable(
 			0,
 			lpSelectedItems));
 		MAPIFreeBuffer(lpSelectedItems);
@@ -128,7 +128,7 @@ void CRulesDlg::OnModifySelectedItem()
 
 	if (lpSelectedItems)
 	{
-		EC_H(m_lpExchTbl->ModifyTable(
+		EC_MAPI(m_lpExchTbl->ModifyTable(
 			0,
 			lpSelectedItems));
 		MAPIFreeBuffer(lpSelectedItems);

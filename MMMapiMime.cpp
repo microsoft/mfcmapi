@@ -88,7 +88,7 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 
 	HRESULT hRes = S_OK;
 
-	WC_H(MAPIInitialize(NULL));
+	WC_MAPI(MAPIInitialize(NULL));
 	if (SUCCEEDED(hRes))
 	{
 		LPMAPISESSION lpMAPISession = NULL;
@@ -98,7 +98,7 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 			WC_H(MrMAPILogonEx(ProgOpts.lpszProfile,&lpMAPISession));
 			if (SUCCEEDED(hRes) && lpMAPISession)
 			{
-				WC_H(lpMAPISession->OpenAddressBook(NULL,NULL,AB_NO_DIALOG,&lpAdrBook));
+				WC_MAPI(lpMAPISession->OpenAddressBook(NULL,NULL,AB_NO_DIALOG,&lpAdrBook));
 				if (FAILED(hRes)) printf("OpenAddressBook returned an error: 0x%08x\n", hRes);
 			}
 			else if (FAILED(hRes)) printf("MAPILogonEx returned an error: 0x%08x\n", hRes);

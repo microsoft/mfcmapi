@@ -426,7 +426,7 @@ _Check_return_ bool CFolderDlg::HandlePaste()
 				if (lpProgress)
 					ulMoveMessage |= MESSAGE_DIALOG;
 
-				EC_H(lpMAPISourceFolder->CopyMessages(
+				EC_MAPI(lpMAPISourceFolder->CopyMessages(
 					lpEIDs,
 					&IID_IMAPIFolder,
 					m_lpContainer,
@@ -487,7 +487,7 @@ _Check_return_ bool CFolderDlg::HandlePaste()
 						if (lpMessage)
 						{
 							LPMESSAGE lpNewMessage = NULL;
-							EC_H(((LPMAPIFOLDER) m_lpContainer)->CreateMessage(NULL,(m_ulDisplayFlags & dfAssoc)?MAPI_ASSOCIATED:NULL,&lpNewMessage));
+							EC_MAPI(((LPMAPIFOLDER) m_lpContainer)->CreateMessage(NULL,(m_ulDisplayFlags & dfAssoc)?MAPI_ASSOCIATED:NULL,&lpNewMessage));
 							if (lpNewMessage)
 							{
 								LPSPropProblemArray lpProblems = NULL;
@@ -504,7 +504,7 @@ _Check_return_ bool CFolderDlg::HandlePaste()
 								if (lpProgress)
 									ulMoveMessage |= MAPI_DIALOG;
 
-								EC_H(lpMessage->CopyTo(
+								EC_MAPI(lpMessage->CopyTo(
 									0,
 									NULL, // TODO: interfaces?
 									lpTagsToExclude,
@@ -525,12 +525,12 @@ _Check_return_ bool CFolderDlg::HandlePaste()
 								MAPIFreeBuffer(lpTagArray);
 
 								// save changes to IMessage object.
-								EC_H(lpNewMessage->SaveChanges(KEEP_OPEN_READWRITE));
+								EC_MAPI(lpNewMessage->SaveChanges(KEEP_OPEN_READWRITE));
 								lpNewMessage->Release();
 
 								if (MyData.GetCheck(0)) // if we moved, save changes on original message
 								{
-									EC_H(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+									EC_MAPI(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 								}
 							}
 
@@ -684,7 +684,7 @@ void CFolderDlg::OnDeleteSelectedItem()
 			if (lpProgress)
 				ulFlag |= MESSAGE_DIALOG;
 
-			EC_H(((LPMAPIFOLDER) m_lpContainer)->DeleteMessages(
+			EC_MAPI(((LPMAPIFOLDER) m_lpContainer)->DeleteMessages(
 				lpEIDs, // list of messages to delete
 				lpProgress ? (ULONG_PTR)m_hWnd : NULL,
 				lpProgress,
@@ -792,7 +792,7 @@ void CFolderDlg::OnLoadFromMSG()
 				switch (MyData.GetDropDown(0))
 				{
 				case 0:
-					EC_H(((LPMAPIFOLDER)m_lpContainer)->CreateMessage(
+					EC_MAPI(((LPMAPIFOLDER)m_lpContainer)->CreateMessage(
 						NULL,
 						(m_ulDisplayFlags & dfAssoc)?MAPI_ASSOCIATED:NULL,
 						&lpNewMessage));
@@ -991,14 +991,14 @@ void CFolderDlg::OnNewMessage()
 	HRESULT	hRes = S_OK;
 	LPMESSAGE lpMessage = NULL;
 
-	EC_H(((LPMAPIFOLDER)m_lpContainer)->CreateMessage(
+	EC_MAPI(((LPMAPIFOLDER)m_lpContainer)->CreateMessage(
 		NULL,
 		m_ulDisplayFlags & dfAssoc?MAPI_ASSOCIATED:0,
 		&lpMessage));
 
 	if (lpMessage)
 	{
-		EC_H(lpMessage->SaveChanges(NULL));
+		EC_MAPI(lpMessage->SaveChanges(NULL));
 		lpMessage->Release();
 	}
 } // CFolderDlg::OnNewMessage
@@ -1059,7 +1059,7 @@ void CFolderDlg::OnNewCustomForm()
 				{
 					LPMAPIFORMMGR	lpMAPIFormMgr = NULL;
 					LPMAPIFORMINFO	lpMAPIFormInfo = NULL;
-					EC_H(MAPIOpenFormMgr(lpMAPISession,&lpMAPIFormMgr));
+					EC_MAPI(MAPIOpenFormMgr(lpMAPISession,&lpMAPIFormMgr));
 
 					if (lpMAPIFormMgr)
 					{
@@ -1086,7 +1086,7 @@ void CFolderDlg::OnNewCustomForm()
 
 						if (lpMAPIFormInfo)
 						{
-							EC_H(HrGetOneProp(
+							EC_MAPI(HrGetOneProp(
 								lpMAPIFormInfo,
 								PR_MESSAGE_CLASS_A,
 								&lpProp));
@@ -1133,7 +1133,7 @@ _Check_return_ HRESULT CFolderDlg::OnOpenModal(int iItem, _In_ SortListData* /*l
 	{
 		// Before we open the message, make sure the MAPI Form Manager is implemented
 		LPMAPIFORMMGR lpFormMgr = NULL;
-		WC_H(MAPIOpenFormMgr(lpMAPISession,&lpFormMgr));
+		WC_MAPI(MAPIOpenFormMgr(lpMAPISession,&lpFormMgr));
 		hRes = S_OK; // Ditch the error if we got one
 
 		if (lpFormMgr)
@@ -1175,7 +1175,7 @@ _Check_return_ HRESULT CFolderDlg::OnOpenNonModal(int iItem, _In_ SortListData* 
 	{
 		// Before we open the message, make sure the MAPI Form Manager is implemented
 		LPMAPIFORMMGR lpFormMgr = NULL;
-		WC_H(MAPIOpenFormMgr(lpMAPISession,&lpFormMgr));
+		WC_MAPI(MAPIOpenFormMgr(lpMAPISession,&lpFormMgr));
 		hRes = S_OK; // Ditch the error if we got one
 
 		if (lpFormMgr)
@@ -1395,14 +1395,14 @@ void CFolderDlg::OnRTFSync()
 			if (lpMessage)
 			{
 				DebugPrint(DBGGeneric, _T("Calling RTFSync on %p with flags 0x%X\n"),lpMessage,MyData.GetHex(0));
-				EC_H(RTFSync(
+				EC_MAPI(RTFSync(
 					lpMessage,
 					MyData.GetHex(0),
 					&bMessageUpdated));
 
 				DebugPrint(DBGGeneric, _T("RTFSync returned %d\n"),bMessageUpdated);
 
-				EC_H(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+				EC_MAPI(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 
 				lpMessage->Release();
 				lpMessage = NULL;
@@ -1671,7 +1671,7 @@ void CFolderDlg::OnLoadFromTNEF()
 			while (NULL != (lpszPath = dlgFilePicker.GetNextFileName()))
 			{
 				hRes = S_OK;
-				EC_H(((LPMAPIFOLDER)m_lpContainer)->CreateMessage(
+				EC_MAPI(((LPMAPIFOLDER)m_lpContainer)->CreateMessage(
 					NULL,
 					(m_ulDisplayFlags & dfAssoc)?MAPI_ASSOCIATED:0,
 					&lpNewMessage));
@@ -1732,7 +1732,7 @@ void CFolderDlg::OnLoadFromEML()
 			while (NULL != (lpszPath = dlgFilePicker.GetNextFileName()))
 			{
 				hRes = S_OK;
-				EC_H(((LPMAPIFOLDER)m_lpContainer)->CreateMessage(
+				EC_MAPI(((LPMAPIFOLDER)m_lpContainer)->CreateMessage(
 					NULL,
 					(m_ulDisplayFlags & dfAssoc)?MAPI_ASSOCIATED:0,
 					&lpNewMessage));
@@ -1843,7 +1843,7 @@ void CFolderDlg::OnSetReadFlag()
 
 			if (lpMessage)
 			{
-				EC_H(lpMessage->SetReadFlag(MyFlags.GetHex(0)));
+				EC_MAPI(lpMessage->SetReadFlag(MyFlags.GetHex(0)));
 				lpMessage->Release();
 				lpMessage = NULL;
 			}
@@ -1861,7 +1861,7 @@ void CFolderDlg::OnSetReadFlag()
 			if (lpProgress)
 				ulFlags |= MESSAGE_DIALOG;
 
-			EC_H(((LPMAPIFOLDER)m_lpContainer)->SetReadFlags(
+			EC_MAPI(((LPMAPIFOLDER)m_lpContainer)->SetReadFlags(
 				lpEIDs,
 				lpProgress ? (ULONG_PTR)m_hWnd : NULL,
 				lpProgress,
@@ -1913,7 +1913,7 @@ void CFolderDlg::OnGetMessageOptions()
 
 			if (lpMessage)
 			{
-				EC_H(lpMAPISession->MessageOptions(
+				EC_MAPI(lpMAPISession->MessageOptions(
 					(ULONG_PTR) m_hWnd,
 					NULL, // API doesn't like Unicode
 					(LPTSTR)MyAddress.GetStringA(0),
@@ -1950,7 +1950,7 @@ _Check_return_ HRESULT CFolderDlg::OnGetMessageStatus(int /*iItem*/, _In_ SortLi
 
 	if (lpMessageEID)
 	{
-		EC_H(((LPMAPIFOLDER)m_lpContainer)->GetMessageStatus(
+		EC_MAPI(((LPMAPIFOLDER)m_lpContainer)->GetMessageStatus(
 			lpMessageEID->cb,
 			(LPENTRYID) lpMessageEID->lpb,
 			NULL,
@@ -2009,7 +2009,7 @@ void CFolderDlg::OnSetMessageStatus()
 				{
 					ULONG ulOldStatus = NULL;
 
-					EC_H(((LPMAPIFOLDER)m_lpContainer)->SetMessageStatus(
+					EC_MAPI(((LPMAPIFOLDER)m_lpContainer)->SetMessageStatus(
 						lpMessageEID->cb,
 						(LPENTRYID) lpMessageEID->lpb,
 						MyData.GetHex(0),
@@ -2048,7 +2048,7 @@ _Check_return_ HRESULT CFolderDlg::OnSubmitMessage(int iItem, _In_ SortListData*
 	{
 		// Get subject line of message to copy.
 		// This will be used as the new file name.
-		EC_H(lpMessage->SubmitMessage(NULL));
+		EC_MAPI(lpMessage->SubmitMessage(NULL));
 
 		lpMessage->Release();
 	}
@@ -2074,7 +2074,7 @@ _Check_return_ HRESULT CFolderDlg::OnAbortSubmit(int iItem, _In_ SortListData* l
 
 	if (lpMDB && lpMessageEID)
 	{
-		EC_H(lpMDB->AbortSubmit(
+		EC_MAPI(lpMDB->AbortSubmit(
 			lpMessageEID->cb,
 			(LPENTRYID)lpMessageEID->lpb,
 			NULL));

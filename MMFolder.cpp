@@ -4,6 +4,7 @@
 #include "MAPIFunctions.h"
 #include "ExtraPropTags.h"
 #include "InterpretProp2.h"
+#include "MMStore.h"
 
 STDMETHODIMP GetEntryIDFromMDB(LPMDB lpMDB, ULONG ulPropTag, _Out_opt_ ULONG* lpcbeid, _Deref_out_opt_ LPENTRYID* lppeid)
 {
@@ -11,7 +12,7 @@ STDMETHODIMP GetEntryIDFromMDB(LPMDB lpMDB, ULONG ulPropTag, _Out_opt_ ULONG* lp
 	HRESULT hRes = S_OK;
 	LPSPropValue lpEIDProp = NULL;
 
-	WC_H(HrGetOneProp(lpMDB, ulPropTag, &lpEIDProp));
+	WC_MAPI(HrGetOneProp(lpMDB, ulPropTag, &lpEIDProp));
 
 	if (SUCCEEDED(hRes) && lpEIDProp)
 	{
@@ -38,7 +39,7 @@ STDMETHODIMP GetMVEntryIDFromInboxByIndex(LPMDB lpMDB, ULONG ulPropTag, ULONG ul
 	if (SUCCEEDED(hRes) && lpInbox)
 	{
 		LPSPropValue lpEIDProp = NULL;
-		WC_H(HrGetOneProp(lpInbox,ulPropTag,&lpEIDProp));
+		WC_MAPI(HrGetOneProp(lpInbox,ulPropTag,&lpEIDProp));
 		if (SUCCEEDED(hRes) &&
 			lpEIDProp &&
 			PT_MV_BINARY == PROP_TYPE(lpEIDProp->ulPropTag) &&
@@ -205,10 +206,10 @@ HRESULT HrMAPIFindFolderW(
 	*lppeid  = NULL;
 	if (!lpFolder) return MAPI_E_INVALID_PARAMETER;
 
-	WC_H(lpFolder->GetHierarchyTable(MAPI_UNICODE | MAPI_DEFERRED_ERRORS, &lpTable));
+	WC_MAPI(lpFolder->GetHierarchyTable(MAPI_UNICODE | MAPI_DEFERRED_ERRORS, &lpTable));
 	if (SUCCEEDED(hRes) && lpTable)
 	{
-		WC_H(HrQueryAllRows(lpTable, (LPSPropTagArray)&rgColProps, NULL, NULL, 0, &lpRow));
+		WC_MAPI(HrQueryAllRows(lpTable, (LPSPropTagArray)&rgColProps, NULL, NULL, 0, &lpRow));
 	}
 
 	if (SUCCEEDED(hRes) && lpRow)
@@ -357,7 +358,7 @@ HRESULT HrMAPIFindSubfolderExW(
 		// Only OpenEntry if needed for next tier of folder path.
 		if (lppszFolderList[i+1] != NULL)
 		{
-			WC_H(lpParentFolder->OpenEntry(
+			WC_MAPI(lpParentFolder->OpenEntry(
 				cbeid,
 				lpeid,
 				NULL,
@@ -439,7 +440,7 @@ static HRESULT HrLookupRootFolderW(
 		ULONG cValues = 0;
 
 		// Get the outbox entry ID property.
-		WC_H(lpMDB->GetProps(
+		WC_MAPI(lpMDB->GetProps(
 			&rgPropTag,
 			MAPI_UNICODE,
 			&cValues,
@@ -516,7 +517,7 @@ HRESULT HrMAPIFindFolderExW(
 	{
 		ULONG ulObjType = 0;
 
-		WC_H(lpMDB->OpenEntry(
+		WC_MAPI(lpMDB->OpenEntry(
 			cbeid,
 			lpeid,
 			NULL,
@@ -574,7 +575,7 @@ HRESULT HrMAPIOpenFolderExW(
 
 	if (SUCCEEDED(hRes))
 	{
-		WC_H(lpMDB->OpenEntry(
+		WC_MAPI(lpMDB->OpenEntry(
 			cbeid,
 			lpeid,
 			NULL,
@@ -597,27 +598,13 @@ void DumpHierachyTable(
 	DebugPrint(DBGGeneric,"DumpHierachyTable: Outputting hierarchy table for folder %i / %ws from profile %ws \n", ulFolder, lpszFolder?lpszFolder:L"", lpszProfile);
 	HRESULT hRes = S_OK;
 	LPMAPISESSION lpMAPISession = NULL;
-	LPMDB lpMDB = NULL;
 	LPMAPIFOLDER lpFolder = NULL;
 
-	WC_H(MAPIInitialize(NULL));
+	WC_MAPI(MAPIInitialize(NULL));
 
 	WC_H(MrMAPILogonEx(lpszProfile,&lpMAPISession));
-	if (lpMAPISession)
-	{
-		WC_H(OpenExchangeOrDefaultMessageStore(lpMAPISession, &lpMDB));
-	}
-	if (lpMDB)
-	{
-		if (lpszFolder)
-		{
-			WC_H(HrMAPIOpenFolderExW(lpMDB, lpszFolder, &lpFolder));
-		}
-		else
-		{
-			WC_H(OpenDefaultFolder(ulFolder,lpMDB,&lpFolder));
-		}
-	}
+	WC_H(HrMAPIOpenStoreAndFolder(lpMAPISession, ulFolder, lpszFolder, NULL, &lpFolder));
+
 	if (lpFolder)
 	{
 		LPMAPITABLE lpTable = NULL;
@@ -637,38 +624,46 @@ void DumpHierachyTable(
 			PR_DEPTH,
 		};
 
-		WC_H(lpFolder->GetHierarchyTable(MAPI_DEFERRED_ERRORS | CONVENIENT_DEPTH, &lpTable));
+		WC_MAPI(lpFolder->GetHierarchyTable(MAPI_DEFERRED_ERRORS | CONVENIENT_DEPTH, &lpTable));
 		if (SUCCEEDED(hRes) && lpTable)
 		{
-			WC_H(HrQueryAllRows(lpTable, (LPSPropTagArray)&rgColProps, NULL, NULL, 0, &lpRow));
-		}
+			WC_MAPI(lpTable->SetColumns((LPSPropTagArray)&rgColProps, TBL_ASYNC));
 
-		if (SUCCEEDED(hRes) && lpRow)
-		{
-			for (i = 0; i < lpRow->cRows; i++)
+			if (!FAILED(hRes)) for (;;)
 			{
-				if (PR_DEPTH == lpRow->aRow[i].lpProps[ePR_DEPTH].ulPropTag && 
-					lpRow->aRow[i].lpProps[ePR_DEPTH].Value.l > 1)
+				hRes = S_OK;
+				if (lpRow) FreeProws(lpRow);
+				lpRow = NULL;
+				WC_MAPI(lpTable->QueryRows(
+					50,
+					NULL,
+					&lpRow));
+				if (FAILED(hRes) || !lpRow || !lpRow->cRows) break;
+
+				for (i = 0; i < lpRow->cRows; i++)
 				{
-					int iTab = 0;
-					for (iTab = 1; iTab < lpRow->aRow[i].lpProps[ePR_DEPTH].Value.l; iTab++)
+					if (PR_DEPTH == lpRow->aRow[i].lpProps[ePR_DEPTH].ulPropTag && 
+						lpRow->aRow[i].lpProps[ePR_DEPTH].Value.l > 1)
 					{
-						printf("  ");
+						int iTab = 0;
+						for (iTab = 1; iTab < lpRow->aRow[i].lpProps[ePR_DEPTH].Value.l; iTab++)
+						{
+							printf("  ");
+						}
+					}
+					if (PR_DISPLAY_NAME_W == lpRow->aRow[i].lpProps[ePR_DISPLAY_NAME_W].ulPropTag)
+					{
+						printf("%ws\n",lpRow->aRow[i].lpProps[ePR_DISPLAY_NAME_W].Value.lpszW);
 					}
 				}
-				if (PR_DISPLAY_NAME_W == lpRow->aRow[i].lpProps[ePR_DISPLAY_NAME_W].ulPropTag)
-				{
-					printf("%ws\n",lpRow->aRow[i].lpProps[ePR_DISPLAY_NAME_W].Value.lpszW);
-				}
 			}
+			if (lpRow) FreeProws(lpRow);
 		}
 
-		FreeProws(lpRow);
 		if (lpTable) lpTable->Release();
 	}
 
 	if (lpFolder) lpFolder->Release();
-	if (lpMDB) lpMDB->Release();
 	if (lpMAPISession) lpMAPISession->Release();
 	MAPIUninitialize();
 } // DumpHierachyTable

@@ -105,14 +105,14 @@ void CMsgServiceTableDlg::OnRefreshView()
 	m_lpServiceAdmin = NULL;
 
 	LPPROFADMIN lpProfAdmin = NULL;
-	EC_H(MAPIAdminProfiles(0, &lpProfAdmin));
+	EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
 
 	if (lpProfAdmin)
 	{
 #pragma warning(push)
 #pragma warning(disable:4616)
 #pragma warning(disable:6276)
-		EC_H(lpProfAdmin->AdminServices(
+		EC_MAPI(lpProfAdmin->AdminServices(
 			(TCHAR*)m_szProfileName,
 			(TCHAR*)"",
 			NULL,
@@ -123,7 +123,7 @@ void CMsgServiceTableDlg::OnRefreshView()
 		{
 			LPMAPITABLE lpServiceTable = NULL;
 
-			EC_H(m_lpServiceAdmin->GetMsgServiceTable(
+			EC_MAPI(m_lpServiceAdmin->GetMsgServiceTable(
 				0, // fMapiUnicode is not supported
 				&lpServiceTable));
 
@@ -162,14 +162,14 @@ void CMsgServiceTableDlg::OnDisplayItem()
 			lpServiceUID = lpListData->data.Contents.lpServiceUID;
 			if (lpServiceUID)
 			{
-				EC_H(m_lpServiceAdmin->AdminProviders(
+				EC_MAPI(m_lpServiceAdmin->AdminProviders(
 					(LPMAPIUID) lpServiceUID->lpb,
 					0, // fMapiUnicode is not supported
 					&lpProviderAdmin));
 
 				if (lpProviderAdmin)
 				{
-					EC_H(lpProviderAdmin->GetProviderTable(
+					EC_MAPI(lpProviderAdmin->GetProviderTable(
 						0, // fMapiUnicode is not supported
 						&lpProviderTable));
 
@@ -281,7 +281,7 @@ void CMsgServiceTableDlg::OnOpenProfileSection()
 	if (lpProfSect)
 	{
 		LPMAPIPROP lpTemp = NULL;
-		EC_H(lpProfSect->QueryInterface(IID_IMAPIProp,(LPVOID*) &lpTemp));
+		EC_MAPI(lpProfSect->QueryInterface(IID_IMAPIProp,(LPVOID*) &lpTemp));
 		if (lpTemp)
 		{
 			EC_H(DisplayObject(
@@ -317,7 +317,7 @@ void CMsgServiceTableDlg::OnDeleteSelectedItem()
 		lpServiceUID = lpListData->data.Contents.lpServiceUID;
 		if (lpServiceUID)
 		{
-			WC_H(m_lpServiceAdmin->DeleteMsgService(
+			WC_MAPI(m_lpServiceAdmin->DeleteMsgService(
 				(LPMAPIUID) lpServiceUID->lpb));
 		}
 	}

@@ -5,16 +5,18 @@
 // Here's an index of error macros and functions for use throughout MFCMAPI
 // EC_H - When wrapping a function, checks that hRes is SUCCEEDED, then makes the call
 //        If the call fails, logs and displays a dialog.
-//        Prints a skip note if the call is not made.
+//        Prints a skip note in debug builds if the call is not made.
 // WC_H - When wrapping a function, checks that hRes is SUCCEEDED, then makes the call
 //        If the call fails, logs. It does not display a dialog.
-//        Prints a skip note if the call is not made.
+//        Prints a skip note in debug builds if the call is not made.
 // EC_H_MSG - When wrapping a function, checks that hRes is SUCCEEDED, then makes the call
 //        If the call fails, logs and displays a dialog with a given error string.
-//        Prints a skip note if the call is not made.
+//        Prints a skip note in debug builds if the call is not made.
 // WC_H_MSG - When wrapping a function, checks that hRes is SUCCEEDED, then makes the call
 //        If the call fails, logs and a given error string.
-//        Prints a skip note if the call is not made.
+//        Prints a skip note in debug builds if the call is not made.
+// EC_MAPI Variant of EC_H that is only used to wrap MAPI api calls.
+// WC_MAPI Variant of WC_H that is only used to wrap MAPI api calls.
 // CHECKHRES - checks an hRes and logs and displays a dialog on error
 // CHECKHRESMSG - checks an hRes and logs and displays a dialog with a given error string on error
 // WARNHRESMSG - checks an hRes and logs a given error string on error
@@ -22,8 +24,8 @@
 // EC_W32 - does the same as EC_H, wrapping the result of the function call in HRESULT_FROM_WIN32
 // WC_W32 - does the same as WC_H, wrapping the result of the function call in HRESULT_FROM_WIN32
 
-// EC_B - Similar to EC_H, but for Boolean functions, using DialogOnWin32Error to set failure in hRes
-// WC_B - Similar to WC_H, but for Boolean functions, using DialogOnWin32Error to set failure in hRes
+// EC_B - Similar to EC_H, but for Boolean functions, using CheckWin32Error to set failure in hRes
+// WC_B - Similar to WC_H, but for Boolean functions, using CheckWin32Error to set failure in hRes
 
 // EC_D - Similar to EC_B, but preserves the result in _ret so it can be used later
 // WC_D - Similar to WC_B, but preserves the result in _ret so it can be used later
@@ -40,8 +42,22 @@
 // EC_MAPIERR - logs and displays dialog for any errors in a LPMAPIERROR
 // EC_TNEFERR - logs and displays dialog for any errors in a LPSTnefProblemArray
 
-void CheckHResFn(HRESULT hRes, _In_opt_z_ LPCSTR szFunction, UINT uidErrorMsg, _In_z_ LPCSTR szFile, int iLine);
-void WarnHResFn (HRESULT hRes, _In_opt_z_ LPCSTR szFunction, UINT uidErrorMsg, _In_z_ LPCSTR szFile, int iLine);
+void LogFunctionCall(
+			  HRESULT hRes,
+			  HRESULT hrIgnore,
+			  bool bShowDialog,
+			  bool bMAPICall,
+			  bool bSystemCall,
+			  UINT uidErrorMsg,
+			  _In_opt_z_ LPCSTR szFunction,
+			  _In_z_ LPCSTR szFile,
+			  int iLine);
+
+#define CheckHResFn(hRes, hrIgnore, bDisplayDialog, szFunction, uidErrorMsg, szFile, iLine) \
+	LogFunctionCall(hRes, hrIgnore, bDisplayDialog, false, false, uidErrorMsg, szFunction, szFile, iLine)
+
+#define CheckMAPICall(hRes, hrIgnore, bDisplayDialog, szFunction, uidErrorMsg, szFile, iLine) \
+	LogFunctionCall(hRes, hrIgnore, bDisplayDialog, true, false, uidErrorMsg, szFunction, szFile, iLine)
 
 void __cdecl ErrDialog(_In_z_ LPCSTR szFile, int iLine, UINT uidErrorFmt, ...);
 
@@ -56,12 +72,11 @@ struct ERROR_ARRAY_ENTRY
 typedef ERROR_ARRAY_ENTRY* LPERROR_ARRAY_ENTRY;
 
 // Macros for debug output
-#define CHECKHRES(hRes) (CheckHResFn(hRes,"",NULL,__FILE__,__LINE__))
-#define CHECKHRESMSG(hRes,uidErrorMsg) (CheckHResFn(hRes, NULL, uidErrorMsg, __FILE__, __LINE__))
-#define WARNHRESMSG(hRes,uidErrorMsg)  (WarnHResFn (hRes, NULL, uidErrorMsg, __FILE__, __LINE__))
+#define CHECKHRES(hRes) (CheckHResFn(hRes, NULL, true, "", NULL, __FILE__, __LINE__))
+#define CHECKHRESMSG(hRes, uidErrorMsg) (CheckHResFn(hRes, NULL, true, NULL, uidErrorMsg, __FILE__, __LINE__))
+#define WARNHRESMSG(hRes, uidErrorMsg)  (CheckHResFn(hRes, NULL, false, NULL, uidErrorMsg, __FILE__, __LINE__))
 
-_Check_return_ HRESULT WarnOnWin32Error  (_In_z_ LPCSTR szFile, int iLine, _In_z_ LPCSTR szFunction);
-_Check_return_ HRESULT DialogOnWin32Error(_In_z_ LPCSTR szFile, int iLine, _In_z_ LPCSTR szFunction);
+_Check_return_ HRESULT CheckWin32Error(bool bDisplayDialog, _In_z_ LPCSTR szFile, int iLine, _In_z_ LPCSTR szFunction);
 
 // We'll only output this information in debug builds.
 #ifdef _DEBUG
@@ -74,7 +89,7 @@ void PrintSkipNote(HRESULT hRes, _In_z_ LPCSTR szFunc);
 if (SUCCEEDED(hRes))	\
 {	\
 	hRes = (fnx);	\
-	CheckHResFn(hRes,#fnx,NULL,__FILE__,__LINE__);	\
+	CheckHResFn(hRes, NULL, true, #fnx, NULL, __FILE__, __LINE__);	\
 }	\
 else	\
 {	\
@@ -85,18 +100,40 @@ else	\
 if (SUCCEEDED(hRes))	\
 {	\
 	hRes = (fnx);	\
-	WarnHResFn(hRes,#fnx,NULL,__FILE__,__LINE__);	\
+	CheckHResFn(hRes, NULL, false, #fnx, NULL, __FILE__, __LINE__);	\
 }	\
 else	\
 {	\
 	PrintSkipNote(hRes,#fnx);\
 } // WC_H
 
+#define EC_MAPI(fnx)	\
+if (SUCCEEDED(hRes))	\
+{	\
+	hRes = (fnx);	\
+	CheckMAPICall(hRes, NULL, true, #fnx, NULL, __FILE__, __LINE__);	\
+}	\
+else	\
+{	\
+	PrintSkipNote(hRes,#fnx);\
+} // EC_MAPI
+
+#define WC_MAPI(fnx)	\
+if (SUCCEEDED(hRes))	\
+{	\
+	hRes = (fnx);	\
+	CheckMAPICall(hRes, NULL, false, #fnx, NULL, __FILE__, __LINE__);	\
+}	\
+else	\
+{	\
+	PrintSkipNote(hRes,#fnx);\
+} // WC_MAPI
+
 #define EC_H_MSG(fnx,uidErrorMsg)	\
 if (SUCCEEDED(hRes))	\
 {	\
 	hRes = (fnx);	\
-	CheckHResFn(hRes,#fnx,uidErrorMsg,__FILE__,__LINE__);	\
+	CheckMAPICall(hRes, NULL, true, #fnx, uidErrorMsg, __FILE__, __LINE__);	\
 }	\
 else	\
 {	\
@@ -107,7 +144,7 @@ else	\
 if (SUCCEEDED(hRes))	\
 {	\
 	hRes = (fnx);	\
-	WarnHResFn(hRes,#fnx,uidErrorMsg,__FILE__,__LINE__);	\
+	CheckMAPICall(hRes, NULL, false, #fnx, uidErrorMsg, __FILE__, __LINE__);	\
 }	\
 else	\
 {	\
@@ -118,7 +155,7 @@ else	\
 if (SUCCEEDED(hRes))	\
 {	\
 	hRes = HRESULT_FROM_WIN32(fnx);	\
-	CheckHResFn(hRes,#fnx,NULL,__FILE__,__LINE__);	\
+	CheckHResFn(hRes, NULL, true, #fnx, NULL, __FILE__, __LINE__);	\
 }	\
 else	\
 {	\
@@ -129,7 +166,7 @@ else	\
 if (SUCCEEDED(hRes))	\
 {	\
 	hRes = HRESULT_FROM_WIN32(fnx);	\
-	WarnHResFn(hRes,#fnx,NULL,__FILE__,__LINE__);	\
+	CheckHResFn(hRes, NULL, false, #fnx, NULL, __FILE__, __LINE__);	\
 }	\
 else	\
 {	\
@@ -141,7 +178,7 @@ if (SUCCEEDED(hRes))	\
 {	\
 	if (!(fnx))	\
 	{	\
-		hRes = DialogOnWin32Error(__FILE__,__LINE__,#fnx);	\
+		hRes = CheckWin32Error(true, __FILE__, __LINE__, #fnx);	\
 	}	\
 }	\
 else	\
@@ -154,7 +191,7 @@ if (SUCCEEDED(hRes))	\
 {	\
 	if (!(fnx))	\
 	{	\
-		hRes = WarnOnWin32Error(__FILE__,__LINE__,#fnx);\
+		hRes = CheckWin32Error(false, __FILE__, __LINE__, #fnx);\
 	}	\
 }	\
 else	\
@@ -170,7 +207,7 @@ if (SUCCEEDED(hRes))	\
 	_ret = (fnx);	\
 	if (!_ret)	\
 	{	\
-		hRes = DialogOnWin32Error(__FILE__,__LINE__,#fnx);	\
+		hRes = CheckWin32Error(true, __FILE__, __LINE__, #fnx);	\
 	}	\
 }	\
 else	\
@@ -186,7 +223,7 @@ if (SUCCEEDED(hRes))	\
 	_ret = (fnx);	\
 	if (!_ret)	\
 	{	\
-		hRes = WarnOnWin32Error(__FILE__,__LINE__,#fnx);\
+		hRes = CheckWin32Error(false, __FILE__, __LINE__, #fnx);\
 	}	\
 }	\
 else	\
@@ -203,7 +240,7 @@ else	\
 if (SUCCEEDED(hRes))	\
 {	\
 	hRes = (fnx);	\
-	if (MAPI_W_ERRORS_RETURNED != hRes) CheckHResFn(hRes,#fnx,NULL,__FILE__,__LINE__);	\
+	CheckMAPICall(hRes, MAPI_W_ERRORS_RETURNED, true, #fnx, NULL, __FILE__, __LINE__);	\
 }	\
 else	\
 {	\
@@ -214,7 +251,7 @@ else	\
 if (SUCCEEDED(hRes))	\
 {	\
 	hRes = (fnx);	\
-	if (MAPI_W_ERRORS_RETURNED != hRes) WarnHResFn(hRes,#fnx,NULL,__FILE__,__LINE__);	\
+	CheckMAPICall(hRes, MAPI_W_ERRORS_RETURNED, false, #fnx, NULL, __FILE__, __LINE__);	\
 }	\
 else	\
 {	\
@@ -228,10 +265,10 @@ if (SUCCEEDED(hRes))	\
 	hRes = (fnx);	\
 	if (MAPI_E_USER_CANCEL == hRes || MAPI_E_CANCEL == hRes) \
 	{ \
-		WarnHResFn(hRes,#fnx,IDS_USERCANCELLED,__FILE__,__LINE__); \
+		CheckMAPICall(hRes, NULL, false, #fnx, IDS_USERCANCELLED, __FILE__, __LINE__); \
 		hRes = S_OK; \
 	} \
-	else CheckHResFn(hRes,#fnx,NULL,__FILE__,__LINE__);	\
+	else CheckMAPICall(hRes, NULL, true, #fnx, NULL, __FILE__, __LINE__);	\
 }	\
 else	\
 {	\

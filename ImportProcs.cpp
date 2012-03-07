@@ -361,7 +361,6 @@ _Check_return_ STDMETHODIMP MyOpenStreamOnFile(_In_ LPALLOCATEBUFFER lpAllocateB
 	HRESULT hRes = S_OK;
 
 	hRes = OpenStreamOnFileW(
-
 		lpAllocateBuffer,
 		lpFreeBuffer,
 		ulFlags,
@@ -400,7 +399,7 @@ _Check_return_ HRESULT HrDupPropset(
 	HRESULT hRes = S_OK;
 
 	//	Find out how much memory we need
-	EC_H(ScCountProps(cprop, rgprop, &cb));
+	EC_MAPI(ScCountProps(cprop, rgprop, &cb));
 
 	if (SUCCEEDED(hRes) && cb)
 	{
@@ -417,7 +416,7 @@ _Check_return_ HRESULT HrDupPropset(
 		if (SUCCEEDED(hRes) && prgprop)
 		{
 			//	Copy the properties
-			EC_H(ScCopyProps(cprop, rgprop, *prgprop, &cb));
+			EC_MAPI(ScCopyProps(cprop, rgprop, *prgprop, &cb));
 		}
 	}
 
@@ -578,7 +577,7 @@ _Check_return_ STDAPI HrCopyActions(
 					// Copy the rgPropVals.
 					for (j = 0; j < lpActSrc->lpadrlist->cEntries; j++)
 					{
-						WC_H(HrDupPropset(
+						WC_MAPI(HrDupPropset(
 							lpActDst->lpadrlist->aEntries[j].cValues,
 							lpActSrc->lpadrlist->aEntries[j].rgPropVals,
 							lpObject,
@@ -691,7 +690,7 @@ _Check_return_ HRESULT HrCopyRestrictionArray(
 		case RES_PROPERTY:
 			if (lpResSrc[i].res.resContent.lpProp)
 			{
-				WC_H(HrDupPropset(
+				WC_MAPI(HrDupPropset(
 					1,
 					lpResSrc[i].res.resContent.lpProp,
 					lpObject,
@@ -745,7 +744,7 @@ _Check_return_ HRESULT HrCopyRestrictionArray(
 
 			if (lpResSrc[i].res.resComment.cValues && lpResSrc[i].res.resComment.lpProp)
 			{
-				WC_H(HrDupPropset(
+				WC_MAPI(HrDupPropset(
 					lpResSrc[i].res.resComment.cValues,
 					lpResSrc[i].res.resComment.lpProp,
 					lpObject,
@@ -845,7 +844,7 @@ _Check_return_ STDAPI_(SCODE) MyPropCopyMore(_In_ LPSPropValue lpSPropValueDest,
 			break;
 		}
 	default:
-		hRes = PropCopyMore(lpSPropValueDest,lpSPropValueSrc,lpfAllocMore,lpvObject);
+		WC_MAPI(PropCopyMore(lpSPropValueDest,lpSPropValueSrc,lpfAllocMore,lpvObject));
 	}
 	return hRes;
 } // MyPropCopyMore

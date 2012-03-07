@@ -27,7 +27,7 @@ void LaunchProfileWizard(
 	DebugPrint(DBGGeneric,_T("LaunchProfileWizard: Using LAUNCHWIZARDENTRY to launch wizard API.\n"));
 
 	// Call LaunchWizard to add the service.
-	WC_H(LaunchWizard(
+	WC_MAPI(LaunchWizard(
 		hParentWnd,
 		ulFlags,
 		lppszServiceNameToAdd,
@@ -60,7 +60,7 @@ void DisplayMAPISVCPath(_In_ CWnd* pParentWnd)
 		IDS_MAPISVCTEXT,
 		1,
 		CEDITOR_BUTTON_OK);
-	MyData.InitSingleLine(0,IDS_MAPISVCPROMPT,NULL,true);
+	MyData.InitSingleLine(0,IDS_FILEPATH,NULL,true);
 	MyData.SetString(0,szServicesIni);
 
 	WC_H(MyData.DisplayDialog());
@@ -421,13 +421,13 @@ _Check_return_ HRESULT HrMarkExistingProviders(_In_ LPSERVICEADMIN lpServiceAdmi
 		PR_SERVICE_UID
 	};
 
-	EC_H(lpServiceAdmin->GetMsgServiceTable(0, &lpProviderTable));
+	EC_MAPI(lpServiceAdmin->GetMsgServiceTable(0, &lpProviderTable));
 
 	if (lpProviderTable)
 	{
 		LPSRowSet lpRowSet = NULL;
 
-		EC_H(HrQueryAllRows(lpProviderTable, (LPSPropTagArray) &pTagUID, NULL, NULL, 0, &lpRowSet));
+		EC_MAPI(HrQueryAllRows(lpProviderTable, (LPSPropTagArray) &pTagUID, NULL, NULL, 0, &lpRowSet));
 
 		if (lpRowSet) DebugPrintSRowSet(DBGGeneric,lpRowSet,NULL);
 
@@ -460,15 +460,15 @@ _Check_return_ HRESULT HrMarkExistingProviders(_In_ LPSERVICEADMIN lpServiceAdmi
 							SPropValue	PropVal;
 							PropVal.ulPropTag = PR_MARKER;
 							PropVal.Value.lpszA = MARKER_STRING;
-							EC_H(lpSect->SetProps(1,&PropVal,NULL));
+							EC_MAPI(lpSect->SetProps(1,&PropVal,NULL));
 						}
 						else
 						{
 							SPropTagArray pTagArray = {1,PR_MARKER};
-							WC_H(lpSect->DeleteProps(&pTagArray,NULL));
+							WC_MAPI(lpSect->DeleteProps(&pTagArray,NULL));
 						}
 						hRes = S_OK;
-						EC_H(lpSect->SaveChanges(0));
+						EC_MAPI(lpSect->SaveChanges(0));
 						lpSect->Release();
 					}
 				}
@@ -498,14 +498,14 @@ _Check_return_ HRESULT HrFindUnmarkedProvider(_In_ LPSERVICEADMIN lpServiceAdmin
 		PR_SERVICE_UID
 	};
 
-	EC_H(lpServiceAdmin->GetMsgServiceTable(0, &lpProviderTable));
+	EC_MAPI(lpServiceAdmin->GetMsgServiceTable(0, &lpProviderTable));
 
 	if (lpProviderTable)
 	{
-		EC_H(lpProviderTable->SetColumns((LPSPropTagArray)&pTagUID,TBL_BATCH));
+		EC_MAPI(lpProviderTable->SetColumns((LPSPropTagArray)&pTagUID,TBL_BATCH));
 		for (;;)
 		{
-			EC_H(lpProviderTable->QueryRows(1,0,lpRowSet));
+			EC_MAPI(lpProviderTable->QueryRows(1,0,lpRowSet));
 			if (S_OK == hRes && *lpRowSet && 1 == (*lpRowSet)->cRows)
 			{
 				LPSRow		 lpCurRow = NULL;
@@ -581,10 +581,10 @@ _Check_return_ HRESULT HrAddServiceToProfile(
 	if (!lpszServiceName || !lpszProfileName) return MAPI_E_INVALID_PARAMETER;
 
 	// Connect to Profile Admin interface.
-	EC_H(MAPIAdminProfiles(0, &lpProfAdmin));
+	EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
 	if (!lpProfAdmin) return hRes;
 
-	EC_H(lpProfAdmin->AdminServices(
+	EC_MAPI(lpProfAdmin->AdminServices(
 		(LPTSTR) lpszProfileName,
 		(LPTSTR) _T(""),
 		0,
@@ -597,7 +597,7 @@ _Check_return_ HRESULT HrAddServiceToProfile(
 		LPMAPIUID lpuidService = &uidService;
 
 		LPSERVICEADMIN2 lpServiceAdmin2 = NULL;
-		WC_H(lpServiceAdmin->QueryInterface(IID_IMsgServiceAdmin2, (LPVOID*) &lpServiceAdmin2));
+		WC_MAPI(lpServiceAdmin->QueryInterface(IID_IMsgServiceAdmin2, (LPVOID*) &lpServiceAdmin2));
 
 		if (SUCCEEDED(hRes) && lpServiceAdmin2)
 		{
@@ -741,11 +741,11 @@ _Check_return_ HRESULT HrCreateProfile(
 	if (!lpszProfileName) return MAPI_E_INVALID_PARAMETER;
 
 	// Connect to Profile Admin interface.
-	EC_H(MAPIAdminProfiles(0, &lpProfAdmin));
+	EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
 	if (!lpProfAdmin) return hRes;
 
 	// Create the profile
-	WC_H(lpProfAdmin->CreateProfile(
+	WC_MAPI(lpProfAdmin->CreateProfile(
 		(LPTSTR)lpszProfileName,
 		NULL,
 		0,
@@ -774,10 +774,10 @@ _Check_return_ HRESULT HrRemoveProfile(
 	DebugPrint(DBGGeneric,_T("HrRemoveProfile(%hs)\n"),lpszProfileName);
 	if (!lpszProfileName) return MAPI_E_INVALID_PARAMETER;
 
-	EC_H(MAPIAdminProfiles(0, &lpProfAdmin));
+	EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
 	if (!lpProfAdmin) return hRes;
 
-	EC_H(lpProfAdmin->DeleteProfile((LPTSTR)lpszProfileName, 0));
+	EC_MAPI(lpProfAdmin->DeleteProfile((LPTSTR)lpszProfileName, 0));
 
 	lpProfAdmin->Release();
 
@@ -799,10 +799,10 @@ _Check_return_ HRESULT HrSetDefaultProfile(
 	DebugPrint(DBGGeneric,_T("HrRemoveProfile(%hs)\n"),lpszProfileName);
 	if (!lpszProfileName) return MAPI_E_INVALID_PARAMETER;
 
-	EC_H(MAPIAdminProfiles(0, &lpProfAdmin));
+	EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
 	if (!lpProfAdmin) return hRes;
 
-	EC_H(lpProfAdmin->SetDefaultProfile((LPTSTR)lpszProfileName, 0));
+	EC_MAPI(lpProfAdmin->SetDefaultProfile((LPTSTR)lpszProfileName, 0));
 
 	lpProfAdmin->Release();
 
@@ -836,12 +836,12 @@ _Check_return_ HRESULT HrMAPIProfileExists(
 
 	// Get a table of existing profiles
 
-	EC_H(lpProfAdmin->GetProfileTable(
+	EC_MAPI(lpProfAdmin->GetProfileTable(
 		0,
 		&lpTable));
 	if (!lpTable) return hRes;
 
-	EC_H(HrQueryAllRows(
+	EC_MAPI(HrQueryAllRows(
 		lpTable,
 		(LPSPropTagArray)&rgPropTag,
 		NULL,
@@ -904,7 +904,7 @@ _Check_return_ HRESULT OpenProfileSection(_In_ LPSERVICEADMIN lpServiceAdmin, _I
 	*lppProfSect = NULL;
 
 	// First, we try the normal way of opening the profile section:
-	WC_H(lpServiceAdmin->OpenProfileSection(
+	WC_MAPI(lpServiceAdmin->OpenProfileSection(
 		(LPMAPIUID) lpServiceUID->lpb,
 		NULL,
 		MAPI_MODIFY | MAPI_FORCE_ACCESS, // passing this flag might actually work with Outlook 2000 and XP
@@ -934,7 +934,7 @@ _Check_return_ HRESULT OpenProfileSection(_In_ LPSERVICEADMIN lpServiceAdmin, _I
 
 		if (ppProfile && *ppProfile)
 		{
-			EC_H((*ppProfile)->OpenSection(
+			EC_MAPI((*ppProfile)->OpenSection(
 				(LPMAPIUID)lpServiceUID->lpb,
 				MAPI_MODIFY,
 				lppProfSect));
@@ -960,7 +960,7 @@ _Check_return_ HRESULT OpenProfileSection(_In_ LPPROVIDERADMIN lpProviderAdmin, 
 	if (!lpProviderUID || !lpProviderAdmin || !lppProfSect) return MAPI_E_INVALID_PARAMETER;
 	*lppProfSect = NULL;
 
-	WC_H(lpProviderAdmin->OpenProfileSection(
+	WC_MAPI(lpProviderAdmin->OpenProfileSection(
 		(LPMAPIUID) lpProviderUID->lpb,
 		NULL,
 		MAPI_MODIFY | MAPI_FORCE_ACCESS,
@@ -972,7 +972,7 @@ _Check_return_ HRESULT OpenProfileSection(_In_ LPPROVIDERADMIN lpProviderAdmin, 
 		// We only do this hack as a last resort - it can crash some versions of Outlook, but is required for Exchange
 		*(((BYTE*)lpProviderAdmin) + 0x60) = 0x2; // Use at your own risk! NOT SUPPORTED!
 
-		WC_H(lpProviderAdmin->OpenProfileSection(
+		WC_MAPI(lpProviderAdmin->OpenProfileSection(
 			(LPMAPIUID) lpProviderUID->lpb,
 			NULL,
 			MAPI_MODIFY,
@@ -1003,10 +1003,10 @@ _Check_return_ HRESULT GetProfileServiceVersion(_In_z_ LPCSTR lpszProfileName,
 
 	DebugPrint(DBGGeneric,_T("GetProfileServiceVersion(%hs)\n"),lpszProfileName);
 
-	EC_H(MAPIAdminProfiles(0, &lpProfAdmin));
+	EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
 	if (!lpProfAdmin) return hRes;
 
-	EC_H(lpProfAdmin->AdminServices(
+	EC_MAPI(lpProfAdmin->AdminServices(
 		(LPTSTR) lpszProfileName,
 		(LPTSTR) _T(""),
 		0,
@@ -1016,7 +1016,7 @@ _Check_return_ HRESULT GetProfileServiceVersion(_In_z_ LPCSTR lpszProfileName,
 	if (lpServiceAdmin)
 	{
 		LPPROFSECT lpProfSect = NULL;
-		EC_H(lpServiceAdmin->OpenProfileSection(
+		EC_MAPI(lpServiceAdmin->OpenProfileSection(
 			(LPMAPIUID)pbGlobalProfileSectionGuid,
 			NULL,
 			0,
@@ -1024,7 +1024,7 @@ _Check_return_ HRESULT GetProfileServiceVersion(_In_z_ LPCSTR lpszProfileName,
 		if (lpProfSect)
 		{
 			LPSPropValue lpServerVersion = NULL;
-			WC_H(HrGetOneProp(lpProfSect,PR_PROFILE_SERVER_VERSION,&lpServerVersion));
+			WC_MAPI(HrGetOneProp(lpProfSect,PR_PROFILE_SERVER_VERSION,&lpServerVersion));
 
 			if (SUCCEEDED(hRes) && lpServerVersion && PR_PROFILE_SERVER_VERSION == lpServerVersion->ulPropTag)
 			{
@@ -1035,7 +1035,7 @@ _Check_return_ HRESULT GetProfileServiceVersion(_In_z_ LPCSTR lpszProfileName,
 			hRes = S_OK;
 
 			LPSPropValue lpServerFullVersion = NULL;
-			WC_H(HrGetOneProp(lpProfSect,PR_PROFILE_SERVER_FULL_VERSION,&lpServerFullVersion));
+			WC_MAPI(HrGetOneProp(lpProfSect,PR_PROFILE_SERVER_FULL_VERSION,&lpServerFullVersion));
 
 			if (SUCCEEDED(hRes) &&
 				lpServerFullVersion &&

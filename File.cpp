@@ -135,7 +135,7 @@ _Check_return_ HRESULT LoadMSGToMessage(_In_z_ LPCWSTR szMessageFile, _Deref_out
 		if (pStorage)
 		{
 			// Open an IMessage interface on an IStorage object
-			EC_H(OpenIMsgOnIStg(NULL,
+			EC_MAPI(OpenIMsgOnIStg(NULL,
 				MAPIAllocateBuffer,
 				MAPIAllocateMore,
 				MAPIFreeBuffer,
@@ -195,7 +195,7 @@ _Check_return_ HRESULT LoadFromMSG(_In_z_ LPCWSTR szMessageFile, _In_ LPMESSAGE 
 
 		LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIProp::CopyTo"), hWnd); // STRING_OK
 
-		EC_H(pIMsg->CopyTo(
+		EC_MAPI(pIMsg->CopyTo(
 			0,
 			NULL,
 			(LPSPropTagArray)&excludeTags,
@@ -215,7 +215,7 @@ _Check_return_ HRESULT LoadFromMSG(_In_z_ LPCWSTR szMessageFile, _In_ LPMESSAGE 
 		MAPIFreeBuffer(lpProblems);
 		if (!FAILED(hRes))
 		{
-			EC_H(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+			EC_MAPI(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 		}
 	}
 
@@ -274,7 +274,7 @@ _Check_return_ HRESULT LoadFromTNEF(_In_z_ LPCWSTR szMessageFile, _In_ LPADRBOOK
 	if (lpTNEF)
 	{
 		// Decode the TNEF stream into our MAPI message.
-		EC_H(lpTNEF->ExtractProps(
+		EC_MAPI(lpTNEF->ExtractProps(
 			TNEF_PROP_EXCLUDE,
 			(LPSPropTagArray) &lpPropTnefExcludeArray,
 			&lpError));
@@ -282,7 +282,7 @@ _Check_return_ HRESULT LoadFromTNEF(_In_z_ LPCWSTR szMessageFile, _In_ LPADRBOOK
 		EC_TNEFERR(lpError);
 	}
 
-	EC_H(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+	EC_MAPI(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 
 	if (lpBodyStream) lpBodyStream->Release();
 	MAPIFreeBuffer(lpError);
@@ -509,20 +509,20 @@ _Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_z
 
 	DebugPrint(DBGGeneric,_T("SaveFolderContentsToMSG: Saving contents of folder to \"%ws\"\n"),szPathName);
 
-	EC_H(lpFolder->GetContentsTable(
+	EC_MAPI(lpFolder->GetContentsTable(
 		fMapiUnicode | (bAssoc?MAPI_ASSOCIATED:NULL),
 		&lpFolderContents));
 
 	if (lpFolderContents)
 	{
-		EC_H(lpFolderContents->SetColumns((LPSPropTagArray)&fldCols, TBL_BATCH));
+		EC_MAPI(lpFolderContents->SetColumns((LPSPropTagArray)&fldCols, TBL_BATCH));
 
 		if (!FAILED(hRes)) for (;;)
 		{
 			hRes = S_OK;
 			if (pRows) FreeProws(pRows);
 			pRows = NULL;
-			EC_H(lpFolderContents->QueryRows(
+			EC_MAPI(lpFolderContents->QueryRows(
 				1,
 				NULL,
 				&pRows));
@@ -591,7 +591,7 @@ _Check_return_ HRESULT SaveToEML(_In_ LPMESSAGE lpMessage, _In_z_ LPCWSTR szFile
 
 	// Open the property of the attachment
 	// containing the file data
-	EC_H(lpMessage->OpenProperty(
+	EC_MAPI(lpMessage->OpenProperty(
 		PR_INTERNET_CONTENT,
 		(LPIID)&IID_IStream,
 		0,
@@ -623,13 +623,13 @@ _Check_return_ HRESULT SaveToEML(_In_ LPMESSAGE lpMessage, _In_z_ LPCWSTR szFile
 			{
 				pStrmSrc->Stat(&StatInfo, STATFLAG_NONAME);
 
-				EC_H(pStrmSrc->CopyTo(pStrmDest,
+				EC_MAPI(pStrmSrc->CopyTo(pStrmDest,
 					StatInfo.cbSize,
 					NULL,
 					NULL));
 
 				// Commit changes to new stream
-				EC_H(pStrmDest->Commit(STGC_DEFAULT));
+				EC_MAPI(pStrmDest->Commit(STGC_DEFAULT));
 
 				pStrmDest->Release();
 			}
@@ -701,7 +701,7 @@ _Check_return_ HRESULT CreateNewMSG(_In_z_ LPCWSTR szFileName, bool bUnicode, _D
 		if (SUCCEEDED(hRes) && pStorage)
 		{
 			// Open an IMessage interface on an IStorage object
-			EC_H(OpenIMsgOnIStg(
+			EC_MAPI(OpenIMsgOnIStg(
 				NULL,
 				MAPIAllocateBuffer,
 				MAPIAllocateMore,
@@ -720,7 +720,7 @@ _Check_return_ HRESULT CreateNewMSG(_In_z_ LPCWSTR szFileName, bool bUnicode, _D
 				// as the storage medium. If the client does not support
 				// CLSID_MailMessage as the compound document, you will have to use
 				// the CLSID that it does support.
-				EC_H(WriteClassStg(pStorage, CLSID_MailMessage));
+				EC_MAPI(WriteClassStg(pStorage, CLSID_MailMessage));
 				if (SUCCEEDED(hRes))
 				{
 					*lppStorage = pStorage;
@@ -771,7 +771,7 @@ _Check_return_ HRESULT SaveToMSG(_In_ LPMESSAGE lpMessage, _In_z_ LPCWSTR szFile
 		// copy message properties to IMessage object opened on top of IStorage.
 		LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIProp::CopyTo"), hWnd); // STRING_OK
 
-		EC_H(lpMessage->CopyTo(0, NULL,
+		EC_MAPI(lpMessage->CopyTo(0, NULL,
 			(LPSPropTagArray)&excludeTags,
 			lpProgress ? (ULONG_PTR)hWnd : NULL,
 			lpProgress,
@@ -789,10 +789,10 @@ _Check_return_ HRESULT SaveToMSG(_In_ LPMESSAGE lpMessage, _In_z_ LPCWSTR szFile
 		MAPIFreeBuffer(lpProblems);
 
 		// save changes to IMessage object.
-		EC_H(pIMsg->SaveChanges(KEEP_OPEN_READWRITE));
+		EC_MAPI(pIMsg->SaveChanges(KEEP_OPEN_READWRITE));
 
 		// save changes in storage of new doc file
-		EC_H(pStorage->Commit(STGC_DEFAULT));
+		EC_MAPI(pStorage->Commit(STGC_DEFAULT));
 	}
 
 	if (pStorage) pStorage->Release();
@@ -864,32 +864,32 @@ _Check_return_ HRESULT SaveToTNEF(_In_ LPMESSAGE lpMessage, _In_ LPADRBOOK lpAdr
 		if (lpTNEF)
 		{
 			// Excludes
-			EC_H(lpTNEF->AddProps(
+			EC_MAPI(lpTNEF->AddProps(
 				TNEF_PROP_EXCLUDE,
 				0,
 				NULL,
 				(LPSPropTagArray) &lpPropTnefExcludeArray
 				));
-			EC_H(lpTNEF->AddProps(
+			EC_MAPI(lpTNEF->AddProps(
 				TNEF_PROP_EXCLUDE | TNEF_PROP_ATTACHMENTS_ONLY,
 				0,
 				NULL,
 				(LPSPropTagArray) &lpPropTnefExcludeArray
 				));
 
-			EC_H(lpTNEF->AddProps(
+			EC_MAPI(lpTNEF->AddProps(
 				TNEF_PROP_INCLUDE,
 				0,
 				NULL,
 				(LPSPropTagArray) &lpPropTnefIncludeArray
 				));
 
-			EC_H(lpTNEF->Finish(0, &dwKey, &lpError));
+			EC_MAPI(lpTNEF->Finish(0, &dwKey, &lpError));
 
 			EC_TNEFERR(lpError);
 
 			// Saving stream
-			EC_H(lpStream->Commit(STGC_DEFAULT));
+			EC_MAPI(lpStream->Commit(STGC_DEFAULT));
 
 			MAPIFreeBuffer(lpError);
 			lpTNEF->Release();
@@ -923,14 +923,14 @@ _Check_return_ HRESULT DeleteAttachments(_In_ LPMESSAGE lpMessage, _In_opt_z_ LP
 
 	if (!lpMessage) return MAPI_E_INVALID_PARAMETER;
 
-	EC_H(HrGetOneProp(
+	EC_MAPI(HrGetOneProp(
 		lpMessage,
 		PR_HASATTACH,
 		&pProps));
 
 	if (pProps && PR_HASATTACH == pProps[0].ulPropTag && pProps[0].Value.b)
 	{
-		EC_H(lpMessage->OpenProperty(
+		EC_MAPI(lpMessage->OpenProperty(
 			PR_MESSAGE_ATTACHMENTS,
 			&IID_IMAPITable,
 			0,
@@ -943,7 +943,7 @@ _Check_return_ HRESULT DeleteAttachments(_In_ LPMESSAGE lpMessage, _In_opt_z_ LP
 			// to HrQueryAllRows for the file name.  However,
 			// we don't support restricting attachment tables (EMSMDB32 that is)
 			// So I have to compare the strings myself (see below)
-			EC_H(HrQueryAllRows(lpAttTbl,
+			EC_MAPI(HrQueryAllRows(lpAttTbl,
 				(LPSPropTagArray) &sptAttachTableCols,
 				NULL,
 				NULL,
@@ -970,7 +970,7 @@ _Check_return_ HRESULT DeleteAttachments(_In_ LPMESSAGE lpMessage, _In_opt_z_ LP
 					// Open the attachment
 					LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMessage::DeleteAttach"), hWnd); // STRING_OK
 
-					EC_H(lpMessage->DeleteAttach(
+					EC_MAPI(lpMessage->DeleteAttach(
 						pRows->aRow[iRow].lpProps[ATTACHNUM].Value.l,
 						lpProgress ? (ULONG_PTR)hWnd : NULL,
 						lpProgress,
@@ -989,7 +989,7 @@ _Check_return_ HRESULT DeleteAttachments(_In_ LPMESSAGE lpMessage, _In_opt_z_ LP
 				// and also added a flag so we only call this if we
 				// got a successful DeleteAttach call
 				if (bDirty)
-					EC_H(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+					EC_MAPI(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 			}
 		}
 	}
@@ -1024,14 +1024,14 @@ _Check_return_ HRESULT WriteAttachmentsToFile(_In_ LPMESSAGE lpMessage, HWND hWn
 
 	if (!lpMessage) return MAPI_E_INVALID_PARAMETER;
 
-	EC_H(HrGetOneProp(
+	EC_MAPI(HrGetOneProp(
 		lpMessage,
 		PR_HASATTACH,
 		&pProps));
 
 	if (pProps && PR_HASATTACH == pProps[0].ulPropTag && pProps[0].Value.b)
 	{
-		EC_H(lpMessage->OpenProperty(
+		EC_MAPI(lpMessage->OpenProperty(
 			PR_MESSAGE_ATTACHMENTS,
 			&IID_IMAPITable,
 			0,
@@ -1040,7 +1040,7 @@ _Check_return_ HRESULT WriteAttachmentsToFile(_In_ LPMESSAGE lpMessage, HWND hWn
 
 		if (lpAttTbl)
 		{
-			EC_H(HrQueryAllRows(lpAttTbl,
+			EC_MAPI(HrQueryAllRows(lpAttTbl,
 				(LPSPropTagArray) &sptAttachTableCols,
 				NULL,
 				NULL,
@@ -1056,7 +1056,7 @@ _Check_return_ HRESULT WriteAttachmentsToFile(_In_ LPMESSAGE lpMessage, HWND hWn
 					if (PR_ATTACH_NUM != pRows->aRow[iRow].lpProps[ATTACHNUM].ulPropTag) continue;
 
 					// Open the attachment
-					EC_H(lpMessage->OpenAttach (
+					EC_MAPI(lpMessage->OpenAttach (
 						pRows->aRow[iRow].lpProps[ATTACHNUM].Value.l,
 						NULL,
 						MAPI_BEST_ACCESS,
@@ -1095,7 +1095,7 @@ _Check_return_ HRESULT WriteEmbeddedMSGToFile(_In_ LPATTACH lpAttach, _In_z_ LPC
 
 	DebugPrint(DBGGeneric,_T("WriteEmbeddedMSGToFile: Saving attachment to \"%ws\"\n"),szFileName);
 
-	EC_H(lpAttach->OpenProperty(
+	EC_MAPI(lpAttach->OpenProperty(
 		PR_ATTACH_DATA_OBJ,
 		(LPIID)&IID_IMessage,
 		0,
@@ -1122,7 +1122,7 @@ _Check_return_ HRESULT WriteAttachStreamToFile(_In_ LPATTACH lpAttach, _In_z_ LP
 
 	// Open the property of the attachment
 	// containing the file data
-	WC_H(lpAttach->OpenProperty(
+	WC_MAPI(lpAttach->OpenProperty(
 		PR_ATTACH_DATA_BIN,
 		(LPIID)&IID_IStream,
 		0,
@@ -1155,13 +1155,13 @@ _Check_return_ HRESULT WriteAttachStreamToFile(_In_ LPATTACH lpAttach, _In_z_ LP
 			{
 				pStrmSrc->Stat(&StatInfo, STATFLAG_NONAME);
 
-				EC_H(pStrmSrc->CopyTo(pStrmDest,
+				EC_MAPI(pStrmSrc->CopyTo(pStrmDest,
 					StatInfo.cbSize,
 					NULL,
 					NULL));
 
 				// Commit changes to new stream
-				EC_H(pStrmDest->Commit(STGC_DEFAULT));
+				EC_MAPI(pStrmDest->Commit(STGC_DEFAULT));
 
 				pStrmDest->Release();
 			}
@@ -1184,7 +1184,7 @@ _Check_return_ HRESULT WriteOleToFile(_In_ LPATTACH lpAttach, _In_z_ LPCWSTR szF
 
 	// Open the property of the attachment containing the OLE data
 	// Try to get it as an IStreamDocFile file first as that will be faster
-	WC_H(lpAttach->OpenProperty(
+	WC_MAPI(lpAttach->OpenProperty(
 		PR_ATTACH_DATA_OBJ,
 		(LPIID)&IID_IStreamDocfile,
 		0,
@@ -1207,15 +1207,15 @@ _Check_return_ HRESULT WriteOleToFile(_In_ LPATTACH lpAttach, _In_z_ LPCWSTR szF
 
 		if (pStrmDest)
 		{
-			EC_H(pStrmSrc->Stat(&StatInfo, STATFLAG_NONAME));
+			EC_MAPI(pStrmSrc->Stat(&StatInfo, STATFLAG_NONAME));
 
-			EC_H(pStrmSrc->CopyTo(pStrmDest,
+			EC_MAPI(pStrmSrc->CopyTo(pStrmDest,
 				StatInfo.cbSize,
 				NULL,
 				NULL));
 
 			// Commit changes to new stream
-			EC_H(pStrmDest->Commit(STGC_DEFAULT));
+			EC_MAPI(pStrmDest->Commit(STGC_DEFAULT));
 			pStrmDest->Release();
 		}
 		pStrmSrc->Release();
@@ -1224,7 +1224,7 @@ _Check_return_ HRESULT WriteOleToFile(_In_ LPATTACH lpAttach, _In_z_ LPCWSTR szF
 	else
 	{
 		hRes = S_OK;
-		EC_H(lpAttach->OpenProperty(
+		EC_MAPI(lpAttach->OpenProperty(
 			PR_ATTACH_DATA_OBJ,
 			(LPIID)&IID_IStorage,
 			0,
@@ -1241,13 +1241,13 @@ _Check_return_ HRESULT WriteOleToFile(_In_ LPATTACH lpAttach, _In_z_ LPCWSTR szF
 				&lpStorageDest));
 			if (lpStorageDest)
 			{
-				EC_H(lpStorageSrc->CopyTo(
+				EC_MAPI(lpStorageSrc->CopyTo(
 					NULL,
 					NULL,
 					NULL,
 					lpStorageDest));
 
-				EC_H(lpStorageDest->Commit(STGC_DEFAULT));
+				EC_MAPI(lpStorageDest->Commit(STGC_DEFAULT));
 				lpStorageDest->Release();
 			}
 

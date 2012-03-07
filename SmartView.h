@@ -993,7 +993,65 @@ struct NickNameCacheStruct
 
 // Allocates return value with new. Clean up with DeleteNickNameCacheStruct.
 _Check_return_ NickNameCacheStruct* BinToNickNameCacheStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
-void DeleteNickNameCacheStruct(_In_ NickNameCacheStruct* pfufsNickNameCache);
+void DeleteNickNameCacheStruct(_In_ NickNameCacheStruct* pnncNickNameCache);
 // result allocated with new, clean up with delete[]
-_Check_return_ LPWSTR NickNameCacheStructToString(_In_ NickNameCacheStruct* pfufsNickNameCache);
+_Check_return_ LPWSTR NickNameCacheStructToString(_In_ NickNameCacheStruct* pnncNickNameCache);
+
+// VerbDataStruct
+// =====================
+//   This structure specifies verb data
+//
+struct VerbDataStruct
+{
+	DWORD VerbType;
+	BYTE DisplayNameCount;
+	LPSTR DisplayName;
+	BYTE MsgClsNameCount;
+	LPSTR MsgClsName;
+	BYTE Internal1StringCount;
+	LPSTR Internal1String;
+	BYTE DisplayNameCountRepeat;
+	LPSTR DisplayNameRepeat;
+	DWORD Internal2;
+	BYTE Internal3;
+	DWORD fUseUSHeaders;
+	DWORD Internal4;
+	DWORD SendBehavior;
+	DWORD Internal5;
+	DWORD ID;
+	DWORD Internal6;
+};
+
+// VerbExtraDataStruct
+// =====================
+//   This structure specifies extra verb data
+//
+struct VerbExtraDataStruct
+{
+	BYTE DisplayNameCount;
+	LPWSTR DisplayName;
+	BYTE DisplayNameCountRepeat;
+	LPWSTR DisplayNameRepeat;
+};
+
+// VerbStreamStruct
+// =====================
+//   This structure specifies a verb stream
+//
+struct VerbStreamStruct
+{
+	WORD Version;
+	DWORD Count;
+	VerbDataStruct* lpVerbData;
+	WORD Version2;
+	VerbExtraDataStruct* lpVerbExtraData;
+	size_t JunkDataSize;
+	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
+};
+
+// Allocates return value with new. Clean up with DeleteVerbStreamStruct.
+_Check_return_ VerbStreamStruct* BinToVerbStreamStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+void DeleteVerbStreamStruct(_In_ VerbStreamStruct* pvsVerbStream);
+// result allocated with new, clean up with delete[]
+_Check_return_ LPWSTR VerbStreamStructToString(_In_ VerbStreamStruct* pvsVerbStream);
 // End Functions to parse PT_BINARY properties

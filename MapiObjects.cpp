@@ -103,7 +103,7 @@ void CGlobalCache::MAPIInitialize(ULONG ulFlags)
 	if (!m_bMAPIInitialized)
 	{
 		MAPIINIT_0 mapiInit = {MAPI_INIT_VERSION,ulFlags};
-		WC_H(::MAPIInitialize(&mapiInit));
+		WC_MAPI(::MAPIInitialize(&mapiInit));
 		if (SUCCEEDED(hRes))
 		{
 			m_bMAPIInitialized = true;
@@ -339,7 +339,7 @@ void CMapiObjects::Logoff(_In_ HWND hwnd, ULONG ulFlags)
 
 	if (m_lpMAPISession)
 	{
-		EC_H(m_lpMAPISession->Logoff((ULONG_PTR)hwnd,ulFlags,NULL));
+		EC_MAPI(m_lpMAPISession->Logoff((ULONG_PTR)hwnd,ulFlags,NULL));
 		m_lpMAPISession->Release();
 		m_lpMAPISession = NULL;
 	}
@@ -377,7 +377,7 @@ _Check_return_ LPADRBOOK CMapiObjects::GetAddrBook(bool bForceOpen)
 	if (!m_lpAddrBook && m_lpMAPISession && bForceOpen)
 	{
 		HRESULT hRes = S_OK;
-		EC_H(m_lpMAPISession->OpenAddressBook(
+		EC_MAPI(m_lpMAPISession->OpenAddressBook(
 			NULL,
 			NULL,
 			NULL,

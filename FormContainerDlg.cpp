@@ -108,7 +108,7 @@ void CFormContainerDlg::OnRefreshView()
 	if (m_lpFormContainer)
 	{
 		LPSMAPIFORMINFOARRAY lpMAPIFormInfoArray = NULL;
-		WC_H(m_lpFormContainer->ResolveMultipleMessageClasses(0,NULL,&lpMAPIFormInfoArray));
+		WC_MAPI(m_lpFormContainer->ResolveMultipleMessageClasses(0,NULL,&lpMAPIFormInfoArray));
 		if (lpMAPIFormInfoArray)
 		{
 			ULONG i = NULL;
@@ -117,7 +117,7 @@ void CFormContainerDlg::OnRefreshView()
 				if (0 == i)
 				{
 					LPSPropTagArray lpTagArray = NULL;
-					EC_H(lpMAPIFormInfoArray->aFormInfo[i]->GetPropList(fMapiUnicode,&lpTagArray));
+					EC_MAPI(lpMAPIFormInfoArray->aFormInfo[i]->GetPropList(fMapiUnicode,&lpTagArray));
 					EC_H(m_lpContentsTableListCtrl->SetUIColumns(lpTagArray));
 					MAPIFreeBuffer(lpTagArray);
 				}
@@ -166,7 +166,7 @@ _Check_return_ HRESULT CFormContainerDlg::OpenItemProp(int iSelectedItem, __mfcm
 		if (CheckStringProp(lpProp,PT_STRING8))
 		{
 			LPMAPIFORMINFO lpFormInfoProp = NULL;
-			EC_H(m_lpFormContainer->ResolveMessageClass(
+			EC_MAPI(m_lpFormContainer->ResolveMessageClass(
 				lpProp->Value.lpszA,
 				MAPIFORM_EXACTMATCH,
 				&lpFormInfoProp));
@@ -208,7 +208,7 @@ void CFormContainerDlg::OnDeleteSelectedItem()
 				_T("OnDeleteSelectedItem"), // STRING_OK
 				_T("Removing form \"%hs\"\n"), // STRING_OK
 				lpProp->Value.lpszA);
-			EC_H(m_lpFormContainer->RemoveForm(
+			EC_MAPI(m_lpFormContainer->RemoveForm(
 				lpProp->Value.lpszA));
 		}
 	}
@@ -258,11 +258,11 @@ void CFormContainerDlg::OnInstallForm()
 				hRes = S_OK;
 				DebugPrintEx(DBGForms,CLASS,_T("OnInstallForm"),
 					_T("Calling InstallForm(%p,0x%08X,\"%hs\")\n"),hwnd,ulFlags,lpszPath); // STRING_OK
-				WC_H(m_lpFormContainer->InstallForm((ULONG_PTR)hwnd,ulFlags,(LPTSTR)lpszPath));
+				WC_MAPI(m_lpFormContainer->InstallForm((ULONG_PTR)hwnd,ulFlags,(LPTSTR)lpszPath));
 				if (MAPI_E_EXTENDED_ERROR == hRes)
 				{
 					LPMAPIERROR lpErr = NULL;
-					hRes = m_lpFormContainer->GetLastError(hRes,fMapiUnicode,&lpErr);
+					WC_MAPI(m_lpFormContainer->GetLastError(hRes,fMapiUnicode,&lpErr));
 					if (lpErr)
 					{
 						EC_MAPIERR(fMapiUnicode,lpErr);
@@ -300,7 +300,7 @@ void CFormContainerDlg::OnRemoveForm()
 		{
 			DebugPrintEx(DBGForms,CLASS,_T("OnRemoveForm"),
 				_T("Calling RemoveForm(\"%hs\")\n"),szClass); // STRING_OK
-			EC_H(m_lpFormContainer->RemoveForm(szClass));
+			EC_MAPI(m_lpFormContainer->RemoveForm(szClass));
 			OnRefreshView(); // Update the view since we don't have notifications here.
 		}
 	}
@@ -331,7 +331,7 @@ void CFormContainerDlg::OnResolveMessageClass()
 			LPMAPIFORMINFO lpMAPIFormInfo = NULL;
 			DebugPrintEx(DBGForms,CLASS,_T("OnResolveMessageClass"),
 				_T("Calling ResolveMessageClass(\"%hs\",0x%08X)\n"),szClass,ulFlags); // STRING_OK
-			EC_H(m_lpFormContainer->ResolveMessageClass(szClass,ulFlags,&lpMAPIFormInfo));
+			EC_MAPI(m_lpFormContainer->ResolveMessageClass(szClass,ulFlags,&lpMAPIFormInfo));
 			if (lpMAPIFormInfo)
 			{
 				OnUpdateSingleMAPIPropListCtrl(lpMAPIFormInfo, NULL);
@@ -408,7 +408,7 @@ void CFormContainerDlg::OnResolveMultipleMessageClasses()
 			LPSMAPIFORMINFOARRAY lpMAPIFormInfoArray = NULL;
 			DebugPrintEx(DBGForms,CLASS,_T("OnResolveMultipleMessageClasses"),
 				_T("Calling ResolveMultipleMessageClasses(Num Classes = 0x%08X,0x%08X)\n"),ulNumClasses,ulFlags); // STRING_OK
-			EC_H(m_lpFormContainer->ResolveMultipleMessageClasses(lpMSGClassArray,ulFlags,&lpMAPIFormInfoArray));
+			EC_MAPI(m_lpFormContainer->ResolveMultipleMessageClasses(lpMSGClassArray,ulFlags,&lpMAPIFormInfoArray));
 			if (lpMAPIFormInfoArray)
 			{
 				DebugPrintEx(DBGForms,CLASS,_T("OnResolveMultipleMessageClasses"),_T("Got 0x%08X forms\n"),lpMAPIFormInfoArray->cForms);
@@ -450,7 +450,7 @@ void CFormContainerDlg::OnCalcFormPropSet()
 		LPMAPIFORMPROPARRAY lpFormPropArray = NULL;
 		DebugPrintEx(DBGForms,CLASS,_T("OnCalcFormPropSet"),
 			_T("Calling CalcFormPropSet(0x%08X)\n"),ulFlags); // STRING_OK
-		EC_H(m_lpFormContainer->CalcFormPropSet(ulFlags,&lpFormPropArray));
+		EC_MAPI(m_lpFormContainer->CalcFormPropSet(ulFlags,&lpFormPropArray));
 		if (lpFormPropArray)
 		{
 			DebugPrintFormPropArray(DBGForms,lpFormPropArray);
@@ -465,7 +465,7 @@ void CFormContainerDlg::OnGetDisplay()
 	if (!m_lpFormContainer) return;
 
 	LPTSTR lpszDisplayName = NULL;
-	EC_H(m_lpFormContainer->GetDisplay(fMapiUnicode,&lpszDisplayName));
+	EC_MAPI(m_lpFormContainer->GetDisplay(fMapiUnicode,&lpszDisplayName));
 
 	if (lpszDisplayName)
 	{

@@ -859,7 +859,7 @@ _Check_return_ HRESULT GetLargeBinaryProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPr
 		// need to get the data as a stream
 		LPSTREAM lpStream = NULL;
 
-		WC_H(lpMAPIProp->OpenProperty(
+		WC_MAPI(lpMAPIProp->OpenProperty(
 			ulPropTag,
 			&IID_IStream,
 			STGM_READ,
@@ -889,7 +889,7 @@ _Check_return_ HRESULT GetLargeBinaryProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPr
 							(LPVOID*) &lpPropArray->Value.bin.lpb));
 						if (lpPropArray->Value.bin.lpb)
 						{
-							EC_H(lpStream->Read(lpPropArray->Value.bin.lpb, StatInfo.cbSize.LowPart, &lpPropArray->Value.bin.cb));
+							EC_MAPI(lpStream->Read(lpPropArray->Value.bin.lpb, StatInfo.cbSize.LowPart, &lpPropArray->Value.bin.cb));
 							if (SUCCEEDED(hRes) && lpPropArray->Value.bin.cb == StatInfo.cbSize.LowPart)
 							{
 								bSuccess = true;

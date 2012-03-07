@@ -199,7 +199,7 @@ void CContentsTableListCtrl::GetStatus()
 	ULONG ulTableStatus = NULL;
 	ULONG ulTableType = NULL;
 
-	EC_H(m_lpContentsTable->GetStatus(
+	EC_MAPI(m_lpContentsTable->GetStatus(
 		&ulTableStatus,
 		&ulTableType));
 
@@ -345,7 +345,7 @@ void CContentsTableListCtrl::DoSetColumns(bool bAddExtras, bool bDisplayEditor, 
 
 	if (S_OK == hRes)
 	{
-		EC_H(m_lpContentsTable->QueryColumns(
+		EC_MAPI(m_lpContentsTable->QueryColumns(
 			ulQueryColumnFlags,
 			&lpOriginalColSet));
 		hRes = S_OK;
@@ -395,7 +395,7 @@ void CContentsTableListCtrl::DoSetColumns(bool bAddExtras, bool bDisplayEditor, 
 	if (lpFinalTagArray)
 	{
 		// Apply lpFinalTagArray through SetColumns
-		EC_H(m_lpContentsTable->SetColumns(
+		EC_MAPI(m_lpContentsTable->SetColumns(
 			lpFinalTagArray,
 			ulSetColumnFlags)); // Flags
 		EC_H(SetUIColumns(lpFinalTagArray));
@@ -572,7 +572,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::ApplyRestriction()
 			DebugPrintRestriction(DBGGeneric,m_lpRes,lpMDB);
 		}
 
-		EC_H(m_lpContentsTable->Restrict(
+		EC_MAPI(m_lpContentsTable->Restrict(
 			m_lpRes,
 			TBL_BATCH));
 	}
@@ -623,7 +623,7 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 	CString					szStatusText;
 
 	// required on da new thread before we do any MAPI work
-	EC_H(MAPIInitialize(NULL));
+	EC_MAPI(MAPIInitialize(NULL));
 
 	(void) ::SendMessage(hWndHost,WM_MFCMAPI_CLEARSINGLEMAPIPROPLIST,NULL,NULL);
 	szStatusText.FormatMessage(IDS_STATUSTEXTNUMITEMS,lpListCtrl->GetItemCount());
@@ -636,13 +636,13 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 	if (!bABORTSET) // only check abort once for this group of ops
 	{
 		// go to the first row
-		EC_H(lpContentsTable->SeekRow(
+		EC_MAPI(lpContentsTable->SeekRow(
 			BOOKMARK_BEGINNING,
 			0,
 			NULL));
 		hRes = S_OK; // don't let failure here fail the whole load
 
-		EC_H(lpContentsTable->GetRowCount(
+		EC_MAPI(lpContentsTable->GetRowCount(
 			NULL,
 			&ulTotal));
 		hRes = S_OK; // don't let failure here fail the whole load
@@ -670,14 +670,14 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 			DebugPrintEx(DBGGeneric,CLASS,_T("DoFindRows"),_T("running FindRow with restriction:\n"));
 			DebugPrintRestriction(DBGGeneric,lpRes,NULL);
 
-			CHECKABORT(WC_H(lpContentsTable->FindRow(
+			CHECKABORT(WC_MAPI(lpContentsTable->FindRow(
 				lpRes,
 				BOOKMARK_CURRENT,
 				NULL)));
 
 			if (MAPI_E_NOT_FOUND != hRes) // MAPI_E_NOT_FOUND signals we didn't find any more rows.
 			{
-				CHECKABORT(EC_H(lpContentsTable->QueryRows(
+				CHECKABORT(EC_MAPI(lpContentsTable->QueryRows(
 					1,
 					NULL,
 					&pRows)));
@@ -692,7 +692,7 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 		{
 			DebugPrintEx(DBGGeneric,CLASS,_T("ThreadFuncLoadTable"),_T("Calling QueryRows. Asking for 0x%X rows.\n"),(ulThrottleLevel)?ulThrottleLevel:NUMROWSPERLOOP);
 			// Pull back a sizable block of rows to add to the list box
-			CHECKABORT(EC_H(lpContentsTable->QueryRows(
+			CHECKABORT(EC_MAPI(lpContentsTable->QueryRows(
 				(ulThrottleLevel)?ulThrottleLevel:NUMROWSPERLOOP,
 				NULL,
 				&pRows)));
@@ -1540,15 +1540,15 @@ void CContentsTableListCtrl::OnItemChanged(_In_ NMHDR* pNMHDR, _In_ LRESULT* pRe
 			else if (lpMAPIProp)
 			{
 				// Get a property from the item for the title bar
-				hRes = HrGetOneProp(
+				WC_MAPI(HrGetOneProp(
 					lpMAPIProp,
 					PR_DISPLAY_NAME,
-					&lpProp);
+					&lpProp));
 				if (MAPI_E_NOT_FOUND == hRes)
 				{
 					hRes = S_OK;
 					// Let's try a different property
-					WC_H(HrGetOneProp(
+					WC_MAPI(HrGetOneProp(
 						lpMAPIProp,
 						PR_SUBJECT,
 						&lpProp));
@@ -1590,7 +1590,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::NotificationOn()
 
 	if (m_lpAdviseSink)
 	{
-		WC_H(m_lpContentsTable->Advise(
+		WC_MAPI(m_lpContentsTable->Advise(
 			fnevTableModified,
 			(IMAPIAdviseSink *)m_lpAdviseSink,
 			&m_ulAdviseConnection));
@@ -1609,7 +1609,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::NotificationOn()
 			if (lpMDB)
 			{
 				// Try to trigger some RPC to get the notifications going
-				WC_H(HrGetOneProp(
+				WC_MAPI(HrGetOneProp(
 					lpMDB,
 					PR_TEST_LINE_SPEED,
 					&lpProp));
@@ -1704,7 +1704,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::DoExpandCollapse()
 				LPSRowSet lpRowSet = NULL;
 				ULONG ulRowsAdded = 0;
 
-				EC_H(m_lpContentsTable->ExpandRow(
+				EC_MAPI(m_lpContentsTable->ExpandRow(
 					lpData->data.Contents.lpInstanceKey->cb,
 					lpData->data.Contents.lpInstanceKey->lpb,
 					256,
@@ -1735,7 +1735,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::DoExpandCollapse()
 		{
 			ULONG ulRowsRemoved = 0;
 
-			EC_H(m_lpContentsTable->CollapseRow(
+			EC_MAPI(m_lpContentsTable->CollapseRow(
 				lpData->data.Contents.lpInstanceKey->cb,
 				lpData->data.Contents.lpInstanceKey->lpb,
 				NULL,
@@ -1793,7 +1793,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::SetSortTable(_In_ LPSSortOrderSet
 	HRESULT hRes = S_OK;
 	if (!m_lpContentsTable) return MAPI_E_INVALID_PARAMETER;
 
-	EC_H(m_lpContentsTable->SortTable(
+	EC_MAPI(m_lpContentsTable->SortTable(
 		lpSortOrderSet,
 		ulFlags));
 
@@ -1840,7 +1840,7 @@ _Check_return_ LRESULT	CContentsTableListCtrl::msgOnAddItem(WPARAM wParam, LPARA
 	SRow NewRow = {0};
 	NewRow.cValues = tab->row.cValues;
 	NewRow.ulAdrEntryPad = tab->row.ulAdrEntryPad;
-	EC_H(ScDupPropset(
+	EC_MAPI(ScDupPropset(
 		tab->row.cValues,
 		tab->row.lpProps,
 		MAPIAllocateBuffer,
@@ -1899,7 +1899,7 @@ _Check_return_ LRESULT	CContentsTableListCtrl::msgOnModifyItem(WPARAM wParam, LP
 		SRow NewRow = {0};
 		NewRow.cValues = tab->row.cValues;
 		NewRow.ulAdrEntryPad = tab->row.ulAdrEntryPad;
-		EC_H(ScDupPropset(
+		EC_MAPI(ScDupPropset(
 			tab->row.cValues,
 			tab->row.lpProps,
 			MAPIAllocateBuffer,

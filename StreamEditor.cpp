@@ -147,7 +147,7 @@ void CStreamEditor::ReadTextStreamFromProperty()
 
 	DebugPrintEx(DBGStream,CLASS,_T("ReadTextStreamFromProperty"),_T("opening property 0x%X (== %s) from %p\n"),m_ulPropTag,(LPCTSTR) TagToString(m_ulPropTag,m_lpMAPIProp,m_bIsAB,true),m_lpMAPIProp);
 
-	WC_H(m_lpMAPIProp->OpenProperty(
+	WC_MAPI(m_lpMAPIProp->OpenProperty(
 		m_ulPropTag,
 		&IID_IStream,
 		STGM_READ,
@@ -217,7 +217,7 @@ void CStreamEditor::WriteTextStreamToProperty()
 	LPSTREAM lpTmpRTFStream = NULL;
 	LPSTREAM lpStreamOut = NULL;
 
-	EC_H(m_lpMAPIProp->OpenProperty(
+	EC_MAPI(m_lpMAPIProp->OpenProperty(
 		m_ulPropTag,
 		&IID_IStream,
 		STGM_READWRITE,
@@ -254,12 +254,12 @@ void CStreamEditor::WriteTextStreamToProperty()
 
 		if (GetBinaryUseControl(m_iBinBox, &cb, &lpb))
 		{
-			EC_H(lpStreamOut->Write(lpb, (ULONG) cb, &cbWritten));
+			EC_MAPI(lpStreamOut->Write(lpb, (ULONG) cb, &cbWritten));
 			DebugPrintEx(DBGStream,CLASS,_T("WriteTextStreamToProperty"),_T("wrote 0x%X\n"),cbWritten);
 
-			EC_H(lpStreamOut->Commit(STGC_DEFAULT));
+			EC_MAPI(lpStreamOut->Commit(STGC_DEFAULT));
 
-			EC_H(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
+			EC_MAPI(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
 		}
 		delete[] lpb;
 	}

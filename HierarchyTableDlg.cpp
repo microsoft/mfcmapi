@@ -51,7 +51,7 @@ CBaseDialog(
 	if (lpRootContainer)
 	{
 		LPMAPICONTAINER lpTemp = NULL;
-		EC_H(lpRootContainer->QueryInterface(IID_IMAPIContainer,(LPVOID*) &lpTemp));
+		EC_MAPI(lpRootContainer->QueryInterface(IID_IMAPIContainer,(LPVOID*) &lpTemp));
 		if (lpTemp)
 		{
 			m_lpContainer = lpTemp;
@@ -151,7 +151,7 @@ void CHierarchyTableDlg::OnDisplayHierarchyTable()
 
 		WC_H(MyData.DisplayDialog());
 
-		EC_H(lpContainer->GetHierarchyTable(
+		EC_MAPI(lpContainer->GetHierarchyTable(
 			MyData.GetCheck(0)?CONVENIENT_DEPTH:0
 			| fMapiUnicode,
 			&lpMAPITable));
@@ -185,7 +185,7 @@ void CHierarchyTableDlg::OnEditSearchCriteria()
 		LPENTRYLIST lpEntryList = NULL;
 		ULONG ulSearchState = 0;
 
-		WC_H(lpMAPIFolder->GetSearchCriteria(
+		WC_MAPI(lpMAPIFolder->GetSearchCriteria(
 			fMapiUnicode,
 			&lpRes,
 			&lpEntryList,
@@ -221,7 +221,7 @@ void CHierarchyTableDlg::OnEditSearchCriteria()
 				LPSRestriction lpNewRes = MyCriteria.DetachModifiedSRestriction();
 				LPENTRYLIST lpNewEntryList = MyCriteria.DetachModifiedEntryList();
 				ULONG ulSearchFlags = MyCriteria.GetSearchFlags();
-				EC_H(lpMAPIFolder->SetSearchCriteria(
+				EC_MAPI(lpMAPIFolder->SetSearchCriteria(
 					lpNewRes,
 					lpNewEntryList,
 					ulSearchFlags));

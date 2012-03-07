@@ -76,6 +76,7 @@ private:
 	void OnShowProfiles();
 	void OnUnloadMAPI();
 	void OnViewMSGProperties();
+	void OnDisplayMAPIPath();
 
 	DECLARE_MESSAGE_MAP()
 };

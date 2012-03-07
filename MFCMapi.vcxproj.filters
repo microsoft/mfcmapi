@@ -177,6 +177,9 @@
     <ClInclude Include="nameidarray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Options.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="ParentWnd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -238,9 +241,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="UIFunctions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Options.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -410,6 +410,12 @@
     <ClCompile Include="MMErr.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MMFidMid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MMFolder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="MMMapiMime.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -420,6 +426,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MMSmartView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MMStore.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MrMAPI.cpp">
@@ -441,6 +450,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="NamedPropCache.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Options.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ParentWnd.cpp">
@@ -494,16 +506,7 @@
     <ClCompile Include="TagArrayEditor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MMFidMid.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MMFolder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="UIFunctions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Options.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -517,6 +520,9 @@
     <CustomBuildStep Include="MMErr.h">
       <Filter>Header Files</Filter>
     </CustomBuildStep>
+    <CustomBuildStep Include="MMFolder.h">
+      <Filter>Header Files</Filter>
+    </CustomBuildStep>
     <CustomBuildStep Include="MMMapiMime.h">
       <Filter>Header Files</Filter>
     </CustomBuildStep>
@@ -527,6 +533,9 @@
       <Filter>Header Files</Filter>
     </CustomBuildStep>
     <CustomBuildStep Include="MMSmartView.h">
+      <Filter>Header Files</Filter>
+    </CustomBuildStep>
+    <CustomBuildStep Include="MMStore.h">
       <Filter>Header Files</Filter>
     </CustomBuildStep>
     <CustomBuildStep Include="MrMAPI.h">

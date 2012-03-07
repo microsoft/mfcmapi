@@ -457,7 +457,7 @@ _Check_return_ HRESULT CSingleMAPIPropListCtrl::LoadMAPIPropList()
 
 			// Let's add some extra properties
 			// Don't need to report since we're gonna put show the error in the UI
-			WC_H(m_lpMAPIProp->GetProps(
+			WC_MAPI(m_lpMAPIProp->GetProps(
 				&pNewTag,
 				fMapiUnicode,
 				&cExtraProps,
@@ -816,7 +816,7 @@ void CSingleMAPIPropListCtrl::SavePropsToXML()
 				int iRow;
 				int iItemCount = GetItemCount();
 
-				OutputToFile(fProps,_T("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n"));
+				OutputToFile(fProps, g_szXMLHeader);
 				OutputToFile(fProps,_T("<propertypane>\n"));
 				for (iRow = 0; iRow<iItemCount; iRow++)
 				{
@@ -1529,7 +1529,7 @@ void CSingleMAPIPropListCtrl::OnEditPropAsStream(ULONG ulType, bool bEditAsRTF)
 				ULONG ulPropVal = NULL;
 				LPSPropValue lpProp = NULL;
 
-				WC_H(m_lpMAPIProp->GetProps(
+				WC_MAPI(m_lpMAPIProp->GetProps(
 					&pTag,
 					fMapiUnicode,
 					&ulPropVal,
@@ -1749,7 +1749,7 @@ void CSingleMAPIPropListCtrl::OnPasteProperty()
 					if (lpProgress)
 						ulCopyFlags |= MAPI_DIALOG;
 
-					EC_H(lpSourcePropObj->CopyProps(
+					EC_MAPI(lpSourcePropObj->CopyProps(
 						&TagArray,
 						lpProgress ? (ULONG_PTR)m_lpHostDlg->m_hWnd : NULL, // ui param
 						lpProgress, // progress
@@ -1769,7 +1769,7 @@ void CSingleMAPIPropListCtrl::OnPasteProperty()
 			{
 				ULONG			ulValues = NULL;
 				LPSPropValue	lpSourceProp = NULL;
-				EC_H(lpSourcePropObj->GetProps(
+				EC_MAPI(lpSourcePropObj->GetProps(
 					&TagArray,
 					fMapiUnicode,
 					&ulValues,
@@ -1777,7 +1777,7 @@ void CSingleMAPIPropListCtrl::OnPasteProperty()
 				if (!FAILED(hRes) && ulValues && lpSourceProp && PT_ERROR != lpSourceProp->ulPropTag)
 				{
 					lpSourceProp->ulPropTag = ulTargetTag;
-					EC_H(m_lpMAPIProp->SetProps(
+					EC_MAPI(m_lpMAPIProp->SetProps(
 						ulValues,
 						lpSourceProp,
 						&lpProblems));
@@ -1795,7 +1795,7 @@ void CSingleMAPIPropListCtrl::OnPasteProperty()
 
 	if (!FAILED(hRes))
 	{
-		EC_H(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
+		EC_MAPI(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
 
 		// refresh
 		WC_H(RefreshMAPIPropList());
@@ -1856,7 +1856,7 @@ void CSingleMAPIPropListCtrl::OnCopyTo()
 			if (lpProgress)
 				ulCopyFlags |= MAPI_DIALOG;
 
-			EC_H(lpSourcePropObj->CopyTo(
+			EC_MAPI(lpSourcePropObj->CopyTo(
 				0,
 				NULL, // TODO: exclude interfaces?
 				lpTagArray,
@@ -1882,7 +1882,7 @@ void CSingleMAPIPropListCtrl::OnCopyTo()
 
 	if (!FAILED(hRes))
 	{
-		EC_H(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
+		EC_MAPI(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
 
 		// refresh
 		WC_H(RefreshMAPIPropList());
@@ -1905,7 +1905,7 @@ void CSingleMAPIPropListCtrl::OnOpenProperty()
 	LPSPropValue lpProp = NULL;
 	if (m_lpMAPIProp)
 	{
-		EC_H(HrGetOneProp(m_lpMAPIProp,ulPropTag,&lpProp));
+		EC_MAPI(HrGetOneProp(m_lpMAPIProp,ulPropTag,&lpProp));
 	}
 	else if (GetPropVals())
 	{
@@ -2116,7 +2116,7 @@ void CSingleMAPIPropListCtrl::OnPasteNamedProps()
 						m_lpMAPIProp,
 						m_lpHostDlg->m_hWnd));
 
-					EC_H(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
+					EC_MAPI(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
 
 					WC_H(RefreshMAPIPropList());
 

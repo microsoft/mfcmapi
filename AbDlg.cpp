@@ -259,7 +259,7 @@ void CAbDlg::OnDeleteSelectedItem()
 
 		EC_H(m_lpContentsTableListCtrl->GetSelectedItemEIDs(&lpEIDs));
 
-		EC_H(((LPABCONT)m_lpContainer)->DeleteEntries(lpEIDs,NULL));
+		EC_MAPI(((LPABCONT)m_lpContainer)->DeleteEntries(lpEIDs,NULL));
 
 		MAPIFreeBuffer(lpEIDs);
 	}
@@ -310,7 +310,7 @@ _Check_return_ bool CAbDlg::HandlePaste()
 		{
 			LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IABContainer::CopyEntries"), m_hWnd); // STRING_OK
 
-			EC_H(((LPABCONT)m_lpContainer)->CopyEntries(
+			EC_MAPI(((LPABCONT)m_lpContainer)->CopyEntries(
 				lpEIDs,
 				lpProgress ? (ULONG_PTR)m_hWnd : NULL,
 				lpProgress,

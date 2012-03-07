@@ -52,7 +52,7 @@ CHierarchyTableDlg(
 		LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 		if (lpMDB)
 		{
-			WC_H(HrGetOneProp(
+			WC_MAPI(HrGetOneProp(
 				lpMDB,
 				PR_DISPLAY_NAME,
 				&lpProp));
@@ -63,7 +63,7 @@ CHierarchyTableDlg(
 				{
 					MAPIFreeBuffer(lpProp);
 
-					WC_H(HrGetOneProp(
+					WC_MAPI(HrGetOneProp(
 						lpMDB,
 						PR_MAILBOX_OWNER_NAME,
 						&lpProp));
@@ -258,7 +258,7 @@ void CMsgStoreDlg::OnDisplayReceiveFolderTable()
 	LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 	if (!lpMDB) return;
 
-	EC_H(lpMDB->GetReceiveFolderTable(
+	EC_MAPI(lpMDB->GetReceiveFolderTable(
 		fMapiUnicode,
 		&lpMAPITable));
 	if (lpMAPITable)
@@ -281,7 +281,7 @@ void CMsgStoreDlg::OnDisplayOutgoingQueueTable()
 	LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 	if (!lpMDB) return;
 
-	EC_H(lpMDB->GetOutgoingQueue(
+	EC_MAPI(lpMDB->GetOutgoingQueue(
 		NULL,
 		&lpMAPITable));
 
@@ -369,11 +369,11 @@ void CMsgStoreDlg::OnOpenFormContainer()
 
 	if (lpMAPIFolder)
 	{
-		EC_H(MAPIOpenFormMgr(lpMAPISession,&lpMAPIFormMgr));
+		EC_MAPI(MAPIOpenFormMgr(lpMAPISession,&lpMAPIFormMgr));
 
 		if (lpMAPIFormMgr)
 		{
-			EC_H(lpMAPIFormMgr->OpenFormContainer(
+			EC_MAPI(lpMAPIFormMgr->OpenFormContainer(
 				HFRMREG_FOLDER,
 				lpMAPIFolder,
 				&lpMAPIFormContainer));
@@ -492,7 +492,7 @@ void CMsgStoreDlg::OnPasteMessages()
 			if (lpProgress)
 				ulMoveMessage |= MESSAGE_DIALOG;
 
-			EC_H(lpMAPISourceFolder->CopyMessages(
+			EC_MAPI(lpMAPISourceFolder->CopyMessages(
 				lpEIDs,
 				&IID_IMAPIFolder,
 				lpMAPIDestFolder,
@@ -590,7 +590,7 @@ void CMsgStoreDlg::OnPasteFolder()
 			if (lpProgress)
 				ulCopyFlags |= FOLDER_DIALOG;
 
-			hRes = lpCopyRoot->CopyFolder(
+			WC_MAPI(lpCopyRoot->CopyFolder(
 				lpProps[EID].Value.bin.cb,
 				(LPENTRYID) lpProps[EID].Value.bin.lpb,
 				&IID_IMAPIFolder,
@@ -598,8 +598,7 @@ void CMsgStoreDlg::OnPasteFolder()
 				MyData.GetString(0),
 				lpProgress ? (ULONG_PTR)m_hWnd : NULL, // UI
 				lpProgress, // Progress
-				ulCopyFlags
-				);
+				ulCopyFlags));
 			if (MAPI_E_COLLISION == hRes)
 			{
 				ErrDialog(__FILE__,__LINE__,IDS_EDDUPEFOLDER);
@@ -737,7 +736,7 @@ void CMsgStoreDlg::OnCreateSubFolder()
 	{
 		WC_H(MyData.DisplayDialog());
 
-		EC_H(lpMAPIFolder->CreateFolder(
+		EC_MAPI(lpMAPIFolder->CreateFolder(
 			MyData.GetHex(1),
 			MyData.GetString(0),
 			MyData.GetString(2),
@@ -895,7 +894,7 @@ void CMsgStoreDlg::OnEmptyFolder()
 
 				DebugPrintEx(DBGGeneric,CLASS,_T("OnEmptyFolder"),_T("Calling EmptyFolder on %p, ulFlags = 0x%08X.\n"),lpMAPIFolderToEmpty,ulFlags);
 
-				EC_H(lpMAPIFolderToEmpty->EmptyFolder(
+				EC_MAPI(lpMAPIFolderToEmpty->EmptyFolder(
 					lpProgress ? (ULONG_PTR)m_hWnd : NULL,
 					lpProgress,
 					ulFlags));
@@ -962,7 +961,7 @@ void CMsgStoreDlg::OnDeleteSelectedItem()
 				if (lpProgress)
 					ulFlags |= FOLDER_DIALOG;
 
-				EC_H(lpParentFolder->DeleteFolder(
+				EC_MAPI(lpParentFolder->DeleteFolder(
 					lpItemEID->cb,
 					(LPENTRYID) lpItemEID->lpb,
 					lpProgress ? (ULONG_PTR)m_hWnd : NULL,
@@ -1103,7 +1102,7 @@ void CMsgStoreDlg::OnSetReceiveFolder()
 	{
 		if (MyData.GetCheck(1))
 		{
-			EC_H(lpMDB->SetReceiveFolder(
+			EC_MAPI(lpMDB->SetReceiveFolder(
 				MyData.GetString(0),
 				fMapiUnicode,
 				NULL,
@@ -1111,7 +1110,7 @@ void CMsgStoreDlg::OnSetReceiveFolder()
 		}
 		else if (lpEID)
 		{
-			EC_H(lpMDB->SetReceiveFolder(
+			EC_MAPI(lpMDB->SetReceiveFolder(
 				MyData.GetString(0),
 				fMapiUnicode,
 				lpEID->cb,
@@ -1235,7 +1234,7 @@ void CMsgStoreDlg::OnRestoreDeletedFolder()
 			if (lpProgress)
 				ulCopyFlags |= FOLDER_DIALOG;
 
-			hRes = lpCopyRoot->CopyFolder(
+			WC_MAPI(lpCopyRoot->CopyFolder(
 				lpProps[EID].Value.bin.cb,
 				(LPENTRYID) lpProps[EID].Value.bin.lpb,
 				&IID_IMAPIFolder,
@@ -1243,7 +1242,7 @@ void CMsgStoreDlg::OnRestoreDeletedFolder()
 				MyData.GetString(0),
 				lpProgress ? (ULONG_PTR)m_hWnd : NULL,
 				lpProgress,
-				ulCopyFlags);
+				ulCopyFlags));
 			if (MAPI_E_COLLISION == hRes)
 			{
 				ErrDialog(__FILE__,__LINE__,IDS_EDDUPEFOLDER);
@@ -1298,7 +1297,7 @@ void CMsgStoreDlg::OnValidateIPMSubtree()
 
 		DebugPrintEx(DBGGeneric,CLASS,_T("OnValidateIPMSubtree"),_T("ulFlags = 0x%08X\n"),ulFlags);
 
-		EC_H(HrValidateIPMSubtree(
+		EC_MAPI(HrValidateIPMSubtree(
 			lpMDB,
 			ulFlags,
 			&ulValues,

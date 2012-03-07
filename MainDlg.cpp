@@ -108,6 +108,7 @@ BEGIN_MESSAGE_MAP(CMainDlg, CContentsTableDlg)
 	ON_COMMAND(ID_VIEWMSGPROPERTIES, OnViewMSGProperties)
 	ON_COMMAND(ID_CONVERTMSGTOEML, OnConvertMSGToEML)
 	ON_COMMAND(ID_CONVERTEMLTOMSG, OnConvertEMLToMSG)
+	ON_COMMAND(ID_DISPLAYMAPIPATH, OnDisplayMAPIPath)
 END_MESSAGE_MAP()
 
 _Check_return_ bool CMainDlg::HandleMenu(WORD wMenuSelect)
@@ -136,6 +137,7 @@ void CMainDlg::OnInitMenu(_In_ CMenu* pMenu)
 
 		pMenu->EnableMenuItem(ID_LOADMAPI,DIM(!hMAPI && !bInLoadOp));
 		pMenu->EnableMenuItem(ID_UNLOADMAPI,DIM(hMAPI && !bInLoadOp));
+		pMenu->EnableMenuItem(ID_DISPLAYMAPIPATH,DIM(hMAPI && !bInLoadOp));
 		pMenu->CheckMenuItem(ID_LOADMAPI,CHECK(hMAPI && !bInLoadOp));
 		pMenu->EnableMenuItem(ID_MAPIINITIALIZE,DIM(!bMAPIInitialized && !bInLoadOp));
 		pMenu->EnableMenuItem(ID_MAPIUNINITIALIZE,DIM(bMAPIInitialized && !bInLoadOp));
@@ -207,7 +209,7 @@ void CMainDlg::OnOpenAddressBook()
 	LPMAPISESSION lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
-	EC_H(lpMAPISession->OpenAddressBook(
+	EC_MAPI(lpMAPISession->OpenAddressBook(
 		NULL,
 		NULL,
 		NULL,
@@ -249,7 +251,7 @@ void CMainDlg::OnOpenDefaultDir()
 	ULONG		ulObjType = NULL;
 	LPABCONT	lpDefaultDir = NULL;
 
-	EC_H(lpAddrBook->GetDefaultDir(
+	EC_MAPI(lpAddrBook->GetDefaultDir(
 		&cbEID,
 		&lpEID));
 
@@ -288,7 +290,7 @@ void CMainDlg::OnOpenPAB()
 	ULONG		ulObjType = NULL;
 	LPABCONT	lpPAB = NULL;
 
-	EC_H(lpAddrBook->GetPAB(
+	EC_MAPI(lpAddrBook->GetPAB(
 		&cbEID,
 		&lpEID));
 
@@ -396,7 +398,7 @@ void CMainDlg::OnOpenDefaultMessageStore()
 		LPMAPIPROP			lpIdentity = NULL;
 		LPSPropValue		lpMailboxName = NULL;
 
-		EC_H(lpMAPISession->QueryIdentity(
+		EC_MAPI(lpMAPISession->QueryIdentity(
 			&cbEntryID,
 			&lpEntryID));
 
@@ -415,7 +417,7 @@ void CMainDlg::OnOpenDefaultMessageStore()
 				(LPUNKNOWN*)&lpIdentity));
 			if (lpIdentity)
 			{
-				EC_H(HrGetOneProp(
+				EC_MAPI(HrGetOneProp(
 					lpIdentity,
 					PR_EMAIL_ADDRESS,
 					&lpMailboxName));
@@ -628,7 +630,7 @@ void CMainDlg::OnOpenMessageStoreTable()
 	LPMAPISESSION lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
-	EC_H(lpMAPISession->GetMsgStoresTable(0, &pStoresTbl));
+	EC_MAPI(lpMAPISession->GetMsgStoresTable(0, &pStoresTbl));
 
 	if (pStoresTbl)
 	{
@@ -953,7 +955,7 @@ void CMainDlg::OnSelectFormContainer()
 	LPMAPISESSION lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
-	EC_H(MAPIOpenFormMgr(lpMAPISession,&lpMAPIFormMgr));
+	EC_MAPI(MAPIOpenFormMgr(lpMAPISession,&lpMAPIFormMgr));
 	if (lpMAPIFormMgr)
 	{
 		CEditor MyFlags(
@@ -998,7 +1000,7 @@ void CMainDlg::OnOpenFormContainer()
 	LPMAPISESSION lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
-	EC_H(MAPIOpenFormMgr(lpMAPISession,&lpMAPIFormMgr));
+	EC_MAPI(MAPIOpenFormMgr(lpMAPISession,&lpMAPIFormMgr));
 	if (lpMAPIFormMgr)
 	{
 		CEditor MyFlags(
@@ -1041,7 +1043,7 @@ void CMainDlg::OnMAPIOpenLocalFormContainer()
 	HRESULT	hRes = S_OK;
 	LPMAPIFORMCONTAINER	lpMAPILocalFormContainer = NULL;
 
-	EC_H(MAPIOpenLocalFormContainer(&lpMAPILocalFormContainer));
+	EC_MAPI(MAPIOpenLocalFormContainer(&lpMAPILocalFormContainer));
 
 	if (lpMAPILocalFormContainer)
 	{
@@ -1099,6 +1101,33 @@ void CMainDlg::OnUnloadMAPI()
 		UnLoadPrivateMAPI();
 	}
 } // CMainDlg::OnUnloadMAPI
+
+void CMainDlg::OnDisplayMAPIPath()
+{
+	HRESULT hRes = S_OK;
+	TCHAR   szMAPIPath[MAX_PATH] = {0};
+
+	DebugPrint(DBGGeneric, _T("OnDisplayMAPIPath()\n"));
+	HMODULE hMAPI = GetMAPIHandle();
+
+	if (hMAPI)
+	{
+		(void) GetModuleFileName(hMAPI, szMAPIPath, _countof(szMAPIPath));
+	}
+
+	CEditor MyData(
+		this,
+		IDS_MAPIPATHTITLE,
+		NULL,
+		3,
+		CEDITOR_BUTTON_OK);
+	MyData.InitSingleLine(0, IDS_FILEPATH, NULL, true);
+	MyData.SetString(0, szMAPIPath);
+	MyData.InitCheck(1, IDS_REGKEY_FORCEOUTLOOKMAPI, 0 != RegKeys[regkeyFORCEOUTLOOKMAPI].ulCurDWORD, true);
+	MyData.InitCheck(2, IDS_REGKEY_FORCESYSTEMMAPI, 0 != RegKeys[regkeyFORCESYSTEMMAPI].ulCurDWORD, true);
+
+	WC_H(MyData.DisplayDialog());
+} // CMainDlg::OnDisplayMAPIPath
 
 void CMainDlg::OnMAPIInitialize()
 {
@@ -1195,7 +1224,7 @@ void CMainDlg::OnQueryDefaultMessageOpt()
 		ULONG			cValues = NULL;
 		LPSPropValue	lpOptions = NULL;
 
-		EC_H(lpMAPISession->QueryDefaultMessageOpt(
+		EC_MAPI(lpMAPISession->QueryDefaultMessageOpt(
 			(LPTSTR) MyData.GetStringA(0),
 			NULL, // API doesn't like Unicode
 			&cValues,
@@ -1261,7 +1290,7 @@ void CMainDlg::OnQueryDefaultRecipOpt()
 		ULONG			cValues = NULL;
 		LPSPropValue	lpOptions = NULL;
 
-		EC_H(lpAddrBook->QueryDefaultRecipOpt(
+		EC_MAPI(lpAddrBook->QueryDefaultRecipOpt(
 			(LPTSTR) MyData.GetStringA(0),
 			NULL, // API doesn't like Unicode
 			&cValues,
@@ -1318,7 +1347,7 @@ void CMainDlg::OnQueryIdentity()
 	LPMAPISESSION lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
-	EC_H(lpMAPISession->QueryIdentity(
+	EC_MAPI(lpMAPISession->QueryIdentity(
 		&cbEntryID,
 		&lpEntryID));
 
@@ -1404,7 +1433,7 @@ void CMainDlg::OnSetDefaultStore()
 			WC_H(MyData.DisplayDialog());
 			if (S_OK == hRes)
 			{
-				EC_H(lpMAPISession->SetDefaultStore(
+				EC_MAPI(lpMAPISession->SetDefaultStore(
 					MyData.GetHex(0),
 					lpItemEID->cb,
 					(LPENTRYID)lpItemEID->lpb));
@@ -1460,10 +1489,10 @@ void CMainDlg::OnShowProfiles()
 	m_lpMapiObjects->MAPIInitialize(NULL);
 
 	LPPROFADMIN lpProfAdmin = NULL;
-	EC_H(MAPIAdminProfiles(0, &lpProfAdmin));
+	EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
 	if (!lpProfAdmin) return;
 
-	EC_H(lpProfAdmin->GetProfileTable(
+	EC_MAPI(lpProfAdmin->GetProfileTable(
 		0, // fMapiUnicode is not supported
 		&lpProfTable));
 
@@ -1536,7 +1565,7 @@ void CMainDlg::OnStatusTable()
 	LPMAPISESSION lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
-	EC_H(lpMAPISession->GetStatusTable(
+	EC_MAPI(lpMAPISession->GetStatusTable(
 		NULL, // This table does not support MAPI_UNICODE!
 		&lpMAPITable));
 	if (lpMAPITable)
@@ -1784,7 +1813,7 @@ void CMainDlg::OnComputeGivenStoreHash()
 							DebugPrint(DBGGeneric,_T("CMainDlg::OnComputeGivenStoreHash, emsmdbUID from PR_EMSMDB_SECTION_UID = %s\n"),szGUID);
 							delete[] szGUID;
 					}
-					WC_H(lpMAPISession->OpenProfileSection(&emsmdbUID, NULL, 0, &lpProfSect));
+					WC_MAPI(lpMAPISession->OpenProfileSection(&emsmdbUID, NULL, 0, &lpProfSect));
 				}
 			}
 			if (!lpServiceUID || FAILED(hRes))
@@ -1792,13 +1821,13 @@ void CMainDlg::OnComputeGivenStoreHash()
 				hRes = S_OK;
 				// For Outlook 2003/2007, HrEmsmdbUIDFromStore may not succeed,
 				// so use pbGlobalProfileSectionGuid instead
-				WC_H(lpMAPISession->OpenProfileSection((LPMAPIUID)pbGlobalProfileSectionGuid, NULL, 0, &lpProfSect));
+				WC_MAPI(lpMAPISession->OpenProfileSection((LPMAPIUID)pbGlobalProfileSectionGuid, NULL, 0, &lpProfSect));
 			}
 
 			if (lpProfSect)
 			{
 				hRes = S_OK;
-				WC_H(HrGetOneProp(lpProfSect, PR_PROFILE_CONFIG_FLAGS, &lpConfigProp));
+				WC_MAPI(HrGetOneProp(lpProfSect, PR_PROFILE_CONFIG_FLAGS, &lpConfigProp));
 				if (SUCCEEDED(hRes) && PROP_TYPE(lpConfigProp->ulPropTag) != PT_ERROR)
 				{
 					if (fPrivateExchangeStore)
@@ -1817,11 +1846,11 @@ void CMainDlg::OnComputeGivenStoreHash()
 				if (fCached)
 				{
 					hRes = S_OK;
-					WC_H(HrGetOneProp(lpProfSect, PR_PROFILE_OFFLINE_STORE_PATH_W, &lpPathPropW));
+					WC_MAPI(HrGetOneProp(lpProfSect, PR_PROFILE_OFFLINE_STORE_PATH_W, &lpPathPropW));
 					if (FAILED(hRes))
 					{
 						hRes = S_OK;
-						WC_H(HrGetOneProp(lpProfSect, PR_PROFILE_OFFLINE_STORE_PATH_A, &lpPathPropA));
+						WC_MAPI(HrGetOneProp(lpProfSect, PR_PROFILE_OFFLINE_STORE_PATH_A, &lpPathPropA));
 					}
 					if (SUCCEEDED(hRes))
 					{
@@ -1840,7 +1869,7 @@ void CMainDlg::OnComputeGivenStoreHash()
 					if ((fPrivateExchangeStore || fPublicExchangeStore) && (wzPath || szPath))
 					{
 						hRes = S_OK;
-						WC_H(HrGetOneProp(lpProfSect, PR_MAPPING_SIGNATURE, &lpMappingSig));
+						WC_MAPI(HrGetOneProp(lpProfSect, PR_MAPPING_SIGNATURE, &lpMappingSig));
 					}
 					hRes = S_OK;
 				}

@@ -59,6 +59,7 @@ NAME_ARRAY_ENTRY g_uidParsingTypes[] = {
 	{IDS_STNICKNAMECACHE,L"Nickname Cache"}, // STRING_OK
 	{IDS_STENCODEENTRYID,L"Encode Entry ID"}, // STRING_OK
 	{IDS_STDECODEENTRYID,L"Decode Entry ID"}, // STRING_OK
+	{IDS_STVERBSTREAM,L"Verb Stream"}, // STRING_OK
 };
 ULONG g_cuidParsingTypes = _countof(g_uidParsingTypes);
 
@@ -105,6 +106,7 @@ SMART_VIEW_PARSERS_ENTRY g_SmartViewParsers[] = {
 	MAKE_SV_ENTRY(IDS_STWEBVIEWPERSISTSTREAM, WebViewPersistStreamStruct)
 	MAKE_SV_ENTRY(IDS_STFOLDERUSERFIELDS, FolderUserFieldStreamStruct)
 	MAKE_SV_ENTRY(IDS_STNICKNAMECACHE, NickNameCacheStruct)
+	MAKE_SV_ENTRY(IDS_STVERBSTREAM, VerbStreamStruct)
 	// MAKE_SV_ENTRY(IDS_STSID, SIDStruct)
 	// MAKE_SV_ENTRY(IDS_STDECODEENTRYID)
 	// MAKE_SV_ENTRY(IDS_STENCODEENTRYID)
@@ -1498,7 +1500,9 @@ void SIDBinToString(SBinary myBin, _Deref_out_z_ LPWSTR* lpszResultString)
 	LPTSTR lpSidDomain = NULL;
 	LPTSTR lpStringSid = NULL;
 
-	if (myBin.cb && SidStart && IsValidSid(SidStart))
+	if (SidStart &&
+		myBin.cb >= sizeof(SID) - sizeof(DWORD) + sizeof(DWORD) * ((PISID) SidStart)->SubAuthorityCount &&
+		IsValidSid(SidStart))
 	{
 		DWORD dwSidName = 0;
 		DWORD dwSidDomain = 0;
@@ -5924,4 +5928,179 @@ _Check_return_ LPWSTR NickNameCacheStructToString(_In_ NickNameCacheStruct* pnnc
 
 //////////////////////////////////////////////////////////////////////////
 // End NickNameCacheStruct
+//////////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////
+// VerbStreamStruct
+//////////////////////////////////////////////////////////////////////////
+
+// Allocates return value with new. Clean up with DeleteVerbStreamStruct.
+_Check_return_ VerbStreamStruct* BinToVerbStreamStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
+{
+	if (!lpBin) return NULL;
+
+	VerbStreamStruct vsVerbStream = {0};
+	CBinaryParser Parser(cbBin,lpBin);
+
+	Parser.GetWORD(&vsVerbStream.Version);
+	Parser.GetDWORD(&vsVerbStream.Count);
+
+	if (vsVerbStream.Count && vsVerbStream.Count < _MaxEntriesSmall)
+		vsVerbStream.lpVerbData = new VerbDataStruct[vsVerbStream.Count];
+	if (vsVerbStream.lpVerbData)
+	{
+		memset(vsVerbStream.lpVerbData,0,sizeof(VerbDataStruct)*vsVerbStream.Count);
+		ULONG i = 0;
+
+		for (i = 0 ; i < vsVerbStream.Count ; i++)
+		{
+			Parser.GetDWORD(&vsVerbStream.lpVerbData[i].VerbType);
+			Parser.GetBYTE(&vsVerbStream.lpVerbData[i].DisplayNameCount);
+			Parser.GetStringA(vsVerbStream.lpVerbData[i].DisplayNameCount, &vsVerbStream.lpVerbData[i].DisplayName);
+			Parser.GetBYTE(&vsVerbStream.lpVerbData[i].MsgClsNameCount);
+			Parser.GetStringA(vsVerbStream.lpVerbData[i].MsgClsNameCount, &vsVerbStream.lpVerbData[i].MsgClsName);
+			Parser.GetBYTE(&vsVerbStream.lpVerbData[i].Internal1StringCount);
+			Parser.GetStringA(vsVerbStream.lpVerbData[i].Internal1StringCount, &vsVerbStream.lpVerbData[i].Internal1String);
+			Parser.GetBYTE(&vsVerbStream.lpVerbData[i].DisplayNameCountRepeat);
+			Parser.GetStringA(vsVerbStream.lpVerbData[i].DisplayNameCountRepeat, &vsVerbStream.lpVerbData[i].DisplayNameRepeat);
+			Parser.GetDWORD(&vsVerbStream.lpVerbData[i].Internal2);
+			Parser.GetBYTE(&vsVerbStream.lpVerbData[i].Internal3);
+			Parser.GetDWORD(&vsVerbStream.lpVerbData[i].fUseUSHeaders);
+			Parser.GetDWORD(&vsVerbStream.lpVerbData[i].Internal4);
+			Parser.GetDWORD(&vsVerbStream.lpVerbData[i].SendBehavior);
+			Parser.GetDWORD(&vsVerbStream.lpVerbData[i].Internal5);
+			Parser.GetDWORD(&vsVerbStream.lpVerbData[i].ID);
+			Parser.GetDWORD(&vsVerbStream.lpVerbData[i].Internal6);
+		}
+	}
+
+	Parser.GetWORD(&vsVerbStream.Version2);
+
+	if (vsVerbStream.Count && vsVerbStream.Count < _MaxEntriesSmall)
+		vsVerbStream.lpVerbExtraData = new VerbExtraDataStruct[vsVerbStream.Count];
+	if (vsVerbStream.lpVerbExtraData)
+	{
+		memset(vsVerbStream.lpVerbExtraData,0,sizeof(VerbExtraDataStruct)*vsVerbStream.Count);
+		ULONG i = 0;
+
+		for (i = 0 ; i < vsVerbStream.Count ; i++)
+		{
+			Parser.GetBYTE(&vsVerbStream.lpVerbExtraData[i].DisplayNameCount);
+			Parser.GetStringW(vsVerbStream.lpVerbExtraData[i].DisplayNameCount, &vsVerbStream.lpVerbExtraData[i].DisplayName);
+			Parser.GetBYTE(&vsVerbStream.lpVerbExtraData[i].DisplayNameCountRepeat);
+			Parser.GetStringW(vsVerbStream.lpVerbExtraData[i].DisplayNameCountRepeat, &vsVerbStream.lpVerbExtraData[i].DisplayNameRepeat);
+		}
+	}
+
+	vsVerbStream.JunkDataSize = Parser.GetRemainingData(&vsVerbStream.JunkData);
+
+	VerbStreamStruct* pvsVerbStream = new VerbStreamStruct;
+	if (pvsVerbStream)
+	{
+		*pvsVerbStream = vsVerbStream;
+	}
+
+	return pvsVerbStream;
+} // BinToVerbStreamStruct
+
+void DeleteVerbStreamStruct(_In_ VerbStreamStruct* pvsVerbStream)
+{
+	if (!pvsVerbStream) return;
+	if (pvsVerbStream->Count && pvsVerbStream->lpVerbData)
+	{
+		ULONG i = 0;
+
+		for (i = 0 ; i < pvsVerbStream->Count ; i++)
+		{
+			delete[] pvsVerbStream->lpVerbData[i].DisplayName;
+			delete[] pvsVerbStream->lpVerbData[i].MsgClsName;
+			delete[] pvsVerbStream->lpVerbData[i].Internal1String;
+			delete[] pvsVerbStream->lpVerbData[i].DisplayNameRepeat;
+		}
+		delete[] pvsVerbStream->lpVerbData;
+	}
+
+	if (pvsVerbStream->Count && pvsVerbStream->lpVerbExtraData)
+	{
+		ULONG i = 0;
+
+		for (i = 0 ; i < pvsVerbStream->Count ; i++)
+		{
+			delete[] pvsVerbStream->lpVerbExtraData[i].DisplayName;
+			delete[] pvsVerbStream->lpVerbExtraData[i].DisplayNameRepeat;
+		}
+		delete[] pvsVerbStream->lpVerbExtraData;
+	}
+
+	delete[] pvsVerbStream->JunkData;
+	delete pvsVerbStream;
+} // DeleteVerbStreamStruct
+
+// result allocated with new, clean up with delete[]
+_Check_return_ LPWSTR VerbStreamStructToString(_In_ VerbStreamStruct* pvsVerbStream)
+{
+	if (!pvsVerbStream) return NULL;
+
+	CString szVerbString;
+	CString szTmp;
+
+	szVerbString.FormatMessage(IDS_VERBHEADER,pvsVerbStream->Version,pvsVerbStream->Count);
+
+	if (pvsVerbStream->Count && pvsVerbStream->lpVerbData)
+	{
+		ULONG i = 0;
+		for (i = 0 ; i < pvsVerbStream->Count ; i++)
+		{
+			LPWSTR szVerb = NULL;
+			InterpretNumberAsStringProp(pvsVerbStream->lpVerbData[i].ID, PR_LAST_VERB_EXECUTED, &szVerb);
+			szTmp.FormatMessage(IDS_VERBDATA,
+				i,
+				pvsVerbStream->lpVerbData[i].VerbType,
+				pvsVerbStream->lpVerbData[i].DisplayNameCount,
+				pvsVerbStream->lpVerbData[i].DisplayName,
+				pvsVerbStream->lpVerbData[i].MsgClsNameCount,
+				pvsVerbStream->lpVerbData[i].MsgClsName,
+				pvsVerbStream->lpVerbData[i].Internal1StringCount,
+				pvsVerbStream->lpVerbData[i].Internal1String,
+				pvsVerbStream->lpVerbData[i].DisplayNameCountRepeat,
+				pvsVerbStream->lpVerbData[i].DisplayNameRepeat,
+				pvsVerbStream->lpVerbData[i].Internal2,
+				pvsVerbStream->lpVerbData[i].Internal3,
+				pvsVerbStream->lpVerbData[i].fUseUSHeaders,
+				pvsVerbStream->lpVerbData[i].Internal4,
+				pvsVerbStream->lpVerbData[i].SendBehavior,
+				pvsVerbStream->lpVerbData[i].Internal5,
+				pvsVerbStream->lpVerbData[i].ID,
+				szVerb,
+				pvsVerbStream->lpVerbData[i].Internal6);
+			delete[] szVerb;
+			szVerbString += szTmp;
+		}
+	}
+
+	szTmp.FormatMessage(IDS_VERBVERSION2,pvsVerbStream->Version2);
+	szVerbString += szTmp;
+
+	if (pvsVerbStream->Count && pvsVerbStream->lpVerbData)
+	{
+		ULONG i = 0;
+		for (i = 0 ; i < pvsVerbStream->Count ; i++)
+		{
+			szTmp.FormatMessage(IDS_VERBEXTRADATA,
+				i,
+				pvsVerbStream->lpVerbExtraData[i].DisplayNameCount,
+				pvsVerbStream->lpVerbExtraData[i].DisplayName,
+				pvsVerbStream->lpVerbExtraData[i].DisplayNameCountRepeat,
+				pvsVerbStream->lpVerbExtraData[i].DisplayNameRepeat);
+			szVerbString += szTmp;
+		}
+	}
+
+	szVerbString += JunkDataToString(pvsVerbStream->JunkDataSize,pvsVerbStream->JunkData);
+
+	return CStringToString(szVerbString);
+} // VerbStreamStructToString
+
+//////////////////////////////////////////////////////////////////////////
+// End VerbStreamStruct
 //////////////////////////////////////////////////////////////////////////

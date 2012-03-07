@@ -55,7 +55,7 @@ CAttachmentsDlg::~CAttachmentsDlg()
 	{
 		HRESULT hRes = S_OK;
 
-		EC_H(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+		EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 	}
 	if (m_lpMessage) m_lpMessage->Release();
 } // CAttachmentsDlg::~CAttachmentsDlg
@@ -125,7 +125,7 @@ _Check_return_ HRESULT CAttachmentsDlg::OpenItemProp(
 
 		if (m_bDisplayAttachAsEmbeddedMessage && ATTACH_EMBEDDED_MSG == ulAttachMethod)
 		{
-			EC_H(m_lpMessage->OpenAttach(
+			EC_MAPI(m_lpMessage->OpenAttach(
 				ulAttachNum,
 				NULL,
 				m_bUseMapiModifyOnEmbeddedMessage?MAPI_MODIFY:MAPI_BEST_ACCESS,
@@ -133,7 +133,7 @@ _Check_return_ HRESULT CAttachmentsDlg::OpenItemProp(
 
 			if (m_lpAttach)
 			{
-				EC_H(m_lpAttach->OpenProperty(
+				EC_MAPI(m_lpAttach->OpenProperty(
 					PR_ATTACH_DATA_OBJ,
 					(LPIID)&IID_IMessage,
 					0,
@@ -151,7 +151,7 @@ _Check_return_ HRESULT CAttachmentsDlg::OpenItemProp(
 		}
 		else
 		{
-			EC_H(m_lpMessage->OpenAttach(
+			EC_MAPI(m_lpMessage->OpenAttach(
 				ulAttachNum,
 				NULL,
 				MAPI_BEST_ACCESS,
@@ -232,7 +232,7 @@ _Check_return_ bool CAttachmentsDlg::HandlePaste()
 			LPSPropProblemArray lpProblems = NULL;
 
 			// Open the attachment source
-			EC_H(lpSourceMessage->OpenAttach(
+			EC_MAPI(lpSourceMessage->OpenAttach(
 				lpAttNumList[ulAtt],
 				NULL,
 				MAPI_DEFERRED_ERRORS,
@@ -242,13 +242,13 @@ _Check_return_ bool CAttachmentsDlg::HandlePaste()
 			{
 				ULONG ulAttNum = NULL;
 				// Create the attachment destination
-				EC_H(m_lpMessage->CreateAttach(NULL, MAPI_DEFERRED_ERRORS, &ulAttNum, &lpAttDst));
+				EC_MAPI(m_lpMessage->CreateAttach(NULL, MAPI_DEFERRED_ERRORS, &ulAttNum, &lpAttDst));
 				if (lpAttDst)
 				{
 					LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IAttach::CopyTo"), m_hWnd); // STRING_OK
 
 					// Copy from source to destination
-					EC_H(lpAttSrc->CopyTo(
+					EC_MAPI(lpAttSrc->CopyTo(
 						0,
 						NULL,
 						0,
@@ -272,12 +272,12 @@ _Check_return_ bool CAttachmentsDlg::HandlePaste()
 
 			if (lpAttDst)
 			{
-				EC_H(lpAttDst->SaveChanges(KEEP_OPEN_READWRITE));
+				EC_MAPI(lpAttDst->SaveChanges(KEEP_OPEN_READWRITE));
 				lpAttDst->Release();
 				lpAttDst = NULL;
 			}
 		}
-		EC_H(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+		EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 		OnRefreshView(); // Update the view since we don't have notifications here.
 	}
 
@@ -319,7 +319,7 @@ void CAttachmentsDlg::OnDeleteSelectedItem()
 
 				LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMessage::DeleteAttach"), m_hWnd); // STRING_OK
 
-				EC_H(m_lpMessage->DeleteAttach(
+				EC_MAPI(m_lpMessage->DeleteAttach(
 					lpAttNumList[iSelection],
 					lpProgress ? (ULONG_PTR)m_hWnd : NULL,
 					lpProgress,
@@ -332,7 +332,7 @@ void CAttachmentsDlg::OnDeleteSelectedItem()
 			}
 
 			MAPIFreeBuffer(lpAttNumList);
-			EC_H(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+			EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 			OnRefreshView(); // Update the view since we don't have notifications here.
 		}
 	}
@@ -344,7 +344,7 @@ void CAttachmentsDlg::OnModifySelectedItem()
 	{
 		HRESULT hRes = S_OK;
 
-		EC_H(m_lpAttach->SaveChanges(KEEP_OPEN_READWRITE));
+		EC_MAPI(m_lpAttach->SaveChanges(KEEP_OPEN_READWRITE));
 	}
 } // CAttachmentsDlg::OnModifySelectedItem
 
@@ -354,7 +354,7 @@ void CAttachmentsDlg::OnSaveChanges()
 	{
 		HRESULT hRes = S_OK;
 
-		EC_H(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+		EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 	}
 } // CAttachmentsDlg::OnSaveChanges
 
@@ -382,7 +382,7 @@ void CAttachmentsDlg::OnSaveToFile()
 		{
 			ulAttachNum = lpListData->data.Contents.ulAttachNum;
 
-			EC_H(m_lpMessage->OpenAttach(
+			EC_MAPI(m_lpMessage->OpenAttach(
 				ulAttachNum,
 				NULL,
 				MAPI_BEST_ACCESS, // TODO: Is best access really needed?
@@ -426,7 +426,7 @@ _Check_return_ HRESULT CAttachmentsDlg::GetEmbeddedMessage(int iIndex, _Deref_ou
 
 	if (NULL != lpMAPIProp)
 	{
-		EC_H(lpMAPIProp->QueryInterface(
+		EC_MAPI(lpMAPIProp->QueryInterface(
 			IID_IMessage,
 			(LPVOID*)lppMessage));
 
