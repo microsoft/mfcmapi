@@ -635,13 +635,13 @@ void GetOutlookVersionString(_Deref_out_opt_ LPTSTR* lppszPath, _Deref_out_opt_z
 
 	if (!pfnMsiProvideQualifiedComponent || !pfnMsiGetFileVersion) return;
 
-	TCHAR pszaOutlookQualifiedComponents[][MAX_PATH] = {
+	TCHAR pszOutlookQualifiedComponents[][MAX_PATH] = {
 		_T("{1E77DE88-BCAB-4C37-B9E5-073AF52DFD7A}"), // O14_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
 		_T("{24AAE126-0911-478F-A019-07B875EB9996}"), // O12_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
 		_T("{BC174BAD-2F53-4855-A1D5-0D575C19B1EA}"), // O11_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
 		_T("{BC174BAD-2F53-4855-A1D5-1D575C19B1EA}"), // O11_CATEGORY_GUID_CORE_OFFICE (debug)  // STRING_OK
 	};
-	int nOutlookQualifiedComponents = _countof(pszaOutlookQualifiedComponents);
+	int nOutlookQualifiedComponents = _countof(pszOutlookQualifiedComponents);
 	int i = 0;
 	DWORD dwValueBuf = 0;
 	UINT ret = 0;
@@ -649,7 +649,7 @@ void GetOutlookVersionString(_Deref_out_opt_ LPTSTR* lppszPath, _Deref_out_opt_z
 	for (i = 0; i < nOutlookQualifiedComponents; i++)
 	{
 		WC_D(ret,pfnMsiProvideQualifiedComponent(
-			pszaOutlookQualifiedComponents[i],
+			pszOutlookQualifiedComponents[i],
 			_T("outlook.x64.exe"), // STRING_OK
 			(DWORD) INSTALLMODE_DEFAULT,
 			NULL,
@@ -663,7 +663,7 @@ void GetOutlookVersionString(_Deref_out_opt_ LPTSTR* lppszPath, _Deref_out_opt_z
 		for (i = 0; i < nOutlookQualifiedComponents; i++)
 		{
 			WC_D(ret,pfnMsiProvideQualifiedComponent(
-				pszaOutlookQualifiedComponents[i],
+				pszOutlookQualifiedComponents[i],
 				_T("outlook.exe"), // STRING_OK
 				(DWORD) INSTALLMODE_DEFAULT,
 				NULL,
@@ -680,7 +680,7 @@ void GetOutlookVersionString(_Deref_out_opt_ LPTSTR* lppszPath, _Deref_out_opt_z
 		if (lpszTempPath != NULL)
 		{
 			WC_D(ret,pfnMsiProvideQualifiedComponent(
-				pszaOutlookQualifiedComponents[i],
+				pszOutlookQualifiedComponents[i],
 				_T("outlook.exe"), // STRING_OK
 				(DWORD) INSTALLMODE_EXISTING,
 				lpszTempPath,

@@ -72,6 +72,24 @@ IDR_MAINFRAME           ICON    DISCARDABLE     "MFCMapi.ico"
 
 IDR_MENU_MAIN MENU DISCARDABLE
 BEGIN
+	POPUP "&QuickStart"
+	BEGIN
+		POPUP "Open Folder"
+		BEGIN
+			MENUITEM "Inbox",                       ID_QSINBOX
+			MENUITEM "Calendar",                    ID_QSCALENDAR
+			MENUITEM "Contacts",                    ID_QSCONTACTS
+		END
+		POPUP "Open Address Book"
+		BEGIN
+			MENUITEM "Open Address Book Hierarchy", ID_QSAB
+			MENUITEM "Open Default Address Book",   ID_QSDEFAULTDIR
+		END
+		MENUITEM "Open Rules",                  ID_QSRULES
+		MENUITEM "Calendar Permissions"         ID_QSCALPERM
+		MENUITEM "Nickname Cache (SLOW)"        ID_QSNICKNAME
+		MENUITEM "Delivery Store Quota"         ID_QSQUOTA
+	END
 	POPUP "&Session"
 	BEGIN
 		MENUITEM "Logon...",                    ID_LOGONANDDISPLAYSTORES
@@ -313,6 +331,8 @@ BEGIN
 	BEGIN
 		MENUITEM "Open profile",                ID_DISPLAYSELECTEDITEM
 		MENUITEM "Create profile...",           ID_CREATEPROFILE
+		MENUITEM "Copy profile",                ID_COPY
+		MENUITEM "Paste profile...",            ID_PASTE
 		MENUITEM "Delete profile",              ID_DELETESELECTEDITEM
 		POPUP "Services"
 		BEGIN
@@ -340,6 +360,8 @@ BEGIN
 	MENUITEM "Open profile",                ID_DISPLAYSELECTEDITEM
 	MENUITEM "Set default profile",         ID_SETDEFAULTPROFILE
 	MENUITEM "Get profile server version...", ID_GETPROFILESERVERVERSION
+	MENUITEM "Copy profile",                ID_COPY
+	MENUITEM "Paste profile...",            ID_PASTE
 	MENUITEM "Delete profile",              ID_DELETESELECTEDITEM
 	POPUP "Services"
 	BEGIN

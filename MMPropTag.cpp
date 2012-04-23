@@ -452,11 +452,11 @@ void PrintFlag(_In_ ULONG ulPropNum, _In_opt_z_ LPCWSTR lpszPropName, _In_ bool 
 				}
 			}
 		}
-		else
+		else if (lpszPropName)
 		{
 			for (ulCur = 0 ; ulCur < ulNameIDArray ; ulCur++)
 			{
-				if (0 == lstrcmpiW(lpszPropName,NameIDArray[ulCur].lpszName))
+				if (NameIDArray[ulCur].lpszName && 0 == lstrcmpiW(lpszPropName,NameIDArray[ulCur].lpszName))
 				{
 					break;
 				}
@@ -482,7 +482,7 @@ void PrintFlag(_In_ ULONG ulPropNum, _In_opt_z_ LPCWSTR lpszPropName, _In_ bool 
 				}
 			}
 		}
-		else
+		else if (lpszPropName)
 		{
 			for (ulCur = 0 ; ulCur < ulPropTagArray ; ulCur++)
 			{

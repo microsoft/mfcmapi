@@ -22,6 +22,8 @@ private:
 	void OnDeleteSelectedItem();
 	void OnDisplayItem();
 	void OnRefreshView();
+	void HandleCopy();
+	_Check_return_ bool HandlePaste();
 
 	// Menu items
 	void OnAddExchangeToProfile();

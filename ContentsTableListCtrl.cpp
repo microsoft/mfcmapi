@@ -651,8 +651,11 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 
 		ulThrottleLevel = RegKeys[regkeyTHROTTLE_LEVEL].ulCurDWORD;
 
-		szStatusText.FormatMessage(IDS_LOADINGITEMS,0,ulTotal);
-		(void) ::SendMessage(hWndHost,WM_MFCMAPI_UPDATESTATUSBAR,STATUSDATA2,(LPARAM)(LPCTSTR) szStatusText);
+		if (ulTotal)
+		{
+			szStatusText.FormatMessage(IDS_LOADINGITEMS,0,ulTotal);
+			(void) ::SendMessage(hWndHost,WM_MFCMAPI_UPDATESTATUSBAR,STATUSDATA2,(LPARAM)(LPCTSTR) szStatusText);
+		}
 	}
 
 	LPSRestriction lpRes = lpListCtrl->GetRestriction();
@@ -701,12 +704,16 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 		if (FAILED(hRes) || !pRows || !pRows->cRows) break;
 
 		DebugPrintEx(DBGGeneric,CLASS,_T("ThreadFuncLoadTable"),_T("Got this many rows: 0x%X\n"),pRows->cRows);
+
 		for (iCurPropRow = 0;iCurPropRow<pRows->cRows;iCurPropRow++)
 		{
 			hRes = S_OK;
 			BREAKONABORT; // This check is cheap enough not to be a perf concern anymore
-			szStatusText.FormatMessage(IDS_LOADINGITEMS,iCurListBoxRow+1,ulTotal);
-			(void) ::SendMessage(hWndHost,WM_MFCMAPI_UPDATESTATUSBAR,STATUSDATA2,(LPARAM)(LPCTSTR) szStatusText);
+			if (ulTotal)
+			{
+				szStatusText.FormatMessage(IDS_LOADINGITEMS,iCurListBoxRow+1,ulTotal);
+				(void) ::SendMessage(hWndHost,WM_MFCMAPI_UPDATESTATUSBAR,STATUSDATA2,(LPARAM)(LPCTSTR) szStatusText);
+			}
 
 			DebugPrintEx(DBGGeneric,CLASS,_T("ThreadFuncLoadTable"),_T("Asking to add %p to %d\n"),&pRows->aRow[iCurPropRow],iCurListBoxRow);
 			(void) ::SendMessage(lpListCtrl->m_hWnd,WM_MFCMAPI_THREADADDITEM,iCurListBoxRow,(LPARAM)&pRows->aRow[iCurPropRow]);

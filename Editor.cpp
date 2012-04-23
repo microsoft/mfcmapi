@@ -37,6 +37,10 @@ __ListButtons ListButtons[NUMLISTBUTTONS] = {
 
 #define MAX_WIDTH 1000
 
+// After we compute dialog size minimums, when actually set an initial size, we won't go smaller than this
+#define MIN_WIDTH 600
+#define MIN_HEIGHT 350
+
 #define INVALIDRANGE(iVal) ((iVal) >= m_cControls)
 
 #define LINES_MULTILINEEDIT 4
@@ -1177,8 +1181,8 @@ void CEditor::OnSetDefaultSize()
 		NULL,
 		0,
 		0,
-		m_iMinWidth,
-		m_iMinHeight,
+		max(MIN_WIDTH,m_iMinWidth),
+		max(MIN_HEIGHT,m_iMinHeight),
 		SWP_NOZORDER | SWP_NOMOVE));
 } // CEditor::OnSetDefaultSize
 

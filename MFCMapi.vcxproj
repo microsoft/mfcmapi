@@ -744,6 +744,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="PropTypeArray.h" />
     <ClInclude Include="ProviderTableDlg.h" />
     <ClInclude Include="PublicFolderTableDlg.h" />
+    <ClInclude Include="QuickStart.h" />
     <ClInclude Include="RecipientsDlg.h" />
     <ClInclude Include="Registry.h" />
     <ClInclude Include="Resource.h" />
@@ -1065,6 +1066,10 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="PublicFolderTableDlg.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="QuickStart.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
     </ClCompile>

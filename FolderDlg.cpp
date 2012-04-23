@@ -931,17 +931,17 @@ void CFolderDlg::NewSpecialItem(WORD wMenuSelect)
 
 	if (lpMAPISession)
 	{
-		ULONG ulTag = NULL;
+		ULONG ulFolder = NULL;
 		LPCSTR szClass = NULL;
 
 		switch(wMenuSelect)
 		{
 		case ID_NEW_APPOINTMENT:
-			ulTag = PR_IPM_APPOINTMENT_ENTRYID;
+			ulFolder = DEFAULT_CALENDAR;
 			szClass = "IPM.APPOINTMENT"; // STRING_OK
 			break;
 		case ID_NEW_CONTACT:
-			ulTag = PR_IPM_CONTACT_ENTRYID;
+			ulFolder = DEFAULT_CONTACTS;
 			szClass = "IPM.CONTACT"; // STRING_OK
 			break;
 		case ID_NEW_IPMNOTE:
@@ -951,19 +951,19 @@ void CFolderDlg::NewSpecialItem(WORD wMenuSelect)
 			szClass = "IPM.POST"; // STRING_OK
 			break;
 		case ID_NEW_TASK:
-			ulTag = PR_IPM_TASK_ENTRYID;
+			ulFolder = DEFAULT_TASKS;
 			szClass = "IPM.TASK"; // STRING_OK
 			break;
 		case ID_NEW_STICKYNOTE:
-			ulTag = PR_IPM_NOTE_ENTRYID;
+			ulFolder = DEFAULT_NOTES;
 			szClass = "IPM.STICKYNOTE"; // STRING_OK
 			break;
 
 		}
 		LPMAPIFOLDER lpSpecialFolder = NULL;
-		if (ulTag)
+		if (ulFolder)
 		{
-			EC_H(GetSpecialFolder(lpMDB,ulTag,&lpSpecialFolder));
+			EC_H(OpenDefaultFolder(ulFolder, lpMDB, &lpSpecialFolder));
 			lpFolder = lpSpecialFolder;
 		}
 		else

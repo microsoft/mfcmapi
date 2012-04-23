@@ -1233,14 +1233,15 @@ _Check_return_ LPWSTR AppointmentRecurrencePatternStructToString(_In_ Appointmen
 	LPWSTR szRecurrencePattern = NULL;
 
 	szRecurrencePattern = RecurrencePatternStructToString(parpPattern->RecurrencePattern);
+	szARP = szRecurrencePattern;
+	delete[] szRecurrencePattern;
+
 	szTmp.FormatMessage(IDS_ARPHEADER,
-		szRecurrencePattern,
 		parpPattern->ReaderVersion2,
 		parpPattern->WriterVersion2,
 		parpPattern->StartTimeOffset,RTimeToString(parpPattern->StartTimeOffset),
 		parpPattern->EndTimeOffset,RTimeToString(parpPattern->EndTimeOffset),
 		parpPattern->ExceptionCount);
-	delete[] szRecurrencePattern;
 	szARP += szTmp;
 
 	WORD i = 0;

@@ -1,6 +1,8 @@
 #pragma once
 // UIFunctions.h : Common UI functions for MFC MAPI
 
+#include <oleacc.h>
+
 enum uiColor
 {
 	cBackground,

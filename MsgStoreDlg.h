@@ -42,7 +42,7 @@ private:
 	void OnDisplayOutgoingQueueTable();
 	void OnDisplayReceiveFolderTable();
 	void OnDisplayRulesTable();
-	void OnDisplaySpecialFolder(ULONG ulPropTag);
+	void OnDisplaySpecialFolder(ULONG ulFolder);
 	void OnDisplayTasksFolder();
 	void OnEmptyFolder();
 	void OnOpenFormContainer();

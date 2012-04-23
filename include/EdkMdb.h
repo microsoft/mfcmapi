@@ -208,8 +208,8 @@
 #define PR_OOF_STATE					PROP_TAG( PT_BOOLEAN, pidStoreMin+0x05)
 
 // Bug#255023 Provide quota information to MAPI clients to avoid large emails from ever reaching the server
-#define PR_MAX_SUBMIT_MESSAGE_SIZE		PROP_TAG( PT_LONG, pidProviderSpecificMin+0x6D)
-#define PR_PROHIBIT_SEND_QUOTA			PROP_TAG( PT_LONG, pidProviderSpecificMin+0x6E)
+#define PR_MAX_SUBMIT_MESSAGE_SIZE		PROP_TAG( PT_LONG, 0x666D)
+#define PR_PROHIBIT_SEND_QUOTA			PROP_TAG( PT_LONG, 0x666E)
 
 	// Public stores -- name of hierarchy server
 #define PR_HIERARCHY_SERVER				PROP_TAG( PT_TSTRING, pidStoreMin+0x1B)

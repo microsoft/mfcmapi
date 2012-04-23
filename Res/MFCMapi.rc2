@@ -225,9 +225,18 @@ ID_PASTE										"Paste copied item(s)"
 ID_PASTE_NAMEDPROPS								"Paste named properties from source to target"
 ID_PASTE_PROPERTY								"Paste copied property from source to target"
 ID_PASTE_RULES									"Paste rules from source folder"
+ID_QSINBOX										"Open the Inbox folder for the default profile"
+ID_QSCALENDAR									"Open the Calendar folder for the default profile"
+ID_QSCONTACTS									"Open the Contacts folder for the default profile"
+ID_QSRULES										"Open the Inbox rules for the default profile"
+ID_QSDEFAULTDIR									"Open the default address book for the default profile"
+ID_QSAB											"Open the Outlook Address Book hierarchy"
+ID_QSCALPERM									"Opens the calendar and shows the ACL table"
+ID_QSNICKNAME									"Displays the contents of the Nickname Cache"
+ID_QSQUOTA										"Looks up and displays various delivery store quotas"
 ID_QUERYDEFAULTMESSAGEOPT						"Call QueryDefaultMessageOpt"
 ID_QUERYDEFAULTRECIPOPT							"Call QueryDefaultRecipOpt"
-ID_QUERYIDENTITY								"Display properties of the currently logged on user. Use QueryIdentity"
+ID_QUERYIDENTITY								"Display properties of the currently logged on user using QueryIdentity"
 ID_RECIPIENTPROPERTIES							"Display Recipients table (PR_MESSAGE_RECIPIENTS)"
 ID_RECIPOPTIONS									"Display recipient options dialog"
 ID_REFRESHVIEW									"Refresh view of current pane"
@@ -625,7 +634,9 @@ IDS_PSTPATHPROMPT                "Confirm or edit the PST path, and set password
 IDS_PSTDOPW                      "Set a password on the PST"
 IDS_PSTPW                        "PST Password"
 IDS_OPENPROFILE                  "Open Profile"
-IDS_OPENPROFILEPROMPT            "Profile Name"
+IDS_OPENPROFILEPROMPT            "Profile name"
+IDS_COPYPROFILE                  "Copy Profile"
+IDS_COPYPROFILEPROMPT            "New profile name"
 // propertyeditor.cpp
 IDS_EDITROW                      "Edit Row"
 // propertytageditor.cpp
@@ -636,6 +647,12 @@ IDS_PROPSELECTOR                 "Property Selector"
 // publicfoldertabledlg.cpp
 IDS_PFSEARCHCRITERIAPROMPT       "Type portion of name to find\r\n\
 ulFuzzyLevel Flags:"
+// QuickStart.cpp
+IDS_QUOTADISPLAYNAME              "Display Name = %1!ws!"
+IDS_QUOTASIZE                     "\r\nPR_MESSAGE_SIZE_EXTENDED = %1!I64d! bytes = %2!I64d! kilobytes"
+IDS_QUOTAPROP                     "\r\n%1 = 0x%2!08X! = %2!d! kilobytes"
+IDS_QUOTAMASK                     "\r\n\r\nStore Support Mask = 0x%1!08X!"
+IDS_QUOTAPROVIDER                 "\r\nMDB Provider = %1"
 // restricteditor.cpp
 IDS_RESED                        "Restriction Editor"
 IDS_RESEDCOMPPROMPT              "Edit Compare Property restriction"
@@ -729,6 +746,7 @@ existing named property mappings.\r\n"
 IDS_STLONGRTIME                  "RTime"
 IDS_STPTI8                       "I8"
 IDS_STSFIDMID                    "Fid/Mid"
+IDS_QUOTA                        "Quota"
 
 // AbDlg.cpp
 IDS_FLAGS "Flags"
@@ -1692,12 +1710,12 @@ IDS_CONVERTCODEPAGE "Code Page For Conversion"
 IDS_CONVERTCHARSETTYPE "Character Set Type"
 IDS_CONVERTCHARSETAPPLYTYPE "Character Set Apply Type"
 
-IDS_ARPHEADER "%1!ws!\r\nAppointment Recurrence Pattern: \r\n\
-ReaderVersion2: 0x%2!08X!\r\n\
-WriterVersion2: 0x%3!08X!\r\n\
-StartTimeOffset: 0x%4!08X! = %4!d! = %5\r\n\
-EndTimeOffset: 0x%6!08X! = %6!d! = %7\r\n\
-ExceptionCount: 0x%8!04X!\r\n"
+IDS_ARPHEADER "\r\nAppointment Recurrence Pattern: \r\n\
+ReaderVersion2: 0x%1!08X!\r\n\
+WriterVersion2: 0x%2!08X!\r\n\
+StartTimeOffset: 0x%3!08X! = %3!d! = %4\r\n\
+EndTimeOffset: 0x%5!08X! = %5!d! = %6\r\n\
+ExceptionCount: 0x%7!04X!\r\n"
 
 IDS_ARPEXHEADER "ExceptionInfo[%1!d!].StartDateTime: 0x%2!08X! = %3\r\n\
 ExceptionInfo[%1!d!].EndDateTime: 0x%4!08X! = %5\r\n\
@@ -2106,6 +2124,9 @@ IDS_STATUSTEXTNUMPROPS "Properties: %1!d!"
 IDS_STATUSTEXTNOFOLDER "Could not open folder or get properties"
 IDS_STATUSTEXTCONTENTCOUNTS "Contents: %1!d! Assoc. Contents: %2!d!"
 IDS_STATUSTEXTDELETEDCOUNTS "Deleted Items: %1!d! Deleted Assoc. Items: %2!d! Deleted Subfolders: %3!d!"
+IDS_STATUSTEXTLOADINGNICKNAME "Loading Nickname Cache..."
+IDS_STATUSTEXTLOADINGQUOTA "Loading Quota Properties..."
+
 
 SC_CLOSE "Close window."
 SC_RESTORE "Restore window."

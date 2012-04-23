@@ -967,3 +967,10 @@ enum SearchPathReorderType
 #define SECFLAG_NONE            0x0000       // Message has no security
 #define SECFLAG_ENCRYPTED       0x0001       // Message is sealed
 #define SECFLAG_SIGNED          0x0002       // Message is signed
+
+#define PR_ROAMING_BINARYSTREAM PROP_TAG(PT_BINARY, 0x7C09)
+
+#define PR_PROHIBIT_RECEIVE_QUOTA PROP_TAG( PT_LONG, 0x666A)
+#define PR_QUOTA_WARNING PROP_TAG( PT_LONG, 0x341A)
+#define PR_QUOTA_SEND    PROP_TAG( PT_LONG, 0x341B)
+#define PR_QUOTA_RECEIVE PROP_TAG( PT_LONG, 0x341C)
