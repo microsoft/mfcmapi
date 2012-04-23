@@ -1063,3 +1063,25 @@ _Check_return_ HRESULT GetProfileServiceVersion(_In_z_ LPCSTR lpszProfileName,
 
 	return hRes;
 } // GetProfileServiceVersion
+
+// $--HrCopyProfile---------------------------------------------------------
+// Copies a profile.
+// ------------------------------------------------------------------------------
+_Check_return_ HRESULT HrCopyProfile(_In_z_ LPCSTR lpszOldProfileName,
+	_In_z_ LPCSTR lpszNewProfileName)
+{
+	HRESULT hRes= S_OK;
+	LPPROFADMIN lpProfAdmin = NULL;
+
+	DebugPrint(DBGGeneric,_T("HrCopyProfile(%hs, %hs)\n"), lpszOldProfileName, lpszNewProfileName);
+	if (!lpszOldProfileName || !lpszNewProfileName) return MAPI_E_INVALID_PARAMETER;
+
+	EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
+	if (!lpProfAdmin) return hRes;
+
+	EC_MAPI(lpProfAdmin->CopyProfile((LPTSTR) lpszOldProfileName, NULL, (LPTSTR) lpszNewProfileName, NULL, NULL));
+
+	lpProfAdmin->Release();
+
+	return hRes;
+} // HrCopyProfile

@@ -12,6 +12,7 @@ class CGlobalCache;
 #define BUFFER_PROPTAG			((ULONG) 0x00000010)
 #define BUFFER_SOURCEPROPOBJ	((ULONG) 0x00000020)
 #define BUFFER_ATTACHMENTS		((ULONG) 0x00000040)
+#define BUFFER_PROFILE			((ULONG) 0x00000080)
 
 class CMapiObjects
 {
@@ -26,6 +27,7 @@ public:
 	_Check_return_ LPADRBOOK     GetAddrBook(bool bForceOpen);
 	_Check_return_ LPMDB         GetMDB();
 	_Check_return_ LPMAPISESSION GetSession();
+	_Check_return_ LPMAPISESSION LogonGetSession(_In_ HWND hWnd);
 
 	void SetAddrBook(_In_opt_ LPADRBOOK lpAddrBook);
 	void SetMDB(_In_opt_ LPMDB lppMDB);
@@ -44,11 +46,14 @@ public:
 	_Check_return_ ULONG* GetAttachmentsToCopy();
 	_Check_return_ ULONG  GetNumAttachments();
 
+	_Check_return_ LPSTR GetProfileToCopy();
+
 	void SetABEntriesToCopy(_In_ LPENTRYLIST lpEBEntriesToCopy);
 	void SetMessagesToCopy(_In_ LPENTRYLIST lpMessagesToCopy, _In_ LPMAPIFOLDER lpSourceParent);
 	void SetFolderToCopy(_In_ LPMAPIFOLDER lpFolderToCopy, _In_ LPMAPIFOLDER lpSourceParent);
 	void SetPropertyToCopy(ULONG ulPropTag, _In_ LPMAPIPROP lpSourcePropObject);
 	void SetAttachmentsToCopy(_In_ LPMESSAGE lpMessage, ULONG ulNumSelected, _Out_ ULONG* lpAttNumList);
+	void SetProfileToCopy(_In_ LPSTR szProfileName);
 
 	_Check_return_ ULONG GetBufferStatus();
 

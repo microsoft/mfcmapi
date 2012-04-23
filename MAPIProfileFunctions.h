@@ -67,3 +67,6 @@ _Check_return_ HRESULT GetProfileServiceVersion(_In_z_ LPCSTR lpszProfileName,
 												_Out_ EXCHANGE_STORE_VERSION_NUM* lpStoreVersion,
 												_Out_ bool* lpbFoundServerVersion,
 												_Out_ bool* lpbFoundServerFullVersion);
+
+_Check_return_ HRESULT HrCopyProfile(_In_z_ LPCSTR lpszOldProfileName,
+	_In_z_ LPCSTR lpszNewProfileName);

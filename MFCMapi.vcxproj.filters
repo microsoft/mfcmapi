@@ -243,6 +243,9 @@
     <ClInclude Include="UIFunctions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="QuickStart.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Res\bldver.rc">
@@ -507,6 +510,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="UIFunctions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QuickStart.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

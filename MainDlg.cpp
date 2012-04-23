@@ -24,6 +24,7 @@
 #include "MAPIMime.h"
 #include "InterpretProp2.h"
 #include "guids.h"
+#include "QuickStart.h"
 
 static TCHAR* CLASS = _T("CMainDlg");
 
@@ -114,6 +115,8 @@ END_MESSAGE_MAP()
 _Check_return_ bool CMainDlg::HandleMenu(WORD wMenuSelect)
 {
 	DebugPrint(DBGMenu,_T("CMainDlg::HandleMenu wMenuSelect = 0x%X = %d\n"),wMenuSelect,wMenuSelect);
+	if (HandleQuickStart(wMenuSelect, this, m_hWnd)) return true;
+
 	return CContentsTableDlg::HandleMenu(wMenuSelect);
 } // CMainDlg::HandleMenu
 

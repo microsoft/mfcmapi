@@ -126,6 +126,47 @@ _Check_return_ HRESULT CSortListCtrl::Create(_In_ CWnd* pCreateParent, ULONG ulF
 	return hRes;
 } // CSortListCtrl::Create
 
+static bool s_bInTrack = false;
+static int s_iTrack = 0;
+static int s_iHeaderHeight = 0;
+
+void OnBeginTrack(_In_ NMHDR* pNMHDR, _In_ HWND hWndParent)
+{
+	RECT rcHeader = {0};
+	if (!pNMHDR) return;
+	LPNMHEADER pHdr = (LPNMHEADER) pNMHDR;
+	Header_GetItemRect(pHdr->hdr.hwndFrom, pHdr->iItem, &rcHeader);
+	s_bInTrack = true;
+	s_iTrack = rcHeader.right;
+	s_iHeaderHeight = rcHeader.bottom - rcHeader.top;
+	DrawTrackingBar(pHdr->hdr.hwndFrom, hWndParent, s_iTrack, s_iHeaderHeight, false);
+} // OnBeginTrack
+
+void OnEndTrack(_In_ NMHDR* pNMHDR, _In_ HWND hWndParent)
+{
+	if (s_bInTrack && pNMHDR)
+	{
+		DrawTrackingBar(pNMHDR->hwndFrom, hWndParent, s_iTrack, s_iHeaderHeight, true);
+	}
+	s_bInTrack = false;
+} // OnEndTrack
+
+void OnTrack(_In_ NMHDR* pNMHDR, _In_ HWND hWndParent)
+{
+	if (s_bInTrack && pNMHDR)
+	{
+		RECT rcHeader = {0};
+		LPNMHEADER pHdr = (LPNMHEADER) pNMHDR;
+		Header_GetItemRect(pHdr->hdr.hwndFrom, pHdr->iItem, &rcHeader);
+		if (s_iTrack != rcHeader.right)
+		{
+			DrawTrackingBar(pHdr->hdr.hwndFrom, hWndParent, s_iTrack, s_iHeaderHeight, true);
+			s_iTrack = rcHeader.right;
+			DrawTrackingBar(pHdr->hdr.hwndFrom, hWndParent, s_iTrack, s_iHeaderHeight, false);
+		}
+	}
+} // OnTrack
+
 _Check_return_ LRESULT CSortListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	int iItemCur = m_iItemCur;
@@ -151,6 +192,21 @@ _Check_return_ LRESULT CSortListCtrl::WindowProc(UINT message, WPARAM wParam, LP
 			case HDN_DIVIDERDBLCLICKW:
 				AutoSizeColumn(((LPNMHEADERW)pHdr)->iItem,0,0);
 				return NULL;
+				break;
+			case HDN_BEGINTRACKA:
+			case HDN_BEGINTRACKW:
+				OnBeginTrack(pHdr, m_hWnd);
+				break;
+			case HDN_ENDTRACKA:
+			case HDN_ENDTRACKW:
+				OnEndTrack(pHdr, m_hWnd);
+				break;
+			case HDN_ITEMCHANGEDA:
+			case HDN_ITEMCHANGEDW:
+				// Let the control handle the resized columns before we redraw our tracking bar
+				LRESULT lRet = CListCtrl::WindowProc(message,wParam,lParam);
+				OnTrack(pHdr, m_hWnd);
+				return lRet;
 				break;
 			}
 			break; // WM_NOTIFY

@@ -51,11 +51,8 @@ _Check_return_ HRESULT DeleteProperty(_In_ LPMAPIPROP lpMAPIProp,ULONG ulPropTag
 _Check_return_ HRESULT DeleteToDeletedItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLDER lpSourceFolder, _In_ LPENTRYLIST lpEIDs, _In_ HWND hWnd);
 _Check_return_ bool    FindPropInPropTagArray(_In_ LPSPropTagArray lpspTagArray, ULONG ulPropToFind, _Out_ ULONG* lpulRowFound);
 _Check_return_ ULONG   GetMAPIObjectType(_In_opt_ LPMAPIPROP lpMAPIProp);
-_Check_return_ HRESULT GetInbox(_In_ LPMDB lpMDB, _Deref_out_opt_ LPMAPIFOLDER* lpInbox);
-_Check_return_ HRESULT GetInbox(_In_ LPMDB lpMDB, _Out_opt_ ULONG* lpcbeid, _Deref_out_opt_ LPENTRYID* lppeid);
 _Check_return_ HRESULT GetParentFolder(_In_ LPMAPIFOLDER lpChildFolder, _In_ LPMDB lpMDB, _Deref_out_opt_ LPMAPIFOLDER* lpParentFolder);
 _Check_return_ HRESULT GetPropsNULL(_In_ LPMAPIPROP lpMAPIProp, ULONG ulFlags, _Out_ ULONG* lpcValues, _Deref_out_opt_ LPSPropValue* lppPropArray);
-_Check_return_ HRESULT GetSpecialFolder(_In_ LPMDB lpMDB, ULONG ulFolderPropTag, _Deref_out_opt_ LPMAPIFOLDER *lpSpecialFolder);
 _Check_return_ HRESULT GetSpecialFolderEID(_In_ LPMDB lpMDB, ULONG ulFolderPropTag, _Out_opt_ ULONG* lpcbeid, _Deref_out_opt_ LPENTRYID* lppeid);
 _Check_return_ HRESULT IsAttachmentBlocked(_In_ LPMAPISESSION lpMAPISession, _In_z_ LPCWSTR pwszFileName, _Out_ bool* pfBlocked);
 _Check_return_ bool    IsDuplicateProp(_In_ LPSPropTagArray lpArray, ULONG ulPropTag);
@@ -107,3 +104,35 @@ HRESULT HrEmsmdbUIDFromStore(_In_ LPMAPISESSION pmsess,
 							 _Out_opt_ MAPIUID* pEmsmdbUID);
 bool FExchangePrivateStore(_In_ LPMAPIUID lpmapiuid);
 bool FExchangePublicStore(_In_ LPMAPIUID lpmapiuid);
+
+enum
+{
+	DEFAULT_UNSPECIFIED,
+	DEFAULT_CALENDAR,
+	DEFAULT_CONTACTS,
+	DEFAULT_JOURNAL,
+	DEFAULT_NOTES,
+	DEFAULT_TASKS,
+	DEFAULT_REMINDERS,
+	DEFAULT_DRAFTS,
+	DEFAULT_SENTITEMS,
+	DEFAULT_OUTBOX,
+	DEFAULT_DELETEDITEMS,
+	DEFAULT_FINDER,
+	DEFAULT_IPM_SUBTREE,
+	DEFAULT_INBOX,
+	DEFAULT_LOCALFREEBUSY,
+	DEFAULT_CONFLICTS,
+	DEFAULT_SYNCISSUES,
+	DEFAULT_LOCALFAILURES,
+	DEFAULT_SERVERFAILURES,
+	DEFAULT_JUNKMAIL,
+	NUM_DEFAULT_PROPS
+};
+
+STDMETHODIMP OpenDefaultFolder(_In_ ULONG ulFolder, _In_ LPMDB lpMDB, _Deref_out_opt_ LPMAPIFOLDER *lpFolder);
+STDMETHODIMP GetDefaultFolderEID(
+	_In_ ULONG ulFolder,
+	_In_ LPMDB lpMDB,
+	_Out_opt_ ULONG* lpcbeid,
+	_Deref_out_opt_ LPENTRYID* lppeid);

@@ -16,26 +16,29 @@ void DumpExchangeTable(_In_z_ LPWSTR lpszProfile, _In_ ULONG ulPropTag, _In_ ULO
 
 	WC_H(MrMAPILogonEx(lpszProfile,&lpMAPISession));
 
-	WC_H(HrMAPIOpenStoreAndFolder(lpMAPISession, ulFolder, lpszFolder, NULL, &lpFolder));
+	if (lpMAPISession)
+	{
+		WC_H(HrMAPIOpenStoreAndFolder(lpMAPISession, ulFolder, lpszFolder, NULL, &lpFolder));
 
-	if (lpFolder)
-	{
-		// Open the table in an IExchangeModifyTable interface
-		WC_MAPI(lpFolder->OpenProperty(
-			ulPropTag,
-			(LPGUID)&IID_IExchangeModifyTable,
-			0,
-			MAPI_DEFERRED_ERRORS,
-			(LPUNKNOWN*)&lpExchTbl));
-	}
-	if (lpExchTbl)
-	{
-		WC_MAPI(lpExchTbl->GetTable(NULL,&lpTbl));
-	}
-	if (lpTbl)
-	{
-		RegKeys[regkeyDEBUG_TAG].ulCurDWORD |= DBGGeneric;
-		_OutputTable(DBGGeneric,NULL,lpTbl);
+		if (lpFolder)
+		{
+			// Open the table in an IExchangeModifyTable interface
+			WC_MAPI(lpFolder->OpenProperty(
+				ulPropTag,
+				(LPGUID)&IID_IExchangeModifyTable,
+				0,
+				MAPI_DEFERRED_ERRORS,
+				(LPUNKNOWN*)&lpExchTbl));
+		}
+		if (lpExchTbl)
+		{
+			WC_MAPI(lpExchTbl->GetTable(NULL,&lpTbl));
+		}
+		if (lpTbl)
+		{
+			RegKeys[regkeyDEBUG_TAG].ulCurDWORD |= DBGGeneric;
+			_OutputTable(DBGGeneric,NULL,lpTbl);
+		}
 	}
 
 	if (lpTbl) lpTbl->Release();

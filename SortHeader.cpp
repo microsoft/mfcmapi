@@ -9,18 +9,12 @@ CSortHeader::CSortHeader()
 {
 	m_hwndTip = NULL;
 	m_hwndParent = NULL;
-	m_bInTrack = false;
-	m_iTrack = -1;
-	m_iHeaderHeight = 0;
 	ZeroMemory(&m_ti,sizeof(TOOLINFO));
 } // CSortHeader::CSortHeader
 
 BEGIN_MESSAGE_MAP(CSortHeader, CHeaderCtrl)
 	ON_MESSAGE(WM_MFCMAPI_SAVECOLUMNORDERHEADER, msgOnSaveColumnOrder)
 	ON_NOTIFY_REFLECT(NM_CUSTOMDRAW, OnCustomDraw)
-	ON_NOTIFY_REFLECT(HDN_BEGINTRACK, OnBeginTrack)
-	ON_NOTIFY_REFLECT(HDN_ENDTRACK, OnEndTrack)
-	ON_NOTIFY_REFLECT(HDN_ITEMCHANGED, OnTrack)
 END_MESSAGE_MAP()
 
 _Check_return_ bool CSortHeader::Init(_In_ CHeaderCtrl *pHeader, _In_ HWND hwndParent)
@@ -190,43 +184,6 @@ _Check_return_ LRESULT CSortHeader::msgOnSaveColumnOrder(WPARAM /*wParam*/, LPAR
 	}
 	return S_OK;
 } // CSortHeader::msgOnSaveColumnOrder
-
-void CSortHeader::OnBeginTrack(_In_ NMHDR* pNMHDR, _In_ LRESULT* /*pResult*/)
-{
-	RECT rcHeader = {0};
-	if (!pNMHDR) return;
-	LPNMHEADER pHdr = (LPNMHEADER) pNMHDR;
-	Header_GetItemRect(pHdr->hdr.hwndFrom, pHdr->iItem, &rcHeader);
-	m_bInTrack = true;
-	m_iTrack = rcHeader.right;
-	m_iHeaderHeight = rcHeader.bottom-rcHeader.top;
-	DrawTrackingBar(pHdr->hdr.hwndFrom, m_hwndParent, m_iTrack, m_iHeaderHeight, false);
-} // CSortHeader::OnBeginTrack
-
-void CSortHeader::OnEndTrack(_In_ NMHDR* pNMHDR, _In_ LRESULT* /*pResult*/)
-{
-	if (m_bInTrack)
-	{
-		DrawTrackingBar(pNMHDR->hwndFrom, m_hwndParent, m_iTrack, m_iHeaderHeight, true);
-	}
-	m_bInTrack = false;
-} // CSortHeader::OnEndTrack
-
-void CSortHeader::OnTrack(_In_ NMHDR* pNMHDR, _In_ LRESULT* /*pResult*/)
-{
-	if (m_bInTrack && pNMHDR)
-	{
-		RECT rcHeader = {0};
-		LPNMHEADER pHdr = (LPNMHEADER) pNMHDR;
-		Header_GetItemRect(pHdr->hdr.hwndFrom, pHdr->iItem, &rcHeader);
-		if (m_iTrack != rcHeader.right)
-		{
-			DrawTrackingBar(pHdr->hdr.hwndFrom, m_hwndParent, m_iTrack, m_iHeaderHeight, true);
-			m_iTrack = rcHeader.right;
-			DrawTrackingBar(pHdr->hdr.hwndFrom, m_hwndParent, m_iTrack, m_iHeaderHeight, false);
-		}
-	}
-} // CSortHeader::OnTrack
 
 void CSortHeader::OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 {

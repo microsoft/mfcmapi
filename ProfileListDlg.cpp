@@ -80,6 +80,10 @@ void CProfileListDlg::OnInitMenu(_In_ CMenu* pMenu)
 			pMenu->EnableMenuItem(ID_ADDUNICODEPSTTOPROFILE,DIMMSOK(iNumSel));
 			pMenu->EnableMenuItem(ID_ADDSERVICETOPROFILE,DIMMSOK(iNumSel));
 			pMenu->EnableMenuItem(ID_SETDEFAULTPROFILE,DIMMSNOK(iNumSel));
+
+			pMenu->EnableMenuItem(ID_COPY,DIMMSNOK(iNumSel));
+			ULONG ulStatus = m_lpMapiObjects->GetBufferStatus();
+			pMenu->EnableMenuItem(ID_PASTE,DIM(ulStatus & BUFFER_PROFILE));
 		}
 	}
 	CContentsTableDlg::OnInitMenu(pMenu);
@@ -547,3 +551,53 @@ void CProfileListDlg::OnOpenProfileByName()
 		}
 	}
 } // CProfileListDlg::OnOpenProfileByName
+
+void CProfileListDlg::HandleCopy()
+{
+	int iItem = -1;
+	SortListData* lpListData = NULL;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
+
+	DebugPrintEx(DBGGeneric,CLASS,_T("HandleCopy"),_T("\n"));
+	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return;
+
+	// Find the highlighted profile
+	lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
+	if (lpListData)
+	{
+		m_lpMapiObjects->SetProfileToCopy(lpListData->data.Contents.szProfileDisplayName);
+	}
+} // CProfileListDlg::HandleCopy
+
+_Check_return_ bool CProfileListDlg::HandlePaste()
+{
+	if (CBaseDialog::HandlePaste()) return true;
+
+	HRESULT hRes = S_OK;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
+
+	DebugPrintEx(DBGGeneric,CLASS,_T("HandlePaste"),_T("\n"));
+	if (!m_lpMapiObjects) return false;
+
+	LPSTR szOldProfile = m_lpMapiObjects->GetProfileToCopy();
+
+	CEditor MyData(
+		this,
+		IDS_COPYPROFILE,
+		NULL,
+		1,
+		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+
+	MyData.InitSingleLineSzA(0,IDS_COPYPROFILEPROMPT,szOldProfile,false);
+
+	WC_H(MyData.DisplayDialog());
+	if (S_OK == hRes)
+	{
+		LPSTR szNewProfile = MyData.GetStringA(0);
+
+		WC_MAPI(HrCopyProfile(szOldProfile, szNewProfile));
+
+		OnRefreshView(); // Update the view since we don't have notifications here.
+	}
+	return true;
+} // CProfileListDlg::HandlePaste

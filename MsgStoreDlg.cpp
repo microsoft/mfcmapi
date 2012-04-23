@@ -184,31 +184,7 @@ void CMsgStoreDlg::OnInitMenu(_In_ CMenu* pMenu)
 /////////////////////////////////////////////////////////////////////////////////////
 //  Menu Commands
 
-void CMsgStoreDlg::OnDisplayInbox()
-{
-	HRESULT			hRes = S_OK;
-	LPMAPIFOLDER	lpInbox = NULL;
-
-	if (!m_lpMapiObjects) return;
-
-	LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release
-	if (!lpMDB) return;
-
-	EC_H(GetInbox(lpMDB,&lpInbox));
-
-	if (lpInbox)
-	{
-		EC_H(DisplayObject(
-			lpInbox,
-			NULL,
-			otHierarchy,
-			this));
-
-		lpInbox->Release();
-	}
-} // CMsgStoreDlg::OnDisplayInbox
-
-void CMsgStoreDlg::OnDisplaySpecialFolder(ULONG ulPropTag)
+void CMsgStoreDlg::OnDisplaySpecialFolder(ULONG ulFolder)
 {
 	HRESULT			hRes = S_OK;
 	LPMAPIFOLDER	lpFolder = NULL;
@@ -218,7 +194,7 @@ void CMsgStoreDlg::OnDisplaySpecialFolder(ULONG ulPropTag)
 	LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 	if (!lpMDB) return;
 
-	EC_H(GetSpecialFolder(lpMDB,ulPropTag,&lpFolder));
+	EC_H(OpenDefaultFolder(ulFolder, lpMDB, &lpFolder));
 
 	if (lpFolder)
 	{
@@ -232,20 +208,25 @@ void CMsgStoreDlg::OnDisplaySpecialFolder(ULONG ulPropTag)
 	}
 } // CMsgStoreDlg::OnDisplaySpecialFolder
 
+void CMsgStoreDlg::OnDisplayInbox()
+{
+	OnDisplaySpecialFolder(DEFAULT_INBOX);
+} // CMsgStoreDlg::OnDisplayInbox
+
 // See Q171670 INFO: Entry IDs of Outlook Special Folders for more info on these tags
 void CMsgStoreDlg::OnDisplayCalendarFolder()
 {
-	OnDisplaySpecialFolder(PR_IPM_APPOINTMENT_ENTRYID);
+	OnDisplaySpecialFolder(DEFAULT_CALENDAR);
 } // CMsgStoreDlg::OnDisplayCalendarFolder
 
 void CMsgStoreDlg::OnDisplayContactsFolder()
 {
-	OnDisplaySpecialFolder(PR_IPM_CONTACT_ENTRYID);
+	OnDisplaySpecialFolder(DEFAULT_CONTACTS);
 } // CMsgStoreDlg::OnDisplayContactsFolder
 
 void CMsgStoreDlg::OnDisplayTasksFolder()
 {
-	OnDisplaySpecialFolder(PR_IPM_TASK_ENTRYID);
+	OnDisplaySpecialFolder(DEFAULT_TASKS);
 } // CMsgStoreDlg::OnDisplayTasksFolder
 
 void CMsgStoreDlg::OnDisplayReceiveFolderTable()

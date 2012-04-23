@@ -34,33 +34,37 @@ void DumpContentsTable(
 	WC_MAPI(MAPIInitialize(NULL));
 
 	WC_H(MrMAPILogonEx(lpszProfile,&lpMAPISession));
-	WC_H(HrMAPIOpenStoreAndFolder(lpMAPISession, ulFolder, lpszFolder, &lpMDB, &lpFolder));
 
-	if (lpFolder)
+	if (lpMAPISession)
 	{
-		CDumpStore MyDumpStore;
-		SSortOrderSet SortOrder = {0};
-		MyDumpStore.InitMDB(lpMDB);
-		MyDumpStore.InitFolder(lpFolder);
-		MyDumpStore.InitFolderPathRoot(lpszDir);
-		MyDumpStore.InitFolderContentsRestriction(lpRes);
-		if (bMSG) MyDumpStore.EnableMSG();
-		if (bList) MyDumpStore.EnableList();
-		if (ulCount)
+		WC_H(HrMAPIOpenStoreAndFolder(lpMAPISession, ulFolder, lpszFolder, &lpMDB, &lpFolder));
+
+		if (lpFolder)
 		{
-			MyDumpStore.InitMaxOutput(ulCount);
-			SortOrder.cSorts = 1;
-			SortOrder.cCategories = 0;
-			SortOrder.cExpanded = 0;
-			SortOrder.aSort[0].ulPropTag = PR_MESSAGE_DELIVERY_TIME;
-			SortOrder.aSort[0].ulOrder = TABLE_SORT_DESCEND;
-			MyDumpStore.InitSortOrder(&SortOrder);
+			CDumpStore MyDumpStore;
+			SSortOrderSet SortOrder = {0};
+			MyDumpStore.InitMDB(lpMDB);
+			MyDumpStore.InitFolder(lpFolder);
+			MyDumpStore.InitFolderPathRoot(lpszDir);
+			MyDumpStore.InitFolderContentsRestriction(lpRes);
+			if (bMSG) MyDumpStore.EnableMSG();
+			if (bList) MyDumpStore.EnableList();
+			if (ulCount)
+			{
+				MyDumpStore.InitMaxOutput(ulCount);
+				SortOrder.cSorts = 1;
+				SortOrder.cCategories = 0;
+				SortOrder.cExpanded = 0;
+				SortOrder.aSort[0].ulPropTag = PR_MESSAGE_DELIVERY_TIME;
+				SortOrder.aSort[0].ulOrder = TABLE_SORT_DESCEND;
+				MyDumpStore.InitSortOrder(&SortOrder);
+			}
+			if (bRetryStreamProps) MyDumpStore.EnableStreamRetry();
+			MyDumpStore.ProcessFolders(
+				bContents,
+				bAssociated,
+				false);
 		}
-		if (bRetryStreamProps) MyDumpStore.EnableStreamRetry();
-		MyDumpStore.ProcessFolders(
-			bContents,
-			bAssociated,
-			false);
 	}
 
 	if (lpFolder) lpFolder->Release();

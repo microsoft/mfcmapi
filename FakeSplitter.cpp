@@ -50,7 +50,7 @@ CFakeSplitter::CFakeSplitter(
 		wc.style   = 0; // not passing CS_VREDRAW | CS_HREDRAW fixes flicker
 		wc.lpszClassName = _T("FakeSplitter"); // STRING_OK
 		wc.lpfnWndProc = ::DefWindowProc;
-		wc.hbrBackground = GetSysBrush(cBitmapTransBack); // helps spot flashing
+		wc.hbrBackground = GetSysBrush(cBackground); // helps spot flashing
 
 		RegisterClassEx(&wc);
 	}
