@@ -244,7 +244,7 @@ static HRESULT HrLookupRootFolderW(
 
 	ULONG ulPropTag = NULL;
 
-	WC_H(PropNameToPropTagW(lpszRootFolder,&ulPropTag));
+	WC_H(LookupPropName(lpszRootFolder, &ulPropTag));
 	if (!ulPropTag)
 	{
 		// Maybe one of our folder constants was passed.
@@ -259,9 +259,6 @@ static HRESULT HrLookupRootFolderW(
 		// Still no match?
 		// Maybe a prop tag was passed as hex
 		ulPropTag = wcstoul(lpszRootFolder,NULL,16);
-		// Maybe one of our folder constants was passed.
-		// These are base 10.
-		ulFolder = wcstoul(lpszRootFolder,NULL,10);
 	}
 	if (!ulPropTag) return MAPI_E_NOT_FOUND;
 
@@ -423,91 +420,87 @@ HRESULT HrMAPIOpenFolderExW(
 
 void DumpHierachyTable(
 	_In_z_ LPWSTR lpszProfile,
+	_In_ LPMAPIFOLDER lpFolder,
 	_In_ ULONG ulFolder,
 	_In_z_ LPWSTR lpszFolder)
 {
-	InitMFC();
 	DebugPrint(DBGGeneric,"DumpHierachyTable: Outputting hierarchy table for folder %i / %ws from profile %ws \n", ulFolder, lpszFolder?lpszFolder:L"", lpszProfile);
 	HRESULT hRes = S_OK;
-	LPMAPISESSION lpMAPISession = NULL;
-	LPMAPIFOLDER lpFolder = NULL;
 
-	WC_MAPI(MAPIInitialize(NULL));
-
-	WC_H(MrMAPILogonEx(lpszProfile,&lpMAPISession));
-
-	if (lpMAPISession)
+	if (lpFolder)
 	{
-		WC_H(HrMAPIOpenStoreAndFolder(lpMAPISession, ulFolder, lpszFolder, NULL, &lpFolder));
+		LPMAPITABLE lpTable = NULL;
+		LPSRowSet lpRow = NULL;
+		ULONG i = 0;
 
-		if (lpFolder)
+		enum
 		{
-			LPMAPITABLE lpTable = NULL;
-			LPSRowSet lpRow = NULL;
-			ULONG i = 0;
+			ePR_DISPLAY_NAME_W,
+			ePR_DEPTH,
+			NUM_COLS
+		};
+		static const SizedSPropTagArray(NUM_COLS, rgColProps) =
+		{
+			NUM_COLS,
+			PR_DISPLAY_NAME_W,
+			PR_DEPTH,
+		};
 
-			enum
-			{
-				ePR_DISPLAY_NAME_W,
-				ePR_DEPTH,
-				NUM_COLS
-			};
-			static const SizedSPropTagArray(NUM_COLS, rgColProps) =
-			{
-				NUM_COLS,
-				PR_DISPLAY_NAME_W,
-				PR_DEPTH,
-			};
+		WC_MAPI(lpFolder->GetHierarchyTable(MAPI_DEFERRED_ERRORS | CONVENIENT_DEPTH, &lpTable));
+		if (SUCCEEDED(hRes) && lpTable)
+		{
+			WC_MAPI(lpTable->SetColumns((LPSPropTagArray)&rgColProps, TBL_ASYNC));
 
-			WC_MAPI(lpFolder->GetHierarchyTable(MAPI_DEFERRED_ERRORS | CONVENIENT_DEPTH, &lpTable));
-			if (SUCCEEDED(hRes) && lpTable)
+			if (!FAILED(hRes)) for (;;)
 			{
-				WC_MAPI(lpTable->SetColumns((LPSPropTagArray)&rgColProps, TBL_ASYNC));
+				hRes = S_OK;
+				if (lpRow) FreeProws(lpRow);
+				lpRow = NULL;
+				WC_MAPI(lpTable->QueryRows(
+					50,
+					NULL,
+					&lpRow));
+				if (FAILED(hRes) || !lpRow || !lpRow->cRows) break;
 
-				if (!FAILED(hRes)) for (;;)
+				for (i = 0; i < lpRow->cRows; i++)
 				{
-					hRes = S_OK;
-					if (lpRow) FreeProws(lpRow);
-					lpRow = NULL;
-					WC_MAPI(lpTable->QueryRows(
-						50,
-						NULL,
-						&lpRow));
-					if (FAILED(hRes) || !lpRow || !lpRow->cRows) break;
-
-					for (i = 0; i < lpRow->cRows; i++)
+					if (PR_DEPTH == lpRow->aRow[i].lpProps[ePR_DEPTH].ulPropTag && 
+						lpRow->aRow[i].lpProps[ePR_DEPTH].Value.l > 1)
 					{
-						if (PR_DEPTH == lpRow->aRow[i].lpProps[ePR_DEPTH].ulPropTag && 
-							lpRow->aRow[i].lpProps[ePR_DEPTH].Value.l > 1)
+						int iTab = 0;
+						for (iTab = 1; iTab < lpRow->aRow[i].lpProps[ePR_DEPTH].Value.l; iTab++)
 						{
-							int iTab = 0;
-							for (iTab = 1; iTab < lpRow->aRow[i].lpProps[ePR_DEPTH].Value.l; iTab++)
-							{
-								printf("  ");
-							}
-						}
-						if (PR_DISPLAY_NAME_W == lpRow->aRow[i].lpProps[ePR_DISPLAY_NAME_W].ulPropTag)
-						{
-							printf("%ws\n",lpRow->aRow[i].lpProps[ePR_DISPLAY_NAME_W].Value.lpszW);
+							printf("  ");
 						}
 					}
+					if (PR_DISPLAY_NAME_W == lpRow->aRow[i].lpProps[ePR_DISPLAY_NAME_W].ulPropTag)
+					{
+						printf("%ws\n",lpRow->aRow[i].lpProps[ePR_DISPLAY_NAME_W].Value.lpszW);
+					}
 				}
-				if (lpRow) FreeProws(lpRow);
 			}
-
-			if (lpTable) lpTable->Release();
+			if (lpRow) FreeProws(lpRow);
 		}
-	}
 
-	if (lpFolder) lpFolder->Release();
-	if (lpMAPISession) lpMAPISession->Release();
-	MAPIUninitialize();
+		if (lpTable) lpTable->Release();
+	}
 } // DumpHierachyTable
+
+void DoFolderProps(_In_ MYOPTIONS ProgOpts)
+{
+	if (ProgOpts.lpFolder)
+	{
+		ULONG ulPropTag = NULL;
+		(void) PropNameToPropTagW(ProgOpts.lpszUnswitchedOption, &ulPropTag);
+		PrintObjectProperties(_T("folderprops"), ProgOpts.lpFolder, ulPropTag);
+	}
+} // DoFolderProps
 
 void DoChildFolders(_In_ MYOPTIONS ProgOpts)
 {
 	DumpHierachyTable(
 		ProgOpts.lpszProfile,
+		ProgOpts.lpFolder,
 		ProgOpts.ulFolder,
 		ProgOpts.lpszFolderPath);
 } // DoChildFolders

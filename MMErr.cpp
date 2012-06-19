@@ -52,7 +52,7 @@ void DoErrorParse(_In_ MYOPTIONS ProgOpts)
 	{
 		ULONG ulArg = NULL;
 		LPWSTR szEndPtr = NULL;
-		ulArg = wcstoul(lpszErr,&szEndPtr,ProgOpts.bDoDecimal?10:16);
+		ulArg = wcstoul(lpszErr,&szEndPtr,(ProgOpts.ulOptions & OPT_DODECIMAL)?10:16);
 
 		// if szEndPtr is pointing to something other than NULL, this must be a string
 		if (!szEndPtr || *szEndPtr)
@@ -69,7 +69,7 @@ void DoErrorParse(_In_ MYOPTIONS ProgOpts)
 	}
 	else
 	{
-		if (ProgOpts.bDoPartialSearch || !lpszErr)
+		if ((ProgOpts.ulOptions & OPT_DOPARTIALSEARCH) || !lpszErr)
 		{
 			PrintErrFromPartialName(lpszErr);
 		}

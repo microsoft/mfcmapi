@@ -492,6 +492,8 @@ void PrintFlag(_In_ ULONG ulPropNum, _In_opt_z_ LPCWSTR lpszPropName, _In_ bool 
 				}
 			}
 		}
+
+
 		if (ulCur != ulPropTagArray)
 		{
 			printf("Found property %ws (0x%08X).\n",PropTagArray[ulCur].lpszName, PropTagArray[ulCur].ulValue);
@@ -518,7 +520,7 @@ void DoPropTags(_In_ MYOPTIONS ProgOpts)
 	{
 		ULONG ulArg = NULL;
 		LPWSTR szEndPtr = NULL;
-		ulArg = wcstoul(lpszPropName,&szEndPtr,ProgOpts.bDoDecimal?10:16);
+		ulArg = wcstoul(lpszPropName,&szEndPtr, (ProgOpts.ulOptions & OPT_DODECIMAL)?10:16);
 
 		// if szEndPtr is pointing to something other than NULL, this must be a string
 		if (!szEndPtr || *szEndPtr)
@@ -529,24 +531,39 @@ void DoPropTags(_In_ MYOPTIONS ProgOpts)
 		ulPropNum = ulArg;
 	}
 
-	if (ProgOpts.bDoFlag)
+	// Handle dispid cases
+	if (ProgOpts.ulOptions & OPT_DODISPID)
 	{
-		PrintFlag(ulPropNum,lpszPropName,ProgOpts.bDoDispid,ProgOpts.ulFlagValue);
-
-	}
-	else if (ProgOpts.bDoPartialSearch)
-	{
-		if (ProgOpts.bDoDispid)
+		if (ProgOpts.ulOptions & OPT_DOFLAG)
+		{
+			PrintFlag(ulPropNum, lpszPropName, true, ProgOpts.ulFlagValue);
+		}
+		else if (ProgOpts.ulOptions & OPT_DOPARTIALSEARCH)
 		{
 			PrintDispIDFromPartialName(lpszPropName,ProgOpts.ulTypeNum);
 		}
-		else
+		else if (ulPropNum)
 		{
-			PrintTagFromPartialName(lpszPropName,ProgOpts.ulTypeNum);
+			PrintDispIDFromNum(ulPropNum);
 		}
+		else if (lpszPropName)
+		{
+			PrintDispIDFromName(lpszPropName);
+		}
+		return;
+	}
+
+	// Handle prop tag cases
+	if (ProgOpts.ulOptions & OPT_DOFLAG)
+	{
+		PrintFlag(ulPropNum, lpszPropName, false, ProgOpts.ulFlagValue);
+	}
+	else if (ProgOpts.ulOptions & OPT_DOPARTIALSEARCH)
+	{
+		PrintTagFromPartialName(lpszPropName,ProgOpts.ulTypeNum);
 	}
 	// If we weren't asked about a property, maybe we were asked about types
-	else if (ProgOpts.bDoType)
+	else if (ProgOpts.ulOptions & OPT_DOTYPE)
 	{
 		if (ulNoMatch != ProgOpts.ulTypeNum)
 		{
@@ -559,25 +576,10 @@ void DoPropTags(_In_ MYOPTIONS ProgOpts)
 			PrintKnownTypes();
 		}
 	}
-	else if (ProgOpts.bDoDispid)
-	{
-		if (ulPropNum)
-		{
-			PrintDispIDFromNum(ulPropNum);
-		}
-		else if (lpszPropName)
-		{
-			PrintDispIDFromName(lpszPropName);
-		}
-	}
 	else
 	{
 		if (ulPropNum)
 		{
-			if (ProgOpts.bDoType && ulNoMatch != ProgOpts.ulTypeNum)
-			{
-				ulPropNum = CHANGE_PROP_TYPE(ulPropNum,ProgOpts.ulTypeNum);
-			}
 			PrintTagFromNum(ulPropNum);
 		}
 		else if (lpszPropName)
@@ -591,3 +593,19 @@ void DoGUIDs(_In_ MYOPTIONS /*ProgOpts*/)
 {
 	PrintGUIDs();
 } // DoGUIDs
+
+void DoFlagSearch(_In_ MYOPTIONS ProgOpts)
+{
+	//ProgOpts.lpszFlagName;
+	ULONG	ulCurEntry = 0;
+	if (!ulFlagArray || !FlagArray) return;
+
+	for (ulCurEntry = 0; ulCurEntry < ulFlagArray; ulCurEntry++)
+	{
+		if (!_wcsicmp(FlagArray[ulCurEntry].lpszName, ProgOpts.lpszFlagName))
+		{
+			printf("%ws = 0x%08X\n",FlagArray[ulCurEntry].lpszName, FlagArray[ulCurEntry].lFlagValue);
+			break;
+		}
+	}
+} // DoFlagSearch

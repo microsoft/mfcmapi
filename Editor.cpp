@@ -2167,14 +2167,9 @@ _Check_return_ ULONG CEditor::GetPropTag(ULONG i)
 
 	HRESULT hRes = S_OK;
 	ULONG ulPropTag = NULL;
-	LPWSTR szTag = m_lpControls[i].UI.lpEdit->lpszW;
-	LPWSTR szEnd = NULL;
-	ULONG ulTag = wcstoul(szTag,&szEnd,16);
+	ULONG ulTag = NULL;
 
-	if (*szEnd != NULL) // If we didn't consume the whole string, try a lookup
-	{
-		EC_H(PropNameToPropTagW(szTag,&ulTag));
-	}
+	EC_H(PropNameToPropTagW(m_lpControls[i].UI.lpEdit->lpszW, &ulTag));
 
 	// Figure if this is a full tag or just an ID
 	if (ulTag & PROP_TAG_MASK) // Full prop tag

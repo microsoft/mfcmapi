@@ -2080,7 +2080,8 @@ _Check_return_ HRESULT SendTestMessage(
 									   _In_ LPMAPIFOLDER lpFolder,
 									   _In_z_ LPCTSTR szRecipient,
 									   _In_z_ LPCTSTR szBody,
-									   _In_z_ LPCTSTR szSubject)
+									   _In_z_ LPCTSTR szSubject,
+									   _In_z_ LPCTSTR szClass)
 {
 	HRESULT			hRes = S_OK;
 	LPMESSAGE		lpNewMessage = NULL;
@@ -2115,6 +2116,13 @@ _Check_return_ HRESULT SendTestMessage(
 		sProp.Value.LPSZ = (LPTSTR) szSubject;
 
 		DebugPrint(DBGGeneric,_T("Setting PR_SUBJECT to %s.\n"),szSubject);
+		EC_MAPI(HrSetOneProp(lpNewMessage,&sProp));
+
+		sProp.dwAlignPad = 0;
+		sProp.ulPropTag = PR_MESSAGE_CLASS;
+		sProp.Value.LPSZ = (LPTSTR) szClass;
+
+		DebugPrint(DBGGeneric,_T("Setting PR_MESSAGE_CLASS to %s.\n"),szSubject);
 		EC_MAPI(HrSetOneProp(lpNewMessage,&sProp));
 
 		SPropTagArray sPropTagArray;

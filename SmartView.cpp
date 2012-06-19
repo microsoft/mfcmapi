@@ -60,6 +60,7 @@ NAME_ARRAY_ENTRY g_uidParsingTypes[] = {
 	{IDS_STENCODEENTRYID,L"Encode Entry ID"}, // STRING_OK
 	{IDS_STDECODEENTRYID,L"Decode Entry ID"}, // STRING_OK
 	{IDS_STVERBSTREAM,L"Verb Stream"}, // STRING_OK
+	{IDS_STTOMBSTONE,L"Tombstone"}, // STRING_OK
 };
 ULONG g_cuidParsingTypes = _countof(g_uidParsingTypes);
 
@@ -107,6 +108,7 @@ SMART_VIEW_PARSERS_ENTRY g_SmartViewParsers[] = {
 	MAKE_SV_ENTRY(IDS_STFOLDERUSERFIELDS, FolderUserFieldStreamStruct)
 	MAKE_SV_ENTRY(IDS_STNICKNAMECACHE, NickNameCacheStruct)
 	MAKE_SV_ENTRY(IDS_STVERBSTREAM, VerbStreamStruct)
+	MAKE_SV_ENTRY(IDS_STTOMBSTONE, TombstoneStruct)
 	// MAKE_SV_ENTRY(IDS_STSID, SIDStruct)
 	// MAKE_SV_ENTRY(IDS_STDECODEENTRYID)
 	// MAKE_SV_ENTRY(IDS_STENCODEENTRYID)
@@ -6104,4 +6106,143 @@ _Check_return_ LPWSTR VerbStreamStructToString(_In_ VerbStreamStruct* pvsVerbStr
 
 //////////////////////////////////////////////////////////////////////////
 // End VerbStreamStruct
+//////////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////
+// TombstoneStruct
+//////////////////////////////////////////////////////////////////////////
+
+// Allocates return value with new. Clean up with DeleteTombstoneStruct.
+_Check_return_ TombstoneStruct* BinToTombstoneStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
+{
+	if (!lpBin) return NULL;
+
+	TombstoneStruct tsTombstone = {0};
+	CBinaryParser Parser(cbBin,lpBin);
+
+	Parser.GetDWORD(&tsTombstone.Identifier);
+	Parser.GetDWORD(&tsTombstone.HeaderSize);
+	Parser.GetDWORD(&tsTombstone.Version);
+	Parser.GetDWORD(&tsTombstone.RecordsCount);
+	Parser.GetDWORD(&tsTombstone.RecordsSize);
+
+	// Run through the parser once to count the number of flag structs
+	CBinaryParser Parser2(cbBin,lpBin);
+	Parser2.SetCurrentOffset(Parser.GetCurrentOffset());
+	for (;;)
+	{
+		// Must have at least 2 bytes left to have another flag
+		if (Parser2.RemainingBytes() <  sizeof(DWORD)*3 + sizeof(WORD)) break;
+		DWORD dwData= NULL;
+		WORD wData = NULL;
+		Parser2.GetDWORD(&dwData);
+		Parser2.GetDWORD(&dwData);
+		Parser2.GetDWORD(&dwData);
+		Parser2.Advance(dwData);
+		Parser2.GetWORD(&wData);
+		Parser2.Advance(wData);
+		tsTombstone.ActualRecordsCount++;
+	}
+
+	if (tsTombstone.ActualRecordsCount && tsTombstone.ActualRecordsCount < _MaxEntriesSmall)
+		tsTombstone.lpRecords = new TombstoneRecord[tsTombstone.ActualRecordsCount];
+	if (tsTombstone.lpRecords)
+	{
+		memset(tsTombstone.lpRecords,0,sizeof(TombstoneRecord)*tsTombstone.ActualRecordsCount);
+		ULONG i = 0;
+
+		for (i = 0 ; i < tsTombstone.ActualRecordsCount ; i++)
+		{
+			Parser.GetDWORD(&tsTombstone.lpRecords[i].StartTime);
+			Parser.GetDWORD(&tsTombstone.lpRecords[i].EndTime);
+			Parser.GetDWORD(&tsTombstone.lpRecords[i].GlobalObjectIdSize);
+			Parser.GetBYTES(tsTombstone.lpRecords[i].GlobalObjectIdSize, _MaxBytes, &tsTombstone.lpRecords[i].lpGlobalObjectId);
+			Parser.GetWORD(&tsTombstone.lpRecords[i].UsernameSize);
+			Parser.GetStringA(tsTombstone.lpRecords[i].UsernameSize,&tsTombstone.lpRecords[i].szUsername);
+		}
+	}
+
+	tsTombstone.JunkDataSize = Parser.GetRemainingData(&tsTombstone.JunkData);
+
+	TombstoneStruct* ptsTombstone = new TombstoneStruct;
+	if (ptsTombstone)
+	{
+		*ptsTombstone = tsTombstone;
+	}
+
+	return ptsTombstone;
+} // BinToTombstoneStruct
+
+void DeleteTombstoneStruct(_In_ TombstoneStruct* ptsTombstone)
+{
+	if (!ptsTombstone) return;
+	if (ptsTombstone->RecordsCount && ptsTombstone->lpRecords)
+	{
+		ULONG i = 0;
+
+		for (i = 0 ; i < ptsTombstone->RecordsCount ; i++)
+		{
+			delete[] ptsTombstone->lpRecords[i].lpGlobalObjectId;
+			delete[] ptsTombstone->lpRecords[i].szUsername;
+		}
+		delete[] ptsTombstone->lpRecords;
+	}
+
+	delete[] ptsTombstone->JunkData;
+	delete ptsTombstone;
+} // DeleteTombstoneStruct
+
+// result allocated with new, clean up with delete[]
+_Check_return_ LPWSTR TombstoneStructToString(_In_ TombstoneStruct* ptsTombstone)
+{
+	if (!ptsTombstone) return NULL;
+
+	CString szTombstoneString;
+	CString szTmp;
+
+	szTombstoneString.FormatMessage(IDS_TOMBSTONEHEADER,
+		ptsTombstone->Identifier,
+		ptsTombstone->HeaderSize,
+		ptsTombstone->Version,
+		ptsTombstone->RecordsCount,
+		ptsTombstone->ActualRecordsCount,
+		ptsTombstone->RecordsSize);
+
+	if (ptsTombstone->RecordsCount && ptsTombstone->lpRecords)
+	{
+		ULONG i = 0;
+		for (i = 0 ; i < ptsTombstone->ActualRecordsCount ; i++)
+		{
+			LPWSTR szGoid = NULL;
+			GlobalObjectIdStruct* lpGoid = BinToGlobalObjectIdStruct(ptsTombstone->lpRecords[i].GlobalObjectIdSize, ptsTombstone->lpRecords[i].lpGlobalObjectId);
+			if (lpGoid)
+			{
+				szGoid = GlobalObjectIdStructToString(lpGoid);
+			}
+
+			SBinary sBin = {0};
+			sBin.cb = (ULONG) ptsTombstone->lpRecords[i].GlobalObjectIdSize;
+			sBin.lpb = ptsTombstone->lpRecords[i].lpGlobalObjectId;
+			szTmp.FormatMessage(IDS_TOMBSTONERECORD,
+				i,
+				ptsTombstone->lpRecords[i].StartTime, (LPCTSTR) RTimeToString(ptsTombstone->lpRecords[i].StartTime),
+				ptsTombstone->lpRecords[i].EndTime, (LPCTSTR) RTimeToString(ptsTombstone->lpRecords[i].EndTime),
+				ptsTombstone->lpRecords[i].GlobalObjectIdSize,
+				(LPCTSTR) BinToHexString(&sBin,true),
+				szGoid,
+				ptsTombstone->lpRecords[i].UsernameSize,
+				ptsTombstone->lpRecords[i].szUsername);
+			szTombstoneString += szTmp;
+			delete[] szGoid;
+			DeleteGlobalObjectIdStruct(lpGoid);
+		}
+	}
+
+	szTombstoneString += JunkDataToString(ptsTombstone->JunkDataSize,ptsTombstone->JunkData);
+
+	return CStringToString(szTombstoneString);
+} // TombstoneStructToString
+
+//////////////////////////////////////////////////////////////////////////
+// End TombstoneStruct
 //////////////////////////////////////////////////////////////////////////

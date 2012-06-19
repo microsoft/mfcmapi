@@ -9,7 +9,6 @@
 #define CHECKFLAG(__flag) ((ProgOpts.ulMAPIMIMEFlags & (__flag)) == (__flag))
 void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 {
-	InitMFC();
 	printf("Message File Converter\n");
 	printf("Options specified:\n");
 	printf("   Input File: %ws\n", ProgOpts.lpszInput);
@@ -88,77 +87,61 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 
 	HRESULT hRes = S_OK;
 
-	WC_MAPI(MAPIInitialize(NULL));
-	if (SUCCEEDED(hRes))
+	LPADRBOOK lpAdrBook = NULL;
+	if (CHECKFLAG(MAPIMIME_ADDRESSBOOK) && ProgOpts.lpMAPISession)
 	{
-		LPMAPISESSION lpMAPISession = NULL;
-		LPADRBOOK lpAdrBook = NULL;
-		if (CHECKFLAG(MAPIMIME_ADDRESSBOOK))
+		WC_MAPI(ProgOpts.lpMAPISession->OpenAddressBook(NULL,NULL,AB_NO_DIALOG,&lpAdrBook));
+		if (FAILED(hRes)) printf("OpenAddressBook returned an error: 0x%08x\n", hRes);
+	}
+	if (CHECKFLAG(MAPIMIME_TOMIME))
+	{
+		// Source file is MSG, target is EML
+		WC_H(ConvertMSGToEML(
+			ProgOpts.lpszInput,
+			ProgOpts.lpszOutput,
+			ProgOpts.ulConvertFlags,
+			CHECKFLAG(MAPIMIME_ENCODING) ? (ENCODINGTYPE)ProgOpts.ulEncodingType : IET_UNKNOWN,
+			CHECKFLAG(MAPIMIME_RFC822) ? SAVE_RFC822 : SAVE_RFC1521, 
+			CHECKFLAG(MAPIMIME_WRAP)?ProgOpts.ulWrapLines:USE_DEFAULT_WRAPPING,
+			lpAdrBook));
+	}
+	else if (CHECKFLAG(MAPIMIME_TOMAPI))
+	{
+		// Source file is EML, target is MSG
+		HCHARSET hCharSet = NULL;
+		if (CHECKFLAG(MAPIMIME_CHARSET))
 		{
-			WC_H(MrMAPILogonEx(ProgOpts.lpszProfile,&lpMAPISession));
-			if (SUCCEEDED(hRes) && lpMAPISession)
+			WC_H(MyMimeOleGetCodePageCharset(ProgOpts.ulCodePage,ProgOpts.cSetType,&hCharSet));
+			if (FAILED(hRes)) 
 			{
-				WC_MAPI(lpMAPISession->OpenAddressBook(NULL,NULL,AB_NO_DIALOG,&lpAdrBook));
-				if (FAILED(hRes)) printf("OpenAddressBook returned an error: 0x%08x\n", hRes);
-			}
-			else if (FAILED(hRes)) printf("MAPILogonEx returned an error: 0x%08x\n", hRes);
-		}
-		if (CHECKFLAG(MAPIMIME_TOMIME))
-		{
-			// Source file is MSG, target is EML
-			WC_H(ConvertMSGToEML(
-				ProgOpts.lpszInput,
-				ProgOpts.lpszOutput,
-				ProgOpts.ulConvertFlags,
-				CHECKFLAG(MAPIMIME_ENCODING) ? (ENCODINGTYPE)ProgOpts.ulEncodingType : IET_UNKNOWN,
-				CHECKFLAG(MAPIMIME_RFC822) ? SAVE_RFC822 : SAVE_RFC1521, 
-				CHECKFLAG(MAPIMIME_WRAP)?ProgOpts.ulWrapLines:USE_DEFAULT_WRAPPING,
-				lpAdrBook));
-		}
-		else if (CHECKFLAG(MAPIMIME_TOMAPI))
-		{
-			// Source file is EML, target is MSG
-			HCHARSET hCharSet = NULL;
-			if (CHECKFLAG(MAPIMIME_CHARSET))
-			{
-				WC_H(MyMimeOleGetCodePageCharset(ProgOpts.ulCodePage,ProgOpts.cSetType,&hCharSet));
-				if (FAILED(hRes)) 
-				{
-					printf("MimeOleGetCodePageCharset returned 0x%08X\n",hRes);
-				}
-			}
-			if (SUCCEEDED(hRes))
-			{
-				WC_H(ConvertEMLToMSG(
-					ProgOpts.lpszInput, 
-					ProgOpts.lpszOutput, 
-					ProgOpts.ulConvertFlags,
-					CHECKFLAG(MAPIMIME_CHARSET),
-					hCharSet,
-					ProgOpts.cSetApplyType,
-					lpAdrBook,
-					CHECKFLAG(MAPIMIME_UNICODE)));
+				printf("MimeOleGetCodePageCharset returned 0x%08X\n",hRes);
 			}
 		}
-
 		if (SUCCEEDED(hRes))
 		{
-			printf("File converted successfully.\n");
+			WC_H(ConvertEMLToMSG(
+				ProgOpts.lpszInput, 
+				ProgOpts.lpszOutput, 
+				ProgOpts.ulConvertFlags,
+				CHECKFLAG(MAPIMIME_CHARSET),
+				hCharSet,
+				ProgOpts.cSetApplyType,
+				lpAdrBook,
+				CHECKFLAG(MAPIMIME_UNICODE)));
 		}
-		else if (REGDB_E_CLASSNOTREG == hRes)
-		{
-			printf("MAPI <-> MIME converter not found. Perhaps Outlook is not installed.\n");
-		}
-		else
-		{
-			printf("Conversion returned an error: 0x%08x\n", hRes);
-		}
-		if (lpAdrBook) lpAdrBook->Release();
-		if (lpMAPISession) lpMAPISession->Release();
-		MAPIUninitialize();
+	}
+
+	if (SUCCEEDED(hRes))
+	{
+		printf("File converted successfully.\n");
+	}
+	else if (REGDB_E_CLASSNOTREG == hRes)
+	{
+		printf("MAPI <-> MIME converter not found. Perhaps Outlook is not installed.\n");
 	}
 	else
 	{
-		printf("Error initializing MAPI: 0x%08x\n", hRes);
+		printf("Conversion returned an error: 0x%08x\n", hRes);
 	}
+	if (lpAdrBook) lpAdrBook->Release();
 } // DoMAPIMIME

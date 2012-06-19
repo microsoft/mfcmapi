@@ -211,7 +211,7 @@ HMODULE LoadMailClientFromMSIData(HKEY hkeyMapiClient)
 		&& ERROR_SUCCESS == RegQueryValueExA(	hkeyMapiClient, SzValueNameLCID,0,
 												&dwType, (LPBYTE) &rgchMSIApplicationLCID, &dwSizeLCID))
 	{
-		if (GetComponentPath(rgchMSIComponentID, rgchMSIApplicationLCID, 
+		if (GetComponentPath(rgchMSIComponentID, rgchMSIApplicationLCID,
 			rgchComponentPath, _countof(rgchComponentPath), FALSE))
 		{
 			DebugPrint(DBGLoadMAPI,_T("LoadMailClientFromMSIData: Loading %hs\n"),rgchComponentPath);

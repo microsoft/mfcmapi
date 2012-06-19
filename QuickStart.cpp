@@ -364,6 +364,7 @@ void OnQSDisplayQuota(_In_ CBaseDialog* lpHostDlg, _In_ HWND hwnd)
 
 				// All of these properties are in kilobytes. Be careful adding a property not in kilobytes.
 				AddFormattedQuota(PR_PROHIBIT_SEND_QUOTA);
+				AddFormattedQuota(PR_PROHIBIT_RECEIVE_QUOTA);
 				AddFormattedQuota(PR_STORAGE_QUOTA_LIMIT);
 				AddFormattedQuota(PR_QUOTA_SEND);
 				AddFormattedQuota(PR_QUOTA_RECEIVE);

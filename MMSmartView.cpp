@@ -7,15 +7,14 @@
 
 void DoSmartView(_In_ MYOPTIONS ProgOpts)
 {
-	InitMFC();
 	// Ignore the reg key that disables smart view parsing
 	RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD = true;
 
 	ULONG ulStructType = NULL;
 
-	if (ProgOpts.ulParser && ProgOpts.ulParser < g_cuidParsingTypes)
+	if (ProgOpts.ulSVParser && ProgOpts.ulSVParser < g_cuidParsingTypes)
 	{
-		ulStructType = g_uidParsingTypes[ProgOpts.ulParser].ulValue;
+		ulStructType = g_uidParsingTypes[ProgOpts.ulSVParser].ulValue;
 	}
 
 	if (ulStructType)
@@ -41,7 +40,7 @@ void DoSmartView(_In_ MYOPTIONS ProgOpts)
 				memset(lpbIn,0,sizeof(BYTE)*(iLength+1));
 				fread(lpbIn,sizeof(BYTE),iLength,fIn);
 				SBinary Bin = {0};
-				if (ProgOpts.bBinaryFile)
+				if (ProgOpts.ulOptions & OPT_BINARYFILE)
 				{
 					Bin.cb = iLength;
 					Bin.lpb = lpbIn;
@@ -95,7 +94,7 @@ void DoSmartView(_In_ MYOPTIONS ProgOpts)
 					}
 				}
 				delete[] szString;
-				if (!ProgOpts.bBinaryFile) delete[] Bin.lpb;
+				if (!(ProgOpts.ulOptions & OPT_BINARYFILE)) delete[] Bin.lpb;
 				delete[] lpbIn;
 			}
 		}
