@@ -14,6 +14,9 @@ void FindTagArrayMatches(_In_ ULONG ulTarget,
 // Free lpszExactMatch and lpszPartialMatches with MAPIFreeBuffer
 _Check_return_ HRESULT PropTagToPropName(ULONG ulPropTag, bool bIsAB, _Deref_opt_out_opt_z_ LPTSTR* lpszExactMatch, _Deref_opt_out_opt_z_ LPTSTR* lpszPartialMatches);
 
+// Strictly does a lookup in the array. Does not convert otherwise
+_Check_return_ HRESULT LookupPropName(_In_z_ LPCWSTR lpszPropName, _Out_ ULONG* ulPropTag);
+
 _Check_return_ HRESULT PropNameToPropTagW(_In_z_ LPCWSTR lpszPropName, _Out_ ULONG* ulPropTag);
 _Check_return_ HRESULT PropNameToPropTagA(_In_z_ LPCSTR lpszPropName, _Out_ ULONG* ulPropTag);
 #ifdef UNICODE

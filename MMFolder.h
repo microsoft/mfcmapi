@@ -2,6 +2,7 @@
 // MMFolder.h : Folder related utilities for MrMAPI
 
 void DoChildFolders(_In_ MYOPTIONS ProgOpts);
+void DoFolderProps(_In_ MYOPTIONS ProgOpts);
 
 HRESULT HrMAPIOpenFolderExW(
 	_In_ LPMDB lpMdb,                        // Open message store

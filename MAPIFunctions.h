@@ -77,7 +77,8 @@ _Check_return_ HRESULT SendTestMessage(
 									   _In_ LPMAPIFOLDER lpFolder,
 									   _In_z_ LPCTSTR szRecipient,
 									   _In_z_ LPCTSTR szBody,
-									   _In_z_ LPCTSTR szSubject);
+									   _In_z_ LPCTSTR szSubject,
+									   _In_z_ LPCTSTR szClass);
 _Check_return_ HRESULT WrapStreamForRTF(
 										_In_ LPSTREAM lpCompressedRTFStream,
 										bool bUseWrapEx,

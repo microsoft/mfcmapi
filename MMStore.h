@@ -8,4 +8,6 @@ HRESULT HrMAPIOpenStoreAndFolder(
 	_Out_opt_ LPMDB* lppMDB,
 	_Deref_out_opt_ LPMAPIFOLDER* lppFolder);
 
+void PrintObjectProperties(_In_z_ LPCTSTR szObjType, _In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag);
+
 void DoStore(_In_ MYOPTIONS ProgOpts);

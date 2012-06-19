@@ -7,79 +7,56 @@
 
 void DumpContentsTable(
 	_In_z_ LPWSTR lpszProfile,
+	_In_ LPMDB lpMDB,
+	_In_ LPMAPIFOLDER lpFolder,
 	_In_z_ LPWSTR lpszDir,
-	_In_ bool bContents,
-	_In_ bool bAssociated,
-	_In_ bool bRetryStreamProps,
-	_In_ bool bMSG,
-	_In_ bool bList,
+	_In_ ULONG ulOptions,
 	_In_ ULONG ulFolder,
 	_In_z_ LPWSTR lpszFolder,
 	_In_ ULONG ulCount,
 	_In_opt_ LPSRestriction lpRes)
 {
-	InitMFC();
 	DebugPrint(DBGGeneric,"DumpContentsTable: Outputting folder %i / %ws from profile %ws to %ws\n", ulFolder, lpszFolder?lpszFolder:L"", lpszProfile, lpszDir);
-	if (bContents)  DebugPrint(DBGGeneric,"DumpContentsTable: Outputting Contents\n");
-	if (bAssociated) DebugPrint(DBGGeneric,"DumpContentsTable: Outputting Associated Contents\n");
-	if (bMSG) DebugPrint(DBGGeneric,"DumpContentsTable: Outputting as MSG\n");
-	if (bRetryStreamProps) DebugPrint(DBGGeneric,"DumpContentsTable: Will retry stream properties\n");
-	if (bList) DebugPrint(DBGGeneric,"DumpContentsTable: List only mode\n");
+	if (ulOptions & OPT_DOCONTENTS)  DebugPrint(DBGGeneric,"DumpContentsTable: Outputting Contents\n");
+	if (ulOptions & OPT_DOASSOCIATEDCONTENTS) DebugPrint(DBGGeneric,"DumpContentsTable: Outputting Associated Contents\n");
+	if (ulOptions & OPT_MSG) DebugPrint(DBGGeneric,"DumpContentsTable: Outputting as MSG\n");
+	if (ulOptions & OPT_RETRYSTREAMPROPS) DebugPrint(DBGGeneric,"DumpContentsTable: Will retry stream properties\n");
+	if (ulOptions & OPT_LIST) DebugPrint(DBGGeneric,"DumpContentsTable: List only mode\n");
 	if (ulCount) DebugPrint(DBGGeneric,"DumpContentsTable: Limiting output to %d messages.\n", ulCount);
 	HRESULT hRes = S_OK;
-	LPMAPISESSION lpMAPISession = NULL;
-	LPMDB lpMDB = NULL;
-	LPMAPIFOLDER lpFolder = NULL;
 
-	WC_MAPI(MAPIInitialize(NULL));
-
-	WC_H(MrMAPILogonEx(lpszProfile,&lpMAPISession));
-
-	if (lpMAPISession)
+	if (lpFolder)
 	{
-		WC_H(HrMAPIOpenStoreAndFolder(lpMAPISession, ulFolder, lpszFolder, &lpMDB, &lpFolder));
-
-		if (lpFolder)
+		CDumpStore MyDumpStore;
+		SSortOrderSet SortOrder = {0};
+		MyDumpStore.InitMDB(lpMDB);
+		MyDumpStore.InitFolder(lpFolder);
+		MyDumpStore.InitFolderPathRoot(lpszDir);
+		MyDumpStore.InitFolderContentsRestriction(lpRes);
+		if (ulOptions & OPT_MSG) MyDumpStore.EnableMSG();
+		if (ulOptions & OPT_LIST) MyDumpStore.EnableList();
+		if (ulCount)
 		{
-			CDumpStore MyDumpStore;
-			SSortOrderSet SortOrder = {0};
-			MyDumpStore.InitMDB(lpMDB);
-			MyDumpStore.InitFolder(lpFolder);
-			MyDumpStore.InitFolderPathRoot(lpszDir);
-			MyDumpStore.InitFolderContentsRestriction(lpRes);
-			if (bMSG) MyDumpStore.EnableMSG();
-			if (bList) MyDumpStore.EnableList();
-			if (ulCount)
-			{
-				MyDumpStore.InitMaxOutput(ulCount);
-				SortOrder.cSorts = 1;
-				SortOrder.cCategories = 0;
-				SortOrder.cExpanded = 0;
-				SortOrder.aSort[0].ulPropTag = PR_MESSAGE_DELIVERY_TIME;
-				SortOrder.aSort[0].ulOrder = TABLE_SORT_DESCEND;
-				MyDumpStore.InitSortOrder(&SortOrder);
-			}
-			if (bRetryStreamProps) MyDumpStore.EnableStreamRetry();
-			MyDumpStore.ProcessFolders(
-				bContents,
-				bAssociated,
-				false);
+			MyDumpStore.InitMaxOutput(ulCount);
+			SortOrder.cSorts = 1;
+			SortOrder.cCategories = 0;
+			SortOrder.cExpanded = 0;
+			SortOrder.aSort[0].ulPropTag = PR_MESSAGE_DELIVERY_TIME;
+			SortOrder.aSort[0].ulOrder = TABLE_SORT_DESCEND;
+			MyDumpStore.InitSortOrder(&SortOrder);
 		}
+		if (ulOptions & OPT_RETRYSTREAMPROPS) MyDumpStore.EnableStreamRetry();
+		MyDumpStore.ProcessFolders(
+			0 != (ulOptions & OPT_DOCONTENTS),
+			0 != (ulOptions & OPT_DOASSOCIATEDCONTENTS),
+			false);
 	}
-
-	if (lpFolder) lpFolder->Release();
-	if (lpMDB) lpMDB->Release();
-	if (lpMAPISession) lpMAPISession->Release();
-	MAPIUninitialize();
 } // DumpContentsTable
 
 void DumpMSG(_In_z_ LPCWSTR lpszMSGFile, _In_z_ LPCWSTR lpszXMLFile, _In_ bool bRetryStreamProps)
 {
-	InitMFC();
 	HRESULT hRes = S_OK;
 	LPMESSAGE lpMessage = NULL;
-
-	WC_MAPI(MAPIInitialize(NULL));
 
 	WC_H(LoadMSGToMessage(lpszMSGFile, &lpMessage));
 
@@ -93,8 +70,6 @@ void DumpMSG(_In_z_ LPCWSTR lpszMSGFile, _In_z_ LPCWSTR lpszXMLFile, _In_ bool b
 		MyDumpStore.ProcessMessage(lpMessage,true,NULL);
 		lpMessage->Release();
 	}
-
-	MAPIUninitialize();
 } // DumpMSG
 
 void DoContents(_In_ MYOPTIONS ProgOpts)
@@ -153,12 +128,10 @@ void DoContents(_In_ MYOPTIONS ProgOpts)
 	}
 	DumpContentsTable(
 		ProgOpts.lpszProfile,
+		ProgOpts.lpMDB,
+		ProgOpts.lpFolder,
 		ProgOpts.lpszOutput?ProgOpts.lpszOutput:L".",
-		ProgOpts.bDoContents,
-		ProgOpts.bDoAssociatedContents,
-		ProgOpts.bRetryStreamProps,
-		ProgOpts.bMSG,
-		ProgOpts.bList,
+		ProgOpts.ulOptions,
 		ProgOpts.ulFolder,
 		ProgOpts.lpszFolderPath,
 		ProgOpts.ulCount,
@@ -170,5 +143,5 @@ void DoMSG(_In_ MYOPTIONS ProgOpts)
 	DumpMSG(
 		ProgOpts.lpszInput,
 		ProgOpts.lpszOutput?ProgOpts.lpszOutput:L".",
-		ProgOpts.bRetryStreamProps);
+		0 != (ProgOpts.ulOptions & OPT_RETRYSTREAMPROPS));
 } // DoMAPIMIME

@@ -919,7 +919,7 @@ void MergeFlagArrays(
 			AppendFlagIfNotDupe(Out,&iOut,In2,&iIn2);
 		}
 
-		*lpcOut = iOut-1;
+		*lpcOut = iOut;
 		*lpOut = Out;
 	}
 } // MergeFlagArrays

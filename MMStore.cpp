@@ -5,6 +5,7 @@
 #include "MAPIStoreFunctions.h"
 #include "ColumnTags.h"
 #include "MMFolder.h"
+#include "InterpretProp2.h"
 
 HRESULT OpenStore(_In_ LPMAPISESSION lpMAPISession, ULONG ulIndex, _Out_ LPMDB* lppMDB)
 {
@@ -77,20 +78,63 @@ HRESULT HrMAPIOpenStoreAndFolder(
 		// Check if we were told which store to open
 		if (lpszFolderPath && lpszFolderPath[0] == L'#')
 		{
-			LPWSTR szEndPtr = NULL;
-			ULONG ulStore = wcstoul(lpszFolderPath + 1, &szEndPtr, 10);
-
-			// Only '\' and NULL are acceptable next characters after our store number
-			if (szEndPtr && (szEndPtr[0] == L'\\' || szEndPtr[0] == L'\0'))
+			// Skip the '#'
+			lpszFolderPath++;
+			SBinary Bin = {0};
+			LPSTR szPath = NULL;
+#ifdef UNICODE
+			szPath = lpszFolderPath;
+#else
+			EC_H(UnicodeToAnsi(lpszFolderPath, &szPath));
+#endif
+			// Find our slash if we have one and null terminate at it
+			LPSTR szSlash = strchr(szPath + 1, '\\');
+			if (szSlash)
 			{
-				// We have a store. Let's open it
-				WC_H(OpenStore(lpMAPISession, ulStore, &lpMDB));
-				lpszFolderPath = szEndPtr;
+				szSlash[0] = L'\0';
+			}
+
+			// MyBinFromHex will balk at odd string length or forbidden characters
+			// In order for cb to get bigger than 1, the string has to have at least 4 characters
+			// Which is larger than any reasonable store number. So we use that to distinguish.
+			if (MyBinFromHex((LPCTSTR) szPath, NULL, &Bin.cb) && Bin.cb > 1)
+			{
+				Bin.lpb = new BYTE[Bin.cb];
+				if (Bin.lpb)
+				{
+					(void) MyBinFromHex((LPCTSTR) szPath, Bin.lpb, &Bin.cb);
+					WC_H(CallOpenMsgStore(
+						lpMAPISession,
+						NULL,
+						&Bin,
+						MDB_NO_DIALOG | MDB_WRITE,
+						&lpMDB));
+					lpszFolderPath = wcschr(lpszFolderPath + 1, L'\\');
+					delete[] Bin.lpb;
+				}
 			}
 			else
 			{
-				return MAPI_E_INVALID_PARAMETER;
+				hRes = S_OK;
+				LPWSTR szEndPtr = NULL;
+				ULONG ulStore = wcstoul(lpszFolderPath, &szEndPtr, 10);
+
+				// Only '\' and NULL are acceptable next characters after our store number
+				if (szEndPtr && (szEndPtr[0] == L'\\' || szEndPtr[0] == L'\0'))
+				{
+					// We have a store. Let's open it
+					WC_H(OpenStore(lpMAPISession, ulStore, &lpMDB));
+					lpszFolderPath = szEndPtr;
+				}
+				else
+				{
+					hRes = MAPI_E_INVALID_PARAMETER;
+				}
 			}
+
+#ifdef UNICODE
+			delete[] szPath;
+#endif
 		}
 		else
 		{
@@ -138,21 +182,35 @@ HRESULT HrMAPIOpenStoreAndFolder(
 	return hRes;
 } // HrMAPIOpenStoreAndFolder
 
-void PrintStoreProperties(_In_ LPMDB lpMDB)
+void PrintObjectProperties(_In_z_ LPCTSTR szObjType, _In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
 {
 	HRESULT hRes = S_OK;
-	if (!lpMDB) return;
+	if (!lpMAPIProp) return;
 
 	printf(g_szXMLHeader);
-	printf(_T("<messagestoreprops>\n"));
+	printf(_T("<%s>\n"), szObjType);
 
 	LPSPropValue lpAllProps = NULL;
 	ULONG cValues = 0L;
 
-	WC_H_GETPROPS(GetPropsNULL(lpMDB,
-		fMapiUnicode,
-		&cValues,
-		&lpAllProps));
+	if (ulPropTag)
+	{
+		SPropTagArray sTag = {0};
+		sTag.cValues = 1;
+		sTag.aulPropTag[0] = ulPropTag;
+
+		WC_H_GETPROPS(lpMAPIProp->GetProps(&sTag,
+			fMapiUnicode,
+			&cValues,
+			&lpAllProps)); 
+	}
+	else
+	{
+		WC_H_GETPROPS(GetPropsNULL(lpMAPIProp,
+			fMapiUnicode,
+			&cValues,
+			&lpAllProps));
+	}
 	if (FAILED(hRes))
 	{
 		printf(_T("<properties error=\"0x%08X\" />\n"),hRes);
@@ -161,17 +219,22 @@ void PrintStoreProperties(_In_ LPMDB lpMDB)
 	{
 		printf(_T("<properties>\n"));
 
-		_OutputProperties(DBGNoDebug, stdout, cValues, lpAllProps, lpMDB, true);
+		_OutputProperties(DBGNoDebug, stdout, cValues, lpAllProps, lpMAPIProp, true);
 
 		printf(_T("</properties>\n"));
 
 		MAPIFreeBuffer(lpAllProps);
 	}
 
-	printf(_T("</messagestoreprops>\n"));
+	printf(_T("</%s>\n"), szObjType);
+} // PrintObjectProperties
+
+void PrintStoreProperties(_In_ LPMDB lpMDB, ULONG ulPropTag)
+{
+	PrintObjectProperties(_T("messagestoreprops"), lpMDB, ulPropTag);
 } // PrintStoreProperties
 
-void PrintStoreTable(_In_ LPMAPISESSION lpMAPISession)
+void PrintStoreTable(_In_ LPMAPISESSION lpMAPISession, ULONG ulPropTag)
 {
 	HRESULT hRes = S_OK;
 	LPMAPITABLE lpStoreTable = NULL;
@@ -183,7 +246,16 @@ void PrintStoreTable(_In_ LPMAPISESSION lpMAPISession)
 
 	if (lpStoreTable)
 	{
-		WC_MAPI(lpStoreTable->SetColumns((LPSPropTagArray) &sptSTORECols, TBL_ASYNC));
+		LPSPropTagArray sTags = (LPSPropTagArray) &sptSTORECols;
+		SPropTagArray sTag = {0};
+		if (ulPropTag)
+		{
+			sTag.cValues = 1;
+			sTag.aulPropTag[0] = ulPropTag;
+			sTags = &sTag;
+		}
+
+		WC_MAPI(lpStoreTable->SetColumns(sTags, TBL_ASYNC));
 
 		if (SUCCEEDED(hRes))
 		{
@@ -219,35 +291,36 @@ void PrintStoreTable(_In_ LPMAPISESSION lpMAPISession)
 
 void DoStore(_In_ MYOPTIONS ProgOpts)
 {
-	InitMFC();
 	HRESULT hRes = S_OK;
 	LPMAPISESSION lpMAPISession = NULL;
 	LPMDB lpMDB = NULL;
+	ULONG ulPropTag = NULL;
+	// If we have a prop tag, parse it
+	// For now, we don't support dispids
+	if (ProgOpts.lpszUnswitchedOption && !(ProgOpts.ulOptions & OPT_DODISPID))
+	{
+		WC_H(PropNameToPropTagW(ProgOpts.lpszUnswitchedOption, &ulPropTag));
+	}
+	hRes = S_OK;
 
-	WC_MAPI(MAPIInitialize(NULL));
-
-	WC_H(MrMAPILogonEx(ProgOpts.lpszProfile, &lpMAPISession));
-
-	if (lpMAPISession)
+	if (ProgOpts.lpMAPISession)
 	{
 		if (!ProgOpts.lpszStore)
 		{
-			PrintStoreTable(lpMAPISession);
+			PrintStoreTable(ProgOpts.lpMAPISession, ulPropTag);
 		}
 		else 
 		{
 			LPWSTR szEndPtr = NULL;
 			ULONG ulStore = wcstoul(ProgOpts.lpszStore, &szEndPtr, 10);
-			WC_H(OpenStore(lpMAPISession, ulStore, &lpMDB));
+			WC_H(OpenStore(ProgOpts.lpMAPISession, ulStore, &lpMDB));
 		}
 	}
 
 	if (lpMDB)
 	{
-		PrintStoreProperties(lpMDB);
+		PrintStoreProperties(lpMDB, ulPropTag);
 	}
 
 	if (lpMDB) lpMDB->Release();
-	if (lpMAPISession) lpMAPISession->Release();
-	MAPIUninitialize();
 } // DoStore

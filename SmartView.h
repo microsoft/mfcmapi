@@ -1054,4 +1054,42 @@ _Check_return_ VerbStreamStruct* BinToVerbStreamStruct(ULONG cbBin, _In_count_(c
 void DeleteVerbStreamStruct(_In_ VerbStreamStruct* pvsVerbStream);
 // result allocated with new, clean up with delete[]
 _Check_return_ LPWSTR VerbStreamStructToString(_In_ VerbStreamStruct* pvsVerbStream);
+
+// TombstoneRecord
+// =====================
+//   This structure specifies a tombstone record
+//
+struct TombstoneRecord
+{
+	DWORD StartTime;
+	DWORD EndTime;
+	DWORD GlobalObjectIdSize;
+	LPBYTE lpGlobalObjectId;
+	WORD UsernameSize;
+	LPSTR szUsername;
+};
+
+
+// TombstoneStruct
+// =====================
+//   This structure specifies a tombstone stream
+//
+struct TombstoneStruct
+{
+	DWORD Identifier;
+	DWORD HeaderSize;
+	DWORD Version;
+	DWORD RecordsCount;
+	DWORD ActualRecordsCount; // computed based on state, not read value
+	DWORD RecordsSize;
+	TombstoneRecord* lpRecords;
+	size_t JunkDataSize;
+	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
+};
+
+// Allocates return value with new. Clean up with DeleteTombstoneStruct.
+_Check_return_ TombstoneStruct* BinToTombstoneStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+void DeleteTombstoneStruct(_In_ TombstoneStruct* ptsTombstone);
+// result allocated with new, clean up with delete[]
+_Check_return_ LPWSTR TombstoneStructToString(_In_ TombstoneStruct* ptsTombstone);
 // End Functions to parse PT_BINARY properties

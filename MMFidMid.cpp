@@ -216,6 +216,7 @@ bool CFindFidMid::DoContentsTablePerRowWork(_In_ LPSRow lpSRow, ULONG /*ulCurRow
 
 void DumpFidMid(
 	_In_z_ LPWSTR lpszProfile,
+	_In_ LPMAPISESSION lpMAPISession,
 	_In_z_ LPWSTR lpszFid,
 	_In_z_ LPWSTR lpszMid)
 {
@@ -223,16 +224,11 @@ void DumpFidMid(
 	RegKeys[regKeyMAPI_NO_CACHE].ulCurDWORD = true;
 	RegKeys[regkeyMDB_ONLINE].ulCurDWORD = true;
 
-	InitMFC();
 	DebugPrint(DBGGeneric,"DumpFidMid: Outputting from profile %ws. FID: %ws, MID: %ws\n", lpszProfile, lpszFid, lpszMid);
 	HRESULT hRes = S_OK;
-	LPMAPISESSION lpMAPISession = NULL;
 	LPMDB lpMDB = NULL;
 	LPMAPIFOLDER lpFolder = NULL;
 
-	WC_MAPI(MAPIInitialize(NULL));
-
-	WC_H(MrMAPILogonEx(lpszProfile,&lpMAPISession));
 	if (lpMAPISession)
 	{
 		WC_H(OpenExchangeOrDefaultMessageStore(lpMAPISession, &lpMDB));
@@ -265,14 +261,13 @@ void DumpFidMid(
 
 	if (lpFolder) lpFolder->Release();
 	if (lpMDB) lpMDB->Release();
-	if (lpMAPISession) lpMAPISession->Release();
-	MAPIUninitialize();
 } // DumpFidMid
 
 void DoFidMid(_In_ MYOPTIONS ProgOpts)
 {
 	DumpFidMid(
 		ProgOpts.lpszProfile,
+		ProgOpts.lpMAPISession,
 		ProgOpts.lpszFid,
 		ProgOpts.lpszMid);
 } // DoFidMid

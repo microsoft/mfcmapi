@@ -1764,12 +1764,13 @@ void CFolderDlg::OnSendBulkMail()
 		this,
 		IDS_SENDBULKMAIL,
 		IDS_SENDBULKMAILPROMPT,
-		4,
+		5,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 	MyData.InitSingleLine(0,IDS_NUMMESSAGES,NULL,false);
 	MyData.InitSingleLine(1,IDS_RECIPNAME,NULL,false);
 	MyData.InitSingleLine(2,IDS_SUBJECT,NULL,false);
-	MyData.InitMultiLine(3,IDS_BODY,NULL,false);
+	MyData.InitSingleLineSz(3,IDS_CLASS,_T("IPM.Note"),false); // STRING_OK
+	MyData.InitMultiLine(4,IDS_BODY,NULL,false);
 
 	if (!m_lpContainer) return;
 
@@ -1797,8 +1798,9 @@ void CFolderDlg::OnSendBulkMail()
 				lpMAPISession,
 				(LPMAPIFOLDER) m_lpContainer,
 				MyData.GetString(1),
-				MyData.GetString(3),
-				szTestSubject));
+				MyData.GetString(4),
+				szTestSubject,
+				MyData.GetString(3)));
 			if (FAILED(hRes))
 			{
 				CHECKHRESMSG(hRes,IDS_ERRORSENDINGMSGS);
