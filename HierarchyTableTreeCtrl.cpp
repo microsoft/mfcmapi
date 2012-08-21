@@ -178,19 +178,16 @@ _Check_return_ LRESULT CHierarchyTableTreeCtrl::WindowProc(UINT message, WPARAM 
 				{
 					m_HoverButton = false;
 				}
-				HDC hdc = ::GetDC(m_hWnd);
-				DrawExpandTriangle(m_hWnd, hdc, tvHitTestInfo.hItem, m_HoverButton);
-				::ReleaseDC(m_hWnd, hdc);
 
 				// If this is a new glow, clean up the old glow and track for leaving the control
 				if (hItemCurHover != tvHitTestInfo.hItem)
 				{
-					DrawTreeItemFrame(m_hWnd, tvHitTestInfo.hItem, true);
+					DrawTreeItemGlow(m_hWnd, tvHitTestInfo.hItem);
 
 					if (hItemCurHover)
 					{
 						m_hItemCurHover = NULL;
-						DrawTreeItemFrame(m_hWnd, hItemCurHover, false);
+						DrawTreeItemGlow(m_hWnd, hItemCurHover);
 					}
 					m_hItemCurHover = tvHitTestInfo.hItem;
 
@@ -207,7 +204,7 @@ _Check_return_ LRESULT CHierarchyTableTreeCtrl::WindowProc(UINT message, WPARAM 
 				if (hItemCurHover)
 				{
 					m_hItemCurHover = NULL;
-					DrawTreeItemFrame(m_hWnd, hItemCurHover, false);
+					DrawTreeItemGlow(m_hWnd, hItemCurHover);
 				}
 			}
 			break;
@@ -217,7 +214,7 @@ _Check_return_ LRESULT CHierarchyTableTreeCtrl::WindowProc(UINT message, WPARAM 
 			if (hItemCurHover)
 			{
 				m_hItemCurHover = NULL;
-				DrawTreeItemFrame(m_hWnd, hItemCurHover, false);
+				DrawTreeItemGlow(m_hWnd, hItemCurHover);
 			}
 			return NULL;
 			break;

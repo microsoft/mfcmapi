@@ -45,5 +45,6 @@ private:
 	UINT		m_iSmartViewBox;
 	bool		m_bWriteAllowed;
 	bool		m_bDoSmartView;
+	bool		m_bDocFile;
 	ULONG		m_ulEditorType;
 };

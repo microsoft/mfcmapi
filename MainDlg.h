@@ -30,7 +30,10 @@ private:
 	void OnDisplayItem();
 	void OnInitMenu(_In_ CMenu* pMenu);
 
-	// Menu items
+	void AddLoadMAPIMenus();
+	bool InvokeLoadMAPIMenu(WORD wMenuSelect);
+
+// Menu items
 	void OnABHierarchy();
 	void OnAddServicesToMAPISVC();
 	void OnCloseAddressBook();

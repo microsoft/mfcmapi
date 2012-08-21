@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "UIFunctions.h"
 #include "Windowsx.h"
+#include "ImportProcs.h"
 
 HFONT g_hFontSegoe = NULL;
 HFONT g_hFontSegoeBold = NULL;
@@ -21,6 +22,9 @@ enum myColor
 	cBlack,
 	cCyan,
 	cMagenta,
+	cBlue,
+	cMedBlue,
+	cPaleBlue,
 	cColorEnd
 };
 
@@ -33,6 +37,9 @@ COLORREF g_Colors[cColorEnd] =
 	RGB(0x00, 0x00, 0x00), // cBlack
 	RGB(0x00, 0xFF, 0xFF), // cCyan
 	RGB(0xFF, 0x00, 0xFF), // cMagenta
+	RGB(0x00, 0x72, 0xC6), // cBlue
+	RGB(0xCD, 0xE6, 0xF7), // cMedBlue
+	RGB(0xE6, 0xF2, 0xFA), // cPaleBlue
 };
 
 // Fixed mapping of UI elements to colors
@@ -43,19 +50,20 @@ myColor g_FixedColors[cUIEnd] =
 {
 	cWhite, // cBackground
 	cGrey, // cBackgroundReadOnly
-	cBlack, // cGlow
-	cDarkGrey, // cGlowBackground
-	cWhite, // cGlowText
+	cBlue, // cGlow
+	cPaleBlue, // cGlowBackground
+	cBlack, // cGlowText
 	cBlack, // cFrameSelected
 	cGrey, // cFrameUnselected
+	cMedBlue, // cSelectedBackground
 	cGrey, // cArrow
 	cBlack, // cText
 	cGrey, // cTextDisabled
 	cBlack, // cTextReadOnly
 	cMagenta, // cBitmapTransBack
 	cCyan, // cBitmapTransFore
-	cGrey, // cStatus
-	cBlack, // cStatusText
+	cBlue, // cStatus
+	cWhite, // cStatusText
 };
 
 // Mapping of UI elements to system colors
@@ -64,11 +72,12 @@ int g_SysColors[cUIEnd] =
 {
 	COLOR_WINDOW, // cBackground
 	NULL, // cBackgroundReadOnly
-	COLOR_WINDOWFRAME, // cGlow
+	NULL, // cGlow
 	NULL, // cGlowBackground
 	NULL, // cGlowText
 	COLOR_WINDOWTEXT, // cFrameSelected
 	COLOR_3DLIGHT, // cFrameUnselected
+	NULL,
 	COLOR_GRAYTEXT, // cArrow
 	COLOR_WINDOWTEXT, // cText
 	COLOR_GRAYTEXT, // cTextDisabled
@@ -465,6 +474,33 @@ void DisplayContextMenu(UINT uiClassMenu, UINT uiControlMenu, _In_ HWND hWnd, in
 	::DestroyMenu(hPopup);
 } // DisplayContextMenu
 
+HMENU LocateSubmenu(_In_ HMENU hMenu, UINT uid)
+{
+	UINT nPosition = 0;
+	UINT nCount = 0;
+
+	nCount = ::GetMenuItemCount(hMenu);
+	if (-1 == nCount) return NULL;
+
+	for (nPosition = 0; nPosition < nCount; nPosition++)
+	{
+		MENUITEMINFOW menuiteminfo = {0};
+		menuiteminfo.cbSize = sizeof(MENUITEMINFOW);
+		menuiteminfo.fMask = MIIM_SUBMENU | MIIM_ID;
+
+		::GetMenuItemInfoW(hMenu, nPosition, true, &menuiteminfo);
+
+		if (menuiteminfo.wID == uid) return hMenu;
+
+		if (menuiteminfo.hSubMenu)
+		{
+			HMENU hSub = LocateSubmenu(menuiteminfo.hSubMenu, uid);
+			if (hSub) return hSub;
+		}
+	}
+	return NULL;
+} // LocateSubmenu
+
 _Check_return_ int GetEditHeight(_In_ HWND hwndEdit)
 {
 	HRESULT		hRes = S_OK;
@@ -805,12 +841,19 @@ LRESULT CALLBACK DrawEditProc(
 	return DefSubclassProc(hWnd, uMsg, wParam, lParam);
 } // DrawEditProc
 
-void CustomDrawList(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, int iItemCur)
+void CustomDrawList(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, int iItemCurHover)
 {
 	static bool bSelected = false;
 	if (!pNMHDR) return;
 	LPNMLVCUSTOMDRAW lvcd = (LPNMLVCUSTOMDRAW) pNMHDR;
 	int iItem = (int) lvcd->nmcd.dwItemSpec;
+
+	// If there's nothing to paint, this is a "fake paint" and we don't want to toggle selection highlight
+	// Toggling selection highlight causes a repaint, so this logic prevents flicker
+	bool bFakePaint = (lvcd->nmcd.rc.bottom == 0 &&
+		lvcd->nmcd.rc.top == 0 &&
+		lvcd->nmcd.rc.left == 0 &&
+		lvcd->nmcd.rc.right == 0);
 
 	switch (lvcd->nmcd.dwDrawStage)
 	{
@@ -821,44 +864,37 @@ void CustomDrawList(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, int iItemCur)
 	case CDDS_ITEMPREPAINT:
 		// Let the item draw itself without a selection highlight
 		bSelected = ListView_GetItemState(lvcd->nmcd.hdr.hwndFrom, iItem, LVIS_SELECTED) != 0;
-		if (bSelected)
+		if (bSelected && !bFakePaint)
 		{
 			// Turn off listview selection highlight
 			ListView_SetItemState(lvcd->nmcd.hdr.hwndFrom, iItem, 0, LVIS_SELECTED)
 		}
-		*pResult = CDRF_DODEFAULT | CDRF_NOTIFYPOSTPAINT;
+		*pResult = CDRF_DODEFAULT | CDRF_NOTIFYPOSTPAINT | CDRF_NOTIFYSUBITEMDRAW;
+		break;
+
+	case CDDS_SUBITEM | CDDS_ITEMPREPAINT:
+		// Turn on listview hover highlight
+		if (bSelected)
+		{
+			lvcd->clrText = MyGetSysColor(cGlowText);
+			lvcd->clrTextBk = MyGetSysColor(cSelectedBackground);
+		}
+		else if (iItemCurHover == iItem)
+		{
+			lvcd->clrText = MyGetSysColor(cGlowText);
+			lvcd->clrTextBk = MyGetSysColor(cGlowBackground);
+		}
+		*pResult = CDRF_NEWFONT;
 		break;
 
 	case CDDS_ITEMPOSTPAINT:
 		// And then we'll handle our frame
-		if (bSelected)
+		if (bSelected && !bFakePaint)
 		{
 			// Turn on listview selection highlight
-			ListView_SetItemState(lvcd->nmcd.hdr.hwndFrom, iItem, LVIS_SELECTED, LVIS_SELECTED)
+			ListView_SetItemState(lvcd->nmcd.hdr.hwndFrom, iItem, LVIS_SELECTED, LVIS_SELECTED);
 		}
-
 		break;
-
-	case CDDS_POSTPAINT:
-		{
-			if (-1 != iItemCur) DrawListItemFrame(lvcd->nmcd.hdr.hwndFrom, lvcd->nmcd.hdc, iItemCur, LVIS_GLOW);
-
-			UINT iNumItems = (UINT) ::SendMessage(lvcd->nmcd.hdr.hwndFrom, LVM_GETSELECTEDCOUNT, 0, 0);
-			UINT iArrayPos = 0;
-			int iSelectedItem = -1;
-
-			if (!iNumItems) break;
-
-			for (iArrayPos = 0 ; iArrayPos < iNumItems ; iArrayPos++)
-			{
-				iSelectedItem = (int) ::SendMessage(lvcd->nmcd.hdr.hwndFrom, LVM_GETNEXTITEM, iSelectedItem, LVNI_SELECTED);
-				if (-1 == iSelectedItem) break;
-
-				if (iItemCur != iSelectedItem) DrawListItemFrame(lvcd->nmcd.hdr.hwndFrom, lvcd->nmcd.hdc, iSelectedItem, LVIS_SELECTED);
-			}
-
-			break;
-		}
 
 	default:
 		*pResult = CDRF_DODEFAULT;
@@ -866,63 +902,34 @@ void CustomDrawList(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, int iItemCur)
 	}
 } // CustomDrawList
 
-// Handle highlight and selection frames for list items
-void DrawListItemFrame(_In_ HWND hWnd, _In_opt_ HDC hdc, UINT itemID, UINT itemState)
+// Handle highlight glow for list items
+void DrawListItemGlow(_In_ HWND hWnd, UINT itemID)
 {
 	if (-1 == itemID) return;
-	HDC hdcLocal = NULL;
+
+	// If the item already has the selection glow, we don't need to redraw
+	bool bSelected = ListView_GetItemState(hWnd, itemID, LVIS_SELECTED) != 0;
+	if (bSelected) return;
+
 	RECT rcIcon = {0};
 	RECT rcLabels = {0};
 	ListView_GetItemRect(hWnd,itemID, &rcLabels, LVIR_BOUNDS);
 	ListView_GetItemRect(hWnd,itemID, &rcIcon, LVIR_ICON);
 	rcLabels.left = rcIcon.right;
 	if (rcLabels.left >= rcLabels.right) return;
-	bool bSelected = ListView_GetItemState(hWnd, itemID, LVIS_SELECTED) != 0;
-	if (bSelected) itemState |= LVIS_SELECTED;
-	if (!hdc)
-	{
-		hdcLocal = ::GetDC(hWnd);
-		hdc = hdcLocal;
-	}
+	::InvalidateRect(hWnd, &rcLabels, true);
+} // DrawListItemGlow
 
-	if (hdc)
-	{
-		uiColor cFrame = cBackground;
-		if (itemState & LVIS_GLOW)
-		{
-			cFrame = cGlow;
-		}
-		else if (itemState & LVIS_SELECTED)
-		{
-			cFrame = cFrameSelected;
-		}
-		::FrameRect(hdc, &rcLabels, GetSysBrush(cFrame));
-	}
-	if (hdcLocal) ::ReleaseDC(hWnd, hdcLocal);
-} // DrawListItemFrame
-
-void DrawTreeItemFrame(_In_ HWND hWnd, HTREEITEM hItem, bool bDraw)
+void DrawTreeItemGlow(_In_ HWND hWnd, HTREEITEM hItem)
 {
 	RECT rect = {0};
 	RECT rectTree = {0};
-	TreeView_GetItemRect(hWnd, hItem, &rect, 1);
+	TreeView_GetItemRect(hWnd, hItem, &rect, false);
 	::GetClientRect(hWnd, &rectTree);
 	rect.left = rectTree.left;
 	rect.right = rectTree.right;
-	if (bDraw)
-	{
-		HDC hdc = ::GetDC(hWnd);
-		if (hdc)
-		{
-			::FrameRect(hdc, &rect, GetSysBrush(cGlow));
-			::ReleaseDC(hWnd, hdc);
-		}
-	}
-	else
-	{
-		::InvalidateRect(hWnd, &rect, false);
-	}
-} // DrawTreeItemFrame
+	::InvalidateRect(hWnd, &rect, false);
+} // DrawTreeItemGlow
 
 // Copies ibmWidth x ibmHeight rect from hdcSource to a iWidth x iHeight rect in hdcTarget, replacing colors
 // No scaling is performed
@@ -956,7 +963,7 @@ void CopyBitmap(HDC hdcSource, HDC hdcTarget, int iWidth, int iHeight, int ibmWi
 // Fills rectangle with cBackground
 // Replaces cBitmapTransFore (cyan) with cFrameSelected
 // Replaces cBitmapTransBack (magenta) with the cBackground
-void DrawBitmap(_In_ HDC hdc, _In_ LPRECT rcTarget, uiBitmap iBitmap)
+void DrawBitmap(_In_ HDC hdc, _In_ LPRECT rcTarget, uiBitmap iBitmap, bool bHover)
 {
 	if (!rcTarget) return;
 	int iWidth = rcTarget->right - rcTarget->left;
@@ -976,7 +983,7 @@ void DrawBitmap(_In_ HDC hdc, _In_ LPRECT rcTarget, uiBitmap iBitmap)
 
 	// hdcBackReplace: Create a bitmap compatible with hdc, select it, fill with cBackground, copy from hdcForeReplace, with cBitmapTransBack transparent
 	HDC hdcBackReplace = ::CreateCompatibleDC(hdc);
-	CopyBitmap(hdcForeReplace, hdcBackReplace, iWidth, iHeight, bm.bmWidth, bm.bmHeight, cBitmapTransBack, cBackground);
+	CopyBitmap(hdcForeReplace, hdcBackReplace, iWidth, iHeight, bm.bmWidth, bm.bmHeight, cBitmapTransBack, bHover?cGlowBackground:cBackground);
 
 	// hdc: BitBlt from hdcBackReplace
 	(void) BitBlt(
@@ -1006,6 +1013,7 @@ void CustomDrawTree(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, bool bHover, _In_
 	case CDDS_PREPAINT:
 		*pResult = CDRF_NOTIFYITEMDRAW;
 		break;
+
 	case CDDS_ITEMPREPAINT:
 		{
 			HTREEITEM hItem = (HTREEITEM) lvcd->nmcd.dwItemSpec;
@@ -1019,8 +1027,16 @@ void CustomDrawTree(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, bool bHover, _In_
 			}
 
 			*pResult = CDRF_DODEFAULT | CDRF_NOTIFYPOSTPAINT;
+
+			if (hItem == hItemCurHover)
+			{
+				lvcd->clrText = MyGetSysColor(cGlowText);
+				lvcd->clrTextBk = MyGetSysColor(cGlowBackground);
+				*pResult |= CDRF_NEWFONT;
+			}
 			break;
 		}
+
 	case CDDS_ITEMPOSTPAINT:
 		{
 			// If we've advised on this object, add a little icon to let the user know
@@ -1029,7 +1045,7 @@ void CustomDrawTree(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, bool bHover, _In_
 			if (hItem)
 			{
 				// Cover over the +/- and paint triangles instead
-				DrawExpandTriangle(lvcd->nmcd.hdr.hwndFrom, lvcd->nmcd.hdc, hItem, bHover && (hItem == hItemCurHover));
+				DrawExpandTriangle(lvcd->nmcd.hdr.hwndFrom, lvcd->nmcd.hdc, hItem, bHover && (hItem == hItemCurHover), hItem == hItemCurHover);
 
 				TVITEM tvi = {0};
 				tvi.mask = TVIF_PARAM;
@@ -1042,14 +1058,7 @@ void CustomDrawTree(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, bool bHover, _In_
 					TreeView_GetItemRect(lvcd->nmcd.hdr.hwndFrom, hItem, &rect, 1);
 					rect.left = rect.right;
 					rect.right += rect.bottom - rect.top;
-					DrawBitmap(lvcd->nmcd.hdc, &rect, cNotify);
-				}
-
-				// If the mouse is hovering over this item, paint the hover
-				// frame in case we messed it up
-				if (hItem == hItemCurHover)
-				{
-					DrawTreeItemFrame(lvcd->nmcd.hdr.hwndFrom, hItemCurHover, true);
+					DrawBitmap(lvcd->nmcd.hdc, &rect, cNotify, hItem == hItemCurHover);
 				}
 			}
 			break;
@@ -1061,7 +1070,7 @@ void CustomDrawTree(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, bool bHover, _In_
 } // CustomDrawTree
 
 // Paints the triangles indicating expansion state
-void DrawExpandTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ HTREEITEM hItem, bool bGlow)
+void DrawExpandTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ HTREEITEM hItem, bool bGlow, bool bHover)
 {
 	TVITEM tvitem = {0};
 	tvitem.hItem = hItem;
@@ -1080,7 +1089,7 @@ void DrawExpandTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ HTREEITEM hItem, bool
 		rcPlusMinus.bottom--;
 		rcPlusMinus.left = rect.left - 14;
 		rcPlusMinus.right = rcPlusMinus.left + 9;
-		::FillRect(hdc, &rcPlusMinus, GetSysBrush(cBackground));
+		::FillRect(hdc, &rcPlusMinus, GetSysBrush(bHover?cGlowBackground:cBackground));
 
 		POINT tri[3] = {0};
 		if (bExpanded)
@@ -1434,7 +1443,7 @@ void DrawMenu(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
 	uiColor cFore = cText;
 	if (bHot && !bDisabled)
 	{
-		cBack = cGlowBackground;
+		cBack = cSelectedBackground;
 		cFore = cGlowText;
 		::FillRect(hdc, &rcItem, GetSysBrush(cBack));
 	}
@@ -1641,6 +1650,8 @@ void GetCaptionRects(HWND hWnd,
 	int cxSizeFrame = GetSystemMetrics(SM_CXSIZEFRAME);
 	int cySizeFrame = GetSystemMetrics(SM_CYSIZEFRAME);
 	int cySize = GetSystemMetrics(SM_CYSIZE);
+	int cxSizeButton = cySize;
+	if (pfnGetThemeSysSize) cxSizeButton = pfnGetThemeSysSize(0, SM_CXSIZE);
 	int cxBorder = GetSystemMetrics(SM_CXBORDER);
 	int cyBorder = GetSystemMetrics(SM_CYBORDER);
 
@@ -1669,12 +1680,12 @@ void GetCaptionRects(HWND hWnd,
 	rcCloseIcon.top = rcMaxIcon.top = rcMinIcon.top = rcWindow.top + cyFrame + cyBorder;
 	rcCloseIcon.bottom = rcMaxIcon.bottom = rcMinIcon.bottom = rcCloseIcon.top + cySize - 2 * cyBorder;
 	rcCloseIcon.right = rcWindow.right - cxFrame - cxBorder;
-	rcCloseIcon.left = rcMaxIcon.right = rcCloseIcon.right - cySize;
+	rcCloseIcon.left = rcMaxIcon.right = rcCloseIcon.right - cxSizeButton;
 
-	rcMaxIcon.left = rcMaxIcon.right - cySize;
+	rcMaxIcon.left = rcMaxIcon.right - cxSizeButton;
 
 	rcMinIcon.right = rcMaxIcon.left + GetSystemMetrics(SM_CXEDGE);
-	rcMinIcon.left = rcMinIcon.right - cySize;
+	rcMinIcon.left = rcMinIcon.right - cxSizeButton;
 
 	::InflateRect(&rcCloseIcon, -1, -1);
 	::InflateRect(&rcMaxIcon, -1, -1);
@@ -1722,18 +1733,18 @@ void DrawSystemButtons(_In_ HWND hWnd, _In_opt_ HDC hdc, int iHitTest)
 
 	// Draw our system buttons appropriately
 	(void) ::OffsetRect(&rcCloseIcon, (HTCLOSE == iHitTest)? 1 : 0, (HTCLOSE == iHitTest)? 1 : 0);
-	DrawBitmap(hdc, &rcCloseIcon, cClose);
+	DrawBitmap(hdc, &rcCloseIcon, cClose, false);
 
 	if (bMaxBox)
 	{
 		(void) ::OffsetRect(&rcMaxIcon, (HTMAXBUTTON == iHitTest)? 1 : 0, (HTMAXBUTTON == iHitTest)? 1 : 0);
-		DrawBitmap(hdc, &rcMaxIcon, ::IsZoomed(hWnd) ? cRestore :cMaximize);
+		DrawBitmap(hdc, &rcMaxIcon, ::IsZoomed(hWnd) ? cRestore :cMaximize, false);
 	}
 
 	if (bMinBox)
 	{
 		(void) ::OffsetRect(&rcMinIcon, (HTMINBUTTON == iHitTest)? 1 : 0, (HTMINBUTTON == iHitTest)? 1 : 0);
-		DrawBitmap(hdc, &rcMinIcon, cMinimize);
+		DrawBitmap(hdc, &rcMinIcon, cMinimize, false);
 	}
 
 	if (hdcLocal) :: ReleaseDC(hWnd, hdcLocal);
@@ -1916,7 +1927,7 @@ void DrawWindowFrame(_In_ HWND hWnd, bool bActive, int iStatusHeight)
 		DrawSegoeText(
 			hdc,
 			szTitle,
-			GetSysColor(cText),
+			MyGetSysColor(cText),
 			&rcCaptionText,
 			false,
 			DT_LEFT | DT_SINGLELINE | DT_VCENTER);

@@ -119,7 +119,7 @@ private:
 	CSortHeader	m_cSortHeader;
 	int			m_iClickedColumn;
 	bool		m_bSortUp;
-	int			m_iItemCur;
+	int			m_iItemCurHover;
 
 	DECLARE_MESSAGE_MAP()
 };

@@ -1551,6 +1551,8 @@ void CFolderDlg::OnSaveMessageToFile()
 			{
 				WC_H(BuildFileName(szFileName,_countof(szFileName),szDotExt,ulDotExtLen,lpMessage));
 
+				DebugPrint(DBGGeneric,_T("BuildFileNameAndPath built file name \"%ws\"\n"), szFileName);
+
 				CFileDialogExW dlgFilePicker;
 
 				EC_D_DIALOG(dlgFilePicker.DisplayDialog(

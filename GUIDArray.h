@@ -48,6 +48,7 @@ GUID_ARRAY_ENTRY g_PropGuidArray[] =
 	GUID_ENTRY(muidStoreWrap)
 	GUID_ENTRY(PSETID_CalendarAssistant)
 	GUID_ENTRY(g_muidStorePrivate)
+	GUID_ENTRY(PSETID_XmlExtractedEntities)
 	GUID_ENTRY(IID_IMAPISecureMessage)
 	GUID_ENTRY(IID_IProxyStoreObject)
 	GUID_ENTRY(PSETID_UnifiedMessaging)

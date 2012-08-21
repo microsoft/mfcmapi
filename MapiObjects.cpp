@@ -141,10 +141,10 @@ _Check_return_ bool CGlobalCache::bMAPIInitialized()
 
 void CGlobalCache::EmptyBuffer()
 {
-	MAPIFreeBuffer(m_lpAddressEntriesToCopy);
-	MAPIFreeBuffer(m_lpMessagesToCopy);
-	MAPIFreeBuffer(m_lpulAttachmentsToCopy);
-	MAPIFreeBuffer(m_szProfileToCopy);
+	if (m_lpAddressEntriesToCopy) MAPIFreeBuffer(m_lpAddressEntriesToCopy);
+	if (m_lpMessagesToCopy) MAPIFreeBuffer(m_lpMessagesToCopy);
+	if (m_lpulAttachmentsToCopy) MAPIFreeBuffer(m_lpulAttachmentsToCopy);
+	if (m_szProfileToCopy) MAPIFreeBuffer(m_szProfileToCopy);
 	if (m_lpFolderToCopy) m_lpFolderToCopy->Release();
 	if (m_lpSourceParent) m_lpSourceParent->Release();
 	if (m_lpSourcePropObject) m_lpSourcePropObject->Release();

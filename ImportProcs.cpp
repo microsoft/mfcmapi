@@ -64,6 +64,7 @@ LPOPENTHEMEDATA				pfnOpenThemeData = NULL;
 LPCLOSETHEMEDATA			pfnCloseThemeData = NULL;
 LPGETTHEMEMARGINS			pfnGetThemeMargins = NULL;
 LPSETWINDOWTHEME			pfnSetWindowTheme = NULL;
+LPGETTHEMESYSSIZE			pfnGetThemeSysSize = NULL;
 
 // From inetcomm.dll
 LPMIMEOLEGETCODEPAGECHARSET pfnMimeOleGetCodePageCharset = NULL;
@@ -79,22 +80,40 @@ LPHEAPSETINFORMATION pfnHeapSetInformation = NULL;
 LPGETMODULEHANDLEEXW pfnGetModuleHandleExW = NULL;
 
 // Exists to allow some logging
-_Check_return_ HMODULE MyLoadLibrary(_In_z_ LPCTSTR lpszLibFileName)
+_Check_return_ HMODULE MyLoadLibraryA(_In_z_ LPCSTR lpszLibFileName)
 {
 	HMODULE hMod = NULL;
 	HRESULT hRes = S_OK;
-	DebugPrint(DBGLoadLibrary,_T("MyLoadLibrary - loading \"%s\"\n"),lpszLibFileName);
-	WC_D(hMod,LoadLibrary(lpszLibFileName));
+	DebugPrint(DBGLoadLibrary,_T("MyLoadLibraryA - loading \"%hs\"\n"),lpszLibFileName);
+	WC_D(hMod,LoadLibraryA(lpszLibFileName));
 	if (hMod)
 	{
-		DebugPrint(DBGLoadLibrary,_T("MyLoadLibrary - \"%s\" loaded at %p\n"),lpszLibFileName,hMod);
+		DebugPrint(DBGLoadLibrary,_T("MyLoadLibraryA - \"%hs\" loaded at %p\n"),lpszLibFileName,hMod);
 	}
 	else
 	{
-		DebugPrint(DBGLoadLibrary,_T("MyLoadLibrary - \"%s\" failed to load\n"),lpszLibFileName);
+		DebugPrint(DBGLoadLibrary,_T("MyLoadLibraryA - \"%hs\" failed to load\n"),lpszLibFileName);
 	}
 	return hMod;
-} // MyLoadLibrary
+} // MyLoadLibraryA
+
+// Exists to allow some logging
+_Check_return_ HMODULE MyLoadLibraryW(_In_z_ LPCWSTR lpszLibFileName)
+{
+	HMODULE hMod = NULL;
+	HRESULT hRes = S_OK;
+	DebugPrint(DBGLoadLibrary,_T("MyLoadLibraryW - loading \"%ws\"\n"),lpszLibFileName);
+	WC_D(hMod,LoadLibraryW(lpszLibFileName));
+	if (hMod)
+	{
+		DebugPrint(DBGLoadLibrary,_T("MyLoadLibraryW - \"%ws\" loaded at %p\n"),lpszLibFileName,hMod);
+	}
+	else
+	{
+		DebugPrint(DBGLoadLibrary,_T("MyLoadLibraryW - \"%ws\" failed to load\n"),lpszLibFileName);
+	}
+	return hMod;
+} // MyLoadLibraryW
 
 // Loads szModule at the handle given by lphModule, then looks for szEntryPoint.
 // Will not load a module or entry point twice
@@ -149,6 +168,7 @@ void ImportProcs()
 	LoadProc(_T("uxtheme.dll"), &hModUxTheme, "CloseThemeData", (FARPROC*) &pfnCloseThemeData); // STRING_OK;
 	LoadProc(_T("uxtheme.dll"), &hModUxTheme, "GetThemeMargins", (FARPROC*) &pfnGetThemeMargins); // STRING_OK;
 	LoadProc(_T("uxtheme.dll"), &hModUxTheme, "SetWindowTheme", (FARPROC*) &pfnSetWindowTheme); // STRING_OK;
+	LoadProc(_T("uxtheme.dll"), &hModUxTheme, "GetThemeSysSize", (FARPROC*) &pfnGetThemeSysSize); // STRING_OK;
 #ifdef _UNICODE
 	LoadProc(_T("msi.dll"), &hModMSI, "MsiProvideQualifiedComponentW", (FARPROC*) &pfnMsiProvideQualifiedComponent); // STRING_OK;
 	LoadProc(_T("msi.dll"), &hModMSI, "MsiGetFileVersionW", (FARPROC*) &pfnMsiGetFileVersion); // STRING_OK;
@@ -369,6 +389,7 @@ _Check_return_ STDMETHODIMP MyOpenStreamOnFile(_In_ LPALLOCATEBUFFER lpAllocateB
 		lppStream);
 	if (MAPI_E_CALL_FAILED == hRes)
 	{
+		hRes = S_OK;
 		// Convert new file name to Ansi
 		LPSTR lpAnsiCharStr = NULL;
 		EC_H(UnicodeToAnsi(

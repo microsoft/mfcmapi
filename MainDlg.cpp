@@ -25,6 +25,7 @@
 #include "InterpretProp2.h"
 #include "guids.h"
 #include "QuickStart.h"
+#include "UIFunctions.h"
 
 static TCHAR* CLASS = _T("CMainDlg");
 
@@ -50,6 +51,7 @@ CContentsTableDlg(
 	TRACE_CONSTRUCTOR(CLASS);
 
 	CreateDialogAndMenu(IDR_MENU_MAIN);
+	AddLoadMAPIMenus();
 
 	if (RegKeys[regkeyDISPLAY_ABOUT_DIALOG].ulCurDWORD)
 	{
@@ -112,10 +114,80 @@ BEGIN_MESSAGE_MAP(CMainDlg, CContentsTableDlg)
 	ON_COMMAND(ID_DISPLAYMAPIPATH, OnDisplayMAPIPath)
 END_MESSAGE_MAP()
 
+void CMainDlg::AddLoadMAPIMenus()//HMENU hMenu, ULONG ulAddInContext)
+{
+	DebugPrint(DBGLoadMAPI,_T("AddLoadMAPIMenus - Extending menus\n"));
+	HRESULT hRes = S_OK;
+
+	// Find the submenu with ID_LOADMAPI on it
+	HMENU hAddInMenu = LocateSubmenu(::GetMenu(m_hWnd), ID_LOADMAPI);
+
+	UINT uidCurMenu = ID_LOADMAPIMENUMIN;
+
+	// Now add each of the menu entries
+	if (SUCCEEDED(hRes))
+	{
+		MAPIPathIterator* mpi = new MAPIPathIterator(true);
+
+		LPWSTR szPath = NULL;
+
+		if (mpi)
+		{
+			while (uidCurMenu <= ID_LOADMAPIMENUMAX)
+			{
+				szPath = mpi->GetNextMAPIPath();
+				if (!szPath) break;
+
+				DebugPrint(DBGLoadMAPI,_T("Found MAPI path %ws\n"), szPath);
+				LPMENUENTRY lpMenu = CreateMenuEntry(szPath);
+
+				EC_B(AppendMenu(
+					hAddInMenu,
+					MF_ENABLED | MF_OWNERDRAW,
+					uidCurMenu++,
+					(LPCTSTR) lpMenu));
+				delete[] szPath;
+			}
+		}
+
+		delete mpi;
+
+	}
+	DebugPrint(DBGLoadMAPI,_T("Done extending menus\n"));
+} // AddLoadMAPIMenus
+
+bool CMainDlg::InvokeLoadMAPIMenu(WORD wMenuSelect)
+{
+	if (wMenuSelect < ID_LOADMAPIMENUMIN || wMenuSelect > ID_LOADMAPIMENUMAX) return false;
+	DebugPrint(DBGLoadMAPI,_T("InvokeLoadMAPIMenu - got menu item %d\n"), wMenuSelect);
+
+	HRESULT hRes = S_OK;
+	MENUITEMINFOW subMenu = {0};
+	subMenu.cbSize = sizeof(MENUITEMINFO);
+	subMenu.fMask = MIIM_DATA;
+
+	WC_B(GetMenuItemInfoW(
+		::GetMenu(m_hWnd),
+		wMenuSelect,
+		false,
+		&subMenu));
+	if (subMenu.dwItemData)
+	{
+		LPMENUENTRY lme = (LPMENUENTRY) subMenu.dwItemData;
+		DebugPrint(DBGLoadMAPI,_T("Loading MAPI from %ws\n"), lme->m_pName);
+		HMODULE hMAPI = NULL;
+		EC_D(hMAPI,MyLoadLibraryW(lme->m_pName));
+		SetMAPIHandle(hMAPI);
+	}
+
+	return false;
+} // InvokeLoadMAPIMenu
+
 _Check_return_ bool CMainDlg::HandleMenu(WORD wMenuSelect)
 {
 	DebugPrint(DBGMenu,_T("CMainDlg::HandleMenu wMenuSelect = 0x%X = %d\n"),wMenuSelect,wMenuSelect);
 	if (HandleQuickStart(wMenuSelect, this, m_hWnd)) return true;
+	if (InvokeLoadMAPIMenu(wMenuSelect)) return true;
 
 	return CContentsTableDlg::HandleMenu(wMenuSelect);
 } // CMainDlg::HandleMenu
@@ -136,7 +208,6 @@ void CMainDlg::OnInitMenu(_In_ CMenu* pMenu)
 			bMAPIInitialized = m_lpMapiObjects->bMAPIInitialized();
 		}
 		bool bInLoadOp = m_lpContentsTableListCtrl && m_lpContentsTableListCtrl->IsLoading();
-
 
 		pMenu->EnableMenuItem(ID_LOADMAPI,DIM(!hMAPI && !bInLoadOp));
 		pMenu->EnableMenuItem(ID_UNLOADMAPI,DIM(hMAPI && !bInLoadOp));
@@ -190,6 +261,12 @@ void CMainDlg::OnInitMenu(_In_ CMenu* pMenu)
 		pMenu->EnableMenuItem(ID_VIEWABHIERARCHY,DIM(lpMAPISession));
 		pMenu->EnableMenuItem(ID_OPENDEFAULTDIR,DIM(lpMAPISession));
 		pMenu->EnableMenuItem(ID_OPENPAB,DIM(lpMAPISession));
+
+		UINT uidCurMenu = ID_LOADMAPIMENUMIN;
+		for (; uidCurMenu <= ID_LOADMAPIMENUMAX ; uidCurMenu++)
+		{
+			pMenu->EnableMenuItem(uidCurMenu,DIM(!hMAPI && !bInLoadOp));
+		}
 	}
 	CContentsTableDlg::OnInitMenu(pMenu);
 } // CMainDlg::OnInitMenu

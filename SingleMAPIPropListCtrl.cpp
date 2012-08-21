@@ -106,7 +106,7 @@ CSingleMAPIPropListCtrl::CSingleMAPIPropListCtrl(
 CSingleMAPIPropListCtrl::~CSingleMAPIPropListCtrl()
 {
 	TRACE_DESTRUCTOR(CLASS);
-	MAPIFreeBuffer(m_sptExtraProps);
+	if (m_sptExtraProps) MAPIFreeBuffer(m_sptExtraProps);
 	if (m_lpMAPIProp) m_lpMAPIProp->Release();
 	if (m_lpMapiObjects) m_lpMapiObjects->Release();
 	if (m_lpHostDlg) m_lpHostDlg->Release();

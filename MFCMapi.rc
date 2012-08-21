@@ -104,7 +104,10 @@ BEGIN
 		END
 		POPUP "MAPI initialization"
 		BEGIN
-			MENUITEM "Load MAPI",                   ID_LOADMAPI
+			POPUP "Load MAPI"
+			BEGIN
+				MENUITEM "Load by path...",         ID_LOADMAPI
+			END
 			MENUITEM "Unload MAPI",                 ID_UNLOADMAPI
 			MENUITEM "Display MAPI path",           ID_DISPLAYMAPIPATH
 			MENUITEM SEPARATOR

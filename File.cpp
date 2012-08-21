@@ -475,7 +475,7 @@ _Check_return_ HRESULT SanitizeFileNameW(
 	LPWSTR szCur = NULL;
 
 	EC_H(StringCchCopyNW(szFileOut, cchFileOut, szFileIn, cchCharsToCopy));
-	while (NULL != (szCur = wcspbrk(szFileOut,L"^&*-+=[]\\|;:\",<>/?"))) // STRING_OK
+	while (NULL != (szCur = wcspbrk(szFileOut,L"^&*-+=[]\\|;:\",<>/?\r\n"))) // STRING_OK
 	{
 		*szCur = L'_';
 	}
@@ -579,12 +579,48 @@ _Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_z
 	return hRes;
 } // SaveFolderContentsToMSG
 
+_Check_return_ HRESULT WriteStreamToFile(_In_ LPSTREAM pStrmSrc, _In_z_ LPCWSTR szFileName)
+{
+	if (!pStrmSrc || !szFileName) return MAPI_E_INVALID_PARAMETER;
+
+	HRESULT hRes = S_OK;
+	LPSTREAM pStrmDest = NULL;
+	STATSTG StatInfo = {0};
+
+	// Open an IStream interface and create the file at the
+	// same time. This code will create the file in the
+	// current directory.
+	EC_H(MyOpenStreamOnFile(
+		MAPIAllocateBuffer,
+		MAPIFreeBuffer,
+		STGM_CREATE | STGM_READWRITE,
+		szFileName,
+		NULL,
+		&pStrmDest));
+
+	if (pStrmDest)
+	{
+		pStrmSrc->Stat(&StatInfo, STATFLAG_NONAME);
+
+		DebugPrint(DBGStream,_T("WriteStreamToFile: Writing cb = %lld bytes\n"), StatInfo.cbSize.QuadPart);
+
+		EC_MAPI(pStrmSrc->CopyTo(pStrmDest,
+			StatInfo.cbSize,
+			NULL,
+			NULL));
+
+		// Commit changes to new stream
+		EC_MAPI(pStrmDest->Commit(STGC_DEFAULT));
+
+		pStrmDest->Release();
+	}
+	return hRes;
+}
+
 _Check_return_ HRESULT SaveToEML(_In_ LPMESSAGE lpMessage, _In_z_ LPCWSTR szFileName)
 {
 	HRESULT hRes = S_OK;
 	LPSTREAM		pStrmSrc = NULL;
-	LPSTREAM		pStrmDest = NULL;
-	STATSTG			StatInfo = {0};
 
 	if (!lpMessage || !szFileName) return MAPI_E_INVALID_PARAMETER;
 	DebugPrint(DBGGeneric,_T("SaveToEML: Saving message to \"%ws\"\n"),szFileName);
@@ -608,31 +644,8 @@ _Check_return_ HRESULT SaveToEML(_In_ LPMESSAGE lpMessage, _In_z_ LPCWSTR szFile
 	{
 		if (pStrmSrc)
 		{
-			// Open an IStream interface and create the file at the
-			// same time. This code will create the file in the
-			// current directory.
-			EC_H(MyOpenStreamOnFile(
-				MAPIAllocateBuffer,
-				MAPIFreeBuffer,
-				STGM_CREATE | STGM_READWRITE,
-				szFileName,
-				NULL,
-				&pStrmDest));
+			WC_H(WriteStreamToFile(pStrmSrc, szFileName));
 
-			if (pStrmDest)
-			{
-				pStrmSrc->Stat(&StatInfo, STATFLAG_NONAME);
-
-				EC_MAPI(pStrmSrc->CopyTo(pStrmDest,
-					StatInfo.cbSize,
-					NULL,
-					NULL));
-
-				// Commit changes to new stream
-				EC_MAPI(pStrmDest->Commit(STGC_DEFAULT));
-
-				pStrmDest->Release();
-			}
 			pStrmSrc->Release();
 		}
 	}
@@ -1115,8 +1128,6 @@ _Check_return_ HRESULT WriteAttachStreamToFile(_In_ LPATTACH lpAttach, _In_z_ LP
 {
 	HRESULT			hRes = S_OK;
 	LPSTREAM		pStrmSrc = NULL;
-	LPSTREAM		pStrmDest = NULL;
-	STATSTG			StatInfo = {0};
 
 	if (!lpAttach || !szFileName) return MAPI_E_INVALID_PARAMETER;
 
@@ -1140,31 +1151,8 @@ _Check_return_ HRESULT WriteAttachStreamToFile(_In_ LPATTACH lpAttach, _In_z_ LP
 	{
 		if (pStrmSrc)
 		{
-			// Open an IStream interface and create the file at the
-			// same time. This code will create the file in the
-			// current directory.
-			EC_H(MyOpenStreamOnFile(
-				MAPIAllocateBuffer,
-				MAPIFreeBuffer,
-				STGM_CREATE | STGM_READWRITE,
-				szFileName,
-				NULL,
-				&pStrmDest));
+			WC_H(WriteStreamToFile(pStrmSrc, szFileName));
 
-			if (pStrmDest)
-			{
-				pStrmSrc->Stat(&StatInfo, STATFLAG_NONAME);
-
-				EC_MAPI(pStrmSrc->CopyTo(pStrmDest,
-					StatInfo.cbSize,
-					NULL,
-					NULL));
-
-				// Commit changes to new stream
-				EC_MAPI(pStrmDest->Commit(STGC_DEFAULT));
-
-				pStrmDest->Release();
-			}
 			pStrmSrc->Release();
 		}
 	}
@@ -1179,8 +1167,6 @@ _Check_return_ HRESULT WriteOleToFile(_In_ LPATTACH lpAttach, _In_z_ LPCWSTR szF
 	LPSTORAGE		lpStorageSrc = NULL;
 	LPSTORAGE		lpStorageDest = NULL;
 	LPSTREAM		pStrmSrc = NULL;
-	LPSTREAM		pStrmDest = NULL;
-	STATSTG			StatInfo = {0};
 
 	// Open the property of the attachment containing the OLE data
 	// Try to get it as an IStreamDocFile file first as that will be faster
@@ -1194,30 +1180,8 @@ _Check_return_ HRESULT WriteOleToFile(_In_ LPATTACH lpAttach, _In_z_ LPCWSTR szF
 	// We got IStreamDocFile! Great! We can copy stream to stream into the file
 	if (pStrmSrc)
 	{
-		// Open an IStream interface and create the file at the
-		// same time. This code will create the file in the
-		// current directory.
-		EC_H(MyOpenStreamOnFile(
-			MAPIAllocateBuffer,
-			MAPIFreeBuffer,
-			STGM_CREATE | STGM_READWRITE,
-			szFileName,
-			NULL,
-			&pStrmDest));
+		WC_H(WriteStreamToFile(pStrmSrc, szFileName));
 
-		if (pStrmDest)
-		{
-			EC_MAPI(pStrmSrc->Stat(&StatInfo, STATFLAG_NONAME));
-
-			EC_MAPI(pStrmSrc->CopyTo(pStrmDest,
-				StatInfo.cbSize,
-				NULL,
-				NULL));
-
-			// Commit changes to new stream
-			EC_MAPI(pStrmDest->Commit(STGC_DEFAULT));
-			pStrmDest->Release();
-		}
 		pStrmSrc->Release();
 	}
 	// We couldn't get IStreamDocFile! No problem - we'll try IStorage next
