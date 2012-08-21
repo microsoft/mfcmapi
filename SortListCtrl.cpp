@@ -56,7 +56,7 @@ CSortListCtrl::CSortListCtrl()
 	m_bSortUp = false;
 	m_bHaveSorted = false;
 	m_bHeaderSubclassed = false;
-	m_iItemCur = -1;
+	m_iItemCurHover = -1;
 } // CSortListCtrl::CSortListCtrl
 
 CSortListCtrl::~CSortListCtrl()
@@ -169,7 +169,7 @@ void OnTrack(_In_ NMHDR* pNMHDR, _In_ HWND hWndParent)
 
 _Check_return_ LRESULT CSortListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
-	int iItemCur = m_iItemCur;
+	int iItemCur = m_iItemCurHover;
 	HRESULT hRes = S_OK;
 
 	switch (message)
@@ -235,13 +235,13 @@ _Check_return_ LRESULT CSortListCtrl::WindowProc(UINT message, WPARAM wParam, LP
 			{
 				if (iItemCur != lvHitTestInfo.iItem)
 				{
-					DrawListItemFrame(m_hWnd, NULL, lvHitTestInfo.iItem, LVIS_GLOW);
+					DrawListItemGlow(m_hWnd, lvHitTestInfo.iItem);
 					if (-1 != iItemCur)
 					{
-						m_iItemCur = -1;
-						DrawListItemFrame(m_hWnd, NULL, iItemCur, NULL);
+						m_iItemCurHover = -1;
+						DrawListItemGlow(m_hWnd, iItemCur);
 					}
-					m_iItemCur = lvHitTestInfo.iItem;
+					m_iItemCurHover = lvHitTestInfo.iItem;
 
 					TRACKMOUSEEVENT tmEvent = {0};
 					tmEvent.cbSize = sizeof(TRACKMOUSEEVENT);
@@ -255,8 +255,8 @@ _Check_return_ LRESULT CSortListCtrl::WindowProc(UINT message, WPARAM wParam, LP
 			{
 				if (-1 != iItemCur)
 				{
-					m_iItemCur = -1;
-					DrawListItemFrame(m_hWnd, NULL, iItemCur, NULL);
+					m_iItemCurHover = -1;
+					DrawListItemGlow(m_hWnd, iItemCur);
 				}
 			}
 			break;
@@ -266,8 +266,8 @@ _Check_return_ LRESULT CSortListCtrl::WindowProc(UINT message, WPARAM wParam, LP
 				// Turn off any hot highlighting
 				if (-1 != iItemCur)
 				{
-					m_iItemCur = -1;
-					DrawListItemFrame(m_hWnd, NULL, iItemCur, NULL);
+					m_iItemCurHover = -1;
+					DrawListItemGlow(m_hWnd, iItemCur);
 				}
 			}
 			break;
@@ -278,7 +278,7 @@ _Check_return_ LRESULT CSortListCtrl::WindowProc(UINT message, WPARAM wParam, LP
 // Override for list item painting
 void CSortListCtrl::OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 {
-	CustomDrawList(pNMHDR, pResult, m_iItemCur);
+	CustomDrawList(pNMHDR, pResult, m_iItemCurHover);
 } // CSortListCtrl::OnCustomDraw
 
 void CSortListCtrl::OnDeleteAllItems(NMHDR* /*pNMHDR*/, LRESULT* pResult)

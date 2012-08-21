@@ -45,6 +45,7 @@ CEditor(pParentWnd,uidTitle,uidPrompt,0,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL)
 	m_ulOutCodePage = ulOutCodePage;
 	m_ulStreamFlags = NULL;
 	m_bWriteAllowed = false;
+	m_bDocFile = false;
 
 	m_iTextBox = 0;
 	m_iCBBox = 1;
@@ -153,6 +154,21 @@ void CStreamEditor::ReadTextStreamFromProperty()
 		STGM_READ,
 		0,
 		(LPUNKNOWN *)&lpTmpStream));
+	if (FAILED(hRes))
+	{
+		hRes = S_OK;
+		WC_MAPI(m_lpMAPIProp->OpenProperty(
+			CHANGE_PROP_TYPE(m_ulPropTag, PT_OBJECT),
+			&IID_IStreamDocfile,
+			STGM_READ,
+			0,
+			(LPUNKNOWN *)&lpTmpStream));
+		if (SUCCEEDED(hRes))
+		{
+			m_bDocFile = true;
+			m_ulPropTag = CHANGE_PROP_TYPE(m_ulPropTag, PT_OBJECT);
+		}
+	}
 	if (MAPI_E_NOT_FOUND == hRes)
 	{
 		WARNHRESMSG(hRes,IDS_PROPERTYNOTFOUND);
@@ -217,12 +233,24 @@ void CStreamEditor::WriteTextStreamToProperty()
 	LPSTREAM lpTmpRTFStream = NULL;
 	LPSTREAM lpStreamOut = NULL;
 
-	EC_MAPI(m_lpMAPIProp->OpenProperty(
-		m_ulPropTag,
-		&IID_IStream,
-		STGM_READWRITE,
-		MAPI_CREATE	| MAPI_MODIFY,
-		(LPUNKNOWN *)&lpTmpStream));
+	if (m_bDocFile)
+	{
+		EC_MAPI(m_lpMAPIProp->OpenProperty(
+			m_ulPropTag,
+			&IID_IStreamDocfile,
+			STGM_READWRITE,
+			MAPI_CREATE	| MAPI_MODIFY,
+			(LPUNKNOWN *)&lpTmpStream));
+	}
+	else
+	{
+		EC_MAPI(m_lpMAPIProp->OpenProperty(
+			m_ulPropTag,
+			&IID_IStream,
+			STGM_READWRITE,
+			MAPI_CREATE	| MAPI_MODIFY,
+			(LPUNKNOWN *)&lpTmpStream));
+	}
 
 	if (FAILED(hRes) || !lpTmpStream) return;
 

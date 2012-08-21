@@ -564,19 +564,41 @@ void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg
 {
 	CString szStatBarString;
 
-	LPMENUITEM lpAddInMenu = GetAddinMenuItem(m_hWnd,uidMsg);
-	if (lpAddInMenu && lpAddInMenu->szHelp)
+	// MAPI Load paths take special handling
+	if (uidMsg >= ID_LOADMAPIMENUMIN && uidMsg <= ID_LOADMAPIMENUMAX)
 	{
-		szStatBarString.Format(_T("%ws"),lpAddInMenu->szHelp); // STRING_OK
+		HRESULT hRes = S_OK;
+		MENUITEMINFOW mii = {0};
+		mii.cbSize = sizeof(MENUITEMINFO);
+		mii.fMask = MIIM_DATA;
+
+		WC_B(GetMenuItemInfoW(
+			::GetMenu(m_hWnd),
+			uidMsg,
+			false,
+			&mii));
+		if (mii.dwItemData)
+		{
+			LPMENUENTRY lme = (LPMENUENTRY) mii.dwItemData;
+			szStatBarString.FormatMessage(IDS_LOADMAPISTATUS, lme->m_pName);
+		}
 	}
 	else
 	{
-		HRESULT hRes = S_OK;
-		CString szMsg;
-		WC_B(szMsg.LoadString(uidMsg));
-		if (FAILED(hRes)) DebugPrintEx(DBGMenu,CLASS,_T("UpdateStatusBarText"),_T("Cannot find menu item 0x%08X\n"),uidMsg);
+		LPMENUITEM lpAddInMenu = GetAddinMenuItem(m_hWnd,uidMsg);
+		if (lpAddInMenu && lpAddInMenu->szHelp)
+		{
+			szStatBarString.Format(_T("%ws"),lpAddInMenu->szHelp); // STRING_OK
+		}
+		else
+		{
+			HRESULT hRes = S_OK;
+			CString szMsg;
+			WC_B(szMsg.LoadString(uidMsg));
+			if (FAILED(hRes)) DebugPrintEx(DBGMenu,CLASS,_T("UpdateStatusBarText"),_T("Cannot find menu item 0x%08X\n"),uidMsg);
 
-		szStatBarString.FormatMessage(szMsg, ulParam1, ulParam2, ulParam3);
+			szStatBarString.FormatMessage(szMsg, ulParam1, ulParam2, ulParam3);
+		}
 	}
 
 	UpdateStatusBarText(nPos,szStatBarString);
@@ -621,145 +643,70 @@ void CBaseDialog::OnHexEditor()
 	new CHexEditor(m_lpParent);
 } // CBaseDialog::OnHexEditor
 
-// result allocated with new, clean up with delete[]
-void GetOutlookVersionString(_Deref_out_opt_ LPTSTR* lppszPath, _Deref_out_opt_z_ LPTSTR* lppszVer, _Deref_out_opt_z_ LPTSTR* lppszLang)
+CString GetOutlookVersionString()
 {
 	HRESULT hRes = S_OK;
-	LPTSTR lpszTempPath = NULL;
-	LPTSTR lpszTempVer = NULL;
-	LPTSTR lpszTempLang = NULL;
 
-	if (lppszPath) *lppszPath = NULL;
-	if (lppszVer) *lppszVer = NULL;
-	if (lppszLang) *lppszLang = NULL;
+	if (!pfnMsiProvideQualifiedComponent || !pfnMsiGetFileVersion) return _T("");
 
-	if (!pfnMsiProvideQualifiedComponent || !pfnMsiGetFileVersion) return;
-
-	TCHAR pszOutlookQualifiedComponents[][MAX_PATH] = {
-		_T("{1E77DE88-BCAB-4C37-B9E5-073AF52DFD7A}"), // O14_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
-		_T("{24AAE126-0911-478F-A019-07B875EB9996}"), // O12_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
-		_T("{BC174BAD-2F53-4855-A1D5-0D575C19B1EA}"), // O11_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
-		_T("{BC174BAD-2F53-4855-A1D5-1D575C19B1EA}"), // O11_CATEGORY_GUID_CORE_OFFICE (debug)  // STRING_OK
-	};
-	int nOutlookQualifiedComponents = _countof(pszOutlookQualifiedComponents);
 	int i = 0;
-	DWORD dwValueBuf = 0;
-	UINT ret = 0;
+	CString szOut;
 
-	for (i = 0; i < nOutlookQualifiedComponents; i++)
+	for (i = 0; i < g_nOutlookQualifiedComponents; i++)
 	{
-		WC_D(ret,pfnMsiProvideQualifiedComponent(
-			pszOutlookQualifiedComponents[i],
-			_T("outlook.x64.exe"), // STRING_OK
-			(DWORD) INSTALLMODE_DEFAULT,
-			NULL,
-			&dwValueBuf));
-		if (ERROR_SUCCESS == ret) break;
-	}
+		bool b64 = false;
+		LPTSTR lpszTempPath = GetOutlookPath(g_pszOutlookQualifiedComponents[i], &b64);
 
-	if (ERROR_SUCCESS != ret)
-	{
-		hRes = S_OK;
-		for (i = 0; i < nOutlookQualifiedComponents; i++)
+		if (lpszTempPath)
 		{
-			WC_D(ret,pfnMsiProvideQualifiedComponent(
-				pszOutlookQualifiedComponents[i],
-				_T("outlook.exe"), // STRING_OK
-				(DWORD) INSTALLMODE_DEFAULT,
-				NULL,
-				&dwValueBuf));
-			if (ERROR_SUCCESS == ret) break;
-		}
-	}
-
-	if (ERROR_SUCCESS == ret)
-	{
-		dwValueBuf += 1;
-		lpszTempPath = new TCHAR[dwValueBuf];
-
-		if (lpszTempPath != NULL)
-		{
-			WC_D(ret,pfnMsiProvideQualifiedComponent(
-				pszOutlookQualifiedComponents[i],
-				_T("outlook.exe"), // STRING_OK
-				(DWORD) INSTALLMODE_EXISTING,
-				lpszTempPath,
-				&dwValueBuf));
-
-			if (ERROR_SUCCESS == ret)
+			LPTSTR lpszTempVer = NULL;
+			LPTSTR lpszTempLang = NULL;
+			lpszTempVer = new TCHAR[MAX_PATH];
+			lpszTempLang = new TCHAR[MAX_PATH];
+			if (lpszTempVer && lpszTempLang)
 			{
-				lpszTempVer = new TCHAR[MAX_PATH];
-				lpszTempLang = new TCHAR[MAX_PATH];
-				dwValueBuf = MAX_PATH;
-				if (lpszTempVer && lpszTempLang)
+				UINT ret = 0;
+				DWORD dwValueBuf = MAX_PATH;
+				WC_D(ret,pfnMsiGetFileVersion(lpszTempPath,
+					lpszTempVer,
+					&dwValueBuf,
+					lpszTempLang,
+					&dwValueBuf));
+				if (ERROR_SUCCESS == ret)
 				{
-					WC_D(ret,pfnMsiGetFileVersion(lpszTempPath,
-						lpszTempVer,
-						&dwValueBuf,
-						lpszTempLang,
-						&dwValueBuf));
-					if (ERROR_SUCCESS == ret)
-					{
-						if (lppszVer)
-						{
-							*lppszVer = lpszTempVer;
-							lpszTempVer = NULL;
-						}
-					}
-
-					if (lppszPath)
-					{
-						*lppszPath = lpszTempPath;
-						lpszTempPath = NULL;
-					}
-					if (lppszLang)
-					{
-						*lppszLang = lpszTempLang;
-						lpszTempLang = NULL;
-					}
+					szOut.AppendFormat(IDS_OUTLOOKVERSIONSTRING, lpszTempPath, lpszTempVer, lpszTempLang);
+					szOut.AppendFormat(b64?IDS_TRUE:IDS_FALSE);
+					szOut.Append(_T("\n")); // STRING_OK
 				}
+				delete[] lpszTempLang;
+				delete[] lpszTempVer;
 			}
+
+			delete[] lpszTempPath;
 		}
 	}
 
-	delete[] lpszTempVer;
-	delete[] lpszTempLang;
-	delete[] lpszTempPath;
+	return szOut;
 } // GetOutlookVersionString
 
 void CBaseDialog::OnOutlookVersion()
 {
 	HRESULT hRes = S_OK;
-	LPTSTR lpszPath = NULL;
-	LPTSTR lpszVer = NULL;
-	LPTSTR lpszLang = NULL;
-	GetOutlookVersionString(&lpszPath, &lpszVer, &lpszLang);
 
 	CEditor MyEID(
 		this,
 		IDS_OUTLOOKVERSIONTITLE,
-		IDS_OUTLOOKVERSIONPROMPT,
-		3,
+		NULL,
+		1,
 		CEDITOR_BUTTON_OK);
 
-	MyEID.InitSingleLineSz(0,IDS_OUTLOOKVERSIONLABELPATH,lpszPath,true);
-	MyEID.InitSingleLineSz(1,IDS_OUTLOOKVERSIONLABELVER,lpszVer,true);
-	MyEID.InitSingleLineSz(2,IDS_OUTLOOKVERSIONLABELLANG,lpszLang,true);
-	if (!lpszPath)
+	CString szVersionString = GetOutlookVersionString();
+	if (szVersionString.IsEmpty())
 	{
-		MyEID.LoadString(0,IDS_NOTFOUND);
+		WC_B(szVersionString.LoadString(IDS_NOOUTLOOK));
 	}
-	if (!lpszVer)
-	{
-		MyEID.LoadString(1,IDS_NOTFOUND);
-	}
-	if (!lpszLang)
-	{
-		MyEID.LoadString(2,IDS_NOTFOUND);
-	}
-	delete[] lpszPath;
-	delete[] lpszVer;
-	delete[] lpszLang;
+	MyEID.InitMultiLine(0,IDS_OUTLOOKVERSIONPROMPT,(LPCTSTR) szVersionString,true);
+
 
 	WC_H(MyEID.DisplayDialog());
 } // CBaseDialog::OnOutlookVersion

@@ -12,6 +12,7 @@ enum uiColor
 	cGlowText,
 	cFrameSelected,
 	cFrameUnselected,
+	cSelectedBackground,
 	cArrow,
 	cText,
 	cTextDisabled,
@@ -65,6 +66,8 @@ void UpdateMenuString(_In_ HWND hWnd, UINT uiMenuTag, UINT uidNewString);
 
 void DisplayContextMenu(UINT uiClassMenu, UINT uiControlMenu, _In_ HWND hWnd, int x, int y);
 
+HMENU LocateSubmenu(_In_ HMENU hMenu, UINT uid);
+
 _Check_return_ int GetEditHeight(_In_ HWND hwndEdit);
 _Check_return_ int GetTextHeight(_In_ HWND hwndEdit);
 
@@ -107,12 +110,12 @@ LRESULT CALLBACK DrawEditProc(
 
 // List
 void CustomDrawList(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, int iItemCur);
-void DrawListItemFrame(_In_ HWND hWnd, _In_opt_ HDC hdc, UINT itemID, UINT itemState);
+void DrawListItemGlow(_In_ HWND hWnd, UINT itemID);
 
 // Tree
 void CustomDrawTree(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, bool bHover, _In_ HTREEITEM hItemCurHover);
-void DrawTreeItemFrame(_In_ HWND hWnd, _In_ HTREEITEM hItem, bool bDraw);
-void DrawExpandTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ HTREEITEM hItem, bool bGlow);
+void DrawTreeItemGlow(_In_ HWND hWnd, _In_ HTREEITEM hItem);
+void DrawExpandTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ HTREEITEM hItem, bool bGlow, bool bHover);
 
 // Header
 void CustomDrawHeader(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);

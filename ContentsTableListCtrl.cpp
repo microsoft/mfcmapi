@@ -79,7 +79,7 @@ CContentsTableListCtrl::~CContentsTableListCtrl()
 
 	NotificationOff();
 
-	MAPIFreeBuffer(m_lpRes);
+	if (m_lpRes) MAPIFreeBuffer(m_lpRes);
 	if (m_lpContentsTable) m_lpContentsTable->Release();
 	if (m_lpMapiObjects) m_lpMapiObjects->Release();
 	if (m_lpHostDlg) m_lpHostDlg->Release();
