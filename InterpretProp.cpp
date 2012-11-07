@@ -850,9 +850,10 @@ void ActionToString(_In_ ACTION* lpAction, _In_ CString* PropString)
 	case OP_FORWARD:
 	case OP_DELEGATE:
 		{
-			AdrListToString(lpAction->lpadrlist,&szProp);
-			szTmp.FormatMessage(IDS_ACTIONOPFORWARDDEL,szProp);
+			szTmp.FormatMessage(IDS_ACTIONOPFORWARDDEL);
 			*PropString += szTmp;
+			AdrListToString(lpAction->lpadrlist,&szProp);
+			*PropString += szProp;
 			break;
 		}
 

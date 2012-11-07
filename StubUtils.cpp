@@ -165,8 +165,11 @@ bool GetComponentPath(LPCSTR szComponent, LPSTR szQualifier, LPSTR szDllPath, DW
 	{
 		FGetComponentPathType pFGetCompPath = (FGetComponentPathType)GetProcAddress(hMapiStub, SzFGetComponentPath);
 
-		fReturn = pFGetCompPath(szComponent, szQualifier, szDllPath, cchBufferSize, fInstall);
-		DebugPrint(DBGLoadMAPI,_T("GetComponentPath: szDllPath = %hs\n"),szDllPath);
+		if (pFGetCompPath)
+		{
+			fReturn = pFGetCompPath(szComponent, szQualifier, szDllPath, cchBufferSize, fInstall);
+			DebugPrint(DBGLoadMAPI,_T("GetComponentPath: szDllPath = %hs\n"),szDllPath);
+		}
 
 		FreeLibrary(hMapiStub);
 	}
@@ -208,7 +211,7 @@ MAPIPathIterator::MAPIPathIterator(bool bBypassRestrictions)
 	m_hkeyMapiClient = NULL;
 	m_rgchMailClient = NULL;
 
-	m_iCurrentOutlook = 0;
+	m_iCurrentOutlook = oqcOfficeBegin;
 }
 
 MAPIPathIterator::~MAPIPathIterator()
@@ -443,42 +446,58 @@ LPWSTR MAPIPathIterator::GetMAPISystemDir()
 	return NULL;
 } // MAPIPathIterator::GetMAPISystemDir
 
-LPWSTR MAPIPathIterator::GetNextInstalledOutlookMAPI()
+LPWSTR MAPIPathIterator::GetInstalledOutlookMAPI(int iOutlook)
 {
-	DebugPrint(DBGLoadMAPI,_T("Enter GetNextInstalledOutlookMAPI\n"));
+	DebugPrint(DBGLoadMAPI,_T("Enter GetInstalledOutlookMAPI(%d)\n"), iOutlook);
 	HRESULT hRes = S_OK;
 
 	if (!pfnMsiProvideQualifiedComponent || !pfnMsiGetFileVersion) return NULL;
 
 	UINT ret = 0;
 
-	for (; m_iCurrentOutlook < g_nOutlookQualifiedComponents; m_iCurrentOutlook++)
+	LPTSTR lpszTempPath = GetOutlookPath(g_pszOutlookQualifiedComponents[iOutlook], NULL);
+
+	if (lpszTempPath)
 	{
-		LPTSTR lpszTempPath = GetOutlookPath(g_pszOutlookQualifiedComponents[m_iCurrentOutlook], NULL);
+		TCHAR szDrive[_MAX_DRIVE] = {0};
+		TCHAR szOutlookPath[MAX_PATH] = {0};
+		WC_D(ret,_tsplitpath_s(lpszTempPath, szDrive, _MAX_DRIVE, szOutlookPath, MAX_PATH, NULL, NULL, NULL, NULL));
 
-		if (lpszTempPath)
+		if (SUCCEEDED(hRes))
 		{
-			TCHAR szDrive[_MAX_DRIVE] = {0};
-			TCHAR szOutlookPath[MAX_PATH] = {0};
-			WC_D(ret,_tsplitpath_s(lpszTempPath, szDrive, _MAX_DRIVE, szOutlookPath, MAX_PATH, NULL, NULL, NULL, NULL));
-
-			if (SUCCEEDED(hRes))
+			LPWSTR szPath = new WCHAR[MAX_PATH];
+			if (szPath)
 			{
-				LPWSTR szPath = new WCHAR[MAX_PATH];
-				if (szPath)
-				{
 #ifdef UNICODE
-					swprintf_s(szPath, MAX_PATH, WszMAPISystemDrivePath, szDrive, szOutlookPath, WszOlMAPI32DLL);
+				swprintf_s(szPath, MAX_PATH, WszMAPISystemDrivePath, szDrive, szOutlookPath, WszOlMAPI32DLL);
 #else
-					swprintf_s(szPath, MAX_PATH, szMAPISystemDrivePath, szDrive, szOutlookPath, WszOlMAPI32DLL);
+				swprintf_s(szPath, MAX_PATH, szMAPISystemDrivePath, szDrive, szOutlookPath, WszOlMAPI32DLL);
 #endif
-				}
-				delete[] lpszTempPath;
-				m_iCurrentOutlook++; // Make sure we don't repeat this Outlook
-				DebugPrint(DBGLoadMAPI,_T("GetNextInstalledOutlookMAPI: found %ws\n"),szPath);
-				return szPath;
 			}
 			delete[] lpszTempPath;
+			DebugPrint(DBGLoadMAPI,_T("GetInstalledOutlookMAPI: found %ws\n"),szPath);
+			return szPath;
+		}
+		delete[] lpszTempPath;
+	}
+
+	DebugPrint(DBGLoadMAPI,_T("Exit GetInstalledOutlookMAPI: found nothing\n"));
+	return NULL;
+} // MAPIPathIterator::GetInstalledOutlookMAPI
+
+LPWSTR MAPIPathIterator::GetNextInstalledOutlookMAPI()
+{
+	DebugPrint(DBGLoadMAPI,_T("Enter GetNextInstalledOutlookMAPI\n"));
+
+	if (!pfnMsiProvideQualifiedComponent || !pfnMsiGetFileVersion) return NULL;
+
+	for (; m_iCurrentOutlook < oqcOfficeEnd; m_iCurrentOutlook++)
+	{
+		LPWSTR szPath = GetInstalledOutlookMAPI(m_iCurrentOutlook);
+		if (szPath)
+		{
+			m_iCurrentOutlook++; // Make sure we don't repeat this Outlook
+			return szPath;
 		}
 	}
 
@@ -493,7 +512,6 @@ TCHAR g_pszOutlookQualifiedComponents[][MAX_PATH] = {
 	_T("{BC174BAD-2F53-4855-A1D5-0D575C19B1EA}"), // O11_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
 	_T("{BC174BAD-2F53-4855-A1D5-1D575C19B1EA}"), // O11_CATEGORY_GUID_CORE_OFFICE (debug)  // STRING_OK
 };
-int g_nOutlookQualifiedComponents = _countof(g_pszOutlookQualifiedComponents);
 
 // Looks up Outlook's path given its qualified component guid
 LPTSTR GetOutlookPath(_In_z_ LPCTSTR szCategory, _Out_opt_ bool* lpb64)

@@ -652,7 +652,7 @@ CString GetOutlookVersionString()
 	int i = 0;
 	CString szOut;
 
-	for (i = 0; i < g_nOutlookQualifiedComponents; i++)
+	for (i = oqcOfficeBegin; i < oqcOfficeEnd; i++)
 	{
 		bool b64 = false;
 		LPTSTR lpszTempPath = GetOutlookPath(g_pszOutlookQualifiedComponents[i], &b64);
