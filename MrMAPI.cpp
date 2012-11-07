@@ -113,6 +113,7 @@ enum __CommandLineSwitch
 	switchFlag,               // '-flag'
 	switchRecent,             // '-recent'
 	switchStore,              // '-store'
+	switchVersion,            // '-version'
 };
 
 struct COMMANDLINE_SWITCH
@@ -168,6 +169,7 @@ COMMANDLINE_SWITCH g_Switches[] =
 	{switchFlag,               "Flag"},
 	{switchRecent,             "Recent"},
 	{switchStore,              "Store"},
+	{switchVersion,            "Version"},
 // If we want to add aliases for any switches, add them here
 	{switchHelp,               "Help"},
 };
@@ -373,6 +375,17 @@ void DisplayUsage(BOOL bFull)
 		printf("   -On  (or -%s) Online mode. Bypass cached mode.\n",g_Switches[switchOnline].szSwitch);
 		printf("   -V   (or -%s) Verbose. Turn on all debug output.\n",g_Switches[switchVerbose].szSwitch);
 		printf("\n");
+		printf("   MAPI Implementation Options:\n");
+		printf("   -%s MAPI Version to load - supported values\n", g_Switches[switchVersion].szSwitch);
+		printf("           Supported values\n");
+		printf("              0  - List all available MAPI binaries\n");
+		printf("              1  - System MAPI\n");
+		printf("              11 - Outlook 2003 (11)\n");
+		printf("              12 - Outlook 2007 (12)\n");
+		printf("              14 - Outlook 2010 (14)\n");
+		printf("              15 - Outlook 2013 (15)\n");
+		printf("           You can also pass a string, which will load the first MAPI whose path contains the string.\n");
+		printf("\n");
 		printf("Smart View Parsers:\n");
 		// Print smart view options
 		ULONG i = 1;
@@ -475,6 +488,7 @@ OptParser g_Parsers[] =
 	{switchCharset, cmdmodeMAPIMIME, 3, 3, 0},
 	{switchAddressBook, cmdmodeMAPIMIME, 0, 0, OPT_NEEDMAPILOGON}, // special case which needs a logon
 	{switchUnicode, cmdmodeMAPIMIME, 0, 0, 0},
+	{switchVersion, cmdmodeUnknown, 1, 1, 0},
 	{switchNoSwitch, cmdmodeUnknown, 0, 0, 0},
 };
 
@@ -595,6 +609,10 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 			break;
 		case switchProfile:
 			EC_H(AnsiToUnicode(argv[i+1],&pRunOpts->lpszProfile));
+			i++;
+			break;
+		case switchVersion:
+			EC_H(AnsiToUnicode(argv[i+1],&pRunOpts->lpszVersion));
 			i++;
 			break;
 		// Proptag parsing
@@ -803,6 +821,93 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 	return true;
 } // ParseArgs
 
+// Returns true if we've done everything we need to do and can exit the program.
+// Returns false to continue work.
+bool LoadMAPIVersion(LPWSTR lpszVersion)
+{
+	// Load DLLS and get functions from them
+	ImportProcs();
+	DebugPrint(DBGGeneric, "LoadMAPIVersion(%ws)\n", lpszVersion);
+
+	LPWSTR szPath = NULL;
+	_wcslwr(lpszVersion);
+
+	LPWSTR szEndPtr = NULL;
+	ULONG ulVersion = wcstoul(lpszVersion, &szEndPtr, 10);
+	MAPIPathIterator* mpi = new MAPIPathIterator(true);
+	if (mpi)
+	{
+		if (szEndPtr[0])
+		{
+			DebugPrint(DBGGeneric, "Got a string\n");
+
+			while (true)
+			{
+				szPath = mpi->GetNextMAPIPath();
+				if (!szPath) break;
+				_wcslwr(szPath);
+
+				if (wcsstr(szPath, lpszVersion))
+				{
+					break;
+				}
+
+				delete[] szPath;
+				szPath = NULL;
+			}
+		}
+		else if (0 == ulVersion)
+		{
+			DebugPrint(DBGGeneric, "Listing MAPI\n");
+			while (true)
+			{
+				szPath = mpi->GetNextMAPIPath();
+				if (!szPath) break;
+				_wcslwr(szPath);
+
+				printf("MAPI path: %ws\n", szPath);
+				delete[] szPath;
+				szPath = NULL;
+			}
+			return true;
+		}
+		else
+		{
+			DebugPrint(DBGGeneric, "Got a number %d\n", ulVersion);
+			switch (ulVersion)
+			{
+			case 1: // system
+				szPath = mpi->GetMAPISystemDir();
+				break;
+			case 11: // Outlook 2003 (11)
+				szPath = mpi->GetInstalledOutlookMAPI(oqcOffice11);
+				break;
+			case 12: // Outlook 2007 (12)
+				szPath = mpi->GetInstalledOutlookMAPI(oqcOffice12);
+				break;
+			case 14: // Outlook 2010 (14)
+				szPath = mpi->GetInstalledOutlookMAPI(oqcOffice14);
+				break;
+			case 15: // Outlook 2013 (15)
+				szPath = mpi->GetInstalledOutlookMAPI(oqcOffice15);
+				break;
+			}
+		}
+	}
+
+	if (szPath)
+	{
+		DebugPrint(DBGGeneric, "Found MAPI path %ws\n", szPath);
+		HMODULE hMAPI = NULL;
+		HRESULT hRes = S_OK;
+		WC_D(hMAPI,MyLoadLibraryW(szPath));
+		SetMAPIHandle(hMAPI);
+		delete[] szPath;
+	}
+	delete mpi;
+	return false;
+} // LoadMAPIVersion
+
 void main(_In_ int argc, _In_count_(argc) char * argv[])
 {
 	HRESULT hRes = S_OK;
@@ -837,6 +942,11 @@ void main(_In_ int argc, _In_count_(argc) char * argv[])
 	{
 		RegKeys[regkeyLOADADDINS].ulCurDWORD = true;
 		LoadAddIns();
+	}
+
+	if (ProgOpts.lpszVersion)
+	{
+		if (LoadMAPIVersion(ProgOpts.lpszVersion)) return;
 	}
 
 	if (cmdmodeHelp == ProgOpts.Mode || !bGoodCommandLine)

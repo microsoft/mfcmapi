@@ -1347,7 +1347,7 @@ Alt: %2\r\n"
 
 IDS_ACTIONOPBOUNCE "lpAction->scBounceCode = 0x%1!08X! = %2\r\n"
 
-IDS_ACTIONOPFORWARDDEL "lpAction->lpadrlist:\r\n%1"
+IDS_ACTIONOPFORWARDDEL "lpAction->lpadrlist:\r\n"
 
 IDS_ACTIONOPTAG "lpAction->propTag:\r\n\
 lpAction->propTag.ulPropTag = %1
@@ -1630,6 +1630,7 @@ IDS_COLMEMBERID "Member ID"
 IDS_COLMEMBERRIGHTS "Member Rights"
 IDS_COLMESSAGECLASS "Message Class"
 IDS_COLMESSAGESIZE "Message Size"
+IDS_COLMSGFLAGS "Message Flags"
 IDS_COLMETHOD "Method"
 IDS_COLNAMED_PROP_GUID "Named prop GUID"
 IDS_COLNAMED_PROP_NAME "Named prop name"

@@ -59,6 +59,7 @@ struct MYOPTIONS
 	LPWSTR lpszMid;
 	LPWSTR lpszStore;
 	LPWSTR lpszFlagName;
+	LPWSTR lpszVersion;
 	ULONG ulFolder;
 	ULONG ulMAPIMIMEFlags;
 	ULONG ulConvertFlags;

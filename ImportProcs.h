@@ -36,8 +36,16 @@ void SetMAPIHandle(HMODULE hinstMAPI);
 HMODULE GetPrivateMAPI();
 bool GetComponentPath(LPCSTR szComponent, LPSTR szQualifier, LPSTR szDllPath, DWORD cchBufferSize, bool fInstall);
 
+// Keep this in sync with g_pszOutlookQualifiedComponents
+#define oqcOfficeBegin   0
+#define oqcOffice15      oqcOfficeBegin + 0
+#define oqcOffice14      oqcOfficeBegin + 1
+#define oqcOffice12      oqcOfficeBegin + 2
+#define oqcOffice11      oqcOfficeBegin + 3
+#define oqcOffice11Debug oqcOfficeBegin + 4
+#define oqcOfficeEnd     oqcOffice11Debug
+
 extern TCHAR g_pszOutlookQualifiedComponents[][MAX_PATH];
-extern int g_nOutlookQualifiedComponents;
 
 // Looks up Outlook's path given its qualified component guid
 LPTSTR GetOutlookPath(_In_z_ LPCTSTR szCategory, _Out_opt_ bool* lpb64);
@@ -49,12 +57,14 @@ public:
 	MAPIPathIterator(bool bBypassRestrictions);
 	~MAPIPathIterator();
 	LPWSTR GetNextMAPIPath();
+	LPWSTR GetInstalledOutlookMAPI(int iOutlook);
+	LPWSTR GetMAPISystemDir();
+
 private:
 	LPWSTR GetRegisteredMapiClient(LPCWSTR pwzProviderOverride, bool bDLL, bool bEx);
 	LPWSTR GetMailClientFromMSIData(HKEY hkeyMapiClient);
 	LPWSTR GetMailClientFromDllPath(HKEY hkeyMapiClient, bool bEx);
-	LPWSTR GetMAPISystemDir();
-	LPWSTR MAPIPathIterator::GetNextInstalledOutlookMAPI();
+	LPWSTR GetNextInstalledOutlookMAPI();
 
 	mapiSource CurrentSource;
 	HKEY m_hMailKey;

@@ -1223,12 +1223,18 @@ void CustomDrawHeader(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 	case CDDS_POSTPAINT:
 		{
 			RECT rc = {0};
+			// Get the rc for the entire header
 			::GetClientRect(lvcd->hdr.hwndFrom, &rc);
+			// Get the last item in the header
 			int iCount = Header_GetItemCount(lvcd->hdr.hwndFrom);
 			if (iCount)
 			{
+				// Find the index of the last item in the header
+				int iIndex = Header_OrderToIndex(lvcd->hdr.hwndFrom, iCount - 1);
+
 				RECT rcRight = {0};
-				(void) Header_GetItemRect(lvcd->hdr.hwndFrom, iCount - 1, &rcRight);
+				// Compute the right edge of the last item
+				(void) Header_GetItemRect(lvcd->hdr.hwndFrom, iIndex, &rcRight);
 				rc.left = rcRight.right;
 			}
 
