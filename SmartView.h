@@ -153,7 +153,7 @@ void DeleteAppointmentRecurrencePatternStruct(_In_ AppointmentRecurrencePatternS
 // result allocated with new, clean up with delete[]
 _Check_return_ LPWSTR AppointmentRecurrencePatternStructToString(_In_ AppointmentRecurrencePatternStruct* parpPattern);
 
-void SDBinToString(SBinary myBin, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_z_ LPWSTR* lpszResultString);
+void SDBinToString(SBinary myBin, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_z_ LPWSTR* lpszResultString);
 void SIDBinToString(SBinary myBin, _Deref_out_z_ LPWSTR* lpszResultString);
 
 // ExtendedFlagStruct
@@ -384,7 +384,7 @@ struct GlobalObjectIdStruct
 
 // Allocates return value with new. Clean up with DeleteGlobalObjectIdStruct.
 _Check_return_ GlobalObjectIdStruct* BinToGlobalObjectIdStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
-void DeleteGlobalObjectIdStruct(_In_ GlobalObjectIdStruct* pgoidGlobalObjectId);
+void DeleteGlobalObjectIdStruct(_In_opt_ GlobalObjectIdStruct* pgoidGlobalObjectId);
 // result allocated with new, clean up with delete[]
 _Check_return_ LPWSTR GlobalObjectIdStructToString(_In_ GlobalObjectIdStruct* pgoidGlobalObjectId);
 

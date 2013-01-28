@@ -37,10 +37,10 @@ private:
 	// Overrides from base class
 	_Check_return_ bool HandleAddInMenu(WORD wMenuSelect);
 	void OnCancel();
-	_Check_return_ BOOL OnInitDialog();
+	BOOL OnInitDialog();
 	void OnRefreshView();
 
-	_Check_return_ BOOL PreTranslateMessage(_In_ MSG* pMsg);
+	BOOL PreTranslateMessage(MSG* pMsg);
 
 	// Menu items
 	void OnDisplayHierarchyTable();

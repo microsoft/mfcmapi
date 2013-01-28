@@ -58,7 +58,7 @@ _Check_return_ HRESULT IsAttachmentBlocked(_In_ LPMAPISESSION lpMAPISession, _In
 _Check_return_ bool    IsDuplicateProp(_In_ LPSPropTagArray lpArray, ULONG ulPropTag);
 _Check_return_ HRESULT ManuallyEmptyFolder(_In_ LPMAPIFOLDER lpFolder, BOOL bAssoc, BOOL bHardDelete);
 void    MyHexFromBin(_In_opt_count_(cb) LPBYTE lpb, size_t cb, bool bPrependCB, _Deref_out_opt_z_ LPTSTR* lpsz);
-_Check_return_ bool MyBinFromHex(_In_z_ LPCTSTR lpsz, _Inout_opt_count_(*lpcb) LPBYTE lpb, _Inout_ ULONG* lpcb);
+_Check_return_ bool MyBinFromHex(_In_z_ LPCTSTR lpsz, _Out_opt_bytecapcount_(*lpcb) LPBYTE lpb, _Inout_ ULONG* lpcb);
 _Check_return_ HRESULT RemoveOneOff(_In_ LPMESSAGE lpMessage, bool bRemovePropDef);
 _Check_return_ HRESULT ResendMessages(
 									  _In_ LPMAPIFOLDER lpFolder,
@@ -92,7 +92,7 @@ _Check_return_ HRESULT GetNamedPropsByGUID(_In_ LPMAPIPROP lpSource, _In_ LPGUID
 _Check_return_ HRESULT CopyNamedProps(_In_ LPMAPIPROP lpSource, _In_ LPGUID lpPropSetGUID, bool bDoMove, bool bDoNoReplace, _In_ LPMAPIPROP lpTarget, _In_ HWND hWnd);
 
 // Unicode support
-_Check_return_ HRESULT AnsiToUnicode(_In_z_ LPCSTR pszA, _Out_z_cap_(cchszA) LPWSTR* ppszW, size_t cchszA = -1);
+_Check_return_ HRESULT AnsiToUnicode(_In_opt_z_ LPCSTR pszA, _Out_z_cap_(cchszA) LPWSTR* ppszW, size_t cchszA = -1);
 _Check_return_ HRESULT UnicodeToAnsi(_In_z_ LPCWSTR pszW, _Out_z_cap_(cchszW) LPSTR* ppszA, size_t cchszW = -1);
 
 _Check_return_ bool CheckStringProp(_In_opt_ LPSPropValue lpProp, ULONG ulPropType);

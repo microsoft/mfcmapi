@@ -66,8 +66,9 @@ BEGIN_MESSAGE_MAP(CAclDlg, CContentsTableDlg)
 END_MESSAGE_MAP()
 
 
-_Check_return_ HRESULT CAclDlg::OpenItemProp(int /*iSelectedItem*/, __mfcmapiModifyEnum /*bModify*/, _Deref_out_opt_ LPMAPIPROP* /*lppMAPIProp*/)
+_Check_return_ HRESULT CAclDlg::OpenItemProp(int /*iSelectedItem*/, __mfcmapiModifyEnum /*bModify*/, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
 {
+	if (lppMAPIProp) *lppMAPIProp = NULL;
 	// Don't do anything because we don't want to override the properties that we have
 	return S_OK;
 } // CAclDlg::OpenItemProp

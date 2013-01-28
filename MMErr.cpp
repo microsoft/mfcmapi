@@ -40,7 +40,7 @@ void PrintErrFromPartialName(_In_opt_z_ LPCWSTR lpszError)
 			ulNumMatches++;
 		}
 	}
-	printf("Found %d matches.\n",ulNumMatches);
+	printf("Found %u matches.\n",ulNumMatches);
 } // PrintErrFromPartialName
 
 void DoErrorParse(_In_ MYOPTIONS ProgOpts)

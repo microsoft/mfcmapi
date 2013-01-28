@@ -111,8 +111,8 @@ CMySecInfo::~CMySecInfo()
 	if (m_lpMAPIProp) m_lpMAPIProp->Release();
 } // CMySecInfo::~CMySecInfo
 
-STDMETHODIMP CMySecInfo::QueryInterface(REFIID riid,
-										_Deref_out_opt_ LPVOID * ppvObj)
+STDMETHODIMP CMySecInfo::QueryInterface(_In_ REFIID riid,
+										_Deref_out_opt_ LPVOID* ppvObj)
 {
 	*ppvObj = 0;
 	if (riid == IID_ISecurityInformation ||
@@ -146,7 +146,7 @@ STDMETHODIMP_(ULONG) CMySecInfo::Release()
 	return lCount;
 } // CMySecInfo::Release
 
-STDMETHODIMP CMySecInfo::GetObjectInformation(_In_ PSI_OBJECT_INFO pObjectInfo )
+STDMETHODIMP CMySecInfo::GetObjectInformation(PSI_OBJECT_INFO pObjectInfo )
 {
 	DebugPrint(DBGGeneric,_T("CMySecInfo::GetObjectInformation\n"));
 	HRESULT hRes = S_OK;
@@ -184,7 +184,7 @@ STDMETHODIMP CMySecInfo::GetObjectInformation(_In_ PSI_OBJECT_INFO pObjectInfo )
 } // CMySecInfo::GetObjectInformation
 
 STDMETHODIMP CMySecInfo::GetSecurity(SECURITY_INFORMATION /*RequestedInformation*/,
-									 _Deref_out_opt_ PSECURITY_DESCRIPTOR *ppSecurityDescriptor,
+									 PSECURITY_DESCRIPTOR *ppSecurityDescriptor,
 									 BOOL /*fDefault*/)
 {
 	DebugPrint(DBGGeneric,_T("CMySecInfo::GetSecurity\n"));
@@ -255,7 +255,7 @@ STDMETHODIMP CMySecInfo::GetSecurity(SECURITY_INFORMATION /*RequestedInformation
 // on the server once written
 // For this reason, the property sheet is read-only unless a reg key is set.
 STDMETHODIMP CMySecInfo::SetSecurity(SECURITY_INFORMATION /*SecurityInformation*/,
-									 _Out_ PSECURITY_DESCRIPTOR pSecurityDescriptor )
+									 PSECURITY_DESCRIPTOR pSecurityDescriptor )
 {
 	DebugPrint(DBGGeneric,_T("CMySecInfo::SetSecurity\n"));
 	HRESULT		hRes = S_OK;
@@ -295,11 +295,11 @@ STDMETHODIMP CMySecInfo::SetSecurity(SECURITY_INFORMATION /*SecurityInformation*
 	return hRes;
 } // CMySecInfo::SetSecurity
 
-STDMETHODIMP CMySecInfo::GetAccessRights(_In_ const GUID* /*pguidObjectType*/,
+STDMETHODIMP CMySecInfo::GetAccessRights(const GUID* /*pguidObjectType*/,
 										 DWORD /*dwFlags*/,
-										 _Out_ PSI_ACCESS *ppAccess,
-										 _Out_ ULONG *pcAccesses,
-										 _Out_ ULONG *piDefaultAccess )
+										 PSI_ACCESS *ppAccess,
+										 ULONG *pcAccesses,
+										 ULONG *piDefaultAccess )
 {
 	DebugPrint(DBGGeneric,_T("CMySecInfo::GetAccessRights\n"));
 
@@ -323,9 +323,9 @@ STDMETHODIMP CMySecInfo::GetAccessRights(_In_ const GUID* /*pguidObjectType*/,
 	return S_OK;
 } // CMySecInfo::GetAccessRights
 
-STDMETHODIMP CMySecInfo::MapGeneric(_In_ const GUID* /*pguidObjectType*/,
-									_In_ UCHAR* /*pAceFlags*/,
-									_Out_ ACCESS_MASK *pMask)
+STDMETHODIMP CMySecInfo::MapGeneric(const GUID* /*pguidObjectType*/,
+									UCHAR* /*pAceFlags*/,
+									ACCESS_MASK *pMask)
 {
 	DebugPrint(DBGGeneric,_T("CMySecInfo::MapGeneric\n"));
 
@@ -344,26 +344,26 @@ STDMETHODIMP CMySecInfo::MapGeneric(_In_ const GUID* /*pguidObjectType*/,
 	return S_OK;
 } // CMySecInfo::MapGeneric
 
-STDMETHODIMP CMySecInfo::GetInheritTypes(_Out_ PSI_INHERIT_TYPE* /*ppInheritTypes*/,
-										 _Out_ ULONG* /*pcInheritTypes*/)
+STDMETHODIMP CMySecInfo::GetInheritTypes(PSI_INHERIT_TYPE* /*ppInheritTypes*/,
+										 ULONG* /*pcInheritTypes*/)
 {
 	DebugPrint(DBGGeneric,_T("CMySecInfo::GetInheritTypes\n"));
 	return E_NOTIMPL;
 } // CMySecInfo::GetInheritTypes
 
-STDMETHODIMP CMySecInfo::PropertySheetPageCallback(_In_ HWND /*hwnd*/, UINT uMsg, SI_PAGE_TYPE uPage )
+STDMETHODIMP CMySecInfo::PropertySheetPageCallback(HWND /*hwnd*/, UINT uMsg, SI_PAGE_TYPE uPage )
 {
 	DebugPrint(DBGGeneric,_T("CMySecInfo::PropertySheetPageCallback, uMsg = 0x%X, uPage = 0x%X\n"),uMsg,uPage);
 	return S_OK;
 } // CMySecInfo::PropertySheetPageCallback
 
-_Check_return_ STDMETHODIMP_(BOOL) CMySecInfo::IsDaclCanonical(_In_ PACL /*pDacl*/)
+STDMETHODIMP_(BOOL) CMySecInfo::IsDaclCanonical(PACL /*pDacl*/)
 {
 	DebugPrint(DBGGeneric,_T("CMySecInfo::IsDaclCanonical - always returns true.\n"));
 	return true;
 } // CMySecInfo::IsDaclCanonical
 
-_Check_return_ STDMETHODIMP CMySecInfo::LookupSids(ULONG /*cSids*/, _In_count_(cSids) PSID* /*rgpSids*/, _Deref_out_ LPDATAOBJECT* /*ppdo*/)
+STDMETHODIMP CMySecInfo::LookupSids(ULONG /*cSids*/, PSID* /*rgpSids*/, LPDATAOBJECT* /*ppdo*/)
 {
 	DebugPrint(DBGGeneric,_T("CMySecInfo::LookupSids\n"));
 	return E_NOTIMPL;
@@ -371,16 +371,17 @@ _Check_return_ STDMETHODIMP CMySecInfo::LookupSids(ULONG /*cSids*/, _In_count_(c
 
 _Check_return_ bool GetTextualSid(
 				   _In_ PSID pSid,            // binary SID
-				   _Out_opt_z_cap_(*lpdwBufferLen) LPTSTR TextualSid,    // buffer for Textual representation of SID
-				   _Inout_ LPDWORD lpdwBufferLen // required/provided TextualSid buffersize
+				   _Deref_opt_out_opt_z_ LPTSTR* lpTextualSid    // buffer for Textual representation of SID
 				   )
 {
+	if (!lpTextualSid) return false;
 	HRESULT hRes = S_OK;
-	PSID_IDENTIFIER_AUTHORITY psia;
-	DWORD dwSubAuthorities;
-	DWORD dwSidRev=SID_REVISION;
+	PSID_IDENTIFIER_AUTHORITY psia = NULL;
+	PUCHAR lpSubAuthoritiesCount = NULL;
+	DWORD dwSidRev = SID_REVISION;
 	DWORD dwCounter = 0;
-	DWORD dwSidSize = 0;
+	DWORD dwBufferLen = 0;
+	LPTSTR TextualSid = NULL;
 
 	// Validate the binary SID.
 	if (!IsValidSid(pSid)) return false;
@@ -389,60 +390,60 @@ _Check_return_ bool GetTextualSid(
 	psia = GetSidIdentifierAuthority(pSid);
 
 	// Get the number of subauthorities in the SID.
-	dwSubAuthorities = *GetSidSubAuthorityCount(pSid);
+	lpSubAuthoritiesCount = GetSidSubAuthorityCount(pSid);
 
 	// Compute the buffer length.
 	// S-SID_REVISION- + IdentifierAuthority- + subauthorities- + NULL
-	dwSidSize = (15 + 12 + (12 * dwSubAuthorities) + 1) * sizeof(TCHAR);
+	dwBufferLen = (15 + 12 + (12 * (lpSubAuthoritiesCount?*lpSubAuthoritiesCount:0)) + 1) * sizeof(TCHAR);
+	TextualSid = new TCHAR[dwBufferLen];
+	*lpTextualSid = TextualSid;
 
-	// Check input buffer length.
-	// If too small, indicate the proper size and set last error.
-	if (*lpdwBufferLen < dwSidSize || !TextualSid)
+	if (TextualSid)
 	{
-		*lpdwBufferLen = dwSidSize;
-		SetLastError(ERROR_INSUFFICIENT_BUFFER);
-		return false;
-	}
+		memset(TextualSid, NULL, dwBufferLen);
 
-	// Add 'S' prefix and revision number to the string.
-	EC_H(StringCchPrintf(TextualSid, *lpdwBufferLen, _T("S-%lu-"), dwSidRev )); // STRING_OK
+		// Add 'S' prefix and revision number to the string.
+		EC_H(StringCchPrintf(TextualSid, dwBufferLen, _T("S-%lu-"), dwSidRev )); // STRING_OK
 
-	size_t cchTextualSid = 0;
-	EC_H(StringCchLength(TextualSid,STRSAFE_MAX_CCH,&cchTextualSid));
-
-	// Add SID identifier authority to the string.
-	if ((psia->Value[0] != 0) || (psia->Value[1] != 0))
-	{
-		EC_H(StringCchPrintf(TextualSid + cchTextualSid,
-			*lpdwBufferLen - cchTextualSid,
-			_T("0x%02hx%02hx%02hx%02hx%02hx%02hx"), // STRING_OK
-			(USHORT)psia->Value[0],
-			(USHORT)psia->Value[1],
-			(USHORT)psia->Value[2],
-			(USHORT)psia->Value[3],
-			(USHORT)psia->Value[4],
-			(USHORT)psia->Value[5]));
-	}
-	else
-	{
-		EC_H(StringCchPrintf(TextualSid + cchTextualSid,
-			*lpdwBufferLen - cchTextualSid,
-			_T("%lu"), // STRING_OK
-			(ULONG)(psia->Value[5]      ) +
-			(ULONG)(psia->Value[4] <<  8) +
-			(ULONG)(psia->Value[3] << 16) +
-			(ULONG)(psia->Value[2] << 24)));
-	}
-
-
-	// Add SID subauthorities to the string.
-	for (dwCounter=0 ; dwCounter < dwSubAuthorities ; dwCounter++)
-	{
+		size_t cchTextualSid = 0;
 		EC_H(StringCchLength(TextualSid,STRSAFE_MAX_CCH,&cchTextualSid));
-		EC_H(StringCchPrintf(TextualSid + cchTextualSid,
-			*lpdwBufferLen - cchTextualSid,
-			_T("-%lu"), // STRING_OK
-			*GetSidSubAuthority(pSid, dwCounter)));
+
+		// Add SID identifier authority to the string.
+		if ((psia->Value[0] != 0) || (psia->Value[1] != 0))
+		{
+			EC_H(StringCchPrintf(TextualSid + cchTextualSid,
+				dwBufferLen - cchTextualSid,
+				_T("0x%02hx%02hx%02hx%02hx%02hx%02hx"), // STRING_OK
+				(USHORT)psia->Value[0],
+				(USHORT)psia->Value[1],
+				(USHORT)psia->Value[2],
+				(USHORT)psia->Value[3],
+				(USHORT)psia->Value[4],
+				(USHORT)psia->Value[5]));
+		}
+		else
+		{
+			EC_H(StringCchPrintf(TextualSid + cchTextualSid,
+				dwBufferLen - cchTextualSid,
+				_T("%lu"), // STRING_OK
+				(ULONG)(psia->Value[5]      ) +
+				(ULONG)(psia->Value[4] <<  8) +
+				(ULONG)(psia->Value[3] << 16) +
+				(ULONG)(psia->Value[2] << 24)));
+		}
+
+		// Add SID subauthorities to the string.
+		if (lpSubAuthoritiesCount)
+		{
+			for (dwCounter=0 ; dwCounter < *lpSubAuthoritiesCount ; dwCounter++)
+			{
+				EC_H(StringCchLength(TextualSid,STRSAFE_MAX_CCH,&cchTextualSid));
+				EC_H(StringCchPrintf(TextualSid + cchTextualSid,
+					dwBufferLen - cchTextualSid,
+					_T("-%lu"), // STRING_OK
+					*GetSidSubAuthority(pSid, dwCounter)));
+			}
+		}
 	}
 
 	return true;
@@ -537,17 +538,8 @@ void ACEToString(_In_ void* pACE, eAceType acetype, _In_ CString *AceString)
 		hRes = S_OK;
 	}
 
-	DWORD dwStringSid = 0;
-	(void) GetTextualSid(SidStart,NULL,&dwStringSid); // Get a buffer count
 	LPTSTR lpStringSid = NULL;
-	if (dwStringSid)
-	{
-		lpStringSid = new TCHAR[dwStringSid];
-		if (lpStringSid)
-		{
-			EC_B(GetTextualSid(SidStart,lpStringSid,&dwStringSid));
-		}
-	}
+	EC_B(GetTextualSid(SidStart, &lpStringSid));
 
 	LPTSTR szAceType = NULL;
 	LPTSTR szAceFlags = NULL;

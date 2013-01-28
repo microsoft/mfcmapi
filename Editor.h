@@ -207,7 +207,7 @@ protected:
 	_Check_return_ bool IsValidEdit(ULONG ulNum);
 	_Check_return_ bool IsValidList(ULONG ulNum);
 	_Check_return_ bool IsValidCheck(ULONG iControl);
-	_Check_return_ BOOL OnInitDialog();
+	BOOL OnInitDialog();
 	void OnOK();
 	void OnContextMenu(_In_ CWnd *pWnd, CPoint pos);
 
@@ -242,7 +242,7 @@ private:
 	void    OnSetDefaultSize();
 	_Check_return_ SIZE    ComputeWorkArea(SIZE sScreen);
 	_Check_return_ LRESULT OnNcHitTest(CPoint point);
-	_Check_return_ LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 
 	void    GetEditBoxText(ULONG i);
 	void    SetEditBoxText(ULONG i); // Only used internally - others should use SetString, etc.

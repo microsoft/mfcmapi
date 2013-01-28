@@ -113,7 +113,7 @@ BEGIN_MESSAGE_MAP(CBaseDialog, CMyDialog)
 	ON_MESSAGE(WM_MFCMAPI_CLEARSINGLEMAPIPROPLIST, msgOnClearSingleMAPIPropList)
 END_MESSAGE_MAP()
 
-_Check_return_ LRESULT CBaseDialog::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CBaseDialog::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
 	{
@@ -141,7 +141,7 @@ _Check_return_ LRESULT CBaseDialog::WindowProc(UINT message, WPARAM wParam, LPAR
 	return CMyDialog::WindowProc(message,wParam,lParam);
 } // CBaseDialog::WindowProc
 
-_Check_return_ BOOL CBaseDialog::OnInitDialog()
+BOOL CBaseDialog::OnInitDialog()
 {
 	UpdateTitleBarText(NULL);
 
@@ -218,7 +218,7 @@ void CBaseDialog::CreateDialogAndMenu(UINT nIDMenuResource, UINT uiClassMenuReso
 
 _Check_return_ bool CBaseDialog::HandleMenu(WORD wMenuSelect)
 {
-	DebugPrint(DBGMenu,_T("CBaseDialog::HandleMenu wMenuSelect = 0x%X = %d\n"),wMenuSelect,wMenuSelect);
+	DebugPrint(DBGMenu,_T("CBaseDialog::HandleMenu wMenuSelect = 0x%X = %u\n"),wMenuSelect,wMenuSelect);
 	switch (wMenuSelect)
 	{
 	case ID_HEXEDITOR: OnHexEditor(); return true;
@@ -256,7 +256,7 @@ void CBaseDialog::OnInitMenu(_In_opt_ CMenu* pMenu)
 
 // Checks flags on add-in menu items to ensure they should be enabled
 // Override to support context sensitive scenarios
-void CBaseDialog::EnableAddInMenus(_In_ HMENU hMenu, ULONG ulMenu, LPMENUITEM /*lpAddInMenu*/, UINT uiEnable)
+void CBaseDialog::EnableAddInMenus(_In_ HMENU hMenu, ULONG ulMenu, _In_ LPMENUITEM /*lpAddInMenu*/, UINT uiEnable)
 {
 	if (hMenu) ::EnableMenuItem(hMenu,ulMenu,uiEnable);
 } // CBaseDialog::EnableAddInMenus

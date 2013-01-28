@@ -167,7 +167,7 @@ void OnTrack(_In_ NMHDR* pNMHDR, _In_ HWND hWndParent)
 	}
 } // OnTrack
 
-_Check_return_ LRESULT CSortListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CSortListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	int iItemCur = m_iItemCurHover;
 	HRESULT hRes = S_OK;
@@ -281,12 +281,12 @@ void CSortListCtrl::OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 	CustomDrawList(pNMHDR, pResult, m_iItemCurHover);
 } // CSortListCtrl::OnCustomDraw
 
-void CSortListCtrl::OnDeleteAllItems(NMHDR* /*pNMHDR*/, LRESULT* pResult)
+void CSortListCtrl::OnDeleteAllItems(_In_ NMHDR* /*pNMHDR*/, _In_ LRESULT* pResult)
 {
 	*pResult = false; // make sure we get LVN_DELETEITEM for all items
 } // CSortListCtrl::OnDeleteAllItems
 
-void CSortListCtrl::OnDeleteItem(NMHDR* pNMHDR, LRESULT* pResult)
+void CSortListCtrl::OnDeleteItem(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 {
 	LPNMLISTVIEW pNMV = (LPNMLISTVIEW) pNMHDR;
 
@@ -299,7 +299,7 @@ void CSortListCtrl::OnDeleteItem(NMHDR* pNMHDR, LRESULT* pResult)
 	*pResult = 0;
 } // CSortListCtrl::OnDeleteItem
 
-_Check_return_ SortListData* CSortListCtrl::InsertRow(int iRow, LPCTSTR szText)
+_Check_return_ SortListData* CSortListCtrl::InsertRow(int iRow, _In_z_ LPCTSTR szText)
 {
 	return InsertRow(iRow, szText, 0, 0);
 } // CSortListCtrl::InsertRow
@@ -368,7 +368,7 @@ struct SortInfo
 // Sort the item in alphabetical order.
 // Simplistic algorithm that only looks at the text. This pays no attention to the underlying MAPI properties.
 // This will sort dates and numbers badly. :)
-int CALLBACK CSortListCtrl::MyCompareProc(_In_ LPARAM lParam1, _In_ LPARAM lParam2, _In_ LPARAM lParamSort)
+_Check_return_ int CALLBACK CSortListCtrl::MyCompareProc(_In_ LPARAM lParam1, _In_ LPARAM lParam2, _In_ LPARAM lParamSort)
 {
 	if (!lParamSort) return sortEqual;
 	SortInfo* lpSortInfo = (SortInfo*) lParamSort;

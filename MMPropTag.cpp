@@ -124,7 +124,7 @@ void PrintKnownTypes()
 	printf("%-18s%-9s%s\n","Type","Hex","Decimal");
 	for (ulMatch = 0 ; ulMatch < ulPropTypeArray ; ulMatch++)
 	{
-		printf("%-15ws = 0x%04X = %d\n",PropTypeArray[ulMatch].lpszName,PropTypeArray[ulMatch].ulValue,PropTypeArray[ulMatch].ulValue);
+		printf("%-15ws = 0x%04X = %u\n",PropTypeArray[ulMatch].lpszName,PropTypeArray[ulMatch].ulValue,PropTypeArray[ulMatch].ulValue);
 	}
 
 	printf("\n");
@@ -278,7 +278,7 @@ void PrintTagFromPartialName(_In_opt_z_ LPCWSTR lpszPropName, _In_ ULONG ulType)
 			ulNumMatches++;
 		}
 	}
-	printf("Found %d matches.\n",ulNumMatches);
+	printf("Found %u matches.\n",ulNumMatches);
 } // PrintTagFromPartialName
 
 void PrintGUID(_In_ LPCGUID lpGUID)
@@ -433,7 +433,7 @@ void PrintDispIDFromPartialName(_In_opt_z_ LPCWSTR lpszDispIDName, _In_ ULONG ul
 			ulNumMatches++;
 		}
 	}
-	printf("Found %d matches.\n",ulNumMatches);
+	printf("Found %u matches.\n",ulNumMatches);
 } // PrintDispIDFromPartialName
 
 void PrintFlag(_In_ ULONG ulPropNum, _In_opt_z_ LPCWSTR lpszPropName, _In_ bool bIsDispid, _In_ ULONG ulFlagValue)
@@ -568,7 +568,7 @@ void DoPropTags(_In_ MYOPTIONS ProgOpts)
 		if (ulNoMatch != ProgOpts.ulTypeNum)
 		{
 			PrintType(PROP_TAG(ProgOpts.ulTypeNum,0));
-			printf(" = 0x%04X = %d",ProgOpts.ulTypeNum,ProgOpts.ulTypeNum);
+			printf(" = 0x%04X = %u",ProgOpts.ulTypeNum,ProgOpts.ulTypeNum);
 			printf("\n");
 		}
 		else

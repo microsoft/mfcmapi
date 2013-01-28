@@ -54,7 +54,7 @@ public:
 
 private:
 	// Overrides from base class
-	_Check_return_ LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	void    OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 	void    OnItemChanged(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 	void    OnContextMenu(_In_ CWnd *pWnd, CPoint pos);

@@ -17,6 +17,7 @@
 #include <shlwapi.h>
 #include "ImportProcs.h"
 #include "MAPIStoreFunctions.h"
+#include "MMPst.h"
 
 // Initialize MFC for LoadString support later on
 void InitMFC()
@@ -114,11 +115,13 @@ enum __CommandLineSwitch
 	switchRecent,             // '-recent'
 	switchStore,              // '-store'
 	switchVersion,            // '-version'
+	switchSize,               // '-size'
+	switchPST,                // ' -pst'
 };
 
 struct COMMANDLINE_SWITCH
 {
-	__CommandLineSwitch	iSwitch;
+	__CommandLineSwitch iSwitch;
 	LPCSTR szSwitch;
 };
 
@@ -170,6 +173,8 @@ COMMANDLINE_SWITCH g_Switches[] =
 	{switchRecent,             "Recent"},
 	{switchStore,              "Store"},
 	{switchVersion,            "Version"},
+	{switchSize,               "Size"},
+	{switchPST,                "PST"},
 // If we want to add aliases for any switches, add them here
 	{switchHelp,               "Help"},
 };
@@ -194,12 +199,12 @@ void DisplayUsage(BOOL bFull)
 			}
 		}
 		printf("MrMAPI currently knows:\n");
-		printf("%6d property tags\n",ulPropTagArray);
-		printf("%6d dispids\n",ulNameIDArray);
-		printf("%6d types\n",ulPropTypeArray);
-		printf("%6d guids\n",ulPropGuidArray);
-		printf("%6d errors\n",g_ulErrorArray);
-		printf("%6d smart view parsers\n",g_cuidParsingTypes-1);
+		printf("%6u property tags\n",ulPropTagArray);
+		printf("%6u dispids\n",ulNameIDArray);
+		printf("%6u types\n",ulPropTypeArray);
+		printf("%6u guids\n",ulPropGuidArray);
+		printf("%6u errors\n",g_ulErrorArray);
+		printf("%6u smart view parsers\n",g_cuidParsingTypes-1);
 		printf("\n");
 	}
 	printf("Usage:\n");
@@ -229,12 +234,16 @@ void DisplayUsage(BOOL bFull)
 		g_Switches[switchStore].szSwitch,g_Switches[switchProfile].szSwitch);
 	printf("   MrMAPI [<property number>|<property name>] -%s <folder> [-%s <profile>]\n",
 		g_Switches[switchFolder].szSwitch,g_Switches[switchProfile].szSwitch);
+	printf("   MrMAPI -%s -%s <folder> [-%s <profile>]\n",
+		g_Switches[switchSize].szSwitch, g_Switches[switchFolder].szSwitch, g_Switches[switchProfile].szSwitch);
 	printf("   MrMAPI -%s | -%s -%s <path to input file> -%s <path to output file> [-%s <conversion flags>]\n",
 		g_Switches[switchMAPI].szSwitch,g_Switches[switchMIME].szSwitch,g_Switches[switchInput].szSwitch,g_Switches[switchOutput].szSwitch,g_Switches[switchCCSFFlags].szSwitch);
 	printf("          [-%s] [-%s <Decimal number of characters>] [-%s <Decimal number indicating encoding>]\n",
 		g_Switches[switchRFC822].szSwitch,g_Switches[switchWrap].szSwitch,g_Switches[switchEncoding].szSwitch);
 	printf("          [-%s] [-%s] [-%s CodePage CharSetType CharSetApplyType]\n",
 		g_Switches[switchAddressBook].szSwitch,g_Switches[switchUnicode].szSwitch,g_Switches[switchCharset].szSwitch);
+	printf("   MrMAPI -%s -%s <path to input file>\n",
+		g_Switches[switchPST].szSwitch,g_Switches[switchInput].szSwitch);
 	if (bFull)
 	{
 		printf("\n");
@@ -303,8 +312,10 @@ void DisplayUsage(BOOL bFull)
 		printf("           If a property is specified, outputs only that property.\n");
 		printf("\n");
 		printf("   Folder Properties\n");
-		printf("   -f   (or -%s) Output properties of a folder as XML.\n",g_Switches[switchFolder].szSwitch);
+		printf("   -F   (or -%s) Output properties of a folder as XML.\n",g_Switches[switchFolder].szSwitch);
 		printf("           If a property is specified, outputs only that property.\n");
+		printf("   -Size   Output size of a folder and all subfolders.\n");
+		printf("           Use %s to specify which folder to scan.\n",g_Switches[switchFolder].szSwitch);
 		printf("\n");
 		printf("   MAPI <-> MIME Conversion:\n");
 		printf("   -Ma  (or -%s) Convert an EML file to MAPI format (MSG file).\n",g_Switches[switchMAPI].szSwitch);
@@ -354,6 +365,11 @@ void DisplayUsage(BOOL bFull)
 		printf("              1 - CSET_APPLY_ALL\n");
 		printf("              2 - CSET_APPLY_TAG_ALL\n");
 		printf("\n");
+		printf("   PST Analysis\n");
+		printf("   -PST Output statistics of a PST file.\n");
+		printf("           If a property is specified, outputs only that property.\n");
+		printf("   -I   (or -%s) PST file to be analyzed.\n",g_Switches[switchInput].szSwitch);
+		printf("\n");
 		printf("   Universal Options:\n");
 		printf("   -I   (or -%s) Input file.\n",g_Switches[switchInput].szSwitch);
 		printf("   -O   (or -%s) Output file or directory.\n",g_Switches[switchOutput].szSwitch);
@@ -391,14 +407,14 @@ void DisplayUsage(BOOL bFull)
 		ULONG i = 1;
 		for (i = 1 ; i < g_cuidParsingTypes ; i++)
 		{
-			_tprintf(_T("   %2d %ws\n"),i,g_uidParsingTypes[i].lpszName);
+			_tprintf(_T("   %2u %ws\n"),i,g_uidParsingTypes[i].lpszName);
 		}
 		printf("\n");
 		printf("Folders:\n");
 		// Print Folders
 		for (i = 1 ; i < NUM_DEFAULT_PROPS ; i++)
 		{
-			printf("   %2d %hs\n",i,FolderNames[i]);
+			printf("   %2u %hs\n",i,FolderNames[i]);
 		}
 		printf("\n");
 		printf("Examples:\n");
@@ -464,7 +480,7 @@ OptParser g_Parsers[] =
 	{switchFlag, cmdmodeUnknown, 1, 1, 0}, // can't know until we parse the argument
 	{switchGuid, cmdmodeGuid, 0, 0, 0},
 	{switchError, cmdmodeErr, 0, 0, 0},
-	{switchParser, cmdmodeSmartView, 1, 1, OPT_INITMFC},
+	{switchParser, cmdmodeSmartView, 1, 1, OPT_INITMFC | OPT_NEEDINPUTFILE},
 	{switchBinary, cmdmodeSmartView, 0, 0, OPT_BINARYFILE},
 	{switchAcl, cmdmodeAcls, 0, 0, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDFOLDER},
 	{switchRule, cmdmodeRules, 0, 0, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDFOLDER},
@@ -474,13 +490,13 @@ OptParser g_Parsers[] =
 	{switchMSG, cmdmodeContents, 0, 0, OPT_MSG},
 	{switchList, cmdmodeContents, 0, 0, OPT_LIST},
 	{switchRecent, cmdmodeContents, 1, 1, 0},
-	{switchXML, cmdmodeXML, 0, 0, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC},
+	{switchXML, cmdmodeXML, 0, 0, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDINPUTFILE},
 	{switchFid, cmdmodeFidMid, 0, 1, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC},
 	{switchMid, cmdmodeFidMid, 0, 1, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC},
 	{switchStore, cmdmodeStoreProperties, 0, 1, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC},
-	{switchChildFolders, cmdmodeChildFolders, 0, 1, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC},
-	{switchMAPI, cmdmodeMAPIMIME, 0, 0, OPT_NEEDMAPIINIT | OPT_INITMFC},
-	{switchMIME, cmdmodeMAPIMIME, 0, 0, OPT_NEEDMAPIINIT | OPT_INITMFC},
+	{switchChildFolders, cmdmodeChildFolders, 0, 1, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDFOLDER},
+	{switchMAPI, cmdmodeMAPIMIME, 0, 0, OPT_NEEDMAPIINIT | OPT_INITMFC | OPT_NEEDINPUTFILE | OPT_NEEDOUTPUTFILE},
+	{switchMIME, cmdmodeMAPIMIME, 0, 0, OPT_NEEDMAPIINIT | OPT_INITMFC | OPT_NEEDINPUTFILE | OPT_NEEDOUTPUTFILE},
 	{switchCCSFFlags, cmdmodeMAPIMIME, 1, 1, 0},
 	{switchRFC822, cmdmodeMAPIMIME, 1, 1, 0},
 	{switchWrap, cmdmodeMAPIMIME, 1, 1, 0},
@@ -488,6 +504,8 @@ OptParser g_Parsers[] =
 	{switchCharset, cmdmodeMAPIMIME, 3, 3, 0},
 	{switchAddressBook, cmdmodeMAPIMIME, 0, 0, OPT_NEEDMAPILOGON}, // special case which needs a logon
 	{switchUnicode, cmdmodeMAPIMIME, 0, 0, 0},
+	{switchSize, cmdmodeFolderSize, 0, 0, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDFOLDER},
+	{switchPST, cmdmodePST, 0, 0, OPT_NEEDINPUTFILE},
 	{switchVersion, cmdmodeUnknown, 1, 1, 0},
 	{switchNoSwitch, cmdmodeUnknown, 0, 0, 0},
 };
@@ -681,8 +699,19 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 			break;
 		// Store Properties:
 		case switchStore:
-			EC_H(AnsiToUnicode(argv[i+1], &pRunOpts->lpszStore));
-			i++;
+			if (i+1 < argc  && switchNoSwitch == ParseArgument(argv[i+1]))
+			{
+				pRunOpts->ulStore = strtoul(argv[i+1],&szEndPtr,10);
+
+				// If we parsed completely, this was a store number
+				if (NULL == szEndPtr[0])
+				{
+					// Increment ulStore so we can use to distinguish an unset value
+					pRunOpts->ulStore++;
+					i++;
+				}
+				// Else it was a naked option - leave it on the stack
+			}
 			break;
 		// MAPIMIME
 		case switchMAPI:
@@ -757,6 +786,9 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 		EC_H(AnsiToUnicode(strPath,&pRunOpts->lpszOutput));
 	}
 
+	if (pRunOpts->ulOptions & OPT_NEEDINPUTFILE && !pRunOpts->lpszInput) return false;
+	if (pRunOpts->ulOptions & OPT_NEEDOUTPUTFILE && !pRunOpts->lpszOutput) return false;
+
 	// Validate that we have bare minimum to run
 	switch (pRunOpts->Mode)
 	{
@@ -766,36 +798,16 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 		if ((pRunOpts->ulOptions & OPT_DOPARTIALSEARCH) && (pRunOpts->ulOptions & OPT_DOTYPE) && ulNoMatch == pRunOpts->ulTypeNum) return false;
 		if ((pRunOpts->ulOptions & OPT_DOFLAG) && ((pRunOpts->ulOptions & OPT_DOPARTIALSEARCH) || (pRunOpts->ulOptions & OPT_DOTYPE))) return false;
 		break;
-	case cmdmodeFlagSearch:
-		// Nothing to check
-		break;
-	case cmdmodeGuid:
-		// Nothing to check
-		break;
 	case cmdmodeSmartView:
-		if (!pRunOpts->ulSVParser || !pRunOpts->lpszInput) return false;
-		break;
-	case cmdmodeAcls:
-		// Nothing to check - both lpszProfile and ulFolder are optional
-		break;
-	case cmdmodeRules:
-		// Nothing to check - both lpszProfile and ulFolder are optional
+		if (!pRunOpts->ulSVParser) return false;
 		break;
 	case cmdmodeContents:
 		if (!(pRunOpts->ulOptions & OPT_DOCONTENTS) && !(pRunOpts->ulOptions & OPT_DOASSOCIATEDCONTENTS)) return false;
-		break;
-	case cmdmodeXML:
-		if (!pRunOpts->lpszInput) return false;
 		break;
 	case cmdmodeMAPIMIME:
 #define CHECKFLAG(__flag) ((pRunOpts->ulMAPIMIMEFlags & (__flag)) == (__flag))
 		// Can't convert both ways at once
 		if (CHECKFLAG(MAPIMIME_TOMAPI) && CHECKFLAG(MAPIMIME_TOMIME)) return false;
-
-		// Should have given us source and target files
-		if (pRunOpts->lpszInput == NULL || 
-			pRunOpts->lpszOutput == NULL)
-			return false;
 
 		// Make sure there's no MIME-only options specified in a MIME->MAPI conversion
 		if (CHECKFLAG(MAPIMIME_TOMAPI) &&
@@ -809,9 +821,6 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 			(CHECKFLAG(MAPIMIME_CHARSET) ||
 			CHECKFLAG(MAPIMIME_UNICODE)))
 			return false;
-		break;
-	case cmdmodeErr:
-		// Nothing to check
 		break;
 	default:
 		break;
@@ -873,7 +882,7 @@ bool LoadMAPIVersion(LPWSTR lpszVersion)
 		}
 		else
 		{
-			DebugPrint(DBGGeneric, "Got a number %d\n", ulVersion);
+			DebugPrint(DBGGeneric, "Got a number %u\n", ulVersion);
 			switch (ulVersion)
 			{
 			case 1: // system
@@ -1030,6 +1039,12 @@ void main(_In_ int argc, _In_count_(argc) char * argv[])
 			break;
 		case cmdmodeFolderProps:
 			DoFolderProps(ProgOpts);
+			break;
+		case cmdmodeFolderSize:
+			DoFolderSize(ProgOpts);
+			break;
+		case cmdmodePST:
+			DoPST(ProgOpts);
 			break;
 		}
 	}

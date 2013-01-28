@@ -26,7 +26,7 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 			if (0 == ProgOpts.ulWrapLines)
 				printf("OFF\n");
 			else
-				printf("%d\n", ProgOpts.ulWrapLines);
+				printf("%u\n", ProgOpts.ulWrapLines);
 		}
 	}
 	else if (CHECKFLAG(MAPIMIME_TOMAPI))
@@ -38,7 +38,7 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 		}
 		if (CHECKFLAG(MAPIMIME_CHARSET))
 		{
-			printf("   CodePage: %d\n", ProgOpts.ulCodePage);
+			printf("   CodePage: %u\n", ProgOpts.ulCodePage);
 			printf("   CharSetType: ");
 			switch(ProgOpts.cSetType)
 			{

@@ -70,6 +70,8 @@ _Check_return_ HRESULT CProviderTableDlg::OpenItemProp(int iSelectedItem, __mfcm
 
 	if (!lppMAPIProp || !m_lpContentsTableListCtrl || !m_lpProviderAdmin) return MAPI_E_INVALID_PARAMETER;
 
+	*lppMAPIProp = NULL;
+
 	lpListData = (SortListData*) m_lpContentsTableListCtrl->GetItemData(iSelectedItem);
 	if (lpListData)
 	{

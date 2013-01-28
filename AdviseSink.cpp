@@ -20,8 +20,8 @@ CAdviseSink::~CAdviseSink()
 	TRACE_DESTRUCTOR(CLASS);
 } // CAdviseSink::~CAdviseSink
 
-_Check_return_ STDMETHODIMP CAdviseSink::QueryInterface(_In_ REFIID riid,
-										 _Deref_out_opt_ LPVOID * ppvObj)
+STDMETHODIMP CAdviseSink::QueryInterface(REFIID riid,
+										 LPVOID * ppvObj)
 {
 	*ppvObj = 0;
 	if (riid == IID_IMAPIAdviseSink ||
@@ -49,8 +49,8 @@ STDMETHODIMP_(ULONG) CAdviseSink::Release()
 	return lCount;
 } // CAdviseSink::Release
 
-_Check_return_ STDMETHODIMP_(ULONG) CAdviseSink::OnNotify(ULONG cNotify,
-											_In_ LPNOTIFICATION lpNotifications)
+STDMETHODIMP_(ULONG) CAdviseSink::OnNotify(ULONG cNotify,
+										   LPNOTIFICATION lpNotifications)
 {
 	HRESULT			hRes = S_OK;
 

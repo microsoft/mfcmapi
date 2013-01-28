@@ -275,7 +275,7 @@ void PrintStoreTable(_In_ LPMAPISESSION lpMAPISession, ULONG ulPropTag)
 				ULONG i = 0;
 				for (i = 0; i < lpRows->cRows; i++)
 				{
-					printf(_T("<properties index=\"%d\">\n"), iCurStore);
+					printf(_T("<properties index=\"%u\">\n"), iCurStore);
 					_OutputProperties(DBGNoDebug, stdout, lpRows->aRow[i].cValues, lpRows->aRow[i].lpProps, NULL, false);
 					printf(_T("</properties>\n"));
 					iCurStore++;
@@ -295,6 +295,7 @@ void DoStore(_In_ MYOPTIONS ProgOpts)
 	LPMAPISESSION lpMAPISession = NULL;
 	LPMDB lpMDB = NULL;
 	ULONG ulPropTag = NULL;
+
 	// If we have a prop tag, parse it
 	// For now, we don't support dispids
 	if (ProgOpts.lpszUnswitchedOption && !(ProgOpts.ulOptions & OPT_DODISPID))
@@ -305,15 +306,14 @@ void DoStore(_In_ MYOPTIONS ProgOpts)
 
 	if (ProgOpts.lpMAPISession)
 	{
-		if (!ProgOpts.lpszStore)
+		if (0 == ProgOpts.ulStore)
 		{
 			PrintStoreTable(ProgOpts.lpMAPISession, ulPropTag);
 		}
 		else 
 		{
-			LPWSTR szEndPtr = NULL;
-			ULONG ulStore = wcstoul(ProgOpts.lpszStore, &szEndPtr, 10);
-			WC_H(OpenStore(ProgOpts.lpMAPISession, ulStore, &lpMDB));
+			// ulStore was incremented by 1 before, so drop it back now
+			WC_H(OpenStore(ProgOpts.lpMAPISession, ProgOpts.ulStore-1, &lpMDB));
 		}
 	}
 

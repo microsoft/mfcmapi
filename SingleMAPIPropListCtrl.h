@@ -32,7 +32,7 @@ public:
 	void OnPasteProperty();
 
 private:
-	_Check_return_ LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	_Check_return_ HRESULT AddPropToExtraProps(ULONG ulPropTag, bool bRefresh);
 	_Check_return_ HRESULT AddPropsToExtraProps(_In_ LPSPropTagArray lpPropsToAdd, bool bRefresh);
 	void FindAllNamedProps();

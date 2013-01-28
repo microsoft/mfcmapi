@@ -51,8 +51,8 @@ CMAPIProgress::~CMAPIProgress()
 	TRACE_DESTRUCTOR(CLASS);
 } // CMAPIProgress::~CMAPIProgress
 
-_Check_return_ STDMETHODIMP CMAPIProgress::QueryInterface(REFIID riid,
-										   _Deref_out_opt_ LPVOID * ppvObj)
+STDMETHODIMP CMAPIProgress::QueryInterface(REFIID riid,
+										   LPVOID * ppvObj)
 {
 	*ppvObj = 0;
 	if (riid == IID_IMAPIProgress ||
@@ -82,7 +82,7 @@ STDMETHODIMP_(ULONG) CMAPIProgress::Release()
 
 _Check_return_ STDMETHODIMP CMAPIProgress::Progress(ULONG ulValue, ULONG ulCount, ULONG ulTotal)
 {
-	DebugPrintEx(DBGGeneric, CLASS, _T("Progress"), _T("(%s) - ulValue = %d, ulCount = %d, ulTotal = %d\n"),
+	DebugPrintEx(DBGGeneric, CLASS, _T("Progress"), _T("(%s) - ulValue = %u, ulCount = %u, ulTotal = %u\n"),
 		(LPCTSTR) m_szContext, ulValue, ulCount, ulTotal);
 
 	OutputState(_T("Progress"));
@@ -99,7 +99,7 @@ _Check_return_ STDMETHODIMP CMAPIProgress::Progress(ULONG ulValue, ULONG ulCount
 	return S_OK;
 } // CMAPIProgress::Progress
 
-_Check_return_ STDMETHODIMP CMAPIProgress::GetFlags(_Inout_ ULONG* lpulFlags)
+STDMETHODIMP CMAPIProgress::GetFlags(ULONG* lpulFlags)
 {
 	if (!lpulFlags)
 	{
@@ -112,7 +112,7 @@ _Check_return_ STDMETHODIMP CMAPIProgress::GetFlags(_Inout_ ULONG* lpulFlags)
 	return S_OK;
 } // CMAPIProgress::GetFlags
 
-_Check_return_ STDMETHODIMP CMAPIProgress::GetMax(_Inout_ ULONG* lpulMax)
+STDMETHODIMP CMAPIProgress::GetMax(ULONG* lpulMax)
 {
 	if (!lpulMax)
 		return MAPI_E_INVALID_PARAMETER;
@@ -123,7 +123,7 @@ _Check_return_ STDMETHODIMP CMAPIProgress::GetMax(_Inout_ ULONG* lpulMax)
 	return S_OK;
 } // CMAPIProgress::GetMax
 
-_Check_return_ STDMETHODIMP CMAPIProgress::GetMin(_Inout_ ULONG* lpulMin)
+STDMETHODIMP CMAPIProgress::GetMin(ULONG* lpulMin)
 {
 	if (!lpulMin)
 		return MAPI_E_INVALID_PARAMETER;
@@ -134,7 +134,7 @@ _Check_return_ STDMETHODIMP CMAPIProgress::GetMin(_Inout_ ULONG* lpulMin)
 	return S_OK;
 } // CMAPIProgress::GetMin
 
-_Check_return_ STDMETHODIMP CMAPIProgress::SetLimits(_Inout_ ULONG* lpulMin, _Inout_ ULONG* lpulMax, _Inout_ ULONG* lpulFlags)
+STDMETHODIMP CMAPIProgress::SetLimits(ULONG* lpulMin, ULONG* lpulMax, ULONG* lpulFlags)
 {
 	OutputState(_T("SetLimits"));
 
@@ -145,7 +145,7 @@ _Check_return_ STDMETHODIMP CMAPIProgress::SetLimits(_Inout_ ULONG* lpulMin, _In
 
 	if (lpulMin)
 	{
-		EC_H(StringCchPrintf(szMin, _countof(szMin), _T("%d"), *lpulMin)); // STRING_OK
+		EC_H(StringCchPrintf(szMin, _countof(szMin), _T("%u"), *lpulMin)); // STRING_OK
 	}
 	else
 	{
@@ -154,7 +154,7 @@ _Check_return_ STDMETHODIMP CMAPIProgress::SetLimits(_Inout_ ULONG* lpulMin, _In
 
 	if (lpulMax)
 	{
-		EC_H(StringCchPrintf(szMax, _countof(szMax), _T("%d"), *lpulMax)); // STRING_OK
+		EC_H(StringCchPrintf(szMax, _countof(szMax), _T("%u"), *lpulMax)); // STRING_OK
 	}
 	else
 	{
@@ -189,7 +189,7 @@ _Check_return_ STDMETHODIMP CMAPIProgress::SetLimits(_Inout_ ULONG* lpulMin, _In
 
 void CMAPIProgress::OutputState(_In_z_ LPCTSTR lpszFunction)
 {
-	DebugPrint(DBGGeneric,_T("%s::%s(%s) - Current Values: Min = %d, Max = %d, Flags = %d\n"),
+	DebugPrint(DBGGeneric,_T("%s::%s(%s) - Current Values: Min = %u, Max = %u, Flags = %u\n"),
 		CLASS, lpszFunction, (LPCTSTR) m_szContext, m_ulMin, m_ulMax, m_ulFlags);
 } // CMAPIProgress::OutputState
 #endif

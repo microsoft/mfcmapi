@@ -108,7 +108,7 @@ void LoadSingleAddIn(_In_ LPADDIN lpAddIn, HMODULE hMod, _In_ LPLOADADDIN pfnLoa
 	}
 
 	ULONG ulVersion = GetAddinVersion(hMod);
-	DebugPrint(DBGAddInPlumbing,_T("AddIn version = %d\n"),ulVersion);
+	DebugPrint(DBGAddInPlumbing,_T("AddIn version = %u\n"),ulVersion);
 
 	LPGETMENUS pfnGetMenus = NULL;
 	WC_D(pfnGetMenus, (LPGETMENUS) GetProcAddress(hMod,szGetMenus));
@@ -574,7 +574,7 @@ void UnloadAddIns()
 #ifndef MRMAPI
 // Adds menu items appropriate to the context
 // Returns number of menu items added
-ULONG ExtendAddInMenu(HMENU hMenu, ULONG ulAddInContext)
+_Check_return_ ULONG ExtendAddInMenu(HMENU hMenu, ULONG ulAddInContext)
 {
 	DebugPrint(DBGAddInPlumbing,_T("Extending menus, ulAddInContext = 0x%08X\n"),ulAddInContext);
 	HMENU hAddInMenu = NULL;
@@ -657,7 +657,7 @@ ULONG ExtendAddInMenu(HMENU hMenu, ULONG ulAddInContext)
 	return uidCurMenu-ID_ADDINMENU;
 } // ExtendAddInMenu
 
-LPMENUITEM GetAddinMenuItem(HWND hWnd, UINT uidMsg)
+_Check_return_ LPMENUITEM GetAddinMenuItem(HWND hWnd, UINT uidMsg)
 {
 	if (uidMsg < ID_ADDINMENU) return NULL;
 
@@ -784,8 +784,9 @@ void MergeArrays(
 	*lpcOut = cIn1+cIn2;
 	*lpOut = new char[*lpcOut * width];
 
-	if (lpOut)
+	if (*lpOut)
 	{
+		memset(*lpOut, 0, *lpcOut * width);
 		char* iIn1 = (char*) In1;
 		char* iIn2 = (char*) In2;
 		LPVOID endIn1 = iIn1 + width * (cIn1-1);
@@ -1386,7 +1387,7 @@ __declspec(dllexport) void __cdecl GetMAPIModule(_In_ HMODULE* lphModule, bool b
 } // GetMAPIModule
 
 // Search for properties matching lpszPropName on a substring
-LPNAMEID_ARRAY_ENTRY GetDispIDFromName(_In_z_ LPCWSTR lpszDispIDName)
+_Check_return_ LPNAMEID_ARRAY_ENTRY GetDispIDFromName(_In_z_ LPCWSTR lpszDispIDName)
 {
 	if (!lpszDispIDName) return NULL;
 

@@ -35,7 +35,7 @@ public:
 	_Check_return_ ULONG GetPropertyToCopy();
 	_Check_return_ LPMAPIPROP GetSourcePropObject();
 
-	void SetAttachmentsToCopy(_In_ LPMESSAGE lpMessage, ULONG ulNumAttachments, _Out_ ULONG* lpAttNumList);
+	void SetAttachmentsToCopy(_In_ LPMESSAGE lpMessage, ULONG ulNumAttachments, _In_ ULONG* lpAttNumList);
 	_Check_return_ ULONG* GetAttachmentsToCopy();
 	_Check_return_ ULONG GetNumAttachments();
 
@@ -224,7 +224,7 @@ _Check_return_ LPMAPIPROP CGlobalCache::GetSourcePropObject()
 	return m_lpSourcePropObject;
 } // CGlobalCache::GetSourcePropObject
 
-void CGlobalCache::SetAttachmentsToCopy(_In_ LPMESSAGE lpMessage, ULONG ulNumAttachments, _Out_ ULONG* lpAttNumList)
+void CGlobalCache::SetAttachmentsToCopy(_In_ LPMESSAGE lpMessage, ULONG ulNumAttachments, _In_ ULONG* lpAttNumList)
 {
 	EmptyBuffer();
 	m_lpulAttachmentsToCopy = lpAttNumList;
@@ -500,7 +500,7 @@ _Check_return_ LPMAPIFOLDER CMapiObjects::GetSourceParentFolder()
 	return NULL;
 } // CMapiObjects::GetSourceParentFolder
 
-void CMapiObjects::SetPropertyToCopy(ULONG ulPropTag, LPMAPIPROP lpSourcePropObject)
+void CMapiObjects::SetPropertyToCopy(ULONG ulPropTag, _In_ LPMAPIPROP lpSourcePropObject)
 {
 	if (m_lpGlobalCache)
 	{
@@ -526,7 +526,7 @@ _Check_return_ LPMAPIPROP CMapiObjects::GetSourcePropObject()
 	return NULL;
 } // CMapiObjects::GetSourcePropObject
 
-void CMapiObjects::SetAttachmentsToCopy(_In_ LPMESSAGE lpMessage, ULONG ulNumAttachments, _Out_ ULONG* lpAttNumList)
+void CMapiObjects::SetAttachmentsToCopy(_In_ LPMESSAGE lpMessage, ULONG ulNumAttachments, _In_ ULONG* lpAttNumList)
 {
 	if (m_lpGlobalCache)
 	{

@@ -11,8 +11,8 @@ public:
 	void DisplayParentedDialog(CParentWnd* lpNonModalParent, UINT iAutoCenterWidth);
 
 protected:
-	_Check_return_ LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
-	_Check_return_ virtual BOOL CheckAutoCenter();
+	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	virtual BOOL CheckAutoCenter();
 	void SetStatusHeight(int iHeight);
 	int GetStatusHeight();
 

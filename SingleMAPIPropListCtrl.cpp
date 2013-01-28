@@ -119,7 +119,7 @@ BEGIN_MESSAGE_MAP(CSingleMAPIPropListCtrl, CSortListCtrl)
 	ON_MESSAGE(WM_MFCMAPI_SAVECOLUMNORDERLIST, msgOnSaveColumnOrder)
 END_MESSAGE_MAP()
 
-_Check_return_ LRESULT CSingleMAPIPropListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CSingleMAPIPropListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
 	{
@@ -224,7 +224,7 @@ void CSingleMAPIPropListCtrl::InitMenu(_In_ CMenu* pMenu)
 
 _Check_return_ bool CSingleMAPIPropListCtrl::HandleMenu(WORD wMenuSelect)
 {
-	DebugPrint(DBGMenu,_T("CSingleMAPIPropListCtrl::HandleMenu wMenuSelect = 0x%X = %d\n"),wMenuSelect,wMenuSelect);
+	DebugPrint(DBGMenu,_T("CSingleMAPIPropListCtrl::HandleMenu wMenuSelect = 0x%X = %u\n"),wMenuSelect,wMenuSelect);
 	switch (wMenuSelect)
 	{
 	case ID_COPY_PROPERTY: OnCopyProperty(); return true;
@@ -504,7 +504,7 @@ _Check_return_ HRESULT CSingleMAPIPropListCtrl::LoadMAPIPropList()
 	// lpMappingSig might come from lpPropsFromGetProps, so don't free this until here
 	MAPIFreeBuffer(lpPropsFromGetProps);
 
-	DebugPrintEx(DBGGeneric,CLASS,_T("LoadMAPIPropList"),_T("added %d properties\n"),ulCurListBoxRow);
+	DebugPrintEx(DBGGeneric,CLASS,_T("LoadMAPIPropList"),_T("added %u properties\n"),ulCurListBoxRow);
 
 	SortClickedColumn();
 

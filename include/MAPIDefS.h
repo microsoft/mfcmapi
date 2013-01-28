@@ -94,8 +94,14 @@ typedef WCHAR				TCHAR;
 typedef char				TCHAR;
 #endif
 
+
+#if _SAL_VERSION >= 20
+typedef _Null_terminated_ WCHAR FAR *			LPWSTR;
+typedef _Null_terminated_ const WCHAR FAR *	LPCWSTR;
+#else
 typedef WCHAR FAR *			LPWSTR;
 typedef const WCHAR FAR *	LPCWSTR;
+#endif
 typedef TCHAR FAR *			LPTSTR;
 typedef const TCHAR FAR *	LPCTSTR;
 typedef BYTE FAR *			LPBYTE;

@@ -44,6 +44,14 @@ GUID_ARRAY_ENTRY g_PropGuidArray[] =
 	GUID_ENTRY(PSETID_Remote)
 	GUID_ENTRY(PSETID_Sharing)
 	GUID_ENTRY(PSETID_PostRss)
+
+	GUID_ENTRY(CLSID_MailFolder)
+	GUID_ENTRY(CLSID_ContactFolder)
+	GUID_ENTRY(CLSID_CalendarFolder)
+	GUID_ENTRY(CLSID_TaskFolder)
+	GUID_ENTRY(CLSID_NoteFolder)
+	GUID_ENTRY(CLSID_JournalFolder)
+
 	GUID_ENTRY(muidContabDLL)
 	GUID_ENTRY(g_muidStorePublic)
 	GUID_ENTRY(muidStoreWrap)

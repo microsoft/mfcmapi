@@ -27,7 +27,7 @@ CPropertyTagEditor::CPropertyTagEditor(
 									   UINT uidPrompt,
 									   ULONG ulPropTag,
 									   bool bIncludeABProps,
-									   _In_ LPMAPIPROP lpMAPIProp,
+									   _In_opt_ LPMAPIPROP lpMAPIProp,
 									   _In_ CWnd* pParentWnd):
 CEditor(pParentWnd,
 		uidTitle?uidTitle:IDS_PROPTAGEDITOR,
@@ -64,7 +64,7 @@ CPropertyTagEditor::~CPropertyTagEditor()
 	if (m_lpMAPIProp) m_lpMAPIProp->Release();
 } // CPropertyTagEditor::~CPropertyTagEditor
 
-_Check_return_ BOOL CPropertyTagEditor::OnInitDialog()
+BOOL CPropertyTagEditor::OnInitDialog()
 {
 	BOOL bRet = CEditor::OnInitDialog();
 
@@ -440,7 +440,7 @@ CPropertySelector::~CPropertySelector()
 	if (m_lpMAPIProp) m_lpMAPIProp->Release();
 } // CPropertySelector::~CPropertySelector
 
-_Check_return_ BOOL CPropertySelector::OnInitDialog()
+BOOL CPropertySelector::OnInitDialog()
 {
 	BOOL bRet = CEditor::OnInitDialog();
 
@@ -501,7 +501,7 @@ void CPropertySelector::OnOK()
 
 // We're not actually editing the list here - just overriding this to allow double-click
 // So it's OK to return false
-_Check_return_ bool CPropertySelector::DoListEdit(ULONG /*ulListNum*/, int /*iItem*/, SortListData* /*lpData*/)
+_Check_return_ bool CPropertySelector::DoListEdit(ULONG /*ulListNum*/, int /*iItem*/, _In_ SortListData* /*lpData*/)
 {
 	OnOK();
 	return false;

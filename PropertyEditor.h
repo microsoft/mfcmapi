@@ -33,7 +33,7 @@ public:
 	_Check_return_ LPSPropValue DetachModifiedSPropValue();
 
 private:
-	_Check_return_ BOOL  OnInitDialog();
+	BOOL  OnInitDialog();
 	void  CreatePropertyControls();
 	void  InitPropertyControls();
 	void  WriteStringsToSPropValue();
@@ -75,7 +75,7 @@ public:
 private:
 	// Use this function to implement list editing
 	_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData);
-	_Check_return_ BOOL OnInitDialog();
+	BOOL OnInitDialog();
 	void CreatePropertyControls();
 	void InitPropertyControls();
 	void ReadMultiValueStringsFromProperty(ULONG ulListNum);

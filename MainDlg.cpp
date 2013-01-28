@@ -159,7 +159,7 @@ void CMainDlg::AddLoadMAPIMenus()//HMENU hMenu, ULONG ulAddInContext)
 bool CMainDlg::InvokeLoadMAPIMenu(WORD wMenuSelect)
 {
 	if (wMenuSelect < ID_LOADMAPIMENUMIN || wMenuSelect > ID_LOADMAPIMENUMAX) return false;
-	DebugPrint(DBGLoadMAPI,_T("InvokeLoadMAPIMenu - got menu item %d\n"), wMenuSelect);
+	DebugPrint(DBGLoadMAPI,_T("InvokeLoadMAPIMenu - got menu item %u\n"), wMenuSelect);
 
 	HRESULT hRes = S_OK;
 	MENUITEMINFOW subMenu = {0};
@@ -185,7 +185,7 @@ bool CMainDlg::InvokeLoadMAPIMenu(WORD wMenuSelect)
 
 _Check_return_ bool CMainDlg::HandleMenu(WORD wMenuSelect)
 {
-	DebugPrint(DBGMenu,_T("CMainDlg::HandleMenu wMenuSelect = 0x%X = %d\n"),wMenuSelect,wMenuSelect);
+	DebugPrint(DBGMenu,_T("CMainDlg::HandleMenu wMenuSelect = 0x%X = %u\n"),wMenuSelect,wMenuSelect);
 	if (HandleQuickStart(wMenuSelect, this, m_hWnd)) return true;
 	if (InvokeLoadMAPIMenu(wMenuSelect)) return true;
 
@@ -1869,8 +1869,13 @@ void CMainDlg::OnComputeGivenStoreHash()
 
 			MAPIUID emsmdbUID = {0};
 			LPPROFSECT lpProfSect = NULL;
-			bool fPublicExchangeStore  = FExchangePublicStore((LPMAPIUID)lpProviderUID->lpb);
-			bool fPrivateExchangeStore = FExchangePrivateStore((LPMAPIUID)lpProviderUID->lpb);
+			bool fPublicExchangeStore  = false;
+			bool fPrivateExchangeStore = false;
+			if (lpProviderUID)
+			{
+				fPublicExchangeStore  = FExchangePublicStore((LPMAPIUID)lpProviderUID->lpb);
+				fPrivateExchangeStore = FExchangePrivateStore((LPMAPIUID)lpProviderUID->lpb);
+			}
 			bool fCached = false;
 			LPSPropValue lpConfigProp = NULL;
 			LPSPropValue lpPathPropA = NULL;

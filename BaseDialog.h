@@ -39,7 +39,7 @@ protected:
 	_Check_return_ virtual bool HandleMenu(WORD wMenuSelect);
 	_Check_return_ virtual bool HandlePaste();
 	virtual void OnCancel();
-	_Check_return_ virtual BOOL OnInitDialog();
+	virtual BOOL OnInitDialog();
 	virtual void OnInitMenu(_In_opt_ CMenu* pMenu);
 
 	ULONG						m_ulAddInContext;
@@ -61,7 +61,7 @@ private:
 	virtual void OnRefreshView();
 
 	// Overrides from base class
-	_Check_return_ LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	void    OnActivate(UINT nState, _In_ CWnd* pWndOther, BOOL bMinimized);
 	void    OnMenuSelect(UINT nItemID, UINT nFlags, HMENU hSysMenu);
 	void    OnOK();

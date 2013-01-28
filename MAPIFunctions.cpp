@@ -1367,7 +1367,7 @@ _Check_return_ HRESULT ManuallyEmptyFolder(_In_ LPMAPIFOLDER lpFolder, BOOL bAss
 				}
 			}
 		}
-		DebugPrint(DBGGeneric,_T("ManuallyEmptyFolder deleted %d items\n"),iItemCount);
+		DebugPrint(DBGGeneric,_T("ManuallyEmptyFolder deleted %u items\n"),iItemCount);
 	}
 
 	if (pRows) FreeProws(pRows);
@@ -1430,7 +1430,7 @@ void MyHexFromBin(_In_opt_count_(cb) LPBYTE lpb, size_t cb, bool bPrependCB, _De
 		memset(*lpsz, 0, cchOut);
 		if (bPrependCB)
 		{
-			StringCchPrintf(*lpsz, cchOut, _T("cb: %d lpb: "), cb); // STRING_OK
+			StringCchPrintf(*lpsz, cchOut, _T("cb: %u lpb: "), cb); // STRING_OK
 			lpszCur += CBPREPEND + cchCB;
 		}
 		if (!cb || !lpb)
@@ -1465,7 +1465,7 @@ void MyHexFromBin(_In_opt_count_(cb) LPBYTE lpb, size_t cb, bool bPrependCB, _De
 // Pass NULL for lpb and a pointer to a count to find out how much memory to allocate
 // Returns false if the string cannot be converted
 // If lpb is passed, lpcb must point to the size in bytes of lpb
-_Check_return_ bool MyBinFromHex(_In_z_ LPCTSTR lpsz, _Inout_opt_count_(*lpcb) LPBYTE lpb, _Inout_ ULONG* lpcb)
+_Check_return_ bool MyBinFromHex(_In_z_ LPCTSTR lpsz, _Out_opt_bytecapcount_(*lpcb) LPBYTE lpb, _Inout_ ULONG* lpcb)
 {
 	HRESULT hRes = S_OK;
 	size_t cchStrLen = NULL;
@@ -1473,7 +1473,7 @@ _Check_return_ bool MyBinFromHex(_In_z_ LPCTSTR lpsz, _Inout_opt_count_(*lpcb) L
 	ULONG iBinPos = 0;
 	TCHAR szTmp[3] = {0};
 	szTmp[2] = 0;
-	TCHAR szJunk[] = _T("\r\n\t -.,\\/'{}`"); // STRING_OK
+	TCHAR szJunk[] = _T("\r\n\t -.,\\/'{}`\""); // STRING_OK
 
 	if (!lpcb)
 	{
@@ -2062,7 +2062,7 @@ _Check_return_ HRESULT ResetPermissionsOnItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLD
 					iItemCount++;
 				}
 			}
-			DebugPrint(DBGGeneric,_T("ResetPermissionsOnItems reset permissions on %d items\n"),iItemCount);
+			DebugPrint(DBGGeneric,_T("ResetPermissionsOnItems reset permissions on %u items\n"),iItemCount);
 		}
 	}
 
@@ -2308,7 +2308,7 @@ _Check_return_ HRESULT GetNamedPropsByGUID(_In_ LPMAPIPROP lpSource, _In_ LPGUID
 
 // if cchszA == -1, MultiByteToWideChar will compute the length
 // Delete with delete[]
-_Check_return_ HRESULT AnsiToUnicode(_In_z_ LPCSTR pszA, _Out_z_cap_(cchszA) LPWSTR* ppszW, size_t cchszA)
+_Check_return_ HRESULT AnsiToUnicode(_In_opt_z_ LPCSTR pszA, _Out_z_cap_(cchszA) LPWSTR* ppszW, size_t cchszA)
 {
 	HRESULT hRes = S_OK;
 	if (!ppszW) return MAPI_E_INVALID_PARAMETER;
@@ -2548,7 +2548,7 @@ _Check_return_ LPWSTR DecodeID(ULONG cbBuffer, _In_count_(cbBuffer) LPBYTE lpbBu
 	LPBYTE lpDecoded = NULL;
 
 	// Allocate memory for lpDecoded
-	lpDecoded = new BYTE[cbBuffer/2];
+	lpDecoded = new BYTE[cbDecodedBuffer];
 	if (!lpDecoded) return NULL;
 
 	// Subtract kwBaseOffset from every character and place result in lpDecoded

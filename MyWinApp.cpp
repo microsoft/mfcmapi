@@ -57,7 +57,7 @@ CMyWinApp::CMyWinApp()
 /////////////////////////////////////////////////////////////////////////////
 // CMyWinApp initialization
 
-_Check_return_ BOOL CMyWinApp::InitInstance()
+BOOL CMyWinApp::InitInstance()
 {
 	// Create a parent window that all objects get a pointer to, ensuring we don't
 	// quit this thread until all objects have freed themselves.

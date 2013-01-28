@@ -194,9 +194,15 @@ typedef interface IMimeEditTagCollection IMimeEditTagCollection;
 extern "C"{
 #endif
 
+#if _SAL_VERSION >= 20
+_Must_inspect_result_
+_Ret_maybenull_ _Post_writable_byte_size_(size)
+void * __RPC_USER MIDL_user_allocate(size_t size);
+void        __RPC_USER MIDL_user_free( _Pre_maybenull_ _Post_invalid_ void  * );
+#else
 void * __RPC_USER MIDL_user_allocate(size_t);
-void __RPC_USER MIDL_user_free( void * );
-
+void        __RPC_USER MIDL_user_free( void  * );
+#endif
 /* interface __MIDL_itf_mimeole_0000 */
 /* [local] */
 
@@ -9610,15 +9616,15 @@ extern RPC_IF_HANDLE __MIDL_itf_mimeole_0282_v0_0_s_ifspec;
 
 /* Additional Prototypes for ALL interfaces */
 
-unsigned long             __RPC_USER  BSTR_UserSize(     unsigned long *, unsigned long            , BSTR * );
-unsigned char * __RPC_USER  BSTR_UserMarshal(  unsigned long *, unsigned char *, BSTR * );
-unsigned char * __RPC_USER  BSTR_UserUnmarshal(unsigned long *, unsigned char *, BSTR * );
-void                      __RPC_USER  BSTR_UserFree(     unsigned long *, BSTR * );
+unsigned long             __RPC_USER  BSTR_UserSize(     __RPC__in unsigned long *, unsigned long            , __RPC__in BSTR * ); 
+unsigned char * __RPC_USER  BSTR_UserMarshal(  __RPC__in unsigned long *, __RPC__inout_xcount(0) unsigned char *, __RPC__in BSTR * ); 
+unsigned char * __RPC_USER  BSTR_UserUnmarshal(__RPC__in unsigned long *, __RPC__in_xcount(0) unsigned char *, __RPC__out BSTR * ); 
+void                      __RPC_USER  BSTR_UserFree(     __RPC__in unsigned long *, __RPC__in BSTR * ); 
 
-unsigned long             __RPC_USER  HFONT_UserSize(     unsigned long *, unsigned long            , HFONT * );
-unsigned char * __RPC_USER  HFONT_UserMarshal(  unsigned long *, unsigned char *, HFONT * );
-unsigned char * __RPC_USER  HFONT_UserUnmarshal(unsigned long *, unsigned char *, HFONT * );
-void                      __RPC_USER  HFONT_UserFree(     unsigned long *, HFONT * );
+unsigned long             __RPC_USER  HFONT_UserSize(     __RPC__in unsigned long *, unsigned long            , __RPC__in HFONT * ); 
+unsigned char * __RPC_USER  HFONT_UserMarshal(  __RPC__in unsigned long *, __RPC__inout_xcount(0) unsigned char *, __RPC__in HFONT * ); 
+unsigned char * __RPC_USER  HFONT_UserUnmarshal(__RPC__in unsigned long *, __RPC__in_xcount(0) unsigned char *, __RPC__out HFONT * ); 
+void                      __RPC_USER  HFONT_UserFree(     __RPC__in unsigned long *, __RPC__in HFONT * ); 
 
 /* end of Additional Prototypes */
 

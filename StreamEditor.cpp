@@ -119,7 +119,7 @@ CStreamEditor::~CStreamEditor()
 } // CStreamEditor::~CStreamEditor
 
 // Used to call functions which need to be called AFTER controls are created
-_Check_return_ BOOL CStreamEditor::OnInitDialog()
+BOOL CStreamEditor::OnInitDialog()
 {
 	BOOL bRet = CEditor::OnInitDialog();
 

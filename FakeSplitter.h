@@ -27,7 +27,7 @@ private:
 	void    OnSize(UINT nType, int cx, int cy);
 	void    OnPaint();
 	void    OnMouseMove(UINT nFlags,CPoint point);
-	_Check_return_ LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	_Check_return_ int     HitTest(LONG x, LONG y);
 
 	// starting and stopping tracking

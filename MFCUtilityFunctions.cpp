@@ -702,6 +702,8 @@ void ResolveMessageClass(_In_ CMapiObjects* lpMapiObjects, _In_opt_ LPMAPIFOLDER
 	LPMAPIFORMMGR lpMAPIFormMgr = NULL;
 	if (!lpMapiObjects || !lppMAPIFormInfo) return;
 
+	*lppMAPIFormInfo = NULL;
+
 	LPMAPISESSION lpMAPISession = lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
@@ -745,6 +747,8 @@ void SelectForm(_In_ HWND hWnd, _In_ CMapiObjects* lpMapiObjects, _In_opt_ LPMAP
 	LPMAPIFORMMGR lpMAPIFormMgr = NULL;
 
 	if (!lpMapiObjects || !lppMAPIFormInfo) return;
+
+	*lppMAPIFormInfo = NULL;
 
 	LPMAPISESSION lpMAPISession = lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;

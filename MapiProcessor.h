@@ -75,19 +75,19 @@ private:
 	// The Begin functions return true if work should continue
 	// Do and End functions will only be called if Begin returned true
 	// If BeginMessageWork returns false, we'll never call the recipient or attachment functions
-	virtual bool BeginMessageWork(_In_ LPMESSAGE lpMessage, _In_opt_ LPVOID lpParentMessageData, _Deref_out_ LPVOID* lpData);
-	virtual bool BeginRecipientWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData);
+	virtual bool BeginMessageWork(_In_ LPMESSAGE lpMessage, _In_opt_ LPVOID lpParentMessageData, _Deref_out_opt_ LPVOID* lpData);
+	virtual bool BeginRecipientWork(_In_ LPMESSAGE lpMessage, _In_opt_ LPVOID lpData);
 	virtual void DoMessagePerRecipientWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData, _In_ LPSRow lpSRow, ULONG ulCurRow);
 	virtual void EndRecipientWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData);
-	virtual bool BeginAttachmentWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData);
+	virtual bool BeginAttachmentWork(_In_ LPMESSAGE lpMessage, _In_opt_ LPVOID lpData);
 	virtual void DoMessagePerAttachmentWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData, _In_ LPSRow lpSRow, _In_ LPATTACH lpAttach, ULONG ulCurRow);
-	virtual void EndAttachmentWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData);
-	virtual void EndMessageWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData);
+	virtual void EndAttachmentWork(_In_ LPMESSAGE lpMessage, _In_opt_ LPVOID lpData);
+	virtual void EndMessageWork(_In_ LPMESSAGE lpMessage, _In_opt_ LPVOID lpData);
 
 	void ProcessFolder(bool bDoRegular, bool bDoAssociated, bool bDoDescent);
 	void ProcessContentsTable(ULONG ulFlags);
-	void ProcessRecipients(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData);
-	void ProcessAttachments(_In_ LPMESSAGE lpMessage, bool bHasAttach, _In_ LPVOID lpData);
+	void ProcessRecipients(_In_ LPMESSAGE lpMessage, _In_opt_ LPVOID lpData);
+	void ProcessAttachments(_In_ LPMESSAGE lpMessage, bool bHasAttach, _In_opt_ LPVOID lpData);
 
 	// FolderList functions
 	// Add a new node to the end of the folder list

@@ -10,5 +10,5 @@ class CMyWinApp : public CWinApp
 public:
 	CMyWinApp();
 private:
-	_Check_return_ BOOL InitInstance();
+	BOOL InitInstance();
 };

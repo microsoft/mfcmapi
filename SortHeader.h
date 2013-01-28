@@ -19,7 +19,7 @@ public:
 	_Check_return_ bool Init(_In_ CHeaderCtrl *pHeader, _In_ HWND hwndParent);
 
 private:
-	_Check_return_ LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	void    RegisterHeaderTooltip();
 
 	// Custom messages

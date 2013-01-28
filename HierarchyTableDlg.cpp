@@ -233,7 +233,7 @@ void CHierarchyTableDlg::OnEditSearchCriteria()
 	}
 } // CHierarchyTableDlg::OnEditSearchCriteria
 
-_Check_return_ BOOL CHierarchyTableDlg::OnInitDialog()
+BOOL CHierarchyTableDlg::OnInitDialog()
 {
 	BOOL bRet = CBaseDialog::OnInitDialog();
 
@@ -273,7 +273,7 @@ void CHierarchyTableDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 } // CHierarchyTableDlg::CreateDialogAndMenu
 
 // Per Q167960 BUG: ESC/ENTER Keys Do Not Work When Editing CTreeCtrl Labels
-_Check_return_ BOOL CHierarchyTableDlg::PreTranslateMessage(_In_ MSG* pMsg)
+BOOL CHierarchyTableDlg::PreTranslateMessage(MSG* pMsg)
 {
 	// If edit control is visible in tree view control, when you send a
 	// WM_KEYDOWN message to the edit control it will dismiss the edit

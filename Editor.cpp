@@ -71,7 +71,7 @@ _Check_return_ static DWORD CALLBACK EditStreamReadCallBack(
 	if (pbTempBuff)
 	{
 		EC_MAPI(stmData->Read(pbTempBuff,cbTemp,&cbTempRead));
-		DebugPrint(DBGStream,_T("EditStreamReadCallBack: read %d bytes\n"),cbTempRead);
+		DebugPrint(DBGStream,_T("EditStreamReadCallBack: read %u bytes\n"),cbTempRead);
 
 		memset(pbBuff, 0, cbTempRead*2);
 		ULONG i = 0;
@@ -210,7 +210,7 @@ BEGIN_MESSAGE_MAP(CEditor, CMyDialog)
 	ON_WM_CONTEXTMENU()
 END_MESSAGE_MAP()
 
-_Check_return_ LRESULT CEditor::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CEditor::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
 	{
@@ -1719,7 +1719,7 @@ void CEditor::SetBinary(ULONG i, _In_opt_count_(cb) LPBYTE lpb, size_t cb)
 // Updates m_lpControls[i].UI.lpEdit->lpszW using SetStringW
 void CEditor::SetSize(ULONG i, size_t cb)
 {
-	SetStringf(i,_T("0x%08X = %d"), cb, cb); // STRING_OK
+	SetStringf(i,_T("0x%08X = %u"), cb, cb); // STRING_OK
 } // CEditor::SetSize
 
 // returns false if we failed to get a binary
@@ -1812,7 +1812,7 @@ void CEditor::SetHex(ULONG i, ULONG ulVal)
 
 void CEditor::SetDecimal(ULONG i, ULONG ulVal)
 {
-	SetStringf(i,_T("%d"),ulVal); // STRING_OK
+	SetStringf(i,_T("%u"),ulVal); // STRING_OK
 } // CEditor::SetDecimal
 
 // This is used by the DbgView - don't call any debugger functions here!!!
@@ -2005,6 +2005,7 @@ void CEditor::GetEditBoxText(ULONG i)
 // No need to free this - treat it like a static
 _Check_return_ LPSTR CEditor::GetEditBoxTextA(ULONG iControl, _Out_ size_t* lpcchText)
 {
+	if (lpcchText) *lpcchText = NULL;
 	if (!IsValidEdit(iControl)) return NULL;
 
 	GetEditBoxText(iControl);
@@ -2015,6 +2016,7 @@ _Check_return_ LPSTR CEditor::GetEditBoxTextA(ULONG iControl, _Out_ size_t* lpcc
 
 _Check_return_ LPWSTR CEditor::GetEditBoxTextW(ULONG iControl, _Out_ size_t* lpcchText)
 {
+	if (lpcchText) *lpcchText = NULL;
 	if (!IsValidEdit(iControl)) return NULL;
 
 	GetEditBoxText(iControl);
@@ -2133,6 +2135,15 @@ _Check_return_ ULONG CEditor::GetDecimalUseControl(ULONG i)
 	return _tcstoul((LPCTSTR) szTmpString,NULL,10);
 } // CEditor::GetDecimalUseControl
 
+void CleanPropString(_In_ CString* lpString)
+{
+	if (!lpString) return;
+
+	// remove any whitespace or nonsense punctuation
+	lpString->Replace(_T(","), _T("")); // STRING_OK
+	lpString->Replace(_T(" "), _T("")); // STRING_OK
+} // CleanPropString
+
 _Check_return_ ULONG CEditor::GetPropTagUseControl(ULONG i)
 {
 	if (!IsValidEdit(i)) return 0;
@@ -2141,6 +2152,10 @@ _Check_return_ ULONG CEditor::GetPropTagUseControl(ULONG i)
 	ULONG ulPropTag = NULL;
 	CString szTag;
 	szTag = GetStringUseControl(i);
+
+	// remove any whitespace or nonsense punctuation
+	CleanPropString(&szTag);
+
 	LPTSTR szEnd = NULL;
 	ULONG ulTag = _tcstoul((LPCTSTR) szTag,&szEnd,16);
 

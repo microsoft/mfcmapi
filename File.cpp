@@ -118,11 +118,15 @@ _Check_return_ HRESULT MyStgOpenStorage(_In_z_ LPCWSTR szMessageFile, bool bBest
 } // MyStgOpenStorage
 
 // Creates an LPMESSAGE on top of the MSG file
-_Check_return_ HRESULT LoadMSGToMessage(_In_z_ LPCWSTR szMessageFile, _Deref_out_ LPMESSAGE* lppMessage)
+_Check_return_ HRESULT LoadMSGToMessage(_In_z_ LPCWSTR szMessageFile, _Deref_out_opt_ LPMESSAGE* lppMessage)
 {
+	if (!lppMessage) return MAPI_E_INVALID_PARAMETER;
+
 	HRESULT		hRes = S_OK;
 	LPSTORAGE	pStorage = NULL;
 	LPMALLOC	lpMalloc = NULL;
+
+	*lppMessage = NULL;
 
 	// get memory allocation function
 	lpMalloc = MAPIGetDefaultMalloc();
@@ -602,7 +606,7 @@ _Check_return_ HRESULT WriteStreamToFile(_In_ LPSTREAM pStrmSrc, _In_z_ LPCWSTR 
 	{
 		pStrmSrc->Stat(&StatInfo, STATFLAG_NONAME);
 
-		DebugPrint(DBGStream,_T("WriteStreamToFile: Writing cb = %lld bytes\n"), StatInfo.cbSize.QuadPart);
+		DebugPrint(DBGStream,_T("WriteStreamToFile: Writing cb = %llu bytes\n"), StatInfo.cbSize.QuadPart);
 
 		EC_MAPI(pStrmSrc->CopyTo(pStrmDest,
 			StatInfo.cbSize,
@@ -683,7 +687,7 @@ _Check_return_ HRESULT STDAPICALLTYPE MyStgCreateStorageEx(IN const WCHAR* pName
 	return hRes;
 } // MyStgCreateStorageEx
 
-_Check_return_ HRESULT CreateNewMSG(_In_z_ LPCWSTR szFileName, bool bUnicode, _Deref_out_ LPMESSAGE* lppMessage, _Deref_out_ LPSTORAGE* lppStorage)
+_Check_return_ HRESULT CreateNewMSG(_In_z_ LPCWSTR szFileName, bool bUnicode, _Deref_out_opt_ LPMESSAGE* lppMessage, _Deref_out_opt_ LPSTORAGE* lppStorage)
 {
 	if (!szFileName || !lppMessage || !lppStorage) return MAPI_E_INVALID_PARAMETER;
 
@@ -691,6 +695,9 @@ _Check_return_ HRESULT CreateNewMSG(_In_z_ LPCWSTR szFileName, bool bUnicode, _D
 	LPSTORAGE	pStorage = NULL;
 	LPMESSAGE	pIMsg = NULL;
 	LPMALLOC	pMalloc = NULL;
+
+	*lppMessage = NULL;
+	*lppStorage = NULL;
 
 	// get memory allocation function
 	pMalloc = MAPIGetDefaultMalloc();

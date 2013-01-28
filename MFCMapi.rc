@@ -85,7 +85,7 @@ BEGIN
 			MENUITEM "Open Address Book Hierarchy", ID_QSAB
 			MENUITEM "Open Default Address Book",   ID_QSDEFAULTDIR
 		END
-		MENUITEM "Open Rules",                  ID_QSRULES
+		MENUITEM "Inbox Rules",                 ID_QSRULES
 		MENUITEM "Calendar Permissions"         ID_QSCALPERM
 		MENUITEM "Nickname Cache (SLOW)"        ID_QSNICKNAME
 		MENUITEM "Delivery Store Quota"         ID_QSQUOTA
