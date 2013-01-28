@@ -199,7 +199,7 @@ _Check_return_ CString BinToTextString(_In_ LPSBinary lpBin, bool bMultiLine)
 	return StringAsText;
 } // BinToTextString
 
-_Check_return_ CString BinToHexString(_In_ LPSBinary lpBin, bool bPrependCB)
+_Check_return_ CString BinToHexString(_In_opt_ LPSBinary lpBin, bool bPrependCB)
 {
 	if (!lpBin) return _T("");
 
@@ -392,7 +392,7 @@ _Check_return_ CString TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, b
 		static size_t cchMaxBuff = 0;
 		size_t cchBuff = szRet.GetLength();
 		cchMaxBuff = max(cchBuff,cchMaxBuff);
-		DebugPrint(DBGTest,_T("TagToString parsing 0x%08X returned %d chars - max %d\n"),ulPropTag,cchBuff,cchMaxBuff);
+		DebugPrint(DBGTest,_T("TagToString parsing 0x%08X returned %u chars - max %u\n"),ulPropTag,cchBuff,cchMaxBuff);
 	}
 	return szRet;
 } // TagToString
@@ -1076,7 +1076,7 @@ void InterpretProp(_In_ LPSPropValue lpProp, _In_opt_ CString *PropString, _In_o
 		// MV property
 		// All the MV structures are basically the same, so we can cheat when we pull the count
 		ULONG cValues = lpProp->Value.MVi.cValues;
-		tmpPropString.Format(_T("%d: "),cValues); // STRING_OK
+		tmpPropString.Format(_T("%u: "),cValues); // STRING_OK
 		// Don't bother with the loop if we don't have data
 		if (lpProp->Value.MVi.lpi)
 		{
@@ -1111,7 +1111,7 @@ void InterpretProp(_In_ LPSPropValue lpProp, _In_opt_ CString *PropString, _In_o
 			tmpAltPropString.Format(_T("0x%X"),lpProp->Value.i); // STRING_OK
 			break;
 		case(PT_LONG):
-			tmpPropString.Format(_T("%u"),lpProp->Value.l); // STRING_OK
+			tmpPropString.Format(_T("%d"),lpProp->Value.l); // STRING_OK
 			tmpAltPropString.Format(_T("0x%X"),lpProp->Value.l); // STRING_OK
 			break;
 		case(PT_R4):
@@ -1292,7 +1292,7 @@ void NameIDToStrings(_In_ LPMAPINAMEID lpNameID,
 
 	if (lpNameID->ulKind == MNID_ID)
 	{
-		DebugPrint(DBGNamedProp,_T("lpNameID->Kind.lID = 0x%04X = %u\n"),lpNameID->Kind.lID,lpNameID->Kind.lID);
+		DebugPrint(DBGNamedProp,_T("lpNameID->Kind.lID = 0x%04X = %d\n"),lpNameID->Kind.lID,lpNameID->Kind.lID);
 		LPWSTR szName = NameIDToPropName(lpNameID);
 
 		if (szName)
@@ -1306,7 +1306,7 @@ void NameIDToStrings(_In_ LPMAPINAMEID lpNameID,
 				if (szPropName)
 				{
 					// Printing hex first gets a nice sort without spacing tricks
-					EC_H(StringCchPrintf(szPropName,26 + 3 + cchName + 1,_T("id: 0x%04X=%u = %ws"), // STRING_OK
+					EC_H(StringCchPrintf(szPropName,26 + 3 + cchName + 1,_T("id: 0x%04X=%d = %ws"), // STRING_OK
 						lpNameID->Kind.lID,
 						lpNameID->Kind.lID,
 						szName));
@@ -1321,7 +1321,7 @@ void NameIDToStrings(_In_ LPMAPINAMEID lpNameID,
 			if (szPropName)
 			{
 				// Printing hex first gets a nice sort without spacing tricks
-				EC_H(StringCchPrintf(szPropName,26 + 1,_T("id: 0x%04X=%u"), // STRING_OK
+				EC_H(StringCchPrintf(szPropName,26 + 1,_T("id: 0x%04X=%d"), // STRING_OK
 					lpNameID->Kind.lID,
 					lpNameID->Kind.lID));
 			}

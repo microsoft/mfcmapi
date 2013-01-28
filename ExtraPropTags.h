@@ -978,3 +978,63 @@ enum SearchPathReorderType
 #define PR_SCHDINFO_APPT_TOMBSTONE PROP_TAG( PT_BINARY, 0x686A)
 
 #define PRXF_IGNORE_SEC_WARNING 0x10
+
+#define PR_WLINK_AB_EXSTOREEID PROP_TAG(PT_BINARY, 0x6891)
+#define PR_WLINK_ABEID PROP_TAG(PT_BINARY, 0x6854)
+#define PR_WLINK_ENTRYID PROP_TAG(PT_BINARY, 0x684C)
+#define PR_WLINK_STORE_ENTRYID PROP_TAG(PT_BINARY, 0x684E)
+#define PR_WLINK_RO_GROUP_TYPE PROP_TAG(PT_LONG, 0x6892)
+#define PR_WLINK_SECTION PROP_TAG(PT_LONG, 0x6852)
+#define PR_WLINK_TYPE PROP_TAG(PT_LONG, 0x6849)
+#define PR_WLINK_FLAGS PROP_TAG(PT_LONG, 0x684A)
+
+enum WBROGroupType {
+	wbrogUndefined = -1,
+	wbrogMyDepartment = 0,
+	wbrogOtherDepartment,
+	wbrogDirectReportGroup,
+	wbrogCoworkerGroup,
+	wbrogDL,
+};
+
+enum WBSID {
+	wbsidMailFavorites = 1,
+	wbsidCalendar = 3,
+	wbsidContacts,
+	wbsidTasks,
+	wbsidNotes,
+	wbsidJournal,
+};
+
+enum WLinkType {
+	wblNormalFolder = 0,
+	wblSearchFolder = 1,
+	wblSharedFolder = 2,
+	wblHeader = 4,
+};
+
+#define sipPublicFolder     0x00000001
+#define sipImapFolder       0x00000004
+#define sipWebDavFolder     0x00000008
+#define sipSharePointFolder 0x00000010
+#define sipRootFolder       0x00000020
+#define sipSharedOut        0x00000100
+#define sipSharedIn         0x00000200
+#define sipPersonFolder     0x00000400
+#define sipiCal             0x00000800
+#define sipOverlay          0x00001000
+#define sipOneOffName       0x00002000
+
+#define dispidConvActionMoveFolderEid 0x85C6
+#define dispidConvActionMoveStoreEid 0x85C7
+
+#define PR_RETENTION_FLAGS PROP_TAG(PT_LONG, 0x301D)
+#define RETENTION_FLAGS_EXPLICIT         ((ULONG)0x00000001)
+#define RETENTION_FLAGS_TAG_CHANGED      ((ULONG)0x00000002)
+#define RETENTION_FLAGS_AUTOTAG          ((ULONG)0x00000004)
+#define RETENTION_FLAGS_PERSONAL         ((ULONG)0x00000008)
+#define RETENTION_FLAGS_EXPLICIT_ARCHIVE ((ULONG)0x00000010)
+#define RETENTION_FLAGS_KEEP_IN_PLACE    ((ULONG)0x00000020)
+#define RETENTION_FLAGS_SYSTEM_DATA      ((ULONG)0X00000040)
+#define RETENTION_FLAGS_NEEDS_RESCAN     ((ULONG)0X00000080)
+#define RETENTION_FLAGS_PENDING_RESCAN   ((ULONG)0X00000100)

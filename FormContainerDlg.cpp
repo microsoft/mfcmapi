@@ -82,7 +82,7 @@ void CFormContainerDlg::OnInitMenu(_In_ CMenu* pMenu)
 	CContentsTableDlg::OnInitMenu(pMenu);
 } // CFormContainerDlg::OnInitMenu
 
-_Check_return_ BOOL CFormContainerDlg::OnInitDialog()
+BOOL CFormContainerDlg::OnInitDialog()
 {
 	BOOL bRet = CContentsTableDlg::OnInitDialog();
 
@@ -154,6 +154,8 @@ _Check_return_ HRESULT CFormContainerDlg::OpenItemProp(int iSelectedItem, __mfcm
 	DebugPrintEx(DBGOpenItemProp,CLASS,_T("OpenItemProp"),_T("iSelectedItem = 0x%X\n"),iSelectedItem);
 
 	if (!lppMAPIProp || !m_lpContentsTableListCtrl || !m_lpFormContainer) return MAPI_E_INVALID_PARAMETER;
+
+	*lppMAPIProp  = NULL;
 
 	lpListData = (SortListData*) m_lpContentsTableListCtrl->GetItemData(iSelectedItem);
 	if (lpListData)

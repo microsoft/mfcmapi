@@ -20,7 +20,7 @@ public:
 private:
 	// Use this function to implement list editing
 	_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData);
-	_Check_return_ BOOL OnInitDialog();
+	BOOL OnInitDialog();
 	void OnOK();
 
 	void ReadTagArrayToList(ULONG ulListNum);

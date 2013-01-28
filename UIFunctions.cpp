@@ -920,7 +920,7 @@ void DrawListItemGlow(_In_ HWND hWnd, UINT itemID)
 	::InvalidateRect(hWnd, &rcLabels, true);
 } // DrawListItemGlow
 
-void DrawTreeItemGlow(_In_ HWND hWnd, HTREEITEM hItem)
+void DrawTreeItemGlow(_In_ HWND hWnd, _In_ HTREEITEM hItem)
 {
 	RECT rect = {0};
 	RECT rectTree = {0};
@@ -1771,7 +1771,7 @@ void DrawWindowFrame(_In_ HWND hWnd, bool bActive, int iStatusHeight)
 	RECT rcWindow = {0};
 	RECT rcClient = {0};
 	::GetWindowRect(hWnd, &rcWindow); // Get our non-client size
-	::GetClientRect(hWnd, &rcClient); // get our client size
+	::GetClientRect(hWnd, &rcClient); // Get our client size
 	::MapWindowPoints(hWnd, NULL, (LPPOINT) &rcClient, 2); // locate our client rect on the screen
 
 	// Before we fiddle with our client and window rects further, paint the menu
@@ -1938,11 +1938,14 @@ void DrawWindowFrame(_In_ HWND hWnd, bool bActive, int iStatusHeight)
 			false,
 			DT_LEFT | DT_SINGLELINE | DT_VCENTER);
 
-		// Finally, we paint our border glow
-		RECT rcInnerFrame = rcWindow;
-		::InflateRect(&rcInnerFrame, -BORDER_VISIBLEWIDTH, -BORDER_VISIBLEWIDTH);
-		::ExcludeClipRect(hdc, rcInnerFrame.left, rcInnerFrame.top, rcInnerFrame.right, rcInnerFrame.bottom);
-		::FillRect(hdc, &rcWindow, GetSysBrush(bActive?cGlow:cFrameUnselected));
+		// Finally, we paint our border glow if we're not maximized
+		if (!::IsZoomed(hWnd))
+		{
+			RECT rcInnerFrame = rcWindow;
+			::InflateRect(&rcInnerFrame, -BORDER_VISIBLEWIDTH, -BORDER_VISIBLEWIDTH);
+			::ExcludeClipRect(hdc, rcInnerFrame.left, rcInnerFrame.top, rcInnerFrame.right, rcInnerFrame.bottom);
+			::FillRect(hdc, &rcWindow, GetSysBrush(bActive?cGlow:cFrameUnselected));
+		}
 
 		db.End(hdc);
 		::ReleaseDC(hWnd, hdcWin);

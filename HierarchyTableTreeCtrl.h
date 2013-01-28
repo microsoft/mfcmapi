@@ -32,7 +32,7 @@ public:
 
 private:
 	// Overrides from base class
-	_Check_return_ LRESULT     WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	LRESULT     WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	void        OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 
 	_Check_return_ HRESULT     ExpandNode(HTREEITEM Parent);

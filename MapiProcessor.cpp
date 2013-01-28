@@ -476,7 +476,7 @@ void CMAPIProcessor::ProcessMessage(_In_ LPMESSAGE lpMessage, bool bHasAttach, _
 	}
 } // CMAPIProcessor::ProcessMessage
 
-void CMAPIProcessor::ProcessRecipients(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData)
+void CMAPIProcessor::ProcessRecipients(_In_ LPMESSAGE lpMessage, _In_opt_ LPVOID lpData)
 {
 	if (!lpMessage) return;
 
@@ -523,7 +523,7 @@ void CMAPIProcessor::ProcessRecipients(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpD
 	EndRecipientWork(lpMessage,lpData);
 } // CMAPIProcessor::ProcessRecipients
 
-void CMAPIProcessor::ProcessAttachments(_In_ LPMESSAGE lpMessage, bool bHasAttach, _In_ LPVOID lpData)
+void CMAPIProcessor::ProcessAttachments(_In_ LPMESSAGE lpMessage, bool bHasAttach, _In_opt_ LPVOID lpData)
 {
 	if (!lpMessage) return;
 
@@ -792,12 +792,13 @@ void CMAPIProcessor::EndContentsTableWork()
 {
 } // CMAPIProcessor::EndContentsTableWork
 
-bool CMAPIProcessor::BeginMessageWork(_In_ LPMESSAGE /*lpMessage*/, _In_opt_ LPVOID /*lpParentMessageData*/, _Deref_out_ LPVOID* /*lpData*/)
+bool CMAPIProcessor::BeginMessageWork(_In_ LPMESSAGE /*lpMessage*/, _In_opt_ LPVOID /*lpParentMessageData*/, _Deref_out_opt_ LPVOID* lpData)
 {
+	if (lpData) *lpData = NULL;
 	return true; // Keep processing
 } // CMAPIProcessor::BeginMessageWork
 
-bool CMAPIProcessor::BeginRecipientWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID /*lpData*/)
+bool CMAPIProcessor::BeginRecipientWork(_In_ LPMESSAGE /*lpMessage*/, _In_opt_ LPVOID /*lpData*/)
 {
 	return true; // Keep processing
 } // CMAPIProcessor::BeginRecipientWork
@@ -810,7 +811,7 @@ void CMAPIProcessor::EndRecipientWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID 
 {
 } // CMAPIProcessor::EndRecipientWork
 
-bool CMAPIProcessor::BeginAttachmentWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID /*lpData*/)
+bool CMAPIProcessor::BeginAttachmentWork(_In_ LPMESSAGE /*lpMessage*/, _In_opt_ LPVOID /*lpData*/)
 {
 	return true; // Keep processing
 } // CMAPIProcessor::BeginAttachmentWork
@@ -819,10 +820,10 @@ void CMAPIProcessor::DoMessagePerAttachmentWork(_In_ LPMESSAGE /*lpMessage*/, _I
 {
 } // CMAPIProcessor::DoMessagePerAttachmentWork
 
-void CMAPIProcessor::EndAttachmentWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID /*lpData*/)
+void CMAPIProcessor::EndAttachmentWork(_In_ LPMESSAGE /*lpMessage*/, _In_opt_ LPVOID /*lpData*/)
 {
 } // CMAPIProcessor::EndAttachmentWork
 
-void CMAPIProcessor::EndMessageWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID /*lpData*/)
+void CMAPIProcessor::EndMessageWork(_In_ LPMESSAGE /*lpMessage*/, _In_opt_ LPVOID /*lpData*/)
 {
 } // CMAPIProcessor::EndMessageWork

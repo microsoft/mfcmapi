@@ -96,7 +96,7 @@ BEGIN_MESSAGE_MAP(CContentsTableListCtrl, CSortListCtrl)
 	ON_MESSAGE(WM_MFCMAPI_REFRESHTABLE, msgOnRefreshTable)
 END_MESSAGE_MAP()
 
-_Check_return_ LRESULT CContentsTableListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CContentsTableListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	HRESULT hRes = S_OK;
 
@@ -545,7 +545,7 @@ _Check_return_ LPSRestriction CContentsTableListCtrl::GetRestriction()
 	return m_lpRes;
 } // CContentsTableListCtrl::GetRestriction
 
-__mfcmapiRestrictionTypeEnum CContentsTableListCtrl::GetRestrictionType()
+_Check_return_ __mfcmapiRestrictionTypeEnum CContentsTableListCtrl::GetRestrictionType()
 {
 	return m_RestrictionType;
 } // CContentsTableListCtrl::GetRestrictionType
@@ -715,7 +715,7 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 				(void) ::SendMessage(hWndHost,WM_MFCMAPI_UPDATESTATUSBAR,STATUSDATA2,(LPARAM)(LPCTSTR) szStatusText);
 			}
 
-			DebugPrintEx(DBGGeneric,CLASS,_T("ThreadFuncLoadTable"),_T("Asking to add %p to %d\n"),&pRows->aRow[iCurPropRow],iCurListBoxRow);
+			DebugPrintEx(DBGGeneric,CLASS,_T("ThreadFuncLoadTable"),_T("Asking to add %p to %u\n"),&pRows->aRow[iCurPropRow],iCurListBoxRow);
 			(void) ::SendMessage(lpListCtrl->m_hWnd,WM_MFCMAPI_THREADADDITEM,iCurListBoxRow,(LPARAM)&pRows->aRow[iCurPropRow]);
 			if (FAILED(hRes)) continue;
 			iCurListBoxRow++;
@@ -739,7 +739,7 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 		(void) ::SendMessage(hWndHost,WM_MFCMAPI_UPDATESTATUSBAR,STATUSINFOTEXT,(LPARAM)(LPCTSTR) szStatusText);
 	}
 	(void) ::SendMessage(hWndHost,WM_MFCMAPI_UPDATESTATUSBAR,STATUSDATA2,(LPARAM)_T(""));
-	DebugPrintEx(DBGGeneric,CLASS,_T("ThreadFuncLoadTable"),_T("added %d items\n"),iCurListBoxRow);
+	DebugPrintEx(DBGGeneric,CLASS,_T("ThreadFuncLoadTable"),_T("added %u items\n"),iCurListBoxRow);
 
 	DebugPrintEx(DBGGeneric,CLASS,_T("ThreadFuncLoadTable"),_T("Releasing pointers.\n"));
 

@@ -28,7 +28,7 @@ protected:
 	// Overrides from base class
 	void CreateDialogAndMenu(UINT nIDMenuResource);
 	_Check_return_ bool HandleMenu(WORD wMenuSelect);
-	_Check_return_ BOOL OnInitDialog();
+	BOOL OnInitDialog();
 	void OnInitMenu(_In_opt_ CMenu* pMenu);
 	void OnRefreshView();
 

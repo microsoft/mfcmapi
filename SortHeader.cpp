@@ -76,7 +76,7 @@ void CSortHeader::RegisterHeaderTooltip()
 
 #define GET_X_LPARAM(lp) ((int)(short)LOWORD(lp))
 #define GET_Y_LPARAM(lp) ((int)(short)HIWORD(lp))
-_Check_return_ LRESULT CSortHeader::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CSortHeader::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	HRESULT hRes = S_OK;
 

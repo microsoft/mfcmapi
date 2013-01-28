@@ -65,7 +65,7 @@ CFolderDlg::~CFolderDlg()
 
 _Check_return_ bool CFolderDlg::HandleMenu(WORD wMenuSelect)
 {
-	DebugPrint(DBGMenu,_T("CFolderDlg::HandleMenu wMenuSelect = 0x%X = %d\n"),wMenuSelect,wMenuSelect);
+	DebugPrint(DBGMenu,_T("CFolderDlg::HandleMenu wMenuSelect = 0x%X = %u\n"),wMenuSelect,wMenuSelect);
 	HRESULT hRes = S_OK;
 	switch (wMenuSelect)
 	{

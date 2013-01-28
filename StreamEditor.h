@@ -21,7 +21,7 @@ public:
 	virtual ~CStreamEditor();
 
 private:
-	_Check_return_ BOOL  OnInitDialog();
+	BOOL  OnInitDialog();
 	void  ReadTextStreamFromProperty();
 	void  WriteTextStreamToProperty();
 	_Check_return_ ULONG HandleChange(UINT nID);

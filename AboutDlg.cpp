@@ -29,7 +29,7 @@ CAboutDlg::~CAboutDlg()
 	TRACE_DESTRUCTOR(CLASS);
 } // CAboutDlg::~CAboutDlg
 
-_Check_return_ BOOL CAboutDlg::OnInitDialog()
+BOOL CAboutDlg::OnInitDialog()
 {
 	HRESULT hRes = S_OK;
 	BOOL bRet = CMyDialog::OnInitDialog();
@@ -208,7 +208,7 @@ _Check_return_ BOOL CAboutDlg::OnInitDialog()
 	return bRet;
 } // CAboutDlg::OnInitDialog
 
-_Check_return_ LRESULT CAboutDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CAboutDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
 	{

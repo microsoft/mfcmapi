@@ -9,7 +9,7 @@ _Check_return_ HRESULT CreateAndDisplayNewMailInFolder(
 	_In_ LPMAPISESSION lpMAPISession,
 	_In_ CContentsTableListCtrl *lpContentsTableListCtrl,
 	int iItem,
-	_In_z_ LPCSTR szMessageClass,
+	_In_opt_z_ LPCSTR szMessageClass,
 	_In_ LPMAPIFOLDER lpFolder);
 _Check_return_ HRESULT OpenMessageModal(_In_ LPMAPIFOLDER lpParentFolder,
 										_In_ LPMAPISESSION lpMAPISession,

@@ -153,7 +153,7 @@ BEGIN_MESSAGE_MAP(CHierarchyTableTreeCtrl, CTreeCtrl)
 	ON_MESSAGE(WM_MFCMAPI_REFRESHTABLE, msgOnRefreshTable)
 END_MESSAGE_MAP()
 
-_Check_return_ LRESULT CHierarchyTableTreeCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CHierarchyTableTreeCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	// Read the current hover local, since we need to clear it before we do any drawing
 	HTREEITEM hItemCurHover = m_hItemCurHover;
@@ -734,13 +734,15 @@ void CHierarchyTableTreeCtrl::UpdateSelectionUI(HTREEITEM hItem)
 
 	DebugPrintEx(DBGHierarchy,CLASS,_T("UpdateSelectionUI"),_T("%p\n"),hItem);
 
+	if (!m_lpHostDlg) return;
+
 	// Have to request modify or this object is read only in the single prop control.
 	GetContainer(hItem,mfcmapiREQUEST_MODIFY, &lpMAPIContainer);
 
 	// make sure we've gotten the hierarchy table for this node
 	(void) GetHierarchyTable(hItem,lpMAPIContainer,(0 != RegKeys[regkeyHIER_EXPAND_NOTIFS].ulCurDWORD));
 
-	if (SUCCEEDED(hRes) && m_lpHostDlg && lpMAPIContainer)
+	if (SUCCEEDED(hRes) && lpMAPIContainer)
 	{
 		// Get some props for status bar
 		WC_H_GETPROPS(lpMAPIContainer->GetProps(
@@ -797,11 +799,8 @@ void CHierarchyTableTreeCtrl::UpdateSelectionUI(HTREEITEM hItem)
 		ulParam2,
 		ulParam3);
 
-	if (m_lpHostDlg)
-	{
-		m_lpHostDlg->OnUpdateSingleMAPIPropListCtrl(lpMAPIContainer, (SortListData*) GetItemData(hItem));
-		m_lpHostDlg->UpdateTitleBarText(GetItemText(GetSelectedItem()));
-	}
+	m_lpHostDlg->OnUpdateSingleMAPIPropListCtrl(lpMAPIContainer, (SortListData*) GetItemData(hItem));
+	m_lpHostDlg->UpdateTitleBarText(GetItemText(GetSelectedItem()));
 
 	if (lpMAPIContainer) lpMAPIContainer->Release();
 } // CHierarchyTableTreeCtrl::UpdateSelectionUI
@@ -974,7 +973,7 @@ _Check_return_ LPMAPICONTAINER CHierarchyTableTreeCtrl::GetSelectedContainer(__m
 void CHierarchyTableTreeCtrl::GetContainer(
 	HTREEITEM Item,
 	__mfcmapiModifyEnum bModify,
-	LPMAPICONTAINER* lppContainer)
+	_In_ LPMAPICONTAINER* lppContainer)
 {
 	HRESULT			hRes = S_OK;
 	ULONG			ulObjType = NULL;
@@ -1097,7 +1096,7 @@ void CHierarchyTableTreeCtrl::GetContainer(
 //		 End - Message Handlers
 
 // When + is clicked, add all entries in the table as children
-void CHierarchyTableTreeCtrl::OnItemExpanding(NMHDR* pNMHDR, LRESULT* pResult)
+void CHierarchyTableTreeCtrl::OnItemExpanding(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 {
 	HRESULT			hRes = S_OK;
 
@@ -1118,7 +1117,7 @@ void CHierarchyTableTreeCtrl::OnItemExpanding(NMHDR* pNMHDR, LRESULT* pResult)
 } // CHierarchyTableTreeCtrl::OnItemExpanding
 
 // Tree control will call this for every node it deletes.
-void CHierarchyTableTreeCtrl::OnDeleteItem(NMHDR* pNMHDR, LRESULT* pResult)
+void CHierarchyTableTreeCtrl::OnDeleteItem(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 {
 	LPNMTREEVIEW pNMTreeView = (LPNMTREEVIEW)pNMHDR;
 	if (pNMTreeView)

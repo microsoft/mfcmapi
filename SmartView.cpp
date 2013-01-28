@@ -16,8 +16,8 @@
 #define _MaxEntriesExtraLarge 1500
 #define _MaxEntriesEnormous 10000
 
-void InterpretMVBinaryAsString(SBinaryArray myBinArray, DWORD_PTR iStructType, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_z_ LPWSTR* lpszResultString);
-void InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_ LPGUID lpguidNamedProp, _Deref_out_z_ LPWSTR* lpszResultString);
+void InterpretMVBinaryAsString(SBinaryArray myBinArray, DWORD_PTR iStructType, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_z_ LPWSTR* lpszResultString);
+void InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_ LPGUID lpguidNamedProp, _Deref_out_opt_z_ LPWSTR* lpszResultString);
 
 _Check_return_ LPWSTR CStringToString(CString szCString);
 
@@ -279,10 +279,12 @@ void InterpretPropSmartView(_In_ LPSPropValue lpProp, // required property value
 	MAPIFreeBuffer(lppPropNames);
 } // InterpretPropSmartView
 
-void InterpretMVBinaryAsString(SBinaryArray myBinArray, DWORD_PTR iStructType, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_z_ LPWSTR* lpszResultString)
+void InterpretMVBinaryAsString(SBinaryArray myBinArray, DWORD_PTR iStructType, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_z_ LPWSTR* lpszResultString)
 {
-	if (!RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD) return;
 	if (!lpszResultString) return;
+	*lpszResultString = NULL;
+
+	if (!RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD) return;
 
 	ULONG ulRow = 0;
 	CString szResult;
@@ -299,9 +301,12 @@ void InterpretMVBinaryAsString(SBinaryArray myBinArray, DWORD_PTR iStructType, _
 			ulRow);
 		szResult += szTmp;
 		InterpretBinaryAsString(myBinArray.lpbin[ulRow],iStructType,lpMAPIProp,ulPropTag,&szSmartView);
-		szResult += szSmartView;
-		delete[] szSmartView;
-		szSmartView = NULL;
+		if (szSmartView)
+		{
+			szResult += szSmartView;
+			delete[] szSmartView;
+			szSmartView = NULL;
+		}
 	}
 
 	*lpszResultString = CStringToString(szResult);
@@ -367,9 +372,11 @@ void InterpretNumberAsString(_PV pV, ULONG ulPropTag, ULONG ulPropNameID, _In_op
 #ifdef UNICODE
 				InterpretFlags(ulPropID,pV.ul,szPrefix,lpszResultString);
 #else
-				LPTSTR lpszResultStringA = NULL;
+				LPSTR lpszResultStringA = NULL;
+				LPWSTR lpszResultStringW = NULL;
 				InterpretFlags(ulPropID,pV.ul,szPrefix,&lpszResultStringA);
-				EC_H(AnsiToUnicode(lpszResultStringA,lpszResultString));
+				EC_H(AnsiToUnicode(lpszResultStringA,&lpszResultStringW));
+				*lpszResultString = lpszResultStringW;
 				delete[] lpszResultStringA;
 #endif
 			}
@@ -378,10 +385,12 @@ void InterpretNumberAsString(_PV pV, ULONG ulPropTag, ULONG ulPropNameID, _In_op
 	}
 } // InterpretNumberAsString
 
-void InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_ LPGUID lpguidNamedProp, _Deref_out_z_ LPWSTR* lpszResultString)
+void InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_ LPGUID lpguidNamedProp, _Deref_out_opt_z_ LPWSTR* lpszResultString)
 {
-	if (!RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD) return;
 	if (!lpszResultString) return;
+	*lpszResultString = NULL;
+
+	if (!RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD) return;
 
 	ULONG ulRow = 0;
 	CString szResult;
@@ -414,8 +423,10 @@ void InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropTag, ULONG ulPr
 // lpszResultString allocated with new, delete with delete[]
 void InterpretBinaryAsString(SBinary myBin, DWORD_PTR iStructType, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_z_ LPWSTR* lpszResultString)
 {
-	if (!RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD) return;
 	if (!lpszResultString) return;
+	*lpszResultString = NULL;
+
+	if (!RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD) return;
 	LPWSTR szResultString = NULL;
 
 	ULONG i = 0;
@@ -568,8 +579,8 @@ public:
 	void GetBYTESNoAlloc(size_t cbBytes, size_t cbMaxBytes, _In_count_(cbBytes) LPBYTE pBYTES);
 	void GetStringA(size_t cchChar, _Deref_out_z_ LPSTR* ppStr);
 	void GetStringW(size_t cchChar, _Deref_out_z_ LPWSTR* ppStr);
-	void GetStringA(_Deref_out_z_ LPSTR* ppStr);
-	void GetStringW(_Deref_out_z_ LPWSTR* ppStr);
+	void GetStringA(_Deref_out_opt_z_ LPSTR* ppStr);
+	void GetStringW(_Deref_out_opt_z_ LPWSTR* ppStr);
 	size_t GetRemainingData(_Out_ LPBYTE* ppRemainingBYTES);
 
 private:
@@ -584,7 +595,7 @@ static TCHAR* CLASS = _T("CBinaryParser");
 
 CBinaryParser::CBinaryParser(size_t cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
-	DebugPrintEx(DBGSmartView,CLASS,_T("CBinaryParser"),_T("cbBin = 0x%08X = %d\n"),cbBin,cbBin);
+	DebugPrintEx(DBGSmartView,CLASS,_T("CBinaryParser"),_T("cbBin = 0x%08X = %u\n"),cbBin,cbBin);
 	m_cbBin = cbBin;
 	m_lpBin = lpBin;
 	m_lpCur = lpBin;
@@ -593,7 +604,7 @@ CBinaryParser::CBinaryParser(size_t cbBin, _In_count_(cbBin) LPBYTE lpBin)
 
 void CBinaryParser::Advance(size_t cbAdvance)
 {
-	DebugPrintEx(DBGSmartView,CLASS,_T("Advance"),_T("Advancing 0x%08X = %d bytes.\n"),cbAdvance,cbAdvance);
+	DebugPrintEx(DBGSmartView,CLASS,_T("Advance"),_T("Advancing 0x%08X = %u bytes.\n"),cbAdvance,cbAdvance);
 	// Refuse to advance a negative count
 	if (cbAdvance < 0) return;
 	m_lpCur += cbAdvance;
@@ -607,7 +618,7 @@ size_t CBinaryParser::GetCurrentOffset()
 
 void CBinaryParser::SetCurrentOffset(size_t stOffset)
 {
-	DebugPrintEx(DBGSmartView,CLASS,_T("SetCurrentOffset"),_T("Setting offset 0x%08X = %d bytes.\n"),stOffset,stOffset);
+	DebugPrintEx(DBGSmartView,CLASS,_T("SetCurrentOffset"),_T("Setting offset 0x%08X = %u bytes.\n"),stOffset,stOffset);
 	m_lpCur = m_lpBin + stOffset;
 } // CBinaryParser::SetCurrentOffset
 
@@ -630,10 +641,10 @@ bool CBinaryParser::CheckRemainingBytes(size_t cbBytes)
 	size_t cbRemaining = RemainingBytes();
 	if (cbBytes > cbRemaining)
 	{
-		DebugPrintEx(DBGSmartView,CLASS,_T("CheckRemainingBytes"),_T("Bytes requested (0x%08X = %d) > remaining bytes (0x%08X = %d)\n"),
+		DebugPrintEx(DBGSmartView,CLASS,_T("CheckRemainingBytes"),_T("Bytes requested (0x%08X = %u) > remaining bytes (0x%08X = %u)\n"),
 			cbBytes,cbBytes,
 			cbRemaining,cbRemaining);
-		DebugPrintEx(DBGSmartView,CLASS,_T("CheckRemainingBytes"),_T("Total Bytes: 0x%08X = %d\n"),m_cbBin,m_cbBin);
+		DebugPrintEx(DBGSmartView,CLASS,_T("CheckRemainingBytes"),_T("Total Bytes: 0x%08X = %u\n"),m_cbBin,m_cbBin);
 		DebugPrintEx(DBGSmartView,CLASS,_T("CheckRemainingBytes"),_T("Current offset: 0x%08X = %d\n"),m_lpCur-m_lpBin,m_lpCur-m_lpBin);
 		return false;
 	}
@@ -642,28 +653,36 @@ bool CBinaryParser::CheckRemainingBytes(size_t cbBytes)
 
 void CBinaryParser::GetBYTE(_Out_ BYTE* pBYTE)
 {
-	if (!pBYTE || !CheckRemainingBytes(sizeof(BYTE))) return;
+	if (!pBYTE) return;
+	*pBYTE = NULL;
+	if (!CheckRemainingBytes(sizeof(BYTE))) return;
 	*pBYTE = *((BYTE*)m_lpCur);
 	m_lpCur += sizeof(BYTE);
 } // CBinaryParser::GetBYTE
 
 void CBinaryParser::GetWORD(_Out_ WORD* pWORD)
 {
-	if (!pWORD || !CheckRemainingBytes(sizeof(WORD))) return;
+	if (!pWORD) return;
+	*pWORD = NULL;
+	if (!CheckRemainingBytes(sizeof(WORD))) return;
 	*pWORD = *((WORD*)m_lpCur);
 	m_lpCur += sizeof(WORD);
 } // CBinaryParser::GetWORD
 
 void CBinaryParser::GetDWORD(_Out_ DWORD* pDWORD)
 {
-	if (!pDWORD || !CheckRemainingBytes(sizeof(DWORD))) return;
+	if (!pDWORD) return;
+	*pDWORD = NULL;
+	if (!CheckRemainingBytes(sizeof(DWORD))) return;
 	*pDWORD = *((DWORD*)m_lpCur);
 	m_lpCur += sizeof(DWORD);
 } // CBinaryParser::GetDWORD
 
 void CBinaryParser::GetLARGE_INTEGER(_Out_ LARGE_INTEGER* pLARGE_INTEGER)
 {
-	if (!pLARGE_INTEGER || !CheckRemainingBytes(sizeof(LARGE_INTEGER))) return;
+	if (!pLARGE_INTEGER) return;
+	*pLARGE_INTEGER = LARGE_INTEGER();
+	if (!CheckRemainingBytes(sizeof(LARGE_INTEGER))) return;
 	*pLARGE_INTEGER = *((LARGE_INTEGER*)m_lpCur);
 	m_lpCur += sizeof(LARGE_INTEGER);
 } // CBinaryParser::GetLARGE_INTEGER
@@ -721,9 +740,10 @@ void CBinaryParser::GetStringW(size_t cchWChar, _Deref_out_z_ LPWSTR* ppStr)
 } // CBinaryParser::GetStringW
 
 // No size specified - assume the NULL terminator is in the stream, but don't read off the end
-void CBinaryParser::GetStringA(_Deref_out_z_ LPSTR* ppStr)
+void CBinaryParser::GetStringA(_Deref_out_opt_z_ LPSTR* ppStr)
 {
 	if (!ppStr) return;
+	*ppStr = NULL;
 	size_t cchChar = NULL;
 	HRESULT hRes = S_OK;
 
@@ -737,9 +757,11 @@ void CBinaryParser::GetStringA(_Deref_out_z_ LPSTR* ppStr)
 } // CBinaryParser::GetStringA
 
 // No size specified - assume the NULL terminator is in the stream, but don't read off the end
-void CBinaryParser::GetStringW(_Deref_out_z_ LPWSTR* ppStr)
+void CBinaryParser::GetStringW(_Deref_out_opt_z_ LPWSTR* ppStr)
 {
 	if (!ppStr) return;
+	*ppStr = NULL;
+
 	size_t cchChar = NULL;
 	HRESULT hRes = S_OK;
 
@@ -754,6 +776,9 @@ void CBinaryParser::GetStringW(_Deref_out_z_ LPWSTR* ppStr)
 
 size_t CBinaryParser::GetRemainingData(_Out_ LPBYTE* ppRemainingBYTES)
 {
+	if (!ppRemainingBYTES) return 0;
+	*ppRemainingBYTES = NULL;
+
 	size_t cbBytes = RemainingBytes();
 	if (cbBytes > 0)
 	{
@@ -765,7 +790,7 @@ size_t CBinaryParser::GetRemainingData(_Out_ LPBYTE* ppRemainingBYTES)
 _Check_return_ CString JunkDataToString(size_t cbJunkData, _In_count_(cbJunkData) LPBYTE lpJunkData)
 {
 	if (!cbJunkData || !lpJunkData) return _T("");
-	DebugPrintEx(DBGSmartView,CLASS,_T("JunkDataToString"),_T("Had 0x%08X = %d bytes left over.\n"),cbJunkData,cbJunkData);
+	DebugPrintEx(DBGSmartView,CLASS,_T("JunkDataToString"),_T("Had 0x%08X = %u bytes left over.\n"),cbJunkData,cbJunkData);
 	CString szTmp;
 	SBinary sBin = {0};
 
@@ -1444,9 +1469,11 @@ _Check_return_ LPWSTR AppointmentRecurrencePatternStructToString(_In_ Appointmen
 // SDBin
 //////////////////////////////////////////////////////////////////////////
 
-void SDBinToString(SBinary myBin, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_z_ LPWSTR* lpszResultString)
+void SDBinToString(SBinary myBin, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_z_ LPWSTR* lpszResultString)
 {
 	if (!lpszResultString) return;
+	*lpszResultString = NULL;
+
 	HRESULT hRes = S_OK;
 	LPBYTE lpSDToParse = myBin.lpb;
 	ULONG ulSDToParse = myBin.cb;
@@ -1541,16 +1568,7 @@ void SIDBinToString(SBinary myBin, _Deref_out_z_ LPWSTR* lpszResultString)
 			hRes = S_OK;
 		}
 
-		DWORD dwStringSid = 0;
-		(void) GetTextualSid(SidStart,NULL,&dwStringSid); // Get a buffer count
-		if (dwStringSid)
-		{
-			lpStringSid = new TCHAR[dwStringSid];
-			if (lpStringSid)
-			{
-				EC_B(GetTextualSid(SidStart,lpStringSid,&dwStringSid));
-			}
-		}
+		EC_B(GetTextualSid(SidStart, &lpStringSid));
 	}
 
 	CString szDomain;
@@ -2460,7 +2478,7 @@ _Check_return_ GlobalObjectIdStruct* BinToGlobalObjectIdStruct(ULONG cbBin, _In_
 	return pgoidGlobalObjectId;
 } // BinToGlobalObjectIdStruct
 
-void DeleteGlobalObjectIdStruct(_In_ GlobalObjectIdStruct* pgoidGlobalObjectId)
+void DeleteGlobalObjectIdStruct(_In_opt_ GlobalObjectIdStruct* pgoidGlobalObjectId)
 {
 	if (!pgoidGlobalObjectId) return;
 	delete[] pgoidGlobalObjectId->lpData;
@@ -2523,10 +2541,10 @@ _Check_return_ LPWSTR GlobalObjectIdStructToString(_In_ GlobalObjectIdStruct* pg
 
 // Fills out lpEID based on the passed in entry ID type
 // lpcbBytesRead returns the number of bytes consumed
-void BinToTypedEntryIdStruct(EIDStructType ulType, ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, _Out_ EntryIdStruct* lpEID, _Out_ size_t* lpcbBytesRead)
+void BinToTypedEntryIdStruct(EIDStructType ulType, ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, _In_ EntryIdStruct* lpEID, _Out_ size_t* lpcbBytesRead)
 {
-	if (!lpBin || !lpEID) return;
 	if (lpcbBytesRead) *lpcbBytesRead = NULL;
+	if (!lpBin || !lpEID) return;
 
 	CBinaryParser Parser(cbBin,lpBin);
 
@@ -3498,13 +3516,13 @@ _Check_return_ LPWSTR PropertyStructToString(_In_ PropertyStruct* ppProperty)
 // RestrictionStruct
 //////////////////////////////////////////////////////////////////////////
 
-RestrictionStruct* BinToRestrictionStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
+_Check_return_ RestrictionStruct* BinToRestrictionStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
 	return BinToRestrictionStructWithSize(cbBin,lpBin,NULL);
 } // BinToRestrictionStruct
 
 // Allocates return value with new. Clean up with DeleteRestrictionStruct.
-RestrictionStruct* BinToRestrictionStructWithSize(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, _Out_opt_ size_t* lpcbBytesRead)
+_Check_return_ RestrictionStruct* BinToRestrictionStructWithSize(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, _Out_opt_ size_t* lpcbBytesRead)
 {
 	if (!lpBin) return NULL;
 	if (lpcbBytesRead) *lpcbBytesRead = NULL;
@@ -4041,7 +4059,7 @@ _Check_return_ LPWSTR RuleConditionStructToString(_In_ RuleConditionStruct* prcR
 //////////////////////////////////////////////////////////////////////////
 
 // Allocates return value with new. Clean up with DeleteEntryListStruct.
-EntryListStruct* BinToEntryListStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
+_Check_return_ EntryListStruct* BinToEntryListStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
 	if (!lpBin) return NULL;
 
@@ -4147,7 +4165,7 @@ _Check_return_ LPWSTR EntryListStructToString(_In_ EntryListStruct* pelEntryList
 //////////////////////////////////////////////////////////////////////////
 
 // Allocates return value with new. Clean up with DeleteSearchFolderDefinitionStruct.
-SearchFolderDefinitionStruct* BinToSearchFolderDefinitionStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
+_Check_return_ SearchFolderDefinitionStruct* BinToSearchFolderDefinitionStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
 	if (!lpBin) return NULL;
 
@@ -5436,6 +5454,7 @@ _Check_return_ LPWSTR RecipientRowStreamStructToString(_In_ RecipientRowStreamSt
 void BinToFolderFieldDefinitionCommon(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, _Out_ size_t* lpcbBytesRead, _Out_ FolderFieldDefinitionCommon* pffdcFolderFieldDefinitionCommon)
 {
 	if (!lpBin || !lpcbBytesRead || !pffdcFolderFieldDefinitionCommon) return;
+	*pffdcFolderFieldDefinitionCommon = FolderFieldDefinitionCommon();
 
 	CBinaryParser Parser(cbBin,lpBin);
 
@@ -6180,7 +6199,7 @@ void DeleteTombstoneStruct(_In_ TombstoneStruct* ptsTombstone)
 	{
 		ULONG i = 0;
 
-		for (i = 0 ; i < ptsTombstone->RecordsCount ; i++)
+		for (i = 0 ; i < ptsTombstone->ActualRecordsCount ; i++)
 		{
 			delete[] ptsTombstone->lpRecords[i].lpGlobalObjectId;
 			delete[] ptsTombstone->lpRecords[i].szUsername;

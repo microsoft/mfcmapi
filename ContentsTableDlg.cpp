@@ -81,7 +81,7 @@ CContentsTableDlg::~CContentsTableDlg()
 
 _Check_return_ bool CContentsTableDlg::HandleMenu(WORD wMenuSelect)
 {
-	DebugPrint(DBGMenu,_T("CContentsTableDlg::HandleMenu wMenuSelect = 0x%X = %d\n"),wMenuSelect,wMenuSelect);
+	DebugPrint(DBGMenu,_T("CContentsTableDlg::HandleMenu wMenuSelect = 0x%X = %u\n"),wMenuSelect,wMenuSelect);
 	switch (wMenuSelect)
 	{
 	case ID_APPLYFINDROW: SetRestrictionType(mfcmapiFINDROW_RESTRICTION); return true;
@@ -92,7 +92,7 @@ _Check_return_ bool CContentsTableDlg::HandleMenu(WORD wMenuSelect)
 	return CBaseDialog::HandleMenu(wMenuSelect);
 } // CContentsTableDlg::HandleMenu
 
-_Check_return_ BOOL CContentsTableDlg::OnInitDialog()
+BOOL CContentsTableDlg::OnInitDialog()
 {
 	HRESULT	hRes = S_OK;
 	BOOL	bRet = CBaseDialog::OnInitDialog();
@@ -851,7 +851,7 @@ _Check_return_ HRESULT CContentsTableDlg::OpenAttachmentsFromMessage(_In_ LPMESS
 	return hRes;
 } // CContentsTableDlg::OpenAttachmentsFromMessage
 
-_Check_return_ HRESULT CContentsTableDlg::OpenRecipientsFromMessage(LPMESSAGE lpMessage)
+_Check_return_ HRESULT CContentsTableDlg::OpenRecipientsFromMessage(_In_ LPMESSAGE lpMessage)
 {
 	HRESULT hRes = S_OK;
 	LPMAPITABLE	lpTable = NULL;

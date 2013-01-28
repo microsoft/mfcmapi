@@ -16,13 +16,13 @@ void DumpContentsTable(
 	_In_ ULONG ulCount,
 	_In_opt_ LPSRestriction lpRes)
 {
-	DebugPrint(DBGGeneric,"DumpContentsTable: Outputting folder %i / %ws from profile %ws to %ws\n", ulFolder, lpszFolder?lpszFolder:L"", lpszProfile, lpszDir);
+	DebugPrint(DBGGeneric,"DumpContentsTable: Outputting folder %u / %ws from profile %ws to %ws\n", ulFolder, lpszFolder?lpszFolder:L"", lpszProfile, lpszDir);
 	if (ulOptions & OPT_DOCONTENTS)  DebugPrint(DBGGeneric,"DumpContentsTable: Outputting Contents\n");
 	if (ulOptions & OPT_DOASSOCIATEDCONTENTS) DebugPrint(DBGGeneric,"DumpContentsTable: Outputting Associated Contents\n");
 	if (ulOptions & OPT_MSG) DebugPrint(DBGGeneric,"DumpContentsTable: Outputting as MSG\n");
 	if (ulOptions & OPT_RETRYSTREAMPROPS) DebugPrint(DBGGeneric,"DumpContentsTable: Will retry stream properties\n");
 	if (ulOptions & OPT_LIST) DebugPrint(DBGGeneric,"DumpContentsTable: List only mode\n");
-	if (ulCount) DebugPrint(DBGGeneric,"DumpContentsTable: Limiting output to %d messages.\n", ulCount);
+	if (ulCount) DebugPrint(DBGGeneric,"DumpContentsTable: Limiting output to %u messages.\n", ulCount);
 	HRESULT hRes = S_OK;
 
 	if (lpFolder)

@@ -55,7 +55,7 @@ BEGIN_MESSAGE_MAP(CRulesDlg, CContentsTableDlg)
 	ON_COMMAND(ID_MODIFYSELECTEDITEM, OnModifySelectedItem)
 END_MESSAGE_MAP()
 
-void CRulesDlg::OnInitMenu(CMenu* pMenu)
+void CRulesDlg::OnInitMenu(_In_opt_ CMenu* pMenu)
 {
 	if (pMenu)
 	{

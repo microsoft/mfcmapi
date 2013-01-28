@@ -9,16 +9,16 @@ public:
 
 private:
 	// IUnknown
-	_Check_return_ STDMETHODIMP QueryInterface(REFIID riid, _Deref_out_opt_ LPVOID * ppvObj);
+	STDMETHODIMP QueryInterface(REFIID riid, LPVOID * ppvObj);
 	STDMETHODIMP_(ULONG) AddRef();
 	STDMETHODIMP_(ULONG) Release();
 
 	// IMAPIProgress
 	_Check_return_ STDMETHODIMP Progress(ULONG ulValue, ULONG ulCount, ULONG ulTotal);
-	_Check_return_ STDMETHODIMP GetFlags(_Inout_ ULONG* lpulFlags);
-	_Check_return_ STDMETHODIMP GetMax(_Inout_ ULONG* lpulMax);
-	_Check_return_ STDMETHODIMP GetMin(_Inout_ ULONG* lpulMin);
-	_Check_return_ STDMETHODIMP SetLimits(_Inout_ ULONG* lpulMin, _Inout_ ULONG* lpulMax, _Inout_ ULONG* lpulFlags);
+	STDMETHODIMP GetFlags(ULONG* lpulFlags);
+	STDMETHODIMP GetMax(ULONG* lpulMax);
+	STDMETHODIMP GetMin(ULONG* lpulMin);
+	STDMETHODIMP SetLimits(ULONG* lpulMin, ULONG* lpulMax, ULONG* lpulFlags);
 
 	void OutputState(_In_z_ LPCTSTR lpszFunction);
 

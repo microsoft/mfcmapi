@@ -10,14 +10,14 @@ public:
 	CRestrictEditor(
 		_In_ CWnd* pParentWnd,
 		_In_opt_ LPVOID lpAllocParent,
-		_In_ LPSRestriction lpRes);
+		_In_opt_ LPSRestriction lpRes);
 	virtual ~CRestrictEditor();
 
 	_Check_return_ LPSRestriction DetachModifiedSRestriction();
 
 private:
 	void  OnEditAction1();
-	_Check_return_ BOOL  OnInitDialog();
+	BOOL  OnInitDialog();
 	_Check_return_ ULONG HandleChange(UINT nID);
 	void  OnOK();
 
@@ -51,7 +51,7 @@ private:
 	// Use this function to implement list editing
 	_Check_return_ bool  DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData);
 	void  OnEditAction1();
-	_Check_return_ BOOL  OnInitDialog();
+	BOOL  OnInitDialog();
 	_Check_return_ ULONG HandleChange(UINT nID);
 	void  InitListFromEntryList(ULONG ulListNum, _In_ LPENTRYLIST lpEntryList);
 	void  OnOK();

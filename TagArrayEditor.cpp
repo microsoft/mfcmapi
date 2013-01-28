@@ -40,7 +40,7 @@ CTagArrayEditor::~CTagArrayEditor()
 } // CTagArrayEditor::~CTagArrayEditor
 
 // Used to call functions which need to be called AFTER controls are created
-_Check_return_ BOOL CTagArrayEditor::OnInitDialog()
+BOOL CTagArrayEditor::OnInitDialog()
 {
 	BOOL bRet = CEditor::OnInitDialog();
 
@@ -145,7 +145,7 @@ void CTagArrayEditor::ReadTagArrayToList(ULONG ulListNum)
 		{
 			ULONG ulPropTag = m_lpTagArray->aulPropTag[iTagCount];
 			SortListData* lpData = NULL;
-			szTmp.Format(_T("%d"),iTagCount); // STRING_OK
+			szTmp.Format(_T("%u"),iTagCount); // STRING_OK
 			lpData = InsertListRow(ulListNum,iTagCount,szTmp);
 			if (lpData)
 			{

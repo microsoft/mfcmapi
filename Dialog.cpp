@@ -98,7 +98,7 @@ bool DepressSystemButton(HWND hWnd, int iHitTest)
 #define WM_NCUAHDRAWCAPTION     0x00AE
 #define WM_NCUAHDRAWFRAME       0x00AF
 
-_Check_return_ LRESULT CMyDialog::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CMyDialog::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	LRESULT lRes = 0;
 	if (HandleControlUI(message, wParam, lParam, &lRes)) return lRes;
@@ -194,7 +194,7 @@ void CMyDialog::DisplayParentedDialog(CParentWnd* lpNonModalParent, UINT iAutoCe
 
 // MFC will call this function to check if it ought to center the dialog
 // We'll tell it no, but also place the dialog where we want it.
-_Check_return_ BOOL CMyDialog::CheckAutoCenter()
+BOOL CMyDialog::CheckAutoCenter()
 {
 	// Make the editor wider - OnSize will fix the height for us
 	if (m_iAutoCenterWidth)

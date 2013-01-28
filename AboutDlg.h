@@ -14,8 +14,8 @@ public:
 
 private:
 	void    OnOK();
-	_Check_return_ LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
-	_Check_return_ BOOL    OnInitDialog();
+	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	BOOL    OnInitDialog();
 
 	CRichEditCtrl	m_HelpText;
 	CButton			m_DisplayAboutCheck;

@@ -121,8 +121,9 @@ void CPublicFolderTableDlg::OnDisplayItem()
 	}*/
 } // CPublicFolderTableDlg::OnDisplayItem
 
-_Check_return_ HRESULT CPublicFolderTableDlg::OpenItemProp(int /*iSelectedItem*/, __mfcmapiModifyEnum /*bModify*/, _Deref_out_opt_ LPMAPIPROP* /*lppMAPIProp*/)
+_Check_return_ HRESULT CPublicFolderTableDlg::OpenItemProp(int /*iSelectedItem*/, __mfcmapiModifyEnum /*bModify*/, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
 {
+	if (lppMAPIProp) *lppMAPIProp = NULL;
 	HRESULT			hRes = S_OK;
 /*	LPSBinary		lpProviderUID = NULL;
 	SortListData*	lpListData = NULL;

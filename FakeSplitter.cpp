@@ -90,7 +90,7 @@ BEGIN_MESSAGE_MAP(CFakeSplitter, CWnd)
 	ON_WM_PAINT()
 END_MESSAGE_MAP()
 
-_Check_return_ LRESULT CFakeSplitter::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CFakeSplitter::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
 	{

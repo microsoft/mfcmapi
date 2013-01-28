@@ -426,7 +426,7 @@ void OutputBody(_In_ FILE* fMessageProps, _In_ LPMESSAGE lpMessage, ULONG ulBody
 					OutputToFilef(fMessageProps,_T(" ulStreamFlags = \"0x%08X\" szStreamFlags= \"%s\""),ulStreamFlags,szFlags);
 					delete[] szFlags;
 					szFlags = NULL;
-					OutputToFilef(fMessageProps,_T(" CodePageIn = \"%d\" CodePageOut = \"%d\""),ulCPID,CP_ACP);
+					OutputToFilef(fMessageProps,_T(" CodePageIn = \"%u\" CodePageOut = \"%d\""),ulCPID,CP_ACP);
 				}
 				else
 				{
@@ -518,7 +518,7 @@ void OutputMessageXML(
 
 		// build a string for appending
 		WCHAR	szNewExt[MAX_PATH];
-		WC_H(StringCchPrintfW(szNewExt,_countof(szNewExt),L"-Attach%d.xml",((LPMESSAGEDATA) lpParentMessageData)->ulCurAttNum)); // STRING_OK
+		WC_H(StringCchPrintfW(szNewExt,_countof(szNewExt),L"-Attach%u.xml",((LPMESSAGEDATA) lpParentMessageData)->ulCurAttNum)); // STRING_OK
 
 		// append our string
 		WC_H(StringCchCatW(lpMsgData->szFilePath,_countof(lpMsgData->szFilePath),szNewExt));
@@ -684,8 +684,9 @@ void OutputMessageMSG(
 		NULL));
 } // OutputMessageMSG
 
-bool CDumpStore::BeginMessageWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpParentMessageData, _Deref_out_ LPVOID* lpData)
+bool CDumpStore::BeginMessageWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpParentMessageData, _Deref_out_opt_ LPVOID* lpData)
 {
+	if (lpData) *lpData = NULL;
 	if (m_bOutputList) return false;
 
 	if (m_bOutputMSG)

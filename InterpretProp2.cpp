@@ -152,6 +152,8 @@ int _cdecl CompareTagsSortOrder(_In_ const void* a1, _In_ const void* a2)
 #pragma warning(disable:6385)
 _Check_return_ HRESULT PropTagToPropName(ULONG ulPropTag, bool bIsAB, _Deref_opt_out_opt_z_ LPTSTR* lpszExactMatch, _Deref_opt_out_opt_z_ LPTSTR* lpszPartialMatches)
 {
+	if (lpszExactMatch) *lpszExactMatch = NULL;
+	if (lpszPartialMatches) *lpszPartialMatches = NULL;
 	if (!lpszExactMatch && !lpszPartialMatches) return MAPI_E_INVALID_PARAMETER;
 
 	HRESULT hRes = S_OK;

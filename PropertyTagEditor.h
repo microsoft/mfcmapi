@@ -13,7 +13,7 @@ public:
 		UINT uidPrompt,
 		ULONG ulPropTag,
 		bool bIncludeABProps,
-		_In_ LPMAPIPROP lpMAPIProp,
+		_In_opt_ LPMAPIPROP lpMAPIProp,
 		_In_ CWnd* pParentWnd);
 	virtual ~CPropertyTagEditor();
 
@@ -23,7 +23,7 @@ private:
 	_Check_return_ ULONG HandleChange(UINT nID);
 	void  OnEditAction1();
 	void  OnEditAction2();
-	_Check_return_ BOOL  OnInitDialog();
+	BOOL  OnInitDialog();
 	void  PopulateFields(ULONG ulSkipField);
 	_Check_return_ ULONG GetSelectedPropType();
 	void  LookupNamedProp(ULONG ulSkipField, bool bCreate);
@@ -45,7 +45,7 @@ public:
 	_Check_return_ ULONG GetPropertyTag();
 
 private:
-	_Check_return_ BOOL OnInitDialog();
+	BOOL OnInitDialog();
 	_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData);
 	void OnOK();
 

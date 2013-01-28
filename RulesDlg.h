@@ -24,7 +24,7 @@ private:
 		_In_ LPMAPIPROP lpMAPIProp,
 		_In_ LPMAPICONTAINER lpContainer);
 	void OnDeleteSelectedItem();
-	void OnInitMenu(CMenu* pMenu);
+	void OnInitMenu(_In_opt_ CMenu* pMenu);
 	void OnRefreshView();
 
 	// Menu items

@@ -444,7 +444,7 @@ _Check_return_ ULONG CResSubResEditor::HandleChange(UINT nID)
 	return i;
 } // CResSubResEditor::HandleChange
 
-LPSRestriction CResSubResEditor::DetachModifiedSRestriction()
+_Check_return_ LPSRestriction CResSubResEditor::DetachModifiedSRestriction()
 {
 	LPSRestriction m_lpRet = m_lpNewRes;
 	m_lpNewRes = NULL;
@@ -485,7 +485,7 @@ public:
 
 private:
 	_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData);
-	_Check_return_ BOOL OnInitDialog();
+	BOOL OnInitDialog();
 	void InitListFromRestriction(ULONG ulListNum, _In_ LPSRestriction lpRes);
 	void OnOK();
 
@@ -511,7 +511,7 @@ CEditor(pParentWnd,IDS_RESED,IDS_RESEDANDORPROMPT,1,CEDITOR_BUTTON_OK|CEDITOR_BU
 } // CResAndOrEditor::CResAndOrEditor
 
 // Used to call functions which need to be called AFTER controls are created
-_Check_return_ BOOL CResAndOrEditor::OnInitDialog()
+BOOL CResAndOrEditor::OnInitDialog()
 {
 	BOOL bRet = CEditor::OnInitDialog();
 
@@ -553,7 +553,7 @@ void CResAndOrEditor::InitListFromRestriction(ULONG ulListNum, _In_ LPSRestricti
 
 		for (i = 0;i< lpRes->res.resAnd.cRes;i++)
 		{
-			szTmp.Format(_T("%d"),i); // STRING_OK
+			szTmp.Format(_T("%u"),i); // STRING_OK
 			lpData = InsertListRow(ulListNum,i,szTmp);
 			if (lpData)
 			{
@@ -569,7 +569,7 @@ void CResAndOrEditor::InitListFromRestriction(ULONG ulListNum, _In_ LPSRestricti
 
 		for (i = 0;i< lpRes->res.resOr.cRes;i++)
 		{
-			szTmp.Format(_T("%d"),i); // STRING_OK
+			szTmp.Format(_T("%u"),i); // STRING_OK
 			lpData = InsertListRow(ulListNum,i,szTmp);
 			if (lpData)
 			{
@@ -673,7 +673,7 @@ public:
 private:
 	void           OnEditAction1();
 	_Check_return_ bool           DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData);
-	_Check_return_ BOOL           OnInitDialog();
+	BOOL           OnInitDialog();
 	void           InitListFromPropArray(ULONG ulListNum, ULONG cProps, _In_count_(cProps) LPSPropValue lpProps);
 	_Check_return_ LPSRestriction GetSourceRes();
 	void           OnOK();
@@ -704,7 +704,7 @@ CEditor(pParentWnd,IDS_COMMENTRESED,IDS_RESEDCOMMENTPROMPT,2,CEDITOR_BUTTON_OK|C
 } // CResCommentEditor::CResCommentEditor
 
 // Used to call functions which need to be called AFTER controls are created
-_Check_return_ BOOL CResCommentEditor::OnInitDialog()
+BOOL CResCommentEditor::OnInitDialog()
 {
 	BOOL bRet = CEditor::OnInitDialog();
 
@@ -758,7 +758,7 @@ void CResCommentEditor::InitListFromPropArray(ULONG ulListNum, ULONG cProps, _In
 
 	for (i = 0;i< cProps;i++)
 	{
-		szTmp.Format(_T("%d"),i); // STRING_OK
+		szTmp.Format(_T("%u"),i); // STRING_OK
 		lpData = InsertListRow(ulListNum,i,szTmp);
 		if (lpData)
 		{
@@ -911,7 +911,7 @@ static TCHAR* CLASS = _T("CRestrictEditor"); // STRING_OK
 CRestrictEditor::CRestrictEditor(
 								 _In_ CWnd* pParentWnd,
 								 _In_opt_ LPVOID lpAllocParent,
-								 _In_ LPSRestriction lpRes):
+								 _In_opt_ LPSRestriction lpRes):
 CEditor(pParentWnd,IDS_RESED,IDS_RESEDPROMPT,3,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_ACTION1|CEDITOR_BUTTON_CANCEL,IDS_ACTIONEDITRES, NULL)
 {
 	TRACE_CONSTRUCTOR(CLASS);
@@ -966,7 +966,7 @@ CRestrictEditor::~CRestrictEditor()
 } // CRestrictEditor::~CRestrictEditor
 
 // Used to call functions which need to be called AFTER controls are created
-_Check_return_ BOOL CRestrictEditor::OnInitDialog()
+BOOL CRestrictEditor::OnInitDialog()
 {
 	BOOL bRet = CEditor::OnInitDialog();
 
@@ -1321,7 +1321,7 @@ CCriteriaEditor::~CCriteriaEditor()
 } // CCriteriaEditor::~CCriteriaEditor
 
 // Used to call functions which need to be called AFTER controls are created
-_Check_return_ BOOL CCriteriaEditor::OnInitDialog()
+BOOL CCriteriaEditor::OnInitDialog()
 {
 	BOOL bRet = CEditor::OnInitDialog();
 
@@ -1392,7 +1392,7 @@ void CCriteriaEditor::InitListFromEntryList(ULONG ulListNum, _In_ LPENTRYLIST lp
 	{
 		for (i = 0;i< lpEntryList->cValues;i++)
 		{
-			szTmp.Format(_T("%d"),i); // STRING_OK
+			szTmp.Format(_T("%u"),i); // STRING_OK
 			lpData = InsertListRow(ulListNum,i,szTmp);
 			if (lpData)
 			{
@@ -1403,7 +1403,7 @@ void CCriteriaEditor::InitListFromEntryList(ULONG ulListNum, _In_ LPENTRYLIST lp
 				lpData->data.Binary.NewBin.lpb = NULL;
 			}
 
-			szTmp.Format(_T("%d"),lpEntryList->lpbin[i].cb); // STRING_OK
+			szTmp.Format(_T("%u"),lpEntryList->lpbin[i].cb); // STRING_OK
 			SetListString(ulListNum,i,1,szTmp);
 			SetListString(ulListNum,i,2,BinToHexString(&lpEntryList->lpbin[i],false));
 			SetListString(ulListNum,i,3,BinToTextString(&lpEntryList->lpbin[i],true));
@@ -1487,7 +1487,7 @@ _Check_return_ bool CCriteriaEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 					lpData->data.Binary.NewBin.lpb,
 					&lpData->data.Binary.NewBin.cb));
 
-				szTmp.Format(_T("%d"),lpData->data.Binary.NewBin.cb); // STRING_OK
+				szTmp.Format(_T("%u"),lpData->data.Binary.NewBin.cb); // STRING_OK
 				SetListString(ulListNum,iItem,1,szTmp);
 				SetListString(ulListNum,iItem,2,BinToHexString(&lpData->data.Binary.NewBin,false));
 				SetListString(ulListNum,iItem,3,BinToTextString(&lpData->data.Binary.NewBin,true));

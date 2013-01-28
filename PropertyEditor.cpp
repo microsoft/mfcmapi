@@ -144,7 +144,7 @@ CPropertyEditor::~CPropertyEditor()
 	if (m_lpMAPIProp) m_lpMAPIProp->Release();
 } // CPropertyEditor::~CPropertyEditor
 
-_Check_return_ BOOL CPropertyEditor::OnInitDialog()
+BOOL CPropertyEditor::OnInitDialog()
 {
 	BOOL bRet = CEditor::OnInitDialog();
 	return bRet;
@@ -387,7 +387,7 @@ void CPropertyEditor::InitPropertyControls()
 		InitMultiLine(2,IDS_SMARTVIEW,NULL,true);
 		if (m_lpsInputValue)
 		{
-			SetStringf(0,_T("%u"),m_lpsInputValue->Value.l); // STRING_OK
+			SetStringf(0,_T("%d"),m_lpsInputValue->Value.l); // STRING_OK
 			SetHex(1,m_lpsInputValue->Value.l);
 			if (szSmartView) SetStringW(2,szSmartView);
 		}
@@ -788,7 +788,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 			else if (1 == i)
 			{
 				lVal = (LONG) _tcstoul(szTmpString,NULL,16);
-				SetStringf(0,_T("%u"),lVal); // STRING_OK
+				SetStringf(0,_T("%d"),lVal); // STRING_OK
 			}
 
 			LPWSTR szSmartView = NULL;
@@ -1048,7 +1048,7 @@ CMultiValuePropertyEditor::~CMultiValuePropertyEditor()
 	if (m_lpMAPIProp) m_lpMAPIProp->Release();
 } // CMultiValuePropertyEditor::~CMultiValuePropertyEditor
 
-_Check_return_ BOOL CMultiValuePropertyEditor::OnInitDialog()
+BOOL CMultiValuePropertyEditor::OnInitDialog()
 {
 	BOOL bRet = CEditor::OnInitDialog();
 
@@ -1114,7 +1114,7 @@ void CMultiValuePropertyEditor::ReadMultiValueStringsFromProperty(ULONG ulListNu
 	ULONG cValues = m_lpsInputValue->Value.MVi.cValues;
 	for (iMVCount = 0; iMVCount < cValues; iMVCount++)
 	{
-		szTmp.Format(_T("%d"),iMVCount); // STRING_OK
+		szTmp.Format(_T("%u"),iMVCount); // STRING_OK
 		SortListData* lpData = InsertListRow(ulListNum,iMVCount,szTmp);
 
 		if (lpData)

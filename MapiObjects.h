@@ -52,7 +52,7 @@ public:
 	void SetMessagesToCopy(_In_ LPENTRYLIST lpMessagesToCopy, _In_ LPMAPIFOLDER lpSourceParent);
 	void SetFolderToCopy(_In_ LPMAPIFOLDER lpFolderToCopy, _In_ LPMAPIFOLDER lpSourceParent);
 	void SetPropertyToCopy(ULONG ulPropTag, _In_ LPMAPIPROP lpSourcePropObject);
-	void SetAttachmentsToCopy(_In_ LPMESSAGE lpMessage, ULONG ulNumSelected, _Out_ ULONG* lpAttNumList);
+	void SetAttachmentsToCopy(_In_ LPMESSAGE lpMessage, ULONG ulNumSelected, _In_ ULONG* lpAttNumList);
 	void SetProfileToCopy(_In_ LPSTR szProfileName);
 
 	_Check_return_ ULONG GetBufferStatus();

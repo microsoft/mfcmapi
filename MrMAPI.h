@@ -21,6 +21,8 @@ enum CmdMode
 	cmdmodeStoreProperties,
 	cmdmodeFlagSearch,
 	cmdmodeFolderProps,
+	cmdmodeFolderSize,
+	cmdmodePST,
 };
 
 #define OPT_DOPARTIALSEARCH      0x00001
@@ -41,6 +43,9 @@ enum CmdMode
 #define OPT_NEEDMAPILOGON        0x08000
 #define OPT_INITMFC              0x10000
 #define OPT_NEEDFOLDER           0x20000
+#define OPT_NEEDINPUTFILE        0x40000
+#define OPT_NEEDOUTPUTFILE       0x80000
+
 
 struct MYOPTIONS
 {
@@ -57,9 +62,9 @@ struct MYOPTIONS
 	LPWSTR lpszFolderPath;
 	LPWSTR lpszFid;
 	LPWSTR lpszMid;
-	LPWSTR lpszStore;
 	LPWSTR lpszFlagName;
 	LPWSTR lpszVersion;
+	ULONG ulStore;
 	ULONG ulFolder;
 	ULONG ulMAPIMIMEFlags;
 	ULONG ulConvertFlags;

@@ -3,6 +3,7 @@
 
 void DoChildFolders(_In_ MYOPTIONS ProgOpts);
 void DoFolderProps(_In_ MYOPTIONS ProgOpts);
+void DoFolderSize(_In_ MYOPTIONS ProgOpts);
 
 HRESULT HrMAPIOpenFolderExW(
 	_In_ LPMDB lpMdb,                        // Open message store

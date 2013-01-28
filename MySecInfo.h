@@ -17,30 +17,30 @@ public:
 		ULONG ulPropTag);
 	virtual ~CMySecInfo();
 
-	_Check_return_ STDMETHODIMP QueryInterface (REFIID riid,
+	STDMETHODIMP QueryInterface(_In_ REFIID riid,
 		_Deref_out_opt_ LPVOID* ppvObj);
 	STDMETHODIMP_(ULONG) AddRef();
 	STDMETHODIMP_(ULONG) Release();
 
-	_Check_return_ STDMETHOD(GetObjectInformation) (_In_ PSI_OBJECT_INFO pObjectInfo);
-	_Check_return_ STDMETHOD(GetSecurity) (SECURITY_INFORMATION RequestedInformation,
-		_Deref_out_opt_ PSECURITY_DESCRIPTOR* ppSecurityDescriptor,
+	STDMETHOD(GetObjectInformation) (PSI_OBJECT_INFO pObjectInfo);
+	STDMETHOD(GetSecurity) (SECURITY_INFORMATION RequestedInformation,
+		PSECURITY_DESCRIPTOR* ppSecurityDescriptor,
 		BOOL fDefault);
-	_Check_return_ STDMETHOD(SetSecurity) (SECURITY_INFORMATION SecurityInformation,
-		_Out_ PSECURITY_DESCRIPTOR pSecurityDescriptor );
-	_Check_return_ STDMETHOD(GetAccessRights) (_In_ const GUID* pguidObjectType,
+	STDMETHOD(SetSecurity) (SECURITY_INFORMATION SecurityInformation,
+		PSECURITY_DESCRIPTOR pSecurityDescriptor );
+	STDMETHOD(GetAccessRights) (const GUID* pguidObjectType,
 		DWORD dwFlags,
-		_Out_ PSI_ACCESS* ppAccess,
-		_Out_ ULONG* pcAccesses,
-		_Out_ ULONG* piDefaultAccess );
-	_Check_return_ STDMETHOD(MapGeneric) (_In_ const GUID* pguidObjectType,
-		_In_ UCHAR* pAceFlags,
-		_Out_ ACCESS_MASK *pMask);
-	_Check_return_ STDMETHOD(GetInheritTypes) (_Out_ PSI_INHERIT_TYPE* ppInheritTypes,
-		_Out_ ULONG* pcInheritTypes);
-	_Check_return_ STDMETHOD(PropertySheetPageCallback)(_In_ HWND hwnd, UINT uMsg, SI_PAGE_TYPE uPage );
-	_Check_return_ STDMETHOD_(BOOL,IsDaclCanonical) (_In_ PACL pDacl);
-	_Check_return_ STDMETHOD(LookupSids) (ULONG cSids, _In_count_(cSids) PSID* rgpSids, _Deref_out_ LPDATAOBJECT* ppdo);
+		PSI_ACCESS* ppAccess,
+		ULONG* pcAccesses,
+		ULONG* piDefaultAccess );
+	STDMETHOD(MapGeneric) (const GUID* pguidObjectType,
+		UCHAR* pAceFlags,
+		ACCESS_MASK *pMask);
+	STDMETHOD(GetInheritTypes) (PSI_INHERIT_TYPE* ppInheritTypes,
+		ULONG* pcInheritTypes);
+	STDMETHOD(PropertySheetPageCallback)(HWND hwnd, UINT uMsg, SI_PAGE_TYPE uPage );
+	STDMETHOD_(BOOL,IsDaclCanonical) (PACL pDacl);
+	STDMETHOD(LookupSids) (ULONG cSids, PSID* rgpSids, LPDATAOBJECT* ppdo);
 
 private:
 	LONG		m_cRef;
@@ -53,9 +53,8 @@ private:
 };
 
 _Check_return_ bool GetTextualSid(
-				   _In_ PSID pSid, // binary SID
-				   _Out_opt_z_cap_(*lpdwBufferLen) LPTSTR TextualSid, // buffer for Textual representation of SID
-				   _Inout_ LPDWORD lpdwBufferLen // required/provided TextualSid buffersize
+				   _In_ PSID pSid,            // binary SID
+				   _Deref_opt_out_opt_z_ LPTSTR* lpTextualSid    // buffer for Textual representation of SID
 				   );
 
 _Check_return_ HRESULT SDToString(_In_count_(cbBuf) LPBYTE lpBuf, ULONG cbBuf, eAceType acetype, _In_ CString *SDString, _In_ CString *sdInfo);
