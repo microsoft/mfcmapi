@@ -592,6 +592,45 @@ _Check_return_ HRESULT OpenOtherUsersMailbox(
 } // OpenOtherUsersMailbox
 
 #ifndef MRMAPI
+_Check_return_ HRESULT OpenMailboxWithPrompt(
+	_In_ LPMAPISESSION lpMAPISession,
+	_In_ LPMDB lpMDB,
+	_In_opt_z_ LPCTSTR szServerName,
+	_In_opt_z_ LPCTSTR szMailboxDN,
+	ULONG ulFlags, // desired flags for CreateStoreEntryID
+	_Deref_out_opt_ LPMDB* lppOtherUserMDB)
+{
+	HRESULT hRes = S_OK;
+	*lppOtherUserMDB = NULL;
+
+	if (!lpMAPISession) return MAPI_E_INVALID_PARAMETER;
+
+	CEditor MyPrompt(
+		NULL,
+		IDS_OPENOTHERUSER,
+		IDS_OPENWITHFLAGSPROMPT,
+		3,
+		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+	MyPrompt.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS),true));
+	MyPrompt.InitSingleLineSz(0,IDS_SERVERNAME,szServerName,false);
+	MyPrompt.InitSingleLineSz(1,IDS_USERDN,szMailboxDN,false);
+	MyPrompt.InitSingleLine(2,IDS_CREATESTORENTRYIDFLAGS,ulFlags,false);
+	MyPrompt.SetHex(2,OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP);
+	WC_H(MyPrompt.DisplayDialog());
+	if (S_OK == hRes)
+	{
+		WC_H(OpenOtherUsersMailbox(
+			lpMAPISession,
+			lpMDB,
+			MyPrompt.GetString(0),
+			MyPrompt.GetString(1),
+			MyPrompt.GetHex(2),
+			lppOtherUserMDB));
+	}
+
+	return hRes;
+} // OpenMailboxWithPrompt
+
 // Display a UI to select a mailbox, then call OpenOtherUsersMailbox with the mailboxDN
 // May return MAPI_E_CANCEL
 _Check_return_ HRESULT OpenOtherUsersMailboxFromGal(
@@ -607,10 +646,13 @@ _Check_return_ HRESULT OpenOtherUsersMailboxFromGal(
 	LPSPropValue	lpEntryID		= NULL;
 	LPMAILUSER		lpMailUser		= NULL;
 	LPMDB			lpPrivateMDB	= NULL;
+	LPTSTR szServerName = NULL;
 
 	*lppOtherUserMDB = NULL;
 
 	if (!lpMAPISession || !lpAddrBook) return MAPI_E_INVALID_PARAMETER;
+
+	EC_H(GetServerName(lpMAPISession, &szServerName));
 
 	// CString doesn't provide a way to extract just ANSI strings, so we do this manually
 	CHAR szTitle[256];
@@ -666,32 +708,20 @@ _Check_return_ HRESULT OpenOtherUsersMailboxFromGal(
 
 					if (CheckStringProp(lpEmailAddress,PT_TSTRING))
 					{
-						CEditor MyPrompt(
-							NULL,
-							IDS_OPENOTHERUSER,
-							IDS_OPENWITHFLAGSPROMPT,
-							1,
-							CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-						MyPrompt.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS),true));
-						MyPrompt.InitSingleLine(0,IDS_CREATESTORENTRYIDFLAGS,NULL,false);
-						MyPrompt.SetHex(0,OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP);
-						WC_H(MyPrompt.DisplayDialog());
-						if (S_OK == hRes)
-						{
-							WC_H(OpenOtherUsersMailbox(
-								lpMAPISession,
-								lpPrivateMDB,
-								NULL,
-								lpEmailAddress->Value.LPSZ,
-								MyPrompt.GetHex(0),
-								lppOtherUserMDB));
-						}
+						WC_H(OpenMailboxWithPrompt(
+							lpMAPISession,
+							lpPrivateMDB,
+							szServerName,
+							lpEmailAddress->Value.LPSZ,
+							OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP,
+							lppOtherUserMDB));
 					}
 				}
 			}
 		}
 	}
 
+	MAPIFreeBuffer(szServerName);
 	MAPIFreeBuffer(lpEmailAddress);
 	if (lpAdrList) FreePadrlist(lpAdrList);
 	if (lpMailUser) lpMailUser->Release();

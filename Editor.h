@@ -139,6 +139,7 @@ public:
 	void SetBinary(ULONG i, _In_opt_count_(cb) LPBYTE lpb, size_t cb);
 	void SetHex(ULONG i, ULONG ulVal);
 	void SetDecimal(ULONG i, ULONG ulVal);
+	void SetSize(ULONG i, size_t cb);
 
 	// Get values after we've done the DisplayDialog
 	LPSTR  GetStringA(ULONG i);
@@ -166,7 +167,6 @@ protected:
 	void InitList(ULONG i, UINT uidLabel, bool bAllowSort, bool bReadOnly);
 	void InitEditFromBinaryStream(ULONG iControl, _In_ LPSTREAM lpStreamIn);
 	void InsertColumn(ULONG ulListNum, int nCol, UINT uidText);
-	void SetSize(ULONG i, size_t cb);
 	void SetDropDownSelection(ULONG i, _In_opt_z_ LPCTSTR szText);
 	void SetListStringA(ULONG iControl, ULONG iListRow, ULONG iListCol, _In_opt_z_ LPCSTR szListString);
 	void SetListStringW(ULONG iControl, ULONG iListRow, ULONG iListCol, _In_opt_z_ LPCWSTR szListString);

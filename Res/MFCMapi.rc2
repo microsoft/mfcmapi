@@ -475,13 +475,6 @@ The Entry ID will be passed OpenMsgStore\r\n\
 \r\n\
 Enter Entry ID as a binary string"
 IDS_OPENPUBSTORE                 "Open Public Message Store"
-IDS_OPENMBDN                     "Open Mailbox With DN"
-IDS_OPENMBDNPROMPT               "Input server name, user DN and desired flags\r\n\
-Examples:\r\n\
-OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP = 0x9\r\n\
-OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP | OPENSTORE_PUBLIC = 0xB\r\n\
-OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP | OPENSTORE_RESTORE_DATABASE | \r\n\
-   OPENSTORE_OVERRIDE_HOME_MDB  | OPENSTORE_HOME_LOGON = 0x10001D\r\n"
 IDS_DUMPSERVERPRIVATESTORE       "Dump Server Private Store Contents"
 IDS_SERVERNAMEPROMPT             "Type name of server"
 IDS_PROFFORMAPILOGON             "Profile For MAPILogonEx"
@@ -747,6 +740,7 @@ IDS_STLONGRTIME                  "RTime"
 IDS_STPTI8                       "I8"
 IDS_STSFIDMID                    "Fid/Mid"
 IDS_QUOTA                        "Quota"
+IDS_NICKNAME                     "Nickname Cache"
 
 // AbDlg.cpp
 IDS_FLAGS "Flags"
@@ -840,7 +834,7 @@ IDS_SERVICE "Service:"
 IDS_CREATESTORENTRYIDFLAGS "CreateStoreEntryID flags"
 // MailboxTableDlg.cpp
 IDS_OPENWITHFLAGS "Open with flags"
-IDS_OPENWITHFLAGSPROMPT "Entry flags for CreateStoreEntryID\r\n\
+IDS_OPENWITHFLAGSPROMPT "Flags for CreateStoreEntryID\r\n\
 Examples:\r\n\
 OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP = 0x9\r\n\
 OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP | OPENSTORE_PUBLIC = 0xB\r\n\
@@ -1909,10 +1903,13 @@ IDS_ENTRYIDEXCHANGEADDRESSDATA "\r\nVersion = 0x%1!08X! = %2\r\n\
 Type = 0x%3!08X! = %4!ws!\r\n\
 X500DN = %5!hs!"
 
-IDS_ENTRYIDCONTACTADDRESSDATA "\r\nVersion = 0x%1!08X! = %2\r\n\
-Type = 0x%3!08X! = %4\r\n\
-Index = 0x%5!08X! = %6\r\n\
-EntryIDCount = 0x%7!08X!\r\n"
+IDS_ENTRYIDCONTACTADDRESSDATAHEAD "\r\nVersion = 0x%1!08X! = %2\r\n\
+Type = 0x%3!08X! = %4\r\n"
+
+IDS_ENTRYIDCONTACTADDRESSDATAUSER "Index = 0x%1!08X! = %2\r\n\
+EntryIDCount = 0x%3!08X!\r\n"
+
+IDS_ENTRYIDCONTACTADDRESSDATACONTAINER "muidID = %1\r\n"
 
 IDS_ENTRYIDMAPIMESSAGESTOREDATA "\r\nVersion = 0x%1!02X! = %2\r\n\
 Flag = 0x%3!02X! = %4\r\n\
