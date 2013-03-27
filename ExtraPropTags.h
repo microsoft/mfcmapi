@@ -635,6 +635,7 @@ const ULONG rdfSat = 0x40;
 #define CONTAB_VERSION    0x000000003
 
 // Contact Addess Book Types
+#define CONTAB_CONTAINER  0x00000003
 #define CONTAB_USER       0x00000004
 #define CONTAB_DISTLIST   0x00000005
 

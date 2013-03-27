@@ -1088,7 +1088,7 @@ void DrawExpandTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ HTREEITEM hItem, bool
 		rcPlusMinus.top++;
 		rcPlusMinus.bottom--;
 		rcPlusMinus.left = rect.left - 14;
-		rcPlusMinus.right = rcPlusMinus.left + 9;
+		rcPlusMinus.right = rcPlusMinus.left + 10;
 		::FillRect(hdc, &rcPlusMinus, GetSysBrush(bHover?cGlowBackground:cBackground));
 
 		POINT tri[3] = {0};

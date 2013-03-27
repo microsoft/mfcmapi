@@ -71,6 +71,13 @@ _Check_return_ HRESULT OpenOtherUsersMailbox(
 							  _In_z_ LPCTSTR szMailboxDN,
 							  ULONG ulFlags, // desired flags for CreateStoreEntryID
 							  _Deref_out_opt_ LPMDB* lppOtherUserMDB);
+_Check_return_ HRESULT OpenMailboxWithPrompt(
+	_In_ LPMAPISESSION lpMAPISession,
+	_In_ LPMDB lpMDB,
+	_In_opt_z_ LPCTSTR szServerName,
+	_In_opt_z_ LPCTSTR szMailboxDN,
+	ULONG ulFlags, // desired flags for CreateStoreEntryID
+	_Deref_out_opt_ LPMDB* lppOtherUserMDB);
 _Check_return_ HRESULT OpenOtherUsersMailboxFromGal(
 									 _In_ LPMAPISESSION lpMAPISession,
 									 _In_ LPADRBOOK lpAddrBook,

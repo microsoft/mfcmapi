@@ -2581,33 +2581,34 @@ void BinToTypedEntryIdStruct(EIDStructType ulType, ULONG cbBin, _In_count_(cbBin
 		{
 			Parser.GetDWORD(&lpEID->ProviderData.ContactAddressBookObject.Version);
 			Parser.GetDWORD(&lpEID->ProviderData.ContactAddressBookObject.Type);
-			Parser.GetDWORD(&lpEID->ProviderData.ContactAddressBookObject.Index);
-			Parser.GetDWORD(&lpEID->ProviderData.ContactAddressBookObject.EntryIDCount);
 
-			// We don't use BinToEntryIdStruct here because we know which type we need to read
-			// So we read the header of the entry ID manually, then recurse on BinToTypedEntryIdStruct to fill it out
-			lpEID->ProviderData.ContactAddressBookObject.lpEntryID = new EntryIdStruct;
-			if (lpEID->ProviderData.ContactAddressBookObject.lpEntryID)
+			if (CONTAB_CONTAINER == lpEID->ProviderData.ContactAddressBookObject.Type)
 			{
-				memset(lpEID->ProviderData.ContactAddressBookObject.lpEntryID,0,sizeof(EntryIdStruct));
-
-				Parser.GetBYTE(&lpEID->ProviderData.ContactAddressBookObject.lpEntryID->abFlags[0]);
-				Parser.GetBYTE(&lpEID->ProviderData.ContactAddressBookObject.lpEntryID->abFlags[1]);
-				Parser.GetBYTE(&lpEID->ProviderData.ContactAddressBookObject.lpEntryID->abFlags[2]);
-				Parser.GetBYTE(&lpEID->ProviderData.ContactAddressBookObject.lpEntryID->abFlags[3]);
-				Parser.GetBYTESNoAlloc(sizeof(lpEID->ProviderData.ContactAddressBookObject.lpEntryID->ProviderUID),
-					sizeof(lpEID->ProviderData.ContactAddressBookObject.lpEntryID->ProviderUID),
-					(LPBYTE) &lpEID->ProviderData.ContactAddressBookObject.lpEntryID->ProviderUID);
-				lpEID->ProviderData.ContactAddressBookObject.lpEntryID->ObjectType = eidtMessage;
-				size_t cbBinRead = 0;
-				BinToTypedEntryIdStruct(
-					eidtMessage,
-					(ULONG) Parser.RemainingBytes(),
-					lpBin+Parser.GetCurrentOffset(),
-					lpEID->ProviderData.ContactAddressBookObject.lpEntryID,
-					&cbBinRead);
-				Parser.Advance(cbBinRead);
+				Parser.GetBYTESNoAlloc(
+					sizeof(lpEID->ProviderData.ContactAddressBookObject.muidID),
+					sizeof(lpEID->ProviderData.ContactAddressBookObject.muidID),
+					(LPBYTE) &lpEID->ProviderData.ContactAddressBookObject.muidID);
 			}
+			else // Assume we've got some variation on the user/distlist format
+			{
+				Parser.GetDWORD(&lpEID->ProviderData.ContactAddressBookObject.Index);
+				Parser.GetDWORD(&lpEID->ProviderData.ContactAddressBookObject.EntryIDCount);
+			}
+
+			// Read the wrapped entry ID from the remaining data
+			size_t cbOffset = Parser.GetCurrentOffset();
+			size_t cbRemainingBytes = Parser.RemainingBytes();
+
+			// If we already got a size, use it, else we just read the rest of the structure
+			if (0 != lpEID->ProviderData.ContactAddressBookObject.EntryIDCount &&
+				lpEID->ProviderData.ContactAddressBookObject.EntryIDCount < cbRemainingBytes)
+			{
+				cbRemainingBytes = lpEID->ProviderData.ContactAddressBookObject.EntryIDCount;
+			}
+			lpEID->ProviderData.ContactAddressBookObject.lpEntryID = BinToEntryIdStruct(
+				(ULONG) cbRemainingBytes,
+				lpBin+cbOffset);
+			Parser.Advance(cbRemainingBytes);
 		}
 		break;
 	case eidtWAB:
@@ -3003,12 +3004,31 @@ _Check_return_ LPWSTR EntryIdStructToString(_In_ EntryIdStruct* peidEntryId)
 		LPTSTR szIndex = NULL;
 		InterpretFlags(flagContabIndex, peidEntryId->ProviderData.ContactAddressBookObject.Index, &szIndex);
 
-		szTmp.FormatMessage(IDS_ENTRYIDCONTACTADDRESSDATA,
+		szTmp.FormatMessage(IDS_ENTRYIDCONTACTADDRESSDATAHEAD,
 			peidEntryId->ProviderData.ContactAddressBookObject.Version,szVersion,
-			peidEntryId->ProviderData.ContactAddressBookObject.Type,szType,
-			peidEntryId->ProviderData.ContactAddressBookObject.Index,szIndex,
-			peidEntryId->ProviderData.ContactAddressBookObject.EntryIDCount);
+			peidEntryId->ProviderData.ContactAddressBookObject.Type,szType);
 		szEntryId += szTmp;
+
+		switch (peidEntryId->ProviderData.ContactAddressBookObject.Type)
+		{
+		case CONTAB_USER:
+		case CONTAB_DISTLIST:
+			szTmp.FormatMessage(IDS_ENTRYIDCONTACTADDRESSDATAUSER,
+				peidEntryId->ProviderData.ContactAddressBookObject.Index,szIndex,
+				peidEntryId->ProviderData.ContactAddressBookObject.EntryIDCount);
+			szEntryId += szTmp;
+			break;
+		case CONTAB_CONTAINER:
+			szGUID = GUIDToStringAndName((LPGUID) &peidEntryId->ProviderData.ContactAddressBookObject.muidID);
+			szTmp.FormatMessage(IDS_ENTRYIDCONTACTADDRESSDATACONTAINER,szGUID);
+			szEntryId += szTmp;
+
+			delete[] szGUID;
+			szGUID = NULL;
+			break;
+		default:
+			break;
+		}
 
 		delete[] szIndex;
 		szIndex = NULL;

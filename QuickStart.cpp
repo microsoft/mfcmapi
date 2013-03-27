@@ -195,6 +195,7 @@ void OnQSDisplayNicknameCache(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 {
 	HRESULT hRes = S_OK;
 	LPWSTR szNicknames = NULL;
+	LPSPropValue lpsProp = NULL;
 
 	lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, IDS_STATUSTEXTLOADINGNICKNAME, NULL, NULL, NULL);
 	lpHostDlg->SendMessage(WM_PAINT, NULL, NULL); // force paint so we update the status now
@@ -250,15 +251,12 @@ void OnQSDisplayNicknameCache(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 
 							if (SUCCEEDED(hRes) && lpMSG)
 							{
-								LPSPropValue lpsProp = NULL;
 								WC_H(GetLargeBinaryProp(lpMSG, PR_ROAMING_BINARYSTREAM, &lpsProp));
 
 								if (lpsProp)
 								{
 									// Get the string interpretation
 									InterpretBinaryAsString(lpsProp->Value.bin, IDS_STNICKNAMECACHE, lpMSG, PR_ROAMING_BINARYSTREAM, &szNicknames);
-
-									MAPIFreeBuffer(lpsProp);
 								}
 								lpMSG->Release();
 							}
@@ -274,21 +272,35 @@ void OnQSDisplayNicknameCache(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 		lpMDB->Release();
 
 		// Display our dialog
-		if (szNicknames)
+		if (szNicknames || lpsProp)
 		{
 			CEditor MyResults(
 				lpHostDlg,
-				IDS_SMARTVIEW,
+				IDS_NICKNAME,
 				NULL,
-				1,
+				3,
 				CEDITOR_BUTTON_OK);
 			MyResults.InitMultiLine(0, NULL, NULL, true);
-			MyResults.SetStringW(0, szNicknames);
+			MyResults.InitSingleLine(1, IDS_CB, NULL, true);
+			MyResults.InitMultiLine(2, IDS_HEX, NULL, true);
+
+			if (szNicknames)
+			{
+				MyResults.SetStringW(0, szNicknames);
+			}
+
+			if (lpsProp)
+			{
+				MyResults.SetSize(1, lpsProp->Value.bin.cb);
+				MyResults.SetBinary(2, lpsProp->Value.bin.lpb, lpsProp->Value.bin.cb);
+			}
 
 			WC_H(MyResults.DisplayDialog());
 
 			delete[] szNicknames;
 		}
+
+		MAPIFreeBuffer(lpsProp);
 	}
 	lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, _T(""));
 } // OnQSDisplayNicknameCache

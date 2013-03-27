@@ -21,6 +21,7 @@ struct PSTHEADER {
 #define NDBANSISMALL 14
 #define NDBANSILARGE 15
 #define NDBUNICODE   23
+#define NDBUNICODE2  36
 
 struct BREFANSI {
 	DWORD			bid;
@@ -161,19 +162,7 @@ void DoPST(_In_ MYOPTIONS ProgOpts)
 			BYTE fAMapValid = 0;
 			BYTE bCryptMethod = 0;
 
-			if (NDBUNICODE == pstHeader.wVer)
-			{
-				printf("Unicode PST\n");
-				HEADER2UNICODE h2Unicode = {0};
-				if (fread(&h2Unicode, sizeof(HEADER2UNICODE) ,1, fIn))
-				{
-					ibFileEof = h2Unicode.root.ibFileEof;
-					cbAMapFree = h2Unicode.root.cbAMapFree;
-					fAMapValid = h2Unicode.root.fAMapValid;
-					bCryptMethod = h2Unicode.bCryptMethod;
-				}
-			}
-			else if (NDBANSISMALL == pstHeader.wVer || NDBANSILARGE == pstHeader.wVer)
+			if (NDBANSISMALL == pstHeader.wVer || NDBANSILARGE == pstHeader.wVer)
 			{
 				printf("ANSI PST (%ws)\n", NDBANSISMALL == pstHeader.wVer?L"small":L"large");
 				HEADER2ANSI h2Ansi = {0};
@@ -183,6 +172,18 @@ void DoPST(_In_ MYOPTIONS ProgOpts)
 					cbAMapFree = h2Ansi.root.cbAMapFree;
 					fAMapValid = h2Ansi.root.fAMapValid;
 					bCryptMethod = h2Ansi.bCryptMethod;
+				}
+			}
+			else if (NDBUNICODE == pstHeader.wVer || NDBUNICODE2 == pstHeader.wVer)
+			{
+				printf("Unicode PST\n");
+				HEADER2UNICODE h2Unicode = {0};
+				if (fread(&h2Unicode, sizeof(HEADER2UNICODE) ,1, fIn))
+				{
+					ibFileEof = h2Unicode.root.ibFileEof;
+					cbAMapFree = h2Unicode.root.cbAMapFree;
+					fAMapValid = h2Unicode.root.fAMapValid;
+					bCryptMethod = h2Unicode.bCryptMethod;
 				}
 			}
 

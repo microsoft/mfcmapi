@@ -490,8 +490,9 @@ struct EntryIdStruct
 		{
 			DWORD Version;
 			DWORD Type;
-			DWORD Index;
-			DWORD EntryIDCount;
+			DWORD Index; // CONTAB_USER, CONTAB_DISTLIST only
+			DWORD EntryIDCount; // CONTAB_USER, CONTAB_DISTLIST only
+			BYTE muidID[16]; // CONTAB_CONTAINER only
 			EntryIdStruct* lpEntryID;
 		} ContactAddressBookObject;
 		struct

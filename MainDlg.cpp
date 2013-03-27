@@ -660,37 +660,22 @@ void CMainDlg::OnOpenMailboxWithDN()
 
 	if (StoreSupportsManageStore(lpMDB))
 	{
-		CEditor MyPrompt(
-			this,
-			IDS_OPENMBDN,
-			IDS_OPENMBDNPROMPT,
-			3,
-			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-		MyPrompt.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS),true));
-		MyPrompt.InitSingleLineSz(0,IDS_SERVERNAME,szServerName,false);
-		MyPrompt.InitSingleLine(1,IDS_USERDN,NULL,false);
-		MyPrompt.InitSingleLine(2,IDS_CREATESTORENTRYIDFLAGS,NULL,false);
-		MyPrompt.SetHex(2,OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP);
-		WC_H(MyPrompt.DisplayDialog());
-		if (S_OK == hRes)
+		WC_H(OpenMailboxWithPrompt(
+			lpMAPISession,
+			lpMDB,
+			szServerName,
+			NULL,
+			OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP,
+			&lpOtherMDB));
+		if (SUCCEEDED(hRes) && lpOtherMDB)
 		{
-			EC_H(OpenOtherUsersMailbox(
-				lpMAPISession,
-				lpMDB,
-				MyPrompt.GetString(0),
-				MyPrompt.GetString(1),
-				MyPrompt.GetHex(2),
-				&lpOtherMDB));
-			if (lpOtherMDB)
-			{
-				EC_H(DisplayObject(
-					lpOtherMDB,
-					NULL,
-					otStore,
-					this));
+			EC_H(DisplayObject(
+				lpOtherMDB,
+				NULL,
+				otStore,
+				this));
 
-				lpOtherMDB->Release();
-			}
+			lpOtherMDB->Release();
 		}
 	}
 	lpMDB->Release();
