@@ -16,11 +16,11 @@ __RegKeys RegKeys[] = {
 	{_T("HierExpandNotifications"),		regDWORD,regoptCheck,		true		,0,_T(""),_T(""),false,	IDS_REGKEY_HIER_EXPAND_NOTIFS}, // STRING_OK
 	{_T("HierRootNotifs"),				regDWORD,regoptCheck,		false		,0,_T(""),_T(""),false,	IDS_REGKEY_HIER_ROOT_NOTIFS}, // STRING_OK
 	{_T("DoSmartView"),					regDWORD,regoptCheck,		true		,0,_T(""),_T(""),true,	IDS_REGKEY_DO_SMART_VIEW}, // STRING_OK
-	{_T("DoGetProps"),					regDWORD,regoptCheck,		true		,0,_T(""),_T(""),true,	IDS_REGKEY_DO_GETPROPS}, // STRING_OK
+	{_T("OnlyAdditionalProperties"),	regDWORD,regoptCheck,		false		,0,_T(""),_T(""),true,	IDS_REGKEY_ONLYADDITIONALPROPERTIES}, // STRING_OK
+	{_T("UseRowDataForSinglePropList"),	regDWORD,regoptCheck,		false		,0,_T(""),_T(""),true,	IDS_REGKEY_USE_ROW_DATA_FOR_SINGLEPROPLIST}, // STRING_OK
 	{_T("UseGetPropList"),				regDWORD,regoptCheck,		true		,0,_T(""),_T(""),true,	IDS_REGKEY_USE_GETPROPLIST}, // STRING_OK
 	{_T("CacheNamedProps"),				regDWORD,regoptCheck,		true		,0,_T(""),_T(""),false,	IDS_REGKEY_CACHE_NAMED_PROPS}, // STRING_OK
 	{_T("AllowDupeColumns"),			regDWORD,regoptCheck,		false		,0,_T(""),_T(""),false,	IDS_REGKEY_ALLOW_DUPE_COLUMNS}, // STRING_OK
-	{_T("UseRowDataForSinglePropList"),	regDWORD,regoptCheck,		false		,0,_T(""),_T(""),true,	IDS_REGKEY_USE_ROW_DATA_FOR_SINGLEPROPLIST}, // STRING_OK
 	{_T("DoColumnNames"),				regDWORD,regoptCheck,		true		,0,_T(""),_T(""),false,	IDS_REGKEY_DO_COLUMN_NAMES}, // STRING_OK
 	{_T("EditColumnsOnLoad"),			regDWORD,regoptCheck,		false		,0,_T(""),_T(""),false,	IDS_REGKEY_EDIT_COLUMNS_ON_LOAD}, // STRING_OK
 	{_T("ForceMDBOnline"),				regDWORD,regoptCheck,		false		,0,_T(""),_T(""),false,	IDS_REGKEY_MDB_ONLINE}, // STRING_OK
@@ -28,6 +28,7 @@ __RegKeys RegKeys[] = {
 	{_T("AllowPersistCache"),			regDWORD,regoptCheck,		false		,0,_T(""),_T(""),false,	IDS_REGKEY_ALLOW_PERSIST_CACHE }, // STRING_OK
 	{_T("UseIMAPIProgress"),			regDWORD,regoptCheck,		false		,0,_T(""),_T(""),false,	IDS_REGKEY_USE_IMAPIPROGRESS}, // STRING_OK
 	{_T("UseMessageRaw"),				regDWORD,regoptCheck,		false		,0,_T(""),_T(""),false,	IDS_REGKEY_USE_MESSAGERAW}, // STRING_OK
+	{_T("SuppressNotFound"),			regDWORD,regoptCheck,		true		,0,_T(""),_T(""),false,	IDS_REGKEY_SUPPRESS_NOTFOUND}, // STRING_OK
 	{_T("HeapEnableTerminationOnCorruption"),regDWORD,regoptCheck,	true		,0,_T(""),_T(""),false,	IDS_REGKEY_HEAPENABLETERMINATIONONCORRUPTION}, // STRING_OK
 	{_T("LoadAddIns"),					regDWORD,regoptCheck,		true		,0,_T(""),_T(""),false,	IDS_REGKEY_LOADADDINS}, // STRING_OK
 	{_T("ForceOutlookMAPI"),			regDWORD,regoptCheck,		false		,0,_T(""),_T(""),false,	IDS_REGKEY_FORCEOUTLOOKMAPI}, // STRING_OK

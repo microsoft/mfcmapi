@@ -28,22 +28,21 @@ static TCHAR* CLASS = _T("CMsgStoreDlg");
 
 
 CMsgStoreDlg::CMsgStoreDlg(
-						   _In_ CParentWnd* pParentWnd,
-						   _In_ CMapiObjects* lpMapiObjects,
-						   _In_opt_ LPMAPIFOLDER lpRootFolder,
-						   ULONG ulDisplayFlags
-						   ):
+	_In_ CParentWnd* pParentWnd,
+	_In_ CMapiObjects* lpMapiObjects,
+	_In_opt_ LPMAPIFOLDER lpRootFolder,
+	ULONG ulDisplayFlags
+	):
 CHierarchyTableDlg(
-				   pParentWnd,
-				   lpMapiObjects,
-				   IDS_FOLDERTREE,
-				   lpRootFolder,
-				   IDR_MENU_MESSAGESTORE_POPUP,
-				   MENU_CONTEXT_FOLDER_TREE)
+	pParentWnd,
+	lpMapiObjects,
+	IDS_FOLDERTREE,
+	lpRootFolder,
+	IDR_MENU_MESSAGESTORE_POPUP,
+	MENU_CONTEXT_FOLDER_TREE)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	HRESULT			hRes = S_OK;
-	LPSPropValue	lpProp = NULL;
 
 	m_ulDisplayFlags = ulDisplayFlags;
 
@@ -52,32 +51,7 @@ CHierarchyTableDlg(
 		LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 		if (lpMDB)
 		{
-			WC_MAPI(HrGetOneProp(
-				lpMDB,
-				PR_DISPLAY_NAME,
-				&lpProp));
-			if (lpProp)
-			{
-				// Check for a NULL value and get a different prop if needed
-				if (_T('\0') == lpProp->Value.LPSZ[0])
-				{
-					MAPIFreeBuffer(lpProp);
-
-					WC_MAPI(HrGetOneProp(
-						lpMDB,
-						PR_MAILBOX_OWNER_NAME,
-						&lpProp));
-				}
-			}
-			hRes = S_OK;
-
-			// Set the title
-			// Shouldn't have to check lpProp for non-NULL since CheckString does it, but prefast is complaining
-			if (lpProp && CheckStringProp(lpProp,PT_TSTRING))
-			{
-				m_szTitle = lpProp->Value.LPSZ;
-			}
-			MAPIFreeBuffer(lpProp);
+			m_szTitle = GetTitle(lpMDB);
 
 			if (!m_lpContainer)
 			{
@@ -426,7 +400,7 @@ _Check_return_ bool CMsgStoreDlg::HandlePaste()
 			1,
 			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 
-		MyData.InitCheck(0,IDS_PASTEFOLDERCONTENTS,false,false);
+		MyData.InitPane(0, CreateCheckPane(IDS_PASTEFOLDERCONTENTS, false, false));
 		WC_H(MyData.DisplayDialog());
 		if (S_OK == hRes)
 		{
@@ -462,7 +436,7 @@ void CMsgStoreDlg::OnPasteMessages()
 			1,
 			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 
-		MyData.InitCheck(0,IDS_MESSAGEMOVE,false,false);
+		MyData.InitPane(0, CreateCheckPane(IDS_MESSAGEMOVE, false, false));
 		WC_H(MyData.DisplayDialog());
 		if (S_OK == hRes)
 		{
@@ -532,9 +506,9 @@ void CMsgStoreDlg::OnPasteFolder()
 			IDS_PASTEFOLDERNEWNAMEPROMPT,
 			3,
 			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-		MyData.InitSingleLine(0,IDS_FOLDERNAME,NULL,false);
-		MyData.InitCheck(1,IDS_COPYSUBFOLDERS,false,false);
-		MyData.InitCheck(2,IDS_FOLDERMOVE,false,false);
+		MyData.InitPane(0, CreateSingleLinePane(IDS_FOLDERNAME, NULL, false));
+		MyData.InitPane(1, CreateCheckPane(IDS_COPYSUBFOLDERS, false, false));
+		MyData.InitPane(2, CreateCheckPane(IDS_FOLDERMOVE, false, false));
 
 		// Get required properties from the source folder
 		EC_H_GETPROPS(lpMAPISourceFolder->GetProps(
@@ -623,9 +597,9 @@ void CMsgStoreDlg::OnPasteFolderContents()
 			IDS_PICKOPTIONSPROMPT,
 			3,
 			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-		MyData.InitCheck(0,IDS_COPYASSOCIATEDITEMS,false,false);
-		MyData.InitCheck(1,IDS_MOVEMESSAGES,false,false);
-		MyData.InitCheck(2,IDS_SINGLECALLCOPY,false,false);
+		MyData.InitPane(0, CreateCheckPane(IDS_COPYASSOCIATEDITEMS, false, false));
+		MyData.InitPane(1, CreateCheckPane(IDS_MOVEMESSAGES, false, false));
+		MyData.InitPane(2, CreateCheckPane(IDS_SINGLECALLCOPY, false, false));
 		WC_H(MyData.DisplayDialog());
 
 		if (S_OK == hRes)
@@ -670,7 +644,7 @@ void CMsgStoreDlg::OnPasteRules()
 			IDS_COPYFOLDERRULESPROMPT,
 			1,
 			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-		MyData.InitCheck(0,IDS_REPLACERULES,false,false);
+		MyData.InitPane(0, CreateCheckPane(IDS_REPLACERULES, false, false));
 		WC_H(MyData.DisplayDialog());
 
 		if (S_OK == hRes)
@@ -700,15 +674,15 @@ void CMsgStoreDlg::OnCreateSubFolder()
 		4,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 	MyData.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_FOLDER_TYPE),true));
-	MyData.InitSingleLine(0,IDS_FOLDERNAME,IDS_FOLDERNAMEVALUE,false);
-	MyData.InitSingleLine(1,IDS_FOLDERTYPE,NULL,false);
+	MyData.InitPane(0, CreateSingleLinePaneID(IDS_FOLDERNAME, IDS_FOLDERNAMEVALUE, false));
+	MyData.InitPane(1, CreateSingleLinePane(IDS_FOLDERTYPE, NULL, false));
 	MyData.SetHex(1,FOLDER_GENERIC);
 	CString szProduct;
 	CString szFolderComment;
 	EC_B(szProduct.LoadString(ID_PRODUCTNAME));
 	szFolderComment.FormatMessage(IDS_FOLDERCOMMENTVALUE,szProduct);
-	MyData.InitSingleLineSz(2,IDS_FOLDERCOMMENT,szFolderComment,false);
-	MyData.InitCheck(3,IDS_PASSOPENIFEXISTS,false,false);
+	MyData.InitPane(2, CreateSingleLinePane(IDS_FOLDERCOMMENT, szFolderComment, false));
+	MyData.InitPane(3, CreateCheckPane(IDS_PASSOPENIFEXISTS, false, false));
 
 	LPMAPIFOLDER lpMAPIFolder = (LPMAPIFOLDER) m_lpHierarchyTableTreeCtrl->GetSelectedContainer(
 		mfcmapiREQUEST_MODIFY);
@@ -853,9 +827,9 @@ void CMsgStoreDlg::OnEmptyFolder()
 			IDS_DELETEITEMSANDSUBPROMPT,
 			3,
 			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-		MyData.InitCheck(0,IDS_DELASSOCIATED,false,false);
-		MyData.InitCheck(1,IDS_HARDDELETION,false,false);
-		MyData.InitCheck(2,IDS_MANUALLYEMPTYFOLDER,false,false);
+		MyData.InitPane(0, CreateCheckPane(IDS_DELASSOCIATED, false, false));
+		MyData.InitPane(1, CreateCheckPane(IDS_HARDDELETION, false, false));
+		MyData.InitPane(2, CreateCheckPane(IDS_MANUALLYEMPTYFOLDER, false, false));
 
 		WC_H(MyData.DisplayDialog());
 		if (S_OK == hRes)
@@ -927,7 +901,7 @@ void CMsgStoreDlg::OnDeleteSelectedItem()
 				IDS_DELETEFOLDERPROMPT,
 				1,
 				CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-			MyData.InitCheck(0,IDS_HARDDELETION,false,false);
+			MyData.InitPane(0, CreateCheckPane(IDS_HARDDELETION, false, false));
 			if (!bShiftPressed) WC_H(MyData.DisplayDialog());
 			if (S_OK == hRes)
 			{
@@ -982,13 +956,13 @@ void CMsgStoreDlg::OnSaveFolderContentsAsMSG()
 		IDS_SAVEFOLDERASMSGPROMPT,
 		2,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-	MyData.InitCheck(0,IDS_SAVEASSOCIATED,false,false);
-	MyData.InitCheck(1,IDS_SAVEUNICODE,false,false);
+	MyData.InitPane(0, CreateCheckPane(IDS_SAVEASSOCIATEDCONTENTS, false, false));
+	MyData.InitPane(1, CreateCheckPane(IDS_SAVEUNICODE, false, false));
 	WC_H(MyData.DisplayDialog());
 
 	if (S_OK == hRes)
 	{
-		WC_H(GetDirectoryPath(szFilePath));
+		WC_H(GetDirectoryPath(m_hWnd, szFilePath));
 
 		if (S_OK == hRes && szFilePath[0])
 		{
@@ -1008,8 +982,7 @@ void CMsgStoreDlg::OnSaveFolderContentsAsMSG()
 
 void CMsgStoreDlg::OnSaveFolderContentsAsTextFiles()
 {
-	HRESULT			hRes = S_OK;
-	WCHAR			szPathName[MAX_PATH];
+	HRESULT hRes = S_OK;
 
 	if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return;
 
@@ -1026,29 +999,21 @@ void CMsgStoreDlg::OnSaveFolderContentsAsTextFiles()
 			IDS_PICKOPTIONSPROMPT,
 			3,
 			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-		MyData.InitCheck(0,IDS_RECURSESUBFOLDERS,false,false);
-		MyData.InitCheck(1,IDS_SAVEREGULARCONTENTS,true,false);
-		MyData.InitCheck(2,IDS_SAVEASSOCIATEDCONTENTS,true,false);
+		MyData.InitPane(0, CreateCheckPane(IDS_RECURSESUBFOLDERS, false, false));
+		MyData.InitPane(1, CreateCheckPane(IDS_SAVEREGULARCONTENTS, true, false));
+		MyData.InitPane(2, CreateCheckPane(IDS_SAVEASSOCIATEDCONTENTS, true, false));
 
 		WC_H(MyData.DisplayDialog());
 
 		if (S_OK == hRes)
 		{
-			WC_H(GetDirectoryPath(szPathName));
-
-			if (S_OK == hRes && szPathName[0])
-			{
-				CWaitCursor		Wait; // Change the mouse to an hourglass while we work.
-
-				CDumpStore MyDumpStore;
-				MyDumpStore.InitMDB(lpMDB);
-				MyDumpStore.InitFolder(lpFolder);
-				MyDumpStore.InitFolderPathRoot(szPathName);
-				MyDumpStore.ProcessFolders(
-					MyData.GetCheck(1),
-					MyData.GetCheck(2),
-					MyData.GetCheck(0));
-			}
+			SaveFolderContentsToTXT(
+				lpMDB,
+				lpFolder,
+				MyData.GetCheck(1),
+				MyData.GetCheck(2),
+				MyData.GetCheck(0),
+				m_hWnd);
 		}
 		lpFolder->Release();
 	}
@@ -1071,8 +1036,8 @@ void CMsgStoreDlg::OnSetReceiveFolder()
 		IDS_SETRECFOLDERPROMPT,
 		2,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-	MyData.InitSingleLine(0,IDS_CLASS,NULL,false);
-	MyData.InitCheck(1,IDS_DELETEASSOCIATION,false,false);
+	MyData.InitPane(0, CreateSingleLinePane(IDS_CLASS, NULL, false));
+	MyData.InitPane(1, CreateCheckPane(IDS_DELETEASSOCIATION, false, false));
 
 	// Find the highlighted item
 	LPSBinary lpEID = m_lpHierarchyTableTreeCtrl->GetSelectedItemEID();
@@ -1184,8 +1149,8 @@ void CMsgStoreDlg::OnRestoreDeletedFolder()
 			IDS_RESTOREDELFOLDPROMPT,
 			2,
 			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-		MyData.InitSingleLine(0,IDS_FOLDERNAME,NULL,false);
-		MyData.InitCheck(1,IDS_COPYSUBFOLDERS,false,false);
+		MyData.InitPane(0, CreateSingleLinePane(IDS_FOLDERNAME, NULL, false));
+		MyData.InitPane(1, CreateCheckPane(IDS_COPYSUBFOLDERS, false, false));
 
 		if (lpProps)
 		{
@@ -1261,8 +1226,8 @@ void CMsgStoreDlg::OnValidateIPMSubtree()
 		IDS_PICKOPTIONSPROMPT,
 		2,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-	MyData.InitCheck(0,IDS_MAPIFORCECREATE,false,false);
-	MyData.InitCheck(1,IDS_MAPIFULLIPMTREE,false,false);
+	MyData.InitPane(0, CreateCheckPane(IDS_MAPIFORCECREATE, false, false));
+	MyData.InitPane(1, CreateCheckPane(IDS_MAPIFULLIPMTREE, false, false));
 
 	if (!m_lpMapiObjects) return;
 

@@ -13,6 +13,7 @@
 #include "MsgServiceTableDlg.h"
 #include "ImportProcs.h"
 #include "MAPIFunctions.h"
+#include "File.h"
 
 static TCHAR* CLASS = _T("CProfileListDlg");
 
@@ -21,21 +22,21 @@ static TCHAR* CLASS = _T("CProfileListDlg");
 
 
 CProfileListDlg::CProfileListDlg(
-								 _In_ CParentWnd* pParentWnd,
-								 _In_ CMapiObjects* lpMapiObjects,
-								 _In_ LPMAPITABLE lpMAPITable
-								 ):
+	_In_ CParentWnd* pParentWnd,
+	_In_ CMapiObjects* lpMapiObjects,
+	_In_ LPMAPITABLE lpMAPITable
+	):
 CContentsTableDlg(
-				  pParentWnd,
-				  lpMapiObjects,
-				  IDS_PROFILES,
-				  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
-				  lpMAPITable,
-				  (LPSPropTagArray) &sptPROFLISTCols,
-				  NUMPROFLISTCOLUMNS,
-				  PROFLISTColumns,
-				  IDR_MENU_PROFILE_POPUP,
-				  MENU_CONTEXT_PROFILE_LIST)
+	pParentWnd,
+	lpMapiObjects,
+	IDS_PROFILES,
+	mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+	lpMAPITable,
+	(LPSPropTagArray) &sptPROFLISTCols,
+	NUMPROFLISTCOLUMNS,
+	PROFLISTColumns,
+	IDR_MENU_PROFILE_POPUP,
+	MENU_CONTEXT_PROFILE_LIST)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 
@@ -65,6 +66,7 @@ BEGIN_MESSAGE_MAP(CProfileListDlg, CContentsTableDlg)
 	ON_COMMAND(ID_CREATEPROFILE,OnCreateProfile)
 	ON_COMMAND(ID_SETDEFAULTPROFILE,OnSetDefaultProfile)
 	ON_COMMAND(ID_OPENPROFILEBYNAME,OnOpenProfileByName)
+	ON_COMMAND(ID_EXPORTPROFILE,OnExportProfile)
 END_MESSAGE_MAP()
 
 void CProfileListDlg::OnInitMenu(_In_ CMenu* pMenu)
@@ -80,6 +82,7 @@ void CProfileListDlg::OnInitMenu(_In_ CMenu* pMenu)
 			pMenu->EnableMenuItem(ID_ADDUNICODEPSTTOPROFILE,DIMMSOK(iNumSel));
 			pMenu->EnableMenuItem(ID_ADDSERVICETOPROFILE,DIMMSOK(iNumSel));
 			pMenu->EnableMenuItem(ID_SETDEFAULTPROFILE,DIMMSNOK(iNumSel));
+			pMenu->EnableMenuItem(ID_EXPORTPROFILE,DIMMSNOK(iNumSel));
 
 			pMenu->EnableMenuItem(ID_COPY,DIMMSNOK(iNumSel));
 			ULONG ulStatus = m_lpMapiObjects->GetBufferStatus();
@@ -167,9 +170,9 @@ void CProfileListDlg::OnLaunchProfileWizard()
 		IDS_LAUNCHPROFWIZPROMPT,
 		2,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-	MyData.InitSingleLine(0,IDS_FLAGS,NULL,false);
+	MyData.InitPane(0, CreateSingleLinePane(IDS_FLAGS, NULL, false));
 	MyData.SetHex(0,MAPI_PW_LAUNCHED_BY_CONFIG);
-	MyData.InitSingleLineSz(1,IDS_SERVICE,_T("MSEMS"),false); // STRING_OK
+	MyData.InitPane(1, CreateSingleLinePane(IDS_SERVICE, _T("MSEMS"), false)); // STRING_OK
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -216,8 +219,8 @@ void CProfileListDlg::OnAddExchangeToProfile()
 		2,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 
-	MyData.InitSingleLine(0,IDS_SERVERNAME,NULL,false);
-	MyData.InitSingleLine(1,IDS_MAILBOXNAME,NULL,false);
+	MyData.InitPane(0, CreateSingleLinePane(IDS_SERVERNAME, NULL, false));
+	MyData.InitPane(1, CreateSingleLinePane(IDS_MAILBOXNAME, NULL, false));
 
 	WC_H(MyData.DisplayDialog());
 
@@ -289,9 +292,9 @@ void CProfileListDlg::AddPSTToProfile(bool bUnicodePST)
 				IDS_PSTPATHPROMPT,
 				3,
 				CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-			MyFile.InitSingleLineSz(0,IDS_SERVICE,dlgFilePicker.GetFileName(),false);
-			MyFile.InitCheck(1,IDS_PSTDOPW,false,false);
-			MyFile.InitSingleLineSz(2,IDS_PSTPW,_T(""),false);
+			MyFile.InitPane(0, CreateSingleLinePane(IDS_SERVICE, dlgFilePicker.GetFileName(), false));
+			MyFile.InitPane(1, CreateCheckPane(IDS_PSTDOPW, false, false));
+			MyFile.InitPane(2, CreateSingleLinePane(IDS_PSTPW, _T(""), false));
 
 			WC_H(MyFile.DisplayDialog());
 
@@ -340,8 +343,8 @@ void CProfileListDlg::OnAddServiceToProfile()
 		IDS_NEWSERVICEPROMPT,
 		2,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-	MyData.InitSingleLine(0,IDS_SERVICE,NULL,false);
-	MyData.InitCheck(1,IDS_DISPLAYSERVICEUI,true,false);
+	MyData.InitPane(0, CreateSingleLinePane(IDS_SERVICE, NULL, false));
+	MyData.InitPane(1, CreateCheckPane(IDS_DISPLAYSERVICEUI, true, false));
 
 	WC_H(MyData.DisplayDialog());
 
@@ -374,7 +377,7 @@ void CProfileListDlg::OnCreateProfile()
 		IDS_NEWPROFPROMPT,
 		1,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-	MyData.InitSingleLine(0,IDS_PROFILE,NULL,false);
+	MyData.InitPane(0, CreateSingleLinePane(IDS_PROFILE, NULL, false));
 
 	WC_H(MyData.DisplayDialog());
 
@@ -458,11 +461,11 @@ void CProfileListDlg::OnGetProfileServiceVersion()
 			5,
 			CEDITOR_BUTTON_OK);
 
-		MyData.InitSingleLine(0,IDS_PROFILESERVERVERSION,NULL,true);
-		MyData.InitSingleLine(1,IDS_PROFILESERVERVERSIONMAJOR,NULL,true);
-		MyData.InitSingleLine(2,IDS_PROFILESERVERVERSIONMINOR,NULL,true);
-		MyData.InitSingleLine(3,IDS_PROFILESERVERVERSIONBUILD,NULL,true);
-		MyData.InitSingleLine(4,IDS_PROFILESERVERVERSIONMINORBUILD,NULL,true);
+		MyData.InitPane(0, CreateSingleLinePane(IDS_PROFILESERVERVERSION, NULL, true));
+		MyData.InitPane(1, CreateSingleLinePane(IDS_PROFILESERVERVERSIONMAJOR, NULL, true));
+		MyData.InitPane(2, CreateSingleLinePane(IDS_PROFILESERVERVERSIONMINOR, NULL, true));
+		MyData.InitPane(3, CreateSingleLinePane(IDS_PROFILESERVERVERSIONBUILD, NULL, true));
+		MyData.InitPane(4, CreateSingleLinePane(IDS_PROFILESERVERVERSIONMINORBUILD, NULL, true));
 
 		if (bFoundServerVersion)
 		{
@@ -535,7 +538,7 @@ void CProfileListDlg::OnOpenProfileByName()
 		NULL,
 		1,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-	MyData.InitSingleLine(0,IDS_OPENPROFILEPROMPT,NULL,false);
+	MyData.InitPane(0, CreateSingleLinePane(IDS_OPENPROFILEPROMPT, NULL, false));
 
 	WC_H(MyData.DisplayDialog());
 
@@ -588,7 +591,7 @@ _Check_return_ bool CProfileListDlg::HandlePaste()
 		1,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 
-	MyData.InitSingleLineSzA(0,IDS_COPYPROFILEPROMPT,szOldProfile,false);
+	MyData.InitPane(0, CreateSingleLinePaneA(IDS_COPYPROFILEPROMPT, szOldProfile, false));
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -601,3 +604,253 @@ _Check_return_ bool CProfileListDlg::HandlePaste()
 	}
 	return true;
 } // CProfileListDlg::HandlePaste
+
+void ExportProfileSection(FILE* fProfile, LPPROFSECT lpSect)
+{
+	if (!fProfile || !lpSect) return;
+
+	HRESULT hRes = S_OK;
+	LPSPropValue lpAllProps = NULL;
+	ULONG cValues = 0L;
+
+	WC_H_GETPROPS(GetPropsNULL(lpSect,
+		fMapiUnicode,
+		&cValues,
+		&lpAllProps));
+	if (FAILED(hRes))
+	{
+		OutputToFilef(fProfile, _T("<properties error=\"0x%08X\" />\n"), hRes);
+	}
+	else if (lpAllProps)
+	{
+		OutputToFile(fProfile, _T("<properties listtype=\"section\">\n"));
+
+		OutputPropertiesToFile(fProfile, cValues, lpAllProps, NULL, false);
+
+		OutputToFile(fProfile, _T("</properties>\n"));
+
+		MAPIFreeBuffer(lpAllProps);
+	}
+}
+
+void ExportProfileProvider(FILE* fProfile, int iRow, LPPROVIDERADMIN lpProviderAdmin, LPSRow lpRow)
+{
+	if (!fProfile || !lpRow) return;
+
+	Outputf(DBGNoDebug, fProfile, true, _T("<provider index = \"0x%08X\">\n"), iRow);
+
+	OutputToFile(fProfile, _T("<properties listtype=\"row\">\n"));
+	OutputSRowToFile(fProfile, lpRow, NULL);
+	OutputToFile(fProfile, _T("</properties>\n"));
+
+	HRESULT hRes = S_OK;
+	LPSPropValue lpProviderUID = NULL;
+
+	lpProviderUID = PpropFindProp(
+		lpRow->lpProps,
+		lpRow->cValues,
+		PR_PROVIDER_UID);
+
+	if (lpProviderUID)
+	{
+		LPPROFSECT lpSect = NULL;
+		EC_H(OpenProfileSection(
+			lpProviderAdmin,
+			&lpProviderUID->Value.bin,
+			&lpSect));
+		if (lpSect)
+		{
+			ExportProfileSection(fProfile, lpSect);
+			lpSect->Release();
+		}
+	}
+
+	OutputToFile(fProfile, _T("</provider>\n"));
+}
+
+void ExportProfileService(FILE* fProfile, int iRow, LPSERVICEADMIN lpServiceAdmin, LPSRow lpRow)
+{
+	if (!fProfile || !lpRow) return;
+
+	Outputf(DBGNoDebug, fProfile, true, _T("<service index = \"0x%08X\">\n"), iRow);
+
+	OutputToFile(fProfile, _T("<properties listtype=\"row\">\n"));
+	OutputSRowToFile(fProfile, lpRow, NULL);
+	OutputToFile(fProfile, _T("</properties>\n"));
+
+	HRESULT hRes = S_OK;
+	LPSPropValue lpServiceUID = NULL;
+
+	lpServiceUID = PpropFindProp(
+		lpRow->lpProps,
+		lpRow->cValues,
+		PR_SERVICE_UID);
+
+	if (lpServiceUID)
+	{
+		LPPROFSECT lpSect = NULL;
+		EC_H(OpenProfileSection(
+			lpServiceAdmin,
+			&lpServiceUID->Value.bin,
+			&lpSect));
+		if (lpSect)
+		{
+			ExportProfileSection(fProfile, lpSect);
+			lpSect->Release();
+		}
+
+		LPPROVIDERADMIN lpProviderAdmin = NULL;
+
+		EC_MAPI(lpServiceAdmin->AdminProviders(
+			(LPMAPIUID) lpServiceUID->Value.bin.lpb,
+			0, // fMapiUnicode is not supported
+			&lpProviderAdmin));
+
+		if (lpProviderAdmin)
+		{
+			LPMAPITABLE lpProviderTable = NULL;
+			EC_MAPI(lpProviderAdmin->GetProviderTable(
+				0, // fMapiUnicode is not supported
+				&lpProviderTable));
+
+			if (lpProviderTable)
+			{
+				LPSRowSet lpRowSet = NULL;
+				EC_MAPI(HrQueryAllRows(lpProviderTable, NULL, NULL, NULL, 0, &lpRowSet));
+				if (lpRowSet && lpRowSet->cRows >= 1)
+				{
+					for (ULONG i = 0 ; i < lpRowSet->cRows ; i++)
+					{
+						ExportProfileProvider(fProfile, i, lpProviderAdmin, &lpRowSet->aRow[i]);
+					}
+				}
+
+				FreeProws(lpRowSet);
+				lpProviderTable->Release();
+				lpProviderTable = NULL;
+			}
+
+			lpProviderAdmin->Release();
+			lpProviderAdmin = NULL;
+		}
+	}
+
+	OutputToFile(fProfile, _T("</service>\n"));
+}
+
+void ExportProfile(LPCSTR szProfile, LPWSTR szFileName)
+{
+	if (!szProfile || !szFileName) return;
+
+	DebugPrint(DBGGeneric,_T("ExportProfile: Saving profile \"%hs\" to \"%ws\"\n"), szProfile, szFileName);
+
+	HRESULT hRes = S_OK;
+	LPPROFADMIN lpProfAdmin = NULL;
+	FILE* fProfile = NULL;
+	fProfile = MyOpenFile(szFileName, true);
+	if (fProfile)
+	{
+		OutputToFile(fProfile, g_szXMLHeader);
+		Outputf(DBGNoDebug, fProfile, true, _T("<profile profilename= \"%hs\">\n"), szProfile);
+
+		EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
+
+		if (lpProfAdmin)
+		{
+			LPSERVICEADMIN lpServiceAdmin = NULL;
+#pragma warning(push)
+#pragma warning(disable:4616)
+#pragma warning(disable:6276)
+			EC_MAPI(lpProfAdmin->AdminServices(
+				(TCHAR*)szProfile,
+				(TCHAR*)"",
+				NULL,
+				MAPI_DIALOG,
+				&lpServiceAdmin));
+#pragma warning(pop)
+			if (lpServiceAdmin)
+			{
+				LPMAPITABLE lpServiceTable = NULL;
+
+				EC_MAPI(lpServiceAdmin->GetMsgServiceTable(
+					0, // fMapiUnicode is not supported
+					&lpServiceTable));
+
+				if (lpServiceTable)
+				{
+					LPSRowSet lpRowSet = NULL;
+					EC_MAPI(HrQueryAllRows(lpServiceTable, NULL, NULL, NULL, 0, &lpRowSet));
+					if (lpRowSet && lpRowSet->cRows >= 1)
+					{
+						for (ULONG i = 0 ; i < lpRowSet->cRows ; i++)
+						{
+							ExportProfileService(fProfile, i, lpServiceAdmin, &lpRowSet->aRow[i]);
+						}
+					}
+
+					FreeProws(lpRowSet);
+					lpServiceTable->Release();
+				}
+				lpServiceAdmin->Release();
+			}
+			lpProfAdmin->Release();
+		}
+
+		OutputToFile(fProfile, _T("</profile>"));
+		CloseFile(fProfile);
+	}
+}
+
+void CProfileListDlg::OnExportProfile()
+{
+	HRESULT hRes = S_OK;
+	int iItem = -1;
+	SortListData* lpListData = NULL;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
+
+	DebugPrintEx(DBGGeneric, CLASS, _T("OnExportProfile"), _T("\n"));
+	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return;
+
+	// Find the highlighted profile
+	lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
+	if (lpListData)
+	{
+		WCHAR szFileName[MAX_PATH] = {0};
+		INT_PTR iDlgRet = IDOK;
+
+		CStringW szFileSpec;
+		EC_B(szFileSpec.LoadString(IDS_XMLFILES));
+
+		LPWSTR szProfileName = NULL;
+		EC_H(AnsiToUnicode(lpListData->data.Contents.szProfileDisplayName, &szProfileName));
+		if (SUCCEEDED(hRes))
+		{
+			WC_H(BuildFileNameAndPath(
+				szFileName,
+				_countof(szFileName),
+				L".xml", // STRING_OK
+				4,
+				szProfileName,
+				NULL,
+				NULL));
+		}
+		delete[] szProfileName;
+
+		DebugPrint(DBGGeneric, _T("BuildFileNameAndPath built file name \"%ws\"\n"), szFileName);
+
+		CFileDialogExW dlgFilePicker;
+
+		EC_D_DIALOG(dlgFilePicker.DisplayDialog(
+			false,
+			L"xml", // STRING_OK
+			szFileName,
+			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
+			szFileSpec,
+			this));
+
+		if (iDlgRet == IDOK)
+		{
+			ExportProfile(lpListData->data.Contents.szProfileDisplayName, dlgFilePicker.GetFileName());
+		}
+	}
+}

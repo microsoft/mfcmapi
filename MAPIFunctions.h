@@ -131,9 +131,36 @@ enum
 	NUM_DEFAULT_PROPS
 };
 
+// Keep this in sync with the NUM_DEFAULT_PROPS enum above
+static LPSTR FolderNames[] = {
+	"",
+	"Calendar",
+	"Contacts",
+	"Journal",
+	"Notes",
+	"Tasks",
+	"Reminders",
+	"Drafts",
+	"Sent Items",
+	"Outbox",
+	"Deleted Items",
+	"Finder",
+	"IPM_SUBTREE",
+	"Inbox",
+	"Local Freebusy",
+	"Conflicts",
+	"Sync Issues",
+	"Local Failures",
+	"Server Failures",
+	"Junk E-mail",
+};
+
 STDMETHODIMP OpenDefaultFolder(_In_ ULONG ulFolder, _In_ LPMDB lpMDB, _Deref_out_opt_ LPMAPIFOLDER *lpFolder);
 STDMETHODIMP GetDefaultFolderEID(
 	_In_ ULONG ulFolder,
 	_In_ LPMDB lpMDB,
 	_Out_opt_ ULONG* lpcbeid,
 	_Deref_out_opt_ LPENTRYID* lppeid);
+
+CString GetTitle(LPMAPIPROP lpMAPIProp);
+bool UnwrapContactEntryID(_In_ ULONG cbIn, _In_ LPBYTE lpbIn, _Out_ ULONG* lpcbOut, _Out_ LPBYTE* lppbOut);

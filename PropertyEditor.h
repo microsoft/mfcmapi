@@ -49,6 +49,7 @@ private:
 	LPSPropValue	m_lpsOutputValue;
 	bool			m_bDirty;
 	bool			m_bMVRow; // whether this row came from a multivalued property. Used for smart view parsing.
+	SmartViewPane*  m_lpSmartView;
 
 	// all calls to MAPIAllocateMore will use m_lpAllocParent
 	// this is not something to be freed
@@ -78,12 +79,13 @@ private:
 	BOOL OnInitDialog();
 	void CreatePropertyControls();
 	void InitPropertyControls();
-	void ReadMultiValueStringsFromProperty(ULONG ulListNum);
+	void ReadMultiValueStringsFromProperty();
 	void WriteSPropValueToObject();
-	void WriteMultiValueStringsToSPropValue(ULONG ulListNum);
-	void WriteMultiValueStringsToSPropValue(ULONG ulListNum, _In_ LPVOID lpParent, _In_ LPSPropValue lpsProp);
-	void UpdateListRow(_In_ LPSPropValue lpProp, ULONG ulListNum, ULONG iMVCount);
-	void UpdateSmartView(ULONG ulListNum);
+	void WriteMultiValueStringsToSPropValue();
+	void WriteMultiValueStringsToSPropValue(_In_ LPVOID lpParent, _In_ LPSPropValue lpsProp);
+	void UpdateListRow(_In_ LPSPropValue lpProp, ULONG iMVCount);
+	void UpdateSmartView();
+	_Check_return_ ULONG HandleChange(UINT nID);
 	void OnOK();
 
 	// source variables

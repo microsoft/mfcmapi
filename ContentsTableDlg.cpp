@@ -26,21 +26,21 @@ static TCHAR* CLASS = _T("CContentsTableDlg");
 
 
 CContentsTableDlg::CContentsTableDlg(
-									 _In_ CParentWnd* pParentWnd,
-									 _In_ CMapiObjects* lpMapiObjects,
-									 UINT uidTitle,
-									 __mfcmapiCreateDialogEnum bCreateDialog,
-									 _In_opt_ LPMAPITABLE lpContentsTable,
-									 _In_ LPSPropTagArray sptExtraColumnTags,
-									 ULONG iNumExtraDisplayColumns,
-									 _In_count_(iNumExtraDisplayColumns) TagNames* lpExtraDisplayColumns,
-									 ULONG nIDContextMenu,
-									 ULONG ulAddInContext
-									 ):
+	_In_ CParentWnd* pParentWnd,
+	_In_ CMapiObjects* lpMapiObjects,
+	UINT uidTitle,
+	__mfcmapiCreateDialogEnum bCreateDialog,
+	_In_opt_ LPMAPITABLE lpContentsTable,
+	_In_ LPSPropTagArray sptExtraColumnTags,
+	ULONG iNumExtraDisplayColumns,
+	_In_count_(iNumExtraDisplayColumns) TagNames* lpExtraDisplayColumns,
+	ULONG nIDContextMenu,
+	ULONG ulAddInContext
+	):
 CBaseDialog(
-			pParentWnd,
-			lpMapiObjects,
-			ulAddInContext)
+	pParentWnd,
+	lpMapiObjects,
+	ulAddInContext)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	HRESULT hRes = S_OK;
@@ -96,7 +96,6 @@ BOOL CContentsTableDlg::OnInitDialog()
 {
 	HRESULT	hRes = S_OK;
 	BOOL	bRet = CBaseDialog::OnInitDialog();
-	LPSPropValue	lpProp = NULL;
 	ULONG			ulFlags = NULL;
 
 	m_lpContentsTableListCtrl = new CContentsTableListCtrl(
@@ -119,22 +118,11 @@ BOOL CContentsTableDlg::OnInitDialog()
 	if (m_lpContainer)
 	{
 		// Get a property for the title bar
-		WC_MAPI(HrGetOneProp(
-			m_lpContainer,
-			PR_DISPLAY_NAME,
-			&lpProp));
+		m_szTitle = GetTitle(m_lpContainer);
 
-		if (lpProp)
+		if (m_ulDisplayFlags & dfAssoc)
 		{
-			if (CheckStringProp(lpProp,PT_TSTRING))
-			{
-				m_szTitle = lpProp->Value.LPSZ;
-			}
-			else
-			{
-				EC_B(m_szTitle.LoadString(IDS_DISPLAYNAMENOTFOUND));
-			}
-			MAPIFreeBuffer(lpProp);
+			m_szTitle.FormatMessage(IDS_HIDDEN, (LPCTSTR) m_szTitle);
 		}
 
 		if (m_lpContentsTable) m_lpContentsTable->Release();
@@ -524,10 +512,10 @@ void CContentsTableDlg::OnCreatePropertyStringRestriction()
 			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 		MyData.SetPromptPostFix(AllFlagsToString(flagFuzzyLevel,true));
 
-		MyData.InitSingleLine(0,IDS_PROPVALUE,NULL,false);
-		MyData.InitSingleLine(1,IDS_ULFUZZYLEVEL,NULL,false);
+		MyData.InitPane(0, CreateSingleLinePane(IDS_PROPVALUE, NULL, false));
+		MyData.InitPane(1, CreateSingleLinePane(IDS_ULFUZZYLEVEL, NULL, false));
 		MyData.SetHex(1,FL_IGNORECASE | FL_PREFIX);
-		MyData.InitCheck(2,IDS_APPLYUSINGFINDROW,false,false);
+		MyData.InitPane(2, CreateCheckPane(IDS_APPLYUSINGFINDROW, false, false));
 
 		WC_H(MyData.DisplayDialog());
 		if (S_OK != hRes) return;
@@ -584,8 +572,8 @@ void CContentsTableDlg::OnCreateRangeRestriction()
 			2,
 			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 
-		MyData.InitSingleLine(0,IDS_SUBSTRING,NULL,false);
-		MyData.InitCheck(1,IDS_APPLYUSINGFINDROW,false,false);
+		MyData.InitPane(0, CreateSingleLinePane(IDS_SUBSTRING,NULL, false));
+		MyData.InitPane(1, CreateCheckPane(IDS_APPLYUSINGFINDROW, false, false));
 
 		WC_H(MyData.DisplayDialog());
 		if (S_OK != hRes) return;
@@ -670,7 +658,6 @@ void CContentsTableDlg::OnSetColumns()
 	if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
 	m_lpContentsTableListCtrl->DoSetColumns(
 		false,
-		true,
 		true);
 } // CContentsTableDlg::OnSetColumns
 
@@ -693,12 +680,12 @@ void CContentsTableDlg::OnSortTable()
 		6,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 
-	MyData.InitSingleLine(0,IDS_CSORTS,NULL,false);
-	MyData.InitSingleLine(1,IDS_CCATS,NULL,false);
-	MyData.InitSingleLine(2,IDS_CEXPANDED,NULL,false);
-	MyData.InitCheck(3,IDS_TBLASYNC,false,false);
-	MyData.InitCheck(4,IDS_TBLBATCH,false,false);
-	MyData.InitCheck(5,IDS_REFRESHAFTERSORT,true,false);
+	MyData.InitPane(0, CreateSingleLinePane(IDS_CSORTS,NULL, false));
+	MyData.InitPane(1, CreateSingleLinePane(IDS_CCATS,NULL, false));
+	MyData.InitPane(2, CreateSingleLinePane(IDS_CEXPANDED,NULL, false));
+	MyData.InitPane(3, CreateCheckPane(IDS_TBLASYNC, false, false));
+	MyData.InitPane(4, CreateCheckPane(IDS_TBLBATCH, false, false));
+	MyData.InitPane(5, CreateCheckPane(IDS_REFRESHAFTERSORT, true, false));
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK != hRes) return;
@@ -752,7 +739,7 @@ void CContentsTableDlg::OnSortTable()
 					IDS_DDTABLESORTCATEGMAX,
 					IDS_DDTABLESORTCATEGMIN
 				};
-				MySortOrderDlg.InitDropDown(0,IDS_SORTORDER,_countof(uidDropDown),uidDropDown,true);
+				MySortOrderDlg.InitPane(0, CreateDropDownPane(IDS_SORTORDER, _countof(uidDropDown), uidDropDown, true));
 
 				WC_H(MySortOrderDlg.DisplayDialog());
 				if (S_OK == hRes)
@@ -823,30 +810,13 @@ _Check_return_ HRESULT CContentsTableDlg::OpenItemProp(int iSelectedItem, __mfcm
 	return hRes;
 } // CContentsTableDlg::OpenItemProp
 
-_Check_return_ HRESULT CContentsTableDlg::OpenAttachmentsFromMessage(_In_ LPMESSAGE lpMessage, bool fSaveMessageAtClose)
+_Check_return_ HRESULT CContentsTableDlg::OpenAttachmentsFromMessage(_In_ LPMESSAGE lpMessage)
 {
 	HRESULT hRes = S_OK;
-	LPMAPITABLE	lpTable = NULL;
 
 	if (NULL == lpMessage) return MAPI_E_INVALID_PARAMETER;
 
-	EC_MAPI(lpMessage->OpenProperty(
-		PR_MESSAGE_ATTACHMENTS,
-		&IID_IMAPITable,
-		0,
-		0,
-		(LPUNKNOWN *) &lpTable));
-
-	if (lpTable)
-	{
-		new CAttachmentsDlg(
-			m_lpParent,
-			m_lpMapiObjects,
-			lpTable,
-			lpMessage,
-			fSaveMessageAtClose);
-		lpTable->Release();
-	}
+	EC_H(DisplayTable(lpMessage, PR_MESSAGE_ATTACHMENTS, otDefault, this));
 
 	return hRes;
 } // CContentsTableDlg::OpenAttachmentsFromMessage
@@ -854,24 +824,8 @@ _Check_return_ HRESULT CContentsTableDlg::OpenAttachmentsFromMessage(_In_ LPMESS
 _Check_return_ HRESULT CContentsTableDlg::OpenRecipientsFromMessage(_In_ LPMESSAGE lpMessage)
 {
 	HRESULT hRes = S_OK;
-	LPMAPITABLE	lpTable = NULL;
 
-	EC_MAPI(lpMessage->OpenProperty(
-		PR_MESSAGE_RECIPIENTS,
-		&IID_IMAPITable,
-		0,
-		0,
-		(LPUNKNOWN *) &lpTable));
-
-	if (lpTable)
-	{
-		new CRecipientsDlg(
-			m_lpParent,
-			m_lpMapiObjects,
-			lpTable,
-			lpMessage);
-		lpTable->Release();
-	}
+	EC_H(DisplayTable(lpMessage, PR_MESSAGE_RECIPIENTS, otDefault, this));
 
 	return hRes;
 } // CContentsTableDlg::OpenRecipientsFromMessage
@@ -986,10 +940,9 @@ _Check_return_ LRESULT	CContentsTableDlg::msgOnResetColumns(WPARAM /*wParam*/, L
 	{
 		m_lpContentsTableListCtrl->DoSetColumns(
 			true,
-			false,
 			false);
 		return true;
 	}
 
 	return false;
-} // CContentsTableDlg::msgOnRefreshTableFull
+}

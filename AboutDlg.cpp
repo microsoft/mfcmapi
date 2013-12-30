@@ -96,17 +96,15 @@ BOOL CAboutDlg::OnInitDialog()
 		| WS_BORDER
 		| ES_AUTOHSCROLL
 		| ES_AUTOVSCROLL
-		| ES_MULTILINE
-		| ES_READONLY,
+		| ES_MULTILINE,
 		rcHelpText,
 		this,
 		IDD_HELP));
-	m_HelpText.ModifyStyleEx(WS_EX_CLIENTEDGE, 0, 0);
+	SubclassEdit(m_HelpText.m_hWnd, m_hWnd, true);
+
 	::SendMessage(m_HelpText.m_hWnd, EM_SETEVENTMASK,NULL, ENM_LINK);
 	::SendMessage(m_HelpText.m_hWnd, EM_AUTOURLDETECT,true, NULL);
-	m_HelpText.SetBackgroundColor(false, MyGetSysColor(cBackground));
 	m_HelpText.SetFont(GetFont());
-	ClearEditFormatting(m_HelpText.m_hWnd, false); // Lie. This control is read only, but we render it as if it wasn't.
 
 	CString szHelpText;
 	szHelpText.FormatMessage(IDS_HELPTEXT,szProductName);

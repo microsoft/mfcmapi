@@ -21,6 +21,8 @@ enum uiColor
 	cBitmapTransFore,
 	cStatus,
 	cStatusText,
+	cPaneHeaderBackground,
+	cPaneHeaderText,
 	cUIEnd
 };
 
@@ -42,6 +44,19 @@ enum uiBitmap
 	cBitmapEnd
 };
 
+enum uiButtonStyle
+{
+	bsUnstyled,
+	bsUpArrow,
+	bsDownArrow
+};
+
+enum uiLabelStyle
+{
+	lsUnstyled,
+	lsPaneHeader,
+};
+
 class CDoubleBuffer
 {
 private:
@@ -55,7 +70,7 @@ private:
 public:
 	CDoubleBuffer();
 	~CDoubleBuffer();
-	void Begin(_Inout_ HDC& hdc, _In_ RECT* prcPaint);
+	void Begin(_Inout_ HDC& hdc, _In_ CONST RECT* prcPaint);
 	void End(_Inout_ HDC& hdc);
 };
 
@@ -107,6 +122,7 @@ LRESULT CALLBACK DrawEditProc(
 	LPARAM lParam,
 	UINT_PTR uIdSubclass,
 	DWORD_PTR /*dwRefData*/);
+void SubclassEdit(_In_ HWND hWnd, _In_ HWND hWndParent, bool bReadOnly);
 
 // List
 void CustomDrawList(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, int iItemCur);
@@ -118,6 +134,7 @@ void DrawTreeItemGlow(_In_ HWND hWnd, _In_ HTREEITEM hItem);
 void DrawExpandTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ HTREEITEM hItem, bool bGlow, bool bHover);
 
 // Header
+void DrawTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ CONST RECT* lprc, bool bButton, bool bUp);
 void CustomDrawHeader(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 void DrawTrackingBar(_In_ HWND hWndHeader, _In_ HWND hWndList, int x, int iHeaderHeight, bool bRedraw);
 
@@ -143,3 +160,9 @@ _Check_return_ bool HandleControlUI(UINT message, WPARAM wParam, LPARAM lParam, 
 
 // Help Text
 void DrawHelpText(_In_ HWND hWnd, _In_ UINT uIDText);
+
+// Text labels
+void SubclassLabel(_In_ HWND hWnd);
+void StyleLabel(_In_ HWND hWnd, uiLabelStyle lsStyle);
+
+void StyleButton(_In_ HWND hWnd, uiButtonStyle bsStyle);

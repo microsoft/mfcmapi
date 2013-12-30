@@ -57,6 +57,7 @@ CSortListCtrl::CSortListCtrl()
 	m_bHaveSorted = false;
 	m_bHeaderSubclassed = false;
 	m_iItemCurHover = -1;
+	m_bAllowEscapeClose = false;
 } // CSortListCtrl::CSortListCtrl
 
 CSortListCtrl::~CSortListCtrl()
@@ -109,7 +110,7 @@ _Check_return_ HRESULT CSortListCtrl::Create(_In_ CWnd* pCreateParent, ULONG ulF
 	ListView_SetTextColor(m_hWnd, MyGetSysColor(cText));
 	::SendMessageA(m_hWnd, WM_SETFONT, (WPARAM) GetSegoeFont(), false);
 
-	SetExtendedStyle(GetExtendedStyle() | LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_INFOTIP);
+	SetExtendedStyle(GetExtendedStyle() | LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_INFOTIP | LVS_EX_DOUBLEBUFFER);
 
 	if (bImages)
 	{
@@ -190,7 +191,7 @@ LRESULT CSortListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 				break;
 			case HDN_DIVIDERDBLCLICKA:
 			case HDN_DIVIDERDBLCLICKW:
-				AutoSizeColumn(((LPNMHEADERW)pHdr)->iItem,0,0);
+				AutoSizeColumn(((LPNMHEADERW)pHdr)->iItem, 0, 0);
 				return NULL;
 				break;
 			case HDN_BEGINTRACKA:
@@ -235,13 +236,16 @@ LRESULT CSortListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			{
 				if (iItemCur != lvHitTestInfo.iItem)
 				{
-					DrawListItemGlow(m_hWnd, lvHitTestInfo.iItem);
+					// 'Unglow' the previous line
 					if (-1 != iItemCur)
 					{
 						m_iItemCurHover = -1;
 						DrawListItemGlow(m_hWnd, iItemCur);
 					}
+
+					// Glow the current line - it's important that m_iItemCurHover be set before we draw the glow
 					m_iItemCurHover = lvHitTestInfo.iItem;
+					DrawListItemGlow(m_hWnd, lvHitTestInfo.iItem);
 
 					TRACKMOUSEEVENT tmEvent = {0};
 					tmEvent.cbSize = sizeof(TRACKMOUSEEVENT);
@@ -261,16 +265,16 @@ LRESULT CSortListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			}
 			break;
 		}
-		case WM_MOUSELEAVE:
+	case WM_MOUSELEAVE:
+		{
+			// Turn off any hot highlighting
+			if (-1 != iItemCur)
 			{
-				// Turn off any hot highlighting
-				if (-1 != iItemCur)
-				{
-					m_iItemCurHover = -1;
-					DrawListItemGlow(m_hWnd, iItemCur);
-				}
+				m_iItemCurHover = -1;
+				DrawListItemGlow(m_hWnd, iItemCur);
 			}
-			break;
+		}
+		break;
 	} // end switch
 	return CListCtrl::WindowProc(message,wParam,lParam);
 } // CSortListCtrl::WindowProc
@@ -353,7 +357,8 @@ void CSortListCtrl::MySetRedraw(bool bRedraw)
 enum __SortStyle
 {
 	SORTSTYLE_STRING = 0,
-	SORTSTYLE_NUMERIC
+	SORTSTYLE_NUMERIC,
+	SORTSTYLE_HEX,
 };
 
 struct SortInfo
@@ -397,6 +402,40 @@ _Check_return_ int CALLBACK CSortListCtrl::MyCompareProc(_In_ LPARAM lParam1, _I
 			int iRet = lstrcmpi(
 				sz1,
 				sz2);
+
+			return (lpSortInfo->bSortUp?-iRet:iRet);
+		}
+		break;
+	case SORTSTYLE_HEX:
+		{
+			TCHAR* sz1 = lpData1->szSortText;
+			TCHAR* sz2 = lpData2->szSortText;
+
+			// Empty strings should always sort after non-empty strings
+			if (!sz1) return sort2First;
+			if (!sz1[0]) return sort2First;
+			if (!sz2) return sort1First;
+			if (!sz2[0]) return sort1First;
+
+			int iRet = 0;
+			if (lpData1->ulSortValue.LowPart == lpData2->ulSortValue.LowPart)
+			{
+				iRet = lstrcmpi(sz1, sz2);
+			}
+			else
+			{
+				int lCheck = max(lpData1->ulSortValue.LowPart , lpData2->ulSortValue.LowPart );
+				int i = 0;
+
+				for (i = 0; i < lCheck; i++)
+				{
+					if (sz1[i] != sz2[i])
+					{
+						iRet = (sz1[i] < sz2[i]) ? -1 : 1;
+						break;
+					}
+				}
+			}
 
 			return (lpSortInfo->bSortUp?-iRet:iRet);
 		}
@@ -485,13 +524,13 @@ void CSortListCtrl::SortClickedColumn()
 
 	switch(PROP_TYPE(ulPropTag))
 	{
-	case (PT_I2):
-	case (PT_LONG):
-	case (PT_R4):
-	case (PT_DOUBLE):
-	case (PT_APPTIME):
-	case (PT_CURRENCY):
-	case (PT_I8):
+	case PT_I2:
+	case PT_LONG:
+	case PT_R4:
+	case PT_DOUBLE:
+	case PT_APPTIME:
+	case PT_CURRENCY:
+	case PT_I8:
 		{
 			sortinfo.sortstyle = SORTSTYLE_NUMERIC;
 			for (int i = 0;i<GetItemCount();i++)
@@ -500,7 +539,7 @@ void CSortListCtrl::SortClickedColumn()
 				lvi.lParam = 0;
 				szText[0] = NULL;
 				::SendMessage(m_hWnd, LVM_GETITEM, (WPARAM)0, (LPARAM)&lvi);
-				SortListData *lpData = (SortListData*) lvi.lParam;
+				SortListData* lpData = (SortListData*) lvi.lParam;
 				if (lpData)
 				{
 					MAPIFreeBuffer(lpData->szSortText);
@@ -510,7 +549,7 @@ void CSortListCtrl::SortClickedColumn()
 			}
 			break;
 		}
-	case (PT_SYSTIME):
+	case PT_SYSTIME:
 		{
 			ULONG ulSourceCol = 0;
 			if (hdItem.lParam)
@@ -521,7 +560,7 @@ void CSortListCtrl::SortClickedColumn()
 			sortinfo.sortstyle = SORTSTYLE_NUMERIC;
 			for (int i = 0;i<GetItemCount();i++)
 			{
-				SortListData *lpData = (SortListData*) GetItemData(i);
+				SortListData* lpData = (SortListData*) GetItemData(i);
 				if (lpData)
 				{
 					MAPIFreeBuffer(lpData->szSortText);
@@ -536,6 +575,36 @@ void CSortListCtrl::SortClickedColumn()
 			}
 			break;
 		}
+	case PT_BINARY:
+		{
+			sortinfo.sortstyle = SORTSTYLE_HEX;
+			for (int i = 0;i<GetItemCount();i++)
+			{
+				lvi.iItem = i;
+				lvi.lParam = 0;
+				szText[0] = NULL;
+				::SendMessage(m_hWnd, LVM_GETITEM, (WPARAM)0, (LPARAM)&lvi);
+				SortListData* lpData = (SortListData*) lvi.lParam;
+				if (lpData)
+				{
+					MAPIFreeBuffer(lpData->szSortText);
+
+					LPCTSTR szHex = StrStr(szText, _T("lpb: ")); // STRING_OK
+					EC_H(CopyString(
+						&lpData->szSortText,
+						szHex,
+						NULL)); // Do not allocate off of lpData - If we do that we'll 'leak' memory every time we sort until we close the window
+					size_t cchStr = NULL;
+					if (szHex)
+					{
+						EC_H(StringCchLength(szHex, STRSAFE_MAX_CCH, &cchStr));
+					}
+
+					lpData->ulSortValue.LowPart = (DWORD) cchStr;
+				}
+			}
+			break;
+		}
 	default:
 		{
 			sortinfo.sortstyle = SORTSTYLE_STRING;
@@ -545,7 +614,7 @@ void CSortListCtrl::SortClickedColumn()
 				lvi.lParam = 0;
 				szText[0] = NULL;
 				::SendMessage(m_hWnd, LVM_GETITEM, (WPARAM)0, (LPARAM)&lvi);
-				SortListData *lpData = (SortListData*) lvi.lParam;
+				SortListData* lpData = (SortListData*) lvi.lParam;
 				if (lpData)
 				{
 					MAPIFreeBuffer(lpData->szSortText);
@@ -588,19 +657,19 @@ void CSortListCtrl::FakeClickColumn(int iColumn, bool bSortUp)
 	SortClickedColumn();
 } // CSortListCtrl::FakeClickColumn
 
-void CSortListCtrl::AutoSizeColumn(int iColumn, int iMinWidth, int iMaxWidth)
+void CSortListCtrl::AutoSizeColumn(int iColumn, int iMaxWidth, int iMinWidth)
 {
-	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	MySetRedraw(false);
-	SetColumnWidth(iColumn,LVSCW_AUTOSIZE_USEHEADER);
+	SetColumnWidth(iColumn, LVSCW_AUTOSIZE_USEHEADER);
 	int width = GetColumnWidth(iColumn);
-	if (iMaxWidth && width > iMaxWidth) SetColumnWidth(iColumn,iMaxWidth);
+	if (iMaxWidth && width > iMaxWidth) SetColumnWidth(iColumn, iMaxWidth);
 	else if (width < iMinWidth) SetColumnWidth(iColumn,iMinWidth);
 	MySetRedraw(true);
 } // CSortListCtrl::AutoSizeColumn
 
-void CSortListCtrl::AutoSizeColumns()
+void CSortListCtrl::AutoSizeColumns(bool bMinWidth)
 {
 	CHeaderCtrl*	lpMyHeader = NULL;
 	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
@@ -612,7 +681,7 @@ void CSortListCtrl::AutoSizeColumns()
 		MySetRedraw(false);
 		for (int i = 0;i<lpMyHeader->GetItemCount();i++)
 		{
-			AutoSizeColumn(i,100,150);
+			AutoSizeColumn(i, 150, bMinWidth?150:0);
 		}
 		MySetRedraw(true);
 	}
@@ -653,6 +722,11 @@ void CSortListCtrl::DeleteAllColumns(bool bShutdown)
 	}
 } // CSortListCtrl::DeleteAllColumns
 
+void CSortListCtrl::AllowEscapeClose()
+{
+	m_bAllowEscapeClose = true;
+}
+
 // Assert that we want all keyboard input (including ENTER!)
 // In the case of TAB though, let it through
 _Check_return_ UINT CSortListCtrl::OnGetDlgCode()
@@ -667,6 +741,13 @@ _Check_return_ UINT CSortListCtrl::OnGetDlgCode()
 		// to make sure that the Tab key is pressed
 		if (GetKeyState(VK_TAB) < 0)
 			iDlgCode &= ~(DLGC_WANTALLKEYS | DLGC_WANTMESSAGE |	DLGC_WANTTAB);
+
+		if (m_bAllowEscapeClose)
+		{
+			// to make sure that the Escape key is pressed
+			if (GetKeyState(VK_ESCAPE) < 0)
+				iDlgCode &= ~(DLGC_WANTALLKEYS | DLGC_WANTMESSAGE |	DLGC_WANTTAB);
+		}
 	}
 
 	return iDlgCode;

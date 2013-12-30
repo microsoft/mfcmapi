@@ -516,7 +516,6 @@ ULONGLONG ComputeSingleFolderSize(
 	HRESULT hRes = S_OK;
 	LPMAPITABLE lpTable = NULL;
 	LPSRowSet lpsRowSet = NULL; 
-	LPMAPIFOLDER lpSubfolder = NULL;
 	SizedSPropTagArray (1, sProps) = { 1, {PR_MESSAGE_SIZE} };
 	ULONGLONG ullThisFolderSize = 0;
 
@@ -580,7 +579,6 @@ ULONGLONG ComputeFolderSize(
 	{
 		LPMAPITABLE lpTable = NULL;
 		LPSRowSet lpRow = NULL;
-		LPSPropValue lpPropRootSize = NULL;
 		ULONG i = 0;
 		ULONGLONG ullSize = 0;
 

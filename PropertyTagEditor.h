@@ -27,6 +27,10 @@ private:
 	void  PopulateFields(ULONG ulSkipField);
 	_Check_return_ ULONG GetSelectedPropType();
 	void  LookupNamedProp(ULONG ulSkipField, bool bCreate);
+	_Check_return_ CString GetDropStringUseControl(ULONG iControl);
+	_Check_return_ int GetDropDownSelection(ULONG iControl);
+	void InsertDropString(ULONG iControl, int iRow, _In_z_ LPCTSTR szText);
+	void SetDropDownSelection(ULONG i, _In_opt_z_ LPCTSTR szText);
 
 	ULONG		m_ulPropTag;
 	bool		m_bIncludeABProps;
@@ -48,6 +52,7 @@ private:
 	BOOL OnInitDialog();
 	_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData);
 	void OnOK();
+	_Check_return_ SortListData* GetSelectedListRowData(ULONG iControl);
 
 	ULONG		m_ulPropTag;
 	bool		m_bIncludeABProps;

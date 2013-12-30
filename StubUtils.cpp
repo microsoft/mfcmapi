@@ -66,6 +66,7 @@ static bool s_fForceOutlookMAPI = false;
 static bool s_fForceSystemMAPI = false;
 
 static volatile HMODULE g_hinstMAPI = NULL;
+HMODULE g_hModPstPrx32 = NULL;
 
 __inline HMODULE GetMAPIHandle()
 {
@@ -80,10 +81,23 @@ void SetMAPIHandle(HMODULE hinstMAPI)
 
 	if (hinstMAPI == NULL)
 	{
+		// If we've preloaded pstprx32.dll, unload it before MAPI is unloaded to prevent dependency problems
+		if (g_hModPstPrx32)
+		{
+			::FreeLibrary(g_hModPstPrx32);
+			g_hModPstPrx32 = NULL;
+		}
+
 		hinstToFree = (HMODULE)InterlockedExchangePointer((PVOID*) &g_hinstMAPI, (PVOID) hinstNULL);
 	}
 	else
 	{
+		// Preload pstprx32 to prevent crash when using autodiscover to build a new profile
+		if (!g_hModPstPrx32)
+		{
+			g_hModPstPrx32 = LoadFromOLMAPIDir(_T("pstprx32.dll")); // STRING_OK
+		}
+
 		// Set the value only if the global is NULL
 		HMODULE	hinstPrev;
 		hinstPrev = (HMODULE)InterlockedCompareExchangePointer(reinterpret_cast<volatile PVOID*>(&g_hinstMAPI), hinstMAPI, hinstNULL);

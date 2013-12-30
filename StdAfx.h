@@ -236,97 +236,117 @@ struct RTF_WCSRETINFO {
 
 // For EditSecurity
 typedef bool (STDAPICALLTYPE EDITSECURITY)
-(
- HWND hwndOwner,
- LPSECURITYINFO psi
- );
+	(
+	HWND hwndOwner,
+	LPSECURITYINFO psi
+	);
 typedef EDITSECURITY* LPEDITSECURITY;
 
 // For StgCreateStorageEx
 typedef HRESULT (STDAPICALLTYPE STGCREATESTORAGEEX)
-(
- IN const WCHAR* pwcsName,
- IN  DWORD grfMode,
- IN  DWORD stgfmt,              // enum
- IN  DWORD grfAttrs,             // reserved
- IN  STGOPTIONS * pStgOptions,
- IN  void * reserved,
- IN  REFIID riid,
- OUT void ** ppObjectOpen);
+	(
+	IN const WCHAR* pwcsName,
+	IN  DWORD grfMode,
+	IN  DWORD stgfmt,              // enum
+	IN  DWORD grfAttrs,             // reserved
+	IN  STGOPTIONS * pStgOptions,
+	IN  void * reserved,
+	IN  REFIID riid,
+	OUT void ** ppObjectOpen);
 typedef STGCREATESTORAGEEX* LPSTGCREATESTORAGEEX;
 
 // For Themes
 typedef HTHEME (STDMETHODCALLTYPE OPENTHEMEDATA)
-(
- HWND hwnd,
- LPCWSTR pszClassList);
+	(
+	HWND hwnd,
+	LPCWSTR pszClassList);
 typedef OPENTHEMEDATA* LPOPENTHEMEDATA;
 
 typedef HTHEME (STDMETHODCALLTYPE CLOSETHEMEDATA)
-(
- HTHEME hTheme);
+	(
+	HTHEME hTheme);
 typedef CLOSETHEMEDATA* LPCLOSETHEMEDATA;
 
 typedef HRESULT (STDMETHODCALLTYPE GETTHEMEMARGINS)
-(
- HTHEME hTheme,
- OPTIONAL HDC hdc,
- int iPartId,
- int iStateId,
- int iPropId,
- OPTIONAL RECT *prc,
- OUT MARGINS *pMargins);
+	(
+	HTHEME hTheme,
+	OPTIONAL HDC hdc,
+	int iPartId,
+	int iStateId,
+	int iPropId,
+	OPTIONAL RECT *prc,
+	OUT MARGINS *pMargins);
 typedef GETTHEMEMARGINS* LPGETTHEMEMARGINS;
 
 typedef HRESULT (STDMETHODCALLTYPE SETWINDOWTHEME)
-(
-__in  HWND hwnd,
-__in  LPCWSTR pszSubAppName,
-__in  LPCWSTR pszSubIdList
-);
+	(
+	__in  HWND hwnd,
+	__in  LPCWSTR pszSubAppName,
+	__in  LPCWSTR pszSubIdList
+	);
 typedef SETWINDOWTHEME* LPSETWINDOWTHEME;
 
 typedef int (STDMETHODCALLTYPE GETTHEMESYSSIZE)
-(
- HTHEME hTheme,
- int iSizeID
-);
+	(
+	HTHEME hTheme,
+	int iSizeID
+	);
 typedef GETTHEMESYSSIZE* LPGETTHEMESYSSIZE;
 
 typedef HRESULT (STDMETHODCALLTYPE MSIPROVIDEQUALIFIEDCOMPONENT)
-(
- LPCTSTR     szCategory,
- LPCTSTR     szQualifier,
- DWORD       dwInstallMode,
- LPTSTR      lpPathBuf,
- LPDWORD     pcchPathBuf
- );
+	(
+	LPCTSTR     szCategory,
+	LPCTSTR     szQualifier,
+	DWORD       dwInstallMode,
+	LPTSTR      lpPathBuf,
+	LPDWORD     pcchPathBuf
+	);
 typedef MSIPROVIDEQUALIFIEDCOMPONENT* LPMSIPROVIDEQUALIFIEDCOMPONENT;
 
 typedef HRESULT (STDMETHODCALLTYPE MSIGETFILEVERSION)
-(
- LPCTSTR   szFilePath,
- LPTSTR    lpVersionBuf,
- LPDWORD   pcchVersionBuf,
- LPTSTR    lpLangBuf,
- LPDWORD   pcchLangBuf
- );
+	(
+	LPCTSTR   szFilePath,
+	LPTSTR    lpVersionBuf,
+	LPDWORD   pcchVersionBuf,
+	LPTSTR    lpLangBuf,
+	LPDWORD   pcchLangBuf
+	);
 typedef MSIGETFILEVERSION* LPMSIGETFILEVERSION;
 
-// http://msdn2.microsoft.com/en-us/library/bb820924.aspx
+typedef HRESULT (STDMETHODCALLTYPE SHGETPROPERTYSTOREFORWINDOW)
+	(
+	HWND hwnd,
+	REFIID riid,
+	void** ppv
+	);
+typedef SHGETPROPERTYSTOREFORWINDOW* LPSHGETPROPERTYSTOREFORWINDOW;
+
+// http://msdn.microsoft.com/en-us/library/office/dn433223.aspx
 #pragma pack(4)
 struct CONTAB_ENTRYID
 {
-	BYTE misc1[4];
-	MAPIUID misc2;
-	ULONG misc3;
-	ULONG misc4;
-	ULONG misc5;
-	// EntryID of contact in store.
+	BYTE abFlags[4];
+	MAPIUID muid;
+	ULONG ulVersion;
+	ULONG ulType;
+	ULONG ulIndex;
 	ULONG cbeid;
 	BYTE abeid[1];
 };
 typedef CONTAB_ENTRYID* LPCONTAB_ENTRYID;
+#pragma pack()
+
+// http://msdn.microsoft.com/en-us/library/office/dn433221.aspx
+#pragma pack(4)
+struct DIR_ENTRYID
+{
+	BYTE abFlags[4]; 
+	MAPIUID muid; 
+	ULONG ulVersion; 
+	ULONG ulType; 
+	MAPIUID muidID; 
+};
+typedef DIR_ENTRYID* LPDIR_ENTRYID;
 #pragma pack()
 
 // http://msdn2.microsoft.com/en-us/library/bb820951.aspx

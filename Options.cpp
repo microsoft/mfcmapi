@@ -42,20 +42,20 @@ CEditor(pWnd, IDS_SETOPTS, NULL, 0, CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL)
 	{
 		if (regoptCheck == RegKeys[ulReg].ulRegOptType)
 		{
-			InitCheck(ulReg, RegKeys[ulReg].uiOptionsPrompt, (0 != RegKeys[ulReg].ulCurDWORD), false);
+			InitPane(ulReg, CreateCheckPane(RegKeys[ulReg].uiOptionsPrompt, (0 != RegKeys[ulReg].ulCurDWORD), false));
 		}
 		else if (regoptString == RegKeys[ulReg].ulRegOptType)
 		{
-			InitSingleLineSz(ulReg, RegKeys[ulReg].uiOptionsPrompt, RegKeys[ulReg].szCurSTRING, false);
+			InitPane(ulReg, CreateSingleLinePane(RegKeys[ulReg].uiOptionsPrompt, RegKeys[ulReg].szCurSTRING, false));
 		}
 		else if (regoptStringHex == RegKeys[ulReg].ulRegOptType)
 		{
-			InitSingleLine(ulReg, RegKeys[ulReg].uiOptionsPrompt, NULL, false);
+			InitPane(ulReg, CreateSingleLinePane(RegKeys[ulReg].uiOptionsPrompt, NULL, false));
 			SetHex(ulReg, RegKeys[ulReg].ulCurDWORD);
 		}
 		else if (regoptStringDec == RegKeys[ulReg].ulRegOptType)
 		{
-			InitSingleLine(ulReg, RegKeys[ulReg].uiOptionsPrompt, NULL, false);
+			InitPane(ulReg, CreateSingleLinePane(RegKeys[ulReg].uiOptionsPrompt, NULL, false));
 			SetDecimal(ulReg, RegKeys[ulReg].ulCurDWORD);
 		}
 	}

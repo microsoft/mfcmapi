@@ -32,16 +32,16 @@
 */
 
 _Check_return_ HRESULT CallOpenEntry(
-									 _In_opt_ LPMDB lpMDB,
-									 _In_opt_ LPADRBOOK lpAB,
-									 _In_opt_ LPMAPICONTAINER lpContainer,
-									 _In_opt_ LPMAPISESSION lpMAPISession,
-									 ULONG cbEntryID,
-									 _In_opt_ LPENTRYID lpEntryID,
-									 _In_opt_ LPCIID lpInterface,
-									 ULONG ulFlags,
-									 _Out_opt_ ULONG* ulObjTypeRet, // optional - can be NULL
-									 _Deref_out_opt_ LPUNKNOWN* lppUnk) // required
+	_In_opt_ LPMDB lpMDB,
+	_In_opt_ LPADRBOOK lpAB,
+	_In_opt_ LPMAPICONTAINER lpContainer,
+	_In_opt_ LPMAPISESSION lpMAPISession,
+	ULONG cbEntryID,
+	_In_opt_ LPENTRYID lpEntryID,
+	_In_opt_ LPCIID lpInterface,
+	ULONG ulFlags,
+	_Out_opt_ ULONG* ulObjTypeRet, // optional - can be NULL
+	_Deref_out_opt_ LPUNKNOWN* lppUnk) // required
 {
 	if (!lppUnk) return MAPI_E_INVALID_PARAMETER;
 	HRESULT			hRes = S_OK;
@@ -209,15 +209,15 @@ _Check_return_ HRESULT CallOpenEntry(
 } // CallOpenEntry
 
 _Check_return_ HRESULT CallOpenEntry(
-									 _In_opt_ LPMDB lpMDB,
-									 _In_opt_ LPADRBOOK lpAB,
-									 _In_opt_ LPMAPICONTAINER lpContainer,
-									 _In_opt_ LPMAPISESSION lpMAPISession,
-									 _In_opt_ LPSBinary lpSBinary,
-									 _In_opt_ LPCIID lpInterface,
-									 ULONG ulFlags,
-									 _Out_opt_ ULONG* ulObjTypeRet,
-									 _Deref_out_opt_ LPUNKNOWN* lppUnk)
+	_In_opt_ LPMDB lpMDB,
+	_In_opt_ LPADRBOOK lpAB,
+	_In_opt_ LPMAPICONTAINER lpContainer,
+	_In_opt_ LPMAPISESSION lpMAPISession,
+	_In_opt_ LPSBinary lpSBinary,
+	_In_opt_ LPCIID lpInterface,
+	ULONG ulFlags,
+	_Out_opt_ ULONG* ulObjTypeRet,
+	_Deref_out_opt_ LPUNKNOWN* lppUnk)
 {
 	HRESULT			hRes = S_OK;
 	WC_H(CallOpenEntry(
@@ -1394,7 +1394,7 @@ void MyHexFromBin(_In_opt_count_(cb) LPBYTE lpb, size_t cb, bool bPrependCB, _De
 		return;
 	}
 	size_t cchOut = 1;
-	
+
 	// We might be given a cb without an lpb. We want to print the count, but won't need space for the string.
 	if (lpb) cchOut += 2*cb;
 
@@ -1435,7 +1435,7 @@ void MyHexFromBin(_In_opt_count_(cb) LPBYTE lpb, size_t cb, bool bPrependCB, _De
 		}
 		if (!cb || !lpb)
 		{
-			memcpy(lpszCur,_T("NULL"),4); // STRING_OK
+			memcpy(lpszCur,_T("NULL"),4 * sizeof(TCHAR)); // STRING_OK
 			lpszCur += 4;
 		}
 		else
@@ -1556,11 +1556,11 @@ _Check_return_ bool MyBinFromHex(_In_z_ LPCTSTR lpsz, _Out_opt_bytecapcount_(*lp
 } // MyBinFromHex
 
 ULONG aulOneOffIDs[] = {dispidFormStorage,
-dispidPageDirStream,
-dispidFormPropStream,
-dispidScriptStream,
-dispidPropDefStream, // dispidPropDefStream must remain next to last in list
-dispidCustomFlag}; // dispidCustomFlag must remain last in list
+	dispidPageDirStream,
+	dispidFormPropStream,
+	dispidScriptStream,
+	dispidPropDefStream, // dispidPropDefStream must remain next to last in list
+	dispidCustomFlag}; // dispidCustomFlag must remain last in list
 
 #define ulNumOneOffIDs (_countof(aulOneOffIDs))
 
@@ -2076,12 +2076,12 @@ _Check_return_ HRESULT ResetPermissionsOnItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLD
 // This function creates a new message based in m_lpContainer
 // Then sends the message
 _Check_return_ HRESULT SendTestMessage(
-									   _In_ LPMAPISESSION lpMAPISession,
-									   _In_ LPMAPIFOLDER lpFolder,
-									   _In_z_ LPCTSTR szRecipient,
-									   _In_z_ LPCTSTR szBody,
-									   _In_z_ LPCTSTR szSubject,
-									   _In_z_ LPCTSTR szClass)
+	_In_ LPMAPISESSION lpMAPISession,
+	_In_ LPMAPIFOLDER lpFolder,
+	_In_z_ LPCTSTR szRecipient,
+	_In_z_ LPCTSTR szBody,
+	_In_z_ LPCTSTR szSubject,
+	_In_z_ LPCTSTR szClass)
 {
 	HRESULT			hRes = S_OK;
 	LPMESSAGE		lpNewMessage = NULL;
@@ -2156,13 +2156,13 @@ STDAPI_(HRESULT) WrapCompressedRTFStreamEx(
 	RTF_WCSRETINFO * pRetInfo);
 
 _Check_return_ HRESULT WrapStreamForRTF(
-										_In_ LPSTREAM lpCompressedRTFStream,
-										bool bUseWrapEx,
-										ULONG ulFlags,
-										ULONG ulInCodePage,
-										ULONG ulOutCodePage,
-										_Deref_out_ LPSTREAM* lpUncompressedRTFStream,
-										_Out_opt_ ULONG* pulStreamFlags)
+	_In_ LPSTREAM lpCompressedRTFStream,
+	bool bUseWrapEx,
+	ULONG ulFlags,
+	ULONG ulInCodePage,
+	ULONG ulOutCodePage,
+	_Deref_out_ LPSTREAM* lpUncompressedRTFStream,
+	_Out_opt_ ULONG* pulStreamFlags)
 {
 	if (!lpCompressedRTFStream || !lpUncompressedRTFStream) return MAPI_E_INVALID_PARAMETER;
 	HRESULT hRes = S_OK;
@@ -2604,7 +2604,7 @@ HRESULT HrEmsmdbUIDFromStore(_In_ LPMAPISESSION pmsess,
 		eMax,
 		{
 			PR_ENTRYID,
-			PR_EMSMDB_SECTION_UID,
+				PR_EMSMDB_SECTION_UID,
 		}
 	};
 
@@ -2824,6 +2824,90 @@ STDMETHODIMP OpenDefaultFolder(_In_ ULONG ulFolder, _In_ LPMDB lpMDB, _Deref_out
 			lpTemp->Release();
 		}
 	}
+	MAPIFreeBuffer(lpeid);
 
 	return hRes;
 } // OpenDefaultFolder
+
+
+ULONG g_DisplayNameProps[] =
+{
+	PR_DISPLAY_NAME,
+	PR_MAILBOX_OWNER_NAME,
+	PR_SUBJECT,
+};
+
+
+CString GetTitle(LPMAPIPROP lpMAPIProp)
+{
+	HRESULT hRes = S_OK;
+	CString szTitle;
+	LPSPropValue lpProp = NULL;
+	bool bFoundName = false;
+
+	if (!lpMAPIProp) return szTitle;
+
+	ULONG i = 0;
+
+	// Get a property for the title bar
+	for (i = 0 ; !bFoundName && i < _countof(g_DisplayNameProps) ; i++)
+	{
+		hRes = S_OK;
+		WC_MAPI(HrGetOneProp(
+			lpMAPIProp,
+			g_DisplayNameProps[i],
+			&lpProp));
+
+		if (lpProp)
+		{
+			if (CheckStringProp(lpProp, PT_TSTRING))
+			{
+				szTitle = lpProp->Value.LPSZ;
+				bFoundName = true;
+			}
+			MAPIFreeBuffer(lpProp);
+		}
+	}
+
+	if (!bFoundName)
+	{
+		EC_B(szTitle.LoadString(IDS_DISPLAYNAMENOTFOUND));
+	}
+
+	return szTitle;
+}
+
+bool UnwrapContactEntryID(_In_ ULONG cbIn, _In_ LPBYTE lpbIn, _Out_ ULONG* lpcbOut, _Out_ LPBYTE* lppbOut)
+{
+	if (lpcbOut) *lpcbOut = 0;
+	if (lppbOut) *lppbOut = NULL;
+
+	if (cbIn < sizeof(DIR_ENTRYID)) return false;
+	if (!lpcbOut || !lppbOut || !lpbIn) return false;
+
+	LPCONTAB_ENTRYID lpContabEID = (LPCONTAB_ENTRYID) lpbIn;
+
+	switch (lpContabEID->ulType)
+	{
+	case CONTAB_USER:
+	case CONTAB_DISTLIST:
+		if (cbIn >= sizeof(CONTAB_ENTRYID) && lpContabEID->cbeid && lpContabEID->abeid)
+		{
+			*lpcbOut = lpContabEID->cbeid;
+			*lppbOut = lpContabEID->abeid;
+			return true;
+		}
+		break;
+	case CONTAB_ROOT:
+	case CONTAB_SUBROOT:
+	case CONTAB_CONTAINER:
+		{
+			*lpcbOut = cbIn - sizeof(DIR_ENTRYID);
+			*lppbOut = lpbIn + sizeof(DIR_ENTRYID);
+			return true;
+		}
+		break;
+	}
+
+	return false;
+}

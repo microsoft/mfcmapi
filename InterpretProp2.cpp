@@ -800,10 +800,10 @@ void InterpretProp(_In_opt_ LPSPropValue lpProp, // optional property value
 	LPMAPINAMEID* lppPropNames = 0;
 
 	// If we weren't passed named property information and we need it, look it up
-	// We don't check bIsAB here - some address book providers may actually support named props
-	// If they don't, they should return empty results or an error, either of which we can handle
+	// We check bIsAB here - some address book providers return garbage which will crash us
 	if (!lpNameID &&
 		lpMAPIProp && // if we have an object
+		!bIsAB &&
 		RegKeys[regkeyPARSED_NAMED_PROPS].ulCurDWORD && // and we're parsing named props
 		(RegKeys[regkeyGETPROPNAMES_ON_ALL_PROPS].ulCurDWORD || PROP_ID(ulPropTag) >= 0x8000) && // and it's either a named prop or we're doing all props
 		(lpszNamedPropName || lpszNamedPropGUID || lpszNamedPropDASL)) // and we want to return something that needs named prop information

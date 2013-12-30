@@ -12,8 +12,10 @@ extern LPSETWINDOWTHEME				pfnSetWindowTheme;
 extern LPGETTHEMESYSSIZE			pfnGetThemeSysSize;
 extern LPMSIPROVIDEQUALIFIEDCOMPONENT pfnMsiProvideQualifiedComponent;
 extern LPMSIGETFILEVERSION			pfnMsiGetFileVersion;
+extern LPSHGETPROPERTYSTOREFORWINDOW pfnSHGetPropertyStoreForWindow;
 
 _Check_return_ HMODULE LoadFromSystemDir(_In_z_ LPCTSTR szDLLName);
+_Check_return_ HMODULE LoadFromOLMAPIDir(_In_z_ LPCTSTR szDLLName);
 
 _Check_return_ HMODULE MyLoadLibraryA(_In_z_ LPCSTR lpszLibFileName);
 _Check_return_ HMODULE MyLoadLibraryW(_In_z_ LPCWSTR lpszLibFileName);

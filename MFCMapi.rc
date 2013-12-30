@@ -79,6 +79,25 @@ BEGIN
 			MENUITEM "Inbox",                       ID_QSINBOX
 			MENUITEM "Calendar",                    ID_QSCALENDAR
 			MENUITEM "Contacts",                    ID_QSCONTACTS
+			MENUITEM SEPARATOR
+			MENUITEM "Journal",                     ID_QSJOURNAL
+			MENUITEM "Notes",                       ID_QSNOTES
+			MENUITEM "Tasks",                       ID_QSTASKS
+			MENUITEM "Reminders",                   ID_QSREMINDERS
+			MENUITEM "Drafts",                      ID_QSDRAFTS
+			MENUITEM "Sent Items",                  ID_QSSENTITEMS
+			MENUITEM "Outbox",                      ID_QSOUTBOX
+			MENUITEM "Deleted Items",               ID_QSDELETEDITEMS
+			MENUITEM "Junkmail",                    ID_QSJUNKMAIL
+			MENUITEM SEPARATOR
+			MENUITEM "IPM_SUBTREE",                 ID_QSIPM_SUBTREE
+			MENUITEM "Finder",                      ID_QSFINDER
+			MENUITEM "Local Freebusy",              ID_QSLOCALFREEBUSY
+			MENUITEM SEPARATOR
+			MENUITEM "Sync Issues",                 ID_QSSYNCISSUES
+			MENUITEM "Conflicts",                   ID_QSCONFLICTS
+			MENUITEM "Local Failures",              ID_QSLOCALFAILURES
+			MENUITEM "Server Failures",             ID_QSSERVERFAILURES
 		END
 		POPUP "Open Address Book"
 		BEGIN
@@ -89,6 +108,7 @@ BEGIN
 		MENUITEM "Calendar Permissions"         ID_QSCALPERM
 		MENUITEM "Nickname Cache (SLOW)"        ID_QSNICKNAME
 		MENUITEM "Delivery Store Quota"         ID_QSQUOTA
+		MENUITEM "Check Special Folders"        ID_QSCHECKSPECIALFOLDERS
 	END
 	POPUP "&Session"
 	BEGIN
@@ -173,6 +193,7 @@ BEGIN
 			MENUITEM "View properties of MSG file...", ID_VIEWMSGPROPERTIES
 			MENUITEM "Convert MSG to EML...",          ID_CONVERTMSGTOEML
 			MENUITEM "Convert EML to MSG...",          ID_CONVERTEMLTOMSG
+			MENUITEM "Convert MSG to XML...",          ID_CONVERTMSGTOXML
 			MENUITEM SEPARATOR
 			MENUITEM "Export store contents to text (SLOW)...", ID_DUMPSTORECONTENTS
 			MENUITEM "Export server contents to text (VERY SLOW)...",
@@ -216,7 +237,7 @@ IDR_MENU_FOLDER MENU DISCARDABLE
 BEGIN
 	POPUP "&Actions"
 	BEGIN
-		MENUITEM "Open message",                ID_OPENNONMODAL
+		MENUITEM "Open message",                ID_DISPLAYSELECTEDITEM
 		MENUITEM "Export message...",           ID_SAVEMESSAGETOFILE
 		MENUITEM SEPARATOR
 		MENUITEM "Copy messages",               ID_COPY
@@ -245,7 +266,8 @@ BEGIN
 		BEGIN
 			MENUITEM "Execute verb on form...",     ID_EXECUTEVERBONFORM
 			MENUITEM "Get props using longterm EID", ID_GETPROPSUSINGLONGTERMEID
-			MENUITEM "Open message (modal)",        ID_OPENMODAL
+			MENUITEM "Open message form",           ID_OPENNONMODAL
+			MENUITEM "Open message form (modal)",   ID_OPENMODAL
 			MENUITEM "Remove one off properties"    ID_REMOVEONEOFF
 			MENUITEM "RTFSync...",                     ID_RTFSYNC
 			MENUITEM SEPARATOR
@@ -276,6 +298,13 @@ BEGIN
 			MENUITEM "From TNEF...",           ID_LOADFROMTNEF
 		END
 		MENUITEM SEPARATOR
+		POPUP "View"
+		BEGIN
+			MENUITEM "Hierarchy...",           ID_HIERARCHY
+			MENUITEM "Contents..."             ID_CONTENTS
+			MENUITEM "Hidden contents..."      ID_HIDDENCONTENTS
+		END
+		MENUITEM SEPARATOR
 		POPUP "Advanced"
 		BEGIN
 			MENUITEM "Display ACL table...",        ID_DISPLAYACLTABLE
@@ -288,7 +317,7 @@ END
 
 IDR_MENU_FOLDER_POPUP MENU DISCARDABLE
 BEGIN
-	MENUITEM "Open message",                ID_OPENNONMODAL
+	MENUITEM "Open message",                ID_DISPLAYSELECTEDITEM
 	MENUITEM "Export message...",           ID_SAVEMESSAGETOFILE
 	MENUITEM SEPARATOR
 	MENUITEM "Copy messages",               ID_COPY
@@ -317,7 +346,8 @@ BEGIN
 	BEGIN
 		MENUITEM "Execute verb on form...",     ID_EXECUTEVERBONFORM
 		MENUITEM "Get props using longterm EID", ID_GETPROPSUSINGLONGTERMEID
-		MENUITEM "Open message (modal)",        ID_OPENMODAL
+		MENUITEM "Open message form",           ID_OPENNONMODAL
+		MENUITEM "Open message form (modal)",   ID_OPENMODAL
 		MENUITEM "Remove one off properties"    ID_REMOVEONEOFF
 		MENUITEM "RTFSync...",                  ID_RTFSYNC
 		MENUITEM SEPARATOR
@@ -334,6 +364,7 @@ BEGIN
 	BEGIN
 		MENUITEM "Open profile",                ID_DISPLAYSELECTEDITEM
 		MENUITEM "Create profile...",           ID_CREATEPROFILE
+		MENUITEM "Export profile...",           ID_EXPORTPROFILE
 		MENUITEM "Copy profile",                ID_COPY
 		MENUITEM "Paste profile...",            ID_PASTE
 		MENUITEM "Delete profile",              ID_DELETESELECTEDITEM
@@ -363,6 +394,7 @@ BEGIN
 	MENUITEM "Open profile",                ID_DISPLAYSELECTEDITEM
 	MENUITEM "Set default profile",         ID_SETDEFAULTPROFILE
 	MENUITEM "Get profile server version...", ID_GETPROFILESERVERVERSION
+	MENUITEM "Export profile...",           ID_EXPORTPROFILE
 	MENUITEM "Copy profile",                ID_COPY
 	MENUITEM "Paste profile...",            ID_PASTE
 	MENUITEM "Delete profile",              ID_DELETESELECTEDITEM
@@ -633,16 +665,8 @@ BEGIN
 		MENUITEM "Save changes on message",     ID_SAVECHANGES
 		MENUITEM "Save changes on selected item", ID_MODIFYSELECTEDITEM
 		MENUITEM SEPARATOR
-		MENUITEM "Display attachment table",    ID_ATTACHMENTPROPERTIES
-		MENUITEM "Display recipient table",     ID_RECIPIENTPROPERTIES
-		MENUITEM SEPARATOR
-		POPUP "Options"
-		BEGIN
-			MENUITEM "View attachments as embedded messages",
-			                                        ID_VIEWEMBEDDEDMESSAGEPROPERTIES
-			MENUITEM "Use MAPI_MODIFY when viewing embedded messages",
-			                                        ID_USEMAPIMODIFYONATTACHMENTS
-		END
+		MENUITEM "View attachments as embedded messages",
+		                                        ID_VIEWEMBEDDEDMESSAGEPROPERTIES
 	END
 END
 
@@ -655,16 +679,8 @@ BEGIN
 	MENUITEM "&Save to file...",            ID_SAVETOFILE
 	MENUITEM "Save changes on selected item", ID_MODIFYSELECTEDITEM
 	MENUITEM SEPARATOR
-	MENUITEM "Display attachment table",    ID_ATTACHMENTPROPERTIES
-	MENUITEM "Display recipient table",     ID_RECIPIENTPROPERTIES
-	MENUITEM SEPARATOR
-	POPUP "Options"
-	BEGIN
-		MENUITEM "View attachments as embedded messages",
-			                                    ID_VIEWEMBEDDEDMESSAGEPROPERTIES
-		MENUITEM "Use MAPI_MODIFY when viewing embedded messages",
-			                                    ID_USEMAPIMODIFYONATTACHMENTS
-	END
+	MENUITEM "View attachments as embedded messages",
+		                                    ID_VIEWEMBEDDEDMESSAGEPROPERTIES
 END
 
 IDR_MENU_PROPERTY MENU DISCARDABLE
@@ -680,7 +696,6 @@ BEGIN
 			MENUITEM "Binary...",                   ID_EDITPROPASBINARYSTREAM
 		END
 		MENUITEM SEPARATOR
-		MENUITEM "Smart view...",               ID_PARSEPROPERTY
 		MENUITEM "&Open as entry ID or object", ID_OPEN_PROPERTY
 		MENUITEM SEPARATOR
 		MENUITEM "Copy property",               ID_COPY_PROPERTY
@@ -717,7 +732,6 @@ BEGIN
 		MENUITEM "Binary...",                   ID_EDITPROPASBINARYSTREAM
 	END
 	MENUITEM SEPARATOR
-	MENUITEM "Smart view...",               ID_PARSEPROPERTY
 	MENUITEM "&Open as entry ID or object", ID_OPEN_PROPERTY
 	MENUITEM SEPARATOR
 	MENUITEM "Copy property",               ID_COPY_PROPERTY
@@ -823,6 +837,21 @@ BEGIN
 		MENUITEM SEPARATOR
 		MENUITEM "Select all",                  EM_SETSEL
 	END
+END
+
+IDR_MENU_MESSAGE MENU DISCARDABLE
+BEGIN
+	POPUP "&Actions"
+	BEGIN
+		MENUITEM "Display attachment table",    ID_ATTACHMENTPROPERTIES
+		MENUITEM "Display recipient table",     ID_RECIPIENTPROPERTIES
+	END
+END
+
+IDR_MENU_MESSAGE_POPUP MENU DISCARDABLE
+BEGIN
+	MENUITEM "Display attachment table",    ID_ATTACHMENTPROPERTIES
+	MENUITEM "Display recipient table",     ID_RECIPIENTPROPERTIES
 END
 
 /////////////////////////////////////////////////////////////////////////////

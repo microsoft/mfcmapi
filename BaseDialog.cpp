@@ -26,10 +26,10 @@
 static TCHAR* CLASS = _T("CBaseDialog");
 
 CBaseDialog::CBaseDialog(
-						 _In_ CParentWnd* pParentWnd,
-						 _In_ CMapiObjects* lpMapiObjects, // Pass NULL to create a new m_lpMapiObjects,
-						 ULONG ulAddInContext
-						 ) : CMyDialog()
+	_In_ CParentWnd* pParentWnd,
+	_In_ CMapiObjects* lpMapiObjects, // Pass NULL to create a new m_lpMapiObjects,
+	ULONG ulAddInContext
+	) : CMyDialog()
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	HRESULT hRes = S_OK;
@@ -272,7 +272,7 @@ void CBaseDialog::OnMenuSelect(UINT nItemID, UINT nFlags, HMENU /*hSysMenu*/)
 
 	if (nItemID && !(nFlags & (MF_SEPARATOR | MF_POPUP)))
 	{
-		UpdateStatusBarText(STATUSINFOTEXT, nItemID, 0, 0, 0); // This will LoadString the menu help text for us
+		UpdateStatusBarText(STATUSINFOTEXT, nItemID); // This will LoadString the menu help text for us
 		m_bDisplayingMenuText = true;
 	}
 	else
@@ -381,13 +381,15 @@ void CBaseDialog::OnEscHit()
 
 void CBaseDialog::OnOptions()
 {
-	bool bNiceNamesBefore = 0 != RegKeys[regkeyDO_COLUMN_NAMES].ulCurDWORD;
+	ULONG ulNiceNamesBefore = RegKeys[regkeyDO_COLUMN_NAMES].ulCurDWORD;
+	ULONG ulSuppressNotFoundBefore = RegKeys[regkeySUPPRESS_NOT_FOUND].ulCurDWORD;
 	bool bNeedPropRefresh = DisplayOptionsDlg(this);
-	bool bNiceNamesAfter = 0 != RegKeys[regkeyDO_COLUMN_NAMES].ulCurDWORD;
+	bool bNiceNamesChanged = ulNiceNamesBefore != RegKeys[regkeyDO_COLUMN_NAMES].ulCurDWORD;
+	bool bSuppressNotFoundChanged = ulSuppressNotFoundBefore != RegKeys[regkeySUPPRESS_NOT_FOUND].ulCurDWORD;
 	HRESULT hRes = S_OK;
 	bool bResetColumns = false;
 
-	if (bNiceNamesBefore != bNiceNamesAfter)
+	if (bNiceNamesChanged || bSuppressNotFoundChanged)
 	{
 		// We check if this worked so we don't refresh the prop list after resetting the top pane
 		// But, if we're a tree view, this won't work at all, so we'll still want to reset props if needed
@@ -521,7 +523,9 @@ void CBaseDialog::SetStatusWidths()
 	RECT rcStatus = {0};
 	::GetClientRect(m_hWnd, &rcStatus);
 	rcStatus.top = rcStatus.bottom - GetStatusHeight();
-	::InvalidateRect(m_hWnd, &rcStatus, false);
+
+	// Tell the window it needs to paint
+	::RedrawWindow(m_hWnd, &rcStatus, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
 } // CBaseDialog::SetStatusWidths
 
 void CBaseDialog::OnSize(UINT/* nType*/, int cx, int cy)
@@ -560,7 +564,19 @@ void CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, _In_z_ LPCTSTR szMs
 	SetStatusWidths();
 } // CBaseDialog::UpdateStatusBarText
 
-void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg, ULONG ulParam1, ULONG ulParam2, ULONG ulParam3)
+void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg)
+{
+	UpdateStatusBarText(nPos, uidMsg, NULL, NULL, NULL);
+}
+
+void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg, ULONG ulParam1)
+{
+	CString szParam1;
+	szParam1.Format(_T("%u"), ulParam1);
+	UpdateStatusBarText(nPos, uidMsg, szParam1, NULL, NULL);
+}
+
+void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg, LPCTSTR szParam1, LPCTSTR szParam2, LPCTSTR szParam3)
 {
 	CString szStatBarString;
 
@@ -597,7 +613,7 @@ void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg
 			WC_B(szMsg.LoadString(uidMsg));
 			if (FAILED(hRes)) DebugPrintEx(DBGMenu,CLASS,_T("UpdateStatusBarText"),_T("Cannot find menu item 0x%08X\n"),uidMsg);
 
-			szStatBarString.FormatMessage(szMsg, ulParam1, ulParam2, ulParam3);
+			szStatBarString.FormatMessage(szMsg, szParam1, szParam2, szParam3);
 		}
 	}
 
@@ -640,7 +656,7 @@ _Check_return_ LRESULT	CBaseDialog::msgOnClearSingleMAPIPropList(WPARAM /*wParam
 
 void CBaseDialog::OnHexEditor()
 {
-	new CHexEditor(m_lpParent);
+	new CHexEditor(m_lpParent, m_lpMapiObjects);
 } // CBaseDialog::OnHexEditor
 
 CString GetOutlookVersionString()
@@ -705,7 +721,7 @@ void CBaseDialog::OnOutlookVersion()
 	{
 		WC_B(szVersionString.LoadString(IDS_NOOUTLOOK));
 	}
-	MyEID.InitMultiLine(0,IDS_OUTLOOKVERSIONPROMPT,(LPCTSTR) szVersionString,true);
+	MyEID.InitPane(0, CreateMultiLinePane(IDS_OUTLOOKVERSIONPROMPT, (LPCTSTR) szVersionString, true));
 
 
 	WC_H(MyEID.DisplayDialog());
@@ -723,28 +739,28 @@ void CBaseDialog::OnOpenEntryID(_In_opt_ LPSBinary lpBin)
 		10,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 
-	MyEID.InitSingleLineSz(0,IDS_EID,BinToHexString(lpBin,false),false);
+	MyEID.InitPane(0, CreateSingleLinePane(IDS_EID, BinToHexString(lpBin, false), false));
 
 	LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release
-	MyEID.InitCheck(1,IDS_USEMDB,lpMDB?true:false,lpMDB?false:true);
+	MyEID.InitPane(1, CreateCheckPane(IDS_USEMDB, lpMDB?true:false, lpMDB?false:true));
 
 	LPADRBOOK lpAB = m_lpMapiObjects->GetAddrBook(false); // do not release
-	MyEID.InitCheck(2,IDS_USEAB,lpAB?true:false,lpAB?false:true);
+	MyEID.InitPane(2, CreateCheckPane(IDS_USEAB, lpAB?true:false, lpAB?false:true));
 
 	LPMAPISESSION lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
-	MyEID.InitCheck(3,IDS_SESSION,lpMAPISession?true:false,lpMAPISession?false:true);
+	MyEID.InitPane(3, CreateCheckPane(IDS_SESSION, lpMAPISession?true:false, lpMAPISession?false:true));
 
-	MyEID.InitCheck(4,IDS_PASSMAPIMODIFY,false,false);
+	MyEID.InitPane(4, CreateCheckPane(IDS_PASSMAPIMODIFY, false, false));
 
-	MyEID.InitCheck(5,IDS_PASSMAPINOCACHE,false,false);
+	MyEID.InitPane(5, CreateCheckPane(IDS_PASSMAPINOCACHE, false, false));
 
-	MyEID.InitCheck(6,IDS_PASSMAPICACHEONLY,false,false);
+	MyEID.InitPane(6, CreateCheckPane(IDS_PASSMAPICACHEONLY, false, false));
 
-	MyEID.InitCheck(7,IDS_EIDBASE64ENCODED,false,false);
+	MyEID.InitPane(7, CreateCheckPane(IDS_EIDBASE64ENCODED, false, false));
 
-	MyEID.InitCheck(8,IDS_ATTEMPTIADDRBOOKDETAILSCALL,false,lpAB?false:true);
+	MyEID.InitPane(8, CreateCheckPane(IDS_ATTEMPTIADDRBOOKDETAILSCALL, false, lpAB?false:true));
 
-	MyEID.InitCheck(9,IDS_EIDISCONTAB,false,false);
+	MyEID.InitPane(9, CreateCheckPane(IDS_EIDISCONTAB, false, false));
 
 	WC_H(MyEID.DisplayDialog());
 	if (S_OK != hRes) return;
@@ -757,13 +773,7 @@ void CBaseDialog::OnOpenEntryID(_In_opt_ LPSBinary lpBin)
 
 	if (MyEID.GetCheck(9) && lpEnteredEntryID)
 	{
-		LPCONTAB_ENTRYID lpContabEID = (LPCONTAB_ENTRYID)lpEnteredEntryID;
-		if (lpContabEID && lpContabEID->cbeid && lpContabEID->abeid)
-		{
-			cbBin = lpContabEID->cbeid;
-			lpEntryID = (LPENTRYID) lpContabEID->abeid;
-		}
-
+		(void) UnwrapContactEntryID((ULONG) cbBin, (LPBYTE) lpEnteredEntryID, (ULONG*) &cbBin, (LPBYTE*) &lpEntryID);
 	}
 	else
 	{
@@ -846,17 +856,17 @@ void CBaseDialog::OnCompareEntryIDs()
 		4,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 
-	MyEIDs.InitSingleLine(0,IDS_EID1,NULL,false);
-	MyEIDs.InitSingleLine(1,IDS_EID2,NULL,false);
+	MyEIDs.InitPane(0, CreateSingleLinePane(IDS_EID1, NULL, false));
+	MyEIDs.InitPane(1, CreateSingleLinePane(IDS_EID2, NULL, false));
 
 	UINT uidDropDown[] = {
 		IDS_DDMESSAGESTORE,
 		IDS_DDSESSION,
 		IDS_DDADDRESSBOOK
 	};
-	MyEIDs.InitDropDown(2,IDS_OBJECTFORCOMPAREEID,_countof(uidDropDown),uidDropDown,true);
+	MyEIDs.InitPane(2, CreateDropDownPane(IDS_OBJECTFORCOMPAREEID, _countof(uidDropDown), uidDropDown, true));
 
-	MyEIDs.InitCheck(3,IDS_EIDBASE64ENCODED,false,false);
+	MyEIDs.InitPane(3, CreateCheckPane(IDS_EIDBASE64ENCODED, false, false));
 
 	WC_H(MyEIDs.DisplayDialog());
 	if (S_OK != hRes) return;
@@ -923,10 +933,10 @@ void CBaseDialog::OnComputeStoreHash()
 		4,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 
-	MyStoreEID.InitSingleLine(0,IDS_STOREEID,NULL,false);
-	MyStoreEID.InitCheck(1,IDS_EIDBASE64ENCODED,false,false);
-	MyStoreEID.InitSingleLine(2,IDS_FILENAME,NULL,false);
-	MyStoreEID.InitCheck(3,IDS_PUBLICFOLDERSTORE,false,false);
+	MyStoreEID.InitPane(0, CreateSingleLinePane(IDS_STOREEID, NULL, false));
+	MyStoreEID.InitPane(1, CreateCheckPane(IDS_EIDBASE64ENCODED, false, false));
+	MyStoreEID.InitPane(2, CreateSingleLinePane(IDS_FILENAME, NULL, false));
+	MyStoreEID.InitPane(3, CreateCheckPane(IDS_PUBLICFOLDERSTORE, false, false));
 
 	WC_H(MyStoreEID.DisplayDialog());
 	if (S_OK != hRes) return;
@@ -970,15 +980,15 @@ void CBaseDialog::OnNotificationsOn()
 		3,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 	MyData.SetPromptPostFix(AllFlagsToString(flagNotifEventType,true));
-	MyData.InitSingleLine(0,IDS_EID,NULL,false);
-	MyData.InitSingleLine(1,IDS_ULEVENTMASK,NULL,false);
+	MyData.InitPane(0, CreateSingleLinePane(IDS_EID,NULL, false));
+	MyData.InitPane(1, CreateSingleLinePane(IDS_ULEVENTMASK, NULL, false));
 	MyData.SetHex(1,fnevNewMail);
 	UINT uidDropDown[] = {
 		IDS_DDMESSAGESTORE,
 		IDS_DDSESSION,
 		IDS_DDADDRESSBOOK
 	};
-	MyData.InitDropDown(2,IDS_OBJECTFORADVISE,_countof(uidDropDown),uidDropDown,true);
+	MyData.InitPane(2, CreateDropDownPane(IDS_OBJECTFORADVISE, _countof(uidDropDown), uidDropDown, true));
 
 	WC_H(MyData.DisplayDialog());
 

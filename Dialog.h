@@ -25,6 +25,7 @@ private:
 	UINT m_iAutoCenterWidth;
 	bool m_bStatus;
 	int m_iStatusHeight;
+	HWND m_hWndPrevious;
 
 	DECLARE_MESSAGE_MAP()
 };

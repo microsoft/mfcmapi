@@ -12,6 +12,7 @@ public:
 		UINT uidPrompt,
 		_In_ LPMAPIPROP lpMAPIProp,
 		ULONG ulPropTag,
+		bool bGuessType,
 		bool bIsAB,
 		bool bEditPropAsRTF,
 		bool bUseWrapEx,
@@ -22,13 +23,16 @@ public:
 
 private:
 	BOOL  OnInitDialog();
+	void  OpenPropertyStream(bool bWrite, bool bRTF);
 	void  ReadTextStreamFromProperty();
 	void  WriteTextStreamToProperty();
 	_Check_return_ ULONG HandleChange(UINT nID);
 	void  OnOK();
+	void SetEditReadOnly(ULONG iControl);
 
 	// source variables
 	LPMAPIPROP	m_lpMAPIProp;
+	LPSTREAM	m_lpStream;
 	ULONG		m_ulPropTag;
 	bool		m_bIsAB; // whether the tag is from the AB or not
 	bool		m_bUseWrapEx;
@@ -38,13 +42,13 @@ private:
 	ULONG		m_ulStreamFlags; // returned from WrapCompressedRTFStreamEx
 
 	UINT		m_iTextBox;
-	UINT		m_iCBBox;
 	UINT		m_iFlagBox;
 	UINT		m_iCodePageBox;
 	UINT		m_iBinBox;
 	UINT		m_iSmartViewBox;
-	bool		m_bWriteAllowed;
 	bool		m_bDoSmartView;
 	bool		m_bDocFile;
+	bool		m_bAllowTypeGuessing;
 	ULONG		m_ulEditorType;
+	HRESULT		m_StreamError;
 };

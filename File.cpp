@@ -10,6 +10,7 @@
 #include "ImportProcs.h"
 #include "MFCUtilityFunctions.h"
 #include <shlobj.h>
+#include "Dumpstore.h"
 
 // Add current Entry ID to file name
 _Check_return_ HRESULT AppendEntryID(_Inout_z_count_(cchFileName) LPWSTR szFileName, size_t cchFileName, _In_ LPSBinary lpBin, size_t cchMaxAppend)
@@ -47,7 +48,7 @@ _Check_return_ HRESULT AppendEntryID(_Inout_z_count_(cchFileName) LPWSTR szFileN
 	return hRes;
 } // AppendEntryID
 
-_Check_return_ HRESULT GetDirectoryPath(_Inout_z_ LPWSTR szPath)
+_Check_return_ HRESULT GetDirectoryPath(HWND hWnd, _Inout_z_ LPWSTR szPath)
 {
 	BROWSEINFOW BrowseInfo;
 	LPITEMIDLIST lpItemIdList = NULL;
@@ -68,7 +69,7 @@ _Check_return_ HRESULT GetDirectoryPath(_Inout_z_ LPWSTR szPath)
 	CStringW szInputString;
 	EC_B(szInputString.LoadString(IDS_DIRPROMPT));
 
-	BrowseInfo.hwndOwner = NULL;
+	BrowseInfo.hwndOwner = hWnd;
 	BrowseInfo.lpszTitle = szInputString;
 	BrowseInfo.pszDisplayName = szPath;
 	BrowseInfo.ulFlags = BIF_USENEWUI | BIF_RETURNONLYFSDIRS;
@@ -453,10 +454,10 @@ _Check_return_ HRESULT BuildFileNameAndPath(_Inout_z_count_(cchFileOut) LPWSTR s
 // Do NOT call with full path - just file names
 // Resulting string will have no more than cchCharsToCopy characters
 _Check_return_ HRESULT SanitizeFileNameA(
-						  _Inout_z_count_(cchFileOut) LPSTR szFileOut, // output buffer
-						  size_t cchFileOut, // length of output buffer
-						  _In_z_ LPCSTR szFileIn, // File name in
-						  size_t cchCharsToCopy)
+	_Inout_z_count_(cchFileOut) LPSTR szFileOut, // output buffer
+	size_t cchFileOut, // length of output buffer
+	_In_z_ LPCSTR szFileIn, // File name in
+	size_t cchCharsToCopy)
 {
 	HRESULT hRes = S_OK;
 	LPSTR szCur = NULL;
@@ -470,10 +471,10 @@ _Check_return_ HRESULT SanitizeFileNameA(
 } // SanitizeFileNameA
 
 _Check_return_ HRESULT SanitizeFileNameW(
-						  _Inout_z_count_(cchFileOut) LPWSTR szFileOut, // output buffer
-						  size_t cchFileOut, // length of output buffer
-						  _In_z_ LPCWSTR szFileIn, // File name in
-						  size_t cchCharsToCopy)
+	_Inout_z_count_(cchFileOut) LPWSTR szFileOut, // output buffer
+	size_t cchFileOut, // length of output buffer
+	_In_z_ LPCWSTR szFileIn, // File name in
+	size_t cchCharsToCopy)
 {
 	HRESULT hRes = S_OK;
 	LPWSTR szCur = NULL;
@@ -485,6 +486,27 @@ _Check_return_ HRESULT SanitizeFileNameW(
 	}
 	return hRes;
 } // SanitizeFileNameW
+
+void SaveFolderContentsToTXT(_In_ LPMDB lpMDB, _In_ LPMAPIFOLDER lpFolder, bool bRegular, bool bAssoc, bool bDescend, HWND hWnd)
+{
+	HRESULT hRes = S_OK;
+	WCHAR szDir[MAX_PATH] = {0};
+
+	WC_H(GetDirectoryPath(hWnd, szDir));
+
+	if (S_OK == hRes && szDir[0])
+	{
+		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
+		CDumpStore MyDumpStore;
+		MyDumpStore.InitMDB(lpMDB);
+		MyDumpStore.InitFolder(lpFolder);
+		MyDumpStore.InitFolderPathRoot(szDir);
+		MyDumpStore.ProcessFolders(
+			bRegular,
+			bAssoc,
+			bDescend);
+	}
+}
 
 _Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_z_ LPCWSTR szPathName, bool bAssoc, bool bUnicode, HWND hWnd)
 {
@@ -658,13 +680,13 @@ _Check_return_ HRESULT SaveToEML(_In_ LPMESSAGE lpMessage, _In_z_ LPCWSTR szFile
 } // SaveToEML
 
 _Check_return_ HRESULT STDAPICALLTYPE MyStgCreateStorageEx(IN const WCHAR* pName,
-											DWORD grfMode,
-											DWORD stgfmt,
-											DWORD grfAttrs,
-											_In_ STGOPTIONS * pStgOptions,
-											_Pre_null_ void * reserved,
-											_In_ REFIID riid,
-											_Out_ void ** ppObjectOpen)
+														   DWORD grfMode,
+														   DWORD stgfmt,
+														   DWORD grfAttrs,
+														   _In_ STGOPTIONS * pStgOptions,
+														   _Pre_null_ void * reserved,
+														   _In_ REFIID riid,
+														   _Out_ void ** ppObjectOpen)
 {
 	HRESULT hRes = S_OK;
 	if (!pName) return MAPI_E_INVALID_PARAMETER;
@@ -953,7 +975,7 @@ _Check_return_ HRESULT DeleteAttachments(_In_ LPMESSAGE lpMessage, _In_opt_z_ LP
 		EC_MAPI(lpMessage->OpenProperty(
 			PR_MESSAGE_ATTACHMENTS,
 			&IID_IMAPITable,
-			0,
+			fMapiUnicode,
 			0,
 			(LPUNKNOWN *) &lpAttTbl));
 
@@ -1054,7 +1076,7 @@ _Check_return_ HRESULT WriteAttachmentsToFile(_In_ LPMESSAGE lpMessage, HWND hWn
 		EC_MAPI(lpMessage->OpenProperty(
 			PR_MESSAGE_ATTACHMENTS,
 			&IID_IMAPITable,
-			0,
+			fMapiUnicode,
 			0,
 			(LPUNKNOWN *) &lpAttTbl));
 
@@ -1076,7 +1098,7 @@ _Check_return_ HRESULT WriteAttachmentsToFile(_In_ LPMESSAGE lpMessage, HWND hWn
 					if (PR_ATTACH_NUM != pRows->aRow[iRow].lpProps[ATTACHNUM].ulPropTag) continue;
 
 					// Open the attachment
-					EC_MAPI(lpMessage->OpenAttach (
+					EC_MAPI(lpMessage->OpenAttach(
 						pRows->aRow[iRow].lpProps[ATTACHNUM].Value.l,
 						NULL,
 						MAPI_BEST_ACCESS,

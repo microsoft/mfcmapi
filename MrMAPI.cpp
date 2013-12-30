@@ -850,7 +850,7 @@ bool LoadMAPIVersion(LPWSTR lpszVersion)
 		{
 			DebugPrint(DBGGeneric, "Got a string\n");
 
-			while (true)
+			for (;;)
 			{
 				szPath = mpi->GetNextMAPIPath();
 				if (!szPath) break;
@@ -868,7 +868,7 @@ bool LoadMAPIVersion(LPWSTR lpszVersion)
 		else if (0 == ulVersion)
 		{
 			DebugPrint(DBGGeneric, "Listing MAPI\n");
-			while (true)
+			for (;;)
 			{
 				szPath = mpi->GetNextMAPIPath();
 				if (!szPath) break;

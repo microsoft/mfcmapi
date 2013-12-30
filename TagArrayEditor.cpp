@@ -10,18 +10,21 @@
 
 static TCHAR* CLASS = _T("CTagArrayEditor");
 
-// Takes LPMAPIPROP and ulPropTag as input - will pull SPropValue from the LPMAPIPROP
 CTagArrayEditor::CTagArrayEditor(
-								 _In_ CWnd* pParentWnd,
-								 UINT uidTitle,
-								 UINT uidPrompt,
-								 _In_opt_ LPSPropTagArray lpTagArray,
-								 bool bIsAB,
-								 _In_ LPMAPIPROP lpMAPIProp):
-CEditor(pParentWnd,uidTitle,uidPrompt,0,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL)
+	_In_ CWnd* pParentWnd,
+	UINT uidTitle,
+	UINT uidPrompt,
+	_In_opt_ LPMAPITABLE lpContentsTable,
+	_In_opt_ LPSPropTagArray lpTagArray,
+	bool bIsAB,
+	_In_opt_ LPMAPIPROP lpMAPIProp):
+CEditor(pParentWnd, uidTitle, uidPrompt, 0, CEDITOR_BUTTON_OK | (lpContentsTable?(CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_ACTION2):0) | CEDITOR_BUTTON_CANCEL, IDS_QUERYCOLUMNS, IDS_FLAGS, NULL)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 
+	m_lpContentsTable = lpContentsTable;
+	if (m_lpContentsTable) m_lpContentsTable->AddRef();
+	m_ulSetColumnsFlags = TBL_BATCH;
 	m_lpTagArray = lpTagArray;
 	m_bIsAB = bIsAB;
 	m_lpOutputTagArray = NULL;
@@ -29,7 +32,7 @@ CEditor(pParentWnd,uidTitle,uidPrompt,0,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL)
 	if (m_lpMAPIProp) m_lpMAPIProp->AddRef();
 
 	CreateControls(1);
-	InitList(0,IDS_PROPTAGARRAY,false,false);
+	InitPane(0, CreateListPane(IDS_PROPTAGARRAY, false, false, this));
 } // CTagArrayEditor::CTagArrayEditor
 
 CTagArrayEditor::~CTagArrayEditor()
@@ -53,6 +56,15 @@ BOOL CTagArrayEditor::OnInitDialog()
 void CTagArrayEditor::OnOK()
 {
 	WriteListToTagArray(0);
+	if (m_lpOutputTagArray && m_lpContentsTable)
+	{
+		// Apply lpFinalTagArray through SetColumns
+		HRESULT hRes = S_OK;
+		EC_MAPI(m_lpContentsTable->SetColumns(
+			m_lpOutputTagArray,
+			m_ulSetColumnsFlags)); // Flags
+	}
+
 	CMyDialog::OnOK(); // don't need to call CEditor::OnOK
 } // CTagArrayEditor::OnOK
 
@@ -95,7 +107,7 @@ _Check_return_ bool CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 		InterpretProp(
 			NULL,
 			ulNewPropTag,
-			NULL,
+			m_lpMAPIProp,
 			NULL,
 			NULL,
 			m_bIsAB,
@@ -118,6 +130,7 @@ _Check_return_ bool CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 		delete[] szExactMatch;
 		FreeNameIDStrings(szNamedPropName, szNamedPropGUID, NULL);
 
+		ResizeList(ulListNum, false);
 		return true;
 	}
 	return false;
@@ -126,6 +139,8 @@ _Check_return_ bool CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 void CTagArrayEditor::ReadTagArrayToList(ULONG ulListNum)
 {
 	if (!IsValidList(ulListNum)) return;
+
+	ClearList(ulListNum);
 
 	InsertColumn(ulListNum,0,IDS_SHARP);
 	InsertColumn(ulListNum,1,IDS_TAG);
@@ -196,7 +211,7 @@ void CTagArrayEditor::WriteListToTagArray(ULONG ulListNum)
 	if (!IsValidList(ulListNum)) return;
 
 	// If we're not dirty, don't write
-	if (!ListDirty(ulListNum)) return;
+	if (!IsDirty(ulListNum)) return;
 
 	HRESULT hRes = S_OK;
 	ULONG ulListCount = GetListCount(ulListNum);
@@ -224,3 +239,62 @@ _Check_return_ LPSPropTagArray CTagArrayEditor::DetachModifiedTagArray()
 	m_lpOutputTagArray = NULL;
 	return lpRetArray;
 } // CTagArrayEditor::DetachModifiedTagArray
+
+// QueryColumns flags
+void CTagArrayEditor::OnEditAction1()
+{
+	if (!m_lpContentsTable) return;
+	HRESULT hRes = S_OK;
+	ULONG ulQueryColumnFlags = NULL;
+
+	CEditor MyData(
+		this,
+		IDS_QUERYCOLUMNS,
+		IDS_QUERYCOLUMNSPROMPT,
+		1,
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+	MyData.InitPane(0, CreateSingleLinePane(IDS_QUERYCOLUMNFLAGS, NULL, false));
+	MyData.SetHex(0, ulQueryColumnFlags);
+
+	WC_H(MyData.DisplayDialog());
+	if (S_OK == hRes)
+	{
+		ulQueryColumnFlags = MyData.GetHex(0);
+		LPSPropTagArray lpTagArray = NULL;
+
+		EC_MAPI(m_lpContentsTable->QueryColumns(
+			ulQueryColumnFlags,
+			&lpTagArray));
+
+		if (SUCCEEDED(hRes))
+		{
+			MAPIFreeBuffer(m_lpTagArray);
+			m_lpTagArray = lpTagArray;
+
+			ReadTagArrayToList(0);
+			UpdateListButtons();
+		}
+	}
+}
+
+// SetColumns flags
+void CTagArrayEditor::OnEditAction2()
+{
+	if (!m_lpContentsTable) return;
+	HRESULT hRes = S_OK;
+
+	CEditor MyData(
+		this,
+		IDS_SETCOLUMNS,
+		IDS_SETCOLUMNSPROMPT,
+		1,
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+	MyData.InitPane(0, CreateSingleLinePane(IDS_SETCOLUMNFLAGS, NULL, false));
+	MyData.SetHex(0, m_ulSetColumnsFlags);
+
+	WC_H(MyData.DisplayDialog());
+	if (S_OK == hRes)
+	{
+		m_ulSetColumnsFlags = MyData.GetHex(0);
+	}
+}
