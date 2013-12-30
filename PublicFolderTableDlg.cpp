@@ -187,8 +187,8 @@ void CPublicFolderTableDlg::OnCreatePropertyStringRestriction()
 			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 		MyData.SetPromptPostFix(AllFlagsToString(flagFuzzyLevel,true));
 
-		MyData.InitSingleLine(0,IDS_NAME,NULL,false);
-		MyData.InitSingleLine(1,IDS_ULFUZZYLEVEL,NULL,false);
+		MyData.InitPane(0, CreateSingleLinePane(IDS_NAME, NULL, false));
+		MyData.InitPane(1, CreateSingleLinePane(IDS_ULFUZZYLEVEL, NULL, false));
 		MyData.SetHex(1,FL_IGNORECASE|FL_PREFIX);
 
 		WC_H(MyData.DisplayDialog());

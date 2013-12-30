@@ -804,6 +804,7 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 		NULL,
 		NULL,
 		false,
+		false,
 		&szSmartView);
 
 	OutputXMLValue(ulDbgLvl,fFile,PropXMLNames[pcPROPEXACTNAMES].uidName,szExactMatches,2);

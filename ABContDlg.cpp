@@ -30,6 +30,8 @@ CHierarchyTableDlg(
 
 	HRESULT	hRes = S_OK;
 
+	m_bIsAB = true;
+
 	if (m_lpMapiObjects)
 	{
 		LPADRBOOK lpAddrBook = m_lpMapiObjects->GetAddrBook(false); // do not release

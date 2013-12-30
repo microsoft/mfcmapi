@@ -292,7 +292,6 @@ void PrintStoreTable(_In_ LPMAPISESSION lpMAPISession, ULONG ulPropTag)
 void DoStore(_In_ MYOPTIONS ProgOpts)
 {
 	HRESULT hRes = S_OK;
-	LPMAPISESSION lpMAPISession = NULL;
 	LPMDB lpMDB = NULL;
 	ULONG ulPropTag = NULL;
 

@@ -35,7 +35,7 @@ protected:
 	virtual void OnDisplayItem();
 
 	void SetRestrictionType(__mfcmapiRestrictionTypeEnum RestrictionType);
-	_Check_return_ HRESULT OpenAttachmentsFromMessage(_In_ LPMESSAGE lpMessage, bool fSaveMessageAtClose);
+	_Check_return_ HRESULT OpenAttachmentsFromMessage(_In_ LPMESSAGE lpMessage);
 	_Check_return_ HRESULT OpenRecipientsFromMessage(_In_ LPMESSAGE lpMessage);
 
 	CContentsTableListCtrl*	m_lpContentsTableListCtrl;

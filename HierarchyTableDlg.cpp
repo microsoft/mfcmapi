@@ -147,7 +147,7 @@ void CHierarchyTableDlg::OnDisplayHierarchyTable()
 			IDS_DISPLAYHIEARCHYTABLEPROMPT,
 			1,
 			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-		MyData.InitCheck(0,IDS_CONVENIENTDEPTH,false,false);
+		MyData.InitPane(0, CreateCheckPane(IDS_CONVENIENTDEPTH, false, false));
 
 		WC_H(MyData.DisplayDialog());
 

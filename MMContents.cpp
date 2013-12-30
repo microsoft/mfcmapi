@@ -23,7 +23,6 @@ void DumpContentsTable(
 	if (ulOptions & OPT_RETRYSTREAMPROPS) DebugPrint(DBGGeneric,"DumpContentsTable: Will retry stream properties\n");
 	if (ulOptions & OPT_LIST) DebugPrint(DBGGeneric,"DumpContentsTable: List only mode\n");
 	if (ulCount) DebugPrint(DBGGeneric,"DumpContentsTable: Limiting output to %u messages.\n", ulCount);
-	HRESULT hRes = S_OK;
 
 	if (lpFolder)
 	{

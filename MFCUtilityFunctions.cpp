@@ -12,17 +12,21 @@
 #include "AbDlg.h"
 #include "Editor.h"
 #include "SingleMAPIPropListCtrl.h"
+#include "SingleRecipientDialog.h"
 #include "AclDlg.h"
 #include "RulesDlg.h"
 #include "MailboxTableDlg.h"
 #include "PublicFolderTableDlg.h"
 #include "SmartView.h"
+#include "SingleMessageDialog.h"
+#include "AttachmentsDlg.h"
+#include "RecipientsDlg.h"
 
 _Check_return_ HRESULT DisplayObject(
-					  _In_ LPMAPIPROP lpUnk,
-					  ULONG ulObjType,
-					  ObjectType tType,
-					  _In_ CBaseDialog* lpHostDlg)
+	_In_ LPMAPIPROP lpUnk,
+	ULONG ulObjType,
+	ObjectType tType,
+	_In_ CBaseDialog* lpHostDlg)
 {
 	HRESULT			hRes = S_OK;
 
@@ -40,8 +44,6 @@ _Check_return_ HRESULT DisplayObject(
 		ulObjType = GetMAPIObjectType((LPMAPIPROP)lpUnk);
 	}
 
-	lpHostDlg->OnUpdateSingleMAPIPropListCtrl(lpUnk, NULL);
-
 	LPWSTR szFlags = NULL;
 	InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE, &szFlags);
 	DebugPrint(DBGGeneric,_T("DisplayObject asked to display %p, with ObjectType of 0x%08X and MAPI type of 0x%08X = %ws\n"),
@@ -58,6 +60,8 @@ _Check_return_ HRESULT DisplayObject(
 		// #define MAPI_STORE		((ULONG) 0x00000001)	/* Message Store */
 	case MAPI_STORE:
 		{
+			lpHostDlg->OnUpdateSingleMAPIPropListCtrl(lpUnk, NULL);
+
 			LPMDB lpMDB = lpMapiObjects->GetMDB(); // do not release
 			if (lpMDB) lpMDB->AddRef(); // hold on to this so that...
 			lpMapiObjects->SetMDB((LPMDB) lpUnk);
@@ -132,6 +136,24 @@ _Check_return_ HRESULT DisplayObject(
 				(LPABCONT) lpUnk);
 			break;
 		}
+		// #define MAPI_MESSAGE	((ULONG) 0x00000005)	/* Message */
+	case MAPI_MESSAGE:
+		{
+			new SingleMessageDialog(
+				lpParentWnd,
+				lpMapiObjects,
+				(LPMESSAGE) lpUnk);
+			break;
+		}
+		// #define MAPI_MAILUSER	((ULONG) 0x00000006)	/* Individual Recipient */
+	case MAPI_MAILUSER:
+		{
+			new SingleRecipientDialog(
+				lpParentWnd,
+				lpMapiObjects,
+				(LPMAILUSER) lpUnk);
+			break;
+		}
 		// #define MAPI_DISTLIST	((ULONG) 0x00000008)	/* Distribution List Recipient */
 	case MAPI_DISTLIST: // A DistList is really an Address book anyways
 		{
@@ -141,16 +163,16 @@ _Check_return_ HRESULT DisplayObject(
 				(LPABCONT) lpUnk);
 			break;
 		}
+		// The following types don't have special viewers - just dump their props in the property pane
 		// #define MAPI_ADDRBOOK	((ULONG) 0x00000002)	/* Address Book */
-		// #define MAPI_FOLDER	((ULONG) 0x00000003)	/* Folder */
-		// #define MAPI_MESSAGE	((ULONG) 0x00000005)	/* Message */
-		// #define MAPI_MAILUSER	((ULONG) 0x00000006)	/* Individual Recipient */
 		// #define MAPI_ATTACH	((ULONG) 0x00000007)	/* Attachment */
 		// #define MAPI_PROFSECT	((ULONG) 0x00000009)	/* Profile Section */
 		// #define MAPI_STATUS	((ULONG) 0x0000000A)	/* Status Object */
 		// #define MAPI_SESSION	((ULONG) 0x0000000B)	/* Session */
 		// #define MAPI_FORMINFO	((ULONG) 0x0000000C)	/* Form Information */
 	default:
+		lpHostDlg->OnUpdateSingleMAPIPropListCtrl(lpUnk, NULL);
+
 		InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE, &szFlags);
 		DebugPrint(DBGGeneric,
 			_T("DisplayObject: Object type: 0x%08X = %ws not implemented\r\n") // STRING_OK
@@ -159,7 +181,6 @@ _Check_return_ HRESULT DisplayObject(
 			szFlags);
 		delete[] szFlags;
 		szFlags = NULL;
-		// Perhaps we could create a 'Single Object Property Display' window for this case?
 		break;
 	}
 
@@ -167,9 +188,9 @@ _Check_return_ HRESULT DisplayObject(
 } // DisplayObject
 
 _Check_return_ HRESULT DisplayTable(
-					 _In_ LPMAPITABLE lpTable,
-					 ObjectType tType,
-					 _In_ CBaseDialog* lpHostDlg)
+	_In_ LPMAPITABLE lpTable,
+	ObjectType tType,
+	_In_ CBaseDialog* lpHostDlg)
 {
 	if (!lpHostDlg) return MAPI_E_INVALID_PARAMETER;
 
@@ -255,10 +276,10 @@ _Check_return_ HRESULT DisplayTable(
 } // DisplayTable
 
 _Check_return_ HRESULT DisplayTable(
-					 _In_ LPMAPIPROP lpMAPIProp,
-					 ULONG ulPropTag,
-					 ObjectType tType,
-					 _In_ CBaseDialog* lpHostDlg)
+	_In_ LPMAPIPROP lpMAPIProp,
+	ULONG ulPropTag,
+	ObjectType tType,
+	_In_ CBaseDialog* lpHostDlg)
 {
 	HRESULT		hRes = S_OK;
 	LPMAPITABLE	lpTable = NULL;
@@ -266,19 +287,55 @@ _Check_return_ HRESULT DisplayTable(
 	if (!lpHostDlg || !lpMAPIProp) return MAPI_E_INVALID_PARAMETER;
 	if (PT_OBJECT != PROP_TYPE(ulPropTag)) return MAPI_E_INVALID_TYPE;
 
-	EC_MAPI(lpMAPIProp->OpenProperty(
+	WC_MAPI(lpMAPIProp->OpenProperty(
 		ulPropTag,
 		&IID_IMAPITable,
-		0,
+		fMapiUnicode,
 		0,
 		(LPUNKNOWN *) &lpTable));
+	if (MAPI_E_INTERFACE_NOT_SUPPORTED == hRes)
+	{
+		hRes = S_OK;
+		switch (PROP_ID(ulPropTag))
+		{
+		case PROP_ID(PR_MESSAGE_ATTACHMENTS):
+			((LPMESSAGE) lpMAPIProp)->GetAttachmentTable(
+				NULL,
+				&lpTable);
+			break;
+		case PROP_ID(PR_MESSAGE_RECIPIENTS):
+			((LPMESSAGE) lpMAPIProp)->GetRecipientTable(
+				NULL,
+				&lpTable);
+			break;
+		}
+	}
 
 	if (lpTable)
 	{
-		EC_H(DisplayTable(
-			lpTable,
-			tType,
-			lpHostDlg));
+		switch (PROP_ID(ulPropTag))
+		{
+		case PROP_ID(PR_MESSAGE_ATTACHMENTS):
+			new CAttachmentsDlg(
+				lpHostDlg->GetParentWnd(),
+				lpHostDlg->GetMapiObjects(),
+				lpTable,
+				(LPMESSAGE) lpMAPIProp);
+			break;
+		case PROP_ID(PR_MESSAGE_RECIPIENTS):
+			new CRecipientsDlg(
+				lpHostDlg->GetParentWnd(),
+				lpHostDlg->GetMapiObjects(),
+				lpTable,
+				(LPMESSAGE) lpMAPIProp);
+			break;
+		default:
+			EC_H(DisplayTable(
+				lpTable,
+				tType,
+				lpHostDlg));
+			break;
+		}
 
 		lpTable->Release();
 	}
@@ -287,10 +344,10 @@ _Check_return_ HRESULT DisplayTable(
 } // DisplayTable
 
 _Check_return_ HRESULT DisplayExchangeTable(
-							 _In_ LPMAPIPROP lpMAPIProp,
-							 ULONG ulPropTag,
-							 ObjectType tType,
-							 _In_ CBaseDialog* lpHostDlg)
+	_In_ LPMAPIPROP lpMAPIProp,
+	ULONG ulPropTag,
+	ObjectType tType,
+	_In_ CBaseDialog* lpHostDlg)
 {
 	HRESULT			hRes = S_OK;
 	LPEXCHANGEMODIFYTABLE	lpExchTbl = NULL;
@@ -333,7 +390,7 @@ _Check_return_ HRESULT DisplayExchangeTable(
 					1,
 					CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 
-				MyData.InitCheck(0,IDS_FBRIGHTSVISIBLE, false, false);
+				MyData.InitPane(0, CreateCheckPane(IDS_FBRIGHTSVISIBLE, false, false));
 
 				WC_H(MyData.DisplayDialog());
 				if (S_OK == hRes)
@@ -395,7 +452,7 @@ _Check_return_ bool bShouldCancel(_In_opt_ CWnd* cWnd, HRESULT hResPrev)
 		{
 			CString szPrevErr;
 			szPrevErr.FormatMessage(IDS_PREVIOUSCALL,ErrorNameFromErrorCode(hResPrev),hResPrev);
-			Cancel.InitSingleLineSz(0,IDS_ERROR,szPrevErr,true);
+			Cancel.InitPane(0, CreateSingleLinePane(IDS_ERROR, szPrevErr, true));
 		}
 		WC_H(Cancel.DisplayDialog());
 		if (S_OK != hRes)
@@ -436,16 +493,16 @@ void DisplayMailboxTable(_In_ CParentWnd*	lpParent,
 			IDS_SERVERNAMEPROMPT,
 			4,
 			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-		MyData.InitSingleLineSz(0,IDS_SERVERNAME,szServerName,false);
-		MyData.InitSingleLine(1,IDS_OFFSET,NULL,false);
+		MyData.InitPane(0, CreateSingleLinePane(IDS_SERVERNAME, szServerName, false));
+		MyData.InitPane(1, CreateSingleLinePane(IDS_OFFSET, NULL, false));
 		MyData.SetHex(1,0);
-		MyData.InitSingleLine(2,IDS_MAILBOXGUID,NULL,false);
+		MyData.InitPane(2, CreateSingleLinePane(IDS_MAILBOXGUID, NULL, false));
 		UINT uidDropDown[] = {
 			IDS_GETMBXINTERFACE1,
 			IDS_GETMBXINTERFACE3,
 			IDS_GETMBXINTERFACE5
 		};
-		MyData.InitDropDown(3,IDS_GETMBXINTERFACE,_countof(uidDropDown),uidDropDown,true);
+		MyData.InitPane(3, CreateDropDownPane(IDS_GETMBXINTERFACE, _countof(uidDropDown), uidDropDown, true));
 		WC_H(MyData.DisplayDialog());
 
 		if (SUCCEEDED(hRes) && 0 != MyData.GetHex(1) && 0 == MyData.GetDropDown(3))
@@ -579,18 +636,18 @@ void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
 			IDS_DISPLAYPFTABLEPROMPT,
 			5,
 			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-		MyData.InitSingleLineSz(0,IDS_SERVERNAME,szServerName,false);
-		MyData.InitSingleLine(1,IDS_OFFSET,NULL,false);
+		MyData.InitPane(0, CreateSingleLinePane(IDS_SERVERNAME, szServerName, false));
+		MyData.InitPane(1, CreateSingleLinePane(IDS_OFFSET, NULL, false));
 		MyData.SetHex(1,0);
-		MyData.InitSingleLine(2,IDS_FLAGS,NULL,false);
+		MyData.InitPane(2, CreateSingleLinePane(IDS_FLAGS, NULL, false));
 		MyData.SetHex(2,MDB_IPM);
-		MyData.InitSingleLine(3,IDS_PUBLICFOLDERGUID,NULL,false);
+		MyData.InitPane(3, CreateSingleLinePane(IDS_PUBLICFOLDERGUID, NULL, false));
 		UINT uidDropDown[] = {
 			IDS_GETPFINTERFACE1,
 			IDS_GETPFINTERFACE4,
 			IDS_GETPFINTERFACE5
 		};
-		MyData.InitDropDown(4,IDS_GETMBXINTERFACE,_countof(uidDropDown),uidDropDown,true);
+		MyData.InitPane(4, CreateDropDownPane(IDS_GETMBXINTERFACE, _countof(uidDropDown), uidDropDown, true));
 		WC_H(MyData.DisplayDialog());
 
 		if (SUCCEEDED(hRes) && 0 != MyData.GetHex(1) && 0 == MyData.GetDropDown(4))
@@ -717,8 +774,8 @@ void ResolveMessageClass(_In_ CMapiObjects* lpMapiObjects, _In_opt_ LPMAPIFOLDER
 			IDS_RESOLVECLASSPROMPT,
 			(ULONG) 2,
 			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-		MyData.InitSingleLine(0,IDS_CLASS,NULL,false);
-		MyData.InitSingleLine(1,IDS_FLAGS,NULL,false);
+		MyData.InitPane(0, CreateSingleLinePane(IDS_CLASS, NULL, false));
+		MyData.InitPane(1, CreateSingleLinePane(IDS_FLAGS, NULL, false));
 
 		WC_H(MyData.DisplayDialog());
 		if (S_OK == hRes)

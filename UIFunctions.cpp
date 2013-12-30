@@ -4,6 +4,7 @@
 #include "UIFunctions.h"
 #include "Windowsx.h"
 #include "ImportProcs.h"
+#include "RichEditOleCallback.h"
 
 HFONT g_hFontSegoe = NULL;
 HFONT g_hFontSegoeBold = NULL;
@@ -11,12 +12,16 @@ HFONT g_hFontSegoeBold = NULL;
 #define SEGOE _T("Segoe UI") // STRING_OK
 #define SEGOEW L"Segoe UI" // STRING_OK
 #define SEGOEBOLD L"Segoe UI Bold" // STRING_OK
+#define BUTTON_STYLE _T("ButtonStyle") // STRING_OK
+#define LABEL_STYLE _T("LabelStyle") // STRING_OK
 
 #define BORDER_VISIBLEWIDTH 2
+#define TRIANGLE_SIZE 4
 
 enum myColor
 {
 	cWhite,
+	cLightGrey,
 	cGrey,
 	cDarkGrey,
 	cBlack,
@@ -32,6 +37,7 @@ enum myColor
 COLORREF g_Colors[cColorEnd] =
 {
 	RGB(0xFF, 0xFF, 0xFF), // cWhite
+	RGB(0xD3, 0xD3, 0xD3), // cLightGrey
 	RGB(0xAD, 0xAC, 0xAE), // cGrey
 	RGB(0x64, 0x64, 0x64), // cDarkGrey
 	RGB(0x00, 0x00, 0x00), // cBlack
@@ -49,7 +55,7 @@ COLORREF g_Colors[cColorEnd] =
 myColor g_FixedColors[cUIEnd] =
 {
 	cWhite, // cBackground
-	cGrey, // cBackgroundReadOnly
+	cLightGrey, // cBackgroundReadOnly
 	cBlue, // cGlow
 	cPaleBlue, // cGlowBackground
 	cBlack, // cGlowText
@@ -64,6 +70,8 @@ myColor g_FixedColors[cUIEnd] =
 	cCyan, // cBitmapTransFore
 	cBlue, // cStatus
 	cWhite, // cStatusText
+	cPaleBlue, // cPaneHeaderBackground,
+	cBlack, // cPaneHeaderText,
 };
 
 // Mapping of UI elements to system colors
@@ -136,7 +144,7 @@ CDoubleBuffer::~CDoubleBuffer()
 	Cleanup();
 } // CDoubleBuffer::~CDoubleBuffer
 
-void CDoubleBuffer::Begin(_Inout_ HDC& hdc, _In_ RECT* prcPaint)
+void CDoubleBuffer::Begin(_Inout_ HDC& hdc, _In_ RECT CONST* prcPaint)
 {
 	if (hdc)
 	{
@@ -670,7 +678,7 @@ _Check_return_ HPEN GetPen(uiPen up)
 			g_Pens[cDashedPen] = ExtCreatePen(PS_GEOMETRIC | PS_USERSTYLE, 1, &lbr, 2, rgStyle);
 			return g_Pens[cDashedPen];
 		}
-	break;
+		break;
 	}
 	return NULL;
 } // GetPen
@@ -841,6 +849,36 @@ LRESULT CALLBACK DrawEditProc(
 	return DefSubclassProc(hWnd, uMsg, wParam, lParam);
 } // DrawEditProc
 
+void SubclassEdit(_In_ HWND hWnd, _In_ HWND hWndParent, bool bReadOnly)
+{
+	SetWindowSubclass(hWnd, DrawEditProc, 0, 0);
+
+	LONG_PTR lStyle = ::GetWindowLongPtr(hWnd, GWL_EXSTYLE);
+	lStyle &= ~WS_EX_CLIENTEDGE;
+	(void) ::SetWindowLongPtr(hWnd, GWL_EXSTYLE, lStyle);
+	if (bReadOnly){
+		(void) ::SendMessage(hWnd, EM_SETBKGNDCOLOR, (WPARAM) 0, (LPARAM) MyGetSysColor(cBackgroundReadOnly));
+		(void) ::SendMessage(hWnd, EM_SETREADONLY, true, 0L);
+	}
+	else
+	{
+		(void) ::SendMessage(hWnd, EM_SETBKGNDCOLOR, (WPARAM) 0, (LPARAM) MyGetSysColor(cBackground));
+	}
+	ClearEditFormatting(hWnd, bReadOnly);
+
+	// Set up callback to control paste and context menus
+	CRichEditOleCallback* reCallback = new CRichEditOleCallback(hWnd, hWndParent);
+	if (reCallback)
+	{
+		(void) ::SendMessage(
+			hWnd,
+			EM_SETOLECALLBACK,
+			(WPARAM) 0,
+			(LPARAM) reCallback);
+		reCallback->Release();
+	}
+}
+
 void CustomDrawList(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, int iItemCurHover)
 {
 	static bool bSelected = false;
@@ -873,6 +911,34 @@ void CustomDrawList(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, int iItemCurHover
 		break;
 
 	case CDDS_SUBITEM | CDDS_ITEMPREPAINT:
+		{
+			// Big speedup - we skip painting if the target rectangle is outside the client area
+
+			// On some systems, top/bottom will both be zero, but not left/right. We want to consider those
+			// as if they had positive area, so bump bottom to 1 and remember to reset it after.
+			bool bResetBottom = false;
+			if (0 == lvcd->nmcd.rc.top && 0 == lvcd->nmcd.rc.bottom)
+			{
+				lvcd->nmcd.rc.bottom = 1;
+				bResetBottom = true;
+			}
+
+			RECT rc = {0};
+			::GetClientRect(lvcd->nmcd.hdr.hwndFrom, &rc);
+			::IntersectRect(&rc, &rc, &lvcd->nmcd.rc);
+
+			if (bResetBottom)
+			{
+				lvcd->nmcd.rc.bottom = 0;
+			}
+
+			if (::IsRectEmpty(&rc))
+			{
+				*pResult = CDRF_SKIPDEFAULT;
+				break;
+			}
+		}
+
 		// Turn on listview hover highlight
 		if (bSelected)
 		{
@@ -917,7 +983,10 @@ void DrawListItemGlow(_In_ HWND hWnd, UINT itemID)
 	ListView_GetItemRect(hWnd,itemID, &rcIcon, LVIR_ICON);
 	rcLabels.left = rcIcon.right;
 	if (rcLabels.left >= rcLabels.right) return;
-	::InvalidateRect(hWnd, &rcLabels, true);
+	RECT rcClient = {0};
+	::GetClientRect(hWnd, &rcClient); // Get our client size
+	::IntersectRect(&rcLabels, &rcLabels, &rcClient);
+	RedrawWindow(hWnd, &rcLabels, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
 } // DrawListItemGlow
 
 void DrawTreeItemGlow(_In_ HWND hWnd, _In_ HTREEITEM hItem)
@@ -1079,37 +1148,52 @@ void DrawExpandTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ HTREEITEM hItem, bool
 	bool bHasChildren = tvitem.cChildren != 0;
 	if (bHasChildren)
 	{
-		bool bExpanded = (TVIS_EXPANDED == (tvitem.state & TVIS_EXPANDED));
-		RECT rect = {0};
-		TreeView_GetItemRect(hWnd, hItem, &rect, 1);
+		RECT rcButton = {0};
+		TreeView_GetItemRect(hWnd, hItem, &rcButton, true);
 
-		// Build a box to erase the +/- icons
-		RECT rcPlusMinus = rect;
-		rcPlusMinus.top++;
-		rcPlusMinus.bottom--;
-		rcPlusMinus.left = rect.left - 14;
-		rcPlusMinus.right = rcPlusMinus.left + 10;
-		::FillRect(hdc, &rcPlusMinus, GetSysBrush(bHover?cGlowBackground:cBackground));
+		// Erase the +/- icons
+		// We erase everything to the left of the label
+		rcButton.right = rcButton.left;
+		rcButton.left = 0;
+		::FillRect(hdc, &rcButton, GetSysBrush(bHover?cGlowBackground:cBackground));
+
+		// Now we focus on a box 15 pixels wide to the left of the label
+		rcButton.left = rcButton.right - 15;
+
+		// Boundary box for the actual triangles
+		RECT rcTriangle = {0};
 
 		POINT tri[3] = {0};
+		bool bExpanded = (TVIS_EXPANDED == (tvitem.state & TVIS_EXPANDED));
 		if (bExpanded)
 		{
-			tri[0].x = rect.left-14;
-			tri[0].y = rect.top+11;
-			tri[1].x = tri[0].x+5;
-			tri[1].y = tri[0].y-5;
-			tri[2].x = tri[0].x+5;
-			tri[2].y = tri[0].y;
+			rcTriangle.top = (rcButton.top + rcButton.bottom) / 2 - 3;
+			rcTriangle.bottom = rcTriangle.top + 5;
+			rcTriangle.left = rcButton.left;
+			rcTriangle.right = rcTriangle.left + 5;
+
+			tri[0].x = rcTriangle.left;
+			tri[0].y = rcTriangle.bottom;
+			tri[1].x = rcTriangle.right;
+			tri[1].y = rcTriangle.top;
+			tri[2].x = rcTriangle.right;
+			tri[2].y = rcTriangle.bottom;
 		}
 		else
 		{
-			tri[0].x = rect.left-14;
-			tri[0].y = rect.top+4;
-			tri[1].x = tri[0].x;
-			tri[1].y = tri[0].y+8;
-			tri[2].x = tri[0].x+4;
-			tri[2].y = tri[0].y+4;
+			rcTriangle.top = (rcButton.top + rcButton.bottom) / 2 - 4;
+			rcTriangle.bottom = rcTriangle.top + 8;
+			rcTriangle.left = rcButton.left;
+			rcTriangle.right = rcTriangle.left + 4;
+
+			tri[0].x = rcTriangle.left;
+			tri[0].y = rcTriangle.top;
+			tri[1].x = rcTriangle.left;
+			tri[1].y = rcTriangle.bottom;
+			tri[2].x = rcTriangle.right;
+			tri[2].y = (rcTriangle.top + rcTriangle.bottom) / 2;
 		}
+
 		uiColor cEdge;
 		uiColor cFill;
 		if (bGlow)
@@ -1125,6 +1209,54 @@ void DrawExpandTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ HTREEITEM hItem, bool
 		DrawFilledPolygon(hdc, tri, _countof(tri), MyGetSysColor(cEdge), GetSysBrush(cFill));
 	}
 } // DrawExpandTriangle
+
+void DrawTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ CONST RECT* lprc, bool bButton, bool bUp)
+{
+	if (!hWnd || !hdc || !lprc) return;
+
+	CDoubleBuffer db;
+	db.Begin(hdc, lprc);
+
+	::FillRect(hdc, lprc, GetSysBrush(bButton?cPaneHeaderBackground:cBackground));
+
+	POINT tri[3] = {0};
+	LONG lCenter = 0;
+	LONG lTop = 0;
+	if (bButton)
+	{
+		lCenter = lprc->left + (lprc->bottom - lprc->top) / 2;
+		lTop = (lprc->top + lprc->bottom - TRIANGLE_SIZE) / 2;
+	}
+	else
+	{
+		lCenter = (lprc->left + lprc->right)/2;
+		lTop = lprc->top + GetSystemMetrics(SM_CYBORDER);
+	}
+
+	if (bUp)
+	{
+		tri[0].x = lCenter;
+		tri[0].y = lTop;
+		tri[1].x = lCenter - TRIANGLE_SIZE;
+		tri[1].y = lTop + TRIANGLE_SIZE;
+		tri[2].x = lCenter + TRIANGLE_SIZE;
+		tri[2].y = lTop + TRIANGLE_SIZE;
+	}
+	else
+	{
+		tri[0].x = lCenter;
+		tri[0].y = lTop + TRIANGLE_SIZE;
+		tri[1].x = lCenter - TRIANGLE_SIZE;
+		tri[1].y = lTop;
+		tri[2].x = lCenter + TRIANGLE_SIZE;
+		tri[2].y = lTop;
+	}
+	uiColor uiArrow = cArrow;
+	if (bButton) uiArrow = cPaneHeaderText;
+	DrawFilledPolygon(hdc, tri, _countof(tri), MyGetSysColor(uiArrow), GetSysBrush(uiArrow));
+
+	db.End(hdc);
+}
 
 void DrawHeaderItem(_In_ HWND hWnd, _In_ HDC hdc, UINT itemID, _In_ LPRECT lprc)
 {
@@ -1153,28 +1285,7 @@ void DrawHeaderItem(_In_ HWND hWnd, _In_ HDC hdc, UINT itemID, _In_ LPRECT lprc)
 
 	if (bSorted)
 	{
-		POINT tri[3] = {0};
-		LONG lCenter = (rcHeader.left + rcHeader.right)/2;
-		LONG lTop = rcHeader.top + GetSystemMetrics(SM_CYBORDER);
-		if (bSortUp)
-		{
-			tri[0].x = lCenter;
-			tri[0].y = lTop;
-			tri[1].x = lCenter-4;
-			tri[1].y = lTop+4;
-			tri[2].x = lCenter+4;
-			tri[2].y = lTop+4;
-		}
-		else
-		{
-			tri[0].x = lCenter;
-			tri[0].y = lTop+4;
-			tri[1].x = lCenter-4;
-			tri[1].y = lTop;
-			tri[2].x = lCenter+4;
-			tri[2].y = lTop;
-		}
-		DrawFilledPolygon(hdc, tri, _countof(tri), MyGetSysColor(cArrow), GetSysBrush(cArrow));
+		DrawTriangle(hWnd, hdc, lprc, false, bSortUp);
 	}
 
 	RECT rcText = rcHeader;
@@ -1274,26 +1385,48 @@ void DrawTrackingBar(_In_ HWND hWndHeader, _In_ HWND hWndList, int x, int iHeade
 	::ReleaseDC(hWndList, hdc);
 } // DrawTrackingBar
 
+void StyleButton(_In_ HWND hWnd, uiButtonStyle bsStyle)
+{
+	HRESULT hRes = S_OK;
+
+	EC_B(::SetProp(hWnd, BUTTON_STYLE, (HANDLE) bsStyle));
+}
+
 void DrawButton(_In_ HWND hWnd, _In_ HDC hDC, _In_ LPRECT lprc, UINT itemState)
 {
-	WCHAR szButton[255] = {0};
-	::GetWindowTextW(hWnd, szButton, _countof(szButton));
-	int iState = (int) ::SendMessage(hWnd, BM_GETSTATE, NULL, NULL);
-	bool bGlow = (iState & BST_HOT) != 0;
-	bool bPushed = (iState & BST_PUSHED) != 0;
-	bool bDisabled = (itemState & CDIS_DISABLED) != 0;
-	bool bFocused = (itemState & CDIS_FOCUS) != 0;
-
 	::FillRect(hDC, lprc, GetSysBrush(cBackground));
-	::FrameRect(hDC ,lprc, (bFocused || bGlow || bPushed)?GetSysBrush(cFrameSelected):GetSysBrush(cFrameUnselected));
 
-	DrawSegoeTextW(
-		hDC,
-		szButton,
-		(bPushed || bDisabled)?MyGetSysColor(cTextDisabled):MyGetSysColor(cText),
-		lprc,
-		false,
-		DT_SINGLELINE | DT_VCENTER | DT_CENTER);
+	ULONG bsStyle = (ULONG) ::GetProp(hWnd, BUTTON_STYLE);
+	switch(bsStyle)
+	{
+	case bsUnstyled:
+		{
+			WCHAR szButton[255] = {0};
+			::GetWindowTextW(hWnd, szButton, _countof(szButton));
+			int iState = (int) ::SendMessage(hWnd, BM_GETSTATE, NULL, NULL);
+			bool bGlow = (iState & BST_HOT) != 0;
+			bool bPushed = (iState & BST_PUSHED) != 0;
+			bool bDisabled = (itemState & CDIS_DISABLED) != 0;
+			bool bFocused = (itemState & CDIS_FOCUS) != 0;
+
+			::FrameRect(hDC ,lprc, (bFocused || bGlow || bPushed)?GetSysBrush(cFrameSelected):GetSysBrush(cFrameUnselected));
+
+			DrawSegoeTextW(
+				hDC,
+				szButton,
+				(bPushed || bDisabled)?MyGetSysColor(cTextDisabled):MyGetSysColor(cText),
+				lprc,
+				false,
+				DT_SINGLELINE | DT_VCENTER | DT_CENTER);
+		}
+		break;
+	case bsUpArrow:
+		DrawTriangle(hWnd, hDC, lprc, true, true);
+		break;
+	case bsDownArrow:
+		DrawTriangle(hWnd, hDC, lprc, true, false);
+		break;
+	}
 } // DrawButton
 
 void DrawCheckButton(_In_ HWND hWnd, _In_ HDC hDC, _In_ LPRECT lprc, UINT itemState)
@@ -1413,7 +1546,7 @@ void MeasureItem(_In_ LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 	// Important to keep this case even if we do not use it - CDialog::OnMeasureItem asserts.
 	else if (ODT_COMBOBOX == lpMeasureItemStruct->CtlType)
 	{
-//		DebugPrint(DBGGeneric,"Combo Box\n");
+		//		DebugPrint(DBGGeneric,"Combo Box\n");
 	}
 } // MeasureItem
 
@@ -1624,12 +1757,12 @@ void DrawStatus(
 } // DrawStatus
 
 void GetCaptionRects(HWND hWnd,
-	RECT* lprcFullCaption,
-	RECT* lprcIcon,
-	RECT* lprcCloseIcon,
-	RECT* lprcMaxIcon,
-	RECT* lprcMinIcon,
-	RECT* lprcCaptionText)
+					 RECT* lprcFullCaption,
+					 RECT* lprcIcon,
+					 RECT* lprcCloseIcon,
+					 RECT* lprcMaxIcon,
+					 RECT* lprcMinIcon,
+					 RECT* lprcCaptionText)
 {
 	RECT rcFullCaption = {0};
 	RECT rcIcon = {0};
@@ -1677,7 +1810,7 @@ void GetCaptionRects(HWND hWnd,
 	rcFullCaption.bottom =
 		rcCaptionText.bottom =
 		rcWindow.top + cyFrame + GetSystemMetrics(SM_CYCAPTION);
-	
+
 	rcIcon.top = rcWindow.top + cyFrame + GetSystemMetrics(SM_CYEDGE);
 	rcIcon.left = rcWindow.left + cxFrame + cxFixedFrame;
 	rcIcon.bottom = rcIcon.top + GetSystemMetrics(SM_CYSMICON);
@@ -1964,14 +2097,23 @@ _Check_return_ bool HandleControlUI(UINT message, WPARAM wParam, LPARAM lParam, 
 	case WM_CTLCOLORSTATIC:
 	case WM_CTLCOLOREDIT:
 		{
+			ULONG lsStyle = (ULONG) ::GetProp((HWND) lParam, LABEL_STYLE);
+			uiColor uiText = cText;
+			uiColor uiBackground = cBackground;
+
+			if (lsStyle == lsPaneHeader)
+			{
+				uiText = cPaneHeaderText;
+				uiBackground = cPaneHeaderBackground;
+			}
 			HDC hdc = (HDC) wParam;
 			if (hdc)
 			{
-				::SetTextColor(hdc, MyGetSysColor(cText));
+				::SetTextColor(hdc, MyGetSysColor(uiText));
 				::SetBkMode(hdc, TRANSPARENT);
 				::SelectObject(hdc, GetSegoeFont());
 			}
-			*lpResult = (LRESULT) GetSysBrush(cBackground);
+			*lpResult = (LRESULT) GetSysBrush(uiBackground);
 			return true;
 		}
 		break;
@@ -1981,7 +2123,7 @@ _Check_return_ bool HandleControlUI(UINT message, WPARAM wParam, LPARAM lParam, 
 
 			switch (pHdr->code)
 			{
-			// Paint Buttons
+				// Paint Buttons
 			case NM_CUSTOMDRAW:
 				return CustomDrawButton(pHdr, lpResult);
 			}
@@ -2028,3 +2170,38 @@ void DrawHelpText(_In_ HWND hWnd, _In_ UINT uIDText)
 	}
 	::EndPaint(hWnd, &ps);
 } // DrawHelpText
+
+// Handle WM_ERASEBKGND so the control won't flicker.
+LRESULT CALLBACK LabelProc(
+	_In_ HWND hWnd,
+	UINT uMsg,
+	WPARAM wParam,
+	LPARAM lParam,
+	UINT_PTR uIdSubclass,
+	DWORD_PTR /*dwRefData*/)
+{
+	switch (uMsg)
+	{
+	case WM_NCDESTROY:
+		RemoveWindowSubclass(hWnd, LabelProc, uIdSubclass);
+		return DefSubclassProc(hWnd, uMsg, wParam, lParam);
+		break;
+	case WM_ERASEBKGND:
+		return true;
+	}
+	return DefSubclassProc(hWnd, uMsg, wParam, lParam);
+} // LabelProc
+
+void SubclassLabel(_In_ HWND hWnd)
+{
+	SetWindowSubclass(hWnd, LabelProc, 0, 0);
+	::SendMessageA(hWnd, WM_SETFONT, (WPARAM) GetSegoeFont(), false);
+	::SendMessage(hWnd, EM_SETMARGINS, EC_LEFTMARGIN | EC_RIGHTMARGIN, 0);
+}
+
+void StyleLabel(_In_ HWND hWnd, uiLabelStyle lsStyle)
+{
+	HRESULT hRes = S_OK;
+
+	EC_B(::SetProp(hWnd, LABEL_STYLE, (HANDLE) lsStyle));
+}

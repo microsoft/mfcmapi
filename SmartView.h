@@ -4,18 +4,20 @@ extern NAME_ARRAY_ENTRY g_uidParsingTypes[];
 extern ULONG g_cuidParsingTypes;
 
 // lpszSmartView allocated with new, delete with delete[]
-void InterpretPropSmartView(_In_ LPSPropValue lpProp, // required property value
-							_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
-							_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
-							_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
-							bool bMVRow, // did the row come from a MV prop?
-							_Deref_out_opt_z_ LPWSTR* lpszSmartView); // Built from lpProp & lpMAPIProp
+ULONG InterpretPropSmartView(_In_ LPSPropValue lpProp, // required property value
+							 _In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
+							 _In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
+							 _In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
+							 bool bIsAB, // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
+							 bool bMVRow, // did the row come from a MV prop?
+							 _Deref_out_opt_z_ LPWSTR* lpszSmartView); // Built from lpProp & lpMAPIProp
 
 void InterpretBinaryAsString(SBinary myBin, DWORD_PTR iStructType, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_z_ LPWSTR* lpszResultString);
-void InterpretNumberAsString(_PV pV, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_z_ LPWSTR lpszPropNameString, _In_opt_ LPCGUID lpguidNamedProp, bool bLabel, _Deref_out_opt_z_ LPWSTR* lpszResultString);
-void InterpretNumberAsStringProp(ULONG ulVal, ULONG ulPropTag, _Deref_out_opt_z_ LPWSTR* lpszResultString);
-void InterpretNumberAsStringNamedProp(ULONG ulVal, ULONG ulPropNameID, _In_opt_ LPCGUID lpguidNamedProp, _Deref_out_opt_z_ LPWSTR* lpszResultString);
-	_Check_return_ LPWSTR FidMidToSzString(LONGLONG llID, bool bLabel);
+void InterpretMVBinaryAsString(SBinaryArray myBinArray, DWORD_PTR iStructType, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_z_ LPWSTR* lpszResultString);
+ULONG InterpretNumberAsString(_PV pV, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_z_ LPWSTR lpszPropNameString, _In_opt_ LPCGUID lpguidNamedProp, bool bLabel, _Deref_out_opt_z_ LPWSTR* lpszResultString);
+ULONG InterpretNumberAsStringProp(ULONG ulVal, ULONG ulPropTag, _Deref_out_opt_z_ LPWSTR* lpszResultString);
+ULONG InterpretNumberAsStringNamedProp(ULONG ulVal, ULONG ulPropNameID, _In_opt_ LPCGUID lpguidNamedProp, _Deref_out_opt_z_ LPWSTR* lpszResultString);
+_Check_return_ LPWSTR FidMidToSzString(LONGLONG llID, bool bLabel);
 
 // Nothing below this point actually needs to be public. It's only used internally by InterpretPropSmartView
 

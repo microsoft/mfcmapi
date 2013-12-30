@@ -83,7 +83,7 @@ public:
 
 	// Exported manipulation functions
 	_Check_return_ HRESULT       Create(_In_ CWnd* pCreateParent, ULONG ulFlags, UINT nID, bool bImages);
-	void          AutoSizeColumns();
+	void          AutoSizeColumns(bool bMinWidth);
 	void          DeleteAllColumns(bool bShutdown = false);
 	void          SetSelectedItem(int iItem);
 	void          SortClickedColumn();
@@ -91,6 +91,7 @@ public:
 	void SetItemText(int nItem, int nSubItem, _In_z_ LPCTSTR lpszText);
 	void SetItemTextA(int nItem, int nSubItem, _In_z_ LPCSTR lpszText);
 	void SetItemTextW(int nItem, int nSubItem, _In_z_ LPCWSTR lpszText);
+	void AllowEscapeClose();
 
 protected:
 	void          MySetRedraw(bool bRedraw);
@@ -107,7 +108,7 @@ private:
 	void OnColumnClick(int iColumn);
 	void OnDeleteAllItems(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 	void OnDeleteItem(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
-	void AutoSizeColumn(int iColumn, int iMinWidth, int iMaxWidth);
+	void AutoSizeColumn(int iColumn, int iMaxWidth, int iMinWidth);
 	void OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 	_Check_return_ static int CALLBACK MyCompareProc(_In_ LPARAM lParam1, _In_ LPARAM lParam2, _In_ LPARAM lParamSort);
 
@@ -120,6 +121,7 @@ private:
 	int			m_iClickedColumn;
 	bool		m_bSortUp;
 	int			m_iItemCurHover;
+	bool		m_bAllowEscapeClose;
 
 	DECLARE_MESSAGE_MAP()
 };

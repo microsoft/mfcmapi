@@ -18,8 +18,8 @@ enum FakesSplitHitTestValue
 };
 
 CFakeSplitter::CFakeSplitter(
-							 _In_ CBaseDialog *lpHostDlg
-							 ):CWnd()
+	_In_ CBaseDialog *lpHostDlg
+	):CWnd()
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	HRESULT hRes = S_OK;
@@ -34,7 +34,7 @@ CFakeSplitter::CFakeSplitter(
 
 	m_flSplitPercent = 0.5;
 
-	m_iSplitWidth = 7;
+	m_iSplitWidth = 0;
 
 	m_PaneOne = NULL;
 	m_PaneTwo = NULL;
@@ -131,6 +131,14 @@ LRESULT CFakeSplitter::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 void CFakeSplitter::SetPaneOne(CWnd* PaneOne)
 {
 	m_PaneOne = PaneOne;
+	if (m_PaneOne)
+	{
+		m_iSplitWidth = 7;
+	}
+	else
+	{
+		m_iSplitWidth = 0;
+	}
 } // CFakeSplitter::SetPaneOne
 
 void CFakeSplitter::SetPaneTwo(CWnd* PaneTwo)
@@ -186,19 +194,28 @@ void CFakeSplitter::OnSize(UINT /*nType*/, int cx, int cy)
 		EC_B(EndDeferWindowPos(hdwp));
 	}
 
-	// Invalidate our splitter region to force a redraw
-	if (SplitHorizontal == m_SplitType)
+	if (m_PaneOne && m_PaneTwo)
 	{
-		InvalidateRect(CRect(m_iSplitPos,0,m_iSplitPos+m_iSplitWidth,cy),false);
-	}
-	else
-	{
-		InvalidateRect(CRect(0,m_iSplitPos,cx,m_iSplitPos+m_iSplitWidth),false);
+		// Invalidate our splitter region to force a redraw
+		if (SplitHorizontal == m_SplitType)
+		{
+			InvalidateRect(CRect(m_iSplitPos,0,m_iSplitPos+m_iSplitWidth,cy),false);
+		}
+		else
+		{
+			InvalidateRect(CRect(0,m_iSplitPos,cx,m_iSplitPos+m_iSplitWidth),false);
+		}
 	}
 } // CFakeSplitter::OnSize
 
 void CFakeSplitter::CalcSplitPos()
 {
+	if (!m_PaneOne)
+	{
+		m_iSplitPos = 0;
+		return;
+	}
+
 	int iCurSpan;
 	CRect rect;
 	GetClientRect(rect);
@@ -240,6 +257,8 @@ void CFakeSplitter::SetSplitType(SplitType stSplitType)
 
 _Check_return_ int CFakeSplitter::HitTest(LONG x, LONG y)
 {
+	if (!m_PaneOne) return noHit;
+
 	LONG lTestPos;
 
 	if (SplitHorizontal == m_SplitType)
@@ -260,6 +279,8 @@ _Check_return_ int CFakeSplitter::HitTest(LONG x, LONG y)
 
 void CFakeSplitter::OnMouseMove(UINT /*nFlags*/, CPoint point)
 {
+	if (!m_PaneOne) return;
+
 	HRESULT hRes = S_OK;
 	// If we don't have GetCapture, then we don't want to track right now.
 	if (GetCapture() != this)

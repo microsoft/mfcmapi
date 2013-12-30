@@ -263,8 +263,8 @@ void CMsgServiceTableDlg::OnOpenProfileSection()
 		2,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 
-	MyUID.InitGUIDDropDown(0,IDS_MAPIUID,false);
-	MyUID.InitCheck(1, IDS_MAPIUIDBYTESWAPPED, false, false);
+	MyUID.InitPane(0, CreateDropDownGuidPane(IDS_MAPIUID, false));
+	MyUID.InitPane(1, CreateCheckPane(IDS_MAPIUIDBYTESWAPPED, false, false));
 
 	WC_H(MyUID.DisplayDialog());
 	if (S_OK != hRes) return;

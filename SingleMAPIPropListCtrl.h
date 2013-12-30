@@ -2,6 +2,7 @@
 // SingleMAPIPropListCtrl.h : header file
 
 #include "SortListCtrl.h"
+#include "PropertyBag/PropertyBag.h" // TODO: Use a forward declaration
 class CBaseDialog;
 class CMapiObjects;
 
@@ -18,11 +19,11 @@ public:
 
 	// Initialization
 	_Check_return_ HRESULT SetDataSource(_In_opt_ LPMAPIPROP lpMAPIProp, _In_opt_ SortListData* lpListData, bool bIsAB);
+	_Check_return_ HRESULT SetDataSource(_In_opt_ LPMAPIPROPERTYBAG lpPropBag, bool bIsAB);
 	_Check_return_ HRESULT RefreshMAPIPropList();
 
 	// Selected item accessors
-	_Check_return_ ULONG        GetCountPropVals();
-	_Check_return_ LPSPropValue GetPropVals();
+	_Check_return_ HRESULT GetDisplayedProps(ULONG FAR* lpcValues, LPSPropValue FAR* lppPropArray);
 	void         GetSelectedPropTag(_Out_ ULONG* lpPropTag);
 	_Check_return_ bool         IsModifiedPropVals();
 
@@ -38,7 +39,6 @@ private:
 	void FindAllNamedProps();
 	void CountNamedProps();
 	_Check_return_ HRESULT LoadMAPIPropList();
-	_Check_return_ HRESULT SetNewProp(_In_ LPSPropValue lpNewProp);
 
 	void AddPropToListBox(
 		int iRow,
@@ -63,20 +63,19 @@ private:
 	void OnModifyExtraProps();
 	void OnOpenProperty();
 	void OnOpenPropertyAsTable();
-	void OnParseProperty();
 	void OnPasteNamedProps();
 
 	// Custom messages
 	_Check_return_ LRESULT msgOnSaveColumnOrder(WPARAM wParam, LPARAM lParam);
 
-	LPMAPIPROP		m_lpMAPIProp;
-	SortListData*	m_lpSourceData; // NEVER FREE THIS - It's just 'on loan' from CContentsTableListCtrl
 	CBaseDialog*	m_lpHostDlg;
 	CString			m_szTitle;
 	bool			m_bHaveEverDisplayedSomething;
 	bool			m_bIsAB;
-	bool			m_bRowModified;
 	CMapiObjects*	m_lpMapiObjects;
+
+	// TODO: Replace m_lpMAPIProp and m_lpSourceData with a single PropertyBag
+	LPMAPIPROPERTYBAG m_lpPropBag;
 
 	// Used to store prop tags added through AddPropsToExtraProps
 	LPSPropTagArray		m_sptExtraProps;

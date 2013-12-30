@@ -728,9 +728,9 @@ void CHierarchyTableTreeCtrl::UpdateSelectionUI(HTREEITEM hItem)
 	LPSPropValue	lpProps = NULL;
 	ULONG			cVals = 0;
 	UINT			uiMsg = IDS_STATUSTEXTNOFOLDER;
-	ULONG			ulParam1 = 0;
-	ULONG			ulParam2 = 0;
-	ULONG			ulParam3 = 0;
+	CString szParam1;
+	CString szParam2;
+	CString szParam3;
 
 	DebugPrintEx(DBGHierarchy,CLASS,_T("UpdateSelectionUI"),_T("%p\n"),hItem);
 
@@ -758,14 +758,16 @@ void CHierarchyTableTreeCtrl::UpdateSelectionUI(HTREEITEM hItem)
 				if (PT_ERROR == PROP_TYPE(lpProps[htcPR_CONTENT_COUNT].ulPropTag))
 				{
 					WARNHRESMSG(lpProps[htcPR_CONTENT_COUNT].Value.err,IDS_NODELACKSCONTENTCOUNT);
+					szParam1 = _T("?"); // STRING_OK
 				}
-				else ulParam1 = lpProps[htcPR_CONTENT_COUNT].Value.ul;
+				else szParam1.Format(_T("%u"), lpProps[htcPR_CONTENT_COUNT].Value.ul);
 
 				if (PT_ERROR == PROP_TYPE(lpProps[htcPR_ASSOC_CONTENT_COUNT].ulPropTag))
 				{
 					WARNHRESMSG(lpProps[htcPR_ASSOC_CONTENT_COUNT].Value.err,IDS_NODELACKSASSOCCONTENTCOUNT);
+					szParam2 = _T("?"); // STRING_OK
 				}
-				else ulParam2 = lpProps[htcPR_ASSOC_CONTENT_COUNT].Value.ul;
+				else szParam2.Format(_T("%u"), lpProps[htcPR_ASSOC_CONTENT_COUNT].Value.ul);
 			}
 			else
 			{
@@ -773,20 +775,23 @@ void CHierarchyTableTreeCtrl::UpdateSelectionUI(HTREEITEM hItem)
 				if (PT_ERROR == PROP_TYPE(lpProps[htcPR_DELETED_MSG_COUNT].ulPropTag))
 				{
 					WARNHRESMSG(lpProps[htcPR_DELETED_MSG_COUNT].Value.err,IDS_NODELACKSDELETEDMESSAGECOUNT);
+					szParam1 = _T("?"); // STRING_OK
 				}
-				else ulParam1 = lpProps[htcPR_DELETED_MSG_COUNT].Value.ul;
+				else szParam1.Format(_T("%u"), lpProps[htcPR_DELETED_MSG_COUNT].Value.ul);
 
 				if (PT_ERROR == PROP_TYPE(lpProps[htcPR_DELETED_ASSOC_MSG_COUNT].ulPropTag))
 				{
 					WARNHRESMSG(lpProps[htcPR_DELETED_ASSOC_MSG_COUNT].Value.err,IDS_NODELACKSDELETEDASSOCMESSAGECOUNT);
+					szParam2 = _T("?"); // STRING_OK
 				}
-				else ulParam2 = lpProps[htcPR_DELETED_ASSOC_MSG_COUNT].Value.ul;
+				else szParam2.Format(_T("%u"), lpProps[htcPR_DELETED_ASSOC_MSG_COUNT].Value.ul);
 
 				if (PT_ERROR == PROP_TYPE(lpProps[htcPR_DELETED_FOLDER_COUNT].ulPropTag))
 				{
 					WARNHRESMSG(lpProps[htcPR_DELETED_FOLDER_COUNT].Value.err,IDS_NODELACKSDELETEDSUBFOLDERCOUNT);
+					szParam3 = _T("?"); // STRING_OK
 				}
-				else ulParam2 = lpProps[htcPR_DELETED_FOLDER_COUNT].Value.ul;
+				else szParam3.Format(_T("%u"), lpProps[htcPR_DELETED_FOLDER_COUNT].Value.ul);
 			}
 			MAPIFreeBuffer(lpProps);
 		}
@@ -795,9 +800,9 @@ void CHierarchyTableTreeCtrl::UpdateSelectionUI(HTREEITEM hItem)
 	m_lpHostDlg->UpdateStatusBarText(
 		STATUSDATA1,
 		uiMsg,
-		ulParam1,
-		ulParam2,
-		ulParam3);
+		szParam1,
+		szParam2,
+		szParam3);
 
 	m_lpHostDlg->OnUpdateSingleMAPIPropListCtrl(lpMAPIContainer, (SortListData*) GetItemData(hItem));
 	m_lpHostDlg->UpdateTitleBarText(GetItemText(GetSelectedItem()));
@@ -913,17 +918,34 @@ void CHierarchyTableTreeCtrl::OnRightClick(_In_ NMHDR* /*pNMHDR*/, _In_ LRESULT*
 	*pResult = 1;
 } // CHierarchyTableTreeCtrl::OnRightClick
 
-void CHierarchyTableTreeCtrl::OnContextMenu(_In_ CWnd* /*pWnd*/, CPoint pos)
+void CHierarchyTableTreeCtrl::OnContextMenu(_In_ CWnd* pWnd, CPoint pos)
 {
-	// Select the item that is at the point pos.
-	UINT uFlags = NULL;
-	CPoint ptTree = pos;
-	ScreenToClient(&ptTree);
-	HTREEITEM hClickedItem = HitTest(ptTree, &uFlags);
-
-	if ((hClickedItem != NULL) && (TVHT_ONITEM & uFlags))
+	if (pWnd && -1 == pos.x && -1 == pos.y)
 	{
-		Select(hClickedItem, TVGN_CARET);
+		// Find the highlighted item
+		HTREEITEM item = GetSelectedItem();
+
+		if (item)
+		{
+			RECT rc = {0};
+			GetItemRect(item, &rc, true);
+			pos.x = rc.left;
+			pos.y = rc.top;
+			::ClientToScreen(pWnd->m_hWnd, &pos);
+		}
+	}
+	else
+	{
+		// Select the item that is at the point pos.
+		UINT uFlags = NULL;
+		CPoint ptTree = pos;
+		ScreenToClient(&ptTree);
+		HTREEITEM hClickedItem = HitTest(ptTree, &uFlags);
+
+		if ((hClickedItem != NULL) && (TVHT_ONITEM & uFlags))
+		{
+			Select(hClickedItem, TVGN_CARET);
+		}
 	}
 
 	DisplayContextMenu(m_nIDContextMenu,IDR_MENU_HIERARCHY_TABLE,m_lpHostDlg->m_hWnd,pos.x, pos.y);
@@ -1188,14 +1210,14 @@ _Check_return_ LRESULT CHierarchyTableTreeCtrl::msgOnAddItem(WPARAM wParam, LPAR
 	else
 	{
 		// in case the item doesn't know it has children, let it know
-			TVITEM tvItem = {0};
-			tvItem.hItem = hParent;
-			tvItem.mask = TVIF_PARAM;
-			if (TreeView_GetItem(m_hWnd,&tvItem) && tvItem.lParam)
-			{
-				SortListData* lpData = (SortListData*) tvItem.lParam;
-				lpData->data.Node.cSubfolders = 1;
-			}
+		TVITEM tvItem = {0};
+		tvItem.hItem = hParent;
+		tvItem.mask = TVIF_PARAM;
+		if (TreeView_GetItem(m_hWnd,&tvItem) && tvItem.lParam)
+		{
+			SortListData* lpData = (SortListData*) tvItem.lParam;
+			lpData->data.Node.cSubfolders = 1;
+		}
 	}
 
 	return S_OK;

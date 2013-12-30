@@ -39,6 +39,7 @@ private:
 	void OnRemoveServicesFromMAPISVC();
 	void OnSetDefaultProfile();
 	void OnOpenProfileByName();
+	void OnExportProfile();
 
 	void AddPSTToProfile(bool bUnicodePST);
 

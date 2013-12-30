@@ -12,6 +12,7 @@
 #include "SmartView.h"
 #include "Editor.h"
 #include "MainDlg.h"
+#include "QSSpecialFolders.h"
 
 LPMAPISESSION OpenSessionForQuickStart(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 {
@@ -197,7 +198,7 @@ void OnQSDisplayNicknameCache(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	LPWSTR szNicknames = NULL;
 	LPSPropValue lpsProp = NULL;
 
-	lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, IDS_STATUSTEXTLOADINGNICKNAME, NULL, NULL, NULL);
+	lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, IDS_STATUSTEXTLOADINGNICKNAME);
 	lpHostDlg->SendMessage(WM_PAINT, NULL, NULL); // force paint so we update the status now
 
 	LPMDB lpMDB = NULL;
@@ -218,7 +219,7 @@ void OnQSDisplayNicknameCache(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 				SRestriction sRes = {0};
 				SPropValue sPV = {0};
 				sRes.rt = RES_PROPERTY;
-				sRes.res.resProperty.ulPropTag = PR_MESSAGE_CLASS_A;
+				sRes.res.resProperty.ulPropTag = PR_MESSAGE_CLASS;
 				sRes.res.resProperty.relop = RELOP_EQ;
 				sRes.res.resProperty.lpProp = &sPV;
 				sPV.ulPropTag = sRes.res.resProperty.ulPropTag;
@@ -278,11 +279,10 @@ void OnQSDisplayNicknameCache(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 				lpHostDlg,
 				IDS_NICKNAME,
 				NULL,
-				3,
+				2,
 				CEDITOR_BUTTON_OK);
-			MyResults.InitMultiLine(0, NULL, NULL, true);
-			MyResults.InitSingleLine(1, IDS_CB, NULL, true);
-			MyResults.InitMultiLine(2, IDS_HEX, NULL, true);
+			MyResults.InitPane(0, CreateCollapsibleTextPane(NULL, true));
+			MyResults.InitPane(1, CreateCountedTextPane(IDS_HEX, true, IDS_CB));
 
 			if (szNicknames)
 			{
@@ -291,8 +291,9 @@ void OnQSDisplayNicknameCache(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 
 			if (lpsProp)
 			{
-				MyResults.SetSize(1, lpsProp->Value.bin.cb);
-				MyResults.SetBinary(2, lpsProp->Value.bin.lpb, lpsProp->Value.bin.cb);
+				CountedTextPane* lpPane = (CountedTextPane*) MyResults.GetControl(1);
+				if (lpPane) lpPane->SetCount(lpsProp->Value.bin.cb);
+				MyResults.SetBinary(1, lpsProp->Value.bin.lpb, lpsProp->Value.bin.cb);
 			}
 
 			WC_H(MyResults.DisplayDialog());
@@ -354,7 +355,7 @@ void OnQSDisplayQuota(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	HRESULT hRes = S_OK;
 	CString szQuotaString;
 
-	lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, IDS_STATUSTEXTLOADINGQUOTA, NULL, NULL, NULL);
+	lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, IDS_STATUSTEXTLOADINGQUOTA);
 	lpHostDlg->SendMessage(WM_PAINT, NULL, NULL); // force paint so we update the status now
 
 	LPMDB lpMDB = NULL;
@@ -438,7 +439,7 @@ void OnQSDisplayQuota(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 			NULL,
 			1,
 			CEDITOR_BUTTON_OK);
-		MyResults.InitMultiLine(0, NULL, NULL, true);
+		MyResults.InitPane(0, CreateMultiLinePane(NULL, NULL, true));
 		MyResults.SetString(0, szQuotaString);
 
 		WC_H(MyResults.DisplayDialog());
@@ -454,12 +455,29 @@ bool HandleQuickStart(_In_ WORD wMenuSelect, _In_ CMainDlg* lpHostDlg, _In_ HWND
 	case ID_QSINBOX: OnQSDisplayFolder(lpHostDlg, hwnd, DEFAULT_INBOX); return true;
 	case ID_QSCALENDAR: OnQSDisplayFolder(lpHostDlg, hwnd, DEFAULT_CALENDAR); return true;
 	case ID_QSCONTACTS: OnQSDisplayFolder(lpHostDlg, hwnd, DEFAULT_CONTACTS); return true;
+	case ID_QSJOURNAL: OnQSDisplayFolder(lpHostDlg, hwnd, DEFAULT_JOURNAL); return true;
+	case ID_QSNOTES: OnQSDisplayFolder(lpHostDlg, hwnd, DEFAULT_NOTES); return true;
+	case ID_QSTASKS: OnQSDisplayFolder(lpHostDlg, hwnd, DEFAULT_TASKS); return true;
+	case ID_QSREMINDERS: OnQSDisplayFolder(lpHostDlg, hwnd, DEFAULT_REMINDERS); return true;
+	case ID_QSDRAFTS: OnQSDisplayFolder(lpHostDlg, hwnd, DEFAULT_DRAFTS); return true;
+	case ID_QSSENTITEMS: OnQSDisplayFolder(lpHostDlg, hwnd, DEFAULT_SENTITEMS); return true;
+	case ID_QSOUTBOX: OnQSDisplayFolder(lpHostDlg, hwnd, DEFAULT_OUTBOX); return true;
+	case ID_QSDELETEDITEMS: OnQSDisplayFolder(lpHostDlg, hwnd, DEFAULT_DELETEDITEMS); return true;
+	case ID_QSFINDER: OnQSDisplayFolder(lpHostDlg, hwnd, DEFAULT_FINDER); return true;
+	case ID_QSIPM_SUBTREE: OnQSDisplayFolder(lpHostDlg, hwnd, DEFAULT_IPM_SUBTREE); return true;
+	case ID_QSLOCALFREEBUSY: OnQSDisplayFolder(lpHostDlg, hwnd, DEFAULT_LOCALFREEBUSY); return true;
+	case ID_QSCONFLICTS: OnQSDisplayFolder(lpHostDlg, hwnd, DEFAULT_CONFLICTS); return true;
+	case ID_QSSYNCISSUES: OnQSDisplayFolder(lpHostDlg, hwnd, DEFAULT_SYNCISSUES); return true;
+	case ID_QSLOCALFAILURES: OnQSDisplayFolder(lpHostDlg, hwnd, DEFAULT_LOCALFAILURES); return true;
+	case ID_QSSERVERFAILURES: OnQSDisplayFolder(lpHostDlg, hwnd, DEFAULT_SERVERFAILURES); return true;
+	case ID_QSJUNKMAIL: OnQSDisplayFolder(lpHostDlg, hwnd, DEFAULT_JUNKMAIL); return true;
 	case ID_QSRULES: OnQSDisplayTable(lpHostDlg, hwnd, DEFAULT_INBOX, PR_RULES_TABLE, otRules); return true;
 	case ID_QSDEFAULTDIR: OnQSDisplayDefaultDir(lpHostDlg, hwnd); return true;
 	case ID_QSAB: OnQSDisplayAB(lpHostDlg, hwnd); return true;
 	case ID_QSCALPERM: OnQSDisplayTable(lpHostDlg, hwnd, DEFAULT_CALENDAR, PR_ACL_TABLE, otACL); return true;
 	case ID_QSNICKNAME: OnQSDisplayNicknameCache(lpHostDlg, hwnd); return true;
 	case ID_QSQUOTA: OnQSDisplayQuota(lpHostDlg, hwnd); return true;
+	case ID_QSCHECKSPECIALFOLDERS: OnQSCheckSpecialFolders(lpHostDlg, hwnd); return true;
 	}
 	return false;
 }

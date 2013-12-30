@@ -33,20 +33,20 @@ static TCHAR* CLASS = _T("CMainDlg");
 // CMainDlg dialog
 
 CMainDlg::CMainDlg(
-				   _In_ CParentWnd* pParentWnd,
-				   _In_ CMapiObjects* lpMapiObjects
-				   ):
+	_In_ CParentWnd* pParentWnd,
+	_In_ CMapiObjects* lpMapiObjects
+	):
 CContentsTableDlg(
-				  pParentWnd,
-				  lpMapiObjects,
-				  ID_PRODUCTNAME,
-				  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
-				  NULL,
-				  (LPSPropTagArray) &sptSTORECols,
-				  NUMSTORECOLUMNS,
-				  STOREColumns,
-				  IDR_MENU_MAIN_POPUP,
-				  MENU_CONTEXT_MAIN)
+	pParentWnd,
+	lpMapiObjects,
+	ID_PRODUCTNAME,
+	mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+	NULL,
+	(LPSPropTagArray) &sptSTORECols,
+	NUMSTORECOLUMNS,
+	STOREColumns,
+	IDR_MENU_MAIN_POPUP,
+	MENU_CONTEXT_MAIN)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 
@@ -111,6 +111,7 @@ BEGIN_MESSAGE_MAP(CMainDlg, CContentsTableDlg)
 	ON_COMMAND(ID_VIEWMSGPROPERTIES, OnViewMSGProperties)
 	ON_COMMAND(ID_CONVERTMSGTOEML, OnConvertMSGToEML)
 	ON_COMMAND(ID_CONVERTEMLTOMSG, OnConvertEMLToMSG)
+	ON_COMMAND(ID_CONVERTMSGTOXML, OnConvertMSGToXML)
 	ON_COMMAND(ID_DISPLAYMAPIPATH, OnDisplayMAPIPath)
 END_MESSAGE_MAP()
 
@@ -463,7 +464,7 @@ void CMainDlg::OnOpenDefaultMessageStore()
 			1,
 			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 		MyPrompt.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS),true));
-		MyPrompt.InitSingleLine(0,IDS_CREATESTORENTRYIDFLAGS,NULL,false);
+		MyPrompt.InitPane(0, CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, NULL, false));
 		MyPrompt.SetHex(0,NULL);
 		WC_H(MyPrompt.DisplayDialog());
 		if (S_OK == hRes)
@@ -546,12 +547,12 @@ void CMainDlg::OnOpenMessageStoreEID()
 		5,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 
-	MyEID.InitSingleLine(0,IDS_EID,NULL,false);
-	MyEID.InitSingleLine(1,IDS_FLAGS,NULL,false);
+	MyEID.InitPane(0, CreateSingleLinePane(IDS_EID, NULL, false));
+	MyEID.InitPane(1, CreateSingleLinePane(IDS_FLAGS, NULL, false));
 	MyEID.SetHex(1,MDB_WRITE);
-	MyEID.InitCheck(2,IDS_EIDBASE64ENCODED,false,false);
-	MyEID.InitCheck(3,IDS_DISPLAYPROPS,false,false);
-	MyEID.InitCheck(4,IDS_UNWRAPSTORE,false,false);
+	MyEID.InitPane(2, CreateCheckPane(IDS_EIDBASE64ENCODED, false, false));
+	MyEID.InitPane(3, CreateCheckPane(IDS_DISPLAYPROPS, false, false));
+	MyEID.InitPane(4, CreateCheckPane(IDS_UNWRAPSTORE, false, false));
 
 	WC_H(MyEID.DisplayDialog());
 	if (S_OK != hRes) return;
@@ -618,7 +619,7 @@ void CMainDlg::OnOpenPublicFolders()
 		1,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 	MyPrompt.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS),true));
-	MyPrompt.InitSingleLine(0,IDS_CREATESTORENTRYIDFLAGS,NULL,false);
+	MyPrompt.InitPane(0, CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, NULL, false));
 	MyPrompt.SetHex(0,NULL);
 	WC_H(MyPrompt.DisplayDialog());
 	if (S_OK == hRes)
@@ -821,7 +822,7 @@ void CMainDlg::OnDumpStoreContents()
 					&lpMDB));
 				if (lpMDB)
 				{
-					WC_H(GetDirectoryPath(szDir));
+					WC_H(GetDirectoryPath(m_hWnd, szDir));
 					if (S_OK == hRes && szDir[0])
 					{
 						CWaitCursor		Wait; // Change the mouse to an hourglass while we work.
@@ -859,13 +860,13 @@ void CMainDlg::OnDumpServerContents()
 		IDS_SERVERNAMEPROMPT,
 		1,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-	MyData.InitSingleLineSz(0,IDS_SERVERNAME,szServerName,false);
+	MyData.InitPane(0, CreateSingleLinePane(IDS_SERVERNAME, szServerName, false));
 
 	WC_H(MyData.DisplayDialog());
 
 	if (S_OK == hRes)
 	{
-		WC_H(GetDirectoryPath(szDir));
+		WC_H(GetDirectoryPath(m_hWnd, szDir));
 
 		if (S_OK == hRes && szDir[0])
 		{
@@ -911,7 +912,7 @@ void CMainDlg::OnLogoffWithFlags()
 		IDS_LOGOFFPROMPT,
 		1,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-	MyData.InitSingleLine(0,IDS_FLAGSINHEX,NULL,false);
+	MyData.InitPane(0, CreateSingleLinePane(IDS_FLAGSINHEX, NULL, false));
 	MyData.SetHex(0,MAPI_LOGOFF_UI);
 
 	WC_H(MyData.DisplayDialog());
@@ -955,8 +956,8 @@ void CMainDlg::OnLogonWithFlags()
 		IDS_PROFFORMAPILOGONPROMPT,
 		2,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-	MyData.InitSingleLine(0,IDS_PROFILE,NULL,false);
-	MyData.InitSingleLine(1,IDS_FLAGSINHEX,NULL,false);
+	MyData.InitPane(0, CreateSingleLinePane(IDS_PROFILE, NULL, false));
+	MyData.InitPane(1, CreateSingleLinePane(IDS_FLAGSINHEX, NULL, false));
 	MyData.SetHex(1,MAPI_EXTENDED|MAPI_EXPLICIT_PROFILE|MAPI_ALLOW_OTHERS|MAPI_NEW_SESSION|MAPI_LOGON_UI);
 
 	WC_H(MyData.DisplayDialog());
@@ -1029,7 +1030,7 @@ void CMainDlg::OnSelectFormContainer()
 			IDS_SELECTFORMPROMPT,
 			(ULONG) 1,
 			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-		MyFlags.InitSingleLine(0,IDS_FLAGS,NULL,false);
+		MyFlags.InitPane(0, CreateSingleLinePane(IDS_FLAGS, NULL, false));
 		MyFlags.SetHex(0,MAPIFORM_SELECT_ALL_REGISTRIES);
 
 		WC_H(MyFlags.DisplayDialog());
@@ -1074,7 +1075,7 @@ void CMainDlg::OnOpenFormContainer()
 			IDS_OPENFORMCONTAINERPROMPT,
 			(ULONG) 1,
 			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-		MyFlags.InitSingleLine(0,IDS_HFRMREG,NULL,false);
+		MyFlags.InitPane(0, CreateSingleLinePane(IDS_HFRMREG, NULL, false));
 		MyFlags.SetHex(0,MAPIFORM_SELECT_ALL_REGISTRIES);
 
 		WC_H(MyFlags.DisplayDialog());
@@ -1137,7 +1138,7 @@ void CMainDlg::OnLoadMAPI()
 		IDS_LOADMAPIPROMPT,
 		1,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-	MyData.InitSingleLineSz(0,IDS_PATH,szDLLPath,false);
+	MyData.InitPane(0, CreateSingleLinePane(IDS_PATH, szDLLPath, false));
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -1186,10 +1187,10 @@ void CMainDlg::OnDisplayMAPIPath()
 		NULL,
 		3,
 		CEDITOR_BUTTON_OK);
-	MyData.InitSingleLine(0, IDS_FILEPATH, NULL, true);
+	MyData.InitPane(0, CreateSingleLinePane(IDS_FILEPATH, NULL, true));
 	MyData.SetString(0, szMAPIPath);
-	MyData.InitCheck(1, IDS_REGKEY_FORCEOUTLOOKMAPI, 0 != RegKeys[regkeyFORCEOUTLOOKMAPI].ulCurDWORD, true);
-	MyData.InitCheck(2, IDS_REGKEY_FORCESYSTEMMAPI, 0 != RegKeys[regkeyFORCESYSTEMMAPI].ulCurDWORD, true);
+	MyData.InitPane(1, CreateCheckPane(IDS_REGKEY_FORCEOUTLOOKMAPI,  0 != RegKeys[regkeyFORCEOUTLOOKMAPI].ulCurDWORD, true));
+	MyData.InitPane(2, CreateCheckPane(IDS_REGKEY_FORCESYSTEMMAPI,  0 != RegKeys[regkeyFORCESYSTEMMAPI].ulCurDWORD, true));
 
 	WC_H(MyData.DisplayDialog());
 } // CMainDlg::OnDisplayMAPIPath
@@ -1205,7 +1206,7 @@ void CMainDlg::OnMAPIInitialize()
 		IDS_MAPIINITPROMPT,
 		1,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-	MyData.InitSingleLine(0,IDS_FLAGSINHEX,NULL,false);
+	MyData.InitPane(0, CreateSingleLinePane(IDS_FLAGSINHEX, NULL, false));
 	MyData.SetHex(0,NULL);
 
 	WC_H(MyData.DisplayDialog());
@@ -1281,7 +1282,7 @@ void CMainDlg::OnQueryDefaultMessageOpt()
 		IDS_ADDRESSTYPEPROMPT,
 		1,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-	MyData.InitSingleLineSz(0,IDS_ADDRESSTYPE,_T("EX"),false); // STRING_OK
+	MyData.InitPane(0, CreateSingleLinePane(IDS_ADDRESSTYPE, _T("EX"), false)); // STRING_OK
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -1305,7 +1306,7 @@ void CMainDlg::OnQueryDefaultMessageOpt()
 				IDS_RESULTOFCALLPROMPT,
 				lpOptions?2:1,
 				CEDITOR_BUTTON_OK);
-			MyResult.InitSingleLine(0,IDS_COUNTOPTIONS,NULL,true);
+			MyResult.InitPane(0, CreateSingleLinePane(IDS_COUNTOPTIONS, NULL, true));
 			MyResult.SetHex(0,cValues);
 
 			if (lpOptions)
@@ -1325,7 +1326,7 @@ void CMainDlg::OnQueryDefaultMessageOpt()
 						szAltProp);
 					szPropString += szTmp;
 				}
-				MyResult.InitMultiLine(1,IDS_OPTIONS,(LPCTSTR) szPropString,true);
+				MyResult.InitPane(1,CreateMultiLinePane(IDS_OPTIONS, (LPCTSTR) szPropString, true));
 			}
 
 			WC_H(MyResult.DisplayDialog());
@@ -1347,7 +1348,7 @@ void CMainDlg::OnQueryDefaultRecipOpt()
 		IDS_ADDRESSTYPEPROMPT,
 		1,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-	MyData.InitSingleLineSz(0,IDS_ADDRESSTYPE,_T("EX"),false); // STRING_OK
+	MyData.InitPane(0, CreateSingleLinePane(IDS_ADDRESSTYPE, _T("EX"), false)); // STRING_OK
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -1371,7 +1372,7 @@ void CMainDlg::OnQueryDefaultRecipOpt()
 				IDS_RESULTOFCALLPROMPT,
 				lpOptions?2:1,
 				CEDITOR_BUTTON_OK);
-			MyResult.InitSingleLine(0,IDS_COUNTOPTIONS,NULL,true);
+			MyResult.InitPane(0, CreateSingleLinePane(IDS_COUNTOPTIONS, NULL, true));
 			MyResult.SetHex(0,cValues);
 
 			if (lpOptions)
@@ -1391,7 +1392,7 @@ void CMainDlg::OnQueryDefaultRecipOpt()
 						szAltProp);
 					szPropString += szTmp;
 				}
-				MyResult.InitMultiLine(1,IDS_OPTIONS,(LPCTSTR) szPropString,true);
+				MyResult.InitPane(1, CreateMultiLinePane(IDS_OPTIONS, (LPCTSTR) szPropString, true));
 			}
 
 			WC_H(MyResult.DisplayDialog());
@@ -1424,7 +1425,7 @@ void CMainDlg::OnQueryIdentity()
 			IDS_QUERYIDPROMPT,
 			1,
 			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-		MyPrompt.InitCheck(0,IDS_DISPLAYDETAILSDLG,false,false);
+		MyPrompt.InitPane(0, CreateCheckPane(IDS_DISPLAYDETAILSDLG, false, false));
 		WC_H(MyPrompt.DisplayDialog());
 		if (S_OK == hRes)
 		{
@@ -1492,7 +1493,7 @@ void CMainDlg::OnSetDefaultStore()
 				IDS_SETDEFSTOREPROMPT,
 				1,
 				CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-			MyData.InitSingleLine(0,IDS_FLAGS,NULL,false);
+			MyData.InitPane(0, CreateSingleLinePane(IDS_FLAGS, NULL, false));
 			MyData.SetHex(0,MAPI_DEFAULT_STORE);
 
 			WC_H(MyData.DisplayDialog());
@@ -1520,7 +1521,7 @@ void CMainDlg::OnIsAttachmentBlocked()
 		IDS_ENTERFILENAME,
 		1,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-	MyData.InitSingleLine(0,IDS_FILENAME,NULL,false);
+	MyData.InitPane(0, CreateSingleLinePane(IDS_FILENAME, NULL, false));
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -1538,7 +1539,7 @@ void CMainDlg::OnIsAttachmentBlocked()
 			CString szRet;
 			CString szResult;
 			EC_B(szResult.LoadString(bBlocked?IDS_TRUE:IDS_FALSE));
-			MyResult.InitSingleLineSz(0,IDS_RESULT,szResult,true);
+			MyResult.InitPane(0, CreateSingleLinePane(IDS_RESULT, szResult, true));
 
 			WC_H(MyResult.DisplayDialog());
 		}
@@ -1586,9 +1587,9 @@ void CMainDlg::OnLaunchProfileWizard()
 		IDS_LAUNCHPROFWIZPROMPT,
 		2,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-	MyData.InitSingleLine(0,IDS_FLAGS,NULL,false);
+	MyData.InitPane(0, CreateSingleLinePane(IDS_FLAGS, NULL, false));
 	MyData.SetHex(0,MAPI_PW_LAUNCHED_BY_CONFIG);
-	MyData.InitSingleLineSz(1,IDS_SERVICE,_T("MSEMS"),false); // STRING_OK
+	MyData.InitPane(1, CreateSingleLinePane(IDS_SERVICE, _T("MSEMS"), false)); // STRING_OK
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -1693,7 +1694,7 @@ void CMainDlg::OnViewMSGProperties()
 			&lpNewMessage));
 		if (lpNewMessage)
 		{
-			EC_H(m_lpPropDisplay->SetDataSource(lpNewMessage,NULL,false));
+			WC_H(DisplayObject(lpNewMessage, MAPI_MESSAGE, otDefault, this));
 			lpNewMessage->Release();
 		}
 	}
@@ -1820,6 +1821,59 @@ void CMainDlg::OnConvertEMLToMSG()
 	}
 } // CMainDlg::OnConvertEMLToMSG
 
+void CMainDlg::OnConvertMSGToXML()
+{
+	if (!m_lpMapiObjects) return;
+	m_lpMapiObjects->MAPIInitialize(NULL);
+	if (!m_lpMapiObjects->bMAPIInitialized()) return;
+
+	HRESULT hRes = S_OK;
+
+	INT_PTR iDlgRet = IDOK;
+
+	CStringW szFileSpec;
+	CFileDialogExW dlgFilePickerMSG;
+	EC_B(szFileSpec.LoadString(IDS_MSGFILES));
+
+	EC_D_DIALOG(dlgFilePickerMSG.DisplayDialog(
+		true,
+		L"msg", // STRING_OK
+		NULL,
+		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_FILEMUSTEXIST,
+		szFileSpec,
+		this));
+	if (iDlgRet == IDOK)
+	{
+		EC_B(szFileSpec.LoadString(IDS_XMLFILES));
+
+		CFileDialogExW dlgFilePickerXML;
+
+		EC_D_DIALOG(dlgFilePickerXML.DisplayDialog(
+			true,
+			L"xml", // STRING_OK
+			NULL,
+			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
+			szFileSpec,
+			this));
+		if (iDlgRet == IDOK)
+		{
+			LPMESSAGE lpMessage = NULL;
+
+			EC_H(LoadMSGToMessage(dlgFilePickerMSG.GetFileName(), &lpMessage));
+
+			if (lpMessage)
+			{
+				CDumpStore MyDumpStore;
+				MyDumpStore.InitMessagePath(dlgFilePickerXML.GetFileName());
+				// Just assume this message might have attachments
+				MyDumpStore.ProcessMessage(lpMessage, true, NULL);
+
+				lpMessage->Release();
+			}
+		}
+	}
+} // CMainDlg::OnConvertMSGToXML
+
 void CMainDlg::OnComputeGivenStoreHash()
 {
 	HRESULT hRes = S_OK;
@@ -1879,9 +1933,9 @@ void CMainDlg::OnComputeGivenStoreHash()
 				{
 					if (fIsSet(DBGGeneric))
 					{
-							LPTSTR szGUID = GUIDToString((LPCGUID) &emsmdbUID);
-							DebugPrint(DBGGeneric,_T("CMainDlg::OnComputeGivenStoreHash, emsmdbUID from PR_EMSMDB_SECTION_UID = %s\n"),szGUID);
-							delete[] szGUID;
+						LPTSTR szGUID = GUIDToString((LPCGUID) &emsmdbUID);
+						DebugPrint(DBGGeneric,_T("CMainDlg::OnComputeGivenStoreHash, emsmdbUID from PR_EMSMDB_SECTION_UID = %s\n"),szGUID);
+						delete[] szGUID;
 					}
 					WC_MAPI(lpMAPISession->OpenProfileSection(&emsmdbUID, NULL, 0, &lpProfSect));
 				}
@@ -1983,9 +2037,9 @@ void CMainDlg::OnComputeGivenStoreHash()
 } // CMainDlg::OnComputeGivenStoreHash
 
 void CMainDlg::HandleAddInMenuSingle(
-									 _In_ LPADDINMENUPARAMS lpParams,
-									 _In_ LPMAPIPROP lpMAPIProp,
-									 _In_ LPMAPICONTAINER /*lpContainer*/)
+	_In_ LPADDINMENUPARAMS lpParams,
+	_In_ LPMAPIPROP lpMAPIProp,
+	_In_ LPMAPICONTAINER /*lpContainer*/)
 {
 	if (lpParams)
 	{

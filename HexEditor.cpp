@@ -4,6 +4,8 @@
 #include "stdafx.h"
 #include "HexEditor.h"
 #include "SmartView.h"
+#include "FileDialogEx.h"
+#include "ImportProcs.h"
 
 static TCHAR* CLASS = _T("CHexEditor");
 
@@ -11,33 +13,32 @@ enum __HexEditorFields
 {
 	HEXED_ANSI,
 	HEXED_UNICODE,
-	HEXED_CCH,
 	HEXED_BASE64,
-	HEXED_CB,
 	HEXED_HEX,
-	HEXED_PICKER,
 	HEXED_SMARTVIEW
 };
 
-CHexEditor::CHexEditor(_In_ CParentWnd* pParentWnd):
-CEditor(pParentWnd,IDS_HEXEDITOR,NULL,0,CEDITOR_BUTTON_OK)
+CHexEditor::CHexEditor(_In_ CParentWnd* pParentWnd, _In_ CMapiObjects* lpMapiObjects):
+	CEditor(pParentWnd, IDS_HEXEDITOR, NULL, 0, CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_ACTION2 | CEDITOR_BUTTON_ACTION3, IDS_IMPORT, IDS_EXPORT, IDS_CLOSE)
 {
 	TRACE_CONSTRUCTOR(CLASS);
-	CreateControls(8);
-	InitMultiLine(HEXED_ANSI,IDS_ANSISTRING,NULL,false);
-	InitMultiLine(HEXED_UNICODE,IDS_UNISTRING,NULL,false);
-	InitSingleLine(HEXED_CCH,IDS_CCH,NULL,true);
-	InitMultiLine(HEXED_BASE64,IDS_BASE64STRING,NULL,false);
-	InitSingleLine(HEXED_CB,IDS_CB,NULL,true);
-	InitMultiLine(HEXED_HEX,IDS_HEX,NULL,false);
-	InitDropDownArray(HEXED_PICKER,IDS_SMARTVIEW,g_cuidParsingTypes,g_uidParsingTypes,true);
-	InitMultiLine(HEXED_SMARTVIEW,NULL,NULL,true);
+	m_lpMapiObjects = lpMapiObjects;
+	if (m_lpMapiObjects) m_lpMapiObjects->AddRef();
+
+	CreateControls(5);
+	InitPane(HEXED_ANSI, CreateCollapsibleTextPane(IDS_ANSISTRING, false));
+	InitPane(HEXED_UNICODE, CreateCollapsibleTextPane(IDS_UNISTRING, false));
+	InitPane(HEXED_BASE64, CreateCountedTextPane(IDS_BASE64STRING, false, IDS_CCH));
+	InitPane(HEXED_HEX, CreateCountedTextPane(IDS_HEX, false, IDS_CB));
+	InitPane(HEXED_SMARTVIEW, CreateSmartViewPane(IDS_SMARTVIEW));
 	DisplayParentedDialog(pParentWnd,1000);
 } // CHexEditor::CHexEditor
 
 CHexEditor::~CHexEditor()
 {
 	TRACE_DESTRUCTOR(CLASS);
+
+	if (m_lpMapiObjects) m_lpMapiObjects->Release();
 } // CHexEditor::~CHexEditor
 
 void CHexEditor::OnOK()
@@ -180,44 +181,142 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 		break;
 	}
 
-	if (HEXED_PICKER != i)
+	if (HEXED_SMARTVIEW != i)
 	{
 		// length of base64 encoded string
-		SetSize(HEXED_CCH, cchEncodeStr);
-		// Length of binary/hex data
-		SetSize(HEXED_CB, cb);
+		CountedTextPane* lpPane = (CountedTextPane*) GetControl(HEXED_BASE64);
+		if (lpPane)
+		{
+			lpPane->SetCount(cchEncodeStr);
+		}
+
+		lpPane = (CountedTextPane*) GetControl(HEXED_HEX);
+		if (lpPane)
+		{
+			lpPane->SetCount(cb);
+		}
 	}
 	// Update any parsing we've got:
 	UpdateParser();
 	delete[] szEncodeStr;
+
+	// Force the new layout
+	OnRecalcLayout();
+
 	return i;
 } // CHexEditor::HandleChange
 
 void CHexEditor::UpdateParser()
 {
 	// Find out how to interpret the data
-	DWORD_PTR iStructType = GetDropDownSelectionValue(HEXED_PICKER);
-
-	LPWSTR szString = NULL;
-	if (iStructType)
+	SmartViewPane* lpPane = (SmartViewPane*) GetControl(HEXED_SMARTVIEW);
+	if (lpPane)
 	{
 		SBinary Bin = {0};
 		if (GetBinaryUseControl(HEXED_HEX,(size_t*) &Bin.cb,&Bin.lpb))
 		{
-			// Get the string interpretation
-			InterpretBinaryAsString(Bin,iStructType,NULL,NULL,&szString);
+			lpPane->Parse(Bin);
 			delete[] Bin.lpb;
 		}
 	}
-
-	if (szString)
-	{
-		SetStringW(HEXED_SMARTVIEW,szString);
-
-		delete[] szString;
-	}
-	else
-	{
-		SetString(HEXED_SMARTVIEW,_T(""));
-	}
 } // CHexEditor::UpdateParser
+
+// Import
+void CHexEditor::OnEditAction1()
+{
+	HRESULT hRes = S_OK;
+	if (S_OK == hRes)
+	{
+		INT_PTR iDlgRet = IDOK;
+
+		CStringW szFileSpec;
+		EC_B(szFileSpec.LoadString(IDS_ALLFILES));
+
+		CFileDialogExW dlgFilePicker;
+
+		EC_D_DIALOG(dlgFilePicker.DisplayDialog(
+			true,
+			NULL,
+			NULL,
+			OFN_FILEMUSTEXIST,
+			szFileSpec,
+			this));
+		if (iDlgRet == IDOK && dlgFilePicker.GetFileName())
+		{
+			if (m_lpMapiObjects) m_lpMapiObjects->MAPIInitialize(NULL);
+			LPSTREAM lpStream = NULL;
+
+			// Get a Stream interface on the input file
+			EC_H(MyOpenStreamOnFile(
+				MAPIAllocateBuffer,
+				MAPIFreeBuffer,
+				STGM_READ,
+				dlgFilePicker.GetFileName(),
+				NULL,
+				&lpStream));
+
+			if (lpStream)
+			{
+				TextPane* lpPane = (TextPane*) GetControl(HEXED_HEX);
+				if (lpPane)
+				{
+					lpPane->InitEditFromBinaryStream(lpStream);
+				}
+				lpStream->Release();
+			}
+		}
+	}
+}
+
+// Export
+void CHexEditor::OnEditAction2()
+{
+	HRESULT hRes = S_OK;
+	if (S_OK == hRes)
+	{
+		INT_PTR iDlgRet = IDOK;
+
+		CStringW szFileSpec;
+		EC_B(szFileSpec.LoadString(IDS_ALLFILES));
+
+		CFileDialogExW dlgFilePicker;
+
+		EC_D_DIALOG(dlgFilePicker.DisplayDialog(
+			true,
+			NULL,
+			NULL,
+			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
+			szFileSpec,
+			this));
+		if (iDlgRet == IDOK && dlgFilePicker.GetFileName())
+		{
+			if (m_lpMapiObjects) m_lpMapiObjects->MAPIInitialize(NULL);
+			LPSTREAM lpStream = NULL;
+
+			// Get a Stream interface on the input file
+			EC_H(MyOpenStreamOnFile(
+				MAPIAllocateBuffer,
+				MAPIFreeBuffer,
+				STGM_CREATE | STGM_READWRITE,
+				dlgFilePicker.GetFileName(),
+				NULL,
+				&lpStream));
+
+			if (lpStream)
+			{
+				TextPane* lpPane = (TextPane*) GetControl(HEXED_HEX);
+				if (lpPane)
+				{
+					lpPane->WriteToBinaryStream(lpStream);
+				}
+				lpStream->Release();
+			}
+		}
+	}
+}
+
+// Close
+void CHexEditor::OnEditAction3()
+{
+	OnOK();
+}

@@ -32,22 +32,22 @@ static TCHAR* CLASS = _T("CFolderDlg");
 // CFolderDlg dialog
 
 CFolderDlg::CFolderDlg(
-					   _In_ CParentWnd* pParentWnd,
-					   _In_ CMapiObjects* lpMapiObjects,
-					   _In_ LPMAPIFOLDER lpMAPIFolder,
-					   ULONG ulDisplayFlags
-					   ):
+	_In_ CParentWnd* pParentWnd,
+	_In_ CMapiObjects* lpMapiObjects,
+	_In_ LPMAPIFOLDER lpMAPIFolder,
+	ULONG ulDisplayFlags
+	):
 CContentsTableDlg(
-				  pParentWnd,
-				  lpMapiObjects,
-				  IDS_FOLDER,
-				  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
-				  NULL,
-				  (LPSPropTagArray) &sptMSGCols,
-				  NUMMSGCOLUMNS,
-				  MSGColumns,
-				  IDR_MENU_FOLDER_POPUP,
-				  MENU_CONTEXT_FOLDER_CONTENTS)
+	pParentWnd,
+	lpMapiObjects,
+	IDS_FOLDER,
+	mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+	NULL,
+	(LPSPropTagArray) &sptMSGCols,
+	NUMMSGCOLUMNS,
+	MSGColumns,
+	IDR_MENU_FOLDER_POPUP,
+	MENU_CONTEXT_FOLDER_CONTENTS)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	m_ulDisplayFlags = ulDisplayFlags;
@@ -99,6 +99,10 @@ _Check_return_ bool CFolderDlg::HandleMenu(WORD wMenuSelect)
 		return true;
 	case ID_EXECUTEVERBONFORM: OnExecuteVerbOnForm(); return true;
 	case ID_GETPROPSUSINGLONGTERMEID: OnGetPropsUsingLongTermEID(); return true;
+	case ID_HIERARCHY:
+	case ID_CONTENTS:
+	case ID_HIDDENCONTENTS:
+		OnDisplayFolder(wMenuSelect); return true;
 	}
 
 	if (MultiSelectSimple(wMenuSelect)) return true;
@@ -109,10 +113,10 @@ _Check_return_ bool CFolderDlg::HandleMenu(WORD wMenuSelect)
 } // CFolderDlg::HandleMenu
 
 typedef HRESULT (CFolderDlg::* LPSIMPLEMULTI)
-(
+	(
 	int				iItem,
 	SortListData*	lpData
-);
+	);
 
 _Check_return_ bool CFolderDlg::MultiSelectSimple(WORD wMenuSelect)
 {
@@ -198,7 +202,31 @@ _Check_return_ bool CFolderDlg::MultiSelectComplex(WORD wMenuSelect)
 
 void CFolderDlg::OnDisplayItem()
 {
-	(void) HandleMenu(ID_OPENNONMODAL);
+	HRESULT hRes = S_OK;
+	LPMAPIPROP lpMAPIProp = NULL;
+	int iItem = -1;
+	CWaitCursor Wait;
+
+	do
+	{
+		hRes = S_OK;
+		EC_H(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(
+			&iItem,
+			mfcmapiREQUEST_MODIFY,
+			&lpMAPIProp));
+
+		if (lpMAPIProp)
+		{
+			EC_H(DisplayObject(
+				lpMAPIProp,
+				NULL,
+				otDefault,
+				this));
+			lpMAPIProp->Release();
+			lpMAPIProp = NULL;
+		}
+	}
+	while (iItem != -1);
 } // CFolderDlg::OnDisplayItem
 
 void CFolderDlg::OnInitMenu(_In_ CMenu* pMenu)
@@ -257,6 +285,8 @@ void CFolderDlg::OnInitMenu(_In_ CMenu* pMenu)
 		pMenu->EnableMenuItem(ID_SENDBULKMAIL,DIM(m_lpContainer));
 		pMenu->EnableMenuItem(ID_SAVEFOLDERCONTENTSASTEXTFILES,DIM(m_lpContainer));
 
+		pMenu->EnableMenuItem(ID_CONTENTS, DIM(m_lpContainer && !(m_ulDisplayFlags == dfNormal)));
+		pMenu->EnableMenuItem(ID_HIDDENCONTENTS, DIM(m_lpContainer && !(m_ulDisplayFlags & dfAssoc)));
 	}
 	CContentsTableDlg::OnInitMenu(pMenu);
 } // CFolderDlg::OnInitMenu
@@ -302,10 +332,10 @@ void CFolderDlg::OnAddOneOffAddress()
 		4,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 
-	MyData.InitSingleLine(0,IDS_DISPLAYNAME,IDS_DISPLAYNAMEVALUE,false);
-	MyData.InitSingleLineSz(1,IDS_ADDRESSTYPE,_T("EX"),false); // STRING_OK
-	MyData.InitSingleLine(2,IDS_ADDRESS,IDS_ADDRESSVALUE,false);
-	MyData.InitSingleLine(3,IDS_RECIPTYPE,NULL,false);
+	MyData.InitPane(0, CreateSingleLinePaneID(IDS_DISPLAYNAME, IDS_DISPLAYNAMEVALUE, false));
+	MyData.InitPane(1, CreateSingleLinePane(IDS_ADDRESSTYPE, _T("EX"), false)); // STRING_OK
+	MyData.InitPane(2, CreateSingleLinePaneID(IDS_ADDRESS, IDS_ADDRESSVALUE, false));
+	MyData.InitPane(3, CreateSingleLinePane(IDS_RECIPTYPE, NULL, false));
 	MyData.SetHex(3,MAPI_TO);
 
 	WC_H(MyData.DisplayDialog());
@@ -362,7 +392,7 @@ _Check_return_ HRESULT CFolderDlg::OnAttachmentProperties(int iItem, _In_ SortLi
 
 	if (lpMessage)
 	{
-		EC_H(OpenAttachmentsFromMessage(lpMessage, true));
+		EC_H(OpenAttachmentsFromMessage(lpMessage));
 
 		lpMessage->Release();
 	}
@@ -403,12 +433,12 @@ _Check_return_ bool CFolderDlg::HandlePaste()
 		2,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 
-	MyData.InitCheck(0,IDS_MESSAGEMOVE,false,false);
+	MyData.InitPane(0, CreateCheckPane(IDS_MESSAGEMOVE, false, false));
 	UINT uidDropDown[] = {
 		IDS_DDCOPYMESSAGES,
 		IDS_DDCOPYTO
 	};
-	MyData.InitDropDown(1,IDS_COPYINTERFACE,_countof(uidDropDown),uidDropDown,true);
+	MyData.InitPane(1, CreateDropDownPane(IDS_COPYINTERFACE, _countof(uidDropDown), uidDropDown, true));
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -461,6 +491,7 @@ _Check_return_ bool CFolderDlg::HandlePaste()
 					this,
 					IDS_TAGSTOEXCLUDE,
 					IDS_TAGSTOEXCLUDEPROMPT,
+					NULL,
 					(LPSPropTagArray)&excludeTags,
 					false,
 					m_lpContainer);
@@ -558,7 +589,7 @@ void CFolderDlg::OnDeleteAttachments()
 		1,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 
-	MyData.InitSingleLine(0,IDS_FILENAME,NULL, false);
+	MyData.InitPane(0, CreateSingleLinePane(IDS_FILENAME, NULL, false));
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -639,9 +670,9 @@ void CFolderDlg::OnDeleteSelectedItem()
 		};
 
 		if (bShift)
-			MyData.InitDropDown(0,IDS_DELSTYLE,_countof(uidDropDown),uidDropDown,true);
+			MyData.InitPane(0, CreateDropDownPane(IDS_DELSTYLE, _countof(uidDropDown), uidDropDown, true));
 		else
-			MyData.InitDropDown(0,IDS_DELSTYLE,_countof(uidDropDown) - 1,&uidDropDown[1],true);
+			MyData.InitPane(0, CreateDropDownPane(IDS_DELSTYLE, _countof(uidDropDown) - 1, &uidDropDown[1], true));
 
 		WC_H(MyData.DisplayDialog());
 
@@ -780,7 +811,7 @@ void CFolderDlg::OnLoadFromMSG()
 			IDS_DDLOADTOFOLDER,
 			IDS_DDDISPLAYPROPSONLY
 		};
-		MyData.InitDropDown(0,IDS_LOADSTYLE,_countof(uidDropDown),uidDropDown,true);
+		MyData.InitPane(0, CreateDropDownPane(IDS_LOADSTYLE, _countof(uidDropDown), uidDropDown, true));
 
 		WC_H(MyData.DisplayDialog());
 		if (S_OK == hRes)
@@ -887,7 +918,7 @@ void CFolderDlg::OnManualResolve()
 			1,
 			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 
-		MyData.InitSingleLine(0,IDS_DISPLAYNAME,NULL,false);
+		MyData.InitPane(0, CreateSingleLinePane(IDS_DISPLAYNAME, NULL, false));
 
 		WC_H(MyData.DisplayDialog());
 		if (S_OK == hRes)
@@ -1027,7 +1058,7 @@ void CFolderDlg::OnNewCustomForm()
 			IDS_DDFOLDERFORMLIBRARY,
 			IDS_DDORGFORMLIBRARY
 		};
-		MyPrompt1.InitDropDown(0,IDS_LOCATIONOFFORM,_countof(uidDropDown),uidDropDown,true);
+		MyPrompt1.InitPane(0, CreateDropDownPane(IDS_LOCATIONOFFORM, _countof(uidDropDown), uidDropDown, true));
 
 		WC_H(MyPrompt1.DisplayDialog());
 
@@ -1042,7 +1073,7 @@ void CFolderDlg::OnNewCustomForm()
 				IDS_NEWCUSTOMFORMPROMPT2,
 				1,
 				CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-			MyClass.InitSingleLineSz(0,IDS_FORMTYPE,_T("IPM.Note"),false); // STRING_OK
+			MyClass.InitPane(0, CreateSingleLinePane(IDS_FORMTYPE, _T("IPM.Note"), false)); // STRING_OK
 
 			switch (MyPrompt1.GetDropDown(0))
 			{
@@ -1227,7 +1258,7 @@ void CFolderDlg::OnExecuteVerbOnForm()
 			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 		MyData.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_LAST_VERB_EXECUTED),false));
 
-		MyData.InitSingleLine(0,IDS_VERB,NULL,false);
+		MyData.InitPane(0, CreateSingleLinePane(IDS_VERB, NULL, false));
 		MyData.SetDecimal(0,EXCHIVERB_OPEN);
 
 		WC_H(MyData.DisplayDialog());
@@ -1318,7 +1349,7 @@ void CFolderDlg::OnRemoveOneOff()
 		IDS_REMOVEONEOFFPROMPT,
 		1,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-	MyData.InitCheck(0,IDS_REMOVEPROPDEFSTREAM,true,false);
+	MyData.InitPane(0, CreateCheckPane(IDS_REMOVEPROPDEFSTREAM, true, false));
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -1373,7 +1404,7 @@ void CFolderDlg::OnRTFSync()
 		1,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 
-	MyData.InitSingleLine(0,IDS_FLAGS,NULL,false);
+	MyData.InitPane(0, CreateSingleLinePane(IDS_FLAGS, NULL, false));
 	MyData.SetHex(0,RTF_SYNC_RTF_CHANGED);
 
 	WC_H(MyData.DisplayDialog());
@@ -1444,30 +1475,20 @@ _Check_return_ HRESULT CFolderDlg::OnSaveAttachments(int iItem, _In_ SortListDat
 
 void CFolderDlg::OnSaveFolderContentsAsTextFiles()
 {
-	HRESULT			hRes = S_OK;
-	WCHAR			szDir[MAX_PATH];
-
 	if (!m_lpMapiObjects || !m_lpContainer) return;
 
 	LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 	if (!lpMDB) return;
 
-	szDir[0] = 0;
-	WC_H(GetDirectoryPath(szDir));
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-	if (S_OK == hRes && szDir[0])
-	{
-		CWaitCursor		Wait; // Change the mouse to an hourglass while we work.
-
-		CDumpStore MyDumpStore;
-		MyDumpStore.InitMDB(lpMDB);
-		MyDumpStore.InitFolder((LPMAPIFOLDER) m_lpContainer);
-		MyDumpStore.InitFolderPathRoot(szDir);
-		MyDumpStore.ProcessFolders(
-			(m_ulDisplayFlags & dfAssoc)?false:true,
-			(m_ulDisplayFlags & dfAssoc)?true:false,
-			false);
-	}
+	SaveFolderContentsToTXT(
+		lpMDB,
+		(LPMAPIFOLDER) m_lpContainer,
+		(m_ulDisplayFlags & dfAssoc)?false:true,
+		(m_ulDisplayFlags & dfAssoc)?true:false,
+		false,
+		m_hWnd);
 } // CFolderDlg::OnSaveFolderContentsAsTextFiles
 
 void CFolderDlg::OnSaveMessageToFile()
@@ -1491,7 +1512,7 @@ void CFolderDlg::OnSaveMessageToFile()
 		IDS_DDEMLFILEUSINGICONVERTERSESSION,
 		IDS_DDTNEFFILE
 	};
-	MyData.InitDropDown(0,IDS_FORMATTOSAVEMESSAGE,_countof(uidDropDown),uidDropDown,true);
+	MyData.InitPane(0, CreateDropDownPane(IDS_FORMATTOSAVEMESSAGE, _countof(uidDropDown), uidDropDown, true));
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
 	{
@@ -1768,11 +1789,11 @@ void CFolderDlg::OnSendBulkMail()
 		IDS_SENDBULKMAILPROMPT,
 		5,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-	MyData.InitSingleLine(0,IDS_NUMMESSAGES,NULL,false);
-	MyData.InitSingleLine(1,IDS_RECIPNAME,NULL,false);
-	MyData.InitSingleLine(2,IDS_SUBJECT,NULL,false);
-	MyData.InitSingleLineSz(3,IDS_CLASS,_T("IPM.Note"),false); // STRING_OK
-	MyData.InitMultiLine(4,IDS_BODY,NULL,false);
+	MyData.InitPane(0, CreateSingleLinePane(IDS_NUMMESSAGES, NULL, false));
+	MyData.InitPane(1, CreateSingleLinePane(IDS_RECIPNAME, NULL, false));
+	MyData.InitPane(2, CreateSingleLinePane(IDS_SUBJECT, NULL, false));
+	MyData.InitPane(3, CreateSingleLinePane(IDS_CLASS, _T("IPM.Note"), false)); // STRING_OK
+	MyData.InitPane(4, CreateMultiLinePane(IDS_BODY, NULL, false));
 
 	if (!m_lpContainer) return;
 
@@ -1828,7 +1849,7 @@ void CFolderDlg::OnSetReadFlag()
 		1,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 
-	MyFlags.InitSingleLine(0,IDS_FLAGSINHEX,NULL,false);
+	MyFlags.InitPane(0, CreateSingleLinePane(IDS_FLAGSINHEX, NULL, false));
 	MyFlags.SetHex(0,CLEAR_READ_FLAG);
 
 	WC_H(MyFlags.DisplayDialog());
@@ -1899,7 +1920,7 @@ void CFolderDlg::OnGetMessageOptions()
 		IDS_ADDRESSTYPEPROMPT,
 		1,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-	MyAddress.InitSingleLineSz(0,IDS_ADDRESSTYPE,_T("EX"),false); // STRING_OK
+	MyAddress.InitPane(0, CreateSingleLinePane(IDS_ADDRESSTYPE, _T("EX"), false)); // STRING_OK
 	WC_H(MyAddress.DisplayDialog());
 
 	if (S_OK == hRes)
@@ -1966,7 +1987,7 @@ _Check_return_ HRESULT CFolderDlg::OnGetMessageStatus(int /*iItem*/, _In_ SortLi
 			NULL,
 			1,
 			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-		MyStatus.InitSingleLine(0,IDS_MESSAGESTATUS,NULL,true);
+		MyStatus.InitPane(0, CreateSingleLinePane(IDS_MESSAGESTATUS, NULL, true));
 		MyStatus.SetHex(0,ulMessageStatus);
 
 		WC_H(MyStatus.DisplayDialog());
@@ -1988,8 +2009,8 @@ void CFolderDlg::OnSetMessageStatus()
 		2,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 
-	MyData.InitSingleLine(0,IDS_STATUSINHEX,NULL,false);
-	MyData.InitSingleLine(1,IDS_MASKINHEX,NULL,false);
+	MyData.InitPane(0, CreateSingleLinePane(IDS_STATUSINHEX, NULL, false));
+	MyData.InitPane(1, CreateSingleLinePane(IDS_MASKINHEX, NULL, false));
 
 	DebugPrintEx(DBGGeneric,CLASS,_T("OnSetMessageStatus"),_T("\n"));
 
@@ -2087,10 +2108,31 @@ _Check_return_ HRESULT CFolderDlg::OnAbortSubmit(int iItem, _In_ SortListData* l
 	return hRes;
 } // CFolderDlg::OnAbortSubmit
 
+void CFolderDlg::OnDisplayFolder(WORD wMenuSelect)
+{
+	HRESULT hRes = S_OK;
+	ObjectType otType = otDefault;
+	switch (wMenuSelect)
+	{
+	case ID_HIERARCHY:
+		otType = otHierarchy; break;
+	case ID_CONTENTS:
+		otType = otContents; break;
+	case ID_HIDDENCONTENTS:
+		otType = otAssocContents; break;
+	}
+
+	EC_H(DisplayObject(
+		m_lpContainer,
+		NULL,
+		otType,
+		this));
+}
+
 void CFolderDlg::HandleAddInMenuSingle(
-									   _In_ LPADDINMENUPARAMS lpParams,
-									   _In_ LPMAPIPROP lpMAPIProp,
-									   _In_ LPMAPICONTAINER /*lpContainer*/)
+	_In_ LPADDINMENUPARAMS lpParams,
+	_In_ LPMAPIPROP lpMAPIProp,
+	_In_ LPMAPICONTAINER /*lpContainer*/)
 {
 	if (lpParams)
 	{

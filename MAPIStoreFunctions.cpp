@@ -359,7 +359,7 @@ _Check_return_ HRESULT GetServerName(_In_ LPMAPISESSION lpSession, _Deref_out_op
 			IDS_SERVERNAMEMISSINGPROMPT,
 			1,
 			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-		MyData.InitSingleLine(0,IDS_SERVERNAME,NULL,false);
+		MyData.InitPane(0, CreateSingleLinePane(IDS_SERVERNAME, NULL, false));
 
 		WC_H(MyData.DisplayDialog());
 
@@ -612,9 +612,9 @@ _Check_return_ HRESULT OpenMailboxWithPrompt(
 		3,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 	MyPrompt.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS),true));
-	MyPrompt.InitSingleLineSz(0,IDS_SERVERNAME,szServerName,false);
-	MyPrompt.InitSingleLineSz(1,IDS_USERDN,szMailboxDN,false);
-	MyPrompt.InitSingleLine(2,IDS_CREATESTORENTRYIDFLAGS,ulFlags,false);
+	MyPrompt.InitPane(0, CreateSingleLinePane(IDS_SERVERNAME, szServerName, false));
+	MyPrompt.InitPane(1, CreateSingleLinePane(IDS_USERDN, szMailboxDN, false));
+	MyPrompt.InitPane(2, CreateSingleLinePaneID(IDS_CREATESTORENTRYIDFLAGS, ulFlags, false));
 	MyPrompt.SetHex(2,OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP);
 	WC_H(MyPrompt.DisplayDialog());
 	if (S_OK == hRes)

@@ -49,14 +49,14 @@ enum __DbgViewFields
 static TCHAR* CLASS = _T("CDbgView");
 
 CDbgView::CDbgView(_In_ CParentWnd* pParentWnd):
-CEditor(pParentWnd, IDS_DBGVIEW, NULL, 0, CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_ACTION2, IDS_CLEAR, IDS_CLOSE)
+	CEditor(pParentWnd, IDS_DBGVIEW, NULL, 0, CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_ACTION2, IDS_CLEAR, IDS_CLOSE, NULL)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	CreateControls(DBGVIEW_NUMFIELDS);
-	InitSingleLine(DBGVIEW_TAGS,IDS_REGKEY_DEBUG_TAG,NULL,false);
+	InitPane(DBGVIEW_TAGS, CreateSingleLinePane(IDS_REGKEY_DEBUG_TAG, NULL, false));
 	SetHex(DBGVIEW_TAGS,GetDebugLevel());
-	InitCheck(DBGVIEW_PAUSE,IDS_PAUSE,false,false);
-	InitMultiLine(DBGVIEW_VIEW,NULL,NULL,true);
+	InitPane(DBGVIEW_PAUSE, CreateCheckPane(IDS_PAUSE, false, false));
+	InitPane(DBGVIEW_VIEW, CreateMultiLinePane(NULL, NULL, true));
 	m_bPaused = false;
 	DisplayParentedDialog(pParentWnd,800);
 } // CDbgView::CDbgView
@@ -108,7 +108,14 @@ _Check_return_ ULONG CDbgView::HandleChange(UINT nID)
 // Clear
 void CDbgView::OnEditAction1()
 {
-	ClearView(DBGVIEW_VIEW);
+	if (IsValidEdit(DBGVIEW_VIEW))
+	{
+		TextPane* lpPane = (TextPane*) GetControl(DBGVIEW_VIEW);
+		if (lpPane)
+		{
+			return lpPane->ClearView();
+		}
+	}
 } // CDbgView::OnEditAction1
 
 // Close
@@ -120,5 +127,13 @@ void CDbgView::OnEditAction2()
 void CDbgView::AppendText(_In_z_ LPCTSTR szMsg)
 {
 	if (m_bPaused) return;
-	AppendString(DBGVIEW_VIEW,szMsg);
+
+	if (IsValidEdit(DBGVIEW_VIEW))
+	{
+		TextPane* lpPane = (TextPane*) GetControl(DBGVIEW_VIEW);
+		if (lpPane)
+		{
+			return lpPane->AppendString(szMsg);
+		}
+	}
 } // CDbgView::AppendText

@@ -1,10 +1,11 @@
-// Editor.cpp : implementation file
+// Dialog.cpp : implementation file
 //
 
 #include "stdafx.h"
 #include "Dialog.h"
 #include "UIFunctions.h"
 #include "ImportProcs.h"
+#include <propkey.h>
 
 static TCHAR* CLASS = _T("CMyDialog");
 
@@ -25,6 +26,15 @@ void CMyDialog::Constructor()
 	m_hwndCenteringWindow = NULL;
 	m_iAutoCenterWidth = NULL;
 	m_iStatusHeight = 0;
+
+	// If the previous foreground window is ours, remember its handle for computing cascades
+	m_hWndPrevious = ::GetForegroundWindow();
+	DWORD pid = NULL;
+	(void) ::GetWindowThreadProcessId(m_hWndPrevious, &pid);
+	if (::GetCurrentProcessId() != pid)
+	{
+		m_hWndPrevious = NULL;
+	}
 } // CMyDialog::Constructor
 
 CMyDialog::~CMyDialog()
@@ -151,6 +161,23 @@ LRESULT CMyDialog::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		return 0;
 		break;
 	case WM_CREATE:
+		// Ensure all windows group together by enforcing a consistent App User Model ID.
+		// We don't use SetCurrentProcessExplicitAppUserModelID because logging on to MAPI somehow breaks this.
+		if (pfnSHGetPropertyStoreForWindow)
+		{
+			IPropertyStore* pps = NULL;
+			HRESULT hRes = pfnSHGetPropertyStoreForWindow(m_hWnd, IID_PPV_ARGS(&pps));
+			if (SUCCEEDED(hRes) && pps) {
+				PROPVARIANT var = {0};
+				var.vt = VT_LPWSTR;
+				var.pwszVal = L"Microsoft.MFCMAPI";
+
+				(void) pps->SetValue(PKEY_AppUserModel_ID, var);
+			}
+
+			if (pps) pps->Release();
+		}
+
 		if (pfnSetWindowTheme) (void) pfnSetWindowTheme(m_hWnd, L"", L"");
 		{
 			// These calls force Windows to initialize the system menu for this window.
@@ -201,7 +228,20 @@ BOOL CMyDialog::CheckAutoCenter()
 	{
 		SetWindowPos(NULL,0,0,m_iAutoCenterWidth,0,NULL);
 	}
-	CenterWindow(m_hwndCenteringWindow);
+
+	// This effect only applies when opening non-CEditor IDD_BLANK_DIALOG windows
+	if (m_hWndPrevious && !m_lpNonModalParent && m_hwndCenteringWindow && IDD_BLANK_DIALOG == (int) m_lpszTemplateName)
+	{
+		// Cheap cascade effect
+		RECT rc = {0};
+		(void) ::GetWindowRect(m_hWndPrevious, &rc);
+		LONG lOffset = GetSystemMetrics(SM_CXSMSIZE);
+		(void) ::SetWindowPos(m_hWnd, NULL, rc.left + lOffset, rc.top + lOffset, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+	}
+	else
+	{
+		CenterWindow(m_hwndCenteringWindow);
+	}
 	return false;
 } // CMyDialog::CheckAutoCenter
 

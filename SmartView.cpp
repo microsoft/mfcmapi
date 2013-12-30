@@ -16,8 +16,7 @@
 #define _MaxEntriesExtraLarge 1500
 #define _MaxEntriesEnormous 10000
 
-void InterpretMVBinaryAsString(SBinaryArray myBinArray, DWORD_PTR iStructType, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_z_ LPWSTR* lpszResultString);
-void InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_ LPGUID lpguidNamedProp, _Deref_out_opt_z_ LPWSTR* lpszResultString);
+ULONG InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_ LPGUID lpguidNamedProp, _Deref_out_opt_z_ LPWSTR* lpszResultString);
 
 _Check_return_ LPWSTR CStringToString(CString szCString);
 
@@ -186,25 +185,29 @@ _Check_return_ ULONG FindSmartViewParserForProp(_In_count_(ulParserArray) LPSMAR
 } // FindSmartViewParserForProp
 
 // lpszSmartView allocated with new, delete with delete[]
-void InterpretPropSmartView(_In_ LPSPropValue lpProp, // required property value
-							_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
-							_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
-							_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
-							bool bMVRow, // did the row come from a MV prop?
-							_Deref_out_opt_z_ LPWSTR* lpszSmartView) // Built from lpProp & lpMAPIProp
+ULONG InterpretPropSmartView(_In_ LPSPropValue lpProp, // required property value
+							 _In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
+							 _In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
+							 _In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
+							 bool bIsAB, // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
+							 bool bMVRow, // did the row come from a MV prop?
+							 _Deref_out_opt_z_ LPWSTR* lpszSmartView) // Built from lpProp & lpMAPIProp
 {
-	if (!lpszSmartView) return;
+	if (!lpszSmartView) return NULL;
 	*lpszSmartView = NULL;
-	if (!lpProp) return;
+	if (!lpProp) return NULL;
 
 	HRESULT hRes = S_OK;
+	ULONG iStructType = NULL;
 
 	// Named Props
 	LPMAPINAMEID* lppPropNames = 0;
 
 	// If we weren't passed named property information and we need it, look it up
+	// We check bIsAB here - some address book providers return garbage which will crash us
 	if (!lpNameID &&
 		lpMAPIProp && // if we have an object
+		!bIsAB &&
 		RegKeys[regkeyPARSED_NAMED_PROPS].ulCurDWORD && // and we're parsing named props
 		(RegKeys[regkeyGETPROPNAMES_ON_ALL_PROPS].ulCurDWORD || PROP_ID(lpProp->ulPropTag) >= 0x8000)) // and it's either a named prop or we're doing all props
 	{
@@ -246,12 +249,12 @@ void InterpretPropSmartView(_In_ LPSPropValue lpProp, // required property value
 	case PT_I2:
 	case PT_I8:
 		{
-			InterpretNumberAsString(lpProp->Value,lpProp->ulPropTag,ulPropNameID,NULL,lpPropNameGUID,true,lpszSmartView);
+			iStructType = InterpretNumberAsString(lpProp->Value,lpProp->ulPropTag,ulPropNameID,NULL,lpPropNameGUID,true,lpszSmartView);
 		}
 		break;
 	case PT_MV_LONG:
 		{
-			InterpretMVLongAsString(lpProp->Value.MVl,lpProp->ulPropTag,ulPropNameID,lpPropNameGUID,lpszSmartView);
+			iStructType = InterpretMVLongAsString(lpProp->Value.MVl,lpProp->ulPropTag,ulPropNameID,lpPropNameGUID,lpszSmartView);
 		}
 		break;
 	case PT_BINARY:
@@ -259,7 +262,23 @@ void InterpretPropSmartView(_In_ LPSPropValue lpProp, // required property value
 			ULONG ulLookupPropTag = lpProp->ulPropTag;
 			if (bMVRow) ulLookupPropTag |= MV_FLAG;
 
-			ULONG iStructType = FindSmartViewParserForProp(SmartViewParserArray, ulSmartViewParserArray, ulLookupPropTag, ulPropNameID, lpPropNameGUID);
+			iStructType = FindSmartViewParserForProp(SmartViewParserArray, ulSmartViewParserArray, ulLookupPropTag, ulPropNameID, lpPropNameGUID);
+			// We special-case this property
+			if (!iStructType && PR_ROAMING_BINARYSTREAM == ulLookupPropTag && lpMAPIProp)
+			{
+				LPSPropValue lpPropSubject = NULL;
+
+				EC_MAPI(HrGetOneProp(
+					lpMAPIProp,
+					PR_SUBJECT_W,
+					&lpPropSubject));
+
+				if (CheckStringProp(lpPropSubject, PT_UNICODE) && 0 == wcscmp(lpPropSubject->Value.lpszW, L"IPM.Configuration.Autocomplete"))
+				{
+					iStructType = IDS_STNICKNAMECACHE;
+				}
+			}
+
 			if (iStructType)
 			{
 				InterpretBinaryAsString(lpProp->Value.bin,iStructType,lpMAPIProp,lpProp->ulPropTag,lpszSmartView);
@@ -268,7 +287,7 @@ void InterpretPropSmartView(_In_ LPSPropValue lpProp, // required property value
 		break;
 	case PT_MV_BINARY:
 		{
-			ULONG iStructType = FindSmartViewParserForProp(SmartViewParserArray, ulSmartViewParserArray, lpProp->ulPropTag, ulPropNameID, lpPropNameGUID);
+			iStructType = FindSmartViewParserForProp(SmartViewParserArray, ulSmartViewParserArray, lpProp->ulPropTag, ulPropNameID, lpPropNameGUID);
 			if (iStructType)
 			{
 				InterpretMVBinaryAsString(lpProp->Value.MVbin,iStructType,lpMAPIProp,lpProp->ulPropTag,lpszSmartView);
@@ -277,6 +296,8 @@ void InterpretPropSmartView(_In_ LPSPropValue lpProp, // required property value
 		break;
 	}
 	MAPIFreeBuffer(lppPropNames);
+
+	return iStructType;
 } // InterpretPropSmartView
 
 void InterpretMVBinaryAsString(SBinaryArray myBinArray, DWORD_PTR iStructType, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_z_ LPWSTR* lpszResultString)
@@ -312,36 +333,36 @@ void InterpretMVBinaryAsString(SBinaryArray myBinArray, DWORD_PTR iStructType, _
 	*lpszResultString = CStringToString(szResult);
 } // InterpretMVBinaryAsString
 
-void InterpretNumberAsStringProp(ULONG ulVal, ULONG ulPropTag, _Deref_out_opt_z_ LPWSTR* lpszResultString)
+ULONG InterpretNumberAsStringProp(ULONG ulVal, ULONG ulPropTag, _Deref_out_opt_z_ LPWSTR* lpszResultString)
 {
 	_PV pV = {0};
 	pV.ul = ulVal;
-	InterpretNumberAsString(pV, ulPropTag, NULL, NULL, NULL, false, lpszResultString);
+	return InterpretNumberAsString(pV, ulPropTag, NULL, NULL, NULL, false, lpszResultString);
 } // InterpretNumberAsStringProp
 
-void InterpretNumberAsStringNamedProp(ULONG ulVal, ULONG ulPropNameID, _In_opt_ LPCGUID lpguidNamedProp, _Deref_out_opt_z_ LPWSTR* lpszResultString)
+ULONG InterpretNumberAsStringNamedProp(ULONG ulVal, ULONG ulPropNameID, _In_opt_ LPCGUID lpguidNamedProp, _Deref_out_opt_z_ LPWSTR* lpszResultString)
 {
 	_PV pV = {0};
 	pV.ul = ulVal;
-	InterpretNumberAsString(pV, PT_LONG, ulPropNameID, NULL, lpguidNamedProp, false, lpszResultString);
+	return InterpretNumberAsString(pV, PT_LONG, ulPropNameID, NULL, lpguidNamedProp, false, lpszResultString);
 } // InterpretNumberAsStringNamedProp
 
 // Interprets a PT_LONG, PT_I2. or PT_I8 found in lpProp and returns a string allocated with new
 // Free the string with delete[]
 // Will not return a string if the lpProp is not a PT_LONG/PT_I2/PT_I8 or we don't recognize the property
 // Will use named property details to look up named property flags
-void InterpretNumberAsString(_PV pV, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_z_ LPWSTR lpszPropNameString, _In_opt_ LPCGUID lpguidNamedProp, bool bLabel, _Deref_out_opt_z_ LPWSTR* lpszResultString)
+ULONG InterpretNumberAsString(_PV pV, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_z_ LPWSTR lpszPropNameString, _In_opt_ LPCGUID lpguidNamedProp, bool bLabel, _Deref_out_opt_z_ LPWSTR* lpszResultString)
 {
 	if (lpszResultString) *lpszResultString = NULL;
 	if (!ulPropTag || !lpszResultString)
 	{
-		return;
+		return NULL;
 	}
 	if (PROP_TYPE(ulPropTag) != PT_LONG &&
 		PROP_TYPE(ulPropTag) != PT_I2 &&
 		PROP_TYPE(ulPropTag) != PT_I8)
 	{
-		return;
+		return NULL;
 	}
 
 	ULONG iParser = FindSmartViewParserForProp(NumStructArray, ulNumStructArray, ulPropTag, ulPropNameID, lpguidNamedProp);
@@ -383,31 +404,36 @@ void InterpretNumberAsString(_PV pV, ULONG ulPropTag, ULONG ulPropNameID, _In_op
 		}
 		break;
 	}
+
+	return iParser;
 } // InterpretNumberAsString
 
-void InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_ LPGUID lpguidNamedProp, _Deref_out_opt_z_ LPWSTR* lpszResultString)
+ULONG InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_ LPGUID lpguidNamedProp, _Deref_out_opt_z_ LPWSTR* lpszResultString)
 {
-	if (!lpszResultString) return;
+	if (!lpszResultString) return NULL;
 	*lpszResultString = NULL;
 
-	if (!RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD) return;
+	if (!RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD) return NULL;
 
+	ULONG iStructType = NULL;
 	ULONG ulRow = 0;
 	CString szResult;
 	CString szTmp;
 	LPWSTR szSmartView = NULL;
+	bool bHasData = false;
 
 	for (ulRow = 0 ; ulRow < myLongArray.cValues ; ulRow++)
 	{
-		if (ulRow != 0)
-		{
-			szResult += _T("\r\n"); // STRING_OK
-		}
 		_PV pV = {0};
 		pV.ul = myLongArray.lpl[ulRow];
-		InterpretNumberAsString(pV, CHANGE_PROP_TYPE(ulPropTag, PT_LONG), ulPropNameID, NULL, lpguidNamedProp, true, &szSmartView);
+		iStructType = InterpretNumberAsString(pV, CHANGE_PROP_TYPE(ulPropTag, PT_LONG), ulPropNameID, NULL, lpguidNamedProp, true, &szSmartView);
 		if (szSmartView)
 		{
+			if (bHasData)
+			{
+				szResult += _T("\r\n"); // STRING_OK
+			}
+			bHasData = true;
 			szTmp.FormatMessage(IDS_MVROWLONG,
 				ulRow,
 				szSmartView?szSmartView:L"");
@@ -418,6 +444,8 @@ void InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropTag, ULONG ulPr
 	}
 
 	*lpszResultString = CStringToString(szResult);
+
+	return iStructType;
 } // InterpretMVLongAsString
 
 // lpszResultString allocated with new, delete with delete[]
@@ -1538,14 +1566,23 @@ void SIDBinToString(SBinary myBin, _Deref_out_z_ LPWSTR* lpszResultString)
 		DWORD dwSidDomain = 0;
 		SID_NAME_USE SidNameUse;
 
-		WC_B(LookupAccountSid(
+		if (!LookupAccountSid(
 			NULL,
 			SidStart,
 			NULL,
 			&dwSidName,
 			NULL,
 			&dwSidDomain,
-			&SidNameUse));
+			&SidNameUse))
+		{
+			DWORD dwErr = GetLastError();
+			hRes = HRESULT_FROM_WIN32(dwErr);
+			if (ERROR_NONE_MAPPED != dwErr &&
+				STRSAFE_E_INSUFFICIENT_BUFFER != hRes)
+			{
+				LogFunctionCall(hRes, NULL, false, false, true, dwErr, "LookupAccountSid", __FILE__, __LINE__);
+			}
+		}
 		hRes = S_OK;
 
 #pragma warning(push)
@@ -2866,7 +2903,7 @@ void DeleteEntryIdStruct(_In_ EntryIdStruct* peidEntryId)
 		delete[] peidEntryId->ProviderData.MessageDatabaseObject.v2FQDN;
 		break;
 	case eidtWAB:
-		DeleteEntryIdStruct(peidEntryId->ProviderData.ContactAddressBookObject.lpEntryID);
+		DeleteEntryIdStruct(peidEntryId->ProviderData.WAB.lpEntryID);
 	}
 
 	delete[] peidEntryId->JunkData;
@@ -3018,7 +3055,9 @@ _Check_return_ LPWSTR EntryIdStructToString(_In_ EntryIdStruct* peidEntryId)
 				peidEntryId->ProviderData.ContactAddressBookObject.EntryIDCount);
 			szEntryId += szTmp;
 			break;
+		case CONTAB_ROOT:
 		case CONTAB_CONTAINER:
+		case CONTAB_SUBROOT:
 			szGUID = GUIDToStringAndName((LPGUID) &peidEntryId->ProviderData.ContactAddressBookObject.muidID);
 			szTmp.FormatMessage(IDS_ENTRYIDCONTACTADDRESSDATACONTAINER,szGUID);
 			szEntryId += szTmp;
@@ -3051,7 +3090,12 @@ _Check_return_ LPWSTR EntryIdStructToString(_In_ EntryIdStruct* peidEntryId)
 
 		LPWSTR szEID = EntryIdStructToString(peidEntryId->ProviderData.WAB.lpEntryID);
 		szEntryId += szEID;
+
+		delete[] szType;
+		szType = NULL;
+
 		delete[] szEID;
+		szEID = NULL;
 	}
 	else if (eidtMessageDatabase == peidEntryId->ObjectType)
 	{
@@ -3093,7 +3137,7 @@ _Check_return_ LPWSTR EntryIdStructToString(_In_ EntryIdStruct* peidEntryId)
 			LPTSTR szV2Version = NULL;
 			InterpretFlags(flagV2Magic, peidEntryId->ProviderData.MessageDatabaseObject.v2.ulMagic, &szV2Magic);
 			InterpretFlags(flagV2Version, peidEntryId->ProviderData.MessageDatabaseObject.v2.ulVersion, &szV2Version);
-			
+
 			szTmp.FormatMessage(IDS_ENTRYIDMAPIMESSAGESTOREEXCHANGEDATAV2,
 				peidEntryId->ProviderData.MessageDatabaseObject.v2.ulMagic, szV2Magic,
 				peidEntryId->ProviderData.MessageDatabaseObject.v2.ulSize,
@@ -3483,6 +3527,7 @@ _Check_return_ LPWSTR PropertyStructToString(_In_ PropertyStruct* ppProperty)
 				NULL,
 				NULL,
 				NULL,
+				false,
 				false,
 				&szSmartView);
 
@@ -4632,6 +4677,7 @@ void DeletePropertyDefinitionStreamStruct(_In_ PropertyDefinitionStreamStruct* p
 		DWORD iDef = 0;
 		for (iDef = 0 ; iDef < ppdsPropertyDefinitionStream->dwFieldDefinitionCount ; iDef++)
 		{
+			delete[] ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].szNmidName;
 			delete[] ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].pasNameANSI.szCharacters;
 			delete[] ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].pasFormulaANSI.szCharacters;
 			delete[] ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].pasValidationRuleANSI.szCharacters;
@@ -4787,6 +4833,8 @@ _Check_return_ LPWSTR PropertyDefinitionStreamStructToString(_In_ PropertyDefini
 				szTmp.FormatMessage(IDS_PROPDEFINTERNALTYPE,
 					ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].dwInternalType, szFlags,
 					ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].dwSkipBlockCount);
+				delete[] szFlags;
+				szFlags = NULL;
 				szPropertyDefinitionStream += szTmp;
 
 				if (ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].psbSkipBlocks)

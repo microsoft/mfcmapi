@@ -2,58 +2,59 @@
 #include "ImportProcs.h"
 #include "MAPIFunctions.h"
 
-HMODULE	hModAclui = NULL;
+HMODULE hModAclui = NULL;
 HMODULE hModOle32 = NULL;
 HMODULE hModUxTheme = NULL;
 HMODULE hModInetComm = NULL;
 HMODULE hModMSI = NULL;
 HMODULE hModKernel32 = NULL;
+HMODULE hModShell32 = NULL;
 
 typedef HTHEME (STDMETHODCALLTYPE CLOSETHEMEDATA)
-(
- HTHEME hTheme);
+	(
+	HTHEME hTheme);
 typedef CLOSETHEMEDATA* LPCLOSETHEMEDATA;
 
 typedef bool (WINAPI HEAPSETINFORMATION) (
-    HANDLE HeapHandle,
-    HEAP_INFORMATION_CLASS HeapInformationClass,
-    PVOID HeapInformation,
-    SIZE_T HeapInformationLength);
+	HANDLE HeapHandle,
+	HEAP_INFORMATION_CLASS HeapInformationClass,
+	PVOID HeapInformation,
+	SIZE_T HeapInformationLength);
 typedef HEAPSETINFORMATION* LPHEAPSETINFORMATION;
 
 typedef bool (WINAPI GETMODULEHANDLEEXW) (
-    DWORD    dwFlags,
-    LPCWSTR lpModuleName,
-    HMODULE* phModule);
+	DWORD    dwFlags,
+	LPCWSTR lpModuleName,
+	HMODULE* phModule);
 typedef GETMODULEHANDLEEXW* LPGETMODULEHANDLEEXW;
 
 typedef HRESULT (STDMETHODCALLTYPE MIMEOLEGETCODEPAGECHARSET)
-(
- CODEPAGEID cpiCodePage,
- CHARSETTYPE ctCsetType,
- LPHCHARSET phCharset
- );
+	(
+	CODEPAGEID cpiCodePage,
+	CHARSETTYPE ctCsetType,
+	LPHCHARSET phCharset
+	);
 typedef MIMEOLEGETCODEPAGECHARSET* LPMIMEOLEGETCODEPAGECHARSET;
 
 typedef UINT (WINAPI MSIPROVIDECOMPONENTW)
-(
- LPCWSTR szProduct,
- LPCWSTR szFeature,
- LPCWSTR szComponent,
- DWORD   dwInstallMode,
- LPWSTR  lpPathBuf,
- LPDWORD pcchPathBuf
- );
+	(
+	LPCWSTR szProduct,
+	LPCWSTR szFeature,
+	LPCWSTR szComponent,
+	DWORD   dwInstallMode,
+	LPWSTR  lpPathBuf,
+	LPDWORD pcchPathBuf
+	);
 typedef MSIPROVIDECOMPONENTW FAR * LPMSIPROVIDECOMPONENTW;
 
 typedef UINT (WINAPI MSIPROVIDEQUALIFIEDCOMPONENTW)
-(
- LPCWSTR szCategory,
- LPCWSTR szQualifier,
- DWORD   dwInstallMode,
- LPWSTR  lpPathBuf,
- LPDWORD pcchPathBuf
- );
+	(
+	LPCWSTR szCategory,
+	LPCWSTR szQualifier,
+	DWORD   dwInstallMode,
+	LPWSTR  lpPathBuf,
+	LPDWORD pcchPathBuf
+	);
 typedef MSIPROVIDEQUALIFIEDCOMPONENTW FAR * LPMSIPROVIDEQUALIFIEDCOMPONENTW;
 
 LPEDITSECURITY				pfnEditSecurity = NULL;
@@ -65,6 +66,7 @@ LPCLOSETHEMEDATA			pfnCloseThemeData = NULL;
 LPGETTHEMEMARGINS			pfnGetThemeMargins = NULL;
 LPSETWINDOWTHEME			pfnSetWindowTheme = NULL;
 LPGETTHEMESYSSIZE			pfnGetThemeSysSize = NULL;
+LPSHGETPROPERTYSTOREFORWINDOW pfnSHGetPropertyStoreForWindow = NULL;
 
 // From inetcomm.dll
 LPMIMEOLEGETCODEPAGECHARSET pfnMimeOleGetCodePageCharset = NULL;
@@ -160,6 +162,50 @@ _Check_return_ HMODULE LoadFromSystemDir(_In_z_ LPCTSTR szDLLName)
 	return hModRet;
 } // LoadFromSystemDir
 
+_Check_return_ HMODULE LoadFromOLMAPIDir(_In_z_ LPCTSTR szDLLName)
+{
+	HMODULE hModRet = NULL;
+
+	DebugPrint(DBGLoadLibrary,_T("LoadFromOLMAPIDir - loading \"%s\"\n"),szDLLName);
+
+	MAPIPathIterator* mpi = new MAPIPathIterator(true);
+	if (mpi)
+	{
+		int i = 0;
+		for (i = oqcOfficeBegin; i < oqcOfficeEnd; i++)
+		{
+			LPWSTR szOutlookMAPIPath = mpi->GetInstalledOutlookMAPI(i);
+			if (szOutlookMAPIPath)
+			{
+				HRESULT hRes = S_OK;
+				UINT ret = 0;
+				WCHAR szDrive[_MAX_DRIVE] = {0};
+				WCHAR szMAPIPath[MAX_PATH] = {0};
+				WC_D(ret,_wsplitpath_s(szOutlookMAPIPath, szDrive, _MAX_DRIVE, szMAPIPath, MAX_PATH, NULL, NULL, NULL, NULL));
+
+				if (SUCCEEDED(hRes))
+				{
+					LPWSTR szFullPath = new WCHAR[MAX_PATH];
+#ifdef UNICODE
+					swprintf_s(szFullPath, MAX_PATH, L"%s%s%s", szDrive, szMAPIPath, szDLLName);
+#else
+					swprintf_s(szFullPath, MAX_PATH, L"%s%s%hs", szDrive, szMAPIPath, szDLLName);
+#endif
+					DebugPrint(DBGLoadLibrary,_T("LoadFromOLMAPIDir - loading from \"%ws\"\n"), szFullPath);
+					WC_D(hModRet, MyLoadLibraryW(szFullPath));
+					delete[] szFullPath;
+
+				}
+			}
+			delete[] szOutlookMAPIPath;
+			if (hModRet) break;
+		}
+	}
+	delete mpi;
+
+	return hModRet;
+} // LoadFromOLMAPIDir
+
 void ImportProcs()
 {
 	LoadProc(_T("aclui.dll"),&hModAclui,"EditSecurity", (FARPROC*) &pfnEditSecurity); // STRING_OK;
@@ -176,6 +222,7 @@ void ImportProcs()
 	LoadProc(_T("msi.dll"), &hModMSI, "MsiProvideQualifiedComponentA", (FARPROC*) &pfnMsiProvideQualifiedComponent); // STRING_OK;
 	LoadProc(_T("msi.dll"), &hModMSI, "MsiGetFileVersionA", (FARPROC*) &pfnMsiGetFileVersion); // STRING_OK;
 #endif
+	LoadProc(_T("shell32.dll"), &hModShell32, "SHGetPropertyStoreForWindow", (FARPROC*) &pfnSHGetPropertyStoreForWindow); // STRING_OK;
 } // ImportProcs
 
 // Opens the mail key for the specified MAPI client, such as 'Microsoft Outlook' or 'ExchangeMAPI'
@@ -411,10 +458,10 @@ _Check_return_ STDMETHODIMP MyOpenStreamOnFile(_In_ LPALLOCATEBUFFER lpAllocateB
 } // MyOpenStreamOnFile
 
 _Check_return_ HRESULT HrDupPropset(
-					 int cprop,
-					 _In_count_(cprop) LPSPropValue rgprop,
-					 _In_ LPVOID lpObject,
-					 _In_ LPSPropValue*	prgprop)
+	int cprop,
+	_In_count_(cprop) LPSPropValue rgprop,
+	_In_ LPVOID lpObject,
+	_In_ LPSPropValue*	prgprop)
 {
 	ULONG cb = NULL;
 	HRESULT hRes = S_OK;
@@ -448,9 +495,9 @@ typedef ACTIONS* LPACTIONS;
 
 // swiped from EDK rules sample
 _Check_return_ STDAPI HrCopyActions(
-					 _In_ LPACTIONS lpActsSrc, // source action ptr
-					 _In_ LPVOID lpObject, // ptr to existing MAPI buffer
-					 _In_ LPACTIONS*	lppActsDst) // ptr to destination ACTIONS buffer
+	_In_ LPACTIONS lpActsSrc, // source action ptr
+	_In_ LPVOID lpObject, // ptr to existing MAPI buffer
+	_In_ LPACTIONS*	lppActsDst) // ptr to destination ACTIONS buffer
 {
 	if (!lpActsSrc || !lppActsDst) return MAPI_E_INVALID_PARAMETER;
 	if (lpActsSrc->cActions <= 0 || lpActsSrc->lpAction == NULL) return MAPI_E_INVALID_PARAMETER;
@@ -643,11 +690,11 @@ _Check_return_ STDAPI HrCopyActions(
 } // HrCopyActions
 
 _Check_return_ HRESULT HrCopyRestrictionArray(
-							   _In_ LPSRestriction lpResSrc, // source restriction
-							   _In_ LPVOID lpObject, // ptr to existing MAPI buffer
-							   ULONG cRes, // # elements in array
-							   _In_count_(cRes) LPSRestriction lpResDest // destination restriction
-							   )
+	_In_ LPSRestriction lpResSrc, // source restriction
+	_In_ LPVOID lpObject, // ptr to existing MAPI buffer
+	ULONG cRes, // # elements in array
+	_In_count_(cRes) LPSRestriction lpResDest // destination restriction
+	)
 {
 	if (!lpResSrc || !lpResDest || !lpObject) return MAPI_E_INVALID_PARAMETER;
 	HRESULT hRes = S_OK;
@@ -784,10 +831,10 @@ _Check_return_ HRESULT HrCopyRestrictionArray(
 } // HrCopyRestrictionArray
 
 _Check_return_ STDAPI HrCopyRestriction(
-						 _In_ LPSRestriction lpResSrc, // source restriction ptr
-						 _In_opt_ LPVOID lpObject, // ptr to existing MAPI buffer
-						 _In_ LPSRestriction* lppResDest // dest restriction buffer ptr
-						 )
+	_In_ LPSRestriction lpResSrc, // source restriction ptr
+	_In_opt_ LPVOID lpObject, // ptr to existing MAPI buffer
+	_In_ LPSRestriction* lppResDest // dest restriction buffer ptr
+	)
 {
 	if (!lppResDest) return MAPI_E_INVALID_PARAMETER;
 	*lppResDest = NULL;
@@ -898,12 +945,12 @@ HRESULT WINAPI MyMimeOleGetCodePageCharset(
 } // MyMimeOleGetCodePageCharset
 
 STDAPI_(UINT) MsiProvideComponentW(
-								 LPCWSTR szProduct,
-								 LPCWSTR szFeature,
-								 LPCWSTR szComponent,
-								 DWORD dwInstallMode,
-								 LPWSTR lpPathBuf,
-								 LPDWORD pcchPathBuf)
+	LPCWSTR szProduct,
+	LPCWSTR szFeature,
+	LPCWSTR szComponent,
+	DWORD dwInstallMode,
+	LPWSTR lpPathBuf,
+	LPDWORD pcchPathBuf)
 {
 	if (!pfnMsiProvideComponentW)
 	{

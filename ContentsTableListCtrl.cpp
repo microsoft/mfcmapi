@@ -109,7 +109,7 @@ LRESULT CContentsTableListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM l
 		}
 		break;
 	case WM_PAINT:
-		if (!m_lpContentsTable)
+		if (LVS_NOCOLUMNHEADER & GetStyle())
 		{
 			DrawHelpText(m_hWnd, IDS_HELPTEXTSTARTHERE);
 			return true;
@@ -136,8 +136,18 @@ LRESULT CContentsTableListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM l
 /////////////////////////////////////////////////////////////////////////////
 // CContentsTableListCtrl message handlers
 
-void CContentsTableListCtrl::OnContextMenu(_In_ CWnd* /*pWnd*/, CPoint pos)
+void CContentsTableListCtrl::OnContextMenu(_In_ CWnd* pWnd, CPoint pos)
 {
+	if (pWnd && -1 == pos.x && -1 == pos.y)
+	{
+		POINT point = {0};
+		int iItem = GetNextItem(
+			-1,
+			LVNI_SELECTED);
+		GetItemPosition(iItem, &point);
+		::ClientToScreen(pWnd->m_hWnd, &point);
+		pos = point;
+	}
 	DisplayContextMenu(m_nIDContextMenu,IDR_MENU_TABLE,m_lpHostDlg->m_hWnd, pos.x, pos.y);
 } // CContentsTableListCtrl::OnContextMenu
 
@@ -184,8 +194,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::SetContentsTable(
 	// Set up the columns on the new contents table and refresh!
 	DoSetColumns(
 		true,
-		(0 != RegKeys[regkeyEDIT_COLUMNS_ON_LOAD].ulCurDWORD),
-		false);
+		(0 != RegKeys[regkeyEDIT_COLUMNS_ON_LOAD].ulCurDWORD));
 
 	return hRes;
 } // CContentsTableListCtrl::SetContentsTable
@@ -211,18 +220,18 @@ void CContentsTableListCtrl::GetStatus()
 			IDS_GETSTATUSPROMPT,
 			4,
 			CEDITOR_BUTTON_OK);
-		MyData.InitSingleLine(0,IDS_ULTABLESTATUS,NULL,true);
+		MyData.InitPane(0, CreateSingleLinePane(IDS_ULTABLESTATUS, NULL, true));
 		MyData.SetHex(0,ulTableStatus);
 		LPTSTR szFlags = NULL;
 		InterpretFlags(flagTableStatus, ulTableStatus, &szFlags);
-		MyData.InitMultiLine(1,IDS_ULTABLESTATUS,szFlags,true);
+		MyData.InitPane(1, CreateMultiLinePane(IDS_ULTABLESTATUS, szFlags, true));
 		delete[] szFlags;
 		szFlags = NULL;
 
-		MyData.InitSingleLine(2,IDS_ULTABLETYPE,NULL,true);
+		MyData.InitPane(2, CreateSingleLinePane(IDS_ULTABLETYPE, NULL, true));
 		MyData.SetHex(2,ulTableType);
 		InterpretFlags(flagTableType,ulTableType, &szFlags);
-		MyData.InitMultiLine(3,IDS_ULTABLETYPE,szFlags,true);
+		MyData.InitPane(3, CreateMultiLinePane(IDS_ULTABLETYPE, szFlags, true));
 		delete[] szFlags;
 		szFlags = NULL;
 
@@ -272,7 +281,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::SetUIColumns(_In_ LPSPropTagArray
 	hRes = S_OK;
 	EC_H(AddColumns(lpTags));
 
-	AutoSizeColumns();
+	AutoSizeColumns(true);
 
 	DebugPrintEx(DBGGeneric,CLASS,_T("SetColumns"),_T("Done inserting column headers\n"));
 
@@ -280,16 +289,17 @@ _Check_return_ HRESULT CContentsTableListCtrl::SetUIColumns(_In_ LPSPropTagArray
 	return hRes;
 } // CContentsTableListCtrl::SetUIColumns
 
-void CContentsTableListCtrl::DoSetColumns(bool bAddExtras, bool bDisplayEditor, bool bQueryFlags)
+void CContentsTableListCtrl::DoSetColumns(bool bAddExtras, bool bDisplayEditor)
 {
-	HRESULT			hRes = S_OK;
-
-	// Clear out the selected item view since we have a new contents table
-	if (m_lpHostDlg)
-		m_lpHostDlg->OnUpdateSingleMAPIPropListCtrl(NULL, NULL);
+	HRESULT hRes = S_OK;
+	DebugPrintEx(DBGGeneric, CLASS,_T("DoSetColumns"), _T("bbDisplayEditor = %d\n"), bDisplayEditor);
 
 	if (!IsContentsTableSet())
 	{
+		// Clear out the selected item view since we have no contents table
+		if (m_lpHostDlg)
+			m_lpHostDlg->OnUpdateSingleMAPIPropListCtrl(NULL, NULL);
+
 		// Make sure we're clear
 		DeleteAllColumns();
 		ModifyStyle(0, LVS_NOCOLUMNHEADER);
@@ -303,55 +313,16 @@ void CContentsTableListCtrl::DoSetColumns(bool bAddExtras, bool bDisplayEditor, 
 	LPSPropTagArray lpOriginalColSet = NULL;
 
 	// this is just a pointer - do not free
-	LPSPropTagArray lpFinalTagArray = lpOriginalColSet;
+	LPSPropTagArray lpFinalTagArray = NULL;
+	bool bModified = false;
 
-	ULONG ulQueryColumnFlags = NULL;
-	ULONG ulSetColumnFlags = TBL_BATCH;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-	CWaitCursor		Wait; // Change the mouse to an hourglass while we work.
-
-	DebugPrintEx(DBGGeneric,CLASS,_T("DoSetColumns"),
-		_T("bbDisplayEditor = %d, bQueryFlags = %d\n"), // STRING_OK
-		bDisplayEditor,
-		bQueryFlags);
-
-	ModifyStyle(LVS_NOCOLUMNHEADER, 0);
-
-	// Cycle our notification, turning off the old one if necessary
-	NotificationOff();
-	WC_H(NotificationOn());
+	EC_MAPI(m_lpContentsTable->QueryColumns(
+		NULL,
+		&lpOriginalColSet));
+	lpFinalTagArray = lpOriginalColSet;
 	hRes = S_OK;
-
-	if (bQueryFlags)
-	{
-		CEditor MyData(
-			this,
-			IDS_SETCOLUMNS,
-			IDS_SETCOLUMNSPROMPT,
-			2,
-			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.InitSingleLine(0,IDS_QUERYCOLUMNFLAGS,NULL,false);
-		MyData.SetHex(0,ulQueryColumnFlags );
-		MyData.InitSingleLine(1,IDS_SETCOLUMNFLAGS,NULL,false);
-		MyData.SetHex(1,ulSetColumnFlags);
-
-		WC_H(MyData.DisplayDialog());
-		if (S_OK == hRes)
-		{
-			ulQueryColumnFlags = MyData.GetHex(0);
-			ulSetColumnFlags = MyData.GetHex(1);
-		}
-	}
-
-	if (S_OK == hRes)
-	{
-		EC_MAPI(m_lpContentsTable->QueryColumns(
-			ulQueryColumnFlags,
-			&lpOriginalColSet));
-		hRes = S_OK;
-
-		lpFinalTagArray = lpOriginalColSet;
-	}
 
 	if (bAddExtras)
 	{
@@ -375,6 +346,7 @@ void CContentsTableListCtrl::DoSetColumns(bool bAddExtras, bool bDisplayEditor, 
 			this,
 			IDS_COLUMNSET,
 			IDS_COLUMNSETPROMPT,
+			m_lpContentsTable,
 			lpFinalTagArray, // build on the final array we've computed thus far
 			m_bIsAB,
 			lpMDB);
@@ -387,17 +359,26 @@ void CContentsTableListCtrl::DoSetColumns(bool bAddExtras, bool bDisplayEditor, 
 			if (lpModifiedTags)
 			{
 				lpFinalTagArray = lpModifiedTags;
+				bModified = true;
 			}
 		}
-		hRes = S_OK;
 	}
-
-	if (lpFinalTagArray)
+	else
 	{
 		// Apply lpFinalTagArray through SetColumns
 		EC_MAPI(m_lpContentsTable->SetColumns(
 			lpFinalTagArray,
-			ulSetColumnFlags)); // Flags
+			TBL_BATCH));
+		bModified = true;
+	}
+
+	if (bModified)
+	{
+		// Cycle our notification, turning off the old one if necessary
+		NotificationOff();
+		WC_H(NotificationOn());
+		hRes = S_OK;
+
 		EC_H(SetUIColumns(lpFinalTagArray));
 		EC_H(RefreshTable());
 	}
@@ -524,6 +505,11 @@ _Check_return_ HRESULT CContentsTableListCtrl::AddColumns(_In_ LPSPropTagArray l
 		}
 	}
 
+	if (ulCurHeaderCol)
+	{
+		ModifyStyle(LVS_NOCOLUMNHEADER, 0);
+	}
+
 	// this would be bad
 	if (ulCurHeaderCol<m_ulHeaderColumns)
 	{
@@ -626,7 +612,9 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 	EC_MAPI(MAPIInitialize(NULL));
 
 	(void) ::SendMessage(hWndHost,WM_MFCMAPI_CLEARSINGLEMAPIPROPLIST,NULL,NULL);
-	szStatusText.FormatMessage(IDS_STATUSTEXTNUMITEMS,lpListCtrl->GetItemCount());
+	CString szCount;
+	szCount.Format(_T("%d"), lpListCtrl->GetItemCount());
+	szStatusText.FormatMessage(IDS_STATUSTEXTNUMITEMS, szCount);
 	(void) ::SendMessage(hWndHost,WM_MFCMAPI_UPDATESTATUSBAR,STATUSDATA1,(LPARAM)(LPCTSTR) szStatusText);
 
 	// potentially lengthy op - check abort before and after
@@ -1079,6 +1067,15 @@ void CContentsTableListCtrl::SetRowStrings(int iRow, _In_ LPSRow lpsRowData)
 				LPWSTR szFlags = NULL;
 				LPSPropValue pProp = &lpsRowData->lpProps[ulCol];
 
+				// If we've got a MAPI_E_NOT_FOUND error, just don't display it.
+				if (RegKeys[regkeySUPPRESS_NOT_FOUND].ulCurDWORD && pProp && PT_ERROR == PROP_TYPE(pProp->ulPropTag) && MAPI_E_NOT_FOUND == pProp->Value.err)
+				{
+					if (0 == iColumn)
+					{
+						SetItemText(iRow, iColumn, (LPCTSTR) PropString);
+					}
+					continue;
+				}
 				InterpretProp(pProp,&PropString,NULL);
 
 				InterpretNumberAsString(pProp->Value,pProp->ulPropTag,NULL,NULL,NULL,false,&szFlags);
@@ -1168,7 +1165,21 @@ void GetDepthAndImage(_In_ LPSRow lpsRowData, _In_ ULONG* lpulDepth, _In_ ULONG*
 					break;
 				}
 			}
+		}
+	}
 
+	// We still don't have a good icon - make some heuristic guesses
+	if (slIconDefault == ulImage)
+	{
+		LPSPropValue lpProp = NULL;
+		lpProp = PpropFindProp(lpsRowData->lpProps, lpsRowData->cValues, PR_SERVICE_UID);
+		if (!lpProp)
+		{
+			lpProp = PpropFindProp(lpsRowData->lpProps, lpsRowData->cValues, PR_PROVIDER_UID);
+		}
+		if (lpProp)
+		{
+			ulImage = slIconMAPI_PROFSECT;
 		}
 	}
 
@@ -1218,7 +1229,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::AddItemToListBox(int iRow, _In_ L
 	EC_H(RefreshItem(iRow,lpsRowToAdd,false));
 
 	if (m_lpHostDlg)
-		m_lpHostDlg->UpdateStatusBarText(STATUSDATA1, IDS_STATUSTEXTNUMITEMS, GetItemCount(), 0, 0);
+		m_lpHostDlg->UpdateStatusBarText(STATUSDATA1, IDS_STATUSTEXTNUMITEMS, GetItemCount());
 
 	return hRes;
 } // CContentsTableListCtrl::AddItemToListBox
@@ -1514,7 +1525,6 @@ void CContentsTableListCtrl::OnItemChanged(_In_ NMHDR* pNMHDR, _In_ LRESULT* pRe
 		if (1 == GetSelectedCount())
 		{
 			HRESULT			hRes = S_OK;
-			LPSPropValue	lpProp = NULL;
 
 			// go get the original row for display in the prop list control
 			lpData = (SortListData*) GetItemData(pNMListView->iItem);
@@ -1543,32 +1553,14 @@ void CContentsTableListCtrl::OnItemChanged(_In_ NMHDR* pNMHDR, _In_ LRESULT* pRe
 				{
 					szTitle.Format(_T("%ws"),lpProps[m_ulDisplayNameColumn].Value.lpszW); // STRING_OK
 				}
+				else
+				{
+					szTitle = GetTitle(lpMAPIProp);
+				}
 			}
 			else if (lpMAPIProp)
 			{
-				// Get a property from the item for the title bar
-				WC_MAPI(HrGetOneProp(
-					lpMAPIProp,
-					PR_DISPLAY_NAME,
-					&lpProp));
-				if (MAPI_E_NOT_FOUND == hRes)
-				{
-					hRes = S_OK;
-					// Let's try a different property
-					WC_MAPI(HrGetOneProp(
-						lpMAPIProp,
-						PR_SUBJECT,
-						&lpProp));
-				}
-				else WARNHRESMSG(hRes,IDS_TITLEPROPNOTFOUND);
-				if (lpProp)
-				{
-					if (CheckStringProp(lpProp,PT_TSTRING))
-					{
-						szTitle = lpProp->Value.LPSZ;
-					}
-					MAPIFreeBuffer(lpProp);
-				}
+				szTitle = GetTitle(lpMAPIProp);
 			}
 		}
 
@@ -1883,7 +1875,7 @@ _Check_return_ LRESULT	CContentsTableListCtrl::msgOnDeleteItem(WPARAM wParam, LP
 		m_lpHostDlg->OnUpdateSingleMAPIPropListCtrl(NULL, NULL);
 	}
 
-	m_lpHostDlg->UpdateStatusBarText(STATUSDATA1, IDS_STATUSTEXTNUMITEMS, iCount, 0, 0);
+	m_lpHostDlg->UpdateStatusBarText(STATUSDATA1, IDS_STATUSTEXTNUMITEMS, iCount);
 	return hRes;
 } // CContentsTableListCtrl::msgOnDeleteItem
 

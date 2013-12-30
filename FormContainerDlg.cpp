@@ -20,21 +20,21 @@ static TCHAR* CLASS = _T("CFormContainerDlg");
 
 
 CFormContainerDlg::CFormContainerDlg(
-									 _In_ CParentWnd* pParentWnd,
-									 _In_ CMapiObjects* lpMapiObjects,
-									 _In_ LPMAPIFORMCONTAINER lpFormContainer
-									 ):
+	_In_ CParentWnd* pParentWnd,
+	_In_ CMapiObjects* lpMapiObjects,
+	_In_ LPMAPIFORMCONTAINER lpFormContainer
+	):
 CContentsTableDlg(
-				  pParentWnd,
-				  lpMapiObjects,
-				  IDS_FORMCONTAINER,
-				  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
-				  NULL,
-				  (LPSPropTagArray) &sptDEFCols,
-				  NUMDEFCOLUMNS,
-				  DEFColumns,
-				  IDR_MENU_FORM_CONTAINER_POPUP,
-				  MENU_CONTEXT_FORM_CONTAINER)
+	pParentWnd,
+	lpMapiObjects,
+	IDS_FORMCONTAINER,
+	mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+	NULL,
+	(LPSPropTagArray) &sptDEFCols,
+	NUMDEFCOLUMNS,
+	DEFColumns,
+	IDR_MENU_FORM_CONTAINER_POPUP,
+	MENU_CONTEXT_FORM_CONTAINER)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 
@@ -143,7 +143,7 @@ void CFormContainerDlg::OnRefreshView()
 			MAPIFreeBuffer(lpMAPIFormInfoArray);
 		}
 	}
-	m_lpContentsTableListCtrl->AutoSizeColumns();
+	m_lpContentsTableListCtrl->AutoSizeColumns(false);
 } // CFormContainerDlg::OnRefreshView
 
 _Check_return_ HRESULT CFormContainerDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum /*bModify*/, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
@@ -231,7 +231,7 @@ void CFormContainerDlg::OnInstallForm()
 		IDS_INSTALLFORMPROMPT,
 		(ULONG) 1,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-	MyFlags.InitSingleLine(0,IDS_FLAGS,NULL,false);
+	MyFlags.InitPane(0, CreateSingleLinePane(IDS_FLAGS, NULL, false));
 	MyFlags.SetHex(0,MAPIFORM_INSTALL_DIALOG);
 
 	WC_H(MyFlags.DisplayDialog());
@@ -292,7 +292,7 @@ void CFormContainerDlg::OnRemoveForm()
 		IDS_REMOVEFORMPROMPT,
 		(ULONG) 1,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-	MyClass.InitSingleLine(0,IDS_CLASS,NULL,false);
+	MyClass.InitPane(0, CreateSingleLinePane(IDS_CLASS, NULL, false));
 
 	WC_H(MyClass.DisplayDialog());
 	if (S_OK == hRes)
@@ -320,8 +320,8 @@ void CFormContainerDlg::OnResolveMessageClass()
 		IDS_RESOLVECLASSPROMPT,
 		(ULONG) 2,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-	MyData.InitSingleLine(0,IDS_CLASS,NULL,false);
-	MyData.InitSingleLine(1,IDS_FLAGS,NULL,false);
+	MyData.InitPane(0, CreateSingleLinePane(IDS_CLASS, NULL, false));
+	MyData.InitPane(1, CreateSingleLinePane(IDS_FLAGS, NULL, false));
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -357,9 +357,9 @@ void CFormContainerDlg::OnResolveMultipleMessageClasses()
 		IDS_RESOLVECLASSESPROMPT,
 		(ULONG) 2,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-	MyData.InitSingleLine(0,IDS_NUMBER,NULL,false);
+	MyData.InitPane(0, CreateSingleLinePane(IDS_NUMBER, NULL, false));
 	MyData.SetDecimal(0,1);
-	MyData.InitSingleLine(1,IDS_FLAGS,NULL,false);
+	MyData.InitPane(1, CreateSingleLinePane(IDS_FLAGS, NULL, false));
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -383,7 +383,7 @@ void CFormContainerDlg::OnResolveMultipleMessageClasses()
 						IDS_ENTERMSGCLASSPROMPT,
 						(ULONG) 1,
 						CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-					MyClass.InitSingleLine(0,IDS_CLASS,NULL,false);
+					MyClass.InitPane(0, CreateSingleLinePane(IDS_CLASS, NULL, false));
 
 					WC_H(MyClass.DisplayDialog());
 					if (S_OK == hRes)
@@ -441,7 +441,7 @@ void CFormContainerDlg::OnCalcFormPropSet()
 		IDS_CALCFORMPROPSETPROMPT,
 		(ULONG) 1,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-	MyData.InitSingleLine(0,IDS_FLAGS,NULL,false);
+	MyData.InitPane(0, CreateSingleLinePane(IDS_FLAGS, NULL, false));
 	MyData.SetHex(0,FORMPROPSET_UNION);
 
 	WC_H(MyData.DisplayDialog());
@@ -478,7 +478,7 @@ void CFormContainerDlg::OnGetDisplay()
 			IDS_GETDISPLAYPROMPT,
 			1,
 			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-		MyOutput.InitSingleLineSz(0,IDS_GETDISPLAY,lpszDisplayName,true);
+		MyOutput.InitPane(0, CreateSingleLinePane(IDS_GETDISPLAY, lpszDisplayName, true));
 		WC_H(MyOutput.DisplayDialog());
 		MAPIFreeBuffer(lpszDisplayName);
 	}

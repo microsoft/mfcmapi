@@ -15,22 +15,22 @@ static TCHAR* CLASS = _T("CRecipientsDlg");
 // CRecipientsDlg dialog
 
 CRecipientsDlg::CRecipientsDlg(
-							   _In_ CParentWnd* pParentWnd,
-							   _In_ CMapiObjects* lpMapiObjects,
-							   _In_ LPMAPITABLE lpMAPITable,
-							   _In_ LPMESSAGE lpMessage
-							   ):
+	_In_ CParentWnd* pParentWnd,
+	_In_ CMapiObjects* lpMapiObjects,
+	_In_ LPMAPITABLE lpMAPITable,
+	_In_ LPMESSAGE lpMessage
+	):
 CContentsTableDlg(
-				  pParentWnd,
-				  lpMapiObjects,
-				  IDS_RECIPIENTS,
-				  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
-				  lpMAPITable,
-				  (LPSPropTagArray) &sptDEFCols,
-				  NUMDEFCOLUMNS,
-				  DEFColumns,
-				  IDR_MENU_RECIPIENTS_POPUP,
-				  MENU_CONTEXT_RECIPIENT_TABLE)
+	pParentWnd,
+	lpMapiObjects,
+	IDS_RECIPIENTS,
+	mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+	lpMAPITable,
+	(LPSPropTagArray) &sptDEFCols,
+	NUMDEFCOLUMNS,
+	DEFColumns,
+	IDR_MENU_RECIPIENTS_POPUP,
+	MENU_CONTEXT_RECIPIENT_TABLE)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	m_lpMessage = lpMessage;
@@ -45,7 +45,13 @@ CRecipientsDlg::~CRecipientsDlg()
 {
 	TRACE_DESTRUCTOR(CLASS);
 
-	if (m_lpMessage) m_lpMessage->Release();
+	if (m_lpMessage)
+	{
+		HRESULT hRes = S_OK;
+
+		EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+		m_lpMessage->Release();
+	}
 } // CRecipientsDlg::~CRecipientsDlg
 
 BEGIN_MESSAGE_MAP(CRecipientsDlg, CContentsTableDlg)
@@ -74,9 +80,9 @@ void CRecipientsDlg::OnInitMenu(_In_ CMenu* pMenu)
 } // CRecipientsDlg::OnInitMenu
 
 _Check_return_ HRESULT CRecipientsDlg::OpenItemProp(
-									  int iSelectedItem,
-									  __mfcmapiModifyEnum bModify,
-									  _Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
+	int iSelectedItem,
+	__mfcmapiModifyEnum bModify,
+	_Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
 {
 	DebugPrintEx(DBGOpenItemProp,CLASS,_T("OpenItemProp"),_T("iSelectedItem = 0x%X\n"),iSelectedItem);
 
@@ -126,7 +132,7 @@ void CRecipientsDlg::OnDeleteSelectedItem()
 				EC_H(MAPIAllocateBuffer(
 					sizeof(SPropValue),
 					(LPVOID*) &lpProp));
-				
+
 				if (lpProp)
 				{
 					lpAdrList->aEntries[iSelection].ulReserved1 = 0;
@@ -169,14 +175,16 @@ void CRecipientsDlg::OnModifyRecipients()
 
 	if (!m_lpPropDisplay->IsModifiedPropVals()) return;
 
-	LPSPropValue lpProps = m_lpPropDisplay->GetPropVals();
+	ULONG cProps = 0;
+	LPSPropValue lpProps = NULL;
+	EC_H(m_lpPropDisplay->GetDisplayedProps(&cProps, &lpProps));
 
 	if (lpProps)
 	{
 		ADRLIST	adrList = {0};
 		adrList.cEntries = 1;
 		adrList.aEntries[0].ulReserved1 = 0;
-		adrList.aEntries[0].cValues = m_lpPropDisplay->GetCountPropVals();
+		adrList.aEntries[0].cValues = cProps;
 
 		ULONG ulSizeProps = NULL;
 		EC_MAPI(ScCountProps(
@@ -213,7 +221,9 @@ void CRecipientsDlg::OnRecipOptions()
 
 	if (1 != m_lpContentsTableListCtrl->GetSelectedCount()) return;
 
-	LPSPropValue lpProps = m_lpPropDisplay->GetPropVals();
+	ULONG cProps = 0;
+	LPSPropValue lpProps = NULL;
+	EC_H(m_lpPropDisplay->GetDisplayedProps(&cProps, &lpProps));
 
 	if (lpProps)
 	{
@@ -222,7 +232,7 @@ void CRecipientsDlg::OnRecipOptions()
 		{
 			ADRENTRY adrEntry = {0};
 			adrEntry.ulReserved1 = 0;
-			adrEntry.cValues = m_lpPropDisplay->GetCountPropVals();
+			adrEntry.cValues = cProps;
 			adrEntry.rgPropVals = lpProps;
 			DebugPrintEx(DBGGeneric,CLASS,_T("OnRecipOptions"),_T("Calling RecipOptions\n"));
 

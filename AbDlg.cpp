@@ -21,21 +21,21 @@ static TCHAR* CLASS = _T("CAbDlg");
 
 
 CAbDlg::CAbDlg(
-			   _In_ CParentWnd* pParentWnd,
-			   _In_ CMapiObjects* lpMapiObjects,
-			   _In_ LPABCONT lpAdrBook
-			   ):
+	_In_ CParentWnd* pParentWnd,
+	_In_ CMapiObjects* lpMapiObjects,
+	_In_ LPABCONT lpAdrBook
+	):
 CContentsTableDlg(
-				  pParentWnd,
-				  lpMapiObjects,
-				  IDS_AB,
-				  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
-				  NULL,
-				  (LPSPropTagArray) &sptABCols,
-				  NUMABCOLUMNS,
-				  ABColumns,
-				  IDR_MENU_AB_VIEW_POPUP,
-				  MENU_CONTEXT_AB_CONTENTS)
+	pParentWnd,
+	lpMapiObjects,
+	IDS_AB,
+	mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+	NULL,
+	(LPSPropTagArray) &sptABCols,
+	NUMABCOLUMNS,
+	ABColumns,
+	IDR_MENU_AB_VIEW_POPUP,
+	MENU_CONTEXT_AB_CONTENTS)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	m_lpContainer = lpAdrBook;
@@ -138,40 +138,43 @@ void CAbDlg::OnDisplayDetails()
 
 void CAbDlg::OnOpenContact()
 {
-	HRESULT			hRes = S_OK;
-	LPENTRYLIST		lpEntryList = NULL;
-	LPMESSAGE		lpMessage = NULL;
+	HRESULT hRes = S_OK;
+	LPENTRYLIST lpEntryList = NULL;
+	LPMAPIPROP lpProp = NULL;
 
 	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl || !m_lpPropDisplay) return;
-	LPMAPISESSION	lpSession = m_lpMapiObjects->GetSession(); // do not release
+	LPMAPISESSION lpSession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpSession) return;
 
-	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	EC_H(m_lpContentsTableListCtrl->GetSelectedItemEIDs(&lpEntryList));
 
-	if (SUCCEEDED(hRes) && lpEntryList && 1 == lpEntryList->cValues && sizeof(CONTAB_ENTRYID) <= lpEntryList->lpbin[0].cb)
+	if (SUCCEEDED(hRes) && lpEntryList && 1 == lpEntryList->cValues)
 	{
-		LPCONTAB_ENTRYID lpContabEID = (LPCONTAB_ENTRYID)lpEntryList->lpbin[0].lpb;
-
-		if (lpContabEID && lpContabEID->cbeid && lpContabEID->abeid)
+		ULONG cb = 0;
+		LPBYTE lpb = NULL;
+		if (UnwrapContactEntryID(lpEntryList->lpbin[0].cb, lpEntryList->lpbin[0].lpb, &cb, &lpb))
 		{
 			EC_H(CallOpenEntry(
 				NULL,
 				NULL,
 				NULL,
 				lpSession,
-				lpContabEID->cbeid,
-				(LPENTRYID) lpContabEID->abeid,
+				cb,
+				(LPENTRYID) lpb,
 				NULL,
 				NULL,
 				NULL,
-				(LPUNKNOWN*)&lpMessage));
+				(LPUNKNOWN*) &lpProp));
 		}
 	}
 
-	WC_H(m_lpPropDisplay->SetDataSource(lpMessage, NULL, false));
-	if (lpMessage) lpMessage->Release();
+	if (lpProp)
+	{
+		EC_H(DisplayObject(lpProp, NULL, otDefault, this));
+		if (lpProp) lpProp->Release();
+	}
 	MAPIFreeBuffer(lpEntryList);
 } // CAbDlg::OnOpenContact
 
@@ -302,7 +305,7 @@ _Check_return_ bool CAbDlg::HandlePaste()
 			1,
 			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 
-		MyData.InitSingleLine(0,IDS_FLAGS,NULL,false);
+		MyData.InitPane(0, CreateSingleLinePane(IDS_FLAGS, NULL, false));
 		MyData.SetHex(0,CREATE_CHECK_DUP_STRICT);
 
 		WC_H(MyData.DisplayDialog());
@@ -340,7 +343,7 @@ void CAbDlg::OnCreatePropertyStringRestriction()
 		1,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 
-	MyData.InitSingleLine(0,IDS_NAME,NULL,false);
+	MyData.InitPane(0, CreateSingleLinePane(IDS_NAME, NULL, false));
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK != hRes) return;
@@ -360,9 +363,9 @@ void CAbDlg::OnCreatePropertyStringRestriction()
 } // CAbDlg::OnCreatePropertyStringRestriction
 
 void CAbDlg::HandleAddInMenuSingle(
-								   _In_ LPADDINMENUPARAMS lpParams,
-								   _In_ LPMAPIPROP lpMAPIProp,
-								   _In_ LPMAPICONTAINER /*lpContainer*/)
+	_In_ LPADDINMENUPARAMS lpParams,
+	_In_ LPMAPIPROP lpMAPIProp,
+	_In_ LPMAPICONTAINER /*lpContainer*/)
 {
 	if (lpParams)
 	{

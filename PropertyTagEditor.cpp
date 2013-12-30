@@ -23,19 +23,20 @@ enum __PropTagFields
 };
 
 CPropertyTagEditor::CPropertyTagEditor(
-									   UINT uidTitle,
-									   UINT uidPrompt,
-									   ULONG ulPropTag,
-									   bool bIncludeABProps,
-									   _In_opt_ LPMAPIPROP lpMAPIProp,
-									   _In_ CWnd* pParentWnd):
+	UINT uidTitle,
+	UINT uidPrompt,
+	ULONG ulPropTag,
+	bool bIncludeABProps,
+	_In_opt_ LPMAPIPROP lpMAPIProp,
+	_In_ CWnd* pParentWnd):
 CEditor(pParentWnd,
 		uidTitle?uidTitle:IDS_PROPTAGEDITOR,
 		uidPrompt,
 		0,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL|CEDITOR_BUTTON_ACTION1|(lpMAPIProp?CEDITOR_BUTTON_ACTION2:0),
 		IDS_ACTIONSELECTPTAG,
-		IDS_ACTIONCREATENAMEDPROP)
+		IDS_ACTIONCREATENAMEDPROP,
+		NULL)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	m_ulPropTag = ulPropTag;
@@ -45,16 +46,16 @@ CEditor(pParentWnd,
 	if (m_lpMAPIProp) m_lpMAPIProp->AddRef();
 
 	CreateControls(m_lpMAPIProp?8:5);
-	InitSingleLine(PROPTAG_TAG,IDS_PROPTAG,NULL,false);
-	InitSingleLine(PROPTAG_ID,IDS_PROPID,NULL,false);
-	InitDropDown(PROPTAG_TYPE,IDS_PROPTYPE,0,NULL,false);
-	InitSingleLine(PROPTAG_NAME,IDS_PROPNAME,NULL,true);
-	InitSingleLine(PROPTAG_TYPESTRING,IDS_PROPTYPE,NULL,true);
+	InitPane(PROPTAG_TAG, CreateSingleLinePane(IDS_PROPTAG, NULL, false));
+	InitPane(PROPTAG_ID,  CreateSingleLinePane(IDS_PROPID, NULL, false));
+	InitPane(PROPTAG_TYPE, CreateDropDownPane(IDS_PROPTYPE, 0, NULL, false));
+	InitPane(PROPTAG_NAME, CreateSingleLinePane(IDS_PROPNAME, NULL, true));
+	InitPane(PROPTAG_TYPESTRING, CreateSingleLinePane(IDS_PROPTYPE, NULL, true));
 	if (m_lpMAPIProp)
 	{
-		InitDropDown(PROPTAG_NAMEPROPKIND,IDS_NAMEPROPKIND,0,NULL,true);
-		InitSingleLine(PROPTAG_NAMEPROPNAME,IDS_NAMEPROPNAME,NULL,false);
-		InitGUIDDropDown(PROPTAG_NAMEPROPGUID,IDS_NAMEPROPGUID,false);
+		InitPane(PROPTAG_NAMEPROPKIND, CreateDropDownPane(IDS_NAMEPROPKIND, 0, NULL, true));
+		InitPane(PROPTAG_NAMEPROPNAME, CreateSingleLinePane(IDS_NAMEPROPNAME, NULL, false));
+		InitPane(PROPTAG_NAMEPROPGUID, CreateDropDownGuidPane(IDS_NAMEPROPGUID, false));
 	}
 } // CPropertyTagEditor::CPropertyTagEditor
 
@@ -411,6 +412,56 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField)
 	delete[] szExactMatch;
 } // CPropertyTagEditor::PopulateFields
 
+void CPropertyTagEditor::SetDropDownSelection(ULONG i, _In_opt_z_ LPCTSTR szText)
+{
+	if (IsValidDropDown(i))
+	{
+		DropDownPane* lpPane = (DropDownPane*) GetControl(i);
+		if (lpPane)
+		{
+			return lpPane->SetDropDownSelection(szText);
+		}
+	}
+}
+
+_Check_return_ CString CPropertyTagEditor::GetDropStringUseControl(ULONG iControl)
+{
+	if (IsValidDropDown(iControl))
+	{
+		DropDownPane* lpPane = (DropDownPane*) GetControl(iControl);
+		if (lpPane)
+		{
+			return lpPane->GetDropStringUseControl();
+		}
+	}
+	return _T("");
+}
+
+_Check_return_ int CPropertyTagEditor::GetDropDownSelection(ULONG iControl)
+{
+	if (IsValidDropDown(iControl))
+	{
+		DropDownPane* lpPane = (DropDownPane*) GetControl(iControl);
+		if (lpPane)
+		{
+			return lpPane->GetDropDownSelection();
+		}
+	}
+	return CB_ERR;
+}
+
+void CPropertyTagEditor::InsertDropString(ULONG iControl, int iRow, _In_z_ LPCTSTR szText)
+{
+	if (IsValidDropDown(iControl))
+	{
+		DropDownPane* lpPane = (DropDownPane*) GetControl(iControl);
+		if (lpPane)
+		{
+			return lpPane->InsertDropString(iRow, szText);
+		}
+	}
+}
+
 //////////////////////////////////////////////////////////////////////////////////////
 // CPropertySelector
 // Property selection dialog
@@ -418,9 +469,9 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField)
 //////////////////////////////////////////////////////////////////////////////////////
 
 CPropertySelector::CPropertySelector(
-									 bool bIncludeABProps,
-									 _In_ LPMAPIPROP lpMAPIProp,
-									 _In_ CWnd* pParentWnd):
+	bool bIncludeABProps,
+	_In_ LPMAPIPROP lpMAPIProp,
+	_In_ CWnd* pParentWnd):
 CEditor(pParentWnd,IDS_PROPSELECTOR,0,0,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL)
 {
 	TRACE_CONSTRUCTOR(CLASS);
@@ -431,7 +482,7 @@ CEditor(pParentWnd,IDS_PROPSELECTOR,0,0,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL)
 	if (m_lpMAPIProp) m_lpMAPIProp->AddRef();
 
 	CreateControls(1);
-	InitList(0,IDS_KNOWNPROPTAGS,true,true);
+	InitPane(0, CreateListPane(IDS_KNOWNPROPTAGS, true, true, this));
 } // CPropertySelector::CPropertySelector
 
 CPropertySelector::~CPropertySelector()
@@ -511,3 +562,16 @@ _Check_return_ ULONG CPropertySelector::GetPropertyTag()
 {
 	return m_ulPropTag;
 } // CPropertySelector::GetPropertyTag
+
+_Check_return_ SortListData* CPropertySelector::GetSelectedListRowData(ULONG iControl)
+{
+	if (IsValidList(iControl))
+	{
+		ListPane* lpPane = (ListPane*) GetControl(iControl);
+		if (lpPane)
+		{
+			return lpPane->GetSelectedListRowData();
+		}
+	}
+	return NULL;
+}

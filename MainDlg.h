@@ -40,6 +40,7 @@ private:
 	void OnComputeGivenStoreHash();
 	void OnConvertMSGToEML();
 	void OnConvertEMLToMSG();
+	void OnConvertMSGToXML();
 	void OnDisplayMailboxTable();
 	void OnDisplayPublicFolderTable();
 	void OnDumpStoreContents();

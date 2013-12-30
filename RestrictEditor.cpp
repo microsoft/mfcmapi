@@ -24,30 +24,30 @@ private:
 };
 
 CResCompareEditor::CResCompareEditor(
-									 _In_ CWnd* pParentWnd,
-									 ULONG ulRelop,
-									 ULONG ulPropTag1,
-									 ULONG ulPropTag2):
+	_In_ CWnd* pParentWnd,
+	ULONG ulRelop,
+	ULONG ulPropTag1,
+	ULONG ulPropTag2):
 CEditor(pParentWnd,IDS_RESED,IDS_RESEDCOMPPROMPT,6,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL)
 {
 	TRACE_CONSTRUCTOR(COMPCLASS);
 
 	SetPromptPostFix(AllFlagsToString(flagRelop,false));
-	InitSingleLine(0,IDS_RELOP,NULL,false);
+	InitPane(0, CreateSingleLinePane(IDS_RELOP, NULL, false));
 	SetHex(0,ulRelop);
 	LPTSTR szFlags = NULL;
 	InterpretFlags(flagRelop, ulRelop, &szFlags);
-	InitSingleLineSz(1,IDS_RELOP,szFlags,true);
+	InitPane(1, CreateSingleLinePane(IDS_RELOP, szFlags, true));
 	delete[] szFlags;
 	szFlags = NULL;
 
-	InitSingleLine(2,IDS_ULPROPTAG1,NULL,false);
+	InitPane(2, CreateSingleLinePane(IDS_ULPROPTAG1, NULL, false));
 	SetHex(2,ulPropTag1);
-	InitSingleLineSz(3,IDS_ULPROPTAG1,TagToString(ulPropTag1,NULL,false,true),true);
+	InitPane(3, CreateSingleLinePane(IDS_ULPROPTAG1, TagToString(ulPropTag1, NULL, false, true), true));
 
-	InitSingleLine(4,IDS_ULPROPTAG2,NULL,false);
+	InitPane(4, CreateSingleLinePane(IDS_ULPROPTAG2, NULL, false));
 	SetHex(4,ulPropTag2);
-	InitSingleLineSz(5,IDS_ULPROPTAG1,TagToString(ulPropTag2,NULL,false,true),true);
+	InitPane(5, CreateSingleLinePane(IDS_ULPROPTAG1, TagToString(ulPropTag2, NULL, false, true), true));
 } // CResCompareEditor::CResCompareEditor
 
 _Check_return_ ULONG CResCompareEditor::HandleChange(UINT nID)
@@ -100,12 +100,12 @@ private:
 };
 
 CResCombinedEditor::CResCombinedEditor(
-									   _In_ CWnd* pParentWnd,
-									   ULONG ulResType,
-									   ULONG ulCompare,
-									   ULONG ulPropTag,
-									   _In_ LPSPropValue lpProp,
-									   _In_ LPVOID lpAllocParent):
+	_In_ CWnd* pParentWnd,
+	ULONG ulResType,
+	ULONG ulCompare,
+	ULONG ulPropTag,
+	_In_ LPSPropValue lpProp,
+	_In_ LPVOID lpAllocParent):
 CEditor(pParentWnd,
 		IDS_RESED,
 		ulResType == RES_CONTENT?IDS_RESEDCONTPROMPT : // Content case
@@ -114,6 +114,7 @@ CEditor(pParentWnd,
 		8,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_ACTION1|CEDITOR_BUTTON_CANCEL,
 		IDS_ACTIONEDITPROP,
+		NULL,
 		NULL)
 {
 	TRACE_CONSTRUCTOR(CONTENTCLASS);
@@ -129,35 +130,35 @@ CEditor(pParentWnd,
 	{
 		SetPromptPostFix(AllFlagsToString(flagFuzzyLevel,true));
 
-		InitSingleLine(0,IDS_ULFUZZYLEVEL,NULL,false);
+		InitPane(0, CreateSingleLinePane(IDS_ULFUZZYLEVEL, NULL, false));
 		SetHex(0,ulCompare);
 		InterpretFlags(flagFuzzyLevel, ulCompare, &szFlags);
-		InitSingleLineSz(1,IDS_ULFUZZYLEVEL,szFlags,true);
+		InitPane(1, CreateSingleLinePane(IDS_ULFUZZYLEVEL, szFlags, true));
 	}
 	else if (RES_PROPERTY == m_ulResType)
 	{
 		SetPromptPostFix(AllFlagsToString(flagRelop,false));
-		InitSingleLine(0,IDS_RELOP,NULL,false);
+		InitPane(0, CreateSingleLinePane(IDS_RELOP, NULL, false));
 		SetHex(0,ulCompare);
 		InterpretFlags(flagRelop, ulCompare, &szFlags);
-		InitSingleLineSz(1,IDS_RELOP,szFlags,true);
+		InitPane(1, CreateSingleLinePane(IDS_RELOP, szFlags, true));
 	}
 	delete[] szFlags;
 	szFlags = NULL;
 
-	InitSingleLine(2,IDS_ULPROPTAG,NULL,false);
+	InitPane(2, CreateSingleLinePane(IDS_ULPROPTAG, NULL, false));
 	SetHex(2,ulPropTag);
-	InitSingleLineSz(3,IDS_ULPROPTAG,TagToString(ulPropTag,NULL,false,true),true);
+	InitPane(3, CreateSingleLinePane(IDS_ULPROPTAG, TagToString(ulPropTag, NULL, false, true), true));
 
-	InitSingleLine(4,IDS_LPPROPULPROPTAG,NULL,false);
+	InitPane(4, CreateSingleLinePane(IDS_LPPROPULPROPTAG, NULL, false));
 	if (lpProp) SetHex(4,lpProp->ulPropTag);
-	InitSingleLineSz(5,IDS_LPPROPULPROPTAG,lpProp?(LPCTSTR)TagToString(lpProp->ulPropTag,NULL,false,true):NULL,true);
+	InitPane(5, CreateSingleLinePane(IDS_LPPROPULPROPTAG, lpProp?(LPCTSTR)TagToString(lpProp->ulPropTag, NULL, false, true):NULL, true));
 
 	CString szProp;
 	CString szAltProp;
 	if (lpProp)	InterpretProp(lpProp,&szProp,&szAltProp);
-	InitMultiLine(6,IDS_LPPROP,szProp,true);
-	InitMultiLine(7,IDS_LPPROPALTVIEW,szAltProp,true);
+	InitPane(6,CreateMultiLinePane(IDS_LPPROP, szProp, true));
+	InitPane(7,CreateMultiLinePane(IDS_LPPROPALTVIEW, szAltProp, true));
 } // CResCombinedEditor::CResCombinedEditor
 
 _Check_return_ ULONG CResCombinedEditor::HandleChange(UINT nID)
@@ -252,28 +253,28 @@ private:
 };
 
 CResBitmaskEditor::CResBitmaskEditor(
-									 _In_ CWnd* pParentWnd,
-									 ULONG relBMR,
-									 ULONG ulPropTag,
-									 ULONG ulMask):
+	_In_ CWnd* pParentWnd,
+	ULONG relBMR,
+	ULONG ulPropTag,
+	ULONG ulMask):
 CEditor(pParentWnd,IDS_RESED,IDS_RESEDBITPROMPT,5,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL)
 {
 	TRACE_CONSTRUCTOR(BITMASKCLASS);
 
 	SetPromptPostFix(AllFlagsToString(flagBitmask,false));
-	InitSingleLine(0,IDS_RELBMR,NULL,false);
+	InitPane(0, CreateSingleLinePane(IDS_RELBMR, NULL, false));
 	SetHex(0,relBMR);
 	LPTSTR szFlags = NULL;
 	InterpretFlags(flagBitmask, relBMR, &szFlags);
-	InitSingleLineSz(1,IDS_RELBMR,szFlags,true);
+	InitPane(1, CreateSingleLinePane(IDS_RELBMR, szFlags, true));
 	delete[] szFlags;
 	szFlags = NULL;
 
-	InitSingleLine(2,IDS_ULPROPTAG,NULL,false);
+	InitPane(2, CreateSingleLinePane(IDS_ULPROPTAG, NULL, false));
 	SetHex(2,ulPropTag);
-	InitSingleLineSz(3,IDS_ULPROPTAG,TagToString(ulPropTag,NULL,false,true),true);
+	InitPane(3, CreateSingleLinePane(IDS_ULPROPTAG, TagToString(ulPropTag, NULL, false, true), true));
 
-	InitSingleLine(4,IDS_MASK,NULL,false);
+	InitPane(4, CreateSingleLinePane(IDS_MASK, NULL, false));
 	SetHex(4,ulMask);
 } // CResBitmaskEditor::CResBitmaskEditor
 
@@ -311,28 +312,28 @@ private:
 };
 
 CResSizeEditor::CResSizeEditor(
-							   _In_ CWnd* pParentWnd,
-							   ULONG relop,
-							   ULONG ulPropTag,
-							   ULONG cb):
+	_In_ CWnd* pParentWnd,
+	ULONG relop,
+	ULONG ulPropTag,
+	ULONG cb):
 CEditor(pParentWnd,IDS_RESED,IDS_RESEDSIZEPROMPT,5,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL)
 {
 	TRACE_CONSTRUCTOR(SIZECLASS);
 
 	SetPromptPostFix(AllFlagsToString(flagRelop,false));
-	InitSingleLine(0,IDS_RELOP,NULL,false);
+	InitPane(0, CreateSingleLinePane(IDS_RELOP, NULL, false));
 	SetHex(0,relop);
 	LPTSTR szFlags = NULL;
 	InterpretFlags(flagRelop, relop, &szFlags);
-	InitSingleLineSz(1,IDS_RELOP,szFlags,true);
+	InitPane(1, CreateSingleLinePane(IDS_RELOP, szFlags, true));
 	delete[] szFlags;
 	szFlags = NULL;
 
-	InitSingleLine(2,IDS_ULPROPTAG,NULL,false);
+	InitPane(2, CreateSingleLinePane(IDS_ULPROPTAG, NULL, false));
 	SetHex(2,ulPropTag);
-	InitSingleLineSz(3,IDS_ULPROPTAG,TagToString(ulPropTag,NULL,false,true),true);
+	InitPane(3, CreateSingleLinePane(IDS_ULPROPTAG, TagToString(ulPropTag, NULL, false, true), true));
 
-	InitSingleLine(4,IDS_CB,NULL,false);
+	InitPane(4, CreateSingleLinePane(IDS_CB, NULL, false));
 	SetHex(4,cb);
 } // CResSizeEditor::CResSizeEditor
 
@@ -368,15 +369,15 @@ private:
 };
 
 CResExistEditor::CResExistEditor(
-								 _In_ CWnd* pParentWnd,
-								 ULONG ulPropTag):
+	_In_ CWnd* pParentWnd,
+	ULONG ulPropTag):
 CEditor(pParentWnd,IDS_RESED,IDS_RESEDEXISTPROMPT,2,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL)
 {
 	TRACE_CONSTRUCTOR(EXISTCLASS);
 
-	InitSingleLine(0,IDS_ULPROPTAG,NULL,false);
+	InitPane(0, CreateSingleLinePane(IDS_ULPROPTAG, NULL, false));
 	SetHex(0,ulPropTag);
-	InitSingleLineSz(1,IDS_ULPROPTAG,TagToString(ulPropTag,NULL,false,true),true);
+	InitPane(1, CreateSingleLinePane(IDS_ULPROPTAG, TagToString(ulPropTag, NULL, false, true), true));
 } // CResExistEditor::CResExistEditor
 
 _Check_return_ ULONG CResExistEditor::HandleChange(UINT nID)
@@ -414,11 +415,11 @@ private:
 };
 
 CResSubResEditor::CResSubResEditor(
-								   _In_ CWnd* pParentWnd,
-								   ULONG ulSubObject,
-								   _In_ LPSRestriction lpRes,
-								   _In_ LPVOID lpAllocParent):
-CEditor(pParentWnd,IDS_SUBRESED,IDS_RESEDSUBPROMPT,3,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_ACTION1|CEDITOR_BUTTON_CANCEL,IDS_ACTIONEDITRES,NULL)
+	_In_ CWnd* pParentWnd,
+	ULONG ulSubObject,
+	_In_ LPSRestriction lpRes,
+	_In_ LPVOID lpAllocParent):
+CEditor(pParentWnd,IDS_SUBRESED,IDS_RESEDSUBPROMPT,3,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_ACTION1|CEDITOR_BUTTON_CANCEL,IDS_ACTIONEDITRES,NULL, NULL)
 {
 	TRACE_CONSTRUCTOR(SUBRESCLASS);
 
@@ -426,11 +427,11 @@ CEditor(pParentWnd,IDS_SUBRESED,IDS_RESEDSUBPROMPT,3,CEDITOR_BUTTON_OK|CEDITOR_B
 	m_lpNewRes = NULL;
 	m_lpAllocParent = lpAllocParent;
 
-	InitSingleLine(0,IDS_ULSUBOBJECT,NULL,false);
+	InitPane(0, CreateSingleLinePane(IDS_ULSUBOBJECT, NULL, false));
 	SetHex(0,ulSubObject);
-	InitSingleLineSz(1,IDS_ULSUBOBJECT,TagToString(ulSubObject,NULL,false,true),true);
+	InitPane(1, CreateSingleLinePane(IDS_ULSUBOBJECT, TagToString(ulSubObject, NULL, false, true), true));
 
-	InitMultiLine(2,IDS_LPRES,RestrictionToString(lpRes,NULL),true);
+	InitPane(2, CreateMultiLinePane(IDS_LPRES, RestrictionToString(lpRes, NULL), true));
 } // CResSubResEditor::CResSubResEditor
 
 _Check_return_ ULONG CResSubResEditor::HandleChange(UINT nID)
@@ -465,7 +466,8 @@ void CResSubResEditor::OnEditAction1()
 	{
 		// Since m_lpNewRes was owned by an m_lpAllocParent, we don't free it directly
 		m_lpNewRes = ResEdit.DetachModifiedSRestriction();
-		InitMultiLine(2,IDS_LPRES,RestrictionToString(m_lpNewRes,NULL),true);
+
+		SetString(2, RestrictionToString(m_lpNewRes, NULL));
 	}
 } // CResSubResEditor::OnEditAction1
 
@@ -496,9 +498,9 @@ private:
 };
 
 CResAndOrEditor::CResAndOrEditor(
-								 _In_ CWnd* pParentWnd,
-								 _In_ LPSRestriction lpRes,
-								 _In_ LPVOID lpAllocParent):
+	_In_ CWnd* pParentWnd,
+	_In_ LPSRestriction lpRes,
+	_In_ LPVOID lpAllocParent):
 CEditor(pParentWnd,IDS_RESED,IDS_RESEDANDORPROMPT,1,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL)
 {
 	TRACE_CONSTRUCTOR(ANDORCLASS);
@@ -507,7 +509,7 @@ CEditor(pParentWnd,IDS_RESED,IDS_RESEDANDORPROMPT,1,CEDITOR_BUTTON_OK|CEDITOR_BU
 	m_ulNewResCount = NULL;
 	m_lpAllocParent = lpAllocParent;
 
-	InitList(0,IDS_SUBRESTRICTIONS,false,false);
+	InitPane(0, CreateListPane(IDS_SUBRESTRICTIONS, false, false, this));
 } // CResAndOrEditor::CResAndOrEditor
 
 // Used to call functions which need to be called AFTER controls are created
@@ -687,10 +689,10 @@ private:
 };
 
 CResCommentEditor::CResCommentEditor(
-									 _In_ CWnd* pParentWnd,
-									 _In_ LPSRestriction lpRes,
-									 _In_ LPVOID lpAllocParent):
-CEditor(pParentWnd,IDS_COMMENTRESED,IDS_RESEDCOMMENTPROMPT,2,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_ACTION1|CEDITOR_BUTTON_CANCEL,IDS_ACTIONEDITRES,NULL)
+	_In_ CWnd* pParentWnd,
+	_In_ LPSRestriction lpRes,
+	_In_ LPVOID lpAllocParent):
+CEditor(pParentWnd, IDS_COMMENTRESED, IDS_RESEDCOMMENTPROMPT, 2, CEDITOR_BUTTON_OK|CEDITOR_BUTTON_ACTION1|CEDITOR_BUTTON_CANCEL, IDS_ACTIONEDITRES, NULL, NULL)
 {
 	TRACE_CONSTRUCTOR(COMMENTCLASS);
 
@@ -699,8 +701,8 @@ CEditor(pParentWnd,IDS_COMMENTRESED,IDS_RESEDCOMMENTPROMPT,2,CEDITOR_BUTTON_OK|C
 	m_lpNewCommentProp = NULL;
 	m_lpAllocParent = lpAllocParent;
 
-	InitList(0,IDS_SUBRESTRICTION,false,false);
-	InitMultiLine(1,IDS_RESTRICTIONTEXT,RestrictionToString(m_lpSourceRes->res.resComment.lpRes,NULL),true);
+	InitPane(0, CreateListPane(IDS_SUBRESTRICTION, false, false, this));
+	InitPane(1, CreateMultiLinePane(IDS_RESTRICTIONTEXT, RestrictionToString(m_lpSourceRes->res.resComment.lpRes, NULL), true));
 } // CResCommentEditor::CResCommentEditor
 
 // Used to call functions which need to be called AFTER controls are created
@@ -815,7 +817,7 @@ _Check_return_ bool CResCommentEditor::DoListEdit(ULONG ulListNum, int iItem, _I
 			1,
 			true);
 
-		MyTag.InitSingleLine(0,IDS_TAG,NULL,false);
+		MyTag.InitPane(0, CreateSingleLinePane(IDS_TAG, NULL, false));
 
 		WC_H(MyTag.DisplayDialog());
 		if (S_OK != hRes) return false;
@@ -909,10 +911,10 @@ static TCHAR* CLASS = _T("CRestrictEditor"); // STRING_OK
 // Create an editor for a restriction
 // Takes LPSRestriction lpRes as input
 CRestrictEditor::CRestrictEditor(
-								 _In_ CWnd* pParentWnd,
-								 _In_opt_ LPVOID lpAllocParent,
-								 _In_opt_ LPSRestriction lpRes):
-CEditor(pParentWnd,IDS_RESED,IDS_RESEDPROMPT,3,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_ACTION1|CEDITOR_BUTTON_CANCEL,IDS_ACTIONEDITRES, NULL)
+	_In_ CWnd* pParentWnd,
+	_In_opt_ LPVOID lpAllocParent,
+	_In_opt_ LPSRestriction lpRes):
+CEditor(pParentWnd, IDS_RESED, IDS_RESEDPROMPT, 3, CEDITOR_BUTTON_OK|CEDITOR_BUTTON_ACTION1|CEDITOR_BUTTON_CANCEL, IDS_ACTIONEDITRES, NULL, NULL)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	HRESULT hRes = S_OK;
@@ -950,9 +952,9 @@ CEditor(pParentWnd,IDS_RESED,IDS_RESEDPROMPT,3,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_
 	}
 
 	SetPromptPostFix(AllFlagsToString(flagRestrictionType,true));
-	InitSingleLine(0,IDS_RESTRICTIONTYPE,NULL,false); // type as a number
-	InitSingleLine(1,IDS_RESTRICTIONTYPE,NULL,true); // type as a string (flagRestrictionType)
-	InitMultiLine(2,IDS_RESTRICTIONTEXT,RestrictionToString(GetSourceRes(),NULL),true);
+	InitPane(0, CreateSingleLinePane(IDS_RESTRICTIONTYPE, NULL, false)); // type as a number
+	InitPane(1, CreateSingleLinePane(IDS_RESTRICTIONTYPE, NULL, true)); // type as a string (flagRestrictionType)
+	InitPane(2, CreateMultiLinePane(IDS_RESTRICTIONTEXT, RestrictionToString(GetSourceRes(), NULL), true));
 } // CRestrictEditor::CRestrictEditor
 
 CRestrictEditor::~CRestrictEditor()
@@ -1232,7 +1234,7 @@ void CRestrictEditor::OnEditAction1()
 			if (S_OK == hRes)
 			{
 				m_lpOutputRes->rt = lpSourceRes->rt;
-				m_lpOutputRes->res.resSub.ulSubObject = MyEditor.GetHex(0);
+				m_lpOutputRes->res.resSub.ulSubObject = MyEditor.GetHex(1);
 
 				// Since m_lpOutputRes->res.resSub.lpRes was owned by an m_lpAllocParent, we don't free it directly
 				m_lpOutputRes->res.resSub.lpRes = MyEditor.DetachModifiedSRestriction();
@@ -1278,11 +1280,11 @@ void CRestrictEditor::OnEditAction1()
 static TCHAR* CRITERIACLASS = _T("CCriteriaEditor"); // STRING_OK
 #define LISTNUM 4
 CCriteriaEditor::CCriteriaEditor(
-								 _In_ CWnd* pParentWnd,
-								 _In_ LPSRestriction lpRes,
-								 _In_ LPENTRYLIST lpEntryList,
-								 ULONG ulSearchState):
-CEditor(pParentWnd,IDS_CRITERIAEDITOR,IDS_CRITERIAEDITORPROMPT,6,CEDITOR_BUTTON_OK|CEDITOR_BUTTON_ACTION1|CEDITOR_BUTTON_CANCEL,IDS_ACTIONEDITRES,NULL)
+	_In_ CWnd* pParentWnd,
+	_In_ LPSRestriction lpRes,
+	_In_ LPENTRYLIST lpEntryList,
+	ULONG ulSearchState):
+CEditor(pParentWnd, IDS_CRITERIAEDITOR, IDS_CRITERIAEDITORPROMPT, 6, CEDITOR_BUTTON_OK|CEDITOR_BUTTON_ACTION1|CEDITOR_BUTTON_CANCEL, IDS_ACTIONEDITRES, NULL, NULL)
 {
 	TRACE_CONSTRUCTOR(CRITERIACLASS);
 
@@ -1299,18 +1301,18 @@ CEditor(pParentWnd,IDS_CRITERIAEDITOR,IDS_CRITERIAEDITORPROMPT,6,CEDITOR_BUTTON_
 	m_ulNewSearchFlags = NULL;
 
 	SetPromptPostFix(AllFlagsToString(flagSearchFlag,true));
-	InitSingleLine(0,IDS_SEARCHSTATE,NULL,true);
+	InitPane(0, CreateSingleLinePane(IDS_SEARCHSTATE, NULL, true));
 	SetHex(0,ulSearchState);
 	LPTSTR szFlags = NULL;
 	InterpretFlags(flagSearchState, ulSearchState, &szFlags);
-	InitSingleLineSz(1,IDS_SEARCHSTATE,szFlags,true);
+	InitPane(1, CreateSingleLinePane(IDS_SEARCHSTATE, szFlags, true));
 	delete[] szFlags;
 	szFlags = NULL;
-	InitSingleLine(2,IDS_SEARCHFLAGS,NULL,false);
+	InitPane(2, CreateSingleLinePane(IDS_SEARCHFLAGS, NULL, false));
 	SetHex(2,0);
-	InitSingleLine(3,IDS_SEARCHFLAGS,NULL,true);
-	InitList(4,IDS_EIDLIST,false,false);
-	InitMultiLine(5,IDS_RESTRICTIONTEXT,RestrictionToString(m_lpSourceRes,NULL),true);
+	InitPane(3, CreateSingleLinePane(IDS_SEARCHFLAGS, NULL, true));
+	InitPane(4, CreateListPane(IDS_EIDLIST, false, false, this));
+	InitPane(5, CreateMultiLinePane(IDS_RESTRICTIONTEXT, RestrictionToString(m_lpSourceRes, NULL), true));
 } // CCriteriaEditor::CCriteriaEditor
 
 CCriteriaEditor::~CCriteriaEditor()
@@ -1463,7 +1465,7 @@ _Check_return_ bool CCriteriaEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 		lpSourcebin = &lpData->data.Binary.NewBin;
 	}
 
-	BinEdit.InitSingleLineSz(0,IDS_EID,BinToHexString(lpSourcebin,false),false);
+	BinEdit.InitPane(0, CreateSingleLinePane(IDS_EID, BinToHexString(lpSourcebin, false), false));
 
 	WC_H(BinEdit.DisplayDialog());
 	if (S_OK == hRes)

@@ -17,32 +17,30 @@ static TCHAR* CLASS = _T("CAttachmentsDlg");
 // CAttachmentsDlg dialog
 
 CAttachmentsDlg::CAttachmentsDlg(
-								 _In_ CParentWnd* pParentWnd,
-								 _In_ CMapiObjects* lpMapiObjects,
-								 _In_ LPMAPITABLE lpMAPITable,
-								 _In_ LPMESSAGE lpMessage,
-								 bool bSaveMessageAtClose
-								 ):
+	_In_ CParentWnd* pParentWnd,
+	_In_ CMapiObjects* lpMapiObjects,
+	_In_ LPMAPITABLE lpMAPITable,
+	_In_ LPMESSAGE lpMessage
+	):
 CContentsTableDlg(
-				  pParentWnd,
-				  lpMapiObjects,
-				  IDS_ATTACHMENTS,
-				  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
-				  lpMAPITable,
-				  (LPSPropTagArray) &sptATTACHCols,
-				  NUMATTACHCOLUMNS,
-				  ATTACHColumns,
-				  IDR_MENU_ATTACHMENTS_POPUP,
-				  MENU_CONTEXT_ATTACHMENT_TABLE)
+	pParentWnd,
+	lpMapiObjects,
+	IDS_ATTACHMENTS,
+	mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+	lpMAPITable,
+	(LPSPropTagArray) &sptATTACHCols,
+	NUMATTACHCOLUMNS,
+	ATTACHColumns,
+	IDR_MENU_ATTACHMENTS_POPUP,
+	MENU_CONTEXT_ATTACHMENT_TABLE)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	m_lpMessage = lpMessage;
 	if (m_lpMessage) m_lpMessage->AddRef();
 
 	m_bDisplayAttachAsEmbeddedMessage = false;
-	m_bUseMapiModifyOnEmbeddedMessage = false;
-	m_bSaveMessageAtClose = bSaveMessageAtClose;
 	m_lpAttach = NULL;
+	m_ulAttachNum = (ULONG) -1;
 
 	CreateDialogAndMenu(IDR_MENU_ATTACHMENTS);
 } // CAttachmentsDlg::CAttachmentsDlg
@@ -51,13 +49,13 @@ CAttachmentsDlg::~CAttachmentsDlg()
 {
 	TRACE_DESTRUCTOR(CLASS);
 	if (m_lpAttach) m_lpAttach->Release();
-	if (m_lpMessage && m_bSaveMessageAtClose)
+	if (m_lpMessage)
 	{
 		HRESULT hRes = S_OK;
 
-		EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+		WC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+		m_lpMessage->Release();
 	}
-	if (m_lpMessage) m_lpMessage->Release();
 } // CAttachmentsDlg::~CAttachmentsDlg
 
 BEGIN_MESSAGE_MAP(CAttachmentsDlg, CContentsTableDlg)
@@ -66,9 +64,6 @@ BEGIN_MESSAGE_MAP(CAttachmentsDlg, CContentsTableDlg)
 	ON_COMMAND(ID_SAVECHANGES, OnSaveChanges)
 	ON_COMMAND(ID_SAVETOFILE, OnSaveToFile)
 	ON_COMMAND(ID_VIEWEMBEDDEDMESSAGEPROPERTIES, OnViewEmbeddedMessageProps)
-	ON_COMMAND(ID_USEMAPIMODIFYONATTACHMENTS, OnUseMapiModify)
-	ON_COMMAND(ID_ATTACHMENTPROPERTIES, OnAttachmentProperties)
-	ON_COMMAND(ID_RECIPIENTPROPERTIES, OnRecipientProperties)
 END_MESSAGE_MAP()
 
 void CAttachmentsDlg::OnInitMenu(_In_ CMenu* pMenu)
@@ -87,34 +82,106 @@ void CAttachmentsDlg::OnInitMenu(_In_ CMenu* pMenu)
 			pMenu->EnableMenuItem(ID_DELETESELECTEDITEM,DIMMSOK(iNumSel));
 			pMenu->EnableMenuItem(ID_MODIFYSELECTEDITEM,DIMMSOK(1 == iNumSel));
 			pMenu->EnableMenuItem(ID_SAVETOFILE,DIMMSOK(iNumSel));
-			pMenu->EnableMenuItem(ID_ATTACHMENTPROPERTIES,DIM(m_bDisplayAttachAsEmbeddedMessage && 1 == iNumSel));
-			pMenu->EnableMenuItem(ID_RECIPIENTPROPERTIES,DIM(m_bDisplayAttachAsEmbeddedMessage && 1 == iNumSel));
+			pMenu->EnableMenuItem(ID_DISPLAYSELECTEDITEM,DIM(1 == iNumSel));
 		}
 		pMenu->CheckMenuItem(ID_VIEWEMBEDDEDMESSAGEPROPERTIES,CHECK(m_bDisplayAttachAsEmbeddedMessage));
-		pMenu->CheckMenuItem(ID_USEMAPIMODIFYONATTACHMENTS,CHECK(m_bUseMapiModifyOnEmbeddedMessage));
-
 	}
 	CContentsTableDlg::OnInitMenu(pMenu);
 } // CAttachmentsDlg::OnInitMenu
 
-_Check_return_ HRESULT CAttachmentsDlg::OpenItemProp(
-									  int iSelectedItem,
-									  __mfcmapiModifyEnum /*bModify*/,
-									  _Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
+void CAttachmentsDlg::OnDisplayItem()
 {
-	HRESULT			hRes = S_OK;
-	SortListData*	lpListData = NULL;
+	HRESULT hRes = S_OK;
+	int iItem = -1;
+	SortListData* lpListData = NULL;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
+
+	if (!m_lpContentsTableListCtrl || !m_lpMessage) return;
+	if (!m_lpAttach) return;
+
+	lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
+	if (lpListData && ATTACH_EMBEDDED_MSG == lpListData->data.Contents.ulAttachMethod)
+	{
+		LPMESSAGE lpMessage = OpenEmbeddedMessage();
+		if (lpMessage)
+		{
+			WC_H(DisplayObject(lpMessage, MAPI_MESSAGE, otDefault, this));
+			lpMessage->Release();
+			lpMessage = NULL;
+		}
+	}
+}
+
+_Check_return_ LPATTACH CAttachmentsDlg::OpenAttach(ULONG ulAttachNum)
+{
+	HRESULT hRes = S_OK;
+	LPATTACH lpAttach = NULL;
+
+	WC_MAPI(m_lpMessage->OpenAttach(
+		ulAttachNum,
+		NULL,
+		MAPI_MODIFY,
+		&lpAttach));
+	if (MAPI_E_NO_ACCESS == hRes)
+	{
+		hRes = S_OK;
+		WC_MAPI(m_lpMessage->OpenAttach(
+			ulAttachNum,
+			NULL,
+			MAPI_BEST_ACCESS,
+			&lpAttach));
+	}
+
+	return lpAttach;
+}
+
+_Check_return_ LPMESSAGE CAttachmentsDlg::OpenEmbeddedMessage()
+{
+	if (!m_lpAttach) return NULL;
+	HRESULT hRes = S_OK;
+
+	LPMESSAGE lpMessage= NULL;
+	WC_MAPI(m_lpAttach->OpenProperty(
+		PR_ATTACH_DATA_OBJ,
+		(LPIID) &IID_IMessage,
+		0,
+		MAPI_MODIFY,
+		(LPUNKNOWN *) &lpMessage));
+	if (hRes == MAPI_E_NO_ACCESS)
+	{
+		hRes = S_OK;
+		WC_MAPI(m_lpAttach->OpenProperty(
+			PR_ATTACH_DATA_OBJ,
+			(LPIID) &IID_IMessage,
+			0,
+			MAPI_BEST_ACCESS,
+			(LPUNKNOWN *) &lpMessage));
+	}
+	if (hRes == MAPI_E_INTERFACE_NOT_SUPPORTED ||
+		hRes == MAPI_E_NOT_FOUND)
+	{
+		WARNHRESMSG(hRes,IDS_ATTNOTEMBEDDEDMSG);
+	}
+
+	return lpMessage;
+}
+
+_Check_return_ HRESULT CAttachmentsDlg::OpenItemProp(
+	int iSelectedItem,
+	__mfcmapiModifyEnum /*bModify*/,
+	_Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
+{
+	HRESULT hRes = S_OK;
+	SortListData* lpListData = NULL;
 
 	DebugPrintEx(DBGOpenItemProp,CLASS,_T("OpenItemProp"),_T("iSelectedItem = 0x%X\n"),iSelectedItem);
 
 	if (!m_lpContentsTableListCtrl || !lppMAPIProp) return MAPI_E_INVALID_PARAMETER;
 
 	*lppMAPIProp = NULL;
-	if (m_lpAttach) m_lpAttach->Release();
-	m_lpAttach = NULL;
 
 	// Find the highlighted item AttachNum
-	lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(NULL);
+	lpListData = (SortListData*) m_lpContentsTableListCtrl->GetItemData(iSelectedItem);
 
 	if (lpListData)
 	{
@@ -123,43 +190,34 @@ _Check_return_ HRESULT CAttachmentsDlg::OpenItemProp(
 		ulAttachNum = lpListData->data.Contents.ulAttachNum;
 		ulAttachMethod = lpListData->data.Contents.ulAttachMethod;
 
-		if (m_bDisplayAttachAsEmbeddedMessage && ATTACH_EMBEDDED_MSG == ulAttachMethod)
+		// Check for matching cached attachment to avoid reopen
+		if (ulAttachNum != m_ulAttachNum || !m_lpAttach)
 		{
-			EC_MAPI(m_lpMessage->OpenAttach(
-				ulAttachNum,
-				NULL,
-				m_bUseMapiModifyOnEmbeddedMessage?MAPI_MODIFY:MAPI_BEST_ACCESS,
-				(LPATTACH*)&m_lpAttach));
-
+			if (m_lpAttach) m_lpAttach->Release();
+			m_lpAttach = OpenAttach(ulAttachNum);
+			m_ulAttachNum = (ULONG) -1;
 			if (m_lpAttach)
 			{
-				EC_MAPI(m_lpAttach->OpenProperty(
-					PR_ATTACH_DATA_OBJ,
-					(LPIID)&IID_IMessage,
-					0,
-					m_bUseMapiModifyOnEmbeddedMessage?MAPI_MODIFY:0,
-					(LPUNKNOWN *)lppMAPIProp));
-				if (hRes == MAPI_E_INTERFACE_NOT_SUPPORTED)
-				{
-					WARNHRESMSG(hRes,IDS_ATTNOTEMBEDDEDMSG);
-				}
-				else if (hRes == MAPI_E_NOT_FOUND)
-				{
-					WARNHRESMSG(hRes,IDS_ATTNOTEMBEDDEDMSG);
-				}
+				m_ulAttachNum = ulAttachNum;
 			}
+		}
+
+		if (m_lpAttach && m_bDisplayAttachAsEmbeddedMessage && ATTACH_EMBEDDED_MSG == ulAttachMethod)
+		{
+			// Reopening an embedded message can fail
+			// The view might be holding the embedded message we're trying to open, so we clear
+			// it from the view to allow us to reopen it.
+			// TODO: Consider caching our embedded message so this isn't necessary
+			OnUpdateSingleMAPIPropListCtrl(NULL, NULL);
+			*lppMAPIProp = OpenEmbeddedMessage();
 		}
 		else
 		{
-			EC_MAPI(m_lpMessage->OpenAttach(
-				ulAttachNum,
-				NULL,
-				MAPI_BEST_ACCESS,
-				(LPATTACH*)&m_lpAttach));
 			*lppMAPIProp = m_lpAttach;
 			if (*lppMAPIProp) (*lppMAPIProp)->AddRef();
 		}
 	}
+
 	return hRes;
 } // CAttachmentsDlg::OpenItemProp
 
@@ -405,72 +463,6 @@ void CAttachmentsDlg::OnViewEmbeddedMessageProps()
 	m_bDisplayAttachAsEmbeddedMessage = !m_bDisplayAttachAsEmbeddedMessage;
 	OnRefreshView();
 } // CAttachmentsDlg::OnViewEmbeddedMessageProps
-
-void CAttachmentsDlg::OnUseMapiModify()
-{
-	m_bUseMapiModifyOnEmbeddedMessage = !m_bUseMapiModifyOnEmbeddedMessage;
-} // CAttachmentsDlg::OnUseMapiModify
-
-_Check_return_ HRESULT CAttachmentsDlg::GetEmbeddedMessage(int iIndex, _Deref_out_opt_ LPMESSAGE *lppMessage)
-{
-	HRESULT hRes = S_OK;
-	LPMAPIPROP lpMAPIProp = NULL;
-	__mfcmapiModifyEnum	fRequestModify = m_bUseMapiModifyOnEmbeddedMessage ? mfcmapiREQUEST_MODIFY : mfcmapiDO_NOT_REQUEST_MODIFY;
-
-	if (!m_bDisplayAttachAsEmbeddedMessage) return MAPI_E_CALL_FAILED;
-
-	EC_H(OpenItemProp(
-		iIndex,
-		fRequestModify,
-		&lpMAPIProp));
-
-	if (NULL != lpMAPIProp)
-	{
-		EC_MAPI(lpMAPIProp->QueryInterface(
-			IID_IMessage,
-			(LPVOID*)lppMessage));
-
-		lpMAPIProp->Release();
-	}
-
-	return hRes;
-} // CAttachmentsDlg::GetEmbeddedMessage
-
-void CAttachmentsDlg::OnAttachmentProperties()
-{
-	HRESULT hRes = S_OK;
-	LPMESSAGE lpMessage = NULL;
-
-	EC_H(GetEmbeddedMessage(
-		-1,
-		&lpMessage));
-
-	if (NULL != lpMessage)
-	{
-		EC_H(OpenAttachmentsFromMessage(lpMessage, m_bUseMapiModifyOnEmbeddedMessage));
-
-		lpMessage->Release();
-	}
-
-} // CAttachmentsDlg::OnAttachmentProperties
-
-void CAttachmentsDlg::OnRecipientProperties()
-{
-	HRESULT hRes = S_OK;
-	LPMESSAGE lpMessage = NULL;
-
-	EC_H(GetEmbeddedMessage(
-		-1,
-		&lpMessage));
-
-	if (lpMessage)
-	{
-		EC_H(OpenRecipientsFromMessage(lpMessage));
-
-		lpMessage->Release();
-	}
-
-} // CAttachmentsDlg::OnRecipientProperties
 
 void CAttachmentsDlg::HandleAddInMenuSingle(
 	_In_ LPADDINMENUPARAMS lpParams,
