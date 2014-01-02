@@ -135,7 +135,7 @@ bool TextPane::IsType(__ViewTypes vType)
 ULONG TextPane::GetFlags()
 {
 	ULONG ulFlags = vpNone;
-	if (m_EditBox.GetModify()) ulFlags |= vpDirty;
+	if (m_EditBox.m_hWnd && m_EditBox.GetModify()) ulFlags |= vpDirty;
 	if (m_bReadOnly) ulFlags |= vpReadonly;
 	return ulFlags;
 }
