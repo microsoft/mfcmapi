@@ -487,17 +487,9 @@ _Check_return_ bool CFolderDlg::HandlePaste()
 					PR_RTF_SYNC_TRAILING_COUNT
 				};
 
-				CTagArrayEditor MyEditor(
-					this,
-					IDS_TAGSTOEXCLUDE,
-					IDS_TAGSTOEXCLUDEPROMPT,
-					NULL,
-					(LPSPropTagArray)&excludeTags,
-					false,
-					m_lpContainer);
-				WC_H(MyEditor.DisplayDialog());
+				LPSPropTagArray lpTagsToExclude = GetExcludedTags((LPSPropTagArray)&excludeTags, m_lpContainer, m_bIsAB);
 
-				if (S_OK == hRes)
+				if (lpTagsToExclude)
 				{
 					ULONG i = 0;
 					for (i = 0 ; i < lpEIDs->cValues ; i++)
@@ -523,12 +515,6 @@ _Check_return_ bool CFolderDlg::HandlePaste()
 							{
 								LPSPropProblemArray lpProblems = NULL;
 
-								LPSPropTagArray lpTagsToExclude = (LPSPropTagArray)&excludeTags;
-								LPSPropTagArray lpTagArray = MyEditor.DetachModifiedTagArray();
-								if (lpTagArray)
-								{
-									lpTagsToExclude = lpTagArray;
-								}
 								// copy message properties to IMessage object opened on top of IStorage.
 								LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIProp::CopyTo"), m_hWnd); // STRING_OK
 
@@ -537,7 +523,7 @@ _Check_return_ bool CFolderDlg::HandlePaste()
 
 								EC_MAPI(lpMessage->CopyTo(
 									0,
-									NULL, // TODO: interfaces?
+									NULL, // ODO: interfaces?
 									lpTagsToExclude,
 									lpProgress ? (ULONG_PTR)m_hWnd : NULL, // UI param
 									lpProgress, // progress
@@ -553,7 +539,6 @@ _Check_return_ bool CFolderDlg::HandlePaste()
 
 								EC_PROBLEMARRAY(lpProblems);
 								MAPIFreeBuffer(lpProblems);
-								MAPIFreeBuffer(lpTagArray);
 
 								// save changes to IMessage object.
 								EC_MAPI(lpNewMessage->SaveChanges(KEEP_OPEN_READWRITE));
@@ -569,6 +554,7 @@ _Check_return_ bool CFolderDlg::HandlePaste()
 							lpMessage = NULL;
 						}
 					}
+					MAPIFreeBuffer(lpTagsToExclude);
 				}
 			}
 		}
@@ -1598,13 +1584,13 @@ void CFolderDlg::OnSaveMessageToFile()
 						}
 						break;
 					case 1:
-						EC_H(SaveToMSG(lpMessage,dlgFilePicker.GetFileName(),false,m_hWnd));
+						EC_H(SaveToMSG(lpMessage, dlgFilePicker.GetFileName(), false, m_hWnd, true));
 						break;
 					case 2:
-						EC_H(SaveToMSG(lpMessage,dlgFilePicker.GetFileName(),true,m_hWnd));
+						EC_H(SaveToMSG(lpMessage, dlgFilePicker.GetFileName(), true, m_hWnd, true));
 						break;
 					case 3:
-						EC_H(SaveToEML(lpMessage,dlgFilePicker.GetFileName()));
+						EC_H(SaveToEML(lpMessage, dlgFilePicker.GetFileName()));
 						break;
 					case 4:
 						{
