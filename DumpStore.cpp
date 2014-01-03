@@ -681,7 +681,8 @@ void OutputMessageMSG(
 		lpMessage,
 		szFileName,
 		fMapiUnicode?true:false,
-		NULL));
+		NULL,
+		false));
 } // OutputMessageMSG
 
 bool CDumpStore::BeginMessageWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpParentMessageData, _Deref_out_opt_ LPVOID* lpData)

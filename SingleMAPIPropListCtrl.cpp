@@ -1642,74 +1642,15 @@ void CSingleMAPIPropListCtrl::OnCopyTo()
 	if (!lpSourcePropObj) return;
 
 	HRESULT hRes = S_OK;
-	LPSPropProblemArray lpProblems = NULL;
 
-	CEditor MyData(
-		this,
-		IDS_COPYTO,
-		IDS_COPYPASTEPROMPT,
-		2,
-		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-
-	LPTSTR szGuid = GUIDToStringAndName(&IID_IMAPIProp);
-	MyData.InitPane(0, CreateSingleLinePane(IDS_INTERFACE, szGuid, false));
-	delete[] szGuid;
-	szGuid = NULL;
-	MyData.InitPane(1, CreateSingleLinePane(IDS_FLAGS, NULL, false));
-	MyData.SetHex(1, MAPI_DIALOG);
-
-	WC_H(MyData.DisplayDialog());
-	if (S_OK == hRes)
-	{
-		GUID	MyGUID = { 0 };
-		CString szTemp = MyData.GetString(0);
-		EC_H(StringToGUID((LPCTSTR)szTemp, &MyGUID));
-
-		CTagArrayEditor TagEditor(
-			this,
-			IDS_TAGSTOEXCLUDE,
-			IDS_TAGSTOEXCLUDEPROMPT,
-			NULL,
-			NULL,
-			false,
-			m_lpPropBag->GetMAPIProp());
-		WC_H(TagEditor.DisplayDialog());
-
-		if (S_OK == hRes)
-		{
-			LPSPropTagArray lpTagArray = TagEditor.DetachModifiedTagArray();
-
-			LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIProp::CopyTo"), m_lpHostDlg->m_hWnd); // STRING_OK
-
-			ULONG ulCopyFlags = MyData.GetHex(1);
-
-			if (lpProgress)
-				ulCopyFlags |= MAPI_DIALOG;
-
-			EC_MAPI(lpSourcePropObj->CopyTo(
-				0,
-				NULL, // TODO: exclude interfaces?
-				lpTagArray,
-				lpProgress ? (ULONG_PTR)m_lpHostDlg->m_hWnd : NULL, // UI param
-				lpProgress, // progress
-				&MyGUID,
-				m_lpPropBag->GetMAPIProp(),
-				ulCopyFlags, // flags
-				&lpProblems));
-			MAPIFreeBuffer(lpTagArray);
-
-			if (lpProgress)
-				lpProgress->Release();
-
-			lpProgress = NULL;
-		}
-	}
-	if (lpProblems)
-	{
-		EC_PROBLEMARRAY(lpProblems);
-		MAPIFreeBuffer(lpProblems);
-	}
-
+	EC_H(CopyTo(
+		m_lpHostDlg->m_hWnd,
+		lpSourcePropObj,
+		m_lpPropBag->GetMAPIProp(),
+		&IID_IMAPIProp,
+		NULL,
+		m_bIsAB,
+		true));
 	if (!FAILED(hRes))
 	{
 		EC_H(m_lpPropBag->Commit());

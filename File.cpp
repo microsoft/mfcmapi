@@ -592,7 +592,8 @@ _Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_z
 					lpMessage,
 					szFileName,
 					bUnicode,
-					hWnd));
+					hWnd,
+					false));
 
 				DebugPrint(DBGGeneric,_T("Message Saved\n"));
 			}
@@ -779,7 +780,7 @@ _Check_return_ HRESULT CreateNewMSG(_In_z_ LPCWSTR szFileName, bool bUnicode, _D
 	return hRes;
 } // CreateNewMSG
 
-_Check_return_ HRESULT SaveToMSG(_In_ LPMESSAGE lpMessage, _In_z_ LPCWSTR szFileName, bool bUnicode, HWND hWnd)
+_Check_return_ HRESULT SaveToMSG(_In_ LPMESSAGE lpMessage, _In_z_ LPCWSTR szFileName, bool bUnicode, HWND hWnd, bool bAllowUI)
 {
 	HRESULT hRes = S_OK;
 	LPSTORAGE pStorage = NULL;
@@ -808,27 +809,14 @@ _Check_return_ HRESULT SaveToMSG(_In_ LPMESSAGE lpMessage, _In_z_ LPCWSTR szFile
 			PR_RTF_SYNC_TRAILING_COUNT
 		};
 
-		LPSPropProblemArray lpProblems = NULL;
-
-		// copy message properties to IMessage object opened on top of IStorage.
-		LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIProp::CopyTo"), hWnd); // STRING_OK
-
-		EC_MAPI(lpMessage->CopyTo(0, NULL,
-			(LPSPropTagArray)&excludeTags,
-			lpProgress ? (ULONG_PTR)hWnd : NULL,
-			lpProgress,
-			(LPIID)&IID_IMessage,
+		EC_H(CopyTo(
+			hWnd,
+			lpMessage,
 			pIMsg,
-			lpProgress ? MAPI_DIALOG : 0,
-			&lpProblems));
-
-		if (lpProgress)
-			lpProgress->Release();
-
-		lpProgress = NULL;
-
-		EC_PROBLEMARRAY(lpProblems);
-		MAPIFreeBuffer(lpProblems);
+			&IID_IMessage,
+			(LPSPropTagArray) &excludeTags,
+			false,
+			bAllowUI));
 
 		// save changes to IMessage object.
 		EC_MAPI(pIMsg->SaveChanges(KEEP_OPEN_READWRITE));
@@ -1146,7 +1134,7 @@ _Check_return_ HRESULT WriteEmbeddedMSGToFile(_In_ LPATTACH lpAttach, _In_z_ LPC
 
 	if (lpAttachMsg)
 	{
-		EC_H(SaveToMSG(lpAttachMsg,szFileName, bUnicode, hWnd));
+		EC_H(SaveToMSG(lpAttachMsg,szFileName, bUnicode, hWnd, false));
 		lpAttachMsg->Release();
 	}
 
