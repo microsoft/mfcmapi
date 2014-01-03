@@ -282,7 +282,7 @@ void CHexEditor::OnEditAction2()
 		CFileDialogExW dlgFilePicker;
 
 		EC_D_DIALOG(dlgFilePicker.DisplayDialog(
-			true,
+			false,
 			NULL,
 			NULL,
 			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
