@@ -279,7 +279,7 @@ void CMAPIProcessor::ProcessFolder(bool bDoRegular,
 				if (lpRows) FreeProws(lpRows);
 				lpRows = NULL;
 				WC_MAPI(lpHierarchyTable->QueryRows(
-					1,
+					255,
 					NULL,
 					&lpRows));
 				if (FAILED(hRes))
@@ -289,36 +289,41 @@ void CMAPIProcessor::ProcessFolder(bool bDoRegular,
 				}
 				if (!lpRows || !lpRows->cRows) break;
 
-				DoFolderPerHierarchyTableRowWork(lpRows->aRow);
-				if (lpRows->aRow[0].lpProps)
+				ULONG ulRow = 0;
+
+				for (ulRow = 0; ulRow < lpRows->cRows; ulRow++)
 				{
-					TCHAR	szSubFolderOffset[MAX_PATH]; // Holds subfolder name
+					DoFolderPerHierarchyTableRowWork(&lpRows->aRow[ulRow]);
+					if (lpRows->aRow[ulRow].lpProps)
+					{
+						TCHAR	szSubFolderOffset[MAX_PATH]; // Holds subfolder name
 
-					LPSPropValue	lpFolderDisplayName = NULL;
+						LPSPropValue lpFolderDisplayName = NULL;
 
-					lpFolderDisplayName = PpropFindProp(
-						lpRows->aRow[0].lpProps,
-						lpRows->aRow[0].cValues,
+						lpFolderDisplayName = PpropFindProp(
+							lpRows->aRow[ulRow].lpProps,
+							lpRows->aRow[ulRow].cValues,
 						PR_DISPLAY_NAME);
 
 					if (CheckStringProp(lpFolderDisplayName,PT_TSTRING))
-					{
+						{
 						TCHAR szTemp[MAX_PATH/2];
-						// Clean up the folder name before appending it to the offset
+							// Clean up the folder name before appending it to the offset
 						WC_H(SanitizeFileName(szTemp,_countof(szTemp),lpFolderDisplayName->Value.LPSZ,_countof(szTemp)));
 
-						WC_H(StringCchPrintf(szSubFolderOffset,_countof(szSubFolderOffset),
+							WC_H(StringCchPrintf(szSubFolderOffset, _countof(szSubFolderOffset),
 							_T("%s%s\\"), // STRING_OK
-							m_szFolderOffset,szTemp));
-					}
-					else
-					{
-						WC_H(StringCchPrintf(szSubFolderOffset,_countof(szSubFolderOffset),
-							_T("%s\\UnknownFolder\\"), // STRING_OK
-							m_szFolderOffset));
-					}
+								m_szFolderOffset, szTemp));
+						}
+						else
+						{
+							WC_H(StringCchPrintf(szSubFolderOffset, _countof(szSubFolderOffset),
+								_T("%s\\UnknownFolder\\"), // STRING_OK
+								m_szFolderOffset));
+						}
 
-					AddFolderToFolderList(&lpRows->aRow[0].lpProps[EID].Value.bin,szSubFolderOffset);
+						AddFolderToFolderList(&lpRows->aRow[ulRow].lpProps[EID].Value.bin, szSubFolderOffset);
+					}
 				}
 			}
 
