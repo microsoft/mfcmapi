@@ -11,9 +11,9 @@ inline void PrintFolder(LPCWSTR szFid, LPCTSTR szFolder)
 	printf("%-15ws %s\n", szFid, szFolder);
 }
 
-inline void PrintMessage(LPCWSTR szMid, bool fAssociated, LPCTSTR szSubject)
+inline void PrintMessage(LPCWSTR szMid, bool fAssociated, LPCTSTR szSubject, LPCTSTR szClass)
 {
-	printf("     %-15ws %c %s\n", szMid, (fAssociated ? 'A' : 'R'), szSubject);
+	printf("     %-15ws %c %s (%s)\n", szMid, (fAssociated ? 'A' : 'R'), szSubject, szClass);
 }
 
 class CFindFidMid : public CMAPIProcessor
@@ -110,7 +110,7 @@ void CFindFidMid::BeginFolderWork()
 	if (lpProps && PidTagFolderId == lpProps[ePidTagFolderId].ulPropTag)
 	{
 		m_szCurrentFid = FidMidToSzString(lpProps[ePidTagFolderId].Value.li.QuadPart,false);
-		DebugPrint(DBGGeneric,"CFindFidMid::DoFolderPerHierarchyTableRowWork: Found FID %ws for %ws\n", m_szCurrentFid, lpszDisplayName);
+		DebugPrint(DBGGeneric, "CFindFidMid::DoFolderPerHierarchyTableRowWork: Found FID %ws for %ws\n", m_szCurrentFid, lpszDisplayName);
 	}
 	else
 	{
@@ -174,8 +174,10 @@ bool CFindFidMid::DoContentsTablePerRowWork(_In_ LPSRow lpSRow, ULONG /*ulCurRow
 
 	LPSPropValue lpPropMid = NULL;
 	LPSPropValue lpPropSubject = NULL;
+	LPSPropValue lpPropClass = NULL;
 	LPWSTR lpszThisMid = NULL;
 	LPTSTR lpszSubject = _T("");
+	LPTSTR lpszClass = _T("");
 
 	lpPropMid = PpropFindProp(lpSRow->lpProps,lpSRow->cValues,PidTagMid);
 	if (lpPropMid)
@@ -207,8 +209,14 @@ bool CFindFidMid::DoContentsTablePerRowWork(_In_ LPSRow lpSRow, ULONG /*ulCurRow
 			lpszSubject = lpPropSubject->Value.LPSZ;
 		}
 
-		PrintMessage(lpszThisMid, m_fAssociated, lpszSubject);
-		DebugPrint(DBGGeneric,"EnumMessages::ProcessRow: Matched MID %ws, \"%s\"\n", lpszThisMid, lpszSubject);
+		lpPropClass = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PR_MESSAGE_CLASS);
+		if (lpPropClass)
+		{
+			lpszClass = lpPropClass->Value.LPSZ;
+		}
+
+		PrintMessage(lpszThisMid, m_fAssociated, lpszSubject, lpszClass);
+		DebugPrint(DBGGeneric, "EnumMessages::ProcessRow: Matched MID %ws, \"%s\", \"%s\"\n", lpszThisMid, lpszSubject, lpszClass);
 	}
 	// Don't open the message - the row is enough
 	return false;
