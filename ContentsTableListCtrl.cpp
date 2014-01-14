@@ -121,16 +121,16 @@ LRESULT CContentsTableListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM l
 		{
 			// Post the message to display the item
 			if (m_lpHostDlg)
-				m_lpHostDlg->PostMessage(WM_COMMAND,ID_DISPLAYSELECTEDITEM,NULL);
+				m_lpHostDlg->PostMessage(WM_COMMAND, ID_DISPLAYSELECTEDITEM, NULL);
 		}
 		else
 		{
-			CHECKHRESMSG(hRes,IDS_EXPANDCOLLAPSEFAILED);
+			CHECKHRESMSG(hRes, IDS_EXPANDCOLLAPSEFAILED);
 		}
 		return NULL;
 		break;
 	} // end switch
-	return CSortListCtrl::WindowProc(message,wParam,lParam);
+	return CSortListCtrl::WindowProc(message, wParam, lParam);
 } // CContentsTableListCtrl::WindowProc
 
 /////////////////////////////////////////////////////////////////////////////
@@ -140,7 +140,7 @@ void CContentsTableListCtrl::OnContextMenu(_In_ CWnd* pWnd, CPoint pos)
 {
 	if (pWnd && -1 == pos.x && -1 == pos.y)
 	{
-		POINT point = {0};
+		POINT point = { 0 };
 		int iItem = GetNextItem(
 			-1,
 			LVNI_SELECTED);
@@ -148,7 +148,7 @@ void CContentsTableListCtrl::OnContextMenu(_In_ CWnd* pWnd, CPoint pos)
 		::ClientToScreen(pWnd->m_hWnd, &point);
 		pos = point;
 	}
-	DisplayContextMenu(m_nIDContextMenu,IDR_MENU_TABLE,m_lpHostDlg->m_hWnd, pos.x, pos.y);
+	DisplayContextMenu(m_nIDContextMenu, IDR_MENU_TABLE, m_lpHostDlg->m_hWnd, pos.x, pos.y);
 } // CContentsTableListCtrl::OnContextMenu
 
 _Check_return_ ULONG CContentsTableListCtrl::GetContainerType()
@@ -158,7 +158,7 @@ _Check_return_ ULONG CContentsTableListCtrl::GetContainerType()
 
 _Check_return_ bool CContentsTableListCtrl::IsContentsTableSet()
 {
-	return m_lpContentsTable?true:false;
+	return m_lpContentsTable ? true : false;
 } // CContentsTableListCtrl::IsContentsTableSet
 
 _Check_return_ HRESULT CContentsTableListCtrl::SetContentsTable(
@@ -177,8 +177,8 @@ _Check_return_ HRESULT CContentsTableListCtrl::SetContentsTable(
 	m_ulDisplayFlags = ulDisplayFlags;
 	m_ulContainerType = ulContainerType;
 
-	DebugPrintEx(DBGGeneric,CLASS,_T("SetContentsTable"),_T("replacing %p with %p\n"),m_lpContentsTable,lpContentsTable);
-	DebugPrintEx(DBGGeneric,CLASS,_T("SetContentsTable"),_T("New container type: 0x%X\n"),m_ulContainerType);
+	DebugPrintEx(DBGGeneric, CLASS, _T("SetContentsTable"), _T("replacing %p with %p\n"), m_lpContentsTable, lpContentsTable);
+	DebugPrintEx(DBGGeneric, CLASS, _T("SetContentsTable"), _T("New container type: 0x%X\n"), m_ulContainerType);
 	// Clean up the old contents table and grab the new one
 	if (m_lpContentsTable)
 	{
@@ -221,7 +221,7 @@ void CContentsTableListCtrl::GetStatus()
 			4,
 			CEDITOR_BUTTON_OK);
 		MyData.InitPane(0, CreateSingleLinePane(IDS_ULTABLESTATUS, NULL, true));
-		MyData.SetHex(0,ulTableStatus);
+		MyData.SetHex(0, ulTableStatus);
 		LPTSTR szFlags = NULL;
 		InterpretFlags(flagTableStatus, ulTableStatus, &szFlags);
 		MyData.InitPane(1, CreateMultiLinePane(IDS_ULTABLESTATUS, szFlags, true));
@@ -229,8 +229,8 @@ void CContentsTableListCtrl::GetStatus()
 		szFlags = NULL;
 
 		MyData.InitPane(2, CreateSingleLinePane(IDS_ULTABLETYPE, NULL, true));
-		MyData.SetHex(2,ulTableType);
-		InterpretFlags(flagTableType,ulTableType, &szFlags);
+		MyData.SetHex(2, ulTableType);
+		InterpretFlags(flagTableType, ulTableType, &szFlags);
 		MyData.InitPane(3, CreateMultiLinePane(IDS_ULTABLETYPE, szFlags, true));
 		delete[] szFlags;
 		szFlags = NULL;
@@ -247,7 +247,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::SetUIColumns(_In_ LPSPropTagArray
 
 	// find a PR_DISPLAY_NAME column for later use
 	m_ulDisplayNameColumn = NODISPLAYNAME;
-	for (ULONG i = 0 ; i < lpTags->cValues ; i++)
+	for (ULONG i = 0; i < lpTags->cValues; i++)
 	{
 		if (PROP_ID(lpTags->aulPropTag[i]) == PROP_ID(PR_DISPLAY_NAME))
 		{
@@ -259,7 +259,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::SetUIColumns(_In_ LPSPropTagArray
 	// Didn't find display name - fall back on some other columns
 	if (NODISPLAYNAME == m_ulDisplayNameColumn)
 	{
-		for (ULONG i = 0 ; i < lpTags->cValues ; i++)
+		for (ULONG i = 0; i < lpTags->cValues; i++)
 		{
 			if (PROP_ID(lpTags->aulPropTag[i]) == PROP_ID(PR_SUBJECT) ||
 				PROP_ID(lpTags->aulPropTag[i]) == PROP_ID(PR_RULE_NAME) ||
@@ -272,7 +272,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::SetUIColumns(_In_ LPSPropTagArray
 		}
 	}
 
-	DebugPrintEx(DBGGeneric,CLASS,_T("SetColumns"),_T("calculating and inserting column headers\n"));
+	DebugPrintEx(DBGGeneric, CLASS, _T("SetColumns"), _T("calculating and inserting column headers\n"));
 	MySetRedraw(false);
 
 	// Delete all of the old column headers
@@ -283,7 +283,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::SetUIColumns(_In_ LPSPropTagArray
 
 	AutoSizeColumns(true);
 
-	DebugPrintEx(DBGGeneric,CLASS,_T("SetColumns"),_T("Done inserting column headers\n"));
+	DebugPrintEx(DBGGeneric, CLASS, _T("SetColumns"), _T("Done inserting column headers\n"));
 
 	MySetRedraw(true);
 	return hRes;
@@ -292,7 +292,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::SetUIColumns(_In_ LPSPropTagArray
 void CContentsTableListCtrl::DoSetColumns(bool bAddExtras, bool bDisplayEditor)
 {
 	HRESULT hRes = S_OK;
-	DebugPrintEx(DBGGeneric, CLASS,_T("DoSetColumns"), _T("bbDisplayEditor = %d\n"), bDisplayEditor);
+	DebugPrintEx(DBGGeneric, CLASS, _T("DoSetColumns"), _T("bbDisplayEditor = %d\n"), bDisplayEditor);
 
 	if (!IsContentsTableSet())
 	{
@@ -393,7 +393,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::AddColumn(UINT uidHeaderName, ULO
 	HRESULT			hRes = S_OK;
 	CHeaderCtrl*	lpMyHeader = NULL;
 	int				iRetVal = NULL;
-	HDITEM			hdItem = {0};
+	HDITEM			hdItem = { 0 };
 	lpMyHeader = GetHeaderCtrl();
 
 	CString szHeaderString;
@@ -405,20 +405,20 @@ _Check_return_ HRESULT CContentsTableListCtrl::AddColumn(UINT uidHeaderName, ULO
 	else
 	{
 		LPTSTR szExactMatches = NULL;
-		EC_H(PropTagToPropName(ulPropTag,m_bIsAB,&szExactMatches,NULL));
+		EC_H(PropTagToPropName(ulPropTag, m_bIsAB, &szExactMatches, NULL));
 		if (!szExactMatches)
-			szHeaderString.Format(_T("0x%08X"),ulPropTag); // STRING_OK
+			szHeaderString.Format(_T("0x%08X"), ulPropTag); // STRING_OK
 		else
 			szHeaderString = szExactMatches;
 		delete[] szExactMatches;
 	}
 
-	iRetVal = InsertColumn(ulCurHeaderCol,szHeaderString);
+	iRetVal = InsertColumn(ulCurHeaderCol, szHeaderString);
 
 	if (-1 == iRetVal)
 	{
 		// We failed to insert a column header
-		ErrDialog(__FILE__,__LINE__,IDS_EDCOLUMNHEADERFAILED);
+		ErrDialog(__FILE__, __LINE__, IDS_EDCOLUMNHEADERFAILED);
 	}
 
 	if (lpMyHeader)
@@ -435,11 +435,11 @@ _Check_return_ HRESULT CContentsTableListCtrl::AddColumn(UINT uidHeaderName, ULO
 			lpHeaderData->ulTagArrayRow = ulCurTagArrayRow;
 			lpHeaderData->ulPropTag = ulPropTag;
 			lpHeaderData->bIsAB = m_bIsAB;
-			EC_H(StringCchCopy(lpHeaderData->szTipString,_countof(lpHeaderData->szTipString),
-				(LPCTSTR) TagToString(ulPropTag,lpMDB,m_bIsAB,false)));
+			EC_H(StringCchCopy(lpHeaderData->szTipString, _countof(lpHeaderData->szTipString),
+				(LPCTSTR)TagToString(ulPropTag, lpMDB, m_bIsAB, false)));
 
-			hdItem.lParam = (LPARAM) lpHeaderData;
-			EC_B(lpMyHeader->SetItem(ulCurHeaderCol,&hdItem));
+			hdItem.lParam = (LPARAM)lpHeaderData;
+			EC_B(lpMyHeader->SetItem(ulCurHeaderCol, &hdItem));
 		}
 	}
 
@@ -459,19 +459,19 @@ _Check_return_ HRESULT CContentsTableListCtrl::AddColumns(_In_ LPSPropTagArray l
 	ULONG	ulCurHeaderCol = 0;
 	if (RegKeys[regkeyDO_COLUMN_NAMES].ulCurDWORD)
 	{
-		DebugPrintEx(DBGGeneric,CLASS,_T("AddColumns"),_T("Adding named columns\n"));
+		DebugPrintEx(DBGGeneric, CLASS, _T("AddColumns"), _T("Adding named columns\n"));
 		// If we have named columns, put them up front
 		if (m_lpExtraDisplayColumns)
 		{
 			ULONG	ulCurExtraCol = 0;
 			// Walk through the list of named/extra columns and add them to our header list
-			for (ulCurExtraCol = 0; ulCurExtraCol<m_ulNumExtraDisplayColumns; ulCurExtraCol++)
+			for (ulCurExtraCol = 0; ulCurExtraCol < m_ulNumExtraDisplayColumns; ulCurExtraCol++)
 			{
 				ULONG ulExtraColRowNum = m_lpExtraDisplayColumns[ulCurExtraCol].ulMatchingTableColumn;
 				ULONG ulExtraColTag = m_sptExtraColumnTags->aulPropTag[ulExtraColRowNum];
 
 				ULONG ulCurTagArrayRow = 0;
-				if (FindPropInPropTagArray(lpCurColTagArray,ulExtraColTag,&ulCurTagArrayRow))
+				if (FindPropInPropTagArray(lpCurColTagArray, ulExtraColTag, &ulCurTagArrayRow))
 				{
 					hRes = S_OK;
 					EC_H(AddColumn(
@@ -489,7 +489,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::AddColumns(_In_ LPSPropTagArray l
 	}
 
 	ULONG ulCurTableCol = 0;
-	DebugPrintEx(DBGGeneric,CLASS,_T("AddColumns"),_T("Adding unnamed columns\n"));
+	DebugPrintEx(DBGGeneric, CLASS, _T("AddColumns"), _T("Adding unnamed columns\n"));
 	// Now, walk through the current tag table and add each unstruck column to our list
 	for (ulCurTableCol = 0; ulCurTableCol < lpCurColTagArray->cValues; ulCurTableCol++)
 	{
@@ -511,12 +511,12 @@ _Check_return_ HRESULT CContentsTableListCtrl::AddColumns(_In_ LPSPropTagArray l
 	}
 
 	// this would be bad
-	if (ulCurHeaderCol<m_ulHeaderColumns)
+	if (ulCurHeaderCol < m_ulHeaderColumns)
 	{
-		ErrDialog(__FILE__,__LINE__,IDS_EDTOOMANYCOLUMNS);
+		ErrDialog(__FILE__, __LINE__, IDS_EDTOOMANYCOLUMNS);
 	}
 
-	DebugPrintEx(DBGGeneric,CLASS,_T("AddColumns"),_T("Done adding columns\n"));
+	DebugPrintEx(DBGGeneric, CLASS, _T("AddColumns"), _T("Done adding columns\n"));
 	return hRes;
 } // CContentsTableListCtrl::AddColumns
 
@@ -546,16 +546,16 @@ _Check_return_ HRESULT CContentsTableListCtrl::ApplyRestriction()
 	if (!m_lpContentsTable) return MAPI_E_INVALID_PARAMETER;
 
 	HRESULT hRes = S_OK;
-	DebugPrintEx(DBGGeneric,CLASS,_T("ApplyRestriction"),_T("m_RestrictionType = 0x%X\n"),m_RestrictionType);
+	DebugPrintEx(DBGGeneric, CLASS, _T("ApplyRestriction"), _T("m_RestrictionType = 0x%X\n"), m_RestrictionType);
 	// Apply our restrictions
 	if (mfcmapiNORMAL_RESTRICTION == m_RestrictionType)
 	{
-		DebugPrintEx(DBGGeneric,CLASS,_T("ApplyRestriction"),_T("applying restriction:\n"));
+		DebugPrintEx(DBGGeneric, CLASS, _T("ApplyRestriction"), _T("applying restriction:\n"));
 
 		if (m_lpMapiObjects)
 		{
 			LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release
-			DebugPrintRestriction(DBGGeneric,m_lpRes,lpMDB);
+			DebugPrintRestriction(DBGGeneric, m_lpRes, lpMDB);
 		}
 
 		EC_MAPI(m_lpContentsTable->Restrict(
@@ -598,7 +598,7 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 	LPSRowSet				pRows = NULL;
 	ULONG					iCurPropRow = 0;
 	ULONG					iCurListBoxRow = 0;
-	ThreadLoadTableInfo*	lpThreadInfo = (ThreadLoadTableInfo*) lpParam;
+	ThreadLoadTableInfo*	lpThreadInfo = (ThreadLoadTableInfo*)lpParam;
 	if (!lpThreadInfo || !lpThreadInfo->lpbAbort)	return 0;
 
 	CContentsTableListCtrl* lpListCtrl = lpThreadInfo->lpListCtrl;
@@ -611,11 +611,11 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 	// required on da new thread before we do any MAPI work
 	EC_MAPI(MAPIInitialize(NULL));
 
-	(void) ::SendMessage(hWndHost,WM_MFCMAPI_CLEARSINGLEMAPIPROPLIST,NULL,NULL);
+	(void) ::SendMessage(hWndHost, WM_MFCMAPI_CLEARSINGLEMAPIPROPLIST, NULL, NULL);
 	CString szCount;
 	szCount.Format(_T("%d"), lpListCtrl->GetItemCount());
 	szStatusText.FormatMessage(IDS_STATUSTEXTNUMITEMS, szCount);
-	(void) ::SendMessage(hWndHost,WM_MFCMAPI_UPDATESTATUSBAR,STATUSDATA1,(LPARAM)(LPCTSTR) szStatusText);
+	(void) ::SendMessage(hWndHost, WM_MFCMAPI_UPDATESTATUSBAR, STATUSDATA1, (LPARAM)(LPCTSTR)szStatusText);
 
 	// potentially lengthy op - check abort before and after
 	CHECKABORT(WC_H(lpListCtrl->ApplyRestriction()));
@@ -635,14 +635,14 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 			&ulTotal));
 		hRes = S_OK; // don't let failure here fail the whole load
 
-		DebugPrintEx(DBGGeneric,CLASS,_T("ThreadFuncLoadTable"),_T("ulTotal = 0x%X\n"),ulTotal);
+		DebugPrintEx(DBGGeneric, CLASS, _T("ThreadFuncLoadTable"), _T("ulTotal = 0x%X\n"), ulTotal);
 
 		ulThrottleLevel = RegKeys[regkeyTHROTTLE_LEVEL].ulCurDWORD;
 
 		if (ulTotal)
 		{
-			szStatusText.FormatMessage(IDS_LOADINGITEMS,0,ulTotal);
-			(void) ::SendMessage(hWndHost,WM_MFCMAPI_UPDATESTATUSBAR,STATUSDATA2,(LPARAM)(LPCTSTR) szStatusText);
+			szStatusText.FormatMessage(IDS_LOADINGITEMS, 0, ulTotal);
+			(void) ::SendMessage(hWndHost, WM_MFCMAPI_UPDATESTATUSBAR, STATUSDATA2, (LPARAM)(LPCTSTR)szStatusText);
 		}
 	}
 
@@ -652,14 +652,14 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 	{
 		BREAKONABORT;
 		EC_B(szStatusText.LoadString(IDS_ESCSTOPLOADING));
-		(void) ::SendMessage(hWndHost,WM_MFCMAPI_UPDATESTATUSBAR,STATUSINFOTEXT,(LPARAM)(LPCTSTR) szStatusText);
+		(void) ::SendMessage(hWndHost, WM_MFCMAPI_UPDATESTATUSBAR, STATUSINFOTEXT, (LPARAM)(LPCTSTR)szStatusText);
 		hRes = S_OK;
 		if (pRows) FreeProws(pRows);
 		pRows = NULL;
 		if (mfcmapiFINDROW_RESTRICTION == lpListCtrl->GetRestrictionType() && lpRes)
 		{
-			DebugPrintEx(DBGGeneric,CLASS,_T("DoFindRows"),_T("running FindRow with restriction:\n"));
-			DebugPrintRestriction(DBGGeneric,lpRes,NULL);
+			DebugPrintEx(DBGGeneric, CLASS, _T("DoFindRows"), _T("running FindRow with restriction:\n"));
+			DebugPrintRestriction(DBGGeneric, lpRes, NULL);
 
 			CHECKABORT(WC_MAPI(lpContentsTable->FindRow(
 				lpRes,
@@ -681,30 +681,30 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 		}
 		else
 		{
-			DebugPrintEx(DBGGeneric,CLASS,_T("ThreadFuncLoadTable"),_T("Calling QueryRows. Asking for 0x%X rows.\n"),(ulThrottleLevel)?ulThrottleLevel:NUMROWSPERLOOP);
+			DebugPrintEx(DBGGeneric, CLASS, _T("ThreadFuncLoadTable"), _T("Calling QueryRows. Asking for 0x%X rows.\n"), (ulThrottleLevel) ? ulThrottleLevel : NUMROWSPERLOOP);
 			// Pull back a sizable block of rows to add to the list box
 			CHECKABORT(EC_MAPI(lpContentsTable->QueryRows(
-				(ulThrottleLevel)?ulThrottleLevel:NUMROWSPERLOOP,
+				(ulThrottleLevel) ? ulThrottleLevel : NUMROWSPERLOOP,
 				NULL,
 				&pRows)));
 			if (FAILED(hRes)) break;
 		}
 		if (FAILED(hRes) || !pRows || !pRows->cRows) break;
 
-		DebugPrintEx(DBGGeneric,CLASS,_T("ThreadFuncLoadTable"),_T("Got this many rows: 0x%X\n"),pRows->cRows);
+		DebugPrintEx(DBGGeneric, CLASS, _T("ThreadFuncLoadTable"), _T("Got this many rows: 0x%X\n"), pRows->cRows);
 
-		for (iCurPropRow = 0;iCurPropRow<pRows->cRows;iCurPropRow++)
+		for (iCurPropRow = 0; iCurPropRow < pRows->cRows; iCurPropRow++)
 		{
 			hRes = S_OK;
 			BREAKONABORT; // This check is cheap enough not to be a perf concern anymore
 			if (ulTotal)
 			{
-				szStatusText.FormatMessage(IDS_LOADINGITEMS,iCurListBoxRow+1,ulTotal);
-				(void) ::SendMessage(hWndHost,WM_MFCMAPI_UPDATESTATUSBAR,STATUSDATA2,(LPARAM)(LPCTSTR) szStatusText);
+				szStatusText.FormatMessage(IDS_LOADINGITEMS, iCurListBoxRow + 1, ulTotal);
+				(void) ::SendMessage(hWndHost, WM_MFCMAPI_UPDATESTATUSBAR, STATUSDATA2, (LPARAM)(LPCTSTR)szStatusText);
 			}
 
-			DebugPrintEx(DBGGeneric,CLASS,_T("ThreadFuncLoadTable"),_T("Asking to add %p to %u\n"),&pRows->aRow[iCurPropRow],iCurListBoxRow);
-			(void) ::SendMessage(lpListCtrl->m_hWnd,WM_MFCMAPI_THREADADDITEM,iCurListBoxRow,(LPARAM)&pRows->aRow[iCurPropRow]);
+			DebugPrintEx(DBGGeneric, CLASS, _T("ThreadFuncLoadTable"), _T("Asking to add %p to %u\n"), &pRows->aRow[iCurPropRow], iCurListBoxRow);
+			(void) ::SendMessage(lpListCtrl->m_hWnd, WM_MFCMAPI_THREADADDITEM, iCurListBoxRow, (LPARAM)&pRows->aRow[iCurPropRow]);
 			if (FAILED(hRes)) continue;
 			iCurListBoxRow++;
 		}
@@ -719,17 +719,17 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 	if (bABORTSET)
 	{
 		EC_B(szStatusText.LoadString(IDS_TABLELOADCANCELLED));
-		(void) ::SendMessage(hWndHost,WM_MFCMAPI_UPDATESTATUSBAR,STATUSINFOTEXT,(LPARAM)(LPCTSTR) szStatusText);
+		(void) ::SendMessage(hWndHost, WM_MFCMAPI_UPDATESTATUSBAR, STATUSINFOTEXT, (LPARAM)(LPCTSTR)szStatusText);
 	}
 	else
 	{
 		EC_B(szStatusText.LoadString(IDS_TABLELOADED));
-		(void) ::SendMessage(hWndHost,WM_MFCMAPI_UPDATESTATUSBAR,STATUSINFOTEXT,(LPARAM)(LPCTSTR) szStatusText);
+		(void) ::SendMessage(hWndHost, WM_MFCMAPI_UPDATESTATUSBAR, STATUSINFOTEXT, (LPARAM)(LPCTSTR)szStatusText);
 	}
-	(void) ::SendMessage(hWndHost,WM_MFCMAPI_UPDATESTATUSBAR,STATUSDATA2,(LPARAM)_T(""));
-	DebugPrintEx(DBGGeneric,CLASS,_T("ThreadFuncLoadTable"),_T("added %u items\n"),iCurListBoxRow);
+	(void) ::SendMessage(hWndHost, WM_MFCMAPI_UPDATESTATUSBAR, STATUSDATA2, (LPARAM)_T(""));
+	DebugPrintEx(DBGGeneric, CLASS, _T("ThreadFuncLoadTable"), _T("added %u items\n"), iCurListBoxRow);
 
-	DebugPrintEx(DBGGeneric,CLASS,_T("ThreadFuncLoadTable"),_T("Releasing pointers.\n"));
+	DebugPrintEx(DBGGeneric, CLASS, _T("ThreadFuncLoadTable"), _T("Releasing pointers.\n"));
 
 	lpListCtrl->ClearLoading();
 
@@ -737,7 +737,7 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 	if (pRows) FreeProws(pRows);
 	if (lpContentsTable) lpContentsTable->Release();
 	if (lpListCtrl) lpListCtrl->Release();
-	DebugPrintEx(DBGGeneric,CLASS,_T("ThreadFuncLoadTable"),_T("Pointers released.\n"));
+	DebugPrintEx(DBGGeneric, CLASS, _T("ThreadFuncLoadTable"), _T("Pointers released.\n"));
 
 	MAPIUninitialize();
 
@@ -761,7 +761,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::LoadContentsTableIntoView()
 	HRESULT			hRes = S_OK;
 	CWaitCursor		Wait; // Change the mouse to an hourglass while we work.
 
-	DebugPrintEx(DBGGeneric,CLASS,_T("LoadContentsTableIntoView"),_T("\n"));
+	DebugPrintEx(DBGGeneric, CLASS, _T("LoadContentsTableIntoView"), _T("\n"));
 
 	if (m_bInLoadOp) return MAPI_E_INVALID_PARAMETER;
 	if (!this || !m_lpHostDlg) return MAPI_E_INVALID_PARAMETER;
@@ -792,21 +792,21 @@ _Check_return_ HRESULT CContentsTableListCtrl::LoadContentsTableIntoView()
 		lpThreadInfo->lpContentsTable = m_lpContentsTable;
 		m_lpContentsTable->AddRef();
 
-		DebugPrintEx(DBGGeneric,CLASS,_T("LoadContentsTableIntoView"),_T("Creating load thread.\n"));
+		DebugPrintEx(DBGGeneric, CLASS, _T("LoadContentsTableIntoView"), _T("Creating load thread.\n"));
 
 		HANDLE hThread = 0;
-		EC_D(hThread,(HANDLE) _beginthreadex(NULL, 0, ThreadFuncLoadTable, lpThreadInfo, 0, 0));
+		EC_D(hThread, (HANDLE)_beginthreadex(NULL, 0, ThreadFuncLoadTable, lpThreadInfo, 0, 0));
 
 		if (!hThread)
 		{
-			DebugPrintEx(DBGGeneric,CLASS,_T("LoadContentsTableIntoView"),_T("Load thread creation failed.\n"));
+			DebugPrintEx(DBGGeneric, CLASS, _T("LoadContentsTableIntoView"), _T("Load thread creation failed.\n"));
 			if (lpThreadInfo->lpContentsTable) lpThreadInfo->lpContentsTable->Release();
 			if (lpThreadInfo->lpListCtrl) lpThreadInfo->lpListCtrl->Release();
 			delete lpThreadInfo;
 		}
 		else
 		{
-			DebugPrintEx(DBGGeneric,CLASS,_T("LoadContentsTableIntoView"),_T("Load thread created.\n"));
+			DebugPrintEx(DBGGeneric, CLASS, _T("LoadContentsTableIntoView"), _T("Load thread created.\n"));
 			m_LoadThreadHandle = hThread;
 		}
 	}
@@ -816,7 +816,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::LoadContentsTableIntoView()
 
 void CContentsTableListCtrl::OnCancelTableLoad()
 {
-	DebugPrintEx(DBGGeneric,CLASS,_T("OnCancelTableLoad"),_T("Setting abort flag and waiting for thread to discover it\n"));
+	DebugPrintEx(DBGGeneric, CLASS, _T("OnCancelTableLoad"), _T("Setting abort flag and waiting for thread to discover it\n"));
 	// Wait here until the thread we spun off has shut down
 	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 	DWORD dwRet = 0;
@@ -827,7 +827,7 @@ void CContentsTableListCtrl::OnCancelTableLoad()
 	{
 		MSG msg;
 
-		InterlockedExchange(&m_bAbortLoad,true);
+		InterlockedExchange(&m_bAbortLoad, true);
 
 		// Wait for the thread to shutdown/signal, or messages posted to our queue
 		dwRet = MsgWaitForMultipleObjects(
@@ -844,7 +844,7 @@ void CContentsTableListCtrl::OnCancelTableLoad()
 		{
 			if (msg.message == WM_KEYDOWN && msg.wParam == VK_F5)
 			{
-				DebugPrintEx(DBGGeneric,CLASS,_T("OnCancelTableLoad"),_T("Ditching refresh (F5)\n"));
+				DebugPrintEx(DBGGeneric, CLASS, _T("OnCancelTableLoad"), _T("Ditching refresh (F5)\n"));
 				bVKF5Hit = true;
 			}
 			else
@@ -854,7 +854,7 @@ void CContentsTableListCtrl::OnCancelTableLoad()
 		}
 	}
 
-	DebugPrintEx(DBGGeneric,CLASS,_T("OnCancelTableLoad"),_T("Load thread has shut down.\n"));
+	DebugPrintEx(DBGGeneric, CLASS, _T("OnCancelTableLoad"), _T("Load thread has shut down.\n"));
 
 	if (m_LoadThreadHandle) CloseHandle(m_LoadThreadHandle);
 	m_LoadThreadHandle = NULL;
@@ -862,8 +862,8 @@ void CContentsTableListCtrl::OnCancelTableLoad()
 
 	if (bVKF5Hit) // If we ditched a refresh message, repost it now
 	{
-		DebugPrintEx(DBGGeneric,CLASS,_T("OnCancelTableLoad"),_T("Posting skipped refresh message\n"));
-		PostMessage(WM_KEYDOWN,VK_F5,0);
+		DebugPrintEx(DBGGeneric, CLASS, _T("OnCancelTableLoad"), _T("Posting skipped refresh message\n"));
+		PostMessage(WM_KEYDOWN, VK_F5, 0);
 	}
 } // CContentsTableListCtrl::OnCancelTableLoad
 
@@ -889,7 +889,7 @@ void CContentsTableListCtrl::BuildDataItem(_In_ LPSRow lpsRowData, _Inout_ SortL
 	lpData->ulSortValue.QuadPart = NULL;
 	lpData->cSourceProps = 0;
 	lpData->ulSortDataType = SORTLIST_CONTENTS;
-	memset(&lpData->data,0,sizeof(_ContentsData));
+	memset(&lpData->data, 0, sizeof(_ContentsData));
 
 	// Save off the source props
 	lpData->lpSourceProps = lpsRowData->lpProps;
@@ -905,8 +905,8 @@ void CContentsTableListCtrl::BuildDataItem(_In_ LPSRow lpsRowData, _Inout_ SortL
 		EC_H(MAPIAllocateMore(
 			(ULONG)sizeof(SBinary),
 			lpData,
-			(LPVOID*) &lpData->data.Contents.lpInstanceKey));
-		EC_H(CopySBinary(lpData->data.Contents.lpInstanceKey,&lpProp->Value.bin, lpData));
+			(LPVOID*)&lpData->data.Contents.lpInstanceKey));
+		EC_H(CopySBinary(lpData->data.Contents.lpInstanceKey, &lpProp->Value.bin, lpData));
 	}
 
 	// Save the attachment number into lpData
@@ -916,7 +916,7 @@ void CContentsTableListCtrl::BuildDataItem(_In_ LPSRow lpsRowData, _Inout_ SortL
 		PR_ATTACH_NUM);
 	if (lpProp && PR_ATTACH_NUM == lpProp->ulPropTag)
 	{
-		DebugPrint(DBGGeneric,_T("\tPR_ATTACH_NUM = %d\n"),lpProp->Value.l);
+		DebugPrint(DBGGeneric, _T("\tPR_ATTACH_NUM = %d\n"), lpProp->Value.l);
 		lpData->data.Contents.ulAttachNum = lpProp->Value.l;
 	}
 
@@ -926,7 +926,7 @@ void CContentsTableListCtrl::BuildDataItem(_In_ LPSRow lpsRowData, _Inout_ SortL
 		PR_ATTACH_METHOD);
 	if (lpProp && PR_ATTACH_METHOD == lpProp->ulPropTag)
 	{
-		DebugPrint(DBGGeneric,_T("\tPR_ATTACH_METHOD = %d\n"),lpProp->Value.l);
+		DebugPrint(DBGGeneric, _T("\tPR_ATTACH_METHOD = %d\n"), lpProp->Value.l);
 		lpData->data.Contents.ulAttachMethod = lpProp->Value.l;
 	}
 
@@ -937,7 +937,7 @@ void CContentsTableListCtrl::BuildDataItem(_In_ LPSRow lpsRowData, _Inout_ SortL
 		PR_ROWID);
 	if (lpProp && PR_ROWID == lpProp->ulPropTag)
 	{
-		DebugPrint(DBGGeneric,_T("\tPR_ROWID = %d\n"),lpProp->Value.l);
+		DebugPrint(DBGGeneric, _T("\tPR_ROWID = %d\n"), lpProp->Value.l);
 		lpData->data.Contents.ulRowID = lpProp->Value.l;
 	}
 
@@ -948,7 +948,7 @@ void CContentsTableListCtrl::BuildDataItem(_In_ LPSRow lpsRowData, _Inout_ SortL
 		PR_ROW_TYPE);
 	if (lpProp && PR_ROW_TYPE == lpProp->ulPropTag)
 	{
-		DebugPrint(DBGGeneric,_T("\tPR_ROW_TYPE = %d\n"),lpProp->Value.l);
+		DebugPrint(DBGGeneric, _T("\tPR_ROW_TYPE = %d\n"), lpProp->Value.l);
 		lpData->data.Contents.ulRowType = lpProp->Value.l;
 	}
 
@@ -962,8 +962,8 @@ void CContentsTableListCtrl::BuildDataItem(_In_ LPSRow lpsRowData, _Inout_ SortL
 		EC_H(MAPIAllocateMore(
 			(ULONG)sizeof(SBinary),
 			lpData,
-			(LPVOID*) &lpData->data.Contents.lpEntryID));
-		EC_H(CopySBinary(lpData->data.Contents.lpEntryID,&lpProp->Value.bin, lpData));
+			(LPVOID*)&lpData->data.Contents.lpEntryID));
+		EC_H(CopySBinary(lpData->data.Contents.lpEntryID, &lpProp->Value.bin, lpData));
 	}
 
 	// Save the Longterm Entry ID into lpData
@@ -976,8 +976,8 @@ void CContentsTableListCtrl::BuildDataItem(_In_ LPSRow lpsRowData, _Inout_ SortL
 		EC_H(MAPIAllocateMore(
 			(ULONG)sizeof(SBinary),
 			lpData,
-			(LPVOID*) &lpData->data.Contents.lpLongtermID));
-		EC_H(CopySBinary(lpData->data.Contents.lpLongtermID,&lpProp->Value.bin, lpData));
+			(LPVOID*)&lpData->data.Contents.lpLongtermID));
+		EC_H(CopySBinary(lpData->data.Contents.lpLongtermID, &lpProp->Value.bin, lpData));
 	}
 
 	// Save the Service ID into lpData
@@ -991,8 +991,8 @@ void CContentsTableListCtrl::BuildDataItem(_In_ LPSRow lpsRowData, _Inout_ SortL
 		EC_H(MAPIAllocateMore(
 			(ULONG)sizeof(SBinary),
 			lpData,
-			(LPVOID*) &lpData->data.Contents.lpServiceUID));
-		EC_H(CopySBinary(lpData->data.Contents.lpServiceUID,&lpProp->Value.bin, lpData));
+			(LPVOID*)&lpData->data.Contents.lpServiceUID));
+		EC_H(CopySBinary(lpData->data.Contents.lpServiceUID, &lpProp->Value.bin, lpData));
 	}
 
 	// Save the Provider ID into lpData
@@ -1006,8 +1006,8 @@ void CContentsTableListCtrl::BuildDataItem(_In_ LPSRow lpsRowData, _Inout_ SortL
 		EC_H(MAPIAllocateMore(
 			(ULONG)sizeof(SBinary),
 			lpData,
-			(LPVOID*) &lpData->data.Contents.lpProviderUID));
-		EC_H(CopySBinary(lpData->data.Contents.lpProviderUID,&lpProp->Value.bin, lpData));
+			(LPVOID*)&lpData->data.Contents.lpProviderUID));
+		EC_H(CopySBinary(lpData->data.Contents.lpProviderUID, &lpProp->Value.bin, lpData));
 	}
 
 	// Save the DisplayName into lpData
@@ -1015,9 +1015,9 @@ void CContentsTableListCtrl::BuildDataItem(_In_ LPSRow lpsRowData, _Inout_ SortL
 		lpsRowData->lpProps,
 		lpsRowData->cValues,
 		PR_DISPLAY_NAME_A); // We pull this properties for profiles, which do not support Unicode
-	if (CheckStringProp(lpProp,PT_STRING8))
+	if (CheckStringProp(lpProp, PT_STRING8))
 	{
-		DebugPrint(DBGGeneric,_T("\tPR_DISPLAY_NAME_A = %hs\n"),lpProp->Value.lpszA);
+		DebugPrint(DBGGeneric, _T("\tPR_DISPLAY_NAME_A = %hs\n"), lpProp->Value.lpszA);
 
 		EC_H(CopyStringA(
 			&lpData->data.Contents.szProfileDisplayName,
@@ -1030,9 +1030,9 @@ void CContentsTableListCtrl::BuildDataItem(_In_ LPSRow lpsRowData, _Inout_ SortL
 		lpsRowData->lpProps,
 		lpsRowData->cValues,
 		PR_EMAIL_ADDRESS);
-	if (CheckStringProp(lpProp,PT_TSTRING))
+	if (CheckStringProp(lpProp, PT_TSTRING))
 	{
-		DebugPrint(DBGGeneric,_T("\tPR_EMAIL_ADDRESS = %s\n"),lpProp->Value.LPSZ);
+		DebugPrint(DBGGeneric, _T("\tPR_EMAIL_ADDRESS = %s\n"), lpProp->Value.LPSZ);
 		EC_H(CopyString(
 			&lpData->data.Contents.szDN,
 			lpProp->Value.LPSZ,
@@ -1050,11 +1050,11 @@ void CContentsTableListCtrl::SetRowStrings(int iRow, _In_ LPSRow lpsRowData)
 
 	if (!lpMyHeader) return;
 
-	for (iColumn = 0;iColumn<m_ulHeaderColumns;iColumn++)
+	for (iColumn = 0; iColumn < m_ulHeaderColumns; iColumn++)
 	{
-		HDITEM hdItem = {0};
+		HDITEM hdItem = { 0 };
 		hdItem.mask = HDI_LPARAM;
-		EC_B(lpMyHeader->GetItem(iColumn,&hdItem));
+		EC_B(lpMyHeader->GetItem(iColumn, &hdItem));
 
 		if (hdItem.lParam)
 		{
@@ -1072,13 +1072,13 @@ void CContentsTableListCtrl::SetRowStrings(int iRow, _In_ LPSRow lpsRowData)
 				{
 					if (0 == iColumn)
 					{
-						SetItemText(iRow, iColumn, (LPCTSTR) PropString);
+						SetItemText(iRow, iColumn, (LPCTSTR)PropString);
 					}
 					continue;
 				}
-				InterpretProp(pProp,&PropString,NULL);
+				InterpretProp(pProp, &PropString, NULL);
 
-				InterpretNumberAsString(pProp->Value,pProp->ulPropTag,NULL,NULL,NULL,false,&szFlags);
+				InterpretNumberAsString(pProp->Value, pProp->ulPropTag, NULL, NULL, NULL, false, &szFlags);
 				if (szFlags)
 				{
 					PropString += _T(" ("); // STRING_OK
@@ -1088,14 +1088,14 @@ void CContentsTableListCtrl::SetRowStrings(int iRow, _In_ LPSRow lpsRowData)
 				delete[] szFlags;
 				szFlags = NULL;
 
-				SetItemText(iRow,iColumn,(LPCTSTR) PropString);
+				SetItemText(iRow, iColumn, (LPCTSTR)PropString);
 			}
 			else
 			{
 				// This is an odd case which just shouldn't happen.
 				// If SetColumns failed in DoSetColumns, we might have columns
 				// mapped past the end of the table. Just log the error and give up.
-				WARNHRESMSG(MAPI_E_NOT_FOUND,IDS_COLOUTOFRANGE);
+				WARNHRESMSG(MAPI_E_NOT_FOUND, IDS_COLOUTOFRANGE);
 				break;
 			}
 		}
@@ -1105,18 +1105,18 @@ void CContentsTableListCtrl::SetRowStrings(int iRow, _In_ LPSRow lpsRowData)
 #define NUMOBJTYPES 12
 static LONG _ObjTypeIcons[NUMOBJTYPES][2] =
 {
-	{MAPI_STORE,slIconMAPI_STORE},
-	{MAPI_ADDRBOOK,slIconMAPI_ADDRBOOK},
-	{MAPI_FOLDER,slIconMAPI_FOLDER},
-	{MAPI_ABCONT,slIconMAPI_ABCONT},
-	{MAPI_MESSAGE,slIconMAPI_MESSAGE},
-	{MAPI_MAILUSER,slIconMAPI_MAILUSER},
-	{MAPI_ATTACH,slIconMAPI_ATTACH},
-	{MAPI_DISTLIST,slIconMAPI_DISTLIST},
-	{MAPI_PROFSECT,slIconMAPI_PROFSECT},
-	{MAPI_STATUS,slIconMAPI_STATUS},
-	{MAPI_SESSION,slIconMAPI_SESSION},
-	{MAPI_FORMINFO,slIconMAPI_FORMINFO},
+	{ MAPI_STORE, slIconMAPI_STORE },
+	{ MAPI_ADDRBOOK, slIconMAPI_ADDRBOOK },
+	{ MAPI_FOLDER, slIconMAPI_FOLDER },
+	{ MAPI_ABCONT, slIconMAPI_ABCONT },
+	{ MAPI_MESSAGE, slIconMAPI_MESSAGE },
+	{ MAPI_MAILUSER, slIconMAPI_MAILUSER },
+	{ MAPI_ATTACH, slIconMAPI_ATTACH },
+	{ MAPI_DISTLIST, slIconMAPI_DISTLIST },
+	{ MAPI_PROFSECT, slIconMAPI_PROFSECT },
+	{ MAPI_STATUS, slIconMAPI_STATUS },
+	{ MAPI_SESSION, slIconMAPI_SESSION },
+	{ MAPI_FORMINFO, slIconMAPI_FORMINFO },
 };
 
 void GetDepthAndImage(_In_ LPSRow lpsRowData, _In_ ULONG* lpulDepth, _In_ ULONG* lpulImage)
@@ -1128,15 +1128,15 @@ void GetDepthAndImage(_In_ LPSRow lpsRowData, _In_ ULONG* lpulDepth, _In_ ULONG*
 	ULONG ulDepth = NULL;
 	ULONG ulImage = slIconDefault;
 	LPSPropValue lpDepth = NULL;
-	lpDepth = PpropFindProp(lpsRowData->lpProps,lpsRowData->cValues,PR_DEPTH);
+	lpDepth = PpropFindProp(lpsRowData->lpProps, lpsRowData->cValues, PR_DEPTH);
 	if (lpDepth && PR_DEPTH == lpDepth->ulPropTag) ulDepth = lpDepth->Value.l;
 	if (ulDepth > 5) ulDepth = 5; // Just in case
 
 	LPSPropValue lpRowType = NULL;
-	lpRowType = PpropFindProp(lpsRowData->lpProps,lpsRowData->cValues,PR_ROW_TYPE);
+	lpRowType = PpropFindProp(lpsRowData->lpProps, lpsRowData->cValues, PR_ROW_TYPE);
 	if (lpRowType && PR_ROW_TYPE == lpRowType->ulPropTag)
 	{
-		switch(lpRowType->Value.l)
+		switch (lpRowType->Value.l)
 		{
 		case TBL_LEAF_ROW:
 			break;
@@ -1153,11 +1153,11 @@ void GetDepthAndImage(_In_ LPSRow lpsRowData, _In_ ULONG* lpulDepth, _In_ ULONG*
 	if (slIconDefault == ulImage)
 	{
 		LPSPropValue lpObjType = NULL;
-		lpObjType = PpropFindProp(lpsRowData->lpProps,lpsRowData->cValues,PR_OBJECT_TYPE);
+		lpObjType = PpropFindProp(lpsRowData->lpProps, lpsRowData->cValues, PR_OBJECT_TYPE);
 		if (lpObjType && PR_OBJECT_TYPE == lpObjType->ulPropTag)
 		{
 			int i = 0;
-			for (i=0;i<NUMOBJTYPES;i++)
+			for (i = 0; i < NUMOBJTYPES; i++)
 			{
 				if (_ObjTypeIcons[i][0] == lpObjType->Value.l)
 				{
@@ -1192,26 +1192,26 @@ _Check_return_ HRESULT CContentsTableListCtrl::RefreshItem(int iRow, _In_ LPSRow
 	HRESULT			hRes = S_OK;
 	SortListData*	lpData = 0;
 
-	DebugPrintEx(DBGGeneric,CLASS,_T("RefreshItem"),_T("item %d\n"),iRow);
+	DebugPrintEx(DBGGeneric, CLASS, _T("RefreshItem"), _T("item %d\n"), iRow);
 
 	if (bItemExists)
 	{
-		lpData = (SortListData*) GetItemData(iRow);
+		lpData = (SortListData*)GetItemData(iRow);
 	}
 	else
 	{
 		ULONG ulDepth = NULL;
 		ULONG ulImage = slIconDefault;
-		GetDepthAndImage(lpsRowData,&ulDepth,&ulImage);
+		GetDepthAndImage(lpsRowData, &ulDepth, &ulImage);
 
-		lpData = InsertRow(iRow, _T("TempRefreshItem"),ulDepth,ulImage); // STRING_OK
+		lpData = InsertRow(iRow, _T("TempRefreshItem"), ulDepth, ulImage); // STRING_OK
 	}
 
 	if (lpData)
 	{
-		BuildDataItem(lpsRowData,lpData);
+		BuildDataItem(lpsRowData, lpData);
 
-		SetRowStrings(iRow,lpsRowData);
+		SetRowStrings(iRow, lpsRowData);
 		// Do this last so that our row can't get sorted before we're done!
 		lpData->bItemFullyLoaded = true;
 	}
@@ -1224,9 +1224,9 @@ _Check_return_ HRESULT CContentsTableListCtrl::AddItemToListBox(int iRow, _In_ L
 {
 	HRESULT			hRes = S_OK;
 
-	DebugPrintEx(DBGGeneric,CLASS,_T("AddItemToListBox"),_T("item %d\n"),iRow);
+	DebugPrintEx(DBGGeneric, CLASS, _T("AddItemToListBox"), _T("item %d\n"), iRow);
 
-	EC_H(RefreshItem(iRow,lpsRowToAdd,false));
+	EC_H(RefreshItem(iRow, lpsRowToAdd, false));
 
 	if (m_lpHostDlg)
 		m_lpHostDlg->UpdateStatusBarText(STATUSDATA1, IDS_STATUSTEXTNUMITEMS, GetItemCount());
@@ -1236,7 +1236,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::AddItemToListBox(int iRow, _In_ L
 
 void CContentsTableListCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
-	DebugPrintEx(DBGMenu,CLASS,_T("OnKeyDown"),_T("0x%X\n"),nChar);
+	DebugPrintEx(DBGMenu, CLASS, _T("OnKeyDown"), _T("0x%X\n"), nChar);
 
 	if (!m_lpHostDlg) return;
 	bool bCtrlPressed = GetKeyState(VK_CONTROL) < 0;
@@ -1254,9 +1254,9 @@ void CContentsTableListCtrl::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 			// nothing to do - DoExpandCollapse did the work
 			// we only want to go to the next case if it returned S_FALSE
 		}
-		else if (!m_lpHostDlg || !m_lpHostDlg->HandleKeyDown(nChar,bShiftPressed,bCtrlPressed,bMenuPressed))
+		else if (!m_lpHostDlg || !m_lpHostDlg->HandleKeyDown(nChar, bShiftPressed, bCtrlPressed, bMenuPressed))
 		{
-			CSortListCtrl::OnKeyDown(nChar,nRepCnt,nFlags);
+			CSortListCtrl::OnKeyDown(nChar, nRepCnt, nFlags);
 		}
 	}
 } // CContentsTableListCtrl::OnKeyDown
@@ -1268,11 +1268,11 @@ _Check_return_ HRESULT CContentsTableListCtrl::GetSelectedItemEIDs(_Deref_out_op
 	int iNumItems = GetSelectedCount();
 
 	if (!iNumItems) return S_OK;
-	if (iNumItems > ULONG_MAX/sizeof(SBinary)) return MAPI_E_INVALID_PARAMETER;
+	if (iNumItems > ULONG_MAX / sizeof(SBinary)) return MAPI_E_INVALID_PARAMETER;
 
 	LPENTRYLIST lpTempList = NULL;
 
-	EC_H(MAPIAllocateBuffer(sizeof(ENTRYLIST),(LPVOID*) &lpTempList));
+	EC_H(MAPIAllocateBuffer(sizeof(ENTRYLIST), (LPVOID*)&lpTempList));
 
 	if (lpTempList)
 	{
@@ -1280,15 +1280,15 @@ _Check_return_ HRESULT CContentsTableListCtrl::GetSelectedItemEIDs(_Deref_out_op
 		lpTempList->lpbin = NULL;
 
 		EC_H(MAPIAllocateMore(
-			(ULONG)sizeof(SBinary) * iNumItems,
+			(ULONG)sizeof(SBinary)* iNumItems,
 			lpTempList,
-			(LPVOID*) &lpTempList->lpbin));
+			(LPVOID*)&lpTempList->lpbin));
 		if (lpTempList->lpbin)
 		{
 			int iArrayPos = 0;
 			int iSelectedItem = -1;
 
-			for (iArrayPos = 0 ; iArrayPos < iNumItems ; iArrayPos++)
+			for (iArrayPos = 0; iArrayPos < iNumItems; iArrayPos++)
 			{
 				lpTempList->lpbin[iArrayPos].cb = 0;
 				lpTempList->lpbin[iArrayPos].lpb = NULL;
@@ -1297,14 +1297,14 @@ _Check_return_ HRESULT CContentsTableListCtrl::GetSelectedItemEIDs(_Deref_out_op
 					LVNI_SELECTED);
 				if (-1 != iSelectedItem)
 				{
-					SortListData* lpData = (SortListData*) GetItemData(iSelectedItem);
+					SortListData* lpData = (SortListData*)GetItemData(iSelectedItem);
 					if (lpData && lpData->data.Contents.lpEntryID)
 					{
 						lpTempList->lpbin[iArrayPos].cb = lpData->data.Contents.lpEntryID->cb;
 						EC_H(MAPIAllocateMore(
 							lpData->data.Contents.lpEntryID->cb,
 							lpTempList,
-							(LPVOID *) &lpTempList->lpbin[iArrayPos].lpb));
+							(LPVOID *)&lpTempList->lpbin[iArrayPos].lpb));
 						if (lpTempList->lpbin[iArrayPos].lpb)
 						{
 							CopyMemory(
@@ -1339,13 +1339,13 @@ _Check_return_ int CContentsTableListCtrl::GetNextSelectedItemNum(
 	{
 		iItem = -1;
 	}
-	DebugPrintEx(DBGGeneric,CLASS,_T("GetNextSelectedItemNum"),_T("iItem before = 0x%X\n"),iItem);
+	DebugPrintEx(DBGGeneric, CLASS, _T("GetNextSelectedItemNum"), _T("iItem before = 0x%X\n"), iItem);
 
 	iItem = GetNextItem(
 		iItem,
 		LVNI_SELECTED);
 
-	DebugPrintEx(DBGGeneric,CLASS,_T("GetNextSelectedItemNum"),_T("iItem after = 0x%X\n"),iItem);
+	DebugPrintEx(DBGGeneric, CLASS, _T("GetNextSelectedItemNum"), _T("iItem after = 0x%X\n"), iItem);
 
 	if (iCurItem) *iCurItem = iItem;
 
@@ -1358,7 +1358,7 @@ _Check_return_ SortListData* CContentsTableListCtrl::GetNextSelectedItemData(_In
 
 	iItem = GetNextSelectedItemNum(iCurItem);
 	if (-1 == iItem) return NULL;
-	return (SortListData*) GetItemData(iItem);
+	return (SortListData*)GetItemData(iItem);
 } // CContentsTableListCtrl::GetNextSelectedItemData
 
 // Pass iCurItem as -1 to get the primary selected item.
@@ -1394,81 +1394,81 @@ _Check_return_ HRESULT CContentsTableListCtrl::DefaultOpenItemProp(
 
 	if (!m_lpMapiObjects || -1 == iItem) return S_OK;
 
-	DebugPrintEx(DBGGeneric,CLASS,_T("DefaultOpenItemProp"),_T("iItem = %d, bModify = %d, m_ulContainerType = 0x%X\n"),iItem, bModify, m_ulContainerType);
+	DebugPrintEx(DBGGeneric, CLASS, _T("DefaultOpenItemProp"), _T("iItem = %d, bModify = %d, m_ulContainerType = 0x%X\n"), iItem, bModify, m_ulContainerType);
 
 	SortListData* lpListData = NULL;
-	lpListData = (SortListData*) GetItemData(iItem);
+	lpListData = (SortListData*)GetItemData(iItem);
 
 	if (!lpListData) return S_OK;
 	lpEID = lpListData->data.Contents.lpEntryID;
 	if (!lpEID || (lpEID->cb == 0)) return S_OK;
 
-	DebugPrint(DBGGeneric,_T("Item being opened:\n"));
-	DebugPrintBinary(DBGGeneric,lpEID);
+	DebugPrint(DBGGeneric, _T("Item being opened:\n"));
+	DebugPrintBinary(DBGGeneric, lpEID);
 
 	// Find the highlighted item EID
-	switch(m_ulContainerType)
+	switch (m_ulContainerType)
 	{
-	case (MAPI_ABCONT):
-		{
-			LPADRBOOK lpAB = m_lpMapiObjects->GetAddrBook(false); // do not release
-			WC_H(CallOpenEntry(
-				NULL,
-				lpAB, // use AB
-				NULL,
-				NULL,
-				lpEID,
-				NULL,
-				(bModify == mfcmapiREQUEST_MODIFY)?MAPI_MODIFY:MAPI_BEST_ACCESS,
-				NULL,
-				(LPUNKNOWN*)lppProp));
-		}
-		break;
-	case(MAPI_FOLDER):
-		{
-			LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release
-			LPCIID lpInterface = NULL;
+	case (MAPI_ABCONT) :
+	{
+						   LPADRBOOK lpAB = m_lpMapiObjects->GetAddrBook(false); // do not release
+						   WC_H(CallOpenEntry(
+							   NULL,
+							   lpAB, // use AB
+							   NULL,
+							   NULL,
+							   lpEID,
+							   NULL,
+							   (bModify == mfcmapiREQUEST_MODIFY) ? MAPI_MODIFY : MAPI_BEST_ACCESS,
+							   NULL,
+							   (LPUNKNOWN*)lppProp));
+	}
+					   break;
+	case(MAPI_FOLDER) :
+	{
+						  LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release
+						  LPCIID lpInterface = NULL;
 
-			if (RegKeys[regkeyUSE_MESSAGERAW].ulCurDWORD)
-			{
-				lpInterface = &IID_IMessageRaw;
-			}
+						  if (RegKeys[regkeyUSE_MESSAGERAW].ulCurDWORD)
+						  {
+							  lpInterface = &IID_IMessageRaw;
+						  }
 
-			WC_H(CallOpenEntry(
-				lpMDB, // use MDB
-				NULL,
-				NULL,
-				NULL,
-				lpEID,
-				lpInterface,
-				(bModify == mfcmapiREQUEST_MODIFY)?MAPI_MODIFY:MAPI_BEST_ACCESS,
-				NULL,
-				(LPUNKNOWN*)lppProp));
-			if (MAPI_E_INTERFACE_NOT_SUPPORTED == hRes && RegKeys[regkeyUSE_MESSAGERAW].ulCurDWORD)
-			{
-				ErrDialog(__FILE__,__LINE__,IDS_EDMESSAGERAWNOTSUPPORTED);
-			}
-		}
-		break;
+						  WC_H(CallOpenEntry(
+							  lpMDB, // use MDB
+							  NULL,
+							  NULL,
+							  NULL,
+							  lpEID,
+							  lpInterface,
+							  (bModify == mfcmapiREQUEST_MODIFY) ? MAPI_MODIFY : MAPI_BEST_ACCESS,
+							  NULL,
+							  (LPUNKNOWN*)lppProp));
+						  if (MAPI_E_INTERFACE_NOT_SUPPORTED == hRes && RegKeys[regkeyUSE_MESSAGERAW].ulCurDWORD)
+						  {
+							  ErrDialog(__FILE__, __LINE__, IDS_EDMESSAGERAWNOTSUPPORTED);
+						  }
+	}
+					  break;
 	default:
-		{
-			LPMAPISESSION lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
-			WC_H(CallOpenEntry(
-				NULL,
-				NULL,
-				NULL,
-				lpMAPISession, // use session
-				lpEID,
-				NULL,
-				(bModify == mfcmapiREQUEST_MODIFY)?MAPI_MODIFY:MAPI_BEST_ACCESS,
-				NULL,
-				(LPUNKNOWN*)lppProp));
-		}
+	{
+			   LPMAPISESSION lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
+			   WC_H(CallOpenEntry(
+				   NULL,
+				   NULL,
+				   NULL,
+				   lpMAPISession, // use session
+				   lpEID,
+				   NULL,
+				   (bModify == mfcmapiREQUEST_MODIFY) ? MAPI_MODIFY : MAPI_BEST_ACCESS,
+				   NULL,
+				   (LPUNKNOWN*)lppProp));
+	}
 		break;
 	}
 	if (!*lppProp && FAILED(hRes) && mfcmapiREQUEST_MODIFY == bModify && MAPI_E_NOT_FOUND != hRes)
 	{
-		DebugPrint(DBGGeneric,_T("\tOpenEntry failed: 0x%X. Will try again without MAPI_MODIFY\n"),hRes);
+		DebugPrint(DBGGeneric, _T("\tOpenEntry failed: 0x%X. Will try again without MAPI_MODIFY\n"), hRes);
 		// We got access denied when we passed MAPI_MODIFY
 		// Let's try again without it.
 		hRes = S_OK;
@@ -1480,11 +1480,11 @@ _Check_return_ HRESULT CContentsTableListCtrl::DefaultOpenItemProp(
 
 	if (MAPI_E_NOT_FOUND == hRes)
 	{
-		DebugPrint(DBGGeneric,_T("\tDefaultOpenItemProp encountered an entry ID for an item that doesn't exist\n\tThis happens often when we're deleting items.\n"));
+		DebugPrint(DBGGeneric, _T("\tDefaultOpenItemProp encountered an entry ID for an item that doesn't exist\n\tThis happens often when we're deleting items.\n"));
 		hRes = S_OK;
 	}
 
-	DebugPrintEx(DBGGeneric,CLASS,_T("DefaultOpenItemProp"),_T("returning *lppProp = %p and hRes = 0x%X\n"),*lppProp, hRes);
+	DebugPrintEx(DBGGeneric, CLASS, _T("DefaultOpenItemProp"), _T("returning *lppProp = %p and hRes = 0x%X\n"), *lppProp, hRes);
 	return hRes;
 } // CContentsTableListCtrl::DefaultOpenItemProp
 
@@ -1492,12 +1492,12 @@ void CContentsTableListCtrl::SelectAll()
 {
 	HRESULT hRes = S_OK;
 	int iIndex = 0;
-	DebugPrintEx(DBGGeneric,CLASS,_T("SelectAll"),_T("\n"));
+	DebugPrintEx(DBGGeneric, CLASS, _T("SelectAll"), _T("\n"));
 	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 	MySetRedraw(false);
-	for (iIndex = 0;iIndex < GetItemCount();iIndex++)
+	for (iIndex = 0; iIndex < GetItemCount(); iIndex++)
 	{
-		EC_B(SetItemState(iIndex,LVIS_SELECTED,LVIS_SELECTED | LVIS_FOCUSED));
+		EC_B(SetItemState(iIndex, LVIS_SELECTED, LVIS_SELECTED | LVIS_FOCUSED));
 		hRes = S_OK;
 	}
 	MySetRedraw(true);
@@ -1508,7 +1508,7 @@ void CContentsTableListCtrl::SelectAll()
 // This is a tough function. I wonder if I'm handling this event correctly
 void CContentsTableListCtrl::OnItemChanged(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 {
-	LPNMLISTVIEW pNMListView = (LPNMLISTVIEW) pNMHDR;
+	LPNMLISTVIEW pNMListView = (LPNMLISTVIEW)pNMHDR;
 
 	*pResult = 0;
 
@@ -1527,7 +1527,7 @@ void CContentsTableListCtrl::OnItemChanged(_In_ NMHDR* pNMHDR, _In_ LRESULT* pRe
 			HRESULT			hRes = S_OK;
 
 			// go get the original row for display in the prop list control
-			lpData = (SortListData*) GetItemData(pNMListView->iItem);
+			lpData = (SortListData*)GetItemData(pNMListView->iItem);
 			ULONG			cValues = 0;
 			LPSPropValue	lpProps = NULL;
 			if (lpData)
@@ -1545,13 +1545,13 @@ void CContentsTableListCtrl::OnItemChanged(_In_ NMHDR* pNMHDR, _In_ LRESULT* pRe
 				&& lpProps
 				&& m_ulDisplayNameColumn < cValues)
 			{
-				if (CheckStringProp(&lpProps[m_ulDisplayNameColumn],PT_STRING8))
+				if (CheckStringProp(&lpProps[m_ulDisplayNameColumn], PT_STRING8))
 				{
-					szTitle.Format(_T("%hs"),lpProps[m_ulDisplayNameColumn].Value.lpszA); // STRING_OK
+					szTitle.Format(_T("%hs"), lpProps[m_ulDisplayNameColumn].Value.lpszA); // STRING_OK
 				}
-				else if (CheckStringProp(&lpProps[m_ulDisplayNameColumn],PT_UNICODE))
+				else if (CheckStringProp(&lpProps[m_ulDisplayNameColumn], PT_UNICODE))
 				{
-					szTitle.Format(_T("%ws"),lpProps[m_ulDisplayNameColumn].Value.lpszW); // STRING_OK
+					szTitle.Format(_T("%ws"), lpProps[m_ulDisplayNameColumn].Value.lpszW); // STRING_OK
 				}
 				else
 				{
@@ -1574,7 +1574,7 @@ void CContentsTableListCtrl::OnItemChanged(_In_ NMHDR* pNMHDR, _In_ LRESULT* pRe
 
 _Check_return_ bool CContentsTableListCtrl::IsAdviseSet()
 {
-	return m_lpAdviseSink?true:false;
+	return m_lpAdviseSink ? true : false;
 } // CContentsTableListCtrl::IsAdviseSet
 
 _Check_return_ HRESULT CContentsTableListCtrl::NotificationOn()
@@ -1583,9 +1583,9 @@ _Check_return_ HRESULT CContentsTableListCtrl::NotificationOn()
 
 	if (m_lpAdviseSink || !m_lpContentsTable) return S_OK;
 
-	DebugPrintEx(DBGGeneric,CLASS,_T("NotificationOn"),_T("registering table notification on %p\n"),m_lpContentsTable);
+	DebugPrintEx(DBGGeneric, CLASS, _T("NotificationOn"), _T("registering table notification on %p\n"), m_lpContentsTable);
 
-	m_lpAdviseSink =  new CAdviseSink(m_hWnd,NULL);
+	m_lpAdviseSink = new CAdviseSink(m_hWnd, NULL);
 
 	if (m_lpAdviseSink)
 	{
@@ -1607,6 +1607,8 @@ _Check_return_ HRESULT CContentsTableListCtrl::NotificationOn()
 			LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 			if (lpMDB)
 			{
+				m_lpAdviseSink->SetAdviseTarget(lpMDB);
+
 				// Try to trigger some RPC to get the notifications going
 				WC_MAPI(HrGetOneProp(
 					lpMDB,
@@ -1622,7 +1624,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::NotificationOn()
 		}
 	}
 
-	DebugPrintEx(DBGGeneric,CLASS,_T("NotificationOn"),_T("Table notification results (Sink:%p, ulConnection:0x%X) on %p\n"),m_lpAdviseSink, m_ulAdviseConnection, m_lpContentsTable);
+	DebugPrintEx(DBGGeneric, CLASS, _T("NotificationOn"), _T("Table notification results (Sink:%p, ulConnection:0x%X) on %p\n"), m_lpAdviseSink, m_ulAdviseConnection, m_lpContentsTable);
 	return hRes;
 } // CContentsTableListCtrl::NotificationOn
 
@@ -1631,7 +1633,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::NotificationOn()
 void CContentsTableListCtrl::NotificationOff()
 {
 	if (!m_lpAdviseSink) return;
-	DebugPrintEx(DBGGeneric,CLASS,_T("NotificationOff"),_T("clearing table notification (Sink:%p, ulConnection:0x%X) on %p\n"),m_lpAdviseSink, m_ulAdviseConnection, m_lpContentsTable);
+	DebugPrintEx(DBGGeneric, CLASS, _T("NotificationOff"), _T("clearing table notification (Sink:%p, ulConnection:0x%X) on %p\n"), m_lpAdviseSink, m_ulAdviseConnection, m_lpContentsTable);
 
 	if (m_ulAdviseConnection && m_lpContentsTable)
 		m_lpContentsTable->Unadvise(m_ulAdviseConnection);
@@ -1647,11 +1649,11 @@ _Check_return_ HRESULT CContentsTableListCtrl::RefreshTable()
 	if (!m_lpHostDlg) return MAPI_E_INVALID_PARAMETER;
 	if (m_bInLoadOp)
 	{
-		DebugPrintEx(DBGGeneric,CLASS,_T("RefreshTable"),_T("called during table load - ditching call\n"));
+		DebugPrintEx(DBGGeneric, CLASS, _T("RefreshTable"), _T("called during table load - ditching call\n"));
 		return S_OK;
 	}
 
-	DebugPrintEx(DBGGeneric,CLASS,_T("RefreshTable"),_T("\n"));
+	DebugPrintEx(DBGGeneric, CLASS, _T("RefreshTable"), _T("\n"));
 
 	EC_H(LoadContentsTableIntoView());
 
@@ -1678,7 +1680,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::DoExpandCollapse()
 	// nothing selected, no work done
 	if (-1 == iItem) return S_FALSE;
 
-	lpData = (SortListData*) GetItemData(iItem);
+	lpData = (SortListData*)GetItemData(iItem);
 
 	// No lpData or wrong type of row - no work done
 	if (!lpData ||
@@ -1688,46 +1690,46 @@ _Check_return_ HRESULT CContentsTableListCtrl::DoExpandCollapse()
 		return S_FALSE;
 
 	bool bDidWork = false;
-	LVITEM lvItem = {0};
+	LVITEM lvItem = { 0 };
 	lvItem.iItem = iItem;
 	lvItem.iSubItem = 0;
 	lvItem.mask = LVIF_IMAGE;
-	switch(lpData->data.Contents.ulRowType)
+	switch (lpData->data.Contents.ulRowType)
 	{
 	default:
 		break;
 	case TBL_COLLAPSED_CATEGORY:
-		{
-			if (lpData->data.Contents.lpInstanceKey)
-			{
-				LPSRowSet lpRowSet = NULL;
-				ULONG ulRowsAdded = 0;
+	{
+								   if (lpData->data.Contents.lpInstanceKey)
+								   {
+									   LPSRowSet lpRowSet = NULL;
+									   ULONG ulRowsAdded = 0;
 
-				EC_MAPI(m_lpContentsTable->ExpandRow(
-					lpData->data.Contents.lpInstanceKey->cb,
-					lpData->data.Contents.lpInstanceKey->lpb,
-					256,
-					NULL,
-					&lpRowSet,
-					&ulRowsAdded));
-				if (S_OK == hRes && lpRowSet)
-				{
-					ULONG i = 0;
-					for (i = 0 ; i < lpRowSet->cRows ; i++)
-					{
-						// add the item to the NEXT slot
-						EC_H(AddItemToListBox(iItem + i + 1,&lpRowSet->aRow[i]));
-						// Since we handed the props off to the list box, null it out of the row set
-						// so we don't free it later with FreeProws
-						lpRowSet->aRow[i].lpProps = NULL;
-					}
-				}
-				FreeProws(lpRowSet);
-				lpData->data.Contents.ulRowType = TBL_EXPANDED_CATEGORY;
-				lvItem.iImage = slIconNodeExpanded;
-				bDidWork = true;
-			}
-		}
+									   EC_MAPI(m_lpContentsTable->ExpandRow(
+										   lpData->data.Contents.lpInstanceKey->cb,
+										   lpData->data.Contents.lpInstanceKey->lpb,
+										   256,
+										   NULL,
+										   &lpRowSet,
+										   &ulRowsAdded));
+									   if (S_OK == hRes && lpRowSet)
+									   {
+										   ULONG i = 0;
+										   for (i = 0; i < lpRowSet->cRows; i++)
+										   {
+											   // add the item to the NEXT slot
+											   EC_H(AddItemToListBox(iItem + i + 1, &lpRowSet->aRow[i]));
+											   // Since we handed the props off to the list box, null it out of the row set
+											   // so we don't free it later with FreeProws
+											   lpRowSet->aRow[i].lpProps = NULL;
+										   }
+									   }
+									   FreeProws(lpRowSet);
+									   lpData->data.Contents.ulRowType = TBL_EXPANDED_CATEGORY;
+									   lvItem.iImage = slIconNodeExpanded;
+									   bDidWork = true;
+								   }
+	}
 		break;
 	case TBL_EXPANDED_CATEGORY:
 		if (lpData->data.Contents.lpInstanceKey)
@@ -1742,7 +1744,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::DoExpandCollapse()
 			if (S_OK == hRes && ulRowsRemoved)
 			{
 				int i = 0;
-				for (i = iItem + ulRowsRemoved ; i > iItem ; i--)
+				for (i = iItem + ulRowsRemoved; i > iItem; i--)
 				{
 					EC_B(DeleteItem(i));
 				}
@@ -1767,10 +1769,10 @@ _Check_return_ HRESULT CContentsTableListCtrl::DoExpandCollapse()
 		{
 			lpProp->Value.l = lpData->data.Contents.ulRowType;
 		}
-		SRow sRowData = {0};
+		SRow sRowData = { 0 };
 		sRowData.cValues = lpData->cSourceProps;
 		sRowData.lpProps = lpData->lpSourceProps;
-		SetRowStrings(iItem,&sRowData);
+		SetRowStrings(iItem, &sRowData);
 	}
 	return hRes;
 } // CContentsTableListCtrl::DoExpandCollapse
@@ -1782,7 +1784,7 @@ void CContentsTableListCtrl::OnOutputTable(_In_z_ LPCWSTR szFileName)
 	fTable = MyOpenFile(szFileName, true);
 	if (fTable)
 	{
-		OutputTableToFile(fTable,m_lpContentsTable);
+		OutputTableToFile(fTable, m_lpContentsTable);
 		CloseFile(fTable);
 	}
 } // CContentsTableListCtrl::OnOutputTable
@@ -1803,13 +1805,13 @@ _Check_return_ HRESULT CContentsTableListCtrl::SetSortTable(_In_ LPSSortOrderSet
 _Check_return_ LRESULT	CContentsTableListCtrl::msgOnThreadAddItem(WPARAM wParam, LPARAM lParam)
 {
 	HRESULT hRes = S_OK;
-	int		iNewRow = (int) wParam;
-	LPSRow	lpsRow = (LPSRow) lParam;
+	int		iNewRow = (int)wParam;
+	LPSRow	lpsRow = (LPSRow)lParam;
 
 	if (!lpsRow) return MAPI_E_INVALID_PARAMETER;
 
-	DebugPrintEx(DBGGeneric,CLASS,_T("msgOnThreadAddItem"),_T("Received message to add %p to row %d\n"),lpsRow,iNewRow);
-	EC_H(AddItemToListBox(iNewRow,lpsRow));
+	DebugPrintEx(DBGGeneric, CLASS, _T("msgOnThreadAddItem"), _T("Received message to add %p to row %d\n"), lpsRow, iNewRow);
+	EC_H(AddItemToListBox(iNewRow, lpsRow));
 
 	return hRes;
 } // CContentsTableListCtrl::msgOnThreadAddItem
@@ -1818,7 +1820,7 @@ _Check_return_ LRESULT	CContentsTableListCtrl::msgOnThreadAddItem(WPARAM wParam,
 _Check_return_ LRESULT	CContentsTableListCtrl::msgOnAddItem(WPARAM wParam, LPARAM /*lParam*/)
 {
 	HRESULT hRes = S_OK;
-	TABLE_NOTIFICATION*	tab = (TABLE_NOTIFICATION*) wParam;
+	TABLE_NOTIFICATION*	tab = (TABLE_NOTIFICATION*)wParam;
 
 	if (!tab) return MAPI_E_INVALID_PARAMETER;
 
@@ -1836,7 +1838,7 @@ _Check_return_ LRESULT	CContentsTableListCtrl::msgOnAddItem(WPARAM wParam, LPARA
 
 	// We make this copy here and pass it in to AddItemToListBox, where it is grabbed by BuildDataItem to be part of the item data
 	// The mem will be freed when the item data is cleaned up - do not free here
-	SRow NewRow = {0};
+	SRow NewRow = { 0 };
 	NewRow.cValues = tab->row.cValues;
 	NewRow.ulAdrEntryPad = tab->row.ulAdrEntryPad;
 	EC_MAPI(ScDupPropset(
@@ -1845,8 +1847,8 @@ _Check_return_ LRESULT	CContentsTableListCtrl::msgOnAddItem(WPARAM wParam, LPARA
 		MAPIAllocateBuffer,
 		&NewRow.lpProps));
 
-	DebugPrintEx(DBGGeneric,CLASS,_T("msgOnAddItem"),_T("Received message to add row to row %d\n"),iNewRow);
-	EC_H(AddItemToListBox(iNewRow,&NewRow));
+	DebugPrintEx(DBGGeneric, CLASS, _T("msgOnAddItem"), _T("Received message to add row to row %d\n"), iNewRow);
+	EC_H(AddItemToListBox(iNewRow, &NewRow));
 
 	return hRes;
 } // CContentsTableListCtrl::msgOnAddItem
@@ -1855,13 +1857,13 @@ _Check_return_ LRESULT	CContentsTableListCtrl::msgOnAddItem(WPARAM wParam, LPARA
 _Check_return_ LRESULT	CContentsTableListCtrl::msgOnDeleteItem(WPARAM wParam, LPARAM /*lParam*/)
 {
 	HRESULT hRes = S_OK;
-	TABLE_NOTIFICATION*	tab = (TABLE_NOTIFICATION*) wParam;
+	TABLE_NOTIFICATION*	tab = (TABLE_NOTIFICATION*)wParam;
 
 	if (!tab) return MAPI_E_INVALID_PARAMETER;
 
 	int	iItem = FindRow(&tab->propIndex.Value.bin);
 
-	DebugPrintEx(DBGGeneric,CLASS,_T("msgOnDeleteItem"),_T("Received message to delete item 0x%d\n"),iItem);
+	DebugPrintEx(DBGGeneric, CLASS, _T("msgOnDeleteItem"), _T("Received message to delete item 0x%d\n"), iItem);
 
 	if (iItem == -1) return S_OK;
 
@@ -1883,7 +1885,7 @@ _Check_return_ LRESULT	CContentsTableListCtrl::msgOnDeleteItem(WPARAM wParam, LP
 _Check_return_ LRESULT	CContentsTableListCtrl::msgOnModifyItem(WPARAM wParam, LPARAM /*lParam*/)
 {
 	HRESULT hRes = S_OK;
-	TABLE_NOTIFICATION*	tab = (TABLE_NOTIFICATION*) wParam;
+	TABLE_NOTIFICATION*	tab = (TABLE_NOTIFICATION*)wParam;
 
 	if (!tab) return MAPI_E_INVALID_PARAMETER;
 
@@ -1891,11 +1893,11 @@ _Check_return_ LRESULT	CContentsTableListCtrl::msgOnModifyItem(WPARAM wParam, LP
 
 	if (-1 != iItem)
 	{
-		DebugPrintEx(DBGGeneric,CLASS,_T("msgOnModifyItem"),_T("Received message to modify row %d with %p\n"),iItem,&tab->row);
+		DebugPrintEx(DBGGeneric, CLASS, _T("msgOnModifyItem"), _T("Received message to modify row %d with %p\n"), iItem, &tab->row);
 
 		// We make this copy here and pass it in to RefreshItem, where it is grabbed by BuildDataItem to be part of the item data
 		// The mem will be freed when the item data is cleaned up - do not free here
-		SRow NewRow = {0};
+		SRow NewRow = { 0 };
 		NewRow.cValues = tab->row.cValues;
 		NewRow.ulAdrEntryPad = tab->row.ulAdrEntryPad;
 		EC_MAPI(ScDupPropset(
@@ -1904,7 +1906,7 @@ _Check_return_ LRESULT	CContentsTableListCtrl::msgOnModifyItem(WPARAM wParam, LP
 			MAPIAllocateBuffer,
 			&NewRow.lpProps));
 
-		EC_H(RefreshItem(iItem,&NewRow,true));
+		EC_H(RefreshItem(iItem, &NewRow, true));
 	}
 
 	return hRes;
@@ -1914,7 +1916,7 @@ _Check_return_ LRESULT	CContentsTableListCtrl::msgOnModifyItem(WPARAM wParam, LP
 _Check_return_ LRESULT	CContentsTableListCtrl::msgOnRefreshTable(WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	HRESULT hRes = S_OK;
-	DebugPrintEx(DBGGeneric,CLASS,_T("msgOnRefreshTable"),_T("Received message refresh table\n"));
+	DebugPrintEx(DBGGeneric, CLASS, _T("msgOnRefreshTable"), _T("Received message refresh table\n"));
 	EC_H(RefreshTable());
 
 	return hRes;
@@ -1929,13 +1931,13 @@ _Check_return_ int	CContentsTableListCtrl::FindRow(_In_ LPSBinary lpInstance)
 	LPSBinary lpCurInstance = NULL;
 	SortListData* lpListData = NULL;
 
-	DebugPrintEx(DBGGeneric,CLASS,_T("msgOnGetIndex"),_T("Getting index for %p\n"),lpInstance);
+	DebugPrintEx(DBGGeneric, CLASS, _T("msgOnGetIndex"), _T("Getting index for %p\n"), lpInstance);
 
 	if (!lpInstance) return -1;
 
-	for (iItem = 0;iItem<GetItemCount();iItem++)
+	for (iItem = 0; iItem < GetItemCount(); iItem++)
 	{
-		lpListData = (SortListData*) GetItemData(iItem);
+		lpListData = (SortListData*)GetItemData(iItem);
 		if (lpListData)
 		{
 			lpCurInstance = lpListData->data.Contents.lpInstanceKey;
@@ -1943,13 +1945,13 @@ _Check_return_ int	CContentsTableListCtrl::FindRow(_In_ LPSBinary lpInstance)
 			{
 				if (!memcmp(lpCurInstance->lpb, lpInstance->lpb, lpInstance->cb))
 				{
-					DebugPrintEx(DBGGeneric,CLASS,_T("msgOnGetIndex"),_T("Matched at 0x%08X\n"),iItem);
+					DebugPrintEx(DBGGeneric, CLASS, _T("msgOnGetIndex"), _T("Matched at 0x%08X\n"), iItem);
 					return iItem;
 				}
 			}
 		}
 	}
 
-	DebugPrintEx(DBGGeneric,CLASS,_T("msgOnGetIndex"),_T("No match found: 0x%08X\n"),iItem);
+	DebugPrintEx(DBGGeneric, CLASS, _T("msgOnGetIndex"), _T("No match found: 0x%08X\n"), iItem);
 	return -1;
 } // CContentsTableListCtrl::FindRow
