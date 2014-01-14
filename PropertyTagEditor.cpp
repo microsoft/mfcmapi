@@ -26,7 +26,7 @@ CPropertyTagEditor::CPropertyTagEditor(
 	UINT uidTitle,
 	UINT uidPrompt,
 	ULONG ulPropTag,
-	bool bIncludeABProps,
+	bool bIsAB,
 	_In_opt_ LPMAPIPROP lpMAPIProp,
 	_In_ CWnd* pParentWnd):
 CEditor(pParentWnd,
@@ -40,7 +40,7 @@ CEditor(pParentWnd,
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	m_ulPropTag = ulPropTag;
-	m_bIncludeABProps = bIncludeABProps;
+	m_bIsAB = bIsAB;
 	m_lpMAPIProp = lpMAPIProp;
 
 	if (m_lpMAPIProp) m_lpMAPIProp->AddRef();
@@ -51,7 +51,9 @@ CEditor(pParentWnd,
 	InitPane(PROPTAG_TYPE, CreateDropDownPane(IDS_PROPTYPE, 0, NULL, false));
 	InitPane(PROPTAG_NAME, CreateSingleLinePane(IDS_PROPNAME, NULL, true));
 	InitPane(PROPTAG_TYPESTRING, CreateSingleLinePane(IDS_PROPTYPE, NULL, true));
-	if (m_lpMAPIProp)
+
+	// Map named properties if we can, but not for Address Books
+	if (m_lpMAPIProp && !m_bIsAB)
 	{
 		InitPane(PROPTAG_NAMEPROPKIND, CreateDropDownPane(IDS_NAMEPROPKIND, 0, NULL, true));
 		InitPane(PROPTAG_NAMEPROPNAME, CreateSingleLinePane(IDS_NAMEPROPNAME, NULL, false));
@@ -111,7 +113,7 @@ void CPropertyTagEditor::OnEditAction1()
 	HRESULT hRes = S_OK;
 
 	CPropertySelector MyData(
-		m_bIncludeABProps,
+		m_bIsAB,
 		m_lpMAPIProp,
 		this);
 
@@ -326,7 +328,7 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField)
 		m_lpMAPIProp,
 		NULL,
 		NULL,
-		m_bIncludeABProps,
+		m_bIsAB,
 		&szExactMatch, // Built from ulPropTag & bIsAB
 		&szPartialMatch, // Built from ulPropTag & bIsAB
 		&PropType,
@@ -351,9 +353,10 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField)
 	}
 	if (PROPTAG_TYPESTRING != ulSkipField) SetString(PROPTAG_TYPESTRING,(LPCTSTR) TypeToString(m_ulPropTag));
 
-	// do a named property lookup and fill out fields
-	// but only if PROPTAG_TAG or PROPTAG_ID is what the user changed
-	if (m_lpMAPIProp &&
+	// Do a named property lookup and fill out fields
+	// But only if PROPTAG_TAG or PROPTAG_ID is what the user changed
+	// And never for Address Books
+	if (m_lpMAPIProp && !m_bIsAB &&
 		(PROPTAG_TAG == ulSkipField || PROPTAG_ID == ulSkipField ))
 	{
 		ULONG			ulPropNames = 0;

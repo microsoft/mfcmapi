@@ -12,7 +12,7 @@ public:
 		UINT uidTitle,
 		UINT uidPrompt,
 		ULONG ulPropTag,
-		bool bIncludeABProps,
+		bool bIsAB,
 		_In_opt_ LPMAPIPROP lpMAPIProp,
 		_In_ CWnd* pParentWnd);
 	virtual ~CPropertyTagEditor();
@@ -33,7 +33,7 @@ private:
 	void SetDropDownSelection(ULONG i, _In_opt_z_ LPCTSTR szText);
 
 	ULONG		m_ulPropTag;
-	bool		m_bIncludeABProps;
+	bool		m_bIsAB;
 	LPMAPIPROP	m_lpMAPIProp;
 };
 
