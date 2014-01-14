@@ -50,7 +50,7 @@ void SetDebugOutputToFile(bool bDoOutput);
 #define fIsSet(ulTag) (RegKeys[regkeyDEBUG_TAG].ulCurDWORD & (ulTag))
 #define fIsSetv(ulTag) (((ulTag) != DBGNoDebug) && (RegKeys[regkeyDEBUG_TAG].ulCurDWORD & (ulTag)))
 
-_Check_return_ FILE* MyOpenFile(_In_z_ LPCWSTR szFileName,bool bNewFile);
+_Check_return_ FILE* MyOpenFile(_In_z_ LPCWSTR szFileName, bool bNewFile);
 void CloseFile(_In_opt_ FILE* fFile);
 
 void _Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, _In_opt_z_ LPCTSTR szMsg);
@@ -83,7 +83,7 @@ void _OutputFormInfo(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMINFO l
 void _OutputFormPropArray(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMPROPARRAY lpMAPIFormPropArray);
 void _OutputPropTagArray(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropTagArray lpTagsToDump);
 void _OutputTable(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPITABLE lpMAPITable);
-void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify,  _In_count_(cNotify) LPNOTIFICATION lpNotifications);
+void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify, _In_count_(cNotify) LPNOTIFICATION lpNotifications, _In_opt_ LPMAPIPROP lpObj);
 
 #define DebugPrintBinary(ulDbgLvl, lpBin)						_OutputBinary((ulDbgLvl), NULL, (lpBin))
 #define DebugPrintProperties(ulDbgLvl, cProps, lpProps, lpObj)	_OutputProperties((ulDbgLvl), NULL, (cProps), (lpProps), (lpObj), false)
@@ -93,7 +93,7 @@ void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify,  
 #define DebugPrintFormInfo(ulDbgLvl,lpMAPIFormInfo)				_OutputFormInfo((ulDbgLvl),NULL, (lpMAPIFormInfo))
 #define DebugPrintFormPropArray(ulDbgLvl,lpMAPIFormPropArray)	_OutputFormPropArray((ulDbgLvl),NULL, (lpMAPIFormPropArray))
 #define DebugPrintPropTagArray(ulDbgLvl,lpTagsToDump)			_OutputPropTagArray((ulDbgLvl),NULL, (lpTagsToDump))
-#define DebugPrintNotifications(ulDbgLvl, cNotify, lpNotifications)		_OutputNotifications((ulDbgLvl),NULL, (cNotify), (lpNotifications))
+#define DebugPrintNotifications(ulDbgLvl, cNotify, lpNotifications, lpObj)		_OutputNotifications((ulDbgLvl),NULL, (cNotify), (lpNotifications), (lpObj))
 #define DebugPrintSRowSet(ulDbgLvl, lpRowSet, lpObj)			_OutputSRowSet((ulDbgLvl), NULL, (lpRowSet), (lpObj))
 
 #define OutputStreamToFile(fFile, lpStream)						_OutputStream(DBGNoDebug, (fFile), (lpStream))
