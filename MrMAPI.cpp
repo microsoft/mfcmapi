@@ -9,6 +9,7 @@
 #include "MMErr.h"
 #include "MMFidMid.h"
 #include "MMFolder.h"
+#include "MMProfile.h"
 #include "MMPropTag.h"
 #include "MMRules.h"
 #include "MMSmartView.h"
@@ -244,6 +245,9 @@ void DisplayUsage(BOOL bFull)
 		g_Switches[switchAddressBook].szSwitch,g_Switches[switchUnicode].szSwitch,g_Switches[switchCharset].szSwitch);
 	printf("   MrMAPI -%s -%s <path to input file>\n",
 		g_Switches[switchPST].szSwitch,g_Switches[switchInput].szSwitch);
+	printf("   MrMAPI -%s [<profile> -%s <output file>]\n",
+		g_Switches[switchProfile].szSwitch, g_Switches[switchOutput].szSwitch);
+
 	if (bFull)
 	{
 		printf("\n");
@@ -321,7 +325,7 @@ void DisplayUsage(BOOL bFull)
 		printf("   -Ma  (or -%s) Convert an EML file to MAPI format (MSG file).\n",g_Switches[switchMAPI].szSwitch);
 		printf("   -Mi  (or -%s) Convert an MSG file to MIME format (EML file).\n",g_Switches[switchMIME].szSwitch);
 		printf("   -I   (or -%s) Indicates the input file for conversion, either a MIME-formatted EML file or an MSG file.\n",g_Switches[switchInput].szSwitch);
-		printf("   -O   (or -%s) Indicates the output file for the convertion.\n",g_Switches[switchOutput].szSwitch);
+		printf("   -O   (or -%s) Indicates the output file for the conversion.\n",g_Switches[switchOutput].szSwitch);
 		printf("   -Cc  (or -%s) Indicates specific flags to pass to the converter.\n",g_Switches[switchCCSFFlags].szSwitch);
 		printf("           Available values (these may be OR'ed together):\n");
 		printf("              MIME -> MAPI:\n");
@@ -369,6 +373,12 @@ void DisplayUsage(BOOL bFull)
 		printf("   -PST Output statistics of a PST file.\n");
 		printf("           If a property is specified, outputs only that property.\n");
 		printf("   -I   (or -%s) PST file to be analyzed.\n",g_Switches[switchInput].szSwitch);
+		printf("\n");
+		printf("   Profiles\n");
+		printf("   -Pr  (or -%s) Output list of profiles\n", g_Switches[switchProfile].szSwitch);
+		printf("           If a profile is specified, exports that profile.\n");
+		printf("   -O   (or -%s) Indicates the output file profile export.\n", g_Switches[switchOutput].szSwitch);
+		printf("           Required if a profile is specified.\n");
 		printf("\n");
 		printf("   Universal Options:\n");
 		printf("   -I   (or -%s) Input file.\n",g_Switches[switchInput].szSwitch);
@@ -473,7 +483,7 @@ OptParser g_Parsers[] =
 	{switchFolder, cmdmodeUnknown, 1, 1, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_NEEDFOLDER | OPT_INITMFC},
 	{switchInput, cmdmodeUnknown, 1, 1, 0},
 	{switchOutput, cmdmodeUnknown, 1, 1, 0},
-	{switchProfile, cmdmodeUnknown, 1, 1, 0},
+	{switchProfile, cmdmodeUnknown, 0, 1, OPT_PROFILE},
 	{switchMoreProperties, cmdmodeUnknown, 0, 0, OPT_RETRYSTREAMPROPS},
 	{switchDispid, cmdmodePropTag, 0, 0, OPT_DODISPID},
 	{switchType, cmdmodePropTag, 0, 1, OPT_DOTYPE},
@@ -771,14 +781,24 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 		return false;
 	}
 
+	// Having processed the command line, we may not have determined a mode.
+	// Some modes can be presumed by the switches we did see.
+
 	// If we didn't get a mode set but we saw OPT_NEEDFOLDER, assume we're in folder dumping mode
 	if (cmdmodeUnknown == pRunOpts->Mode && pRunOpts->ulOptions & OPT_NEEDFOLDER) pRunOpts->Mode = cmdmodeFolderProps;
+
+	// If we didn't get a mode set, but we saw OPT_PROFILE, assume we're in profile dumping mode
+	if (cmdmodeUnknown == pRunOpts->Mode && pRunOpts->ulOptions & OPT_PROFILE)
+	{
+		pRunOpts->Mode = cmdmodeProfile;
+		pRunOpts->ulOptions |= OPT_NEEDMAPIINIT | OPT_INITMFC;
+	}
 
 	// If we didn't get a mode set, assume we're in prop tag mode
 	if (cmdmodeUnknown == pRunOpts->Mode) pRunOpts->Mode = cmdmodePropTag;
 
 	// If we weren't passed an output file/directory, remember the current directory
-	if (!pRunOpts->lpszOutput && pRunOpts->Mode != cmdmodeSmartView)
+	if (!pRunOpts->lpszOutput && pRunOpts->Mode != cmdmodeSmartView && pRunOpts->Mode != cmdmodeProfile)
 	{
 		CHAR strPath[_MAX_PATH];
 		GetCurrentDirectoryA(_MAX_PATH,strPath);
@@ -786,10 +806,10 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 		EC_H(AnsiToUnicode(strPath,&pRunOpts->lpszOutput));
 	}
 
+	// Validate that we have bare minimum to run
 	if (pRunOpts->ulOptions & OPT_NEEDINPUTFILE && !pRunOpts->lpszInput) return false;
 	if (pRunOpts->ulOptions & OPT_NEEDOUTPUTFILE && !pRunOpts->lpszOutput) return false;
 
-	// Validate that we have bare minimum to run
 	switch (pRunOpts->Mode)
 	{
 	case cmdmodePropTag:
@@ -821,6 +841,9 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 			(CHECKFLAG(MAPIMIME_CHARSET) ||
 			CHECKFLAG(MAPIMIME_UNICODE)))
 			return false;
+		break;
+	case cmdmodeProfile:
+		if (pRunOpts->lpszProfile && !pRunOpts->lpszOutput) return false;
 		break;
 	default:
 		break;
@@ -1045,6 +1068,9 @@ void main(_In_ int argc, _In_count_(argc) char * argv[])
 			break;
 		case cmdmodePST:
 			DoPST(ProgOpts);
+			break;
+		case cmdmodeProfile:
+			DoProfile(ProgOpts);
 			break;
 		}
 	}

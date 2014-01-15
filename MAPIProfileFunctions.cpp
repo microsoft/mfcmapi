@@ -8,6 +8,7 @@
 #include "ExtraPropTags.h"
 #include "Guids.h"
 
+#ifndef MRMAPI
 // This declaration is missing from the MAPI headers
 STDAPI STDAPICALLTYPE LaunchWizard(HWND hParentWnd,
 									ULONG ulFlags,
@@ -890,97 +891,6 @@ _Check_return_ HRESULT HrMAPIProfileExists(
 	return hRes;
 } // HrMAPIProfileExists
 
-#define MAPI_FORCE_ACCESS 0x00080000
-
-_Check_return_ HRESULT OpenProfileSection(_In_ LPSERVICEADMIN lpServiceAdmin, _In_ LPSBinary lpServiceUID, _Deref_out_opt_ LPPROFSECT* lppProfSect)
-{
-	HRESULT		hRes = S_OK;
-
-	DebugPrint(DBGOpenItemProp,_T("OpenProfileSection opening lpServiceUID = "));
-	DebugPrintBinary(DBGOpenItemProp,lpServiceUID);
-	DebugPrint(DBGOpenItemProp,_T("\n"));
-
-	if (!lpServiceUID || !lpServiceAdmin || !lppProfSect) return MAPI_E_INVALID_PARAMETER;
-	*lppProfSect = NULL;
-
-	// First, we try the normal way of opening the profile section:
-	WC_MAPI(lpServiceAdmin->OpenProfileSection(
-		(LPMAPIUID) lpServiceUID->lpb,
-		NULL,
-		MAPI_MODIFY | MAPI_FORCE_ACCESS, // passing this flag might actually work with Outlook 2000 and XP
-		lppProfSect));
-
-	if (!*lppProfSect)
-	{
-		hRes = S_OK;
-		///////////////////////////////////////////////////////////////////
-		// HACK CENTRAL.  This is a MAJOR hack.  MAPI will always return E_ACCESSDENIED
-		// when we open a profile section on the service if we are a client.  The workaround
-		// (HACK) is to call into one of MAPI's internal functions that bypasses
-		// the security check.  We build a Interface to it and then point to it from our
-		// offset of 0x48.  USE AT YOUR OWN RISK!  NOT SUPPORTED!
-		interface IOpenSectionHack : public IUnknown
-		{
-		public:
-			virtual HRESULT STDMETHODCALLTYPE OpenSection(LPMAPIUID, ULONG, LPPROFSECT*) = 0;
-		};
-
-		IOpenSectionHack** ppProfile;
-
-		ppProfile = (IOpenSectionHack**)((((BYTE*)lpServiceAdmin) + 0x48));
-
-		// Now, we want to get open the Services Profile Section and store that
-		// interface with the Object
-
-		if (ppProfile && *ppProfile)
-		{
-			EC_MAPI((*ppProfile)->OpenSection(
-				(LPMAPIUID)lpServiceUID->lpb,
-				MAPI_MODIFY,
-				lppProfSect));
-		}
-		else
-		{
-			hRes = MAPI_E_NOT_FOUND;
-		}
-		// END OF HACK.  I'm amazed that this works....
-		///////////////////////////////////////////////////////////////////
-	}
-	return hRes;
-} // OpenProfileSection
-
-_Check_return_ HRESULT OpenProfileSection(_In_ LPPROVIDERADMIN lpProviderAdmin, _In_ LPSBinary lpProviderUID, _Deref_out_ LPPROFSECT* lppProfSect)
-{
-	HRESULT			hRes = S_OK;
-
-	DebugPrint(DBGOpenItemProp,_T("OpenProfileSection opening lpServiceUID = "));
-	DebugPrintBinary(DBGOpenItemProp,lpProviderUID);
-	DebugPrint(DBGOpenItemProp,_T("\n"));
-
-	if (!lpProviderUID || !lpProviderAdmin || !lppProfSect) return MAPI_E_INVALID_PARAMETER;
-	*lppProfSect = NULL;
-
-	WC_MAPI(lpProviderAdmin->OpenProfileSection(
-		(LPMAPIUID) lpProviderUID->lpb,
-		NULL,
-		MAPI_MODIFY | MAPI_FORCE_ACCESS,
-		lppProfSect));
-	if (!*lppProfSect)
-	{
-		hRes = S_OK;
-
-		// We only do this hack as a last resort - it can crash some versions of Outlook, but is required for Exchange
-		*(((BYTE*)lpProviderAdmin) + 0x60) = 0x2; // Use at your own risk! NOT SUPPORTED!
-
-		WC_MAPI(lpProviderAdmin->OpenProfileSection(
-			(LPMAPIUID) lpProviderUID->lpb,
-			NULL,
-			MAPI_MODIFY,
-			lppProfSect));
-	}
-	return hRes;
-} // OpenProfileSection
-
 _Check_return_ HRESULT GetProfileServiceVersion(_In_z_ LPCSTR lpszProfileName,
 												_Out_ ULONG* lpulServerVersion,
 												_Out_ EXCHANGE_STORE_VERSION_NUM* lpStoreVersion,
@@ -1085,3 +995,95 @@ _Check_return_ HRESULT HrCopyProfile(_In_z_ LPCSTR lpszOldProfileName,
 
 	return hRes;
 } // HrCopyProfile
+#endif
+
+#define MAPI_FORCE_ACCESS 0x00080000
+
+_Check_return_ HRESULT OpenProfileSection(_In_ LPSERVICEADMIN lpServiceAdmin, _In_ LPSBinary lpServiceUID, _Deref_out_opt_ LPPROFSECT* lppProfSect)
+{
+	HRESULT		hRes = S_OK;
+
+	DebugPrint(DBGOpenItemProp, _T("OpenProfileSection opening lpServiceUID = "));
+	DebugPrintBinary(DBGOpenItemProp, lpServiceUID);
+	DebugPrint(DBGOpenItemProp, _T("\n"));
+
+	if (!lpServiceUID || !lpServiceAdmin || !lppProfSect) return MAPI_E_INVALID_PARAMETER;
+	*lppProfSect = NULL;
+
+	// First, we try the normal way of opening the profile section:
+	WC_MAPI(lpServiceAdmin->OpenProfileSection(
+		(LPMAPIUID)lpServiceUID->lpb,
+		NULL,
+		MAPI_MODIFY | MAPI_FORCE_ACCESS, // passing this flag might actually work with Outlook 2000 and XP
+		lppProfSect));
+
+	if (!*lppProfSect)
+	{
+		hRes = S_OK;
+		///////////////////////////////////////////////////////////////////
+		// HACK CENTRAL.  This is a MAJOR hack.  MAPI will always return E_ACCESSDENIED
+		// when we open a profile section on the service if we are a client.  The workaround
+		// (HACK) is to call into one of MAPI's internal functions that bypasses
+		// the security check.  We build a Interface to it and then point to it from our
+		// offset of 0x48.  USE AT YOUR OWN RISK!  NOT SUPPORTED!
+		interface IOpenSectionHack : public IUnknown
+		{
+		public:
+			virtual HRESULT STDMETHODCALLTYPE OpenSection(LPMAPIUID, ULONG, LPPROFSECT*) = 0;
+		};
+
+		IOpenSectionHack** ppProfile;
+
+		ppProfile = (IOpenSectionHack**)((((BYTE*)lpServiceAdmin) + 0x48));
+
+		// Now, we want to get open the Services Profile Section and store that
+		// interface with the Object
+
+		if (ppProfile && *ppProfile)
+		{
+			EC_MAPI((*ppProfile)->OpenSection(
+				(LPMAPIUID)lpServiceUID->lpb,
+				MAPI_MODIFY,
+				lppProfSect));
+		}
+		else
+		{
+			hRes = MAPI_E_NOT_FOUND;
+		}
+		// END OF HACK.  I'm amazed that this works....
+		///////////////////////////////////////////////////////////////////
+	}
+	return hRes;
+} // OpenProfileSection
+
+_Check_return_ HRESULT OpenProfileSection(_In_ LPPROVIDERADMIN lpProviderAdmin, _In_ LPSBinary lpProviderUID, _Deref_out_ LPPROFSECT* lppProfSect)
+{
+	HRESULT			hRes = S_OK;
+
+	DebugPrint(DBGOpenItemProp, _T("OpenProfileSection opening lpServiceUID = "));
+	DebugPrintBinary(DBGOpenItemProp, lpProviderUID);
+	DebugPrint(DBGOpenItemProp, _T("\n"));
+
+	if (!lpProviderUID || !lpProviderAdmin || !lppProfSect) return MAPI_E_INVALID_PARAMETER;
+	*lppProfSect = NULL;
+
+	WC_MAPI(lpProviderAdmin->OpenProfileSection(
+		(LPMAPIUID)lpProviderUID->lpb,
+		NULL,
+		MAPI_MODIFY | MAPI_FORCE_ACCESS,
+		lppProfSect));
+	if (!*lppProfSect)
+	{
+		hRes = S_OK;
+
+		// We only do this hack as a last resort - it can crash some versions of Outlook, but is required for Exchange
+		*(((BYTE*)lpProviderAdmin) + 0x60) = 0x2; // Use at your own risk! NOT SUPPORTED!
+
+		WC_MAPI(lpProviderAdmin->OpenProfileSection(
+			(LPMAPIUID)lpProviderUID->lpb,
+			NULL,
+			MAPI_MODIFY,
+			lppProfSect));
+	}
+	return hRes;
+} // OpenProfileSection

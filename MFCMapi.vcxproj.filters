@@ -291,6 +291,9 @@
     <ClInclude Include="RichEditOleCallback.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ExportProfile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Res\bldver.rc">
@@ -602,6 +605,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RichEditOleCallback.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MMProfile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ExportProfile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
