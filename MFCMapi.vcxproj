@@ -780,6 +780,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="MapiProcessor.h" />
     <ClInclude Include="MAPIProfileFunctions.h" />
     <ClInclude Include="MAPIProgress.h" />
+    <ClInclude Include="ExportProfile.h" />
     <ClInclude Include="PropertyBag\MAPIPropPropertyBag.h" />
     <ClInclude Include="MAPIStoreFunctions.h" />
     <ClInclude Include="MFCMAPI.h" />
@@ -857,6 +858,18 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </CustomBuildStep>
     <CustomBuildStep Include="MMMapiMime.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Prefast|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Prefast|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </CustomBuildStep>
+    <CustomBuildStep Include="MMProfile.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -1106,11 +1119,9 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="MapiProcessor.cpp" />
-    <ClCompile Include="MAPIProfileFunctions.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
-    </ClCompile>
+    <ClCompile Include="MAPIProfileFunctions.cpp" />
     <ClCompile Include="MAPIProgress.cpp" />
+    <ClCompile Include="ExportProfile.cpp" />
     <ClCompile Include="PropertyBag\MAPIPropPropertyBag.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
@@ -1183,6 +1194,18 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="MMMapiMime.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Prefast|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Prefast|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="MMProfile.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
