@@ -20,7 +20,7 @@
 
 // Fix a build issue with a few versions of the MAPI headers
 #if !defined(FREEBUFFER_DEFINED)
-typedef ULONG (STDAPICALLTYPE FREEBUFFER)(
+typedef ULONG(STDAPICALLTYPE FREEBUFFER)(
 	LPVOID			lpBuffer
 	);
 #define FREEBUFFER_DEFINED
@@ -236,89 +236,89 @@ struct RTF_WCSRETINFO {
 
 // For EditSecurity
 typedef bool (STDAPICALLTYPE EDITSECURITY)
-	(
-	HWND hwndOwner,
-	LPSECURITYINFO psi
-	);
+(
+HWND hwndOwner,
+LPSECURITYINFO psi
+);
 typedef EDITSECURITY* LPEDITSECURITY;
 
 // For StgCreateStorageEx
-typedef HRESULT (STDAPICALLTYPE STGCREATESTORAGEEX)
-	(
-	IN const WCHAR* pwcsName,
-	IN  DWORD grfMode,
-	IN  DWORD stgfmt,              // enum
-	IN  DWORD grfAttrs,             // reserved
-	IN  STGOPTIONS * pStgOptions,
-	IN  void * reserved,
-	IN  REFIID riid,
-	OUT void ** ppObjectOpen);
+typedef HRESULT(STDAPICALLTYPE STGCREATESTORAGEEX)
+(
+IN const WCHAR* pwcsName,
+IN  DWORD grfMode,
+IN  DWORD stgfmt,              // enum
+IN  DWORD grfAttrs,             // reserved
+IN  STGOPTIONS * pStgOptions,
+IN  void * reserved,
+IN  REFIID riid,
+OUT void ** ppObjectOpen);
 typedef STGCREATESTORAGEEX* LPSTGCREATESTORAGEEX;
 
 // For Themes
-typedef HTHEME (STDMETHODCALLTYPE OPENTHEMEDATA)
-	(
-	HWND hwnd,
-	LPCWSTR pszClassList);
+typedef HTHEME(STDMETHODCALLTYPE OPENTHEMEDATA)
+(
+HWND hwnd,
+LPCWSTR pszClassList);
 typedef OPENTHEMEDATA* LPOPENTHEMEDATA;
 
-typedef HTHEME (STDMETHODCALLTYPE CLOSETHEMEDATA)
-	(
-	HTHEME hTheme);
+typedef HTHEME(STDMETHODCALLTYPE CLOSETHEMEDATA)
+(
+HTHEME hTheme);
 typedef CLOSETHEMEDATA* LPCLOSETHEMEDATA;
 
-typedef HRESULT (STDMETHODCALLTYPE GETTHEMEMARGINS)
-	(
-	HTHEME hTheme,
-	OPTIONAL HDC hdc,
-	int iPartId,
-	int iStateId,
-	int iPropId,
-	OPTIONAL RECT *prc,
-	OUT MARGINS *pMargins);
+typedef HRESULT(STDMETHODCALLTYPE GETTHEMEMARGINS)
+(
+HTHEME hTheme,
+OPTIONAL HDC hdc,
+int iPartId,
+int iStateId,
+int iPropId,
+OPTIONAL RECT *prc,
+OUT MARGINS *pMargins);
 typedef GETTHEMEMARGINS* LPGETTHEMEMARGINS;
 
-typedef HRESULT (STDMETHODCALLTYPE SETWINDOWTHEME)
-	(
-	__in  HWND hwnd,
-	__in  LPCWSTR pszSubAppName,
-	__in  LPCWSTR pszSubIdList
-	);
+typedef HRESULT(STDMETHODCALLTYPE SETWINDOWTHEME)
+(
+__in  HWND hwnd,
+__in  LPCWSTR pszSubAppName,
+__in  LPCWSTR pszSubIdList
+);
 typedef SETWINDOWTHEME* LPSETWINDOWTHEME;
 
 typedef int (STDMETHODCALLTYPE GETTHEMESYSSIZE)
-	(
-	HTHEME hTheme,
-	int iSizeID
-	);
+(
+HTHEME hTheme,
+int iSizeID
+);
 typedef GETTHEMESYSSIZE* LPGETTHEMESYSSIZE;
 
-typedef HRESULT (STDMETHODCALLTYPE MSIPROVIDEQUALIFIEDCOMPONENT)
-	(
-	LPCTSTR     szCategory,
-	LPCTSTR     szQualifier,
-	DWORD       dwInstallMode,
-	LPTSTR      lpPathBuf,
-	LPDWORD     pcchPathBuf
-	);
+typedef HRESULT(STDMETHODCALLTYPE MSIPROVIDEQUALIFIEDCOMPONENT)
+(
+LPCTSTR     szCategory,
+LPCTSTR     szQualifier,
+DWORD       dwInstallMode,
+LPTSTR      lpPathBuf,
+LPDWORD     pcchPathBuf
+);
 typedef MSIPROVIDEQUALIFIEDCOMPONENT* LPMSIPROVIDEQUALIFIEDCOMPONENT;
 
-typedef HRESULT (STDMETHODCALLTYPE MSIGETFILEVERSION)
-	(
-	LPCTSTR   szFilePath,
-	LPTSTR    lpVersionBuf,
-	LPDWORD   pcchVersionBuf,
-	LPTSTR    lpLangBuf,
-	LPDWORD   pcchLangBuf
-	);
+typedef HRESULT(STDMETHODCALLTYPE MSIGETFILEVERSION)
+(
+LPCTSTR   szFilePath,
+LPTSTR    lpVersionBuf,
+LPDWORD   pcchVersionBuf,
+LPTSTR    lpLangBuf,
+LPDWORD   pcchLangBuf
+);
 typedef MSIGETFILEVERSION* LPMSIGETFILEVERSION;
 
-typedef HRESULT (STDMETHODCALLTYPE SHGETPROPERTYSTOREFORWINDOW)
-	(
-	HWND hwnd,
-	REFIID riid,
-	void** ppv
-	);
+typedef HRESULT(STDMETHODCALLTYPE SHGETPROPERTYSTOREFORWINDOW)
+(
+HWND hwnd,
+REFIID riid,
+void** ppv
+);
 typedef SHGETPROPERTYSTOREFORWINDOW* LPSHGETPROPERTYSTOREFORWINDOW;
 
 // http://msdn.microsoft.com/en-us/library/office/dn433223.aspx
@@ -340,11 +340,11 @@ typedef CONTAB_ENTRYID* LPCONTAB_ENTRYID;
 #pragma pack(4)
 struct DIR_ENTRYID
 {
-	BYTE abFlags[4]; 
-	MAPIUID muid; 
-	ULONG ulVersion; 
-	ULONG ulType; 
-	MAPIUID muidID; 
+	BYTE abFlags[4];
+	MAPIUID muid;
+	ULONG ulVersion;
+	ULONG ulType;
+	MAPIUID muidID;
 };
 typedef DIR_ENTRYID* LPDIR_ENTRYID;
 #pragma pack()
@@ -497,19 +497,19 @@ struct INDEX_SEARCH_PUSHER_PROCESS
 *
 *-----------------------------------------------------------------------*/
 
-#define EXCHANGE_IEXCHANGEMANAGESTORE5_METHODS(IPURE)					\
-	MAPIMETHOD(GetMailboxTableEx)									\
-	(THIS_	LPSTR						lpszServerName,				\
-	LPGUID						lpguidMdb,					\
-	LPMAPITABLE*			lppTable,					\
-	ULONG						ulFlags,					\
-	UINT						uOffset) IPURE;				\
-	MAPIMETHOD(GetPublicFolderTableEx)								\
-	(THIS_	LPSTR						lpszServerName,				\
-	LPGUID						lpguidMdb,					\
-	LPMAPITABLE*			lppTable,					\
-	ULONG						ulFlags,					\
-	UINT						uOffset) IPURE;				\
+#define EXCHANGE_IEXCHANGEMANAGESTORE5_METHODS(IPURE) \
+	MAPIMETHOD(GetMailboxTableEx) \
+	(THIS_	LPSTR lpszServerName, \
+	LPGUID lpguidMdb, \
+	LPMAPITABLE* lppTable, \
+	ULONG ulFlags, \
+	UINT uOffset) IPURE; \
+	MAPIMETHOD(GetPublicFolderTableEx) \
+	(THIS_	LPSTR lpszServerName, \
+	LPGUID lpguidMdb, \
+	LPMAPITABLE* lppTable, \
+	ULONG ulFlags, \
+	UINT uOffset) IPURE; \
 
 #undef  INTERFACE
 #define INTERFACE  IExchangeManageStore5
@@ -528,17 +528,38 @@ DECLARE_MAPI_INTERFACE_(IExchangeManageStore5, IUnknown)
 DECLARE_MAPI_INTERFACE_PTR(IExchangeManageStore5, LPEXCHANGEMANAGESTORE5);
 #endif // #ifndef EXCHANGE_IEXCHANGEMANAGESTORE5_METHODS
 
+#define EXCHANGE_IEXCHANGEMANAGESTOREEX_METHODS(IPURE) \
+	MAPIMETHOD(CreateStoreEntryID2) \
+	(THIS_ ULONG cValues, \
+	LPSPropValue lpPropArray, \
+	ULONG ulFlags, \
+	ULONG* lpcbEntryID, \
+	LPENTRYID * lppEntryID) IPURE;
+
+#undef INTERFACE
+#define INTERFACE  IExchangeManageStoreEx
+DECLARE_MAPI_INTERFACE_(IExchangeManageStoreEx, IUnknown)
+{
+	MAPI_IUNKNOWN_METHODS(PURE)
+		EXCHANGE_IEXCHANGEMANAGESTORE_METHODS(PURE)
+		EXCHANGE_IEXCHANGEMANAGESTOREEX_METHODS(PURE)
+};
+#undef IMPL
+#define IMPL
+
+DECLARE_MAPI_INTERFACE_PTR(IExchangeManageStoreEx, LPEXCHANGEMANAGESTOREEX);
+
 #define	CbNewROWLIST(_centries)	(offsetof(ROWLIST,aEntries) + \
 	(_centries)*sizeof(ROWENTRY))
 #define	MAXNewROWLIST (ULONG_MAX-offsetof(ROWLIST,aEntries))/sizeof(ROWENTRY)
 #define MAXMessageClassArray (ULONG_MAX - offsetof(SMessageClassArray, aMessageClass))/sizeof(LPCSTR)
 #define MAXNewADRLIST (ULONG_MAX - offsetof(ADRLIST, aEntries))/sizeof(ADRENTRY)
 
-const WORD TZRULE_FLAG_RECUR_CURRENT_TZREG  = 0x0001; // see dispidApptTZDefRecur
-const WORD TZRULE_FLAG_EFFECTIVE_TZREG      = 0x0002;
+const WORD TZRULE_FLAG_RECUR_CURRENT_TZREG = 0x0001; // see dispidApptTZDefRecur
+const WORD TZRULE_FLAG_EFFECTIVE_TZREG = 0x0002;
 
 // http://blogs.msdn.com/stephen_griffin/archive/2007/03/19/mapi-and-exchange-2007.aspx
-#define CONNECT_IGNORE_NO_PF					((ULONG)0x8000)
+#define CONNECT_IGNORE_NO_PF ((ULONG)0x8000)
 
 #define TABLE_SORT_CATEG_MAX ((ULONG) 0x00000004)
 #define TABLE_SORT_CATEG_MIN ((ULONG) 0x00000008)
