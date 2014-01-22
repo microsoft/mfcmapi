@@ -6,13 +6,14 @@
 #include "Editor.h"
 #include "Guids.h"
 #include "InterpretProp2.h"
+#include "ExtraPropTags.h"
 
 _Check_return_ HRESULT CallOpenMsgStore(
-						 _In_ LPMAPISESSION	lpSession,
-						 _In_ ULONG_PTR		ulUIParam,
-						 _In_ LPSBinary		lpEID,
-						 ULONG			ulFlags,
-						 _Deref_out_ LPMDB*			lpMDB)
+	_In_ LPMAPISESSION	lpSession,
+	_In_ ULONG_PTR		ulUIParam,
+	_In_ LPSBinary		lpEID,
+	ULONG			ulFlags,
+	_Deref_out_ LPMDB*			lpMDB)
 {
 	if (!lpSession || !lpMDB || !lpEID) return MAPI_E_INVALID_PARAMETER;
 
@@ -22,38 +23,38 @@ _Check_return_ HRESULT CallOpenMsgStore(
 	{
 		ulFlags |= MDB_ONLINE;
 	}
-	DebugPrint(DBGOpenItemProp,_T("CallOpenMsgStore ulFlags = 0x%X\n"),ulFlags);
+	DebugPrint(DBGOpenItemProp, _T("CallOpenMsgStore ulFlags = 0x%X\n"), ulFlags);
 
 	WC_MAPI(lpSession->OpenMsgStore(
 		ulUIParam,
 		lpEID->cb,
-		(LPENTRYID) lpEID->lpb,
+		(LPENTRYID)lpEID->lpb,
 		NULL,
 		ulFlags,
-		(LPMDB*) lpMDB));
+		(LPMDB*)lpMDB));
 	if (MAPI_E_UNKNOWN_FLAGS == hRes && (ulFlags & MDB_ONLINE))
 	{
 		hRes = S_OK;
 		// perhaps this store doesn't know the MDB_ONLINE flag - remove and retry
 		ulFlags = ulFlags & ~MDB_ONLINE;
-		DebugPrint(DBGOpenItemProp,_T("CallOpenMsgStore 2nd attempt ulFlags = 0x%X\n"),ulFlags);
+		DebugPrint(DBGOpenItemProp, _T("CallOpenMsgStore 2nd attempt ulFlags = 0x%X\n"), ulFlags);
 
 		WC_MAPI(lpSession->OpenMsgStore(
 			ulUIParam,
 			lpEID->cb,
-			(LPENTRYID) lpEID->lpb,
+			(LPENTRYID)lpEID->lpb,
 			NULL,
 			ulFlags,
-			(LPMDB*) lpMDB));
+			(LPMDB*)lpMDB));
 	}
 	return hRes;
 } // CallOpenMsgStore
 
 // Build a server DN. Allocates memory. Free with MAPIFreeBuffer.
 _Check_return_ HRESULT BuildServerDN(
-					  _In_z_ LPCTSTR szServerName,
-					  _In_z_ LPCTSTR szPost,
-					  _Deref_out_z_ LPTSTR* lpszServerDN)
+	_In_z_ LPCTSTR szServerName,
+	_In_z_ LPCTSTR szPost,
+	_Deref_out_z_ LPTSTR* lpszServerDN)
 {
 	HRESULT hRes = S_OK;
 	if (!lpszServerDN) return MAPI_E_INVALID_PARAMETER;
@@ -64,14 +65,14 @@ _Check_return_ HRESULT BuildServerDN(
 	size_t cbPostLen = 0;
 	size_t cbServerDN = 0;
 
-	EC_H(StringCbLength(szPre,STRSAFE_MAX_CCH * sizeof(TCHAR),&cbPreLen));
-	EC_H(StringCbLength(szServerName,STRSAFE_MAX_CCH * sizeof(TCHAR),&cbServerLen));
-	EC_H(StringCbLength(szPost,STRSAFE_MAX_CCH * sizeof(TCHAR),&cbPostLen));
+	EC_H(StringCbLength(szPre, STRSAFE_MAX_CCH * sizeof(TCHAR), &cbPreLen));
+	EC_H(StringCbLength(szServerName, STRSAFE_MAX_CCH * sizeof(TCHAR), &cbServerLen));
+	EC_H(StringCbLength(szPost, STRSAFE_MAX_CCH * sizeof(TCHAR), &cbPostLen));
 
 	cbServerDN = cbPreLen + cbServerLen + cbPostLen + sizeof(TCHAR);
 
 	EC_H(MAPIAllocateBuffer(
-		(ULONG) cbServerDN,
+		(ULONG)cbServerDN,
 		(LPVOID*)lpszServerDN));
 
 	EC_H(StringCbPrintf(
@@ -85,10 +86,10 @@ _Check_return_ HRESULT BuildServerDN(
 } // BuildServerDN
 
 _Check_return_ HRESULT GetMailboxTable1(
-						 _In_ LPMDB lpMDB,
-						 _In_z_ LPCTSTR szServerDN,
-						 ULONG ulFlags,
-						 _Deref_out_opt_ LPMAPITABLE* lpMailboxTable)
+	_In_ LPMDB lpMDB,
+	_In_z_ LPCTSTR szServerDN,
+	ULONG ulFlags,
+	_Deref_out_opt_ LPMAPITABLE* lpMailboxTable)
 {
 	if (!lpMDB || !lpMailboxTable || !szServerDN) return MAPI_E_INVALID_PARAMETER;
 	*lpMailboxTable = NULL;
@@ -98,12 +99,12 @@ _Check_return_ HRESULT GetMailboxTable1(
 
 	WC_MAPI(lpMDB->QueryInterface(
 		IID_IExchangeManageStore,
-		(void **) &lpManageStore1));
+		(void **)&lpManageStore1));
 
 	if (lpManageStore1)
 	{
 		WC_MAPI(lpManageStore1->GetMailboxTable(
-			(LPSTR) szServerDN,
+			(LPSTR)szServerDN,
 			lpMailboxTable,
 			ulFlags));
 
@@ -113,11 +114,11 @@ _Check_return_ HRESULT GetMailboxTable1(
 } // GetMailboxTable1
 
 _Check_return_ HRESULT GetMailboxTable3(
-						 _In_ LPMDB lpMDB,
-						 _In_z_ LPCTSTR szServerDN,
-						 ULONG ulOffset,
-						 ULONG ulFlags,
-						 _Deref_out_opt_ LPMAPITABLE* lpMailboxTable)
+	_In_ LPMDB lpMDB,
+	_In_z_ LPCTSTR szServerDN,
+	ULONG ulOffset,
+	ULONG ulFlags,
+	_Deref_out_opt_ LPMAPITABLE* lpMailboxTable)
 {
 	if (!lpMDB || !lpMailboxTable || !szServerDN) return MAPI_E_INVALID_PARAMETER;
 	*lpMailboxTable = NULL;
@@ -127,12 +128,12 @@ _Check_return_ HRESULT GetMailboxTable3(
 
 	WC_MAPI(lpMDB->QueryInterface(
 		IID_IExchangeManageStore3,
-		(void **) &lpManageStore3));
+		(void **)&lpManageStore3));
 
 	if (lpManageStore3)
 	{
 		WC_MAPI(lpManageStore3->GetMailboxTableOffset(
-			(LPSTR) szServerDN,
+			(LPSTR)szServerDN,
 			lpMailboxTable,
 			ulFlags,
 			ulOffset));
@@ -143,12 +144,12 @@ _Check_return_ HRESULT GetMailboxTable3(
 } // GetMailboxTable3
 
 _Check_return_ HRESULT GetMailboxTable5(
-						 _In_ LPMDB lpMDB,
-						 _In_z_ LPCTSTR szServerDN,
-						 ULONG ulOffset,
-						 ULONG ulFlags,
-						 _In_opt_ LPGUID lpGuidMDB,
-						 _Deref_out_opt_ LPMAPITABLE* lpMailboxTable)
+	_In_ LPMDB lpMDB,
+	_In_z_ LPCTSTR szServerDN,
+	ULONG ulOffset,
+	ULONG ulFlags,
+	_In_opt_ LPGUID lpGuidMDB,
+	_Deref_out_opt_ LPMAPITABLE* lpMailboxTable)
 {
 	if (!lpMDB || !lpMailboxTable || !szServerDN) return MAPI_E_INVALID_PARAMETER;
 	*lpMailboxTable = NULL;
@@ -158,12 +159,12 @@ _Check_return_ HRESULT GetMailboxTable5(
 
 	EC_MAPI(lpMDB->QueryInterface(
 		IID_IExchangeManageStore5,
-		(void **) &lpManageStore5));
+		(void **)&lpManageStore5));
 
 	if (lpManageStore5)
 	{
 		EC_MAPI(lpManageStore5->GetMailboxTableEx(
-			(LPSTR) szServerDN,
+			(LPSTR)szServerDN,
 			lpGuidMDB,
 			lpMailboxTable,
 			ulFlags,
@@ -178,10 +179,10 @@ _Check_return_ HRESULT GetMailboxTable5(
 // Use GetServerName to get the default server
 // Will try IID_IExchangeManageStore3 first and fail back to IID_IExchangeManageStore
 _Check_return_ HRESULT GetMailboxTable(
-						_In_ LPMDB lpMDB,
-						_In_z_ LPCTSTR szServerName,
-						ULONG ulOffset,
-						_Deref_out_opt_ LPMAPITABLE* lpMailboxTable)
+	_In_ LPMDB lpMDB,
+	_In_z_ LPCTSTR szServerName,
+	ULONG ulOffset,
+	_Deref_out_opt_ LPMAPITABLE* lpMailboxTable)
 {
 	if (!lpMDB || !StoreSupportsManageStore(lpMDB) || !lpMailboxTable) return MAPI_E_INVALID_PARAMETER;
 	*lpMailboxTable = NULL;
@@ -219,10 +220,10 @@ _Check_return_ HRESULT GetMailboxTable(
 } // GetMailboxTable
 
 _Check_return_ HRESULT GetPublicFolderTable1(
-							  _In_ LPMDB lpMDB,
-							  _In_z_ LPCTSTR szServerDN,
-							  ULONG ulFlags,
-							  _Deref_out_opt_ LPMAPITABLE* lpPFTable)
+	_In_ LPMDB lpMDB,
+	_In_z_ LPCTSTR szServerDN,
+	ULONG ulFlags,
+	_Deref_out_opt_ LPMAPITABLE* lpPFTable)
 {
 	if (!lpMDB || !lpPFTable || !szServerDN) return MAPI_E_INVALID_PARAMETER;
 	*lpPFTable = NULL;
@@ -232,12 +233,12 @@ _Check_return_ HRESULT GetPublicFolderTable1(
 
 	EC_MAPI(lpMDB->QueryInterface(
 		IID_IExchangeManageStore,
-		(void **) &lpManageStore1));
+		(void **)&lpManageStore1));
 
 	if (lpManageStore1)
 	{
 		EC_MAPI(lpManageStore1->GetPublicFolderTable(
-			(LPSTR) szServerDN,
+			(LPSTR)szServerDN,
 			lpPFTable,
 			ulFlags));
 
@@ -248,11 +249,11 @@ _Check_return_ HRESULT GetPublicFolderTable1(
 } // GetPublicFolderTable1
 
 _Check_return_ HRESULT GetPublicFolderTable4(
-							  _In_ LPMDB lpMDB,
-							  _In_z_ LPCTSTR szServerDN,
-							  ULONG ulOffset,
-							  ULONG ulFlags,
-							  _Deref_out_opt_ LPMAPITABLE* lpPFTable)
+	_In_ LPMDB lpMDB,
+	_In_z_ LPCTSTR szServerDN,
+	ULONG ulOffset,
+	ULONG ulFlags,
+	_Deref_out_opt_ LPMAPITABLE* lpPFTable)
 {
 	if (!lpMDB || !lpPFTable || !szServerDN) return MAPI_E_INVALID_PARAMETER;
 	*lpPFTable = NULL;
@@ -262,12 +263,12 @@ _Check_return_ HRESULT GetPublicFolderTable4(
 
 	EC_MAPI(lpMDB->QueryInterface(
 		IID_IExchangeManageStore4,
-		(void **) &lpManageStore4));
+		(void **)&lpManageStore4));
 
 	if (lpManageStore4)
 	{
 		EC_MAPI(lpManageStore4->GetPublicFolderTableOffset(
-			(LPSTR) szServerDN,
+			(LPSTR)szServerDN,
 			lpPFTable,
 			ulFlags,
 			ulOffset));
@@ -278,12 +279,12 @@ _Check_return_ HRESULT GetPublicFolderTable4(
 } // GetPublicFolderTable4
 
 _Check_return_ HRESULT GetPublicFolderTable5(
-							  _In_ LPMDB lpMDB,
-							  _In_z_ LPCTSTR szServerDN,
-							  ULONG ulOffset,
-							  ULONG ulFlags,
-							  _In_opt_ LPGUID lpGuidMDB,
-							  _Deref_out_opt_ LPMAPITABLE* lpPFTable)
+	_In_ LPMDB lpMDB,
+	_In_z_ LPCTSTR szServerDN,
+	ULONG ulOffset,
+	ULONG ulFlags,
+	_In_opt_ LPGUID lpGuidMDB,
+	_Deref_out_opt_ LPMAPITABLE* lpPFTable)
 {
 	if (!lpMDB || !lpPFTable || !szServerDN) return MAPI_E_INVALID_PARAMETER;
 	*lpPFTable = NULL;
@@ -293,12 +294,12 @@ _Check_return_ HRESULT GetPublicFolderTable5(
 
 	EC_MAPI(lpMDB->QueryInterface(
 		IID_IExchangeManageStore5,
-		(void **) &lpManageStore5));
+		(void **)&lpManageStore5));
 
 	if (lpManageStore5)
 	{
 		EC_MAPI(lpManageStore5->GetPublicFolderTableEx(
-			(LPSTR) szServerDN,
+			(LPSTR)szServerDN,
 			lpGuidMDB,
 			lpPFTable,
 			ulFlags,
@@ -316,7 +317,7 @@ _Check_return_ HRESULT GetServerName(_In_ LPMAPISESSION lpSession, _Deref_out_op
 	HRESULT			hRes = S_OK;
 	LPSERVICEADMIN	pSvcAdmin = NULL;
 	LPPROFSECT		pGlobalProfSect = NULL;
-	LPSPropValue	lpServerName	= NULL;
+	LPSPropValue	lpServerName = NULL;
 
 	if (!lpSession) return MAPI_E_INVALID_PARAMETER;
 
@@ -336,7 +337,7 @@ _Check_return_ HRESULT GetServerName(_In_ LPMAPISESSION lpSession, _Deref_out_op
 		PR_PROFILE_HOME_SERVER,
 		&lpServerName));
 
-	if (CheckStringProp(lpServerName,PT_STRING8)) // profiles are ASCII only
+	if (CheckStringProp(lpServerName, PT_STRING8)) // profiles are ASCII only
 	{
 #ifdef UNICODE
 		LPWSTR	szWideServer = NULL;
@@ -346,7 +347,7 @@ _Check_return_ HRESULT GetServerName(_In_ LPMAPISESSION lpSession, _Deref_out_op
 		EC_H(CopyStringW(szServerName,szWideServer,NULL));
 		delete[] szWideServer;
 #else
-		EC_H(CopyStringA(szServerName,lpServerName->Value.lpszA,NULL));
+		EC_H(CopyStringA(szServerName, lpServerName->Value.lpszA, NULL));
 #endif
 	}
 #ifndef MRMAPI
@@ -358,14 +359,14 @@ _Check_return_ HRESULT GetServerName(_In_ LPMAPISESSION lpSession, _Deref_out_op
 			IDS_SERVERNAME,
 			IDS_SERVERNAMEMISSINGPROMPT,
 			1,
-			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.InitPane(0, CreateSingleLinePane(IDS_SERVERNAME, NULL, false));
 
 		WC_H(MyData.DisplayDialog());
 
 		if (S_OK == hRes)
 		{
-			EC_H(CopyString(szServerName,MyData.GetString(0),NULL));
+			EC_H(CopyString(szServerName, MyData.GetString(0), NULL));
 		}
 	}
 #endif
@@ -374,6 +375,149 @@ _Check_return_ HRESULT GetServerName(_In_ LPMAPISESSION lpSession, _Deref_out_op
 	if (pSvcAdmin) pSvcAdmin->Release();
 	return hRes;
 } // GetServerName
+
+_Check_return_ HRESULT CreateStoreEntryID(
+	_In_ LPMDB lpMDB, // open message store
+	_In_z_ LPCSTR lpszMsgStoreDN, // desired message store DN
+	_In_opt_z_ LPCSTR lpszMailboxDN, // desired mailbox DN or NULL
+	ULONG ulFlags, // desired flags for CreateStoreEntryID
+	_Out_opt_ ULONG* lpcbEntryID,
+	_Deref_out_opt_ LPENTRYID * lppEntryID)
+{
+	HRESULT hRes = S_OK;
+	LPEXCHANGEMANAGESTORE lpXManageStore = NULL;
+
+	if (!lpMDB || !lpszMsgStoreDN || !StoreSupportsManageStore(lpMDB))
+	{
+		if (!lpMDB) DebugPrint(DBGGeneric, _T("CreateStoreEntryID: MDB was NULL\n"));
+		if (!lpszMsgStoreDN) DebugPrint(DBGGeneric, _T("CreateStoreEntryID: lpszMsgStoreDN was NULL\n"));
+		return MAPI_E_INVALID_PARAMETER;
+	}
+
+	EC_MAPI(lpMDB->QueryInterface(
+		IID_IExchangeManageStore,
+		(LPVOID*)&lpXManageStore));
+
+	if (lpXManageStore)
+	{
+		DebugPrint(DBGGeneric, _T("CreateStoreEntryID: Creating EntryID. StoreDN = \"%s\", MailboxDN = \"%s\"\n"), lpszMsgStoreDN, lpszMailboxDN);
+
+		EC_MAPI(lpXManageStore->CreateStoreEntryID(
+			(LPSTR)lpszMsgStoreDN,
+			(LPSTR)lpszMailboxDN,
+			ulFlags,
+			lpcbEntryID,
+			lppEntryID));
+
+		lpXManageStore->Release();
+	}
+
+	return hRes;
+}
+
+_Check_return_ HRESULT CreateStoreEntryID2(
+	_In_ LPMDB lpMDB, // open message store
+	_In_z_ LPCSTR lpszMsgStoreDN, // desired message store DN
+	_In_opt_z_ LPCSTR lpszMailboxDN, // desired mailbox DN or NULL
+	ULONG ulFlags, // desired flags for CreateStoreEntryID
+	_Out_opt_ ULONG* lpcbEntryID,
+	_Deref_out_opt_ LPENTRYID * lppEntryID)
+{
+	HRESULT hRes = S_OK;
+	LPEXCHANGEMANAGESTOREEX lpXManageStoreEx = NULL;
+
+	if (!lpMDB || !lpszMsgStoreDN || !StoreSupportsManageStoreEx(lpMDB))
+	{
+		if (!lpMDB) DebugPrint(DBGGeneric, _T("CreateStoreEntryID2: MDB was NULL\n"));
+		if (!lpszMsgStoreDN) DebugPrint(DBGGeneric, _T("CreateStoreEntryID2: lpszMsgStoreDN was NULL\n"));
+		return MAPI_E_INVALID_PARAMETER;
+	}
+
+	EC_MAPI(lpMDB->QueryInterface(
+		IID_IExchangeManageStoreEx,
+		(LPVOID*)&lpXManageStoreEx));
+
+	if (lpXManageStoreEx)
+	{
+		DebugPrint(DBGGeneric, _T("CreateStoreEntryID2: Creating EntryID. StoreDN = \"%s\", MailboxDN = \"%s\"\n"), lpszMsgStoreDN, lpszMailboxDN);
+		SPropValue sProps[3] = {0};
+		sProps[0].ulPropTag = PR_PROFILE_MAILBOX;
+		sProps[0].Value.lpszA = (LPSTR)lpszMailboxDN;
+
+		sProps[1].ulPropTag = PR_PROFILE_MDB_DN;
+		sProps[1].Value.lpszA = (LPSTR)lpszMsgStoreDN;
+
+		sProps[2].ulPropTag = PR_FORCE_USE_ENTRYID_SERVER;
+		sProps[2].Value.b = true;
+
+		EC_MAPI(lpXManageStoreEx->CreateStoreEntryID2(
+			_countof(sProps),
+			(LPSPropValue)&sProps,
+			ulFlags,
+			lpcbEntryID,
+			lppEntryID));
+
+		lpXManageStoreEx->Release();
+	}
+
+	return hRes;
+}
+
+_Check_return_ HRESULT CreateStoreEntryID(
+	_In_ LPMDB lpMDB, // open message store
+	_In_z_ LPCTSTR lpszMsgStoreDN, // desired message store DN
+	_In_opt_z_ LPCTSTR lpszMailboxDN, // desired mailbox DN or NULL
+	ULONG ulFlags, // desired flags for CreateStoreEntryID
+	bool bForceServer, // Use CreateStoreEntryID2
+	_Out_opt_ ULONG* lpcbEntryID,
+	_Deref_out_opt_ LPENTRYID * lppEntryID)
+{
+	HRESULT hRes = S_OK;
+
+#ifdef UNICODE
+	LPSTR szAnsiMsgStoreDN = NULL;
+	LPSTR szAnsiMailboxDN = NULL;
+	if (lpszMsgStoreDN) EC_H(UnicodeToAnsi(lpszMsgStoreDN, &szAnsiMsgStoreDN));
+	if (lpszMailboxDN) EC_H(UnicodeToAnsi(lpszMailboxDN, &szAnsiMailboxDN));
+#else
+	LPCSTR szAnsiMsgStoreDN = lpszMsgStoreDN;
+	LPCSTR szAnsiMailboxDN = lpszMailboxDN;
+#endif
+
+	// Use a NULL MailboxDN to open the public store
+	if (szAnsiMailboxDN == NULL || !*szAnsiMailboxDN)
+	{
+		ulFlags |= OPENSTORE_PUBLIC;
+	}
+
+	if (!bForceServer)
+	{
+		EC_MAPI(CreateStoreEntryID(
+			lpMDB,
+			(LPSTR)szAnsiMsgStoreDN,
+			(LPSTR)szAnsiMailboxDN,
+			ulFlags,
+			lpcbEntryID,
+			lppEntryID));
+	}
+	else
+	{
+		EC_MAPI(CreateStoreEntryID2(
+			lpMDB,
+			(LPSTR)szAnsiMsgStoreDN,
+			(LPSTR)szAnsiMailboxDN,
+			ulFlags,
+			lpcbEntryID,
+			lppEntryID));
+	}
+
+#ifdef UNICODE
+	delete[] szAnsiMsgStoreDN;
+	delete[] szAnsiMailboxDN;
+#endif
+
+	return hRes;
+}
 
 // Stolen from MBLogon.c in the EDK to avoid compiling and linking in the entire beast
 // Cleaned up to fit in with other functions
@@ -398,70 +542,29 @@ _Check_return_ HRESULT GetServerName(_In_ LPMAPISESSION lpSession, _Deref_out_op
 // -----------------------------------------------------------------------------
 
 _Check_return_ HRESULT HrMailboxLogon(
-									  _In_ LPMAPISESSION		lpMAPISession,	// MAPI session handle
-									  _In_ LPMDB				lpMDB,			// open message store
-									  _In_z_ LPCTSTR			lpszMsgStoreDN,	// desired message store DN
-									  _In_opt_z_ LPCTSTR		lpszMailboxDN,	// desired mailbox DN or NULL
-									  ULONG						ulFlags,		// desired flags for CreateStoreEntryID
-									  _Deref_out_opt_ LPMDB*	lppMailboxMDB)	// ptr to mailbox message store ptr
+	_In_ LPMAPISESSION lpMAPISession, // MAPI session handle
+	_In_ LPMDB lpMDB, // open message store
+	_In_z_ LPCTSTR lpszMsgStoreDN, // desired message store DN
+	_In_opt_z_ LPCTSTR lpszMailboxDN, // desired mailbox DN or NULL
+	ULONG ulFlags, // desired flags for CreateStoreEntryID
+	bool bForceServer, // Use CreateStoreEntryID2
+	_Deref_out_opt_ LPMDB*	lppMailboxMDB) // ptr to mailbox message store ptr
 {
-	HRESULT					hRes			= S_OK;
-	LPEXCHANGEMANAGESTORE	lpXManageStore  = NULL;
-	LPMDB					lpMailboxMDB	= NULL;
-	SBinary					sbEID			= {0};
+	HRESULT hRes = S_OK;
+	SBinary sbEID = { 0 };
 
 	*lppMailboxMDB = NULL;
 
-	if (!lpMAPISession || !lpMDB || !lpszMsgStoreDN || !lppMailboxMDB || !StoreSupportsManageStore(lpMDB))
+	if (!lpMAPISession)
 	{
-		if (!lpMAPISession) DebugPrint(DBGGeneric,_T("HrMailboxLogon: Session was NULL\n"));
-		if (!lpMDB) DebugPrint(DBGGeneric,_T("HrMailboxLogon: MDB was NULL\n"));
-		if (!lpszMsgStoreDN) DebugPrint(DBGGeneric,_T("HrMailboxLogon: lpszMsgStoreDN was NULL\n"));
-		if (!lppMailboxMDB) DebugPrint(DBGGeneric,_T("HrMailboxLogon: lppMailboxMDB was NULL\n"));
+		DebugPrint(DBGGeneric, _T("HrMailboxLogon: Session was NULL\n"));
 		return MAPI_E_INVALID_PARAMETER;
 	}
 
-	// Use a NULL MailboxDN to open the public store
-	if (lpszMailboxDN == NULL || !*lpszMailboxDN)
+	WC_H(CreateStoreEntryID(lpMDB, lpszMsgStoreDN, lpszMailboxDN, ulFlags, bForceServer, &sbEID.cb, (LPENTRYID*)&sbEID.lpb));
+
+	if (SUCCEEDED(hRes))
 	{
-		ulFlags |= OPENSTORE_PUBLIC;
-	}
-
-	EC_MAPI(lpMDB->QueryInterface(
-		IID_IExchangeManageStore,
-		(LPVOID*) &lpXManageStore));
-
-	if (lpXManageStore)
-	{
-		DebugPrint(DBGGeneric,_T("HrMailboxLogon: Creating EntryID. StoreDN = \"%s\", MailboxDN = \"%s\"\n"),lpszMsgStoreDN,lpszMailboxDN);
-
-#ifdef UNICODE
-		{
-			char *szAnsiMsgStoreDN = NULL;
-			char *szAnsiMailboxDN = NULL;
-			EC_H(UnicodeToAnsi(lpszMsgStoreDN,&szAnsiMsgStoreDN));
-
-			if (lpszMailboxDN) EC_H(UnicodeToAnsi(lpszMailboxDN,&szAnsiMailboxDN));
-
-			EC_MAPI(lpXManageStore->CreateStoreEntryID(
-				szAnsiMsgStoreDN,
-				szAnsiMailboxDN,
-				ulFlags,
-				&sbEID.cb,
-				(LPENTRYID*) &sbEID.lpb));
-			delete[] szAnsiMsgStoreDN;
-			delete[] szAnsiMailboxDN;
-		}
-#else
-		EC_MAPI(lpXManageStore->CreateStoreEntryID(
-			(LPSTR) lpszMsgStoreDN,
-			(LPSTR) lpszMailboxDN,
-			ulFlags,
-			&sbEID.cb,
-			(LPENTRYID*) &sbEID.lpb));
-#endif
-		DebugPrintBinary(DBGGeneric,&sbEID);
-
 		WC_H(CallOpenMsgStore(
 			lpMAPISession,
 			NULL,
@@ -470,19 +573,16 @@ _Check_return_ HRESULT HrMailboxLogon(
 			MDB_NO_MAIL |     // spooler not notified of our presence
 			MDB_TEMPORARY |   // message store not added to MAPI profile
 			MAPI_BEST_ACCESS, // normally WRITE, but allow access to RO store
-			&lpMailboxMDB));
-
-		*lppMailboxMDB = lpMailboxMDB;
+			lppMailboxMDB));
 	}
 
 	MAPIFreeBuffer(sbEID.lpb);
-	if (lpXManageStore) lpXManageStore->Release();
 	return hRes;
-} // HrMailboxLogon
+}
 
 _Check_return_ HRESULT OpenDefaultMessageStore(
-								_In_ LPMAPISESSION lpMAPISession,
-								_Deref_out_ LPMDB* lppDefaultMDB)
+	_In_ LPMAPISESSION lpMAPISession,
+	_Deref_out_ LPMDB* lppDefaultMDB)
 {
 	HRESULT				hRes = S_OK;
 	LPMAPITABLE			pStoresTbl = NULL;
@@ -495,7 +595,7 @@ _Check_return_ HRESULT OpenDefaultMessageStore(
 		EID,
 		NUM_COLS
 	};
-	static const SizedSPropTagArray(NUM_COLS,sptEIDCol) =
+	static const SizedSPropTagArray(NUM_COLS, sptEIDCol) =
 	{
 		NUM_COLS,
 		PR_ENTRYID,
@@ -511,11 +611,11 @@ _Check_return_ HRESULT OpenDefaultMessageStore(
 	sres.res.resProperty.lpProp = &spv; // prop tag to compare against
 
 	spv.ulPropTag = PR_DEFAULT_STORE; // tag type
-	spv.Value.b	= true; // tag value
+	spv.Value.b = true; // tag value
 
 	EC_MAPI(HrQueryAllRows(
 		pStoresTbl,						// table to query
-		(LPSPropTagArray) &sptEIDCol,	// columns to get
+		(LPSPropTagArray)&sptEIDCol,	// columns to get
 		&sres,							// restriction to use
 		NULL,							// sort order
 		0,								// max number of rows - 0 means ALL
@@ -539,12 +639,13 @@ _Check_return_ HRESULT OpenDefaultMessageStore(
 
 // Build DNs for call to HrMailboxLogon
 _Check_return_ HRESULT OpenOtherUsersMailbox(
-							  _In_ LPMAPISESSION lpMAPISession,
-							  _In_ LPMDB lpMDB,
-							  _In_opt_z_ LPCTSTR szServerName,
-							  _In_z_ LPCTSTR szMailboxDN,
-							  ULONG ulFlags, // desired flags for CreateStoreEntryID
-							  _Deref_out_opt_ LPMDB* lppOtherUserMDB)
+	_In_ LPMAPISESSION lpMAPISession,
+	_In_ LPMDB lpMDB,
+	_In_opt_z_ LPCTSTR szServerName,
+	_In_z_ LPCTSTR szMailboxDN,
+	ULONG ulFlags, // desired flags for CreateStoreEntryID
+	bool bForceServer, // Use CreateStoreEntryID2
+	_Deref_out_opt_ LPMDB* lppOtherUserMDB)
 {
 	HRESULT		hRes = S_OK;
 
@@ -553,14 +654,14 @@ _Check_return_ HRESULT OpenOtherUsersMailbox(
 
 	*lppOtherUserMDB = NULL;
 
-	DebugPrint(DBGGeneric,_T("OpenOtherUsersMailbox called with lpMAPISession = %p, lpMDB = %p, Server = \"%s\", Mailbox = \"%s\"\n"),lpMAPISession, lpMDB,szServerName,szMailboxDN);
+	DebugPrint(DBGGeneric, _T("OpenOtherUsersMailbox called with lpMAPISession = %p, lpMDB = %p, Server = \"%s\", Mailbox = \"%s\"\n"), lpMAPISession, lpMDB, szServerName, szMailboxDN);
 	if (!lpMAPISession || !lpMDB || !szMailboxDN || !StoreSupportsManageStore(lpMDB)) return MAPI_E_INVALID_PARAMETER;
 
 	szServerNamePTR = szServerName;
 	if (!szServerName)
 	{
 		// If we weren't given a server name, get one from the profile
-		EC_H(GetServerName(lpMAPISession,&szServerNameFromProfile));
+		EC_H(GetServerName(lpMAPISession, &szServerNameFromProfile));
 		szServerNamePTR = szServerNameFromProfile;
 	}
 
@@ -575,13 +676,14 @@ _Check_return_ HRESULT OpenOtherUsersMailbox(
 
 		if (szServerDN)
 		{
-			DebugPrint(DBGGeneric,_T("Calling HrMailboxLogon with Server DN = \"%s\"\n"),szServerDN);
+			DebugPrint(DBGGeneric, _T("Calling HrMailboxLogon with Server DN = \"%s\"\n"), szServerDN);
 			WC_H(HrMailboxLogon(
 				lpMAPISession,
 				lpMDB,
 				szServerDN,
 				szMailboxDN,
 				ulFlags,
+				bForceServer,
 				lppOtherUserMDB));
 			MAPIFreeBuffer(szServerDN);
 		}
@@ -609,13 +711,14 @@ _Check_return_ HRESULT OpenMailboxWithPrompt(
 		NULL,
 		IDS_OPENOTHERUSER,
 		IDS_OPENWITHFLAGSPROMPT,
-		3,
-		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-	MyPrompt.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS),true));
+		4,
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+	MyPrompt.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
 	MyPrompt.InitPane(0, CreateSingleLinePane(IDS_SERVERNAME, szServerName, false));
 	MyPrompt.InitPane(1, CreateSingleLinePane(IDS_USERDN, szMailboxDN, false));
-	MyPrompt.InitPane(2, CreateSingleLinePaneID(IDS_CREATESTORENTRYIDFLAGS, ulFlags, false));
-	MyPrompt.SetHex(2,OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP);
+	MyPrompt.InitPane(2, CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, NULL, false));
+	MyPrompt.SetHex(2, ulFlags);
+	MyPrompt.InitPane(3, CreateCheckPane(IDS_FORCESERVER, false, false));
 	WC_H(MyPrompt.DisplayDialog());
 	if (S_OK == hRes)
 	{
@@ -625,6 +728,7 @@ _Check_return_ HRESULT OpenMailboxWithPrompt(
 			MyPrompt.GetString(0),
 			MyPrompt.GetString(1),
 			MyPrompt.GetHex(2),
+			MyPrompt.GetCheck(3),
 			lppOtherUserMDB));
 	}
 
@@ -634,18 +738,18 @@ _Check_return_ HRESULT OpenMailboxWithPrompt(
 // Display a UI to select a mailbox, then call OpenOtherUsersMailbox with the mailboxDN
 // May return MAPI_E_CANCEL
 _Check_return_ HRESULT OpenOtherUsersMailboxFromGal(
-									 _In_ LPMAPISESSION lpMAPISession,
-									 _In_ LPADRBOOK lpAddrBook,
-									 _Deref_out_opt_ LPMDB* lppOtherUserMDB)
+	_In_ LPMAPISESSION lpMAPISession,
+	_In_ LPADRBOOK lpAddrBook,
+	_Deref_out_opt_ LPMDB* lppOtherUserMDB)
 {
 	HRESULT		hRes = S_OK;
 
-	ADRPARM			AdrParm = {0};
-	LPADRLIST		lpAdrList		= NULL;
-	LPSPropValue	lpEmailAddress	= NULL;
-	LPSPropValue	lpEntryID		= NULL;
-	LPMAILUSER		lpMailUser		= NULL;
-	LPMDB			lpPrivateMDB	= NULL;
+	ADRPARM			AdrParm = { 0 };
+	LPADRLIST		lpAdrList = NULL;
+	LPSPropValue	lpEmailAddress = NULL;
+	LPSPropValue	lpEntryID = NULL;
+	LPMAILUSER		lpMailUser = NULL;
+	LPMDB			lpPrivateMDB = NULL;
 	LPTSTR szServerName = NULL;
 
 	*lppOtherUserMDB = NULL;
@@ -657,21 +761,21 @@ _Check_return_ HRESULT OpenOtherUsersMailboxFromGal(
 	// CString doesn't provide a way to extract just ANSI strings, so we do this manually
 	CHAR szTitle[256];
 	int iRet = NULL;
-	EC_D(iRet,LoadStringA(GetModuleHandle(NULL),
+	EC_D(iRet, LoadStringA(GetModuleHandle(NULL),
 		IDS_SELECTMAILBOX,
 		szTitle,
 		_countof(szTitle)));
 
-	AdrParm.ulFlags			= DIALOG_MODAL | ADDRESS_ONE | AB_SELECTONLY | AB_RESOLVE ;
+	AdrParm.ulFlags = DIALOG_MODAL | ADDRESS_ONE | AB_SELECTONLY | AB_RESOLVE;
 #pragma warning(push)
 #pragma warning(disable:4616)
 #pragma warning(disable:6276)
-	AdrParm.lpszCaption		= (LPTSTR) szTitle;
+	AdrParm.lpszCaption = (LPTSTR)szTitle;
 #pragma warning(pop)
 
 	ULONG_PTR ulHwnd = (ULONG_PTR)::GetDesktopWindow();
 
-	WC_H(OpenMessageStoreGUID(lpMAPISession,pbExchangeProviderPrimaryUserGuid,&lpPrivateMDB));
+	WC_H(OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpPrivateMDB));
 	if (lpPrivateMDB && StoreSupportsManageStore(lpPrivateMDB))
 	{
 		EC_H_CANCEL(lpAddrBook->Address(
@@ -694,7 +798,7 @@ _Check_return_ HRESULT OpenOtherUsersMailboxFromGal(
 					NULL,
 					NULL,
 					lpEntryID->Value.bin.cb,
-					(LPENTRYID) lpEntryID->Value.bin.lpb,
+					(LPENTRYID)lpEntryID->Value.bin.lpb,
 					NULL,
 					MAPI_BEST_ACCESS,
 					NULL,
@@ -706,7 +810,7 @@ _Check_return_ HRESULT OpenOtherUsersMailboxFromGal(
 						PR_EMAIL_ADDRESS,
 						&lpEmailAddress));
 
-					if (CheckStringProp(lpEmailAddress,PT_TSTRING))
+					if (CheckStringProp(lpEmailAddress, PT_TSTRING))
 					{
 						WC_H(OpenMailboxWithPrompt(
 							lpMAPISession,
@@ -737,11 +841,11 @@ _Check_return_ HRESULT OpenOtherUsersMailboxFromGal(
 // pbExchangeProviderXportGuid
 
 _Check_return_ HRESULT OpenMessageStoreGUID(_In_ LPMAPISESSION lpMAPISession,
-							 _In_z_ LPCSTR lpGUID,
-							 _Deref_out_opt_ LPMDB* lppMDB)
+	_In_z_ LPCSTR lpGUID,
+	_Deref_out_opt_ LPMDB* lppMDB)
 {
 	LPMAPITABLE	pStoresTbl = NULL;
-	LPSRowSet	pRow		= NULL;
+	LPSRowSet	pRow = NULL;
 	ULONG		ulRowNum;
 	HRESULT		hRes = S_OK;
 
@@ -751,7 +855,7 @@ _Check_return_ HRESULT OpenMessageStoreGUID(_In_ LPMAPISESSION lpMAPISession,
 		STORETYPE,
 		NUM_COLS
 	};
-	static const SizedSPropTagArray(NUM_COLS,sptCols) =
+	static const SizedSPropTagArray(NUM_COLS, sptCols) =
 	{
 		NUM_COLS,
 		PR_ENTRYID,
@@ -767,20 +871,20 @@ _Check_return_ HRESULT OpenMessageStoreGUID(_In_ LPMAPISESSION lpMAPISession,
 	{
 		EC_MAPI(HrQueryAllRows(
 			pStoresTbl,					// table to query
-			(LPSPropTagArray) &sptCols,	// columns to get
+			(LPSPropTagArray)&sptCols,	// columns to get
 			NULL,						// restriction to use
 			NULL,						// sort order
 			0,							// max number of rows
 			&pRow));
 		if (pRow)
 		{
-			if (!FAILED(hRes)) for (ulRowNum=0; ulRowNum<pRow->cRows; ulRowNum++)
+			if (!FAILED(hRes)) for (ulRowNum = 0; ulRowNum < pRow->cRows; ulRowNum++)
 			{
 				hRes = S_OK;
 				// check to see if we have a folder with a matching GUID
 				if (pRow->aRow[ulRowNum].lpProps[STORETYPE].ulPropTag == PR_MDB_PROVIDER &&
 					pRow->aRow[ulRowNum].lpProps[EID].ulPropTag == PR_ENTRYID &&
-					IsEqualMAPIUID(pRow->aRow[ulRowNum].lpProps[STORETYPE].Value.bin.lpb,lpGUID))
+					IsEqualMAPIUID(pRow->aRow[ulRowNum].lpProps[STORETYPE].Value.bin.lpb, lpGUID))
 				{
 					WC_H(CallOpenMsgStore(
 						lpMAPISession,
@@ -807,8 +911,8 @@ _Check_return_ HRESULT OpenPublicMessageStore(
 {
 	HRESULT			hRes = S_OK;
 
-	LPMDB			lpPublicMDBNonAdmin	= NULL;
-	LPSPropValue	lpServerName	= NULL;
+	LPMDB			lpPublicMDBNonAdmin = NULL;
+	LPSPropValue	lpServerName = NULL;
 
 	if (!lpMAPISession || !lppPublicMDB) return MAPI_E_INVALID_PARAMETER;
 
@@ -831,7 +935,7 @@ _Check_return_ HRESULT OpenPublicMessageStore(
 			PR_HIERARCHY_SERVER,
 			&lpServerName));
 
-		if (CheckStringProp(lpServerName,PT_TSTRING))
+		if (CheckStringProp(lpServerName, PT_TSTRING))
 		{
 			LPTSTR	szServerDN = NULL;
 
@@ -848,6 +952,7 @@ _Check_return_ HRESULT OpenPublicMessageStore(
 					szServerDN,
 					NULL,
 					ulFlags,
+					false,
 					lppPublicMDB));
 				MAPIFreeBuffer(szServerDN);
 			}
@@ -887,14 +992,14 @@ _Check_return_ HRESULT OpenStoreFromMAPIProp(_In_ LPMAPISESSION lpMAPISession, _
 
 _Check_return_ bool StoreSupportsManageStore(_In_ LPMDB lpMDB)
 {
-	HRESULT					hRes = S_OK;
-	LPEXCHANGEMANAGESTORE	lpIManageStore = NULL;
+	HRESULT hRes = S_OK;
+	LPEXCHANGEMANAGESTORE lpIManageStore = NULL;
 
 	if (!lpMDB) return false;
 
 	EC_H_MSG(lpMDB->QueryInterface(
 		IID_IExchangeManageStore,
-		(void **) &lpIManageStore),
+		(void **)&lpIManageStore),
 		IDS_MANAGESTORENOTSUPPORTED);
 
 	if (lpIManageStore)
@@ -903,7 +1008,27 @@ _Check_return_ bool StoreSupportsManageStore(_In_ LPMDB lpMDB)
 		return true;
 	}
 	return false;
-} // StoreSupportsManageStore
+}
+
+_Check_return_ bool StoreSupportsManageStoreEx(_In_ LPMDB lpMDB)
+{
+	HRESULT hRes = S_OK;
+	LPEXCHANGEMANAGESTORE lpIManageStore = NULL;
+
+	if (!lpMDB) return false;
+
+	EC_H_MSG(lpMDB->QueryInterface(
+		IID_IExchangeManageStoreEx,
+		(void **)&lpIManageStore),
+		IDS_MANAGESTOREEXNOTSUPPORTED);
+
+	if (lpIManageStore)
+	{
+		lpIManageStore->Release();
+		return true;
+	}
+	return false;
+}
 
 _Check_return_ HRESULT HrUnWrapMDB(_In_ LPMDB lpMDBIn, _Deref_out_ LPMDB* lppMDBOut)
 {
@@ -911,7 +1036,7 @@ _Check_return_ HRESULT HrUnWrapMDB(_In_ LPMDB lpMDBIn, _Deref_out_ LPMDB* lppMDB
 	HRESULT hRes = S_OK;
 	IProxyStoreObject* lpProxyObj = NULL;
 	LPMDB lpUnwrappedMDB = NULL;
-	EC_MAPI(lpMDBIn->QueryInterface(IID_IProxyStoreObject,(void**)&lpProxyObj));
+	EC_MAPI(lpMDBIn->QueryInterface(IID_IProxyStoreObject, (void**)&lpProxyObj));
 	if (SUCCEEDED(hRes) && lpProxyObj)
 	{
 		EC_MAPI(lpProxyObj->UnwrapNoRef((LPVOID*)&lpUnwrappedMDB));

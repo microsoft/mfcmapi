@@ -35,14 +35,14 @@ static TCHAR* CLASS = _T("CMainDlg");
 CMainDlg::CMainDlg(
 	_In_ CParentWnd* pParentWnd,
 	_In_ CMapiObjects* lpMapiObjects
-	):
-CContentsTableDlg(
+	) :
+	CContentsTableDlg(
 	pParentWnd,
 	lpMapiObjects,
 	ID_PRODUCTNAME,
 	mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 	NULL,
-	(LPSPropTagArray) &sptSTORECols,
+	(LPSPropTagArray)&sptSTORECols,
 	NUMSTORECOLUMNS,
 	STOREColumns,
 	IDR_MENU_MAIN_POPUP,
@@ -72,7 +72,7 @@ BEGIN_MESSAGE_MAP(CMainDlg, CContentsTableDlg)
 	ON_COMMAND(ID_DUMPSTORECONTENTS, OnDumpStoreContents)
 	ON_COMMAND(ID_DUMPSERVERCONTENTSTOTEXT, OnDumpServerContents)
 	ON_COMMAND(ID_FASTSHUTDOWN, OnFastShutdown)
-	ON_COMMAND(ID_ISATTACHMENTBLOCKED,OnIsAttachmentBlocked)
+	ON_COMMAND(ID_ISATTACHMENTBLOCKED, OnIsAttachmentBlocked)
 	ON_COMMAND(ID_LOADMAPI, OnLoadMAPI)
 	ON_COMMAND(ID_LOGOFF, OnLogoff)
 	ON_COMMAND(ID_LOGOFFWITHFLAGS, OnLogoffWithFlags)
@@ -84,15 +84,15 @@ BEGIN_MESSAGE_MAP(CMainDlg, CContentsTableDlg)
 	ON_COMMAND(ID_MAPIUNINITIALIZE, OnMAPIUninitialize)
 	ON_COMMAND(ID_OPENADDRESSBOOK, OnOpenAddressBook)
 	ON_COMMAND(ID_OPENDEFAULTMESSAGESTORE, OnOpenDefaultMessageStore)
-	ON_COMMAND(ID_OPENFORMCONTAINER,OnOpenFormContainer)
+	ON_COMMAND(ID_OPENFORMCONTAINER, OnOpenFormContainer)
 	ON_COMMAND(ID_OPENMAILBOXWITHDN, OnOpenMailboxWithDN)
 	ON_COMMAND(ID_OPENMESSAGESTOREEID, OnOpenMessageStoreEID)
 	ON_COMMAND(ID_OPENMESSAGESTORETABLE, OnOpenMessageStoreTable)
 	ON_COMMAND(ID_OPENOTHERUSERSMAILBOXFROMGAL, OnOpenOtherUsersMailboxFromGAL)
 	ON_COMMAND(ID_OPENPUBLICFOLDERS, OnOpenPublicFolders)
 	ON_COMMAND(ID_OPENSELECTEDSTOREDELETEDFOLDERS, OnOpenSelectedStoreDeletedFolders)
-	ON_COMMAND(ID_QUERYDEFAULTMESSAGEOPT,OnQueryDefaultMessageOpt)
-	ON_COMMAND(ID_QUERYDEFAULTRECIPOPT,OnQueryDefaultRecipOpt)
+	ON_COMMAND(ID_QUERYDEFAULTMESSAGEOPT, OnQueryDefaultMessageOpt)
+	ON_COMMAND(ID_QUERYDEFAULTRECIPOPT, OnQueryDefaultRecipOpt)
 	ON_COMMAND(ID_QUERYIDENTITY, OnQueryIdentity)
 	ON_COMMAND(ID_RESOLVEMESSAGECLASS, OnResolveMessageClass)
 	ON_COMMAND(ID_SELECTFORM, OnSelectForm)
@@ -104,9 +104,9 @@ BEGIN_MESSAGE_MAP(CMainDlg, CContentsTableDlg)
 	ON_COMMAND(ID_OPENPAB, OnOpenPAB)
 	ON_COMMAND(ID_VIEWSTATUSTABLE, OnStatusTable)
 	ON_COMMAND(ID_SHOWPROFILES, OnShowProfiles)
-	ON_COMMAND(ID_GETMAPISVCINF,OnGetMAPISVC)
-	ON_COMMAND(ID_ADDSERVICESTOMAPISVCINF,OnAddServicesToMAPISVC)
-	ON_COMMAND(ID_REMOVESERVICESFROMMAPISVCINF,OnRemoveServicesFromMAPISVC)
+	ON_COMMAND(ID_GETMAPISVCINF, OnGetMAPISVC)
+	ON_COMMAND(ID_ADDSERVICESTOMAPISVCINF, OnAddServicesToMAPISVC)
+	ON_COMMAND(ID_REMOVESERVICESFROMMAPISVCINF, OnRemoveServicesFromMAPISVC)
 	ON_COMMAND(ID_LAUNCHPROFILEWIZARD, OnLaunchProfileWizard)
 	ON_COMMAND(ID_VIEWMSGPROPERTIES, OnViewMSGProperties)
 	ON_COMMAND(ID_CONVERTMSGTOEML, OnConvertMSGToEML)
@@ -117,7 +117,7 @@ END_MESSAGE_MAP()
 
 void CMainDlg::AddLoadMAPIMenus()//HMENU hMenu, ULONG ulAddInContext)
 {
-	DebugPrint(DBGLoadMAPI,_T("AddLoadMAPIMenus - Extending menus\n"));
+	DebugPrint(DBGLoadMAPI, _T("AddLoadMAPIMenus - Extending menus\n"));
 	HRESULT hRes = S_OK;
 
 	// Find the submenu with ID_LOADMAPI on it
@@ -139,14 +139,14 @@ void CMainDlg::AddLoadMAPIMenus()//HMENU hMenu, ULONG ulAddInContext)
 				szPath = mpi->GetNextMAPIPath();
 				if (!szPath) break;
 
-				DebugPrint(DBGLoadMAPI,_T("Found MAPI path %ws\n"), szPath);
+				DebugPrint(DBGLoadMAPI, _T("Found MAPI path %ws\n"), szPath);
 				LPMENUENTRY lpMenu = CreateMenuEntry(szPath);
 
 				EC_B(AppendMenu(
 					hAddInMenu,
 					MF_ENABLED | MF_OWNERDRAW,
 					uidCurMenu++,
-					(LPCTSTR) lpMenu));
+					(LPCTSTR)lpMenu));
 				delete[] szPath;
 			}
 		}
@@ -154,16 +154,16 @@ void CMainDlg::AddLoadMAPIMenus()//HMENU hMenu, ULONG ulAddInContext)
 		delete mpi;
 
 	}
-	DebugPrint(DBGLoadMAPI,_T("Done extending menus\n"));
+	DebugPrint(DBGLoadMAPI, _T("Done extending menus\n"));
 } // AddLoadMAPIMenus
 
 bool CMainDlg::InvokeLoadMAPIMenu(WORD wMenuSelect)
 {
 	if (wMenuSelect < ID_LOADMAPIMENUMIN || wMenuSelect > ID_LOADMAPIMENUMAX) return false;
-	DebugPrint(DBGLoadMAPI,_T("InvokeLoadMAPIMenu - got menu item %u\n"), wMenuSelect);
+	DebugPrint(DBGLoadMAPI, _T("InvokeLoadMAPIMenu - got menu item %u\n"), wMenuSelect);
 
 	HRESULT hRes = S_OK;
-	MENUITEMINFOW subMenu = {0};
+	MENUITEMINFOW subMenu = { 0 };
 	subMenu.cbSize = sizeof(MENUITEMINFO);
 	subMenu.fMask = MIIM_DATA;
 
@@ -174,10 +174,10 @@ bool CMainDlg::InvokeLoadMAPIMenu(WORD wMenuSelect)
 		&subMenu));
 	if (subMenu.dwItemData)
 	{
-		LPMENUENTRY lme = (LPMENUENTRY) subMenu.dwItemData;
-		DebugPrint(DBGLoadMAPI,_T("Loading MAPI from %ws\n"), lme->m_pName);
+		LPMENUENTRY lme = (LPMENUENTRY)subMenu.dwItemData;
+		DebugPrint(DBGLoadMAPI, _T("Loading MAPI from %ws\n"), lme->m_pName);
 		HMODULE hMAPI = NULL;
-		EC_D(hMAPI,MyLoadLibraryW(lme->m_pName));
+		EC_D(hMAPI, MyLoadLibraryW(lme->m_pName));
 		SetMAPIHandle(hMAPI);
 	}
 
@@ -186,7 +186,7 @@ bool CMainDlg::InvokeLoadMAPIMenu(WORD wMenuSelect)
 
 _Check_return_ bool CMainDlg::HandleMenu(WORD wMenuSelect)
 {
-	DebugPrint(DBGMenu,_T("CMainDlg::HandleMenu wMenuSelect = 0x%X = %u\n"),wMenuSelect,wMenuSelect);
+	DebugPrint(DBGMenu, _T("CMainDlg::HandleMenu wMenuSelect = 0x%X = %u\n"), wMenuSelect, wMenuSelect);
 	if (HandleQuickStart(wMenuSelect, this, m_hWnd)) return true;
 	if (InvokeLoadMAPIMenu(wMenuSelect)) return true;
 
@@ -210,63 +210,63 @@ void CMainDlg::OnInitMenu(_In_ CMenu* pMenu)
 		}
 		bool bInLoadOp = m_lpContentsTableListCtrl && m_lpContentsTableListCtrl->IsLoading();
 
-		pMenu->EnableMenuItem(ID_LOADMAPI,DIM(!hMAPI && !bInLoadOp));
-		pMenu->EnableMenuItem(ID_UNLOADMAPI,DIM(hMAPI && !bInLoadOp));
-		pMenu->EnableMenuItem(ID_DISPLAYMAPIPATH,DIM(hMAPI && !bInLoadOp));
-		pMenu->CheckMenuItem(ID_LOADMAPI,CHECK(hMAPI && !bInLoadOp));
-		pMenu->EnableMenuItem(ID_MAPIINITIALIZE,DIM(!bMAPIInitialized && !bInLoadOp));
-		pMenu->EnableMenuItem(ID_MAPIUNINITIALIZE,DIM(bMAPIInitialized && !bInLoadOp));
-		pMenu->CheckMenuItem(ID_MAPIINITIALIZE,CHECK(bMAPIInitialized && !bInLoadOp));
-		pMenu->EnableMenuItem(ID_LOGON,DIM(!lpMAPISession && !bInLoadOp));
-		pMenu->EnableMenuItem(ID_LOGONANDDISPLAYSTORES,DIM(!lpMAPISession && !bInLoadOp));
-		pMenu->EnableMenuItem(ID_LOGONWITHFLAGS,DIM(!lpMAPISession && !bInLoadOp));
-		pMenu->CheckMenuItem(ID_LOGON,CHECK(lpMAPISession && !bInLoadOp));
-		pMenu->EnableMenuItem(ID_LOGOFF,DIM(lpMAPISession && !bInLoadOp));
-		pMenu->EnableMenuItem(ID_LOGOFFWITHFLAGS,DIM(lpMAPISession && !bInLoadOp));
-		pMenu->EnableMenuItem(ID_FASTSHUTDOWN,DIM(lpMAPISession));
-		pMenu->EnableMenuItem(ID_ISATTACHMENTBLOCKED,DIM(lpMAPISession));
-		pMenu->EnableMenuItem(ID_VIEWSTATUSTABLE,DIM(lpMAPISession));
-		pMenu->EnableMenuItem(ID_QUERYDEFAULTMESSAGEOPT,DIM(lpMAPISession));
-		pMenu->EnableMenuItem(ID_QUERYDEFAULTRECIPOPT,DIM(lpMAPISession));
-		pMenu->EnableMenuItem(ID_QUERYIDENTITY,DIM(lpMAPISession));
-		pMenu->EnableMenuItem(ID_OPENFORMCONTAINER,DIM(lpMAPISession));
-		pMenu->EnableMenuItem(ID_RESOLVEMESSAGECLASS,DIM(lpMAPISession));
-		pMenu->EnableMenuItem(ID_SELECTFORM,DIM(lpMAPISession));
-		pMenu->EnableMenuItem(ID_SELECTFORMCONTAINER,DIM(lpMAPISession));
+		pMenu->EnableMenuItem(ID_LOADMAPI, DIM(!hMAPI && !bInLoadOp));
+		pMenu->EnableMenuItem(ID_UNLOADMAPI, DIM(hMAPI && !bInLoadOp));
+		pMenu->EnableMenuItem(ID_DISPLAYMAPIPATH, DIM(hMAPI && !bInLoadOp));
+		pMenu->CheckMenuItem(ID_LOADMAPI, CHECK(hMAPI && !bInLoadOp));
+		pMenu->EnableMenuItem(ID_MAPIINITIALIZE, DIM(!bMAPIInitialized && !bInLoadOp));
+		pMenu->EnableMenuItem(ID_MAPIUNINITIALIZE, DIM(bMAPIInitialized && !bInLoadOp));
+		pMenu->CheckMenuItem(ID_MAPIINITIALIZE, CHECK(bMAPIInitialized && !bInLoadOp));
+		pMenu->EnableMenuItem(ID_LOGON, DIM(!lpMAPISession && !bInLoadOp));
+		pMenu->EnableMenuItem(ID_LOGONANDDISPLAYSTORES, DIM(!lpMAPISession && !bInLoadOp));
+		pMenu->EnableMenuItem(ID_LOGONWITHFLAGS, DIM(!lpMAPISession && !bInLoadOp));
+		pMenu->CheckMenuItem(ID_LOGON, CHECK(lpMAPISession && !bInLoadOp));
+		pMenu->EnableMenuItem(ID_LOGOFF, DIM(lpMAPISession && !bInLoadOp));
+		pMenu->EnableMenuItem(ID_LOGOFFWITHFLAGS, DIM(lpMAPISession && !bInLoadOp));
+		pMenu->EnableMenuItem(ID_FASTSHUTDOWN, DIM(lpMAPISession));
+		pMenu->EnableMenuItem(ID_ISATTACHMENTBLOCKED, DIM(lpMAPISession));
+		pMenu->EnableMenuItem(ID_VIEWSTATUSTABLE, DIM(lpMAPISession));
+		pMenu->EnableMenuItem(ID_QUERYDEFAULTMESSAGEOPT, DIM(lpMAPISession));
+		pMenu->EnableMenuItem(ID_QUERYDEFAULTRECIPOPT, DIM(lpMAPISession));
+		pMenu->EnableMenuItem(ID_QUERYIDENTITY, DIM(lpMAPISession));
+		pMenu->EnableMenuItem(ID_OPENFORMCONTAINER, DIM(lpMAPISession));
+		pMenu->EnableMenuItem(ID_RESOLVEMESSAGECLASS, DIM(lpMAPISession));
+		pMenu->EnableMenuItem(ID_SELECTFORM, DIM(lpMAPISession));
+		pMenu->EnableMenuItem(ID_SELECTFORMCONTAINER, DIM(lpMAPISession));
 
-		pMenu->EnableMenuItem(ID_DISPLAYMAILBOXTABLE,DIM(lpMAPISession));
-		pMenu->EnableMenuItem(ID_DISPLAYPUBLICFOLDERTABLE,DIM(lpMAPISession));
-		pMenu->EnableMenuItem(ID_OPENMESSAGESTORETABLE,DIM(lpMAPISession && !bInLoadOp));
-		pMenu->EnableMenuItem(ID_OPENDEFAULTMESSAGESTORE,DIM(lpMAPISession));
+		pMenu->EnableMenuItem(ID_DISPLAYMAILBOXTABLE, DIM(lpMAPISession));
+		pMenu->EnableMenuItem(ID_DISPLAYPUBLICFOLDERTABLE, DIM(lpMAPISession));
+		pMenu->EnableMenuItem(ID_OPENMESSAGESTORETABLE, DIM(lpMAPISession && !bInLoadOp));
+		pMenu->EnableMenuItem(ID_OPENDEFAULTMESSAGESTORE, DIM(lpMAPISession));
 
-		pMenu->EnableMenuItem(ID_OPENPUBLICFOLDERS,DIM(lpMAPISession));
+		pMenu->EnableMenuItem(ID_OPENPUBLICFOLDERS, DIM(lpMAPISession));
 
-		pMenu->EnableMenuItem(ID_DUMPSERVERCONTENTSTOTEXT,DIM(lpMAPISession));
+		pMenu->EnableMenuItem(ID_DUMPSERVERCONTENTSTOTEXT, DIM(lpMAPISession));
 
-		pMenu->EnableMenuItem(ID_OPENOTHERUSERSMAILBOXFROMGAL,DIM(lpMAPISession));
-		pMenu->EnableMenuItem(ID_OPENMAILBOXWITHDN,DIM(lpMAPISession));
-		pMenu->EnableMenuItem(ID_OPENMESSAGESTOREEID,DIM(lpMAPISession));
+		pMenu->EnableMenuItem(ID_OPENOTHERUSERSMAILBOXFROMGAL, DIM(lpMAPISession));
+		pMenu->EnableMenuItem(ID_OPENMAILBOXWITHDN, DIM(lpMAPISession));
+		pMenu->EnableMenuItem(ID_OPENMESSAGESTOREEID, DIM(lpMAPISession));
 
 		if (m_lpContentsTableListCtrl)
 		{
 			int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
-			pMenu->EnableMenuItem(ID_OPENSELECTEDSTOREDELETEDFOLDERS,DIM(lpMAPISession && iNumSel));
-			pMenu->EnableMenuItem(ID_SETDEFAULTSTORE,DIM(lpMAPISession && 1 == iNumSel));
-			pMenu->EnableMenuItem(ID_DUMPSTORECONTENTS,DIM(lpMAPISession && 1 == iNumSel));
-			pMenu->EnableMenuItem(ID_COMPUTEGIVENSTOREHASH,DIM(lpMAPISession && 1 == iNumSel));
+			pMenu->EnableMenuItem(ID_OPENSELECTEDSTOREDELETEDFOLDERS, DIM(lpMAPISession && iNumSel));
+			pMenu->EnableMenuItem(ID_SETDEFAULTSTORE, DIM(lpMAPISession && 1 == iNumSel));
+			pMenu->EnableMenuItem(ID_DUMPSTORECONTENTS, DIM(lpMAPISession && 1 == iNumSel));
+			pMenu->EnableMenuItem(ID_COMPUTEGIVENSTOREHASH, DIM(lpMAPISession && 1 == iNumSel));
 		}
-		pMenu->EnableMenuItem(ID_OPENADDRESSBOOK,DIM(lpMAPISession && !lpAddrBook));
-		pMenu->CheckMenuItem(ID_OPENADDRESSBOOK,CHECK(lpAddrBook));
-		pMenu->EnableMenuItem(ID_CLOSEADDRESSBOOK,DIM(lpAddrBook));
+		pMenu->EnableMenuItem(ID_OPENADDRESSBOOK, DIM(lpMAPISession && !lpAddrBook));
+		pMenu->CheckMenuItem(ID_OPENADDRESSBOOK, CHECK(lpAddrBook));
+		pMenu->EnableMenuItem(ID_CLOSEADDRESSBOOK, DIM(lpAddrBook));
 
-		pMenu->EnableMenuItem(ID_VIEWABHIERARCHY,DIM(lpMAPISession));
-		pMenu->EnableMenuItem(ID_OPENDEFAULTDIR,DIM(lpMAPISession));
-		pMenu->EnableMenuItem(ID_OPENPAB,DIM(lpMAPISession));
+		pMenu->EnableMenuItem(ID_VIEWABHIERARCHY, DIM(lpMAPISession));
+		pMenu->EnableMenuItem(ID_OPENDEFAULTDIR, DIM(lpMAPISession));
+		pMenu->EnableMenuItem(ID_OPENPAB, DIM(lpMAPISession));
 
 		UINT uidCurMenu = ID_LOADMAPIMENUMIN;
-		for (; uidCurMenu <= ID_LOADMAPIMENUMAX ; uidCurMenu++)
+		for (; uidCurMenu <= ID_LOADMAPIMENUMAX; uidCurMenu++)
 		{
-			pMenu->EnableMenuItem(uidCurMenu,DIM(!hMAPI && !bInLoadOp));
+			pMenu->EnableMenuItem(uidCurMenu, DIM(!hMAPI && !bInLoadOp));
 		}
 	}
 	CContentsTableDlg::OnInitMenu(pMenu);
@@ -299,7 +299,7 @@ void CMainDlg::OnOpenAddressBook()
 	m_lpMapiObjects->SetAddrBook(lpAddrBook);
 
 	if (m_lpPropDisplay)
-		EC_H(m_lpPropDisplay->SetDataSource(lpAddrBook,NULL,true));
+		EC_H(m_lpPropDisplay->SetDataSource(lpAddrBook, NULL, true));
 
 	if (lpAddrBook) lpAddrBook->Release();
 } // CMainDlg::OnOpenAddressBook
@@ -309,7 +309,7 @@ void CMainDlg::OnABHierarchy()
 	if (!m_lpMapiObjects) return;
 
 	// ensure we have an AB
-	(void) m_lpMapiObjects->GetAddrBook(true); // do not release
+	(void)m_lpMapiObjects->GetAddrBook(true); // do not release
 
 	// call the dialog
 	new CAbContDlg(
@@ -350,7 +350,7 @@ void CMainDlg::OnOpenDefaultDir()
 
 	if (lpDefaultDir)
 	{
-		EC_H(DisplayObject(lpDefaultDir,ulObjType,otDefault,this));
+		EC_H(DisplayObject(lpDefaultDir, ulObjType, otDefault, this));
 
 		lpDefaultDir->Release();
 	}
@@ -389,7 +389,7 @@ void CMainDlg::OnOpenPAB()
 
 	if (lpPAB)
 	{
-		EC_H(DisplayObject(lpPAB,ulObjType,otDefault,this));
+		EC_H(DisplayObject(lpPAB, ulObjType, otDefault, this));
 
 		lpPAB->Release();
 	}
@@ -411,7 +411,7 @@ _Check_return_ HRESULT CMainDlg::OpenItemProp(int iSelectedItem, __mfcmapiModify
 	HRESULT		hRes = S_OK;
 
 	*lppMAPIProp = NULL;
-	DebugPrintEx(DBGOpenItemProp,CLASS,_T("OpenItemProp"),_T("iSelectedItem = 0x%X\n"),iSelectedItem);
+	DebugPrintEx(DBGOpenItemProp, CLASS, _T("OpenItemProp"), _T("iSelectedItem = 0x%X\n"), iSelectedItem);
 
 	if (!m_lpContentsTableListCtrl || !lppMAPIProp) return MAPI_E_INVALID_PARAMETER;
 
@@ -419,7 +419,7 @@ _Check_return_ HRESULT CMainDlg::OpenItemProp(int iSelectedItem, __mfcmapiModify
 	if (!lpMAPISession) return MAPI_E_INVALID_PARAMETER;
 
 	SortListData*	lpListData = NULL;
-	lpListData = (SortListData*) m_lpContentsTableListCtrl->GetItemData(iSelectedItem);
+	lpListData = (SortListData*)m_lpContentsTableListCtrl->GetItemData(iSelectedItem);
 	if (lpListData)
 	{
 		LPSBinary	lpEntryID = NULL;
@@ -434,7 +434,7 @@ _Check_return_ HRESULT CMainDlg::OpenItemProp(int iSelectedItem, __mfcmapiModify
 				(ULONG_PTR)m_hWnd,
 				lpEntryID,
 				ulFlags,
-				(LPMDB*) lppMAPIProp));
+				(LPMDB*)lppMAPIProp));
 		}
 	}
 	return hRes;
@@ -462,10 +462,10 @@ void CMainDlg::OnOpenDefaultMessageStore()
 			IDS_OPENDEFMSGSTORE,
 			IDS_OPENWITHFLAGSPROMPT,
 			1,
-			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-		MyPrompt.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS),true));
+			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+		MyPrompt.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
 		MyPrompt.InitPane(0, CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, NULL, false));
-		MyPrompt.SetHex(0,NULL);
+		MyPrompt.SetHex(0, NULL);
 		WC_H(MyPrompt.DisplayDialog());
 		if (S_OK == hRes)
 		{
@@ -503,7 +503,7 @@ void CMainDlg::OnOpenDefaultMessageStore()
 					PR_EMAIL_ADDRESS,
 					&lpMailboxName));
 
-				if (CheckStringProp(lpMailboxName,PT_TSTRING))
+				if (CheckStringProp(lpMailboxName, PT_TSTRING))
 				{
 					LPMDB lpAdminMDB = NULL;
 					EC_H(OpenOtherUsersMailbox(
@@ -512,6 +512,7 @@ void CMainDlg::OnOpenDefaultMessageStore()
 						NULL,
 						lpMailboxName->Value.LPSZ,
 						ulFlags,
+						false,
 						&lpAdminMDB));
 					if (lpAdminMDB)
 					{
@@ -545,11 +546,11 @@ void CMainDlg::OnOpenMessageStoreEID()
 		IDS_OPENSTOREEID,
 		IDS_OPENSTOREEIDPROMPT,
 		5,
-		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 	MyEID.InitPane(0, CreateSingleLinePane(IDS_EID, NULL, false));
 	MyEID.InitPane(1, CreateSingleLinePane(IDS_FLAGS, NULL, false));
-	MyEID.SetHex(1,MDB_WRITE);
+	MyEID.SetHex(1, MDB_WRITE);
 	MyEID.InitPane(2, CreateCheckPane(IDS_EIDBASE64ENCODED, false, false));
 	MyEID.InitPane(3, CreateCheckPane(IDS_DISPLAYPROPS, false, false));
 	MyEID.InitPane(4, CreateCheckPane(IDS_UNWRAPSTORE, false, false));
@@ -558,8 +559,8 @@ void CMainDlg::OnOpenMessageStoreEID()
 	if (S_OK != hRes) return;
 
 	// Get the entry ID as a binary
-	SBinary sBin = {0};
-	EC_H(MyEID.GetEntryID(0,MyEID.GetCheck(2),(size_t*)&sBin.cb,(LPENTRYID*)&sBin.lpb));
+	SBinary sBin = { 0 };
+	EC_H(MyEID.GetEntryID(0, MyEID.GetCheck(2), (size_t*)&sBin.cb, (LPENTRYID*)&sBin.lpb));
 
 	if (SUCCEEDED(hRes))
 	{
@@ -576,7 +577,7 @@ void CMainDlg::OnOpenMessageStoreEID()
 			if (MyEID.GetCheck(4))
 			{
 				LPMDB lpUnwrappedMDB = NULL;
-				EC_H(HrUnWrapMDB(lpMDB,&lpUnwrappedMDB));
+				EC_H(HrUnWrapMDB(lpMDB, &lpUnwrappedMDB));
 
 				// Ditch the old MDB and substitute the unwrapped one.
 				lpMDB->Release();
@@ -586,7 +587,7 @@ void CMainDlg::OnOpenMessageStoreEID()
 			if (MyEID.GetCheck(3))
 			{
 				if (m_lpPropDisplay)
-					EC_H(m_lpPropDisplay->SetDataSource(lpMDB,NULL,true));
+					EC_H(m_lpPropDisplay->SetDataSource(lpMDB, NULL, true));
 			}
 			else
 			{
@@ -617,10 +618,10 @@ void CMainDlg::OnOpenPublicFolders()
 		IDS_OPENPUBSTORE,
 		IDS_OPENWITHFLAGSPROMPT,
 		1,
-		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-	MyPrompt.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS),true));
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+	MyPrompt.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
 	MyPrompt.InitPane(0, CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, NULL, false));
-	MyPrompt.SetHex(0,NULL);
+	MyPrompt.SetHex(0, NULL);
 	WC_H(MyPrompt.DisplayDialog());
 	if (S_OK == hRes)
 	{
@@ -711,8 +712,8 @@ void CMainDlg::OnOpenMessageStoreTable()
 
 void CMainDlg::OnOpenOtherUsersMailboxFromGAL()
 {
-	HRESULT			hRes			= S_OK;
-	LPMDB			lpMailboxMDB	= NULL; // Ptr to any another's msg store interface.
+	HRESULT			hRes = S_OK;
+	LPMDB			lpMailboxMDB = NULL; // Ptr to any another's msg store interface.
 
 	if (!m_lpMapiObjects) return;
 
@@ -785,8 +786,7 @@ void CMainDlg::OnOpenSelectedStoreDeletedFolders()
 				}
 			}
 		}
-	}
-	while (iItem != -1);
+	} while (iItem != -1);
 
 	if (lpMDB) lpMDB->Release();
 } // CMainDlg::OnOpenSelectedStoreDeletedFolders
@@ -837,14 +837,13 @@ void CMainDlg::OnDumpStoreContents()
 				}
 			}
 		}
-	}
-	while (iItem != -1);
+	} while (iItem != -1);
 } // CMainDlg::OnDumpStoreContents
 
 void CMainDlg::OnDumpServerContents()
 {
 	HRESULT			hRes = S_OK;
-	WCHAR			szDir[MAX_PATH] = {0};
+	WCHAR			szDir[MAX_PATH] = { 0 };
 	LPTSTR			szServerName = NULL;
 
 	if (!m_lpMapiObjects) return;
@@ -859,7 +858,7 @@ void CMainDlg::OnDumpServerContents()
 		IDS_DUMPSERVERPRIVATESTORE,
 		IDS_SERVERNAMEPROMPT,
 		1,
-		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.InitPane(0, CreateSingleLinePane(IDS_SERVERNAME, szServerName, false));
 
 	WC_H(MyData.DisplayDialog());
@@ -911,9 +910,9 @@ void CMainDlg::OnLogoffWithFlags()
 		IDS_LOGOFF,
 		IDS_LOGOFFPROMPT,
 		1,
-		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.InitPane(0, CreateSingleLinePane(IDS_FLAGSINHEX, NULL, false));
-	MyData.SetHex(0,MAPI_LOGOFF_UI);
+	MyData.SetHex(0, MAPI_LOGOFF_UI);
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -955,10 +954,10 @@ void CMainDlg::OnLogonWithFlags()
 		IDS_PROFFORMAPILOGON,
 		IDS_PROFFORMAPILOGONPROMPT,
 		2,
-		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.InitPane(0, CreateSingleLinePane(IDS_PROFILE, NULL, false));
 	MyData.InitPane(1, CreateSingleLinePane(IDS_FLAGSINHEX, NULL, false));
-	MyData.SetHex(1,MAPI_EXTENDED|MAPI_EXPLICIT_PROFILE|MAPI_ALLOW_OTHERS|MAPI_NEW_SESSION|MAPI_LOGON_UI);
+	MyData.SetHex(1, MAPI_EXTENDED | MAPI_EXPLICIT_PROFILE | MAPI_ALLOW_OTHERS | MAPI_NEW_SESSION | MAPI_LOGON_UI);
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -972,12 +971,12 @@ void CMainDlg::OnLogonWithFlags()
 		}
 		m_lpMapiObjects->MAPILogonEx(
 			m_hWnd, // handle of current window (from def'n of CWnd)
-			(LPTSTR) lpszProfile, // profile name
+			(LPTSTR)lpszProfile, // profile name
 			MyData.GetHex(1));
 	}
 	else
 	{
-		DebugPrint(DBGGeneric,_T("MAPILogonEx call cancelled.\n"));
+		DebugPrint(DBGGeneric, _T("MAPILogonEx call cancelled.\n"));
 	}
 } // CMainDlg::OnLogonWithFlags
 
@@ -990,7 +989,7 @@ void CMainDlg::OnResolveMessageClass()
 	ResolveMessageClass(m_lpMapiObjects, NULL, &lpMAPIFormInfo);
 	if (lpMAPIFormInfo)
 	{
-		EC_H(m_lpPropDisplay->SetDataSource(lpMAPIFormInfo,NULL,false));
+		EC_H(m_lpPropDisplay->SetDataSource(lpMAPIFormInfo, NULL, false));
 		lpMAPIFormInfo->Release();
 	}
 } // CMainDlg::OnResolveMessageClass
@@ -1005,7 +1004,7 @@ void CMainDlg::OnSelectForm()
 	if (lpMAPIFormInfo)
 	{
 		// TODO: Put some code in here which works with the returned Form Info pointer
-		EC_H(m_lpPropDisplay->SetDataSource(lpMAPIFormInfo,NULL,false));
+		EC_H(m_lpPropDisplay->SetDataSource(lpMAPIFormInfo, NULL, false));
 		lpMAPIFormInfo->Release();
 	}
 } // CMainDlg::OnSelectForm
@@ -1021,17 +1020,17 @@ void CMainDlg::OnSelectFormContainer()
 	LPMAPISESSION lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
-	EC_MAPI(MAPIOpenFormMgr(lpMAPISession,&lpMAPIFormMgr));
+	EC_MAPI(MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr));
 	if (lpMAPIFormMgr)
 	{
 		CEditor MyFlags(
 			this,
 			IDS_SELECTFORM,
 			IDS_SELECTFORMPROMPT,
-			(ULONG) 1,
-			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+			(ULONG)1,
+			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyFlags.InitPane(0, CreateSingleLinePane(IDS_FLAGS, NULL, false));
-		MyFlags.SetHex(0,MAPIFORM_SELECT_ALL_REGISTRIES);
+		MyFlags.SetHex(0, MAPIFORM_SELECT_ALL_REGISTRIES);
 
 		WC_H(MyFlags.DisplayDialog());
 		if (S_OK == hRes)
@@ -1039,7 +1038,7 @@ void CMainDlg::OnSelectFormContainer()
 			ULONG ulFlags = MyFlags.GetHex(0);
 			EC_H_CANCEL(lpMAPIFormMgr->SelectFormContainer(
 				(ULONG_PTR)m_hWnd,
-				ulFlags ,
+				ulFlags,
 				&lpMAPIFormContainer));
 			if (lpMAPIFormContainer)
 			{
@@ -1066,17 +1065,17 @@ void CMainDlg::OnOpenFormContainer()
 	LPMAPISESSION lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
-	EC_MAPI(MAPIOpenFormMgr(lpMAPISession,&lpMAPIFormMgr));
+	EC_MAPI(MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr));
 	if (lpMAPIFormMgr)
 	{
 		CEditor MyFlags(
 			this,
 			IDS_OPENFORMCONTAINER,
 			IDS_OPENFORMCONTAINERPROMPT,
-			(ULONG) 1,
-			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+			(ULONG)1,
+			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyFlags.InitPane(0, CreateSingleLinePane(IDS_HFRMREG, NULL, false));
-		MyFlags.SetHex(0,MAPIFORM_SELECT_ALL_REGISTRIES);
+		MyFlags.SetHex(0, MAPIFORM_SELECT_ALL_REGISTRIES);
 
 		WC_H(MyFlags.DisplayDialog());
 		if (S_OK == hRes)
@@ -1084,7 +1083,7 @@ void CMainDlg::OnOpenFormContainer()
 			HFRMREG hFrmReg = MyFlags.GetHex(0);
 			EC_H_CANCEL(lpMAPIFormMgr->OpenFormContainer(
 				hFrmReg,
-				NULL ,
+				NULL,
 				&lpMAPIFormContainer));
 			if (lpMAPIFormContainer)
 			{
@@ -1125,19 +1124,19 @@ void CMainDlg::OnMAPIOpenLocalFormContainer()
 void CMainDlg::OnLoadMAPI()
 {
 	HRESULT hRes = S_OK;
-	TCHAR	szDLLPath[MAX_PATH] = {0};
+	TCHAR	szDLLPath[MAX_PATH] = { 0 };
 	UINT	uiRet = NULL;
 
-	WC_D(uiRet,GetSystemDirectory(szDLLPath, MAX_PATH));
-	WC_H(StringCchCat(szDLLPath,_countof(szDLLPath),_T("\\"))); // STRING_OK
-	WC_H(StringCchCat(szDLLPath,_countof(szDLLPath),_T("mapi32.dll"))); // STRING_OK
+	WC_D(uiRet, GetSystemDirectory(szDLLPath, MAX_PATH));
+	WC_H(StringCchCat(szDLLPath, _countof(szDLLPath), _T("\\"))); // STRING_OK
+	WC_H(StringCchCat(szDLLPath, _countof(szDLLPath), _T("mapi32.dll"))); // STRING_OK
 
 	CEditor MyData(
 		this,
 		IDS_LOADMAPI,
 		IDS_LOADMAPIPROMPT,
 		1,
-		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.InitPane(0, CreateSingleLinePane(IDS_PATH, szDLLPath, false));
 
 	WC_H(MyData.DisplayDialog());
@@ -1145,7 +1144,7 @@ void CMainDlg::OnLoadMAPI()
 	{
 		HMODULE hMAPI = NULL;
 		UnLoadPrivateMAPI();
-		EC_D(hMAPI,MyLoadLibrary(MyData.GetString(0)));
+		EC_D(hMAPI, MyLoadLibrary(MyData.GetString(0)));
 		SetMAPIHandle(hMAPI);
 	}
 } // CMainDlg::OnLoadMAPI
@@ -1159,7 +1158,7 @@ void CMainDlg::OnUnloadMAPI()
 		IDS_UNLOADMAPI,
 		IDS_MAPICRASHWARNING,
 		0,
-		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -1171,14 +1170,14 @@ void CMainDlg::OnUnloadMAPI()
 void CMainDlg::OnDisplayMAPIPath()
 {
 	HRESULT hRes = S_OK;
-	TCHAR   szMAPIPath[MAX_PATH] = {0};
+	TCHAR   szMAPIPath[MAX_PATH] = { 0 };
 
 	DebugPrint(DBGGeneric, _T("OnDisplayMAPIPath()\n"));
 	HMODULE hMAPI = GetMAPIHandle();
 
 	if (hMAPI)
 	{
-		(void) GetModuleFileName(hMAPI, szMAPIPath, _countof(szMAPIPath));
+		(void)GetModuleFileName(hMAPI, szMAPIPath, _countof(szMAPIPath));
 	}
 
 	CEditor MyData(
@@ -1189,8 +1188,8 @@ void CMainDlg::OnDisplayMAPIPath()
 		CEDITOR_BUTTON_OK);
 	MyData.InitPane(0, CreateSingleLinePane(IDS_FILEPATH, NULL, true));
 	MyData.SetString(0, szMAPIPath);
-	MyData.InitPane(1, CreateCheckPane(IDS_REGKEY_FORCEOUTLOOKMAPI,  0 != RegKeys[regkeyFORCEOUTLOOKMAPI].ulCurDWORD, true));
-	MyData.InitPane(2, CreateCheckPane(IDS_REGKEY_FORCESYSTEMMAPI,  0 != RegKeys[regkeyFORCESYSTEMMAPI].ulCurDWORD, true));
+	MyData.InitPane(1, CreateCheckPane(IDS_REGKEY_FORCEOUTLOOKMAPI, 0 != RegKeys[regkeyFORCEOUTLOOKMAPI].ulCurDWORD, true));
+	MyData.InitPane(2, CreateCheckPane(IDS_REGKEY_FORCESYSTEMMAPI, 0 != RegKeys[regkeyFORCESYSTEMMAPI].ulCurDWORD, true));
 
 	WC_H(MyData.DisplayDialog());
 } // CMainDlg::OnDisplayMAPIPath
@@ -1205,9 +1204,9 @@ void CMainDlg::OnMAPIInitialize()
 		IDS_MAPIINIT,
 		IDS_MAPIINITPROMPT,
 		1,
-		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.InitPane(0, CreateSingleLinePane(IDS_FLAGSINHEX, NULL, false));
-	MyData.SetHex(0,NULL);
+	MyData.SetHex(0, NULL);
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -1226,7 +1225,7 @@ void CMainDlg::OnMAPIUninitialize()
 		IDS_MAPIUNINIT,
 		IDS_MAPICRASHWARNING,
 		0,
-		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -1244,24 +1243,24 @@ void CMainDlg::OnFastShutdown()
 
 	LPMAPICLIENTSHUTDOWN lpClientShutdown = NULL;
 
-	EC_H_MSG(lpMAPISession->QueryInterface(IID_IMAPIClientShutdown,(LPVOID*) &lpClientShutdown),IDS_EDNOMAPICLIENTSHUTDOWN);
+	EC_H_MSG(lpMAPISession->QueryInterface(IID_IMAPIClientShutdown, (LPVOID*)&lpClientShutdown), IDS_EDNOMAPICLIENTSHUTDOWN);
 
 	if (SUCCEEDED(hRes) && lpClientShutdown)
 	{
-		EC_H_MSG(lpClientShutdown->QueryFastShutdown(),IDS_EDQUERYFASTSHUTDOWNFAILED);
+		EC_H_MSG(lpClientShutdown->QueryFastShutdown(), IDS_EDQUERYFASTSHUTDOWNFAILED);
 
 		HRESULT hResNotify = NULL;
 
 		hResNotify = lpClientShutdown->NotifyProcessShutdown();
-		CHECKHRESMSG(hResNotify,IDS_EDNOTIFYPROCESSSHUTDOWNFAILED);
+		CHECKHRESMSG(hResNotify, IDS_EDNOTIFYPROCESSSHUTDOWNFAILED);
 
 		if (SUCCEEDED(hRes))
 		{
-			EC_H_MSG(lpClientShutdown->DoFastShutdown(),IDS_EDDOFASTSHUTDOWNFAILED);
+			EC_H_MSG(lpClientShutdown->DoFastShutdown(), IDS_EDDOFASTSHUTDOWNFAILED);
 
 			if (SUCCEEDED(hRes))
 			{
-				ErrDialog(__FILE__,__LINE__,IDS_EDDOFASTSHUTDOWNSUCCEEDED);
+				ErrDialog(__FILE__, __LINE__, IDS_EDDOFASTSHUTDOWNSUCCEEDED);
 			}
 		}
 	}
@@ -1281,7 +1280,7 @@ void CMainDlg::OnQueryDefaultMessageOpt()
 		IDS_QUERYDEFMSGOPT,
 		IDS_ADDRESSTYPEPROMPT,
 		1,
-		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.InitPane(0, CreateSingleLinePane(IDS_ADDRESSTYPE, _T("EX"), false)); // STRING_OK
 
 	WC_H(MyData.DisplayDialog());
@@ -1291,12 +1290,12 @@ void CMainDlg::OnQueryDefaultMessageOpt()
 		LPSPropValue	lpOptions = NULL;
 
 		EC_MAPI(lpMAPISession->QueryDefaultMessageOpt(
-			(LPTSTR) MyData.GetStringA(0),
+			(LPTSTR)MyData.GetStringA(0),
 			NULL, // API doesn't like Unicode
 			&cValues,
 			&lpOptions));
 
-		DebugPrintProperties(DBGGeneric,cValues,lpOptions,NULL);
+		DebugPrintProperties(DBGGeneric, cValues, lpOptions, NULL);
 
 		if (SUCCEEDED(hRes))
 		{
@@ -1304,10 +1303,10 @@ void CMainDlg::OnQueryDefaultMessageOpt()
 				this,
 				IDS_QUERYDEFMSGOPT,
 				IDS_RESULTOFCALLPROMPT,
-				lpOptions?2:1,
+				lpOptions ? 2 : 1,
 				CEDITOR_BUTTON_OK);
 			MyResult.InitPane(0, CreateSingleLinePane(IDS_COUNTOPTIONS, NULL, true));
-			MyResult.SetHex(0,cValues);
+			MyResult.SetHex(0, cValues);
 
 			if (lpOptions)
 			{
@@ -1316,17 +1315,17 @@ void CMainDlg::OnQueryDefaultMessageOpt()
 				CString szTmp;
 				CString szProp;
 				CString szAltProp;
-				for (i = 0; i< cValues;i++)
+				for (i = 0; i < cValues; i++)
 				{
-					InterpretProp(&lpOptions[i],&szProp,&szAltProp);
+					InterpretProp(&lpOptions[i], &szProp, &szAltProp);
 					szTmp.FormatMessage(IDS_OPTIONSSTRUCTURE,
 						i,
-						TagToString(lpOptions[i].ulPropTag,NULL,false,true),
+						TagToString(lpOptions[i].ulPropTag, NULL, false, true),
 						szProp,
 						szAltProp);
 					szPropString += szTmp;
 				}
-				MyResult.InitPane(1,CreateMultiLinePane(IDS_OPTIONS, (LPCTSTR) szPropString, true));
+				MyResult.InitPane(1, CreateMultiLinePane(IDS_OPTIONS, (LPCTSTR)szPropString, true));
 			}
 
 			WC_H(MyResult.DisplayDialog());
@@ -1347,7 +1346,7 @@ void CMainDlg::OnQueryDefaultRecipOpt()
 		IDS_QUERYDEFRECIPOPT,
 		IDS_ADDRESSTYPEPROMPT,
 		1,
-		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.InitPane(0, CreateSingleLinePane(IDS_ADDRESSTYPE, _T("EX"), false)); // STRING_OK
 
 	WC_H(MyData.DisplayDialog());
@@ -1357,12 +1356,12 @@ void CMainDlg::OnQueryDefaultRecipOpt()
 		LPSPropValue	lpOptions = NULL;
 
 		EC_MAPI(lpAddrBook->QueryDefaultRecipOpt(
-			(LPTSTR) MyData.GetStringA(0),
+			(LPTSTR)MyData.GetStringA(0),
 			NULL, // API doesn't like Unicode
 			&cValues,
 			&lpOptions));
 
-		DebugPrintProperties(DBGGeneric,cValues,lpOptions,NULL);
+		DebugPrintProperties(DBGGeneric, cValues, lpOptions, NULL);
 
 		if (SUCCEEDED(hRes))
 		{
@@ -1370,10 +1369,10 @@ void CMainDlg::OnQueryDefaultRecipOpt()
 				this,
 				IDS_QUERYDEFRECIPOPT,
 				IDS_RESULTOFCALLPROMPT,
-				lpOptions?2:1,
+				lpOptions ? 2 : 1,
 				CEDITOR_BUTTON_OK);
 			MyResult.InitPane(0, CreateSingleLinePane(IDS_COUNTOPTIONS, NULL, true));
-			MyResult.SetHex(0,cValues);
+			MyResult.SetHex(0, cValues);
 
 			if (lpOptions)
 			{
@@ -1382,17 +1381,17 @@ void CMainDlg::OnQueryDefaultRecipOpt()
 				CString szTmp;
 				CString szProp;
 				CString szAltProp;
-				for (i = 0; i< cValues;i++)
+				for (i = 0; i < cValues; i++)
 				{
-					InterpretProp(&lpOptions[i],&szProp,&szAltProp);
+					InterpretProp(&lpOptions[i], &szProp, &szAltProp);
 					szTmp.FormatMessage(IDS_OPTIONSSTRUCTURE,
 						i,
-						TagToString(lpOptions[i].ulPropTag,NULL,false,true),
+						TagToString(lpOptions[i].ulPropTag, NULL, false, true),
 						szProp,
 						szAltProp);
 					szPropString += szTmp;
 				}
-				MyResult.InitPane(1, CreateMultiLinePane(IDS_OPTIONS, (LPCTSTR) szPropString, true));
+				MyResult.InitPane(1, CreateMultiLinePane(IDS_OPTIONS, (LPCTSTR)szPropString, true));
 			}
 
 			WC_H(MyResult.DisplayDialog());
@@ -1424,7 +1423,7 @@ void CMainDlg::OnQueryIdentity()
 			IDS_QUERYID,
 			IDS_QUERYIDPROMPT,
 			1,
-			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyPrompt.InitPane(0, CreateCheckPane(IDS_DISPLAYDETAILSDLG, false, false));
 		WC_H(MyPrompt.DisplayDialog());
 		if (S_OK == hRes)
@@ -1432,7 +1431,7 @@ void CMainDlg::OnQueryIdentity()
 			if (MyPrompt.GetCheck(0))
 			{
 				LPADRBOOK lpAB = m_lpMapiObjects->GetAddrBook(true); // do not release
-				ULONG_PTR ulUIParam = (ULONG_PTR) (void*) m_hWnd;
+				ULONG_PTR ulUIParam = (ULONG_PTR)(void*)m_hWnd;
 
 				EC_H_CANCEL(lpAB->Details(
 					&ulUIParam,
@@ -1460,7 +1459,7 @@ void CMainDlg::OnQueryIdentity()
 					(LPUNKNOWN*)&lpIdentity));
 				if (lpIdentity)
 				{
-					EC_H(m_lpPropDisplay->SetDataSource(lpIdentity,NULL,true));
+					EC_H(m_lpPropDisplay->SetDataSource(lpIdentity, NULL, true));
 
 					lpIdentity->Release();
 				}
@@ -1492,9 +1491,9 @@ void CMainDlg::OnSetDefaultStore()
 				IDS_SETDEFSTORE,
 				IDS_SETDEFSTOREPROMPT,
 				1,
-				CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 			MyData.InitPane(0, CreateSingleLinePane(IDS_FLAGS, NULL, false));
-			MyData.SetHex(0,MAPI_DEFAULT_STORE);
+			MyData.SetHex(0, MAPI_DEFAULT_STORE);
 
 			WC_H(MyData.DisplayDialog());
 			if (S_OK == hRes)
@@ -1520,14 +1519,14 @@ void CMainDlg::OnIsAttachmentBlocked()
 		IDS_ISATTBLOCKED,
 		IDS_ENTERFILENAME,
 		1,
-		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.InitPane(0, CreateSingleLinePane(IDS_FILENAME, NULL, false));
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
 	{
 		bool bBlocked = false;
-		EC_H(IsAttachmentBlocked(lpMAPISession,MyData.GetStringW(0),&bBlocked));
+		EC_H(IsAttachmentBlocked(lpMAPISession, MyData.GetStringW(0), &bBlocked));
 		if (SUCCEEDED(hRes))
 		{
 			CEditor MyResult(
@@ -1538,7 +1537,7 @@ void CMainDlg::OnIsAttachmentBlocked()
 				CEDITOR_BUTTON_OK);
 			CString szRet;
 			CString szResult;
-			EC_B(szResult.LoadString(bBlocked?IDS_TRUE:IDS_FALSE));
+			EC_B(szResult.LoadString(bBlocked ? IDS_TRUE : IDS_FALSE));
 			MyResult.InitPane(0, CreateSingleLinePane(IDS_RESULT, szResult, true));
 
 			WC_H(MyResult.DisplayDialog());
@@ -1586,21 +1585,21 @@ void CMainDlg::OnLaunchProfileWizard()
 		IDS_LAUNCHPROFWIZ,
 		IDS_LAUNCHPROFWIZPROMPT,
 		2,
-		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.InitPane(0, CreateSingleLinePane(IDS_FLAGS, NULL, false));
-	MyData.SetHex(0,MAPI_PW_LAUNCHED_BY_CONFIG);
+	MyData.SetHex(0, MAPI_PW_LAUNCHED_BY_CONFIG);
 	MyData.InitPane(1, CreateSingleLinePane(IDS_SERVICE, _T("MSEMS"), false)); // STRING_OK
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		CHAR szProfName[80] = {0};
-		LPSTR szServices[] = {MyData.GetStringA(1),NULL};
+		CHAR szProfName[80] = { 0 };
+		LPSTR szServices[] = { MyData.GetStringA(1), NULL };
 
 		LaunchProfileWizard(
 			m_hWnd,
 			MyData.GetHex(0),
-			(LPCSTR*) szServices,
+			(LPCSTR*)szServices,
 			_countof(szProfName),
 			szProfName);
 	}
@@ -1655,14 +1654,14 @@ void CMainDlg::OnDisplayMailboxTable()
 {
 	if (!m_lpParent || !m_lpMapiObjects) return;
 
-	DisplayMailboxTable(m_lpParent,m_lpMapiObjects);
+	DisplayMailboxTable(m_lpParent, m_lpMapiObjects);
 } // CMainDlg::OnDisplayMailboxTable
 
 void CMainDlg::OnDisplayPublicFolderTable()
 {
 	if (!m_lpParent || !m_lpMapiObjects) return;
 
-	DisplayPublicFolderTable(m_lpParent,m_lpMapiObjects);
+	DisplayPublicFolderTable(m_lpParent, m_lpMapiObjects);
 } // CMainDlg::OnDisplayPublicFolderTable
 
 void CMainDlg::OnViewMSGProperties()
@@ -1713,7 +1712,7 @@ void CMainDlg::OnConvertMSGToEML()
 	ULONG ulWrapLines = USE_DEFAULT_WRAPPING;
 	bool bDoAdrBook = false;
 
-	WC_H(GetConversionToEMLOptions(this,&ulConvertFlags,&et,&mst,&ulWrapLines,&bDoAdrBook));
+	WC_H(GetConversionToEMLOptions(this, &ulConvertFlags, &et, &mst, &ulWrapLines, &bDoAdrBook));
 	if (S_OK == hRes)
 	{
 		LPADRBOOK lpAdrBook = NULL;
@@ -1773,7 +1772,7 @@ void CMainDlg::OnConvertEMLToMSG()
 	bool bUnicode = false;
 	HCHARSET hCharSet = NULL;
 	CSETAPPLYTYPE cSetApplyType = CSET_APPLY_UNTAGGED;
-	WC_H(GetConversionFromEMLOptions(this,&ulConvertFlags,&bDoAdrBook,&bDoApply,&hCharSet,&cSetApplyType,&bUnicode));
+	WC_H(GetConversionFromEMLOptions(this, &ulConvertFlags, &bDoAdrBook, &bDoApply, &hCharSet, &cSetApplyType, &bUnicode));
 	if (S_OK == hRes)
 	{
 		LPADRBOOK lpAdrBook = NULL;
@@ -1906,13 +1905,13 @@ void CMainDlg::OnComputeGivenStoreHash()
 				PR_MDB_PROVIDER);
 			if (lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag)) lpProviderUID = &lpProp->Value.bin;
 
-			MAPIUID emsmdbUID = {0};
+			MAPIUID emsmdbUID = { 0 };
 			LPPROFSECT lpProfSect = NULL;
-			bool fPublicExchangeStore  = false;
+			bool fPublicExchangeStore = false;
 			bool fPrivateExchangeStore = false;
 			if (lpProviderUID)
 			{
-				fPublicExchangeStore  = FExchangePublicStore((LPMAPIUID)lpProviderUID->lpb);
+				fPublicExchangeStore = FExchangePublicStore((LPMAPIUID)lpProviderUID->lpb);
 				fPrivateExchangeStore = FExchangePrivateStore((LPMAPIUID)lpProviderUID->lpb);
 			}
 			bool fCached = false;
@@ -1933,8 +1932,8 @@ void CMainDlg::OnComputeGivenStoreHash()
 				{
 					if (fIsSet(DBGGeneric))
 					{
-						LPTSTR szGUID = GUIDToString((LPCGUID) &emsmdbUID);
-						DebugPrint(DBGGeneric,_T("CMainDlg::OnComputeGivenStoreHash, emsmdbUID from PR_EMSMDB_SECTION_UID = %s\n"),szGUID);
+						LPTSTR szGUID = GUIDToString((LPCGUID)&emsmdbUID);
+						DebugPrint(DBGGeneric, _T("CMainDlg::OnComputeGivenStoreHash, emsmdbUID from PR_EMSMDB_SECTION_UID = %s\n"), szGUID);
 						delete[] szGUID;
 					}
 					WC_MAPI(lpMAPISession->OpenProfileSection(&emsmdbUID, NULL, 0, &lpProfSect));
@@ -1963,9 +1962,9 @@ void CMainDlg::OnComputeGivenStoreHash()
 						fCached = ((lpConfigProp->Value.l & CONFIG_OST_CACHE_PUBLIC) == CONFIG_OST_CACHE_PUBLIC);
 					}
 				}
-				DebugPrint(DBGGeneric,_T("CMainDlg::OnComputeGivenStoreHash, fPrivateExchangeStore = %d\n"),fPrivateExchangeStore);
-				DebugPrint(DBGGeneric,_T("CMainDlg::OnComputeGivenStoreHash, fPublicExchangeStore = %d\n"),fPublicExchangeStore);
-				DebugPrint(DBGGeneric,_T("CMainDlg::OnComputeGivenStoreHash, fCached = %d\n"),fCached);
+				DebugPrint(DBGGeneric, _T("CMainDlg::OnComputeGivenStoreHash, fPrivateExchangeStore = %d\n"), fPrivateExchangeStore);
+				DebugPrint(DBGGeneric, _T("CMainDlg::OnComputeGivenStoreHash, fPublicExchangeStore = %d\n"), fPublicExchangeStore);
+				DebugPrint(DBGGeneric, _T("CMainDlg::OnComputeGivenStoreHash, fCached = %d\n"), fCached);
 
 				if (fCached)
 				{
@@ -1981,12 +1980,12 @@ void CMainDlg::OnComputeGivenStoreHash()
 						if (lpPathPropW && lpPathPropW->Value.lpszW)
 						{
 							wzPath = lpPathPropW->Value.lpszW;
-							DebugPrint(DBGGeneric,_T("CMainDlg::OnComputeGivenStoreHash, PR_PROFILE_OFFLINE_STORE_PATH_W = %ws\n"),wzPath);
+							DebugPrint(DBGGeneric, _T("CMainDlg::OnComputeGivenStoreHash, PR_PROFILE_OFFLINE_STORE_PATH_W = %ws\n"), wzPath);
 						}
 						else if (lpPathPropA && lpPathPropA->Value.lpszA)
 						{
 							szPath = lpPathPropA->Value.lpszA;
-							DebugPrint(DBGGeneric,_T("CMainDlg::OnComputeGivenStoreHash, PR_PROFILE_OFFLINE_STORE_PATH_A = %hs\n"),szPath);
+							DebugPrint(DBGGeneric, _T("CMainDlg::OnComputeGivenStoreHash, PR_PROFILE_OFFLINE_STORE_PATH_A = %hs\n"), szPath);
 						}
 					}
 					// If this is an Exchange store with an OST path, it's an OST, so we get the mapping signature
@@ -2008,24 +2007,24 @@ void CMainDlg::OnComputeGivenStoreHash()
 			CString szHash;
 			if (dwSigHash)
 			{
-				szHash.FormatMessage(IDS_STOREHASHDOUBLEVAL,dwEIDHash,dwSigHash);
+				szHash.FormatMessage(IDS_STOREHASHDOUBLEVAL, dwEIDHash, dwSigHash);
 			}
 			else
 			{
-				szHash.FormatMessage(IDS_STOREHASHVAL,dwEIDHash);
+				szHash.FormatMessage(IDS_STOREHASHVAL, dwEIDHash);
 			}
-			DebugPrint(DBGGeneric,_T("CMainDlg::OnComputeGivenStoreHash, Entry ID hash = 0x%08X\n"), dwEIDHash);
+			DebugPrint(DBGGeneric, _T("CMainDlg::OnComputeGivenStoreHash, Entry ID hash = 0x%08X\n"), dwEIDHash);
 			if (dwSigHash)
-				DebugPrint(DBGGeneric,_T("CMainDlg::OnComputeGivenStoreHash, Mapping Signature hash = 0x%08X\n"), dwSigHash);
+				DebugPrint(DBGGeneric, _T("CMainDlg::OnComputeGivenStoreHash, Mapping Signature hash = 0x%08X\n"), dwSigHash);
 
 			CEditor Result(
 				this,
 				IDS_STOREHASH,
 				NULL,
-				(ULONG) 0,
+				(ULONG)0,
 				CEDITOR_BUTTON_OK);
 			Result.SetPromptPostFix(szHash);
-			(void) Result.DisplayDialog();
+			(void)Result.DisplayDialog();
 
 			MAPIFreeBuffer(lpMappingSig);
 			MAPIFreeBuffer(lpPathPropA);
@@ -2043,7 +2042,7 @@ void CMainDlg::HandleAddInMenuSingle(
 {
 	if (lpParams)
 	{
-		lpParams->lpMDB = (LPMDB) lpMAPIProp;
+		lpParams->lpMDB = (LPMDB)lpMAPIProp;
 	}
 
 	InvokeAddInMenu(lpParams);
