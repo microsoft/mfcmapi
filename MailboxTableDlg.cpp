@@ -21,28 +21,28 @@ static TCHAR* CLASS = _T("CMailboxTableDlg");
 // CMailboxTableDlg dialog
 
 CMailboxTableDlg::CMailboxTableDlg(
-								   _In_ CParentWnd* pParentWnd,
-								   _In_ CMapiObjects* lpMapiObjects,
-								   _In_z_ LPCTSTR lpszServerName,
-								   _In_ LPMAPITABLE lpMAPITable
-								   ):
-CContentsTableDlg(
-				  pParentWnd,
-				  lpMapiObjects,
-				  IDS_MAILBOXTABLE,
-				  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
-				  lpMAPITable,
-				  (LPSPropTagArray) &sptMBXCols,
-				  NUMMBXCOLUMNS,
-				  MBXColumns,
-				  IDR_MENU_MAILBOX_TABLE_POPUP,
-				  MENU_CONTEXT_MAILBOX_TABLE
-				  )
+	_In_ CParentWnd* pParentWnd,
+	_In_ CMapiObjects* lpMapiObjects,
+	_In_z_ LPCTSTR lpszServerName,
+	_In_ LPMAPITABLE lpMAPITable
+	) :
+	CContentsTableDlg(
+	pParentWnd,
+	lpMapiObjects,
+	IDS_MAILBOXTABLE,
+	mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+	lpMAPITable,
+	(LPSPropTagArray)&sptMBXCols,
+	NUMMBXCOLUMNS,
+	MBXColumns,
+	IDR_MENU_MAILBOX_TABLE_POPUP,
+	MENU_CONTEXT_MAILBOX_TABLE
+	)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	HRESULT hRes = S_OK;
 
-	EC_H(CopyString(&m_lpszServerName,lpszServerName,NULL));
+	EC_H(CopyString(&m_lpszServerName, lpszServerName, NULL));
 
 	CreateDialogAndMenu(IDR_MENU_MAILBOX_TABLE);
 } // CMailboxTableDlg::CMailboxTableDlg
@@ -64,7 +64,7 @@ void CMailboxTableDlg::OnInitMenu(_In_ CMenu* pMenu)
 		if (m_lpContentsTableListCtrl)
 		{
 			int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
-			pMenu->EnableMenuItem(ID_OPENWITHFLAGS,DIMMSOK(iNumSel));
+			pMenu->EnableMenuItem(ID_OPENWITHFLAGS, DIMMSOK(iNumSel));
 		}
 	}
 	CContentsTableDlg::OnInitMenu(pMenu);
@@ -72,7 +72,7 @@ void CMailboxTableDlg::OnInitMenu(_In_ CMenu* pMenu)
 
 void CMailboxTableDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 {
-	DebugPrintEx(DBGCreateDialog,CLASS,_T("CreateDialogAndMenu"),_T("id = 0x%X\n"),nIDMenuResource);
+	DebugPrintEx(DBGCreateDialog, CLASS, _T("CreateDialogAndMenu"), _T("id = 0x%X\n"), nIDMenuResource);
 	CContentsTableDlg::CreateDialogAndMenu(nIDMenuResource);
 
 	UpdateMenuString(
@@ -97,7 +97,7 @@ void CMailboxTableDlg::DisplayItem(ULONG ulFlags)
 	}
 	LPMDB lpSourceMDB = NULL; // do not release
 
-	lpSourceMDB = lpMDB?lpMDB:lpGUIDMDB;
+	lpSourceMDB = lpMDB ? lpMDB : lpGUIDMDB;
 
 	if (lpSourceMDB)
 	{
@@ -121,12 +121,13 @@ void CMailboxTableDlg::DisplayItem(ULONG ulFlags)
 						m_lpszServerName,
 						szMailboxDN,
 						ulFlags,
+						false,
 						&lpNewMDB));
 
 					if (lpNewMDB)
 					{
 						EC_H(DisplayObject(
-							(LPMAPIPROP) lpNewMDB,
+							(LPMAPIPROP)lpNewMDB,
 							NULL,
 							otStore,
 							this));
@@ -135,8 +136,7 @@ void CMailboxTableDlg::DisplayItem(ULONG ulFlags)
 					}
 				}
 			}
-		}
-		while (iItem != -1);
+		} while (iItem != -1);
 
 	}
 	if (lpGUIDMDB) lpGUIDMDB->Release();
@@ -156,10 +156,10 @@ void CMailboxTableDlg::OnOpenWithFlags()
 		IDS_OPENWITHFLAGS,
 		IDS_OPENWITHFLAGSPROMPT,
 		1,
-		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-	MyPrompt.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS),true));
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+	MyPrompt.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
 	MyPrompt.InitPane(0, CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, NULL, false));
-	MyPrompt.SetHex(0,OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP);
+	MyPrompt.SetHex(0, OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP);
 	WC_H(MyPrompt.DisplayDialog());
 	if (S_OK == hRes)
 	{
@@ -188,19 +188,19 @@ void CMailboxTableDlg::OnCreatePropertyStringRestriction()
 			IDS_SEARCHCRITERIA,
 			IDS_MBSEARCHCRITERIAPROMPT,
 			2,
-			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-		MyData.SetPromptPostFix(AllFlagsToString(flagFuzzyLevel,true));
+			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+		MyData.SetPromptPostFix(AllFlagsToString(flagFuzzyLevel, true));
 
 		MyData.InitPane(0, CreateSingleLinePane(IDS_NAME, NULL, false));
 		MyData.InitPane(1, CreateSingleLinePane(IDS_ULFUZZYLEVEL, NULL, false));
-		MyData.SetHex(1,FL_IGNORECASE|FL_PREFIX);
+		MyData.SetHex(1, FL_IGNORECASE | FL_PREFIX);
 
 		WC_H(MyData.DisplayDialog());
 		if (S_OK != hRes) return;
 
 		// Allocate and create our SRestriction
 		EC_H(CreatePropertyStringRestriction(
-			CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(),PT_TSTRING),
+			CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_TSTRING),
 			MyData.GetString(0),
 			MyData.GetHex(1),
 			NULL,
