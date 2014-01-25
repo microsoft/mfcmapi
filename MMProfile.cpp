@@ -94,7 +94,7 @@ void DoProfile(_In_ MYOPTIONS ProgOpts)
 		(void)UnicodeToAnsi(ProgOpts.lpszProfile, &szProfileA);
 		if (szProfileA)
 		{
-			ExportProfile(szProfileA, ProgOpts.lpszOutput);
+			ExportProfile(szProfileA, ProgOpts.lpszProfileSection, ProgOpts.bByteSwapped, ProgOpts.lpszOutput);
 		}
 
 		delete[] szProfileA;

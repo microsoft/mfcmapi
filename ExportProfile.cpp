@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "MAPIProfileFunctions.h"
 #include "MAPIFunctions.h"
+#include "InterpretProp2.h"
 
 void ExportProfileSection(FILE* fProfile, LPPROFSECT lpSect)
 {
@@ -138,11 +139,15 @@ void ExportProfileService(FILE* fProfile, int iRow, LPSERVICEADMIN lpServiceAdmi
 	OutputToFile(fProfile, _T("</service>\n"));
 }
 
-void ExportProfile(LPCSTR szProfile, LPWSTR szFileName)
+void ExportProfile(_In_z_ LPCSTR szProfile, _In_z_ LPWSTR szProfileSection, bool bByteSwapped, _In_z_ LPWSTR szFileName)
 {
 	if (!szProfile) return;
 
 	DebugPrint(DBGGeneric, _T("ExportProfile: Saving profile \"%hs\" to \"%ws\"\n"), szProfile, szFileName);
+	if (szProfileSection)
+	{
+		DebugPrint(DBGGeneric, _T("ExportProfile: Restricting to \"%ws\"\n"), szProfileSection);
+	}
 
 	HRESULT hRes = S_OK;
 	LPPROFADMIN lpProfAdmin = NULL;
@@ -173,26 +178,50 @@ void ExportProfile(LPCSTR szProfile, LPWSTR szFileName)
 #pragma warning(pop)
 		if (lpServiceAdmin)
 		{
-			LPMAPITABLE lpServiceTable = NULL;
-
-			EC_MAPI(lpServiceAdmin->GetMsgServiceTable(
-				0, // fMapiUnicode is not supported
-				&lpServiceTable));
-
-			if (lpServiceTable)
+			if (szProfileSection)
 			{
-				LPSRowSet lpRowSet = NULL;
-				EC_MAPI(HrQueryAllRows(lpServiceTable, NULL, NULL, NULL, 0, &lpRowSet));
-				if (lpRowSet && lpRowSet->cRows >= 1)
-				{
-					for (ULONG i = 0; i < lpRowSet->cRows; i++)
-					{
-						ExportProfileService(fProfile, i, lpServiceAdmin, &lpRowSet->aRow[i]);
-					}
-				}
+				LPCGUID lpGuid = GUIDNameToGUIDW(szProfileSection, bByteSwapped);
 
-				FreeProws(lpRowSet);
-				lpServiceTable->Release();
+				if (lpGuid)
+				{
+					LPPROFSECT lpSect = NULL;
+					SBinary sBin = { 0 };
+					sBin.cb = sizeof(GUID);
+					sBin.lpb = (LPBYTE)lpGuid;
+
+					EC_H(OpenProfileSection(
+						lpServiceAdmin,
+						&sBin,
+						&lpSect));
+
+					ExportProfileSection(fProfile, lpSect);
+					delete[] lpGuid;
+				}
+			}
+			else
+			{
+				LPMAPITABLE lpServiceTable = NULL;
+
+				EC_MAPI(lpServiceAdmin->GetMsgServiceTable(
+					0, // fMapiUnicode is not supported
+					&lpServiceTable));
+
+				if (lpServiceTable)
+				{
+					LPSRowSet lpRowSet = NULL;
+					EC_MAPI(HrQueryAllRows(lpServiceTable, NULL, NULL, NULL, 0, &lpRowSet));
+					if (lpRowSet && lpRowSet->cRows >= 1)
+					{
+						ULONG i = 0;
+						for (i = 0; i < lpRowSet->cRows; i++)
+						{
+							ExportProfileService(fProfile, i, lpServiceAdmin, &lpRowSet->aRow[i]);
+						}
+					}
+
+					FreeProws(lpRowSet);
+					lpServiceTable->Release();
+				}
 			}
 			lpServiceAdmin->Release();
 		}

@@ -653,7 +653,7 @@ void CProfileListDlg::OnExportProfile()
 
 		if (iDlgRet == IDOK)
 		{
-			ExportProfile(lpListData->data.Contents.szProfileDisplayName, dlgFilePicker.GetFileName());
+			ExportProfile(lpListData->data.Contents.szProfileDisplayName, NULL, false, dlgFilePicker.GetFileName());
 		}
 	}
 }

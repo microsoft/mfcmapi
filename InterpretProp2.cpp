@@ -379,12 +379,12 @@ _Check_return_ ULONG PropTypeNameToPropTypeW(_In_z_ LPCWSTR lpszPropType)
 
 _Check_return_ LPTSTR GUIDToStringAndName(_In_opt_ LPCGUID lpGUID)
 {
-	HRESULT	hRes = S_OK;
-	ULONG	ulCur = 0;
-	LPCWSTR	szGUIDName = NULL;
-	size_t	cchGUIDName = NULL;
-	size_t	cchGUID = NULL;
-	WCHAR	szUnknown[13]; // The length of IDS_UNKNOWNGUID
+	HRESULT hRes = S_OK;
+	ULONG ulCur = 0;
+	LPCWSTR szGUIDName = NULL;
+	size_t cchGUIDName = NULL;
+	size_t cchGUID = NULL;
+	WCHAR szUnknown[13]; // The length of IDS_UNKNOWNGUID
 
 	if (lpGUID && ulPropGuidArray && PropGuidArray)
 	{
@@ -425,38 +425,99 @@ _Check_return_ LPTSTR GUIDToStringAndName(_In_opt_ LPCGUID lpGUID)
 	return szBothGuid;
 } // GUIDToStringAndName
 
-void GUIDNameToGUID(_In_z_ LPCTSTR szGUID, _Deref_out_opt_ LPCGUID* lpGUID)
+LPCGUID GUIDNameToGUIDInt(_In_z_ LPCTSTR szGUID, bool bByteSwapped)
 {
-	if (!szGUID || !lpGUID) return;
-
-	ULONG ulCur = 0;
-
-	*lpGUID = NULL;
-
-	if (!ulPropGuidArray || !PropGuidArray) return;
-
-#ifdef UNICODE
-	LPCWSTR szGUIDW = szGUID;
-#else
 	HRESULT hRes = S_OK;
-	LPWSTR szGUIDW = NULL;
-	EC_H(AnsiToUnicode(szGUID,&szGUIDW));
-	if (SUCCEEDED(hRes))
+	LPGUID lpGuidRet = NULL;
+	LPCGUID lpGUID = NULL;
+	GUID guid = { 0 };
+
+	// Try the GUID like PS_* first
+	if (ulPropGuidArray && PropGuidArray)
 	{
-#endif
-		for (ulCur = 0 ; ulCur < ulPropGuidArray ; ulCur++)
+		ULONG ulCur = 0;
+#ifdef UNICODE
+		LPCWSTR szGUIDW = szGUID;
+#else
+		LPWSTR szGUIDW = NULL;
+		EC_H(AnsiToUnicode(szGUID, &szGUIDW));
+		if (SUCCEEDED(hRes))
 		{
-			if (0 == lstrcmpiW(szGUIDW,PropGuidArray[ulCur].lpszName))
-			{
-				*lpGUID = PropGuidArray[ulCur].lpGuid;
-				break;
-			}
-		}
-#ifndef UNICODE
-	}
-	delete[] szGUIDW;
 #endif
-} // GUIDNameToGUID
+			for (ulCur = 0; ulCur < ulPropGuidArray; ulCur++)
+			{
+				if (0 == lstrcmpiW(szGUIDW, PropGuidArray[ulCur].lpszName))
+				{
+					lpGUID = PropGuidArray[ulCur].lpGuid;
+					break;
+				}
+			}
+#ifndef UNICODE
+		}
+		delete[] szGUIDW;
+#endif
+	}
+
+	if (!lpGUID) // no match - try it like a guid {}
+	{
+		hRes = S_OK;
+		WC_H(StringToGUID(szGUID, bByteSwapped, &guid));
+
+		if (SUCCEEDED(hRes))
+		{
+			lpGUID = &guid;
+		}
+	}
+
+	if (lpGUID)
+	{
+		lpGuidRet = new GUID;
+		if (lpGuidRet)
+		{
+			memcpy(lpGuidRet, lpGUID, sizeof(GUID));
+		}
+	}
+
+	return lpGuidRet;
+}
+
+LPCGUID GUIDNameToGUIDW(_In_z_ LPCWSTR szGUID, bool bByteSwapped)
+{
+#ifdef UNICODE
+	return GUIDNameToGUIDInt(szGUID, bByteSwapped);
+#else
+	LPCGUID lpGUID = NULL;
+	LPSTR szGUIDA = NULL;
+	(void)UnicodeToAnsi(szGUID, &szGUIDA);
+	if (szGUIDA)
+	{
+		lpGUID = GUIDNameToGUIDInt(szGUIDA, bByteSwapped);
+	}
+
+	delete[] szGUIDA;
+
+	return lpGUID;
+#endif
+}
+
+LPCGUID GUIDNameToGUIDA(_In_z_ LPCSTR szGUID, bool bByteSwapped)
+{
+#ifdef UNICODE
+	LPCGUID lpGUID = NULL;
+	LPWSTR szGUIDW = NULL;
+	(void)AnsiToUnicode(szGUID, &szGUIDW);
+	if (szGUIDW)
+	{
+		lpGUID = GUIDNameToGUIDInt(szGUIDW, bByteSwapped);
+	}
+
+	delete[] szGUIDW;
+
+	return lpGUID;
+#else
+	return GUIDNameToGUIDInt(szGUID, bByteSwapped);
+#endif
+}
 
 // Allocates and returns string built from NameIDArray
 // Allocated with new, clean up with delete[]
