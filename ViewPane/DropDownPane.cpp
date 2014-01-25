@@ -266,40 +266,31 @@ _Check_return_ bool DropDownPane::GetSelectedGUID(bool bByteSwapped, _In_ LPGUID
 {
 	if (!lpSelectedGUID) return NULL;
 
-	LPCGUID lpGUID = NULL;
 	int iCurSel = GetDropDownSelection();
 	if (iCurSel != CB_ERR)
 	{
-		lpGUID = PropGuidArray[iCurSel].lpGuid;
+		memcpy(lpSelectedGUID, PropGuidArray[iCurSel].lpGuid, sizeof(GUID));
+		return true;
 	}
 	else
 	{
 		// no match - need to do a lookup
 		CString szText;
-		GUID guid = {0};
-		szText = GetDropStringUseControl();
-		if (szText.IsEmpty()) szText = m_lpszSelectionString;
-
-		// try the GUID like PS_* first
-		GUIDNameToGUID((LPCTSTR) szText, &lpGUID);
-		if (!lpGUID) // no match - try it like a guid {}
+		if (m_bInitialized)
 		{
-			HRESULT hRes = S_OK;
-			WC_H(StringToGUID((LPCTSTR) szText, bByteSwapped, &guid));
-
-			if (SUCCEEDED(hRes))
-			{
-				lpGUID = &guid;
-			}
+			szText = GetDropStringUseControl();
 		}
-	}
 
-	if (lpGUID)
-	{
-		memcpy(lpSelectedGUID,lpGUID,sizeof(GUID));
+		if (szText.IsEmpty())
+		{
+			szText = m_lpszSelectionString;
+		}
+
+		LPCGUID lpGUID = GUIDNameToGUID(szText, bByteSwapped);
+		memcpy(lpSelectedGUID, lpGUID, sizeof(GUID));
+		delete[] lpGUID;
 		return true;
 	}
-	return false;
 }
 
 void DropDownPane::SetDropDownSelection(_In_opt_z_ LPCTSTR szText)

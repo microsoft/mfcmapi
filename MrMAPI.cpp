@@ -112,12 +112,14 @@ enum __CommandLineSwitch
 	switchChildFolders,       // '-chi'
 	switchFid,                // '-fi'
 	switchMid,                // '-mid'
-	switchFlag,               // '-flag'
-	switchRecent,             // '-recent'
-	switchStore,              // '-store'
-	switchVersion,            // '-version'
-	switchSize,               // '-size'
-	switchPST,                // ' -pst'
+	switchFlag,               // '-fl'
+	switchRecent,             // '-re'
+	switchStore,              // '-st'
+	switchVersion,            // '-vers'
+	switchSize,               // '-si'
+	switchPST,                // '-pst'
+	switchProfileSection,     // '-profiles'
+	switchByteSwapped,        // '-b'
 };
 
 struct COMMANDLINE_SWITCH
@@ -176,6 +178,8 @@ COMMANDLINE_SWITCH g_Switches[] =
 	{switchVersion,            "Version"},
 	{switchSize,               "Size"},
 	{switchPST,                "PST"},
+	{switchProfileSection,     "ProfileSection"},
+	{switchByteSwapped,        "ByteSwapped"},
 // If we want to add aliases for any switches, add them here
 	{switchHelp,               "Help"},
 };
@@ -245,8 +249,8 @@ void DisplayUsage(BOOL bFull)
 		g_Switches[switchAddressBook].szSwitch,g_Switches[switchUnicode].szSwitch,g_Switches[switchCharset].szSwitch);
 	printf("   MrMAPI -%s -%s <path to input file>\n",
 		g_Switches[switchPST].szSwitch,g_Switches[switchInput].szSwitch);
-	printf("   MrMAPI -%s [<profile> -%s <output file>]\n",
-		g_Switches[switchProfile].szSwitch, g_Switches[switchOutput].szSwitch);
+	printf("   MrMAPI -%s [<profile> [-%s <profilesection> [-%s]] -%s <output file>]\n",
+		g_Switches[switchProfile].szSwitch, g_Switches[switchProfileSection].szSwitch, g_Switches[switchByteSwapped].szSwitch, g_Switches[switchOutput].szSwitch);
 
 	if (bFull)
 	{
@@ -377,7 +381,9 @@ void DisplayUsage(BOOL bFull)
 		printf("   Profiles\n");
 		printf("   -Pr  (or -%s) Output list of profiles\n", g_Switches[switchProfile].szSwitch);
 		printf("           If a profile is specified, exports that profile.\n");
-		printf("   -O   (or -%s) Indicates the output file profile export.\n", g_Switches[switchOutput].szSwitch);
+		printf("   -ProfileSection If specified, output specific profile section.\n");
+		printf("   -B   (or -%s) If specified, profile section guid is byte swapped.\n", g_Switches[switchByteSwapped].szSwitch);
+		printf("   -O   (or -%s) Indicates the output file for profile export.\n", g_Switches[switchOutput].szSwitch);
 		printf("           Required if a profile is specified.\n");
 		printf("\n");
 		printf("   Universal Options:\n");
@@ -517,6 +523,8 @@ OptParser g_Parsers[] =
 	{switchSize, cmdmodeFolderSize, 0, 0, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDFOLDER},
 	{switchPST, cmdmodePST, 0, 0, OPT_NEEDINPUTFILE},
 	{switchVersion, cmdmodeUnknown, 1, 1, 0},
+	{switchProfileSection, cmdmodeProfile, 1, 1, OPT_PROFILE | OPT_NEEDMAPIINIT | OPT_INITMFC},
+	{switchByteSwapped, cmdmodeProfile, 0, 0, OPT_PROFILE | OPT_NEEDMAPIINIT | OPT_INITMFC },
 	{switchNoSwitch, cmdmodeUnknown, 0, 0, 0},
 };
 
@@ -636,8 +644,19 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 			i++;
 			break;
 		case switchProfile:
-			EC_H(AnsiToUnicode(argv[i+1],&pRunOpts->lpszProfile));
+			// If we have a next argument and it's not an option, parse it as a profile name
+			if (i + 1 < argc && switchNoSwitch == ParseArgument(argv[i + 1]))
+			{
+				EC_H(AnsiToUnicode(argv[i + 1], &pRunOpts->lpszProfile));
+				i++;
+			}
+			break;
+		case switchProfileSection:
+			EC_H(AnsiToUnicode(argv[i + 1], &pRunOpts->lpszProfileSection));
 			i++;
+			break;
+		case switchByteSwapped:
+			pRunOpts->bByteSwapped = true;
 			break;
 		case switchVersion:
 			EC_H(AnsiToUnicode(argv[i+1],&pRunOpts->lpszVersion));
@@ -844,6 +863,8 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 		break;
 	case cmdmodeProfile:
 		if (pRunOpts->lpszProfile && !pRunOpts->lpszOutput) return false;
+		if (!pRunOpts->lpszProfile && pRunOpts->lpszOutput) return false;
+		if (pRunOpts->lpszProfileSection && !pRunOpts->lpszProfile) return false;
 		break;
 	default:
 		break;

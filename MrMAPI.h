@@ -65,6 +65,7 @@ struct MYOPTIONS
 	LPWSTR lpszMid;
 	LPWSTR lpszFlagName;
 	LPWSTR lpszVersion;
+	LPWSTR lpszProfileSection;
 	ULONG ulStore;
 	ULONG ulFolder;
 	ULONG ulMAPIMIMEFlags;
@@ -74,6 +75,7 @@ struct MYOPTIONS
 	ULONG ulCodePage;
 	ULONG ulFlagValue;
 	ULONG ulCount;
+	bool bByteSwapped;
 	CHARSETTYPE cSetType;
 	CSETAPPLYTYPE cSetApplyType;
 	LPMAPISESSION lpMAPISession;

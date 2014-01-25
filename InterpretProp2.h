@@ -33,7 +33,13 @@ _Check_return_ ULONG PropTypeNameToPropTypeA(_In_z_ LPCSTR lpszPropType);
 #endif
 
 _Check_return_ LPTSTR GUIDToStringAndName(_In_opt_ LPCGUID lpGUID);
-void GUIDNameToGUID(_In_z_ LPCTSTR szGUID, _Deref_out_opt_ LPCGUID* lpGUID);
+LPCGUID GUIDNameToGUIDW(_In_z_ LPCWSTR szGUID, bool bByteSwapped);
+LPCGUID GUIDNameToGUIDA(_In_z_ LPCSTR szGUID, bool bByteSwapped);
+#ifdef UNICODE
+#define GUIDNameToGUID GUIDNameToGUIDW
+#else
+#define GUIDNameToGUID GUIDNameToGUIDA
+#endif
 
 _Check_return_ LPWSTR NameIDToPropName(_In_ LPMAPINAMEID lpNameID);
 
