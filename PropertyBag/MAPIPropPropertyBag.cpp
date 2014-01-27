@@ -122,6 +122,20 @@ _Check_return_ HRESULT MAPIPropPropertyBag::GetProp(
 
 	HRESULT hRes = S_OK;
 	WC_MAPI(HrGetOneProp(m_lpProp, ulPropTag, lppProp));
+
+	// Special case for profile sections and row properties - we may have a property which was in our row that isn't available on the object
+	// In that case, we'll get MAPI_E_NOT_FOUND, but the property will be present in m_lpListData->lpSourceProps
+	// So we fetch it from there instead
+	// The caller will assume the memory was allocated from them, so copy before handing it back
+	if (MAPI_E_NOT_FOUND == hRes && m_lpListData)
+	{
+		LPSPropValue lpProp = PpropFindProp(m_lpListData->lpSourceProps, m_lpListData->cSourceProps, ulPropTag);
+		if (lpProp)
+		{
+			hRes = S_OK;
+			WC_MAPI(ScDupPropset(1, lpProp, MAPIAllocateBuffer, lppProp));
+		}
+	}
 	return hRes;
 }
 
