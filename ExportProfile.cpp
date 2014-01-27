@@ -6,7 +6,7 @@
 #include "MAPIFunctions.h"
 #include "InterpretProp2.h"
 
-void ExportProfileSection(FILE* fProfile, LPPROFSECT lpSect)
+void ExportProfileSection(FILE* fProfile, LPPROFSECT lpSect, LPSBinary lpSectBin)
 {
 	if (!fProfile || !lpSect) return;
 
@@ -24,7 +24,14 @@ void ExportProfileSection(FILE* fProfile, LPPROFSECT lpSect)
 	}
 	else if (lpAllProps)
 	{
-		OutputToFile(fProfile, _T("<properties listtype=\"section\">\n"));
+		LPTSTR szBin = NULL;
+		if (lpSectBin)
+		{
+			MyHexFromBin(lpSectBin->lpb, lpSectBin->cb, false, &szBin);
+		}
+		OutputToFilef(fProfile, _T("<properties listtype=\"profilesection\" profilesection=\"%s\">\n"), szBin);
+
+		delete[] szBin;
 
 		OutputPropertiesToFile(fProfile, cValues, lpAllProps, NULL, false);
 
@@ -61,7 +68,7 @@ void ExportProfileProvider(FILE* fProfile, int iRow, LPPROVIDERADMIN lpProviderA
 			&lpSect));
 		if (lpSect)
 		{
-			ExportProfileSection(fProfile, lpSect);
+			ExportProfileSection(fProfile, lpSect, &lpProviderUID->Value.bin);
 			lpSect->Release();
 		}
 	}
@@ -96,7 +103,7 @@ void ExportProfileService(FILE* fProfile, int iRow, LPSERVICEADMIN lpServiceAdmi
 			&lpSect));
 		if (lpSect)
 		{
-			ExportProfileSection(fProfile, lpSect);
+			ExportProfileSection(fProfile, lpSect, &lpServiceUID->Value.bin);
 			lpSect->Release();
 		}
 
@@ -194,7 +201,7 @@ void ExportProfile(_In_z_ LPCSTR szProfile, _In_z_ LPWSTR szProfileSection, bool
 						&sBin,
 						&lpSect));
 
-					ExportProfileSection(fProfile, lpSect);
+					ExportProfileSection(fProfile, lpSect, &sBin);
 					delete[] lpGuid;
 				}
 			}
