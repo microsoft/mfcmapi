@@ -1292,6 +1292,8 @@ void CSingleMAPIPropListCtrl::OnEditPropAsRestriction(ULONG ulPropTag)
 			WC_H(RefreshMAPIPropList());
 		}
 	}
+
+	m_lpPropBag->FreeBuffer(lpEditProp);
 } // CSingleMAPIPropListCtrl::OnEditPropAsRestriction
 
 void CSingleMAPIPropListCtrl::OnEditGivenProp(ULONG ulPropTag)
@@ -1385,8 +1387,11 @@ void CSingleMAPIPropListCtrl::OnEditGivenProp(ULONG ulPropTag)
 			// At this point, we're done with lpModProp - it was allocated off of lpSourceArray
 			// and freed when a new source array was allocated. Nothing to free here. Move along.
 		}
+
 	}
 	WC_H(RefreshMAPIPropList());
+
+	m_lpPropBag->FreeBuffer(lpEditProp);
 } // CSingleMAPIPropListCtrl::OnEditGivenProp
 
 // Display the selected property as a stream using CStreamEditor
@@ -1443,7 +1448,7 @@ void CSingleMAPIPropListCtrl::OnEditPropAsStream(ULONG ulType, bool bEditAsRTF)
 					ulInCodePage = lpProp[0].Value.l;
 				}
 
-				MAPIFreeBuffer(lpProp);
+				m_lpPropBag->FreeBuffer(lpProp);
 
 				CEditor MyPrompt2(
 					this,
@@ -1719,7 +1724,7 @@ void CSingleMAPIPropListCtrl::OnOpenProperty()
 	}
 	if (m_lpPropBag)
 	{
-		MAPIFreeBuffer(lpProp);
+		m_lpPropBag->FreeBuffer(lpProp);
 	}
 } // CSingleMAPIPropListCtrl::OnOpenProperty
 
