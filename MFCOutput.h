@@ -117,10 +117,8 @@ void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify, _
 #define TRACE_RELEASE(__class,__count)
 #endif
 
-void OutputXMLValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, _In_opt_z_ LPCTSTR szValue, int iIndent);
+void OutputXMLValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, _In_z_ LPTSTR szValue, bool bWrapCData, int iIndent);
 void OutputCDataOpen(ULONG ulDbgLvl, _In_opt_ FILE* fFile);
 void OutputCDataClose(ULONG ulDbgLvl, _In_opt_ FILE* fFile);
-void OutputXMLCDataValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, _In_z_ LPTSTR szValue, int iIndent);
 
-#define OutputXMLValueToFile(fFile, uidTag, szValue, iIndent)		OutputXMLValue(DBGNoDebug, fFile, uidTag, szValue, iIndent)
-#define OutputXMLCDataValueToFile(fFile, uidTag, szValue, iIndent)	OutputXMLCDataValue(DBGNoDebug, fFile, uidTag, szValue, iIndent)
+#define OutputXMLValueToFile(fFile, uidTag, szValue, bWrapCData, iIndent) OutputXMLValue(DBGNoDebug, fFile, uidTag, szValue, bWrapCData, iIndent)
