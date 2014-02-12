@@ -13,6 +13,7 @@
 #include "Editor.h"
 #include "MainDlg.h"
 #include "QSSpecialFolders.h"
+#include "MAPIABFunctions.h"
 
 LPMAPISESSION OpenSessionForQuickStart(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 {
@@ -64,8 +65,8 @@ HRESULT OpenABForQuickStart(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd, _Out_ LPAD
 	if (!lpMapiObjects) return MAPI_E_CALL_FAILED;
 
 	// ensure we have an AB
-	(void) OpenSessionForQuickStart(lpHostDlg, hwnd); // do not release
-	LPADRBOOK lpAdrBook =  lpMapiObjects->GetAddrBook(true); // do not release
+	(void)OpenSessionForQuickStart(lpHostDlg, hwnd); // do not release
+	LPADRBOOK lpAdrBook = lpMapiObjects->GetAddrBook(true); // do not release
 
 	if (lpAdrBook)
 	{
@@ -216,8 +217,8 @@ void OnQSDisplayNicknameCache(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 
 			if (lpTable)
 			{
-				SRestriction sRes = {0};
-				SPropValue sPV = {0};
+				SRestriction sRes = { 0 };
+				SPropValue sPV = { 0 };
 				sRes.rt = RES_PROPERTY;
 				sRes.res.resProperty.ulPropTag = PR_MESSAGE_CLASS;
 				sRes.res.resProperty.relop = RELOP_EQ;
@@ -238,7 +239,7 @@ void OnQSDisplayNicknameCache(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 						eidNUM_COLS,
 						PR_ENTRYID,
 					};
-					WC_MAPI(lpTable->SetColumns((LPSPropTagArray) &eidCols, TBL_BATCH));
+					WC_MAPI(lpTable->SetColumns((LPSPropTagArray)&eidCols, TBL_BATCH));
 
 					if (SUCCEEDED(hRes))
 					{
@@ -248,7 +249,7 @@ void OnQSDisplayNicknameCache(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 						if (lpRows && 1 == lpRows->cRows && PR_ENTRYID == lpRows->aRow[0].lpProps[eidPR_ENTRYID].ulPropTag)
 						{
 							LPMESSAGE lpMSG = NULL;
-							WC_H(CallOpenEntry(lpMDB, NULL, NULL, NULL, &lpRows->aRow[0].lpProps[eidPR_ENTRYID].Value.bin, NULL, NULL, NULL, (LPUNKNOWN*) &lpMSG));
+							WC_H(CallOpenEntry(lpMDB, NULL, NULL, NULL, &lpRows->aRow[0].lpProps[eidPR_ENTRYID].Value.bin, NULL, NULL, NULL, (LPUNKNOWN*)&lpMSG));
 
 							if (SUCCEEDED(hRes) && lpMSG)
 							{
@@ -273,7 +274,7 @@ void OnQSDisplayNicknameCache(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 		lpMDB->Release();
 
 		// Display our dialog
-		if (szNicknames || lpsProp)
+		if (szNicknames && lpsProp)
 		{
 			CEditor MyResults(
 				lpHostDlg,
@@ -291,7 +292,7 @@ void OnQSDisplayNicknameCache(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 
 			if (lpsProp)
 			{
-				CountedTextPane* lpPane = (CountedTextPane*) MyResults.GetControl(1);
+				CountedTextPane* lpPane = (CountedTextPane*)MyResults.GetControl(1);
 				if (lpPane) lpPane->SetCount(lpsProp->Value.bin.cb);
 				MyResults.SetBinary(1, lpsProp->Value.bin.lpb, lpsProp->Value.bin.cb);
 			}
@@ -321,7 +322,7 @@ enum
 	qPR_MDB_PROVIDER,
 	qNUM_COLS
 };
-static const SizedSPropTagArray(qNUM_COLS,sptaQuota) =
+static const SizedSPropTagArray(qNUM_COLS, sptaQuota) =
 {
 	qNUM_COLS,
 	PR_STORE_SUPPORT_MASK,
@@ -368,7 +369,7 @@ void OnQSDisplayQuota(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 
 		// Get quota properties
 		WC_H_GETPROPS(lpMDB->GetProps(
-			(LPSPropTagArray) &sptaQuota,
+			(LPSPropTagArray)&sptaQuota,
 			fMapiUnicode,
 			&cProps,
 			&lpProps));
@@ -384,7 +385,7 @@ void OnQSDisplayQuota(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 				if (!szDisplayName[0])
 				{
 					int iRet = NULL;
-					WC_D(iRet,LoadStringW(GetModuleHandle(NULL),
+					WC_D(iRet, LoadStringW(GetModuleHandle(NULL),
 						IDS_NOTFOUND,
 						szNotFound,
 						_countof(szNotFound)));
@@ -424,7 +425,7 @@ void OnQSDisplayQuota(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 
 			if (lpProps[qPR_MDB_PROVIDER].ulPropTag == PR_MDB_PROVIDER)
 			{
-				szTmp.FormatMessage(IDS_QUOTAPROVIDER, (LPCTSTR) BinToHexString(&lpProps[qPR_MDB_PROVIDER].Value.bin, true));
+				szTmp.FormatMessage(IDS_QUOTAPROVIDER, (LPCTSTR)BinToHexString(&lpProps[qPR_MDB_PROVIDER].Value.bin, true));
 				szQuotaString += szTmp;
 			}
 
@@ -447,6 +448,103 @@ void OnQSDisplayQuota(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 
 	lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, _T(""));
 } // OnQSDisplayQuota
+
+void OnQSOpenUser(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
+{
+	HRESULT hRes = S_OK;
+
+	CMapiObjects* lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
+	if (!lpMapiObjects) return;
+
+	CParentWnd* lpParentWnd = lpHostDlg->GetParentWnd(); // do not release
+	if (!lpParentWnd) return;
+
+	LPADRBOOK lpAdrBook = NULL;
+	WC_H(OpenABForQuickStart(lpHostDlg, hwnd, &lpAdrBook));
+	if (SUCCEEDED(hRes) && lpAdrBook)
+	{
+		ULONG ulObjType = NULL;
+		LPMAILUSER lpMailUser = NULL;
+
+		EC_H(SelectUser(lpAdrBook, hwnd, &ulObjType, &lpMailUser));
+
+		if (SUCCEEDED(hRes) && lpMailUser)
+		{
+			EC_H(DisplayObject(
+				lpMailUser,
+				ulObjType,
+				otDefault,
+				lpHostDlg));
+		}
+
+		if (lpMailUser) lpMailUser->Release();
+	}
+
+	if (lpAdrBook) lpAdrBook->Release();
+}
+
+void OnQSLookupThumbail(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
+{
+	HRESULT hRes = S_OK;
+	LPSPropValue lpThumbnail = NULL;
+
+	CMapiObjects* lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
+	if (!lpMapiObjects) return;
+
+	CParentWnd* lpParentWnd = lpHostDlg->GetParentWnd(); // do not release
+	if (!lpParentWnd) return;
+
+	LPADRBOOK lpAdrBook = NULL;
+	WC_H(OpenABForQuickStart(lpHostDlg, hwnd, &lpAdrBook));
+	if (SUCCEEDED(hRes) && lpAdrBook)
+	{
+		ULONG ulObjType = NULL;
+		LPMAILUSER lpMailUser = NULL;
+
+		EC_H(SelectUser(lpAdrBook, hwnd, &ulObjType, &lpMailUser));
+
+		if (SUCCEEDED(hRes) && lpMailUser)
+		{
+			WC_H(GetLargeBinaryProp(lpMailUser, PR_EMS_AB_THUMBNAIL_PHOTO, &lpThumbnail));
+		}
+
+		if (lpMailUser) lpMailUser->Release();
+	}
+
+	bool bPhotoFound = SUCCEEDED(hRes) &&
+		lpThumbnail &&
+		PR_EMS_AB_THUMBNAIL_PHOTO == lpThumbnail->ulPropTag &&
+		lpThumbnail->Value.bin.cb != 0;
+
+	hRes = S_OK;
+	CEditor MyResults(
+		lpHostDlg,
+		IDS_QSTHUMBNAIL,
+		NULL,
+		bPhotoFound?2:1,
+		CEDITOR_BUTTON_OK);
+
+	if (lpThumbnail)
+	{
+		MyResults.InitPane(0, CreateCountedTextPane(IDS_HEX, true, IDS_CB));
+		MyResults.InitPane(1, CreateCollapsibleTextPane(IDS_ANSISTRING, true));
+
+		CountedTextPane* lpPane = (CountedTextPane*)MyResults.GetControl(0);
+		if (lpPane) lpPane->SetCount(lpThumbnail->Value.bin.cb);
+		MyResults.SetBinary(0, lpThumbnail->Value.bin.lpb, lpThumbnail->Value.bin.cb);
+
+		MyResults.SetStringA(1, (LPCSTR)lpThumbnail->Value.bin.lpb, lpThumbnail->Value.bin.cb + 1); // ansi string
+	}
+	else
+	{
+		MyResults.InitPane(0, CreateSingleLinePaneID(0, IDS_QSTHUMBNAILNOTFOUND, true));
+	}
+
+	WC_H(MyResults.DisplayDialog());
+
+	MAPIFreeBuffer(lpThumbnail);
+	if (lpAdrBook) lpAdrBook->Release();
+}
 
 bool HandleQuickStart(_In_ WORD wMenuSelect, _In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 {
@@ -478,6 +576,8 @@ bool HandleQuickStart(_In_ WORD wMenuSelect, _In_ CMainDlg* lpHostDlg, _In_ HWND
 	case ID_QSNICKNAME: OnQSDisplayNicknameCache(lpHostDlg, hwnd); return true;
 	case ID_QSQUOTA: OnQSDisplayQuota(lpHostDlg, hwnd); return true;
 	case ID_QSCHECKSPECIALFOLDERS: OnQSCheckSpecialFolders(lpHostDlg, hwnd); return true;
+	case ID_QSTHUMBNAIL: OnQSLookupThumbail(lpHostDlg, hwnd); return true;
+	case ID_QSOPENUSER: OnQSOpenUser(lpHostDlg, hwnd); return true;
 	}
 	return false;
 }

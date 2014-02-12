@@ -36,3 +36,5 @@ _Check_return_ HRESULT SearchContentsTableForName(
 	_In_z_ LPCTSTR szName,
 	ULONG PropTagToCompare,
 	_Deref_out_opt_ LPSPropValue *lppPropsFound);
+
+_Check_return_ HRESULT SelectUser(_In_ LPADRBOOK lpAdrBook, HWND hwnd, _Deref_out_opt_ ULONG* lpulObjType, _Deref_out_opt_ LPMAILUSER* lppMailUser);
