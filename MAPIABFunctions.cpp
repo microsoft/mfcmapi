@@ -6,14 +6,14 @@
 
 _Check_return_ HRESULT HrAllocAdrList(ULONG ulNumProps, _Deref_out_opt_ LPADRLIST* lpAdrList)
 {
-	if (!lpAdrList || ulNumProps > ULONG_MAX/sizeof(SPropValue)) return MAPI_E_INVALID_PARAMETER;
+	if (!lpAdrList || ulNumProps > ULONG_MAX / sizeof(SPropValue)) return MAPI_E_INVALID_PARAMETER;
 	HRESULT hRes = S_OK;
 	LPADRLIST lpLocalAdrList = NULL;
 
 	*lpAdrList = NULL;
 
 	// Allocate memory for new SRowSet structure.
-	EC_H(MAPIAllocateBuffer(CbNewSRowSet(1),(LPVOID*) &lpLocalAdrList));
+	EC_H(MAPIAllocateBuffer(CbNewSRowSet(1), (LPVOID*)&lpLocalAdrList));
 
 	if (lpLocalAdrList)
 	{
@@ -24,11 +24,11 @@ _Check_return_ HRESULT HrAllocAdrList(ULONG ulNumProps, _Deref_out_opt_ LPADRLIS
 		// recipient properties will be set.
 		EC_H(MAPIAllocateBuffer(
 			ulNumProps * sizeof(SPropValue),
-			(LPVOID*) &lpLocalAdrList->aEntries[0].rgPropVals));
+			(LPVOID*)&lpLocalAdrList->aEntries[0].rgPropVals));
 
 		// Zero out allocated memory.
 		if (lpLocalAdrList->aEntries[0].rgPropVals)
-			ZeroMemory(lpLocalAdrList->aEntries[0].rgPropVals,ulNumProps * sizeof(SPropValue));
+			ZeroMemory(lpLocalAdrList->aEntries[0].rgPropVals, ulNumProps * sizeof(SPropValue));
 		if (SUCCEEDED(hRes))
 		{
 			*lpAdrList = lpLocalAdrList;
@@ -43,12 +43,12 @@ _Check_return_ HRESULT HrAllocAdrList(ULONG ulNumProps, _Deref_out_opt_ LPADRLIS
 } // HrAllocAdrList
 
 _Check_return_ HRESULT AddOneOffAddress(
-										_In_ LPMAPISESSION lpMAPISession,
-										_In_ LPMESSAGE lpMessage,
-										_In_z_ LPCTSTR szDisplayName,
-										_In_z_ LPCTSTR szAddrType,
-										_In_z_ LPCTSTR szEmailAddress,
-										ULONG ulRecipientType)
+	_In_ LPMAPISESSION lpMAPISession,
+	_In_ LPMESSAGE lpMessage,
+	_In_z_ LPCTSTR szDisplayName,
+	_In_z_ LPCTSTR szAddrType,
+	_In_z_ LPCTSTR szEmailAddress,
+	ULONG ulRecipientType)
 {
 	HRESULT hRes = S_OK;
 	LPADRLIST lpAdrList = NULL; // ModifyRecips takes LPADRLIST
@@ -73,7 +73,7 @@ _Check_return_ HRESULT AddOneOffAddress(
 		NULL,
 		&lpAddrBook));
 
-	EC_MAPI(HrAllocAdrList(NUM_RECIP_PROPS,&lpAdrList));
+	EC_MAPI(HrAllocAdrList(NUM_RECIP_PROPS, &lpAdrList));
 
 	// Setup the One Time recipient by indicating how many recipients
 	// and how many properties will be set on each recipient.
@@ -85,13 +85,13 @@ _Check_return_ HRESULT AddOneOffAddress(
 
 		// Set the SPropValue members == the desired values.
 		lpAdrList->aEntries[0].rgPropVals[NAME].ulPropTag = PR_DISPLAY_NAME;
-		lpAdrList->aEntries[0].rgPropVals[NAME].Value.LPSZ = (LPTSTR) szDisplayName;
+		lpAdrList->aEntries[0].rgPropVals[NAME].Value.LPSZ = (LPTSTR)szDisplayName;
 
 		lpAdrList->aEntries[0].rgPropVals[ADDR].ulPropTag = PR_ADDRTYPE;
-		lpAdrList->aEntries[0].rgPropVals[ADDR].Value.LPSZ = (LPTSTR) szAddrType;
+		lpAdrList->aEntries[0].rgPropVals[ADDR].Value.LPSZ = (LPTSTR)szAddrType;
 
 		lpAdrList->aEntries[0].rgPropVals[EMAIL].ulPropTag = PR_EMAIL_ADDRESS;
-		lpAdrList->aEntries[0].rgPropVals[EMAIL].Value.LPSZ = (LPTSTR) szEmailAddress;
+		lpAdrList->aEntries[0].rgPropVals[EMAIL].Value.LPSZ = (LPTSTR)szEmailAddress;
 
 		lpAdrList->aEntries[0].rgPropVals[RECIP].ulPropTag = PR_RECIPIENT_TYPE;
 		lpAdrList->aEntries[0].rgPropVals[RECIP].Value.l = ulRecipientType;
@@ -100,13 +100,13 @@ _Check_return_ HRESULT AddOneOffAddress(
 
 		// Create the One-off address and get an EID for it.
 		EC_MAPI(lpAddrBook->CreateOneOff(
-			lpAdrList-> aEntries[0].rgPropVals[NAME].Value.LPSZ,
-			lpAdrList-> aEntries[0].rgPropVals[ADDR].Value.LPSZ,
-			lpAdrList-> aEntries[0].rgPropVals[EMAIL].Value.LPSZ,
+			lpAdrList->aEntries[0].rgPropVals[NAME].Value.LPSZ,
+			lpAdrList->aEntries[0].rgPropVals[ADDR].Value.LPSZ,
+			lpAdrList->aEntries[0].rgPropVals[EMAIL].Value.LPSZ,
 			fMapiUnicode,
 			&lpAdrList->aEntries[0].rgPropVals[EID].Value.bin.cb,
 			&lpEID));
-		lpAdrList->aEntries[0].rgPropVals[EID].Value.bin.lpb = (LPBYTE) lpEID;
+		lpAdrList->aEntries[0].rgPropVals[EID].Value.bin.lpb = (LPBYTE)lpEID;
 
 		EC_MAPI(lpAddrBook->ResolveName(
 			0L,
@@ -116,7 +116,7 @@ _Check_return_ HRESULT AddOneOffAddress(
 
 		// If everything goes right, add the new recipient to the message
 		// object passed into us.
-		EC_MAPI(lpMessage->ModifyRecipients(MODRECIP_ADD,lpAdrList));
+		EC_MAPI(lpMessage->ModifyRecipients(MODRECIP_ADD, lpAdrList));
 
 		EC_MAPI(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 	}
@@ -128,12 +128,12 @@ _Check_return_ HRESULT AddOneOffAddress(
 } // AddOneOffAddress
 
 _Check_return_ HRESULT AddRecipient(
-									_In_ LPMAPISESSION lpMAPISession,
-									_In_ LPMESSAGE lpMessage,
-									_In_z_ LPCTSTR szName,
-									ULONG ulRecipientType)
+	_In_ LPMAPISESSION lpMAPISession,
+	_In_ LPMESSAGE lpMessage,
+	_In_z_ LPCTSTR szName,
+	ULONG ulRecipientType)
 {
-	HRESULT			hRes	= S_OK;
+	HRESULT			hRes = S_OK;
 	LPADRLIST		lpAdrList = NULL; // ModifyRecips takes LPADRLIST
 	LPADRBOOK		lpAddrBook = NULL;
 
@@ -152,7 +152,7 @@ _Check_return_ HRESULT AddRecipient(
 		NULL,
 		&lpAddrBook));
 
-	EC_MAPI(HrAllocAdrList(NUM_RECIP_PROPS,&lpAdrList));
+	EC_MAPI(HrAllocAdrList(NUM_RECIP_PROPS, &lpAdrList));
 
 	if (lpAdrList)
 	{
@@ -163,7 +163,7 @@ _Check_return_ HRESULT AddRecipient(
 
 		// Set the SPropValue members == the desired values.
 		lpAdrList->aEntries[0].rgPropVals[NAME].ulPropTag = PR_DISPLAY_NAME;
-		lpAdrList->aEntries[0].rgPropVals[NAME].Value.LPSZ = (LPTSTR) szName;
+		lpAdrList->aEntries[0].rgPropVals[NAME].Value.LPSZ = (LPTSTR)szName;
 
 		lpAdrList->aEntries[0].rgPropVals[RECIP].ulPropTag = PR_RECIPIENT_TYPE;
 		lpAdrList->aEntries[0].rgPropVals[RECIP].Value.l = ulRecipientType;
@@ -176,7 +176,7 @@ _Check_return_ HRESULT AddRecipient(
 
 		// If everything goes right, add the new recipient to the message
 		// object passed into us.
-		EC_MAPI(lpMessage->ModifyRecipients(MODRECIP_ADD,lpAdrList));
+		EC_MAPI(lpMessage->ModifyRecipients(MODRECIP_ADD, lpAdrList));
 
 		EC_MAPI(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 	}
@@ -188,9 +188,9 @@ _Check_return_ HRESULT AddRecipient(
 
 // Same as CreatePropertyStringRestriction, but skips the existence part.
 _Check_return_ HRESULT CreateANRRestriction(ULONG ulPropTag,
-											_In_z_ LPCTSTR szString,
-											_In_opt_ LPVOID lpParent,
-											_Deref_out_opt_ LPSRestriction* lppRes)
+	_In_z_ LPCTSTR szString,
+	_In_opt_ LPVOID lpParent,
+	_Deref_out_opt_ LPSRestriction* lppRes)
 {
 	HRESULT hRes = S_OK;
 	LPSRestriction	lpRes = NULL;
@@ -249,15 +249,15 @@ _Check_return_ HRESULT CreateANRRestriction(ULONG ulPropTag,
 				lpAllocationParent));
 		}
 
-		DebugPrint(DBGGeneric,_T("CreateANRRestriction built restriction:\n"));
-		DebugPrintRestriction(DBGGeneric,lpRes,NULL);
+		DebugPrint(DBGGeneric, _T("CreateANRRestriction built restriction:\n"));
+		DebugPrintRestriction(DBGGeneric, lpRes, NULL);
 
 		*lppRes = lpRes;
 	}
 
 	if (hRes != S_OK)
 	{
-		DebugPrint(DBGGeneric,_T("Failed to create restriction\n"));
+		DebugPrint(DBGGeneric, _T("Failed to create restriction\n"));
 		MAPIFreeBuffer(lpRes);
 		*lppRes = NULL;
 	}
@@ -298,10 +298,10 @@ _Check_return_ HRESULT GetABContainerTable(_In_ LPADRBOOK lpAdrBook, _Deref_out_
 
 // Manually resolve a name in the address book and add it to the message
 _Check_return_ HRESULT ManualResolve(
-									 _In_ LPMAPISESSION lpMAPISession,
-									 _In_ LPMESSAGE lpMessage,
-									 _In_z_ LPCTSTR szName,
-									 ULONG PropTagToCompare)
+	_In_ LPMAPISESSION lpMAPISession,
+	_In_ LPMESSAGE lpMessage,
+	_In_z_ LPCTSTR szName,
+	ULONG PropTagToCompare)
 {
 	HRESULT			hRes = S_OK;
 	ULONG			ulObjType = 0;
@@ -320,7 +320,7 @@ _Check_return_ HRESULT ManualResolve(
 		abcNUM_COLS
 	};
 
-	static const SizedSPropTagArray(abcNUM_COLS,abcCols) =
+	static const SizedSPropTagArray(abcNUM_COLS, abcCols) =
 	{
 		abcNUM_COLS,
 		PR_ENTRYID,
@@ -340,7 +340,7 @@ _Check_return_ HRESULT ManualResolve(
 
 	if (!lpMAPISession) return MAPI_E_INVALID_PARAMETER;
 
-	DebugPrint(DBGGeneric,_T("ManualResolve: Asked to resolve \"%s\"\n"),szName);
+	DebugPrint(DBGGeneric, _T("ManualResolve: Asked to resolve \"%s\"\n"), szName);
 
 	EC_MAPI(lpMAPISession->OpenAddressBook(
 		NULL,
@@ -348,7 +348,7 @@ _Check_return_ HRESULT ManualResolve(
 		NULL,
 		&lpAdrBook));
 
-	EC_H(GetABContainerTable(lpAdrBook,&lpABContainerTable));
+	EC_H(GetABContainerTable(lpAdrBook, &lpABContainerTable));
 
 	if (lpABContainerTable)
 	{
@@ -370,8 +370,8 @@ _Check_return_ HRESULT ManualResolve(
 			// From this point forward, consider any error an error with the current address book container, so just continue and try the next one.
 			if (PR_ENTRYID == lpABRow->aRow->lpProps[abcPR_ENTRYID].ulPropTag)
 			{
-				DebugPrint(DBGGeneric,_T("ManualResolve: Searching this container\n"));
-				DebugPrintBinary(DBGGeneric,&lpABRow->aRow->lpProps[abcPR_ENTRYID].Value.bin);
+				DebugPrint(DBGGeneric, _T("ManualResolve: Searching this container\n"));
+				DebugPrintBinary(DBGGeneric, &lpABRow->aRow->lpProps[abcPR_ENTRYID].Value.bin);
 
 				if (lpABContainer) lpABContainer->Release();
 				lpABContainer = NULL;
@@ -388,7 +388,7 @@ _Check_return_ HRESULT ManualResolve(
 					(LPUNKNOWN*)&lpABContainer));
 				if (!lpABContainer) continue;
 
-				DebugPrint(DBGGeneric,_T("ManualResolve: Object opened as 0x%X\n"),ulObjType);
+				DebugPrint(DBGGeneric, _T("ManualResolve: Object opened as 0x%X\n"), ulObjType);
 
 				if (lpABContainer && ulObjType == MAPI_ABCONT)
 				{
@@ -397,7 +397,7 @@ _Check_return_ HRESULT ManualResolve(
 					WC_MAPI(lpABContainer->GetContentsTable(fMapiUnicode, &pTable));
 					if (!pTable)
 					{
-						DebugPrint(DBGGeneric,_T("ManualResolve: Container did not support contents table\n"));
+						DebugPrint(DBGGeneric, _T("ManualResolve: Container did not support contents table\n"));
 						if (MAPI_E_NO_SUPPORT == hRes) hRes = S_OK;
 						continue;
 					}
@@ -438,7 +438,7 @@ _Check_return_ HRESULT ManualResolve(
 
 					pProp = &pProps[abPR_ENTRYID];
 					pProp->ulPropTag = PR_ENTRYID;
-					EC_H(CopySBinary(&pProp->Value.bin, &lpFoundRow[abPR_ENTRYID].Value.bin,lpAdrList));
+					EC_H(CopySBinary(&pProp->Value.bin, &lpFoundRow[abPR_ENTRYID].Value.bin, lpAdrList));
 
 					pProp = &pProps[abPR_RECIPIENT_TYPE];
 					pProp->ulPropTag = PR_RECIPIENT_TYPE;
@@ -447,7 +447,7 @@ _Check_return_ HRESULT ManualResolve(
 					pProp = &pProps[abPR_DISPLAY_NAME];
 					pProp->ulPropTag = PR_DISPLAY_NAME;
 
-					if (!CheckStringProp(&lpFoundRow[abPR_DISPLAY_NAME],PT_TSTRING)) continue;
+					if (!CheckStringProp(&lpFoundRow[abPR_DISPLAY_NAME], PT_TSTRING)) continue;
 
 					EC_H(CopyString(
 						&pProp->Value.LPSZ,
@@ -457,7 +457,7 @@ _Check_return_ HRESULT ManualResolve(
 					pProp = &pProps[abPR_ADDRTYPE];
 					pProp->ulPropTag = PR_ADDRTYPE;
 
-					if (!CheckStringProp(&lpFoundRow[abPR_ADDRTYPE],PT_TSTRING)) continue;
+					if (!CheckStringProp(&lpFoundRow[abPR_ADDRTYPE], PT_TSTRING)) continue;
 
 					EC_H(CopyString(
 						&pProp->Value.LPSZ,
@@ -514,7 +514,7 @@ _Check_return_ HRESULT SearchContentsTableForName(
 		abNUM_COLS
 	};
 
-	const SizedSPropTagArray(abNUM_COLS,abCols) =
+	const SizedSPropTagArray(abNUM_COLS, abCols) =
 	{
 		abNUM_COLS,
 		PR_ENTRYID,
@@ -528,7 +528,7 @@ _Check_return_ HRESULT SearchContentsTableForName(
 	*lppPropsFound = NULL;
 	if (!pTable || !szName) return MAPI_E_INVALID_PARAMETER;
 
-	DebugPrint(DBGGeneric,_T("SearchContentsTableForName: Looking for \"%s\"\n"),szName);
+	DebugPrint(DBGGeneric, _T("SearchContentsTableForName: Looking for \"%s\"\n"), szName);
 
 	// Set a restriction so we only find close matches
 	LPSRestriction	lpSRes = NULL;
@@ -568,12 +568,12 @@ _Check_return_ HRESULT SearchContentsTableForName(
 		// An error at this point is an error with the current entry, so we can continue this for statement
 		// Unless it's an allocation error. Those are bad.
 		if (PropTagToCompare == pRows->aRow->lpProps[abPropTagToCompare].ulPropTag &&
-			CheckStringProp(&pRows->aRow->lpProps[abPropTagToCompare],PT_TSTRING))
+			CheckStringProp(&pRows->aRow->lpProps[abPropTagToCompare], PT_TSTRING))
 		{
-			DebugPrint(DBGGeneric,_T("SearchContentsTableForName: found \"%s\"\n"),pRows->aRow->lpProps[abPropTagToCompare].Value.LPSZ);
+			DebugPrint(DBGGeneric, _T("SearchContentsTableForName: found \"%s\"\n"), pRows->aRow->lpProps[abPropTagToCompare].Value.LPSZ);
 			if (lstrcmpi(szName, pRows->aRow->lpProps[abPropTagToCompare].Value.LPSZ) == 0)
 			{
-				DebugPrint(DBGGeneric,_T("SearchContentsTableForName: This is an exact match!\n"));
+				DebugPrint(DBGGeneric, _T("SearchContentsTableForName: This is an exact match!\n"));
 				// We found a match! Return it!
 				EC_MAPI(ScDupPropset(
 					abNUM_COLS,
@@ -587,9 +587,90 @@ _Check_return_ HRESULT SearchContentsTableForName(
 
 	if (!*lppPropsFound)
 	{
-		DebugPrint(DBGGeneric,_T("SearchContentsTableForName: No exact match found.\n"));
+		DebugPrint(DBGGeneric, _T("SearchContentsTableForName: No exact match found.\n"));
 	}
 	MAPIFreeBuffer(lpSRes);
 	if (pRows) FreeProws(pRows);
 	return hRes;
 } // SearchContentsTableForName
+
+_Check_return_ HRESULT SelectUser(_In_ LPADRBOOK lpAdrBook, HWND hwnd, _Deref_out_opt_ ULONG* lpulObjType, _Deref_out_opt_ LPMAILUSER* lppMailUser)
+{
+	if (!lpAdrBook || !hwnd ||!lppMailUser) return MAPI_E_INVALID_PARAMETER;
+
+	HRESULT hRes = S_OK;
+
+	ADRPARM AdrParm = { 0 };
+	LPADRLIST lpAdrList = NULL;
+	LPSPropValue lpEntryID = NULL;
+	LPMAILUSER lpMailUser = NULL;
+
+	*lppMailUser = NULL;
+	if (lpulObjType)
+	{
+		*lpulObjType = NULL;
+	}
+
+	CHAR szTitle[256];
+	int iRet = NULL;
+	EC_D(iRet, LoadStringA(GetModuleHandle(NULL),
+		IDS_SELECTMAILBOX,
+		szTitle,
+		_countof(szTitle)));
+
+	AdrParm.ulFlags = DIALOG_MODAL | ADDRESS_ONE | AB_SELECTONLY | AB_RESOLVE;
+#pragma warning(push)
+#pragma warning(disable:4616)
+#pragma warning(disable:6276)
+	AdrParm.lpszCaption = (LPTSTR)szTitle;
+#pragma warning(pop)
+
+	EC_H_CANCEL(lpAdrBook->Address(
+		(ULONG_PTR*)&hwnd,
+		&AdrParm,
+		&lpAdrList));
+
+	if (lpAdrList)
+	{
+		lpEntryID = PpropFindProp(
+			lpAdrList[0].aEntries->rgPropVals,
+			lpAdrList[0].aEntries->cValues,
+			PR_ENTRYID);
+
+		if (lpEntryID)
+		{
+			ULONG ulObjType = NULL;
+
+			EC_H(CallOpenEntry(
+				NULL,
+				lpAdrBook,
+				NULL,
+				NULL,
+				lpEntryID->Value.bin.cb,
+				(LPENTRYID)lpEntryID->Value.bin.lpb,
+				NULL,
+				MAPI_BEST_ACCESS,
+				&ulObjType,
+				(LPUNKNOWN*)&lpMailUser));
+			if (SUCCEEDED(hRes) && lpMailUser)
+			{
+				*lppMailUser = lpMailUser;
+			}
+			else
+			{
+				if (lpMailUser)
+				{
+					lpMailUser->Release();
+				}
+
+				if (lpulObjType)
+				{
+					*lpulObjType = ulObjType;
+				}
+			}
+		}
+	}
+
+	if (lpAdrList) FreePadrlist(lpAdrList);
+	return hRes;
+}

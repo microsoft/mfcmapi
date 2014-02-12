@@ -7,6 +7,7 @@
 #include "Guids.h"
 #include "InterpretProp2.h"
 #include "ExtraPropTags.h"
+#include "MAPIABFunctions.h"
 
 _Check_return_ HRESULT CallOpenMsgStore(
 	_In_ LPMAPISESSION	lpSession,
@@ -742,14 +743,11 @@ _Check_return_ HRESULT OpenOtherUsersMailboxFromGal(
 	_In_ LPADRBOOK lpAddrBook,
 	_Deref_out_opt_ LPMDB* lppOtherUserMDB)
 {
-	HRESULT		hRes = S_OK;
+	HRESULT hRes = S_OK;
 
-	ADRPARM			AdrParm = { 0 };
-	LPADRLIST		lpAdrList = NULL;
-	LPSPropValue	lpEmailAddress = NULL;
-	LPSPropValue	lpEntryID = NULL;
-	LPMAILUSER		lpMailUser = NULL;
-	LPMDB			lpPrivateMDB = NULL;
+	LPSPropValue lpEmailAddress = NULL;
+	LPMAILUSER lpMailUser = NULL;
+	LPMDB lpPrivateMDB = NULL;
 	LPTSTR szServerName = NULL;
 
 	*lppOtherUserMDB = NULL;
@@ -758,76 +756,32 @@ _Check_return_ HRESULT OpenOtherUsersMailboxFromGal(
 
 	EC_H(GetServerName(lpMAPISession, &szServerName));
 
-	// CString doesn't provide a way to extract just ANSI strings, so we do this manually
-	CHAR szTitle[256];
-	int iRet = NULL;
-	EC_D(iRet, LoadStringA(GetModuleHandle(NULL),
-		IDS_SELECTMAILBOX,
-		szTitle,
-		_countof(szTitle)));
-
-	AdrParm.ulFlags = DIALOG_MODAL | ADDRESS_ONE | AB_SELECTONLY | AB_RESOLVE;
-#pragma warning(push)
-#pragma warning(disable:4616)
-#pragma warning(disable:6276)
-	AdrParm.lpszCaption = (LPTSTR)szTitle;
-#pragma warning(pop)
-
-	ULONG_PTR ulHwnd = (ULONG_PTR)::GetDesktopWindow();
-
 	WC_H(OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpPrivateMDB));
 	if (lpPrivateMDB && StoreSupportsManageStore(lpPrivateMDB))
 	{
-		EC_H_CANCEL(lpAddrBook->Address(
-			&ulHwnd,
-			&AdrParm,
-			&lpAdrList));
-
-		if (lpAdrList)
+		EC_H(SelectUser(lpAddrBook, ::GetDesktopWindow(), NULL, &lpMailUser));
+		if (lpMailUser)
 		{
-			lpEntryID = PpropFindProp(
-				lpAdrList[0].aEntries->rgPropVals,
-				lpAdrList[0].aEntries->cValues,
-				PR_ENTRYID);
+			EC_MAPI(HrGetOneProp(
+				lpMailUser,
+				PR_EMAIL_ADDRESS,
+				&lpEmailAddress));
 
-			if (lpEntryID)
+			if (CheckStringProp(lpEmailAddress, PT_TSTRING))
 			{
-				EC_H(CallOpenEntry(
-					NULL,
-					lpAddrBook,
-					NULL,
-					NULL,
-					lpEntryID->Value.bin.cb,
-					(LPENTRYID)lpEntryID->Value.bin.lpb,
-					NULL,
-					MAPI_BEST_ACCESS,
-					NULL,
-					(LPUNKNOWN*)&lpMailUser));
-				if (lpMailUser)
-				{
-					EC_MAPI(HrGetOneProp(
-						lpMailUser,
-						PR_EMAIL_ADDRESS,
-						&lpEmailAddress));
-
-					if (CheckStringProp(lpEmailAddress, PT_TSTRING))
-					{
-						WC_H(OpenMailboxWithPrompt(
-							lpMAPISession,
-							lpPrivateMDB,
-							szServerName,
-							lpEmailAddress->Value.LPSZ,
-							OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP,
-							lppOtherUserMDB));
-					}
-				}
+				WC_H(OpenMailboxWithPrompt(
+					lpMAPISession,
+					lpPrivateMDB,
+					szServerName,
+					lpEmailAddress->Value.LPSZ,
+					OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP,
+					lppOtherUserMDB));
 			}
 		}
 	}
 
 	MAPIFreeBuffer(szServerName);
 	MAPIFreeBuffer(lpEmailAddress);
-	if (lpAdrList) FreePadrlist(lpAdrList);
 	if (lpMailUser) lpMailUser->Release();
 	if (lpPrivateMDB) lpPrivateMDB->Release();
 	return hRes;
