@@ -921,7 +921,10 @@ enum SearchPathReorderType
 #define ftNull        0x00
 #define ftString      0x01
 #define ftInteger     0x03
-#define ftTime        0x05
+// This definition conflicts with Windows headers.
+// Was only use for Flags.h and we can handle that differently.
+// Definition left commened for reference
+//#define ftTime        0x05
 #define ftBoolean     0x06
 #define ftDuration    0x07
 #define ftMultiString 0x0B

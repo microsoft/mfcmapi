@@ -20,11 +20,11 @@ CFileDialogExA::~CFileDialogExA()
 } // CFileDialogExA::~CFileDialogExA
 
 _Check_return_ INT_PTR CFileDialogExA::DisplayDialog(bool bOpenFileDialog, // true for open, false for FileSaveAs
-									  _In_opt_z_ LPCSTR lpszDefExt,
-									  _In_opt_z_ LPCSTR lpszFileName,
-									  DWORD dwFlags,
-									  _In_opt_z_ LPCSTR lpszFilter,
-									  _In_opt_ CWnd* pParentWnd)
+	_In_opt_z_ LPCSTR lpszDefExt,
+	_In_opt_z_ LPCSTR lpszFileName,
+	DWORD dwFlags,
+	_In_opt_z_ LPCSTR lpszFilter,
+	_In_opt_ CWnd* pParentWnd)
 {
 	m_szBigBuff = NULL;
 	m_szNextPath = NULL;
@@ -55,7 +55,7 @@ _Check_return_ INT_PTR CFileDialogExA::DisplayDialog(bool bOpenFileDialog, // tr
 
 	m_ofn.lpstrDefExt = lpszDefExt;
 	m_ofn.Flags = dwFlags | OFN_ENABLEHOOK | OFN_EXPLORER;
-	m_ofn.hwndOwner = pParentWnd?pParentWnd->m_hWnd:NULL;
+	m_ofn.hwndOwner = pParentWnd ? pParentWnd->m_hWnd : NULL;
 
 	// zero out the file buffer for consistent parsing later
 	memset(m_ofn.lpstrFile, 0, m_ofn.nMaxFile);
@@ -135,7 +135,7 @@ _Check_return_ LPSTR CFileDialogExA::GetNextFileName()
 	}
 	else
 	{
-		_splitpath_s(strBasePath+"\\", strDrive, _MAX_DRIVE, strDir, _MAX_DIR, NULL, 0, NULL, 0); // STRING_OK
+		_splitpath_s(strBasePath + "\\", strDrive, _MAX_DRIVE, strDir, _MAX_DIR, NULL, 0, NULL, 0); // STRING_OK
 		_makepath_s(strPath, _MAX_PATH, strDrive, strDir, strName, strExt);
 	}
 
@@ -154,11 +154,11 @@ CFileDialogExW::~CFileDialogExW()
 } // CFileDialogExW::~CFileDialogExW
 
 _Check_return_ INT_PTR CFileDialogExW::DisplayDialog(bool bOpenFileDialog, // true for open, false for FileSaveAs
-									  _In_opt_z_ LPCWSTR lpszDefExt,
-									  _In_opt_z_ LPCWSTR lpszFileName,
-									  DWORD dwFlags,
-									  _In_opt_z_ LPCWSTR lpszFilter,
-									  _In_opt_ CWnd* pParentWnd)
+	_In_opt_z_ LPCWSTR lpszDefExt,
+	_In_opt_z_ LPCWSTR lpszFileName,
+	DWORD dwFlags,
+	_In_opt_z_ LPCWSTR lpszFilter,
+	_In_opt_ CWnd* pParentWnd)
 {
 	m_szBigBuff = NULL;
 	m_szNextPath = NULL;
@@ -189,7 +189,7 @@ _Check_return_ INT_PTR CFileDialogExW::DisplayDialog(bool bOpenFileDialog, // tr
 
 	m_ofn.lpstrDefExt = lpszDefExt;
 	m_ofn.Flags = dwFlags | OFN_ENABLEHOOK | OFN_EXPLORER;
-	m_ofn.hwndOwner = pParentWnd?pParentWnd->m_hWnd:NULL;
+	m_ofn.hwndOwner = pParentWnd ? pParentWnd->m_hWnd : NULL;
 
 	// zero out the file buffer for consistent parsing later
 	memset(m_ofn.lpstrFile, 0, m_ofn.nMaxFile);
@@ -269,13 +269,17 @@ _Check_return_ LPWSTR CFileDialogExW::GetNextFileName()
 	}
 	else
 	{
-		_wsplitpath_s(strBasePath+L"\\", strDrive, _MAX_DRIVE, strDir, _MAX_DIR, NULL, 0, NULL, 0); // STRING_OK
+		_wsplitpath_s(strBasePath + L"\\", strDrive, _MAX_DRIVE, strDir, _MAX_DIR, NULL, 0, NULL, 0); // STRING_OK
 		_wmakepath_s(strPath, _MAX_PATH, strDrive, strDir, strName, strExt);
 	}
 
 	return strPath;
 } // CFileDialogExW::GetNextFileName
 
+// Ignore deprecation error. This code is checking that we're above Windows 2000
+// and won't be affected by Windows 8 version ephemera. Not worth rewriting.
+#pragma warning(push)
+#pragma warning(disable:4996)
 _Check_return_ bool IsWin2000()
 {
 	OSVERSIONINFOEX osvi;
@@ -289,13 +293,13 @@ _Check_return_ bool IsWin2000()
 	ZeroMemory(&osvi, sizeof(OSVERSIONINFOEX));
 	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
 
-	WC_B(GetVersionEx ((OSVERSIONINFO*) &osvi));
+	WC_B(GetVersionEx((OSVERSIONINFO*)&osvi));
 	if (S_OK != hRes)
 	{
 		// If OSVERSIONINFOEX doesn't work, try OSVERSIONINFO.
 		hRes = S_OK;
 		osvi.dwOSVersionInfoSize = sizeof (OSVERSIONINFO);
-		EC_B(GetVersionEx((OSVERSIONINFO*) &osvi));
+		EC_B(GetVersionEx((OSVERSIONINFO*)&osvi));
 		if (S_OK != hRes) return false;
 	}
 
@@ -310,3 +314,4 @@ _Check_return_ bool IsWin2000()
 	}
 	return false;
 } // IsWin2000
+#pragma warning (pop)

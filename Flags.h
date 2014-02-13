@@ -1353,8 +1353,8 @@ FLAG_ARRAY_ENTRY g_FlagArray[] =
 	NON_PROP_FLAG_ENTRY(flagFolderType,ftNull,flagVALUE) // NULL Value
 	NON_PROP_FLAG_ENTRY(flagFolderType,ftString,flagVALUE)
 	NON_PROP_FLAG_ENTRY(flagFolderType,ftInteger,flagVALUE)
-	NON_PROP_FLAG_ENTRY(flagFolderType,ftTime,flagVALUE)
-	NON_PROP_FLAG_ENTRY(flagFolderType,ftBoolean,flagVALUE)
+	NON_PROP_FLAG_ENTRY_NAMED(flagFolderType, 0x05, L"ftTime", flagVALUE) // STRING_OK
+	NON_PROP_FLAG_ENTRY(flagFolderType, ftBoolean, flagVALUE)
 	NON_PROP_FLAG_ENTRY(flagFolderType,ftDuration,flagVALUE)
 	NON_PROP_FLAG_ENTRY(flagFolderType,ftMultiString,flagVALUE)
 	NON_PROP_FLAG_ENTRY(flagFolderType,ftFloat,flagVALUE)
