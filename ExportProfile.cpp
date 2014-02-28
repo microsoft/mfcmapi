@@ -234,11 +234,11 @@ void ExportProfile(_In_z_ LPCSTR szProfile, _In_z_ LPWSTR szProfileSection, bool
 		}
 		lpProfAdmin->Release();
 
-		OutputToFile(fProfile, _T("</profile>"));
-
 		if (fProfile)
 		{
 			CloseFile(fProfile);
 		}
 	}
+
+	OutputToFile(fProfile, _T("</profile>"));
 }
