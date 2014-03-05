@@ -1122,7 +1122,7 @@ void ScrubStringForXML(_In_z_ LPTSTR szString)
 		case _T('\n'):
 			break;
 		default:
-			if (szString[i] < 0x20) szString[i] = _T('.');
+			if (szString[i] > 0 && szString[i] < 0x20) szString[i] = _T('.');
 			break;
 		}
 	}
