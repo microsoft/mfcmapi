@@ -7,6 +7,11 @@
 
 #define VC_EXTRALEAN	// Exclude rarely-used stuff from Windows headers
 
+// Speed up our string conversions for output
+#ifdef MRMAPI
+#define _CRT_DISABLE_PERFCRIT_LOCKS
+#endif
+
 #include <sal.h>
 // A bug in annotations in shobjidl.h forces us to disable 6387 to include afxwin.h
 #pragma warning(push)

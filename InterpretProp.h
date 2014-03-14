@@ -52,5 +52,4 @@ void ActionsToString(_In_ ACTIONS* lpActions, _In_ CString* PropString);
 
 void AdrListToString(_In_ LPADRLIST lpAdrList, _In_ CString *PropString);
 
-void InterpretMVProp(_In_ LPSPropValue lpProp, ULONG ulMVRow, _In_ CString *PropString, _In_ CString *AltPropString);
 void InterpretProp(_In_ LPSPropValue lpProp, _In_opt_ CString *PropString, _In_opt_ CString *AltPropString);
