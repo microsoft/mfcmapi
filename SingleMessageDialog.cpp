@@ -6,6 +6,7 @@
 #include "SingleMAPIPropListCtrl.h"
 #include "MAPIFunctions.h"
 #include "MFCUtilityFunctions.h"
+#include "Editor.h"
 
 static TCHAR* CLASS = _T("SingleMessageDialog");
 
@@ -16,8 +17,8 @@ static TCHAR* CLASS = _T("SingleMessageDialog");
 SingleMessageDialog::SingleMessageDialog(
 	_In_ CParentWnd* pParentWnd,
 	_In_ CMapiObjects* lpMapiObjects,
-	_In_opt_ LPMESSAGE lpMAPIProp):
-CBaseDialog(
+	_In_opt_ LPMESSAGE lpMAPIProp) :
+	CBaseDialog(
 	pParentWnd,
 	lpMapiObjects,
 	NULL)
@@ -62,13 +63,14 @@ BEGIN_MESSAGE_MAP(SingleMessageDialog, CBaseDialog)
 	ON_COMMAND(ID_REFRESHVIEW, OnRefreshView)
 	ON_COMMAND(ID_ATTACHMENTPROPERTIES, OnAttachmentProperties)
 	ON_COMMAND(ID_RECIPIENTPROPERTIES, OnRecipientProperties)
+	ON_COMMAND(ID_RTFSYNC, OnRTFSync)
 END_MESSAGE_MAP()
 
 // Clear the current list and get a new one with whatever code we've got in LoadMAPIPropList
 void SingleMessageDialog::OnRefreshView()
 {
 	if (!m_lpPropDisplay) return;
-	(void) m_lpPropDisplay->RefreshMAPIPropList();
+	(void)m_lpPropDisplay->RefreshMAPIPropList();
 } // SingleMessageDialog::OnRefreshView
 
 void SingleMessageDialog::OnAttachmentProperties()
@@ -86,3 +88,40 @@ void SingleMessageDialog::OnRecipientProperties()
 
 	EC_H(DisplayTable(m_lpMessage, PR_MESSAGE_RECIPIENTS, otDefault, this));
 } // SingleMessageDialog::OnRecipientProperties
+
+void SingleMessageDialog::OnRTFSync()
+{
+	HRESULT hRes = S_OK;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
+
+	CEditor MyData(
+		this,
+		IDS_CALLRTFSYNC,
+		IDS_CALLRTFSYNCPROMPT,
+		1,
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+
+	MyData.InitPane(0, CreateSingleLinePane(IDS_FLAGS, NULL, false));
+	MyData.SetHex(0, RTF_SYNC_RTF_CHANGED);
+
+	WC_H(MyData.DisplayDialog());
+	if (S_OK == hRes)
+	{
+		BOOL bMessageUpdated = false;
+
+		if (m_lpMessage)
+		{
+			DebugPrint(DBGGeneric, _T("Calling RTFSync on %p with flags 0x%X\n"), m_lpMessage, MyData.GetHex(0));
+			EC_MAPI(RTFSync(
+				m_lpMessage,
+				MyData.GetHex(0),
+				&bMessageUpdated));
+
+			DebugPrint(DBGGeneric, _T("RTFSync returned %d\n"), bMessageUpdated);
+
+			EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+
+			(void)m_lpPropDisplay->RefreshMAPIPropList();
+		}
+	}
+}

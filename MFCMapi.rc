@@ -847,6 +847,8 @@ BEGIN
 	BEGIN
 		MENUITEM "Display attachment table",    ID_ATTACHMENTPROPERTIES
 		MENUITEM "Display recipient table",     ID_RECIPIENTPROPERTIES
+		MENUITEM SEPARATOR
+		MENUITEM "RTFSync...",                  ID_RTFSYNC
 	END
 END
 
@@ -854,6 +856,8 @@ IDR_MENU_MESSAGE_POPUP MENU DISCARDABLE
 BEGIN
 	MENUITEM "Display attachment table",    ID_ATTACHMENTPROPERTIES
 	MENUITEM "Display recipient table",     ID_RECIPIENTPROPERTIES
+	MENUITEM SEPARATOR
+	MENUITEM "RTFSync...",                  ID_RTFSYNC
 END
 
 /////////////////////////////////////////////////////////////////////////////
