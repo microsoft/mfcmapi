@@ -25,6 +25,7 @@ private:
 	void OnRefreshView();
 	void OnAttachmentProperties();
 	void OnRecipientProperties();
+	void OnRTFSync();
 
 	DECLARE_MESSAGE_MAP()
 };

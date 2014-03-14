@@ -19,7 +19,6 @@
 #include "ImportProcs.h"
 #include "MAPIStoreFunctions.h"
 #include "MMPst.h"
-#include <locale.h>
 
 // Initialize MFC for LoadString support later on
 void InitMFC()
