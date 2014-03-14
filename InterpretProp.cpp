@@ -5,6 +5,7 @@
 #include "ExtraPropTags.h"
 #include "NamedPropCache.h"
 #include "SmartView.h"
+#include "ParseProperty.h"
 
 static const char pBase64[] = {
 	0x3e, 0x7f, 0x7f, 0x7f, 0x3f, 0x34, 0x35, 0x36,
@@ -27,27 +28,27 @@ _Check_return_ HRESULT Base64Decode(_In_z_ LPCTSTR szEncodedStr, _Inout_ size_t*
 	HRESULT hRes = S_OK;
 	size_t	cchLen = 0;
 
-	EC_H(StringCchLength(szEncodedStr,STRSAFE_MAX_CCH,&cchLen));
+	EC_H(StringCchLength(szEncodedStr, STRSAFE_MAX_CCH, &cchLen));
 
 	if (cchLen % 4) return MAPI_E_INVALID_PARAMETER;
 
 	// look for padding at the end
-	static const TCHAR szPadding[]  = _T("=="); // STRING_OK
+	static const TCHAR szPadding[] = _T("=="); // STRING_OK
 	const TCHAR* szPaddingLoc = NULL;
 	szPaddingLoc = _tcschr(szEncodedStr, szPadding[0]);
 	size_t cchPaddingLen = 0;
 	if (NULL != szPaddingLoc)
 	{
 		// check padding length
-		EC_H(StringCchLength(szPaddingLoc,STRSAFE_MAX_CCH,&cchPaddingLen));
+		EC_H(StringCchLength(szPaddingLoc, STRSAFE_MAX_CCH, &cchPaddingLen));
 		if (cchPaddingLen >= 3) return MAPI_E_INVALID_PARAMETER;
 
 		// check for bad characters after the first '='
-		if (_tcsncmp(szPaddingLoc, (TCHAR *) szPadding, cchPaddingLen)) return MAPI_E_INVALID_PARAMETER;
+		if (_tcsncmp(szPaddingLoc, (TCHAR *)szPadding, cchPaddingLen)) return MAPI_E_INVALID_PARAMETER;
 	}
 	// cchPaddingLen == 0,1,2 now
 
-	size_t	cchDecodedLen = ((cchLen + 3)/ 4) * 3; // 3 times number of 4 tuplets, rounded up
+	size_t	cchDecodedLen = ((cchLen + 3) / 4) * 3; // 3 times number of 4 tuplets, rounded up
 
 	// back off the decoded length to the correct length
 	// xx== ->y
@@ -62,30 +63,30 @@ _Check_return_ HRESULT Base64Decode(_In_z_ LPCTSTR szEncodedStr, _Inout_ size_t*
 
 	LPBYTE	lpOutByte = *lpDecodedBuffer;
 
-	TCHAR c[4] = {0};
-	BYTE bTmp[3] = {0}; // output
+	TCHAR c[4] = { 0 };
+	BYTE bTmp[3] = { 0 }; // output
 
 	while (*szEncodedStr)
 	{
 		int i = 0;
 		int iOutlen = 3;
-		for (i = 0 ; i < 4 ; i++)
+		for (i = 0; i < 4; i++)
 		{
-			c[i] = *(szEncodedStr+i);
-			if  (c[i] == _T('='))
+			c[i] = *(szEncodedStr + i);
+			if (c[i] == _T('='))
 			{
-				iOutlen = i-1;
+				iOutlen = i - 1;
 				break;
 			}
 			if ((c[i] < 0x2b) || (c[i] > 0x7a)) return MAPI_E_INVALID_PARAMETER;
 
 			c[i] = pBase64[c[i] - 0x2b];
 		}
-		bTmp[0]  = (BYTE) ((c[0] << 2)        | (c[1] >> 4));
-		bTmp[1]  = (BYTE) ((c[1] & 0x0f) << 4 | (c[2] >> 2));
-		bTmp[2]  = (BYTE) ((c[2] & 0x03) << 6 |  c[3]);
+		bTmp[0] = (BYTE)((c[0] << 2) | (c[1] >> 4));
+		bTmp[1] = (BYTE)((c[1] & 0x0f) << 4 | (c[2] >> 2));
+		bTmp[2] = (BYTE)((c[2] & 0x03) << 6 | c[3]);
 
-		for (i = 0 ; i < iOutlen ; i++)
+		for (i = 0; i < iOutlen; i++)
 		{
 			lpOutByte[i] = bTmp[i];
 		}
@@ -97,15 +98,15 @@ _Check_return_ HRESULT Base64Decode(_In_z_ LPCTSTR szEncodedStr, _Inout_ size_t*
 } // Base64Decode
 
 static const		// Base64 Index into encoding
-	char pIndex[] = {	// and decoding table.
-		0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48,
-		0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f, 0x50,
-		0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58,
-		0x59, 0x5a, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66,
-		0x67, 0x68, 0x69, 0x6a, 0x6b, 0x6c, 0x6d, 0x6e,
-		0x6f, 0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76,
-		0x77, 0x78, 0x79, 0x7a, 0x30, 0x31, 0x32, 0x33,
-		0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x2b, 0x2f
+char pIndex[] = {	// and decoding table.
+	0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48,
+	0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f, 0x50,
+	0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58,
+	0x59, 0x5a, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66,
+	0x67, 0x68, 0x69, 0x6a, 0x6b, 0x6c, 0x6d, 0x6e,
+	0x6f, 0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76,
+	0x77, 0x78, 0x79, 0x7a, 0x30, 0x31, 0x32, 0x33,
+	0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x2b, 0x2f
 };
 
 // allocates output string with new
@@ -115,7 +116,7 @@ _Check_return_ HRESULT Base64Encode(size_t cbSourceBuf, _In_count_(cbSourceBuf) 
 	HRESULT hRes = S_OK;
 
 	size_t cchEncodeLen = ((cbSourceBuf + 2) / 3) * 4; // 4 * number of size three blocks, round up, plus null terminator
-	*szEncodedStr = new TCHAR[cchEncodeLen+1]; // allocate a touch extra for some NULL terminators
+	*szEncodedStr = new TCHAR[cchEncodeLen + 1]; // allocate a touch extra for some NULL terminators
 	if (cchEncodedStr) *cchEncodedStr = cchEncodeLen;
 	if (!*szEncodedStr) return MAPI_E_CALL_FAILED;
 
@@ -124,29 +125,29 @@ _Check_return_ HRESULT Base64Encode(size_t cbSourceBuf, _In_count_(cbSourceBuf) 
 	szOutChar = *szEncodedStr;
 
 	// Using integer division to round down here
-	while (cbBuf < (cbSourceBuf/3)*3) // encode each 3 byte octet.
+	while (cbBuf < (cbSourceBuf / 3) * 3) // encode each 3 byte octet.
 	{
-		*szOutChar++ = pIndex[  lpSourceBuffer[cbBuf]             >> 2];
-		*szOutChar++ = pIndex[((lpSourceBuffer[cbBuf]     & 0x03) << 4) + (lpSourceBuffer[cbBuf + 1] >> 4)];
+		*szOutChar++ = pIndex[lpSourceBuffer[cbBuf] >> 2];
+		*szOutChar++ = pIndex[((lpSourceBuffer[cbBuf] & 0x03) << 4) + (lpSourceBuffer[cbBuf + 1] >> 4)];
 		*szOutChar++ = pIndex[((lpSourceBuffer[cbBuf + 1] & 0x0f) << 2) + (lpSourceBuffer[cbBuf + 2] >> 6)];
-		*szOutChar++ = pIndex[  lpSourceBuffer[cbBuf + 2] & 0x3f];
-		cbBuf    += 3; // Next octet.
+		*szOutChar++ = pIndex[lpSourceBuffer[cbBuf + 2] & 0x3f];
+		cbBuf += 3; // Next octet.
 	}
 
 	if (cbSourceBuf - cbBuf) // Partial octet remaining?
 	{
 		*szOutChar++ = pIndex[lpSourceBuffer[cbBuf] >> 2]; // Yes, encode it.
 
-		if  (cbSourceBuf - cbBuf == 1) // End of octet?
+		if (cbSourceBuf - cbBuf == 1) // End of octet?
 		{
-			*szOutChar++ = pIndex[ (lpSourceBuffer[cbBuf] & 0x03) << 4];
+			*szOutChar++ = pIndex[(lpSourceBuffer[cbBuf] & 0x03) << 4];
 			*szOutChar++ = _T('=');
 			*szOutChar++ = _T('=');
 		}
 		else
 		{ // No, one more part.
-			*szOutChar++ = pIndex[((lpSourceBuffer[cbBuf]     & 0x03) << 4) + (lpSourceBuffer[cbBuf + 1] >> 4)];
-			*szOutChar++ = pIndex[ (lpSourceBuffer[cbBuf + 1] & 0x0f) << 2];
+			*szOutChar++ = pIndex[((lpSourceBuffer[cbBuf] & 0x03) << 4) + (lpSourceBuffer[cbBuf + 1] >> 4)];
+			*szOutChar++ = pIndex[(lpSourceBuffer[cbBuf + 1] & 0x0f) << 2];
 			*szOutChar++ = _T('=');
 		}
 	}
@@ -162,12 +163,12 @@ _Check_return_ CString BinToTextString(_In_ LPSBinary lpBin, bool bMultiLine)
 	CString StringAsText;
 	LPTSTR szBin = NULL;
 
-	szBin = new TCHAR[1+lpBin->cb];
+	szBin = new TCHAR[1 + lpBin->cb];
 
 	if (szBin)
 	{
 		ULONG i;
-		for (i = 0;i<lpBin->cb;i++)
+		for (i = 0; i < lpBin->cb; i++)
 		{
 			// Any printable extended ASCII character gets mapped directly
 			if (lpBin->lpb[i] >= 0x20 &&
@@ -226,7 +227,7 @@ _Check_return_ CString BinToHexString(_In_opt_ LPSBinary lpBin, bool bPrependCB)
 _Check_return_ LPTSTR GUIDToString(_In_opt_ LPCGUID lpGUID)
 {
 	HRESULT	hRes = S_OK;
-	GUID	nullGUID = {0};
+	GUID	nullGUID = { 0 };
 	LPTSTR	szGUID = NULL;
 
 	if (!lpGUID)
@@ -236,7 +237,7 @@ _Check_return_ LPTSTR GUIDToString(_In_opt_ LPCGUID lpGUID)
 
 	szGUID = new TCHAR[GUID_STRING_SIZE];
 
-	EC_H(StringCchPrintf(szGUID,GUID_STRING_SIZE,_T("{%.8X-%.4X-%.4X-%.2X%.2X-%.2X%.2X%.2X%.2X%.2X%.2X}"), // STRING_OK
+	EC_H(StringCchPrintf(szGUID, GUID_STRING_SIZE, _T("{%.8X-%.4X-%.4X-%.2X%.2X-%.2X%.2X%.2X%.2X%.2X%.2X}"), // STRING_OK
 		lpGUID->Data1,
 		lpGUID->Data2,
 		lpGUID->Data3,
@@ -265,12 +266,12 @@ _Check_return_ HRESULT StringToGUID(_In_z_ LPCTSTR szGUID, bool bByteSwapped, _I
 	ULONG cbGUID = sizeof(GUID);
 
 	// Now we use MyBinFromHex to do the work.
-	(void) MyBinFromHex(szGUID, (LPBYTE) lpGUID, &cbGUID);
+	(void)MyBinFromHex(szGUID, (LPBYTE)lpGUID, &cbGUID);
 
 	// Note that we get the bByteSwapped behavior by default. We have to work to get the 'normal' behavior
 	if (!bByteSwapped)
 	{
-		LPBYTE lpByte = (LPBYTE) lpGUID;
+		LPBYTE lpByte = (LPBYTE)lpGUID;
 		BYTE bByte = 0;
 		bByte = lpByte[0];
 		lpByte[0] = lpByte[3];
@@ -286,10 +287,10 @@ _Check_return_ CString CurrencyToString(CURRENCY curVal)
 {
 	CString szCur;
 
-	szCur.Format(_T("%05I64d"),curVal.int64); // STRING_OK
+	szCur.Format(_T("%05I64d"), curVal.int64); // STRING_OK
 	if (szCur.GetLength() > 4)
 	{
-		szCur.Insert(szCur.GetLength()-4,_T(".")); // STRING_OK
+		szCur.Insert(szCur.GetLength() - 4, _T(".")); // STRING_OK
 	}
 	return szCur;
 } // CurrencyToString
@@ -376,7 +377,7 @@ _Check_return_ CString TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, b
 	}
 	szRet.FormatMessage(szFormatString,
 		ulPropTag,
-		(LPCTSTR) TypeToString(ulPropTag),
+		(LPCTSTR)TypeToString(ulPropTag),
 		szExactMatches,
 		szPartialMatches,
 		szNamedPropName,
@@ -391,8 +392,8 @@ _Check_return_ CString TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, b
 	{
 		static size_t cchMaxBuff = 0;
 		size_t cchBuff = szRet.GetLength();
-		cchMaxBuff = max(cchBuff,cchMaxBuff);
-		DebugPrint(DBGTest,_T("TagToString parsing 0x%08X returned %u chars - max %u\n"),ulPropTag,cchBuff,cchMaxBuff);
+		cchMaxBuff = max(cchBuff, cchMaxBuff);
+		DebugPrint(DBGTest, _T("TagToString parsing 0x%08X returned %u chars - max %u\n"), ulPropTag, cchBuff, cchMaxBuff);
 	}
 	return szRet;
 } // TagToString
@@ -403,12 +404,12 @@ _Check_return_ CString ProblemArrayToString(_In_ LPSPropProblemArray lpProblems)
 	if (lpProblems)
 	{
 		ULONG i = 0;
-		for (i = 0;i < lpProblems->cProblem;i++)
+		for (i = 0; i < lpProblems->cProblem; i++)
 		{
 			CString szTemp;
 			szTemp.FormatMessage(IDS_PROBLEMARRAY,
 				lpProblems->aProblem[i].ulIndex,
-				TagToString(lpProblems->aProblem[i].ulPropTag,NULL,false,false),
+				TagToString(lpProblems->aProblem[i].ulPropTag, NULL, false, false),
 				lpProblems->aProblem[i].scode,
 				ErrorNameFromErrorCode(lpProblems->aProblem[i].scode));
 			szOut += szTemp;
@@ -423,7 +424,7 @@ _Check_return_ CString MAPIErrToString(ULONG ulFlags, _In_ LPMAPIERROR lpErr)
 	if (lpErr)
 	{
 		szOut.FormatMessage(
-			ulFlags & MAPI_UNICODE?IDS_MAPIERRUNICODE:IDS_MAPIERRANSI,
+			ulFlags & MAPI_UNICODE ? IDS_MAPIERRUNICODE : IDS_MAPIERRANSI,
 			lpErr->ulVersion,
 			lpErr->lpszError,
 			lpErr->lpszComponent,
@@ -446,7 +447,7 @@ _Check_return_ CString TnefProblemArrayToString(_In_ LPSTnefProblemArray lpError
 				IDS_TNEFPROBARRAY,
 				lpError->aProblem[iError].ulComponent,
 				lpError->aProblem[iError].ulAttribute,
-				TagToString(lpError->aProblem[iError].ulPropTag,NULL,false,false),
+				TagToString(lpError->aProblem[iError].ulPropTag, NULL, false, false),
 				lpError->aProblem[iError].scode,
 				ErrorNameFromErrorCode(lpError->aProblem[iError].scode));
 			szOut += szTemp;
@@ -480,7 +481,7 @@ void RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj, U
 	CString szAltProp;
 
 	CString szTabs;
-	for (i = 0;i<ulTabLevel;i++)
+	for (i = 0; i < ulTabLevel; i++)
 	{
 		szTabs += _T("\t"); // STRING_OK
 	}
@@ -488,11 +489,11 @@ void RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj, U
 	LPTSTR szFlags = NULL;
 	LPWSTR szPropNum = NULL;
 	InterpretFlags(flagRestrictionType, lpRes->rt, &szFlags);
-	szTmp.FormatMessage(IDS_RESTYPE,szTabs,lpRes->rt,szFlags);
+	szTmp.FormatMessage(IDS_RESTYPE, szTabs, lpRes->rt, szFlags);
 	*PropString += szTmp;
 	delete[] szFlags;
 	szFlags = NULL;
-	switch(lpRes->rt)
+	switch (lpRes->rt)
 	{
 	case RES_COMPAREPROPS:
 		InterpretFlags(flagRelop, lpRes->res.resCompareProps.relop, &szFlags);
@@ -501,35 +502,35 @@ void RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj, U
 			szTabs,
 			szFlags,
 			lpRes->res.resCompareProps.relop,
-			TagToString(lpRes->res.resCompareProps.ulPropTag1,lpObj,false,true),
-			TagToString(lpRes->res.resCompareProps.ulPropTag2,lpObj,false,true));
+			TagToString(lpRes->res.resCompareProps.ulPropTag1, lpObj, false, true),
+			TagToString(lpRes->res.resCompareProps.ulPropTag2, lpObj, false, true));
 		*PropString += szTmp;
 		delete[] szFlags;
 		break;
 	case RES_AND:
-		szTmp.FormatMessage(IDS_RESANDCOUNT,szTabs,lpRes->res.resAnd.cRes);
+		szTmp.FormatMessage(IDS_RESANDCOUNT, szTabs, lpRes->res.resAnd.cRes);
 		*PropString += szTmp;
 		if (lpRes->res.resAnd.lpRes)
 		{
-			for (i = 0;i< lpRes->res.resAnd.cRes;i++)
+			for (i = 0; i < lpRes->res.resAnd.cRes; i++)
 			{
-				szTmp.FormatMessage(IDS_RESANDPOINTER,szTabs,i);
+				szTmp.FormatMessage(IDS_RESANDPOINTER, szTabs, i);
 				*PropString += szTmp;
-				RestrictionToString(&lpRes->res.resAnd.lpRes[i],lpObj,ulTabLevel+1,&szTmp);
+				RestrictionToString(&lpRes->res.resAnd.lpRes[i], lpObj, ulTabLevel + 1, &szTmp);
 				*PropString += szTmp;
 			}
 		}
 		break;
 	case RES_OR:
-		szTmp.FormatMessage(IDS_RESORCOUNT,szTabs,lpRes->res.resOr.cRes);
+		szTmp.FormatMessage(IDS_RESORCOUNT, szTabs, lpRes->res.resOr.cRes);
 		*PropString += szTmp;
 		if (lpRes->res.resOr.lpRes)
 		{
-			for (i = 0;i< lpRes->res.resOr.cRes;i++)
+			for (i = 0; i < lpRes->res.resOr.cRes; i++)
 			{
-				szTmp.FormatMessage(IDS_RESORPOINTER,szTabs,i);
+				szTmp.FormatMessage(IDS_RESORPOINTER, szTabs, i);
 				*PropString += szTmp;
-				RestrictionToString(&lpRes->res.resOr.lpRes[i],lpObj,ulTabLevel+1,&szTmp);
+				RestrictionToString(&lpRes->res.resOr.lpRes[i], lpObj, ulTabLevel + 1, &szTmp);
 				*PropString += szTmp;
 			}
 		}
@@ -540,7 +541,7 @@ void RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj, U
 			szTabs,
 			lpRes->res.resNot.ulReserved);
 		*PropString += szTmp;
-		RestrictionToString(lpRes->res.resNot.lpRes,lpObj,ulTabLevel+1,&szTmp);
+		RestrictionToString(lpRes->res.resNot.lpRes, lpObj, ulTabLevel + 1, &szTmp);
 		*PropString += szTmp;
 		break;
 	case RES_COUNT:
@@ -550,7 +551,7 @@ void RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj, U
 			szTabs,
 			lpRes->res.resNot.ulReserved);
 		*PropString += szTmp;
-		RestrictionToString(lpRes->res.resNot.lpRes,lpObj,ulTabLevel+1,&szTmp);
+		RestrictionToString(lpRes->res.resNot.lpRes, lpObj, ulTabLevel + 1, &szTmp);
 		*PropString += szTmp;
 		break;
 	case RES_CONTENT:
@@ -560,17 +561,17 @@ void RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj, U
 			szTabs,
 			szFlags,
 			lpRes->res.resContent.ulFuzzyLevel,
-			TagToString(lpRes->res.resContent.ulPropTag,lpObj,false,true));
+			TagToString(lpRes->res.resContent.ulPropTag, lpObj, false, true));
 		delete[] szFlags;
 		szFlags = NULL;
 		*PropString += szTmp;
 		if (lpRes->res.resContent.lpProp)
 		{
-			InterpretProp(lpRes->res.resContent.lpProp,&szProp,&szAltProp);
+			InterpretProp(lpRes->res.resContent.lpProp, &szProp, &szAltProp);
 			szTmp.FormatMessage(
 				IDS_RESCONTENTPROP,
 				szTabs,
-				TagToString(lpRes->res.resContent.lpProp->ulPropTag,lpObj,false,true),
+				TagToString(lpRes->res.resContent.lpProp->ulPropTag, lpObj, false, true),
 				szProp,
 				szAltProp);
 			*PropString += szTmp;
@@ -583,24 +584,24 @@ void RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj, U
 			szTabs,
 			szFlags,
 			lpRes->res.resProperty.relop,
-			TagToString(lpRes->res.resProperty.ulPropTag,lpObj,false,true));
+			TagToString(lpRes->res.resProperty.ulPropTag, lpObj, false, true));
 		delete[] szFlags;
 		szFlags = NULL;
 		*PropString += szTmp;
 		if (lpRes->res.resProperty.lpProp)
 		{
-			InterpretProp(lpRes->res.resProperty.lpProp,&szProp,&szAltProp);
+			InterpretProp(lpRes->res.resProperty.lpProp, &szProp, &szAltProp);
 			szTmp.FormatMessage(
 				IDS_RESPROPPROP,
 				szTabs,
-				TagToString(lpRes->res.resProperty.lpProp->ulPropTag,lpObj,false,true),
+				TagToString(lpRes->res.resProperty.lpProp->ulPropTag, lpObj, false, true),
 				szProp,
 				szAltProp);
 			*PropString += szTmp;
-			InterpretNumberAsString(lpRes->res.resProperty.lpProp->Value,lpRes->res.resProperty.lpProp->ulPropTag,NULL,NULL,NULL,false,&szPropNum);
+			InterpretNumberAsString(lpRes->res.resProperty.lpProp->Value, lpRes->res.resProperty.lpProp->ulPropTag, NULL, NULL, NULL, false, &szPropNum);
 			if (szPropNum)
 			{
-				szTmp.FormatMessage(IDS_RESPROPPROPFLAGS,szTabs,szPropNum);
+				szTmp.FormatMessage(IDS_RESPROPPROPFLAGS, szTabs, szPropNum);
 				delete[] szPropNum;
 				szPropNum = NULL;
 				*PropString += szTmp;
@@ -621,7 +622,7 @@ void RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj, U
 		InterpretNumberAsStringProp(lpRes->res.resBitMask.ulMask, lpRes->res.resBitMask.ulPropTag, &szPropNum);
 		if (szPropNum)
 		{
-			szTmp.FormatMessage(IDS_RESBITMASKFLAGS,szPropNum);
+			szTmp.FormatMessage(IDS_RESBITMASKFLAGS, szPropNum);
 			delete[] szPropNum;
 			szPropNum = NULL;
 			*PropString += szTmp;
@@ -629,7 +630,7 @@ void RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj, U
 		szTmp.FormatMessage(
 			IDS_RESBITMASKTAG,
 			szTabs,
-			TagToString(lpRes->res.resBitMask.ulPropTag,lpObj,false,true));
+			TagToString(lpRes->res.resBitMask.ulPropTag, lpObj, false, true));
 		*PropString += szTmp;
 		break;
 	case RES_SIZE:
@@ -640,7 +641,7 @@ void RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj, U
 			szFlags,
 			lpRes->res.resSize.relop,
 			lpRes->res.resSize.cb,
-			TagToString(lpRes->res.resSize.ulPropTag,lpObj,false,true));
+			TagToString(lpRes->res.resSize.ulPropTag, lpObj, false, true));
 		delete[] szFlags;
 		szFlags = NULL;
 		*PropString += szTmp;
@@ -649,7 +650,7 @@ void RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj, U
 		szTmp.FormatMessage(
 			IDS_RESEXIST,
 			szTabs,
-			TagToString(lpRes->res.resExist.ulPropTag,lpObj,false,true),
+			TagToString(lpRes->res.resExist.ulPropTag, lpObj, false, true),
 			lpRes->res.resExist.ulReserved1,
 			lpRes->res.resExist.ulReserved2);
 		*PropString += szTmp;
@@ -658,24 +659,24 @@ void RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj, U
 		szTmp.FormatMessage(
 			IDS_RESSUBRES,
 			szTabs,
-			TagToString(lpRes->res.resSub.ulSubObject,lpObj,false,true));
+			TagToString(lpRes->res.resSub.ulSubObject, lpObj, false, true));
 		*PropString += szTmp;
-		RestrictionToString(lpRes->res.resSub.lpRes,lpObj,ulTabLevel+1,&szTmp);
+		RestrictionToString(lpRes->res.resSub.lpRes, lpObj, ulTabLevel + 1, &szTmp);
 		*PropString += szTmp;
 		break;
 	case RES_COMMENT:
-		szTmp.FormatMessage(IDS_RESCOMMENT,szTabs,lpRes->res.resComment.cValues);
+		szTmp.FormatMessage(IDS_RESCOMMENT, szTabs, lpRes->res.resComment.cValues);
 		*PropString += szTmp;
 		if (lpRes->res.resComment.lpProp)
 		{
-			for (i = 0;i< lpRes->res.resComment.cValues;i++)
+			for (i = 0; i < lpRes->res.resComment.cValues; i++)
 			{
-				InterpretProp(&lpRes->res.resComment.lpProp[i],&szProp,&szAltProp);
+				InterpretProp(&lpRes->res.resComment.lpProp[i], &szProp, &szAltProp);
 				szTmp.FormatMessage(
 					IDS_RESCOMMENTPROPS,
 					szTabs,
 					i,
-					TagToString(lpRes->res.resComment.lpProp[i].ulPropTag,lpObj,false,true),
+					TagToString(lpRes->res.resComment.lpProp[i].ulPropTag, lpObj, false, true),
 					szProp,
 					szAltProp);
 				*PropString += szTmp;
@@ -685,22 +686,22 @@ void RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj, U
 			IDS_RESCOMMENTRES,
 			szTabs);
 		*PropString += szTmp;
-		RestrictionToString(lpRes->res.resComment.lpRes,lpObj,ulTabLevel+1,&szTmp);
+		RestrictionToString(lpRes->res.resComment.lpRes, lpObj, ulTabLevel + 1, &szTmp);
 		*PropString += szTmp;
 		break;
 	case RES_ANNOTATION:
-		szTmp.FormatMessage(IDS_RESANNOTATION,szTabs,lpRes->res.resComment.cValues);
+		szTmp.FormatMessage(IDS_RESANNOTATION, szTabs, lpRes->res.resComment.cValues);
 		*PropString += szTmp;
 		if (lpRes->res.resComment.lpProp)
 		{
-			for (i = 0;i< lpRes->res.resComment.cValues;i++)
+			for (i = 0; i < lpRes->res.resComment.cValues; i++)
 			{
-				InterpretProp(&lpRes->res.resComment.lpProp[i],&szProp,&szAltProp);
+				InterpretProp(&lpRes->res.resComment.lpProp[i], &szProp, &szAltProp);
 				szTmp.FormatMessage(
 					IDS_RESANNOTATIONPROPS,
 					szTabs,
 					i,
-					TagToString(lpRes->res.resComment.lpProp[i].ulPropTag,lpObj,false,true),
+					TagToString(lpRes->res.resComment.lpProp[i].ulPropTag, lpObj, false, true),
 					szProp,
 					szAltProp);
 				*PropString += szTmp;
@@ -710,7 +711,7 @@ void RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj, U
 			IDS_RESANNOTATIONRES,
 			szTabs);
 		*PropString += szTmp;
-		RestrictionToString(lpRes->res.resComment.lpRes,lpObj,ulTabLevel+1,&szTmp);
+		RestrictionToString(lpRes->res.resComment.lpRes, lpObj, ulTabLevel + 1, &szTmp);
 		*PropString += szTmp;
 		break;
 	}
@@ -719,7 +720,7 @@ void RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj, U
 _Check_return_ CString RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj)
 {
 	CString szRes;
-	RestrictionToString(lpRes,lpObj,0,&szRes);
+	RestrictionToString(lpRes, lpObj, 0, &szRes);
 	return szRes;
 } // RestrictionToString
 
@@ -736,23 +737,23 @@ void AdrListToString(_In_ LPADRLIST lpAdrList, _In_ CString *PropString)
 	CString szTmp;
 	CString szProp;
 	CString szAltProp;
-	PropString->FormatMessage(IDS_ADRLISTCOUNT,lpAdrList->cEntries);
+	PropString->FormatMessage(IDS_ADRLISTCOUNT, lpAdrList->cEntries);
 
 	ULONG i = 0;
-	for (i = 0 ; i < lpAdrList->cEntries ; i++)
+	for (i = 0; i < lpAdrList->cEntries; i++)
 	{
-		szTmp.FormatMessage(IDS_ADRLISTENTRIESCOUNT,i,lpAdrList->aEntries[i].cValues);
+		szTmp.FormatMessage(IDS_ADRLISTENTRIESCOUNT, i, lpAdrList->aEntries[i].cValues);
 		*PropString += szTmp;
 
 		ULONG j = 0;
-		for (j = 0 ; j < lpAdrList->aEntries[i].cValues ; j++)
+		for (j = 0; j < lpAdrList->aEntries[i].cValues; j++)
 		{
-			InterpretProp(&lpAdrList->aEntries[i].rgPropVals[j],&szProp,&szAltProp);
+			InterpretProp(&lpAdrList->aEntries[i].rgPropVals[j], &szProp, &szAltProp);
 			szTmp.FormatMessage(
 				IDS_ADRLISTENTRY,
 				i,
 				j,
-				TagToString(lpAdrList->aEntries[i].rgPropVals[j].ulPropTag,NULL,false,false),
+				TagToString(lpAdrList->aEntries[i].rgPropVals[j].ulPropTag, NULL, false, false),
 				szProp,
 				szAltProp);
 			*PropString += szTmp;
@@ -781,7 +782,7 @@ void ActionToString(_In_ ACTION* lpAction, _In_ CString* PropString)
 		IDS_ACTION,
 		lpAction->acttype,
 		szFlags,
-		RestrictionToString(lpAction->lpRes,NULL),
+		RestrictionToString(lpAction->lpRes, NULL),
 		lpAction->ulFlags,
 		szFlags2);
 	delete[] szFlags2;
@@ -789,100 +790,100 @@ void ActionToString(_In_ ACTION* lpAction, _In_ CString* PropString)
 	szFlags2 = NULL;
 	szFlags = NULL;
 
-	switch(lpAction->acttype)
+	switch (lpAction->acttype)
 	{
 	case OP_MOVE:
 	case OP_COPY:
-		{
-			SBinary sBinStore = {0};
-			SBinary sBinFld = {0};
-			sBinStore.cb = lpAction->actMoveCopy.cbStoreEntryId;
-			sBinStore.lpb = (LPBYTE) lpAction->actMoveCopy.lpStoreEntryId;
-			sBinFld.cb = lpAction->actMoveCopy.cbFldEntryId;
-			sBinFld.lpb = (LPBYTE) lpAction->actMoveCopy.lpFldEntryId;
+	{
+					SBinary sBinStore = { 0 };
+					SBinary sBinFld = { 0 };
+					sBinStore.cb = lpAction->actMoveCopy.cbStoreEntryId;
+					sBinStore.lpb = (LPBYTE)lpAction->actMoveCopy.lpStoreEntryId;
+					sBinFld.cb = lpAction->actMoveCopy.cbFldEntryId;
+					sBinFld.lpb = (LPBYTE)lpAction->actMoveCopy.lpFldEntryId;
 
-			szTmp.FormatMessage(IDS_ACTIONOPMOVECOPY,
-				BinToHexString(&sBinStore,true),
-				BinToTextString(&sBinStore,false),
-				BinToHexString(&sBinFld,true),
-				BinToTextString(&sBinFld,false));
-			*PropString += szTmp;
-			break;
-		}
+					szTmp.FormatMessage(IDS_ACTIONOPMOVECOPY,
+						BinToHexString(&sBinStore, true),
+						BinToTextString(&sBinStore, false),
+						BinToHexString(&sBinFld, true),
+						BinToTextString(&sBinFld, false));
+					*PropString += szTmp;
+					break;
+	}
 	case OP_REPLY:
 	case OP_OOF_REPLY:
-		{
+	{
 
-			SBinary sBin = {0};
-			sBin.cb = lpAction->actReply.cbEntryId;
-			sBin.lpb = (LPBYTE) lpAction->actReply.lpEntryId;
-			LPTSTR szGUID = GUIDToStringAndName(&lpAction->actReply.guidReplyTemplate);
+						 SBinary sBin = { 0 };
+						 sBin.cb = lpAction->actReply.cbEntryId;
+						 sBin.lpb = (LPBYTE)lpAction->actReply.lpEntryId;
+						 LPTSTR szGUID = GUIDToStringAndName(&lpAction->actReply.guidReplyTemplate);
 
-			szTmp.FormatMessage(IDS_ACTIONOPREPLY,
-				BinToHexString(&sBin,true),
-				BinToTextString(&sBin,false),
-				szGUID);
-			*PropString += szTmp;
-			delete[] szGUID;
-			break;
-		}
+						 szTmp.FormatMessage(IDS_ACTIONOPREPLY,
+							 BinToHexString(&sBin, true),
+							 BinToTextString(&sBin, false),
+							 szGUID);
+						 *PropString += szTmp;
+						 delete[] szGUID;
+						 break;
+	}
 	case OP_DEFER_ACTION:
-		{
-			SBinary sBin = {0};
-			sBin.cb = lpAction->actDeferAction.cbData;
-			sBin.lpb = (LPBYTE) lpAction->actDeferAction.pbData;
+	{
+							SBinary sBin = { 0 };
+							sBin.cb = lpAction->actDeferAction.cbData;
+							sBin.lpb = (LPBYTE)lpAction->actDeferAction.pbData;
 
-			szTmp.FormatMessage(IDS_ACTIONOPDEFER,
-				BinToHexString(&sBin,true),
-				BinToTextString(&sBin,false));
-			*PropString += szTmp;
-			break;
-		}
+							szTmp.FormatMessage(IDS_ACTIONOPDEFER,
+								BinToHexString(&sBin, true),
+								BinToTextString(&sBin, false));
+							*PropString += szTmp;
+							break;
+	}
 	case OP_BOUNCE:
-		{
-			InterpretFlags(flagBounceCode, lpAction->scBounceCode, &szFlags);
-			szTmp.FormatMessage(IDS_ACTIONOPBOUNCE,lpAction->scBounceCode,szFlags);
-			delete[] szFlags;
-			szFlags = NULL;
-			*PropString += szTmp;
-			break;
-		}
+	{
+					  InterpretFlags(flagBounceCode, lpAction->scBounceCode, &szFlags);
+					  szTmp.FormatMessage(IDS_ACTIONOPBOUNCE, lpAction->scBounceCode, szFlags);
+					  delete[] szFlags;
+					  szFlags = NULL;
+					  *PropString += szTmp;
+					  break;
+	}
 	case OP_FORWARD:
 	case OP_DELEGATE:
-		{
-			szTmp.FormatMessage(IDS_ACTIONOPFORWARDDEL);
-			*PropString += szTmp;
-			AdrListToString(lpAction->lpadrlist,&szProp);
-			*PropString += szProp;
-			break;
-		}
+	{
+						szTmp.FormatMessage(IDS_ACTIONOPFORWARDDEL);
+						*PropString += szTmp;
+						AdrListToString(lpAction->lpadrlist, &szProp);
+						*PropString += szProp;
+						break;
+	}
 
 	case OP_TAG:
-		{
-			InterpretProp(&lpAction->propTag,&szProp,&szAltProp);
-			szTmp.FormatMessage(IDS_ACTIONOPTAG,
-				TagToString(lpAction->propTag.ulPropTag,NULL,false,true),
-				szProp,
-				szAltProp);
-			*PropString += szTmp;
-			break;
-		}
+	{
+				   InterpretProp(&lpAction->propTag, &szProp, &szAltProp);
+				   szTmp.FormatMessage(IDS_ACTIONOPTAG,
+					   TagToString(lpAction->propTag.ulPropTag, NULL, false, true),
+					   szProp,
+					   szAltProp);
+				   *PropString += szTmp;
+				   break;
+	}
 	}
 
-	switch(lpAction->acttype)
+	switch (lpAction->acttype)
 	{
 	case OP_REPLY:
-		{
-			InterpretFlags(flagOPReply, lpAction->ulActionFlavor, &szFlags);
-			break;
-		}
-	case OP_FORWARD:
-		{
-			InterpretFlags(flagOpForward, lpAction->ulActionFlavor, &szFlags);
-			break;
-		}
+	{
+					 InterpretFlags(flagOPReply, lpAction->ulActionFlavor, &szFlags);
+					 break;
 	}
-	szTmp.FormatMessage(IDS_ACTIONFLAVOR,lpAction->ulActionFlavor,szFlags);
+	case OP_FORWARD:
+	{
+					   InterpretFlags(flagOpForward, lpAction->ulActionFlavor, &szFlags);
+					   break;
+	}
+	}
+	szTmp.FormatMessage(IDS_ACTIONFLAVOR, lpAction->ulActionFlavor, szFlags);
 	*PropString += szTmp;
 
 	delete[] szFlags;
@@ -895,14 +896,14 @@ void ActionToString(_In_ ACTION* lpAction, _In_ CString* PropString)
 	}
 	else
 	{
-		szTmp.FormatMessage(IDS_ACTIONTAGARRAYCOUNT,lpAction->lpPropTagArray->cValues);
+		szTmp.FormatMessage(IDS_ACTIONTAGARRAYCOUNT, lpAction->lpPropTagArray->cValues);
 		*PropString += szTmp;
 		ULONG i = 0;
-		for (i = 0 ; i < lpAction->lpPropTagArray->cValues ; i++)
+		for (i = 0; i < lpAction->lpPropTagArray->cValues; i++)
 		{
 			szTmp.FormatMessage(IDS_ACTIONTAGARRAYTAG,
 				i,
-				TagToString(lpAction->lpPropTagArray->aulPropTag[i],NULL,false,false));
+				TagToString(lpAction->lpPropTagArray->aulPropTag[i], NULL, false, false));
 			*PropString += szTmp;
 		}
 	}
@@ -931,11 +932,11 @@ void ActionsToString(_In_ ACTIONS* lpActions, _In_ CString* PropString)
 	szFlags = NULL;
 
 	UINT i = 0;
-	for (i = 0 ; i < lpActions->cActions ; i++)
+	for (i = 0; i < lpActions->cActions; i++)
 	{
-		szTmp.FormatMessage(IDS_ACTIONSACTION,i);
+		szTmp.FormatMessage(IDS_ACTIONSACTION, i);
 		*PropString += szTmp;
-		ActionToString(&lpActions->lpAction[i],&szTmp);
+		ActionToString(&lpActions->lpAction[i], &szTmp);
 		*PropString += szTmp;
 	}
 } // ActionsToString
@@ -943,11 +944,11 @@ void ActionsToString(_In_ ACTIONS* lpActions, _In_ CString* PropString)
 void FileTimeToString(_In_ FILETIME* lpFileTime, _In_ CString *PropString, _In_opt_ CString *AltPropString)
 {
 	HRESULT	hRes = S_OK;
-	SYSTEMTIME SysTime = {0};
+	SYSTEMTIME SysTime = { 0 };
 
 	if (!lpFileTime) return;
 
-	WC_B(FileTimeToSystemTime((FILETIME*) lpFileTime,&SysTime));
+	WC_B(FileTimeToSystemTime((FILETIME*)lpFileTime, &SysTime));
 
 	if (S_OK == hRes && PropString)
 	{
@@ -960,9 +961,9 @@ void FileTimeToString(_In_ FILETIME* lpFileTime, _In_ CString *PropString, _In_o
 		szDateStr[0] = NULL;
 
 		// shove millisecond info into our format string since GetTimeFormat doesn't use it
-		szFormatStr.FormatMessage(IDS_FILETIMEFORMAT,SysTime.wMilliseconds);
+		szFormatStr.FormatMessage(IDS_FILETIMEFORMAT, SysTime.wMilliseconds);
 
-		WC_D(iRet,GetTimeFormat(
+		WC_D(iRet, GetTimeFormat(
 			LOCALE_USER_DEFAULT,
 			NULL,
 			&SysTime,
@@ -970,7 +971,7 @@ void FileTimeToString(_In_ FILETIME* lpFileTime, _In_ CString *PropString, _In_o
 			szTimeStr,
 			MAX_PATH));
 
-		WC_D(iRet,GetDateFormat(
+		WC_D(iRet, GetDateFormat(
 			LOCALE_USER_DEFAULT,
 			NULL,
 			&SysTime,
@@ -978,7 +979,7 @@ void FileTimeToString(_In_ FILETIME* lpFileTime, _In_ CString *PropString, _In_o
 			szDateStr,
 			MAX_PATH));
 
-		PropString->Format(_T("%s %s"),szTimeStr,szDateStr); // STRING_OK
+		PropString->Format(_T("%s %s"), szTimeStr, szDateStr); // STRING_OK
 	}
 	else if (PropString)
 	{
@@ -991,91 +992,6 @@ void FileTimeToString(_In_ FILETIME* lpFileTime, _In_ CString *PropString, _In_o
 		lpFileTime->dwLowDateTime,
 		lpFileTime->dwHighDateTime);
 } // FileTimeToString
-
-void InterpretMVProp(_In_ LPSPropValue lpProp, ULONG ulMVRow, _In_ CString *PropString, _In_ CString *AltPropString)
-{
-	if (!lpProp) return;
-	if (ulMVRow > lpProp->Value.MVi.cValues) return;
-
-	// We'll let InterpretProp do all the work
-	SPropValue sProp = {0};
-	sProp.ulPropTag = CHANGE_PROP_TYPE(lpProp->ulPropTag,PROP_TYPE(lpProp->ulPropTag) & ~MV_FLAG);
-
-	// Only attempt to dereference our array if it's non-NULL
-	if (PROP_TYPE(lpProp->ulPropTag) & MV_FLAG &&
-		lpProp->Value.MVi.lpi)
-	{
-		switch(PROP_TYPE(lpProp->ulPropTag))
-		{
-		case(PT_MV_I2):
-			sProp.Value.i = lpProp->Value.MVi.lpi[ulMVRow];
-			break;
-		case(PT_MV_LONG):
-			sProp.Value.l = lpProp->Value.MVl.lpl[ulMVRow];
-			break;
-		case(PT_MV_DOUBLE):
-			sProp.Value.dbl = lpProp->Value.MVdbl.lpdbl[ulMVRow];
-			break;
-		case(PT_MV_CURRENCY):
-			sProp.Value.cur = lpProp->Value.MVcur.lpcur[ulMVRow];
-			break;
-		case(PT_MV_APPTIME):
-			sProp.Value.at = lpProp->Value.MVat.lpat[ulMVRow];
-			break;
-		case(PT_MV_SYSTIME):
-			sProp.Value.ft = lpProp->Value.MVft.lpft[ulMVRow];
-			break;
-		case(PT_MV_I8):
-			sProp.Value.li = lpProp->Value.MVli.lpli[ulMVRow];
-			break;
-		case(PT_MV_R4):
-			sProp.Value.flt = lpProp->Value.MVflt.lpflt[ulMVRow];
-			break;
-		case(PT_MV_STRING8):
-			sProp.Value.lpszA = lpProp->Value.MVszA.lppszA[ulMVRow];
-			break;
-		case(PT_MV_UNICODE):
-			sProp.Value.lpszW = lpProp->Value.MVszW.lppszW[ulMVRow];
-			break;
-		case(PT_MV_BINARY):
-			sProp.Value.bin = lpProp->Value.MVbin.lpbin[ulMVRow];
-			break;
-		case(PT_MV_CLSID):
-			sProp.Value.lpguid = &lpProp->Value.MVguid.lpguid[ulMVRow];
-			break;
-		default:
-			break;
-		}
-	}
-	InterpretProp(&sProp,PropString, AltPropString);
-} // InterpretMVProp
-
-CString BuildErrorPropString(_In_ LPSPropValue lpProp)
-{
-	CString err;
-	if (PROP_TYPE(lpProp->ulPropTag) != PT_ERROR) return err;
-	switch (PROP_ID(lpProp->ulPropTag))
-	{
-	case PROP_ID(PR_BODY):
-	case PROP_ID(PR_BODY_HTML):
-	case PROP_ID(PR_RTF_COMPRESSED):
-		{
-			if (MAPI_E_NOT_ENOUGH_MEMORY == lpProp->Value.err ||
-				MAPI_E_NOT_FOUND == lpProp->Value.err)
-			{
-				err.Format(_T("Body: Open to view")); // STRING_OK
-			}
-			break;
-		}
-	default:
-		if (MAPI_E_NOT_ENOUGH_MEMORY == lpProp->Value.err)
-		{
-			err.Format(_T("Stream: Open to view")); // STRING_OK
-			break;
-		}
-	}
-	return err;
-}
 
 /***************************************************************************
 Name		: InterpretProp
@@ -1090,140 +1006,18 @@ Comment	: Add new Property IDs as they become known
 ***************************************************************************/
 void InterpretProp(_In_ LPSPropValue lpProp, _In_opt_ CString *PropString, _In_opt_ CString *AltPropString)
 {
-	CString tmpPropString;
-	CString tmpAltPropString;
-	CString szTmp;
-	CString szAltTmp;
-	ULONG iMVCount = 0;
-
 	if (!lpProp) return;
 
-	if (MV_FLAG & PROP_TYPE(lpProp->ulPropTag))
-	{
-		// MV property
-		// All the MV structures are basically the same, so we can cheat when we pull the count
-		ULONG cValues = lpProp->Value.MVi.cValues;
-		tmpPropString.Format(_T("%u: "),cValues); // STRING_OK
-		// Don't bother with the loop if we don't have data
-		if (lpProp->Value.MVi.lpi)
-		{
-			for (iMVCount = 0; iMVCount < cValues; iMVCount++)
-			{
-				if (iMVCount != 0)
-				{
-					tmpPropString += _T("; "); // STRING_OK
-					switch(PROP_TYPE(lpProp->ulPropTag))
-					{
-					case(PT_MV_LONG):
-					case(PT_MV_BINARY):
-					case(PT_MV_SYSTIME):
-					case(PT_MV_STRING8):
-					case(PT_MV_UNICODE):
-						tmpAltPropString += _T("; "); // STRING_OK
-						break;
-					}
-				}
-				InterpretMVProp(lpProp, iMVCount, &szTmp, &szAltTmp);
-				tmpPropString += szTmp;
-				tmpAltPropString += szAltTmp;
-			}
-		}
-	}
-	else
-	{
-		switch(PROP_TYPE(lpProp->ulPropTag))
-		{
-		case(PT_I2):
-			tmpPropString.Format(_T("%d"),lpProp->Value.i); // STRING_OK
-			tmpAltPropString.Format(_T("0x%X"),lpProp->Value.i); // STRING_OK
-			break;
-		case(PT_LONG):
-			tmpPropString.Format(_T("%d"),lpProp->Value.l); // STRING_OK
-			tmpAltPropString.Format(_T("0x%X"),lpProp->Value.l); // STRING_OK
-			break;
-		case(PT_R4):
-			tmpPropString.Format(_T("%f"),lpProp->Value.flt); // STRING_OK
-			break;
-		case(PT_DOUBLE):
-			tmpPropString.Format(_T("%f"),lpProp->Value.dbl); // STRING_OK
-			break;
-		case(PT_CURRENCY):
-			tmpPropString = CurrencyToString(lpProp->Value.cur);
-			tmpAltPropString.Format(_T("0x%08X:0x%08X"),(int)(lpProp->Value.cur.Hi),(int)lpProp->Value.cur.Lo); // STRING_OK
-			break;
-		case(PT_APPTIME):
-			tmpPropString.Format(_T("%f"),lpProp->Value.at); // STRING_OK
-			break;
-		case(PT_ERROR):
-			tmpPropString.Format(_T("Err:0x%08X=%ws"),lpProp->Value.err,ErrorNameFromErrorCode(lpProp->Value.err)); // STRING_OK
-			tmpAltPropString = BuildErrorPropString(lpProp);
-			break;
-		case(PT_BOOLEAN):
-			if (lpProp->Value.b)
-				tmpPropString.FormatMessage(IDS_TRUE);
-			else
-				tmpPropString.FormatMessage(IDS_FALSE);
-			break;
-		case(PT_OBJECT):
-			tmpPropString.FormatMessage(IDS_OBJECT);
-			break;
-		case(PT_I8): // LARGE_INTEGER
-			tmpPropString.Format(_T("0x%08X:0x%08X"),(int)(lpProp->Value.li.HighPart),(int)lpProp->Value.li.LowPart); // STRING_OK
-			tmpAltPropString.Format(_T("%I64d"),lpProp->Value.li.QuadPart); // STRING_OK
-			break;
-		case(PT_STRING8):
-			// CString overloads '=' to handle conversions
-			if (CheckStringProp(lpProp,PT_STRING8))
-			{
-				tmpPropString = lpProp->Value.lpszA;
+	Property parsedProperty = ParseProperty(lpProp);
 
-				HRESULT hRes = S_OK;
-				SBinary sBin = {0};
-				WC_H(StringCbLengthA(lpProp->Value.lpszA,STRSAFE_MAX_CCH * sizeof(char),(size_t*)&sBin.cb));
-				sBin.lpb = (LPBYTE) lpProp->Value.lpszA;
-				tmpAltPropString = BinToHexString(&sBin,true);
-			}
-			break;
-		case(PT_UNICODE):
-			// CString overloads '=' to handle conversions
-			if (CheckStringProp(lpProp,PT_UNICODE))
-			{
-				tmpPropString = lpProp->Value.lpszW;
-
-				HRESULT hRes = S_OK;
-				SBinary sBin = {0};
-				WC_H(StringCbLengthW(lpProp->Value.lpszW,STRSAFE_MAX_CCH * sizeof(WCHAR),(size_t*)&sBin.cb));
-				sBin.lpb = (LPBYTE) lpProp->Value.lpszW;
-				tmpAltPropString = BinToHexString(&sBin,true);
-			}
-			break;
-		case(PT_SYSTIME):
-			FileTimeToString(&lpProp->Value.ft,&tmpPropString,&tmpAltPropString);
-			break;
-		case(PT_CLSID):
-			{
-				LPTSTR szGuid = GUIDToStringAndName(lpProp->Value.lpguid);
-				tmpPropString = szGuid;
-				delete[] szGuid;
-			}
-			break;
-		case(PT_BINARY):
-			tmpPropString = BinToHexString(&lpProp->Value.bin,true);
-			tmpAltPropString = BinToTextString(&lpProp->Value.bin,true);
-			break;
-		case(PT_SRESTRICTION):
-			tmpPropString = RestrictionToString((LPSRestriction) lpProp->Value.lpszA,NULL);
-			break;
-		case(PT_ACTIONS):
-			ActionsToString((ACTIONS*)lpProp->Value.lpszA,&tmpPropString);
-			break;
-		default:
-			break;
-		}
-	}
-	if (PropString) *PropString = tmpPropString;
-	if (AltPropString) *AltPropString = tmpAltPropString;
-} // InterpretProp
+#ifdef _UNICODE
+	if (PropString) *PropString =  parsedProperty.toString().c_str();
+	if (AltPropString) *AltPropString=  parsedProperty.toAltString().c_str();
+#else
+	if (PropString) (*PropString).Format("%ws", parsedProperty.toString().c_str());
+	if (AltPropString) (*AltPropString).Format("%ws", parsedProperty.toAltString().c_str());
+#endif
+}
 
 _Check_return_ CString TypeToString(ULONG ulPropTag)
 {
@@ -1239,7 +1033,7 @@ _Check_return_ CString TypeToString(ULONG ulPropTag)
 	ULONG ulCur = 0;
 	bool bTypeFound = false;
 
-	for (ulCur = 0 ; ulCur < ulPropTypeArray ; ulCur++)
+	for (ulCur = 0; ulCur < ulPropTypeArray; ulCur++)
 	{
 		if (PropTypeArray[ulCur].ulValue == PROP_TYPE(ulPropTag))
 		{
@@ -1249,7 +1043,7 @@ _Check_return_ CString TypeToString(ULONG ulPropTag)
 		}
 	}
 	if (!bTypeFound)
-		tmpPropType.Format(_T("0x%04x"),PROP_TYPE(ulPropTag)); // STRING_OK
+		tmpPropType.Format(_T("0x%04x"), PROP_TYPE(ulPropTag)); // STRING_OK
 
 	if (bNeedInstance) tmpPropType += _T(" | MV_INSTANCE"); // STRING_OK
 	return tmpPropType;
@@ -1268,10 +1062,10 @@ _Check_return_ CString TypeToString(ULONG ulPropTag)
 // TagToString will prepend the http://schemas.microsoft.com/MAPI/ for us since it's a constant
 // We don't compute a DASL string for non-named props as FormatMessage in TagToString can handle those
 void NameIDToStrings(_In_ LPMAPINAMEID lpNameID,
-					 ULONG ulPropTag,
-					 _Deref_opt_out_opt_z_ LPTSTR* lpszPropName,
-					 _Deref_opt_out_opt_z_ LPTSTR* lpszPropGUID,
-					 _Deref_opt_out_opt_z_ LPTSTR* lpszDASL)
+	ULONG ulPropTag,
+	_Deref_opt_out_opt_z_ LPTSTR* lpszPropName,
+	_Deref_opt_out_opt_z_ LPTSTR* lpszPropGUID,
+	_Deref_opt_out_opt_z_ LPTSTR* lpszDASL)
 {
 	HRESULT hRes = S_OK;
 
@@ -1293,14 +1087,14 @@ void NameIDToStrings(_In_ LPMAPINAMEID lpNameID,
 		{
 			if (lpszPropName) *lpszPropName = lpNamedPropCacheEntry->lpszPropName;
 			if (lpszPropGUID) *lpszPropGUID = lpNamedPropCacheEntry->lpszPropGUID;
-			if (lpszDASL)     *lpszDASL     = lpNamedPropCacheEntry->lpszDASL;
+			if (lpszDASL)     *lpszDASL = lpNamedPropCacheEntry->lpszDASL;
 			return;
 		}
 
 		// We shouldn't ever get here without a cached entry
 		if (!lpNamedPropCacheEntry)
 		{
-			DebugPrint(DBGNamedProp,_T("NameIDToStrings: Failed to find cache entry for ulPropTag = 0x%08X\n"),ulPropTag);
+			DebugPrint(DBGNamedProp, _T("NameIDToStrings: Failed to find cache entry for ulPropTag = 0x%08X\n"), ulPropTag);
 			return;
 		}
 	}
@@ -1310,23 +1104,23 @@ void NameIDToStrings(_In_ LPMAPINAMEID lpNameID,
 	LPTSTR szPropGUID = NULL;
 	LPTSTR szDASL = NULL;
 
-	DebugPrint(DBGNamedProp,_T("Parsing named property\n"));
-	DebugPrint(DBGNamedProp,_T("ulPropTag = 0x%08x\n"),ulPropTag);
+	DebugPrint(DBGNamedProp, _T("Parsing named property\n"));
+	DebugPrint(DBGNamedProp, _T("ulPropTag = 0x%08x\n"), ulPropTag);
 	szPropGUID = GUIDToStringAndName(lpNameID->lpguid);
-	DebugPrint(DBGNamedProp,_T("lpNameID->lpguid = %s\n"), szPropGUID);
+	DebugPrint(DBGNamedProp, _T("lpNameID->lpguid = %s\n"), szPropGUID);
 
 	LPTSTR szDASLGuid = NULL;
 	szDASLGuid = GUIDToString(lpNameID->lpguid);
 
 	if (lpNameID->ulKind == MNID_ID)
 	{
-		DebugPrint(DBGNamedProp,_T("lpNameID->Kind.lID = 0x%04X = %d\n"),lpNameID->Kind.lID,lpNameID->Kind.lID);
+		DebugPrint(DBGNamedProp, _T("lpNameID->Kind.lID = 0x%04X = %d\n"), lpNameID->Kind.lID, lpNameID->Kind.lID);
 		LPWSTR szName = NameIDToPropName(lpNameID);
 
 		if (szName)
 		{
 			size_t cchName = 0;
-			EC_H(StringCchLengthW(szName,STRSAFE_MAX_CCH,&cchName));
+			EC_H(StringCchLengthW(szName, STRSAFE_MAX_CCH, &cchName));
 			if (SUCCEEDED(hRes))
 			{
 				// Worst case is 'id: 0xFFFFFFFF=4294967295' - 26 chars
@@ -1334,7 +1128,7 @@ void NameIDToStrings(_In_ LPMAPINAMEID lpNameID,
 				if (szPropName)
 				{
 					// Printing hex first gets a nice sort without spacing tricks
-					EC_H(StringCchPrintf(szPropName,26 + 3 + cchName + 1,_T("id: 0x%04X=%d = %ws"), // STRING_OK
+					EC_H(StringCchPrintf(szPropName, 26 + 3 + cchName + 1, _T("id: 0x%04X=%d = %ws"), // STRING_OK
 						lpNameID->Kind.lID,
 						lpNameID->Kind.lID,
 						szName));
@@ -1345,11 +1139,11 @@ void NameIDToStrings(_In_ LPMAPINAMEID lpNameID,
 		else
 		{
 			// Worst case is 'id: 0xFFFFFFFF=4294967295' - 26 chars
-			szPropName = new TCHAR[26+1];
+			szPropName = new TCHAR[26 + 1];
 			if (szPropName)
 			{
 				// Printing hex first gets a nice sort without spacing tricks
-				EC_H(StringCchPrintf(szPropName,26 + 1,_T("id: 0x%04X=%d"), // STRING_OK
+				EC_H(StringCchPrintf(szPropName, 26 + 1, _T("id: 0x%04X=%d"), // STRING_OK
 					lpNameID->Kind.lID,
 					lpNameID->Kind.lID));
 			}
@@ -1358,7 +1152,7 @@ void NameIDToStrings(_In_ LPMAPINAMEID lpNameID,
 		szDASL = new TCHAR[CCH_DASL_ID];
 		if (szDASL)
 		{
-			EC_H(StringCchPrintf(szDASL,CCH_DASL_ID,_T("id/%s/%04X%04X"), // STRING_OK
+			EC_H(StringCchPrintf(szDASL, CCH_DASL_ID, _T("id/%s/%04X%04X"), // STRING_OK
 				szDASLGuid,
 				lpNameID->Kind.lID,
 				PROP_TYPE(ulPropTag)));
@@ -1371,26 +1165,26 @@ void NameIDToStrings(_In_ LPMAPINAMEID lpNameID,
 		// So we check the string length both ways to make our best guess
 		size_t cchShortLen = NULL;
 		size_t cchWideLen = NULL;
-		WC_H(StringCchLengthA((LPSTR)lpNameID->Kind.lpwstrName,STRSAFE_MAX_CCH,&cchShortLen));
-		WC_H(StringCchLengthW(lpNameID->Kind.lpwstrName,STRSAFE_MAX_CCH,&cchWideLen));
+		WC_H(StringCchLengthA((LPSTR)lpNameID->Kind.lpwstrName, STRSAFE_MAX_CCH, &cchShortLen));
+		WC_H(StringCchLengthW(lpNameID->Kind.lpwstrName, STRSAFE_MAX_CCH, &cchWideLen));
 
 		if (cchShortLen < cchWideLen)
 		{
 			// this is the *proper* case
-			DebugPrint(DBGNamedProp,_T("lpNameID->Kind.lpwstrName = \"%ws\"\n"),lpNameID->Kind.lpwstrName);
-			szPropName = new TCHAR[7+cchWideLen];
+			DebugPrint(DBGNamedProp, _T("lpNameID->Kind.lpwstrName = \"%ws\"\n"), lpNameID->Kind.lpwstrName);
+			szPropName = new TCHAR[7 + cchWideLen];
 			if (szPropName)
 			{
 				// Compiler Error C2017 - Can occur (falsly) when escape sequences are stringized, as EC_H will do here
 #define __GOODSTRING _T("sz: \"%ws\"") // STRING_OK
-				EC_H(StringCchPrintf(szPropName,7+cchWideLen,__GOODSTRING,
+				EC_H(StringCchPrintf(szPropName, 7 + cchWideLen, __GOODSTRING,
 					lpNameID->Kind.lpwstrName));
 			}
 
-			szDASL = new TCHAR[CCH_DASL_STRING+cchWideLen];
+			szDASL = new TCHAR[CCH_DASL_STRING + cchWideLen];
 			if (szDASL)
 			{
-				EC_H(StringCchPrintf(szDASL,CCH_DASL_STRING+cchWideLen,_T("string/%s/%ws"), // STRING_OK
+				EC_H(StringCchPrintf(szDASL, CCH_DASL_STRING + cchWideLen, _T("string/%s/%ws"), // STRING_OK
 					szDASLGuid,
 					lpNameID->Kind.lpwstrName));
 			}
@@ -1398,25 +1192,25 @@ void NameIDToStrings(_In_ LPMAPINAMEID lpNameID,
 		else
 		{
 			// this is the case where ANSI data was shoved into a unicode string.
-			DebugPrint(DBGNamedProp,_T("Warning: ANSI data was found in a unicode field. This is a bug on the part of the creator of this named property\n"));
-			DebugPrint(DBGNamedProp,_T("lpNameID->Kind.lpwstrName = \"%hs\"\n"),(LPCSTR) lpNameID->Kind.lpwstrName);
+			DebugPrint(DBGNamedProp, _T("Warning: ANSI data was found in a unicode field. This is a bug on the part of the creator of this named property\n"));
+			DebugPrint(DBGNamedProp, _T("lpNameID->Kind.lpwstrName = \"%hs\"\n"), (LPCSTR)lpNameID->Kind.lpwstrName);
 
-			szPropName = new TCHAR[7+cchShortLen+25];
+			szPropName = new TCHAR[7 + cchShortLen + 25];
 			if (szPropName)
 			{
 				CString szComment;
 				EC_B(szComment.LoadString(IDS_NAMEWASANSI));
 				// Compiler Error C2017 - Can occur (falsly) when escape sequences are stringized, as EC_H will do here
 #define __BADSTRING _T("sz: \"%hs\" %s") // STRING_OK
-				EC_H(StringCchPrintf(szPropName,7+cchShortLen+25,__BADSTRING,
-					(LPSTR) lpNameID->Kind.lpwstrName, (LPCTSTR) szComment));
+				EC_H(StringCchPrintf(szPropName, 7 + cchShortLen + 25, __BADSTRING,
+					(LPSTR)lpNameID->Kind.lpwstrName, (LPCTSTR)szComment));
 			}
-			szDASL = new TCHAR[CCH_DASL_STRING+cchShortLen];
+			szDASL = new TCHAR[CCH_DASL_STRING + cchShortLen];
 			if (szDASL)
 			{
-				EC_H(StringCchPrintf(szDASL,CCH_DASL_STRING+cchShortLen,_T("string/%s/%hs"), // STRING_OK
+				EC_H(StringCchPrintf(szDASL, CCH_DASL_STRING + cchShortLen, _T("string/%s/%hs"), // STRING_OK
 					szDASLGuid,
-					(LPSTR) lpNameID->Kind.lpwstrName));
+					(LPSTR)lpNameID->Kind.lpwstrName));
 			}
 		}
 	}
@@ -1425,14 +1219,14 @@ void NameIDToStrings(_In_ LPMAPINAMEID lpNameID,
 	// Return what we were asked for
 	if (lpszPropName) *lpszPropName = szPropName;
 	if (lpszPropGUID) *lpszPropGUID = szPropGUID;
-	if (lpszDASL)     *lpszDASL     = szDASL;
+	if (lpszDASL)     *lpszDASL = szDASL;
 
 	// We've built our strings - if we're caching, put them in the cache
 	if (lpNamedPropCacheEntry)
 	{
 		lpNamedPropCacheEntry->lpszPropName = szPropName;
 		lpNamedPropCacheEntry->lpszPropGUID = szPropGUID;
-		lpNamedPropCacheEntry->lpszDASL     = szDASL;
+		lpNamedPropCacheEntry->lpszDASL = szDASL;
 		lpNamedPropCacheEntry->bStringsCached = true;
 	}
 	// But if we're not caching, free what we didn't use
@@ -1449,8 +1243,8 @@ void NameIDToStrings(_In_ LPMAPINAMEID lpNameID,
 // Need to watch out for callers to NameIDToStrings holding the strings
 // long enough for the user to change the cache setting!
 void FreeNameIDStrings(_In_opt_z_ LPTSTR lpszPropName,
-					   _In_opt_z_ LPTSTR lpszPropGUID,
-					   _In_opt_z_ LPTSTR lpszDASL)
+	_In_opt_z_ LPTSTR lpszPropGUID,
+	_In_opt_z_ LPTSTR lpszDASL)
 {
 	if (!fCacheNamedProps())
 	{

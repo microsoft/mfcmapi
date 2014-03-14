@@ -8,6 +8,8 @@
 #include "DbgView.h"
 #include "SmartView.h"
 #include "ColumnTags.h"
+#include "ParseProperty.h"
+#include <cvt/wstring>
 
 LPCTSTR g_szXMLHeader = _T("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n");
 FILE* g_fDebugFile = NULL;
@@ -161,45 +163,55 @@ void WriteFile(_In_ FILE* fFile, _In_z_ LPCTSTR szString)
 	}
 } // WriteFile
 
+void OutputThreadTime(ULONG ulDbgLvl)
+{
+	// Compute current time and thread for a time stamp
+	TCHAR szThreadTime[MAX_PATH];
+
+	SYSTEMTIME stLocalTime = {};
+	FILETIME ftLocalTime = {};
+
+	GetSystemTime(&stLocalTime);
+	GetSystemTimeAsFileTime(&ftLocalTime);
+
+	(void)StringCchPrintf(szThreadTime,
+		_countof(szThreadTime),
+		_T("0x%04x %02d:%02u:%02u.%03u%s  %02u-%02u-%4u 0x%08X: "), // STRING_OK
+		GetCurrentThreadId(),
+		(stLocalTime.wHour <= 12) ? stLocalTime.wHour : stLocalTime.wHour - 12,
+		stLocalTime.wMinute,
+		stLocalTime.wSecond,
+		stLocalTime.wMilliseconds,
+		(stLocalTime.wHour <= 12) ? _T("AM") : _T("PM"), // STRING_OK
+		stLocalTime.wMonth,
+		stLocalTime.wDay,
+		stLocalTime.wYear,
+		ulDbgLvl);
+	OutputDebugString(szThreadTime);
+#ifndef MRMAPI
+	OutputToDbgView(szThreadTime);
+#endif
+
+	// print to to our debug output log file
+	if (RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD && g_fDebugFile)
+	{
+		WriteFile(g_fDebugFile, szThreadTime);
+	}
+}
+
 // The root of all debug output - call no debug output functions besides OutputDebugString from here!
 void _Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, _In_opt_z_ LPCTSTR szMsg)
 {
 	CHKPARAM;
 	EARLYABORT;
-	static TCHAR szErr[64]; // buffer for catastrophic failures
-
 	if (!szMsg) return; // nothing to print? Cool!
 
 	// print to debug output
 	if (fIsSetv(ulDbgLvl))
 	{
-		// Compute current time and thread for a time stamp
-		TCHAR		szThreadTime[MAX_PATH];
-
 		if (bPrintThreadTime)
 		{
-			SYSTEMTIME	stLocalTime;
-			FILETIME	ftLocalTime;
-			GetSystemTime(&stLocalTime);
-			GetSystemTimeAsFileTime(&ftLocalTime);
-
-			(void)StringCchPrintf(szThreadTime,
-				_countof(szThreadTime),
-				_T("0x%04x %02d:%02u:%02u.%03u%s  %02u-%02u-%4u 0x%08X: "), // STRING_OK
-				GetCurrentThreadId(),
-				(stLocalTime.wHour <= 12) ? stLocalTime.wHour : stLocalTime.wHour - 12,
-				stLocalTime.wMinute,
-				stLocalTime.wSecond,
-				stLocalTime.wMilliseconds,
-				(stLocalTime.wHour <= 12) ? _T("AM") : _T("PM"), // STRING_OK
-				stLocalTime.wMonth,
-				stLocalTime.wDay,
-				stLocalTime.wYear,
-				ulDbgLvl);
-			OutputDebugString(szThreadTime);
-#ifndef MRMAPI
-			OutputToDbgView(szThreadTime);
-#endif
+			OutputThreadTime(ulDbgLvl);
 		}
 
 		OutputDebugString(szMsg);
@@ -217,7 +229,6 @@ void _Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, _In_op
 		// print to to our debug output log file
 		if (RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD && g_fDebugFile)
 		{
-			if (bPrintThreadTime) WriteFile(g_fDebugFile, szThreadTime);
 			WriteFile(g_fDebugFile, szMsg);
 		}
 	}
@@ -227,7 +238,7 @@ void _Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, _In_op
 	{
 		WriteFile(fFile, szMsg);
 	}
-} // _Output
+}
 
 void __cdecl Outputf(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, _Printf_format_string_ LPCTSTR szMsg, ...)
 {
@@ -254,7 +265,7 @@ void __cdecl Outputf(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime
 	va_end(argList);
 
 	_Output(ulDbgLvl, fFile, bPrintThreadTime, szDebugString);
-} // Outputf
+}
 
 void __cdecl OutputToFilef(_In_opt_ FILE* fFile, _Printf_format_string_ LPCTSTR szMsg, ...)
 {
@@ -747,6 +758,8 @@ void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify, _
 	Outputf(ulDbgLvl, fFile, true, _T("End dumping notifications.\n"));
 } // _OutputNotifications
 
+std::wstring_convert<std::codecvt<wchar_t, char, std::mbstate_t> > s_converter("");
+
 void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpProp, _In_opt_ LPMAPIPROP lpObj, bool bRetryStreamProps)
 {
 	CHKPARAM;
@@ -769,10 +782,8 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 
 	CString PropType;
 
-	Outputf(ulDbgLvl, fFile, false, _T("\t<property tag = \"0x%08X\" type = \"%s\">\n"), lpProp->ulPropTag, (LPCTSTR)TypeToString(lpProp->ulPropTag));
+	Outputf(ulDbgLvl, fFile, false, _T("\t<property tag = \"0x%08X\" type = \"%s\" >\n"), lpProp->ulPropTag, (LPCTSTR)TypeToString(lpProp->ulPropTag));
 
-	CString PropString;
-	CString AltPropString;
 	LPTSTR szExactMatches = NULL;
 	LPTSTR szPartialMatches = NULL;
 	LPWSTR szSmartView = NULL;
@@ -790,8 +801,8 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 		&szPartialMatches, // Built from ulPropTag & bIsAB
 		&PropType,
 		NULL,
-		&PropString,
-		&AltPropString,
+		NULL,
+		NULL,
 		&szNamedPropName, // Built from lpProp & lpMAPIProp
 		&szNamedPropGUID, // Built from lpProp & lpMAPIProp
 		NULL);
@@ -810,31 +821,16 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 	OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPNAMEDIID].uidName, szNamedPropGUID, false, iIndent);
 	OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPNAMEDNAME].uidName, szNamedPropName, false, iIndent);
 
-	switch (PROP_TYPE(lpProp->ulPropTag))
-	{
-	case PT_STRING8:
-	case PT_UNICODE:
-	case PT_MV_STRING8:
-	case PT_MV_UNICODE:
-	case PT_SRESTRICTION:
-	case PT_ACTIONS:
-		OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPVAL].uidName, (LPTSTR)(LPCTSTR)PropString, true, iIndent);
-		OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPVALALT].uidName, (LPTSTR)(LPCTSTR)AltPropString, false, iIndent);
-		break;
-	case PT_BINARY:
-	case PT_MV_BINARY:
-		OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPVAL].uidName, (LPTSTR)(LPCTSTR)PropString, false, iIndent);
-		OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPVALALT].uidName, (LPTSTR)(LPCTSTR)AltPropString, true, iIndent);
-		break;
-	default:
-		OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPVAL].uidName, (LPTSTR)(LPCTSTR)PropString, false, iIndent);
-		OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPVALALT].uidName, (LPTSTR)(LPCTSTR)AltPropString, false, iIndent);
-		break;
-	}
+	Property prop = ParseProperty(lpProp);
+#ifdef _UNICODE
+	_Output(ulDbgLvl, fFile, false, prop.toXML(iIndent).c_str());
+#else
+	_Output(ulDbgLvl, fFile, false, s_converter.to_bytes(prop.toXML(iIndent)).c_str());
+#endif
 
 	if (szSmartView)
 	{
-		// Eventually we should remove this split, but right now, OutputXMLCDataValue is too expensive to recode
+		// Eventually we should remove this split, but right now, OutputXMLValue is too expensive to recode
 #ifdef UNICODE
 		OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPSMARTVIEW].uidName, szSmartView, true, iIndent);
 #else

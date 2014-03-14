@@ -2115,6 +2115,9 @@ cRowCount = %2!d!\r\n"
 IDS_RECIPIENTROWSTREAMROW "\r\nRow %1!d!\r\n\
 cValues = 0x%2!08X! = %2!d!\r\n\
 ulReserved1 = 0x%3!08X! = %3!d!\r\n"
+IDS_OPENBODY "Body: Open to view"
+IDS_OPENSTREAM "Stream: Open to view"
+IDS_ROW "row"
 
 // All strings above this point use FormatMessage style formatting
 
