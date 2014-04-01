@@ -21,6 +21,8 @@ public:
 		ULONG ulOutCodePage);
 	virtual ~CStreamEditor();
 
+	void DisableSave();
+
 private:
 	BOOL  OnInitDialog();
 	void  OpenPropertyStream(bool bWrite, bool bRTF);
@@ -49,6 +51,7 @@ private:
 	bool		m_bDoSmartView;
 	bool		m_bDocFile;
 	bool		m_bAllowTypeGuessing;
+	bool		m_bDisableSave;
 	ULONG		m_ulEditorType;
 	HRESULT		m_StreamError;
 };

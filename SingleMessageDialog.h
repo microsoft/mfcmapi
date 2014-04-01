@@ -27,5 +27,10 @@ private:
 	void OnRecipientProperties();
 	void OnRTFSync();
 
+	void OnTestEditBody();
+	void OnTestEditHTML();
+	void OnTestEditRTF();
+	void OnSaveChanges();
+
 	DECLARE_MESSAGE_MAP()
 };
