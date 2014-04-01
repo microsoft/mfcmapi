@@ -7,6 +7,8 @@
 #include "MAPIFunctions.h"
 #include "MFCUtilityFunctions.h"
 #include "Editor.h"
+#include "StreamEditor.h"
+#include "ExtraPropTags.h"
 
 static TCHAR* CLASS = _T("SingleMessageDialog");
 
@@ -64,6 +66,10 @@ BEGIN_MESSAGE_MAP(SingleMessageDialog, CBaseDialog)
 	ON_COMMAND(ID_ATTACHMENTPROPERTIES, OnAttachmentProperties)
 	ON_COMMAND(ID_RECIPIENTPROPERTIES, OnRecipientProperties)
 	ON_COMMAND(ID_RTFSYNC, OnRTFSync)
+	ON_COMMAND(ID_TESTEDITBODY, OnTestEditBody)
+	ON_COMMAND(ID_TESTEDITHTML, OnTestEditHTML)
+	ON_COMMAND(ID_TESTEDITRTF, OnTestEditRTF)
+	ON_COMMAND(ID_SAVECHANGES, OnSaveChanges)
 END_MESSAGE_MAP()
 
 // Clear the current list and get a new one with whatever code we've got in LoadMAPIPropList
@@ -123,5 +129,110 @@ void SingleMessageDialog::OnRTFSync()
 
 			(void)m_lpPropDisplay->RefreshMAPIPropList();
 		}
+	}
+}
+
+void SingleMessageDialog::OnTestEditBody()
+{
+	HRESULT hRes = S_OK;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
+
+	if (m_lpMessage)
+	{
+		DebugPrint(DBGGeneric, _T("Editing body on %p\n"), m_lpMessage);
+
+		CStreamEditor MyEditor(
+			this,
+			IDS_PROPEDITOR,
+			IDS_STREAMEDITORPROMPT,
+			m_lpMessage,
+			PR_BODY_W,
+			false, // No stream guessing
+			m_bIsAB,
+			false,
+			false,
+			0,
+			0,
+			0);
+		MyEditor.DisableSave();
+
+		WC_H(MyEditor.DisplayDialog());
+
+		(void)m_lpPropDisplay->RefreshMAPIPropList();
+	}
+}
+
+void SingleMessageDialog::OnTestEditHTML()
+{
+	HRESULT hRes = S_OK;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
+
+	if (m_lpMessage)
+	{
+		DebugPrint(DBGGeneric, _T("Testing HTML on %p\n"), m_lpMessage);
+
+		CStreamEditor MyEditor(
+			this,
+			IDS_PROPEDITOR,
+			IDS_STREAMEDITORPROMPT,
+			m_lpMessage,
+			PR_BODY_HTML,
+			false, // No stream guessing
+			m_bIsAB,
+			false,
+			false,
+			0,
+			0,
+			0);
+		MyEditor.DisableSave();
+
+		WC_H(MyEditor.DisplayDialog());
+
+		(void)m_lpPropDisplay->RefreshMAPIPropList();
+	}
+}
+
+void SingleMessageDialog::OnTestEditRTF()
+{
+	HRESULT hRes = S_OK;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
+
+	if (m_lpMessage)
+	{
+		DebugPrint(DBGGeneric, _T("Testing body on %p\n"), m_lpMessage);
+
+		CStreamEditor MyEditor(
+			this,
+			IDS_PROPEDITOR,
+			IDS_STREAMEDITORPROMPT,
+			m_lpMessage,
+			PR_RTF_COMPRESSED,
+			false, // No stream guessing
+			m_bIsAB,
+			true,
+			false,
+			0,
+			0,
+			0);
+		MyEditor.DisableSave();
+
+		WC_H(MyEditor.DisplayDialog());
+
+		(void)m_lpPropDisplay->RefreshMAPIPropList();
+	}
+}
+
+void SingleMessageDialog::OnSaveChanges()
+{
+	HRESULT hRes = S_OK;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
+
+	if (m_lpMessage)
+	{
+		DebugPrint(DBGGeneric, _T("Saving changes on %p\n"), m_lpMessage);
+
+		EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
+
+		(void)m_lpPropDisplay->RefreshMAPIPropList();
 	}
 }
