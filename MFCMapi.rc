@@ -663,6 +663,7 @@ MENUITEM "&Delete attachment", ID_DELETESELECTEDITEM
 MENUITEM "Copy attachments", ID_COPY
 MENUITEM "Paste attachments", ID_PASTE
 MENUITEM "&Save to file...", ID_SAVETOFILE
+MENUITEM "Add attachment", ID_ADDATTACHMENT
 MENUITEM SEPARATOR
 MENUITEM "Save changes on message", ID_SAVECHANGES
 MENUITEM "Save changes on selected item", ID_MODIFYSELECTEDITEM
@@ -680,6 +681,7 @@ MENUITEM "Copy attachments", ID_COPY
 MENUITEM "Paste attachments", ID_PASTE
 MENUITEM "&Save to file...", ID_SAVETOFILE
 MENUITEM "Save changes on selected item", ID_MODIFYSELECTEDITEM
+MENUITEM "Add attachment", ID_ADDATTACHMENT
 MENUITEM SEPARATOR
 MENUITEM "View attachments as embedded messages",
 ID_VIEWEMBEDDEDMESSAGEPROPERTIES
