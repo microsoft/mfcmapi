@@ -33,6 +33,7 @@ private:
 	void OnSaveChanges();
 	void OnSaveToFile();
 	void OnViewEmbeddedMessageProps();
+	void OnAddAttachment();
 
 	LPATTACH	m_lpAttach; // Currently opened attachment
 	ULONG		m_ulAttachNum; // Currently opened attachment number
