@@ -11,3 +11,5 @@ HRESULT HrMAPIOpenStoreAndFolder(
 void PrintObjectProperties(_In_z_ LPCTSTR szObjType, _In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag);
 
 void DoStore(_In_ MYOPTIONS ProgOpts);
+
+HRESULT OpenStore(_In_ LPMAPISESSION lpMAPISession, ULONG ulIndex, _Out_ LPMDB* lppMDB);

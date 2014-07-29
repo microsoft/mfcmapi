@@ -67,3 +67,4 @@ void InterpretProp(_In_opt_ LPSPropValue lpProp, // optional property value
 				   _Deref_opt_out_opt_z_ LPTSTR* lpszNamedPropDASL); // Built from ulPropTag & lpMAPIProp
 
 _Check_return_ HRESULT GetLargeBinaryProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_ LPSPropValue* lppProp);
+_Check_return_ HRESULT GetLargeStringProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_ LPSPropValue* lppProp);

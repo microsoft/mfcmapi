@@ -16,18 +16,18 @@ void DumpContentsTable(
 	_In_ ULONG ulCount,
 	_In_opt_ LPSRestriction lpRes)
 {
-	DebugPrint(DBGGeneric,"DumpContentsTable: Outputting folder %u / %ws from profile %ws to %ws\n", ulFolder, lpszFolder?lpszFolder:L"", lpszProfile, lpszDir);
-	if (ulOptions & OPT_DOCONTENTS)  DebugPrint(DBGGeneric,"DumpContentsTable: Outputting Contents\n");
-	if (ulOptions & OPT_DOASSOCIATEDCONTENTS) DebugPrint(DBGGeneric,"DumpContentsTable: Outputting Associated Contents\n");
-	if (ulOptions & OPT_MSG) DebugPrint(DBGGeneric,"DumpContentsTable: Outputting as MSG\n");
-	if (ulOptions & OPT_RETRYSTREAMPROPS) DebugPrint(DBGGeneric,"DumpContentsTable: Will retry stream properties\n");
-	if (ulOptions & OPT_LIST) DebugPrint(DBGGeneric,"DumpContentsTable: List only mode\n");
-	if (ulCount) DebugPrint(DBGGeneric,"DumpContentsTable: Limiting output to %u messages.\n", ulCount);
+	DebugPrint(DBGGeneric, "DumpContentsTable: Outputting folder %u / %ws from profile %ws to %ws\n", ulFolder, lpszFolder ? lpszFolder : L"", lpszProfile, lpszDir);
+	if (ulOptions & OPT_DOCONTENTS)  DebugPrint(DBGGeneric, "DumpContentsTable: Outputting Contents\n");
+	if (ulOptions & OPT_DOASSOCIATEDCONTENTS) DebugPrint(DBGGeneric, "DumpContentsTable: Outputting Associated Contents\n");
+	if (ulOptions & OPT_MSG) DebugPrint(DBGGeneric, "DumpContentsTable: Outputting as MSG\n");
+	if (ulOptions & OPT_RETRYSTREAMPROPS) DebugPrint(DBGGeneric, "DumpContentsTable: Will retry stream properties\n");
+	if (ulOptions & OPT_LIST) DebugPrint(DBGGeneric, "DumpContentsTable: List only mode\n");
+	if (ulCount) DebugPrint(DBGGeneric, "DumpContentsTable: Limiting output to %u messages.\n", ulCount);
 
 	if (lpFolder)
 	{
 		CDumpStore MyDumpStore;
-		SSortOrderSet SortOrder = {0};
+		SSortOrderSet SortOrder = { 0 };
 		MyDumpStore.InitMDB(lpMDB);
 		MyDumpStore.InitFolder(lpFolder);
 		MyDumpStore.InitFolderPathRoot(lpszDir);
@@ -44,7 +44,7 @@ void DumpContentsTable(
 			SortOrder.aSort[0].ulOrder = TABLE_SORT_DESCEND;
 			MyDumpStore.InitSortOrder(&SortOrder);
 		}
-		if (ulOptions & OPT_RETRYSTREAMPROPS) MyDumpStore.EnableStreamRetry();
+		if (!(ulOptions & OPT_RETRYSTREAMPROPS)) MyDumpStore.DisableStreamRetry();
 		MyDumpStore.ProcessFolders(
 			0 != (ulOptions & OPT_DOCONTENTS),
 			0 != (ulOptions & OPT_DOASSOCIATEDCONTENTS),
@@ -63,21 +63,21 @@ void DumpMSG(_In_z_ LPCWSTR lpszMSGFile, _In_z_ LPCWSTR lpszXMLFile, _In_ bool b
 	{
 		CDumpStore MyDumpStore;
 		MyDumpStore.InitMessagePath(lpszXMLFile);
-		if (bRetryStreamProps) MyDumpStore.EnableStreamRetry();
+		if (!bRetryStreamProps) MyDumpStore.DisableStreamRetry();
 
 		// Just assume this message might have attachments
-		MyDumpStore.ProcessMessage(lpMessage,true,NULL);
+		MyDumpStore.ProcessMessage(lpMessage, true, NULL);
 		lpMessage->Release();
 	}
 } // DumpMSG
 
 void DoContents(_In_ MYOPTIONS ProgOpts)
 {
-	SRestriction sResTop = {0};
-	SRestriction sResMiddle[2] = {0};
-	SRestriction sResSubject[2] = {0};
-	SRestriction sResMessageClass[2] = {0};
-	SPropValue sPropValue[2] = {0};
+	SRestriction sResTop = { 0 };
+	SRestriction sResMiddle[2] = { 0 };
+	SRestriction sResSubject[2] = { 0 };
+	SRestriction sResMessageClass[2] = { 0 };
+	SPropValue sPropValue[2] = { 0 };
 	LPSRestriction lpRes = NULL;
 	if (ProgOpts.lpszSubject || ProgOpts.lpszMessageClass)
 	{
@@ -123,13 +123,13 @@ void DoContents(_In_ MYOPTIONS ProgOpts)
 		sResTop.res.resAnd.cRes = i;
 		sResTop.res.resAnd.lpRes = &sResMiddle[0];
 		lpRes = &sResTop;
-		DebugPrintRestriction(DBGGeneric,lpRes,NULL);
+		DebugPrintRestriction(DBGGeneric, lpRes, NULL);
 	}
 	DumpContentsTable(
 		ProgOpts.lpszProfile,
 		ProgOpts.lpMDB,
 		ProgOpts.lpFolder,
-		ProgOpts.lpszOutput?ProgOpts.lpszOutput:L".",
+		ProgOpts.lpszOutput ? ProgOpts.lpszOutput : L".",
 		ProgOpts.ulOptions,
 		ProgOpts.ulFolder,
 		ProgOpts.lpszFolderPath,
@@ -141,6 +141,6 @@ void DoMSG(_In_ MYOPTIONS ProgOpts)
 {
 	DumpMSG(
 		ProgOpts.lpszInput,
-		ProgOpts.lpszOutput?ProgOpts.lpszOutput:L".",
+		ProgOpts.lpszOutput ? ProgOpts.lpszOutput : L".",
 		0 != (ProgOpts.ulOptions & OPT_RETRYSTREAMPROPS));
 } // DoMAPIMIME

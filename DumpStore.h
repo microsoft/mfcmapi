@@ -22,7 +22,7 @@ public:
 	void InitMailboxTablePathRoot(_In_z_ LPCWSTR szMailboxTablePathRoot);
 	void EnableMSG();
 	void EnableList();
-	void EnableStreamRetry();
+	void DisableStreamRetry();
 
 private:
 	// Worker functions (dump messages, scan for something, etc)
