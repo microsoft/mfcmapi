@@ -24,6 +24,7 @@ enum CmdMode
 	cmdmodeFolderSize,
 	cmdmodePST,
 	cmdmodeProfile,
+	cmdmodeReceiveFolder,
 };
 
 #define OPT_DOPARTIALSEARCH      0x00001
@@ -47,6 +48,7 @@ enum CmdMode
 #define OPT_NEEDINPUTFILE        0x40000
 #define OPT_NEEDOUTPUTFILE       0x80000
 #define OPT_PROFILE             0x100000
+#define OPT_NEEDSTORE			0x200000
 
 struct MYOPTIONS
 {

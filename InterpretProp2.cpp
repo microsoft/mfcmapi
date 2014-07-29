@@ -15,22 +15,22 @@ static WCHAR szPropSeparator[] = L", "; // STRING_OK
 // if it wants just the true partial matches.
 // If no hits, then ulNoMatch should be returned for lpulFirstExact and/or lpulFirstPartial
 void FindTagArrayMatches(_In_ ULONG ulTarget,
-						 bool bIsAB,
-						 _In_count_(ulMyArray) NAME_ARRAY_ENTRY_V2* MyArray,
-						 _In_ ULONG ulMyArray,
-						 _Out_ ULONG* lpulNumExacts,
-						 _Out_ ULONG* lpulFirstExact,
-						 _Out_ ULONG* lpulNumPartials,
-						 _Out_ ULONG* lpulFirstPartial)
+	bool bIsAB,
+	_In_count_(ulMyArray) NAME_ARRAY_ENTRY_V2* MyArray,
+	_In_ ULONG ulMyArray,
+	_Out_ ULONG* lpulNumExacts,
+	_Out_ ULONG* lpulFirstExact,
+	_Out_ ULONG* lpulNumPartials,
+	_Out_ ULONG* lpulFirstPartial)
 {
 	if (!(ulTarget & PROP_TAG_MASK)) // not dealing with a full prop tag
 	{
-		ulTarget = PROP_TAG(PT_UNSPECIFIED,ulTarget);
+		ulTarget = PROP_TAG(PT_UNSPECIFIED, ulTarget);
 	}
 
 	ULONG ulLowerBound = 0;
-	ULONG ulUpperBound = ulMyArray-1; // ulMyArray-1 is the last entry
-	ULONG ulMidPoint = (ulUpperBound+ulLowerBound)/2;
+	ULONG ulUpperBound = ulMyArray - 1; // ulMyArray-1 is the last entry
+	ULONG ulMidPoint = (ulUpperBound + ulLowerBound) / 2;
 	ULONG ulFirstMatch = ulNoMatch;
 	ULONG ulLastMatch = ulNoMatch;
 	ULONG ulFirstExactMatch = ulNoMatch;
@@ -58,11 +58,11 @@ void FindTagArrayMatches(_In_ ULONG ulTarget,
 		{
 			ulUpperBound = ulMidPoint;
 		}
-		else if (ulMaskedTarget > (PROP_TAG_MASK & MyArray[ulMidPoint].ulValue))
+		else if (ulMaskedTarget >(PROP_TAG_MASK & MyArray[ulMidPoint].ulValue))
 		{
 			ulLowerBound = ulMidPoint;
 		}
-		ulMidPoint = (ulUpperBound+ulLowerBound)/2;
+		ulMidPoint = (ulUpperBound + ulLowerBound) / 2;
 	}
 
 	// When we get down to two points, we may have only checked one of them
@@ -82,21 +82,21 @@ void FindTagArrayMatches(_In_ ULONG ulTarget,
 		ulLastMatch = ulFirstMatch; // Remember the last match we've found so far
 
 		// Scan backwards to find the first partial match
-		while (ulFirstMatch > 0 && ulMaskedTarget == (PROP_TAG_MASK & MyArray[ulFirstMatch-1].ulValue))
+		while (ulFirstMatch > 0 && ulMaskedTarget == (PROP_TAG_MASK & MyArray[ulFirstMatch - 1].ulValue))
 		{
 			ulFirstMatch = ulFirstMatch - 1;
 		}
 
 		// Scan forwards to find the real last partial match
 		// Last entry in the array is ulMyArray-1
-		while (ulLastMatch+1 < ulMyArray && ulMaskedTarget == (PROP_TAG_MASK & MyArray[ulLastMatch+1].ulValue))
+		while (ulLastMatch + 1 < ulMyArray && ulMaskedTarget == (PROP_TAG_MASK & MyArray[ulLastMatch + 1].ulValue))
 		{
 			ulLastMatch = ulLastMatch + 1;
 		}
 
 		// Scan to see if we have any exact matches
 		ULONG ulCur;
-		for (ulCur = ulFirstMatch ; ulCur <= ulLastMatch ; ulCur++)
+		for (ulCur = ulFirstMatch; ulCur <= ulLastMatch; ulCur++)
 		{
 			if (ulTarget == MyArray[ulCur].ulValue)
 			{
@@ -109,7 +109,7 @@ void FindTagArrayMatches(_In_ ULONG ulTarget,
 
 		if (ulNoMatch != ulFirstExactMatch)
 		{
-			for (ulCur = ulFirstExactMatch ; ulCur <= ulLastMatch ; ulCur++)
+			for (ulCur = ulFirstExactMatch; ulCur <= ulLastMatch; ulCur++)
 			{
 				if (ulTarget == MyArray[ulCur].ulValue)
 				{
@@ -132,13 +132,13 @@ void FindTagArrayMatches(_In_ ULONG ulTarget,
 // Compare tag sort order. 
 int _cdecl CompareTagsSortOrder(_In_ const void* a1, _In_ const void* a2)
 {
-	LPNAME_ARRAY_ENTRY_V2 lpTag1 = &PropTagArray[* (LPULONG) a1];
-	LPNAME_ARRAY_ENTRY_V2 lpTag2 = &PropTagArray[* (LPULONG) a2];;
+	LPNAME_ARRAY_ENTRY_V2 lpTag1 = &PropTagArray[*(LPULONG)a1];
+	LPNAME_ARRAY_ENTRY_V2 lpTag2 = &PropTagArray[*(LPULONG)a2];;
 
 	if (lpTag1->ulSortOrder < lpTag2->ulSortOrder) return 1;
 	if (lpTag1->ulSortOrder == lpTag2->ulSortOrder)
 	{
-		return wcscmp(lpTag1->lpszName,lpTag2->lpszName);
+		return wcscmp(lpTag1->lpszName, lpTag2->lpszName);
 	}
 	return -1;
 } // CompareTagsSortOrder
@@ -164,37 +164,37 @@ _Check_return_ HRESULT PropTagToPropName(ULONG ulPropTag, bool bIsAB, _Deref_opt
 	ULONG ulCur = NULL;
 	ULONG i = 0;
 
-	FindTagArrayMatches(ulPropTag,bIsAB,PropTagArray,ulPropTagArray,&ulNumExacts,&ulFirstExactMatch,&ulNumPartials,&ulFirstPartial);
+	FindTagArrayMatches(ulPropTag, bIsAB, PropTagArray, ulPropTagArray, &ulNumExacts, &ulFirstExactMatch, &ulNumPartials, &ulFirstPartial);
 
 	if (lpszExactMatch && ulNumExacts > 0 && ulNoMatch != ulFirstExactMatch)
 	{
-		ULONG ulLastExactMatch = ulFirstExactMatch+ulNumExacts-1;
+		ULONG ulLastExactMatch = ulFirstExactMatch + ulNumExacts - 1;
 		ULONG* lpulExacts = new ULONG[ulNumExacts];
 		if (lpulExacts)
 		{
-			memset(lpulExacts,0,ulNumExacts*sizeof(ULONG));
+			memset(lpulExacts, 0, ulNumExacts*sizeof(ULONG));
 			size_t cchExact = 1 + (ulNumExacts - 1) * (_countof(szPropSeparator) - 1);
-			for (ulCur = ulFirstExactMatch ; ulCur <= ulLastExactMatch ; ulCur++)
+			for (ulCur = ulFirstExactMatch; ulCur <= ulLastExactMatch; ulCur++)
 			{
 				size_t cchLen = 0;
-				EC_H(StringCchLengthW(PropTagArray[ulCur].lpszName,STRSAFE_MAX_CCH,&cchLen));
+				EC_H(StringCchLengthW(PropTagArray[ulCur].lpszName, STRSAFE_MAX_CCH, &cchLen));
 				cchExact += cchLen;
 				if (i < ulNumExacts) lpulExacts[i] = ulCur;
 				i++;
 			}
 
-			qsort(lpulExacts,i,sizeof(ULONG),&CompareTagsSortOrder);
+			qsort(lpulExacts, i, sizeof(ULONG), &CompareTagsSortOrder);
 
 			LPWSTR szExactMatch = new WCHAR[cchExact];
 			if (szExactMatch)
 			{
 				szExactMatch[0] = _T('\0');
-				for (i = 0 ; i < ulNumExacts ; i++)
+				for (i = 0; i < ulNumExacts; i++)
 				{
-					EC_H(StringCchCatW(szExactMatch,cchExact,PropTagArray[lpulExacts[i]].lpszName));
-					if (i+1 < ulNumExacts)
+					EC_H(StringCchCatW(szExactMatch, cchExact, PropTagArray[lpulExacts[i]].lpszName));
+					if (i + 1 < ulNumExacts)
 					{
-						EC_H(StringCchCatW(szExactMatch,cchExact,szPropSeparator));
+						EC_H(StringCchCatW(szExactMatch, cchExact, szPropSeparator));
 					}
 				}
 				if (SUCCEEDED(hRes))
@@ -203,7 +203,7 @@ _Check_return_ HRESULT PropTagToPropName(ULONG ulPropTag, bool bIsAB, _Deref_opt
 					*lpszExactMatch = szExactMatch;
 #else
 					LPSTR szAnsiExactMatch = NULL;
-					EC_H(UnicodeToAnsi(szExactMatch,&szAnsiExactMatch));
+					EC_H(UnicodeToAnsi(szExactMatch, &szAnsiExactMatch));
 					if (SUCCEEDED(hRes))
 					{
 						*lpszExactMatch = szAnsiExactMatch;
@@ -221,36 +221,36 @@ _Check_return_ HRESULT PropTagToPropName(ULONG ulPropTag, bool bIsAB, _Deref_opt
 		ULONG* lpulPartials = new ULONG[ulNumPartials];
 		if (lpulPartials)
 		{
-			memset(lpulPartials,0,ulNumPartials*sizeof(ULONG));
+			memset(lpulPartials, 0, ulNumPartials*sizeof(ULONG));
 			// let's build lpszPartialMatches
 			// see how much space we need - initialize cchPartial with space for separators and NULL terminator
 			// note - ulNumPartials-1 is the number of spaces we need...
-			ULONG ulLastMatch = ulFirstPartial+ulNumPartials+ulNumExacts-1;
+			ULONG ulLastMatch = ulFirstPartial + ulNumPartials + ulNumExacts - 1;
 			size_t cchPartial = 1 + (ulNumPartials - 1) * (_countof(szPropSeparator) - 1);
 			i = 0;
-			for (ulCur = ulFirstPartial ; ulCur <= ulLastMatch ; ulCur++)
+			for (ulCur = ulFirstPartial; ulCur <= ulLastMatch; ulCur++)
 			{
 				if (ulPropTag == PropTagArray[ulCur].ulValue) continue; // skip our exact matches
 				size_t cchLen = 0;
-				EC_H(StringCchLengthW(PropTagArray[ulCur].lpszName,STRSAFE_MAX_CCH,&cchLen));
+				EC_H(StringCchLengthW(PropTagArray[ulCur].lpszName, STRSAFE_MAX_CCH, &cchLen));
 				cchPartial += cchLen;
 				if (i < ulNumPartials) lpulPartials[i] = ulCur;
 				i++;
 			}
 
-			qsort(lpulPartials,i,sizeof(ULONG),&CompareTagsSortOrder);
+			qsort(lpulPartials, i, sizeof(ULONG), &CompareTagsSortOrder);
 
 			LPWSTR szPartialMatches = new WCHAR[cchPartial];
 			if (szPartialMatches)
 			{
 				szPartialMatches[0] = _T('\0');
 				ULONG ulNumSeparators = 1; // start at 1 so we print one less than we print strings
-				for (i = 0 ; i < ulNumPartials ; i++)
+				for (i = 0; i < ulNumPartials; i++)
 				{
-					EC_H(StringCchCatW(szPartialMatches,cchPartial,PropTagArray[lpulPartials[i]].lpszName));
+					EC_H(StringCchCatW(szPartialMatches, cchPartial, PropTagArray[lpulPartials[i]].lpszName));
 					if (ulNumSeparators < ulNumPartials)
 					{
-						EC_H(StringCchCatW(szPartialMatches,cchPartial,szPropSeparator));
+						EC_H(StringCchCatW(szPartialMatches, cchPartial, szPropSeparator));
 					}
 					ulNumSeparators++;
 				}
@@ -260,7 +260,7 @@ _Check_return_ HRESULT PropTagToPropName(ULONG ulPropTag, bool bIsAB, _Deref_opt
 					*lpszPartialMatches = szPartialMatches;
 #else
 					LPSTR szAnsiPartialMatches = NULL;
-					EC_H(UnicodeToAnsi(szPartialMatches,&szAnsiPartialMatches));
+					EC_H(UnicodeToAnsi(szPartialMatches, &szAnsiPartialMatches));
 					if (SUCCEEDED(hRes))
 					{
 						*lpszPartialMatches = szAnsiPartialMatches;
@@ -289,7 +289,7 @@ _Check_return_ HRESULT LookupPropName(_In_z_ LPCWSTR lpszPropName, _Out_ ULONG* 
 
 	if (!ulPropTagArray || !PropTagArray) return S_OK;
 
-	for (ulCur = 0 ; ulCur < ulPropTagArray ; ulCur++)
+	for (ulCur = 0; ulCur < ulPropTagArray; ulCur++)
 	{
 		if (0 == lstrcmpiW(lpszPropName, PropTagArray[ulCur].lpszName))
 		{
@@ -328,10 +328,10 @@ _Check_return_ HRESULT PropNameToPropTagA(_In_z_ LPCSTR lpszPropName, _Out_ ULON
 	if (!ulPropTagArray || !PropTagArray) return S_OK;
 
 	LPWSTR szPropName = NULL;
-	EC_H(AnsiToUnicode(lpszPropName,&szPropName));
+	EC_H(AnsiToUnicode(lpszPropName, &szPropName));
 	if (SUCCEEDED(hRes))
 	{
-		EC_H(PropNameToPropTagW(szPropName,ulPropTag));
+		EC_H(PropNameToPropTagW(szPropName, ulPropTag));
 	}
 	delete[] szPropName;
 	return hRes;
@@ -343,8 +343,8 @@ _Check_return_ ULONG PropTypeNameToPropTypeA(_In_z_ LPCSTR lpszPropType)
 
 	HRESULT hRes = S_OK;
 	LPWSTR szPropType = NULL;
-	EC_H(AnsiToUnicode(lpszPropType,&szPropType));
-	ulPropType =  PropTypeNameToPropTypeW(szPropType);
+	EC_H(AnsiToUnicode(lpszPropType, &szPropType));
+	ulPropType = PropTypeNameToPropTypeW(szPropType);
 	delete[] szPropType;
 
 	return ulPropType;
@@ -357,7 +357,7 @@ _Check_return_ ULONG PropTypeNameToPropTypeW(_In_z_ LPCWSTR lpszPropType)
 	// Check for numbers first before trying the string as an array lookup.
 	// This will translate '0x102' to 0x102, 0x3 to 3, etc.
 	LPWSTR szEnd = NULL;
-	ULONG ulType = wcstoul(lpszPropType,&szEnd,16);
+	ULONG ulType = wcstoul(lpszPropType, &szEnd, 16);
 	if (*szEnd == NULL) return ulType;
 
 	ULONG ulCur = 0;
@@ -365,9 +365,9 @@ _Check_return_ ULONG PropTypeNameToPropTypeW(_In_z_ LPCWSTR lpszPropType)
 	ULONG ulPropType = PT_UNSPECIFIED;
 
 	LPCWSTR szPropType = lpszPropType;
-	for (ulCur = 0 ; ulCur < ulPropTypeArray ; ulCur++)
+	for (ulCur = 0; ulCur < ulPropTypeArray; ulCur++)
 	{
-		if (0 == lstrcmpiW(szPropType,PropTypeArray[ulCur].lpszName))
+		if (0 == lstrcmpiW(szPropType, PropTypeArray[ulCur].lpszName))
 		{
 			ulPropType = PropTypeArray[ulCur].ulValue;
 			break;
@@ -388,9 +388,9 @@ _Check_return_ LPTSTR GUIDToStringAndName(_In_opt_ LPCGUID lpGUID)
 
 	if (lpGUID && ulPropGuidArray && PropGuidArray)
 	{
-		for (ulCur = 0 ; ulCur < ulPropGuidArray ; ulCur++)
+		for (ulCur = 0; ulCur < ulPropGuidArray; ulCur++)
 		{
-			if (IsEqualGUID(*lpGUID,*PropGuidArray[ulCur].lpGuid))
+			if (IsEqualGUID(*lpGUID, *PropGuidArray[ulCur].lpGuid))
 			{
 				szGUIDName = PropGuidArray[ulCur].lpszName;
 				break;
@@ -401,7 +401,7 @@ _Check_return_ LPTSTR GUIDToStringAndName(_In_opt_ LPCGUID lpGUID)
 	{
 		int iRet = NULL;
 		// CString doesn't provide a way to extract just Unicode strings, so we do this manually
-		EC_D(iRet,LoadStringW(GetModuleHandle(NULL),
+		EC_D(iRet, LoadStringW(GetModuleHandle(NULL),
 			IDS_UNKNOWNGUID,
 			szUnknown,
 			_countof(szUnknown)));
@@ -410,15 +410,15 @@ _Check_return_ LPTSTR GUIDToStringAndName(_In_opt_ LPCGUID lpGUID)
 
 	LPTSTR szGUID = GUIDToString(lpGUID);
 
-	EC_H(StringCchLengthW(szGUIDName,STRSAFE_MAX_CCH,&cchGUIDName));
-	if (szGUID) EC_H(StringCchLength(szGUID,STRSAFE_MAX_CCH,&cchGUID));
+	EC_H(StringCchLengthW(szGUIDName, STRSAFE_MAX_CCH, &cchGUIDName));
+	if (szGUID) EC_H(StringCchLength(szGUID, STRSAFE_MAX_CCH, &cchGUID));
 
-	size_t cchBothGuid = cchGUID + 3 + cchGUIDName+1;
+	size_t cchBothGuid = cchGUID + 3 + cchGUIDName + 1;
 	LPTSTR szBothGuid = new TCHAR[cchBothGuid];
 
 	if (szBothGuid)
 	{
-		EC_H(StringCchPrintf(szBothGuid,cchBothGuid,_T("%s = %ws"),szGUID,szGUIDName)); // STRING_OK
+		EC_H(StringCchPrintf(szBothGuid, cchBothGuid, _T("%s = %ws"), szGUID, szGUIDName)); // STRING_OK
 	}
 
 	delete[] szGUID;
@@ -531,7 +531,7 @@ _Check_return_ LPWSTR NameIDToPropName(_In_ LPMAPINAMEID lpNameID)
 
 	if (!ulNameIDArray || !NameIDArray) return NULL;
 
-	for (ulCur = 0 ; ulCur < ulNameIDArray ; ulCur++)
+	for (ulCur = 0; ulCur < ulNameIDArray; ulCur++)
 	{
 		if (NameIDArray[ulCur].lValue == lpNameID->Kind.lID)
 		{
@@ -547,16 +547,16 @@ _Check_return_ LPWSTR NameIDToPropName(_In_ LPMAPINAMEID lpNameID)
 	// count up how long our string needs to be
 	size_t cchResultString = 0;
 	ULONG ulNumMatches = 0;
-	for (ulCur = ulMatch ; ulCur < ulNameIDArray ; ulCur++)
+	for (ulCur = ulMatch; ulCur < ulNameIDArray; ulCur++)
 	{
 		size_t cchLen = 0;
 		if (NameIDArray[ulCur].lValue != lpNameID->Kind.lID) break;
 		// We don't acknowledge array entries without guids
 		if (!NameIDArray[ulCur].lpGuid) continue;
 		// But if we weren't asked about a guid, we don't check one
-		if (lpNameID->lpguid && !IsEqualGUID(*lpNameID->lpguid,*NameIDArray[ulCur].lpGuid)) continue;
+		if (lpNameID->lpguid && !IsEqualGUID(*lpNameID->lpguid, *NameIDArray[ulCur].lpGuid)) continue;
 
-		EC_H(StringCchLengthW(NameIDArray[ulCur].lpszName,STRSAFE_MAX_CCH,&cchLen));
+		EC_H(StringCchLengthW(NameIDArray[ulCur].lpszName, STRSAFE_MAX_CCH, &cchLen));
 		cchResultString += cchLen;
 		ulNumMatches++;
 	}
@@ -572,18 +572,18 @@ _Check_return_ LPWSTR NameIDToPropName(_In_ LPMAPINAMEID lpNameID)
 	if (szResultString)
 	{
 		szResultString[0] = L'\0'; // STRING_OK
-		for (ulCur = ulMatch ; ulCur < ulNameIDArray ; ulCur++)
+		for (ulCur = ulMatch; ulCur < ulNameIDArray; ulCur++)
 		{
 			if (NameIDArray[ulCur].lValue != lpNameID->Kind.lID) break;
 			// We don't acknowledge array entries without guids
 			if (!NameIDArray[ulCur].lpGuid) continue;
 			// But if we weren't asked about a guid, we don't check one
-			if (lpNameID->lpguid && !IsEqualGUID(*lpNameID->lpguid,*NameIDArray[ulCur].lpGuid)) continue;
+			if (lpNameID->lpguid && !IsEqualGUID(*lpNameID->lpguid, *NameIDArray[ulCur].lpGuid)) continue;
 
-			EC_H(StringCchCatW(szResultString,cchResultString,NameIDArray[ulCur].lpszName));
+			EC_H(StringCchCatW(szResultString, cchResultString, NameIDArray[ulCur].lpszName));
 			if (--ulNumMatches > 0)
 			{
-				EC_H(StringCchCatW(szResultString,cchResultString,szPropSeparator));
+				EC_H(StringCchCatW(szResultString, cchResultString, szPropSeparator));
 			}
 		}
 		if (SUCCEEDED(hRes))
@@ -640,7 +640,7 @@ void InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, _In_z_ LPCTST
 	// We've matched our flag name to the array - we SHOULD return a string at this point
 	bool bNeedSeparator = false;
 
-	for (;FlagArray[ulCurEntry].ulFlagName == ulFlagName;ulCurEntry++)
+	for (; FlagArray[ulCurEntry].ulFlagName == ulFlagName; ulCurEntry++)
 	{
 		if (flagFLAG == FlagArray[ulCurEntry].ulFlagType)
 		{
@@ -648,9 +648,9 @@ void InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, _In_z_ LPCTST
 			{
 				if (bNeedSeparator)
 				{
-					EC_H(StringCchCatW(szTempString,_countof(szTempString),L" | ")); // STRING_OK
+					EC_H(StringCchCatW(szTempString, _countof(szTempString), L" | ")); // STRING_OK
 				}
-				EC_H(StringCchCatW(szTempString,_countof(szTempString),FlagArray[ulCurEntry].lpszName));
+				EC_H(StringCchCatW(szTempString, _countof(szTempString), FlagArray[ulCurEntry].lpszName));
 				lTempValue &= ~FlagArray[ulCurEntry].lFlagValue;
 				bNeedSeparator = true;
 			}
@@ -661,9 +661,9 @@ void InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, _In_z_ LPCTST
 			{
 				if (bNeedSeparator)
 				{
-					EC_H(StringCchCatW(szTempString,_countof(szTempString),L" | ")); // STRING_OK
+					EC_H(StringCchCatW(szTempString, _countof(szTempString), L" | ")); // STRING_OK
 				}
-				EC_H(StringCchCatW(szTempString,_countof(szTempString),FlagArray[ulCurEntry].lpszName));
+				EC_H(StringCchCatW(szTempString, _countof(szTempString), FlagArray[ulCurEntry].lpszName));
 				lTempValue = 0;
 				bNeedSeparator = true;
 			}
@@ -674,9 +674,9 @@ void InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, _In_z_ LPCTST
 			{
 				if (bNeedSeparator)
 				{
-					EC_H(StringCchCatW(szTempString,_countof(szTempString),L" | ")); // STRING_OK
+					EC_H(StringCchCatW(szTempString, _countof(szTempString), L" | ")); // STRING_OK
 				}
-				EC_H(StringCchCatW(szTempString,_countof(szTempString),FlagArray[ulCurEntry].lpszName));
+				EC_H(StringCchCatW(szTempString, _countof(szTempString), FlagArray[ulCurEntry].lpszName));
 				lTempValue = lTempValue - (FlagArray[ulCurEntry].lFlagValue << 16);
 				bNeedSeparator = true;
 			}
@@ -687,9 +687,9 @@ void InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, _In_z_ LPCTST
 			{
 				if (bNeedSeparator)
 				{
-					EC_H(StringCchCatW(szTempString,_countof(szTempString),L" | ")); // STRING_OK
+					EC_H(StringCchCatW(szTempString, _countof(szTempString), L" | ")); // STRING_OK
 				}
-				EC_H(StringCchCatW(szTempString,_countof(szTempString),FlagArray[ulCurEntry].lpszName));
+				EC_H(StringCchCatW(szTempString, _countof(szTempString), FlagArray[ulCurEntry].lpszName));
 				lTempValue = lTempValue - (FlagArray[ulCurEntry].lFlagValue << 8);
 				bNeedSeparator = true;
 			}
@@ -700,9 +700,9 @@ void InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, _In_z_ LPCTST
 			{
 				if (bNeedSeparator)
 				{
-					EC_H(StringCchCatW(szTempString,_countof(szTempString),L" | ")); // STRING_OK
+					EC_H(StringCchCatW(szTempString, _countof(szTempString), L" | ")); // STRING_OK
 				}
-				EC_H(StringCchCatW(szTempString,_countof(szTempString),FlagArray[ulCurEntry].lpszName));
+				EC_H(StringCchCatW(szTempString, _countof(szTempString), FlagArray[ulCurEntry].lpszName));
 				lTempValue = lTempValue - FlagArray[ulCurEntry].lFlagValue;
 				bNeedSeparator = true;
 			}
@@ -713,9 +713,9 @@ void InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, _In_z_ LPCTST
 			{
 				if (bNeedSeparator)
 				{
-					EC_H(StringCchCatW(szTempString,_countof(szTempString),L" | ")); // STRING_OK
+					EC_H(StringCchCatW(szTempString, _countof(szTempString), L" | ")); // STRING_OK
 				}
-				EC_H(StringCchCatW(szTempString,_countof(szTempString),FlagArray[ulCurEntry].lpszName));
+				EC_H(StringCchCatW(szTempString, _countof(szTempString), FlagArray[ulCurEntry].lpszName));
 				lTempValue = lTempValue - FlagArray[ulCurEntry].lFlagValue;
 				bNeedSeparator = true;
 			}
@@ -729,11 +729,11 @@ void InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, _In_z_ LPCTST
 			{
 				if (bNeedSeparator)
 				{
-					EC_H(StringCchCatW(szTempString,_countof(szTempString),L" | ")); // STRING_OK
+					EC_H(StringCchCatW(szTempString, _countof(szTempString), L" | ")); // STRING_OK
 				}
 				WCHAR szClearedBits[15];
-				EC_H(StringCchPrintfW(szClearedBits,_countof(szClearedBits),L"0x%X",lClearedBits)); // STRING_OK
-				EC_H(StringCchCatW(szTempString,_countof(szTempString),szClearedBits));
+				EC_H(StringCchPrintfW(szClearedBits, _countof(szClearedBits), L"0x%X", lClearedBits)); // STRING_OK
+				EC_H(StringCchCatW(szTempString, _countof(szTempString), szClearedBits));
 				// clear the bits out
 				lTempValue &= ~FlagArray[ulCurEntry].lFlagValue;
 				bNeedSeparator = true;
@@ -749,15 +749,15 @@ void InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, _In_z_ LPCTST
 		WCHAR	szUnk[15];
 		if (bNeedSeparator)
 		{
-			EC_H(StringCchCatW(szTempString,_countof(szTempString),L" | ")); // STRING_OK
+			EC_H(StringCchCatW(szTempString, _countof(szTempString), L" | ")); // STRING_OK
 		}
-		EC_H(StringCchPrintfW(szUnk,_countof(szUnk),L"0x%X",lTempValue)); // STRING_OK
-		EC_H(StringCchCatW(szTempString,_countof(szTempString),szUnk));
+		EC_H(StringCchPrintfW(szUnk, _countof(szUnk), L"0x%X", lTempValue)); // STRING_OK
+		EC_H(StringCchCatW(szTempString, _countof(szTempString), szUnk));
 	}
 
 	// Copy the string we computed for output
 	size_t cchLen = 0;
-	EC_H(StringCchLengthW(szTempString,_countof(szTempString),&cchLen));
+	EC_H(StringCchLengthW(szTempString, _countof(szTempString), &cchLen));
 
 	if (cchLen)
 	{
@@ -765,7 +765,7 @@ void InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, _In_z_ LPCTST
 		size_t cchPrefix = NULL;
 		if (szPrefix)
 		{
-			EC_H(StringCchLength(szPrefix,STRSAFE_MAX_CCH,&cchPrefix));
+			EC_H(StringCchLength(szPrefix, STRSAFE_MAX_CCH, &cchPrefix));
 			cchLen += cchPrefix;
 		}
 
@@ -774,7 +774,7 @@ void InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, _In_z_ LPCTST
 		if (*szFlagString)
 		{
 			(*szFlagString)[0] = NULL;
-			EC_H(StringCchPrintf(*szFlagString,cchLen,_T("%s%ws"),szPrefix?szPrefix:_T(""),szTempString)); // STRING_OK
+			EC_H(StringCchPrintf(*szFlagString, cchLen, _T("%s%ws"), szPrefix ? szPrefix : _T(""), szTempString)); // STRING_OK
 		}
 	}
 } // InterpretFlags
@@ -806,7 +806,7 @@ _Check_return_ CString AllFlagsToString(const ULONG ulFlagName, bool bHex)
 	if (FlagArray[ulCurEntry].ulFlagName != ulFlagName) return szFlagString;
 
 	// We've matched our flag name to the array - we SHOULD return a string at this point
-	for (;FlagArray[ulCurEntry].ulFlagName == ulFlagName;ulCurEntry++)
+	for (; FlagArray[ulCurEntry].ulFlagName == ulFlagName; ulCurEntry++)
 	{
 		if (flagCLEARBITS == FlagArray[ulCurEntry].ulFlagType)
 		{
@@ -816,11 +816,11 @@ _Check_return_ CString AllFlagsToString(const ULONG ulFlagName, bool bHex)
 		{
 			if (bHex)
 			{
-				szTempString.FormatMessage(IDS_FLAGTOSTRINGHEX,FlagArray[ulCurEntry].lFlagValue,FlagArray[ulCurEntry].lpszName);
+				szTempString.FormatMessage(IDS_FLAGTOSTRINGHEX, FlagArray[ulCurEntry].lFlagValue, FlagArray[ulCurEntry].lpszName);
 			}
 			else
 			{
-				szTempString.FormatMessage(IDS_FLAGTOSTRINGDEC,FlagArray[ulCurEntry].lFlagValue,FlagArray[ulCurEntry].lpszName);
+				szTempString.FormatMessage(IDS_FLAGTOSTRINGDEC, FlagArray[ulCurEntry].lFlagValue, FlagArray[ulCurEntry].lpszName);
 			}
 			szFlagString += szTempString;
 		}
@@ -834,28 +834,28 @@ _Check_return_ CString AllFlagsToString(const ULONG ulFlagName, bool bHex)
 // lpszNamedPropName, lpszNamedPropGUID, lpszNamedPropDASL freed with FreeNameIDStrings
 // If lpProp is NULL but ulPropTag and lpMAPIProp are passed, will call GetProps
 void InterpretProp(_In_opt_ LPSPropValue lpProp, // optional property value
-				   ULONG ulPropTag, // optional 'original' prop tag
-				   _In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
-				   _In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
-				   _In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
-				   bool bIsAB, // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
-				   _Deref_out_opt_z_ LPTSTR* lpszNameExactMatches, // Built from ulPropTag & bIsAB
-				   _Deref_out_opt_z_ LPTSTR* lpszNamePartialMatches, // Built from ulPropTag & bIsAB
-				   _In_opt_ CString* PropType, // Built from ulPropTag
-				   _In_opt_ CString* PropTag, // Built from ulPropTag
-				   _In_opt_ CString* PropString, // Built from lpProp
-				   _In_opt_ CString* AltPropString, // Built from lpProp
-				   _Deref_opt_out_opt_z_ LPTSTR* lpszNamedPropName, // Built from ulPropTag & lpMAPIProp
-				   _Deref_opt_out_opt_z_ LPTSTR* lpszNamedPropGUID, // Built from ulPropTag & lpMAPIProp
-				   _Deref_opt_out_opt_z_ LPTSTR* lpszNamedPropDASL) // Built from ulPropTag & lpMAPIProp
+	ULONG ulPropTag, // optional 'original' prop tag
+	_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
+	_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
+	_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
+	bool bIsAB, // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
+	_Deref_out_opt_z_ LPTSTR* lpszNameExactMatches, // Built from ulPropTag & bIsAB
+	_Deref_out_opt_z_ LPTSTR* lpszNamePartialMatches, // Built from ulPropTag & bIsAB
+	_In_opt_ CString* PropType, // Built from ulPropTag
+	_In_opt_ CString* PropTag, // Built from ulPropTag
+	_In_opt_ CString* PropString, // Built from lpProp
+	_In_opt_ CString* AltPropString, // Built from lpProp
+	_Deref_opt_out_opt_z_ LPTSTR* lpszNamedPropName, // Built from ulPropTag & lpMAPIProp
+	_Deref_opt_out_opt_z_ LPTSTR* lpszNamedPropGUID, // Built from ulPropTag & lpMAPIProp
+	_Deref_opt_out_opt_z_ LPTSTR* lpszNamedPropDASL) // Built from ulPropTag & lpMAPIProp
 {
 	HRESULT hRes = S_OK;
 
 	// These four strings are based on ulPropTag, not the LPSPropValue
 	if (PropType) *PropType = TypeToString(ulPropTag);
 	if (lpszNameExactMatches || lpszNamePartialMatches)
-		EC_H(PropTagToPropName(ulPropTag,bIsAB,lpszNameExactMatches,lpszNamePartialMatches));
-	if (PropTag) PropTag->Format(_T("0x%08X"),ulPropTag); // STRING_OK
+		EC_H(PropTagToPropName(ulPropTag, bIsAB, lpszNameExactMatches, lpszNamePartialMatches));
+	if (PropTag) PropTag->Format(_T("0x%08X"), ulPropTag); // STRING_OK
 
 	// Named Props
 	LPMAPINAMEID* lppPropNames = 0;
@@ -869,7 +869,7 @@ void InterpretProp(_In_opt_ LPSPropValue lpProp, // optional property value
 		(RegKeys[regkeyGETPROPNAMES_ON_ALL_PROPS].ulCurDWORD || PROP_ID(ulPropTag) >= 0x8000) && // and it's either a named prop or we're doing all props
 		(lpszNamedPropName || lpszNamedPropGUID || lpszNamedPropDASL)) // and we want to return something that needs named prop information
 	{
-		SPropTagArray	tag = {0};
+		SPropTagArray	tag = { 0 };
 		LPSPropTagArray	lpTag = &tag;
 		ULONG			ulPropNames = 0;
 		tag.cValues = 1;
@@ -901,26 +901,24 @@ void InterpretProp(_In_opt_ LPSPropValue lpProp, // optional property value
 	if (lpProp)
 	{
 		if (PropString || AltPropString)
-			InterpretProp(lpProp,PropString,AltPropString);
+			InterpretProp(lpProp, PropString, AltPropString);
 	}
 
 	// Avoid making the call if we don't have to so we don't accidently depend on MAPI
 	if (lppPropNames) MAPIFreeBuffer(lppPropNames);
 } // InterpretProp
 
-// Returns LPSPropValue with value of a binary property
+// Returns LPSPropValue with value of a property
 // Uses GetProps and falls back to OpenProperty if the value is large
 // Free with MAPIFreeBuffer
-_Check_return_ HRESULT GetLargeBinaryProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_ LPSPropValue* lppProp)
+_Check_return_ HRESULT GetLargeProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_ LPSPropValue* lppProp)
 {
 	if (!lpMAPIProp || !lppProp) return MAPI_E_INVALID_PARAMETER;
-	DebugPrint(DBGGeneric,_T("GetLargeBinaryProp getting buffer from 0x%08X\n"),ulPropTag);
+	DebugPrint(DBGGeneric, _T("GetLargeProp getting buffer from 0x%08X\n"), ulPropTag);
 
-	ulPropTag = CHANGE_PROP_TYPE(ulPropTag,PT_BINARY);
-
-	HRESULT			hRes		= S_OK;
-	ULONG			cValues		= 0;
-	LPSPropValue	lpPropArray	= NULL;
+	HRESULT			hRes = S_OK;
+	ULONG			cValues = 0;
+	LPSPropValue	lpPropArray = NULL;
 	bool			bSuccess = false;
 
 	const SizedSPropTagArray(1, sptaBuffer) =
@@ -934,7 +932,7 @@ _Check_return_ HRESULT GetLargeBinaryProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPr
 
 	if (lpPropArray && PT_ERROR == PROP_TYPE(lpPropArray->ulPropTag) && MAPI_E_NOT_ENOUGH_MEMORY == lpPropArray->Value.err)
 	{
-		DebugPrint(DBGGeneric,_T("GetLargeBinaryProp property reported in GetProps as large.\n"));
+		DebugPrint(DBGGeneric, _T("GetLargeProp property reported in GetProps as large.\n"));
 		MAPIFreeBuffer(lpPropArray);
 		lpPropArray = NULL;
 		// need to get the data as a stream
@@ -945,10 +943,10 @@ _Check_return_ HRESULT GetLargeBinaryProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPr
 			&IID_IStream,
 			STGM_READ,
 			0,
-			(LPUNKNOWN*) &lpStream));
+			(LPUNKNOWN*)&lpStream));
 		if (SUCCEEDED(hRes) && lpStream)
 		{
-			STATSTG	StatInfo = {0};
+			STATSTG	StatInfo = { 0 };
 			lpStream->Stat(&StatInfo, STATFLAG_NONAME); // find out how much space we need
 
 			// We're not going to try to support MASSIVE properties.
@@ -956,10 +954,10 @@ _Check_return_ HRESULT GetLargeBinaryProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPr
 			{
 				EC_H(MAPIAllocateBuffer(
 					sizeof(SPropValue),
-					(LPVOID*) &lpPropArray));
+					(LPVOID*)&lpPropArray));
 				if (lpPropArray)
 				{
-					memset(lpPropArray,0,sizeof(SPropValue));
+					memset(lpPropArray, 0, sizeof(SPropValue));
 					lpPropArray->ulPropTag = ulPropTag;
 
 					if (StatInfo.cbSize.LowPart)
@@ -967,7 +965,7 @@ _Check_return_ HRESULT GetLargeBinaryProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPr
 						EC_H(MAPIAllocateMore(
 							StatInfo.cbSize.LowPart,
 							lpPropArray,
-							(LPVOID*) &lpPropArray->Value.bin.lpb));
+							(LPVOID*)&lpPropArray->Value.bin.lpb));
 						if (lpPropArray->Value.bin.lpb)
 						{
 							EC_MAPI(lpStream->Read(lpPropArray->Value.bin.lpb, StatInfo.cbSize.LowPart, &lpPropArray->Value.bin.cb));
@@ -985,12 +983,12 @@ _Check_return_ HRESULT GetLargeBinaryProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPr
 	}
 	else if (lpPropArray && cValues == 1 && lpPropArray->ulPropTag == ulPropTag)
 	{
-		DebugPrint(DBGGeneric,_T("GetLargeBinaryProp GetProps found property.\n"));
+		DebugPrint(DBGGeneric, _T("GetLargeProp GetProps found property.\n"));
 		bSuccess = true;
 	}
 	else if (lpPropArray && PT_ERROR == PROP_TYPE(lpPropArray->ulPropTag))
 	{
-		DebugPrint(DBGGeneric,_T("GetLargeBinaryProp GetProps reported property as error 0x%08X.\n"),lpPropArray->Value.err);
+		DebugPrint(DBGGeneric, _T("GetLargeProp GetProps reported property as error 0x%08X.\n"), lpPropArray->Value.err);
 	}
 
 	if (bSuccess)
@@ -1004,4 +1002,18 @@ _Check_return_ HRESULT GetLargeBinaryProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPr
 	}
 
 	return hRes;
-} // GetLargeBinaryProp
+}
+
+// Returns LPSPropValue with value of a binary property
+// Free with MAPIFreeBuffer
+_Check_return_ HRESULT GetLargeBinaryProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_ LPSPropValue* lppProp)
+{
+	return GetLargeProp(lpMAPIProp, CHANGE_PROP_TYPE(ulPropTag, PT_BINARY), lppProp);
+}
+
+// Returns LPSPropValue with value of a string property
+// Free with MAPIFreeBuffer
+_Check_return_ HRESULT GetLargeStringProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_ LPSPropValue* lppProp)
+{
+	return GetLargeProp(lpMAPIProp, CHANGE_PROP_TYPE(ulPropTag, PT_TSTRING), lppProp);
+}

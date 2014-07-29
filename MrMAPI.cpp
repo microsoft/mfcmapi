@@ -19,6 +19,7 @@
 #include "ImportProcs.h"
 #include "MAPIStoreFunctions.h"
 #include "MMPst.h"
+#include "MMReceiveFolder.h"
 
 // Initialize MFC for LoadString support later on
 void InitMFC()
@@ -120,6 +121,7 @@ enum __CommandLineSwitch
 	switchPST,                // '-pst'
 	switchProfileSection,     // '-profiles'
 	switchByteSwapped,        // '-b'
+	switchReceiveFolder,      // '-receivefolder'
 };
 
 struct COMMANDLINE_SWITCH
@@ -180,6 +182,7 @@ COMMANDLINE_SWITCH g_Switches[] =
 	{ switchPST, "PST" },
 	{ switchProfileSection, "ProfileSection" },
 	{ switchByteSwapped, "ByteSwapped" },
+	{ switchReceiveFolder, "ReceiveFolder" },
 	// If we want to add aliases for any switches, add them here
 	{ switchHelp, "Help" },
 };
@@ -251,6 +254,7 @@ void DisplayUsage(BOOL bFull)
 		g_Switches[switchPST].szSwitch, g_Switches[switchInput].szSwitch);
 	printf("   MrMAPI -%s [<profile> [-%s <profilesection> [-%s]] -%s <output file>]\n",
 		g_Switches[switchProfile].szSwitch, g_Switches[switchProfileSection].szSwitch, g_Switches[switchByteSwapped].szSwitch, g_Switches[switchOutput].szSwitch);
+	printf("   MrMAPI -%s [<store num>] [-%s <profile>]\n", g_Switches[switchReceiveFolder].szSwitch, g_Switches[switchProfile].szSwitch);
 
 	if (bFull)
 	{
@@ -386,6 +390,9 @@ void DisplayUsage(BOOL bFull)
 		printf("   -O   (or -%s) Indicates the output file for profile export.\n", g_Switches[switchOutput].szSwitch);
 		printf("           Required if a profile is specified.\n");
 		printf("\n");
+		printf("   Receive Folder Table\n");
+		printf("   -%s Displays Receive Folder Table for the specified store\n", g_Switches[switchReceiveFolder].szSwitch);
+		printf("\n");
 		printf("   Universal Options:\n");
 		printf("   -I   (or -%s) Input file.\n", g_Switches[switchInput].szSwitch);
 		printf("   -O   (or -%s) Output file or directory.\n", g_Switches[switchOutput].szSwitch);
@@ -507,7 +514,7 @@ OptParser g_Parsers[] =
 	{ switchList, cmdmodeContents, 0, 0, OPT_LIST },
 	{ switchRecent, cmdmodeContents, 1, 1, 0 },
 	{ switchXML, cmdmodeXML, 0, 0, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDINPUTFILE },
-	{ switchFid, cmdmodeFidMid, 0, 1, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC },
+	{ switchFid, cmdmodeFidMid, 0, 1, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDSTORE },
 	{ switchMid, cmdmodeFidMid, 0, 1, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC },
 	{ switchStore, cmdmodeStoreProperties, 0, 1, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC },
 	{ switchChildFolders, cmdmodeChildFolders, 0, 1, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDFOLDER },
@@ -525,6 +532,7 @@ OptParser g_Parsers[] =
 	{ switchVersion, cmdmodeUnknown, 1, 1, 0 },
 	{ switchProfileSection, cmdmodeProfile, 1, 1, OPT_PROFILE | OPT_NEEDMAPIINIT | OPT_INITMFC },
 	{ switchByteSwapped, cmdmodeProfile, 0, 0, OPT_PROFILE | OPT_NEEDMAPIINIT | OPT_INITMFC },
+	{ switchReceiveFolder, cmdmodeReceiveFolder, 0, 1, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_NEEDSTORE | OPT_INITMFC },
 	{ switchNoSwitch, cmdmodeUnknown, 0, 0, 0 },
 };
 
@@ -726,8 +734,9 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 				EC_H(AnsiToUnicode("", &pRunOpts->lpszMid)); // STRING_OK
 			}
 			break;
-			// Store Properties:
+			// Store Properties / Receive Folder:
 		case switchStore:
+		case switchReceiveFolder:
 			if (i + 1 < argc  && switchNoSwitch == ParseArgument(argv[i + 1]))
 			{
 				pRunOpts->ulStore = strtoul(argv[i + 1], &szEndPtr, 10);
@@ -1034,10 +1043,28 @@ void main(_In_ int argc, _In_count_(argc) char * argv[])
 			if (FAILED(hRes)) printf("MAPILogonEx returned an error: 0x%08x\n", hRes);
 		}
 
+		// If they need a folder get it and store at the same time from the folder id
 		if (ProgOpts.lpMAPISession && ProgOpts.ulOptions & OPT_NEEDFOLDER)
 		{
 			WC_H(HrMAPIOpenStoreAndFolder(ProgOpts.lpMAPISession, ProgOpts.ulFolder, ProgOpts.lpszFolderPath, &ProgOpts.lpMDB, &ProgOpts.lpFolder));
 			if (FAILED(hRes)) printf("HrMAPIOpenStoreAndFolder returned an error: 0x%08x\n", hRes);
+		}
+		else if (ProgOpts.lpMAPISession && ProgOpts.ulOptions & OPT_NEEDSTORE)
+		{
+			// They asked us for a store, if they passed a store index give them that one
+			if (ProgOpts.ulStore != 0)
+			{
+				// Decrement by one here on the index since we incremented during parameter parsing
+				// This is so zero indicate they did not specify a store
+				WC_H(OpenStore(ProgOpts.lpMAPISession, ProgOpts.ulStore - 1, &ProgOpts.lpMDB));
+				if (FAILED(hRes)) printf("OpenStore returned an error: 0x%08x\n", hRes);
+			}
+			else
+			{
+				// If they needed a store but didn't specify, get the default one
+				WC_H(OpenExchangeOrDefaultMessageStore(ProgOpts.lpMAPISession, &ProgOpts.lpMDB));
+				if (FAILED(hRes)) printf("OpenExchangeOrDefaultMessageStore returned an error: 0x%08x\n", hRes);
+			}
 		}
 
 		switch (ProgOpts.Mode)
@@ -1092,6 +1119,9 @@ void main(_In_ int argc, _In_count_(argc) char * argv[])
 			break;
 		case cmdmodeProfile:
 			DoProfile(ProgOpts);
+			break;
+		case cmdmodeReceiveFolder:
+			DoReceiveFolder(ProgOpts);
 			break;
 		}
 	}

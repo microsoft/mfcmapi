@@ -774,10 +774,19 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 	if (PT_ERROR == PROP_TYPE(lpProp->ulPropTag) && MAPI_E_NOT_ENOUGH_MEMORY == lpProp->Value.err && lpObj && bRetryStreamProps)
 	{
 		WC_H(GetLargeBinaryProp(lpObj, lpProp->ulPropTag, &lpLargeProp));
+
+		if (FAILED(hRes))
+		{
+			hRes = S_OK;
+			WC_H(GetLargeStringProp(lpObj, lpProp->ulPropTag, &lpLargeProp));
+		}
+
 		if (SUCCEEDED(hRes) && lpLargeProp && PT_ERROR != PROP_TYPE(lpLargeProp->ulPropTag))
 		{
 			lpProp = lpLargeProp;
 		}
+
+		hRes = S_OK;
 	}
 
 	CString PropType;

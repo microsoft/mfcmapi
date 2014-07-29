@@ -224,7 +224,7 @@ bool CFindFidMid::DoContentsTablePerRowWork(_In_ LPSRow lpSRow, ULONG /*ulCurRow
 
 void DumpFidMid(
 	_In_z_ LPWSTR lpszProfile,
-	_In_ LPMAPISESSION lpMAPISession,
+	_In_ LPMDB lpMDB,
 	_In_z_ LPWSTR lpszFid,
 	_In_z_ LPWSTR lpszMid)
 {
@@ -234,13 +234,8 @@ void DumpFidMid(
 
 	DebugPrint(DBGGeneric,"DumpFidMid: Outputting from profile %ws. FID: %ws, MID: %ws\n", lpszProfile, lpszFid, lpszMid);
 	HRESULT hRes = S_OK;
-	LPMDB lpMDB = NULL;
 	LPMAPIFOLDER lpFolder = NULL;
 
-	if (lpMAPISession)
-	{
-		WC_H(OpenExchangeOrDefaultMessageStore(lpMAPISession, &lpMDB));
-	}
 	if (lpMDB)
 	{
 		// Open root container.
@@ -268,14 +263,13 @@ void DumpFidMid(
 	}
 
 	if (lpFolder) lpFolder->Release();
-	if (lpMDB) lpMDB->Release();
 } // DumpFidMid
 
 void DoFidMid(_In_ MYOPTIONS ProgOpts)
 {
 	DumpFidMid(
 		ProgOpts.lpszProfile,
-		ProgOpts.lpMAPISession,
+		ProgOpts.lpMDB,
 		ProgOpts.lpszFid,
 		ProgOpts.lpszMid);
 } // DoFidMid
