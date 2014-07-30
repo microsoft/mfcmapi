@@ -758,17 +758,26 @@ void CDumpStore::DoMessagePerAttachmentWork(_In_ LPMESSAGE lpMessage, _In_ LPVOI
 
 	hRes = S_OK;
 
+	OutputToFilef(lpMsgData->fMessageProps, _T("<attachment num=\"0x%08X\" filename=\""), ulCurRow);
+
 	lpAttachName = PpropFindProp(
 		lpSRow->lpProps,
 		lpSRow->cValues,
 		PR_ATTACH_FILENAME);
 
-	OutputToFilef(lpMsgData->fMessageProps, _T("<attachment num=\"0x%08X\" filename=\""), ulCurRow);
+	if (!lpAttachName || !CheckStringProp(lpAttachName, PT_TSTRING))
+	{
+		lpAttachName = PpropFindProp(
+			lpSRow->lpProps,
+			lpSRow->cValues,
+			PR_DISPLAY_NAME);
+	}
 
 	if (lpAttachName && CheckStringProp(lpAttachName, PT_TSTRING))
 		OutputToFile(lpMsgData->fMessageProps, lpAttachName->Value.LPSZ);
 	else
 		OutputToFile(lpMsgData->fMessageProps, _T("PR_ATTACH_FILENAME not found"));
+
 	OutputToFile(lpMsgData->fMessageProps, _T("\">\n"));
 
 	OutputToFile(lpMsgData->fMessageProps, _T("\t<tableprops>\n"));
@@ -793,13 +802,14 @@ void CDumpStore::DoMessagePerAttachmentWork(_In_ LPMESSAGE lpMessage, _In_ LPVOI
 			OutputToFile(lpMsgData->fMessageProps, _T("\t<getprops>\n"));
 			OutputPropertiesToFile(lpMsgData->fMessageProps, ulAllProps, lpAllProps, lpAttach, m_bRetryStreamProps);
 			OutputToFile(lpMsgData->fMessageProps, _T("\t</getprops>\n"));
-
 		}
+
 		MAPIFreeBuffer(lpAllProps);
 		lpAllProps = NULL;
 	}
+
 	OutputToFile(lpMsgData->fMessageProps, _T("</attachment>\n"));
-} // CDumpStore::DoMessagePerAttachmentWork
+}
 
 void CDumpStore::EndAttachmentWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID lpData)
 {

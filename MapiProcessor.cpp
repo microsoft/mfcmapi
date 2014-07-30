@@ -538,6 +538,7 @@ void CMAPIProcessor::ProcessAttachments(_In_ LPMESSAGE lpMessage, bool bHasAttac
 		attPR_ATTACH_NUM,
 		atPR_ATTACH_METHOD,
 		attPR_ATTACH_FILENAME,
+		attPR_DISPLAY_NAME,
 		attNUM_COLS
 	};
 	static const SizedSPropTagArray(attNUM_COLS, attCols) =
@@ -546,6 +547,7 @@ void CMAPIProcessor::ProcessAttachments(_In_ LPMESSAGE lpMessage, bool bHasAttac
 		PR_ATTACH_NUM,
 		PR_ATTACH_METHOD,
 		PR_ATTACH_FILENAME,
+		PR_DISPLAY_NAME,
 	};
 	HRESULT			hRes = S_OK;
 	LPMAPITABLE		lpAttachTable = NULL;
