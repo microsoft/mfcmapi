@@ -1095,4 +1095,34 @@ _Check_return_ TombstoneStruct* BinToTombstoneStruct(ULONG cbBin, _In_count_(cbB
 void DeleteTombstoneStruct(_In_ TombstoneStruct* ptsTombstone);
 // result allocated with new, clean up with delete[]
 _Check_return_ LPWSTR TombstoneStructToString(_In_ TombstoneStruct* ptsTombstone);
+
+// SizedXID
+// =====================
+//   This structure specifies a sized XID record
+//
+struct SizedXID
+{
+	BYTE XidSize;
+	GUID NamespaceGuid;
+	DWORD cbLocalId;
+	LPBYTE LocalID;
+};
+
+// PCLStruct
+// =====================
+//   This structure specifies a Predecessor Change List stream
+//
+struct PCLStruct
+{
+	DWORD cXID;
+	SizedXID* lpXID;
+	size_t JunkDataSize;
+	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
+};
+
+// Allocates return value with new. Clean up with DeletePCLStruct.
+_Check_return_ PCLStruct* BinToPCLStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+void DeletePCLStruct(_In_ PCLStruct* pcl);
+// result allocated with new, clean up with delete[]
+_Check_return_ LPWSTR PCLStructToString(_In_ PCLStruct* pcl);
 // End Functions to parse PT_BINARY properties
