@@ -204,7 +204,7 @@ _Check_return_ wstring GUIDToStringAndName(_In_opt_ LPCGUID lpGUID)
 		szGUIDName = loadstring(IDS_UNKNOWNGUID);
 	}
 
-	wstring szGUID = format(L"%hs", GUIDToString(lpGUID));
+	wstring szGUID = GUIDToString(lpGUID);
 	return szGUIDName + L" = " + szGUID;
 }
 
