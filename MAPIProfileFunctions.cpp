@@ -11,21 +11,21 @@
 #ifndef MRMAPI
 // This declaration is missing from the MAPI headers
 STDAPI STDAPICALLTYPE LaunchWizard(HWND hParentWnd,
-									ULONG ulFlags,
-									LPCSTR* lppszServiceNameToAdd,
-									ULONG cchBufferMax,
-									_Out_cap_(cchBufferMax) LPSTR lpszNewProfileName);
+	ULONG ulFlags,
+	LPCSTR* lppszServiceNameToAdd,
+	ULONG cchBufferMax,
+	_Out_cap_(cchBufferMax) LPSTR lpszNewProfileName);
 
 void LaunchProfileWizard(
-						 _In_ HWND hParentWnd,
-						 ULONG ulFlags,
-						 _In_z_ LPCSTR* lppszServiceNameToAdd,
-						 ULONG cchBufferMax,
-						 _Out_cap_(cchBufferMax) LPSTR lpszNewProfileName)
+	_In_ HWND hParentWnd,
+	ULONG ulFlags,
+	_In_z_ LPCSTR* lppszServiceNameToAdd,
+	ULONG cchBufferMax,
+	_Out_cap_(cchBufferMax) LPSTR lpszNewProfileName)
 {
 	HRESULT hRes = S_OK;
 
-	DebugPrint(DBGGeneric,_T("LaunchProfileWizard: Using LAUNCHWIZARDENTRY to launch wizard API.\n"));
+	DebugPrint(DBGGeneric, _T("LaunchProfileWizard: Using LAUNCHWIZARDENTRY to launch wizard API.\n"));
 
 	// Call LaunchWizard to add the service.
 	WC_MAPI(LaunchWizard(
@@ -36,24 +36,24 @@ void LaunchProfileWizard(
 		lpszNewProfileName));
 	if (MAPI_E_CALL_FAILED == hRes)
 	{
-		CHECKHRESMSG(hRes,IDS_LAUNCHWIZARDFAILED);
+		CHECKHRESMSG(hRes, IDS_LAUNCHWIZARDFAILED);
 	}
 	else CHECKHRES(hRes);
 
 	if (SUCCEEDED(hRes))
 	{
-		DebugPrint(DBGGeneric,_T("LaunchProfileWizard: Profile \"%hs\" configured.\n"),lpszNewProfileName);
+		DebugPrint(DBGGeneric, _T("LaunchProfileWizard: Profile \"%hs\" configured.\n"), lpszNewProfileName);
 	}
 } // LaunchProfileWizard
 
 void DisplayMAPISVCPath(_In_ CWnd* pParentWnd)
 {
 	HRESULT hRes = S_OK;
-	TCHAR   szServicesIni[MAX_PATH+12] = {0}; // 12 = space for 'MAPISVC.INF'
+	TCHAR   szServicesIni[MAX_PATH + 12] = { 0 }; // 12 = space for 'MAPISVC.INF'
 
-	DebugPrint(DBGGeneric,_T("DisplayMAPISVCPath()\n"));
+	DebugPrint(DBGGeneric, _T("DisplayMAPISVCPath()\n"));
 
-	GetMAPISVCPath(szServicesIni,_countof(szServicesIni));
+	GetMAPISVCPath(szServicesIni, _countof(szServicesIni));
 
 	CEditor MyData(
 		pParentWnd,
@@ -62,7 +62,7 @@ void DisplayMAPISVCPath(_In_ CWnd* pParentWnd)
 		1,
 		CEDITOR_BUTTON_OK);
 	MyData.InitPane(0, CreateSingleLinePane(IDS_FILEPATH, NULL, true));
-	MyData.SetString(0,szServicesIni);
+	MyData.SetString(0, szServicesIni);
 
 	WC_H(MyData.DisplayDialog());
 } // DisplayMAPISVCPath
@@ -77,10 +77,10 @@ void GetMAPISVCPath(_Inout_z_count_(cchMAPIDir) LPTSTR szMAPIDir, ULONG cchMAPID
 {
 	HRESULT hRes = S_OK;
 
-	GetMAPIPath(_T("Microsoft Outlook"),szMAPIDir,cchMAPIDir); // STRING_OK
+	GetMAPIPath(_T("Microsoft Outlook"), szMAPIDir, cchMAPIDir); // STRING_OK
 
 	// We got the path to MAPI - need to strip it
-	if (szMAPIDir[0] != _T('\0'))
+	if (szMAPIDir[0])
 	{
 		LPTSTR lpszSlash = NULL;
 		LPTSTR lpszCur = szMAPIDir;
@@ -91,17 +91,20 @@ void GetMAPISVCPath(_Inout_z_count_(cchMAPIDir) LPTSTR szMAPIDir, ULONG cchMAPID
 		}
 		*lpszSlash = _T('\0');
 	}
-
-	if (szMAPIDir[0] == _T('\0'))
+	else
 	{
-		hRes = S_OK;
-
 		// Fall back on System32
-		UINT uiLen = 0;
-		EC_D(uiLen,GetSystemDirectory(szMAPIDir, cchMAPIDir));
+		UINT cchSystemDir = 0;
+		TCHAR szSystemDir[MAX_PATH] = { 0 };
+		EC_D(cchSystemDir, GetSystemDirectory(szSystemDir, _countof(szSystemDir)));
+
+		if (cchSystemDir < _countof(szSystemDir))
+		{
+			EC_H(StringCchCopy(szMAPIDir, cchMAPIDir, szSystemDir));
+		}
 	}
 
-	if (SUCCEEDED(hRes) && szMAPIDir[0] != _T('\0'))
+	if (SUCCEEDED(hRes) && szMAPIDir[0])
 	{
 		EC_H(StringCchPrintf(
 			szMAPIDir,
@@ -122,159 +125,159 @@ struct SERVICESINIREC
 
 static SERVICESINIREC aEMSServicesIni[] =
 {
-	{_T("Default Services"),	_T("MSEMS"), 0L, _T("Microsoft Exchange Server")}, // STRING_OK
-	{_T("Services"),	_T("MSEMS"), 0L, _T("Microsoft Exchange Server")}, // STRING_OK
+	{ _T("Default Services"), _T("MSEMS"), 0L, _T("Microsoft Exchange Server") }, // STRING_OK
+	{ _T("Services"), _T("MSEMS"), 0L, _T("Microsoft Exchange Server") }, // STRING_OK
 
-	{_T("MSEMS"),	_T("PR_DISPLAY_NAME"),			0L, _T("Microsoft Exchange Server")}, // STRING_OK
-	{_T("MSEMS"),	_T("Sections"),					0L, _T("MSEMS_MSMail_Section")}, // STRING_OK
-	{_T("MSEMS"),	_T("PR_SERVICE_DLL_NAME"),		0L, _T("emsui.dll")}, // STRING_OK
-	{_T("MSEMS"),	_T("PR_SERVICE_INSTALL_ID"),	0L, _T("{6485D26A-C2AC-11D1-AD3E-10A0C911C9C0}")}, // STRING_OK
-	{_T("MSEMS"),	_T("PR_SERVICE_ENTRY_NAME"),	0L, _T("EMSCfg")}, // STRING_OK
-	{_T("MSEMS"),	_T("PR_RESOURCE_FLAGS"),		0L, _T("SERVICE_SINGLE_COPY")}, // STRING_OK
-	{_T("MSEMS"),	_T("WIZARD_ENTRY_NAME"),		0L, _T("EMSWizardEntry")}, // STRING_OK
-	{_T("MSEMS"),	_T("Providers"),				0L,	_T("EMS_DSA, EMS_MDB_public, EMS_MDB_private, EMS_RXP, EMS_MSX, EMS_Hook")}, // STRING_OK
-	{_T("MSEMS"),	_T("PR_SERVICE_SUPPORT_FILES"),	0L, _T("emsui.dll,emsabp.dll,emsmdb.dll")}, // STRING_OK
+	{ _T("MSEMS"), _T("PR_DISPLAY_NAME"), 0L, _T("Microsoft Exchange Server") }, // STRING_OK
+	{ _T("MSEMS"), _T("Sections"), 0L, _T("MSEMS_MSMail_Section") }, // STRING_OK
+	{ _T("MSEMS"), _T("PR_SERVICE_DLL_NAME"), 0L, _T("emsui.dll") }, // STRING_OK
+	{ _T("MSEMS"), _T("PR_SERVICE_INSTALL_ID"), 0L, _T("{6485D26A-C2AC-11D1-AD3E-10A0C911C9C0}") }, // STRING_OK
+	{ _T("MSEMS"), _T("PR_SERVICE_ENTRY_NAME"), 0L, _T("EMSCfg") }, // STRING_OK
+	{ _T("MSEMS"), _T("PR_RESOURCE_FLAGS"), 0L, _T("SERVICE_SINGLE_COPY") }, // STRING_OK
+	{ _T("MSEMS"), _T("WIZARD_ENTRY_NAME"), 0L, _T("EMSWizardEntry") }, // STRING_OK
+	{ _T("MSEMS"), _T("Providers"), 0L, _T("EMS_DSA, EMS_MDB_public, EMS_MDB_private, EMS_RXP, EMS_MSX, EMS_Hook") }, // STRING_OK
+	{ _T("MSEMS"), _T("PR_SERVICE_SUPPORT_FILES"), 0L, _T("emsui.dll,emsabp.dll,emsmdb.dll") }, // STRING_OK
 
-	{_T("EMS_MDB_public"),	_T("PR_RESOURCE_TYPE"),			0L, _T("MAPI_STORE_PROVIDER")}, // STRING_OK
-	{_T("EMS_MDB_public"),	_T("PR_PROVIDER_DLL_NAME"),		0L, _T("EMSMDB.DLL")}, // STRING_OK
-	{_T("EMS_MDB_public"),	_T("PR_SERVICE_INSTALL_ID"),	0L, _T("{6485D26A-C2AC-11D1-AD3E-10A0C911C9C0}")}, // STRING_OK
-	{_T("EMS_MDB_public"),	_T("PR_RESOURCE_FLAGS"),		0L, _T("STATUS_NO_DEFAULT_STORE")}, // STRING_OK
-	{_T("EMS_MDB_public"),	NULL,							PR_PROFILE_OPEN_FLAGS, _T("06000000")}, // STRING_OK
-	{_T("EMS_MDB_public"),	NULL,							PR_PROFILE_TYPE, _T("03000000")}, // STRING_OK
-	{_T("EMS_MDB_public"),	NULL,							PR_MDB_PROVIDER, _T("78b2fa70aff711cd9bc800aa002fc45a")}, // STRING_OK
-	{_T("EMS_MDB_public"),	_T("PR_DISPLAY_NAME"),			0L, _T("Public Folders")}, // STRING_OK
-	{_T("EMS_MDB_public"),	_T("PR_PROVIDER_DISPLAY"),		0L, _T("Microsoft Exchange Message Store")}, // STRING_OK
+	{ _T("EMS_MDB_public"), _T("PR_RESOURCE_TYPE"), 0L, _T("MAPI_STORE_PROVIDER") }, // STRING_OK
+	{ _T("EMS_MDB_public"), _T("PR_PROVIDER_DLL_NAME"), 0L, _T("EMSMDB.DLL") }, // STRING_OK
+	{ _T("EMS_MDB_public"), _T("PR_SERVICE_INSTALL_ID"), 0L, _T("{6485D26A-C2AC-11D1-AD3E-10A0C911C9C0}") }, // STRING_OK
+	{ _T("EMS_MDB_public"), _T("PR_RESOURCE_FLAGS"), 0L, _T("STATUS_NO_DEFAULT_STORE") }, // STRING_OK
+	{ _T("EMS_MDB_public"), NULL, PR_PROFILE_OPEN_FLAGS, _T("06000000") }, // STRING_OK
+	{ _T("EMS_MDB_public"), NULL, PR_PROFILE_TYPE, _T("03000000") }, // STRING_OK
+	{ _T("EMS_MDB_public"), NULL, PR_MDB_PROVIDER, _T("78b2fa70aff711cd9bc800aa002fc45a") }, // STRING_OK
+	{ _T("EMS_MDB_public"), _T("PR_DISPLAY_NAME"), 0L, _T("Public Folders") }, // STRING_OK
+	{ _T("EMS_MDB_public"), _T("PR_PROVIDER_DISPLAY"), 0L, _T("Microsoft Exchange Message Store") }, // STRING_OK
 
-	{_T("EMS_MDB_private"),	_T("PR_PROVIDER_DLL_NAME"),		0L, _T("EMSMDB.DLL")}, // STRING_OK
-	{_T("EMS_MDB_private"),	_T("PR_SERVICE_INSTALL_ID"),	0L, _T("{6485D26A-C2AC-11D1-AD3E-10A0C911C9C0}")}, // STRING_OK
-	{_T("EMS_MDB_private"),	_T("PR_RESOURCE_TYPE"),			0L, _T("MAPI_STORE_PROVIDER")}, // STRING_OK
-	{_T("EMS_MDB_private"),	_T("PR_RESOURCE_FLAGS"),		0L, _T("STATUS_PRIMARY_IDENTITY|STATUS_DEFAULT_STORE|STATUS_PRIMARY_STORE")}, // STRING_OK
-	{_T("EMS_MDB_private"),	NULL,							PR_PROFILE_OPEN_FLAGS, _T("0C000000")}, // STRING_OK
-	{_T("EMS_MDB_private"),	NULL,							PR_PROFILE_TYPE, _T("01000000")}, // STRING_OK
-	{_T("EMS_MDB_private"),	NULL,							PR_MDB_PROVIDER, _T("5494A1C0297F101BA58708002B2A2517")}, // STRING_OK
-	{_T("EMS_MDB_private"),	_T("PR_DISPLAY_NAME"),			0L, _T("Private Folders")}, // STRING_OK
-	{_T("EMS_MDB_private"),	_T("PR_PROVIDER_DISPLAY"),		0L, _T("Microsoft Exchange Message Store")}, // STRING_OK
+	{ _T("EMS_MDB_private"), _T("PR_PROVIDER_DLL_NAME"), 0L, _T("EMSMDB.DLL") }, // STRING_OK
+	{ _T("EMS_MDB_private"), _T("PR_SERVICE_INSTALL_ID"), 0L, _T("{6485D26A-C2AC-11D1-AD3E-10A0C911C9C0}") }, // STRING_OK
+	{ _T("EMS_MDB_private"), _T("PR_RESOURCE_TYPE"), 0L, _T("MAPI_STORE_PROVIDER") }, // STRING_OK
+	{ _T("EMS_MDB_private"), _T("PR_RESOURCE_FLAGS"), 0L, _T("STATUS_PRIMARY_IDENTITY|STATUS_DEFAULT_STORE|STATUS_PRIMARY_STORE") }, // STRING_OK
+	{ _T("EMS_MDB_private"), NULL, PR_PROFILE_OPEN_FLAGS, _T("0C000000") }, // STRING_OK
+	{ _T("EMS_MDB_private"), NULL, PR_PROFILE_TYPE, _T("01000000") }, // STRING_OK
+	{ _T("EMS_MDB_private"), NULL, PR_MDB_PROVIDER, _T("5494A1C0297F101BA58708002B2A2517") }, // STRING_OK
+	{ _T("EMS_MDB_private"), _T("PR_DISPLAY_NAME"), 0L, _T("Private Folders") }, // STRING_OK
+	{ _T("EMS_MDB_private"), _T("PR_PROVIDER_DISPLAY"), 0L, _T("Microsoft Exchange Message Store") }, // STRING_OK
 
-	{_T("EMS_DSA"),	_T("PR_DISPLAY_NAME"),			0L, _T("Microsoft Exchange Directory Service")}, // STRING_OK
-	{_T("EMS_DSA"),	_T("PR_PROVIDER_DISPLAY"),		0L, _T("Microsoft Exchange Directory Service")}, // STRING_OK
-	{_T("EMS_DSA"),	_T("PR_PROVIDER_DLL_NAME"),		0L, _T("EMSABP.DLL")}, // STRING_OK
-	{_T("EMS_DSA"),	_T("PR_SERVICE_INSTALL_ID"),	0L, _T("{6485D26A-C2AC-11D1-AD3E-10A0C911C9C0}")}, // STRING_OK
-	{_T("EMS_DSA"),	_T("PR_RESOURCE_TYPE"),			0L, _T("MAPI_AB_PROVIDER")}, // STRING_OK
+	{ _T("EMS_DSA"), _T("PR_DISPLAY_NAME"), 0L, _T("Microsoft Exchange Directory Service") }, // STRING_OK
+	{ _T("EMS_DSA"), _T("PR_PROVIDER_DISPLAY"), 0L, _T("Microsoft Exchange Directory Service") }, // STRING_OK
+	{ _T("EMS_DSA"), _T("PR_PROVIDER_DLL_NAME"), 0L, _T("EMSABP.DLL") }, // STRING_OK
+	{ _T("EMS_DSA"), _T("PR_SERVICE_INSTALL_ID"), 0L, _T("{6485D26A-C2AC-11D1-AD3E-10A0C911C9C0}") }, // STRING_OK
+	{ _T("EMS_DSA"), _T("PR_RESOURCE_TYPE"), 0L, _T("MAPI_AB_PROVIDER") }, // STRING_OK
 
-	{_T("MSEMS_MSMail_Section"),	_T("UID"),		0L, _T("13DBB0C8AA05101A9BB000AA002FC45A")}, // STRING_OK
-	{_T("MSEMS_MSMail_Section"),	NULL,							PR_PROFILE_VERSION, _T("01050000")}, // STRING_OK
-	{_T("MSEMS_MSMail_Section"),	NULL,							PR_PROFILE_CONFIG_FLAGS, _T("04000000")}, // STRING_OK
-	{_T("MSEMS_MSMail_Section"),	NULL,							PR_PROFILE_TRANSPORT_FLAGS, _T("03000000")}, // STRING_OK
-	{_T("MSEMS_MSMail_Section"),	NULL,							PR_PROFILE_CONNECT_FLAGS, _T("02000000")}, // STRING_OK
+	{ _T("MSEMS_MSMail_Section"), _T("UID"), 0L, _T("13DBB0C8AA05101A9BB000AA002FC45A") }, // STRING_OK
+	{ _T("MSEMS_MSMail_Section"), NULL, PR_PROFILE_VERSION, _T("01050000") }, // STRING_OK
+	{ _T("MSEMS_MSMail_Section"), NULL, PR_PROFILE_CONFIG_FLAGS, _T("04000000") }, // STRING_OK
+	{ _T("MSEMS_MSMail_Section"), NULL, PR_PROFILE_TRANSPORT_FLAGS, _T("03000000") }, // STRING_OK
+	{ _T("MSEMS_MSMail_Section"), NULL, PR_PROFILE_CONNECT_FLAGS, _T("02000000") }, // STRING_OK
 
-	{_T("EMS_RXP"),	_T("PR_DISPLAY_NAME"),			0L, _T("Microsoft Exchange Remote Transport")}, // STRING_OK
-	{_T("EMS_RXP"),	_T("PR_PROVIDER_DISPLAY"),		0L, _T("Microsoft Exchange Remote Transport")}, // STRING_OK
-	{_T("EMS_RXP"),	_T("PR_PROVIDER_DLL_NAME"),		0L, _T("EMSUI.DLL")}, // STRING_OK
-	{_T("EMS_RXP"),	_T("PR_SERVICE_INSTALL_ID"),	0L, _T("{6485D26A-C2AC-11D1-AD3E-10A0C911C9C0}")}, // STRING_OK
-	{_T("EMS_RXP"),	_T("PR_RESOURCE_TYPE"),			0L, _T("MAPI_TRANSPORT_PROVIDER")}, // STRING_OK
-	{_T("EMS_RXP"),	NULL,							PR_PROFILE_OPEN_FLAGS, _T("40000000")}, // STRING_OK
-	{_T("EMS_RXP"),	NULL,							PR_PROFILE_TYPE, _T("0A000000")}, // STRING_OK
+	{ _T("EMS_RXP"), _T("PR_DISPLAY_NAME"), 0L, _T("Microsoft Exchange Remote Transport") }, // STRING_OK
+	{ _T("EMS_RXP"), _T("PR_PROVIDER_DISPLAY"), 0L, _T("Microsoft Exchange Remote Transport") }, // STRING_OK
+	{ _T("EMS_RXP"), _T("PR_PROVIDER_DLL_NAME"), 0L, _T("EMSUI.DLL") }, // STRING_OK
+	{ _T("EMS_RXP"), _T("PR_SERVICE_INSTALL_ID"), 0L, _T("{6485D26A-C2AC-11D1-AD3E-10A0C911C9C0}") }, // STRING_OK
+	{ _T("EMS_RXP"), _T("PR_RESOURCE_TYPE"), 0L, _T("MAPI_TRANSPORT_PROVIDER") }, // STRING_OK
+	{ _T("EMS_RXP"), NULL, PR_PROFILE_OPEN_FLAGS, _T("40000000") }, // STRING_OK
+	{ _T("EMS_RXP"), NULL, PR_PROFILE_TYPE, _T("0A000000") }, // STRING_OK
 
-	{_T("EMS_MSX"),	_T("PR_DISPLAY_NAME"),			0L, _T("Microsoft Exchange Transport")}, // STRING_OK
-	{_T("EMS_MSX"),	_T("PR_PROVIDER_DISPLAY"),		0L, _T("Microsoft Exchange Transport")}, // STRING_OK
-	{_T("EMS_MSX"),	_T("PR_PROVIDER_DLL_NAME"),		0L, _T("EMSMDB.DLL")}, // STRING_OK
-	{_T("EMS_MSX"),	_T("PR_SERVICE_INSTALL_ID"),	0L, _T("{6485D26A-C2AC-11D1-AD3E-10A0C911C9C0}")}, // STRING_OK
-	{_T("EMS_MSX"),	_T("PR_RESOURCE_TYPE"),			0L, _T("MAPI_TRANSPORT_PROVIDER")}, // STRING_OK
-	{_T("EMS_MSX"),	NULL,							PR_PROFILE_OPEN_FLAGS, _T("00000000")}, // STRING_OK
+	{ _T("EMS_MSX"), _T("PR_DISPLAY_NAME"), 0L, _T("Microsoft Exchange Transport") }, // STRING_OK
+	{ _T("EMS_MSX"), _T("PR_PROVIDER_DISPLAY"), 0L, _T("Microsoft Exchange Transport") }, // STRING_OK
+	{ _T("EMS_MSX"), _T("PR_PROVIDER_DLL_NAME"), 0L, _T("EMSMDB.DLL") }, // STRING_OK
+	{ _T("EMS_MSX"), _T("PR_SERVICE_INSTALL_ID"), 0L, _T("{6485D26A-C2AC-11D1-AD3E-10A0C911C9C0}") }, // STRING_OK
+	{ _T("EMS_MSX"), _T("PR_RESOURCE_TYPE"), 0L, _T("MAPI_TRANSPORT_PROVIDER") }, // STRING_OK
+	{ _T("EMS_MSX"), NULL, PR_PROFILE_OPEN_FLAGS, _T("00000000") }, // STRING_OK
 
-	{_T("EMS_Hook"),	_T("PR_DISPLAY_NAME"),			0L, _T("Microsoft Exchange Hook")}, // STRING_OK
-	{_T("EMS_Hook"),	_T("PR_PROVIDER_DISPLAY"),		0L, _T("Microsoft Exchange Hook")}, // STRING_OK
-	{_T("EMS_Hook"),	_T("PR_PROVIDER_DLL_NAME"),		0L, _T("EMSMDB.DLL")}, // STRING_OK
-	{_T("EMS_Hook"),	_T("PR_SERVICE_INSTALL_ID"),	0L, _T("{6485D26A-C2AC-11D1-AD3E-10A0C911C9C0}")}, // STRING_OK
-	{_T("EMS_Hook"),	_T("PR_RESOURCE_TYPE"),			0L, _T("MAPI_HOOK_PROVIDER")}, // STRING_OK
-	{_T("EMS_Hook"),	_T("PR_RESOURCE_FLAGS"),		0L, _T("HOOK_INBOUND")}, // STRING_OK
+	{ _T("EMS_Hook"), _T("PR_DISPLAY_NAME"), 0L, _T("Microsoft Exchange Hook") }, // STRING_OK
+	{ _T("EMS_Hook"), _T("PR_PROVIDER_DISPLAY"), 0L, _T("Microsoft Exchange Hook") }, // STRING_OK
+	{ _T("EMS_Hook"), _T("PR_PROVIDER_DLL_NAME"), 0L, _T("EMSMDB.DLL") }, // STRING_OK
+	{ _T("EMS_Hook"), _T("PR_SERVICE_INSTALL_ID"), 0L, _T("{6485D26A-C2AC-11D1-AD3E-10A0C911C9C0}") }, // STRING_OK
+	{ _T("EMS_Hook"), _T("PR_RESOURCE_TYPE"), 0L, _T("MAPI_HOOK_PROVIDER") }, // STRING_OK
+	{ _T("EMS_Hook"), _T("PR_RESOURCE_FLAGS"), 0L, _T("HOOK_INBOUND") }, // STRING_OK
 
-	{NULL, NULL, 0L, NULL}
+	{ NULL, NULL, 0L, NULL }
 };
 
 // Here's an example of the array to use to remove a service
 static SERVICESINIREC aREMOVE_MSEMSServicesIni[] =
 {
-	{_T("Default Services"),	_T("MSEMS"),	0L,	NULL}, // STRING_OK
-	{_T("Services"),			_T("MSEMS"),	0L,	NULL}, // STRING_OK
+	{ _T("Default Services"), _T("MSEMS"), 0L, NULL }, // STRING_OK
+	{ _T("Services"), _T("MSEMS"), 0L, NULL }, // STRING_OK
 
-	{_T("MSEMS"),			NULL,				0L, NULL}, // STRING_OK
+	{ _T("MSEMS"), NULL, 0L, NULL }, // STRING_OK
 
-	{_T("EMS_MDB_public"),	NULL,				0L, NULL}, // STRING_OK
+	{ _T("EMS_MDB_public"), NULL, 0L, NULL }, // STRING_OK
 
-	{_T("EMS_MDB_private"),	NULL,				0L, NULL}, // STRING_OK
+	{ _T("EMS_MDB_private"), NULL, 0L, NULL }, // STRING_OK
 
-	{_T("EMS_DSA"),			NULL,				0L, NULL}, // STRING_OK
+	{ _T("EMS_DSA"), NULL, 0L, NULL }, // STRING_OK
 
-	{_T("MSEMS_MSMail_Section"),	NULL,				0L, NULL}, // STRING_OK
+	{ _T("MSEMS_MSMail_Section"), NULL, 0L, NULL }, // STRING_OK
 
-	{_T("EMS_RXP"),			NULL,				0L, NULL}, // STRING_OK
+	{ _T("EMS_RXP"), NULL, 0L, NULL }, // STRING_OK
 
-	{_T("EMS_MSX"),			NULL,				0L, NULL}, // STRING_OK
+	{ _T("EMS_MSX"), NULL, 0L, NULL }, // STRING_OK
 
-	{_T("EMS_Hook"),		NULL,				0L, NULL}, // STRING_OK
-	{_T("EMSDelegate"),		NULL,				0L, NULL}, // STRING_OK
+	{ _T("EMS_Hook"), NULL, 0L, NULL }, // STRING_OK
+	{ _T("EMSDelegate"), NULL, 0L, NULL }, // STRING_OK
 
 
-	{NULL, NULL, 0L, NULL}
+	{ NULL, NULL, 0L, NULL }
 };
 
 static SERVICESINIREC aPSTServicesIni[] =
 {
-	{_T("Services"),	_T("MSPST MS"), 0L, _T("Personal Folders File (.pst)")}, // STRING_OK
-	{_T("Services"),	_T("MSPST AB"), 0L, _T("Personal Address Book")}, // STRING_OK
+	{ _T("Services"), _T("MSPST MS"), 0L, _T("Personal Folders File (.pst)") }, // STRING_OK
+	{ _T("Services"), _T("MSPST AB"), 0L, _T("Personal Address Book") }, // STRING_OK
 
-	{_T("MSPST AB"),	_T("PR_DISPLAY_NAME"),			0L, _T("Personal Address Book")}, // STRING_OK
-	{_T("MSPST AB"),	_T("Providers"),				0L,	_T("MSPST ABP")}, // STRING_OK
-	{_T("MSPST AB"),	_T("PR_SERVICE_DLL_NAME"),		0L, _T("MSPST.DLL")}, // STRING_OK
-	{_T("MSPST AB"),	_T("PR_SERVICE_INSTALL_ID"),	0L, _T("{6485D262-C2AC-11D1-AD3E-10A0C911C9C0}")}, // STRING_OK
-	{_T("MSPST AB"),	_T("PR_SERVICE_SUPPORT_FILES"),	0L, _T("MSPST.DLL")}, // STRING_OK
-	{_T("MSPST AB"),	_T("PR_SERVICE_ENTRY_NAME"),	0L, _T("PABServiceEntry")}, // STRING_OK
-	{_T("MSPST AB"),	_T("PR_RESOURCE_FLAGS"),		0L, _T("SERVICE_SINGLE_COPY|SERVICE_NO_PRIMARY_IDENTITY")}, // STRING_OK
+	{ _T("MSPST AB"), _T("PR_DISPLAY_NAME"), 0L, _T("Personal Address Book") }, // STRING_OK
+	{ _T("MSPST AB"), _T("Providers"), 0L, _T("MSPST ABP") }, // STRING_OK
+	{ _T("MSPST AB"), _T("PR_SERVICE_DLL_NAME"), 0L, _T("MSPST.DLL") }, // STRING_OK
+	{ _T("MSPST AB"), _T("PR_SERVICE_INSTALL_ID"), 0L, _T("{6485D262-C2AC-11D1-AD3E-10A0C911C9C0}") }, // STRING_OK
+	{ _T("MSPST AB"), _T("PR_SERVICE_SUPPORT_FILES"), 0L, _T("MSPST.DLL") }, // STRING_OK
+	{ _T("MSPST AB"), _T("PR_SERVICE_ENTRY_NAME"), 0L, _T("PABServiceEntry") }, // STRING_OK
+	{ _T("MSPST AB"), _T("PR_RESOURCE_FLAGS"), 0L, _T("SERVICE_SINGLE_COPY|SERVICE_NO_PRIMARY_IDENTITY") }, // STRING_OK
 
-	{_T("MSPST ABP"),	_T("PR_PROVIDER_DLL_NAME"),		0L, _T("MSPST.DLL")}, // STRING_OK
-	{_T("MSPST ABP"),	_T("PR_SERVICE_INSTALL_ID"),	0L, _T("{6485D262-C2AC-11D1-AD3E-10A0C911C9C0}")}, // STRING_OK
-	{_T("MSPST ABP"),	_T("PR_RESOURCE_TYPE"),			0L, _T("MAPI_AB_PROVIDER")}, // STRING_OK
-	{_T("MSPST ABP"),	_T("PR_DISPLAY_NAME"),			0L, _T("Personal Address Book")}, // STRING_OK
-	{_T("MSPST ABP"),	_T("PR_PROVIDER_DISPLAY"),		0L, _T("Personal Address Book")}, // STRING_OK
-	{_T("MSPST ABP"),	_T("PR_SERVICE_DLL_NAME"),		0L, _T("MSPST.DLL")}, // STRING_OK
+	{ _T("MSPST ABP"), _T("PR_PROVIDER_DLL_NAME"), 0L, _T("MSPST.DLL") }, // STRING_OK
+	{ _T("MSPST ABP"), _T("PR_SERVICE_INSTALL_ID"), 0L, _T("{6485D262-C2AC-11D1-AD3E-10A0C911C9C0}") }, // STRING_OK
+	{ _T("MSPST ABP"), _T("PR_RESOURCE_TYPE"), 0L, _T("MAPI_AB_PROVIDER") }, // STRING_OK
+	{ _T("MSPST ABP"), _T("PR_DISPLAY_NAME"), 0L, _T("Personal Address Book") }, // STRING_OK
+	{ _T("MSPST ABP"), _T("PR_PROVIDER_DISPLAY"), 0L, _T("Personal Address Book") }, // STRING_OK
+	{ _T("MSPST ABP"), _T("PR_SERVICE_DLL_NAME"), 0L, _T("MSPST.DLL") }, // STRING_OK
 
-	{_T("MSPST MS"),	_T("Providers"),				0L,	_T("MSPST MSP")}, // STRING_OK
-	{_T("MSPST MS"),	_T("PR_SERVICE_DLL_NAME"),		0L, _T("mspst.dll")}, // STRING_OK
-	{_T("MSPST MS"),	_T("PR_SERVICE_INSTALL_ID"),	0L, _T("{6485D262-C2AC-11D1-AD3E-10A0C911C9C0}")}, // STRING_OK
-	{_T("MSPST MS"),	_T("PR_SERVICE_SUPPORT_FILES"),	0L, _T("mspst.dll")}, // STRING_OK
-	{_T("MSPST MS"),	_T("PR_SERVICE_ENTRY_NAME"),	0L, _T("PSTServiceEntry")}, // STRING_OK
-	{_T("MSPST MS"),	_T("PR_RESOURCE_FLAGS"),		0L, _T("SERVICE_NO_PRIMARY_IDENTITY")}, // STRING_OK
+	{ _T("MSPST MS"), _T("Providers"), 0L, _T("MSPST MSP") }, // STRING_OK
+	{ _T("MSPST MS"), _T("PR_SERVICE_DLL_NAME"), 0L, _T("mspst.dll") }, // STRING_OK
+	{ _T("MSPST MS"), _T("PR_SERVICE_INSTALL_ID"), 0L, _T("{6485D262-C2AC-11D1-AD3E-10A0C911C9C0}") }, // STRING_OK
+	{ _T("MSPST MS"), _T("PR_SERVICE_SUPPORT_FILES"), 0L, _T("mspst.dll") }, // STRING_OK
+	{ _T("MSPST MS"), _T("PR_SERVICE_ENTRY_NAME"), 0L, _T("PSTServiceEntry") }, // STRING_OK
+	{ _T("MSPST MS"), _T("PR_RESOURCE_FLAGS"), 0L, _T("SERVICE_NO_PRIMARY_IDENTITY") }, // STRING_OK
 
-	{_T("MSPST MSP"),	NULL,							PR_MDB_PROVIDER, _T("4e495441f9bfb80100aa0037d96e0000")}, // STRING_OK
-	{_T("MSPST MSP"),	_T("PR_PROVIDER_DLL_NAME"),		0L, _T("mspst.dll")}, // STRING_OK
-	{_T("MSPST MSP"),	_T("PR_SERVICE_INSTALL_ID"),	0L, _T("{6485D262-C2AC-11D1-AD3E-10A0C911C9C0}")}, // STRING_OK
-	{_T("MSPST MSP"),	_T("PR_RESOURCE_TYPE"),			0L, _T("MAPI_STORE_PROVIDER")}, // STRING_OK
-	{_T("MSPST MSP"),	_T("PR_RESOURCE_FLAGS"),		0L, _T("STATUS_DEFAULT_STORE")}, // STRING_OK
-	{_T("MSPST MSP"),	_T("PR_DISPLAY_NAME"),			0L, _T("Personal Folders")}, // STRING_OK
-	{_T("MSPST MSP"),	_T("PR_PROVIDER_DISPLAY"),		0L, _T("Personal Folders File (.pst)")}, // STRING_OK
-	{_T("MSPST MSP"),	_T("PR_SERVICE_DLL_NAME"),		0L, _T("mspst.dll")}, // STRING_OK
+	{ _T("MSPST MSP"), NULL, PR_MDB_PROVIDER, _T("4e495441f9bfb80100aa0037d96e0000") }, // STRING_OK
+	{ _T("MSPST MSP"), _T("PR_PROVIDER_DLL_NAME"), 0L, _T("mspst.dll") }, // STRING_OK
+	{ _T("MSPST MSP"), _T("PR_SERVICE_INSTALL_ID"), 0L, _T("{6485D262-C2AC-11D1-AD3E-10A0C911C9C0}") }, // STRING_OK
+	{ _T("MSPST MSP"), _T("PR_RESOURCE_TYPE"), 0L, _T("MAPI_STORE_PROVIDER") }, // STRING_OK
+	{ _T("MSPST MSP"), _T("PR_RESOURCE_FLAGS"), 0L, _T("STATUS_DEFAULT_STORE") }, // STRING_OK
+	{ _T("MSPST MSP"), _T("PR_DISPLAY_NAME"), 0L, _T("Personal Folders") }, // STRING_OK
+	{ _T("MSPST MSP"), _T("PR_PROVIDER_DISPLAY"), 0L, _T("Personal Folders File (.pst)") }, // STRING_OK
+	{ _T("MSPST MSP"), _T("PR_SERVICE_DLL_NAME"), 0L, _T("mspst.dll") }, // STRING_OK
 
 
-	{NULL, NULL, 0L, NULL}
+	{ NULL, NULL, 0L, NULL }
 };
 
 static SERVICESINIREC aREMOVE_MSPSTServicesIni[] =
 {
-	{_T("Default Services"),	_T("MSPST MS"), 0L, NULL}, // STRING_OK
-	{_T("Default Services"),	_T("MSPST AB"), 0L, NULL}, // STRING_OK
-	{_T("Services"),	_T("MSPST MS"), 0L, NULL}, // STRING_OK
-	{_T("Services"),	_T("MSPST AB"), 0L, NULL}, // STRING_OK
+	{ _T("Default Services"), _T("MSPST MS"), 0L, NULL }, // STRING_OK
+	{ _T("Default Services"), _T("MSPST AB"), 0L, NULL }, // STRING_OK
+	{ _T("Services"), _T("MSPST MS"), 0L, NULL }, // STRING_OK
+	{ _T("Services"), _T("MSPST AB"), 0L, NULL }, // STRING_OK
 
-	{_T("MSPST AB"),	NULL,	0L, NULL}, // STRING_OK
+	{ _T("MSPST AB"), NULL, 0L, NULL }, // STRING_OK
 
-	{_T("MSPST ABP"),	NULL,	0L, NULL}, // STRING_OK
+	{ _T("MSPST ABP"), NULL, 0L, NULL }, // STRING_OK
 
-	{_T("MSPST MS"),	NULL,	0L, NULL}, // STRING_OK
+	{ _T("MSPST MS"), NULL, 0L, NULL }, // STRING_OK
 
-	{_T("MSPST MSP"),	NULL,	0L, NULL}, // STRING_OK
+	{ _T("MSPST MSP"), NULL, 0L, NULL }, // STRING_OK
 
-	{NULL, NULL, 0L, NULL}
+	{ NULL, NULL, 0L, NULL }
 };
 
 // $--HrSetProfileParameters----------------------------------------------
@@ -282,16 +285,16 @@ static SERVICESINIREC aREMOVE_MSPSTServicesIni[] =
 // -----------------------------------------------------------------------------
 _Check_return_ HRESULT HrSetProfileParameters(_In_ SERVICESINIREC *lpServicesIni)
 {
-	HRESULT	hRes						= S_OK;
-	TCHAR	szServicesIni[MAX_PATH+12]	= {0}; // 12 = space for 'MAPISVC.INF'
-	UINT	n							= 0;
-	TCHAR	szPropNum[10]				= {0};
+	HRESULT	hRes = S_OK;
+	TCHAR	szServicesIni[MAX_PATH + 12] = { 0 }; // 12 = space for 'MAPISVC.INF'
+	UINT	n = 0;
+	TCHAR	szPropNum[10] = { 0 };
 
-	DebugPrint(DBGGeneric,_T("HrSetProfileParameters()\n"));
+	DebugPrint(DBGGeneric, _T("HrSetProfileParameters()\n"));
 
 	if (!lpServicesIni) return MAPI_E_INVALID_PARAMETER;
 
-	GetMAPISVCPath(szServicesIni,_countof(szServicesIni));
+	GetMAPISVCPath(szServicesIni, _countof(szServicesIni));
 
 	if (!szServicesIni[0])
 	{
@@ -299,7 +302,7 @@ _Check_return_ HRESULT HrSetProfileParameters(_In_ SERVICESINIREC *lpServicesIni
 	}
 	else
 	{
-		DebugPrint(DBGGeneric,_T("Writing to this file: \"%s\"\n"),szServicesIni);
+		DebugPrint(DBGGeneric, _T("Writing to this file: \"%s\"\n"), szServicesIni);
 
 		//
 		// Loop through and add items to MAPISVC.INF
@@ -329,7 +332,7 @@ _Check_return_ HRESULT HrSetProfileParameters(_In_ SERVICESINIREC *lpServicesIni
 			// Write the item to MAPISVC.INF
 			//
 
-			DebugPrint(DBGGeneric,_T("\tWriting: \"%s\"::\"%s\"::\"%s\"\n"),
+			DebugPrint(DBGGeneric, _T("\tWriting: \"%s\"::\"%s\"::\"%s\"\n"),
 				lpServicesIni[n].lpszSection,
 				lpszProp,
 				lpszValue);
@@ -357,7 +360,7 @@ void AddServicesToMapiSvcInf()
 		IDS_ADDSERVICESTOINF,
 		IDS_ADDSERVICESTOINFPROMPT,
 		2,
-		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.InitPane(0, CreateCheckPane(IDS_EXCHANGE, false, false));
 	MyData.InitPane(1, CreateCheckPane(IDS_PST, false, false));
 
@@ -385,7 +388,7 @@ void RemoveServicesFromMapiSvcInf()
 		IDS_REMOVEFROMINF,
 		IDS_REMOVEFROMINFPROMPT,
 		2,
-		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.InitPane(0, CreateCheckPane(IDS_EXCHANGE, false, false));
 	MyData.InitPane(1, CreateCheckPane(IDS_PST, false, false));
 
@@ -428,13 +431,13 @@ _Check_return_ HRESULT HrMarkExistingProviders(_In_ LPSERVICEADMIN lpServiceAdmi
 	{
 		LPSRowSet lpRowSet = NULL;
 
-		EC_MAPI(HrQueryAllRows(lpProviderTable, (LPSPropTagArray) &pTagUID, NULL, NULL, 0, &lpRowSet));
+		EC_MAPI(HrQueryAllRows(lpProviderTable, (LPSPropTagArray)&pTagUID, NULL, NULL, 0, &lpRowSet));
 
-		if (lpRowSet) DebugPrintSRowSet(DBGGeneric,lpRowSet,NULL);
+		if (lpRowSet) DebugPrintSRowSet(DBGGeneric, lpRowSet, NULL);
 
 		if (lpRowSet && lpRowSet->cRows >= 1)
 		{
-			for (ULONG i = 0 ; i < lpRowSet->cRows ; i++)
+			for (ULONG i = 0; i < lpRowSet->cRows; i++)
 			{
 				LPSRow		 lpCurRow = NULL;
 				LPSPropValue lpServiceUID = NULL;
@@ -461,12 +464,12 @@ _Check_return_ HRESULT HrMarkExistingProviders(_In_ LPSERVICEADMIN lpServiceAdmi
 							SPropValue	PropVal;
 							PropVal.ulPropTag = PR_MARKER;
 							PropVal.Value.lpszA = MARKER_STRING;
-							EC_MAPI(lpSect->SetProps(1,&PropVal,NULL));
+							EC_MAPI(lpSect->SetProps(1, &PropVal, NULL));
 						}
 						else
 						{
-							SPropTagArray pTagArray = {1,PR_MARKER};
-							WC_MAPI(lpSect->DeleteProps(&pTagArray,NULL));
+							SPropTagArray pTagArray = { 1, PR_MARKER };
+							WC_MAPI(lpSect->DeleteProps(&pTagArray, NULL));
 						}
 						hRes = S_OK;
 						EC_MAPI(lpSect->SaveChanges(0));
@@ -503,10 +506,10 @@ _Check_return_ HRESULT HrFindUnmarkedProvider(_In_ LPSERVICEADMIN lpServiceAdmin
 
 	if (lpProviderTable)
 	{
-		EC_MAPI(lpProviderTable->SetColumns((LPSPropTagArray)&pTagUID,TBL_BATCH));
+		EC_MAPI(lpProviderTable->SetColumns((LPSPropTagArray)&pTagUID, TBL_BATCH));
 		for (;;)
 		{
-			EC_MAPI(lpProviderTable->QueryRows(1,0,lpRowSet));
+			EC_MAPI(lpProviderTable->QueryRows(1, 0, lpRowSet));
 			if (S_OK == hRes && *lpRowSet && 1 == (*lpRowSet)->cRows)
 			{
 				LPSRow		 lpCurRow = NULL;
@@ -527,12 +530,12 @@ _Check_return_ HRESULT HrFindUnmarkedProvider(_In_ LPSERVICEADMIN lpServiceAdmin
 						&lpSect));
 					if (lpSect)
 					{
-						SPropTagArray	pTagArray = {1,PR_MARKER};
+						SPropTagArray	pTagArray = { 1, PR_MARKER };
 						ULONG			ulPropVal = 0;
 						LPSPropValue	lpsPropVal = NULL;
-						EC_H_GETPROPS(lpSect->GetProps(&pTagArray,NULL,&ulPropVal,&lpsPropVal));
-						if (!(CheckStringProp(lpsPropVal,PROP_TYPE(PR_MARKER)) &&
-							!strcmp(lpsPropVal->Value.lpszA,MARKER_STRING)))
+						EC_H_GETPROPS(lpSect->GetProps(&pTagArray, NULL, &ulPropVal, &lpsPropVal));
+						if (!(CheckStringProp(lpsPropVal, PROP_TYPE(PR_MARKER)) &&
+							!strcmp(lpsPropVal->Value.lpszA, MARKER_STRING)))
 						{
 							// got an unmarked provider - this is our hit
 							// Don't free *lpRowSet - we're returning it
@@ -575,9 +578,9 @@ _Check_return_ HRESULT HrAddServiceToProfile(
 	HRESULT			hRes = S_OK;
 	LPPROFADMIN		lpProfAdmin = NULL;
 	LPSERVICEADMIN	lpServiceAdmin = NULL;
-	LPSRowSet		lpRowSet =NULL;
+	LPSRowSet		lpRowSet = NULL;
 
-	DebugPrint(DBGGeneric,_T("HrAddServiceToProfile(%hs,%hs)\n"),lpszServiceName,lpszProfileName);
+	DebugPrint(DBGGeneric, _T("HrAddServiceToProfile(%hs,%hs)\n"), lpszServiceName, lpszProfileName);
 
 	if (!lpszServiceName || !lpszProfileName) return MAPI_E_INVALID_PARAMETER;
 
@@ -586,19 +589,19 @@ _Check_return_ HRESULT HrAddServiceToProfile(
 	if (!lpProfAdmin) return hRes;
 
 	EC_MAPI(lpProfAdmin->AdminServices(
-		(LPTSTR) lpszProfileName,
-		(LPTSTR) _T(""),
+		(LPTSTR)lpszProfileName,
+		(LPTSTR)_T(""),
 		0,
 		0,
 		&lpServiceAdmin));
 
 	if (lpServiceAdmin)
 	{
-		MAPIUID uidService = {0};
+		MAPIUID uidService = { 0 };
 		LPMAPIUID lpuidService = &uidService;
 
 		LPSERVICEADMIN2 lpServiceAdmin2 = NULL;
-		WC_MAPI(lpServiceAdmin->QueryInterface(IID_IMsgServiceAdmin2, (LPVOID*) &lpServiceAdmin2));
+		WC_MAPI(lpServiceAdmin->QueryInterface(IID_IMsgServiceAdmin2, (LPVOID*)&lpServiceAdmin2));
 
 		if (SUCCEEDED(hRes) && lpServiceAdmin2)
 		{
@@ -617,7 +620,7 @@ _Check_return_ HRESULT HrAddServiceToProfile(
 			if (lpPropVals)
 			{
 				// Add a dummy prop to the current providers
-				EC_H(HrMarkExistingProviders(lpServiceAdmin,true));
+				EC_H(HrMarkExistingProviders(lpServiceAdmin, true));
 			}
 			EC_H_MSG(lpServiceAdmin->CreateMsgService(
 				(LPTSTR)lpszServiceName,
@@ -628,9 +631,9 @@ _Check_return_ HRESULT HrAddServiceToProfile(
 			if (lpPropVals)
 			{
 				// Look for a provider without our dummy prop
-				EC_H(HrFindUnmarkedProvider(lpServiceAdmin,&lpRowSet));
+				EC_H(HrFindUnmarkedProvider(lpServiceAdmin, &lpRowSet));
 
-				if (lpRowSet) DebugPrintSRowSet(DBGGeneric,lpRowSet,NULL);
+				if (lpRowSet) DebugPrintSRowSet(DBGGeneric, lpRowSet, NULL);
 
 				// should only have one unmarked row
 				if (lpRowSet && lpRowSet->cRows == 1)
@@ -644,13 +647,13 @@ _Check_return_ HRESULT HrAddServiceToProfile(
 
 					if (lpServiceUIDProp)
 					{
-						lpuidService = (LPMAPIUID) lpServiceUIDProp->Value.bin.lpb;
+						lpuidService = (LPMAPIUID)lpServiceUIDProp->Value.bin.lpb;
 					}
 				}
 
 				hRes = S_OK;
 				// Strip out the dummy prop
-				EC_H(HrMarkExistingProviders(lpServiceAdmin,false));
+				EC_H(HrMarkExistingProviders(lpServiceAdmin, false));
 			}
 		}
 
@@ -680,17 +683,17 @@ _Check_return_ HRESULT HrAddExchangeToProfile(
 {
 	HRESULT			hRes = S_OK;
 
-	DebugPrint(DBGGeneric,_T("HrAddExchangeToProfile(%hs,%hs,%hs)\n"),lpszServerName,lpszMailboxName,lpszProfileName);
+	DebugPrint(DBGGeneric, _T("HrAddExchangeToProfile(%hs,%hs,%hs)\n"), lpszServerName, lpszMailboxName, lpszProfileName);
 
 	if (!lpszServerName || !lpszMailboxName || !lpszProfileName) return MAPI_E_INVALID_PARAMETER;
 
 #define NUMEXCHANGEPROPS 2
 	SPropValue		PropVal[NUMEXCHANGEPROPS];
 	PropVal[0].ulPropTag = PR_PROFILE_UNRESOLVED_SERVER;
-	PropVal[0].Value.lpszA = (LPSTR) lpszServerName;
+	PropVal[0].Value.lpszA = (LPSTR)lpszServerName;
 	PropVal[1].ulPropTag = PR_PROFILE_UNRESOLVED_NAME;
-	PropVal[1].Value.lpszA = (LPSTR) lpszMailboxName;
-	EC_H(HrAddServiceToProfile("MSEMS",ulUIParam,NULL,NUMEXCHANGEPROPS,PropVal,lpszProfileName)); // STRING_OK
+	PropVal[1].Value.lpszA = (LPSTR)lpszMailboxName;
+	EC_H(HrAddServiceToProfile("MSEMS", ulUIParam, NULL, NUMEXCHANGEPROPS, PropVal, lpszProfileName)); // STRING_OK
 
 	return hRes;
 } // HrAddExchangeToProfile
@@ -705,24 +708,24 @@ _Check_return_ HRESULT HrAddPSTToProfile(
 {
 	HRESULT			hRes = S_OK;
 
-	DebugPrint(DBGGeneric,_T("HrAddPSTToProfile(0x%X,%s,%hs,0x%X,%hs)\n"),bUnicodePST,lpszPSTPath,lpszProfileName,bPasswordSet,lpszPassword);
+	DebugPrint(DBGGeneric, _T("HrAddPSTToProfile(0x%X,%s,%hs,0x%X,%hs)\n"), bUnicodePST, lpszPSTPath, lpszProfileName, bPasswordSet, lpszPassword);
 
 	if (!lpszPSTPath || !lpszProfileName) return MAPI_E_INVALID_PARAMETER;
 
 	SPropValue PropVal[2];
 
 	PropVal[0].ulPropTag = CHANGE_PROP_TYPE(PR_PST_PATH, PT_TSTRING);
-	PropVal[0].Value.LPSZ = (LPTSTR) lpszPSTPath;
+	PropVal[0].Value.LPSZ = (LPTSTR)lpszPSTPath;
 	PropVal[1].ulPropTag = PR_PST_PW_SZ_OLD;
-	PropVal[1].Value.lpszA = (LPSTR) lpszPassword;
+	PropVal[1].Value.lpszA = (LPSTR)lpszPassword;
 
 	if (bUnicodePST)
 	{
-		EC_H(HrAddServiceToProfile("MSUPST MS",ulUIParam,NULL,bPasswordSet?2:1,PropVal,lpszProfileName)); // STRING_OK
+		EC_H(HrAddServiceToProfile("MSUPST MS", ulUIParam, NULL, bPasswordSet ? 2 : 1, PropVal, lpszProfileName)); // STRING_OK
 	}
 	else
 	{
-		EC_H(HrAddServiceToProfile("MSPST MS",ulUIParam,NULL,bPasswordSet?2:1,PropVal,lpszProfileName)); // STRING_OK
+		EC_H(HrAddServiceToProfile("MSPST MS", ulUIParam, NULL, bPasswordSet ? 2 : 1, PropVal, lpszProfileName)); // STRING_OK
 	}
 
 	return hRes;
@@ -732,12 +735,12 @@ _Check_return_ HRESULT HrAddPSTToProfile(
 // Creates an empty profile.
 // -----------------------------------------------------------------------------
 _Check_return_ HRESULT HrCreateProfile(
-									   _In_z_ LPCSTR lpszProfileName) // profile name
+	_In_z_ LPCSTR lpszProfileName) // profile name
 {
 	HRESULT			hRes = S_OK;
 	LPPROFADMIN		lpProfAdmin = NULL;
 
-	DebugPrint(DBGGeneric,_T("HrCreateProfile(%hs)\n"),lpszProfileName);
+	DebugPrint(DBGGeneric, _T("HrCreateProfile(%hs)\n"), lpszProfileName);
 
 	if (!lpszProfileName) return MAPI_E_INVALID_PARAMETER;
 
@@ -767,12 +770,12 @@ _Check_return_ HRESULT HrCreateProfile(
 // Removes a profile.
 // ------------------------------------------------------------------------------
 _Check_return_ HRESULT HrRemoveProfile(
-									   _In_z_ LPCSTR lpszProfileName)
+	_In_z_ LPCSTR lpszProfileName)
 {
-	HRESULT		hRes= S_OK;
+	HRESULT		hRes = S_OK;
 	LPPROFADMIN	lpProfAdmin = NULL;
 
-	DebugPrint(DBGGeneric,_T("HrRemoveProfile(%hs)\n"),lpszProfileName);
+	DebugPrint(DBGGeneric, _T("HrRemoveProfile(%hs)\n"), lpszProfileName);
 	if (!lpszProfileName) return MAPI_E_INVALID_PARAMETER;
 
 	EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
@@ -794,10 +797,10 @@ _Check_return_ HRESULT HrRemoveProfile(
 _Check_return_ HRESULT HrSetDefaultProfile(
 	_In_z_ LPCSTR lpszProfileName)
 {
-	HRESULT hRes= S_OK;
+	HRESULT hRes = S_OK;
 	LPPROFADMIN lpProfAdmin = NULL;
 
-	DebugPrint(DBGGeneric,_T("HrRemoveProfile(%hs)\n"),lpszProfileName);
+	DebugPrint(DBGGeneric, _T("HrRemoveProfile(%hs)\n"), lpszProfileName);
 	if (!lpszProfileName) return MAPI_E_INVALID_PARAMETER;
 
 	EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
@@ -832,7 +835,7 @@ _Check_return_ HRESULT HrMAPIProfileExists(
 		PR_DISPLAY_NAME_A
 	};
 
-	DebugPrint(DBGGeneric,_T("HrMAPIProfileExists()\n"));
+	DebugPrint(DBGGeneric, _T("HrMAPIProfileExists()\n"));
 	if (!lpProfAdmin || !lpszProfileName) return MAPI_E_INVALID_PARAMETER;
 
 	// Get a table of existing profiles
@@ -868,7 +871,7 @@ _Check_return_ HRESULT HrMAPIProfileExists(
 
 				ULONG ulComp = NULL;
 
-				EC_D(ulComp,CompareStringA(
+				EC_D(ulComp, CompareStringA(
 					g_lcid, // LOCALE_INVARIANT,
 					NORM_IGNORECASE,
 					lpProp[0].Value.lpszA,
@@ -892,10 +895,10 @@ _Check_return_ HRESULT HrMAPIProfileExists(
 } // HrMAPIProfileExists
 
 _Check_return_ HRESULT GetProfileServiceVersion(_In_z_ LPCSTR lpszProfileName,
-												_Out_ ULONG* lpulServerVersion,
-												_Out_ EXCHANGE_STORE_VERSION_NUM* lpStoreVersion,
-												_Out_ bool* lpbFoundServerVersion,
-												_Out_ bool* lpbFoundServerFullVersion)
+	_Out_ ULONG* lpulServerVersion,
+	_Out_ EXCHANGE_STORE_VERSION_NUM* lpStoreVersion,
+	_Out_ bool* lpbFoundServerVersion,
+	_Out_ bool* lpbFoundServerFullVersion)
 {
 	if (!lpszProfileName
 		|| !lpulServerVersion
@@ -907,18 +910,18 @@ _Check_return_ HRESULT GetProfileServiceVersion(_In_z_ LPCSTR lpszProfileName,
 	*lpbFoundServerVersion = false;
 	*lpbFoundServerFullVersion = false;
 
-	HRESULT        hRes= S_OK;
+	HRESULT        hRes = S_OK;
 	LPPROFADMIN    lpProfAdmin = NULL;
 	LPSERVICEADMIN lpServiceAdmin = NULL;
 
-	DebugPrint(DBGGeneric,_T("GetProfileServiceVersion(%hs)\n"),lpszProfileName);
+	DebugPrint(DBGGeneric, _T("GetProfileServiceVersion(%hs)\n"), lpszProfileName);
 
 	EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
 	if (!lpProfAdmin) return hRes;
 
 	EC_MAPI(lpProfAdmin->AdminServices(
-		(LPTSTR) lpszProfileName,
-		(LPTSTR) _T(""),
+		(LPTSTR)lpszProfileName,
+		(LPTSTR)_T(""),
 		0,
 		0,
 		&lpServiceAdmin));
@@ -934,7 +937,7 @@ _Check_return_ HRESULT GetProfileServiceVersion(_In_z_ LPCSTR lpszProfileName,
 		if (lpProfSect)
 		{
 			LPSPropValue lpServerVersion = NULL;
-			WC_MAPI(HrGetOneProp(lpProfSect,PR_PROFILE_SERVER_VERSION,&lpServerVersion));
+			WC_MAPI(HrGetOneProp(lpProfSect, PR_PROFILE_SERVER_VERSION, &lpServerVersion));
 
 			if (SUCCEEDED(hRes) && lpServerVersion && PR_PROFILE_SERVER_VERSION == lpServerVersion->ulPropTag)
 			{
@@ -945,18 +948,18 @@ _Check_return_ HRESULT GetProfileServiceVersion(_In_z_ LPCSTR lpszProfileName,
 			hRes = S_OK;
 
 			LPSPropValue lpServerFullVersion = NULL;
-			WC_MAPI(HrGetOneProp(lpProfSect,PR_PROFILE_SERVER_FULL_VERSION,&lpServerFullVersion));
+			WC_MAPI(HrGetOneProp(lpProfSect, PR_PROFILE_SERVER_FULL_VERSION, &lpServerFullVersion));
 
 			if (SUCCEEDED(hRes) &&
 				lpServerFullVersion &&
 				PR_PROFILE_SERVER_FULL_VERSION == lpServerFullVersion->ulPropTag &&
 				sizeof(EXCHANGE_STORE_VERSION_NUM) == lpServerFullVersion->Value.bin.cb)
 			{
-				DebugPrint(DBGGeneric,_T("PR_PROFILE_SERVER_FULL_VERSION = "));
-				DebugPrintBinary(DBGGeneric,&lpServerFullVersion->Value.bin);
-				DebugPrint(DBGGeneric,_T("\n"));
+				DebugPrint(DBGGeneric, _T("PR_PROFILE_SERVER_FULL_VERSION = "));
+				DebugPrintBinary(DBGGeneric, &lpServerFullVersion->Value.bin);
+				DebugPrint(DBGGeneric, _T("\n"));
 
-				memcpy(lpStoreVersion,lpServerFullVersion->Value.bin.lpb,sizeof(EXCHANGE_STORE_VERSION_NUM));
+				memcpy(lpStoreVersion, lpServerFullVersion->Value.bin.lpb, sizeof(EXCHANGE_STORE_VERSION_NUM));
 				*lpbFoundServerFullVersion = true;
 			}
 			MAPIFreeBuffer(lpServerFullVersion);
@@ -980,16 +983,16 @@ _Check_return_ HRESULT GetProfileServiceVersion(_In_z_ LPCSTR lpszProfileName,
 _Check_return_ HRESULT HrCopyProfile(_In_z_ LPCSTR lpszOldProfileName,
 	_In_z_ LPCSTR lpszNewProfileName)
 {
-	HRESULT hRes= S_OK;
+	HRESULT hRes = S_OK;
 	LPPROFADMIN lpProfAdmin = NULL;
 
-	DebugPrint(DBGGeneric,_T("HrCopyProfile(%hs, %hs)\n"), lpszOldProfileName, lpszNewProfileName);
+	DebugPrint(DBGGeneric, _T("HrCopyProfile(%hs, %hs)\n"), lpszOldProfileName, lpszNewProfileName);
 	if (!lpszOldProfileName || !lpszNewProfileName) return MAPI_E_INVALID_PARAMETER;
 
 	EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
 	if (!lpProfAdmin) return hRes;
 
-	EC_MAPI(lpProfAdmin->CopyProfile((LPTSTR) lpszOldProfileName, NULL, (LPTSTR) lpszNewProfileName, NULL, NULL));
+	EC_MAPI(lpProfAdmin->CopyProfile((LPTSTR)lpszOldProfileName, NULL, (LPTSTR)lpszNewProfileName, NULL, NULL));
 
 	lpProfAdmin->Release();
 

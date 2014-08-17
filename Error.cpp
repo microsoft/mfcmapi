@@ -40,7 +40,7 @@ void LogFunctionCall(
 	if (bSystemCall)
 	{
 		LPTSTR szErr = NULL;
-		FormatMessage(
+		DWORD dw = FormatMessage(
 			FORMAT_MESSAGE_ALLOCATE_BUFFER|FORMAT_MESSAGE_FROM_SYSTEM,
 			0,
 			uidErrorMsg,
@@ -48,8 +48,11 @@ void LogFunctionCall(
 			(LPTSTR)&szErr,
 			0,
 			0);
-		szErrorMsg = szErr;
-		LocalFree(szErr);
+		if (dw)
+		{
+			szErrorMsg = szErr;
+			LocalFree(szErr);
+		}
 	}
 	else if (uidErrorMsg) (void) szErrorMsg.LoadString(uidErrorMsg);
 

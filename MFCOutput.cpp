@@ -847,7 +847,7 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 		OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPSMARTVIEW].uidName, szSmartView, true, iIndent);
 #else
 		LPSTR szSmartViewA = NULL;
-		HRESULT hRes = UnicodeToAnsi(szSmartView, &szSmartViewA);
+		hRes = UnicodeToAnsi(szSmartView, &szSmartViewA);
 		if (SUCCEEDED(hRes) && szSmartViewA)
 		{
 			OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPSMARTVIEW].uidName, szSmartViewA, true, iIndent);
