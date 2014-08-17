@@ -26,9 +26,12 @@ void OpenDebugFile()
 		g_fDebugFile = MyOpenFile(RegKeys[regkeyDEBUG_FILE_NAME].szCurSTRING, false);
 #else
 		LPWSTR szDebugFileW = NULL;
-		(void)AnsiToUnicode(RegKeys[regkeyDEBUG_FILE_NAME].szCurSTRING, &szDebugFileW);
-		g_fDebugFile = MyOpenFile(szDebugFileW, false);
-		delete[] szDebugFileW;
+		HRESULT hRes = AnsiToUnicode(RegKeys[regkeyDEBUG_FILE_NAME].szCurSTRING, &szDebugFileW);
+		if (SUCCEEDED(hRes) && szDebugFileW)
+		{
+			g_fDebugFile = MyOpenFile(szDebugFileW, false);
+			delete[] szDebugFileW;
+		}
 #endif
 	}
 } // OpenDebugFile
@@ -96,7 +99,7 @@ _Check_return_ FILE* MyOpenFile(_In_z_ LPCWSTR szFileName, bool bNewFile)
 #if defined(_MSC_VER) && (_MSC_VER >= 1400)
 	_wfopen_s(&fOut, szFileName, szParams);
 #else
-	fOut = _wfopen(szFileName,szParams);
+	fOut = _wfopen(szFileName, szParams);
 #endif
 	if (fOut)
 	{
@@ -844,9 +847,12 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 		OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPSMARTVIEW].uidName, szSmartView, true, iIndent);
 #else
 		LPSTR szSmartViewA = NULL;
-		(void)UnicodeToAnsi(szSmartView, &szSmartViewA);
-		OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPSMARTVIEW].uidName, szSmartViewA, true, iIndent);
-		delete[] szSmartViewA;
+		HRESULT hRes = UnicodeToAnsi(szSmartView, &szSmartViewA);
+		if (SUCCEEDED(hRes) && szSmartViewA)
+		{
+			OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPSMARTVIEW].uidName, szSmartViewA, true, iIndent);
+			delete[] szSmartViewA;
+		}
 #endif
 	}
 	_Output(ulDbgLvl, fFile, false, _T("\t</property>\n"));

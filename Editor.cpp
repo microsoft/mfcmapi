@@ -302,9 +302,12 @@ void CEditor::SetAddInTitle(_In_z_ LPWSTR szTitle)
 	m_szAddInTitle = szTitle;
 #else
 	LPSTR szTitleA = NULL;
-	(void)UnicodeToAnsi(szTitle, &szTitleA);
-	m_szAddInTitle = szTitleA;
-	delete[] szTitleA;
+	HRESULT hRes = UnicodeToAnsi(szTitle, &szTitleA);
+	if (SUCCEEDED(hRes) && szTitleA)
+	{
+		m_szAddInTitle = szTitleA;
+		delete[] szTitleA;
+	}
 #endif
 } // CEditor::SetAddInTitle
 
