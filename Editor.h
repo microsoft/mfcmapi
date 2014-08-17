@@ -42,7 +42,7 @@ public:
 		ULONG ulNumFields,
 		ULONG ulButtonFlags);
 	CEditor(
-		_In_ CWnd* pParentWnd,
+		_In_opt_ CWnd* pParentWnd,
 		UINT uidTitle,
 		UINT uidPrompt,
 		ULONG ulNumFields,
@@ -62,10 +62,10 @@ public:
 	void SetStringW(ULONG i, _In_opt_z_ LPCWSTR szMsg, size_t cchsz = -1);
 #ifdef UNICODE
 #define SetString SetStringW
-//#define InitSingleLineSz InitSingleLineSzW
+	//#define InitSingleLineSz InitSingleLineSzW
 #else
 #define SetString SetStringA
-//#define InitSingleLineSz InitSingleLineSzA
+	//#define InitSingleLineSz InitSingleLineSzA
 #endif
 	void __cdecl SetStringf(ULONG i, _Printf_format_string_ LPCTSTR szMsg, ...);
 	void LoadString(ULONG i, UINT uidMsg);

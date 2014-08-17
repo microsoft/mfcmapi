@@ -498,10 +498,9 @@ void OnQSLookupThumbail(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	WC_H(OpenABForQuickStart(lpHostDlg, hwnd, &lpAdrBook));
 	if (SUCCEEDED(hRes) && lpAdrBook)
 	{
-		ULONG ulObjType = NULL;
 		LPMAILUSER lpMailUser = NULL;
 
-		EC_H(SelectUser(lpAdrBook, hwnd, &ulObjType, &lpMailUser));
+		EC_H(SelectUser(lpAdrBook, hwnd, NULL, &lpMailUser));
 
 		if (SUCCEEDED(hRes) && lpMailUser)
 		{

@@ -37,12 +37,12 @@ wstring Attribute::toXML()
 	return m_key + L"=\"" + m_value + L"\" ";
 }
 
-void Attributes::AddAttribute(_In_z_ wstring key, _In_z_ wstring value)
+void Attributes::AddAttribute(_In_ wstring key, _In_ wstring value)
 {
 	m_attributes.push_back(Attribute(key, value));
 }
 
-wstring Attributes::GetAttribute(_In_z_ wstring key)
+wstring Attributes::GetAttribute(_In_ wstring key)
 {
 	size_t iAttribute = 0;
 	for (iAttribute = 0; iAttribute < m_attributes.size(); iAttribute++)

@@ -7,7 +7,7 @@ class CTagArrayEditor : public CEditor
 {
 public:
 	CTagArrayEditor(
-		_In_ CWnd* pParentWnd,
+		_In_opt_ CWnd* pParentWnd,
 		UINT uidTitle,
 		UINT uidPrompt,
 		_In_opt_ LPMAPITABLE lpContentsTable,

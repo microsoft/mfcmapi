@@ -594,9 +594,9 @@ _Check_return_ HRESULT SearchContentsTableForName(
 	return hRes;
 } // SearchContentsTableForName
 
-_Check_return_ HRESULT SelectUser(_In_ LPADRBOOK lpAdrBook, HWND hwnd, _Deref_out_opt_ ULONG* lpulObjType, _Deref_out_opt_ LPMAILUSER* lppMailUser)
+_Check_return_ HRESULT SelectUser(_In_ LPADRBOOK lpAdrBook, HWND hwnd, _Out_opt_ ULONG* lpulObjType, _Deref_out_opt_ LPMAILUSER* lppMailUser)
 {
-	if (!lpAdrBook || !hwnd ||!lppMailUser) return MAPI_E_INVALID_PARAMETER;
+	if (!lpAdrBook || !hwnd || !lppMailUser) return MAPI_E_INVALID_PARAMETER;
 
 	HRESULT hRes = S_OK;
 
