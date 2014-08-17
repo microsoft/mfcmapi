@@ -28,7 +28,7 @@ _Check_return_ HRESULT AppendEntryID(_Inout_z_count_(cchFileName) LPWSTR szFileN
 
 	if (szBin)
 	{
-		EC_H(StringCchCatNW(szFileName, cchFileName, L"_",1)); // STRING_OK
+		EC_H(StringCchCatNW(szFileName, cchFileName, L"_", 1)); // STRING_OK
 #ifdef UNICODE
 		EC_H(StringCchCatNW(szFileName, cchFileName, szBin,cchMaxAppend-1));
 #else
@@ -38,7 +38,7 @@ _Check_return_ HRESULT AppendEntryID(_Inout_z_count_(cchFileName) LPWSTR szFileN
 			&szWideBin));
 		if (szWideBin)
 		{
-			EC_H(StringCchCatNW(szFileName, cchFileName, szWideBin,cchMaxAppend-1));
+			EC_H(StringCchCatNW(szFileName, cchFileName, szWideBin, cchMaxAppend - 1));
 		}
 		delete[] szWideBin;
 #endif
@@ -62,7 +62,7 @@ _Check_return_ HRESULT GetDirectoryPath(HWND hWnd, _Inout_z_ LPWSTR szPath)
 
 	if (!lpMalloc) return hRes;
 
-	memset(&BrowseInfo,NULL,sizeof(BROWSEINFO));
+	memset(&BrowseInfo, NULL, sizeof(BROWSEINFO));
 
 	szPath[0] = NULL;
 
@@ -78,7 +78,7 @@ _Check_return_ HRESULT GetDirectoryPath(HWND hWnd, _Inout_z_ LPWSTR szPath)
 	lpItemIdList = SHBrowseForFolderW(&BrowseInfo);
 	if (lpItemIdList)
 	{
-		EC_B(SHGetPathFromIDListW(lpItemIdList,szPath));
+		EC_B(SHGetPathFromIDListW(lpItemIdList, szPath));
 		lpMalloc->Free(lpItemIdList);
 	}
 	else
@@ -94,7 +94,7 @@ _Check_return_ HRESULT GetDirectoryPath(HWND hWnd, _Inout_z_ LPWSTR szPath)
 _Check_return_ HRESULT MyStgOpenStorage(_In_z_ LPCWSTR szMessageFile, bool bBestAccess, _Deref_out_ LPSTORAGE* lppStorage)
 {
 	if (!lppStorage) return MAPI_E_INVALID_PARAMETER;
-	DebugPrint(DBGGeneric,_T("MyStgOpenStorage: Opening \"%ws\", bBestAccess == %s\n"),szMessageFile,bBestAccess?_T("True"):_T("False"));
+	DebugPrint(DBGGeneric, _T("MyStgOpenStorage: Opening \"%ws\", bBestAccess == %s\n"), szMessageFile, bBestAccess ? _T("True") : _T("False"));
 	HRESULT		hRes = S_OK;
 	ULONG		ulFlags = STGM_TRANSACTED;
 
@@ -169,7 +169,7 @@ _Check_return_ HRESULT LoadFromMSG(_In_z_ LPCWSTR szMessageFile, _In_ LPMESSAGE 
 	// the properties that Exchange excludes to save bits and time.
 	// Should not be necessary to exclude these, but speeds the process
 	// when a lot of messages are being copied.
-	static const SizedSPropTagArray	(18, excludeTags) =
+	static const SizedSPropTagArray(18, excludeTags) =
 	{
 		18,
 		PR_REPLICA_VERSION,
@@ -192,7 +192,7 @@ _Check_return_ HRESULT LoadFromMSG(_In_z_ LPCWSTR szMessageFile, _In_ LPMESSAGE 
 		PR_HAS_DAMS
 	};
 
-	EC_H(LoadMSGToMessage(szMessageFile,&pIMsg));
+	EC_H(LoadMSGToMessage(szMessageFile, &pIMsg));
 
 	if (pIMsg)
 	{
@@ -281,7 +281,7 @@ _Check_return_ HRESULT LoadFromTNEF(_In_z_ LPCWSTR szMessageFile, _In_ LPADRBOOK
 		// Decode the TNEF stream into our MAPI message.
 		EC_MAPI(lpTNEF->ExtractProps(
 			TNEF_PROP_EXCLUDE,
-			(LPSPropTagArray) &lpPropTnefExcludeArray,
+			(LPSPropTagArray)&lpPropTnefExcludeArray,
 			&lpError));
 
 		EC_TNEFERR(lpError);
@@ -298,10 +298,10 @@ _Check_return_ HRESULT LoadFromTNEF(_In_z_ LPCWSTR szMessageFile, _In_ LPADRBOOK
 
 // Builds a file name out of the passed in message and extension
 _Check_return_ HRESULT BuildFileName(_Inout_z_count_(cchFileOut) LPWSTR szFileOut,
-									 size_t cchFileOut,
-									 _In_z_count_(cchExt) LPCWSTR szExt,
-									 size_t cchExt,
-									 _In_ LPMESSAGE lpMessage)
+	size_t cchFileOut,
+	_In_z_count_(cchExt) LPCWSTR szExt,
+	size_t cchExt,
+	_In_ LPMESSAGE lpMessage)
 {
 	HRESULT hRes = S_OK;
 	ULONG ulProps = NULL;
@@ -317,7 +317,7 @@ _Check_return_ HRESULT BuildFileName(_Inout_z_count_(cchFileOut) LPWSTR szFileOu
 		ePR_RECORD_KEY,
 		NUM_COLS
 	};
-	static const SizedSPropTagArray(NUM_COLS,sptaMessageProps) =
+	static const SizedSPropTagArray(NUM_COLS, sptaMessageProps) =
 	{
 		NUM_COLS,
 		PR_SUBJECT_W,
@@ -327,14 +327,14 @@ _Check_return_ HRESULT BuildFileName(_Inout_z_count_(cchFileOut) LPWSTR szFileOu
 	// Get subject line of message
 	// This will be used as the new file name.
 	WC_H_GETPROPS(lpMessage->GetProps(
-		(LPSPropTagArray) &sptaMessageProps,
+		(LPSPropTagArray)&sptaMessageProps,
 		fMapiUnicode,
 		&ulProps,
 		&lpProps));
 	hRes = S_OK;
 
 	szFileOut[0] = NULL;
-	if (CheckStringProp(&lpProps[ePR_SUBJECT_W],PT_UNICODE))
+	if (CheckStringProp(&lpProps[ePR_SUBJECT_W], PT_UNICODE))
 	{
 		szSubj = lpProps[ePR_SUBJECT_W].Value.lpszW;
 	}
@@ -363,14 +363,14 @@ _Check_return_ HRESULT BuildFileName(_Inout_z_count_(cchFileOut) LPWSTR szFileOu
 #define MAXSUBJ 25
 #define MAXBIN 141
 _Check_return_ HRESULT BuildFileNameAndPath(_Inout_z_count_(cchFileOut) LPWSTR szFileOut,
-											size_t cchFileOut,
-											_In_z_count_(cchExt) LPCWSTR szExt,
-											size_t cchExt,
-											_In_opt_z_ LPCWSTR szSubj,
-											_In_opt_ LPSBinary lpBin,
-											_In_opt_z_ LPCWSTR szRootPath)
+	size_t cchFileOut,
+	_In_z_count_(cchExt) LPCWSTR szExt,
+	size_t cchExt,
+	_In_opt_z_ LPCWSTR szSubj,
+	_In_opt_ LPSBinary lpBin,
+	_In_opt_z_ LPCWSTR szRootPath)
 {
-	HRESULT			hRes = S_OK;
+	HRESULT hRes = S_OK;
 
 	if (!szFileOut) return MAPI_E_INVALID_PARAMETER;
 	if (cchFileOut > MAX_PATH) return MAPI_E_INVALID_PARAMETER;
@@ -378,40 +378,46 @@ _Check_return_ HRESULT BuildFileNameAndPath(_Inout_z_count_(cchFileOut) LPWSTR s
 	szFileOut[0] = L'\0'; // initialize our string to NULL
 	size_t cchCharRemaining = cchFileOut;
 
-	size_t cchRootPath = NULL;
+	size_t cchShortPath = NULL;
 
 	// set up the path portion of the output:
+	WCHAR szShortPath[MAX_PATH] = { 0 };
 	if (szRootPath)
 	{
 		// Use the short path to give us as much room as possible
-		EC_D(cchRootPath,GetShortPathNameW(szRootPath, szFileOut, (DWORD)cchFileOut));
+		EC_D(cchShortPath, GetShortPathNameW(szRootPath, szShortPath, _countof(szShortPath)));
 		// stuff a slash in there if we need one
-		if (cchRootPath+1 < cchFileOut && szFileOut[cchRootPath-1] != L'\\')
+		if (cchShortPath && cchShortPath + 1 < _countof(szShortPath))
 		{
-			szFileOut[cchRootPath] = L'\\';
-			szFileOut[cchRootPath+1] = L'\0';
-			cchRootPath++;
+			if (szShortPath[cchShortPath - 1] != L'\\')
+			{
+				szShortPath[cchShortPath] = L'\\';
+				szShortPath[cchShortPath + 1] = L'\0';
+				cchShortPath++;
+			}
+
+			EC_H(StringCchCopyW(szFileOut, cchFileOut, szShortPath));
+			cchCharRemaining -= cchShortPath;
 		}
-		cchCharRemaining -= cchRootPath;
 	}
 
 	// We now have cchCharRemaining characters in which to work
 	// Suppose this is 0? Need at least 12 for an 8.3 name
 
 	size_t cchBin = 0;
-	if (lpBin) cchBin = (2*lpBin->cb)+1; // bin + '_'
+	if (lpBin) cchBin = (2 * lpBin->cb) + 1; // bin + '_'
 
 	size_t cchSubj = 14; // length of 'UnknownSubject'
 	if (szSubj)
 	{
-		EC_H(StringCchLengthW(szSubj,STRSAFE_MAX_CCH,&cchSubj));
+		EC_H(StringCchLengthW(szSubj, STRSAFE_MAX_CCH, &cchSubj));
 	}
 
 	if (cchCharRemaining < cchSubj + cchBin + cchExt + 1)
 	{
 		// don't have enough space - need to shorten things:
 		if (cchSubj > MAXSUBJ) cchSubj = MAXSUBJ;
-		if (cchBin  > MAXBIN)  cchBin  = MAXBIN;
+		if (cchBin > MAXBIN)  cchBin = MAXBIN;
 	}
 	if (cchCharRemaining < cchSubj + cchBin + cchExt + 1)
 	{
@@ -424,7 +430,7 @@ _Check_return_ HRESULT BuildFileNameAndPath(_Inout_z_count_(cchFileOut) LPWSTR s
 		if (szSubj)
 		{
 			EC_H(SanitizeFileNameW(
-				szFileOut + cchRootPath,
+				szFileOut + cchShortPath,
 				cchCharRemaining,
 				szSubj,
 				cchSubj));
@@ -432,18 +438,18 @@ _Check_return_ HRESULT BuildFileNameAndPath(_Inout_z_count_(cchFileOut) LPWSTR s
 		else
 		{
 			// We must have failed to get a subject before. Make one up.
-			EC_H(StringCchCopyW(szFileOut + cchRootPath, cchCharRemaining, L"UnknownSubject")); // STRING_OK
+			EC_H(StringCchCopyW(szFileOut + cchShortPath, cchCharRemaining, L"UnknownSubject")); // STRING_OK
 		}
 
 		if (lpBin && lpBin->cb)
 		{
-			EC_H(AppendEntryID(szFileOut,cchFileOut,lpBin,cchBin));
+			EC_H(AppendEntryID(szFileOut, cchFileOut, lpBin, cchBin));
 		}
 
 		// Add our extension
 		if (szExt && cchExt)
 		{
-			EC_H(StringCchCatNW(szFileOut, cchFileOut, szExt,cchExt));
+			EC_H(StringCchCatNW(szFileOut, cchFileOut, szExt, cchExt));
 		}
 	}
 
@@ -463,7 +469,7 @@ _Check_return_ HRESULT SanitizeFileNameA(
 	LPSTR szCur = NULL;
 
 	EC_H(StringCchCopyNA(szFileOut, cchFileOut, szFileIn, cchCharsToCopy));
-	while (NULL != (szCur = strpbrk(szFileOut,"^&*-+=[]\\|;:\",<>/?"))) // STRING_OK
+	while (NULL != (szCur = strpbrk(szFileOut, "^&*-+=[]\\|;:\",<>/?"))) // STRING_OK
 	{
 		*szCur = '_';
 	}
@@ -480,7 +486,7 @@ _Check_return_ HRESULT SanitizeFileNameW(
 	LPWSTR szCur = NULL;
 
 	EC_H(StringCchCopyNW(szFileOut, cchFileOut, szFileIn, cchCharsToCopy));
-	while (NULL != (szCur = wcspbrk(szFileOut,L"^&*-+=[]\\|;:\",<>/?\r\n"))) // STRING_OK
+	while (NULL != (szCur = wcspbrk(szFileOut, L"^&*-+=[]\\|;:\",<>/?\r\n"))) // STRING_OK
 	{
 		*szCur = L'_';
 	}
@@ -490,7 +496,7 @@ _Check_return_ HRESULT SanitizeFileNameW(
 void SaveFolderContentsToTXT(_In_ LPMDB lpMDB, _In_ LPMAPIFOLDER lpFolder, bool bRegular, bool bAssoc, bool bDescend, HWND hWnd)
 {
 	HRESULT hRes = S_OK;
-	WCHAR szDir[MAX_PATH] = {0};
+	WCHAR szDir[MAX_PATH] = { 0 };
 
 	WC_H(GetDirectoryPath(hWnd, szDir));
 
@@ -523,7 +529,7 @@ _Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_z
 		fldNUM_COLS
 	};
 
-	static const SizedSPropTagArray(fldNUM_COLS,fldCols) =
+	static const SizedSPropTagArray(fldNUM_COLS, fldCols) =
 	{
 		fldNUM_COLS,
 		PR_ENTRYID,
@@ -533,10 +539,10 @@ _Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_z
 
 	if (!lpFolder || !szPathName) return MAPI_E_INVALID_PARAMETER;
 
-	DebugPrint(DBGGeneric,_T("SaveFolderContentsToMSG: Saving contents of folder to \"%ws\"\n"),szPathName);
+	DebugPrint(DBGGeneric, _T("SaveFolderContentsToMSG: Saving contents of folder to \"%ws\"\n"), szPathName);
 
 	EC_MAPI(lpFolder->GetContentsTable(
-		fMapiUnicode | (bAssoc?MAPI_ASSOCIATED:NULL),
+		fMapiUnicode | (bAssoc ? MAPI_ASSOCIATED : NULL),
 		&lpFolderContents));
 
 	if (lpFolderContents)
@@ -558,8 +564,8 @@ _Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_z
 
 			if (PT_ERROR != PROP_TYPE(pRows->aRow->lpProps[fldPR_ENTRYID].ulPropTag))
 			{
-				DebugPrint(DBGGeneric,_T("Source Message =\n"));
-				DebugPrintBinary(DBGGeneric,&pRows->aRow->lpProps[fldPR_ENTRYID].Value.bin);
+				DebugPrint(DBGGeneric, _T("Source Message =\n"));
+				DebugPrintBinary(DBGGeneric, &pRows->aRow->lpProps[fldPR_ENTRYID].Value.bin);
 
 				if (lpMessage) lpMessage->Release();
 				lpMessage = NULL;
@@ -569,24 +575,24 @@ _Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_z
 					lpFolder,
 					NULL,
 					pRows->aRow->lpProps[fldPR_ENTRYID].Value.bin.cb,
-					(LPENTRYID) pRows->aRow->lpProps[fldPR_ENTRYID].Value.bin.lpb,
+					(LPENTRYID)pRows->aRow->lpProps[fldPR_ENTRYID].Value.bin.lpb,
 					NULL,
 					MAPI_BEST_ACCESS,
 					NULL,
 					(LPUNKNOWN*)&lpMessage));
 				if (!lpMessage) continue;
 
-				WCHAR szFileName[MAX_PATH] = {0};
+				WCHAR szFileName[MAX_PATH] = { 0 };
 
 				LPCWSTR szSubj = L"UnknownSubject"; // STRING_OK
 
-				if (CheckStringProp(&pRows->aRow->lpProps[fldPR_SUBJECT_W],PT_UNICODE))
+				if (CheckStringProp(&pRows->aRow->lpProps[fldPR_SUBJECT_W], PT_UNICODE))
 				{
 					szSubj = pRows->aRow->lpProps[fldPR_SUBJECT_W].Value.lpszW;
 				}
-				EC_H(BuildFileNameAndPath(szFileName,_countof(szFileName),L".msg",4,szSubj,&pRows->aRow->lpProps[fldPR_RECORD_KEY].Value.bin,szPathName)); // STRING_OK
+				EC_H(BuildFileNameAndPath(szFileName, _countof(szFileName), L".msg", 4, szSubj, &pRows->aRow->lpProps[fldPR_RECORD_KEY].Value.bin, szPathName)); // STRING_OK
 
-				DebugPrint(DBGGeneric,_T("Saving to = \"%ws\"\n"),szFileName);
+				DebugPrint(DBGGeneric, _T("Saving to = \"%ws\"\n"), szFileName);
 
 				EC_H(SaveToMSG(
 					lpMessage,
@@ -595,7 +601,7 @@ _Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_z
 					hWnd,
 					false));
 
-				DebugPrint(DBGGeneric,_T("Message Saved\n"));
+				DebugPrint(DBGGeneric, _T("Message Saved\n"));
 			}
 		}
 	}
@@ -612,7 +618,7 @@ _Check_return_ HRESULT WriteStreamToFile(_In_ LPSTREAM pStrmSrc, _In_z_ LPCWSTR 
 
 	HRESULT hRes = S_OK;
 	LPSTREAM pStrmDest = NULL;
-	STATSTG StatInfo = {0};
+	STATSTG StatInfo = { 0 };
 
 	// Open an IStream interface and create the file at the
 	// same time. This code will create the file in the
@@ -629,7 +635,7 @@ _Check_return_ HRESULT WriteStreamToFile(_In_ LPSTREAM pStrmSrc, _In_z_ LPCWSTR 
 	{
 		pStrmSrc->Stat(&StatInfo, STATFLAG_NONAME);
 
-		DebugPrint(DBGStream,_T("WriteStreamToFile: Writing cb = %llu bytes\n"), StatInfo.cbSize.QuadPart);
+		DebugPrint(DBGStream, _T("WriteStreamToFile: Writing cb = %llu bytes\n"), StatInfo.cbSize.QuadPart);
 
 		EC_MAPI(pStrmSrc->CopyTo(pStrmDest,
 			StatInfo.cbSize,
@@ -650,7 +656,7 @@ _Check_return_ HRESULT SaveToEML(_In_ LPMESSAGE lpMessage, _In_z_ LPCWSTR szFile
 	LPSTREAM		pStrmSrc = NULL;
 
 	if (!lpMessage || !szFileName) return MAPI_E_INVALID_PARAMETER;
-	DebugPrint(DBGGeneric,_T("SaveToEML: Saving message to \"%ws\"\n"),szFileName);
+	DebugPrint(DBGGeneric, _T("SaveToEML: Saving message to \"%ws\"\n"), szFileName);
 
 	// Open the property of the attachment
 	// containing the file data
@@ -664,7 +670,7 @@ _Check_return_ HRESULT SaveToEML(_In_ LPMESSAGE lpMessage, _In_z_ LPCWSTR szFile
 	{
 		if (MAPI_E_NOT_FOUND == hRes)
 		{
-			DebugPrint(DBGGeneric,_T("No internet content found\n"));
+			DebugPrint(DBGGeneric, _T("No internet content found\n"));
 		}
 	}
 	else
@@ -681,13 +687,13 @@ _Check_return_ HRESULT SaveToEML(_In_ LPMESSAGE lpMessage, _In_z_ LPCWSTR szFile
 } // SaveToEML
 
 _Check_return_ HRESULT STDAPICALLTYPE MyStgCreateStorageEx(IN const WCHAR* pName,
-														   DWORD grfMode,
-														   DWORD stgfmt,
-														   DWORD grfAttrs,
-														   _In_ STGOPTIONS * pStgOptions,
-														   _Pre_null_ void * reserved,
-														   _In_ REFIID riid,
-														   _Out_ void ** ppObjectOpen)
+	DWORD grfMode,
+	DWORD stgfmt,
+	DWORD grfAttrs,
+	_In_ STGOPTIONS * pStgOptions,
+	_Pre_null_ void * reserved,
+	_In_ REFIID riid,
+	_Out_ void ** ppObjectOpen)
 {
 	HRESULT hRes = S_OK;
 	if (!pName) return MAPI_E_INVALID_PARAMETER;
@@ -706,7 +712,7 @@ _Check_return_ HRESULT STDAPICALLTYPE MyStgCreateStorageEx(IN const WCHAR* pName
 		pName,
 		grfMode,
 		0,
-		(LPSTORAGE*) ppObjectOpen);
+		(LPSTORAGE*)ppObjectOpen);
 	return hRes;
 } // MyStgCreateStorageEx
 
@@ -726,7 +732,7 @@ _Check_return_ HRESULT CreateNewMSG(_In_z_ LPCWSTR szFileName, bool bUnicode, _D
 	pMalloc = MAPIGetDefaultMalloc();
 	if (pMalloc)
 	{
-		STGOPTIONS myOpts = {0};
+		STGOPTIONS myOpts = { 0 };
 
 		myOpts.usVersion = 1; // STGOPTIONS_VERSION
 		myOpts.ulSectorSize = 4096;
@@ -754,7 +760,7 @@ _Check_return_ HRESULT CreateNewMSG(_In_z_ LPCWSTR szFileName, bool bUnicode, _D
 				pStorage,
 				NULL,
 				0,
-				bUnicode?MAPI_UNICODE:0,
+				bUnicode ? MAPI_UNICODE : 0,
 				&pIMsg));
 			if (SUCCEEDED(hRes) && pIMsg)
 			{
@@ -788,16 +794,16 @@ _Check_return_ HRESULT SaveToMSG(_In_ LPMESSAGE lpMessage, _In_z_ LPCWSTR szFile
 
 	if (!lpMessage || !szFileName) return MAPI_E_INVALID_PARAMETER;
 
-	DebugPrint(DBGGeneric,_T("SaveToMSG: Saving message to \"%ws\"\n"),szFileName);
+	DebugPrint(DBGGeneric, _T("SaveToMSG: Saving message to \"%ws\"\n"), szFileName);
 
-	EC_H(CreateNewMSG(szFileName,bUnicode,&pIMsg,&pStorage));
+	EC_H(CreateNewMSG(szFileName, bUnicode, &pIMsg, &pStorage));
 	if (pIMsg && pStorage)
 	{
 		// Specify properties to exclude in the copy operation. These are
 		// the properties that Exchange excludes to save bits and time.
 		// Should not be necessary to exclude these, but speeds the process
 		// when a lot of messages are being copied.
-		static const SizedSPropTagArray (7, excludeTags) =
+		static const SizedSPropTagArray(7, excludeTags) =
 		{
 			7,
 			PR_ACCESS,
@@ -814,7 +820,7 @@ _Check_return_ HRESULT SaveToMSG(_In_ LPMESSAGE lpMessage, _In_z_ LPCWSTR szFile
 			lpMessage,
 			pIMsg,
 			&IID_IMessage,
-			(LPSPropTagArray) &excludeTags,
+			(LPSPropTagArray)&excludeTags,
 			false,
 			bAllowUI));
 
@@ -839,7 +845,7 @@ _Check_return_ HRESULT SaveToTNEF(_In_ LPMESSAGE lpMessage, _In_ LPADRBOOK lpAdr
 	{
 		ulNumTNEFIncludeProps = 2
 	};
-	static const SizedSPropTagArray(ulNumTNEFIncludeProps, lpPropTnefIncludeArray ) =
+	static const SizedSPropTagArray(ulNumTNEFIncludeProps, lpPropTnefIncludeArray) =
 	{
 		ulNumTNEFIncludeProps,
 		PR_MESSAGE_RECIPIENTS,
@@ -850,18 +856,18 @@ _Check_return_ HRESULT SaveToTNEF(_In_ LPMESSAGE lpMessage, _In_ LPADRBOOK lpAdr
 	{
 		ulNumTNEFExcludeProps = 1
 	};
-	static const SizedSPropTagArray(ulNumTNEFExcludeProps, lpPropTnefExcludeArray ) =
+	static const SizedSPropTagArray(ulNumTNEFExcludeProps, lpPropTnefExcludeArray) =
 	{
 		ulNumTNEFExcludeProps,
 		PR_URL_COMP_NAME
 	};
 
 	if (!lpMessage || !lpAdrBook || !szFileName) return MAPI_E_INVALID_PARAMETER;
-	DebugPrint(DBGGeneric,_T("SaveToTNEF: Saving message to \"%ws\"\n"),szFileName);
+	DebugPrint(DBGGeneric, _T("SaveToTNEF: Saving message to \"%ws\"\n"), szFileName);
 
-	LPSTREAM			lpStream	= NULL;
-	LPITNEF				lpTNEF		= NULL;
-	LPSTnefProblemArray	lpError		= NULL;
+	LPSTREAM			lpStream = NULL;
+	LPITNEF				lpTNEF = NULL;
+	LPSTnefProblemArray	lpError = NULL;
 
 	static WORD dwKey = (WORD)::GetTickCount();
 
@@ -898,20 +904,20 @@ _Check_return_ HRESULT SaveToTNEF(_In_ LPMESSAGE lpMessage, _In_ LPADRBOOK lpAdr
 				TNEF_PROP_EXCLUDE,
 				0,
 				NULL,
-				(LPSPropTagArray) &lpPropTnefExcludeArray
+				(LPSPropTagArray)&lpPropTnefExcludeArray
 				));
 			EC_MAPI(lpTNEF->AddProps(
 				TNEF_PROP_EXCLUDE | TNEF_PROP_ATTACHMENTS_ONLY,
 				0,
 				NULL,
-				(LPSPropTagArray) &lpPropTnefExcludeArray
+				(LPSPropTagArray)&lpPropTnefExcludeArray
 				));
 
 			EC_MAPI(lpTNEF->AddProps(
 				TNEF_PROP_INCLUDE,
 				0,
 				NULL,
-				(LPSPropTagArray) &lpPropTnefIncludeArray
+				(LPSPropTagArray)&lpPropTnefIncludeArray
 				));
 
 			EC_MAPI(lpTNEF->Finish(0, &dwKey, &lpError));
@@ -944,7 +950,7 @@ _Check_return_ HRESULT DeleteAttachments(_In_ LPMESSAGE lpMessage, _In_opt_z_ LP
 		ATTACHNAME,
 		NUM_COLS
 	};
-	static const SizedSPropTagArray(NUM_COLS,sptAttachTableCols) =
+	static const SizedSPropTagArray(NUM_COLS, sptAttachTableCols) =
 	{
 		NUM_COLS,
 		PR_ATTACH_NUM,
@@ -965,7 +971,7 @@ _Check_return_ HRESULT DeleteAttachments(_In_ LPMESSAGE lpMessage, _In_opt_z_ LP
 			&IID_IMAPITable,
 			fMapiUnicode,
 			0,
-			(LPUNKNOWN *) &lpAttTbl));
+			(LPUNKNOWN *)&lpAttTbl));
 
 		if (lpAttTbl)
 		{
@@ -974,7 +980,7 @@ _Check_return_ HRESULT DeleteAttachments(_In_ LPMESSAGE lpMessage, _In_opt_z_ LP
 			// we don't support restricting attachment tables (EMSMDB32 that is)
 			// So I have to compare the strings myself (see below)
 			EC_MAPI(HrQueryAllRows(lpAttTbl,
-				(LPSPropTagArray) &sptAttachTableCols,
+				(LPSPropTagArray)&sptAttachTableCols,
 				NULL,
 				NULL,
 				0,
@@ -984,7 +990,7 @@ _Check_return_ HRESULT DeleteAttachments(_In_ LPMESSAGE lpMessage, _In_opt_z_ LP
 			{
 				bool bDirty = false;
 
-				if (!FAILED(hRes)) for (iRow = 0; iRow < pRows -> cRows; iRow++)
+				if (!FAILED(hRes)) for (iRow = 0; iRow < pRows->cRows; iRow++)
 				{
 					hRes = S_OK;
 
@@ -1025,7 +1031,7 @@ _Check_return_ HRESULT DeleteAttachments(_In_ LPMESSAGE lpMessage, _In_opt_z_ LP
 	}
 
 	if (pRows) FreeProws(pRows);
-	if (lpAttTbl) lpAttTbl -> Release();
+	if (lpAttTbl) lpAttTbl->Release();
 	MAPIFreeBuffer(pProps);
 
 	return hRes;
@@ -1046,7 +1052,7 @@ _Check_return_ HRESULT WriteAttachmentsToFile(_In_ LPMESSAGE lpMessage, HWND hWn
 		ATTACHNUM,
 		NUM_COLS
 	};
-	static const SizedSPropTagArray(NUM_COLS,sptAttachTableCols) =
+	static const SizedSPropTagArray(NUM_COLS, sptAttachTableCols) =
 	{
 		NUM_COLS,
 		PR_ATTACH_NUM
@@ -1066,12 +1072,12 @@ _Check_return_ HRESULT WriteAttachmentsToFile(_In_ LPMESSAGE lpMessage, HWND hWn
 			&IID_IMAPITable,
 			fMapiUnicode,
 			0,
-			(LPUNKNOWN *) &lpAttTbl));
+			(LPUNKNOWN *)&lpAttTbl));
 
 		if (lpAttTbl)
 		{
 			EC_MAPI(HrQueryAllRows(lpAttTbl,
-				(LPSPropTagArray) &sptAttachTableCols,
+				(LPSPropTagArray)&sptAttachTableCols,
 				NULL,
 				NULL,
 				0,
@@ -1079,7 +1085,7 @@ _Check_return_ HRESULT WriteAttachmentsToFile(_In_ LPMESSAGE lpMessage, HWND hWn
 
 			if (pRows)
 			{
-				if (!FAILED(hRes)) for (iRow = 0; iRow < pRows -> cRows; iRow++)
+				if (!FAILED(hRes)) for (iRow = 0; iRow < pRows->cRows; iRow++)
 				{
 					lpAttach = NULL;
 
@@ -1097,16 +1103,16 @@ _Check_return_ HRESULT WriteAttachmentsToFile(_In_ LPMESSAGE lpMessage, HWND hWn
 						WC_H(WriteAttachmentToFile(lpAttach, hWnd));
 						lpAttach->Release();
 						lpAttach = NULL;
-						if (S_OK != hRes && iRow != pRows->cRows-1)
+						if (S_OK != hRes && iRow != pRows->cRows - 1)
 						{
-							if (bShouldCancel(NULL,hRes)) break;
+							if (bShouldCancel(NULL, hRes)) break;
 							hRes = S_OK;
 						}
 					}
 				}
 				if (pRows) FreeProws(pRows);
 			}
-			lpAttTbl -> Release();
+			lpAttTbl->Release();
 		}
 	}
 
@@ -1123,7 +1129,7 @@ _Check_return_ HRESULT WriteEmbeddedMSGToFile(_In_ LPATTACH lpAttach, _In_z_ LPC
 
 	if (!lpAttach || !szFileName) return MAPI_E_INVALID_PARAMETER;
 
-	DebugPrint(DBGGeneric,_T("WriteEmbeddedMSGToFile: Saving attachment to \"%ws\"\n"),szFileName);
+	DebugPrint(DBGGeneric, _T("WriteEmbeddedMSGToFile: Saving attachment to \"%ws\"\n"), szFileName);
 
 	EC_MAPI(lpAttach->OpenProperty(
 		PR_ATTACH_DATA_OBJ,
@@ -1134,7 +1140,7 @@ _Check_return_ HRESULT WriteEmbeddedMSGToFile(_In_ LPATTACH lpAttach, _In_z_ LPC
 
 	if (lpAttachMsg)
 	{
-		EC_H(SaveToMSG(lpAttachMsg,szFileName, bUnicode, hWnd, false));
+		EC_H(SaveToMSG(lpAttachMsg, szFileName, bUnicode, hWnd, false));
 		lpAttachMsg->Release();
 	}
 
@@ -1160,7 +1166,7 @@ _Check_return_ HRESULT WriteAttachStreamToFile(_In_ LPATTACH lpAttach, _In_z_ LP
 	{
 		if (MAPI_E_NOT_FOUND == hRes)
 		{
-			DebugPrint(DBGGeneric,_T("No attachments found. Maybe the attachment was a message?\n"));
+			DebugPrint(DBGGeneric, _T("No attachments found. Maybe the attachment was a message?\n"));
 		}
 		else CHECKHRES(hRes);
 	}
@@ -1245,7 +1251,7 @@ _Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd)
 	HRESULT			hRes = S_OK;
 	LPSPropValue	lpProps = NULL;
 	ULONG			ulProps = 0;
-	WCHAR			szFileName[MAX_PATH] = {0};
+	WCHAR			szFileName[MAX_PATH] = { 0 };
 	INT_PTR			iDlgRet = 0;
 
 	enum
@@ -1256,7 +1262,7 @@ _Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd)
 		DISPLAY_NAME_W,
 		NUM_COLS
 	};
-	static const SizedSPropTagArray(NUM_COLS,sptaAttachProps) =
+	static const SizedSPropTagArray(NUM_COLS, sptaAttachProps) =
 	{
 		NUM_COLS,
 		PR_ATTACH_METHOD,
@@ -1267,11 +1273,11 @@ _Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd)
 
 	if (!lpAttach) return MAPI_E_INVALID_PARAMETER;
 
-	DebugPrint(DBGGeneric,_T("WriteAttachmentToFile: Saving attachment.\n"));
+	DebugPrint(DBGGeneric, _T("WriteAttachmentToFile: Saving attachment.\n"));
 
 	// Get required properties from the message
 	EC_H_GETPROPS(lpAttach->GetProps(
-		(LPSPropTagArray) &sptaAttachProps, // property tag array
+		(LPSPropTagArray)&sptaAttachProps, // property tag array
 		fMapiUnicode, // flags
 		&ulProps, // Count of values returned
 		&lpProps)); // Values returned
@@ -1281,92 +1287,92 @@ _Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd)
 		LPCWSTR szName = L"Unknown"; // STRING_OK
 
 		// Get a file name to use
-		if (CheckStringProp(&lpProps[ATTACH_LONG_FILENAME_W],PT_UNICODE))
+		if (CheckStringProp(&lpProps[ATTACH_LONG_FILENAME_W], PT_UNICODE))
 		{
 			szName = lpProps[ATTACH_LONG_FILENAME_W].Value.lpszW;
 		}
-		else if (CheckStringProp(&lpProps[ATTACH_FILENAME_W],PT_UNICODE))
+		else if (CheckStringProp(&lpProps[ATTACH_FILENAME_W], PT_UNICODE))
 		{
 			szName = lpProps[ATTACH_FILENAME_W].Value.lpszW;
 		}
-		else if (CheckStringProp(&lpProps[DISPLAY_NAME_W],PT_UNICODE))
+		else if (CheckStringProp(&lpProps[DISPLAY_NAME_W], PT_UNICODE))
 		{
 			szName = lpProps[DISPLAY_NAME_W].Value.lpszW;
 		}
 
-		EC_H(SanitizeFileNameW(szFileName,_countof(szFileName),szName,_countof(szFileName)));
+		EC_H(SanitizeFileNameW(szFileName, _countof(szFileName), szName, _countof(szFileName)));
 
 		// Get File Name
-		switch(lpProps[ATTACH_METHOD].Value.l)
+		switch (lpProps[ATTACH_METHOD].Value.l)
 		{
 		case ATTACH_BY_VALUE:
 		case ATTACH_BY_REFERENCE:
 		case ATTACH_BY_REF_RESOLVE:
 		case ATTACH_BY_REF_ONLY:
-			{
-				CStringW szFileSpec;
-				EC_B(szFileSpec.LoadString(IDS_ALLFILES));
+		{
+								   CStringW szFileSpec;
+								   EC_B(szFileSpec.LoadString(IDS_ALLFILES));
 
-				CFileDialogExW dlgFilePicker;
+								   CFileDialogExW dlgFilePicker;
 
-				DebugPrint(DBGGeneric,_T("WriteAttachmentToFile: Prompting with \"%ws\"\n"),szFileName);
+								   DebugPrint(DBGGeneric, _T("WriteAttachmentToFile: Prompting with \"%ws\"\n"), szFileName);
 
-				EC_D_DIALOG(dlgFilePicker.DisplayDialog(
-					false,
-					L"txt", // STRING_OK
-					szFileName,
-					OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-					szFileSpec));
-				if (iDlgRet == IDOK)
-				{
-					EC_H(WriteAttachStreamToFile(lpAttach,dlgFilePicker.GetFileName()));
-				}
-			}
+								   EC_D_DIALOG(dlgFilePicker.DisplayDialog(
+									   false,
+									   L"txt", // STRING_OK
+									   szFileName,
+									   OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
+									   szFileSpec));
+								   if (iDlgRet == IDOK)
+								   {
+									   EC_H(WriteAttachStreamToFile(lpAttach, dlgFilePicker.GetFileName()));
+								   }
+		}
 			break;
 		case ATTACH_EMBEDDED_MSG:
 			// Get File Name
-			{
-				CStringW szFileSpec;
-				EC_B(szFileSpec.LoadString(IDS_MSGFILES));
+		{
+									CStringW szFileSpec;
+									EC_B(szFileSpec.LoadString(IDS_MSGFILES));
 
-				CFileDialogExW dlgFilePicker;
+									CFileDialogExW dlgFilePicker;
 
-				DebugPrint(DBGGeneric,_T("WriteAttachmentToFile: Prompting with \"%ws\"\n"),szFileName);
+									DebugPrint(DBGGeneric, _T("WriteAttachmentToFile: Prompting with \"%ws\"\n"), szFileName);
 
-				EC_D_DIALOG(dlgFilePicker.DisplayDialog(
-					false,
-					L"msg", // STRING_OK
-					szFileName,
-					OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-					szFileSpec));
-				if (iDlgRet == IDOK)
-				{
-					EC_H(WriteEmbeddedMSGToFile(lpAttach,dlgFilePicker.GetFileName(), (MAPI_UNICODE == fMapiUnicode)?true:false, hWnd));
-				}
-			}
+									EC_D_DIALOG(dlgFilePicker.DisplayDialog(
+										false,
+										L"msg", // STRING_OK
+										szFileName,
+										OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
+										szFileSpec));
+									if (iDlgRet == IDOK)
+									{
+										EC_H(WriteEmbeddedMSGToFile(lpAttach, dlgFilePicker.GetFileName(), (MAPI_UNICODE == fMapiUnicode) ? true : false, hWnd));
+									}
+		}
 			break;
 		case ATTACH_OLE:
-			{
-				CStringW szFileSpec;
-				EC_B(szFileSpec.LoadString(IDS_ALLFILES));
+		{
+						   CStringW szFileSpec;
+						   EC_B(szFileSpec.LoadString(IDS_ALLFILES));
 
-				CFileDialogExW dlgFilePicker;
+						   CFileDialogExW dlgFilePicker;
 
-				DebugPrint(DBGGeneric,_T("WriteAttachmentToFile: Prompting with \"%ws\"\n"),szFileName);
-				EC_D_DIALOG(dlgFilePicker.DisplayDialog(
-					false,
-					NULL,
-					szFileName,
-					OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-					szFileSpec));
-				if (iDlgRet == IDOK)
-				{
-					EC_H(WriteOleToFile(lpAttach,dlgFilePicker.GetFileName()));
-				}
-			}
+						   DebugPrint(DBGGeneric, _T("WriteAttachmentToFile: Prompting with \"%ws\"\n"), szFileName);
+						   EC_D_DIALOG(dlgFilePicker.DisplayDialog(
+							   false,
+							   NULL,
+							   szFileName,
+							   OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
+							   szFileSpec));
+						   if (iDlgRet == IDOK)
+						   {
+							   EC_H(WriteOleToFile(lpAttach, dlgFilePicker.GetFileName()));
+						   }
+		}
 			break;
 		default:
-			ErrDialog(__FILE__,__LINE__,IDS_EDUNKNOWNATTMETHOD); break;
+			ErrDialog(__FILE__, __LINE__, IDS_EDUNKNOWNATTMETHOD); break;
 		}
 	}
 	if (iDlgRet == IDCANCEL) hRes = MAPI_E_USER_CANCEL;

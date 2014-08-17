@@ -1124,20 +1124,21 @@ void CMainDlg::OnMAPIOpenLocalFormContainer()
 void CMainDlg::OnLoadMAPI()
 {
 	HRESULT hRes = S_OK;
-	TCHAR	szDLLPath[MAX_PATH] = { 0 };
-	UINT	uiRet = NULL;
-
-	WC_D(uiRet, GetSystemDirectory(szDLLPath, MAX_PATH));
-	WC_H(StringCchCat(szDLLPath, _countof(szDLLPath), _T("\\"))); // STRING_OK
-	WC_H(StringCchCat(szDLLPath, _countof(szDLLPath), _T("mapi32.dll"))); // STRING_OK
-
+	TCHAR szDLLPath[MAX_PATH] = { 0 };
+	UINT cchDllPath = NULL;
 	CEditor MyData(
 		this,
 		IDS_LOADMAPI,
 		IDS_LOADMAPIPROMPT,
 		1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyData.InitPane(0, CreateSingleLinePane(IDS_PATH, szDLLPath, false));
+
+	WC_D(cchDllPath, GetSystemDirectory(szDLLPath, _countof(szDLLPath)));
+	if (cchDllPath < _countof(szDLLPath))
+	{
+		WC_H(StringCchCat(szDLLPath, _countof(szDLLPath), _T("\\mapi32.dll"))); // STRING_OK
+		MyData.InitPane(0, CreateSingleLinePane(IDS_PATH, szDLLPath, false));
+	}
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -1175,11 +1176,6 @@ void CMainDlg::OnDisplayMAPIPath()
 	DebugPrint(DBGGeneric, _T("OnDisplayMAPIPath()\n"));
 	HMODULE hMAPI = GetMAPIHandle();
 
-	if (hMAPI)
-	{
-		(void)GetModuleFileName(hMAPI, szMAPIPath, _countof(szMAPIPath));
-	}
-
 	CEditor MyData(
 		this,
 		IDS_MAPIPATHTITLE,
@@ -1187,7 +1183,15 @@ void CMainDlg::OnDisplayMAPIPath()
 		3,
 		CEDITOR_BUTTON_OK);
 	MyData.InitPane(0, CreateSingleLinePane(IDS_FILEPATH, NULL, true));
-	MyData.SetString(0, szMAPIPath);
+	if (hMAPI)
+	{
+		DWORD dw = GetModuleFileName(hMAPI, szMAPIPath, _countof(szMAPIPath));
+		if (dw)
+		{
+			MyData.SetString(0, szMAPIPath);
+		}
+	}
+
 	MyData.InitPane(1, CreateCheckPane(IDS_REGKEY_FORCEOUTLOOKMAPI, 0 != RegKeys[regkeyFORCEOUTLOOKMAPI].ulCurDWORD, true));
 	MyData.InitPane(2, CreateCheckPane(IDS_REGKEY_FORCESYSTEMMAPI, 0 != RegKeys[regkeyFORCESYSTEMMAPI].ulCurDWORD, true));
 

@@ -36,8 +36,8 @@ CContentsTableDlg::CContentsTableDlg(
 	_In_count_(iNumExtraDisplayColumns) TagNames* lpExtraDisplayColumns,
 	ULONG nIDContextMenu,
 	ULONG ulAddInContext
-	):
-CBaseDialog(
+	) :
+	CBaseDialog(
 	pParentWnd,
 	lpMapiObjects,
 	ulAddInContext)
@@ -81,7 +81,7 @@ CContentsTableDlg::~CContentsTableDlg()
 
 _Check_return_ bool CContentsTableDlg::HandleMenu(WORD wMenuSelect)
 {
-	DebugPrint(DBGMenu,_T("CContentsTableDlg::HandleMenu wMenuSelect = 0x%X = %u\n"),wMenuSelect,wMenuSelect);
+	DebugPrint(DBGMenu, _T("CContentsTableDlg::HandleMenu wMenuSelect = 0x%X = %u\n"), wMenuSelect, wMenuSelect);
 	switch (wMenuSelect)
 	{
 	case ID_APPLYFINDROW: SetRestrictionType(mfcmapiFINDROW_RESTRICTION); return true;
@@ -122,15 +122,15 @@ BOOL CContentsTableDlg::OnInitDialog()
 
 		if (m_ulDisplayFlags & dfAssoc)
 		{
-			m_szTitle.FormatMessage(IDS_HIDDEN, (LPCTSTR) m_szTitle);
+			m_szTitle.FormatMessage(IDS_HIDDEN, (LPCTSTR)m_szTitle);
 		}
 
 		if (m_lpContentsTable) m_lpContentsTable->Release();
 		m_lpContentsTable = NULL;
 
 		ulFlags =
-			(m_ulDisplayFlags & dfAssoc?MAPI_ASSOCIATED:NULL) |
-			(m_ulDisplayFlags & dfDeleted?SHOW_SOFT_DELETES:NULL) |
+			(m_ulDisplayFlags & dfAssoc ? MAPI_ASSOCIATED : NULL) |
+			(m_ulDisplayFlags & dfDeleted ? SHOW_SOFT_DELETES : NULL) |
 			fMapiUnicode;
 
 		hRes = S_OK;
@@ -149,8 +149,8 @@ void CContentsTableDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 {
 	HRESULT hRes = S_OK;
 
-	DebugPrintEx(DBGCreateDialog,CLASS,_T("CreateDialogAndMenu"),_T("id = 0x%X\n"),nIDMenuResource);
-	CBaseDialog::CreateDialogAndMenu(nIDMenuResource,IDR_MENU_TABLE,IDS_TABLEMENU);
+	DebugPrintEx(DBGCreateDialog, CLASS, _T("CreateDialogAndMenu"), _T("id = 0x%X\n"), nIDMenuResource);
+	CBaseDialog::CreateDialogAndMenu(nIDMenuResource, IDR_MENU_TABLE, IDS_TABLEMENU);
 
 	if (m_lpContentsTableListCtrl && m_lpContentsTable)
 	{
@@ -168,15 +168,15 @@ void CContentsTableDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 
 BEGIN_MESSAGE_MAP(CContentsTableDlg, CBaseDialog)
 	ON_COMMAND(ID_DISPLAYSELECTEDITEM, OnDisplayItem)
-	ON_COMMAND(ID_CANCELTABLELOAD,OnEscHit)
+	ON_COMMAND(ID_CANCELTABLELOAD, OnEscHit)
 	ON_COMMAND(ID_REFRESHVIEW, OnRefreshView)
 	ON_COMMAND(ID_CREATEMESSAGERESTRICTION, OnCreateMessageRestriction)
 	ON_COMMAND(ID_CREATEPROPERTYSTRINGRESTRICTION, OnCreatePropertyStringRestriction)
 	ON_COMMAND(ID_CREATERANGERESTRICTION, OnCreateRangeRestriction)
 	ON_COMMAND(ID_EDITRESTRICTION, OnEditRestriction)
 	ON_COMMAND(ID_GETSTATUS, OnGetStatus)
-	ON_COMMAND(ID_OUTPUTTABLE,OnOutputTable)
-	ON_COMMAND(ID_SETCOLUMNS,OnSetColumns)
+	ON_COMMAND(ID_OUTPUTTABLE, OnOutputTable)
+	ON_COMMAND(ID_SETCOLUMNS, OnSetColumns)
 	ON_COMMAND(ID_SORTTABLE, OnSortTable)
 	ON_COMMAND(ID_TABLENOTIFICATIONON, OnNotificationOn)
 	ON_COMMAND(ID_TABLENOTIFICATIONOFF, OnNotificationOff)
@@ -189,36 +189,36 @@ void CContentsTableDlg::OnInitMenu(_In_opt_ CMenu* pMenu)
 	{
 		int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
 
-		pMenu->EnableMenuItem(ID_CANCELTABLELOAD,DIM(m_lpContentsTableListCtrl->IsLoading()));
-		pMenu->EnableMenuItem(ID_CREATEMESSAGERESTRICTION,DIM(1 == iNumSel && MAPI_FOLDER == m_lpContentsTableListCtrl->GetContainerType()));
+		pMenu->EnableMenuItem(ID_CANCELTABLELOAD, DIM(m_lpContentsTableListCtrl->IsLoading()));
+		pMenu->EnableMenuItem(ID_CREATEMESSAGERESTRICTION, DIM(1 == iNumSel && MAPI_FOLDER == m_lpContentsTableListCtrl->GetContainerType()));
 
-		pMenu->EnableMenuItem(ID_DISPLAYSELECTEDITEM,DIMMSOK(iNumSel));
+		pMenu->EnableMenuItem(ID_DISPLAYSELECTEDITEM, DIMMSOK(iNumSel));
 
 		__mfcmapiRestrictionTypeEnum RestrictionType = m_lpContentsTableListCtrl->GetRestrictionType();
-		pMenu->CheckMenuItem(ID_APPLYFINDROW,CHECK(mfcmapiFINDROW_RESTRICTION == RestrictionType));
-		pMenu->CheckMenuItem(ID_APPLYRESTRICTION,CHECK(mfcmapiNORMAL_RESTRICTION == RestrictionType));
-		pMenu->CheckMenuItem(ID_CLEARRESTRICTION,CHECK(mfcmapiNO_RESTRICTION == RestrictionType));
-		pMenu->EnableMenuItem(ID_TABLENOTIFICATIONON,DIM(m_lpContentsTableListCtrl->IsContentsTableSet() && !m_lpContentsTableListCtrl->IsAdviseSet()));
-		pMenu->CheckMenuItem(ID_TABLENOTIFICATIONON,CHECK(m_lpContentsTableListCtrl->IsAdviseSet()));
-		pMenu->EnableMenuItem(ID_TABLENOTIFICATIONOFF,DIM(m_lpContentsTableListCtrl->IsAdviseSet()));
-		pMenu->EnableMenuItem(ID_OUTPUTTABLE,DIM(m_lpContentsTableListCtrl->IsContentsTableSet() && !m_lpContentsTableListCtrl->IsLoading()));
+		pMenu->CheckMenuItem(ID_APPLYFINDROW, CHECK(mfcmapiFINDROW_RESTRICTION == RestrictionType));
+		pMenu->CheckMenuItem(ID_APPLYRESTRICTION, CHECK(mfcmapiNORMAL_RESTRICTION == RestrictionType));
+		pMenu->CheckMenuItem(ID_CLEARRESTRICTION, CHECK(mfcmapiNO_RESTRICTION == RestrictionType));
+		pMenu->EnableMenuItem(ID_TABLENOTIFICATIONON, DIM(m_lpContentsTableListCtrl->IsContentsTableSet() && !m_lpContentsTableListCtrl->IsAdviseSet()));
+		pMenu->CheckMenuItem(ID_TABLENOTIFICATIONON, CHECK(m_lpContentsTableListCtrl->IsAdviseSet()));
+		pMenu->EnableMenuItem(ID_TABLENOTIFICATIONOFF, DIM(m_lpContentsTableListCtrl->IsAdviseSet()));
+		pMenu->EnableMenuItem(ID_OUTPUTTABLE, DIM(m_lpContentsTableListCtrl->IsContentsTableSet() && !m_lpContentsTableListCtrl->IsLoading()));
 
-		pMenu->EnableMenuItem(ID_SETCOLUMNS,DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
-		pMenu->EnableMenuItem(ID_SORTTABLE,DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
-		pMenu->EnableMenuItem(ID_GETSTATUS,DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
-		pMenu->EnableMenuItem(ID_CREATEMESSAGERESTRICTION,DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
-		pMenu->EnableMenuItem(ID_CREATEPROPERTYSTRINGRESTRICTION,DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
-		pMenu->EnableMenuItem(ID_CREATERANGERESTRICTION,DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
-		pMenu->EnableMenuItem(ID_EDITRESTRICTION,DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
-		pMenu->EnableMenuItem(ID_APPLYFINDROW,DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
-		pMenu->EnableMenuItem(ID_APPLYRESTRICTION,DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
-		pMenu->EnableMenuItem(ID_CLEARRESTRICTION,DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
-		pMenu->EnableMenuItem(ID_REFRESHVIEW,DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
+		pMenu->EnableMenuItem(ID_SETCOLUMNS, DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
+		pMenu->EnableMenuItem(ID_SORTTABLE, DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
+		pMenu->EnableMenuItem(ID_GETSTATUS, DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
+		pMenu->EnableMenuItem(ID_CREATEMESSAGERESTRICTION, DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
+		pMenu->EnableMenuItem(ID_CREATEPROPERTYSTRINGRESTRICTION, DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
+		pMenu->EnableMenuItem(ID_CREATERANGERESTRICTION, DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
+		pMenu->EnableMenuItem(ID_EDITRESTRICTION, DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
+		pMenu->EnableMenuItem(ID_APPLYFINDROW, DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
+		pMenu->EnableMenuItem(ID_APPLYRESTRICTION, DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
+		pMenu->EnableMenuItem(ID_CLEARRESTRICTION, DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
+		pMenu->EnableMenuItem(ID_REFRESHVIEW, DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
 
 		ULONG ulMenu = ID_ADDINMENU;
-		for (ulMenu = ID_ADDINMENU; ulMenu < ID_ADDINMENU+m_ulAddInMenuItems ; ulMenu++)
+		for (ulMenu = ID_ADDINMENU; ulMenu < ID_ADDINMENU + m_ulAddInMenuItems; ulMenu++)
 		{
-			LPMENUITEM lpAddInMenu = GetAddinMenuItem(m_hWnd,ulMenu);
+			LPMENUITEM lpAddInMenu = GetAddinMenuItem(m_hWnd, ulMenu);
 			if (!lpAddInMenu) continue;
 
 			ULONG ulFlags = lpAddInMenu->ulFlags;
@@ -234,7 +234,7 @@ void CContentsTableDlg::OnInitMenu(_In_opt_ CMenu* pMenu)
 
 void CContentsTableDlg::OnCancel()
 {
-	DebugPrintEx(DBGGeneric,CLASS,_T("OnCancel"),_T("\n"));
+	DebugPrintEx(DBGGeneric, CLASS, _T("OnCancel"), _T("\n"));
 	// get rid of the window before we start our cleanup
 	ShowWindow(SW_HIDE);
 
@@ -247,7 +247,7 @@ void CContentsTableDlg::OnCancel()
 
 void CContentsTableDlg::OnEscHit()
 {
-	DebugPrintEx(DBGGeneric,CLASS,_T("OnEscHit"),_T("\n"));
+	DebugPrintEx(DBGGeneric, CLASS, _T("OnEscHit"), _T("\n"));
 	if (m_lpContentsTableListCtrl)
 	{
 		m_lpContentsTableListCtrl->OnCancelTableLoad();
@@ -286,8 +286,7 @@ void CContentsTableDlg::OnDisplayItem()
 			lpMAPIProp->Release();
 			lpMAPIProp = NULL;
 		}
-	}
-	while (iItem != -1);
+	} while (iItem != -1);
 } // CContentsTableDlg::OnDisplayItem
 
 // Clear the current list and get a new one with whatever code we've got in LoadMAPIPropList
@@ -295,7 +294,7 @@ void CContentsTableDlg::OnRefreshView()
 {
 	HRESULT hRes = S_OK;
 	if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
-	DebugPrintEx(DBGGeneric,CLASS,_T("OnRefreshView"),_T("\n"));
+	DebugPrintEx(DBGGeneric, CLASS, _T("OnRefreshView"), _T("\n"));
 	if (m_lpContentsTableListCtrl->IsLoading()) m_lpContentsTableListCtrl->OnCancelTableLoad();
 	EC_H(m_lpContentsTableListCtrl->RefreshTable());
 } // CContentsTableDlg::OnRefreshView
@@ -340,7 +339,7 @@ void CContentsTableDlg::OnCreateMessageRestriction()
 		frPR_MESSAGE_DELIVERY_TIME,
 		frNUMCOLS
 	};
-	static const SizedSPropTagArray(frNUMCOLS,sptFRCols) =
+	static const SizedSPropTagArray(frNUMCOLS, sptFRCols) =
 	{
 		frNUMCOLS,
 		PR_SUBJECT,
@@ -358,7 +357,7 @@ void CContentsTableDlg::OnCreateMessageRestriction()
 	if (lpMAPIProp)
 	{
 		EC_H_GETPROPS(lpMAPIProp->GetProps(
-			(LPSPropTagArray) &sptFRCols,
+			(LPSPropTagArray)&sptFRCols,
 			fMapiUnicode,
 			&cVals,
 			&lpProps));
@@ -371,12 +370,12 @@ void CContentsTableDlg::OnCreateMessageRestriction()
 				(LPVOID*)&lpRes));
 
 			EC_H(MAPIAllocateMore(
-				sizeof(SRestriction)*2,
+				sizeof(SRestriction)* 2,
 				lpRes,
 				(LPVOID*)&lpResLevel1));
 
 			EC_H(MAPIAllocateMore(
-				sizeof(SRestriction)*2,
+				sizeof(SRestriction)* 2,
 				lpRes,
 				(LPVOID*)&lpResLevel2));
 
@@ -400,8 +399,8 @@ void CContentsTableDlg::OnCreateMessageRestriction()
 			{
 				// Zero out allocated memory.
 				ZeroMemory(lpRes, sizeof(SRestriction));
-				ZeroMemory(lpResLevel1, sizeof(SRestriction)*2);
-				ZeroMemory(lpResLevel2, sizeof(SRestriction)*2);
+				ZeroMemory(lpResLevel1, sizeof(SRestriction)* 2);
+				ZeroMemory(lpResLevel2, sizeof(SRestriction)* 2);
 
 				ZeroMemory(lpspvSubject, sizeof(SPropValue));
 				ZeroMemory(lpspvSubmitTime, sizeof(SPropValue));
@@ -434,7 +433,7 @@ void CContentsTableDlg::OnCreateMessageRestriction()
 				// Allocate and fill out properties:
 				lpspvSubject->ulPropTag = PR_SUBJECT;
 
-				if (CheckStringProp(&lpProps[frPR_SUBJECT],PT_TSTRING))
+				if (CheckStringProp(&lpProps[frPR_SUBJECT], PT_TSTRING))
 				{
 					EC_H(CopyString(
 						&lpspvSubject->Value.LPSZ,
@@ -467,8 +466,8 @@ void CContentsTableDlg::OnCreateMessageRestriction()
 					lpspvDeliveryTime->Value.ft.dwHighDateTime = 0x0;
 				}
 
-				DebugPrintEx(DBGGeneric,CLASS,_T("OnCreateMessageRestriction"),_T("built restriction:\n"));
-				DebugPrintRestriction(DBGGeneric,lpRes,lpMAPIProp);
+				DebugPrintEx(DBGGeneric, CLASS, _T("OnCreateMessageRestriction"), _T("built restriction:\n"));
+				DebugPrintRestriction(DBGGeneric, lpRes, lpMAPIProp);
 			}
 			else
 			{
@@ -509,12 +508,12 @@ void CContentsTableDlg::OnCreatePropertyStringRestriction()
 			IDS_SEARCHCRITERIA,
 			IDS_CONTSEARCHCRITERIAPROMPT,
 			3,
-			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-		MyData.SetPromptPostFix(AllFlagsToString(flagFuzzyLevel,true));
+			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+		MyData.SetPromptPostFix(AllFlagsToString(flagFuzzyLevel, true));
 
 		MyData.InitPane(0, CreateSingleLinePane(IDS_PROPVALUE, NULL, false));
 		MyData.InitPane(1, CreateSingleLinePane(IDS_ULFUZZYLEVEL, NULL, false));
-		MyData.SetHex(1,FL_IGNORECASE | FL_PREFIX);
+		MyData.SetHex(1, FL_IGNORECASE | FL_PREFIX);
 		MyData.InitPane(2, CreateCheckPane(IDS_APPLYUSINGFINDROW, false, false));
 
 		WC_H(MyData.DisplayDialog());
@@ -522,7 +521,7 @@ void CContentsTableDlg::OnCreatePropertyStringRestriction()
 
 		// Allocate and create our SRestriction
 		EC_H(CreatePropertyStringRestriction(
-			CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(),PT_TSTRING),
+			CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_TSTRING),
 			MyData.GetString(0),
 			MyData.GetHex(1),
 			NULL,
@@ -570,9 +569,9 @@ void CContentsTableDlg::OnCreateRangeRestriction()
 			IDS_SEARCHCRITERIA,
 			IDS_RANGESEARCHCRITERIAPROMPT,
 			2,
-			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		MyData.InitPane(0, CreateSingleLinePane(IDS_SUBSTRING,NULL, false));
+		MyData.InitPane(0, CreateSingleLinePane(IDS_SUBSTRING, NULL, false));
 		MyData.InitPane(1, CreateCheckPane(IDS_APPLYUSINGFINDROW, false, false));
 
 		WC_H(MyData.DisplayDialog());
@@ -580,7 +579,7 @@ void CContentsTableDlg::OnCreateRangeRestriction()
 
 		// Allocate and create our SRestriction
 		EC_H(CreateRangeRestriction(
-			CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(),PT_TSTRING),
+			CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_TSTRING),
 			MyData.GetString(0),
 			NULL,
 			&lpRes));
@@ -646,7 +645,7 @@ void CContentsTableDlg::OnOutputTable()
 
 		if (szFileName)
 		{
-			DebugPrintEx(DBGGeneric,CLASS,_T("OnOutputTable"),_T("saving to %ws\n"),szFileName);
+			DebugPrintEx(DBGGeneric, CLASS, _T("OnOutputTable"), _T("saving to %ws\n"), szFileName);
 
 			m_lpContentsTableListCtrl->OnOutputTable(szFileName);
 		}
@@ -678,11 +677,11 @@ void CContentsTableDlg::OnSortTable()
 		IDS_SORTTABLE,
 		IDS_SORTTABLEPROMPT1,
 		6,
-		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-	MyData.InitPane(0, CreateSingleLinePane(IDS_CSORTS,NULL, false));
-	MyData.InitPane(1, CreateSingleLinePane(IDS_CCATS,NULL, false));
-	MyData.InitPane(2, CreateSingleLinePane(IDS_CEXPANDED,NULL, false));
+	MyData.InitPane(0, CreateSingleLinePane(IDS_CSORTS, NULL, false));
+	MyData.InitPane(1, CreateSingleLinePane(IDS_CCATS, NULL, false));
+	MyData.InitPane(2, CreateSingleLinePane(IDS_CEXPANDED, NULL, false));
 	MyData.InitPane(3, CreateCheckPane(IDS_TBLASYNC, false, false));
 	MyData.InitPane(4, CreateCheckPane(IDS_TBLBATCH, false, false));
 	MyData.InitPane(5, CreateCheckPane(IDS_REFRESHAFTERSORT, true, false));
@@ -696,13 +695,13 @@ void CContentsTableDlg::OnSortTable()
 
 	if (cSorts < cCategories || cCategories < cExpanded)
 	{
-		ErrDialog(__FILE__,__LINE__,IDS_EDBADSORTS,cSorts,cCategories,cExpanded);
+		ErrDialog(__FILE__, __LINE__, IDS_EDBADSORTS, cSorts, cCategories, cExpanded);
 		return;
 	}
 
 	LPSSortOrderSet lpMySortOrders = NULL;
 
-	EC_H(MAPIAllocateBuffer(CbNewSSortOrderSet(cSorts),(LPVOID*)&lpMySortOrders));
+	EC_H(MAPIAllocateBuffer(CbNewSSortOrderSet(cSorts), (LPVOID*)&lpMySortOrders));
 
 	if (lpMySortOrders)
 	{
@@ -712,7 +711,7 @@ void CContentsTableDlg::OnSortTable()
 		bool bNoError = true;
 
 		ULONG i = 0;
-		for (i = 0 ; i < cSorts ; i++)
+		for (i = 0; i < cSorts; i++)
 		{
 			CPropertyTagEditor MyPropertyTag(
 				NULL, // title
@@ -731,7 +730,7 @@ void CContentsTableDlg::OnSortTable()
 					IDS_SORTORDER,
 					IDS_SORTORDERPROMPT,
 					1,
-					CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+					CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 				UINT uidDropDown[] = {
 					IDS_DDTABLESORTASCEND,
 					IDS_DDTABLESORTDESCEND,
@@ -773,7 +772,7 @@ void CContentsTableDlg::OnSortTable()
 		{
 			EC_MAPI(m_lpContentsTableListCtrl->SetSortTable(
 				lpMySortOrders,
-				(MyData.GetCheck(3)?TBL_ASYNC:0) | (MyData.GetCheck(4)?TBL_BATCH: 0) // flags
+				(MyData.GetCheck(3) ? TBL_ASYNC : 0) | (MyData.GetCheck(4) ? TBL_BATCH : 0) // flags
 				));
 		}
 	}
@@ -787,7 +786,7 @@ void CContentsTableDlg::OnSortTable()
 _Check_return_ HRESULT CContentsTableDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
 {
 	HRESULT hRes = S_OK;
-	DebugPrintEx(DBGOpenItemProp,CLASS,_T("OpenItemProp"),_T("iSelectedItem = 0x%X\n"),iSelectedItem);
+	DebugPrintEx(DBGOpenItemProp, CLASS, _T("OpenItemProp"), _T("iSelectedItem = 0x%X\n"), iSelectedItem);
 
 	if (!lppMAPIProp || !m_lpContentsTableListCtrl) return MAPI_E_INVALID_PARAMETER;
 
@@ -832,22 +831,22 @@ _Check_return_ HRESULT CContentsTableDlg::OpenRecipientsFromMessage(_In_ LPMESSA
 
 _Check_return_ bool CContentsTableDlg::HandleAddInMenu(WORD wMenuSelect)
 {
-	if (wMenuSelect < ID_ADDINMENU || ID_ADDINMENU+m_ulAddInMenuItems < wMenuSelect) return false;
+	if (wMenuSelect < ID_ADDINMENU || ID_ADDINMENU + m_ulAddInMenuItems < wMenuSelect) return false;
 	if (!m_lpContentsTableListCtrl) return false;
-	LPMAPIPROP		lpMAPIProp = NULL;
-	int				iItem = -1;
+	LPMAPIPROP lpMAPIProp = NULL;
+	int iItem = -1;
 	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
-	LPMENUITEM lpAddInMenu = GetAddinMenuItem(m_hWnd,wMenuSelect);
+	LPMENUITEM lpAddInMenu = GetAddinMenuItem(m_hWnd, wMenuSelect);
 	if (!lpAddInMenu) return false;
 
 	ULONG ulFlags = lpAddInMenu->ulFlags;
 
 	__mfcmapiModifyEnum	fRequestModify =
-		(ulFlags & MENU_FLAGS_REQUESTMODIFY)?mfcmapiREQUEST_MODIFY:mfcmapiDO_NOT_REQUEST_MODIFY;
+		(ulFlags & MENU_FLAGS_REQUESTMODIFY) ? mfcmapiREQUEST_MODIFY : mfcmapiDO_NOT_REQUEST_MODIFY;
 
 	// Get the stuff we need for any case
-	_AddInMenuParams MyAddInMenuParams = {0};
+	_AddInMenuParams MyAddInMenuParams = { 0 };
 	MyAddInMenuParams.lpAddInMenu = lpAddInMenu;
 	MyAddInMenuParams.ulAddInContext = m_ulAddInContext;
 	MyAddInMenuParams.hWndParent = m_hWnd;
@@ -864,7 +863,7 @@ _Check_return_ bool CContentsTableDlg::HandleAddInMenu(WORD wMenuSelect)
 	}
 
 	// MENU_FLAGS_SINGLESELECT and MENU_FLAGS_MULTISELECT can't both be set, so we can ignore this case
-	if (!(ulFlags & (MENU_FLAGS_SINGLESELECT|MENU_FLAGS_MULTISELECT)))
+	if (!(ulFlags & (MENU_FLAGS_SINGLESELECT | MENU_FLAGS_MULTISELECT)))
 	{
 		HandleAddInMenuSingle(
 			&MyAddInMenuParams,
@@ -874,12 +873,12 @@ _Check_return_ bool CContentsTableDlg::HandleAddInMenu(WORD wMenuSelect)
 	else
 	{
 		// Add appropriate flag to context
-		MyAddInMenuParams.ulCurrentFlags |= (ulFlags & (MENU_FLAGS_SINGLESELECT|MENU_FLAGS_MULTISELECT));
+		MyAddInMenuParams.ulCurrentFlags |= (ulFlags & (MENU_FLAGS_SINGLESELECT | MENU_FLAGS_MULTISELECT));
 		for (;;)
 		{
-			SortListData* lpData = (SortListData*) m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
+			SortListData* lpData = (SortListData*)m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 			if (-1 == iItem) break;
-			SRow MyRow = {0};
+			SRow MyRow = { 0 };
 
 			// If we have a row to give, give it - it's free
 			if (lpData)
@@ -892,7 +891,10 @@ _Check_return_ bool CContentsTableDlg::HandleAddInMenu(WORD wMenuSelect)
 
 			if (!(ulFlags & MENU_FLAGS_ROW))
 			{
-				(void) OpenItemProp(iItem, fRequestModify, &lpMAPIProp);
+				if (FAILED(OpenItemProp(iItem, fRequestModify, &lpMAPIProp)))
+				{
+					lpMAPIProp = NULL;
+				}
 			}
 
 			HandleAddInMenuSingle(
@@ -916,13 +918,13 @@ void CContentsTableDlg::HandleAddInMenuSingle(
 	if (lpParams)
 	{
 		lpParams->lpTable = m_lpContentsTable;
-		switch(lpParams->ulAddInContext)
+		switch (lpParams->ulAddInContext)
 		{
 		case MENU_CONTEXT_RECIEVE_FOLDER_TABLE:
-			lpParams->lpFolder = (LPMAPIFOLDER) lpMAPIProp; // OpenItemProp returns LPMAPIFOLDER
+			lpParams->lpFolder = (LPMAPIFOLDER)lpMAPIProp; // OpenItemProp returns LPMAPIFOLDER
 			break;
 		case MENU_CONTEXT_HIER_TABLE:
-			lpParams->lpFolder = (LPMAPIFOLDER) lpMAPIProp; // OpenItemProp returns LPMAPIFOLDER
+			lpParams->lpFolder = (LPMAPIFOLDER)lpMAPIProp; // OpenItemProp returns LPMAPIFOLDER
 			break;
 		}
 	}
@@ -934,7 +936,7 @@ void CContentsTableDlg::HandleAddInMenuSingle(
 // Returns true if we reset columns, false otherwise
 _Check_return_ LRESULT	CContentsTableDlg::msgOnResetColumns(WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
-	DebugPrintEx(DBGGeneric,CLASS,_T("msgOnResetColumns"),_T("Received message reset columns\n"));
+	DebugPrintEx(DBGGeneric, CLASS, _T("msgOnResetColumns"), _T("Received message reset columns\n"));
 
 	if (m_lpContentsTableListCtrl)
 	{

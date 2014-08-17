@@ -47,12 +47,15 @@ inline std::wstring formatmessage(DWORD dwID, ...)
 	wstring format = loadstring(dwID);
 
 	LPWSTR buffer = NULL;
+	std::wstring ret;
 	va_list vl;
 	va_start(vl, dwID);
-	FormatMessageW(FORMAT_MESSAGE_FROM_STRING | FORMAT_MESSAGE_ALLOCATE_BUFFER, format.c_str(), 0, 0, (LPWSTR)&buffer, 0, &vl);
-
-	std::wstring ret(buffer);
-	(void)LocalFree(buffer);
+	DWORD dw = FormatMessageW(FORMAT_MESSAGE_FROM_STRING | FORMAT_MESSAGE_ALLOCATE_BUFFER, format.c_str(), 0, 0, (LPWSTR)&buffer, 0, &vl);
+	if (dw)
+	{
+		ret = std::wstring(buffer);
+		(void)LocalFree(buffer);
+	}
 
 	va_end(vl);
 	return ret;
