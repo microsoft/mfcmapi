@@ -441,7 +441,7 @@ _Check_return_ HRESULT CreateStoreEntryID2(
 	if (lpXManageStoreEx)
 	{
 		DebugPrint(DBGGeneric, _T("CreateStoreEntryID2: Creating EntryID. StoreDN = \"%s\", MailboxDN = \"%s\"\n"), lpszMsgStoreDN, lpszMailboxDN);
-		SPropValue sProps[3] = {0};
+		SPropValue sProps[3] = { 0 };
 		sProps[0].ulPropTag = PR_PROFILE_MAILBOX;
 		sProps[0].Value.lpszA = (LPSTR)lpszMailboxDN;
 

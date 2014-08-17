@@ -26,8 +26,8 @@ private:
 class Attributes
 {
 public:
-	void AddAttribute(_In_z_ wstring key, _In_z_ wstring value);
-	wstring GetAttribute(_In_z_ wstring key);
+	void AddAttribute(_In_ wstring key, _In_ wstring value);
+	wstring GetAttribute(_In_ wstring key);
 
 	wstring toXML();
 

@@ -41,7 +41,7 @@ CEditor::CEditor(
 	UINT uidTitle,
 	UINT uidPrompt,
 	ULONG ulNumFields,
-	ULONG ulButtonFlags):CMyDialog(IDD_BLANK_DIALOG,pParentWnd)
+	ULONG ulButtonFlags) :CMyDialog(IDD_BLANK_DIALOG, pParentWnd)
 {
 	Constructor(pParentWnd,
 		uidTitle,
@@ -54,14 +54,14 @@ CEditor::CEditor(
 } // CEditor::CEditor
 
 CEditor::CEditor(
-	_In_ CWnd* pParentWnd,
+	_In_opt_ CWnd* pParentWnd,
 	UINT uidTitle,
 	UINT uidPrompt,
 	ULONG ulNumFields,
 	ULONG ulButtonFlags,
 	UINT uidActionButtonText1,
 	UINT uidActionButtonText2,
-	UINT uidActionButtonText3):CMyDialog(IDD_BLANK_DIALOG,pParentWnd)
+	UINT uidActionButtonText3) :CMyDialog(IDD_BLANK_DIALOG, pParentWnd)
 {
 	Constructor(pParentWnd,
 		uidTitle,
@@ -94,7 +94,7 @@ void CEditor::Constructor(
 
 	m_bButtonFlags = ulButtonFlags;
 
-	m_iMargin = GetSystemMetrics(SM_CXHSCROLL)/2+1;
+	m_iMargin = GetSystemMetrics(SM_CXHSCROLL) / 2 + 1;
 	m_iSideMargin = m_iMargin / 2;
 
 	m_iSmallHeightMargin = m_iSideMargin;
@@ -126,7 +126,7 @@ void CEditor::Constructor(
 
 	// Note that LoadIcon does not require a subsequent DestroyIcon in Win32
 	HRESULT hRes = S_OK;
-	WC_D(m_hIcon,AfxGetApp()->LoadIcon(IDR_MAINFRAME));
+	WC_D(m_hIcon, AfxGetApp()->LoadIcon(IDR_MAINFRAME));
 
 	m_pParentWnd = pParentWnd;
 	if (!m_pParentWnd)
@@ -139,7 +139,7 @@ void CEditor::Constructor(
 	}
 	if (!m_pParentWnd)
 	{
-		DebugPrint(DBGGeneric,_T("Editor created with a NULL parent!\n"));
+		DebugPrint(DBGGeneric, _T("Editor created with a NULL parent!\n"));
 	}
 	if (ulNumFields) CreateControls(ulNumFields);
 
@@ -168,131 +168,131 @@ LRESULT CEditor::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		// I can handle notify messages for my child list control since I am the parent window
 		// This makes it easy for me to customize the child control to do what I want
 	case WM_NOTIFY:
-		{
-			LPNMHDR pHdr = (LPNMHDR) lParam;
+	{
+		LPNMHDR pHdr = (LPNMHDR)lParam;
 
-			switch(pHdr->code)
+		switch (pHdr->code)
+		{
+		case NM_DBLCLK:
+		case NM_RETURN:
+			if (IsValidList(m_ulListNum))
 			{
-			case NM_DBLCLK:
-			case NM_RETURN:
-				if (IsValidList(m_ulListNum))
-				{
-					(void) m_lpControls[m_ulListNum].lpPane->HandleChange(IDD_LISTEDIT);
-				}
-				return NULL;
-				break;
+				(void)m_lpControls[m_ulListNum].lpPane->HandleChange(IDD_LISTEDIT);
 			}
+			return NULL;
 			break;
 		}
+		break;
+	}
 	case WM_COMMAND:
+	{
+		WORD nCode = HIWORD(wParam);
+		WORD idFrom = LOWORD(wParam);
+		if (EN_CHANGE == nCode ||
+			CBN_SELCHANGE == nCode ||
+			CBN_EDITCHANGE == nCode)
 		{
-			WORD nCode = HIWORD(wParam);
-			WORD idFrom = LOWORD(wParam);
-			if (EN_CHANGE == nCode ||
-				CBN_SELCHANGE == nCode ||
-				CBN_EDITCHANGE == nCode)
-			{
-				(void) HandleChange(idFrom);
-			}
-			else if (BN_CLICKED == nCode)
-			{
-				switch(idFrom)
-				{
-				case IDD_EDITACTION1: OnEditAction1(); return NULL;
-				case IDD_EDITACTION2: OnEditAction2(); return NULL;
-				case IDD_EDITACTION3: OnEditAction3(); return NULL;
-				case IDD_RECALCLAYOUT: OnRecalcLayout(); return NULL;
-				default: (void) HandleChange(idFrom); break;
-				}
-			}
-			break;
+			(void)HandleChange(idFrom);
 		}
+		else if (BN_CLICKED == nCode)
+		{
+			switch (idFrom)
+			{
+			case IDD_EDITACTION1: OnEditAction1(); return NULL;
+			case IDD_EDITACTION2: OnEditAction2(); return NULL;
+			case IDD_EDITACTION3: OnEditAction3(); return NULL;
+			case IDD_RECALCLAYOUT: OnRecalcLayout(); return NULL;
+			default: (void)HandleChange(idFrom); break;
+			}
+		}
+		break;
+	}
 	case WM_ERASEBKGND:
-		{
-			RECT rect = {0};
-			::GetClientRect(m_hWnd, &rect);
-			HGDIOBJ hOld = ::SelectObject((HDC)wParam, GetSysBrush(cBackground));
-			BOOL bRet = ::PatBlt((HDC) wParam, 0, 0, rect.right - rect.left, rect.bottom - rect.top, PATCOPY);
-			::SelectObject((HDC)wParam, hOld);
-			return bRet;
-		}
+	{
+		RECT rect = { 0 };
+		::GetClientRect(m_hWnd, &rect);
+		HGDIOBJ hOld = ::SelectObject((HDC)wParam, GetSysBrush(cBackground));
+		BOOL bRet = ::PatBlt((HDC)wParam, 0, 0, rect.right - rect.left, rect.bottom - rect.top, PATCOPY);
+		::SelectObject((HDC)wParam, hOld);
+		return bRet;
+	}
 		break;
 	case WM_MOUSEWHEEL:
+	{
+		if (!m_bScrollVisible) break;
+
+		static int s_DeltaTotal = 0;
+		short zDelta = GET_WHEEL_DELTA_WPARAM(wParam);
+		s_DeltaTotal += zDelta;
+
+		int nLines = s_DeltaTotal / WHEEL_DELTA;
+		s_DeltaTotal -= nLines * WHEEL_DELTA;
+		int i = 0;
+		for (i = 0; i != abs(nLines); ++i)
 		{
-			if (!m_bScrollVisible) break;
-
-			static int s_DeltaTotal = 0;
-			short zDelta = GET_WHEEL_DELTA_WPARAM(wParam);
-			s_DeltaTotal += zDelta;
-
-			int nLines = s_DeltaTotal / WHEEL_DELTA;
-			s_DeltaTotal -= nLines * WHEEL_DELTA;
-			int i = 0;
-			for (i = 0; i != abs(nLines); ++i)
-			{
-				::SendMessage(m_hWnd,
-					WM_VSCROLL,
-					(nLines < 0) ? (WPARAM) SB_LINEDOWN : (WPARAM) SB_LINEUP,
-					(LPARAM) m_hWndVertScroll);
-			}
-			break;
-		}
-	case WM_VSCROLL:
-		{
-			WORD wScrollType = LOWORD(wParam);
-			HWND hWndScroll = (HWND) lParam;
-			SCROLLINFO si = {0};
-
-			si.cbSize = sizeof(si);
-			si.fMask  = SIF_ALL;
-			::GetScrollInfo(hWndScroll, SB_CTL, &si);
-
-			// Save the position for comparison later on.
-			int yPos = si.nPos;
-			switch (wScrollType)
-			{
-			case SB_TOP:
-				si.nPos = si.nMin;
-				break;
-			case SB_BOTTOM:
-				si.nPos = si.nMax;
-				break;
-			case SB_LINEUP:
-				si.nPos -= m_iEditHeight;
-				break;
-			case SB_LINEDOWN:
-				si.nPos += m_iEditHeight;
-				break;
-			case SB_PAGEUP:
-				si.nPos -= si.nPage;
-				break;
-			case SB_PAGEDOWN:
-				si.nPos += si.nPage;
-				break;
-			case SB_THUMBTRACK:
-				si.nPos = si.nTrackPos;
-				break;
-			default:
-				break;
-			}
-
-			// Set the position and then retrieve it.  Due to adjustments
-			// by Windows it may not be the same as the value set.
-			si.fMask = SIF_POS;
-			::SetScrollInfo(hWndScroll, SB_CTL, &si, TRUE);
-			::GetScrollInfo(hWndScroll, SB_CTL, &si);
-
-			// If the position has changed, scroll window and update it.
-			if (si.nPos != yPos)
-			{
-				::ScrollWindowEx(m_ScrollWindow.m_hWnd, 0, yPos - si.nPos, NULL, NULL, NULL, NULL, SW_SCROLLCHILDREN | SW_INVALIDATE);
-			}
-
-			return 0;
+			::SendMessage(m_hWnd,
+				WM_VSCROLL,
+				(nLines < 0) ? (WPARAM)SB_LINEDOWN : (WPARAM)SB_LINEUP,
+				(LPARAM)m_hWndVertScroll);
 		}
 		break;
+	}
+	case WM_VSCROLL:
+	{
+		WORD wScrollType = LOWORD(wParam);
+		HWND hWndScroll = (HWND)lParam;
+		SCROLLINFO si = { 0 };
+
+		si.cbSize = sizeof(si);
+		si.fMask = SIF_ALL;
+		::GetScrollInfo(hWndScroll, SB_CTL, &si);
+
+		// Save the position for comparison later on.
+		int yPos = si.nPos;
+		switch (wScrollType)
+		{
+		case SB_TOP:
+			si.nPos = si.nMin;
+			break;
+		case SB_BOTTOM:
+			si.nPos = si.nMax;
+			break;
+		case SB_LINEUP:
+			si.nPos -= m_iEditHeight;
+			break;
+		case SB_LINEDOWN:
+			si.nPos += m_iEditHeight;
+			break;
+		case SB_PAGEUP:
+			si.nPos -= si.nPage;
+			break;
+		case SB_PAGEDOWN:
+			si.nPos += si.nPage;
+			break;
+		case SB_THUMBTRACK:
+			si.nPos = si.nTrackPos;
+			break;
+		default:
+			break;
+		}
+
+		// Set the position and then retrieve it.  Due to adjustments
+		// by Windows it may not be the same as the value set.
+		si.fMask = SIF_POS;
+		::SetScrollInfo(hWndScroll, SB_CTL, &si, TRUE);
+		::GetScrollInfo(hWndScroll, SB_CTL, &si);
+
+		// If the position has changed, scroll window and update it.
+		if (si.nPos != yPos)
+		{
+			::ScrollWindowEx(m_ScrollWindow.m_hWnd, 0, yPos - si.nPos, NULL, NULL, NULL, NULL, SW_SCROLLCHILDREN | SW_INVALIDATE);
+		}
+
+		return 0;
+	}
+		break;
 	} // end switch
-	return CMyDialog::WindowProc(message,wParam,lParam);
+	return CMyDialog::WindowProc(message, wParam, lParam);
 } // CEditor::WindowProc
 
 // AddIn functions
@@ -302,7 +302,7 @@ void CEditor::SetAddInTitle(_In_z_ LPWSTR szTitle)
 	m_szAddInTitle = szTitle;
 #else
 	LPSTR szTitleA = NULL;
-	(void) UnicodeToAnsi(szTitle,&szTitleA);
+	(void)UnicodeToAnsi(szTitle, &szTitleA);
 	m_szAddInTitle = szTitleA;
 	delete[] szTitleA;
 #endif
@@ -346,7 +346,7 @@ BOOL CEditor::OnInitDialog()
 	BOOL bRet = CMyDialog::OnInitDialog();
 
 	EC_B(szPostfix.LoadString(m_uidTitle));
-	m_szTitle = szPostfix+m_szAddInTitle;
+	m_szTitle = szPostfix + m_szAddInTitle;
 	SetWindowText(m_szTitle);
 
 	SetIcon(m_hIcon, false); // Set small icon - large icon isn't used
@@ -362,7 +362,7 @@ BOOL CEditor::OnInitDialog()
 			// Make sure we clear the prefix out or it might show up in the prompt
 			szPrefix = _T("");
 		}
-		szFullString = szPrefix+m_szPromptPostFix;
+		szFullString = szPrefix + m_szPromptPostFix;
 
 		EC_B(m_Prompt.Create(
 			WS_CHILD
@@ -370,7 +370,7 @@ BOOL CEditor::OnInitDialog()
 			| ES_MULTILINE
 			| ES_READONLY
 			| WS_VISIBLE,
-			CRect(0,0,0,0),
+			CRect(0, 0, 0, 0),
 			this,
 			IDC_PROMPT));
 		m_Prompt.SetWindowText(szFullString);
@@ -382,7 +382,7 @@ BOOL CEditor::OnInitDialog()
 	HDC hdc = ::GetDC(m_hWnd);
 	if (!hdc) return false; // fatal error
 	HGDIOBJ hfontOld = ::SelectObject(hdc, GetSegoeFont());
-	SIZE sizeText = {0};
+	SIZE sizeText = { 0 };
 
 	CWnd* pParent = this;
 	if (m_bEnableScroll)
@@ -390,7 +390,7 @@ BOOL CEditor::OnInitDialog()
 		m_ScrollWindow.CreateEx(
 			0,
 			_T("Static"), // STRING_OK
-			(LPCTSTR) NULL,
+			(LPCTSTR)NULL,
 			WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN,
 			CRect(0, 0, 0, 0),
 			this,
@@ -398,7 +398,7 @@ BOOL CEditor::OnInitDialog()
 		m_hWndVertScroll = ::CreateWindowEx(
 			0,
 			_T("SCROLLBAR"), // STRING_OK
-			(LPCTSTR) NULL,
+			(LPCTSTR)NULL,
 			WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | SBS_VERT | SBS_RIGHTALIGN,
 			0, 0, 0, 0,
 			m_hWnd,
@@ -406,13 +406,13 @@ BOOL CEditor::OnInitDialog()
 			NULL,
 			NULL);
 		// Subclass static control so we can ensure we're drawing everything right
-		SetWindowSubclass(m_ScrollWindow.m_hWnd, DrawScrollProc, 0, (DWORD_PTR) m_ScrollWindow.m_hWnd);
+		SetWindowSubclass(m_ScrollWindow.m_hWnd, DrawScrollProc, 0, (DWORD_PTR)m_ScrollWindow.m_hWnd);
 		pParent = &m_ScrollWindow;
 	}
 
 	SetMargins(); // Not all margins have been computed yet, but some have and we can use them during Initialize
 	ULONG i = 0;
-	for (i = 0 ; i < m_cControls ; i++)
+	for (i = 0; i < m_cControls; i++)
 	{
 		if (m_lpControls[i].lpPane)
 		{
@@ -430,7 +430,7 @@ BOOL CEditor::OnInitDialog()
 			| WS_CHILD
 			| WS_CLIPSIBLINGS
 			| WS_VISIBLE,
-			CRect(0,0,0,0),
+			CRect(0, 0, 0, 0),
 			this,
 			IDOK));
 	}
@@ -445,12 +445,12 @@ BOOL CEditor::OnInitDialog()
 			| WS_CHILD
 			| WS_CLIPSIBLINGS
 			| WS_VISIBLE,
-			CRect(0,0,0,0),
+			CRect(0, 0, 0, 0),
 			this,
 			IDD_EDITACTION1));
 
 		::GetTextExtentPoint32(hdc, szActionButtonText1, szActionButtonText1.GetLength(), &sizeText);
-		m_iButtonWidth = max(m_iButtonWidth,sizeText.cx);
+		m_iButtonWidth = max(m_iButtonWidth, sizeText.cx);
 	}
 
 	if (m_bButtonFlags & CEDITOR_BUTTON_ACTION2)
@@ -463,12 +463,12 @@ BOOL CEditor::OnInitDialog()
 			| WS_CHILD
 			| WS_CLIPSIBLINGS
 			| WS_VISIBLE,
-			CRect(0,0,0,0),
+			CRect(0, 0, 0, 0),
 			this,
 			IDD_EDITACTION2));
 
 		::GetTextExtentPoint32(hdc, szActionButtonText2, szActionButtonText2.GetLength(), &sizeText);
-		m_iButtonWidth = max(m_iButtonWidth,sizeText.cx);
+		m_iButtonWidth = max(m_iButtonWidth, sizeText.cx);
 	}
 
 	if (m_bButtonFlags & CEDITOR_BUTTON_ACTION3)
@@ -481,12 +481,12 @@ BOOL CEditor::OnInitDialog()
 			| WS_CHILD
 			| WS_CLIPSIBLINGS
 			| WS_VISIBLE,
-			CRect(0,0,0,0),
+			CRect(0, 0, 0, 0),
 			this,
 			IDD_EDITACTION3));
 
 		::GetTextExtentPoint32(hdc, szActionButtonText3, szActionButtonText3.GetLength(), &sizeText);
-		m_iButtonWidth = max(m_iButtonWidth,sizeText.cx);
+		m_iButtonWidth = max(m_iButtonWidth, sizeText.cx);
 	}
 
 	if (m_bButtonFlags & CEDITOR_BUTTON_CANCEL)
@@ -499,7 +499,7 @@ BOOL CEditor::OnInitDialog()
 			| WS_CHILD
 			| WS_CLIPSIBLINGS
 			| WS_VISIBLE,
-			CRect(0,0,0,0),
+			CRect(0, 0, 0, 0),
 			this,
 			IDCANCEL));
 	}
@@ -513,7 +513,7 @@ BOOL CEditor::OnInitDialog()
 	// Compute some constants
 	m_iEditHeight = GetEditHeight(m_hWnd);
 	m_iTextHeight = GetTextHeight(m_hWnd);
-	m_iButtonHeight = m_iTextHeight + GetSystemMetrics(SM_CYEDGE)*2;
+	m_iButtonHeight = m_iTextHeight + GetSystemMetrics(SM_CYEDGE) * 2;
 
 	OnSetDefaultSize();
 
@@ -533,7 +533,7 @@ void CEditor::OnOK()
 {
 	// save data from the UI back into variables that we can query later
 	ULONG j = 0;
-	for (j = 0 ; j < m_cControls ; j++)
+	for (j = 0; j < m_cControls; j++)
 	{
 		if (m_lpControls[j].lpPane)
 		{
@@ -562,7 +562,7 @@ _Check_return_ HRESULT CEditor::DisplayDialog()
 	switch (iDlgRet)
 	{
 	case -1:
-		DebugPrint(DBGGeneric,_T("Dialog box could not be created!\n"));
+		DebugPrint(DBGGeneric, _T("Dialog box could not be created!\n"));
 		MessageBox(_T("Dialog box could not be created!")); // STRING_OK
 		return MAPI_E_CALL_FAILED;
 		break;
@@ -574,7 +574,7 @@ _Check_return_ HRESULT CEditor::DisplayDialog()
 		return S_OK;
 		break;
 	default:
-		return HRESULT_FROM_WIN32((unsigned long) iDlgRet);
+		return HRESULT_FROM_WIN32((unsigned long)iDlgRet);
 		break;
 	}
 } // CEditor::DisplayDialog
@@ -583,7 +583,7 @@ _Check_return_ HRESULT CEditor::DisplayDialog()
 void CEditor::SetMargins()
 {
 	ULONG j = 0;
-	for (j = 0 ; j < m_cControls ; j++)
+	for (j = 0; j < m_cControls; j++)
 	{
 		if (m_lpControls[j].lpPane)
 		{
@@ -618,7 +618,7 @@ int ComputePromptWidth(CEdit* lpPrompt, HDC hdc, int iMaxWidth, int* iLineCount)
 		int len = lpPrompt->LineLength(lpPrompt->LineIndex(i));
 		if (len)
 		{
-			LPTSTR szLine = new TCHAR[len+1];
+			LPTSTR szLine = new TCHAR[len + 1];
 			memset(szLine, 0, len + 1);
 
 			lpPrompt->GetLine(i, szLine, len);
@@ -640,7 +640,7 @@ int ComputeCaptionWidth(HDC hdc, CString szTitle, int iMargin)
 {
 	int iCaptionWidth = NULL;
 
-	SIZE sizeTitle = {0};
+	SIZE sizeTitle = { 0 };
 	::GetTextExtentPoint32(hdc, szTitle, szTitle.GetLength(), &sizeTitle);
 	iCaptionWidth = sizeTitle.cx + iMargin; // Allow for some whitespace between the caption and buttons
 
@@ -657,7 +657,7 @@ int ComputeCaptionWidth(HDC hdc, CString szTitle, int iMargin)
 // Good is defined as big enough to display all elements at a minimum size, including title
 _Check_return_ SIZE CEditor::ComputeWorkArea(SIZE sScreen)
 {
-	SIZE sArea = {0};
+	SIZE sArea = { 0 };
 
 	// Figure a good width (cx)
 	int cx = 0;
@@ -674,7 +674,7 @@ _Check_return_ SIZE CEditor::ComputeWorkArea(SIZE sScreen)
 	SetMargins();
 	ULONG j = 0;
 	// width
-	for (j = 0 ; j < m_cControls ; j++)
+	for (j = 0; j < m_cControls; j++)
 	{
 		if (m_lpControls[j].lpPane)
 		{
@@ -709,7 +709,7 @@ _Check_return_ SIZE CEditor::ComputeWorkArea(SIZE sScreen)
 	cy += m_iMargin; // add a little height between the buttons and our edit controls
 
 	int iControlHeight = 0;
-	for (j = 0 ; j < m_cControls ; j++)
+	for (j = 0; j < m_cControls; j++)
 	{
 		if (m_lpControls[j].lpPane)
 		{
@@ -744,7 +744,7 @@ void CEditor::OnSetDefaultSize()
 	int cxFullScreen = rcMaxScreen.Width();
 	int cyFullScreen = rcMaxScreen.Height();
 
-	SIZE sScreen = {cxFullScreen, cyFullScreen};
+	SIZE sScreen = { cxFullScreen, cyFullScreen };
 	SIZE sArea = ComputeWorkArea(sScreen);
 	// inflate the rectangle according to the title bar, border, etc...
 	CRect MyRect(0, 0, sArea.cx, sArea.cy);
@@ -768,11 +768,11 @@ void CEditor::OnSetDefaultSize()
 	// worst case, don't go bigger than the screen
 	m_iMinWidth = MyRect.Width();
 	m_iMinHeight = MyRect.Height();
-	m_iMinWidth = min(m_iMinWidth,cxFullScreen);
-	m_iMinHeight = min(m_iMinHeight,cyFullScreen);
+	m_iMinWidth = min(m_iMinWidth, cxFullScreen);
+	m_iMinHeight = min(m_iMinHeight, cyFullScreen);
 
 	// worst case v2, don't go bigger than MAX_WIDTH pixels wide
-	m_iMinWidth = min(m_iMinWidth,MAX_WIDTH);
+	m_iMinWidth = min(m_iMinWidth, MAX_WIDTH);
 } // CEditor::OnSetDefaultSize
 
 void CEditor::OnGetMinMaxInfo(_Inout_ MINMAXINFO* lpMMI)
@@ -786,12 +786,12 @@ void CEditor::OnRecalcLayout()
 {
 	OnSetDefaultSize();
 
-	RECT rc = {0};
+	RECT rc = { 0 };
 	::GetClientRect(m_hWnd, &rc);
 	(void) ::PostMessage(m_hWnd,
 		WM_SIZE,
-		(WPARAM) SIZE_RESTORED,
-		(LPARAM) MAKELPARAM(rc.right - rc.left, rc.bottom - rc.top));
+		(WPARAM)SIZE_RESTORED,
+		(LPARAM)MAKELPARAM(rc.right - rc.left, rc.bottom - rc.top));
 }
 
 // Artificially expand our gripper region to make it easier to expand dialogs
@@ -800,7 +800,7 @@ _Check_return_ LRESULT CEditor::OnNcHitTest(CPoint point)
 	CRect gripRect;
 	GetWindowRect(gripRect);
 	gripRect.left = gripRect.right - ::GetSystemMetrics(SM_CXHSCROLL);
-	gripRect.top  = gripRect.bottom - ::GetSystemMetrics(SM_CYVSCROLL);
+	gripRect.top = gripRect.bottom - ::GetSystemMetrics(SM_CYVSCROLL);
 	// Test to see if the cursor is within the 'gripper'
 	// area, and tell the system that the user is over
 	// the lower right-hand corner if it is.
@@ -919,7 +919,7 @@ void CEditor::OnSize(UINT nType, int cx, int cy)
 	int iFixedHeight = 0;
 	int iVariableLines = 0;
 	ULONG j = 0;
-	for (j = 0 ; j < m_cControls ; j++)
+	for (j = 0; j < m_cControls; j++)
 	{
 		if (m_lpControls[j].lpPane)
 		{
@@ -940,7 +940,7 @@ void CEditor::OnSize(UINT nType, int cx, int cy)
 			int iScrollWidth = GetSystemMetrics(SM_CXVSCROLL);
 			iFullWidth -= iScrollWidth;
 			::SetWindowPos(m_hWndVertScroll, 0, iFullWidth + iCXMargin, iCYTop, iScrollWidth, iCYBottom - iCYTop, SWP_NOZORDER);
-			SCROLLINFO si = {0};
+			SCROLLINFO si = { 0 };
 			si.cbSize = sizeof(si);
 			si.fMask = SIF_POS;
 			::GetScrollInfo(m_hWndVertScroll, SB_CTL, &si);
@@ -964,7 +964,7 @@ void CEditor::OnSize(UINT nType, int cx, int cy)
 		iCYTop = -iScrollPos; // We get scrolling for free by adjusting our top
 	}
 
-	for (j = 0 ; j < m_cControls ; j++)
+	for (j = 0; j < m_cControls; j++)
 	{
 		// Calculate height for multiline edit boxes and lists
 		// If we had any slack space, parcel it out Monopoly house style over the controls
@@ -1010,7 +1010,7 @@ void CEditor::CreateControls(ULONG ulCount)
 	if (m_lpControls)
 	{
 		ULONG i = 0;
-		for (i = 0 ; i < m_cControls ; i++)
+		for (i = 0; i < m_cControls; i++)
 		{
 			m_lpControls[i].lpPane = NULL;
 		}
@@ -1022,7 +1022,7 @@ void CEditor::DeleteControls()
 	if (m_lpControls)
 	{
 		ULONG i = 0;
-		for (i = 0 ; i < m_cControls ; i++)
+		for (i = 0; i < m_cControls; i++)
 		{
 			if (m_lpControls[i].lpPane)
 			{
@@ -1093,11 +1093,11 @@ void __cdecl CEditor::SetStringf(ULONG i, _Printf_format_string_ LPCTSTR szMsg, 
 	{
 		va_list argList = NULL;
 		va_start(argList, szMsg);
-		szTemp.FormatV(szMsg,argList);
+		szTemp.FormatV(szMsg, argList);
 		va_end(argList);
 	}
 
-	SetString(i,(LPCTSTR) szTemp);
+	SetString(i, (LPCTSTR)szTemp);
 } // CEditor::SetStringf
 
 // Updates m_lpControls[i].lpEdit->lpszW using SetStringW
@@ -1113,7 +1113,7 @@ void CEditor::LoadString(ULONG i, UINT uidMsg)
 		EC_B(szTemp.LoadString(uidMsg));
 	}
 
-	SetString(i,(LPCTSTR) szTemp);
+	SetString(i, (LPCTSTR)szTemp);
 } // CEditor::LoadString
 
 // Updates m_lpControls[i].lpEdit->lpszW using SetStringW
@@ -1127,7 +1127,7 @@ void CEditor::SetBinary(ULONG i, _In_opt_count_(cb) LPBYTE lpb, size_t cb)
 // Updates m_lpControls[i].lpEdit->lpszW using SetStringW
 void CEditor::SetSize(ULONG i, size_t cb)
 {
-	SetStringf(i,_T("0x%08X = %u"), cb, cb); // STRING_OK
+	SetStringf(i, _T("0x%08X = %u"), cb, cb); // STRING_OK
 } // CEditor::SetSize
 
 // returns false if we failed to get a binary
@@ -1137,7 +1137,7 @@ void CEditor::SetSize(ULONG i, size_t cb)
 _Check_return_ bool CEditor::GetBinaryUseControl(ULONG i, _Out_ size_t* cbBin, _Out_ LPBYTE* lpBin)
 {
 	if (!IsValidEdit(i)) return false;
-	if (!cbBin || ! lpBin) return false;
+	if (!cbBin || !lpBin) return false;
 	CString szString;
 
 	*cbBin = NULL;
@@ -1145,20 +1145,20 @@ _Check_return_ bool CEditor::GetBinaryUseControl(ULONG i, _Out_ size_t* cbBin, _
 
 	szString = GetStringUseControl(i);
 	if (!MyBinFromHex(
-		(LPCTSTR) szString,
+		(LPCTSTR)szString,
 		NULL,
-		(ULONG*) cbBin)) return false;
+		(ULONG*)cbBin)) return false;
 
-	*lpBin = new BYTE[*cbBin+2]; // lil extra space to shove a NULL terminator on there
+	*lpBin = new BYTE[*cbBin + 2]; // lil extra space to shove a NULL terminator on there
 	if (*lpBin)
 	{
-		(void) MyBinFromHex(
-			(LPCTSTR) szString,
+		(void)MyBinFromHex(
+			(LPCTSTR)szString,
 			*lpBin,
-			(ULONG*) cbBin);
+			(ULONG*)cbBin);
 		// In case we try printing this...
 		(*lpBin)[*cbBin] = 0;
-		(*lpBin)[*cbBin+1] = 0;
+		(*lpBin)[*cbBin + 1] = 0;
 		return true;
 	}
 	return false;
@@ -1189,22 +1189,22 @@ _Check_return_ HRESULT CEditor::GetEntryID(ULONG i, bool bIsBase64, _Out_ size_t
 	{
 		if (bIsBase64) // entry was BASE64 encoded
 		{
-			EC_H(Base64Decode(szString,lpcbBin,(LPBYTE*) lppEID));
+			EC_H(Base64Decode(szString, lpcbBin, (LPBYTE*)lppEID));
 		}
 		else // Entry was hexized string
 		{
 			if (MyBinFromHex(
-				(LPCTSTR) szString,
+				(LPCTSTR)szString,
 				NULL,
-				(ULONG*) lpcbBin) && *lpcbBin)
+				(ULONG*)lpcbBin) && *lpcbBin)
 			{
 				*lppEID = (LPENTRYID) new BYTE[*lpcbBin];
 				if (*lppEID)
 				{
 					EC_B(MyBinFromHex(
 						szString,
-						(LPBYTE) *lppEID,
-						(ULONG*) lpcbBin));
+						(LPBYTE)*lppEID,
+						(ULONG*)lpcbBin));
 				}
 			}
 		}
@@ -1215,33 +1215,33 @@ _Check_return_ HRESULT CEditor::GetEntryID(ULONG i, bool bIsBase64, _Out_ size_t
 
 void CEditor::SetHex(ULONG i, ULONG ulVal)
 {
-	SetStringf(i,_T("0x%08X"),ulVal); // STRING_OK
+	SetStringf(i, _T("0x%08X"), ulVal); // STRING_OK
 } // CEditor::SetHex
 
 void CEditor::SetDecimal(ULONG i, ULONG ulVal)
 {
-	SetStringf(i,_T("%u"),ulVal); // STRING_OK
+	SetStringf(i, _T("%u"), ulVal); // STRING_OK
 } // CEditor::SetDecimal
 
 void CEditor::SetListStringA(ULONG iControl, ULONG iListRow, ULONG iListCol, _In_opt_z_ LPCSTR szListString)
 {
 	if (!IsValidList(iControl)) return;
 
-	m_lpControls[iControl].lpListPane->SetListStringA(iListRow, iListCol,szListString?szListString:"");
+	m_lpControls[iControl].lpListPane->SetListStringA(iListRow, iListCol, szListString ? szListString : "");
 } // CEditor::SetListStringA
 
 void CEditor::SetListStringW(ULONG iControl, ULONG iListRow, ULONG iListCol, _In_opt_z_ LPCWSTR szListString)
 {
 	if (!IsValidList(iControl)) return;
 
-	m_lpControls[iControl].lpListPane->SetListStringW(iListRow, iListCol,szListString?szListString:L"");
+	m_lpControls[iControl].lpListPane->SetListStringW(iListRow, iListCol, szListString ? szListString : L"");
 } // CEditor::SetListStringW
 
 _Check_return_ SortListData* CEditor::InsertListRow(ULONG iControl, int iRow, _In_z_ LPCTSTR szText)
 {
 	if (!IsValidList(iControl)) return NULL;
 
-	return m_lpControls[iControl].lpListPane->InsertRow(iRow,(LPTSTR) szText);
+	return m_lpControls[iControl].lpListPane->InsertRow(iRow, (LPTSTR)szText);
 } // CEditor::InsertListRow
 
 void CEditor::ClearList(ULONG iControl)
@@ -1293,7 +1293,7 @@ _Check_return_ ULONG CEditor::GetHex(ULONG i)
 {
 	if (!IsValidEdit(i)) return 0;
 
-	return wcstoul(m_lpControls[i].lpTextPane->GetStringW(),NULL,16);
+	return wcstoul(m_lpControls[i].lpTextPane->GetStringW(), NULL, 16);
 } // CEditor::GetHex
 
 _Check_return_ CString CEditor::GetStringUseControl(ULONG iControl)
@@ -1314,7 +1314,7 @@ _Check_return_ SortListData* CEditor::GetListRowData(ULONG iControl, int iRow)
 {
 	if (!IsValidList(iControl)) return 0;
 
-	return (SortListData*) m_lpControls[iControl].lpListPane->GetItemData(iRow);
+	return (SortListData*)m_lpControls[iControl].lpListPane->GetItemData(iRow);
 } // CEditor::GetListRowData
 
 _Check_return_ bool CEditor::IsDirty(ULONG iControl)
@@ -1328,7 +1328,7 @@ _Check_return_ ULONG CEditor::GetHexUseControl(ULONG i)
 
 	CString szTmpString = GetStringUseControl(i);
 
-	return _tcstoul((LPCTSTR) szTmpString,NULL,16);
+	return _tcstoul((LPCTSTR)szTmpString, NULL, 16);
 } // CEditor::GetHexUseControl
 
 _Check_return_ ULONG CEditor::GetDecimalUseControl(ULONG i)
@@ -1337,7 +1337,7 @@ _Check_return_ ULONG CEditor::GetDecimalUseControl(ULONG i)
 
 	CString szTmpString = GetStringUseControl(i);
 
-	return _tcstoul((LPCTSTR) szTmpString,NULL,10);
+	return _tcstoul((LPCTSTR)szTmpString, NULL, 10);
 } // CEditor::GetDecimalUseControl
 
 void CleanPropString(_In_ CString* lpString)
@@ -1362,11 +1362,11 @@ _Check_return_ ULONG CEditor::GetPropTagUseControl(ULONG i)
 	CleanPropString(&szTag);
 
 	LPTSTR szEnd = NULL;
-	ULONG ulTag = _tcstoul((LPCTSTR) szTag,&szEnd,16);
+	ULONG ulTag = _tcstoul((LPCTSTR)szTag, &szEnd, 16);
 
 	if (*szEnd != NULL) // If we didn't consume the whole string, try a lookup
 	{
-		EC_H(PropNameToPropTag((LPCTSTR) szTag,&ulTag));
+		EC_H(PropNameToPropTag((LPCTSTR)szTag, &ulTag));
 	}
 
 	// Figure if this is a full tag or just an ID
@@ -1376,7 +1376,7 @@ _Check_return_ ULONG CEditor::GetPropTagUseControl(ULONG i)
 	}
 	else // Just an ID
 	{
-		ulPropTag = PROP_TAG(PT_UNSPECIFIED,ulTag);
+		ulPropTag = PROP_TAG(PT_UNSPECIFIED, ulTag);
 	}
 	return ulPropTag;
 } // CEditor::GetPropTagUseControl
@@ -1398,7 +1398,7 @@ _Check_return_ ULONG CEditor::GetPropTag(ULONG i)
 	}
 	else // Just an ID
 	{
-		ulPropTag = PROP_TAG(PT_UNSPECIFIED,ulTag);
+		ulPropTag = PROP_TAG(PT_UNSPECIFIED, ulTag);
 	}
 	return ulPropTag;
 } // CEditor::GetPropTag
@@ -1407,7 +1407,7 @@ _Check_return_ ULONG CEditor::GetDecimal(ULONG i)
 {
 	if (!IsValidEdit(i)) return 0;
 
-	return wcstoul(m_lpControls[i].lpTextPane->GetStringW(),NULL,10);
+	return wcstoul(m_lpControls[i].lpTextPane->GetStringW(), NULL, 10);
 } // CEditor::GetDecimal
 
 _Check_return_ bool CEditor::GetCheck(ULONG i)
@@ -1448,9 +1448,9 @@ void CEditor::InsertColumn(ULONG ulListNum, int nCol, UINT uidText, ULONG ulProp
 
 _Check_return_ ULONG CEditor::HandleChange(UINT nID)
 {
-	if (!m_lpControls) return (ULONG) -1;
+	if (!m_lpControls) return (ULONG)-1;
 	ULONG i = 0;
-	for (i = 0 ; i < m_cControls ; i++)
+	for (i = 0; i < m_cControls; i++)
 	{
 		if (!m_lpControls[i].lpPane) continue;
 		// Either our change came from one of our top level controls/views
@@ -1464,11 +1464,11 @@ _Check_return_ ULONG CEditor::HandleChange(UINT nID)
 		// We do not return the control number because this is a button event, not an edit change
 		if (-1 != m_lpControls[i].lpPane->HandleChange(nID))
 		{
-			return (ULONG) -1;
+			return (ULONG)-1;
 		}
 	}
 
-	return (ULONG) -1;
+	return (ULONG)-1;
 } // CEditor::HandleChange
 
 _Check_return_ bool CEditor::IsValidDropDown(ULONG ulNum)
