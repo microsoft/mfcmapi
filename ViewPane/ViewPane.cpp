@@ -49,7 +49,7 @@ void ViewPane::SetWindowPos(int x, int y, int width, int /*height*/)
 
 	if (vpCollapsible & GetFlags())
 	{
-		StyleButton(m_CollapseButton.m_hWnd, m_bCollapsed?bsUpArrow:bsDownArrow);
+		StyleButton(m_CollapseButton.m_hWnd, m_bCollapsed ? bsUpArrow : bsDownArrow);
 		m_CollapseButton.SetWindowPos(NULL, x, y, width, m_iLabelHeight, SWP_NOZORDER);
 	}
 
@@ -75,7 +75,7 @@ void ViewPane::Initialize(int iControl, _In_ CWnd* pParent, _In_opt_ HDC /*hdc*/
 		| WS_CLIPSIBLINGS
 		| ES_READONLY
 		| WS_VISIBLE,
-		CRect(0,0,0,0),
+		CRect(0, 0, 0, 0),
 		pParent,
 		iCurIDLabel));
 	m_Label.SetWindowText(m_szLabel);
@@ -91,7 +91,7 @@ void ViewPane::Initialize(int iControl, _In_ CWnd* pParent, _In_opt_ HDC /*hdc*/
 			| WS_CHILD
 			| WS_CLIPSIBLINGS
 			| WS_VISIBLE,
-			CRect(0,0,0,0),
+			CRect(0, 0, 0, 0),
 			pParent,
 			IDD_COLLAPSE + iControl));
 	}
@@ -110,7 +110,7 @@ ULONG ViewPane::GetFlags()
 
 int ViewPane::GetMinWidth(_In_ HDC hdc)
 {
-	SIZE sizeText = {0};
+	SIZE sizeText = { 0 };
 	::GetTextExtentPoint32(hdc, m_szLabel, m_szLabel.GetLength(), &sizeText);
 	m_iLabelWidth = sizeText.cx;
 	return m_iLabelWidth;
@@ -118,13 +118,13 @@ int ViewPane::GetMinWidth(_In_ HDC hdc)
 
 ULONG ViewPane::HandleChange(UINT nID)
 {
-	if ((UINT) (IDD_COLLAPSE + m_iControl) == nID)
+	if ((UINT)(IDD_COLLAPSE + m_iControl) == nID)
 	{
 		OnToggleCollapse();
 		return m_iControl;
 	}
 
-	return (ULONG) -1;
+	return (ULONG)-1;
 }
 
 void ViewPane::OnToggleCollapse()
@@ -159,10 +159,13 @@ void ViewPane::SetAddInLabel(_In_z_ LPWSTR szLabel)
 	m_szLabel = szLabel;
 #else
 	LPSTR szLabelA = NULL;
-	(void) UnicodeToAnsi(szLabel, &szLabelA);
-	m_szLabel = szLabelA;
-	m_bUseLabelControl = true;
-	delete[] szLabelA;
+	HRESULT hRes = UnicodeToAnsi(szLabel, &szLabelA);
+	if (SUCCEEDED(hRes) && szLabelA)
+	{
+		m_szLabel = szLabelA;
+		m_bUseLabelControl = true;
+		delete[] szLabelA;
+	}
 #endif
 }
 

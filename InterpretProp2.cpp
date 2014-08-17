@@ -488,13 +488,12 @@ LPCGUID GUIDNameToGUIDW(_In_z_ LPCWSTR szGUID, bool bByteSwapped)
 #else
 	LPCGUID lpGUID = NULL;
 	LPSTR szGUIDA = NULL;
-	(void)UnicodeToAnsi(szGUID, &szGUIDA);
-	if (szGUIDA)
+	HRESULT hRes = UnicodeToAnsi(szGUID, &szGUIDA);
+	if (SUCCEEDED(hRes) && szGUIDA)
 	{
 		lpGUID = GUIDNameToGUIDInt(szGUIDA, bByteSwapped);
+		delete[] szGUIDA;
 	}
-
-	delete[] szGUIDA;
 
 	return lpGUID;
 #endif

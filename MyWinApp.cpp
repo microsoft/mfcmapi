@@ -29,7 +29,7 @@ CMyWinApp::CMyWinApp()
 		NULL,
 		KEY_READ,
 		&hRootKey);
-	if (ERROR_SUCCESS == lStatus && hRootKey)
+	if (ERROR_SUCCESS == lStatus)
 	{
 		DWORD dwRegVal = 0;
 		DWORD dwType = REG_DWORD;
@@ -39,14 +39,15 @@ CMyWinApp::CMyWinApp()
 			RegKeys[regkeyHEAPENABLETERMINATIONONCORRUPTION].szKeyName,
 			NULL,
 			&dwType,
-			(LPBYTE) &dwRegVal,
+			(LPBYTE)&dwRegVal,
 			&cb);
 		if (ERROR_SUCCESS == lStatus && !dwRegVal)
 		{
 			bTerminateOnCorruption = false;
 		}
+
+		if (hRootKey) RegCloseKey(hRootKey);
 	}
-	if (hRootKey) RegCloseKey(hRootKey);
 
 	if (bTerminateOnCorruption)
 	{
@@ -64,11 +65,11 @@ BOOL CMyWinApp::InitInstance()
 	CParentWnd *pWnd = new CParentWnd();
 	if (pWnd)
 	{
-		m_pMainWnd = (CWnd *) pWnd;
+		m_pMainWnd = (CWnd *)pWnd;
 		CMapiObjects* MyObjects = new CMapiObjects(NULL);
 		if (MyObjects)
 		{
-			new CMainDlg(pWnd,MyObjects);
+			new CMainDlg(pWnd, MyObjects);
 			MyObjects->Release();
 		}
 		pWnd->Release();
