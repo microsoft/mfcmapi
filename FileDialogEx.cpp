@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "FileDialogEx.h"
-
-_Check_return_ static bool IsWin2000();
+#include "VersionHelpers.h"
 
 ///////////////////////////////////////////////////////////////////////////
 // CFileDialogExA / CFileDialogExW
@@ -33,7 +32,7 @@ _Check_return_ INT_PTR CFileDialogExA::DisplayDialog(bool bOpenFileDialog, // tr
 	// initialize structure to 0/NULL
 	memset(&m_ofn, 0, sizeof(OPENFILENAMEEXA));
 
-	if (IsWin2000())
+	if (IsWindowsVersionOrGreater(5, 0, 0))
 		m_ofn.lStructSize = sizeof(OPENFILENAMEEXA);
 	else
 		m_ofn.lStructSize = sizeof(OPENFILENAMEA);
@@ -167,7 +166,7 @@ _Check_return_ INT_PTR CFileDialogExW::DisplayDialog(bool bOpenFileDialog, // tr
 	// initialize structure to 0/NULL
 	memset(&m_ofn, 0, sizeof(OPENFILENAMEEXW));
 
-	if (IsWin2000())
+	if (IsWindowsVersionOrGreater(5, 0, 0))
 		m_ofn.lStructSize = sizeof(OPENFILENAMEEXW);
 	else
 		m_ofn.lStructSize = sizeof(OPENFILENAMEW);
@@ -274,44 +273,4 @@ _Check_return_ LPWSTR CFileDialogExW::GetNextFileName()
 	}
 
 	return strPath;
-} // CFileDialogExW::GetNextFileName
-
-// Ignore deprecation error. This code is checking that we're above Windows 2000
-// and won't be affected by Windows 8 version ephemera. Not worth rewriting.
-#pragma warning(push)
-#pragma warning(disable:4996)
-_Check_return_ bool IsWin2000()
-{
-	OSVERSIONINFOEX osvi;
-	HRESULT hRes = S_OK;
-
-	// Try calling GetVersionEx using the OSVERSIONINFOEX structure,
-	// which is supported on Windows 2000.
-	//
-	// If that fails, try using the OSVERSIONINFO structure.
-
-	ZeroMemory(&osvi, sizeof(OSVERSIONINFOEX));
-	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-
-	WC_B(GetVersionEx((OSVERSIONINFO*)&osvi));
-	if (S_OK != hRes)
-	{
-		// If OSVERSIONINFOEX doesn't work, try OSVERSIONINFO.
-		hRes = S_OK;
-		osvi.dwOSVersionInfoSize = sizeof (OSVERSIONINFO);
-		EC_B(GetVersionEx((OSVERSIONINFO*)&osvi));
-		if (S_OK != hRes) return false;
-	}
-
-	switch (osvi.dwPlatformId)
-	{
-	case VER_PLATFORM_WIN32_NT:
-
-		if (osvi.dwMajorVersion >= 5)
-			return true;
-
-		break;
-	}
-	return false;
-} // IsWin2000
-#pragma warning (pop)
+} // CFileDialogExW::GetNextFileName}
