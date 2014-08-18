@@ -5269,15 +5269,18 @@ _Check_return_ WebViewPersistStreamStruct* BinToWebViewPersistStreamStruct(ULONG
 	}
 	// Set up to parse for real
 	CBinaryParser Parser2(cbBin, lpBin);
-	if (wvpsWebViewPersistStream.cWebViews && wvpsWebViewPersistStream.cWebViews < _MaxEntriesSmall)
-		wvpsWebViewPersistStream.lpWebViews = new WebViewPersistStruct[wvpsWebViewPersistStream.cWebViews];
+	DWORD cWebViews = wvpsWebViewPersistStream.cWebViews;
+	if (cWebViews && cWebViews < _MaxEntriesSmall)
+	{
+		wvpsWebViewPersistStream.lpWebViews = new WebViewPersistStruct[cWebViews];
+	}
 
 	if (wvpsWebViewPersistStream.lpWebViews)
 	{
-		memset(wvpsWebViewPersistStream.lpWebViews, 0, sizeof(WebViewPersistStruct)*wvpsWebViewPersistStream.cWebViews);
+		memset(wvpsWebViewPersistStream.lpWebViews, 0, sizeof(WebViewPersistStruct)*cWebViews);
 		ULONG i = 0;
 
-		for (i = 0; i < wvpsWebViewPersistStream.cWebViews; i++)
+		for (i = 0; i < cWebViews; i++)
 		{
 			Parser2.GetDWORD(&wvpsWebViewPersistStream.lpWebViews[i].dwVersion);
 			Parser2.GetDWORD(&wvpsWebViewPersistStream.lpWebViews[i].dwType);
