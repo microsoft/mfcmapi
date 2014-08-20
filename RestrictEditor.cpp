@@ -1068,212 +1068,264 @@ _Check_return_ ULONG CRestrictEditor::HandleChange(UINT nID)
 void CRestrictEditor::OnEditAction1()
 {
 	HRESULT hRes = S_OK;
-
 	LPSRestriction lpSourceRes = GetSourceRes();
-
 	if (!lpSourceRes || !m_lpOutputRes) return;
 
-	// Do we need to set this again?
 	switch(lpSourceRes->rt)
 	{
 	case RES_COMPAREPROPS:
-		{
-			CResCompareEditor MyEditor(
-				this,
-				lpSourceRes->res.resCompareProps.relop,
-				lpSourceRes->res.resCompareProps.ulPropTag1,
-				lpSourceRes->res.resCompareProps.ulPropTag2);
-			WC_H(MyEditor.DisplayDialog());
-			if (S_OK == hRes)
-			{
-				m_lpOutputRes->rt = lpSourceRes->rt;
-				m_lpOutputRes->res.resCompareProps.relop = MyEditor.GetHex(0);
-				m_lpOutputRes->res.resCompareProps.ulPropTag1 = MyEditor.GetPropTag(2);
-				m_lpOutputRes->res.resCompareProps.ulPropTag2 = MyEditor.GetPropTag(4);
-			}
-		}
+		WC_H(EditCompare(lpSourceRes));
 		break;
 		// Structures for these two types are identical
 	case RES_OR:
 	case RES_AND:
-		{
-			CResAndOrEditor MyResEditor(
-				this,
-				lpSourceRes,
-				m_lpAllocParent); // pass source res into editor
-			WC_H(MyResEditor.DisplayDialog());
-
-			if (S_OK == hRes)
-			{
-				m_lpOutputRes->rt = lpSourceRes->rt;
-				m_lpOutputRes->res.resAnd.cRes = MyResEditor.GetResCount();
-
-				LPSRestriction lpNewResArray = MyResEditor.DetachModifiedSRestrictionArray();
-				if (lpNewResArray)
-				{
-					// I can do this because our new memory was allocated from a common parent
-					MAPIFreeBuffer(m_lpOutputRes->res.resAnd.lpRes);
-					m_lpOutputRes->res.resAnd.lpRes = lpNewResArray;
-				}
-			}
-		}
+		WC_H(EditAndOr(lpSourceRes));
 		break;
 		// Structures for these two types are identical
 	case RES_NOT:
 	case RES_COUNT:
-		{
-			CRestrictEditor MyResEditor(
-				this,
-				m_lpAllocParent,
-				lpSourceRes->res.resNot.lpRes); // pass source res into editor
-			WC_H(MyResEditor.DisplayDialog());
-
-			if (S_OK == hRes)
-			{
-				m_lpOutputRes->rt = lpSourceRes->rt;
-				// Since m_lpOutputRes->res.resNot.lpRes was owned by an m_lpAllocParent, we don't free it directly
-				m_lpOutputRes->res.resNot.lpRes = MyResEditor.DetachModifiedSRestriction();
-			}
-		}
+		WC_H(EditRestrict(lpSourceRes));
 		break;
 		// Structures for these two types are identical
 	case RES_PROPERTY:
 	case RES_CONTENT:
-		{
-			CResCombinedEditor MyEditor(
-				this,
-				lpSourceRes->rt,
-				lpSourceRes->res.resContent.ulFuzzyLevel,
-				lpSourceRes->res.resContent.ulPropTag,
-				lpSourceRes->res.resContent.lpProp,
-				m_lpAllocParent);
-			WC_H(MyEditor.DisplayDialog());
-			if (S_OK == hRes)
-			{
-				m_lpOutputRes->rt = lpSourceRes->rt;
-				m_lpOutputRes->res.resContent.ulFuzzyLevel = MyEditor.GetHex(0);
-				m_lpOutputRes->res.resContent.ulPropTag = MyEditor.GetPropTag(2);
-
-				// Since m_lpOutputRes->res.resContent.lpProp was owned by an m_lpAllocParent, we don't free it directly
-				m_lpOutputRes->res.resContent.lpProp = MyEditor.DetachModifiedSPropValue();
-
-				if (!m_lpOutputRes->res.resContent.lpProp)
-				{
-					// Got a problem here - the relop or fuzzy level was changed, but not the property
-					// Need to copy the property from the source Res to the output Res
-					EC_H(MAPIAllocateMore(
-						sizeof(SPropValue),
-						m_lpAllocParent,
-						(LPVOID*)&m_lpOutputRes->res.resContent.lpProp));
-					EC_H(MyPropCopyMore(
-						m_lpOutputRes->res.resContent.lpProp,
-						lpSourceRes->res.resContent.lpProp,
-						MAPIAllocateMore,
-						m_lpAllocParent));
-				}
-			}
-		}
+		WC_H(EditCombined(lpSourceRes));
 		break;
 	case RES_BITMASK:
-		{
-			CResBitmaskEditor MyEditor(
-				this,
-				lpSourceRes->res.resBitMask.relBMR,
-				lpSourceRes->res.resBitMask.ulPropTag,
-				lpSourceRes->res.resBitMask.ulMask);
-			WC_H(MyEditor.DisplayDialog());
-			if (S_OK == hRes)
-			{
-				m_lpOutputRes->rt = lpSourceRes->rt;
-				m_lpOutputRes->res.resBitMask.relBMR = MyEditor.GetHex(0);
-				m_lpOutputRes->res.resBitMask.ulPropTag = MyEditor.GetPropTag(2);
-				m_lpOutputRes->res.resBitMask.ulMask = MyEditor.GetHex(4);
-			}
-		}
+		WC_H(EditBitmask(lpSourceRes));
 		break;
 	case RES_SIZE:
-		{
-			CResSizeEditor MyEditor(
-				this,
-				lpSourceRes->res.resSize.relop,
-				lpSourceRes->res.resSize.ulPropTag,
-				lpSourceRes->res.resSize.cb);
-			WC_H(MyEditor.DisplayDialog());
-			if (S_OK == hRes)
-			{
-				m_lpOutputRes->rt = lpSourceRes->rt;
-				m_lpOutputRes->res.resSize.relop = MyEditor.GetHex(0);
-				m_lpOutputRes->res.resSize.ulPropTag = MyEditor.GetPropTag(2);
-				m_lpOutputRes->res.resSize.cb = MyEditor.GetHex(4);
-			}
-		}
+		WC_H(EditSize(lpSourceRes));
 		break;
 	case RES_EXIST:
-		{
-			CResExistEditor MyEditor(
-				this,
-				lpSourceRes->res.resExist.ulPropTag);
-			WC_H(MyEditor.DisplayDialog());
-			if (S_OK == hRes)
-			{
-				m_lpOutputRes->rt = lpSourceRes->rt;
-				m_lpOutputRes->res.resExist.ulPropTag = MyEditor.GetPropTag(0);
-				m_lpOutputRes->res.resExist.ulReserved1 = 0;
-				m_lpOutputRes->res.resExist.ulReserved2 = 0;
-			}
-		}
+		WC_H(EditExist(lpSourceRes));
 		break;
 	case RES_SUBRESTRICTION:
-		{
-			CResSubResEditor MyEditor(
-				this,
-				lpSourceRes->res.resSub.ulSubObject,
-				lpSourceRes->res.resSub.lpRes,
-				m_lpAllocParent);
-			WC_H(MyEditor.DisplayDialog());
-			if (S_OK == hRes)
-			{
-				m_lpOutputRes->rt = lpSourceRes->rt;
-				m_lpOutputRes->res.resSub.ulSubObject = MyEditor.GetHex(1);
-
-				// Since m_lpOutputRes->res.resSub.lpRes was owned by an m_lpAllocParent, we don't free it directly
-				m_lpOutputRes->res.resSub.lpRes = MyEditor.DetachModifiedSRestriction();
-			}
-		}
+		WC_H(EditSubrestriction(lpSourceRes));
 		break;
 		// Structures for these two types are identical
 	case RES_COMMENT:
 	case RES_ANNOTATION:
-		{
-			CResCommentEditor MyResEditor(
-				this,
-				lpSourceRes,
-				m_lpAllocParent); // pass source res into editor
-			WC_H(MyResEditor.DisplayDialog());
-
-			if (S_OK == hRes)
-			{
-				m_lpOutputRes->rt = lpSourceRes->rt;
-
-				// Since m_lpOutputRes->res.resComment.lpRes was owned by an m_lpAllocParent, we don't free it directly
-				m_lpOutputRes->res.resComment.lpRes = MyResEditor.DetachModifiedSRestriction();
-
-				// Since m_lpOutputRes->res.resComment.lpProp was owned by an m_lpAllocParent, we don't free it directly
-				m_lpOutputRes->res.resComment.lpProp = MyResEditor.DetachModifiedSPropValue();
-				if (m_lpOutputRes->res.resComment.lpProp)
-				{
-					m_lpOutputRes->res.resComment.cValues = MyResEditor.GetSPropValueCount();
-				}
-			}
-		}
+		WC_H(EditComment(lpSourceRes));
 		break;
 	}
+
 	if (S_OK == hRes)
 	{
 		m_bModified = true;
 		SetString(2,RestrictionToString(m_lpOutputRes,NULL));
 	}
-} // CRestrictEditor::OnEditAction1
+}
+
+HRESULT CRestrictEditor::EditCompare(LPSRestriction lpSourceRes)
+{
+	HRESULT hRes = S_OK;
+	CResCompareEditor MyEditor(
+		this,
+		lpSourceRes->res.resCompareProps.relop,
+		lpSourceRes->res.resCompareProps.ulPropTag1,
+		lpSourceRes->res.resCompareProps.ulPropTag2);
+	WC_H(MyEditor.DisplayDialog());
+	if (S_OK == hRes)
+	{
+		m_lpOutputRes->rt = lpSourceRes->rt;
+		m_lpOutputRes->res.resCompareProps.relop = MyEditor.GetHex(0);
+		m_lpOutputRes->res.resCompareProps.ulPropTag1 = MyEditor.GetPropTag(2);
+		m_lpOutputRes->res.resCompareProps.ulPropTag2 = MyEditor.GetPropTag(4);
+	}
+
+	return hRes;
+}
+
+HRESULT CRestrictEditor::EditAndOr(LPSRestriction lpSourceRes)
+{
+	HRESULT hRes = S_OK;
+	CResAndOrEditor MyResEditor(
+		this,
+		lpSourceRes,
+		m_lpAllocParent); // pass source res into editor
+	WC_H(MyResEditor.DisplayDialog());
+
+	if (S_OK == hRes)
+	{
+		m_lpOutputRes->rt = lpSourceRes->rt;
+		m_lpOutputRes->res.resAnd.cRes = MyResEditor.GetResCount();
+
+		LPSRestriction lpNewResArray = MyResEditor.DetachModifiedSRestrictionArray();
+		if (lpNewResArray)
+		{
+			// I can do this because our new memory was allocated from a common parent
+			MAPIFreeBuffer(m_lpOutputRes->res.resAnd.lpRes);
+			m_lpOutputRes->res.resAnd.lpRes = lpNewResArray;
+		}
+	}
+
+	return hRes;
+}
+
+HRESULT CRestrictEditor::EditRestrict(LPSRestriction lpSourceRes)
+{
+	HRESULT hRes = S_OK;
+	CRestrictEditor MyResEditor(
+		this,
+		m_lpAllocParent,
+		lpSourceRes->res.resNot.lpRes); // pass source res into editor
+	WC_H(MyResEditor.DisplayDialog());
+
+	if (S_OK == hRes)
+	{
+		m_lpOutputRes->rt = lpSourceRes->rt;
+		// Since m_lpOutputRes->res.resNot.lpRes was owned by an m_lpAllocParent, we don't free it directly
+		m_lpOutputRes->res.resNot.lpRes = MyResEditor.DetachModifiedSRestriction();
+	}
+
+	return hRes;
+}
+
+HRESULT CRestrictEditor::EditCombined(LPSRestriction lpSourceRes)
+{
+	HRESULT hRes = S_OK;
+	CResCombinedEditor MyEditor(
+		this,
+		lpSourceRes->rt,
+		lpSourceRes->res.resContent.ulFuzzyLevel,
+		lpSourceRes->res.resContent.ulPropTag,
+		lpSourceRes->res.resContent.lpProp,
+		m_lpAllocParent);
+	WC_H(MyEditor.DisplayDialog());
+	if (S_OK == hRes)
+	{
+		m_lpOutputRes->rt = lpSourceRes->rt;
+		m_lpOutputRes->res.resContent.ulFuzzyLevel = MyEditor.GetHex(0);
+		m_lpOutputRes->res.resContent.ulPropTag = MyEditor.GetPropTag(2);
+
+		// Since m_lpOutputRes->res.resContent.lpProp was owned by an m_lpAllocParent, we don't free it directly
+		m_lpOutputRes->res.resContent.lpProp = MyEditor.DetachModifiedSPropValue();
+
+		if (!m_lpOutputRes->res.resContent.lpProp)
+		{
+			// Got a problem here - the relop or fuzzy level was changed, but not the property
+			// Need to copy the property from the source Res to the output Res
+			EC_H(MAPIAllocateMore(
+				sizeof(SPropValue),
+				m_lpAllocParent,
+				(LPVOID*)&m_lpOutputRes->res.resContent.lpProp));
+			EC_H(MyPropCopyMore(
+				m_lpOutputRes->res.resContent.lpProp,
+				lpSourceRes->res.resContent.lpProp,
+				MAPIAllocateMore,
+				m_lpAllocParent));
+		}
+	}
+
+	return hRes;
+}
+
+HRESULT CRestrictEditor::EditBitmask(LPSRestriction lpSourceRes)
+{
+	HRESULT hRes = S_OK;
+	CResBitmaskEditor MyEditor(
+		this,
+		lpSourceRes->res.resBitMask.relBMR,
+		lpSourceRes->res.resBitMask.ulPropTag,
+		lpSourceRes->res.resBitMask.ulMask);
+	WC_H(MyEditor.DisplayDialog());
+	if (S_OK == hRes)
+	{
+		m_lpOutputRes->rt = lpSourceRes->rt;
+		m_lpOutputRes->res.resBitMask.relBMR = MyEditor.GetHex(0);
+		m_lpOutputRes->res.resBitMask.ulPropTag = MyEditor.GetPropTag(2);
+		m_lpOutputRes->res.resBitMask.ulMask = MyEditor.GetHex(4);
+	}
+
+	return hRes;
+}
+
+HRESULT CRestrictEditor::EditSize(LPSRestriction lpSourceRes)
+{
+	HRESULT hRes = S_OK;
+	CResSizeEditor MyEditor(
+		this,
+		lpSourceRes->res.resSize.relop,
+		lpSourceRes->res.resSize.ulPropTag,
+		lpSourceRes->res.resSize.cb);
+	WC_H(MyEditor.DisplayDialog());
+	if (S_OK == hRes)
+	{
+		m_lpOutputRes->rt = lpSourceRes->rt;
+		m_lpOutputRes->res.resSize.relop = MyEditor.GetHex(0);
+		m_lpOutputRes->res.resSize.ulPropTag = MyEditor.GetPropTag(2);
+		m_lpOutputRes->res.resSize.cb = MyEditor.GetHex(4);
+	}
+
+	return hRes;
+}
+
+HRESULT CRestrictEditor::EditExist(LPSRestriction lpSourceRes)
+{
+	HRESULT hRes = S_OK;
+	CResExistEditor MyEditor(
+		this,
+		lpSourceRes->res.resExist.ulPropTag);
+	WC_H(MyEditor.DisplayDialog());
+	if (S_OK == hRes)
+	{
+		m_lpOutputRes->rt = lpSourceRes->rt;
+		m_lpOutputRes->res.resExist.ulPropTag = MyEditor.GetPropTag(0);
+		m_lpOutputRes->res.resExist.ulReserved1 = 0;
+		m_lpOutputRes->res.resExist.ulReserved2 = 0;
+	}
+
+	return hRes;
+}
+
+HRESULT CRestrictEditor::EditSubrestriction(LPSRestriction lpSourceRes)
+{
+	HRESULT hRes = S_OK;
+	CResSubResEditor MyEditor(
+		this,
+		lpSourceRes->res.resSub.ulSubObject,
+		lpSourceRes->res.resSub.lpRes,
+		m_lpAllocParent);
+	WC_H(MyEditor.DisplayDialog());
+	if (S_OK == hRes)
+	{
+		m_lpOutputRes->rt = lpSourceRes->rt;
+		m_lpOutputRes->res.resSub.ulSubObject = MyEditor.GetHex(1);
+
+		// Since m_lpOutputRes->res.resSub.lpRes was owned by an m_lpAllocParent, we don't free it directly
+		m_lpOutputRes->res.resSub.lpRes = MyEditor.DetachModifiedSRestriction();
+	}
+
+	return hRes;
+}
+
+HRESULT CRestrictEditor::EditComment(LPSRestriction lpSourceRes)
+{
+	HRESULT hRes = S_OK;
+	CResCommentEditor MyResEditor(
+		this,
+		lpSourceRes,
+		m_lpAllocParent); // pass source res into editor
+	WC_H(MyResEditor.DisplayDialog());
+
+	if (S_OK == hRes)
+	{
+		m_lpOutputRes->rt = lpSourceRes->rt;
+
+		// Since m_lpOutputRes->res.resComment.lpRes was owned by an m_lpAllocParent, we don't free it directly
+		m_lpOutputRes->res.resComment.lpRes = MyResEditor.DetachModifiedSRestriction();
+
+		// Since m_lpOutputRes->res.resComment.lpProp was owned by an m_lpAllocParent, we don't free it directly
+		m_lpOutputRes->res.resComment.lpProp = MyResEditor.DetachModifiedSPropValue();
+		if (m_lpOutputRes->res.resComment.lpProp)
+		{
+			m_lpOutputRes->res.resComment.cValues = MyResEditor.GetSPropValueCount();
+		}
+	}
+
+	return hRes;
+}
 
 // Note that no alloc parent is passed in to CCriteriaEditor. So we're completely responsible for freeing any memory we allocate.
 // If we return (detach) memory to a caller, they must MAPIFreeBuffer

@@ -17,6 +17,15 @@ public:
 
 private:
 	void  OnEditAction1();
+	HRESULT CRestrictEditor::EditCompare(LPSRestriction lpSourceRes);
+	HRESULT CRestrictEditor::EditAndOr(LPSRestriction lpSourceRes);
+	HRESULT CRestrictEditor::EditRestrict(LPSRestriction lpSourceRes);
+	HRESULT CRestrictEditor::EditCombined(LPSRestriction lpSourceRes);
+	HRESULT CRestrictEditor::EditBitmask(LPSRestriction lpSourceRes);
+	HRESULT CRestrictEditor::EditSize(LPSRestriction lpSourceRes);
+	HRESULT CRestrictEditor::EditExist(LPSRestriction lpSourceRes);
+	HRESULT CRestrictEditor::EditSubrestriction(LPSRestriction lpSourceRes);
+	HRESULT CRestrictEditor::EditComment(LPSRestriction lpSourceRes);
 	BOOL  OnInitDialog();
 	_Check_return_ ULONG HandleChange(UINT nID);
 	void  OnOK();
