@@ -1431,7 +1431,7 @@ void MyHexFromBin(_In_opt_count_(cb) LPBYTE lpb, size_t cb, bool bPrependCB, _De
 		memset(*lpsz, 0, cchOut);
 		if (bPrependCB)
 		{
-			StringCchPrintf(*lpsz, cchOut, _T("cb: %u lpb: "), cb); // STRING_OK
+			StringCchPrintf(*lpsz, cchOut, _T("cb: %u lpb: "), (UINT)cb); // STRING_OK
 			lpszCur += CBPREPEND + cchCB;
 		}
 		if (!cb || !lpb)

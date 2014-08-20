@@ -41,7 +41,7 @@ int CountedTextPane::GetMinWidth(_In_ HDC hdc)
 	int iLabelWidth = TextPane::GetMinWidth(hdc);
 
 	CString szCount;
-	szCount.Format(_T("%s: 0x%08X = %u"), (LPCTSTR) m_szCountLabel, m_iCount, m_iCount); // STRING_OK
+	szCount.Format(_T("%s: 0x%08X = %u"), (LPCTSTR)m_szCountLabel, (int)m_iCount, (UINT)m_iCount); // STRING_OK
 	m_Count.SetWindowText(szCount);
 
 	SIZE sizeText = {0};

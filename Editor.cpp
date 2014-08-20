@@ -1130,7 +1130,7 @@ void CEditor::SetBinary(ULONG i, _In_opt_count_(cb) LPBYTE lpb, size_t cb)
 // Updates m_lpControls[i].lpEdit->lpszW using SetStringW
 void CEditor::SetSize(ULONG i, size_t cb)
 {
-	SetStringf(i, _T("0x%08X = %u"), cb, cb); // STRING_OK
+	SetStringf(i, _T("0x%08X = %u"), (int)cb, (UINT)cb); // STRING_OK
 } // CEditor::SetSize
 
 // returns false if we failed to get a binary

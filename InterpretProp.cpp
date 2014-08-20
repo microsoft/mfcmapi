@@ -393,7 +393,7 @@ _Check_return_ CString TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, b
 		static size_t cchMaxBuff = 0;
 		size_t cchBuff = szRet.GetLength();
 		cchMaxBuff = max(cchBuff, cchMaxBuff);
-		DebugPrint(DBGTest, _T("TagToString parsing 0x%08X returned %u chars - max %u\n"), ulPropTag, cchBuff, cchMaxBuff);
+		DebugPrint(DBGTest, _T("TagToString parsing 0x%08X returned %u chars - max %u\n"), ulPropTag, (UINT)cchBuff, (UINT)cchMaxBuff);
 	}
 	return szRet;
 } // TagToString
