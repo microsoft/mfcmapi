@@ -616,7 +616,7 @@ _Check_return_ LPMAPITABLE CHierarchyTableTreeCtrl::GetHierarchyTable(HTREEITEM 
 						MAPIFreeBuffer(lpProp);
 					}
 				}
-				DebugPrintEx(DBGNotify, CLASS, _T("GetHierarchyTable"), _T("Advise sink %p, ulAdviseConnection = 0x%08X\n"), lpData->data.Node.lpAdviseSink, lpData->data.Node.ulAdviseConnection);
+				DebugPrintEx(DBGNotify, CLASS, _T("GetHierarchyTable"), _T("Advise sink %p, ulAdviseConnection = 0x%08X\n"), lpData->data.Node.lpAdviseSink, (int)lpData->data.Node.ulAdviseConnection);
 			}
 		}
 	}
@@ -1151,7 +1151,7 @@ void CHierarchyTableTreeCtrl::OnDeleteItem(_In_ NMHDR* pNMHDR, _In_ LRESULT* pRe
 
 		if (lpData && lpData->data.Node.lpAdviseSink)
 		{
-			DebugPrintEx(DBGHierarchy, CLASS, _T("OnDeleteItem"), _T("Unadvising %p, ulAdviseConnection = 0x%08X\n"), lpData->data.Node.lpAdviseSink, lpData->data.Node.ulAdviseConnection);
+			DebugPrintEx(DBGHierarchy, CLASS, _T("OnDeleteItem"), _T("Unadvising %p, ulAdviseConnection = 0x%08X\n"), lpData->data.Node.lpAdviseSink, (int)lpData->data.Node.ulAdviseConnection);
 		}
 		if (lpData) FreeSortListData(lpData);
 		lpData = NULL;

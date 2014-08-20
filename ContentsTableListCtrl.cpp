@@ -1625,7 +1625,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::NotificationOn()
 		}
 	}
 
-	DebugPrintEx(DBGGeneric, CLASS, _T("NotificationOn"), _T("Table notification results (Sink:%p, ulConnection:0x%X) on %p\n"), m_lpAdviseSink, m_ulAdviseConnection, m_lpContentsTable);
+	DebugPrintEx(DBGGeneric, CLASS, _T("NotificationOn"), _T("Table notification results (Sink:%p, ulConnection:0x%X) on %p\n"), m_lpAdviseSink, (int)m_ulAdviseConnection, m_lpContentsTable);
 	return hRes;
 } // CContentsTableListCtrl::NotificationOn
 
@@ -1634,7 +1634,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::NotificationOn()
 void CContentsTableListCtrl::NotificationOff()
 {
 	if (!m_lpAdviseSink) return;
-	DebugPrintEx(DBGGeneric, CLASS, _T("NotificationOff"), _T("clearing table notification (Sink:%p, ulConnection:0x%X) on %p\n"), m_lpAdviseSink, m_ulAdviseConnection, m_lpContentsTable);
+	DebugPrintEx(DBGGeneric, CLASS, _T("NotificationOff"), _T("clearing table notification (Sink:%p, ulConnection:0x%X) on %p\n"), m_lpAdviseSink, (int)m_ulAdviseConnection, m_lpContentsTable);
 
 	if (m_ulAdviseConnection && m_lpContentsTable)
 		m_lpContentsTable->Unadvise(m_ulAdviseConnection);
