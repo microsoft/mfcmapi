@@ -314,14 +314,14 @@ _Check_return_ CString TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, b
 		NULL,
 		NULL,
 		bIsAB,
-		&szExactMatches, // Built from ulPropTag & bIsAB
-		&szPartialMatches, // Built from ulPropTag & bIsAB
 		NULL,
 		NULL,
 		NULL,
 		&szNamedPropName, // Built from lpProp & lpMAPIProp
 		&szNamedPropGUID, // Built from lpProp & lpMAPIProp
 		&szNamedPropDASL); // Built from ulPropTag & lpMAPIProp
+
+	EC_H(PropTagToPropName(ulPropTag, bIsAB, &szExactMatches, &szPartialMatches));
 
 	CString szFormatString;
 	if (bSingleLine)

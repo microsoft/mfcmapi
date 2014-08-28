@@ -110,14 +110,15 @@ _Check_return_ bool CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 			NULL,
 			NULL,
 			m_bIsAB,
-			&szExactMatch, // Built from ulPropTag & bIsAB
-			&szPartialMatch, // Built from ulPropTag & bIsAB
 			&PropTag,
 			NULL,
 			NULL,
 			&szNamedPropName, // Built from lpProp & lpMAPIProp
 			&szNamedPropGUID, // Built from lpProp & lpMAPIProp
 			NULL);
+
+		EC_H(PropTagToPropName(ulNewPropTag, m_bIsAB, &szExactMatch, &szPartialMatch));
+
 		SetListString(ulListNum, iItem, 2, szExactMatch);
 		SetListString(ulListNum, iItem, 3, szPartialMatch);
 		SetListString(ulListNum, iItem, 4, TypeToString(ulNewPropTag));
@@ -180,25 +181,34 @@ void CTagArrayEditor::ReadTagArrayToList(ULONG ulListNum)
 				NULL,
 				NULL,
 				m_bIsAB,
-				&szExactMatch, // Built from ulPropTag & bIsAB
-				&szPartialMatch, // Built from ulPropTag & bIsAB
 				&PropTag,
 				NULL,
 				NULL,
 				&szNamedPropName, // Built from lpProp & lpMAPIProp
 				&szNamedPropGUID, // Built from lpProp & lpMAPIProp
 				NULL);
+
+
 			SetListString(ulListNum, iTagCount, 1, PropTag);
-			SetListString(ulListNum, iTagCount, 2, szExactMatch);
-			SetListString(ulListNum, iTagCount, 3, szPartialMatch);
+
+			HRESULT hRes = S_OK;
+			EC_H(PropTagToPropName(ulPropTag, m_bIsAB, &szExactMatch, &szPartialMatch));
+			if (SUCCEEDED(hRes))
+			{
+				SetListString(ulListNum, iTagCount, 2, szExactMatch);
+				SetListString(ulListNum, iTagCount, 3, szPartialMatch);
+			}
+
 			SetListString(ulListNum, iTagCount, 4, TypeToString(ulPropTag));
 			SetListString(ulListNum, iTagCount, 5, szNamedPropName);
 			SetListString(ulListNum, iTagCount, 6, szNamedPropGUID);
+
 			delete[] szPartialMatch;
 			delete[] szExactMatch;
 			FreeNameIDStrings(szNamedPropName, szNamedPropGUID, NULL);
 		}
 	}
+
 	ResizeList(ulListNum, false);
 } // CTagArrayEditor::ReadTagArrayToList
 

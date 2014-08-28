@@ -3513,8 +3513,6 @@ _Check_return_ LPWSTR PropertyStructToString(_In_ PropertyStruct* ppProperty)
 				NULL,
 				NULL,
 				false,
-				&szExactMatches,
-				&szPartialMatches,
 				NULL,
 				&PropString,
 				&AltPropString,
@@ -3536,18 +3534,24 @@ _Check_return_ LPWSTR PropertyStructToString(_In_ PropertyStruct* ppProperty)
 				ppProperty->Prop[i].ulPropTag);
 			szProperty += szTmp;
 
-			if (szExactMatches)
-			{
-				szTmp.FormatMessage(IDS_PROPERTYDATAEXACTMATCHES,
-					szExactMatches);
-				szProperty += szTmp;
-			}
+			HRESULT hRes = S_OK;
+			EC_H(PropTagToPropName(ppProperty->Prop[i].ulPropTag, false, &szExactMatches, &szPartialMatches));
 
-			if (szPartialMatches)
+			if (SUCCEEDED(hRes))
 			{
-				szTmp.FormatMessage(IDS_PROPERTYDATAPARTIALMATCHES,
-					szPartialMatches);
-				szProperty += szTmp;
+				if (szExactMatches)
+				{
+					szTmp.FormatMessage(IDS_PROPERTYDATAEXACTMATCHES,
+						szExactMatches);
+					szProperty += szTmp;
+				}
+
+				if (szPartialMatches)
+				{
+					szTmp.FormatMessage(IDS_PROPERTYDATAPARTIALMATCHES,
+						szPartialMatches);
+					szProperty += szTmp;
+				}
 			}
 
 			szTmp.FormatMessage(IDS_PROPERTYDATA,

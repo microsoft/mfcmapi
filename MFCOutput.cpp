@@ -807,8 +807,6 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 		NULL,
 		NULL,
 		false,
-		&szExactMatches, // Built from ulPropTag & bIsAB
-		&szPartialMatches, // Built from ulPropTag & bIsAB
 		NULL,
 		NULL,
 		NULL,
@@ -825,8 +823,13 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 		false,
 		&szSmartView);
 
-	if (szExactMatches) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPEXACTNAMES].uidName, szExactMatches, false, iIndent);
-	if (szPartialMatches) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPPARTIALNAMES].uidName, szPartialMatches, false, iIndent);
+	EC_H(PropTagToPropName(lpProp->ulPropTag, false, &szExactMatches, &szPartialMatches));
+	if (SUCCEEDED(hRes))
+	{
+		if (szExactMatches) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPEXACTNAMES].uidName, szExactMatches, false, iIndent);
+		if (szPartialMatches) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPPARTIALNAMES].uidName, szPartialMatches, false, iIndent);
+	}
+
 	if (szNamedPropGUID) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPNAMEDIID].uidName, szNamedPropGUID, false, iIndent);
 	if (szNamedPropName) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPNAMEDNAME].uidName, szNamedPropName, false, iIndent);
 

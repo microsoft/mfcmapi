@@ -675,8 +675,6 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 		lpNameID,
 		lpMappingSignature,
 		m_bIsAB,
-		&szExactMatches, // Built from ulPropTag & bIsAB
-		&szPartialMatches, // Built from ulPropTag & bIsAB
 		&PropTag, // Built from ulPropTag
 		&PropString, // Built from lpProp
 		&AltPropString, // Built from lpProp
@@ -693,8 +691,14 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 		false,
 		&szSmartView); // Built from lpProp & lpMAPIProp
 
-	SetItemText(iRow, pcPROPEXACTNAMES, szExactMatches ? szExactMatches : (LPCTSTR)PropTag);
-	SetItemText(iRow, pcPROPPARTIALNAMES, szPartialMatches ? szPartialMatches : _T(""));
+	HRESULT hRes = S_OK;
+	EC_H(PropTagToPropName(ulPropTag, m_bIsAB, &szExactMatches, &szPartialMatches));
+	if (SUCCEEDED(hRes))
+	{
+		SetItemText(iRow, pcPROPEXACTNAMES, szExactMatches ? szExactMatches : (LPCTSTR)PropTag);
+		SetItemText(iRow, pcPROPPARTIALNAMES, szPartialMatches ? szPartialMatches : _T(""));
+	}
+
 	SetItemText(iRow, pcPROPTAG, (LPCTSTR)PropTag);
 	SetItemText(iRow, pcPROPTYPE, (LPCTSTR)TypeToString(ulPropTag));
 	SetItemText(iRow, pcPROPVAL, (LPCTSTR)PropString);
