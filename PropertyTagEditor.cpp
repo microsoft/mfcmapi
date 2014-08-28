@@ -313,8 +313,6 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField)
 {
 	HRESULT hRes = S_OK;
 
-	LPTSTR szExactMatch = NULL;
-	LPTSTR szPartialMatch = NULL;
 	LPTSTR szNamedPropName = NULL;
 
 	InterpretProp(
@@ -324,8 +322,6 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField)
 		NULL,
 		NULL,
 		m_bIsAB,
-		&szExactMatch, // Built from ulPropTag & bIsAB
-		&szPartialMatch, // Built from ulPropTag & bIsAB
 		NULL,
 		NULL,
 		NULL,
@@ -338,13 +334,21 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField)
 	if (PROPTAG_TYPE != ulSkipField) SetDropDownSelection(PROPTAG_TYPE, TypeToString(m_ulPropTag));
 	if (PROPTAG_NAME != ulSkipField)
 	{
+		LPTSTR szExactMatch = NULL;
+		LPTSTR szPartialMatch = NULL;
+		EC_H(PropTagToPropName(m_ulPropTag, m_bIsAB, &szExactMatch, &szPartialMatch));
+
 		if (PROP_ID(m_ulPropTag) && (szExactMatch || szPartialMatch))
 			SetStringf(PROPTAG_NAME, _T("%s (%s)"), szExactMatch ? szExactMatch : _T(""), szPartialMatch ? szPartialMatch : _T("")); // STRING_OK
 		else if (szNamedPropName)
 			SetStringf(PROPTAG_NAME, _T("%s"), szNamedPropName); // STRING_OK
 		else
 			LoadString(PROPTAG_NAME, IDS_UNKNOWNPROPERTY);
+
+		delete[] szPartialMatch;
+		delete[] szExactMatch;
 	}
+
 	if (PROPTAG_TYPESTRING != ulSkipField) SetString(PROPTAG_TYPESTRING, (LPCTSTR)TypeToString(m_ulPropTag));
 
 	// Do a named property lookup and fill out fields
@@ -405,8 +409,6 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField)
 	}
 
 	FreeNameIDStrings(szNamedPropName, NULL, NULL);
-	delete[] szPartialMatch;
-	delete[] szExactMatch;
 } // CPropertyTagEditor::PopulateFields
 
 void CPropertyTagEditor::SetDropDownSelection(ULONG i, _In_opt_z_ LPCTSTR szText)
