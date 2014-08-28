@@ -3500,7 +3500,6 @@ _Check_return_ LPWSTR PropertyStructToString(_In_ PropertyStruct* ppProperty)
 	{
 		for (i = 0; i < ppProperty->PropCount; i++)
 		{
-			CString PropType;
 			CString PropString;
 			CString AltPropString;
 			LPTSTR szExactMatches = NULL;
@@ -3516,7 +3515,6 @@ _Check_return_ LPWSTR PropertyStructToString(_In_ PropertyStruct* ppProperty)
 				false,
 				&szExactMatches,
 				&szPartialMatches,
-				&PropType,
 				NULL,
 				&PropString,
 				&AltPropString,

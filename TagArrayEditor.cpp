@@ -98,7 +98,6 @@ _Check_return_ bool CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 		SetListString(ulListNum, iItem, 1, szTmp);
 
 		CString PropTag;
-		CString PropType;
 		LPTSTR szExactMatch = NULL;
 		LPTSTR szPartialMatch = NULL;
 		LPTSTR szNamedPropName = NULL;
@@ -113,7 +112,6 @@ _Check_return_ bool CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 			m_bIsAB,
 			&szExactMatch, // Built from ulPropTag & bIsAB
 			&szPartialMatch, // Built from ulPropTag & bIsAB
-			&PropType,
 			&PropTag,
 			NULL,
 			NULL,
@@ -122,7 +120,7 @@ _Check_return_ bool CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 			NULL);
 		SetListString(ulListNum, iItem, 2, szExactMatch);
 		SetListString(ulListNum, iItem, 3, szPartialMatch);
-		SetListString(ulListNum, iItem, 4, PropType);
+		SetListString(ulListNum, iItem, 4, TypeToString(ulNewPropTag));
 		SetListString(ulListNum, iItem, 5, szNamedPropName);
 		SetListString(ulListNum, iItem, 6, szNamedPropGUID);
 
@@ -170,7 +168,6 @@ void CTagArrayEditor::ReadTagArrayToList(ULONG ulListNum)
 			}
 
 			CString PropTag;
-			CString PropType;
 			LPTSTR szExactMatch = NULL;
 			LPTSTR szPartialMatch = NULL;
 			LPTSTR szNamedPropName = NULL;
@@ -185,7 +182,6 @@ void CTagArrayEditor::ReadTagArrayToList(ULONG ulListNum)
 				m_bIsAB,
 				&szExactMatch, // Built from ulPropTag & bIsAB
 				&szPartialMatch, // Built from ulPropTag & bIsAB
-				&PropType,
 				&PropTag,
 				NULL,
 				NULL,
@@ -195,7 +191,7 @@ void CTagArrayEditor::ReadTagArrayToList(ULONG ulListNum)
 			SetListString(ulListNum, iTagCount, 1, PropTag);
 			SetListString(ulListNum, iTagCount, 2, szExactMatch);
 			SetListString(ulListNum, iTagCount, 3, szPartialMatch);
-			SetListString(ulListNum, iTagCount, 4, PropType);
+			SetListString(ulListNum, iTagCount, 4, TypeToString(ulPropTag));
 			SetListString(ulListNum, iTagCount, 5, szNamedPropName);
 			SetListString(ulListNum, iTagCount, 6, szNamedPropGUID);
 			delete[] szPartialMatch;

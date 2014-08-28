@@ -792,8 +792,6 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 		hRes = S_OK;
 	}
 
-	CString PropType;
-
 	Outputf(ulDbgLvl, fFile, false, _T("\t<property tag = \"0x%08X\" type = \"%s\" >\n"), lpProp->ulPropTag, (LPCTSTR)TypeToString(lpProp->ulPropTag));
 
 	LPTSTR szExactMatches = NULL;
@@ -811,7 +809,6 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 		false,
 		&szExactMatches, // Built from ulPropTag & bIsAB
 		&szPartialMatches, // Built from ulPropTag & bIsAB
-		&PropType,
 		NULL,
 		NULL,
 		NULL,

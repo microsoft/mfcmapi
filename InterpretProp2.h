@@ -58,7 +58,6 @@ void InterpretProp(_In_opt_ LPSPropValue lpProp, // optional property value
 				   bool bIsAB, // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
 				   _Deref_out_opt_z_ LPTSTR* lpszNameExactMatches, // Built from ulPropTag & bIsAB
 				   _Deref_out_opt_z_ LPTSTR* lpszNamePartialMatches, // Built from ulPropTag & bIsAB
-				   _In_opt_ CString* PropType, // Built from ulPropTag
 				   _In_opt_ CString* PropTag, // Built from ulPropTag
 				   _In_opt_ CString* PropString, // Built from lpProp
 				   _In_opt_ CString* AltPropString, // Built from lpProp

@@ -659,7 +659,7 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 	CString PropTag;
 	CString PropString;
 	CString AltPropString;
-	CString PropType;
+	CString PropType = TypeToString(ulPropTag);
 	LPTSTR szExactMatches = NULL;
 	LPTSTR szPartialMatches = NULL;
 	LPWSTR szSmartView = NULL;
@@ -677,7 +677,6 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 		m_bIsAB,
 		&szExactMatches, // Built from ulPropTag & bIsAB
 		&szPartialMatches, // Built from ulPropTag & bIsAB
-		&PropType, // Built from ulPropTag
 		&PropTag, // Built from ulPropTag
 		&PropString, // Built from lpProp
 		&AltPropString, // Built from lpProp
