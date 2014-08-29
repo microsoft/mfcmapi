@@ -3506,19 +3506,6 @@ _Check_return_ LPWSTR PropertyStructToString(_In_ PropertyStruct* ppProperty)
 			LPTSTR szPartialMatches = NULL;
 			LPWSTR szSmartView = NULL;
 
-			InterpretProp(
-				&ppProperty->Prop[i],
-				ppProperty->Prop[i].ulPropTag,
-				NULL,
-				NULL,
-				NULL,
-				false,
-				&PropString,
-				&AltPropString,
-				NULL,
-				NULL,
-				NULL);
-
 			InterpretPropSmartView(
 				&ppProperty->Prop[i],
 				NULL,
@@ -3553,6 +3540,7 @@ _Check_return_ LPWSTR PropertyStructToString(_In_ PropertyStruct* ppProperty)
 				}
 			}
 
+			InterpretProp(&ppProperty->Prop[i], &PropString, &AltPropString);
 			szTmp.FormatMessage(IDS_PROPERTYDATA,
 				(LPCTSTR)PropString,
 				(LPCTSTR)AltPropString);

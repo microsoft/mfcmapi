@@ -103,14 +103,11 @@ _Check_return_ bool CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 		LPTSTR szNamedPropGUID = NULL;
 
 		InterpretProp(
-			NULL,
 			ulNewPropTag,
 			m_lpMAPIProp,
 			NULL,
 			NULL,
 			m_bIsAB,
-			NULL,
-			NULL,
 			&szNamedPropName, // Built from lpProp & lpMAPIProp
 			&szNamedPropGUID, // Built from lpProp & lpMAPIProp
 			NULL);
@@ -173,14 +170,11 @@ void CTagArrayEditor::ReadTagArrayToList(ULONG ulListNum)
 			LPTSTR szNamedPropGUID = NULL;
 
 			InterpretProp(
-				NULL,
 				ulPropTag,
 				m_lpMAPIProp,
 				NULL,
 				NULL,
 				m_bIsAB,
-				NULL,
-				NULL,
 				&szNamedPropName, // Built from lpProp & lpMAPIProp
 				&szNamedPropGUID, // Built from lpProp & lpMAPIProp
 				NULL);

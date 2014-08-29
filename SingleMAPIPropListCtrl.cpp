@@ -669,14 +669,11 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 	// If we have lpNameID, we don't need to ask InterpretProp to look up named property information
 
 	InterpretProp(
-		lpsPropToAdd,
 		ulPropTag,
 		m_lpPropBag->GetMAPIProp(),
 		lpNameID,
 		lpMappingSignature,
 		m_bIsAB,
-		&PropString, // Built from lpProp
-		&AltPropString, // Built from lpProp
 		&szNamedPropName, // Built from lpProp & lpMAPIProp
 		&szNamedPropGUID, // Built from lpProp & lpMAPIProp
 		NULL);
@@ -701,8 +698,11 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 	PropTag.Format(_T("0x%08X"), ulPropTag);
 	SetItemText(iRow, pcPROPTAG, (LPCTSTR)PropTag);
 	SetItemText(iRow, pcPROPTYPE, (LPCTSTR)TypeToString(ulPropTag));
+
+	InterpretProp(lpsPropToAdd, &PropString, &AltPropString);
 	SetItemText(iRow, pcPROPVAL, (LPCTSTR)PropString);
 	SetItemText(iRow, pcPROPVALALT, (LPCTSTR)AltPropString);
+
 	if (szSmartView) SetItemTextW(iRow, pcPROPSMARTVIEW, (LPCWSTR)szSmartView);
 	if (szNamedPropName) SetItemText(iRow, pcPROPNAMEDNAME, szNamedPropName);
 	if (szNamedPropGUID) SetItemText(iRow, pcPROPNAMEDIID, szNamedPropGUID);
