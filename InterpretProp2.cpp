@@ -837,7 +837,6 @@ void InterpretProp(_In_opt_ LPSPropValue lpProp, // optional property value
 	_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
 	_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
 	bool bIsAB, // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
-	_In_opt_ CString* PropTag, // Built from ulPropTag
 	_In_opt_ CString* PropString, // Built from lpProp
 	_In_opt_ CString* AltPropString, // Built from lpProp
 	_Deref_opt_out_opt_z_ LPTSTR* lpszNamedPropName, // Built from ulPropTag & lpMAPIProp
@@ -850,8 +849,6 @@ void InterpretProp(_In_opt_ LPSPropValue lpProp, // optional property value
 	if (lpszNamedPropName) *lpszNamedPropName = NULL;
 	if (lpszNamedPropGUID) *lpszNamedPropGUID = NULL;
 	if (lpszNamedPropDASL) *lpszNamedPropDASL = NULL;
-
-	if (PropTag) PropTag->Format(_T("0x%08X"), ulPropTag); // STRING_OK
 
 	// Named Props
 	LPMAPINAMEID* lppPropNames = 0;
