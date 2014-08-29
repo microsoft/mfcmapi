@@ -316,7 +316,6 @@ _Check_return_ CString TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, b
 		bIsAB,
 		NULL,
 		NULL,
-		NULL,
 		&szNamedPropName, // Built from lpProp & lpMAPIProp
 		&szNamedPropGUID, // Built from lpProp & lpMAPIProp
 		&szNamedPropDASL); // Built from ulPropTag & lpMAPIProp

@@ -3513,7 +3513,6 @@ _Check_return_ LPWSTR PropertyStructToString(_In_ PropertyStruct* ppProperty)
 				NULL,
 				NULL,
 				false,
-				NULL,
 				&PropString,
 				&AltPropString,
 				NULL,

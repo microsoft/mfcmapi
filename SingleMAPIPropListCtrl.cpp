@@ -675,7 +675,6 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 		lpNameID,
 		lpMappingSignature,
 		m_bIsAB,
-		&PropTag, // Built from ulPropTag
 		&PropString, // Built from lpProp
 		&AltPropString, // Built from lpProp
 		&szNamedPropName, // Built from lpProp & lpMAPIProp
@@ -699,6 +698,7 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 		SetItemText(iRow, pcPROPPARTIALNAMES, szPartialMatches ? szPartialMatches : _T(""));
 	}
 
+	PropTag.Format(_T("0x%08X"), ulPropTag);
 	SetItemText(iRow, pcPROPTAG, (LPCTSTR)PropTag);
 	SetItemText(iRow, pcPROPTYPE, (LPCTSTR)TypeToString(ulPropTag));
 	SetItemText(iRow, pcPROPVAL, (LPCTSTR)PropString);
