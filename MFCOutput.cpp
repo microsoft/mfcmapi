@@ -801,14 +801,11 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 	LPTSTR szNamedPropGUID = NULL;
 
 	InterpretProp(
-		lpProp,
 		lpProp->ulPropTag,
 		lpObj,
 		NULL,
 		NULL,
 		false,
-		NULL,
-		NULL,
 		&szNamedPropName, // Built from lpProp & lpMAPIProp
 		&szNamedPropGUID, // Built from lpProp & lpMAPIProp
 		NULL);

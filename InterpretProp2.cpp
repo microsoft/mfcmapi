@@ -828,17 +828,13 @@ _Check_return_ CString AllFlagsToString(const ULONG ulFlagName, bool bHex)
 	return szFlagString;
 } // AllFlagsToString
 
-// Uber property interpreter - given an LPSPropValue, produces all manner of strings
 // lpszNamedPropName, lpszNamedPropGUID, lpszNamedPropDASL freed with FreeNameIDStrings
-// If lpProp is NULL but ulPropTag and lpMAPIProp are passed, will call GetProps
-void InterpretProp(_In_opt_ LPSPropValue lpProp, // optional property value
+void InterpretProp(
 	ULONG ulPropTag, // optional 'original' prop tag
 	_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
 	_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
 	_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
 	bool bIsAB, // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
-	_In_opt_ CString* PropString, // Built from lpProp
-	_In_opt_ CString* AltPropString, // Built from lpProp
 	_Deref_opt_out_opt_z_ LPTSTR* lpszNamedPropName, // Built from ulPropTag & lpMAPIProp
 	_Deref_opt_out_opt_z_ LPTSTR* lpszNamedPropGUID, // Built from ulPropTag & lpMAPIProp
 	_Deref_opt_out_opt_z_ LPTSTR* lpszNamedPropDASL) // Built from ulPropTag & lpMAPIProp
@@ -889,12 +885,6 @@ void InterpretProp(_In_opt_ LPSPropValue lpProp, // optional property value
 			lpszNamedPropName,
 			lpszNamedPropGUID,
 			lpszNamedPropDASL);
-	}
-
-	if (lpProp)
-	{
-		if (PropString || AltPropString)
-			InterpretProp(lpProp, PropString, AltPropString);
 	}
 
 	// Avoid making the call if we don't have to so we don't accidently depend on MAPI
