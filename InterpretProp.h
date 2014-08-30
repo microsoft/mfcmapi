@@ -18,23 +18,17 @@ _Check_return_ CString ProblemArrayToString(_In_ LPSPropProblemArray lpProblems)
 _Check_return_ CString MAPIErrToString(ULONG ulFlags, _In_ LPMAPIERROR lpErr);
 _Check_return_ CString TnefProblemArrayToString(_In_ LPSTnefProblemArray lpError);
 
-// Allocates strings with new
 // Free with FreeNameIDStrings
-//
-// lpszDASL string for a named prop will look like this:
-// id/{12345678-1234-1234-1234-12345678ABCD}/80010003
-// string/{12345678-1234-1234-1234-12345678ABCD}/MyProp
-// So the following #defines give the size of the buffers we need, in TCHARS, including 1 for the null terminator
-// CCH_DASL_ID gets an extra digit to handle some AB props with name IDs of five digits
-#define CCH_DASL_ID 2+1+38+1+8+1+1
-#define CCH_DASL_STRING 6+1+38+1+1
-// TagToString will prepend the http://schemas.microsoft.com/MAPI/ for us since it's a constant
-// We don't compute a DASL string for non-named props as FormatMessage in TagToString can handle those
-void NameIDToStrings(_In_ LPMAPINAMEID lpNameID,
-					 ULONG ulPropTag,
-					 _Deref_opt_out_opt_z_ LPTSTR* lpszPropName,
-					 _Deref_opt_out_opt_z_ LPTSTR* lpszPropGUID,
-					 _Deref_opt_out_opt_z_ LPTSTR* lpszDASL);
+void NameIDToStrings(
+	ULONG ulPropTag, // optional 'original' prop tag
+	_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
+	_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
+	_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
+	bool bIsAB, // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
+	_Deref_opt_out_opt_z_ LPTSTR* lpszNamedPropName, // Built from ulPropTag & lpMAPIProp
+	_Deref_opt_out_opt_z_ LPTSTR* lpszNamedPropGUID, // Built from ulPropTag & lpMAPIProp
+	_Deref_opt_out_opt_z_ LPTSTR* lpszNamedPropDASL); // Built from ulPropTag & lpMAPIProp
+
 void FreeNameIDStrings(_In_opt_z_ LPTSTR lpszPropName,
 					   _In_opt_z_ LPTSTR lpszPropGUID,
 					   _In_opt_z_ LPTSTR lpszDASL);
