@@ -48,17 +48,5 @@ void InterpretFlags(const __NonPropFlag ulFlagName, const LONG lFlagValue, _Dere
 void InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, _In_z_ LPCTSTR szPrefix, _Deref_out_opt_z_ LPTSTR* szFlagString);
 _Check_return_ CString AllFlagsToString(const ULONG ulFlagName, bool bHex);
 
-// Uber property interpreter - given an LPSPropValue, produces all manner of strings
-// All LPTSTR strings allocated with new, delete with delete[]
-void InterpretProp(
-	ULONG ulPropTag, // optional 'original' prop tag
-	_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
-	_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
-	_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
-	bool bIsAB, // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
-	_Deref_opt_out_opt_z_ LPTSTR* lpszNamedPropName, // Built from ulPropTag & lpMAPIProp
-	_Deref_opt_out_opt_z_ LPTSTR* lpszNamedPropGUID, // Built from ulPropTag & lpMAPIProp
-	_Deref_opt_out_opt_z_ LPTSTR* lpszNamedPropDASL); // Built from ulPropTag & lpMAPIProp
-
 _Check_return_ HRESULT GetLargeBinaryProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_ LPSPropValue* lppProp);
 _Check_return_ HRESULT GetLargeStringProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_ LPSPropValue* lppProp);

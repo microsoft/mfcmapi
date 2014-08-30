@@ -800,7 +800,7 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 	LPTSTR szNamedPropName = NULL;
 	LPTSTR szNamedPropGUID = NULL;
 
-	InterpretProp(
+	NameIDToStrings(
 		lpProp->ulPropTag,
 		lpObj,
 		NULL,

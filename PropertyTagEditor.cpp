@@ -315,7 +315,7 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField)
 
 	LPTSTR szNamedPropName = NULL;
 
-	InterpretProp(
+	NameIDToStrings(
 		m_ulPropTag,
 		m_lpMAPIProp,
 		NULL,

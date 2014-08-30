@@ -828,69 +828,6 @@ _Check_return_ CString AllFlagsToString(const ULONG ulFlagName, bool bHex)
 	return szFlagString;
 } // AllFlagsToString
 
-// lpszNamedPropName, lpszNamedPropGUID, lpszNamedPropDASL freed with FreeNameIDStrings
-void InterpretProp(
-	ULONG ulPropTag, // optional 'original' prop tag
-	_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
-	_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
-	_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
-	bool bIsAB, // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
-	_Deref_opt_out_opt_z_ LPTSTR* lpszNamedPropName, // Built from ulPropTag & lpMAPIProp
-	_Deref_opt_out_opt_z_ LPTSTR* lpszNamedPropGUID, // Built from ulPropTag & lpMAPIProp
-	_Deref_opt_out_opt_z_ LPTSTR* lpszNamedPropDASL) // Built from ulPropTag & lpMAPIProp
-{
-	HRESULT hRes = S_OK;
-
-	// In case we error out, set our returns
-	if (lpszNamedPropName) *lpszNamedPropName = NULL;
-	if (lpszNamedPropGUID) *lpszNamedPropGUID = NULL;
-	if (lpszNamedPropDASL) *lpszNamedPropDASL = NULL;
-
-	// Named Props
-	LPMAPINAMEID* lppPropNames = 0;
-
-	// If we weren't passed named property information and we need it, look it up
-	// We check bIsAB here - some address book providers return garbage which will crash us
-	if (!lpNameID &&
-		lpMAPIProp && // if we have an object
-		!bIsAB &&
-		RegKeys[regkeyPARSED_NAMED_PROPS].ulCurDWORD && // and we're parsing named props
-		(RegKeys[regkeyGETPROPNAMES_ON_ALL_PROPS].ulCurDWORD || PROP_ID(ulPropTag) >= 0x8000) && // and it's either a named prop or we're doing all props
-		(lpszNamedPropName || lpszNamedPropGUID || lpszNamedPropDASL)) // and we want to return something that needs named prop information
-	{
-		SPropTagArray	tag = { 0 };
-		LPSPropTagArray	lpTag = &tag;
-		ULONG			ulPropNames = 0;
-		tag.cValues = 1;
-		tag.aulPropTag[0] = ulPropTag;
-
-		WC_H_GETPROPS(GetNamesFromIDs(lpMAPIProp,
-			lpMappingSignature,
-			&lpTag,
-			NULL,
-			NULL,
-			&ulPropNames,
-			&lppPropNames));
-		if (SUCCEEDED(hRes) && ulPropNames == 1 && lppPropNames && lppPropNames[0])
-		{
-			lpNameID = lppPropNames[0];
-		}
-		hRes = S_OK;
-	}
-
-	if (lpNameID)
-	{
-		NameIDToStrings(lpNameID,
-			ulPropTag,
-			lpszNamedPropName,
-			lpszNamedPropGUID,
-			lpszNamedPropDASL);
-	}
-
-	// Avoid making the call if we don't have to so we don't accidently depend on MAPI
-	if (lppPropNames) MAPIFreeBuffer(lppPropNames);
-} // InterpretProp
-
 // Returns LPSPropValue with value of a property
 // Uses GetProps and falls back to OpenProperty if the value is large
 // Free with MAPIFreeBuffer

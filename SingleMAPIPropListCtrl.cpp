@@ -668,7 +668,7 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 
 	// If we have lpNameID, we don't need to ask InterpretProp to look up named property information
 
-	InterpretProp(
+	NameIDToStrings(
 		ulPropTag,
 		m_lpPropBag->GetMAPIProp(),
 		lpNameID,
@@ -1114,7 +1114,15 @@ void CSingleMAPIPropListCtrl::CountNamedProps()
 				DebugPrintEx(DBGNamedProp, CLASS, _T("CountNamedProps"), _T("Found a named property at 0x%04X.\n"), ulCurrent);
 				LPTSTR lpszNameID = NULL;
 				LPTSTR lpszNameGUID = NULL;
-				NameIDToStrings(lppPropNames[0], tag.aulPropTag[0], &lpszNameID, &lpszNameGUID, NULL);
+				NameIDToStrings(
+					tag.aulPropTag[0],
+					NULL,
+					lppPropNames[0],
+					NULL,
+					false,
+					&lpszNameID,
+					&lpszNameGUID,
+					NULL);
 				DebugPrintEx(DBGNamedProp, CLASS, _T("CountNamedProps"), _T("Name = %s, GUID = %s\n"), lpszNameID, lpszNameGUID);
 				FreeNameIDStrings(lpszNameID, lpszNameGUID, NULL);
 			}
@@ -1165,7 +1173,15 @@ void CSingleMAPIPropListCtrl::CountNamedProps()
 			CString szNamedProp;
 			LPTSTR lpszNameID = NULL;
 			LPTSTR lpszNameGUID = NULL;
-			NameIDToStrings(lppPropNames[0], tag.aulPropTag[0], &lpszNameID, &lpszNameGUID, NULL);
+			NameIDToStrings(
+				tag.aulPropTag[0],
+				NULL,
+				lppPropNames[0],
+				NULL,
+				false,
+				&lpszNameID,
+				&lpszNameGUID,
+				NULL);
 			szNamedProp.FormatMessage(IDS_HIGHESTNAMEDPROPNAME, ulHighestKnown, lpszNameID, lpszNameGUID);
 			FreeNameIDStrings(lpszNameID, lpszNameGUID, NULL);
 			MyResult.SetString(1, szNamedProp);
