@@ -2,6 +2,7 @@
 #include "Property.h"
 #include "ParseProperty.h"
 #include "ColumnTags.h"
+#include "String.h"
 
 wstring ScrubStringForXML(_In_ wstring szString)
 {

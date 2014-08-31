@@ -3,63 +3,11 @@
 #include "Property.h"
 #include "MAPIFunctions.h"
 #include "ExtraPropTags.h"
+#include "String.h"
 
 // We avoid bringing InterpretProp.h in with these
 void RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj, ULONG ulTabLevel, _In_ CString *PropString);
 void ActionsToString(_In_ ACTIONS* lpActions, _In_ CString* PropString);
-
-inline std::wstring format(const LPWSTR fmt, ...)
-{
-	LPWSTR buffer = NULL;
-	va_list vl;
-	va_start(vl, fmt);
-	int len = _vscwprintf(fmt, vl);
-	if (0 != len)
-	{
-		len++;
-		buffer = new wchar_t[len];
-		memset(buffer, 0, sizeof(wchar_t)* len);
-		(void)_vsnwprintf_s(buffer, len, len, fmt, vl);
-	}
-
-	std::wstring ret(buffer);
-	va_end(vl);
-	delete[] buffer;
-	return ret;
-}
-
-inline std::wstring loadstring(DWORD dwID)
-{
-	wstring fmtString;
-	LPWSTR buffer = 0;
-	size_t len = ::LoadStringW(NULL, dwID, (PWCHAR)&buffer, 0);
-
-	if (len)
-	{
-		fmtString.assign(buffer, len);
-	}
-
-	return fmtString;
-}
-
-inline std::wstring formatmessage(DWORD dwID, ...)
-{
-	wstring format = loadstring(dwID);
-
-	LPWSTR buffer = NULL;
-	std::wstring ret;
-	va_list vl;
-	va_start(vl, dwID);
-	DWORD dw = FormatMessageW(FORMAT_MESSAGE_FROM_STRING | FORMAT_MESSAGE_ALLOCATE_BUFFER, format.c_str(), 0, 0, (LPWSTR)&buffer, 0, &vl);
-	if (dw)
-	{
-		ret = std::wstring(buffer);
-		(void)LocalFree(buffer);
-	}
-
-	va_end(vl);
-	return ret;
-}
 
 wstring BuildErrorPropString(_In_ LPSPropValue lpProp)
 {
@@ -159,7 +107,7 @@ _Check_return_ wstring BinToHexString(_In_opt_ LPSBinary lpBin)
 		lpBin->cb);
 }
 
-_Check_return_ wstring GUIDToString(_In_opt_ LPCGUID lpGUID)
+_Check_return_ wstring GUIDToWstring(_In_opt_ LPCGUID lpGUID)
 {
 	GUID nullGUID = { 0 };
 	wstring szGUID;
@@ -185,7 +133,7 @@ _Check_return_ wstring GUIDToString(_In_opt_ LPCGUID lpGUID)
 	return szGUID;
 }
 
-_Check_return_ wstring GUIDToStringAndName(_In_opt_ LPCGUID lpGUID)
+_Check_return_ wstring GUIDToWstringAndName(_In_opt_ LPCGUID lpGUID)
 {
 	ULONG ulCur = 0;
 	wstring szGUIDName;
@@ -207,7 +155,7 @@ _Check_return_ wstring GUIDToStringAndName(_In_opt_ LPCGUID lpGUID)
 		szGUIDName = loadstring(IDS_UNKNOWNGUID);
 	}
 
-	wstring szGUID = GUIDToString(lpGUID);
+	wstring szGUID = GUIDToWstring(lpGUID);
 	return szGUIDName + L" = " + szGUID;
 }
 
@@ -452,7 +400,7 @@ Property ParseProperty(_In_ LPSPropValue lpProp)
 			break;
 		case PT_CLSID:
 			// TODO: One string matches current behavior - look at splitting to two strings in future change
-			szTmp = GUIDToStringAndName(lpProp->Value.lpguid);
+			szTmp = GUIDToWstringAndName(lpProp->Value.lpguid);
 			break;
 		case PT_BINARY:
 			szTmp = BinToHexString(&lpProp->Value.bin);
