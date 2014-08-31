@@ -691,6 +691,7 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 	EC_H(PropTagToPropName(ulPropTag, m_bIsAB, &szExactMatches, &szPartialMatches));
 	if (SUCCEEDED(hRes))
 	{
+		SetItemText(iRow, pcPROPBESTGUESS, _T("foo"));
 		SetItemText(iRow, pcPROPEXACTNAMES, szExactMatches ? szExactMatches : (LPCTSTR)PropTag);
 		SetItemText(iRow, pcPROPPARTIALNAMES, szPartialMatches ? szPartialMatches : _T(""));
 	}
@@ -838,6 +839,9 @@ void CSingleMAPIPropListCtrl::SavePropsToXML()
 					szTemp1 = GetItemText(iRow, pcPROPTAG);
 					szTemp2 = GetItemText(iRow, pcPROPTYPE);
 					OutputToFilef(fProps, _T("\t<property tag = \"%s\" type = \"%s\">\n"), (LPCTSTR)szTemp1, (LPCTSTR)szTemp2);
+
+					szTemp1 = GetItemText(iRow, pcPROPBESTGUESS);
+					OutputXMLValueToFile(fProps, PropXMLNames[pcPROPBESTGUESS].uidName, (LPTSTR)(LPCTSTR)szTemp1, false, 2);
 
 					szTemp1 = GetItemText(iRow, pcPROPEXACTNAMES);
 					OutputXMLValueToFile(fProps, PropXMLNames[pcPROPEXACTNAMES].uidName, (LPTSTR)(LPCTSTR)szTemp1, false, 2);
