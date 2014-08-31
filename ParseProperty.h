@@ -1,7 +1,6 @@
 #pragma once
 #include "Property.h"
-#include <string>
 
 Property ParseProperty(_In_ LPSPropValue lpProp);
-
-inline std::wstring loadstring(DWORD dwID);
+_Check_return_ wstring GUIDToWstring(_In_opt_ LPCGUID lpGUID);
+_Check_return_ wstring GUIDToWstringAndName(_In_opt_ LPCGUID lpGUID);

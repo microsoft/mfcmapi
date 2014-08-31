@@ -934,6 +934,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="QSSpecialFolders.h" />
     <ClInclude Include="RichEditOleCallback.h" />
     <ClInclude Include="SingleRecipientDialog.h" />
+    <ClInclude Include="String.h" />
     <ClInclude Include="ViewPane\CheckPane.h" />
     <ClInclude Include="ViewPane\CollapsibleTextPane.h" />
     <ClInclude Include="ViewPane\CountedTextPane.h" />
@@ -1664,6 +1665,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="String.cpp" />
     <ClCompile Include="StubUtils.cpp" />
     <ClCompile Include="TagArrayEditor.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>

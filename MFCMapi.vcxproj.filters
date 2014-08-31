@@ -303,6 +303,9 @@
     <ClInclude Include="Property.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="String.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Res\bldver.rc">
@@ -632,6 +635,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MMReceiveFolder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="String.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
