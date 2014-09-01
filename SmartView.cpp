@@ -8,6 +8,7 @@
 #include "guids.h"
 #include "MySecInfo.h"
 #include "NamedPropCache.h"
+#include "ParseProperty.h"
 
 #define _MaxBytes 0xFFFF
 #define _MaxDepth 50
@@ -829,7 +830,7 @@ _Check_return_ CString JunkDataToString(size_t cbJunkData, _In_count_(cbJunkData
 	sBin.lpb = lpJunkData;
 	szTmp.FormatMessage(IDS_JUNKDATASIZE,
 		cbJunkData);
-	szTmp += BinToHexString(&sBin, true);
+	szTmp += BinToHexString(&sBin, true).c_str();
 	return szTmp;
 } // JunkDataToString
 
@@ -1395,7 +1396,7 @@ _Check_return_ LPWSTR AppointmentRecurrencePatternStructToString(_In_ Appointmen
 		SBinary sBin = { 0 };
 		sBin.cb = parpPattern->ReservedBlock1Size;
 		sBin.lpb = parpPattern->ReservedBlock1;
-		szARP += BinToHexString(&sBin, true);
+		szARP += wstringToCString(BinToHexString(&sBin, true));
 	}
 
 	if (parpPattern->ExceptionCount && parpPattern->ExtendedException)
@@ -1421,7 +1422,7 @@ _Check_return_ LPWSTR AppointmentRecurrencePatternStructToString(_In_ Appointmen
 					SBinary sBin = { 0 };
 					sBin.cb = parpPattern->ExtendedException[i].ChangeHighlight.ChangeHighlightSize - sizeof(DWORD);
 					sBin.lpb = parpPattern->ExtendedException[i].ChangeHighlight.Reserved;
-					szExtendedException += BinToHexString(&sBin, true);
+					szExtendedException += wstringToCString(BinToHexString(&sBin, true));
 					szExtendedException += _T("\n"); // STRING_OK
 				}
 			}
@@ -1433,7 +1434,7 @@ _Check_return_ LPWSTR AppointmentRecurrencePatternStructToString(_In_ Appointmen
 				SBinary sBin = { 0 };
 				sBin.cb = parpPattern->ExtendedException[i].ReservedBlockEE1Size;
 				sBin.lpb = parpPattern->ExtendedException[i].ReservedBlockEE1;
-				szExtendedException += BinToHexString(&sBin, true);
+				szExtendedException += wstringToCString(BinToHexString(&sBin, true));
 			}
 			if (parpPattern->ExceptionInfo)
 			{
@@ -1469,7 +1470,7 @@ _Check_return_ LPWSTR AppointmentRecurrencePatternStructToString(_In_ Appointmen
 				SBinary sBin = { 0 };
 				sBin.cb = parpPattern->ExtendedException[i].ReservedBlockEE2Size;
 				sBin.lpb = parpPattern->ExtendedException[i].ReservedBlockEE2;
-				szExtendedException += BinToHexString(&sBin, true);
+				szExtendedException += wstringToCString(BinToHexString(&sBin, true));
 			}
 
 			szARP += szExtendedException;
@@ -1484,7 +1485,7 @@ _Check_return_ LPWSTR AppointmentRecurrencePatternStructToString(_In_ Appointmen
 		SBinary sBin = { 0 };
 		sBin.cb = parpPattern->ReservedBlock2Size;
 		sBin.lpb = parpPattern->ReservedBlock2;
-		szARP += BinToHexString(&sBin, true);
+		szARP += wstringToCString(BinToHexString(&sBin, true));
 	}
 
 	szARP += JunkDataToString(parpPattern->JunkDataSize, parpPattern->JunkData);
@@ -1806,7 +1807,7 @@ _Check_return_ LPWSTR ExtendedFlagsStructToString(_In_ ExtendedFlagsStruct* pefE
 				szExtendedFlags += szTmp;
 				sBin.cb = pefExtendedFlags->pefExtendedFlags[i].Cb;
 				sBin.lpb = pefExtendedFlags->pefExtendedFlags[i].lpUnknownData;
-				szExtendedFlags += BinToHexString(&sBin, true);
+				szExtendedFlags += wstringToCString(BinToHexString(&sBin, true));
 			}
 		}
 	}
@@ -2029,7 +2030,7 @@ _Check_return_ LPWSTR TimeZoneDefinitionStructToString(_In_ TimeZoneDefinitionSt
 			SBinary sBin = { 0 };
 			sBin.cb = 14;
 			sBin.lpb = ptzdTimeZoneDefinition->lpTZRule[i].X;
-			szTZRule += BinToHexString(&sBin, true);
+			szTZRule += wstringToCString(BinToHexString(&sBin, true));
 
 			szTmp.FormatMessage(IDS_TZRULEFOOTER,
 				i,
@@ -2156,7 +2157,7 @@ _Check_return_ LPWSTR ReportTagStructToString(_In_ ReportTagStruct* prtReportTag
 	SBinary sBin = { 0 };
 	sBin.cb = sizeof(prtReportTag->Cookie);
 	sBin.lpb = (LPBYTE)prtReportTag->Cookie;
-	szReportTag += BinToHexString(&sBin, true);
+	szReportTag += wstringToCString(BinToHexString(&sBin, true));
 
 	LPTSTR szFlags = NULL;
 	InterpretFlags(flagReportTagVersion, prtReportTag->Version, &szFlags);
@@ -2173,7 +2174,7 @@ _Check_return_ LPWSTR ReportTagStructToString(_In_ ReportTagStruct* prtReportTag
 		szReportTag += szTmp;
 		sBin.cb = prtReportTag->cbStoreEntryID;
 		sBin.lpb = prtReportTag->lpStoreEntryID;
-		szReportTag += BinToHexString(&sBin, true);
+		szReportTag += wstringToCString(BinToHexString(&sBin, true));
 	}
 
 	if (prtReportTag->cbFolderEntryID)
@@ -2182,7 +2183,7 @@ _Check_return_ LPWSTR ReportTagStructToString(_In_ ReportTagStruct* prtReportTag
 		szReportTag += szTmp;
 		sBin.cb = prtReportTag->cbFolderEntryID;
 		sBin.lpb = prtReportTag->lpFolderEntryID;
-		szReportTag += BinToHexString(&sBin, true);
+		szReportTag += wstringToCString(BinToHexString(&sBin, true));
 	}
 
 	if (prtReportTag->cbMessageEntryID)
@@ -2191,7 +2192,7 @@ _Check_return_ LPWSTR ReportTagStructToString(_In_ ReportTagStruct* prtReportTag
 		szReportTag += szTmp;
 		sBin.cb = prtReportTag->cbMessageEntryID;
 		sBin.lpb = prtReportTag->lpMessageEntryID;
-		szReportTag += BinToHexString(&sBin, true);
+		szReportTag += wstringToCString(BinToHexString(&sBin, true));
 	}
 
 	if (prtReportTag->cbSearchFolderEntryID)
@@ -2200,7 +2201,7 @@ _Check_return_ LPWSTR ReportTagStructToString(_In_ ReportTagStruct* prtReportTag
 		szReportTag += szTmp;
 		sBin.cb = prtReportTag->cbSearchFolderEntryID;
 		sBin.lpb = prtReportTag->lpSearchFolderEntryID;
-		szReportTag += BinToHexString(&sBin, true);
+		szReportTag += wstringToCString(BinToHexString(&sBin, true));
 	}
 
 	if (prtReportTag->cbMessageSearchKey)
@@ -2209,7 +2210,7 @@ _Check_return_ LPWSTR ReportTagStructToString(_In_ ReportTagStruct* prtReportTag
 		szReportTag += szTmp;
 		sBin.cb = prtReportTag->cbMessageSearchKey;
 		sBin.lpb = prtReportTag->lpMessageSearchKey;
-		szReportTag += BinToHexString(&sBin, true);
+		szReportTag += wstringToCString(BinToHexString(&sBin, true));
 	}
 
 	if (prtReportTag->cchAnsiText)
@@ -2453,7 +2454,7 @@ _Check_return_ LPWSTR TaskAssignersStructToString(_In_ TaskAssignersStruct* ptaT
 				SBinary sBin = { 0 };
 				sBin.cb = ptaTaskAssigners->lpTaskAssigners[i].cbEntryID;
 				sBin.lpb = ptaTaskAssigners->lpTaskAssigners[i].lpEntryID;
-				szTaskAssigners += BinToHexString(&sBin, true);
+				szTaskAssigners += wstringToCString(BinToHexString(&sBin, true));
 			}
 			szTmp.FormatMessage(IDS_TASKASSIGNERNAME,
 				ptaTaskAssigners->lpTaskAssigners[i].szDisplayName,
@@ -2468,7 +2469,7 @@ _Check_return_ LPWSTR TaskAssignersStructToString(_In_ TaskAssignersStruct* ptaT
 				SBinary sBin = { 0 };
 				sBin.cb = (ULONG)ptaTaskAssigners->lpTaskAssigners[i].JunkDataSize;
 				sBin.lpb = ptaTaskAssigners->lpTaskAssigners[i].JunkData;
-				szTaskAssigners += BinToHexString(&sBin, true);
+				szTaskAssigners += wstringToCString(BinToHexString(&sBin, true));
 			}
 		}
 	}
@@ -2539,7 +2540,7 @@ _Check_return_ LPWSTR GlobalObjectIdStructToString(_In_ GlobalObjectIdStruct* pg
 	SBinary sBin = { 0 };
 	sBin.cb = sizeof(pgoidGlobalObjectId->Id);
 	sBin.lpb = pgoidGlobalObjectId->Id;
-	szGlobalObjectId += BinToHexString(&sBin, true);
+	szGlobalObjectId += wstringToCString(BinToHexString(&sBin, true));
 
 	LPTSTR szFlags = NULL;
 	InterpretFlags(flagGlobalObjectIdMonth, pgoidGlobalObjectId->Month, &szFlags);
@@ -2563,7 +2564,7 @@ _Check_return_ LPWSTR GlobalObjectIdStructToString(_In_ GlobalObjectIdStruct* pg
 		szGlobalObjectId += szTmp;
 		sBin.cb = pgoidGlobalObjectId->dwSize;
 		sBin.lpb = pgoidGlobalObjectId->lpData;
-		szGlobalObjectId += BinToHexString(&sBin, true);
+		szGlobalObjectId += wstringToCString(BinToHexString(&sBin, true));
 	}
 
 	szGlobalObjectId += JunkDataToString(pgoidGlobalObjectId->JunkDataSize, pgoidGlobalObjectId->JunkData);
@@ -3160,7 +3161,7 @@ _Check_return_ LPWSTR EntryIdStructToString(_In_ EntryIdStruct* peidEntryId)
 			SBinary sBin = { 0 };
 			sBin.cb = sizeof(peidEntryId->ProviderData.MessageDatabaseObject.v2Reserved);
 			sBin.lpb = peidEntryId->ProviderData.MessageDatabaseObject.v2Reserved;
-			szEntryId += BinToHexString(&sBin, true);
+			szEntryId += wstringToCString(BinToHexString(&sBin, true));
 		}
 
 		delete[] szFlag;
@@ -3188,11 +3189,11 @@ _Check_return_ LPWSTR EntryIdStructToString(_In_ EntryIdStruct* peidEntryId)
 			peidEntryId->ProviderData.FolderOrMessage.Type, szType,
 			szDatabaseGUID);
 		szEntryId += szTmp;
-		szEntryId += BinToHexString(&sBinGlobalCounter, true);
+		szEntryId += wstringToCString(BinToHexString(&sBinGlobalCounter, true));
 
 		szTmp.FormatMessage(IDS_ENTRYIDEXCHANGEDATAPAD);
 		szEntryId += szTmp;
-		szEntryId += BinToHexString(&sBinPad, true);
+		szEntryId += wstringToCString(BinToHexString(&sBinPad, true));
 
 		delete[] szDatabaseGUID;
 		szDatabaseGUID = NULL;
@@ -3228,20 +3229,20 @@ _Check_return_ LPWSTR EntryIdStructToString(_In_ EntryIdStruct* peidEntryId)
 			peidEntryId->ProviderData.FolderOrMessage.Type, szType,
 			szFolderDatabaseGUID);
 		szEntryId += szTmp;
-		szEntryId += BinToHexString(&sBinFolderGlobalCounter, true);
+		szEntryId += wstringToCString(BinToHexString(&sBinFolderGlobalCounter, true));
 
 		szTmp.FormatMessage(IDS_ENTRYIDEXCHANGEDATAPADNUM, 1);
 		szEntryId += szTmp;
-		szEntryId += BinToHexString(&sBinPad1, true);
+		szEntryId += wstringToCString(BinToHexString(&sBinPad1, true));
 
 		szTmp.FormatMessage(IDS_ENTRYIDEXCHANGEMESSAGEDATAGUID,
 			szMessageDatabaseGUID);
 		szEntryId += szTmp;
-		szEntryId += BinToHexString(&sBinMessageGlobalCounter, true);
+		szEntryId += wstringToCString(BinToHexString(&sBinMessageGlobalCounter, true));
 
 		szTmp.FormatMessage(IDS_ENTRYIDEXCHANGEDATAPADNUM, 2);
 		szEntryId += szTmp;
-		szEntryId += BinToHexString(&sBinPad2, true);
+		szEntryId += wstringToCString(BinToHexString(&sBinPad2, true));
 
 		delete[] szMessageDatabaseGUID;
 		szMessageDatabaseGUID = NULL;
@@ -4414,7 +4415,7 @@ _Check_return_ LPWSTR SearchFolderDefinitionStructToString(_In_ SearchFolderDefi
 
 		szTmp.FormatMessage(IDS_SFDEFINITIONSKIPBYTES1);
 		szSearchFolderDefinition += szTmp;
-		szSearchFolderDefinition += BinToHexString(&sBin, true);
+		szSearchFolderDefinition += wstringToCString(BinToHexString(&sBin, true));
 	}
 
 	szTmp.FormatMessage(IDS_SFDEFINITIONDEEPSEARCH,
@@ -4482,7 +4483,7 @@ _Check_return_ LPWSTR SearchFolderDefinitionStructToString(_In_ SearchFolderDefi
 
 		szTmp.FormatMessage(IDS_SFDEFINITIONSKIPBYTES2);
 		szSearchFolderDefinition += szTmp;
-		szSearchFolderDefinition += BinToHexString(&sBin, true);
+		szSearchFolderDefinition += wstringToCString(BinToHexString(&sBin, true));
 	}
 
 	if (psfdSearchFolderDefinition->Restriction)
@@ -4508,7 +4509,7 @@ _Check_return_ LPWSTR SearchFolderDefinitionStructToString(_In_ SearchFolderDefi
 
 			szTmp.FormatMessage(IDS_SFDEFINITIONADVANCEDSEARCHBYTES);
 			szSearchFolderDefinition += szTmp;
-			szSearchFolderDefinition += BinToHexString(&sBin, true);
+			szSearchFolderDefinition += wstringToCString(BinToHexString(&sBin, true));
 		}
 	}
 
@@ -4525,7 +4526,7 @@ _Check_return_ LPWSTR SearchFolderDefinitionStructToString(_In_ SearchFolderDefi
 
 		szTmp.FormatMessage(IDS_SFDEFINITIONSKIPBYTES3);
 		szSearchFolderDefinition += szTmp;
-		szSearchFolderDefinition += BinToHexString(&sBin, true);
+		szSearchFolderDefinition += wstringToCString(BinToHexString(&sBin, true));
 	}
 
 	szSearchFolderDefinition += JunkDataToString(psfdSearchFolderDefinition->JunkDataSize, psfdSearchFolderDefinition->JunkData);
@@ -4859,7 +4860,7 @@ _Check_return_ LPWSTR PropertyDefinitionStreamStructToString(_In_ PropertyDefini
 
 								szTmp.FormatMessage(IDS_PROPDEFCONTENT);
 								szPropertyDefinitionStream += szTmp;
-								szPropertyDefinitionStream += BinToHexString(&sBin, true);
+								szPropertyDefinitionStream += wstringToCString(BinToHexString(&sBin, true));
 							}
 						}
 					}
@@ -5080,7 +5081,7 @@ _Check_return_ LPWSTR AdditionalRenEntryIDsStructToString(_In_ AdditionalRenEntr
 					SBinary sBin = { 0 };
 					sBin.cb = (ULONG)pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementDataSize;
 					sBin.lpb = pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].ppeDataElement[iDataElement].lpbElementData;
-					szAdditionalRenEntryIDs += BinToHexString(&sBin, true);
+					szAdditionalRenEntryIDs += wstringToCString(BinToHexString(&sBin, true));
 				}
 			}
 			szAdditionalRenEntryIDs += JunkDataToString(pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].JunkDataSize, pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].JunkData);
@@ -5340,7 +5341,7 @@ _Check_return_ LPWSTR WebViewPersistStreamStructToString(_In_ WebViewPersistStre
 			SBinary sBinUnused = { 0 };
 			sBinUnused.cb = sizeof(pwvpsWebViewPersistStream->lpWebViews[i].dwUnused);
 			sBinUnused.lpb = (LPBYTE)&pwvpsWebViewPersistStream->lpWebViews[i].dwUnused;
-			szWebViewPersistStream += BinToHexString(&sBinUnused, true);
+			szWebViewPersistStream += wstringToCString(BinToHexString(&sBinUnused, true));
 
 			szTmp.FormatMessage(IDS_WEBVIEWCBDATA, pwvpsWebViewPersistStream->lpWebViews[i].cbData);
 			szWebViewPersistStream += szTmp;
@@ -5371,7 +5372,7 @@ _Check_return_ LPWSTR WebViewPersistStreamStructToString(_In_ WebViewPersistStre
 
 					   szTmp.FormatMessage(IDS_WEBVIEWDATA);
 					   szWebViewPersistStream += szTmp;
-					   szWebViewPersistStream += BinToHexString(&sBinData, true);
+					   szWebViewPersistStream += wstringToCString(BinToHexString(&sBinData, true));
 					   break;
 			}
 			}
@@ -5963,7 +5964,7 @@ _Check_return_ LPWSTR NickNameCacheStructToString(_In_ NickNameCacheStruct* pnnc
 	SBinary sBinMetadata = { 0 };
 	sBinMetadata.cb = sizeof(pnncNickNameCache->Metadata1);
 	sBinMetadata.lpb = pnncNickNameCache->Metadata1;
-	szNickNameCache += BinToHexString(&sBinMetadata, true);
+	szNickNameCache += wstringToCString(BinToHexString(&sBinMetadata, true));
 
 	szTmp.FormatMessage(IDS_NICKNAMEROWCOUNT, pnncNickNameCache->ulMajorVersion, pnncNickNameCache->ulMinorVersion, pnncNickNameCache->cRowCount);
 	szNickNameCache += szTmp;
@@ -5992,13 +5993,13 @@ _Check_return_ LPWSTR NickNameCacheStructToString(_In_ NickNameCacheStruct* pnnc
 	szNickNameCache += szTmp;
 	sBinEI.cb = pnncNickNameCache->cbEI;
 	sBinEI.lpb = pnncNickNameCache->lpbEI;
-	szNickNameCache += BinToHexString(&sBinEI, true);
+	szNickNameCache += wstringToCString(BinToHexString(&sBinEI, true));
 
 	szTmp.FormatMessage(IDS_NICKNAMEFOOTER);
 	szNickNameCache += szTmp;
 	sBinMetadata.cb = sizeof(pnncNickNameCache->Metadata2);
 	sBinMetadata.lpb = pnncNickNameCache->Metadata2;
-	szNickNameCache += BinToHexString(&sBinMetadata, true);
+	szNickNameCache += wstringToCString(BinToHexString(&sBinMetadata, true));
 
 	szNickNameCache += JunkDataToString(pnncNickNameCache->JunkDataSize, pnncNickNameCache->JunkData);
 
@@ -6304,7 +6305,7 @@ _Check_return_ LPWSTR TombstoneStructToString(_In_ TombstoneStruct* ptsTombstone
 				ptsTombstone->lpRecords[i].StartTime, (LPCTSTR)RTimeToString(ptsTombstone->lpRecords[i].StartTime),
 				ptsTombstone->lpRecords[i].EndTime, (LPCTSTR)RTimeToString(ptsTombstone->lpRecords[i].EndTime),
 				ptsTombstone->lpRecords[i].GlobalObjectIdSize,
-				(LPCTSTR)BinToHexString(&sBin, true),
+				BinToHexString(&sBin, true),
 				szGoid,
 				ptsTombstone->lpRecords[i].UsernameSize,
 				ptsTombstone->lpRecords[i].szUsername);
@@ -6426,7 +6427,7 @@ _Check_return_ LPWSTR PCLStructToString(_In_ PCLStruct* pcl)
 				i,
 				pcl->lpXID[i].XidSize,
 				szGUID,
-				(LPCTSTR)BinToHexString(&sBin, true));
+				BinToHexString(&sBin, true).c_str());
 			szPCLString += szTmp;
 
 			delete[] szGUID;

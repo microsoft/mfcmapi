@@ -67,9 +67,14 @@ wstring BuildErrorPropString(_In_ LPSPropValue lpProp)
 	return szBin;
 }
 
- wstring MyHexFromBin(_In_opt_count_(cb) LPBYTE lpb, size_t cb)
+ wstring MyHexFromBin(_In_opt_count_(cb) LPBYTE lpb, size_t cb, bool bPrependCB)
 {
 	wstring lpsz;
+
+	if (bPrependCB)
+	{
+		lpsz = format(L"cb: %u lpb: ", (UINT)cb); // STRING_OK
+	}
 
 	if (!cb || !lpb)
 	{
@@ -98,13 +103,14 @@ wstring BuildErrorPropString(_In_ LPSPropValue lpProp)
 	return lpsz;
 }
 
- wstring BinToHexString(_In_opt_ LPSBinary lpBin)
+ wstring BinToHexString(_In_opt_ LPSBinary lpBin, bool bPrependCB)
 {
 	if (!lpBin) return L"";
 
 	return MyHexFromBin(
 		lpBin->lpb,
-		lpBin->cb);
+		lpBin->cb,
+		bPrependCB);
 }
 
  wstring GUIDToWstring(_In_opt_ LPCGUID lpGUID)
@@ -376,7 +382,7 @@ Property ParseProperty(_In_ LPSPropValue lpProp)
 				SBinary sBin = { 0 };
 				sBin.cb = (ULONG)szTmp.length();
 				sBin.lpb = (LPBYTE)lpProp->Value.lpszA;
-				szAltTmp = BinToHexString(&sBin);
+				szAltTmp = BinToHexString(&sBin, false);
 
 				altAttributes.AddAttribute(L"cb", format(L"%u", sBin.cb)); // STRING_OK
 			}
@@ -390,7 +396,7 @@ Property ParseProperty(_In_ LPSPropValue lpProp)
 				SBinary sBin = { 0 };
 				sBin.cb = ((ULONG)szTmp.length()) * sizeof(WCHAR);
 				sBin.lpb = (LPBYTE)lpProp->Value.lpszW;
-				szAltTmp = BinToHexString(&sBin);
+				szAltTmp = BinToHexString(&sBin, false);
 
 				altAttributes.AddAttribute(L"cb", format(L"%u", sBin.cb)); // STRING_OK
 			}
@@ -403,7 +409,7 @@ Property ParseProperty(_In_ LPSPropValue lpProp)
 			szTmp = GUIDToWstringAndName(lpProp->Value.lpguid);
 			break;
 		case PT_BINARY:
-			szTmp = BinToHexString(&lpProp->Value.bin);
+			szTmp = BinToHexString(&lpProp->Value.bin, false);
 			szAltTmp = BinToTextString(&lpProp->Value.bin, true);
 			bAltPropXMLSafe = false;
 

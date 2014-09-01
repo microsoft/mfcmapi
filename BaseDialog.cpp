@@ -22,6 +22,7 @@
 #include "ImportProcs.h"
 #include "SmartView.h"
 #include "Options.h"
+#include "ParseProperty.h"
 
 static TCHAR* CLASS = _T("CBaseDialog");
 
@@ -729,7 +730,7 @@ void CBaseDialog::OnOutlookVersion()
 
 void CBaseDialog::OnOpenEntryID(_In_opt_ LPSBinary lpBin)
 {
-	HRESULT			hRes = S_OK;
+	HRESULT hRes = S_OK;
 	if (!m_lpMapiObjects) return;
 
 	CEditor MyEID(
@@ -739,7 +740,7 @@ void CBaseDialog::OnOpenEntryID(_In_opt_ LPSBinary lpBin)
 		10,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-	MyEID.InitPane(0, CreateSingleLinePane(IDS_EID, BinToHexString(lpBin, false), false));
+	MyEID.InitPane(0, CreateSingleLinePaneW(IDS_EID, BinToHexString(lpBin, false).c_str(), false));
 
 	LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 	MyEID.InitPane(1, CreateCheckPane(IDS_USEMDB, lpMDB ? true : false, lpMDB ? false : true));

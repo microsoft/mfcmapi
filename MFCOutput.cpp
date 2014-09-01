@@ -360,7 +360,7 @@ void _OutputBinary(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSBinary lpBin)
 		return;
 	}
 
-	_Output(ulDbgLvl, fFile, false, BinToHexString(lpBin, true));
+	_Output(ulDbgLvl, fFile, false, wstringToCString(BinToHexString(lpBin, true)));
 
 	_Output(ulDbgLvl, fFile, false, _T("\n"));
 } // _OutputBinary

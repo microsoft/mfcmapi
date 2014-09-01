@@ -157,27 +157,6 @@ _Check_return_ HRESULT Base64Encode(size_t cbSourceBuf, _In_count_(cbSourceBuf) 
 	return hRes;
 } // Base64Encode
 
-_Check_return_ CString BinToHexString(_In_opt_ LPSBinary lpBin, bool bPrependCB)
-{
-	if (!lpBin) return _T("");
-
-	CString HexString;
-
-	LPTSTR szBin = NULL;
-	MyHexFromBin(
-		lpBin->lpb,
-		lpBin->cb,
-		bPrependCB,
-		&szBin);
-
-	if (szBin)
-	{
-		HexString = szBin;
-		delete[] szBin;
-	}
-	return HexString;
-} // BinToHexString
-
 // Allocates string for GUID with new
 // free with delete[]
 #define GUID_STRING_SIZE 39

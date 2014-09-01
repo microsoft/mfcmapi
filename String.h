@@ -5,6 +5,7 @@ std::wstring loadstring(DWORD dwID);
 std::wstring format(const LPWSTR fmt, ...);
 std::wstring formatmessage(DWORD dwID, ...);
 LPTSTR wstringToLPTSTR(std::wstring src);
+CString wstringToCString(std::wstring src);
 
 // Unicode support
 _Check_return_ HRESULT AnsiToUnicode(_In_opt_z_ LPCSTR pszA, _Out_z_cap_(cchszA) LPWSTR* ppszW, size_t cchszA = -1);

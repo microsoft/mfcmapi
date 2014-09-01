@@ -75,6 +75,17 @@ LPTSTR wstringToLPTSTR(std::wstring src)
 	return dst;
 }
 
+CString wstringToCString(std::wstring src)
+{
+	CString dst;
+#ifdef UNICODE
+	dst = src.c_str();
+#else
+	dst.Format("%ws", src.c_str());
+#endif
+	return dst;
+}
+
 // if cchszA == -1, MultiByteToWideChar will compute the length
 // Delete with delete[]
 _Check_return_ HRESULT AnsiToUnicode(_In_opt_z_ LPCSTR pszA, _Out_z_cap_(cchszA) LPWSTR* ppszW, size_t cchszA)
