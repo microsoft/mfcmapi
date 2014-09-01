@@ -3520,24 +3520,20 @@ _Check_return_ LPWSTR PropertyStructToString(_In_ PropertyStruct* ppProperty)
 				ppProperty->Prop[i].ulPropTag);
 			szProperty += szTmp;
 
-			HRESULT hRes = S_OK;
-			EC_H(PropTagToPropName(ppProperty->Prop[i].ulPropTag, false, &szExactMatches, &szPartialMatches));
+			PropTagToPropName(ppProperty->Prop[i].ulPropTag, false, &szExactMatches, &szPartialMatches);
 
-			if (SUCCEEDED(hRes))
+			if (szExactMatches)
 			{
-				if (szExactMatches)
-				{
-					szTmp.FormatMessage(IDS_PROPERTYDATAEXACTMATCHES,
-						szExactMatches);
-					szProperty += szTmp;
-				}
+				szTmp.FormatMessage(IDS_PROPERTYDATAEXACTMATCHES,
+					szExactMatches);
+				szProperty += szTmp;
+			}
 
-				if (szPartialMatches)
-				{
-					szTmp.FormatMessage(IDS_PROPERTYDATAPARTIALMATCHES,
-						szPartialMatches);
-					szProperty += szTmp;
-				}
+			if (szPartialMatches)
+			{
+				szTmp.FormatMessage(IDS_PROPERTYDATAPARTIALMATCHES,
+					szPartialMatches);
+				szProperty += szTmp;
 			}
 
 			InterpretProp(&ppProperty->Prop[i], &PropString, &AltPropString);
@@ -4746,7 +4742,6 @@ _Check_return_ LPWSTR PropertyDefinitionStreamStructToString(_In_ PropertyDefini
 
 	CString szPropertyDefinitionStream;
 	CString szTmp;
-	HRESULT hRes = S_OK;
 
 	LPTSTR szVersion = NULL;
 	InterpretFlags(flagPropDefVersion, ppdsPropertyDefinitionStream->wVersion, &szVersion);
@@ -4779,7 +4774,7 @@ _Check_return_ LPWSTR PropertyDefinitionStreamStructToString(_In_ PropertyDefini
 				if (ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].dwDispid < 0x8000)
 				{
 					LPTSTR szDispidName = NULL;
-					EC_H(PropTagToPropName(ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].dwDispid, false, NULL, &szDispidName));
+					PropTagToPropName(ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].dwDispid, false, NULL, &szDispidName);
 					if (szDispidName)
 					{
 						szTmp.FormatMessage(IDS_PROPDEFDISPIDTAG, szDispidName);

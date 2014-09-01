@@ -687,13 +687,9 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 		false,
 		&szSmartView); // Built from lpProp & lpMAPIProp
 
-	HRESULT hRes = S_OK;
-	EC_H(PropTagToPropName(ulPropTag, m_bIsAB, &szExactMatches, &szPartialMatches));
-	if (SUCCEEDED(hRes))
-	{
-		SetItemText(iRow, pcPROPEXACTNAMES, szExactMatches ? szExactMatches : (LPCTSTR)PropTag);
-		SetItemText(iRow, pcPROPPARTIALNAMES, szPartialMatches ? szPartialMatches : _T(""));
-	}
+	PropTagToPropName(ulPropTag, m_bIsAB, &szExactMatches, &szPartialMatches);
+	SetItemText(iRow, pcPROPEXACTNAMES, szExactMatches ? szExactMatches : (LPCTSTR)PropTag);
+	SetItemText(iRow, pcPROPPARTIALNAMES, szPartialMatches ? szPartialMatches : _T(""));
 
 	PropTag.Format(_T("0x%08X"), ulPropTag);
 	SetItemText(iRow, pcPROPTAG, (LPCTSTR)PropTag);

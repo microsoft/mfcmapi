@@ -3,9 +3,26 @@
 #include "InterpretProp.h"
 #include "MAPIFunctions.h"
 #include "NamedPropCache.h"
+#include "String.h"
+#include <vector>
+#include <algorithm>
 
 #define ulNoMatch 0xffffffff
 static WCHAR szPropSeparator[] = L", "; // STRING_OK
+
+// Compare tag sort order.
+bool CompareTagsSortOrder(int a1, int a2)
+{
+	LPNAME_ARRAY_ENTRY_V2 lpTag1 = &PropTagArray[a1];
+	LPNAME_ARRAY_ENTRY_V2 lpTag2 = &PropTagArray[a2];;
+
+	if (lpTag1->ulSortOrder < lpTag2->ulSortOrder) return false;
+	if (lpTag1->ulSortOrder == lpTag2->ulSortOrder)
+	{
+		return wcscmp(lpTag1->lpszName, lpTag2->lpszName)>0 ? false : true;
+	}
+	return true;
+}
 
 // Searches an array for a target number.
 // Search is done with a mask
@@ -18,10 +35,8 @@ void FindTagArrayMatches(_In_ ULONG ulTarget,
 	bool bIsAB,
 	_In_count_(ulMyArray) NAME_ARRAY_ENTRY_V2* MyArray,
 	_In_ ULONG ulMyArray,
-	_Out_ ULONG* lpulNumExacts,
-	_Out_ ULONG* lpulFirstExact,
-	_Out_ ULONG* lpulNumPartials,
-	_Out_ ULONG* lpulFirstPartial)
+	std::vector<ULONG>& ulExacts,
+	std::vector<ULONG>& ulPartials)
 {
 	if (!(ulTarget & PROP_TAG_MASK)) // not dealing with a full prop tag
 	{
@@ -32,15 +47,7 @@ void FindTagArrayMatches(_In_ ULONG ulTarget,
 	ULONG ulUpperBound = ulMyArray - 1; // ulMyArray-1 is the last entry
 	ULONG ulMidPoint = (ulUpperBound + ulLowerBound) / 2;
 	ULONG ulFirstMatch = ulNoMatch;
-	ULONG ulLastMatch = ulNoMatch;
-	ULONG ulFirstExactMatch = ulNoMatch;
-	ULONG ulLastExactMatch = ulNoMatch;
 	ULONG ulMaskedTarget = ulTarget & PROP_TAG_MASK;
-
-	if (lpulNumExacts) *lpulNumExacts = 0;
-	if (lpulFirstExact) *lpulFirstExact = ulNoMatch;
-	if (lpulNumPartials) *lpulNumPartials = 0;
-	if (lpulFirstPartial) *lpulFirstPartial = ulNoMatch;
 
 	// Short circuit property IDs with the high bit set if bIsAB wasn't passed
 	if (!bIsAB && (ulTarget & 0x80000000)) return;
@@ -62,6 +69,7 @@ void FindTagArrayMatches(_In_ ULONG ulTarget,
 		{
 			ulLowerBound = ulMidPoint;
 		}
+
 		ulMidPoint = (ulUpperBound + ulLowerBound) / 2;
 	}
 
@@ -79,203 +87,82 @@ void FindTagArrayMatches(_In_ ULONG ulTarget,
 	// Check that we got a match
 	if (ulNoMatch != ulFirstMatch)
 	{
-		ulLastMatch = ulFirstMatch; // Remember the last match we've found so far
-
 		// Scan backwards to find the first partial match
 		while (ulFirstMatch > 0 && ulMaskedTarget == (PROP_TAG_MASK & MyArray[ulFirstMatch - 1].ulValue))
 		{
 			ulFirstMatch = ulFirstMatch - 1;
 		}
 
-		// Scan forwards to find the real last partial match
-		// Last entry in the array is ulMyArray-1
-		while (ulLastMatch + 1 < ulMyArray && ulMaskedTarget == (PROP_TAG_MASK & MyArray[ulLastMatch + 1].ulValue))
-		{
-			ulLastMatch = ulLastMatch + 1;
-		}
-
-		// Scan to see if we have any exact matches
+		// Grab our matches
 		ULONG ulCur;
-		for (ulCur = ulFirstMatch; ulCur <= ulLastMatch; ulCur++)
+		for (ulCur = ulFirstMatch; ulCur < ulMyArray && ulMaskedTarget == (PROP_TAG_MASK & MyArray[ulCur].ulValue); ulCur++)
 		{
 			if (ulTarget == MyArray[ulCur].ulValue)
 			{
-				ulFirstExactMatch = ulCur;
-				break;
+				ulExacts.push_back(ulCur);
 			}
-		}
-
-		ULONG ulNumExacts = 0;
-
-		if (ulNoMatch != ulFirstExactMatch)
-		{
-			for (ulCur = ulFirstExactMatch; ulCur <= ulLastMatch; ulCur++)
+			else
 			{
-				if (ulTarget == MyArray[ulCur].ulValue)
-				{
-					ulLastExactMatch = ulCur;
-				}
-				else break;
+				ulPartials.push_back(ulCur);
 			}
-			ulNumExacts = ulLastExactMatch - ulFirstExactMatch + 1;
 		}
 
-		ULONG ulNumPartials = ulLastMatch - ulFirstMatch + 1 - ulNumExacts;
+		if (ulExacts.size()) std::sort(ulExacts.begin(), ulExacts.end(), CompareTagsSortOrder);
+		if (ulPartials.size()) std::sort(ulPartials.begin(), ulPartials.end(), CompareTagsSortOrder);
 
-		if (lpulNumExacts) *lpulNumExacts = ulNumExacts;
-		if (lpulFirstExact) *lpulFirstExact = ulFirstExactMatch;
-		if (lpulNumPartials) *lpulNumPartials = ulNumPartials;
-		if (lpulFirstPartial) *lpulFirstPartial = ulFirstMatch;
 	}
-} // FindTagArrayMatches
-
-// Compare tag sort order. 
-int _cdecl CompareTagsSortOrder(_In_ const void* a1, _In_ const void* a2)
-{
-	LPNAME_ARRAY_ENTRY_V2 lpTag1 = &PropTagArray[*(LPULONG)a1];
-	LPNAME_ARRAY_ENTRY_V2 lpTag2 = &PropTagArray[*(LPULONG)a2];;
-
-	if (lpTag1->ulSortOrder < lpTag2->ulSortOrder) return 1;
-	if (lpTag1->ulSortOrder == lpTag2->ulSortOrder)
-	{
-		return wcscmp(lpTag1->lpszName, lpTag2->lpszName);
-	}
-	return -1;
-} // CompareTagsSortOrder
+}
 
 // lpszExactMatch and lpszPartialMatches allocated with new
 // clean up with delete[]
-// The compiler gets confused by the qsort call and thinks lpulPartials is smaller than it really is.
-// Then it complains when I write to the 'bad' memory, even though it's definitely good.
-// This is a bug in SAL, so I'm disabling the warning.
-#pragma warning(push)
-#pragma warning(disable:6385)
-_Check_return_ HRESULT PropTagToPropName(ULONG ulPropTag, bool bIsAB, _Deref_opt_out_opt_z_ LPTSTR* lpszExactMatch, _Deref_opt_out_opt_z_ LPTSTR* lpszPartialMatches)
+void PropTagToPropName(ULONG ulPropTag, bool bIsAB, _Deref_opt_out_opt_z_ LPTSTR* lpszExactMatch, _Deref_opt_out_opt_z_ LPTSTR* lpszPartialMatches)
 {
 	if (lpszExactMatch) *lpszExactMatch = NULL;
 	if (lpszPartialMatches) *lpszPartialMatches = NULL;
-	if (!lpszExactMatch && !lpszPartialMatches) return MAPI_E_INVALID_PARAMETER;
+	if (!lpszExactMatch && !lpszPartialMatches) return;
 
-	HRESULT hRes = S_OK;
-	ULONG ulNumExacts = NULL;
-	ULONG ulFirstExactMatch = ulNoMatch;
-	ULONG ulNumPartials = NULL;
-	ULONG ulFirstPartial = ulNoMatch;
-	ULONG ulCur = NULL;
-	ULONG i = 0;
+	std::vector<ULONG> ulExacts;
+	std::vector<ULONG> ulPartials;
+	FindTagArrayMatches(ulPropTag, bIsAB, PropTagArray, ulPropTagArray, ulExacts, ulPartials);
 
-	FindTagArrayMatches(ulPropTag, bIsAB, PropTagArray, ulPropTagArray, &ulNumExacts, &ulFirstExactMatch, &ulNumPartials, &ulFirstPartial);
-
-	if (lpszExactMatch && ulNumExacts > 0 && ulNoMatch != ulFirstExactMatch)
+	if (lpszExactMatch)
 	{
-		ULONG ulLastExactMatch = ulFirstExactMatch + ulNumExacts - 1;
-		ULONG* lpulExacts = new ULONG[ulNumExacts];
-		if (lpulExacts)
+		if (ulExacts.size())
 		{
-			memset(lpulExacts, 0, ulNumExacts*sizeof(ULONG));
-			size_t cchExact = 1 + (ulNumExacts - 1) * (_countof(szPropSeparator) - 1);
-			for (ulCur = ulFirstExactMatch; ulCur <= ulLastExactMatch; ulCur++)
+			std::wstring szExactMatch;
+			for (ULONG ulMatch : ulExacts)
 			{
-				size_t cchLen = 0;
-				EC_H(StringCchLengthW(PropTagArray[ulCur].lpszName, STRSAFE_MAX_CCH, &cchLen));
-				cchExact += cchLen;
-				if (i < ulNumExacts) lpulExacts[i] = ulCur;
-				i++;
-			}
-
-			qsort(lpulExacts, i, sizeof(ULONG), &CompareTagsSortOrder);
-
-			LPWSTR szExactMatch = new WCHAR[cchExact];
-			if (szExactMatch)
-			{
-				szExactMatch[0] = _T('\0');
-				for (i = 0; i < ulNumExacts; i++)
+				szExactMatch += format(L"%ws", PropTagArray[ulMatch].lpszName);
+				if (ulMatch != ulExacts.back())
 				{
-					EC_H(StringCchCatW(szExactMatch, cchExact, PropTagArray[lpulExacts[i]].lpszName));
-					if (i + 1 < ulNumExacts)
-					{
-						EC_H(StringCchCatW(szExactMatch, cchExact, szPropSeparator));
-					}
-				}
-				if (SUCCEEDED(hRes))
-				{
-#ifdef UNICODE
-					*lpszExactMatch = szExactMatch;
-#else
-					LPSTR szAnsiExactMatch = NULL;
-					EC_H(UnicodeToAnsi(szExactMatch, &szAnsiExactMatch));
-					if (SUCCEEDED(hRes))
-					{
-						*lpszExactMatch = szAnsiExactMatch;
-					}
-					delete[] szExactMatch;
-#endif
+					szExactMatch += szPropSeparator;
 				}
 			}
+
+			*lpszExactMatch = wstringToLPTSTR(szExactMatch);
 		}
-		delete[] lpulExacts;
 	}
 
-	if (lpszPartialMatches && ulNumPartials > 0 && lpszPartialMatches)
+	if (lpszPartialMatches)
 	{
-		ULONG* lpulPartials = new ULONG[ulNumPartials];
-		if (lpulPartials)
+		if (ulPartials.size())
 		{
-			memset(lpulPartials, 0, ulNumPartials*sizeof(ULONG));
-			// let's build lpszPartialMatches
-			// see how much space we need - initialize cchPartial with space for separators and NULL terminator
-			// note - ulNumPartials-1 is the number of spaces we need...
-			ULONG ulLastMatch = ulFirstPartial + ulNumPartials + ulNumExacts - 1;
-			size_t cchPartial = 1 + (ulNumPartials - 1) * (_countof(szPropSeparator) - 1);
-			i = 0;
-			for (ulCur = ulFirstPartial; ulCur <= ulLastMatch; ulCur++)
+			std::wstring szPartialMatches;
 			{
-				if (ulPropTag == PropTagArray[ulCur].ulValue) continue; // skip our exact matches
-				size_t cchLen = 0;
-				EC_H(StringCchLengthW(PropTagArray[ulCur].lpszName, STRSAFE_MAX_CCH, &cchLen));
-				cchPartial += cchLen;
-				if (i < ulNumPartials) lpulPartials[i] = ulCur;
-				i++;
-			}
-
-			qsort(lpulPartials, i, sizeof(ULONG), &CompareTagsSortOrder);
-
-			LPWSTR szPartialMatches = new WCHAR[cchPartial];
-			if (szPartialMatches)
-			{
-				szPartialMatches[0] = _T('\0');
-				ULONG ulNumSeparators = 1; // start at 1 so we print one less than we print strings
-				for (i = 0; i < ulNumPartials; i++)
+				for (ULONG ulMatch : ulPartials)
 				{
-					EC_H(StringCchCatW(szPartialMatches, cchPartial, PropTagArray[lpulPartials[i]].lpszName));
-					if (ulNumSeparators < ulNumPartials)
+					szPartialMatches += format(L"%ws", PropTagArray[ulMatch].lpszName);
+					if (ulMatch != ulPartials.back())
 					{
-						EC_H(StringCchCatW(szPartialMatches, cchPartial, szPropSeparator));
+						szPartialMatches += szPropSeparator;
 					}
-					ulNumSeparators++;
 				}
-				if (SUCCEEDED(hRes))
-				{
-#ifdef UNICODE
-					*lpszPartialMatches = szPartialMatches;
-#else
-					LPSTR szAnsiPartialMatches = NULL;
-					EC_H(UnicodeToAnsi(szPartialMatches, &szAnsiPartialMatches));
-					if (SUCCEEDED(hRes))
-					{
-						*lpszPartialMatches = szAnsiPartialMatches;
-					}
-					delete[] szPartialMatches;
-#endif
-				}
+
+				*lpszPartialMatches = wstringToLPTSTR(szPartialMatches);
 			}
 		}
-		delete[] lpulPartials;
 	}
-
-	return hRes;
-} // PropTagToPropName
-#pragma warning(pop)
+}
 
 // Strictly does a lookup in the array. Does not convert otherwise
 _Check_return_ HRESULT LookupPropName(_In_z_ LPCWSTR lpszPropName, _Out_ ULONG* ulPropTag)

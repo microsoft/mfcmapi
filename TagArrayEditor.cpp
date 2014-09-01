@@ -112,7 +112,7 @@ _Check_return_ bool CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 			&szNamedPropGUID, // Built from lpProp & lpMAPIProp
 			NULL);
 
-		EC_H(PropTagToPropName(ulNewPropTag, m_bIsAB, &szExactMatch, &szPartialMatch));
+		PropTagToPropName(ulNewPropTag, m_bIsAB, &szExactMatch, &szPartialMatch);
 
 		SetListString(ulListNum, iItem, 2, szExactMatch);
 		SetListString(ulListNum, iItem, 3, szPartialMatch);
@@ -182,14 +182,9 @@ void CTagArrayEditor::ReadTagArrayToList(ULONG ulListNum)
 			PropTag.Format(_T("0x%08X"), ulPropTag);
 			SetListString(ulListNum, iTagCount, 1, PropTag);
 
-			HRESULT hRes = S_OK;
-			EC_H(PropTagToPropName(ulPropTag, m_bIsAB, &szExactMatch, &szPartialMatch));
-			if (SUCCEEDED(hRes))
-			{
-				SetListString(ulListNum, iTagCount, 2, szExactMatch);
-				SetListString(ulListNum, iTagCount, 3, szPartialMatch);
-			}
-
+			PropTagToPropName(ulPropTag, m_bIsAB, &szExactMatch, &szPartialMatch);
+			SetListString(ulListNum, iTagCount, 2, szExactMatch);
+			SetListString(ulListNum, iTagCount, 3, szPartialMatch);
 			SetListString(ulListNum, iTagCount, 4, TypeToString(ulPropTag));
 			SetListString(ulListNum, iTagCount, 5, szNamedPropName);
 			SetListString(ulListNum, iTagCount, 6, szNamedPropGUID);

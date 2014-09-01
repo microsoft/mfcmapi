@@ -332,7 +332,7 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField)
 	{
 		LPTSTR szExactMatch = NULL;
 		LPTSTR szPartialMatch = NULL;
-		EC_H(PropTagToPropName(m_ulPropTag, m_bIsAB, &szExactMatch, &szPartialMatch));
+		PropTagToPropName(m_ulPropTag, m_bIsAB, &szExactMatch, &szPartialMatch);
 
 		if (PROP_ID(m_ulPropTag) && (szExactMatch || szPartialMatch))
 			SetStringf(PROPTAG_NAME, _T("%s (%s)"), szExactMatch ? szExactMatch : _T(""), szPartialMatch ? szPartialMatch : _T("")); // STRING_OK

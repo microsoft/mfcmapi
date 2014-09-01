@@ -406,7 +406,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::AddColumn(UINT uidHeaderName, ULO
 	else
 	{
 		LPTSTR szExactMatches = NULL;
-		EC_H(PropTagToPropName(ulPropTag, m_bIsAB, &szExactMatches, NULL));
+		PropTagToPropName(ulPropTag, m_bIsAB, &szExactMatches, NULL);
 		if (!szExactMatches)
 			szHeaderString.Format(_T("0x%08X"), ulPropTag); // STRING_OK
 		else
