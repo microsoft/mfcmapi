@@ -6,6 +6,7 @@
 #include "String.h"
 #include <vector>
 #include <algorithm>
+#include <unordered_map>
 
 #define ulNoMatch 0xffffffff
 static WCHAR szPropSeparator[] = L", "; // STRING_OK
@@ -113,6 +114,14 @@ void FindTagArrayMatches(_In_ ULONG ulTarget,
 	}
 }
 
+struct NameMapEntry
+{
+	std::wstring szExactMatch;
+	std::wstring szPartialMatches;
+};
+
+std::unordered_map<ULONG64, NameMapEntry> g_PropNames;
+
 // lpszExactMatch and lpszPartialMatches allocated with new
 // clean up with delete[]
 void PropTagToPropName(ULONG ulPropTag, bool bIsAB, _Deref_opt_out_opt_z_ LPTSTR* lpszExactMatch, _Deref_opt_out_opt_z_ LPTSTR* lpszPartialMatches)
@@ -121,25 +130,44 @@ void PropTagToPropName(ULONG ulPropTag, bool bIsAB, _Deref_opt_out_opt_z_ LPTSTR
 	if (lpszPartialMatches) *lpszPartialMatches = NULL;
 	if (!lpszExactMatch && !lpszPartialMatches) return;
 
+	ULONG64 ulKey = (bIsAB ? (_int64)1 << 32 : 0) | ulPropTag;
+
+	auto match = g_PropNames.find(ulKey);
+	if (match != g_PropNames.end())
+	{
+		if (lpszExactMatch)
+		{
+			*lpszExactMatch = wstringToLPTSTR(match->second.szExactMatch);
+		}
+
+		if (lpszPartialMatches)
+		{
+			*lpszPartialMatches = wstringToLPTSTR(match->second.szPartialMatches);
+		}
+
+		return;
+	}
+
 	std::vector<ULONG> ulExacts;
 	std::vector<ULONG> ulPartials;
 	FindTagArrayMatches(ulPropTag, bIsAB, PropTagArray, ulPropTagArray, ulExacts, ulPartials);
+
+	NameMapEntry entry;
 
 	if (lpszExactMatch)
 	{
 		if (ulExacts.size())
 		{
-			std::wstring szExactMatch;
 			for (ULONG ulMatch : ulExacts)
 			{
-				szExactMatch += format(L"%ws", PropTagArray[ulMatch].lpszName);
+				entry.szExactMatch += format(L"%ws", PropTagArray[ulMatch].lpszName);
 				if (ulMatch != ulExacts.back())
 				{
-					szExactMatch += szPropSeparator;
+					entry.szExactMatch += szPropSeparator;
 				}
 			}
 
-			*lpszExactMatch = wstringToLPTSTR(szExactMatch);
+			*lpszExactMatch = wstringToLPTSTR(entry.szExactMatch);
 		}
 	}
 
@@ -147,21 +175,22 @@ void PropTagToPropName(ULONG ulPropTag, bool bIsAB, _Deref_opt_out_opt_z_ LPTSTR
 	{
 		if (ulPartials.size())
 		{
-			std::wstring szPartialMatches;
 			{
 				for (ULONG ulMatch : ulPartials)
 				{
-					szPartialMatches += format(L"%ws", PropTagArray[ulMatch].lpszName);
+					entry.szPartialMatches += format(L"%ws", PropTagArray[ulMatch].lpszName);
 					if (ulMatch != ulPartials.back())
 					{
-						szPartialMatches += szPropSeparator;
+						entry.szPartialMatches += szPropSeparator;
 					}
 				}
 
-				*lpszPartialMatches = wstringToLPTSTR(szPartialMatches);
+				*lpszPartialMatches = wstringToLPTSTR(entry.szPartialMatches);
 			}
 		}
 	}
+
+	g_PropNames.insert({ ulKey, entry });
 }
 
 // Strictly does a lookup in the array. Does not convert otherwise
