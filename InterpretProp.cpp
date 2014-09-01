@@ -1090,17 +1090,16 @@ void NameIDToStrings(_In_ LPMAPINAMEID lpNameID,
 	if (lpNameID->ulKind == MNID_ID)
 	{
 		DebugPrint(DBGNamedProp, _T("lpNameID->Kind.lID = 0x%04X = %d\n"), lpNameID->Kind.lID, lpNameID->Kind.lID);
-		LPWSTR szName = NameIDToPropName(lpNameID);
+		std::wstring szName = NameIDToPropName(lpNameID);
 
-		if (szName)
+		if (!szName.empty())
 		{
 			// Printing hex first gets a nice sort without spacing tricks
 			szPropName = format(L"id: 0x%04X=%d = %ws", // STRING_OK
 				lpNameID->Kind.lID,
 				lpNameID->Kind.lID,
-				szName);
+				szName.c_str());
 
-			delete[] szName;
 		}
 		else
 		{

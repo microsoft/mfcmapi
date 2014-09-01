@@ -434,17 +434,16 @@ LPCGUID GUIDNameToGUIDA(_In_z_ LPCSTR szGUID, bool bByteSwapped)
 #endif
 }
 
-// Allocates and returns string built from NameIDArray
-// Allocated with new, clean up with delete[]
-_Check_return_ LPWSTR NameIDToPropName(_In_ LPMAPINAMEID lpNameID)
+// Returns string built from NameIDArray
+std::wstring NameIDToPropName(_In_ LPMAPINAMEID lpNameID)
 {
-	if (!lpNameID) return NULL;
-	if (lpNameID->ulKind != MNID_ID) return NULL;
-	HRESULT hRes = S_OK;
-	ULONG	ulCur = 0;
-	ULONG	ulMatch = ulNoMatch;
+	std::wstring szResultString;
+	if (!lpNameID) return szResultString;
+	if (lpNameID->ulKind != MNID_ID) return szResultString;
+	ULONG ulCur = 0;
+	ULONG ulMatch = ulNoMatch;
 
-	if (!ulNameIDArray || !NameIDArray) return NULL;
+	if (!ulNameIDArray || !NameIDArray) return szResultString;
 
 	for (ulCur = 0; ulCur < ulNameIDArray; ulCur++)
 	{
@@ -454,39 +453,9 @@ _Check_return_ LPWSTR NameIDToPropName(_In_ LPMAPINAMEID lpNameID)
 			break;
 		}
 	}
-	if (ulNoMatch == ulMatch)
+
+	if (ulNoMatch != ulMatch)
 	{
-		return NULL;
-	}
-
-	// count up how long our string needs to be
-	size_t cchResultString = 0;
-	ULONG ulNumMatches = 0;
-	for (ulCur = ulMatch; ulCur < ulNameIDArray; ulCur++)
-	{
-		size_t cchLen = 0;
-		if (NameIDArray[ulCur].lValue != lpNameID->Kind.lID) break;
-		// We don't acknowledge array entries without guids
-		if (!NameIDArray[ulCur].lpGuid) continue;
-		// But if we weren't asked about a guid, we don't check one
-		if (lpNameID->lpguid && !IsEqualGUID(*lpNameID->lpguid, *NameIDArray[ulCur].lpGuid)) continue;
-
-		EC_H(StringCchLengthW(NameIDArray[ulCur].lpszName, STRSAFE_MAX_CCH, &cchLen));
-		cchResultString += cchLen;
-		ulNumMatches++;
-	}
-
-	if (!ulNumMatches) return NULL;
-
-	// Add in space for null terminator and separators
-	cchResultString += 1 + (ulNumMatches - 1) * (_countof(szPropSeparator) - 1);
-
-	// Copy our matches into the result string
-	LPWSTR szResultString = NULL;
-	szResultString = new WCHAR[cchResultString];
-	if (szResultString)
-	{
-		szResultString[0] = L'\0'; // STRING_OK
 		for (ulCur = ulMatch; ulCur < ulNameIDArray; ulCur++)
 		{
 			if (NameIDArray[ulCur].lValue != lpNameID->Kind.lID) break;
@@ -495,24 +464,16 @@ _Check_return_ LPWSTR NameIDToPropName(_In_ LPMAPINAMEID lpNameID)
 			// But if we weren't asked about a guid, we don't check one
 			if (lpNameID->lpguid && !IsEqualGUID(*lpNameID->lpguid, *NameIDArray[ulCur].lpGuid)) continue;
 
-			EC_H(StringCchCatW(szResultString, cchResultString, NameIDArray[ulCur].lpszName));
-			if (--ulNumMatches > 0)
+			szResultString += NameIDArray[ulCur].lpszName;
+			if (ulCur != ulNameIDArray - 1)
 			{
-				EC_H(StringCchCatW(szResultString, cchResultString, szPropSeparator));
+				szResultString += szPropSeparator;
 			}
-		}
-		if (SUCCEEDED(hRes))
-		{
-			return szResultString;
-		}
-		else
-		{
-			delete[] szResultString;
 		}
 	}
 
-	return NULL;
-} // NameIDToPropName
+	return szResultString;
+}
 
 // Interprets a flag value according to a flag name and returns a string
 // allocated with new
@@ -697,11 +658,11 @@ void InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, _In_z_ LPCTST
 // Returns a list of all known flags/values for a flag name.
 // For instance, for flagFuzzyLevel, would return:
 // \r\n0x00000000 FL_FULLSTRING\r\n\
-// 0x00000001 FL_SUBSTRING\r\n\
-// 0x00000002 FL_PREFIX\r\n\
-// 0x00010000 FL_IGNORECASE\r\n\
-// 0x00020000 FL_IGNORENONSPACE\r\n\
-// 0x00040000 FL_LOOSE
+	// 0x00000001 FL_SUBSTRING\r\n\
+	// 0x00000002 FL_PREFIX\r\n\
+	// 0x00010000 FL_IGNORECASE\r\n\
+	// 0x00020000 FL_IGNORENONSPACE\r\n\
+	// 0x00040000 FL_LOOSE
 //
 // Since the string is always appended to a prompt we include \r\n at the start
 _Check_return_ CString AllFlagsToString(const ULONG ulFlagName, bool bHex)

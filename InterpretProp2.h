@@ -40,7 +40,7 @@ LPCGUID GUIDNameToGUIDA(_In_z_ LPCSTR szGUID, bool bByteSwapped);
 #define GUIDNameToGUID GUIDNameToGUIDA
 #endif
 
-_Check_return_ LPWSTR NameIDToPropName(_In_ LPMAPINAMEID lpNameID);
+std::wstring NameIDToPropName(_In_ LPMAPINAMEID lpNameID);
 
 enum __NonPropFlag; // forward
 void InterpretFlags(const __NonPropFlag ulFlagName, const LONG lFlagValue, _Deref_out_opt_z_ LPTSTR* szFlagString);

@@ -4785,18 +4785,17 @@ _Check_return_ LPWSTR PropertyDefinitionStreamStructToString(_In_ PropertyDefini
 				}
 				else
 				{
-					LPWSTR szDispidName = NULL;
+					std::wstring szDispidName = NULL;
 					MAPINAMEID mnid = { 0 };
 					mnid.lpguid = NULL;
 					mnid.ulKind = MNID_ID;
 					mnid.Kind.lID = ppdsPropertyDefinitionStream->pfdFieldDefinitions[iDef].dwDispid;
 					szDispidName = NameIDToPropName(&mnid);
-					if (szDispidName)
+					if (!szDispidName.empty())
 					{
-						szTmp.FormatMessage(IDS_PROPDEFDISPIDNAMED, szDispidName);
+						szTmp.FormatMessage(IDS_PROPDEFDISPIDNAMED, szDispidName.c_str());
 						szPropertyDefinitionStream += szTmp;
 					}
-					delete[] szDispidName;
 				}
 			}
 
