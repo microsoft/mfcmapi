@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "MFCOutput.h"
 #include "MapiFunctions.h"
+#include "String.h"
 #include "InterpretProp.h"
 #include "InterpretProp2.h"
 #include "DbgView.h"

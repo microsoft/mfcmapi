@@ -6,6 +6,7 @@
 #include "MapiObjects.h"
 #include "ContentsTableDlg.h"
 #include "MAPIFunctions.h"
+#include "String.h"
 #include "UIFunctions.h"
 #include "InterpretProp.h"
 #include "AboutDlg.h"

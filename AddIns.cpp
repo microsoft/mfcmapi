@@ -4,7 +4,7 @@
 #include "BaseDialog.h"
 #include "MFCMAPI.h"
 #include "ImportProcs.h"
-#include "MAPIFunctions.h"
+#include "String.h"
 #include "Editor.h"
 #include "Guids.h"
 #ifndef MRMAPI

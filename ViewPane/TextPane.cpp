@@ -2,6 +2,7 @@
 #include "..\stdafx.h"
 #include "TextPane.h"
 #include "..\MAPIFunctions.h"
+#include "..\String.h"
 #include "..\UIFunctions.h"
 
 static TCHAR* CLASS = _T("TextPane");

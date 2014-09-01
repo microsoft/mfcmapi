@@ -10,7 +10,7 @@
 #include "FileDialogEx.h"
 #include "Editor.h"
 #include "MsgServiceTableDlg.h"
-#include "MAPIFunctions.h"
+#include "String.h"
 #include "File.h"
 #include "ExportProfile.h"
 

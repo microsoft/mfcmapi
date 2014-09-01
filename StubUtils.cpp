@@ -8,7 +8,7 @@
 // Included for MFCMAPI tracing
 #include "MFCOutput.h"
 #include "ImportProcs.h"
-#include "MAPIFunctions.h"
+#include "String.h"
 
 /*
  *  MAPI Stub Utilities

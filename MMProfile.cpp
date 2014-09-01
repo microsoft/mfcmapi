@@ -4,6 +4,7 @@
 #include "MMProfile.h"
 #include "ExportProfile.h"
 #include "MAPIFunctions.h"
+#include "String.h"
 #include "MAPIProfileFunctions.h"
 
 void ExportProfileList()

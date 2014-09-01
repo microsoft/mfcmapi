@@ -2,6 +2,7 @@
 #include "MrMAPI.h"
 #include "MMStore.h"
 #include "MAPIFunctions.h"
+#include "String.h"
 #include "MAPIStoreFunctions.h"
 #include "ColumnTags.h"
 #include "MMFolder.h"

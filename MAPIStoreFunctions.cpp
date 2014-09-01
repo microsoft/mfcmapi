@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "MAPIStoreFunctions.h"
 #include "MAPIFunctions.h"
+#include "String.h"
 #include "Editor.h"
 #include "Guids.h"
 #include "InterpretProp2.h"

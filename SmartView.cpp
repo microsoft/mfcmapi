@@ -4,6 +4,7 @@
 #include "InterpretProp.h"
 #include "ExtraPropTags.h"
 #include "MAPIFunctions.h"
+#include "String.h"
 #include "guids.h"
 #include "MySecInfo.h"
 #include "NamedPropCache.h"

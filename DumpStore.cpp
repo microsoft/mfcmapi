@@ -6,6 +6,7 @@
 #include "stdafx.h"
 #include "dumpstore.h"
 #include "MAPIFunctions.h"
+#include "String.h"
 #include "file.h"
 #include "InterpretProp2.h"
 #include "ImportProcs.h"

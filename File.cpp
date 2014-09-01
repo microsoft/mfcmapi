@@ -4,6 +4,7 @@
 #include "File.h"
 #include "InterpretProp.h"
 #include "MAPIFunctions.h"
+#include "String.h"
 #include "FileDialogEx.h"
 #include "MAPIProgress.h"
 #include "guids.h"

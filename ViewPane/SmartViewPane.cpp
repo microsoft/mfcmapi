@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "..\stdafx.h"
 #include "SmartViewPane.h"
-#include "..\MAPIFunctions.h"
+#include "..\String.h"
 #include "..\UIFunctions.h"
 #include "..\SmartView.h"
 
