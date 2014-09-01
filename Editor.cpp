@@ -5,6 +5,7 @@
 #include "Editor.h"
 #include "UIFunctions.h"
 #include "MAPIFunctions.h"
+#include "String.h"
 #include "InterpretProp.h"
 #include "InterpretProp2.h"
 #include "ImportProcs.h"

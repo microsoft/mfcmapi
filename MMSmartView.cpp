@@ -2,6 +2,7 @@
 
 #include "MrMAPI.h"
 #include "MAPIFunctions.h"
+#include "String.h"
 #include <io.h>
 #include "SmartView.h"
 

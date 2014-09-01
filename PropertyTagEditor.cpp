@@ -5,7 +5,7 @@
 #include "PropertyTagEditor.h"
 #include "InterpretProp.h"
 #include "InterpretProp2.h"
-#include "MAPIFunctions.h"
+#include "String.h"
 #include "NamedPropCache.h"
 
 static TCHAR* CLASS = _T("CPropertyTagEditor");

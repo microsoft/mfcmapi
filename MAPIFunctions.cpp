@@ -2,6 +2,7 @@
 
 #include "stdafx.h"
 #include "MAPIFunctions.h"
+#include "String.h"
 #include "MAPIStoreFunctions.h"
 #include "MAPIABFunctions.h"
 #include "InterpretProp.h"
@@ -2306,97 +2307,6 @@ _Check_return_ HRESULT GetNamedPropsByGUID(_In_ LPMAPIPROP lpSource, _In_ LPGUID
 	MAPIFreeBuffer(lpAllProps);
 	return hRes;
 } // GetNamedPropsByGUID
-
-// if cchszA == -1, MultiByteToWideChar will compute the length
-// Delete with delete[]
-_Check_return_ HRESULT AnsiToUnicode(_In_opt_z_ LPCSTR pszA, _Out_z_cap_(cchszA) LPWSTR* ppszW, size_t cchszA)
-{
-	HRESULT hRes = S_OK;
-	if (!ppszW) return MAPI_E_INVALID_PARAMETER;
-	*ppszW = NULL;
-	if (NULL == pszA) return S_OK;
-	if (!cchszA) return S_OK;
-
-	// Get our buffer size
-	int iRet = 0;
-	EC_D(iRet, MultiByteToWideChar(
-		CP_ACP,
-		0,
-		pszA,
-		(int)cchszA,
-		NULL,
-		NULL));
-
-	if (SUCCEEDED(hRes) && 0 != iRet)
-	{
-		// MultiByteToWideChar returns num of chars
-		LPWSTR pszW = new WCHAR[iRet];
-
-		EC_D(iRet, MultiByteToWideChar(
-			CP_ACP,
-			0,
-			pszA,
-			(int)cchszA,
-			pszW,
-			iRet));
-		if (SUCCEEDED(hRes))
-		{
-			*ppszW = pszW;
-		}
-		else
-		{
-			delete[] pszW;
-		}
-	}
-	return hRes;
-} // AnsiToUnicode
-
-// if cchszW == -1, WideCharToMultiByte will compute the length
-// Delete with delete[]
-_Check_return_ HRESULT UnicodeToAnsi(_In_z_ LPCWSTR pszW, _Out_z_cap_(cchszW) LPSTR* ppszA, size_t cchszW)
-{
-	HRESULT hRes = S_OK;
-	if (!ppszA) return MAPI_E_INVALID_PARAMETER;
-	*ppszA = NULL;
-	if (NULL == pszW) return S_OK;
-
-	// Get our buffer size
-	int iRet = 0;
-	EC_D(iRet, WideCharToMultiByte(
-		CP_ACP,
-		0,
-		pszW,
-		(int)cchszW,
-		NULL,
-		NULL,
-		NULL,
-		NULL));
-
-	if (SUCCEEDED(hRes) && 0 != iRet)
-	{
-		// WideCharToMultiByte returns num of bytes
-		LPSTR pszA = (LPSTR) new BYTE[iRet];
-
-		EC_D(iRet, WideCharToMultiByte(
-			CP_ACP,
-			0,
-			pszW,
-			(int)cchszW,
-			pszA,
-			iRet,
-			NULL,
-			NULL));
-		if (SUCCEEDED(hRes))
-		{
-			*ppszA = pszA;
-		}
-		else
-		{
-			delete[] pszA;
-		}
-	}
-	return hRes;
-} // UnicodeToAnsi
 
 _Check_return_ bool CheckStringProp(_In_opt_ LPSPropValue lpProp, ULONG ulPropType)
 {

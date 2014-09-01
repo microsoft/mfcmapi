@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "..\stdafx.h"
 #include "DropDownPane.h"
-#include "..\MAPIFunctions.h"
+#include "..\String.h"
 #include "..\InterpretProp.h"
 #include "..\InterpretProp2.h"
 

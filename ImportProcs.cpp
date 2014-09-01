@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "ImportProcs.h"
-#include "MAPIFunctions.h"
+#include "String.h"
 
 HMODULE hModAclui = NULL;
 HMODULE hModOle32 = NULL;

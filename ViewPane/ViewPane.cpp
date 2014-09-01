@@ -2,7 +2,7 @@
 #include "..\stdafx.h"
 #include "ViewPane.h"
 #include "..\UIFunctions.h"
-#include "..\MAPIFunctions.h"
+#include "..\String.h"
 
 ViewPane::ViewPane(UINT uidLabel, bool bReadOnly)
 {

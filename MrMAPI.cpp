@@ -2,6 +2,7 @@
 
 #include "MrMAPI.h"
 #include "MAPIFunctions.h"
+#include "String.h"
 #include "InterpretProp2.h"
 #include "SmartView.h"
 #include "MMAcls.h"
