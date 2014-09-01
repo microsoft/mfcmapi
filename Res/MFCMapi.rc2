@@ -1376,19 +1376,19 @@ lpAction->ulFlags = 0x%4!08X! = %5\r\n"
 
 IDS_ACTIONOPMOVECOPY "lpAction->actMoveCopy.lpStoreEntryId:\r\n\
 %1\r\n\
-Alt: %2\r\n\
+Alt: %2!ws!\r\n\
 lpAction->actMoveCopy.lpFldEntryId:\r\n\
 %3\r\n\
-Alt: %4\r\n"
+Alt: %4!ws!\r\n"
 
 IDS_ACTIONOPREPLY "lpAction->actReply.lpEntryId:\r\n\
 %1\r\n\
 Alt: %2\r\n\
-actReply.guidReplyTemplate = %3\r\n"
+actReply.guidReplyTemplate = %3!ws!\r\n"
 
 IDS_ACTIONOPDEFER "lpAction->actDeferAction.pbData:\r\n\
 %1\r\n\
-Alt: %2\r\n"
+Alt: %2!ws!\r\n"
 
 IDS_ACTIONOPBOUNCE "lpAction->scBounceCode = 0x%1!08X! = %2\r\n"
 
