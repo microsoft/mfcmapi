@@ -157,10 +157,6 @@ void PrintTag(_In_ ULONG ulRow)
 void PrintTagFromNum(_In_ ULONG ulPropTag)
 {
 	ULONG ulPropID = NULL;
-	ULONG ulNumExacts = NULL;
-	ULONG ulFirstExactMatch = ulNoMatch;
-	ULONG ulNumPartials = NULL;
-	ULONG ulFirstPartial = ulNoMatch;
 
 	if (ulPropTag & 0xffff0000) // dealing with a full prop tag
 	{
@@ -179,29 +175,30 @@ void PrintTagFromNum(_In_ ULONG ulPropTag)
 		printf("Only trust the following output if this property is known to be an address book property.\n");
 	}
 
-	FindTagArrayMatches(ulPropTag,true,PropTagArray,ulPropTagArray,&ulNumExacts,&ulFirstExactMatch,&ulNumPartials,&ulFirstPartial);
+	std::vector<ULONG> ulExacts;
+	std::vector<ULONG> ulPartials;
+	FindTagArrayMatches(ulPropTag, true, PropTagArray, ulPropTagArray, ulExacts, ulPartials);
 
-	ULONG ulCur = NULL;
-	if (ulNumExacts > 0)
+	if (ulExacts.size())
 	{
 		printf("\nExact matches:\n");
-		for (ulCur = ulFirstExactMatch ; ulCur < ulFirstExactMatch+ulNumExacts ; ulCur++)
+		for (ULONG ulCur:ulExacts)
 		{
 			PrintTag(ulCur);
 		}
 	}
 
-	if (ulNumPartials > 0)
+	if (ulPartials.size())
 	{
 		printf("\nPartial matches:\n");
 		// let's print our partial matches
-		for (ulCur = ulFirstPartial ; ulCur < ulFirstPartial+ulNumPartials+ulNumExacts ; ulCur++)
+		for (ULONG ulCur : ulPartials)
 		{
 			if (ulPropTag == PropTagArray[ulCur].ulValue) continue; // skip our exact matches
 			PrintTag(ulCur);
 		}
 	}
-} // PrintTagFromNum
+}
 
 void PrintTagFromName(_In_z_ LPCWSTR lpszPropName)
 {
@@ -218,40 +215,39 @@ void PrintTagFromName(_In_z_ LPCWSTR lpszPropName)
 
 			// now that we have a match, let's see if we have other tags with the same number
 			ULONG ulExactMatch = ulCur; // The guy that matched lpszPropName
-			ULONG ulNumExacts = NULL;
-			ULONG ulFirstExactMatch = ulNoMatch;
-			ULONG ulNumPartials = NULL;
-			ULONG ulFirstPartial = ulNoMatch;
 
-			FindTagArrayMatches(PropTagArray[ulExactMatch].ulValue,true,PropTagArray,ulPropTagArray,&ulNumExacts,&ulFirstExactMatch,&ulNumPartials,&ulFirstPartial);
+			std::vector<ULONG> ulExacts;
+			std::vector<ULONG> ulPartials;
+			FindTagArrayMatches(PropTagArray[ulExactMatch].ulValue, true, PropTagArray, ulPropTagArray, ulExacts, ulPartials);
 
 			// We're gonna skip at least one, so only print if we have more than one
-			if (ulNumExacts > 1)
+			if (ulExacts.size() > 1)
 			{
 				printf("\nOther exact matches:\n");
-				for (ulCur = ulFirstExactMatch ; ulCur < ulFirstExactMatch+ulNumExacts ; ulCur++)
+				for (ULONG ulMatch:ulExacts)
 				{
-					if (ulExactMatch == ulCur) continue; // skip this one
-					PrintTag(ulCur);
+					if (ulExactMatch == ulMatch) continue; // skip this one
+					PrintTag(ulMatch);
 				}
 			}
 
-			if (ulNumPartials > 0)
+			if (ulPartials.size())
 			{
 				printf("\nOther partial matches:\n");
-				for (ulCur = ulFirstPartial ; ulCur < ulFirstPartial+ulNumPartials+ulNumExacts ; ulCur++)
+				for (ULONG ulMatch : ulPartials)
 				{
-					if (PropTagArray[ulExactMatch].ulValue == PropTagArray[ulCur].ulValue) continue; // skip our exact matches
-					PrintTag(ulCur);
+					if (PropTagArray[ulExactMatch].ulValue == PropTagArray[ulMatch].ulValue) continue; // skip our exact matches
+					PrintTag(ulMatch);
 				}
 			}
+
 			bMatchFound = true;
 			break;
 		}
 	}
 
 	if (!bMatchFound) printf("Property tag \"%ws\" not found\n",lpszPropName);
-} // PrintTagFromName
+}
 
 // Search for properties matching lpszPropName on a substring
 // If ulType isn't ulNoMatch, restrict on the property type as well

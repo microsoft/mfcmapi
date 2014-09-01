@@ -318,7 +318,7 @@ _Check_return_ CString TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, b
 		&szNamedPropGUID, // Built from lpProp & lpMAPIProp
 		&szNamedPropDASL); // Built from ulPropTag & lpMAPIProp
 
-	EC_H(PropTagToPropName(ulPropTag, bIsAB, &szExactMatches, &szPartialMatches));
+	PropTagToPropName(ulPropTag, bIsAB, &szExactMatches, &szPartialMatches);
 
 	CString szFormatString;
 	if (bSingleLine)
