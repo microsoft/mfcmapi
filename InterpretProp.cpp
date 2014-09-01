@@ -157,50 +157,6 @@ _Check_return_ HRESULT Base64Encode(size_t cbSourceBuf, _In_count_(cbSourceBuf) 
 	return hRes;
 } // Base64Encode
 
-_Check_return_ CString BinToTextString(_In_ LPSBinary lpBin, bool bMultiLine)
-{
-	if (!lpBin || !lpBin->cb || !lpBin->lpb) return _T("");
-
-	CString StringAsText;
-	LPTSTR szBin = NULL;
-
-	szBin = new TCHAR[1 + lpBin->cb];
-
-	if (szBin)
-	{
-		ULONG i;
-		for (i = 0; i < lpBin->cb; i++)
-		{
-			// Any printable extended ASCII character gets mapped directly
-			if (lpBin->lpb[i] >= 0x20 &&
-				lpBin->lpb[i] <= 0xFE)
-			{
-				szBin[i] = lpBin->lpb[i];
-			}
-			// If we allow multiple lines, we accept tab, LF and CR
-			else if (bMultiLine &&
-				(lpBin->lpb[i] == 9 || // Tab
-				lpBin->lpb[i] == 10 || // Line Feed
-				lpBin->lpb[i] == 13))  // Carriage Return
-			{
-				szBin[i] = lpBin->lpb[i];
-			}
-			// Everything else is a dot
-			else
-			{
-				szBin[i] = _T('.');
-			}
-
-		}
-		szBin[i] = _T('\0');
-
-		StringAsText = szBin;
-
-		delete[] szBin;
-	}
-	return StringAsText;
-} // BinToTextString
-
 _Check_return_ CString BinToHexString(_In_opt_ LPSBinary lpBin, bool bPrependCB)
 {
 	if (!lpBin) return _T("");
@@ -800,9 +756,9 @@ void ActionToString(_In_ ACTION* lpAction, _In_ CString* PropString)
 
 					szTmp.FormatMessage(IDS_ACTIONOPMOVECOPY,
 						BinToHexString(&sBinStore, true),
-						BinToTextString(&sBinStore, false),
+						BinToTextString(&sBinStore, false).c_str(),
 						BinToHexString(&sBinFld, true),
-						BinToTextString(&sBinFld, false));
+						BinToTextString(&sBinFld, false).c_str());
 					*PropString += szTmp;
 					break;
 	}
@@ -817,7 +773,7 @@ void ActionToString(_In_ ACTION* lpAction, _In_ CString* PropString)
 
 						 szTmp.FormatMessage(IDS_ACTIONOPREPLY,
 							 BinToHexString(&sBin, true),
-							 BinToTextString(&sBin, false),
+							 BinToTextString(&sBin, false).c_str(),
 							 szGUID);
 						 *PropString += szTmp;
 						 delete[] szGUID;
@@ -831,7 +787,7 @@ void ActionToString(_In_ ACTION* lpAction, _In_ CString* PropString)
 
 							szTmp.FormatMessage(IDS_ACTIONOPDEFER,
 								BinToHexString(&sBin, true),
-								BinToTextString(&sBin, false));
+								BinToTextString(&sBin, false).c_str());
 							*PropString += szTmp;
 							break;
 	}

@@ -5,8 +5,6 @@ _Check_return_ HRESULT Base64Decode(_In_z_ LPCTSTR szEncodedStr, _Inout_ size_t*
 _Check_return_ HRESULT Base64Encode(size_t cbSourceBuf, _In_count_(cbSourceBuf) LPBYTE lpSourceBuffer, _Inout_ size_t* cchEncodedStr, _Out_ _Deref_post_cap_(*cchEncodedStr) LPTSTR* szEncodedStr);
 
 // Function to create strings representing properties
-_Check_return_ CString BinToTextString(_In_ LPSBinary lpBin, bool bMultiLine);
-
 _Check_return_ CString BinToHexString(_In_opt_ LPSBinary lpBin, bool bPrependCB);
 
 void FileTimeToString(_In_ FILETIME* lpFileTime, _In_ CString *PropString, _In_opt_ CString *AltPropString);

@@ -34,7 +34,7 @@ wstring BuildErrorPropString(_In_ LPSPropValue lpProp)
 	return L"";
 }
 
-_Check_return_ wstring BinToTextString(_In_ LPSBinary lpBin, bool bMultiLine)
+ wstring BinToTextString(_In_ LPSBinary lpBin, bool bMultiLine)
 {
 	if (!lpBin || !lpBin->cb || !lpBin->lpb) return L"";
 
@@ -67,7 +67,7 @@ _Check_return_ wstring BinToTextString(_In_ LPSBinary lpBin, bool bMultiLine)
 	return szBin;
 }
 
-_Check_return_ wstring MyHexFromBin(_In_opt_count_(cb) LPBYTE lpb, size_t cb)
+ wstring MyHexFromBin(_In_opt_count_(cb) LPBYTE lpb, size_t cb)
 {
 	wstring lpsz;
 
@@ -98,7 +98,7 @@ _Check_return_ wstring MyHexFromBin(_In_opt_count_(cb) LPBYTE lpb, size_t cb)
 	return lpsz;
 }
 
-_Check_return_ wstring BinToHexString(_In_opt_ LPSBinary lpBin)
+ wstring BinToHexString(_In_opt_ LPSBinary lpBin)
 {
 	if (!lpBin) return L"";
 
@@ -107,7 +107,7 @@ _Check_return_ wstring BinToHexString(_In_opt_ LPSBinary lpBin)
 		lpBin->cb);
 }
 
-_Check_return_ wstring GUIDToWstring(_In_opt_ LPCGUID lpGUID)
+ wstring GUIDToWstring(_In_opt_ LPCGUID lpGUID)
 {
 	GUID nullGUID = { 0 };
 	wstring szGUID;
@@ -133,7 +133,7 @@ _Check_return_ wstring GUIDToWstring(_In_opt_ LPCGUID lpGUID)
 	return szGUID;
 }
 
-_Check_return_ wstring GUIDToWstringAndName(_In_opt_ LPCGUID lpGUID)
+ wstring GUIDToWstringAndName(_In_opt_ LPCGUID lpGUID)
 {
 	ULONG ulCur = 0;
 	wstring szGUIDName;
@@ -204,7 +204,7 @@ void FileTimeToString(_In_ FILETIME* lpFileTime, _In_ wstring& PropString, _In_o
 	AltPropString = formatmessage(IDS_FILETIMEALTFORMAT, lpFileTime->dwLowDateTime, lpFileTime->dwHighDateTime);
 }
 
-_Check_return_ wstring RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj)
+ wstring RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj)
 {
 	CString szRes;
 	RestrictionToString(lpRes, lpObj, 0, &szRes);
@@ -216,7 +216,7 @@ _Check_return_ wstring RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ L
 #endif
 }
 
-_Check_return_ wstring ActionsToString(_In_ ACTIONS* lpActions)
+ wstring ActionsToString(_In_ ACTIONS* lpActions)
 {
 	CString szActions;
 	ActionsToString(lpActions, &szActions);
