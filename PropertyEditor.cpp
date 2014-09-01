@@ -6,6 +6,7 @@
 #include "InterpretProp2.h"
 #include "MAPIFunctions.h"
 #include "SmartView.h"
+#include "ParseProperty.h"
 
 _Check_return_ HRESULT DisplayPropertyEditor(_In_ CWnd* pParentWnd,
 	UINT uidTitle,
@@ -417,7 +418,7 @@ void CPropertyEditor::InitPropertyControls()
 			if (lpPane)
 			{
 				lpPane->SetCount(m_lpsInputValue->Value.bin.cb);
-				lpPane->SetString(BinToHexString(&m_lpsInputValue->Value.bin, false));
+				lpPane->SetStringW(BinToHexString(&m_lpsInputValue->Value.bin, false).c_str());
 				SetStringA(1, (LPCSTR)m_lpsInputValue->Value.bin.lpb, m_lpsInputValue->Value.bin.cb + 1);
 			}
 

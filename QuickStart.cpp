@@ -14,6 +14,7 @@
 #include "MainDlg.h"
 #include "QSSpecialFolders.h"
 #include "MAPIABFunctions.h"
+#include "ParseProperty.h"
 
 LPMAPISESSION OpenSessionForQuickStart(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 {
@@ -425,7 +426,7 @@ void OnQSDisplayQuota(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 
 			if (lpProps[qPR_MDB_PROVIDER].ulPropTag == PR_MDB_PROVIDER)
 			{
-				szTmp.FormatMessage(IDS_QUOTAPROVIDER, (LPCTSTR)BinToHexString(&lpProps[qPR_MDB_PROVIDER].Value.bin, true));
+				szTmp.FormatMessage(IDS_QUOTAPROVIDER, BinToHexString(&lpProps[qPR_MDB_PROVIDER].Value.bin, true).c_str());
 				szQuotaString += szTmp;
 			}
 

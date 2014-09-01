@@ -1460,7 +1460,7 @@ void CCriteriaEditor::InitListFromEntryList(ULONG ulListNum, _In_ LPENTRYLIST lp
 
 			szTmp.Format(_T("%u"), lpEntryList->lpbin[i].cb); // STRING_OK
 			SetListString(ulListNum, i, 1, szTmp);
-			SetListString(ulListNum, i, 2, BinToHexString(&lpEntryList->lpbin[i], false));
+			SetListStringW(ulListNum, i, 2, BinToHexString(&lpEntryList->lpbin[i], false).c_str());
 			SetListStringW(ulListNum, i, 3, BinToTextString(&lpEntryList->lpbin[i], true).c_str());
 			if (lpData) lpData->bItemFullyLoaded = true;
 		}
@@ -1518,7 +1518,7 @@ _Check_return_ bool CCriteriaEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 		lpSourcebin = &lpData->data.Binary.NewBin;
 	}
 
-	BinEdit.InitPane(0, CreateSingleLinePane(IDS_EID, BinToHexString(lpSourcebin, false), false));
+	BinEdit.InitPane(0, CreateSingleLinePaneW(IDS_EID, BinToHexString(lpSourcebin, false).c_str(), false));
 
 	WC_H(BinEdit.DisplayDialog());
 	if (S_OK == hRes)
@@ -1544,7 +1544,7 @@ _Check_return_ bool CCriteriaEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 
 				szTmp.Format(_T("%u"), lpData->data.Binary.NewBin.cb); // STRING_OK
 				SetListString(ulListNum, iItem, 1, szTmp);
-				SetListString(ulListNum, iItem, 2, BinToHexString(&lpData->data.Binary.NewBin, false));
+				SetListStringW(ulListNum, iItem, 2, BinToHexString(&lpData->data.Binary.NewBin, false).c_str());
 				SetListStringW(ulListNum, iItem, 3, BinToTextString(&lpData->data.Binary.NewBin, true).c_str());
 				return true;
 			}

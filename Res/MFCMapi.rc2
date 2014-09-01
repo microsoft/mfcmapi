@@ -659,7 +659,7 @@ IDS_QUOTADISPLAYNAME              "Display Name = %1!ws!"
 IDS_QUOTASIZE                     "\r\nPR_MESSAGE_SIZE_EXTENDED = %1!I64d! bytes = %2!I64d! kilobytes"
 IDS_QUOTAPROP                     "\r\n%1 = 0x%2!08X! = %2!d! kilobytes"
 IDS_QUOTAMASK                     "\r\n\r\nStore Support Mask = 0x%1!08X! = %2!ws!"
-IDS_QUOTAPROVIDER                 "\r\nMDB Provider = %1"
+IDS_QUOTAPROVIDER                 "\r\nMDB Provider = %1!ws!"
 IDS_QSSPECIALFOLDERS              "Special folders"
 IDS_QSSPECIALFOLDER               "Special folder"
 IDS_QSSFFOLDERNAME                "Folder name"
@@ -1616,7 +1616,7 @@ IDS_TOMBSTONERECORD "\r\nRecord[%1!d!]\r\n\
 StartTime = 0x%2!08X! = %3\r\n\
 Endtime = 0x%4!08X! = %5\r\n\
 GlobalObjectIdSize = 0x%6!08X!\r\n\
-GlobalObjectId = %7!s!\r\n\
+GlobalObjectId = %7!ws!\r\n\
 %8!ws!\r\n\
 UsernameSize= 0x%9!04X!\r\n\
 szUsername = %10!hs!"
@@ -1625,7 +1625,7 @@ Count = %1!d!"
 IDS_PCLXID "\r\nXID[%1!d!]:\r\n\
 XidSize = 0x%2!08X! = %2!d!\r\n\
 NamespaceGuid = %3\r\n\
-LocalId = %4"
+LocalId = %!ws!4"
 
 // For InsertColumn
 IDS_ENTRY "Entry"
