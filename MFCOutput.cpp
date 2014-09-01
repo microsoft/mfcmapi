@@ -822,7 +822,6 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 	EC_H(PropTagToPropName(lpProp->ulPropTag, false, &szExactMatches, &szPartialMatches));
 	if (SUCCEEDED(hRes))
 	{
-		if (szExactMatches) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPBESTGUESS].uidName, _T("foo"), false, iIndent);
 		if (szExactMatches) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPEXACTNAMES].uidName, szExactMatches, false, iIndent);
 		if (szPartialMatches) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPPARTIALNAMES].uidName, szPartialMatches, false, iIndent);
 	}
