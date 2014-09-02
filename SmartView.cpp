@@ -20,8 +20,6 @@
 
 ULONG InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_ LPGUID lpguidNamedProp, _Deref_out_opt_z_ LPWSTR* lpszResultString);
 
-_Check_return_ LPWSTR CStringToString(CString szCString);
-
 // Functions to parse PT_LONG/PT-I2 properties
 
 _Check_return_ CString RTimeToString(DWORD rTime);
@@ -334,7 +332,7 @@ void InterpretMVBinaryAsString(SBinaryArray myBinArray, DWORD_PTR iStructType, _
 		}
 	}
 
-	*lpszResultString = CStringToString(szResult);
+	*lpszResultString = CStringToLPWSTR(szResult);
 } // InterpretMVBinaryAsString
 
 ULONG InterpretNumberAsStringProp(ULONG ulVal, ULONG ulPropTag, _Deref_out_opt_z_ LPWSTR* lpszResultString)
@@ -447,7 +445,7 @@ ULONG InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropTag, ULONG ulP
 		}
 	}
 
-	*lpszResultString = CStringToString(szResult);
+	*lpszResultString = CStringToLPWSTR(szResult);
 
 	return iStructType;
 } // InterpretMVLongAsString
@@ -533,7 +531,7 @@ _Check_return_ LPWSTR RTimeToSzString(DWORD rTime, bool bLabel)
 		szRTime.FormatMessage(_T("RTime: ")); // STRING_OK
 	}
 	szRTime += RTimeToString(rTime);
-	return CStringToString(szRTime);
+	return CStringToLPWSTR(szRTime);
 } // RTimeToSzString
 
 _Check_return_ LPWSTR PTI8ToSzString(LARGE_INTEGER liI8, bool bLabel)
@@ -547,7 +545,7 @@ _Check_return_ LPWSTR PTI8ToSzString(LARGE_INTEGER liI8, bool bLabel)
 	{
 		szI8.FormatMessage(IDS_PTI8FORMAT, liI8.LowPart, liI8.HighPart);
 	}
-	return CStringToString(szI8);
+	return CStringToLPWSTR(szI8);
 } // PTI8ToSzString
 
 typedef WORD REPLID;
@@ -588,7 +586,7 @@ _Check_return_ LPWSTR FidMidToSzString(LONGLONG llID, bool bLabel)
 	{
 		szFidMid.FormatMessage(IDS_FIDMIDFORMAT, WGetReplId(*pid), UllGetIdGlobcnt(*pid));
 	}
-	return CStringToString(szFidMid);
+	return CStringToLPWSTR(szFidMid);
 } // FidMidToSzString
 
 // CBinaryParser - helper class for parsing binary data without
@@ -834,24 +832,6 @@ _Check_return_ CString JunkDataToString(size_t cbJunkData, _In_count_(cbJunkData
 	return szTmp;
 } // JunkDataToString
 
-// result allocated with new
-// clean up with delete[]
-_Check_return_ LPWSTR CStringToString(CString szCString)
-{
-	size_t cchCString = szCString.GetLength() + 1;
-	LPWSTR szOut = new WCHAR[cchCString];
-	if (szOut)
-	{
-		HRESULT hRes = S_OK;
-#ifdef UNICODE
-		EC_H(StringCchPrintfW(szOut,cchCString,L"%ws",(LPCTSTR)szCString)); // STRING_OK
-#else
-		EC_H(StringCchPrintfW(szOut, cchCString, L"%hs", (LPCTSTR)szCString)); // STRING_OK
-#endif
-	}
-	return szOut;
-} // CStringToString
-
 //////////////////////////////////////////////////////////////////////////
 // RecurrencePatternStruct
 //////////////////////////////////////////////////////////////////////////
@@ -1083,7 +1063,7 @@ _Check_return_ LPWSTR RecurrencePatternStructToString(_In_ RecurrencePatternStru
 
 	szRP += JunkDataToString(prpPattern->JunkDataSize, prpPattern->JunkData);
 
-	return CStringToString(szRP);
+	return CStringToLPWSTR(szRP);
 } // RecurrencePatternStructToString
 
 //////////////////////////////////////////////////////////////////////////
@@ -1490,7 +1470,7 @@ _Check_return_ LPWSTR AppointmentRecurrencePatternStructToString(_In_ Appointmen
 
 	szARP += JunkDataToString(parpPattern->JunkDataSize, parpPattern->JunkData);
 
-	return CStringToString(szARP);
+	return CStringToLPWSTR(szARP);
 } // AppointmentRecurrencePatternStructToString
 
 //////////////////////////////////////////////////////////////////////////
@@ -1545,7 +1525,7 @@ void SDBinToString(SBinary myBin, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTa
 		delete[] szFlags;
 		szFlags = NULL;
 
-		*lpszResultString = CStringToString(szResult);
+		*lpszResultString = CStringToLPWSTR(szResult);
 	}
 } // SDBinToString
 
@@ -1630,7 +1610,7 @@ void SIDBinToString(SBinary myBin, _Deref_out_z_ LPWSTR* lpszResultString)
 	if (lpSidDomain) delete[] lpSidDomain;
 	if (lpSidName) delete[] lpSidName;
 
-	*lpszResultString = CStringToString(szResult);
+	*lpszResultString = CStringToLPWSTR(szResult);
 } // SIDBinToString
 
 //////////////////////////////////////////////////////////////////////////
@@ -1814,7 +1794,7 @@ _Check_return_ LPWSTR ExtendedFlagsStructToString(_In_ ExtendedFlagsStruct* pefE
 
 	szExtendedFlags += JunkDataToString(pefExtendedFlags->JunkDataSize, pefExtendedFlags->JunkData);
 
-	return CStringToString(szExtendedFlags);
+	return CStringToLPWSTR(szExtendedFlags);
 } // ExtendedFlagsStructToString
 
 //////////////////////////////////////////////////////////////////////////
@@ -1905,7 +1885,7 @@ _Check_return_ LPWSTR TimeZoneStructToString(_In_ TimeZoneStruct* ptzTimeZone)
 
 	szTimeZone += JunkDataToString(ptzTimeZone->JunkDataSize, ptzTimeZone->JunkData);
 
-	return CStringToString(szTimeZone);
+	return CStringToLPWSTR(szTimeZone);
 } // TimeZoneStructToString
 
 //////////////////////////////////////////////////////////////////////////
@@ -2061,7 +2041,7 @@ _Check_return_ LPWSTR TimeZoneDefinitionStructToString(_In_ TimeZoneDefinitionSt
 
 	szTimeZoneDefinition += JunkDataToString(ptzdTimeZoneDefinition->JunkDataSize, ptzdTimeZoneDefinition->JunkData);
 
-	return CStringToString(szTimeZoneDefinition);
+	return CStringToLPWSTR(szTimeZoneDefinition);
 } // TimeZoneDefinitionStructToString
 
 //////////////////////////////////////////////////////////////////////////
@@ -2223,7 +2203,7 @@ _Check_return_ LPWSTR ReportTagStructToString(_In_ ReportTagStruct* prtReportTag
 
 	szReportTag += JunkDataToString(prtReportTag->JunkDataSize, prtReportTag->JunkData);
 
-	return CStringToString(szReportTag);
+	return CStringToLPWSTR(szReportTag);
 } // ReportTagStructToString
 
 //////////////////////////////////////////////////////////////////////////
@@ -2352,7 +2332,7 @@ _Check_return_ LPWSTR ConversationIndexStructToString(_In_ ConversationIndexStru
 
 	szConversationIndex += JunkDataToString(pciConversationIndex->JunkDataSize, pciConversationIndex->JunkData);
 
-	return CStringToString(szConversationIndex);
+	return CStringToLPWSTR(szConversationIndex);
 } // ConversationIndexStructToString
 
 //////////////////////////////////////////////////////////////////////////
@@ -2476,7 +2456,7 @@ _Check_return_ LPWSTR TaskAssignersStructToString(_In_ TaskAssignersStruct* ptaT
 
 	szTaskAssigners += JunkDataToString(ptaTaskAssigners->JunkDataSize, ptaTaskAssigners->JunkData);
 
-	return CStringToString(szTaskAssigners);
+	return CStringToLPWSTR(szTaskAssigners);
 } // TaskAssignersStructToString
 
 //////////////////////////////////////////////////////////////////////////
@@ -2569,7 +2549,7 @@ _Check_return_ LPWSTR GlobalObjectIdStructToString(_In_ GlobalObjectIdStruct* pg
 
 	szGlobalObjectId += JunkDataToString(pgoidGlobalObjectId->JunkDataSize, pgoidGlobalObjectId->JunkData);
 
-	return CStringToString(szGlobalObjectId);
+	return CStringToLPWSTR(szGlobalObjectId);
 } // GlobalObjectIdStructToString
 
 //////////////////////////////////////////////////////////////////////////
@@ -3256,7 +3236,7 @@ _Check_return_ LPWSTR EntryIdStructToString(_In_ EntryIdStruct* peidEntryId)
 
 	szEntryId += JunkDataToString(peidEntryId->JunkDataSize, peidEntryId->JunkData);
 
-	return CStringToString(szEntryId);
+	return CStringToLPWSTR(szEntryId);
 } // EntryIdStructToString
 
 //////////////////////////////////////////////////////////////////////////
@@ -3559,7 +3539,7 @@ _Check_return_ LPWSTR PropertyStructToString(_In_ PropertyStruct* ppProperty)
 
 	szProperty += JunkDataToString(ppProperty->JunkDataSize, ppProperty->JunkData);
 
-	return CStringToString(szProperty);
+	return CStringToLPWSTR(szProperty);
 } // PropertyStructToString
 
 //////////////////////////////////////////////////////////////////////////
@@ -3909,7 +3889,7 @@ _Check_return_ LPWSTR RestrictionStructToString(_In_ RestrictionStruct* prRestri
 
 	szRestriction += JunkDataToString(prRestriction->JunkDataSize, prRestriction->JunkData);
 
-	return CStringToString(szRestriction);
+	return CStringToLPWSTR(szRestriction);
 } // RestrictionStructToString
 
 //////////////////////////////////////////////////////////////////////////
@@ -4101,7 +4081,7 @@ _Check_return_ LPWSTR RuleConditionStructToString(_In_ RuleConditionStruct* prcR
 
 	szRuleCondition += JunkDataToString(prcRuleCondition->JunkDataSize, prcRuleCondition->JunkData);
 
-	return CStringToString(szRuleCondition);
+	return CStringToLPWSTR(szRuleCondition);
 } // RuleConditionStructToString
 
 //////////////////////////////////////////////////////////////////////////
@@ -4207,7 +4187,7 @@ _Check_return_ LPWSTR EntryListStructToString(_In_ EntryListStruct* pelEntryList
 
 	szEntryList += JunkDataToString(pelEntryList->JunkDataSize, pelEntryList->JunkData);
 
-	return CStringToString(szEntryList);
+	return CStringToLPWSTR(szEntryList);
 } // EntryListStructToString
 
 //////////////////////////////////////////////////////////////////////////
@@ -4531,7 +4511,7 @@ _Check_return_ LPWSTR SearchFolderDefinitionStructToString(_In_ SearchFolderDefi
 
 	szSearchFolderDefinition += JunkDataToString(psfdSearchFolderDefinition->JunkDataSize, psfdSearchFolderDefinition->JunkData);
 
-	return CStringToString(szSearchFolderDefinition);
+	return CStringToLPWSTR(szSearchFolderDefinition);
 } // SearchFolderDefinitionStructToString
 
 //////////////////////////////////////////////////////////////////////////
@@ -4871,7 +4851,7 @@ _Check_return_ LPWSTR PropertyDefinitionStreamStructToString(_In_ PropertyDefini
 
 	szPropertyDefinitionStream += JunkDataToString(ppdsPropertyDefinitionStream->JunkDataSize, ppdsPropertyDefinitionStream->JunkData);
 
-	return CStringToString(szPropertyDefinitionStream);
+	return CStringToLPWSTR(szPropertyDefinitionStream);
 } // PropertyDefinitionStreamStructToString
 
 //////////////////////////////////////////////////////////////////////////
@@ -5090,7 +5070,7 @@ _Check_return_ LPWSTR AdditionalRenEntryIDsStructToString(_In_ AdditionalRenEntr
 
 	szAdditionalRenEntryIDs += JunkDataToString(pareiAdditionalRenEntryIDs->JunkDataSize, pareiAdditionalRenEntryIDs->JunkData);
 
-	return CStringToString(szAdditionalRenEntryIDs);
+	return CStringToLPWSTR(szAdditionalRenEntryIDs);
 } // AdditionalRenEntryIDsStructToString
 
 //////////////////////////////////////////////////////////////////////////
@@ -5218,7 +5198,7 @@ _Check_return_ LPWSTR FlatEntryListStructToString(_In_ FlatEntryListStruct* pfel
 
 	szFlatEntryList += JunkDataToString(pfelFlatEntryList->JunkDataSize, pfelFlatEntryList->JunkData);
 
-	return CStringToString(szFlatEntryList);
+	return CStringToLPWSTR(szFlatEntryList);
 } // FlatEntryListStructToString
 
 //////////////////////////////////////////////////////////////////////////
@@ -5382,7 +5362,7 @@ _Check_return_ LPWSTR WebViewPersistStreamStructToString(_In_ WebViewPersistStre
 
 	szWebViewPersistStream += JunkDataToString(pwvpsWebViewPersistStream->JunkDataSize, pwvpsWebViewPersistStream->JunkData);
 
-	return CStringToString(szWebViewPersistStream);
+	return CStringToLPWSTR(szWebViewPersistStream);
 } // WebViewPersistStreamStructToString
 
 //////////////////////////////////////////////////////////////////////////
@@ -5498,7 +5478,7 @@ _Check_return_ LPWSTR RecipientRowStreamStructToString(_In_ RecipientRowStreamSt
 
 	szRecipientRowStream += JunkDataToString(prrsRecipientRowStream->JunkDataSize, prrsRecipientRowStream->JunkData);
 
-	return CStringToString(szRecipientRowStream);
+	return CStringToLPWSTR(szRecipientRowStream);
 } // RecipientRowStreamStructToString
 
 //////////////////////////////////////////////////////////////////////////
@@ -5731,7 +5711,7 @@ _Check_return_ LPWSTR FolderUserFieldStreamStructToString(_In_ FolderUserFieldSt
 
 	szFolderUserFieldStream += JunkDataToString(pfufsFolderUserFieldStream->JunkDataSize, pfufsFolderUserFieldStream->JunkData);
 
-	return CStringToString(szFolderUserFieldStream);
+	return CStringToLPWSTR(szFolderUserFieldStream);
 } // FolderUserFieldStreamStructToString
 
 //////////////////////////////////////////////////////////////////////////
@@ -6003,7 +5983,7 @@ _Check_return_ LPWSTR NickNameCacheStructToString(_In_ NickNameCacheStruct* pnnc
 
 	szNickNameCache += JunkDataToString(pnncNickNameCache->JunkDataSize, pnncNickNameCache->JunkData);
 
-	return CStringToString(szNickNameCache);
+	return CStringToLPWSTR(szNickNameCache);
 } // NickNameCacheStructToString
 
 //////////////////////////////////////////////////////////////////////////
@@ -6178,7 +6158,7 @@ _Check_return_ LPWSTR VerbStreamStructToString(_In_ VerbStreamStruct* pvsVerbStr
 
 	szVerbString += JunkDataToString(pvsVerbStream->JunkDataSize, pvsVerbStream->JunkData);
 
-	return CStringToString(szVerbString);
+	return CStringToLPWSTR(szVerbString);
 } // VerbStreamStructToString
 
 //////////////////////////////////////////////////////////////////////////
@@ -6317,7 +6297,7 @@ _Check_return_ LPWSTR TombstoneStructToString(_In_ TombstoneStruct* ptsTombstone
 
 	szTombstoneString += JunkDataToString(ptsTombstone->JunkDataSize, ptsTombstone->JunkData);
 
-	return CStringToString(szTombstoneString);
+	return CStringToLPWSTR(szTombstoneString);
 } // TombstoneStructToString
 
 //////////////////////////////////////////////////////////////////////////
@@ -6437,7 +6417,7 @@ _Check_return_ LPWSTR PCLStructToString(_In_ PCLStruct* pcl)
 
 	szPCLString += JunkDataToString(pcl->JunkDataSize, pcl->JunkData);
 
-	return CStringToString(szPCLString);
+	return CStringToLPWSTR(szPCLString);
 }
 
 //////////////////////////////////////////////////////////////////////////
