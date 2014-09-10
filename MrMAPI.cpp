@@ -514,7 +514,7 @@ OptParser g_Parsers[] =
 	{ switchMSG, cmdmodeContents, 0, 0, OPT_MSG },
 	{ switchList, cmdmodeContents, 0, 0, OPT_LIST },
 	{ switchRecent, cmdmodeContents, 1, 1, 0 },
-	{ switchXML, cmdmodeXML, 0, 0, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDINPUTFILE },
+	{ switchXML, cmdmodeXML, 0, 0, OPT_NEEDMAPIINIT | OPT_INITMFC | OPT_NEEDINPUTFILE },
 	{ switchFid, cmdmodeFidMid, 0, 1, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDSTORE },
 	{ switchMid, cmdmodeFidMid, 0, 1, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC },
 	{ switchStore, cmdmodeStoreProperties, 0, 1, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC },
