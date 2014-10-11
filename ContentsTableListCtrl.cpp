@@ -1064,7 +1064,7 @@ void CContentsTableListCtrl::SetRowStrings(int iRow, _In_ LPSRow lpsRowData)
 
 			if (ulCol < lpsRowData->cValues)
 			{
-				CString PropString;
+				wstring PropString;
 				LPWSTR szFlags = NULL;
 				LPSPropValue pProp = &lpsRowData->lpProps[ulCol];
 
@@ -1073,23 +1073,25 @@ void CContentsTableListCtrl::SetRowStrings(int iRow, _In_ LPSRow lpsRowData)
 				{
 					if (0 == iColumn)
 					{
-						SetItemText(iRow, iColumn, (LPCTSTR)PropString);
+						SetItemText(iRow, iColumn, _T(""));
 					}
+
 					continue;
 				}
+
 				InterpretProp(pProp, &PropString, NULL);
 
 				InterpretNumberAsString(pProp->Value, pProp->ulPropTag, NULL, NULL, NULL, false, &szFlags);
 				if (szFlags)
 				{
-					PropString += _T(" ("); // STRING_OK
+					PropString += L" ("; // STRING_OK
 					PropString += szFlags;
-					PropString += _T(")"); // STRING_OK
+					PropString += L")"; // STRING_OK
 				}
 				delete[] szFlags;
 				szFlags = NULL;
 
-				SetItemText(iRow, iColumn, (LPCTSTR)PropString);
+				SetItemTextW(iRow, iColumn, PropString.c_str());
 			}
 			else
 			{

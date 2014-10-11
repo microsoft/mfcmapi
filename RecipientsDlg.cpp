@@ -8,6 +8,7 @@
 #include "ColumnTags.h"
 #include "SingleMAPIPropListCtrl.h"
 #include "InterpretProp.h"
+#include "string.h"
 
 static TCHAR* CLASS = _T("CRecipientsDlg");
 
@@ -19,14 +20,14 @@ CRecipientsDlg::CRecipientsDlg(
 	_In_ CMapiObjects* lpMapiObjects,
 	_In_ LPMAPITABLE lpMAPITable,
 	_In_ LPMESSAGE lpMessage
-	):
-CContentsTableDlg(
+	) :
+	CContentsTableDlg(
 	pParentWnd,
 	lpMapiObjects,
 	IDS_RECIPIENTS,
 	mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 	lpMAPITable,
-	(LPSPropTagArray) &sptDEFCols,
+	(LPSPropTagArray)&sptDEFCols,
 	NUMDEFCOLUMNS,
 	DEFColumns,
 	IDR_MENU_RECIPIENTS_POPUP,
@@ -69,12 +70,12 @@ void CRecipientsDlg::OnInitMenu(_In_ CMenu* pMenu)
 		if (m_lpContentsTableListCtrl)
 		{
 			int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
-			pMenu->EnableMenuItem(ID_DELETESELECTEDITEM,DIMMSOK(iNumSel));
-			pMenu->EnableMenuItem(ID_RECIPOPTIONS,DIMMSOK(1 == iNumSel));
+			pMenu->EnableMenuItem(ID_DELETESELECTEDITEM, DIMMSOK(iNumSel));
+			pMenu->EnableMenuItem(ID_RECIPOPTIONS, DIMMSOK(1 == iNumSel));
 			pMenu->EnableMenuItem(ID_MODIFYRECIPIENT,
 				DIM(1 == iNumSel && m_lpPropDisplay && m_lpPropDisplay->IsModifiedPropVals()));
 		}
-		pMenu->CheckMenuItem(ID_VIEWRECIPIENTABENTRY,CHECK(m_bViewRecipientABEntry));
+		pMenu->CheckMenuItem(ID_VIEWRECIPIENTABENTRY, CHECK(m_bViewRecipientABEntry));
 	}
 	CContentsTableDlg::OnInitMenu(pMenu);
 } // CRecipientsDlg::OnInitMenu
@@ -84,7 +85,7 @@ _Check_return_ HRESULT CRecipientsDlg::OpenItemProp(
 	__mfcmapiModifyEnum bModify,
 	_Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
 {
-	DebugPrintEx(DBGOpenItemProp,CLASS,_T("OpenItemProp"),_T("iSelectedItem = 0x%X\n"),iSelectedItem);
+	DebugPrintEx(DBGOpenItemProp, CLASS, _T("OpenItemProp"), _T("iSelectedItem = 0x%X\n"), iSelectedItem);
 
 	if (!m_lpContentsTableListCtrl || !lppMAPIProp) return MAPI_E_INVALID_PARAMETER;
 
@@ -119,19 +120,19 @@ void CRecipientsDlg::OnDeleteSelectedItem()
 	{
 		EC_H(MAPIAllocateBuffer(
 			(ULONG)CbNewADRLIST(iNumSelected),
-			(LPVOID*) &lpAdrList));
+			(LPVOID*)&lpAdrList));
 		if (lpAdrList)
 		{
 			ZeroMemory(lpAdrList, CbNewADRLIST(iNumSelected));
 			lpAdrList->cEntries = iNumSelected;
 
 			int iSelection = 0;
-			for (iSelection = 0 ; iSelection < iNumSelected ; iSelection++)
+			for (iSelection = 0; iSelection < iNumSelected; iSelection++)
 			{
 				LPSPropValue lpProp = NULL;
 				EC_H(MAPIAllocateBuffer(
 					sizeof(SPropValue),
-					(LPVOID*) &lpProp));
+					(LPVOID*)&lpProp));
 
 				if (lpProp)
 				{
@@ -150,7 +151,7 @@ void CRecipientsDlg::OnDeleteSelectedItem()
 					{
 						lpProp->Value.l = 0;
 					}
-					DebugPrintEx(DBGDeleteSelectedItem,CLASS,_T("OnDeleteSelectedItem"),_T("Deleting row 0x%08X\n"),lpProp->Value.l);
+					DebugPrintEx(DBGDeleteSelectedItem, CLASS, _T("OnDeleteSelectedItem"), _T("Deleting row 0x%08X\n"), lpProp->Value.l);
 				}
 			}
 
@@ -181,7 +182,7 @@ void CRecipientsDlg::OnModifyRecipients()
 
 	if (lpProps)
 	{
-		ADRLIST	adrList = {0};
+		ADRLIST	adrList = { 0 };
 		adrList.cEntries = 1;
 		adrList.aEntries[0].ulReserved1 = 0;
 		adrList.aEntries[0].cValues = cProps;
@@ -192,7 +193,7 @@ void CRecipientsDlg::OnModifyRecipients()
 			lpProps,
 			&ulSizeProps));
 
-		EC_H(MAPIAllocateBuffer(ulSizeProps,(LPVOID*) &adrList.aEntries[0].rgPropVals));
+		EC_H(MAPIAllocateBuffer(ulSizeProps, (LPVOID*)&adrList.aEntries[0].rgPropVals));
 
 		EC_MAPI(ScCopyProps(
 			adrList.aEntries[0].cValues,
@@ -200,7 +201,7 @@ void CRecipientsDlg::OnModifyRecipients()
 			adrList.aEntries[0].rgPropVals,
 			&ulSizeProps));
 
-		DebugPrintEx(DBGGeneric,CLASS,_T("OnModifyRecipients"),_T("Committing changes for current selection\n"));
+		DebugPrintEx(DBGGeneric, CLASS, _T("OnModifyRecipients"), _T("Committing changes for current selection\n"));
 
 		EC_MAPI(m_lpMessage->ModifyRecipients(
 			MODRECIP_MODIFY,
@@ -230,44 +231,44 @@ void CRecipientsDlg::OnRecipOptions()
 		LPADRBOOK lpAB = m_lpMapiObjects->GetAddrBook(true); // do not release
 		if (lpAB)
 		{
-			ADRENTRY adrEntry = {0};
+			ADRENTRY adrEntry = { 0 };
 			adrEntry.ulReserved1 = 0;
 			adrEntry.cValues = cProps;
 			adrEntry.rgPropVals = lpProps;
-			DebugPrintEx(DBGGeneric,CLASS,_T("OnRecipOptions"),_T("Calling RecipOptions\n"));
+			DebugPrintEx(DBGGeneric, CLASS, _T("OnRecipOptions"), _T("Calling RecipOptions\n"));
 
 			EC_MAPI(lpAB->RecipOptions(
-				(ULONG_PTR) m_hWnd,
+				(ULONG_PTR)m_hWnd,
 				NULL,
 				&adrEntry));
 
 			if (MAPI_W_ERRORS_RETURNED == hRes)
 			{
 				LPMAPIERROR lpErr = NULL;
-				WC_MAPI(lpAB->GetLastError(hRes,fMapiUnicode,&lpErr));
+				WC_MAPI(lpAB->GetLastError(hRes, fMapiUnicode, &lpErr));
 				if (lpErr)
 				{
-					EC_MAPIERR(fMapiUnicode,lpErr);
+					EC_MAPIERR(fMapiUnicode, lpErr);
 					MAPIFreeBuffer(lpErr);
 				}
 				else CHECKHRES(hRes);
 			}
 			else if (SUCCEEDED(hRes))
 			{
-				ADRLIST adrList = {0};
+				ADRLIST adrList = { 0 };
 				adrList.cEntries = 1;
 				adrList.aEntries[0].ulReserved1 = 0;
 				adrList.aEntries[0].cValues = adrEntry.cValues;
 				adrList.aEntries[0].rgPropVals = adrEntry.rgPropVals;
 
-				CString szAdrList;
-				AdrListToString(&adrList,&szAdrList);
+				wstring szAdrList;
+				AdrListToString(&adrList, &szAdrList);
 
-				DebugPrintEx(DBGGeneric,CLASS,_T("OnRecipOptions"),_T("RecipOptions returned the following ADRLIST:\n"));
+				DebugPrintEx(DBGGeneric, CLASS, _T("OnRecipOptions"), _T("RecipOptions returned the following ADRLIST:\n"));
 				// This buffer may be huge - passing it as single parameter to _Output avoids calls to StringCchVPrintf
 				// Note - debug output may still be truncated due to limitations of OutputDebugString,
 				// but output to file is complete
-				_Output(DBGGeneric,NULL,false,(LPCTSTR)szAdrList);
+				_Output(DBGGeneric, NULL, false, wstringToLPTSTR(szAdrList));
 
 				EC_MAPI(m_lpMessage->ModifyRecipients(
 					MODRECIP_MODIFY,

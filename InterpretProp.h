@@ -1,5 +1,8 @@
 #pragma once
 
+#include <string>
+using namespace std;
+
 // Base64 functions
 _Check_return_ HRESULT Base64Decode(_In_z_ LPCTSTR szEncodedStr, _Inout_ size_t* cbBuf, _Out_ _Deref_post_cap_(*cbBuf) LPBYTE* lpDecodedBuffer);
 _Check_return_ HRESULT Base64Encode(size_t cbSourceBuf, _In_count_(cbSourceBuf) LPBYTE lpSourceBuffer, _Inout_ size_t* cchEncodedStr, _Out_ _Deref_post_cap_(*cchEncodedStr) LPTSTR* szEncodedStr);
@@ -39,6 +42,6 @@ _Check_return_ CString RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ L
 
 void ActionsToString(_In_ ACTIONS* lpActions, _In_ CString* PropString);
 
-void AdrListToString(_In_ LPADRLIST lpAdrList, _In_ CString *PropString);
+void AdrListToString(_In_ LPADRLIST lpAdrList, _In_ wstring *PropString);
 
-void InterpretProp(_In_ LPSPropValue lpProp, _In_opt_ CString *PropString, _In_opt_ CString *AltPropString);
+void InterpretProp(_In_ LPSPropValue lpProp, _In_opt_  wstring* PropString, _In_opt_  wstring* AltPropString);

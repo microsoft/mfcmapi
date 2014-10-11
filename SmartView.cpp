@@ -3482,8 +3482,8 @@ _Check_return_ LPWSTR PropertyStructToString(_In_ PropertyStruct* ppProperty)
 	{
 		for (i = 0; i < ppProperty->PropCount; i++)
 		{
-			CString PropString;
-			CString AltPropString;
+			wstring PropString;
+			wstring AltPropString;
 			LPTSTR szExactMatches = NULL;
 			LPTSTR szPartialMatches = NULL;
 			LPWSTR szSmartView = NULL;
@@ -3520,8 +3520,8 @@ _Check_return_ LPWSTR PropertyStructToString(_In_ PropertyStruct* ppProperty)
 
 			InterpretProp(&ppProperty->Prop[i], &PropString, &AltPropString);
 			szTmp.FormatMessage(IDS_PROPERTYDATA,
-				(LPCTSTR)PropString,
-				(LPCTSTR)AltPropString);
+				PropString.c_str(),
+				AltPropString.c_str());
 			szProperty += szTmp;
 
 			if (szSmartView)
@@ -3540,7 +3540,7 @@ _Check_return_ LPWSTR PropertyStructToString(_In_ PropertyStruct* ppProperty)
 	szProperty += JunkDataToString(ppProperty->JunkDataSize, ppProperty->JunkData);
 
 	return CStringToLPWSTR(szProperty);
-} // PropertyStructToString
+}
 
 //////////////////////////////////////////////////////////////////////////
 // End PropertyStruct

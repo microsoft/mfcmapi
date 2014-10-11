@@ -657,8 +657,8 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 	}
 
 	CString PropTag;
-	CString PropString;
-	CString AltPropString;
+	wstring PropString;
+	wstring AltPropString;
 	CString PropType = TypeToString(ulPropTag);
 	LPTSTR szExactMatches = NULL;
 	LPTSTR szPartialMatches = NULL;
@@ -696,8 +696,8 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 	SetItemText(iRow, pcPROPTYPE, (LPCTSTR)TypeToString(ulPropTag));
 
 	InterpretProp(lpsPropToAdd, &PropString, &AltPropString);
-	SetItemText(iRow, pcPROPVAL, (LPCTSTR)PropString);
-	SetItemText(iRow, pcPROPVALALT, (LPCTSTR)AltPropString);
+	SetItemTextW(iRow, pcPROPVAL, PropString.c_str());
+	SetItemTextW(iRow, pcPROPVALALT, AltPropString.c_str());
 
 	if (szSmartView) SetItemTextW(iRow, pcPROPSMARTVIEW, (LPCWSTR)szSmartView);
 	if (szNamedPropName) SetItemText(iRow, pcPROPNAMEDNAME, szNamedPropName);

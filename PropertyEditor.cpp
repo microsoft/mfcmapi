@@ -233,8 +233,8 @@ void CPropertyEditor::InitPropertyControls()
 		m_bMVRow,
 		&szSmartView); // Built from lpProp & lpMAPIProp
 
-	CString szTemp1;
-	CString szTemp2;
+	wstring szTemp1;
+	wstring szTemp2;
 	CountedTextPane* lpPane = NULL;
 	size_t cbStr = 0;
 	LPTSTR szGuid = NULL;
@@ -464,8 +464,8 @@ void CPropertyEditor::InitPropertyControls()
 		{
 			SetHex(0, (int)m_lpsInputValue->Value.ft.dwLowDateTime);
 			SetHex(1, (int)m_lpsInputValue->Value.ft.dwHighDateTime);
-			FileTimeToString(&m_lpsInputValue->Value.ft, &szTemp1, NULL);
-			SetString(2, szTemp1);
+			FileTimeToString(&m_lpsInputValue->Value.ft, szTemp1, szTemp2);
+			SetStringW(2, szTemp1.c_str());
 		}
 		else
 		{
@@ -491,19 +491,19 @@ void CPropertyEditor::InitPropertyControls()
 	case PT_SRESTRICTION:
 		InitPane(0, CreateCollapsibleTextPane(IDS_RESTRICTION, true));
 		InterpretProp(m_lpsInputValue, &szTemp1, NULL);
-		SetString(0, szTemp1);
+		SetStringW(0, szTemp1.c_str());
 		break;
 	case PT_ACTIONS:
 		InitPane(0, CreateCollapsibleTextPane(IDS_ACTIONS, true));
 		InterpretProp(m_lpsInputValue, &szTemp1, NULL);
-		SetString(0, szTemp1);
+		SetStringW(0, szTemp1.c_str());
 		break;
 	default:
 		InterpretProp(m_lpsInputValue, &szTemp1, &szTemp2);
 		InitPane(0, CreateCollapsibleTextPane(IDS_VALUE, true));
 		InitPane(1, CreateCollapsibleTextPane(IDS_ALTERNATEVIEW, true));
-		SetString(IDS_VALUE, szTemp1);
-		SetString(IDS_ALTERNATEVIEW, szTemp2);
+		SetStringW(IDS_VALUE, szTemp1.c_str());
+		SetStringW(IDS_ALTERNATEVIEW, szTemp2.c_str());
 		break;
 	}
 
@@ -1531,12 +1531,12 @@ _Check_return_ bool CMultiValuePropertyEditor::DoListEdit(ULONG /*ulListNum*/, i
 
 void CMultiValuePropertyEditor::UpdateListRow(_In_ LPSPropValue lpProp, ULONG iMVCount)
 {
-	CString szTmp;
-	CString szAltTmp;
+	wstring szTmp;
+	wstring szAltTmp;
 
 	InterpretProp(lpProp, &szTmp, &szAltTmp);
-	SetListString(0, iMVCount, 1, szTmp);
-	SetListString(0, iMVCount, 2, szAltTmp);
+	SetListStringW(0, iMVCount, 1, szTmp.c_str());
+	SetListStringW(0, iMVCount, 2, szAltTmp.c_str());
 
 	if (PT_MV_LONG == PROP_TYPE(m_ulPropTag) ||
 		PT_MV_BINARY == PROP_TYPE(m_ulPropTag))
