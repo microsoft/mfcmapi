@@ -408,8 +408,8 @@ void RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj, U
 		return;
 	}
 	CString szTmp;
-	CString szProp;
-	CString szAltProp;
+	wstring szProp;
+	wstring szAltProp;
 
 	CString szTabs;
 	for (i = 0; i < ulTabLevel; i++)
@@ -503,8 +503,8 @@ void RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj, U
 				IDS_RESCONTENTPROP,
 				szTabs,
 				TagToString(lpRes->res.resContent.lpProp->ulPropTag, lpObj, false, true),
-				szProp,
-				szAltProp);
+				szProp.c_str(),
+				szAltProp.c_str());
 			*PropString += szTmp;
 		}
 		break;
@@ -526,8 +526,8 @@ void RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj, U
 				IDS_RESPROPPROP,
 				szTabs,
 				TagToString(lpRes->res.resProperty.lpProp->ulPropTag, lpObj, false, true),
-				szProp,
-				szAltProp);
+				szProp.c_str(),
+				szAltProp.c_str());
 			*PropString += szTmp;
 			InterpretNumberAsString(lpRes->res.resProperty.lpProp->Value, lpRes->res.resProperty.lpProp->ulPropTag, NULL, NULL, NULL, false, &szPropNum);
 			if (szPropNum)
@@ -608,8 +608,8 @@ void RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj, U
 					szTabs,
 					i,
 					TagToString(lpRes->res.resComment.lpProp[i].ulPropTag, lpObj, false, true),
-					szProp,
-					szAltProp);
+					szProp.c_str(),
+					szAltProp.c_str());
 				*PropString += szTmp;
 			}
 		}
@@ -633,8 +633,8 @@ void RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj, U
 					szTabs,
 					i,
 					TagToString(lpRes->res.resComment.lpProp[i].ulPropTag, lpObj, false, true),
-					szProp,
-					szAltProp);
+					szProp.c_str(),
+					szAltProp.c_str());
 				*PropString += szTmp;
 			}
 		}
@@ -655,42 +655,43 @@ _Check_return_ CString RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ L
 	return szRes;
 } // RestrictionToString
 
-void AdrListToString(_In_ LPADRLIST lpAdrList, _In_ CString *PropString)
+void AdrListToString(_In_ LPADRLIST lpAdrList, _In_ wstring *PropString)
 {
 	if (!PropString) return;
 
-	*PropString = _T(""); // STRING_OK
+	*PropString = L""; // STRING_OK
 	if (!lpAdrList)
 	{
-		PropString->FormatMessage(IDS_ADRLISTNULL);
+		*PropString = formatmessage(IDS_ADRLISTNULL);
 		return;
 	}
-	CString szTmp;
-	CString szProp;
-	CString szAltProp;
-	PropString->FormatMessage(IDS_ADRLISTCOUNT, lpAdrList->cEntries);
+
+	wstring szTmp;
+	wstring szProp;
+	wstring szAltProp;
+	*PropString = formatmessage(IDS_ADRLISTCOUNT, lpAdrList->cEntries);
 
 	ULONG i = 0;
 	for (i = 0; i < lpAdrList->cEntries; i++)
 	{
-		szTmp.FormatMessage(IDS_ADRLISTENTRIESCOUNT, i, lpAdrList->aEntries[i].cValues);
+		szTmp = formatmessage(IDS_ADRLISTENTRIESCOUNT, i, lpAdrList->aEntries[i].cValues);
 		*PropString += szTmp;
 
 		ULONG j = 0;
 		for (j = 0; j < lpAdrList->aEntries[i].cValues; j++)
 		{
 			InterpretProp(&lpAdrList->aEntries[i].rgPropVals[j], &szProp, &szAltProp);
-			szTmp.FormatMessage(
+			szTmp = formatmessage(
 				IDS_ADRLISTENTRY,
 				i,
 				j,
 				TagToString(lpAdrList->aEntries[i].rgPropVals[j].ulPropTag, NULL, false, false),
-				szProp,
-				szAltProp);
+				szProp.c_str(),
+				szAltProp.c_str());
 			*PropString += szTmp;
 		}
 	}
-} // AdrListToString
+}
 
 void ActionToString(_In_ ACTION* lpAction, _In_ CString* PropString)
 {
@@ -703,8 +704,8 @@ void ActionToString(_In_ ACTION* lpAction, _In_ CString* PropString)
 		return;
 	}
 	CString szTmp;
-	CString szProp;
-	CString szAltProp;
+	wstring szProp;
+	wstring szAltProp;
 	LPTSTR szFlags = NULL;
 	LPTSTR szFlags2 = NULL;
 	InterpretFlags(flagAccountType, lpAction->acttype, &szFlags);
@@ -785,7 +786,7 @@ void ActionToString(_In_ ACTION* lpAction, _In_ CString* PropString)
 						szTmp.FormatMessage(IDS_ACTIONOPFORWARDDEL);
 						*PropString += szTmp;
 						AdrListToString(lpAction->lpadrlist, &szProp);
-						*PropString += szProp;
+						*PropString += wstringToCString(szProp);
 						break;
 	}
 
@@ -794,8 +795,8 @@ void ActionToString(_In_ ACTION* lpAction, _In_ CString* PropString)
 				   InterpretProp(&lpAction->propTag, &szProp, &szAltProp);
 				   szTmp.FormatMessage(IDS_ACTIONOPTAG,
 					   TagToString(lpAction->propTag.ulPropTag, NULL, false, true),
-					   szProp,
-					   szAltProp);
+					   szProp.c_str(),
+					   szAltProp.c_str());
 				   *PropString += szTmp;
 				   break;
 	}
@@ -925,29 +926,24 @@ void FileTimeToString(_In_ FILETIME* lpFileTime, _In_ CString *PropString, _In_o
 } // FileTimeToString
 
 /***************************************************************************
-Name		: InterpretProp
-Purpose	: Evaluate a property value and return a string representing the property.
+Name: InterpretProp
+Purpose: Evaluate a property value and return a string representing the property.
 Parameters:
-IN:
+In:
 LPSPropValue lpProp: Property to be evaluated
-OUT:
-CString *tmpPropString: String representing property value
-CString *tmpAltPropString: Alternative string representation
-Comment	: Add new Property IDs as they become known
+Out:
+wstring* tmpPropString: String representing property value
+wstring* tmpAltPropString: Alternative string representation
+Comment: Add new Property IDs as they become known
 ***************************************************************************/
-void InterpretProp(_In_ LPSPropValue lpProp, _In_opt_ CString *PropString, _In_opt_ CString *AltPropString)
+void InterpretProp(_In_ LPSPropValue lpProp, _In_opt_  wstring* PropString, _In_opt_  wstring* AltPropString)
 {
 	if (!lpProp) return;
 
 	Property parsedProperty = ParseProperty(lpProp);
 
-#ifdef _UNICODE
-	if (PropString) *PropString =  parsedProperty.toString().c_str();
-	if (AltPropString) *AltPropString=  parsedProperty.toAltString().c_str();
-#else
-	if (PropString) (*PropString).Format("%ws", parsedProperty.toString().c_str());
-	if (AltPropString) (*AltPropString).Format("%ws", parsedProperty.toAltString().c_str());
-#endif
+	if (PropString) *PropString = parsedProperty.toString();
+	if (AltPropString) *AltPropString = parsedProperty.toAltString();
 }
 
 _Check_return_ CString TypeToString(ULONG ulPropTag)

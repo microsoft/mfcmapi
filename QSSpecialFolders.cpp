@@ -111,6 +111,7 @@ void SpecialFolderEditor::LoadFolders()
 	}
 
 	CString szTmp;
+	wstring szProp;
 
 	// This will iterate over all the special folders we know how to get.
 	for (i = DEFAULT_UNSPECIFIED + 1 ; i < NUM_DEFAULT_PROPS ; i++)
@@ -136,8 +137,8 @@ void SpecialFolderEditor::LoadFolders()
 				eid.ulPropTag = PR_ENTRYID;
 				eid.Value.bin.cb = cb;
 				eid.Value.bin.lpb = (LPBYTE) lpeid;
-				InterpretProp(&eid, &szTmp, NULL);
-				SetListString(ulListNum, iRow, iCol, szTmp);
+				InterpretProp(&eid, &szProp, NULL);
+				SetListStringW(ulListNum, iRow, iCol, szProp.c_str());
 				iCol++;
 
 				LPMAPIFOLDER lpFolder = NULL;
@@ -170,9 +171,13 @@ void SpecialFolderEditor::LoadFolders()
 
 						if (szTmp.IsEmpty() && PT_ERROR != PROP_TYPE(lpProps[ulPropNum].ulPropTag))
 						{
-							InterpretProp(&lpProps[ulPropNum], &szTmp, NULL);
+							InterpretProp(&lpProps[ulPropNum], &szProp, NULL);
+							SetListStringW(ulListNum, iRow, iCol, szProp.c_str());
 						}
-						SetListString(ulListNum, iRow, iCol, szTmp);
+						else
+						{
+							SetListString(ulListNum, iRow, iCol, szTmp);
+						}
 						iCol++;
 					}
 				}

@@ -155,12 +155,12 @@ CResCombinedEditor::CResCombinedEditor(
 	if (lpProp) SetHex(4, lpProp->ulPropTag);
 	InitPane(5, CreateSingleLinePane(IDS_LPPROPULPROPTAG, lpProp ? (LPCTSTR)TagToString(lpProp->ulPropTag, NULL, false, true) : NULL, true));
 
-	CString szProp;
-	CString szAltProp;
-	if (lpProp)	InterpretProp(lpProp, &szProp, &szAltProp);
-	InitPane(6, CreateMultiLinePane(IDS_LPPROP, szProp, true));
-	InitPane(7, CreateMultiLinePane(IDS_LPPROPALTVIEW, szAltProp, true));
-} // CResCombinedEditor::CResCombinedEditor
+	wstring szProp;
+	wstring szAltProp;
+	if (lpProp) InterpretProp(lpProp, &szProp, &szAltProp);
+	InitPane(6, CreateMultiLinePaneW(IDS_LPPROP, szProp.c_str(), true));
+	InitPane(7, CreateMultiLinePaneW(IDS_LPPROPALTVIEW, szAltProp.c_str(), true));
+}
 
 _Check_return_ ULONG CResCombinedEditor::HandleChange(UINT nID)
 {
@@ -230,12 +230,12 @@ void CResCombinedEditor::OnEditAction1()
 	if (S_OK == hRes && lpOutProp)
 	{
 		m_lpNewProp = lpOutProp;
-		CString szProp;
-		CString szAltProp;
+		wstring szProp;
+		wstring szAltProp;
 
 		InterpretProp(m_lpNewProp, &szProp, &szAltProp);
-		SetString(6, szProp);
-		SetString(7, szAltProp);
+		SetStringW(6, szProp.c_str());
+		SetStringW(7, szAltProp.c_str());
 	}
 } // CResCombinedEditor::OnEditAction1
 
@@ -752,7 +752,8 @@ void CResCommentEditor::InitListFromPropArray(ULONG ulListNum, ULONG cProps, _In
 
 	InsertColumn(ulListNum, 0, IDS_SHARP);
 	CString szTmp;
-	CString szAltTmp;
+	wstring szProp;
+	wstring szAltProp;
 	SortListData* lpData = NULL;
 	ULONG i = 0;
 	InsertColumn(ulListNum, 1, IDS_PROPERTY);
@@ -768,9 +769,9 @@ void CResCommentEditor::InitListFromPropArray(ULONG ulListNum, ULONG cProps, _In
 			lpData->ulSortDataType = SORTLIST_COMMENT;
 			lpData->data.Comment.lpOldProp = &lpProps[i];
 			SetListString(ulListNum, i, 1, TagToString(lpProps[i].ulPropTag, NULL, false, true));
-			InterpretProp(&lpProps[i], &szTmp, &szAltTmp);
-			SetListString(ulListNum, i, 2, szTmp);
-			SetListString(ulListNum, i, 3, szAltTmp);
+			InterpretProp(&lpProps[i], &szProp, &szAltProp);
+			SetListStringW(ulListNum, i, 2, szProp.c_str());
+			SetListStringW(ulListNum, i, 3, szAltProp.c_str());
 			lpData->bItemFullyLoaded = true;
 		}
 	}
@@ -841,12 +842,12 @@ _Check_return_ bool CResCommentEditor::DoListEdit(ULONG ulListNum, int iItem, _I
 	// Since lpData->data.Comment.lpNewProp was owned by an m_lpAllocParent, we don't free it directly
 	if (S_OK == hRes && lpData->data.Comment.lpNewProp)
 	{
-		CString szTmp;
-		CString szAltTmp;
+		wstring szTmp;
+		wstring szAltTmp;
 		SetListString(ulListNum, iItem, 1, TagToString(lpData->data.Comment.lpNewProp->ulPropTag, NULL, false, true));
 		InterpretProp(lpData->data.Comment.lpNewProp, &szTmp, &szAltTmp);
-		SetListString(ulListNum, iItem, 2, szTmp);
-		SetListString(ulListNum, iItem, 3, szAltTmp);
+		SetListStringW(ulListNum, iItem, 2, szTmp.c_str());
+		SetListStringW(ulListNum, iItem, 3, szAltTmp.c_str());
 		return true;
 	}
 
