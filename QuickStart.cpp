@@ -9,7 +9,7 @@
 #include "AbContDlg.h"
 #include "ExtraPropTags.h"
 #include "InterpretProp2.h"
-#include "SmartView.h"
+#include "SmartView\SmartView.h"
 #include "Editor.h"
 #include "MainDlg.h"
 #include "QSSpecialFolders.h"

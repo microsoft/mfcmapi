@@ -17,7 +17,7 @@
 #include "RulesDlg.h"
 #include "MailboxTableDlg.h"
 #include "PublicFolderTableDlg.h"
-#include "SmartView.h"
+#include "SmartView\SmartView.h"
 #include "SingleMessageDialog.h"
 #include "AttachmentsDlg.h"
 #include "RecipientsDlg.h"

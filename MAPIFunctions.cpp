@@ -12,7 +12,7 @@
 #include "MAPIProgress.h"
 #include "Guids.h"
 #include "NamedPropCache.h"
-#include "SmartView.h"
+#include "SmartView\SmartView.h"
 #include "TagArrayEditor.h"
 
 // I don't use MAPIOID.h, which is needed to deal with PR_ATTACH_TAG, but if I did, here's how to include it

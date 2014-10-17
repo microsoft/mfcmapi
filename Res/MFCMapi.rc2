@@ -1324,14 +1324,14 @@ IDS_RESCOUNT "%1lpRes->res.resCount.ulCount = 0x%2!08X!\r\n\
 IDS_RESCONTENT "%1lpRes->res.resContent.ulFuzzyLevel = %2 = 0x%3!08X!\r\n\
 %1lpRes->res.resContent.ulPropTag = %4\r\n"
 IDS_RESCONTENTPROP "%1lpRes->res.resContent.lpProp->ulPropTag = %2\r\n\
-%1lpRes->res.resContent.lpProp->Value = %3\r\n\
-%1\tAlt: %4\r\n"
+%1lpRes->res.resContent.lpProp->Value = %3!ws!\r\n\
+%1\tAlt: %4!ws!\r\n"
 
 IDS_RESPROP "%1lpRes->res.resProperty.relop = %2 = 0x%3!08X!\r\n\
 %1lpRes->res.resProperty.ulPropTag = %4\r\n"
 IDS_RESPROPPROP "%1lpRes->res.resProperty.lpProp->ulPropTag = %2\r\n\
-%1lpRes->res.resProperty.lpProp->Value = %3\r\n\
-%1\tAlt: %4\r\n"
+%1lpRes->res.resProperty.lpProp->Value = %3!ws!\r\n\
+%1\tAlt: %4!ws!\r\n"
 IDS_RESPROPPROPFLAGS "%1\tFlags: %2!ws!\r\n"
 
 IDS_RESBITMASK "%1lpRes->res.resBitMask.relBMR = %2 = 0x%3!08X!\r\n\
@@ -1352,14 +1352,14 @@ IDS_RESSUBRES "%1lpRes->res.resSub.ulSubObject = %2\r\n\
 
 IDS_RESCOMMENT "%1lpRes->res.resComment.cValues = 0x%2!08X!\r\n"
 IDS_RESCOMMENTPROPS "%1lpRes->res.resComment.lpProp[0x%2!08X!].ulPropTag = %3\r\n\
-%1lpRes->res.resComment.lpProp[0x%2!08X!].Value = %4\r\n\
-%1\tAlt: %5\r\n"
+%1lpRes->res.resComment.lpProp[0x%2!08X!].Value = %4!ws!\r\n\
+%1\tAlt: %5!ws!\r\n"
 IDS_RESCOMMENTRES "%1lpRes->res.resComment.lpRes\r\n"
 
 IDS_RESANNOTATION "%1lpRes->res.resAnnotation.cValues = 0x%2!08X!\r\n"
 IDS_RESANNOTATIONPROPS "%1lpRes->res.resAnnotation.lpProp[0x%2!08X!].ulPropTag = %3\r\n\
-%1lpRes->res.resAnnotation.lpProp[0x%2!08X!].Value = %4\r\n\
-%1\tAlt: %5\r\n"
+%1lpRes->res.resAnnotation.lpProp[0x%2!08X!].Value = %4!ws!\r\n\
+%1\tAlt: %5!ws!\r\n"
 IDS_RESANNOTATIONRES "%1lpRes->res.resAnnotation.lpRes\r\n"
 
 IDS_ADRLISTNULL "lpAdrList was NULL\r\n"
@@ -1541,11 +1541,11 @@ IDS_FLAGTOSTRINGDEC "\r\n%1!5d! %2!ws!"
 IDS_FIELDHEADER "Folder User Field Stream\r\n\
 FolderUserFieldAnsi.FieldDefinitionCount = %1!d!"
 IDS_FIELDANSIFIELD "\r\n\r\nField %1!d!\r\n\
-FieldType = 0x%2!08X! = %3\r\n\
+FieldType = 0x%2!08X! = %3!ws!\r\n\
 FieldNameLength = 0x%4!08X! = %4!d!\r\n\
 FieldName = %5!hs!\r\n\
 PropSetGuid = %6\r\n\
-fcapm = 0x%7!08X! = %8\r\n\
+fcapm = 0x%7!08X! = %8!ws!\r\n\
 dwString = 0x%9!08X!\r\n\
 dwBitmap = 0x%10!08X!\r\n\
 dwDisplay = 0x%11!08X!\r\n\
@@ -1554,11 +1554,11 @@ wszFormulaLength = 0x%13!04X! = %13!d!\r\n\
 wszFormula = %14!ws!"
 IDS_FIELDUNICODEHEADER "\r\n\r\nFolderUserFieldUnicode.FieldDefinitionCount = %1!d!"
 IDS_FIELDUNICODEFIELD "\r\n\r\nField %1!d!\r\n\
-FieldType = 0x%2!08X! = %3\r\n\
+FieldType = 0x%2!08X! = %3!ws!\r\n\
 FieldNameLength = 0x%4!08X! = %4!d!\r\n\
 FieldName = %5!ws!\r\n\
 PropSetGuid = %6\r\n\
-fcapm = 0x%7!08X! = %8\r\n\
+fcapm = 0x%7!08X! = %8!ws!\r\n\
 dwString = 0x%9!08X!\r\n\
 dwBitmap = 0x%10!08X!\r\n\
 dwDisplay = 0x%11!08X!\r\n\
@@ -2010,7 +2010,7 @@ IDS_ENTRYIDWRAPPEDENTRYIDDATA "\r\nWrapped Entry Type = 0x%1!02X! = %2\r\n"
 
 IDS_PROPERTYDATAHEADER "Property[%1!d!]\r\n\
 Property = 0x%2!08X!\r\n"
-IDS_PROPERTYDATA "PropString = %1 AltPropString = %2\r\n"
+IDS_PROPERTYDATA "PropString = %1!ws! AltPropString = %2!ws!\r\n"
 IDS_PROPERTYDATASMARTVIEW "Smart View: %1!ws!\r\n"
 IDS_PROPERTYDATAEXACTMATCHES "Exact Matches: %1\r\n"
 IDS_PROPERTYDATAPARTIALMATCHES "Partial Matches: %1\r\n"

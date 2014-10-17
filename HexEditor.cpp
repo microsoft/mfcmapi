@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "HexEditor.h"
-#include "SmartView.h"
+#include "SmartView\SmartView.h"
 #include "FileDialogEx.h"
 #include "ImportProcs.h"
 

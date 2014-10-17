@@ -7,7 +7,7 @@
 #include "InterpretProp.h"
 #include "InterpretProp2.h"
 #include "DbgView.h"
-#include "SmartView.h"
+#include "SmartView\SmartView.h"
 #include "ColumnTags.h"
 #include "ParseProperty.h"
 #include <cvt/wstring>

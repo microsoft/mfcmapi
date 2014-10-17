@@ -20,7 +20,7 @@
 #include "ExtraPropTags.h"
 #include <msi.h>
 #include "ImportProcs.h"
-#include "SmartView.h"
+#include "SmartView\SmartView.h"
 #include "Options.h"
 #include "ParseProperty.h"
 

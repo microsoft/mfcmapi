@@ -1,5 +1,7 @@
 #pragma once
 #include <vector>
+#include <string>
+using namespace std;
 
 #define PROP_TAG_MASK 0xffff0000
 void FindTagArrayMatches(_In_ ULONG ulTarget,
@@ -44,6 +46,7 @@ std::wstring NameIDToPropName(_In_ LPMAPINAMEID lpNameID);
 
 enum __NonPropFlag; // forward
 void InterpretFlags(const __NonPropFlag ulFlagName, const LONG lFlagValue, _Deref_out_opt_z_ LPTSTR* szFlagString);
+_Check_return_  wstring InterpretFlags(const __NonPropFlag ulFlagName, const LONG lFlagValue);
 void InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, _In_z_ LPCTSTR szPrefix, _Deref_out_opt_z_ LPTSTR* szFlagString);
 _Check_return_ CString AllFlagsToString(const ULONG ulFlagName, bool bHex);
 
