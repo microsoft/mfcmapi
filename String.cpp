@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "string.h"
 
-std::wstring format(const LPWSTR fmt, ...)
+wstring format(const LPWSTR fmt, ...)
 {
 	LPWSTR buffer = NULL;
 	va_list vl;
@@ -15,15 +15,15 @@ std::wstring format(const LPWSTR fmt, ...)
 		(void)_vsnwprintf_s(buffer, len, len, fmt, vl);
 	}
 
-	std::wstring ret(buffer);
+	wstring ret(buffer);
 	va_end(vl);
 	delete[] buffer;
 	return ret;
 }
 
-std::wstring loadstring(DWORD dwID)
+wstring loadstring(DWORD dwID)
 {
-	std::wstring fmtString;
+	wstring fmtString;
 	LPWSTR buffer = 0;
 	size_t len = ::LoadStringW(NULL, dwID, (PWCHAR)&buffer, 0);
 
@@ -35,18 +35,18 @@ std::wstring loadstring(DWORD dwID)
 	return fmtString;
 }
 
-std::wstring formatmessage(DWORD dwID, ...)
+wstring formatmessage(DWORD dwID, ...)
 {
-	std::wstring format = loadstring(dwID);
+	wstring format = loadstring(dwID);
 
 	LPWSTR buffer = NULL;
-	std::wstring ret;
+	wstring ret;
 	va_list vl;
 	va_start(vl, dwID);
 	DWORD dw = FormatMessageW(FORMAT_MESSAGE_FROM_STRING | FORMAT_MESSAGE_ALLOCATE_BUFFER, format.c_str(), 0, 0, (LPWSTR)&buffer, 0, &vl);
 	if (dw)
 	{
-		ret = std::wstring(buffer);
+		ret = wstring(buffer);
 		(void)LocalFree(buffer);
 	}
 
@@ -54,7 +54,7 @@ std::wstring formatmessage(DWORD dwID, ...)
 	return ret;
 }
 
-LPTSTR wstringToLPTSTR(std::wstring src)
+LPTSTR wstringToLPTSTR(wstring src)
 {
 	LPTSTR dst = NULL;
 #ifdef UNICODE
@@ -75,7 +75,22 @@ LPTSTR wstringToLPTSTR(std::wstring src)
 	return dst;
 }
 
-CString wstringToCString(std::wstring src)
+LPWSTR wstringToLPWSTR(wstring src)
+{
+	size_t cch = src.length();
+	if (!cch) return NULL;
+
+	cch++; // Null terminator
+	LPWSTR dst = new WCHAR[cch];
+	if (dst)
+	{
+		memcpy(dst, src.c_str(), cch * sizeof(WCHAR));
+	}
+
+	return dst;
+}
+
+CString wstringToCString(wstring src)
 {
 	CString dst;
 #ifdef UNICODE
@@ -83,6 +98,20 @@ CString wstringToCString(std::wstring src)
 #else
 	dst.Format("%ws", src.c_str());
 #endif
+	return dst;
+}
+
+wstring LPTSTRToWstring(LPTSTR src)
+{
+	wstring dst;
+
+#ifdef UNICODE
+	dst = src;
+#else
+	string ansi = src;
+	dst = wstring(ansi.begin(), ansi.end());
+#endif
+
 	return dst;
 }
 
@@ -198,4 +227,14 @@ _Check_return_ HRESULT UnicodeToAnsi(_In_z_ LPCWSTR pszW, _Out_z_cap_(cchszW) LP
 	}
 
 	return hRes;
+}
+
+bool IsNullOrEmptyW(LPWSTR szStr)
+{
+	return !szStr || !szStr[0];
+}
+
+bool IsNullOrEmptyA(LPCSTR szStr)
+{
+	return !szStr || !szStr[0];
 }

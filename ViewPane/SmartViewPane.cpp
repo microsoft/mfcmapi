@@ -3,7 +3,7 @@
 #include "SmartViewPane.h"
 #include "..\String.h"
 #include "..\UIFunctions.h"
-#include "..\SmartView.h"
+#include "..\SmartView\SmartView.h"
 
 static TCHAR* CLASS = _T("SmartViewPane");
 

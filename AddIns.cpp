@@ -17,7 +17,7 @@
 #include "GuidArray.h"
 #include "NameIDArray.h"
 #include "PropTypeArray.h"
-#include "SmartViewParsers.h"
+#include "SmartView\SmartViewParsers.h"
 
 LPADDIN g_lpMyAddins = NULL;
 

@@ -6,7 +6,7 @@
 #include "QuickStart.h"
 #include "MAPIFunctions.h"
 #include "InterpretProp2.h"
-#include "SmartView.h"
+#include "SmartView\SmartView.h"
 #include "Editor.h"
 
 static TCHAR* SPECIALFOLDERCLASS = _T("SpecialFolderEditor"); // STRING_OK

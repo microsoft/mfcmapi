@@ -6,7 +6,7 @@
 #include "InterpretProp2.h"
 #include "MAPIFunctions.h"
 #include "ExtraPropTags.h"
-#include "SmartView.h"
+#include "SmartView\SmartView.h"
 
 enum __StreamEditorTypes
 {

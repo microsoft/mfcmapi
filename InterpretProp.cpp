@@ -4,7 +4,7 @@
 #include "InterpretProp2.h"
 #include "ExtraPropTags.h"
 #include "NamedPropCache.h"
-#include "SmartView.h"
+#include "SmartView\SmartView.h"
 #include "ParseProperty.h"
 #include "String.h"
 
@@ -259,8 +259,8 @@ _Check_return_ CString TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, b
 	if (bSingleLine)
 	{
 		szFormatString = _T("0x%1!08X! (%2)"); // STRING_OK
-		if (szExactMatches) szFormatString += _T(": %3"); // STRING_OK
-		if (szPartialMatches) szFormatString += _T(": (%4)"); // STRING_OK
+		if (!IsNullOrEmpty(szExactMatches)) szFormatString += _T(": %3"); // STRING_OK
+		if (!IsNullOrEmpty(szPartialMatches)) szFormatString += _T(": (%4)"); // STRING_OK
 		if (szNamedPropName)
 		{
 			EC_B(szTemp.LoadString(IDS_NAMEDPROPSINGLELINE));
@@ -275,12 +275,12 @@ _Check_return_ CString TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, b
 	else
 	{
 		EC_B(szFormatString.LoadString(IDS_TAGMULTILINE));
-		if (szExactMatches)
+		if (!IsNullOrEmpty(szExactMatches))
 		{
 			EC_B(szTemp.LoadString(IDS_PROPNAMEMULTILINE));
 			szFormatString += szTemp;
 		}
-		if (szPartialMatches)
+		if (!IsNullOrEmpty(szPartialMatches))
 		{
 			EC_B(szTemp.LoadString(IDS_OTHERNAMESMULTILINE));
 			szFormatString += szTemp;

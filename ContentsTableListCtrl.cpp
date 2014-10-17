@@ -16,7 +16,7 @@
 #include "TagArrayEditor.h"
 #include "Guids.h"
 #include "ExtraPropTags.h"
-#include "Smartview.h"
+#include "SmartView\Smartview.h"
 #include <process.h>
 #include "UIFunctions.h"
 

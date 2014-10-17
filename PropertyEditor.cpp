@@ -5,7 +5,7 @@
 #include "PropertyEditor.h"
 #include "InterpretProp2.h"
 #include "MAPIFunctions.h"
-#include "SmartView.h"
+#include "SmartView\SmartView.h"
 #include "ParseProperty.h"
 
 _Check_return_ HRESULT DisplayPropertyEditor(_In_ CWnd* pParentWnd,

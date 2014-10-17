@@ -464,11 +464,12 @@ std::wstring NameIDToPropName(_In_ LPMAPINAMEID lpNameID)
 			// But if we weren't asked about a guid, we don't check one
 			if (lpNameID->lpguid && !IsEqualGUID(*lpNameID->lpguid, *NameIDArray[ulCur].lpGuid)) continue;
 
-			szResultString += NameIDArray[ulCur].lpszName;
-			if (ulCur != ulNameIDArray - 1)
+			if (ulCur != ulMatch)
 			{
 				szResultString += szPropSeparator;
 			}
+
+			szResultString += NameIDArray[ulCur].lpszName;
 		}
 	}
 
@@ -483,6 +484,16 @@ void InterpretFlags(const __NonPropFlag ulFlagName, const LONG lFlagValue, _Dere
 {
 	InterpretFlags(ulFlagName, lFlagValue, _T(""), szFlagString);
 } // InterpretFlags
+
+_Check_return_  wstring InterpretFlags(const __NonPropFlag ulFlagName, const LONG lFlagValue)
+{
+	LPTSTR szFlags = NULL;
+	InterpretFlags(ulFlagName, lFlagValue, &szFlags);
+	wstring szRet = LPTSTRToWstring(szFlags);
+
+	delete[] szFlags;
+	return szRet;
+}
 
 // Interprets a flag value according to a flag name and returns a string
 // allocated with new
