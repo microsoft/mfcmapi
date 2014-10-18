@@ -17,10 +17,9 @@ public:
 	WebViewPersistStream(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
 	~WebViewPersistStream();
 
-	_Check_return_ LPWSTR ToString();
-
 private:
 	void Parse();
+	_Check_return_ wstring ToStringInternal();
 
 	DWORD m_cWebViews;
 	WebViewPersistStruct* m_lpWebViews;

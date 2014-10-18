@@ -4,7 +4,7 @@
 #include "MAPIFunctions.h"
 #include "String.h"
 #include <io.h>
-#include "SmartView.h"
+#include "SmartView\SmartView.h"
 
 void DoSmartView(_In_ MYOPTIONS ProgOpts)
 {

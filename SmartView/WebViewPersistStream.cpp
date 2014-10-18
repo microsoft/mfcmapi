@@ -29,24 +29,24 @@ WebViewPersistStream::~WebViewPersistStream()
 
 void WebViewPersistStream::Parse()
 {
-	if (!m_lpBin) return;
-
 	// Run through the parser once to count the number of web view structs
-	CBinaryParser Parser2(m_cbBin, m_lpBin);
 	for (;;)
 	{
 		// Must have at least 2 bytes left to have another struct
-		if (Parser2.RemainingBytes() < sizeof(DWORD)* 11) break;
-		Parser2.Advance(sizeof(DWORD)* 10);
+		if (m_Parser.RemainingBytes() < sizeof(DWORD)* 11) break;
+		m_Parser.Advance(sizeof(DWORD)* 10);
 		DWORD cbData;
-		Parser2.GetDWORD(&cbData);
+		m_Parser.GetDWORD(&cbData);
 
 		// Must have at least cbData bytes left to be a valid flag
-		if (Parser2.RemainingBytes() < cbData) break;
+		if (m_Parser.RemainingBytes() < cbData) break;
 
-		Parser2.Advance(cbData);
+		m_Parser.Advance(cbData);
 		m_cWebViews++;
 	}
+
+	// Now we parse for real
+	m_Parser.Rewind();
 
 	DWORD cWebViews = m_cWebViews;
 	if (cWebViews && cWebViews < _MaxEntriesSmall)
@@ -71,10 +71,8 @@ void WebViewPersistStream::Parse()
 	}
 }
 
-_Check_return_ LPWSTR WebViewPersistStream::ToString()
+_Check_return_ wstring WebViewPersistStream::ToStringInternal()
 {
-	Parse();
-
 	wstring szWebViewPersistStream;
 	wstring szTmp;
 
@@ -135,7 +133,5 @@ _Check_return_ LPWSTR WebViewPersistStream::ToString()
 		}
 	}
 
-	szWebViewPersistStream += JunkDataToString();
-
-	return wstringToLPWSTR(szWebViewPersistStream);
+	return szWebViewPersistStream;
 }

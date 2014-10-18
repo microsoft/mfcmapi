@@ -36,10 +36,9 @@ public:
 	VerbStream(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
 	~VerbStream();
 
-	_Check_return_ LPWSTR ToString();
-
 private:
 	void Parse();
+	_Check_return_ wstring ToStringInternal();
 
 	WORD m_Version;
 	DWORD m_Count;

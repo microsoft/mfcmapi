@@ -28,26 +28,26 @@ PCL::~PCL()
 
 void PCL::Parse()
 {
-	if (!m_lpBin) return;
-
 	m_cXID = 0;
 
 	// Run through the parser once to count the number of flag structs
-	CBinaryParser Parser2(m_cbBin, m_lpBin);
 	for (;;)
 	{
 		// Must have at least 1 byte left to have another XID
-		if (Parser2.RemainingBytes() <= sizeof(BYTE)) break;
+		if (m_Parser.RemainingBytes() <= sizeof(BYTE)) break;
 
 		BYTE XidSize = 0;
-		Parser2.GetBYTE(&XidSize);
-		if (Parser2.RemainingBytes() >= XidSize)
+		m_Parser.GetBYTE(&XidSize);
+		if (m_Parser.RemainingBytes() >= XidSize)
 		{
-			Parser2.Advance(XidSize);
+			m_Parser.Advance(XidSize);
 		}
 
 		m_cXID++;
 	}
+
+	// Now we parse for real
+	m_Parser.Rewind();
 
 	if (m_cXID && m_cXID < _MaxEntriesSmall)
 		m_lpXID = new SizedXID[m_cXID];
@@ -68,10 +68,8 @@ void PCL::Parse()
 	}
 }
 
-_Check_return_ LPWSTR PCL::ToString()
+_Check_return_ wstring PCL::ToStringInternal()
 {
-	Parse();
-
 	wstring szPCLString;
 	wstring szTmp;
 
@@ -97,7 +95,5 @@ _Check_return_ LPWSTR PCL::ToString()
 		}
 	}
 
-	szPCLString += JunkDataToString();
-
-	return wstringToLPWSTR(szPCLString);
+	return szPCLString;
 }

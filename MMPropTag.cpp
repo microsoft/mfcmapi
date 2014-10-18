@@ -3,7 +3,7 @@
 #include "MrMAPI.h"
 #include <shlwapi.h>
 #include "guids.h"
-#include "SmartView.h"
+#include "SmartView\SmartView.h"
 #include "InterpretProp2.h"
 
 // Searches a NAMEID_ARRAY_ENTRY array for a target dispid.

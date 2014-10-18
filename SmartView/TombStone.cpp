@@ -34,8 +34,6 @@ TombStone::~TombStone()
 
 void TombStone::Parse()
 {
-	if (!m_lpBin) return;
-
 	m_Parser.GetDWORD(&m_Identifier);
 	m_Parser.GetDWORD(&m_HeaderSize);
 	m_Parser.GetDWORD(&m_Version);
@@ -43,22 +41,24 @@ void TombStone::Parse()
 	m_Parser.GetDWORD(&m_RecordsSize);
 
 	// Run through the parser once to count the number of flag structs
-	CBinaryParser Parser2(m_cbBin, m_lpBin);
-	Parser2.SetCurrentOffset(m_Parser.GetCurrentOffset());
+	size_t ulFlagOffset = m_Parser.GetCurrentOffset();
 	for (;;)
 	{
 		// Must have at least 2 bytes left to have another flag
-		if (Parser2.RemainingBytes() < sizeof(DWORD)* 3 + sizeof(WORD)) break;
+		if (m_Parser.RemainingBytes() < sizeof(DWORD)* 3 + sizeof(WORD)) break;
 		DWORD dwData = NULL;
 		WORD wData = NULL;
-		Parser2.GetDWORD(&dwData);
-		Parser2.GetDWORD(&dwData);
-		Parser2.GetDWORD(&dwData);
-		Parser2.Advance(dwData);
-		Parser2.GetWORD(&wData);
-		Parser2.Advance(wData);
+		m_Parser.GetDWORD(&dwData);
+		m_Parser.GetDWORD(&dwData);
+		m_Parser.GetDWORD(&dwData);
+		m_Parser.Advance(dwData);
+		m_Parser.GetWORD(&wData);
+		m_Parser.Advance(wData);
 		m_ActualRecordsCount++;
 	}
+
+	// Now we parse for real
+	m_Parser.SetCurrentOffset(ulFlagOffset);
 
 	if (m_ActualRecordsCount && m_ActualRecordsCount < _MaxEntriesSmall)
 		m_lpRecords = new TombstoneRecord[m_ActualRecordsCount];
@@ -79,10 +79,8 @@ void TombStone::Parse()
 	}
 }
 
-_Check_return_ LPWSTR TombStone::ToString()
+_Check_return_ wstring TombStone::ToStringInternal()
 {
-	Parse();
-
 	wstring szTombstoneString;
 	wstring szTmp;
 
@@ -120,7 +118,5 @@ _Check_return_ LPWSTR TombStone::ToString()
 		}
 	}
 
-	szTombstoneString += JunkDataToString();
-
-	return wstringToLPWSTR(szTombstoneString);
+	return szTombstoneString;
 }
