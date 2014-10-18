@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "..\stdafx.h"
 #include "RecipientRowStream.h"
-#include "BinaryParser.h"
 #include "..\String.h"
 #include "SmartView.h"
 
@@ -31,10 +30,8 @@ void RecipientRowStream::Parse()
 {
 	if (!m_lpBin) return;
 
-	CBinaryParser Parser(m_cbBin, m_lpBin);
-
-	Parser.GetDWORD(&m_cVersion);
-	Parser.GetDWORD(&m_cRowCount);
+	m_Parser.GetDWORD(&m_cVersion);
+	m_Parser.GetDWORD(&m_cRowCount);
 
 	if (m_cRowCount && m_cRowCount < _MaxEntriesSmall)
 		m_lpAdrEntry = new ADRENTRY[m_cRowCount];
@@ -46,25 +43,23 @@ void RecipientRowStream::Parse()
 
 		for (i = 0; i < m_cRowCount; i++)
 		{
-			Parser.GetDWORD(&m_lpAdrEntry[i].cValues);
-			Parser.GetDWORD(&m_lpAdrEntry[i].ulReserved1);
+			m_Parser.GetDWORD(&m_lpAdrEntry[i].cValues);
+			m_Parser.GetDWORD(&m_lpAdrEntry[i].ulReserved1);
 
 			if (m_lpAdrEntry[i].cValues && m_lpAdrEntry[i].cValues < _MaxEntriesSmall)
 			{
-				size_t cbOffset = Parser.GetCurrentOffset();
+				size_t cbOffset = m_Parser.GetCurrentOffset();
 				size_t cbBytesRead = 0;
 				m_lpAdrEntry[i].rgPropVals = BinToSPropValue(
-					(ULONG)Parser.RemainingBytes(),
+					(ULONG)m_Parser.RemainingBytes(),
 					m_lpBin + cbOffset,
 					m_lpAdrEntry[i].cValues,
 					&cbBytesRead,
 					false);
-				Parser.Advance(cbBytesRead);
+				m_Parser.Advance(cbBytesRead);
 			}
 		}
 	}
-
-	m_JunkDataSize = Parser.GetRemainingData(&m_JunkData);
 }
 
 _Check_return_ LPWSTR RecipientRowStream::ToString()

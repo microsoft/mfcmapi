@@ -1,10 +1,7 @@
 #include "stdafx.h"
 #include "..\stdafx.h"
 #include "NickNameCache.h"
-#include "BinaryParser.h"
 #include "..\String.h"
-#include <String>
-using namespace std;
 #include "..\ParseProperty.h"
 #include "SmartView.h"
 
@@ -43,12 +40,10 @@ void NickNameCache::Parse()
 {
 	if (!m_lpBin) return;
 
-	CBinaryParser Parser(m_cbBin, m_lpBin);
-
-	Parser.GetBYTESNoAlloc(sizeof(m_Metadata1), sizeof(m_Metadata1), m_Metadata1);
-	Parser.GetDWORD(&m_ulMajorVersion);
-	Parser.GetDWORD(&m_ulMinorVersion);
-	Parser.GetDWORD(&m_cRowCount);
+	m_Parser.GetBYTESNoAlloc(sizeof(m_Metadata1), sizeof(m_Metadata1), m_Metadata1);
+	m_Parser.GetDWORD(&m_ulMajorVersion);
+	m_Parser.GetDWORD(&m_ulMinorVersion);
+	m_Parser.GetDWORD(&m_cRowCount);
 
 	if (m_cRowCount && m_cRowCount < _MaxEntriesEnormous)
 		m_lpRows = new SRow[m_cRowCount];
@@ -60,26 +55,24 @@ void NickNameCache::Parse()
 
 		for (i = 0; i < m_cRowCount; i++)
 		{
-			Parser.GetDWORD(&m_lpRows[i].cValues);
+			m_Parser.GetDWORD(&m_lpRows[i].cValues);
 
 			if (m_lpRows[i].cValues && m_lpRows[i].cValues < _MaxEntriesSmall)
 			{
 				size_t cbBytesRead = 0;
 				m_lpRows[i].lpProps = NickNameBinToSPropValue(
-					(ULONG)Parser.RemainingBytes(),
-					m_lpBin + Parser.GetCurrentOffset(),
+					(ULONG)m_Parser.RemainingBytes(),
+					m_lpBin + m_Parser.GetCurrentOffset(),
 					m_lpRows[i].cValues,
 					&cbBytesRead);
-				Parser.Advance(cbBytesRead);
+				m_Parser.Advance(cbBytesRead);
 			}
 		}
 	}
 
-	Parser.GetDWORD(&m_cbEI);
-	Parser.GetBYTES(m_cbEI, _MaxBytes, &m_lpbEI);
-	Parser.GetBYTESNoAlloc(sizeof(m_Metadata2), sizeof(m_Metadata2), m_Metadata2);
-
-	m_JunkDataSize = Parser.GetRemainingData(&m_JunkData);
+	m_Parser.GetDWORD(&m_cbEI);
+	m_Parser.GetBYTES(m_cbEI, _MaxBytes, &m_lpbEI);
+	m_Parser.GetBYTESNoAlloc(sizeof(m_Metadata2), sizeof(m_Metadata2), m_Metadata2);
 }
 
 _Check_return_ LPWSTR NickNameCache::ToString()

@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "..\stdafx.h"
 #include "VerbStream.h"
-#include "BinaryParser.h"
 #include "..\String.h"
 #include "SmartView.h"
 #include "..\ExtraPropTags.h"
@@ -50,10 +49,8 @@ void VerbStream::Parse()
 {
 	if (!m_lpBin) return;
 
-	CBinaryParser Parser(m_cbBin, m_lpBin);
-
-	Parser.GetWORD(&m_Version);
-	Parser.GetDWORD(&m_Count);
+	m_Parser.GetWORD(&m_Version);
+	m_Parser.GetDWORD(&m_Count);
 
 	if (m_Count && m_Count < _MaxEntriesSmall)
 		m_lpVerbData = new VerbDataStruct[m_Count];
@@ -65,27 +62,27 @@ void VerbStream::Parse()
 
 		for (i = 0; i < m_Count; i++)
 		{
-			Parser.GetDWORD(&m_lpVerbData[i].VerbType);
-			Parser.GetBYTE(&m_lpVerbData[i].DisplayNameCount);
-			Parser.GetStringA(m_lpVerbData[i].DisplayNameCount, &m_lpVerbData[i].DisplayName);
-			Parser.GetBYTE(&m_lpVerbData[i].MsgClsNameCount);
-			Parser.GetStringA(m_lpVerbData[i].MsgClsNameCount, &m_lpVerbData[i].MsgClsName);
-			Parser.GetBYTE(&m_lpVerbData[i].Internal1StringCount);
-			Parser.GetStringA(m_lpVerbData[i].Internal1StringCount, &m_lpVerbData[i].Internal1String);
-			Parser.GetBYTE(&m_lpVerbData[i].DisplayNameCountRepeat);
-			Parser.GetStringA(m_lpVerbData[i].DisplayNameCountRepeat, &m_lpVerbData[i].DisplayNameRepeat);
-			Parser.GetDWORD(&m_lpVerbData[i].Internal2);
-			Parser.GetBYTE(&m_lpVerbData[i].Internal3);
-			Parser.GetDWORD(&m_lpVerbData[i].fUseUSHeaders);
-			Parser.GetDWORD(&m_lpVerbData[i].Internal4);
-			Parser.GetDWORD(&m_lpVerbData[i].SendBehavior);
-			Parser.GetDWORD(&m_lpVerbData[i].Internal5);
-			Parser.GetDWORD(&m_lpVerbData[i].ID);
-			Parser.GetDWORD(&m_lpVerbData[i].Internal6);
+			m_Parser.GetDWORD(&m_lpVerbData[i].VerbType);
+			m_Parser.GetBYTE(&m_lpVerbData[i].DisplayNameCount);
+			m_Parser.GetStringA(m_lpVerbData[i].DisplayNameCount, &m_lpVerbData[i].DisplayName);
+			m_Parser.GetBYTE(&m_lpVerbData[i].MsgClsNameCount);
+			m_Parser.GetStringA(m_lpVerbData[i].MsgClsNameCount, &m_lpVerbData[i].MsgClsName);
+			m_Parser.GetBYTE(&m_lpVerbData[i].Internal1StringCount);
+			m_Parser.GetStringA(m_lpVerbData[i].Internal1StringCount, &m_lpVerbData[i].Internal1String);
+			m_Parser.GetBYTE(&m_lpVerbData[i].DisplayNameCountRepeat);
+			m_Parser.GetStringA(m_lpVerbData[i].DisplayNameCountRepeat, &m_lpVerbData[i].DisplayNameRepeat);
+			m_Parser.GetDWORD(&m_lpVerbData[i].Internal2);
+			m_Parser.GetBYTE(&m_lpVerbData[i].Internal3);
+			m_Parser.GetDWORD(&m_lpVerbData[i].fUseUSHeaders);
+			m_Parser.GetDWORD(&m_lpVerbData[i].Internal4);
+			m_Parser.GetDWORD(&m_lpVerbData[i].SendBehavior);
+			m_Parser.GetDWORD(&m_lpVerbData[i].Internal5);
+			m_Parser.GetDWORD(&m_lpVerbData[i].ID);
+			m_Parser.GetDWORD(&m_lpVerbData[i].Internal6);
 		}
 	}
 
-	Parser.GetWORD(&m_Version2);
+	m_Parser.GetWORD(&m_Version2);
 
 	if (m_Count && m_Count < _MaxEntriesSmall)
 		m_lpVerbExtraData = new VerbExtraDataStruct[m_Count];
@@ -96,14 +93,12 @@ void VerbStream::Parse()
 
 		for (i = 0; i < m_Count; i++)
 		{
-			Parser.GetBYTE(&m_lpVerbExtraData[i].DisplayNameCount);
-			Parser.GetStringW(m_lpVerbExtraData[i].DisplayNameCount, &m_lpVerbExtraData[i].DisplayName);
-			Parser.GetBYTE(&m_lpVerbExtraData[i].DisplayNameCountRepeat);
-			Parser.GetStringW(m_lpVerbExtraData[i].DisplayNameCountRepeat, &m_lpVerbExtraData[i].DisplayNameRepeat);
+			m_Parser.GetBYTE(&m_lpVerbExtraData[i].DisplayNameCount);
+			m_Parser.GetStringW(m_lpVerbExtraData[i].DisplayNameCount, &m_lpVerbExtraData[i].DisplayName);
+			m_Parser.GetBYTE(&m_lpVerbExtraData[i].DisplayNameCountRepeat);
+			m_Parser.GetStringW(m_lpVerbExtraData[i].DisplayNameCountRepeat, &m_lpVerbExtraData[i].DisplayNameRepeat);
 		}
 	}
-
-	m_JunkDataSize = Parser.GetRemainingData(&m_JunkData);
 }
 
 _Check_return_ LPWSTR VerbStream::ToString()
