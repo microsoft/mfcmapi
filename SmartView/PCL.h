@@ -16,10 +16,9 @@ public:
 	PCL(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
 	~PCL();
 
-	_Check_return_ LPWSTR ToString();
-
 private:
 	void Parse();
+	_Check_return_ wstring ToStringInternal();
 
 	DWORD m_cXID;
 	SizedXID* m_lpXID;

@@ -20,14 +20,19 @@ public:
 	SmartViewParser(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
 	virtual ~SmartViewParser();
 
-	virtual _Check_return_ LPWSTR ToString() = 0;
+	_Check_return_ LPWSTR ToString();
 
 protected:
-	_Check_return_ wstring JunkDataToString();
 	_Check_return_ wstring RTimeToString(DWORD rTime);
+	_Check_return_ LPSPropValue BinToSPropValue(DWORD dwPropCount, bool bStringPropsExcludeLength);
+
+	CBinaryParser m_Parser;
+
+private:
+	virtual void Parse() = 0;
+	virtual _Check_return_ wstring ToStringInternal() = 0;
+	_Check_return_ wstring JunkDataToString();
 
 	ULONG m_cbBin;
 	LPBYTE m_lpBin;
-
-	CBinaryParser m_Parser;
 };

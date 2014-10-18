@@ -4,7 +4,7 @@
 #include "MAPIFunctions.h"
 #include "MapiProcessor.h"
 #include "ExtraPropTags.h"
-#include "SmartView.h"
+#include "SmartView\SmartView.h"
 
 inline void PrintFolder(LPCWSTR szFid, LPCTSTR szFolder)
 {

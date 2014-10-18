@@ -47,8 +47,6 @@ VerbStream::~VerbStream()
 
 void VerbStream::Parse()
 {
-	if (!m_lpBin) return;
-
 	m_Parser.GetWORD(&m_Version);
 	m_Parser.GetDWORD(&m_Count);
 
@@ -101,10 +99,8 @@ void VerbStream::Parse()
 	}
 }
 
-_Check_return_ LPWSTR VerbStream::ToString()
+_Check_return_ wstring VerbStream::ToStringInternal()
 {
-	Parse();
-
 	wstring szVerbString;
 	wstring szTmp;
 
@@ -160,7 +156,5 @@ _Check_return_ LPWSTR VerbStream::ToString()
 		}
 	}
 
-	szVerbString += JunkDataToString();
-
-	return wstringToLPWSTR(szVerbString);
+	return szVerbString;
 }

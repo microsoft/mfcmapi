@@ -7,10 +7,11 @@ public:
 	NickNameCache(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
 	~NickNameCache();
 
-	_Check_return_ LPWSTR ToString();
-
 private:
 	void Parse();
+	_Check_return_ wstring ToStringInternal();
+
+	_Check_return_ LPSPropValue NickNameBinToSPropValue(DWORD dwPropCount);
 
 	BYTE m_Metadata1[4];
 	ULONG m_ulMajorVersion;

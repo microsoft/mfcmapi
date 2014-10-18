@@ -7,10 +7,9 @@ public:
 	RecipientRowStream(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
 	~RecipientRowStream();
 
-	_Check_return_ LPWSTR ToString();
-
 private:
 	void Parse();
+	_Check_return_ wstring ToStringInternal();
 
 	DWORD m_cVersion;
 	DWORD m_cRowCount;

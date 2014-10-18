@@ -17,10 +17,9 @@ public:
 	TombStone(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
 	~TombStone();
 
-	_Check_return_ LPWSTR ToString();
-
 private:
 	void Parse();
+	_Check_return_ wstring ToStringInternal();
 
 	DWORD m_Identifier;
 	DWORD m_HeaderSize;

@@ -34,6 +34,12 @@ void CBinaryParser::Advance(size_t cbAdvance)
 	m_lpCur += cbAdvance;
 }
 
+void CBinaryParser::Rewind()
+{
+	DebugPrintEx(DBGSmartView, CLASS, _T("Rewind"), _T("Rewinding to the beginning of the stream\n"));
+	m_lpCur = m_lpBin;
+}
+
 size_t CBinaryParser::GetCurrentOffset()
 {
 	DebugPrintEx(DBGSmartView, CLASS, _T("GetCurrentOffset"), _T("Returning offset 0x%08X = %d bytes.\n"), (int)(m_lpCur - m_lpBin), (int)(m_lpCur - m_lpBin));
@@ -62,6 +68,7 @@ bool CBinaryParser::CheckRemainingBytes(size_t cbBytes)
 		DebugPrintEx(DBGSmartView, CLASS, _T("CheckRemainingBytes"), _T("Current offset does not exist!\n"));
 		return false;
 	}
+
 	size_t cbRemaining = RemainingBytes();
 	if (cbBytes > cbRemaining)
 	{
@@ -72,6 +79,7 @@ bool CBinaryParser::CheckRemainingBytes(size_t cbBytes)
 		DebugPrintEx(DBGSmartView, CLASS, _T("CheckRemainingBytes"), _T("Current offset: 0x%08X = %d\n"), (int)(m_lpCur - m_lpBin), (int)(m_lpCur - m_lpBin));
 		return false;
 	}
+
 	return true;
 }
 
@@ -121,6 +129,7 @@ void CBinaryParser::GetBYTES(size_t cbBytes, size_t cbMaxBytes, _Out_ LPBYTE* pp
 		memset(*ppBYTES, 0, sizeof(BYTE)* cbBytes);
 		memcpy(*ppBYTES, m_lpCur, cbBytes);
 	}
+
 	m_lpCur += cbBytes;
 }
 
@@ -145,6 +154,7 @@ void CBinaryParser::GetStringA(size_t cchChar, _Deref_out_z_ LPSTR* ppStr)
 		memcpy(*ppStr, m_lpCur, sizeof(CHAR)* cchChar);
 		(*ppStr)[cchChar] = NULL;
 	}
+
 	m_lpCur += sizeof(CHAR)* cchChar;
 }
 
@@ -160,6 +170,7 @@ void CBinaryParser::GetStringW(size_t cchWChar, _Deref_out_z_ LPWSTR* ppStr)
 		memcpy(*ppStr, m_lpCur, sizeof(WCHAR)* cchWChar);
 		(*ppStr)[cchWChar] = NULL;
 	}
+
 	m_lpCur += sizeof(WCHAR)* cchWChar;
 }
 
@@ -208,5 +219,6 @@ size_t CBinaryParser::GetRemainingData(_Out_ LPBYTE* ppRemainingBYTES)
 	{
 		GetBYTES(cbBytes, cbBytes, ppRemainingBYTES);
 	}
+
 	return cbBytes;
 }

@@ -2,7 +2,7 @@
 #include "..\stdafx.h"
 #include "RecipientRowStream.h"
 #include "..\String.h"
-#include "SmartView.h"
+//#include "SmartView.h"
 
 RecipientRowStream::RecipientRowStream(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
 {
@@ -28,8 +28,6 @@ RecipientRowStream::~RecipientRowStream()
 
 void RecipientRowStream::Parse()
 {
-	if (!m_lpBin) return;
-
 	m_Parser.GetDWORD(&m_cVersion);
 	m_Parser.GetDWORD(&m_cRowCount);
 
@@ -48,24 +46,16 @@ void RecipientRowStream::Parse()
 
 			if (m_lpAdrEntry[i].cValues && m_lpAdrEntry[i].cValues < _MaxEntriesSmall)
 			{
-				size_t cbOffset = m_Parser.GetCurrentOffset();
-				size_t cbBytesRead = 0;
 				m_lpAdrEntry[i].rgPropVals = BinToSPropValue(
-					(ULONG)m_Parser.RemainingBytes(),
-					m_lpBin + cbOffset,
 					m_lpAdrEntry[i].cValues,
-					&cbBytesRead,
 					false);
-				m_Parser.Advance(cbBytesRead);
 			}
 		}
 	}
 }
 
-_Check_return_ LPWSTR RecipientRowStream::ToString()
+_Check_return_ wstring RecipientRowStream::ToStringInternal()
 {
-	Parse();
-
 	wstring szRecipientRowStream;
 	wstring szTmp;
 
@@ -95,7 +85,5 @@ _Check_return_ LPWSTR RecipientRowStream::ToString()
 		}
 	}
 
-	szRecipientRowStream += JunkDataToString();
-
-	return wstringToLPWSTR(szRecipientRowStream);
+	return szRecipientRowStream;
 }

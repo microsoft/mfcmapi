@@ -6,8 +6,6 @@
 #include "..\ParseProperty.h"
 #include "..\ExtraPropTags.h"
 
-void BinToFolderFieldDefinitionCommon(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, _Out_ size_t* lpcbBytesRead, _Out_ FolderFieldDefinitionCommon* pffdcFolderFieldDefinitionCommon);
-
 FolderUserFieldStream::FolderUserFieldStream(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
 {
 	m_FolderUserFieldsAnsi = { 0 };
@@ -42,8 +40,6 @@ FolderUserFieldStream::~FolderUserFieldStream()
 
 void FolderUserFieldStream::Parse()
 {
-	if (!m_lpBin) return;
-
 	m_Parser.GetDWORD(&m_FolderUserFieldsAnsi.FieldDefinitionCount);
 
 	if (m_FolderUserFieldsAnsi.FieldDefinitionCount && m_FolderUserFieldsAnsi.FieldDefinitionCount < _MaxEntriesSmall)
@@ -67,13 +63,8 @@ void FolderUserFieldStream::Parse()
 					&m_FolderUserFieldsAnsi.FieldDefinitions[i].FieldName);
 			}
 
-			size_t cbBytesRead = 0;
 			BinToFolderFieldDefinitionCommon(
-				(ULONG)m_Parser.RemainingBytes(),
-				m_lpBin + m_Parser.GetCurrentOffset(),
-				&cbBytesRead,
 				&m_FolderUserFieldsAnsi.FieldDefinitions[i].Common);
-			m_Parser.Advance(cbBytesRead);
 		}
 	}
 
@@ -100,21 +91,34 @@ void FolderUserFieldStream::Parse()
 					&m_FolderUserFieldsUnicode.FieldDefinitions[i].FieldName);
 			}
 
-			size_t cbBytesRead = 0;
 			BinToFolderFieldDefinitionCommon(
-				(ULONG)m_Parser.RemainingBytes(),
-				m_lpBin + m_Parser.GetCurrentOffset(),
-				&cbBytesRead,
 				&m_FolderUserFieldsUnicode.FieldDefinitions[i].Common);
-			m_Parser.Advance(cbBytesRead);
 		}
 	}
 }
 
-_Check_return_ LPWSTR FolderUserFieldStream::ToString()
+void FolderUserFieldStream::BinToFolderFieldDefinitionCommon(_Out_ FolderFieldDefinitionCommon* pffdcFolderFieldDefinitionCommon)
 {
-	Parse();
+	*pffdcFolderFieldDefinitionCommon = FolderFieldDefinitionCommon();
 
+	m_Parser.GetBYTESNoAlloc(sizeof(GUID), sizeof(GUID), (LPBYTE)&pffdcFolderFieldDefinitionCommon->PropSetGuid);
+	m_Parser.GetDWORD(&pffdcFolderFieldDefinitionCommon->fcapm);
+	m_Parser.GetDWORD(&pffdcFolderFieldDefinitionCommon->dwString);
+	m_Parser.GetDWORD(&pffdcFolderFieldDefinitionCommon->dwBitmap);
+	m_Parser.GetDWORD(&pffdcFolderFieldDefinitionCommon->dwDisplay);
+	m_Parser.GetDWORD(&pffdcFolderFieldDefinitionCommon->iFmt);
+	m_Parser.GetWORD(&pffdcFolderFieldDefinitionCommon->wszFormulaLength);
+	if (pffdcFolderFieldDefinitionCommon->wszFormulaLength &&
+		pffdcFolderFieldDefinitionCommon->wszFormulaLength < _MaxEntriesLarge)
+	{
+		m_Parser.GetStringW(
+			pffdcFolderFieldDefinitionCommon->wszFormulaLength,
+			&pffdcFolderFieldDefinitionCommon->wszFormula);
+	}
+}
+
+_Check_return_ wstring FolderUserFieldStream::ToStringInternal()
+{
 	wstring szFolderUserFieldStream;
 	wstring szTmp;
 
@@ -181,32 +185,5 @@ _Check_return_ LPWSTR FolderUserFieldStream::ToString()
 		}
 	}
 
-	szFolderUserFieldStream += JunkDataToString();
-
-	return wstringToLPWSTR(szFolderUserFieldStream);
-}
-
-void BinToFolderFieldDefinitionCommon(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, _Out_ size_t* lpcbBytesRead, _Out_ FolderFieldDefinitionCommon* pffdcFolderFieldDefinitionCommon)
-{
-	if (!lpBin || !lpcbBytesRead || !pffdcFolderFieldDefinitionCommon) return;
-	*pffdcFolderFieldDefinitionCommon = FolderFieldDefinitionCommon();
-
-	CBinaryParser Parser(cbBin, lpBin);
-
-	Parser.GetBYTESNoAlloc(sizeof(GUID), sizeof(GUID), (LPBYTE)&pffdcFolderFieldDefinitionCommon->PropSetGuid);
-	Parser.GetDWORD(&pffdcFolderFieldDefinitionCommon->fcapm);
-	Parser.GetDWORD(&pffdcFolderFieldDefinitionCommon->dwString);
-	Parser.GetDWORD(&pffdcFolderFieldDefinitionCommon->dwBitmap);
-	Parser.GetDWORD(&pffdcFolderFieldDefinitionCommon->dwDisplay);
-	Parser.GetDWORD(&pffdcFolderFieldDefinitionCommon->iFmt);
-	Parser.GetWORD(&pffdcFolderFieldDefinitionCommon->wszFormulaLength);
-	if (pffdcFolderFieldDefinitionCommon->wszFormulaLength &&
-		pffdcFolderFieldDefinitionCommon->wszFormulaLength < _MaxEntriesLarge)
-	{
-		Parser.GetStringW(
-			pffdcFolderFieldDefinitionCommon->wszFormulaLength,
-			&pffdcFolderFieldDefinitionCommon->wszFormula);
-	}
-
-	*lpcbBytesRead = Parser.GetCurrentOffset();
+	return szFolderUserFieldStream;
 }

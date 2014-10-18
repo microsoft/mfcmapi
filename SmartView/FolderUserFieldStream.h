@@ -47,10 +47,11 @@ public:
 	FolderUserFieldStream(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
 	~FolderUserFieldStream();
 
-	_Check_return_ LPWSTR ToString();
-
 private:
 	void Parse();
+	_Check_return_ wstring ToStringInternal();
+
+	void BinToFolderFieldDefinitionCommon(_Out_ FolderFieldDefinitionCommon* pffdcFolderFieldDefinitionCommon);
 
 	FolderUserFieldA m_FolderUserFieldsAnsi;
 	FolderUserFieldW m_FolderUserFieldsUnicode;

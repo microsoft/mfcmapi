@@ -10,6 +10,7 @@ public:
 
 	void Init(size_t cbBin, _In_count_(cbBin) LPBYTE lpBin);
 	void Advance(size_t cbAdvance);
+	void Rewind();
 	size_t GetCurrentOffset();
 	// Moves the parser to an offset obtained from GetCurrentOffset
 	void SetCurrentOffset(size_t stOffset);
