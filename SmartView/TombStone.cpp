@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "..\stdafx.h"
 #include "TombStone.h"
-#include "BinaryParser.h"
 #include "..\String.h"
 #include "..\ParseProperty.h"
 #include "SmartView.h"
@@ -37,17 +36,15 @@ void TombStone::Parse()
 {
 	if (!m_lpBin) return;
 
-	CBinaryParser Parser(m_cbBin, m_lpBin);
-
-	Parser.GetDWORD(&m_Identifier);
-	Parser.GetDWORD(&m_HeaderSize);
-	Parser.GetDWORD(&m_Version);
-	Parser.GetDWORD(&m_RecordsCount);
-	Parser.GetDWORD(&m_RecordsSize);
+	m_Parser.GetDWORD(&m_Identifier);
+	m_Parser.GetDWORD(&m_HeaderSize);
+	m_Parser.GetDWORD(&m_Version);
+	m_Parser.GetDWORD(&m_RecordsCount);
+	m_Parser.GetDWORD(&m_RecordsSize);
 
 	// Run through the parser once to count the number of flag structs
 	CBinaryParser Parser2(m_cbBin, m_lpBin);
-	Parser2.SetCurrentOffset(Parser.GetCurrentOffset());
+	Parser2.SetCurrentOffset(m_Parser.GetCurrentOffset());
 	for (;;)
 	{
 		// Must have at least 2 bytes left to have another flag
@@ -72,16 +69,14 @@ void TombStone::Parse()
 
 		for (i = 0; i < m_ActualRecordsCount; i++)
 		{
-			Parser.GetDWORD(&m_lpRecords[i].StartTime);
-			Parser.GetDWORD(&m_lpRecords[i].EndTime);
-			Parser.GetDWORD(&m_lpRecords[i].GlobalObjectIdSize);
-			Parser.GetBYTES(m_lpRecords[i].GlobalObjectIdSize, _MaxBytes, &m_lpRecords[i].lpGlobalObjectId);
-			Parser.GetWORD(&m_lpRecords[i].UsernameSize);
-			Parser.GetStringA(m_lpRecords[i].UsernameSize, &m_lpRecords[i].szUsername);
+			m_Parser.GetDWORD(&m_lpRecords[i].StartTime);
+			m_Parser.GetDWORD(&m_lpRecords[i].EndTime);
+			m_Parser.GetDWORD(&m_lpRecords[i].GlobalObjectIdSize);
+			m_Parser.GetBYTES(m_lpRecords[i].GlobalObjectIdSize, _MaxBytes, &m_lpRecords[i].lpGlobalObjectId);
+			m_Parser.GetWORD(&m_lpRecords[i].UsernameSize);
+			m_Parser.GetStringA(m_lpRecords[i].UsernameSize, &m_lpRecords[i].szUsername);
 		}
 	}
-
-	m_JunkDataSize = Parser.GetRemainingData(&m_JunkData);
 }
 
 _Check_return_ LPWSTR TombStone::ToString()

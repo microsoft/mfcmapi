@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "..\stdafx.h"
 #include "FolderUserFieldStream.h"
-#include "BinaryParser.h"
 #include "..\String.h"
 #include "..\InterpretProp2.h"
 #include "..\ParseProperty.h"
@@ -45,9 +44,7 @@ void FolderUserFieldStream::Parse()
 {
 	if (!m_lpBin) return;
 
-	CBinaryParser Parser(m_cbBin, m_lpBin);
-
-	Parser.GetDWORD(&m_FolderUserFieldsAnsi.FieldDefinitionCount);
+	m_Parser.GetDWORD(&m_FolderUserFieldsAnsi.FieldDefinitionCount);
 
 	if (m_FolderUserFieldsAnsi.FieldDefinitionCount && m_FolderUserFieldsAnsi.FieldDefinitionCount < _MaxEntriesSmall)
 		m_FolderUserFieldsAnsi.FieldDefinitions = new FolderFieldDefinitionA[m_FolderUserFieldsAnsi.FieldDefinitionCount];
@@ -59,28 +56,28 @@ void FolderUserFieldStream::Parse()
 
 		for (i = 0; i < m_FolderUserFieldsAnsi.FieldDefinitionCount; i++)
 		{
-			Parser.GetDWORD(&m_FolderUserFieldsAnsi.FieldDefinitions[i].FieldType);
-			Parser.GetWORD(&m_FolderUserFieldsAnsi.FieldDefinitions[i].FieldNameLength);
+			m_Parser.GetDWORD(&m_FolderUserFieldsAnsi.FieldDefinitions[i].FieldType);
+			m_Parser.GetWORD(&m_FolderUserFieldsAnsi.FieldDefinitions[i].FieldNameLength);
 
 			if (m_FolderUserFieldsAnsi.FieldDefinitions[i].FieldNameLength &&
 				m_FolderUserFieldsAnsi.FieldDefinitions[i].FieldNameLength < _MaxEntriesSmall)
 			{
-				Parser.GetStringA(
+				m_Parser.GetStringA(
 					m_FolderUserFieldsAnsi.FieldDefinitions[i].FieldNameLength,
 					&m_FolderUserFieldsAnsi.FieldDefinitions[i].FieldName);
 			}
 
 			size_t cbBytesRead = 0;
 			BinToFolderFieldDefinitionCommon(
-				(ULONG)Parser.RemainingBytes(),
-				m_lpBin + Parser.GetCurrentOffset(),
+				(ULONG)m_Parser.RemainingBytes(),
+				m_lpBin + m_Parser.GetCurrentOffset(),
 				&cbBytesRead,
 				&m_FolderUserFieldsAnsi.FieldDefinitions[i].Common);
-			Parser.Advance(cbBytesRead);
+			m_Parser.Advance(cbBytesRead);
 		}
 	}
 
-	Parser.GetDWORD(&m_FolderUserFieldsUnicode.FieldDefinitionCount);
+	m_Parser.GetDWORD(&m_FolderUserFieldsUnicode.FieldDefinitionCount);
 
 	if (m_FolderUserFieldsUnicode.FieldDefinitionCount && m_FolderUserFieldsUnicode.FieldDefinitionCount < _MaxEntriesSmall)
 		m_FolderUserFieldsUnicode.FieldDefinitions = new FolderFieldDefinitionW[m_FolderUserFieldsUnicode.FieldDefinitionCount];
@@ -92,28 +89,26 @@ void FolderUserFieldStream::Parse()
 
 		for (i = 0; i < m_FolderUserFieldsUnicode.FieldDefinitionCount; i++)
 		{
-			Parser.GetDWORD(&m_FolderUserFieldsUnicode.FieldDefinitions[i].FieldType);
-			Parser.GetWORD(&m_FolderUserFieldsUnicode.FieldDefinitions[i].FieldNameLength);
+			m_Parser.GetDWORD(&m_FolderUserFieldsUnicode.FieldDefinitions[i].FieldType);
+			m_Parser.GetWORD(&m_FolderUserFieldsUnicode.FieldDefinitions[i].FieldNameLength);
 
 			if (m_FolderUserFieldsUnicode.FieldDefinitions[i].FieldNameLength &&
 				m_FolderUserFieldsUnicode.FieldDefinitions[i].FieldNameLength < _MaxEntriesSmall)
 			{
-				Parser.GetStringW(
+				m_Parser.GetStringW(
 					m_FolderUserFieldsUnicode.FieldDefinitions[i].FieldNameLength,
 					&m_FolderUserFieldsUnicode.FieldDefinitions[i].FieldName);
 			}
 
 			size_t cbBytesRead = 0;
 			BinToFolderFieldDefinitionCommon(
-				(ULONG)Parser.RemainingBytes(),
-				m_lpBin + Parser.GetCurrentOffset(),
+				(ULONG)m_Parser.RemainingBytes(),
+				m_lpBin + m_Parser.GetCurrentOffset(),
 				&cbBytesRead,
 				&m_FolderUserFieldsUnicode.FieldDefinitions[i].Common);
-			Parser.Advance(cbBytesRead);
+			m_Parser.Advance(cbBytesRead);
 		}
 	}
-
-	m_JunkDataSize = Parser.GetRemainingData(&m_JunkData);
 }
 
 _Check_return_ LPWSTR FolderUserFieldStream::ToString()

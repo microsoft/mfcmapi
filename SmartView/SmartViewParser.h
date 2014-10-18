@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 using namespace std;
+#include "BinaryParser.h"
 
 #define _MaxBytes 0xFFFF
 #define _MaxDepth 50
@@ -28,6 +29,5 @@ protected:
 	ULONG m_cbBin;
 	LPBYTE m_lpBin;
 
-	size_t m_JunkDataSize;
-	LPBYTE m_JunkData; // Unparsed data in persisted property
+	CBinaryParser m_Parser;
 };

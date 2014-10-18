@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "..\stdafx.h"
 #include "WebViewPersistStream.h"
-#include "BinaryParser.h"
 #include "..\String.h"
 #include "..\InterpretProp2.h"
 #include "..\ParseProperty.h"
@@ -32,26 +31,23 @@ void WebViewPersistStream::Parse()
 {
 	if (!m_lpBin) return;
 
-	CBinaryParser Parser(m_cbBin, m_lpBin);
-
 	// Run through the parser once to count the number of web view structs
+	CBinaryParser Parser2(m_cbBin, m_lpBin);
 	for (;;)
 	{
 		// Must have at least 2 bytes left to have another struct
-		if (Parser.RemainingBytes() < sizeof(DWORD)* 11) break;
-		Parser.Advance(sizeof(DWORD)* 10);
+		if (Parser2.RemainingBytes() < sizeof(DWORD)* 11) break;
+		Parser2.Advance(sizeof(DWORD)* 10);
 		DWORD cbData;
-		Parser.GetDWORD(&cbData);
+		Parser2.GetDWORD(&cbData);
 
 		// Must have at least cbData bytes left to be a valid flag
-		if (Parser.RemainingBytes() < cbData) break;
+		if (Parser2.RemainingBytes() < cbData) break;
 
-		Parser.Advance(cbData);
+		Parser2.Advance(cbData);
 		m_cWebViews++;
 	}
 
-	// Set up to parse for real
-	CBinaryParser Parser2(m_cbBin, m_lpBin);
 	DWORD cWebViews = m_cWebViews;
 	if (cWebViews && cWebViews < _MaxEntriesSmall)
 	{
@@ -65,16 +61,14 @@ void WebViewPersistStream::Parse()
 
 		for (i = 0; i < cWebViews; i++)
 		{
-			Parser2.GetDWORD(&m_lpWebViews[i].dwVersion);
-			Parser2.GetDWORD(&m_lpWebViews[i].dwType);
-			Parser2.GetDWORD(&m_lpWebViews[i].dwFlags);
-			Parser2.GetBYTESNoAlloc(sizeof(m_lpWebViews[i].dwUnused), sizeof(m_lpWebViews[i].dwUnused), (LPBYTE)&m_lpWebViews[i].dwUnused);
-			Parser2.GetDWORD(&m_lpWebViews[i].cbData);
-			Parser2.GetBYTES(m_lpWebViews[i].cbData, _MaxBytes, &m_lpWebViews[i].lpData);
+			m_Parser.GetDWORD(&m_lpWebViews[i].dwVersion);
+			m_Parser.GetDWORD(&m_lpWebViews[i].dwType);
+			m_Parser.GetDWORD(&m_lpWebViews[i].dwFlags);
+			m_Parser.GetBYTESNoAlloc(sizeof(m_lpWebViews[i].dwUnused), sizeof(m_lpWebViews[i].dwUnused), (LPBYTE)&m_lpWebViews[i].dwUnused);
+			m_Parser.GetDWORD(&m_lpWebViews[i].cbData);
+			m_Parser.GetBYTES(m_lpWebViews[i].cbData, _MaxBytes, &m_lpWebViews[i].lpData);
 		}
 	}
-
-	m_JunkDataSize = Parser2.GetRemainingData(&m_JunkData);
 }
 
 _Check_return_ LPWSTR WebViewPersistStream::ToString()

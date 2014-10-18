@@ -4,9 +4,22 @@
 
 static TCHAR* CLASS = _T("CBinaryParser");
 
+CBinaryParser::CBinaryParser()
+{
+	m_cbBin = 0;
+	m_lpBin = NULL;
+	m_lpCur = NULL;
+	m_lpEnd = NULL;
+}
+
 CBinaryParser::CBinaryParser(size_t cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
-	DebugPrintEx(DBGSmartView, CLASS, _T("CBinaryParser"), _T("cbBin = 0x%08X = %u\n"), (int)cbBin, (UINT)cbBin);
+	Init(cbBin, lpBin);
+}
+
+void CBinaryParser::Init(size_t cbBin, _In_count_(cbBin) LPBYTE lpBin)
+{
+	DebugPrintEx(DBGSmartView, CLASS, _T("Init"), _T("cbBin = 0x%08X = %u\n"), (int)cbBin, (UINT)cbBin);
 	m_cbBin = cbBin;
 	m_lpBin = lpBin;
 	m_lpCur = lpBin;

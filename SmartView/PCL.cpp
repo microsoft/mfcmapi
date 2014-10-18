@@ -30,12 +30,10 @@ void PCL::Parse()
 {
 	if (!m_lpBin) return;
 
-	CBinaryParser Parser(m_cbBin, m_lpBin);
 	m_cXID = 0;
 
 	// Run through the parser once to count the number of flag structs
 	CBinaryParser Parser2(m_cbBin, m_lpBin);
-	Parser2.SetCurrentOffset(Parser.GetCurrentOffset());
 	for (;;)
 	{
 		// Must have at least 1 byte left to have another XID
@@ -61,15 +59,13 @@ void PCL::Parse()
 
 		for (i = 0; i < m_cXID; i++)
 		{
-			Parser.GetBYTE(&m_lpXID[i].XidSize);
-			Parser.GetBYTESNoAlloc(sizeof(GUID), sizeof(GUID), (LPBYTE)&m_lpXID[i].NamespaceGuid);
+			m_Parser.GetBYTE(&m_lpXID[i].XidSize);
+			m_Parser.GetBYTESNoAlloc(sizeof(GUID), sizeof(GUID), (LPBYTE)&m_lpXID[i].NamespaceGuid);
 			m_lpXID[i].cbLocalId = m_lpXID[i].XidSize - sizeof(GUID);
-			if (Parser.RemainingBytes() < m_lpXID[i].cbLocalId) break;
-			Parser.GetBYTES(m_lpXID[i].cbLocalId, m_lpXID[i].cbLocalId, &m_lpXID[i].LocalID);
+			if (m_Parser.RemainingBytes() < m_lpXID[i].cbLocalId) break;
+			m_Parser.GetBYTES(m_lpXID[i].cbLocalId, m_lpXID[i].cbLocalId, &m_lpXID[i].LocalID);
 		}
 	}
-
-	m_JunkDataSize = Parser.GetRemainingData(&m_JunkData);
 }
 
 _Check_return_ LPWSTR PCL::ToString()
