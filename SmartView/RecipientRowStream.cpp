@@ -2,7 +2,7 @@
 #include "..\stdafx.h"
 #include "RecipientRowStream.h"
 #include "..\String.h"
-//#include "SmartView.h"
+#include "SmartView.h"
 
 RecipientRowStream::RecipientRowStream(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
 {
