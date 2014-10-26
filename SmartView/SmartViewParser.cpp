@@ -42,12 +42,27 @@ _Check_return_ wstring SmartViewParser::JunkDataToString()
 		sBin.cb = (ULONG)junkDataSize;
 		sBin.lpb = junkData;
 		szJunkString += BinToHexString(&sBin, true);
-		
 	}
 
 	if (junkData) delete[] junkData;
 
 	return szJunkString;
+}
+
+// TODO: Eliminate this
+_Check_return_ wstring SmartViewParser::JunkDataToString(size_t cbJunkData, _In_count_(cbJunkData) LPBYTE lpJunkData)
+{
+	if (!cbJunkData || !lpJunkData) return L"";
+	DebugPrint(DBGSmartView, _T("Had 0x%08X = %u bytes left over.\n"), (int)cbJunkData, (UINT)cbJunkData);
+	wstring szTmp;
+	SBinary sBin = { 0 };
+
+	sBin.cb = (ULONG)cbJunkData;
+	sBin.lpb = lpJunkData;
+	szTmp = formatmessage(IDS_JUNKDATASIZE,
+		cbJunkData);
+	szTmp += BinToHexString(&sBin, true).c_str();
+	return szTmp;
 }
 
 _Check_return_ wstring SmartViewParser::RTimeToString(DWORD rTime)

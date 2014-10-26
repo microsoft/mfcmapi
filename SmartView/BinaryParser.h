@@ -12,6 +12,7 @@ public:
 	void Advance(size_t cbAdvance);
 	void Rewind();
 	size_t GetCurrentOffset();
+	LPBYTE GetCurrentAddress();
 	// Moves the parser to an offset obtained from GetCurrentOffset
 	void SetCurrentOffset(size_t stOffset);
 	size_t RemainingBytes();

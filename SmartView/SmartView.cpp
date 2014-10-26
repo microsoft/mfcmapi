@@ -20,6 +20,7 @@
 #include "FolderUserFieldStream.h"
 #include "RecipientRowStream.h"
 #include "WebViewPersistStream.h"
+#include "FlatEntryList.h"
 
 #define _MaxBytes 0xFFFF
 #define _MaxDepth 50
@@ -113,7 +114,6 @@ SMART_VIEW_PARSERS_ENTRY g_SmartViewParsers[] = {
 	MAKE_SV_ENTRY(IDS_STSEARCHFOLDERDEFINITION, SearchFolderDefinitionStruct)
 	MAKE_SV_ENTRY(IDS_STPROPERTYDEFINITIONSTREAM, PropertyDefinitionStreamStruct)
 	MAKE_SV_ENTRY(IDS_STADDITIONALRENENTRYIDSEX, AdditionalRenEntryIDsStruct)
-	MAKE_SV_ENTRY(IDS_STFLATENTRYLIST, FlatEntryListStruct)
 	// MAKE_SV_ENTRY(IDS_STSID, SIDStruct)
 	// MAKE_SV_ENTRY(IDS_STDECODEENTRYID)
 	// MAKE_SV_ENTRY(IDS_STENCODEENTRYID)
@@ -147,6 +147,9 @@ LPSMARTVIEWPARSER GetSmartViewParser(DWORD_PTR iStructType, ULONG cbBin, _In_cou
 		break;
 	case IDS_STWEBVIEWPERSISTSTREAM:
 		return new WebViewPersistStream(cbBin, lpBin);
+		break;
+	case IDS_STFLATENTRYLIST:
+		return new FlatEntryList(cbBin, lpBin);
 		break;
 	}
 
@@ -4897,132 +4900,4 @@ _Check_return_ LPWSTR AdditionalRenEntryIDsStructToString(_In_ AdditionalRenEntr
 
 //////////////////////////////////////////////////////////////////////////
 // End AdditionalRenEntryIDsStruct
-//////////////////////////////////////////////////////////////////////////
-
-//////////////////////////////////////////////////////////////////////////
-// FlatEntryListStruct
-//////////////////////////////////////////////////////////////////////////
-
-// Allocates return value with new. Clean up with DeleteFlatEntryListStruct.
-_Check_return_ FlatEntryListStruct* BinToFlatEntryListStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
-{
-	if (!lpBin) return NULL;
-
-	FlatEntryListStruct felFlatEntryList = { 0 };
-	CBinaryParser Parser(cbBin, lpBin);
-
-	Parser.GetDWORD(&felFlatEntryList.cEntries);
-
-	// We read and report this, but ultimately, it's not used.
-	Parser.GetDWORD(&felFlatEntryList.cbEntries);
-
-	if (felFlatEntryList.cEntries && felFlatEntryList.cEntries < _MaxEntriesLarge)
-	{
-		felFlatEntryList.pEntryIDs = new FlatEntryIDStruct[felFlatEntryList.cEntries];
-		if (felFlatEntryList.pEntryIDs)
-		{
-			memset(felFlatEntryList.pEntryIDs, 0, felFlatEntryList.cEntries * sizeof(FlatEntryIDStruct));
-
-			DWORD iFlatEntryList = 0;
-			for (iFlatEntryList = 0; iFlatEntryList < felFlatEntryList.cEntries; iFlatEntryList++)
-			{
-				// Size here will be the length of the serialized entry ID
-				// We'll have to round it up to a multiple of 4 to read off padding
-				Parser.GetDWORD(&felFlatEntryList.pEntryIDs[iFlatEntryList].dwSize);
-				size_t ulSize = Parser.RemainingBytes();
-				ulSize = min(felFlatEntryList.pEntryIDs[iFlatEntryList].dwSize, ulSize);
-
-				felFlatEntryList.pEntryIDs[iFlatEntryList].lpEntryID = BinToEntryIdStruct(
-					(ULONG)ulSize,
-					lpBin + Parser.GetCurrentOffset());
-				Parser.Advance(ulSize);
-
-				DWORD dwPAD = 3 - ((felFlatEntryList.pEntryIDs[iFlatEntryList].dwSize + 3) % 4);
-				if (dwPAD > 0)
-				{
-					felFlatEntryList.pEntryIDs[iFlatEntryList].JunkDataSize = dwPAD;
-					Parser.GetBYTES(felFlatEntryList.pEntryIDs[iFlatEntryList].JunkDataSize, felFlatEntryList.pEntryIDs[iFlatEntryList].JunkDataSize, &felFlatEntryList.pEntryIDs[iFlatEntryList].JunkData);
-				}
-			}
-		}
-	}
-
-	felFlatEntryList.JunkDataSize = Parser.GetRemainingData(&felFlatEntryList.JunkData);
-
-	FlatEntryListStruct* pfelFlatEntryList = new FlatEntryListStruct;
-	if (pfelFlatEntryList)
-	{
-		*pfelFlatEntryList = felFlatEntryList;
-	}
-
-	return pfelFlatEntryList;
-} // BinToFlatEntryListStruct
-
-void DeleteFlatEntryListStruct(_In_ FlatEntryListStruct* pfelFlatEntryList)
-{
-	if (!pfelFlatEntryList) return;
-	if (pfelFlatEntryList->pEntryIDs)
-	{
-		DWORD iFlatEntryList = 0;
-		for (iFlatEntryList = 0; iFlatEntryList < pfelFlatEntryList->cEntries; iFlatEntryList++)
-		{
-			DeleteEntryIdStruct(pfelFlatEntryList->pEntryIDs[iFlatEntryList].lpEntryID);
-			delete[] pfelFlatEntryList->pEntryIDs[iFlatEntryList].JunkData;
-		}
-	}
-	delete[] pfelFlatEntryList->pEntryIDs;
-
-	delete[] pfelFlatEntryList->JunkData;
-	delete pfelFlatEntryList;
-} // DeleteFlatEntryListStruct
-
-// result allocated with new, clean up with delete[]
-_Check_return_ LPWSTR FlatEntryListStructToString(_In_ FlatEntryListStruct* pfelFlatEntryList)
-{
-	if (!pfelFlatEntryList) return NULL;
-
-	CString szFlatEntryList;
-	CString szTmp;
-
-	szFlatEntryList.FormatMessage(
-		IDS_FELHEADER,
-		pfelFlatEntryList->cEntries,
-		pfelFlatEntryList->cbEntries);
-
-	if (pfelFlatEntryList->pEntryIDs)
-	{
-		DWORD iFlatEntryList = 0;
-		for (iFlatEntryList = 0; iFlatEntryList < pfelFlatEntryList->cEntries; iFlatEntryList++)
-		{
-			szTmp.FormatMessage(
-				IDS_FELENTRYHEADER,
-				iFlatEntryList,
-				pfelFlatEntryList->pEntryIDs[iFlatEntryList].dwSize);
-			szFlatEntryList += szTmp;
-			if (pfelFlatEntryList->pEntryIDs[iFlatEntryList].lpEntryID)
-			{
-				LPWSTR szEID = EntryIdStructToString(pfelFlatEntryList->pEntryIDs[iFlatEntryList].lpEntryID);
-				szFlatEntryList += szEID;
-				delete[] szEID;
-			}
-
-			if (pfelFlatEntryList->pEntryIDs[iFlatEntryList].JunkDataSize)
-			{
-				szTmp.FormatMessage(
-					IDS_FELENTRYPADDING,
-					iFlatEntryList);
-				szFlatEntryList += szTmp;
-				szFlatEntryList += JunkDataToString(pfelFlatEntryList->pEntryIDs[iFlatEntryList].JunkDataSize, pfelFlatEntryList->pEntryIDs[iFlatEntryList].JunkData);
-			}
-			szFlatEntryList += _T("\r\n"); // STRING_OK
-		}
-	}
-
-	szFlatEntryList += JunkDataToString(pfelFlatEntryList->JunkDataSize, pfelFlatEntryList->JunkData);
-
-	return CStringToLPWSTR(szFlatEntryList);
-} // FlatEntryListStructToString
-
-//////////////////////////////////////////////////////////////////////////
-// End FlatEntryListStruct
 //////////////////////////////////////////////////////////////////////////
