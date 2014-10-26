@@ -46,6 +46,12 @@ size_t CBinaryParser::GetCurrentOffset()
 	return m_lpCur - m_lpBin;
 }
 
+LPBYTE CBinaryParser::GetCurrentAddress()
+{
+	DebugPrintEx(DBGSmartView, CLASS, _T("GetCurrentAddress"), _T("Returning address 0x%08X = %d bytes.\n"), (int)m_lpCur, (int)m_lpCur);
+	return m_lpCur;
+}
+
 void CBinaryParser::SetCurrentOffset(size_t stOffset)
 {
 	DebugPrintEx(DBGSmartView, CLASS, _T("SetCurrentOffset"), _T("Setting offset 0x%08X = %u bytes.\n"), (int)stOffset, (UINT)stOffset);

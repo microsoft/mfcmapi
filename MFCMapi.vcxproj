@@ -929,6 +929,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="RichEditOleCallback.h" />
     <ClInclude Include="SingleRecipientDialog.h" />
     <ClInclude Include="SmartView\BinaryParser.h" />
+    <ClInclude Include="SmartView\FlatEntryList.h" />
     <ClInclude Include="SmartView\FolderUserFieldStream.h" />
     <ClInclude Include="SmartView\NickNameCache.h" />
     <ClInclude Include="SmartView\PCL.h" />
@@ -1650,6 +1651,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="SmartView\BinaryParser.cpp" />
+    <ClCompile Include="SmartView\FlatEntryList.cpp" />
     <ClCompile Include="SmartView\FolderUserFieldStream.cpp" />
     <ClCompile Include="SmartView\NickNameCache.cpp" />
     <ClCompile Include="SmartView\PCL.cpp" />

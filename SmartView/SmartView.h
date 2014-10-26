@@ -813,36 +813,3 @@ _Check_return_ AdditionalRenEntryIDsStruct* BinToAdditionalRenEntryIDsStruct(ULO
 void DeleteAdditionalRenEntryIDsStruct(_In_ AdditionalRenEntryIDsStruct* pareiAdditionalRenEntryIDs);
 // result allocated with new, clean up with delete[]
 _Check_return_ LPWSTR AdditionalRenEntryIDsStructToString(_In_ AdditionalRenEntryIDsStruct* pareiAdditionalRenEntryIDs);
-
-// FlatEntryIDStruct
-// =====================
-//   This structure specifies a Flat Entry ID in a Flat Entry List blob
-//
-struct FlatEntryIDStruct
-{
-	DWORD dwSize;
-	EntryIdStruct* lpEntryID;
-
-	size_t JunkDataSize;
-	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
-};
-
-// FlatEntryListStruct
-// =====================
-//   This structure specifies a Flat Entry List blob
-//
-struct FlatEntryListStruct
-{
-	DWORD cEntries;
-	DWORD cbEntries;
-	FlatEntryIDStruct* pEntryIDs;
-
-	size_t JunkDataSize;
-	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
-};
-
-// Allocates return value with new. Clean up with DeleteFlatEntryListStruct.
-_Check_return_ FlatEntryListStruct* BinToFlatEntryListStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
-void DeleteFlatEntryListStruct(_In_ FlatEntryListStruct* pfelFlatEntryList);
-// result allocated with new, clean up with delete[]
-_Check_return_ LPWSTR FlatEntryListStructToString(_In_ FlatEntryListStruct* pfelFlatEntryList);
