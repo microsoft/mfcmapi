@@ -928,6 +928,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="QSSpecialFolders.h" />
     <ClInclude Include="RichEditOleCallback.h" />
     <ClInclude Include="SingleRecipientDialog.h" />
+    <ClInclude Include="SmartView\AdditionalRenEntryIDs.h" />
     <ClInclude Include="SmartView\BinaryParser.h" />
     <ClInclude Include="SmartView\FlatEntryList.h" />
     <ClInclude Include="SmartView\FolderUserFieldStream.h" />
@@ -1650,6 +1651,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="SmartView\AdditionalRenEntryIDs.cpp" />
     <ClCompile Include="SmartView\BinaryParser.cpp" />
     <ClCompile Include="SmartView\FlatEntryList.cpp" />
     <ClCompile Include="SmartView\FolderUserFieldStream.cpp" />
