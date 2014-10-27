@@ -21,6 +21,7 @@
 #include "RecipientRowStream.h"
 #include "WebViewPersistStream.h"
 #include "FlatEntryList.h"
+#include "AdditionalRenEntryIDs.h"
 
 #define _MaxBytes 0xFFFF
 #define _MaxDepth 50
@@ -113,7 +114,6 @@ SMART_VIEW_PARSERS_ENTRY g_SmartViewParsers[] = {
 	// MAKE_SV_ENTRY(IDS_STEXTENDEDRULECONDITION, RuleConditionStruct)
 	MAKE_SV_ENTRY(IDS_STSEARCHFOLDERDEFINITION, SearchFolderDefinitionStruct)
 	MAKE_SV_ENTRY(IDS_STPROPERTYDEFINITIONSTREAM, PropertyDefinitionStreamStruct)
-	MAKE_SV_ENTRY(IDS_STADDITIONALRENENTRYIDSEX, AdditionalRenEntryIDsStruct)
 	// MAKE_SV_ENTRY(IDS_STSID, SIDStruct)
 	// MAKE_SV_ENTRY(IDS_STDECODEENTRYID)
 	// MAKE_SV_ENTRY(IDS_STENCODEENTRYID)
@@ -150,6 +150,9 @@ LPSMARTVIEWPARSER GetSmartViewParser(DWORD_PTR iStructType, ULONG cbBin, _In_cou
 		break;
 	case IDS_STFLATENTRYLIST:
 		return new FlatEntryList(cbBin, lpBin);
+		break;
+	case IDS_STADDITIONALRENENTRYIDSEX:
+		return new AdditionalRenEntryIDs(cbBin, lpBin);
 		break;
 	}
 
@@ -4681,223 +4684,4 @@ _Check_return_ LPWSTR PropertyDefinitionStreamStructToString(_In_ PropertyDefini
 
 //////////////////////////////////////////////////////////////////////////
 // End PropertyDefinitionStreamStruct
-//////////////////////////////////////////////////////////////////////////
-
-//////////////////////////////////////////////////////////////////////////
-// AdditionalRenEntryIDsStruct
-//////////////////////////////////////////////////////////////////////////
-
-#define PERISIST_SENTINEL 0
-#define ELEMENT_SENTINEL 0
-
-void BinToPersistData(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, _Out_ size_t* lpcbBytesRead, _Out_ PersistData* ppdPersistData)
-{
-	if (!lpBin || !lpcbBytesRead || !ppdPersistData) return;
-
-	CBinaryParser Parser(cbBin, lpBin);
-
-	Parser.GetWORD(&ppdPersistData->wPersistID);
-	Parser.GetWORD(&ppdPersistData->wDataElementsSize);
-
-	if (ppdPersistData->wPersistID != PERISIST_SENTINEL &&
-		Parser.RemainingBytes() >= ppdPersistData->wDataElementsSize)
-	{
-		// Build a new parser to preread and count our elements
-		// This new parser will only contain as much space as suggested in wDataElementsSize
-		CBinaryParser DataElementParser(ppdPersistData->wDataElementsSize,
-			Parser.GetCurrentOffset() + lpBin);
-		for (;;)
-		{
-			if (DataElementParser.RemainingBytes() < 2 * sizeof(WORD)) break;
-			WORD wElementID = NULL;
-			WORD wElementDataSize = NULL;
-			DataElementParser.GetWORD(&wElementID);
-			DataElementParser.GetWORD(&wElementDataSize);
-			// Must have at least wElementDataSize bytes left to be a valid element data
-			if (DataElementParser.RemainingBytes() < wElementDataSize) break;
-
-			DataElementParser.Advance(wElementDataSize);
-			ppdPersistData->wDataElementCount++;
-			if (ELEMENT_SENTINEL == wElementID) break;
-		}
-	}
-
-	if (ppdPersistData->wDataElementCount && ppdPersistData->wDataElementCount < _MaxEntriesSmall)
-	{
-		ppdPersistData->ppeDataElement = new PersistElement[ppdPersistData->wDataElementCount];
-
-		if (ppdPersistData->ppeDataElement)
-		{
-			memset(ppdPersistData->ppeDataElement, 0, ppdPersistData->wDataElementCount * sizeof(PersistElement));
-
-			WORD iDataElement = 0;
-			for (iDataElement = 0; iDataElement < ppdPersistData->wDataElementCount; iDataElement++)
-			{
-				Parser.GetWORD(&ppdPersistData->ppeDataElement[iDataElement].wElementID);
-				Parser.GetWORD(&ppdPersistData->ppeDataElement[iDataElement].wElementDataSize);
-				if (ELEMENT_SENTINEL == ppdPersistData->ppeDataElement[iDataElement].wElementID) break;
-				// Since this is a word, the size will never be too large
-				Parser.GetBYTES(
-					ppdPersistData->ppeDataElement[iDataElement].wElementDataSize,
-					ppdPersistData->ppeDataElement[iDataElement].wElementDataSize,
-					&ppdPersistData->ppeDataElement[iDataElement].lpbElementData);
-			}
-		}
-	}
-
-	// We'll trust wDataElementsSize to dictate our record size.
-	// Count the 2 WORD size header fields too.
-	size_t cbRecordSize = ppdPersistData->wDataElementsSize + sizeof(WORD)* 2;
-
-	*lpcbBytesRead = Parser.GetCurrentOffset();
-
-	// Junk data remains - can't use GetRemainingData here since it would eat the whole buffer
-	if (*lpcbBytesRead < cbRecordSize)
-	{
-		ppdPersistData->JunkDataSize = cbRecordSize - *lpcbBytesRead;
-		Parser.GetBYTES(ppdPersistData->JunkDataSize, ppdPersistData->JunkDataSize, &ppdPersistData->JunkData);
-		*lpcbBytesRead = Parser.GetCurrentOffset();
-	}
-} // BinToPersistData
-
-// Allocates return value with new. Clean up with DeleteAdditionalRenEntryIDsStruct.
-_Check_return_ AdditionalRenEntryIDsStruct* BinToAdditionalRenEntryIDsStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
-{
-	if (!lpBin) return NULL;
-
-	AdditionalRenEntryIDsStruct areiAdditionalRenEntryIDs = { 0 };
-	CBinaryParser Parser(cbBin, lpBin);
-	size_t cbOffset = 0;
-
-	// We're gonna preprocess the buffer to get a count of PersistData blocks
-	cbOffset = Parser.GetCurrentOffset();
-	for (;;)
-	{
-		if (Parser.RemainingBytes() < 2 * sizeof(WORD)) break;
-		WORD wPersistID = NULL;
-		WORD wDataElementSize = NULL;
-		Parser.GetWORD(&wPersistID);
-		Parser.GetWORD(&wDataElementSize);
-		// Must have at least wDataElementSize bytes left to be a valid data element
-		if (Parser.RemainingBytes() < wDataElementSize) break;
-
-		Parser.Advance(wDataElementSize);
-		areiAdditionalRenEntryIDs.wPersistDataCount++;
-		if (PERISIST_SENTINEL == wPersistID) break;
-	}
-	Parser.SetCurrentOffset(cbOffset);
-
-	if (areiAdditionalRenEntryIDs.wPersistDataCount && areiAdditionalRenEntryIDs.wPersistDataCount < _MaxEntriesSmall)
-	{
-		areiAdditionalRenEntryIDs.ppdPersistData = new PersistData[areiAdditionalRenEntryIDs.wPersistDataCount];
-
-		if (areiAdditionalRenEntryIDs.ppdPersistData)
-		{
-			memset(areiAdditionalRenEntryIDs.ppdPersistData, 0, areiAdditionalRenEntryIDs.wPersistDataCount * sizeof(PersistData));
-			WORD iPersistElement = 0;
-			for (iPersistElement = 0; iPersistElement < areiAdditionalRenEntryIDs.wPersistDataCount; iPersistElement++)
-			{
-				size_t cbBytesRead = 0;
-				BinToPersistData(
-					(ULONG)Parser.RemainingBytes(),
-					lpBin + Parser.GetCurrentOffset(),
-					&cbBytesRead,
-					&areiAdditionalRenEntryIDs.ppdPersistData[iPersistElement]);
-				Parser.Advance(cbBytesRead);
-			}
-		}
-	}
-
-	areiAdditionalRenEntryIDs.JunkDataSize = Parser.GetRemainingData(&areiAdditionalRenEntryIDs.JunkData);
-
-	AdditionalRenEntryIDsStruct* pareiAdditionalRenEntryIDs = new AdditionalRenEntryIDsStruct;
-	if (pareiAdditionalRenEntryIDs)
-	{
-		*pareiAdditionalRenEntryIDs = areiAdditionalRenEntryIDs;
-	}
-
-	return pareiAdditionalRenEntryIDs;
-} // BinToAdditionalRenEntryIDsStruct
-
-void DeleteAdditionalRenEntryIDsStruct(_In_ AdditionalRenEntryIDsStruct* pareiAdditionalRenEntryIDs)
-{
-	if (!pareiAdditionalRenEntryIDs) return;
-	if (pareiAdditionalRenEntryIDs->ppdPersistData)
-	{
-		WORD iPersistElement = 0;
-		for (iPersistElement = 0; iPersistElement < pareiAdditionalRenEntryIDs->wPersistDataCount; iPersistElement++)
-		{
-			if (pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].ppeDataElement)
-			{
-				WORD iDataElement = 0;
-				for (iDataElement = 0; iDataElement < pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].wDataElementCount; iDataElement++)
-				{
-					delete[] pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].ppeDataElement[iDataElement].lpbElementData;
-				}
-			}
-			delete[] pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].ppeDataElement;
-		}
-	}
-	delete[] pareiAdditionalRenEntryIDs->ppdPersistData;
-
-	delete[] pareiAdditionalRenEntryIDs->JunkData;
-	delete pareiAdditionalRenEntryIDs;
-} // DeleteAdditionalRenEntryIDsStruct
-
-// result allocated with new, clean up with delete[]
-_Check_return_ LPWSTR AdditionalRenEntryIDsStructToString(_In_ AdditionalRenEntryIDsStruct* pareiAdditionalRenEntryIDs)
-{
-	if (!pareiAdditionalRenEntryIDs) return NULL;
-
-	CString szAdditionalRenEntryIDs;
-	CString szTmp;
-
-	szAdditionalRenEntryIDs.FormatMessage(IDS_AEIDHEADER,
-		pareiAdditionalRenEntryIDs->wPersistDataCount);
-
-	if (pareiAdditionalRenEntryIDs->ppdPersistData)
-	{
-		WORD iPersistElement = 0;
-		for (iPersistElement = 0; iPersistElement < pareiAdditionalRenEntryIDs->wPersistDataCount; iPersistElement++)
-		{
-			LPTSTR szPersistID = NULL;
-			InterpretFlags(flagPersistID, pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].wPersistID, &szPersistID);
-			szTmp.FormatMessage(IDS_AEIDPERSISTELEMENT,
-				iPersistElement,
-				pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].wPersistID, szPersistID,
-				pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].wDataElementsSize);
-			szAdditionalRenEntryIDs += szTmp;
-			delete[] szPersistID;
-
-			if (pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].ppeDataElement)
-			{
-				WORD iDataElement = 0;
-				for (iDataElement = 0; iDataElement < pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].wDataElementCount; iDataElement++)
-				{
-					LPTSTR szElementID = NULL;
-					InterpretFlags(flagElementID, pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID, &szElementID);
-					szTmp.FormatMessage(IDS_AEIDDATAELEMENT,
-						iDataElement,
-						pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID, szElementID,
-						pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementDataSize);
-					szAdditionalRenEntryIDs += szTmp;
-					delete[] szElementID;
-
-					SBinary sBin = { 0 };
-					sBin.cb = (ULONG)pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementDataSize;
-					sBin.lpb = pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].ppeDataElement[iDataElement].lpbElementData;
-					szAdditionalRenEntryIDs += wstringToCString(BinToHexString(&sBin, true));
-				}
-			}
-			szAdditionalRenEntryIDs += JunkDataToString(pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].JunkDataSize, pareiAdditionalRenEntryIDs->ppdPersistData[iPersistElement].JunkData);
-		}
-	}
-
-	szAdditionalRenEntryIDs += JunkDataToString(pareiAdditionalRenEntryIDs->JunkDataSize, pareiAdditionalRenEntryIDs->JunkData);
-
-	return CStringToLPWSTR(szAdditionalRenEntryIDs);
-} // AdditionalRenEntryIDsStructToString
-
-//////////////////////////////////////////////////////////////////////////
-// End AdditionalRenEntryIDsStruct
 //////////////////////////////////////////////////////////////////////////
