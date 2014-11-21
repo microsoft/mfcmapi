@@ -238,6 +238,7 @@ ULONG InterpretPropSmartView(_In_ LPSPropValue lpProp, // required property valu
 	bool bMVRow, // did the row come from a MV prop?
 	_Deref_out_opt_z_ LPWSTR* lpszSmartView) // Built from lpProp & lpMAPIProp
 {
+	if (!RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD) return NULL;
 	if (!lpszSmartView) return NULL;
 	*lpszSmartView = NULL;
 	if (!lpProp) return NULL;
@@ -313,7 +314,7 @@ ULONG InterpretPropSmartView(_In_ LPSPropValue lpProp, // required property valu
 					  {
 						  LPSPropValue lpPropSubject = NULL;
 
-						  EC_MAPI(HrGetOneProp(
+						  WC_MAPI(HrGetOneProp(
 							  lpMAPIProp,
 							  PR_SUBJECT_W,
 							  &lpPropSubject));
@@ -436,7 +437,7 @@ ULONG InterpretNumberAsString(_PV pV, ULONG ulPropTag, ULONG ulPropNameID, _In_o
 				   }
 
 #ifdef UNICODE
-				   InterpretFlags(ulPropID,pV.ul,szPrefix,lpszResultString);
+				   InterpretFlags(ulPropID, pV.ul, szPrefix, lpszResultString);
 #else
 				   LPSTR lpszResultStringA = NULL;
 				   LPWSTR lpszResultStringW = NULL;
@@ -518,6 +519,7 @@ void InterpretBinaryAsString(SBinary myBin, DWORD_PTR iStructType, _In_opt_ LPMA
 					pStruct = NULL;
 				}
 			}
+
 			bParsed = true;
 			break;
 		}
