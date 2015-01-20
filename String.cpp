@@ -103,16 +103,17 @@ CString wstringToCString(wstring src)
 
 wstring LPTSTRToWstring(LPTSTR src)
 {
-	wstring dst;
-
 #ifdef UNICODE
-	dst = src;
+	return src;
 #else
-	string ansi = src;
-	dst = wstring(ansi.begin(), ansi.end());
+	return LPSTRToWstring(src);
 #endif
+}
 
-	return dst;
+wstring LPSTRToWstring(LPSTR src)
+{
+	string ansi = src;
+	return wstring(ansi.begin(), ansi.end());
 }
 
 // result allocated with new

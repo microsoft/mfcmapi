@@ -934,7 +934,9 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="SmartView\FolderUserFieldStream.h" />
     <ClInclude Include="SmartView\NickNameCache.h" />
     <ClInclude Include="SmartView\PCL.h" />
+    <ClInclude Include="SmartView\PropertyDefinitionStream.h" />
     <ClInclude Include="SmartView\RecipientRowStream.h" />
+    <ClInclude Include="SmartView\SearchFolderDefinition.h" />
     <ClInclude Include="SmartView\SmartViewParser.h" />
     <ClInclude Include="SmartView\TombStone.h" />
     <ClInclude Include="SmartView\VerbStream.h" />
@@ -1657,7 +1659,9 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="SmartView\FolderUserFieldStream.cpp" />
     <ClCompile Include="SmartView\NickNameCache.cpp" />
     <ClCompile Include="SmartView\PCL.cpp" />
+    <ClCompile Include="SmartView\PropertyDefinitionStream.cpp" />
     <ClCompile Include="SmartView\RecipientRowStream.cpp" />
+    <ClCompile Include="SmartView\SearchFolderDefinition.cpp" />
     <ClCompile Include="SmartView\SmartView.cpp" />
     <ClCompile Include="SmartView\SmartViewParser.cpp" />
     <ClCompile Include="SmartView\TombStone.cpp" />

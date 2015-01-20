@@ -76,7 +76,7 @@ _Check_return_ wstring WebViewPersistStream::ToStringInternal()
 	wstring szWebViewPersistStream;
 	wstring szTmp;
 
-	szWebViewPersistStream= formatmessage(IDS_WEBVIEWSTREAMHEADER, m_cWebViews);
+	szWebViewPersistStream = formatmessage(IDS_WEBVIEWSTREAMHEADER, m_cWebViews);
 	if (m_lpWebViews && m_cWebViews)
 	{
 		ULONG i = 0;
@@ -87,7 +87,7 @@ _Check_return_ wstring WebViewPersistStream::ToStringInternal()
 			wstring szType = InterpretFlags(flagWebViewType, m_lpWebViews[i].dwType);
 			wstring szFlags = InterpretFlags(flagWebViewFlags, m_lpWebViews[i].dwFlags);
 
-			szTmp= formatmessage(
+			szTmp = formatmessage(
 				IDS_WEBVIEWHEADER,
 				i,
 				m_lpWebViews[i].dwVersion, szVersion.c_str(),
@@ -100,32 +100,32 @@ _Check_return_ wstring WebViewPersistStream::ToStringInternal()
 			sBin.lpb = (LPBYTE)&m_lpWebViews[i].dwUnused;
 			szWebViewPersistStream += BinToHexString(&sBin, true);
 
-			szTmp= formatmessage(IDS_WEBVIEWCBDATA, m_lpWebViews[i].cbData);
+			szTmp = formatmessage(IDS_WEBVIEWCBDATA, m_lpWebViews[i].cbData);
 			szWebViewPersistStream += szTmp;
 
 			switch (m_lpWebViews[i].dwType)
 			{
 			case WEBVIEWURL:
+			{
+				// Copy lpData to a new buffer and NULL terminate it in case it's not already.
+				size_t cchData = m_lpWebViews[i].cbData / sizeof(WCHAR);
+				WCHAR* lpwzTmp = new WCHAR[cchData + 1];
+				if (lpwzTmp)
 				{
-					// Copy lpData to a new buffer and NULL terminate it in case it's not already.
-					size_t cchData = m_lpWebViews[i].cbData / sizeof(WCHAR);
-					WCHAR* lpwzTmp = new WCHAR[cchData + 1];
-					if (lpwzTmp)
-					{
-						memcpy(lpwzTmp, m_lpWebViews[i].lpData, sizeof(WCHAR)* cchData);
-						lpwzTmp[cchData] = NULL;
-						szTmp= formatmessage(IDS_WEBVIEWURL);
-						szWebViewPersistStream += szTmp;
-						szWebViewPersistStream += lpwzTmp;
-						delete[] lpwzTmp;
-					}
-					break;
+					memcpy(lpwzTmp, m_lpWebViews[i].lpData, sizeof(WCHAR)* cchData);
+					lpwzTmp[cchData] = NULL;
+					szTmp = formatmessage(IDS_WEBVIEWURL);
+					szWebViewPersistStream += szTmp;
+					szWebViewPersistStream += lpwzTmp;
+					delete[] lpwzTmp;
 				}
+				break;
+			}
 			default:
 				sBin.cb = m_lpWebViews[i].cbData;
 				sBin.lpb = m_lpWebViews[i].lpData;
 
-				szTmp= formatmessage(IDS_WEBVIEWDATA);
+				szTmp = formatmessage(IDS_WEBVIEWDATA);
 				szWebViewPersistStream += szTmp;
 				szWebViewPersistStream += BinToHexString(&sBin, true);
 				break;

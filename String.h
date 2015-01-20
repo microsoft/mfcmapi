@@ -9,6 +9,7 @@ LPTSTR wstringToLPTSTR(wstring src);
 LPWSTR wstringToLPWSTR(wstring src);
 CString wstringToCString(::wstring src);
 wstring LPTSTRToWstring(LPTSTR src);
+wstring LPSTRToWstring(LPSTR src);
 _Check_return_ LPWSTR CStringToLPWSTR(CString szCString);
 
 // Unicode support

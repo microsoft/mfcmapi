@@ -339,6 +339,12 @@
     <ClInclude Include="SmartView\AdditionalRenEntryIDs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SmartView\PropertyDefinitionStream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SmartView\SearchFolderDefinition.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Res\bldver.rc">
@@ -704,6 +710,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SmartView\AdditionalRenEntryIDs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SmartView\PropertyDefinitionStream.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SmartView\SearchFolderDefinition.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
