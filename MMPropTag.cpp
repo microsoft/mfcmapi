@@ -10,14 +10,14 @@
 // Exact matches are those that match
 // If no hits, then ulNoMatch should be returned for lpulFirstExact
 void FindNameIDArrayMatches(_In_ LONG lTarget,
-							_In_count_(ulMyArray) NAMEID_ARRAY_ENTRY* MyArray,
-							_In_ ULONG ulMyArray,
-							_Out_ ULONG* lpulNumExacts,
-							_Out_ ULONG* lpulFirstExact)
+	_In_count_(ulMyArray) NAMEID_ARRAY_ENTRY* MyArray,
+	_In_ ULONG ulMyArray,
+	_Out_ ULONG* lpulNumExacts,
+	_Out_ ULONG* lpulFirstExact)
 {
 	ULONG ulLowerBound = 0;
-	ULONG ulUpperBound = ulMyArray-1; // ulMyArray-1 is the last entry
-	ULONG ulMidPoint = (ulUpperBound+ulLowerBound)/2;
+	ULONG ulUpperBound = ulMyArray - 1; // ulMyArray-1 is the last entry
+	ULONG ulMidPoint = (ulUpperBound + ulLowerBound) / 2;
 	ULONG ulFirstMatch = ulNoMatch;
 	ULONG ulLastMatch = ulNoMatch;
 
@@ -41,7 +41,7 @@ void FindNameIDArrayMatches(_In_ LONG lTarget,
 		{
 			ulLowerBound = ulMidPoint;
 		}
-		ulMidPoint = (ulUpperBound+ulLowerBound)/2;
+		ulMidPoint = (ulUpperBound + ulLowerBound) / 2;
 	}
 
 	// When we get down to two points, we may have only checked one of them
@@ -61,14 +61,14 @@ void FindNameIDArrayMatches(_In_ LONG lTarget,
 		ulLastMatch = ulFirstMatch; // Remember the last match we've found so far
 
 		// Scan backwards to find the first match
-		while (ulFirstMatch > 0 && lTarget == MyArray[ulFirstMatch-1].lValue)
+		while (ulFirstMatch > 0 && lTarget == MyArray[ulFirstMatch - 1].lValue)
 		{
 			ulFirstMatch = ulFirstMatch - 1;
 		}
 
 		// Scan forwards to find the real last match
 		// Last entry in the array is ulPropTagArray-1
-		while (ulLastMatch+1 < ulMyArray && lTarget == MyArray[ulLastMatch+1].lValue)
+		while (ulLastMatch + 1 < ulMyArray && lTarget == MyArray[ulLastMatch + 1].lValue)
 		{
 			ulLastMatch = ulLastMatch + 1;
 		}
@@ -101,17 +101,17 @@ void PrintType(_In_ ULONG ulPropTag)
 	ULONG ulMatch = 0;
 	bool bFound = false;
 
-	for (ulMatch = 0 ; ulMatch < ulPropTypeArray ; ulMatch++)
+	for (ulMatch = 0; ulMatch < ulPropTypeArray; ulMatch++)
 	{
 		if (PROP_TYPE(ulPropTag) == PropTypeArray[ulMatch].ulValue)
 		{
 			bFound = true;
-			printf("%ws",PropTypeArray[ulMatch].lpszName);
+			printf("%ws", PropTypeArray[ulMatch].lpszName);
 			break;
 		}
 	}
 
-	if (!bFound) printf("0x%04X = Unknown type",PROP_TYPE(ulPropTag));
+	if (!bFound) printf("0x%04X = Unknown type", PROP_TYPE(ulPropTag));
 
 	if (bNeedInstance) printf(" | MV_INSTANCE");
 } // PrintType
@@ -121,21 +121,21 @@ void PrintKnownTypes()
 	// Do a linear search through PropTypeArray - ulPropTypeArray will be small
 	ULONG ulMatch = 0;
 
-	printf("%-18s%-9s%s\n","Type","Hex","Decimal");
-	for (ulMatch = 0 ; ulMatch < ulPropTypeArray ; ulMatch++)
+	printf("%-18s%-9s%s\n", "Type", "Hex", "Decimal");
+	for (ulMatch = 0; ulMatch < ulPropTypeArray; ulMatch++)
 	{
-		printf("%-15ws = 0x%04X = %u\n",PropTypeArray[ulMatch].lpszName,PropTypeArray[ulMatch].ulValue,PropTypeArray[ulMatch].ulValue);
+		printf("%-15ws = 0x%04X = %u\n", PropTypeArray[ulMatch].lpszName, PropTypeArray[ulMatch].ulValue, PropTypeArray[ulMatch].ulValue);
 	}
 
 	printf("\n");
 	printf("Types may also have the flag 0x%04X = %s\n",
-		MV_INSTANCE,"MV_INSTANCE");
+		MV_INSTANCE, "MV_INSTANCE");
 } // PrintKnownTypes
 
 // Print the tag found in the array at ulRow
 void PrintTag(_In_ ULONG ulRow)
 {
-	printf("0x%08X,%ws,",PropTagArray[ulRow].ulValue,PropTagArray[ulRow].lpszName);
+	printf("0x%08X,%ws,", PropTagArray[ulRow].ulValue, PropTagArray[ulRow].lpszName);
 	PrintType(PropTagArray[ulRow].ulValue);
 	printf("\n");
 } // PrintTag
@@ -167,7 +167,7 @@ void PrintTagFromNum(_In_ ULONG ulPropTag)
 		ulPropID = ulPropTag;
 	}
 
-	printf("Property tag 0x%08X:\n",ulPropTag);
+	printf("Property tag 0x%08X:\n", ulPropTag);
 
 	if (ulPropID & 0x8000)
 	{
@@ -182,7 +182,7 @@ void PrintTagFromNum(_In_ ULONG ulPropTag)
 	if (ulExacts.size())
 	{
 		printf("\nExact matches:\n");
-		for (ULONG ulCur:ulExacts)
+		for (ULONG ulCur : ulExacts)
 		{
 			PrintTag(ulCur);
 		}
@@ -207,9 +207,9 @@ void PrintTagFromName(_In_z_ LPCWSTR lpszPropName)
 	ULONG ulCur = 0;
 	bool bMatchFound = false;
 
-	for (ulCur = 0 ; ulCur < ulPropTagArray ; ulCur++)
+	for (ulCur = 0; ulCur < ulPropTagArray; ulCur++)
 	{
-		if (0 == lstrcmpiW(lpszPropName,PropTagArray[ulCur].lpszName))
+		if (0 == lstrcmpiW(lpszPropName, PropTagArray[ulCur].lpszName))
 		{
 			PrintTag(ulCur);
 
@@ -224,7 +224,7 @@ void PrintTagFromName(_In_z_ LPCWSTR lpszPropName)
 			if (ulExacts.size() > 1)
 			{
 				printf("\nOther exact matches:\n");
-				for (ULONG ulMatch:ulExacts)
+				for (ULONG ulMatch : ulExacts)
 				{
 					if (ulExactMatch == ulMatch) continue; // skip this one
 					PrintTag(ulMatch);
@@ -246,14 +246,14 @@ void PrintTagFromName(_In_z_ LPCWSTR lpszPropName)
 		}
 	}
 
-	if (!bMatchFound) printf("Property tag \"%ws\" not found\n",lpszPropName);
+	if (!bMatchFound) printf("Property tag \"%ws\" not found\n", lpszPropName);
 }
 
 // Search for properties matching lpszPropName on a substring
 // If ulType isn't ulNoMatch, restrict on the property type as well
 void PrintTagFromPartialName(_In_opt_z_ LPCWSTR lpszPropName, _In_ ULONG ulType)
 {
-	if (lpszPropName) printf("Searching for \"%ws\"\n",lpszPropName);
+	if (lpszPropName) printf("Searching for \"%ws\"\n", lpszPropName);
 	else printf("Searching for all properties\n");
 
 	if (ulNoMatch != ulType)
@@ -265,22 +265,22 @@ void PrintTagFromPartialName(_In_opt_z_ LPCWSTR lpszPropName, _In_ ULONG ulType)
 	ULONG ulCur = 0;
 	ULONG ulNumMatches = 0;
 
-	for (ulCur = 0 ; ulCur < ulPropTagArray ; ulCur++)
+	for (ulCur = 0; ulCur < ulPropTagArray; ulCur++)
 	{
-		if (!lpszPropName || 0 != StrStrIW(PropTagArray[ulCur].lpszName,lpszPropName))
+		if (!lpszPropName || 0 != StrStrIW(PropTagArray[ulCur].lpszName, lpszPropName))
 		{
 			if (ulNoMatch != ulType && ulType != PROP_TYPE(PropTagArray[ulCur].ulValue)) continue;
 			PrintTag(ulCur);
 			ulNumMatches++;
 		}
 	}
-	printf("Found %u matches.\n",ulNumMatches);
+	printf("Found %u matches.\n", ulNumMatches);
 } // PrintTagFromPartialName
 
 void PrintGUID(_In_ LPCGUID lpGUID)
 {
 	// PSUNKNOWN isn't a real guid - just a placeholder - don't print it
-	if (!lpGUID || IsEqualGUID(*lpGUID,PSUNKNOWN))
+	if (!lpGUID || IsEqualGUID(*lpGUID, PSUNKNOWN))
 	{
 		printf(",");
 		return;
@@ -304,9 +304,9 @@ void PrintGUID(_In_ LPCGUID lpGUID)
 	printf(",");
 	if (ulPropGuidArray && PropGuidArray)
 	{
-		for (ulCur = 0 ; ulCur < ulPropGuidArray ; ulCur++)
+		for (ulCur = 0; ulCur < ulPropGuidArray; ulCur++)
 		{
-			if (IsEqualGUID(*lpGUID,*PropGuidArray[ulCur].lpGuid))
+			if (IsEqualGUID(*lpGUID, *PropGuidArray[ulCur].lpGuid))
 			{
 				printf("%ws", PropGuidArray[ulCur].lpszName);
 				break;
@@ -318,7 +318,7 @@ void PrintGUID(_In_ LPCGUID lpGUID)
 void PrintGUIDs()
 {
 	ULONG	ulCur = 0;
-	for (ulCur = 0 ; ulCur < ulPropGuidArray ; ulCur++)
+	for (ulCur = 0; ulCur < ulPropGuidArray; ulCur++)
 	{
 		printf("{%.8X-%.4X-%.4X-%.2X%.2X-%.2X%.2X%.2X%.2X%.2X%.2X}",
 			PropGuidArray[ulCur].lpGuid->Data1,
@@ -338,17 +338,17 @@ void PrintGUIDs()
 
 void PrintDispID(_In_ ULONG ulRow)
 {
-	printf("0x%04X,%ws,",NameIDArray[ulRow].lValue,NameIDArray[ulRow].lpszName);
+	printf("0x%04X,%ws,", NameIDArray[ulRow].lValue, NameIDArray[ulRow].lpszName);
 	PrintGUID(NameIDArray[ulRow].lpGuid);
 	printf(",");
 	if (PT_UNSPECIFIED != NameIDArray[ulRow].ulType)
 	{
-		PrintType(PROP_TAG(NameIDArray[ulRow].ulType,0));
+		PrintType(PROP_TAG(NameIDArray[ulRow].ulType, 0));
 	}
 	printf(",");
 	if (NameIDArray[ulRow].lpszArea)
 	{
-		printf("%ws",NameIDArray[ulRow].lpszArea);
+		printf("%ws", NameIDArray[ulRow].lpszArea);
 	}
 	printf("\n");
 } // PrintDispID
@@ -358,15 +358,15 @@ void PrintDispIDFromNum(_In_ ULONG ulDispID)
 	ULONG ulNumExacts = NULL;
 	ULONG ulFirstExactMatch = ulNoMatch;
 
-	printf("Dispid tag 0x%04X:\n",ulDispID);
+	printf("Dispid tag 0x%04X:\n", ulDispID);
 
-	FindNameIDArrayMatches(ulDispID,NameIDArray,ulNameIDArray,&ulNumExacts,&ulFirstExactMatch);
+	FindNameIDArrayMatches(ulDispID, NameIDArray, ulNameIDArray, &ulNumExacts, &ulFirstExactMatch);
 
 	ULONG ulCur = NULL;
 	if (ulNumExacts > 0 && ulNoMatch != ulFirstExactMatch)
 	{
 		printf("\nExact matches:\n");
-		for (ulCur = ulFirstExactMatch ; ulCur < ulFirstExactMatch+ulNumExacts ; ulCur++)
+		for (ulCur = ulFirstExactMatch; ulCur < ulFirstExactMatch + ulNumExacts; ulCur++)
 		{
 			PrintDispID(ulCur);
 		}
@@ -380,9 +380,9 @@ void PrintDispIDFromName(_In_z_ LPCWSTR lpszDispIDName)
 	ULONG ulCur = 0;
 	bool bMatchFound = false;
 
-	for (ulCur = 0 ; ulCur < ulNameIDArray ; ulCur++)
+	for (ulCur = 0; ulCur < ulNameIDArray; ulCur++)
 	{
-		if (0 == lstrcmpiW(lpszDispIDName,NameIDArray[ulCur].lpszName))
+		if (0 == lstrcmpiW(lpszDispIDName, NameIDArray[ulCur].lpszName))
 		{
 			PrintDispID(ulCur);
 
@@ -391,13 +391,13 @@ void PrintDispIDFromName(_In_z_ LPCWSTR lpszDispIDName)
 			ULONG ulNumExacts = NULL;
 			ULONG ulFirstExactMatch = ulNoMatch;
 
-			FindNameIDArrayMatches(NameIDArray[ulExactMatch].lValue,NameIDArray,ulNameIDArray,&ulNumExacts,&ulFirstExactMatch);
+			FindNameIDArrayMatches(NameIDArray[ulExactMatch].lValue, NameIDArray, ulNameIDArray, &ulNumExacts, &ulFirstExactMatch);
 
 			// We're gonna skip at least one, so only print if we have more than one
 			if (ulNumExacts > 1)
 			{
 				printf("\nOther exact matches:\n");
-				for (ulCur = ulFirstExactMatch ; ulCur < ulFirstExactMatch+ulNumExacts ; ulCur++)
+				for (ulCur = ulFirstExactMatch; ulCur < ulFirstExactMatch + ulNumExacts; ulCur++)
 				{
 					if (ulExactMatch == ulCur) continue; // skip this one
 					PrintDispID(ulCur);
@@ -408,41 +408,41 @@ void PrintDispIDFromName(_In_z_ LPCWSTR lpszDispIDName)
 		}
 	}
 
-	if (!bMatchFound) printf("Property tag \"%ws\" not found\n",lpszDispIDName);
+	if (!bMatchFound) printf("Property tag \"%ws\" not found\n", lpszDispIDName);
 } // PrintDispIDFromName
 
 // Search for properties matching lpszPropName on a substring
 void PrintDispIDFromPartialName(_In_opt_z_ LPCWSTR lpszDispIDName, _In_ ULONG ulType)
 {
-	if (lpszDispIDName) printf("Searching for \"%ws\"\n",lpszDispIDName);
+	if (lpszDispIDName) printf("Searching for \"%ws\"\n", lpszDispIDName);
 	else printf("Searching for all properties\n");
 
 	ULONG ulCur = 0;
 	ULONG ulNumMatches = 0;
 
-	for (ulCur = 0 ; ulCur < ulNameIDArray ; ulCur++)
+	for (ulCur = 0; ulCur < ulNameIDArray; ulCur++)
 	{
-		if (!lpszDispIDName || 0 != StrStrIW(NameIDArray[ulCur].lpszName,lpszDispIDName))
+		if (!lpszDispIDName || 0 != StrStrIW(NameIDArray[ulCur].lpszName, lpszDispIDName))
 		{
 			if (ulNoMatch != ulType && ulType != NameIDArray[ulCur].ulType) continue;
 			PrintDispID(ulCur);
 			ulNumMatches++;
 		}
 	}
-	printf("Found %u matches.\n",ulNumMatches);
+	printf("Found %u matches.\n", ulNumMatches);
 } // PrintDispIDFromPartialName
 
 void PrintFlag(_In_ ULONG ulPropNum, _In_opt_z_ LPCWSTR lpszPropName, _In_ bool bIsDispid, _In_ ULONG ulFlagValue)
 {
-	LPWSTR szFlags = NULL;
+	wstring szFlags;
 	ULONG ulCur = 0;
 	if (bIsDispid)
 	{
 		if (ulPropNum)
 		{
-			for (ulCur = 0 ; ulCur < ulNameIDArray ; ulCur++)
+			for (ulCur = 0; ulCur < ulNameIDArray; ulCur++)
 			{
-				if (ulPropNum == (ULONG) NameIDArray[ulCur].lValue)
+				if (ulPropNum == (ULONG)NameIDArray[ulCur].lValue)
 				{
 					break;
 				}
@@ -450,9 +450,9 @@ void PrintFlag(_In_ ULONG ulPropNum, _In_opt_z_ LPCWSTR lpszPropName, _In_ bool 
 		}
 		else if (lpszPropName)
 		{
-			for (ulCur = 0 ; ulCur < ulNameIDArray ; ulCur++)
+			for (ulCur = 0; ulCur < ulNameIDArray; ulCur++)
 			{
-				if (NameIDArray[ulCur].lpszName && 0 == lstrcmpiW(lpszPropName,NameIDArray[ulCur].lpszName))
+				if (NameIDArray[ulCur].lpszName && 0 == lstrcmpiW(lpszPropName, NameIDArray[ulCur].lpszName))
 				{
 					break;
 				}
@@ -460,17 +460,17 @@ void PrintFlag(_In_ ULONG ulPropNum, _In_opt_z_ LPCWSTR lpszPropName, _In_ bool 
 		}
 		if (ulCur != ulNameIDArray)
 		{
-			printf("Found named property %ws (0x%04X) ",NameIDArray[ulCur].lpszName, NameIDArray[ulCur].lValue);
+			printf("Found named property %ws (0x%04X) ", NameIDArray[ulCur].lpszName, NameIDArray[ulCur].lValue);
 			PrintGUID(NameIDArray[ulCur].lpGuid);
 			printf(".\n");
-			InterpretNumberAsStringNamedProp(ulFlagValue,NameIDArray[ulCur].lValue, NameIDArray[ulCur].lpGuid,&szFlags);
+			szFlags = InterpretNumberAsStringNamedProp(ulFlagValue, NameIDArray[ulCur].lValue, NameIDArray[ulCur].lpGuid);
 		}
 	}
 	else
 	{
 		if (ulPropNum)
 		{
-			for (ulCur = 0 ; ulCur < ulPropTagArray ; ulCur++)
+			for (ulCur = 0; ulCur < ulPropTagArray; ulCur++)
 			{
 				if (ulPropNum == PropTagArray[ulCur].ulValue)
 				{
@@ -480,9 +480,9 @@ void PrintFlag(_In_ ULONG ulPropNum, _In_opt_z_ LPCWSTR lpszPropName, _In_ bool 
 		}
 		else if (lpszPropName)
 		{
-			for (ulCur = 0 ; ulCur < ulPropTagArray ; ulCur++)
+			for (ulCur = 0; ulCur < ulPropTagArray; ulCur++)
 			{
-				if (0 == lstrcmpiW(lpszPropName,PropTagArray[ulCur].lpszName))
+				if (0 == lstrcmpiW(lpszPropName, PropTagArray[ulCur].lpszName))
 				{
 					break;
 				}
@@ -492,14 +492,13 @@ void PrintFlag(_In_ ULONG ulPropNum, _In_opt_z_ LPCWSTR lpszPropName, _In_ bool 
 
 		if (ulCur != ulPropTagArray)
 		{
-			printf("Found property %ws (0x%08X).\n",PropTagArray[ulCur].lpszName, PropTagArray[ulCur].ulValue);
-			InterpretNumberAsStringProp(ulFlagValue,PropTagArray[ulCur].ulValue,&szFlags);
+			printf("Found property %ws (0x%08X).\n", PropTagArray[ulCur].lpszName, PropTagArray[ulCur].ulValue);
+			szFlags = InterpretNumberAsStringProp(ulFlagValue, PropTagArray[ulCur].ulValue);
 		}
 	}
-	if (szFlags)
+	if (!szFlags.empty())
 	{
-		printf("0x%08X = %ws\n",ulFlagValue,szFlags);
-		delete[] szFlags;
+		printf("0x%08X = %ws\n", ulFlagValue, szFlags.c_str());
 	}
 	else
 	{
@@ -516,7 +515,7 @@ void DoPropTags(_In_ MYOPTIONS ProgOpts)
 	{
 		ULONG ulArg = NULL;
 		LPWSTR szEndPtr = NULL;
-		ulArg = wcstoul(lpszPropName,&szEndPtr, (ProgOpts.ulOptions & OPT_DODECIMAL)?10:16);
+		ulArg = wcstoul(lpszPropName, &szEndPtr, (ProgOpts.ulOptions & OPT_DODECIMAL) ? 10 : 16);
 
 		// if szEndPtr is pointing to something other than NULL, this must be a string
 		if (!szEndPtr || *szEndPtr)
@@ -536,7 +535,7 @@ void DoPropTags(_In_ MYOPTIONS ProgOpts)
 		}
 		else if (ProgOpts.ulOptions & OPT_DOPARTIALSEARCH)
 		{
-			PrintDispIDFromPartialName(lpszPropName,ProgOpts.ulTypeNum);
+			PrintDispIDFromPartialName(lpszPropName, ProgOpts.ulTypeNum);
 		}
 		else if (ulPropNum)
 		{
@@ -556,15 +555,15 @@ void DoPropTags(_In_ MYOPTIONS ProgOpts)
 	}
 	else if (ProgOpts.ulOptions & OPT_DOPARTIALSEARCH)
 	{
-		PrintTagFromPartialName(lpszPropName,ProgOpts.ulTypeNum);
+		PrintTagFromPartialName(lpszPropName, ProgOpts.ulTypeNum);
 	}
 	// If we weren't asked about a property, maybe we were asked about types
 	else if (ProgOpts.ulOptions & OPT_DOTYPE)
 	{
 		if (ulNoMatch != ProgOpts.ulTypeNum)
 		{
-			PrintType(PROP_TAG(ProgOpts.ulTypeNum,0));
-			printf(" = 0x%04X = %u",ProgOpts.ulTypeNum,ProgOpts.ulTypeNum);
+			PrintType(PROP_TAG(ProgOpts.ulTypeNum, 0));
+			printf(" = 0x%04X = %u", ProgOpts.ulTypeNum, ProgOpts.ulTypeNum);
 			printf("\n");
 		}
 		else
@@ -600,7 +599,7 @@ void DoFlagSearch(_In_ MYOPTIONS ProgOpts)
 	{
 		if (!_wcsicmp(FlagArray[ulCurEntry].lpszName, ProgOpts.lpszFlagName))
 		{
-			printf("%ws = 0x%08X\n",FlagArray[ulCurEntry].lpszName, FlagArray[ulCurEntry].lFlagValue);
+			printf("%ws = 0x%08X\n", FlagArray[ulCurEntry].lpszName, FlagArray[ulCurEntry].lFlagValue);
 			break;
 		}
 	}

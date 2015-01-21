@@ -5,6 +5,7 @@
 #include "MapiProcessor.h"
 #include "ExtraPropTags.h"
 #include "SmartView\SmartView.h"
+#include "String.h"
 
 inline void PrintFolder(LPCWSTR szFid, LPCTSTR szFolder)
 {
@@ -67,7 +68,7 @@ void CFindFidMid::InitFidMid(_In_z_ LPCWSTR szFid, _In_z_ LPCWSTR szMid)
 
 void CFindFidMid::BeginFolderWork()
 {
-	DebugPrint(DBGGeneric,"CFindFidMid::BeginFolderWork: m_szFolderOffset %s\n", m_szFolderOffset);
+	DebugPrint(DBGGeneric, "CFindFidMid::BeginFolderWork: m_szFolderOffset %s\n", m_szFolderOffset);
 	m_fFIDMatch = false;
 	m_fFIDExactMatch = false;
 	m_fFIDPrinted = false;
@@ -85,7 +86,7 @@ void CFindFidMid::BeginFolderWork()
 		ePidTagFolderId,
 		NUM_COLS
 	};
-	static const SizedSPropTagArray(NUM_COLS,sptaFolderProps) =
+	static const SizedSPropTagArray(NUM_COLS, sptaFolderProps) =
 	{
 		NUM_COLS,
 		PR_DISPLAY_NAME_W,
@@ -93,11 +94,11 @@ void CFindFidMid::BeginFolderWork()
 	};
 
 	WC_H_GETPROPS(m_lpFolder->GetProps(
-		(LPSPropTagArray) &sptaFolderProps,
+		(LPSPropTagArray)&sptaFolderProps,
 		NULL,
 		&ulProps,
 		&lpProps));
-	DebugPrint(DBGGeneric,"CFindFidMid::DoFolderPerHierarchyTableRowWork: m_szFolderOffset %s\n",m_szFolderOffset);
+	DebugPrint(DBGGeneric, "CFindFidMid::DoFolderPerHierarchyTableRowWork: m_szFolderOffset %s\n", m_szFolderOffset);
 
 	// Now get the FID
 	LPWSTR lpszDisplayName = NULL;
@@ -109,13 +110,13 @@ void CFindFidMid::BeginFolderWork()
 
 	if (lpProps && PidTagFolderId == lpProps[ePidTagFolderId].ulPropTag)
 	{
-		m_szCurrentFid = FidMidToSzString(lpProps[ePidTagFolderId].Value.li.QuadPart,false);
+		m_szCurrentFid = wstringToLPWSTR(FidMidToSzString(lpProps[ePidTagFolderId].Value.li.QuadPart, false));
 		DebugPrint(DBGGeneric, "CFindFidMid::DoFolderPerHierarchyTableRowWork: Found FID %ws for %ws\n", m_szCurrentFid, lpszDisplayName);
 	}
 	else
 	{
 		// Nothing left to do if we can't find a fid.
-		DebugPrint(DBGGeneric,"CFindFidMid::DoFolderPerHierarchyTableRowWork: No FID found for %ws\n", lpszDisplayName);
+		DebugPrint(DBGGeneric, "CFindFidMid::DoFolderPerHierarchyTableRowWork: No FID found for %ws\n", lpszDisplayName);
 		return;
 	}
 
@@ -139,7 +140,7 @@ void CFindFidMid::BeginFolderWork()
 
 	if (m_fFIDMatch)
 	{
-		DebugPrint(DBGGeneric,"CFindFidMid::DoFolderPerHierarchyTableRowWork: Matched FID %ws\n", m_szFid);
+		DebugPrint(DBGGeneric, "CFindFidMid::DoFolderPerHierarchyTableRowWork: Matched FID %ws\n", m_szFid);
 		// Print out the folder
 		if (m_szMid == NULL || m_fFIDExactMatch)
 		{
@@ -175,26 +176,26 @@ bool CFindFidMid::DoContentsTablePerRowWork(_In_ LPSRow lpSRow, ULONG /*ulCurRow
 	LPSPropValue lpPropMid = NULL;
 	LPSPropValue lpPropSubject = NULL;
 	LPSPropValue lpPropClass = NULL;
-	LPWSTR lpszThisMid = NULL;
+	wstring lpszThisMid;
 	LPTSTR lpszSubject = _T("");
 	LPTSTR lpszClass = _T("");
 
-	lpPropMid = PpropFindProp(lpSRow->lpProps,lpSRow->cValues,PidTagMid);
+	lpPropMid = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PidTagMid);
 	if (lpPropMid)
 	{
-		lpszThisMid = FidMidToSzString(lpPropMid->Value.li.QuadPart,false);
-		DebugPrint(DBGGeneric,"CFindFidMid::DoContentsTablePerRowWork: Found MID %ws\n", lpszThisMid);
+		lpszThisMid = FidMidToSzString(lpPropMid->Value.li.QuadPart, false);
+		DebugPrint(DBGGeneric, "CFindFidMid::DoContentsTablePerRowWork: Found MID %ws\n", lpszThisMid);
 	}
 	else
 	{
 		// Nothing left to do if we can't find a mid
-		DebugPrint(DBGGeneric,"CFindFidMid::DoContentsTablePerRowWork: No MID found\n");
+		DebugPrint(DBGGeneric, "CFindFidMid::DoContentsTablePerRowWork: No MID found\n");
 		return false;
 	}
 
 	// Check for a MID match
-	if (wcscmp(m_szMid, L"") == 0 || _wcsicmp(m_szMid, lpszThisMid) == 0
-		|| (wcschr(lpszThisMid, L'-') != 0 && _wcsicmp(m_szMid, wcschr(lpszThisMid, L'-') + 1) == 0))
+	if (wcscmp(m_szMid, L"") == 0 || _wcsicmp(m_szMid, lpszThisMid.c_str()) == 0
+		|| (wcschr(lpszThisMid.c_str(), L'-') != 0 && _wcsicmp(m_szMid, wcschr(lpszThisMid.c_str(), L'-') + 1) == 0))
 	{
 		// If we haven't already, print the folder info
 		if (!m_fFIDPrinted)
@@ -203,7 +204,7 @@ bool CFindFidMid::DoContentsTablePerRowWork(_In_ LPSRow lpSRow, ULONG /*ulCurRow
 			m_fFIDPrinted = true;
 		}
 
-		lpPropSubject = PpropFindProp(lpSRow->lpProps,lpSRow->cValues,PR_SUBJECT);
+		lpPropSubject = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PR_SUBJECT);
 		if (lpPropSubject)
 		{
 			lpszSubject = lpPropSubject->Value.LPSZ;
@@ -215,9 +216,10 @@ bool CFindFidMid::DoContentsTablePerRowWork(_In_ LPSRow lpSRow, ULONG /*ulCurRow
 			lpszClass = lpPropClass->Value.LPSZ;
 		}
 
-		PrintMessage(lpszThisMid, m_fAssociated, lpszSubject, lpszClass);
+		PrintMessage(lpszThisMid.c_str(), m_fAssociated, lpszSubject, lpszClass);
 		DebugPrint(DBGGeneric, "EnumMessages::ProcessRow: Matched MID %ws, \"%s\", \"%s\"\n", lpszThisMid, lpszSubject, lpszClass);
 	}
+
 	// Don't open the message - the row is enough
 	return false;
 } // CFindFidMid::DoContentsTablePerRowWork
@@ -232,7 +234,7 @@ void DumpFidMid(
 	RegKeys[regKeyMAPI_NO_CACHE].ulCurDWORD = true;
 	RegKeys[regkeyMDB_ONLINE].ulCurDWORD = true;
 
-	DebugPrint(DBGGeneric,"DumpFidMid: Outputting from profile %ws. FID: %ws, MID: %ws\n", lpszProfile, lpszFid, lpszMid);
+	DebugPrint(DBGGeneric, "DumpFidMid: Outputting from profile %ws. FID: %ws, MID: %ws\n", lpszProfile, lpszFid, lpszMid);
 	HRESULT hRes = S_OK;
 	LPMAPIFOLDER lpFolder = NULL;
 
@@ -255,7 +257,7 @@ void DumpFidMid(
 		CFindFidMid MyFindFidMid;
 		MyFindFidMid.InitMDB(lpMDB);
 		MyFindFidMid.InitFolder(lpFolder);
-		MyFindFidMid.InitFidMid(lpszFid,lpszMid);
+		MyFindFidMid.InitFidMid(lpszFid, lpszMid);
 		MyFindFidMid.ProcessFolders(
 			true,
 			true,

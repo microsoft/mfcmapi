@@ -22,12 +22,12 @@ void DoSmartView(_In_ MYOPTIONS ProgOpts)
 	{
 		FILE* fIn = NULL;
 		FILE* fOut = NULL;
-		fIn = _wfopen(ProgOpts.lpszInput,L"rb");
-		if (!fIn) printf("Cannot open input file %ws\n",ProgOpts.lpszInput);
+		fIn = _wfopen(ProgOpts.lpszInput, L"rb");
+		if (!fIn) printf("Cannot open input file %ws\n", ProgOpts.lpszInput);
 		if (ProgOpts.lpszOutput)
 		{
-			fOut = _wfopen(ProgOpts.lpszOutput,L"wb");
-			if (!fOut) printf("Cannot open output file %ws\n",ProgOpts.lpszOutput);
+			fOut = _wfopen(ProgOpts.lpszOutput, L"wb");
+			if (!fOut) printf("Cannot open output file %ws\n", ProgOpts.lpszOutput);
 		}
 
 		if (fIn && (!ProgOpts.lpszOutput || fOut))
@@ -35,12 +35,12 @@ void DoSmartView(_In_ MYOPTIONS ProgOpts)
 			int iDesc = _fileno(fIn);
 			long iLength = _filelength(iDesc);
 
-			LPBYTE lpbIn = new BYTE[iLength+1]; // +1 for NULL
+			LPBYTE lpbIn = new BYTE[iLength + 1]; // +1 for NULL
 			if (lpbIn)
 			{
-				memset(lpbIn,0,sizeof(BYTE)*(iLength+1));
-				fread(lpbIn,sizeof(BYTE),iLength,fIn);
-				SBinary Bin = {0};
+				memset(lpbIn, 0, sizeof(BYTE)*(iLength + 1));
+				fread(lpbIn, sizeof(BYTE), iLength, fIn);
+				SBinary Bin = { 0 };
 				if (ProgOpts.ulOptions & OPT_BINARYFILE)
 				{
 					Bin.cb = iLength;
@@ -52,18 +52,18 @@ void DoSmartView(_In_ MYOPTIONS ProgOpts)
 #ifdef UNICODE
 					EC_H(AnsiToUnicode((LPCSTR) lpbIn,&szIn));
 #else
-					szIn = (LPSTR) lpbIn;
+					szIn = (LPSTR)lpbIn;
 #endif
 					if (MyBinFromHex(
-						(LPCTSTR) szIn,
+						(LPCTSTR)szIn,
 						NULL,
 						&Bin.cb))
 					{
 						Bin.lpb = new BYTE[Bin.cb];
 						if (Bin.lpb)
 						{
-							(void) MyBinFromHex(
-								(LPCTSTR) szIn,
+							(void)MyBinFromHex(
+								(LPCTSTR)szIn,
 								Bin.lpb,
 								&Bin.cb);
 						}
@@ -73,28 +73,27 @@ void DoSmartView(_In_ MYOPTIONS ProgOpts)
 #endif
 				}
 
-				LPWSTR szString = NULL;
-				InterpretBinaryAsString(Bin,ulStructType,NULL,NULL,&szString);
-				if (szString)
+				wstring szString = InterpretBinaryAsString(Bin, ulStructType, NULL, NULL);
+				if (!szString.empty())
 				{
 					if (fOut)
 					{
 						// Without this split, the ANSI build writes out UNICODE files
 #ifdef UNICODE
-						fputws(szString,fOut);
+						fputws(szString.c_str(),fOut);
 #else
 						LPSTR szStringA = NULL;
-						(void) UnicodeToAnsi(szString,&szStringA);
-						fputs(szStringA,fOut);
+						(void)UnicodeToAnsi(szString.c_str(), &szStringA);
+						fputs(szStringA, fOut);
 						delete[] szStringA;
 #endif
 					}
 					else
 					{
-						_tprintf(_T("%ws\n"),szString);
+						_tprintf(_T("%ws\n"), szString.c_str());
 					}
 				}
-				delete[] szString;
+
 				if (!(ProgOpts.ulOptions & OPT_BINARYFILE)) delete[] Bin.lpb;
 				delete[] lpbIn;
 			}

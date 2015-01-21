@@ -183,27 +183,23 @@ BOOL CStreamEditor::OnInitDialog()
 		SmartViewPane* lpSmartView = (SmartViewPane*)GetControl(m_iSmartViewBox);
 		if (lpSmartView)
 		{
-			LPWSTR szSmartView = NULL;
-
 			SPropValue sProp = { 0 };
 			sProp.ulPropTag = CHANGE_PROP_TYPE(m_ulPropTag, PT_BINARY);
 			if (GetBinaryUseControl(m_iBinBox, (size_t*)&sProp.Value.bin.cb, &sProp.Value.bin.lpb))
 			{
-				ULONG iStructType = InterpretPropSmartView(
+				int iStructType = FindSmartViewParserForProp(sProp.ulPropTag, NULL, NULL, false);
+				wstring szSmartView = InterpretPropSmartView(
 					&sProp,
 					m_lpMAPIProp,
 					NULL,
 					NULL,
 					m_bIsAB,
-					false,
-					&szSmartView);
+					false);
 
 				lpSmartView->SetParser(iStructType);
-				lpSmartView->SetStringW(szSmartView);
-
-				delete[] szSmartView;
-				szSmartView = NULL;
+				lpSmartView->SetStringW(szSmartView.c_str());
 			}
+
 			delete[] sProp.Value.bin.lpb;
 		}
 	}

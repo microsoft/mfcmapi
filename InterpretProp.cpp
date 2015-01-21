@@ -418,7 +418,7 @@ void RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj, U
 	}
 
 	LPTSTR szFlags = NULL;
-	LPWSTR szPropNum = NULL;
+	wstring szPropNum;
 	InterpretFlags(flagRestrictionType, lpRes->rt, &szFlags);
 	szTmp.FormatMessage(IDS_RESTYPE, szTabs, lpRes->rt, szFlags);
 	*PropString += szTmp;
@@ -529,12 +529,10 @@ void RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj, U
 				szProp.c_str(),
 				szAltProp.c_str());
 			*PropString += szTmp;
-			InterpretNumberAsString(lpRes->res.resProperty.lpProp->Value, lpRes->res.resProperty.lpProp->ulPropTag, NULL, NULL, NULL, false, &szPropNum);
-			if (szPropNum)
+			szPropNum = InterpretNumberAsString(lpRes->res.resProperty.lpProp->Value, lpRes->res.resProperty.lpProp->ulPropTag, NULL, NULL, NULL, false);
+			if (!szPropNum.empty())
 			{
-				szTmp.FormatMessage(IDS_RESPROPPROPFLAGS, szTabs, szPropNum);
-				delete[] szPropNum;
-				szPropNum = NULL;
+				szTmp.FormatMessage(IDS_RESPROPPROPFLAGS, szTabs, szPropNum.c_str());
 				*PropString += szTmp;
 			}
 		}
@@ -550,12 +548,10 @@ void RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj, U
 		delete[] szFlags;
 		szFlags = NULL;
 		*PropString += szTmp;
-		InterpretNumberAsStringProp(lpRes->res.resBitMask.ulMask, lpRes->res.resBitMask.ulPropTag, &szPropNum);
-		if (szPropNum)
+		szPropNum = InterpretNumberAsStringProp(lpRes->res.resBitMask.ulMask, lpRes->res.resBitMask.ulPropTag);
+		if (!szPropNum.empty())
 		{
-			szTmp.FormatMessage(IDS_RESBITMASKFLAGS, szPropNum);
-			delete[] szPropNum;
-			szPropNum = NULL;
+			szTmp.FormatMessage(IDS_RESBITMASKFLAGS, szPropNum.c_str());
 			*PropString += szTmp;
 		}
 		szTmp.FormatMessage(

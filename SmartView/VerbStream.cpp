@@ -101,19 +101,15 @@ void VerbStream::Parse()
 
 _Check_return_ wstring VerbStream::ToStringInternal()
 {
-	wstring szVerbString;
-	wstring szTmp;
-
-	szVerbString = formatmessage(IDS_VERBHEADER, m_Version, m_Count);
+	wstring szVerbString = formatmessage(IDS_VERBHEADER, m_Version, m_Count);
 
 	if (m_Count && m_lpVerbData)
 	{
 		ULONG i = 0;
 		for (i = 0; i < m_Count; i++)
 		{
-			LPWSTR szVerb = NULL;
-			InterpretNumberAsStringProp(m_lpVerbData[i].ID, PR_LAST_VERB_EXECUTED, &szVerb);
-			szTmp = formatmessage(IDS_VERBDATA,
+			wstring szVerb = InterpretNumberAsStringProp(m_lpVerbData[i].ID, PR_LAST_VERB_EXECUTED);
+			szVerbString += formatmessage(IDS_VERBDATA,
 				i,
 				m_lpVerbData[i].VerbType,
 				m_lpVerbData[i].DisplayNameCount,
@@ -131,28 +127,24 @@ _Check_return_ wstring VerbStream::ToStringInternal()
 				m_lpVerbData[i].SendBehavior,
 				m_lpVerbData[i].Internal5,
 				m_lpVerbData[i].ID,
-				szVerb,
+				szVerb.c_str(),
 				m_lpVerbData[i].Internal6);
-			delete[] szVerb;
-			szVerbString += szTmp;
 		}
 	}
 
-	szTmp = formatmessage(IDS_VERBVERSION2, m_Version2);
-	szVerbString += szTmp;
+	szVerbString += formatmessage(IDS_VERBVERSION2, m_Version2);
 
 	if (m_Count && m_lpVerbData)
 	{
 		ULONG i = 0;
 		for (i = 0; i < m_Count; i++)
 		{
-			szTmp = formatmessage(IDS_VERBEXTRADATA,
+			szVerbString += formatmessage(IDS_VERBEXTRADATA,
 				i,
 				m_lpVerbExtraData[i].DisplayNameCount,
 				m_lpVerbExtraData[i].DisplayName,
 				m_lpVerbExtraData[i].DisplayNameCountRepeat,
 				m_lpVerbExtraData[i].DisplayNameRepeat);
-			szVerbString += szTmp;
 		}
 	}
 

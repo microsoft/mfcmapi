@@ -44,15 +44,12 @@ _Check_return_ HRESULT DisplayObject(
 		ulObjType = GetMAPIObjectType((LPMAPIPROP)lpUnk);
 	}
 
-	LPWSTR szFlags = NULL;
-	InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE, &szFlags);
+	wstring szFlags = InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE);
 	DebugPrint(DBGGeneric, _T("DisplayObject asked to display %p, with ObjectType of 0x%08X and MAPI type of 0x%08X = %ws\n"),
 		lpUnk,
 		tType,
 		ulObjType,
-		szFlags);
-	delete[] szFlags;
-	szFlags = NULL;
+		szFlags.c_str());
 
 	LPMDB lpMDB = NULL;
 	// call the dialog
@@ -166,14 +163,12 @@ _Check_return_ HRESULT DisplayObject(
 	default:
 		lpHostDlg->OnUpdateSingleMAPIPropListCtrl(lpUnk, NULL);
 
-		InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE, &szFlags);
+		szFlags = InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE);
 		DebugPrint(DBGGeneric,
 			_T("DisplayObject: Object type: 0x%08X = %ws not implemented\r\n") // STRING_OK
 			_T("This is not an error. It just means no specialized viewer has been implemented for this object type."), // STRING_OK
 			ulObjType,
-			szFlags);
-		delete[] szFlags;
-		szFlags = NULL;
+			szFlags.c_str());
 		break;
 	}
 

@@ -155,18 +155,14 @@ void SpecialFolderEditor::LoadFolders()
 						szTmp.Empty();
 						if (PT_LONG == PROP_TYPE(lpProps[ulPropNum].ulPropTag))
 						{
-							LPWSTR szSmartView = NULL;
-
-							InterpretNumberAsString(
+							wstring szSmartView = InterpretNumberAsString(
 								lpProps[ulPropNum].Value,
 								lpProps[ulPropNum].ulPropTag,
 								NULL,
 								NULL,
 								NULL,
-								false,
-								&szSmartView);
-							szTmp = szSmartView;
-							delete[] szSmartView;
+								false);
+							szTmp = szSmartView.c_str();
 						}
 
 						if (szTmp.IsEmpty() && PT_ERROR != PROP_TYPE(lpProps[ulPropNum].ulPropTag))

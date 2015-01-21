@@ -1065,7 +1065,6 @@ void CContentsTableListCtrl::SetRowStrings(int iRow, _In_ LPSRow lpsRowData)
 			if (ulCol < lpsRowData->cValues)
 			{
 				wstring PropString;
-				LPWSTR szFlags = NULL;
 				LPSPropValue pProp = &lpsRowData->lpProps[ulCol];
 
 				// If we've got a MAPI_E_NOT_FOUND error, just don't display it.
@@ -1081,15 +1080,13 @@ void CContentsTableListCtrl::SetRowStrings(int iRow, _In_ LPSRow lpsRowData)
 
 				InterpretProp(pProp, &PropString, NULL);
 
-				InterpretNumberAsString(pProp->Value, pProp->ulPropTag, NULL, NULL, NULL, false, &szFlags);
-				if (szFlags)
+				wstring szFlags = InterpretNumberAsString(pProp->Value, pProp->ulPropTag, NULL, NULL, NULL, false);
+				if (!szFlags.empty())
 				{
 					PropString += L" ("; // STRING_OK
-					PropString += szFlags;
+					PropString += szFlags.c_str();
 					PropString += L")"; // STRING_OK
 				}
-				delete[] szFlags;
-				szFlags = NULL;
 
 				SetItemTextW(iRow, iColumn, PropString.c_str());
 			}

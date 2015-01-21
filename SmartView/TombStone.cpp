@@ -18,10 +18,9 @@ TombStone::TombStone(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewPar
 
 TombStone::~TombStone()
 {
-	if (m_RecordsCount && m_lpRecords)
+	if (m_ActualRecordsCount && m_lpRecords)
 	{
 		ULONG i = 0;
-
 		for (i = 0; i < m_ActualRecordsCount; i++)
 		{
 			delete[] m_lpRecords[i].lpGlobalObjectId;
@@ -82,7 +81,6 @@ void TombStone::Parse()
 _Check_return_ wstring TombStone::ToStringInternal()
 {
 	wstring szTombstoneString;
-	wstring szTmp;
 
 	szTombstoneString = formatmessage(IDS_TOMBSTONEHEADER,
 		m_Identifier,
@@ -92,29 +90,25 @@ _Check_return_ wstring TombStone::ToStringInternal()
 		m_ActualRecordsCount,
 		m_RecordsSize);
 
-	if (m_RecordsCount && m_lpRecords)
+	if (m_ActualRecordsCount && m_lpRecords)
 	{
 		ULONG i = 0;
 		for (i = 0; i < m_ActualRecordsCount; i++)
 		{
-			LPWSTR szGoid = NULL;
 			SBinary sBin = { 0 };
 			sBin.cb = m_lpRecords[i].GlobalObjectIdSize;
 			sBin.lpb = m_lpRecords[i].lpGlobalObjectId;
-			InterpretBinaryAsString(sBin, IDS_STGLOBALOBJECTID, NULL, NULL, &szGoid);
+			wstring szGoid = InterpretBinaryAsString(sBin, IDS_STGLOBALOBJECTID, NULL, NULL);
 
-			szTmp = formatmessage(IDS_TOMBSTONERECORD,
+			szTombstoneString += formatmessage(IDS_TOMBSTONERECORD,
 				i,
 				m_lpRecords[i].StartTime, RTimeToString(m_lpRecords[i].StartTime).c_str(),
 				m_lpRecords[i].EndTime, RTimeToString(m_lpRecords[i].EndTime).c_str(),
 				m_lpRecords[i].GlobalObjectIdSize,
 				BinToHexString(&sBin, true).c_str(),
-				szGoid,
+				szGoid.c_str(),
 				m_lpRecords[i].UsernameSize,
 				m_lpRecords[i].szUsername);
-			szTombstoneString += szTmp;
-
-			delete[] szGoid;
 		}
 	}
 

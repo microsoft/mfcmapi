@@ -16,7 +16,7 @@ SmartViewParser::~SmartViewParser()
 {
 }
 
-_Check_return_ LPWSTR SmartViewParser::ToString()
+_Check_return_ wstring SmartViewParser::ToString()
 {
 	Parse();
 
@@ -24,7 +24,7 @@ _Check_return_ LPWSTR SmartViewParser::ToString()
 
 	szParsedString += JunkDataToString();
 
-	return wstringToLPWSTR(szParsedString);
+	return szParsedString;
 }
 
 _Check_return_ wstring SmartViewParser::JunkDataToString()

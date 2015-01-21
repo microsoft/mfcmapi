@@ -593,7 +593,7 @@ void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify, _
 	Outputf(ulDbgLvl, fFile, true, _T("Dumping %u notifications.\n"), cNotify);
 
 	LPTSTR szFlags = NULL;
-	LPWSTR szPropNum = NULL;
+	wstring szPropNum;
 
 	for (ULONG i = 0; i < cNotify; i++)
 	{
@@ -657,14 +657,12 @@ void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify, _
 
 			Outputf(ulDbgLvl, fFile, true, _T("lpNotifications[%u].info.newmail.ulMessageFlags = 0x%08X"), i,
 				lpNotifications[i].info.newmail.ulMessageFlags);
-			InterpretNumberAsStringProp(lpNotifications[i].info.newmail.ulMessageFlags, PR_MESSAGE_FLAGS, &szPropNum);
-			if (szPropNum)
+			szPropNum = InterpretNumberAsStringProp(lpNotifications[i].info.newmail.ulMessageFlags, PR_MESSAGE_FLAGS);
+			if (!szPropNum.empty())
 			{
-				Outputf(ulDbgLvl, fFile, false, _T(" = %ws"), szPropNum);
+				Outputf(ulDbgLvl, fFile, false, _T(" = %ws"), szPropNum.c_str());
 			}
 
-			delete[] szPropNum;
-			szPropNum = NULL;
 			Outputf(ulDbgLvl, fFile, false, _T("\n"));
 			break;
 		case fnevTableModified:
@@ -722,15 +720,11 @@ void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify, _
 			Outputf(ulDbgLvl, fFile, true, _T("lpNotifications[%u].info.obj.ulObjType = 0x%08X"), i,
 				lpNotifications[i].info.obj.ulObjType);
 
-			InterpretNumberAsStringProp(lpNotifications[i].info.obj.ulObjType, PR_OBJECT_TYPE, &szPropNum);
-			if (szPropNum)
+			szPropNum = InterpretNumberAsStringProp(lpNotifications[i].info.obj.ulObjType, PR_OBJECT_TYPE);
+			if (!szPropNum.empty())
 			{
-				Outputf(ulDbgLvl, fFile, false, _T(" = %ws"),
-					szPropNum);
+				Outputf(ulDbgLvl, fFile, false, _T(" = %ws"), szPropNum.c_str());
 			}
-
-			delete[] szPropNum;
-			szPropNum = NULL;
 
 			Outputf(ulDbgLvl, fFile, false, _T("\n"));
 			Outputf(ulDbgLvl, fFile, true, _T("lpNotifications[%u].info.obj.lpPropTagArray = \n"), i);
@@ -797,7 +791,6 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 
 	LPTSTR szExactMatches = NULL;
 	LPTSTR szPartialMatches = NULL;
-	LPWSTR szSmartView = NULL;
 	LPTSTR szNamedPropName = NULL;
 	LPTSTR szNamedPropGUID = NULL;
 
@@ -810,15 +803,6 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 		&szNamedPropName, // Built from lpProp & lpMAPIProp
 		&szNamedPropGUID, // Built from lpProp & lpMAPIProp
 		NULL);
-
-	InterpretPropSmartView(
-		lpProp,
-		lpObj,
-		NULL,
-		NULL,
-		false,
-		false,
-		&szSmartView);
 
 	PropTagToPropName(lpProp->ulPropTag, false, &szExactMatches, &szPartialMatches);
 	if (szExactMatches) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPEXACTNAMES].uidName, szExactMatches, false, iIndent);
@@ -834,27 +818,23 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 	_Output(ulDbgLvl, fFile, false, s_converter.to_bytes(prop.toXML(iIndent)).c_str());
 #endif
 
-	if (szSmartView)
+	wstring szSmartView = InterpretPropSmartView(
+		lpProp,
+		lpObj,
+		NULL,
+		NULL,
+		false,
+		false);
+	if (!szSmartView.empty())
 	{
-		// Eventually we should remove this split, but right now, OutputXMLValue is too expensive to recode
-#ifdef UNICODE
-		OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPSMARTVIEW].uidName, szSmartView, true, iIndent);
-#else
-		LPSTR szSmartViewA = NULL;
-		hRes = UnicodeToAnsi(szSmartView, &szSmartViewA);
-		if (SUCCEEDED(hRes) && szSmartViewA)
-		{
-			OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPSMARTVIEW].uidName, szSmartViewA, true, iIndent);
-			delete[] szSmartViewA;
-		}
-#endif
+		OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPSMARTVIEW].uidName, wstringToLPTSTR(szSmartView), true, iIndent);
 	}
+
 	_Output(ulDbgLvl, fFile, false, _T("\t</property>\n"));
 
 	delete[] szPartialMatches;
 	delete[] szExactMatches;
 	FreeNameIDStrings(szNamedPropName, szNamedPropGUID, NULL);
-	delete[] szSmartView;
 	MAPIFreeBuffer(lpLargeProp);
 } // _OutputProperty
 

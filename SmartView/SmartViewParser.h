@@ -20,7 +20,7 @@ public:
 	SmartViewParser(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
 	virtual ~SmartViewParser();
 
-	_Check_return_ LPWSTR ToString();
+	_Check_return_ wstring ToString();
 
 protected:
 	_Check_return_ wstring RTimeToString(DWORD rTime);
