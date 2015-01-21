@@ -173,21 +173,23 @@ _Check_return_ wstring SearchFolderDefinition::ToStringInternal()
 {
 	wstring szSearchFolderDefinition;
 
-	LPWSTR szFlags = NULL;
-	InterpretNumberAsStringProp(m_Flags, PR_WB_SF_STORAGE_TYPE, &szFlags);
-
+	wstring szFlags = InterpretNumberAsStringProp(m_Flags, PR_WB_SF_STORAGE_TYPE);
 	szSearchFolderDefinition = formatmessage(IDS_SFDEFINITIONHEADER,
 		m_Version,
-		m_Flags, szFlags,
+		m_Flags,
+		szFlags.c_str(),
 		m_NumericSearch,
 		m_TextSearchLength);
-	delete[] szFlags;
 
 	if (m_TextSearchLength)
 	{
 		szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONTEXTSEARCH,
 			m_TextSearchLengthExtended);
-		szSearchFolderDefinition += m_TextSearch;
+
+		if (m_TextSearch)
+		{
+			szSearchFolderDefinition += m_TextSearch;
+		}
 	}
 
 	szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONSKIPLEN1,
@@ -212,7 +214,11 @@ _Check_return_ wstring SearchFolderDefinition::ToStringInternal()
 	{
 		szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONFOLDERLIST1,
 			m_FolderList1LengthExtended);
-		szSearchFolderDefinition += m_FolderList1;
+
+		if (m_FolderList1)
+		{
+			szSearchFolderDefinition += m_FolderList1;
+		}
 	}
 
 	szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONFOLDERLISTLENGTH2,
@@ -222,8 +228,12 @@ _Check_return_ wstring SearchFolderDefinition::ToStringInternal()
 	{
 		szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONFOLDERLIST2);
 		LPWSTR szEntryList = EntryListStructToString(m_FolderList2);
-		szSearchFolderDefinition += szEntryList;
-		delete[] szEntryList;
+
+		if (szEntryList)
+		{
+			szSearchFolderDefinition += szEntryList;
+			delete[] szEntryList;
+		}
 	}
 
 	if (SFST_BINARY & m_Flags)
@@ -242,8 +252,12 @@ _Check_return_ wstring SearchFolderDefinition::ToStringInternal()
 				szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONPROPERTIES, i);
 
 				LPWSTR szProps = PropertyStructToString(&m_Addresses[i].Properties);
-				szSearchFolderDefinition += szProps;
-				delete[] szProps;
+
+				if (szProps)
+				{
+					szSearchFolderDefinition += szProps;
+					delete[] szProps;
+				}
 			}
 		}
 	}
@@ -266,8 +280,11 @@ _Check_return_ wstring SearchFolderDefinition::ToStringInternal()
 	{
 		szSearchFolderDefinition += L"\r\n"; // STRING_OK
 		LPWSTR szRes = RestrictionStructToString(m_Restriction);
-		szSearchFolderDefinition += szRes;
-		delete[] szRes;
+		if (szRes)
+		{
+			szSearchFolderDefinition += szRes;
+			delete[] szRes;
+		}
 	}
 
 	if (SFST_FILTERSTREAM & m_Flags)

@@ -229,15 +229,13 @@ void SmartViewPane::SetParser(DWORD_PTR iParser)
 
 void SmartViewPane::Parse(SBinary myBin)
 {
-	LPWSTR szSmartView = NULL;
 	DWORD_PTR iStructType = GetDropDownSelectionValue();
-	InterpretBinaryAsString(myBin, iStructType, NULL, NULL, &szSmartView);
+	wstring szSmartView = InterpretBinaryAsString(myBin, iStructType, NULL, NULL);
 
-	if (szSmartView)
+	if (!szSmartView.empty())
 	{
 		m_bHasData = true;
-		SetStringW(szSmartView);
-		delete[] szSmartView;
+		SetStringW(szSmartView.c_str());
 	}
 	else
 	{

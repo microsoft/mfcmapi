@@ -112,6 +112,7 @@ wstring LPTSTRToWstring(LPTSTR src)
 
 wstring LPSTRToWstring(LPSTR src)
 {
+	if (!src) return L"";
 	string ansi = src;
 	return wstring(ansi.begin(), ansi.end());
 }

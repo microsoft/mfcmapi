@@ -197,7 +197,7 @@ void OnQSDisplayAB(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 void OnQSDisplayNicknameCache(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 {
 	HRESULT hRes = S_OK;
-	LPWSTR szNicknames = NULL;
+	wstring szNicknames;
 	LPSPropValue lpsProp = NULL;
 
 	lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, IDS_STATUSTEXTLOADINGNICKNAME);
@@ -259,7 +259,7 @@ void OnQSDisplayNicknameCache(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 								if (lpsProp)
 								{
 									// Get the string interpretation
-									InterpretBinaryAsString(lpsProp->Value.bin, IDS_STNICKNAMECACHE, lpMSG, PR_ROAMING_BINARYSTREAM, &szNicknames);
+									szNicknames = InterpretBinaryAsString(lpsProp->Value.bin, IDS_STNICKNAMECACHE, lpMSG, PR_ROAMING_BINARYSTREAM);
 								}
 								lpMSG->Release();
 							}
@@ -275,7 +275,7 @@ void OnQSDisplayNicknameCache(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 		lpMDB->Release();
 
 		// Display our dialog
-		if (szNicknames && lpsProp)
+		if (!szNicknames.empty() && lpsProp)
 		{
 			CEditor MyResults(
 				lpHostDlg,
@@ -286,10 +286,7 @@ void OnQSDisplayNicknameCache(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 			MyResults.InitPane(0, CreateCollapsibleTextPane(NULL, true));
 			MyResults.InitPane(1, CreateCountedTextPane(IDS_HEX, true, IDS_CB));
 
-			if (szNicknames)
-			{
-				MyResults.SetStringW(0, szNicknames);
-			}
+			MyResults.SetStringW(0, szNicknames.c_str());
 
 			if (lpsProp)
 			{
@@ -299,8 +296,6 @@ void OnQSDisplayNicknameCache(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 			}
 
 			WC_H(MyResults.DisplayDialog());
-
-			delete[] szNicknames;
 		}
 
 		MAPIFreeBuffer(lpsProp);
@@ -416,12 +411,9 @@ void OnQSDisplayQuota(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 
 			if (lpProps[qPR_STORE_SUPPORT_MASK].ulPropTag == PR_STORE_SUPPORT_MASK)
 			{
-				LPWSTR szFlags = NULL;
-				InterpretNumberAsStringProp(lpProps[qPR_STORE_SUPPORT_MASK].Value.l, PR_STORE_SUPPORT_MASK, &szFlags);
-				szTmp.FormatMessage(IDS_QUOTAMASK, lpProps[qPR_STORE_SUPPORT_MASK].Value.l, szFlags);
+				wstring szFlags = InterpretNumberAsStringProp(lpProps[qPR_STORE_SUPPORT_MASK].Value.l, PR_STORE_SUPPORT_MASK);
+				szTmp.FormatMessage(IDS_QUOTAMASK, lpProps[qPR_STORE_SUPPORT_MASK].Value.l, szFlags.c_str());
 				szQuotaString += szTmp;
-				delete[] szFlags;
-				szFlags = NULL;
 			}
 
 			if (lpProps[qPR_MDB_PROVIDER].ulPropTag == PR_MDB_PROVIDER)

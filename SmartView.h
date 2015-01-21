@@ -1,25 +1,23 @@
 #pragma once
-#include <string>
-using namespace std;
 
 extern NAME_ARRAY_ENTRY g_uidParsingTypes[];
 extern ULONG g_cuidParsingTypes;
 
-wstring InterpretPropSmartView(_In_ LPSPropValue lpProp, // required property value
-	_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
-	_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
-	_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
-	bool bIsAB, // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
-	bool bMVRow); // did the row come from a MV prop?
+// lpszSmartView allocated with new, delete with delete[]
+ULONG InterpretPropSmartView(_In_ LPSPropValue lpProp, // required property value
+							 _In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
+							 _In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
+							 _In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
+							 bool bIsAB, // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
+							 bool bMVRow, // did the row come from a MV prop?
+							 _Deref_out_opt_z_ LPWSTR* lpszSmartView); // Built from lpProp & lpMAPIProp
 
-wstring InterpretBinaryAsString(SBinary myBin, DWORD_PTR iStructType, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag);
-wstring InterpretMVBinaryAsString(SBinaryArray myBinArray, DWORD_PTR iStructType, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag);
-wstring InterpretNumberAsString(_PV pV, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_z_ LPWSTR lpszPropNameString, _In_opt_ LPCGUID lpguidNamedProp, bool bLabel);
-wstring InterpretNumberAsStringProp(ULONG ulVal, ULONG ulPropTag);
-wstring InterpretNumberAsStringNamedProp(ULONG ulVal, ULONG ulPropNameID, _In_opt_ LPCGUID lpguidNamedProp);
-wstring FidMidToSzString(LONGLONG llID, bool bLabel);
-
-_Check_return_ ULONG FindSmartViewParserForProp(const ULONG ulPropTag, const ULONG ulPropNameID, _In_opt_ const LPCGUID lpguidNamedProp, bool bMVRow);
+void InterpretBinaryAsString(SBinary myBin, DWORD_PTR iStructType, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_z_ LPWSTR* lpszResultString);
+void InterpretMVBinaryAsString(SBinaryArray myBinArray, DWORD_PTR iStructType, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_z_ LPWSTR* lpszResultString);
+ULONG InterpretNumberAsString(_PV pV, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_z_ LPWSTR lpszPropNameString, _In_opt_ LPCGUID lpguidNamedProp, bool bLabel, _Deref_out_opt_z_ LPWSTR* lpszResultString);
+ULONG InterpretNumberAsStringProp(ULONG ulVal, ULONG ulPropTag, _Deref_out_opt_z_ LPWSTR* lpszResultString);
+ULONG InterpretNumberAsStringNamedProp(ULONG ulVal, ULONG ulPropNameID, _In_opt_ LPCGUID lpguidNamedProp, _Deref_out_opt_z_ LPWSTR* lpszResultString);
+_Check_return_ LPWSTR FidMidToSzString(LONGLONG llID, bool bLabel);
 
 // Nothing below this point actually needs to be public. It's only used internally by InterpretPropSmartView
 
@@ -645,3 +643,486 @@ _Check_return_ EntryListStruct* BinToEntryListStruct(ULONG cbBin, _In_count_(cbB
 void DeleteEntryListStruct(_In_ EntryListStruct* pelEntryList);
 // result allocated with new, clean up with delete[]
 _Check_return_ LPWSTR EntryListStructToString(_In_ EntryListStruct* pelEntryList);
+
+// AddressListEntryStruct
+// =====================
+//   This structure specifies an entry in an Address List
+//
+struct AddressListEntryStruct
+{
+	DWORD PropertyCount;
+	DWORD Pad;
+	PropertyStruct Properties;
+};
+
+// SearchFolderDefinitionStruct
+// =====================
+//   This structure specifies a Search Folder Definition
+//
+struct SearchFolderDefinitionStruct
+{
+	DWORD Version;
+	DWORD Flags;
+	DWORD NumericSearch;
+	BYTE TextSearchLength;
+	WORD TextSearchLengthExtended;
+	LPWSTR TextSearch;
+	DWORD SkipLen1;
+	LPBYTE SkipBytes1;
+	DWORD DeepSearch;
+	BYTE FolderList1Length;
+	WORD FolderList1LengthExtended;
+	LPWSTR FolderList1;
+	DWORD FolderList2Length;
+	EntryListStruct* FolderList2;
+	DWORD AddressCount; // SFST_BINARY
+	AddressListEntryStruct* Addresses; // SFST_BINARY
+	DWORD SkipLen2;
+	LPBYTE SkipBytes2;
+	RestrictionStruct* Restriction; // SFST_MRES
+	DWORD AdvancedSearchLen; // SFST_FILTERSTREAM
+	LPBYTE AdvancedSearchBytes; // SFST_FILTERSTREAM
+	DWORD SkipLen3;
+	LPBYTE SkipBytes3;
+	size_t JunkDataSize;
+	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
+};
+
+// Allocates return value with new. Clean up with DeleteSearchFolderDefinitionStruct.
+_Check_return_ SearchFolderDefinitionStruct* BinToSearchFolderDefinitionStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+void DeleteSearchFolderDefinitionStruct(_In_ SearchFolderDefinitionStruct* psfdSearchFolderDefinition);
+// result allocated with new, clean up with delete[]
+_Check_return_ LPWSTR SearchFolderDefinitionStructToString(_In_ SearchFolderDefinitionStruct* psfdSearchFolderDefinition);
+
+// PackedUnicodeString
+// =====================
+//   This structure specifies a Packed Unicode String
+//
+struct PackedUnicodeString
+{
+	BYTE cchLength;
+	WORD cchExtendedLength;
+	LPWSTR szCharacters;
+};
+
+// PackedAnsiString
+// =====================
+//   This structure specifies a Packed Ansi String
+//
+struct PackedAnsiString
+{
+	BYTE cchLength;
+	WORD cchExtendedLength;
+	LPSTR szCharacters;
+};
+
+// SkipBlock
+// =====================
+//   This structure specifies a Skip Block
+//
+struct SkipBlock
+{
+	DWORD dwSize;
+	BYTE* lpbContent;
+};
+
+// FieldDefinition
+// =====================
+//   This structure specifies a Field Definition
+//
+struct FieldDefinition
+{
+	DWORD dwFlags;
+	WORD wVT;
+	DWORD dwDispid;
+	WORD wNmidNameLength;
+	LPWSTR szNmidName;
+	PackedAnsiString pasNameANSI;
+	PackedAnsiString pasFormulaANSI;
+	PackedAnsiString pasValidationRuleANSI;
+	PackedAnsiString pasValidationTextANSI;
+	PackedAnsiString pasErrorANSI;
+	DWORD dwInternalType;
+	DWORD dwSkipBlockCount;
+	SkipBlock* psbSkipBlocks;
+};
+
+// PropertyDefinitionStreamStruct
+// =====================
+//   This structure specifies a Property Definition Stream
+//
+struct PropertyDefinitionStreamStruct
+{
+	WORD wVersion;
+	DWORD dwFieldDefinitionCount;
+	FieldDefinition* pfdFieldDefinitions;
+
+	size_t JunkDataSize;
+	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
+};
+
+// Allocates return value with new. Clean up with DeletePropertyDefinitionStreamStruct.
+_Check_return_ PropertyDefinitionStreamStruct* BinToPropertyDefinitionStreamStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+void DeletePropertyDefinitionStreamStruct(_In_ PropertyDefinitionStreamStruct* ppdsPropertyDefinitionStream);
+// result allocated with new, clean up with delete[]
+_Check_return_ LPWSTR PropertyDefinitionStreamStructToString(_In_ PropertyDefinitionStreamStruct* ppdsPropertyDefinitionStream);
+
+// PersistElement
+// =====================
+//   This structure specifies a Persist Element block
+//
+struct PersistElement
+{
+	WORD wElementID;
+	WORD wElementDataSize;
+	LPBYTE lpbElementData;
+};
+
+// PersistData
+// =====================
+//   This structure specifies a Persist Data block
+//
+struct PersistData
+{
+	WORD wPersistID;
+	WORD wDataElementsSize;
+	WORD wDataElementCount;
+	PersistElement* ppeDataElement;
+
+	size_t JunkDataSize;
+	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
+};
+
+// AdditionalRenEntryIDsStruct
+// =====================
+//   This structure specifies a Additional Ren Entry ID blob
+//
+struct AdditionalRenEntryIDsStruct
+{
+	WORD wPersistDataCount;
+	PersistData* ppdPersistData;
+
+	size_t JunkDataSize;
+	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
+};
+
+// Allocates return value with new. Clean up with DeleteAdditionalRenEntryIDsStruct.
+void BinToPersistData(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, _Out_ size_t* lpcbBytesRead, _Out_ PersistData* ppdPersistData);
+// Allocates return value with new. Clean up with DeleteAdditionalRenEntryIDsStruct.
+_Check_return_ AdditionalRenEntryIDsStruct* BinToAdditionalRenEntryIDsStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+void DeleteAdditionalRenEntryIDsStruct(_In_ AdditionalRenEntryIDsStruct* pareiAdditionalRenEntryIDs);
+// result allocated with new, clean up with delete[]
+_Check_return_ LPWSTR AdditionalRenEntryIDsStructToString(_In_ AdditionalRenEntryIDsStruct* pareiAdditionalRenEntryIDs);
+
+// FlatEntryIDStruct
+// =====================
+//   This structure specifies a Flat Entry ID in a Flat Entry List blob
+//
+struct FlatEntryIDStruct
+{
+	DWORD dwSize;
+	EntryIdStruct* lpEntryID;
+
+	size_t JunkDataSize;
+	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
+};
+
+// FlatEntryListStruct
+// =====================
+//   This structure specifies a Flat Entry List blob
+//
+struct FlatEntryListStruct
+{
+	DWORD cEntries;
+	DWORD cbEntries;
+	FlatEntryIDStruct* pEntryIDs;
+
+	size_t JunkDataSize;
+	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
+};
+
+// Allocates return value with new. Clean up with DeleteFlatEntryListStruct.
+_Check_return_ FlatEntryListStruct* BinToFlatEntryListStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+void DeleteFlatEntryListStruct(_In_ FlatEntryListStruct* pfelFlatEntryList);
+// result allocated with new, clean up with delete[]
+_Check_return_ LPWSTR FlatEntryListStructToString(_In_ FlatEntryListStruct* pfelFlatEntryList);
+
+// WebViewPersistStruct
+// =====================
+//   This structure specifies a single Web View Persistance Object
+//
+struct WebViewPersistStruct
+{
+	DWORD dwVersion;
+	DWORD dwType;
+	DWORD dwFlags;
+	DWORD dwUnused[7];
+	DWORD cbData;
+	LPBYTE lpData;
+};
+
+// WebViewPersistStreamStruct
+// =====================
+//   This structure specifies a Web View Persistance Object stream struct
+//
+struct WebViewPersistStreamStruct
+{
+	DWORD cWebViews;
+	WebViewPersistStruct* lpWebViews;
+	size_t JunkDataSize;
+	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
+};
+
+// Allocates return value with new. Clean up with DeleteWebViewPersistStreamStruct.
+_Check_return_ WebViewPersistStreamStruct* BinToWebViewPersistStreamStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+void DeleteWebViewPersistStreamStruct(_In_ WebViewPersistStreamStruct* pwvpsWebViewPersistStream);
+// result allocated with new, clean up with delete[]
+_Check_return_ LPWSTR WebViewPersistStreamStructToString(_In_ WebViewPersistStreamStruct* pwvpsWebViewPersistStream);
+
+// RecipientRowStreamStruct
+// =====================
+//   This structure specifies an recipient row stream struct
+//
+struct RecipientRowStreamStruct
+{
+	DWORD cVersion;
+	DWORD cRowCount;
+	LPADRENTRY lpAdrEntry;
+	size_t JunkDataSize;
+	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
+};
+
+// Allocates return value with new. Clean up with DeleteRecipientRowStreamStruct.
+_Check_return_ RecipientRowStreamStruct* BinToRecipientRowStreamStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+void DeleteRecipientRowStreamStruct(_In_ RecipientRowStreamStruct* prrsRecipientRowStream);
+// result allocated with new, clean up with delete[]
+_Check_return_ LPWSTR RecipientRowStreamStructToString(_In_ RecipientRowStreamStruct* prrsRecipientRowStream);
+
+// FolderFieldDefinitionCommon
+// =====================
+//   This structure specifies a folder field definition common struct
+//
+struct FolderFieldDefinitionCommon
+{
+	GUID PropSetGuid;
+	DWORD fcapm;
+	DWORD dwString;
+	DWORD dwBitmap;
+	DWORD dwDisplay;
+	DWORD iFmt;
+	WORD wszFormulaLength;
+	LPWSTR wszFormula;
+};
+
+// FolderFieldDefinitionA
+// =====================
+//   This structure specifies a folder field definition ANSI struct
+//
+struct FolderFieldDefinitionA
+{
+	DWORD FieldType;
+	WORD FieldNameLength;
+	LPSTR FieldName;
+	FolderFieldDefinitionCommon Common;
+};
+
+// FolderFieldDefinitionW
+// =====================
+//   This structure specifies a folder field definition Unicode struct
+//
+struct FolderFieldDefinitionW
+{
+	DWORD FieldType;
+	WORD FieldNameLength;
+	LPWSTR FieldName;
+	FolderFieldDefinitionCommon Common;
+};
+
+// FolderUserFieldA
+// =====================
+//   This structure specifies a folder user field ANSI stream struct
+//
+struct FolderUserFieldA
+{
+	DWORD FieldDefinitionCount;
+	FolderFieldDefinitionA* FieldDefinitions;
+};
+
+// FolderUserFieldW
+// =====================
+//   This structure specifies a folder user field Unicode stream struct
+//
+struct FolderUserFieldW
+{
+	DWORD FieldDefinitionCount;
+	FolderFieldDefinitionW* FieldDefinitions;
+};
+
+// FolderUserFieldStreamStruct
+// =====================
+//   This structure specifies a folder user field stream struct
+//
+struct FolderUserFieldStreamStruct
+{
+	FolderUserFieldA FolderUserFieldsAnsi;
+	FolderUserFieldW FolderUserFieldsUnicode;
+	size_t JunkDataSize;
+	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
+};
+
+// Allocates return value with new. Clean up with DeleteFolderUserFieldStreamStruct.
+_Check_return_ FolderUserFieldStreamStruct* BinToFolderUserFieldStreamStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+void DeleteFolderUserFieldStreamStruct(_In_ FolderUserFieldStreamStruct* pfufsFolderUserFieldStream);
+// result allocated with new, clean up with delete[]
+_Check_return_ LPWSTR FolderUserFieldStreamStructToString(_In_ FolderUserFieldStreamStruct* pfufsFolderUserFieldStream);
+
+// NickNameCacheStruct
+// =====================
+//   This structure specifies a nickname cache struct
+//
+struct NickNameCacheStruct
+{
+	BYTE Metadata1[4];
+	ULONG ulMajorVersion;
+	ULONG ulMinorVersion;
+	DWORD cRowCount;
+	LPSRow lpRows;
+	ULONG cbEI;
+	LPBYTE lpbEI;
+	BYTE Metadata2[8];
+	size_t JunkDataSize;
+	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
+};
+
+// Allocates return value with new. Clean up with DeleteNickNameCacheStruct.
+_Check_return_ NickNameCacheStruct* BinToNickNameCacheStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+void DeleteNickNameCacheStruct(_In_ NickNameCacheStruct* pnncNickNameCache);
+// result allocated with new, clean up with delete[]
+_Check_return_ LPWSTR NickNameCacheStructToString(_In_ NickNameCacheStruct* pnncNickNameCache);
+
+// VerbDataStruct
+// =====================
+//   This structure specifies verb data
+//
+struct VerbDataStruct
+{
+	DWORD VerbType;
+	BYTE DisplayNameCount;
+	LPSTR DisplayName;
+	BYTE MsgClsNameCount;
+	LPSTR MsgClsName;
+	BYTE Internal1StringCount;
+	LPSTR Internal1String;
+	BYTE DisplayNameCountRepeat;
+	LPSTR DisplayNameRepeat;
+	DWORD Internal2;
+	BYTE Internal3;
+	DWORD fUseUSHeaders;
+	DWORD Internal4;
+	DWORD SendBehavior;
+	DWORD Internal5;
+	DWORD ID;
+	DWORD Internal6;
+};
+
+// VerbExtraDataStruct
+// =====================
+//   This structure specifies extra verb data
+//
+struct VerbExtraDataStruct
+{
+	BYTE DisplayNameCount;
+	LPWSTR DisplayName;
+	BYTE DisplayNameCountRepeat;
+	LPWSTR DisplayNameRepeat;
+};
+
+// VerbStreamStruct
+// =====================
+//   This structure specifies a verb stream
+//
+struct VerbStreamStruct
+{
+	WORD Version;
+	DWORD Count;
+	VerbDataStruct* lpVerbData;
+	WORD Version2;
+	VerbExtraDataStruct* lpVerbExtraData;
+	size_t JunkDataSize;
+	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
+};
+
+// Allocates return value with new. Clean up with DeleteVerbStreamStruct.
+_Check_return_ VerbStreamStruct* BinToVerbStreamStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+void DeleteVerbStreamStruct(_In_ VerbStreamStruct* pvsVerbStream);
+// result allocated with new, clean up with delete[]
+_Check_return_ LPWSTR VerbStreamStructToString(_In_ VerbStreamStruct* pvsVerbStream);
+
+// TombstoneRecord
+// =====================
+//   This structure specifies a tombstone record
+//
+struct TombstoneRecord
+{
+	DWORD StartTime;
+	DWORD EndTime;
+	DWORD GlobalObjectIdSize;
+	LPBYTE lpGlobalObjectId;
+	WORD UsernameSize;
+	LPSTR szUsername;
+};
+
+
+// TombstoneStruct
+// =====================
+//   This structure specifies a tombstone stream
+//
+struct TombstoneStruct
+{
+	DWORD Identifier;
+	DWORD HeaderSize;
+	DWORD Version;
+	DWORD RecordsCount;
+	DWORD ActualRecordsCount; // computed based on state, not read value
+	DWORD RecordsSize;
+	TombstoneRecord* lpRecords;
+	size_t JunkDataSize;
+	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
+};
+
+// Allocates return value with new. Clean up with DeleteTombstoneStruct.
+_Check_return_ TombstoneStruct* BinToTombstoneStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+void DeleteTombstoneStruct(_In_ TombstoneStruct* ptsTombstone);
+// result allocated with new, clean up with delete[]
+_Check_return_ LPWSTR TombstoneStructToString(_In_ TombstoneStruct* ptsTombstone);
+
+// SizedXID
+// =====================
+//   This structure specifies a sized XID record
+//
+struct SizedXID
+{
+	BYTE XidSize;
+	GUID NamespaceGuid;
+	DWORD cbLocalId;
+	LPBYTE LocalID;
+};
+
+// PCLStruct
+// =====================
+//   This structure specifies a Predecessor Change List stream
+//
+struct PCLStruct
+{
+	DWORD cXID;
+	SizedXID* lpXID;
+	size_t JunkDataSize;
+	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
+};
+
+// Allocates return value with new. Clean up with DeletePCLStruct.
+_Check_return_ PCLStruct* BinToPCLStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+void DeletePCLStruct(_In_ PCLStruct* pcl);
+// result allocated with new, clean up with delete[]
+_Check_return_ LPWSTR PCLStructToString(_In_ PCLStruct* pcl);
+// End Functions to parse PT_BINARY properties

@@ -817,11 +817,8 @@ void CBaseDialog::OnOpenEntryID(_In_opt_ LPSBinary lpBin)
 
 		if (lpUnk)
 		{
-			LPWSTR szFlags = NULL;
-			InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE, &szFlags);
-			DebugPrint(DBGGeneric, _T("OnOpenEntryID: Got object (%p) of type 0x%08X = %ws\n"), lpUnk, ulObjType, szFlags);
-			delete[] szFlags;
-			szFlags = NULL;
+			wstring szFlags = InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE);
+			DebugPrint(DBGGeneric, _T("OnOpenEntryID: Got object (%p) of type 0x%08X = %ws\n"), lpUnk, ulObjType, szFlags.c_str());
 
 			LPMAPIPROP lpTemp = NULL;
 			WC_MAPI(lpUnk->QueryInterface(IID_IMAPIProp, (LPVOID*)&lpTemp));

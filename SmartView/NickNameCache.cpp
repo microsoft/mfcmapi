@@ -233,8 +233,12 @@ _Check_return_ wstring NickNameCache::ToStringInternal()
 			psPropStruct.Prop = m_lpRows[i].lpProps;
 
 			LPWSTR szProps = PropertyStructToString(&psPropStruct);
-			szNickNameCache += szProps;
-			delete[] szProps;
+
+			if (szProps)
+			{
+				szNickNameCache += szProps;
+				delete[] szProps;
+			}
 		}
 	}
 

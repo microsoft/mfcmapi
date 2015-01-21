@@ -199,11 +199,8 @@ _Check_return_ HRESULT CallOpenEntry(
 
 	if (lpUnk)
 	{
-		LPWSTR szFlags = NULL;
-		InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE, &szFlags);
-		DebugPrint(DBGGeneric, _T("OnOpenEntryID: Got object (%p) of type 0x%08X = %ws\n"), lpUnk, ulObjType, szFlags);
-		delete[] szFlags;
-		szFlags = NULL;
+		wstring szFlags = InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE);
+		DebugPrint(DBGGeneric, _T("OnOpenEntryID: Got object (%p) of type 0x%08X = %ws\n"), lpUnk, ulObjType, szFlags.c_str());
 		*lppUnk = lpUnk;
 	}
 	if (ulObjTypeRet) *ulObjTypeRet = ulObjType;

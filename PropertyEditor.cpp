@@ -223,15 +223,14 @@ void CPropertyEditor::InitPropertyControls()
 		m_lpSmartView = (SmartViewPane*)CreateSmartViewPane(IDS_SMARTVIEW);
 	}
 
-	LPWSTR szSmartView = NULL;
-
-	int iStructType = InterpretPropSmartView(m_lpsInputValue,
+	int iStructType = FindSmartViewParserForProp(m_lpsInputValue->ulPropTag, NULL, NULL, m_bMVRow);
+	wstring szSmartView = InterpretPropSmartView(
+		m_lpsInputValue,
 		m_lpMAPIProp,
 		NULL,
 		NULL,
 		m_bIsAB,
-		m_bMVRow,
-		&szSmartView); // Built from lpProp & lpMAPIProp
+		m_bMVRow); // Built from lpProp & lpMAPIProp
 
 	wstring szTemp1;
 	wstring szTemp2;
@@ -377,7 +376,7 @@ void CPropertyEditor::InitPropertyControls()
 		if (m_lpSmartView)
 		{
 			m_lpSmartView->DisableDropDown();
-			m_lpSmartView->SetStringW(szSmartView);
+			m_lpSmartView->SetStringW(szSmartView.c_str());
 		}
 
 		break;
@@ -403,7 +402,7 @@ void CPropertyEditor::InitPropertyControls()
 		if (m_lpSmartView)
 		{
 			m_lpSmartView->DisableDropDown();
-			m_lpSmartView->SetStringW(szSmartView);
+			m_lpSmartView->SetStringW(szSmartView.c_str());
 		}
 
 		break;
@@ -429,7 +428,7 @@ void CPropertyEditor::InitPropertyControls()
 		if (m_lpSmartView)
 		{
 			m_lpSmartView->SetParser(iStructType);
-			m_lpSmartView->SetStringW(szSmartView);
+			m_lpSmartView->SetStringW(szSmartView.c_str());
 		}
 
 		break;
@@ -452,7 +451,7 @@ void CPropertyEditor::InitPropertyControls()
 		if (m_lpSmartView)
 		{
 			m_lpSmartView->DisableDropDown();
-			m_lpSmartView->SetStringW(szSmartView);
+			m_lpSmartView->SetStringW(szSmartView.c_str());
 		}
 
 		break;
@@ -506,9 +505,7 @@ void CPropertyEditor::InitPropertyControls()
 		SetStringW(IDS_ALTERNATEVIEW, szTemp2.c_str());
 		break;
 	}
-
-	delete[] szSmartView;
-} // CPropertyEditor::InitPropertyControls
+}
 
 void CPropertyEditor::WriteStringsToSPropValue()
 {
@@ -776,7 +773,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 	if ((ULONG)-1 == i) return (ULONG)-1;
 
 	CString szTmpString;
-	LPWSTR szSmartView = NULL;
+	wstring szSmartView;
 	SPropValue sProp = { 0 };
 
 	short int iVal = 0;
@@ -810,17 +807,15 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		sProp.ulPropTag = m_ulPropTag;
 		sProp.Value.i = iVal;
 
-		InterpretPropSmartView(&sProp,
+		szSmartView = InterpretPropSmartView(&sProp,
 			m_lpMAPIProp,
 			NULL,
 			NULL,
 			m_bIsAB,
-			m_bMVRow,
-			&szSmartView);
+			m_bMVRow);
 
-		if (m_lpSmartView) m_lpSmartView->SetStringW(szSmartView);
-		delete[] szSmartView;
-		szSmartView = NULL;
+		if (m_lpSmartView) m_lpSmartView->SetStringW(szSmartView.c_str());
+
 		break;
 	case PT_LONG: // unsigned 32 bit
 		szTmpString = GetStringUseControl(i);
@@ -838,17 +833,15 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		sProp.ulPropTag = m_ulPropTag;
 		sProp.Value.l = lVal;
 
-		InterpretPropSmartView(&sProp,
+		szSmartView = InterpretPropSmartView(&sProp,
 			m_lpMAPIProp,
 			NULL,
 			NULL,
 			m_bIsAB,
-			m_bMVRow,
-			&szSmartView);
+			m_bMVRow);
 
-		if (m_lpSmartView) m_lpSmartView->SetStringW(szSmartView);
-		delete[] szSmartView;
-		szSmartView = NULL;
+		if (m_lpSmartView) m_lpSmartView->SetStringW(szSmartView.c_str());
+
 		break;
 	case PT_CURRENCY:
 		if (0 == i || 1 == i)
@@ -889,17 +882,15 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		sProp.ulPropTag = m_ulPropTag;
 		sProp.Value.li = liVal;
 
-		InterpretPropSmartView(&sProp,
+		szSmartView = InterpretPropSmartView(&sProp,
 			m_lpMAPIProp,
 			NULL,
 			NULL,
 			m_bIsAB,
-			m_bMVRow,
-			&szSmartView);
+			m_bMVRow);
 
-		if (m_lpSmartView) m_lpSmartView->SetStringW(szSmartView);
-		delete[] szSmartView;
-		szSmartView = NULL;
+		if (m_lpSmartView) m_lpSmartView->SetStringW(szSmartView.c_str());
+
 		break;
 	case PT_SYSTIME: // components are unsigned hex
 		szTmpString = GetStringUseControl(0);
@@ -1094,25 +1085,23 @@ BOOL CMultiValuePropertyEditor::OnInitDialog()
 	ReadMultiValueStringsFromProperty();
 	ResizeList(0, false);
 
-	LPWSTR szSmartView = NULL;
-	ULONG iStructType = InterpretPropSmartView(m_lpsInputValue,
+	int iStructType = FindSmartViewParserForProp(m_lpsInputValue->ulPropTag, NULL, NULL, true);
+	wstring szSmartView = InterpretPropSmartView(
+		m_lpsInputValue,
 		m_lpMAPIProp,
 		NULL,
 		NULL,
 		m_bIsAB,
-		true,
-		&szSmartView);
-	if (szSmartView)
+		true);
+	if (!szSmartView.empty())
 	{
 		SmartViewPane* lpPane = (SmartViewPane*)GetControl(1);
 		if (lpPane)
 		{
 			lpPane->SetParser(iStructType);
-			lpPane->SetStringW(szSmartView);
+			lpPane->SetStringW(szSmartView.c_str());
 		}
 	}
-
-	delete[] szSmartView;
 
 	UpdateListButtons();
 
@@ -1541,19 +1530,15 @@ void CMultiValuePropertyEditor::UpdateListRow(_In_ LPSPropValue lpProp, ULONG iM
 	if (PT_MV_LONG == PROP_TYPE(m_ulPropTag) ||
 		PT_MV_BINARY == PROP_TYPE(m_ulPropTag))
 	{
-		LPWSTR szSmartView = NULL;
-
-		InterpretPropSmartView(lpProp,
+		wstring szSmartView = InterpretPropSmartView(
+			lpProp,
 			m_lpMAPIProp,
 			NULL,
 			NULL,
 			m_bIsAB,
-			true,
-			&szSmartView);
+			true);
 
-		if (szSmartView) SetListStringW(0, iMVCount, 3, szSmartView);
-		delete[] szSmartView;
-		szSmartView = NULL;
+		if (!szSmartView.empty()) SetListStringW(0, iMVCount, 3, szSmartView.c_str());
 	}
 } // CMultiValuePropertyEditor::UpdateListRow
 
@@ -1572,27 +1557,25 @@ void CMultiValuePropertyEditor::UpdateSmartView()
 			WriteMultiValueStringsToSPropValue((LPVOID)lpsProp, lpsProp);
 
 			DWORD_PTR iStructType = NULL;
-			LPWSTR szSmartView = NULL;
+			wstring szSmartView;
 			switch (PROP_TYPE(m_ulPropTag))
 			{
 			case PT_MV_LONG:
-				(void)InterpretPropSmartView(lpsProp, m_lpMAPIProp, NULL, NULL, m_bIsAB, true, &szSmartView);
+				szSmartView = InterpretPropSmartView(lpsProp, m_lpMAPIProp, NULL, NULL, m_bIsAB, true);
 				break;
 			case PT_MV_BINARY:
 				iStructType = lpPane->GetDropDownSelectionValue();
 				if (iStructType)
 				{
-					InterpretMVBinaryAsString(lpsProp->Value.MVbin, iStructType, m_lpMAPIProp, lpsProp->ulPropTag, &szSmartView);
+					szSmartView = InterpretMVBinaryAsString(lpsProp->Value.MVbin, iStructType, m_lpMAPIProp, lpsProp->ulPropTag);
 				}
 				break;
 			}
 
-			if (szSmartView)
+			if (!szSmartView.empty())
 			{
-				lpPane->SetStringW(szSmartView);
+				lpPane->SetStringW(szSmartView.c_str());
 			}
-
-			delete[] szSmartView;
 		}
 
 		MAPIFreeBuffer(lpsProp);
