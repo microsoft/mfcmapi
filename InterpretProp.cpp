@@ -731,9 +731,9 @@ void ActionToString(_In_ ACTION* lpAction, _In_ CString* PropString)
 					sBinFld.lpb = (LPBYTE)lpAction->actMoveCopy.lpFldEntryId;
 
 					szTmp.FormatMessage(IDS_ACTIONOPMOVECOPY,
-						BinToHexString(&sBinStore, true),
+						BinToHexString(&sBinStore, true).c_str(),
 						BinToTextString(&sBinStore, false).c_str(),
-						BinToHexString(&sBinFld, true),
+						BinToHexString(&sBinFld, true).c_str(),
 						BinToTextString(&sBinFld, false).c_str());
 					*PropString += szTmp;
 					break;
@@ -748,7 +748,7 @@ void ActionToString(_In_ ACTION* lpAction, _In_ CString* PropString)
 						 LPTSTR szGUID = GUIDToStringAndName(&lpAction->actReply.guidReplyTemplate);
 
 						 szTmp.FormatMessage(IDS_ACTIONOPREPLY,
-							 BinToHexString(&sBin, true),
+							 BinToHexString(&sBin, true).c_str(),
 							 BinToTextString(&sBin, false).c_str(),
 							 szGUID);
 						 *PropString += szTmp;
@@ -762,7 +762,7 @@ void ActionToString(_In_ ACTION* lpAction, _In_ CString* PropString)
 							sBin.lpb = (LPBYTE)lpAction->actDeferAction.pbData;
 
 							szTmp.FormatMessage(IDS_ACTIONOPDEFER,
-								BinToHexString(&sBin, true),
+								BinToHexString(&sBin, true).c_str(),
 								BinToTextString(&sBin, false).c_str());
 							*PropString += szTmp;
 							break;

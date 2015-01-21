@@ -187,7 +187,7 @@ BOOL CStreamEditor::OnInitDialog()
 			sProp.ulPropTag = CHANGE_PROP_TYPE(m_ulPropTag, PT_BINARY);
 			if (GetBinaryUseControl(m_iBinBox, (size_t*)&sProp.Value.bin.cb, &sProp.Value.bin.lpb))
 			{
-				int iStructType = FindSmartViewParserForProp(sProp.ulPropTag, NULL, NULL, false);
+				__ParsingTypeEnum iStructType = FindSmartViewParserForProp(sProp.ulPropTag, NULL, NULL, false);
 				wstring szSmartView = InterpretPropSmartView(
 					&sProp,
 					m_lpMAPIProp,

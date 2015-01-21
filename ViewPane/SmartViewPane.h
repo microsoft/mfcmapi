@@ -30,7 +30,7 @@ public:
 
 	void SetStringW(_In_opt_z_ LPCWSTR szMsg);
 	void DisableDropDown();
-	void SetParser(DWORD_PTR iParser);
+	void SetParser(__ParsingTypeEnum iParser);
 
 	void Parse(SBinary myBin);
 

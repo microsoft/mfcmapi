@@ -136,13 +136,16 @@ enum __ParsingTypeEnum
 	IDS_STVERBSTREAM,
 	IDS_STTOMBSTONE,
 	IDS_STPCL,
+	IDS_STLONGRTIME,
+	IDS_STPTI8,
+	IDS_STSFIDMID,
 };
 
 struct SMARTVIEW_PARSER_ARRAY_ENTRY
 {
-	ULONG	ulIndex;
-	ULONG	iStructType;
-	bool	bMV;
+	ULONG ulIndex;
+	__ParsingTypeEnum iStructType;
+	bool bMV;
 };
 typedef SMARTVIEW_PARSER_ARRAY_ENTRY* LPSMARTVIEW_PARSER_ARRAY_ENTRY;
 

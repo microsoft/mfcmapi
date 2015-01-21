@@ -558,11 +558,8 @@
 #define IDS_COUNTNAMEDPROPS             33875
 #define IDS_COUNTNAMEDPROPSPROMPT       33876
 #define IDS_DBGVIEW                     33883
-#define IDS_STLONGRTIME                 33885
-#define IDS_STPTI8                      33886
 #define IDS_OPENPROFILE                 33887
 #define IDS_OPENPROFILEPROMPT           33888
-#define IDS_STSFIDMID                   33889
 #define IDS_HELPTEXTSTARTHERE           33890
 #define IDS_HELPTEXTNOPROPS             33891
 #define IDS_QUOTA                       33892
