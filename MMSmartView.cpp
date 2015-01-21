@@ -11,11 +11,11 @@ void DoSmartView(_In_ MYOPTIONS ProgOpts)
 	// Ignore the reg key that disables smart view parsing
 	RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD = true;
 
-	ULONG ulStructType = NULL;
+	__ParsingTypeEnum ulStructType = IDS_STNOPARSING;
 
 	if (ProgOpts.ulSVParser && ProgOpts.ulSVParser < g_cuidParsingTypes)
 	{
-		ulStructType = g_uidParsingTypes[ProgOpts.ulSVParser].ulValue;
+		ulStructType = (__ParsingTypeEnum)g_uidParsingTypes[ProgOpts.ulSVParser].ulValue;
 	}
 
 	if (ulStructType)
@@ -102,4 +102,4 @@ void DoSmartView(_In_ MYOPTIONS ProgOpts)
 		if (fOut) fclose(fOut);
 		if (fIn) fclose(fIn);
 	}
-} // DoSmartView
+}

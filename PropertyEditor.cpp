@@ -1556,7 +1556,7 @@ void CMultiValuePropertyEditor::UpdateSmartView()
 		{
 			WriteMultiValueStringsToSPropValue((LPVOID)lpsProp, lpsProp);
 
-			DWORD_PTR iStructType = NULL;
+			__ParsingTypeEnum iStructType = IDS_STNOPARSING;
 			wstring szSmartView;
 			switch (PROP_TYPE(m_ulPropTag))
 			{
@@ -1564,7 +1564,7 @@ void CMultiValuePropertyEditor::UpdateSmartView()
 				szSmartView = InterpretPropSmartView(lpsProp, m_lpMAPIProp, NULL, NULL, m_bIsAB, true);
 				break;
 			case PT_MV_BINARY:
-				iStructType = lpPane->GetDropDownSelectionValue();
+				iStructType = (__ParsingTypeEnum) lpPane->GetDropDownSelectionValue();
 				if (iStructType)
 				{
 					szSmartView = InterpretMVBinaryAsString(lpsProp->Value.MVbin, iStructType, m_lpMAPIProp, lpsProp->ulPropTag);
@@ -1580,7 +1580,7 @@ void CMultiValuePropertyEditor::UpdateSmartView()
 
 		MAPIFreeBuffer(lpsProp);
 	}
-} // CMultiValuePropertyEditor::UpdateSmartView
+}
 
 _Check_return_ ULONG CMultiValuePropertyEditor::HandleChange(UINT nID)
 {
