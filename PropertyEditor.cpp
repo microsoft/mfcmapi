@@ -223,7 +223,7 @@ void CPropertyEditor::InitPropertyControls()
 		m_lpSmartView = (SmartViewPane*)CreateSmartViewPane(IDS_SMARTVIEW);
 	}
 
-	int iStructType = FindSmartViewParserForProp(m_lpsInputValue->ulPropTag, NULL, NULL, m_bMVRow);
+	__ParsingTypeEnum iStructType = FindSmartViewParserForProp(m_lpsInputValue->ulPropTag, NULL, NULL, m_bMVRow);
 	wstring szSmartView = InterpretPropSmartView(
 		m_lpsInputValue,
 		m_lpMAPIProp,
@@ -1085,7 +1085,7 @@ BOOL CMultiValuePropertyEditor::OnInitDialog()
 	ReadMultiValueStringsFromProperty();
 	ResizeList(0, false);
 
-	int iStructType = FindSmartViewParserForProp(m_lpsInputValue->ulPropTag, NULL, NULL, true);
+	__ParsingTypeEnum iStructType = FindSmartViewParserForProp(m_lpsInputValue->ulPropTag, NULL, NULL, true);
 	wstring szSmartView = InterpretPropSmartView(
 		m_lpsInputValue,
 		m_lpMAPIProp,

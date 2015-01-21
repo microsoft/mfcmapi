@@ -768,9 +768,6 @@ a binary search of the named property range (0x8000-0xFFFF).\r\n\
 \r\n\
 The Edit Given Property menu item may be used to further examine\r\n\
 existing named property mappings.\r\n"
-IDS_STLONGRTIME                  "RTime"
-IDS_STPTI8                       "I8"
-IDS_STSFIDMID                    "Fid/Mid"
 IDS_QUOTA                        "Quota"
 IDS_NICKNAME                     "Nickname Cache"
 IDS_QSTHUMBNAIL                  "Thumbnail photo"
@@ -1375,19 +1372,19 @@ lpAction->lpRes: \r\n%3\
 lpAction->ulFlags = 0x%4!08X! = %5\r\n"
 
 IDS_ACTIONOPMOVECOPY "lpAction->actMoveCopy.lpStoreEntryId:\r\n\
-%1\r\n\
+%1!ws!\r\n\
 Alt: %2!ws!\r\n\
 lpAction->actMoveCopy.lpFldEntryId:\r\n\
-%3\r\n\
+%3!ws!\r\n\
 Alt: %4!ws!\r\n"
 
 IDS_ACTIONOPREPLY "lpAction->actReply.lpEntryId:\r\n\
-%1\r\n\
+%1!ws!\r\n\
 Alt: %2\r\n\
 actReply.guidReplyTemplate = %3!ws!\r\n"
 
 IDS_ACTIONOPDEFER "lpAction->actDeferAction.pbData:\r\n\
-%1\r\n\
+%1!ws!\r\n\
 Alt: %2!ws!\r\n"
 
 IDS_ACTIONOPBOUNCE "lpAction->scBounceCode = 0x%1!08X! = %2\r\n"

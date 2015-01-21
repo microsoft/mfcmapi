@@ -12,9 +12,9 @@ ViewPane* CreateSmartViewPane(UINT uidLabel)
 	return new SmartViewPane(uidLabel);
 }
 
-SmartViewPane::SmartViewPane(UINT uidLabel):DropDownPane(uidLabel, true, g_cuidParsingTypes, NULL, g_uidParsingTypes, false)
+SmartViewPane::SmartViewPane(UINT uidLabel) :DropDownPane(uidLabel, true, g_cuidParsingTypes, NULL, g_uidParsingTypes, false)
 {
-	m_lpTextPane = (TextPane*) CreateMultiLinePane(NULL, NULL, true);
+	m_lpTextPane = (TextPane*)CreateMultiLinePane(NULL, NULL, true);
 	m_bHasData = false;
 	m_bDoDropDown = true;
 }
@@ -141,7 +141,7 @@ void SmartViewPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 		| CBS_AUTOHSCROLL
 		| CBS_DISABLENOSCROLL
 		| CBS_DROPDOWNLIST, // does not allow typing
-		CRect(0,0,0,0),
+		CRect(0, 0, 0, 0),
 		pParent,
 		m_nID));
 
@@ -149,7 +149,7 @@ void SmartViewPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 
 	if (g_uidParsingTypes)
 	{
-		for (iDropNum=0 ; iDropNum < g_cuidParsingTypes ; iDropNum++)
+		for (iDropNum = 0; iDropNum < g_cuidParsingTypes; iDropNum++)
 		{
 #ifdef UNICODE
 			m_DropDown.InsertString(
@@ -171,7 +171,7 @@ void SmartViewPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 				g_uidParsingTypes[iDropNum].ulValue);
 		}
 	}
-	m_DropDown.SetCurSel((int) m_iDropSelectionValue);
+	m_DropDown.SetCurSel((int)m_iDropSelectionValue);
 
 	// Passing a control # of 1 gives us a built in margin
 	m_lpTextPane->Initialize(1, pParent, hdc);
@@ -210,15 +210,15 @@ void SmartViewPane::DisableDropDown()
 	m_bDoDropDown = false;
 }
 
-void SmartViewPane::SetParser(DWORD_PTR iParser)
+void SmartViewPane::SetParser(__ParsingTypeEnum iParser)
 {
 	ULONG iDropNum = 0;
 
 	if (g_uidParsingTypes)
 	{
-		for (iDropNum=0 ; iDropNum < g_cuidParsingTypes ; iDropNum++)
+		for (iDropNum = 0; iDropNum < g_cuidParsingTypes; iDropNum++)
 		{
-			if (iParser == g_uidParsingTypes[iDropNum].ulValue)
+			if (iParser == (__ParsingTypeEnum)g_uidParsingTypes[iDropNum].ulValue)
 			{
 				SetSelection(iDropNum);
 				break;

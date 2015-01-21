@@ -19,7 +19,7 @@ wstring InterpretNumberAsStringProp(ULONG ulVal, ULONG ulPropTag);
 wstring InterpretNumberAsStringNamedProp(ULONG ulVal, ULONG ulPropNameID, _In_opt_ LPCGUID lpguidNamedProp);
 wstring FidMidToSzString(LONGLONG llID, bool bLabel);
 
-_Check_return_ ULONG FindSmartViewParserForProp(const ULONG ulPropTag, const ULONG ulPropNameID, _In_opt_ const LPCGUID lpguidNamedProp, bool bMVRow);
+_Check_return_ __ParsingTypeEnum FindSmartViewParserForProp(const ULONG ulPropTag, const ULONG ulPropNameID, _In_opt_ const LPCGUID lpguidNamedProp, bool bMVRow);
 
 // Nothing below this point actually needs to be public. It's only used internally by InterpretPropSmartView
 

@@ -165,20 +165,6 @@ LPSMARTVIEWPARSER GetSmartViewParser(DWORD_PTR iStructType, ULONG cbBin, _In_cou
 	return NULL;
 }
 
-SMARTVIEW_PARSER_ARRAY_ENTRY g_NumStructArray[] =
-{
-	BINARY_STRUCTURE_ENTRY(PR_RULE_ID, IDS_STPTI8)
-	BINARY_STRUCTURE_ENTRY(PidTagFolderId, IDS_STSFIDMID)
-	BINARY_STRUCTURE_ENTRY(PidTagMid, IDS_STSFIDMID)
-	BINARY_STRUCTURE_ENTRY(PR_WB_SF_LAST_USED, IDS_STLONGRTIME)
-	BINARY_STRUCTURE_ENTRY(PR_WB_SF_EXPIRATION, IDS_STLONGRTIME)
-	BINARY_STRUCTURE_ENTRY(PR_FREEBUSY_PUBLISH_START, IDS_STLONGRTIME)
-	BINARY_STRUCTURE_ENTRY(PR_FREEBUSY_PUBLISH_END, IDS_STLONGRTIME)
-};
-
-LPSMARTVIEW_PARSER_ARRAY_ENTRY NumStructArray = g_NumStructArray;
-ULONG ulNumStructArray = _countof(g_NumStructArray);
-
 _Check_return_ ULONG BuildFlagIndexFromTag(ULONG ulPropTag,
 	ULONG ulPropNameID,
 	_In_opt_z_ LPWSTR lpszPropNameString,
@@ -217,30 +203,29 @@ _Check_return_ ULONG BuildFlagIndexFromTag(ULONG ulPropTag,
 	return NULL;
 } // BuildFlagIndexFromTag
 
-_Check_return_ ULONG FindSmartViewParserForProp(_In_count_(ulParserArray) LPSMARTVIEW_PARSER_ARRAY_ENTRY lpParserArray, ULONG ulParserArray, const ULONG ulPropTag, const ULONG ulPropNameID, _In_opt_ const LPCGUID lpguidNamedProp)
+_Check_return_ __ParsingTypeEnum FindSmartViewParserForProp(const ULONG ulPropTag, const ULONG ulPropNameID, _In_opt_ const LPCGUID lpguidNamedProp)
 {
-	if (!lpParserArray) return 0;
-	ULONG	ulCurEntry = 0;
-	ULONG	ulIndex = BuildFlagIndexFromTag(ulPropTag, ulPropNameID, NULL, lpguidNamedProp);
-	bool	bMV = (PROP_TYPE(ulPropTag) & MV_FLAG) == MV_FLAG;
+	ULONG ulCurEntry = 0;
+	ULONG ulIndex = BuildFlagIndexFromTag(ulPropTag, ulPropNameID, NULL, lpguidNamedProp);
+	bool bMV = (PROP_TYPE(ulPropTag) & MV_FLAG) == MV_FLAG;
 
-	while (ulCurEntry < ulParserArray)
+	while (ulCurEntry < ulSmartViewParserArray)
 	{
-		if (lpParserArray[ulCurEntry].ulIndex == ulIndex &&
-			lpParserArray[ulCurEntry].bMV == bMV)
-			return lpParserArray[ulCurEntry].iStructType;
+		if (SmartViewParserArray[ulCurEntry].ulIndex == ulIndex &&
+			SmartViewParserArray[ulCurEntry].bMV == bMV)
+			return SmartViewParserArray[ulCurEntry].iStructType;
 		ulCurEntry++;
 	}
 
-	return 0;
-} // FindSmartViewParserForProp
+	return IDS_STNOPARSING;
+}
 
-_Check_return_ ULONG FindSmartViewParserForProp(const ULONG ulPropTag, const ULONG ulPropNameID, _In_opt_ const LPCGUID lpguidNamedProp, bool bMVRow)
+_Check_return_ __ParsingTypeEnum FindSmartViewParserForProp(const ULONG ulPropTag, const ULONG ulPropNameID, _In_opt_ const LPCGUID lpguidNamedProp, bool bMVRow)
 {
 	ULONG ulLookupPropTag = ulPropTag;
 	if (bMVRow) ulLookupPropTag |= MV_FLAG;
 
-	return FindSmartViewParserForProp(SmartViewParserArray, ulSmartViewParserArray, ulLookupPropTag, ulPropNameID, lpguidNamedProp);
+	return FindSmartViewParserForProp(ulLookupPropTag, ulPropNameID, lpguidNamedProp);
 }
 
 wstring InterpretPropSmartView(_In_ LPSPropValue lpProp, // required property value
@@ -256,7 +241,7 @@ wstring InterpretPropSmartView(_In_ LPSPropValue lpProp, // required property va
 	if (!lpProp) return L"";
 
 	HRESULT hRes = S_OK;
-	ULONG iStructType = NULL;
+	__ParsingTypeEnum iStructType = IDS_STNOPARSING;
 
 	// Named Props
 	LPMAPINAMEID* lppPropNames = 0;
@@ -316,7 +301,7 @@ wstring InterpretPropSmartView(_In_ LPSPropValue lpProp, // required property va
 		ulLookupPropTag = lpProp->ulPropTag;
 		if (bMVRow) ulLookupPropTag |= MV_FLAG;
 
-		iStructType = FindSmartViewParserForProp(SmartViewParserArray, ulSmartViewParserArray, ulLookupPropTag, ulPropNameID, lpPropNameGUID);
+		iStructType = FindSmartViewParserForProp(ulLookupPropTag, ulPropNameID, lpPropNameGUID);
 		// We special-case this property
 		if (!iStructType && PR_ROAMING_BINARYSTREAM == ulLookupPropTag && lpMAPIProp)
 		{
@@ -340,7 +325,7 @@ wstring InterpretPropSmartView(_In_ LPSPropValue lpProp, // required property va
 
 		break;
 	case PT_MV_BINARY:
-		iStructType = FindSmartViewParserForProp(SmartViewParserArray, ulSmartViewParserArray, lpProp->ulPropTag, ulPropNameID, lpPropNameGUID);
+		iStructType = FindSmartViewParserForProp(lpProp->ulPropTag, ulPropNameID, lpPropNameGUID);
 		if (iStructType)
 		{
 			lpszSmartView = InterpretMVBinaryAsString(lpProp->Value.MVbin, iStructType, lpMAPIProp, lpProp->ulPropTag);
@@ -401,7 +386,7 @@ wstring InterpretNumberAsString(_PV pV, ULONG ulPropTag, ULONG ulPropNameID, _In
 		PROP_TYPE(ulPropTag) != PT_I8) return L"";
 
 	ULONG ulPropID = NULL;
-	ULONG iParser = FindSmartViewParserForProp(NumStructArray, ulNumStructArray, ulPropTag, ulPropNameID, lpguidNamedProp);
+	__ParsingTypeEnum iParser = FindSmartViewParserForProp(ulPropTag, ulPropNameID, lpguidNamedProp);
 	switch (iParser)
 	{
 	case IDS_STLONGRTIME:
