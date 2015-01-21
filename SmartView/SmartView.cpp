@@ -90,7 +90,7 @@ typedef void (BINTOSTRING)(SBinary myBin, LPWSTR* lpszResultString);
 typedef BINTOSTRING *LPBINTOSTRING;
 struct SMART_VIEW_PARSERS_ENTRY
 {
-	ULONG iStructType;
+	__ParsingTypeEnum iStructType;
 	LPBINTOSTRUCT fBinToStruct;
 	LPDELETESTRUCT fDeleteStruct;
 	LPSTRUCTTOSTRING fStructToString;
@@ -120,7 +120,7 @@ SMART_VIEW_PARSERS_ENTRY g_SmartViewParsers[] = {
 };
 ULONG g_cSmartViewParsers = _countof(g_SmartViewParsers);
 
-LPSMARTVIEWPARSER GetSmartViewParser(DWORD_PTR iStructType, ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
+LPSMARTVIEWPARSER GetSmartViewParser(__ParsingTypeEnum iStructType, ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
 	switch (iStructType)
 	{
@@ -338,7 +338,7 @@ wstring InterpretPropSmartView(_In_ LPSPropValue lpProp, // required property va
 	return lpszSmartView;
 }
 
-wstring InterpretMVBinaryAsString(SBinaryArray myBinArray, DWORD_PTR iStructType, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
+wstring InterpretMVBinaryAsString(SBinaryArray myBinArray, __ParsingTypeEnum  iStructType, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
 {
 	if (!RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD) return L"";
 
@@ -454,7 +454,7 @@ wstring InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropTag, ULONG u
 }
 
 // return allocated with new, delete with delete[]
-wstring InterpretBinaryAsString(SBinary myBin, DWORD_PTR iStructType, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
+wstring InterpretBinaryAsString(SBinary myBin, __ParsingTypeEnum iStructType, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
 {
 	if (!RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD) return L"";
 	wstring szResultString;
