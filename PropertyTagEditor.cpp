@@ -7,6 +7,7 @@
 #include "InterpretProp2.h"
 #include "String.h"
 #include "NamedPropCache.h"
+#include "Guids.h"
 
 static TCHAR* CLASS = _T("CPropertyTagEditor");
 
@@ -133,6 +134,26 @@ void CPropertyTagEditor::OnEditAction2()
 
 	PopulateFields(NOSKIPFIELD);
 } // CPropertyTagEditor::OnEditAction2
+
+// Search for properties matching lpszDispIDName on a substring
+_Check_return_ LPNAMEID_ARRAY_ENTRY GetDispIDFromName(_In_z_ LPCWSTR lpszDispIDName)
+{
+	if (!lpszDispIDName) return NULL;
+
+	ULONG ulCur = 0;
+
+	for (ulCur = 0; ulCur < ulNameIDArray; ulCur++)
+	{
+		if (0 == wcscmp(NameIDArray[ulCur].lpszName, lpszDispIDName))
+		{
+			// PSUNKNOWN is used as a placeholder in NameIDArray - don't return matching entries
+			if (IsEqualGUID(*NameIDArray[ulCur].lpGuid, PSUNKNOWN)) return NULL;
+
+			return &NameIDArray[ulCur];
+		}
+	}
+	return NULL;
+}
 
 void CPropertyTagEditor::LookupNamedProp(ULONG ulSkipField, bool bCreate)
 {

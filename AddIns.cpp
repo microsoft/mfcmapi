@@ -28,6 +28,7 @@ ULONG g_ulPropGuidArray = _countof(g_PropGuidArray);
 ULONG g_ulNameIDArray = _countof(g_NameIDArray);
 ULONG g_ulPropTypeArray = _countof(g_PropTypeArray);
 ULONG g_ulSmartViewParserArray = _countof(g_SmartViewParserArray);
+ULONG g_ulSmartViewParserTypeArray = _countof(g_SmartViewParserTypeArray);
 
 // Arrays and counts declared in mfcmapi.h
 LPNAME_ARRAY_ENTRY PropTypeArray = NULL;
@@ -47,6 +48,9 @@ ULONG ulFlagArray = NULL;
 
 LPSMARTVIEW_PARSER_ARRAY_ENTRY SmartViewParserArray = NULL;
 ULONG ulSmartViewParserArray;
+
+LPNAME_ARRAY_ENTRY SmartViewParserTypeArray = NULL;
+ULONG ulSmartViewParserTypeArray;
 
 _Check_return_ ULONG GetAddinVersion(HMODULE hMod)
 {
@@ -153,7 +157,6 @@ void LoadSingleAddIn(_In_ LPADDIN lpAddIn, HMODULE hMod, _In_ LPLOADADDIN pfnLoa
 		lpAddIn->bLegacyPropTags = true;
 	}
 
-
 	hRes = S_OK;
 	LPGETPROPTYPES pfnGetPropTypes = NULL;
 	WC_D(pfnGetPropTypes, (LPGETPROPTYPES)GetProcAddress(hMod, szGetPropTypes));
@@ -198,8 +201,16 @@ void LoadSingleAddIn(_In_ LPADDIN lpAddIn, HMODULE hMod, _In_ LPLOADADDIN pfnLoa
 		pfnGetSmartViewParserArray(&lpAddIn->ulSmartViewParsers, &lpAddIn->lpSmartViewParsers);
 	}
 
+	hRes = S_OK;
+	LPGETSMARTVIEWPARSERTYPEARRAY pfnGetSmartViewParserTypeArray = NULL;
+	WC_D(pfnGetSmartViewParserTypeArray, (LPGETSMARTVIEWPARSERTYPEARRAY)GetProcAddress(hMod, szGetSmartViewParserTypeArray));
+	if (pfnGetSmartViewParserTypeArray)
+	{
+		pfnGetSmartViewParserTypeArray(&lpAddIn->ulSmartViewParserTypes, &lpAddIn->lpSmartViewParserTypes);
+	}
+
 	DebugPrint(DBGAddInPlumbing, _T("Done loading AddIn\n"));
-} // LoadSingleAddIn
+}
 
 class CFileList
 {
@@ -464,7 +475,7 @@ void LoadAddIns()
 							LPLOADADDIN pfnLoadAddIn = NULL;
 							WC_D(pfnLoadAddIn, (LPLOADADDIN)GetProcAddress(hMod, szLoadAddIn));
 
-							if (pfnLoadAddIn)
+							if (pfnLoadAddIn && GetAddinVersion(hMod) == MFCMAPI_HEADER_CURRENT_VERSION)
 							{
 								DebugPrint(DBGAddInPlumbing, _T("Found an add-in\n"));
 								// Add a node
@@ -523,6 +534,7 @@ void ResetArrays()
 	if (NameIDArray != g_NameIDArray) delete[] NameIDArray;
 	if (FlagArray != g_FlagArray) delete[] FlagArray;
 	if (SmartViewParserArray != g_SmartViewParserArray) delete[] SmartViewParserArray;
+	if (SmartViewParserTypeArray != g_SmartViewParserTypeArray) delete[] SmartViewParserTypeArray;
 
 	ulPropTypeArray = g_ulPropTypeArray;
 	PropTypeArray = g_PropTypeArray;
@@ -536,7 +548,9 @@ void ResetArrays()
 	FlagArray = g_FlagArray;
 	ulSmartViewParserArray = g_ulSmartViewParserArray;
 	SmartViewParserArray = g_SmartViewParserArray;
-} // ResetArrays
+	ulSmartViewParserTypeArray = g_ulSmartViewParserTypeArray;
+	SmartViewParserTypeArray = g_SmartViewParserTypeArray;
+}
 
 void UnloadAddIns()
 {
@@ -843,7 +857,7 @@ void SortFlagArray(_In_count_(ulFlags) LPFLAG_ARRAY_ENTRY lpFlags, _In_ ULONG ul
 {
 	ULONG i = 0;
 	ULONG iLoc = 0;
-	for (i = 1; i<ulFlags; i++)
+	for (i = 1; i < ulFlags; i++)
 	{
 		FLAG_ARRAY_ENTRY NextItem = lpFlags[i];
 		for (iLoc = i; iLoc > 0; iLoc--)
@@ -941,6 +955,7 @@ void MergeAddInArrays()
 	DebugPrint(DBGAddInPlumbing, _T("Found 0x%08X built in named ids.\n"), g_ulNameIDArray);
 	DebugPrint(DBGAddInPlumbing, _T("Found 0x%08X built in flags.\n"), g_ulFlagArray);
 	DebugPrint(DBGAddInPlumbing, _T("Found 0x%08X built in Smart View parsers.\n"), g_ulSmartViewParserArray);
+	DebugPrint(DBGAddInPlumbing, _T("Found 0x%08X built in Smart View parser types.\n"), g_ulSmartViewParserTypeArray);
 
 	// No add-in == nothing to merge
 	if (!g_lpMyAddins) return;
@@ -958,6 +973,7 @@ void MergeAddInArrays()
 		DebugPrint(DBGAddInPlumbing, _T("Found 0x%08X named ids.\n"), lpCurAddIn->ulNameIDs);
 		DebugPrint(DBGAddInPlumbing, _T("Found 0x%08X flags.\n"), lpCurAddIn->ulPropFlags);
 		DebugPrint(DBGAddInPlumbing, _T("Found 0x%08X Smart View parsers.\n"), lpCurAddIn->ulSmartViewParsers);
+		DebugPrint(DBGAddInPlumbing, _T("Found 0x%08X Smart View parser types.\n"), lpCurAddIn->ulSmartViewParserTypes);
 		ulAddInPropGuidArray += lpCurAddIn->ulPropGuids;
 		lpCurAddIn = lpCurAddIn->lpNextAddIn;
 	}
@@ -996,6 +1012,7 @@ void MergeAddInArrays()
 			PropTypeArray = newPropTypeArray;
 			ulPropTypeArray = (ULONG)ulnewPropTypeArray;
 		}
+
 		if (lpCurAddIn->ulPropTags)
 		{
 			qsort(lpCurAddIn->lpPropTags, lpCurAddIn->ulPropTags, sizeof(NAME_ARRAY_ENTRY_V2), &CompareTags);
@@ -1010,6 +1027,7 @@ void MergeAddInArrays()
 			PropTagArray = newPropTagArray;
 			ulPropTagArray = (ULONG)ulnewPropTagArray;
 		}
+
 		if (lpCurAddIn->ulNameIDs)
 		{
 			qsort(lpCurAddIn->lpNameIDs, lpCurAddIn->ulNameIDs, sizeof(NAMEID_ARRAY_ENTRY), &CompareNameID);
@@ -1024,6 +1042,7 @@ void MergeAddInArrays()
 			NameIDArray = newNameIDArray;
 			ulNameIDArray = (ULONG)ulnewNameIDArray;
 		}
+
 		if (lpCurAddIn->ulPropFlags)
 		{
 			SortFlagArray(lpCurAddIn->lpPropFlags, lpCurAddIn->ulPropFlags);
@@ -1036,6 +1055,7 @@ void MergeAddInArrays()
 			FlagArray = newFlagArray;
 			ulFlagArray = (ULONG)ulnewFlagArray;
 		}
+
 		if (lpCurAddIn->ulSmartViewParsers)
 		{
 			qsort(lpCurAddIn->lpSmartViewParsers, lpCurAddIn->ulSmartViewParsers, sizeof(SMARTVIEW_PARSER_ARRAY_ENTRY), &CompareSmartViewParser);
@@ -1050,6 +1070,32 @@ void MergeAddInArrays()
 			SmartViewParserArray = newSmartViewParserArray;
 			ulSmartViewParserArray = (ULONG)ulnewSmartViewParserArray;
 		}
+
+		// We add our new parsers to the end of the array, assigning ids starting with IDS_STEND
+		static ULONG s_ulNextParser = IDS_STEND;
+		if (lpCurAddIn->ulSmartViewParserTypes)
+		{
+			ULONG ulNewArray = lpCurAddIn->ulSmartViewParserTypes + ulSmartViewParserTypeArray;
+			LPNAME_ARRAY_ENTRY lpNewArray = new NAME_ARRAY_ENTRY[ulNewArray];
+
+			if (lpNewArray)
+			{
+				for (i = 0; i < ulSmartViewParserTypeArray; i++)
+				{
+					lpNewArray[i] = SmartViewParserTypeArray[i];
+				}
+
+				for (i = 0; i < lpCurAddIn->ulSmartViewParserTypes; i++)
+				{
+					lpNewArray[i + ulSmartViewParserTypeArray].ulValue = s_ulNextParser++;
+					lpNewArray[i + ulSmartViewParserTypeArray].lpszName = lpCurAddIn->lpSmartViewParserTypes[i];
+				}
+			}
+
+			SmartViewParserTypeArray = lpNewArray;
+			ulSmartViewParserTypeArray = ulNewArray;
+		}
+
 		if (lpCurAddIn->ulPropGuids)
 		{
 			// Copy guids from lpCurAddIn->lpPropGuids, checking for dupes on the way
@@ -1066,6 +1112,7 @@ void MergeAddInArrays()
 						break;
 					}
 				}
+
 				if (!bDupe)
 				{
 					PropGuidArray[ulCurPropGuid] = lpCurAddIn->lpPropGuids[i];
@@ -1082,9 +1129,10 @@ void MergeAddInArrays()
 	DebugPrint(DBGAddInPlumbing, _T("After merge, 0x%08X guids.\n"), ulPropGuidArray);
 	DebugPrint(DBGAddInPlumbing, _T("After merge, 0x%08X flags.\n"), ulFlagArray);
 	DebugPrint(DBGAddInPlumbing, _T("After merge, 0x%08X Smart View parsers.\n"), ulSmartViewParserArray);
+	DebugPrint(DBGAddInPlumbing, _T("After merge, 0x%08X Smart View parser types.\n"), ulSmartViewParserTypeArray);
 
 	DebugPrint(DBGAddInPlumbing, _T("Done merging add-in arrays\n"));
-} // MergeAddInArrays
+}
 
 __declspec(dllexport) void __cdecl AddInLog(bool bPrintThreadTime, _Printf_format_string_ LPWSTR szMsg, ...)
 {
@@ -1259,12 +1307,12 @@ _Check_return_ __declspec(dllexport) HRESULT __cdecl ComplexDialog(_In_ LPADDIND
 					i,
 					lpDialog->lpDialogControls[i].ulDefaultNum);
 				break;
-			}
+		}
 
 			// Do this after initializing controls so we have our label status set correctly.
 			MyComplexDialog.SetAddInLabel(i, lpDialog->lpDialogControls[i].szLabel);
-		}
 	}
+}
 
 	WC_H(MyComplexDialog.DisplayDialog());
 
@@ -1365,22 +1413,59 @@ __declspec(dllexport) void __cdecl GetMAPIModule(_In_ HMODULE* lphModule, bool b
 	}
 } // GetMAPIModule
 
-// Search for properties matching lpszPropName on a substring
-_Check_return_ LPNAMEID_ARRAY_ENTRY GetDispIDFromName(_In_z_ LPCWSTR lpszDispIDName)
+wstring AddInStructTypeToString(__ParsingTypeEnum iStructType)
 {
-	if (!lpszDispIDName) return NULL;
-
-	ULONG ulCur = 0;
-
-	for (ulCur = 0; ulCur < ulNameIDArray; ulCur++)
+	ULONG i = 0;
+	for (i = 0; i < ulSmartViewParserTypeArray; i++)
 	{
-		if (0 == wcscmp(NameIDArray[ulCur].lpszName, lpszDispIDName))
+		if (SmartViewParserTypeArray[i].ulValue == (ULONG) iStructType)
 		{
-			// PSUNKNOWN is used as a placeholder in NameIDArray - don't return matching entries
-			if (IsEqualGUID(*NameIDArray[ulCur].lpGuid, PSUNKNOWN)) return NULL;
-
-			return &NameIDArray[ulCur];
+			return SmartViewParserTypeArray[i].lpszName;
 		}
 	}
-	return NULL;
-} // GetDispIDFromName
+
+	return L"";
+}
+
+wstring AddInSmartView(__ParsingTypeEnum iStructType, ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
+{
+	// Don't let add-ins hijack our built in types
+	if (iStructType <= IDS_STEND-1) return L"";
+
+	wstring szStructType = AddInStructTypeToString(iStructType);
+	if (szStructType.empty()) return L"";
+
+	LPADDIN lpCurAddIn = g_lpMyAddins;
+	while (lpCurAddIn)
+	{
+		if (lpCurAddIn->ulSmartViewParserTypes)
+		{
+			ULONG i = 0;
+			for (i = 0; i < lpCurAddIn->ulSmartViewParserTypes; i++)
+			{
+				if (0 == szStructType.compare(lpCurAddIn->lpSmartViewParserTypes[i]))
+				{
+					HRESULT hRes = S_OK;
+					LPSMARTVIEWPARSE pfnSmartViewParse = NULL;
+					WC_D(pfnSmartViewParse, (LPSMARTVIEWPARSE)GetProcAddress(lpCurAddIn->hMod, szSmartViewParse));
+
+					LPFREEPARSE pfnFreeParse = NULL;
+					WC_D(pfnFreeParse, (LPFREEPARSE)GetProcAddress(lpCurAddIn->hMod, szFreeParse));
+
+					if (pfnSmartViewParse && pfnFreeParse)
+					{
+						LPWSTR szParse = pfnSmartViewParse(szStructType.c_str(), cbBin, lpBin);
+						wstring szRet = szParse;
+
+						pfnFreeParse(szParse);
+						return szRet;
+					}
+				}
+			}
+		}
+
+		lpCurAddIn = lpCurAddIn->lpNextAddIn;
+	}
+
+	return L"No parser found";
+}
