@@ -213,7 +213,7 @@ void DisplayUsage(BOOL bFull)
 		printf("%6u types\n", ulPropTypeArray);
 		printf("%6u guids\n", ulPropGuidArray);
 		printf("%6u errors\n", g_ulErrorArray);
-		printf("%6u smart view parsers\n", g_cuidParsingTypes - 1);
+		printf("%6u smart view parsers\n", ulSmartViewParserTypeArray - 1);
 		printf("\n");
 	}
 	printf("Usage:\n");
@@ -429,9 +429,9 @@ void DisplayUsage(BOOL bFull)
 		printf("Smart View Parsers:\n");
 		// Print smart view options
 		ULONG i = 1;
-		for (i = 1; i < g_cuidParsingTypes; i++)
+		for (i = 1; i < ulSmartViewParserTypeArray; i++)
 		{
-			_tprintf(_T("   %2u %ws\n"), i, g_uidParsingTypes[i].lpszName);
+			_tprintf(_T("   %2u %ws\n"), i, SmartViewParserTypeArray[i].lpszName);
 		}
 		printf("\n");
 		printf("Folders:\n");

@@ -7,18 +7,21 @@
 //    Original, unversioned header
 // 2
 //    NAMEID_ARRAY_ENTRY augmented with ulType and lpszArea
+// 3
+//    lpSmartViewParserTypes and ulSmartViewParserTypes added to _Addin
 
 #define MFCMAPI_HEADER_V1 1
 #define MFCMAPI_HEADER_V2 2
+#define MFCMAPI_HEADER_V3 3
 
 // Version number of this header file. Will be bumped when breaking changes are made
-#define MFCMAPI_HEADER_CURRENT_VERSION MFCMAPI_HEADER_V2
+#define MFCMAPI_HEADER_CURRENT_VERSION MFCMAPI_HEADER_V3
 
 // Property tags and types - used by GetPropTags and GetPropTypes
 struct NAME_ARRAY_ENTRY
 {
 	ULONG ulValue;
-	LPWSTR lpszName;
+	LPCWSTR lpszName;
 };
 typedef NAME_ARRAY_ENTRY* LPNAME_ARRAY_ENTRY;
 
@@ -26,15 +29,15 @@ struct NAME_ARRAY_ENTRY_V2
 {
 	ULONG ulValue;
 	ULONG ulSortOrder;
-	LPWSTR lpszName;
+	LPCWSTR lpszName;
 };
 typedef NAME_ARRAY_ENTRY_V2* LPNAME_ARRAY_ENTRY_V2;
 
 // Guids - used by GetPropGuids
 struct GUID_ARRAY_ENTRY
 {
-	LPCGUID	lpGuid;
-	LPWSTR	lpszName;
+	LPCGUID lpGuid;
+	LPCWSTR lpszName;
 };
 typedef GUID_ARRAY_ENTRY* LPGUID_ARRAY_ENTRY;
 
@@ -43,9 +46,9 @@ struct NAMEID_ARRAY_ENTRY
 {
 	LONG    lValue;
 	LPCGUID lpGuid;
-	LPWSTR  lpszName;
+	LPCWSTR lpszName;
 	ULONG   ulType;
-	LPWSTR  lpszArea;
+	LPCWSTR lpszArea;
 };
 typedef NAMEID_ARRAY_ENTRY* LPNAMEID_ARRAY_ENTRY;
 
@@ -64,15 +67,15 @@ enum __FlagType
 // Types of guids for InterpretFlag named property lookup
 enum __GuidType
 {
-	guidPSETID_Meeting     = 0x100,
-	guidPSETID_Address     = 0x200,
-	guidPSETID_Task        = 0x300,
+	guidPSETID_Meeting = 0x100,
+	guidPSETID_Address = 0x200,
+	guidPSETID_Task = 0x300,
 	guidPSETID_Appointment = 0x400,
-	guidPSETID_Common      = 0x500,
-	guidPSETID_Log         = 0x600,
-	guidPSETID_PostRss     = 0x700,
-	guidPSETID_Sharing     = 0x800,
-	guidPSETID_Note        = 0x900,
+	guidPSETID_Common = 0x500,
+	guidPSETID_Log = 0x600,
+	guidPSETID_PostRss = 0x700,
+	guidPSETID_Sharing = 0x800,
+	guidPSETID_Note = 0x900,
 };
 
 // All MAPI props are stored in the array by their PROP_ID. So all are < 0xffff.
@@ -139,6 +142,7 @@ enum __ParsingTypeEnum
 	IDS_STLONGRTIME,
 	IDS_STPTI8,
 	IDS_STSFIDMID,
+	IDS_STEND // This must be the end of the enum
 };
 
 struct SMARTVIEW_PARSER_ARRAY_ENTRY
@@ -334,7 +338,7 @@ typedef ADDINLOG* LPADDINLOG;
 // Use: Hooks MFCMAPI's CEditor class to display a simple dialog.
 // Notes: Uses a 4k buffer for printf parameter expansion. All string to be displayed should be smaller than 4k.
 #define szSimpleDialog "SimpleDialog" // STRING_OK
-typedef HRESULT (STDMETHODVCALLTYPE SIMPLEDIALOG)(
+typedef HRESULT(STDMETHODVCALLTYPE SIMPLEDIALOG)(
 	_In_z_ LPWSTR szTitle, // Title for dialog
 	_Printf_format_string_ LPWSTR szMsg, // the message to be printed. Uses printf syntax.
 	... // optional printf style parameters
@@ -344,20 +348,20 @@ typedef SIMPLEDIALOG* LPSIMPLEDIALOG;
 // Function: ComplexDialog
 // Use: Hooks MFCMAPI's CEditor class to display a complex dialog. 'Complex' means the dialog has controls.
 #define szComplexDialog "ComplexDialog" // STRING_OK
-typedef HRESULT (_cdecl COMPLEXDIALOG)(
-									   _In_ LPADDINDIALOG lpDialog, // In - pointer to a _AddInDialog structure indicating what the dialog should look like
-									   _Out_ LPADDINDIALOGRESULT* lppDialogResult // Out, Optional - array of _AddInDialogControlResult structures with the values of the dialog when it was closed
-									                                        // Must be freed with FreeDialogResult
-									   );
+typedef HRESULT(_cdecl COMPLEXDIALOG)(
+	_In_ LPADDINDIALOG lpDialog, // In - pointer to a _AddInDialog structure indicating what the dialog should look like
+	_Out_ LPADDINDIALOGRESULT* lppDialogResult // Out, Optional - array of _AddInDialogControlResult structures with the values of the dialog when it was closed
+	// Must be freed with FreeDialogResult
+	);
 typedef COMPLEXDIALOG* LPCOMPLEXDIALOG;
 
 // Function: FreeDialogResult
 // Use: Free lppDialogResult returned by ComplexDialog
-// Notes: Failure to free lppDialogResult will result in a memory leak
+// Notes: Failure to free lpDialogResult will result in a memory leak
 #define szFreeDialogResult "FreeDialogResult" // STRING_OK
-typedef void (_cdecl FREEDIALOGRESULT)(
-									   _In_ LPADDINDIALOGRESULT lpDialogResult // _AddInDialogControlResult array to be freed
-									   );
+typedef void(_cdecl FREEDIALOGRESULT)(
+	_In_ LPADDINDIALOGRESULT lpDialogResult // _AddInDialogControlResult array to be freed
+	);
 typedef FREEDIALOGRESULT* LPFREEDIALOGRESULT;
 
 // Function: GetMAPIModule
@@ -367,10 +371,10 @@ typedef FREEDIALOGRESULT* LPFREEDIALOGRESULT;
 //        If MAPI is loaded, bForce has no effect.
 //        The handle returned is NOT ref-counted. Pay close attention to return values from GetProcAddress. Do not call FreeLibrary.
 #define szGetMAPIModule "GetMAPIModule" // STRING_OK
-typedef void (_cdecl GETMAPIMODULE)(
-									_In_ HMODULE* lphModule,
-									bool bForce
-									);
+typedef void(_cdecl GETMAPIMODULE)(
+	_In_ HMODULE* lphModule,
+	bool bForce
+	);
 typedef GETMAPIMODULE* LPGETMAPIMODULE;
 
 // End functions exported by MFCMAPI
@@ -404,7 +408,7 @@ typedef GETMENUS* LPGETMENUS;
 // Function: CallMenu
 // Use: Calls back to AddIn with a menu choice - addin will decode and invoke
 #define szCallMenu "CallMenu" // STRING_OK
-typedef HRESULT (STDMETHODCALLTYPE CALLMENU)(
+typedef HRESULT(STDMETHODCALLTYPE CALLMENU)(
 	_In_ LPADDINMENUPARAMS lpParams	// Everything the add-in needs to know
 	);
 typedef CALLMENU* LPCALLMENU;
@@ -472,11 +476,38 @@ typedef void (STDMETHODCALLTYPE GETSMARTVIEWPARSERARRAY)(
 	);
 typedef GETSMARTVIEWPARSERARRAY* LPGETSMARTVIEWPARSERARRAY;
 
+// Function: GetSmartViewParserTypeArray
+// Use: Returns a static array of SmartView parser types for MFCMAPI to use in SmartView parsing
+#define szGetSmartViewParserTypeArray "GetSmartViewParserTypeArray" // STRING_OK
+typedef void (STDMETHODCALLTYPE GETSMARTVIEWPARSERTYPEARRAY)(
+	_In_ ULONG* lpulSmartViewParserTypeArray, // Number of entries in lppSmartViewParserTypeArray
+	_In_ LPCWSTR** lppSmartViewParserTypeArray // Array of LPCWSTR
+	);
+typedef GETSMARTVIEWPARSERTYPEARRAY* LPGETSMARTVIEWPARSERTYPEARRAY;
+
+// Function: SmartViewParse
+// Use: Performs Smart View Parsing for the given type
+#define szSmartViewParse "SmartViewParse" // STRING_OK
+typedef LPWSTR(STDMETHODCALLTYPE SMARTVIEWPARSE)(
+	_In_ LPCWSTR szParserType, // Name of parser type
+	ULONG cbBin,
+	_In_count_(cbBin) LPBYTE lpBin
+	);
+typedef SMARTVIEWPARSE* LPSMARTVIEWPARSE;
+
+// Function: FreeParse
+// Use: Free the string returned by SmartViewParse
+#define szFreeParse "FreeParse" // STRING_OK
+typedef void(STDMETHODCALLTYPE FREEPARSE)(
+	_In_ LPWSTR szParse
+	);
+typedef FREEPARSE* LPFREEPARSE;
+
 // Function: GetAPIVersion
 // Use: Returns version number of the API used by the add-in
 // Notes: MUST return MFCMAPI_HEADER_CURRENT_VERSION
 #define szGetAPIVersion "GetAPIVersion" // STRING_OK
-typedef ULONG (STDMETHODCALLTYPE GETAPIVERSION)();
+typedef ULONG(STDMETHODCALLTYPE GETAPIVERSION)();
 typedef GETAPIVERSION* LPGETAPIVERSION;
 
 // Structure used internally by MFCMAPI to track information on loaded Add-Ins. While it is accessible
@@ -501,6 +532,8 @@ struct _AddIn
 	LPFLAG_ARRAY_ENTRY             lpPropFlags;        // Array of flags exposed by add-in
 	ULONG                          ulSmartViewParsers; // Count of Smart View parsers exposed by add-in
 	LPSMARTVIEW_PARSER_ARRAY_ENTRY lpSmartViewParsers; // Array of Smart View parsers exposed by add-in
+	ULONG                          ulSmartViewParserTypes; // Count of Smart View parser types exposed by add-in
+	LPCWSTR*                       lpSmartViewParserTypes; // Array of Smart View parser types exposed by add-in
 	BOOL                           bLegacyPropTags;    // Flag tracking if legacy property tags have been loaded and upconverted
 };
 
@@ -518,7 +551,9 @@ _Check_return_ ULONG ExtendAddInMenu(HMENU hMenu, ULONG ulAddInContext);
 _Check_return_ LPMENUITEM GetAddinMenuItem(HWND hWnd, UINT uidMsg);
 void InvokeAddInMenu(_In_opt_ LPADDINMENUPARAMS lpParams);
 void MergeAddInArrays();
-_Check_return_ LPNAMEID_ARRAY_ENTRY GetDispIDFromName(_In_z_ LPCWSTR lpszDispIDName);
+#include <string>
+using namespace std;
+wstring AddInSmartView(__ParsingTypeEnum iStructType, ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
 
 extern LPNAME_ARRAY_ENTRY_V2 PropTagArray;
 extern ULONG ulPropTagArray;
@@ -537,3 +572,6 @@ extern ULONG ulFlagArray;
 
 extern LPSMARTVIEW_PARSER_ARRAY_ENTRY SmartViewParserArray;
 extern ULONG ulSmartViewParserArray;
+
+extern LPNAME_ARRAY_ENTRY SmartViewParserTypeArray;
+extern ULONG ulSmartViewParserTypeArray;

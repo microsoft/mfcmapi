@@ -12,7 +12,7 @@ ViewPane* CreateSmartViewPane(UINT uidLabel)
 	return new SmartViewPane(uidLabel);
 }
 
-SmartViewPane::SmartViewPane(UINT uidLabel) :DropDownPane(uidLabel, true, g_cuidParsingTypes, NULL, g_uidParsingTypes, false)
+SmartViewPane::SmartViewPane(UINT uidLabel) :DropDownPane(uidLabel, true, ulSmartViewParserTypeArray, NULL, SmartViewParserTypeArray, false)
 {
 	m_lpTextPane = (TextPane*)CreateMultiLinePane(NULL, NULL, true);
 	m_bHasData = false;
@@ -108,7 +108,7 @@ void SmartViewPane::SetWindowPos(int x, int y, int width, int height)
 			// Note - Real height of a combo box is fixed at m_iEditHeight
 			// Height we set here influences the amount of dropdown entries we see
 			// Only really matters on Win2k and below.
-			ULONG ulDrops = 1 + min(g_cuidParsingTypes, 4);
+			ULONG ulDrops = 1 + min(ulSmartViewParserTypeArray, 4);
 			EC_B(m_DropDown.SetWindowPos(NULL, x, y, width, m_iEditHeight * ulDrops, SWP_NOZORDER));
 
 			y += m_iEditHeight;
@@ -147,17 +147,17 @@ void SmartViewPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 
 	ULONG iDropNum = 0;
 
-	if (g_uidParsingTypes)
+	if (SmartViewParserTypeArray)
 	{
-		for (iDropNum = 0; iDropNum < g_cuidParsingTypes; iDropNum++)
+		for (iDropNum = 0; iDropNum < ulSmartViewParserTypeArray; iDropNum++)
 		{
 #ifdef UNICODE
 			m_DropDown.InsertString(
 				iDropNum,
-				g_uidParsingTypes[iDropNum].lpszName);
+				SmartViewParserTypeArray[iDropNum].lpszName);
 #else
 			LPSTR szAnsiName = NULL;
-			EC_H(UnicodeToAnsi(g_uidParsingTypes[iDropNum].lpszName, &szAnsiName));
+			EC_H(UnicodeToAnsi(SmartViewParserTypeArray[iDropNum].lpszName, &szAnsiName));
 			if (SUCCEEDED(hRes))
 			{
 				m_DropDown.InsertString(
@@ -168,7 +168,7 @@ void SmartViewPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 #endif
 			m_DropDown.SetItemData(
 				iDropNum,
-				g_uidParsingTypes[iDropNum].ulValue);
+				SmartViewParserTypeArray[iDropNum].ulValue);
 		}
 	}
 	m_DropDown.SetCurSel((int)m_iDropSelectionValue);
@@ -214,11 +214,11 @@ void SmartViewPane::SetParser(__ParsingTypeEnum iParser)
 {
 	ULONG iDropNum = 0;
 
-	if (g_uidParsingTypes)
+	if (SmartViewParserTypeArray)
 	{
-		for (iDropNum = 0; iDropNum < g_cuidParsingTypes; iDropNum++)
+		for (iDropNum = 0; iDropNum < ulSmartViewParserTypeArray; iDropNum++)
 		{
-			if (iParser == (__ParsingTypeEnum)g_uidParsingTypes[iDropNum].ulValue)
+			if (iParser == (__ParsingTypeEnum)SmartViewParserTypeArray[iDropNum].ulValue)
 			{
 				SetSelection(iDropNum);
 				break;

@@ -43,42 +43,6 @@ _Check_return_ wstring PTI8ToSzString(LARGE_INTEGER liI8, bool bLabel);
 
 // End: Functions to parse PT_LONG/PT-I2 properties
 
-// After 'No Parsing', these are in alphabetical order
-NAME_ARRAY_ENTRY g_uidParsingTypes[] = {
-	{ IDS_STNOPARSING, L"Choose Smart View Parser" }, // STRING_OK
-	{ IDS_STADDITIONALRENENTRYIDSEX, L"Additional Ren Entry IDs Ex" }, // STRING_OK
-	{ IDS_STAPPOINTMENTRECURRENCEPATTERN, L"Appointment Recurrence Pattern" }, // STRING_OK
-	{ IDS_STCONVERSATIONINDEX, L"Conversation Index" }, // STRING_OK
-	{ IDS_STENTRYID, L"Entry Id" }, // STRING_OK
-	{ IDS_STENTRYLIST, L"Entry List" }, // STRING_OK
-	{ IDS_STEXTENDEDFOLDERFLAGS, L"Extended Folder Flags" }, // STRING_OK
-	{ IDS_STEXTENDEDRULECONDITION, L"Extended Rule Condition" }, // STRING_OK
-	{ IDS_STFLATENTRYLIST, L"Flat Entry List" }, // STRING_OK
-	{ IDS_STFOLDERUSERFIELDS, L"Folder User Fields Stream" }, // STRING_OK
-	{ IDS_STGLOBALOBJECTID, L"Global Object Id" }, // STRING_OK
-	{ IDS_STPROPERTY, L"Property" }, // STRING_OK
-	{ IDS_STPROPERTYDEFINITIONSTREAM, L"Property Definition Stream" }, // STRING_OK
-	{ IDS_STRECIPIENTROWSTREAM, L"Recipient Row Stream" }, // STRING_OK
-	{ IDS_STRECURRENCEPATTERN, L"Recurrence Pattern" }, // STRING_OK
-	{ IDS_STREPORTTAG, L"Report Tag" }, // STRING_OK
-	{ IDS_STRESTRICTION, L"Restriction" }, // STRING_OK
-	{ IDS_STRULECONDITION, L"Rule Condition" }, // STRING_OK
-	{ IDS_STSEARCHFOLDERDEFINITION, L"Search Folder Definition" }, // STRING_OK
-	{ IDS_STSECURITYDESCRIPTOR, L"Security Descriptor" }, // STRING_OK
-	{ IDS_STSID, L"SID" }, // STRING_OK
-	{ IDS_STTASKASSIGNERS, L"Task Assigners" }, // STRING_OK
-	{ IDS_STTIMEZONE, L"Time Zone" }, // STRING_OK
-	{ IDS_STTIMEZONEDEFINITION, L"Time Zone Definition" }, // STRING_OK
-	{ IDS_STWEBVIEWPERSISTSTREAM, L"Web View Persistence Object Stream" }, // STRING_OK
-	{ IDS_STNICKNAMECACHE, L"Nickname Cache" }, // STRING_OK
-	{ IDS_STENCODEENTRYID, L"Encode Entry ID" }, // STRING_OK
-	{ IDS_STDECODEENTRYID, L"Decode Entry ID" }, // STRING_OK
-	{ IDS_STVERBSTREAM, L"Verb Stream" }, // STRING_OK
-	{ IDS_STTOMBSTONE, L"Tombstone" }, // STRING_OK
-	{ IDS_STPCL, L"Predecessor Change List" }, // STRING_OK
-};
-ULONG g_cuidParsingTypes = _countof(g_uidParsingTypes);
-
 typedef LPVOID BINTOSTRUCT(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
 typedef BINTOSTRUCT *LPBINTOSTRUCT;
 typedef void DELETESTRUCT(LPVOID lpStruct);
@@ -453,14 +417,16 @@ wstring InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropTag, ULONG u
 	return szResult;
 }
 
-// return allocated with new, delete with delete[]
 wstring InterpretBinaryAsString(SBinary myBin, __ParsingTypeEnum iStructType, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
 {
 	if (!RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD) return L"";
-	wstring szResultString;
+	wstring szResultString = AddInSmartView(iStructType, myBin.cb, myBin.lpb);
+	if (!szResultString.empty())
+	{
+		return szResultString;
+	}
 
 	ULONG i = 0;
-	bool bParsed = false;
 	for (i = 0; i < g_cSmartViewParsers; i++)
 	{
 		if (iStructType == g_SmartViewParsers[i].iStructType)
@@ -483,55 +449,47 @@ wstring InterpretBinaryAsString(SBinary myBin, __ParsingTypeEnum iStructType, _I
 				}
 			}
 
-			bParsed = true;
-			break;
+			return szResultString;
 		}
 	}
 
-	if (!bParsed)
+	LPSMARTVIEWPARSER svp = GetSmartViewParser(iStructType, myBin.cb, myBin.lpb);
+	if (svp)
 	{
-		LPSMARTVIEWPARSER svp = GetSmartViewParser(iStructType, myBin.cb, myBin.lpb);
-		if (svp)
-		{
-			szResultString = svp->ToString();
-			delete svp;
-			svp = NULL;
-			bParsed = true;
-		}
+		szResultString = svp->ToString();
+		delete svp;
+		return szResultString;
 	}
 
 	// These parsers have some special casing
-	if (!bParsed)
+	LPWSTR szTmp = NULL;
+
+	switch (iStructType)
 	{
-		LPWSTR szTmp = NULL;
+	case IDS_STSECURITYDESCRIPTOR:
+		SDBinToString(myBin, lpMAPIProp, ulPropTag, &szTmp);
+		break;
+	case IDS_STRULECONDITION:
+		RuleConditionToString(myBin, &szTmp, false);
+		break;
+	case IDS_STEXTENDEDRULECONDITION:
+		RuleConditionToString(myBin, &szTmp, true);
+		break;
+	case IDS_STSID:
+		SIDBinToString(myBin, &szTmp);
+		break;
+	case IDS_STDECODEENTRYID:
+		szTmp = DecodeID(myBin.cb, myBin.lpb);
+		break;
+	case IDS_STENCODEENTRYID:
+		szTmp = EncodeID(myBin.cb, (LPENTRYID)myBin.lpb);
+		break;
+	}
 
-		switch (iStructType)
-		{
-		case IDS_STSECURITYDESCRIPTOR:
-			SDBinToString(myBin, lpMAPIProp, ulPropTag, &szTmp);
-			break;
-		case IDS_STRULECONDITION:
-			RuleConditionToString(myBin, &szTmp, false);
-			break;
-		case IDS_STEXTENDEDRULECONDITION:
-			RuleConditionToString(myBin, &szTmp, true);
-			break;
-		case IDS_STSID:
-			SIDBinToString(myBin, &szTmp);
-			break;
-		case IDS_STDECODEENTRYID:
-			szTmp = DecodeID(myBin.cb, myBin.lpb);
-			break;
-		case IDS_STENCODEENTRYID:
-			szTmp = EncodeID(myBin.cb, (LPENTRYID)myBin.lpb);
-			break;
-		}
-
-		if (szTmp)
-		{
-			szResultString = szTmp;
-			delete[] szTmp;
-		}
+	if (szTmp)
+	{
+		szResultString = szTmp;
+		delete[] szTmp;
 	}
 
 	return szResultString;

@@ -1,5 +1,40 @@
 #pragma once
 
+// After 'No Parsing', these are in alphabetical order
+NAME_ARRAY_ENTRY g_SmartViewParserTypeArray[] = {
+	{ IDS_STNOPARSING, L"Choose Smart View Parser" }, // STRING_OK
+	{ IDS_STADDITIONALRENENTRYIDSEX, L"Additional Ren Entry IDs Ex" }, // STRING_OK
+	{ IDS_STAPPOINTMENTRECURRENCEPATTERN, L"Appointment Recurrence Pattern" }, // STRING_OK
+	{ IDS_STCONVERSATIONINDEX, L"Conversation Index" }, // STRING_OK
+	{ IDS_STENTRYID, L"Entry Id" }, // STRING_OK
+	{ IDS_STENTRYLIST, L"Entry List" }, // STRING_OK
+	{ IDS_STEXTENDEDFOLDERFLAGS, L"Extended Folder Flags" }, // STRING_OK
+	{ IDS_STEXTENDEDRULECONDITION, L"Extended Rule Condition" }, // STRING_OK
+	{ IDS_STFLATENTRYLIST, L"Flat Entry List" }, // STRING_OK
+	{ IDS_STFOLDERUSERFIELDS, L"Folder User Fields Stream" }, // STRING_OK
+	{ IDS_STGLOBALOBJECTID, L"Global Object Id" }, // STRING_OK
+	{ IDS_STPROPERTY, L"Property" }, // STRING_OK
+	{ IDS_STPROPERTYDEFINITIONSTREAM, L"Property Definition Stream" }, // STRING_OK
+	{ IDS_STRECIPIENTROWSTREAM, L"Recipient Row Stream" }, // STRING_OK
+	{ IDS_STRECURRENCEPATTERN, L"Recurrence Pattern" }, // STRING_OK
+	{ IDS_STREPORTTAG, L"Report Tag" }, // STRING_OK
+	{ IDS_STRESTRICTION, L"Restriction" }, // STRING_OK
+	{ IDS_STRULECONDITION, L"Rule Condition" }, // STRING_OK
+	{ IDS_STSEARCHFOLDERDEFINITION, L"Search Folder Definition" }, // STRING_OK
+	{ IDS_STSECURITYDESCRIPTOR, L"Security Descriptor" }, // STRING_OK
+	{ IDS_STSID, L"SID" }, // STRING_OK
+	{ IDS_STTASKASSIGNERS, L"Task Assigners" }, // STRING_OK
+	{ IDS_STTIMEZONE, L"Time Zone" }, // STRING_OK
+	{ IDS_STTIMEZONEDEFINITION, L"Time Zone Definition" }, // STRING_OK
+	{ IDS_STWEBVIEWPERSISTSTREAM, L"Web View Persistence Object Stream" }, // STRING_OK
+	{ IDS_STNICKNAMECACHE, L"Nickname Cache" }, // STRING_OK
+	{ IDS_STENCODEENTRYID, L"Encode Entry ID" }, // STRING_OK
+	{ IDS_STDECODEENTRYID, L"Decode Entry ID" }, // STRING_OK
+	{ IDS_STVERBSTREAM, L"Verb Stream" }, // STRING_OK
+	{ IDS_STTOMBSTONE, L"Tombstone" }, // STRING_OK
+	{ IDS_STPCL, L"Predecessor Change List" }, // STRING_OK
+};
+
 SMARTVIEW_PARSER_ARRAY_ENTRY g_SmartViewParserArray[] =
 {
 	BINARY_STRUCTURE_ENTRY(PR_REPORT_TAG, IDS_STREPORTTAG)

@@ -2,9 +2,6 @@
 #include <string>
 using namespace std;
 
-extern NAME_ARRAY_ENTRY g_uidParsingTypes[];
-extern ULONG g_cuidParsingTypes;
-
 wstring InterpretPropSmartView(_In_ LPSPropValue lpProp, // required property value
 	_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
 	_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
