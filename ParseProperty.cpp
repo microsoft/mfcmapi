@@ -85,15 +85,10 @@ wstring BuildErrorPropString(_In_ LPSPropValue lpProp)
 		ULONG i = 0;
 		for (i = 0; i < cb; i++)
 		{
-			BYTE bLow;
-			BYTE bHigh;
-			wchar_t szLow;
-			wchar_t szHigh;
-
-			bLow = (BYTE)((lpb[i]) & 0xf);
-			bHigh = (BYTE)((lpb[i] >> 4) & 0xf);
-			szLow = (wchar_t)((bLow <= 0x9) ? L'0' + bLow : L'A' + bLow - 0xa);
-			szHigh = (wchar_t)((bHigh <= 0x9) ? L'0' + bHigh : L'A' + bHigh - 0xa);
+			BYTE bLow = (BYTE)((lpb[i]) & 0xf);
+			BYTE bHigh = (BYTE)((lpb[i] >> 4) & 0xf);
+			wchar_t szLow = (wchar_t)((bLow <= 0x9) ? L'0' + bLow : L'A' + bLow - 0xa);
+			wchar_t szHigh = (wchar_t)((bHigh <= 0x9) ? L'0' + bHigh : L'A' + bHigh - 0xa);
 
 			lpsz += szHigh;
 			lpsz += szLow;
@@ -178,8 +173,8 @@ void FileTimeToString(_In_ FILETIME* lpFileTime, _In_ wstring& PropString, _In_o
 	{
 		int iRet = 0;
 		wstring szFormatStr;
-		wchar_t szTimeStr[MAX_PATH];
-		wchar_t szDateStr[MAX_PATH];
+		wchar_t szTimeStr[MAX_PATH] = { 0 };
+		wchar_t szDateStr[MAX_PATH] = { 0 };
 
 		// shove millisecond info into our format string since GetTimeFormat doesn't use it
 		szFormatStr = formatmessage(IDS_FILETIMEFORMAT, SysTime.wMilliseconds);
