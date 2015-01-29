@@ -930,6 +930,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="SingleRecipientDialog.h" />
     <ClInclude Include="SmartView\AdditionalRenEntryIDs.h" />
     <ClInclude Include="SmartView\BinaryParser.h" />
+    <ClInclude Include="SmartView\EntryList.h" />
     <ClInclude Include="SmartView\FlatEntryList.h" />
     <ClInclude Include="SmartView\FolderUserFieldStream.h" />
     <ClInclude Include="SmartView\NickNameCache.h" />
@@ -1655,6 +1656,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     </ClCompile>
     <ClCompile Include="SmartView\AdditionalRenEntryIDs.cpp" />
     <ClCompile Include="SmartView\BinaryParser.cpp" />
+    <ClCompile Include="SmartView\EntryList.cpp" />
     <ClCompile Include="SmartView\FlatEntryList.cpp" />
     <ClCompile Include="SmartView\FolderUserFieldStream.cpp" />
     <ClCompile Include="SmartView\NickNameCache.cpp" />

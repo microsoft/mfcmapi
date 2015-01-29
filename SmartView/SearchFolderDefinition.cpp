@@ -37,7 +37,7 @@ SearchFolderDefinition::~SearchFolderDefinition()
 	delete[] m_TextSearch;
 	delete[] m_SkipBytes1;
 	delete[] m_FolderList1;
-	if (m_FolderList2) DeleteEntryListStruct(m_FolderList2);
+	if (m_FolderList2) delete m_FolderList2;
 	if (m_Addresses)
 	{
 		DWORD i = 0;
@@ -101,7 +101,7 @@ void SearchFolderDefinition::Parse()
 		cbOffset = m_Parser.GetCurrentOffset();
 		size_t cbRemainingBytes = m_Parser.RemainingBytes();
 		cbRemainingBytes = min(m_FolderList2Length, cbRemainingBytes);
-		m_FolderList2 = BinToEntryListStruct(
+		m_FolderList2 = new EntryList(
 			(ULONG)cbRemainingBytes,
 			m_Parser.GetCurrentAddress());
 		m_Parser.Advance(cbRemainingBytes);
@@ -224,16 +224,10 @@ _Check_return_ wstring SearchFolderDefinition::ToStringInternal()
 	szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONFOLDERLISTLENGTH2,
 		m_FolderList2Length);
 
-	if (m_FolderList2Length)
+	if (m_FolderList2Length && m_FolderList2)
 	{
 		szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONFOLDERLIST2);
-		LPWSTR szEntryList = EntryListStructToString(m_FolderList2);
-
-		if (szEntryList)
-		{
-			szSearchFolderDefinition += szEntryList;
-			delete[] szEntryList;
-		}
+		szSearchFolderDefinition += m_FolderList2->ToString();
 	}
 
 	if (SFST_BINARY & m_Flags)

@@ -1,6 +1,6 @@
 #pragma once
 #include "SmartViewParser.h"
-#include "SmartView.h"
+#include "EntryList.h"
 
 struct AddressListEntryStruct
 {
@@ -32,7 +32,7 @@ private:
 	WORD m_FolderList1LengthExtended;
 	LPWSTR m_FolderList1;
 	DWORD m_FolderList2Length;
-	EntryListStruct* m_FolderList2;
+	EntryList* m_FolderList2;
 	DWORD m_AddressCount; // SFST_BINARY
 	AddressListEntryStruct* m_Addresses; // SFST_BINARY
 	DWORD m_SkipLen2;
