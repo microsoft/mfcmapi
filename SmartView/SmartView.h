@@ -610,35 +610,3 @@ _Check_return_ RuleConditionStruct* BinToRuleConditionStruct(ULONG cbBin, _In_co
 void DeleteRuleConditionStruct(_In_ RuleConditionStruct* prcRuleCondition);
 // result allocated with new, clean up with delete[]
 _Check_return_ LPWSTR RuleConditionStructToString(_In_ RuleConditionStruct* prcRuleCondition, bool bExtended);
-
-// EntryListEntryStruct
-// =====================
-//   This structure specifies an Entry in an Entry List
-//
-struct EntryListEntryStruct
-{
-	DWORD EntryLength;
-	DWORD EntryLengthPad;
-	EntryIdStruct* EntryId;
-};
-
-// EntryListStruct
-// =====================
-//   This structure specifies an Entry List
-//
-struct EntryListStruct
-{
-	DWORD EntryCount;
-	DWORD Pad;
-
-	EntryListEntryStruct* Entry;
-
-	size_t JunkDataSize;
-	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
-};
-
-// Allocates return value with new. Clean up with DeleteEntryListStruct.
-_Check_return_ EntryListStruct* BinToEntryListStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
-void DeleteEntryListStruct(_In_ EntryListStruct* pelEntryList);
-// result allocated with new, clean up with delete[]
-_Check_return_ LPWSTR EntryListStructToString(_In_ EntryListStruct* pelEntryList);

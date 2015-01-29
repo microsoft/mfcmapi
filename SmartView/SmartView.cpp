@@ -24,6 +24,7 @@
 #include "AdditionalRenEntryIDs.h"
 #include "PropertyDefinitionStream.h"
 #include "SearchFolderDefinition.h"
+#include "EntryList.h"
 
 #define _MaxBytes 0xFFFF
 #define _MaxDepth 50
@@ -73,7 +74,6 @@ SMART_VIEW_PARSERS_ENTRY g_SmartViewParsers[] = {
 	MAKE_SV_ENTRY(IDS_STTASKASSIGNERS, TaskAssignersStruct)
 	MAKE_SV_ENTRY(IDS_STGLOBALOBJECTID, GlobalObjectIdStruct)
 	MAKE_SV_ENTRY(IDS_STENTRYID, EntryIdStruct)
-	MAKE_SV_ENTRY(IDS_STENTRYLIST, EntryListStruct)
 	MAKE_SV_ENTRY(IDS_STPROPERTY, PropertyStruct)
 	MAKE_SV_ENTRY(IDS_STRESTRICTION, RestrictionStruct)
 	// MAKE_SV_ENTRY(IDS_STRULECONDITION, RuleConditionStruct)
@@ -123,6 +123,9 @@ LPSMARTVIEWPARSER GetSmartViewParser(__ParsingTypeEnum iStructType, ULONG cbBin,
 		break;
 	case IDS_STSEARCHFOLDERDEFINITION:
 		return new SearchFolderDefinition(cbBin, lpBin);
+		break;
+	case IDS_STENTRYLIST:
+		return new EntryList(cbBin, lpBin);
 		break;
 	}
 
@@ -3833,110 +3836,4 @@ _Check_return_ LPWSTR RuleConditionStructToString(_In_ RuleConditionStruct* prcR
 
 //////////////////////////////////////////////////////////////////////////
 // End RuleConditionStruct
-//////////////////////////////////////////////////////////////////////////
-
-//////////////////////////////////////////////////////////////////////////
-// EntryListStruct
-//////////////////////////////////////////////////////////////////////////
-
-// Allocates return value with new. Clean up with DeleteEntryListStruct.
-_Check_return_ EntryListStruct* BinToEntryListStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
-{
-	if (!lpBin) return NULL;
-
-	EntryListStruct elEntryList = { 0 };
-	CBinaryParser Parser(cbBin, lpBin);
-
-	Parser.GetDWORD(&elEntryList.EntryCount);
-	Parser.GetDWORD(&elEntryList.Pad);
-
-	if (elEntryList.EntryCount && elEntryList.EntryCount < _MaxEntriesLarge)
-	{
-		elEntryList.Entry = new EntryListEntryStruct[elEntryList.EntryCount];
-		if (elEntryList.Entry)
-		{
-			memset(elEntryList.Entry, 0, sizeof(EntryListEntryStruct)* elEntryList.EntryCount);
-			DWORD i = 0;
-			for (i = 0; i < elEntryList.EntryCount; i++)
-			{
-				Parser.GetDWORD(&elEntryList.Entry[i].EntryLength);
-				Parser.GetDWORD(&elEntryList.Entry[i].EntryLengthPad);
-			}
-
-			for (i = 0; i < elEntryList.EntryCount; i++)
-			{
-				size_t cbOffset = Parser.GetCurrentOffset();
-				size_t cbRemainingBytes = Parser.RemainingBytes();
-				cbRemainingBytes = min(elEntryList.Entry[i].EntryLength, cbRemainingBytes);
-				elEntryList.Entry[i].EntryId = BinToEntryIdStruct(
-					(ULONG)cbRemainingBytes,
-					lpBin + cbOffset);
-				Parser.Advance(cbRemainingBytes);
-			}
-		}
-	}
-
-	elEntryList.JunkDataSize = Parser.GetRemainingData(&elEntryList.JunkData);
-
-	EntryListStruct* pelEntryList = new EntryListStruct;
-	if (pelEntryList)
-	{
-		*pelEntryList = elEntryList;
-	}
-
-	return pelEntryList;
-} // BinToEntryListStruct
-
-void DeleteEntryListStruct(_In_ EntryListStruct* pelEntryList)
-{
-	if (!pelEntryList) return;
-	if (pelEntryList->Entry)
-	{
-		DWORD i = 0;
-		for (i = 0; i < pelEntryList->EntryCount; i++)
-		{
-			DeleteEntryIdStruct(pelEntryList->Entry[i].EntryId);
-		}
-	}
-	delete[] pelEntryList->Entry;
-
-	delete[] pelEntryList->JunkData;
-	delete pelEntryList;
-} // DeleteEntryListStruct
-
-// result allocated with new, clean up with delete[]
-_Check_return_ LPWSTR EntryListStructToString(_In_ EntryListStruct* pelEntryList)
-{
-	if (!pelEntryList) return NULL;
-
-	CString szEntryList;
-	CString szTmp;
-
-	szEntryList.FormatMessage(IDS_ENTRYLISTDATA,
-		pelEntryList->EntryCount,
-		pelEntryList->Pad);
-
-	if (pelEntryList->Entry)
-	{
-		DWORD i = pelEntryList->EntryCount;
-		for (i = 0; i < pelEntryList->EntryCount; i++)
-		{
-			szTmp.FormatMessage(IDS_ENTRYLISTENTRYID,
-				i,
-				pelEntryList->Entry[i].EntryLength,
-				pelEntryList->Entry[i].EntryLengthPad);
-			szEntryList += szTmp;
-			LPWSTR szEntryId = EntryIdStructToString(pelEntryList->Entry[i].EntryId);
-			szEntryList += szEntryId;
-			delete[] szEntryId;
-		}
-	}
-
-	szEntryList += JunkDataToString(pelEntryList->JunkDataSize, pelEntryList->JunkData);
-
-	return CStringToLPWSTR(szEntryList);
-} // EntryListStructToString
-
-//////////////////////////////////////////////////////////////////////////
-// End EntryListStruct
 //////////////////////////////////////////////////////////////////////////
