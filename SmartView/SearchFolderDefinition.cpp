@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "..\stdafx.h"
 #include "SearchFolderDefinition.h"
+#include "RestrictionStruct.h"
 #include "..\String.h"
 #include "..\ParseProperty.h"
 #include "..\ExtraPropTags.h"
@@ -25,7 +26,6 @@ SearchFolderDefinition::SearchFolderDefinition(ULONG cbBin, _In_count_(cbBin) LP
 	m_Addresses = 0;
 	m_SkipLen2 = 0;
 	m_SkipBytes2 = 0;
-	m_Restriction = 0;
 	m_AdvancedSearchLen = 0;
 	m_AdvancedSearchBytes = 0;
 	m_SkipLen3 = 0;
@@ -50,7 +50,6 @@ SearchFolderDefinition::~SearchFolderDefinition()
 	}
 
 	delete[] m_SkipBytes2;
-	DeleteRestrictionStruct(m_Restriction);
 	delete[] m_AdvancedSearchBytes;
 	delete[] m_SkipBytes3;
 }
@@ -141,13 +140,16 @@ void SearchFolderDefinition::Parse()
 
 	if (SFST_MRES & m_Flags)
 	{
-		size_t cbBytesRead = 0;
-		cbOffset = m_Parser.GetCurrentOffset();
-		m_Restriction = BinToRestrictionStructWithSize(
+		RestrictionStruct* res = new RestrictionStruct(
 			(ULONG)m_Parser.RemainingBytes(),
-			m_Parser.GetCurrentAddress(),
-			&cbBytesRead);
-		m_Parser.Advance(cbBytesRead);
+			m_Parser.GetCurrentAddress());
+		if (res)
+		{
+			res->DisableJunkParsing();
+			m_Restriction = res->ToString();
+			m_Parser.Advance(res->GetCurrentOffset());
+			delete res;
+		}
 	}
 
 	if (SFST_FILTERSTREAM & m_Flags)
@@ -270,15 +272,10 @@ _Check_return_ wstring SearchFolderDefinition::ToStringInternal()
 		szSearchFolderDefinition += BinToHexString(&sBin, true);
 	}
 
-	if (m_Restriction)
+	if (!m_Restriction.empty())
 	{
 		szSearchFolderDefinition += L"\r\n"; // STRING_OK
-		LPWSTR szRes = RestrictionStructToString(m_Restriction);
-		if (szRes)
-		{
-			szSearchFolderDefinition += szRes;
-			delete[] szRes;
-		}
+		szSearchFolderDefinition += m_Restriction;
 	}
 
 	if (SFST_FILTERSTREAM & m_Flags)

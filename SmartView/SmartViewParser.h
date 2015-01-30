@@ -22,6 +22,9 @@ public:
 
 	_Check_return_ wstring ToString();
 
+	void DisableJunkParsing();
+	size_t GetCurrentOffset();
+
 protected:
 	_Check_return_ wstring RTimeToString(DWORD rTime);
 	_Check_return_ LPSPropValue BinToSPropValue(DWORD dwPropCount, bool bStringPropsExcludeLength);
@@ -34,6 +37,7 @@ private:
 	virtual _Check_return_ wstring ToStringInternal() = 0;
 	_Check_return_ wstring JunkDataToString();
 
+	bool m_bEnableJunk;
 	ULONG m_cbBin;
 	LPBYTE m_lpBin;
 };
