@@ -6,6 +6,7 @@
 
 SmartViewParser::SmartViewParser(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
+	m_bEnableJunk = true;
 	m_cbBin = cbBin;
 	m_lpBin = lpBin;
 
@@ -16,13 +17,26 @@ SmartViewParser::~SmartViewParser()
 {
 }
 
+void SmartViewParser::DisableJunkParsing()
+{
+	m_bEnableJunk = false;
+}
+
+size_t SmartViewParser::GetCurrentOffset()
+{
+	return m_Parser.GetCurrentOffset();
+}
+
 _Check_return_ wstring SmartViewParser::ToString()
 {
 	Parse();
 
 	wstring szParsedString = ToStringInternal();
 
-	szParsedString += JunkDataToString();
+	if (m_bEnableJunk)
+	{
+		szParsedString += JunkDataToString();
+	}
 
 	return szParsedString;
 }

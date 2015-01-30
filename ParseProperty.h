@@ -7,3 +7,4 @@ wstring GUIDToWstringAndName(_In_opt_ LPCGUID lpGUID);
 wstring BinToTextString(_In_ LPSBinary lpBin, bool bMultiLine);
 wstring BinToHexString(_In_opt_ LPSBinary lpBin, bool bPrependCB);
 void FileTimeToString(_In_ FILETIME* lpFileTime, _In_ wstring& PropString, _In_opt_ wstring& AltPropString);
+wstring RestrictionToWstring(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj);

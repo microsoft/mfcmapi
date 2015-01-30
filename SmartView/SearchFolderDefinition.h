@@ -37,7 +37,7 @@ private:
 	AddressListEntryStruct* m_Addresses; // SFST_BINARY
 	DWORD m_SkipLen2;
 	LPBYTE m_SkipBytes2;
-	RestrictionStruct* m_Restriction; // SFST_MRES
+	wstring m_Restriction; // SFST_MRES
 	DWORD m_AdvancedSearchLen; // SFST_FILTERSTREAM
 	LPBYTE m_AdvancedSearchBytes; // SFST_FILTERSTREAM
 	DWORD m_SkipLen3;

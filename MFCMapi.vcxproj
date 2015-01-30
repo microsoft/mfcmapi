@@ -937,6 +937,8 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="SmartView\PCL.h" />
     <ClInclude Include="SmartView\PropertyDefinitionStream.h" />
     <ClInclude Include="SmartView\RecipientRowStream.h" />
+    <ClInclude Include="SmartView\RestrictionStruct.h" />
+    <ClInclude Include="SmartView\RuleCondition.h" />
     <ClInclude Include="SmartView\SearchFolderDefinition.h" />
     <ClInclude Include="SmartView\SmartViewParser.h" />
     <ClInclude Include="SmartView\TombStone.h" />
@@ -1663,6 +1665,8 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="SmartView\PCL.cpp" />
     <ClCompile Include="SmartView\PropertyDefinitionStream.cpp" />
     <ClCompile Include="SmartView\RecipientRowStream.cpp" />
+    <ClCompile Include="SmartView\RestrictionStruct.cpp" />
+    <ClCompile Include="SmartView\RuleCondition.cpp" />
     <ClCompile Include="SmartView\SearchFolderDefinition.cpp" />
     <ClCompile Include="SmartView\SmartView.cpp" />
     <ClCompile Include="SmartView\SmartViewParser.cpp" />

@@ -205,7 +205,7 @@ void FileTimeToString(_In_ FILETIME* lpFileTime, _In_ wstring& PropString, _In_o
 	AltPropString = formatmessage(IDS_FILETIMEALTFORMAT, lpFileTime->dwLowDateTime, lpFileTime->dwHighDateTime);
 }
 
- wstring RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj)
+ wstring RestrictionToWstring(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj)
 {
 	CString szRes;
 	RestrictionToString(lpRes, lpObj, 0, &szRes);
@@ -411,7 +411,7 @@ Property ParseProperty(_In_ LPSPropValue lpProp)
 			attributes.AddAttribute(L"cb", format(L"%u", lpProp->Value.bin.cb)); // STRING_OK
 			break;
 		case PT_SRESTRICTION:
-			szTmp = RestrictionToString((LPSRestriction)lpProp->Value.lpszA, NULL);
+			szTmp = RestrictionToWstring((LPSRestriction)lpProp->Value.lpszA, NULL);
 			bPropXMLSafe = false;
 			break;
 		case PT_ACTIONS:
