@@ -6,7 +6,7 @@ struct AddressListEntryStruct
 {
 	DWORD PropertyCount;
 	DWORD Pad;
-	PropertyStruct Properties;
+	LPSPropValue Props;
 };
 
 class SearchFolderDefinition : public SmartViewParser

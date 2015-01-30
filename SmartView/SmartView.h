@@ -512,26 +512,3 @@ _Check_return_ EntryIdStruct* BinToEntryIdStructWithSize(ULONG cbBin, _In_count_
 void DeleteEntryIdStruct(_In_ EntryIdStruct* peidEntryId);
 // result allocated with new, clean up with delete[]
 _Check_return_ LPWSTR EntryIdStructToString(_In_ EntryIdStruct* peidEntryId);
-
-// PropertyStruct
-// =====================
-//   This structure specifies an array of Properties
-//
-struct PropertyStruct
-{
-	DWORD PropCount;
-	LPSPropValue Prop;
-
-	size_t JunkDataSize;
-	LPBYTE JunkData; // My own addition to account for unparsed data in persisted property
-};
-
-// Allocates return value with new. Clean up with DeletePropertyStruct.
-_Check_return_ PropertyStruct* BinToPropertyStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
-// Allocates return value with new. Clean up with DeletePropertyStruct.
-_Check_return_ LPSPropValue BinToSPropValue(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, DWORD dwPropCount, _Out_ size_t* lpcbBytesRead, bool bStringPropsExcludeLength);
-// Neuters an array of SPropValues - caller must use delete to delete the SPropValue
-void DeleteSPropVal(ULONG cVal, _In_count_(cVal) LPSPropValue lpsPropVal);
-void DeletePropertyStruct(_In_ PropertyStruct* ppProperty);
-// result allocated with new, clean up with delete[]
-_Check_return_ LPWSTR PropertyStructToString(_In_ PropertyStruct* ppProperty);

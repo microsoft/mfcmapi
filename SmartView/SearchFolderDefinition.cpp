@@ -2,6 +2,7 @@
 #include "..\stdafx.h"
 #include "SearchFolderDefinition.h"
 #include "RestrictionStruct.h"
+#include "PropertyStruct.h"
 #include "..\String.h"
 #include "..\ParseProperty.h"
 #include "..\ExtraPropTags.h"
@@ -43,7 +44,7 @@ SearchFolderDefinition::~SearchFolderDefinition()
 		DWORD i = 0;
 		for (i = 0; i < m_AddressCount; i++)
 		{
-			DeleteSPropVal(m_Addresses[i].Properties.PropCount, m_Addresses[i].Properties.Prop);
+			DeleteSPropVal(m_Addresses[i].PropertyCount, m_Addresses[i].Props);
 		}
 
 		delete[] m_Addresses;
@@ -124,9 +125,7 @@ void SearchFolderDefinition::Parse()
 					m_Parser.GetDWORD(&m_Addresses[i].Pad);
 					if (m_Addresses[i].PropertyCount)
 					{
-						m_Addresses[i].Properties.PropCount = m_Addresses[i].PropertyCount;
-
-						m_Addresses[i].Properties.Prop = BinToSPropValue(
+						m_Addresses[i].Props = BinToSPropValue(
 							m_Addresses[i].PropertyCount,
 							false);
 					}
@@ -246,14 +245,7 @@ _Check_return_ wstring SearchFolderDefinition::ToStringInternal()
 					i, m_Addresses[i].Pad);
 
 				szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONPROPERTIES, i);
-
-				LPWSTR szProps = PropertyStructToString(&m_Addresses[i].Properties);
-
-				if (szProps)
-				{
-					szSearchFolderDefinition += szProps;
-					delete[] szProps;
-				}
+				szSearchFolderDefinition += PropsToString(m_Addresses[i].PropertyCount, m_Addresses[i].Props);
 			}
 		}
 	}
