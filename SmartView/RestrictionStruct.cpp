@@ -2,6 +2,7 @@
 #include "..\stdafx.h"
 #include "RestrictionStruct.h"
 #include "SmartView.h"
+#include "PropertyStruct.h"
 #include "..\String.h"
 #include "..\InterpretProp.h"
 

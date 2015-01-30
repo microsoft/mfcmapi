@@ -354,6 +354,9 @@
     <ClInclude Include="SmartView\RestrictionStruct.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SmartView\PropertyStruct.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Res\bldver.rc">
@@ -734,6 +737,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SmartView\RestrictionStruct.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SmartView\PropertyStruct.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -4,6 +4,7 @@
 #include "..\String.h"
 #include "..\ParseProperty.h"
 #include "SmartView.h"
+#include "PropertyStruct.h"
 
 NickNameCache::NickNameCache(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
 {
@@ -207,7 +208,6 @@ _Check_return_ LPSPropValue NickNameCache::NickNameBinToSPropValue(DWORD dwPropC
 _Check_return_ wstring NickNameCache::ToStringInternal()
 {
 	wstring szNickNameCache;
-	wstring szTmp;
 
 	szNickNameCache = formatmessage(IDS_NICKNAMEHEADER);
 	SBinary sBinMetadata = { 0 };
@@ -215,43 +215,29 @@ _Check_return_ wstring NickNameCache::ToStringInternal()
 	sBinMetadata.lpb = m_Metadata1;
 	szNickNameCache += BinToHexString(&sBinMetadata, true);
 
-	szTmp = formatmessage(IDS_NICKNAMEROWCOUNT, m_ulMajorVersion, m_ulMinorVersion, m_cRowCount);
-	szNickNameCache += szTmp;
+	szNickNameCache += formatmessage(IDS_NICKNAMEROWCOUNT, m_ulMajorVersion, m_ulMinorVersion, m_cRowCount);
 
 	if (m_cRowCount && m_lpRows)
 	{
 		ULONG i = 0;
 		for (i = 0; i < m_cRowCount; i++)
 		{
-			szTmp = formatmessage(IDS_NICKNAMEROWS,
+			szNickNameCache += formatmessage(IDS_NICKNAMEROWS,
 				i,
 				m_lpRows[i].cValues);
-			szNickNameCache += szTmp;
 
-			PropertyStruct psPropStruct = { 0 };
-			psPropStruct.PropCount = m_lpRows[i].cValues;
-			psPropStruct.Prop = m_lpRows[i].lpProps;
-
-			LPWSTR szProps = PropertyStructToString(&psPropStruct);
-
-			if (szProps)
-			{
-				szNickNameCache += szProps;
-				delete[] szProps;
-			}
+			szNickNameCache += PropsToString(m_lpRows[i].cValues, m_lpRows[i].lpProps);
 		}
 	}
 
 	SBinary sBinEI = { 0 };
-	szTmp = formatmessage(IDS_NICKNAMEEXTRAINFO);
-	szNickNameCache += szTmp;
+	szNickNameCache += formatmessage(IDS_NICKNAMEEXTRAINFO);
 
 	sBinEI.cb = m_cbEI;
 	sBinEI.lpb = m_lpbEI;
 	szNickNameCache += BinToHexString(&sBinEI, true);
 
-	szTmp = formatmessage(IDS_NICKNAMEFOOTER);
-	szNickNameCache += szTmp;
+	szNickNameCache += formatmessage(IDS_NICKNAMEFOOTER);
 
 	sBinMetadata.cb = sizeof(m_Metadata2);
 	sBinMetadata.lpb = m_Metadata2;

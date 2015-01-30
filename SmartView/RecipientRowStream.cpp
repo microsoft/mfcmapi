@@ -3,6 +3,7 @@
 #include "RecipientRowStream.h"
 #include "..\String.h"
 #include "SmartView.h"
+#include "PropertyStruct.h"
 
 RecipientRowStream::RecipientRowStream(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
 {
@@ -57,9 +58,8 @@ void RecipientRowStream::Parse()
 _Check_return_ wstring RecipientRowStream::ToStringInternal()
 {
 	wstring szRecipientRowStream;
-	wstring szTmp;
 
-	szRecipientRowStream= formatmessage(
+	szRecipientRowStream = formatmessage(
 		IDS_RECIPIENTROWSTREAMHEADER,
 		m_cVersion,
 		m_cRowCount);
@@ -68,20 +68,13 @@ _Check_return_ wstring RecipientRowStream::ToStringInternal()
 		ULONG i = 0;
 		for (i = 0; i < m_cRowCount; i++)
 		{
-			szTmp= formatmessage(
+			szRecipientRowStream += formatmessage(
 				IDS_RECIPIENTROWSTREAMROW,
 				i,
 				m_lpAdrEntry[i].cValues,
 				m_lpAdrEntry[i].ulReserved1);
-			szRecipientRowStream += szTmp;
 
-			PropertyStruct psPropStruct = { 0 };
-			psPropStruct.PropCount = m_lpAdrEntry[i].cValues;
-			psPropStruct.Prop = m_lpAdrEntry[i].rgPropVals;
-
-			LPWSTR szProps = PropertyStructToString(&psPropStruct);
-			szRecipientRowStream += szProps;
-			delete[] szProps;
+			szRecipientRowStream += PropsToString(m_lpAdrEntry[i].cValues, m_lpAdrEntry[i].rgPropVals);
 		}
 	}
 
