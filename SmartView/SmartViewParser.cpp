@@ -6,6 +6,7 @@
 
 SmartViewParser::SmartViewParser(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
+	m_bParsed = false;
 	m_bEnableJunk = true;
 	m_cbBin = cbBin;
 	m_lpBin = lpBin;
@@ -27,9 +28,17 @@ size_t SmartViewParser::GetCurrentOffset()
 	return m_Parser.GetCurrentOffset();
 }
 
+void SmartViewParser::EnsureParsed()
+{
+	if (m_bParsed || m_Parser.Empty()) return;
+	Parse();
+	m_bParsed = true;
+}
+
 _Check_return_ wstring SmartViewParser::ToString()
 {
-	Parse();
+	if (m_Parser.Empty()) return L"";
+	EnsureParsed();
 
 	wstring szParsedString = ToStringInternal();
 

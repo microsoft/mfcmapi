@@ -17,10 +17,11 @@ FlatEntryList::~FlatEntryList()
 		DWORD iFlatEntryList = 0;
 		for (iFlatEntryList = 0; iFlatEntryList < m_cEntries; iFlatEntryList++)
 		{
-			DeleteEntryIdStruct(m_pEntryIDs[iFlatEntryList].lpEntryID);
+			delete m_pEntryIDs[iFlatEntryList].lpEntryID;
 			delete[] m_pEntryIDs[iFlatEntryList].JunkData;
 		}
 	}
+
 	delete[] m_pEntryIDs;
 }
 
@@ -44,10 +45,9 @@ void FlatEntryList::Parse()
 				// Size here will be the length of the serialized entry ID
 				// We'll have to round it up to a multiple of 4 to read off padding
 				m_Parser.GetDWORD(&m_pEntryIDs[iFlatEntryList].dwSize);
-				size_t ulSize = m_Parser.RemainingBytes();
-				ulSize = min(m_pEntryIDs[iFlatEntryList].dwSize, ulSize);
+				size_t ulSize = min(m_pEntryIDs[iFlatEntryList].dwSize, m_Parser.RemainingBytes());
 
-				m_pEntryIDs[iFlatEntryList].lpEntryID = BinToEntryIdStruct(
+				m_pEntryIDs[iFlatEntryList].lpEntryID = new EntryIdStruct(
 					(ULONG)ulSize,
 					m_Parser.GetCurrentAddress());
 				m_Parser.Advance(ulSize);
@@ -66,7 +66,6 @@ void FlatEntryList::Parse()
 _Check_return_ wstring FlatEntryList::ToStringInternal()
 {
 	wstring szFlatEntryList;
-	wstring szTmp;
 
 	szFlatEntryList = formatmessage(
 		IDS_FELHEADER,
@@ -78,26 +77,23 @@ _Check_return_ wstring FlatEntryList::ToStringInternal()
 		DWORD iFlatEntryList = 0;
 		for (iFlatEntryList = 0; iFlatEntryList < m_cEntries; iFlatEntryList++)
 		{
-			szTmp = formatmessage(
+			szFlatEntryList += formatmessage(
 				IDS_FELENTRYHEADER,
 				iFlatEntryList,
 				m_pEntryIDs[iFlatEntryList].dwSize);
-			szFlatEntryList += szTmp;
 			if (m_pEntryIDs[iFlatEntryList].lpEntryID)
 			{
-				LPWSTR szEID = EntryIdStructToString(m_pEntryIDs[iFlatEntryList].lpEntryID);
-				szFlatEntryList += szEID;
-				delete[] szEID;
+				szFlatEntryList += m_pEntryIDs[iFlatEntryList].lpEntryID->ToString();
 			}
 
 			if (m_pEntryIDs[iFlatEntryList].JunkDataSize)
 			{
-				szTmp = formatmessage(
+				szFlatEntryList += formatmessage(
 					IDS_FELENTRYPADDING,
 					iFlatEntryList);
-				szFlatEntryList += szTmp;
 				szFlatEntryList += JunkDataToString(m_pEntryIDs[iFlatEntryList].JunkDataSize, m_pEntryIDs[iFlatEntryList].JunkData);
 			}
+
 			szFlatEntryList += L"\r\n"; // STRING_OK
 		}
 	}

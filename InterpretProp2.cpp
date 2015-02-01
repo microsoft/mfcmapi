@@ -293,14 +293,14 @@ _Check_return_ ULONG PropTypeNameToPropTypeW(_In_z_ LPCWSTR lpszPropType)
 	return ulPropType;
 } // PropTypeNameToPropTypeW
 
-_Check_return_ LPTSTR GUIDToStringAndName(_In_opt_ LPCGUID lpGUID)
+_Check_return_ wstring GUIDToStringAndName(_In_opt_ LPCGUID lpGUID)
 {
-	HRESULT hRes = S_OK;
 	ULONG ulCur = 0;
-	LPCWSTR szGUIDName = NULL;
-	size_t cchGUIDName = NULL;
-	size_t cchGUID = NULL;
-	WCHAR szUnknown[13]; // The length of IDS_UNKNOWNGUID
+	LPTSTR szGUID = GUIDToString(lpGUID);
+	wstring szGUIDName = LPTSTRToWstring(szGUID);
+	delete[] szGUID;
+
+	szGUIDName += L" = "; // STRING_OK
 
 	if (lpGUID && ulPropGuidArray && PropGuidArray)
 	{
@@ -308,38 +308,14 @@ _Check_return_ LPTSTR GUIDToStringAndName(_In_opt_ LPCGUID lpGUID)
 		{
 			if (IsEqualGUID(*lpGUID, *PropGuidArray[ulCur].lpGuid))
 			{
-				szGUIDName = PropGuidArray[ulCur].lpszName;
-				break;
+				szGUIDName += PropGuidArray[ulCur].lpszName;
+				return szGUIDName;
 			}
 		}
 	}
-	if (!szGUIDName)
-	{
-		int iRet = NULL;
-		// CString doesn't provide a way to extract just Unicode strings, so we do this manually
-		EC_D(iRet, LoadStringW(GetModuleHandle(NULL),
-			IDS_UNKNOWNGUID,
-			szUnknown,
-			_countof(szUnknown)));
-		szGUIDName = szUnknown;
-	}
 
-	LPTSTR szGUID = GUIDToString(lpGUID);
-
-	EC_H(StringCchLengthW(szGUIDName, STRSAFE_MAX_CCH, &cchGUIDName));
-	if (szGUID) EC_H(StringCchLength(szGUID, STRSAFE_MAX_CCH, &cchGUID));
-
-	size_t cchBothGuid = cchGUID + 3 + cchGUIDName + 1;
-	LPTSTR szBothGuid = new TCHAR[cchBothGuid];
-
-	if (szBothGuid)
-	{
-		EC_H(StringCchPrintf(szBothGuid, cchBothGuid, _T("%s = %ws"), szGUID, szGUIDName)); // STRING_OK
-	}
-
-	delete[] szGUID;
-	return szBothGuid;
-} // GUIDToStringAndName
+	return szGUIDName + formatmessage(IDS_UNKNOWNGUID);
+}
 
 LPCGUID GUIDNameToGUIDInt(_In_z_ LPCTSTR szGUID, bool bByteSwapped)
 {

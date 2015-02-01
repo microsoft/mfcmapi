@@ -17,7 +17,7 @@ EntryList::~EntryList()
 		DWORD i = 0;
 		for (i = 0; i < m_EntryCount; i++)
 		{
-			DeleteEntryIdStruct(m_Entry[i].EntryId);
+			delete m_Entry[i].EntryId;
 		}
 	}
 
@@ -44,10 +44,9 @@ void EntryList::Parse()
 
 			for (i = 0; i < m_EntryCount; i++)
 			{
-				size_t cbRemainingBytes = m_Parser.RemainingBytes();
-				cbRemainingBytes = min(m_Entry[i].EntryLength, cbRemainingBytes);
-				m_Entry[i].EntryId = BinToEntryIdStruct(
-					(ULONG)cbRemainingBytes,
+				size_t cbRemainingBytes = min(m_Entry[i].EntryLength, m_Parser.RemainingBytes());
+				m_Entry[i].EntryId = new EntryIdStruct(
+					cbRemainingBytes,
 					m_Parser.GetCurrentAddress());
 				m_Parser.Advance(cbRemainingBytes);
 			}
@@ -58,7 +57,6 @@ void EntryList::Parse()
 _Check_return_ wstring EntryList::ToStringInternal()
 {
 	wstring szEntryList;
-	wstring szTmp;
 
 	szEntryList = formatmessage(IDS_ENTRYLISTDATA,
 		m_EntryCount,
@@ -69,14 +67,15 @@ _Check_return_ wstring EntryList::ToStringInternal()
 		DWORD i = m_EntryCount;
 		for (i = 0; i < m_EntryCount; i++)
 		{
-			szTmp = formatmessage(IDS_ENTRYLISTENTRYID,
+			szEntryList += formatmessage(IDS_ENTRYLISTENTRYID,
 				i,
 				m_Entry[i].EntryLength,
 				m_Entry[i].EntryLengthPad);
-			szEntryList += szTmp;
-			LPWSTR szEntryId = EntryIdStructToString(m_Entry[i].EntryId);
-			szEntryList += szEntryId;
-			delete[] szEntryId;
+
+			if (m_Entry[i].EntryId)
+			{
+				szEntryList += m_Entry[i].EntryId->ToString();
+			}
 		}
 	}
 

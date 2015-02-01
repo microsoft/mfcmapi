@@ -26,6 +26,11 @@ void CBinaryParser::Init(size_t cbBin, _In_count_(cbBin) LPBYTE lpBin)
 	m_lpEnd = lpBin + cbBin;
 }
 
+bool CBinaryParser::Empty()
+{
+	return m_cbBin == 0 || m_lpBin == 0;
+}
+
 void CBinaryParser::Advance(size_t cbAdvance)
 {
 	DebugPrintEx(DBGSmartView, CLASS, _T("Advance"), _T("Advancing 0x%08X = %u bytes.\n"), (int)cbAdvance, (UINT)cbAdvance);

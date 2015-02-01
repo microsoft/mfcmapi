@@ -384,14 +384,16 @@ void _OutputNamedPropID(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPINAMEID 
 			_T("\t\t: nmid Name: %ws\n"), // STRING_OK
 			lpName->Kind.lpwstrName);
 	}
-	LPTSTR szGuid = GUIDToStringAndName(lpName->lpguid);
+
+	LPTSTR szGuid = wstringToLPTSTR(GUIDToStringAndName(lpName->lpguid));
+
 	if (szGuid)
 	{
 		_Output(ulDbgLvl, fFile, false, szGuid);
 		delete[] szGuid;
 		Outputf(ulDbgLvl, fFile, false, _T("\n"));
 	}
-} // _OutputNamedPropID
+}
 
 void _OutputFormInfo(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMINFO lpMAPIFormInfo)
 {

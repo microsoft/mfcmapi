@@ -24,6 +24,7 @@ public:
 
 	void DisableJunkParsing();
 	size_t GetCurrentOffset();
+	void EnsureParsed();
 
 protected:
 	_Check_return_ wstring RTimeToString(DWORD rTime);
@@ -38,6 +39,7 @@ private:
 	_Check_return_ wstring JunkDataToString();
 
 	bool m_bEnableJunk;
+	bool m_bParsed;
 	ULONG m_cbBin;
 	LPBYTE m_lpBin;
 };

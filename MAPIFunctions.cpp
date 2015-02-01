@@ -63,12 +63,8 @@ _Check_return_ HRESULT CallOpenEntry(
 
 	if (lpInterface && fIsSet(DBGGeneric))
 	{
-		LPTSTR szGuid = GUIDToStringAndName(lpInterface);
-		if (szGuid)
-		{
-			DebugPrint(DBGGeneric, _T("CallOpenEntry: OpenEntry asking for %s\n"), szGuid);
-			delete[] szGuid;
-		}
+		wstring szGuid = GUIDToStringAndName(lpInterface);
+		DebugPrint(DBGGeneric, _T("CallOpenEntry: OpenEntry asking for %ws\n"), szGuid.c_str());
 	}
 
 	if (lpMDB)
@@ -2876,7 +2872,7 @@ HRESULT CopyTo(HWND hWnd, _In_ LPMAPIPROP lpSource, _In_ LPMAPIPROP lpDest, LPCG
 			2,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		LPTSTR szGuid = GUIDToStringAndName(lpGUID);
+		LPTSTR szGuid = wstringToLPTSTR(GUIDToStringAndName(lpGUID));
 		MyData.InitPane(0, CreateSingleLinePane(IDS_INTERFACE, szGuid, false));
 		delete[] szGuid;
 		szGuid = NULL;
