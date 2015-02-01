@@ -28,7 +28,7 @@ void RestrictionStruct::Parse()
 
 		(void)BinToRestriction(
 			0,
-			m_Parser.RemainingBytes(),
+			(ULONG)m_Parser.RemainingBytes(),
 			m_Parser.GetCurrentAddress(),
 			&cbBytesRead,
 			m_lpRes,

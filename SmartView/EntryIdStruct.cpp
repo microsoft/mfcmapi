@@ -155,7 +155,7 @@ void EntryIdStruct::Parse()
 			}
 
 			m_ProviderData.ContactAddressBookObject.lpEntryID = new EntryIdStruct(
-				cbRemainingBytes,
+				(ULONG)cbRemainingBytes,
 				m_Parser.GetCurrentAddress());
 			if (m_ProviderData.ContactAddressBookObject.lpEntryID)
 			{

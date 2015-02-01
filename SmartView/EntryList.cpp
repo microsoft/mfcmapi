@@ -46,7 +46,7 @@ void EntryList::Parse()
 			{
 				size_t cbRemainingBytes = min(m_Entry[i].EntryLength, m_Parser.RemainingBytes());
 				m_Entry[i].EntryId = new EntryIdStruct(
-					cbRemainingBytes,
+					(ULONG)cbRemainingBytes,
 					m_Parser.GetCurrentAddress());
 				m_Parser.Advance(cbRemainingBytes);
 			}

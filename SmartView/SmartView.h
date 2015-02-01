@@ -14,7 +14,7 @@ wstring InterpretMVBinaryAsString(SBinaryArray myBinArray, __ParsingTypeEnum iSt
 wstring InterpretNumberAsString(_PV pV, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_z_ LPWSTR lpszPropNameString, _In_opt_ LPCGUID lpguidNamedProp, bool bLabel);
 wstring InterpretNumberAsStringProp(ULONG ulVal, ULONG ulPropTag);
 wstring InterpretNumberAsStringNamedProp(ULONG ulVal, ULONG ulPropNameID, _In_opt_ LPCGUID lpguidNamedProp);
-wstring FidMidToSzString(LONGLONG llID, bool bLabel);
+_Check_return_ wstring FidMidToSzString(LONGLONG llID, bool bLabel);
 
 _Check_return_ __ParsingTypeEnum FindSmartViewParserForProp(const ULONG ulPropTag, const ULONG ulPropNameID, _In_opt_ const LPCGUID lpguidNamedProp, bool bMVRow);
 
