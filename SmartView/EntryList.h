@@ -1,6 +1,6 @@
 #pragma once
 #include "SmartViewParser.h"
-#include "SmartView.h"
+#include "EntryIdStruct.h"
 
 struct EntryListEntryStruct
 {

@@ -8,6 +8,7 @@
 #include "InterpretProp.h"
 #include "InterpretProp2.h"
 #include "ExtraPropTags.h"
+#include "String.h"
 
 static TCHAR* CLASS = _T("CMySecInfo");
 
@@ -593,24 +594,16 @@ void ACEToString(_In_ void* pACE, eAceType acetype, _In_ CString *AceString)
 	{
 		szTmpString.FormatMessage(IDS_SIDOBJECTYPE);
 		*AceString += szTmpString;
-		LPTSTR szObjectGuid = GUIDToStringAndName(&ObjectType);
-		if (szObjectGuid)
-		{
-			*AceString += szObjectGuid;
-			delete[] szObjectGuid;
-		}
+		wstring szObjectGuid = GUIDToStringAndName(&ObjectType);
+		*AceString += wstringToCString(szObjectGuid);
 		szTmpString.FormatMessage(IDS_SIDINHERITEDOBJECTYPE);
 		*AceString += szTmpString;
-		LPTSTR szInheritedGuid = GUIDToStringAndName(&InheritedObjectType);
-		if (szInheritedGuid)
-		{
-			*AceString += szInheritedGuid;
-			delete[] szInheritedGuid;
-		}
+		wstring szInheritedGuid = GUIDToStringAndName(&InheritedObjectType);
+		*AceString += wstringToCString(szInheritedGuid);
 		szTmpString.FormatMessage(IDS_SIDFLAGS,Flags);
 		*AceString += szTmpString;
 	}
-} // ACEToString
+}
 
 _Check_return_ HRESULT SDToString(_In_count_(cbBuf) LPBYTE lpBuf, ULONG cbBuf, eAceType acetype, _In_ CString *SDString, _In_ CString *sdInfo)
 {

@@ -1,13 +1,13 @@
 #pragma once
 #include "SmartViewParser.h"
-#include "SmartView.h" //TODO: Replace with EntryID parser when available
+#include "EntryIdStruct.h"
 
 struct FlatEntryIDStruct
 {
 	DWORD dwSize;
 	EntryIdStruct* lpEntryID;
 
-	size_t JunkDataSize;
+	size_t JunkDataSize; // TODO: Kill this junk data
 	LPBYTE JunkData;
 };
 

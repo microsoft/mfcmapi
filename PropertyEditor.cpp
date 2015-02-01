@@ -236,7 +236,7 @@ void CPropertyEditor::InitPropertyControls()
 	wstring szTemp2;
 	CountedTextPane* lpPane = NULL;
 	size_t cbStr = 0;
-	LPTSTR szGuid = NULL;
+	wstring szGuid;
 
 	switch (PROP_TYPE(m_ulPropTag))
 	{
@@ -484,8 +484,7 @@ void CPropertyEditor::InitPropertyControls()
 			szGuid = GUIDToStringAndName(0);
 		}
 
-		SetString(0, szGuid);
-		delete[] szGuid;
+		SetStringW(0, szGuid.c_str());
 		break;
 	case PT_SRESTRICTION:
 		InitPane(0, CreateCollapsibleTextPane(IDS_RESTRICTION, true));

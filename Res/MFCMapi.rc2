@@ -1380,7 +1380,7 @@ Alt: %4!ws!\r\n"
 
 IDS_ACTIONOPREPLY "lpAction->actReply.lpEntryId:\r\n\
 %1!ws!\r\n\
-Alt: %2\r\n\
+Alt: %2!ws!\r\n\
 actReply.guidReplyTemplate = %3!ws!\r\n"
 
 IDS_ACTIONOPDEFER "lpAction->actDeferAction.pbData:\r\n\

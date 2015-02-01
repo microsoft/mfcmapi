@@ -191,7 +191,7 @@ void DropDownPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC /*hdc*/
 	{
 		for (iDropNum=0 ; iDropNum < ulPropGuidArray ; iDropNum++)
 		{
-			LPTSTR szGUID = GUIDToStringAndName(PropGuidArray[iDropNum].lpGuid);
+			LPTSTR szGUID = wstringToLPTSTR(GUIDToStringAndName(PropGuidArray[iDropNum].lpGuid));
 			InsertDropString(iDropNum, szGUID);
 			delete[] szGUID;
 		}

@@ -745,14 +745,13 @@ void ActionToString(_In_ ACTION* lpAction, _In_ CString* PropString)
 						 SBinary sBin = { 0 };
 						 sBin.cb = lpAction->actReply.cbEntryId;
 						 sBin.lpb = (LPBYTE)lpAction->actReply.lpEntryId;
-						 LPTSTR szGUID = GUIDToStringAndName(&lpAction->actReply.guidReplyTemplate);
+						 wstring szGUID = GUIDToStringAndName(&lpAction->actReply.guidReplyTemplate);
 
 						 szTmp.FormatMessage(IDS_ACTIONOPREPLY,
 							 BinToHexString(&sBin, true).c_str(),
 							 BinToTextString(&sBin, false).c_str(),
-							 szGUID);
+							 szGUID.c_str());
 						 *PropString += szTmp;
-						 delete[] szGUID;
 						 break;
 	}
 	case OP_DEFER_ACTION:

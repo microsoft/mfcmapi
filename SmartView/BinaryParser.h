@@ -8,6 +8,7 @@ public:
 	CBinaryParser();
 	CBinaryParser(size_t cbBin, _In_count_(cbBin) LPBYTE lpBin);
 
+	bool Empty();
 	void Init(size_t cbBin, _In_count_(cbBin) LPBYTE lpBin);
 	void Advance(size_t cbAdvance);
 	void Rewind();

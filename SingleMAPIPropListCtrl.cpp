@@ -1574,10 +1574,8 @@ void CSingleMAPIPropListCtrl::OnPasteProperty()
 					  2,
 					  CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-				  LPTSTR szGuid = GUIDToStringAndName(&IID_IMAPIProp);
-				  MyCopyData.InitPane(0, CreateSingleLinePane(IDS_INTERFACE, szGuid, false));
-				  delete[] szGuid;
-				  szGuid = NULL;
+				  wstring szGuid = GUIDToStringAndName(&IID_IMAPIProp);
+				  MyCopyData.InitPane(0, CreateSingleLinePaneW(IDS_INTERFACE, szGuid.c_str(), false));
 				  MyCopyData.InitPane(1, CreateSingleLinePane(IDS_FLAGS, NULL, false));
 				  MyCopyData.SetHex(1, MAPI_DIALOG);
 
@@ -1857,10 +1855,8 @@ void CSingleMAPIPropListCtrl::OnPasteNamedProps()
 			3,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		LPTSTR szGuid = GUIDToStringAndName(&PS_PUBLIC_STRINGS);
-		MyData.InitPane(0, CreateSingleLinePane(IDS_GUID, szGuid, false));
-		delete[] szGuid;
-		szGuid = NULL;
+		wstring szGuid = GUIDToStringAndName(&PS_PUBLIC_STRINGS);
+		MyData.InitPane(0, CreateSingleLinePaneW(IDS_GUID, szGuid.c_str(), false));
 		MyData.InitPane(1, CreateCheckPane(IDS_MAPIMOVE, false, false));
 		MyData.InitPane(2, CreateCheckPane(IDS_MAPINOREPLACE, false, false));
 
