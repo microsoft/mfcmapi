@@ -118,10 +118,7 @@ _Check_return_ wstring RuleCondition::ToStringInternal()
 			szRuleCondition += formatmessage(IDS_RULECONNAMEPROPKIND,
 				m_NamedPropertyInformation.PropertyName[i].Kind);
 
-			LPTSTR szGUID = GUIDToString(&m_NamedPropertyInformation.PropertyName[i].Guid);
-			szRuleCondition += LPTSTRToWstring(szGUID);
-			delete[] szGUID;
-			szGUID = NULL;
+			szRuleCondition += GUIDToString(&m_NamedPropertyInformation.PropertyName[i].Guid);
 
 			if (MNID_ID == m_NamedPropertyInformation.PropertyName[i].Kind)
 			{

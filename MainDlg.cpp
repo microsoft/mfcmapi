@@ -1936,9 +1936,8 @@ void CMainDlg::OnComputeGivenStoreHash()
 				{
 					if (fIsSet(DBGGeneric))
 					{
-						LPTSTR szGUID = GUIDToString((LPCGUID)&emsmdbUID);
-						DebugPrint(DBGGeneric, _T("CMainDlg::OnComputeGivenStoreHash, emsmdbUID from PR_EMSMDB_SECTION_UID = %s\n"), szGUID);
-						delete[] szGUID;
+						wstring szGUID = GUIDToString((LPCGUID)&emsmdbUID);
+						DebugPrint(DBGGeneric, _T("CMainDlg::OnComputeGivenStoreHash, emsmdbUID from PR_EMSMDB_SECTION_UID = %ws\n"), szGUID.c_str());
 					}
 					WC_MAPI(lpMAPISession->OpenProfileSection(&emsmdbUID, NULL, 0, &lpProfSect));
 				}
