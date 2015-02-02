@@ -215,7 +215,7 @@ void CPropertyTagEditor::LookupNamedProp(ULONG ulSkipField, bool bCreate)
 
 			if (PROPTAG_NAMEPROPGUID != ulSkipField)
 			{
-				LPTSTR szGUID = GUIDToString(lpNameIDEntry->lpGuid);
+				LPTSTR szGUID = wstringToLPTSTR(GUIDToString(lpNameIDEntry->lpGuid));
 				SetDropDownSelection(PROPTAG_NAMEPROPGUID, szGUID);
 				delete[] szGUID;
 			}
@@ -406,7 +406,7 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField)
 			}
 			if (PROPTAG_NAMEPROPGUID != ulSkipField)
 			{
-				LPTSTR szGUID = GUIDToString(lppPropNames[0]->lpguid);
+				LPTSTR szGUID = wstringToLPTSTR(GUIDToString(lppPropNames[0]->lpguid));
 				SetDropDownSelection(PROPTAG_NAMEPROPGUID, szGUID);
 				delete[] szGUID;
 			}

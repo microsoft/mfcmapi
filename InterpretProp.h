@@ -31,7 +31,7 @@ void FreeNameIDStrings(_In_opt_z_ LPTSTR lpszPropName,
 					   _In_opt_z_ LPTSTR lpszPropGUID,
 					   _In_opt_z_ LPTSTR lpszDASL);
 
-_Check_return_ LPTSTR GUIDToString(_In_opt_ LPCGUID lpGUID);
+_Check_return_ wstring GUIDToString(_In_opt_ LPCGUID lpGUID);
 
 _Check_return_ HRESULT StringToGUID(_In_z_ LPCTSTR szGUID, _Inout_ LPGUID lpGUID);
 _Check_return_ HRESULT StringToGUID(_In_z_ LPCTSTR szGUID, bool bByteSwapped, _Inout_ LPGUID lpGUID);

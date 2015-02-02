@@ -296,11 +296,9 @@ _Check_return_ ULONG PropTypeNameToPropTypeW(_In_z_ LPCWSTR lpszPropType)
 _Check_return_ wstring GUIDToStringAndName(_In_opt_ LPCGUID lpGUID)
 {
 	ULONG ulCur = 0;
-	LPTSTR szGUID = GUIDToString(lpGUID);
-	wstring szGUIDName = LPTSTRToWstring(szGUID);
-	delete[] szGUID;
+	wstring szGUID = GUIDToString(lpGUID);
 
-	szGUIDName += L" = "; // STRING_OK
+	szGUID += L" = "; // STRING_OK
 
 	if (lpGUID && ulPropGuidArray && PropGuidArray)
 	{
@@ -308,13 +306,13 @@ _Check_return_ wstring GUIDToStringAndName(_In_opt_ LPCGUID lpGUID)
 		{
 			if (IsEqualGUID(*lpGUID, *PropGuidArray[ulCur].lpGuid))
 			{
-				szGUIDName += PropGuidArray[ulCur].lpszName;
-				return szGUIDName;
+				szGUID += PropGuidArray[ulCur].lpszName;
+				return szGUID;
 			}
 		}
 	}
 
-	return szGUIDName + formatmessage(IDS_UNKNOWNGUID);
+	return szGUID + formatmessage(IDS_UNKNOWNGUID);
 }
 
 LPCGUID GUIDNameToGUIDInt(_In_z_ LPCTSTR szGUID, bool bByteSwapped)

@@ -157,23 +157,17 @@ _Check_return_ HRESULT Base64Encode(size_t cbSourceBuf, _In_count_(cbSourceBuf) 
 	return hRes;
 } // Base64Encode
 
-// Allocates string for GUID with new
-// free with delete[]
 #define GUID_STRING_SIZE 39
-_Check_return_ LPTSTR GUIDToString(_In_opt_ LPCGUID lpGUID)
+_Check_return_ wstring GUIDToString(_In_opt_ LPCGUID lpGUID)
 {
-	HRESULT	hRes = S_OK;
-	GUID	nullGUID = { 0 };
-	LPTSTR	szGUID = NULL;
+	GUID nullGUID = { 0 };
 
 	if (!lpGUID)
 	{
 		lpGUID = &nullGUID;
 	}
 
-	szGUID = new TCHAR[GUID_STRING_SIZE];
-
-	EC_H(StringCchPrintf(szGUID, GUID_STRING_SIZE, _T("{%.8X-%.4X-%.4X-%.2X%.2X-%.2X%.2X%.2X%.2X%.2X%.2X}"), // STRING_OK
+	return format(L"{%.8X-%.4X-%.4X-%.2X%.2X-%.2X%.2X%.2X%.2X%.2X%.2X}", // STRING_OK
 		lpGUID->Data1,
 		lpGUID->Data2,
 		lpGUID->Data3,
@@ -184,10 +178,8 @@ _Check_return_ LPTSTR GUIDToString(_In_opt_ LPCGUID lpGUID)
 		lpGUID->Data4[4],
 		lpGUID->Data4[5],
 		lpGUID->Data4[6],
-		lpGUID->Data4[7]));
-
-	return szGUID;
-} // GUIDToString
+		lpGUID->Data4[7]);
+}
 
 _Check_return_ HRESULT StringToGUID(_In_z_ LPCTSTR szGUID, _Inout_ LPGUID lpGUID)
 {
@@ -723,77 +715,77 @@ void ActionToString(_In_ ACTION* lpAction, _In_ CString* PropString)
 	case OP_MOVE:
 	case OP_COPY:
 	{
-					SBinary sBinStore = { 0 };
-					SBinary sBinFld = { 0 };
-					sBinStore.cb = lpAction->actMoveCopy.cbStoreEntryId;
-					sBinStore.lpb = (LPBYTE)lpAction->actMoveCopy.lpStoreEntryId;
-					sBinFld.cb = lpAction->actMoveCopy.cbFldEntryId;
-					sBinFld.lpb = (LPBYTE)lpAction->actMoveCopy.lpFldEntryId;
+		SBinary sBinStore = { 0 };
+		SBinary sBinFld = { 0 };
+		sBinStore.cb = lpAction->actMoveCopy.cbStoreEntryId;
+		sBinStore.lpb = (LPBYTE)lpAction->actMoveCopy.lpStoreEntryId;
+		sBinFld.cb = lpAction->actMoveCopy.cbFldEntryId;
+		sBinFld.lpb = (LPBYTE)lpAction->actMoveCopy.lpFldEntryId;
 
-					szTmp.FormatMessage(IDS_ACTIONOPMOVECOPY,
-						BinToHexString(&sBinStore, true).c_str(),
-						BinToTextString(&sBinStore, false).c_str(),
-						BinToHexString(&sBinFld, true).c_str(),
-						BinToTextString(&sBinFld, false).c_str());
-					*PropString += szTmp;
-					break;
+		szTmp.FormatMessage(IDS_ACTIONOPMOVECOPY,
+			BinToHexString(&sBinStore, true).c_str(),
+			BinToTextString(&sBinStore, false).c_str(),
+			BinToHexString(&sBinFld, true).c_str(),
+			BinToTextString(&sBinFld, false).c_str());
+		*PropString += szTmp;
+		break;
 	}
 	case OP_REPLY:
 	case OP_OOF_REPLY:
 	{
 
-						 SBinary sBin = { 0 };
-						 sBin.cb = lpAction->actReply.cbEntryId;
-						 sBin.lpb = (LPBYTE)lpAction->actReply.lpEntryId;
-						 wstring szGUID = GUIDToStringAndName(&lpAction->actReply.guidReplyTemplate);
+		SBinary sBin = { 0 };
+		sBin.cb = lpAction->actReply.cbEntryId;
+		sBin.lpb = (LPBYTE)lpAction->actReply.lpEntryId;
+		wstring szGUID = GUIDToStringAndName(&lpAction->actReply.guidReplyTemplate);
 
-						 szTmp.FormatMessage(IDS_ACTIONOPREPLY,
-							 BinToHexString(&sBin, true).c_str(),
-							 BinToTextString(&sBin, false).c_str(),
-							 szGUID.c_str());
-						 *PropString += szTmp;
-						 break;
+		szTmp.FormatMessage(IDS_ACTIONOPREPLY,
+			BinToHexString(&sBin, true).c_str(),
+			BinToTextString(&sBin, false).c_str(),
+			szGUID.c_str());
+		*PropString += szTmp;
+		break;
 	}
 	case OP_DEFER_ACTION:
 	{
-							SBinary sBin = { 0 };
-							sBin.cb = lpAction->actDeferAction.cbData;
-							sBin.lpb = (LPBYTE)lpAction->actDeferAction.pbData;
+		SBinary sBin = { 0 };
+		sBin.cb = lpAction->actDeferAction.cbData;
+		sBin.lpb = (LPBYTE)lpAction->actDeferAction.pbData;
 
-							szTmp.FormatMessage(IDS_ACTIONOPDEFER,
-								BinToHexString(&sBin, true).c_str(),
-								BinToTextString(&sBin, false).c_str());
-							*PropString += szTmp;
-							break;
+		szTmp.FormatMessage(IDS_ACTIONOPDEFER,
+			BinToHexString(&sBin, true).c_str(),
+			BinToTextString(&sBin, false).c_str());
+		*PropString += szTmp;
+		break;
 	}
 	case OP_BOUNCE:
 	{
-					  InterpretFlags(flagBounceCode, lpAction->scBounceCode, &szFlags);
-					  szTmp.FormatMessage(IDS_ACTIONOPBOUNCE, lpAction->scBounceCode, szFlags);
-					  delete[] szFlags;
-					  szFlags = NULL;
-					  *PropString += szTmp;
-					  break;
+		InterpretFlags(flagBounceCode, lpAction->scBounceCode, &szFlags);
+		szTmp.FormatMessage(IDS_ACTIONOPBOUNCE, lpAction->scBounceCode, szFlags);
+		delete[] szFlags;
+		szFlags = NULL;
+		*PropString += szTmp;
+		break;
 	}
 	case OP_FORWARD:
 	case OP_DELEGATE:
 	{
-						szTmp.FormatMessage(IDS_ACTIONOPFORWARDDEL);
-						*PropString += szTmp;
-						AdrListToString(lpAction->lpadrlist, &szProp);
-						*PropString += wstringToCString(szProp);
-						break;
+		szTmp.FormatMessage(IDS_ACTIONOPFORWARDDEL);
+		*PropString += szTmp;
+		AdrListToString(lpAction->lpadrlist, &szProp);
+		*PropString += wstringToCString(szProp);
+		break;
 	}
 
 	case OP_TAG:
 	{
-				   InterpretProp(&lpAction->propTag, &szProp, &szAltProp);
-				   szTmp.FormatMessage(IDS_ACTIONOPTAG,
-					   TagToString(lpAction->propTag.ulPropTag, NULL, false, true),
-					   szProp.c_str(),
-					   szAltProp.c_str());
-				   *PropString += szTmp;
-				   break;
+		InterpretProp(&lpAction->propTag, &szProp, &szAltProp);
+		szTmp.FormatMessage(IDS_ACTIONOPTAG,
+			TagToString(lpAction->propTag.ulPropTag, NULL, false, true),
+			szProp.c_str(),
+			szAltProp.c_str());
+		*PropString += szTmp;
+		break;
 	}
 	}
 
@@ -801,13 +793,13 @@ void ActionToString(_In_ ACTION* lpAction, _In_ CString* PropString)
 	{
 	case OP_REPLY:
 	{
-					 InterpretFlags(flagOPReply, lpAction->ulActionFlavor, &szFlags);
-					 break;
+		InterpretFlags(flagOPReply, lpAction->ulActionFlavor, &szFlags);
+		break;
 	}
 	case OP_FORWARD:
 	{
-					   InterpretFlags(flagOpForward, lpAction->ulActionFlavor, &szFlags);
-					   break;
+		InterpretFlags(flagOpForward, lpAction->ulActionFlavor, &szFlags);
+		break;
 	}
 	}
 	szTmp.FormatMessage(IDS_ACTIONFLAVOR, lpAction->ulActionFlavor, szFlags);
