@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "..\stdafx.h"
 #include "SmartView.h"
-#include "BinaryParser.h"
 #include "..\InterpretProp2.h"
 #include "..\InterpretProp.h"
 #include "..\ExtraPropTags.h"
@@ -39,49 +38,12 @@
 #include "AppointmentRecurrencePattern.h"
 #include "RecurrencePattern.h"
 
-#define _MaxBytes 0xFFFF
-#define _MaxDepth 50
-#define _MaxEID 500
-#define _MaxEntriesSmall 500
-#define _MaxEntriesLarge 1000
-#define _MaxEntriesExtraLarge 1500
-#define _MaxEntriesEnormous 10000
-
 wstring InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_ LPGUID lpguidNamedProp);
 
 // Functions to parse PT_LONG/PT-I2 properties
-
-_Check_return_ CString RTimeToString(DWORD rTime);
 _Check_return_ wstring RTimeToSzString(DWORD rTime, bool bLabel);
 _Check_return_ wstring PTI8ToSzString(LARGE_INTEGER liI8, bool bLabel);
-
 // End: Functions to parse PT_LONG/PT-I2 properties
-
-typedef LPVOID BINTOSTRUCT(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
-typedef BINTOSTRUCT *LPBINTOSTRUCT;
-typedef void DELETESTRUCT(LPVOID lpStruct);
-typedef DELETESTRUCT *LPDELETESTRUCT;
-typedef LPWSTR STRUCTTOSTRING(LPVOID lpStruct);
-typedef STRUCTTOSTRING *LPSTRUCTTOSTRING;
-
-typedef void (BINTOSTRING)(SBinary myBin, LPWSTR* lpszResultString);
-typedef BINTOSTRING *LPBINTOSTRING;
-struct SMART_VIEW_PARSERS_ENTRY
-{
-	__ParsingTypeEnum iStructType;
-	LPBINTOSTRUCT fBinToStruct;
-	LPDELETESTRUCT fDeleteStruct;
-	LPSTRUCTTOSTRING fStructToString;
-};
-#define MAKE_SV_ENTRY(_fIDSType, _fType) {(_fIDSType), (LPBINTOSTRUCT) BinTo##_fType, (LPDELETESTRUCT) Delete##_fType, (LPSTRUCTTOSTRING) _fType##ToString},
-SMART_VIEW_PARSERS_ENTRY g_SmartViewParsers[] = {
-	{ IDS_STNOPARSING, NULL, NULL, NULL },
-	// MAKE_SV_ENTRY(IDS_STSECURITYDESCRIPTOR, NULL}
-	// MAKE_SV_ENTRY(IDS_STSID, SIDStruct)
-	// MAKE_SV_ENTRY(IDS_STDECODEENTRYID)
-	// MAKE_SV_ENTRY(IDS_STENCODEENTRYID)
-};
-ULONG g_cSmartViewParsers = _countof(g_SmartViewParsers);
 
 LPSMARTVIEWPARSER GetSmartViewParser(__ParsingTypeEnum iStructType, ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
@@ -470,33 +432,6 @@ wstring InterpretBinaryAsString(SBinary myBin, __ParsingTypeEnum iStructType, _I
 		return szResultString;
 	}
 
-	ULONG i = 0;
-	for (i = 0; i < g_cSmartViewParsers; i++)
-	{
-		if (iStructType == g_SmartViewParsers[i].iStructType)
-		{
-			if (g_SmartViewParsers[i].fBinToStruct && g_SmartViewParsers[i].fStructToString && g_SmartViewParsers[i].fDeleteStruct)
-			{
-				LPVOID pStruct = g_SmartViewParsers[i].fBinToStruct(myBin.cb, myBin.lpb);
-				if (pStruct)
-				{
-					LPWSTR szTmp = g_SmartViewParsers[i].fStructToString(pStruct);
-
-					if (szTmp)
-					{
-						szResultString = szTmp;
-						delete[] szTmp;
-					}
-
-					g_SmartViewParsers[i].fDeleteStruct(pStruct);
-					pStruct = NULL;
-				}
-			}
-
-			return szResultString;
-		}
-	}
-
 	LPSMARTVIEWPARSER svp = GetSmartViewParser(iStructType, myBin.cb, myBin.lpb);
 	if (svp)
 	{
@@ -533,9 +468,10 @@ wstring InterpretBinaryAsString(SBinary myBin, __ParsingTypeEnum iStructType, _I
 	return szResultString;
 }
 
-_Check_return_ CString RTimeToString(DWORD rTime)
+_Check_return_ wstring RTimeToString(DWORD rTime)
 {
-	CString PropString;
+	wstring rTimeString;
+	wstring rTimeAltString;
 	FILETIME fTime = { 0 };
 	LARGE_INTEGER liNumSec = { 0 };
 	liNumSec.LowPart = rTime;
@@ -544,8 +480,8 @@ _Check_return_ CString RTimeToString(DWORD rTime)
 	liNumSec.QuadPart = liNumSec.QuadPart * 10000000 * 60;
 	fTime.dwLowDateTime = liNumSec.LowPart;
 	fTime.dwHighDateTime = liNumSec.HighPart;
-	FileTimeToString(&fTime, &PropString, NULL);
-	return PropString;
+	FileTimeToString(&fTime, rTimeString, rTimeAltString);
+	return rTimeString;
 }
 
 _Check_return_ wstring RTimeToSzString(DWORD rTime, bool bLabel)
@@ -556,9 +492,7 @@ _Check_return_ wstring RTimeToSzString(DWORD rTime, bool bLabel)
 		szRTime = L"RTime: "; // STRING_OK
 	}
 
-	LPWSTR szTmp = CStringToLPWSTR(RTimeToString(rTime));
-	szRTime += szTmp;
-	delete[] szTmp;
+	szRTime += RTimeToString(rTime);
 	return szRTime;
 }
 

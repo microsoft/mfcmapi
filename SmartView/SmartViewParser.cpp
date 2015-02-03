@@ -88,22 +88,6 @@ _Check_return_ wstring SmartViewParser::JunkDataToString(size_t cbJunkData, _In_
 	return szTmp;
 }
 
-_Check_return_ wstring SmartViewParser::RTimeToString(DWORD rTime)
-{
-	wstring rTimeString;
-	wstring rTimeAltString;
-	FILETIME fTime = { 0 };
-	LARGE_INTEGER liNumSec = { 0 };
-	liNumSec.LowPart = rTime;
-	// Resolution of RTime is in minutes, FILETIME is in 100 nanosecond intervals
-	// Scale between the two is 10000000*60
-	liNumSec.QuadPart = liNumSec.QuadPart * 10000000 * 60;
-	fTime.dwLowDateTime = liNumSec.LowPart;
-	fTime.dwHighDateTime = liNumSec.HighPart;
-	FileTimeToString(&fTime, rTimeString, rTimeAltString);
-	return rTimeString;
-}
-
 // Caller allocates with new. Clean up with DeleteSPropVal.
 _Check_return_ LPSPropValue SmartViewParser::BinToSPropValue(DWORD dwPropCount, bool bStringPropsExcludeLength)
 {
