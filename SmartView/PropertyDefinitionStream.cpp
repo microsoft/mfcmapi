@@ -215,7 +215,7 @@ _Check_return_ wstring PropertyDefinitionStream::ToStringInternal()
 				{
 					LPTSTR szDispidName = NULL;
 					PropTagToPropName(m_pfdFieldDefinitions[iDef].dwDispid, false, NULL, &szDispidName);
-					if (szDispidName)
+					if (!IsNullOrEmpty(szDispidName))
 					{
 						szPropertyDefinitionStream += formatmessage(IDS_PROPDEFDISPIDTAG, LPTSTRToWstring(szDispidName).c_str());
 					}

@@ -378,6 +378,15 @@
     <ClInclude Include="SmartView\TimeZone.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SmartView\ExtendedFlags.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SmartView\AppointmentRecurrencePattern.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SmartView\RecurrencePattern.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Res\bldver.rc">
@@ -782,6 +791,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SmartView\TimeZone.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SmartView\ExtendedFlags.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SmartView\AppointmentRecurrencePattern.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SmartView\RecurrencePattern.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

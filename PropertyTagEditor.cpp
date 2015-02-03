@@ -355,9 +355,9 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField)
 		LPTSTR szPartialMatch = NULL;
 		PropTagToPropName(m_ulPropTag, m_bIsAB, &szExactMatch, &szPartialMatch);
 
-		if (PROP_ID(m_ulPropTag) && (szExactMatch || szPartialMatch))
-			SetStringf(PROPTAG_NAME, _T("%s (%s)"), szExactMatch ? szExactMatch : _T(""), szPartialMatch ? szPartialMatch : _T("")); // STRING_OK
-		else if (szNamedPropName)
+		if (PROP_ID(m_ulPropTag) && (!IsNullOrEmpty(szExactMatch) || !IsNullOrEmpty(szPartialMatch)))
+			SetStringf(PROPTAG_NAME, _T("%s (%s)"), !IsNullOrEmpty(szExactMatch) ? szExactMatch : _T(""), !IsNullOrEmpty(szPartialMatch) ? szPartialMatch : _T("")); // STRING_OK
+		else if (!IsNullOrEmpty(szNamedPropName))
 			SetStringf(PROPTAG_NAME, _T("%s"), szNamedPropName); // STRING_OK
 		else
 			LoadString(PROPTAG_NAME, IDS_UNKNOWNPROPERTY);

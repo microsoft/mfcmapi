@@ -19,6 +19,7 @@
 #include "SmartView\Smartview.h"
 #include <process.h>
 #include "UIFunctions.h"
+#include "String.h"
 
 static TCHAR* CLASS = _T("CContentsTableListCtrl");
 
@@ -407,7 +408,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::AddColumn(UINT uidHeaderName, ULO
 	{
 		LPTSTR szExactMatches = NULL;
 		PropTagToPropName(ulPropTag, m_bIsAB, &szExactMatches, NULL);
-		if (!szExactMatches)
+		if (IsNullOrEmpty(szExactMatches))
 			szHeaderString.Format(_T("0x%08X"), ulPropTag); // STRING_OK
 		else
 			szHeaderString = szExactMatches;

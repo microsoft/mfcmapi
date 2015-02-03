@@ -25,6 +25,7 @@
 #include "PropertyBag/PropertyBag.h"
 #include "PropertyBag/MAPIPropPropertyBag.h"
 #include "PropertyBag/RowPropertyBag.h"
+#include "String.h"
 
 static TCHAR* CLASS = _T("CSingleMAPIPropListCtrl");
 
@@ -678,8 +679,8 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 		NULL);
 
 	PropTagToPropName(ulPropTag, m_bIsAB, &szExactMatches, &szPartialMatches);
-	SetItemText(iRow, pcPROPEXACTNAMES, szExactMatches ? szExactMatches : (LPCTSTR)PropTag);
-	SetItemText(iRow, pcPROPPARTIALNAMES, szPartialMatches ? szPartialMatches : _T(""));
+	SetItemText(iRow, pcPROPEXACTNAMES, !IsNullOrEmpty(szExactMatches) ? szExactMatches : (LPCTSTR)PropTag);
+	SetItemText(iRow, pcPROPPARTIALNAMES, !IsNullOrEmpty(szPartialMatches) ? szPartialMatches : _T(""));
 
 	PropTag.Format(_T("0x%08X"), ulPropTag);
 	SetItemText(iRow, pcPROPTAG, (LPCTSTR)PropTag);
