@@ -27,7 +27,6 @@ public:
 	void EnsureParsed();
 
 protected:
-	_Check_return_ wstring RTimeToString(DWORD rTime);
 	_Check_return_ LPSPropValue BinToSPropValue(DWORD dwPropCount, bool bStringPropsExcludeLength);
 	_Check_return_ wstring JunkDataToString(size_t cbJunkData, _In_count_(cbJunkData) LPBYTE lpJunkData); // TODO: Eliminate this
 

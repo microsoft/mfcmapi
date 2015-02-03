@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "..\stdafx.h"
 #include "RecurrencePattern.h"
+#include "SmartView.h"
 #include "..\String.h"
 #include "..\ParseProperty.h"
 #include "..\InterpretProp.h"
