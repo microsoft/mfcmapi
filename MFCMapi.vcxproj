@@ -929,10 +929,12 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="RichEditOleCallback.h" />
     <ClInclude Include="SingleRecipientDialog.h" />
     <ClInclude Include="SmartView\AdditionalRenEntryIDs.h" />
+    <ClInclude Include="SmartView\AppointmentRecurrencePattern.h" />
     <ClInclude Include="SmartView\BinaryParser.h" />
     <ClInclude Include="SmartView\ConversationIndex.h" />
     <ClInclude Include="SmartView\EntryIdStruct.h" />
     <ClInclude Include="SmartView\EntryList.h" />
+    <ClInclude Include="SmartView\ExtendedFlags.h" />
     <ClInclude Include="SmartView\FlatEntryList.h" />
     <ClInclude Include="SmartView\FolderUserFieldStream.h" />
     <ClInclude Include="SmartView\GlobalObjectId.h" />
@@ -941,6 +943,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="SmartView\PropertyDefinitionStream.h" />
     <ClInclude Include="SmartView\PropertyStruct.h" />
     <ClInclude Include="SmartView\RecipientRowStream.h" />
+    <ClInclude Include="SmartView\RecurrencePattern.h" />
     <ClInclude Include="SmartView\ReportTag.h" />
     <ClInclude Include="SmartView\RestrictionStruct.h" />
     <ClInclude Include="SmartView\RuleCondition.h" />
@@ -1665,10 +1668,12 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="SmartView\AdditionalRenEntryIDs.cpp" />
+    <ClCompile Include="SmartView\AppointmentRecurrencePattern.cpp" />
     <ClCompile Include="SmartView\BinaryParser.cpp" />
     <ClCompile Include="SmartView\ConversationIndex.cpp" />
     <ClCompile Include="SmartView\EntryIdStruct.cpp" />
     <ClCompile Include="SmartView\EntryList.cpp" />
+    <ClCompile Include="SmartView\ExtendedFlags.cpp" />
     <ClCompile Include="SmartView\FlatEntryList.cpp" />
     <ClCompile Include="SmartView\FolderUserFieldStream.cpp" />
     <ClCompile Include="SmartView\GlobalObjectId.cpp" />
@@ -1677,6 +1682,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="SmartView\PropertyDefinitionStream.cpp" />
     <ClCompile Include="SmartView\PropertyStruct.cpp" />
     <ClCompile Include="SmartView\RecipientRowStream.cpp" />
+    <ClCompile Include="SmartView\RecurrencePattern.cpp" />
     <ClCompile Include="SmartView\ReportTag.cpp" />
     <ClCompile Include="SmartView\RestrictionStruct.cpp" />
     <ClCompile Include="SmartView\RuleCondition.cpp" />

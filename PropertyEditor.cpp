@@ -223,7 +223,7 @@ void CPropertyEditor::InitPropertyControls()
 		m_lpSmartView = (SmartViewPane*)CreateSmartViewPane(IDS_SMARTVIEW);
 	}
 
-	__ParsingTypeEnum iStructType = FindSmartViewParserForProp(m_lpsInputValue->ulPropTag, NULL, NULL, m_bMVRow);
+	__ParsingTypeEnum iStructType = FindSmartViewParserForProp(m_lpsInputValue ? m_lpsInputValue->ulPropTag : m_ulPropTag, NULL, NULL, m_bMVRow);
 	wstring szSmartView = InterpretPropSmartView(
 		m_lpsInputValue,
 		m_lpMAPIProp,
