@@ -39,6 +39,8 @@ AppointmentRecurrencePattern::~AppointmentRecurrencePattern()
 	}
 
 	delete[] m_ExceptionInfo;
+	delete[] m_ReservedBlock1;
+
 	if (m_ExceptionCount && m_ExtendedException)
 	{
 		for (i = 0; i < m_ExceptionCount; i++)
