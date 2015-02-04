@@ -141,7 +141,9 @@ void SearchFolderDefinition::Parse()
 	{
 		RestrictionStruct* res = new RestrictionStruct(
 			(ULONG)m_Parser.RemainingBytes(),
-			m_Parser.GetCurrentAddress());
+			m_Parser.GetCurrentAddress(),
+			false,
+			true);
 		if (res)
 		{
 			res->DisableJunkParsing();

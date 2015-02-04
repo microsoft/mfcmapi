@@ -6,8 +6,10 @@
 #include "..\String.h"
 #include "..\InterpretProp.h"
 
-RestrictionStruct::RestrictionStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
+RestrictionStruct::RestrictionStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, bool bRuleCondition, bool bExtended) : SmartViewParser(cbBin, lpBin)
 {
+	m_bRuleCondition = bRuleCondition;
+	m_bExtended = bExtended;
 	m_lpRes = NULL;
 }
 
@@ -23,18 +25,13 @@ void RestrictionStruct::Parse()
 
 	if (m_lpRes)
 	{
-		size_t cbBytesRead = 0;
 		memset(m_lpRes, 0, sizeof(SRestriction));
 
 		(void)BinToRestriction(
 			0,
-			(ULONG)m_Parser.RemainingBytes(),
-			m_Parser.GetCurrentAddress(),
-			&cbBytesRead,
 			m_lpRes,
-			false,
-			true);
-		m_Parser.Advance(cbBytesRead);
+			m_bRuleCondition,
+			m_bExtended);
 	}
 }
 
@@ -55,30 +52,25 @@ _Check_return_ wstring RestrictionStruct::ToStringInternal()
 // If bRuleCondition is false, parse restrictions defined in [MS-OXOCFG] 2.2.4.1.2
 // If bRuleCondition is false, ignore bExtendedCount (assumes true)
 // Returns true if it successfully read a restriction
-bool BinToRestriction(ULONG ulDepth, ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, _Out_ size_t* lpcbBytesRead, _In_ LPSRestriction psrRestriction, bool bRuleCondition, bool bExtendedCount)
+bool RestrictionStruct::BinToRestriction(ULONG ulDepth, _In_ LPSRestriction psrRestriction, bool bRuleCondition, bool bExtendedCount)
 {
 	if (ulDepth > _MaxDepth) return false;
-	if (!lpBin) return false;
-	if (lpcbBytesRead) *lpcbBytesRead = NULL;
 	if (!psrRestriction) return false;
-	CBinaryParser Parser(cbBin, lpBin);
 
 	BYTE bTemp = 0;
 	WORD wTemp = 0;
 	DWORD dwTemp = 0;
 	DWORD i = 0;
-	size_t cbOffset = 0;
-	size_t cbBytesRead = 0;
 	bool bRet = true;
 
 	if (bRuleCondition)
 	{
-		Parser.GetBYTE(&bTemp);
+		m_Parser.GetBYTE(&bTemp);
 		psrRestriction->rt = bTemp;
 	}
 	else
 	{
-		Parser.GetDWORD(&dwTemp);
+		m_Parser.GetDWORD(&dwTemp);
 		psrRestriction->rt = dwTemp;
 	}
 
@@ -88,11 +80,11 @@ bool BinToRestriction(ULONG ulDepth, ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin
 	case RES_OR:
 		if (!bRuleCondition || bExtendedCount)
 		{
-			Parser.GetDWORD(&dwTemp);
+			m_Parser.GetDWORD(&dwTemp);
 		}
 		else
 		{
-			Parser.GetWORD(&wTemp);
+			m_Parser.GetWORD(&wTemp);
 			dwTemp = wTemp;
 		}
 		psrRestriction->res.resAnd.cRes = dwTemp;
@@ -105,16 +97,11 @@ bool BinToRestriction(ULONG ulDepth, ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin
 				memset(psrRestriction->res.resAnd.lpRes, 0, sizeof(SRestriction)* psrRestriction->res.resAnd.cRes);
 				for (i = 0; i < psrRestriction->res.resAnd.cRes; i++)
 				{
-					cbOffset = Parser.GetCurrentOffset();
 					bRet = BinToRestriction(
 						ulDepth + 1,
-						(ULONG)Parser.RemainingBytes(),
-						lpBin + cbOffset,
-						&cbBytesRead,
 						&psrRestriction->res.resAnd.lpRes[i],
 						bRuleCondition,
 						bExtendedCount);
-					Parser.Advance(cbBytesRead);
 					if (!bRet) break;
 				}
 			}
@@ -125,152 +112,121 @@ bool BinToRestriction(ULONG ulDepth, ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin
 		if (psrRestriction->res.resNot.lpRes)
 		{
 			memset(psrRestriction->res.resNot.lpRes, 0, sizeof(SRestriction));
-			cbOffset = Parser.GetCurrentOffset();
 			bRet = BinToRestriction(
 				ulDepth + 1,
-				(ULONG)Parser.RemainingBytes(),
-				lpBin + cbOffset,
-				&cbBytesRead,
 				psrRestriction->res.resNot.lpRes,
 				bRuleCondition,
 				bExtendedCount);
-			Parser.Advance(cbBytesRead);
 		}
 		break;
 	case RES_CONTENT:
-		Parser.GetDWORD(&psrRestriction->res.resContent.ulFuzzyLevel);
-		Parser.GetDWORD(&psrRestriction->res.resContent.ulPropTag);
-		cbOffset = Parser.GetCurrentOffset();
+		m_Parser.GetDWORD(&psrRestriction->res.resContent.ulFuzzyLevel);
+		m_Parser.GetDWORD(&psrRestriction->res.resContent.ulPropTag);
 		psrRestriction->res.resContent.lpProp = BinToSPropValue(
-			(ULONG)Parser.RemainingBytes(),
-			lpBin + cbOffset,
 			1,
-			&cbBytesRead,
 			bRuleCondition);
-		Parser.Advance(cbBytesRead);
 		break;
 	case RES_PROPERTY:
 		if (bRuleCondition)
-			Parser.GetBYTE((LPBYTE)&psrRestriction->res.resProperty.relop);
+			m_Parser.GetBYTE((LPBYTE)&psrRestriction->res.resProperty.relop);
 		else
-			Parser.GetDWORD(&psrRestriction->res.resProperty.relop);
-		Parser.GetDWORD(&psrRestriction->res.resProperty.ulPropTag);
-		cbOffset = Parser.GetCurrentOffset();
+			m_Parser.GetDWORD(&psrRestriction->res.resProperty.relop);
+
+		m_Parser.GetDWORD(&psrRestriction->res.resProperty.ulPropTag);
 		psrRestriction->res.resProperty.lpProp = BinToSPropValue(
-			(ULONG)Parser.RemainingBytes(),
-			lpBin + cbOffset,
 			1,
-			&cbBytesRead,
 			bRuleCondition);
-		Parser.Advance(cbBytesRead);
 		break;
 	case RES_COMPAREPROPS:
 		if (bRuleCondition)
-			Parser.GetBYTE((LPBYTE)&psrRestriction->res.resCompareProps.relop);
+			m_Parser.GetBYTE((LPBYTE)&psrRestriction->res.resCompareProps.relop);
 		else
-			Parser.GetDWORD(&psrRestriction->res.resCompareProps.relop);
-		Parser.GetDWORD(&psrRestriction->res.resCompareProps.ulPropTag1);
-		Parser.GetDWORD(&psrRestriction->res.resCompareProps.ulPropTag2);
+			m_Parser.GetDWORD(&psrRestriction->res.resCompareProps.relop);
+
+		m_Parser.GetDWORD(&psrRestriction->res.resCompareProps.ulPropTag1);
+		m_Parser.GetDWORD(&psrRestriction->res.resCompareProps.ulPropTag2);
 		break;
 	case RES_BITMASK:
 		if (bRuleCondition)
-			Parser.GetBYTE((LPBYTE)&psrRestriction->res.resBitMask.relBMR);
+			m_Parser.GetBYTE((LPBYTE)&psrRestriction->res.resBitMask.relBMR);
 		else
-			Parser.GetDWORD(&psrRestriction->res.resBitMask.relBMR);
-		Parser.GetDWORD(&psrRestriction->res.resBitMask.ulPropTag);
-		Parser.GetDWORD(&psrRestriction->res.resBitMask.ulMask);
+			m_Parser.GetDWORD(&psrRestriction->res.resBitMask.relBMR);
+
+		m_Parser.GetDWORD(&psrRestriction->res.resBitMask.ulPropTag);
+		m_Parser.GetDWORD(&psrRestriction->res.resBitMask.ulMask);
 		break;
 	case RES_SIZE:
 		if (bRuleCondition)
-			Parser.GetBYTE((LPBYTE)&psrRestriction->res.resSize.relop);
+			m_Parser.GetBYTE((LPBYTE)&psrRestriction->res.resSize.relop);
 		else
-			Parser.GetDWORD(&psrRestriction->res.resSize.relop);
-		Parser.GetDWORD(&psrRestriction->res.resSize.ulPropTag);
-		Parser.GetDWORD(&psrRestriction->res.resSize.cb);
+			m_Parser.GetDWORD(&psrRestriction->res.resSize.relop);
+
+		m_Parser.GetDWORD(&psrRestriction->res.resSize.ulPropTag);
+		m_Parser.GetDWORD(&psrRestriction->res.resSize.cb);
 		break;
 	case RES_EXIST:
-		Parser.GetDWORD(&psrRestriction->res.resExist.ulPropTag);
+		m_Parser.GetDWORD(&psrRestriction->res.resExist.ulPropTag);
 		break;
 	case RES_SUBRESTRICTION:
-		Parser.GetDWORD(&psrRestriction->res.resSub.ulSubObject);
+		m_Parser.GetDWORD(&psrRestriction->res.resSub.ulSubObject);
 		psrRestriction->res.resSub.lpRes = new SRestriction;
 		if (psrRestriction->res.resSub.lpRes)
 		{
 			memset(psrRestriction->res.resSub.lpRes, 0, sizeof(SRestriction));
-			cbOffset = Parser.GetCurrentOffset();
 			bRet = BinToRestriction(
 				ulDepth + 1,
-				(ULONG)Parser.RemainingBytes(),
-				lpBin + cbOffset,
-				&cbBytesRead,
 				psrRestriction->res.resSub.lpRes,
 				bRuleCondition,
 				bExtendedCount);
-			Parser.Advance(cbBytesRead);
 		}
 		break;
 	case RES_COMMENT:
 		if (bRuleCondition)
-			Parser.GetBYTE((LPBYTE)&psrRestriction->res.resComment.cValues);
+			m_Parser.GetBYTE((LPBYTE)&psrRestriction->res.resComment.cValues);
 		else
-			Parser.GetDWORD(&psrRestriction->res.resComment.cValues);
-		cbOffset = Parser.GetCurrentOffset();
+			m_Parser.GetDWORD(&psrRestriction->res.resComment.cValues);
+
 		psrRestriction->res.resProperty.lpProp = BinToSPropValue(
-			(ULONG)Parser.RemainingBytes(),
-			lpBin + cbOffset,
 			psrRestriction->res.resComment.cValues,
-			&cbBytesRead,
 			bRuleCondition);
-		Parser.Advance(cbBytesRead);
 
 		// Check if a restriction is present
-		Parser.GetBYTE(&bTemp);
+		m_Parser.GetBYTE(&bTemp);
 		if (bTemp)
 		{
 			psrRestriction->res.resComment.lpRes = new SRestriction;
 			if (psrRestriction->res.resComment.lpRes)
 			{
 				memset(psrRestriction->res.resComment.lpRes, 0, sizeof(SRestriction));
-				cbOffset = Parser.GetCurrentOffset();
 				bRet = BinToRestriction(
 					ulDepth + 1,
-					(ULONG)Parser.RemainingBytes(),
-					lpBin + cbOffset,
-					&cbBytesRead,
 					psrRestriction->res.resComment.lpRes,
 					bRuleCondition,
 					bExtendedCount);
-				Parser.Advance(cbBytesRead);
 			}
 		}
 		break;
 	case RES_COUNT:
 		// RES_COUNT and RES_NOT look the same, so we use the resNot member here
-		Parser.GetDWORD(&psrRestriction->res.resNot.ulReserved);
+		m_Parser.GetDWORD(&psrRestriction->res.resNot.ulReserved);
 		psrRestriction->res.resNot.lpRes = new SRestriction;
 		if (psrRestriction->res.resNot.lpRes)
 		{
 			memset(psrRestriction->res.resNot.lpRes, 0, sizeof(SRestriction));
-			cbOffset = Parser.GetCurrentOffset();
 			bRet = BinToRestriction(
 				ulDepth + 1,
-				(ULONG)Parser.RemainingBytes(),
-				lpBin + cbOffset,
-				&cbBytesRead,
 				psrRestriction->res.resNot.lpRes,
 				bRuleCondition,
 				bExtendedCount);
-			Parser.Advance(cbBytesRead);
 		}
 		break;
 	}
 
-	if (lpcbBytesRead) *lpcbBytesRead = Parser.GetCurrentOffset();
 	return bRet;
 }
 
 // Does not delete lpRes, which must be released manually. See RES_AND case below.
-void DeleteRestriction(_In_ LPSRestriction lpRes)
+void RestrictionStruct::DeleteRestriction(_In_ LPSRestriction lpRes)
 {
 	if (!lpRes) return;
 
