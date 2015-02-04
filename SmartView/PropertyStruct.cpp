@@ -134,6 +134,8 @@ void DeleteSPropVal(ULONG cVal, _In_count_(cVal) LPSPropValue lpsPropVal)
 				{
 					delete[] lpsPropVal[i].Value.MVszA.lppszA[j];
 				}
+
+				delete[] lpsPropVal[i].Value.MVszA.lppszA;
 			}
 			break;
 		case PT_MV_UNICODE:
@@ -143,6 +145,8 @@ void DeleteSPropVal(ULONG cVal, _In_count_(cVal) LPSPropValue lpsPropVal)
 				{
 					delete[] lpsPropVal[i].Value.MVszW.lppszW[j];
 				}
+
+				delete[] lpsPropVal[i].Value.MVszW.lppszW;
 			}
 			break;
 		case PT_MV_BINARY:
@@ -152,6 +156,8 @@ void DeleteSPropVal(ULONG cVal, _In_count_(cVal) LPSPropValue lpsPropVal)
 				{
 					delete[] lpsPropVal[i].Value.MVbin.lpbin[j].lpb;
 				}
+
+				delete[] lpsPropVal[i].Value.MVbin.lpbin;
 			}
 			break;
 		}

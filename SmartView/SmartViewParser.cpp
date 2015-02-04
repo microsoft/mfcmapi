@@ -95,6 +95,7 @@ _Check_return_ LPSPropValue SmartViewParser::BinToSPropValue(DWORD dwPropCount, 
 	LPSPropValue pspvProperty = new SPropValue[dwPropCount];
 	if (!pspvProperty) return NULL;
 	memset(pspvProperty, 0, sizeof(SPropValue)*dwPropCount);
+	ULONG ulCurrOffset = m_Parser.GetCurrentOffset();
 
 	DWORD i = 0;
 
@@ -190,6 +191,13 @@ _Check_return_ LPSPropValue SmartViewParser::BinToSPropValue(DWORD dwPropCount, 
 		default:
 			break;
 		}
+	}
+
+	if (ulCurrOffset == m_Parser.GetCurrentOffset())
+	{
+		// We didn't advance at all - we should return nothing.
+		delete[] pspvProperty;
+		pspvProperty = NULL;
 	}
 
 	return pspvProperty;
