@@ -98,7 +98,7 @@ _Check_return_ wstring TombStone::ToStringInternal()
 			SBinary sBin = { 0 };
 			sBin.cb = m_lpRecords[i].GlobalObjectIdSize;
 			sBin.lpb = m_lpRecords[i].lpGlobalObjectId;
-			wstring szGoid = InterpretBinaryAsString(sBin, IDS_STGLOBALOBJECTID, NULL, NULL);
+			wstring szGoid = InterpretBinaryAsString(sBin, IDS_STGLOBALOBJECTID, NULL);
 
 			szTombstoneString += formatmessage(IDS_TOMBSTONERECORD,
 				i,

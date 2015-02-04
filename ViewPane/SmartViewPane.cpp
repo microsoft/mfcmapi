@@ -230,7 +230,7 @@ void SmartViewPane::SetParser(__ParsingTypeEnum iParser)
 void SmartViewPane::Parse(SBinary myBin)
 {
 	__ParsingTypeEnum iStructType = (__ParsingTypeEnum)GetDropDownSelectionValue();
-	wstring szSmartView = InterpretBinaryAsString(myBin, iStructType, NULL, NULL);
+	wstring szSmartView = InterpretBinaryAsString(myBin, iStructType, NULL);
 
 	if (!szSmartView.empty())
 	{

@@ -2,12 +2,10 @@
 #include "..\stdafx.h"
 #include "SmartView.h"
 #include "..\InterpretProp2.h"
-#include "..\InterpretProp.h"
 #include "..\ExtraPropTags.h"
 #include "..\MAPIFunctions.h"
 #include "..\String.h"
-#include "..\guids.h"
-#include "..\MySecInfo.h"
+#include "..\Guids.h"
 #include "..\NamedPropCache.h"
 #include "..\ParseProperty.h"
 
@@ -37,6 +35,8 @@
 #include "ExtendedFlags.h"
 #include "AppointmentRecurrencePattern.h"
 #include "RecurrencePattern.h"
+#include "SIDBin.h"
+#include "SDBin.h"
 
 wstring InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_ LPGUID lpguidNamedProp);
 
@@ -45,7 +45,7 @@ _Check_return_ wstring RTimeToSzString(DWORD rTime, bool bLabel);
 _Check_return_ wstring PTI8ToSzString(LARGE_INTEGER liI8, bool bLabel);
 // End: Functions to parse PT_LONG/PT-I2 properties
 
-LPSMARTVIEWPARSER GetSmartViewParser(__ParsingTypeEnum iStructType, ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
+LPSMARTVIEWPARSER GetSmartViewParser(__ParsingTypeEnum iStructType, ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, _In_opt_ LPMAPIPROP lpMAPIProp)
 {
 	switch (iStructType)
 	{
@@ -129,6 +129,15 @@ LPSMARTVIEWPARSER GetSmartViewParser(__ParsingTypeEnum iStructType, ULONG cbBin,
 		break;
 	case IDS_STRECURRENCEPATTERN:
 		return new RecurrencePattern(cbBin, lpBin);
+		break;
+	case IDS_STSID:
+		return new SIDBin(cbBin, lpBin);
+		break;
+	case IDS_STSECURITYDESCRIPTOR:
+		return new SDBin(cbBin, lpBin, lpMAPIProp, false);
+		break;
+	case IDS_STFBSECURITYDESCRIPTOR:
+		return new SDBin(cbBin, lpBin, lpMAPIProp, true);
 		break;
 	}
 
@@ -241,6 +250,7 @@ wstring InterpretPropSmartView(_In_ LPSPropValue lpProp, // required property va
 		{
 			lpNameID = lppPropNames[0];
 		}
+
 		hRes = S_OK;
 	}
 
@@ -290,7 +300,7 @@ wstring InterpretPropSmartView(_In_ LPSPropValue lpProp, // required property va
 
 		if (iStructType)
 		{
-			lpszSmartView = InterpretBinaryAsString(lpProp->Value.bin, iStructType, lpMAPIProp, lpProp->ulPropTag);
+			lpszSmartView = InterpretBinaryAsString(lpProp->Value.bin, iStructType, lpMAPIProp);
 		}
 
 		break;
@@ -298,17 +308,18 @@ wstring InterpretPropSmartView(_In_ LPSPropValue lpProp, // required property va
 		iStructType = FindSmartViewParserForProp(lpProp->ulPropTag, ulPropNameID, lpPropNameGUID);
 		if (iStructType)
 		{
-			lpszSmartView = InterpretMVBinaryAsString(lpProp->Value.MVbin, iStructType, lpMAPIProp, lpProp->ulPropTag);
+			lpszSmartView = InterpretMVBinaryAsString(lpProp->Value.MVbin, iStructType, lpMAPIProp);
 		}
 
 		break;
 	}
+
 	MAPIFreeBuffer(lppPropNames);
 
 	return lpszSmartView;
 }
 
-wstring InterpretMVBinaryAsString(SBinaryArray myBinArray, __ParsingTypeEnum  iStructType, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
+wstring InterpretMVBinaryAsString(SBinaryArray myBinArray, __ParsingTypeEnum  iStructType, _In_opt_ LPMAPIPROP lpMAPIProp)
 {
 	if (!RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD) return L"";
 
@@ -323,7 +334,7 @@ wstring InterpretMVBinaryAsString(SBinaryArray myBinArray, __ParsingTypeEnum  iS
 		}
 
 		szResult += formatmessage(IDS_MVROWBIN, ulRow);
-		szResult += InterpretBinaryAsString(myBinArray.lpbin[ulRow], iStructType, lpMAPIProp, ulPropTag);
+		szResult += InterpretBinaryAsString(myBinArray.lpbin[ulRow], iStructType, lpMAPIProp);
 	}
 
 	return szResult;
@@ -423,7 +434,7 @@ wstring InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropTag, ULONG u
 	return szResult;
 }
 
-wstring InterpretBinaryAsString(SBinary myBin, __ParsingTypeEnum iStructType, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
+wstring InterpretBinaryAsString(SBinary myBin, __ParsingTypeEnum iStructType, _In_opt_ LPMAPIPROP lpMAPIProp)
 {
 	if (!RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD) return L"";
 	wstring szResultString = AddInSmartView(iStructType, myBin.cb, myBin.lpb);
@@ -432,7 +443,7 @@ wstring InterpretBinaryAsString(SBinary myBin, __ParsingTypeEnum iStructType, _I
 		return szResultString;
 	}
 
-	LPSMARTVIEWPARSER svp = GetSmartViewParser(iStructType, myBin.cb, myBin.lpb);
+	LPSMARTVIEWPARSER svp = GetSmartViewParser(iStructType, myBin.cb, myBin.lpb, lpMAPIProp);
 	if (svp)
 	{
 		szResultString = svp->ToString();
@@ -445,12 +456,6 @@ wstring InterpretBinaryAsString(SBinary myBin, __ParsingTypeEnum iStructType, _I
 
 	switch (iStructType)
 	{
-	case IDS_STSECURITYDESCRIPTOR:
-		SDBinToString(myBin, lpMAPIProp, ulPropTag, &szTmp);
-		break;
-	case IDS_STSID:
-		SIDBinToString(myBin, &szTmp);
-		break;
 	case IDS_STDECODEENTRYID:
 		szTmp = DecodeID(myBin.cb, myBin.lpb);
 		break;
@@ -546,139 +551,3 @@ _Check_return_ wstring FidMidToSzString(LONGLONG llID, bool bLabel)
 		return formatmessage(IDS_FIDMIDFORMAT, WGetReplId(*pid), UllGetIdGlobcnt(*pid));
 	}
 }
-
-//////////////////////////////////////////////////////////////////////////
-// SDBin
-//////////////////////////////////////////////////////////////////////////
-
-void SDBinToString(SBinary myBin, _In_opt_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_z_ LPWSTR* lpszResultString)
-{
-	if (!lpszResultString) return;
-	*lpszResultString = NULL;
-
-	HRESULT hRes = S_OK;
-	LPBYTE lpSDToParse = myBin.lpb;
-	ULONG ulSDToParse = myBin.cb;
-
-	if (lpSDToParse)
-	{
-		eAceType acetype = acetypeMessage;
-		switch (GetMAPIObjectType(lpMAPIProp))
-		{
-		case (MAPI_STORE) :
-		case (MAPI_ADDRBOOK) :
-		case (MAPI_FOLDER) :
-		case (MAPI_ABCONT) :
-						   acetype = acetypeContainer;
-			break;
-		}
-
-		if (PR_FREEBUSY_NT_SECURITY_DESCRIPTOR == ulPropTag)
-			acetype = acetypeFreeBusy;
-
-		CString szDACL;
-		CString szInfo;
-		CString szTmp;
-
-		WC_H(SDToString(lpSDToParse, ulSDToParse, acetype, &szDACL, &szInfo));
-
-		LPTSTR szFlags = NULL;
-		InterpretFlags(flagSecurityVersion, SECURITY_DESCRIPTOR_VERSION(lpSDToParse), &szFlags);
-
-		CString szResult;
-		szResult.FormatMessage(IDS_SECURITYDESCRIPTORHEADER);
-		szResult += szInfo;
-		szTmp.FormatMessage(IDS_SECURITYDESCRIPTORVERSION, SECURITY_DESCRIPTOR_VERSION(lpSDToParse), szFlags);
-		szResult += szTmp;
-		szResult += szDACL;
-
-		delete[] szFlags;
-		szFlags = NULL;
-
-		*lpszResultString = CStringToLPWSTR(szResult);
-	}
-} // SDBinToString
-
-//////////////////////////////////////////////////////////////////////////
-// SIDDBin
-//////////////////////////////////////////////////////////////////////////
-
-void SIDBinToString(SBinary myBin, _Deref_out_z_ LPWSTR* lpszResultString)
-{
-	if (!lpszResultString) return;
-	HRESULT hRes = S_OK;
-	PSID SidStart = myBin.lpb;
-	LPTSTR lpSidName = NULL;
-	LPTSTR lpSidDomain = NULL;
-	LPTSTR lpStringSid = NULL;
-
-	if (SidStart &&
-		myBin.cb >= sizeof(SID) - sizeof(DWORD) + sizeof(DWORD)* ((PISID)SidStart)->SubAuthorityCount &&
-		IsValidSid(SidStart))
-	{
-		DWORD dwSidName = 0;
-		DWORD dwSidDomain = 0;
-		SID_NAME_USE SidNameUse;
-
-		if (!LookupAccountSid(
-			NULL,
-			SidStart,
-			NULL,
-			&dwSidName,
-			NULL,
-			&dwSidDomain,
-			&SidNameUse))
-		{
-			DWORD dwErr = GetLastError();
-			hRes = HRESULT_FROM_WIN32(dwErr);
-			if (ERROR_NONE_MAPPED != dwErr &&
-				STRSAFE_E_INSUFFICIENT_BUFFER != hRes)
-			{
-				LogFunctionCall(hRes, NULL, false, false, true, dwErr, "LookupAccountSid", __FILE__, __LINE__);
-			}
-		}
-		hRes = S_OK;
-
-#pragma warning(push)
-#pragma warning(disable:6211)
-		if (dwSidName) lpSidName = new TCHAR[dwSidName];
-		if (dwSidDomain) lpSidDomain = new TCHAR[dwSidDomain];
-#pragma warning(pop)
-
-		// Only make the call if we got something to get
-		if (lpSidName || lpSidDomain)
-		{
-			WC_B(LookupAccountSid(
-				NULL,
-				SidStart,
-				lpSidName,
-				&dwSidName,
-				lpSidDomain,
-				&dwSidDomain,
-				&SidNameUse));
-			hRes = S_OK;
-		}
-
-		EC_B(GetTextualSid(SidStart, &lpStringSid));
-	}
-
-	CString szDomain;
-	CString szName;
-	CString szSID;
-
-	if (lpSidDomain) szDomain = lpSidDomain;
-	else EC_B(szDomain.LoadString(IDS_NODOMAIN));
-	if (lpSidName) szName = lpSidName;
-	else EC_B(szName.LoadString(IDS_NONAME));
-	if (lpStringSid) szSID = lpStringSid;
-	else EC_B(szSID.LoadString(IDS_NOSID));
-
-	CString szResult;
-	szResult.FormatMessage(IDS_SIDHEADER, szDomain, szName, szSID);
-
-	if (lpStringSid) delete[] lpStringSid;
-	if (lpSidDomain) delete[] lpSidDomain;
-	if (lpSidName) delete[] lpSidName;
-
-	*lpszResultString = CStringToLPWSTR(szResult);
-} // SIDBinToString

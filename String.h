@@ -10,7 +10,6 @@ LPWSTR wstringToLPWSTR(wstring src);
 CString wstringToCString(::wstring src);
 wstring LPTSTRToWstring(LPTSTR src);
 wstring LPSTRToWstring(LPSTR src);
-_Check_return_ LPWSTR CStringToLPWSTR(CString szCString);
 
 // Unicode support
 _Check_return_ HRESULT AnsiToUnicode(_In_opt_z_ LPCSTR pszA, _Out_z_cap_(cchszA) LPWSTR* ppszW, size_t cchszA = -1);

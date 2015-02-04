@@ -117,29 +117,6 @@ wstring LPSTRToWstring(LPSTR src)
 	return wstring(ansi.begin(), ansi.end());
 }
 
-// result allocated with new
-// clean up with delete[]
-_Check_return_ LPWSTR CStringToLPWSTR(CString szCString)
-{
-	LPWSTR dst = NULL;
-#ifdef UNICODE
-	size_t cch = szCString.GetLength();
-	if (!cch) return NULL;
-
-	cch++; // Null terminator
-	dst = new WCHAR[cch];
-	if (dst)
-	{
-		memcpy(dst, (LPCWSTR)szCString, cch * sizeof(WCHAR));
-	}
-#else
-	HRESULT hRes = S_OK;
-	EC_H(AnsiToUnicode((LPCSTR)szCString, &dst));
-#endif
-
-	return dst;
-}
-
 // if cchszA == -1, MultiByteToWideChar will compute the length
 // Delete with delete[]
 _Check_return_ HRESULT AnsiToUnicode(_In_opt_z_ LPCSTR pszA, _Out_z_cap_(cchszA) LPWSTR* ppszW, size_t cchszA)

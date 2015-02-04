@@ -947,7 +947,9 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="SmartView\ReportTag.h" />
     <ClInclude Include="SmartView\RestrictionStruct.h" />
     <ClInclude Include="SmartView\RuleCondition.h" />
+    <ClInclude Include="SmartView\SDBin.h" />
     <ClInclude Include="SmartView\SearchFolderDefinition.h" />
+    <ClInclude Include="SmartView\SIDBin.h" />
     <ClInclude Include="SmartView\SmartViewParser.h" />
     <ClInclude Include="SmartView\TaskAssigners.h" />
     <ClInclude Include="SmartView\TimeZone.h" />
@@ -1686,7 +1688,9 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="SmartView\ReportTag.cpp" />
     <ClCompile Include="SmartView\RestrictionStruct.cpp" />
     <ClCompile Include="SmartView\RuleCondition.cpp" />
+    <ClCompile Include="SmartView\SDBin.cpp" />
     <ClCompile Include="SmartView\SearchFolderDefinition.cpp" />
+    <ClCompile Include="SmartView\SIDBin.cpp" />
     <ClCompile Include="SmartView\SmartView.cpp" />
     <ClCompile Include="SmartView\SmartViewParser.cpp" />
     <ClCompile Include="SmartView\TaskAssigners.cpp" />
