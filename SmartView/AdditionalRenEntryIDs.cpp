@@ -29,6 +29,7 @@ AdditionalRenEntryIDs::~AdditionalRenEntryIDs()
 			}
 
 			delete[] m_ppdPersistData[iPersistElement].ppeDataElement;
+			delete[] m_ppdPersistData[iPersistElement].JunkData;
 		}
 	}
 
