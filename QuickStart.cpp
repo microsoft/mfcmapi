@@ -259,7 +259,7 @@ void OnQSDisplayNicknameCache(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 								if (lpsProp)
 								{
 									// Get the string interpretation
-									szNicknames = InterpretBinaryAsString(lpsProp->Value.bin, IDS_STNICKNAMECACHE, lpMSG, PR_ROAMING_BINARYSTREAM);
+									szNicknames = InterpretBinaryAsString(lpsProp->Value.bin, IDS_STNICKNAMECACHE, lpMSG);
 								}
 								lpMSG->Release();
 							}

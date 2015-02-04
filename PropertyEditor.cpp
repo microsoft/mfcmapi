@@ -1566,7 +1566,7 @@ void CMultiValuePropertyEditor::UpdateSmartView()
 				iStructType = (__ParsingTypeEnum) lpPane->GetDropDownSelectionValue();
 				if (iStructType)
 				{
-					szSmartView = InterpretMVBinaryAsString(lpsProp->Value.MVbin, iStructType, m_lpMAPIProp, lpsProp->ulPropTag);
+					szSmartView = InterpretMVBinaryAsString(lpsProp->Value.MVbin, iStructType, m_lpMAPIProp);
 				}
 				break;
 			}

@@ -73,7 +73,7 @@ void DoSmartView(_In_ MYOPTIONS ProgOpts)
 #endif
 				}
 
-				wstring szString = InterpretBinaryAsString(Bin, ulStructType, NULL, NULL);
+				wstring szString = InterpretBinaryAsString(Bin, ulStructType, NULL);
 				if (!szString.empty())
 				{
 					if (fOut)
