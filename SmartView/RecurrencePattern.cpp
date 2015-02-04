@@ -104,6 +104,7 @@ void RecurrencePattern::Parse()
 			}
 		}
 	}
+
 	m_Parser.GetDWORD(&m_StartDate);
 	m_Parser.GetDWORD(&m_EndDate);
 }
@@ -152,7 +153,6 @@ _Check_return_ wstring RecurrencePattern::ToStringInternal()
 			m_PatternTypeSpecific.MonthNthRecurrencePattern.N, szN.c_str());
 		break;
 	}
-
 
 	wstring szEndType = InterpretFlags(flagEndType, m_EndType);
 	wstring szFirstDOW = InterpretFlags(flagFirstDOW, m_FirstDOW);
