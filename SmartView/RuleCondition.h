@@ -1,5 +1,6 @@
 #pragma once
 #include "SmartViewParser.h"
+#include "RestrictionStruct.h"
 
 // http://msdn.microsoft.com/en-us/library/ee158295.aspx
 // http://msdn.microsoft.com/en-us/library/ee179073.aspx
@@ -42,6 +43,6 @@ private:
 	_Check_return_ wstring ToStringInternal();
 
 	NamedPropertyInformationStruct m_NamedPropertyInformation;
-	LPSRestriction m_lpRes;
+	RestrictionStruct* m_lpRes;
 	bool m_bExtended;
 };

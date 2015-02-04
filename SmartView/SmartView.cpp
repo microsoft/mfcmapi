@@ -95,7 +95,7 @@ LPSMARTVIEWPARSER GetSmartViewParser(__ParsingTypeEnum iStructType, ULONG cbBin,
 		return new RuleCondition(cbBin, lpBin, true);
 		break;
 	case IDS_STRESTRICTION:
-		return new RestrictionStruct(cbBin, lpBin);
+		return new RestrictionStruct(cbBin, lpBin, false, true);
 		break;
 	case IDS_STPROPERTY:
 		return new PropertyStruct(cbBin, lpBin);

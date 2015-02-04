@@ -27,8 +27,7 @@ RuleCondition::~RuleCondition()
 	}
 
 	delete[] m_NamedPropertyInformation.PropertyName;
-	DeleteRestriction(m_lpRes);
-	delete[] m_lpRes;
+	delete m_lpRes;
 }
 
 void RuleCondition::Parse()
@@ -72,21 +71,16 @@ void RuleCondition::Parse()
 		}
 	}
 
-	m_lpRes = new SRestriction;
+	m_lpRes = new RestrictionStruct(
+		(ULONG)m_Parser.RemainingBytes(),
+		m_Parser.GetCurrentAddress(),
+		true,
+		m_bExtended);
 	if (m_lpRes)
 	{
-		memset(m_lpRes, 0, sizeof(SRestriction));
-		size_t cbBytesRead = 0;
-
-		(void)BinToRestriction(
-			0,
-			(ULONG)m_Parser.RemainingBytes(),
-			m_Parser.GetCurrentAddress(),
-			&cbBytesRead,
-			m_lpRes,
-			true,
-			m_bExtended);
-		m_Parser.Advance(cbBytesRead);
+		m_lpRes->DisableJunkParsing();
+		m_lpRes->EnsureParsed();
+		m_Parser.Advance(m_lpRes->GetCurrentOffset());
 	}
 }
 
@@ -138,9 +132,7 @@ _Check_return_ wstring RuleCondition::ToStringInternal()
 	}
 
 	szRuleCondition += L"\r\n"; // STRING_OK
-	wstring szRestriction = formatmessage(IDS_RESTRICTIONDATA);
-	szRestriction += RestrictionToWstring(m_lpRes, NULL);
-	szRuleCondition += szRestriction;
+	szRuleCondition += m_lpRes->ToString();
 
 	return szRuleCondition;
 }
