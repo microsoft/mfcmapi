@@ -59,7 +59,7 @@ AppointmentRecurrencePattern::~AppointmentRecurrencePattern()
 
 void AppointmentRecurrencePattern::Parse()
 {
-	m_RecurrencePattern = new RecurrencePattern(m_Parser.RemainingBytes(), m_Parser.GetCurrentAddress());
+	m_RecurrencePattern = new RecurrencePattern((ULONG)m_Parser.RemainingBytes(), m_Parser.GetCurrentAddress());
 
 	if (m_RecurrencePattern)
 	{
@@ -219,7 +219,7 @@ _Check_return_ wstring AppointmentRecurrencePattern::ToStringInternal()
 {
 	wstring szARP;
 	wstring szTmp;
-	
+
 	szARP = m_RecurrencePattern->ToString();
 
 	szARP += formatmessage(IDS_ARPHEADER,
