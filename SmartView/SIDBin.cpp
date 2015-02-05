@@ -20,7 +20,7 @@ void SIDBin::Parse()
 {
 	HRESULT hRes = S_OK;
 	PSID SidStart = m_Parser.GetCurrentAddress();
-	ULONG cbSid = m_Parser.RemainingBytes();
+	size_t cbSid = m_Parser.RemainingBytes();
 	m_Parser.Advance(cbSid);
 
 	if (SidStart &&

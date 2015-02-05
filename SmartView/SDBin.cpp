@@ -27,7 +27,7 @@ _Check_return_ wstring SDBin::ToStringInternal()
 {
 	HRESULT hRes = S_OK;
 	LPBYTE lpSDToParse = m_Parser.GetCurrentAddress();
-	ULONG ulSDToParse = m_Parser.RemainingBytes();
+	size_t ulSDToParse = m_Parser.RemainingBytes();
 	m_Parser.Advance(ulSDToParse);
 
 	eAceType acetype = acetypeMessage;
@@ -46,7 +46,7 @@ _Check_return_ wstring SDBin::ToStringInternal()
 	wstring szDACL;
 	wstring szInfo;
 
-	WC_H(SDToString(lpSDToParse, ulSDToParse, acetype, szDACL, szInfo));
+	WC_H(SDToString(lpSDToParse, (ULONG)ulSDToParse, acetype, szDACL, szInfo));
 
 	wstring szFlags = InterpretFlags(flagSecurityVersion, SECURITY_DESCRIPTOR_VERSION(lpSDToParse));
 	wstring szResult = formatmessage(IDS_SECURITYDESCRIPTORHEADER);
