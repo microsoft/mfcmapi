@@ -44,48 +44,22 @@ _Check_return_ wstring SmartViewParser::ToString()
 
 	if (m_bEnableJunk)
 	{
-		szParsedString += JunkDataToString();
+		szParsedString += JunkDataToString(m_Parser.RemainingBytes(), m_Parser.GetCurrentAddress());
 	}
 
 	return szParsedString;
 }
 
-_Check_return_ wstring SmartViewParser::JunkDataToString()
-{
-	LPBYTE junkData = NULL;
-	size_t junkDataSize = m_Parser.GetRemainingData(&junkData);
-	wstring szJunkString;
-
-	if (junkDataSize && junkData)
-	{
-		DebugPrint(DBGSmartView, _T("Had 0x%08X = %u bytes left over.\n"), (int)junkDataSize, (UINT)junkDataSize);
-		szJunkString = formatmessage(IDS_JUNKDATASIZE, junkDataSize);
-		SBinary sBin = { 0 };
-
-		sBin.cb = (ULONG)junkDataSize;
-		sBin.lpb = junkData;
-		szJunkString += BinToHexString(&sBin, true);
-	}
-
-	if (junkData) delete[] junkData;
-
-	return szJunkString;
-}
-
-// TODO: Eliminate this
 _Check_return_ wstring SmartViewParser::JunkDataToString(size_t cbJunkData, _In_count_(cbJunkData) LPBYTE lpJunkData)
 {
 	if (!cbJunkData || !lpJunkData) return L"";
 	DebugPrint(DBGSmartView, _T("Had 0x%08X = %u bytes left over.\n"), (int)cbJunkData, (UINT)cbJunkData);
-	wstring szTmp;
 	SBinary sBin = { 0 };
-
 	sBin.cb = (ULONG)cbJunkData;
 	sBin.lpb = lpJunkData;
-	szTmp = formatmessage(IDS_JUNKDATASIZE,
-		cbJunkData);
-	szTmp += BinToHexString(&sBin, true).c_str();
-	return szTmp;
+	wstring szJunk = formatmessage(IDS_JUNKDATASIZE, cbJunkData);
+	szJunk += BinToHexString(&sBin, true).c_str();
+	return szJunk;
 }
 
 // Caller allocates with new. Clean up with DeleteSPropVal.

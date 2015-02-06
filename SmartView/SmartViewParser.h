@@ -28,14 +28,13 @@ public:
 
 protected:
 	_Check_return_ LPSPropValue BinToSPropValue(DWORD dwPropCount, bool bStringPropsExcludeLength);
-	_Check_return_ wstring JunkDataToString(size_t cbJunkData, _In_count_(cbJunkData) LPBYTE lpJunkData); // TODO: Eliminate this
+	_Check_return_ wstring JunkDataToString(size_t cbJunkData, _In_count_(cbJunkData) LPBYTE lpJunkData);
 
 	CBinaryParser m_Parser;
 
 private:
 	virtual void Parse() = 0;
 	virtual _Check_return_ wstring ToStringInternal() = 0;
-	_Check_return_ wstring JunkDataToString();
 
 	bool m_bEnableJunk;
 	bool m_bParsed;
