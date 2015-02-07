@@ -6,8 +6,8 @@
 #include "String.h"
 
 // We avoid bringing InterpretProp.h in with these
-void RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj, ULONG ulTabLevel, _In_ CString *PropString);
-void ActionsToString(_In_ ACTIONS* lpActions, _In_ CString* PropString);
+_Check_return_ wstring RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj);
+_Check_return_ wstring ActionsToString(_In_ ACTIONS* lpActions);
 
 wstring BuildErrorPropString(_In_ LPSPropValue lpProp)
 {
@@ -205,30 +205,6 @@ void FileTimeToString(_In_ FILETIME* lpFileTime, _In_ wstring& PropString, _In_o
 	AltPropString = formatmessage(IDS_FILETIMEALTFORMAT, lpFileTime->dwLowDateTime, lpFileTime->dwHighDateTime);
 }
 
- wstring RestrictionToWstring(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj)
-{
-	CString szRes;
-	RestrictionToString(lpRes, lpObj, 0, &szRes);
-
-#ifdef UNICODE
-	return (LPCTSTR)szRes;
-#else
-	return format(L"%hs", (LPCTSTR)szRes);
-#endif
-}
-
- wstring ActionsToString(_In_ ACTIONS* lpActions)
-{
-	CString szActions;
-	ActionsToString(lpActions, &szActions);
-
-#ifdef UNICODE
-	return (LPCTSTR)szActions;
-#else
-	return format(L"%hs", (LPCTSTR)szActions);
-#endif
-}
-
 Property ParseMVProperty(_In_ LPSPropValue lpProp, ULONG ulMVRow)
 {
 	if (!lpProp || ulMVRow > lpProp->Value.MVi.cValues) return Property();
@@ -411,7 +387,7 @@ Property ParseProperty(_In_ LPSPropValue lpProp)
 			attributes.AddAttribute(L"cb", format(L"%u", lpProp->Value.bin.cb)); // STRING_OK
 			break;
 		case PT_SRESTRICTION:
-			szTmp = RestrictionToWstring((LPSRestriction)lpProp->Value.lpszA, NULL);
+			szTmp = RestrictionToString((LPSRestriction)lpProp->Value.lpszA, NULL);
 			bPropXMLSafe = false;
 			break;
 		case PT_ACTIONS:

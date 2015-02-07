@@ -60,23 +60,19 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 
 	if (0 != ProgOpts.ulConvertFlags)
 	{
-		LPSTR lpszFlags = NULL;
-		InterpretFlags(flagCcsf, ProgOpts.ulConvertFlags, &lpszFlags);
-		if (lpszFlags)
+		wstring szFlags = InterpretFlags(flagCcsf, ProgOpts.ulConvertFlags);
+		if (!szFlags.empty())
 		{
-			printf("   Conversion Flags: %s\n", lpszFlags); 
-			delete[] lpszFlags;
+			printf("   Conversion Flags: %ws\n", szFlags.empty()); 
 		}
 	}
 
 	if (CHECKFLAG(MAPIMIME_ENCODING))
 	{
-		LPSTR lpszEncodingType = NULL;
-		InterpretFlags(flagIet, ProgOpts.ulEncodingType, &lpszEncodingType);
-		if (lpszEncodingType)
+		wstring szType = InterpretFlags(flagIet, ProgOpts.ulEncodingType);
+		if (!szType.empty())
 		{
-			printf("   Encoding Type: %s\n", lpszEncodingType);
-			delete[] lpszEncodingType;
+			printf("   Encoding Type: %ws\n", szType.c_str());
 		}
 	}
 

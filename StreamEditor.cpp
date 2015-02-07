@@ -7,6 +7,7 @@
 #include "MAPIFunctions.h"
 #include "ExtraPropTags.h"
 #include "SmartView\SmartView.h"
+#include "String.h"
 
 enum __StreamEditorTypes
 {
@@ -512,19 +513,15 @@ _Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
 
 	if (m_bUseWrapEx)
 	{
-		LPTSTR szFlags = NULL;
-		InterpretFlags(flagStreamFlag, m_ulStreamFlags, &szFlags);
-		SetStringf(m_iFlagBox, _T("0x%08X = %s"), m_ulStreamFlags, szFlags); // STRING_OK
-		delete[] szFlags;
-		szFlags = NULL;
-		CString szTmp;
-		szTmp.FormatMessage(IDS_CODEPAGES, m_ulInCodePage, m_ulOutCodePage);
-		SetString(m_iCodePageBox, szTmp);
+		wstring szFlags = InterpretFlags(flagStreamFlag, m_ulStreamFlags);
+		SetStringf(m_iFlagBox, _T("0x%08X = %ws"), m_ulStreamFlags, szFlags.c_str()); // STRING_OK
+		wstring szTmp = formatmessage(IDS_CODEPAGES, m_ulInCodePage, m_ulOutCodePage);
+		SetStringW(m_iCodePageBox, szTmp.c_str());
 	}
 
 	OnRecalcLayout();
 	return i;
-} // CStreamEditor::HandleChange
+}
 
 void CStreamEditor::SetEditReadOnly(ULONG iControl)
 {

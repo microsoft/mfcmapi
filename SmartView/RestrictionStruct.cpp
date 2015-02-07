@@ -40,7 +40,7 @@ _Check_return_ wstring RestrictionStruct::ToStringInternal()
 	wstring szRestriction;
 
 	szRestriction = formatmessage(IDS_RESTRICTIONDATA);
-	szRestriction += LPTSTRToWstring((LPTSTR)(LPCTSTR)RestrictionToString(m_lpRes, NULL));
+	szRestriction += RestrictionToString(m_lpRes, NULL);
 
 	return szRestriction;
 }

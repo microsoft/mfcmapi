@@ -594,19 +594,18 @@ void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify, _
 
 	Outputf(ulDbgLvl, fFile, true, _T("Dumping %u notifications.\n"), cNotify);
 
-	LPTSTR szFlags = NULL;
+	wstring szFlags;
 	wstring szPropNum;
 
 	for (ULONG i = 0; i < cNotify; i++)
 	{
 		Outputf(ulDbgLvl, fFile, true, _T("lpNotifications[%u].ulEventType = 0x%08X"), i, lpNotifications[i].ulEventType);
-		InterpretFlags(flagNotifEventType, lpNotifications[i].ulEventType, &szFlags);
-		if (szFlags)
+		szFlags = InterpretFlags(flagNotifEventType, lpNotifications[i].ulEventType);
+		if (!szFlags.empty())
 		{
-			Outputf(ulDbgLvl, fFile, false, _T(" = %s"), szFlags);
+			Outputf(ulDbgLvl, fFile, false, _T(" = %ws"), szFlags.c_str());
 		}
-		delete[] szFlags;
-		szFlags = NULL;
+
 		Outputf(ulDbgLvl, fFile, false, _T("\n"));
 
 		SBinary sbin = { 0 };
@@ -670,14 +669,12 @@ void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify, _
 		case fnevTableModified:
 			Outputf(ulDbgLvl, fFile, true, _T("lpNotifications[%u].info.tab.ulTableEvent = 0x%08X"), i,
 				lpNotifications[i].info.tab.ulTableEvent);
-			InterpretFlags(flagTableEventType, lpNotifications[i].info.tab.ulTableEvent, &szFlags);
-			if (szFlags)
+			szFlags = InterpretFlags(flagTableEventType, lpNotifications[i].info.tab.ulTableEvent);
+			if (!szFlags.empty())
 			{
-				Outputf(ulDbgLvl, fFile, false, _T(" = %s"), szFlags);
+				Outputf(ulDbgLvl, fFile, false, _T(" = %ws"), szFlags.c_str());
 			}
 
-			delete[] szFlags;
-			szFlags = NULL;
 			Outputf(ulDbgLvl, fFile, false, _T("\n"));
 
 			Outputf(ulDbgLvl, fFile, true, _T("lpNotifications[%u].info.tab.hResult = 0x%08X\n"), i,
@@ -874,6 +871,7 @@ void _OutputProperties(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cProps, _In_c
 				if (lpSortedProps[iLoc - 1].ulPropTag < NextItem.ulPropTag) break;
 				lpSortedProps[iLoc] = lpSortedProps[iLoc - 1];
 			}
+
 			lpSortedProps[iLoc] = NextItem;
 		}
 
@@ -936,8 +934,8 @@ void _OutputRestriction(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_opt_ LPSRestri
 		return;
 	}
 
-	_Output(ulDbgLvl, fFile, true, RestrictionToString(lpRes, lpObj));
-} // _OutputRestriction
+	Outputf(ulDbgLvl, fFile, true, _T("%ws"), RestrictionToString(lpRes, lpObj).c_str());
+}
 
 #define MAXBYTES 4096
 void _OutputStream(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSTREAM lpStream)

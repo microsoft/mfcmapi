@@ -338,7 +338,7 @@ void CPropertyEditor::InitPropertyControls()
 		{
 			SetHex(0, m_lpsInputValue->Value.cur.Hi);
 			SetHex(1, m_lpsInputValue->Value.cur.Lo);
-			SetString(2, CurrencyToString(m_lpsInputValue->Value.cur));
+			SetStringW(2, CurrencyToString(m_lpsInputValue->Value.cur).c_str());
 		}
 		else
 		{
@@ -849,7 +849,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 			curVal.Hi = _tcstoul(szTmpString, NULL, 16);
 			szTmpString = GetStringUseControl(1);
 			curVal.Lo = _tcstoul(szTmpString, NULL, 16);
-			SetString(2, CurrencyToString(curVal));
+			SetStringW(2, CurrencyToString(curVal).c_str());
 		}
 		else if (2 == i)
 		{

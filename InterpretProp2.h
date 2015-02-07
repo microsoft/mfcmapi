@@ -45,9 +45,7 @@ LPCGUID GUIDNameToGUIDA(_In_z_ LPCSTR szGUID, bool bByteSwapped);
 std::wstring NameIDToPropName(_In_ LPMAPINAMEID lpNameID);
 
 enum __NonPropFlag; // forward
-void InterpretFlags(const __NonPropFlag ulFlagName, const LONG lFlagValue, _Deref_out_opt_z_ LPTSTR* szFlagString);
-_Check_return_  wstring InterpretFlags(const __NonPropFlag ulFlagName, const LONG lFlagValue);
-void InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, _In_z_ LPCTSTR szPrefix, _Deref_out_opt_z_ LPTSTR* szFlagString);
+_Check_return_  wstring InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue);
 _Check_return_ CString AllFlagsToString(const ULONG ulFlagName, bool bHex);
 
 _Check_return_ HRESULT GetLargeBinaryProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_ LPSPropValue* lppProp);

@@ -36,12 +36,8 @@ CResCompareEditor::CResCompareEditor(
 	SetPromptPostFix(AllFlagsToString(flagRelop, false));
 	InitPane(0, CreateSingleLinePane(IDS_RELOP, NULL, false));
 	SetHex(0, ulRelop);
-	LPTSTR szFlags = NULL;
-	InterpretFlags(flagRelop, ulRelop, &szFlags);
-	InitPane(1, CreateSingleLinePane(IDS_RELOP, szFlags, true));
-	delete[] szFlags;
-	szFlags = NULL;
-
+	wstring szFlags = InterpretFlags(flagRelop, ulRelop);
+	InitPane(1, CreateSingleLinePaneW(IDS_RELOP, szFlags.c_str(), true));
 	InitPane(2, CreateSingleLinePane(IDS_ULPROPTAG1, NULL, false));
 	SetHex(2, ulPropTag1);
 	InitPane(3, CreateSingleLinePane(IDS_ULPROPTAG1, TagToString(ulPropTag1, NULL, false, true), true));
@@ -57,11 +53,8 @@ _Check_return_ ULONG CResCompareEditor::HandleChange(UINT nID)
 
 	if (0 == i)
 	{
-		LPTSTR szFlags = NULL;
-		InterpretFlags(flagRelop, GetHexUseControl(0), &szFlags);
-		SetString(1, szFlags);
-		delete[] szFlags;
-		szFlags = NULL;
+		wstring szFlags = InterpretFlags(flagRelop, GetHexUseControl(0));
+		SetStringW(1, szFlags.c_str());
 	}
 	else if (2 == i)
 	{
@@ -125,7 +118,7 @@ CResCombinedEditor::CResCombinedEditor(
 	m_lpNewProp = NULL;
 	m_lpAllocParent = lpAllocParent;
 
-	LPTSTR szFlags = NULL;
+	wstring szFlags;
 
 	if (RES_CONTENT == m_ulResType)
 	{
@@ -133,19 +126,17 @@ CResCombinedEditor::CResCombinedEditor(
 
 		InitPane(0, CreateSingleLinePane(IDS_ULFUZZYLEVEL, NULL, false));
 		SetHex(0, ulCompare);
-		InterpretFlags(flagFuzzyLevel, ulCompare, &szFlags);
-		InitPane(1, CreateSingleLinePane(IDS_ULFUZZYLEVEL, szFlags, true));
+		szFlags = InterpretFlags(flagFuzzyLevel, ulCompare);
+		InitPane(1, CreateSingleLinePaneW(IDS_ULFUZZYLEVEL, szFlags.c_str(), true));
 	}
 	else if (RES_PROPERTY == m_ulResType)
 	{
 		SetPromptPostFix(AllFlagsToString(flagRelop, false));
 		InitPane(0, CreateSingleLinePane(IDS_RELOP, NULL, false));
 		SetHex(0, ulCompare);
-		InterpretFlags(flagRelop, ulCompare, &szFlags);
-		InitPane(1, CreateSingleLinePane(IDS_RELOP, szFlags, true));
+		szFlags = InterpretFlags(flagRelop, ulCompare);
+		InitPane(1, CreateSingleLinePaneW(IDS_RELOP, szFlags.c_str(), true));
 	}
-	delete[] szFlags;
-	szFlags = NULL;
 
 	InitPane(2, CreateSingleLinePane(IDS_ULPROPTAG, NULL, false));
 	SetHex(2, ulPropTag);
@@ -166,21 +157,19 @@ _Check_return_ ULONG CResCombinedEditor::HandleChange(UINT nID)
 {
 	ULONG i = CEditor::HandleChange(nID);
 
-	LPTSTR szFlags = NULL;
+	wstring szFlags;
 	if (0 == i)
 	{
 		if (RES_CONTENT == m_ulResType)
 		{
-			InterpretFlags(flagFuzzyLevel, GetHexUseControl(0), &szFlags);
-			SetString(1, szFlags);
+			szFlags = InterpretFlags(flagFuzzyLevel, GetHexUseControl(0));
+			SetStringW(1, szFlags.c_str());
 		}
 		else if (RES_PROPERTY == m_ulResType)
 		{
-			InterpretFlags(flagRelop, GetHexUseControl(0), &szFlags);
-			SetString(1, szFlags);
+			szFlags = InterpretFlags(flagRelop, GetHexUseControl(0));
+			SetStringW(1, szFlags.c_str());
 		}
-		delete[] szFlags;
-		szFlags = NULL;
 	}
 	else if (2 == i)
 	{
@@ -265,12 +254,8 @@ CResBitmaskEditor::CResBitmaskEditor(
 	SetPromptPostFix(AllFlagsToString(flagBitmask, false));
 	InitPane(0, CreateSingleLinePane(IDS_RELBMR, NULL, false));
 	SetHex(0, relBMR);
-	LPTSTR szFlags = NULL;
-	InterpretFlags(flagBitmask, relBMR, &szFlags);
-	InitPane(1, CreateSingleLinePane(IDS_RELBMR, szFlags, true));
-	delete[] szFlags;
-	szFlags = NULL;
-
+	wstring szFlags = InterpretFlags(flagBitmask, relBMR);
+	InitPane(1, CreateSingleLinePaneW(IDS_RELBMR, szFlags.c_str(), true));
 	InitPane(2, CreateSingleLinePane(IDS_ULPROPTAG, NULL, false));
 	SetHex(2, ulPropTag);
 	InitPane(3, CreateSingleLinePane(IDS_ULPROPTAG, TagToString(ulPropTag, NULL, false, true), true));
@@ -285,11 +270,8 @@ _Check_return_ ULONG CResBitmaskEditor::HandleChange(UINT nID)
 
 	if (0 == i)
 	{
-		LPTSTR szFlags = NULL;
-		InterpretFlags(flagBitmask, GetHexUseControl(0), &szFlags);
-		SetString(1, szFlags);
-		delete[] szFlags;
-		szFlags = NULL;
+		wstring szFlags = InterpretFlags(flagBitmask, GetHexUseControl(0));
+		SetStringW(1, szFlags.c_str());
 	}
 	else if (2 == i)
 	{
@@ -324,11 +306,8 @@ CResSizeEditor::CResSizeEditor(
 	SetPromptPostFix(AllFlagsToString(flagRelop, false));
 	InitPane(0, CreateSingleLinePane(IDS_RELOP, NULL, false));
 	SetHex(0, relop);
-	LPTSTR szFlags = NULL;
-	InterpretFlags(flagRelop, relop, &szFlags);
-	InitPane(1, CreateSingleLinePane(IDS_RELOP, szFlags, true));
-	delete[] szFlags;
-	szFlags = NULL;
+	wstring szFlags = InterpretFlags(flagRelop, relop);
+	InitPane(1, CreateSingleLinePaneW(IDS_RELOP, szFlags.c_str(), true));
 
 	InitPane(2, CreateSingleLinePane(IDS_ULPROPTAG, NULL, false));
 	SetHex(2, ulPropTag);
@@ -344,11 +323,8 @@ _Check_return_ ULONG CResSizeEditor::HandleChange(UINT nID)
 
 	if (0 == i)
 	{
-		LPTSTR szFlags = NULL;
-		InterpretFlags(flagRelop, GetHexUseControl(0), &szFlags);
-		SetString(1, szFlags);
-		delete[] szFlags;
-		szFlags = NULL;
+		wstring szFlags = InterpretFlags(flagRelop, GetHexUseControl(0));
+		SetStringW(1, szFlags.c_str());
 	}
 	else if (2 == i)
 	{
@@ -432,7 +408,7 @@ CResSubResEditor::CResSubResEditor(
 	SetHex(0, ulSubObject);
 	InitPane(1, CreateSingleLinePane(IDS_ULSUBOBJECT, TagToString(ulSubObject, NULL, false, true), true));
 
-	InitPane(2, CreateMultiLinePane(IDS_LPRES, RestrictionToString(lpRes, NULL), true));
+	InitPane(2, CreateMultiLinePaneW(IDS_LPRES, RestrictionToString(lpRes, NULL).c_str(), true));
 } // CResSubResEditor::CResSubResEditor
 
 _Check_return_ ULONG CResSubResEditor::HandleChange(UINT nID)
@@ -468,7 +444,7 @@ void CResSubResEditor::OnEditAction1()
 		// Since m_lpNewRes was owned by an m_lpAllocParent, we don't free it directly
 		m_lpNewRes = ResEdit.DetachModifiedSRestriction();
 
-		SetString(2, RestrictionToString(m_lpNewRes, NULL));
+		SetStringW(2, RestrictionToString(m_lpNewRes, NULL).c_str());
 	}
 } // CResSubResEditor::OnEditAction1
 
@@ -562,7 +538,7 @@ void CResAndOrEditor::InitListFromRestriction(ULONG ulListNum, _In_ LPSRestricti
 			{
 				lpData->ulSortDataType = SORTLIST_RES;
 				lpData->data.Res.lpOldRes = &lpRes->res.resAnd.lpRes[i]; // save off address of source restriction
-				SetListString(ulListNum, i, 1, RestrictionToString(lpData->data.Res.lpOldRes, NULL));
+				SetListStringW(ulListNum, i, 1, RestrictionToString(lpData->data.Res.lpOldRes, NULL).c_str());
 				lpData->bItemFullyLoaded = true;
 			}
 		}
@@ -578,7 +554,7 @@ void CResAndOrEditor::InitListFromRestriction(ULONG ulListNum, _In_ LPSRestricti
 			{
 				lpData->ulSortDataType = SORTLIST_RES;
 				lpData->data.Res.lpOldRes = &lpRes->res.resOr.lpRes[i]; // save off address of source restriction
-				SetListString(ulListNum, i, 1, RestrictionToString(lpData->data.Res.lpOldRes, NULL));
+				SetListStringW(ulListNum, i, 1, RestrictionToString(lpData->data.Res.lpOldRes, NULL).c_str());
 				lpData->bItemFullyLoaded = true;
 			}
 		}
@@ -608,7 +584,7 @@ _Check_return_ bool CResAndOrEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 	{
 		// Since lpData->data.Res.lpNewRes was owned by an m_lpAllocParent, we don't free it directly
 		lpData->data.Res.lpNewRes = MyResEditor.DetachModifiedSRestriction();
-		SetListString(ulListNum, iItem, 1, RestrictionToString(lpData->data.Res.lpNewRes, NULL));
+		SetListStringW(ulListNum, iItem, 1, RestrictionToString(lpData->data.Res.lpNewRes, NULL).c_str());
 		return true;
 	}
 	return false;
@@ -703,7 +679,7 @@ CResCommentEditor::CResCommentEditor(
 	m_lpAllocParent = lpAllocParent;
 
 	InitPane(0, CreateListPane(IDS_SUBRESTRICTION, false, false, this));
-	InitPane(1, CreateMultiLinePane(IDS_RESTRICTIONTEXT, RestrictionToString(m_lpSourceRes->res.resComment.lpRes, NULL), true));
+	InitPane(1, CreateMultiLinePaneW(IDS_RESTRICTIONTEXT, RestrictionToString(m_lpSourceRes->res.resComment.lpRes, NULL).c_str(), true));
 } // CResCommentEditor::CResCommentEditor
 
 // Used to call functions which need to be called AFTER controls are created
@@ -794,7 +770,7 @@ void CResCommentEditor::OnEditAction1()
 	{
 		// Since m_lpNewCommentRes was owned by an m_lpAllocParent, we don't free it directly
 		m_lpNewCommentRes = MyResEditor.DetachModifiedSRestriction();
-		SetString(1, RestrictionToString(m_lpNewCommentRes, NULL));
+		SetStringW(1, RestrictionToString(m_lpNewCommentRes, NULL).c_str());
 	}
 } // CResCommentEditor::OnEditAction1
 
@@ -956,7 +932,7 @@ CRestrictEditor::CRestrictEditor(
 	SetPromptPostFix(AllFlagsToString(flagRestrictionType, true));
 	InitPane(0, CreateSingleLinePane(IDS_RESTRICTIONTYPE, NULL, false)); // type as a number
 	InitPane(1, CreateSingleLinePane(IDS_RESTRICTIONTYPE, NULL, true)); // type as a string (flagRestrictionType)
-	InitPane(2, CreateMultiLinePane(IDS_RESTRICTIONTEXT, RestrictionToString(GetSourceRes(), NULL), true));
+	InitPane(2, CreateMultiLinePaneW(IDS_RESTRICTIONTEXT, RestrictionToString(GetSourceRes(), NULL).c_str(), true));
 } // CRestrictEditor::CRestrictEditor
 
 CRestrictEditor::~CRestrictEditor()
@@ -979,12 +955,10 @@ BOOL CRestrictEditor::OnInitDialog()
 	if (lpSourceRes)
 	{
 		SetHex(0, lpSourceRes->rt);
-		LPTSTR szFlags = NULL;
-		InterpretFlags(flagRestrictionType, lpSourceRes->rt, &szFlags);
-		SetString(1, szFlags);
-		delete[] szFlags;
-		szFlags = NULL;
+		wstring szFlags = InterpretFlags(flagRestrictionType, lpSourceRes->rt);
+		SetStringW(1, szFlags.c_str());
 	}
+
 	return bRet;
 } // CRestrictEditor::OnInitDialog
 
@@ -1024,11 +998,8 @@ _Check_return_ ULONG CRestrictEditor::HandleChange(UINT nID)
 
 		if (ulOldResType == ulNewResType) return i;
 
-		LPTSTR szFlags = NULL;
-		InterpretFlags(flagRestrictionType, ulNewResType, &szFlags);
-		SetString(1, szFlags);
-		delete[] szFlags;
-		szFlags = NULL;
+		wstring szFlags = InterpretFlags(flagRestrictionType, ulNewResType);
+		SetStringW(1, szFlags.c_str());
 
 		m_bModified = true;
 		if ((ulOldResType == RES_AND || ulOldResType == RES_OR) &&
@@ -1062,7 +1033,7 @@ _Check_return_ ULONG CRestrictEditor::HandleChange(UINT nID)
 			m_lpOutputRes->rt = ulNewResType;
 		}
 
-		SetString(2, RestrictionToString(m_lpOutputRes, NULL));
+		SetStringW(2, RestrictionToString(m_lpOutputRes, NULL).c_str());
 	}
 	return i;
 } // CRestrictEditor::HandleChange
@@ -1115,7 +1086,7 @@ void CRestrictEditor::OnEditAction1()
 	if (S_OK == hRes)
 	{
 		m_bModified = true;
-		SetString(2, RestrictionToString(m_lpOutputRes, NULL));
+		SetStringW(2, RestrictionToString(m_lpOutputRes, NULL).c_str());
 	}
 }
 
@@ -1357,16 +1328,13 @@ CCriteriaEditor::CCriteriaEditor(
 	SetPromptPostFix(AllFlagsToString(flagSearchFlag, true));
 	InitPane(0, CreateSingleLinePane(IDS_SEARCHSTATE, NULL, true));
 	SetHex(0, ulSearchState);
-	LPTSTR szFlags = NULL;
-	InterpretFlags(flagSearchState, ulSearchState, &szFlags);
-	InitPane(1, CreateSingleLinePane(IDS_SEARCHSTATE, szFlags, true));
-	delete[] szFlags;
-	szFlags = NULL;
+	wstring szFlags = InterpretFlags(flagSearchState, ulSearchState);
+	InitPane(1, CreateSingleLinePaneW(IDS_SEARCHSTATE, szFlags.c_str(), true));
 	InitPane(2, CreateSingleLinePane(IDS_SEARCHFLAGS, NULL, false));
 	SetHex(2, 0);
 	InitPane(3, CreateSingleLinePane(IDS_SEARCHFLAGS, NULL, true));
 	InitPane(4, CreateListPane(IDS_EIDLIST, false, false, this));
-	InitPane(5, CreateMultiLinePane(IDS_RESTRICTIONTEXT, RestrictionToString(m_lpSourceRes, NULL), true));
+	InitPane(5, CreateMultiLinePaneW(IDS_RESTRICTIONTEXT, RestrictionToString(m_lpSourceRes, NULL).c_str(), true));
 } // CCriteriaEditor::CCriteriaEditor
 
 CCriteriaEditor::~CCriteriaEditor()
@@ -1400,12 +1368,10 @@ _Check_return_ ULONG CCriteriaEditor::HandleChange(UINT nID)
 
 	if (2 == i)
 	{
-		LPTSTR szFlags = NULL;
-		InterpretFlags(flagSearchFlag, GetHexUseControl(i), &szFlags);
-		SetString(3, szFlags);
-		delete[] szFlags;
-		szFlags = NULL;
+		wstring szFlags = InterpretFlags(flagSearchFlag, GetHexUseControl(i));
+		SetStringW(3, szFlags.c_str());
 	}
+
 	return i;
 } // CCriteriaEditor::HandleChange
 
@@ -1489,7 +1455,7 @@ void CCriteriaEditor::OnEditAction1()
 			// We didn't pass an alloc parent to CRestrictEditor, so we must free what came back
 			MAPIFreeBuffer(m_lpNewRes);
 			m_lpNewRes = lpModRes;
-			SetString(5, RestrictionToString(m_lpNewRes, NULL));
+			SetStringW(5, RestrictionToString(m_lpNewRes, NULL).c_str());
 		}
 	}
 } // CCriteriaEditor::OnEditAction1
