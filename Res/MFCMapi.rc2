@@ -1303,8 +1303,8 @@ IDS_RESDEPTHEXCEEDED "Restriction nested too many (100) levels.\r\n"
 IDS_RESTYPE "%1lpRes->rt = 0x%2!X! = %3\r\n"
 
 IDS_RESCOMPARE "%1lpRes->res.resCompareProps.relop = %2 = 0x%3!08X!\r\n\
-%1lpRes->res.resCompareProps.ulPropTag1 = %4\r\n\
-%1lpRes->res.resCompareProps.ulPropTag2 = %5\r\n"
+%1lpRes->res.resCompareProps.ulPropTag1 = %4!hs!\r\n\
+%1lpRes->res.resCompareProps.ulPropTag2 = %5!hs!\r\n"
 
 IDS_RESANDCOUNT "%1lpRes->res.resAnd.cRes = 0x%2!08X!\r\n"
 IDS_RESANDPOINTER "%1lpRes->res.resAnd.lpRes[0x%2!08X!]\r\n"
@@ -1319,14 +1319,14 @@ IDS_RESCOUNT "%1lpRes->res.resCount.ulCount = 0x%2!08X!\r\n\
 %1lpRes->res.resCount.lpRes\r\n"
 
 IDS_RESCONTENT "%1lpRes->res.resContent.ulFuzzyLevel = %2 = 0x%3!08X!\r\n\
-%1lpRes->res.resContent.ulPropTag = %4\r\n"
-IDS_RESCONTENTPROP "%1lpRes->res.resContent.lpProp->ulPropTag = %2\r\n\
+%1lpRes->res.resContent.ulPropTag = %4!hs!\r\n"
+IDS_RESCONTENTPROP "%1lpRes->res.resContent.lpProp->ulPropTag = %2!hs!\r\n\
 %1lpRes->res.resContent.lpProp->Value = %3!ws!\r\n\
 %1\tAlt: %4!ws!\r\n"
 
 IDS_RESPROP "%1lpRes->res.resProperty.relop = %2 = 0x%3!08X!\r\n\
-%1lpRes->res.resProperty.ulPropTag = %4\r\n"
-IDS_RESPROPPROP "%1lpRes->res.resProperty.lpProp->ulPropTag = %2\r\n\
+%1lpRes->res.resProperty.ulPropTag = %4!hs!\r\n"
+IDS_RESPROPPROP "%1lpRes->res.resProperty.lpProp->ulPropTag = %2!hs!\r\n\
 %1lpRes->res.resProperty.lpProp->Value = %3!ws!\r\n\
 %1\tAlt: %4!ws!\r\n"
 IDS_RESPROPPROPFLAGS "%1\tFlags: %2!ws!\r\n"
@@ -1334,27 +1334,27 @@ IDS_RESPROPPROPFLAGS "%1\tFlags: %2!ws!\r\n"
 IDS_RESBITMASK "%1lpRes->res.resBitMask.relBMR = %2 = 0x%3!08X!\r\n\
 %1lpRes->res.resBitMask.ulMask = 0x%4!08X!"
 IDS_RESBITMASKFLAGS ": %1!ws!"
-IDS_RESBITMASKTAG "\r\n%1lpRes->res.resBitMask.ulPropTag = %2\r\n"
+IDS_RESBITMASKTAG "\r\n%1lpRes->res.resBitMask.ulPropTag = %2!hs!\r\n"
 
 IDS_RESSIZE "%1lpRes->res.resSize.relop = %2 = 0x%3!08X!\r\n\
 %1lpRes->res.resSize.cb = 0x%4!08X!\r\n\
-%1lpRes->res.resSize.ulPropTag = %5\r\n"
+%1lpRes->res.resSize.ulPropTag = %5!hs!\r\n"
 
-IDS_RESEXIST "%1lpRes->res.resExist.ulPropTag = %2\r\n\
+IDS_RESEXIST "%1lpRes->res.resExist.ulPropTag = %2!hs!\r\n\
 %1lpRes->res.resExist.ulReserved1 = 0x%3!08X!\r\n\
 %1lpRes->res.resExist.ulReserved2 = 0x%4!08X!\r\n"
 
-IDS_RESSUBRES "%1lpRes->res.resSub.ulSubObject = %2\r\n\
+IDS_RESSUBRES "%1lpRes->res.resSub.ulSubObject = %2!hs!\r\n\
 %1lpRes->res.resSub.lpRes\r\n"
 
 IDS_RESCOMMENT "%1lpRes->res.resComment.cValues = 0x%2!08X!\r\n"
-IDS_RESCOMMENTPROPS "%1lpRes->res.resComment.lpProp[0x%2!08X!].ulPropTag = %3\r\n\
+IDS_RESCOMMENTPROPS "%1lpRes->res.resComment.lpProp[0x%2!08X!].ulPropTag = %3!hs!\r\n\
 %1lpRes->res.resComment.lpProp[0x%2!08X!].Value = %4!ws!\r\n\
 %1\tAlt: %5!ws!\r\n"
 IDS_RESCOMMENTRES "%1lpRes->res.resComment.lpRes\r\n"
 
 IDS_RESANNOTATION "%1lpRes->res.resAnnotation.cValues = 0x%2!08X!\r\n"
-IDS_RESANNOTATIONPROPS "%1lpRes->res.resAnnotation.lpProp[0x%2!08X!].ulPropTag = %3\r\n\
+IDS_RESANNOTATIONPROPS "%1lpRes->res.resAnnotation.lpProp[0x%2!08X!].ulPropTag = %3!hs!\r\n\
 %1lpRes->res.resAnnotation.lpProp[0x%2!08X!].Value = %4!ws!\r\n\
 %1\tAlt: %5!ws!\r\n"
 IDS_RESANNOTATIONRES "%1lpRes->res.resAnnotation.lpRes\r\n"
@@ -1362,7 +1362,7 @@ IDS_RESANNOTATIONRES "%1lpRes->res.resAnnotation.lpRes\r\n"
 IDS_ADRLISTNULL "lpAdrList was NULL\r\n"
 IDS_ADRLISTCOUNT "lpAdrList->cEntries = 0x%1!08X!\r\n"
 IDS_ADRLISTENTRIESCOUNT "lpAdrList->aEntries[0x%1!08X!].cValues = 0x%2!08X!\r\n"
-IDS_ADRLISTENTRY "lpAdrList->aEntries[0x%1!08X!].rgPropVals[0x%2!08X!].ulPropTag = %3\r\n\
+IDS_ADRLISTENTRY "lpAdrList->aEntries[0x%1!08X!].rgPropVals[0x%2!08X!].ulPropTag = %3!hs!\r\n\
 lpAdrList->aEntries[0x%1!08X!].rgPropVals[0x%2!08X!].Value = %4\r\n\
 \tAlt: %5\r\n"
 

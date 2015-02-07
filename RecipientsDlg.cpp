@@ -261,8 +261,7 @@ void CRecipientsDlg::OnRecipOptions()
 				adrList.aEntries[0].cValues = adrEntry.cValues;
 				adrList.aEntries[0].rgPropVals = adrEntry.rgPropVals;
 
-				wstring szAdrList;
-				AdrListToString(&adrList, &szAdrList);
+				wstring szAdrList = AdrListToString(&adrList);
 
 				DebugPrintEx(DBGGeneric, CLASS, _T("OnRecipOptions"), _T("RecipOptions returned the following ADRLIST:\n"));
 				// This buffer may be huge - passing it as single parameter to _Output avoids calls to StringCchVPrintf

@@ -36,12 +36,11 @@ _Check_return_ wstring GUIDToString(_In_opt_ LPCGUID lpGUID);
 _Check_return_ HRESULT StringToGUID(_In_z_ LPCTSTR szGUID, _Inout_ LPGUID lpGUID);
 _Check_return_ HRESULT StringToGUID(_In_z_ LPCTSTR szGUID, bool bByteSwapped, _Inout_ LPGUID lpGUID);
 
-_Check_return_ CString CurrencyToString(CURRENCY curVal);
+_Check_return_ wstring CurrencyToString(CURRENCY curVal);
 
-_Check_return_ CString RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj);
+_Check_return_ wstring RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj);
+_Check_return_ wstring ActionsToString(_In_ ACTIONS* lpActions);
 
-void ActionsToString(_In_ ACTIONS* lpActions, _In_ CString* PropString);
-
-void AdrListToString(_In_ LPADRLIST lpAdrList, _In_ wstring *PropString);
+_Check_return_ wstring AdrListToString(_In_ LPADRLIST lpAdrList);
 
 void InterpretProp(_In_ LPSPropValue lpProp, _In_opt_  wstring* PropString, _In_opt_  wstring* AltPropString);

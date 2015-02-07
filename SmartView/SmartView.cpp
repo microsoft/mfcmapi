@@ -384,17 +384,12 @@ wstring InterpretNumberAsString(_PV pV, ULONG ulPropTag, ULONG ulPropNameID, _In
 		ulPropID = BuildFlagIndexFromTag(ulPropTag, ulPropNameID, lpszPropNameString, lpguidNamedProp);
 		if (ulPropID)
 		{
-			CString szPrefix;
-			HRESULT hRes = S_OK;
-			if (bLabel)
-			{
-				EC_B(szPrefix.LoadString(IDS_FLAGS_PREFIX));
-			}
+			lpszResultString += InterpretFlags(ulPropID, pV.ul);
 
-			LPTSTR szTmp = NULL;
-			InterpretFlags(ulPropID, pV.ul, szPrefix, &szTmp);
-			lpszResultString = LPTSTRToWstring(szTmp);
-			delete[] szTmp;
+			if (bLabel && !lpszResultString.empty())
+			{
+				lpszResultString = formatmessage(IDS_FLAGS_PREFIX) + lpszResultString;
+			}
 		}
 
 		break;

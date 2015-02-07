@@ -20,7 +20,7 @@ bool CompareTagsSortOrder(int a1, int a2)
 	if (lpTag1->ulSortOrder < lpTag2->ulSortOrder) return false;
 	if (lpTag1->ulSortOrder == lpTag2->ulSortOrder)
 	{
-		return wcscmp(lpTag1->lpszName, lpTag2->lpszName)>0 ? false : true;
+		return wcscmp(lpTag1->lpszName, lpTag2->lpszName) > 0 ? false : true;
 	}
 	return true;
 }
@@ -66,7 +66,7 @@ void FindTagArrayMatches(_In_ ULONG ulTarget,
 		{
 			ulUpperBound = ulMidPoint;
 		}
-		else if (ulMaskedTarget >(PROP_TAG_MASK & MyArray[ulMidPoint].ulValue))
+		else if (ulMaskedTarget > (PROP_TAG_MASK & MyArray[ulMidPoint].ulValue))
 		{
 			ulLowerBound = ulMidPoint;
 		}
@@ -450,44 +450,17 @@ std::wstring NameIDToPropName(_In_ LPMAPINAMEID lpNameID)
 	return szResultString;
 }
 
-// Interprets a flag value according to a flag name and returns a string
-// allocated with new
-// Free the string with delete[]
-// Will not return a string if the flag name is not recognized
-void InterpretFlags(const __NonPropFlag ulFlagName, const LONG lFlagValue, _Deref_out_opt_z_ LPTSTR* szFlagString)
-{
-	InterpretFlags(ulFlagName, lFlagValue, _T(""), szFlagString);
-} // InterpretFlags
-
-_Check_return_  wstring InterpretFlags(const __NonPropFlag ulFlagName, const LONG lFlagValue)
-{
-	LPTSTR szFlags = NULL;
-	InterpretFlags(ulFlagName, lFlagValue, &szFlags);
-	wstring szRet = LPTSTRToWstring(szFlags);
-
-	delete[] szFlags;
-	return szRet;
-}
+_Check_return_  wstring InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, wstring szPrefix);
 
 // Interprets a flag value according to a flag name and returns a string
-// allocated with new
-// Free the string with delete[]
 // Will not return a string if the flag name is not recognized
-void InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, _In_z_ LPCTSTR szPrefix, _Deref_out_opt_z_ LPTSTR* szFlagString)
+_Check_return_ wstring InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue)
 {
-	if (!szFlagString)
-	{
-		return;
-	}
-	HRESULT	hRes = S_OK;
-	ULONG	ulCurEntry = 0;
-	LONG	lTempValue = lFlagValue;
-	WCHAR	szTempString[1024];
+	ULONG ulCurEntry = 0;
+	LONG lTempValue = lFlagValue;
+	wstring szTempString;
 
-	*szFlagString = NULL;
-	szTempString[0] = NULL;
-
-	if (!ulFlagArray || !FlagArray) return;
+	if (!ulFlagArray || !FlagArray) return L"";
 
 	while (ulCurEntry < ulFlagArray && FlagArray[ulCurEntry].ulFlagName != ulFlagName)
 	{
@@ -495,8 +468,8 @@ void InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, _In_z_ LPCTST
 	}
 
 	// Don't run off the end of the array
-	if (ulFlagArray == ulCurEntry) return;
-	if (FlagArray[ulCurEntry].ulFlagName != ulFlagName) return;
+	if (ulFlagArray == ulCurEntry) return L"";
+	if (FlagArray[ulCurEntry].ulFlagName != ulFlagName) return L"";
 
 	// We've matched our flag name to the array - we SHOULD return a string at this point
 	bool bNeedSeparator = false;
@@ -509,9 +482,10 @@ void InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, _In_z_ LPCTST
 			{
 				if (bNeedSeparator)
 				{
-					EC_H(StringCchCatW(szTempString, _countof(szTempString), L" | ")); // STRING_OK
+					szTempString += L" | ";  // STRING_OK
 				}
-				EC_H(StringCchCatW(szTempString, _countof(szTempString), FlagArray[ulCurEntry].lpszName));
+
+				szTempString += FlagArray[ulCurEntry].lpszName;
 				lTempValue &= ~FlagArray[ulCurEntry].lFlagValue;
 				bNeedSeparator = true;
 			}
@@ -522,9 +496,10 @@ void InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, _In_z_ LPCTST
 			{
 				if (bNeedSeparator)
 				{
-					EC_H(StringCchCatW(szTempString, _countof(szTempString), L" | ")); // STRING_OK
+					szTempString += L" | "; // STRING_OK
 				}
-				EC_H(StringCchCatW(szTempString, _countof(szTempString), FlagArray[ulCurEntry].lpszName));
+
+				szTempString += FlagArray[ulCurEntry].lpszName;
 				lTempValue = 0;
 				bNeedSeparator = true;
 			}
@@ -535,9 +510,10 @@ void InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, _In_z_ LPCTST
 			{
 				if (bNeedSeparator)
 				{
-					EC_H(StringCchCatW(szTempString, _countof(szTempString), L" | ")); // STRING_OK
+					szTempString += L" | "; // STRING_OK
 				}
-				EC_H(StringCchCatW(szTempString, _countof(szTempString), FlagArray[ulCurEntry].lpszName));
+
+				szTempString += FlagArray[ulCurEntry].lpszName;
 				lTempValue = lTempValue - (FlagArray[ulCurEntry].lFlagValue << 16);
 				bNeedSeparator = true;
 			}
@@ -548,9 +524,10 @@ void InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, _In_z_ LPCTST
 			{
 				if (bNeedSeparator)
 				{
-					EC_H(StringCchCatW(szTempString, _countof(szTempString), L" | ")); // STRING_OK
+					szTempString += L" | "; // STRING_OK
 				}
-				EC_H(StringCchCatW(szTempString, _countof(szTempString), FlagArray[ulCurEntry].lpszName));
+
+				szTempString += FlagArray[ulCurEntry].lpszName;
 				lTempValue = lTempValue - (FlagArray[ulCurEntry].lFlagValue << 8);
 				bNeedSeparator = true;
 			}
@@ -561,9 +538,10 @@ void InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, _In_z_ LPCTST
 			{
 				if (bNeedSeparator)
 				{
-					EC_H(StringCchCatW(szTempString, _countof(szTempString), L" | ")); // STRING_OK
+					szTempString += L" | "; // STRING_OK
 				}
-				EC_H(StringCchCatW(szTempString, _countof(szTempString), FlagArray[ulCurEntry].lpszName));
+
+				szTempString += FlagArray[ulCurEntry].lpszName;
 				lTempValue = lTempValue - FlagArray[ulCurEntry].lFlagValue;
 				bNeedSeparator = true;
 			}
@@ -574,9 +552,10 @@ void InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, _In_z_ LPCTST
 			{
 				if (bNeedSeparator)
 				{
-					EC_H(StringCchCatW(szTempString, _countof(szTempString), L" | ")); // STRING_OK
+					szTempString += L" | "; // STRING_OK
 				}
-				EC_H(StringCchCatW(szTempString, _countof(szTempString), FlagArray[ulCurEntry].lpszName));
+
+				szTempString += FlagArray[ulCurEntry].lpszName;
 				lTempValue = lTempValue - FlagArray[ulCurEntry].lFlagValue;
 				bNeedSeparator = true;
 			}
@@ -590,11 +569,10 @@ void InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, _In_z_ LPCTST
 			{
 				if (bNeedSeparator)
 				{
-					EC_H(StringCchCatW(szTempString, _countof(szTempString), L" | ")); // STRING_OK
+					szTempString += L" | "; // STRING_OK
 				}
-				WCHAR szClearedBits[15];
-				EC_H(StringCchPrintfW(szClearedBits, _countof(szClearedBits), L"0x%X", lClearedBits)); // STRING_OK
-				EC_H(StringCchCatW(szTempString, _countof(szTempString), szClearedBits));
+
+				szTempString += format(L"0x%X", lClearedBits); // STRING_OK
 				// clear the bits out
 				lTempValue &= ~FlagArray[ulCurEntry].lFlagValue;
 				bNeedSeparator = true;
@@ -607,38 +585,16 @@ void InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, _In_z_ LPCTST
 	// Otherwise, it's true, and we only tack if lTempValue still has something in it
 	if (!bNeedSeparator || lTempValue)
 	{
-		WCHAR	szUnk[15];
 		if (bNeedSeparator)
 		{
-			EC_H(StringCchCatW(szTempString, _countof(szTempString), L" | ")); // STRING_OK
+			szTempString += L" | "; // STRING_OK
 		}
-		EC_H(StringCchPrintfW(szUnk, _countof(szUnk), L"0x%X", lTempValue)); // STRING_OK
-		EC_H(StringCchCatW(szTempString, _countof(szTempString), szUnk));
+
+		szTempString += format(L"0x%X", lTempValue); // STRING_OK
 	}
 
-	// Copy the string we computed for output
-	size_t cchLen = 0;
-	EC_H(StringCchLengthW(szTempString, _countof(szTempString), &cchLen));
-
-	if (cchLen)
-	{
-		cchLen++; // for the NULL
-		size_t cchPrefix = NULL;
-		if (szPrefix)
-		{
-			EC_H(StringCchLength(szPrefix, STRSAFE_MAX_CCH, &cchPrefix));
-			cchLen += cchPrefix;
-		}
-
-		*szFlagString = new TCHAR[cchLen];
-
-		if (*szFlagString)
-		{
-			(*szFlagString)[0] = NULL;
-			EC_H(StringCchPrintf(*szFlagString, cchLen, _T("%s%ws"), szPrefix ? szPrefix : _T(""), szTempString)); // STRING_OK
-		}
-	}
-} // InterpretFlags
+	return szTempString;
+}
 
 // Returns a list of all known flags/values for a flag name.
 // For instance, for flagFuzzyLevel, would return:

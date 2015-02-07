@@ -422,11 +422,8 @@ void OutputBody(_In_ FILE* fMessageProps, _In_ LPMESSAGE lpMessage, ULONG ulBody
 						CP_ACP, // requesting ANSI code page - check if this will be valid in UNICODE builds
 						&lpRTFUncompressed,
 						&ulStreamFlags));
-					LPTSTR szFlags = NULL;
-					InterpretFlags(flagStreamFlag, ulStreamFlags, &szFlags);
-					OutputToFilef(fMessageProps, _T(" ulStreamFlags = \"0x%08X\" szStreamFlags= \"%s\""), ulStreamFlags, szFlags);
-					delete[] szFlags;
-					szFlags = NULL;
+					wstring szFlags = InterpretFlags(flagStreamFlag, ulStreamFlags);
+					OutputToFilef(fMessageProps, _T(" ulStreamFlags = \"0x%08X\" szStreamFlags= \"%ws\""), ulStreamFlags, szFlags.c_str());
 					OutputToFilef(fMessageProps, _T(" CodePageIn = \"%u\" CodePageOut = \"%d\""), ulCPID, CP_ACP);
 				}
 				else

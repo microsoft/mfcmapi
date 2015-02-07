@@ -223,18 +223,12 @@ void CContentsTableListCtrl::GetStatus()
 			CEDITOR_BUTTON_OK);
 		MyData.InitPane(0, CreateSingleLinePane(IDS_ULTABLESTATUS, NULL, true));
 		MyData.SetHex(0, ulTableStatus);
-		LPTSTR szFlags = NULL;
-		InterpretFlags(flagTableStatus, ulTableStatus, &szFlags);
-		MyData.InitPane(1, CreateMultiLinePane(IDS_ULTABLESTATUS, szFlags, true));
-		delete[] szFlags;
-		szFlags = NULL;
-
+		wstring szFlags = InterpretFlags(flagTableStatus, ulTableStatus);
+		MyData.InitPane(1, CreateMultiLinePaneW(IDS_ULTABLESTATUS, szFlags.c_str(), true));
 		MyData.InitPane(2, CreateSingleLinePane(IDS_ULTABLETYPE, NULL, true));
 		MyData.SetHex(2, ulTableType);
-		InterpretFlags(flagTableType, ulTableType, &szFlags);
-		MyData.InitPane(3, CreateMultiLinePane(IDS_ULTABLETYPE, szFlags, true));
-		delete[] szFlags;
-		szFlags = NULL;
+		szFlags = InterpretFlags(flagTableType, ulTableType);
+		MyData.InitPane(3, CreateMultiLinePaneW(IDS_ULTABLETYPE, szFlags.c_str(), true));
 
 		WC_H(MyData.DisplayDialog());
 	}

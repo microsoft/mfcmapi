@@ -211,17 +211,16 @@ _Check_return_ HRESULT StringToGUID(_In_z_ LPCTSTR szGUID, bool bByteSwapped, _I
 	return hRes;
 } // StringToGUID
 
-_Check_return_ CString CurrencyToString(CURRENCY curVal)
+_Check_return_ wstring CurrencyToString(CURRENCY curVal)
 {
-	CString szCur;
-
-	szCur.Format(_T("%05I64d"), curVal.int64); // STRING_OK
-	if (szCur.GetLength() > 4)
+	wstring szCur = format(L"%05I64d", curVal.int64); // STRING_OK
+	if (szCur.length() > 4)
 	{
-		szCur.Insert(szCur.GetLength() - 4, _T(".")); // STRING_OK
+		szCur.insert(szCur.length() - 4, L"."); // STRING_OK
 	}
+
 	return szCur;
-} // CurrencyToString
+}
 
 _Check_return_ CString TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB, bool bSingleLine)
 {
@@ -382,333 +381,273 @@ _Check_return_ CString TnefProblemArrayToString(_In_ LPSTnefProblemArray lpError
 // There may be restrictions with over 100 nested levels, but we're not going to try to parse them
 #define _MaxRestrictionNesting 100
 
-void RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj, ULONG ulTabLevel, _In_ CString *PropString)
+_Check_return_ wstring RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj, ULONG ulTabLevel)
 {
-	if (!PropString) return;
-
-	*PropString = _T(""); // STRING_OK
-
 	ULONG i = 0;
 	if (!lpRes)
 	{
-		PropString->FormatMessage(IDS_NULLRES);
-		return;
+		return formatmessage(IDS_NULLRES);
 	}
 	if (ulTabLevel > _MaxRestrictionNesting)
 	{
-		PropString->FormatMessage(IDS_RESDEPTHEXCEEDED);
-		return;
+		return formatmessage(IDS_RESDEPTHEXCEEDED);
 	}
-	CString szTmp;
+
+	wstring resString;
 	wstring szProp;
 	wstring szAltProp;
 
-	CString szTabs;
+	wstring szTabs;
 	for (i = 0; i < ulTabLevel; i++)
 	{
-		szTabs += _T("\t"); // STRING_OK
+		szTabs += L"\t"; // STRING_OK
 	}
 
-	LPTSTR szFlags = NULL;
 	wstring szPropNum;
-	InterpretFlags(flagRestrictionType, lpRes->rt, &szFlags);
-	szTmp.FormatMessage(IDS_RESTYPE, szTabs, lpRes->rt, szFlags);
-	*PropString += szTmp;
-	delete[] szFlags;
-	szFlags = NULL;
+	wstring szFlags = InterpretFlags(flagRestrictionType, lpRes->rt);
+	resString += formatmessage(IDS_RESTYPE, szTabs.c_str(), lpRes->rt, szFlags.c_str());
+
 	switch (lpRes->rt)
 	{
 	case RES_COMPAREPROPS:
-		InterpretFlags(flagRelop, lpRes->res.resCompareProps.relop, &szFlags);
-		szTmp.FormatMessage(
+		szFlags = InterpretFlags(flagRelop, lpRes->res.resCompareProps.relop);
+		resString += formatmessage(
 			IDS_RESCOMPARE,
-			szTabs,
-			szFlags,
+			szTabs.c_str(),
+			szFlags.c_str(),
 			lpRes->res.resCompareProps.relop,
 			TagToString(lpRes->res.resCompareProps.ulPropTag1, lpObj, false, true),
 			TagToString(lpRes->res.resCompareProps.ulPropTag2, lpObj, false, true));
-		*PropString += szTmp;
-		delete[] szFlags;
 		break;
 	case RES_AND:
-		szTmp.FormatMessage(IDS_RESANDCOUNT, szTabs, lpRes->res.resAnd.cRes);
-		*PropString += szTmp;
+		resString += formatmessage(IDS_RESANDCOUNT, szTabs.c_str(), lpRes->res.resAnd.cRes);
 		if (lpRes->res.resAnd.lpRes)
 		{
 			for (i = 0; i < lpRes->res.resAnd.cRes; i++)
 			{
-				szTmp.FormatMessage(IDS_RESANDPOINTER, szTabs, i);
-				*PropString += szTmp;
-				RestrictionToString(&lpRes->res.resAnd.lpRes[i], lpObj, ulTabLevel + 1, &szTmp);
-				*PropString += szTmp;
+				resString += formatmessage(IDS_RESANDPOINTER, szTabs.c_str(), i);
+				resString += RestrictionToString(&lpRes->res.resAnd.lpRes[i], lpObj, ulTabLevel + 1);
 			}
 		}
 		break;
 	case RES_OR:
-		szTmp.FormatMessage(IDS_RESORCOUNT, szTabs, lpRes->res.resOr.cRes);
-		*PropString += szTmp;
+		resString += formatmessage(IDS_RESORCOUNT, szTabs.c_str(), lpRes->res.resOr.cRes);
 		if (lpRes->res.resOr.lpRes)
 		{
 			for (i = 0; i < lpRes->res.resOr.cRes; i++)
 			{
-				szTmp.FormatMessage(IDS_RESORPOINTER, szTabs, i);
-				*PropString += szTmp;
-				RestrictionToString(&lpRes->res.resOr.lpRes[i], lpObj, ulTabLevel + 1, &szTmp);
-				*PropString += szTmp;
+				resString += formatmessage(IDS_RESORPOINTER, szTabs.c_str(), i);
+				resString += RestrictionToString(&lpRes->res.resOr.lpRes[i], lpObj, ulTabLevel + 1);
 			}
 		}
 		break;
 	case RES_NOT:
-		szTmp.FormatMessage(
+		resString += formatmessage(
 			IDS_RESNOT,
-			szTabs,
+			szTabs.c_str(),
 			lpRes->res.resNot.ulReserved);
-		*PropString += szTmp;
-		RestrictionToString(lpRes->res.resNot.lpRes, lpObj, ulTabLevel + 1, &szTmp);
-		*PropString += szTmp;
+		resString += RestrictionToString(lpRes->res.resNot.lpRes, lpObj, ulTabLevel + 1);
 		break;
 	case RES_COUNT:
 		// RES_COUNT and RES_NOT look the same, so we use the resNot member here
-		szTmp.FormatMessage(
+		resString += formatmessage(
 			IDS_RESCOUNT,
-			szTabs,
+			szTabs.c_str(),
 			lpRes->res.resNot.ulReserved);
-		*PropString += szTmp;
-		RestrictionToString(lpRes->res.resNot.lpRes, lpObj, ulTabLevel + 1, &szTmp);
-		*PropString += szTmp;
+		resString += RestrictionToString(lpRes->res.resNot.lpRes, lpObj, ulTabLevel + 1);
 		break;
 	case RES_CONTENT:
-		InterpretFlags(flagFuzzyLevel, lpRes->res.resContent.ulFuzzyLevel, &szFlags);
-		szTmp.FormatMessage(
+		szFlags = InterpretFlags(flagFuzzyLevel, lpRes->res.resContent.ulFuzzyLevel);
+		resString += formatmessage(
 			IDS_RESCONTENT,
-			szTabs,
-			szFlags,
+			szTabs.c_str(),
+			szFlags.c_str(),
 			lpRes->res.resContent.ulFuzzyLevel,
 			TagToString(lpRes->res.resContent.ulPropTag, lpObj, false, true));
-		delete[] szFlags;
-		szFlags = NULL;
-		*PropString += szTmp;
 		if (lpRes->res.resContent.lpProp)
 		{
 			InterpretProp(lpRes->res.resContent.lpProp, &szProp, &szAltProp);
-			szTmp.FormatMessage(
+			resString += formatmessage(
 				IDS_RESCONTENTPROP,
-				szTabs,
+				szTabs.c_str(),
 				TagToString(lpRes->res.resContent.lpProp->ulPropTag, lpObj, false, true),
 				szProp.c_str(),
 				szAltProp.c_str());
-			*PropString += szTmp;
 		}
 		break;
 	case RES_PROPERTY:
-		InterpretFlags(flagRelop, lpRes->res.resProperty.relop, &szFlags);
-		szTmp.FormatMessage(
+		szFlags = InterpretFlags(flagRelop, lpRes->res.resProperty.relop);
+		resString += formatmessage(
 			IDS_RESPROP,
-			szTabs,
-			szFlags,
+			szTabs.c_str(),
+			szFlags.c_str(),
 			lpRes->res.resProperty.relop,
 			TagToString(lpRes->res.resProperty.ulPropTag, lpObj, false, true));
-		delete[] szFlags;
-		szFlags = NULL;
-		*PropString += szTmp;
 		if (lpRes->res.resProperty.lpProp)
 		{
 			InterpretProp(lpRes->res.resProperty.lpProp, &szProp, &szAltProp);
-			szTmp.FormatMessage(
+			resString += formatmessage(
 				IDS_RESPROPPROP,
-				szTabs,
+				szTabs.c_str(),
 				TagToString(lpRes->res.resProperty.lpProp->ulPropTag, lpObj, false, true),
 				szProp.c_str(),
 				szAltProp.c_str());
-			*PropString += szTmp;
 			szPropNum = InterpretNumberAsString(lpRes->res.resProperty.lpProp->Value, lpRes->res.resProperty.lpProp->ulPropTag, NULL, NULL, NULL, false);
 			if (!szPropNum.empty())
 			{
-				szTmp.FormatMessage(IDS_RESPROPPROPFLAGS, szTabs, szPropNum.c_str());
-				*PropString += szTmp;
+				resString += formatmessage(IDS_RESPROPPROPFLAGS, szTabs.c_str(), szPropNum.c_str());
 			}
 		}
 		break;
 	case RES_BITMASK:
-		InterpretFlags(flagBitmask, lpRes->res.resBitMask.relBMR, &szFlags);
-		szTmp.FormatMessage(
+		szFlags = InterpretFlags(flagBitmask, lpRes->res.resBitMask.relBMR);
+		resString += formatmessage(
 			IDS_RESBITMASK,
-			szTabs,
-			szFlags,
+			szTabs.c_str(),
+			szFlags.c_str(),
 			lpRes->res.resBitMask.relBMR,
 			lpRes->res.resBitMask.ulMask);
-		delete[] szFlags;
-		szFlags = NULL;
-		*PropString += szTmp;
 		szPropNum = InterpretNumberAsStringProp(lpRes->res.resBitMask.ulMask, lpRes->res.resBitMask.ulPropTag);
 		if (!szPropNum.empty())
 		{
-			szTmp.FormatMessage(IDS_RESBITMASKFLAGS, szPropNum.c_str());
-			*PropString += szTmp;
+			resString += formatmessage(IDS_RESBITMASKFLAGS, szPropNum.c_str());
 		}
-		szTmp.FormatMessage(
+		resString += formatmessage(
 			IDS_RESBITMASKTAG,
-			szTabs,
+			szTabs.c_str(),
 			TagToString(lpRes->res.resBitMask.ulPropTag, lpObj, false, true));
-		*PropString += szTmp;
 		break;
 	case RES_SIZE:
-		InterpretFlags(flagRelop, lpRes->res.resSize.relop, &szFlags);
-		szTmp.FormatMessage(
+		szFlags = InterpretFlags(flagRelop, lpRes->res.resSize.relop);
+		resString += formatmessage(
 			IDS_RESSIZE,
-			szTabs,
-			szFlags,
+			szTabs.c_str(),
+			szFlags.c_str(),
 			lpRes->res.resSize.relop,
 			lpRes->res.resSize.cb,
 			TagToString(lpRes->res.resSize.ulPropTag, lpObj, false, true));
-		delete[] szFlags;
-		szFlags = NULL;
-		*PropString += szTmp;
 		break;
 	case RES_EXIST:
-		szTmp.FormatMessage(
+		resString += formatmessage(
 			IDS_RESEXIST,
-			szTabs,
+			szTabs.c_str(),
 			TagToString(lpRes->res.resExist.ulPropTag, lpObj, false, true),
 			lpRes->res.resExist.ulReserved1,
 			lpRes->res.resExist.ulReserved2);
-		*PropString += szTmp;
 		break;
 	case RES_SUBRESTRICTION:
-		szTmp.FormatMessage(
+		resString += formatmessage(
 			IDS_RESSUBRES,
-			szTabs,
+			szTabs.c_str(),
 			TagToString(lpRes->res.resSub.ulSubObject, lpObj, false, true));
-		*PropString += szTmp;
-		RestrictionToString(lpRes->res.resSub.lpRes, lpObj, ulTabLevel + 1, &szTmp);
-		*PropString += szTmp;
+		resString += RestrictionToString(lpRes->res.resSub.lpRes, lpObj, ulTabLevel + 1);
 		break;
 	case RES_COMMENT:
-		szTmp.FormatMessage(IDS_RESCOMMENT, szTabs, lpRes->res.resComment.cValues);
-		*PropString += szTmp;
+		resString += formatmessage(IDS_RESCOMMENT, szTabs.c_str(), lpRes->res.resComment.cValues);
 		if (lpRes->res.resComment.lpProp)
 		{
 			for (i = 0; i < lpRes->res.resComment.cValues; i++)
 			{
 				InterpretProp(&lpRes->res.resComment.lpProp[i], &szProp, &szAltProp);
-				szTmp.FormatMessage(
+				resString += formatmessage(
 					IDS_RESCOMMENTPROPS,
-					szTabs,
+					szTabs.c_str(),
 					i,
 					TagToString(lpRes->res.resComment.lpProp[i].ulPropTag, lpObj, false, true),
 					szProp.c_str(),
 					szAltProp.c_str());
-				*PropString += szTmp;
 			}
 		}
-		szTmp.FormatMessage(
+		resString += formatmessage(
 			IDS_RESCOMMENTRES,
-			szTabs);
-		*PropString += szTmp;
-		RestrictionToString(lpRes->res.resComment.lpRes, lpObj, ulTabLevel + 1, &szTmp);
-		*PropString += szTmp;
+			szTabs.c_str());
+		resString += RestrictionToString(lpRes->res.resComment.lpRes, lpObj, ulTabLevel + 1);
 		break;
 	case RES_ANNOTATION:
-		szTmp.FormatMessage(IDS_RESANNOTATION, szTabs, lpRes->res.resComment.cValues);
-		*PropString += szTmp;
+		resString += formatmessage(IDS_RESANNOTATION, szTabs.c_str(), lpRes->res.resComment.cValues);
 		if (lpRes->res.resComment.lpProp)
 		{
 			for (i = 0; i < lpRes->res.resComment.cValues; i++)
 			{
 				InterpretProp(&lpRes->res.resComment.lpProp[i], &szProp, &szAltProp);
-				szTmp.FormatMessage(
+				resString += formatmessage(
 					IDS_RESANNOTATIONPROPS,
-					szTabs,
+					szTabs.c_str(),
 					i,
 					TagToString(lpRes->res.resComment.lpProp[i].ulPropTag, lpObj, false, true),
 					szProp.c_str(),
 					szAltProp.c_str());
-				*PropString += szTmp;
 			}
 		}
-		szTmp.FormatMessage(
+
+		resString += formatmessage(
 			IDS_RESANNOTATIONRES,
-			szTabs);
-		*PropString += szTmp;
-		RestrictionToString(lpRes->res.resComment.lpRes, lpObj, ulTabLevel + 1, &szTmp);
-		*PropString += szTmp;
+			szTabs.c_str());
+		resString += RestrictionToString(lpRes->res.resComment.lpRes, lpObj, ulTabLevel + 1);
 		break;
 	}
-} // RestrictionToString
 
-_Check_return_ CString RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj)
+	return resString;
+}
+
+_Check_return_ wstring RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj)
 {
-	CString szRes;
-	RestrictionToString(lpRes, lpObj, 0, &szRes);
-	return szRes;
-} // RestrictionToString
+	return RestrictionToString(lpRes, lpObj, 0);
+}
 
-void AdrListToString(_In_ LPADRLIST lpAdrList, _In_ wstring *PropString)
+_Check_return_ wstring AdrListToString(_In_ LPADRLIST lpAdrList)
 {
-	if (!PropString) return;
-
-	*PropString = L""; // STRING_OK
 	if (!lpAdrList)
 	{
-		*PropString = formatmessage(IDS_ADRLISTNULL);
-		return;
+		return formatmessage(IDS_ADRLISTNULL);
 	}
 
-	wstring szTmp;
+	wstring adrstring;
 	wstring szProp;
 	wstring szAltProp;
-	*PropString = formatmessage(IDS_ADRLISTCOUNT, lpAdrList->cEntries);
+	adrstring = formatmessage(IDS_ADRLISTCOUNT, lpAdrList->cEntries);
 
 	ULONG i = 0;
 	for (i = 0; i < lpAdrList->cEntries; i++)
 	{
-		szTmp = formatmessage(IDS_ADRLISTENTRIESCOUNT, i, lpAdrList->aEntries[i].cValues);
-		*PropString += szTmp;
+		adrstring += formatmessage(IDS_ADRLISTENTRIESCOUNT, i, lpAdrList->aEntries[i].cValues);
 
 		ULONG j = 0;
 		for (j = 0; j < lpAdrList->aEntries[i].cValues; j++)
 		{
 			InterpretProp(&lpAdrList->aEntries[i].rgPropVals[j], &szProp, &szAltProp);
-			szTmp = formatmessage(
+			adrstring += formatmessage(
 				IDS_ADRLISTENTRY,
 				i,
 				j,
 				TagToString(lpAdrList->aEntries[i].rgPropVals[j].ulPropTag, NULL, false, false),
 				szProp.c_str(),
 				szAltProp.c_str());
-			*PropString += szTmp;
 		}
 	}
+
+	return adrstring;
 }
 
-void ActionToString(_In_ ACTION* lpAction, _In_ CString* PropString)
+_Check_return_ wstring ActionToString(_In_ ACTION* lpAction)
 {
-	if (!PropString) return;
-
-	*PropString = _T(""); // STRING_OK
 	if (!lpAction)
 	{
-		PropString->FormatMessage(IDS_ACTIONNULL);
-		return;
+		return formatmessage(IDS_ACTIONNULL);
 	}
-	CString szTmp;
+
+	wstring actstring;
 	wstring szProp;
 	wstring szAltProp;
-	LPTSTR szFlags = NULL;
-	LPTSTR szFlags2 = NULL;
-	InterpretFlags(flagAccountType, lpAction->acttype, &szFlags);
-	InterpretFlags(flagRuleFlag, lpAction->ulFlags, &szFlags2);
-	PropString->FormatMessage(
+	wstring szFlags = InterpretFlags(flagAccountType, lpAction->acttype);
+	wstring szFlags2 = InterpretFlags(flagRuleFlag, lpAction->ulFlags);
+	actstring = formatmessage(
 		IDS_ACTION,
 		lpAction->acttype,
-		szFlags,
-		RestrictionToString(lpAction->lpRes, NULL),
+		szFlags.c_str(),
+		RestrictionToString(lpAction->lpRes, NULL).c_str(),
 		lpAction->ulFlags,
-		szFlags2);
-	delete[] szFlags2;
-	delete[] szFlags;
-	szFlags2 = NULL;
-	szFlags = NULL;
+		szFlags2.c_str());
 
 	switch (lpAction->acttype)
 	{
@@ -722,12 +661,11 @@ void ActionToString(_In_ ACTION* lpAction, _In_ CString* PropString)
 		sBinFld.cb = lpAction->actMoveCopy.cbFldEntryId;
 		sBinFld.lpb = (LPBYTE)lpAction->actMoveCopy.lpFldEntryId;
 
-		szTmp.FormatMessage(IDS_ACTIONOPMOVECOPY,
+		actstring += formatmessage(IDS_ACTIONOPMOVECOPY,
 			BinToHexString(&sBinStore, true).c_str(),
 			BinToTextString(&sBinStore, false).c_str(),
 			BinToHexString(&sBinFld, true).c_str(),
 			BinToTextString(&sBinFld, false).c_str());
-		*PropString += szTmp;
 		break;
 	}
 	case OP_REPLY:
@@ -739,11 +677,10 @@ void ActionToString(_In_ ACTION* lpAction, _In_ CString* PropString)
 		sBin.lpb = (LPBYTE)lpAction->actReply.lpEntryId;
 		wstring szGUID = GUIDToStringAndName(&lpAction->actReply.guidReplyTemplate);
 
-		szTmp.FormatMessage(IDS_ACTIONOPREPLY,
+		actstring += formatmessage(IDS_ACTIONOPREPLY,
 			BinToHexString(&sBin, true).c_str(),
 			BinToTextString(&sBin, false).c_str(),
 			szGUID.c_str());
-		*PropString += szTmp;
 		break;
 	}
 	case OP_DEFER_ACTION:
@@ -752,39 +689,32 @@ void ActionToString(_In_ ACTION* lpAction, _In_ CString* PropString)
 		sBin.cb = lpAction->actDeferAction.cbData;
 		sBin.lpb = (LPBYTE)lpAction->actDeferAction.pbData;
 
-		szTmp.FormatMessage(IDS_ACTIONOPDEFER,
+		actstring += formatmessage(IDS_ACTIONOPDEFER,
 			BinToHexString(&sBin, true).c_str(),
 			BinToTextString(&sBin, false).c_str());
-		*PropString += szTmp;
 		break;
 	}
 	case OP_BOUNCE:
 	{
-		InterpretFlags(flagBounceCode, lpAction->scBounceCode, &szFlags);
-		szTmp.FormatMessage(IDS_ACTIONOPBOUNCE, lpAction->scBounceCode, szFlags);
-		delete[] szFlags;
-		szFlags = NULL;
-		*PropString += szTmp;
+		szFlags = InterpretFlags(flagBounceCode, lpAction->scBounceCode);
+		actstring += formatmessage(IDS_ACTIONOPBOUNCE, lpAction->scBounceCode, szFlags);
 		break;
 	}
 	case OP_FORWARD:
 	case OP_DELEGATE:
 	{
-		szTmp.FormatMessage(IDS_ACTIONOPFORWARDDEL);
-		*PropString += szTmp;
-		AdrListToString(lpAction->lpadrlist, &szProp);
-		*PropString += wstringToCString(szProp);
+		actstring += formatmessage(IDS_ACTIONOPFORWARDDEL);
+		actstring += AdrListToString(lpAction->lpadrlist);
 		break;
 	}
 
 	case OP_TAG:
 	{
 		InterpretProp(&lpAction->propTag, &szProp, &szAltProp);
-		szTmp.FormatMessage(IDS_ACTIONOPTAG,
+		actstring += formatmessage(IDS_ACTIONOPTAG,
 			TagToString(lpAction->propTag.ulPropTag, NULL, false, true),
 			szProp.c_str(),
 			szAltProp.c_str());
-		*PropString += szTmp;
 		break;
 	}
 	}
@@ -793,72 +723,59 @@ void ActionToString(_In_ ACTION* lpAction, _In_ CString* PropString)
 	{
 	case OP_REPLY:
 	{
-		InterpretFlags(flagOPReply, lpAction->ulActionFlavor, &szFlags);
+		szFlags = InterpretFlags(flagOPReply, lpAction->ulActionFlavor);
 		break;
 	}
 	case OP_FORWARD:
 	{
-		InterpretFlags(flagOpForward, lpAction->ulActionFlavor, &szFlags);
+		szFlags = InterpretFlags(flagOpForward, lpAction->ulActionFlavor);
 		break;
 	}
 	}
-	szTmp.FormatMessage(IDS_ACTIONFLAVOR, lpAction->ulActionFlavor, szFlags);
-	*PropString += szTmp;
 
-	delete[] szFlags;
-	szFlags = NULL;
+	actstring += formatmessage(IDS_ACTIONFLAVOR, lpAction->ulActionFlavor, szFlags);
 
 	if (!lpAction->lpPropTagArray)
 	{
-		szTmp.FormatMessage(IDS_ACTIONTAGARRAYNULL);
-		*PropString += szTmp;
+		actstring += formatmessage(IDS_ACTIONTAGARRAYNULL);
 	}
 	else
 	{
-		szTmp.FormatMessage(IDS_ACTIONTAGARRAYCOUNT, lpAction->lpPropTagArray->cValues);
-		*PropString += szTmp;
+		actstring += formatmessage(IDS_ACTIONTAGARRAYCOUNT, lpAction->lpPropTagArray->cValues);
 		ULONG i = 0;
 		for (i = 0; i < lpAction->lpPropTagArray->cValues; i++)
 		{
-			szTmp.FormatMessage(IDS_ACTIONTAGARRAYTAG,
+			actstring += formatmessage(IDS_ACTIONTAGARRAYTAG,
 				i,
 				TagToString(lpAction->lpPropTagArray->aulPropTag[i], NULL, false, false));
-			*PropString += szTmp;
 		}
 	}
-} // ActionToString
 
-void ActionsToString(_In_ ACTIONS* lpActions, _In_ CString* PropString)
+	return actstring;
+}
+
+_Check_return_ wstring ActionsToString(_In_ ACTIONS* lpActions)
 {
-	if (!PropString) return;
-
-	*PropString = _T(""); // STRING_OK
 	if (!lpActions)
 	{
-		PropString->FormatMessage(IDS_ACTIONSNULL);
-		return;
+		return formatmessage(IDS_ACTIONSNULL);
 	}
-	CString szTmp;
-	CString szAltTmp;
 
-	LPTSTR szFlags = NULL;
-	InterpretFlags(flagRulesVersion, lpActions->ulVersion, &szFlags);
-	PropString->FormatMessage(IDS_ACTIONSMEMBERS,
+	wstring szFlags = InterpretFlags(flagRulesVersion, lpActions->ulVersion);
+	wstring actstring = formatmessage(IDS_ACTIONSMEMBERS,
 		lpActions->ulVersion,
-		szFlags,
+		szFlags.c_str(),
 		lpActions->cActions);
-	delete[] szFlags;
-	szFlags = NULL;
 
 	UINT i = 0;
 	for (i = 0; i < lpActions->cActions; i++)
 	{
-		szTmp.FormatMessage(IDS_ACTIONSACTION, i);
-		*PropString += szTmp;
-		ActionToString(&lpActions->lpAction[i], &szTmp);
-		*PropString += szTmp;
+		actstring += formatmessage(IDS_ACTIONSACTION, i);
+		actstring += ActionToString(&lpActions->lpAction[i]);
 	}
-} // ActionsToString
+
+	return actstring;
+}
 
 void FileTimeToString(_In_ FILETIME* lpFileTime, _In_ CString *PropString, _In_opt_ CString *AltPropString)
 {
