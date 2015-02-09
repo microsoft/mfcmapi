@@ -2,7 +2,6 @@
 #include "..\stdafx.h"
 #include "DropDownPane.h"
 #include "..\String.h"
-#include "..\InterpretProp.h"
 #include "..\InterpretProp2.h"
 
 static TCHAR* CLASS = _T("DropDownPane");

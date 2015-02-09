@@ -3,8 +3,7 @@
 #include "RuleCondition.h"
 #include "RestrictionStruct.h"
 #include "..\String.h"
-#include "..\ParseProperty.h"
-#include "..\InterpretProp.h"
+#include "..\InterpretProp2.h"
 
 RuleCondition::RuleCondition(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, bool bExtended) : SmartViewParser(cbBin, lpBin)
 {

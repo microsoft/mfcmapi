@@ -1,12 +1,11 @@
 #include "stdafx.h"
 #include "InterpretProp2.h"
 #include "InterpretProp.h"
-#include "MAPIFunctions.h"
-#include "NamedPropCache.h"
 #include "String.h"
 #include <vector>
 #include <algorithm>
 #include <unordered_map>
+using namespace std;
 
 #define ulNoMatch 0xffffffff
 static WCHAR szPropSeparator[] = L", "; // STRING_OK
@@ -36,8 +35,8 @@ void FindTagArrayMatches(_In_ ULONG ulTarget,
 	bool bIsAB,
 	_In_count_(ulMyArray) NAME_ARRAY_ENTRY_V2* MyArray,
 	_In_ ULONG ulMyArray,
-	std::vector<ULONG>& ulExacts,
-	std::vector<ULONG>& ulPartials)
+	vector<ULONG>& ulExacts,
+	vector<ULONG>& ulPartials)
 {
 	if (!(ulTarget & PROP_TAG_MASK)) // not dealing with a full prop tag
 	{
@@ -108,19 +107,19 @@ void FindTagArrayMatches(_In_ ULONG ulTarget,
 			}
 		}
 
-		if (ulExacts.size()) std::sort(ulExacts.begin(), ulExacts.end(), CompareTagsSortOrder);
-		if (ulPartials.size()) std::sort(ulPartials.begin(), ulPartials.end(), CompareTagsSortOrder);
+		if (ulExacts.size()) sort(ulExacts.begin(), ulExacts.end(), CompareTagsSortOrder);
+		if (ulPartials.size()) sort(ulPartials.begin(), ulPartials.end(), CompareTagsSortOrder);
 
 	}
 }
 
 struct NameMapEntry
 {
-	std::wstring szExactMatch;
-	std::wstring szPartialMatches;
+	wstring szExactMatch;
+	wstring szPartialMatches;
 };
 
-std::unordered_map<ULONG64, NameMapEntry> g_PropNames;
+unordered_map<ULONG64, NameMapEntry> g_PropNames;
 
 // lpszExactMatch and lpszPartialMatches allocated with new
 // clean up with delete[]
@@ -148,8 +147,8 @@ void PropTagToPropName(ULONG ulPropTag, bool bIsAB, _Deref_opt_out_opt_z_ LPTSTR
 		return;
 	}
 
-	std::vector<ULONG> ulExacts;
-	std::vector<ULONG> ulPartials;
+	vector<ULONG> ulExacts;
+	vector<ULONG> ulPartials;
 	FindTagArrayMatches(ulPropTag, bIsAB, PropTagArray, ulPropTagArray, ulExacts, ulPartials);
 
 	NameMapEntry entry;
@@ -293,6 +292,32 @@ _Check_return_ ULONG PropTypeNameToPropTypeW(_In_z_ LPCWSTR lpszPropType)
 	return ulPropType;
 } // PropTypeNameToPropTypeW
 
+_Check_return_ wstring GUIDToString(_In_opt_ LPCGUID lpGUID)
+{
+	GUID nullGUID = { 0 };
+	wstring szGUID;
+
+	if (!lpGUID)
+	{
+		lpGUID = &nullGUID;
+	}
+
+	szGUID = format(L"{%.8X-%.4X-%.4X-%.2X%.2X-%.2X%.2X%.2X%.2X%.2X%.2X}", // STRING_OK
+		lpGUID->Data1,
+		lpGUID->Data2,
+		lpGUID->Data3,
+		lpGUID->Data4[0],
+		lpGUID->Data4[1],
+		lpGUID->Data4[2],
+		lpGUID->Data4[3],
+		lpGUID->Data4[4],
+		lpGUID->Data4[5],
+		lpGUID->Data4[6],
+		lpGUID->Data4[7]);
+
+	return szGUID;
+}
+
 _Check_return_ wstring GUIDToStringAndName(_In_opt_ LPCGUID lpGUID)
 {
 	ULONG ulCur = 0;
@@ -306,13 +331,12 @@ _Check_return_ wstring GUIDToStringAndName(_In_opt_ LPCGUID lpGUID)
 		{
 			if (IsEqualGUID(*lpGUID, *PropGuidArray[ulCur].lpGuid))
 			{
-				szGUID += PropGuidArray[ulCur].lpszName;
-				return szGUID;
+				return szGUID + PropGuidArray[ulCur].lpszName;
 			}
 		}
 	}
 
-	return szGUID + formatmessage(IDS_UNKNOWNGUID);
+	return szGUID + loadstring(IDS_UNKNOWNGUID);
 }
 
 LPCGUID GUIDNameToGUIDInt(_In_z_ LPCTSTR szGUID, bool bByteSwapped)
@@ -409,9 +433,9 @@ LPCGUID GUIDNameToGUIDA(_In_z_ LPCSTR szGUID, bool bByteSwapped)
 }
 
 // Returns string built from NameIDArray
-std::wstring NameIDToPropName(_In_ LPMAPINAMEID lpNameID)
+wstring NameIDToPropName(_In_ LPMAPINAMEID lpNameID)
 {
-	std::wstring szResultString;
+	wstring szResultString;
 	if (!lpNameID) return szResultString;
 	if (lpNameID->ulKind != MNID_ID) return szResultString;
 	ULONG ulCur = 0;

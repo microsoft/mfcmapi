@@ -2,8 +2,8 @@
 #include "..\stdafx.h"
 #include "ConversationIndex.h"
 #include "..\String.h"
-#include "..\ParseProperty.h"
 #include "..\InterpretProp.h"
+#include "..\InterpretProp2.h"
 
 ConversationIndex::ConversationIndex(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
 {

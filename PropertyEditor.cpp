@@ -772,6 +772,8 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 	if ((ULONG)-1 == i) return (ULONG)-1;
 
 	CString szTmpString;
+	wstring szTemp1;
+	wstring szTemp2;
 	wstring szSmartView;
 	SPropValue sProp = { 0 };
 
@@ -897,8 +899,8 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		szTmpString = GetStringUseControl(1);
 		ftVal.dwHighDateTime = _tcstoul(szTmpString, NULL, 16);
 
-		FileTimeToString(&ftVal, &szTmpString, NULL);
-		SetString(2, szTmpString);
+		FileTimeToString(&ftVal, szTemp1, szTemp2);
+		SetStringW(2, szTemp1.c_str());
 		break;
 	case PT_BINARY:
 		if (0 == i || 2 == i)

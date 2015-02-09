@@ -1,6 +1,5 @@
 #include "StdAfx.h"
 #include "Property.h"
-#include "ParseProperty.h"
 #include "ColumnTags.h"
 #include "String.h"
 
