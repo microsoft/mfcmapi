@@ -157,30 +157,6 @@ _Check_return_ HRESULT Base64Encode(size_t cbSourceBuf, _In_count_(cbSourceBuf) 
 	return hRes;
 } // Base64Encode
 
-#define GUID_STRING_SIZE 39
-_Check_return_ wstring GUIDToString(_In_opt_ LPCGUID lpGUID)
-{
-	GUID nullGUID = { 0 };
-
-	if (!lpGUID)
-	{
-		lpGUID = &nullGUID;
-	}
-
-	return format(L"{%.8X-%.4X-%.4X-%.2X%.2X-%.2X%.2X%.2X%.2X%.2X%.2X}", // STRING_OK
-		lpGUID->Data1,
-		lpGUID->Data2,
-		lpGUID->Data3,
-		lpGUID->Data4[0],
-		lpGUID->Data4[1],
-		lpGUID->Data4[2],
-		lpGUID->Data4[3],
-		lpGUID->Data4[4],
-		lpGUID->Data4[5],
-		lpGUID->Data4[6],
-		lpGUID->Data4[7]);
-}
-
 _Check_return_ HRESULT StringToGUID(_In_z_ LPCTSTR szGUID, _Inout_ LPGUID lpGUID)
 {
 	return StringToGUID(szGUID, false, lpGUID);
@@ -386,11 +362,11 @@ _Check_return_ wstring RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ L
 	ULONG i = 0;
 	if (!lpRes)
 	{
-		return formatmessage(IDS_NULLRES);
+		return loadstring(IDS_NULLRES);
 	}
 	if (ulTabLevel > _MaxRestrictionNesting)
 	{
-		return formatmessage(IDS_RESDEPTHEXCEEDED);
+		return loadstring(IDS_RESDEPTHEXCEEDED);
 	}
 
 	wstring resString;
@@ -599,7 +575,7 @@ _Check_return_ wstring AdrListToString(_In_ LPADRLIST lpAdrList)
 {
 	if (!lpAdrList)
 	{
-		return formatmessage(IDS_ADRLISTNULL);
+		return loadstring(IDS_ADRLISTNULL);
 	}
 
 	wstring adrstring;
@@ -633,7 +609,7 @@ _Check_return_ wstring ActionToString(_In_ ACTION* lpAction)
 {
 	if (!lpAction)
 	{
-		return formatmessage(IDS_ACTIONNULL);
+		return loadstring(IDS_ACTIONNULL);
 	}
 
 	wstring actstring;
@@ -737,7 +713,7 @@ _Check_return_ wstring ActionToString(_In_ ACTION* lpAction)
 
 	if (!lpAction->lpPropTagArray)
 	{
-		actstring += formatmessage(IDS_ACTIONTAGARRAYNULL);
+		actstring += loadstring(IDS_ACTIONTAGARRAYNULL);
 	}
 	else
 	{
@@ -758,7 +734,7 @@ _Check_return_ wstring ActionsToString(_In_ ACTIONS* lpActions)
 {
 	if (!lpActions)
 	{
-		return formatmessage(IDS_ACTIONSNULL);
+		return loadstring(IDS_ACTIONSNULL);
 	}
 
 	wstring szFlags = InterpretFlags(flagRulesVersion, lpActions->ulVersion);
@@ -777,37 +753,34 @@ _Check_return_ wstring ActionsToString(_In_ ACTIONS* lpActions)
 	return actstring;
 }
 
-void FileTimeToString(_In_ FILETIME* lpFileTime, _In_ CString *PropString, _In_opt_ CString *AltPropString)
+void FileTimeToString(_In_ FILETIME* lpFileTime, _In_ wstring& PropString, _In_opt_ wstring& AltPropString)
 {
-	HRESULT	hRes = S_OK;
+	HRESULT hRes = S_OK;
 	SYSTEMTIME SysTime = { 0 };
 
 	if (!lpFileTime) return;
 
 	WC_B(FileTimeToSystemTime((FILETIME*)lpFileTime, &SysTime));
 
-	if (S_OK == hRes && PropString)
+	if (S_OK == hRes)
 	{
-		int		iRet = 0;
-		TCHAR	szTimeStr[MAX_PATH];
-		TCHAR	szDateStr[MAX_PATH];
-		CString szFormatStr;
-
-		szTimeStr[0] = NULL;
-		szDateStr[0] = NULL;
+		int iRet = 0;
+		wstring szFormatStr;
+		wchar_t szTimeStr[MAX_PATH] = { 0 };
+		wchar_t szDateStr[MAX_PATH] = { 0 };
 
 		// shove millisecond info into our format string since GetTimeFormat doesn't use it
-		szFormatStr.FormatMessage(IDS_FILETIMEFORMAT, SysTime.wMilliseconds);
+		szFormatStr = formatmessage(IDS_FILETIMEFORMAT, SysTime.wMilliseconds);
 
-		WC_D(iRet, GetTimeFormat(
+		WC_D(iRet, GetTimeFormatW(
 			LOCALE_USER_DEFAULT,
 			NULL,
 			&SysTime,
-			szFormatStr,
+			szFormatStr.c_str(),
 			szTimeStr,
 			MAX_PATH));
 
-		WC_D(iRet, GetDateFormat(
+		WC_D(iRet, GetDateFormatW(
 			LOCALE_USER_DEFAULT,
 			NULL,
 			&SysTime,
@@ -815,19 +788,15 @@ void FileTimeToString(_In_ FILETIME* lpFileTime, _In_ CString *PropString, _In_o
 			szDateStr,
 			MAX_PATH));
 
-		PropString->Format(_T("%s %s"), szTimeStr, szDateStr); // STRING_OK
+		PropString = format(L"%ws %ws", szTimeStr, szDateStr); // STRING_OK
 	}
-	else if (PropString)
+	else
 	{
-		PropString->FormatMessage(IDS_INVALIDSYSTIME);
+		PropString = loadstring(IDS_INVALIDSYSTIME);
 	}
 
-	if (AltPropString)
-		AltPropString->FormatMessage(
-		IDS_FILETIMEALTFORMAT,
-		lpFileTime->dwLowDateTime,
-		lpFileTime->dwHighDateTime);
-} // FileTimeToString
+	AltPropString = formatmessage(IDS_FILETIMEALTFORMAT, lpFileTime->dwLowDateTime, lpFileTime->dwHighDateTime);
+}
 
 /***************************************************************************
 Name: InterpretProp
@@ -917,15 +886,15 @@ void NameIDToStrings(_In_ LPMAPINAMEID lpNameID,
 
 	DebugPrint(DBGNamedProp, _T("Parsing named property\n"));
 	DebugPrint(DBGNamedProp, _T("ulPropTag = 0x%08x\n"), ulPropTag);
-	szPropGUID = GUIDToWstringAndName(lpNameID->lpguid);
+	szPropGUID = GUIDToStringAndName(lpNameID->lpguid);
 	DebugPrint(DBGNamedProp, _T("lpNameID->lpguid = %ws\n"), szPropGUID.c_str());
 
-	wstring szDASLGuid = GUIDToWstring(lpNameID->lpguid);
+	wstring szDASLGuid = GUIDToString(lpNameID->lpguid);
 
 	if (lpNameID->ulKind == MNID_ID)
 	{
 		DebugPrint(DBGNamedProp, _T("lpNameID->Kind.lID = 0x%04X = %d\n"), lpNameID->Kind.lID, lpNameID->Kind.lID);
-		std::wstring szName = NameIDToPropName(lpNameID);
+		wstring szName = NameIDToPropName(lpNameID);
 
 		if (!szName.empty())
 		{

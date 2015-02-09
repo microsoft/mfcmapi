@@ -4,6 +4,8 @@
 #include "MAPIFunctions.h"
 #include "ExtraPropTags.h"
 #include "String.h"
+#include "InterpretProp.h"
+#include "InterpretProp2.h"
 
 // We avoid bringing InterpretProp.h in with these
 _Check_return_ wstring RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj);
@@ -106,103 +108,6 @@ wstring BuildErrorPropString(_In_ LPSPropValue lpProp)
 		lpBin->lpb,
 		lpBin->cb,
 		bPrependCB);
-}
-
- wstring GUIDToWstring(_In_opt_ LPCGUID lpGUID)
-{
-	GUID nullGUID = { 0 };
-	wstring szGUID;
-
-	if (!lpGUID)
-	{
-		lpGUID = &nullGUID;
-	}
-
-	szGUID = format(L"{%.8X-%.4X-%.4X-%.2X%.2X-%.2X%.2X%.2X%.2X%.2X%.2X}", // STRING_OK
-		lpGUID->Data1,
-		lpGUID->Data2,
-		lpGUID->Data3,
-		lpGUID->Data4[0],
-		lpGUID->Data4[1],
-		lpGUID->Data4[2],
-		lpGUID->Data4[3],
-		lpGUID->Data4[4],
-		lpGUID->Data4[5],
-		lpGUID->Data4[6],
-		lpGUID->Data4[7]);
-
-	return szGUID;
-}
-
- wstring GUIDToWstringAndName(_In_opt_ LPCGUID lpGUID)
-{
-	ULONG ulCur = 0;
-	wstring szGUIDName;
-
-	if (lpGUID && ulPropGuidArray && PropGuidArray)
-	{
-		for (ulCur = 0; ulCur < ulPropGuidArray; ulCur++)
-		{
-			if (IsEqualGUID(*lpGUID, *PropGuidArray[ulCur].lpGuid))
-			{
-				szGUIDName = PropGuidArray[ulCur].lpszName;
-				break;
-			}
-		}
-	}
-
-	if (szGUIDName.empty())
-	{
-		szGUIDName = loadstring(IDS_UNKNOWNGUID);
-	}
-
-	wstring szGUID = GUIDToWstring(lpGUID);
-	return szGUIDName + L" = " + szGUID;
-}
-
-void FileTimeToString(_In_ FILETIME* lpFileTime, _In_ wstring& PropString, _In_opt_ wstring& AltPropString)
-{
-	HRESULT hRes = S_OK;
-	SYSTEMTIME SysTime = { 0 };
-
-	if (!lpFileTime) return;
-
-	WC_B(FileTimeToSystemTime((FILETIME*)lpFileTime, &SysTime));
-
-	if (S_OK == hRes)
-	{
-		int iRet = 0;
-		wstring szFormatStr;
-		wchar_t szTimeStr[MAX_PATH] = { 0 };
-		wchar_t szDateStr[MAX_PATH] = { 0 };
-
-		// shove millisecond info into our format string since GetTimeFormat doesn't use it
-		szFormatStr = formatmessage(IDS_FILETIMEFORMAT, SysTime.wMilliseconds);
-
-		WC_D(iRet, GetTimeFormatW(
-			LOCALE_USER_DEFAULT,
-			NULL,
-			&SysTime,
-			szFormatStr.c_str(),
-			szTimeStr,
-			MAX_PATH));
-
-		WC_D(iRet, GetDateFormatW(
-			LOCALE_USER_DEFAULT,
-			NULL,
-			&SysTime,
-			NULL,
-			szDateStr,
-			MAX_PATH));
-
-		PropString = format(L"%ws %ws", szTimeStr, szDateStr); // STRING_OK
-	}
-	else
-	{
-		PropString = loadstring(IDS_INVALIDSYSTIME);
-	}
-
-	AltPropString = formatmessage(IDS_FILETIMEALTFORMAT, lpFileTime->dwLowDateTime, lpFileTime->dwHighDateTime);
 }
 
 Property ParseMVProperty(_In_ LPSPropValue lpProp, ULONG ulMVRow)
@@ -377,7 +282,7 @@ Property ParseProperty(_In_ LPSPropValue lpProp)
 			break;
 		case PT_CLSID:
 			// TODO: One string matches current behavior - look at splitting to two strings in future change
-			szTmp = GUIDToWstringAndName(lpProp->Value.lpguid);
+			szTmp = GUIDToStringAndName(lpProp->Value.lpguid);
 			break;
 		case PT_BINARY:
 			szTmp = BinToHexString(&lpProp->Value.bin, false);

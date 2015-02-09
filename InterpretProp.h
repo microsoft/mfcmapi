@@ -7,7 +7,7 @@ using namespace std;
 _Check_return_ HRESULT Base64Decode(_In_z_ LPCTSTR szEncodedStr, _Inout_ size_t* cbBuf, _Out_ _Deref_post_cap_(*cbBuf) LPBYTE* lpDecodedBuffer);
 _Check_return_ HRESULT Base64Encode(size_t cbSourceBuf, _In_count_(cbSourceBuf) LPBYTE lpSourceBuffer, _Inout_ size_t* cchEncodedStr, _Out_ _Deref_post_cap_(*cchEncodedStr) LPTSTR* szEncodedStr);
 
-void FileTimeToString(_In_ FILETIME* lpFileTime, _In_ CString *PropString, _In_opt_ CString *AltPropString);
+void FileTimeToString(_In_ FILETIME* lpFileTime, _In_ wstring& PropString, _In_opt_ wstring& AltPropString); 
 
 #define TAG_MAX_LEN 1024 // Max I've seen in testing is 546 - bit more to be safe
 _Check_return_ CString TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB, bool bSingleLine);
@@ -30,8 +30,6 @@ void NameIDToStrings(
 void FreeNameIDStrings(_In_opt_z_ LPTSTR lpszPropName,
 					   _In_opt_z_ LPTSTR lpszPropGUID,
 					   _In_opt_z_ LPTSTR lpszDASL);
-
-_Check_return_ wstring GUIDToString(_In_opt_ LPCGUID lpGUID);
 
 _Check_return_ HRESULT StringToGUID(_In_z_ LPCTSTR szGUID, _Inout_ LPGUID lpGUID);
 _Check_return_ HRESULT StringToGUID(_In_z_ LPCTSTR szGUID, bool bByteSwapped, _Inout_ LPGUID lpGUID);

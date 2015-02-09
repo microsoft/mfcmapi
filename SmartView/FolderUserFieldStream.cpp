@@ -3,7 +3,6 @@
 #include "FolderUserFieldStream.h"
 #include "..\String.h"
 #include "..\InterpretProp2.h"
-#include "..\ParseProperty.h"
 #include "..\ExtraPropTags.h"
 
 FolderUserFieldStream::FolderUserFieldStream(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
@@ -131,7 +130,7 @@ _Check_return_ wstring FolderUserFieldStream::ToStringInternal()
 		ULONG i = 0;
 		for (i = 0; i < m_FolderUserFieldsAnsi.FieldDefinitionCount; i++)
 		{
-			wstring szGUID = GUIDToWstring(&m_FolderUserFieldsAnsi.FieldDefinitions[i].Common.PropSetGuid);
+			wstring szGUID = GUIDToString(&m_FolderUserFieldsAnsi.FieldDefinitions[i].Common.PropSetGuid);
 			wstring szFieldType = InterpretFlags(flagFolderType, m_FolderUserFieldsAnsi.FieldDefinitions[i].FieldType);
 			wstring szFieldcap = InterpretFlags(flagFieldCap, m_FolderUserFieldsAnsi.FieldDefinitions[i].Common.fcapm);
 
@@ -163,7 +162,7 @@ _Check_return_ wstring FolderUserFieldStream::ToStringInternal()
 		ULONG i = 0;
 		for (i = 0; i < m_FolderUserFieldsUnicode.FieldDefinitionCount; i++)
 		{
-			wstring szGUID = GUIDToWstring(&m_FolderUserFieldsUnicode.FieldDefinitions[i].Common.PropSetGuid);
+			wstring szGUID = GUIDToString(&m_FolderUserFieldsUnicode.FieldDefinitions[i].Common.PropSetGuid);
 			wstring szFieldType = InterpretFlags(flagFolderType, m_FolderUserFieldsUnicode.FieldDefinitions[i].FieldType);
 			wstring szFieldcap = InterpretFlags(flagFieldCap, m_FolderUserFieldsUnicode.FieldDefinitions[i].Common.fcapm);
 

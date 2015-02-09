@@ -3,7 +3,6 @@
 #include "ExtendedFlags.h"
 #include "..\String.h"
 #include "..\ParseProperty.h"
-#include "..\InterpretProp.h"
 #include "..\InterpretProp2.h"
 #include "..\ExtraPropTags.h"
 
@@ -147,7 +146,7 @@ _Check_return_ wstring ExtendedFlags::ToStringInternal()
 
 			if (m_pefExtendedFlags[i].lpUnknownData)
 			{
-				szExtendedFlags += formatmessage(IDS_EXTENDEDFLAGUNKNOWN);
+				szExtendedFlags += loadstring(IDS_EXTENDEDFLAGUNKNOWN);
 				sBin.cb = m_pefExtendedFlags[i].Cb;
 				sBin.lpb = m_pefExtendedFlags[i].lpUnknownData;
 				szExtendedFlags += BinToHexString(&sBin, true);

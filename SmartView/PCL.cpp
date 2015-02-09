@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "..\stdafx.h"
 #include "PCL.h"
-#include "BinaryParser.h"
 #include "..\String.h"
 #include "..\ParseProperty.h"
+#include "..\InterpretProp2.h"
 
 PCL::PCL(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
 {
@@ -80,7 +80,7 @@ _Check_return_ wstring PCL::ToStringInternal()
 		ULONG i = 0;
 		for (i = 0; i < m_cXID; i++)
 		{
-			wstring szGUID = GUIDToWstring(&m_lpXID[i].NamespaceGuid);
+			wstring szGUID = GUIDToString(&m_lpXID[i].NamespaceGuid);
 
 			SBinary sBin = { 0 };
 			sBin.cb = (ULONG)m_lpXID[i].cbLocalId;

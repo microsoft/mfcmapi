@@ -8,7 +8,6 @@
 #include "MAPIFormFunctions.h"
 #include "ContentsTableListCtrl.h"
 #include "Editor.h"
-#include "InterpretProp.h"
 #include "InterpretProp2.h"
 #include "MyWinApp.h"
 extern CMyWinApp theApp;

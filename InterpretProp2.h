@@ -8,8 +8,8 @@ void FindTagArrayMatches(_In_ ULONG ulTarget,
 	bool bIsAB,
 	_In_count_(ulMyArray) NAME_ARRAY_ENTRY_V2* MyArray,
 	_In_ ULONG ulMyArray,
-	std::vector<ULONG>& ulExacts,
-	std::vector<ULONG>& ulPartials);
+	vector<ULONG>& ulExacts,
+	vector<ULONG>& ulPartials);
 
 // Function to convert property tags to their names
 // Free lpszExactMatch and lpszPartialMatches with MAPIFreeBuffer
@@ -33,6 +33,7 @@ _Check_return_ ULONG PropTypeNameToPropTypeA(_In_z_ LPCSTR lpszPropType);
 #define PropTypeNameToPropType PropTypeNameToPropTypeA
 #endif
 
+_Check_return_ wstring GUIDToString(_In_opt_ LPCGUID lpGUID);
 _Check_return_ wstring GUIDToStringAndName(_In_opt_ LPCGUID lpGUID);
 LPCGUID GUIDNameToGUIDW(_In_z_ LPCWSTR szGUID, bool bByteSwapped);
 LPCGUID GUIDNameToGUIDA(_In_z_ LPCSTR szGUID, bool bByteSwapped);
@@ -42,9 +43,8 @@ LPCGUID GUIDNameToGUIDA(_In_z_ LPCSTR szGUID, bool bByteSwapped);
 #define GUIDNameToGUID GUIDNameToGUIDA
 #endif
 
-std::wstring NameIDToPropName(_In_ LPMAPINAMEID lpNameID);
+wstring NameIDToPropName(_In_ LPMAPINAMEID lpNameID);
 
-enum __NonPropFlag; // forward
 _Check_return_  wstring InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue);
 _Check_return_ CString AllFlagsToString(const ULONG ulFlagName, bool bHex);
 
