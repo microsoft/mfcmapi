@@ -678,10 +678,10 @@ _Check_return_ HRESULT GetLargeProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag,
 	if (!lpMAPIProp || !lppProp) return MAPI_E_INVALID_PARAMETER;
 	DebugPrint(DBGGeneric, _T("GetLargeProp getting buffer from 0x%08X\n"), ulPropTag);
 
-	HRESULT			hRes = S_OK;
-	ULONG			cValues = 0;
-	LPSPropValue	lpPropArray = NULL;
-	bool			bSuccess = false;
+	HRESULT hRes = S_OK;
+	ULONG cValues = 0;
+	LPSPropValue lpPropArray = NULL;
+	bool bSuccess = false;
 
 	const SizedSPropTagArray(1, sptaBuffer) =
 	{
@@ -724,15 +724,43 @@ _Check_return_ HRESULT GetLargeProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag,
 
 					if (StatInfo.cbSize.LowPart)
 					{
-						EC_H(MAPIAllocateMore(
-							StatInfo.cbSize.LowPart,
-							lpPropArray,
-							(LPVOID*)&lpPropArray->Value.bin.lpb));
-						if (lpPropArray->Value.bin.lpb)
+						LPBYTE lpBuffer = NULL;
+						ULONG ulBufferSize = StatInfo.cbSize.LowPart;
+						ULONG ulTrailingNullSize = 0;
+						switch (PROP_TYPE(ulPropTag))
 						{
-							EC_MAPI(lpStream->Read(lpPropArray->Value.bin.lpb, StatInfo.cbSize.LowPart, &lpPropArray->Value.bin.cb));
-							if (SUCCEEDED(hRes) && lpPropArray->Value.bin.cb == StatInfo.cbSize.LowPart)
+						case PT_STRING8: ulTrailingNullSize = sizeof(char); break;
+						case PT_UNICODE: ulTrailingNullSize = sizeof(WCHAR); break;
+						case PT_BINARY: break;
+						default: break;
+						}
+
+						EC_H(MAPIAllocateMore(
+							ulBufferSize + ulTrailingNullSize,
+							lpPropArray,
+							(LPVOID*)&lpBuffer));
+						if (lpBuffer)
+						{
+							memset(lpBuffer, 0, ulBufferSize + ulTrailingNullSize);
+							ULONG ulSizeRead = 0;
+							EC_MAPI(lpStream->Read(lpBuffer, ulBufferSize, &ulSizeRead));
+							if (SUCCEEDED(hRes) && ulSizeRead == ulBufferSize)
 							{
+								switch (PROP_TYPE(ulPropTag))
+								{
+								case PT_STRING8:
+									lpPropArray->Value.lpszA = (LPSTR)lpBuffer;
+									break;
+								case PT_UNICODE:
+									lpPropArray->Value.lpszW = (LPWSTR)lpBuffer;
+									break;
+								case PT_BINARY:
+									lpPropArray->Value.bin.cb = ulBufferSize;
+									lpPropArray->Value.bin.lpb = lpBuffer;
+									break;
+								default: break;
+								}
+
 								bSuccess = true;
 							}
 						}
