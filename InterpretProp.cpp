@@ -673,7 +673,7 @@ _Check_return_ wstring ActionToString(_In_ ACTION* lpAction)
 	case OP_BOUNCE:
 	{
 		szFlags = InterpretFlags(flagBounceCode, lpAction->scBounceCode);
-		actstring += formatmessage(IDS_ACTIONOPBOUNCE, lpAction->scBounceCode, szFlags);
+		actstring += formatmessage(IDS_ACTIONOPBOUNCE, lpAction->scBounceCode, szFlags.c_str());
 		break;
 	}
 	case OP_FORWARD:
@@ -709,7 +709,7 @@ _Check_return_ wstring ActionToString(_In_ ACTION* lpAction)
 	}
 	}
 
-	actstring += formatmessage(IDS_ACTIONFLAVOR, lpAction->ulActionFlavor, szFlags);
+	actstring += formatmessage(IDS_ACTIONFLAVOR, lpAction->ulActionFlavor, szFlags.c_str());
 
 	if (!lpAction->lpPropTagArray)
 	{

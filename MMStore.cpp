@@ -61,7 +61,7 @@ HRESULT OpenStore(_In_ LPMAPISESSION lpMAPISession, ULONG ulIndex, _Out_ LPMDB* 
 	if (lpStoreTable) lpStoreTable->Release();
 
 	return hRes;
-} // OpenStore
+}
 
 HRESULT HrMAPIOpenStoreAndFolder(
 	_In_ LPMAPISESSION lpMAPISession,
@@ -168,6 +168,7 @@ HRESULT HrMAPIOpenStoreAndFolder(
 				lpFolder->Release();
 			}
 		}
+
 		if (lpMDB)
 		{
 			if (lppMDB)
@@ -180,8 +181,14 @@ HRESULT HrMAPIOpenStoreAndFolder(
 			}
 		}
 	}
+	else
+	{
+		if (lpFolder) lpFolder->Release();
+		if (lpMDB) lpMDB->Release();
+	}
+
 	return hRes;
-} // HrMAPIOpenStoreAndFolder
+}
 
 void PrintObjectProperties(_In_z_ LPCTSTR szObjType, _In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
 {
