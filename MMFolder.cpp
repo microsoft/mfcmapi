@@ -5,15 +5,18 @@
 #include "ExtraPropTags.h"
 #include "InterpretProp2.h"
 #include "MMStore.h"
+#include "String.h"
+#include <vector>
+using namespace std;
 
 // Search folder for entry ID of child folder by name.
 HRESULT HrMAPIFindFolderW(
-	_In_ LPMAPIFOLDER lpFolder,        // pointer to folder
-	_In_z_ LPCWSTR lpszName,           // name of child folder to find
-	_Out_opt_ ULONG* lpcbeid,          // pointer to count of bytes in entry ID
+	_In_ LPMAPIFOLDER lpFolder, // pointer to folder
+	_In_ wstring lpszName, // name of child folder to find
+	_Out_opt_ ULONG* lpcbeid, // pointer to count of bytes in entry ID
 	_Deref_out_opt_ LPENTRYID* lppeid) // pointer to entry ID pointer
 {
-	DebugPrint(DBGGeneric,"HrMAPIFindFolderW: Locating folder \"%ws\"\n", lpszName);
+	DebugPrint(DBGGeneric, "HrMAPIFindFolderW: Locating folder \"%ws\"\n", lpszName.c_str());
 	HRESULT hRes = S_OK;
 	LPMAPITABLE lpTable = NULL;
 	LPSRowSet lpRow = NULL;
@@ -35,7 +38,7 @@ HRESULT HrMAPIFindFolderW(
 
 	if (!lpcbeid || !lppeid) return MAPI_E_INVALID_PARAMETER;
 	*lpcbeid = 0;
-	*lppeid  = NULL;
+	*lppeid = NULL;
 	if (!lpFolder) return MAPI_E_INVALID_PARAMETER;
 
 	WC_MAPI(lpFolder->GetHierarchyTable(MAPI_UNICODE | MAPI_DEFERRED_ERRORS, &lpTable));
@@ -51,7 +54,7 @@ HRESULT HrMAPIFindFolderW(
 			lpRowProp = lpRow->aRow[i].lpProps;
 
 			if (PR_DISPLAY_NAME_W == lpRowProp[ePR_DISPLAY_NAME_W].ulPropTag &&
-				_wcsicmp(lpRowProp[ePR_DISPLAY_NAME_W].Value.lpszW, lpszName) == 0 &&
+				_wcsicmp(lpRowProp[ePR_DISPLAY_NAME_W].Value.lpszW, lpszName.c_str()) == 0 &&
 				PR_ENTRYID == lpRowProp[ePR_ENTRYID].ulPropTag)
 			{
 				WC_H(MAPIAllocateBuffer(lpRowProp[ePR_ENTRYID].Value.bin.cb, (LPVOID*)lppeid));
@@ -74,121 +77,95 @@ HRESULT HrMAPIFindFolderW(
 	if (lpTable) lpTable->Release();
 
 	return hRes;
-} // HrMAPIFindFolderW
+}
 
 #define wszBackslash L'\\'
+#define wszBackslashStr L"\\"
+#define wszDoubleBackslash L"\\\\"
 
-// Splits string lpsz at backslashes and points elements of array
-// *lpppsz to string components.
-HRESULT HrSplitPath(
-	_In_z_ LPCWSTR lpsz,           // separated string
-	_Out_opt_ ULONG* lpcpsz,       // count of string pointers
-	_Deref_out_opt_z_ LPWSTR** lpppsz) // pointer to list of strings
+// Converts // to /
+wstring unescape(_In_ wstring lpsz)
 {
-	DebugPrint(DBGGeneric,"HrSplitPath: splitting path \"%ws\"\n", lpsz);
-	if (!lpcpsz || !lpppsz) return MAPI_E_INVALID_PARAMETER;
-	HRESULT hRes = S_OK;
-	LPCWSTR pch = NULL;
-	LPBYTE lpb = NULL;
-	LPWSTR *lppsz = NULL;
-	LPWSTR pchNew = NULL;
-	ULONG cToken = 0;
-	ULONG cArrayBytes = 0;
-	ULONG cBytes = 0;
-	ULONG csz = 0;
+	DebugPrint(DBGGeneric, "unescape: working on path \"%ws\"\n", lpsz.c_str());
 
-	*lpcpsz = 0;
-	*lpppsz = NULL;
-
-	// Skip to end if nothing to do
-	if (*lpsz == 0) return S_OK;
-
-	// Count the number of tokens.
-	pch = lpsz;
-	while (*pch)
+	size_t index = 0;
+	while (index != std::string::npos)
 	{
-		// Skip adjacent backslashes
-		while (wszBackslash == *pch)
-			pch++;
-
-		if (*pch == 0) break;
-
-		cToken++;
-
-		// Skip next token
-		while (*pch && !(wszBackslash == *pch))
-			pch++;
+		index = lpsz.find(wszDoubleBackslash, index);
+		if (index == std::string::npos) break;
+		lpsz.replace(index, 2, wszBackslashStr);
+		index++;
 	}
 
-	// Array will consist of pointers followed by the tokenized string
-	cArrayBytes = (cToken + 1) * (sizeof(LPWSTR));
-	cBytes = cArrayBytes + (lstrlenW(lpsz) + 1) * sizeof(WCHAR);
+	return lpsz;
+}
 
-	WC_H(MAPIAllocateBuffer(cBytes, (LPVOID*) &lpb));
-	if (SUCCEEDED(hRes) && lpb)
+// Splits string lpsz at backslashes and returns components in vector
+vector<wstring> SplitPath(_In_ wstring lpsz)
+{
+	DebugPrint(DBGGeneric, "SplitPath: splitting path \"%ws\"\n", lpsz.c_str());
+
+	vector<wstring> result;
+
+	const wchar_t* str = lpsz.c_str();
+	do
 	{
-		lppsz  = (LPWSTR*) lpb;
-		pchNew = (LPWSTR) (lpb + cArrayBytes);
+		const wchar_t* begin = str;
 
-		wcscpy_s(pchNew, (cBytes-cArrayBytes), lpsz);
-
-		while (*pchNew)
+		while (*str != 0)
 		{
-			// remove and skip backslashes
-			while (wszBackslash == *pchNew)
-				*pchNew++ = 0;
-
-			if (*pchNew == 0) break;
-
-			lppsz[csz++] = pchNew;
-
-			// skip next token
-			while (*pchNew && !(wszBackslash == *pchNew))
-				pchNew++;
+			if (*str == wszBackslash && *(str + 1) == wszBackslash)
+			{
+				str += 2;
+			}
+			else if (*str != wszBackslash)
+			{
+				str++;
+			}
+			else break;
 		}
 
-		lppsz[csz] = NULL;
+		if (begin != str)
+		{
+			result.push_back(unescape(wstring(begin, str)));
+		}
+	} while (0 != *str++);
 
-		*lpcpsz = csz;
-		*lpppsz = lppsz;
-	}
-
-	if (FAILED(hRes))
-		MAPIFreeBuffer(lpb);
-
-	return hRes;
-} // HrSplitPath
+	return result;
+}
 
 // Finds an arbitrarily nested folder in the indicated folder given
 // a hierarchical list of subfolders.
 HRESULT HrMAPIFindSubfolderExW(
-	_In_ LPMAPIFOLDER lpRootFolder,    // open root folder
-	ULONG ulFolderCount,               // count of hierarchical list of subfolders to navigate
-	LPWSTR* lppszFolderList,           // hierarchical list of subfolders to navigate
-	_Out_opt_ ULONG* lpcbeid,          // pointer to count of bytes in entry ID
+	_In_ LPMAPIFOLDER lpRootFolder, // open root folder
+	vector<wstring> FolderList, // hierarchical list of subfolders to navigate
+	_Out_opt_ ULONG* lpcbeid, // pointer to count of bytes in entry ID
 	_Deref_out_opt_ LPENTRYID* lppeid) // pointer to entry ID pointer
 {
 	HRESULT hRes = S_OK;
-	LPMAPIFOLDER lpParentFolder = lpRootFolder;
-	LPMAPIFOLDER lpChildFolder = NULL;
 	ULONG cbeid = 0;
 	LPENTRYID lpeid = NULL;
-	ULONG ulObjType = 0;
 	ULONG i = 0;
 
 	if (!lpcbeid || !lppeid) return MAPI_E_INVALID_PARAMETER;
-	if (!ulFolderCount || !lppszFolderList) return MAPI_E_INVALID_PARAMETER;
+	if (FolderList.empty()) return MAPI_E_INVALID_PARAMETER;
 
-	for (i = 0; i < ulFolderCount; i++)
+	LPMAPIFOLDER lpParentFolder = lpRootFolder;
+	if (lpRootFolder) lpRootFolder->AddRef();
+
+	for (i = 0; i < FolderList.size(); i++)
 	{
+		LPMAPIFOLDER lpChildFolder = NULL;
+		ULONG ulObjType = 0;
+
 		// Free entryid before re-use.
 		MAPIFreeBuffer(lpeid);
 
-		WC_H(HrMAPIFindFolderW(lpParentFolder, lppszFolderList[i], &cbeid, &lpeid));
+		WC_H(HrMAPIFindFolderW(lpParentFolder, FolderList[i].c_str(), &cbeid, &lpeid));
 		if (FAILED(hRes)) break;
 
 		// Only OpenEntry if needed for next tier of folder path.
-		if (lppszFolderList[i+1] != NULL)
+		if (i + 1 < FolderList.size())
 		{
 			WC_MAPI(lpParentFolder->OpenEntry(
 				cbeid,
@@ -206,50 +183,47 @@ HRESULT HrMAPIFindSubfolderExW(
 		}
 
 		// No longer need the parent folder
-		// (Don't release the folder that was passed!)
-		if (i > 0)
-		{
-			if (lpParentFolder) lpParentFolder->Release();
-		}
-
+		if (lpParentFolder) lpParentFolder->Release();
 		lpParentFolder = lpChildFolder;
-		lpChildFolder  = NULL;
+		lpChildFolder = NULL;
 	}
 
 	// Success!
 	*lpcbeid = cbeid;
-	*lppeid  = lpeid;
+	*lppeid = lpeid;
+
+	if (lpParentFolder) lpParentFolder->Release();
 
 	return hRes;
-} // HrMAPIFindSubfolderExW
+}
 
 // Compare folder name to known root folder ENTRYID strings.  Return ENTRYID,
 // if matched.
 static HRESULT HrLookupRootFolderW(
-	_In_ LPMDB lpMDB,                  // pointer to open message store
-	_In_z_ LPCWSTR lpszRootFolder,     // root folder name only (no separators)
-	_Out_opt_ ULONG* lpcbeid,          // size of entryid
+	_In_ LPMDB lpMDB, // pointer to open message store
+	_In_ wstring lpszRootFolder, // root folder name only (no separators)
+	_Out_opt_ ULONG* lpcbeid, // size of entryid
 	_Deref_out_opt_ LPENTRYID* lppeid) // pointer to entryid
 {
-	DebugPrint(DBGGeneric,"HrLookupRootFolderW: Locating root folder \"%ws\"\n", lpszRootFolder);
+	DebugPrint(DBGGeneric, "HrLookupRootFolderW: Locating root folder \"%ws\"\n", lpszRootFolder.c_str());
 	if (!lpcbeid || !lppeid) return MAPI_E_INVALID_PARAMETER;
 	HRESULT hRes = S_OK;
 
 	*lpcbeid = 0;
-	*lppeid  = NULL;
+	*lppeid = NULL;
 
 	if (!lpMDB) return MAPI_E_INVALID_PARAMETER;
 	// Implicitly recognize no root folder as THE root folder
-	if (!lpszRootFolder || !lpszRootFolder[0]) return S_OK;
+	if (lpszRootFolder.empty()) return S_OK;
 
 	ULONG ulPropTag = NULL;
 
-	WC_H(LookupPropName(lpszRootFolder, &ulPropTag));
+	WC_H(LookupPropName(lpszRootFolder.c_str(), &ulPropTag));
 	if (!ulPropTag)
 	{
 		// Maybe one of our folder constants was passed.
 		// These are base 10.
-		ULONG ulFolder = wcstoul(lpszRootFolder,NULL,10);
+		ULONG ulFolder = wcstoul(lpszRootFolder.c_str(), NULL, 10);
 		if (0 < ulFolder && ulFolder < NUM_DEFAULT_PROPS)
 		{
 			WC_H(GetDefaultFolderEID(ulFolder, lpMDB, lpcbeid, lppeid));
@@ -258,13 +232,14 @@ static HRESULT HrLookupRootFolderW(
 
 		// Still no match?
 		// Maybe a prop tag was passed as hex
-		ulPropTag = wcstoul(lpszRootFolder,NULL,16);
+		ulPropTag = wcstoul(lpszRootFolder.c_str(), NULL, 16);
 	}
+
 	if (!ulPropTag) return MAPI_E_NOT_FOUND;
 
 	if (ulPropTag)
 	{
-		SPropTagArray rgPropTag = { 1, ulPropTag};
+		SPropTagArray rgPropTag = { 1, ulPropTag };
 		LPSPropValue lpPropValue = NULL;
 		ULONG cValues = 0;
 
@@ -295,17 +270,17 @@ static HRESULT HrLookupRootFolderW(
 	}
 
 	return hRes;
-} // HrLookupRootFolderW
+}
 
 // Finds an arbitrarily nested folder in the indicated store given its
 // path name.
 HRESULT HrMAPIFindFolderExW(
-	_In_ LPMDB lpMDB,                  // Open message store
-	_In_z_ LPCWSTR lpszFolderPath,     // folder path
-	_Out_opt_ ULONG* lpcbeid,          // pointer to count of bytes in entry ID
+	_In_ LPMDB lpMDB, // Open message store
+	_In_ wstring lpszFolderPath, // folder path
+	_Out_opt_ ULONG* lpcbeid, // pointer to count of bytes in entry ID
 	_Deref_out_opt_ LPENTRYID* lppeid) // pointer to entry ID pointer
 {
-	DebugPrint(DBGGeneric,"HrMAPIFindFolderExW: Locating path \"%ws\"\n", lpszFolderPath);
+	DebugPrint(DBGGeneric, "HrMAPIFindFolderExW: Locating path \"%ws\"\n", lpszFolderPath.c_str());
 	HRESULT hRes = S_OK;
 	LPMAPIFOLDER lpRootFolder = NULL;
 	ULONG cbeid = 0;
@@ -314,25 +289,19 @@ HRESULT HrMAPIFindFolderExW(
 	if (!lpcbeid || !lppeid) return MAPI_E_INVALID_PARAMETER;
 
 	*lpcbeid = 0;
-	*lppeid  = NULL;
+	*lppeid = NULL;
 
 	if (!lpMDB) return MAPI_E_INVALID_PARAMETER;
 
-	ULONG ulFolderCount = 0;
-	LPWSTR* lppszFolderList = NULL;
-	WC_H(HrSplitPath(lpszFolderPath, &ulFolderCount, &lppszFolderList));
+	vector<wstring> FolderList = SplitPath(lpszFolderPath);
 
 	// Check for literal property name
-	if (ulFolderCount && lppszFolderList && lppszFolderList[0] && lppszFolderList[0][0] == L'@')
+	if (!FolderList.empty() && FolderList[0][0] == L'@')
 	{
-		WC_H(HrLookupRootFolderW(lpMDB, lppszFolderList[0]+1, &cbeid, &lpeid));
+		WC_H(HrLookupRootFolderW(lpMDB, FolderList[0].c_str() + 1, &cbeid, &lpeid));
 		if (SUCCEEDED(hRes))
 		{
-			ulFolderCount--;
-			if (ulFolderCount)
-			{
-				lppszFolderList = &lppszFolderList[1];
-			}
+			FolderList.erase(FolderList.begin());
 		}
 		else
 		{
@@ -342,7 +311,7 @@ HRESULT HrMAPIFindFolderExW(
 	}
 
 	// If we have any subfolders, chase them
-	if (SUCCEEDED(hRes) && ulFolderCount)
+	if (SUCCEEDED(hRes) && !FolderList.empty())
 	{
 		ULONG ulObjType = 0;
 
@@ -361,8 +330,7 @@ HRESULT HrMAPIFindFolderExW(
 			// Find the subfolder in question
 			WC_H(HrMAPIFindSubfolderExW(
 				lpRootFolder,
-				ulFolderCount,
-				lppszFolderList,
+				FolderList,
 				&cbeid,
 				&lpeid));
 		}
@@ -372,21 +340,20 @@ HRESULT HrMAPIFindFolderExW(
 	if (SUCCEEDED(hRes))
 	{
 		*lpcbeid = cbeid;
-		*lppeid  = lpeid;
+		*lppeid = lpeid;
 	}
 
-	MAPIFreeBuffer(lppszFolderList);
 	return hRes;
-} // HrMAPIFindFolderExW
+}
 
 // Opens an arbitrarily nested folder in the indicated store given its
 // path name.
 HRESULT HrMAPIOpenFolderExW(
-	_In_ LPMDB lpMDB,                        // Open message store
-	_In_z_ LPCWSTR lpszFolderPath,           // folder path
+	_In_ LPMDB lpMDB, // Open message store
+	_In_ wstring lpszFolderPath, // folder path
 	_Deref_out_opt_ LPMAPIFOLDER* lppFolder) // pointer to folder opened
 {
-	DebugPrint(DBGGeneric,"HrMAPIOpenFolderExW: Locating path \"%ws\"\n", lpszFolderPath);
+	DebugPrint(DBGGeneric, "HrMAPIOpenFolderExW: Locating path \"%ws\"\n", lpszFolderPath.c_str());
 	HRESULT hRes = S_OK;
 	LPENTRYID lpeid = NULL;
 	ULONG cbeid = 0;
@@ -416,18 +383,18 @@ HRESULT HrMAPIOpenFolderExW(
 	MAPIFreeBuffer(lpeid);
 
 	return hRes;
-} // HrMAPIOpenFolderExW
+}
 
 void DumpHierarchyTable(
-	_In_z_ LPWSTR lpszProfile,
+	_In_ wstring lpszProfile,
 	_In_ LPMAPIFOLDER lpFolder,
 	_In_ ULONG ulFolder,
-	_In_z_ LPWSTR lpszFolder,
+	_In_ wstring lpszFolder,
 	_In_ ULONG ulDepth)
 {
 	if (0 == ulDepth)
 	{
-		DebugPrint(DBGGeneric,"DumpHierarchyTable: Outputting hierarchy table for folder %u / %ws from profile %ws \n", ulFolder, lpszFolder?lpszFolder:L"", lpszProfile);
+		DebugPrint(DBGGeneric, "DumpHierarchyTable: Outputting hierarchy table for folder %u / %ws from profile %ws \n", ulFolder, lpszFolder.c_str(), lpszProfile.c_str());
 	}
 	HRESULT hRes = S_OK;
 
@@ -479,7 +446,7 @@ void DumpHierarchyTable(
 					}
 					if (PR_DISPLAY_NAME_W == lpRow->aRow[i].lpProps[ePR_DISPLAY_NAME_W].ulPropTag)
 					{
-						printf("%ws\n",lpRow->aRow[i].lpProps[ePR_DISPLAY_NAME_W].Value.lpszW);
+						printf("%ws\n", lpRow->aRow[i].lpProps[ePR_DISPLAY_NAME_W].Value.lpszW);
 					}
 
 					if (PR_ENTRYID == lpRow->aRow[i].lpProps[ePR_ENTRYID].ulPropTag)
@@ -492,7 +459,7 @@ void DumpHierarchyTable(
 							NULL,
 							MAPI_BEST_ACCESS,
 							&ulObjType,
-							(LPUNKNOWN *) &lpSubfolder));
+							(LPUNKNOWN *)&lpSubfolder));
 
 						if (SUCCEEDED(hRes) && lpSubfolder)
 						{
@@ -503,20 +470,21 @@ void DumpHierarchyTable(
 					}
 				}
 			}
+
 			if (lpRow) FreeProws(lpRow);
 		}
 
 		if (lpTable) lpTable->Release();
 	}
-} // DumpHierarchyTable
+}
 
 ULONGLONG ComputeSingleFolderSize(
 	_In_ LPMAPIFOLDER lpFolder)
 {
 	HRESULT hRes = S_OK;
 	LPMAPITABLE lpTable = NULL;
-	LPSRowSet lpsRowSet = NULL; 
-	SizedSPropTagArray (1, sProps) = { 1, {PR_MESSAGE_SIZE} };
+	LPSRowSet lpsRowSet = NULL;
+	SizedSPropTagArray(1, sProps) = { 1, { PR_MESSAGE_SIZE } };
 	ULONGLONG ullThisFolderSize = 0;
 
 	// Look at each item in this folder
@@ -527,7 +495,7 @@ ULONGLONG ComputeSingleFolderSize(
 
 		if (lpsRowSet)
 		{
-			for(ULONG i = 0; i < lpsRowSet->cRows; i++)
+			for (ULONG i = 0; i < lpsRowSet->cRows; i++)
 			{
 				if (PROP_TYPE(lpsRowSet->aRow[i].lpProps[0].ulPropTag) != PT_ERROR)
 					ullThisFolderSize += lpsRowSet->aRow[i].lpProps[0].Value.l;
@@ -539,7 +507,6 @@ ULONGLONG ComputeSingleFolderSize(
 		lpTable = NULL;
 	}
 	DebugPrint(DBGGeneric, "Content size = %I64u\n", ullThisFolderSize);
-//	printf("Content size = %I64d\n", ullThisFolderSize);
 
 	WC_MAPI(lpFolder->GetContentsTable(MAPI_ASSOCIATED, &lpTable));
 	if (lpTable)
@@ -548,7 +515,7 @@ ULONGLONG ComputeSingleFolderSize(
 
 		if (lpsRowSet)
 		{
-			for(ULONG i = 0; i < lpsRowSet->cRows; i++)
+			for (ULONG i = 0; i < lpsRowSet->cRows; i++)
 			{
 				if (PROP_TYPE(lpsRowSet->aRow[i].lpProps[0].ulPropTag) != PT_ERROR)
 					ullThisFolderSize += lpsRowSet->aRow[i].lpProps[0].Value.l;
@@ -559,20 +526,19 @@ ULONGLONG ComputeSingleFolderSize(
 		lpTable->Release();
 		lpTable = NULL;
 	}
+
 	DebugPrint(DBGGeneric, "Total size = %I64u\n", ullThisFolderSize);
-//	printf("Total size = %I64d\n", ullThisFolderSize);
 
 	return ullThisFolderSize;
-} // ComputeSingleFolderSize
+}
 
 ULONGLONG ComputeFolderSize(
-	_In_z_ LPWSTR lpszProfile,
+	_In_ wstring lpszProfile,
 	_In_ LPMAPIFOLDER lpFolder,
 	_In_ ULONG ulFolder,
-	_In_z_ LPWSTR lpszFolder)
+	_In_ wstring lpszFolder)
 {
-	DebugPrint(DBGGeneric,"ComputeFolderSize: Calculating size (including subfolders) for folder %u / %ws from profile %ws \n", ulFolder, lpszFolder?lpszFolder:L"", lpszProfile);
-//	printf("ComputeFolderSize: Calculating size (including subfolders) for folder %i / %ws from profile %ws \n", ulFolder, lpszFolder?lpszFolder:L"", lpszProfile);
+	DebugPrint(DBGGeneric, "ComputeFolderSize: Calculating size (including subfolders) for folder %u / %ws from profile %ws \n", ulFolder, lpszFolder.c_str(), lpszProfile.c_str());
 	HRESULT hRes = S_OK;
 
 	if (lpFolder)
@@ -636,15 +602,16 @@ ULONGLONG ComputeFolderSize(
 							NULL,
 							MAPI_BEST_ACCESS,
 							&ulObjType,
-							(LPUNKNOWN *) &lpSubfolder));
+							(LPUNKNOWN *)&lpSubfolder));
 
 						if (SUCCEEDED(hRes) && lpSubfolder)
 						{
-							LPWSTR szDisplayName = L"";
+							wstring szDisplayName;
 							if (PR_DISPLAY_NAME_W == lpRow->aRow[i].lpProps[ePR_DISPLAY_NAME_W].ulPropTag)
 							{
 								szDisplayName = lpRow->aRow[i].lpProps[ePR_DISPLAY_NAME_W].Value.lpszW;
 							}
+
 							ullSize += ComputeFolderSize(lpszProfile, lpSubfolder, 0, szDisplayName);
 						}
 
@@ -652,6 +619,7 @@ ULONGLONG ComputeFolderSize(
 					}
 				}
 			}
+
 			if (lpRow) FreeProws(lpRow);
 		}
 
@@ -661,17 +629,17 @@ ULONGLONG ComputeFolderSize(
 	}
 
 	return 0;
-} // ComputeFolderSize
+}
 
 void DoFolderProps(_In_ MYOPTIONS ProgOpts)
 {
 	if (ProgOpts.lpFolder)
 	{
 		ULONG ulPropTag = NULL;
-		(void) PropNameToPropTagW(ProgOpts.lpszUnswitchedOption, &ulPropTag);
+		(void)PropNameToPropTagW(ProgOpts.lpszUnswitchedOption, &ulPropTag);
 		PrintObjectProperties(_T("folderprops"), ProgOpts.lpFolder, ulPropTag);
 	}
-} // DoFolderProps
+}
 
 void DoFolderSize(_In_ MYOPTIONS ProgOpts)
 {
@@ -684,14 +652,14 @@ void DoFolderSize(_In_ MYOPTIONS ProgOpts)
 	printf("Bytes: %I64d\n", ullSize);
 	printf("KB: %I64d\n", ullSize / 1024);
 	printf("MB: %I64d\n", ullSize / (1024 * 1024));
-} // DoFolderSize
+}
 
 void DoChildFolders(_In_ MYOPTIONS ProgOpts)
 {
 	DumpHierarchyTable(
-		ProgOpts.lpszProfile,
+		ProgOpts.lpszProfile ? ProgOpts.lpszProfile : L"",
 		ProgOpts.lpFolder,
 		ProgOpts.ulFolder,
-		ProgOpts.lpszFolderPath,
+		ProgOpts.lpszFolderPath ? ProgOpts.lpszFolderPath : L"",
 		0);
-} // DoChildFolders
+}
