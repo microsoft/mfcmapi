@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "..\stdafx.h"
 #include "MrMAPI.h"
 #include "MMPST.h"
 

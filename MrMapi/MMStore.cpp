@@ -1,12 +1,13 @@
 #include "stdafx.h"
+#include "..\stdafx.h"
 #include "MrMAPI.h"
 #include "MMStore.h"
-#include "MAPIFunctions.h"
-#include "String.h"
-#include "MAPIStoreFunctions.h"
-#include "ColumnTags.h"
+#include "..\MAPIFunctions.h"
+#include "..\String.h"
+#include "..\MAPIStoreFunctions.h"
+#include "..\ColumnTags.h"
 #include "MMFolder.h"
-#include "InterpretProp2.h"
+#include "..\InterpretProp2.h"
 
 HRESULT OpenStore(_In_ LPMAPISESSION lpMAPISession, ULONG ulIndex, _Out_ LPMDB* lppMDB)
 {

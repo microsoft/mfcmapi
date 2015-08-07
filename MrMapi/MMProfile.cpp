@@ -1,11 +1,11 @@
 #include "stdafx.h"
-
+#include "..\stdafx.h"
 #include "MrMAPI.h"
 #include "MMProfile.h"
-#include "ExportProfile.h"
-#include "MAPIFunctions.h"
-#include "String.h"
-#include "MAPIProfileFunctions.h"
+#include "..\ExportProfile.h"
+#include "..\MAPIFunctions.h"
+#include "..\String.h"
+#include "..\MAPIProfileFunctions.h"
 
 void ExportProfileList()
 {

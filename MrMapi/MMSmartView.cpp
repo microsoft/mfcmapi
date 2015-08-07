@@ -1,10 +1,10 @@
 #include "stdafx.h"
-
+#include "..\stdafx.h"
 #include "MrMAPI.h"
-#include "MAPIFunctions.h"
-#include "String.h"
+#include "..\MAPIFunctions.h"
+#include "..\String.h"
 #include <io.h>
-#include "SmartView\SmartView.h"
+#include "..\SmartView\SmartView.h"
 
 void DoSmartView(_In_ MYOPTIONS ProgOpts)
 {
