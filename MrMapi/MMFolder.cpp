@@ -1,9 +1,10 @@
 #include "stdafx.h"
+#include "..\stdafx.h"
 #include "MrMAPI.h"
 #include "MMFolder.h"
-#include "MAPIFunctions.h"
-#include "ExtraPropTags.h"
-#include "InterpretProp2.h"
+#include "..\MAPIFunctions.h"
+#include "..\ExtraPropTags.h"
+#include "..\InterpretProp2.h"
 #include "MMStore.h"
 #include "String.h"
 #include <vector>

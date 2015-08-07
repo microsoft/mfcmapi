@@ -393,6 +393,9 @@
     <ClInclude Include="SmartView\SDBin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MrMapi\MMstdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Res\bldver.rc">
@@ -550,39 +553,6 @@
     <ClCompile Include="MFCUtilityFunctions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MMAcls.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MMContents.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MMErr.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MMFidMid.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MMFolder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MMMapiMime.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MMPropTag.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MMRules.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MMSmartView.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MMStore.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MrMAPI.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="MsgServiceTableDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -658,9 +628,6 @@
     <ClCompile Include="QuickStart.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MMPst.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="PropertyBag\MAPIPropPropertyBag.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -703,9 +670,6 @@
     <ClCompile Include="RichEditOleCallback.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MMProfile.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ExportProfile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -716,9 +680,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Property.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MMReceiveFolder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="String.cpp">
@@ -814,38 +775,50 @@
     <ClCompile Include="SmartView\SDBin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MrMapi\MMAcls.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MrMapi\MMContents.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MrMapi\MMErr.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MrMapi\MMFidMid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MrMapi\MMFolder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MrMapi\MMMapiMime.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MrMapi\MMProfile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MrMapi\MMPropTag.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MrMapi\MMPst.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MrMapi\MMReceiveFolder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MrMapi\MMRules.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MrMapi\MMSmartView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MrMapi\MMStore.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MrMAPI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuildStep Include="MMAcls.h">
-      <Filter>Header Files</Filter>
-    </CustomBuildStep>
-    <CustomBuildStep Include="MMContents.h">
-      <Filter>Header Files</Filter>
-    </CustomBuildStep>
-    <CustomBuildStep Include="MMErr.h">
-      <Filter>Header Files</Filter>
-    </CustomBuildStep>
-    <CustomBuildStep Include="MMFolder.h">
-      <Filter>Header Files</Filter>
-    </CustomBuildStep>
-    <CustomBuildStep Include="MMMapiMime.h">
-      <Filter>Header Files</Filter>
-    </CustomBuildStep>
-    <CustomBuildStep Include="MMPropTag.h">
-      <Filter>Header Files</Filter>
-    </CustomBuildStep>
-    <CustomBuildStep Include="MMRules.h">
-      <Filter>Header Files</Filter>
-    </CustomBuildStep>
-    <CustomBuildStep Include="MMSmartView.h">
-      <Filter>Header Files</Filter>
-    </CustomBuildStep>
-    <CustomBuildStep Include="MMStore.h">
-      <Filter>Header Files</Filter>
-    </CustomBuildStep>
-    <CustomBuildStep Include="MrMAPI.h">
-      <Filter>Header Files</Filter>
-    </CustomBuildStep>
     <CustomBuildStep Include="mfcmapi.exe.manifest" />
     <CustomBuildStep Include="mrmapi.exe.manifest" />
   </ItemGroup>

@@ -1,9 +1,10 @@
 #include "stdafx.h"
+#include "..\stdafx.h"
 #include "MrMAPI.h"
 #include "MMStore.h"
 #include "MMFolder.h"
-#include "DumpStore.h"
-#include "File.h"
+#include "..\DumpStore.h"
+#include "..\File.h"
 
 void DumpContentsTable(
 	_In_z_ LPWSTR lpszProfile,

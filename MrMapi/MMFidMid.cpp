@@ -1,11 +1,12 @@
 #include "stdafx.h"
+#include "..\stdafx.h"
 #include "MrMAPI.h"
 #include "MMFidMid.h"
-#include "MAPIFunctions.h"
-#include "MapiProcessor.h"
-#include "ExtraPropTags.h"
-#include "SmartView\SmartView.h"
-#include "String.h"
+#include "..\MAPIFunctions.h"
+#include "..\MapiProcessor.h"
+#include "..\ExtraPropTags.h"
+#include "..\SmartView\SmartView.h"
+#include "..\String.h"
 
 inline void PrintFolder(LPCWSTR szFid, LPCTSTR szFolder)
 {

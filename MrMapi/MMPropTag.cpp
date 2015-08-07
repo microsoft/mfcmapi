@@ -1,10 +1,10 @@
 #include "stdafx.h"
-
+#include "..\stdafx.h"
 #include "MrMAPI.h"
 #include <shlwapi.h>
-#include "guids.h"
-#include "SmartView\SmartView.h"
-#include "InterpretProp2.h"
+#include "..\Guids.h"
+#include "..\SmartView\SmartView.h"
+#include "..\InterpretProp2.h"
 
 // Searches a NAMEID_ARRAY_ENTRY array for a target dispid.
 // Exact matches are those that match
