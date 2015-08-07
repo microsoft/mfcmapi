@@ -83,7 +83,7 @@ void FindNameIDArrayMatches(_In_ LONG lTarget,
 		if (lpulNumExacts) *lpulNumExacts = ulNumMatches;
 		if (lpulFirstExact) *lpulFirstExact = ulFirstMatch;
 	}
-} // FindNameIDArrayMatches
+}
 
 // prints the type of a prop tag
 // no pretty stuff or \n - calling function gets to do that
@@ -114,7 +114,7 @@ void PrintType(_In_ ULONG ulPropTag)
 	if (!bFound) printf("0x%04X = Unknown type", PROP_TYPE(ulPropTag));
 
 	if (bNeedInstance) printf(" | MV_INSTANCE");
-} // PrintType
+}
 
 void PrintKnownTypes()
 {
@@ -130,7 +130,7 @@ void PrintKnownTypes()
 	printf("\n");
 	printf("Types may also have the flag 0x%04X = %s\n",
 		MV_INSTANCE, "MV_INSTANCE");
-} // PrintKnownTypes
+}
 
 // Print the tag found in the array at ulRow
 void PrintTag(_In_ ULONG ulRow)
@@ -138,7 +138,7 @@ void PrintTag(_In_ ULONG ulRow)
 	printf("0x%08X,%ws,", PropTagArray[ulRow].ulValue, PropTagArray[ulRow].lpszName);
 	PrintType(PropTagArray[ulRow].ulValue);
 	printf("\n");
-} // PrintTag
+}
 
 // Given a property tag, output the matching names and partially matching names
 // Matching names will be presented first, with partial matches following
@@ -262,6 +262,7 @@ void PrintTagFromPartialName(_In_opt_z_ LPCWSTR lpszPropName, _In_ ULONG ulType)
 		PrintType(ulType);
 		printf("\n");
 	}
+
 	ULONG ulCur = 0;
 	ULONG ulNumMatches = 0;
 
@@ -275,7 +276,7 @@ void PrintTagFromPartialName(_In_opt_z_ LPCWSTR lpszPropName, _In_ ULONG ulType)
 		}
 	}
 	printf("Found %u matches.\n", ulNumMatches);
-} // PrintTagFromPartialName
+}
 
 void PrintGUID(_In_ LPCGUID lpGUID)
 {
@@ -299,7 +300,7 @@ void PrintGUID(_In_ LPCGUID lpGUID)
 		lpGUID->Data4[6],
 		lpGUID->Data4[7]);
 
-	ULONG	ulCur = 0;
+	ULONG ulCur = 0;
 
 	printf(",");
 	if (ulPropGuidArray && PropGuidArray)
@@ -313,11 +314,11 @@ void PrintGUID(_In_ LPCGUID lpGUID)
 			}
 		}
 	}
-} // PrintGUID
+}
 
 void PrintGUIDs()
 {
-	ULONG	ulCur = 0;
+	ULONG ulCur = 0;
 	for (ulCur = 0; ulCur < ulPropGuidArray; ulCur++)
 	{
 		printf("{%.8X-%.4X-%.4X-%.2X%.2X-%.2X%.2X%.2X%.2X%.2X%.2X}",
@@ -334,7 +335,7 @@ void PrintGUIDs()
 			PropGuidArray[ulCur].lpGuid->Data4[7]);
 		printf(",%ws\n", PropGuidArray[ulCur].lpszName);
 	}
-} // PrintGUIDs
+}
 
 void PrintDispID(_In_ ULONG ulRow)
 {
@@ -351,7 +352,7 @@ void PrintDispID(_In_ ULONG ulRow)
 		printf("%ws", NameIDArray[ulRow].lpszArea);
 	}
 	printf("\n");
-} // PrintDispID
+}
 
 void PrintDispIDFromNum(_In_ ULONG ulDispID)
 {
@@ -371,7 +372,7 @@ void PrintDispIDFromNum(_In_ ULONG ulDispID)
 			PrintDispID(ulCur);
 		}
 	}
-} // PrintDispIDFromNum
+}
 
 void PrintDispIDFromName(_In_z_ LPCWSTR lpszDispIDName)
 {
@@ -409,7 +410,7 @@ void PrintDispIDFromName(_In_z_ LPCWSTR lpszDispIDName)
 	}
 
 	if (!bMatchFound) printf("Property tag \"%ws\" not found\n", lpszDispIDName);
-} // PrintDispIDFromName
+}
 
 // Search for properties matching lpszPropName on a substring
 void PrintDispIDFromPartialName(_In_opt_z_ LPCWSTR lpszDispIDName, _In_ ULONG ulType)
@@ -430,7 +431,7 @@ void PrintDispIDFromPartialName(_In_opt_z_ LPCWSTR lpszDispIDName, _In_ ULONG ul
 		}
 	}
 	printf("Found %u matches.\n", ulNumMatches);
-} // PrintDispIDFromPartialName
+}
 
 void PrintFlag(_In_ ULONG ulPropNum, _In_opt_z_ LPCWSTR lpszPropName, _In_ bool bIsDispid, _In_ ULONG ulFlagValue)
 {
@@ -504,12 +505,12 @@ void PrintFlag(_In_ ULONG ulPropNum, _In_opt_z_ LPCWSTR lpszPropName, _In_ bool 
 	{
 		printf("No flag parsing found.\n");
 	}
-} // PrintFlag
+}
 
 void DoPropTags(_In_ MYOPTIONS ProgOpts)
 {
 	ULONG ulPropNum = NULL;
-	LPWSTR lpszPropName = ProgOpts.lpszUnswitchedOption;
+	LPCWSTR lpszPropName = ProgOpts.lpszUnswitchedOption.empty() ? NULL : ProgOpts.lpszUnswitchedOption.c_str();
 
 	if (lpszPropName)
 	{
@@ -582,12 +583,12 @@ void DoPropTags(_In_ MYOPTIONS ProgOpts)
 			PrintTagFromName(lpszPropName);
 		}
 	}
-} // DoPropTags
+}
 
 void DoGUIDs(_In_ MYOPTIONS /*ProgOpts*/)
 {
 	PrintGUIDs();
-} // DoGUIDs
+}
 
 void DoFlagSearch(_In_ MYOPTIONS ProgOpts)
 {
@@ -597,10 +598,10 @@ void DoFlagSearch(_In_ MYOPTIONS ProgOpts)
 
 	for (ulCurEntry = 0; ulCurEntry < ulFlagArray; ulCurEntry++)
 	{
-		if (!_wcsicmp(FlagArray[ulCurEntry].lpszName, ProgOpts.lpszFlagName))
+		if (!_wcsicmp(FlagArray[ulCurEntry].lpszName, ProgOpts.lpszFlagName.c_str()))
 		{
 			printf("%ws = 0x%08X\n", FlagArray[ulCurEntry].lpszName, FlagArray[ulCurEntry].lFlagValue);
 			break;
 		}
 	}
-} // DoFlagSearch
+}

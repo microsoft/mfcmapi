@@ -6,7 +6,7 @@
 #include "..\ExtraPropTags.h"
 #include "..\InterpretProp2.h"
 #include "MMStore.h"
-#include "String.h"
+#include "..\String.h"
 #include <vector>
 using namespace std;
 
@@ -637,7 +637,7 @@ void DoFolderProps(_In_ MYOPTIONS ProgOpts)
 	if (ProgOpts.lpFolder)
 	{
 		ULONG ulPropTag = NULL;
-		(void)PropNameToPropTagW(ProgOpts.lpszUnswitchedOption, &ulPropTag);
+		(void)PropNameToPropTagW(ProgOpts.lpszUnswitchedOption.c_str(), &ulPropTag);
 		PrintObjectProperties(_T("folderprops"), ProgOpts.lpFolder, ulPropTag);
 	}
 }
@@ -658,9 +658,9 @@ void DoFolderSize(_In_ MYOPTIONS ProgOpts)
 void DoChildFolders(_In_ MYOPTIONS ProgOpts)
 {
 	DumpHierarchyTable(
-		ProgOpts.lpszProfile ? ProgOpts.lpszProfile : L"",
+		!ProgOpts.lpszProfile.empty() ? ProgOpts.lpszProfile.c_str() : L"",
 		ProgOpts.lpFolder,
 		ProgOpts.ulFolder,
-		ProgOpts.lpszFolderPath ? ProgOpts.lpszFolderPath : L"",
+		!ProgOpts.lpszFolderPath.empty() ? ProgOpts.lpszFolderPath.c_str() : L"",
 		0);
 }

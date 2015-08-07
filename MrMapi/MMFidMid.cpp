@@ -52,19 +52,20 @@ CFindFidMid::CFindFidMid()
 	m_fFIDExactMatch = false;
 	m_fFIDPrinted = false;
 	m_fAssociated = false;
-} // CFindFidMid::CFindFidMid
+}
 
 CFindFidMid::~CFindFidMid()
 {
 	delete[] m_szCurrentFid;
 	m_szCurrentFid = NULL;
-} // CFindFidMid::~CFindFidMid
+}
 
 void CFindFidMid::InitFidMid(_In_z_ LPCWSTR szFid, _In_z_ LPCWSTR szMid)
 {
 	m_szFid = szFid;
 	m_szMid = szMid;
 }
+
 // --------------------------------------------------------------------------------- //
 
 void CFindFidMid::BeginFolderWork()
@@ -149,13 +150,13 @@ void CFindFidMid::BeginFolderWork()
 			m_fFIDPrinted = true;
 		}
 	}
-} // CFindFidMid::BeginFolderWork
+}
 
 bool CFindFidMid::ContinueProcessingFolders()
 {
 	// if we've found an exact match, we can stop
 	return !m_fFIDExactMatch;
-} // CFindFidMid::ContinueProcessingFolders
+}
 
 bool CFindFidMid::ShouldProcessContentsTable()
 {
@@ -163,12 +164,12 @@ bool CFindFidMid::ShouldProcessContentsTable()
 	// 1 - we matched our fid, possibly because a fid wasn't passed in
 	// 2 - We have a mid to look for, even if it's an empty string
 	return m_fFIDMatch && m_szMid;
-} // CFindFidMid::ShouldProcessContentsTable
+}
 
 void CFindFidMid::BeginContentsTableWork(ULONG ulFlags, ULONG /*ulCountRows*/)
 {
 	m_fAssociated = ((ulFlags & MAPI_ASSOCIATED) == MAPI_ASSOCIATED);
-} // CFindFidMid::BeginContentsTableWork
+}
 
 bool CFindFidMid::DoContentsTablePerRowWork(_In_ LPSRow lpSRow, ULONG /*ulCurRow*/)
 {
@@ -223,13 +224,13 @@ bool CFindFidMid::DoContentsTablePerRowWork(_In_ LPSRow lpSRow, ULONG /*ulCurRow
 
 	// Don't open the message - the row is enough
 	return false;
-} // CFindFidMid::DoContentsTablePerRowWork
+}
 
 void DumpFidMid(
-	_In_z_ LPWSTR lpszProfile,
+	_In_z_ LPCWSTR lpszProfile,
 	_In_ LPMDB lpMDB,
-	_In_z_ LPWSTR lpszFid,
-	_In_z_ LPWSTR lpszMid)
+	_In_z_ LPCWSTR lpszFid,
+	_In_z_ LPCWSTR lpszMid)
 {
 	// FID/MID lookups only succeed online, so go ahead and force it
 	RegKeys[regKeyMAPI_NO_CACHE].ulCurDWORD = true;
@@ -253,6 +254,7 @@ void DumpFidMid(
 			NULL,
 			(LPUNKNOWN*)&lpFolder));
 	}
+
 	if (lpFolder)
 	{
 		CFindFidMid MyFindFidMid;
@@ -266,13 +268,13 @@ void DumpFidMid(
 	}
 
 	if (lpFolder) lpFolder->Release();
-} // DumpFidMid
+}
 
 void DoFidMid(_In_ MYOPTIONS ProgOpts)
 {
 	DumpFidMid(
-		ProgOpts.lpszProfile,
+		ProgOpts.lpszProfile.c_str(),
 		ProgOpts.lpMDB,
-		ProgOpts.lpszFid,
-		ProgOpts.lpszMid);
-} // DoFidMid
+		ProgOpts.lpszFid.c_str(),
+		ProgOpts.lpszMid.c_str());
+}

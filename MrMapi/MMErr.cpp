@@ -5,55 +5,56 @@
 #include "MMErr.h"
 #include <shlwapi.h>
 #include <io.h>
+#include "..\String.h"
 
 void PrintErrFromNum(_In_ ULONG ulError)
 {
 	LPWSTR szErr = ErrorNameFromErrorCode(ulError);
-	printf("0x%08X = %ws\n",ulError,szErr);
-} // PrintErrFromNum
+	printf("0x%08X = %ws\n", ulError, szErr);
+}
 
 void PrintErrFromName(_In_z_ LPCWSTR lpszError)
 {
 	ULONG i = 0;
 
-	for (i = 0;i < g_ulErrorArray;i++)
+	for (i = 0; i < g_ulErrorArray; i++)
 	{
-		if (0 == lstrcmpiW(lpszError,g_ErrorArray[i].lpszName))
+		if (0 == lstrcmpiW(lpszError, g_ErrorArray[i].lpszName))
 		{
-			printf("0x%08X = %ws\n",g_ErrorArray[i].ulErrorName,lpszError);
+			printf("0x%08X = %ws\n", g_ErrorArray[i].ulErrorName, lpszError);
 		}
 	}
-} // PrintErrFromName
+}
 
 void PrintErrFromPartialName(_In_opt_z_ LPCWSTR lpszError)
 {
-	if (lpszError) printf("Searching for \"%ws\"\n",lpszError);
+	if (lpszError) printf("Searching for \"%ws\"\n", lpszError);
 	else printf("Searching for all errors\n");
 
 	ULONG ulCur = 0;
 	ULONG ulNumMatches = 0;
 
-	for (ulCur = 0 ; ulCur < g_ulErrorArray ; ulCur++)
+	for (ulCur = 0; ulCur < g_ulErrorArray; ulCur++)
 	{
-		if (!lpszError || 0 != StrStrIW(g_ErrorArray[ulCur].lpszName,lpszError))
+		if (!lpszError || 0 != StrStrIW(g_ErrorArray[ulCur].lpszName, lpszError))
 		{
-			printf("0x%08X = %ws\n",g_ErrorArray[ulCur].ulErrorName,g_ErrorArray[ulCur].lpszName);
+			printf("0x%08X = %ws\n", g_ErrorArray[ulCur].ulErrorName, g_ErrorArray[ulCur].lpszName);
 			ulNumMatches++;
 		}
 	}
-	printf("Found %u matches.\n",ulNumMatches);
-} // PrintErrFromPartialName
+	printf("Found %u matches.\n", ulNumMatches);
+}
 
 void DoErrorParse(_In_ MYOPTIONS ProgOpts)
 {
 	ULONG ulErrNum = NULL;
-	LPWSTR lpszErr = ProgOpts.lpszUnswitchedOption;
+	LPCWSTR lpszErr = ProgOpts.lpszUnswitchedOption.empty() ? NULL : ProgOpts.lpszUnswitchedOption.c_str();
 
 	if (lpszErr)
 	{
 		ULONG ulArg = NULL;
 		LPWSTR szEndPtr = NULL;
-		ulArg = wcstoul(lpszErr,&szEndPtr,(ProgOpts.ulOptions & OPT_DODECIMAL)?10:16);
+		ulArg = wcstoul(lpszErr, &szEndPtr, (ProgOpts.ulOptions & OPT_DODECIMAL) ? 10 : 16);
 
 		// if szEndPtr is pointing to something other than NULL, this must be a string
 		if (!szEndPtr || *szEndPtr)
@@ -79,4 +80,4 @@ void DoErrorParse(_In_ MYOPTIONS ProgOpts)
 			PrintErrFromName(lpszErr);
 		}
 	}
-} // DoErrorParse
+}

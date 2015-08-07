@@ -146,7 +146,7 @@ void ExportProfileService(FILE* fProfile, int iRow, LPSERVICEADMIN lpServiceAdmi
 	OutputToFile(fProfile, _T("</service>\n"));
 }
 
-void ExportProfile(_In_z_ LPCSTR szProfile, _In_z_ LPWSTR szProfileSection, bool bByteSwapped, _In_z_ LPWSTR szFileName)
+void ExportProfile(_In_z_ LPCSTR szProfile, _In_z_ LPCWSTR szProfileSection, bool bByteSwapped, _In_z_ LPCWSTR szFileName)
 {
 	if (!szProfile) return;
 

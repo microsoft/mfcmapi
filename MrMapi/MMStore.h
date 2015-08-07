@@ -4,7 +4,7 @@
 HRESULT HrMAPIOpenStoreAndFolder(
 	_In_ LPMAPISESSION lpMAPISession,
 	_In_ ULONG ulFolder,
-	_In_z_ LPCWSTR lpszFolderPath,
+	_In_ wstring lpszFolderPath,
 	_Out_opt_ LPMDB* lppMDB,
 	_Deref_out_opt_ LPMAPIFOLDER* lppFolder);
 

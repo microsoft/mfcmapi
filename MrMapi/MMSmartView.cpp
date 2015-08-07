@@ -22,15 +22,15 @@ void DoSmartView(_In_ MYOPTIONS ProgOpts)
 	{
 		FILE* fIn = NULL;
 		FILE* fOut = NULL;
-		fIn = _wfopen(ProgOpts.lpszInput, L"rb");
-		if (!fIn) printf("Cannot open input file %ws\n", ProgOpts.lpszInput);
-		if (ProgOpts.lpszOutput)
+		fIn = _wfopen(ProgOpts.lpszInput.c_str(), L"rb");
+		if (!fIn) printf("Cannot open input file %ws\n", ProgOpts.lpszInput.c_str());
+		if (!ProgOpts.lpszOutput.empty())
 		{
-			fOut = _wfopen(ProgOpts.lpszOutput, L"wb");
-			if (!fOut) printf("Cannot open output file %ws\n", ProgOpts.lpszOutput);
+			fOut = _wfopen(ProgOpts.lpszOutput.c_str(), L"wb");
+			if (!fOut) printf("Cannot open output file %ws\n", ProgOpts.lpszOutput.c_str());
 		}
 
-		if (fIn && (!ProgOpts.lpszOutput || fOut))
+		if (fIn && (ProgOpts.lpszOutput.empty() || fOut))
 		{
 			int iDesc = _fileno(fIn);
 			long iLength = _filelength(iDesc);

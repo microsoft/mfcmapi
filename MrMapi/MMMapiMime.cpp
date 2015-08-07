@@ -20,7 +20,7 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 		printf("MAPI -> MIME\n");
 
 		printf("   Save Format: %s\n", CHECKFLAG(MAPIMIME_RFC822) ? "RFC822" : "RFC1521");
-		
+
 		if (CHECKFLAG(MAPIMIME_WRAP))
 		{
 			printf("   Line Wrap: ");
@@ -41,7 +41,7 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 		{
 			printf("   CodePage: %u\n", ProgOpts.ulCodePage);
 			printf("   CharSetType: ");
-			switch(ProgOpts.cSetType)
+			switch (ProgOpts.cSetType)
 			{
 			case CHARSET_BODY: printf("CHARSET_BODY"); break;
 			case CHARSET_HEADER: printf("CHARSET_HEADER"); break;
@@ -49,7 +49,7 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 			}
 			printf("\n");
 			printf("   CharSetApplyType: ");
-			switch(ProgOpts.cSetApplyType)
+			switch (ProgOpts.cSetApplyType)
 			{
 			case CSET_APPLY_UNTAGGED: printf("CSET_APPLY_UNTAGGED"); break;
 			case CSET_APPLY_ALL: printf("CSET_APPLY_ALL"); break;
@@ -64,7 +64,7 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 		wstring szFlags = InterpretFlags(flagCcsf, ProgOpts.ulConvertFlags);
 		if (!szFlags.empty())
 		{
-			printf("   Conversion Flags: %ws\n", szFlags.empty()); 
+			printf("   Conversion Flags: %ws\n", szFlags.empty());
 		}
 	}
 
@@ -87,19 +87,20 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 	LPADRBOOK lpAdrBook = NULL;
 	if (CHECKFLAG(MAPIMIME_ADDRESSBOOK) && ProgOpts.lpMAPISession)
 	{
-		WC_MAPI(ProgOpts.lpMAPISession->OpenAddressBook(NULL,NULL,AB_NO_DIALOG,&lpAdrBook));
+		WC_MAPI(ProgOpts.lpMAPISession->OpenAddressBook(NULL, NULL, AB_NO_DIALOG, &lpAdrBook));
 		if (FAILED(hRes)) printf("OpenAddressBook returned an error: 0x%08x\n", hRes);
 	}
+
 	if (CHECKFLAG(MAPIMIME_TOMIME))
 	{
 		// Source file is MSG, target is EML
 		WC_H(ConvertMSGToEML(
-			ProgOpts.lpszInput,
-			ProgOpts.lpszOutput,
+			ProgOpts.lpszInput.c_str(),
+			ProgOpts.lpszOutput.c_str(),
 			ProgOpts.ulConvertFlags,
 			CHECKFLAG(MAPIMIME_ENCODING) ? (ENCODINGTYPE)ProgOpts.ulEncodingType : IET_UNKNOWN,
-			CHECKFLAG(MAPIMIME_RFC822) ? SAVE_RFC822 : SAVE_RFC1521, 
-			CHECKFLAG(MAPIMIME_WRAP)?ProgOpts.ulWrapLines:USE_DEFAULT_WRAPPING,
+			CHECKFLAG(MAPIMIME_RFC822) ? SAVE_RFC822 : SAVE_RFC1521,
+			CHECKFLAG(MAPIMIME_WRAP) ? ProgOpts.ulWrapLines : USE_DEFAULT_WRAPPING,
 			lpAdrBook));
 	}
 	else if (CHECKFLAG(MAPIMIME_TOMAPI))
@@ -108,17 +109,17 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 		HCHARSET hCharSet = NULL;
 		if (CHECKFLAG(MAPIMIME_CHARSET))
 		{
-			WC_H(MyMimeOleGetCodePageCharset(ProgOpts.ulCodePage,ProgOpts.cSetType,&hCharSet));
-			if (FAILED(hRes)) 
+			WC_H(MyMimeOleGetCodePageCharset(ProgOpts.ulCodePage, ProgOpts.cSetType, &hCharSet));
+			if (FAILED(hRes))
 			{
-				printf("MimeOleGetCodePageCharset returned 0x%08X\n",hRes);
+				printf("MimeOleGetCodePageCharset returned 0x%08X\n", hRes);
 			}
 		}
 		if (SUCCEEDED(hRes))
 		{
 			WC_H(ConvertEMLToMSG(
-				ProgOpts.lpszInput, 
-				ProgOpts.lpszOutput, 
+				ProgOpts.lpszInput.c_str(),
+				ProgOpts.lpszOutput.c_str(),
 				ProgOpts.ulConvertFlags,
 				CHECKFLAG(MAPIMIME_CHARSET),
 				hCharSet,
