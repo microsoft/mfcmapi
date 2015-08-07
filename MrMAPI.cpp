@@ -30,19 +30,19 @@ void InitMFC()
 #pragma warning(disable:6387)
 	if (!AfxWinInit(::GetModuleHandle(NULL), NULL, ::GetCommandLine(), 0)) return;
 #pragma warning(pop)
-} // InitMFC
+}
 
-_Check_return_ HRESULT MrMAPILogonEx(_In_opt_z_ LPCWSTR lpszProfile, _Deref_out_opt_ LPMAPISESSION* lppSession)
+_Check_return_ HRESULT MrMAPILogonEx(_In_ wstring lpszProfile, _Deref_out_opt_ LPMAPISESSION* lppSession)
 {
 	HRESULT hRes = S_OK;
 	ULONG ulFlags = MAPI_EXTENDED | MAPI_NO_MAIL | MAPI_UNICODE | MAPI_NEW_SESSION;
-	if (!lpszProfile) ulFlags |= MAPI_USE_DEFAULT;
+	if (lpszProfile.empty()) ulFlags |= MAPI_USE_DEFAULT;
 
-	WC_MAPI(MAPILogonEx(NULL, (LPTSTR)lpszProfile, NULL,
+	WC_MAPI(MAPILogonEx(NULL, (LPTSTR)(lpszProfile.empty() ? NULL : lpszProfile.c_str()), NULL,
 		ulFlags,
 		lppSession));
 	return hRes;
-} // MrMAPILogonEx
+}
 
 _Check_return_ HRESULT OpenExchangeOrDefaultMessageStore(
 	_In_ LPMAPISESSION lpMAPISession,
@@ -465,7 +465,7 @@ void DisplayUsage(BOOL bFull)
 		printf("\n");
 		printf("   MrMAPI -p 17 -i webview.txt -o parsed.txt");
 	}
-} // DisplayUsage
+}
 
 bool bSetMode(_In_ CmdMode* pMode, _In_ CmdMode TargetMode)
 {
@@ -475,7 +475,7 @@ bool bSetMode(_In_ CmdMode* pMode, _In_ CmdMode TargetMode)
 		return true;
 	}
 	return false;
-} // bSetMode
+}
 
 struct OptParser
 {
@@ -544,8 +544,9 @@ OptParser* GetParser(__CommandLineSwitch Switch)
 	{
 		if (Switch == g_Parsers[i].Switch) return &g_Parsers[i];
 	}
+
 	return NULL;
-} // GetParser
+}
 
 // Checks if szArg is an option, and if it is, returns which option it is
 // We return the first match, so g_Switches should be ordered appropriately
@@ -577,13 +578,13 @@ __CommandLineSwitch ParseArgument(_In_z_ LPCSTR szArg)
 			return g_Switches[i].iSwitch;
 		}
 	}
+
 	return switchUnknown;
-} // ParseArgument
+}
 
 // Parses command line arguments and fills out MYOPTIONS
 bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * pRunOpts)
 {
-	HRESULT hRes = S_OK;
 	LPSTR szEndPtr = NULL;
 
 	// Clear our options list
@@ -639,36 +640,36 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 			pRunOpts->ulFolder = strtoul(argv[i + 1], &szEndPtr, 10);
 			if (!pRunOpts->ulFolder)
 			{
-				EC_H(AnsiToUnicode(argv[i + 1], &pRunOpts->lpszFolderPath));
+				pRunOpts->lpszFolderPath = LPSTRToWstring(argv[i + 1]);
 				pRunOpts->ulFolder = DEFAULT_INBOX;
 			}
 			i++;
 			break;
 		case switchInput:
-			EC_H(AnsiToUnicode(argv[i + 1], &pRunOpts->lpszInput));
+			pRunOpts->lpszInput = LPSTRToWstring(argv[i + 1]);
 			i++;
 			break;
 		case switchOutput:
-			EC_H(AnsiToUnicode(argv[i + 1], &pRunOpts->lpszOutput));
+			pRunOpts->lpszOutput = LPSTRToWstring(argv[i + 1]);
 			i++;
 			break;
 		case switchProfile:
 			// If we have a next argument and it's not an option, parse it as a profile name
 			if (i + 1 < argc && switchNoSwitch == ParseArgument(argv[i + 1]))
 			{
-				EC_H(AnsiToUnicode(argv[i + 1], &pRunOpts->lpszProfile));
+				pRunOpts->lpszProfile = LPSTRToWstring(argv[i + 1]);
 				i++;
 			}
 			break;
 		case switchProfileSection:
-			EC_H(AnsiToUnicode(argv[i + 1], &pRunOpts->lpszProfileSection));
+			pRunOpts->lpszProfileSection = LPSTRToWstring(argv[i + 1]);
 			i++;
 			break;
 		case switchByteSwapped:
 			pRunOpts->bByteSwapped = true;
 			break;
 		case switchVersion:
-			EC_H(AnsiToUnicode(argv[i + 1], &pRunOpts->lpszVersion));
+			pRunOpts->lpszVersion = LPSTRToWstring(argv[i + 1]);
 			i++;
 			break;
 			// Proptag parsing
@@ -682,7 +683,7 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 			break;
 		case switchFlag:
 			// If we have a next argument and it's not an option, parse it as a flag
-			EC_H(AnsiToUnicode(argv[i + 1], &pRunOpts->lpszFlagName));
+			pRunOpts->lpszFlagName = LPSTRToWstring(argv[i + 1]);
 			pRunOpts->ulFlagValue = strtoul(argv[i + 1], &szEndPtr, 16);
 
 			// Set mode based on whether the flag string was completely parsed as a number
@@ -704,11 +705,11 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 			break;
 			// Contents tables
 		case switchSubject:
-			EC_H(AnsiToUnicode(argv[i + 1], &pRunOpts->lpszSubject));
+			pRunOpts->lpszSubject = LPSTRToWstring(argv[i + 1]);
 			i++;
 			break;
 		case switchMessageClass:
-			EC_H(AnsiToUnicode(argv[i + 1], &pRunOpts->lpszMessageClass));
+			pRunOpts->lpszMessageClass = LPSTRToWstring(argv[i + 1]);
 			i++;
 			break;
 		case switchRecent:
@@ -719,20 +720,21 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 		case switchFid:
 			if (i + 1 < argc  && switchNoSwitch == ParseArgument(argv[i + 1]))
 			{
-				EC_H(AnsiToUnicode(argv[i + 1], &pRunOpts->lpszFid));
+				pRunOpts->lpszFid = LPSTRToWstring(argv[i + 1]);
 				i++;
 			}
 			break;
 		case switchMid:
 			if (i + 1 < argc  && switchNoSwitch == ParseArgument(argv[i + 1]))
 			{
-				EC_H(AnsiToUnicode(argv[i + 1], &pRunOpts->lpszMid));
+				pRunOpts->lpszMid = LPSTRToWstring(argv[i + 1]);
 				i++;
 			}
 			else
 			{
 				// We use the blank string to remember the -mid parameter was passed and save having an extra flag
-				EC_H(AnsiToUnicode("", &pRunOpts->lpszMid)); // STRING_OK
+				// TODO: Check if this works
+				pRunOpts->lpszMid = L"";
 			}
 			break;
 			// Store Properties / Receive Folder:
@@ -794,8 +796,8 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 
 		case switchNoSwitch:
 			// naked option without a flag - we only allow one of these
-			if (pRunOpts->lpszUnswitchedOption)  { bHitError = true; break; } // He's already got one, you see.
-			EC_H(AnsiToUnicode(argv[i], &pRunOpts->lpszUnswitchedOption));
+			if (!pRunOpts->lpszUnswitchedOption.empty()) { bHitError = true; break; } // He's already got one, you see.
+			pRunOpts->lpszUnswitchedOption = LPSTRToWstring(argv[i]);
 			break;
 		case switchUnknown:
 			// display help
@@ -827,23 +829,23 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 	if (cmdmodeUnknown == pRunOpts->Mode) pRunOpts->Mode = cmdmodePropTag;
 
 	// If we weren't passed an output file/directory, remember the current directory
-	if (!pRunOpts->lpszOutput && pRunOpts->Mode != cmdmodeSmartView && pRunOpts->Mode != cmdmodeProfile)
+	if (pRunOpts->lpszOutput.empty() && pRunOpts->Mode != cmdmodeSmartView && pRunOpts->Mode != cmdmodeProfile)
 	{
-		CHAR strPath[_MAX_PATH];
+		char strPath[_MAX_PATH];
 		GetCurrentDirectoryA(_MAX_PATH, strPath);
 
-		EC_H(AnsiToUnicode(strPath, &pRunOpts->lpszOutput));
+		pRunOpts->lpszOutput = LPSTRToWstring(strPath);
 	}
 
 	// Validate that we have bare minimum to run
-	if (pRunOpts->ulOptions & OPT_NEEDINPUTFILE && !pRunOpts->lpszInput) return false;
-	if (pRunOpts->ulOptions & OPT_NEEDOUTPUTFILE && !pRunOpts->lpszOutput) return false;
+	if (pRunOpts->ulOptions & OPT_NEEDINPUTFILE && pRunOpts->lpszInput.empty()) return false;
+	if (pRunOpts->ulOptions & OPT_NEEDOUTPUTFILE && pRunOpts->lpszOutput.empty()) return false;
 
 	switch (pRunOpts->Mode)
 	{
 	case cmdmodePropTag:
-		if ((pRunOpts->ulOptions & OPT_DOTYPE) && !(pRunOpts->ulOptions & OPT_DOPARTIALSEARCH) && (pRunOpts->lpszUnswitchedOption != NULL)) return false;
-		if (!(pRunOpts->ulOptions & OPT_DOTYPE) && !(pRunOpts->ulOptions & OPT_DOPARTIALSEARCH) && (pRunOpts->lpszUnswitchedOption == NULL)) return false;
+		if ((pRunOpts->ulOptions & OPT_DOTYPE) && !(pRunOpts->ulOptions & OPT_DOPARTIALSEARCH) && (!pRunOpts->lpszUnswitchedOption.empty())) return false;
+		if (!(pRunOpts->ulOptions & OPT_DOTYPE) && !(pRunOpts->ulOptions & OPT_DOPARTIALSEARCH) && (pRunOpts->lpszUnswitchedOption.empty())) return false;
 		if ((pRunOpts->ulOptions & OPT_DOPARTIALSEARCH) && (pRunOpts->ulOptions & OPT_DOTYPE) && ulNoMatch == pRunOpts->ulTypeNum) return false;
 		if ((pRunOpts->ulOptions & OPT_DOFLAG) && ((pRunOpts->ulOptions & OPT_DOPARTIALSEARCH) || (pRunOpts->ulOptions & OPT_DOTYPE))) return false;
 		break;
@@ -872,9 +874,9 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 			return false;
 		break;
 	case cmdmodeProfile:
-		if (pRunOpts->lpszProfile && !pRunOpts->lpszOutput) return false;
-		if (!pRunOpts->lpszProfile && pRunOpts->lpszOutput) return false;
-		if (pRunOpts->lpszProfileSection && !pRunOpts->lpszProfile) return false;
+		if (!pRunOpts->lpszProfile.empty() && pRunOpts->lpszOutput.empty()) return false;
+		if (pRunOpts->lpszProfile.empty() && !pRunOpts->lpszOutput.empty()) return false;
+		if (!pRunOpts->lpszProfileSection.empty() && pRunOpts->lpszProfile.empty()) return false;
 		break;
 	default:
 		break;
@@ -886,17 +888,16 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 
 // Returns true if we've done everything we need to do and can exit the program.
 // Returns false to continue work.
-bool LoadMAPIVersion(LPWSTR lpszVersion)
+bool LoadMAPIVersion(wstring lpszVersion)
 {
 	// Load DLLS and get functions from them
 	ImportProcs();
 	DebugPrint(DBGGeneric, "LoadMAPIVersion(%ws)\n", lpszVersion);
 
 	LPWSTR szPath = NULL;
-	_wcslwr(lpszVersion);
 
 	LPWSTR szEndPtr = NULL;
-	ULONG ulVersion = wcstoul(lpszVersion, &szEndPtr, 10);
+	ULONG ulVersion = wcstoul(lpszVersion.c_str(), &szEndPtr, 10);
 	MAPIPathIterator* mpi = new MAPIPathIterator(true);
 	if (mpi)
 	{
@@ -904,13 +905,14 @@ bool LoadMAPIVersion(LPWSTR lpszVersion)
 		{
 			DebugPrint(DBGGeneric, "Got a string\n");
 
+			wstringToLower(lpszVersion);
 			for (;;)
 			{
 				szPath = mpi->GetNextMAPIPath();
 				if (!szPath) break;
 				_wcslwr(szPath);
 
-				if (wcsstr(szPath, lpszVersion))
+				if (wcsstr(szPath, lpszVersion.c_str()))
 				{
 					break;
 				}
@@ -967,9 +969,10 @@ bool LoadMAPIVersion(LPWSTR lpszVersion)
 		SetMAPIHandle(hMAPI);
 		delete[] szPath;
 	}
+
 	delete mpi;
 	return false;
-} // LoadMAPIVersion
+}
 
 void main(_In_ int argc, _In_count_(argc) char * argv[])
 {
@@ -1007,7 +1010,7 @@ void main(_In_ int argc, _In_count_(argc) char * argv[])
 		LoadAddIns();
 	}
 
-	if (ProgOpts.lpszVersion)
+	if (!ProgOpts.lpszVersion.empty())
 	{
 		if (LoadMAPIVersion(ProgOpts.lpszVersion)) return;
 	}
@@ -1139,14 +1142,4 @@ void main(_In_ int argc, _In_count_(argc) char * argv[])
 	{
 		UnloadAddIns();
 	}
-
-	delete[] ProgOpts.lpszProfile;
-	delete[] ProgOpts.lpszUnswitchedOption;
-	delete[] ProgOpts.lpszInput;
-	delete[] ProgOpts.lpszOutput;
-	delete[] ProgOpts.lpszSubject;
-	delete[] ProgOpts.lpszMessageClass;
-	delete[] ProgOpts.lpszFolderPath;
-	delete[] ProgOpts.lpszFid;
-	delete[] ProgOpts.lpszMid;
-} // main
+}

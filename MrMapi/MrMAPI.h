@@ -1,5 +1,7 @@
 #pragma once
 // MrMAPI.h : MrMAPI command line
+#include <string>
+using namespace std;
 
 #define ulNoMatch 0xffffffff
 
@@ -54,20 +56,20 @@ struct MYOPTIONS
 {
 	CmdMode Mode;
 	ULONG ulOptions;
-	LPWSTR lpszUnswitchedOption;
-	LPWSTR lpszProfile;
+	wstring lpszUnswitchedOption;
+	wstring lpszProfile;
 	ULONG ulTypeNum;
 	ULONG ulSVParser;
-	LPWSTR lpszInput;
-	LPWSTR lpszOutput;
-	LPWSTR lpszSubject;
-	LPWSTR lpszMessageClass;
-	LPWSTR lpszFolderPath;
-	LPWSTR lpszFid;
-	LPWSTR lpszMid;
-	LPWSTR lpszFlagName;
-	LPWSTR lpszVersion;
-	LPWSTR lpszProfileSection;
+	wstring lpszInput;
+	wstring lpszOutput;
+	wstring lpszSubject;
+	wstring lpszMessageClass;
+	wstring lpszFolderPath;
+	wstring lpszFid;
+	wstring lpszMid;
+	wstring lpszFlagName;
+	wstring lpszVersion;
+	wstring lpszProfileSection;
 	ULONG ulStore;
 	ULONG ulFolder;
 	ULONG ulMAPIMIMEFlags;

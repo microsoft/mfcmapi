@@ -7,13 +7,13 @@
 #include "..\File.h"
 
 void DumpContentsTable(
-	_In_z_ LPWSTR lpszProfile,
+	_In_z_ LPCWSTR lpszProfile,
 	_In_ LPMDB lpMDB,
 	_In_ LPMAPIFOLDER lpFolder,
 	_In_z_ LPWSTR lpszDir,
 	_In_ ULONG ulOptions,
 	_In_ ULONG ulFolder,
-	_In_z_ LPWSTR lpszFolder,
+	_In_z_ LPCWSTR lpszFolder,
 	_In_ ULONG ulCount,
 	_In_opt_ LPSRestriction lpRes)
 {
@@ -51,7 +51,7 @@ void DumpContentsTable(
 			0 != (ulOptions & OPT_DOASSOCIATEDCONTENTS),
 			false);
 	}
-} // DumpContentsTable
+}
 
 void DumpMSG(_In_z_ LPCWSTR lpszMSGFile, _In_z_ LPCWSTR lpszXMLFile, _In_ bool bRetryStreamProps)
 {
@@ -70,7 +70,7 @@ void DumpMSG(_In_z_ LPCWSTR lpszMSGFile, _In_z_ LPCWSTR lpszXMLFile, _In_ bool b
 		MyDumpStore.ProcessMessage(lpMessage, true, NULL);
 		lpMessage->Release();
 	}
-} // DumpMSG
+}
 
 void DoContents(_In_ MYOPTIONS ProgOpts)
 {
@@ -80,7 +80,7 @@ void DoContents(_In_ MYOPTIONS ProgOpts)
 	SRestriction sResMessageClass[2] = { 0 };
 	SPropValue sPropValue[2] = { 0 };
 	LPSRestriction lpRes = NULL;
-	if (ProgOpts.lpszSubject || ProgOpts.lpszMessageClass)
+	if (!ProgOpts.lpszSubject.empty() || !ProgOpts.lpszMessageClass.empty())
 	{
 		// RES_AND
 		//   RES_AND (optional)
@@ -90,7 +90,7 @@ void DoContents(_In_ MYOPTIONS ProgOpts)
 		//     RES_EXIST - PR_MESSAGE_CLASS_W
 		//     RES_CONTENT - lpszMessageClass
 		int i = 0;
-		if (ProgOpts.lpszSubject)
+		if (!ProgOpts.lpszSubject.empty())
 		{
 			sResMiddle[i].rt = RES_AND;
 			sResMiddle[i].res.resAnd.cRes = 2;
@@ -102,10 +102,11 @@ void DoContents(_In_ MYOPTIONS ProgOpts)
 			sResSubject[1].res.resContent.ulFuzzyLevel = FL_FULLSTRING | FL_IGNORECASE;
 			sResSubject[1].res.resContent.lpProp = &sPropValue[0];
 			sPropValue[0].ulPropTag = PR_SUBJECT_W;
-			sPropValue[0].Value.lpszW = ProgOpts.lpszSubject;
+			sPropValue[0].Value.lpszW = (LPWSTR)ProgOpts.lpszSubject.c_str();
 			i++;
 		}
-		if (ProgOpts.lpszMessageClass)
+
+		if (!ProgOpts.lpszMessageClass.empty())
 		{
 			sResMiddle[i].rt = RES_AND;
 			sResMiddle[i].res.resAnd.cRes = 2;
@@ -117,7 +118,7 @@ void DoContents(_In_ MYOPTIONS ProgOpts)
 			sResMessageClass[1].res.resContent.ulFuzzyLevel = FL_FULLSTRING | FL_IGNORECASE;
 			sResMessageClass[1].res.resContent.lpProp = &sPropValue[1];
 			sPropValue[1].ulPropTag = PR_MESSAGE_CLASS_W;
-			sPropValue[1].Value.lpszW = ProgOpts.lpszMessageClass;
+			sPropValue[1].Value.lpszW = (LPWSTR)ProgOpts.lpszMessageClass.c_str();
 			i++;
 		}
 		sResTop.rt = RES_AND;
@@ -126,22 +127,23 @@ void DoContents(_In_ MYOPTIONS ProgOpts)
 		lpRes = &sResTop;
 		DebugPrintRestriction(DBGGeneric, lpRes, NULL);
 	}
+
 	DumpContentsTable(
-		ProgOpts.lpszProfile,
+		ProgOpts.lpszProfile.c_str(),
 		ProgOpts.lpMDB,
 		ProgOpts.lpFolder,
-		ProgOpts.lpszOutput ? ProgOpts.lpszOutput : L".",
+		!ProgOpts.lpszOutput.empty() ? ProgOpts.lpszOutput.c_str() : L".",
 		ProgOpts.ulOptions,
 		ProgOpts.ulFolder,
-		ProgOpts.lpszFolderPath,
+		ProgOpts.lpszFolderPath.c_str(),
 		ProgOpts.ulCount,
 		lpRes);
-} // DoContents
+}
 
 void DoMSG(_In_ MYOPTIONS ProgOpts)
 {
 	DumpMSG(
-		ProgOpts.lpszInput,
-		ProgOpts.lpszOutput ? ProgOpts.lpszOutput : L".",
+		ProgOpts.lpszInput.c_str(),
+		!ProgOpts.lpszOutput.empty() ? ProgOpts.lpszOutput.c_str() : L".",
 		0 != (ProgOpts.ulOptions & OPT_RETRYSTREAMPROPS));
-} // DoMAPIMIME
+}

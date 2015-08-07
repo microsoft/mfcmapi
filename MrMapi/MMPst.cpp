@@ -89,34 +89,34 @@ void PrintCryptType(BYTE bCryptMethod)
 	printf("0x%02X (", bCryptMethod);
 	switch (bCryptMethod)
 	{
-	case (NDB_CRYPT_NONE):
+	case (NDB_CRYPT_NONE) :
 		printf("not encoded");
 		break;
-	case (NDB_CRYPT_PERMUTE):
+	case (NDB_CRYPT_PERMUTE) :
 		printf("permutative encoding");
 		break;
-	case (NDB_CRYPT_CYCLIC):
+	case (NDB_CRYPT_CYCLIC) :
 		printf("cyclic encoding");
 		break;
 	}
 	printf(")");
-} // PrintCryptType
+}
 
 void PrintAMAPValid(BYTE fAMapValid)
 {
 	printf("0x%02X (", fAMapValid);
 	switch (fAMapValid)
 	{
-	case (0):
+	case (0) :
 		printf("not valid");
 		break;
-	case (1):
-	case (2):
-		printf("valid");
+	case (1) :
+	case (2) :
+			 printf("valid");
 		break;
 	}
 	printf(")");
-} // PrintAMAPValid
+}
 
 #define KB (1024)
 #define MB (KB * 1024)
@@ -127,35 +127,35 @@ void PrintFileSize(ULONGLONG ullFileSize)
 	double scaledSize = 0;
 	if (ullFileSize > GB)
 	{
-		scaledSize = ullFileSize / (double) GB;
+		scaledSize = ullFileSize / (double)GB;
 		printf("%.2f GB", scaledSize);
 	}
 	else if (ullFileSize > MB)
 	{
-		scaledSize = ullFileSize / (double) MB;
+		scaledSize = ullFileSize / (double)MB;
 		printf("%.2f MB", scaledSize);
 	}
 	else if (ullFileSize > KB)
 	{
-		scaledSize = ullFileSize / (double) KB;
+		scaledSize = ullFileSize / (double)KB;
 		printf("%.2f KB", scaledSize);
 	}
 	printf(" (%I64u bytes)", ullFileSize);
-} // PrintFileSize
+}
 
 void DoPST(_In_ MYOPTIONS ProgOpts)
 {
-	printf("Analyzing %ws\n", ProgOpts.lpszInput);
+	printf("Analyzing %ws\n", ProgOpts.lpszInput.c_str());
 
-	_stat64 stats = {0};
-	_wstati64(ProgOpts.lpszInput, &stats);
+	_stat64 stats = { 0 };
+	_wstati64(ProgOpts.lpszInput.c_str(), &stats);
 
 	FILE* fIn = NULL;
-	fIn = _wfopen(ProgOpts.lpszInput,L"rb");
+	fIn = _wfopen(ProgOpts.lpszInput.c_str(), L"rb");
 	if (fIn)
 	{
-		PSTHEADER pstHeader = {0};
-		if (fread(&pstHeader, sizeof(PSTHEADER) ,1, fIn))
+		PSTHEADER pstHeader = { 0 };
+		if (fread(&pstHeader, sizeof(PSTHEADER), 1, fIn))
 		{
 			ULONGLONG ibFileEof = 0;
 			ULONGLONG cbAMapFree = 0;
@@ -165,9 +165,9 @@ void DoPST(_In_ MYOPTIONS ProgOpts)
 
 			if (NDBANSISMALL == pstHeader.wVer || NDBANSILARGE == pstHeader.wVer)
 			{
-				printf("ANSI PST (%ws)\n", NDBANSISMALL == pstHeader.wVer?L"small":L"large");
-				HEADER2ANSI h2Ansi = {0};
-				if (fread(&h2Ansi, sizeof(HEADER2ANSI) ,1, fIn))
+				printf("ANSI PST (%ws)\n", NDBANSISMALL == pstHeader.wVer ? L"small" : L"large");
+				HEADER2ANSI h2Ansi = { 0 };
+				if (fread(&h2Ansi, sizeof(HEADER2ANSI), 1, fIn))
 				{
 					ibFileEof = h2Ansi.root.ibFileEof;
 					cbAMapFree = h2Ansi.root.cbAMapFree;
@@ -178,8 +178,8 @@ void DoPST(_In_ MYOPTIONS ProgOpts)
 			else if (NDBUNICODE == pstHeader.wVer || NDBUNICODE2 == pstHeader.wVer)
 			{
 				printf("Unicode PST\n");
-				HEADER2UNICODE h2Unicode = {0};
-				if (fread(&h2Unicode, sizeof(HEADER2UNICODE) ,1, fIn))
+				HEADER2UNICODE h2Unicode = { 0 };
+				if (fread(&h2Unicode, sizeof(HEADER2UNICODE), 1, fIn))
 				{
 					ibFileEof = h2Unicode.root.ibFileEof;
 					cbAMapFree = h2Unicode.root.cbAMapFree;
@@ -188,7 +188,7 @@ void DoPST(_In_ MYOPTIONS ProgOpts)
 				}
 			}
 
-			if (ibFileEof != (ULONGLONG) stats.st_size)
+			if (ibFileEof != (ULONGLONG)stats.st_size)
 			{
 				printf("File Size (header)  = ");
 				PrintFileSize(ibFileEof);
@@ -227,13 +227,13 @@ void DoPST(_In_ MYOPTIONS ProgOpts)
 		}
 		else
 		{
-			printf("Could not read from %ws. File may be locked or empty.\n",ProgOpts.lpszInput);
+			printf("Could not read from %ws. File may be locked or empty.\n", ProgOpts.lpszInput.c_str());
 		}
 
 		fclose(fIn);
 	}
 	else
 	{
-		printf("Cannot open input file %ws\n",ProgOpts.lpszInput);
+		printf("Cannot open input file %ws\n", ProgOpts.lpszInput.c_str());
 	}
-} // DoPST
+}

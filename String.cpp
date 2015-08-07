@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "string.h"
+#include <algorithm>
 
 wstring format(const LPWSTR fmt, ...)
 {
@@ -115,6 +116,11 @@ wstring LPSTRToWstring(LPSTR src)
 	if (!src) return L"";
 	string ansi = src;
 	return wstring(ansi.begin(), ansi.end());
+}
+
+void wstringToLower(wstring src)
+{
+	std::transform(src.begin(), src.end(), src.begin(), ::tolower);
 }
 
 // if cchszA == -1, MultiByteToWideChar will compute the length

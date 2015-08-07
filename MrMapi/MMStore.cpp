@@ -67,7 +67,7 @@ HRESULT OpenStore(_In_ LPMAPISESSION lpMAPISession, ULONG ulIndex, _Out_ LPMDB* 
 HRESULT HrMAPIOpenStoreAndFolder(
 	_In_ LPMAPISESSION lpMAPISession,
 	_In_ ULONG ulFolder,
-	_In_z_ LPCWSTR lpszFolderPath,
+	_In_ wstring lpszFolderPath,
 	_Out_opt_ LPMDB* lppMDB,
 	_Deref_out_opt_ LPMAPIFOLDER* lppFolder)
 {
@@ -78,17 +78,13 @@ HRESULT HrMAPIOpenStoreAndFolder(
 	if (lpMAPISession)
 	{
 		// Check if we were told which store to open
-		if (lpszFolderPath && lpszFolderPath[0] == L'#')
+		if (!lpszFolderPath.empty() && lpszFolderPath[0] == L'#')
 		{
 			// Skip the '#'
-			lpszFolderPath++;
+			lpszFolderPath.erase(0, 1);
 			SBinary Bin = {0};
-			LPSTR szPath = NULL;
-#ifdef UNICODE
-			szPath = lpszFolderPath;
-#else
-			EC_H(UnicodeToAnsi(lpszFolderPath, &szPath));
-#endif
+			LPSTR szPath = wstringToLPTSTR(lpszFolderPath);
+
 			// Find our slash if we have one and null terminate at it
 			LPSTR szSlash = strchr(szPath + 1, '\\');
 			if (szSlash)
@@ -111,7 +107,16 @@ HRESULT HrMAPIOpenStoreAndFolder(
 						&Bin,
 						MDB_NO_DIALOG | MDB_WRITE,
 						&lpMDB));
-					lpszFolderPath = wcschr(lpszFolderPath + 1, L'\\');
+					size_t slashPos = lpszFolderPath.find_first_of(L'\\');
+					if (slashPos != string::npos)
+					{
+						lpszFolderPath = lpszFolderPath.substr(slashPos, string::npos);
+					}
+					else
+					{
+						lpszFolderPath = L"";
+					}
+
 					delete[] Bin.lpb;
 				}
 			}
@@ -119,7 +124,7 @@ HRESULT HrMAPIOpenStoreAndFolder(
 			{
 				hRes = S_OK;
 				LPWSTR szEndPtr = NULL;
-				ULONG ulStore = wcstoul(lpszFolderPath, &szEndPtr, 10);
+				ULONG ulStore = wcstoul(lpszFolderPath.c_str(), &szEndPtr, 10);
 
 				// Only '\' and NULL are acceptable next characters after our store number
 				if (szEndPtr && (szEndPtr[0] == L'\\' || szEndPtr[0] == L'\0'))
@@ -146,7 +151,7 @@ HRESULT HrMAPIOpenStoreAndFolder(
 
 	if (SUCCEEDED(hRes) && lpMDB)
 	{
-		if (lpszFolderPath)
+		if (!lpszFolderPath.empty())
 		{
 			WC_H(HrMAPIOpenFolderExW(lpMDB, lpszFolderPath, &lpFolder));
 		}
@@ -306,10 +311,11 @@ void DoStore(_In_ MYOPTIONS ProgOpts)
 
 	// If we have a prop tag, parse it
 	// For now, we don't support dispids
-	if (ProgOpts.lpszUnswitchedOption && !(ProgOpts.ulOptions & OPT_DODISPID))
+	if (!ProgOpts.lpszUnswitchedOption.empty() && !(ProgOpts.ulOptions & OPT_DODISPID))
 	{
-		WC_H(PropNameToPropTagW(ProgOpts.lpszUnswitchedOption, &ulPropTag));
+		WC_H(PropNameToPropTagW(ProgOpts.lpszUnswitchedOption.c_str(), &ulPropTag));
 	}
+
 	hRes = S_OK;
 
 	if (ProgOpts.lpMAPISession)
@@ -331,4 +337,4 @@ void DoStore(_In_ MYOPTIONS ProgOpts)
 	}
 
 	if (lpMDB) lpMDB->Release();
-} // DoStore
+}
