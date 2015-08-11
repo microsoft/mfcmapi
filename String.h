@@ -11,6 +11,7 @@ CString wstringToCString(::wstring src);
 wstring LPTSTRToWstring(LPTSTR src);
 wstring LPSTRToWstring(LPSTR src);
 void wstringToLower(wstring src);
+ULONG wstringToUlong(wstring src, int radix);
 
 // Unicode support
 _Check_return_ HRESULT AnsiToUnicode(_In_opt_z_ LPCSTR pszA, _Out_z_cap_(cchszA) LPWSTR* ppszW, size_t cchszA = -1);
