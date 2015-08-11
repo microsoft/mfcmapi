@@ -9,26 +9,26 @@
 
 void PrintErrFromNum(_In_ ULONG ulError)
 {
-	LPWSTR szErr = ErrorNameFromErrorCode(ulError);
-	printf("0x%08X = %ws\n", ulError, szErr);
+	printf("0x%08X = %ws\n", ulError, ErrorNameFromErrorCode(ulError));
 }
 
-void PrintErrFromName(_In_z_ LPCWSTR lpszError)
+void PrintErrFromName(_In_ wstring lpszError)
 {
+	LPCWSTR szErr = lpszError.c_str();
 	ULONG i = 0;
 
 	for (i = 0; i < g_ulErrorArray; i++)
 	{
-		if (0 == lstrcmpiW(lpszError, g_ErrorArray[i].lpszName))
+		if (0 == lstrcmpiW(szErr, g_ErrorArray[i].lpszName))
 		{
-			printf("0x%08X = %ws\n", g_ErrorArray[i].ulErrorName, lpszError);
+			printf("0x%08X = %ws\n", g_ErrorArray[i].ulErrorName, szErr);
 		}
 	}
 }
 
-void PrintErrFromPartialName(_In_opt_z_ LPCWSTR lpszError)
+void PrintErrFromPartialName(_In_ wstring lpszError)
 {
-	if (lpszError) printf("Searching for \"%ws\"\n", lpszError);
+	if (!lpszError.empty()) printf("Searching for \"%ws\"\n", lpszError.c_str());
 	else printf("Searching for all errors\n");
 
 	ULONG ulCur = 0;
@@ -36,34 +36,20 @@ void PrintErrFromPartialName(_In_opt_z_ LPCWSTR lpszError)
 
 	for (ulCur = 0; ulCur < g_ulErrorArray; ulCur++)
 	{
-		if (!lpszError || 0 != StrStrIW(g_ErrorArray[ulCur].lpszName, lpszError))
+		if (lpszError.empty() || 0 != StrStrIW(g_ErrorArray[ulCur].lpszName, lpszError.c_str()))
 		{
 			printf("0x%08X = %ws\n", g_ErrorArray[ulCur].ulErrorName, g_ErrorArray[ulCur].lpszName);
 			ulNumMatches++;
 		}
 	}
+
 	printf("Found %u matches.\n", ulNumMatches);
 }
 
 void DoErrorParse(_In_ MYOPTIONS ProgOpts)
 {
-	ULONG ulErrNum = NULL;
-	LPCWSTR lpszErr = ProgOpts.lpszUnswitchedOption.empty() ? NULL : ProgOpts.lpszUnswitchedOption.c_str();
-
-	if (lpszErr)
-	{
-		ULONG ulArg = NULL;
-		LPWSTR szEndPtr = NULL;
-		ulArg = wcstoul(lpszErr, &szEndPtr, (ProgOpts.ulOptions & OPT_DODECIMAL) ? 10 : 16);
-
-		// if szEndPtr is pointing to something other than NULL, this must be a string
-		if (!szEndPtr || *szEndPtr)
-		{
-			ulArg = NULL;
-		}
-
-		ulErrNum = ulArg;
-	}
+	wstring lpszErr = ProgOpts.lpszUnswitchedOption;
+	ULONG ulErrNum = wstringToUlong(lpszErr, (ProgOpts.ulOptions & OPT_DODECIMAL) ? 10 : 16);
 
 	if (ulErrNum)
 	{
@@ -71,7 +57,7 @@ void DoErrorParse(_In_ MYOPTIONS ProgOpts)
 	}
 	else
 	{
-		if ((ProgOpts.ulOptions & OPT_DOPARTIALSEARCH) || !lpszErr)
+		if ((ProgOpts.ulOptions & OPT_DOPARTIALSEARCH) || lpszErr.empty())
 		{
 			PrintErrFromPartialName(lpszErr);
 		}

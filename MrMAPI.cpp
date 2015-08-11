@@ -844,7 +844,6 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 	switch (pRunOpts->Mode)
 	{
 	case cmdmodePropTag:
-		if ((pRunOpts->ulOptions & OPT_DOTYPE) && !(pRunOpts->ulOptions & OPT_DOPARTIALSEARCH) && (!pRunOpts->lpszUnswitchedOption.empty())) return false;
 		if (!(pRunOpts->ulOptions & OPT_DOTYPE) && !(pRunOpts->ulOptions & OPT_DOPARTIALSEARCH) && (pRunOpts->lpszUnswitchedOption.empty())) return false;
 		if ((pRunOpts->ulOptions & OPT_DOPARTIALSEARCH) && (pRunOpts->ulOptions & OPT_DOTYPE) && ulNoMatch == pRunOpts->ulTypeNum) return false;
 		if ((pRunOpts->ulOptions & OPT_DOFLAG) && ((pRunOpts->ulOptions & OPT_DOPARTIALSEARCH) || (pRunOpts->ulOptions & OPT_DOTYPE))) return false;
@@ -885,6 +884,24 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 	// Didn't fail - return true
 	return true;
 } // ParseArgs
+
+void PrintArgs(_In_ MYOPTIONS ProgOpts)
+{
+	DebugPrint(DBGGeneric, "Mode = %d\n", ProgOpts.Mode);
+	DebugPrint(DBGGeneric, "ulOptions = 0x%08X\n", ProgOpts.ulOptions);
+	DebugPrint(DBGGeneric, "ulTypeNum = 0x%08X\n", ProgOpts.ulTypeNum);
+	if (!ProgOpts.lpszUnswitchedOption.empty()) DebugPrint(DBGGeneric, "lpszUnswitchedOption = %ws\n", ProgOpts.lpszUnswitchedOption.c_str());
+	if (!ProgOpts.lpszFlagName.empty()) DebugPrint(DBGGeneric, "lpszFlagName = %ws\n", ProgOpts.lpszFlagName.c_str());
+	if (!ProgOpts.lpszFolderPath.empty()) DebugPrint(DBGGeneric, "lpszFolderPath = %ws\n", ProgOpts.lpszFolderPath.c_str());
+	if (!ProgOpts.lpszInput.empty()) DebugPrint(DBGGeneric, "lpszInput = %ws\n", ProgOpts.lpszInput.c_str());
+	if (!ProgOpts.lpszMessageClass.empty()) DebugPrint(DBGGeneric, "lpszMessageClass = %ws\n", ProgOpts.lpszMessageClass.c_str());
+	if (!ProgOpts.lpszMid.empty()) DebugPrint(DBGGeneric, "lpszMid = %ws\n", ProgOpts.lpszMid.c_str());
+	if (!ProgOpts.lpszOutput.empty()) DebugPrint(DBGGeneric, "lpszOutput = %ws\n", ProgOpts.lpszOutput.c_str());
+	if (!ProgOpts.lpszProfile.empty()) DebugPrint(DBGGeneric, "lpszProfile = %ws\n", ProgOpts.lpszProfile.c_str());
+	if (!ProgOpts.lpszProfileSection.empty()) DebugPrint(DBGGeneric, "lpszProfileSection = %ws\n", ProgOpts.lpszProfileSection.c_str());
+	if (!ProgOpts.lpszSubject.empty()) DebugPrint(DBGGeneric, "lpszSubject = %ws\n", ProgOpts.lpszSubject.c_str());
+	if (!ProgOpts.lpszVersion.empty()) DebugPrint(DBGGeneric, "lpszVersion = %ws\n", ProgOpts.lpszVersion.c_str());
+}
 
 // Returns true if we've done everything we need to do and can exit the program.
 // Returns false to continue work.
@@ -1002,6 +1019,7 @@ void main(_In_ int argc, _In_count_(argc) char * argv[])
 	if (ProgOpts.ulOptions & OPT_VERBOSE)
 	{
 		RegKeys[regkeyDEBUG_TAG].ulCurDWORD = 0xFFFFFFFF;
+		PrintArgs(ProgOpts);
 	}
 
 	if (!(ProgOpts.ulOptions & OPT_NOADDINS))

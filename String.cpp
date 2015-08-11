@@ -123,6 +123,23 @@ void wstringToLower(wstring src)
 	std::transform(src.begin(), src.end(), src.begin(), ::tolower);
 }
 
+// Converts a wstring to a number. Will return 0 if string is empty or contains non-numeric data.
+ULONG wstringToUlong(wstring src, int radix)
+{
+	if (src.empty()) return 0;
+
+	LPWSTR szEndPtr = NULL;
+	ULONG ulArg = wcstoul(src.c_str(), &szEndPtr, radix);
+
+	// if szEndPtr is pointing to something other than NULL, this must be a string
+	if (!szEndPtr || *szEndPtr)
+	{
+		ulArg = NULL;
+	}
+
+	return ulArg;
+}
+
 // if cchszA == -1, MultiByteToWideChar will compute the length
 // Delete with delete[]
 _Check_return_ HRESULT AnsiToUnicode(_In_opt_z_ LPCSTR pszA, _Out_z_cap_(cchszA) LPWSTR* ppszW, size_t cchszA)
