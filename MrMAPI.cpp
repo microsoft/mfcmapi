@@ -123,6 +123,7 @@ enum __CommandLineSwitch
 	switchProfileSection,     // '-profiles'
 	switchByteSwapped,        // '-b'
 	switchReceiveFolder,      // '-receivefolder'
+	switchSkip,               // '-sk'
 };
 
 struct COMMANDLINE_SWITCH
@@ -184,6 +185,7 @@ COMMANDLINE_SWITCH g_Switches[] =
 	{ switchProfileSection, "ProfileSection" },
 	{ switchByteSwapped, "ByteSwapped" },
 	{ switchReceiveFolder, "ReceiveFolder" },
+	{ switchSkip, "Skip" },
 	// If we want to add aliases for any switches, add them here
 	{ switchHelp, "Help" },
 };
@@ -232,11 +234,11 @@ void DisplayUsage(BOOL bFull)
 	printf("   MrMAPI -%s [-%s <profile>] [-%s <folder>]\n", g_Switches[switchAcl].szSwitch, g_Switches[switchProfile].szSwitch, g_Switches[switchFolder].szSwitch);
 	printf("   MrMAPI -%s | -%s [-%s <profile>] [-%s <folder>] [-%s <output directory>]\n",
 		g_Switches[switchContents].szSwitch, g_Switches[switchAssociatedContents].szSwitch, g_Switches[switchProfile].szSwitch, g_Switches[switchFolder].szSwitch, g_Switches[switchOutput].szSwitch);
-	printf("          [-%s <subject>] [-%s <message class>] [-%s] [-%s] [-%s <count>]\n",
-		g_Switches[switchSubject].szSwitch, g_Switches[switchMessageClass].szSwitch, g_Switches[switchMSG].szSwitch, g_Switches[switchList].szSwitch, g_Switches[switchRecent].szSwitch);
+	printf("          [-%s <subject>] [-%s <message class>] [-%s] [-%s] [-%s <count>] [-%s]\n",
+		g_Switches[switchSubject].szSwitch, g_Switches[switchMessageClass].szSwitch, g_Switches[switchMSG].szSwitch, g_Switches[switchList].szSwitch, g_Switches[switchRecent].szSwitch, g_Switches[switchSkip].szSwitch);
 	printf("   MrMAPI -%s [-%s <profile>] [-%s <folder>]\n", g_Switches[switchChildFolders].szSwitch, g_Switches[switchProfile].szSwitch, g_Switches[switchFolder].szSwitch);
-	printf("   MrMAPI -%s -%s <path to input file> -%s <path to output file>\n",
-		g_Switches[switchXML].szSwitch, g_Switches[switchInput].szSwitch, g_Switches[switchOutput].szSwitch);
+	printf("   MrMAPI -%s -%s <path to input file> -%s <path to output file> [-%s]\n",
+		g_Switches[switchXML].szSwitch, g_Switches[switchInput].szSwitch, g_Switches[switchOutput].szSwitch, g_Switches[switchSkip].szSwitch);
 	printf("   MrMAPI -%s [fid] [-%s [mid]] [-%s <profile>]\n",
 		g_Switches[switchFid].szSwitch, g_Switches[switchMid].szSwitch, g_Switches[switchProfile].szSwitch);
 	printf("   MrMAPI [<property number>|<property name>] -%s [<store num>] [-%s <profile>]\n",
@@ -411,6 +413,7 @@ void DisplayUsage(BOOL bFull)
 		printf("              \"@1\"\n");
 		printf("   -Pr  (or -%s) Profile for MAPILogonEx.\n", g_Switches[switchProfile].szSwitch);
 		printf("   -M   (or -%s) More properties. Tries harder to get stream properties. May take longer.\n", g_Switches[switchMoreProperties].szSwitch);
+		printf("   -Sk  (or -%s) Skip embedded message attachments on export.\n", g_Switches[switchSkip].szSwitch);
 		printf("   -No  (or -%s) No Addins. Don't load any add-ins.\n", g_Switches[switchNoAddins].szSwitch);
 		printf("   -On  (or -%s) Online mode. Bypass cached mode.\n", g_Switches[switchOnline].szSwitch);
 		printf("   -V   (or -%s) Verbose. Turn on all debug output.\n", g_Switches[switchVerbose].szSwitch);
@@ -499,6 +502,7 @@ OptParser g_Parsers[] =
 	{ switchOutput, cmdmodeUnknown, 1, 1, 0 },
 	{ switchProfile, cmdmodeUnknown, 0, 1, OPT_PROFILE },
 	{ switchMoreProperties, cmdmodeUnknown, 0, 0, OPT_RETRYSTREAMPROPS },
+	{ switchSkip, cmdmodeUnknown, 0, 0, OPT_SKIPATTACHMENTS },
 	{ switchDispid, cmdmodePropTag, 0, 0, OPT_DODISPID },
 	{ switchType, cmdmodePropTag, 0, 1, OPT_DOTYPE },
 	{ switchFlag, cmdmodeUnknown, 1, 1, 0 }, // can't know until we parse the argument
