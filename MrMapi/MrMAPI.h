@@ -50,7 +50,8 @@ enum CmdMode
 #define OPT_NEEDINPUTFILE        0x40000
 #define OPT_NEEDOUTPUTFILE       0x80000
 #define OPT_PROFILE             0x100000
-#define OPT_NEEDSTORE			0x200000
+#define OPT_NEEDSTORE           0x200000
+#define OPT_SKIPATTACHMENTS     0x400000
 
 struct MYOPTIONS
 {

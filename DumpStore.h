@@ -23,6 +23,7 @@ public:
 	void EnableMSG();
 	void EnableList();
 	void DisableStreamRetry();
+	void DisableEmbeddedAttachments();
 
 private:
 	// Worker functions (dump messages, scan for something, etc)
@@ -62,4 +63,5 @@ private:
 	bool m_bOutputMSG;
 	bool m_bOutputList;
 	bool m_bRetryStreamProps;
+	bool m_bOutputAttachments;
 };

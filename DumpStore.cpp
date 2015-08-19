@@ -25,15 +25,16 @@ CDumpStore::CDumpStore()
 	m_fMailboxTable = NULL;
 
 	m_bRetryStreamProps = true;
+	m_bOutputAttachments = true;
 	m_bOutputMSG = false;
 	m_bOutputList = false;
 } // CDumpStore::CDumpStore
 
 CDumpStore::~CDumpStore()
 {
-	if (m_fFolderProps)		CloseFile(m_fFolderProps);
-	if (m_fFolderContents)	CloseFile(m_fFolderContents);
-	if (m_fMailboxTable)	CloseFile(m_fMailboxTable);
+	if (m_fFolderProps) CloseFile(m_fFolderProps);
+	if (m_fFolderContents) CloseFile(m_fFolderContents);
+	if (m_fMailboxTable) CloseFile(m_fMailboxTable);
 	MAPIFreeBuffer(m_szFolderPath);
 } // CDumpStore::~CDumpStore
 
@@ -91,6 +92,11 @@ void CDumpStore::EnableList()
 void CDumpStore::DisableStreamRetry()
 {
 	m_bRetryStreamProps = false;
+}
+
+void CDumpStore::DisableEmbeddedAttachments()
+{
+	m_bOutputAttachments = false;
 }
 
 // --------------------------------------------------------------------------------- //
@@ -515,7 +521,7 @@ void OutputMessageXML(
 		if (lpMsgData->szFilePath[cchLen] == L'.') lpMsgData->szFilePath[cchLen] = L'\0';
 
 		// build a string for appending
-		WCHAR	szNewExt[MAX_PATH];
+		WCHAR szNewExt[MAX_PATH];
 		WC_H(StringCchPrintfW(szNewExt, _countof(szNewExt), L"-Attach%u.xml", ((LPMESSAGEDATA)lpParentMessageData)->ulCurAttNum)); // STRING_OK
 
 		// append our string
@@ -606,6 +612,7 @@ void OutputMessageXML(
 		{
 			ulInCodePage = lpTemp->Value.l;
 		}
+
 		OutputBody(lpMsgData->fMessageProps, lpMessage, PR_RTF_COMPRESSED, _T("WrapCompressedRTFEx best body"), true, ulInCodePage);
 
 		if (lpAllProps)
@@ -617,8 +624,9 @@ void OutputMessageXML(
 			OutputToFile(lpMsgData->fMessageProps, _T("</properties>\n"));
 		}
 	}
+
 	MAPIFreeBuffer(lpAllProps);
-} // OutputMessageXML
+}
 
 void OutputMessageMSG(
 	_In_ LPMESSAGE lpMessage,
@@ -686,6 +694,7 @@ void OutputMessageMSG(
 bool CDumpStore::BeginMessageWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpParentMessageData, _Deref_out_opt_ LPVOID* lpData)
 {
 	if (lpData) *lpData = NULL;
+	if (lpParentMessageData && !m_bOutputAttachments) return false;
 	if (m_bOutputList) return false;
 
 	if (m_bOutputMSG)
@@ -698,7 +707,7 @@ bool CDumpStore::BeginMessageWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpParent
 		OutputMessageXML(lpMessage, lpParentMessageData, m_szMessageFileName, m_szFolderPath, m_bRetryStreamProps, lpData);
 		return true;
 	}
-} // CDumpStore::BeginMessageWork
+}
 
 bool CDumpStore::BeginRecipientWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID lpData)
 {

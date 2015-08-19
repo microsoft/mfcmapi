@@ -22,6 +22,7 @@ void DumpContentsTable(
 	if (ulOptions & OPT_DOASSOCIATEDCONTENTS) DebugPrint(DBGGeneric, "DumpContentsTable: Outputting Associated Contents\n");
 	if (ulOptions & OPT_MSG) DebugPrint(DBGGeneric, "DumpContentsTable: Outputting as MSG\n");
 	if (ulOptions & OPT_RETRYSTREAMPROPS) DebugPrint(DBGGeneric, "DumpContentsTable: Will retry stream properties\n");
+	if (ulOptions & OPT_SKIPATTACHMENTS) DebugPrint(DBGGeneric, "DumpContentsTable: Will skip attachments\n");
 	if (ulOptions & OPT_LIST) DebugPrint(DBGGeneric, "DumpContentsTable: List only mode\n");
 	if (ulCount) DebugPrint(DBGGeneric, "DumpContentsTable: Limiting output to %u messages.\n", ulCount);
 
@@ -45,7 +46,10 @@ void DumpContentsTable(
 			SortOrder.aSort[0].ulOrder = TABLE_SORT_DESCEND;
 			MyDumpStore.InitSortOrder(&SortOrder);
 		}
+
 		if (!(ulOptions & OPT_RETRYSTREAMPROPS)) MyDumpStore.DisableStreamRetry();
+		if (ulOptions & OPT_SKIPATTACHMENTS) MyDumpStore.DisableEmbeddedAttachments();
+
 		MyDumpStore.ProcessFolders(
 			0 != (ulOptions & OPT_DOCONTENTS),
 			0 != (ulOptions & OPT_DOASSOCIATEDCONTENTS),
@@ -53,7 +57,7 @@ void DumpContentsTable(
 	}
 }
 
-void DumpMSG(_In_z_ LPCWSTR lpszMSGFile, _In_z_ LPCWSTR lpszXMLFile, _In_ bool bRetryStreamProps)
+void DumpMSG(_In_z_ LPCWSTR lpszMSGFile, _In_z_ LPCWSTR lpszXMLFile, _In_ bool bRetryStreamProps, _In_ bool bOutputAttachments)
 {
 	HRESULT hRes = S_OK;
 	LPMESSAGE lpMessage = NULL;
@@ -65,6 +69,7 @@ void DumpMSG(_In_z_ LPCWSTR lpszMSGFile, _In_z_ LPCWSTR lpszXMLFile, _In_ bool b
 		CDumpStore MyDumpStore;
 		MyDumpStore.InitMessagePath(lpszXMLFile);
 		if (!bRetryStreamProps) MyDumpStore.DisableStreamRetry();
+		if (!bOutputAttachments) MyDumpStore.DisableEmbeddedAttachments();
 
 		// Just assume this message might have attachments
 		MyDumpStore.ProcessMessage(lpMessage, true, NULL);
@@ -145,5 +150,6 @@ void DoMSG(_In_ MYOPTIONS ProgOpts)
 	DumpMSG(
 		ProgOpts.lpszInput.c_str(),
 		!ProgOpts.lpszOutput.empty() ? ProgOpts.lpszOutput.c_str() : L".",
-		0 != (ProgOpts.ulOptions & OPT_RETRYSTREAMPROPS));
+		0 != (ProgOpts.ulOptions & OPT_RETRYSTREAMPROPS),
+		0 == (ProgOpts.ulOptions & OPT_SKIPATTACHMENTS));
 }
