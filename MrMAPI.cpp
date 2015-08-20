@@ -541,6 +541,29 @@ OptParser g_Parsers[] =
 	{ switchNoSwitch, cmdmodeUnknown, 0, 0, 0 },
 };
 
+MYOPTIONS::MYOPTIONS()
+{
+	Mode = cmdmodeUnknown;
+	ulOptions = 0;
+	ulTypeNum = 0;
+	ulSVParser = 0;
+	ulStore = 0;
+	ulFolder = 0;
+	ulMAPIMIMEFlags = 0;
+	ulConvertFlags = 0;
+	ulWrapLines = 0;
+	ulEncodingType = 0;
+	ulCodePage = 0;
+	ulFlagValue = 0;
+	ulCount = 0;
+	bByteSwapped = false;
+	cSetType = CHARSET_BODY;
+	cSetApplyType = CSET_APPLY_UNTAGGED;
+	lpMAPISession = NULL;
+	lpMDB = NULL;
+	lpFolder = NULL;
+}
+
 OptParser* GetParser(__CommandLineSwitch Switch)
 {
 	int i = 0;
@@ -590,9 +613,6 @@ __CommandLineSwitch ParseArgument(_In_z_ LPCSTR szArg)
 bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * pRunOpts)
 {
 	LPSTR szEndPtr = NULL;
-
-	// Clear our options list
-	ZeroMemory(pRunOpts, sizeof(MYOPTIONS));
 
 	pRunOpts->ulTypeNum = ulNoMatch;
 	pRunOpts->ulFolder = DEFAULT_INBOX;
@@ -887,7 +907,7 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 
 	// Didn't fail - return true
 	return true;
-} // ParseArgs
+}
 
 void PrintArgs(_In_ MYOPTIONS ProgOpts)
 {
