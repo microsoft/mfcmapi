@@ -86,6 +86,8 @@ struct MYOPTIONS
 	LPMAPISESSION lpMAPISession;
 	LPMDB lpMDB;
 	LPMAPIFOLDER lpFolder;
+
+	MYOPTIONS();
 };
 
 _Check_return_ HRESULT MrMAPILogonEx(_In_opt_z_ LPCWSTR lpszProfile, _Deref_out_opt_ LPMAPISESSION* lppSession);
