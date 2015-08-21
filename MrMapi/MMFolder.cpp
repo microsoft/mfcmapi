@@ -632,6 +632,52 @@ ULONGLONG ComputeFolderSize(
 	return 0;
 }
 
+void DumpSearchState(
+	_In_ wstring lpszProfile,
+	_In_ LPMAPIFOLDER lpFolder,
+	_In_ ULONG ulFolder,
+	_In_ wstring lpszFolder)
+{
+	DebugPrint(DBGGeneric, "DumpSearchState: Outputting search state for folder %u / %ws from profile %ws \n", ulFolder, lpszFolder.c_str(), lpszProfile.c_str());
+
+	HRESULT hRes = S_OK;
+
+	if (lpFolder)
+	{
+		LPSRestriction lpRes = NULL;
+		LPENTRYLIST lpEntryList = NULL;
+		ULONG ulSearchState = 0;
+
+		WC_H(lpFolder->GetSearchCriteria(
+			fMapiUnicode,
+			&lpRes,
+			&lpEntryList,
+			&ulSearchState));
+		if (MAPI_E_NOT_INITIALIZED == hRes)
+		{
+			printf("No search criteria has been set on this folder.\n");
+		}
+		else if (MAPI_E_NO_SUPPORT == hRes)
+		{
+			printf("This does not appear to be a search folder.\n");
+		}
+		else if (SUCCEEDED(hRes))
+		{
+			wstring szFlags = InterpretFlags(flagSearchState, ulSearchState);
+			printf("Search state %ws == 0x%08X\n", szFlags.c_str(), ulSearchState);
+			printf("\n");
+			printf("Search Scope:\n");
+			_OutputEntryList(DBGNoDebug, stdout, lpEntryList);
+			printf("\n");
+			printf("Search Criteria:\n");
+			_OutputRestriction(DBGNoDebug, stdout, lpRes, NULL);
+		}
+
+		MAPIFreeBuffer(lpRes);
+		MAPIFreeBuffer(lpEntryList);
+	}
+}
+
 void DoFolderProps(_In_ MYOPTIONS ProgOpts)
 {
 	if (ProgOpts.lpFolder)
@@ -663,4 +709,13 @@ void DoChildFolders(_In_ MYOPTIONS ProgOpts)
 		ProgOpts.ulFolder,
 		!ProgOpts.lpszFolderPath.empty() ? ProgOpts.lpszFolderPath.c_str() : L"",
 		0);
+}
+
+void DoSearchState(_In_ MYOPTIONS ProgOpts)
+{
+	DumpSearchState(
+		!ProgOpts.lpszProfile.empty() ? ProgOpts.lpszProfile.c_str() : L"",
+		ProgOpts.lpFolder,
+		ProgOpts.ulFolder,
+		!ProgOpts.lpszFolderPath.empty() ? ProgOpts.lpszFolderPath.c_str() : L"");
 }

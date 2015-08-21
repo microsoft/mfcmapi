@@ -27,6 +27,7 @@ enum CmdMode
 	cmdmodePST,
 	cmdmodeProfile,
 	cmdmodeReceiveFolder,
+	cmdmodeSearchState,
 };
 
 #define OPT_DOPARTIALSEARCH      0x00001
