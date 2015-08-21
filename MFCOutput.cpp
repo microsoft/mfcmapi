@@ -36,23 +36,23 @@ void OpenDebugFile()
 		}
 #endif
 	}
-} // OpenDebugFile
+}
 
 void CloseDebugFile()
 {
 	if (g_fDebugFile) CloseFile(g_fDebugFile);
 	g_fDebugFile = NULL;
-} // CloseDebugFile
+}
 
 _Check_return_ ULONG GetDebugLevel()
 {
 	return RegKeys[regkeyDEBUG_TAG].ulCurDWORD;
-} // GetDebugLevel
+}
 
 void SetDebugLevel(ULONG ulDbgLvl)
 {
 	RegKeys[regkeyDEBUG_TAG].ulCurDWORD = ulDbgLvl;
-} // SetDebugLevel
+}
 
 // We've got our 'new' value here and also a debug output file name
 // gonna set the new value
@@ -82,7 +82,7 @@ void SetDebugOutputToFile(bool bDoOutput)
 		}
 		DebugPrintVersion(DBGVersionBanner);
 	}
-} // SetDebugOutputToFile
+}
 
 #define CHKPARAM ASSERT(DBGNoDebug != ulDbgLvl || fFile)
 
@@ -132,49 +132,20 @@ _Check_return_ FILE* MyOpenFile(_In_z_ LPCWSTR szFileName, bool bNewFile)
 		LocalFree(szSysErr);
 		return NULL;
 	}
-} // MyOpenFile
+}
 
 void CloseFile(_In_opt_ FILE* fFile)
 {
 	if (fFile) fclose(fFile);
-} // CloseFile
-
-// Allocated with new, clean with delete[]
-LPTSTR StripCarriage(_In_z_ LPCTSTR szString)
-{
-	size_t dwLen = _tcslen(szString);
-	LPTSTR szNewString = new TCHAR[dwLen + 1];
-	if (szNewString)
-	{
-		size_t iSrc = 0;
-		size_t iDest = 0;
-		for (iSrc = 0; iSrc < dwLen; iSrc++)
-		{
-			if (_T('\r') != szString[iSrc])
-				szNewString[iDest++] = szString[iSrc];
-		}
-		szNewString[iDest] = _T('\0');
-	}
-	return szNewString;
 }
 
-wstring StripCarriageW(wstring szString)
+wstring StripCarriage(wstring szString)
 {
 	szString.erase(std::remove(szString.begin(), szString.end(), L'\r'), szString.end());
 	return szString;
 }
 
-void WriteFile(_In_ FILE* fFile, _In_z_ LPCTSTR szString)
-{
-	LPTSTR szOut = StripCarriage(szString);
-	if (szOut)
-	{
-		_fputts(szOut, fFile);
-		delete[] szOut;
-	}
-}
-
-void WriteFileW(_In_ FILE* fFile, wstring szString)
+void WriteFile(_In_ FILE* fFile, wstring szString)
 {
 	if (!szString.empty())
 	{
@@ -185,7 +156,7 @@ void WriteFileW(_In_ FILE* fFile, wstring szString)
 void OutputThreadTime(ULONG ulDbgLvl)
 {
 	// Compute current time and thread for a time stamp
-	TCHAR szThreadTime[MAX_PATH];
+	wstring szThreadTime;
 
 	SYSTEMTIME stLocalTime = {};
 	FILETIME ftLocalTime = {};
@@ -193,20 +164,19 @@ void OutputThreadTime(ULONG ulDbgLvl)
 	GetSystemTime(&stLocalTime);
 	GetSystemTimeAsFileTime(&ftLocalTime);
 
-	(void)StringCchPrintf(szThreadTime,
-		_countof(szThreadTime),
-		_T("0x%04x %02d:%02u:%02u.%03u%s  %02u-%02u-%4u 0x%08X: "), // STRING_OK
+	szThreadTime = format(
+		L"0x%04x %02d:%02u:%02u.%03u%ws  %02u-%02u-%4u 0x%08X: ", // STRING_OK
 		GetCurrentThreadId(),
 		(stLocalTime.wHour <= 12) ? stLocalTime.wHour : stLocalTime.wHour - 12,
 		stLocalTime.wMinute,
 		stLocalTime.wSecond,
 		stLocalTime.wMilliseconds,
-		(stLocalTime.wHour <= 12) ? _T("AM") : _T("PM"), // STRING_OK
+		(stLocalTime.wHour <= 12) ? L"AM" : L"PM", // STRING_OK
 		stLocalTime.wMonth,
 		stLocalTime.wDay,
 		stLocalTime.wYear,
 		ulDbgLvl);
-	OutputDebugString(szThreadTime);
+	OutputDebugStringW(szThreadTime.c_str());
 #ifndef MRMAPI
 	OutputToDbgView(szThreadTime);
 #endif
@@ -218,12 +188,12 @@ void OutputThreadTime(ULONG ulDbgLvl)
 	}
 }
 
-// The root of all debug output - call no debug output functions besides OutputDebugString from here!
-void _Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, _In_opt_z_ LPCTSTR szMsg)
+void _OutputW(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, wstring szMsg)
 {
 	CHKPARAM;
 	EARLYABORT;
-	if (!szMsg) return; // nothing to print? Cool!
+	if (szMsg.empty()) return; // nothing to print? Cool!
+	szMsg = StripCarriage(szMsg);
 
 	// print to debug output
 	if (fIsSetv(ulDbgLvl))
@@ -233,14 +203,9 @@ void _Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, _In_op
 			OutputThreadTime(ulDbgLvl);
 		}
 
-		OutputDebugString(szMsg);
+		OutputDebugStringW(szMsg.c_str());
 #ifdef MRMAPI
-		LPTSTR szOut = StripCarriage(szMsg);
-		if (szOut)
-		{
-			_tprintf(szOut);
-			delete[] szOut;
-		}
+		wprintf(L"%ws", szMsg.c_str());
 #else
 		OutputToDbgView(szMsg);
 #endif
@@ -259,42 +224,21 @@ void _Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, _In_op
 	}
 }
 
-void _OutputW(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, wstring szMsg)
+void _OutputA(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, _In_opt_z_ string szMsg)
 {
 	CHKPARAM;
 	EARLYABORT;
-	if (szMsg.empty()) return; // nothing to print? Cool!
-	szMsg = StripCarriageW(szMsg);
+	_OutputW(ulDbgLvl, fFile, bPrintThreadTime, stringToWstring(szMsg));
+}
 
-	// print to debug output
-	if (fIsSetv(ulDbgLvl))
-	{
-		if (bPrintThreadTime)
-		{
-			OutputThreadTime(ulDbgLvl);
-		}
-
-		OutputDebugStringW(szMsg.c_str());
-#ifdef MRMAPI
-		wprintf(L"%ws", szMsg.c_str());
+// The root of all debug output - call no debug output functions besides OutputDebugString from here!
+void _Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, _In_opt_z_ LPCTSTR szMsg)
+{
+#ifdef UNICODE
+	_OutputW(ulDbgLvl, fFile, bPrintThreadTime, szMsg);
 #else
-		LPTSTR lpszMsg = wstringToLPTSTR(szMsg);
-		OutputToDbgView(lpszMsg);
-		delete[] lpszMsg;
+	_OutputA(ulDbgLvl, fFile, bPrintThreadTime, szMsg);
 #endif
-
-		// print to to our debug output log file
-		if (RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD && g_fDebugFile)
-		{
-			WriteFileW(g_fDebugFile, szMsg);
-		}
-	}
-
-	// If we were given a file - send the output there
-	if (fFile)
-	{
-		WriteFileW(fFile, szMsg);
-	}
 }
 
 void __cdecl Outputf(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, _Printf_format_string_ LPCTSTR szMsg, ...)
@@ -305,7 +249,7 @@ void __cdecl Outputf(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime
 
 	if (!szMsg)
 	{
-		_Output(ulDbgLvl, fFile, true, _T("Output called with NULL szMsg!\n"));
+		_OutputW(ulDbgLvl, fFile, true, L"Output called with NULL szMsg!\n");
 		return;
 	}
 
@@ -316,9 +260,10 @@ void __cdecl Outputf(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime
 	WC_H(StringCchVPrintf(szDebugString, _countof(szDebugString), szMsg, argList));
 	if (FAILED(hRes))
 	{
-		_Output(DBGFatalError, NULL, true, _T("Debug output string not large enough to print everything to it\n"));
+		_OutputW(DBGFatalError, NULL, true, L"Debug output string not large enough to print everything to it\n");
 		// Since this function was 'safe', we've still got something we can print - send it on.
 	}
+
 	va_end(argList);
 
 	_Output(ulDbgLvl, fFile, bPrintThreadTime, szDebugString);
@@ -332,7 +277,7 @@ void __cdecl OutputToFilef(_In_opt_ FILE* fFile, _Printf_format_string_ LPCTSTR 
 
 	if (!szMsg)
 	{
-		_Output(DBGFatalError, fFile, true, _T("OutputToFilef called with NULL szMsg!\n"));
+		_OutputW(DBGFatalError, fFile, true, L"OutputToFilef called with NULL szMsg!\n");
 		return;
 	}
 
@@ -343,13 +288,14 @@ void __cdecl OutputToFilef(_In_opt_ FILE* fFile, _Printf_format_string_ LPCTSTR 
 	hRes = StringCchVPrintf(szDebugString, _countof(szDebugString), szMsg, argList);
 	if (S_OK != hRes)
 	{
-		_Output(DBGFatalError, NULL, true, _T("Debug output string not large enough to print everything to it\n"));
+		_OutputW(DBGFatalError, NULL, true, L"Debug output string not large enough to print everything to it\n");
 		// Since this function was 'safe', we've still got something we can print - send it on.
 	}
+
 	va_end(argList);
 
 	_Output(DBGNoDebug, fFile, false, szDebugString);
-} // OutputToFilef
+}
 
 void __cdecl DebugPrint(ULONG ulDbgLvl, _Printf_format_string_ LPCTSTR szMsg, ...)
 {
@@ -368,9 +314,12 @@ void __cdecl DebugPrint(ULONG ulDbgLvl, _Printf_format_string_ LPCTSTR szMsg, ..
 			_Output(ulDbgLvl, NULL, true, szDebugString);
 	}
 	else
+	{
 		_Output(ulDbgLvl, NULL, true, szMsg);
+	}
+	
 	va_end(argList);
-} // DebugPrint
+}
 
 void __cdecl DebugPrintEx(ULONG ulDbgLvl, _In_z_ LPCTSTR szClass, _In_z_ LPCTSTR szFunc, _Printf_format_string_ LPCTSTR szMsg, ...)
 {
@@ -391,7 +340,7 @@ void __cdecl DebugPrintEx(ULONG ulDbgLvl, _In_z_ LPCTSTR szClass, _In_z_ LPCTSTR
 		if (hRes == S_OK)
 			_Output(ulDbgLvl, NULL, true, szDebugString);
 	}
-} // DebugPrintEx
+}
 
 void OutputIndent(ULONG ulDbgLvl, _In_opt_ FILE* fFile, int iIndent)
 {
@@ -409,14 +358,14 @@ void _OutputBinary(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSBinary lpBin)
 
 	if (!lpBin)
 	{
-		_Output(DBGFatalError, fFile, true, _T("OutputBinary called with NULL lpBin!\n"));
+		_OutputW(DBGFatalError, fFile, true, L"OutputBinary called with NULL lpBin!\n");
 		return;
 	}
 
-	_Output(ulDbgLvl, fFile, false, wstringToCString(BinToHexString(lpBin, true)));
+	_OutputW(ulDbgLvl, fFile, false, BinToHexString(lpBin, true));
 
-	_Output(ulDbgLvl, fFile, false, _T("\n"));
-} // _OutputBinary
+	_OutputW(ulDbgLvl, fFile, false, L"\n");
+}
 
 void _OutputNamedPropID(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPINAMEID lpName)
 {
@@ -438,14 +387,8 @@ void _OutputNamedPropID(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPINAMEID 
 			lpName->Kind.lpwstrName);
 	}
 
-	LPTSTR szGuid = wstringToLPTSTR(GUIDToStringAndName(lpName->lpguid));
-
-	if (szGuid)
-	{
-		_Output(ulDbgLvl, fFile, false, szGuid);
-		delete[] szGuid;
-		Outputf(ulDbgLvl, fFile, false, _T("\n"));
-	}
+	_OutputW(ulDbgLvl, fFile, false, GUIDToStringAndName(lpName->lpguid));
+	_OutputW(ulDbgLvl, fFile, false, L"\n");
 }
 
 void _OutputFormInfo(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMINFO lpMAPIFormInfo)
@@ -508,6 +451,7 @@ void _OutputFormInfo(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMINFO l
 					lpMAPIVerbArray->aMAPIVerb[i].grfAttribs);
 			}
 		}
+
 		MAPIFreeBuffer(lpMAPIVerbArray);
 	}
 
@@ -519,7 +463,7 @@ void _OutputFormInfo(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMINFO l
 		_OutputFormPropArray(ulDbgLvl, fFile, lpMAPIFormPropArray);
 		MAPIFreeBuffer(lpMAPIFormPropArray);
 	}
-} // _OutputFormInfo
+}
 
 void _OutputFormPropArray(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMPROPARRAY lpMAPIFormPropArray)
 {
@@ -659,7 +603,7 @@ void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify, _
 			Outputf(ulDbgLvl, fFile, false, _T(" = %ws"), szFlags.c_str());
 		}
 
-		Outputf(ulDbgLvl, fFile, false, _T("\n"));
+		_OutputW(ulDbgLvl, fFile, false, L"\n");
 
 		SBinary sbin = { 0 };
 		switch (lpNotifications[i].ulEventType)
@@ -884,11 +828,7 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 	if (szNamedPropName) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPNAMEDNAME].uidName, szNamedPropName, false, iIndent);
 
 	Property prop = ParseProperty(lpProp);
-#ifdef _UNICODE
-	_Output(ulDbgLvl, fFile, false, prop.toXML(iIndent).c_str());
-#else
-	_Output(ulDbgLvl, fFile, false, s_converter.to_bytes(prop.toXML(iIndent)).c_str());
-#endif
+	_OutputW(ulDbgLvl, fFile, false, prop.toXML(iIndent));
 
 	wstring szSmartView = InterpretPropSmartView(
 		lpProp,
@@ -902,7 +842,7 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 		OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPSMARTVIEW].uidName, wstringToLPTSTR(szSmartView), true, iIndent);
 	}
 
-	_Output(ulDbgLvl, fFile, false, _T("\t</property>\n"));
+	_OutputW(ulDbgLvl, fFile, false, L"\t</property>\n");
 
 	delete[] szPartialMatches;
 	delete[] szExactMatches;
@@ -963,13 +903,13 @@ void _OutputSRow(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSRow lpSRow, _In_o
 
 	if (!lpSRow)
 	{
-		_Output(ulDbgLvl, fFile, true, _T("OutputSRow called with NULL lpSRow!\n"));
+		_OutputW(ulDbgLvl, fFile, true, L"OutputSRow called with NULL lpSRow!\n");
 		return;
 	}
 
 	if (lpSRow->cValues && !lpSRow->lpProps)
 	{
-		_Output(ulDbgLvl, fFile, true, _T("OutputSRow called with NULL lpSRow->lpProps!\n"));
+		_OutputW(ulDbgLvl, fFile, true, L"OutputSRow called with NULL lpSRow->lpProps!\n");
 		return;
 	}
 
@@ -983,7 +923,7 @@ void _OutputSRowSet(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSRowSet lpRowSe
 
 	if (!lpRowSet)
 	{
-		_Output(ulDbgLvl, fFile, true, _T("OutputSRowSet called with NULL lpRowSet!\n"));
+		_OutputW(ulDbgLvl, fFile, true, L"OutputSRowSet called with NULL lpRowSet!\n");
 		return;
 	}
 
@@ -1003,7 +943,7 @@ void _OutputRestriction(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_opt_ LPSRestri
 
 	if (!lpRes)
 	{
-		_Output(ulDbgLvl, fFile, true, _T("_OutputRestriction called with NULL lpRes!\n"));
+		_OutputW(ulDbgLvl, fFile, true, L"_OutputRestriction called with NULL lpRes!\n");
 		return;
 	}
 
@@ -1022,7 +962,7 @@ void _OutputStream(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSTREAM lpStream)
 
 	if (!lpStream)
 	{
-		_Output(ulDbgLvl, fFile, true, _T("OutputStream called with NULL lpStream!\n"));
+		_OutputW(ulDbgLvl, fFile, true, L"OutputStream called with NULL lpStream!\n");
 		return;
 	}
 
@@ -1047,7 +987,7 @@ void _OutputStream(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSTREAM lpStream)
 			_Output(ulDbgLvl, fFile, true, (TCHAR*)bBuf);
 		}
 	} while (ulNumBytes > 0);
-} // _OutputStream
+}
 
 void _OutputVersion(ULONG ulDbgLvl, _In_opt_ FILE* fFile)
 {
@@ -1086,9 +1026,9 @@ void _OutputVersion(ULONG ulDbgLvl, _In_opt_ FILE* fFile)
 					WORD wCodePage;
 				} *lpTranslate = { 0 };
 
-				UINT	cbTranslate = 0;
-				UINT	iCodePages = 0;
-				TCHAR	szSubBlock[256];
+				UINT cbTranslate = 0;
+				UINT iCodePages = 0;
+				TCHAR szSubBlock[256];
 
 				// Read the list of languages and code pages.
 				EC_B(VerQueryValue(
@@ -1148,20 +1088,21 @@ void _OutputVersion(ULONG ulDbgLvl, _In_opt_ FILE* fFile)
 					}
 				}
 			}
+
 			delete[] pbData;
 		}
 	}
-} // _OutputVersion
+}
 
 void OutputCDataOpen(ULONG ulDbgLvl, _In_opt_ FILE* fFile)
 {
-	_Output(ulDbgLvl, fFile, false, _T("<![CDATA["));
-} // OutputCDataOpen
+	_OutputW(ulDbgLvl, fFile, false, L"<![CDATA[");
+}
 
 void OutputCDataClose(ULONG ulDbgLvl, _In_opt_ FILE* fFile)
 {
-	_Output(ulDbgLvl, fFile, false, _T("]]>"));
-} // OutputCDataClose
+	_OutputW(ulDbgLvl, fFile, false, L"]]>");
+}
 
 void ScrubStringForXML(_In_z_ LPTSTR szString)
 {
@@ -1184,7 +1125,7 @@ void ScrubStringForXML(_In_z_ LPTSTR szString)
 			break;
 		}
 	}
-} // ScrubStringForXML
+}
 
 void OutputXMLValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, _In_z_ LPTSTR szValue, bool bWrapCData, int iIndent)
 {

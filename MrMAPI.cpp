@@ -7,7 +7,7 @@
 #include "Smartview\SmartView.h"
 #include "MrMAPI\MMAcls.h"
 #include "MrMAPI\MMContents.h"
-#include "MrMAPI\MMErr.h"Se
+#include "MrMAPI\MMErr.h"
 #include "MrMAPI\MMFidMid.h"
 #include "MrMAPI\MMFolder.h"
 #include "MrMAPI\MMProfile.h"

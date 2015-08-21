@@ -118,6 +118,12 @@ wstring LPSTRToWstring(LPSTR src)
 	return wstring(ansi.begin(), ansi.end());
 }
 
+wstring stringToWstring(string src)
+{
+	return wstring(src.begin(), src.end());
+}
+
+
 void wstringToLower(wstring src)
 {
 	std::transform(src.begin(), src.end(), src.begin(), ::tolower);

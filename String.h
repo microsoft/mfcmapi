@@ -10,6 +10,7 @@ LPWSTR wstringToLPWSTR(wstring src);
 CString wstringToCString(::wstring src);
 wstring LPTSTRToWstring(LPTSTR src);
 wstring LPSTRToWstring(LPSTR src);
+wstring stringToWstring(string src);
 void wstringToLower(wstring src);
 ULONG wstringToUlong(wstring src, int radix);
 

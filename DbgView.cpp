@@ -6,13 +6,14 @@
 #include "DbgView.h"
 #include "ParentWnd.h"
 #include "MFCOutput.h"
+#include "String.h"
 
 class CDbgView : public CEditor
 {
 public:
 	CDbgView(_In_ CParentWnd* pParentWnd);
 	virtual ~CDbgView();
-	void AppendText(_In_z_ LPCTSTR szMsg);
+	void AppendText(wstring szMsg);
 
 private:
 	_Check_return_ ULONG HandleChange(UINT nID);
@@ -30,13 +31,13 @@ CDbgView* g_DgbView = NULL;
 void DisplayDbgView(_In_ CParentWnd* pParentWnd)
 {
 	if (!g_DgbView) g_DgbView = new CDbgView(pParentWnd);
-} // DisplayDbgView
+}
 
-void OutputToDbgView(_In_z_ LPCTSTR szMsg)
+void OutputToDbgView(wstring szMsg)
 {
 	if (!g_DgbView) return;
 	g_DgbView->AppendText(szMsg);
-} // OutputToDbgView
+}
 
 enum __DbgViewFields
 {
@@ -59,24 +60,24 @@ CDbgView::CDbgView(_In_ CParentWnd* pParentWnd):
 	InitPane(DBGVIEW_VIEW, CreateMultiLinePane(NULL, NULL, true));
 	m_bPaused = false;
 	DisplayParentedDialog(pParentWnd,800);
-} // CDbgView::CDbgView
+}
 
 CDbgView::~CDbgView()
 {
 	TRACE_DESTRUCTOR(CLASS);
 	g_DgbView = NULL;
-} // CDbgView::~CDbgView
+}
 
 void CDbgView::OnOK()
 {
 	// Override does nothing except *not* call base OnOK
-} // CDbgView::OnOK
+}
 
 void CDbgView::OnCancel()
 {
 	ShowWindow(SW_HIDE);
 	delete this;
-} // CDbgView::OnCancel
+}
 
 _Check_return_ ULONG CDbgView::HandleChange(UINT nID)
 {
@@ -103,7 +104,7 @@ _Check_return_ ULONG CDbgView::HandleChange(UINT nID)
 	}
 
 	return i;
-} // CDbgView::HandleChange
+}
 
 // Clear
 void CDbgView::OnEditAction1()
@@ -116,15 +117,15 @@ void CDbgView::OnEditAction1()
 			return lpPane->ClearView();
 		}
 	}
-} // CDbgView::OnEditAction1
+}
 
 // Close
 void CDbgView::OnEditAction2()
 {
 	OnCancel();
-} // CDbgView::OnEditAction1
+}
 
-void CDbgView::AppendText(_In_z_ LPCTSTR szMsg)
+void CDbgView::AppendText(wstring szMsg)
 {
 	if (m_bPaused) return;
 
@@ -133,7 +134,9 @@ void CDbgView::AppendText(_In_z_ LPCTSTR szMsg)
 		TextPane* lpPane = (TextPane*) GetControl(DBGVIEW_VIEW);
 		if (lpPane)
 		{
-			return lpPane->AppendString(szMsg);
+			LPCTSTR lpszMsg = wstringToLPTSTR(szMsg);
+			lpPane->AppendString(lpszMsg);
+			delete[] lpszMsg;
 		}
 	}
-} // CDbgView::AppendText
+}
