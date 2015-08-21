@@ -11,6 +11,7 @@
 #include "ColumnTags.h"
 #include "ParseProperty.h"
 #include <cvt/wstring>
+#include <algorithm>
 
 LPCTSTR g_szXMLHeader = _T("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n");
 FILE* g_fDebugFile = NULL;
@@ -155,7 +156,13 @@ LPTSTR StripCarriage(_In_z_ LPCTSTR szString)
 		szNewString[iDest] = _T('\0');
 	}
 	return szNewString;
-} // StripCarriage
+}
+
+wstring StripCarriageW(wstring szString)
+{
+	szString.erase(std::remove(szString.begin(), szString.end(), L'\r'), szString.end());
+	return szString;
+}
 
 void WriteFile(_In_ FILE* fFile, _In_z_ LPCTSTR szString)
 {
@@ -165,7 +172,15 @@ void WriteFile(_In_ FILE* fFile, _In_z_ LPCTSTR szString)
 		_fputts(szOut, fFile);
 		delete[] szOut;
 	}
-} // WriteFile
+}
+
+void WriteFileW(_In_ FILE* fFile, wstring szString)
+{
+	if (!szString.empty())
+	{
+		fputws(szString.c_str(), fFile);
+	}
+}
 
 void OutputThreadTime(ULONG ulDbgLvl)
 {
@@ -241,6 +256,44 @@ void _Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, _In_op
 	if (fFile)
 	{
 		WriteFile(fFile, szMsg);
+	}
+}
+
+void _OutputW(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, wstring szMsg)
+{
+	CHKPARAM;
+	EARLYABORT;
+	if (szMsg.empty()) return; // nothing to print? Cool!
+	szMsg = StripCarriageW(szMsg);
+
+	// print to debug output
+	if (fIsSetv(ulDbgLvl))
+	{
+		if (bPrintThreadTime)
+		{
+			OutputThreadTime(ulDbgLvl);
+		}
+
+		OutputDebugStringW(szMsg.c_str());
+#ifdef MRMAPI
+		wprintf(L"%ws", szMsg.c_str());
+#else
+		LPTSTR lpszMsg = wstringToLPTSTR(szMsg);
+		OutputToDbgView(lpszMsg);
+		delete[] lpszMsg;
+#endif
+
+		// print to to our debug output log file
+		if (RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD && g_fDebugFile)
+		{
+			WriteFileW(g_fDebugFile, szMsg);
+		}
+	}
+
+	// If we were given a file - send the output there
+	if (fFile)
+	{
+		WriteFileW(fFile, szMsg);
 	}
 }
 
@@ -753,7 +806,27 @@ void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify, _
 		}
 	}
 	Outputf(ulDbgLvl, fFile, true, _T("End dumping notifications.\n"));
-} // _OutputNotifications
+}
+
+void _OutputEntryList(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPENTRYLIST lpEntryList)
+{
+	CHKPARAM;
+	EARLYABORT;
+	if (!lpEntryList) return;
+
+	Outputf(ulDbgLvl, fFile, true, _T("Dumping %u entry IDs.\n"), lpEntryList->cValues);
+
+	wstring szFlags;
+	wstring szPropNum;
+
+	for (ULONG i = 0; i < lpEntryList->cValues; i++)
+	{
+		Outputf(ulDbgLvl, fFile, true, _T("lpEntryList->lpbin[%u]\n\t"), i);
+		_OutputBinary(ulDbgLvl, fFile, &lpEntryList->lpbin[i]);
+	}
+
+	Outputf(ulDbgLvl, fFile, true, _T("End dumping entry list.\n"));
+}
 
 std::wstring_convert<std::codecvt<wchar_t, char, std::mbstate_t> > s_converter("");
 
@@ -934,7 +1007,7 @@ void _OutputRestriction(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_opt_ LPSRestri
 		return;
 	}
 
-	Outputf(ulDbgLvl, fFile, true, _T("%ws"), RestrictionToString(lpRes, lpObj).c_str());
+	_OutputW(ulDbgLvl, fFile, true, RestrictionToString(lpRes, lpObj));
 }
 
 #define MAXBYTES 4096

@@ -7,7 +7,7 @@
 #include "Smartview\SmartView.h"
 #include "MrMAPI\MMAcls.h"
 #include "MrMAPI\MMContents.h"
-#include "MrMAPI\MMErr.h"
+#include "MrMAPI\MMErr.h"Se
 #include "MrMAPI\MMFidMid.h"
 #include "MrMAPI\MMFolder.h"
 #include "MrMAPI\MMProfile.h"
@@ -124,6 +124,7 @@ enum __CommandLineSwitch
 	switchByteSwapped,        // '-b'
 	switchReceiveFolder,      // '-receivefolder'
 	switchSkip,               // '-sk'
+	switchSearchState,        // '-searchstate'
 };
 
 struct COMMANDLINE_SWITCH
@@ -186,6 +187,7 @@ COMMANDLINE_SWITCH g_Switches[] =
 	{ switchByteSwapped, "ByteSwapped" },
 	{ switchReceiveFolder, "ReceiveFolder" },
 	{ switchSkip, "Skip" },
+	{ switchSearchState, "SearchState" },
 	// If we want to add aliases for any switches, add them here
 	{ switchHelp, "Help" },
 };
@@ -258,6 +260,8 @@ void DisplayUsage(BOOL bFull)
 	printf("   MrMAPI -%s [<profile> [-%s <profilesection> [-%s]] -%s <output file>]\n",
 		g_Switches[switchProfile].szSwitch, g_Switches[switchProfileSection].szSwitch, g_Switches[switchByteSwapped].szSwitch, g_Switches[switchOutput].szSwitch);
 	printf("   MrMAPI -%s [<store num>] [-%s <profile>]\n", g_Switches[switchReceiveFolder].szSwitch, g_Switches[switchProfile].szSwitch);
+	printf("   MrMAPI -%s -%s <folder> [-%s <profile>]\n",
+		g_Switches[switchSearchState].szSwitch, g_Switches[switchFolder].szSwitch, g_Switches[switchProfile].szSwitch);
 
 	if (bFull)
 	{
@@ -329,8 +333,10 @@ void DisplayUsage(BOOL bFull)
 		printf("   Folder Properties\n");
 		printf("   -F   (or -%s) Output properties of a folder as XML.\n", g_Switches[switchFolder].szSwitch);
 		printf("           If a property is specified, outputs only that property.\n");
-		printf("   -Size   Output size of a folder and all subfolders.\n");
-		printf("           Use %s to specify which folder to scan.\n", g_Switches[switchFolder].szSwitch);
+		printf("   -Size         Output size of a folder and all subfolders.\n");
+		printf("           Use -%s to specify which folder to scan.\n", g_Switches[switchFolder].szSwitch);
+		printf("   -SearchState  Output search folder state.\n");
+		printf("           Use -%s to specify which folder to scan.\n", g_Switches[switchFolder].szSwitch);
 		printf("\n");
 		printf("   MAPI <-> MIME Conversion:\n");
 		printf("   -Ma  (or -%s) Convert an EML file to MAPI format (MSG file).\n", g_Switches[switchMAPI].szSwitch);
@@ -538,6 +544,7 @@ OptParser g_Parsers[] =
 	{ switchProfileSection, cmdmodeProfile, 1, 1, OPT_PROFILE | OPT_NEEDMAPIINIT | OPT_INITMFC },
 	{ switchByteSwapped, cmdmodeProfile, 0, 0, OPT_PROFILE | OPT_NEEDMAPIINIT | OPT_INITMFC },
 	{ switchReceiveFolder, cmdmodeReceiveFolder, 0, 1, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_NEEDSTORE | OPT_INITMFC },
+	{ switchSearchState, cmdmodeSearchState, 0, 1, OPT_NEEDMAPIINIT | OPT_NEEDMAPILOGON | OPT_INITMFC | OPT_NEEDFOLDER },
 	{ switchNoSwitch, cmdmodeUnknown, 0, 0, 0 },
 };
 
@@ -1168,6 +1175,9 @@ void main(_In_ int argc, _In_count_(argc) char * argv[])
 			break;
 		case cmdmodeReceiveFolder:
 			DoReceiveFolder(ProgOpts);
+			break;
+		case cmdmodeSearchState:
+			DoSearchState(ProgOpts);
 			break;
 		}
 	}
