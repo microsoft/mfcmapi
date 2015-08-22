@@ -296,6 +296,8 @@ wstring InterpretPropSmartView(_In_opt_ LPSPropValue lpProp, // required propert
 			{
 				iStructType = IDS_STNICKNAMECACHE;
 			}
+
+			MAPIFreeBuffer(lpPropSubject);
 		}
 
 		if (iStructType)
