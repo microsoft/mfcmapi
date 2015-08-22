@@ -21,6 +21,7 @@
 #include "MAPIStoreFunctions.h"
 #include "MrMAPI\MMPst.h"
 #include "MrMAPI\MMReceiveFolder.h"
+#include "NamedPropCache.h"
 
 // Initialize MFC for LoadString support later on
 void InitMFC()
@@ -1181,6 +1182,8 @@ void main(_In_ int argc, _In_count_(argc) char * argv[])
 			break;
 		}
 	}
+
+	UninitializeNamedPropCache();
 
 	if (bMAPIInit)
 	{
