@@ -91,7 +91,7 @@ _Check_return_ wstring ConversationIndex::ToStringInternal()
 		m_ftCurrent.dwLowDateTime,
 		m_ftCurrent.dwHighDateTime,
 		PropString.c_str(),
-		szGUID);
+		szGUID.c_str());
 
 	if (m_ulResponseLevels && m_lpResponseLevels)
 	{
