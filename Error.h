@@ -306,9 +306,9 @@ else	\
 {	\
 	if (__lperr)	\
 	{	\
-		CString szErr = MAPIErrToString((__ulflags),(__lperr));	\
-		ErrDialog(__FILE__,__LINE__,IDS_EDMAPIERROR,(LPCTSTR) szErr);	\
-		DebugPrint(DBGGeneric,_T("LPMAPIERROR:\n%s\n"),(LPCTSTR) szErr);	\
+		wstring szErr = MAPIErrToString((__ulflags),(__lperr));	\
+		ErrDialog(__FILE__,__LINE__,IDS_EDMAPIERROR, szErr.c_str());	\
+		DebugPrint(DBGGeneric,_T("LPMAPIERROR:\n%ws\n"), szErr.c_str());	\
 	}	\
 } // EC_MAPIERR
 

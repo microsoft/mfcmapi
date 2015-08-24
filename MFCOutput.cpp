@@ -10,7 +10,6 @@
 #include "SmartView\SmartView.h"
 #include "ColumnTags.h"
 #include "ParseProperty.h"
-#include <cvt/wstring>
 #include <algorithm>
 
 LPCTSTR g_szXMLHeader = _T("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n");
@@ -149,7 +148,13 @@ void WriteFile(_In_ FILE* fFile, wstring szString)
 {
 	if (!szString.empty())
 	{
-		fputws(szString.c_str(), fFile);
+		char *lpszString = NULL;
+		HRESULT hRes = UnicodeToAnsi(szString.c_str(), &lpszString);
+		if (SUCCEEDED(hRes))
+		{
+			fputs(lpszString, fFile);
+			delete[] lpszString;
+		}
 	}
 }
 
@@ -188,6 +193,7 @@ void OutputThreadTime(ULONG ulDbgLvl)
 	}
 }
 
+// The root of all debug output - call no debug output functions besides OutputDebugString from here!
 void _OutputW(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, wstring szMsg)
 {
 	CHKPARAM;
@@ -201,7 +207,7 @@ void _OutputW(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, wstri
 		if (bPrintThreadTime)
 		{
 			OutputThreadTime(ulDbgLvl);
-		}
+	}
 
 		OutputDebugStringW(szMsg.c_str());
 #ifdef MRMAPI
@@ -215,7 +221,7 @@ void _OutputW(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, wstri
 		{
 			WriteFile(g_fDebugFile, szMsg);
 		}
-	}
+}
 
 	// If we were given a file - send the output there
 	if (fFile)
@@ -231,7 +237,6 @@ void _OutputA(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, _In_o
 	_OutputW(ulDbgLvl, fFile, bPrintThreadTime, stringToWstring(szMsg));
 }
 
-// The root of all debug output - call no debug output functions besides OutputDebugString from here!
 void _Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, _In_opt_z_ LPCTSTR szMsg)
 {
 #ifdef UNICODE
@@ -241,32 +246,30 @@ void _Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, _In_op
 #endif
 }
 
-void __cdecl Outputf(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, _Printf_format_string_ LPCTSTR szMsg, ...)
+void __cdecl Outputf(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, wstring szMsg, ...)
 {
 	CHKPARAM;
 	EARLYABORT;
-	HRESULT hRes = S_OK;
-
-	if (!szMsg)
-	{
-		_OutputW(ulDbgLvl, fFile, true, L"Output called with NULL szMsg!\n");
-		return;
-	}
 
 	va_list argList = NULL;
 	va_start(argList, szMsg);
-
-	TCHAR szDebugString[4096];
-	WC_H(StringCchVPrintf(szDebugString, _countof(szDebugString), szMsg, argList));
-	if (FAILED(hRes))
+	LPWSTR buffer = NULL;
+	int len = _vscwprintf(szMsg.c_str(), argList);
+	if (0 != len)
 	{
-		_OutputW(DBGFatalError, NULL, true, L"Debug output string not large enough to print everything to it\n");
-		// Since this function was 'safe', we've still got something we can print - send it on.
+		len++;
+		buffer = new wchar_t[len];
+		memset(buffer, 0, sizeof(wchar_t)* len);
+		if (_vsnwprintf_s(buffer, len, _TRUNCATE, szMsg.c_str(), argList) > 0)
+		{
+			wstring szOut(buffer);
+			_OutputW(ulDbgLvl, fFile, bPrintThreadTime, szOut);
+		}
+
+		delete[] buffer;
 	}
 
 	va_end(argList);
-
-	_Output(ulDbgLvl, fFile, bPrintThreadTime, szDebugString);
 }
 
 void __cdecl OutputToFilef(_In_opt_ FILE* fFile, _Printf_format_string_ LPCTSTR szMsg, ...)
@@ -317,7 +320,7 @@ void __cdecl DebugPrint(ULONG ulDbgLvl, _Printf_format_string_ LPCTSTR szMsg, ..
 	{
 		_Output(ulDbgLvl, NULL, true, szMsg);
 	}
-	
+
 	va_end(argList);
 }
 
@@ -348,7 +351,7 @@ void OutputIndent(ULONG ulDbgLvl, _In_opt_ FILE* fFile, int iIndent)
 	EARLYABORT;
 
 	int i = 0;
-	for (i = 0; i < iIndent; i++) _Output(ulDbgLvl, fFile, false, _T("\t"));
+	for (i = 0; i < iIndent; i++) _OutputW(ulDbgLvl, fFile, false, L"\t");
 }
 
 void _OutputBinary(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSBinary lpBin)
@@ -377,13 +380,13 @@ void _OutputNamedPropID(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPINAMEID 
 	if (lpName->ulKind == MNID_ID)
 	{
 		Outputf(ulDbgLvl, fFile, true,
-			_T("\t\t: nmid ID: 0x%X\n"), // STRING_OK
+			L"\t\t: nmid ID: 0x%X\n", // STRING_OK
 			lpName->Kind.lID);
 	}
 	else
 	{
 		Outputf(ulDbgLvl, fFile, true,
-			_T("\t\t: nmid Name: %ws\n"), // STRING_OK
+			L"\t\t: nmid Name: %ws\n", // STRING_OK
 			lpName->Kind.lpwstrName);
 	}
 
@@ -404,7 +407,7 @@ void _OutputFormInfo(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMINFO l
 	LPMAPIVERBARRAY lpMAPIVerbArray = NULL;
 	LPMAPIFORMPROPARRAY lpMAPIFormPropArray = NULL;
 
-	Outputf(ulDbgLvl, fFile, true, _T("Dumping verb and property set for form: %p\n"), lpMAPIFormInfo);
+	Outputf(ulDbgLvl, fFile, true, L"Dumping verb and property set for form: %p\n", lpMAPIFormInfo);
 
 	EC_H(GetPropsNULL(lpMAPIFormInfo, fMapiUnicode, &ulPropVals, &lpPropVals));
 	if (lpPropVals)
@@ -417,14 +420,14 @@ void _OutputFormInfo(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMINFO l
 
 	if (lpMAPIVerbArray)
 	{
-		Outputf(ulDbgLvl, fFile, true, _T("\t0x%X verbs:\n"), lpMAPIVerbArray->cMAPIVerb);
+		Outputf(ulDbgLvl, fFile, true, L"\t0x%X verbs:\n", lpMAPIVerbArray->cMAPIVerb);
 		for (ULONG i = 0; i < lpMAPIVerbArray->cMAPIVerb; i++)
 		{
 			Outputf(
 				ulDbgLvl,
 				fFile,
 				true,
-				_T("\t\tVerb 0x%X\n"), // STRING_OK
+				L"\t\tVerb 0x%X\n", // STRING_OK
 				i);
 			if (lpMAPIVerbArray->aMAPIVerb[i].ulFlags == MAPI_UNICODE)
 			{
@@ -432,7 +435,7 @@ void _OutputFormInfo(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMINFO l
 					ulDbgLvl,
 					fFile,
 					true,
-					_T("\t\tDoVerb value: 0x%X\n\t\tUnicode Name: %ws\n\t\tFlags: 0x%X\n\t\tAttributes: 0x%X\n"), // STRING_OK
+					L"\t\tDoVerb value: 0x%X\n\t\tUnicode Name: %ws\n\t\tFlags: 0x%X\n\t\tAttributes: 0x%X\n", // STRING_OK
 					lpMAPIVerbArray->aMAPIVerb[i].lVerb,
 					(LPWSTR)lpMAPIVerbArray->aMAPIVerb[i].szVerbname,
 					lpMAPIVerbArray->aMAPIVerb[i].fuFlags,
@@ -444,7 +447,7 @@ void _OutputFormInfo(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMINFO l
 					ulDbgLvl,
 					fFile,
 					true,
-					_T("\t\tDoVerb value: 0x%X\n\t\tANSI Name: %hs\n\t\tFlags: 0x%X\n\t\tAttributes: 0x%X\n"), // STRING_OK
+					L"\t\tDoVerb value: 0x%X\n\t\tANSI Name: %hs\n\t\tFlags: 0x%X\n\t\tAttributes: 0x%X\n", // STRING_OK
 					lpMAPIVerbArray->aMAPIVerb[i].lVerb,
 					(LPSTR)lpMAPIVerbArray->aMAPIVerb[i].szVerbname,
 					lpMAPIVerbArray->aMAPIVerb[i].fuFlags,
@@ -467,37 +470,38 @@ void _OutputFormInfo(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMINFO l
 
 void _OutputFormPropArray(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMPROPARRAY lpMAPIFormPropArray)
 {
-	Outputf(ulDbgLvl, fFile, true, _T("\t0x%X Properties:\n"), lpMAPIFormPropArray->cProps);
+	Outputf(ulDbgLvl, fFile, true, L"\t0x%X Properties:\n", lpMAPIFormPropArray->cProps);
 	for (ULONG i = 0; i < lpMAPIFormPropArray->cProps; i++)
 	{
-		Outputf(ulDbgLvl, fFile, true, _T("\t\tProperty 0x%X\n"),
+		Outputf(ulDbgLvl, fFile, true, L"\t\tProperty 0x%X\n",
 			i);
 
 		if (lpMAPIFormPropArray->aFormProp[i].ulFlags == MAPI_UNICODE)
 		{
 			Outputf(ulDbgLvl, fFile, true,
-				_T("\t\tProperty Name: %ws\n\t\tProperty Type: %s\n\t\tSpecial Type: 0x%X\n\t\tNum Vals: 0x%X\n"), // STRING_OK
+				L"\t\tProperty Name: %ws\n\t\tProperty Type: %ws\n\t\tSpecial Type: 0x%X\n\t\tNum Vals: 0x%X\n", // STRING_OK
 				(LPWSTR)lpMAPIFormPropArray->aFormProp[i].pszDisplayName,
-				(LPCTSTR)TypeToString(lpMAPIFormPropArray->aFormProp[i].nPropType),
+				TypeToWstring(lpMAPIFormPropArray->aFormProp[i].nPropType).c_str(),
 				lpMAPIFormPropArray->aFormProp[i].nSpecialType,
 				lpMAPIFormPropArray->aFormProp[i].u.s1.cfpevAvailable);
 		}
 		else
 		{
 			Outputf(ulDbgLvl, fFile, true,
-				_T("\t\tProperty Name: %hs\n\t\tProperty Type: %s\n\t\tSpecial Type: 0x%X\n\t\tNum Vals: 0x%X\n"), // STRING_OK
+				L"\t\tProperty Name: %hs\n\t\tProperty Type: %ws\n\t\tSpecial Type: 0x%X\n\t\tNum Vals: 0x%X\n", // STRING_OK
 				(LPSTR)lpMAPIFormPropArray->aFormProp[i].pszDisplayName,
-				(LPCTSTR)TypeToString(lpMAPIFormPropArray->aFormProp[i].nPropType),
+				TypeToWstring(lpMAPIFormPropArray->aFormProp[i].nPropType).c_str(),
 				lpMAPIFormPropArray->aFormProp[i].nSpecialType,
 				lpMAPIFormPropArray->aFormProp[i].u.s1.cfpevAvailable);
 		}
+
 		_OutputNamedPropID(ulDbgLvl, fFile, &lpMAPIFormPropArray->aFormProp[i].u.s1.nmidIdx);
 		for (ULONG j = 0; j < lpMAPIFormPropArray->aFormProp[i].u.s1.cfpevAvailable; j++)
 		{
 			if (lpMAPIFormPropArray->aFormProp[i].ulFlags == MAPI_UNICODE)
 			{
 				Outputf(ulDbgLvl, fFile, true,
-					_T("\t\t\tEnum 0x%X\nEnumVal Name: %ws\t\t\t\nEnumVal enumeration: 0x%X\n"), // STRING_OK
+					L"\t\t\tEnum 0x%X\nEnumVal Name: %ws\t\t\t\nEnumVal enumeration: 0x%X\n", // STRING_OK
 					j,
 					(LPWSTR)lpMAPIFormPropArray->aFormProp[i].u.s1.pfpevAvailable[j].pszDisplayName,
 					lpMAPIFormPropArray->aFormProp[i].u.s1.pfpevAvailable[j].nVal);
@@ -505,15 +509,16 @@ void _OutputFormPropArray(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMP
 			else
 			{
 				Outputf(ulDbgLvl, fFile, true,
-					_T("\t\t\tEnum 0x%X\nEnumVal Name: %hs\t\t\t\nEnumVal enumeration: 0x%X\n"), // STRING_OK
+					L"\t\t\tEnum 0x%X\nEnumVal Name: %hs\t\t\t\nEnumVal enumeration: 0x%X\n", // STRING_OK
 					j,
 					(LPSTR)lpMAPIFormPropArray->aFormProp[i].u.s1.pfpevAvailable[j].pszDisplayName,
 					lpMAPIFormPropArray->aFormProp[i].u.s1.pfpevAvailable[j].nVal);
 			}
 		}
+
 		_OutputNamedPropID(ulDbgLvl, fFile, &lpMAPIFormPropArray->aFormProp[i].nmid);
 	}
-} // _OutputFormPropArray
+}
 
 void _OutputPropTagArray(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropTagArray lpTagsToDump)
 {
@@ -524,7 +529,7 @@ void _OutputPropTagArray(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropTagAr
 	Outputf(ulDbgLvl,
 		fFile,
 		true,
-		_T("\tProp tag list, %u props\n"), // STRING_OK
+		L"\tProp tag list, %u props\n", // STRING_OK
 		lpTagsToDump->cValues);
 	ULONG uCurProp = 0;
 	for (uCurProp = 0; uCurProp < lpTagsToDump->cValues; uCurProp++)
@@ -532,12 +537,13 @@ void _OutputPropTagArray(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropTagAr
 		Outputf(ulDbgLvl,
 			fFile,
 			true,
-			_T("\t\tProp: %u = %s\n"), // STRING_OK
+			L"\t\tProp: %u = %s\n", // STRING_OK
 			uCurProp,
-			(LPCTSTR)TagToString(lpTagsToDump->aulPropTag[uCurProp], NULL, false, true));
+			(LPCTSTR)TagToString(lpTagsToDump->aulPropTag[uCurProp], NULL, false, true)); // TODO: Fix This
 	}
-	_Output(ulDbgLvl, fFile, true, _T("\tEnd Prop Tag List\n"));
-} // _OutputPropTagArray
+
+	_OutputW(ulDbgLvl, fFile, true, L"\tEnd Prop Tag List\n");
+}
 
 void _OutputTable(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPITABLE lpMAPITable)
 {
@@ -545,8 +551,8 @@ void _OutputTable(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPITABLE lpMAPIT
 	EARLYABORT;
 	if (!lpMAPITable) return;
 
-	HRESULT			hRes = S_OK;
-	LPSRowSet		lpRows = NULL;
+	HRESULT hRes = S_OK;
+	LPSRowSet lpRows = NULL;
 
 	EC_MAPI(lpMAPITable->SeekRow(
 		BOOKMARK_BEGINNING,
@@ -554,7 +560,7 @@ void _OutputTable(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPITABLE lpMAPIT
 		NULL));
 	hRes = S_OK; // don't let failure here fail the whole op
 	_Output(ulDbgLvl, fFile, false, g_szXMLHeader);
-	_Output(ulDbgLvl, fFile, false, _T("<table>\n"));
+	_OutputW(ulDbgLvl, fFile, false, L"<table>\n");
 
 	for (;;)
 	{
@@ -572,16 +578,17 @@ void _OutputTable(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPITABLE lpMAPIT
 		for (iCurRow = 0; iCurRow < lpRows->cRows; iCurRow++)
 		{
 			hRes = S_OK;
-			Outputf(ulDbgLvl, fFile, false, _T("<row index = \"0x%08X\">\n"), iCurRow);
+			Outputf(ulDbgLvl, fFile, false, L"<row index = \"0x%08X\">\n", iCurRow);
 			_OutputSRow(ulDbgLvl, fFile, &lpRows->aRow[iCurRow], NULL);
-			_Output(ulDbgLvl, fFile, false, _T("</row>\n"));
+			_OutputW(ulDbgLvl, fFile, false, L"</row>\n");
 		}
 	}
-	_Output(ulDbgLvl, fFile, false, _T("</table>\n"));
+
+	_OutputW(ulDbgLvl, fFile, false, L"</table>\n");
 
 	FreeProws(lpRows);
 	lpRows = NULL;
-} // _OutputTable
+}
 
 void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify, _In_count_(cNotify) LPNOTIFICATION lpNotifications, _In_opt_ LPMAPIPROP lpObj)
 {
@@ -589,18 +596,18 @@ void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify, _
 	EARLYABORT;
 	if (!lpNotifications) return;
 
-	Outputf(ulDbgLvl, fFile, true, _T("Dumping %u notifications.\n"), cNotify);
+	Outputf(ulDbgLvl, fFile, true, L"Dumping %u notifications.\n", cNotify);
 
 	wstring szFlags;
 	wstring szPropNum;
 
 	for (ULONG i = 0; i < cNotify; i++)
 	{
-		Outputf(ulDbgLvl, fFile, true, _T("lpNotifications[%u].ulEventType = 0x%08X"), i, lpNotifications[i].ulEventType);
+		Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].ulEventType = 0x%08X", i, lpNotifications[i].ulEventType);
 		szFlags = InterpretFlags(flagNotifEventType, lpNotifications[i].ulEventType);
 		if (!szFlags.empty())
 		{
-			Outputf(ulDbgLvl, fFile, false, _T(" = %ws"), szFlags.c_str());
+			Outputf(ulDbgLvl, fFile, false, L" = %ws", szFlags.c_str());
 		}
 
 		_OutputW(ulDbgLvl, fFile, false, L"\n");
@@ -609,84 +616,84 @@ void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify, _
 		switch (lpNotifications[i].ulEventType)
 		{
 		case fnevCriticalError:
-			Outputf(ulDbgLvl, fFile, true, _T("lpNotifications[%u].info.err.ulFlags = 0x%08X\n"), i,
+			Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.err.ulFlags = 0x%08X\n", i,
 				lpNotifications[i].info.err.ulFlags);
-			Outputf(ulDbgLvl, fFile, true, _T("lpNotifications[%u].info.err.scode = 0x%08X\n"), i,
+			Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.err.scode = 0x%08X\n", i,
 				lpNotifications[i].info.err.scode);
 			sbin.cb = lpNotifications[i].info.err.cbEntryID;
 			sbin.lpb = (LPBYTE)lpNotifications[i].info.err.lpEntryID;
-			Outputf(ulDbgLvl, fFile, true, _T("lpNotifications[%u].info.err.lpEntryID = "), i);
+			Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.err.lpEntryID = ", i);
 			_OutputBinary(ulDbgLvl, fFile, &sbin);
-			Outputf(ulDbgLvl, fFile, true, _T("lpNotifications[%u].info.err.lpMAPIError = %s\n"), i,
-				(LPCTSTR)MAPIErrToString(
+			Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.err.lpMAPIError = %s\n", i,
+				MAPIErrToString(
 				lpNotifications[i].info.err.ulFlags,
-				lpNotifications[i].info.err.lpMAPIError));
+				lpNotifications[i].info.err.lpMAPIError).c_str());
 			break;
 		case fnevExtended:
-			Outputf(ulDbgLvl, fFile, true, _T("lpNotifications[%u].info.ext.ulEvent = 0x%08X\n"), i,
+			Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.ext.ulEvent = 0x%08X\n", i,
 				lpNotifications[i].info.ext.ulEvent);
 			sbin.cb = lpNotifications[i].info.ext.cb;
 			sbin.lpb = lpNotifications[i].info.ext.pbEventParameters;
-			Outputf(ulDbgLvl, fFile, true, _T("lpNotifications[%u].info.ext.pbEventParameters = \n"), i);
+			Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.ext.pbEventParameters = \n", i);
 			_OutputBinary(ulDbgLvl, fFile, &sbin);
 			break;
 		case fnevNewMail:
-			Outputf(ulDbgLvl, fFile, true, _T("lpNotifications[%u].info.newmail.ulFlags = 0x%08X\n"), i,
+			Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.newmail.ulFlags = 0x%08X\n", i,
 				lpNotifications[i].info.newmail.ulFlags);
 			sbin.cb = lpNotifications[i].info.newmail.cbEntryID;
 			sbin.lpb = (LPBYTE)lpNotifications[i].info.newmail.lpEntryID;
-			Outputf(ulDbgLvl, fFile, true, _T("lpNotifications[%u].info.newmail.lpEntryID = \n"), i);
+			Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.newmail.lpEntryID = \n", i);
 			_OutputBinary(ulDbgLvl, fFile, &sbin);
 			sbin.cb = lpNotifications[i].info.newmail.cbParentID;
 			sbin.lpb = (LPBYTE)lpNotifications[i].info.newmail.lpParentID;
-			Outputf(ulDbgLvl, fFile, true, _T("lpNotifications[%u].info.newmail.lpParentID = \n"), i);
+			Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.newmail.lpParentID = \n", i);
 			_OutputBinary(ulDbgLvl, fFile, &sbin);
 
 			if (lpNotifications[i].info.newmail.ulFlags & MAPI_UNICODE)
 			{
-				Outputf(ulDbgLvl, fFile, true, _T("lpNotifications[%u].info.newmail.lpszMessageClass = \"%ws\"\n"), i,
+				Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.newmail.lpszMessageClass = \"%ws\"\n", i,
 					(LPWSTR)lpNotifications[i].info.newmail.lpszMessageClass);
 			}
 			else
 			{
-				Outputf(ulDbgLvl, fFile, true, _T("lpNotifications[%u].info.newmail.lpszMessageClass = \"%hs\"\n"), i,
+				Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.newmail.lpszMessageClass = \"%hs\"\n", i,
 					(LPSTR)lpNotifications[i].info.newmail.lpszMessageClass);
 			}
 
-			Outputf(ulDbgLvl, fFile, true, _T("lpNotifications[%u].info.newmail.ulMessageFlags = 0x%08X"), i,
+			Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.newmail.ulMessageFlags = 0x%08X", i,
 				lpNotifications[i].info.newmail.ulMessageFlags);
 			szPropNum = InterpretNumberAsStringProp(lpNotifications[i].info.newmail.ulMessageFlags, PR_MESSAGE_FLAGS);
 			if (!szPropNum.empty())
 			{
-				Outputf(ulDbgLvl, fFile, false, _T(" = %ws"), szPropNum.c_str());
+				Outputf(ulDbgLvl, fFile, false, L" = %ws", szPropNum.c_str());
 			}
 
-			Outputf(ulDbgLvl, fFile, false, _T("\n"));
+			Outputf(ulDbgLvl, fFile, false, L"\n");
 			break;
 		case fnevTableModified:
-			Outputf(ulDbgLvl, fFile, true, _T("lpNotifications[%u].info.tab.ulTableEvent = 0x%08X"), i,
+			Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.tab.ulTableEvent = 0x%08X", i,
 				lpNotifications[i].info.tab.ulTableEvent);
 			szFlags = InterpretFlags(flagTableEventType, lpNotifications[i].info.tab.ulTableEvent);
 			if (!szFlags.empty())
 			{
-				Outputf(ulDbgLvl, fFile, false, _T(" = %ws"), szFlags.c_str());
+				Outputf(ulDbgLvl, fFile, false, L" = %ws", szFlags.c_str());
 			}
 
-			Outputf(ulDbgLvl, fFile, false, _T("\n"));
+			Outputf(ulDbgLvl, fFile, false, L"\n");
 
-			Outputf(ulDbgLvl, fFile, true, _T("lpNotifications[%u].info.tab.hResult = 0x%08X\n"), i,
+			Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.tab.hResult = 0x%08X\n", i,
 				lpNotifications[i].info.tab.hResult);
-			Outputf(ulDbgLvl, fFile, true, _T("lpNotifications[%u].info.tab.propIndex = \n"), i);
+			Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.tab.propIndex = \n", i);
 			_OutputProperty(ulDbgLvl, fFile,
 				&lpNotifications[i].info.tab.propIndex,
 				lpObj,
 				false);
-			Outputf(ulDbgLvl, fFile, true, _T("lpNotifications[%u].info.tab.propPrior = \n"), i);
+			Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.tab.propPrior = \n", i);
 			_OutputProperty(ulDbgLvl, fFile,
 				&lpNotifications[i].info.tab.propPrior,
 				NULL,
 				false);
-			Outputf(ulDbgLvl, fFile, true, _T("lpNotifications[%u].info.tab.row = \n"), i);
+			Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.tab.row = \n", i);
 			_OutputSRow(ulDbgLvl, fFile,
 				&lpNotifications[i].info.tab.row,
 				lpObj);
@@ -699,57 +706,57 @@ void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify, _
 		case fnevSearchComplete:
 			sbin.cb = lpNotifications[i].info.obj.cbOldID;
 			sbin.lpb = (LPBYTE)lpNotifications[i].info.obj.lpOldID;
-			Outputf(ulDbgLvl, fFile, true, _T("lpNotifications[%u].info.obj.lpOldID = \n"), i);
+			Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.obj.lpOldID = \n", i);
 			_OutputBinary(ulDbgLvl, fFile, &sbin);
 			sbin.cb = lpNotifications[i].info.obj.cbOldParentID;
 			sbin.lpb = (LPBYTE)lpNotifications[i].info.obj.lpOldParentID;
-			Outputf(ulDbgLvl, fFile, true, _T("lpNotifications[%u].info.obj.lpOldParentID = \n"), i);
+			Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.obj.lpOldParentID = \n", i);
 			_OutputBinary(ulDbgLvl, fFile, &sbin);
 			sbin.cb = lpNotifications[i].info.obj.cbEntryID;
 			sbin.lpb = (LPBYTE)lpNotifications[i].info.obj.lpEntryID;
-			Outputf(ulDbgLvl, fFile, true, _T("lpNotifications[%u].info.obj.lpEntryID = \n"), i);
+			Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.obj.lpEntryID = \n", i);
 			_OutputBinary(ulDbgLvl, fFile, &sbin);
 			sbin.cb = lpNotifications[i].info.obj.cbParentID;
 			sbin.lpb = (LPBYTE)lpNotifications[i].info.obj.lpParentID;
-			Outputf(ulDbgLvl, fFile, true, _T("lpNotifications[%u].info.obj.lpParentID = \n"), i);
+			Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.obj.lpParentID = \n", i);
 			_OutputBinary(ulDbgLvl, fFile, &sbin);
-			Outputf(ulDbgLvl, fFile, true, _T("lpNotifications[%u].info.obj.ulObjType = 0x%08X"), i,
+			Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.obj.ulObjType = 0x%08X", i,
 				lpNotifications[i].info.obj.ulObjType);
 
 			szPropNum = InterpretNumberAsStringProp(lpNotifications[i].info.obj.ulObjType, PR_OBJECT_TYPE);
 			if (!szPropNum.empty())
 			{
-				Outputf(ulDbgLvl, fFile, false, _T(" = %ws"), szPropNum.c_str());
+				Outputf(ulDbgLvl, fFile, false, L" = %ws", szPropNum.c_str());
 			}
 
-			Outputf(ulDbgLvl, fFile, false, _T("\n"));
-			Outputf(ulDbgLvl, fFile, true, _T("lpNotifications[%u].info.obj.lpPropTagArray = \n"), i);
+			Outputf(ulDbgLvl, fFile, false, L"\n");
+			Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.obj.lpPropTagArray = \n", i);
 			_OutputPropTagArray(ulDbgLvl, fFile,
 				lpNotifications[i].info.obj.lpPropTagArray);
 			break;
 		case fnevIndexing:
-			Outputf(ulDbgLvl, fFile, true, _T("lpNotifications[%u].info.ext.ulEvent = 0x%08X\n"), i,
+			Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.ext.ulEvent = 0x%08X\n", i,
 				lpNotifications[i].info.ext.ulEvent);
 			sbin.cb = lpNotifications[i].info.ext.cb;
 			sbin.lpb = lpNotifications[i].info.ext.pbEventParameters;
-			Outputf(ulDbgLvl, fFile, true, _T("lpNotifications[%u].info.ext.pbEventParameters = \n"), i);
+			Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.ext.pbEventParameters = \n", i);
 			_OutputBinary(ulDbgLvl, fFile, &sbin);
 			if (INDEXING_SEARCH_OWNER == lpNotifications[i].info.ext.ulEvent &&
 				sizeof(INDEX_SEARCH_PUSHER_PROCESS) == lpNotifications[i].info.ext.cb)
 			{
-				Outputf(ulDbgLvl, fFile, true, _T("lpNotifications[%u].info.ext.ulEvent = INDEXING_SEARCH_OWNER\n"), i);
+				Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.ext.ulEvent = INDEXING_SEARCH_OWNER\n", i);
 
 				INDEX_SEARCH_PUSHER_PROCESS* lpidxExt = (INDEX_SEARCH_PUSHER_PROCESS*)lpNotifications[i].info.ext.pbEventParameters;
 				if (lpidxExt)
 				{
-					Outputf(ulDbgLvl, fFile, true, _T("lpidxExt->dwPID = 0x%08X\n"), lpidxExt->dwPID);
+					Outputf(ulDbgLvl, fFile, true, L"lpidxExt->dwPID = 0x%08X\n", lpidxExt->dwPID);
 				}
 			}
 
 			break;
 		}
 	}
-	Outputf(ulDbgLvl, fFile, true, _T("End dumping notifications.\n"));
+	Outputf(ulDbgLvl, fFile, true, L"End dumping notifications.\n");
 }
 
 void _OutputEntryList(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPENTRYLIST lpEntryList)
@@ -758,21 +765,19 @@ void _OutputEntryList(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPENTRYLIST lpE
 	EARLYABORT;
 	if (!lpEntryList) return;
 
-	Outputf(ulDbgLvl, fFile, true, _T("Dumping %u entry IDs.\n"), lpEntryList->cValues);
+	Outputf(ulDbgLvl, fFile, true, L"Dumping %u entry IDs.\n", lpEntryList->cValues);
 
 	wstring szFlags;
 	wstring szPropNum;
 
 	for (ULONG i = 0; i < lpEntryList->cValues; i++)
 	{
-		Outputf(ulDbgLvl, fFile, true, _T("lpEntryList->lpbin[%u]\n\t"), i);
+		Outputf(ulDbgLvl, fFile, true, L"lpEntryList->lpbin[%u]\n\t", i);
 		_OutputBinary(ulDbgLvl, fFile, &lpEntryList->lpbin[i]);
 	}
 
-	Outputf(ulDbgLvl, fFile, true, _T("End dumping entry list.\n"));
+	Outputf(ulDbgLvl, fFile, true, L"End dumping entry list.\n");
 }
-
-std::wstring_convert<std::codecvt<wchar_t, char, std::mbstate_t> > s_converter("");
 
 void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpProp, _In_opt_ LPMAPIPROP lpObj, bool bRetryStreamProps)
 {
@@ -803,10 +808,15 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 		hRes = S_OK;
 	}
 
-	Outputf(ulDbgLvl, fFile, false, _T("\t<property tag = \"0x%08X\" type = \"%s\" >\n"), lpProp->ulPropTag, (LPCTSTR)TypeToString(lpProp->ulPropTag));
+	Outputf(ulDbgLvl, fFile, false, L"\t<property tag = \"0x%08X\" type = \"%ws\" >\n", lpProp->ulPropTag, TypeToWstring(lpProp->ulPropTag).c_str());
 
 	LPTSTR szExactMatches = NULL;
 	LPTSTR szPartialMatches = NULL;
+
+	PropTagToPropName(lpProp->ulPropTag, false, &szExactMatches, &szPartialMatches);
+	if (!IsNullOrEmpty(szExactMatches)) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPEXACTNAMES].uidName, szExactMatches, false, iIndent);
+	if (!IsNullOrEmpty(szPartialMatches)) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPPARTIALNAMES].uidName, szPartialMatches, false, iIndent);
+
 	LPTSTR szNamedPropName = NULL;
 	LPTSTR szNamedPropGUID = NULL;
 
@@ -819,11 +829,6 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 		&szNamedPropName, // Built from lpProp & lpMAPIProp
 		&szNamedPropGUID, // Built from lpProp & lpMAPIProp
 		NULL);
-
-	PropTagToPropName(lpProp->ulPropTag, false, &szExactMatches, &szPartialMatches);
-	if (!IsNullOrEmpty(szExactMatches)) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPEXACTNAMES].uidName, szExactMatches, false, iIndent);
-	if (!IsNullOrEmpty(szPartialMatches)) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPPARTIALNAMES].uidName, szPartialMatches, false, iIndent);
-
 	if (szNamedPropGUID) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPNAMEDIID].uidName, szNamedPropGUID, false, iIndent);
 	if (szNamedPropName) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPNAMEDNAME].uidName, szNamedPropName, false, iIndent);
 
@@ -839,7 +844,7 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 		false);
 	if (!szSmartView.empty())
 	{
-		OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPSMARTVIEW].uidName, wstringToLPTSTR(szSmartView), true, iIndent);
+		OutputXMLValueW(ulDbgLvl, fFile, PropXMLNames[pcPROPSMARTVIEW].uidName, szSmartView, true, iIndent);
 	}
 
 	_OutputW(ulDbgLvl, fFile, false, L"\t</property>\n");
@@ -848,7 +853,7 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 	delete[] szExactMatches;
 	FreeNameIDStrings(szNamedPropName, szNamedPropGUID, NULL);
 	MAPIFreeBuffer(lpLargeProp);
-} // _OutputProperty
+}
 
 void _OutputProperties(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cProps, _In_count_(cProps) LPSPropValue lpProps, _In_opt_ LPMAPIPROP lpObj, bool bRetryStreamProps)
 {
@@ -858,7 +863,7 @@ void _OutputProperties(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cProps, _In_c
 
 	if (cProps && !lpProps)
 	{
-		_Output(ulDbgLvl, fFile, true, _T("OutputProperties called with NULL lpProps!\n"));
+		_OutputW(ulDbgLvl, fFile, true, L"OutputProperties called with NULL lpProps!\n");
 		return;
 	}
 
@@ -893,8 +898,9 @@ void _OutputProperties(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cProps, _In_c
 			_OutputProperty(ulDbgLvl, fFile, &lpSortedProps[i], lpObj, bRetryStreamProps);
 		}
 	}
+
 	MAPIFreeBuffer(lpSortedProps);
-} // _OutputProperties
+}
 
 void _OutputSRow(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSRow lpSRow, _In_opt_ LPMAPIPROP lpObj)
 {
@@ -914,7 +920,7 @@ void _OutputSRow(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSRow lpSRow, _In_o
 	}
 
 	_OutputProperties(ulDbgLvl, fFile, lpSRow->cValues, lpSRow->lpProps, lpObj, false);
-} // _OutputSRow
+}
 
 void _OutputSRowSet(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSRowSet lpRowSet, _In_opt_ LPMAPIPROP lpObj)
 {
@@ -934,7 +940,7 @@ void _OutputSRowSet(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSRowSet lpRowSe
 			_OutputSRow(ulDbgLvl, fFile, &lpRowSet->aRow[i], lpObj);
 		}
 	}
-} // _OutputSRowSet
+}
 
 void _OutputRestriction(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_opt_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj)
 {
@@ -955,10 +961,10 @@ void _OutputStream(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSTREAM lpStream)
 {
 	CHKPARAM;
 	EARLYABORT;
-	HRESULT			hRes = S_OK;
-	BYTE			bBuf[MAXBYTES + 2]; // Allocate some extra for NULL terminators - 2 for Unicode
-	ULONG			ulNumBytes = 0;
-	LARGE_INTEGER	li = { 0 };
+	HRESULT hRes = S_OK;
+	BYTE bBuf[MAXBYTES + 2]; // Allocate some extra for NULL terminators - 2 for Unicode
+	ULONG ulNumBytes = 0;
+	LARGE_INTEGER li = { 0 };
 
 	if (!lpStream)
 	{
@@ -993,18 +999,18 @@ void _OutputVersion(ULONG ulDbgLvl, _In_opt_ FILE* fFile)
 {
 	CHKPARAM;
 	EARLYABORT;
-	TCHAR szFullPath[256];
+	wchar_t szFullPath[MAX_PATH];
 	HRESULT hRes = S_OK;
 	DWORD dwRet = 0;
 
 	// Get version information from the application.
-	EC_D(dwRet, GetModuleFileName(NULL, szFullPath, _countof(szFullPath)));
+	EC_D(dwRet, GetModuleFileNameW(NULL, szFullPath, _countof(szFullPath)));
 
 	if (S_OK == hRes)
 	{
 		DWORD dwVerInfoSize = 0;
 
-		EC_D(dwVerInfoSize, GetFileVersionInfoSize(szFullPath, NULL));
+		EC_D(dwVerInfoSize, GetFileVersionInfoSizeW(szFullPath, NULL));
 
 		if (dwVerInfoSize)
 		{
@@ -1013,7 +1019,7 @@ void _OutputVersion(ULONG ulDbgLvl, _In_opt_ FILE* fFile)
 			if (pbData == NULL) return;
 
 			BOOL bRet = false;
-			EC_D(bRet, GetFileVersionInfo(
+			EC_D(bRet, GetFileVersionInfoW(
 				szFullPath,
 				NULL,
 				dwVerInfoSize,
@@ -1028,12 +1034,11 @@ void _OutputVersion(ULONG ulDbgLvl, _In_opt_ FILE* fFile)
 
 				UINT cbTranslate = 0;
 				UINT iCodePages = 0;
-				TCHAR szSubBlock[256];
 
 				// Read the list of languages and code pages.
-				EC_B(VerQueryValue(
+				EC_B(VerQueryValueW(
 					pbData,
-					_T("\\VarFileInfo\\Translation"), // STRING_OK
+					L"\\VarFileInfo\\Translation", // STRING_OK
 					(LPVOID*)&lpTranslate,
 					&cbTranslate));
 
@@ -1044,45 +1049,29 @@ void _OutputVersion(ULONG ulDbgLvl, _In_opt_ FILE* fFile)
 					for (iCodePages = 0; iCodePages < (cbTranslate / sizeof(LANGANDCODEPAGE)); iCodePages++)
 					{
 						hRes = S_OK;
-						EC_H(StringCchPrintf(
-							szSubBlock,
-							_countof(szSubBlock),
-							_T("\\StringFileInfo\\%04x%04x\\"), // STRING_OK
+						wstring szSubBlock = format(
+							L"\\StringFileInfo\\%04x%04x\\", // STRING_OK
 							lpTranslate[iCodePages].wLanguage,
-							lpTranslate[iCodePages].wCodePage));
-
-						size_t cchRoot = NULL;
-						EC_H(StringCchLength(szSubBlock, 256, &cchRoot));
+							lpTranslate[iCodePages].wCodePage);
 
 						// Load all our strings
 						for (int iVerString = IDS_VER_FIRST; iVerString <= IDS_VER_LAST; iVerString++)
 						{
-							UINT	cchVer = 0;
-							TCHAR*	lpszVer = NULL;
-							TCHAR	szVerString[256];
+							UINT cchVer = 0;
+							wchar_t* lpszVer = NULL;
+							wstring szVerString = loadstring(iVerString);
+							wstring szQueryString = szSubBlock + szVerString;
 							hRes = S_OK;
 
-							int iRet = 0;
-							EC_D(iRet, LoadString(
-								GetModuleHandle(NULL),
-								iVerString,
-								szVerString,
-								_countof(szVerString)));
-
-							EC_H(StringCchCopy(
-								&szSubBlock[cchRoot],
-								_countof(szSubBlock) - cchRoot,
-								szVerString));
-
-							EC_B(VerQueryValue(
+							EC_B(VerQueryValueW(
 								(void*)pbData,
-								szSubBlock,
+								szQueryString.c_str(),
 								(void**)&lpszVer,
 								&cchVer));
 
 							if (S_OK == hRes && cchVer && lpszVer)
 							{
-								Outputf(ulDbgLvl, fFile, true, _T("%s: %s\n"), szVerString, lpszVer);
+								Outputf(ulDbgLvl, fFile, true, L"%ws: %ws\n", szVerString.c_str(), lpszVer);
 							}
 						}
 					}
@@ -1127,6 +1116,25 @@ void ScrubStringForXML(_In_z_ LPTSTR szString)
 	}
 }
 
+void ScrubStringForXMLW(wstring szString)
+{
+	size_t i = 0;
+
+	for (i = 0; i < szString.length(); i++)
+	{
+		switch (szString[i])
+		{
+		case L'\t':
+		case L'\r':
+		case L'\n':
+			break;
+		default:
+			if (szString[i] > 0 && szString[i] < 0x20) szString[i] = L'.';
+			break;
+		}
+	}
+}
+
 void OutputXMLValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, _In_z_ LPTSTR szValue, bool bWrapCData, int iIndent)
 {
 	CHKPARAM;
@@ -1135,12 +1143,10 @@ void OutputXMLValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, _In_z_ LP
 
 	if (!szValue[0]) return;
 
-	CString szTag;
-	HRESULT hRes = S_OK;
-	EC_B(szTag.LoadString(uidTag));
+	wstring szTag = loadstring(uidTag);
 
 	OutputIndent(ulDbgLvl, fFile, iIndent);
-	Outputf(ulDbgLvl, fFile, false, _T("<%s>"), (LPCTSTR)szTag);
+	Outputf(ulDbgLvl, fFile, false, L"<%ws>", szTag.c_str());
 	if (bWrapCData)
 	{
 		OutputCDataOpen(ulDbgLvl, fFile);
@@ -1154,5 +1160,33 @@ void OutputXMLValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, _In_z_ LP
 		OutputCDataClose(ulDbgLvl, fFile);
 	}
 
-	Outputf(ulDbgLvl, fFile, false, _T("</%s>\n"), (LPCTSTR)szTag);
+	Outputf(ulDbgLvl, fFile, false, L"</%ws>\n", szTag.c_str());
+}
+
+void OutputXMLValueW(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, wstring szValue, bool bWrapCData, int iIndent)
+{
+	CHKPARAM;
+	EARLYABORT;
+	if (szValue.empty() || !uidTag) return;
+
+	if (!szValue[0]) return;
+
+	wstring szTag = loadstring(uidTag);
+
+	OutputIndent(ulDbgLvl, fFile, iIndent);
+	Outputf(ulDbgLvl, fFile, false, L"<%ws>", szTag.c_str());
+	if (bWrapCData)
+	{
+		OutputCDataOpen(ulDbgLvl, fFile);
+	}
+
+	ScrubStringForXMLW(szValue);
+	_OutputW(ulDbgLvl, fFile, false, szValue);
+
+	if (bWrapCData)
+	{
+		OutputCDataClose(ulDbgLvl, fFile);
+	}
+
+	Outputf(ulDbgLvl, fFile, false, L"</%ws>\n", szTag.c_str());
 }

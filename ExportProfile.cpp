@@ -45,7 +45,7 @@ void ExportProfileProvider(FILE* fProfile, int iRow, LPPROVIDERADMIN lpProviderA
 {
 	if (!fProfile || !lpRow) return;
 
-	Outputf(DBGNoDebug, fProfile, true, _T("<provider index = \"0x%08X\">\n"), iRow);
+	Outputf(DBGNoDebug, fProfile, true, L"<provider index = \"0x%08X\">\n", iRow);
 
 	OutputToFile(fProfile, _T("<properties listtype=\"row\">\n"));
 	OutputSRowToFile(fProfile, lpRow, NULL);
@@ -80,7 +80,7 @@ void ExportProfileService(FILE* fProfile, int iRow, LPSERVICEADMIN lpServiceAdmi
 {
 	if (!fProfile || !lpRow) return;
 
-	Outputf(DBGNoDebug, fProfile, true, _T("<service index = \"0x%08X\">\n"), iRow);
+	Outputf(DBGNoDebug, fProfile, true, L"<service index = \"0x%08X\">\n", iRow);
 
 	OutputToFile(fProfile, _T("<properties listtype=\"row\">\n"));
 	OutputSRowToFile(fProfile, lpRow, NULL);
@@ -166,7 +166,7 @@ void ExportProfile(_In_z_ LPCSTR szProfile, _In_z_ LPCWSTR szProfileSection, boo
 	}
 
 	OutputToFile(fProfile, g_szXMLHeader);
-	Outputf(DBGNoDebug, fProfile, true, _T("<profile profilename= \"%hs\">\n"), szProfile);
+	Outputf(DBGNoDebug, fProfile, true, L"<profile profilename= \"%hs\">\n", szProfile);
 
 	EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
 

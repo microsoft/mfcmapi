@@ -2,6 +2,7 @@
 // MFCOutput.h : header file
 //
 // Output (to File/Debug) functions
+#include "String.h"
 
 extern LPCTSTR g_szXMLHeader;
 
@@ -54,7 +55,7 @@ _Check_return_ FILE* MyOpenFile(_In_z_ LPCWSTR szFileName, bool bNewFile);
 void CloseFile(_In_opt_ FILE* fFile);
 
 void _Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, _In_opt_z_ LPCTSTR szMsg);
-void __cdecl Outputf(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, _Printf_format_string_ LPCTSTR szMsg, ...);
+void __cdecl Outputf(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, wstring szMsg, ...);
 
 #define OutputToFile(fFile, szMsg) _Output((DBGNoDebug), (fFile), true, (szMsg))
 void __cdecl OutputToFilef(_In_opt_ FILE* fFile, _Printf_format_string_ LPCTSTR szMsg, ...);
@@ -120,6 +121,7 @@ void _OutputEntryList(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPENTRYLIST lpE
 #endif
 
 void OutputXMLValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, _In_z_ LPTSTR szValue, bool bWrapCData, int iIndent);
+void OutputXMLValueW(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, wstring szValue, bool bWrapCData, int iIndent);
 void OutputCDataOpen(ULONG ulDbgLvl, _In_opt_ FILE* fFile);
 void OutputCDataClose(ULONG ulDbgLvl, _In_opt_ FILE* fFile);
 

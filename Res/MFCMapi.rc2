@@ -2133,7 +2133,7 @@ IDS_EDCOLUMNHEADERFAILED "Failed to insert a column header. Column headers might
 IDS_EDTOOMANYCOLUMNS "We allocated too many columns in CContentsTableListCtrl::AddColumns."
 IDS_EDMESSAGERAWNOTSUPPORTED "IID_IMessageRaw not supported by this store."
 IDS_EDPROBLEMARRAY "Problem array:\r\n%s"
-IDS_EDMAPIERROR "LPMAPIERROR:\r\n%s"
+IDS_EDMAPIERROR "LPMAPIERROR:\r\n%ws"
 IDS_EDTNEFPROBLEMARRAY "TNEF Problem array:\r\n%s"
 IDS_EDUNKNOWNATTMETHOD "Unknown attachment method"
 IDS_EDGETMAILBOXTABLEFAILED "%s failed.\r\n\
