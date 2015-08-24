@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "string.h"
 #include <algorithm>
+#include <locale>
+#include <codecvt>
 
 wstring format(const LPWSTR fmt, ...)
 {
@@ -118,11 +120,12 @@ wstring LPSTRToWstring(LPSTR src)
 	return wstring(ansi.begin(), ansi.end());
 }
 
+std::wstring_convert<std::codecvt<wchar_t, char, std::mbstate_t> > s_converter("");
+
 wstring stringToWstring(string src)
 {
-	return wstring(src.begin(), src.end());
+	return s_converter.from_bytes(src);
 }
-
 
 void wstringToLower(wstring src)
 {

@@ -273,6 +273,7 @@ _Check_return_ CString TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, b
 			szFormatString += szTemp;
 		}
 	}
+
 	szRet.FormatMessage(szFormatString,
 		ulPropTag,
 		(LPCTSTR)TypeToString(ulPropTag),
@@ -293,8 +294,9 @@ _Check_return_ CString TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, b
 		cchMaxBuff = max(cchBuff, cchMaxBuff);
 		DebugPrint(DBGTest, _T("TagToString parsing 0x%08X returned %u chars - max %u\n"), ulPropTag, (UINT)cchBuff, (UINT)cchMaxBuff);
 	}
+
 	return szRet;
-} // TagToString
+}
 
 _Check_return_ CString ProblemArrayToString(_In_ LPSPropProblemArray lpProblems)
 {
@@ -316,12 +318,12 @@ _Check_return_ CString ProblemArrayToString(_In_ LPSPropProblemArray lpProblems)
 	return szOut;
 } // ProblemArrayToString
 
-_Check_return_ CString MAPIErrToString(ULONG ulFlags, _In_ LPMAPIERROR lpErr)
+wstring MAPIErrToString(ULONG ulFlags, _In_ LPMAPIERROR lpErr)
 {
-	CString szOut;
+	wstring szOut;
 	if (lpErr)
 	{
-		szOut.FormatMessage(
+		szOut = formatmessage(
 			ulFlags & MAPI_UNICODE ? IDS_MAPIERRUNICODE : IDS_MAPIERRANSI,
 			lpErr->ulVersion,
 			lpErr->lpszError,
@@ -331,7 +333,7 @@ _Check_return_ CString MAPIErrToString(ULONG ulFlags, _In_ LPMAPIERROR lpErr)
 			lpErr->ulContext);
 	}
 	return szOut;
-} // MAPIErrToString
+}
 
 _Check_return_ CString TnefProblemArrayToString(_In_ LPSTnefProblemArray lpError)
 {
@@ -819,9 +821,9 @@ void InterpretProp(_In_ LPSPropValue lpProp, _In_opt_  wstring* PropString, _In_
 	if (AltPropString) *AltPropString = parsedProperty.toAltString();
 }
 
-_Check_return_ CString TypeToString(ULONG ulPropTag)
+wstring TypeToWstring(ULONG ulPropTag)
 {
-	CString tmpPropType;
+	wstring tmpPropType;
 
 	bool bNeedInstance = false;
 	if (ulPropTag & MV_INSTANCE)
@@ -842,12 +844,18 @@ _Check_return_ CString TypeToString(ULONG ulPropTag)
 			break;
 		}
 	}
-	if (!bTypeFound)
-		tmpPropType.Format(_T("0x%04x"), PROP_TYPE(ulPropTag)); // STRING_OK
 
-	if (bNeedInstance) tmpPropType += _T(" | MV_INSTANCE"); // STRING_OK
+	if (!bTypeFound)
+		tmpPropType = format(L"0x%04x", PROP_TYPE(ulPropTag)); // STRING_OK
+
+	if (bNeedInstance) tmpPropType += L" | MV_INSTANCE"; // STRING_OK
 	return tmpPropType;
-} // TypeToString
+}
+
+_Check_return_ CString TypeToString(ULONG ulPropTag)
+{
+	return wstringToCString(TypeToWstring(ulPropTag));
+}
 
 // TagToString will prepend the http://schemas.microsoft.com/MAPI/ for us since it's a constant
 // We don't compute a DASL string for non-named props as FormatMessage in TagToString can handle those
