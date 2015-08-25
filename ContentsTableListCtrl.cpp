@@ -1772,7 +1772,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::DoExpandCollapse()
 	return hRes;
 } // CContentsTableListCtrl::DoExpandCollapse
 
-void CContentsTableListCtrl::OnOutputTable(_In_z_ LPCWSTR szFileName)
+void CContentsTableListCtrl::OnOutputTable(wstring szFileName)
 {
 	if (m_bInLoadOp) return;
 	FILE* fTable = NULL;
@@ -1782,7 +1782,7 @@ void CContentsTableListCtrl::OnOutputTable(_In_z_ LPCWSTR szFileName)
 		OutputTableToFile(fTable, m_lpContentsTable);
 		CloseFile(fTable);
 	}
-} // CContentsTableListCtrl::OnOutputTable
+}
 
 _Check_return_ HRESULT CContentsTableListCtrl::SetSortTable(_In_ LPSSortOrderSet lpSortOrderSet, ULONG ulFlags)
 {

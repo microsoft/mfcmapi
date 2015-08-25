@@ -88,9 +88,8 @@ void SetDebugOutputToFile(bool bDoOutput)
 // quick check to see if we have anything to print - so we can avoid executing the call
 #define EARLYABORT {if (!fFile && !RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD && !fIsSetv(ulDbgLvl)) return;}
 
-_Check_return_ FILE* MyOpenFile(_In_z_ LPCWSTR szFileName, bool bNewFile)
+_Check_return_ FILE* MyOpenFile(wstring szFileName, bool bNewFile)
 {
-	static TCHAR szErr[256]; // buffer for catastrophic failures
 	FILE* fOut = NULL;
 	LPCWSTR szParams = L"a+"; // STRING_OK
 	if (bNewFile) szParams = L"w"; // STRING_OK
@@ -98,9 +97,9 @@ _Check_return_ FILE* MyOpenFile(_In_z_ LPCWSTR szFileName, bool bNewFile)
 	// _wfopen has been deprecated, but older compilers do not have _wfopen_s
 	// Use the replacement when we're on VS 2005 or higher.
 #if defined(_MSC_VER) && (_MSC_VER >= 1400)
-	_wfopen_s(&fOut, szFileName, szParams);
+	_wfopen_s(&fOut, szFileName.c_str(), szParams);
 #else
-	fOut = _wfopen(szFileName, szParams);
+	fOut = _wfopen(szFileName.c_str(), szParams);
 #endif
 	if (fOut)
 	{
@@ -110,25 +109,22 @@ _Check_return_ FILE* MyOpenFile(_In_z_ LPCWSTR szFileName, bool bNewFile)
 	{
 		// File IO failed - complain - not using error macros since we may not have debug output here
 		DWORD dwErr = GetLastError();
-		HRESULT hRes = HRESULT_FROM_WIN32(dwErr);
-		LPTSTR szSysErr = NULL;
-		FormatMessage(
+		wstring szSysErr = formatmessage(
 			FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
 			0,
-			dwErr,
+			HRESULT_FROM_WIN32(dwErr),
 			0,
 			(LPTSTR)&szSysErr,
 			0,
 			0);
 
-		hRes = StringCchPrintf(szErr, _countof(szErr),
-			_T("_tfopen failed, hRes = 0x%08X, dwErr = 0x%08X = \"%s\"\n"), // STRING_OK
+		wstring szErr = format(
+			L"_tfopen failed, hRes = 0x%08X, dwErr = 0x%08X = \"%ws\"\n", // STRING_OK
 			HRESULT_FROM_WIN32(dwErr),
 			dwErr,
-			szSysErr);
+			szSysErr.c_str());
 
-		OutputDebugString(szErr);
-		LocalFree(szSysErr);
+		OutputDebugStringW(szErr.c_str());
 		return NULL;
 	}
 }
