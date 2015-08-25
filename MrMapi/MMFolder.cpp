@@ -17,7 +17,7 @@ HRESULT HrMAPIFindFolderW(
 	_Out_opt_ ULONG* lpcbeid, // pointer to count of bytes in entry ID
 	_Deref_out_opt_ LPENTRYID* lppeid) // pointer to entry ID pointer
 {
-	DebugPrint(DBGGeneric, "HrMAPIFindFolderW: Locating folder \"%ws\"\n", lpszName.c_str());
+	DebugPrint(DBGGeneric, L"HrMAPIFindFolderW: Locating folder \"%ws\"\n", lpszName.c_str());
 	HRESULT hRes = S_OK;
 	LPMAPITABLE lpTable = NULL;
 	LPSRowSet lpRow = NULL;
@@ -87,7 +87,7 @@ HRESULT HrMAPIFindFolderW(
 // Converts // to /
 wstring unescape(_In_ wstring lpsz)
 {
-	DebugPrint(DBGGeneric, "unescape: working on path \"%ws\"\n", lpsz.c_str());
+	DebugPrint(DBGGeneric, L"unescape: working on path \"%ws\"\n", lpsz.c_str());
 
 	size_t index = 0;
 	while (index != std::string::npos)
@@ -104,7 +104,7 @@ wstring unescape(_In_ wstring lpsz)
 // Splits string lpsz at backslashes and returns components in vector
 vector<wstring> SplitPath(_In_ wstring lpsz)
 {
-	DebugPrint(DBGGeneric, "SplitPath: splitting path \"%ws\"\n", lpsz.c_str());
+	DebugPrint(DBGGeneric, L"SplitPath: splitting path \"%ws\"\n", lpsz.c_str());
 
 	vector<wstring> result;
 
@@ -206,7 +206,7 @@ static HRESULT HrLookupRootFolderW(
 	_Out_opt_ ULONG* lpcbeid, // size of entryid
 	_Deref_out_opt_ LPENTRYID* lppeid) // pointer to entryid
 {
-	DebugPrint(DBGGeneric, "HrLookupRootFolderW: Locating root folder \"%ws\"\n", lpszRootFolder.c_str());
+	DebugPrint(DBGGeneric, L"HrLookupRootFolderW: Locating root folder \"%ws\"\n", lpszRootFolder.c_str());
 	if (!lpcbeid || !lppeid) return MAPI_E_INVALID_PARAMETER;
 	HRESULT hRes = S_OK;
 
@@ -281,7 +281,7 @@ HRESULT HrMAPIFindFolderExW(
 	_Out_opt_ ULONG* lpcbeid, // pointer to count of bytes in entry ID
 	_Deref_out_opt_ LPENTRYID* lppeid) // pointer to entry ID pointer
 {
-	DebugPrint(DBGGeneric, "HrMAPIFindFolderExW: Locating path \"%ws\"\n", lpszFolderPath.c_str());
+	DebugPrint(DBGGeneric, L"HrMAPIFindFolderExW: Locating path \"%ws\"\n", lpszFolderPath.c_str());
 	HRESULT hRes = S_OK;
 	LPMAPIFOLDER lpRootFolder = NULL;
 	ULONG cbeid = 0;
@@ -354,7 +354,7 @@ HRESULT HrMAPIOpenFolderExW(
 	_In_ wstring lpszFolderPath, // folder path
 	_Deref_out_opt_ LPMAPIFOLDER* lppFolder) // pointer to folder opened
 {
-	DebugPrint(DBGGeneric, "HrMAPIOpenFolderExW: Locating path \"%ws\"\n", lpszFolderPath.c_str());
+	DebugPrint(DBGGeneric, L"HrMAPIOpenFolderExW: Locating path \"%ws\"\n", lpszFolderPath.c_str());
 	HRESULT hRes = S_OK;
 	LPENTRYID lpeid = NULL;
 	ULONG cbeid = 0;
@@ -395,7 +395,7 @@ void DumpHierarchyTable(
 {
 	if (0 == ulDepth)
 	{
-		DebugPrint(DBGGeneric, "DumpHierarchyTable: Outputting hierarchy table for folder %u / %ws from profile %ws \n", ulFolder, lpszFolder.c_str(), lpszProfile.c_str());
+		DebugPrint(DBGGeneric, L"DumpHierarchyTable: Outputting hierarchy table for folder %u / %ws from profile %ws \n", ulFolder, lpszFolder.c_str(), lpszProfile.c_str());
 	}
 	HRESULT hRes = S_OK;
 
@@ -507,7 +507,7 @@ ULONGLONG ComputeSingleFolderSize(
 		lpTable->Release();
 		lpTable = NULL;
 	}
-	DebugPrint(DBGGeneric, "Content size = %I64u\n", ullThisFolderSize);
+	DebugPrint(DBGGeneric, L"Content size = %I64u\n", ullThisFolderSize);
 
 	WC_MAPI(lpFolder->GetContentsTable(MAPI_ASSOCIATED, &lpTable));
 	if (lpTable)
@@ -528,7 +528,7 @@ ULONGLONG ComputeSingleFolderSize(
 		lpTable = NULL;
 	}
 
-	DebugPrint(DBGGeneric, "Total size = %I64u\n", ullThisFolderSize);
+	DebugPrint(DBGGeneric, L"Total size = %I64u\n", ullThisFolderSize);
 
 	return ullThisFolderSize;
 }
@@ -539,7 +539,7 @@ ULONGLONG ComputeFolderSize(
 	_In_ ULONG ulFolder,
 	_In_ wstring lpszFolder)
 {
-	DebugPrint(DBGGeneric, "ComputeFolderSize: Calculating size (including subfolders) for folder %u / %ws from profile %ws \n", ulFolder, lpszFolder.c_str(), lpszProfile.c_str());
+	DebugPrint(DBGGeneric, L"ComputeFolderSize: Calculating size (including subfolders) for folder %u / %ws from profile %ws \n", ulFolder, lpszFolder.c_str(), lpszProfile.c_str());
 	HRESULT hRes = S_OK;
 
 	if (lpFolder)
@@ -638,7 +638,7 @@ void DumpSearchState(
 	_In_ ULONG ulFolder,
 	_In_ wstring lpszFolder)
 {
-	DebugPrint(DBGGeneric, "DumpSearchState: Outputting search state for folder %u / %ws from profile %ws \n", ulFolder, lpszFolder.c_str(), lpszProfile.c_str());
+	DebugPrint(DBGGeneric, L"DumpSearchState: Outputting search state for folder %u / %ws from profile %ws \n", ulFolder, lpszFolder.c_str(), lpszProfile.c_str());
 
 	HRESULT hRes = S_OK;
 

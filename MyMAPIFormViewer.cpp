@@ -59,7 +59,7 @@ CMyMAPIFormViewer::CMyMAPIFormViewer(
 	if (!m_hwndParent)
 	{
 		ErrDialog(__FILE__, __LINE__, IDS_EDFORMVIEWERNULLPARENT);
-		DebugPrint(DBGFormViewer, _T("Form Viewer created with a NULL parent!\n"));
+		DebugPrint(DBGFormViewer, L"Form Viewer created with a NULL parent!\n");
 	}
 } // CMyMAPIFormViewer::CMyMAPIFormViewer
 
@@ -92,38 +92,38 @@ STDMETHODIMP CMyMAPIFormViewer::QueryInterface(REFIID riid,
 {
 	DebugPrintEx(DBGFormViewer, CLASS, _T("QueryInterface"), _T("\n"));
 	wstring szGuid = GUIDToStringAndName((LPGUID)&riid);
-	DebugPrint(DBGFormViewer, _T("GUID Requested: %ws\n"), szGuid.c_str());
+	DebugPrint(DBGFormViewer, L"GUID Requested: %ws\n", szGuid.c_str());
 
 	*ppvObj = 0;
 	if (riid == IID_IMAPIMessageSite)
 	{
-		DebugPrint(DBGFormViewer, _T("Requested IID_IMAPIMessageSite\n"));
+		DebugPrint(DBGFormViewer, L"Requested IID_IMAPIMessageSite\n");
 		*ppvObj = (IMAPIMessageSite *)this;
 		AddRef();
 		return S_OK;
 	}
 	if (riid == IID_IMAPIViewContext)
 	{
-		DebugPrint(DBGFormViewer, _T("Requested IID_IMAPIViewContext\n"));
+		DebugPrint(DBGFormViewer, L"Requested IID_IMAPIViewContext\n");
 		*ppvObj = (IMAPIViewContext *)this;
 		AddRef();
 		return S_OK;
 	}
 	if (riid == IID_IMAPIViewAdviseSink)
 	{
-		DebugPrint(DBGFormViewer, _T("Requested IID_IMAPIViewAdviseSink\n"));
+		DebugPrint(DBGFormViewer, L"Requested IID_IMAPIViewAdviseSink\n");
 		*ppvObj = (IMAPIViewAdviseSink *)this;
 		AddRef();
 		return S_OK;
 	}
 	if (riid == IID_IUnknown)
 	{
-		DebugPrint(DBGFormViewer, _T("Requested IID_IUnknown\n"));
+		DebugPrint(DBGFormViewer, L"Requested IID_IUnknown\n");
 		*ppvObj = (LPUNKNOWN)((IMAPIMessageSite *)this);
 		AddRef();
 		return S_OK;
 	}
-	DebugPrint(DBGFormViewer, _T("Unknown interface requested\n"));
+	DebugPrint(DBGFormViewer, L"Unknown interface requested\n");
 	return E_NOINTERFACE;
 } // CMyMAPIFormViewer::QueryInterface
 
@@ -454,10 +454,10 @@ _Check_return_ HRESULT CMyMAPIFormViewer::SetPersist(_In_opt_ LPMAPIFORM lpForm,
 	{
 		//	Message is in compose mode - caching the IPersistMessage might hose Outlook
 		//	However, if we don't cache the IPersistMessage, we can't support SaveMessage or SubmitMessage
-		DebugPrint(DBGFormViewer, _T("Not caching the persist\n"));
+		DebugPrint(DBGFormViewer, L"Not caching the persist\n");
 		return S_OK;
 	}
-	DebugPrint(DBGFormViewer, _T("Caching the persist\n"));
+	DebugPrint(DBGFormViewer, L"Caching the persist\n");
 
 	// Doing this part (saving the persist) will leak Winword in compose mode - which is why we make the above check
 	// trouble is - compose mode is when we need the persist, for SaveMessage and SubmitMessage
@@ -570,7 +570,7 @@ STDMETHODIMP CMyMAPIFormViewer::ActivateNext(ULONG ulDir,
 
 			if (m_lpMapiFormAdviseSink)
 			{
-				DebugPrint(DBGFormViewer, _T("Calling OnActivateNext: szClass = %hs, ulStatus = 0x%X, ulFlags = 0x%X\n"),
+				DebugPrint(DBGFormViewer, L"Calling OnActivateNext: szClass = %hs, ulStatus = 0x%X, ulFlags = 0x%X\n",
 					lpspvaShow[ePR_MESSAGE_CLASS_A].Value.lpszA,
 					ulMessageStatus,
 					lpspvaShow[ePR_MESSAGE_FLAGS].Value.ul);

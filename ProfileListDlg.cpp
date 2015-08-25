@@ -469,7 +469,7 @@ void CProfileListDlg::OnGetProfileServiceVersion()
 		if (bFoundServerVersion)
 		{
 			MyData.SetStringf(0,_T("%u = 0x%X"),ulServerVersion,ulServerVersion); // STRING_OK
-			DebugPrint(DBGGeneric,_T("PR_PROFILE_SERVER_VERSION == 0x%08X\n"),ulServerVersion);
+			DebugPrint(DBGGeneric, L"PR_PROFILE_SERVER_VERSION == 0x%08X\n",ulServerVersion);
 		}
 		else
 		{
@@ -478,16 +478,16 @@ void CProfileListDlg::OnGetProfileServiceVersion()
 
 		if (bFoundServerFullVersion)
 		{
-			DebugPrint(DBGGeneric,_T("PR_PROFILE_SERVER_FULL_VERSION = \n"));
+			DebugPrint(DBGGeneric, L"PR_PROFILE_SERVER_FULL_VERSION = \n");
 			MyData.SetStringf(1,_T("%u = 0x%X"),storeVersion.wMajorVersion,storeVersion.wMajorVersion); // STRING_OK
 			MyData.SetStringf(2,_T("%u = 0x%X"),storeVersion.wMinorVersion,storeVersion.wMinorVersion); // STRING_OK
 			MyData.SetStringf(3,_T("%u = 0x%X"),storeVersion.wBuild,storeVersion.wBuild); // STRING_OK
 			MyData.SetStringf(4,_T("%u = 0x%X"),storeVersion.wMinorBuild,storeVersion.wMinorBuild); // STRING_OK
 			DebugPrint(DBGGeneric,
-				_T("\twMajorVersion 0x%04X\n") // STRING_OK
-				_T("\twMinorVersion 0x%04X\n") // STRING_OK
-				_T("\twBuild 0x%04X\n") // STRING_OK
-				_T("\twMinorBuild 0x%04X\n"), // STRING_OK
+				L"\twMajorVersion 0x%04X\n" // STRING_OK
+				L"\twMinorVersion 0x%04X\n" // STRING_OK
+				L"\twBuild 0x%04X\n" // STRING_OK
+				L"\twMinorBuild 0x%04X\n", // STRING_OK
 				storeVersion.wMajorVersion,
 				storeVersion.wMinorVersion,
 				storeVersion.wBuild,
@@ -639,7 +639,7 @@ void CProfileListDlg::OnExportProfile()
 		}
 		delete[] szProfileName;
 
-		DebugPrint(DBGGeneric, _T("BuildFileNameAndPath built file name \"%ws\"\n"), szFileName);
+		DebugPrint(DBGGeneric, L"BuildFileNameAndPath built file name \"%ws\"\n", szFileName);
 
 		CFileDialogExW dlgFilePicker;
 

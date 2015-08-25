@@ -70,7 +70,7 @@ void CFindFidMid::InitFidMid(_In_z_ LPCWSTR szFid, _In_z_ LPCWSTR szMid)
 
 void CFindFidMid::BeginFolderWork()
 {
-	DebugPrint(DBGGeneric, "CFindFidMid::BeginFolderWork: m_szFolderOffset %s\n", m_szFolderOffset);
+	DebugPrint(DBGGeneric, L"CFindFidMid::BeginFolderWork: m_szFolderOffset %ws\n", LPCTSTRToWstring(m_szFolderOffset).c_str());
 	m_fFIDMatch = false;
 	m_fFIDExactMatch = false;
 	m_fFIDPrinted = false;
@@ -100,7 +100,7 @@ void CFindFidMid::BeginFolderWork()
 		NULL,
 		&ulProps,
 		&lpProps));
-	DebugPrint(DBGGeneric, "CFindFidMid::DoFolderPerHierarchyTableRowWork: m_szFolderOffset %s\n", m_szFolderOffset);
+	DebugPrint(DBGGeneric, L"CFindFidMid::DoFolderPerHierarchyTableRowWork: m_szFolderOffset %ws\n", LPCTSTRToWstring(m_szFolderOffset).c_str());
 
 	// Now get the FID
 	LPWSTR lpszDisplayName = NULL;
@@ -113,12 +113,12 @@ void CFindFidMid::BeginFolderWork()
 	if (lpProps && PidTagFolderId == lpProps[ePidTagFolderId].ulPropTag)
 	{
 		m_szCurrentFid = wstringToLPWSTR(FidMidToSzString(lpProps[ePidTagFolderId].Value.li.QuadPart, false));
-		DebugPrint(DBGGeneric, "CFindFidMid::DoFolderPerHierarchyTableRowWork: Found FID %ws for %ws\n", m_szCurrentFid, lpszDisplayName);
+		DebugPrint(DBGGeneric, L"CFindFidMid::DoFolderPerHierarchyTableRowWork: Found FID %ws for %ws\n", m_szCurrentFid, lpszDisplayName);
 	}
 	else
 	{
 		// Nothing left to do if we can't find a fid.
-		DebugPrint(DBGGeneric, "CFindFidMid::DoFolderPerHierarchyTableRowWork: No FID found for %ws\n", lpszDisplayName);
+		DebugPrint(DBGGeneric, L"CFindFidMid::DoFolderPerHierarchyTableRowWork: No FID found for %ws\n", lpszDisplayName);
 		return;
 	}
 
@@ -142,7 +142,7 @@ void CFindFidMid::BeginFolderWork()
 
 	if (m_fFIDMatch)
 	{
-		DebugPrint(DBGGeneric, "CFindFidMid::DoFolderPerHierarchyTableRowWork: Matched FID %ws\n", m_szFid);
+		DebugPrint(DBGGeneric, L"CFindFidMid::DoFolderPerHierarchyTableRowWork: Matched FID %ws\n", m_szFid);
 		// Print out the folder
 		if (m_szMid == NULL || m_fFIDExactMatch)
 		{
@@ -186,12 +186,12 @@ bool CFindFidMid::DoContentsTablePerRowWork(_In_ LPSRow lpSRow, ULONG /*ulCurRow
 	if (lpPropMid)
 	{
 		lpszThisMid = FidMidToSzString(lpPropMid->Value.li.QuadPart, false);
-		DebugPrint(DBGGeneric, "CFindFidMid::DoContentsTablePerRowWork: Found MID %ws\n", lpszThisMid);
+		DebugPrint(DBGGeneric, L"CFindFidMid::DoContentsTablePerRowWork: Found MID %ws\n", lpszThisMid);
 	}
 	else
 	{
 		// Nothing left to do if we can't find a mid
-		DebugPrint(DBGGeneric, "CFindFidMid::DoContentsTablePerRowWork: No MID found\n");
+		DebugPrint(DBGGeneric, L"CFindFidMid::DoContentsTablePerRowWork: No MID found\n");
 		return false;
 	}
 
@@ -219,7 +219,7 @@ bool CFindFidMid::DoContentsTablePerRowWork(_In_ LPSRow lpSRow, ULONG /*ulCurRow
 		}
 
 		PrintMessage(lpszThisMid.c_str(), m_fAssociated, lpszSubject, lpszClass);
-		DebugPrint(DBGGeneric, "EnumMessages::ProcessRow: Matched MID %ws, \"%s\", \"%s\"\n", lpszThisMid, lpszSubject, lpszClass);
+		DebugPrint(DBGGeneric, L"EnumMessages::ProcessRow: Matched MID %ws, \"%ws\", \"%ws\"\n", lpszThisMid, LPCTSTRToWstring(lpszSubject).c_str(), LPCTSTRToWstring(lpszClass).c_str());
 	}
 
 	// Don't open the message - the row is enough
@@ -236,7 +236,7 @@ void DumpFidMid(
 	RegKeys[regKeyMAPI_NO_CACHE].ulCurDWORD = true;
 	RegKeys[regkeyMDB_ONLINE].ulCurDWORD = true;
 
-	DebugPrint(DBGGeneric, "DumpFidMid: Outputting from profile %ws. FID: %ws, MID: %ws\n", lpszProfile, lpszFid, lpszMid);
+	DebugPrint(DBGGeneric, L"DumpFidMid: Outputting from profile %ws. FID: %ws, MID: %ws\n", lpszProfile, lpszFid, lpszMid);
 	HRESULT hRes = S_OK;
 	LPMAPIFOLDER lpFolder = NULL;
 

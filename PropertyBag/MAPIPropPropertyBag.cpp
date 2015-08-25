@@ -82,7 +82,7 @@ _Check_return_ HRESULT MAPIPropPropertyBag::GetAllProps(
 		if (MAPI_E_CALL_FAILED == hRes)
 		{
 			// Some stores, like public folders, don't support properties on the root folder
-			DebugPrint(DBGGeneric, _T("Failed to get call GetProps on this object!\n"));
+			DebugPrint(DBGGeneric, L"Failed to get call GetProps on this object!\n");
 		}
 		else if (FAILED(hRes)) // only report errors, not warnings
 		{
