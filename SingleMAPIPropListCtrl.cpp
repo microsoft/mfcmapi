@@ -222,7 +222,7 @@ void CSingleMAPIPropListCtrl::InitMenu(_In_ CMenu* pMenu)
 
 _Check_return_ bool CSingleMAPIPropListCtrl::HandleMenu(WORD wMenuSelect)
 {
-	DebugPrint(DBGMenu, _T("CSingleMAPIPropListCtrl::HandleMenu wMenuSelect = 0x%X = %u\n"), wMenuSelect, wMenuSelect);
+	DebugPrint(DBGMenu, L"CSingleMAPIPropListCtrl::HandleMenu wMenuSelect = 0x%X = %u\n", wMenuSelect, wMenuSelect);
 	switch (wMenuSelect)
 	{
 	case ID_COPY_PROPERTY: OnCopyProperty(); return true;
@@ -770,7 +770,7 @@ _Check_return_ HRESULT CSingleMAPIPropListCtrl::SetDataSource(_In_opt_ LPMAPIPRO
 		{
 			// This fixes a ton of flashing problems
 			lpMyHeader->SetRedraw(true);
-			for (iCurCol = 0; iCurCol<NUMPROPCOLUMNS; iCurCol++)
+			for (iCurCol = 0; iCurCol < NUMPROPCOLUMNS; iCurCol++)
 			{
 				SetColumnWidth(iCurCol, LVSCW_AUTOSIZE_USEHEADER);
 				if (GetColumnWidth(iCurCol) > 200) SetColumnWidth(iCurCol, 200);
@@ -854,21 +854,21 @@ void CSingleMAPIPropListCtrl::SavePropsToXML()
 					case PT_STRING8:
 					case PT_UNICODE:
 					{
-									   OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVAL].uidName, (LPTSTR)(LPCTSTR)szTemp1, true, 2);
-									   OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVALALT].uidName, (LPTSTR)(LPCTSTR)szTemp2, false, 2);
-									   break;
+						OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVAL].uidName, (LPTSTR)(LPCTSTR)szTemp1, true, 2);
+						OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVALALT].uidName, (LPTSTR)(LPCTSTR)szTemp2, false, 2);
+						break;
 					}
 					case PT_BINARY:
 					{
-									  OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVAL].uidName, (LPTSTR)(LPCTSTR)szTemp1, false, 2);
-									  OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVALALT].uidName, (LPTSTR)(LPCTSTR)szTemp2, true, 2);
-									  break;
+						OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVAL].uidName, (LPTSTR)(LPCTSTR)szTemp1, false, 2);
+						OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVALALT].uidName, (LPTSTR)(LPCTSTR)szTemp2, true, 2);
+						break;
 					}
 					default:
 					{
-							   OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVAL].uidName, (LPTSTR)(LPCTSTR)szTemp1, false, 2);
-							   OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVALALT].uidName, (LPTSTR)(LPCTSTR)szTemp2, false, 2);
-							   break;
+						OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVAL].uidName, (LPTSTR)(LPCTSTR)szTemp1, false, 2);
+						OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVALALT].uidName, (LPTSTR)(LPCTSTR)szTemp2, false, 2);
+						break;
 					}
 					}
 
@@ -1271,7 +1271,7 @@ void CSingleMAPIPropListCtrl::OnEditPropAsRestriction(ULONG ulPropTag)
 		lpResIn = (LPSRestriction)lpEditProp->Value.lpszA;
 	}
 
-	DebugPrint(DBGGeneric, _T("Source restriction before editing:\n"));
+	DebugPrint(DBGGeneric, L"Source restriction before editing:\n");
 	DebugPrintRestriction(DBGGeneric, lpResIn, m_lpPropBag->GetMAPIProp());
 	CRestrictEditor MyResEditor(
 		this,
@@ -1284,7 +1284,7 @@ void CSingleMAPIPropListCtrl::OnEditPropAsRestriction(ULONG ulPropTag)
 		LPSRestriction lpModRes = MyResEditor.DetachModifiedSRestriction();
 		if (lpModRes)
 		{
-			DebugPrint(DBGGeneric, _T("Modified restriction:\n"));
+			DebugPrint(DBGGeneric, L"Modified restriction:\n");
 			DebugPrintRestriction(DBGGeneric, lpModRes, m_lpPropBag->GetMAPIProp());
 
 			// need to merge the data we got back from the CRestrictEditor with our current prop set
@@ -1566,66 +1566,66 @@ void CSingleMAPIPropListCtrl::OnPasteProperty()
 		{
 		case 0:
 		{
-				  CEditor MyCopyData(
-					  this,
-					  IDS_PASTEPROP,
-					  IDS_COPYPASTEPROMPT,
-					  2,
-					  CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+			CEditor MyCopyData(
+				this,
+				IDS_PASTEPROP,
+				IDS_COPYPASTEPROMPT,
+				2,
+				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-				  wstring szGuid = GUIDToStringAndName(&IID_IMAPIProp);
-				  MyCopyData.InitPane(0, CreateSingleLinePaneW(IDS_INTERFACE, szGuid.c_str(), false));
-				  MyCopyData.InitPane(1, CreateSingleLinePane(IDS_FLAGS, NULL, false));
-				  MyCopyData.SetHex(1, MAPI_DIALOG);
+			wstring szGuid = GUIDToStringAndName(&IID_IMAPIProp);
+			MyCopyData.InitPane(0, CreateSingleLinePaneW(IDS_INTERFACE, szGuid.c_str(), false));
+			MyCopyData.InitPane(1, CreateSingleLinePane(IDS_FLAGS, NULL, false));
+			MyCopyData.SetHex(1, MAPI_DIALOG);
 
-				  WC_H(MyCopyData.DisplayDialog());
-				  if (S_OK == hRes)
-				  {
-					  GUID	MyGUID = { 0 };
-					  CString szTemp = MyCopyData.GetString(0);
-					  EC_H(StringToGUID((LPCTSTR)szTemp, &MyGUID));
+			WC_H(MyCopyData.DisplayDialog());
+			if (S_OK == hRes)
+			{
+				GUID	MyGUID = { 0 };
+				CString szTemp = MyCopyData.GetString(0);
+				EC_H(StringToGUID((LPCTSTR)szTemp, &MyGUID));
 
-					  LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIProp::CopyProps"), m_lpHostDlg->m_hWnd); // STRING_OK
+				LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIProp::CopyProps"), m_lpHostDlg->m_hWnd); // STRING_OK
 
-					  ULONG ulCopyFlags = MyCopyData.GetHex(1);
+				ULONG ulCopyFlags = MyCopyData.GetHex(1);
 
-					  if (lpProgress)
-						  ulCopyFlags |= MAPI_DIALOG;
+				if (lpProgress)
+					ulCopyFlags |= MAPI_DIALOG;
 
-					  EC_MAPI(lpSourcePropObj->CopyProps(
-						  &TagArray,
-						  lpProgress ? (ULONG_PTR)m_lpHostDlg->m_hWnd : NULL, // ui param
-						  lpProgress, // progress
-						  &MyGUID,
-						  m_lpPropBag->GetMAPIProp(),
-						  ulCopyFlags,
-						  &lpProblems));
+				EC_MAPI(lpSourcePropObj->CopyProps(
+					&TagArray,
+					lpProgress ? (ULONG_PTR)m_lpHostDlg->m_hWnd : NULL, // ui param
+					lpProgress, // progress
+					&MyGUID,
+					m_lpPropBag->GetMAPIProp(),
+					ulCopyFlags,
+					&lpProblems));
 
-					  if (lpProgress)
-						  lpProgress->Release();
+				if (lpProgress)
+					lpProgress->Release();
 
-					  lpProgress = NULL;
-				  }
+				lpProgress = NULL;
+			}
 		}
-			break;
+		break;
 		case 1:
 		{
-				  ULONG			ulValues = NULL;
-				  LPSPropValue	lpSourceProp = NULL;
-				  EC_MAPI(lpSourcePropObj->GetProps(
-					  &TagArray,
-					  fMapiUnicode,
-					  &ulValues,
-					  &lpSourceProp));
-				  if (!FAILED(hRes) && ulValues && lpSourceProp && PT_ERROR != lpSourceProp->ulPropTag)
-				  {
-					  lpSourceProp->ulPropTag = ulTargetTag;
-					  EC_H(m_lpPropBag->SetProps(
-						  ulValues,
-						  lpSourceProp));
-				  }
+			ULONG			ulValues = NULL;
+			LPSPropValue	lpSourceProp = NULL;
+			EC_MAPI(lpSourcePropObj->GetProps(
+				&TagArray,
+				fMapiUnicode,
+				&ulValues,
+				&lpSourceProp));
+			if (!FAILED(hRes) && ulValues && lpSourceProp && PT_ERROR != lpSourceProp->ulPropTag)
+			{
+				lpSourceProp->ulPropTag = ulTargetTag;
+				EC_H(m_lpPropBag->SetProps(
+					ulValues,
+					lpSourceProp));
+			}
 		}
-			break;
+		break;
 		case 2:
 			EC_H(CopyPropertyAsStream(lpSourcePropObj, m_lpPropBag->GetMAPIProp(), ulSourceTag, ulTargetTag));
 			break;
@@ -1708,24 +1708,24 @@ void CSingleMAPIPropListCtrl::OnOpenProperty()
 			{
 			case (PT_BINARY) :
 			{
-								 DebugPrintEx(DBGGeneric, CLASS, _T("OnOpenProperty"), _T("property is PT_BINARY\n"));
-								 m_lpHostDlg->OnOpenEntryID(&lpProp->Value.bin);
-								 break;
+				DebugPrintEx(DBGGeneric, CLASS, _T("OnOpenProperty"), _T("property is PT_BINARY\n"));
+				m_lpHostDlg->OnOpenEntryID(&lpProp->Value.bin);
+				break;
 			}
 			case (PT_MV_BINARY) :
 			{
-									ULONG i = 0;
+				ULONG i = 0;
 
-									DebugPrintEx(DBGGeneric, CLASS, _T("OnOpenProperty"), _T("property is PT_MV_BINARY\n"));
-									if (S_OK == hRes && lpProp && PT_MV_BINARY == PROP_TYPE(lpProp->ulPropTag))
-									{
-										DebugPrintEx(DBGGeneric, CLASS, _T("OnOpenProperty"), _T("opened MV structure. There are 0x%X binaries in it.\n"), lpProp->Value.MVbin.cValues);
-										for (i = 0; i < lpProp->Value.MVbin.cValues; i++)
-										{
-											m_lpHostDlg->OnOpenEntryID(&lpProp->Value.MVbin.lpbin[i]);
-										}
-									}
-									break;
+				DebugPrintEx(DBGGeneric, CLASS, _T("OnOpenProperty"), _T("property is PT_MV_BINARY\n"));
+				if (S_OK == hRes && lpProp && PT_MV_BINARY == PROP_TYPE(lpProp->ulPropTag))
+				{
+					DebugPrintEx(DBGGeneric, CLASS, _T("OnOpenProperty"), _T("opened MV structure. There are 0x%X binaries in it.\n"), lpProp->Value.MVbin.cValues);
+					for (i = 0; i < lpProp->Value.MVbin.cValues; i++)
+					{
+						m_lpHostDlg->OnOpenEntryID(&lpProp->Value.MVbin.lpbin[i]);
+					}
+				}
+				break;
 			}
 			}
 		}

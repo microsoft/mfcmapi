@@ -117,13 +117,13 @@ void SingleMessageDialog::OnRTFSync()
 
 		if (m_lpMessage)
 		{
-			DebugPrint(DBGGeneric, _T("Calling RTFSync on %p with flags 0x%X\n"), m_lpMessage, MyData.GetHex(0));
+			DebugPrint(DBGGeneric, L"Calling RTFSync on %p with flags 0x%X\n", m_lpMessage, MyData.GetHex(0));
 			EC_MAPI(RTFSync(
 				m_lpMessage,
 				MyData.GetHex(0),
 				&bMessageUpdated));
 
-			DebugPrint(DBGGeneric, _T("RTFSync returned %d\n"), bMessageUpdated);
+			DebugPrint(DBGGeneric, L"RTFSync returned %d\n", bMessageUpdated);
 
 			EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 
@@ -139,7 +139,7 @@ void SingleMessageDialog::OnTestEditBody()
 
 	if (m_lpMessage)
 	{
-		DebugPrint(DBGGeneric, _T("Editing body on %p\n"), m_lpMessage);
+		DebugPrint(DBGGeneric, L"Editing body on %p\n", m_lpMessage);
 
 		CStreamEditor MyEditor(
 			this,
@@ -169,7 +169,7 @@ void SingleMessageDialog::OnTestEditHTML()
 
 	if (m_lpMessage)
 	{
-		DebugPrint(DBGGeneric, _T("Testing HTML on %p\n"), m_lpMessage);
+		DebugPrint(DBGGeneric, L"Testing HTML on %p\n", m_lpMessage);
 
 		CStreamEditor MyEditor(
 			this,
@@ -199,7 +199,7 @@ void SingleMessageDialog::OnTestEditRTF()
 
 	if (m_lpMessage)
 	{
-		DebugPrint(DBGGeneric, _T("Testing body on %p\n"), m_lpMessage);
+		DebugPrint(DBGGeneric, L"Testing body on %p\n", m_lpMessage);
 
 		CStreamEditor MyEditor(
 			this,
@@ -229,7 +229,7 @@ void SingleMessageDialog::OnSaveChanges()
 
 	if (m_lpMessage)
 	{
-		DebugPrint(DBGGeneric, _T("Saving changes on %p\n"), m_lpMessage);
+		DebugPrint(DBGGeneric, L"Saving changes on %p\n", m_lpMessage);
 
 		EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 

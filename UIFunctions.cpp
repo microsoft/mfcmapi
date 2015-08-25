@@ -378,7 +378,7 @@ void UpdateMenuString(_In_ HWND hWnd, UINT uiMenuTag, UINT uidNewString)
 	WCHAR szNewString[128] = {0};
 	::LoadStringW(GetModuleHandle(NULL), uidNewString, szNewString, _countof(szNewString));
 
-	DebugPrint(DBGMenu,_T("UpdateMenuString: Changing menu item 0x%X on window %p to \"%s\"\n"),uiMenuTag,hWnd,(LPCTSTR) szNewString);
+	DebugPrint(DBGMenu,L"UpdateMenuString: Changing menu item 0x%X on window %p to \"%ws\"\n",uiMenuTag,hWnd, szNewString);
 	HMENU hMenu = ::GetMenu(hWnd);
 	if (!hMenu) return;
 
