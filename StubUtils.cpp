@@ -75,7 +75,7 @@ __inline HMODULE GetMAPIHandle()
 
 void SetMAPIHandle(HMODULE hinstMAPI)
 {
-	DebugPrint(DBGLoadMAPI, _T("Enter SetMAPIHandle: hinstMAPI = %p\n"), hinstMAPI);
+	DebugPrint(DBGLoadMAPI, L"Enter SetMAPIHandle: hinstMAPI = %p\n", hinstMAPI);
 	HMODULE	hinstNULL = NULL;
 	HMODULE	hinstToFree = NULL;
 
@@ -117,7 +117,7 @@ void SetMAPIHandle(HMODULE hinstMAPI)
 	{
 		FreeLibrary(hinstToFree);
 	}
-	DebugPrint(DBGLoadMAPI, _T("Exit SetMAPIHandle\n"));
+	DebugPrint(DBGLoadMAPI, L"Exit SetMAPIHandle\n");
 } // SetMAPIHandle
 
 /*
@@ -126,7 +126,7 @@ void SetMAPIHandle(HMODULE hinstMAPI)
  */
 DWORD RegQueryWszExpand(HKEY hKey, LPCWSTR lpValueName, LPWSTR lpValue, DWORD cchValueLen)
 {
-	DebugPrint(DBGLoadMAPI, _T("Enter RegQueryWszExpand: hKey = %p, lpValueName = %ws, cchValueLen = 0x%08X\n"),
+	DebugPrint(DBGLoadMAPI, L"Enter RegQueryWszExpand: hKey = %p, lpValueName = %ws, cchValueLen = 0x%08X\n",
 		hKey, lpValueName, cchValueLen);
 	DWORD dwErr = ERROR_SUCCESS;
 	DWORD dwType = 0;
@@ -138,7 +138,7 @@ DWORD RegQueryWszExpand(HKEY hKey, LPCWSTR lpValueName, LPWSTR lpValue, DWORD cc
 
 	if (dwErr == ERROR_SUCCESS)
 	{
-		DebugPrint(DBGLoadMAPI, _T("RegQueryWszExpand: rgchValue = %ws\n"), rgchValue);
+		DebugPrint(DBGLoadMAPI, L"RegQueryWszExpand: rgchValue = %ws\n", rgchValue);
 		if (dwType == REG_EXPAND_SZ)
 		{
 			// Expand the strings
@@ -148,7 +148,7 @@ DWORD RegQueryWszExpand(HKEY hKey, LPCWSTR lpValueName, LPWSTR lpValue, DWORD cc
 				dwErr = ERROR_INSUFFICIENT_BUFFER;
 				goto Exit;
 			}
-			DebugPrint(DBGLoadMAPI, _T("RegQueryWszExpand: rgchValue(expanded) = %ws\n"), lpValue);
+			DebugPrint(DBGLoadMAPI, L"RegQueryWszExpand: rgchValue(expanded) = %ws\n", lpValue);
 		}
 		else if (dwType == REG_SZ)
 		{
@@ -156,7 +156,7 @@ DWORD RegQueryWszExpand(HKEY hKey, LPCWSTR lpValueName, LPWSTR lpValue, DWORD cc
 		}
 	}
 Exit:
-	DebugPrint(DBGLoadMAPI, _T("Exit RegQueryWszExpand: dwErr = 0x%08X\n"), dwErr);
+	DebugPrint(DBGLoadMAPI, L"Exit RegQueryWszExpand: dwErr = 0x%08X\n", dwErr);
 	return dwErr;
 } // RegQueryWszExpand
 
@@ -167,7 +167,7 @@ Exit:
  */
 bool GetComponentPath(LPCSTR szComponent, LPSTR szQualifier, LPSTR szDllPath, DWORD cchBufferSize, bool fInstall)
 {
-	DebugPrint(DBGLoadMAPI, _T("Enter GetComponentPath: szComponent = %hs, szQualifier = %hs, cchBufferSize = 0x%08X, fInstall = 0x%08X\n"),
+	DebugPrint(DBGLoadMAPI, L"Enter GetComponentPath: szComponent = %hs, szQualifier = %hs, cchBufferSize = 0x%08X, fInstall = 0x%08X\n",
 		szComponent, szQualifier, cchBufferSize, fInstall);
 	HMODULE hMapiStub = NULL;
 	bool fReturn = FALSE;
@@ -185,13 +185,13 @@ bool GetComponentPath(LPCSTR szComponent, LPSTR szQualifier, LPSTR szDllPath, DW
 		if (pFGetCompPath)
 		{
 			fReturn = pFGetCompPath(szComponent, szQualifier, szDllPath, cchBufferSize, fInstall);
-			DebugPrint(DBGLoadMAPI, _T("GetComponentPath: szDllPath = %hs\n"), szDllPath);
+			DebugPrint(DBGLoadMAPI, L"GetComponentPath: szDllPath = %hs\n", szDllPath);
 		}
 
 		FreeLibrary(hMapiStub);
 	}
 
-	DebugPrint(DBGLoadMAPI, _T("Exit GetComponentPath: fReturn = 0x%08X\n"), fReturn);
+	DebugPrint(DBGLoadMAPI, L"Exit GetComponentPath: fReturn = 0x%08X\n", fReturn);
 	return fReturn;
 } // GetComponentPath
 
@@ -293,7 +293,7 @@ LPWSTR MAPIPathIterator::GetNextMAPIPath()
  */
 LPWSTR MAPIPathIterator::GetMailClientFromMSIData(HKEY hkeyMapiClient)
 {
-	DebugPrint(DBGLoadMAPI, _T("Enter GetMailClientFromMSIData\n"));
+	DebugPrint(DBGLoadMAPI, L"Enter GetMailClientFromMSIData\n");
 	CHAR rgchMSIComponentID[MAX_PATH] = { 0 };
 	CHAR rgchMSIApplicationLCID[MAX_PATH] = { 0 };
 	CHAR rgchComponentPath[MAX_PATH] = { 0 };
@@ -312,7 +312,7 @@ LPWSTR MAPIPathIterator::GetMailClientFromMSIData(HKEY hkeyMapiClient)
 			WC_H(AnsiToUnicode(rgchComponentPath, &szPath));
 		}
 	}
-	DebugPrint(DBGLoadMAPI, _T("Exit GetMailClientFromMSIData: szPath = %ws\n"), szPath);
+	DebugPrint(DBGLoadMAPI, L"Exit GetMailClientFromMSIData: szPath = %ws\n", szPath);
 	return szPath;
 } // MAPIPathIterator::GetMailClientFromMSIData
 
@@ -322,7 +322,7 @@ LPWSTR MAPIPathIterator::GetMailClientFromMSIData(HKEY hkeyMapiClient)
  */
 LPWSTR MAPIPathIterator::GetMailClientFromDllPath(HKEY hkeyMapiClient, bool bEx)
 {
-	DebugPrint(DBGLoadMAPI, _T("Enter GetMailClientFromDllPath: hkeyMapiClient = %p, bEx = %d\n"), hkeyMapiClient, bEx);
+	DebugPrint(DBGLoadMAPI, L"Enter GetMailClientFromDllPath: hkeyMapiClient = %p, bEx = %d\n", hkeyMapiClient, bEx);
 	HRESULT hRes = S_OK;
 	LPWSTR szPath = NULL;
 
@@ -345,7 +345,7 @@ LPWSTR MAPIPathIterator::GetMailClientFromDllPath(HKEY hkeyMapiClient, bool bEx)
 		}
 	}
 
-	DebugPrint(DBGLoadMAPI, _T("Exit GetMailClientFromDllPath: szPath = %ws\n"), szPath);
+	DebugPrint(DBGLoadMAPI, L"Exit GetMailClientFromDllPath: szPath = %ws\n", szPath);
 	return szPath;
 } // MAPIPathIterator::GetMailClientFromDllPath
 
@@ -358,7 +358,7 @@ LPWSTR MAPIPathIterator::GetMailClientFromDllPath(HKEY hkeyMapiClient, bool bEx)
  */
 LPWSTR MAPIPathIterator::GetRegisteredMapiClient(LPCWSTR pwzProviderOverride, bool bDLL, bool bEx)
 {
-	DebugPrint(DBGLoadMAPI, _T("Enter GetRegisteredMapiClient\n"));
+	DebugPrint(DBGLoadMAPI, L"Enter GetRegisteredMapiClient\n");
 	HRESULT hRes = S_OK;
 	LPWSTR szPath = NULL;
 	LPCWSTR pwzProvider = pwzProviderOverride;
@@ -395,7 +395,7 @@ LPWSTR MAPIPathIterator::GetRegisteredMapiClient(LPCWSTR pwzProviderOverride, bo
 				&dwSize));
 			if (SUCCEEDED(hRes))
 			{
-				DebugPrint(DBGLoadMAPI, _T("GetRegisteredMapiClient: HKLM\\%ws = %ws\n"), WszKeyNameMailClient, m_rgchMailClient);
+				DebugPrint(DBGLoadMAPI, L"GetRegisteredMapiClient: HKLM\\%ws = %ws\n", WszKeyNameMailClient, m_rgchMailClient);
 			}
 			else
 			{
@@ -409,7 +409,7 @@ LPWSTR MAPIPathIterator::GetRegisteredMapiClient(LPCWSTR pwzProviderOverride, bo
 
 	if (m_hMailKey && pwzProvider && !m_hkeyMapiClient)
 	{
-		DebugPrint(DBGLoadMAPI, _T("GetRegisteredMapiClient: pwzProvider = %ws%\n"), pwzProvider);
+		DebugPrint(DBGLoadMAPI, L"GetRegisteredMapiClient: pwzProvider = %ws\n", pwzProvider);
 		WC_W32(RegOpenKeyExW(
 			m_hMailKey,
 			pwzProvider,
@@ -435,7 +435,7 @@ LPWSTR MAPIPathIterator::GetRegisteredMapiClient(LPCWSTR pwzProviderOverride, bo
 
 	}
 
-	DebugPrint(DBGLoadMAPI, _T("Exit GetRegisteredMapiClient: szPath = %ws\n"), szPath);
+	DebugPrint(DBGLoadMAPI, L"Exit GetRegisteredMapiClient: szPath = %ws\n", szPath);
 	return szPath;
 } // MAPIPathIterator::GetRegisteredMapiClient
 
@@ -445,7 +445,7 @@ LPWSTR MAPIPathIterator::GetRegisteredMapiClient(LPCWSTR pwzProviderOverride, bo
  */
 LPWSTR MAPIPathIterator::GetMAPISystemDir()
 {
-	DebugPrint(DBGLoadMAPI, _T("Enter GetMAPISystemDir\n"));
+	DebugPrint(DBGLoadMAPI, L"Enter GetMAPISystemDir\n");
 	WCHAR szSystemDir[MAX_PATH] = { 0 };
 
 	if (GetSystemDirectoryW(szSystemDir, MAX_PATH))
@@ -454,18 +454,18 @@ LPWSTR MAPIPathIterator::GetMAPISystemDir()
 		if (szDLLPath)
 		{
 			swprintf_s(szDLLPath, MAX_PATH, WszMAPISystemPath, szSystemDir, WszMapi32);
-			DebugPrint(DBGLoadMAPI, _T("GetMAPISystemDir: found %ws\n"), szDLLPath);
+			DebugPrint(DBGLoadMAPI, L"GetMAPISystemDir: found %ws\n", szDLLPath);
 			return szDLLPath;
 		}
 	}
 
-	DebugPrint(DBGLoadMAPI, _T("Exit GetMAPISystemDir: found nothing\n"));
+	DebugPrint(DBGLoadMAPI, L"Exit GetMAPISystemDir: found nothing\n");
 	return NULL;
 } // MAPIPathIterator::GetMAPISystemDir
 
 LPWSTR MAPIPathIterator::GetInstalledOutlookMAPI(int iOutlook)
 {
-	DebugPrint(DBGLoadMAPI, _T("Enter GetInstalledOutlookMAPI(%d)\n"), iOutlook);
+	DebugPrint(DBGLoadMAPI, L"Enter GetInstalledOutlookMAPI(%d)\n", iOutlook);
 	HRESULT hRes = S_OK;
 
 	if (!pfnMsiProvideQualifiedComponent || !pfnMsiGetFileVersion) return NULL;
@@ -492,19 +492,19 @@ LPWSTR MAPIPathIterator::GetInstalledOutlookMAPI(int iOutlook)
 #endif
 			}
 			delete[] lpszTempPath;
-			DebugPrint(DBGLoadMAPI, _T("GetInstalledOutlookMAPI: found %ws\n"), szPath);
+			DebugPrint(DBGLoadMAPI, L"GetInstalledOutlookMAPI: found %ws\n", szPath);
 			return szPath;
 		}
 		delete[] lpszTempPath;
 	}
 
-	DebugPrint(DBGLoadMAPI, _T("Exit GetInstalledOutlookMAPI: found nothing\n"));
+	DebugPrint(DBGLoadMAPI, L"Exit GetInstalledOutlookMAPI: found nothing\n");
 	return NULL;
 } // MAPIPathIterator::GetInstalledOutlookMAPI
 
 LPWSTR MAPIPathIterator::GetNextInstalledOutlookMAPI()
 {
-	DebugPrint(DBGLoadMAPI, _T("Enter GetNextInstalledOutlookMAPI\n"));
+	DebugPrint(DBGLoadMAPI, L"Enter GetNextInstalledOutlookMAPI\n");
 
 	if (!pfnMsiProvideQualifiedComponent || !pfnMsiGetFileVersion) return NULL;
 
@@ -518,7 +518,7 @@ LPWSTR MAPIPathIterator::GetNextInstalledOutlookMAPI()
 		}
 	}
 
-	DebugPrint(DBGLoadMAPI, _T("Exit GetNextInstalledOutlookMAPI: found nothing\n"));
+	DebugPrint(DBGLoadMAPI, L"Exit GetNextInstalledOutlookMAPI: found nothing\n");
 	return NULL;
 } // MAPIPathIterator::GetNextInstalledOutlookMAPI
 
@@ -533,7 +533,7 @@ TCHAR g_pszOutlookQualifiedComponents[][MAX_PATH] = {
 // Looks up Outlook's path given its qualified component guid
 LPTSTR GetOutlookPath(_In_z_ LPCTSTR szCategory, _Out_opt_ bool* lpb64)
 {
-	DebugPrint(DBGLoadMAPI, _T("Enter GetOutlookPath: szCategory = %s\n"), szCategory);
+	DebugPrint(DBGLoadMAPI, L"Enter GetOutlookPath: szCategory = %ws\n", LPCTSTRToWstring(szCategory).c_str());
 	HRESULT hRes = S_OK;
 	DWORD dwValueBuf = 0;
 	UINT ret = 0;
@@ -588,7 +588,7 @@ LPTSTR GetOutlookPath(_In_z_ LPCTSTR szCategory, _Out_opt_ bool* lpb64)
 
 			if (ERROR_SUCCESS == ret)
 			{
-				DebugPrint(DBGLoadMAPI, _T("Exit GetOutlookPath: Path = %s\n"), lpszTempPath);
+				DebugPrint(DBGLoadMAPI, L"Exit GetOutlookPath: Path = %ws\n", LPCTSTRToWstring(lpszTempPath).c_str());
 				return lpszTempPath;
 			}
 
@@ -596,13 +596,13 @@ LPTSTR GetOutlookPath(_In_z_ LPCTSTR szCategory, _Out_opt_ bool* lpb64)
 		}
 	}
 
-	DebugPrint(DBGLoadMAPI, _T("Exit GetOutlookPath: nothing found\n"));
+	DebugPrint(DBGLoadMAPI, L"Exit GetOutlookPath: nothing found\n");
 	return NULL;
 } // LPWSTR GetOutlookPath
 
 HMODULE GetDefaultMapiHandle()
 {
-	DebugPrint(DBGLoadMAPI, _T("Enter GetDefaultMapiHandle\n"));
+	DebugPrint(DBGLoadMAPI, L"Enter GetDefaultMapiHandle\n");
 	HMODULE hinstMapi = NULL;
 
 	LPWSTR szPath = NULL;
@@ -615,14 +615,14 @@ HMODULE GetDefaultMapiHandle()
 			szPath = mpi->GetNextMAPIPath();
 			if (!szPath) break;
 
-			DebugPrint(DBGLoadMAPI, _T("Trying %ws\n"), szPath);
+			DebugPrint(DBGLoadMAPI, L"Trying %ws\n", szPath);
 			hinstMapi = MyLoadLibraryW(szPath);
 			delete[] szPath;
 		}
 	}
 
 	delete mpi;
-	DebugPrint(DBGLoadMAPI, _T("Exit GetDefaultMapiHandle: hinstMapi = %p\n"), hinstMapi);
+	DebugPrint(DBGLoadMAPI, L"Exit GetDefaultMapiHandle: hinstMapi = %p\n", hinstMapi);
 	return hinstMapi;
 } // GetDefaultMapiHandle
 
@@ -632,16 +632,16 @@ HMODULE GetDefaultMapiHandle()
 	------------------------------------------------------------------------------*/
 HMODULE AttachToMAPIDll(const WCHAR *wzMapiDll)
 {
-	DebugPrint(DBGLoadMAPI, _T("Enter AttachToMAPIDll: wzMapiDll = %ws\n"), wzMapiDll);
+	DebugPrint(DBGLoadMAPI, L"Enter AttachToMAPIDll: wzMapiDll = %ws\n", wzMapiDll);
 	HMODULE	hinstPrivateMAPI = NULL;
 	MyGetModuleHandleExW(0UL, wzMapiDll, &hinstPrivateMAPI);
-	DebugPrint(DBGLoadMAPI, _T("Exit AttachToMAPIDll: hinstPrivateMAPI = %p\n"), hinstPrivateMAPI);
+	DebugPrint(DBGLoadMAPI, L"Exit AttachToMAPIDll: hinstPrivateMAPI = %p\n", hinstPrivateMAPI);
 	return hinstPrivateMAPI;
 } // AttachToMAPIDll
 
 void UnLoadPrivateMAPI()
 {
-	DebugPrint(DBGLoadMAPI, _T("Enter UnLoadPrivateMAPI\n"));
+	DebugPrint(DBGLoadMAPI, L"Enter UnLoadPrivateMAPI\n");
 	HMODULE hinstPrivateMAPI = NULL;
 
 	hinstPrivateMAPI = GetMAPIHandle();
@@ -649,24 +649,24 @@ void UnLoadPrivateMAPI()
 	{
 		SetMAPIHandle(NULL);
 	}
-	DebugPrint(DBGLoadMAPI, _T("Exit UnLoadPrivateMAPI\n"));
+	DebugPrint(DBGLoadMAPI, L"Exit UnLoadPrivateMAPI\n");
 } // UnLoadPrivateMAPI
 
 void ForceOutlookMAPI(bool fForce)
 {
-	DebugPrint(DBGLoadMAPI, _T("ForceOutlookMAPI: fForce = 0x%08X\n"), fForce);
+	DebugPrint(DBGLoadMAPI, L"ForceOutlookMAPI: fForce = 0x%08X\n", fForce);
 	s_fForceOutlookMAPI = fForce;
 } // ForceOutlookMAPI
 
 void ForceSystemMAPI(bool fForce)
 {
-	DebugPrint(DBGLoadMAPI, _T("ForceSystemMAPI: fForce = 0x%08X\n"), fForce);
+	DebugPrint(DBGLoadMAPI, L"ForceSystemMAPI: fForce = 0x%08X\n", fForce);
 	s_fForceSystemMAPI = fForce;
 } // ForceSystemMAPI
 
 HMODULE GetPrivateMAPI()
 {
-	DebugPrint(DBGLoadMAPI, _T("Enter GetPrivateMAPI\n"));
+	DebugPrint(DBGLoadMAPI, L"Enter GetPrivateMAPI\n");
 	HMODULE hinstPrivateMAPI = GetMAPIHandle();
 
 	if (NULL == hinstPrivateMAPI)
@@ -696,10 +696,10 @@ HMODULE GetPrivateMAPI()
 		// Reason - if for any reason there is an instance already loaded, SetMAPIHandle()
 		// will free the new one and reuse the old one
 		// So we fetch the instance from the global again
-		DebugPrint(DBGLoadMAPI, _T("Exit GetPrivateMAPI: Returning GetMAPIHandle()\n"));
+		DebugPrint(DBGLoadMAPI, L"Exit GetPrivateMAPI: Returning GetMAPIHandle()\n");
 		return GetMAPIHandle();
 	}
 
-	DebugPrint(DBGLoadMAPI, _T("Exit GetPrivateMAPI, hinstPrivateMAPI = %p\n"), hinstPrivateMAPI);
+	DebugPrint(DBGLoadMAPI, L"Exit GetPrivateMAPI, hinstPrivateMAPI = %p\n", hinstPrivateMAPI);
 	return hinstPrivateMAPI;
 } // GetPrivateMAPI

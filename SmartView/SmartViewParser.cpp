@@ -53,7 +53,7 @@ _Check_return_ wstring SmartViewParser::ToString()
 _Check_return_ wstring SmartViewParser::JunkDataToString(size_t cbJunkData, _In_count_(cbJunkData) LPBYTE lpJunkData)
 {
 	if (!cbJunkData || !lpJunkData) return L"";
-	DebugPrint(DBGSmartView, _T("Had 0x%08X = %u bytes left over.\n"), (int)cbJunkData, (UINT)cbJunkData);
+	DebugPrint(DBGSmartView, L"Had 0x%08X = %u bytes left over.\n", (int)cbJunkData, (UINT)cbJunkData);
 	SBinary sBin = { 0 };
 	sBin.cb = (ULONG)cbJunkData;
 	sBin.lpb = lpJunkData;

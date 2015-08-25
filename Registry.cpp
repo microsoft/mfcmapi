@@ -71,7 +71,7 @@ _Check_return_ HRESULT HrGetRegistryValueW(
 {
 	HRESULT hRes = S_OK;
 
-	DebugPrint(DBGGeneric,_T("HrGetRegistryValue(%ws)\n"),lpszValue);
+	DebugPrint(DBGGeneric, L"HrGetRegistryValue(%ws)\n",lpszValue);
 
 	*lppData = NULL;
 	DWORD cb = NULL;
@@ -125,7 +125,7 @@ _Check_return_ HRESULT HrGetRegistryValueA(
 {
 	HRESULT hRes = S_OK;
 
-	DebugPrint(DBGGeneric,_T("HrGetRegistryValueA(%hs)\n"),lpszValue);
+	DebugPrint(DBGGeneric, L"HrGetRegistryValueA(%hs)\n",lpszValue);
 
 	*lppData = NULL;
 	DWORD cb = NULL;
