@@ -563,7 +563,7 @@ void OutputMessageXML(
 		delete[] szTemp;
 	}
 
-	DebugPrint(DBGGeneric, _T("OutputMessagePropertiesToFile: Saving %p to \"%ws\"\n"), lpMessage, lpMsgData->szFilePath);
+	DebugPrint(DBGGeneric, _T("OutputMessagePropertiesToFile: Saving to \"%ws\"\n"), lpMsgData->szFilePath);
 	lpMsgData->fMessageProps = MyOpenFile(lpMsgData->szFilePath, true);
 
 	if (lpMsgData->fMessageProps)

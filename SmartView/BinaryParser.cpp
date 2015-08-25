@@ -53,7 +53,6 @@ size_t CBinaryParser::GetCurrentOffset()
 
 LPBYTE CBinaryParser::GetCurrentAddress()
 {
-	DebugPrintEx(DBGSmartView, CLASS, _T("GetCurrentAddress"), _T("Returning address 0x%08X = %d bytes.\n"), (int)m_lpCur, (int)m_lpCur);
 	return m_lpCur;
 }
 
