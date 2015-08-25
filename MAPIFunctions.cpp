@@ -195,7 +195,7 @@ _Check_return_ HRESULT CallOpenEntry(
 	if (lpUnk)
 	{
 		wstring szFlags = InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE);
-		DebugPrint(DBGGeneric, _T("OnOpenEntryID: Got object (%p) of type 0x%08X = %ws\n"), lpUnk, ulObjType, szFlags.c_str());
+		DebugPrint(DBGGeneric, _T("OnOpenEntryID: Got object of type 0x%08X = %ws\n"), ulObjType, szFlags.c_str());
 		*lppUnk = lpUnk;
 	}
 	if (ulObjTypeRet) *ulObjTypeRet = ulObjType;
@@ -1040,7 +1040,7 @@ _Check_return_ HRESULT GetInbox(_In_ LPMDB lpMDB, _Out_opt_ ULONG* lpcbeid, _Der
 	ULONG			cbInboxEID = NULL;
 	LPENTRYID		lpInboxEID = NULL;
 
-	DebugPrint(DBGGeneric, _T("GetInbox: getting Inbox from %p\n"), lpMDB);
+	DebugPrint(DBGGeneric, _T("GetInbox: getting Inbox\n"));
 
 	if (!lpMDB || !lpcbeid || !lppeid) return MAPI_E_INVALID_PARAMETER;
 
@@ -1156,7 +1156,7 @@ _Check_return_ HRESULT GetPropsNULL(_In_ LPMAPIPROP lpMAPIProp, ULONG ulFlags, _
 	LPSPropTagArray lpTags = NULL;
 	if (RegKeys[regkeyUSE_GETPROPLIST].ulCurDWORD)
 	{
-		DebugPrint(DBGGeneric, _T("GetPropsNULL: Calling GetPropList on %p\n"), lpMAPIProp);
+		DebugPrint(DBGGeneric, _T("GetPropsNULL: Calling GetPropList\n"));
 		WC_MAPI(lpMAPIProp->GetPropList(
 			ulFlags,
 			&lpTags));

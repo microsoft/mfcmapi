@@ -293,7 +293,7 @@ LPWSTR MAPIPathIterator::GetNextMAPIPath()
  */
 LPWSTR MAPIPathIterator::GetMailClientFromMSIData(HKEY hkeyMapiClient)
 {
-	DebugPrint(DBGLoadMAPI, _T("Enter GetMailClientFromMSIData: hkeyMapiClient = %p\n"), hkeyMapiClient);
+	DebugPrint(DBGLoadMAPI, _T("Enter GetMailClientFromMSIData\n"));
 	CHAR rgchMSIComponentID[MAX_PATH] = { 0 };
 	CHAR rgchMSIApplicationLCID[MAX_PATH] = { 0 };
 	CHAR rgchComponentPath[MAX_PATH] = { 0 };
