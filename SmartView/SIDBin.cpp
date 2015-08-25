@@ -77,8 +77,8 @@ void SIDBin::Parse()
 
 _Check_return_ wstring SIDBin::ToStringInternal()
 {
-	wstring szDomain = m_lpSidDomain ? LPTSTRToWstring(m_lpSidDomain) : formatmessage(IDS_NODOMAIN);
-	wstring szName = m_lpSidName ? LPTSTRToWstring(m_lpSidName) : formatmessage(IDS_NONAME);
+	wstring szDomain = m_lpSidDomain ? LPCTSTRToWstring(m_lpSidDomain) : formatmessage(IDS_NODOMAIN);
+	wstring szName = m_lpSidName ? LPCTSTRToWstring(m_lpSidName) : formatmessage(IDS_NONAME);
 	wstring szSID = !m_lpStringSid.empty() ? m_lpStringSid : formatmessage(IDS_NOSID);
 
 	return formatmessage(IDS_SIDHEADER, szDomain.c_str(), szName.c_str(), szSID.c_str());

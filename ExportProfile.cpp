@@ -20,7 +20,7 @@ void ExportProfileSection(FILE* fProfile, LPPROFSECT lpSect, LPSBinary lpSectBin
 		&lpAllProps));
 	if (FAILED(hRes))
 	{
-		OutputToFilef(fProfile, _T("<properties error=\"0x%08X\" />\n"), hRes);
+		OutputToFilef(fProfile, L"<properties error=\"0x%08X\" />\n", hRes);
 	}
 	else if (lpAllProps)
 	{
@@ -29,7 +29,7 @@ void ExportProfileSection(FILE* fProfile, LPPROFSECT lpSect, LPSBinary lpSectBin
 		{
 			MyHexFromBin(lpSectBin->lpb, lpSectBin->cb, false, &szBin);
 		}
-		OutputToFilef(fProfile, _T("<properties listtype=\"profilesection\" profilesection=\"%s\">\n"), szBin);
+		OutputToFilef(fProfile, L"<properties listtype=\"profilesection\" profilesection=\"%ws\">\n", LPCTSTRToWstring(szBin).c_str());
 
 		delete[] szBin;
 

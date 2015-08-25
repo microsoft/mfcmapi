@@ -828,7 +828,7 @@ void CSingleMAPIPropListCtrl::SavePropsToXML()
 					CString szTemp2;
 					szTemp1 = GetItemText(iRow, pcPROPTAG);
 					szTemp2 = GetItemText(iRow, pcPROPTYPE);
-					OutputToFilef(fProps, _T("\t<property tag = \"%s\" type = \"%s\">\n"), (LPCTSTR)szTemp1, (LPCTSTR)szTemp2);
+					OutputToFilef(fProps, L"\t<property tag = \"%ws\" type = \"%ws\">\n", LPCTSTRToWstring(szTemp1).c_str(), LPCTSTRToWstring(szTemp2).c_str());
 
 					szTemp1 = GetItemText(iRow, pcPROPEXACTNAMES);
 					OutputXMLValueToFile(fProps, PropXMLNames[pcPROPEXACTNAMES].uidName, (LPTSTR)(LPCTSTR)szTemp1, false, 2);

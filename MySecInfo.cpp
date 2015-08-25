@@ -521,8 +521,8 @@ wstring ACEToString(_In_ void* pACE, eAceType acetype)
 		break;
 	};
 
-	wstring szDomain = lpSidDomain ? LPTSTRToWstring(lpSidDomain) : formatmessage(IDS_NODOMAIN);
-	wstring szName = lpSidName ? LPTSTRToWstring(lpSidName) : formatmessage(IDS_NONAME);
+	wstring szDomain = lpSidDomain ? LPCTSTRToWstring(lpSidDomain) : formatmessage(IDS_NODOMAIN);
+	wstring szName = lpSidName ? LPCTSTRToWstring(lpSidName) : formatmessage(IDS_NONAME);
 	wstring szSID = GetTextualSid(SidStart);
 	if (szSID.empty()) szSID = formatmessage(IDS_NOSID);
 	delete[] lpSidDomain;

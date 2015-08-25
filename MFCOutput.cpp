@@ -242,6 +242,27 @@ void _Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, _In_op
 #endif
 }
 
+wstring formatW(wstring szMsg, va_list argList)
+{
+	int len = _vscwprintf(szMsg.c_str(), argList);
+	if (0 != len)
+	{
+		len++;
+		LPWSTR buffer = new wchar_t[len];
+		memset(buffer, 0, sizeof(wchar_t)* len);
+		if (_vsnwprintf_s(buffer, len, _TRUNCATE, szMsg.c_str(), argList) > 0)
+		{
+			wstring szOut(buffer);
+			delete[] buffer;
+			return szOut;
+		}
+
+		delete[] buffer;
+	}
+
+	return L"";
+}
+
 void __cdecl Outputf(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, wstring szMsg, ...)
 {
 	CHKPARAM;
@@ -249,51 +270,19 @@ void __cdecl Outputf(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime
 
 	va_list argList = NULL;
 	va_start(argList, szMsg);
-	LPWSTR buffer = NULL;
-	int len = _vscwprintf(szMsg.c_str(), argList);
-	if (0 != len)
-	{
-		len++;
-		buffer = new wchar_t[len];
-		memset(buffer, 0, sizeof(wchar_t)* len);
-		if (_vsnwprintf_s(buffer, len, _TRUNCATE, szMsg.c_str(), argList) > 0)
-		{
-			wstring szOut(buffer);
-			_OutputW(ulDbgLvl, fFile, bPrintThreadTime, szOut);
-		}
-
-		delete[] buffer;
-	}
-
+	_OutputW(ulDbgLvl, fFile, bPrintThreadTime, formatW(szMsg, argList));
 	va_end(argList);
 }
 
-void __cdecl OutputToFilef(_In_opt_ FILE* fFile, _Printf_format_string_ LPCTSTR szMsg, ...)
+void __cdecl OutputToFilef(_In_opt_ FILE* fFile, wstring szMsg, ...)
 {
-	HRESULT hRes = S_OK;
-
 	if (!fFile) return;
-
-	if (!szMsg)
-	{
-		_OutputW(DBGFatalError, fFile, true, L"OutputToFilef called with NULL szMsg!\n");
-		return;
-	}
 
 	va_list argList = NULL;
 	va_start(argList, szMsg);
-
-	TCHAR szDebugString[4096];
-	hRes = StringCchVPrintf(szDebugString, _countof(szDebugString), szMsg, argList);
-	if (S_OK != hRes)
-	{
-		_OutputW(DBGFatalError, NULL, true, L"Debug output string not large enough to print everything to it\n");
-		// Since this function was 'safe', we've still got something we can print - send it on.
-	}
-
+	_OutputW(DBGNoDebug, fFile, false, formatW(szMsg, argList));
 	va_end(argList);
 
-	_Output(DBGNoDebug, fFile, false, szDebugString);
 }
 
 void __cdecl DebugPrint(ULONG ulDbgLvl, _Printf_format_string_ LPCTSTR szMsg, ...)

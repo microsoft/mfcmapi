@@ -111,7 +111,7 @@ void CDumpStore::BeginMailboxTableWork(_In_z_ LPCTSTR szExchangeServerName)
 	if (m_fMailboxTable)
 	{
 		OutputToFile(m_fMailboxTable, g_szXMLHeader);
-		OutputToFilef(m_fMailboxTable, _T("<mailboxtable server=\"%s\">\n"), szExchangeServerName);
+		OutputToFilef(m_fMailboxTable, L"<mailboxtable server=\"%s\">\n", LPCTSTRToWstring(szExchangeServerName));
 	}
 }
 
@@ -233,7 +233,7 @@ void CDumpStore::BeginFolderWork()
 		&lpAllProps));
 	if (FAILED(hRes))
 	{
-		OutputToFilef(m_fFolderProps, _T("<properties error=\"0x%08X\" />\n"), hRes);
+		OutputToFilef(m_fFolderProps, L"<properties error=\"0x%08X\" />\n", hRes);
 	}
 	else if (lpAllProps)
 	{
@@ -287,8 +287,8 @@ void CDumpStore::BeginContentsTableWork(ULONG ulFlags, ULONG ulCountRows)
 	if (m_fFolderContents)
 	{
 		OutputToFile(m_fFolderContents, g_szXMLHeader);
-		OutputToFilef(m_fFolderContents, _T("<ContentsTable TableType=\"%s\" messagecount=\"0x%08X\">\n"),
-			(ulFlags & MAPI_ASSOCIATED) ? _T("Associated Contents") : _T("Contents"), // STRING_OK
+		OutputToFilef(m_fFolderContents, L"<ContentsTable TableType=\"%ws\" messagecount=\"0x%08X\">\n",
+			(ulFlags & MAPI_ASSOCIATED) ? L"Associated Contents" : L"Contents", // STRING_OK
 			ulCountRows);
 	}
 }
@@ -363,7 +363,7 @@ bool CDumpStore::DoContentsTablePerRowWork(_In_ LPSRow lpSRow, ULONG ulCurRow)
 	}
 	if (!m_fFolderContents || !m_lpFolder) return true;
 
-	OutputToFilef(m_fFolderContents, _T("<message num=\"0x%08X\">\n"), ulCurRow);
+	OutputToFilef(m_fFolderContents, L"<message num=\"0x%08X\">\n", ulCurRow);
 
 	OutputSRowToFile(m_fFolderContents, lpSRow, m_lpFolder);
 
@@ -399,10 +399,10 @@ void OutputBody(_In_ FILE* fMessageProps, _In_ LPMESSAGE lpMessage, ULONG ulBody
 	// The only error we suppress is MAPI_E_NOT_FOUND, so if a body type isn't in the output, it wasn't on the message
 	if (MAPI_E_NOT_FOUND != hRes)
 	{
-		OutputToFilef(fMessageProps, _T("<body property=\"%s\""), szBodyName);
+		OutputToFilef(fMessageProps, L"<body property=\"%ws\"", LPCTSTRToWstring(szBodyName).c_str());
 		if (!lpStream)
 		{
-			OutputToFilef(fMessageProps, _T(" error=\"0x%08X\">\n"), hRes);
+			OutputToFilef(fMessageProps, L" error=\"0x%08X\">\n", hRes);
 		}
 		else
 		{
@@ -424,8 +424,8 @@ void OutputBody(_In_ FILE* fMessageProps, _In_ LPMESSAGE lpMessage, ULONG ulBody
 						&lpRTFUncompressed,
 						&ulStreamFlags));
 					wstring szFlags = InterpretFlags(flagStreamFlag, ulStreamFlags);
-					OutputToFilef(fMessageProps, _T(" ulStreamFlags = \"0x%08X\" szStreamFlags= \"%ws\""), ulStreamFlags, szFlags.c_str());
-					OutputToFilef(fMessageProps, _T(" CodePageIn = \"%u\" CodePageOut = \"%d\""), ulCPID, CP_ACP);
+					OutputToFilef(fMessageProps, L" ulStreamFlags = \"0x%08X\" szStreamFlags= \"%ws\"", ulStreamFlags, szFlags.c_str());
+					OutputToFilef(fMessageProps, L" CodePageIn = \"%u\" CodePageOut = \"%d\"", ulCPID, CP_ACP);
 				}
 				else
 				{
@@ -440,7 +440,7 @@ void OutputBody(_In_ FILE* fMessageProps, _In_ LPMESSAGE lpMessage, ULONG ulBody
 				}
 				if (!lpRTFUncompressed || FAILED(hRes))
 				{
-					OutputToFilef(fMessageProps, _T(" rtfWrapError=\"0x%08X\""), hRes);
+					OutputToFilef(fMessageProps, L" rtfWrapError=\"0x%08X\"", hRes);
 				}
 				else
 				{
@@ -522,7 +522,7 @@ void OutputMessageXML(
 		// append our string
 		WC_H(StringCchCatW(lpMsgData->szFilePath, _countof(lpMsgData->szFilePath), szNewExt));
 
-		OutputToFilef(((LPMESSAGEDATA)lpParentMessageData)->fMessageProps, _T("<embeddedmessage path=\"%ws\"/>\n"), lpMsgData->szFilePath);
+		OutputToFilef(((LPMESSAGEDATA)lpParentMessageData)->fMessageProps, L"<embeddedmessage path=\"%ws\"/>\n", lpMsgData->szFilePath);
 	}
 	else if (szMessageFileName[0]) // if we've got a file name, use it
 	{
@@ -721,7 +721,7 @@ void CDumpStore::DoMessagePerRecipientWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID
 
 	LPMESSAGEDATA lpMsgData = (LPMESSAGEDATA)lpData;
 
-	OutputToFilef(lpMsgData->fMessageProps, _T("<recipient num=\"0x%08X\">\n"), ulCurRow);
+	OutputToFilef(lpMsgData->fMessageProps, L"<recipient num=\"0x%08X\">\n", ulCurRow);
 
 	OutputSRowToFile(lpMsgData->fMessageProps, lpSRow, lpMessage);
 
@@ -760,7 +760,7 @@ void CDumpStore::DoMessagePerAttachmentWork(_In_ LPMESSAGE lpMessage, _In_ LPVOI
 
 	hRes = S_OK;
 
-	OutputToFilef(lpMsgData->fMessageProps, _T("<attachment num=\"0x%08X\" filename=\""), ulCurRow);
+	OutputToFilef(lpMsgData->fMessageProps, L"<attachment num=\"0x%08X\" filename=\"", ulCurRow);
 
 	lpAttachName = PpropFindProp(
 		lpSRow->lpProps,
