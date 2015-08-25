@@ -161,63 +161,63 @@ LRESULT CHierarchyTableTreeCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM 
 	{
 	case WM_MOUSEMOVE:
 	{
-						 HRESULT hRes = S_OK;
+		HRESULT hRes = S_OK;
 
-						 TVHITTESTINFO tvHitTestInfo = { 0 };
-						 tvHitTestInfo.pt.x = GET_X_LPARAM(lParam);
-						 tvHitTestInfo.pt.y = GET_Y_LPARAM(lParam);
+		TVHITTESTINFO tvHitTestInfo = { 0 };
+		tvHitTestInfo.pt.x = GET_X_LPARAM(lParam);
+		tvHitTestInfo.pt.y = GET_Y_LPARAM(lParam);
 
-						 WC_B(::SendMessage(m_hWnd, TVM_HITTEST, 0, (LPARAM)&tvHitTestInfo));
-						 if (tvHitTestInfo.hItem)
-						 {
-							 if (tvHitTestInfo.flags & TVHT_ONITEMBUTTON)
-							 {
-								 m_HoverButton = true;
-							 }
-							 else
-							 {
-								 m_HoverButton = false;
-							 }
+		WC_B(::SendMessage(m_hWnd, TVM_HITTEST, 0, (LPARAM)&tvHitTestInfo));
+		if (tvHitTestInfo.hItem)
+		{
+			if (tvHitTestInfo.flags & TVHT_ONITEMBUTTON)
+			{
+				m_HoverButton = true;
+			}
+			else
+			{
+				m_HoverButton = false;
+			}
 
-							 // If this is a new glow, clean up the old glow and track for leaving the control
-							 if (hItemCurHover != tvHitTestInfo.hItem)
-							 {
-								 DrawTreeItemGlow(m_hWnd, tvHitTestInfo.hItem);
+			// If this is a new glow, clean up the old glow and track for leaving the control
+			if (hItemCurHover != tvHitTestInfo.hItem)
+			{
+				DrawTreeItemGlow(m_hWnd, tvHitTestInfo.hItem);
 
-								 if (hItemCurHover)
-								 {
-									 m_hItemCurHover = NULL;
-									 DrawTreeItemGlow(m_hWnd, hItemCurHover);
-								 }
-								 m_hItemCurHover = tvHitTestInfo.hItem;
+				if (hItemCurHover)
+				{
+					m_hItemCurHover = NULL;
+					DrawTreeItemGlow(m_hWnd, hItemCurHover);
+				}
+				m_hItemCurHover = tvHitTestInfo.hItem;
 
-								 TRACKMOUSEEVENT tmEvent = { 0 };
-								 tmEvent.cbSize = sizeof(TRACKMOUSEEVENT);
-								 tmEvent.dwFlags = TME_LEAVE;
-								 tmEvent.hwndTrack = m_hWnd;
+				TRACKMOUSEEVENT tmEvent = { 0 };
+				tmEvent.cbSize = sizeof(TRACKMOUSEEVENT);
+				tmEvent.dwFlags = TME_LEAVE;
+				tmEvent.hwndTrack = m_hWnd;
 
-								 WC_B(TrackMouseEvent(&tmEvent));
-							 }
-						 }
-						 else
-						 {
-							 if (hItemCurHover)
-							 {
-								 m_hItemCurHover = NULL;
-								 DrawTreeItemGlow(m_hWnd, hItemCurHover);
-							 }
-						 }
-						 break;
+				WC_B(TrackMouseEvent(&tmEvent));
+			}
+		}
+		else
+		{
+			if (hItemCurHover)
+			{
+				m_hItemCurHover = NULL;
+				DrawTreeItemGlow(m_hWnd, hItemCurHover);
+			}
+		}
+		break;
 	}
 	case WM_MOUSELEAVE:
 	{
-						  if (hItemCurHover)
-						  {
-							  m_hItemCurHover = NULL;
-							  DrawTreeItemGlow(m_hWnd, hItemCurHover);
-						  }
-						  return NULL;
-						  break;
+		if (hItemCurHover)
+		{
+			m_hItemCurHover = NULL;
+			DrawTreeItemGlow(m_hWnd, hItemCurHover);
+		}
+		return NULL;
+		break;
 	}
 	} // end switch
 	return CTreeCtrl::WindowProc(message, wParam, lParam);
@@ -426,7 +426,7 @@ _Check_return_ HRESULT CHierarchyTableTreeCtrl::AddRootNode(_In_ LPMAPICONTAINER
 	// Get the entry ID for the Root Container
 	if (!lpProps || PT_ERROR == PROP_TYPE(lpProps[htPR_ENTRYID].ulPropTag))
 	{
-		DebugPrint(DBGHierarchy, _T("Could not find EntryID for Root Container. This is benign. Assuming NULL.\n"));
+		DebugPrint(DBGHierarchy, L"Could not find EntryID for Root Container. This is benign. Assuming NULL.\n");
 		lpEIDBin = NULL;
 	}
 	else lpEIDBin = &lpProps[htPR_ENTRYID].Value.bin;
@@ -434,7 +434,7 @@ _Check_return_ HRESULT CHierarchyTableTreeCtrl::AddRootNode(_In_ LPMAPICONTAINER
 	// Get the Display Name for the Root Container
 	if (!lpProps || PT_ERROR == PROP_TYPE(lpProps[htPR_DISPLAY_NAME].ulPropTag))
 	{
-		DebugPrint(DBGHierarchy, _T("Could not find Display Name for Root Container. This is benign. Assuming NULL.\n"));
+		DebugPrint(DBGHierarchy, L"Could not find Display Name for Root Container. This is benign. Assuming NULL.\n");
 		lpRootName = NULL;
 	}
 	else lpRootName = &lpProps[htPR_DISPLAY_NAME];
@@ -592,7 +592,7 @@ _Check_return_ LPMAPITABLE CHierarchyTableTreeCtrl::GetHierarchyTable(HTREEITEM 
 				{
 					if (lpData->data.Node.lpAdviseSink) lpData->data.Node.lpAdviseSink->Release();
 					lpData->data.Node.lpAdviseSink = NULL;
-					DebugPrint(DBGNotify, _T("This table doesn't support notifications\n"));
+					DebugPrint(DBGNotify, L"This table doesn't support notifications\n");
 					hRes = S_OK; // mask the error
 				}
 				else if (S_OK == hRes)
@@ -1037,7 +1037,7 @@ void CHierarchyTableTreeCtrl::GetContainer(
 			LPADRBOOK lpAddrBook = m_lpMapiObjects->GetAddrBook(false); // do not release
 			if (lpAddrBook)
 			{
-				DebugPrint(DBGGeneric, _T("\tCalling OpenEntry on address book with ulFlags = 0x%X\n"), ulFlags);
+				DebugPrint(DBGGeneric, L"\tCalling OpenEntry on address book with ulFlags = 0x%X\n", ulFlags);
 
 				WC_H(CallOpenEntry(
 					NULL,
@@ -1096,7 +1096,7 @@ void CHierarchyTableTreeCtrl::GetContainer(
 	// if we failed because write access was denied, try again if acceptable
 	if (!lpContainer && FAILED(hRes) && mfcmapiREQUEST_MODIFY == bModify)
 	{
-		DebugPrint(DBGGeneric, _T("\tOpenEntry failed: 0x%X. Will try again without MAPI_MODIFY\n"), hRes);
+		DebugPrint(DBGGeneric, L"\tOpenEntry failed: 0x%X. Will try again without MAPI_MODIFY\n", hRes);
 		// We failed to open the item with MAPI_MODIFY.
 		// Let's try to open it with NULL
 		GetContainer(

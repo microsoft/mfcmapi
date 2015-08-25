@@ -155,9 +155,9 @@ void CDumpStore::DoMailboxTablePerRowWork(_In_ LPMDB lpMDB, _In_ LPSRow lpSRow, 
 		EC_H(SanitizeFileName(szTemp, _countof(szTemp), lpDisplayName->Value.LPSZ, _countof(szTemp)));
 
 #ifdef UNICODE
-		EC_H(StringCchPrintfW(m_szFolderPathRoot,_countof(m_szFolderPathRoot),
+		EC_H(StringCchPrintfW(m_szFolderPathRoot, _countof(m_szFolderPathRoot),
 			L"%s\\%ws", // STRING_OK
-			m_szMailboxTablePathRoot,szTemp));
+			m_szMailboxTablePathRoot, szTemp));
 #else
 		EC_H(StringCchPrintfW(m_szFolderPathRoot, _countof(m_szFolderPathRoot),
 			L"%s\\%hs", // STRING_OK
@@ -196,9 +196,9 @@ void CDumpStore::BeginFolderWork()
 	HRESULT hRes = S_OK;
 	WCHAR	szFolderPath[MAX_PATH];
 #ifdef UNICODE
-	WC_H(StringCchPrintfW(szFolderPath,_countof(szFolderPath),
+	WC_H(StringCchPrintfW(szFolderPath, _countof(szFolderPath),
 		L"%s%ws", // STRING_OK
-		m_szFolderPathRoot,m_szFolderOffset));
+		m_szFolderPathRoot, m_szFolderOffset));
 #else
 	WC_H(StringCchPrintfW(szFolderPath, _countof(szFolderPath),
 		L"%s%hs", // STRING_OK
@@ -558,7 +558,7 @@ void OutputMessageXML(
 		delete[] szTemp;
 	}
 
-	DebugPrint(DBGGeneric, _T("OutputMessagePropertiesToFile: Saving to \"%ws\"\n"), lpMsgData->szFilePath);
+	DebugPrint(DBGGeneric, L"OutputMessagePropertiesToFile: Saving to \"%ws\"\n", lpMsgData->szFilePath);
 	lpMsgData->fMessageProps = MyOpenFile(lpMsgData->szFilePath, true);
 
 	if (lpMsgData->fMessageProps)
@@ -645,7 +645,7 @@ void OutputMessageMSG(
 
 	if (!lpMessage || !szFolderPath) return;
 
-	DebugPrint(DBGGeneric, _T("OutputMessageMSG: Saving message to \"%ws\"\n"), szFolderPath);
+	DebugPrint(DBGGeneric, L"OutputMessageMSG: Saving message to \"%ws\"\n", szFolderPath);
 
 	WCHAR szFileName[MAX_PATH] = { 0 };
 
@@ -676,7 +676,7 @@ void OutputMessageMSG(
 	}
 	WC_H(BuildFileNameAndPath(szFileName, _countof(szFileName), L".msg", 4, szSubj, lpRecordKey, szFolderPath)); // STRING_OK
 
-	DebugPrint(DBGGeneric, _T("Saving to = \"%ws\"\n"), szFileName);
+	DebugPrint(DBGGeneric, L"Saving to = \"%ws\"\n", szFileName);
 
 	WC_H(SaveToMSG(
 		lpMessage,

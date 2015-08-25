@@ -31,7 +31,7 @@ _Check_return_ HRESULT AppendEntryID(_Inout_z_count_(cchFileName) LPWSTR szFileN
 	{
 		EC_H(StringCchCatNW(szFileName, cchFileName, L"_", 1)); // STRING_OK
 #ifdef UNICODE
-		EC_H(StringCchCatNW(szFileName, cchFileName, szBin,cchMaxAppend-1));
+		EC_H(StringCchCatNW(szFileName, cchFileName, szBin, cchMaxAppend - 1));
 #else
 		LPWSTR szWideBin = NULL;
 		EC_H(AnsiToUnicode(
@@ -95,7 +95,7 @@ _Check_return_ HRESULT GetDirectoryPath(HWND hWnd, _Inout_z_ LPWSTR szPath)
 _Check_return_ HRESULT MyStgOpenStorage(_In_z_ LPCWSTR szMessageFile, bool bBestAccess, _Deref_out_ LPSTORAGE* lppStorage)
 {
 	if (!lppStorage) return MAPI_E_INVALID_PARAMETER;
-	DebugPrint(DBGGeneric, _T("MyStgOpenStorage: Opening \"%ws\", bBestAccess == %s\n"), szMessageFile, bBestAccess ? _T("True") : _T("False"));
+	DebugPrint(DBGGeneric, L"MyStgOpenStorage: Opening \"%ws\", bBestAccess == %ws\n", szMessageFile, bBestAccess ? L"True" : L"False");
 	HRESULT		hRes = S_OK;
 	ULONG		ulFlags = STGM_TRANSACTED;
 
@@ -540,7 +540,7 @@ _Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_z
 
 	if (!lpFolder || !szPathName) return MAPI_E_INVALID_PARAMETER;
 
-	DebugPrint(DBGGeneric, _T("SaveFolderContentsToMSG: Saving contents of folder to \"%ws\"\n"), szPathName);
+	DebugPrint(DBGGeneric, L"SaveFolderContentsToMSG: Saving contents of folder to \"%ws\"\n", szPathName);
 
 	EC_MAPI(lpFolder->GetContentsTable(
 		fMapiUnicode | (bAssoc ? MAPI_ASSOCIATED : NULL),
@@ -565,7 +565,7 @@ _Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_z
 
 			if (PT_ERROR != PROP_TYPE(pRows->aRow->lpProps[fldPR_ENTRYID].ulPropTag))
 			{
-				DebugPrint(DBGGeneric, _T("Source Message =\n"));
+				DebugPrint(DBGGeneric, L"Source Message =\n");
 				DebugPrintBinary(DBGGeneric, &pRows->aRow->lpProps[fldPR_ENTRYID].Value.bin);
 
 				if (lpMessage) lpMessage->Release();
@@ -593,7 +593,7 @@ _Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_z
 				}
 				EC_H(BuildFileNameAndPath(szFileName, _countof(szFileName), L".msg", 4, szSubj, &pRows->aRow->lpProps[fldPR_RECORD_KEY].Value.bin, szPathName)); // STRING_OK
 
-				DebugPrint(DBGGeneric, _T("Saving to = \"%ws\"\n"), szFileName);
+				DebugPrint(DBGGeneric, L"Saving to = \"%ws\"\n", szFileName);
 
 				EC_H(SaveToMSG(
 					lpMessage,
@@ -602,7 +602,7 @@ _Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_z
 					hWnd,
 					false));
 
-				DebugPrint(DBGGeneric, _T("Message Saved\n"));
+				DebugPrint(DBGGeneric, L"Message Saved\n");
 			}
 		}
 	}
@@ -636,7 +636,7 @@ _Check_return_ HRESULT WriteStreamToFile(_In_ LPSTREAM pStrmSrc, _In_z_ LPCWSTR 
 	{
 		pStrmSrc->Stat(&StatInfo, STATFLAG_NONAME);
 
-		DebugPrint(DBGStream, _T("WriteStreamToFile: Writing cb = %llu bytes\n"), StatInfo.cbSize.QuadPart);
+		DebugPrint(DBGStream, L"WriteStreamToFile: Writing cb = %llu bytes\n", StatInfo.cbSize.QuadPart);
 
 		EC_MAPI(pStrmSrc->CopyTo(pStrmDest,
 			StatInfo.cbSize,
@@ -657,7 +657,7 @@ _Check_return_ HRESULT SaveToEML(_In_ LPMESSAGE lpMessage, _In_z_ LPCWSTR szFile
 	LPSTREAM		pStrmSrc = NULL;
 
 	if (!lpMessage || !szFileName) return MAPI_E_INVALID_PARAMETER;
-	DebugPrint(DBGGeneric, _T("SaveToEML: Saving message to \"%ws\"\n"), szFileName);
+	DebugPrint(DBGGeneric, L"SaveToEML: Saving message to \"%ws\"\n", szFileName);
 
 	// Open the property of the attachment
 	// containing the file data
@@ -671,7 +671,7 @@ _Check_return_ HRESULT SaveToEML(_In_ LPMESSAGE lpMessage, _In_z_ LPCWSTR szFile
 	{
 		if (MAPI_E_NOT_FOUND == hRes)
 		{
-			DebugPrint(DBGGeneric, _T("No internet content found\n"));
+			DebugPrint(DBGGeneric, L"No internet content found\n");
 		}
 	}
 	else
@@ -795,7 +795,7 @@ _Check_return_ HRESULT SaveToMSG(_In_ LPMESSAGE lpMessage, _In_z_ LPCWSTR szFile
 
 	if (!lpMessage || !szFileName) return MAPI_E_INVALID_PARAMETER;
 
-	DebugPrint(DBGGeneric, _T("SaveToMSG: Saving message to \"%ws\"\n"), szFileName);
+	DebugPrint(DBGGeneric, L"SaveToMSG: Saving message to \"%ws\"\n", szFileName);
 
 	EC_H(CreateNewMSG(szFileName, bUnicode, &pIMsg, &pStorage));
 	if (pIMsg && pStorage)
@@ -864,7 +864,7 @@ _Check_return_ HRESULT SaveToTNEF(_In_ LPMESSAGE lpMessage, _In_ LPADRBOOK lpAdr
 	};
 
 	if (!lpMessage || !lpAdrBook || !szFileName) return MAPI_E_INVALID_PARAMETER;
-	DebugPrint(DBGGeneric, _T("SaveToTNEF: Saving message to \"%ws\"\n"), szFileName);
+	DebugPrint(DBGGeneric, L"SaveToTNEF: Saving message to \"%ws\"\n", szFileName);
 
 	LPSTREAM			lpStream = NULL;
 	LPITNEF				lpTNEF = NULL;
@@ -1130,7 +1130,7 @@ _Check_return_ HRESULT WriteEmbeddedMSGToFile(_In_ LPATTACH lpAttach, _In_z_ LPC
 
 	if (!lpAttach || !szFileName) return MAPI_E_INVALID_PARAMETER;
 
-	DebugPrint(DBGGeneric, _T("WriteEmbeddedMSGToFile: Saving attachment to \"%ws\"\n"), szFileName);
+	DebugPrint(DBGGeneric, L"WriteEmbeddedMSGToFile: Saving attachment to \"%ws\"\n", szFileName);
 
 	EC_MAPI(lpAttach->OpenProperty(
 		PR_ATTACH_DATA_OBJ,
@@ -1167,7 +1167,7 @@ _Check_return_ HRESULT WriteAttachStreamToFile(_In_ LPATTACH lpAttach, _In_z_ LP
 	{
 		if (MAPI_E_NOT_FOUND == hRes)
 		{
-			DebugPrint(DBGGeneric, _T("No attachments found. Maybe the attachment was a message?\n"));
+			DebugPrint(DBGGeneric, L"No attachments found. Maybe the attachment was a message?\n");
 		}
 		else CHECKHRES(hRes);
 	}
@@ -1274,7 +1274,7 @@ _Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd)
 
 	if (!lpAttach) return MAPI_E_INVALID_PARAMETER;
 
-	DebugPrint(DBGGeneric, _T("WriteAttachmentToFile: Saving attachment.\n"));
+	DebugPrint(DBGGeneric, L"WriteAttachmentToFile: Saving attachment.\n");
 
 	// Get required properties from the message
 	EC_H_GETPROPS(lpAttach->GetProps(
@@ -1311,67 +1311,67 @@ _Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd)
 		case ATTACH_BY_REF_RESOLVE:
 		case ATTACH_BY_REF_ONLY:
 		{
-								   CStringW szFileSpec;
-								   EC_B(szFileSpec.LoadString(IDS_ALLFILES));
+			CStringW szFileSpec;
+			EC_B(szFileSpec.LoadString(IDS_ALLFILES));
 
-								   CFileDialogExW dlgFilePicker;
+			CFileDialogExW dlgFilePicker;
 
-								   DebugPrint(DBGGeneric, _T("WriteAttachmentToFile: Prompting with \"%ws\"\n"), szFileName);
+			DebugPrint(DBGGeneric, L"WriteAttachmentToFile: Prompting with \"%ws\"\n", szFileName);
 
-								   EC_D_DIALOG(dlgFilePicker.DisplayDialog(
-									   false,
-									   L"txt", // STRING_OK
-									   szFileName,
-									   OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-									   szFileSpec));
-								   if (iDlgRet == IDOK)
-								   {
-									   EC_H(WriteAttachStreamToFile(lpAttach, dlgFilePicker.GetFileName()));
-								   }
+			EC_D_DIALOG(dlgFilePicker.DisplayDialog(
+				false,
+				L"txt", // STRING_OK
+				szFileName,
+				OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
+				szFileSpec));
+			if (iDlgRet == IDOK)
+			{
+				EC_H(WriteAttachStreamToFile(lpAttach, dlgFilePicker.GetFileName()));
+			}
 		}
-			break;
+		break;
 		case ATTACH_EMBEDDED_MSG:
 			// Get File Name
 		{
-									CStringW szFileSpec;
-									EC_B(szFileSpec.LoadString(IDS_MSGFILES));
+			CStringW szFileSpec;
+			EC_B(szFileSpec.LoadString(IDS_MSGFILES));
 
-									CFileDialogExW dlgFilePicker;
+			CFileDialogExW dlgFilePicker;
 
-									DebugPrint(DBGGeneric, _T("WriteAttachmentToFile: Prompting with \"%ws\"\n"), szFileName);
+			DebugPrint(DBGGeneric, L"WriteAttachmentToFile: Prompting with \"%ws\"\n", szFileName);
 
-									EC_D_DIALOG(dlgFilePicker.DisplayDialog(
-										false,
-										L"msg", // STRING_OK
-										szFileName,
-										OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-										szFileSpec));
-									if (iDlgRet == IDOK)
-									{
-										EC_H(WriteEmbeddedMSGToFile(lpAttach, dlgFilePicker.GetFileName(), (MAPI_UNICODE == fMapiUnicode) ? true : false, hWnd));
-									}
+			EC_D_DIALOG(dlgFilePicker.DisplayDialog(
+				false,
+				L"msg", // STRING_OK
+				szFileName,
+				OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
+				szFileSpec));
+			if (iDlgRet == IDOK)
+			{
+				EC_H(WriteEmbeddedMSGToFile(lpAttach, dlgFilePicker.GetFileName(), (MAPI_UNICODE == fMapiUnicode) ? true : false, hWnd));
+			}
 		}
-			break;
+		break;
 		case ATTACH_OLE:
 		{
-						   CStringW szFileSpec;
-						   EC_B(szFileSpec.LoadString(IDS_ALLFILES));
+			CStringW szFileSpec;
+			EC_B(szFileSpec.LoadString(IDS_ALLFILES));
 
-						   CFileDialogExW dlgFilePicker;
+			CFileDialogExW dlgFilePicker;
 
-						   DebugPrint(DBGGeneric, _T("WriteAttachmentToFile: Prompting with \"%ws\"\n"), szFileName);
-						   EC_D_DIALOG(dlgFilePicker.DisplayDialog(
-							   false,
-							   NULL,
-							   szFileName,
-							   OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-							   szFileSpec));
-						   if (iDlgRet == IDOK)
-						   {
-							   EC_H(WriteOleToFile(lpAttach, dlgFilePicker.GetFileName()));
-						   }
+			DebugPrint(DBGGeneric, L"WriteAttachmentToFile: Prompting with \"%ws\"\n", szFileName);
+			EC_D_DIALOG(dlgFilePicker.DisplayDialog(
+				false,
+				NULL,
+				szFileName,
+				OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
+				szFileSpec));
+			if (iDlgRet == IDOK)
+			{
+				EC_H(WriteOleToFile(lpAttach, dlgFilePicker.GetFileName()));
+			}
 		}
-			break;
+		break;
 		default:
 			ErrDialog(__FILE__, __LINE__, IDS_EDUNKNOWNATTMETHOD); break;
 		}

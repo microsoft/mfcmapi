@@ -81,7 +81,7 @@ CContentsTableDlg::~CContentsTableDlg()
 
 _Check_return_ bool CContentsTableDlg::HandleMenu(WORD wMenuSelect)
 {
-	DebugPrint(DBGMenu, _T("CContentsTableDlg::HandleMenu wMenuSelect = 0x%X = %u\n"), wMenuSelect, wMenuSelect);
+	DebugPrint(DBGMenu, L"CContentsTableDlg::HandleMenu wMenuSelect = 0x%X = %u\n", wMenuSelect, wMenuSelect);
 	switch (wMenuSelect)
 	{
 	case ID_APPLYFINDROW: SetRestrictionType(mfcmapiFINDROW_RESTRICTION); return true;
@@ -370,12 +370,12 @@ void CContentsTableDlg::OnCreateMessageRestriction()
 				(LPVOID*)&lpRes));
 
 			EC_H(MAPIAllocateMore(
-				sizeof(SRestriction)* 2,
+				sizeof(SRestriction) * 2,
 				lpRes,
 				(LPVOID*)&lpResLevel1));
 
 			EC_H(MAPIAllocateMore(
-				sizeof(SRestriction)* 2,
+				sizeof(SRestriction) * 2,
 				lpRes,
 				(LPVOID*)&lpResLevel2));
 
@@ -399,8 +399,8 @@ void CContentsTableDlg::OnCreateMessageRestriction()
 			{
 				// Zero out allocated memory.
 				ZeroMemory(lpRes, sizeof(SRestriction));
-				ZeroMemory(lpResLevel1, sizeof(SRestriction)* 2);
-				ZeroMemory(lpResLevel2, sizeof(SRestriction)* 2);
+				ZeroMemory(lpResLevel1, sizeof(SRestriction) * 2);
+				ZeroMemory(lpResLevel2, sizeof(SRestriction) * 2);
 
 				ZeroMemory(lpspvSubject, sizeof(SPropValue));
 				ZeroMemory(lpspvSubmitTime, sizeof(SPropValue));

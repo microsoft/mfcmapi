@@ -292,22 +292,22 @@ _Check_return_ CString TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, b
 		static size_t cchMaxBuff = 0;
 		size_t cchBuff = szRet.GetLength();
 		cchMaxBuff = max(cchBuff, cchMaxBuff);
-		DebugPrint(DBGTest, _T("TagToString parsing 0x%08X returned %u chars - max %u\n"), ulPropTag, (UINT)cchBuff, (UINT)cchMaxBuff);
+		DebugPrint(DBGTest, L"TagToString parsing 0x%08X returned %u chars - max %u\n", ulPropTag, (UINT)cchBuff, (UINT)cchMaxBuff);
 	}
 
 	return szRet;
 }
 
-_Check_return_ CString ProblemArrayToString(_In_ LPSPropProblemArray lpProblems)
+wstring ProblemArrayToString(_In_ LPSPropProblemArray lpProblems)
 {
-	CString szOut;
+	wstring szOut;
 	if (lpProblems)
 	{
 		ULONG i = 0;
 		for (i = 0; i < lpProblems->cProblem; i++)
 		{
-			CString szTemp;
-			szTemp.FormatMessage(IDS_PROBLEMARRAY,
+			wstring szTemp = formatmessage(
+				IDS_PROBLEMARRAY,
 				lpProblems->aProblem[i].ulIndex,
 				TagToString(lpProblems->aProblem[i].ulPropTag, NULL, false, false),
 				lpProblems->aProblem[i].scode,
@@ -315,8 +315,9 @@ _Check_return_ CString ProblemArrayToString(_In_ LPSPropProblemArray lpProblems)
 			szOut += szTemp;
 		}
 	}
+
 	return szOut;
-} // ProblemArrayToString
+}
 
 wstring MAPIErrToString(ULONG ulFlags, _In_ LPMAPIERROR lpErr)
 {
@@ -335,15 +336,14 @@ wstring MAPIErrToString(ULONG ulFlags, _In_ LPMAPIERROR lpErr)
 	return szOut;
 }
 
-_Check_return_ CString TnefProblemArrayToString(_In_ LPSTnefProblemArray lpError)
+wstring TnefProblemArrayToString(_In_ LPSTnefProblemArray lpError)
 {
-	CString szOut;
+	wstring szOut;
 	if (lpError)
 	{
 		for (ULONG iError = 0; iError < lpError->cProblem; iError++)
 		{
-			CString szTemp;
-			szTemp.FormatMessage(
+			wstring  szTemp = formatmessage(
 				IDS_TNEFPROBARRAY,
 				lpError->aProblem[iError].ulComponent,
 				lpError->aProblem[iError].ulAttribute,
@@ -354,7 +354,7 @@ _Check_return_ CString TnefProblemArrayToString(_In_ LPSTnefProblemArray lpError
 		}
 	}
 	return szOut;
-} // TnefProblemArrayToString
+}
 
 // There may be restrictions with over 100 nested levels, but we're not going to try to parse them
 #define _MaxRestrictionNesting 100
@@ -887,21 +887,21 @@ void NameIDToStrings(_In_ LPMAPINAMEID lpNameID,
 		// We shouldn't ever get here without a cached entry
 		if (!lpNamedPropCacheEntry)
 		{
-			DebugPrint(DBGNamedProp, _T("NameIDToStrings: Failed to find cache entry for ulPropTag = 0x%08X\n"), ulPropTag);
+			DebugPrint(DBGNamedProp, L"NameIDToStrings: Failed to find cache entry for ulPropTag = 0x%08X\n", ulPropTag);
 			return;
 		}
 	}
 
-	DebugPrint(DBGNamedProp, _T("Parsing named property\n"));
-	DebugPrint(DBGNamedProp, _T("ulPropTag = 0x%08x\n"), ulPropTag);
+	DebugPrint(DBGNamedProp, L"Parsing named property\n");
+	DebugPrint(DBGNamedProp, L"ulPropTag = 0x%08x\n", ulPropTag);
 	szPropGUID = GUIDToStringAndName(lpNameID->lpguid);
-	DebugPrint(DBGNamedProp, _T("lpNameID->lpguid = %ws\n"), szPropGUID.c_str());
+	DebugPrint(DBGNamedProp, L"lpNameID->lpguid = %ws\n", szPropGUID.c_str());
 
 	wstring szDASLGuid = GUIDToString(lpNameID->lpguid);
 
 	if (lpNameID->ulKind == MNID_ID)
 	{
-		DebugPrint(DBGNamedProp, _T("lpNameID->Kind.lID = 0x%04X = %d\n"), lpNameID->Kind.lID, lpNameID->Kind.lID);
+		DebugPrint(DBGNamedProp, L"lpNameID->Kind.lID = 0x%04X = %d\n", lpNameID->Kind.lID, lpNameID->Kind.lID);
 		wstring szName = NameIDToPropName(lpNameID);
 
 		if (!szName.empty())
@@ -939,7 +939,7 @@ void NameIDToStrings(_In_ LPMAPINAMEID lpNameID,
 		if (cchShortLen < cchWideLen)
 		{
 			// this is the *proper* case
-			DebugPrint(DBGNamedProp, _T("lpNameID->Kind.lpwstrName = \"%ws\"\n"), lpNameID->Kind.lpwstrName);
+			DebugPrint(DBGNamedProp, L"lpNameID->Kind.lpwstrName = \"%ws\"\n", lpNameID->Kind.lpwstrName);
 			szPropName = format(L"sz: \"%ws\"", lpNameID->Kind.lpwstrName);
 
 			szDASL = format(L"string/%ws/%ws", // STRING_OK
@@ -949,8 +949,8 @@ void NameIDToStrings(_In_ LPMAPINAMEID lpNameID,
 		else
 		{
 			// this is the case where ANSI data was shoved into a unicode string.
-			DebugPrint(DBGNamedProp, _T("Warning: ANSI data was found in a unicode field. This is a bug on the part of the creator of this named property\n"));
-			DebugPrint(DBGNamedProp, _T("lpNameID->Kind.lpwstrName = \"%hs\"\n"), (LPCSTR)lpNameID->Kind.lpwstrName);
+			DebugPrint(DBGNamedProp, L"Warning: ANSI data was found in a unicode field. This is a bug on the part of the creator of this named property\n");
+			DebugPrint(DBGNamedProp, L"lpNameID->Kind.lpwstrName = \"%hs\"\n", (LPCSTR)lpNameID->Kind.lpwstrName);
 
 			wstring szComment = loadstring(IDS_NAMEWASANSI);
 			szPropName = format(L"sz: \"%hs\" %ws", (LPSTR)lpNameID->Kind.lpwstrName, szComment);

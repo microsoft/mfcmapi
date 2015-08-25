@@ -150,10 +150,10 @@ void ExportProfile(_In_z_ LPCSTR szProfile, _In_z_ LPCWSTR szProfileSection, boo
 {
 	if (!szProfile) return;
 
-	DebugPrint(DBGGeneric, _T("ExportProfile: Saving profile \"%hs\" to \"%ws\"\n"), szProfile, szFileName.c_str());
+	DebugPrint(DBGGeneric, L"ExportProfile: Saving profile \"%hs\" to \"%ws\"\n", szProfile, szFileName.c_str());
 	if (szProfileSection)
 	{
-		DebugPrint(DBGGeneric, _T("ExportProfile: Restricting to \"%ws\"\n"), szProfileSection);
+		DebugPrint(DBGGeneric, L"ExportProfile: Restricting to \"%ws\"\n", szProfileSection);
 	}
 
 	HRESULT hRes = S_OK;

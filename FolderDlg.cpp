@@ -36,14 +36,14 @@ CFolderDlg::CFolderDlg(
 	_In_ CMapiObjects* lpMapiObjects,
 	_In_ LPMAPIFOLDER lpMAPIFolder,
 	ULONG ulDisplayFlags
-	):
-CContentsTableDlg(
+	) :
+	CContentsTableDlg(
 	pParentWnd,
 	lpMapiObjects,
 	IDS_FOLDER,
 	mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 	NULL,
-	(LPSPropTagArray) &sptMSGCols,
+	(LPSPropTagArray)&sptMSGCols,
 	NUMMSGCOLUMNS,
 	MSGColumns,
 	IDR_MENU_FOLDER_POPUP,
@@ -65,7 +65,7 @@ CFolderDlg::~CFolderDlg()
 
 _Check_return_ bool CFolderDlg::HandleMenu(WORD wMenuSelect)
 {
-	DebugPrint(DBGMenu,_T("CFolderDlg::HandleMenu wMenuSelect = 0x%X = %u\n"),wMenuSelect,wMenuSelect);
+	DebugPrint(DBGMenu, L"CFolderDlg::HandleMenu wMenuSelect = 0x%X = %u\n", wMenuSelect, wMenuSelect);
 	HRESULT hRes = S_OK;
 	switch (wMenuSelect)
 	{
@@ -112,11 +112,11 @@ _Check_return_ bool CFolderDlg::HandleMenu(WORD wMenuSelect)
 	return CContentsTableDlg::HandleMenu(wMenuSelect);
 } // CFolderDlg::HandleMenu
 
-typedef HRESULT (CFolderDlg::* LPSIMPLEMULTI)
-	(
-	int				iItem,
-	SortListData*	lpData
-	);
+typedef HRESULT(CFolderDlg::* LPSIMPLEMULTI)
+(
+int				iItem,
+SortListData*	lpData
+);
 
 _Check_return_ bool CFolderDlg::MultiSelectSimple(WORD wMenuSelect)
 {
@@ -163,14 +163,14 @@ _Check_return_ bool CFolderDlg::MultiSelectSimple(WORD wMenuSelect)
 				LVNI_SELECTED);
 			while (-1 != iItem)
 			{
-				lpData = (SortListData*) m_lpContentsTableListCtrl->GetItemData(iItem);
-				WC_H((this->*lpFunc)(iItem,lpData));
+				lpData = (SortListData*)m_lpContentsTableListCtrl->GetItemData(iItem);
+				WC_H((this->*lpFunc)(iItem, lpData));
 				iItem = m_lpContentsTableListCtrl->GetNextItem(
 					iItem,
 					LVNI_SELECTED);
 				if (S_OK != hRes && -1 != iItem)
 				{
-					if (bShouldCancel(this,hRes)) break;
+					if (bShouldCancel(this, hRes)) break;
 					hRes = S_OK;
 				}
 			}
@@ -225,8 +225,7 @@ void CFolderDlg::OnDisplayItem()
 			lpMAPIProp->Release();
 			lpMAPIProp = NULL;
 		}
-	}
-	while (iItem != -1);
+	} while (iItem != -1);
 } // CFolderDlg::OnDisplayItem
 
 void CFolderDlg::OnInitMenu(_In_ CMenu* pMenu)
@@ -238,52 +237,52 @@ void CFolderDlg::OnInitMenu(_In_ CMenu* pMenu)
 		if (m_lpMapiObjects)
 		{
 			ULONG ulStatus = m_lpMapiObjects->GetBufferStatus();
-			pMenu->EnableMenuItem(ID_PASTE,DIM(ulStatus & BUFFER_MESSAGES));
+			pMenu->EnableMenuItem(ID_PASTE, DIM(ulStatus & BUFFER_MESSAGES));
 			lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 		}
 
-		pMenu->EnableMenuItem(ID_ADDTESTADDRESS,DIMMSOK(iNumSel));
-		pMenu->EnableMenuItem(ID_ATTACHMENTPROPERTIES,DIMMSOK(iNumSel));
-		pMenu->EnableMenuItem(ID_COPY,DIMMSOK(iNumSel));
+		pMenu->EnableMenuItem(ID_ADDTESTADDRESS, DIMMSOK(iNumSel));
+		pMenu->EnableMenuItem(ID_ATTACHMENTPROPERTIES, DIMMSOK(iNumSel));
+		pMenu->EnableMenuItem(ID_COPY, DIMMSOK(iNumSel));
 
-		pMenu->EnableMenuItem(ID_DELETEATTACHMENTS,DIMMSOK(iNumSel));
-		pMenu->EnableMenuItem(ID_DELETESELECTEDITEM,DIMMSOK(iNumSel));
-		pMenu->EnableMenuItem(ID_MANUALRESOLVE,DIMMSOK(iNumSel));
-		pMenu->EnableMenuItem(ID_OPENMODAL,DIMMSOK(iNumSel));
-		pMenu->EnableMenuItem(ID_OPENNONMODAL,DIMMSOK(iNumSel));
-		pMenu->EnableMenuItem(ID_REMOVEONEOFF,DIMMSOK(iNumSel));
-		pMenu->EnableMenuItem(ID_RESENDMESSAGE,DIMMSOK(iNumSel));
-		pMenu->EnableMenuItem(ID_RTFSYNC,DIMMSOK(iNumSel));
-		pMenu->EnableMenuItem(ID_SAVEATTACHMENTS,DIMMSOK(iNumSel));
-		pMenu->EnableMenuItem(ID_SAVEMESSAGETOFILE,DIMMSOK(iNumSel));
-		pMenu->EnableMenuItem(ID_SETREADFLAG,DIMMSOK(iNumSel));
-		pMenu->EnableMenuItem(ID_SETMESSAGESTATUS,DIMMSOK(iNumSel));
-		pMenu->EnableMenuItem(ID_GETMESSAGESTATUS,DIMMSOK(iNumSel));
-		pMenu->EnableMenuItem(ID_GETMESSAGEOPTIONS,DIMMSOK(iNumSel));
-		pMenu->EnableMenuItem(ID_SUBMITMESSAGE,DIMMSOK(iNumSel));
-		pMenu->EnableMenuItem(ID_ABORTSUBMIT,DIMMSOK(iNumSel));
-		pMenu->EnableMenuItem(ID_RECIPIENTPROPERTIES,DIMMSOK(iNumSel));
+		pMenu->EnableMenuItem(ID_DELETEATTACHMENTS, DIMMSOK(iNumSel));
+		pMenu->EnableMenuItem(ID_DELETESELECTEDITEM, DIMMSOK(iNumSel));
+		pMenu->EnableMenuItem(ID_MANUALRESOLVE, DIMMSOK(iNumSel));
+		pMenu->EnableMenuItem(ID_OPENMODAL, DIMMSOK(iNumSel));
+		pMenu->EnableMenuItem(ID_OPENNONMODAL, DIMMSOK(iNumSel));
+		pMenu->EnableMenuItem(ID_REMOVEONEOFF, DIMMSOK(iNumSel));
+		pMenu->EnableMenuItem(ID_RESENDMESSAGE, DIMMSOK(iNumSel));
+		pMenu->EnableMenuItem(ID_RTFSYNC, DIMMSOK(iNumSel));
+		pMenu->EnableMenuItem(ID_SAVEATTACHMENTS, DIMMSOK(iNumSel));
+		pMenu->EnableMenuItem(ID_SAVEMESSAGETOFILE, DIMMSOK(iNumSel));
+		pMenu->EnableMenuItem(ID_SETREADFLAG, DIMMSOK(iNumSel));
+		pMenu->EnableMenuItem(ID_SETMESSAGESTATUS, DIMMSOK(iNumSel));
+		pMenu->EnableMenuItem(ID_GETMESSAGESTATUS, DIMMSOK(iNumSel));
+		pMenu->EnableMenuItem(ID_GETMESSAGEOPTIONS, DIMMSOK(iNumSel));
+		pMenu->EnableMenuItem(ID_SUBMITMESSAGE, DIMMSOK(iNumSel));
+		pMenu->EnableMenuItem(ID_ABORTSUBMIT, DIMMSOK(iNumSel));
+		pMenu->EnableMenuItem(ID_RECIPIENTPROPERTIES, DIMMSOK(iNumSel));
 
-		pMenu->EnableMenuItem(ID_GETPROPSUSINGLONGTERMEID,DIMMSNOK(iNumSel));
-		pMenu->EnableMenuItem(ID_EXECUTEVERBONFORM,DIMMSNOK(iNumSel));
+		pMenu->EnableMenuItem(ID_GETPROPSUSINGLONGTERMEID, DIMMSNOK(iNumSel));
+		pMenu->EnableMenuItem(ID_EXECUTEVERBONFORM, DIMMSNOK(iNumSel));
 
-		pMenu->EnableMenuItem(ID_RESOLVEMESSAGECLASS,DIM(lpMAPISession));
-		pMenu->EnableMenuItem(ID_SELECTFORM,DIM(lpMAPISession));
+		pMenu->EnableMenuItem(ID_RESOLVEMESSAGECLASS, DIM(lpMAPISession));
+		pMenu->EnableMenuItem(ID_SELECTFORM, DIM(lpMAPISession));
 
-		pMenu->EnableMenuItem(ID_DISPLAYACLTABLE,DIM(m_lpContainer));
-		pMenu->EnableMenuItem(ID_LOADFROMEML,DIM(m_lpContainer));
-		pMenu->EnableMenuItem(ID_LOADFROMMSG,DIM(m_lpContainer));
-		pMenu->EnableMenuItem(ID_LOADFROMTNEF,DIM(m_lpContainer));
-		pMenu->EnableMenuItem(ID_NEW_APPOINTMENT,DIM(m_lpContainer));
-		pMenu->EnableMenuItem(ID_NEW_CONTACT,DIM(m_lpContainer));
-		pMenu->EnableMenuItem(ID_NEW_CUSTOMFORM,DIM(m_lpContainer));
-		pMenu->EnableMenuItem(ID_NEW_IPMNOTE,DIM(m_lpContainer));
-		pMenu->EnableMenuItem(ID_NEW_IPMPOST,DIM(m_lpContainer));
-		pMenu->EnableMenuItem(ID_NEW_STICKYNOTE,DIM(m_lpContainer));
-		pMenu->EnableMenuItem(ID_NEW_TASK,DIM(m_lpContainer));
-		pMenu->EnableMenuItem(ID_NEW_MESSAGE,DIM(m_lpContainer));
-		pMenu->EnableMenuItem(ID_SENDBULKMAIL,DIM(m_lpContainer));
-		pMenu->EnableMenuItem(ID_SAVEFOLDERCONTENTSASTEXTFILES,DIM(m_lpContainer));
+		pMenu->EnableMenuItem(ID_DISPLAYACLTABLE, DIM(m_lpContainer));
+		pMenu->EnableMenuItem(ID_LOADFROMEML, DIM(m_lpContainer));
+		pMenu->EnableMenuItem(ID_LOADFROMMSG, DIM(m_lpContainer));
+		pMenu->EnableMenuItem(ID_LOADFROMTNEF, DIM(m_lpContainer));
+		pMenu->EnableMenuItem(ID_NEW_APPOINTMENT, DIM(m_lpContainer));
+		pMenu->EnableMenuItem(ID_NEW_CONTACT, DIM(m_lpContainer));
+		pMenu->EnableMenuItem(ID_NEW_CUSTOMFORM, DIM(m_lpContainer));
+		pMenu->EnableMenuItem(ID_NEW_IPMNOTE, DIM(m_lpContainer));
+		pMenu->EnableMenuItem(ID_NEW_IPMPOST, DIM(m_lpContainer));
+		pMenu->EnableMenuItem(ID_NEW_STICKYNOTE, DIM(m_lpContainer));
+		pMenu->EnableMenuItem(ID_NEW_TASK, DIM(m_lpContainer));
+		pMenu->EnableMenuItem(ID_NEW_MESSAGE, DIM(m_lpContainer));
+		pMenu->EnableMenuItem(ID_SENDBULKMAIL, DIM(m_lpContainer));
+		pMenu->EnableMenuItem(ID_SAVEFOLDERCONTENTSASTEXTFILES, DIM(m_lpContainer));
 
 		pMenu->EnableMenuItem(ID_CONTENTS, DIM(m_lpContainer && !(m_ulDisplayFlags == dfNormal)));
 		pMenu->EnableMenuItem(ID_HIDDENCONTENTS, DIM(m_lpContainer && !(m_ulDisplayFlags & dfAssoc)));
@@ -310,7 +309,7 @@ void CFolderDlg::EnableAddInMenus(_In_ HMENU hMenu, ULONG ulMenu, _In_ LPMENUITE
 			if (!(m_ulDisplayFlags == dfNormal)) uiEnable = MF_GRAYED;
 		}
 	}
-	if (hMenu) ::EnableMenuItem(hMenu,ulMenu,uiEnable);
+	if (hMenu) ::EnableMenuItem(hMenu, ulMenu, uiEnable);
 } // CFolderDlg::EnableAddInMenus
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -330,13 +329,13 @@ void CFolderDlg::OnAddOneOffAddress()
 		IDS_ADDONEOFF,
 		NULL,
 		4,
-		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 	MyData.InitPane(0, CreateSingleLinePaneID(IDS_DISPLAYNAME, IDS_DISPLAYNAMEVALUE, false));
 	MyData.InitPane(1, CreateSingleLinePane(IDS_ADDRESSTYPE, _T("EX"), false)); // STRING_OK
 	MyData.InitPane(2, CreateSingleLinePaneID(IDS_ADDRESS, IDS_ADDRESSVALUE, false));
 	MyData.InitPane(3, CreateSingleLinePane(IDS_RECIPTYPE, NULL, false));
-	MyData.SetHex(3,MAPI_TO);
+	MyData.SetHex(3, MAPI_TO);
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -370,7 +369,7 @@ void CFolderDlg::OnAddOneOffAddress()
 				LVNI_SELECTED);
 			if (S_OK != hRes && -1 != iItem)
 			{
-				if (bShouldCancel(this,hRes)) break;
+				if (bShouldCancel(this, hRes)) break;
 				hRes = S_OK;
 			}
 		}
@@ -405,7 +404,7 @@ void CFolderDlg::HandleCopy()
 	HRESULT			hRes = S_OK;
 	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
-	DebugPrintEx(DBGGeneric,CLASS,_T("HandleCopy"),_T("\n"));
+	DebugPrintEx(DBGGeneric, CLASS, _T("HandleCopy"), _T("\n"));
 	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return;
 
 	LPENTRYLIST lpEIDs = NULL;
@@ -413,7 +412,7 @@ void CFolderDlg::HandleCopy()
 	EC_H(m_lpContentsTableListCtrl->GetSelectedItemEIDs(&lpEIDs));
 
 	// m_lpMapiObjects takes over ownership of lpEIDs - don't free now
-	m_lpMapiObjects->SetMessagesToCopy(lpEIDs,(LPMAPIFOLDER) m_lpContainer);
+	m_lpMapiObjects->SetMessagesToCopy(lpEIDs, (LPMAPIFOLDER)m_lpContainer);
 } // CFolderDlg::HandleCopy
 
 _Check_return_ bool CFolderDlg::HandlePaste()
@@ -423,7 +422,7 @@ _Check_return_ bool CFolderDlg::HandlePaste()
 	HRESULT		hRes = S_OK;
 	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
-	DebugPrintEx(DBGGeneric,CLASS,_T("HandlePaste"),_T("\n"));
+	DebugPrintEx(DBGGeneric, CLASS, _T("HandlePaste"), _T("\n"));
 	if (!m_lpMapiObjects || !m_lpContainer) return false;
 
 	CEditor MyData(
@@ -431,7 +430,7 @@ _Check_return_ bool CFolderDlg::HandlePaste()
 		IDS_COPYMESSAGE,
 		IDS_COPYMESSAGEPROMPT,
 		2,
-		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 	MyData.InitPane(0, CreateCheckPane(IDS_MESSAGEMOVE, false, false));
 	UINT uidDropDown[] = {
@@ -445,7 +444,7 @@ _Check_return_ bool CFolderDlg::HandlePaste()
 	{
 		LPENTRYLIST	lpEIDs = m_lpMapiObjects->GetMessagesToCopy();
 		LPMAPIFOLDER lpMAPISourceFolder = m_lpMapiObjects->GetSourceParentFolder();
-		ULONG		ulMoveMessage = MyData.GetCheck(0)?MESSAGE_MOVE:0;
+		ULONG		ulMoveMessage = MyData.GetCheck(0) ? MESSAGE_MOVE : 0;
 
 		if (lpEIDs && lpMAPISourceFolder)
 		{
@@ -475,7 +474,7 @@ _Check_return_ bool CFolderDlg::HandlePaste()
 				// the properties that Exchange excludes to save bits and time.
 				// Should not be necessary to exclude these, but speeds the process
 				// when a lot of messages are being copied.
-				static const SizedSPropTagArray (7, excludeTags) =
+				static const SizedSPropTagArray(7, excludeTags) =
 				{
 					7,
 					PR_ACCESS,
@@ -492,7 +491,7 @@ _Check_return_ bool CFolderDlg::HandlePaste()
 				if (lpTagsToExclude)
 				{
 					ULONG i = 0;
-					for (i = 0 ; i < lpEIDs->cValues ; i++)
+					for (i = 0; i < lpEIDs->cValues; i++)
 					{
 						LPMESSAGE lpMessage = NULL;
 
@@ -502,15 +501,15 @@ _Check_return_ bool CFolderDlg::HandlePaste()
 							lpMAPISourceFolder,
 							NULL,
 							lpEIDs->lpbin[i].cb,
-							(LPENTRYID) lpEIDs->lpbin[i].lpb,
+							(LPENTRYID)lpEIDs->lpbin[i].lpb,
 							NULL,
-							MyData.GetCheck(0)?MAPI_MODIFY :0, // only need write access for moves
+							MyData.GetCheck(0) ? MAPI_MODIFY : 0, // only need write access for moves
 							NULL,
 							(LPUNKNOWN*)&lpMessage));
 						if (lpMessage)
 						{
 							LPMESSAGE lpNewMessage = NULL;
-							EC_MAPI(((LPMAPIFOLDER) m_lpContainer)->CreateMessage(NULL,(m_ulDisplayFlags & dfAssoc)?MAPI_ASSOCIATED:NULL,&lpNewMessage));
+							EC_MAPI(((LPMAPIFOLDER)m_lpContainer)->CreateMessage(NULL, (m_ulDisplayFlags & dfAssoc) ? MAPI_ASSOCIATED : NULL, &lpNewMessage));
 							if (lpNewMessage)
 							{
 								LPSPropProblemArray lpProblems = NULL;
@@ -573,7 +572,7 @@ void CFolderDlg::OnDeleteAttachments()
 		IDS_DELETEATTACHMENTS,
 		IDS_DELETEATTACHMENTSPROMPT,
 		1,
-		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 	MyData.InitPane(0, CreateSingleLinePane(IDS_FILENAME, NULL, false));
 
@@ -648,7 +647,7 @@ void CFolderDlg::OnDeleteSelectedItem()
 			IDS_DELETEITEM,
 			IDS_DELETEITEMPROMPT,
 			1,
-			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		UINT uidDropDown[] = {
 			IDS_DDDELETETODELETED,
 			IDS_DDDELETETORETENTION,
@@ -664,7 +663,7 @@ void CFolderDlg::OnDeleteSelectedItem()
 
 		if (bShift)
 		{
-			switch(MyData.GetDropDown(0))
+			switch (MyData.GetDropDown(0))
 			{
 			case 0:
 				bMove = true;
@@ -690,7 +689,7 @@ void CFolderDlg::OnDeleteSelectedItem()
 		{
 			EC_H(DeleteToDeletedItems(
 				lpMDB,
-				(LPMAPIFOLDER) m_lpContainer,
+				(LPMAPIFOLDER)m_lpContainer,
 				lpEIDs,
 				m_hWnd));
 		}
@@ -701,7 +700,7 @@ void CFolderDlg::OnDeleteSelectedItem()
 			if (lpProgress)
 				ulFlag |= MESSAGE_DIALOG;
 
-			EC_MAPI(((LPMAPIFOLDER) m_lpContainer)->DeleteMessages(
+			EC_MAPI(((LPMAPIFOLDER)m_lpContainer)->DeleteMessages(
 				lpEIDs, // list of messages to delete
 				lpProgress ? (ULONG_PTR)m_hWnd : NULL,
 				lpProgress,
@@ -748,7 +747,7 @@ void CFolderDlg::OnGetPropsUsingLongTermEID()
 					NULL,
 					NULL,
 					lpMessageEID->cb,
-					(LPENTRYID) lpMessageEID->lpb,
+					(LPENTRYID)lpMessageEID->lpb,
 					NULL,
 					MAPI_BEST_ACCESS,
 					NULL,
@@ -791,7 +790,7 @@ void CFolderDlg::OnLoadFromMSG()
 			IDS_LOADMSG,
 			IDS_LOADMSGPROMPT,
 			1,
-			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 		UINT uidDropDown[] = {
 			IDS_DDLOADTOFOLDER,
@@ -811,7 +810,7 @@ void CFolderDlg::OnLoadFromMSG()
 				case 0:
 					EC_MAPI(((LPMAPIFOLDER)m_lpContainer)->CreateMessage(
 						NULL,
-						(m_ulDisplayFlags & dfAssoc)?MAPI_ASSOCIATED:NULL,
+						(m_ulDisplayFlags & dfAssoc) ? MAPI_ASSOCIATED : NULL,
 						&lpNewMessage));
 
 					if (lpNewMessage)
@@ -830,7 +829,7 @@ void CFolderDlg::OnLoadFromMSG()
 
 						if (lpNewMessage)
 						{
-							EC_H(m_lpPropDisplay->SetDataSource(lpNewMessage,NULL,false));
+							EC_H(m_lpPropDisplay->SetDataSource(lpNewMessage, NULL, false));
 						}
 					}
 					break;
@@ -902,7 +901,7 @@ void CFolderDlg::OnManualResolve()
 			IDS_MANUALRESOLVE,
 			IDS_MANUALRESOLVEPROMPT,
 			1,
-			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 		MyData.InitPane(0, CreateSingleLinePane(IDS_DISPLAYNAME, NULL, false));
 
@@ -923,13 +922,12 @@ void CFolderDlg::OnManualResolve()
 						lpMAPISession,
 						lpMessage,
 						MyData.GetString(0),
-						CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(),PT_TSTRING)));
+						CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_TSTRING)));
 
 					lpMessage->Release();
 					lpMessage = NULL;
 				}
-			}
-			while (iItem != -1);
+			} while (iItem != -1);
 		}
 	}
 } // CFolderDlg::OnManualResolve
@@ -951,7 +949,7 @@ void CFolderDlg::NewSpecialItem(WORD wMenuSelect)
 		ULONG ulFolder = NULL;
 		LPCSTR szClass = NULL;
 
-		switch(wMenuSelect)
+		switch (wMenuSelect)
 		{
 		case ID_NEW_APPOINTMENT:
 			ulFolder = DEFAULT_CALENDAR;
@@ -985,7 +983,7 @@ void CFolderDlg::NewSpecialItem(WORD wMenuSelect)
 		}
 		else
 		{
-			lpFolder = (LPMAPIFOLDER) m_lpContainer;
+			lpFolder = (LPMAPIFOLDER)m_lpContainer;
 		}
 
 		if (lpFolder)
@@ -1010,7 +1008,7 @@ void CFolderDlg::OnNewMessage()
 
 	EC_MAPI(((LPMAPIFOLDER)m_lpContainer)->CreateMessage(
 		NULL,
-		m_ulDisplayFlags & dfAssoc?MAPI_ASSOCIATED:0,
+		m_ulDisplayFlags & dfAssoc ? MAPI_ASSOCIATED : 0,
 		&lpMessage));
 
 	if (lpMessage)
@@ -1038,7 +1036,7 @@ void CFolderDlg::OnNewCustomForm()
 			IDS_NEWCUSTOMFORM,
 			IDS_NEWCUSTOMFORMPROMPT1,
 			1,
-			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		UINT uidDropDown[] = {
 			IDS_DDENTERFORMCLASS,
 			IDS_DDFOLDERFORMLIBRARY,
@@ -1058,7 +1056,7 @@ void CFolderDlg::OnNewCustomForm()
 				IDS_NEWCUSTOMFORM,
 				IDS_NEWCUSTOMFORMPROMPT2,
 				1,
-				CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 			MyClass.InitPane(0, CreateSingleLinePane(IDS_FORMTYPE, _T("IPM.Note"), false)); // STRING_OK
 
 			switch (MyPrompt1.GetDropDown(0))
@@ -1073,50 +1071,50 @@ void CFolderDlg::OnNewCustomForm()
 				break;
 			case 1:
 			case 2:
-				{
-					LPMAPIFORMMGR	lpMAPIFormMgr = NULL;
-					LPMAPIFORMINFO	lpMAPIFormInfo = NULL;
-					EC_MAPI(MAPIOpenFormMgr(lpMAPISession,&lpMAPIFormMgr));
+			{
+				LPMAPIFORMMGR	lpMAPIFormMgr = NULL;
+				LPMAPIFORMINFO	lpMAPIFormInfo = NULL;
+				EC_MAPI(MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr));
 
-					if (lpMAPIFormMgr)
-					{
-						LPMAPIFOLDER lpFormSource = 0;
-						if (1 == MyPrompt1.GetDropDown(0)) lpFormSource = (LPMAPIFOLDER) m_lpContainer;
-						// Apparently, SelectForm doesn't support unicode
-						// CString doesn't provide a way to extract just ANSI strings, so we do this manually
-						CHAR szTitle[256];
-						int iRet = NULL;
-						EC_D(iRet,LoadStringA(GetModuleHandle(NULL),
-							IDS_SELECTFORMCREATE,
-							szTitle,
-							_countof(szTitle)));
+				if (lpMAPIFormMgr)
+				{
+					LPMAPIFOLDER lpFormSource = 0;
+					if (1 == MyPrompt1.GetDropDown(0)) lpFormSource = (LPMAPIFOLDER)m_lpContainer;
+					// Apparently, SelectForm doesn't support unicode
+					// CString doesn't provide a way to extract just ANSI strings, so we do this manually
+					CHAR szTitle[256];
+					int iRet = NULL;
+					EC_D(iRet, LoadStringA(GetModuleHandle(NULL),
+						IDS_SELECTFORMCREATE,
+						szTitle,
+						_countof(szTitle)));
 #pragma warning(push)
 #pragma warning(disable:4616)
 #pragma warning(disable:6276)
-						EC_H_CANCEL(lpMAPIFormMgr->SelectForm(
-							(ULONG_PTR)m_hWnd,
-							0, // fMapiUnicode,
-							(LPCTSTR) szTitle,
-							lpFormSource,
-							&lpMAPIFormInfo));
+					EC_H_CANCEL(lpMAPIFormMgr->SelectForm(
+						(ULONG_PTR)m_hWnd,
+						0, // fMapiUnicode,
+						(LPCTSTR)szTitle,
+						lpFormSource,
+						&lpMAPIFormInfo));
 #pragma warning(pop)
 
-						if (lpMAPIFormInfo)
+					if (lpMAPIFormInfo)
+					{
+						EC_MAPI(HrGetOneProp(
+							lpMAPIFormInfo,
+							PR_MESSAGE_CLASS_A,
+							&lpProp));
+						if (CheckStringProp(lpProp, PT_STRING8))
 						{
-							EC_MAPI(HrGetOneProp(
-								lpMAPIFormInfo,
-								PR_MESSAGE_CLASS_A,
-								&lpProp));
-							if (CheckStringProp(lpProp,PT_STRING8))
-							{
-								szClass = lpProp->Value.lpszA;
-							}
-							lpMAPIFormInfo->Release();
+							szClass = lpProp->Value.lpszA;
 						}
-						lpMAPIFormMgr->Release();
+						lpMAPIFormInfo->Release();
 					}
+					lpMAPIFormMgr->Release();
 				}
-				break;
+			}
+			break;
 			}
 
 			EC_H(CreateAndDisplayNewMailInFolder(
@@ -1126,7 +1124,7 @@ void CFolderDlg::OnNewCustomForm()
 				m_lpContentsTableListCtrl,
 				-1,
 				szClass,
-				(LPMAPIFOLDER) m_lpContainer));
+				(LPMAPIFOLDER)m_lpContainer));
 
 			MAPIFreeBuffer(lpProp);
 		}
@@ -1150,7 +1148,7 @@ _Check_return_ HRESULT CFolderDlg::OnOpenModal(int iItem, _In_ SortListData* /*l
 	{
 		// Before we open the message, make sure the MAPI Form Manager is implemented
 		LPMAPIFORMMGR lpFormMgr = NULL;
-		WC_MAPI(MAPIOpenFormMgr(lpMAPISession,&lpFormMgr));
+		WC_MAPI(MAPIOpenFormMgr(lpMAPISession, &lpFormMgr));
 		hRes = S_OK; // Ditch the error if we got one
 
 		if (lpFormMgr)
@@ -1162,7 +1160,7 @@ _Check_return_ HRESULT CFolderDlg::OnOpenModal(int iItem, _In_ SortListData* /*l
 			if (lpMessage)
 			{
 				EC_H(OpenMessageModal(
-					(LPMAPIFOLDER) m_lpContainer,
+					(LPMAPIFOLDER)m_lpContainer,
 					lpMAPISession,
 					lpMDB,
 					lpMessage));
@@ -1192,7 +1190,7 @@ _Check_return_ HRESULT CFolderDlg::OnOpenNonModal(int iItem, _In_ SortListData* 
 	{
 		// Before we open the message, make sure the MAPI Form Manager is implemented
 		LPMAPIFORMMGR lpFormMgr = NULL;
-		WC_MAPI(MAPIOpenFormMgr(lpMAPISession,&lpFormMgr));
+		WC_MAPI(MAPIOpenFormMgr(lpMAPISession, &lpFormMgr));
 		hRes = S_OK; // Ditch the error if we got one
 
 		if (lpFormMgr)
@@ -1208,7 +1206,7 @@ _Check_return_ HRESULT CFolderDlg::OnOpenNonModal(int iItem, _In_ SortListData* 
 					m_hWnd,
 					lpMDB,
 					lpMAPISession,
-					(LPMAPIFOLDER) m_lpContainer,
+					(LPMAPIFOLDER)m_lpContainer,
 					m_lpContentsTableListCtrl,
 					iItem,
 					lpMessage,
@@ -1241,11 +1239,11 @@ void CFolderDlg::OnExecuteVerbOnForm()
 			IDS_EXECUTEVERB,
 			IDS_EXECUTEVERBPROMPT,
 			1,
-			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-		MyData.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_LAST_VERB_EXECUTED),false));
+			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+		MyData.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_LAST_VERB_EXECUTED), false));
 
 		MyData.InitPane(0, CreateSingleLinePane(IDS_VERB, NULL, false));
-		MyData.SetDecimal(0,EXCHIVERB_OPEN);
+		MyData.SetDecimal(0, EXCHIVERB_OPEN);
 
 		WC_H(MyData.DisplayDialog());
 		if (S_OK == hRes)
@@ -1267,7 +1265,7 @@ void CFolderDlg::OnExecuteVerbOnForm()
 						m_hWnd,
 						lpMDB,
 						lpMAPISession,
-						(LPMAPIFOLDER) m_lpContainer,
+						(LPMAPIFOLDER)m_lpContainer,
 						m_lpContentsTableListCtrl,
 						iItem,
 						lpMessage,
@@ -1292,7 +1290,7 @@ _Check_return_ HRESULT CFolderDlg::OnResendSelectedItem(int /*iItem*/, _In_ Sort
 	if (lpData->data.Contents.lpEntryID)
 	{
 		EC_H(ResendSingleMessage(
-			(LPMAPIFOLDER) m_lpContainer,
+			(LPMAPIFOLDER)m_lpContainer,
 			lpData->data.Contents.lpEntryID,
 			m_hWnd));
 	}
@@ -1334,7 +1332,7 @@ void CFolderDlg::OnRemoveOneOff()
 		IDS_REMOVEONEOFF,
 		IDS_REMOVEONEOFFPROMPT,
 		1,
-		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.InitPane(0, CreateCheckPane(IDS_REMOVEPROPDEFSTREAM, true, false));
 
 	WC_H(MyData.DisplayDialog());
@@ -1354,7 +1352,7 @@ void CFolderDlg::OnRemoveOneOff()
 
 			if (lpMessage)
 			{
-				DebugPrint(DBGGeneric, _T("Calling RemoveOneOff on %p, %sremoving property definition stream\n"),lpMessage,MyData.GetCheck(0)?_T(""):_T("not "));
+				DebugPrint(DBGGeneric, L"Calling RemoveOneOff on %p, %wsremoving property definition stream\n", lpMessage, MyData.GetCheck(0) ? L"" : L"not ");
 				EC_H(RemoveOneOff(
 					lpMessage,
 					MyData.GetCheck(0)));
@@ -1367,7 +1365,7 @@ void CFolderDlg::OnRemoveOneOff()
 				LVNI_SELECTED);
 			if (S_OK != hRes && -1 != iItem)
 			{
-				if (bShouldCancel(this,hRes)) break;
+				if (bShouldCancel(this, hRes)) break;
 				hRes = S_OK;
 			}
 		}
@@ -1388,10 +1386,10 @@ void CFolderDlg::OnRTFSync()
 		IDS_CALLRTFSYNC,
 		IDS_CALLRTFSYNCPROMPT,
 		1,
-		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 	MyData.InitPane(0, CreateSingleLinePane(IDS_FLAGS, NULL, false));
-	MyData.SetHex(0,RTF_SYNC_RTF_CHANGED);
+	MyData.SetHex(0, RTF_SYNC_RTF_CHANGED);
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -1411,13 +1409,13 @@ void CFolderDlg::OnRTFSync()
 
 			if (lpMessage)
 			{
-				DebugPrint(DBGGeneric, _T("Calling RTFSync on %p with flags 0x%X\n"),lpMessage,MyData.GetHex(0));
+				DebugPrint(DBGGeneric, L"Calling RTFSync on %p with flags 0x%X\n", lpMessage, MyData.GetHex(0));
 				EC_MAPI(RTFSync(
 					lpMessage,
 					MyData.GetHex(0),
 					&bMessageUpdated));
 
-				DebugPrint(DBGGeneric, _T("RTFSync returned %d\n"),bMessageUpdated);
+				DebugPrint(DBGGeneric, L"RTFSync returned %d\n", bMessageUpdated);
 
 				EC_MAPI(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 
@@ -1429,7 +1427,7 @@ void CFolderDlg::OnRTFSync()
 				LVNI_SELECTED);
 			if (S_OK != hRes && -1 != iItem)
 			{
-				if (bShouldCancel(this,hRes)) break;
+				if (bShouldCancel(this, hRes)) break;
 				hRes = S_OK;
 			}
 		}
@@ -1470,9 +1468,9 @@ void CFolderDlg::OnSaveFolderContentsAsTextFiles()
 
 	SaveFolderContentsToTXT(
 		lpMDB,
-		(LPMAPIFOLDER) m_lpContainer,
-		(m_ulDisplayFlags & dfAssoc)?false:true,
-		(m_ulDisplayFlags & dfAssoc)?true:false,
+		(LPMAPIFOLDER)m_lpContainer,
+		(m_ulDisplayFlags & dfAssoc) ? false : true,
+		(m_ulDisplayFlags & dfAssoc) ? true : false,
 		false,
 		m_hWnd);
 } // CFolderDlg::OnSaveFolderContentsAsTextFiles
@@ -1481,14 +1479,14 @@ void CFolderDlg::OnSaveMessageToFile()
 {
 	HRESULT	hRes = S_OK;
 
-	DebugPrintEx(DBGGeneric,CLASS,_T("OnSaveMessageToFile"),_T("\n"));
+	DebugPrintEx(DBGGeneric, CLASS, _T("OnSaveMessageToFile"), _T("\n"));
 
 	CEditor MyData(
 		this,
 		IDS_SAVEMESSAGETOFILE,
 		IDS_SAVEMESSAGETOFILEPROMPT,
 		1,
-		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 	UINT uidDropDown[] = {
 		IDS_DDTEXTFILE,
@@ -1507,7 +1505,7 @@ void CFolderDlg::OnSaveMessageToFile()
 		ULONG		ulDotExtLen = NULL;
 		CStringW	szFilter;
 		LPADRBOOK	lpAddrBook = NULL;
-		switch(MyData.GetDropDown(0))
+		switch (MyData.GetDropDown(0))
 		{
 		case 0:
 			szExt = L"xml"; // STRING_OK
@@ -1546,7 +1544,7 @@ void CFolderDlg::OnSaveMessageToFile()
 		while (-1 != iItem)
 		{
 			LPMESSAGE	lpMessage = NULL;
-			WCHAR		szFileName[MAX_PATH] = {0};
+			WCHAR		szFileName[MAX_PATH] = { 0 };
 			INT_PTR		iDlgRet = IDOK;
 
 			EC_H(OpenItemProp(
@@ -1556,9 +1554,9 @@ void CFolderDlg::OnSaveMessageToFile()
 
 			if (lpMessage)
 			{
-				WC_H(BuildFileName(szFileName,_countof(szFileName),szDotExt,ulDotExtLen,lpMessage));
+				WC_H(BuildFileName(szFileName, _countof(szFileName), szDotExt, ulDotExtLen, lpMessage));
 
-				DebugPrint(DBGGeneric,_T("BuildFileNameAndPath built file name \"%ws\"\n"), szFileName);
+				DebugPrint(DBGGeneric, L"BuildFileNameAndPath built file name \"%ws\"\n", szFileName);
 
 				CFileDialogExW dlgFilePicker;
 
@@ -1572,17 +1570,17 @@ void CFolderDlg::OnSaveMessageToFile()
 
 				if (iDlgRet == IDOK)
 				{
-					switch(MyData.GetDropDown(0))
+					switch (MyData.GetDropDown(0))
 					{
 					case 0:
 						// Idea is to capture anything that may be important about this message to disk so it can be analyzed.
-						{
-							CDumpStore MyDumpStore;
-							MyDumpStore.InitMessagePath(dlgFilePicker.GetFileName());
-							// Just assume this message might have attachments
-							MyDumpStore.ProcessMessage(lpMessage,true,NULL);
-						}
-						break;
+					{
+						CDumpStore MyDumpStore;
+						MyDumpStore.InitMessagePath(dlgFilePicker.GetFileName());
+						// Just assume this message might have attachments
+						MyDumpStore.ProcessMessage(lpMessage, true, NULL);
+					}
+					break;
 					case 1:
 						EC_H(SaveToMSG(lpMessage, dlgFilePicker.GetFileName(), false, m_hWnd, true));
 						break;
@@ -1593,32 +1591,32 @@ void CFolderDlg::OnSaveMessageToFile()
 						EC_H(SaveToEML(lpMessage, dlgFilePicker.GetFileName()));
 						break;
 					case 4:
+					{
+						ULONG ulConvertFlags = CCSF_SMTP;
+						ENCODINGTYPE et = IET_UNKNOWN;
+						MIMESAVETYPE mst = USE_DEFAULT_SAVETYPE;
+						ULONG ulWrapLines = USE_DEFAULT_WRAPPING;
+						bool bDoAdrBook = false;
+
+						EC_H(GetConversionToEMLOptions(this, &ulConvertFlags, &et, &mst, &ulWrapLines, &bDoAdrBook));
+						if (S_OK == hRes)
 						{
-							ULONG ulConvertFlags = CCSF_SMTP;
-							ENCODINGTYPE et = IET_UNKNOWN;
-							MIMESAVETYPE mst = USE_DEFAULT_SAVETYPE;
-							ULONG ulWrapLines = USE_DEFAULT_WRAPPING;
-							bool bDoAdrBook = false;
+							LPADRBOOK lpAdrBook = NULL;
+							if (bDoAdrBook) lpAdrBook = m_lpMapiObjects->GetAddrBook(true); // do not release
 
-							EC_H(GetConversionToEMLOptions(this,&ulConvertFlags,&et,&mst,&ulWrapLines,&bDoAdrBook));
-							if (S_OK == hRes)
-							{
-								LPADRBOOK lpAdrBook = NULL;
-								if (bDoAdrBook) lpAdrBook = m_lpMapiObjects->GetAddrBook(true); // do not release
-
-								EC_H(ExportIMessageToEML(
-									lpMessage,
-									dlgFilePicker.GetFileName(),
-									ulConvertFlags,
-									et,
-									mst,
-									ulWrapLines,
-									lpAdrBook));
-							}
+							EC_H(ExportIMessageToEML(
+								lpMessage,
+								dlgFilePicker.GetFileName(),
+								ulConvertFlags,
+								et,
+								mst,
+								ulWrapLines,
+								lpAdrBook));
 						}
-						break;
+					}
+					break;
 					case 5:
-						EC_H(SaveToTNEF(lpMessage,lpAddrBook,dlgFilePicker.GetFileName()));
+						EC_H(SaveToTNEF(lpMessage, lpAddrBook, dlgFilePicker.GetFileName()));
 						break;
 					default:
 						break;
@@ -1634,7 +1632,7 @@ void CFolderDlg::OnSaveMessageToFile()
 			else
 			{
 				hRes = MAPI_E_USER_CANCEL;
-				CHECKHRESMSG(hRes,IDS_OPENMSGFAILED);
+				CHECKHRESMSG(hRes, IDS_OPENMSGFAILED);
 			}
 
 			iItem = m_lpContentsTableListCtrl->GetNextItem(
@@ -1642,7 +1640,7 @@ void CFolderDlg::OnSaveMessageToFile()
 				LVNI_SELECTED);
 			if ((IDOK != iDlgRet || S_OK != hRes) && -1 != iItem)
 			{
-				if (bShouldCancel(this,hRes)) break;
+				if (bShouldCancel(this, hRes)) break;
 				hRes = S_OK;
 			}
 		}
@@ -1682,7 +1680,7 @@ void CFolderDlg::OnLoadFromTNEF()
 				hRes = S_OK;
 				EC_MAPI(((LPMAPIFOLDER)m_lpContainer)->CreateMessage(
 					NULL,
-					(m_ulDisplayFlags & dfAssoc)?MAPI_ASSOCIATED:0,
+					(m_ulDisplayFlags & dfAssoc) ? MAPI_ASSOCIATED : 0,
 					&lpNewMessage));
 
 				if (lpNewMessage)
@@ -1717,7 +1715,7 @@ void CFolderDlg::OnLoadFromEML()
 	bool bDoApply = false;
 	HCHARSET hCharSet = NULL;
 	CSETAPPLYTYPE cSetApplyType = CSET_APPLY_UNTAGGED;
-	WC_H(GetConversionFromEMLOptions(this,&ulConvertFlags,&bDoAdrBook,&bDoApply,&hCharSet,&cSetApplyType,NULL));
+	WC_H(GetConversionFromEMLOptions(this, &ulConvertFlags, &bDoAdrBook, &bDoApply, &hCharSet, &cSetApplyType, NULL));
 	if (S_OK == hRes)
 	{
 		LPADRBOOK lpAdrBook = NULL;
@@ -1743,7 +1741,7 @@ void CFolderDlg::OnLoadFromEML()
 				hRes = S_OK;
 				EC_MAPI(((LPMAPIFOLDER)m_lpContainer)->CreateMessage(
 					NULL,
-					(m_ulDisplayFlags & dfAssoc)?MAPI_ASSOCIATED:0,
+					(m_ulDisplayFlags & dfAssoc) ? MAPI_ASSOCIATED : 0,
 					&lpNewMessage));
 
 				if (lpNewMessage)
@@ -1774,7 +1772,7 @@ void CFolderDlg::OnSendBulkMail()
 		IDS_SENDBULKMAIL,
 		IDS_SENDBULKMAILPROMPT,
 		5,
-		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.InitPane(0, CreateSingleLinePane(IDS_NUMMESSAGES, NULL, false));
 	MyData.InitPane(1, CreateSingleLinePane(IDS_RECIPNAME, NULL, false));
 	MyData.InitPane(2, CreateSingleLinePane(IDS_SUBJECT, NULL, false));
@@ -1791,28 +1789,28 @@ void CFolderDlg::OnSendBulkMail()
 	if (S_OK == hRes)
 	{
 		ULONG ulNumMessages = 0;
-		ULONG i =0;
+		ULONG i = 0;
 		LPTSTR szSubject = NULL;
 
 		ulNumMessages = MyData.GetDecimal(0);
 		szSubject = MyData.GetString(2);
 
-		for (i = 0 ; i < ulNumMessages ; i++)
+		for (i = 0; i < ulNumMessages; i++)
 		{
 			hRes = S_OK;
 			CString szTestSubject;
-			szTestSubject.FormatMessage(IDS_TESTSUBJECT,szSubject,i);
+			szTestSubject.FormatMessage(IDS_TESTSUBJECT, szSubject, i);
 
 			EC_H(SendTestMessage(
 				lpMAPISession,
-				(LPMAPIFOLDER) m_lpContainer,
+				(LPMAPIFOLDER)m_lpContainer,
 				MyData.GetString(1),
 				MyData.GetString(4),
 				szTestSubject,
 				MyData.GetString(3)));
 			if (FAILED(hRes))
 			{
-				CHECKHRESMSG(hRes,IDS_ERRORSENDINGMSGS);
+				CHECKHRESMSG(hRes, IDS_ERRORSENDINGMSGS);
 				break;
 			}
 		}
@@ -1826,17 +1824,17 @@ void CFolderDlg::OnSetReadFlag()
 
 	if (!m_lpContentsTableListCtrl) return;
 
-	DebugPrintEx(DBGGeneric,CLASS,_T("OnSetReadFlag"),_T("\n"));
+	DebugPrintEx(DBGGeneric, CLASS, _T("OnSetReadFlag"), _T("\n"));
 
 	CEditor MyFlags(
 		this,
 		IDS_SETREADFLAG,
 		IDS_SETREADFLAGPROMPT,
 		1,
-		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 	MyFlags.InitPane(0, CreateSingleLinePane(IDS_FLAGSINHEX, NULL, false));
-	MyFlags.SetHex(0,CLEAR_READ_FLAG);
+	MyFlags.SetHex(0, CLEAR_READ_FLAG);
 
 	WC_H(MyFlags.DisplayDialog());
 	if (S_OK == hRes)
@@ -1898,14 +1896,14 @@ void CFolderDlg::OnGetMessageOptions()
 	LPMAPISESSION lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
-	DebugPrintEx(DBGGeneric,CLASS,_T("OnGetMessageOptions"),_T("\n"));
+	DebugPrintEx(DBGGeneric, CLASS, _T("OnGetMessageOptions"), _T("\n"));
 
 	CEditor MyAddress(
 		this,
 		IDS_MESSAGEOPTIONS,
 		IDS_ADDRESSTYPEPROMPT,
 		1,
-		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyAddress.InitPane(0, CreateSingleLinePane(IDS_ADDRESSTYPE, _T("EX"), false)); // STRING_OK
 	WC_H(MyAddress.DisplayDialog());
 
@@ -1925,7 +1923,7 @@ void CFolderDlg::OnGetMessageOptions()
 			if (lpMessage)
 			{
 				EC_MAPI(lpMAPISession->MessageOptions(
-					(ULONG_PTR) m_hWnd,
+					(ULONG_PTR)m_hWnd,
 					NULL, // API doesn't like Unicode
 					(LPTSTR)MyAddress.GetStringA(0),
 					lpMessage));
@@ -1938,7 +1936,7 @@ void CFolderDlg::OnGetMessageOptions()
 				LVNI_SELECTED);
 			if (S_OK != hRes && -1 != iItem)
 			{
-				if (bShouldCancel(this,hRes)) break;
+				if (bShouldCancel(this, hRes)) break;
 				hRes = S_OK;
 			}
 		}
@@ -1953,7 +1951,7 @@ _Check_return_ HRESULT CFolderDlg::OnGetMessageStatus(int /*iItem*/, _In_ SortLi
 
 	if (!lpData || !m_lpContainer) return MAPI_E_INVALID_PARAMETER;
 
-	DebugPrintEx(DBGGeneric,CLASS,_T("OnGetMessageStatus"),_T("\n"));
+	DebugPrintEx(DBGGeneric, CLASS, _T("OnGetMessageStatus"), _T("\n"));
 
 	ULONG ulMessageStatus = NULL;
 
@@ -1963,7 +1961,7 @@ _Check_return_ HRESULT CFolderDlg::OnGetMessageStatus(int /*iItem*/, _In_ SortLi
 	{
 		EC_MAPI(((LPMAPIFOLDER)m_lpContainer)->GetMessageStatus(
 			lpMessageEID->cb,
-			(LPENTRYID) lpMessageEID->lpb,
+			(LPENTRYID)lpMessageEID->lpb,
 			NULL,
 			&ulMessageStatus));
 
@@ -1972,9 +1970,9 @@ _Check_return_ HRESULT CFolderDlg::OnGetMessageStatus(int /*iItem*/, _In_ SortLi
 			IDS_MESSAGESTATUS,
 			NULL,
 			1,
-			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyStatus.InitPane(0, CreateSingleLinePane(IDS_MESSAGESTATUS, NULL, true));
-		MyStatus.SetHex(0,ulMessageStatus);
+		MyStatus.SetHex(0, ulMessageStatus);
 
 		WC_H(MyStatus.DisplayDialog());
 	}
@@ -1993,12 +1991,12 @@ void CFolderDlg::OnSetMessageStatus()
 		IDS_SETMSGSTATUS,
 		IDS_SETMSGSTATUSPROMPT,
 		2,
-		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 	MyData.InitPane(0, CreateSingleLinePane(IDS_STATUSINHEX, NULL, false));
 	MyData.InitPane(1, CreateSingleLinePane(IDS_MASKINHEX, NULL, false));
 
-	DebugPrintEx(DBGGeneric,CLASS,_T("OnSetMessageStatus"),_T("\n"));
+	DebugPrintEx(DBGGeneric, CLASS, _T("OnSetMessageStatus"), _T("\n"));
 
 	WC_H(MyData.DisplayDialog());
 
@@ -2011,7 +2009,7 @@ void CFolderDlg::OnSetMessageStatus()
 			LVNI_SELECTED);
 		while (iItem != -1)
 		{
-			lpListData = (SortListData*) m_lpContentsTableListCtrl->GetItemData(iItem);
+			lpListData = (SortListData*)m_lpContentsTableListCtrl->GetItemData(iItem);
 			if (lpListData)
 			{
 				lpMessageEID = lpListData->data.Contents.lpEntryID;
@@ -2022,7 +2020,7 @@ void CFolderDlg::OnSetMessageStatus()
 
 					EC_MAPI(((LPMAPIFOLDER)m_lpContainer)->SetMessageStatus(
 						lpMessageEID->cb,
-						(LPENTRYID) lpMessageEID->lpb,
+						(LPENTRYID)lpMessageEID->lpb,
 						MyData.GetHex(0),
 						MyData.GetHex(1),
 						&ulOldStatus));
@@ -2033,7 +2031,7 @@ void CFolderDlg::OnSetMessageStatus()
 				LVNI_SELECTED);
 			if (S_OK != hRes && -1 != iItem)
 			{
-				if (bShouldCancel(this,hRes)) break;
+				if (bShouldCancel(this, hRes)) break;
 				hRes = S_OK;
 			}
 		}
@@ -2046,7 +2044,7 @@ _Check_return_ HRESULT CFolderDlg::OnSubmitMessage(int iItem, _In_ SortListData*
 	LPMESSAGE		lpMessage = NULL;
 	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
-	DebugPrintEx(DBGGeneric,CLASS,_T("OnSubmitMesssage"),_T("\n"));
+	DebugPrintEx(DBGGeneric, CLASS, _T("OnSubmitMesssage"), _T("\n"));
 
 	if (-1 == iItem) return MAPI_E_INVALID_PARAMETER;
 
@@ -2073,7 +2071,7 @@ _Check_return_ HRESULT CFolderDlg::OnAbortSubmit(int iItem, _In_ SortListData* l
 	LPSBinary		lpMessageEID = NULL;
 	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
-	DebugPrintEx(DBGGeneric,CLASS,_T("OnSubmitMesssage"),_T("\n"));
+	DebugPrintEx(DBGGeneric, CLASS, _T("OnSubmitMesssage"), _T("\n"));
 
 	if (-1 == iItem) return MAPI_E_INVALID_PARAMETER;
 	if (!m_lpMapiObjects || !lpData) return MAPI_E_INVALID_PARAMETER;
@@ -2122,8 +2120,8 @@ void CFolderDlg::HandleAddInMenuSingle(
 {
 	if (lpParams)
 	{
-		lpParams->lpFolder = (LPMAPIFOLDER) m_lpContainer; // m_lpContainer is an LPMAPIFOLDER
-		lpParams->lpMessage = (LPMESSAGE) lpMAPIProp; // OpenItemProp returns LPMESSAGE
+		lpParams->lpFolder = (LPMAPIFOLDER)m_lpContainer; // m_lpContainer is an LPMAPIFOLDER
+		lpParams->lpMessage = (LPMESSAGE)lpMAPIProp; // OpenItemProp returns LPMESSAGE
 		// Add appropriate flag to context
 		if (m_ulDisplayFlags & dfAssoc)
 			lpParams->ulCurrentFlags |= MENU_FLAGS_FOLDER_ASSOC;

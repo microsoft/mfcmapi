@@ -296,11 +296,11 @@ else	\
 {	\
 	if (problemarray)	\
 	{	\
-		CString szProbArray = ProblemArrayToString((problemarray));	\
-		ErrDialog(__FILE__,__LINE__,IDS_EDPROBLEMARRAY,(LPCTSTR) szProbArray);	\
-		DebugPrint(DBGGeneric,_T("Problem array:\n%s\n"),(LPCTSTR) szProbArray);	\
+		wstring szProbArray = ProblemArrayToString((problemarray));	\
+		ErrDialog(__FILE__,__LINE__,IDS_EDPROBLEMARRAY, szProbArray.c_str());	\
+		DebugPrint(DBGGeneric,L"Problem array:\n%ws\n",szProbArray.c_str());	\
 	}	\
-} // EC_PROBLEMARRAY
+}
 
 #define EC_MAPIERR(__ulflags,__lperr)	\
 {	\
@@ -308,16 +308,16 @@ else	\
 	{	\
 		wstring szErr = MAPIErrToString((__ulflags),(__lperr));	\
 		ErrDialog(__FILE__,__LINE__,IDS_EDMAPIERROR, szErr.c_str());	\
-		DebugPrint(DBGGeneric,_T("LPMAPIERROR:\n%ws\n"), szErr.c_str());	\
+		DebugPrint(DBGGeneric,L"LPMAPIERROR:\n%ws\n", szErr.c_str());	\
 	}	\
-} // EC_MAPIERR
+}
 
 #define EC_TNEFERR(problemarray)	\
 {	\
 	if (problemarray)	\
 	{	\
-		CString szProbArray = TnefProblemArrayToString((problemarray));	\
-		ErrDialog(__FILE__,__LINE__,IDS_EDTNEFPROBLEMARRAY,(LPCTSTR) szProbArray);	\
-		DebugPrint(DBGGeneric,_T("TNEF Problem array:\n%s\n"),(LPCTSTR) szProbArray);	\
+		wstring szProbArray = TnefProblemArrayToString((problemarray));	\
+		ErrDialog(__FILE__,__LINE__,IDS_EDTNEFPROBLEMARRAY, szProbArray.c_str());	\
+		DebugPrint(DBGGeneric,L"TNEF Problem array:\n%ws\n",szProbArray.c_str());	\
 	}	\
-} // EC_TNEFERR
+}

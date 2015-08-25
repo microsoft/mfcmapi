@@ -192,7 +192,7 @@ void CHierarchyTableDlg::OnEditSearchCriteria()
 			&ulSearchState));
 		if (MAPI_E_NOT_INITIALIZED == hRes)
 		{
-			DebugPrint(DBGGeneric,_T("No search criteria has been set on this folder.\n"));
+			DebugPrint(DBGGeneric, L"No search criteria has been set on this folder.\n");
 			hRes = S_OK;
 		}
 		else CHECKHRESMSG(hRes,IDS_GETSEARCHCRITERIAFAILED);

@@ -10,9 +10,9 @@ HMODULE hModMSI = NULL;
 HMODULE hModKernel32 = NULL;
 HMODULE hModShell32 = NULL;
 
-typedef HTHEME (STDMETHODCALLTYPE CLOSETHEMEDATA)
-	(
-	HTHEME hTheme);
+typedef HTHEME(STDMETHODCALLTYPE CLOSETHEMEDATA)
+(
+HTHEME hTheme);
 typedef CLOSETHEMEDATA* LPCLOSETHEMEDATA;
 
 typedef bool (WINAPI HEAPSETINFORMATION) (
@@ -28,33 +28,33 @@ typedef bool (WINAPI GETMODULEHANDLEEXW) (
 	HMODULE* phModule);
 typedef GETMODULEHANDLEEXW* LPGETMODULEHANDLEEXW;
 
-typedef HRESULT (STDMETHODCALLTYPE MIMEOLEGETCODEPAGECHARSET)
-	(
-	CODEPAGEID cpiCodePage,
-	CHARSETTYPE ctCsetType,
-	LPHCHARSET phCharset
-	);
+typedef HRESULT(STDMETHODCALLTYPE MIMEOLEGETCODEPAGECHARSET)
+(
+CODEPAGEID cpiCodePage,
+CHARSETTYPE ctCsetType,
+LPHCHARSET phCharset
+);
 typedef MIMEOLEGETCODEPAGECHARSET* LPMIMEOLEGETCODEPAGECHARSET;
 
-typedef UINT (WINAPI MSIPROVIDECOMPONENTW)
-	(
-	LPCWSTR szProduct,
-	LPCWSTR szFeature,
-	LPCWSTR szComponent,
-	DWORD   dwInstallMode,
-	LPWSTR  lpPathBuf,
-	LPDWORD pcchPathBuf
-	);
+typedef UINT(WINAPI MSIPROVIDECOMPONENTW)
+(
+LPCWSTR szProduct,
+LPCWSTR szFeature,
+LPCWSTR szComponent,
+DWORD   dwInstallMode,
+LPWSTR  lpPathBuf,
+LPDWORD pcchPathBuf
+);
 typedef MSIPROVIDECOMPONENTW FAR * LPMSIPROVIDECOMPONENTW;
 
-typedef UINT (WINAPI MSIPROVIDEQUALIFIEDCOMPONENTW)
-	(
-	LPCWSTR szCategory,
-	LPCWSTR szQualifier,
-	DWORD   dwInstallMode,
-	LPWSTR  lpPathBuf,
-	LPDWORD pcchPathBuf
-	);
+typedef UINT(WINAPI MSIPROVIDEQUALIFIEDCOMPONENTW)
+(
+LPCWSTR szCategory,
+LPCWSTR szQualifier,
+DWORD   dwInstallMode,
+LPWSTR  lpPathBuf,
+LPDWORD pcchPathBuf
+);
 typedef MSIPROVIDEQUALIFIEDCOMPONENTW FAR * LPMSIPROVIDEQUALIFIEDCOMPONENTW;
 
 LPEDITSECURITY				pfnEditSecurity = NULL;
@@ -86,15 +86,15 @@ _Check_return_ HMODULE MyLoadLibraryA(_In_z_ LPCSTR lpszLibFileName)
 {
 	HMODULE hMod = NULL;
 	HRESULT hRes = S_OK;
-	DebugPrint(DBGLoadLibrary,_T("MyLoadLibraryA - loading \"%hs\"\n"),lpszLibFileName);
-	WC_D(hMod,LoadLibraryA(lpszLibFileName));
+	DebugPrint(DBGLoadLibrary, L"MyLoadLibraryA - loading \"%hs\"\n", lpszLibFileName);
+	WC_D(hMod, LoadLibraryA(lpszLibFileName));
 	if (hMod)
 	{
-		DebugPrint(DBGLoadLibrary,_T("MyLoadLibraryA - \"%hs\" loaded at %p\n"),lpszLibFileName,hMod);
+		DebugPrint(DBGLoadLibrary, L"MyLoadLibraryA - \"%hs\" loaded at %p\n", lpszLibFileName, hMod);
 	}
 	else
 	{
-		DebugPrint(DBGLoadLibrary,_T("MyLoadLibraryA - \"%hs\" failed to load\n"),lpszLibFileName);
+		DebugPrint(DBGLoadLibrary, L"MyLoadLibraryA - \"%hs\" failed to load\n", lpszLibFileName);
 	}
 	return hMod;
 } // MyLoadLibraryA
@@ -104,15 +104,15 @@ _Check_return_ HMODULE MyLoadLibraryW(_In_z_ LPCWSTR lpszLibFileName)
 {
 	HMODULE hMod = NULL;
 	HRESULT hRes = S_OK;
-	DebugPrint(DBGLoadLibrary,_T("MyLoadLibraryW - loading \"%ws\"\n"),lpszLibFileName);
-	WC_D(hMod,LoadLibraryW(lpszLibFileName));
+	DebugPrint(DBGLoadLibrary, L"MyLoadLibraryW - loading \"%ws\"\n", lpszLibFileName);
+	WC_D(hMod, LoadLibraryW(lpszLibFileName));
 	if (hMod)
 	{
-		DebugPrint(DBGLoadLibrary,_T("MyLoadLibraryW - \"%ws\" loaded at %p\n"),lpszLibFileName,hMod);
+		DebugPrint(DBGLoadLibrary, L"MyLoadLibraryW - \"%ws\" loaded at %p\n", lpszLibFileName, hMod);
 	}
 	else
 	{
-		DebugPrint(DBGLoadLibrary,_T("MyLoadLibraryW - \"%ws\" failed to load\n"),lpszLibFileName);
+		DebugPrint(DBGLoadLibrary, L"MyLoadLibraryW - \"%ws\" failed to load\n", lpszLibFileName);
 	}
 	return hMod;
 } // MyLoadLibraryW
@@ -141,22 +141,22 @@ _Check_return_ HMODULE LoadFromSystemDir(_In_z_ LPCTSTR szDLLName)
 
 	HRESULT	hRes = S_OK;
 	HMODULE	hModRet = NULL;
-	TCHAR	szDLLPath[MAX_PATH] = {0};
+	TCHAR	szDLLPath[MAX_PATH] = { 0 };
 	UINT	uiRet = NULL;
 
-	static TCHAR	szSystemDir[MAX_PATH] = {0};
+	static TCHAR	szSystemDir[MAX_PATH] = { 0 };
 	static bool		bSystemDirLoaded = false;
 
-	DebugPrint(DBGLoadLibrary,_T("LoadFromSystemDir - loading \"%s\"\n"),szDLLName);
+	DebugPrint(DBGLoadLibrary, L"LoadFromSystemDir - loading \"%ws\"\n", LPCTSTRToWstring(szDLLName).c_str());
 
 	if (!bSystemDirLoaded)
 	{
-		WC_D(uiRet,GetSystemDirectory(szSystemDir, MAX_PATH));
+		WC_D(uiRet, GetSystemDirectory(szSystemDir, MAX_PATH));
 		bSystemDirLoaded = true;
 	}
 
-	WC_H(StringCchPrintf(szDLLPath,_countof(szDLLPath),_T("%s\\%s"),szSystemDir,szDLLName)); // STRING_OK
-	DebugPrint(DBGLoadLibrary,_T("LoadFromSystemDir - loading from \"%s\"\n"),szDLLPath);
+	WC_H(StringCchPrintf(szDLLPath, _countof(szDLLPath), _T("%s\\%s"), szSystemDir, szDLLName)); // STRING_OK
+	DebugPrint(DBGLoadLibrary, L"LoadFromSystemDir - loading from \"%ws\"\n", LPCTSTRToWstring(szDLLPath).c_str());
 	hModRet = MyLoadLibrary(szDLLPath);
 
 	return hModRet;
@@ -166,7 +166,7 @@ _Check_return_ HMODULE LoadFromOLMAPIDir(_In_z_ LPCTSTR szDLLName)
 {
 	HMODULE hModRet = NULL;
 
-	DebugPrint(DBGLoadLibrary,_T("LoadFromOLMAPIDir - loading \"%s\"\n"),szDLLName);
+	DebugPrint(DBGLoadLibrary, L"LoadFromOLMAPIDir - loading \"%ws\"\n", LPCTSTRToWstring(szDLLName).c_str());
 
 	MAPIPathIterator* mpi = new MAPIPathIterator(true);
 	if (mpi)
@@ -179,9 +179,9 @@ _Check_return_ HMODULE LoadFromOLMAPIDir(_In_z_ LPCTSTR szDLLName)
 			{
 				HRESULT hRes = S_OK;
 				UINT ret = 0;
-				WCHAR szDrive[_MAX_DRIVE] = {0};
-				WCHAR szMAPIPath[MAX_PATH] = {0};
-				WC_D(ret,_wsplitpath_s(szOutlookMAPIPath, szDrive, _MAX_DRIVE, szMAPIPath, MAX_PATH, NULL, NULL, NULL, NULL));
+				WCHAR szDrive[_MAX_DRIVE] = { 0 };
+				WCHAR szMAPIPath[MAX_PATH] = { 0 };
+				WC_D(ret, _wsplitpath_s(szOutlookMAPIPath, szDrive, _MAX_DRIVE, szMAPIPath, MAX_PATH, NULL, NULL, NULL, NULL));
 
 				if (SUCCEEDED(hRes))
 				{
@@ -191,7 +191,7 @@ _Check_return_ HMODULE LoadFromOLMAPIDir(_In_z_ LPCTSTR szDLLName)
 #else
 					swprintf_s(szFullPath, MAX_PATH, L"%s%s%hs", szDrive, szMAPIPath, szDLLName);
 #endif
-					DebugPrint(DBGLoadLibrary,_T("LoadFromOLMAPIDir - loading from \"%ws\"\n"), szFullPath);
+					DebugPrint(DBGLoadLibrary, L"LoadFromOLMAPIDir - loading from \"%ws\"\n", szFullPath);
 					WC_D(hModRet, MyLoadLibraryW(szFullPath));
 					delete[] szFullPath;
 
@@ -208,28 +208,30 @@ _Check_return_ HMODULE LoadFromOLMAPIDir(_In_z_ LPCTSTR szDLLName)
 
 void ImportProcs()
 {
-	LoadProc(_T("aclui.dll"),&hModAclui,"EditSecurity", (FARPROC*) &pfnEditSecurity); // STRING_OK;
-	LoadProc(_T("ole32.dll"), &hModOle32, "StgCreateStorageEx", (FARPROC*) &pfnStgCreateStorageEx); // STRING_OK;
-	LoadProc(_T("uxtheme.dll"), &hModUxTheme, "OpenThemeData", (FARPROC*) &pfnOpenThemeData); // STRING_OK;
-	LoadProc(_T("uxtheme.dll"), &hModUxTheme, "CloseThemeData", (FARPROC*) &pfnCloseThemeData); // STRING_OK;
-	LoadProc(_T("uxtheme.dll"), &hModUxTheme, "GetThemeMargins", (FARPROC*) &pfnGetThemeMargins); // STRING_OK;
-	LoadProc(_T("uxtheme.dll"), &hModUxTheme, "SetWindowTheme", (FARPROC*) &pfnSetWindowTheme); // STRING_OK;
-	LoadProc(_T("uxtheme.dll"), &hModUxTheme, "GetThemeSysSize", (FARPROC*) &pfnGetThemeSysSize); // STRING_OK;
+	LoadProc(_T("aclui.dll"), &hModAclui, "EditSecurity", (FARPROC*)&pfnEditSecurity); // STRING_OK;
+	LoadProc(_T("ole32.dll"), &hModOle32, "StgCreateStorageEx", (FARPROC*)&pfnStgCreateStorageEx); // STRING_OK;
+	LoadProc(_T("uxtheme.dll"), &hModUxTheme, "OpenThemeData", (FARPROC*)&pfnOpenThemeData); // STRING_OK;
+	LoadProc(_T("uxtheme.dll"), &hModUxTheme, "CloseThemeData", (FARPROC*)&pfnCloseThemeData); // STRING_OK;
+	LoadProc(_T("uxtheme.dll"), &hModUxTheme, "GetThemeMargins", (FARPROC*)&pfnGetThemeMargins); // STRING_OK;
+	LoadProc(_T("uxtheme.dll"), &hModUxTheme, "SetWindowTheme", (FARPROC*)&pfnSetWindowTheme); // STRING_OK;
+	LoadProc(_T("uxtheme.dll"), &hModUxTheme, "GetThemeSysSize", (FARPROC*)&pfnGetThemeSysSize); // STRING_OK;
 #ifdef _UNICODE
 	LoadProc(_T("msi.dll"), &hModMSI, "MsiProvideQualifiedComponentW", (FARPROC*) &pfnMsiProvideQualifiedComponent); // STRING_OK;
 	LoadProc(_T("msi.dll"), &hModMSI, "MsiGetFileVersionW", (FARPROC*) &pfnMsiGetFileVersion); // STRING_OK;
 #else
-	LoadProc(_T("msi.dll"), &hModMSI, "MsiProvideQualifiedComponentA", (FARPROC*) &pfnMsiProvideQualifiedComponent); // STRING_OK;
-	LoadProc(_T("msi.dll"), &hModMSI, "MsiGetFileVersionA", (FARPROC*) &pfnMsiGetFileVersion); // STRING_OK;
+	LoadProc(_T("msi.dll"), &hModMSI, "MsiProvideQualifiedComponentA", (FARPROC*)&pfnMsiProvideQualifiedComponent); // STRING_OK;
+	LoadProc(_T("msi.dll"), &hModMSI, "MsiGetFileVersionA", (FARPROC*)&pfnMsiGetFileVersion); // STRING_OK;
 #endif
-	LoadProc(_T("shell32.dll"), &hModShell32, "SHGetPropertyStoreForWindow", (FARPROC*) &pfnSHGetPropertyStoreForWindow); // STRING_OK;
+	LoadProc(_T("shell32.dll"), &hModShell32, "SHGetPropertyStoreForWindow", (FARPROC*)&pfnSHGetPropertyStoreForWindow); // STRING_OK;
 } // ImportProcs
 
 // Opens the mail key for the specified MAPI client, such as 'Microsoft Outlook' or 'ExchangeMAPI'
 // Pass NULL to open the mail key for the default MAPI client
 _Check_return_ HKEY GetMailKey(_In_opt_z_ LPCTSTR szClient)
 {
-	DebugPrint(DBGLoadLibrary,_T("Enter GetMailKey(%s)\n"),szClient?szClient:_T("Default"));
+	wstring lpszClient = L"Default";
+	if (szClient) lpszClient = LPCTSTRToWstring(szClient);
+	DebugPrint(DBGLoadLibrary, L"Enter GetMailKey(%ws)\n", lpszClient.c_str());
 	HRESULT hRes = S_OK;
 	HKEY hMailKey = NULL;
 	bool bClientIsDefault = false;
@@ -251,8 +253,9 @@ _Check_return_ HKEY GetMailKey(_In_opt_z_ LPCTSTR szClient)
 				hDefaultMailKey,
 				_T(""), // get the default value
 				&dwKeyType,
-				(LPVOID*) &szClient));
-			DebugPrint(DBGLoadLibrary,_T("Default MAPI = %s\n"),szClient?szClient:_T("Default"));
+				(LPVOID*)&szClient));
+			if (szClient) lpszClient = LPCTSTRToWstring(szClient);
+			DebugPrint(DBGLoadLibrary, L"Default MAPI = %ws\n", lpszClient.c_str());
 			bClientIsDefault = true;
 			EC_W32(RegCloseKey(hDefaultMailKey));
 		}
@@ -287,7 +290,7 @@ _Check_return_ HKEY GetMailKey(_In_opt_z_ LPCTSTR szClient)
 // Allocates with new, delete with delete[]
 void GetMapiMsiIds(_In_opt_z_ LPCTSTR szClient, _Deref_out_opt_z_ LPSTR* lpszComponentID, _Deref_out_opt_z_ LPSTR* lpszAppLCID, _Deref_out_opt_z_ LPSTR* lpszOfficeLCID)
 {
-	DebugPrint(DBGLoadLibrary,_T("GetMapiMsiIds(%s)\n"),szClient);
+	DebugPrint(DBGLoadLibrary, L"GetMapiMsiIds(%ws)\n", LPCTSTRToWstring(szClient).c_str());
 	HRESULT hRes = S_OK;
 
 	if (lpszComponentID) *lpszComponentID = 0;
@@ -306,8 +309,8 @@ void GetMapiMsiIds(_In_opt_z_ LPCTSTR szClient, _Deref_out_opt_z_ LPSTR* lpszCom
 				hKey,
 				"MSIComponentID", // STRING_OK
 				&dwKeyType,
-				(LPVOID*) lpszComponentID));
-			DebugPrint(DBGLoadLibrary,_T("MSIComponentID = %hs\n"),*lpszComponentID?*lpszComponentID:"<not found>");
+				(LPVOID*)lpszComponentID));
+			DebugPrint(DBGLoadLibrary, L"MSIComponentID = %hs\n", *lpszComponentID ? *lpszComponentID : "<not found>");
 			hRes = S_OK;
 		}
 
@@ -317,8 +320,8 @@ void GetMapiMsiIds(_In_opt_z_ LPCTSTR szClient, _Deref_out_opt_z_ LPSTR* lpszCom
 				hKey,
 				"MSIApplicationLCID", // STRING_OK
 				&dwKeyType,
-				(LPVOID*) lpszAppLCID));
-			DebugPrint(DBGLoadLibrary,_T("MSIApplicationLCID = %hs\n"),*lpszAppLCID?*lpszAppLCID:"<not found>");
+				(LPVOID*)lpszAppLCID));
+			DebugPrint(DBGLoadLibrary, L"MSIApplicationLCID = %hs\n", *lpszAppLCID ? *lpszAppLCID : "<not found>");
 			hRes = S_OK;
 		}
 
@@ -328,8 +331,8 @@ void GetMapiMsiIds(_In_opt_z_ LPCTSTR szClient, _Deref_out_opt_z_ LPSTR* lpszCom
 				hKey,
 				"MSIOfficeLCID", // STRING_OK
 				&dwKeyType,
-				(LPVOID*) lpszOfficeLCID));
-			DebugPrint(DBGLoadLibrary,_T("MSIOfficeLCID = %hs\n"),*lpszOfficeLCID?*lpszOfficeLCID:"<not found>");
+				(LPVOID*)lpszOfficeLCID));
+			DebugPrint(DBGLoadLibrary, L"MSIOfficeLCID = %hs\n", *lpszOfficeLCID ? *lpszOfficeLCID : "<not found>");
 			hRes = S_OK;
 		}
 
@@ -348,7 +351,7 @@ void GetMAPIPath(_In_opt_z_ LPCTSTR szClient, _Inout_z_count_(cchMAPIPath) LPTST
 	LPSTR szAppLCID = NULL;
 	LPSTR szOfficeLCID = NULL;
 
-	GetMapiMsiIds(szClient,&szComponentID,&szAppLCID,&szOfficeLCID);
+	GetMapiMsiIds(szClient, &szComponentID, &szAppLCID, &szOfficeLCID);
 
 	if (szComponentID)
 	{
@@ -409,21 +412,21 @@ void GetMAPIPath(_In_opt_z_ LPCTSTR szClient, _Inout_z_count_(cchMAPIPath) LPTST
 
 // Declaration missing from MAPI headers
 _Check_return_ STDAPI OpenStreamOnFileW(_In_ LPALLOCATEBUFFER lpAllocateBuffer,
-										_In_ LPFREEBUFFER lpFreeBuffer,
-										ULONG ulFlags,
-										_In_z_ LPCWSTR lpszFileName,
-										_In_opt_z_ LPCWSTR lpszPrefix,
-										_Out_ LPSTREAM FAR * lppStream);
+	_In_ LPFREEBUFFER lpFreeBuffer,
+	ULONG ulFlags,
+	_In_z_ LPCWSTR lpszFileName,
+	_In_opt_z_ LPCWSTR lpszPrefix,
+	_Out_ LPSTREAM FAR * lppStream);
 
 // Since I never use lpszPrefix, I don't convert it
 // To make certain of that, I pass NULL for it
 // If I ever do need this param, I'll have to fix this
 _Check_return_ STDMETHODIMP MyOpenStreamOnFile(_In_ LPALLOCATEBUFFER lpAllocateBuffer,
-											   _In_ LPFREEBUFFER lpFreeBuffer,
-											   ULONG ulFlags,
-											   _In_z_ LPCWSTR lpszFileName,
-											   _In_opt_z_ LPCWSTR /*lpszPrefix*/,
-											   _Out_ LPSTREAM FAR * lppStream)
+	_In_ LPFREEBUFFER lpFreeBuffer,
+	ULONG ulFlags,
+	_In_z_ LPCWSTR lpszFileName,
+	_In_opt_z_ LPCWSTR /*lpszPrefix*/,
+	_Out_ LPSTREAM FAR * lppStream)
 {
 	HRESULT hRes = S_OK;
 
@@ -448,7 +451,7 @@ _Check_return_ STDMETHODIMP MyOpenStreamOnFile(_In_ LPALLOCATEBUFFER lpAllocateB
 				lpAllocateBuffer,
 				lpFreeBuffer,
 				ulFlags,
-				(LPTSTR) lpAnsiCharStr,
+				(LPTSTR)lpAnsiCharStr,
 				NULL,
 				lppStream);
 		}
@@ -672,10 +675,10 @@ _Check_return_ STDAPI HrCopyActions(
 				break; // Nothing to do!
 
 			default:				// error!
-				{
-					hRes = MAPI_E_INVALID_PARAMETER;
-					break;
-				}
+			{
+				hRes = MAPI_E_INVALID_PARAMETER;
+				break;
+			}
 			}
 		}
 	}
@@ -713,7 +716,7 @@ _Check_return_ HRESULT HrCopyRestrictionArray(
 		case RES_OR:
 			if (lpResSrc[i].res.resAnd.cRes && lpResSrc[i].res.resAnd.lpRes)
 			{
-				if (lpResSrc[i].res.resAnd.cRes > ULONG_MAX/sizeof(SRestriction))
+				if (lpResSrc[i].res.resAnd.cRes > ULONG_MAX / sizeof(SRestriction))
 				{
 					hRes = MAPI_E_CALL_FAILED;
 					break;
@@ -840,7 +843,7 @@ _Check_return_ STDAPI HrCopyRestriction(
 	*lppResDest = NULL;
 	if (!lpResSrc) return S_OK;
 
-	bool fNullObject =(lpObject == NULL);
+	bool fNullObject = (lpObject == NULL);
 	HRESULT	hRes = S_OK;
 
 	if (lpObject != NULL)
@@ -877,57 +880,57 @@ _Check_return_ STDAPI HrCopyRestriction(
 // the calls to HrCopyRestriction and HrCopyActions. Rewriting those functions to accept function pointers is
 // expensive for no benefit here. So if you borrow this code, be careful if you plan on using other allocators.
 _Check_return_ STDAPI_(SCODE) MyPropCopyMore(_In_ LPSPropValue lpSPropValueDest,
-											 _In_ LPSPropValue lpSPropValueSrc,
-											 _In_ ALLOCATEMORE * lpfAllocMore,
-											 _In_ LPVOID lpvObject)
+	_In_ LPSPropValue lpSPropValueSrc,
+	_In_ ALLOCATEMORE * lpfAllocMore,
+	_In_ LPVOID lpvObject)
 {
 	HRESULT hRes = S_OK;
-	switch ( PROP_TYPE(lpSPropValueSrc->ulPropTag) )
+	switch (PROP_TYPE(lpSPropValueSrc->ulPropTag))
 	{
 	case PT_SRESTRICTION:
 	case PT_ACTIONS:
+	{
+		// It's an action or restriction - we know how to copy those:
+		memcpy((BYTE *)lpSPropValueDest,
+			(BYTE *)lpSPropValueSrc,
+			sizeof(SPropValue));
+		if (PT_SRESTRICTION == PROP_TYPE(lpSPropValueSrc->ulPropTag))
 		{
-			// It's an action or restriction - we know how to copy those:
-			memcpy( (BYTE *) lpSPropValueDest,
-				(BYTE *) lpSPropValueSrc,
-				sizeof(SPropValue));
-			if (PT_SRESTRICTION == PROP_TYPE(lpSPropValueSrc->ulPropTag))
-			{
-				LPSRestriction lpNewRes = NULL;
-				WC_H(HrCopyRestriction(
-					(LPSRestriction) lpSPropValueSrc->Value.lpszA,
-					lpvObject,
-					&lpNewRes));
-				lpSPropValueDest->Value.lpszA = (LPSTR) lpNewRes;
-			}
-			else
-			{
-				ACTIONS* lpNewAct = NULL;
-				WC_H(HrCopyActions(
-					(ACTIONS*) lpSPropValueSrc->Value.lpszA,
-					lpvObject,
-					&lpNewAct));
-				lpSPropValueDest->Value.lpszA = (LPSTR) lpNewAct;
-			}
-			break;
+			LPSRestriction lpNewRes = NULL;
+			WC_H(HrCopyRestriction(
+				(LPSRestriction)lpSPropValueSrc->Value.lpszA,
+				lpvObject,
+				&lpNewRes));
+			lpSPropValueDest->Value.lpszA = (LPSTR)lpNewRes;
 		}
+		else
+		{
+			ACTIONS* lpNewAct = NULL;
+			WC_H(HrCopyActions(
+				(ACTIONS*)lpSPropValueSrc->Value.lpszA,
+				lpvObject,
+				&lpNewAct));
+			lpSPropValueDest->Value.lpszA = (LPSTR)lpNewAct;
+		}
+		break;
+	}
 	default:
-		WC_MAPI(PropCopyMore(lpSPropValueDest,lpSPropValueSrc,lpfAllocMore,lpvObject));
+		WC_MAPI(PropCopyMore(lpSPropValueDest, lpSPropValueSrc, lpfAllocMore, lpvObject));
 	}
 	return hRes;
 } // MyPropCopyMore
 
 void WINAPI MyHeapSetInformation(_In_opt_ HANDLE HeapHandle,
-								 _In_ HEAP_INFORMATION_CLASS HeapInformationClass,
-								 _In_opt_count_(HeapInformationLength) PVOID HeapInformation,
-								 _In_ SIZE_T HeapInformationLength)
+	_In_ HEAP_INFORMATION_CLASS HeapInformationClass,
+	_In_opt_count_(HeapInformationLength) PVOID HeapInformation,
+	_In_ SIZE_T HeapInformationLength)
 {
 	if (!pfnHeapSetInformation)
 	{
-		LoadProc(_T("kernel32.dll"), &hModKernel32, "HeapSetInformation", (FARPROC*) &pfnHeapSetInformation); // STRING_OK;
+		LoadProc(_T("kernel32.dll"), &hModKernel32, "HeapSetInformation", (FARPROC*)&pfnHeapSetInformation); // STRING_OK;
 	}
 
-	if (pfnHeapSetInformation) pfnHeapSetInformation(HeapHandle,HeapInformationClass,HeapInformation,HeapInformationLength);
+	if (pfnHeapSetInformation) pfnHeapSetInformation(HeapHandle, HeapInformationClass, HeapInformation, HeapInformationLength);
 } // MyHeapSetInformation
 
 HRESULT WINAPI MyMimeOleGetCodePageCharset(
@@ -937,10 +940,10 @@ HRESULT WINAPI MyMimeOleGetCodePageCharset(
 {
 	if (!pfnMimeOleGetCodePageCharset)
 	{
-		LoadProc(_T("inetcomm.dll"), &hModInetComm, "MimeOleGetCodePageCharset", (FARPROC*) &pfnMimeOleGetCodePageCharset); // STRING_OK;
+		LoadProc(_T("inetcomm.dll"), &hModInetComm, "MimeOleGetCodePageCharset", (FARPROC*)&pfnMimeOleGetCodePageCharset); // STRING_OK;
 	}
 
-	if (pfnMimeOleGetCodePageCharset) return pfnMimeOleGetCodePageCharset(cpiCodePage,ctCsetType,phCharset);
+	if (pfnMimeOleGetCodePageCharset) return pfnMimeOleGetCodePageCharset(cpiCodePage, ctCsetType, phCharset);
 	return MAPI_E_CALL_FAILED;
 } // MyMimeOleGetCodePageCharset
 
@@ -954,10 +957,10 @@ STDAPI_(UINT) MsiProvideComponentW(
 {
 	if (!pfnMsiProvideComponentW)
 	{
-		LoadProc(_T("msi.dll"), &hModMSI, "MimeOleGetCodePageCharset", (FARPROC*) &pfnMsiProvideComponentW); // STRING_OK;
+		LoadProc(_T("msi.dll"), &hModMSI, "MimeOleGetCodePageCharset", (FARPROC*)&pfnMsiProvideComponentW); // STRING_OK;
 	}
 
-	if (pfnMsiProvideComponentW) return pfnMsiProvideComponentW(szProduct,szFeature,szComponent,dwInstallMode,lpPathBuf,pcchPathBuf);
+	if (pfnMsiProvideComponentW) return pfnMsiProvideComponentW(szProduct, szFeature, szComponent, dwInstallMode, lpPathBuf, pcchPathBuf);
 	return ERROR_NOT_SUPPORTED;
 } // MsiProvideComponentW
 
@@ -970,10 +973,10 @@ STDAPI_(UINT) MsiProvideQualifiedComponentW(
 {
 	if (!pfnMsiProvideQualifiedComponentW)
 	{
-		LoadProc(_T("msi.dll"), &hModMSI, "MsiProvideQualifiedComponentW", (FARPROC*) &pfnMsiProvideQualifiedComponentW); // STRING_OK;
+		LoadProc(_T("msi.dll"), &hModMSI, "MsiProvideQualifiedComponentW", (FARPROC*)&pfnMsiProvideQualifiedComponentW); // STRING_OK;
 	}
 
-	if (pfnMsiProvideQualifiedComponentW) return pfnMsiProvideQualifiedComponentW(szCategory,szQualifier,dwInstallMode,lpPathBuf,pcchPathBuf);
+	if (pfnMsiProvideQualifiedComponentW) return pfnMsiProvideQualifiedComponentW(szCategory, szQualifier, dwInstallMode, lpPathBuf, pcchPathBuf);
 	return ERROR_NOT_SUPPORTED;
 } // MsiProvideQualifiedComponentW
 
@@ -984,10 +987,10 @@ BOOL WINAPI MyGetModuleHandleExW(
 {
 	if (!pfnGetModuleHandleExW)
 	{
-		LoadProc(_T("kernel32.dll"), &hModMSI, "GetModuleHandleExW", (FARPROC*) &pfnGetModuleHandleExW); // STRING_OK;
+		LoadProc(_T("kernel32.dll"), &hModMSI, "GetModuleHandleExW", (FARPROC*)&pfnGetModuleHandleExW); // STRING_OK;
 	}
 
-	if (pfnGetModuleHandleExW) return pfnGetModuleHandleExW(dwFlags,lpModuleName,phModule);
+	if (pfnGetModuleHandleExW) return pfnGetModuleHandleExW(dwFlags, lpModuleName, phModule);
 	*phModule = GetModuleHandleW(lpModuleName);
 	return (*phModule != NULL);
 } // MyGetModuleHandleExW
