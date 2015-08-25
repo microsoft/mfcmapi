@@ -77,8 +77,9 @@ void SetDebugOutputToFile(bool bDoOutput)
 
 		if (lpApp)
 		{
-			DebugPrint(DBGGeneric, _T("%s: Debug printing to file enabled.\n"), lpApp->m_pszAppName);
+			DebugPrint(DBGGeneric, L"%ws: Debug printing to file enabled.\n", LPCTSTRToWstring(lpApp->m_pszAppName).c_str());
 		}
+
 		DebugPrintVersion(DBGVersionBanner);
 	}
 }
@@ -280,15 +281,21 @@ void __cdecl OutputToFilef(_In_opt_ FILE* fFile, wstring szMsg, ...)
 
 	va_list argList = NULL;
 	va_start(argList, szMsg);
-	_OutputW(DBGNoDebug, fFile, false, formatW(szMsg, argList));
+	if (argList)
+	{
+		_OutputW(DBGNoDebug, fFile, false, formatW(szMsg, argList));
+	}
+	else
+	{
+		_OutputW(DBGNoDebug, fFile, true, szMsg);
+	}
+
 	va_end(argList);
 
 }
 
-void __cdecl DebugPrint(ULONG ulDbgLvl, _Printf_format_string_ LPCTSTR szMsg, ...)
+void __cdecl DebugPrint(ULONG ulDbgLvl, wstring szMsg, ...)
 {
-	HRESULT hRes = S_OK;
-
 	if (!fIsSetv(ulDbgLvl) && !RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD) return;
 
 	va_list argList = NULL;
@@ -296,14 +303,11 @@ void __cdecl DebugPrint(ULONG ulDbgLvl, _Printf_format_string_ LPCTSTR szMsg, ..
 
 	if (argList)
 	{
-		TCHAR szDebugString[4096];
-		hRes = StringCchVPrintf(szDebugString, _countof(szDebugString), szMsg, argList);
-		if (hRes == S_OK)
-			_Output(ulDbgLvl, NULL, true, szDebugString);
+		_OutputW(ulDbgLvl, NULL, false, formatW(szMsg, argList));
 	}
 	else
 	{
-		_Output(ulDbgLvl, NULL, true, szMsg);
+		_OutputW(ulDbgLvl, NULL, true, szMsg);
 	}
 
 	va_end(argList);

@@ -25,7 +25,7 @@ _Check_return_ HRESULT CallOpenMsgStore(
 	{
 		ulFlags |= MDB_ONLINE;
 	}
-	DebugPrint(DBGOpenItemProp, _T("CallOpenMsgStore ulFlags = 0x%X\n"), ulFlags);
+	DebugPrint(DBGOpenItemProp, L"CallOpenMsgStore ulFlags = 0x%X\n", ulFlags);
 
 	WC_MAPI(lpSession->OpenMsgStore(
 		ulUIParam,
@@ -39,7 +39,7 @@ _Check_return_ HRESULT CallOpenMsgStore(
 		hRes = S_OK;
 		// perhaps this store doesn't know the MDB_ONLINE flag - remove and retry
 		ulFlags = ulFlags & ~MDB_ONLINE;
-		DebugPrint(DBGOpenItemProp, _T("CallOpenMsgStore 2nd attempt ulFlags = 0x%X\n"), ulFlags);
+		DebugPrint(DBGOpenItemProp, L"CallOpenMsgStore 2nd attempt ulFlags = 0x%X\n", ulFlags);
 
 		WC_MAPI(lpSession->OpenMsgStore(
 			ulUIParam,
@@ -391,8 +391,8 @@ _Check_return_ HRESULT CreateStoreEntryID(
 
 	if (!lpMDB || !lpszMsgStoreDN || !StoreSupportsManageStore(lpMDB))
 	{
-		if (!lpMDB) DebugPrint(DBGGeneric, _T("CreateStoreEntryID: MDB was NULL\n"));
-		if (!lpszMsgStoreDN) DebugPrint(DBGGeneric, _T("CreateStoreEntryID: lpszMsgStoreDN was NULL\n"));
+		if (!lpMDB) DebugPrint(DBGGeneric, L"CreateStoreEntryID: MDB was NULL\n");
+		if (!lpszMsgStoreDN) DebugPrint(DBGGeneric, L"CreateStoreEntryID: lpszMsgStoreDN was NULL\n");
 		return MAPI_E_INVALID_PARAMETER;
 	}
 
@@ -402,7 +402,7 @@ _Check_return_ HRESULT CreateStoreEntryID(
 
 	if (lpXManageStore)
 	{
-		DebugPrint(DBGGeneric, _T("CreateStoreEntryID: Creating EntryID. StoreDN = \"%s\", MailboxDN = \"%s\"\n"), lpszMsgStoreDN, lpszMailboxDN);
+		DebugPrint(DBGGeneric, L"CreateStoreEntryID: Creating EntryID. StoreDN = \"%hs\", MailboxDN = \"%hs\"\n", lpszMsgStoreDN, lpszMailboxDN);
 
 		EC_MAPI(lpXManageStore->CreateStoreEntryID(
 			(LPSTR)lpszMsgStoreDN,
@@ -430,8 +430,8 @@ _Check_return_ HRESULT CreateStoreEntryID2(
 
 	if (!lpMDB || !lpszMsgStoreDN || !StoreSupportsManageStoreEx(lpMDB))
 	{
-		if (!lpMDB) DebugPrint(DBGGeneric, _T("CreateStoreEntryID2: MDB was NULL\n"));
-		if (!lpszMsgStoreDN) DebugPrint(DBGGeneric, _T("CreateStoreEntryID2: lpszMsgStoreDN was NULL\n"));
+		if (!lpMDB) DebugPrint(DBGGeneric, L"CreateStoreEntryID2: MDB was NULL\n");
+		if (!lpszMsgStoreDN) DebugPrint(DBGGeneric, L"CreateStoreEntryID2: lpszMsgStoreDN was NULL\n");
 		return MAPI_E_INVALID_PARAMETER;
 	}
 
@@ -441,7 +441,7 @@ _Check_return_ HRESULT CreateStoreEntryID2(
 
 	if (lpXManageStoreEx)
 	{
-		DebugPrint(DBGGeneric, _T("CreateStoreEntryID2: Creating EntryID. StoreDN = \"%s\", MailboxDN = \"%s\"\n"), lpszMsgStoreDN, lpszMailboxDN);
+		DebugPrint(DBGGeneric, L"CreateStoreEntryID2: Creating EntryID. StoreDN = \"%hs\", MailboxDN = \"%hs\"\n", lpszMsgStoreDN, lpszMailboxDN);
 		SPropValue sProps[3] = { 0 };
 		sProps[0].ulPropTag = PR_PROFILE_MAILBOX;
 		sProps[0].Value.lpszA = (LPSTR)lpszMailboxDN;
@@ -559,7 +559,7 @@ _Check_return_ HRESULT HrMailboxLogon(
 
 	if (!lpMAPISession)
 	{
-		DebugPrint(DBGGeneric, _T("HrMailboxLogon: Session was NULL\n"));
+		DebugPrint(DBGGeneric, L"HrMailboxLogon: Session was NULL\n");
 		return MAPI_E_INVALID_PARAMETER;
 	}
 
@@ -656,7 +656,7 @@ _Check_return_ HRESULT OpenOtherUsersMailbox(
 
 	*lppOtherUserMDB = NULL;
 
-	DebugPrint(DBGGeneric, _T("OpenOtherUsersMailbox called with lpMAPISession = %p, lpMDB = %p, Server = \"%s\", Mailbox = \"%s\"\n"), lpMAPISession, lpMDB, szServerName, szMailboxDN);
+	DebugPrint(DBGGeneric, L"OpenOtherUsersMailbox called with lpMAPISession = %p, lpMDB = %p, Server = \"%ws\", Mailbox = \"%ws\"\n", lpMAPISession, lpMDB, LPCTSTRToWstring(szServerName).c_str(), LPCTSTRToWstring(szMailboxDN).c_str());
 	if (!lpMAPISession || !lpMDB || !szMailboxDN || !StoreSupportsManageStore(lpMDB)) return MAPI_E_INVALID_PARAMETER;
 
 	szServerNamePTR = szServerName;
@@ -678,7 +678,7 @@ _Check_return_ HRESULT OpenOtherUsersMailbox(
 
 		if (szServerDN)
 		{
-			DebugPrint(DBGGeneric, _T("Calling HrMailboxLogon with Server DN = \"%s\"\n"), szServerDN);
+			DebugPrint(DBGGeneric, L"Calling HrMailboxLogon with Server DN = \"%ws\"\n", LPCTSTRToWstring(szServerDN).c_str());
 			WC_H(HrMailboxLogon(
 				lpMAPISession,
 				lpMDB,

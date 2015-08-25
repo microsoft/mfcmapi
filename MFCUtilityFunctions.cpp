@@ -45,7 +45,7 @@ _Check_return_ HRESULT DisplayObject(
 	}
 
 	wstring szFlags = InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE);
-	DebugPrint(DBGGeneric, _T("DisplayObject asked to display %p, with ObjectType of 0x%08X and MAPI type of 0x%08X = %ws\n"),
+	DebugPrint(DBGGeneric, L"DisplayObject asked to display %p, with ObjectType of 0x%08X and MAPI type of 0x%08X = %ws\n",
 		lpUnk,
 		tType,
 		ulObjType,
@@ -165,8 +165,8 @@ _Check_return_ HRESULT DisplayObject(
 
 		szFlags = InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE);
 		DebugPrint(DBGGeneric,
-			_T("DisplayObject: Object type: 0x%08X = %ws not implemented\r\n") // STRING_OK
-			_T("This is not an error. It just means no specialized viewer has been implemented for this object type."), // STRING_OK
+			L"DisplayObject: Object type: 0x%08X = %ws not implemented\r\n" // STRING_OK
+			L"This is not an error. It just means no specialized viewer has been implemented for this object type.", // STRING_OK
 			ulObjType,
 			szFlags.c_str());
 		break;
@@ -188,75 +188,75 @@ _Check_return_ HRESULT DisplayTable(
 	CParentWnd* lpParentWnd = lpHostDlg->GetParentWnd(); // do not release
 	if (!lpParentWnd) return MAPI_E_INVALID_PARAMETER;
 
-	DebugPrint(DBGGeneric, _T("DisplayTable asked to display %p\n"), lpTable);
+	DebugPrint(DBGGeneric, L"DisplayTable asked to display %p\n", lpTable);
 
 	switch (tType)
 	{
 	case otStatus:
 	{
-					 if (!lpTable) return MAPI_E_INVALID_PARAMETER;
-					 new CContentsTableDlg(
-						 lpParentWnd,
-						 lpMapiObjects,
-						 IDS_STATUSTABLE,
-						 mfcmapiCALL_CREATE_DIALOG,
-						 lpTable,
-						 (LPSPropTagArray)&sptSTATUSCols,
-						 NUMSTATUSCOLUMNS,
-						 STATUSColumns,
-						 NULL,
-						 MENU_CONTEXT_STATUS_TABLE);
-					 break;
+		if (!lpTable) return MAPI_E_INVALID_PARAMETER;
+		new CContentsTableDlg(
+			lpParentWnd,
+			lpMapiObjects,
+			IDS_STATUSTABLE,
+			mfcmapiCALL_CREATE_DIALOG,
+			lpTable,
+			(LPSPropTagArray)&sptSTATUSCols,
+			NUMSTATUSCOLUMNS,
+			STATUSColumns,
+			NULL,
+			MENU_CONTEXT_STATUS_TABLE);
+		break;
 	}
 	case otReceive:
 	{
-					  if (!lpTable) return MAPI_E_INVALID_PARAMETER;
-					  new CContentsTableDlg(
-						  lpParentWnd,
-						  lpMapiObjects,
-						  IDS_RECEIVEFOLDERTABLE,
-						  mfcmapiCALL_CREATE_DIALOG,
-						  lpTable,
-						  (LPSPropTagArray)&sptRECEIVECols,
-						  NUMRECEIVECOLUMNS,
-						  RECEIVEColumns,
-						  NULL,
-						  MENU_CONTEXT_RECIEVE_FOLDER_TABLE);
-					  break;
+		if (!lpTable) return MAPI_E_INVALID_PARAMETER;
+		new CContentsTableDlg(
+			lpParentWnd,
+			lpMapiObjects,
+			IDS_RECEIVEFOLDERTABLE,
+			mfcmapiCALL_CREATE_DIALOG,
+			lpTable,
+			(LPSPropTagArray)&sptRECEIVECols,
+			NUMRECEIVECOLUMNS,
+			RECEIVEColumns,
+			NULL,
+			MENU_CONTEXT_RECIEVE_FOLDER_TABLE);
+		break;
 	}
 	case otHierarchy:
 	{
-						if (!lpTable) return MAPI_E_INVALID_PARAMETER;
-						new CContentsTableDlg(
-							lpParentWnd,
-							lpMapiObjects,
-							IDS_HIERARCHYTABLE,
-							mfcmapiCALL_CREATE_DIALOG,
-							lpTable,
-							(LPSPropTagArray)&sptHIERARCHYCols,
-							NUMHIERARCHYCOLUMNS,
-							HIERARCHYColumns,
-							NULL,
-							MENU_CONTEXT_HIER_TABLE);
-						break;
+		if (!lpTable) return MAPI_E_INVALID_PARAMETER;
+		new CContentsTableDlg(
+			lpParentWnd,
+			lpMapiObjects,
+			IDS_HIERARCHYTABLE,
+			mfcmapiCALL_CREATE_DIALOG,
+			lpTable,
+			(LPSPropTagArray)&sptHIERARCHYCols,
+			NUMHIERARCHYCOLUMNS,
+			HIERARCHYColumns,
+			NULL,
+			MENU_CONTEXT_HIER_TABLE);
+		break;
 	}
 	default:
 	case otDefault:
 	{
-					  if (!lpTable) return MAPI_E_INVALID_PARAMETER;
-					  if (otDefault != tType) ErrDialog(__FILE__, __LINE__, IDS_EDDISPLAYTABLE, tType);
-					  new CContentsTableDlg(
-						  lpParentWnd,
-						  lpMapiObjects,
-						  IDS_CONTENTSTABLE,
-						  mfcmapiCALL_CREATE_DIALOG,
-						  lpTable,
-						  (LPSPropTagArray)&sptDEFCols,
-						  NUMDEFCOLUMNS,
-						  DEFColumns,
-						  NULL,
-						  MENU_CONTEXT_DEFAULT_TABLE);
-					  break;
+		if (!lpTable) return MAPI_E_INVALID_PARAMETER;
+		if (otDefault != tType) ErrDialog(__FILE__, __LINE__, IDS_EDDISPLAYTABLE, tType);
+		new CContentsTableDlg(
+			lpParentWnd,
+			lpMapiObjects,
+			IDS_CONTENTSTABLE,
+			mfcmapiCALL_CREATE_DIALOG,
+			lpTable,
+			(LPSPropTagArray)&sptDEFCols,
+			NUMDEFCOLUMNS,
+			DEFColumns,
+			NULL,
+			MENU_CONTEXT_DEFAULT_TABLE);
+		break;
 	}
 	}
 
@@ -369,29 +369,29 @@ _Check_return_ HRESULT DisplayExchangeTable(
 			break;
 		case otACL:
 		{
-					  CEditor MyData(
-						  lpHostDlg,
-						  IDS_ACLTABLE,
-						  IDS_ACLTABLEPROMPT,
-						  1,
-						  CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+			CEditor MyData(
+				lpHostDlg,
+				IDS_ACLTABLE,
+				IDS_ACLTABLEPROMPT,
+				1,
+				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-					  MyData.InitPane(0, CreateCheckPane(IDS_FBRIGHTSVISIBLE, false, false));
+			MyData.InitPane(0, CreateCheckPane(IDS_FBRIGHTSVISIBLE, false, false));
 
-					  WC_H(MyData.DisplayDialog());
-					  if (S_OK == hRes)
-					  {
-						  new CAclDlg(
-							  lpParentWnd,
-							  lpMapiObjects,
-							  lpExchTbl,
-							  MyData.GetCheck(0));
-					  }
+			WC_H(MyData.DisplayDialog());
+			if (S_OK == hRes)
+			{
+				new CAclDlg(
+					lpParentWnd,
+					lpMapiObjects,
+					lpExchTbl,
+					MyData.GetCheck(0));
+			}
 
-					  if (MAPI_E_USER_CANCEL == hRes)
-						  hRes = S_OK; // don't propogate the error past here
+			if (MAPI_E_USER_CANCEL == hRes)
+				hRes = S_OK; // don't propogate the error past here
 		}
-			break;
+		break;
 		default:
 			// Open a MAPI table on the Exchange table property. This table can be
 			// read to determine what the Exchange table looks like.
@@ -441,7 +441,7 @@ _Check_return_ bool bShouldCancel(_In_opt_ CWnd* cWnd, HRESULT hResPrev)
 		WC_H(Cancel.DisplayDialog());
 		if (S_OK != hRes)
 		{
-			DebugPrint(DBGGeneric, _T("bShouldCancel: User asked to cancel\n"));
+			DebugPrint(DBGGeneric, L"bShouldCancel: User asked to cancel\n");
 			return true;
 		}
 	}
@@ -533,32 +533,32 @@ void DisplayMailboxTable(_In_ CParentWnd*	lpParent,
 					break;
 				case 2:
 				{
-						  GUID MyGUID = { 0 };
-						  bool bHaveGUID = false;
+					GUID MyGUID = { 0 };
+					bool bHaveGUID = false;
 
-						  LPTSTR pszGUID = NULL;
-						  pszGUID = MyData.GetString(2);
+					LPTSTR pszGUID = NULL;
+					pszGUID = MyData.GetString(2);
 
-						  if (_T('\0') != pszGUID[0])
-						  {
-							  bHaveGUID = true;
+					if (_T('\0') != pszGUID[0])
+					{
+						bHaveGUID = true;
 
-							  WC_H(StringToGUID(MyData.GetString(2), &MyGUID));
-							  if (FAILED(hRes))
-							  {
-								  ErrDialog(__FILE__, __LINE__, IDS_EDINVALIDGUID);
-								  break;
-							  }
-						  }
+						WC_H(StringToGUID(MyData.GetString(2), &MyGUID));
+						if (FAILED(hRes))
+						{
+							ErrDialog(__FILE__, __LINE__, IDS_EDINVALIDGUID);
+							break;
+						}
+					}
 
-						  EC_H(GetMailboxTable5(
-							  lpMDB,
-							  szServerDN,
-							  MyData.GetHex(1),
-							  fMapiUnicode,
-							  bHaveGUID ? &MyGUID : 0,
-							  &lpMailboxTable));
-						  break;
+					EC_H(GetMailboxTable5(
+						lpMDB,
+						szServerDN,
+						MyData.GetHex(1),
+						fMapiUnicode,
+						bHaveGUID ? &MyGUID : 0,
+						&lpMailboxTable));
+					break;
 				}
 				}
 
@@ -679,32 +679,32 @@ void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
 					break;
 				case 2:
 				{
-						  GUID MyGUID = { 0 };
-						  bool bHaveGUID = false;
+					GUID MyGUID = { 0 };
+					bool bHaveGUID = false;
 
-						  LPTSTR pszGUID = NULL;
-						  pszGUID = MyData.GetString(3);
+					LPTSTR pszGUID = NULL;
+					pszGUID = MyData.GetString(3);
 
-						  if (_T('\0') != pszGUID[0])
-						  {
-							  bHaveGUID = true;
+					if (_T('\0') != pszGUID[0])
+					{
+						bHaveGUID = true;
 
-							  WC_H(StringToGUID(MyData.GetString(3), &MyGUID));
-							  if (FAILED(hRes))
-							  {
-								  ErrDialog(__FILE__, __LINE__, IDS_EDINVALIDGUID);
-								  break;
-							  }
-						  }
+						WC_H(StringToGUID(MyData.GetString(3), &MyGUID));
+						if (FAILED(hRes))
+						{
+							ErrDialog(__FILE__, __LINE__, IDS_EDINVALIDGUID);
+							break;
+						}
+					}
 
-						  EC_H(GetPublicFolderTable5(
-							  lpMDB,
-							  szServerDN,
-							  MyData.GetHex(1),
-							  MyData.GetHex(2) | fMapiUnicode,
-							  bHaveGUID ? &MyGUID : 0,
-							  &lpPFTable));
-						  break;
+					EC_H(GetPublicFolderTable5(
+						lpMDB,
+						szServerDN,
+						MyData.GetHex(1),
+						MyData.GetHex(2) | fMapiUnicode,
+						bHaveGUID ? &MyGUID : 0,
+						&lpPFTable));
+					break;
 				}
 				}
 
@@ -751,7 +751,7 @@ void ResolveMessageClass(_In_ CMapiObjects* lpMapiObjects, _In_opt_ LPMAPIFOLDER
 	EC_MAPI(MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr));
 	if (lpMAPIFormMgr)
 	{
-		DebugPrint(DBGForms, _T("OnResolveMessageClass: resolving message class\n"));
+		DebugPrint(DBGForms, L"OnResolveMessageClass: resolving message class\n");
 		CEditor MyData(
 			NULL,
 			IDS_RESOLVECLASS,
@@ -769,7 +769,7 @@ void ResolveMessageClass(_In_ CMapiObjects* lpMapiObjects, _In_opt_ LPMAPIFOLDER
 			if (szClass)
 			{
 				LPMAPIFORMINFO lpMAPIFormInfo = NULL;
-				DebugPrint(DBGForms, _T("OnResolveMessageClass: Calling ResolveMessageClass(\"%hs\",0x%08X)\n"), szClass, ulFlags); // STRING_OK
+				DebugPrint(DBGForms, L"OnResolveMessageClass: Calling ResolveMessageClass(\"%hs\",0x%08X)\n", szClass, ulFlags); // STRING_OK
 				EC_MAPI(lpMAPIFormMgr->ResolveMessageClass(szClass, ulFlags, lpMAPIFolder, &lpMAPIFormInfo));
 				if (lpMAPIFormInfo)
 				{
