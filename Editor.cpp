@@ -140,7 +140,7 @@ void CEditor::Constructor(
 	}
 	if (!m_pParentWnd)
 	{
-		DebugPrint(DBGGeneric, _T("Editor created with a NULL parent!\n"));
+		DebugPrint(DBGGeneric, L"Editor created with a NULL parent!\n");
 	}
 	if (ulNumFields) CreateControls(ulNumFields);
 
@@ -217,7 +217,7 @@ LRESULT CEditor::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		::SelectObject((HDC)wParam, hOld);
 		return bRet;
 	}
-		break;
+	break;
 	case WM_MOUSEWHEEL:
 	{
 		if (!m_bScrollVisible) break;
@@ -291,7 +291,7 @@ LRESULT CEditor::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 
 		return 0;
 	}
-		break;
+	break;
 	} // end switch
 	return CMyDialog::WindowProc(message, wParam, lParam);
 } // CEditor::WindowProc
@@ -566,7 +566,7 @@ _Check_return_ HRESULT CEditor::DisplayDialog()
 	switch (iDlgRet)
 	{
 	case -1:
-		DebugPrint(DBGGeneric, _T("Dialog box could not be created!\n"));
+		DebugPrint(DBGGeneric, L"Dialog box could not be created!\n");
 		MessageBox(_T("Dialog box could not be created!")); // STRING_OK
 		return MAPI_E_CALL_FAILED;
 		break;

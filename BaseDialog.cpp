@@ -83,7 +83,7 @@ STDMETHODIMP_(ULONG) CBaseDialog::AddRef()
 {
 	LONG lCount = InterlockedIncrement(&m_cRef);
 	TRACE_ADDREF(CLASS, lCount);
-	DebugPrint(DBGRefCount, _T("CBaseDialog::AddRef(\"%s\")\n"), (LPCTSTR)m_szTitle);
+	DebugPrint(DBGRefCount, L"CBaseDialog::AddRef(\"%ws\")\n", LPCTSTRToWstring(m_szTitle).c_str());
 	return lCount;
 } // CBaseDialog::AddRef
 
@@ -91,7 +91,7 @@ STDMETHODIMP_(ULONG) CBaseDialog::Release()
 {
 	LONG lCount = InterlockedDecrement(&m_cRef);
 	TRACE_RELEASE(CLASS, lCount);
-	DebugPrint(DBGRefCount, _T("CBaseDialog::Release(\"%s\")\n"), (LPCTSTR)m_szTitle);
+	DebugPrint(DBGRefCount, L"CBaseDialog::Release(\"%ws\")\n", LPCTSTRToWstring(m_szTitle).c_str());
 	if (!lCount) delete this;
 	return lCount;
 } // CBaseDialog::Release
@@ -118,27 +118,26 @@ LRESULT CBaseDialog::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
 	{
-		case WM_COMMAND:
+	case WM_COMMAND:
 		{
 			WORD idFrom = LOWORD(wParam);
 			// idFrom is the menu item selected
 			if (HandleMenu(idFrom)) return S_OK;
 			break;
 		}
-		case WM_PAINT:
-		{
-			// Paint the status, then let the rest draw itself.
-			DrawStatus(
-				m_hWnd,
-				GetStatusHeight(),
-				(LPCTSTR)m_StatusMessages[STATUSDATA1],
-				m_StatusWidth[STATUSDATA1],
-				(LPCTSTR)m_StatusMessages[STATUSDATA2],
-				m_StatusWidth[STATUSDATA2],
-				(LPCTSTR)m_StatusMessages[STATUSINFOTEXT]);
-			break;
-		}
+	case WM_PAINT:
+		// Paint the status, then let the rest draw itself.
+		DrawStatus(
+			m_hWnd,
+			GetStatusHeight(),
+			(LPCTSTR)m_StatusMessages[STATUSDATA1],
+			m_StatusWidth[STATUSDATA1],
+			(LPCTSTR)m_StatusMessages[STATUSDATA2],
+			m_StatusWidth[STATUSDATA2],
+			(LPCTSTR)m_StatusMessages[STATUSINFOTEXT]);
+		break;
 	} // end switch
+
 	return CMyDialog::WindowProc(message, wParam, lParam);
 } // CBaseDialog::WindowProc
 
@@ -219,7 +218,7 @@ void CBaseDialog::CreateDialogAndMenu(UINT nIDMenuResource, UINT uiClassMenuReso
 
 _Check_return_ bool CBaseDialog::HandleMenu(WORD wMenuSelect)
 {
-	DebugPrint(DBGMenu, _T("CBaseDialog::HandleMenu wMenuSelect = 0x%X = %u\n"), wMenuSelect, wMenuSelect);
+	DebugPrint(DBGMenu, L"CBaseDialog::HandleMenu wMenuSelect = 0x%X = %u\n", wMenuSelect, wMenuSelect);
 	switch (wMenuSelect)
 	{
 	case ID_HEXEDITOR: OnHexEditor(); return true;
@@ -351,7 +350,7 @@ _Check_return_ bool CBaseDialog::HandleKeyDown(UINT nChar, bool bShift, bool bCt
 		OnEscHit(); return true;
 		break;
 	case VK_RETURN:
-		DebugPrint(DBGMenu, _T("CBaseDialog::HandleKeyDown posting ID_DISPLAYSELECTEDITEM\n"));
+		DebugPrint(DBGMenu, L"CBaseDialog::HandleKeyDown posting ID_DISPLAYSELECTEDITEM\n");
 		PostMessage(WM_COMMAND, ID_DISPLAYSELECTEDITEM, NULL);
 		return true;
 		break;
@@ -818,7 +817,7 @@ void CBaseDialog::OnOpenEntryID(_In_opt_ LPSBinary lpBin)
 		if (lpUnk)
 		{
 			wstring szFlags = InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE);
-			DebugPrint(DBGGeneric, _T("OnOpenEntryID: Got object (%p) of type 0x%08X = %ws\n"), lpUnk, ulObjType, szFlags.c_str());
+			DebugPrint(DBGGeneric, L"OnOpenEntryID: Got object (%p) of type 0x%08X = %ws\n", lpUnk, ulObjType, szFlags.c_str());
 
 			LPMAPIPROP lpTemp = NULL;
 			WC_MAPI(lpUnk->QueryInterface(IID_IMAPIProp, (LPVOID*)&lpTemp));
@@ -1080,24 +1079,24 @@ void CBaseDialog::OnNotificationsOff()
 	{
 		switch (m_ulBaseAdviseObjectType)
 		{
-			case MAPI_SESSION:
-			{
-				LPMAPISESSION lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
-				if (lpMAPISession) EC_MAPI(lpMAPISession->Unadvise(m_ulBaseAdviseConnection));
-				break;
-			}
-			case MAPI_STORE:
-			{
-				LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release
-				if (lpMDB) EC_MAPI(lpMDB->Unadvise(m_ulBaseAdviseConnection));
-				break;
-			}
-			case MAPI_ADDRBOOK:
-			{
-				LPADRBOOK lpAB = m_lpMapiObjects->GetAddrBook(false); // do not release
-				if (lpAB) EC_MAPI(lpAB->Unadvise(m_ulBaseAdviseConnection));
-				break;
-			}
+		case MAPI_SESSION:
+		{
+			LPMAPISESSION lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
+			if (lpMAPISession) EC_MAPI(lpMAPISession->Unadvise(m_ulBaseAdviseConnection));
+			break;
+		}
+		case MAPI_STORE:
+		{
+			LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release
+			if (lpMDB) EC_MAPI(lpMDB->Unadvise(m_ulBaseAdviseConnection));
+			break;
+		}
+		case MAPI_ADDRBOOK:
+		{
+			LPADRBOOK lpAB = m_lpMapiObjects->GetAddrBook(false); // do not release
+			if (lpAB) EC_MAPI(lpAB->Unadvise(m_ulBaseAdviseConnection));
+			break;
+		}
 		}
 	}
 

@@ -136,7 +136,7 @@ void CAclDlg::OnAddItem()
 	WC_H(MyData.DisplayDialog());
 	if (S_OK != hRes)
 	{
-		DebugPrint(DBGGeneric,_T("OnAddItem cancelled.\n"));
+		DebugPrint(DBGGeneric,L"OnAddItem cancelled.\n");
 		return;
 	}
 

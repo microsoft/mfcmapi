@@ -148,7 +148,7 @@ _Check_return_ LPWSTR ErrorNameFromErrorCode(ULONG hrErr)
 void PrintSkipNote(HRESULT hRes, _In_z_ LPCSTR szFunc)
 {
 	DebugPrint(DBGHRes,
-		_T("Skipping %hs because hRes = 0x%8x = %ws.\n"), // STRING_OK
+		L"Skipping %hs because hRes = 0x%8x = %ws.\n", // STRING_OK
 		szFunc,
 		hRes,
 		ErrorNameFromErrorCode(hRes));

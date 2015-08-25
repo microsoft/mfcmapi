@@ -100,7 +100,7 @@ void LoadLegacyPropTags(
 
 void LoadSingleAddIn(_In_ LPADDIN lpAddIn, HMODULE hMod, _In_ LPLOADADDIN pfnLoadAddIn)
 {
-	DebugPrint(DBGAddInPlumbing, _T("Loading AddIn\n"));
+	DebugPrint(DBGAddInPlumbing, L"Loading AddIn\n");
 	if (!lpAddIn) return;
 	if (!pfnLoadAddIn) return;
 	HRESULT hRes = S_OK;
@@ -108,11 +108,11 @@ void LoadSingleAddIn(_In_ LPADDIN lpAddIn, HMODULE hMod, _In_ LPLOADADDIN pfnLoa
 	pfnLoadAddIn(&lpAddIn->szName);
 	if (lpAddIn->szName)
 	{
-		DebugPrint(DBGAddInPlumbing, _T("Loading \"%ws\"\n"), lpAddIn->szName);
+		DebugPrint(DBGAddInPlumbing, L"Loading \"%ws\"\n", lpAddIn->szName);
 	}
 
 	ULONG ulVersion = GetAddinVersion(hMod);
-	DebugPrint(DBGAddInPlumbing, _T("AddIn version = %u\n"), ulVersion);
+	DebugPrint(DBGAddInPlumbing, L"AddIn version = %u\n", ulVersion);
 
 	LPGETMENUS pfnGetMenus = NULL;
 	WC_D(pfnGetMenus, (LPGETMENUS)GetProcAddress(hMod, szGetMenus));
@@ -121,7 +121,7 @@ void LoadSingleAddIn(_In_ LPADDIN lpAddIn, HMODULE hMod, _In_ LPLOADADDIN pfnLoa
 		pfnGetMenus(&lpAddIn->ulMenu, &lpAddIn->lpMenu);
 		if (!lpAddIn->ulMenu || !lpAddIn->lpMenu)
 		{
-			DebugPrint(DBGAddInPlumbing, _T("AddIn returned invalid menus\n"));
+			DebugPrint(DBGAddInPlumbing, L"AddIn returned invalid menus\n");
 			lpAddIn->ulMenu = NULL;
 			lpAddIn->lpMenu = NULL;
 		}
@@ -133,12 +133,12 @@ void LoadSingleAddIn(_In_ LPADDIN lpAddIn, HMODULE hMod, _In_ LPLOADADDIN pfnLoa
 				// Save off our add-in struct
 				lpAddIn->lpMenu[ulMenu].lpAddIn = lpAddIn;
 				if (lpAddIn->lpMenu[ulMenu].szMenu)
-					DebugPrint(DBGAddInPlumbing, _T("Menu: %ws\n"), lpAddIn->lpMenu[ulMenu].szMenu);
+					DebugPrint(DBGAddInPlumbing, L"Menu: %ws\n", lpAddIn->lpMenu[ulMenu].szMenu);
 				if (lpAddIn->lpMenu[ulMenu].szHelp)
-					DebugPrint(DBGAddInPlumbing, _T("Help: %ws\n"), lpAddIn->lpMenu[ulMenu].szHelp);
-				DebugPrint(DBGAddInPlumbing, _T("ID: 0x%08X\n"), lpAddIn->lpMenu[ulMenu].ulID);
-				DebugPrint(DBGAddInPlumbing, _T("Context: 0x%08X\n"), lpAddIn->lpMenu[ulMenu].ulContext);
-				DebugPrint(DBGAddInPlumbing, _T("Flags: 0x%08X\n"), lpAddIn->lpMenu[ulMenu].ulFlags);
+					DebugPrint(DBGAddInPlumbing, L"Help: %ws\n", lpAddIn->lpMenu[ulMenu].szHelp);
+				DebugPrint(DBGAddInPlumbing, L"ID: 0x%08X\n", lpAddIn->lpMenu[ulMenu].ulID);
+				DebugPrint(DBGAddInPlumbing, L"Context: 0x%08X\n", lpAddIn->lpMenu[ulMenu].ulContext);
+				DebugPrint(DBGAddInPlumbing, L"Flags: 0x%08X\n", lpAddIn->lpMenu[ulMenu].ulFlags);
 			}
 		}
 	}
@@ -209,7 +209,7 @@ void LoadSingleAddIn(_In_ LPADDIN lpAddIn, HMODULE hMod, _In_ LPLOADADDIN pfnLoa
 		pfnGetSmartViewParserTypeArray(&lpAddIn->ulSmartViewParserTypes, &lpAddIn->lpSmartViewParserTypes);
 	}
 
-	DebugPrint(DBGAddInPlumbing, _T("Done loading AddIn\n"));
+	DebugPrint(DBGAddInPlumbing, L"Done loading AddIn\n");
 }
 
 class CFileList
@@ -370,14 +370,14 @@ bool CFileList::IsOnList(_In_z_ LPTSTR szDLL)
 
 void LoadAddIns()
 {
-	DebugPrint(DBGAddInPlumbing, _T("Loading AddIns\n"));
+	DebugPrint(DBGAddInPlumbing, L"Loading AddIns\n");
 	// First, we look at each DLL in the current dir and see if it exports 'LoadAddIn'
 	LPADDIN lpCurAddIn = NULL;
 	// Allocate space to hold information on all DLLs in the directory
 
 	if (!RegKeys[regkeyLOADADDINS].ulCurDWORD)
 	{
-		DebugPrint(DBGAddInPlumbing, _T("Bypassing add-in loading\n"));
+		DebugPrint(DBGAddInPlumbing, L"Bypassing add-in loading\n");
 	}
 	else
 	{
@@ -409,25 +409,25 @@ void LoadAddIns()
 #define SPECLEN 6 // for '\\*.dll'
 		if (szFilePath[0])
 		{
-			DebugPrint(DBGAddInPlumbing, _T("Current dir = \"%s\"\n"), szFilePath);
+			DebugPrint(DBGAddInPlumbing, L"Current dir = \"%ws\"\n", LPCTSTRToWstring(szFilePath).c_str());
 			hRes = StringCchCatN(szFilePath, MAX_PATH, _T("\\*.dll"), SPECLEN); // STRING_OK
 			if (SUCCEEDED(hRes))
 			{
-				DebugPrint(DBGAddInPlumbing, _T("File spec = \"%s\"\n"), szFilePath);
+				DebugPrint(DBGAddInPlumbing, L"File spec = \"%ws\"\n", LPCTSTRToWstring(szFilePath).c_str());
 
 				WIN32_FIND_DATA FindFileData = { 0 };
 				HANDLE hFind = FindFirstFile(szFilePath, &FindFileData);
 
 				if (hFind == INVALID_HANDLE_VALUE)
 				{
-					DebugPrint(DBGAddInPlumbing, _T("Invalid file handle. Error is %u.\n"), GetLastError());
+					DebugPrint(DBGAddInPlumbing, L"Invalid file handle. Error is %u.\n", GetLastError());
 				}
 				else
 				{
 					for (;;)
 					{
 						hRes = S_OK;
-						DebugPrint(DBGAddInPlumbing, _T("Examining \"%s\"\n"), FindFileData.cFileName);
+						DebugPrint(DBGAddInPlumbing, L"Examining \"%ws\"\n", LPCTSTRToWstring(FindFileData.cFileName).c_str());
 						HMODULE hMod = NULL;
 
 						// If we know the Add-in is good, just load it.
@@ -471,13 +471,13 @@ void LoadAddIns()
 						}
 						if (hMod)
 						{
-							DebugPrint(DBGAddInPlumbing, _T("Opened module\n"));
+							DebugPrint(DBGAddInPlumbing, L"Opened module\n");
 							LPLOADADDIN pfnLoadAddIn = NULL;
 							WC_D(pfnLoadAddIn, (LPLOADADDIN)GetProcAddress(hMod, szLoadAddIn));
 
 							if (pfnLoadAddIn && GetAddinVersion(hMod) == MFCMAPI_HEADER_CURRENT_VERSION)
 							{
-								DebugPrint(DBGAddInPlumbing, _T("Found an add-in\n"));
+								DebugPrint(DBGAddInPlumbing, L"Found an add-in\n");
 								// Add a node
 								if (!lpCurAddIn)
 								{
@@ -515,7 +515,7 @@ void LoadAddIns()
 					FindClose(hFind);
 					if (dwRet != ERROR_NO_MORE_FILES)
 					{
-						DebugPrint(DBGAddInPlumbing, _T("FindNextFile error. Error is %u.\n"), dwRet);
+						DebugPrint(DBGAddInPlumbing, L"FindNextFile error. Error is %u.\n", dwRet);
 					}
 				}
 			}
@@ -523,7 +523,7 @@ void LoadAddIns()
 	}
 
 	MergeAddInArrays();
-	DebugPrint(DBGAddInPlumbing, _T("Done loading AddIns\n"));
+	DebugPrint(DBGAddInPlumbing, L"Done loading AddIns\n");
 } // LoadAddIns
 
 void ResetArrays()
@@ -554,13 +554,13 @@ void ResetArrays()
 
 void UnloadAddIns()
 {
-	DebugPrint(DBGAddInPlumbing, _T("Unloading AddIns\n"));
+	DebugPrint(DBGAddInPlumbing, L"Unloading AddIns\n");
 	if (g_lpMyAddins)
 	{
 		LPADDIN lpCurAddIn = g_lpMyAddins;
 		while (lpCurAddIn)
 		{
-			DebugPrint(DBGAddInPlumbing, _T("Freeing add-in\n"));
+			DebugPrint(DBGAddInPlumbing, L"Freeing add-in\n");
 			if (lpCurAddIn->bLegacyPropTags)
 			{
 				delete[] lpCurAddIn->lpPropTags;
@@ -570,7 +570,7 @@ void UnloadAddIns()
 				HRESULT hRes = S_OK;
 				if (lpCurAddIn->szName)
 				{
-					DebugPrint(DBGAddInPlumbing, _T("Unloading \"%ws\"\n"), lpCurAddIn->szName);
+					DebugPrint(DBGAddInPlumbing, L"Unloading \"%ws\"\n", lpCurAddIn->szName);
 				}
 				LPUNLOADADDIN pfnUnLoadAddIn = NULL;
 				WC_D(pfnUnLoadAddIn, (LPUNLOADADDIN)GetProcAddress(lpCurAddIn->hMod, szUnloadAddIn));
@@ -586,7 +586,7 @@ void UnloadAddIns()
 
 	ResetArrays();
 
-	DebugPrint(DBGAddInPlumbing, _T("Done unloading AddIns\n"));
+	DebugPrint(DBGAddInPlumbing, L"Done unloading AddIns\n");
 } // UnloadAddIns
 
 #ifndef MRMAPI
@@ -594,7 +594,7 @@ void UnloadAddIns()
 // Returns number of menu items added
 _Check_return_ ULONG ExtendAddInMenu(HMENU hMenu, ULONG ulAddInContext)
 {
-	DebugPrint(DBGAddInPlumbing, _T("Extending menus, ulAddInContext = 0x%08X\n"), ulAddInContext);
+	DebugPrint(DBGAddInPlumbing, L"Extending menus, ulAddInContext = 0x%08X\n", ulAddInContext);
 	HMENU hAddInMenu = NULL;
 
 	UINT uidCurMenu = ID_ADDINMENU;
@@ -609,13 +609,13 @@ _Check_return_ ULONG ExtendAddInMenu(HMENU hMenu, ULONG ulAddInContext)
 		LPADDIN lpCurAddIn = g_lpMyAddins;
 		while (lpCurAddIn)
 		{
-			DebugPrint(DBGAddInPlumbing, _T("Examining add-in for menus\n"));
+			DebugPrint(DBGAddInPlumbing, L"Examining add-in for menus\n");
 			if (lpCurAddIn->hMod)
 			{
 				HRESULT hRes = S_OK;
 				if (lpCurAddIn->szName)
 				{
-					DebugPrint(DBGAddInPlumbing, _T("Examining \"%ws\"\n"), lpCurAddIn->szName);
+					DebugPrint(DBGAddInPlumbing, L"Examining \"%ws\"\n", lpCurAddIn->szName);
 				}
 				ULONG ulMenu = 0;
 				for (ulMenu = 0; ulMenu < lpCurAddIn->ulMenu && SUCCEEDED(hRes); ulMenu++)
@@ -624,8 +624,8 @@ _Check_return_ ULONG ExtendAddInMenu(HMENU hMenu, ULONG ulAddInContext)
 						(lpCurAddIn->lpMenu[ulMenu].ulFlags & MENU_FLAGS_MULTISELECT))
 					{
 						// Invalid combo of flags - don't add the menu
-						DebugPrint(DBGAddInPlumbing, _T("Invalid flags on menu \"%ws\" in add-in \"%ws\"\n"), lpCurAddIn->lpMenu[ulMenu].szMenu, lpCurAddIn->szName);
-						DebugPrint(DBGAddInPlumbing, _T("MENU_FLAGS_SINGLESELECT and MENU_FLAGS_MULTISELECT cannot be combined\n"));
+						DebugPrint(DBGAddInPlumbing, L"Invalid flags on menu \"%ws\" in add-in \"%ws\"\n", lpCurAddIn->lpMenu[ulMenu].szMenu, lpCurAddIn->szName);
+						DebugPrint(DBGAddInPlumbing, L"MENU_FLAGS_SINGLESELECT and MENU_FLAGS_MULTISELECT cannot be combined\n");
 						continue;
 					}
 					if (lpCurAddIn->lpMenu[ulMenu].ulContext & ulAddInContext)
@@ -671,7 +671,7 @@ _Check_return_ ULONG ExtendAddInMenu(HMENU hMenu, ULONG ulAddInContext)
 			lpCurAddIn = lpCurAddIn->lpNextAddIn;
 		}
 	}
-	DebugPrint(DBGAddInPlumbing, _T("Done extending menus\n"));
+	DebugPrint(DBGAddInPlumbing, L"Done extending menus\n");
 	return uidCurMenu - ID_ADDINMENU;
 } // ExtendAddInMenu
 
@@ -714,7 +714,7 @@ void InvokeAddInMenu(_In_opt_ LPADDINMENUPARAMS lpParams)
 
 	if (!lpParams->lpAddInMenu->lpAddIn->pfnCallMenu)
 	{
-		DebugPrint(DBGAddInPlumbing, _T("InvokeAddInMenu: CallMenu not found\n"));
+		DebugPrint(DBGAddInPlumbing, L"InvokeAddInMenu: CallMenu not found\n");
 		return;
 	}
 
@@ -945,17 +945,17 @@ void MergeFlagArrays(
 // Assumes built in arrays are already sorted!
 void MergeAddInArrays()
 {
-	DebugPrint(DBGAddInPlumbing, _T("Merging Add-In arrays\n"));
+	DebugPrint(DBGAddInPlumbing, L"Merging Add-In arrays\n");
 
 	ResetArrays();
 
-	DebugPrint(DBGAddInPlumbing, _T("Found 0x%08X built in prop tags.\n"), g_ulPropTagArray);
-	DebugPrint(DBGAddInPlumbing, _T("Found 0x%08X built in prop types.\n"), g_ulPropTypeArray);
-	DebugPrint(DBGAddInPlumbing, _T("Found 0x%08X built in guids.\n"), g_ulPropGuidArray);
-	DebugPrint(DBGAddInPlumbing, _T("Found 0x%08X built in named ids.\n"), g_ulNameIDArray);
-	DebugPrint(DBGAddInPlumbing, _T("Found 0x%08X built in flags.\n"), g_ulFlagArray);
-	DebugPrint(DBGAddInPlumbing, _T("Found 0x%08X built in Smart View parsers.\n"), g_ulSmartViewParserArray);
-	DebugPrint(DBGAddInPlumbing, _T("Found 0x%08X built in Smart View parser types.\n"), g_ulSmartViewParserTypeArray);
+	DebugPrint(DBGAddInPlumbing, L"Found 0x%08X built in prop tags.\n", g_ulPropTagArray);
+	DebugPrint(DBGAddInPlumbing, L"Found 0x%08X built in prop types.\n", g_ulPropTypeArray);
+	DebugPrint(DBGAddInPlumbing, L"Found 0x%08X built in guids.\n", g_ulPropGuidArray);
+	DebugPrint(DBGAddInPlumbing, L"Found 0x%08X built in named ids.\n", g_ulNameIDArray);
+	DebugPrint(DBGAddInPlumbing, L"Found 0x%08X built in flags.\n", g_ulFlagArray);
+	DebugPrint(DBGAddInPlumbing, L"Found 0x%08X built in Smart View parsers.\n", g_ulSmartViewParserArray);
+	DebugPrint(DBGAddInPlumbing, L"Found 0x%08X built in Smart View parser types.\n", g_ulSmartViewParserTypeArray);
 
 	// No add-in == nothing to merge
 	if (!g_lpMyAddins) return;
@@ -966,14 +966,14 @@ void MergeAddInArrays()
 	LPADDIN lpCurAddIn = g_lpMyAddins;
 	while (lpCurAddIn)
 	{
-		DebugPrint(DBGAddInPlumbing, _T("Looking at %ws\n"), lpCurAddIn->szName);
-		DebugPrint(DBGAddInPlumbing, _T("Found 0x%08X prop tags.\n"), lpCurAddIn->ulPropTags);
-		DebugPrint(DBGAddInPlumbing, _T("Found 0x%08X prop types.\n"), lpCurAddIn->ulPropTypes);
-		DebugPrint(DBGAddInPlumbing, _T("Found 0x%08X guids.\n"), lpCurAddIn->ulPropGuids);
-		DebugPrint(DBGAddInPlumbing, _T("Found 0x%08X named ids.\n"), lpCurAddIn->ulNameIDs);
-		DebugPrint(DBGAddInPlumbing, _T("Found 0x%08X flags.\n"), lpCurAddIn->ulPropFlags);
-		DebugPrint(DBGAddInPlumbing, _T("Found 0x%08X Smart View parsers.\n"), lpCurAddIn->ulSmartViewParsers);
-		DebugPrint(DBGAddInPlumbing, _T("Found 0x%08X Smart View parser types.\n"), lpCurAddIn->ulSmartViewParserTypes);
+		DebugPrint(DBGAddInPlumbing, L"Looking at %ws\n", lpCurAddIn->szName);
+		DebugPrint(DBGAddInPlumbing, L"Found 0x%08X prop tags.\n", lpCurAddIn->ulPropTags);
+		DebugPrint(DBGAddInPlumbing, L"Found 0x%08X prop types.\n", lpCurAddIn->ulPropTypes);
+		DebugPrint(DBGAddInPlumbing, L"Found 0x%08X guids.\n", lpCurAddIn->ulPropGuids);
+		DebugPrint(DBGAddInPlumbing, L"Found 0x%08X named ids.\n", lpCurAddIn->ulNameIDs);
+		DebugPrint(DBGAddInPlumbing, L"Found 0x%08X flags.\n", lpCurAddIn->ulPropFlags);
+		DebugPrint(DBGAddInPlumbing, L"Found 0x%08X Smart View parsers.\n", lpCurAddIn->ulSmartViewParsers);
+		DebugPrint(DBGAddInPlumbing, L"Found 0x%08X Smart View parser types.\n", lpCurAddIn->ulSmartViewParserTypes);
 		ulAddInPropGuidArray += lpCurAddIn->ulPropGuids;
 		lpCurAddIn = lpCurAddIn->lpNextAddIn;
 	}
@@ -1124,14 +1124,14 @@ void MergeAddInArrays()
 		lpCurAddIn = lpCurAddIn->lpNextAddIn;
 	}
 
-	DebugPrint(DBGAddInPlumbing, _T("After merge, 0x%08X prop tags.\n"), ulPropTagArray);
-	DebugPrint(DBGAddInPlumbing, _T("After merge, 0x%08X prop types.\n"), ulPropTypeArray);
-	DebugPrint(DBGAddInPlumbing, _T("After merge, 0x%08X guids.\n"), ulPropGuidArray);
-	DebugPrint(DBGAddInPlumbing, _T("After merge, 0x%08X flags.\n"), ulFlagArray);
-	DebugPrint(DBGAddInPlumbing, _T("After merge, 0x%08X Smart View parsers.\n"), ulSmartViewParserArray);
-	DebugPrint(DBGAddInPlumbing, _T("After merge, 0x%08X Smart View parser types.\n"), ulSmartViewParserTypeArray);
+	DebugPrint(DBGAddInPlumbing, L"After merge, 0x%08X prop tags.\n", ulPropTagArray);
+	DebugPrint(DBGAddInPlumbing, L"After merge, 0x%08X prop types.\n", ulPropTypeArray);
+	DebugPrint(DBGAddInPlumbing, L"After merge, 0x%08X guids.\n", ulPropGuidArray);
+	DebugPrint(DBGAddInPlumbing, L"After merge, 0x%08X flags.\n", ulFlagArray);
+	DebugPrint(DBGAddInPlumbing, L"After merge, 0x%08X Smart View parsers.\n", ulSmartViewParserArray);
+	DebugPrint(DBGAddInPlumbing, L"After merge, 0x%08X Smart View parser types.\n", ulSmartViewParserTypeArray);
 
-	DebugPrint(DBGAddInPlumbing, _T("Done merging add-in arrays\n"));
+	DebugPrint(DBGAddInPlumbing, L"Done merging add-in arrays\n");
 }
 
 __declspec(dllexport) void __cdecl AddInLog(bool bPrintThreadTime, _Printf_format_string_ LPWSTR szMsg, ...)
@@ -1307,12 +1307,12 @@ _Check_return_ __declspec(dllexport) HRESULT __cdecl ComplexDialog(_In_ LPADDIND
 					i,
 					lpDialog->lpDialogControls[i].ulDefaultNum);
 				break;
-		}
+			}
 
 			// Do this after initializing controls so we have our label status set correctly.
 			MyComplexDialog.SetAddInLabel(i, lpDialog->lpDialogControls[i].szLabel);
+		}
 	}
-}
 
 	WC_H(MyComplexDialog.DisplayDialog());
 
@@ -1418,7 +1418,7 @@ wstring AddInStructTypeToString(__ParsingTypeEnum iStructType)
 	ULONG i = 0;
 	for (i = 0; i < ulSmartViewParserTypeArray; i++)
 	{
-		if (SmartViewParserTypeArray[i].ulValue == (ULONG) iStructType)
+		if (SmartViewParserTypeArray[i].ulValue == (ULONG)iStructType)
 		{
 			return SmartViewParserTypeArray[i].lpszName;
 		}
@@ -1430,7 +1430,7 @@ wstring AddInStructTypeToString(__ParsingTypeEnum iStructType)
 wstring AddInSmartView(__ParsingTypeEnum iStructType, ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
 	// Don't let add-ins hijack our built in types
-	if (iStructType <= IDS_STEND-1) return L"";
+	if (iStructType <= IDS_STEND - 1) return L"";
 
 	wstring szStructType = AddInStructTypeToString(iStructType);
 	if (szStructType.empty()) return L"";

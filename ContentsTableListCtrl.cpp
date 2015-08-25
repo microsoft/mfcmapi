@@ -912,7 +912,7 @@ void CContentsTableListCtrl::BuildDataItem(_In_ LPSRow lpsRowData, _Inout_ SortL
 		PR_ATTACH_NUM);
 	if (lpProp && PR_ATTACH_NUM == lpProp->ulPropTag)
 	{
-		DebugPrint(DBGGeneric, _T("\tPR_ATTACH_NUM = %d\n"), lpProp->Value.l);
+		DebugPrint(DBGGeneric, L"\tPR_ATTACH_NUM = %d\n", lpProp->Value.l);
 		lpData->data.Contents.ulAttachNum = lpProp->Value.l;
 	}
 
@@ -922,7 +922,7 @@ void CContentsTableListCtrl::BuildDataItem(_In_ LPSRow lpsRowData, _Inout_ SortL
 		PR_ATTACH_METHOD);
 	if (lpProp && PR_ATTACH_METHOD == lpProp->ulPropTag)
 	{
-		DebugPrint(DBGGeneric, _T("\tPR_ATTACH_METHOD = %d\n"), lpProp->Value.l);
+		DebugPrint(DBGGeneric, L"\tPR_ATTACH_METHOD = %d\n", lpProp->Value.l);
 		lpData->data.Contents.ulAttachMethod = lpProp->Value.l;
 	}
 
@@ -933,7 +933,7 @@ void CContentsTableListCtrl::BuildDataItem(_In_ LPSRow lpsRowData, _Inout_ SortL
 		PR_ROWID);
 	if (lpProp && PR_ROWID == lpProp->ulPropTag)
 	{
-		DebugPrint(DBGGeneric, _T("\tPR_ROWID = %d\n"), lpProp->Value.l);
+		DebugPrint(DBGGeneric, L"\tPR_ROWID = %d\n", lpProp->Value.l);
 		lpData->data.Contents.ulRowID = lpProp->Value.l;
 	}
 
@@ -944,7 +944,7 @@ void CContentsTableListCtrl::BuildDataItem(_In_ LPSRow lpsRowData, _Inout_ SortL
 		PR_ROW_TYPE);
 	if (lpProp && PR_ROW_TYPE == lpProp->ulPropTag)
 	{
-		DebugPrint(DBGGeneric, _T("\tPR_ROW_TYPE = %d\n"), lpProp->Value.l);
+		DebugPrint(DBGGeneric, L"\tPR_ROW_TYPE = %d\n", lpProp->Value.l);
 		lpData->data.Contents.ulRowType = lpProp->Value.l;
 	}
 
@@ -1013,7 +1013,7 @@ void CContentsTableListCtrl::BuildDataItem(_In_ LPSRow lpsRowData, _Inout_ SortL
 		PR_DISPLAY_NAME_A); // We pull this properties for profiles, which do not support Unicode
 	if (CheckStringProp(lpProp, PT_STRING8))
 	{
-		DebugPrint(DBGGeneric, _T("\tPR_DISPLAY_NAME_A = %hs\n"), lpProp->Value.lpszA);
+		DebugPrint(DBGGeneric, L"\tPR_DISPLAY_NAME_A = %hs\n", lpProp->Value.lpszA);
 
 		EC_H(CopyStringA(
 			&lpData->data.Contents.szProfileDisplayName,
@@ -1028,7 +1028,7 @@ void CContentsTableListCtrl::BuildDataItem(_In_ LPSRow lpsRowData, _Inout_ SortL
 		PR_EMAIL_ADDRESS);
 	if (CheckStringProp(lpProp, PT_TSTRING))
 	{
-		DebugPrint(DBGGeneric, _T("\tPR_EMAIL_ADDRESS = %s\n"), lpProp->Value.LPSZ);
+		DebugPrint(DBGGeneric, L"\tPR_EMAIL_ADDRESS = %ws\n", LPCTSTRToWstring(lpProp->Value.LPSZ).c_str());
 		EC_H(CopyString(
 			&lpData->data.Contents.szDN,
 			lpProp->Value.LPSZ,
@@ -1398,7 +1398,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::DefaultOpenItemProp(
 	lpEID = lpListData->data.Contents.lpEntryID;
 	if (!lpEID || (lpEID->cb == 0)) return S_OK;
 
-	DebugPrint(DBGGeneric, _T("Item being opened:\n"));
+	DebugPrint(DBGGeneric, L"Item being opened:\n");
 	DebugPrintBinary(DBGGeneric, lpEID);
 
 	// Find the highlighted item EID
@@ -1406,64 +1406,64 @@ _Check_return_ HRESULT CContentsTableListCtrl::DefaultOpenItemProp(
 	{
 	case (MAPI_ABCONT) :
 	{
-						   LPADRBOOK lpAB = m_lpMapiObjects->GetAddrBook(false); // do not release
-						   WC_H(CallOpenEntry(
-							   NULL,
-							   lpAB, // use AB
-							   NULL,
-							   NULL,
-							   lpEID,
-							   NULL,
-							   (bModify == mfcmapiREQUEST_MODIFY) ? MAPI_MODIFY : MAPI_BEST_ACCESS,
-							   NULL,
-							   (LPUNKNOWN*)lppProp));
+		LPADRBOOK lpAB = m_lpMapiObjects->GetAddrBook(false); // do not release
+		WC_H(CallOpenEntry(
+			NULL,
+			lpAB, // use AB
+			NULL,
+			NULL,
+			lpEID,
+			NULL,
+			(bModify == mfcmapiREQUEST_MODIFY) ? MAPI_MODIFY : MAPI_BEST_ACCESS,
+			NULL,
+			(LPUNKNOWN*)lppProp));
 	}
 					   break;
 	case(MAPI_FOLDER) :
 	{
-						  LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release
-						  LPCIID lpInterface = NULL;
+		LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release
+		LPCIID lpInterface = NULL;
 
-						  if (RegKeys[regkeyUSE_MESSAGERAW].ulCurDWORD)
-						  {
-							  lpInterface = &IID_IMessageRaw;
-						  }
+		if (RegKeys[regkeyUSE_MESSAGERAW].ulCurDWORD)
+		{
+			lpInterface = &IID_IMessageRaw;
+		}
 
-						  WC_H(CallOpenEntry(
-							  lpMDB, // use MDB
-							  NULL,
-							  NULL,
-							  NULL,
-							  lpEID,
-							  lpInterface,
-							  (bModify == mfcmapiREQUEST_MODIFY) ? MAPI_MODIFY : MAPI_BEST_ACCESS,
-							  NULL,
-							  (LPUNKNOWN*)lppProp));
-						  if (MAPI_E_INTERFACE_NOT_SUPPORTED == hRes && RegKeys[regkeyUSE_MESSAGERAW].ulCurDWORD)
-						  {
-							  ErrDialog(__FILE__, __LINE__, IDS_EDMESSAGERAWNOTSUPPORTED);
-						  }
+		WC_H(CallOpenEntry(
+			lpMDB, // use MDB
+			NULL,
+			NULL,
+			NULL,
+			lpEID,
+			lpInterface,
+			(bModify == mfcmapiREQUEST_MODIFY) ? MAPI_MODIFY : MAPI_BEST_ACCESS,
+			NULL,
+			(LPUNKNOWN*)lppProp));
+		if (MAPI_E_INTERFACE_NOT_SUPPORTED == hRes && RegKeys[regkeyUSE_MESSAGERAW].ulCurDWORD)
+		{
+			ErrDialog(__FILE__, __LINE__, IDS_EDMESSAGERAWNOTSUPPORTED);
+		}
 	}
 					  break;
 	default:
 	{
-			   LPMAPISESSION lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
-			   WC_H(CallOpenEntry(
-				   NULL,
-				   NULL,
-				   NULL,
-				   lpMAPISession, // use session
-				   lpEID,
-				   NULL,
-				   (bModify == mfcmapiREQUEST_MODIFY) ? MAPI_MODIFY : MAPI_BEST_ACCESS,
-				   NULL,
-				   (LPUNKNOWN*)lppProp));
+		LPMAPISESSION lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
+		WC_H(CallOpenEntry(
+			NULL,
+			NULL,
+			NULL,
+			lpMAPISession, // use session
+			lpEID,
+			NULL,
+			(bModify == mfcmapiREQUEST_MODIFY) ? MAPI_MODIFY : MAPI_BEST_ACCESS,
+			NULL,
+			(LPUNKNOWN*)lppProp));
 	}
-		break;
+	break;
 	}
 	if (!*lppProp && FAILED(hRes) && mfcmapiREQUEST_MODIFY == bModify && MAPI_E_NOT_FOUND != hRes)
 	{
-		DebugPrint(DBGGeneric, _T("\tOpenEntry failed: 0x%X. Will try again without MAPI_MODIFY\n"), hRes);
+		DebugPrint(DBGGeneric, L"\tOpenEntry failed: 0x%X. Will try again without MAPI_MODIFY\n", hRes);
 		// We got access denied when we passed MAPI_MODIFY
 		// Let's try again without it.
 		hRes = S_OK;
@@ -1475,7 +1475,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::DefaultOpenItemProp(
 
 	if (MAPI_E_NOT_FOUND == hRes)
 	{
-		DebugPrint(DBGGeneric, _T("\tDefaultOpenItemProp encountered an entry ID for an item that doesn't exist\n\tThis happens often when we're deleting items.\n"));
+		DebugPrint(DBGGeneric, L"\tDefaultOpenItemProp encountered an entry ID for an item that doesn't exist\n\tThis happens often when we're deleting items.\n");
 		hRes = S_OK;
 	}
 
@@ -1592,7 +1592,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::NotificationOn()
 		{
 			if (m_lpAdviseSink) m_lpAdviseSink->Release();
 			m_lpAdviseSink = NULL;
-			DebugPrint(DBGGeneric, _T("This table doesn't support notifications\n"));
+			DebugPrint(DBGGeneric, L"This table doesn't support notifications\n");
 			hRes = S_OK; // mask the error
 		}
 		else if (S_OK == hRes)
@@ -1695,37 +1695,37 @@ _Check_return_ HRESULT CContentsTableListCtrl::DoExpandCollapse()
 		break;
 	case TBL_COLLAPSED_CATEGORY:
 	{
-								   if (lpData->data.Contents.lpInstanceKey)
-								   {
-									   LPSRowSet lpRowSet = NULL;
-									   ULONG ulRowsAdded = 0;
+		if (lpData->data.Contents.lpInstanceKey)
+		{
+			LPSRowSet lpRowSet = NULL;
+			ULONG ulRowsAdded = 0;
 
-									   EC_MAPI(m_lpContentsTable->ExpandRow(
-										   lpData->data.Contents.lpInstanceKey->cb,
-										   lpData->data.Contents.lpInstanceKey->lpb,
-										   256,
-										   NULL,
-										   &lpRowSet,
-										   &ulRowsAdded));
-									   if (S_OK == hRes && lpRowSet)
-									   {
-										   ULONG i = 0;
-										   for (i = 0; i < lpRowSet->cRows; i++)
-										   {
-											   // add the item to the NEXT slot
-											   EC_H(AddItemToListBox(iItem + i + 1, &lpRowSet->aRow[i]));
-											   // Since we handed the props off to the list box, null it out of the row set
-											   // so we don't free it later with FreeProws
-											   lpRowSet->aRow[i].lpProps = NULL;
-										   }
-									   }
-									   FreeProws(lpRowSet);
-									   lpData->data.Contents.ulRowType = TBL_EXPANDED_CATEGORY;
-									   lvItem.iImage = slIconNodeExpanded;
-									   bDidWork = true;
-								   }
+			EC_MAPI(m_lpContentsTable->ExpandRow(
+				lpData->data.Contents.lpInstanceKey->cb,
+				lpData->data.Contents.lpInstanceKey->lpb,
+				256,
+				NULL,
+				&lpRowSet,
+				&ulRowsAdded));
+			if (S_OK == hRes && lpRowSet)
+			{
+				ULONG i = 0;
+				for (i = 0; i < lpRowSet->cRows; i++)
+				{
+					// add the item to the NEXT slot
+					EC_H(AddItemToListBox(iItem + i + 1, &lpRowSet->aRow[i]));
+					// Since we handed the props off to the list box, null it out of the row set
+					// so we don't free it later with FreeProws
+					lpRowSet->aRow[i].lpProps = NULL;
+				}
+			}
+			FreeProws(lpRowSet);
+			lpData->data.Contents.ulRowType = TBL_EXPANDED_CATEGORY;
+			lvItem.iImage = slIconNodeExpanded;
+			bDidWork = true;
+		}
 	}
-		break;
+	break;
 	case TBL_EXPANDED_CATEGORY:
 		if (lpData->data.Contents.lpInstanceKey)
 		{

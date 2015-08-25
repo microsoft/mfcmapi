@@ -249,7 +249,7 @@ _Check_return_ HRESULT CreateANRRestriction(ULONG ulPropTag,
 				lpAllocationParent));
 		}
 
-		DebugPrint(DBGGeneric, _T("CreateANRRestriction built restriction:\n"));
+		DebugPrint(DBGGeneric, L"CreateANRRestriction built restriction:\n");
 		DebugPrintRestriction(DBGGeneric, lpRes, NULL);
 
 		*lppRes = lpRes;
@@ -257,7 +257,7 @@ _Check_return_ HRESULT CreateANRRestriction(ULONG ulPropTag,
 
 	if (hRes != S_OK)
 	{
-		DebugPrint(DBGGeneric, _T("Failed to create restriction\n"));
+		DebugPrint(DBGGeneric, L"Failed to create restriction\n");
 		MAPIFreeBuffer(lpRes);
 		*lppRes = NULL;
 	}
@@ -340,7 +340,7 @@ _Check_return_ HRESULT ManualResolve(
 
 	if (!lpMAPISession) return MAPI_E_INVALID_PARAMETER;
 
-	DebugPrint(DBGGeneric, _T("ManualResolve: Asked to resolve \"%s\"\n"), szName);
+	DebugPrint(DBGGeneric, L"ManualResolve: Asked to resolve \"%ws\"\n", LPCTSTRToWstring(szName).c_str());
 
 	EC_MAPI(lpMAPISession->OpenAddressBook(
 		NULL,
@@ -370,7 +370,7 @@ _Check_return_ HRESULT ManualResolve(
 			// From this point forward, consider any error an error with the current address book container, so just continue and try the next one.
 			if (PR_ENTRYID == lpABRow->aRow->lpProps[abcPR_ENTRYID].ulPropTag)
 			{
-				DebugPrint(DBGGeneric, _T("ManualResolve: Searching this container\n"));
+				DebugPrint(DBGGeneric, L"ManualResolve: Searching this container\n");
 				DebugPrintBinary(DBGGeneric, &lpABRow->aRow->lpProps[abcPR_ENTRYID].Value.bin);
 
 				if (lpABContainer) lpABContainer->Release();
@@ -388,7 +388,7 @@ _Check_return_ HRESULT ManualResolve(
 					(LPUNKNOWN*)&lpABContainer));
 				if (!lpABContainer) continue;
 
-				DebugPrint(DBGGeneric, _T("ManualResolve: Object opened as 0x%X\n"), ulObjType);
+				DebugPrint(DBGGeneric, L"ManualResolve: Object opened as 0x%X\n", ulObjType);
 
 				if (lpABContainer && ulObjType == MAPI_ABCONT)
 				{
@@ -397,7 +397,7 @@ _Check_return_ HRESULT ManualResolve(
 					WC_MAPI(lpABContainer->GetContentsTable(fMapiUnicode, &pTable));
 					if (!pTable)
 					{
-						DebugPrint(DBGGeneric, _T("ManualResolve: Container did not support contents table\n"));
+						DebugPrint(DBGGeneric, L"ManualResolve: Container did not support contents table\n");
 						if (MAPI_E_NO_SUPPORT == hRes) hRes = S_OK;
 						continue;
 					}
@@ -528,7 +528,7 @@ _Check_return_ HRESULT SearchContentsTableForName(
 	*lppPropsFound = NULL;
 	if (!pTable || !szName) return MAPI_E_INVALID_PARAMETER;
 
-	DebugPrint(DBGGeneric, _T("SearchContentsTableForName: Looking for \"%s\"\n"), szName);
+	DebugPrint(DBGGeneric, L"SearchContentsTableForName: Looking for \"%ws\"\n", LPCTSTRToWstring(szName).c_str());
 
 	// Set a restriction so we only find close matches
 	LPSRestriction	lpSRes = NULL;
@@ -570,10 +570,10 @@ _Check_return_ HRESULT SearchContentsTableForName(
 		if (PropTagToCompare == pRows->aRow->lpProps[abPropTagToCompare].ulPropTag &&
 			CheckStringProp(&pRows->aRow->lpProps[abPropTagToCompare], PT_TSTRING))
 		{
-			DebugPrint(DBGGeneric, _T("SearchContentsTableForName: found \"%s\"\n"), pRows->aRow->lpProps[abPropTagToCompare].Value.LPSZ);
+			DebugPrint(DBGGeneric, L"SearchContentsTableForName: found \"%ws\"\n", LPCTSTRToWstring(pRows->aRow->lpProps[abPropTagToCompare].Value.LPSZ).c_str());
 			if (lstrcmpi(szName, pRows->aRow->lpProps[abPropTagToCompare].Value.LPSZ) == 0)
 			{
-				DebugPrint(DBGGeneric, _T("SearchContentsTableForName: This is an exact match!\n"));
+				DebugPrint(DBGGeneric, L"SearchContentsTableForName: This is an exact match!\n");
 				// We found a match! Return it!
 				EC_MAPI(ScDupPropset(
 					abNUM_COLS,
@@ -587,7 +587,7 @@ _Check_return_ HRESULT SearchContentsTableForName(
 
 	if (!*lppPropsFound)
 	{
-		DebugPrint(DBGGeneric, _T("SearchContentsTableForName: No exact match found.\n"));
+		DebugPrint(DBGGeneric, L"SearchContentsTableForName: No exact match found.\n");
 	}
 	MAPIFreeBuffer(lpSRes);
 	if (pRows) FreeProws(pRows);

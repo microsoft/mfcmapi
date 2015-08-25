@@ -13,9 +13,9 @@ void FileTimeToString(_In_ FILETIME* lpFileTime, _In_ wstring& PropString, _In_o
 _Check_return_ CString TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB, bool bSingleLine);
 wstring TypeToWstring(ULONG ulPropTag);
 _Check_return_ CString TypeToString(ULONG ulPropTag);
-_Check_return_ CString ProblemArrayToString(_In_ LPSPropProblemArray lpProblems);
+wstring ProblemArrayToString(_In_ LPSPropProblemArray lpProblems);
 wstring MAPIErrToString(ULONG ulFlags, _In_ LPMAPIERROR lpErr);
-_Check_return_ CString TnefProblemArrayToString(_In_ LPSTnefProblemArray lpError);
+wstring TnefProblemArrayToString(_In_ LPSTnefProblemArray lpError);
 
 // Free with FreeNameIDStrings
 void NameIDToStrings(

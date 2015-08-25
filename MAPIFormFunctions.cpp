@@ -171,7 +171,7 @@ _Check_return_ HRESULT OpenMessageNonModal(
 
 			if (lpMAPIFormMgr)
 			{
-				DebugPrint(DBGFormViewer,_T("Calling LoadForm: szMessageClass = %hs, ulMessageStatus = 0x%X, ulMessageFlags = 0x%X\n"),
+				DebugPrint(DBGFormViewer, L"Calling LoadForm: szMessageClass = %hs, ulMessageStatus = 0x%X, ulMessageFlags = 0x%X\n",
 					lpspvaShow[CLASS].Value.lpszA,
 					ulMessageStatus,
 					lpspvaShow[FLAGS].Value.ul);

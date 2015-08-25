@@ -676,7 +676,7 @@ _Check_return_ CString AllFlagsToString(const ULONG ulFlagName, bool bHex)
 _Check_return_ HRESULT GetLargeProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_ LPSPropValue* lppProp)
 {
 	if (!lpMAPIProp || !lppProp) return MAPI_E_INVALID_PARAMETER;
-	DebugPrint(DBGGeneric, _T("GetLargeProp getting buffer from 0x%08X\n"), ulPropTag);
+	DebugPrint(DBGGeneric, L"GetLargeProp getting buffer from 0x%08X\n", ulPropTag);
 
 	HRESULT hRes = S_OK;
 	ULONG cValues = 0;
@@ -694,7 +694,7 @@ _Check_return_ HRESULT GetLargeProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag,
 
 	if (lpPropArray && PT_ERROR == PROP_TYPE(lpPropArray->ulPropTag) && MAPI_E_NOT_ENOUGH_MEMORY == lpPropArray->Value.err)
 	{
-		DebugPrint(DBGGeneric, _T("GetLargeProp property reported in GetProps as large.\n"));
+		DebugPrint(DBGGeneric, L"GetLargeProp property reported in GetProps as large.\n");
 		MAPIFreeBuffer(lpPropArray);
 		lpPropArray = NULL;
 		// need to get the data as a stream
@@ -773,12 +773,12 @@ _Check_return_ HRESULT GetLargeProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag,
 	}
 	else if (lpPropArray && cValues == 1 && lpPropArray->ulPropTag == ulPropTag)
 	{
-		DebugPrint(DBGGeneric, _T("GetLargeProp GetProps found property.\n"));
+		DebugPrint(DBGGeneric, L"GetLargeProp GetProps found property.\n");
 		bSuccess = true;
 	}
 	else if (lpPropArray && PT_ERROR == PROP_TYPE(lpPropArray->ulPropTag))
 	{
-		DebugPrint(DBGGeneric, _T("GetLargeProp GetProps reported property as error 0x%08X.\n"), lpPropArray->Value.err);
+		DebugPrint(DBGGeneric, L"GetLargeProp GetProps reported property as error 0x%08X.\n", lpPropArray->Value.err);
 	}
 
 	if (bSuccess)

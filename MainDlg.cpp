@@ -115,7 +115,7 @@ END_MESSAGE_MAP()
 
 void CMainDlg::AddLoadMAPIMenus()//HMENU hMenu, ULONG ulAddInContext)
 {
-	DebugPrint(DBGLoadMAPI, _T("AddLoadMAPIMenus - Extending menus\n"));
+	DebugPrint(DBGLoadMAPI, L"AddLoadMAPIMenus - Extending menus\n");
 	HRESULT hRes = S_OK;
 
 	// Find the submenu with ID_LOADMAPI on it
@@ -137,7 +137,7 @@ void CMainDlg::AddLoadMAPIMenus()//HMENU hMenu, ULONG ulAddInContext)
 				szPath = mpi->GetNextMAPIPath();
 				if (!szPath) break;
 
-				DebugPrint(DBGLoadMAPI, _T("Found MAPI path %ws\n"), szPath);
+				DebugPrint(DBGLoadMAPI, L"Found MAPI path %ws\n", szPath);
 				LPMENUENTRY lpMenu = CreateMenuEntry(szPath);
 
 				EC_B(AppendMenu(
@@ -152,13 +152,13 @@ void CMainDlg::AddLoadMAPIMenus()//HMENU hMenu, ULONG ulAddInContext)
 		delete mpi;
 
 	}
-	DebugPrint(DBGLoadMAPI, _T("Done extending menus\n"));
+	DebugPrint(DBGLoadMAPI, L"Done extending menus\n");
 } // AddLoadMAPIMenus
 
 bool CMainDlg::InvokeLoadMAPIMenu(WORD wMenuSelect)
 {
 	if (wMenuSelect < ID_LOADMAPIMENUMIN || wMenuSelect > ID_LOADMAPIMENUMAX) return false;
-	DebugPrint(DBGLoadMAPI, _T("InvokeLoadMAPIMenu - got menu item %u\n"), wMenuSelect);
+	DebugPrint(DBGLoadMAPI, L"InvokeLoadMAPIMenu - got menu item %u\n", wMenuSelect);
 
 	HRESULT hRes = S_OK;
 	MENUITEMINFOW subMenu = { 0 };
@@ -173,7 +173,7 @@ bool CMainDlg::InvokeLoadMAPIMenu(WORD wMenuSelect)
 	if (subMenu.dwItemData)
 	{
 		LPMENUENTRY lme = (LPMENUENTRY)subMenu.dwItemData;
-		DebugPrint(DBGLoadMAPI, _T("Loading MAPI from %ws\n"), lme->m_pName);
+		DebugPrint(DBGLoadMAPI, L"Loading MAPI from %ws\n", lme->m_pName);
 		HMODULE hMAPI = NULL;
 		EC_D(hMAPI, MyLoadLibraryW(lme->m_pName));
 		SetMAPIHandle(hMAPI);
@@ -184,7 +184,7 @@ bool CMainDlg::InvokeLoadMAPIMenu(WORD wMenuSelect)
 
 _Check_return_ bool CMainDlg::HandleMenu(WORD wMenuSelect)
 {
-	DebugPrint(DBGMenu, _T("CMainDlg::HandleMenu wMenuSelect = 0x%X = %u\n"), wMenuSelect, wMenuSelect);
+	DebugPrint(DBGMenu, L"CMainDlg::HandleMenu wMenuSelect = 0x%X = %u\n", wMenuSelect, wMenuSelect);
 	if (HandleQuickStart(wMenuSelect, this, m_hWnd)) return true;
 	if (InvokeLoadMAPIMenu(wMenuSelect)) return true;
 
@@ -974,7 +974,7 @@ void CMainDlg::OnLogonWithFlags()
 	}
 	else
 	{
-		DebugPrint(DBGGeneric, _T("MAPILogonEx call cancelled.\n"));
+		DebugPrint(DBGGeneric, L"MAPILogonEx call cancelled.\n");
 	}
 } // CMainDlg::OnLogonWithFlags
 
@@ -1171,7 +1171,7 @@ void CMainDlg::OnDisplayMAPIPath()
 	HRESULT hRes = S_OK;
 	TCHAR   szMAPIPath[MAX_PATH] = { 0 };
 
-	DebugPrint(DBGGeneric, _T("OnDisplayMAPIPath()\n"));
+	DebugPrint(DBGGeneric, L"OnDisplayMAPIPath()\n");
 	HMODULE hMAPI = GetMAPIHandle();
 
 	CEditor MyData(
@@ -1935,7 +1935,7 @@ void CMainDlg::OnComputeGivenStoreHash()
 					if (fIsSet(DBGGeneric))
 					{
 						wstring szGUID = GUIDToString((LPCGUID)&emsmdbUID);
-						DebugPrint(DBGGeneric, _T("CMainDlg::OnComputeGivenStoreHash, emsmdbUID from PR_EMSMDB_SECTION_UID = %ws\n"), szGUID.c_str());
+						DebugPrint(DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, emsmdbUID from PR_EMSMDB_SECTION_UID = %ws\n", szGUID.c_str());
 					}
 					WC_MAPI(lpMAPISession->OpenProfileSection(&emsmdbUID, NULL, 0, &lpProfSect));
 				}
@@ -1963,9 +1963,9 @@ void CMainDlg::OnComputeGivenStoreHash()
 						fCached = ((lpConfigProp->Value.l & CONFIG_OST_CACHE_PUBLIC) == CONFIG_OST_CACHE_PUBLIC);
 					}
 				}
-				DebugPrint(DBGGeneric, _T("CMainDlg::OnComputeGivenStoreHash, fPrivateExchangeStore = %d\n"), fPrivateExchangeStore);
-				DebugPrint(DBGGeneric, _T("CMainDlg::OnComputeGivenStoreHash, fPublicExchangeStore = %d\n"), fPublicExchangeStore);
-				DebugPrint(DBGGeneric, _T("CMainDlg::OnComputeGivenStoreHash, fCached = %d\n"), fCached);
+				DebugPrint(DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, fPrivateExchangeStore = %d\n", fPrivateExchangeStore);
+				DebugPrint(DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, fPublicExchangeStore = %d\n", fPublicExchangeStore);
+				DebugPrint(DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, fCached = %d\n", fCached);
 
 				if (fCached)
 				{
@@ -1981,12 +1981,12 @@ void CMainDlg::OnComputeGivenStoreHash()
 						if (lpPathPropW && lpPathPropW->Value.lpszW)
 						{
 							wzPath = lpPathPropW->Value.lpszW;
-							DebugPrint(DBGGeneric, _T("CMainDlg::OnComputeGivenStoreHash, PR_PROFILE_OFFLINE_STORE_PATH_W = %ws\n"), wzPath);
+							DebugPrint(DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, PR_PROFILE_OFFLINE_STORE_PATH_W = %ws\n", wzPath);
 						}
 						else if (lpPathPropA && lpPathPropA->Value.lpszA)
 						{
 							szPath = lpPathPropA->Value.lpszA;
-							DebugPrint(DBGGeneric, _T("CMainDlg::OnComputeGivenStoreHash, PR_PROFILE_OFFLINE_STORE_PATH_A = %hs\n"), szPath);
+							DebugPrint(DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, PR_PROFILE_OFFLINE_STORE_PATH_A = %hs\n", szPath);
 						}
 					}
 					// If this is an Exchange store with an OST path, it's an OST, so we get the mapping signature
@@ -2014,9 +2014,9 @@ void CMainDlg::OnComputeGivenStoreHash()
 			{
 				szHash.FormatMessage(IDS_STOREHASHVAL, dwEIDHash);
 			}
-			DebugPrint(DBGGeneric, _T("CMainDlg::OnComputeGivenStoreHash, Entry ID hash = 0x%08X\n"), dwEIDHash);
+			DebugPrint(DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, Entry ID hash = 0x%08X\n", dwEIDHash);
 			if (dwSigHash)
-				DebugPrint(DBGGeneric, _T("CMainDlg::OnComputeGivenStoreHash, Mapping Signature hash = 0x%08X\n"), dwSigHash);
+				DebugPrint(DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, Mapping Signature hash = 0x%08X\n", dwSigHash);
 
 			CEditor Result(
 				this,
