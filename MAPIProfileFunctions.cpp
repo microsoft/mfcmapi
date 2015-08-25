@@ -25,7 +25,7 @@ void LaunchProfileWizard(
 {
 	HRESULT hRes = S_OK;
 
-	DebugPrint(DBGGeneric, _T("LaunchProfileWizard: Using LAUNCHWIZARDENTRY to launch wizard API.\n"));
+	DebugPrint(DBGGeneric, L"LaunchProfileWizard: Using LAUNCHWIZARDENTRY to launch wizard API.\n");
 
 	// Call LaunchWizard to add the service.
 	WC_MAPI(LaunchWizard(
@@ -42,7 +42,7 @@ void LaunchProfileWizard(
 
 	if (SUCCEEDED(hRes))
 	{
-		DebugPrint(DBGGeneric, _T("LaunchProfileWizard: Profile \"%hs\" configured.\n"), lpszNewProfileName);
+		DebugPrint(DBGGeneric, L"LaunchProfileWizard: Profile \"%hs\" configured.\n", lpszNewProfileName);
 	}
 } // LaunchProfileWizard
 
@@ -51,7 +51,7 @@ void DisplayMAPISVCPath(_In_ CWnd* pParentWnd)
 	HRESULT hRes = S_OK;
 	TCHAR   szServicesIni[MAX_PATH + 12] = { 0 }; // 12 = space for 'MAPISVC.INF'
 
-	DebugPrint(DBGGeneric, _T("DisplayMAPISVCPath()\n"));
+	DebugPrint(DBGGeneric, L"DisplayMAPISVCPath()\n");
 
 	GetMAPISVCPath(szServicesIni, _countof(szServicesIni));
 
@@ -290,7 +290,7 @@ _Check_return_ HRESULT HrSetProfileParameters(_In_ SERVICESINIREC *lpServicesIni
 	UINT	n = 0;
 	TCHAR	szPropNum[10] = { 0 };
 
-	DebugPrint(DBGGeneric, _T("HrSetProfileParameters()\n"));
+	DebugPrint(DBGGeneric, L"HrSetProfileParameters()\n");
 
 	if (!lpServicesIni) return MAPI_E_INVALID_PARAMETER;
 
@@ -302,7 +302,7 @@ _Check_return_ HRESULT HrSetProfileParameters(_In_ SERVICESINIREC *lpServicesIni
 	}
 	else
 	{
-		DebugPrint(DBGGeneric, _T("Writing to this file: \"%s\"\n"), szServicesIni);
+		DebugPrint(DBGGeneric, L"Writing to this file: \"%ws\"\n", LPCTSTRToWstring(szServicesIni).c_str());
 
 		//
 		// Loop through and add items to MAPISVC.INF
@@ -332,10 +332,10 @@ _Check_return_ HRESULT HrSetProfileParameters(_In_ SERVICESINIREC *lpServicesIni
 			// Write the item to MAPISVC.INF
 			//
 
-			DebugPrint(DBGGeneric, _T("\tWriting: \"%s\"::\"%s\"::\"%s\"\n"),
-				lpServicesIni[n].lpszSection,
-				lpszProp,
-				lpszValue);
+			DebugPrint(DBGGeneric, L"\tWriting: \"%ws\"::\"%ws\"::\"%ws\"\n",
+				LPCTSTRToWstring(lpServicesIni[n].lpszSection).c_str(),
+				LPCTSTRToWstring(lpszProp).c_str(),
+				LPCTSTRToWstring(lpszValue).c_str());
 
 			EC_B(WritePrivateProfileString(
 				lpServicesIni[n].lpszSection,
@@ -580,7 +580,7 @@ _Check_return_ HRESULT HrAddServiceToProfile(
 	LPSERVICEADMIN	lpServiceAdmin = NULL;
 	LPSRowSet		lpRowSet = NULL;
 
-	DebugPrint(DBGGeneric, _T("HrAddServiceToProfile(%hs,%hs)\n"), lpszServiceName, lpszProfileName);
+	DebugPrint(DBGGeneric, L"HrAddServiceToProfile(%hs,%hs)\n", lpszServiceName, lpszProfileName);
 
 	if (!lpszServiceName || !lpszProfileName) return MAPI_E_INVALID_PARAMETER;
 
@@ -683,7 +683,7 @@ _Check_return_ HRESULT HrAddExchangeToProfile(
 {
 	HRESULT			hRes = S_OK;
 
-	DebugPrint(DBGGeneric, _T("HrAddExchangeToProfile(%hs,%hs,%hs)\n"), lpszServerName, lpszMailboxName, lpszProfileName);
+	DebugPrint(DBGGeneric, L"HrAddExchangeToProfile(%hs,%hs,%hs)\n", lpszServerName, lpszMailboxName, lpszProfileName);
 
 	if (!lpszServerName || !lpszMailboxName || !lpszProfileName) return MAPI_E_INVALID_PARAMETER;
 
@@ -708,7 +708,7 @@ _Check_return_ HRESULT HrAddPSTToProfile(
 {
 	HRESULT			hRes = S_OK;
 
-	DebugPrint(DBGGeneric, _T("HrAddPSTToProfile(0x%X,%s,%hs,0x%X,%hs)\n"), bUnicodePST, lpszPSTPath, lpszProfileName, bPasswordSet, lpszPassword);
+	DebugPrint(DBGGeneric, L"HrAddPSTToProfile(0x%X,%ws,%hs,0x%X,%hs)\n", bUnicodePST, LPCTSTRToWstring(lpszPSTPath).c_str(), lpszProfileName, bPasswordSet, lpszPassword);
 
 	if (!lpszPSTPath || !lpszProfileName) return MAPI_E_INVALID_PARAMETER;
 
@@ -740,7 +740,7 @@ _Check_return_ HRESULT HrCreateProfile(
 	HRESULT			hRes = S_OK;
 	LPPROFADMIN		lpProfAdmin = NULL;
 
-	DebugPrint(DBGGeneric, _T("HrCreateProfile(%hs)\n"), lpszProfileName);
+	DebugPrint(DBGGeneric, L"HrCreateProfile(%hs)\n", lpszProfileName);
 
 	if (!lpszProfileName) return MAPI_E_INVALID_PARAMETER;
 
@@ -775,7 +775,7 @@ _Check_return_ HRESULT HrRemoveProfile(
 	HRESULT		hRes = S_OK;
 	LPPROFADMIN	lpProfAdmin = NULL;
 
-	DebugPrint(DBGGeneric, _T("HrRemoveProfile(%hs)\n"), lpszProfileName);
+	DebugPrint(DBGGeneric, L"HrRemoveProfile(%hs)\n", lpszProfileName);
 	if (!lpszProfileName) return MAPI_E_INVALID_PARAMETER;
 
 	EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
@@ -800,7 +800,7 @@ _Check_return_ HRESULT HrSetDefaultProfile(
 	HRESULT hRes = S_OK;
 	LPPROFADMIN lpProfAdmin = NULL;
 
-	DebugPrint(DBGGeneric, _T("HrRemoveProfile(%hs)\n"), lpszProfileName);
+	DebugPrint(DBGGeneric, L"HrRemoveProfile(%hs)\n", lpszProfileName);
 	if (!lpszProfileName) return MAPI_E_INVALID_PARAMETER;
 
 	EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
@@ -835,7 +835,7 @@ _Check_return_ HRESULT HrMAPIProfileExists(
 		PR_DISPLAY_NAME_A
 	};
 
-	DebugPrint(DBGGeneric, _T("HrMAPIProfileExists()\n"));
+	DebugPrint(DBGGeneric, L"HrMAPIProfileExists()\n");
 	if (!lpProfAdmin || !lpszProfileName) return MAPI_E_INVALID_PARAMETER;
 
 	// Get a table of existing profiles
@@ -914,7 +914,7 @@ _Check_return_ HRESULT GetProfileServiceVersion(_In_z_ LPCSTR lpszProfileName,
 	LPPROFADMIN    lpProfAdmin = NULL;
 	LPSERVICEADMIN lpServiceAdmin = NULL;
 
-	DebugPrint(DBGGeneric, _T("GetProfileServiceVersion(%hs)\n"), lpszProfileName);
+	DebugPrint(DBGGeneric, L"GetProfileServiceVersion(%hs)\n", lpszProfileName);
 
 	EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
 	if (!lpProfAdmin) return hRes;
@@ -955,9 +955,9 @@ _Check_return_ HRESULT GetProfileServiceVersion(_In_z_ LPCSTR lpszProfileName,
 				PR_PROFILE_SERVER_FULL_VERSION == lpServerFullVersion->ulPropTag &&
 				sizeof(EXCHANGE_STORE_VERSION_NUM) == lpServerFullVersion->Value.bin.cb)
 			{
-				DebugPrint(DBGGeneric, _T("PR_PROFILE_SERVER_FULL_VERSION = "));
+				DebugPrint(DBGGeneric, L"PR_PROFILE_SERVER_FULL_VERSION = ");
 				DebugPrintBinary(DBGGeneric, &lpServerFullVersion->Value.bin);
-				DebugPrint(DBGGeneric, _T("\n"));
+				DebugPrint(DBGGeneric, L"\n");
 
 				memcpy(lpStoreVersion, lpServerFullVersion->Value.bin.lpb, sizeof(EXCHANGE_STORE_VERSION_NUM));
 				*lpbFoundServerFullVersion = true;
@@ -986,7 +986,7 @@ _Check_return_ HRESULT HrCopyProfile(_In_z_ LPCSTR lpszOldProfileName,
 	HRESULT hRes = S_OK;
 	LPPROFADMIN lpProfAdmin = NULL;
 
-	DebugPrint(DBGGeneric, _T("HrCopyProfile(%hs, %hs)\n"), lpszOldProfileName, lpszNewProfileName);
+	DebugPrint(DBGGeneric, L"HrCopyProfile(%hs, %hs)\n", lpszOldProfileName, lpszNewProfileName);
 	if (!lpszOldProfileName || !lpszNewProfileName) return MAPI_E_INVALID_PARAMETER;
 
 	EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
@@ -1006,9 +1006,9 @@ _Check_return_ HRESULT OpenProfileSection(_In_ LPSERVICEADMIN lpServiceAdmin, _I
 {
 	HRESULT		hRes = S_OK;
 
-	DebugPrint(DBGOpenItemProp, _T("OpenProfileSection opening lpServiceUID = "));
+	DebugPrint(DBGOpenItemProp, L"OpenProfileSection opening lpServiceUID = ");
 	DebugPrintBinary(DBGOpenItemProp, lpServiceUID);
-	DebugPrint(DBGOpenItemProp, _T("\n"));
+	DebugPrint(DBGOpenItemProp, L"\n");
 
 	if (!lpServiceUID || !lpServiceAdmin || !lppProfSect) return MAPI_E_INVALID_PARAMETER;
 	*lppProfSect = NULL;
@@ -1063,9 +1063,9 @@ _Check_return_ HRESULT OpenProfileSection(_In_ LPPROVIDERADMIN lpProviderAdmin, 
 {
 	HRESULT			hRes = S_OK;
 
-	DebugPrint(DBGOpenItemProp, _T("OpenProfileSection opening lpServiceUID = "));
+	DebugPrint(DBGOpenItemProp, L"OpenProfileSection opening lpServiceUID = ");
 	DebugPrintBinary(DBGOpenItemProp, lpProviderUID);
-	DebugPrint(DBGOpenItemProp, _T("\n"));
+	DebugPrint(DBGOpenItemProp, L"\n");
 
 	if (!lpProviderUID || !lpProviderAdmin || !lppProfSect) return MAPI_E_INVALID_PARAMETER;
 	*lppProfSect = NULL;

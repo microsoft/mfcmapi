@@ -334,7 +334,7 @@ STDMETHODIMP_(ULONG) CMapiObjects::Release()
 void CMapiObjects::MAPILogonEx(_In_ HWND hwnd, _In_opt_z_ LPTSTR szProfileName, ULONG ulFlags)
 {
 	HRESULT hRes = S_OK;
-	DebugPrint(DBGGeneric,_T("Logging on with MAPILogonEx, ulFlags = 0x%X\n"),ulFlags);
+	DebugPrint(DBGGeneric, L"Logging on with MAPILogonEx, ulFlags = 0x%X\n",ulFlags);
 
 	this->MAPIInitialize(NULL);
 	if (!bMAPIInitialized()) return;
@@ -349,13 +349,13 @@ void CMapiObjects::MAPILogonEx(_In_ HWND hwnd, _In_opt_z_ LPTSTR szProfileName, 
 		ulFlags,
 		&m_lpMAPISession));
 
-	DebugPrint(DBGGeneric,_T("\tm_lpMAPISession set to %p\n"),m_lpMAPISession);
+	DebugPrint(DBGGeneric, L"\tm_lpMAPISession set to %p\n",m_lpMAPISession);
 } // CMapiObjects::MAPILogonEx
 
 void CMapiObjects::Logoff(_In_ HWND hwnd, ULONG ulFlags)
 {
 	HRESULT hRes = S_OK;
-	DebugPrint(DBGGeneric,_T("Logging off of %p, ulFlags = 0x%08X\n"),m_lpMAPISession,ulFlags);
+	DebugPrint(DBGGeneric, L"Logging off of %p, ulFlags = 0x%08X\n",m_lpMAPISession,ulFlags);
 
 	if (m_lpMAPISession)
 	{

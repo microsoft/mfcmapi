@@ -52,7 +52,7 @@ CMAPIProgress::~CMAPIProgress()
 } // CMAPIProgress::~CMAPIProgress
 
 STDMETHODIMP CMAPIProgress::QueryInterface(REFIID riid,
-										   LPVOID * ppvObj)
+	LPVOID * ppvObj)
 {
 	*ppvObj = 0;
 	if (riid == IID_IMAPIProgress ||
@@ -189,7 +189,7 @@ STDMETHODIMP CMAPIProgress::SetLimits(ULONG* lpulMin, ULONG* lpulMax, ULONG* lpu
 
 void CMAPIProgress::OutputState(_In_z_ LPCTSTR lpszFunction)
 {
-	DebugPrint(DBGGeneric,_T("%s::%s(%s) - Current Values: Min = %u, Max = %u, Flags = %u\n"),
-		CLASS, lpszFunction, (LPCTSTR) m_szContext, m_ulMin, m_ulMax, m_ulFlags);
+	DebugPrint(DBGGeneric, L"%ws::%ws(%ws) - Current Values: Min = %u, Max = %u, Flags = %u\n",
+		LPCTSTRToWstring(CLASS).c_str(), LPCTSTRToWstring(lpszFunction).c_str(), LPCTSTRToWstring(m_szContext).c_str(), m_ulMin, m_ulMax, m_ulFlags);
 } // CMAPIProgress::OutputState
 #endif
