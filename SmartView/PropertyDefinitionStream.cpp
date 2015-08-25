@@ -160,7 +160,7 @@ _Check_return_ wstring PackedAnsiStringToString(DWORD dwFlags, _In_ PackedAnsiSt
 	if (ppasString->szCharacters)
 	{
 		szPackedAnsiString += formatmessage(IDS_PROPDEFPACKEDSTRINGCHARS, szFieldName);
-		szPackedAnsiString += LPSTRToWstring(ppasString->szCharacters);
+		szPackedAnsiString += LPCSTRToWstring(ppasString->szCharacters);
 	}
 
 	return szPackedAnsiString;
@@ -217,7 +217,7 @@ _Check_return_ wstring PropertyDefinitionStream::ToStringInternal()
 					PropTagToPropName(m_pfdFieldDefinitions[iDef].dwDispid, false, NULL, &szDispidName);
 					if (!IsNullOrEmpty(szDispidName))
 					{
-						szPropertyDefinitionStream += formatmessage(IDS_PROPDEFDISPIDTAG, LPTSTRToWstring(szDispidName).c_str());
+						szPropertyDefinitionStream += formatmessage(IDS_PROPDEFDISPIDTAG, LPCTSTRToWstring(szDispidName).c_str());
 					}
 
 					delete[] szDispidName;

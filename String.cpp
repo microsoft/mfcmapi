@@ -104,16 +104,16 @@ CString wstringToCString(wstring src)
 	return dst;
 }
 
-wstring LPTSTRToWstring(LPTSTR src)
+wstring LPCTSTRToWstring(LPCTSTR src)
 {
 #ifdef UNICODE
 	return src;
 #else
-	return LPSTRToWstring(src);
+	return LPCSTRToWstring(src);
 #endif
 }
 
-wstring LPSTRToWstring(LPSTR src)
+wstring LPCSTRToWstring(LPCSTR src)
 {
 	if (!src) return L"";
 	string ansi = src;

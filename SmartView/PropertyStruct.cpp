@@ -73,13 +73,13 @@ _Check_return_ wstring PropsToString(DWORD PropCount, LPSPropValue Prop)
 			if (!IsNullOrEmpty(szExactMatches))
 			{
 				szProperty += formatmessage(IDS_PROPERTYDATAEXACTMATCHES,
-					LPTSTRToWstring(szExactMatches).c_str());
+					LPCTSTRToWstring(szExactMatches).c_str());
 			}
 
 			if (!IsNullOrEmpty(szPartialMatches))
 			{
 				szProperty += formatmessage(IDS_PROPERTYDATAPARTIALMATCHES,
-					LPTSTRToWstring(szPartialMatches).c_str());
+					LPCTSTRToWstring(szPartialMatches).c_str());
 			}
 
 			delete[] szExactMatches;

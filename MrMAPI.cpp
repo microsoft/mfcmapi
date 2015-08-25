@@ -672,36 +672,36 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 			pRunOpts->ulFolder = strtoul(argv[i + 1], &szEndPtr, 10);
 			if (!pRunOpts->ulFolder)
 			{
-				pRunOpts->lpszFolderPath = LPSTRToWstring(argv[i + 1]);
+				pRunOpts->lpszFolderPath = LPCSTRToWstring(argv[i + 1]);
 				pRunOpts->ulFolder = DEFAULT_INBOX;
 			}
 			i++;
 			break;
 		case switchInput:
-			pRunOpts->lpszInput = LPSTRToWstring(argv[i + 1]);
+			pRunOpts->lpszInput = LPCSTRToWstring(argv[i + 1]);
 			i++;
 			break;
 		case switchOutput:
-			pRunOpts->lpszOutput = LPSTRToWstring(argv[i + 1]);
+			pRunOpts->lpszOutput = LPCSTRToWstring(argv[i + 1]);
 			i++;
 			break;
 		case switchProfile:
 			// If we have a next argument and it's not an option, parse it as a profile name
 			if (i + 1 < argc && switchNoSwitch == ParseArgument(argv[i + 1]))
 			{
-				pRunOpts->lpszProfile = LPSTRToWstring(argv[i + 1]);
+				pRunOpts->lpszProfile = LPCSTRToWstring(argv[i + 1]);
 				i++;
 			}
 			break;
 		case switchProfileSection:
-			pRunOpts->lpszProfileSection = LPSTRToWstring(argv[i + 1]);
+			pRunOpts->lpszProfileSection = LPCSTRToWstring(argv[i + 1]);
 			i++;
 			break;
 		case switchByteSwapped:
 			pRunOpts->bByteSwapped = true;
 			break;
 		case switchVersion:
-			pRunOpts->lpszVersion = LPSTRToWstring(argv[i + 1]);
+			pRunOpts->lpszVersion = LPCSTRToWstring(argv[i + 1]);
 			i++;
 			break;
 			// Proptag parsing
@@ -715,7 +715,7 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 			break;
 		case switchFlag:
 			// If we have a next argument and it's not an option, parse it as a flag
-			pRunOpts->lpszFlagName = LPSTRToWstring(argv[i + 1]);
+			pRunOpts->lpszFlagName = LPCSTRToWstring(argv[i + 1]);
 			pRunOpts->ulFlagValue = strtoul(argv[i + 1], &szEndPtr, 16);
 
 			// Set mode based on whether the flag string was completely parsed as a number
@@ -737,11 +737,11 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 			break;
 			// Contents tables
 		case switchSubject:
-			pRunOpts->lpszSubject = LPSTRToWstring(argv[i + 1]);
+			pRunOpts->lpszSubject = LPCSTRToWstring(argv[i + 1]);
 			i++;
 			break;
 		case switchMessageClass:
-			pRunOpts->lpszMessageClass = LPSTRToWstring(argv[i + 1]);
+			pRunOpts->lpszMessageClass = LPCSTRToWstring(argv[i + 1]);
 			i++;
 			break;
 		case switchRecent:
@@ -752,14 +752,14 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 		case switchFid:
 			if (i + 1 < argc  && switchNoSwitch == ParseArgument(argv[i + 1]))
 			{
-				pRunOpts->lpszFid = LPSTRToWstring(argv[i + 1]);
+				pRunOpts->lpszFid = LPCSTRToWstring(argv[i + 1]);
 				i++;
 			}
 			break;
 		case switchMid:
 			if (i + 1 < argc  && switchNoSwitch == ParseArgument(argv[i + 1]))
 			{
-				pRunOpts->lpszMid = LPSTRToWstring(argv[i + 1]);
+				pRunOpts->lpszMid = LPCSTRToWstring(argv[i + 1]);
 				i++;
 			}
 			else
@@ -829,7 +829,7 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 		case switchNoSwitch:
 			// naked option without a flag - we only allow one of these
 			if (!pRunOpts->lpszUnswitchedOption.empty()) { bHitError = true; break; } // He's already got one, you see.
-			pRunOpts->lpszUnswitchedOption = LPSTRToWstring(argv[i]);
+			pRunOpts->lpszUnswitchedOption = LPCSTRToWstring(argv[i]);
 			break;
 		case switchUnknown:
 			// display help
@@ -866,7 +866,7 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 		char strPath[_MAX_PATH];
 		GetCurrentDirectoryA(_MAX_PATH, strPath);
 
-		pRunOpts->lpszOutput = LPSTRToWstring(strPath);
+		pRunOpts->lpszOutput = LPCSTRToWstring(strPath);
 	}
 
 	// Validate that we have bare minimum to run
