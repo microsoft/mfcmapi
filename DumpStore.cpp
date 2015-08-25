@@ -104,18 +104,16 @@ void CDumpStore::DisableEmbeddedAttachments()
 void CDumpStore::BeginMailboxTableWork(_In_z_ LPCTSTR szExchangeServerName)
 {
 	if (m_bOutputList) return;
-	HRESULT hRes = S_OK;
-	WCHAR	szTableContentsFile[MAX_PATH];
-	WC_H(StringCchPrintfW(szTableContentsFile, _countof(szTableContentsFile),
-		L"%s\\MAILBOX_TABLE.xml", // STRING_OK
-		m_szMailboxTablePathRoot));
+	wstring szTableContentsFile = format(
+		L"%ws\\MAILBOX_TABLE.xml", // STRING_OK
+		m_szMailboxTablePathRoot);
 	m_fMailboxTable = MyOpenFile(szTableContentsFile, true);
 	if (m_fMailboxTable)
 	{
 		OutputToFile(m_fMailboxTable, g_szXMLHeader);
 		OutputToFilef(m_fMailboxTable, _T("<mailboxtable server=\"%s\">\n"), szExchangeServerName);
 	}
-} // CDumpStore::BeginMailboxTableWork
+}
 
 void CDumpStore::DoMailboxTablePerRowWork(_In_ LPMDB lpMDB, _In_ LPSRow lpSRow, ULONG /*ulCurRow*/)
 {
@@ -215,12 +213,11 @@ void CDumpStore::BeginFolderWork()
 	WC_B(CreateDirectoryW(m_szFolderPath, NULL));
 	hRes = S_OK; // ignore the error - the directory may exist already
 
-	WCHAR	szFolderPropsFile[MAX_PATH]; // Holds file/path name for folder props
-
 	// Dump the folder props to a file
-	WC_H(StringCchPrintfW(szFolderPropsFile, _countof(szFolderPropsFile),
-		L"%sFOLDER_PROPS.xml", // STRING_OK
-		m_szFolderPath));
+	// Holds file/path name for folder props
+	wstring szFolderPropsFile = format(
+		L"%wsFOLDER_PROPS.xml", // STRING_OK
+		m_szFolderPath);
 	m_fFolderProps = MyOpenFile(szFolderPropsFile, true);
 	if (!m_fFolderProps) return;
 
@@ -250,7 +247,7 @@ void CDumpStore::BeginFolderWork()
 	}
 
 	OutputToFile(m_fFolderProps, _T("<HierarchyTable>\n"));
-} // CDumpStore::BeginFolderWork
+}
 
 void CDumpStore::DoFolderPerHierarchyTableRowWork(_In_ LPSRow lpSRow)
 {
@@ -282,12 +279,10 @@ void CDumpStore::BeginContentsTableWork(ULONG ulFlags, ULONG ulCountRows)
 		return;
 	}
 
-	HRESULT hRes = S_OK;
-	WCHAR	szContentsTableFile[MAX_PATH]; // Holds file/path name for contents table output
-
-	WC_H(StringCchPrintfW(szContentsTableFile, _countof(szContentsTableFile),
-		(ulFlags & MAPI_ASSOCIATED) ? L"%sASSOCIATED_CONTENTS_TABLE.xml" : L"%sCONTENTS_TABLE.xml", // STRING_OK
-		m_szFolderPath));
+	// Holds file/path name for contents table output
+	wstring szContentsTableFile = format(
+		(ulFlags & MAPI_ASSOCIATED) ? L"%wsASSOCIATED_CONTENTS_TABLE.xml" : L"%wsCONTENTS_TABLE.xml", // STRING_OK
+		m_szFolderPath);
 	m_fFolderContents = MyOpenFile(szContentsTableFile, true);
 	if (m_fFolderContents)
 	{
@@ -296,7 +291,7 @@ void CDumpStore::BeginContentsTableWork(ULONG ulFlags, ULONG ulCountRows)
 			(ulFlags & MAPI_ASSOCIATED) ? _T("Associated Contents") : _T("Contents"), // STRING_OK
 			ulCountRows);
 	}
-} // CDumpStore::BeginContentsTableWork
+}
 
 // Outputs a single message's details to the screen, so as to produce a list of messages
 void OutputMessageList(

@@ -146,11 +146,11 @@ void ExportProfileService(FILE* fProfile, int iRow, LPSERVICEADMIN lpServiceAdmi
 	OutputToFile(fProfile, _T("</service>\n"));
 }
 
-void ExportProfile(_In_z_ LPCSTR szProfile, _In_z_ LPCWSTR szProfileSection, bool bByteSwapped, _In_z_ LPCWSTR szFileName)
+void ExportProfile(_In_z_ LPCSTR szProfile, _In_z_ LPCWSTR szProfileSection, bool bByteSwapped, wstring szFileName)
 {
 	if (!szProfile) return;
 
-	DebugPrint(DBGGeneric, _T("ExportProfile: Saving profile \"%hs\" to \"%ws\"\n"), szProfile, szFileName);
+	DebugPrint(DBGGeneric, _T("ExportProfile: Saving profile \"%hs\" to \"%ws\"\n"), szProfile, szFileName.c_str());
 	if (szProfileSection)
 	{
 		DebugPrint(DBGGeneric, _T("ExportProfile: Restricting to \"%ws\"\n"), szProfileSection);
@@ -160,7 +160,7 @@ void ExportProfile(_In_z_ LPCSTR szProfile, _In_z_ LPCWSTR szProfileSection, boo
 	LPPROFADMIN lpProfAdmin = NULL;
 	FILE* fProfile = NULL;
 
-	if (szFileName)
+	if (!szFileName.empty())
 	{
 		fProfile = MyOpenFile(szFileName, true);
 	}
