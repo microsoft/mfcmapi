@@ -17,14 +17,14 @@ void DumpContentsTable(
 	_In_ ULONG ulCount,
 	_In_opt_ LPSRestriction lpRes)
 {
-	DebugPrint(DBGGeneric, "DumpContentsTable: Outputting folder %u / %ws from profile %ws to %ws\n", ulFolder, lpszFolder ? lpszFolder : L"", lpszProfile, lpszDir);
-	if (ulOptions & OPT_DOCONTENTS)  DebugPrint(DBGGeneric, "DumpContentsTable: Outputting Contents\n");
-	if (ulOptions & OPT_DOASSOCIATEDCONTENTS) DebugPrint(DBGGeneric, "DumpContentsTable: Outputting Associated Contents\n");
-	if (ulOptions & OPT_MSG) DebugPrint(DBGGeneric, "DumpContentsTable: Outputting as MSG\n");
-	if (ulOptions & OPT_RETRYSTREAMPROPS) DebugPrint(DBGGeneric, "DumpContentsTable: Will retry stream properties\n");
-	if (ulOptions & OPT_SKIPATTACHMENTS) DebugPrint(DBGGeneric, "DumpContentsTable: Will skip attachments\n");
-	if (ulOptions & OPT_LIST) DebugPrint(DBGGeneric, "DumpContentsTable: List only mode\n");
-	if (ulCount) DebugPrint(DBGGeneric, "DumpContentsTable: Limiting output to %u messages.\n", ulCount);
+	DebugPrint(DBGGeneric, L"DumpContentsTable: Outputting folder %u / %ws from profile %ws to %ws\n", ulFolder, lpszFolder ? lpszFolder : L"", lpszProfile, lpszDir);
+	if (ulOptions & OPT_DOCONTENTS) DebugPrint(DBGGeneric, L"DumpContentsTable: Outputting Contents\n");
+	if (ulOptions & OPT_DOASSOCIATEDCONTENTS) DebugPrint(DBGGeneric, L"DumpContentsTable: Outputting Associated Contents\n");
+	if (ulOptions & OPT_MSG) DebugPrint(DBGGeneric, L"DumpContentsTable: Outputting as MSG\n");
+	if (ulOptions & OPT_RETRYSTREAMPROPS) DebugPrint(DBGGeneric, L"DumpContentsTable: Will retry stream properties\n");
+	if (ulOptions & OPT_SKIPATTACHMENTS) DebugPrint(DBGGeneric, L"DumpContentsTable: Will skip attachments\n");
+	if (ulOptions & OPT_LIST) DebugPrint(DBGGeneric, L"DumpContentsTable: List only mode\n");
+	if (ulCount) DebugPrint(DBGGeneric, L"DumpContentsTable: Limiting output to %u messages.\n", ulCount);
 
 	if (lpFolder)
 	{

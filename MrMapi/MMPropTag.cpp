@@ -538,8 +538,8 @@ void DoPropTags(_In_ MYOPTIONS ProgOpts)
 {
 	LPCWSTR lpszPropName = ProgOpts.lpszUnswitchedOption.empty() ? NULL : ProgOpts.lpszUnswitchedOption.c_str();
 	ULONG ulPropNum = wstringToUlong(ProgOpts.lpszUnswitchedOption, (ProgOpts.ulOptions & OPT_DODECIMAL) ? 10 : 16);
-	if (lpszPropName) DebugPrint(DBGGeneric, "lpszPropName = %ws\n", lpszPropName);
-	DebugPrint(DBGGeneric, "ulPropNum = 0x%08X\n", ulPropNum);
+	if (lpszPropName) DebugPrint(DBGGeneric, L"lpszPropName = %ws\n", lpszPropName);
+	DebugPrint(DBGGeneric, L"ulPropNum = 0x%08X\n", ulPropNum);
 
 	// Handle dispid cases
 	if (ProgOpts.ulOptions & OPT_DODISPID)

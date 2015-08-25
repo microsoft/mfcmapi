@@ -144,7 +144,7 @@ STDMETHODIMP_(ULONG) CMySecInfo::Release()
 
 STDMETHODIMP CMySecInfo::GetObjectInformation(PSI_OBJECT_INFO pObjectInfo)
 {
-	DebugPrint(DBGGeneric, _T("CMySecInfo::GetObjectInformation\n"));
+	DebugPrint(DBGGeneric, L"CMySecInfo::GetObjectInformation\n");
 	HRESULT hRes = S_OK;
 	bool bAllowEdits = false;
 
@@ -183,7 +183,7 @@ STDMETHODIMP CMySecInfo::GetSecurity(SECURITY_INFORMATION /*RequestedInformation
 	PSECURITY_DESCRIPTOR *ppSecurityDescriptor,
 	BOOL /*fDefault*/)
 {
-	DebugPrint(DBGGeneric, _T("CMySecInfo::GetSecurity\n"));
+	DebugPrint(DBGGeneric, L"CMySecInfo::GetSecurity\n");
 	HRESULT	hRes = S_OK;
 	LPSPropValue lpsProp = NULL;
 
@@ -238,7 +238,7 @@ STDMETHODIMP CMySecInfo::GetSecurity(SECURITY_INFORMATION /*RequestedInformation
 			wstring szInfo;
 			EC_H(SDToString(lpSDBuffer, cbSBBuffer, m_acetype, szDACL, szInfo));
 
-			DebugPrint(DBGGeneric, _T("sdInfo: %ws\nszDACL: %ws\n"), szInfo.c_str(), szDACL.c_str());
+			DebugPrint(DBGGeneric, L"sdInfo: %ws\nszDACL: %ws\n", szInfo.c_str(), szDACL.c_str());
 		}
 	}
 	MAPIFreeBuffer(lpsProp);
@@ -254,7 +254,7 @@ STDMETHODIMP CMySecInfo::GetSecurity(SECURITY_INFORMATION /*RequestedInformation
 STDMETHODIMP CMySecInfo::SetSecurity(SECURITY_INFORMATION /*SecurityInformation*/,
 	PSECURITY_DESCRIPTOR pSecurityDescriptor)
 {
-	DebugPrint(DBGGeneric, _T("CMySecInfo::SetSecurity\n"));
+	DebugPrint(DBGGeneric, L"CMySecInfo::SetSecurity\n");
 	HRESULT		hRes = S_OK;
 	SPropValue	Blob = { 0 };
 	ULONG		cbBlob = 0;
@@ -298,7 +298,7 @@ STDMETHODIMP CMySecInfo::GetAccessRights(const GUID* /*pguidObjectType*/,
 	ULONG *pcAccesses,
 	ULONG *piDefaultAccess)
 {
-	DebugPrint(DBGGeneric, _T("CMySecInfo::GetAccessRights\n"));
+	DebugPrint(DBGGeneric, L"CMySecInfo::GetAccessRights\n");
 
 	switch (m_acetype)
 	{
@@ -324,7 +324,7 @@ STDMETHODIMP CMySecInfo::MapGeneric(const GUID* /*pguidObjectType*/,
 	UCHAR* /*pAceFlags*/,
 	ACCESS_MASK *pMask)
 {
-	DebugPrint(DBGGeneric, _T("CMySecInfo::MapGeneric\n"));
+	DebugPrint(DBGGeneric, L"CMySecInfo::MapGeneric\n");
 
 	switch (m_acetype)
 	{
@@ -344,25 +344,25 @@ STDMETHODIMP CMySecInfo::MapGeneric(const GUID* /*pguidObjectType*/,
 STDMETHODIMP CMySecInfo::GetInheritTypes(PSI_INHERIT_TYPE* /*ppInheritTypes*/,
 	ULONG* /*pcInheritTypes*/)
 {
-	DebugPrint(DBGGeneric, _T("CMySecInfo::GetInheritTypes\n"));
+	DebugPrint(DBGGeneric, L"CMySecInfo::GetInheritTypes\n");
 	return E_NOTIMPL;
 } // CMySecInfo::GetInheritTypes
 
 STDMETHODIMP CMySecInfo::PropertySheetPageCallback(HWND /*hwnd*/, UINT uMsg, SI_PAGE_TYPE uPage)
 {
-	DebugPrint(DBGGeneric, _T("CMySecInfo::PropertySheetPageCallback, uMsg = 0x%X, uPage = 0x%X\n"), uMsg, uPage);
+	DebugPrint(DBGGeneric, L"CMySecInfo::PropertySheetPageCallback, uMsg = 0x%X, uPage = 0x%X\n", uMsg, uPage);
 	return S_OK;
 } // CMySecInfo::PropertySheetPageCallback
 
 STDMETHODIMP_(BOOL) CMySecInfo::IsDaclCanonical(PACL /*pDacl*/)
 {
-	DebugPrint(DBGGeneric, _T("CMySecInfo::IsDaclCanonical - always returns true.\n"));
+	DebugPrint(DBGGeneric, L"CMySecInfo::IsDaclCanonical - always returns true.\n");
 	return true;
 } // CMySecInfo::IsDaclCanonical
 
 STDMETHODIMP CMySecInfo::LookupSids(ULONG /*cSids*/, PSID* /*rgpSids*/, LPDATAOBJECT* /*ppdo*/)
 {
-	DebugPrint(DBGGeneric, _T("CMySecInfo::LookupSids\n"));
+	DebugPrint(DBGGeneric, L"CMySecInfo::LookupSids\n");
 	return E_NOTIMPL;
 } // CMySecInfo::LookupSids
 
