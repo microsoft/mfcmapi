@@ -5,7 +5,7 @@
 #include "ExtraPropTags.h"
 #include "String.h"
 
-static TCHAR* CLASS = _T("CMySecInfo");
+static wstring CLASS = L"CMySecInfo";
 
 // The following array defines the permission names for Exchange objects.
 SI_ACCESS siExchangeAccessesFolder[] =

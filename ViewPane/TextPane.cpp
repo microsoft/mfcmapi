@@ -5,7 +5,7 @@
 #include "..\String.h"
 #include "..\UIFunctions.h"
 
-static TCHAR* CLASS = _T("TextPane");
+static wstring CLASS = L"TextPane";
 
 ViewPane* CreateMultiLinePaneA(UINT uidLabel, _In_opt_z_ LPCSTR szVal, bool bReadOnly)
 {
@@ -52,7 +52,7 @@ ViewPane* CreateSingleLinePaneID(UINT uidLabel, UINT uidVal, bool bReadOnly)
 		}
 
 #ifdef UNICODE
-		lpPane->SetStringW((LPCTSTR) szTemp);
+		lpPane->SetStringW((LPCTSTR)szTemp);
 #else
 		lpPane->SetStringA((LPCTSTR)szTemp);
 #endif
@@ -304,7 +304,7 @@ void TextPane::SetEditBoxText()
 	// read the 'text stream' into control
 	long lBytesRead = 0;
 	lBytesRead = m_EditBox.StreamIn(uFormat, es);
-	DebugPrintEx(DBGStream, CLASS, _T("SetEditBoxText"), _T("read %d bytes from the stream\n"), lBytesRead);
+	DebugPrintEx(DBGStream, CLASS, L"SetEditBoxText", L"read %d bytes from the stream\n", lBytesRead);
 
 	// Clear the modify bit so this stream appears untouched
 	m_EditBox.SetModify(false);
@@ -551,7 +551,7 @@ void TextPane::InitEditFromBinaryStream(_In_ LPSTREAM lpStreamIn)
 
 	// read the 'text' stream into control
 	lBytesRead = m_EditBox.StreamIn(uFormat, es);
-	DebugPrintEx(DBGStream, CLASS, _T("InitEditFromStream"), _T("read %d bytes from the stream\n"), lBytesRead);
+	DebugPrintEx(DBGStream, CLASS, L"InitEditFromStream", L"read %d bytes from the stream\n", lBytesRead);
 
 	// Clear the modify bit so this stream appears untouched
 	m_EditBox.SetModify(false);
@@ -581,7 +581,7 @@ void TextPane::WriteToBinaryStream(_In_ LPSTREAM lpStreamOut)
 			lpb,
 			(ULONG*)&cb);
 		EC_MAPI(lpStreamOut->Write(lpb, (ULONG)cb, &cbWritten));
-		DebugPrintEx(DBGStream, CLASS, _T("WriteToBinaryStream"), _T("wrote 0x%X bytes to the stream\n"), cbWritten);
+		DebugPrintEx(DBGStream, CLASS, L"WriteToBinaryStream", L"wrote 0x%X bytes to the stream\n", cbWritten);
 
 		EC_MAPI(lpStreamOut->Commit(STGC_DEFAULT));
 	}

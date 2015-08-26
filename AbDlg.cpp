@@ -14,7 +14,7 @@
 #include "MAPIProgress.h"
 #include "MAPIFunctions.h"
 
-static TCHAR* CLASS = _T("CAbDlg");
+static wstring CLASS = L"CAbDlg";
 
 /////////////////////////////////////////////////////////////////////////////
 // CAbDlg dialog
@@ -24,14 +24,14 @@ CAbDlg::CAbDlg(
 	_In_ CParentWnd* pParentWnd,
 	_In_ CMapiObjects* lpMapiObjects,
 	_In_ LPABCONT lpAdrBook
-	):
-CContentsTableDlg(
+	) :
+	CContentsTableDlg(
 	pParentWnd,
 	lpMapiObjects,
 	IDS_AB,
 	mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 	NULL,
-	(LPSPropTagArray) &sptABCols,
+	(LPSPropTagArray)&sptABCols,
 	NUMABCOLUMNS,
 	ABColumns,
 	IDR_MENU_AB_VIEW_POPUP,
@@ -64,7 +64,7 @@ END_MESSAGE_MAP()
 
 void CAbDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 {
-	DebugPrintEx(DBGCreateDialog,CLASS,_T("CreateDialogAndMenu"),_T("id = 0x%X\n"),nIDMenuResource);
+	DebugPrintEx(DBGCreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
 	CContentsTableDlg::CreateDialogAndMenu(nIDMenuResource);
 
 	UpdateMenuString(
@@ -80,23 +80,23 @@ void CAbDlg::OnInitMenu(_In_ CMenu* pMenu)
 		if (m_lpMapiObjects)
 		{
 			ULONG ulStatus = m_lpMapiObjects->GetBufferStatus();
-			pMenu->EnableMenuItem(ID_PASTE,DIM(ulStatus & BUFFER_ABENTRIES));
+			pMenu->EnableMenuItem(ID_PASTE, DIM(ulStatus & BUFFER_ABENTRIES));
 		}
 
 		int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
-		pMenu->EnableMenuItem(ID_COPY,DIMMSOK(iNumSel));
-		pMenu->EnableMenuItem(ID_DELETESELECTEDITEM,DIMMSOK(iNumSel));
-		pMenu->EnableMenuItem(ID_DISPLAYDETAILS,DIMMSOK(iNumSel));
-		pMenu->EnableMenuItem(ID_OPENCONTACT,DIMMSNOK(iNumSel));
-		pMenu->EnableMenuItem(ID_OPENMANAGER,DIMMSOK(iNumSel));
-		pMenu->EnableMenuItem(ID_OPENOWNER,DIMMSOK(iNumSel));
+		pMenu->EnableMenuItem(ID_COPY, DIMMSOK(iNumSel));
+		pMenu->EnableMenuItem(ID_DELETESELECTEDITEM, DIMMSOK(iNumSel));
+		pMenu->EnableMenuItem(ID_DISPLAYDETAILS, DIMMSOK(iNumSel));
+		pMenu->EnableMenuItem(ID_OPENCONTACT, DIMMSNOK(iNumSel));
+		pMenu->EnableMenuItem(ID_OPENMANAGER, DIMMSOK(iNumSel));
+		pMenu->EnableMenuItem(ID_OPENOWNER, DIMMSOK(iNumSel));
 	}
 	CContentsTableDlg::OnInitMenu(pMenu);
 } // CAbDlg::OnInitMenu
 
 void CAbDlg::OnDisplayDetails()
 {
-	DebugPrintEx(DBGGeneric,CLASS,_T("OnDisplayDetails"),_T("displaying Address Book entry details\n"));
+	DebugPrintEx(DBGGeneric, CLASS, L"OnDisplayDetails", L"displaying Address Book entry details\n");
 
 	HRESULT		hRes = S_OK;
 	if (!m_lpMapiObjects) return;
@@ -112,9 +112,9 @@ void CAbDlg::OnDisplayDetails()
 		{
 			ULONG i = 0;
 
-			for (i = 0 ; i < lpEIDs->cValues ; i++)
+			for (i = 0; i < lpEIDs->cValues; i++)
 			{
-				ULONG_PTR ulUIParam = (ULONG_PTR) (void*) m_hWnd;
+				ULONG_PTR ulUIParam = (ULONG_PTR)(void*)m_hWnd;
 
 				// Have to pass DIALOG_MODAL according to
 				// http://support.microsoft.com/kb/171637
@@ -123,12 +123,12 @@ void CAbDlg::OnDisplayDetails()
 					NULL,
 					NULL,
 					lpEIDs->lpbin[i].cb,
-					(LPENTRYID) lpEIDs->lpbin[i].lpb,
+					(LPENTRYID)lpEIDs->lpbin[i].lpb,
 					NULL,
 					NULL,
 					NULL,
 					DIALOG_MODAL)); // API doesn't like Unicode
-				if (lpEIDs->cValues > i+1 && bShouldCancel(this,hRes)) break;
+				if (lpEIDs->cValues > i + 1 && bShouldCancel(this, hRes)) break;
 				hRes = S_OK;
 			}
 		}
@@ -162,11 +162,11 @@ void CAbDlg::OnOpenContact()
 				NULL,
 				lpSession,
 				cb,
-				(LPENTRYID) lpb,
+				(LPENTRYID)lpb,
 				NULL,
 				NULL,
 				NULL,
-				(LPUNKNOWN*) &lpProp));
+				(LPUNKNOWN*)&lpProp));
 		}
 	}
 
@@ -205,8 +205,7 @@ void CAbDlg::OnOpenManager()
 				otDefault, // oType,
 				this));
 		}
-	}
-	while (iItem != -1);
+	} while (iItem != -1);
 
 	if (lpMailUser) lpMailUser->Release();
 } // CAbDlg::OnOpenManager
@@ -238,8 +237,7 @@ void CAbDlg::OnOpenOwner()
 				otDefault, // oType,
 				this));
 		}
-	}
-	while (iItem != -1);
+	} while (iItem != -1);
 
 	if (lpMailUser) lpMailUser->Release();
 } // CAbDlg::OnOpenOwner
@@ -251,18 +249,18 @@ void CAbDlg::OnDeleteSelectedItem()
 		this,
 		IDS_DELETEABENTRY,
 		IDS_DELETEABENTRYPROMPT,
-		(ULONG) 0,
-		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+		(ULONG)0,
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	WC_H(Query.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		DebugPrintEx(DBGGeneric,CLASS,_T("OnDeleteSelectedItem"),_T("deleting address Book entries\n"));
+		DebugPrintEx(DBGGeneric, CLASS, L"OnDeleteSelectedItem", L"deleting address Book entries\n");
 		CWaitCursor		Wait; // Change the mouse to an hourglass while we work.
 		LPENTRYLIST lpEIDs = NULL;
 
 		EC_H(m_lpContentsTableListCtrl->GetSelectedItemEIDs(&lpEIDs));
 
-		EC_MAPI(((LPABCONT)m_lpContainer)->DeleteEntries(lpEIDs,NULL));
+		EC_MAPI(((LPABCONT)m_lpContainer)->DeleteEntries(lpEIDs, NULL));
 
 		MAPIFreeBuffer(lpEIDs);
 	}
@@ -273,7 +271,7 @@ void CAbDlg::HandleCopy()
 	HRESULT			hRes = S_OK;
 	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
-	DebugPrintEx(DBGGeneric,CLASS,_T("HandleCopy"),_T("\n"));
+	DebugPrintEx(DBGGeneric, CLASS, L"HandleCopy", L"\n");
 	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return;
 
 	LPENTRYLIST lpEIDs = NULL;
@@ -291,7 +289,7 @@ _Check_return_ bool CAbDlg::HandlePaste()
 	HRESULT			hRes = S_OK;
 	CWaitCursor		Wait; // Change the mouse to an hourglass while we work.
 
-	DebugPrintEx(DBGGeneric,CLASS,_T("HandlePaste"),_T("pasting address Book entries\n"));
+	DebugPrintEx(DBGGeneric, CLASS, L"HandlePaste", L"pasting address Book entries\n");
 	if (!m_lpMapiObjects || !m_lpContainer) return false;
 
 	LPENTRYLIST lpEIDs = m_lpMapiObjects->GetABEntriesToCopy();
@@ -303,10 +301,10 @@ _Check_return_ bool CAbDlg::HandlePaste()
 			IDS_CALLCOPYENTRIES,
 			IDS_CALLCOPYENTRIESPROMPT,
 			1,
-			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 		MyData.InitPane(0, CreateSingleLinePane(IDS_FLAGS, NULL, false));
-		MyData.SetHex(0,CREATE_CHECK_DUP_STRICT);
+		MyData.SetHex(0, CREATE_CHECK_DUP_STRICT);
 
 		WC_H(MyData.DisplayDialog());
 		if (S_OK == hRes)
@@ -341,7 +339,7 @@ void CAbDlg::OnCreatePropertyStringRestriction()
 		IDS_SEARCHCRITERIA,
 		IDS_ABSEARCHCRITERIAPROMPT,
 		1,
-		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 	MyData.InitPane(0, CreateSingleLinePane(IDS_NAME, NULL, false));
 
@@ -369,8 +367,8 @@ void CAbDlg::HandleAddInMenuSingle(
 {
 	if (lpParams)
 	{
-		lpParams->lpAbCont = (LPABCONT) m_lpContainer;
-		lpParams->lpMailUser = (LPMAILUSER) lpMAPIProp; // OpenItemProp returns LPMAILUSER
+		lpParams->lpAbCont = (LPABCONT)m_lpContainer;
+		lpParams->lpMailUser = (LPMAILUSER)lpMAPIProp; // OpenItemProp returns LPMAILUSER
 	}
 
 	InvokeAddInMenu(lpParams);

@@ -3,7 +3,7 @@
 #include "MAPIFunctions.h"
 #include "enums.h"
 
-static TCHAR* CLASS = _T("CMAPIProgress");
+static wstring CLASS = L"CMAPIProgress";
 
 #ifdef MRMAPI
 _Check_return_ CMAPIProgress* GetMAPIProgress(_In_z_ LPCTSTR /*lpszContext*/, _In_ HWND /*hWnd*/)
@@ -68,22 +68,22 @@ STDMETHODIMP CMAPIProgress::QueryInterface(REFIID riid,
 STDMETHODIMP_(ULONG) CMAPIProgress::AddRef()
 {
 	LONG lCount = InterlockedIncrement(&m_cRef);
-	TRACE_ADDREF(CLASS,lCount);
+	TRACE_ADDREF(CLASS, lCount);
 	return lCount;
 } // CMAPIProgress::AddRef
 
 STDMETHODIMP_(ULONG) CMAPIProgress::Release()
 {
 	LONG lCount = InterlockedDecrement(&m_cRef);
-	TRACE_RELEASE(CLASS,lCount);
+	TRACE_RELEASE(CLASS, lCount);
 	if (!lCount)  delete this;
 	return lCount;
 } // CMAPIProgress::Release
 
 _Check_return_ STDMETHODIMP CMAPIProgress::Progress(ULONG ulValue, ULONG ulCount, ULONG ulTotal)
 {
-	DebugPrintEx(DBGGeneric, CLASS, _T("Progress"), _T("(%s) - ulValue = %u, ulCount = %u, ulTotal = %u\n"),
-		(LPCTSTR) m_szContext, ulValue, ulCount, ulTotal);
+	DebugPrintEx(DBGGeneric, CLASS, L"Progress", L"(%ws) - ulValue = %u, ulCount = %u, ulTotal = %u\n",
+		LPCTSTRToWstring(m_szContext).c_str(), ulValue, ulCount, ulTotal);
 
 	OutputState(_T("Progress"));
 
@@ -93,7 +93,7 @@ _Check_return_ STDMETHODIMP CMAPIProgress::Progress(ULONG ulValue, ULONG ulCount
 		CString szStatusText;
 
 		szStatusText.FormatMessage(IDS_PERCENTLOADED, m_szContext, iPercent);
-		(void)::SendMessage(m_hWnd, WM_MFCMAPI_UPDATESTATUSBAR, STATUSINFOTEXT, (LPARAM)(LPCTSTR) szStatusText);
+		(void)::SendMessage(m_hWnd, WM_MFCMAPI_UPDATESTATUSBAR, STATUSINFOTEXT, (LPARAM)(LPCTSTR)szStatusText);
 	}
 
 	return S_OK;
@@ -170,8 +170,8 @@ STDMETHODIMP CMAPIProgress::SetLimits(ULONG* lpulMin, ULONG* lpulMax, ULONG* lpu
 		EC_H(StringCchPrintf(szFlags, _countof(szFlags), _T("NULL"))); // STRING_OK
 	}
 
-	DebugPrintEx(DBGGeneric, CLASS, _T("SetLimits"), _T("(%s) - Passed Values: lpulMin = %s, lpulMax = %s, lpulFlags = %s\n"),
-		(LPCTSTR) m_szContext, szMin, szMax, szFlags);
+	DebugPrintEx(DBGGeneric, CLASS, L"SetLimits", L"(%ws) - Passed Values: lpulMin = %ws, lpulMax = %ws, lpulFlags = %ws\n",
+		LPCTSTRToWstring(m_szContext).c_str(), LPCTSTRToWstring(szMin).c_str(), LPCTSTRToWstring(szMax).c_str(), LPCTSTRToWstring(szFlags).c_str());
 
 	if (lpulMin)
 		m_ulMin = *lpulMin;
@@ -190,6 +190,6 @@ STDMETHODIMP CMAPIProgress::SetLimits(ULONG* lpulMin, ULONG* lpulMax, ULONG* lpu
 void CMAPIProgress::OutputState(_In_z_ LPCTSTR lpszFunction)
 {
 	DebugPrint(DBGGeneric, L"%ws::%ws(%ws) - Current Values: Min = %u, Max = %u, Flags = %u\n",
-		LPCTSTRToWstring(CLASS).c_str(), LPCTSTRToWstring(lpszFunction).c_str(), LPCTSTRToWstring(m_szContext).c_str(), m_ulMin, m_ulMax, m_ulFlags);
+		CLASS, LPCTSTRToWstring(lpszFunction).c_str(), LPCTSTRToWstring(m_szContext).c_str(), m_ulMin, m_ulMax, m_ulFlags);
 } // CMAPIProgress::OutputState
 #endif

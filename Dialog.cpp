@@ -7,14 +7,14 @@
 #include "ImportProcs.h"
 #include <propkey.h>
 
-static TCHAR* CLASS = _T("CMyDialog");
+static wstring CLASS = L"CMyDialog";
 
-CMyDialog::CMyDialog():CDialog()
+CMyDialog::CMyDialog() :CDialog()
 {
 	Constructor();
 } // CMyDialog::CMyDialog
 
-CMyDialog::CMyDialog(UINT nIDTemplate, CWnd* pParentWnd):CDialog(nIDTemplate,pParentWnd)
+CMyDialog::CMyDialog(UINT nIDTemplate, CWnd* pParentWnd) : CDialog(nIDTemplate, pParentWnd)
 {
 	Constructor();
 } // CMyDialog::CMyDialog
@@ -61,7 +61,7 @@ int CMyDialog::GetStatusHeight()
 // Performs an NC hittest using coordinates from WM_MOUSE* messages
 int NCHitTestMouse(HWND hWnd, LPARAM lParam)
 {
-	POINT pt = {GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
+	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 	(void) ::MapWindowPoints(hWnd, NULL, &pt, 1); // Map our client point to the screen
 	lParam = MAKELONG(pt.x, pt.y);
 	return (int) ::SendMessage(hWnd, WM_NCHITTEST, NULL, lParam);
@@ -74,32 +74,32 @@ bool DepressSystemButton(HWND hWnd, int iHitTest)
 	SetCapture(hWnd);
 	for (;;)
 	{
-		MSG msg = {0};
+		MSG msg = { 0 };
 		if (::PeekMessage(&msg, hWnd, WM_MOUSEFIRST, WM_MOUSELAST, PM_REMOVE))
 		{
 			switch (msg.message)
 			{
 			case WM_LBUTTONUP:
-				{
-					if (bDepressed)
-						DrawSystemButtons(hWnd, NULL, NULL);
-					ReleaseCapture();
-					if (NCHitTestMouse(hWnd, msg.lParam) == iHitTest) return true;
-					return false;
-				}
-				break;
+			{
+				if (bDepressed)
+					DrawSystemButtons(hWnd, NULL, NULL);
+				ReleaseCapture();
+				if (NCHitTestMouse(hWnd, msg.lParam) == iHitTest) return true;
+				return false;
+			}
+			break;
 			case WM_MOUSEMOVE:
+			{
+				if (NCHitTestMouse(hWnd, msg.lParam) == iHitTest)
 				{
-					if (NCHitTestMouse(hWnd, msg.lParam) == iHitTest)
-					{
-						DrawSystemButtons(hWnd, NULL, iHitTest);
-					}
-					else
-					{
-						DrawSystemButtons(hWnd, NULL, NULL);
-					}
+					DrawSystemButtons(hWnd, NULL, iHitTest);
 				}
-				break;
+				else
+				{
+					DrawSystemButtons(hWnd, NULL, NULL);
+				}
+			}
+			break;
 			}
 		}
 	}
@@ -125,30 +125,30 @@ LRESULT CMyDialog::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		case HTCLOSE:
 		case HTMAXBUTTON:
 		case HTMINBUTTON:
+		{
+			if (DepressSystemButton(m_hWnd, (int)wParam))
 			{
-				if (DepressSystemButton(m_hWnd, (int) wParam))
+				switch (wParam)
 				{
-					switch (wParam)
-					{
-					case HTCLOSE:
-						::SendMessageA(m_hWnd, WM_SYSCOMMAND, SC_CLOSE, NULL);
-						break;
-					case HTMAXBUTTON:
-						::SendMessageA(m_hWnd, WM_SYSCOMMAND, ::IsZoomed(m_hWnd) ? SC_RESTORE : SC_MAXIMIZE, NULL);
-						break;
-					case HTMINBUTTON:
-						::SendMessageA(m_hWnd, WM_SYSCOMMAND, SC_MINIMIZE, NULL);
-						break;
-					}
+				case HTCLOSE:
+					::SendMessageA(m_hWnd, WM_SYSCOMMAND, SC_CLOSE, NULL);
+					break;
+				case HTMAXBUTTON:
+					::SendMessageA(m_hWnd, WM_SYSCOMMAND, ::IsZoomed(m_hWnd) ? SC_RESTORE : SC_MAXIMIZE, NULL);
+					break;
+				case HTMINBUTTON:
+					::SendMessageA(m_hWnd, WM_SYSCOMMAND, SC_MINIMIZE, NULL);
+					break;
 				}
-				return 0;
-				break;
 			}
+			return 0;
+			break;
+		}
 		}
 		break;
 	case WM_NCACTIVATE:
 		// Pass -1 to DefWindowProc to signal we do not want our client repainted.
-		lParam =-1;
+		lParam = -1;
 		DrawWindowFrame(m_hWnd, !!wParam, m_iStatusHeight);
 		break;
 	case WM_SETTEXT:
@@ -168,23 +168,23 @@ LRESULT CMyDialog::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			IPropertyStore* pps = NULL;
 			HRESULT hRes = pfnSHGetPropertyStoreForWindow(m_hWnd, IID_PPV_ARGS(&pps));
 			if (SUCCEEDED(hRes) && pps) {
-				PROPVARIANT var = {0};
+				PROPVARIANT var = { 0 };
 				var.vt = VT_LPWSTR;
 				var.pwszVal = L"Microsoft.MFCMAPI";
 
-				(void) pps->SetValue(PKEY_AppUserModel_ID, var);
+				(void)pps->SetValue(PKEY_AppUserModel_ID, var);
 			}
 
 			if (pps) pps->Release();
 		}
 
-		if (pfnSetWindowTheme) (void) pfnSetWindowTheme(m_hWnd, L"", L"");
+		if (pfnSetWindowTheme) (void)pfnSetWindowTheme(m_hWnd, L"", L"");
 		{
 			// These calls force Windows to initialize the system menu for this window.
 			// This avoids repaints whenever the system menu is later accessed.
 			// We eliminate classic mode visual artifacts with this call.
 			(void) ::GetSystemMenu(m_hWnd, false);
-			MENUBARINFO mbi = {0};
+			MENUBARINFO mbi = { 0 };
 			mbi.cbSize = sizeof(mbi);
 			(void) ::GetMenuBarInfo(m_hWnd, OBJID_SYSMENU, 0, &mbi);
 		}
@@ -206,11 +206,11 @@ void CMyDialog::DisplayParentedDialog(CParentWnd* lpNonModalParent, UINT iAutoCe
 
 	HINSTANCE hInst = AfxFindResourceHandle(m_lpszTemplateName, RT_DIALOG);
 	HRSRC hResource = NULL;
-	EC_D(hResource,::FindResource(hInst, m_lpszTemplateName, RT_DIALOG));
+	EC_D(hResource, ::FindResource(hInst, m_lpszTemplateName, RT_DIALOG));
 	if (hResource)
 	{
 		HGLOBAL hTemplate = NULL;
-		EC_D(hTemplate,LoadResource(hInst, hResource));
+		EC_D(hTemplate, LoadResource(hInst, hResource));
 		if (hTemplate)
 		{
 			LPCDLGTEMPLATE lpDialogTemplate = (LPCDLGTEMPLATE)LockResource(hTemplate);
@@ -226,14 +226,14 @@ BOOL CMyDialog::CheckAutoCenter()
 	// Make the editor wider - OnSize will fix the height for us
 	if (m_iAutoCenterWidth)
 	{
-		SetWindowPos(NULL,0,0,m_iAutoCenterWidth,0,NULL);
+		SetWindowPos(NULL, 0, 0, m_iAutoCenterWidth, 0, NULL);
 	}
 
 	// This effect only applies when opening non-CEditor IDD_BLANK_DIALOG windows
-	if (m_hWndPrevious && !m_lpNonModalParent && m_hwndCenteringWindow && IDD_BLANK_DIALOG == (int) m_lpszTemplateName)
+	if (m_hWndPrevious && !m_lpNonModalParent && m_hwndCenteringWindow && IDD_BLANK_DIALOG == (int)m_lpszTemplateName)
 	{
 		// Cheap cascade effect
-		RECT rc = {0};
+		RECT rc = { 0 };
 		(void) ::GetWindowRect(m_hWndPrevious, &rc);
 		LONG lOffset = GetSystemMetrics(SM_CXSMSIZE);
 		(void) ::SetWindowPos(m_hWnd, NULL, rc.left + lOffset, rc.top + lOffset, 0, 0, SWP_NOSIZE | SWP_NOZORDER);

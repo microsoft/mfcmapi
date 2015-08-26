@@ -15,7 +15,7 @@
 #include "PropertyTagEditor.h"
 #include "InterpretProp2.h"
 
-static TCHAR* CLASS = _T("CMailboxTableDlg");
+static wstring CLASS = L"CMailboxTableDlg";
 
 /////////////////////////////////////////////////////////////////////////////
 // CMailboxTableDlg dialog
@@ -72,7 +72,7 @@ void CMailboxTableDlg::OnInitMenu(_In_ CMenu* pMenu)
 
 void CMailboxTableDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 {
-	DebugPrintEx(DBGCreateDialog, CLASS, _T("CreateDialogAndMenu"), _T("id = 0x%X\n"), nIDMenuResource);
+	DebugPrintEx(DBGCreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
 	CContentsTableDlg::CreateDialogAndMenu(nIDMenuResource);
 
 	UpdateMenuString(

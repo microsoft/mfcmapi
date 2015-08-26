@@ -9,7 +9,7 @@
 #include "SmartView\SmartView.h"
 #include "Editor.h"
 
-static TCHAR* SPECIALFOLDERCLASS = _T("SpecialFolderEditor"); // STRING_OK
+static wstring SPECIALFOLDERCLASS = L"SpecialFolderEditor"; // STRING_OK
 class SpecialFolderEditor : public CEditor
 {
 public:
@@ -28,8 +28,8 @@ private:
 
 SpecialFolderEditor::SpecialFolderEditor(
 	_In_ CWnd* pParentWnd,
-	_In_ LPMDB lpMDB):
-CEditor(pParentWnd, IDS_QSSPECIALFOLDERS, NULL, 1, CEDITOR_BUTTON_OK, NULL, NULL, NULL)
+	_In_ LPMDB lpMDB) :
+	CEditor(pParentWnd, IDS_QSSPECIALFOLDERS, NULL, 1, CEDITOR_BUTTON_OK, NULL, NULL, NULL)
 {
 	TRACE_CONSTRUCTOR(SPECIALFOLDERCLASS);
 
@@ -61,21 +61,21 @@ struct sfCol
 };
 
 sfCol g_sfCol[] = {
-	{IDS_SHARP, PT_LONG},
-	{IDS_QSSFFOLDERNAME, PT_NULL},
-	{IDS_QSSFSTENTRYID, PT_NULL},
-	{IDS_QSSFLOCALNAME, PT_NULL},
-	{IDS_QSSFCONTAINERCLASS, PT_NULL},
-	{IDS_QSSFCOMMENT, PT_LONG},
-	{IDS_QSSFCONTENTCOUNT, PT_LONG},
-	{IDS_QSSFHIDDENCONTENTCOUNT, PT_LONG},
-	{IDS_QSSFUNREAD, PT_LONG},
-	{IDS_QSSFCHILDCOUNT, PT_LONG},
-	{IDS_QSSFFOLDERTYPE, PT_NULL},
-	{IDS_QSSFCREATIONTIME, PT_NULL},
-	{IDS_QSSFLASTMODIFICATIONTIME, PT_NULL},
-	{IDS_QSSFRIGHTS, PT_NULL},
-	{IDS_QSSFLTENTRYID, PT_NULL},
+	{ IDS_SHARP, PT_LONG },
+	{ IDS_QSSFFOLDERNAME, PT_NULL },
+	{ IDS_QSSFSTENTRYID, PT_NULL },
+	{ IDS_QSSFLOCALNAME, PT_NULL },
+	{ IDS_QSSFCONTAINERCLASS, PT_NULL },
+	{ IDS_QSSFCOMMENT, PT_LONG },
+	{ IDS_QSSFCONTENTCOUNT, PT_LONG },
+	{ IDS_QSSFHIDDENCONTENTCOUNT, PT_LONG },
+	{ IDS_QSSFUNREAD, PT_LONG },
+	{ IDS_QSSFCHILDCOUNT, PT_LONG },
+	{ IDS_QSSFFOLDERTYPE, PT_NULL },
+	{ IDS_QSSFCREATIONTIME, PT_NULL },
+	{ IDS_QSSFLASTMODIFICATIONTIME, PT_NULL },
+	{ IDS_QSSFRIGHTS, PT_NULL },
+	{ IDS_QSSFLTENTRYID, PT_NULL },
 };
 ULONG g_ulsfCol = _countof(g_sfCol);
 
@@ -105,7 +105,7 @@ void SpecialFolderEditor::LoadFolders()
 	ClearList(ulListNum);
 
 	ULONG i = 0;
-	for (i = 0 ; i < g_ulsfCol ; i++)
+	for (i = 0; i < g_ulsfCol; i++)
 	{
 		InsertColumn(ulListNum, i, g_sfCol[i].ulID, g_sfCol[i].ulType);
 	}
@@ -114,7 +114,7 @@ void SpecialFolderEditor::LoadFolders()
 	wstring szProp;
 
 	// This will iterate over all the special folders we know how to get.
-	for (i = DEFAULT_UNSPECIFIED + 1 ; i < NUM_DEFAULT_PROPS ; i++)
+	for (i = DEFAULT_UNSPECIFIED + 1; i < NUM_DEFAULT_PROPS; i++)
 	{
 		hRes = S_OK;
 		ULONG cb = NULL;
@@ -133,10 +133,10 @@ void SpecialFolderEditor::LoadFolders()
 			WC_H(GetDefaultFolderEID(i, m_lpMDB, &cb, &lpeid));
 			if (SUCCEEDED(hRes))
 			{
-				SPropValue eid = {0};
+				SPropValue eid = { 0 };
 				eid.ulPropTag = PR_ENTRYID;
 				eid.Value.bin.cb = cb;
-				eid.Value.bin.lpb = (LPBYTE) lpeid;
+				eid.Value.bin.lpb = (LPBYTE)lpeid;
 				InterpretProp(&eid, &szProp, NULL);
 				SetListStringW(ulListNum, iRow, iCol, szProp.c_str());
 				iCol++;
@@ -147,10 +147,10 @@ void SpecialFolderEditor::LoadFolders()
 				{
 					ULONG ulProps = 0;
 					LPSPropValue lpProps = NULL;
-					WC_H_GETPROPS(lpFolder->GetProps((LPSPropTagArray) &lptaFolderProps, fMapiUnicode, &ulProps, &lpProps));
+					WC_H_GETPROPS(lpFolder->GetProps((LPSPropTagArray)&lptaFolderProps, fMapiUnicode, &ulProps, &lpProps));
 
 					ULONG ulPropNum = 0;
-					for (ulPropNum = 0 ; ulPropNum < ulProps ; ulPropNum++)
+					for (ulPropNum = 0; ulPropNum < ulProps; ulPropNum++)
 					{
 						szTmp.Empty();
 						if (PT_LONG == PROP_TYPE(lpProps[ulPropNum].ulPropTag))
@@ -217,16 +217,16 @@ _Check_return_ bool SpecialFolderEditor::DoListEdit(ULONG ulListNum, int iItem, 
 	MyResults.InitPane(0, CreateMultiLinePane(NULL, NULL, true));
 
 	CString szTemp1;
-	ListPane* listPane = (ListPane*) GetControl(ulListNum);
+	ListPane* listPane = (ListPane*)GetControl(ulListNum);
 	if (listPane)
 	{
 		CString szLabel;
 		CString szData;
 		ULONG i = 0;
 		// We skip the first column, which is just the index
-		for (i = 1 ; i < g_ulsfCol ; i++)
+		for (i = 1; i < g_ulsfCol; i++)
 		{
-			(void) szLabel.LoadString(g_sfCol[i].ulID);
+			(void)szLabel.LoadString(g_sfCol[i].ulID);
 			szData = listPane->GetItemText(iItem, i);
 			szTemp1 += szLabel + ": " + szData + "\n";
 		}

@@ -11,7 +11,7 @@
 #include "ExtraPropTags.h"
 #include "ParseProperty.h"
 
-static TCHAR* COMPCLASS = _T("CResCompareEditor"); // STRING_OK
+static wstring COMPCLASS = L"CResCompareEditor"; // STRING_OK
 class CResCompareEditor : public CEditor
 {
 public:
@@ -69,7 +69,7 @@ _Check_return_ ULONG CResCompareEditor::HandleChange(UINT nID)
 
 // This class is only invoked by CRestrictEditor. CRestrictEditor always passes an alloc parent.
 // So all memory detached from this class is owned by a parent and must not be freed manually
-static TCHAR* CONTENTCLASS = _T("CResCombinedEditor"); // STRING_OK
+static wstring CONTENTCLASS = L"CResCombinedEditor"; // STRING_OK
 class CResCombinedEditor : public CEditor
 {
 public:
@@ -228,7 +228,7 @@ void CResCombinedEditor::OnEditAction1()
 	}
 } // CResCombinedEditor::OnEditAction1
 
-static TCHAR* BITMASKCLASS = _T("CResBitmaskEditor"); // STRING_OK
+static wstring BITMASKCLASS = L"CResBitmaskEditor"; // STRING_OK
 class CResBitmaskEditor : public CEditor
 {
 public:
@@ -280,7 +280,7 @@ _Check_return_ ULONG CResBitmaskEditor::HandleChange(UINT nID)
 	return i;
 } // CResBitmaskEditor::HandleChange
 
-static TCHAR* SIZECLASS = _T("CResSizeEditor"); // STRING_OK
+static wstring SIZECLASS = L"CResSizeEditor"; // STRING_OK
 class CResSizeEditor : public CEditor
 {
 public:
@@ -333,7 +333,7 @@ _Check_return_ ULONG CResSizeEditor::HandleChange(UINT nID)
 	return i;
 } // CResSizeEditor::HandleChange
 
-static TCHAR* EXISTCLASS = _T("CResExistEditor"); // STRING_OK
+static wstring EXISTCLASS = L"CResExistEditor"; // STRING_OK
 class CResExistEditor : public CEditor
 {
 public:
@@ -370,7 +370,7 @@ _Check_return_ ULONG CResExistEditor::HandleChange(UINT nID)
 
 // This class is only invoked by CRestrictEditor. CRestrictEditor always passes an alloc parent.
 // So all memory detached from this class is owned by a parent and must not be freed manually
-static TCHAR* SUBRESCLASS = _T("CResSubResEditor"); // STRING_OK
+static wstring SUBRESCLASS = L"CResSubResEditor"; // STRING_OK
 class CResSubResEditor : public CEditor
 {
 public:
@@ -450,7 +450,7 @@ void CResSubResEditor::OnEditAction1()
 
 // This class is only invoked by CRestrictEditor. CRestrictEditor always passes an alloc parent.
 // So all memory detached from this class is owned by a parent and must not be freed manually
-static TCHAR* ANDORCLASS = _T("CResAndOrEditor"); // STRING_OK
+static wstring ANDORCLASS = L"CResAndOrEditor"; // STRING_OK
 class CResAndOrEditor : public CEditor
 {
 public:
@@ -636,7 +636,7 @@ void CResAndOrEditor::OnOK()
 
 // This class is only invoked by CRestrictEditor. CRestrictEditor always passes an alloc parent.
 // So all memory detached from this class is owned by a parent and must not be freed manually
-static TCHAR* COMMENTCLASS = _T("CResCommentEditor"); // STRING_OK
+static wstring COMMENTCLASS = L"CResCommentEditor"; // STRING_OK
 class CResCommentEditor : public CEditor
 {
 public:
@@ -885,7 +885,7 @@ void CResCommentEditor::OnOK()
 // Note that an alloc parent is passed in to CRestrictEditor. If a parent isn't passed, we allocate one ourselves.
 // All other memory allocated in CRestrictEditor is owned by the parent and must not be freed manually
 // If we return (detach) memory to a caller, they must MAPIFreeBuffer only if they did not pass in a parent
-static TCHAR* CLASS = _T("CRestrictEditor"); // STRING_OK
+static wstring CLASS = L"CRestrictEditor"; // STRING_OK
 // Create an editor for a restriction
 // Takes LPSRestriction lpRes as input
 CRestrictEditor::CRestrictEditor(
@@ -1302,7 +1302,7 @@ HRESULT CRestrictEditor::EditComment(LPSRestriction lpSourceRes)
 
 // Note that no alloc parent is passed in to CCriteriaEditor. So we're completely responsible for freeing any memory we allocate.
 // If we return (detach) memory to a caller, they must MAPIFreeBuffer
-static TCHAR* CRITERIACLASS = _T("CCriteriaEditor"); // STRING_OK
+static wstring CRITERIACLASS = L"CCriteriaEditor"; // STRING_OK
 #define LISTNUM 4
 CCriteriaEditor::CCriteriaEditor(
 	_In_ CWnd* pParentWnd,

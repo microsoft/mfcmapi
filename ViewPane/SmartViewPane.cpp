@@ -5,7 +5,7 @@
 #include "..\UIFunctions.h"
 #include "..\SmartView\SmartView.h"
 
-static TCHAR* CLASS = _T("SmartViewPane");
+static wstring CLASS = L"SmartViewPane";
 
 ViewPane* CreateSmartViewPane(UINT uidLabel)
 {

@@ -3,7 +3,7 @@
 #include "CountedTextPane.h"
 #include "..\UIFunctions.h"
 
-static TCHAR* CLASS = _T("CountedTextPane");
+static wstring CLASS = L"CountedTextPane";
 
 ViewPane* CreateCountedTextPane(UINT uidLabel, bool bReadOnly, UINT uidCountLabel)
 {
@@ -11,7 +11,7 @@ ViewPane* CreateCountedTextPane(UINT uidLabel, bool bReadOnly, UINT uidCountLabe
 	return lpPane;
 }
 
-CountedTextPane::CountedTextPane(UINT uidLabel, bool bReadOnly, UINT uidCountLabel):TextPane(uidLabel, bReadOnly, true)
+CountedTextPane::CountedTextPane(UINT uidLabel, bool bReadOnly, UINT uidCountLabel) :TextPane(uidLabel, bReadOnly, true)
 {
 	m_iCountLabelWidth = 0;
 
@@ -44,7 +44,7 @@ int CountedTextPane::GetMinWidth(_In_ HDC hdc)
 	szCount.Format(_T("%s: 0x%08X = %u"), (LPCTSTR)m_szCountLabel, (int)m_iCount, (UINT)m_iCount); // STRING_OK
 	m_Count.SetWindowText(szCount);
 
-	SIZE sizeText = {0};
+	SIZE sizeText = { 0 };
 	::GetTextExtentPoint32(hdc, szCount, szCount.GetLength(), &sizeText);
 	m_iCountLabelWidth = sizeText.cx + m_iSideMargin;
 
@@ -89,7 +89,7 @@ int CountedTextPane::GetLines()
 void CountedTextPane::SetWindowPos(int x, int y, int width, int height)
 {
 	HRESULT hRes = S_OK;
-	int (iVariableHeight) = height - GetFixedHeight();
+	int(iVariableHeight) = height - GetFixedHeight();
 	if (0 != m_iControl)
 	{
 		y += m_iSmallHeightMargin;
@@ -133,7 +133,7 @@ void CountedTextPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 		| WS_CLIPSIBLINGS
 		| ES_READONLY
 		| WS_VISIBLE,
-		CRect(0,0,0,0),
+		CRect(0, 0, 0, 0),
 		pParent,
 		IDD_COUNTLABEL));
 	m_Count.SetWindowText(m_szCountLabel);

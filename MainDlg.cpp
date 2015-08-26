@@ -25,7 +25,7 @@
 #include "QuickStart.h"
 #include "UIFunctions.h"
 
-static TCHAR* CLASS = _T("CMainDlg");
+static wstring CLASS = L"CMainDlg";
 
 /////////////////////////////////////////////////////////////////////////////
 // CMainDlg dialog
@@ -409,7 +409,7 @@ _Check_return_ HRESULT CMainDlg::OpenItemProp(int iSelectedItem, __mfcmapiModify
 	HRESULT		hRes = S_OK;
 
 	*lppMAPIProp = NULL;
-	DebugPrintEx(DBGOpenItemProp, CLASS, _T("OpenItemProp"), _T("iSelectedItem = 0x%X\n"), iSelectedItem);
+	DebugPrintEx(DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
 
 	if (!m_lpContentsTableListCtrl || !lppMAPIProp) return MAPI_E_INVALID_PARAMETER;
 

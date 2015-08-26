@@ -7,7 +7,7 @@
 #include "FileDialogEx.h"
 #include "ImportProcs.h"
 
-static TCHAR* CLASS = _T("CHexEditor");
+static wstring CLASS = L"CHexEditor";
 
 enum __HexEditorFields
 {
@@ -18,8 +18,8 @@ enum __HexEditorFields
 	HEXED_SMARTVIEW
 };
 
-CHexEditor::CHexEditor(_In_ CParentWnd* pParentWnd, _In_ CMapiObjects* lpMapiObjects):
-	CEditor(pParentWnd, IDS_HEXEDITOR, NULL, 0, CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_ACTION2 | CEDITOR_BUTTON_ACTION3, IDS_IMPORT, IDS_EXPORT, IDS_CLOSE)
+CHexEditor::CHexEditor(_In_ CParentWnd* pParentWnd, _In_ CMapiObjects* lpMapiObjects) :
+CEditor(pParentWnd, IDS_HEXEDITOR, NULL, 0, CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_ACTION2 | CEDITOR_BUTTON_ACTION3, IDS_IMPORT, IDS_EXPORT, IDS_CLOSE)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	m_lpMapiObjects = lpMapiObjects;
@@ -31,7 +31,7 @@ CHexEditor::CHexEditor(_In_ CParentWnd* pParentWnd, _In_ CMapiObjects* lpMapiObj
 	InitPane(HEXED_BASE64, CreateCountedTextPane(IDS_BASE64STRING, false, IDS_CCH));
 	InitPane(HEXED_HEX, CreateCountedTextPane(IDS_HEX, false, IDS_CB));
 	InitPane(HEXED_SMARTVIEW, CreateSmartViewPane(IDS_SMARTVIEW));
-	DisplayParentedDialog(pParentWnd,1000);
+	DisplayParentedDialog(pParentWnd, 1000);
 } // CHexEditor::CHexEditor
 
 CHexEditor::~CHexEditor()
@@ -68,7 +68,7 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 	HRESULT hRes = S_OK;
 	ULONG i = CEditor::HandleChange(nID);
 
-	if ((ULONG) -1 == i) return (ULONG) -1;
+	if ((ULONG)-1 == i) return (ULONG)-1;
 
 	CString szTmpString;
 	LPBYTE	lpb = NULL;
@@ -77,106 +77,106 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 	size_t	cchEncodeStr = 0;
 	switch (i)
 	{
-	case(HEXED_ANSI):
+	case(HEXED_ANSI) :
+	{
+		size_t cchStr = NULL;
+		lpb = (LPBYTE)GetEditBoxTextA(HEXED_ANSI, &cchStr);
+
+		SetStringA(HEXED_UNICODE, (LPCSTR)lpb, cchStr);
+
+		// What we just read includes a NULL terminator, in both the string and count.
+		// When we write binary/base64, we don't want to include this NULL
+		if (cchStr) cchStr -= 1;
+		cb = cchStr * sizeof(CHAR);
+
+		WC_H(Base64Encode(cb, lpb, &cchEncodeStr, &szEncodeStr));
+		SetString(HEXED_BASE64, szEncodeStr);
+
+		SetBinary(HEXED_HEX, lpb, cb);
+	}
+					 break;
+	case(HEXED_UNICODE) : // Unicode string changed
+	{
+		size_t cchStr = NULL;
+		lpb = (LPBYTE)GetEditBoxTextW(HEXED_UNICODE, &cchStr);
+
+		SetStringW(HEXED_ANSI, (LPWSTR)lpb, cchStr);
+
+		// What we just read includes a NULL terminator, in both the string and count.
+		// When we write binary/base64, we don't want to include this NULL
+		if (cchStr) cchStr -= 1;
+		cb = cchStr * sizeof(WCHAR);
+
+		WC_H(Base64Encode(cb, lpb, &cchEncodeStr, &szEncodeStr));
+		SetString(HEXED_BASE64, szEncodeStr);
+
+		SetBinary(HEXED_HEX, lpb, cb);
+	}
+						  break;
+	case(HEXED_BASE64) : // base64 changed
+	{
+		szTmpString = GetStringUseControl(HEXED_BASE64);
+
+		// remove any whitespace before decoding
+		CleanString(&szTmpString);
+
+		cchEncodeStr = szTmpString.GetLength();
+		WC_H(Base64Decode(szTmpString, &cb, &lpb));
+
+		if (S_OK == hRes)
 		{
-			size_t cchStr = NULL;
-			lpb = (LPBYTE) GetEditBoxTextA(HEXED_ANSI,&cchStr);
-
-			SetStringA(HEXED_UNICODE, (LPCSTR) lpb, cchStr);
-
-			// What we just read includes a NULL terminator, in both the string and count.
-			// When we write binary/base64, we don't want to include this NULL
-			if (cchStr) cchStr -= 1;
-			cb = cchStr * sizeof(CHAR);
-
-			WC_H(Base64Encode(cb, lpb, &cchEncodeStr, &szEncodeStr));
-			SetString(HEXED_BASE64,szEncodeStr);
-
-			SetBinary(HEXED_HEX, lpb, cb);
-		}
-		break;
-	case(HEXED_UNICODE): // Unicode string changed
-		{
-			size_t cchStr = NULL;
-			lpb = (LPBYTE) GetEditBoxTextW(HEXED_UNICODE, &cchStr);
-
-			SetStringW(HEXED_ANSI, (LPWSTR) lpb, cchStr);
-
-			// What we just read includes a NULL terminator, in both the string and count.
-			// When we write binary/base64, we don't want to include this NULL
-			if (cchStr) cchStr -= 1;
-			cb = cchStr * sizeof(WCHAR);
-
-			WC_H(Base64Encode(cb, lpb, &cchEncodeStr, &szEncodeStr));
-			SetString(HEXED_BASE64,szEncodeStr);
-
-			SetBinary(HEXED_HEX, lpb, cb);
-		}
-		break;
-	case(HEXED_BASE64): // base64 changed
-		{
-			szTmpString = GetStringUseControl(HEXED_BASE64);
-
-			// remove any whitespace before decoding
-			CleanString(&szTmpString);
-
-			cchEncodeStr = szTmpString.GetLength();
-			WC_H(Base64Decode(szTmpString,&cb, &lpb));
-
-			if (S_OK == hRes)
+			SetStringA(HEXED_ANSI, (LPCSTR)lpb, cb);
+			if (!(cb % 2)) // Set Unicode String
 			{
-				SetStringA(HEXED_ANSI, (LPCSTR)lpb, cb);
-				if (!(cb % 2)) // Set Unicode String
-				{
-					SetStringW(HEXED_UNICODE, (LPWSTR)lpb, cb/sizeof(WCHAR));
-				}
-				else
-				{
-					SetString(HEXED_UNICODE,_T(""));
-				}
-				SetBinary(HEXED_HEX, lpb, cb);
+				SetStringW(HEXED_UNICODE, (LPWSTR)lpb, cb / sizeof(WCHAR));
 			}
 			else
 			{
-				SetString(HEXED_ANSI,_T(""));
-				SetString(HEXED_UNICODE,_T(""));
-				SetBinary(HEXED_HEX, 0, 0);
+				SetString(HEXED_UNICODE, _T(""));
 			}
-			delete[] lpb;
+			SetBinary(HEXED_HEX, lpb, cb);
 		}
-		break;
-	case(HEXED_HEX): // binary changed
+		else
 		{
-			if (GetBinaryUseControl(HEXED_HEX,&cb,&lpb))
+			SetString(HEXED_ANSI, _T(""));
+			SetString(HEXED_UNICODE, _T(""));
+			SetBinary(HEXED_HEX, 0, 0);
+		}
+		delete[] lpb;
+	}
+						 break;
+	case(HEXED_HEX) : // binary changed
+	{
+		if (GetBinaryUseControl(HEXED_HEX, &cb, &lpb))
+		{
+			// Treat as a NULL terminated string
+			// GetBinaryUseControl includes extra NULLs at the end of the buffer to make this work
+			SetStringA(HEXED_ANSI, (LPCSTR)lpb, cb + 1); // ansi string
+
+			if (!(cb % 2)) // Set Unicode String
 			{
 				// Treat as a NULL terminated string
 				// GetBinaryUseControl includes extra NULLs at the end of the buffer to make this work
-				SetStringA(HEXED_ANSI,(LPCSTR) lpb, cb+1); // ansi string
-
-				if (!(cb % 2)) // Set Unicode String
-				{
-					// Treat as a NULL terminated string
-					// GetBinaryUseControl includes extra NULLs at the end of the buffer to make this work
-					SetStringW(HEXED_UNICODE,(LPWSTR) lpb, cb/sizeof(WCHAR)+1);
-				}
-				else
-				{
-					SetString(HEXED_UNICODE,_T(""));
-				}
-
-				WC_H(Base64Encode(cb, lpb, &cchEncodeStr, &szEncodeStr));
-				SetString(HEXED_BASE64,szEncodeStr);
+				SetStringW(HEXED_UNICODE, (LPWSTR)lpb, cb / sizeof(WCHAR) + 1);
 			}
 			else
 			{
-				SetString(HEXED_ANSI,_T(""));
-				SetString(HEXED_UNICODE,_T(""));
-				SetString(HEXED_BASE64,_T(""));
+				SetString(HEXED_UNICODE, _T(""));
 			}
-			delete[] lpb;
 
+			WC_H(Base64Encode(cb, lpb, &cchEncodeStr, &szEncodeStr));
+			SetString(HEXED_BASE64, szEncodeStr);
 		}
-		break;
+		else
+		{
+			SetString(HEXED_ANSI, _T(""));
+			SetString(HEXED_UNICODE, _T(""));
+			SetString(HEXED_BASE64, _T(""));
+		}
+		delete[] lpb;
+
+	}
+					  break;
 	default:
 		break;
 	}
@@ -184,13 +184,13 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 	if (HEXED_SMARTVIEW != i)
 	{
 		// length of base64 encoded string
-		CountedTextPane* lpPane = (CountedTextPane*) GetControl(HEXED_BASE64);
+		CountedTextPane* lpPane = (CountedTextPane*)GetControl(HEXED_BASE64);
 		if (lpPane)
 		{
 			lpPane->SetCount(cchEncodeStr);
 		}
 
-		lpPane = (CountedTextPane*) GetControl(HEXED_HEX);
+		lpPane = (CountedTextPane*)GetControl(HEXED_HEX);
 		if (lpPane)
 		{
 			lpPane->SetCount(cb);
@@ -209,11 +209,11 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 void CHexEditor::UpdateParser()
 {
 	// Find out how to interpret the data
-	SmartViewPane* lpPane = (SmartViewPane*) GetControl(HEXED_SMARTVIEW);
+	SmartViewPane* lpPane = (SmartViewPane*)GetControl(HEXED_SMARTVIEW);
 	if (lpPane)
 	{
-		SBinary Bin = {0};
-		if (GetBinaryUseControl(HEXED_HEX,(size_t*) &Bin.cb,&Bin.lpb))
+		SBinary Bin = { 0 };
+		if (GetBinaryUseControl(HEXED_HEX, (size_t*)&Bin.cb, &Bin.lpb))
 		{
 			lpPane->Parse(Bin);
 			delete[] Bin.lpb;
@@ -257,7 +257,7 @@ void CHexEditor::OnEditAction1()
 
 			if (lpStream)
 			{
-				TextPane* lpPane = (TextPane*) GetControl(HEXED_HEX);
+				TextPane* lpPane = (TextPane*)GetControl(HEXED_HEX);
 				if (lpPane)
 				{
 					lpPane->InitEditFromBinaryStream(lpStream);
@@ -304,7 +304,7 @@ void CHexEditor::OnEditAction2()
 
 			if (lpStream)
 			{
-				TextPane* lpPane = (TextPane*) GetControl(HEXED_HEX);
+				TextPane* lpPane = (TextPane*)GetControl(HEXED_HEX);
 				if (lpPane)
 				{
 					lpPane->WriteToBinaryStream(lpStream);

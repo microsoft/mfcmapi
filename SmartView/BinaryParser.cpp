@@ -2,7 +2,7 @@
 #include "..\stdafx.h"
 #include "BinaryParser.h"
 
-static TCHAR* CLASS = _T("CBinaryParser");
+static wstring CLASS = L"CBinaryParser";
 
 CBinaryParser::CBinaryParser()
 {
@@ -19,7 +19,7 @@ CBinaryParser::CBinaryParser(size_t cbBin, _In_count_(cbBin) LPBYTE lpBin)
 
 void CBinaryParser::Init(size_t cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
-	DebugPrintEx(DBGSmartView, CLASS, _T("Init"), _T("cbBin = 0x%08X = %u\n"), (int)cbBin, (UINT)cbBin);
+	DebugPrintEx(DBGSmartView, CLASS, L"Init", L"cbBin = 0x%08X = %u\n", (int)cbBin, (UINT)cbBin);
 	m_cbBin = cbBin;
 	m_lpBin = lpBin;
 	m_lpCur = lpBin;
@@ -33,7 +33,7 @@ bool CBinaryParser::Empty()
 
 void CBinaryParser::Advance(size_t cbAdvance)
 {
-	DebugPrintEx(DBGSmartView, CLASS, _T("Advance"), _T("Advancing 0x%08X = %u bytes.\n"), (int)cbAdvance, (UINT)cbAdvance);
+	DebugPrintEx(DBGSmartView, CLASS, L"Advance", L"Advancing 0x%08X = %u bytes.\n", (int)cbAdvance, (UINT)cbAdvance);
 	// Refuse to advance a negative count
 	if (cbAdvance < 0) return;
 	m_lpCur += cbAdvance;
@@ -41,13 +41,13 @@ void CBinaryParser::Advance(size_t cbAdvance)
 
 void CBinaryParser::Rewind()
 {
-	DebugPrintEx(DBGSmartView, CLASS, _T("Rewind"), _T("Rewinding to the beginning of the stream\n"));
+	DebugPrintEx(DBGSmartView, CLASS, L"Rewind", L"Rewinding to the beginning of the stream\n");
 	m_lpCur = m_lpBin;
 }
 
 size_t CBinaryParser::GetCurrentOffset()
 {
-	DebugPrintEx(DBGSmartView, CLASS, _T("GetCurrentOffset"), _T("Returning offset 0x%08X = %d bytes.\n"), (int)(m_lpCur - m_lpBin), (int)(m_lpCur - m_lpBin));
+	DebugPrintEx(DBGSmartView, CLASS, L"GetCurrentOffset", L"Returning offset 0x%08X = %d bytes.\n", (int)(m_lpCur - m_lpBin), (int)(m_lpCur - m_lpBin));
 	return m_lpCur - m_lpBin;
 }
 
@@ -58,7 +58,7 @@ LPBYTE CBinaryParser::GetCurrentAddress()
 
 void CBinaryParser::SetCurrentOffset(size_t stOffset)
 {
-	DebugPrintEx(DBGSmartView, CLASS, _T("SetCurrentOffset"), _T("Setting offset 0x%08X = %u bytes.\n"), (int)stOffset, (UINT)stOffset);
+	DebugPrintEx(DBGSmartView, CLASS, L"SetCurrentOffset", L"Setting offset 0x%08X = %u bytes.\n", (int)stOffset, (UINT)stOffset);
 	m_lpCur = m_lpBin + stOffset;
 }
 
@@ -75,18 +75,18 @@ bool CBinaryParser::CheckRemainingBytes(size_t cbBytes)
 {
 	if (!m_lpCur)
 	{
-		DebugPrintEx(DBGSmartView, CLASS, _T("CheckRemainingBytes"), _T("Current offset does not exist!\n"));
+		DebugPrintEx(DBGSmartView, CLASS, L"CheckRemainingBytes", L"Current offset does not exist!\n");
 		return false;
 	}
 
 	size_t cbRemaining = RemainingBytes();
 	if (cbBytes > cbRemaining)
 	{
-		DebugPrintEx(DBGSmartView, CLASS, _T("CheckRemainingBytes"), _T("Bytes requested (0x%08X = %u) > remaining bytes (0x%08X = %u)\n"),
+		DebugPrintEx(DBGSmartView, CLASS, L"CheckRemainingBytes", L"Bytes requested (0x%08X = %u) > remaining bytes (0x%08X = %u)\n",
 			(int)cbBytes, (UINT)cbBytes,
 			(int)cbRemaining, (UINT)cbRemaining);
-		DebugPrintEx(DBGSmartView, CLASS, _T("CheckRemainingBytes"), _T("Total Bytes: 0x%08X = %u\n"), (int)m_cbBin, (UINT)m_cbBin);
-		DebugPrintEx(DBGSmartView, CLASS, _T("CheckRemainingBytes"), _T("Current offset: 0x%08X = %d\n"), (int)(m_lpCur - m_lpBin), (int)(m_lpCur - m_lpBin));
+		DebugPrintEx(DBGSmartView, CLASS, L"CheckRemainingBytes", L"Total Bytes: 0x%08X = %u\n", (int)m_cbBin, (UINT)m_cbBin);
+		DebugPrintEx(DBGSmartView, CLASS, L"CheckRemainingBytes", L"Current offset: 0x%08X = %d\n", (int)(m_lpCur - m_lpBin), (int)(m_lpCur - m_lpBin));
 		return false;
 	}
 

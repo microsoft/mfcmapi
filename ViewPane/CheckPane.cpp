@@ -2,14 +2,14 @@
 #include "..\stdafx.h"
 #include "CheckPane.h"
 
-static TCHAR* CLASS = _T("CheckPane");
+static wstring CLASS = L"CheckPane";
 
 ViewPane* CreateCheckPane(UINT uidLabel, bool bVal, bool bReadOnly)
 {
 	return new CheckPane(uidLabel, bReadOnly, bVal);
 }
 
-CheckPane::CheckPane(UINT uidLabel, bool bReadOnly, bool bCheck):ViewPane(uidLabel, bReadOnly)
+CheckPane::CheckPane(UINT uidLabel, bool bReadOnly, bool bCheck) :ViewPane(uidLabel, bReadOnly)
 {
 	m_bCheckValue = bCheck;
 }
@@ -54,8 +54,8 @@ void CheckPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC /*hdc*/)
 		| WS_CLIPSIBLINGS
 		| WS_VISIBLE
 		| BS_AUTOCHECKBOX
-		| (m_bReadOnly?WS_DISABLED :0),
-		CRect(0,0,0,0),
+		| (m_bReadOnly ? WS_DISABLED : 0),
+		CRect(0, 0, 0, 0),
 		pParent,
 		m_nID));
 	m_Check.SetCheck(m_bCheckValue);

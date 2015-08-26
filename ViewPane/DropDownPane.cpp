@@ -4,7 +4,7 @@
 #include "..\String.h"
 #include "..\InterpretProp2.h"
 
-static TCHAR* CLASS = _T("DropDownPane");
+static wstring CLASS = L"DropDownPane";
 
 ViewPane* CreateDropDownPane(UINT uidLabel, ULONG ulDropList, _In_opt_count_(ulDropList) UINT* lpuidDropList, bool bReadOnly)
 {
@@ -21,7 +21,7 @@ ViewPane* CreateDropDownGuidPane(UINT uidLabel, bool bReadOnly)
 	return new DropDownPane(uidLabel, bReadOnly, 0, NULL, NULL, true);
 }
 
-DropDownPane::DropDownPane(UINT uidLabel, bool bReadOnly, ULONG ulDropList, _In_opt_count_(ulDropList) UINT* lpuidDropList, _In_opt_count_(ulDropList) LPNAME_ARRAY_ENTRY lpnaeDropList, bool bGUID):ViewPane(uidLabel, bReadOnly)
+DropDownPane::DropDownPane(UINT uidLabel, bool bReadOnly, ULONG ulDropList, _In_opt_count_(ulDropList) UINT* lpuidDropList, _In_opt_count_(ulDropList) LPNAME_ARRAY_ENTRY lpnaeDropList, bool bGUID) :ViewPane(uidLabel, bReadOnly)
 {
 	m_ulDropList = ulDropList;
 	m_lpuidDropList = lpuidDropList;
@@ -49,9 +49,9 @@ int DropDownPane::GetMinWidth(_In_ HDC hdc)
 	ULONG iDropString = 0;
 	for (iDropString = 0; iDropString < m_ulDropList; iDropString++)
 	{
-		SIZE sizeDrop = {0};
+		SIZE sizeDrop = { 0 };
 		CString szDropString;
-		m_DropDown.GetLBText(iDropString,szDropString);
+		m_DropDown.GetLBText(iDropString, szDropString);
 		::GetTextExtentPoint32(hdc, szDropString, szDropString.GetLength(), &sizeDrop);
 		cxDropDown = max(cxDropDown, sizeDrop.cx);
 	}
@@ -109,7 +109,7 @@ void DropDownPane::SetWindowPos(int x, int y, int width, int height)
 	// Note - Real height of a combo box is fixed at m_iEditHeight
 	// Height we set here influences the amount of dropdown entries we see
 	// Only really matters on Win2k and below.
-	ULONG ulDrops = 1 + min(m_ulDropList,4);
+	ULONG ulDrops = 1 + min(m_ulDropList, 4);
 
 	EC_B(m_DropDown.SetWindowPos(NULL, x, y, width, m_iEditHeight * ulDrops, SWP_NOZORDER));
 }
@@ -141,14 +141,14 @@ void DropDownPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC /*hdc*/
 		| CBS_AUTOHSCROLL
 		| CBS_DISABLENOSCROLL
 		| dwDropStyle,
-		CRect(0,0,0,0),
+		CRect(0, 0, 0, 0),
 		pParent,
 		m_nID));
 
 	ULONG iDropNum = 0;
 	if (m_lpuidDropList)
 	{
-		for (iDropNum=0 ; iDropNum < m_ulDropList ; iDropNum++)
+		for (iDropNum = 0; iDropNum < m_ulDropList; iDropNum++)
 		{
 			CString szDropString;
 			EC_B(szDropString.LoadString(m_lpuidDropList[iDropNum]));
@@ -162,7 +162,7 @@ void DropDownPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC /*hdc*/
 	}
 	else if (m_lpnaeDropList)
 	{
-		for (iDropNum=0 ; iDropNum < m_ulDropList ; iDropNum++)
+		for (iDropNum = 0; iDropNum < m_ulDropList; iDropNum++)
 		{
 #ifdef UNICODE
 			m_DropDown.InsertString(
@@ -170,7 +170,7 @@ void DropDownPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC /*hdc*/
 				m_lpnaeDropList[iDropNum].lpszName);
 #else
 			LPSTR szAnsiName = NULL;
-			EC_H(UnicodeToAnsi(m_lpnaeDropList[iDropNum].lpszName,&szAnsiName));
+			EC_H(UnicodeToAnsi(m_lpnaeDropList[iDropNum].lpszName, &szAnsiName));
 			if (SUCCEEDED(hRes))
 			{
 				m_DropDown.InsertString(
@@ -188,7 +188,7 @@ void DropDownPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC /*hdc*/
 	// If this is a GUID list, load up our list of guids
 	if (m_bGUID)
 	{
-		for (iDropNum=0 ; iDropNum < ulPropGuidArray ; iDropNum++)
+		for (iDropNum = 0; iDropNum < ulPropGuidArray; iDropNum++)
 		{
 			LPTSTR szGUID = wstringToLPTSTR(GUIDToStringAndName(PropGuidArray[iDropNum].lpGuid));
 			InsertDropString(iDropNum, szGUID);
@@ -196,14 +196,14 @@ void DropDownPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC /*hdc*/
 		}
 	}
 
-	m_DropDown.SetCurSel((int) m_iDropSelectionValue);
+	m_DropDown.SetCurSel((int)m_iDropSelectionValue);
 
 	m_bInitialized = true;
 }
 
 void DropDownPane::InsertDropString(int iRow, _In_z_ LPCTSTR szText)
 {
-	m_DropDown.InsertString(iRow,szText);
+	m_DropDown.InsertString(iRow, szText);
 	m_ulDropList++;
 }
 
@@ -296,7 +296,7 @@ void DropDownPane::SetDropDownSelection(_In_opt_z_ LPCTSTR szText)
 {
 	HRESULT hRes = S_OK;
 
-	int iSelect = m_DropDown.SelectString(0,szText);
+	int iSelect = m_DropDown.SelectString(0, szText);
 
 	// if we can't select, try pushing the text in there
 	// not all dropdowns will support this!
@@ -306,7 +306,7 @@ void DropDownPane::SetDropDownSelection(_In_opt_z_ LPCTSTR szText)
 			m_DropDown.m_hWnd,
 			WM_SETTEXT,
 			NULL,
-			(LPARAM) szText));
+			(LPARAM)szText));
 	}
 }
 
@@ -318,6 +318,6 @@ void DropDownPane::SetSelection(DWORD_PTR iSelection)
 	}
 	else
 	{
-		m_DropDown.SetCurSel((int) iSelection);
+		m_DropDown.SetCurSel((int)iSelection);
 	}
 }

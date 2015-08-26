@@ -17,7 +17,7 @@ enum __StreamEditorTypes
 	EDITOR_STREAM_UNICODE,
 };
 
-static TCHAR* CLASS = _T("CStreamEditor");
+static wstring CLASS = L"CStreamEditor";
 
 ULONG PreferredStreamType(ULONG ulPropTag)
 {
@@ -228,7 +228,7 @@ void CStreamEditor::OpenPropertyStream(bool bWrite, bool bRTF)
 	ULONG ulFlags = NULL;
 	ULONG ulRTFFlags = m_ulRTFFlags;
 
-	DebugPrintEx(DBGStream, CLASS, _T("OpenPropertyStream"), _T("opening property 0x%X (== %s) from %p, bWrite = 0x%X\n"), m_ulPropTag, (LPCTSTR)TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, true), m_lpMAPIProp, bWrite);
+	DebugPrintEx(DBGStream, CLASS, L"OpenPropertyStream", L"opening property 0x%X (= %ws) from %p, bWrite = 0x%X\n", m_ulPropTag, LPCTSTRToWstring(TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, true)).c_str(), m_lpMAPIProp, bWrite);
 
 	if (bWrite)
 	{
@@ -284,7 +284,7 @@ void CStreamEditor::OpenPropertyStream(bool bWrite, bool bRTF)
 			if (ulPropTag != m_ulPropTag)
 			{
 				hRes = S_OK;
-				DebugPrintEx(DBGStream, CLASS, _T("OpenPropertyStream"), _T("Retrying as 0x%X (== %s)\n"), m_ulPropTag, (LPCTSTR)TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, true));
+				DebugPrintEx(DBGStream, CLASS, L"OpenPropertyStream", L"Retrying as 0x%X (= %ws)\n", m_ulPropTag, LPCTSTRToWstring(TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, true)).c_str());
 				WC_MAPI(m_lpMAPIProp->OpenProperty(
 					ulPropTag,
 					&IID_IStream,
@@ -346,7 +346,7 @@ void CStreamEditor::ReadTextStreamFromProperty()
 	if (!IsValidEdit(m_iTextBox)) return;
 	if (!IsValidEdit(m_iBinBox)) return;
 
-	DebugPrintEx(DBGStream, CLASS, _T("ReadTextStreamFromProperty"), _T("opening property 0x%X (== %s) from %p\n"), m_ulPropTag, (LPCTSTR)TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, true), m_lpMAPIProp);
+	DebugPrintEx(DBGStream, CLASS, L"ReadTextStreamFromProperty", L"opening property 0x%X (= %ws) from %p\n", m_ulPropTag, LPCTSTRToWstring(TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, true)).c_str(), m_lpMAPIProp);
 
 	// If we don't have a stream to display, put up an error instead
 	if (FAILED(m_StreamError) || !m_lpStream)
@@ -404,13 +404,13 @@ void CStreamEditor::WriteTextStreamToProperty()
 		if (GetBinaryUseControl(m_iBinBox, &cb, &lpb))
 		{
 			EC_MAPI(m_lpStream->Write(lpb, (ULONG)cb, &cbWritten));
-			DebugPrintEx(DBGStream, CLASS, _T("WriteTextStreamToProperty"), _T("wrote 0x%X\n"), cbWritten);
+			DebugPrintEx(DBGStream, CLASS, L"WriteTextStreamToProperty", L"wrote 0x%X\n", cbWritten);
 
 			EC_MAPI(m_lpStream->Commit(STGC_DEFAULT));
 
 			if (m_bDisableSave)
 			{
-				DebugPrintEx(DBGStream, CLASS, _T("WriteTextStreamToProperty"), _T("Save was disabled.\n"));
+				DebugPrintEx(DBGStream, CLASS, L"WriteTextStreamToProperty", L"Save was disabled.\n");
 			}
 			else
 			{
@@ -421,7 +421,7 @@ void CStreamEditor::WriteTextStreamToProperty()
 		delete[] lpb;
 	}
 
-	DebugPrintEx(DBGStream, CLASS, _T("WriteTextStreamToProperty"), _T("Wrote out this stream:\n"));
+	DebugPrintEx(DBGStream, CLASS, L"WriteTextStreamToProperty", L"Wrote out this stream:\n");
 	DebugPrintStream(DBGStream, m_lpStream);
 } // CStreamEditor::WriteTextStreamToProperty
 
@@ -481,13 +481,13 @@ _Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
 			default:
 				// Treat as a NULL terminated string
 				// GetBinaryUseControl includes extra NULLs at the end of the buffer to make this work
-				SetStringA(m_iTextBox, (LPCSTR)lpb, cb / sizeof(CHAR)+1);
+				SetStringA(m_iTextBox, (LPCSTR)lpb, cb / sizeof(CHAR) + 1);
 				if (lpBinPane) lpBinPane->SetCount(cb);
 				break;
 			case EDITOR_STREAM_UNICODE:
 				// Treat as a NULL terminated string
 				// GetBinaryUseControl includes extra NULLs at the end of the buffer to make this work
-				SetStringW(m_iTextBox, (LPCWSTR)lpb, cb / sizeof(WCHAR)+1);
+				SetStringW(m_iTextBox, (LPCWSTR)lpb, cb / sizeof(WCHAR) + 1);
 				if (lpBinPane) lpBinPane->SetCount(cb);
 				break;
 			}

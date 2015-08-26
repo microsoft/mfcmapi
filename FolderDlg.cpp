@@ -26,7 +26,7 @@
 #include "MAPIMime.h"
 #include "InterpretProp2.h"
 
-static TCHAR* CLASS = _T("CFolderDlg");
+static wstring CLASS = L"CFolderDlg";
 
 /////////////////////////////////////////////////////////////////////////////
 // CFolderDlg dialog
@@ -404,7 +404,7 @@ void CFolderDlg::HandleCopy()
 	HRESULT			hRes = S_OK;
 	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
-	DebugPrintEx(DBGGeneric, CLASS, _T("HandleCopy"), _T("\n"));
+	DebugPrintEx(DBGGeneric, CLASS, L"HandleCopy", L"\n");
 	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return;
 
 	LPENTRYLIST lpEIDs = NULL;
@@ -422,7 +422,7 @@ _Check_return_ bool CFolderDlg::HandlePaste()
 	HRESULT		hRes = S_OK;
 	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
-	DebugPrintEx(DBGGeneric, CLASS, _T("HandlePaste"), _T("\n"));
+	DebugPrintEx(DBGGeneric, CLASS, L"HandlePaste", L"\n");
 	if (!m_lpMapiObjects || !m_lpContainer) return false;
 
 	CEditor MyData(
@@ -1479,7 +1479,7 @@ void CFolderDlg::OnSaveMessageToFile()
 {
 	HRESULT	hRes = S_OK;
 
-	DebugPrintEx(DBGGeneric, CLASS, _T("OnSaveMessageToFile"), _T("\n"));
+	DebugPrintEx(DBGGeneric, CLASS, L"OnSaveMessageToFile", L"\n");
 
 	CEditor MyData(
 		this,
@@ -1824,7 +1824,7 @@ void CFolderDlg::OnSetReadFlag()
 
 	if (!m_lpContentsTableListCtrl) return;
 
-	DebugPrintEx(DBGGeneric, CLASS, _T("OnSetReadFlag"), _T("\n"));
+	DebugPrintEx(DBGGeneric, CLASS, L"OnSetReadFlag", L"\n");
 
 	CEditor MyFlags(
 		this,
@@ -1896,7 +1896,7 @@ void CFolderDlg::OnGetMessageOptions()
 	LPMAPISESSION lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
-	DebugPrintEx(DBGGeneric, CLASS, _T("OnGetMessageOptions"), _T("\n"));
+	DebugPrintEx(DBGGeneric, CLASS, L"OnGetMessageOptions", L"\n");
 
 	CEditor MyAddress(
 		this,
@@ -1951,7 +1951,7 @@ _Check_return_ HRESULT CFolderDlg::OnGetMessageStatus(int /*iItem*/, _In_ SortLi
 
 	if (!lpData || !m_lpContainer) return MAPI_E_INVALID_PARAMETER;
 
-	DebugPrintEx(DBGGeneric, CLASS, _T("OnGetMessageStatus"), _T("\n"));
+	DebugPrintEx(DBGGeneric, CLASS, L"OnGetMessageStatus", L"\n");
 
 	ULONG ulMessageStatus = NULL;
 
@@ -1996,7 +1996,7 @@ void CFolderDlg::OnSetMessageStatus()
 	MyData.InitPane(0, CreateSingleLinePane(IDS_STATUSINHEX, NULL, false));
 	MyData.InitPane(1, CreateSingleLinePane(IDS_MASKINHEX, NULL, false));
 
-	DebugPrintEx(DBGGeneric, CLASS, _T("OnSetMessageStatus"), _T("\n"));
+	DebugPrintEx(DBGGeneric, CLASS, L"OnSetMessageStatus", L"\n");
 
 	WC_H(MyData.DisplayDialog());
 
@@ -2044,7 +2044,7 @@ _Check_return_ HRESULT CFolderDlg::OnSubmitMessage(int iItem, _In_ SortListData*
 	LPMESSAGE		lpMessage = NULL;
 	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
-	DebugPrintEx(DBGGeneric, CLASS, _T("OnSubmitMesssage"), _T("\n"));
+	DebugPrintEx(DBGGeneric, CLASS, L"OnSubmitMesssage", L"\n");
 
 	if (-1 == iItem) return MAPI_E_INVALID_PARAMETER;
 
@@ -2071,7 +2071,7 @@ _Check_return_ HRESULT CFolderDlg::OnAbortSubmit(int iItem, _In_ SortListData* l
 	LPSBinary		lpMessageEID = NULL;
 	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
-	DebugPrintEx(DBGGeneric, CLASS, _T("OnSubmitMesssage"), _T("\n"));
+	DebugPrintEx(DBGGeneric, CLASS, L"OnSubmitMesssage", L"\n");
 
 	if (-1 == iItem) return MAPI_E_INVALID_PARAMETER;
 	if (!m_lpMapiObjects || !lpData) return MAPI_E_INVALID_PARAMETER;
