@@ -740,7 +740,7 @@ _Check_return_ HRESULT CSingleMAPIPropListCtrl::SetDataSource(_In_opt_ LPMAPIPRO
 _Check_return_ HRESULT CSingleMAPIPropListCtrl::SetDataSource(_In_opt_ LPMAPIPROPERTYBAG lpPropBag, bool bIsAB)
 {
 	HRESULT hRes = S_OK;
-	DebugPrintEx(DBGGeneric, CLASS,  L"SetDataSource", L"setting new data source\n");
+	DebugPrintEx(DBGGeneric, CLASS, L"SetDataSource", L"setting new data source\n");
 
 	// if nothing to do...do nothing
 	if (lpPropBag && lpPropBag->IsEqual(m_lpPropBag))
@@ -821,7 +821,7 @@ void CSingleMAPIPropListCtrl::SavePropsToXML()
 				int iItemCount = GetItemCount();
 
 				OutputToFile(fProps, g_szXMLHeader);
-				OutputToFile(fProps, _T("<propertypane>\n"));
+				OutputToFile(fProps, L"<propertypane>\n");
 				for (iRow = 0; iRow < iItemCount; iRow++)
 				{
 					CString szTemp1;
@@ -875,9 +875,9 @@ void CSingleMAPIPropListCtrl::SavePropsToXML()
 					szTemp1 = GetItemText(iRow, pcPROPSMARTVIEW);
 					OutputXMLValueToFile(fProps, PropXMLNames[pcPROPSMARTVIEW].uidName, (LPTSTR)(LPCTSTR)szTemp1, true, 2);
 
-					OutputToFile(fProps, _T("\t</property>\n"));
+					OutputToFile(fProps, L"\t</property>\n");
 				}
-				OutputToFile(fProps, _T("</propertypane>"));
+				OutputToFile(fProps, L"</propertypane>");
 				CloseFile(fProps);
 			}
 		}

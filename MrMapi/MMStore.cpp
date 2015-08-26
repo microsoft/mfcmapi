@@ -201,7 +201,7 @@ void PrintObjectProperties(_In_z_ LPCTSTR szObjType, _In_ LPMAPIPROP lpMAPIProp,
 	HRESULT hRes = S_OK;
 	if (!lpMAPIProp) return;
 
-	printf(g_szXMLHeader);
+	wprintf(g_szXMLHeader.c_str());
 	printf(_T("<%s>\n"), szObjType);
 
 	LPSPropValue lpAllProps = NULL;
@@ -254,7 +254,7 @@ void PrintStoreTable(_In_ LPMAPISESSION lpMAPISession, ULONG ulPropTag)
 	LPMAPITABLE lpStoreTable = NULL;
 	if (!lpMAPISession) return;
 
-	printf(g_szXMLHeader);
+	wprintf(g_szXMLHeader.c_str());
 	printf(_T("<storetable>\n"));
 	WC_MAPI(lpMAPISession->GetMsgStoresTable(0, &lpStoreTable));
 
