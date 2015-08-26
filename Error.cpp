@@ -4,27 +4,26 @@
 #include "ErrorArray.h"
 
 void LogFunctionCall(
-			  HRESULT hRes,
-			  HRESULT hrIgnore,
-			  bool bShowDialog,
-			  bool bMAPICall,
-			  bool bSystemCall,
-			  UINT uidErrorMsg,
-			  _In_opt_z_ LPCSTR szFunction,
-			  _In_z_ LPCSTR szFile,
-			  int iLine)
+	HRESULT hRes,
+	HRESULT hrIgnore,
+	bool bShowDialog,
+	bool bMAPICall,
+	bool bSystemCall,
+	UINT uidErrorMsg,
+	_In_opt_z_ LPCSTR szFunction,
+	_In_z_ LPCSTR szFile,
+	int iLine)
 {
 	if (fIsSet(DBGMAPIFunctions) && bMAPICall)
 	{
-		CString szFunctionString;
-		szFunctionString.FormatMessage(
+		wstring szFunctionString = formatmessage(
 			IDS_FUNCTION,
 			szFile,
 			iLine,
 			szFunction);
 
-		_Output(DBGMAPIFunctions, NULL, true, szFunctionString);
-		_Output(DBGMAPIFunctions, NULL, false, _T("\n"));
+		_OutputW(DBGMAPIFunctions, NULL, true, szFunctionString);
+		_OutputW(DBGMAPIFunctions, NULL, false, L"\n");
 	}
 
 	// Check if we have no work to do
@@ -41,7 +40,7 @@ void LogFunctionCall(
 	{
 		LPTSTR szErr = NULL;
 		DWORD dw = FormatMessage(
-			FORMAT_MESSAGE_ALLOCATE_BUFFER|FORMAT_MESSAGE_FROM_SYSTEM,
+			FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
 			0,
 			uidErrorMsg,
 			0,
@@ -54,11 +53,10 @@ void LogFunctionCall(
 			LocalFree(szErr);
 		}
 	}
-	else if (uidErrorMsg) (void) szErrorMsg.LoadString(uidErrorMsg);
+	else if (uidErrorMsg) (void)szErrorMsg.LoadString(uidErrorMsg);
 
-	CString szErrString;
-	szErrString.FormatMessage(
-		FAILED(hRes)?IDS_ERRFORMATSTRING:IDS_WARNFORMATSTRING,
+	wstring szErrString = formatmessage(
+		FAILED(hRes) ? IDS_ERRFORMATSTRING : IDS_WARNFORMATSTRING,
 		szErrorMsg,
 		ErrorNameFromErrorCode(hRes),
 		hRes,
@@ -66,8 +64,8 @@ void LogFunctionCall(
 		szFile,
 		iLine);
 
-	_Output(DBGHRes,NULL, true, szErrString);
-	_Output(DBGHRes,NULL, false, _T("\n"));
+	_OutputW(DBGHRes, NULL, true, szErrString);
+	_OutputW(DBGHRes, NULL, false, L"\n");
 
 	if (bShowDialog)
 	{
@@ -76,13 +74,15 @@ void LogFunctionCall(
 			NULL,
 			ID_PRODUCTNAME,
 			NULL,
-			(ULONG) 0,
+			(ULONG)0,
 			CEDITOR_BUTTON_OK);
-		Err.SetPromptPostFix(szErrString);
-		(void) Err.DisplayDialog();
+		LPTSTR lpszErr = wstringToLPTSTR(szErrString);
+		Err.SetPromptPostFix(lpszErr);
+		delete[] lpszErr;
+		(void)Err.DisplayDialog();
 #endif
 	}
-} // LogFunctionCall
+}
 
 _Check_return_ HRESULT CheckWin32Error(bool bDisplayDialog, _In_z_ LPCSTR szFile, int iLine, _In_z_ LPCSTR szFunction)
 {
@@ -90,38 +90,34 @@ _Check_return_ HRESULT CheckWin32Error(bool bDisplayDialog, _In_z_ LPCSTR szFile
 	HRESULT hRes = HRESULT_FROM_WIN32(dwErr);
 	LogFunctionCall(hRes, NULL, bDisplayDialog, false, true, dwErr, szFunction, szFile, iLine);
 	return hRes;
-} // CheckWin32Error
+}
 
 void __cdecl ErrDialog(_In_z_ LPCSTR szFile, int iLine, UINT uidErrorFmt, ...)
 {
-	CString szErrorFmt;
-	(void) szErrorFmt.LoadString(uidErrorFmt);
-	CString szErrorBegin;
-	CString szErrorEnd;
-	CString szCombo;
+	wstring szErrorFmt = loadstring(uidErrorFmt);
 
 	// Build out error message from the variant argument list
 	va_list argList = NULL;
 	va_start(argList, uidErrorFmt);
-	szErrorBegin.FormatV(szErrorFmt,argList);
+	wstring szErrorBegin = formatV(szErrorFmt, argList);
 	va_end(argList);
 
-	szErrorEnd.FormatMessage(IDS_INFILEONLINE,szFile,iLine);
+	wstring szCombo = szErrorBegin + formatmessage(IDS_INFILEONLINE, szFile, iLine);
 
-	szCombo = szErrorBegin+szErrorEnd;
-
-	_Output(DBGHRes,NULL, true, szCombo);
-	_Output(DBGHRes,NULL, false, _T("\n"));
+	_OutputW(DBGHRes, NULL, true, szCombo);
+	_OutputW(DBGHRes, NULL, false, L"\n");
 
 #ifndef MRMAPI
 	CEditor Err(
 		NULL,
 		ID_PRODUCTNAME,
 		NULL,
-		(ULONG) 0,
+		(ULONG)0,
 		CEDITOR_BUTTON_OK);
-	Err.SetPromptPostFix(szCombo);
-	(void) Err.DisplayDialog();
+	LPTSTR lpszCombo = wstringToLPTSTR(szCombo);
+	Err.SetPromptPostFix(lpszCombo);
+	delete[] lpszCombo;
+	(void)Err.DisplayDialog();
 #endif
 } // ErrDialog
 
@@ -132,9 +128,9 @@ _Check_return_ LPWSTR ErrorNameFromErrorCode(ULONG hrErr)
 {
 	ULONG i = 0;
 
-	for (i = 0;i < g_ulErrorArray;i++)
+	for (i = 0; i < g_ulErrorArray; i++)
 	{
-		if (g_ErrorArray[i].ulErrorName == hrErr) return (LPWSTR) g_ErrorArray[i].lpszName;
+		if (g_ErrorArray[i].ulErrorName == hrErr) return (LPWSTR)g_ErrorArray[i].lpszName;
 	}
 
 	HRESULT hRes = S_OK;
@@ -142,7 +138,7 @@ _Check_return_ LPWSTR ErrorNameFromErrorCode(ULONG hrErr)
 	EC_H(StringCchPrintfW(szErrCode, _countof(szErrCode), L"0x%08X", hrErr)); // STRING_OK
 
 	return(szErrCode);
-} // ErrorNameFromErrorCode
+}
 
 #ifdef _DEBUG
 void PrintSkipNote(HRESULT hRes, _In_z_ LPCSTR szFunc)
@@ -152,5 +148,5 @@ void PrintSkipNote(HRESULT hRes, _In_z_ LPCSTR szFunc)
 		szFunc,
 		hRes,
 		ErrorNameFromErrorCode(hRes));
-} // PrintSkipNote
+}
 #endif

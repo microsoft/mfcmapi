@@ -3,7 +3,8 @@
 using namespace std;
 
 wstring loadstring(DWORD dwID);
-wstring format(const LPWSTR fmt, ...);
+wstring formatV(wstring szMsg, va_list argList);
+wstring format(const LPWSTR szMsg, ...);
 wstring formatmessage(DWORD dwID, ...);
 LPTSTR wstringToLPTSTR(wstring src);
 LPWSTR wstringToLPWSTR(wstring src);

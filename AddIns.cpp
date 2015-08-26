@@ -1137,35 +1137,14 @@ void MergeAddInArrays()
 __declspec(dllexport) void __cdecl AddInLog(bool bPrintThreadTime, _Printf_format_string_ LPWSTR szMsg, ...)
 {
 	if (!fIsSet(DBGAddIn)) return;
-	HRESULT hRes = S_OK;
-
-	if (!szMsg)
-	{
-		_Output(DBGGeneric, NULL, true, _T("AddInLog called with NULL szMsg!\n"));
-		return;
-	}
 
 	va_list argList = NULL;
 	va_start(argList, szMsg);
-
-	WCHAR szAddInLogString[4096];
-	WC_H(StringCchVPrintfW(szAddInLogString, _countof(szAddInLogString), szMsg, argList));
-	if (FAILED(hRes))
-	{
-		_Output(DBGFatalError, NULL, true, _T("Debug output string not large enough to print everything to it\n"));
-		// Since this function was 'safe', we've still got something we can print - send it on.
-	}
+	wstring szAddInLogString = formatV(szMsg, argList);
 	va_end(argList);
 
-#ifdef UNICODE
-	_Output(DBGAddIn, NULL, bPrintThreadTime, szAddInLogString);
-#else
-	char *szAnsiAddInLogString = NULL;
-	EC_H(UnicodeToAnsi(szAddInLogString, &szAnsiAddInLogString));
-	_Output(DBGAddIn, NULL, bPrintThreadTime, szAnsiAddInLogString);
-	delete[] szAnsiAddInLogString;
-#endif
-} // AddInLog
+	_OutputW(DBGAddIn, NULL, bPrintThreadTime, szAddInLogString);
+}
 
 #ifndef MRMAPI
 _Check_return_ __declspec(dllexport) HRESULT __cdecl SimpleDialog(_In_z_ LPWSTR szTitle, _Printf_format_string_ LPWSTR szMsg, ...)
@@ -1182,24 +1161,13 @@ _Check_return_ __declspec(dllexport) HRESULT __cdecl SimpleDialog(_In_z_ LPWSTR 
 
 	va_list argList = NULL;
 	va_start(argList, szMsg);
-
-	WCHAR szDialogString[4096];
-	WC_H(StringCchVPrintfW(szDialogString, _countof(szDialogString), szMsg, argList));
-	if (FAILED(hRes))
-	{
-		_Output(DBGFatalError, NULL, true, _T("Debug output string not large enough to print everything to it\n"));
-		// Since this function was 'safe', we've still got something we can print - send it on.
-	}
+	wstring szDialogString = formatV(szMsg, argList);
 	va_end(argList);
 
-#ifdef UNICODE
-	MySimpleDialog.SetPromptPostFix(szDialogString);
-#else
-	char *szAnsiDialogString = NULL;
-	EC_H(UnicodeToAnsi(szDialogString, &szAnsiDialogString));
-	MySimpleDialog.SetPromptPostFix(szAnsiDialogString);
-	delete[] szAnsiDialogString;
-#endif
+	LPTSTR lpszDialogString = wstringToLPTSTR(szDialogString);
+	MySimpleDialog.SetPromptPostFix(lpszDialogString);
+	delete[] lpszDialogString;
+
 	WC_H(MySimpleDialog.DisplayDialog());
 	return hRes;
 } // SimpleDialog

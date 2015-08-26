@@ -4,23 +4,33 @@
 #include <locale>
 #include <codecvt>
 
-wstring format(const LPWSTR fmt, ...)
+wstring formatV(wstring szMsg, va_list argList)
 {
-	LPWSTR buffer = NULL;
-	va_list vl;
-	va_start(vl, fmt);
-	int len = _vscwprintf(fmt, vl);
+	int len = _vscwprintf(szMsg.c_str(), argList);
 	if (0 != len)
 	{
 		len++;
-		buffer = new wchar_t[len];
+		LPWSTR buffer = new wchar_t[len];
 		memset(buffer, 0, sizeof(wchar_t)* len);
-		(void)_vsnwprintf_s(buffer, len, len, fmt, vl);
+		if (_vsnwprintf_s(buffer, len, _TRUNCATE, szMsg.c_str(), argList) > 0)
+		{
+			wstring szOut(buffer);
+			delete[] buffer;
+			return szOut;
+		}
+
+		delete[] buffer;
 	}
 
-	wstring ret(buffer);
-	va_end(vl);
-	delete[] buffer;
+	return L"";
+}
+
+wstring format(const LPWSTR szMsg, ...)
+{
+	va_list argList;
+	va_start(argList, szMsg);
+	wstring ret = formatV(szMsg, argList);
+	va_end(argList);
 	return ret;
 }
 
