@@ -264,10 +264,9 @@ void CRecipientsDlg::OnRecipOptions()
 				wstring szAdrList = AdrListToString(&adrList);
 
 				DebugPrintEx(DBGGeneric, CLASS, L"OnRecipOptions", L"RecipOptions returned the following ADRLIST:\n");
-				// This buffer may be huge - passing it as single parameter to _Output avoids calls to StringCchVPrintf
-				// Note - debug output may still be truncated due to limitations of OutputDebugString,
+				// Note - debug output may be truncated due to limitations of OutputDebugString,
 				// but output to file is complete
-				_Output(DBGGeneric, NULL, false, wstringToLPTSTR(szAdrList));
+				_OutputW(DBGGeneric, NULL, false, szAdrList);
 
 				EC_MAPI(m_lpMessage->ModifyRecipients(
 					MODRECIP_MODIFY,

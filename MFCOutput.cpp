@@ -227,43 +227,6 @@ void _OutputW(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, wstri
 	}
 }
 
-void _OutputA(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, string szMsg)
-{
-	CHKPARAM;
-	EARLYABORT;
-	_OutputW(ulDbgLvl, fFile, bPrintThreadTime, stringToWstring(szMsg));
-}
-
-void _Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, _In_opt_z_ LPCTSTR szMsg)
-{
-#ifdef UNICODE
-	_OutputW(ulDbgLvl, fFile, bPrintThreadTime, szMsg);
-#else
-	_OutputA(ulDbgLvl, fFile, bPrintThreadTime, szMsg);
-#endif
-}
-
-wstring formatW(wstring szMsg, va_list argList)
-{
-	int len = _vscwprintf(szMsg.c_str(), argList);
-	if (0 != len)
-	{
-		len++;
-		LPWSTR buffer = new wchar_t[len];
-		memset(buffer, 0, sizeof(wchar_t)* len);
-		if (_vsnwprintf_s(buffer, len, _TRUNCATE, szMsg.c_str(), argList) > 0)
-		{
-			wstring szOut(buffer);
-			delete[] buffer;
-			return szOut;
-		}
-
-		delete[] buffer;
-	}
-
-	return L"";
-}
-
 void __cdecl Outputf(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, wstring szMsg, ...)
 {
 	CHKPARAM;
@@ -271,7 +234,7 @@ void __cdecl Outputf(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime
 
 	va_list argList = NULL;
 	va_start(argList, szMsg);
-	_OutputW(ulDbgLvl, fFile, bPrintThreadTime, formatW(szMsg, argList));
+	_OutputW(ulDbgLvl, fFile, bPrintThreadTime, formatV(szMsg, argList));
 	va_end(argList);
 }
 
@@ -283,7 +246,7 @@ void __cdecl OutputToFilef(_In_opt_ FILE* fFile, wstring szMsg, ...)
 	va_start(argList, szMsg);
 	if (argList)
 	{
-		_OutputW(DBGNoDebug, fFile, true, formatW(szMsg, argList));
+		_OutputW(DBGNoDebug, fFile, true, formatV(szMsg, argList));
 	}
 	else
 	{
@@ -302,7 +265,7 @@ void __cdecl DebugPrint(ULONG ulDbgLvl, wstring szMsg, ...)
 	va_start(argList, szMsg);
 	if (argList)
 	{
-		_OutputW(ulDbgLvl, NULL, true, formatW(szMsg, argList));
+		_OutputW(ulDbgLvl, NULL, true, formatV(szMsg, argList));
 	}
 	else
 	{
@@ -321,7 +284,7 @@ void __cdecl DebugPrintEx(ULONG ulDbgLvl, wstring szClass, wstring szFunc, wstri
 	va_start(argList, szMsg);
 	if (argList)
 	{
-		_OutputW(ulDbgLvl, NULL, true, formatW(szMsgEx, argList));
+		_OutputW(ulDbgLvl, NULL, true, formatV(szMsgEx, argList));
 	}
 	else
 	{
@@ -976,7 +939,7 @@ void _OutputStream(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSTREAM lpStream)
 		{
 			bBuf[ulNumBytes] = 0;
 			bBuf[ulNumBytes + 1] = 0; // In case we are in Unicode
-			_Output(ulDbgLvl, fFile, true, (TCHAR*)bBuf);
+			_OutputW(ulDbgLvl, fFile, true, LPCTSTRToWstring((TCHAR*)bBuf));
 		}
 	} while (ulNumBytes > 0);
 }
@@ -1139,7 +1102,7 @@ void OutputXMLValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, _In_z_ LP
 	}
 
 	ScrubStringForXML(szValue);
-	_Output(ulDbgLvl, fFile, false, szValue);
+	_OutputW(ulDbgLvl, fFile, false, LPCTSTRToWstring(szValue));
 
 	if (bWrapCData)
 	{

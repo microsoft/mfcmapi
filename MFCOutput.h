@@ -54,7 +54,6 @@ void SetDebugOutputToFile(bool bDoOutput);
 _Check_return_ FILE* MyOpenFile(wstring szFileName, bool bNewFile);
 void CloseFile(_In_opt_ FILE* fFile);
 
-void _Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, _In_opt_z_ LPCTSTR szMsg);
 void _OutputW(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, wstring szMsg);
 void __cdecl Outputf(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, wstring szMsg, ...);
 
