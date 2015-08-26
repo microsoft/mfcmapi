@@ -133,17 +133,17 @@ void CDumpStore::DoMailboxTablePerRowWork(_In_ LPMDB lpMDB, _In_ LPSRow lpSRow, 
 		lpSRow->cValues,
 		PR_DISPLAY_NAME);
 
-	OutputToFile(m_fMailboxTable, _T("<mailbox prdisplayname=\""));
+	OutputToFile(m_fMailboxTable, L"<mailbox prdisplayname=\"");
 	if (CheckStringProp(lpDisplayName, PT_TSTRING))
 	{
-		OutputToFile(m_fMailboxTable, lpDisplayName->Value.LPSZ);
+		OutputToFile(m_fMailboxTable, LPCTSTRToWstring(lpDisplayName->Value.LPSZ));
 	}
-	OutputToFile(m_fMailboxTable, _T("\" premailaddress=\""));
+	OutputToFile(m_fMailboxTable, L"\" premailaddress=\"");
 	if (!CheckStringProp(lpEmailAddress, PT_TSTRING))
 	{
-		OutputToFile(m_fMailboxTable, lpEmailAddress->Value.LPSZ);
+		OutputToFile(m_fMailboxTable, LPCTSTRToWstring(lpEmailAddress->Value.LPSZ));
 	}
-	OutputToFile(m_fMailboxTable, _T("\">\n"));
+	OutputToFile(m_fMailboxTable, L"\">\n");
 
 	OutputSRowToFile(m_fMailboxTable, lpSRow, lpMDB);
 
@@ -169,7 +169,7 @@ void CDumpStore::DoMailboxTablePerRowWork(_In_ LPMDB lpMDB, _In_ LPSRow lpSRow, 
 		hRes = S_OK;
 	}
 
-	OutputToFile(m_fMailboxTable, _T("</mailbox>\n"));
+	OutputToFile(m_fMailboxTable, L"</mailbox>\n");
 } // CDumpStore::DoMailboxTablePerRowWork
 
 void CDumpStore::EndMailboxTableWork()
@@ -177,7 +177,7 @@ void CDumpStore::EndMailboxTableWork()
 	if (m_bOutputList) return;
 	if (m_fMailboxTable)
 	{
-		OutputToFile(m_fMailboxTable, _T("</mailboxtable>\n"));
+		OutputToFile(m_fMailboxTable, L"</mailboxtable>\n");
 		CloseFile(m_fMailboxTable);
 	}
 	m_fMailboxTable = NULL;
@@ -222,7 +222,7 @@ void CDumpStore::BeginFolderWork()
 	if (!m_fFolderProps) return;
 
 	OutputToFile(m_fFolderProps, g_szXMLHeader);
-	OutputToFile(m_fFolderProps, _T("<folderprops>\n"));
+	OutputToFile(m_fFolderProps, L"<folderprops>\n");
 
 	LPSPropValue	lpAllProps = NULL;
 	ULONG			cValues = 0L;
@@ -237,25 +237,25 @@ void CDumpStore::BeginFolderWork()
 	}
 	else if (lpAllProps)
 	{
-		OutputToFile(m_fFolderProps, _T("<properties listtype=\"summary\">\n"));
+		OutputToFile(m_fFolderProps, L"<properties listtype=\"summary\">\n");
 
 		OutputPropertiesToFile(m_fFolderProps, cValues, lpAllProps, m_lpFolder, m_bRetryStreamProps);
 
-		OutputToFile(m_fFolderProps, _T("</properties>\n"));
+		OutputToFile(m_fFolderProps, L"</properties>\n");
 
 		MAPIFreeBuffer(lpAllProps);
 	}
 
-	OutputToFile(m_fFolderProps, _T("<HierarchyTable>\n"));
+	OutputToFile(m_fFolderProps, L"<HierarchyTable>\n");
 }
 
 void CDumpStore::DoFolderPerHierarchyTableRowWork(_In_ LPSRow lpSRow)
 {
 	if (m_bOutputList) return;
 	if (!m_fFolderProps || !lpSRow) return;
-	OutputToFile(m_fFolderProps, _T("<row>\n"));
+	OutputToFile(m_fFolderProps, L"<row>\n");
 	OutputSRowToFile(m_fFolderProps, lpSRow, m_lpMDB);
-	OutputToFile(m_fFolderProps, _T("</row>\n"));
+	OutputToFile(m_fFolderProps, L"</row>\n");
 } // CDumpStore::DoFolderPerHierarchyTableRowWork
 
 void CDumpStore::EndFolderWork()
@@ -263,8 +263,8 @@ void CDumpStore::EndFolderWork()
 	if (m_bOutputList) return;
 	if (m_fFolderProps)
 	{
-		OutputToFile(m_fFolderProps, _T("</HierarchyTable>\n"));
-		OutputToFile(m_fFolderProps, _T("</folderprops>\n"));
+		OutputToFile(m_fFolderProps, L"</HierarchyTable>\n");
+		OutputToFile(m_fFolderProps, L"</folderprops>\n");
 		CloseFile(m_fFolderProps);
 	}
 	m_fFolderProps = NULL;
@@ -367,7 +367,7 @@ bool CDumpStore::DoContentsTablePerRowWork(_In_ LPSRow lpSRow, ULONG ulCurRow)
 
 	OutputSRowToFile(m_fFolderContents, lpSRow, m_lpFolder);
 
-	OutputToFile(m_fFolderContents, _T("</message>\n"));
+	OutputToFile(m_fFolderContents, L"</message>\n");
 	return true;
 } // CDumpStore::DoContentsTablePerRowWork
 
@@ -376,7 +376,7 @@ void CDumpStore::EndContentsTableWork()
 	if (m_bOutputList) return;
 	if (m_fFolderContents)
 	{
-		OutputToFile(m_fFolderContents, _T("</ContentsTable>\n"));
+		OutputToFile(m_fFolderContents, L"</ContentsTable>\n");
 		CloseFile(m_fFolderContents);
 	}
 	m_fFolderContents = NULL;
@@ -448,7 +448,7 @@ void OutputBody(_In_ FILE* fMessageProps, _In_ LPMESSAGE lpMessage, ULONG ulBody
 				}
 			}
 
-			OutputToFile(fMessageProps, _T(">\n"));
+			OutputToFile(fMessageProps, L">\n");
 			if (lpOutputStream)
 			{
 				OutputCDataOpen(DBGNoDebug, fMessageProps);
@@ -456,7 +456,7 @@ void OutputBody(_In_ FILE* fMessageProps, _In_ LPMESSAGE lpMessage, ULONG ulBody
 				OutputCDataClose(DBGNoDebug, fMessageProps);
 			}
 		}
-		OutputToFile(fMessageProps, _T("</body>\n"));
+		OutputToFile(fMessageProps, L"</body>\n");
 	}
 	if (lpRTFUncompressed) lpRTFUncompressed->Release();
 	if (lpStream) lpStream->Release();
@@ -564,10 +564,10 @@ void OutputMessageXML(
 	if (lpMsgData->fMessageProps)
 	{
 		OutputToFile(lpMsgData->fMessageProps, g_szXMLHeader);
-		OutputToFile(lpMsgData->fMessageProps, _T("<message>\n"));
+		OutputToFile(lpMsgData->fMessageProps, L"<message>\n");
 		if (lpAllProps)
 		{
-			OutputToFile(lpMsgData->fMessageProps, _T("<properties listtype=\"summary\">\n"));
+			OutputToFile(lpMsgData->fMessageProps, L"<properties listtype=\"summary\">\n");
 #define NUMPROPS 9
 			static const SizedSPropTagArray(NUMPROPS, sptCols) =
 			{
@@ -593,7 +593,7 @@ void OutputMessageXML(
 				}
 			}
 
-			OutputToFile(lpMsgData->fMessageProps, _T("</properties>\n"));
+			OutputToFile(lpMsgData->fMessageProps, L"</properties>\n");
 		}
 
 		// Log Body
@@ -612,11 +612,11 @@ void OutputMessageXML(
 
 		if (lpAllProps)
 		{
-			OutputToFile(lpMsgData->fMessageProps, _T("<properties listtype=\"FullPropList\">\n"));
+			OutputToFile(lpMsgData->fMessageProps, L"<properties listtype=\"FullPropList\">\n");
 
 			OutputPropertiesToFile(lpMsgData->fMessageProps, cValues, lpAllProps, lpMessage, bRetryStreamProps);
 
-			OutputToFile(lpMsgData->fMessageProps, _T("</properties>\n"));
+			OutputToFile(lpMsgData->fMessageProps, L"</properties>\n");
 		}
 	}
 
@@ -709,7 +709,7 @@ bool CDumpStore::BeginRecipientWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID lp
 	if (!lpData) return false;
 	if (m_bOutputMSG) return false; // When outputting message files, no recipient work is needed
 	if (m_bOutputList) return false;
-	OutputToFile(((LPMESSAGEDATA)lpData)->fMessageProps, _T("<recipients>\n"));
+	OutputToFile(((LPMESSAGEDATA)lpData)->fMessageProps, L"<recipients>\n");
 	return true;
 } // CDumpStore::BeginRecipientWork
 
@@ -725,7 +725,7 @@ void CDumpStore::DoMessagePerRecipientWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID
 
 	OutputSRowToFile(lpMsgData->fMessageProps, lpSRow, lpMessage);
 
-	OutputToFile(lpMsgData->fMessageProps, _T("</recipient>\n"));
+	OutputToFile(lpMsgData->fMessageProps, L"</recipient>\n");
 } // CDumpStore::DoMessagePerRecipientWork
 
 void CDumpStore::EndRecipientWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID lpData)
@@ -733,7 +733,7 @@ void CDumpStore::EndRecipientWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID lpDa
 	if (!lpData) return;
 	if (m_bOutputMSG) return; // When outputting message files, no recipient work is needed
 	if (m_bOutputList) return;
-	OutputToFile(((LPMESSAGEDATA)lpData)->fMessageProps, _T("</recipients>\n"));
+	OutputToFile(((LPMESSAGEDATA)lpData)->fMessageProps, L"</recipients>\n");
 } // CDumpStore::EndRecipientWork
 
 bool CDumpStore::BeginAttachmentWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID lpData)
@@ -741,7 +741,7 @@ bool CDumpStore::BeginAttachmentWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID l
 	if (!lpData) return false;
 	if (m_bOutputMSG) return false; // When outputting message files, no attachment work is needed
 	if (m_bOutputList) return false;
-	OutputToFile(((LPMESSAGEDATA)lpData)->fMessageProps, _T("<attachments>\n"));
+	OutputToFile(((LPMESSAGEDATA)lpData)->fMessageProps, L"<attachments>\n");
 	return true;
 } // CDumpStore::BeginAttachmentWork
 
@@ -776,16 +776,16 @@ void CDumpStore::DoMessagePerAttachmentWork(_In_ LPMESSAGE lpMessage, _In_ LPVOI
 	}
 
 	if (lpAttachName && CheckStringProp(lpAttachName, PT_TSTRING))
-		OutputToFile(lpMsgData->fMessageProps, lpAttachName->Value.LPSZ);
+		OutputToFile(lpMsgData->fMessageProps, LPCTSTRToWstring(lpAttachName->Value.LPSZ));
 	else
-		OutputToFile(lpMsgData->fMessageProps, _T("PR_ATTACH_FILENAME not found"));
+		OutputToFile(lpMsgData->fMessageProps, L"PR_ATTACH_FILENAME not found");
 
-	OutputToFile(lpMsgData->fMessageProps, _T("\">\n"));
+	OutputToFile(lpMsgData->fMessageProps, L"\">\n");
 
-	OutputToFile(lpMsgData->fMessageProps, _T("\t<tableprops>\n"));
+	OutputToFile(lpMsgData->fMessageProps, L"\t<tableprops>\n");
 	OutputSRowToFile(lpMsgData->fMessageProps, lpSRow, lpMessage);
 
-	OutputToFile(lpMsgData->fMessageProps, _T("\t</tableprops>\n"));
+	OutputToFile(lpMsgData->fMessageProps, L"\t</tableprops>\n");
 
 	if (lpAttach)
 	{
@@ -801,16 +801,16 @@ void CDumpStore::DoMessagePerAttachmentWork(_In_ LPMESSAGE lpMessage, _In_ LPVOI
 			// We've reported any error - mask it now
 			hRes = S_OK;
 
-			OutputToFile(lpMsgData->fMessageProps, _T("\t<getprops>\n"));
+			OutputToFile(lpMsgData->fMessageProps, L"\t<getprops>\n");
 			OutputPropertiesToFile(lpMsgData->fMessageProps, ulAllProps, lpAllProps, lpAttach, m_bRetryStreamProps);
-			OutputToFile(lpMsgData->fMessageProps, _T("\t</getprops>\n"));
+			OutputToFile(lpMsgData->fMessageProps, L"\t</getprops>\n");
 		}
 
 		MAPIFreeBuffer(lpAllProps);
 		lpAllProps = NULL;
 	}
 
-	OutputToFile(lpMsgData->fMessageProps, _T("</attachment>\n"));
+	OutputToFile(lpMsgData->fMessageProps, L"</attachment>\n");
 }
 
 void CDumpStore::EndAttachmentWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID lpData)
@@ -818,7 +818,7 @@ void CDumpStore::EndAttachmentWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID lpD
 	if (!lpData) return;
 	if (m_bOutputMSG) return; // When outputting message files, no attachment work is needed
 	if (m_bOutputList) return;
-	OutputToFile(((LPMESSAGEDATA)lpData)->fMessageProps, _T("</attachments>\n"));
+	OutputToFile(((LPMESSAGEDATA)lpData)->fMessageProps, L"</attachments>\n");
 } // CDumpStore::EndAttachmentWork
 
 void CDumpStore::EndMessageWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID lpData)
@@ -829,7 +829,7 @@ void CDumpStore::EndMessageWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID lpData
 
 	if (lpMsgData->fMessageProps)
 	{
-		OutputToFile(lpMsgData->fMessageProps, _T("</message>\n"));
+		OutputToFile(lpMsgData->fMessageProps, L"</message>\n");
 		CloseFile(lpMsgData->fMessageProps);
 	}
 	delete lpMsgData;

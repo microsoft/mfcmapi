@@ -35,7 +35,7 @@ void ExportProfileSection(FILE* fProfile, LPPROFSECT lpSect, LPSBinary lpSectBin
 
 		OutputPropertiesToFile(fProfile, cValues, lpAllProps, NULL, false);
 
-		OutputToFile(fProfile, _T("</properties>\n"));
+		OutputToFile(fProfile, L"</properties>\n");
 
 		MAPIFreeBuffer(lpAllProps);
 	}
@@ -47,9 +47,9 @@ void ExportProfileProvider(FILE* fProfile, int iRow, LPPROVIDERADMIN lpProviderA
 
 	Outputf(DBGNoDebug, fProfile, true, L"<provider index = \"0x%08X\">\n", iRow);
 
-	OutputToFile(fProfile, _T("<properties listtype=\"row\">\n"));
+	OutputToFile(fProfile, L"<properties listtype=\"row\">\n");
 	OutputSRowToFile(fProfile, lpRow, NULL);
-	OutputToFile(fProfile, _T("</properties>\n"));
+	OutputToFile(fProfile, L"</properties>\n");
 
 	HRESULT hRes = S_OK;
 	LPSPropValue lpProviderUID = NULL;
@@ -73,7 +73,7 @@ void ExportProfileProvider(FILE* fProfile, int iRow, LPPROVIDERADMIN lpProviderA
 		}
 	}
 
-	OutputToFile(fProfile, _T("</provider>\n"));
+	OutputToFile(fProfile, L"</provider>\n");
 }
 
 void ExportProfileService(FILE* fProfile, int iRow, LPSERVICEADMIN lpServiceAdmin, LPSRow lpRow)
@@ -82,9 +82,9 @@ void ExportProfileService(FILE* fProfile, int iRow, LPSERVICEADMIN lpServiceAdmi
 
 	Outputf(DBGNoDebug, fProfile, true, L"<service index = \"0x%08X\">\n", iRow);
 
-	OutputToFile(fProfile, _T("<properties listtype=\"row\">\n"));
+	OutputToFile(fProfile, L"<properties listtype=\"row\">\n");
 	OutputSRowToFile(fProfile, lpRow, NULL);
-	OutputToFile(fProfile, _T("</properties>\n"));
+	OutputToFile(fProfile, L"</properties>\n");
 
 	HRESULT hRes = S_OK;
 	LPSPropValue lpServiceUID = NULL;
@@ -143,7 +143,7 @@ void ExportProfileService(FILE* fProfile, int iRow, LPSERVICEADMIN lpServiceAdmi
 		}
 	}
 
-	OutputToFile(fProfile, _T("</service>\n"));
+	OutputToFile(fProfile, L"</service>\n");
 }
 
 void ExportProfile(_In_z_ LPCSTR szProfile, _In_z_ LPCWSTR szProfileSection, bool bByteSwapped, wstring szFileName)
@@ -240,5 +240,5 @@ void ExportProfile(_In_z_ LPCSTR szProfile, _In_z_ LPCWSTR szProfileSection, boo
 		}
 	}
 
-	OutputToFile(fProfile, _T("</profile>"));
+	OutputToFile(fProfile, L"</profile>");
 }

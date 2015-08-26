@@ -4,7 +4,7 @@
 // Output (to File/Debug) functions
 #include "String.h"
 
-extern LPCTSTR g_szXMLHeader;
+extern wstring g_szXMLHeader;
 
 void OpenDebugFile();
 void CloseDebugFile();
@@ -55,9 +55,10 @@ _Check_return_ FILE* MyOpenFile(wstring szFileName, bool bNewFile);
 void CloseFile(_In_opt_ FILE* fFile);
 
 void _Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, _In_opt_z_ LPCTSTR szMsg);
+void _OutputW(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, wstring szMsg);
 void __cdecl Outputf(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, wstring szMsg, ...);
 
-#define OutputToFile(fFile, szMsg) _Output((DBGNoDebug), (fFile), true, (szMsg))
+#define OutputToFile(fFile, szMsg) _OutputW((DBGNoDebug), (fFile), true, (szMsg))
 void __cdecl OutputToFilef(_In_opt_ FILE* fFile, wstring szMsg, ...);
 
 void __cdecl DebugPrint(ULONG ulDbgLvl, wstring szMsg, ...);

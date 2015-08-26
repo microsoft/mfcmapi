@@ -12,7 +12,7 @@
 #include "ParseProperty.h"
 #include <algorithm>
 
-LPCTSTR g_szXMLHeader = _T("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n");
+wstring g_szXMLHeader = L"<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n";
 FILE* g_fDebugFile = NULL;
 
 void OpenDebugFile()
@@ -545,7 +545,7 @@ void _OutputTable(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPITABLE lpMAPIT
 		0,
 		NULL));
 	hRes = S_OK; // don't let failure here fail the whole op
-	_Output(ulDbgLvl, fFile, false, g_szXMLHeader);
+	_OutputW(ulDbgLvl, fFile, false, g_szXMLHeader);
 	_OutputW(ulDbgLvl, fFile, false, L"<table>\n");
 
 	for (;;)
