@@ -61,7 +61,7 @@ void __cdecl Outputf(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime
 void __cdecl OutputToFilef(_In_opt_ FILE* fFile, wstring szMsg, ...);
 
 void __cdecl DebugPrint(ULONG ulDbgLvl, wstring szMsg, ...);
-void __cdecl DebugPrintEx(ULONG ulDbgLvl, _In_z_ LPCTSTR szClass, _In_z_ LPCTSTR szFunc, _Printf_format_string_ LPCTSTR szMsg, ...);
+void __cdecl DebugPrintEx(ULONG ulDbgLvl, wstring szClass, wstring szFunc, wstring szMsg, ...);
 
 // Template for the Output functions
 // void Output(ULONG ulDbgLvl, LPCTSTR szFileName,stufftooutput)
@@ -107,11 +107,11 @@ void _OutputEntryList(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPENTRYLIST lpE
 
 // We'll only output this information in debug builds.
 #ifdef _DEBUG
-#define TRACE_CONSTRUCTOR(__class) DebugPrintEx(DBGConDes,(__class),(__class),_T("(this = %p) - Constructor\n"),this);
-#define TRACE_DESTRUCTOR(__class) DebugPrintEx(DBGConDes,(__class),(__class),_T("(this = %p) - Destructor\n"),this);
+#define TRACE_CONSTRUCTOR(__class) DebugPrintEx(DBGConDes,(__class),(__class),L"(this = %p) - Constructor\n",this);
+#define TRACE_DESTRUCTOR(__class) DebugPrintEx(DBGConDes,(__class),(__class),L"(this = %p) - Destructor\n",this);
 
-#define TRACE_ADDREF(__class,__count) DebugPrintEx(DBGRefCount,(__class),_T("AddRef"),_T("(this = %p) m_cRef increased to %d.\n"),this,(__count));
-#define TRACE_RELEASE(__class,__count) DebugPrintEx(DBGRefCount,(__class),_T("Release"),_T("(this = %p) m_cRef decreased to %d.\n"),this,(__count));
+#define TRACE_ADDREF(__class,__count) DebugPrintEx(DBGRefCount,(__class),L"AddRef",L"(this = %p) m_cRef increased to %d.\n",this,(__count));
+#define TRACE_RELEASE(__class,__count) DebugPrintEx(DBGRefCount,(__class),L"Release",L"(this = %p) m_cRef decreased to %d.\n",this,(__count));
 #else
 #define TRACE_CONSTRUCTOR(__class)
 #define TRACE_DESTRUCTOR(__class)

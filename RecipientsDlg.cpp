@@ -10,7 +10,7 @@
 #include "InterpretProp.h"
 #include "string.h"
 
-static TCHAR* CLASS = _T("CRecipientsDlg");
+static wstring CLASS = L"CRecipientsDlg";
 
 /////////////////////////////////////////////////////////////////////////////
 // CRecipientsDlg dialog
@@ -85,7 +85,7 @@ _Check_return_ HRESULT CRecipientsDlg::OpenItemProp(
 	__mfcmapiModifyEnum bModify,
 	_Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
 {
-	DebugPrintEx(DBGOpenItemProp, CLASS, _T("OpenItemProp"), _T("iSelectedItem = 0x%X\n"), iSelectedItem);
+	DebugPrintEx(DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
 
 	if (!m_lpContentsTableListCtrl || !lppMAPIProp) return MAPI_E_INVALID_PARAMETER;
 
@@ -151,7 +151,7 @@ void CRecipientsDlg::OnDeleteSelectedItem()
 					{
 						lpProp->Value.l = 0;
 					}
-					DebugPrintEx(DBGDeleteSelectedItem, CLASS, _T("OnDeleteSelectedItem"), _T("Deleting row 0x%08X\n"), lpProp->Value.l);
+					DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L"Deleting row 0x%08X\n", lpProp->Value.l);
 				}
 			}
 
@@ -201,7 +201,7 @@ void CRecipientsDlg::OnModifyRecipients()
 			adrList.aEntries[0].rgPropVals,
 			&ulSizeProps));
 
-		DebugPrintEx(DBGGeneric, CLASS, _T("OnModifyRecipients"), _T("Committing changes for current selection\n"));
+		DebugPrintEx(DBGGeneric, CLASS, L"OnModifyRecipients", L"Committing changes for current selection\n");
 
 		EC_MAPI(m_lpMessage->ModifyRecipients(
 			MODRECIP_MODIFY,
@@ -235,7 +235,7 @@ void CRecipientsDlg::OnRecipOptions()
 			adrEntry.ulReserved1 = 0;
 			adrEntry.cValues = cProps;
 			adrEntry.rgPropVals = lpProps;
-			DebugPrintEx(DBGGeneric, CLASS, _T("OnRecipOptions"), _T("Calling RecipOptions\n"));
+			DebugPrintEx(DBGGeneric, CLASS, L"OnRecipOptions", L"Calling RecipOptions\n");
 
 			EC_MAPI(lpAB->RecipOptions(
 				(ULONG_PTR)m_hWnd,
@@ -263,7 +263,7 @@ void CRecipientsDlg::OnRecipOptions()
 
 				wstring szAdrList = AdrListToString(&adrList);
 
-				DebugPrintEx(DBGGeneric, CLASS, _T("OnRecipOptions"), _T("RecipOptions returned the following ADRLIST:\n"));
+				DebugPrintEx(DBGGeneric, CLASS, L"OnRecipOptions", L"RecipOptions returned the following ADRLIST:\n");
 				// This buffer may be huge - passing it as single parameter to _Output avoids calls to StringCchVPrintf
 				// Note - debug output may still be truncated due to limitations of OutputDebugString,
 				// but output to file is complete

@@ -21,7 +21,7 @@
 #include "MAPIProgress.h"
 #include "FormContainerDlg.h"
 
-static TCHAR* CLASS = _T("CMsgStoreDlg");
+static wstring CLASS = L"CMsgStoreDlg";
 
 /////////////////////////////////////////////////////////////////////////////
 // CMsgStoreDlg dialog
@@ -357,7 +357,7 @@ void CMsgStoreDlg::HandleCopy()
 	HRESULT hRes = S_OK;
 	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
-	DebugPrintEx(DBGGeneric, CLASS, _T("OnCopyItems"), _T("\n"));
+	DebugPrintEx(DBGGeneric, CLASS, L"OnCopyItems", L"\n");
 	if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return;
 
 	LPMAPIFOLDER lpMAPISourceFolder = (LPMAPIFOLDER)m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY);
@@ -379,7 +379,7 @@ _Check_return_ bool CMsgStoreDlg::HandlePaste()
 	HRESULT		hRes = S_OK;
 	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
-	DebugPrintEx(DBGGeneric, CLASS, _T("HandlePaste"), _T("\n"));
+	DebugPrintEx(DBGGeneric, CLASS, L"HandlePaste", L"\n");
 	if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return false;
 
 	ULONG ulStatus = m_lpMapiObjects->GetBufferStatus();
@@ -418,7 +418,7 @@ void CMsgStoreDlg::OnPasteMessages()
 	HRESULT			hRes = S_OK;
 	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
-	DebugPrintEx(DBGGeneric, CLASS, _T("OnPasteMessages"), _T("\n"));
+	DebugPrintEx(DBGGeneric, CLASS, L"OnPasteMessages", L"\n");
 	if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return;
 
 	// Get the source Messages
@@ -486,7 +486,7 @@ void CMsgStoreDlg::OnPasteFolder()
 		PR_ENTRYID
 	};
 
-	DebugPrintEx(DBGGeneric, CLASS, _T("OnPasteFolder"), _T("\n"));
+	DebugPrintEx(DBGGeneric, CLASS, L"OnPasteFolder", L"\n");
 
 	// Get the source folder
 	LPMAPIFOLDER lpMAPISourceFolder = m_lpMapiObjects->GetFolderToCopy();
@@ -577,7 +577,7 @@ void CMsgStoreDlg::OnPasteFolderContents()
 {
 	HRESULT			hRes = S_OK;
 
-	DebugPrintEx(DBGGeneric, CLASS, _T("OnPasteFolderContents"), _T("\n"));
+	DebugPrintEx(DBGGeneric, CLASS, L"OnPasteFolderContents", L"\n");
 
 	if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return;
 
@@ -624,7 +624,7 @@ void CMsgStoreDlg::OnPasteRules()
 {
 	HRESULT			hRes = S_OK;
 
-	DebugPrintEx(DBGGeneric, CLASS, _T("OnPasteRules"), _T("\n"));
+	DebugPrintEx(DBGGeneric, CLASS, L"OnPasteRules", L"\n");
 
 	if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return;
 
@@ -847,7 +847,7 @@ void CMsgStoreDlg::OnEmptyFolder()
 				if (lpProgress)
 					ulFlags |= FOLDER_DIALOG;
 
-				DebugPrintEx(DBGGeneric, CLASS, _T("OnEmptyFolder"), _T("Calling EmptyFolder on %p, ulFlags = 0x%08X.\n"), lpMAPIFolderToEmpty, ulFlags);
+				DebugPrintEx(DBGGeneric, CLASS, L"OnEmptyFolder", L"Calling EmptyFolder on %p, ulFlags = 0x%08X.\n", lpMAPIFolderToEmpty, ulFlags);
 
 				EC_MAPI(lpMAPIFolderToEmpty->EmptyFolder(
 					lpProgress ? (ULONG_PTR)m_hWnd : NULL,
@@ -908,7 +908,7 @@ void CMsgStoreDlg::OnDeleteSelectedItem()
 				ulFlags = DEL_FOLDERS | DEL_MESSAGES;
 				ulFlags |= (bShiftPressed || MyData.GetCheck(0)) ? DELETE_HARD_DELETE : 0;
 
-				DebugPrintEx(DBGDeleteSelectedItem, CLASS, _T("OnDeleteSelectedItem"), _T("Calling DeleteFolder on folder. ulFlags = 0x%08X.\n"), ulFlags);
+				DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L"Calling DeleteFolder on folder. ulFlags = 0x%08X.\n", ulFlags);
 				DebugPrintBinary(DBGGeneric, lpItemEID);
 
 				LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIFolder::DeleteFolder"), m_hWnd); // STRING_OK
@@ -944,7 +944,7 @@ void CMsgStoreDlg::OnSaveFolderContentsAsMSG()
 
 	if (!m_lpHierarchyTableTreeCtrl) return;
 
-	DebugPrintEx(DBGGeneric, CLASS, _T("OnSaveFolderContentsAsMSG"), _T("\n"));
+	DebugPrintEx(DBGGeneric, CLASS, L"OnSaveFolderContentsAsMSG", L"\n");
 
 	// Find the highlighted item
 	LPMAPIFOLDER lpMAPIFolder = (LPMAPIFOLDER)m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiDO_NOT_REQUEST_MODIFY);
@@ -1241,7 +1241,7 @@ void CMsgStoreDlg::OnValidateIPMSubtree()
 		ulFlags = (MyData.GetCheck(0) ? MAPI_FORCE_CREATE : 0) |
 			(MyData.GetCheck(1) ? MAPI_FULL_IPM_TREE : 0);
 
-		DebugPrintEx(DBGGeneric, CLASS, _T("OnValidateIPMSubtree"), _T("ulFlags = 0x%08X\n"), ulFlags);
+		DebugPrintEx(DBGGeneric, CLASS, L"OnValidateIPMSubtree", L"ulFlags = 0x%08X\n", ulFlags);
 
 		EC_MAPI(HrValidateIPMSubtree(
 			lpMDB,
@@ -1254,7 +1254,7 @@ void CMsgStoreDlg::OnValidateIPMSubtree()
 
 		if (ulValues > 0 && lpProps)
 		{
-			DebugPrintEx(DBGGeneric, CLASS, _T("OnValidateIPMSubtree"), _T("HrValidateIPMSubtree returned 0x%08X properties:\n"), ulValues);
+			DebugPrintEx(DBGGeneric, CLASS, L"OnValidateIPMSubtree", L"HrValidateIPMSubtree returned 0x%08X properties:\n", ulValues);
 			DebugPrintProperties(DBGGeneric, ulValues, lpProps, lpMDB);
 		}
 

@@ -8,7 +8,7 @@
 #include "MAPIFunctions.h"
 #include "PropertyTagEditor.h"
 
-static TCHAR* CLASS = _T("CTagArrayEditor");
+static wstring CLASS = L"CTagArrayEditor";
 
 CTagArrayEditor::CTagArrayEditor(
 	_In_opt_ CWnd* pParentWnd,

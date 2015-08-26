@@ -12,19 +12,19 @@
 // CAbContDlg dialog
 
 
-static TCHAR* CLASS = _T("CAbContDlg");
+static wstring CLASS = L"CAbContDlg";
 
 CAbContDlg::CAbContDlg(
-					   _In_ CParentWnd* pParentWnd,
-					   _In_ CMapiObjects* lpMapiObjects
-					   ):
-CHierarchyTableDlg(
-				   pParentWnd,
-				   lpMapiObjects,
-				   IDS_ABCONT,
-				   NULL,
-				   IDR_MENU_ABCONT_POPUP,
-				   MENU_CONTEXT_AB_TREE)
+	_In_ CParentWnd* pParentWnd,
+	_In_ CMapiObjects* lpMapiObjects
+	) :
+	CHierarchyTableDlg(
+	pParentWnd,
+	lpMapiObjects,
+	IDS_ABCONT,
+	NULL,
+	IDR_MENU_ABCONT_POPUP,
+	MENU_CONTEXT_AB_TREE)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 
@@ -39,7 +39,7 @@ CHierarchyTableDlg(
 		{
 			// Open root address book (container).
 			EC_H(CallOpenEntry(
-				NULL,lpAddrBook,NULL,NULL,
+				NULL, lpAddrBook, NULL, NULL,
 				0,
 				NULL,
 				MAPI_BEST_ACCESS,
@@ -109,13 +109,13 @@ void CAbContDlg::OnSetPAB()
 } // CAbContDlg::OnSetPAB
 
 void CAbContDlg::HandleAddInMenuSingle(
-									   _In_ LPADDINMENUPARAMS lpParams,
-									   _In_ LPMAPIPROP /*lpMAPIProp*/,
-									   _In_ LPMAPICONTAINER lpContainer)
+	_In_ LPADDINMENUPARAMS lpParams,
+	_In_ LPMAPIPROP /*lpMAPIProp*/,
+	_In_ LPMAPICONTAINER lpContainer)
 {
 	if (lpParams)
 	{
-		lpParams->lpAbCont = (LPABCONT) lpContainer;
+		lpParams->lpAbCont = (LPABCONT)lpContainer;
 	}
 
 	InvokeAddInMenu(lpParams);

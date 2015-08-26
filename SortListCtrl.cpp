@@ -13,7 +13,7 @@
 #include "SortHeader.h"
 #include "AdviseSink.h"
 
-static TCHAR* CLASS = _T("CSortListCtrl");
+static wstring CLASS = L"CSortListCtrl";
 
 void FreeSortListData(_In_ SortListData* lpData)
 {
@@ -222,8 +222,8 @@ LRESULT CSortListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_DESTROY:
 	{
-					   DeleteAllColumns(true);
-					   break;
+		DeleteAllColumns(true);
+		break;
 	}
 	case WM_MOUSEMOVE:
 	{
@@ -404,7 +404,7 @@ _Check_return_ int CALLBACK CSortListCtrl::MyCompareProc(_In_ LPARAM lParam1, _I
 
 		return (lpSortInfo->bSortUp ? -iRet : iRet);
 	}
-		break;
+	break;
 	case SORTSTYLE_HEX:
 	{
 		TCHAR* sz1 = lpData1->szSortText;
@@ -438,14 +438,14 @@ _Check_return_ int CALLBACK CSortListCtrl::MyCompareProc(_In_ LPARAM lParam1, _I
 
 		return (lpSortInfo->bSortUp ? -iRet : iRet);
 	}
-		break;
+	break;
 	case SORTSTYLE_NUMERIC:
 	{
 		ULARGE_INTEGER ul1 = lpData1->ulSortValue;
 		ULARGE_INTEGER ul2 = lpData2->ulSortValue;
 		return (lpSortInfo->bSortUp ? ul2.QuadPart > ul1.QuadPart:ul1.QuadPart >= ul2.QuadPart);
 	}
-		break;
+	break;
 	default:
 		break;
 	}
@@ -667,7 +667,7 @@ void CSortListCtrl::AutoSizeColumns(bool bMinWidth)
 	CHeaderCtrl*	lpMyHeader = NULL;
 	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
-	DebugPrintEx(DBGGeneric, CLASS, _T("AutoSizeColumns"), _T("Sizing columns\n"));
+	DebugPrintEx(DBGGeneric, CLASS, L"AutoSizeColumns", L"Sizing columns\n");
 	lpMyHeader = GetHeaderCtrl();
 	if (lpMyHeader)
 	{
@@ -686,7 +686,7 @@ void CSortListCtrl::DeleteAllColumns(bool bShutdown)
 	CHeaderCtrl*	lpMyHeader = NULL;
 	HDITEM			hdItem = { 0 };
 
-	DebugPrintEx(DBGGeneric, CLASS, _T("DeleteAllColumns"), _T("Deleting existing columns\n"));
+	DebugPrintEx(DBGGeneric, CLASS, L"DeleteAllColumns", L"Deleting existing columns\n");
 	CWaitCursor		Wait; // Change the mouse to an hourglass while we work.
 
 	lpMyHeader = GetHeaderCtrl();
@@ -766,8 +766,8 @@ void CSortListCtrl::SetItemTextA(int nItem, int nSubItem, _In_z_ LPCSTR lpszText
 	}
 #ifdef UNICODE
 	LPWSTR lpszTextW = NULL;
-	(void) AnsiToUnicode(lpszText,&lpszTextW);
-	(void) CListCtrl::SetItemText(nItem,nSubItem,lpszTextW);
+	(void)AnsiToUnicode(lpszText, &lpszTextW);
+	(void)CListCtrl::SetItemText(nItem, nSubItem, lpszTextW);
 	delete[] lpszTextW;
 #else
 	(void)CListCtrl::SetItemText(nItem, nSubItem, lpszText);
@@ -784,7 +784,7 @@ void CSortListCtrl::SetItemTextW(int nItem, int nSubItem, _In_z_ LPCWSTR lpszTex
 		szWhitespace = (LPWSTR)wcspbrk(szWhitespace, L"\r\n\t"); // STRING_OK
 	}
 #ifdef UNICODE
-	(void) CListCtrl::SetItemText(nItem,nSubItem,lpszText);
+	(void) CListCtrl::SetItemText(nItem, nSubItem, lpszText);
 #else
 	LPSTR lpszTextA = NULL;
 	HRESULT hRes = UnicodeToAnsi(lpszText, &lpszTextA);
@@ -800,7 +800,7 @@ void CSortListCtrl::SetItemTextW(int nItem, int nSubItem, _In_z_ LPCWSTR lpszTex
 void CSortListCtrl::SetSelectedItem(int iItem)
 {
 	HRESULT hRes = S_OK;
-	DebugPrintEx(DBGGeneric, CLASS, _T("SetSelectedItem"), _T("selecting iItem = %d\n"), iItem);
+	DebugPrintEx(DBGGeneric, CLASS, L"SetSelectedItem", L"selecting iItem = %d\n", iItem);
 	BOOL bSet = false;
 
 	bSet = SetItemState(iItem, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);

@@ -3,7 +3,7 @@
 #include "CollapsibleTextPane.h"
 #include "..\UIFunctions.h"
 
-static TCHAR* CLASS = _T("CollapsibleTextPane");
+static wstring CLASS = L"CollapsibleTextPane";
 
 ViewPane* CreateCollapsibleTextPane(UINT uidLabel, bool bReadOnly)
 {
@@ -11,7 +11,7 @@ ViewPane* CreateCollapsibleTextPane(UINT uidLabel, bool bReadOnly)
 	return lpPane;
 }
 
-CollapsibleTextPane::CollapsibleTextPane(UINT uidLabel, bool bReadOnly):TextPane(uidLabel, bReadOnly, true)
+CollapsibleTextPane::CollapsibleTextPane(UINT uidLabel, bool bReadOnly) :TextPane(uidLabel, bReadOnly, true)
 {
 }
 
@@ -59,7 +59,7 @@ int CollapsibleTextPane::GetLines()
 void CollapsibleTextPane::SetWindowPos(int x, int y, int width, int height)
 {
 	HRESULT hRes = S_OK;
-	int (iVariableHeight) = height - GetFixedHeight();
+	int(iVariableHeight) = height - GetFixedHeight();
 	if (0 != m_iControl)
 	{
 		y += m_iSmallHeightMargin;

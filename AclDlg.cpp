@@ -10,7 +10,7 @@
 #include "SingleMAPIPropListCtrl.h"
 #include "InterpretProp2.h"
 
-static TCHAR* CLASS = _T("CAclDlg");
+static wstring CLASS = L"CAclDlg";
 
 #define ACL_INCLUDE_ID			0x00000001
 #define ACL_INCLUDE_OTHER		0x00000002
@@ -19,19 +19,19 @@ static TCHAR* CLASS = _T("CAclDlg");
 // CAclDlg dialog
 
 CAclDlg::CAclDlg(_In_ CParentWnd* pParentWnd,
-				 _In_ CMapiObjects* lpMapiObjects,
-				 _In_ LPEXCHANGEMODIFYTABLE lpExchTbl,
-				 bool fFreeBusyVisible)
-				 : CContentsTableDlg(pParentWnd,
-				 lpMapiObjects,
-				 (fFreeBusyVisible ? IDS_ACLFBTABLE : IDS_ACLTABLE),
-				 mfcmapiDO_NOT_CALL_CREATE_DIALOG,
-				 NULL,
-				 (LPSPropTagArray) &sptACLCols,
-				 NUMACLCOLUMNS,
-				 ACLColumns,
-				 IDR_MENU_ACL_POPUP,
-				 MENU_CONTEXT_ACL_TABLE)
+	_In_ CMapiObjects* lpMapiObjects,
+	_In_ LPEXCHANGEMODIFYTABLE lpExchTbl,
+	bool fFreeBusyVisible)
+	: CContentsTableDlg(pParentWnd,
+	lpMapiObjects,
+	(fFreeBusyVisible ? IDS_ACLFBTABLE : IDS_ACLTABLE),
+	mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+	NULL,
+	(LPSPropTagArray)&sptACLCols,
+	NUMACLCOLUMNS,
+	ACLColumns,
+	IDR_MENU_ACL_POPUP,
+	MENU_CONTEXT_ACL_TABLE)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	m_lpExchTbl = lpExchTbl;
@@ -80,8 +80,8 @@ void CAclDlg::OnInitMenu(_In_ CMenu* pMenu)
 		if (m_lpContentsTableListCtrl)
 		{
 			int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
-			pMenu->EnableMenuItem(ID_DELETESELECTEDITEM,DIMMSOK(iNumSel));
-			pMenu->EnableMenuItem(ID_MODIFYSELECTEDITEM,DIMMSOK(iNumSel));
+			pMenu->EnableMenuItem(ID_DELETESELECTEDITEM, DIMMSOK(iNumSel));
+			pMenu->EnableMenuItem(ID_MODIFYSELECTEDITEM, DIMMSOK(iNumSel));
 		}
 	}
 	CContentsTableDlg::OnInitMenu(pMenu);
@@ -97,7 +97,7 @@ void CAclDlg::OnRefreshView()
 
 	if (m_lpContentsTableListCtrl->IsLoading())
 		m_lpContentsTableListCtrl->OnCancelTableLoad();
-	DebugPrintEx(DBGGeneric,CLASS,_T("OnRefreshView"),_T("\n"));
+	DebugPrintEx(DBGGeneric, CLASS, L"OnRefreshView", L"\n");
 
 	if (m_lpExchTbl)
 	{
@@ -127,22 +127,22 @@ void CAclDlg::OnAddItem()
 		IDS_ACLADDITEM,
 		IDS_ACLADDITEMPROMPT,
 		2,
-		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
-	MyData.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_MEMBER_RIGHTS),true));
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+	MyData.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_MEMBER_RIGHTS), true));
 	MyData.InitPane(0, CreateSingleLinePane(IDS_USEREID, NULL, false));
 	MyData.InitPane(1, CreateSingleLinePane(IDS_MASKINHEX, NULL, false));
-	MyData.SetHex(1,0);
+	MyData.SetHex(1, 0);
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK != hRes)
 	{
-		DebugPrint(DBGGeneric,L"OnAddItem cancelled.\n");
+		DebugPrint(DBGGeneric, L"OnAddItem cancelled.\n");
 		return;
 	}
 
 	LPROWLIST lpNewItem = NULL;
 
-	EC_H(MAPIAllocateBuffer(CbNewROWLIST(1),(LPVOID*) &lpNewItem));
+	EC_H(MAPIAllocateBuffer(CbNewROWLIST(1), (LPVOID*)&lpNewItem));
 
 	if (lpNewItem)
 	{
@@ -231,7 +231,7 @@ _Check_return_ HRESULT CAclDlg::GetSelectedItems(ULONG ulFlags, ULONG ulRowFlags
 
 	LPROWLIST lpTempList = NULL;
 
-	EC_H(MAPIAllocateBuffer(CbNewROWLIST(iNumItems),(LPVOID*) &lpTempList));
+	EC_H(MAPIAllocateBuffer(CbNewROWLIST(iNumItems), (LPVOID*)&lpTempList));
 
 	if (lpTempList)
 	{
@@ -239,7 +239,7 @@ _Check_return_ HRESULT CAclDlg::GetSelectedItems(ULONG ulFlags, ULONG ulRowFlags
 		int iArrayPos = 0;
 		int iSelectedItem = -1;
 
-		for (iArrayPos = 0 ; iArrayPos < iNumItems ; iArrayPos++)
+		for (iArrayPos = 0; iArrayPos < iNumItems; iArrayPos++)
 		{
 			lpTempList->aEntries[iArrayPos].ulRowFlags = ulRowFlags;
 			lpTempList->aEntries[iArrayPos].cValues = 0;
@@ -249,7 +249,7 @@ _Check_return_ HRESULT CAclDlg::GetSelectedItems(ULONG ulFlags, ULONG ulRowFlags
 				LVNI_SELECTED);
 			if (-1 != iSelectedItem)
 			{
-				SortListData* lpData = (SortListData*) m_lpContentsTableListCtrl->GetItemData(iSelectedItem);
+				SortListData* lpData = (SortListData*)m_lpContentsTableListCtrl->GetItemData(iSelectedItem);
 				if (lpData)
 				{
 					if (ulFlags & ACL_INCLUDE_ID && ulFlags & ACL_INCLUDE_OTHER)
@@ -293,9 +293,9 @@ _Check_return_ HRESULT CAclDlg::GetSelectedItems(ULONG ulFlags, ULONG ulRowFlags
 } // CAclDlg::GetSelectedItems
 
 void CAclDlg::HandleAddInMenuSingle(
-									_In_ LPADDINMENUPARAMS lpParams,
-									_In_ LPMAPIPROP /*lpMAPIProp*/,
-									_In_ LPMAPICONTAINER /*lpContainer*/)
+	_In_ LPADDINMENUPARAMS lpParams,
+	_In_ LPMAPIPROP /*lpMAPIProp*/,
+	_In_ LPMAPICONTAINER /*lpContainer*/)
 {
 	if (lpParams)
 	{

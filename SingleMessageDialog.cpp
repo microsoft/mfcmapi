@@ -10,7 +10,7 @@
 #include "StreamEditor.h"
 #include "ExtraPropTags.h"
 
-static TCHAR* CLASS = _T("SingleMessageDialog");
+static wstring CLASS = L"SingleMessageDialog";
 
 /////////////////////////////////////////////////////////////////////////////
 // SingleMessageDialog dialog

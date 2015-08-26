@@ -6,7 +6,7 @@
 #include "MapiObjects.h"
 #include "MAPIFunctions.h"
 
-static TCHAR* GCCLASS = _T("CGlobalCache"); // STRING_OK
+static wstring GCCLASS = L"CGlobalCache"; // STRING_OK
 
 // A single instance cache of objects available to all
 class CGlobalCache
@@ -92,14 +92,14 @@ CGlobalCache::~CGlobalCache()
 STDMETHODIMP_(ULONG) CGlobalCache::AddRef()
 {
 	LONG lCount = InterlockedIncrement(&m_cRef);
-	TRACE_ADDREF(GCCLASS,lCount);
+	TRACE_ADDREF(GCCLASS, lCount);
 	return lCount;
 } // CGlobalCache::AddRef
 
 STDMETHODIMP_(ULONG) CGlobalCache::Release()
 {
 	LONG lCount = InterlockedDecrement(&m_cRef);
-	TRACE_RELEASE(GCCLASS,lCount);
+	TRACE_RELEASE(GCCLASS, lCount);
 	if (!lCount)  delete this;
 	return lCount;
 } // CGlobalCache::Release
@@ -109,7 +109,7 @@ void CGlobalCache::MAPIInitialize(ULONG ulFlags)
 	HRESULT hRes = S_OK;
 	if (!m_bMAPIInitialized)
 	{
-		MAPIINIT_0 mapiInit = {MAPI_INIT_VERSION,ulFlags};
+		MAPIINIT_0 mapiInit = { MAPI_INIT_VERSION, ulFlags };
 		WC_MAPI(::MAPIInitialize(&mapiInit));
 		if (SUCCEEDED(hRes))
 		{
@@ -117,7 +117,7 @@ void CGlobalCache::MAPIInitialize(ULONG ulFlags)
 		}
 		else
 		{
-			ErrDialog(__FILE__,__LINE__,
+			ErrDialog(__FILE__, __LINE__,
 				IDS_EDMAPIINITIALIZEFAILED,
 				hRes,
 				ErrorNameFromErrorCode(hRes));
@@ -245,7 +245,7 @@ _Check_return_ ULONG CGlobalCache::GetNumAttachments()
 
 void CGlobalCache::SetProfileToCopy(_In_ LPSTR szProfileName)
 {
-	(void) CopyStringA(&m_szProfileToCopy, szProfileName, NULL);
+	(void)CopyStringA(&m_szProfileToCopy, szProfileName, NULL);
 } // CGlobalCache::SetProfileToCopy
 
 _Check_return_ LPSTR CGlobalCache::GetProfileToCopy()
@@ -267,7 +267,7 @@ _Check_return_ ULONG CGlobalCache::GetBufferStatus()
 	return ulStatus;
 } // CGlobalCache::GetBufferStatus
 
-static TCHAR* CLASS = _T("CMapiObjects");
+static wstring CLASS = L"CMapiObjects";
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -277,7 +277,7 @@ static TCHAR* CLASS = _T("CMapiObjects");
 CMapiObjects::CMapiObjects(_In_opt_ CMapiObjects *OldMapiObjects)
 {
 	TRACE_CONSTRUCTOR(CLASS);
-	DebugPrintEx(DBGConDes,CLASS,CLASS,_T("OldMapiObjects = %p\n"),OldMapiObjects);
+	DebugPrintEx(DBGConDes, CLASS, CLASS, L"OldMapiObjects = %p\n", OldMapiObjects);
 	m_cRef = 1;
 
 	m_lpAddrBook = NULL;
@@ -319,14 +319,14 @@ CMapiObjects::~CMapiObjects()
 STDMETHODIMP_(ULONG) CMapiObjects::AddRef()
 {
 	LONG lCount = InterlockedIncrement(&m_cRef);
-	TRACE_ADDREF(CLASS,lCount);
+	TRACE_ADDREF(CLASS, lCount);
 	return lCount;
 } // CMapiObjects::AddRef
 
 STDMETHODIMP_(ULONG) CMapiObjects::Release()
 {
 	LONG lCount = InterlockedDecrement(&m_cRef);
-	TRACE_RELEASE(CLASS,lCount);
+	TRACE_RELEASE(CLASS, lCount);
 	if (!lCount)  delete this;
 	return lCount;
 } // CMapiObjects::Release
@@ -334,7 +334,7 @@ STDMETHODIMP_(ULONG) CMapiObjects::Release()
 void CMapiObjects::MAPILogonEx(_In_ HWND hwnd, _In_opt_z_ LPTSTR szProfileName, ULONG ulFlags)
 {
 	HRESULT hRes = S_OK;
-	DebugPrint(DBGGeneric, L"Logging on with MAPILogonEx, ulFlags = 0x%X\n",ulFlags);
+	DebugPrint(DBGGeneric, L"Logging on with MAPILogonEx, ulFlags = 0x%X\n", ulFlags);
 
 	this->MAPIInitialize(NULL);
 	if (!bMAPIInitialized()) return;
@@ -349,17 +349,17 @@ void CMapiObjects::MAPILogonEx(_In_ HWND hwnd, _In_opt_z_ LPTSTR szProfileName, 
 		ulFlags,
 		&m_lpMAPISession));
 
-	DebugPrint(DBGGeneric, L"\tm_lpMAPISession set to %p\n",m_lpMAPISession);
+	DebugPrint(DBGGeneric, L"\tm_lpMAPISession set to %p\n", m_lpMAPISession);
 } // CMapiObjects::MAPILogonEx
 
 void CMapiObjects::Logoff(_In_ HWND hwnd, ULONG ulFlags)
 {
 	HRESULT hRes = S_OK;
-	DebugPrint(DBGGeneric, L"Logging off of %p, ulFlags = 0x%08X\n",m_lpMAPISession,ulFlags);
+	DebugPrint(DBGGeneric, L"Logging off of %p, ulFlags = 0x%08X\n", m_lpMAPISession, ulFlags);
 
 	if (m_lpMAPISession)
 	{
-		EC_MAPI(m_lpMAPISession->Logoff((ULONG_PTR)hwnd,ulFlags,NULL));
+		EC_MAPI(m_lpMAPISession->Logoff((ULONG_PTR)hwnd, ulFlags, NULL));
 		m_lpMAPISession->Release();
 		m_lpMAPISession = NULL;
 	}
@@ -381,7 +381,7 @@ _Check_return_ LPMAPISESSION CMapiObjects::LogonGetSession(_In_ HWND hWnd)
 
 void CMapiObjects::SetMDB(_In_opt_ LPMDB lpMDB)
 {
-	DebugPrintEx(DBGGeneric,CLASS,_T("SetMDB"),_T("replacing %p with %p\n"),m_lpMDB,lpMDB);
+	DebugPrintEx(DBGGeneric, CLASS, L"SetMDB", L"replacing %p with %p\n", m_lpMDB, lpMDB);
 	if (m_lpMDB) m_lpMDB->Release();
 	m_lpMDB = lpMDB;
 	if (m_lpMDB) m_lpMDB->AddRef();
@@ -394,7 +394,7 @@ _Check_return_ LPMDB CMapiObjects::GetMDB()
 
 void CMapiObjects::SetAddrBook(_In_opt_ LPADRBOOK lpAddrBook)
 {
-	DebugPrintEx(DBGGeneric,CLASS,_T("SetAddrBook"),_T("replacing %p with %p\n"),m_lpAddrBook,lpAddrBook);
+	DebugPrintEx(DBGGeneric, CLASS, L"SetAddrBook", L"replacing %p with %p\n", m_lpAddrBook, lpAddrBook);
 	if (m_lpAddrBook) m_lpAddrBook->Release();
 	m_lpAddrBook = lpAddrBook;
 	if (m_lpAddrBook) m_lpAddrBook->AddRef();
@@ -461,7 +461,7 @@ void CMapiObjects::SetMessagesToCopy(_In_ LPENTRYLIST lpMessagesToCopy, _In_ LPM
 {
 	if (m_lpGlobalCache)
 	{
-		m_lpGlobalCache->SetMessagesToCopy(lpMessagesToCopy,lpSourceParent);
+		m_lpGlobalCache->SetMessagesToCopy(lpMessagesToCopy, lpSourceParent);
 	}
 } // CMapiObjects::SetMessagesToCopy
 
@@ -478,7 +478,7 @@ void CMapiObjects::SetFolderToCopy(_In_ LPMAPIFOLDER lpFolderToCopy, _In_ LPMAPI
 {
 	if (m_lpGlobalCache)
 	{
-		m_lpGlobalCache->SetFolderToCopy(lpFolderToCopy,lpSourceParent);
+		m_lpGlobalCache->SetFolderToCopy(lpFolderToCopy, lpSourceParent);
 	}
 } // CMapiObjects::SetFolderToCopy
 
@@ -504,7 +504,7 @@ void CMapiObjects::SetPropertyToCopy(ULONG ulPropTag, _In_ LPMAPIPROP lpSourcePr
 {
 	if (m_lpGlobalCache)
 	{
-		m_lpGlobalCache->SetPropertyToCopy(ulPropTag,lpSourcePropObject);
+		m_lpGlobalCache->SetPropertyToCopy(ulPropTag, lpSourcePropObject);
 	}
 } // CMapiObjects::SetPropertyToCopy
 
@@ -530,7 +530,7 @@ void CMapiObjects::SetAttachmentsToCopy(_In_ LPMESSAGE lpMessage, ULONG ulNumAtt
 {
 	if (m_lpGlobalCache)
 	{
-		m_lpGlobalCache->SetAttachmentsToCopy(lpMessage,ulNumAttachments,lpAttNumList);
+		m_lpGlobalCache->SetAttachmentsToCopy(lpMessage, ulNumAttachments, lpAttNumList);
 	}
 } // CMapiObjects::SetAttachmentsToCopy
 

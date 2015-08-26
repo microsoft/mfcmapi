@@ -24,7 +24,7 @@
 #include "Options.h"
 #include "ParseProperty.h"
 
-static TCHAR* CLASS = _T("CBaseDialog");
+static wstring CLASS = L"CBaseDialog";
 
 CBaseDialog::CBaseDialog(
 	_In_ CParentWnd* pParentWnd,
@@ -119,12 +119,12 @@ LRESULT CBaseDialog::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	switch (message)
 	{
 	case WM_COMMAND:
-		{
-			WORD idFrom = LOWORD(wParam);
-			// idFrom is the menu item selected
-			if (HandleMenu(idFrom)) return S_OK;
-			break;
-		}
+	{
+		WORD idFrom = LOWORD(wParam);
+		// idFrom is the menu item selected
+		if (HandleMenu(idFrom)) return S_OK;
+		break;
+	}
 	case WM_PAINT:
 		// Paint the status, then let the rest draw itself.
 		DrawStatus(
@@ -165,7 +165,7 @@ BOOL CBaseDialog::OnInitDialog()
 
 void CBaseDialog::CreateDialogAndMenu(UINT nIDMenuResource, UINT uiClassMenuResource, UINT uidClassMenuTitle)
 {
-	DebugPrintEx(DBGCreateDialog, CLASS, _T("CreateDialogAndMenu"), _T("id = 0x%X\n"), nIDMenuResource);
+	DebugPrintEx(DBGCreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
 
 	m_lpszTemplateName = MAKEINTRESOURCE(IDD_BLANK_DIALOG);
 
@@ -287,7 +287,7 @@ void CBaseDialog::OnMenuSelect(UINT nItemID, UINT nFlags, HMENU /*hSysMenu*/)
 
 _Check_return_ bool CBaseDialog::HandleKeyDown(UINT nChar, bool bShift, bool bCtrl, bool bMenu)
 {
-	DebugPrintEx(DBGMenu, CLASS, _T("HandleKeyDown"), _T("nChar = 0x%0X, bShift = 0x%X, bCtrl = 0x%X, bMenu = 0x%X\n"),
+	DebugPrintEx(DBGMenu, CLASS, L"HandleKeyDown", L"nChar = 0x%0X, bShift = 0x%X, bCtrl = 0x%X, bMenu = 0x%X\n",
 		nChar, bShift, bCtrl, bMenu);
 	if (bMenu) return false;
 
@@ -376,7 +376,7 @@ void CBaseDialog::OnCancel()
 
 void CBaseDialog::OnEscHit()
 {
-	DebugPrintEx(DBGGeneric, CLASS, _T("OnEscHit"), _T("Not implemented\n"));
+	DebugPrintEx(DBGGeneric, CLASS, L"OnEscHit", L"Not implemented\n");
 } // CBaseDialog::OnEscHit
 
 void CBaseDialog::OnOptions()
@@ -410,12 +410,12 @@ void CBaseDialog::OnOpenMainWindow()
 
 void CBaseDialog::HandleCopy()
 {
-	DebugPrintEx(DBGGeneric, CLASS, _T("HandleCopy"), _T("\n"));
+	DebugPrintEx(DBGGeneric, CLASS, L"HandleCopy", L"\n");
 } // CBaseDialog::HandleCopy
 
 _Check_return_ bool CBaseDialog::HandlePaste()
 {
-	DebugPrintEx(DBGGeneric, CLASS, _T("HandlePaste"), _T("\n"));
+	DebugPrintEx(DBGGeneric, CLASS, L"HandlePaste", L"\n");
 	ULONG ulStatus = m_lpMapiObjects->GetBufferStatus();
 
 	if (m_lpPropDisplay && (ulStatus & BUFFER_PROPTAG) && (ulStatus & BUFFER_SOURCEPROPOBJ))
@@ -434,18 +434,18 @@ void CBaseDialog::OnHelp()
 
 void CBaseDialog::OnDeleteSelectedItem()
 {
-	DebugPrintEx(DBGDeleteSelectedItem, CLASS, _T("OnDeleteSelectedItem"), _T(" Not Implemented\n"));
+	DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L" Not Implemented\n");
 } // CBaseDialog::OnDeleteSelectedItem
 
 void CBaseDialog::OnRefreshView()
 {
-	DebugPrintEx(DBGGeneric, CLASS, _T("OnRefreshView"), _T(" Not Implemented\n"));
+	DebugPrintEx(DBGGeneric, CLASS, L"OnRefreshView", L" Not Implemented\n");
 } // CBaseDialog::OnRefreshView
 
 void CBaseDialog::OnUpdateSingleMAPIPropListCtrl(_In_opt_ LPMAPIPROP lpMAPIProp, _In_opt_ SortListData* lpListData)
 {
 	HRESULT hRes = S_OK;
-	DebugPrintEx(DBGGeneric, CLASS, _T("OnUpdateSingleMAPIPropListCtrl"), _T("Setting item %p\n"), lpMAPIProp);
+	DebugPrintEx(DBGGeneric, CLASS, L"OnUpdateSingleMAPIPropListCtrl", L"Setting item %p\n", lpMAPIProp);
 
 	if (m_lpPropDisplay)
 	{
@@ -611,7 +611,7 @@ void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg
 			HRESULT hRes = S_OK;
 			CString szMsg;
 			WC_B(szMsg.LoadString(uidMsg));
-			if (FAILED(hRes)) DebugPrintEx(DBGMenu, CLASS, _T("UpdateStatusBarText"), _T("Cannot find menu item 0x%08X\n"), uidMsg);
+			if (FAILED(hRes)) DebugPrintEx(DBGMenu, CLASS, L"UpdateStatusBarText", L"Cannot find menu item 0x%08X\n", uidMsg);
 
 			szStatBarString.FormatMessage(szMsg, szParam1, szParam2, szParam3);
 		}
@@ -1115,7 +1115,7 @@ void CBaseDialog::OnDispatchNotifications()
 
 _Check_return_ bool CBaseDialog::HandleAddInMenu(WORD wMenuSelect)
 {
-	DebugPrintEx(DBGAddInPlumbing, CLASS, _T("HandleAddInMenu"), _T("wMenuSelect = 0x%08X\n"), wMenuSelect);
+	DebugPrintEx(DBGAddInPlumbing, CLASS, L"HandleAddInMenu", L"wMenuSelect = 0x%08X\n", wMenuSelect);
 	return false;
 } // CBaseDialog::HandleAddInMenu
 

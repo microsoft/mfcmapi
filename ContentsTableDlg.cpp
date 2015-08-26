@@ -19,7 +19,7 @@
 #include "AttachmentsDlg.h"
 #include "RecipientsDlg.h"
 
-static TCHAR* CLASS = _T("CContentsTableDlg");
+static wstring CLASS = L"CContentsTableDlg";
 
 /////////////////////////////////////////////////////////////////////////////
 // CContentsTableDlg dialog
@@ -149,7 +149,7 @@ void CContentsTableDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 {
 	HRESULT hRes = S_OK;
 
-	DebugPrintEx(DBGCreateDialog, CLASS, _T("CreateDialogAndMenu"), _T("id = 0x%X\n"), nIDMenuResource);
+	DebugPrintEx(DBGCreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
 	CBaseDialog::CreateDialogAndMenu(nIDMenuResource, IDR_MENU_TABLE, IDS_TABLEMENU);
 
 	if (m_lpContentsTableListCtrl && m_lpContentsTable)
@@ -234,7 +234,7 @@ void CContentsTableDlg::OnInitMenu(_In_opt_ CMenu* pMenu)
 
 void CContentsTableDlg::OnCancel()
 {
-	DebugPrintEx(DBGGeneric, CLASS, _T("OnCancel"), _T("\n"));
+	DebugPrintEx(DBGGeneric, CLASS, L"OnCancel", L"\n");
 	// get rid of the window before we start our cleanup
 	ShowWindow(SW_HIDE);
 
@@ -247,7 +247,7 @@ void CContentsTableDlg::OnCancel()
 
 void CContentsTableDlg::OnEscHit()
 {
-	DebugPrintEx(DBGGeneric, CLASS, _T("OnEscHit"), _T("\n"));
+	DebugPrintEx(DBGGeneric, CLASS, L"OnEscHit", L"\n");
 	if (m_lpContentsTableListCtrl)
 	{
 		m_lpContentsTableListCtrl->OnCancelTableLoad();
@@ -294,7 +294,7 @@ void CContentsTableDlg::OnRefreshView()
 {
 	HRESULT hRes = S_OK;
 	if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
-	DebugPrintEx(DBGGeneric, CLASS, _T("OnRefreshView"), _T("\n"));
+	DebugPrintEx(DBGGeneric, CLASS, L"OnRefreshView", L"\n");
 	if (m_lpContentsTableListCtrl->IsLoading()) m_lpContentsTableListCtrl->OnCancelTableLoad();
 	EC_H(m_lpContentsTableListCtrl->RefreshTable());
 } // CContentsTableDlg::OnRefreshView
@@ -466,7 +466,7 @@ void CContentsTableDlg::OnCreateMessageRestriction()
 					lpspvDeliveryTime->Value.ft.dwHighDateTime = 0x0;
 				}
 
-				DebugPrintEx(DBGGeneric, CLASS, _T("OnCreateMessageRestriction"), _T("built restriction:\n"));
+				DebugPrintEx(DBGGeneric, CLASS, L"OnCreateMessageRestriction", L"built restriction:\n");
 				DebugPrintRestriction(DBGGeneric, lpRes, lpMAPIProp);
 			}
 			else
@@ -645,7 +645,7 @@ void CContentsTableDlg::OnOutputTable()
 
 		if (szFileName)
 		{
-			DebugPrintEx(DBGGeneric, CLASS, _T("OnOutputTable"), _T("saving to %ws\n"), szFileName);
+			DebugPrintEx(DBGGeneric, CLASS, L"OnOutputTable", L"saving to %ws\n", szFileName);
 
 			m_lpContentsTableListCtrl->OnOutputTable(szFileName);
 		}
@@ -786,7 +786,7 @@ void CContentsTableDlg::OnSortTable()
 _Check_return_ HRESULT CContentsTableDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
 {
 	HRESULT hRes = S_OK;
-	DebugPrintEx(DBGOpenItemProp, CLASS, _T("OpenItemProp"), _T("iSelectedItem = 0x%X\n"), iSelectedItem);
+	DebugPrintEx(DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
 
 	if (!lppMAPIProp || !m_lpContentsTableListCtrl) return MAPI_E_INVALID_PARAMETER;
 
@@ -936,7 +936,7 @@ void CContentsTableDlg::HandleAddInMenuSingle(
 // Returns true if we reset columns, false otherwise
 _Check_return_ LRESULT	CContentsTableDlg::msgOnResetColumns(WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
-	DebugPrintEx(DBGGeneric, CLASS, _T("msgOnResetColumns"), _T("Received message reset columns\n"));
+	DebugPrintEx(DBGGeneric, CLASS, L"msgOnResetColumns", L"Received message reset columns\n");
 
 	if (m_lpContentsTableListCtrl)
 	{

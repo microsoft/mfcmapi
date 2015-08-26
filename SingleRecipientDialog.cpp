@@ -7,7 +7,7 @@
 #include "MAPIFunctions.h"
 #include "MFCUtilityFunctions.h"
 
-static TCHAR* CLASS = _T("SingleRecipientDialog");
+static wstring CLASS = L"SingleRecipientDialog";
 
 /////////////////////////////////////////////////////////////////////////////
 // SingleRecipientDialog dialog
@@ -16,8 +16,8 @@ static TCHAR* CLASS = _T("SingleRecipientDialog");
 SingleRecipientDialog::SingleRecipientDialog(
 	_In_ CParentWnd* pParentWnd,
 	_In_ CMapiObjects* lpMapiObjects,
-	_In_opt_ LPMAILUSER lpMAPIProp):
-CBaseDialog(
+	_In_opt_ LPMAILUSER lpMAPIProp) :
+	CBaseDialog(
 	pParentWnd,
 	lpMapiObjects,
 	NULL)
@@ -66,5 +66,5 @@ END_MESSAGE_MAP()
 void SingleRecipientDialog::OnRefreshView()
 {
 	if (!m_lpPropDisplay) return;
-	(void) m_lpPropDisplay->RefreshMAPIPropList();
+	(void)m_lpPropDisplay->RefreshMAPIPropList();
 } // SingleRecipientDialog::OnRefreshView

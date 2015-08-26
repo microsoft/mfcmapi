@@ -102,7 +102,7 @@ _Check_return_ HRESULT DisplayPropertyEditor(_In_ CWnd* pParentWnd,
 	return hRes;
 } // DisplayPropertyEditor
 
-static TCHAR* SVCLASS = _T("CPropertyEditor"); // STRING_OK
+static wstring SVCLASS = L"CPropertyEditor"; // STRING_OK
 
 // Create an editor for a MAPI property
 CPropertyEditor::CPropertyEditor(
@@ -1012,7 +1012,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 			if (GetBinaryUseControl(1, &cb, &lpb) && !(cb % sizeof(WCHAR)))
 			{
 				// GetBinaryUseControl includes extra NULLs at the end of the buffer to make this work
-				SetStringW(0, (LPCWSTR)lpb, cb / sizeof(WCHAR)+1);
+				SetStringW(0, (LPCWSTR)lpb, cb / sizeof(WCHAR) + 1);
 			}
 			else
 			{
@@ -1037,7 +1037,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 	return i;
 } // CPropertyEditor::HandleChange
 
-static TCHAR* MVCLASS = _T("CMultiValuePropertyEditor"); // STRING_OK
+static wstring MVCLASS = L"CMultiValuePropertyEditor"; // STRING_OK
 
 // Create an editor for a MAPI property
 CMultiValuePropertyEditor::CMultiValuePropertyEditor(
@@ -1565,7 +1565,7 @@ void CMultiValuePropertyEditor::UpdateSmartView()
 				szSmartView = InterpretPropSmartView(lpsProp, m_lpMAPIProp, NULL, NULL, m_bIsAB, true);
 				break;
 			case PT_MV_BINARY:
-				iStructType = (__ParsingTypeEnum) lpPane->GetDropDownSelectionValue();
+				iStructType = (__ParsingTypeEnum)lpPane->GetDropDownSelectionValue();
 				if (iStructType)
 				{
 					szSmartView = InterpretMVBinaryAsString(lpsProp->Value.MVbin, iStructType, m_lpMAPIProp);

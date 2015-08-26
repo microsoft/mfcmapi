@@ -5,7 +5,7 @@
 #include "stdafx.h"
 #include "AdviseSink.h"
 
-static TCHAR* CLASS = _T("CAdviseSink");
+static wstring CLASS = L"CAdviseSink";
 
 CAdviseSink::CAdviseSink(_In_ HWND hWndParent, _In_opt_ HTREEITEM hTreeParent)
 {
@@ -78,24 +78,24 @@ STDMETHODIMP_(ULONG) CAdviseSink::OnNotify(ULONG cNotify,
 				break;
 			case TABLE_ROW_ADDED:
 				EC_H((HRESULT)::SendMessage(
-				m_hWndParent,
-				WM_MFCMAPI_ADDITEM,
-				(WPARAM)&lpNotifications[i].info.tab,
-				(LPARAM)m_hTreeParent));
+					m_hWndParent,
+					WM_MFCMAPI_ADDITEM,
+					(WPARAM)&lpNotifications[i].info.tab,
+					(LPARAM)m_hTreeParent));
 				break;
 			case TABLE_ROW_DELETED:
 				EC_H((HRESULT)::SendMessage(
-				m_hWndParent,
-				WM_MFCMAPI_DELETEITEM,
-				(WPARAM)&lpNotifications[i].info.tab,
-				(LPARAM)m_hTreeParent));
+					m_hWndParent,
+					WM_MFCMAPI_DELETEITEM,
+					(WPARAM)&lpNotifications[i].info.tab,
+					(LPARAM)m_hTreeParent));
 				break;
 			case TABLE_ROW_MODIFIED:
 				EC_H((HRESULT)::SendMessage(
-				m_hWndParent,
-				WM_MFCMAPI_MODIFYITEM,
-				(WPARAM)&lpNotifications[i].info.tab,
-				(LPARAM)m_hTreeParent));
+					m_hWndParent,
+					WM_MFCMAPI_MODIFYITEM,
+					(WPARAM)&lpNotifications[i].info.tab,
+					(LPARAM)m_hTreeParent));
 				break;
 			}
 		}

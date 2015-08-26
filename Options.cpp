@@ -22,10 +22,10 @@ private:
 	bool m_bNeedPropRefresh;
 };
 
-static TCHAR* CLASS = _T("COptions");
+static wstring CLASS = L"COptions";
 
-COptions::COptions(_In_ CWnd* pWnd):
-CEditor(pWnd, IDS_SETOPTS, NULL, 0, CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL)
+COptions::COptions(_In_ CWnd* pWnd) :
+CEditor(pWnd, IDS_SETOPTS, NULL, 0, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	EnableScroll();
@@ -34,11 +34,11 @@ CEditor(pWnd, IDS_SETOPTS, NULL, 0, CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL)
 
 	m_bNeedPropRefresh = false;
 
-	DebugPrintEx(DBGGeneric, CLASS, _T("COptions("), _T("Building option sheet - adding fields\n"));
+	DebugPrintEx(DBGGeneric, CLASS, L"COptions(", L"Building option sheet - adding fields\n");
 
 	ULONG ulReg = 0;
 
-	for (ulReg = 0 ; ulReg < NumRegOptionKeys ; ulReg++)
+	for (ulReg = 0; ulReg < NumRegOptionKeys; ulReg++)
 	{
 		if (regoptCheck == RegKeys[ulReg].ulRegOptType)
 		{
@@ -84,11 +84,11 @@ void COptions::OnOK()
 	SetDebugOutputToFile(GetCheck(regkeyDEBUG_TO_FILE));
 
 	// Remaining options require no special handling - loop through them
-	for (ulReg = 0 ; ulReg < NumRegOptionKeys ; ulReg++)
+	for (ulReg = 0; ulReg < NumRegOptionKeys; ulReg++)
 	{
 		if (regoptCheck == RegKeys[ulReg].ulRegOptType)
 		{
-			if (RegKeys[ulReg].bRefresh && RegKeys[ulReg].ulCurDWORD != (ULONG) GetCheckUseControl(ulReg))
+			if (RegKeys[ulReg].bRefresh && RegKeys[ulReg].ulCurDWORD != (ULONG)GetCheckUseControl(ulReg))
 			{
 				m_bNeedPropRefresh = true;
 			}

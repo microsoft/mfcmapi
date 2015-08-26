@@ -12,29 +12,29 @@
 #include "Editor.h"
 #include "MapiFunctions.h"
 
-static TCHAR* CLASS = _T("CProviderTableDlg");
+static wstring CLASS = L"CProviderTableDlg";
 
 /////////////////////////////////////////////////////////////////////////////
 // CProviderTableDlg dialog
 
 
 CProviderTableDlg::CProviderTableDlg(
-									 _In_ CParentWnd* pParentWnd,
-									 _In_ CMapiObjects* lpMapiObjects,
-									 _In_ LPMAPITABLE lpMAPITable,
-									 _In_ LPPROVIDERADMIN lpProviderAdmin
-									 ):
-CContentsTableDlg(
-				  pParentWnd,
-				  lpMapiObjects,
-				  IDS_PROVIDERS,
-				  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
-				  lpMAPITable,
-				  (LPSPropTagArray) &sptPROVIDERCols,
-				  NUMPROVIDERCOLUMNS,
-				  PROVIDERColumns,
-				  NULL,
-				  MENU_CONTEXT_PROFILE_PROVIDERS)
+	_In_ CParentWnd* pParentWnd,
+	_In_ CMapiObjects* lpMapiObjects,
+	_In_ LPMAPITABLE lpMAPITable,
+	_In_ LPPROVIDERADMIN lpProviderAdmin
+	) :
+	CContentsTableDlg(
+	pParentWnd,
+	lpMapiObjects,
+	IDS_PROVIDERS,
+	mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+	lpMAPITable,
+	(LPSPropTagArray)&sptPROVIDERCols,
+	NUMPROVIDERCOLUMNS,
+	PROVIDERColumns,
+	NULL,
+	MENU_CONTEXT_PROFILE_PROVIDERS)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 
@@ -54,7 +54,7 @@ CProviderTableDlg::~CProviderTableDlg()
 } // CProviderTableDlg::~CProviderTableDlg
 
 BEGIN_MESSAGE_MAP(CProviderTableDlg, CContentsTableDlg)
-	ON_COMMAND(ID_OPENPROFILESECTION,OnOpenProfileSection)
+	ON_COMMAND(ID_OPENPROFILESECTION, OnOpenProfileSection)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -66,13 +66,13 @@ _Check_return_ HRESULT CProviderTableDlg::OpenItemProp(int iSelectedItem, __mfcm
 	LPSBinary		lpProviderUID = NULL;
 	SortListData*	lpListData = NULL;
 
-	DebugPrintEx(DBGOpenItemProp,CLASS,_T("OpenItemProp"),_T("iSelectedItem = 0x%X\n"),iSelectedItem);
+	DebugPrintEx(DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
 
 	if (!lppMAPIProp || !m_lpContentsTableListCtrl || !m_lpProviderAdmin) return MAPI_E_INVALID_PARAMETER;
 
 	*lppMAPIProp = NULL;
 
-	lpListData = (SortListData*) m_lpContentsTableListCtrl->GetItemData(iSelectedItem);
+	lpListData = (SortListData*)m_lpContentsTableListCtrl->GetItemData(iSelectedItem);
 	if (lpListData)
 	{
 		lpProviderUID = lpListData->data.Contents.lpProviderUID;
@@ -81,7 +81,7 @@ _Check_return_ HRESULT CProviderTableDlg::OpenItemProp(int iSelectedItem, __mfcm
 			EC_H(OpenProfileSection(
 				m_lpProviderAdmin,
 				lpProviderUID,
-				(LPPROFSECT*) lppMAPIProp));
+				(LPPROFSECT*)lppMAPIProp));
 		}
 	}
 	return hRes;
@@ -98,7 +98,7 @@ void CProviderTableDlg::OnOpenProfileSection()
 		IDS_OPENPROFSECT,
 		IDS_OPENPROFSECTPROMPT,
 		2,
-		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 	MyUID.InitPane(0, CreateDropDownGuidPane(IDS_MAPIUID, false));
 	MyUID.InitPane(1, CreateCheckPane(IDS_MAPIUIDBYTESWAPPED, false, false));
@@ -106,9 +106,9 @@ void CProviderTableDlg::OnOpenProfileSection()
 	WC_H(MyUID.DisplayDialog());
 	if (S_OK != hRes) return;
 
-	GUID guid = {0};
-	SBinary MapiUID = {sizeof(GUID),(LPBYTE) &guid};
-	(void) MyUID.GetSelectedGUID(0, MyUID.GetCheck(1), &guid);
+	GUID guid = { 0 };
+	SBinary MapiUID = { sizeof(GUID), (LPBYTE)&guid };
+	(void)MyUID.GetSelectedGUID(0, MyUID.GetCheck(1), &guid);
 
 	LPPROFSECT lpProfSect = NULL;
 	EC_H(OpenProfileSection(
@@ -118,7 +118,7 @@ void CProviderTableDlg::OnOpenProfileSection()
 	if (lpProfSect)
 	{
 		LPMAPIPROP lpTemp = NULL;
-		EC_MAPI(lpProfSect->QueryInterface(IID_IMAPIProp,(LPVOID*) &lpTemp));
+		EC_MAPI(lpProfSect->QueryInterface(IID_IMAPIProp, (LPVOID*)&lpTemp));
 		if (lpTemp)
 		{
 			EC_H(DisplayObject(
@@ -140,7 +140,7 @@ void CProviderTableDlg::HandleAddInMenuSingle(
 {
 	if (lpParams)
 	{
-		lpParams->lpProfSect = (LPPROFSECT) lpMAPIProp;
+		lpParams->lpProfSect = (LPPROFSECT)lpMAPIProp;
 	}
 
 	InvokeAddInMenu(lpParams);

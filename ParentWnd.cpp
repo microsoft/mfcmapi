@@ -10,7 +10,7 @@
 
 extern CMyWinApp theApp;
 
-static TCHAR* CLASS = _T("CParentWnd");
+static wstring CLASS = L"CParentWnd";
 
 // This appears to be the only way to catch a column drag event
 // Since we end up catching for EVERY event, we have to be clever to ensure only
@@ -23,13 +23,13 @@ static TCHAR* CLASS = _T("CParentWnd");
 // a particular CSingleMAPIPropListCtrl gets changed.
 // We can't throw to the CSingleMAPIPropListCtrl directly since we don't have a handle here for it
 void CALLBACK MyWinEventProc(
-							 HWINEVENTHOOK /*hWinEventHook*/,
-							 DWORD event,
-							 _In_ HWND hwnd,
-							 LONG /*idObject*/,
-							 LONG /*idChild*/,
-							 DWORD /*dwEventThread*/,
-							 DWORD /*dwmsEventTime*/)
+	HWINEVENTHOOK /*hWinEventHook*/,
+	DWORD event,
+	_In_ HWND hwnd,
+	LONG /*idObject*/,
+	LONG /*idChild*/,
+	DWORD /*dwEventThread*/,
+	DWORD /*dwmsEventTime*/)
 {
 	if (EVENT_OBJECT_REORDER == event)
 	{
@@ -38,8 +38,8 @@ void CALLBACK MyWinEventProc(
 		WC_B(::PostMessage(
 			hwnd,
 			WM_MFCMAPI_SAVECOLUMNORDERHEADER,
-			(WPARAM) NULL,
-			(LPARAM) NULL));
+			(WPARAM)NULL,
+			(LPARAM)NULL));
 	}
 } // MyWinEventProc
 
@@ -56,10 +56,10 @@ CParentWnd::CParentWnd()
 	OpenDebugFile();
 	DebugPrintVersion(DBGVersionBanner);
 	// Force the system riched20 so we don't load office's version.
-	(void) LoadFromSystemDir(_T("riched20.dll")); // STRING_OK
+	(void)LoadFromSystemDir(_T("riched20.dll")); // STRING_OK
 	// Second part is to load rundll32.exe
 	// Don't plan on unloading this, so don't care about the return value
-	(void) LoadFromSystemDir(_T("rundll32.exe")); // STRING_OK
+	(void)LoadFromSystemDir(_T("rundll32.exe")); // STRING_OK
 
 	// Load DLLS and get functions from them
 	ImportProcs();
@@ -105,7 +105,7 @@ CParentWnd::~CParentWnd()
 } // CParentWnd::~CParentWnd
 
 _Check_return_ STDMETHODIMP CParentWnd::QueryInterface(REFIID riid,
-													   _Deref_out_opt_ LPVOID * ppvObj)
+	_Deref_out_opt_ LPVOID * ppvObj)
 {
 	*ppvObj = 0;
 	if (riid == IID_IUnknown)
@@ -120,14 +120,14 @@ _Check_return_ STDMETHODIMP CParentWnd::QueryInterface(REFIID riid,
 STDMETHODIMP_(ULONG) CParentWnd::AddRef()
 {
 	LONG lCount = InterlockedIncrement(&m_cRef);
-	TRACE_ADDREF(CLASS,lCount);
+	TRACE_ADDREF(CLASS, lCount);
 	return lCount;
 } // CParentWnd::AddRef
 
 STDMETHODIMP_(ULONG) CParentWnd::Release()
 {
 	LONG lCount = InterlockedDecrement(&m_cRef);
-	TRACE_RELEASE(CLASS,lCount);
+	TRACE_RELEASE(CLASS, lCount);
 	if (!lCount) delete this;
 	return lCount;
 } // CParentWnd::Release

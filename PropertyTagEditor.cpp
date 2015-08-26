@@ -8,7 +8,7 @@
 #include "NamedPropCache.h"
 #include "Guids.h"
 
-static TCHAR* CLASS = _T("CPropertyTagEditor");
+static wstring CLASS = L"CPropertyTagEditor";
 
 enum __PropTagFields
 {
@@ -78,7 +78,7 @@ BOOL CPropertyTagEditor::OnInitDialog()
 	for (ulDropNum = 0; ulDropNum < ulPropTypeArray; ulDropNum++)
 	{
 #ifdef UNICODE
-		InsertDropString(PROPTAG_TYPE,ulDropNum,PropTypeArray[ulDropNum].lpszName);
+		InsertDropString(PROPTAG_TYPE, ulDropNum, PropTypeArray[ulDropNum].lpszName);
 #else
 		HRESULT hRes = S_OK;
 		LPSTR szAnsiName = NULL;
@@ -181,7 +181,7 @@ void CPropertyTagEditor::LookupNamedProp(ULONG ulSkipField, bool bCreate)
 
 	// Convert our prop tag name to a wide character string
 #ifdef UNICODE
-	szWideName = (LPWSTR) (LPCWSTR) szName;
+	szWideName = (LPWSTR)(LPCWSTR)szName;
 #else
 	EC_H(AnsiToUnicode(szName, &szWideName));
 #endif
@@ -303,14 +303,14 @@ _Check_return_ ULONG CPropertyTagEditor::HandleChange(UINT nID)
 
 		m_ulPropTag = PROP_TAG(PROP_TYPE(m_ulPropTag), ulID);
 	}
-		break;
+	break;
 	case PROPTAG_TYPE: // Prop Type changed
 	{
 		ULONG ulType = GetSelectedPropType();
 
 		m_ulPropTag = CHANGE_PROP_TYPE(m_ulPropTag, ulType);
 	}
-		break;
+	break;
 	case PROPTAG_NAMEPROPKIND:
 	case PROPTAG_NAMEPROPNAME:
 	case PROPTAG_NAMEPROPGUID:

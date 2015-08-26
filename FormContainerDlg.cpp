@@ -13,7 +13,7 @@
 #include "MAPIFunctions.h"
 #include "FileDialogEx.h"
 
-static TCHAR* CLASS = _T("CFormContainerDlg");
+static wstring CLASS = L"CFormContainerDlg";
 
 /////////////////////////////////////////////////////////////////////////////
 // CFormContainerDlg dialog
@@ -23,14 +23,14 @@ CFormContainerDlg::CFormContainerDlg(
 	_In_ CParentWnd* pParentWnd,
 	_In_ CMapiObjects* lpMapiObjects,
 	_In_ LPMAPIFORMCONTAINER lpFormContainer
-	):
-CContentsTableDlg(
+	) :
+	CContentsTableDlg(
 	pParentWnd,
 	lpMapiObjects,
 	IDS_FORMCONTAINER,
 	mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 	NULL,
-	(LPSPropTagArray) &sptDEFCols,
+	(LPSPropTagArray)&sptDEFCols,
 	NUMDEFCOLUMNS,
 	DEFColumns,
 	IDR_MENU_FORM_CONTAINER_POPUP,
@@ -43,7 +43,7 @@ CContentsTableDlg(
 	{
 		m_lpFormContainer->AddRef();
 		LPTSTR lpszDisplayName = NULL;
-		(void)m_lpFormContainer->GetDisplay(fMapiUnicode,&lpszDisplayName);
+		(void)m_lpFormContainer->GetDisplay(fMapiUnicode, &lpszDisplayName);
 		if (lpszDisplayName)
 		{
 			m_szTitle = lpszDisplayName;
@@ -77,7 +77,7 @@ void CFormContainerDlg::OnInitMenu(_In_ CMenu* pMenu)
 	if (pMenu && m_lpContentsTableListCtrl)
 	{
 		int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
-		pMenu->EnableMenuItem(ID_DELETESELECTEDITEM,DIMMSOK(iNumSel));
+		pMenu->EnableMenuItem(ID_DELETESELECTEDITEM, DIMMSOK(iNumSel));
 	}
 	CContentsTableDlg::OnInitMenu(pMenu);
 } // CFormContainerDlg::OnInitMenu
@@ -102,22 +102,22 @@ void CFormContainerDlg::OnRefreshView()
 	if (!m_lpContentsTableListCtrl) return;
 
 	if (m_lpContentsTableListCtrl->IsLoading()) m_lpContentsTableListCtrl->OnCancelTableLoad();
-	DebugPrintEx(DBGForms,CLASS,_T("OnRefreshView"),_T("\n"));
+	DebugPrintEx(DBGForms, CLASS, L"OnRefreshView", L"\n");
 
 	EC_B(m_lpContentsTableListCtrl->DeleteAllItems());
 	if (m_lpFormContainer)
 	{
 		LPSMAPIFORMINFOARRAY lpMAPIFormInfoArray = NULL;
-		WC_MAPI(m_lpFormContainer->ResolveMultipleMessageClasses(0,NULL,&lpMAPIFormInfoArray));
+		WC_MAPI(m_lpFormContainer->ResolveMultipleMessageClasses(0, NULL, &lpMAPIFormInfoArray));
 		if (lpMAPIFormInfoArray)
 		{
 			ULONG i = NULL;
-			for (i=0; i<lpMAPIFormInfoArray->cForms; i++)
+			for (i = 0; i < lpMAPIFormInfoArray->cForms; i++)
 			{
 				if (0 == i)
 				{
 					LPSPropTagArray lpTagArray = NULL;
-					EC_MAPI(lpMAPIFormInfoArray->aFormInfo[i]->GetPropList(fMapiUnicode,&lpTagArray));
+					EC_MAPI(lpMAPIFormInfoArray->aFormInfo[i]->GetPropList(fMapiUnicode, &lpTagArray));
 					EC_H(m_lpContentsTableListCtrl->SetUIColumns(lpTagArray));
 					MAPIFreeBuffer(lpTagArray);
 				}
@@ -125,10 +125,10 @@ void CFormContainerDlg::OnRefreshView()
 				{
 					ULONG ulPropVals = NULL;
 					LPSPropValue lpPropVals = NULL;
-					EC_H_GETPROPS(GetPropsNULL(lpMAPIFormInfoArray->aFormInfo[i],fMapiUnicode,&ulPropVals,&lpPropVals));
+					EC_H_GETPROPS(GetPropsNULL(lpMAPIFormInfoArray->aFormInfo[i], fMapiUnicode, &ulPropVals, &lpPropVals));
 					if (lpPropVals)
 					{
-						SRow sRow = {0};
+						SRow sRow = { 0 };
 						sRow.cValues = ulPropVals;
 						sRow.lpProps = lpPropVals;
 						(void)::SendMessage(
@@ -151,13 +151,13 @@ _Check_return_ HRESULT CFormContainerDlg::OpenItemProp(int iSelectedItem, __mfcm
 	HRESULT			hRes = S_OK;
 	SortListData*	lpListData = NULL;
 
-	DebugPrintEx(DBGOpenItemProp,CLASS,_T("OpenItemProp"),_T("iSelectedItem = 0x%X\n"),iSelectedItem);
+	DebugPrintEx(DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
 
 	if (!lppMAPIProp || !m_lpContentsTableListCtrl || !m_lpFormContainer) return MAPI_E_INVALID_PARAMETER;
 
-	*lppMAPIProp  = NULL;
+	*lppMAPIProp = NULL;
 
-	lpListData = (SortListData*) m_lpContentsTableListCtrl->GetItemData(iSelectedItem);
+	lpListData = (SortListData*)m_lpContentsTableListCtrl->GetItemData(iSelectedItem);
 	if (lpListData)
 	{
 		LPSPropValue lpProp = NULL; // do not free this
@@ -165,7 +165,7 @@ _Check_return_ HRESULT CFormContainerDlg::OpenItemProp(int iSelectedItem, __mfcm
 			lpListData->lpSourceProps,
 			lpListData->cSourceProps,
 			PR_MESSAGE_CLASS_A); // ResolveMessageClass requires an ANSI string
-		if (CheckStringProp(lpProp,PT_STRING8))
+		if (CheckStringProp(lpProp, PT_STRING8))
 		{
 			LPMAPIFORMINFO lpFormInfoProp = NULL;
 			EC_MAPI(m_lpFormContainer->ResolveMessageClass(
@@ -202,19 +202,18 @@ void CFormContainerDlg::OnDeleteSelectedItem()
 			lpListData->lpSourceProps,
 			lpListData->cSourceProps,
 			PR_MESSAGE_CLASS_A); // RemoveForm requires an ANSI string
-		if (CheckStringProp(lpProp,PT_STRING8))
+		if (CheckStringProp(lpProp, PT_STRING8))
 		{
 			DebugPrintEx(
 				DBGDeleteSelectedItem,
 				CLASS,
-				_T("OnDeleteSelectedItem"), // STRING_OK
-				_T("Removing form \"%hs\"\n"), // STRING_OK
+				L"OnDeleteSelectedItem", // STRING_OK
+				L"Removing form \"%hs\"\n", // STRING_OK
 				lpProp->Value.lpszA);
 			EC_MAPI(m_lpFormContainer->RemoveForm(
 				lpProp->Value.lpszA));
 		}
-	}
-	while (iItem != -1);
+	} while (iItem != -1);
 
 	OnRefreshView(); // Update the view since we don't have notifications here.
 } // CFormContainerDlg::OnDeleteSelectedItem
@@ -224,15 +223,15 @@ void CFormContainerDlg::OnInstallForm()
 	HRESULT			hRes = S_OK;
 	if (!m_lpFormContainer) return;
 
-	DebugPrintEx(DBGForms,CLASS,_T("OnInstallForm"),_T("installing form\n"));
+	DebugPrintEx(DBGForms, CLASS, L"OnInstallForm", L"installing form\n");
 	CEditor MyFlags(
 		this,
 		IDS_INSTALLFORM,
 		IDS_INSTALLFORMPROMPT,
-		(ULONG) 1,
-		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+		(ULONG)1,
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyFlags.InitPane(0, CreateSingleLinePane(IDS_FLAGS, NULL, false));
-	MyFlags.SetHex(0,MAPIFORM_INSTALL_DIALOG);
+	MyFlags.SetHex(0, MAPIFORM_INSTALL_DIALOG);
 
 	WC_H(MyFlags.DisplayDialog());
 	if (S_OK == hRes)
@@ -253,27 +252,27 @@ void CFormContainerDlg::OnInstallForm()
 		if (iDlgRet == IDOK)
 		{
 			ULONG ulFlags = MyFlags.GetHex(0);
-			HWND hwnd = (ulFlags & MAPIFORM_INSTALL_DIALOG)?m_hWnd:0;
+			HWND hwnd = (ulFlags & MAPIFORM_INSTALL_DIALOG) ? m_hWnd : 0;
 			LPSTR lpszPath = NULL;
 			while (NULL != (lpszPath = dlgFilePicker.GetNextFileName()))
 			{
 				hRes = S_OK;
-				DebugPrintEx(DBGForms,CLASS,_T("OnInstallForm"),
-					_T("Calling InstallForm(%p,0x%08X,\"%hs\")\n"),hwnd,ulFlags,lpszPath); // STRING_OK
-				WC_MAPI(m_lpFormContainer->InstallForm((ULONG_PTR)hwnd,ulFlags,(LPTSTR)lpszPath));
+				DebugPrintEx(DBGForms, CLASS, L"OnInstallForm",
+					L"Calling InstallForm(%p,0x%08X,\"%hs\")\n", hwnd, ulFlags, lpszPath); // STRING_OK
+				WC_MAPI(m_lpFormContainer->InstallForm((ULONG_PTR)hwnd, ulFlags, (LPTSTR)lpszPath));
 				if (MAPI_E_EXTENDED_ERROR == hRes)
 				{
 					LPMAPIERROR lpErr = NULL;
-					WC_MAPI(m_lpFormContainer->GetLastError(hRes,fMapiUnicode,&lpErr));
+					WC_MAPI(m_lpFormContainer->GetLastError(hRes, fMapiUnicode, &lpErr));
 					if (lpErr)
 					{
-						EC_MAPIERR(fMapiUnicode,lpErr);
+						EC_MAPIERR(fMapiUnicode, lpErr);
 						MAPIFreeBuffer(lpErr);
 					}
 				}
 				else CHECKHRES(hRes);
 
-				if (bShouldCancel(this,hRes)) break;
+				if (bShouldCancel(this, hRes)) break;
 			}
 			OnRefreshView(); // Update the view since we don't have notifications here.
 		}
@@ -285,13 +284,13 @@ void CFormContainerDlg::OnRemoveForm()
 	HRESULT			hRes = S_OK;
 	if (!m_lpFormContainer) return;
 
-	DebugPrintEx(DBGForms,CLASS,_T("OnRemoveForm"),_T("removing form\n"));
+	DebugPrintEx(DBGForms, CLASS, L"OnRemoveForm", L"removing form\n");
 	CEditor MyClass(
 		this,
 		IDS_REMOVEFORM,
 		IDS_REMOVEFORMPROMPT,
-		(ULONG) 1,
-		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+		(ULONG)1,
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyClass.InitPane(0, CreateSingleLinePane(IDS_CLASS, NULL, false));
 
 	WC_H(MyClass.DisplayDialog());
@@ -300,8 +299,8 @@ void CFormContainerDlg::OnRemoveForm()
 		LPSTR szClass = MyClass.GetStringA(0); // RemoveForm requires an ANSI string
 		if (szClass)
 		{
-			DebugPrintEx(DBGForms,CLASS,_T("OnRemoveForm"),
-				_T("Calling RemoveForm(\"%hs\")\n"),szClass); // STRING_OK
+			DebugPrintEx(DBGForms, CLASS, L"OnRemoveForm",
+				L"Calling RemoveForm(\"%hs\")\n", szClass); // STRING_OK
 			EC_MAPI(m_lpFormContainer->RemoveForm(szClass));
 			OnRefreshView(); // Update the view since we don't have notifications here.
 		}
@@ -313,13 +312,13 @@ void CFormContainerDlg::OnResolveMessageClass()
 	HRESULT			hRes = S_OK;
 	if (!m_lpFormContainer) return;
 
-	DebugPrintEx(DBGForms,CLASS,_T("OnResolveMessageClass"),_T("resolving message class\n"));
+	DebugPrintEx(DBGForms, CLASS, L"OnResolveMessageClass", L"resolving message class\n");
 	CEditor MyData(
 		this,
 		IDS_RESOLVECLASS,
 		IDS_RESOLVECLASSPROMPT,
-		(ULONG) 2,
-		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+		(ULONG)2,
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.InitPane(0, CreateSingleLinePane(IDS_CLASS, NULL, false));
 	MyData.InitPane(1, CreateSingleLinePane(IDS_FLAGS, NULL, false));
 
@@ -331,13 +330,13 @@ void CFormContainerDlg::OnResolveMessageClass()
 		if (szClass)
 		{
 			LPMAPIFORMINFO lpMAPIFormInfo = NULL;
-			DebugPrintEx(DBGForms,CLASS,_T("OnResolveMessageClass"),
-				_T("Calling ResolveMessageClass(\"%hs\",0x%08X)\n"),szClass,ulFlags); // STRING_OK
-			EC_MAPI(m_lpFormContainer->ResolveMessageClass(szClass,ulFlags,&lpMAPIFormInfo));
+			DebugPrintEx(DBGForms, CLASS, L"OnResolveMessageClass",
+				L"Calling ResolveMessageClass(\"%hs\",0x%08X)\n", szClass, ulFlags); // STRING_OK
+			EC_MAPI(m_lpFormContainer->ResolveMessageClass(szClass, ulFlags, &lpMAPIFormInfo));
 			if (lpMAPIFormInfo)
 			{
 				OnUpdateSingleMAPIPropListCtrl(lpMAPIFormInfo, NULL);
-				DebugPrintFormInfo(DBGForms,lpMAPIFormInfo);
+				DebugPrintFormInfo(DBGForms, lpMAPIFormInfo);
 				lpMAPIFormInfo->Release();
 			}
 		}
@@ -350,15 +349,15 @@ void CFormContainerDlg::OnResolveMultipleMessageClasses()
 	ULONG i = 0;
 	if (!m_lpFormContainer) return;
 
-	DebugPrintEx(DBGForms,CLASS,_T("OnResolveMultipleMessageClasses"),_T("resolving multiple message classes\n"));
+	DebugPrintEx(DBGForms, CLASS, L"OnResolveMultipleMessageClasses", L"resolving multiple message classes\n");
 	CEditor MyData(
 		this,
 		IDS_RESOLVECLASSES,
 		IDS_RESOLVECLASSESPROMPT,
-		(ULONG) 2,
-		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+		(ULONG)2,
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.InitPane(0, CreateSingleLinePane(IDS_NUMBER, NULL, false));
-	MyData.SetDecimal(0,1);
+	MyData.SetDecimal(0, 1);
 	MyData.InitPane(1, CreateSingleLinePane(IDS_FLAGS, NULL, false));
 
 	WC_H(MyData.DisplayDialog());
@@ -370,19 +369,19 @@ void CFormContainerDlg::OnResolveMultipleMessageClasses()
 		LPSMESSAGECLASSARRAY lpMSGClassArray = NULL;
 		if (ulNumClasses && ulNumClasses < MAXMessageClassArray)
 		{
-			EC_H(MAPIAllocateBuffer(CbMessageClassArray(ulNumClasses),(LPVOID*)&lpMSGClassArray));
+			EC_H(MAPIAllocateBuffer(CbMessageClassArray(ulNumClasses), (LPVOID*)&lpMSGClassArray));
 
 			if (lpMSGClassArray)
 			{
 				lpMSGClassArray->cValues = ulNumClasses;
-				for (i = 0 ; i < ulNumClasses ; i++)
+				for (i = 0; i < ulNumClasses; i++)
 				{
 					CEditor MyClass(
 						this,
 						IDS_ENTERMSGCLASS,
 						IDS_ENTERMSGCLASSPROMPT,
-						(ULONG) 1,
-						CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+						(ULONG)1,
+						CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 					MyClass.InitPane(0, CreateSingleLinePane(IDS_CLASS, NULL, false));
 
 					WC_H(MyClass.DisplayDialog());
@@ -390,13 +389,13 @@ void CFormContainerDlg::OnResolveMultipleMessageClasses()
 					{
 						LPSTR szClass = MyClass.GetStringA(0); // MSDN says always use ANSI strings here
 						size_t cbClass = 0;
-						EC_H(StringCbLengthA(szClass,STRSAFE_MAX_CCH * sizeof(char),&cbClass));
+						EC_H(StringCbLengthA(szClass, STRSAFE_MAX_CCH * sizeof(char), &cbClass));
 
 						if (cbClass)
 						{
 							cbClass++; // for the NULL terminator
-							EC_H(MAPIAllocateMore((ULONG)cbClass,lpMSGClassArray,(LPVOID*)&lpMSGClassArray->aMessageClass[i]));
-							EC_H(StringCbCopyA((LPSTR)lpMSGClassArray->aMessageClass[i],cbClass,szClass));
+							EC_H(MAPIAllocateMore((ULONG)cbClass, lpMSGClassArray, (LPVOID*)&lpMSGClassArray->aMessageClass[i]));
+							EC_H(StringCbCopyA((LPSTR)lpMSGClassArray->aMessageClass[i], cbClass, szClass));
 						}
 						else bCancel = true;
 					}
@@ -408,17 +407,17 @@ void CFormContainerDlg::OnResolveMultipleMessageClasses()
 		if (!bCancel)
 		{
 			LPSMAPIFORMINFOARRAY lpMAPIFormInfoArray = NULL;
-			DebugPrintEx(DBGForms,CLASS,_T("OnResolveMultipleMessageClasses"),
-				_T("Calling ResolveMultipleMessageClasses(Num Classes = 0x%08X,0x%08X)\n"),ulNumClasses,ulFlags); // STRING_OK
-			EC_MAPI(m_lpFormContainer->ResolveMultipleMessageClasses(lpMSGClassArray,ulFlags,&lpMAPIFormInfoArray));
+			DebugPrintEx(DBGForms, CLASS, L"OnResolveMultipleMessageClasses",
+				L"Calling ResolveMultipleMessageClasses(Num Classes = 0x%08X,0x%08X)\n", ulNumClasses, ulFlags); // STRING_OK
+			EC_MAPI(m_lpFormContainer->ResolveMultipleMessageClasses(lpMSGClassArray, ulFlags, &lpMAPIFormInfoArray));
 			if (lpMAPIFormInfoArray)
 			{
-				DebugPrintEx(DBGForms,CLASS,_T("OnResolveMultipleMessageClasses"),_T("Got 0x%08X forms\n"),lpMAPIFormInfoArray->cForms);
-				for (i=0; i<lpMAPIFormInfoArray->cForms; i++)
+				DebugPrintEx(DBGForms, CLASS, L"OnResolveMultipleMessageClasses", L"Got 0x%08X forms\n", lpMAPIFormInfoArray->cForms);
+				for (i = 0; i < lpMAPIFormInfoArray->cForms; i++)
 				{
 					if (lpMAPIFormInfoArray->aFormInfo[i])
 					{
-						DebugPrintFormInfo(DBGForms,lpMAPIFormInfoArray->aFormInfo[i]);
+						DebugPrintFormInfo(DBGForms, lpMAPIFormInfoArray->aFormInfo[i]);
 						lpMAPIFormInfoArray->aFormInfo[i]->Release();
 					}
 				}
@@ -434,15 +433,15 @@ void CFormContainerDlg::OnCalcFormPropSet()
 	HRESULT			hRes = S_OK;
 	if (!m_lpFormContainer) return;
 
-	DebugPrintEx(DBGForms,CLASS,_T("OnCalcFormPropSet"),_T("calculating form property set\n"));
+	DebugPrintEx(DBGForms, CLASS, L"OnCalcFormPropSet", L"calculating form property set\n");
 	CEditor MyData(
 		this,
 		IDS_CALCFORMPROPSET,
 		IDS_CALCFORMPROPSETPROMPT,
-		(ULONG) 1,
-		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+		(ULONG)1,
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.InitPane(0, CreateSingleLinePane(IDS_FLAGS, NULL, false));
-	MyData.SetHex(0,FORMPROPSET_UNION);
+	MyData.SetHex(0, FORMPROPSET_UNION);
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -450,12 +449,12 @@ void CFormContainerDlg::OnCalcFormPropSet()
 		ULONG ulFlags = MyData.GetHex(0);
 
 		LPMAPIFORMPROPARRAY lpFormPropArray = NULL;
-		DebugPrintEx(DBGForms,CLASS,_T("OnCalcFormPropSet"),
-			_T("Calling CalcFormPropSet(0x%08X)\n"),ulFlags); // STRING_OK
-		EC_MAPI(m_lpFormContainer->CalcFormPropSet(ulFlags,&lpFormPropArray));
+		DebugPrintEx(DBGForms, CLASS, L"OnCalcFormPropSet",
+			L"Calling CalcFormPropSet(0x%08X)\n", ulFlags); // STRING_OK
+		EC_MAPI(m_lpFormContainer->CalcFormPropSet(ulFlags, &lpFormPropArray));
 		if (lpFormPropArray)
 		{
-			DebugPrintFormPropArray(DBGForms,lpFormPropArray);
+			DebugPrintFormPropArray(DBGForms, lpFormPropArray);
 			MAPIFreeBuffer(lpFormPropArray);
 		}
 	}
@@ -467,17 +466,17 @@ void CFormContainerDlg::OnGetDisplay()
 	if (!m_lpFormContainer) return;
 
 	LPTSTR lpszDisplayName = NULL;
-	EC_MAPI(m_lpFormContainer->GetDisplay(fMapiUnicode,&lpszDisplayName));
+	EC_MAPI(m_lpFormContainer->GetDisplay(fMapiUnicode, &lpszDisplayName));
 
 	if (lpszDisplayName)
 	{
-		DebugPrintEx(DBGForms,CLASS,_T("OnGetDisplay"),_T("Got display name \"%s\"\n"),lpszDisplayName);
+		DebugPrintEx(DBGForms, CLASS, L"OnGetDisplay", L"Got display name \"%ws\"\n", LPCTSTRToWstring(lpszDisplayName).c_str());
 		CEditor MyOutput(
 			this,
 			IDS_GETDISPLAY,
 			IDS_GETDISPLAYPROMPT,
 			1,
-			CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
+			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyOutput.InitPane(0, CreateSingleLinePane(IDS_GETDISPLAY, lpszDisplayName, true));
 		WC_H(MyOutput.DisplayDialog());
 		MAPIFreeBuffer(lpszDisplayName);
@@ -492,7 +491,7 @@ void CFormContainerDlg::HandleAddInMenuSingle(
 	if (lpParams)
 	{
 		lpParams->lpFormContainer = m_lpFormContainer;
-		lpParams->lpFormInfoProp = (LPMAPIFORMINFO) lpMAPIProp; // OpenItemProp returns LPMAPIFORMINFO
+		lpParams->lpFormInfoProp = (LPMAPIFORMINFO)lpMAPIProp; // OpenItemProp returns LPMAPIFORMINFO
 	}
 
 	InvokeAddInMenu(lpParams);

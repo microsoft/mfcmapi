@@ -204,7 +204,7 @@ void _OutputW(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, wstri
 		if (bPrintThreadTime)
 		{
 			OutputThreadTime(ulDbgLvl);
-	}
+		}
 
 		OutputDebugStringW(szMsg.c_str());
 #ifdef MRMAPI
@@ -218,7 +218,7 @@ void _OutputW(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, wstri
 		{
 			WriteFile(g_fDebugFile, szMsg);
 		}
-}
+	}
 
 	// If we were given a file - send the output there
 	if (fFile)
@@ -227,7 +227,7 @@ void _OutputW(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, wstri
 	}
 }
 
-void _OutputA(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, _In_opt_z_ string szMsg)
+void _OutputA(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, string szMsg)
 {
 	CHKPARAM;
 	EARLYABORT;
@@ -283,7 +283,7 @@ void __cdecl OutputToFilef(_In_opt_ FILE* fFile, wstring szMsg, ...)
 	va_start(argList, szMsg);
 	if (argList)
 	{
-		_OutputW(DBGNoDebug, fFile, false, formatW(szMsg, argList));
+		_OutputW(DBGNoDebug, fFile, true, formatW(szMsg, argList));
 	}
 	else
 	{
@@ -300,10 +300,9 @@ void __cdecl DebugPrint(ULONG ulDbgLvl, wstring szMsg, ...)
 
 	va_list argList = NULL;
 	va_start(argList, szMsg);
-
 	if (argList)
 	{
-		_OutputW(ulDbgLvl, NULL, false, formatW(szMsg, argList));
+		_OutputW(ulDbgLvl, NULL, true, formatW(szMsg, argList));
 	}
 	else
 	{
@@ -313,25 +312,23 @@ void __cdecl DebugPrint(ULONG ulDbgLvl, wstring szMsg, ...)
 	va_end(argList);
 }
 
-void __cdecl DebugPrintEx(ULONG ulDbgLvl, _In_z_ LPCTSTR szClass, _In_z_ LPCTSTR szFunc, _Printf_format_string_ LPCTSTR szMsg, ...)
+void __cdecl DebugPrintEx(ULONG ulDbgLvl, wstring szClass, wstring szFunc, wstring szMsg, ...)
 {
-	HRESULT hRes = S_OK;
-	static TCHAR szMsgEx[1024];
-
 	if (!fIsSetv(ulDbgLvl) && !RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD) return;
 
-	hRes = StringCchPrintf(szMsgEx, _countof(szMsgEx), _T("%s::%s %s"), szClass, szFunc, szMsg); // STRING_OK
-	if (hRes == S_OK)
+	wstring szMsgEx = format(L"%ws::%ws %ws", szClass.c_str(), szFunc.c_str(), szMsg.c_str()); // STRING_OK
+	va_list argList = NULL;
+	va_start(argList, szMsg);
+	if (argList)
 	{
-		va_list argList = NULL;
-		va_start(argList, szMsg);
-
-		TCHAR szDebugString[4096];
-		hRes = StringCchVPrintf(szDebugString, _countof(szDebugString), szMsgEx, argList);
-		va_end(argList);
-		if (hRes == S_OK)
-			_Output(ulDbgLvl, NULL, true, szDebugString);
+		_OutputW(ulDbgLvl, NULL, true, formatW(szMsgEx, argList));
 	}
+	else
+	{
+		_OutputW(ulDbgLvl, NULL, true, szMsgEx);
+	}
+
+	va_end(argList);
 }
 
 void OutputIndent(ULONG ulDbgLvl, _In_opt_ FILE* fFile, int iIndent)

@@ -22,7 +22,7 @@ extern CMyWinApp theApp;
 
 #include "AboutDlg.h"
 
-static TCHAR* CLASS = _T("CEditor");
+static wstring CLASS = L"CEditor";
 
 #define NOLIST 0XFFFFFFFF
 

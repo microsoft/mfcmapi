@@ -9,7 +9,7 @@
 #include "SingleMAPIPropListCtrl.h"
 #include "ImportProcs.h"
 
-static TCHAR* CLASS = _T("CRulesDlg");
+static wstring CLASS = L"CRulesDlg";
 
 #define RULE_INCLUDE_ID			0x00000001
 #define RULE_INCLUDE_OTHER		0x00000002
@@ -18,20 +18,20 @@ static TCHAR* CLASS = _T("CRulesDlg");
 // CRulesDlg dialog
 
 CRulesDlg::CRulesDlg(
-					 _In_ CParentWnd* pParentWnd,
-					 _In_ CMapiObjects* lpMapiObjects,
-					 _In_ LPEXCHANGEMODIFYTABLE lpExchTbl):
-CContentsTableDlg(
-				  pParentWnd,
-				  lpMapiObjects,
-				  IDS_RULESTABLE,
-				  mfcmapiDO_NOT_CALL_CREATE_DIALOG,
-				  NULL,
-				  (LPSPropTagArray) &sptRULECols,
-				  NUMRULECOLUMNS,
-				  RULEColumns,
-				  IDR_MENU_RULES_POPUP,
-				  MENU_CONTEXT_RULES_TABLE)
+	_In_ CParentWnd* pParentWnd,
+	_In_ CMapiObjects* lpMapiObjects,
+	_In_ LPEXCHANGEMODIFYTABLE lpExchTbl) :
+	CContentsTableDlg(
+	pParentWnd,
+	lpMapiObjects,
+	IDS_RULESTABLE,
+	mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+	NULL,
+	(LPSPropTagArray)&sptRULECols,
+	NUMRULECOLUMNS,
+	RULEColumns,
+	IDR_MENU_RULES_POPUP,
+	MENU_CONTEXT_RULES_TABLE)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	m_lpExchTbl = lpExchTbl;
@@ -62,8 +62,8 @@ void CRulesDlg::OnInitMenu(_In_opt_ CMenu* pMenu)
 		if (m_lpContentsTableListCtrl)
 		{
 			int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
-			pMenu->EnableMenuItem(ID_DELETESELECTEDITEM,DIMMSOK(iNumSel));
-			pMenu->EnableMenuItem(ID_MODIFYSELECTEDITEM,DIMMSOK(iNumSel));
+			pMenu->EnableMenuItem(ID_DELETESELECTEDITEM, DIMMSOK(iNumSel));
+			pMenu->EnableMenuItem(ID_MODIFYSELECTEDITEM, DIMMSOK(iNumSel));
 		}
 	}
 	CContentsTableDlg::OnInitMenu(pMenu);
@@ -77,7 +77,7 @@ void CRulesDlg::OnRefreshView()
 	if (!m_lpExchTbl || !m_lpContentsTableListCtrl) return;
 
 	if (m_lpContentsTableListCtrl->IsLoading()) m_lpContentsTableListCtrl->OnCancelTableLoad();
-	DebugPrintEx(DBGGeneric,CLASS,_T("OnRefreshView"),_T("\n"));
+	DebugPrintEx(DBGGeneric, CLASS, L"OnRefreshView", L"\n");
 
 	if (m_lpExchTbl)
 	{
@@ -124,7 +124,7 @@ void CRulesDlg::OnModifySelectedItem()
 
 	LPROWLIST lpSelectedItems = NULL;
 
-	EC_H(GetSelectedItems(RULE_INCLUDE_ID|RULE_INCLUDE_OTHER, ROW_MODIFY, &lpSelectedItems));
+	EC_H(GetSelectedItems(RULE_INCLUDE_ID | RULE_INCLUDE_OTHER, ROW_MODIFY, &lpSelectedItems));
 
 	if (lpSelectedItems)
 	{
@@ -148,7 +148,7 @@ _Check_return_ HRESULT CRulesDlg::GetSelectedItems(ULONG ulFlags, ULONG ulRowFla
 
 	LPROWLIST lpTempList = NULL;
 
-	EC_H(MAPIAllocateBuffer(CbNewROWLIST(iNumItems),(LPVOID*) &lpTempList));
+	EC_H(MAPIAllocateBuffer(CbNewROWLIST(iNumItems), (LPVOID*)&lpTempList));
 
 	if (lpTempList)
 	{
@@ -156,7 +156,7 @@ _Check_return_ HRESULT CRulesDlg::GetSelectedItems(ULONG ulFlags, ULONG ulRowFla
 		int iArrayPos = 0;
 		int iSelectedItem = -1;
 
-		for (iArrayPos = 0 ; iArrayPos < iNumItems ; iArrayPos++)
+		for (iArrayPos = 0; iArrayPos < iNumItems; iArrayPos++)
 		{
 			lpTempList->aEntries[iArrayPos].ulRowFlags = ulRowFlags;
 			lpTempList->aEntries[iArrayPos].cValues = 0;
@@ -166,7 +166,7 @@ _Check_return_ HRESULT CRulesDlg::GetSelectedItems(ULONG ulFlags, ULONG ulRowFla
 				LVNI_SELECTED);
 			if (-1 != iSelectedItem)
 			{
-				SortListData* lpData = (SortListData*) m_lpContentsTableListCtrl->GetItemData(iSelectedItem);
+				SortListData* lpData = (SortListData*)m_lpContentsTableListCtrl->GetItemData(iSelectedItem);
 				if (lpData)
 				{
 					if (ulFlags & RULE_INCLUDE_ID && ulFlags & RULE_INCLUDE_OTHER)
@@ -174,7 +174,7 @@ _Check_return_ HRESULT CRulesDlg::GetSelectedItems(ULONG ulFlags, ULONG ulRowFla
 						EC_H(MAPIAllocateMore(
 							lpData->cSourceProps * sizeof(SPropValue),
 							lpTempList,
-							(LPVOID*) &lpTempList->aEntries[iArrayPos].rgPropVals));
+							(LPVOID*)&lpTempList->aEntries[iArrayPos].rgPropVals));
 						if (SUCCEEDED(hRes) && lpTempList->aEntries[iArrayPos].rgPropVals)
 						{
 							ULONG ulSrc = 0;
@@ -219,9 +219,9 @@ _Check_return_ HRESULT CRulesDlg::GetSelectedItems(ULONG ulFlags, ULONG ulRowFla
 } // CRulesDlg::GetSelectedItems
 
 void CRulesDlg::HandleAddInMenuSingle(
-									  _In_ LPADDINMENUPARAMS lpParams,
-									  _In_ LPMAPIPROP /*lpMAPIProp*/,
-									  _In_ LPMAPICONTAINER /*lpContainer*/)
+	_In_ LPADDINMENUPARAMS lpParams,
+	_In_ LPMAPIPROP /*lpMAPIProp*/,
+	_In_ LPMAPICONTAINER /*lpContainer*/)
 {
 	if (lpParams)
 	{

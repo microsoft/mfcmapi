@@ -13,7 +13,7 @@
 #include "MFCUtilityFunctions.h"
 #include "ImportProcs.h"
 
-static TCHAR* CLASS = _T("CAttachmentsDlg");
+static wstring CLASS = L"CAttachmentsDlg";
 
 /////////////////////////////////////////////////////////////////////////////
 // CAttachmentsDlg dialog
@@ -177,7 +177,7 @@ _Check_return_ HRESULT CAttachmentsDlg::OpenItemProp(
 	HRESULT hRes = S_OK;
 	SortListData* lpListData = NULL;
 
-	DebugPrintEx(DBGOpenItemProp, CLASS, _T("OpenItemProp"), _T("iSelectedItem = 0x%X\n"), iSelectedItem);
+	DebugPrintEx(DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
 
 	if (!m_lpContentsTableListCtrl || !lppMAPIProp) return MAPI_E_INVALID_PARAMETER;
 
@@ -230,7 +230,7 @@ void CAttachmentsDlg::HandleCopy()
 	HRESULT hRes = S_OK;
 	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
 
-	DebugPrintEx(DBGGeneric, CLASS, _T("HandleCopy"), _T("\n"));
+	DebugPrintEx(DBGGeneric, CLASS, L"HandleCopy", L"\n");
 	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return;
 
 	ULONG*			lpAttNumList = NULL;
@@ -268,7 +268,7 @@ _Check_return_ bool CAttachmentsDlg::HandlePaste()
 	if (CBaseDialog::HandlePaste()) return true;
 
 	if (!m_lpContentsTableListCtrl || !m_lpMessage || !m_lpMapiObjects) return false;
-	DebugPrintEx(DBGGeneric, CLASS, _T("HandlePaste"), _T("\n"));
+	DebugPrintEx(DBGGeneric, CLASS, L"HandlePaste", L"\n");
 
 	HRESULT		hRes = S_OK;
 	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
@@ -376,7 +376,7 @@ void CAttachmentsDlg::OnDeleteSelectedItem()
 
 			for (iSelection = 0; iSelection < iNumSelected; iSelection++)
 			{
-				DebugPrintEx(DBGDeleteSelectedItem, CLASS, _T("OnDeleteSelectedItem"), _T("Deleting attachment 0x%08X\n"), lpAttNumList[iSelection]);
+				DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L"Deleting attachment 0x%08X\n", lpAttNumList[iSelection]);
 
 				LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMessage::DeleteAttach"), m_hWnd); // STRING_OK
 
