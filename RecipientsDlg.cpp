@@ -266,7 +266,7 @@ void CRecipientsDlg::OnRecipOptions()
 				DebugPrintEx(DBGGeneric, CLASS, L"OnRecipOptions", L"RecipOptions returned the following ADRLIST:\n");
 				// Note - debug output may be truncated due to limitations of OutputDebugString,
 				// but output to file is complete
-				_OutputW(DBGGeneric, NULL, false, szAdrList);
+				Output(DBGGeneric, NULL, false, szAdrList);
 
 				EC_MAPI(m_lpMessage->ModifyRecipients(
 					MODRECIP_MODIFY,
