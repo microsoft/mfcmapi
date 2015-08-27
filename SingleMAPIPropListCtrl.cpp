@@ -824,65 +824,64 @@ void CSingleMAPIPropListCtrl::SavePropsToXML()
 				OutputToFile(fProps, L"<propertypane>\n");
 				for (iRow = 0; iRow < iItemCount; iRow++)
 				{
-					CString szTemp1;
-					CString szTemp2;
-					szTemp1 = GetItemText(iRow, pcPROPTAG);
-					szTemp2 = GetItemText(iRow, pcPROPTYPE);
-					OutputToFilef(fProps, L"\t<property tag = \"%ws\" type = \"%ws\">\n", LPCTSTRToWstring(szTemp1).c_str(), LPCTSTRToWstring(szTemp2).c_str());
+					wstring szTemp1 = LPCTSTRToWstring(GetItemText(iRow, pcPROPTAG));
+					wstring szTemp2 = LPCTSTRToWstring(GetItemText(iRow, pcPROPTYPE));
+					OutputToFilef(fProps, L"\t<property tag = \"%ws\" type = \"%ws\">\n", szTemp1.c_str(), szTemp2.c_str());
 
-					szTemp1 = GetItemText(iRow, pcPROPEXACTNAMES);
-					OutputXMLValueToFile(fProps, PropXMLNames[pcPROPEXACTNAMES].uidName, (LPTSTR)(LPCTSTR)szTemp1, false, 2);
+					szTemp1 = LPCTSTRToWstring(GetItemText(iRow, pcPROPEXACTNAMES));
+					OutputXMLValueToFile(fProps, PropXMLNames[pcPROPEXACTNAMES].uidName, szTemp1, false, 2);
 
-					szTemp1 = GetItemText(iRow, pcPROPPARTIALNAMES);
-					OutputXMLValueToFile(fProps, PropXMLNames[pcPROPPARTIALNAMES].uidName, (LPTSTR)(LPCTSTR)szTemp1, false, 2);
+					szTemp1 = LPCTSTRToWstring(GetItemText(iRow, pcPROPPARTIALNAMES));
+					OutputXMLValueToFile(fProps, PropXMLNames[pcPROPPARTIALNAMES].uidName, szTemp1, false, 2);
 
-					szTemp1 = GetItemText(iRow, pcPROPNAMEDIID);
-					OutputXMLValueToFile(fProps, PropXMLNames[pcPROPNAMEDIID].uidName, (LPTSTR)(LPCTSTR)szTemp1, false, 2);
+					szTemp1 = LPCTSTRToWstring(GetItemText(iRow, pcPROPNAMEDIID));
+					OutputXMLValueToFile(fProps, PropXMLNames[pcPROPNAMEDIID].uidName, szTemp1, false, 2);
 
-					szTemp1 = GetItemText(iRow, pcPROPNAMEDNAME);
-					OutputXMLValueToFile(fProps, PropXMLNames[pcPROPNAMEDNAME].uidName, (LPTSTR)(LPCTSTR)szTemp1, false, 2);
+					szTemp1 = LPCTSTRToWstring(GetItemText(iRow, pcPROPNAMEDNAME));
+					OutputXMLValueToFile(fProps, PropXMLNames[pcPROPNAMEDNAME].uidName, szTemp1, false, 2);
 
 					SortListData* lpListData = ((SortListData*)GetItemData(iRow));
 					ULONG ulPropType = PT_NULL;
 					if (lpListData)
 						ulPropType = PROP_TYPE(lpListData->data.Prop.ulPropTag);
 
-					szTemp1 = GetItemText(iRow, pcPROPVAL);
-					szTemp2 = GetItemText(iRow, pcPROPVALALT);
+					szTemp1 = LPCTSTRToWstring(GetItemText(iRow, pcPROPVAL));
+					szTemp2 = LPCTSTRToWstring(GetItemText(iRow, pcPROPVALALT));
 					switch (ulPropType)
 					{
 					case PT_STRING8:
 					case PT_UNICODE:
 					{
-						OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVAL].uidName, (LPTSTR)(LPCTSTR)szTemp1, true, 2);
-						OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVALALT].uidName, (LPTSTR)(LPCTSTR)szTemp2, false, 2);
+						OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVAL].uidName, szTemp1, true, 2);
+						OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVALALT].uidName, szTemp2, false, 2);
 						break;
 					}
 					case PT_BINARY:
 					{
-						OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVAL].uidName, (LPTSTR)(LPCTSTR)szTemp1, false, 2);
-						OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVALALT].uidName, (LPTSTR)(LPCTSTR)szTemp2, true, 2);
+						OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVAL].uidName, szTemp1, false, 2);
+						OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVALALT].uidName, szTemp2, true, 2);
 						break;
 					}
 					default:
 					{
-						OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVAL].uidName, (LPTSTR)(LPCTSTR)szTemp1, false, 2);
-						OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVALALT].uidName, (LPTSTR)(LPCTSTR)szTemp2, false, 2);
+						OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVAL].uidName, szTemp1, false, 2);
+						OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVALALT].uidName, szTemp2, false, 2);
 						break;
 					}
 					}
 
-					szTemp1 = GetItemText(iRow, pcPROPSMARTVIEW);
-					OutputXMLValueToFile(fProps, PropXMLNames[pcPROPSMARTVIEW].uidName, (LPTSTR)(LPCTSTR)szTemp1, true, 2);
+					szTemp1 = LPCTSTRToWstring(GetItemText(iRow, pcPROPSMARTVIEW));
+					OutputXMLValueToFile(fProps, PropXMLNames[pcPROPSMARTVIEW].uidName, szTemp1, true, 2);
 
 					OutputToFile(fProps, L"\t</property>\n");
 				}
+
 				OutputToFile(fProps, L"</propertypane>");
 				CloseFile(fProps);
 			}
 		}
 	}
-} // CSingleMAPIPropListCtrl::SavePropsToXML
+}
 
 void CSingleMAPIPropListCtrl::OnDblclk(_In_ NMHDR* /*pNMHDR*/, _In_ LRESULT* pResult)
 {
