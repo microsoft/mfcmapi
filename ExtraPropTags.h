@@ -179,13 +179,13 @@ enum FollowUpStatus
 #define PR_FOLLOWUP_ICON PROP_TAG( PT_LONG, 0x1095 )
 enum OlFlagIcon
 {
-	olNoFlagIcon=0,
-	olPurpleFlagIcon=1,
-	olOrangeFlagIcon=2,
-	olGreenFlagIcon=3,
-	olYellowFlagIcon=4,
-	olBlueFlagIcon=5,
-	olRedFlagIcon=6,
+	olNoFlagIcon = 0,
+	olPurpleFlagIcon = 1,
+	olOrangeFlagIcon = 2,
+	olGreenFlagIcon = 3,
+	olYellowFlagIcon = 4,
+	olBlueFlagIcon = 5,
+	olRedFlagIcon = 6,
 };
 
 // http://msdn2.microsoft.com/en-us/library/bb821130.aspx
@@ -290,17 +290,17 @@ enum t_SmartFolderStorageType
 	SFST_TIMERES_MONTHLY = 0x1000,	// monthly update
 	SFST_TIMERES_WEEKLY = 0x2000,	// weekly update
 	SFST_TIMERES_DAILY = 0x4000,	// the restriction(or filter) has a time condition in it
-	SFST_DEAD= 0x8000,				// used to indicate there is not a valid SPXBIN
+	SFST_DEAD = 0x8000,				// used to indicate there is not a valid SPXBIN
 };
 
 // [MS-OXOCAL].pdf
 #define dispidBusyStatus 0x8205
 enum OlBusyStatus
 {
-	olFree=0,
-	olTentative=1,
-	olBusy=2,
-	olOutOfOffice=3,
+	olFree = 0,
+	olTentative = 1,
+	olBusy = 2,
+	olOutOfOffice = 3,
 };
 #define dispidApptAuxFlags 0x8207
 #define	auxApptFlagCopied 0x0001
@@ -376,13 +376,13 @@ enum confType
 #define seOpenToDelete		0x0001	// Additional processing is required on the Message object when deleting.
 #define seNoFrame			0x0008	// No UI is associated with the Message object.
 #define seCoerceToInbox		0x0010	// Additional processing is required on the Message object when moving or
-									// copying to a Folder object with a PR_CONTAINER_CLASS of 'IPF.Note'.
+// copying to a Folder object with a PR_CONTAINER_CLASS of 'IPF.Note'.
 #define seOpenToCopy		0x0020	// Additional processing is required on the Message object when copying to
-									// another folder.
+// another folder.
 #define seOpenToMove		0x0040	// Additional processing is required on the Message object when moving to
-									// another folder.
+// another folder.
 #define seOpenForCtxMenu    0x0100  // Additional processing is required on the Message object when displaying verbs
-									// to the end-user.
+// to the end-user.
 #define seCannotUndoDelete	0x0400	// Cannot undo delete operation, MUST NOT be set unless seOpenToDelete is set.
 #define seCannotUndoCopy	0x0800	// Cannot undo copy operation, MUST NOT be set unless seOpenToCopy is set.
 #define seCannotUndoMove	0x1000	// Cannot undo move operation, MUST NOT be set unless seOpenToMove is set.
@@ -437,12 +437,12 @@ enum TaskDelegMsgType
 enum TaskStatusValue
 {
 	tsvNotStarted = 0, // The user has not started work on the task object. If this value is set,
-	                   // dispidPercentComplete MUST be 0.0.
+	// dispidPercentComplete MUST be 0.0.
 	tsvInProgress,     // The user’s work on this task object is in progress. If this value is set,
-	                   // dispidPercentComplete MUST be greater than 0.0 and less than 1.0
+	// dispidPercentComplete MUST be greater than 0.0 and less than 1.0
 	tsvComplete,       // The user’s work on this task object is complete. If this value is set,
-	                   // dispidPercentComplete MUST be 1.0, dispidTaskDateCompleted
-	                   // MUST be the current date, and dispidTaskComplete MUST be true.
+	// dispidPercentComplete MUST be 1.0, dispidTaskDateCompleted
+	// MUST be the current date, and dispidTaskComplete MUST be true.
 	tsvWaiting,        // The user is waiting on somebody else.
 	tsvDeferred        // The user has deferred work on the task object.
 };
@@ -451,7 +451,7 @@ enum TaskStatusValue
 enum TaskDelegState
 {
 	tdsNOM = 0, // This task object was created to correspond to a task object that was
-	            // embedded in a task rejection but could not be found locally.
+	// embedded in a task rejection but could not be found locally.
 	tdsOWNNEW,  // The task object is not assigned.
 	tdsOWN,     // The task object is the task assignee’s copy of an assigned task object.
 	tdsACC,     // The task object is the task assigner’s copy of an assigned task object.
@@ -472,11 +472,11 @@ enum TaskHistory
 #define dispidTaskMultRecips 0x8120
 enum TaskMultRecips
 {
-	tmrNone				= 0x0000,	// none
-	tmrSent				= 0x0001,	// The task object has multiple primary recipients.
-	tmrRcvd				= 0x0002,	// Although the 'Sent' hint was not present, the client detected
-									// that the task object has multiple primary recipients.
-	tmrTeamTask			= 0x0004,	// This value is reserved.
+	tmrNone = 0x0000,	// none
+	tmrSent = 0x0001,	// The task object has multiple primary recipients.
+	tmrRcvd = 0x0002,	// Although the 'Sent' hint was not present, the client detected
+	// that the task object has multiple primary recipients.
+	tmrTeamTask = 0x0004,	// This value is reserved.
 };
 
 #define dispidTaskOwnership 0x8129
@@ -526,18 +526,18 @@ enum SniffState
 #define PR_EXTENDED_FOLDER_FLAGS PROP_TAG(PT_BINARY, 0x36DA)
 enum ExtendedFolderPropByte
 {
-	EFPB_FLAGS						= 1,
-	EFPB_CLSIDID					= 2,
-	EFPB_SFTAG						= 3,
-	EFPB_TODO_VERSION				= 5,
+	EFPB_FLAGS = 1,
+	EFPB_CLSIDID = 2,
+	EFPB_SFTAG = 3,
+	EFPB_TODO_VERSION = 5,
 };
 // possible values for PR_EXTENDED_FOLDER_FLAGS
 enum
 {
-	XEFF_NORMAL					= 0x00000000,
-	XEFF_SHOW_UNREAD_COUNT		= 0x00000001,
-	XEFF_SHOW_CONTENT_COUNT		= 0x00000002,
-	XEFF_SHOW_NO_POLICY			= 0x00000020,
+	XEFF_NORMAL = 0x00000000,
+	XEFF_SHOW_UNREAD_COUNT = 0x00000001,
+	XEFF_SHOW_CONTENT_COUNT = 0x00000002,
+	XEFF_SHOW_NO_POLICY = 0x00000020,
 };
 
 #define dispidFlagStringEnum 0x85C0
@@ -561,7 +561,7 @@ enum IdGroup
 	IDC_RCEV_PAT_ORB_WEEKLY,
 	IDC_RCEV_PAT_ORB_MONTHLY,
 	IDC_RCEV_PAT_ORB_YEARLY,
-	IDC_RCEV_PAT_ERB_END=0x2021,
+	IDC_RCEV_PAT_ERB_END = 0x2021,
 	IDC_RCEV_PAT_ERB_AFTERNOCCUR,
 	IDC_RCEV_PAT_ERB_NOEND,
 };
@@ -655,11 +655,11 @@ enum EEmailIndex
 
 enum
 {
-	BFLAGS_INTERNAL_MAILUSER	= 0x03,		// Outlook Contact
+	BFLAGS_INTERNAL_MAILUSER = 0x03,		// Outlook Contact
 	BFLAGS_INTERNAL_DISTLIST,				// Outlook Distribution List
 	BFLAGS_EXTERNAL_MAILUSER,				// external (MAPI) Contact
 	BFLAGS_EXTERNAL_DISTLIST,				// external (MAPI) Distribution List
-	BFLAGS_MASK_OUTLOOK			= 0x80,		// bit pattern 1000 0000
+	BFLAGS_MASK_OUTLOOK = 0x80,		// bit pattern 1000 0000
 };
 
 #define dispidEmail1OriginalEntryID 0x8085
@@ -858,10 +858,10 @@ enum NBI
 #define dispidImgAttchmtsCompressLevel 0x8593
 enum PictureCompressLevel
 {
- pclOriginal = 0,
- pclEmail = 1,
- pclWeb = 2,
- pclDocuments = 3,
+	pclOriginal = 0,
+	pclEmail = 1,
+	pclWeb = 2,
+	pclDocuments = 3,
 };
 
 // http://msdn.microsoft.com/en-us/library/dd941362.aspx
@@ -877,20 +877,20 @@ enum MSOCOST
 #define dispidClientIntent 0x0015
 enum ClientIntent
 {
-	ciNone                             = 0x0000,
-	ciManager                          = 0x0001,
-	ciDelegate                         = 0x0002,
-	ciDeletedWithNoResponse            = 0x0004,
-	ciDeletedExceptionWithNoResponse   = 0x0008,
-	ciRespondedTentative               = 0x0010,
-	ciRespondedAccept                  = 0x0020,
-	ciRespondedDecline                 = 0x0040,
-	ciModifiedStartTime                = 0x0080,
-	ciModifiedEndTime                  = 0x0100,
-	ciModifiedLocation                 = 0x0200,
-	ciRespondedExceptionDecline        = 0x0400,
-	ciCanceled                         = 0x0800,
-	ciExceptionCanceled                = 0x1000,
+	ciNone = 0x0000,
+	ciManager = 0x0001,
+	ciDelegate = 0x0002,
+	ciDeletedWithNoResponse = 0x0004,
+	ciDeletedExceptionWithNoResponse = 0x0008,
+	ciRespondedTentative = 0x0010,
+	ciRespondedAccept = 0x0020,
+	ciRespondedDecline = 0x0040,
+	ciModifiedStartTime = 0x0080,
+	ciModifiedEndTime = 0x0100,
+	ciModifiedLocation = 0x0200,
+	ciRespondedExceptionDecline = 0x0400,
+	ciCanceled = 0x0800,
+	ciExceptionCanceled = 0x1000,
 };
 
 // http://support.microsoft.com/kb/278321
@@ -1054,3 +1054,5 @@ enum WLinkType {
 #define PR_EMS_AB_THUMBNAIL_PHOTO PROP_TAG(PT_BINARY, 0x8C9E)
 
 #define OUTL_RPC_AUTHN_ANONYMOUS 0x8000F001
+
+#define PR_CONTENT_FILTER_SCL PROP_TAG(PT_LONG, 0x4076)
