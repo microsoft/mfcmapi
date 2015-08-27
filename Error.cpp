@@ -22,8 +22,8 @@ void LogFunctionCall(
 			iLine,
 			szFunction);
 
-		_OutputW(DBGMAPIFunctions, NULL, true, szFunctionString);
-		_OutputW(DBGMAPIFunctions, NULL, false, L"\n");
+		Output(DBGMAPIFunctions, NULL, true, szFunctionString);
+		Output(DBGMAPIFunctions, NULL, false, L"\n");
 	}
 
 	// Check if we have no work to do
@@ -64,8 +64,8 @@ void LogFunctionCall(
 		szFile,
 		iLine);
 
-	_OutputW(DBGHRes, NULL, true, szErrString);
-	_OutputW(DBGHRes, NULL, false, L"\n");
+	Output(DBGHRes, NULL, true, szErrString);
+	Output(DBGHRes, NULL, false, L"\n");
 
 	if (bShowDialog)
 	{
@@ -104,8 +104,8 @@ void __cdecl ErrDialog(_In_z_ LPCSTR szFile, int iLine, UINT uidErrorFmt, ...)
 
 	wstring szCombo = szErrorBegin + formatmessage(IDS_INFILEONLINE, szFile, iLine);
 
-	_OutputW(DBGHRes, NULL, true, szCombo);
-	_OutputW(DBGHRes, NULL, false, L"\n");
+	Output(DBGHRes, NULL, true, szCombo);
+	Output(DBGHRes, NULL, false, L"\n");
 
 #ifndef MRMAPI
 	CEditor Err(

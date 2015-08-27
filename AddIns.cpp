@@ -1143,7 +1143,7 @@ __declspec(dllexport) void __cdecl AddInLog(bool bPrintThreadTime, _Printf_forma
 	wstring szAddInLogString = formatV(szMsg, argList);
 	va_end(argList);
 
-	_OutputW(DBGAddIn, NULL, bPrintThreadTime, szAddInLogString);
+	Output(DBGAddIn, NULL, bPrintThreadTime, szAddInLogString);
 }
 
 #ifndef MRMAPI
