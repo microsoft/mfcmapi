@@ -120,8 +120,7 @@ void _OutputEntryList(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPENTRYLIST lpE
 #define TRACE_RELEASE(__class,__count)
 #endif
 
-void OutputXMLValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, _In_z_ LPTSTR szValue, bool bWrapCData, int iIndent);
-void OutputXMLValueW(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, wstring szValue, bool bWrapCData, int iIndent);
+void OutputXMLValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, wstring szValue, bool bWrapCData, int iIndent);
 void OutputCDataOpen(ULONG ulDbgLvl, _In_opt_ FILE* fFile);
 void OutputCDataClose(ULONG ulDbgLvl, _In_opt_ FILE* fFile);
 

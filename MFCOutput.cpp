@@ -763,8 +763,8 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 	LPTSTR szPartialMatches = NULL;
 
 	PropTagToPropName(lpProp->ulPropTag, false, &szExactMatches, &szPartialMatches);
-	if (!IsNullOrEmpty(szExactMatches)) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPEXACTNAMES].uidName, szExactMatches, false, iIndent);
-	if (!IsNullOrEmpty(szPartialMatches)) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPPARTIALNAMES].uidName, szPartialMatches, false, iIndent);
+	if (!IsNullOrEmpty(szExactMatches)) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPEXACTNAMES].uidName, LPCTSTRToWstring(szExactMatches), false, iIndent);
+	if (!IsNullOrEmpty(szPartialMatches)) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPPARTIALNAMES].uidName, LPCTSTRToWstring(szPartialMatches), false, iIndent);
 
 	LPTSTR szNamedPropName = NULL;
 	LPTSTR szNamedPropGUID = NULL;
@@ -778,8 +778,8 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 		&szNamedPropName, // Built from lpProp & lpMAPIProp
 		&szNamedPropGUID, // Built from lpProp & lpMAPIProp
 		NULL);
-	if (szNamedPropGUID) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPNAMEDIID].uidName, szNamedPropGUID, false, iIndent);
-	if (szNamedPropName) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPNAMEDNAME].uidName, szNamedPropName, false, iIndent);
+	if (szNamedPropGUID) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPNAMEDIID].uidName, LPCTSTRToWstring(szNamedPropGUID), false, iIndent);
+	if (szNamedPropName) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPNAMEDNAME].uidName, LPCTSTRToWstring(szNamedPropName), false, iIndent);
 
 	Property prop = ParseProperty(lpProp);
 	Output(ulDbgLvl, fFile, false, prop.toXML(iIndent));
@@ -793,7 +793,7 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 		false);
 	if (!szSmartView.empty())
 	{
-		OutputXMLValueW(ulDbgLvl, fFile, PropXMLNames[pcPROPSMARTVIEW].uidName, szSmartView, true, iIndent);
+		OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPSMARTVIEW].uidName, szSmartView, true, iIndent);
 	}
 
 	Output(ulDbgLvl, fFile, false, L"\t</property>\n");
@@ -1042,30 +1042,7 @@ void OutputCDataClose(ULONG ulDbgLvl, _In_opt_ FILE* fFile)
 	Output(ulDbgLvl, fFile, false, L"]]>");
 }
 
-void ScrubStringForXML(_In_z_ LPTSTR szString)
-{
-	size_t cchString = 0;
-	size_t i = 0;
-
-	HRESULT hRes = S_OK;
-	WC_H(StringCchLength(szString, STRSAFE_MAX_CCH, &cchString));
-
-	for (i = 0; i < cchString; i++)
-	{
-		switch (szString[i])
-		{
-		case _T('\t'):
-		case _T('\r'):
-		case _T('\n'):
-			break;
-		default:
-			if (szString[i] > 0 && szString[i] < 0x20) szString[i] = _T('.');
-			break;
-		}
-	}
-}
-
-void ScrubStringForXMLW(wstring szString)
+void ScrubStringForXML(wstring szString)
 {
 	size_t i = 0;
 
@@ -1084,35 +1061,7 @@ void ScrubStringForXMLW(wstring szString)
 	}
 }
 
-void OutputXMLValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, _In_z_ LPTSTR szValue, bool bWrapCData, int iIndent)
-{
-	CHKPARAM;
-	EARLYABORT;
-	if (!szValue || !uidTag) return;
-
-	if (!szValue[0]) return;
-
-	wstring szTag = loadstring(uidTag);
-
-	OutputIndent(ulDbgLvl, fFile, iIndent);
-	Outputf(ulDbgLvl, fFile, false, L"<%ws>", szTag.c_str());
-	if (bWrapCData)
-	{
-		OutputCDataOpen(ulDbgLvl, fFile);
-	}
-
-	ScrubStringForXML(szValue);
-	Output(ulDbgLvl, fFile, false, LPCTSTRToWstring(szValue));
-
-	if (bWrapCData)
-	{
-		OutputCDataClose(ulDbgLvl, fFile);
-	}
-
-	Outputf(ulDbgLvl, fFile, false, L"</%ws>\n", szTag.c_str());
-}
-
-void OutputXMLValueW(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, wstring szValue, bool bWrapCData, int iIndent)
+void OutputXMLValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, wstring szValue, bool bWrapCData, int iIndent)
 {
 	CHKPARAM;
 	EARLYABORT;
@@ -1129,7 +1078,7 @@ void OutputXMLValueW(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, wstring 
 		OutputCDataOpen(ulDbgLvl, fFile);
 	}
 
-	ScrubStringForXMLW(szValue);
+	ScrubStringForXML(szValue);
 	Output(ulDbgLvl, fFile, false, szValue);
 
 	if (bWrapCData)
