@@ -115,6 +115,7 @@ CString wstringToCString(wstring src)
 wstring LPCTSTRToWstring(LPCTSTR src)
 {
 #ifdef UNICODE
+	if (!src) return L"";
 	return src;
 #else
 	return LPCSTRToWstring(src);
