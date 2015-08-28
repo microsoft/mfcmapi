@@ -8,22 +8,21 @@
 #include "..\SmartView\SmartView.h"
 #include "..\String.h"
 
-inline void PrintFolder(LPCWSTR szFid, LPCTSTR szFolder)
+inline void PrintFolder(wstring szFid, LPCTSTR szFolder)
 {
-	printf("%-15ws %s\n", szFid, szFolder);
+	printf("%-15ws %s\n", szFid.c_str(), szFolder);
 }
 
-inline void PrintMessage(LPCWSTR szMid, bool fAssociated, LPCTSTR szSubject, LPCTSTR szClass)
+inline void PrintMessage(LPCWSTR szMid, bool fAssociated, wstring szSubject, wstring szClass)
 {
-	printf("     %-15ws %c %s (%s)\n", szMid, (fAssociated ? 'A' : 'R'), szSubject, szClass);
+	wprintf(L"     %-15ws %wc %ws (%ws)\n", szMid, (fAssociated ? L'A' : L'R'), szSubject.c_str(), szClass.c_str());
 }
 
 class CFindFidMid : public CMAPIProcessor
 {
 public:
 	CFindFidMid();
-	virtual ~CFindFidMid();
-	void InitFidMid(_In_z_ LPCWSTR szFid, _In_z_ LPCWSTR szMid);
+	void InitFidMid(wstring szFid, wstring szMid, bool bMid);
 
 private:
 	virtual bool ContinueProcessingFolders();
@@ -32,10 +31,11 @@ private:
 	virtual void BeginContentsTableWork(ULONG ulFlags, ULONG ulCountRows);
 	virtual bool DoContentsTablePerRowWork(_In_ LPSRow lpSRow, ULONG ulCurRow);
 
-	LPCWSTR m_szFid;
-	LPCWSTR m_szMid;
-	LPWSTR m_szCurrentFid;
+	wstring m_szFid;
+	wstring m_szMid;
+	wstring m_szCurrentFid;
 
+	bool m_bMid;
 	bool m_fFIDMatch;
 	bool m_fFIDExactMatch;
 	bool m_fFIDPrinted;
@@ -44,29 +44,37 @@ private:
 
 CFindFidMid::CFindFidMid()
 {
-	m_szFid = NULL;
-	m_szMid = NULL;
-	m_szCurrentFid = NULL;
-
 	m_fFIDMatch = false;
 	m_fFIDExactMatch = false;
 	m_fFIDPrinted = false;
 	m_fAssociated = false;
 }
 
-CFindFidMid::~CFindFidMid()
-{
-	delete[] m_szCurrentFid;
-	m_szCurrentFid = NULL;
-}
-
-void CFindFidMid::InitFidMid(_In_z_ LPCWSTR szFid, _In_z_ LPCWSTR szMid)
+void CFindFidMid::InitFidMid(wstring szFid, wstring szMid, bool bMid)
 {
 	m_szFid = szFid;
 	m_szMid = szMid;
+	m_bMid = bMid;
 }
 
 // --------------------------------------------------------------------------------- //
+
+// Passed in Fid matches the found Fid exactly, or matches the tail exactly
+// For instance, both 3-15632 and 15632 will match against an input fid of 15632
+bool MatchFid(wstring inputFid, wstring currentFid)
+{
+	if (_wcsicmp(inputFid.c_str(), currentFid.c_str()) == 0) return true;
+
+	auto pos = currentFid.find('-');
+	if (pos == string::npos) return false;
+	wstring trimmedFid = currentFid.substr(pos + 1, string::npos);
+	if (_wcsicmp(inputFid.c_str(), trimmedFid.c_str()) == 0)
+	{
+		return true;
+	}
+
+	return false;
+}
 
 void CFindFidMid::BeginFolderWork()
 {
@@ -74,8 +82,7 @@ void CFindFidMid::BeginFolderWork()
 	m_fFIDMatch = false;
 	m_fFIDExactMatch = false;
 	m_fFIDPrinted = false;
-	delete[] m_szCurrentFid;
-	m_szCurrentFid = NULL;
+	m_szCurrentFid.clear();
 	if (!m_lpFolder) return;
 
 	HRESULT hRes = S_OK;
@@ -112,8 +119,8 @@ void CFindFidMid::BeginFolderWork()
 
 	if (lpProps && PidTagFolderId == lpProps[ePidTagFolderId].ulPropTag)
 	{
-		m_szCurrentFid = wstringToLPWSTR(FidMidToSzString(lpProps[ePidTagFolderId].Value.li.QuadPart, false));
-		DebugPrint(DBGGeneric, L"CFindFidMid::DoFolderPerHierarchyTableRowWork: Found FID %ws for %ws\n", m_szCurrentFid, lpszDisplayName);
+		m_szCurrentFid = FidMidToSzString(lpProps[ePidTagFolderId].Value.li.QuadPart, false);
+		DebugPrint(DBGGeneric, L"CFindFidMid::DoFolderPerHierarchyTableRowWork: Found FID %ws for %ws\n", m_szCurrentFid.c_str(), lpszDisplayName);
 	}
 	else
 	{
@@ -123,18 +130,15 @@ void CFindFidMid::BeginFolderWork()
 	}
 
 	// If FidMidToSzString failed, we're done.
-	if (!m_szCurrentFid) return;
+	if (m_szCurrentFid.empty()) return;
 
 	// Check for FID matches - no fid matches all folders
-	if (NULL == m_szFid)
+	if (m_szFid.empty())
 	{
 		m_fFIDMatch = true;
 		m_fFIDExactMatch = false;
 	}
-	// Passed in Fid matches the found Fid exactly, or matches the tail exactly
-	// For instance, both 3-15632 and 15632 will match against an input fid of 15632
-	else if (_wcsicmp(m_szFid, m_szCurrentFid) == 0
-		|| (wcschr(m_szCurrentFid, '-') != 0 && _wcsicmp(m_szFid, wcschr(m_szCurrentFid, '-') + 1) == 0))
+	else if (MatchFid(m_szFid, m_szCurrentFid))
 	{
 		m_fFIDMatch = true;
 		m_fFIDExactMatch = true;
@@ -142,9 +146,9 @@ void CFindFidMid::BeginFolderWork()
 
 	if (m_fFIDMatch)
 	{
-		DebugPrint(DBGGeneric, L"CFindFidMid::DoFolderPerHierarchyTableRowWork: Matched FID %ws\n", m_szFid);
+		DebugPrint(DBGGeneric, L"CFindFidMid::DoFolderPerHierarchyTableRowWork: Matched FID %ws\n", m_szFid.c_str());
 		// Print out the folder
-		if (m_szMid == NULL || m_fFIDExactMatch)
+		if (m_szMid.empty() || m_fFIDExactMatch)
 		{
 			PrintFolder(m_szCurrentFid, m_szFolderOffset);
 			m_fFIDPrinted = true;
@@ -161,9 +165,9 @@ bool CFindFidMid::ContinueProcessingFolders()
 bool CFindFidMid::ShouldProcessContentsTable()
 {
 	// Only process a folder's contents table if both
-	// 1 - we matched our fid, possibly because a fid wasn't passed in
-	// 2 - We have a mid to look for, even if it's an empty string
-	return m_fFIDMatch && m_szMid;
+	// 1 - We matched our fid, possibly because a fid wasn't passed in
+	// 2 - We are in mid mode
+	return m_fFIDMatch && m_bMid;
 }
 
 void CFindFidMid::BeginContentsTableWork(ULONG ulFlags, ULONG /*ulCountRows*/)
@@ -179,8 +183,8 @@ bool CFindFidMid::DoContentsTablePerRowWork(_In_ LPSRow lpSRow, ULONG /*ulCurRow
 	LPSPropValue lpPropSubject = NULL;
 	LPSPropValue lpPropClass = NULL;
 	wstring lpszThisMid;
-	LPTSTR lpszSubject = _T("");
-	LPTSTR lpszClass = _T("");
+	wstring lpszSubject;
+	wstring lpszClass;
 
 	lpPropMid = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PidTagMid);
 	if (lpPropMid)
@@ -196,8 +200,7 @@ bool CFindFidMid::DoContentsTablePerRowWork(_In_ LPSRow lpSRow, ULONG /*ulCurRow
 	}
 
 	// Check for a MID match
-	if (wcscmp(m_szMid, L"") == 0 || _wcsicmp(m_szMid, lpszThisMid.c_str()) == 0
-		|| (wcschr(lpszThisMid.c_str(), L'-') != 0 && _wcsicmp(m_szMid, wcschr(lpszThisMid.c_str(), L'-') + 1) == 0))
+	if (m_szMid.empty() || MatchFid(m_szMid, lpszThisMid))
 	{
 		// If we haven't already, print the folder info
 		if (!m_fFIDPrinted)
@@ -209,17 +212,17 @@ bool CFindFidMid::DoContentsTablePerRowWork(_In_ LPSRow lpSRow, ULONG /*ulCurRow
 		lpPropSubject = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PR_SUBJECT);
 		if (lpPropSubject)
 		{
-			lpszSubject = lpPropSubject->Value.LPSZ;
+			lpszSubject = LPCTSTRToWstring(lpPropSubject->Value.LPSZ);
 		}
 
 		lpPropClass = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PR_MESSAGE_CLASS);
 		if (lpPropClass)
 		{
-			lpszClass = lpPropClass->Value.LPSZ;
+			lpszClass = LPCTSTRToWstring(lpPropClass->Value.LPSZ);
 		}
 
 		PrintMessage(lpszThisMid.c_str(), m_fAssociated, lpszSubject, lpszClass);
-		DebugPrint(DBGGeneric, L"EnumMessages::ProcessRow: Matched MID %ws, \"%ws\", \"%ws\"\n", lpszThisMid, LPCTSTRToWstring(lpszSubject).c_str(), LPCTSTRToWstring(lpszClass).c_str());
+		DebugPrint(DBGGeneric, L"EnumMessages::ProcessRow: Matched MID %ws, \"%ws\", \"%ws\"\n", lpszThisMid.c_str(), lpszSubject.c_str(), lpszClass.c_str());
 	}
 
 	// Don't open the message - the row is enough
@@ -229,14 +232,15 @@ bool CFindFidMid::DoContentsTablePerRowWork(_In_ LPSRow lpSRow, ULONG /*ulCurRow
 void DumpFidMid(
 	_In_z_ LPCWSTR lpszProfile,
 	_In_ LPMDB lpMDB,
-	_In_z_ LPCWSTR lpszFid,
-	_In_z_ LPCWSTR lpszMid)
+	wstring lpszFid,
+	wstring lpszMid,
+	bool bMid)
 {
 	// FID/MID lookups only succeed online, so go ahead and force it
 	RegKeys[regKeyMAPI_NO_CACHE].ulCurDWORD = true;
 	RegKeys[regkeyMDB_ONLINE].ulCurDWORD = true;
 
-	DebugPrint(DBGGeneric, L"DumpFidMid: Outputting from profile %ws. FID: %ws, MID: %ws\n", lpszProfile, lpszFid, lpszMid);
+	DebugPrint(DBGGeneric, L"DumpFidMid: Outputting from profile %ws. FID: %ws, MID: %ws\n", lpszProfile, lpszFid.c_str(), lpszMid.c_str());
 	HRESULT hRes = S_OK;
 	LPMAPIFOLDER lpFolder = NULL;
 
@@ -260,7 +264,7 @@ void DumpFidMid(
 		CFindFidMid MyFindFidMid;
 		MyFindFidMid.InitMDB(lpMDB);
 		MyFindFidMid.InitFolder(lpFolder);
-		MyFindFidMid.InitFidMid(lpszFid, lpszMid);
+		MyFindFidMid.InitFidMid(lpszFid, lpszMid, bMid);
 		MyFindFidMid.ProcessFolders(
 			true,
 			true,
@@ -276,5 +280,6 @@ void DoFidMid(_In_ MYOPTIONS ProgOpts)
 		ProgOpts.lpszProfile.c_str(),
 		ProgOpts.lpMDB,
 		ProgOpts.lpszFid.c_str(),
-		ProgOpts.lpszMid.c_str());
+		ProgOpts.lpszMid.c_str(),
+		OPT_MID == (ProgOpts.ulOptions & OPT_MID));
 }

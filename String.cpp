@@ -88,21 +88,6 @@ LPTSTR wstringToLPTSTR(wstring src)
 	return dst;
 }
 
-LPWSTR wstringToLPWSTR(wstring src)
-{
-	size_t cch = src.length();
-	if (!cch) return NULL;
-
-	cch++; // Null terminator
-	LPWSTR dst = new WCHAR[cch];
-	if (dst)
-	{
-		memcpy(dst, src.c_str(), cch * sizeof(WCHAR));
-	}
-
-	return dst;
-}
-
 CString wstringToCString(wstring src)
 {
 	CString dst;
