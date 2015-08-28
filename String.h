@@ -11,7 +11,6 @@ LPTSTR wstringToLPTSTR(wstring src);
 CString wstringToCString(wstring src);
 wstring LPCTSTRToWstring(LPCTSTR src);
 wstring LPCSTRToWstring(LPCSTR src);
-wstring stringToWstring(string src);
 void wstringToLower(wstring src);
 ULONG wstringToUlong(wstring src, int radix);
 
