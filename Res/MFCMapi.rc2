@@ -1005,8 +1005,8 @@ IDS_MAPINOREPLACE "MAPI_NOREPLACE (do not replace existing properties)"
 IDS_HIGHESTNAMEDPROPNOTFOUND "No named properties were found"
 IDS_HIGHESTNAMEDPROPNUM "Highest named property found:"
 IDS_HIGHESTNAMEDPROPNAME "MAPI Property ID: 0x%1!04X!\r\n\
-Named property Name = %2\r\n\
-Named property GUID = %3"
+Named property Name = %2!ws!\r\n\
+Named property GUID = %3!ws!"
 IDS_HIGHESTNAMEDPROPTOTAL "Total number of named properties (out of 32767):"
 
 // StreamEditor.cpp
@@ -1285,14 +1285,14 @@ IDS_UNKNOWNPROPERTY "Unknown Property"
 // InterpretProp.cpp stuff
 IDS_TAGMULTILINE "Tag: 0x%1!08X!\r\nType: %2"
 // Yes, these six look like a mistake, but they are intentional - see TagToString
-IDS_NAMEDPROPSINGLELINE ": Named Prop Name: %5"
-IDS_GUIDSINGLELINE ": Guid: %6"
-IDS_PROPNAMEMULTILINE "\r\nProperty Name(s): %3"
-IDS_OTHERNAMESMULTILINE "\r\nOther Names: %4"
-IDS_NAMEPROPNAMEMULTILINE "\r\nNamed Prop Name: %5"
-IDS_NAMEPROPGUIDMULTILINE "\r\nNamed Prop Guid: %6"
+IDS_NAMEDPROPSINGLELINE ": Named Prop Name: %5!ws!"
+IDS_GUIDSINGLELINE ": Guid: %6!ws!"
+IDS_PROPNAMEMULTILINE "\r\nProperty Name(s): %3!ws!"
+IDS_OTHERNAMESMULTILINE "\r\nOther Names: %4!ws!"
+IDS_NAMEPROPNAMEMULTILINE "\r\nNamed Prop Name: %5!ws!"
+IDS_NAMEPROPGUIDMULTILINE "\r\nNamed Prop Guid: %6!ws!"
 IDS_DASLPROPTAG "\r\nDASL: http://schemas.microsoft.com/mapi/proptag/0x%1!08X!"
-IDS_DASLNAMED "\r\nDASL: http://schemas.microsoft.com/mapi/%7"
+IDS_DASLNAMED "\r\nDASL: http://schemas.microsoft.com/mapi/%7!ws!"
 
 IDS_PROBLEMARRAY "Index: 0x%1!08X!, ulPropTag: %2, scode: 0x%3!08X! = %4!ws!\r\n"
 IDS_MAPIERRUNICODE "ulVersion = 0x%1!X!\r\nlpszError = %2!ws!\r\nlpszComponent = %3!ws!\r\nulLowLevelError = 0x%4!X! = %5!ws!\r\nulContext = 0x%6!X!"

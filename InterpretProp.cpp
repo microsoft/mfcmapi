@@ -200,15 +200,14 @@ _Check_return_ wstring CurrencyToString(CURRENCY curVal)
 
 _Check_return_ CString TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB, bool bSingleLine)
 {
-	CString szRet;
-	CString szTemp;
-	HRESULT hRes = S_OK;
+	wstring szRet;
+	wstring szTemp;
 
 	LPTSTR szExactMatches = NULL;
 	LPTSTR szPartialMatches = NULL;
-	LPTSTR szNamedPropName = NULL;
-	LPTSTR szNamedPropGUID = NULL;
-	LPTSTR szNamedPropDASL = NULL;
+	wstring szNamedPropName;
+	wstring szNamedPropGUID;
+	wstring szNamedPropDASL;
 
 	NameIDToStrings(
 		ulPropTag,
@@ -216,86 +215,82 @@ _Check_return_ CString TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, b
 		NULL,
 		NULL,
 		bIsAB,
-		&szNamedPropName, // Built from lpProp & lpMAPIProp
-		&szNamedPropGUID, // Built from lpProp & lpMAPIProp
-		&szNamedPropDASL); // Built from ulPropTag & lpMAPIProp
+		szNamedPropName, // Built from lpProp & lpMAPIProp
+		szNamedPropGUID, // Built from lpProp & lpMAPIProp
+		szNamedPropDASL); // Built from ulPropTag & lpMAPIProp
 
 	PropTagToPropName(ulPropTag, bIsAB, &szExactMatches, &szPartialMatches);
 
-	CString szFormatString;
+	wstring szFormatString;
 	if (bSingleLine)
 	{
-		szFormatString = _T("0x%1!08X! (%2)"); // STRING_OK
-		if (!IsNullOrEmpty(szExactMatches)) szFormatString += _T(": %3"); // STRING_OK
-		if (!IsNullOrEmpty(szPartialMatches)) szFormatString += _T(": (%4)"); // STRING_OK
-		if (szNamedPropName)
+		szFormatString = L"0x%1!08X! (%2)"; // STRING_OK
+		if (!IsNullOrEmpty(szExactMatches)) szFormatString += L": %3!ws!"; // STRING_OK
+		if (!IsNullOrEmpty(szPartialMatches)) szFormatString += L": (%4!ws!)"; // STRING_OK
+		if (!szNamedPropName.empty())
 		{
-			EC_B(szTemp.LoadString(IDS_NAMEDPROPSINGLELINE));
-			szFormatString += szTemp;
+			szFormatString += loadstring(IDS_NAMEDPROPSINGLELINE);
 		}
-		if (szNamedPropGUID)
+
+		if (!szNamedPropGUID.empty())
 		{
-			EC_B(szTemp.LoadString(IDS_GUIDSINGLELINE));
-			szFormatString += szTemp;
+			szFormatString += loadstring(IDS_GUIDSINGLELINE);
 		}
 	}
 	else
 	{
-		EC_B(szFormatString.LoadString(IDS_TAGMULTILINE));
+		szFormatString = loadstring(IDS_TAGMULTILINE);
 		if (!IsNullOrEmpty(szExactMatches))
 		{
-			EC_B(szTemp.LoadString(IDS_PROPNAMEMULTILINE));
-			szFormatString += szTemp;
+			szFormatString += loadstring(IDS_PROPNAMEMULTILINE);
 		}
+
 		if (!IsNullOrEmpty(szPartialMatches))
 		{
-			EC_B(szTemp.LoadString(IDS_OTHERNAMESMULTILINE));
-			szFormatString += szTemp;
+			szFormatString += loadstring(IDS_OTHERNAMESMULTILINE);
 		}
+
 		if (PROP_ID(ulPropTag) < 0x8000)
 		{
-			EC_B(szTemp.LoadString(IDS_DASLPROPTAG));
-			szFormatString += szTemp;
+			szFormatString += loadstring(IDS_DASLPROPTAG);
 		}
-		else if (szNamedPropDASL)
+		else if (!szNamedPropDASL.empty())
 		{
-			EC_B(szTemp.LoadString(IDS_DASLNAMED));
-			szFormatString += szTemp;
+			szFormatString += loadstring(IDS_DASLNAMED);
 		}
-		if (szNamedPropName)
+
+		if (!szNamedPropName.empty())
 		{
-			EC_B(szTemp.LoadString(IDS_NAMEPROPNAMEMULTILINE));
-			szFormatString += szTemp;
+			szFormatString += loadstring(IDS_NAMEPROPNAMEMULTILINE);
 		}
-		if (szNamedPropGUID)
+
+		if (!szNamedPropGUID.empty())
 		{
-			EC_B(szTemp.LoadString(IDS_NAMEPROPGUIDMULTILINE));
-			szFormatString += szTemp;
+			szFormatString += loadstring(IDS_NAMEPROPGUIDMULTILINE);
 		}
 	}
 
-	szRet.FormatMessage(szFormatString,
+	szRet = formatmessage(szFormatString,
 		ulPropTag,
-		(LPCTSTR)TypeToString(ulPropTag),
-		szExactMatches,
-		szPartialMatches,
-		szNamedPropName,
-		szNamedPropGUID,
-		szNamedPropDASL);
+		LPCTSTRToWstring(TypeToString(ulPropTag)).c_str(),
+		LPCTSTRToWstring(szExactMatches).c_str(),
+		LPCTSTRToWstring(szPartialMatches).c_str(),
+		szNamedPropName.c_str(),
+		szNamedPropGUID.c_str(),
+		szNamedPropDASL.c_str());
 
 	delete[] szPartialMatches;
 	delete[] szExactMatches;
-	FreeNameIDStrings(szNamedPropName, szNamedPropGUID, szNamedPropDASL);
 
 	if (fIsSet(DBGTest))
 	{
 		static size_t cchMaxBuff = 0;
-		size_t cchBuff = szRet.GetLength();
+		size_t cchBuff = szRet.length();
 		cchMaxBuff = max(cchBuff, cchMaxBuff);
 		DebugPrint(DBGTest, L"TagToString parsing 0x%08X returned %u chars - max %u\n", ulPropTag, (UINT)cchBuff, (UINT)cchMaxBuff);
 	}
 
-	return szRet;
+	return wstringToCString(szRet);
 }
 
 wstring ProblemArrayToString(_In_ LPSPropProblemArray lpProblems)
@@ -978,16 +973,11 @@ void NameIDToStrings(
 	_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
 	_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
 	bool bIsAB, // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
-	_Deref_opt_out_opt_z_ LPTSTR* lpszNamedPropName, // Built from ulPropTag & lpMAPIProp
-	_Deref_opt_out_opt_z_ LPTSTR* lpszNamedPropGUID, // Built from ulPropTag & lpMAPIProp
-	_Deref_opt_out_opt_z_ LPTSTR* lpszNamedPropDASL) // Built from ulPropTag & lpMAPIProp
+	_In_ wstring& lpszNamedPropName, // Built from ulPropTag & lpMAPIProp
+	_In_ wstring& lpszNamedPropGUID, // Built from ulPropTag & lpMAPIProp
+	_In_ wstring& lpszNamedPropDASL) // Built from ulPropTag & lpMAPIProp
 {
 	HRESULT hRes = S_OK;
-
-	// In case we error out, set our returns
-	if (lpszNamedPropName) *lpszNamedPropName = NULL;
-	if (lpszNamedPropGUID) *lpszNamedPropGUID = NULL;
-	if (lpszNamedPropDASL) *lpszNamedPropDASL = NULL;
 
 	// Named Props
 	LPMAPINAMEID* lppPropNames = 0;
@@ -998,8 +988,7 @@ void NameIDToStrings(
 		lpMAPIProp && // if we have an object
 		!bIsAB &&
 		RegKeys[regkeyPARSED_NAMED_PROPS].ulCurDWORD && // and we're parsing named props
-		(RegKeys[regkeyGETPROPNAMES_ON_ALL_PROPS].ulCurDWORD || PROP_ID(ulPropTag) >= 0x8000) && // and it's either a named prop or we're doing all props
-		(lpszNamedPropName || lpszNamedPropGUID || lpszNamedPropDASL)) // and we want to return something that needs named prop information
+		(RegKeys[regkeyGETPROPNAMES_ON_ALL_PROPS].ulCurDWORD || PROP_ID(ulPropTag) >= 0x8000)) // and it's either a named prop or we're doing all props
 	{
 		SPropTagArray tag = { 0 };
 		LPSPropTagArray lpTag = &tag;
@@ -1018,39 +1007,17 @@ void NameIDToStrings(
 		{
 			lpNameID = lppPropNames[0];
 		}
-		hRes = S_OK;
 	}
 
 	if (lpNameID)
 	{
-		wstring lpszPropName;
-		wstring lpszPropGUID;
-		wstring lpszDASL;
-
 		NameIDToStrings(lpNameID,
 			ulPropTag,
-			lpszPropName,
-			lpszPropGUID,
-			lpszDASL);
-
-		if (lpszNamedPropName) *lpszNamedPropName = wstringToLPTSTR(lpszPropName);
-		if (lpszNamedPropGUID) *lpszNamedPropGUID = wstringToLPTSTR(lpszPropGUID);
-		if (lpszNamedPropDASL) *lpszNamedPropDASL = wstringToLPTSTR(lpszDASL);
+			lpszNamedPropName,
+			lpszNamedPropGUID,
+			lpszNamedPropDASL);
 	}
 
 	// Avoid making the call if we don't have to so we don't accidently depend on MAPI
 	if (lppPropNames) MAPIFreeBuffer(lppPropNames);
-}
-
-// Free strings from NameIDToStrings if necessary
-// If we're using the cache, we don't need to free
-// Need to watch out for callers to NameIDToStrings holding the strings
-// long enough for the user to change the cache setting!
-void FreeNameIDStrings(_In_opt_z_ LPTSTR lpszPropName,
-	_In_opt_z_ LPTSTR lpszPropGUID,
-	_In_opt_z_ LPTSTR lpszDASL)
-{
-	delete[] lpszPropName;
-	delete[] lpszPropGUID;
-	delete[] lpszDASL;
 }

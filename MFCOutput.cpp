@@ -766,8 +766,9 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 	if (!IsNullOrEmpty(szExactMatches)) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPEXACTNAMES].uidName, LPCTSTRToWstring(szExactMatches), false, iIndent);
 	if (!IsNullOrEmpty(szPartialMatches)) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPPARTIALNAMES].uidName, LPCTSTRToWstring(szPartialMatches), false, iIndent);
 
-	LPTSTR szNamedPropName = NULL;
-	LPTSTR szNamedPropGUID = NULL;
+	wstring szNamedPropName;
+	wstring szNamedPropGUID;
+	wstring szNamedPropDASL;
 
 	NameIDToStrings(
 		lpProp->ulPropTag,
@@ -775,11 +776,11 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 		NULL,
 		NULL,
 		false,
-		&szNamedPropName, // Built from lpProp & lpMAPIProp
-		&szNamedPropGUID, // Built from lpProp & lpMAPIProp
-		NULL);
-	if (szNamedPropGUID) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPNAMEDIID].uidName, LPCTSTRToWstring(szNamedPropGUID), false, iIndent);
-	if (szNamedPropName) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPNAMEDNAME].uidName, LPCTSTRToWstring(szNamedPropName), false, iIndent);
+		szNamedPropName, // Built from lpProp & lpMAPIProp
+		szNamedPropGUID, // Built from lpProp & lpMAPIProp
+		szNamedPropDASL);
+	if (!szNamedPropGUID.empty()) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPNAMEDIID].uidName, szNamedPropGUID, false, iIndent);
+	if (!szNamedPropName.empty()) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPNAMEDNAME].uidName, szNamedPropName, false, iIndent);
 
 	Property prop = ParseProperty(lpProp);
 	Output(ulDbgLvl, fFile, false, prop.toXML(iIndent));
@@ -800,7 +801,6 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 
 	delete[] szPartialMatches;
 	delete[] szExactMatches;
-	FreeNameIDStrings(szNamedPropName, szNamedPropGUID, NULL);
 	MAPIFreeBuffer(lpLargeProp);
 }
 

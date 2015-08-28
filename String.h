@@ -6,6 +6,7 @@ wstring loadstring(DWORD dwID);
 wstring formatV(wstring szMsg, va_list argList);
 wstring format(const LPWSTR szMsg, ...);
 wstring formatmessage(DWORD dwID, ...);
+wstring formatmessage(wstring szMsg, ...);
 LPTSTR wstringToLPTSTR(wstring src);
 CString wstringToCString(wstring src);
 wstring LPCTSTRToWstring(LPCTSTR src);

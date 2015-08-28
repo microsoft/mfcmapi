@@ -661,8 +661,9 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 	CString PropType = TypeToString(ulPropTag);
 	LPTSTR szExactMatches = NULL;
 	LPTSTR szPartialMatches = NULL;
-	LPTSTR szNamedPropName = 0;
-	LPTSTR szNamedPropGUID = 0;
+	wstring szNamedPropName;
+	wstring szNamedPropGUID;
+	wstring szNamedPropDASL;
 
 	// If we have lpNameID, we don't need to ask InterpretProp to look up named property information
 
@@ -672,9 +673,9 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 		lpNameID,
 		lpMappingSignature,
 		m_bIsAB,
-		&szNamedPropName, // Built from lpProp & lpMAPIProp
-		&szNamedPropGUID, // Built from lpProp & lpMAPIProp
-		NULL);
+		szNamedPropName, // Built from lpProp & lpMAPIProp
+		szNamedPropGUID, // Built from lpProp & lpMAPIProp
+		szNamedPropDASL);
 
 	PropTagToPropName(ulPropTag, m_bIsAB, &szExactMatches, &szPartialMatches);
 	SetItemText(iRow, pcPROPEXACTNAMES, !IsNullOrEmpty(szExactMatches) ? szExactMatches : (LPCTSTR)PropTag);
@@ -696,13 +697,12 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 		m_bIsAB,
 		false); // Built from lpProp & lpMAPIProp
 	if (!szSmartView.empty()) SetItemTextW(iRow, pcPROPSMARTVIEW, szSmartView.c_str());
-	if (szNamedPropName) SetItemText(iRow, pcPROPNAMEDNAME, szNamedPropName);
-	if (szNamedPropGUID) SetItemText(iRow, pcPROPNAMEDIID, szNamedPropGUID);
+	if (!szNamedPropName.empty()) SetItemTextW(iRow, pcPROPNAMEDNAME, szNamedPropName.c_str());
+	if (!szNamedPropGUID.empty()) SetItemTextW(iRow, pcPROPNAMEDIID, szNamedPropGUID.c_str());
 
 	delete[] szPartialMatches;
 	delete[] szExactMatches;
-	FreeNameIDStrings(szNamedPropName, szNamedPropGUID, NULL);
-} // CSingleMAPIPropListCtrl::AddPropToListBox
+}
 
 _Check_return_ HRESULT CSingleMAPIPropListCtrl::GetDisplayedProps(ULONG FAR* lpcValues, LPSPropValue FAR* lppPropArray)
 {
@@ -1102,20 +1102,21 @@ void CSingleMAPIPropListCtrl::CountNamedProps()
 			if (fIsSet(DBGNamedProp))
 			{
 				DebugPrintEx(DBGNamedProp, CLASS, L"CountNamedProps", L"Found a named property at 0x%04X.\n", ulCurrent);
-				LPTSTR lpszNameID = NULL;
-				LPTSTR lpszNameGUID = NULL;
+				wstring szNamedPropName;
+				wstring szNamedPropGUID;
+				wstring szNamedPropDASL;
 				NameIDToStrings(
 					tag.aulPropTag[0],
 					NULL,
 					lppPropNames[0],
 					NULL,
 					false,
-					&lpszNameID,
-					&lpszNameGUID,
-					NULL);
-				DebugPrintEx(DBGNamedProp, CLASS, L"CountNamedProps", L"Name = %ws, GUID = %ws\n", LPCTSTRToWstring(lpszNameID).c_str(), LPCTSTRToWstring(lpszNameGUID).c_str());
-				FreeNameIDStrings(lpszNameID, lpszNameGUID, NULL);
+					szNamedPropName,
+					szNamedPropGUID,
+					szNamedPropDASL);
+				DebugPrintEx(DBGNamedProp, CLASS, L"CountNamedProps", L"Name = %ws, GUID = %ws\n", szNamedPropName.c_str(), szNamedPropGUID.c_str());
 			}
+
 			ulHighestKnown = ulCurrent;
 			ulLower = ulCurrent;
 		}
@@ -1160,21 +1161,20 @@ void CSingleMAPIPropListCtrl::CountNamedProps()
 
 		if (S_OK == hRes && ulPropNames == 1 && lppPropNames && *lppPropNames)
 		{
-			CString szNamedProp;
-			LPTSTR lpszNameID = NULL;
-			LPTSTR lpszNameGUID = NULL;
+			wstring szNamedPropName;
+			wstring szNamedPropGUID;
+			wstring szNamedPropDASL;
 			NameIDToStrings(
 				tag.aulPropTag[0],
 				NULL,
 				lppPropNames[0],
 				NULL,
 				false,
-				&lpszNameID,
-				&lpszNameGUID,
-				NULL);
-			szNamedProp.FormatMessage(IDS_HIGHESTNAMEDPROPNAME, ulHighestKnown, lpszNameID, lpszNameGUID);
-			FreeNameIDStrings(lpszNameID, lpszNameGUID, NULL);
-			MyResult.SetString(1, szNamedProp);
+				szNamedPropName,
+				szNamedPropGUID,
+				szNamedPropDASL);
+			wstring szNamedProp = formatmessage(IDS_HIGHESTNAMEDPROPNAME, ulHighestKnown, szNamedPropName.c_str(), szNamedPropGUID.c_str());
+			MyResult.SetStringW(1, szNamedProp.c_str());
 
 			MAPIFreeBuffer(lppPropNames);
 			lppPropNames = NULL;
