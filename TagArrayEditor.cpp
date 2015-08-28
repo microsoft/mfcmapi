@@ -99,8 +99,9 @@ _Check_return_ bool CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 
 		LPTSTR szExactMatch = NULL;
 		LPTSTR szPartialMatch = NULL;
-		LPTSTR szNamedPropName = NULL;
-		LPTSTR szNamedPropGUID = NULL;
+		wstring szNamedPropName;
+		wstring szNamedPropGUID;
+		wstring szNamedPropDASL;
 
 		NameIDToStrings(
 			ulNewPropTag,
@@ -108,21 +109,20 @@ _Check_return_ bool CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 			NULL,
 			NULL,
 			m_bIsAB,
-			&szNamedPropName, // Built from lpProp & lpMAPIProp
-			&szNamedPropGUID, // Built from lpProp & lpMAPIProp
-			NULL);
+			szNamedPropName, // Built from lpProp & lpMAPIProp
+			szNamedPropGUID, // Built from lpProp & lpMAPIProp
+			szNamedPropDASL);
 
 		PropTagToPropName(ulNewPropTag, m_bIsAB, &szExactMatch, &szPartialMatch);
 
 		SetListString(ulListNum, iItem, 2, szExactMatch);
 		SetListString(ulListNum, iItem, 3, szPartialMatch);
 		SetListString(ulListNum, iItem, 4, TypeToString(ulNewPropTag));
-		SetListString(ulListNum, iItem, 5, szNamedPropName);
-		SetListString(ulListNum, iItem, 6, szNamedPropGUID);
+		SetListStringW(ulListNum, iItem, 5, szNamedPropName.c_str());
+		SetListStringW(ulListNum, iItem, 6, szNamedPropGUID.c_str());
 
 		delete[] szPartialMatch;
 		delete[] szExactMatch;
-		FreeNameIDStrings(szNamedPropName, szNamedPropGUID, NULL);
 
 		ResizeList(ulListNum, false);
 		return true;
@@ -166,8 +166,9 @@ void CTagArrayEditor::ReadTagArrayToList(ULONG ulListNum)
 			CString PropTag;
 			LPTSTR szExactMatch = NULL;
 			LPTSTR szPartialMatch = NULL;
-			LPTSTR szNamedPropName = NULL;
-			LPTSTR szNamedPropGUID = NULL;
+			wstring szNamedPropName;
+			wstring szNamedPropGUID;
+			wstring szNamedPropDASL;
 
 			NameIDToStrings(
 				ulPropTag,
@@ -175,9 +176,9 @@ void CTagArrayEditor::ReadTagArrayToList(ULONG ulListNum)
 				NULL,
 				NULL,
 				m_bIsAB,
-				&szNamedPropName, // Built from lpProp & lpMAPIProp
-				&szNamedPropGUID, // Built from lpProp & lpMAPIProp
-				NULL);
+				szNamedPropName, // Built from lpProp & lpMAPIProp
+				szNamedPropGUID, // Built from lpProp & lpMAPIProp
+				szNamedPropDASL);
 
 			PropTag.Format(_T("0x%08X"), ulPropTag);
 			SetListString(ulListNum, iTagCount, 1, PropTag);
@@ -186,12 +187,11 @@ void CTagArrayEditor::ReadTagArrayToList(ULONG ulListNum)
 			SetListString(ulListNum, iTagCount, 2, szExactMatch);
 			SetListString(ulListNum, iTagCount, 3, szPartialMatch);
 			SetListString(ulListNum, iTagCount, 4, TypeToString(ulPropTag));
-			SetListString(ulListNum, iTagCount, 5, szNamedPropName);
-			SetListString(ulListNum, iTagCount, 6, szNamedPropGUID);
+			SetListStringW(ulListNum, iTagCount, 5, szNamedPropName.c_str());
+			SetListStringW(ulListNum, iTagCount, 6, szNamedPropGUID.c_str());
 
 			delete[] szPartialMatch;
 			delete[] szExactMatch;
-			FreeNameIDStrings(szNamedPropName, szNamedPropGUID, NULL);
 		}
 	}
 

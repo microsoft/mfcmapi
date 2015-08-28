@@ -333,7 +333,9 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField)
 {
 	HRESULT hRes = S_OK;
 
-	LPTSTR szNamedPropName = NULL;
+	wstring szNamedPropName;
+	wstring szNamedPropGUID;
+	wstring szNamedPropDASL;
 
 	NameIDToStrings(
 		m_ulPropTag,
@@ -341,9 +343,9 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField)
 		NULL,
 		NULL,
 		m_bIsAB,
-		&szNamedPropName,
-		NULL,
-		NULL);
+		szNamedPropName,
+		szNamedPropGUID,
+		szNamedPropDASL);
 
 	if (PROPTAG_TAG != ulSkipField) SetHex(PROPTAG_TAG, m_ulPropTag);
 	if (PROPTAG_ID != ulSkipField) SetStringf(PROPTAG_ID, _T("0x%04X"), PROP_ID(m_ulPropTag)); // STRING_OK
@@ -356,8 +358,8 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField)
 
 		if (PROP_ID(m_ulPropTag) && (!IsNullOrEmpty(szExactMatch) || !IsNullOrEmpty(szPartialMatch)))
 			SetStringf(PROPTAG_NAME, _T("%s (%s)"), !IsNullOrEmpty(szExactMatch) ? szExactMatch : _T(""), !IsNullOrEmpty(szPartialMatch) ? szPartialMatch : _T("")); // STRING_OK
-		else if (!IsNullOrEmpty(szNamedPropName))
-			SetStringf(PROPTAG_NAME, _T("%s"), szNamedPropName); // STRING_OK
+		else if (!szNamedPropName.empty())
+			SetStringf(PROPTAG_NAME, _T("%ws"), szNamedPropName.c_str()); // STRING_OK
 		else
 			LoadString(PROPTAG_NAME, IDS_UNKNOWNPROPERTY);
 
@@ -423,9 +425,7 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField)
 		}
 		MAPIFreeBuffer(lppPropNames);
 	}
-
-	FreeNameIDStrings(szNamedPropName, NULL, NULL);
-} // CPropertyTagEditor::PopulateFields
+}
 
 void CPropertyTagEditor::SetDropDownSelection(ULONG i, _In_opt_z_ LPCTSTR szText)
 {

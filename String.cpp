@@ -48,22 +48,35 @@ wstring loadstring(DWORD dwID)
 	return fmtString;
 }
 
+wstring formatmessageV(wstring szMsg, va_list argList)
+{
+		LPWSTR buffer = NULL;
+		DWORD dw = FormatMessageW(FORMAT_MESSAGE_FROM_STRING | FORMAT_MESSAGE_ALLOCATE_BUFFER, szMsg.c_str(), 0, 0, (LPWSTR)&buffer, 0, &argList);
+		if (dw)
+		{
+			wstring ret = wstring(buffer);
+			(void)LocalFree(buffer);
+			return ret;
+		}
+
+	return L"";
+}
+
 wstring formatmessage(DWORD dwID, ...)
 {
-	wstring format = loadstring(dwID);
+	va_list argList;
+	va_start(argList, dwID);
+	wstring ret = formatmessageV(loadstring(dwID), argList);
+	va_end(argList);
+	return ret;
+}
 
-	LPWSTR buffer = NULL;
-	wstring ret;
-	va_list vl;
-	va_start(vl, dwID);
-	DWORD dw = FormatMessageW(FORMAT_MESSAGE_FROM_STRING | FORMAT_MESSAGE_ALLOCATE_BUFFER, format.c_str(), 0, 0, (LPWSTR)&buffer, 0, &vl);
-	if (dw)
-	{
-		ret = wstring(buffer);
-		(void)LocalFree(buffer);
-	}
-
-	va_end(vl);
+wstring formatmessage(wstring szMsg, ...)
+{
+	va_list argList;
+	va_start(argList, szMsg);
+	wstring ret = formatmessageV(szMsg, argList);
+	va_end(argList);
 	return ret;
 }
 
