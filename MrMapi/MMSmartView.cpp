@@ -78,19 +78,11 @@ void DoSmartView(_In_ MYOPTIONS ProgOpts)
 				{
 					if (fOut)
 					{
-						// Without this split, the ANSI build writes out UNICODE files
-#ifdef UNICODE
-						fputws(szString.c_str(),fOut);
-#else
-						LPSTR szStringA = NULL;
-						(void)UnicodeToAnsi(szString.c_str(), &szStringA);
-						fputs(szStringA, fOut);
-						delete[] szStringA;
-#endif
+						Output(DBGNoDebug, fOut, false, szString);
 					}
 					else
 					{
-						_tprintf(_T("%ws\n"), szString.c_str());
+						wprintf(L"%ws\n", StripCarriage(szString).c_str());
 					}
 				}
 

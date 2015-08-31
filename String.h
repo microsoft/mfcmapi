@@ -3,16 +3,18 @@
 using namespace std;
 
 wstring loadstring(DWORD dwID);
-wstring formatV(wstring szMsg, va_list argList);
-wstring format(const LPWSTR szMsg, ...);
+wstring formatV(wstring const& szMsg, va_list argList);
+wstring format(LPCWSTR szMsg, ...);
+wstring formatmessagesys(DWORD dwID);
 wstring formatmessage(DWORD dwID, ...);
-wstring formatmessage(wstring szMsg, ...);
-LPTSTR wstringToLPTSTR(wstring src);
-CString wstringToCString(wstring src);
+wstring formatmessage(wstring const szMsg, ...);
+LPTSTR wstringToLPTSTR(wstring const& src);
+CString wstringToCString(wstring const& src);
 wstring LPCTSTRToWstring(LPCTSTR src);
 wstring LPCSTRToWstring(LPCSTR src);
 void wstringToLower(wstring src);
-ULONG wstringToUlong(wstring src, int radix);
+ULONG wstringToUlong(wstring const& src, int radix);
+wstring StripCarriage(wstring szString);
 
 // Unicode support
 _Check_return_ HRESULT AnsiToUnicode(_In_opt_z_ LPCSTR pszA, _Out_z_cap_(cchszA) LPWSTR* ppszW, size_t cchszA = -1);

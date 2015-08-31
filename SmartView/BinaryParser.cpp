@@ -33,7 +33,6 @@ bool CBinaryParser::Empty()
 
 void CBinaryParser::Advance(size_t cbAdvance)
 {
-	DebugPrintEx(DBGSmartView, CLASS, L"Advance", L"Advancing 0x%08X = %u bytes.\n", (int)cbAdvance, (UINT)cbAdvance);
 	// Refuse to advance a negative count
 	if (cbAdvance < 0) return;
 	m_lpCur += cbAdvance;
@@ -47,7 +46,6 @@ void CBinaryParser::Rewind()
 
 size_t CBinaryParser::GetCurrentOffset()
 {
-	DebugPrintEx(DBGSmartView, CLASS, L"GetCurrentOffset", L"Returning offset 0x%08X = %d bytes.\n", (int)(m_lpCur - m_lpBin), (int)(m_lpCur - m_lpBin));
 	return m_lpCur - m_lpBin;
 }
 

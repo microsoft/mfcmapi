@@ -73,10 +73,7 @@ void WebViewPersistStream::Parse()
 
 _Check_return_ wstring WebViewPersistStream::ToStringInternal()
 {
-	wstring szWebViewPersistStream;
-	wstring szTmp;
-
-	szWebViewPersistStream = formatmessage(IDS_WEBVIEWSTREAMHEADER, m_cWebViews);
+	wstring szWebViewPersistStream = formatmessage(IDS_WEBVIEWSTREAMHEADER, m_cWebViews);
 	if (m_lpWebViews && m_cWebViews)
 	{
 		ULONG i = 0;
@@ -87,21 +84,19 @@ _Check_return_ wstring WebViewPersistStream::ToStringInternal()
 			wstring szType = InterpretFlags(flagWebViewType, m_lpWebViews[i].dwType);
 			wstring szFlags = InterpretFlags(flagWebViewFlags, m_lpWebViews[i].dwFlags);
 
-			szTmp = formatmessage(
+			szWebViewPersistStream += formatmessage(
 				IDS_WEBVIEWHEADER,
 				i,
 				m_lpWebViews[i].dwVersion, szVersion.c_str(),
 				m_lpWebViews[i].dwType, szType.c_str(),
 				m_lpWebViews[i].dwFlags, szFlags.c_str());
-			szWebViewPersistStream += szTmp;
 
 			SBinary sBin = { 0 };
 			sBin.cb = sizeof(m_lpWebViews[i].dwUnused);
 			sBin.lpb = (LPBYTE)&m_lpWebViews[i].dwUnused;
 			szWebViewPersistStream += BinToHexString(&sBin, true);
 
-			szTmp = formatmessage(IDS_WEBVIEWCBDATA, m_lpWebViews[i].cbData);
-			szWebViewPersistStream += szTmp;
+			szWebViewPersistStream += formatmessage(IDS_WEBVIEWCBDATA, m_lpWebViews[i].cbData);
 
 			switch (m_lpWebViews[i].dwType)
 			{
@@ -114,8 +109,7 @@ _Check_return_ wstring WebViewPersistStream::ToStringInternal()
 				{
 					memcpy(lpwzTmp, m_lpWebViews[i].lpData, sizeof(WCHAR)* cchData);
 					lpwzTmp[cchData] = NULL;
-					szTmp = formatmessage(IDS_WEBVIEWURL);
-					szWebViewPersistStream += szTmp;
+					szWebViewPersistStream += formatmessage(IDS_WEBVIEWURL);
 					szWebViewPersistStream += lpwzTmp;
 					delete[] lpwzTmp;
 				}
@@ -125,8 +119,7 @@ _Check_return_ wstring WebViewPersistStream::ToStringInternal()
 				sBin.cb = m_lpWebViews[i].cbData;
 				sBin.lpb = m_lpWebViews[i].lpData;
 
-				szTmp = formatmessage(IDS_WEBVIEWDATA);
-				szWebViewPersistStream += szTmp;
+				szWebViewPersistStream += formatmessage(IDS_WEBVIEWDATA);
 				szWebViewPersistStream += BinToHexString(&sBin, true);
 				break;
 			}

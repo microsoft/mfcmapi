@@ -316,7 +316,7 @@ wstring InterpretPropSmartView(_In_opt_ LPSPropValue lpProp, // required propert
 		break;
 	}
 
-	MAPIFreeBuffer(lppPropNames);
+	if (lppPropNames) MAPIFreeBuffer(lppPropNames);
 
 	return lpszSmartView;
 }

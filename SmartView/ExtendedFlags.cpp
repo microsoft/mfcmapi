@@ -110,10 +110,7 @@ void ExtendedFlags::Parse()
 
 _Check_return_ wstring ExtendedFlags::ToStringInternal()
 {
-	wstring szExtendedFlags;
-	SBinary sBin = { 0 };
-
-	szExtendedFlags = formatmessage(IDS_EXTENDEDFLAGSHEADER, m_ulNumFlags);
+	wstring szExtendedFlags = formatmessage(IDS_EXTENDEDFLAGSHEADER, m_ulNumFlags);
 
 	if (m_ulNumFlags && m_pefExtendedFlags)
 	{
@@ -146,6 +143,7 @@ _Check_return_ wstring ExtendedFlags::ToStringInternal()
 
 			if (m_pefExtendedFlags[i].lpUnknownData)
 			{
+				SBinary sBin = { 0 };
 				szExtendedFlags += loadstring(IDS_EXTENDEDFLAGUNKNOWN);
 				sBin.cb = m_pefExtendedFlags[i].Cb;
 				sBin.lpb = m_pefExtendedFlags[i].lpUnknownData;
