@@ -35,36 +35,18 @@ void LogFunctionCall(
 #endif
 
 	// Get our error message if we have one
-	CString szErrorMsg;
-	if (bSystemCall)
-	{
-		LPTSTR szErr = NULL;
-		DWORD dw = FormatMessage(
-			FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-			0,
-			uidErrorMsg,
-			0,
-			(LPTSTR)&szErr,
-			0,
-			0);
-		if (dw)
-		{
-			szErrorMsg = szErr;
-			LocalFree(szErr);
-		}
-	}
-	else if (uidErrorMsg) (void)szErrorMsg.LoadString(uidErrorMsg);
+	wstring szErrorMsg = bSystemCall ? formatmessagesys(uidErrorMsg) : uidErrorMsg ? loadstring(uidErrorMsg) : L"";
 
 	wstring szErrString = formatmessage(
 		FAILED(hRes) ? IDS_ERRFORMATSTRING : IDS_WARNFORMATSTRING,
-		szErrorMsg,
+		szErrorMsg.c_str(),
 		ErrorNameFromErrorCode(hRes),
 		hRes,
 		szFunction,
 		szFile,
 		iLine);
 
-	Output(DBGHRes, NULL, true, szErrString);
+	Output(DBGHRes, NULL, true, StripCarriage(szErrString));
 	Output(DBGHRes, NULL, false, L"\n");
 
 	if (bShowDialog)

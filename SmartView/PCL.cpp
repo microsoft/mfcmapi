@@ -70,28 +70,22 @@ void PCL::Parse()
 
 _Check_return_ wstring PCL::ToStringInternal()
 {
-	wstring szPCLString;
-	wstring szTmp;
-
-	szPCLString = formatmessage(IDS_PCLHEADER, m_cXID);
+	wstring szPCLString = formatmessage(IDS_PCLHEADER, m_cXID);
 
 	if (m_cXID && m_lpXID)
 	{
 		ULONG i = 0;
 		for (i = 0; i < m_cXID; i++)
 		{
-			wstring szGUID = GUIDToString(&m_lpXID[i].NamespaceGuid);
-
 			SBinary sBin = { 0 };
 			sBin.cb = (ULONG)m_lpXID[i].cbLocalId;
 			sBin.lpb = m_lpXID[i].LocalID;
 
-			szTmp = formatmessage(IDS_PCLXID,
+			szPCLString += formatmessage(IDS_PCLXID,
 				i,
 				m_lpXID[i].XidSize,
-				szGUID.c_str(),
+				GUIDToString(&m_lpXID[i].NamespaceGuid).c_str(),
 				BinToHexString(&sBin, true).c_str());
-			szPCLString += szTmp;
 		}
 	}
 

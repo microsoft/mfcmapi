@@ -4,7 +4,7 @@
 #include <locale>
 #include <codecvt>
 
-wstring formatV(wstring szMsg, va_list argList)
+wstring formatV(wstring const& szMsg, va_list argList)
 {
 	int len = _vscwprintf(szMsg.c_str(), argList);
 	if (0 != len)
@@ -25,7 +25,7 @@ wstring formatV(wstring szMsg, va_list argList)
 	return L"";
 }
 
-wstring format(const LPWSTR szMsg, ...)
+wstring format(LPCWSTR szMsg, ...)
 {
 	va_list argList;
 	va_start(argList, szMsg);
@@ -48,7 +48,7 @@ wstring loadstring(DWORD dwID)
 	return fmtString;
 }
 
-wstring formatmessageV(wstring szMsg, va_list argList)
+wstring formatmessageV(wstring const& szMsg, va_list argList)
 {
 		LPWSTR buffer = NULL;
 		DWORD dw = FormatMessageW(FORMAT_MESSAGE_FROM_STRING | FORMAT_MESSAGE_ALLOCATE_BUFFER, szMsg.c_str(), 0, 0, (LPWSTR)&buffer, 0, &argList);
@@ -62,6 +62,20 @@ wstring formatmessageV(wstring szMsg, va_list argList)
 	return L"";
 }
 
+wstring formatmessagesys(DWORD dwID)
+{
+	LPWSTR buffer = NULL;
+	DWORD dw = FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, 0, dwID, 0, (LPWSTR)&buffer, 0, 0);
+	if (dw)
+	{
+		wstring ret = wstring(buffer);
+		(void)LocalFree(buffer);
+		return ret;
+	}
+
+	return L"";
+}
+
 wstring formatmessage(DWORD dwID, ...)
 {
 	va_list argList;
@@ -71,7 +85,7 @@ wstring formatmessage(DWORD dwID, ...)
 	return ret;
 }
 
-wstring formatmessage(wstring szMsg, ...)
+wstring formatmessage(wstring const szMsg, ...)
 {
 	va_list argList;
 	va_start(argList, szMsg);
@@ -80,7 +94,7 @@ wstring formatmessage(wstring szMsg, ...)
 	return ret;
 }
 
-LPTSTR wstringToLPTSTR(wstring src)
+LPTSTR wstringToLPTSTR(wstring const& src)
 {
 	LPTSTR dst = NULL;
 #ifdef UNICODE
@@ -101,7 +115,7 @@ LPTSTR wstringToLPTSTR(wstring src)
 	return dst;
 }
 
-CString wstringToCString(wstring src)
+CString wstringToCString(wstring const& src)
 {
 	CString dst;
 #ifdef UNICODE
@@ -135,7 +149,7 @@ void wstringToLower(wstring src)
 }
 
 // Converts a wstring to a number. Will return 0 if string is empty or contains non-numeric data.
-ULONG wstringToUlong(wstring src, int radix)
+ULONG wstringToUlong(wstring const& src, int radix)
 {
 	if (src.empty()) return 0;
 
@@ -149,6 +163,12 @@ ULONG wstringToUlong(wstring src, int radix)
 	}
 
 	return ulArg;
+}
+
+wstring StripCarriage(wstring szString)
+{
+	szString.erase(std::remove(szString.begin(), szString.end(), L'\r'), szString.end());
+	return szString;
 }
 
 // if cchszA == -1, MultiByteToWideChar will compute the length

@@ -1,6 +1,5 @@
 #pragma once
 
-#pragma warning(disable : 4995)
 #include <vector>
 #include <string>
 using namespace std;
@@ -9,8 +8,8 @@ class Attribute
 {
 public:
 	Attribute();
-	Attribute(_In_ wstring key, _In_ wstring value);
-	Attribute(const Attribute& other);
+	Attribute(wstring const& key, wstring const& value);
+	Attribute(Attribute const& other);
 
 	bool empty();
 	wstring Key();
@@ -26,8 +25,8 @@ private:
 class Attributes
 {
 public:
-	void AddAttribute(_In_ wstring key, _In_ wstring value);
-	wstring GetAttribute(_In_ wstring key);
+	void AddAttribute(wstring const& key, wstring const& value);
+	wstring GetAttribute(wstring const& key);
 
 	wstring toXML();
 

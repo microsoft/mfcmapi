@@ -7,10 +7,6 @@
 #include "InterpretProp.h"
 #include "InterpretProp2.h"
 
-// We avoid bringing InterpretProp.h in with these
-_Check_return_ wstring RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj);
-_Check_return_ wstring ActionsToString(_In_ ACTIONS* lpActions);
-
 wstring BuildErrorPropString(_In_ LPSPropValue lpProp)
 {
 	if (PROP_TYPE(lpProp->ulPropTag) != PT_ERROR) return L"";
@@ -36,7 +32,7 @@ wstring BuildErrorPropString(_In_ LPSPropValue lpProp)
 	return L"";
 }
 
- wstring BinToTextString(_In_ LPSBinary lpBin, bool bMultiLine)
+wstring BinToTextString(_In_ LPSBinary lpBin, bool bMultiLine)
 {
 	if (!lpBin || !lpBin->cb || !lpBin->lpb) return L"";
 
@@ -69,7 +65,7 @@ wstring BuildErrorPropString(_In_ LPSPropValue lpProp)
 	return szBin;
 }
 
- wstring MyHexFromBin(_In_opt_count_(cb) LPBYTE lpb, size_t cb, bool bPrependCB)
+wstring MyHexFromBin(_In_opt_count_(cb) LPBYTE lpb, size_t cb, bool bPrependCB)
 {
 	wstring lpsz;
 
@@ -100,7 +96,7 @@ wstring BuildErrorPropString(_In_ LPSPropValue lpProp)
 	return lpsz;
 }
 
- wstring BinToHexString(_In_opt_ LPSBinary lpBin, bool bPrependCB)
+wstring BinToHexString(_In_opt_ LPSBinary lpBin, bool bPrependCB)
 {
 	if (!lpBin) return L"";
 
@@ -171,9 +167,6 @@ Property ParseMVProperty(_In_ LPSPropValue lpProp, ULONG ulMVRow)
 Property ParseProperty(_In_ LPSPropValue lpProp)
 {
 	Property properties;
-
-	ULONG iMVCount = 0;
-
 	if (!lpProp) return properties;
 
 	if (MV_FLAG & PROP_TYPE(lpProp->ulPropTag))
@@ -186,6 +179,7 @@ Property ParseProperty(_In_ LPSPropValue lpProp)
 		// Don't bother with the loop if we don't have data
 		if (lpProp->Value.MVi.lpi)
 		{
+			ULONG iMVCount = 0;
 			for (iMVCount = 0; iMVCount < lpProp->Value.MVi.cValues; iMVCount++)
 			{
 				properties.AddMVParsing(ParseMVProperty(lpProp, iMVCount));
@@ -205,18 +199,18 @@ Property ParseProperty(_In_ LPSPropValue lpProp)
 		switch (PROP_TYPE(lpProp->ulPropTag))
 		{
 		case PT_I2:
-			szTmp = format(L"%d", lpProp->Value.i); // STRING_OK
+			szTmp = to_wstring(lpProp->Value.i);
 			szAltTmp = format(L"0x%X", lpProp->Value.i); // STRING_OK
 			break;
 		case PT_LONG:
-			szTmp = format(L"%d", lpProp->Value.l); // STRING_OK
+			szTmp = to_wstring(lpProp->Value.l);
 			szAltTmp = format(L"0x%X", lpProp->Value.l); // STRING_OK
 			break;
 		case PT_R4:
-			szTmp = format(L"%f", lpProp->Value.flt); // STRING_OK
+			szTmp = to_wstring(lpProp->Value.flt); // STRING_OK
 			break;
 		case PT_DOUBLE:
-			szTmp = format(L"%f", lpProp->Value.dbl); // STRING_OK
+			szTmp = to_wstring(lpProp->Value.dbl); // STRING_OK
 			break;
 		case PT_CURRENCY:
 			szTmp = format(L"%05I64d", lpProp->Value.cur.int64); // STRING_OK
@@ -228,19 +222,16 @@ Property ParseProperty(_In_ LPSPropValue lpProp)
 			szAltTmp = format(L"0x%08X:0x%08X", (int)(lpProp->Value.cur.Hi), (int)lpProp->Value.cur.Lo); // STRING_OK
 			break;
 		case PT_APPTIME:
-			szTmp = format(L"%f", lpProp->Value.at); // STRING_OK
+			szTmp = to_wstring(lpProp->Value.at); // STRING_OK
 			break;
 		case PT_ERROR:
-			szTmp = format(L"%ws", ErrorNameFromErrorCode(lpProp->Value.err)); // STRING_OK
+			szTmp = ErrorNameFromErrorCode(lpProp->Value.err); // STRING_OK
 			szAltTmp = BuildErrorPropString(lpProp);
 
 			attributes.AddAttribute(L"err", format(L"0x%08X", lpProp->Value.err)); // STRING_OK
 			break;
 		case PT_BOOLEAN:
-			if (lpProp->Value.b)
-				szTmp = loadstring(IDS_TRUE);
-			else
-				szTmp = loadstring(IDS_FALSE);
+			szTmp = loadstring(lpProp->Value.b ? IDS_TRUE : IDS_FALSE);
 			break;
 		case PT_OBJECT:
 			szTmp = loadstring(IDS_OBJECT);
@@ -252,7 +243,7 @@ Property ParseProperty(_In_ LPSPropValue lpProp)
 		case PT_STRING8:
 			if (CheckStringProp(lpProp, PT_STRING8))
 			{
-				szTmp = format(L"%hs", lpProp->Value.lpszA); // STRING_OK
+				szTmp = LPCSTRToWstring(lpProp->Value.lpszA);
 				bPropXMLSafe = false;
 
 				SBinary sBin = { 0 };
@@ -260,7 +251,7 @@ Property ParseProperty(_In_ LPSPropValue lpProp)
 				sBin.lpb = (LPBYTE)lpProp->Value.lpszA;
 				szAltTmp = BinToHexString(&sBin, false);
 
-				altAttributes.AddAttribute(L"cb", format(L"%u", sBin.cb)); // STRING_OK
+				altAttributes.AddAttribute(L"cb", to_wstring(sBin.cb)); // STRING_OK
 			}
 			break;
 		case PT_UNICODE:
@@ -274,7 +265,7 @@ Property ParseProperty(_In_ LPSPropValue lpProp)
 				sBin.lpb = (LPBYTE)lpProp->Value.lpszW;
 				szAltTmp = BinToHexString(&sBin, false);
 
-				altAttributes.AddAttribute(L"cb", format(L"%u", sBin.cb)); // STRING_OK
+				altAttributes.AddAttribute(L"cb", to_wstring(sBin.cb)); // STRING_OK
 			}
 			break;
 		case PT_SYSTIME:
@@ -289,7 +280,7 @@ Property ParseProperty(_In_ LPSPropValue lpProp)
 			szAltTmp = BinToTextString(&lpProp->Value.bin, true);
 			bAltPropXMLSafe = false;
 
-			attributes.AddAttribute(L"cb", format(L"%u", lpProp->Value.bin.cb)); // STRING_OK
+			attributes.AddAttribute(L"cb", to_wstring(lpProp->Value.bin.cb)); // STRING_OK
 			break;
 		case PT_SRESTRICTION:
 			szTmp = RestrictionToString((LPSRestriction)lpProp->Value.lpszA, NULL);

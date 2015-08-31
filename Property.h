@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Attributes.h"
-#pragma warning(disable : 4995)
 #include <vector>
 #include <string>
 using namespace std;
@@ -9,8 +8,8 @@ using namespace std;
 class Parsing
 {
 public:
-	Parsing(_In_ wstring szParsing, bool bXMLSafe, Attributes attributes);
-	Parsing(const Parsing& other);
+	Parsing(wstring const& szParsing, bool bXMLSafe, Attributes const& attributes);
+	Parsing(Parsing const& other);
 
 	wstring toXML(UINT uidTag, int iIndent);
 	wstring toString();
@@ -24,17 +23,17 @@ private:
 class Property
 {
 public:
-	void AddParsing(Parsing mainParsing, Parsing altParsing);
-	void AddMVParsing(Property Property);
+	void AddParsing(Parsing const& mainParsing, Parsing const& altParsing);
+	void AddMVParsing(Property const& Property);
 
-	void AddAttribute(_In_ wstring key, _In_ wstring value);
+	void AddAttribute(wstring const& key, wstring const& value);
 
 	wstring toXML(int iIndent);
 	wstring toString();
 	wstring toAltString();
 
 private:
-	wstring toString(vector<Parsing> parsing);
+	wstring toString(vector<Parsing>& parsing);
 
 	vector<Parsing> m_MainParsing;
 	vector<Parsing> m_AltParsing;

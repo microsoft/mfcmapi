@@ -110,14 +110,7 @@ _Check_return_ FILE* MyOpenFile(wstring szFileName, bool bNewFile)
 	{
 		// File IO failed - complain - not using error macros since we may not have debug output here
 		DWORD dwErr = GetLastError();
-		wstring szSysErr = formatmessage(
-			FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-			0,
-			HRESULT_FROM_WIN32(dwErr),
-			0,
-			(LPTSTR)&szSysErr,
-			0,
-			0);
+		wstring szSysErr = formatmessagesys(HRESULT_FROM_WIN32(dwErr));
 
 		wstring szErr = format(
 			L"_tfopen failed, hRes = 0x%08X, dwErr = 0x%08X = \"%ws\"\n", // STRING_OK
@@ -133,12 +126,6 @@ _Check_return_ FILE* MyOpenFile(wstring szFileName, bool bNewFile)
 void CloseFile(_In_opt_ FILE* fFile)
 {
 	if (fFile) fclose(fFile);
-}
-
-wstring StripCarriage(wstring szString)
-{
-	szString.erase(std::remove(szString.begin(), szString.end(), L'\r'), szString.end());
-	return szString;
 }
 
 void WriteFile(_In_ FILE* fFile, wstring szString)
@@ -191,12 +178,11 @@ void OutputThreadTime(ULONG ulDbgLvl)
 }
 
 // The root of all debug output - call no debug output functions besides OutputDebugString from here!
-void Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, wstring szMsg)
+void Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, wstring const& szMsg)
 {
 	CHKPARAM;
 	EARLYABORT;
 	if (szMsg.empty()) return; // nothing to print? Cool!
-	szMsg = StripCarriage(szMsg);
 
 	// print to debug output
 	if (fIsSetv(ulDbgLvl))
@@ -227,7 +213,7 @@ void Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, wstring
 	}
 }
 
-void __cdecl Outputf(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, wstring szMsg, ...)
+void __cdecl Outputf(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, wstring const szMsg, ...)
 {
 	CHKPARAM;
 	EARLYABORT;
@@ -238,7 +224,7 @@ void __cdecl Outputf(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime
 	va_end(argList);
 }
 
-void __cdecl OutputToFilef(_In_opt_ FILE* fFile, wstring szMsg, ...)
+void __cdecl OutputToFilef(_In_opt_ FILE* fFile, wstring const szMsg, ...)
 {
 	if (!fFile) return;
 
@@ -257,7 +243,7 @@ void __cdecl OutputToFilef(_In_opt_ FILE* fFile, wstring szMsg, ...)
 
 }
 
-void __cdecl DebugPrint(ULONG ulDbgLvl, wstring szMsg, ...)
+void __cdecl DebugPrint(ULONG ulDbgLvl, wstring const szMsg, ...)
 {
 	if (!fIsSetv(ulDbgLvl) && !RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD) return;
 
@@ -275,7 +261,7 @@ void __cdecl DebugPrint(ULONG ulDbgLvl, wstring szMsg, ...)
 	va_end(argList);
 }
 
-void __cdecl DebugPrintEx(ULONG ulDbgLvl, wstring szClass, wstring szFunc, wstring szMsg, ...)
+void __cdecl DebugPrintEx(ULONG ulDbgLvl, wstring const& szClass, wstring const& szFunc, wstring const szMsg, ...)
 {
 	if (!fIsSetv(ulDbgLvl) && !RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD) return;
 
@@ -783,7 +769,7 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 	if (!szNamedPropName.empty()) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPNAMEDNAME].uidName, szNamedPropName, false, iIndent);
 
 	Property prop = ParseProperty(lpProp);
-	Output(ulDbgLvl, fFile, false, prop.toXML(iIndent));
+	Output(ulDbgLvl, fFile, false, StripCarriage(prop.toXML(iIndent)));
 
 	wstring szSmartView = InterpretPropSmartView(
 		lpProp,
@@ -801,7 +787,7 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 
 	delete[] szPartialMatches;
 	delete[] szExactMatches;
-	MAPIFreeBuffer(lpLargeProp);
+	if (lpLargeProp) MAPIFreeBuffer(lpLargeProp);
 }
 
 void _OutputProperties(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cProps, _In_count_(cProps) LPSPropValue lpProps, _In_opt_ LPMAPIPROP lpObj, bool bRetryStreamProps)
@@ -902,7 +888,7 @@ void _OutputRestriction(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_opt_ LPSRestri
 		return;
 	}
 
-	Output(ulDbgLvl, fFile, true, RestrictionToString(lpRes, lpObj));
+	Output(ulDbgLvl, fFile, true, StripCarriage(RestrictionToString(lpRes, lpObj)));
 }
 
 #define MAXBYTES 4096
@@ -939,7 +925,7 @@ void _OutputStream(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSTREAM lpStream)
 		{
 			bBuf[ulNumBytes] = 0;
 			bBuf[ulNumBytes + 1] = 0; // In case we are in Unicode
-			Output(ulDbgLvl, fFile, true, LPCTSTRToWstring((TCHAR*)bBuf));
+			Output(ulDbgLvl, fFile, true, StripCarriage(LPCTSTRToWstring((TCHAR*)bBuf)));
 		}
 	} while (ulNumBytes > 0);
 }
@@ -1042,26 +1028,7 @@ void OutputCDataClose(ULONG ulDbgLvl, _In_opt_ FILE* fFile)
 	Output(ulDbgLvl, fFile, false, L"]]>");
 }
 
-void ScrubStringForXML(wstring szString)
-{
-	size_t i = 0;
-
-	for (i = 0; i < szString.length(); i++)
-	{
-		switch (szString[i])
-		{
-		case L'\t':
-		case L'\r':
-		case L'\n':
-			break;
-		default:
-			if (szString[i] > 0 && szString[i] < 0x20) szString[i] = L'.';
-			break;
-		}
-	}
-}
-
-void OutputXMLValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, wstring szValue, bool bWrapCData, int iIndent)
+void OutputXMLValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, wstring const& szValue, bool bWrapCData, int iIndent)
 {
 	CHKPARAM;
 	EARLYABORT;
@@ -1078,8 +1045,7 @@ void OutputXMLValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, wstring s
 		OutputCDataOpen(ulDbgLvl, fFile);
 	}
 
-	ScrubStringForXML(szValue);
-	Output(ulDbgLvl, fFile, false, szValue);
+	Output(ulDbgLvl, fFile, false, StripCarriage(szValue));
 
 	if (bWrapCData)
 	{

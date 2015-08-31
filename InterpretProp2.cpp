@@ -295,14 +295,13 @@ _Check_return_ ULONG PropTypeNameToPropTypeW(_In_z_ LPCWSTR lpszPropType)
 _Check_return_ wstring GUIDToString(_In_opt_ LPCGUID lpGUID)
 {
 	GUID nullGUID = { 0 };
-	wstring szGUID;
 
 	if (!lpGUID)
 	{
 		lpGUID = &nullGUID;
 	}
 
-	szGUID = format(L"{%.8X-%.4X-%.4X-%.2X%.2X-%.2X%.2X%.2X%.2X%.2X%.2X}", // STRING_OK
+	return format(L"{%.8X-%.4X-%.4X-%.2X%.2X-%.2X%.2X%.2X%.2X%.2X%.2X}", // STRING_OK
 		lpGUID->Data1,
 		lpGUID->Data2,
 		lpGUID->Data3,
@@ -314,8 +313,6 @@ _Check_return_ wstring GUIDToString(_In_opt_ LPCGUID lpGUID)
 		lpGUID->Data4[5],
 		lpGUID->Data4[6],
 		lpGUID->Data4[7]);
-
-	return szGUID;
 }
 
 _Check_return_ wstring GUIDToStringAndName(_In_opt_ LPCGUID lpGUID)
@@ -481,8 +478,6 @@ _Check_return_  wstring InterpretFlags(const ULONG ulFlagName, const LONG lFlagV
 _Check_return_ wstring InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue)
 {
 	ULONG ulCurEntry = 0;
-	LONG lTempValue = lFlagValue;
-	wstring szTempString;
 
 	if (!ulFlagArray || !FlagArray) return L"";
 
@@ -498,6 +493,8 @@ _Check_return_ wstring InterpretFlags(const ULONG ulFlagName, const LONG lFlagVa
 	// We've matched our flag name to the array - we SHOULD return a string at this point
 	bool bNeedSeparator = false;
 
+	LONG lTempValue = lFlagValue;
+	wstring szTempString;
 	for (; FlagArray[ulCurEntry].ulFlagName == ulFlagName; ulCurEntry++)
 	{
 		if (flagFLAG == FlagArray[ulCurEntry].ulFlagType)

@@ -1192,8 +1192,8 @@ IDS_OK "OK"
 IDS_CANCEL "Cancel"
 
 // Error messages
-IDS_ERRFORMATSTRING    "Error: %1\r\nCode: %2!ws! == 0x%3!08X!\r\nFunction %4!hs!\r\nFile %5!hs!\r\nLine %6!d!"
-IDS_WARNFORMATSTRING "Warning: %1\r\nCode: %2!ws! == 0x%3!08X!\r\nFunction %4!hs!\r\nFile %5!hs!\r\nLine %6!d!"
+IDS_ERRFORMATSTRING    "Error: %1!ws!\r\nCode: %2!ws! == 0x%3!08X!\r\nFunction %4!hs!\r\nFile %5!hs!\r\nLine %6!d!"
+IDS_WARNFORMATSTRING "Warning: %1!ws!\r\nCode: %2!ws! == 0x%3!08X!\r\nFunction %4!hs!\r\nFile %5!hs!\r\nLine %6!d!"
 IDS_FUNCTION "Function call: %1!hs!@%2!d!: %3!hs!"
 IDS_ATTNOTEMBEDDEDMSG "Attachment is not an embedded message!"
 IDS_USERCANCELLED "User cancelled!"

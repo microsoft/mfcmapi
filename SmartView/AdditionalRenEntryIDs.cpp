@@ -131,7 +131,7 @@ void AdditionalRenEntryIDs::BinToPersistData(_Out_ PersistData* ppdPersistData)
 
 	// We'll trust wDataElementsSize to dictate our record size.
 	// Count the 2 WORD size header fields too.
-	size_t cbRecordSize = ppdPersistData->wDataElementsSize + sizeof(WORD)* 2;
+	size_t cbRecordSize = ppdPersistData->wDataElementsSize + sizeof(WORD) * 2;
 
 	// Junk data remains - can't use GetRemainingData here since it would eat the whole buffer
 	if (m_Parser.GetCurrentOffset() < cbRecordSize)
@@ -143,10 +143,7 @@ void AdditionalRenEntryIDs::BinToPersistData(_Out_ PersistData* ppdPersistData)
 
 _Check_return_ wstring AdditionalRenEntryIDs::ToStringInternal()
 {
-	wstring szAdditionalRenEntryIDs;
-	wstring szTmp;
-
-	szAdditionalRenEntryIDs = formatmessage(IDS_AEIDHEADER, m_wPersistDataCount);
+	wstring szAdditionalRenEntryIDs = formatmessage(IDS_AEIDHEADER, m_wPersistDataCount);
 
 	if (m_ppdPersistData)
 	{
@@ -154,11 +151,11 @@ _Check_return_ wstring AdditionalRenEntryIDs::ToStringInternal()
 		for (iPersistElement = 0; iPersistElement < m_wPersistDataCount; iPersistElement++)
 		{
 			wstring szPersistID = InterpretFlags(flagPersistID, m_ppdPersistData[iPersistElement].wPersistID);
-			szTmp = formatmessage(IDS_AEIDPERSISTELEMENT,
+			szAdditionalRenEntryIDs += formatmessage(IDS_AEIDPERSISTELEMENT,
 				iPersistElement,
-				m_ppdPersistData[iPersistElement].wPersistID, szPersistID.c_str(),
+				m_ppdPersistData[iPersistElement].wPersistID,
+				szPersistID.c_str(),
 				m_ppdPersistData[iPersistElement].wDataElementsSize);
-			szAdditionalRenEntryIDs += szTmp;
 
 			if (m_ppdPersistData[iPersistElement].ppeDataElement)
 			{
@@ -166,11 +163,11 @@ _Check_return_ wstring AdditionalRenEntryIDs::ToStringInternal()
 				for (iDataElement = 0; iDataElement < m_ppdPersistData[iPersistElement].wDataElementCount; iDataElement++)
 				{
 					wstring szElementID = InterpretFlags(flagElementID, m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID);
-					szTmp = formatmessage(IDS_AEIDDATAELEMENT,
+					szAdditionalRenEntryIDs += formatmessage(IDS_AEIDDATAELEMENT,
 						iDataElement,
-						m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID, szElementID.c_str(),
+						m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID,
+						szElementID.c_str(),
 						m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementDataSize);
-					szAdditionalRenEntryIDs += szTmp;
 
 					SBinary sBin = { 0 };
 					sBin.cb = (ULONG)m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementDataSize;

@@ -5,13 +5,13 @@ Attribute::Attribute()
 {
 }
 
-Attribute::Attribute(_In_ wstring key, _In_ wstring value)
+Attribute::Attribute(wstring const& key, wstring const& value)
 {
 	m_key = key;
 	m_value = value;
 }
 
-Attribute::Attribute(const Attribute& other)
+Attribute::Attribute(Attribute const& other)
 {
 	m_key = other.m_key;
 	m_value = other.m_value;
@@ -37,12 +37,12 @@ wstring Attribute::toXML()
 	return m_key + L"=\"" + m_value + L"\" ";
 }
 
-void Attributes::AddAttribute(_In_ wstring key, _In_ wstring value)
+void Attributes::AddAttribute(wstring const& key, wstring const& value)
 {
 	m_attributes.push_back(Attribute(key, value));
 }
 
-wstring Attributes::GetAttribute(_In_ wstring key)
+wstring Attributes::GetAttribute(wstring const& key)
 {
 	size_t iAttribute = 0;
 	for (iAttribute = 0; iAttribute < m_attributes.size(); iAttribute++)
@@ -58,19 +58,20 @@ wstring Attributes::GetAttribute(_In_ wstring key)
 
 wstring Attributes::toXML()
 {
-	wstring szXML;
 	size_t iCount = m_attributes.size();
 
 	if (iCount > 0)
 	{
-		szXML += L" ";
+		wstring szXML = L" ";
 
 		size_t iAttribute = 0;
 		for (iAttribute = 0; iAttribute < iCount; iAttribute++)
 		{
 			szXML += m_attributes[iAttribute].toXML();
 		}
+
+		return szXML;
 	}
 
-	return szXML;
+	return L"";
 }

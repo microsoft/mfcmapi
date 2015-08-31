@@ -54,17 +54,17 @@ void SetDebugOutputToFile(bool bDoOutput);
 _Check_return_ FILE* MyOpenFile(wstring szFileName, bool bNewFile);
 void CloseFile(_In_opt_ FILE* fFile);
 
-void Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, wstring szMsg);
-void __cdecl Outputf(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, wstring szMsg, ...);
+void Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, wstring const& szMsg);
+void __cdecl Outputf(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, wstring const szMsg, ...);
 
 #define OutputToFile(fFile, szMsg) Output((DBGNoDebug), (fFile), true, (szMsg))
-void __cdecl OutputToFilef(_In_opt_ FILE* fFile, wstring szMsg, ...);
+void __cdecl OutputToFilef(_In_opt_ FILE* fFile, wstring const szMsg, ...);
 
-void __cdecl DebugPrint(ULONG ulDbgLvl, wstring szMsg, ...);
-void __cdecl DebugPrintEx(ULONG ulDbgLvl, wstring szClass, wstring szFunc, wstring szMsg, ...);
+void __cdecl DebugPrint(ULONG ulDbgLvl, wstring const szMsg, ...);
+void __cdecl DebugPrintEx(ULONG ulDbgLvl, wstring const& szClass, wstring const& szFunc, wstring const szMsg, ...);
 
 // Template for the Output functions
-// void Output(ULONG ulDbgLvl, LPCTSTR szFileName,stufftooutput)
+// void Output(ULONG ulDbgLvl, FILE* fFile,stufftooutput)
 
 // If the first parameter is not DBGNoDebug, we debug print the output
 // If the second parameter is a file name, we print the output to the file
@@ -120,7 +120,7 @@ void _OutputEntryList(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPENTRYLIST lpE
 #define TRACE_RELEASE(__class,__count)
 #endif
 
-void OutputXMLValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, wstring szValue, bool bWrapCData, int iIndent);
+void OutputXMLValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, wstring const& szValue, bool bWrapCData, int iIndent);
 void OutputCDataOpen(ULONG ulDbgLvl, _In_opt_ FILE* fFile);
 void OutputCDataClose(ULONG ulDbgLvl, _In_opt_ FILE* fFile);
 

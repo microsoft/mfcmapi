@@ -762,12 +762,11 @@ void FileTimeToString(_In_ FILETIME* lpFileTime, _In_ wstring& PropString, _In_o
 	if (S_OK == hRes)
 	{
 		int iRet = 0;
-		wstring szFormatStr;
 		wchar_t szTimeStr[MAX_PATH] = { 0 };
 		wchar_t szDateStr[MAX_PATH] = { 0 };
 
 		// shove millisecond info into our format string since GetTimeFormat doesn't use it
-		szFormatStr = formatmessage(IDS_FILETIMEFORMAT, SysTime.wMilliseconds);
+		wstring szFormatStr = formatmessage(IDS_FILETIMEFORMAT, SysTime.wMilliseconds);
 
 		WC_D(iRet, GetTimeFormatW(
 			LOCALE_USER_DEFAULT,
