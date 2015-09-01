@@ -1621,8 +1621,11 @@ IDS_PCLHEADER "Predecessor Change List:\r\n\
 Count = %1!d!"
 IDS_PCLXID "\r\nXID[%1!d!]:\r\n\
 XidSize = 0x%2!08X! = %2!d!\r\n\
-NamespaceGuid = %3\r\n\
-LocalId = %!ws!4"
+NamespaceGuid = %3!ws!\r\n\
+LocalId = %4!ws!"
+IDS_XID "XID:\r\n\
+NamespaceGuid = %1!ws!\r\n\
+LocalId = %2!ws!"
 
 // For InsertColumn
 IDS_ENTRY "Entry"

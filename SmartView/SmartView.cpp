@@ -37,6 +37,7 @@
 #include "RecurrencePattern.h"
 #include "SIDBin.h"
 #include "SDBin.h"
+#include "XID.h"
 
 wstring InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropTag, ULONG ulPropNameID, _In_opt_ LPGUID lpguidNamedProp);
 
@@ -138,6 +139,9 @@ LPSMARTVIEWPARSER GetSmartViewParser(__ParsingTypeEnum iStructType, ULONG cbBin,
 		break;
 	case IDS_STFBSECURITYDESCRIPTOR:
 		return new SDBin(cbBin, lpBin, lpMAPIProp, true);
+		break;
+	case IDS_STXID:
+		return new XID(cbBin, lpBin);
 		break;
 	}
 
