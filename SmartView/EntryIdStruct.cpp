@@ -46,6 +46,7 @@ EntryIdStruct::~EntryIdStruct()
 		delete[] m_ProviderData.MessageDatabaseObject.MailboxDN;
 		delete[] m_ProviderData.MessageDatabaseObject.v2DN;
 		delete[] m_ProviderData.MessageDatabaseObject.v2FQDN;
+		delete[] m_ProviderData.MessageDatabaseObject.v3SmtpAddress;
 		break;
 	case eidtWAB:
 		delete m_ProviderData.WAB.lpEntryID;
@@ -209,49 +210,71 @@ void EntryIdStruct::Parse()
 				m_Parser.GetDWORD(&m_ProviderData.MessageDatabaseObject.WrappedType);
 				m_Parser.GetStringA(&m_ProviderData.MessageDatabaseObject.ServerShortname);
 
-				m_ProviderData.MessageDatabaseObject.bV2 = false;
+				m_ProviderData.MessageDatabaseObject.MagicVersion = MDB_STORE_EID_V1_VERSION;
 
 				// Test if we have a magic value. Some PF EIDs also have a mailbox DN and we need to accomodate them
 				if (m_ProviderData.MessageDatabaseObject.WrappedType & OPENSTORE_PUBLIC)
 				{
 					cbRead = m_Parser.GetCurrentOffset();
-					m_Parser.GetDWORD(&m_ProviderData.MessageDatabaseObject.v2.ulMagic);
-					if (MDB_STORE_EID_V2_MAGIC == m_ProviderData.MessageDatabaseObject.v2.ulMagic)
-					{
-						m_ProviderData.MessageDatabaseObject.bV2 = true;
-					}
-
+					m_Parser.GetDWORD(&m_ProviderData.MessageDatabaseObject.MagicVersion);
 					m_Parser.SetCurrentOffset(cbRead);
 				}
 
 				// Either we're not a PF eid, or this PF EID wasn't followed directly by a magic value
 				if (!(m_ProviderData.MessageDatabaseObject.WrappedType & OPENSTORE_PUBLIC) ||
-					!m_ProviderData.MessageDatabaseObject.bV2)
+					(m_ProviderData.MessageDatabaseObject.MagicVersion != MDB_STORE_EID_V2_MAGIC &&
+					m_ProviderData.MessageDatabaseObject.MagicVersion != MDB_STORE_EID_V3_MAGIC))
 				{
 					m_Parser.GetStringA(&m_ProviderData.MessageDatabaseObject.MailboxDN);
 				}
 
-				if (m_Parser.RemainingBytes() >= sizeof(MDB_STORE_EID_V2) + sizeof(WCHAR))
+				// Check again for a magic value
+				cbRead = m_Parser.GetCurrentOffset();
+				m_Parser.GetDWORD(&m_ProviderData.MessageDatabaseObject.MagicVersion);
+				m_Parser.SetCurrentOffset(cbRead);
+
+				switch (m_ProviderData.MessageDatabaseObject.MagicVersion)
 				{
-					m_ProviderData.MessageDatabaseObject.bV2 = true;
-					m_Parser.GetDWORD(&m_ProviderData.MessageDatabaseObject.v2.ulMagic);
-					m_Parser.GetDWORD(&m_ProviderData.MessageDatabaseObject.v2.ulSize);
-					m_Parser.GetDWORD(&m_ProviderData.MessageDatabaseObject.v2.ulVersion);
-					m_Parser.GetDWORD(&m_ProviderData.MessageDatabaseObject.v2.ulOffsetDN);
-					m_Parser.GetDWORD(&m_ProviderData.MessageDatabaseObject.v2.ulOffsetFQDN);
-					if (m_ProviderData.MessageDatabaseObject.v2.ulOffsetDN)
+				case MDB_STORE_EID_V2_MAGIC:
+					if (m_Parser.RemainingBytes() >= sizeof(MDB_STORE_EID_V2) + sizeof(WCHAR))
 					{
-						m_Parser.GetStringA(&m_ProviderData.MessageDatabaseObject.v2DN);
-					}
+						m_Parser.GetDWORD(&m_ProviderData.MessageDatabaseObject.v2.ulMagic);
+						m_Parser.GetDWORD(&m_ProviderData.MessageDatabaseObject.v2.ulSize);
+						m_Parser.GetDWORD(&m_ProviderData.MessageDatabaseObject.v2.ulVersion);
+						m_Parser.GetDWORD(&m_ProviderData.MessageDatabaseObject.v2.ulOffsetDN);
+						m_Parser.GetDWORD(&m_ProviderData.MessageDatabaseObject.v2.ulOffsetFQDN);
+						if (m_ProviderData.MessageDatabaseObject.v2.ulOffsetDN)
+						{
+							m_Parser.GetStringA(&m_ProviderData.MessageDatabaseObject.v2DN);
+						}
 
-					if (m_ProviderData.MessageDatabaseObject.v2.ulOffsetFQDN)
+						if (m_ProviderData.MessageDatabaseObject.v2.ulOffsetFQDN)
+						{
+							m_Parser.GetStringW(&m_ProviderData.MessageDatabaseObject.v2FQDN);
+						}
+
+						m_Parser.GetBYTESNoAlloc(sizeof(m_ProviderData.MessageDatabaseObject.v2Reserved),
+							sizeof(m_ProviderData.MessageDatabaseObject.v2Reserved),
+							(LPBYTE)&m_ProviderData.MessageDatabaseObject.v2Reserved);
+					}
+					break;
+				case MDB_STORE_EID_V3_MAGIC:
+					if (m_Parser.RemainingBytes() >= sizeof(MDB_STORE_EID_V3) + sizeof(WCHAR))
 					{
-						m_Parser.GetStringW(&m_ProviderData.MessageDatabaseObject.v2FQDN);
-					}
+						m_Parser.GetDWORD(&m_ProviderData.MessageDatabaseObject.v3.ulMagic);
+						m_Parser.GetDWORD(&m_ProviderData.MessageDatabaseObject.v3.ulSize);
+						m_Parser.GetDWORD(&m_ProviderData.MessageDatabaseObject.v3.ulVersion);
+						m_Parser.GetDWORD(&m_ProviderData.MessageDatabaseObject.v3.ulOffsetSmtpAddress);
+						if (m_ProviderData.MessageDatabaseObject.v3.ulOffsetSmtpAddress)
+						{
+							m_Parser.GetStringW(&m_ProviderData.MessageDatabaseObject.v3SmtpAddress);
+						}
 
-					m_Parser.GetBYTESNoAlloc(sizeof(m_ProviderData.MessageDatabaseObject.v2Reserved),
-						sizeof(m_ProviderData.MessageDatabaseObject.v2Reserved),
-						(LPBYTE)&m_ProviderData.MessageDatabaseObject.v2Reserved);
+						m_Parser.GetBYTESNoAlloc(sizeof(m_ProviderData.MessageDatabaseObject.v2Reserved),
+							sizeof(m_ProviderData.MessageDatabaseObject.v2Reserved),
+							(LPBYTE)&m_ProviderData.MessageDatabaseObject.v2Reserved);
+					}
+					break;
 				}
 			}
 			break;
@@ -448,10 +471,12 @@ _Check_return_ wstring EntryIdStruct::ToStringInternal()
 				m_ProviderData.MessageDatabaseObject.MailboxDN ? m_ProviderData.MessageDatabaseObject.MailboxDN : ""); // STRING_OK
 		}
 
-		if (m_ProviderData.MessageDatabaseObject.bV2)
+		switch (m_ProviderData.MessageDatabaseObject.MagicVersion)
 		{
-			wstring szV2Magic = InterpretFlags(flagV2Magic, m_ProviderData.MessageDatabaseObject.v2.ulMagic);
-			wstring szV2Version = InterpretFlags(flagV2Version, m_ProviderData.MessageDatabaseObject.v2.ulVersion);
+		case MDB_STORE_EID_V2_MAGIC:
+		{
+			wstring szV2Magic = InterpretFlags(flagEidMagic, m_ProviderData.MessageDatabaseObject.v2.ulMagic);
+			wstring szV2Version = InterpretFlags(flagEidVersion, m_ProviderData.MessageDatabaseObject.v2.ulVersion);
 
 			szEntryId += formatmessage(IDS_ENTRYIDMAPIMESSAGESTOREEXCHANGEDATAV2,
 				m_ProviderData.MessageDatabaseObject.v2.ulMagic, szV2Magic.c_str(),
@@ -466,6 +491,26 @@ _Check_return_ wstring EntryIdStruct::ToStringInternal()
 			sBin.cb = sizeof(m_ProviderData.MessageDatabaseObject.v2Reserved);
 			sBin.lpb = m_ProviderData.MessageDatabaseObject.v2Reserved;
 			szEntryId += BinToHexString(&sBin, true);
+		}
+		break;
+		case MDB_STORE_EID_V3_MAGIC:
+		{
+			wstring szV3Magic = InterpretFlags(flagEidMagic, m_ProviderData.MessageDatabaseObject.v3.ulMagic);
+			wstring szV3Version = InterpretFlags(flagEidVersion, m_ProviderData.MessageDatabaseObject.v3.ulVersion);
+
+			szEntryId += formatmessage(IDS_ENTRYIDMAPIMESSAGESTOREEXCHANGEDATAV3,
+				m_ProviderData.MessageDatabaseObject.v3.ulMagic, szV3Magic.c_str(),
+				m_ProviderData.MessageDatabaseObject.v3.ulSize,
+				m_ProviderData.MessageDatabaseObject.v3.ulVersion, szV3Version.c_str(),
+				m_ProviderData.MessageDatabaseObject.v3.ulOffsetSmtpAddress,
+				m_ProviderData.MessageDatabaseObject.v3SmtpAddress ? m_ProviderData.MessageDatabaseObject.v3SmtpAddress : L""); // STRING_OK
+
+			SBinary sBin = { 0 };
+			sBin.cb = sizeof(m_ProviderData.MessageDatabaseObject.v2Reserved);
+			sBin.lpb = m_ProviderData.MessageDatabaseObject.v2Reserved;
+			szEntryId += BinToHexString(&sBin, true);
+		}
+		break;
 		}
 	}
 	else if (eidtFolder == m_ObjectType)

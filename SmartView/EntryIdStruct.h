@@ -23,6 +23,15 @@ struct MDB_STORE_EID_V2
 	ULONG ulOffsetDN; // offset past the beginning of the MDB_STORE_EID_V2 struct where szServerDN starts
 	ULONG ulOffsetFQDN; // offset past the beginning of the MDB_STORE_EID_V2 struct where wszServerFQDN starts
 };
+
+struct MDB_STORE_EID_V3
+{
+	ULONG ulMagic; // MDB_STORE_EID_V3_MAGIC
+	ULONG ulSize; // size of this struct plus the size of szServerSmtpAddress
+	ULONG ulVersion; // MDB_STORE_EID_V3_VERSION
+	ULONG ulOffsetSmtpAddress; // offset past the beginning of the MDB_STORE_EID_V3 struct where szSmtpAddress starts
+};
+
 class EntryIdStruct : public SmartViewParser
 {
 public:
@@ -71,10 +80,12 @@ private:
 			ULONG WrappedType;
 			LPSTR ServerShortname;
 			LPSTR MailboxDN;
-			BOOL bV2;
+			ULONG MagicVersion;
 			MDB_STORE_EID_V2 v2;
+			MDB_STORE_EID_V3 v3;
 			LPSTR v2DN;
 			LPWSTR v2FQDN;
+			LPWSTR v3SmtpAddress;
 			BYTE v2Reserved[2];
 		} MessageDatabaseObject;
 		struct

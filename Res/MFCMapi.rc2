@@ -1990,6 +1990,13 @@ DN = %8!hs!\r\n\
 FQDN = %9!ws!\r\n\
 Reserved Bytes = "
 
+IDS_ENTRYIDMAPIMESSAGESTOREEXCHANGEDATAV3 "\r\nMagic = 0x%1!08X! = %2\r\n\
+Size = 0x%3!08X! = %3!d!\r\n\
+Version = 0x%4!08X! = %5\r\n\
+OffsetSmtpAddress = 0x%6!08X!\r\n\
+SmtpAddress = %7!ws!\r\n\
+Reserved Bytes = "
+
 IDS_ENTRYIDEXCHANGEFOLDERDATA "\r\nFolder Type = 0x%1!04X! = %2\r\n\
 Database GUID = %3\r\n\
 GlobalCounter = "

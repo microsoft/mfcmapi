@@ -64,8 +64,8 @@ enum __NonPropFlag
 	flagFieldCap,
 	flagCcsf,
 	flagIet,
-	flagV2Magic,
-	flagV2Version,
+	flagEidMagic,
+	flagEidVersion,
 };
 
 #define PR_FREEBUSY_NT_SECURITY_DESCRIPTOR (PROP_TAG(PT_BINARY,0x0F00))
@@ -965,8 +965,11 @@ enum SearchPathReorderType
 #define PidTagFolderId PROP_TAG(PT_I8, 0x6748)
 #define PidTagMid PROP_TAG(PT_I8, 0x674A)
 
+#define MDB_STORE_EID_V1_VERSION (0x0)
 #define MDB_STORE_EID_V2_VERSION (0x1)
+#define MDB_STORE_EID_V3_VERSION (0x2)
 #define MDB_STORE_EID_V2_MAGIC (0xf32135d8)
+#define MDB_STORE_EID_V3_MAGIC (0xf43246e9)
 
 // http://blogs.msdn.com/b/dvespa/archive/2009/03/16/how-to-sign-or-encrypt-a-message-programmatically-from-oom.aspx
 #define PR_SECURITY_FLAGS       PROP_TAG(PT_LONG, 0x6E01)
