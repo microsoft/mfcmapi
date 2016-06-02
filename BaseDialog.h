@@ -31,8 +31,8 @@ public:
 	void __cdecl UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg, ULONG ulParam1);
 	void __cdecl UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg, LPCTSTR szParam1, LPCTSTR szParam2, LPCTSTR szParam3);
 	void OnOpenEntryID(_In_opt_ LPSBinary lpBin);
-	_Check_return_ CParentWnd* GetParentWnd();
-	_Check_return_ CMapiObjects* GetMapiObjects();
+	_Check_return_ CParentWnd* GetParentWnd() const;
+	_Check_return_ CMapiObjects* GetMapiObjects() const;
 
 protected:
 	// Overrides called by child classes
@@ -40,19 +40,19 @@ protected:
 	virtual void EnableAddInMenus(_In_ HMENU hMenu, ULONG ulMenu, _In_ LPMENUITEM lpAddInMenu, UINT uiEnable);
 	_Check_return_ virtual bool HandleMenu(WORD wMenuSelect);
 	_Check_return_ virtual bool HandlePaste();
-	virtual void OnCancel();
-	virtual BOOL OnInitDialog();
-	virtual void OnInitMenu(_In_opt_ CMenu* pMenu);
+	void OnCancel() override;
+	BOOL OnInitDialog() override;
+	void OnInitMenu(_In_opt_ CMenu* pMenu);
 
-	ULONG						m_ulAddInContext;
-	ULONG						m_ulAddInMenuItems;
-	bool						m_bIsAB;
-	CSingleMAPIPropListCtrl*	m_lpPropDisplay;
-	CFakeSplitter*				m_lpFakeSplitter;
-	CString						m_szTitle;
-	LPMAPICONTAINER				m_lpContainer;
-	CMapiObjects*				m_lpMapiObjects;
-	CParentWnd*					m_lpParent;
+	ULONG m_ulAddInContext;
+	ULONG m_ulAddInMenuItems;
+	bool m_bIsAB;
+	CSingleMAPIPropListCtrl* m_lpPropDisplay;
+	CFakeSplitter* m_lpFakeSplitter;
+	CString m_szTitle;
+	LPMAPICONTAINER m_lpContainer;
+	CMapiObjects* m_lpMapiObjects;
+	CParentWnd* m_lpParent;
 
 private:
 	_Check_return_ virtual bool HandleAddInMenu(WORD wMenuSelect);
@@ -63,11 +63,11 @@ private:
 	virtual void OnRefreshView();
 
 	// Overrides from base class
-	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
-	void    OnActivate(UINT nState, _In_ CWnd* pWndOther, BOOL bMinimized);
-	void    OnMenuSelect(UINT nItemID, UINT nFlags, HMENU hSysMenu);
-	void    OnOK();
-	void    OnSize(UINT nType, int cx, int cy);
+	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
+	void OnActivate(UINT nState, _In_ CWnd* pWndOther, BOOL bMinimized);
+	void OnMenuSelect(UINT nItemID, UINT nFlags, HMENU hSysMenu);
+	void OnOK() override;
+	void OnSize(UINT nType, int cx, int cy);
 
 	// Menu items
 	void OnCompareEntryIDs();
@@ -87,15 +87,15 @@ private:
 	_Check_return_ LRESULT msgOnUpdateStatusBar(WPARAM wParam, LPARAM lParam);
 	_Check_return_ LRESULT msgOnClearSingleMAPIPropList(WPARAM wParam, LPARAM lParam);
 
-	LONG			m_cRef;
-	HICON			m_hIcon;
-	CString			m_StatusMessages[STATUSBARNUMPANES];
-	int 			m_StatusWidth[STATUSBARNUMPANES];
-	bool			m_bDisplayingMenuText;
-	CString			m_szMenuDisplacedText;
-	CAdviseSink*	m_lpBaseAdviseSink;
-	ULONG_PTR		m_ulBaseAdviseConnection;
-	ULONG			m_ulBaseAdviseObjectType;
+	LONG m_cRef;
+	HICON m_hIcon;
+	CString m_StatusMessages[STATUSBARNUMPANES];
+	int m_StatusWidth[STATUSBARNUMPANES];
+	bool m_bDisplayingMenuText;
+	CString m_szMenuDisplacedText;
+	CAdviseSink* m_lpBaseAdviseSink;
+	ULONG_PTR m_ulBaseAdviseConnection;
+	ULONG m_ulBaseAdviseObjectType;
 
 	DECLARE_MESSAGE_MAP()
 };
