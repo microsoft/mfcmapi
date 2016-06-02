@@ -230,7 +230,7 @@ BOOL CMyDialog::CheckAutoCenter()
 	}
 
 	// This effect only applies when opening non-CEditor IDD_BLANK_DIALOG windows
-	if (m_hWndPrevious && !m_lpNonModalParent && m_hwndCenteringWindow && IDD_BLANK_DIALOG == (int)m_lpszTemplateName)
+	if (m_hWndPrevious && !m_lpNonModalParent && m_hwndCenteringWindow && IDD_BLANK_DIALOG == reinterpret_cast<intptr_t>(m_lpszTemplateName))
 	{
 		// Cheap cascade effect
 		RECT rc = { 0 };

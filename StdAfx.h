@@ -7,6 +7,13 @@
 
 #define VC_EXTRALEAN	// Exclude rarely-used stuff from Windows headers
 
+#pragma warning(push)
+#pragma warning(disable: 4995)
+#include <cstdio>
+#include <cstring>
+#include <cwchar>
+#pragma warning(pop)
+
 // Speed up our string conversions for output
 #ifdef MRMAPI
 #define _CRT_DISABLE_PERFCRIT_LOCKS
@@ -19,6 +26,11 @@
 #include <afxwin.h>		// MFC core and standard components
 #pragma warning(pop)
 #include <afxcmn.h>		// MFC support for Windows Common Controls
+
+#pragma warning(push)
+#pragma warning(disable: 4091)
+#include <shlobj.h>
+#pragma warning(pop)
 
 // Safe String handling header
 #include <strsafe.h>

@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "FileDialogEx.h"
-#include "VersionHelpers.h"
 
 ///////////////////////////////////////////////////////////////////////////
 // CFileDialogExA / CFileDialogExW
@@ -31,12 +30,7 @@ _Check_return_ INT_PTR CFileDialogExA::DisplayDialog(bool bOpenFileDialog, // tr
 
 	// initialize structure to 0/NULL
 	memset(&m_ofn, 0, sizeof(OPENFILENAMEEXA));
-
-	if (IsWindowsVersionOrGreater(5, 0, 0))
-		m_ofn.lStructSize = sizeof(OPENFILENAMEEXA);
-	else
-		m_ofn.lStructSize = sizeof(OPENFILENAMEA);
-
+	m_ofn.lStructSize = sizeof(OPENFILENAMEEXA);
 	m_ofn.lpstrFile = m_szFileName;
 	m_ofn.nMaxFile = _countof(m_szFileName);
 
@@ -165,12 +159,7 @@ _Check_return_ INT_PTR CFileDialogExW::DisplayDialog(bool bOpenFileDialog, // tr
 
 	// initialize structure to 0/NULL
 	memset(&m_ofn, 0, sizeof(OPENFILENAMEEXW));
-
-	if (IsWindowsVersionOrGreater(5, 0, 0))
-		m_ofn.lStructSize = sizeof(OPENFILENAMEEXW);
-	else
-		m_ofn.lStructSize = sizeof(OPENFILENAMEW);
-
+	m_ofn.lStructSize = sizeof(OPENFILENAMEEXW);
 	m_ofn.lpstrFile = m_szFileName;
 	m_ofn.nMaxFile = _countof(m_szFileName);
 

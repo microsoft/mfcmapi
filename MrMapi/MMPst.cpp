@@ -147,7 +147,7 @@ void DoPST(_In_ MYOPTIONS ProgOpts)
 {
 	printf("Analyzing %ws\n", ProgOpts.lpszInput.c_str());
 
-	_stat64 stats = { 0 };
+	struct _stat64 stats = { 0 };
 	_wstati64(ProgOpts.lpszInput.c_str(), &stats);
 
 	FILE* fIn = NULL;

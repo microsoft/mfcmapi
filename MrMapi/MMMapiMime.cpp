@@ -12,8 +12,8 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 {
 	printf("Message File Converter\n");
 	printf("Options specified:\n");
-	printf("   Input File: %ws\n", ProgOpts.lpszInput);
-	printf("   Output File: %ws\n", ProgOpts.lpszOutput);
+	printf("   Input File: %ws\n", ProgOpts.lpszInput.c_str());
+	printf("   Output File: %ws\n", ProgOpts.lpszOutput.c_str());
 	printf("   Conversion Type: ");
 	if (CHECKFLAG(MAPIMIME_TOMIME))
 	{
@@ -64,7 +64,7 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 		wstring szFlags = InterpretFlags(flagCcsf, ProgOpts.ulConvertFlags);
 		if (!szFlags.empty())
 		{
-			printf("   Conversion Flags: %ws\n", szFlags.empty());
+			printf("   Conversion Flags: %ws\n", szFlags.c_str());
 		}
 	}
 
