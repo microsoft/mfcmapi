@@ -1352,7 +1352,7 @@ void CSingleMAPIPropListCtrl::OnEditGivenProp(ULONG ulPropTag)
 		WC_H(m_lpPropBag->GetProp(ulPropTag, &lpEditProp));
 	}
 
-	if (MAPI_E_NOT_ENOUGH_MEMORY == hRes)
+	if (MAPI_E_NOT_ENOUGH_MEMORY == hRes || MAPI_E_NOT_FOUND == hRes)
 	{
 		hRes = S_OK;
 		CStreamEditor MyEditor(
