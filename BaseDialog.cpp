@@ -34,7 +34,7 @@ CBaseDialog::CBaseDialog(
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	HRESULT hRes = S_OK;
-	EC_B(m_szTitle.LoadString(IDS_BASEDIALOG));
+	m_szTitle = loadstring(IDS_BASEDIALOG);
 	m_bDisplayingMenuText = false;
 
 	m_lpBaseAdviseSink = nullptr;
@@ -83,7 +83,7 @@ STDMETHODIMP_(ULONG) CBaseDialog::AddRef()
 {
 	LONG lCount = InterlockedIncrement(&m_cRef);
 	TRACE_ADDREF(CLASS, lCount);
-	DebugPrint(DBGRefCount, L"CBaseDialog::AddRef(\"%ws\")\n", LPCTSTRToWstring(m_szTitle).c_str());
+	DebugPrint(DBGRefCount, L"CBaseDialog::AddRef(\"%ws\")\n", m_szTitle.c_str());
 	return lCount;
 }
 
@@ -91,7 +91,7 @@ STDMETHODIMP_(ULONG) CBaseDialog::Release()
 {
 	LONG lCount = InterlockedDecrement(&m_cRef);
 	TRACE_RELEASE(CLASS, lCount);
-	DebugPrint(DBGRefCount, L"CBaseDialog::Release(\"%ws\")\n", LPCTSTRToWstring(m_szTitle).c_str());
+	DebugPrint(DBGRefCount, L"CBaseDialog::Release(\"%ws\")\n", m_szTitle.c_str());
 	if (!lCount) delete this;
 	return lCount;
 }
@@ -143,7 +143,7 @@ LRESULT CBaseDialog::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 
 BOOL CBaseDialog::OnInitDialog()
 {
-	UpdateTitleBarText(nullptr);
+	UpdateTitleBarText();
 
 	m_StatusWidth[STATUSDATA1] = 0;
 	m_StatusWidth[STATUSDATA2] = 0;
@@ -618,20 +618,20 @@ void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg
 	UpdateStatusBarText(nPos, szStatBarString);
 }
 
-void CBaseDialog::UpdateTitleBarText(_In_opt_z_ LPCTSTR szMsg)
+void CBaseDialog::UpdateTitleBarText(_In_ wstring& szMsg)
 {
-	CString szTitle;
+	wstring szTitle = formatmessage(IDS_TITLEBARMESSAGE, m_szTitle.c_str(), szMsg.c_str());
 
-	if (szMsg)
-	{
-		szTitle.FormatMessage(IDS_TITLEBARMESSAGE, static_cast<LPCTSTR>(m_szTitle), szMsg);
-	}
-	else
-	{
-		szTitle.FormatMessage(IDS_TITLEBARPLAIN, static_cast<LPCTSTR>(m_szTitle));
-	}
 	// set the title bar
-	SetWindowText(szTitle);
+	SetWindowText(wstringToCString(szTitle));
+}
+
+void CBaseDialog::UpdateTitleBarText()
+{
+	wstring szTitle = formatmessage(IDS_TITLEBARPLAIN, m_szTitle.c_str());
+
+	// set the title bar
+	SetWindowText(wstringToCString(szTitle));
 }
 
 // WM_MFCMAPI_UPDATESTATUSBAR

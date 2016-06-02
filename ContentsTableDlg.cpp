@@ -43,14 +43,13 @@ CContentsTableDlg::CContentsTableDlg(
 	ulAddInContext)
 {
 	TRACE_CONSTRUCTOR(CLASS);
-	HRESULT hRes = S_OK;
 	if (NULL != uidTitle)
 	{
-		EC_B(m_szTitle.LoadString(uidTitle));
+		m_szTitle = loadstring(uidTitle);
 	}
 	else
 	{
-		EC_B(m_szTitle.LoadString(IDS_TABLEASCONTENTS));
+		m_szTitle = loadstring(IDS_TABLEASCONTENTS);
 	}
 
 	m_lpContentsTableListCtrl = NULL;
@@ -122,7 +121,7 @@ BOOL CContentsTableDlg::OnInitDialog()
 
 		if (m_ulDisplayFlags & dfAssoc)
 		{
-			m_szTitle.FormatMessage(IDS_HIDDEN, (LPCTSTR)m_szTitle);
+			m_szTitle = formatmessage(IDS_HIDDEN, m_szTitle.c_str());
 		}
 
 		if (m_lpContentsTable) m_lpContentsTable->Release();
@@ -140,7 +139,7 @@ BOOL CContentsTableDlg::OnInitDialog()
 			&m_lpContentsTable));
 	}
 
-	UpdateTitleBarText(NULL);
+	UpdateTitleBarText();
 
 	return bRet;
 } // CContentsTableDlg::OnInitDialog

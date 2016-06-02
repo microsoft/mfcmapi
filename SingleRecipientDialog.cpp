@@ -23,8 +23,7 @@ SingleRecipientDialog::SingleRecipientDialog(
 	NULL)
 {
 	TRACE_CONSTRUCTOR(CLASS);
-	HRESULT hRes = S_OK;
-	EC_B(m_szTitle.LoadString(IDS_ADDRESS_BOOK_ENTRY));
+	m_szTitle = loadstring(IDS_ADDRESS_BOOK_ENTRY);
 
 	m_lpMailUser = lpMAPIProp;
 	if (m_lpMailUser) m_lpMailUser->AddRef();
@@ -50,7 +49,7 @@ BOOL SingleRecipientDialog::OnInitDialog()
 		m_szTitle = GetTitle(m_lpMailUser);
 	}
 
-	UpdateTitleBarText(NULL);
+	UpdateTitleBarText();
 
 	hRes = S_OK;
 	EC_H(m_lpPropDisplay->SetDataSource(m_lpMailUser, NULL, true));

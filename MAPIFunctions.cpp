@@ -2741,10 +2741,10 @@ ULONG g_DisplayNameProps[] =
 };
 
 
-CString GetTitle(LPMAPIPROP lpMAPIProp)
+wstring GetTitle(LPMAPIPROP lpMAPIProp)
 {
 	HRESULT hRes = S_OK;
-	CString szTitle;
+	wstring szTitle;
 	LPSPropValue lpProp = NULL;
 	bool bFoundName = false;
 
@@ -2765,7 +2765,7 @@ CString GetTitle(LPMAPIPROP lpMAPIProp)
 		{
 			if (CheckStringProp(lpProp, PT_TSTRING))
 			{
-				szTitle = lpProp->Value.LPSZ;
+				szTitle = LPCTSTRToWstring(lpProp->Value.LPSZ);
 				bFoundName = true;
 			}
 			MAPIFreeBuffer(lpProp);
@@ -2774,7 +2774,7 @@ CString GetTitle(LPMAPIPROP lpMAPIProp)
 
 	if (!bFoundName)
 	{
-		EC_B(szTitle.LoadString(IDS_DISPLAYNAMENOTFOUND));
+		szTitle = loadstring(IDS_DISPLAYNAMENOTFOUND);
 	}
 
 	return szTitle;
