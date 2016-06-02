@@ -68,10 +68,10 @@ static bool s_fForceSystemMAPI = false;
 static volatile HMODULE g_hinstMAPI = NULL;
 HMODULE g_hModPstPrx32 = NULL;
 
-__inline HMODULE GetMAPIHandle()
+HMODULE GetMAPIHandle()
 {
 	return g_hinstMAPI;
-} // GetMAPIHandle
+}
 
 void SetMAPIHandle(HMODULE hinstMAPI)
 {
