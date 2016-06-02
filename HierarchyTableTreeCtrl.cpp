@@ -807,7 +807,8 @@ void CHierarchyTableTreeCtrl::UpdateSelectionUI(HTREEITEM hItem)
 		szParam3);
 
 	m_lpHostDlg->OnUpdateSingleMAPIPropListCtrl(lpMAPIContainer, (SortListData*)GetItemData(hItem));
-	m_lpHostDlg->UpdateTitleBarText(GetItemText(GetSelectedItem()));
+	auto selectedItem = LPCTSTRToWstring(GetItemText(GetSelectedItem()));
+	m_lpHostDlg->UpdateTitleBarText(selectedItem);
 
 	if (lpMAPIContainer) lpMAPIContainer->Release();
 } // CHierarchyTableTreeCtrl::UpdateSelectionUI

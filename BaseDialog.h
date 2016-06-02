@@ -25,7 +25,8 @@ public:
 	void OnUpdateSingleMAPIPropListCtrl(_In_opt_ LPMAPIPROP lpMAPIProp, _In_opt_ SortListData* lpListData);
 	_Check_return_ bool HandleKeyDown(UINT nChar, bool bShift, bool bCtrl, bool bMenu);
 
-	void UpdateTitleBarText(_In_opt_z_ LPCTSTR szMsg);
+	void UpdateTitleBarText(_In_ wstring& szMsg);
+	void UpdateTitleBarText();
 	void UpdateStatusBarText(__StatusPaneEnum nPos, _In_z_ LPCTSTR szMsg);
 	void __cdecl UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg);
 	void __cdecl UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg, ULONG ulParam1);
@@ -49,7 +50,7 @@ protected:
 	bool m_bIsAB;
 	CSingleMAPIPropListCtrl* m_lpPropDisplay;
 	CFakeSplitter* m_lpFakeSplitter;
-	CString m_szTitle;
+	wstring m_szTitle;
 	LPMAPICONTAINER m_lpContainer;
 	CMapiObjects* m_lpMapiObjects;
 	CParentWnd* m_lpParent;
