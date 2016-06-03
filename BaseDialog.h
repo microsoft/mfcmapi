@@ -33,6 +33,8 @@ public:
 	_Check_return_ CParentWnd* GetParentWnd() const;
 	_Check_return_ CMapiObjects* GetMapiObjects() const;
 
+	static void UpdateStatus(HWND hWndHost, __StatusPaneEnum pane, wstring status);
+
 protected:
 	// Overrides called by child classes
 	virtual void CreateDialogAndMenu(UINT nIDMenuResource, UINT uiClassMenuResource, UINT uidClassMenuTitle);

@@ -1,6 +1,3 @@
-// ContentsTableListCtrl.cpp : implementation file
-//
-
 #include "stdafx.h"
 #include "SortListCtrl.h"
 #include "ContentsTableListCtrl.h"
@@ -24,8 +21,6 @@
 static wstring CLASS = L"CContentsTableListCtrl";
 
 #define NODISPLAYNAME 0xffffffff
-/////////////////////////////////////////////////////////////////////////////
-// CContentsTableListCtrl
 
 CContentsTableListCtrl::CContentsTableListCtrl(
 	_In_ CWnd* pCreateParent,
@@ -133,9 +128,6 @@ LRESULT CContentsTableListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM l
 	} // end switch
 	return CSortListCtrl::WindowProc(message, wParam, lParam);
 }
-
-/////////////////////////////////////////////////////////////////////////////
-// CContentsTableListCtrl message handlers
 
 void CContentsTableListCtrl::OnContextMenu(_In_ CWnd* pWnd, CPoint pos)
 {
@@ -387,29 +379,26 @@ void CContentsTableListCtrl::DoSetColumns(bool bAddExtras, bool bDisplayEditor)
 _Check_return_ HRESULT CContentsTableListCtrl::AddColumn(UINT uidHeaderName, ULONG ulCurHeaderCol, ULONG ulCurTagArrayRow, ULONG ulPropTag)
 {
 	HRESULT hRes = S_OK;
-	CHeaderCtrl* lpMyHeader = NULL;
-	int iRetVal = NULL;
 	HDITEM hdItem = { 0 };
-	lpMyHeader = GetHeaderCtrl();
-
-	CString szHeaderString;
+	CHeaderCtrl* lpMyHeader = GetHeaderCtrl();
+	wstring szHeaderString;
 
 	if (uidHeaderName)
 	{
-		EC_B(szHeaderString.LoadString(uidHeaderName));
+		szHeaderString = loadstring(uidHeaderName);
 	}
 	else
 	{
 		LPTSTR szExactMatches = NULL;
 		PropTagToPropName(ulPropTag, m_bIsAB, &szExactMatches, NULL);
 		if (IsNullOrEmpty(szExactMatches))
-			szHeaderString.Format(_T("0x%08X"), ulPropTag); // STRING_OK
+			szHeaderString = format(L"0x%08X", ulPropTag); // STRING_OK
 		else
-			szHeaderString = szExactMatches;
+			szHeaderString = LPCTSTRToWstring(szExactMatches);
 		delete[] szExactMatches;
 	}
 
-	iRetVal = InsertColumn(ulCurHeaderCol, szHeaderString);
+	auto iRetVal = InsertColumn(ulCurHeaderCol, wstringToCString(szHeaderString));
 
 	if (-1 == iRetVal)
 	{
@@ -602,16 +591,13 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 	if (!lpListCtrl || !lpContentsTable) return 0;
 
 	HWND hWndHost = lpThreadInfo->hWndHost;
-	CString szStatusText;
 
 	// required on da new thread before we do any MAPI work
 	EC_MAPI(MAPIInitialize(NULL));
 
 	(void) ::SendMessage(hWndHost, WM_MFCMAPI_CLEARSINGLEMAPIPROPLIST, NULL, NULL);
-	CString szCount;
-	szCount.Format(_T("%d"), lpListCtrl->GetItemCount());
-	szStatusText.FormatMessage(IDS_STATUSTEXTNUMITEMS, szCount);
-	(void) ::SendMessage(hWndHost, WM_MFCMAPI_UPDATESTATUSBAR, STATUSDATA1, (LPARAM)(LPCTSTR)szStatusText);
+	wstring szCount = format(L"%d", lpListCtrl->GetItemCount());
+	CBaseDialog::UpdateStatus(hWndHost, STATUSDATA1, formatmessage(IDS_STATUSTEXTNUMITEMS, szCount.c_str()));
 
 	// potentially lengthy op - check abort before and after
 	CHECKABORT(WC_H(lpListCtrl->ApplyRestriction()));
@@ -637,8 +623,7 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 
 		if (ulTotal)
 		{
-			szStatusText.FormatMessage(IDS_LOADINGITEMS, 0, ulTotal);
-			(void) ::SendMessage(hWndHost, WM_MFCMAPI_UPDATESTATUSBAR, STATUSDATA2, (LPARAM)(LPCTSTR)szStatusText);
+			CBaseDialog::UpdateStatus(hWndHost, STATUSDATA2, formatmessage(IDS_LOADINGITEMS, 0, ulTotal));
 		}
 	}
 
@@ -647,8 +632,7 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 	if (!FAILED(hRes)) for (;;)
 	{
 		BREAKONABORT;
-		EC_B(szStatusText.LoadString(IDS_ESCSTOPLOADING));
-		(void) ::SendMessage(hWndHost, WM_MFCMAPI_UPDATESTATUSBAR, STATUSINFOTEXT, (LPARAM)(LPCTSTR)szStatusText);
+		CBaseDialog::UpdateStatus(hWndHost, STATUSINFOTEXT, loadstring(IDS_ESCSTOPLOADING));
 		hRes = S_OK;
 		if (pRows) FreeProws(pRows);
 		pRows = NULL;
@@ -695,8 +679,7 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 			BREAKONABORT; // This check is cheap enough not to be a perf concern anymore
 			if (ulTotal)
 			{
-				szStatusText.FormatMessage(IDS_LOADINGITEMS, iCurListBoxRow + 1, ulTotal);
-				(void) ::SendMessage(hWndHost, WM_MFCMAPI_UPDATESTATUSBAR, STATUSDATA2, (LPARAM)(LPCTSTR)szStatusText);
+				CBaseDialog::UpdateStatus(hWndHost, STATUSDATA2, formatmessage(IDS_LOADINGITEMS, iCurListBoxRow + 1, ulTotal));
 			}
 
 			DebugPrintEx(DBGGeneric, CLASS, L"ThreadFuncLoadTable", L"Asking to add %p to %u\n", &pRows->aRow[iCurPropRow], iCurListBoxRow);
@@ -714,17 +697,15 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 
 	if (bABORTSET)
 	{
-		EC_B(szStatusText.LoadString(IDS_TABLELOADCANCELLED));
-		(void) ::SendMessage(hWndHost, WM_MFCMAPI_UPDATESTATUSBAR, STATUSINFOTEXT, (LPARAM)(LPCTSTR)szStatusText);
+		CBaseDialog::UpdateStatus(hWndHost, STATUSINFOTEXT, loadstring(IDS_TABLELOADCANCELLED));
 	}
 	else
 	{
-		EC_B(szStatusText.LoadString(IDS_TABLELOADED));
-		(void) ::SendMessage(hWndHost, WM_MFCMAPI_UPDATESTATUSBAR, STATUSINFOTEXT, (LPARAM)(LPCTSTR)szStatusText);
+		CBaseDialog::UpdateStatus(hWndHost, STATUSINFOTEXT, loadstring(IDS_TABLELOADED));
 	}
-	(void) ::SendMessage(hWndHost, WM_MFCMAPI_UPDATESTATUSBAR, STATUSDATA2, (LPARAM)_T(""));
-	DebugPrintEx(DBGGeneric, CLASS, L"ThreadFuncLoadTable", L"added %u items\n", iCurListBoxRow);
 
+	CBaseDialog::UpdateStatus(hWndHost, STATUSDATA2, emptystring);
+	DebugPrintEx(DBGGeneric, CLASS, L"ThreadFuncLoadTable", L"added %u items\n", iCurListBoxRow);
 	DebugPrintEx(DBGGeneric, CLASS, L"ThreadFuncLoadTable", L"Releasing pointers.\n");
 
 	lpListCtrl->ClearLoading();
