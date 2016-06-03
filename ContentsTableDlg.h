@@ -1,9 +1,7 @@
 #pragma once
-// ContentsTableDlg.h : header file
+#include "BaseDialog.h"
 
 class CContentsTableListCtrl;
-
-#include "BaseDialog.h"
 
 class CContentsTableDlg : public CBaseDialog
 {
@@ -19,7 +17,7 @@ public:
 		_In_count_(iNumExtraDisplayColumns) TagNames* lpExtraDisplayColumns,
 		ULONG nIDContextMenu,
 		ULONG ulAddInContext
-		);
+	);
 	virtual ~CContentsTableDlg();
 
 	_Check_return_ virtual HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp);
@@ -38,9 +36,9 @@ protected:
 	_Check_return_ HRESULT OpenAttachmentsFromMessage(_In_ LPMESSAGE lpMessage);
 	_Check_return_ HRESULT OpenRecipientsFromMessage(_In_ LPMESSAGE lpMessage);
 
-	CContentsTableListCtrl*	m_lpContentsTableListCtrl;
-	LPMAPITABLE				m_lpContentsTable;
-	ULONG					m_ulDisplayFlags;
+	CContentsTableListCtrl* m_lpContentsTableListCtrl;
+	LPMAPITABLE m_lpContentsTable;
+	ULONG m_ulDisplayFlags;
 
 private:
 	virtual void HandleAddInMenuSingle(
@@ -70,10 +68,10 @@ private:
 	_Check_return_ LRESULT msgOnResetColumns(WPARAM wParam, LPARAM lParam);
 
 	// Values held only for use in InitDialog to create our CContentsTableListCtrl
-	ULONG			m_iNumExtraDisplayColumns;
-	TagNames*		m_lpExtraDisplayColumns;
-	LPSPropTagArray	m_sptExtraColumnTags;
-	UINT			m_nIDContextMenu;
+	ULONG m_iNumExtraDisplayColumns;
+	TagNames* m_lpExtraDisplayColumns;
+	LPSPropTagArray m_sptExtraColumnTags;
+	UINT m_nIDContextMenu;
 
 	DECLARE_MESSAGE_MAP()
 };
