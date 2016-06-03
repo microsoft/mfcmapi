@@ -630,11 +630,16 @@ void CBaseDialog::UpdateTitleBarText()
 	SetWindowText(wstringToCString(szTitle));
 }
 
+void CBaseDialog::UpdateStatus(HWND hWndHost, __StatusPaneEnum pane, wstring status)
+{
+	(void) ::SendMessage(hWndHost, WM_MFCMAPI_UPDATESTATUSBAR, pane, (LPARAM)status.c_str());
+}
+
 // WM_MFCMAPI_UPDATESTATUSBAR
 _Check_return_ LRESULT CBaseDialog::msgOnUpdateStatusBar(WPARAM wParam, LPARAM lParam)
 {
 	__StatusPaneEnum iPane = static_cast<__StatusPaneEnum>(wParam);
-	wstring szStr = LPCTSTRToWstring(reinterpret_cast<LPCTSTR>(lParam));
+	wstring szStr = reinterpret_cast<LPWSTR>(lParam);
 	UpdateStatusBarText(iPane, szStr);
 
 	return S_OK;
