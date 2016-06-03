@@ -1,6 +1,3 @@
-// HierarchyTableTreeCtrl.cpp : implementation file
-//
-
 #include "stdafx.h"
 #include "HierarchyTableTreeCtrl.h"
 #include "BaseDialog.h"
@@ -20,6 +17,7 @@ enum
 	htPR_CONTAINER_FLAGS,
 	htNUMCOLS
 };
+
 static const SizedSPropTagArray(htNUMCOLS, sptHTCols) =
 {
  htNUMCOLS,
@@ -439,18 +437,16 @@ _Check_return_ HRESULT CHierarchyTableTreeCtrl::AddRootNode(_In_ LPMAPICONTAINER
 	}
 	else lpRootName = &lpProps[htPR_DISPLAY_NAME];
 
-	LPCTSTR szName = NULL;
-	TCHAR szRootNode[64];
+	wstring szName;
 
 	// Shouldn't have to check lpRootName for non-NULL since CheckString does it, but prefast is complaining
 	if (lpRootName && CheckStringProp(lpRootName, PT_TSTRING))
 	{
-		szName = lpRootName->Value.LPSZ;
+		szName = LPCTSTRToWstring(lpRootName->Value.LPSZ);
 	}
 	else
 	{
-		WC_B(::LoadString(GetModuleHandle(NULL), IDS_ROOTCONTAINER, szRootNode, _countof(szRootNode)));
-		szName = szRootNode;
+		szName = loadstring(IDS_ROOTCONTAINER);
 	}
 
 	SortListData* lpData = BuildNodeData(
@@ -472,21 +468,21 @@ _Check_return_ HRESULT CHierarchyTableTreeCtrl::AddRootNode(_In_ LPMAPICONTAINER
 }
 
 void CHierarchyTableTreeCtrl::AddNode(
-	_In_ LPCTSTR szName,
+	_In_ wstring szName,
 	HTREEITEM hParent,
 	SortListData* lpData,
 	bool bGetTable)
 {
 	HTREEITEM hItem = NULL;
 
-	DebugPrintEx(DBGHierarchy, CLASS, L"AddNode", L"Adding Node \"%ws\" under node %p, bGetTable = 0x%X\n", LPCTSTRToWstring(szName).c_str(), hParent, bGetTable);
+	DebugPrintEx(DBGHierarchy, CLASS, L"AddNode", L"Adding Node \"%ws\" under node %p, bGetTable = 0x%X\n", szName.c_str(), hParent, bGetTable);
 	TVINSERTSTRUCT tvInsert = { 0 };
 
 	tvInsert.hParent = hParent;
 	tvInsert.hInsertAfter = TVI_SORT;
 	tvInsert.item.mask = TVIF_CHILDREN | TVIF_TEXT;
 	tvInsert.item.cChildren = I_CHILDRENCALLBACK;
-	tvInsert.item.pszText = (LPTSTR)szName;
+	tvInsert.item.pszText = wstringToLPTSTR(szName);
 
 	hItem = TreeView_InsertItem(m_hWnd, &tvInsert);
 
@@ -503,7 +499,7 @@ void CHierarchyTableTreeCtrl::AddNode(_In_ LPSRow lpsRow, HTREEITEM hParent, boo
 {
 	if (!lpsRow) return;
 
-	CString szName;
+	wstring szName;
 	LPSPropValue lpName = NULL; // don't free
 
 	lpName = PpropFindProp(
@@ -512,14 +508,13 @@ void CHierarchyTableTreeCtrl::AddNode(_In_ LPSRow lpsRow, HTREEITEM hParent, boo
 		PR_DISPLAY_NAME);
 	if (CheckStringProp(lpName, PT_TSTRING))
 	{
-		szName = lpName->Value.LPSZ;
+		szName = LPCTSTRToWstring(lpName->Value.LPSZ);
 	}
 	else
 	{
-		HRESULT hRes = S_OK;
-		EC_B(szName.LoadString(IDS_UNKNOWNNAME));
+		szName = loadstring(IDS_UNKNOWNNAME);
 	}
-	DebugPrintEx(DBGHierarchy, CLASS, L"AddNode", L"Adding to %p: %ws\n", hParent, LPCTSTRToWstring(szName).c_str());
+	DebugPrintEx(DBGHierarchy, CLASS, L"AddNode", L"Adding to %p: %ws\n", hParent, szName.c_str());
 
 	SortListData* lpData = BuildNodeData(lpsRow);
 
