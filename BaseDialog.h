@@ -27,10 +27,10 @@ public:
 
 	void UpdateTitleBarText(_In_ wstring& szMsg);
 	void UpdateTitleBarText();
-	void UpdateStatusBarText(__StatusPaneEnum nPos, _In_z_ LPCTSTR szMsg);
+	void UpdateStatusBarText(__StatusPaneEnum nPos, _In_ wstring& szMsg);
 	void __cdecl UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg);
 	void __cdecl UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg, ULONG ulParam1);
-	void __cdecl UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg, LPCTSTR szParam1, LPCTSTR szParam2, LPCTSTR szParam3);
+	void __cdecl UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg, wstring& szParam1, wstring& szParam2, wstring& szParam3);
 	void OnOpenEntryID(_In_opt_ LPSBinary lpBin);
 	_Check_return_ CParentWnd* GetParentWnd() const;
 	_Check_return_ CMapiObjects* GetMapiObjects() const;
@@ -90,10 +90,10 @@ private:
 
 	LONG m_cRef;
 	HICON m_hIcon;
-	CString m_StatusMessages[STATUSBARNUMPANES];
+	wstring m_StatusMessages[STATUSBARNUMPANES];
 	int m_StatusWidth[STATUSBARNUMPANES];
 	bool m_bDisplayingMenuText;
-	CString m_szMenuDisplacedText;
+	wstring m_szMenuDisplacedText;
 	CAdviseSink* m_lpBaseAdviseSink;
 	ULONG_PTR m_ulBaseAdviseConnection;
 	ULONG m_ulBaseAdviseObjectType;

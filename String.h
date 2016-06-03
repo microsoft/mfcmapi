@@ -2,6 +2,7 @@
 #include <string>
 using namespace std;
 
+extern wstring emptystring; 
 wstring loadstring(DWORD dwID);
 wstring formatV(wstring const& szMsg, va_list argList);
 wstring format(LPCWSTR szMsg, ...);

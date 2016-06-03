@@ -137,12 +137,12 @@ void DrawSegoeTextA(
 CDoubleBuffer::CDoubleBuffer() : m_hdcMem(NULL), m_hbmpMem(NULL), m_hdcPaint(NULL)
 {
 	ZeroMemory(&m_rcPaint, sizeof(m_rcPaint));
-} // CDoubleBuffer::CDoubleBuffer
+}
 
 CDoubleBuffer::~CDoubleBuffer()
 {
 	Cleanup();
-} // CDoubleBuffer::~CDoubleBuffer
+}
 
 void CDoubleBuffer::Begin(_Inout_ HDC& hdc, _In_ RECT CONST* prcPaint)
 {
@@ -178,7 +178,7 @@ void CDoubleBuffer::Begin(_Inout_ HDC& hdc, _In_ RECT CONST* prcPaint)
 			}
 		}
 	}
-} // CDoubleBuffer::Begin
+}
 
 void CDoubleBuffer::End(_Inout_ HDC& hdc)
 {
@@ -199,7 +199,7 @@ void CDoubleBuffer::End(_Inout_ HDC& hdc)
 
 		Cleanup();
 	}
-} // CDoubleBuffer::End
+}
 
 void CDoubleBuffer::Cleanup()
 {
@@ -217,11 +217,11 @@ void CDoubleBuffer::Cleanup()
 
 	m_hdcPaint = NULL;
 	ZeroMemory(&m_rcPaint, sizeof(m_rcPaint));
-} // CDoubleBuffer::Cleanup
+}
 
 void InitializeGDI()
 {
-} // InitializeGDI
+}
 
 void UninitializeGDI()
 {
@@ -265,7 +265,7 @@ void UninitializeGDI()
 			g_Bitmaps[i] = NULL;
 		}
 	}
-} // UninitializeGDI
+}
 
 _Check_return_ LPMENUENTRY CreateMenuEntry(_In_z_ LPWSTR szMenu)
 {
@@ -289,21 +289,21 @@ _Check_return_ LPMENUENTRY CreateMenuEntry(_In_z_ LPWSTR szMenu)
 		return lpMenu;
 	}
 	return NULL;
-} // CreateMenuEntry
+}
 
 _Check_return_ LPMENUENTRY CreateMenuEntry(UINT iudMenu)
 {
 	WCHAR szMenu[128] = { 0 };
 	::LoadStringW(GetModuleHandle(NULL), iudMenu, szMenu, _countof(szMenu));
 	return CreateMenuEntry(szMenu);
-} // CreateMenuEntry
+}
 
 void DeleteMenuEntry(_In_ LPMENUENTRY lpMenu)
 {
 	if (!lpMenu) return;
 	if (lpMenu->m_MSAA.pszWText) delete[] lpMenu->m_MSAA.pszWText;
 	delete lpMenu;
-} // DeleteMenuEntry
+}
 
 void DeleteMenuEntries(_In_ HMENU hMenu)
 {
@@ -329,7 +329,7 @@ void DeleteMenuEntries(_In_ HMENU hMenu)
 			DeleteMenuEntries(menuiteminfo.hSubMenu);
 		}
 	}
-} // DeleteMenuEntries
+}
 
 // Walk through the menu structure and convert any string entries to owner draw using MENUENTRY
 void ConvertMenuOwnerDraw(_In_ HMENU hMenu, bool bRoot)
@@ -369,7 +369,7 @@ void ConvertMenuOwnerDraw(_In_ HMENU hMenu, bool bRoot)
 			ConvertMenuOwnerDraw(menuiteminfo.hSubMenu, false);
 		}
 	}
-} // ConvertMenuOwnerDraw
+}
 
 void UpdateMenuString(_In_ HWND hWnd, UINT uiMenuTag, UINT uidNewString)
 {
@@ -395,7 +395,7 @@ void UpdateMenuString(_In_ HWND hWnd, UINT uiMenuTag, UINT uidNewString)
 		uiMenuTag,
 		false,
 		&MenuInfo));
-} // UpdateMenuString
+}
 
 void MergeMenu(_In_ HMENU hMenuDestination, _In_ const HMENU hMenuAdd)
 {
@@ -439,7 +439,7 @@ void MergeMenu(_In_ HMENU hMenuDestination, _In_ const HMENU hMenuAdd)
 			iMenuDestItemCount++;
 		}
 	}
-} // MergeMenu
+}
 
 void DisplayContextMenu(UINT uiClassMenu, UINT uiControlMenu, _In_ HWND hWnd, int x, int y)
 {
@@ -480,7 +480,7 @@ void DisplayContextMenu(UINT uiClassMenu, UINT uiControlMenu, _In_ HWND hWnd, in
 
 	::DestroyMenu(hContext);
 	::DestroyMenu(hPopup);
-} // DisplayContextMenu
+}
 
 HMENU LocateSubmenu(_In_ HMENU hMenu, UINT uid)
 {
@@ -507,7 +507,7 @@ HMENU LocateSubmenu(_In_ HMENU hMenu, UINT uid)
 		}
 	}
 	return NULL;
-} // LocateSubmenu
+}
 
 _Check_return_ int GetEditHeight(_In_ HWND hwndEdit)
 {
@@ -535,7 +535,7 @@ _Check_return_ int GetEditHeight(_In_ HWND hwndEdit)
 		+ 2 * GetSystemMetrics(SM_CYFIXEDFRAME) // Adjust for the edit border
 		+ 2 * GetSystemMetrics(SM_CXEDGE); // Adjust for the edit border
 	return iHeight;
-} // GetEditHeight
+}
 
 _Check_return_ int GetTextHeight(_In_ HWND hwndEdit)
 {
@@ -560,7 +560,7 @@ _Check_return_ int GetTextHeight(_In_ HWND hwndEdit)
 	// Calculate the new height for the static control.
 	iHeight = tmFont.tmHeight;
 	return iHeight;
-} // GetTextHeight
+}
 
 int CALLBACK EnumFontFamExProcW(
 	_In_ LPLOGFONTW lplf,
@@ -574,7 +574,7 @@ int CALLBACK EnumFontFamExProcW(
 	lplf->lfCharSet = DEFAULT_CHARSET;
 	*((HFONT *)lParam) = CreateFontIndirectW(lplf);
 	return 0;
-} // EnumFontFamExProcW
+}
 
 // This font is not cached and must be delete manually
 HFONT GetFont(_In_z_ LPCWSTR szFont)
@@ -601,7 +601,7 @@ HFONT GetFont(_In_z_ LPCWSTR szFont)
 		lf.lfOutPrecision, lf.lfClipPrecision, lf.lfQuality,
 		lf.lfPitchAndFamily, lf.lfFaceName);
 	return hFont;
-} // GetFont
+}
 
 // Cached for deletion in UninitializeGDI
 HFONT GetSegoeFont()
@@ -609,7 +609,7 @@ HFONT GetSegoeFont()
 	if (g_hFontSegoe) return g_hFontSegoe;
 	g_hFontSegoe = GetFont(SEGOEW);
 	return g_hFontSegoe;
-} // GetSegoeFont
+}
 
 // Cached for deletion in UninitializeGDI
 HFONT GetSegoeFontBold()
@@ -617,7 +617,7 @@ HFONT GetSegoeFontBold()
 	if (g_hFontSegoeBold) return g_hFontSegoeBold;
 	g_hFontSegoeBold = GetFont(SEGOEBOLD);
 	return g_hFontSegoeBold;
-} // GetSegoeFontBold
+}
 
 _Check_return_ HBRUSH GetSysBrush(uiColor uc)
 {
@@ -636,7 +636,7 @@ _Check_return_ HBRUSH GetSysBrush(uiColor uc)
 	if (g_FixedBrushes[mc]) return g_FixedBrushes[mc];
 	g_FixedBrushes[mc] = CreateSolidBrush(g_Colors[mc]);
 	return g_FixedBrushes[mc];
-} // GetSysBrush
+}
 
 _Check_return_ COLORREF MyGetSysColor(uiColor uc)
 {
@@ -647,7 +647,7 @@ _Check_return_ COLORREF MyGetSysColor(uiColor uc)
 	// No system color listed in g_SysColors, return a hard coded color
 	myColor mc = g_FixedColors[uc];
 	return g_Colors[mc];
-} // MyGetSysColor
+}
 
 _Check_return_ HPEN GetPen(uiPen up)
 {
@@ -681,7 +681,7 @@ _Check_return_ HPEN GetPen(uiPen up)
 	break;
 	}
 	return NULL;
-} // GetPen
+}
 
 HBITMAP GetBitmap(uiBitmap ub)
 {
@@ -689,7 +689,7 @@ HBITMAP GetBitmap(uiBitmap ub)
 
 	g_Bitmaps[ub] = ::LoadBitmap(GetModuleHandle(NULL), MAKEINTRESOURCE(g_BitmapResources[ub]));
 	return g_Bitmaps[ub];
-} // GetBitmap
+}
 
 void DrawSegoeTextW(
 	_In_ HDC hdc,
@@ -710,7 +710,7 @@ void DrawSegoeTextW(
 		format);
 	::SelectObject(hdc, hfontOld);
 	(void) ::SetTextColor(hdc, crText);
-} // DrawSegoeTextW
+}
 
 void DrawSegoeTextA(
 	_In_ HDC hdc,
@@ -731,7 +731,7 @@ void DrawSegoeTextA(
 		format);
 	::SelectObject(hdc, hfontOld);
 	(void) ::SetTextColor(hdc, crText);
-} // DrawSegoeTextA
+}
 
 // Clear/initialize formatting on the rich edit control.
 // We have to force load the system riched20 to ensure this doesn't break since
@@ -746,7 +746,7 @@ void ClearEditFormatting(_In_ HWND hWnd, bool bReadOnly)
 	cf.crTextColor = MyGetSysColor(bReadOnly ? cTextReadOnly : cText);
 	StringCchCopy(cf.szFaceName, _countof(cf.szFaceName), SEGOE);
 	(void) ::SendMessage(hWnd, EM_SETCHARFORMAT, SCF_ALL, (LPARAM)&cf);
-} // ClearEditFormatting
+}
 
 // Lighten the colors of the base, being careful not to overflow
 COLORREF LightColor(COLORREF crBase)
@@ -759,7 +759,7 @@ COLORREF LightColor(COLORREF crBase)
 	if (bGreen < GetGValue(crBase)) bGreen = 0xff;
 	if (bBlue < GetBValue(crBase)) bBlue = 0xff;
 	return RGB(bRed, bGreen, bBlue);
-} // LightColor
+}
 
 void GradientFillRect(_In_ HDC hdc, RECT rc, uiColor uc)
 {
@@ -789,7 +789,7 @@ void GradientFillRect(_In_ HDC hdc, RECT rc, uiColor uc)
 	gRect.UpperLeft = 0;
 	gRect.LowerRight = 1;
 	::GradientFill(hdc, vertex, 2, &gRect, 1, GRADIENT_FILL_RECT_V);
-} // GradientFillRect
+}
 
 void DrawFilledPolygon(_In_ HDC hdc, _In_count_(cpt) CONST POINT *apt, _In_ int cpt, COLORREF cEdge, _In_ HBRUSH hFill)
 {
@@ -800,7 +800,7 @@ void DrawFilledPolygon(_In_ HDC hdc, _In_count_(cpt) CONST POINT *apt, _In_ int 
 	::SelectObject(hdc, hPenOld);
 	::SelectObject(hdc, hBrushOld);
 	::DeleteObject(hPen);
-} // DrawFilledPolygon
+}
 
 // Draw the frame of our edit controls
 LRESULT CALLBACK DrawEditProc(
@@ -847,7 +847,7 @@ LRESULT CALLBACK DrawEditProc(
 	break;
 	}
 	return DefSubclassProc(hWnd, uMsg, wParam, lParam);
-} // DrawEditProc
+}
 
 void SubclassEdit(_In_ HWND hWnd, _In_ HWND hWndParent, bool bReadOnly)
 {
@@ -966,7 +966,7 @@ void CustomDrawList(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, int iItemCurHover
 		*pResult = CDRF_DODEFAULT;
 		break;
 	}
-} // CustomDrawList
+}
 
 // Handle highlight glow for list items
 void DrawListItemGlow(_In_ HWND hWnd, UINT itemID)
@@ -987,7 +987,7 @@ void DrawListItemGlow(_In_ HWND hWnd, UINT itemID)
 	::GetClientRect(hWnd, &rcClient); // Get our client size
 	::IntersectRect(&rcLabels, &rcLabels, &rcClient);
 	RedrawWindow(hWnd, &rcLabels, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
-} // DrawListItemGlow
+}
 
 void DrawTreeItemGlow(_In_ HWND hWnd, _In_ HTREEITEM hItem)
 {
@@ -998,7 +998,7 @@ void DrawTreeItemGlow(_In_ HWND hWnd, _In_ HTREEITEM hItem)
 	rect.left = rectTree.left;
 	rect.right = rectTree.right;
 	::InvalidateRect(hWnd, &rect, false);
-} // DrawTreeItemGlow
+}
 
 // Copies ibmWidth x ibmHeight rect from hdcSource to a iWidth x iHeight rect in hdcTarget, replacing colors
 // No scaling is performed
@@ -1026,7 +1026,7 @@ void CopyBitmap(HDC hdcSource, HDC hdcTarget, int iWidth, int iHeight, int ibmWi
 		ibmHeight,
 		MyGetSysColor(cSource));
 	if (hbmTarget) ::DeleteObject(hbmTarget);
-} // CopyBitmap
+}
 
 // Draws a bitmap on the screen, double buffered, with two color replacement
 // Fills rectangle with cBackground
@@ -1069,7 +1069,7 @@ void DrawBitmap(_In_ HDC hdc, _In_ LPRECT rcTarget, uiBitmap iBitmap, bool bHove
 	if (hdcBackReplace) ::DeleteDC(hdcBackReplace);
 	if (hdcForeReplace) ::DeleteDC(hdcForeReplace);
 	if (hdcBitmap) ::DeleteDC(hdcBitmap);
-} // DrawBitmap
+}
 
 void CustomDrawTree(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, bool bHover, _In_ HTREEITEM hItemCurHover)
 {
@@ -1136,7 +1136,7 @@ void CustomDrawTree(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, bool bHover, _In_
 		*pResult = CDRF_DODEFAULT;
 		break;
 	}
-} // CustomDrawTree
+}
 
 // Paints the triangles indicating expansion state
 void DrawExpandTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ HTREEITEM hItem, bool bGlow, bool bHover)
@@ -1208,7 +1208,7 @@ void DrawExpandTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ HTREEITEM hItem, bool
 		}
 		DrawFilledPolygon(hdc, tri, _countof(tri), MyGetSysColor(cEdge), GetSysBrush(cFill));
 	}
-} // DrawExpandTriangle
+}
 
 void DrawTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ CONST RECT* lprc, bool bButton, bool bUp)
 {
@@ -1312,7 +1312,7 @@ void DrawHeaderItem(_In_ HWND hWnd, _In_ HDC hdc, UINT itemID, _In_ LPRECT lprc)
 	::FrameRect(hdc, &rcHeader, GetSysBrush(cFrameUnselected));
 
 	db.End(hdc);
-} // DrawHeaderItem
+}
 
 // Draw the unused portion of the header
 void CustomDrawHeader(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
@@ -1363,7 +1363,7 @@ void CustomDrawHeader(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 		*pResult = CDRF_DODEFAULT;
 		break;
 	}
-} // CustomDrawHeader
+}
 
 void DrawTrackingBar(_In_ HWND hWndHeader, _In_ HWND hWndList, int x, int iHeaderHeight, bool bRedraw)
 {
@@ -1383,7 +1383,7 @@ void DrawTrackingBar(_In_ HWND hWndHeader, _In_ HWND hWndList, int x, int iHeade
 		::FillRect(hdc, &rcTracker, GetSysBrush(cFrameSelected));
 	}
 	::ReleaseDC(hWndList, hdc);
-} // DrawTrackingBar
+}
 
 void StyleButton(_In_ HWND hWnd, uiButtonStyle bsStyle)
 {
@@ -1427,7 +1427,7 @@ void DrawButton(_In_ HWND hWnd, _In_ HDC hDC, _In_ LPRECT lprc, UINT itemState)
 		DrawTriangle(hWnd, hDC, lprc, true, false);
 		break;
 	}
-} // DrawButton
+}
 
 void DrawCheckButton(_In_ HWND hWnd, _In_ HDC hDC, _In_ LPRECT lprc, UINT itemState)
 {
@@ -1464,7 +1464,7 @@ void DrawCheckButton(_In_ HWND hWnd, _In_ HDC hDC, _In_ LPRECT lprc, UINT itemSt
 		lprc,
 		false,
 		DT_SINGLELINE | DT_VCENTER);
-} // DrawCheckButton
+}
 
 bool CustomDrawButton(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 {
@@ -1503,7 +1503,7 @@ bool CustomDrawButton(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 		break;
 	}
 	return true;
-} // CustomDrawButton
+}
 
 void MeasureMenu(_In_ LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 {
@@ -1535,7 +1535,7 @@ void MeasureMenu(_In_ LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 		::SelectObject(hdc, hfontOld);
 		::ReleaseDC(NULL, hdc);
 	}
-} // MeasureMenu
+}
 
 void MeasureItem(_In_ LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 {
@@ -1548,7 +1548,7 @@ void MeasureItem(_In_ LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 	{
 		//		DebugPrint(DBGGeneric,"Combo Box\n");
 	}
-} // MeasureItem
+}
 
 void DrawMenu(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
 {
@@ -1651,7 +1651,7 @@ void DrawMenu(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
 	}
 
 	db.End(hdc);
-} // DrawMenu
+}
 
 void DrawComboBox(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
 {
@@ -1679,7 +1679,7 @@ void DrawComboBox(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
 		&lpDrawItemStruct->rcItem,
 		false,
 		DT_LEFT | DT_SINGLELINE | DT_VCENTER);
-} // DrawComboBox
+}
 
 void DrawItem(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
 {
@@ -1693,17 +1693,17 @@ void DrawItem(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
 	{
 		DrawComboBox(lpDrawItemStruct);
 	}
-} // DrawItem
+}
 
 // Paint the status bar with double buffering to avoid flicker
 void DrawStatus(
 	HWND hwnd,
 	int iStatusHeight,
-	LPCTSTR szStatusData1,
+	wstring& szStatusData1,
 	int iStatusData1,
-	LPCTSTR szStatusData2,
+	wstring& szStatusData2,
 	int iStatusData2,
-	LPCTSTR szStatusInfo)
+	wstring& szStatusInfo)
 {
 	RECT rcStatus = { 0 };
 	::GetClientRect(hwnd, &rcStatus);
@@ -1726,27 +1726,27 @@ void DrawStatus(
 	GradientFillRect(ps.hdc, rcGrad, cStatus);
 
 	rcText.left = rcText.right - iStatusData2;
-	::DrawSegoeText(
+	::DrawSegoeTextW(
 		ps.hdc,
-		szStatusData2,
+		szStatusData2.c_str(),
 		crFore,
 		&rcText,
 		true,
 		DT_LEFT | DT_SINGLELINE | DT_BOTTOM);
 	rcText.right = rcText.left;
 	rcText.left = rcText.right - iStatusData1;
-	::DrawSegoeText(
+	::DrawSegoeTextW(
 		ps.hdc,
-		szStatusData1,
+		szStatusData1.c_str(),
 		crFore,
 		&rcText,
 		true,
 		DT_LEFT | DT_SINGLELINE | DT_BOTTOM);
 	rcText.right = rcText.left;
 	rcText.left = 0;
-	::DrawSegoeText(
+	::DrawSegoeTextW(
 		ps.hdc,
-		szStatusInfo,
+		szStatusInfo.c_str(),
 		crFore,
 		&rcText,
 		true,
@@ -1754,7 +1754,7 @@ void DrawStatus(
 
 	db.End(ps.hdc);
 	::EndPaint(hwnd, &ps);
-} // DrawStatus
+}
 
 void GetCaptionRects(HWND hWnd,
 	RECT* lprcFullCaption,
@@ -1850,7 +1850,7 @@ void GetCaptionRects(HWND hWnd,
 	if (lprcMaxIcon) *lprcMaxIcon = rcMaxIcon;
 	if (lprcMinIcon) *lprcMinIcon = rcMinIcon;
 	if (lprcCaptionText) *lprcCaptionText = rcCaptionText;
-} // GetCaptionRects
+}
 
 void DrawSystemButtons(_In_ HWND hWnd, _In_opt_ HDC hdc, int iHitTest)
 {
@@ -1887,7 +1887,7 @@ void DrawSystemButtons(_In_ HWND hWnd, _In_opt_ HDC hdc, int iHitTest)
 	}
 
 	if (hdcLocal) ::ReleaseDC(hWnd, hdcLocal);
-} // DrawSystemButtons
+}
 
 void DrawWindowFrame(_In_ HWND hWnd, bool bActive, int iStatusHeight)
 {
@@ -2083,7 +2083,7 @@ void DrawWindowFrame(_In_ HWND hWnd, bool bActive, int iStatusHeight)
 		db.End(hdc);
 		::ReleaseDC(hWnd, hdcWin);
 	}
-} // DrawWindowFrame
+}
 
 _Check_return_ bool HandleControlUI(UINT message, WPARAM wParam, LPARAM lParam, _Out_ LRESULT* lpResult)
 {
@@ -2129,9 +2129,10 @@ _Check_return_ bool HandleControlUI(UINT message, WPARAM wParam, LPARAM lParam, 
 		}
 	}
 	break;
-	} // end switch
+	}
+
 	return false;
-} // HandleControlUI
+}
 
 void DrawHelpText(_In_ HWND hWnd, _In_ UINT uIDText)
 {
@@ -2169,7 +2170,7 @@ void DrawHelpText(_In_ HWND hWnd, _In_ UINT uIDText)
 		db.End(hdc);
 	}
 	::EndPaint(hWnd, &ps);
-} // DrawHelpText
+}
 
 // Handle WM_ERASEBKGND so the control won't flicker.
 LRESULT CALLBACK LabelProc(
@@ -2190,7 +2191,7 @@ LRESULT CALLBACK LabelProc(
 		return true;
 	}
 	return DefSubclassProc(hWnd, uMsg, wParam, lParam);
-} // LabelProc
+}
 
 void SubclassLabel(_In_ HWND hWnd)
 {
