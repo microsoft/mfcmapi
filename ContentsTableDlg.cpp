@@ -1,6 +1,3 @@
-// ContentsTableDlg.cpp : implementation file
-//
-
 #include "stdafx.h"
 #include "ContentsTableDlg.h"
 #include "ContentsTableListCtrl.h"
@@ -21,10 +18,6 @@
 
 static wstring CLASS = L"CContentsTableDlg";
 
-/////////////////////////////////////////////////////////////////////////////
-// CContentsTableDlg dialog
-
-
 CContentsTableDlg::CContentsTableDlg(
 	_In_ CParentWnd* pParentWnd,
 	_In_ CMapiObjects* lpMapiObjects,
@@ -36,11 +29,11 @@ CContentsTableDlg::CContentsTableDlg(
 	_In_count_(iNumExtraDisplayColumns) TagNames* lpExtraDisplayColumns,
 	ULONG nIDContextMenu,
 	ULONG ulAddInContext
-	) :
+) :
 	CBaseDialog(
-	pParentWnd,
-	lpMapiObjects,
-	ulAddInContext)
+		pParentWnd,
+		lpMapiObjects,
+		ulAddInContext)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	if (NULL != uidTitle)
@@ -69,14 +62,14 @@ CContentsTableDlg::CContentsTableDlg(
 	{
 		CreateDialogAndMenu(NULL);
 	}
-} // CContentsTableDlg::CContentsTableDlg
+}
 
 CContentsTableDlg::~CContentsTableDlg()
 {
 	TRACE_DESTRUCTOR(CLASS);
 	if (m_lpContentsTable) m_lpContentsTable->Release();
 	m_lpContentsTable = NULL;
-} // CContentsTableDlg::~CContentsTableDlg
+}
 
 _Check_return_ bool CContentsTableDlg::HandleMenu(WORD wMenuSelect)
 {
@@ -89,13 +82,13 @@ _Check_return_ bool CContentsTableDlg::HandleMenu(WORD wMenuSelect)
 	}
 
 	return CBaseDialog::HandleMenu(wMenuSelect);
-} // CContentsTableDlg::HandleMenu
+}
 
 BOOL CContentsTableDlg::OnInitDialog()
 {
-	HRESULT	hRes = S_OK;
-	BOOL	bRet = CBaseDialog::OnInitDialog();
-	ULONG			ulFlags = NULL;
+	HRESULT hRes = S_OK;
+	BOOL bRet = CBaseDialog::OnInitDialog();
+	ULONG ulFlags = NULL;
 
 	m_lpContentsTableListCtrl = new CContentsTableListCtrl(
 		m_lpFakeSplitter,
@@ -142,7 +135,7 @@ BOOL CContentsTableDlg::OnInitDialog()
 	UpdateTitleBarText();
 
 	return bRet;
-} // CContentsTableDlg::OnInitDialog
+}
 
 void CContentsTableDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 {
@@ -163,7 +156,7 @@ void CContentsTableDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 			m_ulDisplayFlags,
 			ulPropType));
 	}
-} // CContentsTableDlg::CreateDialogAndMenu
+}
 
 BEGIN_MESSAGE_MAP(CContentsTableDlg, CBaseDialog)
 	ON_COMMAND(ID_DISPLAYSELECTEDITEM, OnDisplayItem)
@@ -229,7 +222,7 @@ void CContentsTableDlg::OnInitMenu(_In_opt_ CMenu* pMenu)
 		}
 	}
 	CBaseDialog::OnInitMenu(pMenu);
-} // CContentsTableDlg::OnInitMenu
+}
 
 void CContentsTableDlg::OnCancel()
 {
@@ -242,7 +235,7 @@ void CContentsTableDlg::OnCancel()
 	if (m_lpContentsTableListCtrl) m_lpContentsTableListCtrl->Release();
 	m_lpContentsTableListCtrl = NULL;
 	CBaseDialog::OnCancel();
-} // CContentsTableDlg::OnCancel
+}
 
 void CContentsTableDlg::OnEscHit()
 {
@@ -251,21 +244,21 @@ void CContentsTableDlg::OnEscHit()
 	{
 		m_lpContentsTableListCtrl->OnCancelTableLoad();
 	}
-} // CContentsTableDlg::OnEscHit
+}
 
 void CContentsTableDlg::SetRestrictionType(__mfcmapiRestrictionTypeEnum RestrictionType)
 {
 	if (m_lpContentsTableListCtrl)
 		m_lpContentsTableListCtrl->SetRestrictionType(RestrictionType);
 	OnRefreshView();
-} // CContentsTableDlg::OnApplyFindRow
+}
 
 void CContentsTableDlg::OnDisplayItem()
 {
-	HRESULT			hRes = S_OK;
-	LPMAPIPROP		lpMAPIProp = NULL;
-	int				iItem = -1;
-	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
+	HRESULT hRes = S_OK;
+	LPMAPIPROP lpMAPIProp = NULL;
+	int iItem = -1;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	do
 	{
@@ -286,7 +279,7 @@ void CContentsTableDlg::OnDisplayItem()
 			lpMAPIProp = NULL;
 		}
 	} while (iItem != -1);
-} // CContentsTableDlg::OnDisplayItem
+}
 
 // Clear the current list and get a new one with whatever code we've got in LoadMAPIPropList
 void CContentsTableDlg::OnRefreshView()
@@ -296,38 +289,38 @@ void CContentsTableDlg::OnRefreshView()
 	DebugPrintEx(DBGGeneric, CLASS, L"OnRefreshView", L"\n");
 	if (m_lpContentsTableListCtrl->IsLoading()) m_lpContentsTableListCtrl->OnCancelTableLoad();
 	EC_H(m_lpContentsTableListCtrl->RefreshTable());
-} // CContentsTableDlg::OnRefreshView
+}
 
 void CContentsTableDlg::OnNotificationOn()
 {
 	if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
 	HRESULT hRes = S_OK;
 	EC_H(m_lpContentsTableListCtrl->NotificationOn());
-} // CContentsTableDlg::OnNotificationOn
+}
 
 void CContentsTableDlg::OnNotificationOff()
 {
 	if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
 	m_lpContentsTableListCtrl->NotificationOff();
-} // CContentsTableDlg::OnNotificationOff
+}
 
 // Read properties of the current message and save them for a restriction
 // Designed to work with messages, but could be made to work with anything
 void CContentsTableDlg::OnCreateMessageRestriction()
 {
 	if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
-	HRESULT			hRes = S_OK;
-	ULONG			cVals = 0;
-	LPSPropValue	lpProps = NULL;
-	LPMAPIPROP		lpMAPIProp = NULL;
+	HRESULT hRes = S_OK;
+	ULONG cVals = 0;
+	LPSPropValue lpProps = NULL;
+	LPMAPIPROP lpMAPIProp = NULL;
 
-	LPSRestriction	lpRes = NULL;
-	LPSRestriction	lpResLevel1 = NULL;
-	LPSRestriction	lpResLevel2 = NULL;
+	LPSRestriction lpRes = NULL;
+	LPSRestriction lpResLevel1 = NULL;
+	LPSRestriction lpResLevel2 = NULL;
 
-	LPSPropValue	lpspvSubject = NULL;
-	LPSPropValue	lpspvSubmitTime = NULL;
-	LPSPropValue	lpspvDeliveryTime = NULL;
+	LPSPropValue lpspvSubject = NULL;
+	LPSPropValue lpspvSubmitTime = NULL;
+	LPSPropValue lpspvDeliveryTime = NULL;
 
 	// These are the properties we're going to copy off of the current message and store
 	// in some object level variables
@@ -340,10 +333,10 @@ void CContentsTableDlg::OnCreateMessageRestriction()
 	};
 	static const SizedSPropTagArray(frNUMCOLS, sptFRCols) =
 	{
-		frNUMCOLS,
-		PR_SUBJECT,
-		PR_CLIENT_SUBMIT_TIME,
-		PR_MESSAGE_DELIVERY_TIME
+	frNUMCOLS,
+	PR_SUBJECT,
+	PR_CLIENT_SUBMIT_TIME,
+	PR_MESSAGE_DELIVERY_TIME
 	};
 
 	if (!m_lpContentsTableListCtrl) return;
@@ -406,8 +399,8 @@ void CContentsTableDlg::OnCreateMessageRestriction()
 				ZeroMemory(lpspvDeliveryTime, sizeof(SPropValue));
 
 				// Root Node
-				lpRes->rt = RES_AND;				// We're doing an AND...
-				lpRes->res.resAnd.cRes = 2;		// ...of two criteria...
+				lpRes->rt = RES_AND; // We're doing an AND...
+				lpRes->res.resAnd.cRes = 2; // ...of two criteria...
 				lpRes->res.resAnd.lpRes = lpResLevel1; // ...described here
 
 				lpResLevel1[0].rt = RES_PROPERTY;
@@ -482,12 +475,12 @@ void CContentsTableDlg::OnCreateMessageRestriction()
 		}
 		lpMAPIProp->Release();
 	}
-} // CContentsTableDlg::OnCreateMessageRestriction
+}
 
 void CContentsTableDlg::OnCreatePropertyStringRestriction()
 {
-	HRESULT			hRes = S_OK;
-	LPSRestriction	lpRes = NULL;
+	HRESULT hRes = S_OK;
+	LPSRestriction lpRes = NULL;
 
 	if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
 
@@ -543,12 +536,12 @@ void CContentsTableDlg::OnCreatePropertyStringRestriction()
 			SetRestrictionType(mfcmapiNORMAL_RESTRICTION);
 		}
 	}
-} // CContentsTableDlg::OnCreatePropertyStringRestriction
+}
 
 void CContentsTableDlg::OnCreateRangeRestriction()
 {
-	HRESULT			hRes = S_OK;
-	LPSRestriction	lpRes = NULL;
+	HRESULT hRes = S_OK;
+	LPSRestriction lpRes = NULL;
 
 	if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
 
@@ -600,11 +593,11 @@ void CContentsTableDlg::OnCreateRangeRestriction()
 			SetRestrictionType(mfcmapiNORMAL_RESTRICTION);
 		}
 	}
-} // CContentsTableDlg::OnCreateRangeRestriction
+}
 
 void CContentsTableDlg::OnEditRestriction()
 {
-	HRESULT			hRes = S_OK;
+	HRESULT hRes = S_OK;
 
 	if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
 
@@ -617,17 +610,15 @@ void CContentsTableDlg::OnEditRestriction()
 	if (S_OK != hRes) return;
 
 	m_lpContentsTableListCtrl->SetRestriction(MyRestrict.DetachModifiedSRestriction());
-} // CContentsTableDlg::OnEditRestriction
+}
 
 void CContentsTableDlg::OnOutputTable()
 {
 	if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
-	HRESULT	hRes = S_OK;
-	WCHAR*	szFileName = NULL;
-	INT_PTR	iDlgRet = 0;
+	HRESULT hRes = S_OK;
+	INT_PTR iDlgRet = 0;
 
-	CStringW szFileSpec;
-	EC_B(szFileSpec.LoadString(IDS_TEXTFILES));
+	wstring szFileSpec = loadstring(IDS_TEXTFILES);
 
 	CFileDialogExW dlgFilePicker;
 
@@ -636,20 +627,19 @@ void CContentsTableDlg::OnOutputTable()
 		L"txt", // STRING_OK
 		L"table.txt", // STRING_OK
 		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-		szFileSpec,
+		szFileSpec.c_str(),
 		this));
 	if (IDOK == iDlgRet)
 	{
-		szFileName = dlgFilePicker.GetFileName();
-
-		if (szFileName)
+		wstring szFileName = dlgFilePicker.GetFileName();
+		if (szFileName.length() != 0)
 		{
-			DebugPrintEx(DBGGeneric, CLASS, L"OnOutputTable", L"saving to %ws\n", szFileName);
+			DebugPrintEx(DBGGeneric, CLASS, L"OnOutputTable", L"saving to %ws\n", szFileName.c_str());
 
 			m_lpContentsTableListCtrl->OnOutputTable(szFileName);
 		}
 	}
-} // CContentsTableDlg::OnOutputTable
+}
 
 void CContentsTableDlg::OnSetColumns()
 {
@@ -657,17 +647,17 @@ void CContentsTableDlg::OnSetColumns()
 	m_lpContentsTableListCtrl->DoSetColumns(
 		false,
 		true);
-} // CContentsTableDlg::OnSetColumns
+}
 
 void CContentsTableDlg::OnGetStatus()
 {
 	if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
 	m_lpContentsTableListCtrl->GetStatus();
-} // CContentsTableDlg::OnGetStatus
+}
 
 void CContentsTableDlg::OnSortTable()
 {
-	HRESULT			hRes = S_OK;
+	HRESULT hRes = S_OK;
 
 	if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
 
@@ -731,11 +721,11 @@ void CContentsTableDlg::OnSortTable()
 					1,
 					CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 				UINT uidDropDown[] = {
-					IDS_DDTABLESORTASCEND,
-					IDS_DDTABLESORTDESCEND,
-					IDS_DDTABLESORTCOMBINE,
-					IDS_DDTABLESORTCATEGMAX,
-					IDS_DDTABLESORTCATEGMIN
+				IDS_DDTABLESORTASCEND,
+				IDS_DDTABLESORTDESCEND,
+				IDS_DDTABLESORTCOMBINE,
+				IDS_DDTABLESORTCATEGMAX,
+				IDS_DDTABLESORTCATEGMIN
 				};
 				MySortOrderDlg.InitPane(0, CreateDropDownPane(IDS_SORTORDER, _countof(uidDropDown), uidDropDown, true));
 
@@ -772,13 +762,13 @@ void CContentsTableDlg::OnSortTable()
 			EC_MAPI(m_lpContentsTableListCtrl->SetSortTable(
 				lpMySortOrders,
 				(MyData.GetCheck(3) ? TBL_ASYNC : 0) | (MyData.GetCheck(4) ? TBL_BATCH : 0) // flags
-				));
+			));
 		}
 	}
 	MAPIFreeBuffer(lpMySortOrders);
 
 	if (MyData.GetCheck(5)) EC_H(m_lpContentsTableListCtrl->RefreshTable());
-} // CContentsTableDlg::OnSortTable
+}
 
 // Since the strategy for opening the selected property may vary depending on the table we're displaying,
 // this virtual function allows us to override the default method with the method used by the table we've written a special class for.
@@ -806,7 +796,7 @@ _Check_return_ HRESULT CContentsTableDlg::OpenItemProp(int iSelectedItem, __mfcm
 	}
 
 	return hRes;
-} // CContentsTableDlg::OpenItemProp
+}
 
 _Check_return_ HRESULT CContentsTableDlg::OpenAttachmentsFromMessage(_In_ LPMESSAGE lpMessage)
 {
@@ -817,7 +807,7 @@ _Check_return_ HRESULT CContentsTableDlg::OpenAttachmentsFromMessage(_In_ LPMESS
 	EC_H(DisplayTable(lpMessage, PR_MESSAGE_ATTACHMENTS, otDefault, this));
 
 	return hRes;
-} // CContentsTableDlg::OpenAttachmentsFromMessage
+}
 
 _Check_return_ HRESULT CContentsTableDlg::OpenRecipientsFromMessage(_In_ LPMESSAGE lpMessage)
 {
@@ -826,7 +816,7 @@ _Check_return_ HRESULT CContentsTableDlg::OpenRecipientsFromMessage(_In_ LPMESSA
 	EC_H(DisplayTable(lpMessage, PR_MESSAGE_RECIPIENTS, otDefault, this));
 
 	return hRes;
-} // CContentsTableDlg::OpenRecipientsFromMessage
+}
 
 _Check_return_ bool CContentsTableDlg::HandleAddInMenu(WORD wMenuSelect)
 {
@@ -834,14 +824,14 @@ _Check_return_ bool CContentsTableDlg::HandleAddInMenu(WORD wMenuSelect)
 	if (!m_lpContentsTableListCtrl) return false;
 	LPMAPIPROP lpMAPIProp = NULL;
 	int iItem = -1;
-	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	LPMENUITEM lpAddInMenu = GetAddinMenuItem(m_hWnd, wMenuSelect);
 	if (!lpAddInMenu) return false;
 
 	ULONG ulFlags = lpAddInMenu->ulFlags;
 
-	__mfcmapiModifyEnum	fRequestModify =
+	__mfcmapiModifyEnum fRequestModify =
 		(ulFlags & MENU_FLAGS_REQUESTMODIFY) ? mfcmapiREQUEST_MODIFY : mfcmapiDO_NOT_REQUEST_MODIFY;
 
 	// Get the stuff we need for any case
@@ -907,7 +897,7 @@ _Check_return_ bool CContentsTableDlg::HandleAddInMenu(WORD wMenuSelect)
 		}
 	}
 	return true;
-} // CContentsTableDlg::HandleAddInMenu
+}
 
 void CContentsTableDlg::HandleAddInMenuSingle(
 	_In_ LPADDINMENUPARAMS lpParams,
@@ -929,11 +919,11 @@ void CContentsTableDlg::HandleAddInMenuSingle(
 	}
 
 	InvokeAddInMenu(lpParams);
-} // CContentsTableDlg::HandleAddInMenuSingle
+}
 
 // WM_MFCMAPI_RESETCOLUMNS
 // Returns true if we reset columns, false otherwise
-_Check_return_ LRESULT	CContentsTableDlg::msgOnResetColumns(WPARAM /*wParam*/, LPARAM /*lParam*/)
+_Check_return_ LRESULT CContentsTableDlg::msgOnResetColumns(WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	DebugPrintEx(DBGGeneric, CLASS, L"msgOnResetColumns", L"Received message reset columns\n");
 

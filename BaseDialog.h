@@ -1,6 +1,4 @@
 #pragma once
-// BaseDialog.h : header file
-
 class CSingleMAPIPropListCtrl;
 class CMapiObjects;
 class CFakeSplitter;

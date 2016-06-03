@@ -1,6 +1,3 @@
-// BaseDialog.cpp : implementation file
-//
-
 #include "stdafx.h"
 #include "BaseDialog.h"
 #include "MainDlg.h"
