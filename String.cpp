@@ -4,6 +4,8 @@
 #include <locale>
 #include <codecvt>
 
+wstring emptystring = L"";
+
 wstring formatV(wstring const& szMsg, va_list argList)
 {
 	int len = _vscwprintf(szMsg.c_str(), argList);

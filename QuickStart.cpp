@@ -1,6 +1,3 @@
-// QuickStart.cpp : implementation file
-//
-
 #include "stdafx.h"
 #include "MAPIStoreFunctions.h"
 #include "MAPIFunctions.h"
@@ -30,7 +27,7 @@ LPMAPISESSION OpenSessionForQuickStart(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	}
 
 	return NULL;
-} // OpenSessionForQuickStart
+}
 
 HRESULT OpenStoreForQuickStart(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd, _Out_ LPMDB* lppMDB)
 {
@@ -54,7 +51,7 @@ HRESULT OpenStoreForQuickStart(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd, _Out_ L
 	}
 
 	return hRes;
-} // OpenStoreForQuickStart
+}
 
 HRESULT OpenABForQuickStart(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd, _Out_ LPADRBOOK* lppAdrBook)
 {
@@ -76,7 +73,7 @@ HRESULT OpenABForQuickStart(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd, _Out_ LPAD
 	}
 
 	return hRes;
-} // OpenABForQuickStart
+}
 
 void OnQSDisplayFolder(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd, _In_ ULONG ulFolder)
 {
@@ -103,7 +100,7 @@ void OnQSDisplayFolder(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd, _In_ ULONG ulFo
 
 		lpMDB->Release();
 	}
-} // OnQSDisplayFolder
+}
 
 void OnQSDisplayTable(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd, _In_ ULONG ulFolder, _In_ ULONG ulProp, _In_ ObjectType tType)
 {
@@ -130,7 +127,7 @@ void OnQSDisplayTable(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd, _In_ ULONG ulFol
 
 		lpMDB->Release();
 	}
-} // OnQSDisplayTable
+}
 
 void OnQSDisplayDefaultDir(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 {
@@ -170,7 +167,7 @@ void OnQSDisplayDefaultDir(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 		MAPIFreeBuffer(lpEID);
 	}
 	if (lpAdrBook) lpAdrBook->Release();
-} // OnQSDisplayDefaultDir
+}
 
 void OnQSDisplayAB(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 {
@@ -192,7 +189,7 @@ void OnQSDisplayAB(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 			lpMapiObjects);
 	}
 	if (lpAdrBook) lpAdrBook->Release();
-} // OnQSDisplayAB
+}
 
 void OnQSDisplayNicknameCache(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 {
@@ -300,8 +297,8 @@ void OnQSDisplayNicknameCache(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 
 		MAPIFreeBuffer(lpsProp);
 	}
-	lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, _T(""));
-} // OnQSDisplayNicknameCache
+	lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, emptystring);
+}
 
 enum
 {
@@ -343,7 +340,7 @@ CString FormatQuota(LPSPropValue lpProp, ULONG ulPropTag, LPCTSTR szName)
 		return szTmp;
 	}
 	return _T("");
-} // FormatQuota
+}
 
 #define AddFormattedQuota(__TAG)   szQuotaString += FormatQuota(&lpProps[q##__TAG], __TAG, _T(#__TAG));
 
@@ -439,8 +436,8 @@ void OnQSDisplayQuota(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 		WC_H(MyResults.DisplayDialog());
 	}
 
-	lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, _T(""));
-} // OnQSDisplayQuota
+	lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, emptystring);
+}
 
 void OnQSOpenUser(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 {

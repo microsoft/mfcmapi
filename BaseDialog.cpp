@@ -130,11 +130,11 @@ LRESULT CBaseDialog::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		DrawStatus(
 			m_hWnd,
 			GetStatusHeight(),
-			static_cast<LPCTSTR>(m_StatusMessages[STATUSDATA1]),
+			m_StatusMessages[STATUSDATA1],
 			m_StatusWidth[STATUSDATA1],
-			static_cast<LPCTSTR>(m_StatusMessages[STATUSDATA2]),
+			m_StatusMessages[STATUSDATA2],
 			m_StatusWidth[STATUSDATA2],
-			static_cast<LPCTSTR>(m_StatusMessages[STATUSINFOTEXT]));
+			m_StatusMessages[STATUSINFOTEXT]);
 		break;
 	} // end switch
 
@@ -480,12 +480,12 @@ void CBaseDialog::OnActivate(UINT nState, _In_ CWnd* pWndOther, BOOL bMinimized)
 void CBaseDialog::SetStatusWidths()
 {
 	// Get the width of the strings
-	int iData1Len = m_StatusMessages[STATUSDATA1].GetLength();
-	int iData2Len = m_StatusMessages[STATUSDATA2].GetLength();
+	int iData1Len = static_cast<int>(m_StatusMessages[STATUSDATA1].length());
+	int iData2Len = static_cast<int>(m_StatusMessages[STATUSDATA2].length());
 
 	SIZE sizeData1 = { 0 };
 	SIZE sizeData2 = { 0 };
-	if (iData1Len || iData2Len)
+	if (iData1Len != 0 || iData2Len != 0)
 	{
 		HDC hdc = ::GetDC(m_hWnd);
 		if (hdc)
@@ -495,12 +495,12 @@ void CBaseDialog::SetStatusWidths()
 
 			if (iData1Len)
 			{
-				::GetTextExtentPoint32(hdc, static_cast<LPCTSTR>(m_StatusMessages[STATUSDATA1]), iData1Len, &sizeData1);
+				::GetTextExtentPoint32W(hdc, m_StatusMessages[STATUSDATA1].c_str(), iData1Len, &sizeData1);
 			}
 
 			if (iData2Len)
 			{
-				::GetTextExtentPoint32(hdc, static_cast<LPCTSTR>(m_StatusMessages[STATUSDATA2]), iData2Len, &sizeData2);
+				::GetTextExtentPoint32W(hdc, m_StatusMessages[STATUSDATA2].c_str(), iData2Len, &sizeData2);
 			}
 
 			::SelectObject(hdc, hfontOld);
@@ -555,7 +555,7 @@ void CBaseDialog::OnSize(UINT/* nType*/, int cx, int cy)
 	}
 }
 
-void CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, _In_z_ LPCTSTR szMsg)
+void CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, _In_ wstring& szMsg)
 {
 	if (nPos < STATUSBARNUMPANES) m_StatusMessages[nPos] = szMsg;
 
@@ -564,19 +564,19 @@ void CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, _In_z_ LPCTSTR szMs
 
 void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg)
 {
-	UpdateStatusBarText(nPos, uidMsg, nullptr, nullptr, nullptr);
+	UpdateStatusBarText(nPos, uidMsg, emptystring, emptystring, emptystring);
 }
 
 void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg, ULONG ulParam1)
 {
-	CString szParam1;
-	szParam1.Format(_T("%u"), ulParam1);
-	UpdateStatusBarText(nPos, uidMsg, szParam1, nullptr, nullptr);
+	wstring szParam1;
+	szParam1 = format(L"%u", ulParam1);
+	UpdateStatusBarText(nPos, uidMsg, szParam1, emptystring, emptystring);
 }
 
-void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg, LPCTSTR szParam1, LPCTSTR szParam2, LPCTSTR szParam3)
+void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg, wstring& szParam1, wstring& szParam2, wstring& szParam3)
 {
-	CString szStatBarString;
+	wstring szStatBarString;
 
 	// MAPI Load paths take special handling
 	if (uidMsg >= ID_LOADMAPIMENUMIN && uidMsg <= ID_LOADMAPIMENUMAX)
@@ -594,7 +594,7 @@ void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg
 		if (mii.dwItemData)
 		{
 			LPMENUENTRY lme = reinterpret_cast<LPMENUENTRY>(mii.dwItemData);
-			szStatBarString.FormatMessage(IDS_LOADMAPISTATUS, lme->m_pName);
+			szStatBarString = formatmessage(IDS_LOADMAPISTATUS, lme->m_pName);
 		}
 	}
 	else
@@ -602,16 +602,15 @@ void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg
 		LPMENUITEM lpAddInMenu = GetAddinMenuItem(m_hWnd, uidMsg);
 		if (lpAddInMenu && lpAddInMenu->szHelp)
 		{
-			szStatBarString.Format(_T("%ws"), lpAddInMenu->szHelp); // STRING_OK
+			szStatBarString = format(L"%ws", lpAddInMenu->szHelp); // STRING_OK
 		}
 		else
 		{
-			HRESULT hRes = S_OK;
-			CString szMsg;
-			WC_B(szMsg.LoadString(uidMsg));
-			if (FAILED(hRes)) DebugPrintEx(DBGMenu, CLASS, L"UpdateStatusBarText", L"Cannot find menu item 0x%08X\n", uidMsg);
+			wstring szMsg;
+			szMsg = loadstring(uidMsg);
+			if (szMsg.length() == 0) DebugPrintEx(DBGMenu, CLASS, L"UpdateStatusBarText", L"Cannot find menu item 0x%08X\n", uidMsg);
 
-			szStatBarString.FormatMessage(szMsg, szParam1, szParam2, szParam3);
+			szStatBarString = formatmessage(szMsg, szParam1.c_str(), szParam2.c_str(), szParam3.c_str());
 		}
 	}
 
@@ -638,7 +637,7 @@ void CBaseDialog::UpdateTitleBarText()
 _Check_return_ LRESULT CBaseDialog::msgOnUpdateStatusBar(WPARAM wParam, LPARAM lParam)
 {
 	__StatusPaneEnum iPane = static_cast<__StatusPaneEnum>(wParam);
-	LPCTSTR szStr = reinterpret_cast<LPCTSTR>(lParam);
+	wstring szStr = LPCTSTRToWstring(reinterpret_cast<LPCTSTR>(lParam));
 	UpdateStatusBarText(iPane, szStr);
 
 	return S_OK;

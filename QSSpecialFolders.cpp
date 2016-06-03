@@ -261,5 +261,5 @@ void OnQSCheckSpecialFolders(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 
 		lpMDB->Release();
 	}
-	lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, _T(""));
+	lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, emptystring);
 }

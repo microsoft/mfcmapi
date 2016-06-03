@@ -146,11 +146,11 @@ void DrawItem(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct);
 void DrawStatus(
 	HWND hwnd,
 	int iStatusHeight,
-	LPCTSTR szStatusData1,
+	wstring& szStatusData1,
 	int iStatusData1,
-	LPCTSTR szStatusData2,
+	wstring& szStatusData2,
 	int iStatusData2,
-	LPCTSTR szStatusInfo);
+	wstring& szStatusInfo);
 
 void DrawSystemButtons(_In_ HWND hWnd, _In_opt_ HDC hdc, int iHitTest);
 void DrawWindowFrame(_In_ HWND hWnd, bool bActive, int iStatusHeight);
