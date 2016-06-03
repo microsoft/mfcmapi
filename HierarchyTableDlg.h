@@ -1,11 +1,9 @@
 #pragma once
-// HierarchyTableDlg.h : header file
+#include "BaseDialog.h"
 
 class CHierarchyTableTreeCtrl;
 class CParentWnd;
 class CMapiObjects;
-
-#include "BaseDialog.h"
 
 class CHierarchyTableDlg : public CBaseDialog
 {
@@ -17,7 +15,7 @@ public:
 		_In_opt_ LPUNKNOWN lpRootContainer,
 		ULONG nIDContextMenu,
 		ULONG ulAddInContext
-		);
+	);
 	virtual ~CHierarchyTableDlg();
 
 protected:
@@ -25,8 +23,8 @@ protected:
 	void CreateDialogAndMenu(UINT nIDMenuResource);
 	void OnInitMenu(_In_ CMenu* pMenu);
 
-	CHierarchyTableTreeCtrl*	m_lpHierarchyTableTreeCtrl;
-	ULONG						m_ulDisplayFlags;
+	CHierarchyTableTreeCtrl* m_lpHierarchyTableTreeCtrl;
+	ULONG m_ulDisplayFlags;
 
 private:
 	virtual void HandleAddInMenuSingle(

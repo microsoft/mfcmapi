@@ -1,6 +1,3 @@
-// HierarchyTableDlg.cpp : implementation file
-//
-
 #include "stdafx.h"
 #include "HierarchyTableDlg.h"
 #include "HierarchyTableTreeCtrl.h"
@@ -13,10 +10,6 @@
 #include "RestrictEditor.h"
 
 static wstring CLASS = L"CHierarchyTableDlg";
-
-/////////////////////////////////////////////////////////////////////////////
-// CHierarchyTableDlg dialog
-
 
 CHierarchyTableDlg::CHierarchyTableDlg(
 	_In_ CParentWnd* pParentWnd,
