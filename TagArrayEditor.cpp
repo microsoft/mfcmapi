@@ -117,7 +117,7 @@ _Check_return_ bool CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 
 		SetListString(ulListNum, iItem, 2, szExactMatch);
 		SetListString(ulListNum, iItem, 3, szPartialMatch);
-		SetListString(ulListNum, iItem, 4, TypeToString(ulNewPropTag));
+		SetListStringW(ulListNum, iItem, 4, TypeToString(ulNewPropTag).c_str());
 		SetListStringW(ulListNum, iItem, 5, szNamedPropName.c_str());
 		SetListStringW(ulListNum, iItem, 6, szNamedPropGUID.c_str());
 
@@ -186,7 +186,7 @@ void CTagArrayEditor::ReadTagArrayToList(ULONG ulListNum)
 			PropTagToPropName(ulPropTag, m_bIsAB, &szExactMatch, &szPartialMatch);
 			SetListString(ulListNum, iTagCount, 2, szExactMatch);
 			SetListString(ulListNum, iTagCount, 3, szPartialMatch);
-			SetListString(ulListNum, iTagCount, 4, TypeToString(ulPropTag));
+			SetListStringW(ulListNum, iTagCount, 4, TypeToString(ulPropTag).c_str());
 			SetListStringW(ulListNum, iTagCount, 5, szNamedPropName.c_str());
 			SetListStringW(ulListNum, iTagCount, 6, szNamedPropGUID.c_str());
 

@@ -11,8 +11,7 @@ void FileTimeToString(_In_ FILETIME* lpFileTime, _In_ wstring& PropString, _In_o
 
 #define TAG_MAX_LEN 1024 // Max I've seen in testing is 546 - bit more to be safe
 _Check_return_ CString TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB, bool bSingleLine);
-wstring TypeToWstring(ULONG ulPropTag);
-_Check_return_ CString TypeToString(ULONG ulPropTag);
+wstring TypeToString(ULONG ulPropTag);
 wstring ProblemArrayToString(_In_ LPSPropProblemArray lpProblems);
 wstring MAPIErrToString(ULONG ulFlags, _In_ LPMAPIERROR lpErr);
 wstring TnefProblemArrayToString(_In_ LPSTnefProblemArray lpError);

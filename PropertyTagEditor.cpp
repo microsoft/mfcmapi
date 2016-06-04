@@ -349,7 +349,7 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField)
 
 	if (PROPTAG_TAG != ulSkipField) SetHex(PROPTAG_TAG, m_ulPropTag);
 	if (PROPTAG_ID != ulSkipField) SetStringf(PROPTAG_ID, _T("0x%04X"), PROP_ID(m_ulPropTag)); // STRING_OK
-	if (PROPTAG_TYPE != ulSkipField) SetDropDownSelection(PROPTAG_TYPE, TypeToString(m_ulPropTag));
+	if (PROPTAG_TYPE != ulSkipField) SetDropDownSelection(PROPTAG_TYPE, wstringToCString(TypeToString(m_ulPropTag)));
 	if (PROPTAG_NAME != ulSkipField)
 	{
 		LPTSTR szExactMatch = NULL;
@@ -367,7 +367,7 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField)
 		delete[] szExactMatch;
 	}
 
-	if (PROPTAG_TYPESTRING != ulSkipField) SetString(PROPTAG_TYPESTRING, (LPCTSTR)TypeToString(m_ulPropTag));
+	if (PROPTAG_TYPESTRING != ulSkipField) SetStringW(PROPTAG_TYPESTRING, TypeToString(m_ulPropTag).c_str());
 
 	// Do a named property lookup and fill out fields
 	// But only if PROPTAG_TAG or PROPTAG_ID is what the user changed
@@ -545,7 +545,7 @@ BOOL CPropertySelector::OnInitDialog()
 
 			szTmp.Format(_T("0x%08X"), PropTagArray[i].ulValue); // STRING_OK
 			SetListString(0, ulCurRow, 1, szTmp);
-			SetListString(0, ulCurRow, 2, TypeToString(PropTagArray[i].ulValue));
+			SetListStringW(0, ulCurRow, 2, TypeToString(PropTagArray[i].ulValue).c_str());
 			ulCurRow++;
 		}
 

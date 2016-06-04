@@ -272,7 +272,7 @@ _Check_return_ CString TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, b
 
 	szRet = formatmessage(szFormatString,
 		ulPropTag,
-		LPCTSTRToWstring(TypeToString(ulPropTag)).c_str(),
+		TypeToString(ulPropTag).c_str(),
 		LPCTSTRToWstring(szExactMatches).c_str(),
 		LPCTSTRToWstring(szPartialMatches).c_str(),
 		szNamedPropName.c_str(),
@@ -815,7 +815,7 @@ void InterpretProp(_In_ LPSPropValue lpProp, _In_opt_  wstring* PropString, _In_
 	if (AltPropString) *AltPropString = parsedProperty.toAltString();
 }
 
-wstring TypeToWstring(ULONG ulPropTag)
+wstring TypeToString(ULONG ulPropTag)
 {
 	wstring tmpPropType;
 
@@ -844,11 +844,6 @@ wstring TypeToWstring(ULONG ulPropTag)
 
 	if (bNeedInstance) tmpPropType += L" | MV_INSTANCE"; // STRING_OK
 	return tmpPropType;
-}
-
-_Check_return_ CString TypeToString(ULONG ulPropTag)
-{
-	return wstringToCString(TypeToWstring(ulPropTag));
 }
 
 // TagToString will prepend the http://schemas.microsoft.com/MAPI/ for us since it's a constant
