@@ -416,7 +416,7 @@ void _OutputFormPropArray(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMP
 			Outputf(ulDbgLvl, fFile, true,
 				L"\t\tProperty Name: %ws\n\t\tProperty Type: %ws\n\t\tSpecial Type: 0x%X\n\t\tNum Vals: 0x%X\n", // STRING_OK
 				(LPWSTR)lpMAPIFormPropArray->aFormProp[i].pszDisplayName,
-				TypeToWstring(lpMAPIFormPropArray->aFormProp[i].nPropType).c_str(),
+				TypeToString(lpMAPIFormPropArray->aFormProp[i].nPropType).c_str(),
 				lpMAPIFormPropArray->aFormProp[i].nSpecialType,
 				lpMAPIFormPropArray->aFormProp[i].u.s1.cfpevAvailable);
 		}
@@ -425,7 +425,7 @@ void _OutputFormPropArray(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMP
 			Outputf(ulDbgLvl, fFile, true,
 				L"\t\tProperty Name: %hs\n\t\tProperty Type: %ws\n\t\tSpecial Type: 0x%X\n\t\tNum Vals: 0x%X\n", // STRING_OK
 				(LPSTR)lpMAPIFormPropArray->aFormProp[i].pszDisplayName,
-				TypeToWstring(lpMAPIFormPropArray->aFormProp[i].nPropType).c_str(),
+				TypeToString(lpMAPIFormPropArray->aFormProp[i].nPropType).c_str(),
 				lpMAPIFormPropArray->aFormProp[i].nSpecialType,
 				lpMAPIFormPropArray->aFormProp[i].u.s1.cfpevAvailable);
 		}
@@ -743,7 +743,7 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 		hRes = S_OK;
 	}
 
-	Outputf(ulDbgLvl, fFile, false, L"\t<property tag = \"0x%08X\" type = \"%ws\" >\n", lpProp->ulPropTag, TypeToWstring(lpProp->ulPropTag).c_str());
+	Outputf(ulDbgLvl, fFile, false, L"\t<property tag = \"0x%08X\" type = \"%ws\" >\n", lpProp->ulPropTag, TypeToString(lpProp->ulPropTag).c_str());
 
 	LPTSTR szExactMatches = NULL;
 	LPTSTR szPartialMatches = NULL;

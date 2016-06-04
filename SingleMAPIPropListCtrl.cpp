@@ -679,7 +679,7 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 	SetItemText(iRow, pcPROPPARTIALNAMES, !IsNullOrEmpty(szPartialMatches) ? szPartialMatches : _T(""));
 
 	SetItemTextW(iRow, pcPROPTAG, PropTag.c_str());
-	SetItemText(iRow, pcPROPTYPE, (LPCTSTR)TypeToString(ulPropTag));
+	SetItemTextW(iRow, pcPROPTYPE, TypeToString(ulPropTag).c_str());
 
 	InterpretProp(lpsPropToAdd, &PropString, &AltPropString);
 	SetItemTextW(iRow, pcPROPVAL, PropString.c_str());
