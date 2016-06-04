@@ -1,8 +1,7 @@
 #pragma once
-// SingleMAPIPropListCtrl.h : header file
-
 #include "SortListCtrl.h"
-#include "PropertyBag/PropertyBag.h" // TODO: Use a forward declaration
+#include "PropertyBag/PropertyBag.h"
+
 class CBaseDialog;
 class CMapiObjects;
 
@@ -14,7 +13,7 @@ public:
 		_In_ CBaseDialog* lpHostDlg,
 		_In_ CMapiObjects* lpMapiObjects,
 		bool bIsAB
-		);
+	);
 	virtual ~CSingleMAPIPropListCtrl();
 
 	// Initialization
@@ -24,8 +23,8 @@ public:
 
 	// Selected item accessors
 	_Check_return_ HRESULT GetDisplayedProps(ULONG FAR* lpcValues, LPSPropValue FAR* lppPropArray);
-	void         GetSelectedPropTag(_Out_ ULONG* lpPropTag);
-	_Check_return_ bool         IsModifiedPropVals();
+	void GetSelectedPropTag(_Out_ ULONG* lpPropTag);
+	_Check_return_ bool IsModifiedPropVals();
 
 	_Check_return_ bool HandleMenu(WORD wMenuSelect);
 	void InitMenu(_In_ CMenu* pMenu);
@@ -68,17 +67,15 @@ private:
 	// Custom messages
 	_Check_return_ LRESULT msgOnSaveColumnOrder(WPARAM wParam, LPARAM lParam);
 
-	CBaseDialog*	m_lpHostDlg;
-	CString			m_szTitle;
-	bool			m_bHaveEverDisplayedSomething;
-	bool			m_bIsAB;
-	CMapiObjects*	m_lpMapiObjects;
+	CBaseDialog* m_lpHostDlg;
+	bool m_bHaveEverDisplayedSomething;
+	bool m_bIsAB;
+	CMapiObjects* m_lpMapiObjects;
 
-	// TODO: Replace m_lpMAPIProp and m_lpSourceData with a single PropertyBag
 	LPMAPIPROPERTYBAG m_lpPropBag;
 
 	// Used to store prop tags added through AddPropsToExtraProps
-	LPSPropTagArray		m_sptExtraProps;
+	LPSPropTagArray m_sptExtraProps;
 
 	DECLARE_MESSAGE_MAP()
 };
