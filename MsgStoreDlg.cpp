@@ -677,11 +677,9 @@ void CMsgStoreDlg::OnCreateSubFolder()
 	MyData.InitPane(0, CreateSingleLinePaneID(IDS_FOLDERNAME, IDS_FOLDERNAMEVALUE, false));
 	MyData.InitPane(1, CreateSingleLinePane(IDS_FOLDERTYPE, NULL, false));
 	MyData.SetHex(1, FOLDER_GENERIC);
-	CString szProduct;
-	CString szFolderComment;
-	EC_B(szProduct.LoadString(ID_PRODUCTNAME));
-	szFolderComment.FormatMessage(IDS_FOLDERCOMMENTVALUE, szProduct);
-	MyData.InitPane(2, CreateSingleLinePane(IDS_FOLDERCOMMENT, szFolderComment, false));
+	wstring szProduct = loadstring(ID_PRODUCTNAME);
+	wstring szFolderComment = formatmessage(IDS_FOLDERCOMMENTVALUE, szProduct.c_str());
+	MyData.InitPane(2, CreateSingleLinePaneW(IDS_FOLDERCOMMENT, szFolderComment.c_str(), false));
 	MyData.InitPane(3, CreateCheckPane(IDS_PASSOPENIFEXISTS, false, false));
 
 	LPMAPIFOLDER lpMAPIFolder = (LPMAPIFOLDER)m_lpHierarchyTableTreeCtrl->GetSelectedContainer(

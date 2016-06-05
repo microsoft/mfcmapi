@@ -1312,9 +1312,9 @@ void CSingleMAPIPropListCtrl::OnEditGivenProp(ULONG ulPropTag)
 	{
 		DebugPrintEx(DBGGeneric, CLASS, L"OnEditGivenProp", L"editing property 0x%X (= %ws)\n",
 			ulPropTag,
-			LPCTSTRToWstring(TagToString(ulPropTag, m_lpPropBag->GetMAPIProp(),
+			TagToString(ulPropTag, m_lpPropBag->GetMAPIProp(),
 				m_bIsAB,
-				true)).c_str());
+				true).c_str());
 	}
 
 	ulPropTag = (PT_ERROR == PROP_TYPE(ulPropTag)) ? CHANGE_PROP_TYPE(ulPropTag, PT_UNSPECIFIED) : ulPropTag;
@@ -1414,7 +1414,7 @@ void CSingleMAPIPropListCtrl::OnEditPropAsStream(ULONG ulType, bool bEditAsRTF)
 	{
 		DebugPrintEx(DBGGeneric, CLASS, L"OnEditPropAsStream", L"editing property 0x%X (= %ws) as stream, ulType = 0x%08X, bEditAsRTF = 0x%X\n",
 			ulPropTag,
-			LPCTSTRToWstring(TagToString(ulPropTag, m_lpPropBag->GetMAPIProp(), m_bIsAB, true)).c_str(),
+			TagToString(ulPropTag, m_lpPropBag->GetMAPIProp(), m_bIsAB, true).c_str(),
 			ulType,
 			bEditAsRTF);
 	}

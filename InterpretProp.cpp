@@ -187,7 +187,7 @@ _Check_return_ HRESULT StringToGUID(_In_z_ LPCTSTR szGUID, bool bByteSwapped, _I
 	return hRes;
 } // StringToGUID
 
-_Check_return_ wstring CurrencyToString(CURRENCY curVal)
+wstring CurrencyToString(CURRENCY curVal)
 {
 	wstring szCur = format(L"%05I64d", curVal.int64); // STRING_OK
 	if (szCur.length() > 4)
@@ -198,7 +198,7 @@ _Check_return_ wstring CurrencyToString(CURRENCY curVal)
 	return szCur;
 }
 
-_Check_return_ CString TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB, bool bSingleLine)
+ wstring TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB, bool bSingleLine)
 {
 	wstring szRet;
 	wstring szTemp;
@@ -290,7 +290,7 @@ _Check_return_ CString TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, b
 		DebugPrint(DBGTest, L"TagToString parsing 0x%08X returned %u chars - max %u\n", ulPropTag, (UINT)cchBuff, (UINT)cchMaxBuff);
 	}
 
-	return wstringToCString(szRet);
+	return szRet;
 }
 
 wstring ProblemArrayToString(_In_ LPSPropProblemArray lpProblems)
@@ -304,7 +304,7 @@ wstring ProblemArrayToString(_In_ LPSPropProblemArray lpProblems)
 			wstring szTemp = formatmessage(
 				IDS_PROBLEMARRAY,
 				lpProblems->aProblem[i].ulIndex,
-				TagToString(lpProblems->aProblem[i].ulPropTag, NULL, false, false),
+				TagToString(lpProblems->aProblem[i].ulPropTag, NULL, false, false).c_str(),
 				lpProblems->aProblem[i].scode,
 				ErrorNameFromErrorCode(lpProblems->aProblem[i].scode));
 			szOut += szTemp;
@@ -342,7 +342,7 @@ wstring TnefProblemArrayToString(_In_ LPSTnefProblemArray lpError)
 				IDS_TNEFPROBARRAY,
 				lpError->aProblem[iError].ulComponent,
 				lpError->aProblem[iError].ulAttribute,
-				TagToString(lpError->aProblem[iError].ulPropTag, NULL, false, false),
+				TagToString(lpError->aProblem[iError].ulPropTag, NULL, false, false).c_str(),
 				lpError->aProblem[iError].scode,
 				ErrorNameFromErrorCode(lpError->aProblem[iError].scode));
 			szOut += szTemp;
@@ -354,7 +354,7 @@ wstring TnefProblemArrayToString(_In_ LPSTnefProblemArray lpError)
 // There may be restrictions with over 100 nested levels, but we're not going to try to parse them
 #define _MaxRestrictionNesting 100
 
-_Check_return_ wstring RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj, ULONG ulTabLevel)
+wstring RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj, ULONG ulTabLevel)
 {
 	ULONG i = 0;
 	if (!lpRes)
@@ -389,8 +389,8 @@ _Check_return_ wstring RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ L
 			szTabs.c_str(),
 			szFlags.c_str(),
 			lpRes->res.resCompareProps.relop,
-			TagToString(lpRes->res.resCompareProps.ulPropTag1, lpObj, false, true),
-			TagToString(lpRes->res.resCompareProps.ulPropTag2, lpObj, false, true));
+			TagToString(lpRes->res.resCompareProps.ulPropTag1, lpObj, false, true).c_str(),
+			TagToString(lpRes->res.resCompareProps.ulPropTag2, lpObj, false, true).c_str());
 		break;
 	case RES_AND:
 		resString += formatmessage(IDS_RESANDCOUNT, szTabs.c_str(), lpRes->res.resAnd.cRes);
@@ -436,14 +436,14 @@ _Check_return_ wstring RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ L
 			szTabs.c_str(),
 			szFlags.c_str(),
 			lpRes->res.resContent.ulFuzzyLevel,
-			TagToString(lpRes->res.resContent.ulPropTag, lpObj, false, true));
+			TagToString(lpRes->res.resContent.ulPropTag, lpObj, false, true).c_str());
 		if (lpRes->res.resContent.lpProp)
 		{
 			InterpretProp(lpRes->res.resContent.lpProp, &szProp, &szAltProp);
 			resString += formatmessage(
 				IDS_RESCONTENTPROP,
 				szTabs.c_str(),
-				TagToString(lpRes->res.resContent.lpProp->ulPropTag, lpObj, false, true),
+				TagToString(lpRes->res.resContent.lpProp->ulPropTag, lpObj, false, true).c_str(),
 				szProp.c_str(),
 				szAltProp.c_str());
 		}
@@ -455,14 +455,14 @@ _Check_return_ wstring RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ L
 			szTabs.c_str(),
 			szFlags.c_str(),
 			lpRes->res.resProperty.relop,
-			TagToString(lpRes->res.resProperty.ulPropTag, lpObj, false, true));
+			TagToString(lpRes->res.resProperty.ulPropTag, lpObj, false, true).c_str());
 		if (lpRes->res.resProperty.lpProp)
 		{
 			InterpretProp(lpRes->res.resProperty.lpProp, &szProp, &szAltProp);
 			resString += formatmessage(
 				IDS_RESPROPPROP,
 				szTabs.c_str(),
-				TagToString(lpRes->res.resProperty.lpProp->ulPropTag, lpObj, false, true),
+				TagToString(lpRes->res.resProperty.lpProp->ulPropTag, lpObj, false, true).c_str(),
 				szProp.c_str(),
 				szAltProp.c_str());
 			szPropNum = InterpretNumberAsString(lpRes->res.resProperty.lpProp->Value, lpRes->res.resProperty.lpProp->ulPropTag, NULL, NULL, NULL, false);
@@ -488,7 +488,7 @@ _Check_return_ wstring RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ L
 		resString += formatmessage(
 			IDS_RESBITMASKTAG,
 			szTabs.c_str(),
-			TagToString(lpRes->res.resBitMask.ulPropTag, lpObj, false, true));
+			TagToString(lpRes->res.resBitMask.ulPropTag, lpObj, false, true).c_str());
 		break;
 	case RES_SIZE:
 		szFlags = InterpretFlags(flagRelop, lpRes->res.resSize.relop);
@@ -498,13 +498,13 @@ _Check_return_ wstring RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ L
 			szFlags.c_str(),
 			lpRes->res.resSize.relop,
 			lpRes->res.resSize.cb,
-			TagToString(lpRes->res.resSize.ulPropTag, lpObj, false, true));
+			TagToString(lpRes->res.resSize.ulPropTag, lpObj, false, true).c_str());
 		break;
 	case RES_EXIST:
 		resString += formatmessage(
 			IDS_RESEXIST,
 			szTabs.c_str(),
-			TagToString(lpRes->res.resExist.ulPropTag, lpObj, false, true),
+			TagToString(lpRes->res.resExist.ulPropTag, lpObj, false, true).c_str(),
 			lpRes->res.resExist.ulReserved1,
 			lpRes->res.resExist.ulReserved2);
 		break;
@@ -512,7 +512,7 @@ _Check_return_ wstring RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ L
 		resString += formatmessage(
 			IDS_RESSUBRES,
 			szTabs.c_str(),
-			TagToString(lpRes->res.resSub.ulSubObject, lpObj, false, true));
+			TagToString(lpRes->res.resSub.ulSubObject, lpObj, false, true).c_str());
 		resString += RestrictionToString(lpRes->res.resSub.lpRes, lpObj, ulTabLevel + 1);
 		break;
 	case RES_COMMENT:
@@ -526,7 +526,7 @@ _Check_return_ wstring RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ L
 					IDS_RESCOMMENTPROPS,
 					szTabs.c_str(),
 					i,
-					TagToString(lpRes->res.resComment.lpProp[i].ulPropTag, lpObj, false, true),
+					TagToString(lpRes->res.resComment.lpProp[i].ulPropTag, lpObj, false, true).c_str(),
 					szProp.c_str(),
 					szAltProp.c_str());
 			}
@@ -547,7 +547,7 @@ _Check_return_ wstring RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ L
 					IDS_RESANNOTATIONPROPS,
 					szTabs.c_str(),
 					i,
-					TagToString(lpRes->res.resComment.lpProp[i].ulPropTag, lpObj, false, true),
+					TagToString(lpRes->res.resComment.lpProp[i].ulPropTag, lpObj, false, true).c_str(),
 					szProp.c_str(),
 					szAltProp.c_str());
 			}
@@ -563,12 +563,12 @@ _Check_return_ wstring RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ L
 	return resString;
 }
 
-_Check_return_ wstring RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj)
+wstring RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj)
 {
 	return RestrictionToString(lpRes, lpObj, 0);
 }
 
-_Check_return_ wstring AdrListToString(_In_ LPADRLIST lpAdrList)
+wstring AdrListToString(_In_ LPADRLIST lpAdrList)
 {
 	if (!lpAdrList)
 	{
@@ -593,7 +593,7 @@ _Check_return_ wstring AdrListToString(_In_ LPADRLIST lpAdrList)
 				IDS_ADRLISTENTRY,
 				i,
 				j,
-				TagToString(lpAdrList->aEntries[i].rgPropVals[j].ulPropTag, NULL, false, false),
+				TagToString(lpAdrList->aEntries[i].rgPropVals[j].ulPropTag, NULL, false, false).c_str(),
 				szProp.c_str(),
 				szAltProp.c_str());
 		}
@@ -685,7 +685,7 @@ _Check_return_ wstring ActionToString(_In_ ACTION* lpAction)
 	{
 		InterpretProp(&lpAction->propTag, &szProp, &szAltProp);
 		actstring += formatmessage(IDS_ACTIONOPTAG,
-			TagToString(lpAction->propTag.ulPropTag, NULL, false, true),
+			TagToString(lpAction->propTag.ulPropTag, NULL, false, true).c_str(),
 			szProp.c_str(),
 			szAltProp.c_str());
 		break;
@@ -720,14 +720,14 @@ _Check_return_ wstring ActionToString(_In_ ACTION* lpAction)
 		{
 			actstring += formatmessage(IDS_ACTIONTAGARRAYTAG,
 				i,
-				TagToString(lpAction->lpPropTagArray->aulPropTag[i], NULL, false, false));
+				TagToString(lpAction->lpPropTagArray->aulPropTag[i], NULL, false, false).c_str());
 		}
 	}
 
 	return actstring;
 }
 
-_Check_return_ wstring ActionsToString(_In_ ACTIONS* lpActions)
+wstring ActionsToString(_In_ ACTIONS* lpActions)
 {
 	if (!lpActions)
 	{
