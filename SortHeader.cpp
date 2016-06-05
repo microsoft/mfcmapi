@@ -66,7 +66,7 @@ void CSortHeader::RegisterHeaderTooltip()
 			m_ti.hwnd = m_hWnd;
 			m_ti.uId = (UINT_PTR)m_hWnd;
 			m_ti.hinst = AfxGetInstanceHandle();
-			m_ti.lpszText = _T("");
+			m_ti.lpszText = L"";
 
 			EC_B(::SendMessage(m_hwndTip, TTM_ADDTOOL, 0, (LPARAM)(LPTOOLINFO)&m_ti));
 			EC_B(::SendMessage(m_hwndTip, TTM_SETMAXTIPWIDTH, 0, (LPARAM)500));
@@ -129,7 +129,7 @@ LRESULT CSortHeader::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			// We only turn on or modify our tooltip if we're on a column header
 			if (hdHitTestInfo.flags & HHT_ONHEADER)
 			{
-				HDITEM	hdItem = { 0 };
+				HDITEM hdItem = { 0 };
 				hdItem.mask = HDI_LPARAM;
 
 				EC_B(GetItem(hdHitTestInfo.iItem, &hdItem));
@@ -139,10 +139,11 @@ LRESULT CSortHeader::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 				// This will only display tips if we have a HeaderData structure saved
 				if (lpHeaderData)
 				{
-					m_ti.lpszText = lpHeaderData->szTipString;
 					EC_B(::GetCursorPos(&hdHitTestInfo.pt));
 					EC_B(::SendMessage(m_hwndTip, TTM_TRACKPOSITION, 0, (LPARAM)MAKELPARAM(hdHitTestInfo.pt.x + 10, hdHitTestInfo.pt.y + 20)));
-					EC_B(::SendMessage(m_hwndTip, TTM_SETTOOLINFO, true, (LPARAM)(LPTOOLINFO)&m_ti));
+
+					m_ti.lpszText = (LPWSTR)lpHeaderData->szTipString.c_str();
+					EC_B(::SendMessage(m_hwndTip, TTM_SETTOOLINFOW, true, (LPARAM)&m_ti));
 					// Ask for notification when the mouse leaves the control
 					TRACKMOUSEEVENT tmEvent = { 0 };
 					tmEvent.cbSize = sizeof(TRACKMOUSEEVENT);

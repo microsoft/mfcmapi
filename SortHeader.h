@@ -5,10 +5,10 @@
 
 struct HeaderData
 {
-	ULONG	ulTagArrayRow;
-	ULONG	ulPropTag;
-	bool	bIsAB;
-	TCHAR	szTipString[TAG_MAX_LEN];
+	ULONG ulTagArrayRow;
+	ULONG ulPropTag;
+	bool bIsAB;
+	wstring szTipString;
 };
 typedef HeaderData* LPHEADERDATA;
 
@@ -20,16 +20,16 @@ public:
 
 private:
 	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
-	void    RegisterHeaderTooltip();
+	void RegisterHeaderTooltip();
 
 	// Custom messages
 	_Check_return_ LRESULT msgOnSaveColumnOrder(WPARAM wParam, LPARAM lParam);
 	void OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 
-	HWND		m_hwndTip;
-	TOOLINFO	m_ti;
-	HWND		m_hwndParent;
-	bool		m_bTooltipDisplayed;
+	HWND m_hwndTip;
+	TOOLINFOW m_ti;
+	HWND m_hwndParent;
+	bool m_bTooltipDisplayed;
 
 	DECLARE_MESSAGE_MAP()
 };

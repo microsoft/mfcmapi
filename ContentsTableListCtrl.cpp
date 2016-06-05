@@ -420,8 +420,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::AddColumn(UINT uidHeaderName, ULO
 			lpHeaderData->ulTagArrayRow = ulCurTagArrayRow;
 			lpHeaderData->ulPropTag = ulPropTag;
 			lpHeaderData->bIsAB = m_bIsAB;
-			EC_H(StringCchCopy(lpHeaderData->szTipString, _countof(lpHeaderData->szTipString),
-				wstringToCString(TagToString(ulPropTag, lpMDB, m_bIsAB, false))));
+			lpHeaderData->szTipString = TagToString(ulPropTag, lpMDB, m_bIsAB, false);
 
 			hdItem.lParam = (LPARAM)lpHeaderData;
 			EC_B(lpMyHeader->SetItem(ulCurHeaderCol, &hdItem));
