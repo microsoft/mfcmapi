@@ -348,10 +348,10 @@ IDS_OUTLOOKVERSIONPROMPT         "Outlook path, version and language obtained th
 IDS_OUTLOOKVERSIONSTRING         "Path: %s\nVersion: %s\nLang: %s\n64 bit: "
 IDS_NOOUTLOOK                    "Outlook does not appear to be installed on this machine."
 
-IDS_TITLEBARMESSAGE              "%1: %2"
-IDS_TITLEBARPLAIN                "%1"
-IDS_HIDDEN                       "%1 (Hidden Contents)"
-IDS_COMPAREEIDBOOL               "0x%1!08X! = %2"
+IDS_TITLEBARMESSAGE              "%1!ws!: %2!ws!"
+IDS_TITLEBARPLAIN                "%1!ws!"
+IDS_HIDDEN                       "%1!ws! (Hidden Contents)"
+IDS_COMPAREEIDBOOL               "0x%1!08X! = %2!ws!"
 IDS_STOREHASHVAL                 "Store Hash = 0x%1!08X!"
 IDS_STOREHASHDOUBLEVAL           "EntryID Hash = 0x%1!08X!\r\nMapping Signature Hash = 0x%2!08X!"
 IDS_LOADMAPISTATUS               "Load MAPI from %1!ws!"
@@ -1272,7 +1272,7 @@ IDS_DIRPROMPT "Choose directory to save to"
 IDS_DISPLAYNAMEVALUE "<Display Name>"
 IDS_ADDRESSVALUE "Mr Display Name [EX:/O=FIRST ORGANIZATION/OU=FIRST ADMINISTRATIVE GROUP/CN=RECIPIENTS/CN=ADMINISTRATOR]"
 IDS_FOLDERNAMEVALUE "New Folder"
-IDS_FOLDERCOMMENTVALUE "Folder Created with %1"
+IDS_FOLDERCOMMENTVALUE "Folder Created with %1!ws!"
 IDS_OBJECTVALUE "Object"
 
 IDS_PREVIOUSCALL "Previous call returned %1!ws! == 0x%2!08X!"
@@ -1283,7 +1283,7 @@ IDS_UNKNOWNNAME "Unknown name"
 IDS_UNKNOWNPROPERTY "Unknown Property"
 
 // InterpretProp.cpp stuff
-IDS_TAGMULTILINE "Tag: 0x%1!08X!\r\nType: %2"
+IDS_TAGMULTILINE "Tag: 0x%1!08X!\r\nType: %2!ws!"
 // Yes, these six look like a mistake, but they are intentional - see TagToString
 IDS_NAMEDPROPSINGLELINE ": Named Prop Name: %5!ws!"
 IDS_GUIDSINGLELINE ": Guid: %6!ws!"
@@ -1294,82 +1294,82 @@ IDS_NAMEPROPGUIDMULTILINE "\r\nNamed Prop Guid: %6!ws!"
 IDS_DASLPROPTAG "\r\nDASL: http://schemas.microsoft.com/mapi/proptag/0x%1!08X!"
 IDS_DASLNAMED "\r\nDASL: http://schemas.microsoft.com/mapi/%7!ws!"
 
-IDS_PROBLEMARRAY "Index: 0x%1!08X!, ulPropTag: %2, scode: 0x%3!08X! = %4!ws!\r\n"
+IDS_PROBLEMARRAY "Index: 0x%1!08X!, ulPropTag: %2!ws!, scode: 0x%3!08X! = %4!ws!\r\n"
 IDS_MAPIERRUNICODE "ulVersion = 0x%1!X!\r\nlpszError = %2!ws!\r\nlpszComponent = %3!ws!\r\nulLowLevelError = 0x%4!X! = %5!ws!\r\nulContext = 0x%6!X!"
 IDS_MAPIERRANSI    "ulVersion = 0x%1!X!\r\nlpszError = %2!hs!\r\nlpszComponent = %3!hs!\r\nulLowLevelError = 0x%4!X! = %5!ws!\r\nulContext = 0x%6!X!"
-IDS_TNEFPROBARRAY "Component: 0x%1!08X!\r\nAttribute: 0x%2!08X!\r\n%3\r\nError: 0x%4!08X! = %5!ws!\r\n"
+IDS_TNEFPROBARRAY "Component: 0x%1!08X!\r\nAttribute: 0x%2!08X!\r\n%3!ws!\r\nError: 0x%4!08X! = %5!ws!\r\n"
 IDS_NULLRES "lpRes was NULL\r\n"
 IDS_RESDEPTHEXCEEDED "Restriction nested too many (100) levels.\r\n"
-IDS_RESTYPE "%1lpRes->rt = 0x%2!X! = %3\r\n"
+IDS_RESTYPE "%1!ws!lpRes->rt = 0x%2!X! = %3!ws!\r\n"
 
-IDS_RESCOMPARE "%1lpRes->res.resCompareProps.relop = %2 = 0x%3!08X!\r\n\
-%1lpRes->res.resCompareProps.ulPropTag1 = %4!hs!\r\n\
-%1lpRes->res.resCompareProps.ulPropTag2 = %5!hs!\r\n"
+IDS_RESCOMPARE "%1!ws!lpRes->res.resCompareProps.relop = %2!ws! = 0x%3!08X!\r\n\
+%1!ws!lpRes->res.resCompareProps.ulPropTag1 = %4!ws!\r\n\
+%1!ws!lpRes->res.resCompareProps.ulPropTag2 = %5!ws!\r\n"
 
-IDS_RESANDCOUNT "%1lpRes->res.resAnd.cRes = 0x%2!08X!\r\n"
-IDS_RESANDPOINTER "%1lpRes->res.resAnd.lpRes[0x%2!08X!]\r\n"
+IDS_RESANDCOUNT "%1!ws!lpRes->res.resAnd.cRes = 0x%2!08X!\r\n"
+IDS_RESANDPOINTER "%1!ws!lpRes->res.resAnd.lpRes[0x%2!08X!]\r\n"
 
-IDS_RESORCOUNT "%1lpRes->res.resOr.cRes = 0x%2!08X!\r\n"
-IDS_RESORPOINTER "%1lpRes->res.resOr.lpRes[0x%2!08X!]\r\n"
+IDS_RESORCOUNT "%1!ws!lpRes->res.resOr.cRes = 0x%2!08X!\r\n"
+IDS_RESORPOINTER "%1!ws!lpRes->res.resOr.lpRes[0x%2!08X!]\r\n"
 
-IDS_RESNOT "%1lpRes->res.resNot.ulReserved = 0x%2!08X!\r\n\
-%1lpRes->res.resNot.lpRes\r\n"
+IDS_RESNOT "%1!ws!lpRes->res.resNot.ulReserved = 0x%2!08X!\r\n\
+%1!ws!lpRes->res.resNot.lpRes\r\n"
 
-IDS_RESCOUNT "%1lpRes->res.resCount.ulCount = 0x%2!08X!\r\n\
-%1lpRes->res.resCount.lpRes\r\n"
+IDS_RESCOUNT "%1!ws!lpRes->res.resCount.ulCount = 0x%2!08X!\r\n\
+%1!ws!lpRes->res.resCount.lpRes\r\n"
 
-IDS_RESCONTENT "%1lpRes->res.resContent.ulFuzzyLevel = %2 = 0x%3!08X!\r\n\
-%1lpRes->res.resContent.ulPropTag = %4!hs!\r\n"
-IDS_RESCONTENTPROP "%1lpRes->res.resContent.lpProp->ulPropTag = %2!hs!\r\n\
-%1lpRes->res.resContent.lpProp->Value = %3!ws!\r\n\
-%1\tAlt: %4!ws!\r\n"
+IDS_RESCONTENT "%1!ws!lpRes->res.resContent.ulFuzzyLevel = %2!ws! = 0x%3!08X!\r\n\
+%1!ws!lpRes->res.resContent.ulPropTag = %4!ws!\r\n"
+IDS_RESCONTENTPROP "%1!ws!lpRes->res.resContent.lpProp->ulPropTag = %2!ws!\r\n\
+%1!ws!lpRes->res.resContent.lpProp->Value = %3!ws!\r\n\
+%1!ws!\tAlt: %4!ws!\r\n"
 
-IDS_RESPROP "%1lpRes->res.resProperty.relop = %2 = 0x%3!08X!\r\n\
-%1lpRes->res.resProperty.ulPropTag = %4!hs!\r\n"
-IDS_RESPROPPROP "%1lpRes->res.resProperty.lpProp->ulPropTag = %2!hs!\r\n\
-%1lpRes->res.resProperty.lpProp->Value = %3!ws!\r\n\
-%1\tAlt: %4!ws!\r\n"
-IDS_RESPROPPROPFLAGS "%1\tFlags: %2!ws!\r\n"
+IDS_RESPROP "%1!ws!lpRes->res.resProperty.relop = %2!ws! = 0x%3!08X!\r\n\
+%1!ws!lpRes->res.resProperty.ulPropTag = %4!ws!\r\n"
+IDS_RESPROPPROP "%1!ws!lpRes->res.resProperty.lpProp->ulPropTag = %2!ws!\r\n\
+%1!ws!lpRes->res.resProperty.lpProp->Value = %3!ws!\r\n\
+%1!ws!\tAlt: %4!ws!\r\n"
+IDS_RESPROPPROPFLAGS "%1!ws!\tFlags: %2!ws!\r\n"
 
-IDS_RESBITMASK "%1lpRes->res.resBitMask.relBMR = %2 = 0x%3!08X!\r\n\
-%1lpRes->res.resBitMask.ulMask = 0x%4!08X!"
+IDS_RESBITMASK "%1!ws!lpRes->res.resBitMask.relBMR = %2!ws! = 0x%3!08X!\r\n\
+%1!ws!lpRes->res.resBitMask.ulMask = 0x%4!08X!"
 IDS_RESBITMASKFLAGS ": %1!ws!"
-IDS_RESBITMASKTAG "\r\n%1lpRes->res.resBitMask.ulPropTag = %2!hs!\r\n"
+IDS_RESBITMASKTAG "\r\n%1!ws!lpRes->res.resBitMask.ulPropTag = %2!ws!\r\n"
 
-IDS_RESSIZE "%1lpRes->res.resSize.relop = %2 = 0x%3!08X!\r\n\
-%1lpRes->res.resSize.cb = 0x%4!08X!\r\n\
-%1lpRes->res.resSize.ulPropTag = %5!hs!\r\n"
+IDS_RESSIZE "%1!ws!lpRes->res.resSize.relop = %2!ws! = 0x%3!08X!\r\n\
+%1!ws!lpRes->res.resSize.cb = 0x%4!08X!\r\n\
+%1!ws!lpRes->res.resSize.ulPropTag = %5!ws!\r\n"
 
-IDS_RESEXIST "%1lpRes->res.resExist.ulPropTag = %2!hs!\r\n\
-%1lpRes->res.resExist.ulReserved1 = 0x%3!08X!\r\n\
-%1lpRes->res.resExist.ulReserved2 = 0x%4!08X!\r\n"
+IDS_RESEXIST "%1!ws!lpRes->res.resExist.ulPropTag = %2!ws!\r\n\
+%1!ws!lpRes->res.resExist.ulReserved1 = 0x%3!08X!\r\n\
+%1!ws!lpRes->res.resExist.ulReserved2 = 0x%4!08X!\r\n"
 
-IDS_RESSUBRES "%1lpRes->res.resSub.ulSubObject = %2!hs!\r\n\
-%1lpRes->res.resSub.lpRes\r\n"
+IDS_RESSUBRES "%1!ws!lpRes->res.resSub.ulSubObject = %2!ws!\r\n\
+%1!ws!lpRes->res.resSub.lpRes\r\n"
 
-IDS_RESCOMMENT "%1lpRes->res.resComment.cValues = 0x%2!08X!\r\n"
-IDS_RESCOMMENTPROPS "%1lpRes->res.resComment.lpProp[0x%2!08X!].ulPropTag = %3!hs!\r\n\
-%1lpRes->res.resComment.lpProp[0x%2!08X!].Value = %4!ws!\r\n\
-%1\tAlt: %5!ws!\r\n"
-IDS_RESCOMMENTRES "%1lpRes->res.resComment.lpRes\r\n"
+IDS_RESCOMMENT "%1!ws!lpRes->res.resComment.cValues = 0x%2!08X!\r\n"
+IDS_RESCOMMENTPROPS "%1!ws!lpRes->res.resComment.lpProp[0x%2!08X!].ulPropTag = %3!ws!\r\n\
+%1!ws!lpRes->res.resComment.lpProp[0x%2!08X!].Value = %4!ws!\r\n\
+%1!ws!\tAlt: %5!ws!\r\n"
+IDS_RESCOMMENTRES "%1!ws!lpRes->res.resComment.lpRes\r\n"
 
-IDS_RESANNOTATION "%1lpRes->res.resAnnotation.cValues = 0x%2!08X!\r\n"
-IDS_RESANNOTATIONPROPS "%1lpRes->res.resAnnotation.lpProp[0x%2!08X!].ulPropTag = %3!hs!\r\n\
-%1lpRes->res.resAnnotation.lpProp[0x%2!08X!].Value = %4!ws!\r\n\
-%1\tAlt: %5!ws!\r\n"
-IDS_RESANNOTATIONRES "%1lpRes->res.resAnnotation.lpRes\r\n"
+IDS_RESANNOTATION "%1!ws!lpRes->res.resAnnotation.cValues = 0x%2!08X!\r\n"
+IDS_RESANNOTATIONPROPS "%1!ws!lpRes->res.resAnnotation.lpProp[0x%2!08X!].ulPropTag = %3!ws!\r\n\
+%1!ws!lpRes->res.resAnnotation.lpProp[0x%2!08X!].Value = %4!ws!\r\n\
+%1!ws!\tAlt: %5!ws!\r\n"
+IDS_RESANNOTATIONRES "%1!ws!lpRes->res.resAnnotation.lpRes\r\n"
 
 IDS_ADRLISTNULL "lpAdrList was NULL\r\n"
 IDS_ADRLISTCOUNT "lpAdrList->cEntries = 0x%1!08X!\r\n"
 IDS_ADRLISTENTRIESCOUNT "lpAdrList->aEntries[0x%1!08X!].cValues = 0x%2!08X!\r\n"
-IDS_ADRLISTENTRY "lpAdrList->aEntries[0x%1!08X!].rgPropVals[0x%2!08X!].ulPropTag = %3!hs!\r\n\
-lpAdrList->aEntries[0x%1!08X!].rgPropVals[0x%2!08X!].Value = %4\r\n\
-\tAlt: %5\r\n"
+IDS_ADRLISTENTRY "lpAdrList->aEntries[0x%1!08X!].rgPropVals[0x%2!08X!].ulPropTag = %3!ws!\r\n\
+lpAdrList->aEntries[0x%1!08X!].rgPropVals[0x%2!08X!].Value = %4!ws!\r\n\
+\tAlt: %5!ws!\r\n"
 
 IDS_ACTIONNULL "lpAction was NULL\r\n"
-IDS_ACTION "lpAction->acttype = 0x%1!08X! = %2\r\n\
-lpAction->lpRes: \r\n%3\
-lpAction->ulFlags = 0x%4!08X! = %5\r\n"
+IDS_ACTION "lpAction->acttype = 0x%1!08X! = %2!ws!\r\n\
+lpAction->lpRes: \r\n%3!ws!\
+lpAction->ulFlags = 0x%4!08X! = %5!ws!\r\n"
 
 IDS_ACTIONOPMOVECOPY "lpAction->actMoveCopy.lpStoreEntryId:\r\n\
 %1!ws!\r\n\
@@ -1387,23 +1387,23 @@ IDS_ACTIONOPDEFER "lpAction->actDeferAction.pbData:\r\n\
 %1!ws!\r\n\
 Alt: %2!ws!\r\n"
 
-IDS_ACTIONOPBOUNCE "lpAction->scBounceCode = 0x%1!08X! = %2\r\n"
+IDS_ACTIONOPBOUNCE "lpAction->scBounceCode = 0x%1!08X! = %2!ws!\r\n"
 
 IDS_ACTIONOPFORWARDDEL "lpAction->lpadrlist:\r\n"
 
 IDS_ACTIONOPTAG "lpAction->propTag:\r\n\
-lpAction->propTag.ulPropTag = %1
-Value: %2\r\n\
-Alt: %3\r\n"
+lpAction->propTag.ulPropTag = %1!ws!\
+Value: %2!ws!\r\n\
+Alt: %3!ws!\r\n"
 
-IDS_ACTIONFLAVOR "lpAction->ulActionFlavor = 0x%1!08X! = %2\r\n"
+IDS_ACTIONFLAVOR "lpAction->ulActionFlavor = 0x%1!08X! = %2!ws!\r\n"
 
 IDS_ACTIONTAGARRAYNULL "lpAction->lpPropTagArray = NULL\r\n"
 IDS_ACTIONTAGARRAYCOUNT "lpAction->lpPropTagArray->cValues = 0x%1!08X!\r\n"
-IDS_ACTIONTAGARRAYTAG "lpAction->lpPropTagArray->aulPropTag[0x%1!08X!] = %2\r\n"
+IDS_ACTIONTAGARRAYTAG "lpAction->lpPropTagArray->aulPropTag[0x%1!08X!] = %2!ws!\r\n"
 
 IDS_ACTIONSNULL "lpActions was NULL\r\n"
-IDS_ACTIONSMEMBERS "lpActions->ulVersion = 0x%1!08X! = %2\r\n\
+IDS_ACTIONSMEMBERS "lpActions->ulVersion = 0x%1!08X! = %2!ws!\r\n\
 lpActions->cActions = 0x%3!08X!\r\n"
 IDS_ACTIONSACTION "lpActions->lpAction[0x%1!08X!]:\r\n"
 
@@ -1416,9 +1416,9 @@ IDS_FALSE "False"
 IDS_NAMEWASANSI "(Name was found as ANSI)"
 IDS_UNKNOWNGUID "Unknown GUID"
 
-IDS_OPTIONSSTRUCTURE "lpOptions[0x%1!08X!].ulPropTag = %2\r\n\
-lpOptions[0x%1!08X!].Value = %3\r\n\
-\tAlt: %4\r\n"
+IDS_OPTIONSSTRUCTURE "lpOptions[0x%1!08X!].ulPropTag = %2!ws!\r\n\
+lpOptions[0x%1!08X!].Value = %3!ws!\r\n\
+\tAlt: %4!ws!\r\n"
 
 IDS_TIMEZONE "Time Zone: \r\n\
 lBias = 0x%1!08X! (%1!d!)\r\n\
@@ -1458,7 +1458,7 @@ IDS_TZRULEHEADER "\r\n\r\n\
 TZRule[0x%1!X!].bMajorVersion = 0x%2!02X! (%2!d!)\r\n\
 TZRule[0x%1!X!].bMinorVersion = 0x%3!02X! (%3!d!)\r\n\
 TZRule[0x%1!X!].wReserved = 0x%4!04X! (%4!d!)\r\n\
-TZRule[0x%1!X!].wTZRuleFlags = 0x%5!04X! = %6\r\n\
+TZRule[0x%1!X!].wTZRuleFlags = 0x%5!04X! = %6!ws!\r\n\
 TZRule[0x%1!X!].wYear = 0x%7!04X! (%7!d!)\r\n\
 TZRule[0x%1!X!].X = "
 
@@ -1514,14 +1514,14 @@ IDS_ACCESSDETAILEDFREEBUSY "Detailed FreeBusy"
 IDS_SECURITYDESCRIPTORHEADER "Security Descriptor: \r\n\
 Security Info: "
 IDS_SECURITYDESCRIPTORVERSION "\r\n\
-Security Version: 0x%1!04X! = %2\r\n\
+Security Version: 0x%1!04X! = %2!ws!\r\n\
 Descriptor:\r\n"
 
-IDS_SIDACCOUNT "Account: %1\\%2\r\n\
-SID: %3\r\n\
-Access Type: 0x%4!08X! = %5\r\n\
-Access Flags: 0x%6!08X! = %7\r\n\
-Access Mask: 0x%8!08X! = %9\r\n"
+IDS_SIDACCOUNT "Account: %1!ws!\\%2!ws!\r\n\
+SID: %3!ws!\r\n\
+Access Type: 0x%4!08X! = %5!ws!\r\n\
+Access Flags: 0x%6!08X! = %7!ws!\r\n\
+Access Mask: 0x%8!08X! = %9!ws!\r\n"
 IDS_SIDOBJECTYPE "ObjectType: "
 IDS_SIDINHERITEDOBJECTYPE "\r\nInheritedObjectType: "
 IDS_SIDFLAGS "\r\nFlags: 0x%1!08X!\r\n"
@@ -1529,8 +1529,8 @@ IDS_SIDFLAGS "\r\nFlags: 0x%1!08X!\r\n"
 IDS_INVALIDSD "This is not a valid security descriptor."
 
 IDS_SIDHEADER "SID: \r\n\
-User: %1\\%2\r\n\
-Textual SID: %3"
+User: %1!ws!\\%2!ws!\r\n\
+Textual SID: %3!ws!"
 
 IDS_FLAGTOSTRINGHEX "\r\n0x%1!08X! %2!ws!"
 IDS_FLAGTOSTRINGDEC "\r\n%1!5d! %2!ws!"
@@ -1541,7 +1541,7 @@ IDS_FIELDANSIFIELD "\r\n\r\nField %1!d!\r\n\
 FieldType = 0x%2!08X! = %3!ws!\r\n\
 FieldNameLength = 0x%4!08X! = %4!d!\r\n\
 FieldName = %5!hs!\r\n\
-PropSetGuid = %6\r\n\
+PropSetGuid = %6!ws!\r\n\
 fcapm = 0x%7!08X! = %8!ws!\r\n\
 dwString = 0x%9!08X!\r\n\
 dwBitmap = 0x%10!08X!\r\n\
@@ -1554,7 +1554,7 @@ IDS_FIELDUNICODEFIELD "\r\n\r\nField %1!d!\r\n\
 FieldType = 0x%2!08X! = %3!ws!\r\n\
 FieldNameLength = 0x%4!08X! = %4!d!\r\n\
 FieldName = %5!ws!\r\n\
-PropSetGuid = %6\r\n\
+PropSetGuid = %6!ws!\r\n\
 fcapm = 0x%7!08X! = %8!ws!\r\n\
 dwString = 0x%9!08X!\r\n\
 dwBitmap = 0x%10!08X!\r\n\
@@ -1610,8 +1610,8 @@ RecordsCount = 0x%4!08X!\r\n\
 ActualRecordsCount (computed) = 0x%5!08X!\r\n\
 RecordsSize = 0x%6!08X!"
 IDS_TOMBSTONERECORD "\r\nRecord[%1!d!]\r\n\
-StartTime = 0x%2!08X! = %3\r\n\
-Endtime = 0x%4!08X! = %5\r\n\
+StartTime = 0x%2!08X! = %3!ws!\r\n\
+Endtime = 0x%4!08X! = %5!ws!\r\n\
 GlobalObjectIdSize = 0x%6!08X!\r\n\
 GlobalObjectId = %7!ws!\r\n\
 %8!ws!\r\n\
@@ -1783,14 +1783,14 @@ IDS_CONVERTCHARSETAPPLYTYPE "Character Set Apply Type"
 IDS_ARPHEADER "\r\nAppointment Recurrence Pattern: \r\n\
 ReaderVersion2: 0x%1!08X!\r\n\
 WriterVersion2: 0x%2!08X!\r\n\
-StartTimeOffset: 0x%3!08X! = %3!d! = %4\r\n\
-EndTimeOffset: 0x%5!08X! = %5!d! = %6\r\n\
+StartTimeOffset: 0x%3!08X! = %3!d! = %4!ws!\r\n\
+EndTimeOffset: 0x%5!08X! = %5!d! = %6!ws!\r\n\
 ExceptionCount: 0x%7!04X!\r\n"
 
-IDS_ARPEXHEADER "ExceptionInfo[%1!d!].StartDateTime: 0x%2!08X! = %3\r\n\
-ExceptionInfo[%1!d!].EndDateTime: 0x%4!08X! = %5\r\n\
-ExceptionInfo[%1!d!].OriginalStartDate: 0x%6!08X! = %7\r\n\
-ExceptionInfo[%1!d!].OverrideFlags: 0x%8!04X! = %9\r\n"
+IDS_ARPEXHEADER "ExceptionInfo[%1!d!].StartDateTime: 0x%2!08X! = %3!ws!\r\n\
+ExceptionInfo[%1!d!].EndDateTime: 0x%4!08X! = %5!ws!\r\n\
+ExceptionInfo[%1!d!].OriginalStartDate: 0x%6!08X! = %7!ws!\r\n\
+ExceptionInfo[%1!d!].OverrideFlags: 0x%8!04X! = %9!ws!\r\n"
 
 IDS_ARPEXSUBJECT "ExceptionInfo[%1!d!].SubjectLength: 0x%2!04X! = %2!d!\r\n\
 ExceptionInfo[%1!d!].SubjectLength2: 0x%3!04X! = %3!d!\r\n\
@@ -1817,8 +1817,8 @@ IDS_ARPEXCHANGEHIGHLIGHTRESERVED "ExtendedException[%1!d!].ChangeHighlight.Reser
 IDS_ARPEXRESERVED1 "ExtendedException[%1!d!].ReservedBlockEE1Size: 0x%2!08X!\r\n"
 
 IDS_ARPEXDATETIME "ExtendedException[%1!d!].StartDateTime: 0x%2!08X! = %3\r\n\
-ExtendedException[%1!d!].EndDateTime: 0x%4!08X! = %5\r\n\
-ExtendedException[%1!d!].OriginalStartDate: 0x%6!08X! = %7\r\n"
+ExtendedException[%1!d!].EndDateTime: 0x%4!08X! = %5!ws!\r\n\
+ExtendedException[%1!d!].OriginalStartDate: 0x%6!08X! = %7!ws!\r\n"
 
 IDS_ARPEXWIDESUBJECT "ExtendedException[%1!d!].WideCharSubjectLength: 0x%2!08X! = %2!d!\r\n\
 ExtendedException[%1!d!].WideCharSubject: ""%3!ws!""\r\n"
@@ -1832,30 +1832,30 @@ IDS_ARPRESERVED2 "ReservedBlock2Size: 0x%1!08X!"
 IDS_RPHEADER "Recurrence Pattern: \r\n\
 ReaderVersion: 0x%1!04X!\r\n\
 WriterVersion: 0x%2!04X!\r\n\
-RecurFrequency: 0x%3!04X! = %4\r\n\
-PatternType: 0x%5!04X! = %6\r\n\
-CalendarType: 0x%7!04X! = %8\r\n\
+RecurFrequency: 0x%3!04X! = %4!ws!\r\n\
+PatternType: 0x%5!04X! = %6!ws!\r\n\
+CalendarType: 0x%7!04X! = %8!ws!\r\n\
 FirstDateTime: 0x%9!08X! = %9!d!\r\n\
 Period: 0x%10!08X! = %10!d!\r\n\
 SlidingFlag: 0x%11!08X!\r\n"
 
-IDS_RPPATTERNWEEK "PatternTypeSpecific.WeekRecurrencePattern: 0x%1!08X! = %2\r\n"
+IDS_RPPATTERNWEEK "PatternTypeSpecific.WeekRecurrencePattern: 0x%1!08X! = %2!ws!\r\n"
 IDS_RPPATTERNMONTH "PatternTypeSpecific.MonthRecurrencePattern: 0x%1!08X! = %1!d!\r\n"
 
-IDS_RPPATTERNMONTHNTH "PatternTypeSpecific.MonthNthRecurrencePattern.DayOfWeek: 0x%1!08X! = %2\r\n\
-PatternTypeSpecific.MonthNthRecurrencePattern.N: 0x%3!08X! = %4\r\n"
+IDS_RPPATTERNMONTHNTH "PatternTypeSpecific.MonthNthRecurrencePattern.DayOfWeek: 0x%1!08X! = %2!ws!\r\n\
+PatternTypeSpecific.MonthNthRecurrencePattern.N: 0x%3!08X! = %4!ws!\r\n"
 
-IDS_RPHEADER2 "EndType: 0x%1!08X! = %2\r\n\
+IDS_RPHEADER2 "EndType: 0x%1!08X! = %2!ws!\r\n\
 OccurrenceCount: 0x%3!08X! = %3!d!\r\n\
-FirstDOW: 0x%4!08X! = %5\r\n\
+FirstDOW: 0x%4!08X! = %5!ws!\r\n\
 DeletedInstanceCount: 0x%6!08X! = %6!d!\r\n"
 
-IDS_RPDELETEDINSTANCEDATES "DeletedInstanceDates[%1!d!]: 0x%2!08X! = %3\r\n"
+IDS_RPDELETEDINSTANCEDATES "DeletedInstanceDates[%1!d!]: 0x%2!08X! = %3!ws!\r\n"
 IDS_RPMODIFIEDINSTANCECOUNT "ModifiedInstanceCount: 0x%1!08X! = %1!d!\r\n"
-IDS_RPMODIFIEDINSTANCEDATES "ModifiedInstanceDates[%1!d!]: 0x%2!08X! = %3\r\n"
+IDS_RPMODIFIEDINSTANCEDATES "ModifiedInstanceDates[%1!d!]: 0x%2!08X! = %3!ws!\r\n"
 
-IDS_RPDATE "StartDate: 0x%1!08X! = %1!d! = %2\r\n\
-EndDate: 0x%3!08X! = %3!d! = %4"
+IDS_RPDATE "StartDate: 0x%1!08X! = %1!d! = %2!ws!\r\n\
+EndDate: 0x%3!08X! = %3!d! = %4!ws!"
 
 IDS_FLAGS_PREFIX "Flags: "
 
@@ -1864,10 +1864,10 @@ IDS_JUNKDATASIZE "\r\nUnparsed data size = 0x%1!08X!\r\n"
 IDS_EXTENDEDFLAGSHEADER "Extended Flags: \r\n\
 Number of flags = %1!d!"
 
-IDS_EXTENDEDFLAGID "\r\nId = 0x%1!02X! = %2\
+IDS_EXTENDEDFLAGID "\r\nId = 0x%1!02X! = %2!ws!\
 \r\nCb = 0x%3!02X! = %3!d!"
-IDS_EXTENDEDFLAGDATAFLAG "\r\n\tExtended Flags = 0x%1!08X! = %2"
-IDS_EXTENDEDFLAGDATASFID "\r\n\tSearchFolderID = %1"
+IDS_EXTENDEDFLAGDATAFLAG "\r\n\tExtended Flags = 0x%1!08X! = %2!ws!"
+IDS_EXTENDEDFLAGDATASFID "\r\n\tSearchFolderID = %1!ws!"
 IDS_EXTENDEDFLAGDATASFTAG "\r\n\tSearchFolderTag = 0x%1!08X!"
 IDS_EXTENDEDFLAGDATATODOVERSION "\r\n\tToDoFolderVersion = 0x%1!08X!"
 
@@ -1875,7 +1875,7 @@ IDS_EXTENDEDFLAGUNKNOWN "\r\n\tUnknown Data = "
 IDS_REPORTTAGHEADER "Report Tag: \r\n\
 Cookie = "
 IDS_REPORTTAGVERSION "\r\n\
-Version = 0x%1!08X! = %2"
+Version = 0x%1!08X! = %2!ws!"
 
 IDS_REPORTTAGSTOREEID "\r\nStoreEntryID = "
 IDS_REPORTTAGFOLDEREID "\r\nFolderEntryID = "
@@ -1887,8 +1887,8 @@ AnsiText = %2!hs!"
 
 IDS_CONVERSATIONINDEXHEADER "Conversation Index: \r\n\
 Unnamed byte = 0x%1!02X! = %1!d!\r\n\
-Current FILETIME: (Low = 0x%2!08X!, High = 0x%3!08X!) = %4\r\n\
-GUID = %5"
+Current FILETIME: (Low = 0x%2!08X!, High = 0x%3!08X!) = %4!ws!\r\n\
+GUID = %5!ws!"
 
 IDS_CONVERSATIONINDEXRESPONSELEVEL "\r\nResponseLevel[%1!d!].DeltaCode = %2!d!\
 \r\nResponseLevel[%1!d!].TimeDelta = 0x%3!08X! = %3!d!\
@@ -1911,21 +1911,21 @@ IDS_GLOBALOBJECTIDHEADER "Global Object ID: \
 \r\nByte Array ID = "
 
 IDS_GLOBALOBJECTIDDATA1 "\r\nYear: 0x%1!04X! = %1!d!\
-\r\nMonth: 0x%2!02X! = %2!d! = %3\
+\r\nMonth: 0x%2!02X! = %2!d! = %3!ws!\
 \r\nDay: 0x%4!02X! = %4!d!\
-\r\nCreation Time = 0x%5!08X!:0x%6!08X! = %7\
+\r\nCreation Time = 0x%5!08X!:0x%6!08X! = %7!ws!\
 \r\nX: 0x%8!08X!:0x%9!08X!\
 \r\nSize: 0x%10!02X! = %10!d!"
 
 IDS_GLOBALOBJECTIDDATA2 "\r\nData = "
 
 IDS_ONEOFFENTRYIDFOOTERUNICODE "\r\n\
-dwBitmask: 0x%1!08X! = %2\r\n\
+dwBitmask: 0x%1!08X! = %2!ws!\r\n\
 szDisplayName = %3!ws!\r\n\
 szAddressType = %4!ws!\r\n\
 szEmailAddress = %5!ws!"
 IDS_ONEOFFENTRYIDFOOTERANSI "\r\n\
-dwBitmask: 0x%1!08X! = %1!d! = %2\r\n\
+dwBitmask: 0x%1!08X! = %1!d! = %2!ws!\r\n\
 szDisplayName = %3!hs!\r\n\
 szAddressType = %4!hs!\r\n\
 szEmailAddress = %5!hs!"
@@ -1950,55 +1950,55 @@ IDS_ENTRYIDWRAPPEDENTRYID "Wrapped Entry ID:\r\n"
 
 IDS_ENTRYIDHEADER1 "abFlags = 0x00000000\r\n"
 
-IDS_ENTRYIDHEADER2 "abFlags[0] = 0x%1!02X!= %2\r\n\
+IDS_ENTRYIDHEADER2 "abFlags[0] = 0x%1!02X!= %2!ws!\r\n\
 abFlags[1..3] = 0x000000\r\n"
 
-IDS_ENTRYIDHEADER3 "abFlags[0] = 0x%1!02X!= %2\r\n\
-abFlags[1] = 0x%3!02X!= %4\r\n\
+IDS_ENTRYIDHEADER3 "abFlags[0] = 0x%1!02X!= %2!ws!\r\n\
+abFlags[1] = 0x%3!02X!= %4!ws!\r\n\
 abFlags[2..3] = 0x%5!02X!%6!02X!\r\n"
 
-IDS_ENTRYIDPROVIDERGUID "Provider GUID = %1"
+IDS_ENTRYIDPROVIDERGUID "Provider GUID = %1!ws!"
 
-IDS_ENTRYIDEXCHANGEADDRESSDATA "\r\nVersion = 0x%1!08X! = %2\r\n\
+IDS_ENTRYIDEXCHANGEADDRESSDATA "\r\nVersion = 0x%1!08X! = %2!ws!\r\n\
 Type = 0x%3!08X! = %4!ws!\r\n\
 X500DN = %5!hs!"
 
-IDS_ENTRYIDCONTACTADDRESSDATAHEAD "\r\nVersion = 0x%1!08X! = %2\r\n\
-Type = 0x%3!08X! = %4\r\n"
+IDS_ENTRYIDCONTACTADDRESSDATAHEAD "\r\nVersion = 0x%1!08X! = %2!ws!\r\n\
+Type = 0x%3!08X! = %4!ws!\r\n"
 
-IDS_ENTRYIDCONTACTADDRESSDATAUSER "Index = 0x%1!08X! = %2\r\n\
+IDS_ENTRYIDCONTACTADDRESSDATAUSER "Index = 0x%1!08X! = %2!ws!\r\n\
 EntryIDCount = 0x%3!08X!\r\n"
 
-IDS_ENTRYIDCONTACTADDRESSDATACONTAINER "muidID = %1\r\n"
+IDS_ENTRYIDCONTACTADDRESSDATACONTAINER "muidID = %1!ws!\r\n"
 
-IDS_ENTRYIDMAPIMESSAGESTOREDATA "\r\nVersion = 0x%1!02X! = %2\r\n\
-Flag = 0x%3!02X! = %4\r\n\
+IDS_ENTRYIDMAPIMESSAGESTOREDATA "\r\nVersion = 0x%1!02X! = %2!ws!\r\n\
+Flag = 0x%3!02X! = %4!ws!\r\n\
 DLLFileName = %5!hs!"
 
 IDS_ENTRYIDMAPIMESSAGESTOREEXCHANGEDATA "\r\nWrapped Flags = 0x%1!08X!\r\n\
-WrappedProviderUID = %2\r\n\
+WrappedProviderUID = %2!ws!\r\n\
 WrappedType = 0x%3!08X! = %4!ws!\r\n\
 ServerShortname = %5!hs!\r\n\
 MailboxDN = %6!hs!"
 
-IDS_ENTRYIDMAPIMESSAGESTOREEXCHANGEDATAV2 "\r\nMagic = 0x%1!08X! = %2\r\n\
+IDS_ENTRYIDMAPIMESSAGESTOREEXCHANGEDATAV2 "\r\nMagic = 0x%1!08X! = %2!ws!\r\n\
 Size = 0x%3!08X! = %3!d!\r\n\
-Version = 0x%4!08X! = %5\r\n\
+Version = 0x%4!08X! = %5!ws!\r\n\
 OffsetDN = 0x%6!08X!\r\n\
 OffsetFQDN = 0x%7!08X!\r\n\
 DN = %8!hs!\r\n\
 FQDN = %9!ws!\r\n\
 Reserved Bytes = "
 
-IDS_ENTRYIDMAPIMESSAGESTOREEXCHANGEDATAV3 "\r\nMagic = 0x%1!08X! = %2\r\n\
+IDS_ENTRYIDMAPIMESSAGESTOREEXCHANGEDATAV3 "\r\nMagic = 0x%1!08X! = %2!ws!\r\n\
 Size = 0x%3!08X! = %3!d!\r\n\
-Version = 0x%4!08X! = %5\r\n\
+Version = 0x%4!08X! = %5!ws!\r\n\
 OffsetSmtpAddress = 0x%6!08X!\r\n\
 SmtpAddress = %7!ws!\r\n\
 Reserved Bytes = "
 
-IDS_ENTRYIDEXCHANGEFOLDERDATA "\r\nFolder Type = 0x%1!04X! = %2\r\n\
-Database GUID = %3\r\n\
+IDS_ENTRYIDEXCHANGEFOLDERDATA "\r\nFolder Type = 0x%1!04X! = %2!ws!\r\n\
+Database GUID = %3!ws!\r\n\
 GlobalCounter = "
 
 IDS_ENTRYIDEXCHANGEDATAPAD "\r\n\
@@ -2007,21 +2007,21 @@ Pad = "
 IDS_ENTRYIDEXCHANGEDATAPADNUM "\r\n\
 Pad%1!d! = "
 
-IDS_ENTRYIDEXCHANGEMESSAGEDATA "\r\nMessage Type = 0x%1!04X! = %2\r\n\
-Folder Database GUID = %3\r\n\
+IDS_ENTRYIDEXCHANGEMESSAGEDATA "\r\nMessage Type = 0x%1!04X! = %2!ws!\r\n\
+Folder Database GUID = %3!ws!\r\n\
 Folder GlobalCounter = "
 
-IDS_ENTRYIDEXCHANGEMESSAGEDATAGUID "\r\nMessage Database GUID = %1\r\n\
+IDS_ENTRYIDEXCHANGEMESSAGEDATAGUID "\r\nMessage Database GUID = %1!ws!\r\n\
 Message GlobalCounter = "
 
-IDS_ENTRYIDWRAPPEDENTRYIDDATA "\r\nWrapped Entry Type = 0x%1!02X! = %2\r\n"
+IDS_ENTRYIDWRAPPEDENTRYIDDATA "\r\nWrapped Entry Type = 0x%1!02X! = %2!ws!\r\n"
 
 IDS_PROPERTYDATAHEADER "Property[%1!d!]\r\n\
 Property = 0x%2!08X!\r\n"
 IDS_PROPERTYDATA "PropString = %1!ws! AltPropString = %2!ws!\r\n"
 IDS_PROPERTYDATASMARTVIEW "Smart View: %1!ws!\r\n"
-IDS_PROPERTYDATAEXACTMATCHES "Exact Matches: %1\r\n"
-IDS_PROPERTYDATAPARTIALMATCHES "Partial Matches: %1\r\n"
+IDS_PROPERTYDATAEXACTMATCHES "Exact Matches: %1!ws!\r\n"
+IDS_PROPERTYDATAPARTIALMATCHES "Partial Matches: %1!ws!\r\n"
 
 IDS_RESTRICTIONDATA "Restriction:\r\n"
 
@@ -2070,16 +2070,16 @@ IDS_SFDEFINITIONADVANCEDSEARCHLEN "\r\nAdvancedSearchLen = 0x%1!08X!"
 IDS_SFDEFINITIONADVANCEDSEARCHBYTES "\r\nAdvancedSearchBytes = "
 IDS_SFDEFINITIONSKIPLEN3 "\r\nSkipLen3 = 0x%1!08X!"
 IDS_SFDEFINITIONSKIPBYTES3 "\r\nSkipBytes2 = "
-IDS_PROPDEFPACKEDSTRINGLEN "%1: Length = 0x%2!04X!"
+IDS_PROPDEFPACKEDSTRINGLEN "%1!ws!: Length = 0x%2!04X!"
 IDS_PROPDEFPACKEDSTRINGCHARS " Characters = "
 IDS_PROPDEFHEADER "Property Definition Stream\r\n\
-Version = 0x%1!04X! = %2\r\n\
+Version = 0x%1!04X! = %2!ws!\r\n\
 FieldDefinitionCount = 0x%3!08X!"
 IDS_PROPDEFFIELDHEADER "\r\nDefinition: %1!d!\r\n\
-\tFlags = 0x%2!08X! = %3\r\n\
-\tVT = 0x%4!04X! = %5\r\n\
+\tFlags = 0x%2!08X! = %3!ws!\r\n\
+\tVT = 0x%4!04X! = %5!ws!\r\n\
 \tDispID = 0x%6!08X!"
-IDS_PROPDEFDISPIDTAG " = %1"
+IDS_PROPDEFDISPIDTAG " = %1!ws!"
 IDS_PROPDEFDISPIDNAMED " = %1!ws!"
 IDS_PROPDEFNMIDNAME "\r\n\tNmidNameLength = 0x%1!04X!\r\n\
 \tNmidName = "
@@ -2089,7 +2089,7 @@ IDS_PROPDEFFORUMULA "FormulaANSI"
 IDS_PROPDEFVRULE "ValidationRuleANSI"
 IDS_PROPDEFVTEXT "ValidationTextANSI"
 IDS_PROPDEFERROR "ErrorANSI"
-IDS_PROPDEFINTERNALTYPE "\r\n\tInternalType = 0x%1!08X! = %2\r\n\
+IDS_PROPDEFINTERNALTYPE "\r\n\tInternalType = 0x%1!08X! = %2!ws!\r\n\
 \tSkipBlockCount = %3!d!"
 IDS_PROPDEFSKIPBLOCK "\r\n\tSkipBlock: %1!d!\r\n\
 \t\tSize = 0x%2!08X!"
@@ -2099,10 +2099,10 @@ IDS_PROPDEFCONTENT "\r\n\t\tContent = "
 IDS_AEIDHEADER "Additional Ren Entry IDs\r\n\
 PersistDataCount = %1!d!"
 IDS_AEIDPERSISTELEMENT "\r\n\r\nPersist Element %1!d!:\r\n\
-PersistID = 0x%2!04X! = %3\r\n\
+PersistID = 0x%2!04X! = %3!ws!\r\n\
 DataElementsSize = 0x%4!04X!"
 IDS_AEIDDATAELEMENT "\r\nDataElement: %1!d!\r\n\
-\tElementID = 0x%2!04X! = %3\r\n\
+\tElementID = 0x%2!04X! = %3!ws!\r\n\
 \tElementDataSize = 0x%4!04X!\r\n\
 \tElementData = "
 IDS_MVROWBIN "Row %1!d!\r\n"
@@ -2115,9 +2115,9 @@ IDS_FELENTRYPADDING "\r\nEntry[%1!d!] Padding:"
 IDS_WEBVIEWSTREAMHEADER "Web View Persistence Object Stream\r\n\
 cWebViews = %1!d!"
 IDS_WEBVIEWHEADER "\r\n\r\nWeb View %1!d!\r\n\
-dwVersion = 0x%2!08X! = %3\r\n\
-dwType = 0x%4!08X! = %5\r\n\
-dwFlags = 0x%6!08X! = %7\r\n\
+dwVersion = 0x%2!08X! = %3!ws!\r\n\
+dwType = 0x%4!08X! = %5!ws!\r\n\
+dwFlags = 0x%6!08X! = %7!ws!\r\n\
 dwUnused = "
 IDS_WEBVIEWCBDATA "\r\n\
 cbData = 0x%1!08X!"
@@ -2202,11 +2202,11 @@ Here are some known causes for this.\r\n\
 #endif
 
 // UpdateStatusBarText - use FormatMessage style formatting
-IDS_STATUSTEXTNUMITEMS "Items: %1"
-IDS_STATUSTEXTNUMPROPS "Properties: %1"
+IDS_STATUSTEXTNUMITEMS "Items: %1!ws!"
+IDS_STATUSTEXTNUMPROPS "Properties: %1!ws!"
 IDS_STATUSTEXTNOFOLDER "Could not open folder or get properties"
-IDS_STATUSTEXTCONTENTCOUNTS "Contents: %1 Assoc. Contents: %2"
-IDS_STATUSTEXTDELETEDCOUNTS "Deleted Items: %1 Deleted Assoc. Items: %2 Deleted Subfolders: %3"
+IDS_STATUSTEXTCONTENTCOUNTS "Contents: %1!ws! Assoc. Contents: %2!ws!"
+IDS_STATUSTEXTDELETEDCOUNTS "Deleted Items: %1!ws! Deleted Assoc. Items: %2!ws! Deleted Subfolders: %3!ws!"
 IDS_STATUSTEXTLOADINGNICKNAME "Loading nickname cache..."
 IDS_STATUSTEXTLOADINGQUOTA "Loading quota properties..."
 IDS_STATUSTEXTCHECKINGSPECIALFOLDERS "Checking special folders..."

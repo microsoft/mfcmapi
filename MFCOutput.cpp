@@ -472,9 +472,9 @@ void _OutputPropTagArray(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropTagAr
 		Outputf(ulDbgLvl,
 			fFile,
 			true,
-			L"\t\tProp: %u = %s\n", // STRING_OK
+			L"\t\tProp: %u = %ws\n", // STRING_OK
 			uCurProp,
-			(LPCTSTR)TagToString(lpTagsToDump->aulPropTag[uCurProp], NULL, false, true)); // TODO: Fix This
+			TagToString(lpTagsToDump->aulPropTag[uCurProp], NULL, false, true).c_str());
 	}
 
 	Output(ulDbgLvl, fFile, true, L"\tEnd Prop Tag List\n");

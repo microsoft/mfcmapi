@@ -143,10 +143,8 @@ CStreamEditor::CStreamEditor(
 		}
 	}
 
-	CString szPromptPostFix;
-	szPromptPostFix.Format(_T("\r\n%s"), (LPCTSTR)TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, false)); // STRING_OK
-
-	SetPromptPostFix(szPromptPostFix);
+	wstring szPromptPostFix = format(L"\r\n%ws", TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, false).c_str()); // STRING_OK
+	SetPromptPostFix(wstringToCString(szPromptPostFix));
 
 	// Let's crack our property open and see what kind of controls we'll need for it
 	// One control for text stream, one for binary
@@ -228,7 +226,7 @@ void CStreamEditor::OpenPropertyStream(bool bWrite, bool bRTF)
 	ULONG ulFlags = NULL;
 	ULONG ulRTFFlags = m_ulRTFFlags;
 
-	DebugPrintEx(DBGStream, CLASS, L"OpenPropertyStream", L"opening property 0x%X (= %ws) from %p, bWrite = 0x%X\n", m_ulPropTag, LPCTSTRToWstring(TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, true)).c_str(), m_lpMAPIProp, bWrite);
+	DebugPrintEx(DBGStream, CLASS, L"OpenPropertyStream", L"opening property 0x%X (= %ws) from %p, bWrite = 0x%X\n", m_ulPropTag, TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, true).c_str(), m_lpMAPIProp, bWrite);
 
 	if (bWrite)
 	{
@@ -284,7 +282,7 @@ void CStreamEditor::OpenPropertyStream(bool bWrite, bool bRTF)
 			if (ulPropTag != m_ulPropTag)
 			{
 				hRes = S_OK;
-				DebugPrintEx(DBGStream, CLASS, L"OpenPropertyStream", L"Retrying as 0x%X (= %ws)\n", m_ulPropTag, LPCTSTRToWstring(TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, true)).c_str());
+				DebugPrintEx(DBGStream, CLASS, L"OpenPropertyStream", L"Retrying as 0x%X (= %ws)\n", m_ulPropTag, TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, true).c_str());
 				WC_MAPI(m_lpMAPIProp->OpenProperty(
 					ulPropTag,
 					&IID_IStream,
@@ -346,7 +344,7 @@ void CStreamEditor::ReadTextStreamFromProperty()
 	if (!IsValidEdit(m_iTextBox)) return;
 	if (!IsValidEdit(m_iBinBox)) return;
 
-	DebugPrintEx(DBGStream, CLASS, L"ReadTextStreamFromProperty", L"opening property 0x%X (= %ws) from %p\n", m_ulPropTag, LPCTSTRToWstring(TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, true)).c_str(), m_lpMAPIProp);
+	DebugPrintEx(DBGStream, CLASS, L"ReadTextStreamFromProperty", L"opening property 0x%X (= %ws) from %p\n", m_ulPropTag, TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, true).c_str(), m_lpMAPIProp);
 
 	// If we don't have a stream to display, put up an error instead
 	if (FAILED(m_StreamError) || !m_lpStream)

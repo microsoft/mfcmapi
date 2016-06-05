@@ -40,11 +40,11 @@ CResCompareEditor::CResCompareEditor(
 	InitPane(1, CreateSingleLinePaneW(IDS_RELOP, szFlags.c_str(), true));
 	InitPane(2, CreateSingleLinePane(IDS_ULPROPTAG1, NULL, false));
 	SetHex(2, ulPropTag1);
-	InitPane(3, CreateSingleLinePane(IDS_ULPROPTAG1, TagToString(ulPropTag1, NULL, false, true), true));
+	InitPane(3, CreateSingleLinePaneW(IDS_ULPROPTAG1, TagToString(ulPropTag1, NULL, false, true).c_str(), true));
 
 	InitPane(4, CreateSingleLinePane(IDS_ULPROPTAG2, NULL, false));
 	SetHex(4, ulPropTag2);
-	InitPane(5, CreateSingleLinePane(IDS_ULPROPTAG1, TagToString(ulPropTag2, NULL, false, true), true));
+	InitPane(5, CreateSingleLinePaneW(IDS_ULPROPTAG1, TagToString(ulPropTag2, NULL, false, true).c_str(), true));
 } // CResCompareEditor::CResCompareEditor
 
 _Check_return_ ULONG CResCompareEditor::HandleChange(UINT nID)
@@ -58,11 +58,11 @@ _Check_return_ ULONG CResCompareEditor::HandleChange(UINT nID)
 	}
 	else if (2 == i)
 	{
-		SetString(3, TagToString(GetPropTagUseControl(2), NULL, false, true));
+		SetStringW(3, TagToString(GetPropTagUseControl(2), NULL, false, true).c_str());
 	}
 	else if (4 == i)
 	{
-		SetString(5, TagToString(GetPropTagUseControl(4), NULL, false, true));
+		SetStringW(5, TagToString(GetPropTagUseControl(4), NULL, false, true).c_str());
 	}
 	return i;
 } // CResCompareEditor::HandleChange
@@ -101,15 +101,15 @@ CResCombinedEditor::CResCombinedEditor(
 	_In_ LPSPropValue lpProp,
 	_In_ LPVOID lpAllocParent) :
 	CEditor(pParentWnd,
-	IDS_RESED,
-	ulResType == RES_CONTENT ? IDS_RESEDCONTPROMPT : // Content case
-	ulResType == RES_PROPERTY ? IDS_RESEDPROPPROMPT : // Property case
-	0, // else case
-	8,
-	CEDITOR_BUTTON_OK | CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_CANCEL,
-	IDS_ACTIONEDITPROP,
-	NULL,
-	NULL)
+		IDS_RESED,
+		ulResType == RES_CONTENT ? IDS_RESEDCONTPROMPT : // Content case
+		ulResType == RES_PROPERTY ? IDS_RESEDPROPPROMPT : // Property case
+		0, // else case
+		8,
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_CANCEL,
+		IDS_ACTIONEDITPROP,
+		NULL,
+		NULL)
 {
 	TRACE_CONSTRUCTOR(CONTENTCLASS);
 
@@ -140,11 +140,11 @@ CResCombinedEditor::CResCombinedEditor(
 
 	InitPane(2, CreateSingleLinePane(IDS_ULPROPTAG, NULL, false));
 	SetHex(2, ulPropTag);
-	InitPane(3, CreateSingleLinePane(IDS_ULPROPTAG, TagToString(ulPropTag, NULL, false, true), true));
+	InitPane(3, CreateSingleLinePaneW(IDS_ULPROPTAG, TagToString(ulPropTag, NULL, false, true).c_str(), true));
 
 	InitPane(4, CreateSingleLinePane(IDS_LPPROPULPROPTAG, NULL, false));
 	if (lpProp) SetHex(4, lpProp->ulPropTag);
-	InitPane(5, CreateSingleLinePane(IDS_LPPROPULPROPTAG, lpProp ? (LPCTSTR)TagToString(lpProp->ulPropTag, NULL, false, true) : NULL, true));
+	InitPane(5, CreateSingleLinePaneW(IDS_LPPROPULPROPTAG, lpProp ? TagToString(lpProp->ulPropTag, NULL, false, true).c_str() : NULL, true));
 
 	wstring szProp;
 	wstring szAltProp;
@@ -173,11 +173,11 @@ _Check_return_ ULONG CResCombinedEditor::HandleChange(UINT nID)
 	}
 	else if (2 == i)
 	{
-		SetString(3, TagToString(GetPropTagUseControl(2), NULL, false, true));
+		SetStringW(3, TagToString(GetPropTagUseControl(2), NULL, false, true).c_str());
 	}
 	else if (4 == i)
 	{
-		SetString(5, TagToString(GetPropTagUseControl(4), NULL, false, true));
+		SetStringW(5, TagToString(GetPropTagUseControl(4), NULL, false, true).c_str());
 		m_lpOldProp = NULL;
 		m_lpNewProp = NULL;
 		SetString(6, NULL);
@@ -258,7 +258,7 @@ CResBitmaskEditor::CResBitmaskEditor(
 	InitPane(1, CreateSingleLinePaneW(IDS_RELBMR, szFlags.c_str(), true));
 	InitPane(2, CreateSingleLinePane(IDS_ULPROPTAG, NULL, false));
 	SetHex(2, ulPropTag);
-	InitPane(3, CreateSingleLinePane(IDS_ULPROPTAG, TagToString(ulPropTag, NULL, false, true), true));
+	InitPane(3, CreateSingleLinePaneW(IDS_ULPROPTAG, TagToString(ulPropTag, NULL, false, true).c_str(), true));
 
 	InitPane(4, CreateSingleLinePane(IDS_MASK, NULL, false));
 	SetHex(4, ulMask);
@@ -275,7 +275,7 @@ _Check_return_ ULONG CResBitmaskEditor::HandleChange(UINT nID)
 	}
 	else if (2 == i)
 	{
-		SetString(3, TagToString(GetPropTagUseControl(2), NULL, false, true));
+		SetStringW(3, TagToString(GetPropTagUseControl(2), NULL, false, true).c_str());
 	}
 	return i;
 } // CResBitmaskEditor::HandleChange
@@ -311,7 +311,7 @@ CResSizeEditor::CResSizeEditor(
 
 	InitPane(2, CreateSingleLinePane(IDS_ULPROPTAG, NULL, false));
 	SetHex(2, ulPropTag);
-	InitPane(3, CreateSingleLinePane(IDS_ULPROPTAG, TagToString(ulPropTag, NULL, false, true), true));
+	InitPane(3, CreateSingleLinePaneW(IDS_ULPROPTAG, TagToString(ulPropTag, NULL, false, true).c_str(), true));
 
 	InitPane(4, CreateSingleLinePane(IDS_CB, NULL, false));
 	SetHex(4, cb);
@@ -328,7 +328,7 @@ _Check_return_ ULONG CResSizeEditor::HandleChange(UINT nID)
 	}
 	else if (2 == i)
 	{
-		SetString(3, TagToString(GetPropTagUseControl(2), NULL, false, true));
+		SetStringW(3, TagToString(GetPropTagUseControl(2), NULL, false, true).c_str());
 	}
 	return i;
 } // CResSizeEditor::HandleChange
@@ -354,7 +354,7 @@ CResExistEditor::CResExistEditor(
 
 	InitPane(0, CreateSingleLinePane(IDS_ULPROPTAG, NULL, false));
 	SetHex(0, ulPropTag);
-	InitPane(1, CreateSingleLinePane(IDS_ULPROPTAG, TagToString(ulPropTag, NULL, false, true), true));
+	InitPane(1, CreateSingleLinePaneW(IDS_ULPROPTAG, TagToString(ulPropTag, NULL, false, true).c_str(), true));
 } // CResExistEditor::CResExistEditor
 
 _Check_return_ ULONG CResExistEditor::HandleChange(UINT nID)
@@ -363,7 +363,7 @@ _Check_return_ ULONG CResExistEditor::HandleChange(UINT nID)
 
 	if (0 == i)
 	{
-		SetString(1, TagToString(GetPropTagUseControl(0), NULL, false, true));
+		SetStringW(1, TagToString(GetPropTagUseControl(0), NULL, false, true).c_str());
 	}
 	return i;
 } // CResExistEditor::HandleChange
@@ -406,7 +406,7 @@ CResSubResEditor::CResSubResEditor(
 
 	InitPane(0, CreateSingleLinePane(IDS_ULSUBOBJECT, NULL, false));
 	SetHex(0, ulSubObject);
-	InitPane(1, CreateSingleLinePane(IDS_ULSUBOBJECT, TagToString(ulSubObject, NULL, false, true), true));
+	InitPane(1, CreateSingleLinePaneW(IDS_ULSUBOBJECT, TagToString(ulSubObject, NULL, false, true).c_str(), true));
 
 	InitPane(2, CreateMultiLinePaneW(IDS_LPRES, RestrictionToString(lpRes, NULL).c_str(), true));
 } // CResSubResEditor::CResSubResEditor
@@ -417,7 +417,7 @@ _Check_return_ ULONG CResSubResEditor::HandleChange(UINT nID)
 
 	if (0 == i)
 	{
-		SetString(1, TagToString(GetPropTagUseControl(0), NULL, false, true));
+		SetStringW(1, TagToString(GetPropTagUseControl(0), NULL, false, true).c_str());
 	}
 	return i;
 } // CResSubResEditor::HandleChange
@@ -744,7 +744,7 @@ void CResCommentEditor::InitListFromPropArray(ULONG ulListNum, ULONG cProps, _In
 		{
 			lpData->ulSortDataType = SORTLIST_COMMENT;
 			lpData->data.Comment.lpOldProp = &lpProps[i];
-			SetListString(ulListNum, i, 1, TagToString(lpProps[i].ulPropTag, NULL, false, true));
+			SetListStringW(ulListNum, i, 1, TagToString(lpProps[i].ulPropTag, NULL, false, true).c_str());
 			InterpretProp(&lpProps[i], &szProp, &szAltProp);
 			SetListStringW(ulListNum, i, 2, szProp.c_str());
 			SetListStringW(ulListNum, i, 3, szAltProp.c_str());
@@ -820,7 +820,7 @@ _Check_return_ bool CResCommentEditor::DoListEdit(ULONG ulListNum, int iItem, _I
 	{
 		wstring szTmp;
 		wstring szAltTmp;
-		SetListString(ulListNum, iItem, 1, TagToString(lpData->data.Comment.lpNewProp->ulPropTag, NULL, false, true));
+		SetListStringW(ulListNum, iItem, 1, TagToString(lpData->data.Comment.lpNewProp->ulPropTag, NULL, false, true).c_str());
 		InterpretProp(lpData->data.Comment.lpNewProp, &szTmp, &szAltTmp);
 		SetListStringW(ulListNum, iItem, 2, szTmp.c_str());
 		SetListStringW(ulListNum, iItem, 3, szAltTmp.c_str());

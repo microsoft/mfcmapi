@@ -10,7 +10,7 @@ _Check_return_ HRESULT Base64Encode(size_t cbSourceBuf, _In_count_(cbSourceBuf) 
 void FileTimeToString(_In_ FILETIME* lpFileTime, _In_ wstring& PropString, _In_opt_ wstring& AltPropString); 
 
 #define TAG_MAX_LEN 1024 // Max I've seen in testing is 546 - bit more to be safe
-_Check_return_ CString TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB, bool bSingleLine);
+wstring TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB, bool bSingleLine);
 wstring TypeToString(ULONG ulPropTag);
 wstring ProblemArrayToString(_In_ LPSPropProblemArray lpProblems);
 wstring MAPIErrToString(ULONG ulFlags, _In_ LPMAPIERROR lpErr);
@@ -29,11 +29,11 @@ void NameIDToStrings(
 _Check_return_ HRESULT StringToGUID(_In_z_ LPCTSTR szGUID, _Inout_ LPGUID lpGUID);
 _Check_return_ HRESULT StringToGUID(_In_z_ LPCTSTR szGUID, bool bByteSwapped, _Inout_ LPGUID lpGUID);
 
-_Check_return_ wstring CurrencyToString(CURRENCY curVal);
+wstring CurrencyToString(CURRENCY curVal);
 
-_Check_return_ wstring RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj);
-_Check_return_ wstring ActionsToString(_In_ ACTIONS* lpActions);
+wstring RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj);
+wstring ActionsToString(_In_ ACTIONS* lpActions);
 
-_Check_return_ wstring AdrListToString(_In_ LPADRLIST lpAdrList);
+wstring AdrListToString(_In_ LPADRLIST lpAdrList);
 
 void InterpretProp(_In_ LPSPropValue lpProp, _In_opt_  wstring* PropString, _In_opt_  wstring* AltPropString);

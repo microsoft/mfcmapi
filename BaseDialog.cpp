@@ -899,10 +899,8 @@ void CBaseDialog::OnCompareEntryIDs()
 
 	if (SUCCEEDED(hRes))
 	{
-		CString szRet;
-		CString szResult;
-		EC_B(szResult.LoadString(ulResult ? IDS_TRUE : IDS_FALSE));
-		szRet.FormatMessage(IDS_COMPAREEIDBOOL, ulResult, szResult);
+		wstring szResult = loadstring(ulResult ? IDS_TRUE : IDS_FALSE);
+		wstring szRet = formatmessage(IDS_COMPAREEIDBOOL, ulResult, szResult.c_str());
 
 		CEditor Result(
 			this,
@@ -910,7 +908,7 @@ void CBaseDialog::OnCompareEntryIDs()
 			NULL,
 			static_cast<ULONG>(0),
 			CEDITOR_BUTTON_OK);
-		Result.SetPromptPostFix(szRet);
+		Result.SetPromptPostFix(wstringToCString(szRet.c_str()));
 		(void)Result.DisplayDialog();
 	}
 

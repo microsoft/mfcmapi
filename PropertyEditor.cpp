@@ -135,10 +135,8 @@ CPropertyEditor::CPropertyEditor(
 	// So by definition, we're already dirty
 	if (!m_lpsInputValue) m_bDirty = true;
 
-	CString szPromptPostFix;
-	szPromptPostFix.Format(_T("%s%s"), uidPrompt ? _T("\r\n") : _T(""), (LPCTSTR)TagToString(m_ulPropTag | (m_bMVRow ? MV_FLAG : NULL), m_lpMAPIProp, m_bIsAB, false)); // STRING_OK
-
-	SetPromptPostFix(szPromptPostFix);
+	wstring szPromptPostFix = format(L"%ws%ws", uidPrompt ? L"\r\n" : L"", TagToString(m_ulPropTag | (m_bMVRow ? MV_FLAG : NULL), m_lpMAPIProp, m_bIsAB, false).c_str()); // STRING_OK
+	SetPromptPostFix(wstringToCString(szPromptPostFix));
 
 	// Let's crack our property open and see what kind of controls we'll need for it
 	CreatePropertyControls();
@@ -1062,10 +1060,9 @@ CMultiValuePropertyEditor::CMultiValuePropertyEditor(
 	m_ulPropTag = ulPropTag;
 	m_lpsInputValue = lpsPropValue;
 
-	CString szPromptPostFix;
-	szPromptPostFix.Format(_T("\r\n%s"), (LPCTSTR)TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, false)); // STRING_OK
+	wstring szPromptPostFix = format(L"\r\n%ws", TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, false).c_str()); // STRING_OK
 
-	SetPromptPostFix(szPromptPostFix);
+	SetPromptPostFix(wstringToCString(szPromptPostFix));
 
 	// Let's crack our property open and see what kind of controls we'll need for it
 	CreatePropertyControls();

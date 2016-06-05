@@ -1313,21 +1313,19 @@ void CMainDlg::OnQueryDefaultMessageOpt()
 			if (lpOptions)
 			{
 				ULONG i = 0;
-				CString szPropString;
-				CString szTmp;
+				wstring szPropString;
 				wstring szProp;
 				wstring szAltProp;
 				for (i = 0; i < cValues; i++)
 				{
 					InterpretProp(&lpOptions[i], &szProp, &szAltProp);
-					szTmp.FormatMessage(IDS_OPTIONSSTRUCTURE,
+					szPropString += formatmessage(IDS_OPTIONSSTRUCTURE,
 						i,
-						TagToString(lpOptions[i].ulPropTag, NULL, false, true),
+						TagToString(lpOptions[i].ulPropTag, NULL, false, true).c_str(),
 						szProp.c_str(),
 						szAltProp.c_str());
-					szPropString += szTmp;
 				}
-				MyResult.InitPane(1, CreateMultiLinePane(IDS_OPTIONS, (LPCTSTR)szPropString, true));
+				MyResult.InitPane(1, CreateMultiLinePaneW(IDS_OPTIONS, szPropString.c_str(), true));
 			}
 
 			WC_H(MyResult.DisplayDialog());
@@ -1379,21 +1377,19 @@ void CMainDlg::OnQueryDefaultRecipOpt()
 			if (lpOptions)
 			{
 				ULONG i = 0;
-				CString szPropString;
-				CString szTmp;
+				wstring szPropString;
 				wstring szProp;
 				wstring szAltProp;
 				for (i = 0; i < cValues; i++)
 				{
 					InterpretProp(&lpOptions[i], &szProp, &szAltProp);
-					szTmp.FormatMessage(IDS_OPTIONSSTRUCTURE,
+					szPropString += formatmessage(IDS_OPTIONSSTRUCTURE,
 						i,
-						TagToString(lpOptions[i].ulPropTag, NULL, false, true),
+						TagToString(lpOptions[i].ulPropTag, NULL, false, true).c_str(),
 						szProp.c_str(),
 						szAltProp.c_str());
-					szPropString += szTmp;
 				}
-				MyResult.InitPane(1, CreateMultiLinePane(IDS_OPTIONS, (LPCTSTR)szPropString, true));
+				MyResult.InitPane(1, CreateMultiLinePaneW(IDS_OPTIONS, szPropString.c_str(), true));
 			}
 
 			WC_H(MyResult.DisplayDialog());
