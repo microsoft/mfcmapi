@@ -658,26 +658,26 @@ void CBaseDialog::OnHexEditor()
 	new CHexEditor(m_lpParent, m_lpMapiObjects);
 }
 
-CString GetOutlookVersionString()
+wstring GetOutlookVersionString()
 {
 	HRESULT hRes = S_OK;
 
-	if (!pfnMsiProvideQualifiedComponent || !pfnMsiGetFileVersion) return _T("");
+	if (!pfnMsiProvideQualifiedComponent || !pfnMsiGetFileVersion) return emptystring;
 
 	int i = 0;
-	CString szOut;
+	wstring szOut;
 
 	for (i = oqcOfficeBegin; i < oqcOfficeEnd; i++)
 	{
 		bool b64 = false;
-		LPTSTR lpszTempPath = GetOutlookPath(g_pszOutlookQualifiedComponents[i], &b64);
+		LPWSTR lpszTempPath = GetOutlookPath(g_pszOutlookQualifiedComponents[i], &b64);
 
 		if (lpszTempPath)
 		{
-			LPTSTR lpszTempVer = nullptr;
-			LPTSTR lpszTempLang = nullptr;
-			lpszTempVer = new TCHAR[MAX_PATH];
-			lpszTempLang = new TCHAR[MAX_PATH];
+			LPWSTR lpszTempVer = nullptr;
+			LPWSTR lpszTempLang = nullptr;
+			lpszTempVer = new WCHAR[MAX_PATH];
+			lpszTempLang = new WCHAR[MAX_PATH];
 			if (lpszTempVer && lpszTempLang)
 			{
 				UINT ret = 0;
@@ -689,9 +689,9 @@ CString GetOutlookVersionString()
 					&dwValueBuf));
 				if (ERROR_SUCCESS == ret)
 				{
-					szOut.AppendFormat(IDS_OUTLOOKVERSIONSTRING, lpszTempPath, lpszTempVer, lpszTempLang);
-					szOut.AppendFormat(b64 ? IDS_TRUE : IDS_FALSE);
-					szOut.Append(_T("\n")); // STRING_OK
+					szOut = formatmessage(IDS_OUTLOOKVERSIONSTRING, lpszTempPath, lpszTempVer, lpszTempLang);
+					szOut += formatmessage(b64 ? IDS_TRUE : IDS_FALSE);
+					szOut += L"\n"; // STRING_OK
 				}
 				delete[] lpszTempLang;
 				delete[] lpszTempVer;
@@ -702,7 +702,7 @@ CString GetOutlookVersionString()
 	}
 
 	return szOut;
-} // GetOutlookVersionString
+}
 
 void CBaseDialog::OnOutlookVersion()
 {
@@ -715,14 +715,13 @@ void CBaseDialog::OnOutlookVersion()
 		1,
 		CEDITOR_BUTTON_OK);
 
-	CString szVersionString = GetOutlookVersionString();
-	if (szVersionString.IsEmpty())
+	wstring szVersionString = GetOutlookVersionString();
+	if (szVersionString.empty())
 	{
-		WC_B(szVersionString.LoadString(IDS_NOOUTLOOK));
+		szVersionString = loadstring(IDS_NOOUTLOOK);
 	}
-	MyEID.InitPane(0, CreateMultiLinePane(IDS_OUTLOOKVERSIONPROMPT, static_cast<LPCTSTR>(szVersionString), true));
 
-
+	MyEID.InitPane(0, CreateMultiLinePaneW(IDS_OUTLOOKVERSIONPROMPT, szVersionString.c_str(), true));
 	WC_H(MyEID.DisplayDialog());
 }
 

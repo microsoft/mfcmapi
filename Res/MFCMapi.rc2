@@ -345,7 +345,7 @@ IDS_COMPUTESTOREHASH             "Compute Store Hash"
 IDS_COMPUTESTOREHASHPROMPT       "Enter store entry ID and file name"
 IDS_OUTLOOKVERSIONTITLE          "Outlook Version"
 IDS_OUTLOOKVERSIONPROMPT         "Outlook path, version and language obtained through MsiProvideQualifiedComponent and MsiGetFileVersion:"
-IDS_OUTLOOKVERSIONSTRING         "Path: %s\nVersion: %s\nLang: %s\n64 bit: "
+IDS_OUTLOOKVERSIONSTRING         "Path: %1!ws!\nVersion: %2!ws!\nLang: %3!ws!\n64 bit: "
 IDS_NOOUTLOOK                    "Outlook does not appear to be installed on this machine."
 
 IDS_TITLEBARMESSAGE              "%1!ws!: %2!ws!"

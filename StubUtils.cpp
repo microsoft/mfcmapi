@@ -472,35 +472,32 @@ LPWSTR MAPIPathIterator::GetInstalledOutlookMAPI(int iOutlook)
 
 	UINT ret = 0;
 
-	LPTSTR lpszTempPath = GetOutlookPath(g_pszOutlookQualifiedComponents[iOutlook], NULL);
+	LPWSTR lpszTempPath = GetOutlookPath(g_pszOutlookQualifiedComponents[iOutlook], NULL);
 
 	if (lpszTempPath)
 	{
-		TCHAR szDrive[_MAX_DRIVE] = { 0 };
-		TCHAR szOutlookPath[MAX_PATH] = { 0 };
-		WC_D(ret, _tsplitpath_s(lpszTempPath, szDrive, _MAX_DRIVE, szOutlookPath, MAX_PATH, NULL, NULL, NULL, NULL));
+		WCHAR szDrive[_MAX_DRIVE] = { 0 };
+		WCHAR szOutlookPath[MAX_PATH] = { 0 };
+		WC_D(ret, _wsplitpath_s(lpszTempPath, szDrive, _MAX_DRIVE, szOutlookPath, MAX_PATH, NULL, NULL, NULL, NULL));
 
 		if (SUCCEEDED(hRes))
 		{
 			LPWSTR szPath = new WCHAR[MAX_PATH];
 			if (szPath)
 			{
-#ifdef UNICODE
 				swprintf_s(szPath, MAX_PATH, WszMAPISystemDrivePath, szDrive, szOutlookPath, WszOlMAPI32DLL);
-#else
-				swprintf_s(szPath, MAX_PATH, szMAPISystemDrivePath, szDrive, szOutlookPath, WszOlMAPI32DLL);
-#endif
 			}
 			delete[] lpszTempPath;
 			DebugPrint(DBGLoadMAPI, L"GetInstalledOutlookMAPI: found %ws\n", szPath);
 			return szPath;
 		}
+
 		delete[] lpszTempPath;
 	}
 
 	DebugPrint(DBGLoadMAPI, L"Exit GetInstalledOutlookMAPI: found nothing\n");
 	return NULL;
-} // MAPIPathIterator::GetInstalledOutlookMAPI
+}
 
 LPWSTR MAPIPathIterator::GetNextInstalledOutlookMAPI()
 {
@@ -522,18 +519,19 @@ LPWSTR MAPIPathIterator::GetNextInstalledOutlookMAPI()
 	return NULL;
 } // MAPIPathIterator::GetNextInstalledOutlookMAPI
 
-TCHAR g_pszOutlookQualifiedComponents[][MAX_PATH] = {
-	_T("{E83B4360-C208-4325-9504-0D23003A74A5}"), // O15_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
-	_T("{1E77DE88-BCAB-4C37-B9E5-073AF52DFD7A}"), // O14_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
-	_T("{24AAE126-0911-478F-A019-07B875EB9996}"), // O12_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
-	_T("{BC174BAD-2F53-4855-A1D5-0D575C19B1EA}"), // O11_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
-	_T("{BC174BAD-2F53-4855-A1D5-1D575C19B1EA}"), // O11_CATEGORY_GUID_CORE_OFFICE (debug)  // STRING_OK
+WCHAR g_pszOutlookQualifiedComponents[][MAX_PATH] = {
+	L"{5812C571-53F0-4467-BEFA-0A4F47A9437C}", // O16_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
+	L"{E83B4360-C208-4325-9504-0D23003A74A5}", // O15_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
+	L"{1E77DE88-BCAB-4C37-B9E5-073AF52DFD7A}", // O14_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
+	L"{24AAE126-0911-478F-A019-07B875EB9996}", // O12_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
+	L"{BC174BAD-2F53-4855-A1D5-0D575C19B1EA}", // O11_CATEGORY_GUID_CORE_OFFICE (retail) // STRING_OK
+	L"{BC174BAD-2F53-4855-A1D5-1D575C19B1EA}", // O11_CATEGORY_GUID_CORE_OFFICE (debug)  // STRING_OK
 };
 
 // Looks up Outlook's path given its qualified component guid
-LPTSTR GetOutlookPath(_In_z_ LPCTSTR szCategory, _Out_opt_ bool* lpb64)
+LPWSTR GetOutlookPath(_In_z_ LPCWSTR szCategory, _Out_opt_ bool* lpb64)
 {
-	DebugPrint(DBGLoadMAPI, L"Enter GetOutlookPath: szCategory = %ws\n", LPCTSTRToWstring(szCategory).c_str());
+	DebugPrint(DBGLoadMAPI, L"Enter GetOutlookPath: szCategory = %ws\n", szCategory);
 	HRESULT hRes = S_OK;
 	DWORD dwValueBuf = 0;
 	UINT ret = 0;
@@ -542,7 +540,7 @@ LPTSTR GetOutlookPath(_In_z_ LPCTSTR szCategory, _Out_opt_ bool* lpb64)
 
 	WC_D(ret, pfnMsiProvideQualifiedComponent(
 		szCategory,
-		_T("outlook.x64.exe"), // STRING_OK
+		L"outlook.x64.exe", // STRING_OK
 		(DWORD)INSTALLMODE_DEFAULT,
 		NULL,
 		&dwValueBuf));
@@ -555,7 +553,7 @@ LPTSTR GetOutlookPath(_In_z_ LPCTSTR szCategory, _Out_opt_ bool* lpb64)
 		ret = ERROR_SUCCESS;
 		WC_D(ret, pfnMsiProvideQualifiedComponent(
 			szCategory,
-			_T("outlook.exe"), // STRING_OK
+			L"outlook.exe", // STRING_OK
 			(DWORD)INSTALLMODE_DEFAULT,
 			NULL,
 			&dwValueBuf));
@@ -563,15 +561,15 @@ LPTSTR GetOutlookPath(_In_z_ LPCTSTR szCategory, _Out_opt_ bool* lpb64)
 
 	if (ERROR_SUCCESS == ret)
 	{
-		LPTSTR lpszTempPath = NULL;
+		LPWSTR lpszTempPath = NULL;
 		dwValueBuf += 1;
-		lpszTempPath = new TCHAR[dwValueBuf];
+		lpszTempPath = new WCHAR[dwValueBuf];
 
 		if (lpszTempPath != NULL)
 		{
 			WC_D(ret, pfnMsiProvideQualifiedComponent(
 				szCategory,
-				_T("outlook.x64.exe"), // STRING_OK
+				L"outlook.x64.exe", // STRING_OK
 				(DWORD)INSTALLMODE_DEFAULT,
 				lpszTempPath,
 				&dwValueBuf));
@@ -580,7 +578,7 @@ LPTSTR GetOutlookPath(_In_z_ LPCTSTR szCategory, _Out_opt_ bool* lpb64)
 				ret = ERROR_SUCCESS;
 				WC_D(ret, pfnMsiProvideQualifiedComponent(
 					szCategory,
-					_T("outlook.exe"), // STRING_OK
+					L"outlook.exe", // STRING_OK
 					(DWORD)INSTALLMODE_DEFAULT,
 					lpszTempPath,
 					&dwValueBuf));
@@ -588,7 +586,7 @@ LPTSTR GetOutlookPath(_In_z_ LPCTSTR szCategory, _Out_opt_ bool* lpb64)
 
 			if (ERROR_SUCCESS == ret)
 			{
-				DebugPrint(DBGLoadMAPI, L"Exit GetOutlookPath: Path = %ws\n", LPCTSTRToWstring(lpszTempPath).c_str());
+				DebugPrint(DBGLoadMAPI, L"Exit GetOutlookPath: Path = %ws\n", lpszTempPath);
 				return lpszTempPath;
 			}
 
@@ -598,7 +596,7 @@ LPTSTR GetOutlookPath(_In_z_ LPCTSTR szCategory, _Out_opt_ bool* lpb64)
 
 	DebugPrint(DBGLoadMAPI, L"Exit GetOutlookPath: nothing found\n");
 	return NULL;
-} // LPWSTR GetOutlookPath
+}
 
 HMODULE GetDefaultMapiHandle()
 {
