@@ -285,7 +285,7 @@ _Check_return_ bool DropDownPane::GetSelectedGUID(bool bByteSwapped, _In_ LPGUID
 			szText = m_lpszSelectionString;
 		}
 
-		LPCGUID lpGUID = GUIDNameToGUID(szText, bByteSwapped);
+		LPCGUID lpGUID = GUIDNameToGUID(LPCTSTRToWstring(szText).c_str(), bByteSwapped);
 		memcpy(lpSelectedGUID, lpGUID, sizeof(GUID));
 		delete[] lpGUID;
 		return true;

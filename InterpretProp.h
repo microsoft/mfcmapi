@@ -26,8 +26,8 @@ void NameIDToStrings(
 	_In_ wstring& lpszNamedPropGUID, // Built from ulPropTag & lpMAPIProp
 	_In_ wstring& lpszNamedPropDASL); // Built from ulPropTag & lpMAPIProp
 
-_Check_return_ HRESULT StringToGUID(_In_z_ LPCTSTR szGUID, _Inout_ LPGUID lpGUID);
-_Check_return_ HRESULT StringToGUID(_In_z_ LPCTSTR szGUID, bool bByteSwapped, _Inout_ LPGUID lpGUID);
+_Check_return_ HRESULT StringToGUID(_In_ wstring szGUID, _Inout_ LPGUID lpGUID);
+_Check_return_ HRESULT StringToGUID(_In_ wstring szGUID, bool bByteSwapped, _Inout_ LPGUID lpGUID);
 
 wstring CurrencyToString(CURRENCY curVal);
 

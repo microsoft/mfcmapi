@@ -336,7 +336,7 @@ wstring GUIDToStringAndName(_In_opt_ LPCGUID lpGUID)
 	return szGUID + loadstring(IDS_UNKNOWNGUID);
 }
 
-LPCGUID GUIDNameToGUIDInt(_In_z_ LPCTSTR szGUID, bool bByteSwapped)
+LPCGUID GUIDNameToGUID(_In_ wstring szGUID, bool bByteSwapped)
 {
 	HRESULT hRes = S_OK;
 	LPGUID lpGuidRet = NULL;
@@ -347,26 +347,15 @@ LPCGUID GUIDNameToGUIDInt(_In_z_ LPCTSTR szGUID, bool bByteSwapped)
 	if (ulPropGuidArray && PropGuidArray)
 	{
 		ULONG ulCur = 0;
-#ifdef UNICODE
-		LPCWSTR szGUIDW = szGUID;
-#else
-		LPWSTR szGUIDW = NULL;
-		EC_H(AnsiToUnicode(szGUID, &szGUIDW));
-		if (SUCCEEDED(hRes))
+
+		for (ulCur = 0; ulCur < ulPropGuidArray; ulCur++)
 		{
-#endif
-			for (ulCur = 0; ulCur < ulPropGuidArray; ulCur++)
+			if (0 == lstrcmpiW(szGUID.c_str(), PropGuidArray[ulCur].lpszName))
 			{
-				if (0 == lstrcmpiW(szGUIDW, PropGuidArray[ulCur].lpszName))
-				{
-					lpGUID = PropGuidArray[ulCur].lpGuid;
-					break;
-				}
+				lpGUID = PropGuidArray[ulCur].lpGuid;
+				break;
 			}
-#ifndef UNICODE
 		}
-		delete[] szGUIDW;
-#endif
 	}
 
 	if (!lpGUID) // no match - try it like a guid {}
@@ -390,43 +379,6 @@ LPCGUID GUIDNameToGUIDInt(_In_z_ LPCTSTR szGUID, bool bByteSwapped)
 	}
 
 	return lpGuidRet;
-}
-
-LPCGUID GUIDNameToGUIDW(_In_z_ LPCWSTR szGUID, bool bByteSwapped)
-{
-#ifdef UNICODE
-	return GUIDNameToGUIDInt(szGUID, bByteSwapped);
-#else
-	LPCGUID lpGUID = NULL;
-	LPSTR szGUIDA = NULL;
-	HRESULT hRes = UnicodeToAnsi(szGUID, &szGUIDA);
-	if (SUCCEEDED(hRes) && szGUIDA)
-	{
-		lpGUID = GUIDNameToGUIDInt(szGUIDA, bByteSwapped);
-		delete[] szGUIDA;
-	}
-
-	return lpGUID;
-#endif
-}
-
-LPCGUID GUIDNameToGUIDA(_In_z_ LPCSTR szGUID, bool bByteSwapped)
-{
-#ifdef UNICODE
-	LPCGUID lpGUID = NULL;
-	LPWSTR szGUIDW = NULL;
-	(void)AnsiToUnicode(szGUID, &szGUIDW);
-	if (szGUIDW)
-	{
-		lpGUID = GUIDNameToGUIDInt(szGUIDW, bByteSwapped);
-	}
-
-	delete[] szGUIDW;
-
-	return lpGUID;
-#else
-	return GUIDNameToGUIDInt(szGUID, bByteSwapped);
-#endif
 }
 
 // Returns string built from NameIDArray
