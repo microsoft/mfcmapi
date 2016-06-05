@@ -292,7 +292,7 @@ _Check_return_ ULONG PropTypeNameToPropTypeW(_In_z_ LPCWSTR lpszPropType)
 	return ulPropType;
 } // PropTypeNameToPropTypeW
 
-_Check_return_ wstring GUIDToString(_In_opt_ LPCGUID lpGUID)
+wstring GUIDToString(_In_opt_ LPCGUID lpGUID)
 {
 	GUID nullGUID = { 0 };
 
@@ -315,7 +315,7 @@ _Check_return_ wstring GUIDToString(_In_opt_ LPCGUID lpGUID)
 		lpGUID->Data4[7]);
 }
 
-_Check_return_ wstring GUIDToStringAndName(_In_opt_ LPCGUID lpGUID)
+wstring GUIDToStringAndName(_In_opt_ LPCGUID lpGUID)
 {
 	ULONG ulCur = 0;
 	wstring szGUID = GUIDToString(lpGUID);
@@ -471,11 +471,11 @@ wstring NameIDToPropName(_In_ LPMAPINAMEID lpNameID)
 	return szResultString;
 }
 
-_Check_return_  wstring InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, wstring szPrefix);
+_Check_return_ wstring InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, wstring szPrefix);
 
 // Interprets a flag value according to a flag name and returns a string
 // Will not return a string if the flag name is not recognized
-_Check_return_ wstring InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue)
+wstring InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue)
 {
 	ULONG ulCurEntry = 0;
 
@@ -503,7 +503,7 @@ _Check_return_ wstring InterpretFlags(const ULONG ulFlagName, const LONG lFlagVa
 			{
 				if (bNeedSeparator)
 				{
-					szTempString += L" | ";  // STRING_OK
+					szTempString += L" | "; // STRING_OK
 				}
 
 				szTempString += FlagArray[ulCurEntry].lpszName;
@@ -620,21 +620,21 @@ _Check_return_ wstring InterpretFlags(const ULONG ulFlagName, const LONG lFlagVa
 // Returns a list of all known flags/values for a flag name.
 // For instance, for flagFuzzyLevel, would return:
 // \r\n0x00000000 FL_FULLSTRING\r\n\
-	// 0x00000001 FL_SUBSTRING\r\n\
-	// 0x00000002 FL_PREFIX\r\n\
-	// 0x00010000 FL_IGNORECASE\r\n\
-	// 0x00020000 FL_IGNORENONSPACE\r\n\
-	// 0x00040000 FL_LOOSE
+ // 0x00000001 FL_SUBSTRING\r\n\
+ // 0x00000002 FL_PREFIX\r\n\
+ // 0x00010000 FL_IGNORECASE\r\n\
+ // 0x00020000 FL_IGNORENONSPACE\r\n\
+ // 0x00040000 FL_LOOSE
 //
 // Since the string is always appended to a prompt we include \r\n at the start
-_Check_return_ CString AllFlagsToString(const ULONG ulFlagName, bool bHex)
+wstring AllFlagsToString(const ULONG ulFlagName, bool bHex)
 {
-	CString szFlagString;
+	wstring szFlagString;
 	if (!ulFlagName) return szFlagString;
 	if (!ulFlagArray || !FlagArray) return szFlagString;
 
-	ULONG	ulCurEntry = 0;
-	CString szTempString;
+	ULONG ulCurEntry = 0;
+	wstring szTempString;
 
 	while (ulCurEntry < ulFlagArray && FlagArray[ulCurEntry].ulFlagName != ulFlagName)
 	{
@@ -654,18 +654,17 @@ _Check_return_ CString AllFlagsToString(const ULONG ulFlagName, bool bHex)
 		{
 			if (bHex)
 			{
-				szTempString.FormatMessage(IDS_FLAGTOSTRINGHEX, FlagArray[ulCurEntry].lFlagValue, FlagArray[ulCurEntry].lpszName);
+				szFlagString += formatmessage(IDS_FLAGTOSTRINGHEX, FlagArray[ulCurEntry].lFlagValue, FlagArray[ulCurEntry].lpszName);
 			}
 			else
 			{
-				szTempString.FormatMessage(IDS_FLAGTOSTRINGDEC, FlagArray[ulCurEntry].lFlagValue, FlagArray[ulCurEntry].lpszName);
+				szFlagString += formatmessage(IDS_FLAGTOSTRINGDEC, FlagArray[ulCurEntry].lFlagValue, FlagArray[ulCurEntry].lpszName);
 			}
-			szFlagString += szTempString;
 		}
 	}
 
 	return szFlagString;
-} // AllFlagsToString
+}
 
 // Returns LPSPropValue with value of a property
 // Uses GetProps and falls back to OpenProperty if the value is large
@@ -682,8 +681,8 @@ _Check_return_ HRESULT GetLargeProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag,
 
 	const SizedSPropTagArray(1, sptaBuffer) =
 	{
-		1,
-		ulPropTag
+	1,
+	ulPropTag
 	};
 	*lppProp = NULL;
 
@@ -705,7 +704,7 @@ _Check_return_ HRESULT GetLargeProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag,
 			(LPUNKNOWN*)&lpStream));
 		if (SUCCEEDED(hRes) && lpStream)
 		{
-			STATSTG	StatInfo = { 0 };
+			STATSTG StatInfo = { 0 };
 			lpStream->Stat(&StatInfo, STATFLAG_NONAME); // find out how much space we need
 
 			// We're not going to try to support MASSIVE properties.

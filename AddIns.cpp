@@ -64,14 +64,14 @@ _Check_return_ ULONG GetAddinVersion(HMODULE hMod)
 
 	// Default case for unversioned add-ins
 	return MFCMAPI_HEADER_V1;
-} // GetAddinVersion
+}
 
 // Load NAME_ARRAY_ENTRY style props from the add-in and upconvert them to V2
 void LoadLegacyPropTags(
 	HMODULE hMod,
 	_In_ ULONG* lpulPropTags, // Number of entries in lppPropTags
 	_In_ LPNAME_ARRAY_ENTRY_V2* lppPropTags // Array of NAME_ARRAY_ENTRY_V2 structures
-	)
+)
 {
 	HRESULT hRes = S_OK;
 	LPGETPROPTAGS pfnGetPropTags = NULL;
@@ -96,7 +96,7 @@ void LoadLegacyPropTags(
 			}
 		}
 	}
-} // LoadLegacyPropTags
+}
 
 void LoadSingleAddIn(_In_ LPADDIN lpAddIn, HMODULE hMod, _In_ LPLOADADDIN pfnLoadAddIn)
 {
@@ -216,7 +216,7 @@ class CFileList
 {
 	struct DLLEntry
 	{
-		TCHAR*	szDLL;
+		TCHAR* szDLL;
 		DLLEntry* lpNext;
 	};
 public:
@@ -264,7 +264,7 @@ CFileList::CFileList(_In_z_ LPCTSTR szKey)
 		}
 	}
 	delete[] lpszReg;
-} // CFileList::CFileList
+}
 
 // Write the list back to registry
 CFileList::~CFileList()
@@ -326,7 +326,7 @@ CFileList::~CFileList()
 		m_lpList = lpNext;
 	}
 	EC_W32(RegCloseKey(m_hRootKey));
-} // CFileList::~CFileList
+}
 
 // Add the DLL to the list
 void CFileList::AddToList(_In_z_ LPTSTR szDLL)
@@ -353,7 +353,7 @@ void CFileList::AddToList(_In_z_ LPTSTR szDLL)
 			}
 		}
 	}
-} // CFileList::AddToList
+}
 
 // Check this DLL name against the list
 bool CFileList::IsOnList(_In_z_ LPTSTR szDLL)
@@ -366,7 +366,7 @@ bool CFileList::IsOnList(_In_z_ LPTSTR szDLL)
 		lpCur = lpCur->lpNext;
 	}
 	return false;
-} // CFileList::IsOnList
+}
 
 void LoadAddIns()
 {
@@ -524,7 +524,7 @@ void LoadAddIns()
 
 	MergeAddInArrays();
 	DebugPrint(DBGAddInPlumbing, L"Done loading AddIns\n");
-} // LoadAddIns
+}
 
 void ResetArrays()
 {
@@ -587,7 +587,7 @@ void UnloadAddIns()
 	ResetArrays();
 
 	DebugPrint(DBGAddInPlumbing, L"Done unloading AddIns\n");
-} // UnloadAddIns
+}
 
 #ifndef MRMAPI
 // Adds menu items appropriate to the context
@@ -673,7 +673,7 @@ _Check_return_ ULONG ExtendAddInMenu(HMENU hMenu, ULONG ulAddInContext)
 	}
 	DebugPrint(DBGAddInPlumbing, L"Done extending menus\n");
 	return uidCurMenu - ID_ADDINMENU;
-} // ExtendAddInMenu
+}
 
 _Check_return_ LPMENUITEM GetAddinMenuItem(HWND hWnd, UINT uidMsg)
 {
@@ -694,7 +694,7 @@ _Check_return_ LPMENUITEM GetAddinMenuItem(HWND hWnd, UINT uidMsg)
 	}
 
 	return NULL;
-} // GetAddinMenuItem
+}
 
 void InvokeAddInMenu(_In_opt_ LPADDINMENUPARAMS lpParams)
 {
@@ -719,7 +719,7 @@ void InvokeAddInMenu(_In_opt_ LPADDINMENUPARAMS lpParams)
 	}
 
 	WC_H(lpParams->lpAddInMenu->lpAddIn->pfnCallMenu(lpParams));
-} // InvokeAddInMenu
+}
 #endif // MRMAPI
 
 // Compare type arrays.
@@ -734,7 +734,7 @@ int _cdecl CompareTypes(_In_ const void* a1, _In_ const void* a2)
 		return wcscmp(lpType1->lpszName, lpType2->lpszName);
 	}
 	return -1;
-} // CompareTypes
+}
 
 // Compare tag arrays. Pay no attention to sort order - we'll sort on sort order during output.
 int _cdecl CompareTags(_In_ const void* a1, _In_ const void* a2)
@@ -748,7 +748,7 @@ int _cdecl CompareTags(_In_ const void* a1, _In_ const void* a2)
 		return wcscmp(lpTag1->lpszName, lpTag2->lpszName);
 	}
 	return -1;
-} // CompareTags
+}
 
 int _cdecl CompareNameID(_In_ const void* a1, _In_ const void* a2)
 {
@@ -763,7 +763,7 @@ int _cdecl CompareNameID(_In_ const void* a1, _In_ const void* a2)
 		if (IsEqualGUID(*lpID1->lpGuid, *lpID2->lpGuid)) return 0;
 	}
 	return -1;
-} // CompareNameID
+}
 
 int _cdecl CompareSmartViewParser(_In_ const void* a1, _In_ const void* a2)
 {
@@ -782,7 +782,7 @@ int _cdecl CompareSmartViewParser(_In_ const void* a1, _In_ const void* a2)
 		}
 	}
 	return -1;
-} // CompareSmartViewParser
+}
 
 void MergeArrays(
 	_Inout_bytecap_x_(cIn1 * width) LPVOID In1,
@@ -848,7 +848,7 @@ void MergeArrays(
 
 		*lpcOut = (iOut - (char*)*lpOut) / width;
 	}
-} // MergeArrays
+}
 
 // Flags are difficult to sort since we need to have a stable sort
 // Records with the same key must appear in the output in the same order as the input
@@ -867,12 +867,12 @@ void SortFlagArray(_In_count_(ulFlags) LPFLAG_ARRAY_ENTRY lpFlags, _In_ ULONG ul
 		}
 		lpFlags[iLoc] = NextItem;
 	}
-} // SortFlagArray
+}
 
 // Consults the end of the supplied array to find a match to the passed in entry
 // If no dupe is found, copies lpSource[*lpiSource] to lpTarget and increases *lpcArray
 // Increases *lpiSource regardless
-void AppendFlagIfNotDupe(_In_count_(*lpcArray) LPFLAG_ARRAY_ENTRY lpTarget, _In_ size_t* lpcArray, _In_count_(*lpiSource + 1)  LPFLAG_ARRAY_ENTRY lpSource, _In_ size_t* lpiSource)
+void AppendFlagIfNotDupe(_In_count_(*lpcArray) LPFLAG_ARRAY_ENTRY lpTarget, _In_ size_t* lpcArray, _In_count_(*lpiSource + 1) LPFLAG_ARRAY_ENTRY lpSource, _In_ size_t* lpiSource)
 {
 	size_t iTarget = *lpcArray;
 	size_t iSource = *lpiSource;
@@ -892,7 +892,7 @@ void AppendFlagIfNotDupe(_In_count_(*lpcArray) LPFLAG_ARRAY_ENTRY lpTarget, _In_
 	}
 	lpTarget[*lpcArray] = lpSource[iSource];
 	(*lpcArray)++;
-} // AppendFlagIfNotDupe
+}
 
 // Similar to MergeArrays, but using AppendFlagIfNotDupe logic
 void MergeFlagArrays(
@@ -940,7 +940,7 @@ void MergeFlagArrays(
 		*lpcOut = iOut;
 		*lpOut = Out;
 	}
-} // MergeFlagArrays
+}
 
 // Assumes built in arrays are already sorted!
 void MergeAddInArrays()
@@ -1164,13 +1164,11 @@ _Check_return_ __declspec(dllexport) HRESULT __cdecl SimpleDialog(_In_z_ LPWSTR 
 	wstring szDialogString = formatV(szMsg, argList);
 	va_end(argList);
 
-	LPTSTR lpszDialogString = wstringToLPTSTR(szDialogString);
-	MySimpleDialog.SetPromptPostFix(lpszDialogString);
-	delete[] lpszDialogString;
+	MySimpleDialog.SetPromptPostFix(szDialogString);
 
 	WC_H(MySimpleDialog.DisplayDialog());
 	return hRes;
-} // SimpleDialog
+}
 
 _Check_return_ __declspec(dllexport) HRESULT __cdecl ComplexDialog(_In_ LPADDINDIALOG lpDialog, _Out_ LPADDINDIALOGRESULT* lppDialogResult)
 {
@@ -1187,15 +1185,7 @@ _Check_return_ __declspec(dllexport) HRESULT __cdecl ComplexDialog(_In_ LPADDIND
 		lpDialog->ulNumControls,
 		lpDialog->ulButtonFlags);
 	MyComplexDialog.SetAddInTitle(lpDialog->szTitle);
-
-#ifdef UNICODE
 	MyComplexDialog.SetPromptPostFix(lpDialog->szPrompt);
-#else
-	char *szAnsiPrompt = NULL;
-	EC_H(UnicodeToAnsi(lpDialog->szPrompt, &szAnsiPrompt));
-	MyComplexDialog.SetPromptPostFix(szAnsiPrompt);
-	delete[] szAnsiPrompt;
-#endif
 
 	if (lpDialog->ulNumControls && lpDialog->lpDialogControls)
 	{
@@ -1350,7 +1340,7 @@ _Check_return_ __declspec(dllexport) HRESULT __cdecl ComplexDialog(_In_ LPADDIND
 		}
 	}
 	return hRes;
-} // ComplexDialog
+}
 
 __declspec(dllexport) void __cdecl FreeDialogResult(_In_ LPADDINDIALOGRESULT lpDialogResult)
 {
@@ -1367,7 +1357,7 @@ __declspec(dllexport) void __cdecl FreeDialogResult(_In_ LPADDINDIALOGRESULT lpD
 		}
 		delete[] lpDialogResult;
 	}
-} // FreeDialogResult
+}
 #endif
 
 __declspec(dllexport) void __cdecl GetMAPIModule(_In_ HMODULE* lphModule, bool bForce)
@@ -1379,7 +1369,7 @@ __declspec(dllexport) void __cdecl GetMAPIModule(_In_ HMODULE* lphModule, bool b
 		// No MAPI loaded - load it
 		*lphModule = GetPrivateMAPI();
 	}
-} // GetMAPIModule
+}
 
 wstring AddInStructTypeToString(__ParsingTypeEnum iStructType)
 {

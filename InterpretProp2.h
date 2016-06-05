@@ -33,8 +33,8 @@ _Check_return_ ULONG PropTypeNameToPropTypeA(_In_z_ LPCSTR lpszPropType);
 #define PropTypeNameToPropType PropTypeNameToPropTypeA
 #endif
 
-_Check_return_ wstring GUIDToString(_In_opt_ LPCGUID lpGUID);
-_Check_return_ wstring GUIDToStringAndName(_In_opt_ LPCGUID lpGUID);
+wstring GUIDToString(_In_opt_ LPCGUID lpGUID);
+wstring GUIDToStringAndName(_In_opt_ LPCGUID lpGUID);
 LPCGUID GUIDNameToGUIDW(_In_z_ LPCWSTR szGUID, bool bByteSwapped);
 LPCGUID GUIDNameToGUIDA(_In_z_ LPCSTR szGUID, bool bByteSwapped);
 #ifdef UNICODE
@@ -45,8 +45,8 @@ LPCGUID GUIDNameToGUIDA(_In_z_ LPCSTR szGUID, bool bByteSwapped);
 
 wstring NameIDToPropName(_In_ LPMAPINAMEID lpNameID);
 
-_Check_return_  wstring InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue);
-_Check_return_ CString AllFlagsToString(const ULONG ulFlagName, bool bHex);
+wstring InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue);
+wstring AllFlagsToString(const ULONG ulFlagName, bool bHex);
 
 _Check_return_ HRESULT GetLargeBinaryProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_ LPSPropValue* lppProp);
 _Check_return_ HRESULT GetLargeStringProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag, _Deref_out_opt_ LPSPropValue* lppProp);

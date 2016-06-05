@@ -58,9 +58,7 @@ void LogFunctionCall(
 			NULL,
 			(ULONG)0,
 			CEDITOR_BUTTON_OK);
-		LPTSTR lpszErr = wstringToLPTSTR(szErrString);
-		Err.SetPromptPostFix(lpszErr);
-		delete[] lpszErr;
+		Err.SetPromptPostFix(szErrString);
 		(void)Err.DisplayDialog();
 #endif
 	}
@@ -96,9 +94,7 @@ void __cdecl ErrDialog(_In_z_ LPCSTR szFile, int iLine, UINT uidErrorFmt, ...)
 		NULL,
 		(ULONG)0,
 		CEDITOR_BUTTON_OK);
-	LPTSTR lpszCombo = wstringToLPTSTR(szCombo);
-	Err.SetPromptPostFix(lpszCombo);
-	delete[] lpszCombo;
+	Err.SetPromptPostFix(szCombo);
 	(void)Err.DisplayDialog();
 #endif
 } // ErrDialog

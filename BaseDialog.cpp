@@ -907,7 +907,7 @@ void CBaseDialog::OnCompareEntryIDs()
 			NULL,
 			static_cast<ULONG>(0),
 			CEDITOR_BUTTON_OK);
-		Result.SetPromptPostFix(wstringToCString(szRet.c_str()));
+		Result.SetPromptPostFix(szRet);
 		(void)Result.DisplayDialog();
 	}
 
@@ -940,9 +940,7 @@ void CBaseDialog::OnComputeStoreHash()
 	EC_H(MyStoreEID.GetEntryID(0, MyStoreEID.GetCheck(1), &cbBin, &lpEntryID));
 
 	DWORD dwHash = ComputeStoreHash(static_cast<ULONG>(cbBin), reinterpret_cast<LPBYTE>(lpEntryID), nullptr, MyStoreEID.GetStringW(2), MyStoreEID.GetCheck(3));
-
-	CString szHash;
-	szHash.FormatMessage(IDS_STOREHASHVAL, dwHash);
+	wstring szHash = formatmessage(IDS_STOREHASHVAL, dwHash);
 
 	CEditor Result(
 		this,
