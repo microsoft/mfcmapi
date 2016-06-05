@@ -349,7 +349,7 @@ void CStreamEditor::ReadTextStreamFromProperty()
 		CString szStreamErr;
 		szStreamErr.FormatMessage(
 			IDS_CANNOTOPENSTREAM,
-			ErrorNameFromErrorCode(m_StreamError),
+			ErrorNameFromErrorCode(m_StreamError).c_str(),
 			m_StreamError);
 		SetString(m_iTextBox, szStreamErr);
 		SetEditReadOnly(m_iTextBox);

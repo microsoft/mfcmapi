@@ -120,7 +120,7 @@ void CGlobalCache::MAPIInitialize(ULONG ulFlags)
 			ErrDialog(__FILE__, __LINE__,
 				IDS_EDMAPIINITIALIZEFAILED,
 				hRes,
-				ErrorNameFromErrorCode(hRes));
+				ErrorNameFromErrorCode(hRes).c_str());
 		}
 	}
 } // CGlobalCache::MAPIInitialize
