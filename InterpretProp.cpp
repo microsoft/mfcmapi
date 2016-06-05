@@ -157,20 +157,20 @@ _Check_return_ HRESULT Base64Encode(size_t cbSourceBuf, _In_count_(cbSourceBuf) 
 	return hRes;
 } // Base64Encode
 
-_Check_return_ HRESULT StringToGUID(_In_z_ LPCTSTR szGUID, _Inout_ LPGUID lpGUID)
+_Check_return_ HRESULT StringToGUID(_In_ wstring szGUID, _Inout_ LPGUID lpGUID)
 {
 	return StringToGUID(szGUID, false, lpGUID);
 } // StringToGUID
 
-_Check_return_ HRESULT StringToGUID(_In_z_ LPCTSTR szGUID, bool bByteSwapped, _Inout_ LPGUID lpGUID)
+_Check_return_ HRESULT StringToGUID(_In_ wstring szGUID, bool bByteSwapped, _Inout_ LPGUID lpGUID)
 {
 	HRESULT hRes = S_OK;
-	if (!szGUID || !lpGUID) return MAPI_E_INVALID_PARAMETER;
+	if (szGUID.empty() || !lpGUID) return MAPI_E_INVALID_PARAMETER;
 
 	ULONG cbGUID = sizeof(GUID);
 
 	// Now we use MyBinFromHex to do the work.
-	(void)MyBinFromHex(szGUID, (LPBYTE)lpGUID, &cbGUID);
+	(void)MyBinFromHex(wstringToCString(szGUID), (LPBYTE)lpGUID, &cbGUID);
 
 	// Note that we get the bByteSwapped behavior by default. We have to work to get the 'normal' behavior
 	if (!bByteSwapped)

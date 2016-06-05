@@ -2882,8 +2882,7 @@ HRESULT CopyTo(HWND hWnd, _In_ LPMAPIPROP lpSource, _In_ LPMAPIPROP lpDest, LPCG
 
 		if (S_OK == hRes)
 		{
-			CString szTemp = MyData.GetString(0);
-			EC_H(StringToGUID((LPCTSTR)szTemp, &MyGUID));
+			EC_H(StringToGUID(MyData.GetStringW(0), &MyGUID));
 			lpGUIDLocal = &MyGUID;
 			ulCopyFlags = MyData.GetHex(1);
 			if (hWnd)

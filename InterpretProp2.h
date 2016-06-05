@@ -35,13 +35,7 @@ _Check_return_ ULONG PropTypeNameToPropTypeA(_In_z_ LPCSTR lpszPropType);
 
 wstring GUIDToString(_In_opt_ LPCGUID lpGUID);
 wstring GUIDToStringAndName(_In_opt_ LPCGUID lpGUID);
-LPCGUID GUIDNameToGUIDW(_In_z_ LPCWSTR szGUID, bool bByteSwapped);
-LPCGUID GUIDNameToGUIDA(_In_z_ LPCSTR szGUID, bool bByteSwapped);
-#ifdef UNICODE
-#define GUIDNameToGUID GUIDNameToGUIDW
-#else
-#define GUIDNameToGUID GUIDNameToGUIDA
-#endif
+LPCGUID GUIDNameToGUID(_In_ wstring szGUID, bool bByteSwapped);
 
 wstring NameIDToPropName(_In_ LPMAPINAMEID lpNameID);
 

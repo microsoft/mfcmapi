@@ -187,7 +187,7 @@ void ExportProfile(_In_z_ LPCSTR szProfile, _In_z_ LPCWSTR szProfileSection, boo
 		{
 			if (szProfileSection)
 			{
-				LPCGUID lpGuid = GUIDNameToGUIDW(szProfileSection, bByteSwapped);
+				LPCGUID lpGuid = GUIDNameToGUID(szProfileSection, bByteSwapped);
 
 				if (lpGuid)
 				{

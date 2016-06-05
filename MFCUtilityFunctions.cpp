@@ -543,7 +543,7 @@ void DisplayMailboxTable(_In_ CParentWnd*	lpParent,
 					{
 						bHaveGUID = true;
 
-						WC_H(StringToGUID(MyData.GetString(2), &MyGUID));
+						WC_H(StringToGUID(MyData.GetStringW(2), &MyGUID));
 						if (FAILED(hRes))
 						{
 							ErrDialog(__FILE__, __LINE__, IDS_EDINVALIDGUID);
@@ -689,7 +689,7 @@ void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
 					{
 						bHaveGUID = true;
 
-						WC_H(StringToGUID(MyData.GetString(3), &MyGUID));
+						WC_H(StringToGUID(MyData.GetStringW(3), &MyGUID));
 						if (FAILED(hRes))
 						{
 							ErrDialog(__FILE__, __LINE__, IDS_EDINVALIDGUID);

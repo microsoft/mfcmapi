@@ -1576,8 +1576,7 @@ void CSingleMAPIPropListCtrl::OnPasteProperty()
 			if (S_OK == hRes)
 			{
 				GUID MyGUID = { 0 };
-				wstring szTemp = MyCopyData.GetStringW(0);
-				EC_H(StringToGUID(wstringToCString(szTemp), &MyGUID));
+				EC_H(StringToGUID(MyCopyData.GetStringW(0), &MyGUID));
 
 				LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIProp::CopyProps"), m_lpHostDlg->m_hWnd); // STRING_OK
 
@@ -1861,7 +1860,7 @@ void CSingleMAPIPropListCtrl::OnPasteNamedProps()
 			LPMAPIPROP lpSource = NULL;
 			GUID propSetGUID = { 0 };
 
-			EC_H(StringToGUID(MyData.GetString(0), &propSetGUID));
+			EC_H(StringToGUID(MyData.GetStringW(0), &propSetGUID));
 
 			if (S_OK == hRes)
 			{
