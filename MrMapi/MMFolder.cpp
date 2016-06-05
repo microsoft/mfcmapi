@@ -219,7 +219,7 @@ static HRESULT HrLookupRootFolderW(
 
 	ULONG ulPropTag = NULL;
 
-	WC_H(LookupPropName(lpszRootFolder.c_str(), &ulPropTag));
+	WC_H(LookupPropName(lpszRootFolder, &ulPropTag));
 	if (!ulPropTag)
 	{
 		// Maybe one of our folder constants was passed.
@@ -683,7 +683,7 @@ void DoFolderProps(_In_ MYOPTIONS ProgOpts)
 	if (ProgOpts.lpFolder)
 	{
 		ULONG ulPropTag = NULL;
-		(void)PropNameToPropTagW(ProgOpts.lpszUnswitchedOption.c_str(), &ulPropTag);
+		(void)PropNameToPropTag(ProgOpts.lpszUnswitchedOption, &ulPropTag);
 		PrintObjectProperties(L"folderprops", ProgOpts.lpFolder, ulPropTag);
 	}
 }
