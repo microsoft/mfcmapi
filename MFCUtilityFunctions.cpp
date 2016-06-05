@@ -435,7 +435,7 @@ _Check_return_ bool bShouldCancel(_In_opt_ CWnd* cWnd, HRESULT hResPrev)
 		if (bGotError)
 		{
 			CString szPrevErr;
-			szPrevErr.FormatMessage(IDS_PREVIOUSCALL, ErrorNameFromErrorCode(hResPrev), hResPrev);
+			szPrevErr.FormatMessage(IDS_PREVIOUSCALL, ErrorNameFromErrorCode(hResPrev).c_str(), hResPrev);
 			Cancel.InitPane(0, CreateSingleLinePane(IDS_ERROR, szPrevErr, true));
 		}
 		WC_H(Cancel.DisplayDialog());

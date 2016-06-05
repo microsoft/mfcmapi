@@ -180,7 +180,7 @@ void SpecialFolderEditor::LoadFolders()
 				else
 				{
 					// We couldn't open the folder - log the error
-					szTmp.FormatMessage(IDS_QSSFCANNOTOPEN, ErrorNameFromErrorCode(hRes), hRes);
+					szTmp.FormatMessage(IDS_QSSFCANNOTOPEN, ErrorNameFromErrorCode(hRes).c_str(), hRes);
 					SetListString(ulListNum, iRow, iCol, szTmp);
 				}
 
@@ -190,7 +190,7 @@ void SpecialFolderEditor::LoadFolders()
 			else
 			{
 				// We couldn't locate the entry ID- log the error
-				szTmp.FormatMessage(IDS_QSSFCANNOTLOCATE, ErrorNameFromErrorCode(hRes), hRes);
+				szTmp.FormatMessage(IDS_QSSFCANNOTLOCATE, ErrorNameFromErrorCode(hRes).c_str(), hRes);
 				SetListString(ulListNum, iRow, iCol, szTmp);
 			}
 

@@ -102,7 +102,7 @@ void __cdecl ErrDialog(_In_z_ LPCSTR szFile, int iLine, UINT uidErrorFmt, ...)
 #define RETURN_ERR_CASE(err) case (err): return(_T(#err))
 
 // Function to convert error codes to their names
-_Check_return_ LPWSTR ErrorNameFromErrorCode(ULONG hrErr)
+wstring ErrorNameFromErrorCode(ULONG hrErr)
 {
 	ULONG i = 0;
 
@@ -111,11 +111,7 @@ _Check_return_ LPWSTR ErrorNameFromErrorCode(ULONG hrErr)
 		if (g_ErrorArray[i].ulErrorName == hrErr) return (LPWSTR)g_ErrorArray[i].lpszName;
 	}
 
-	HRESULT hRes = S_OK;
-	static WCHAR szErrCode[35];
-	EC_H(StringCchPrintfW(szErrCode, _countof(szErrCode), L"0x%08X", hrErr)); // STRING_OK
-
-	return(szErrCode);
+	return format(L"0x%08X", hrErr); // STRING_OK
 }
 
 #ifdef _DEBUG
@@ -125,6 +121,6 @@ void PrintSkipNote(HRESULT hRes, _In_z_ LPCSTR szFunc)
 		L"Skipping %hs because hRes = 0x%8x = %ws.\n", // STRING_OK
 		szFunc,
 		hRes,
-		ErrorNameFromErrorCode(hRes));
+		ErrorNameFromErrorCode(hRes).c_str());
 }
 #endif

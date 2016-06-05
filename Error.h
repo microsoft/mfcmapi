@@ -62,7 +62,7 @@ void LogFunctionCall(
 void __cdecl ErrDialog(_In_z_ LPCSTR szFile, int iLine, UINT uidErrorFmt, ...);
 
 // Function to convert error codes to their names
-_Check_return_ LPWSTR ErrorNameFromErrorCode(ULONG hrErr);
+wstring ErrorNameFromErrorCode(ULONG hrErr);
 // Flag parsing array - used by GetPropFlags
 struct ERROR_ARRAY_ENTRY
 {

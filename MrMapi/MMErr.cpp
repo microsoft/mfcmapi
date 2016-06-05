@@ -9,7 +9,7 @@
 
 void PrintErrFromNum(_In_ ULONG ulError)
 {
-	printf("0x%08X = %ws\n", ulError, ErrorNameFromErrorCode(ulError));
+	printf("0x%08X = %ws\n", ulError, ErrorNameFromErrorCode(ulError).c_str());
 }
 
 void PrintErrFromName(_In_ wstring lpszError)
