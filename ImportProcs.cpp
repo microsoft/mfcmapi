@@ -215,13 +215,8 @@ void ImportProcs()
 	LoadProc(_T("uxtheme.dll"), &hModUxTheme, "GetThemeMargins", (FARPROC*)&pfnGetThemeMargins); // STRING_OK;
 	LoadProc(_T("uxtheme.dll"), &hModUxTheme, "SetWindowTheme", (FARPROC*)&pfnSetWindowTheme); // STRING_OK;
 	LoadProc(_T("uxtheme.dll"), &hModUxTheme, "GetThemeSysSize", (FARPROC*)&pfnGetThemeSysSize); // STRING_OK;
-#ifdef _UNICODE
+	LoadProc(_T("msi.dll"), &hModMSI, "MsiGetFileVersionW", (FARPROC*)&pfnMsiGetFileVersion); // STRING_OK;
 	LoadProc(_T("msi.dll"), &hModMSI, "MsiProvideQualifiedComponentW", (FARPROC*) &pfnMsiProvideQualifiedComponent); // STRING_OK;
-	LoadProc(_T("msi.dll"), &hModMSI, "MsiGetFileVersionW", (FARPROC*) &pfnMsiGetFileVersion); // STRING_OK;
-#else
-	LoadProc(_T("msi.dll"), &hModMSI, "MsiProvideQualifiedComponentA", (FARPROC*)&pfnMsiProvideQualifiedComponent); // STRING_OK;
-	LoadProc(_T("msi.dll"), &hModMSI, "MsiGetFileVersionA", (FARPROC*)&pfnMsiGetFileVersion); // STRING_OK;
-#endif
 	LoadProc(_T("shell32.dll"), &hModShell32, "SHGetPropertyStoreForWindow", (FARPROC*)&pfnSHGetPropertyStoreForWindow); // STRING_OK;
 } // ImportProcs
 

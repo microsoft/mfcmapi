@@ -47,10 +47,10 @@ bool GetComponentPath(LPCSTR szComponent, LPSTR szQualifier, LPSTR szDllPath, DW
 #define oqcOffice11Debug oqcOfficeBegin + 4
 #define oqcOfficeEnd     oqcOffice11Debug
 
-extern TCHAR g_pszOutlookQualifiedComponents[][MAX_PATH];
+extern WCHAR g_pszOutlookQualifiedComponents[][MAX_PATH];
 
 // Looks up Outlook's path given its qualified component guid
-LPTSTR GetOutlookPath(_In_z_ LPCTSTR szCategory, _Out_opt_ bool* lpb64);
+LPWSTR GetOutlookPath(_In_z_ LPCWSTR szCategory, _Out_opt_ bool* lpb64);
 
 enum mapiSource;
 class MAPIPathIterator
