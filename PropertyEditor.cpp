@@ -1,6 +1,3 @@
-// PropertyEditor.cpp : implementation file
-//
-
 #include "stdafx.h"
 #include "PropertyEditor.h"
 #include "InterpretProp2.h"
@@ -100,7 +97,7 @@ _Check_return_ HRESULT DisplayPropertyEditor(_In_ CWnd* pParentWnd,
 		MAPIFreeBuffer(lpsPropValue);
 
 	return hRes;
-} // DisplayPropertyEditor
+}
 
 static wstring SVCLASS = L"CPropertyEditor"; // STRING_OK
 
@@ -136,25 +133,25 @@ CPropertyEditor::CPropertyEditor(
 	if (!m_lpsInputValue) m_bDirty = true;
 
 	wstring szPromptPostFix = format(L"%ws%ws", uidPrompt ? L"\r\n" : L"", TagToString(m_ulPropTag | (m_bMVRow ? MV_FLAG : NULL), m_lpMAPIProp, m_bIsAB, false).c_str()); // STRING_OK
-	SetPromptPostFix(wstringToCString(szPromptPostFix));
+	SetPromptPostFix(szPromptPostFix);
 
 	// Let's crack our property open and see what kind of controls we'll need for it
 	CreatePropertyControls();
 
 	InitPropertyControls();
-} // CPropertyEditor::CPropertyEditor
+}
 
 CPropertyEditor::~CPropertyEditor()
 {
 	TRACE_DESTRUCTOR(SVCLASS);
 	if (m_lpMAPIProp) m_lpMAPIProp->Release();
-} // CPropertyEditor::~CPropertyEditor
+}
 
 BOOL CPropertyEditor::OnInitDialog()
 {
 	BOOL bRet = CEditor::OnInitDialog();
 	return bRet;
-} // CPropertyEditor::OnInitDialog
+}
 
 void CPropertyEditor::OnOK()
 {
@@ -164,7 +161,7 @@ void CPropertyEditor::OnOK()
 	// Write the property to the object if we're not editing a row of a MV property
 	if (!m_bMVRow) WriteSPropValueToObject();
 	CMyDialog::OnOK(); // don't need to call CEditor::OnOK
-} // CPropertyEditor::OnOK
+}
 
 void CPropertyEditor::CreatePropertyControls()
 {
@@ -207,7 +204,7 @@ void CPropertyEditor::CreatePropertyControls()
 		CreateControls(2);
 		break;
 	}
-} // CPropertyEditor::CreatePropertyControls
+}
 
 void CPropertyEditor::InitPropertyControls()
 {
@@ -734,7 +731,7 @@ void CPropertyEditor::WriteStringsToSPropValue()
 			}
 		}
 	}
-} // CPropertyEditor::WriteStringsToSPropValue
+}
 
 void CPropertyEditor::WriteSPropValueToObject()
 {
@@ -753,7 +750,7 @@ void CPropertyEditor::WriteSPropValueToObject()
 	MAPIFreeBuffer(lpProblemArray);
 
 	EC_MAPI(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
-} // CPropertyEditor::WriteSPropValueToObject
+}
 
 // Callers beware: Detatches and returns the modified prop value - this must be MAPIFreeBuffered!
 _Check_return_ LPSPropValue CPropertyEditor::DetachModifiedSPropValue()
@@ -761,7 +758,7 @@ _Check_return_ LPSPropValue CPropertyEditor::DetachModifiedSPropValue()
 	LPSPropValue m_lpRet = m_lpsOutputValue;
 	m_lpsOutputValue = NULL;
 	return m_lpRet;
-} // CPropertyEditor::DetachModifiedSPropValue
+}
 
 _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 {
@@ -1033,7 +1030,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 
 	OnRecalcLayout();
 	return i;
-} // CPropertyEditor::HandleChange
+}
 
 static wstring MVCLASS = L"CMultiValuePropertyEditor"; // STRING_OK
 
@@ -1061,20 +1058,19 @@ CMultiValuePropertyEditor::CMultiValuePropertyEditor(
 	m_lpsInputValue = lpsPropValue;
 
 	wstring szPromptPostFix = format(L"\r\n%ws", TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, false).c_str()); // STRING_OK
-
-	SetPromptPostFix(wstringToCString(szPromptPostFix));
+	SetPromptPostFix(szPromptPostFix);
 
 	// Let's crack our property open and see what kind of controls we'll need for it
 	CreatePropertyControls();
 
 	InitPropertyControls();
-} // CMultiValuePropertyEditor::CMultiValuePropertyEditor
+}
 
 CMultiValuePropertyEditor::~CMultiValuePropertyEditor()
 {
 	TRACE_DESTRUCTOR(MVCLASS);
 	if (m_lpMAPIProp) m_lpMAPIProp->Release();
-} // CMultiValuePropertyEditor::~CMultiValuePropertyEditor
+}
 
 BOOL CMultiValuePropertyEditor::OnInitDialog()
 {
@@ -1104,7 +1100,7 @@ BOOL CMultiValuePropertyEditor::OnInitDialog()
 	UpdateListButtons();
 
 	return bRet;
-} // CMultiValuePropertyEditor::OnInitDialog
+}
 
 void CMultiValuePropertyEditor::OnOK()
 {
@@ -1112,7 +1108,7 @@ void CMultiValuePropertyEditor::OnOK()
 	WriteMultiValueStringsToSPropValue();
 	WriteSPropValueToObject();
 	CMyDialog::OnOK(); // don't need to call CEditor::OnOK
-} // CMultiValuePropertyEditor::OnOK
+}
 
 void CMultiValuePropertyEditor::CreatePropertyControls()
 {
@@ -1125,7 +1121,7 @@ void CMultiValuePropertyEditor::CreatePropertyControls()
 	{
 		CreateControls(1);
 	}
-} // CMultiValuePropertyEditor::CreatePropertyControls
+}
 
 void CMultiValuePropertyEditor::InitPropertyControls()
 {
@@ -1141,7 +1137,7 @@ void CMultiValuePropertyEditor::InitPropertyControls()
 			lpPane->DisableDropDown();
 		}
 	}
-} // CMultiValuePropertyEditor::InitPropertyControls
+}
 
 // Function must be called AFTER dialog controls have been created, not before
 void CMultiValuePropertyEditor::ReadMultiValueStringsFromProperty()
@@ -1222,7 +1218,7 @@ void CMultiValuePropertyEditor::ReadMultiValueStringsFromProperty()
 			lpData->bItemFullyLoaded = true;
 		}
 	}
-} // CMultiValuePropertyEditor::ReadMultiValueStringsFromProperty
+}
 
 // Perisist the data in the controls to m_lpsOutputValue
 void CMultiValuePropertyEditor::WriteMultiValueStringsToSPropValue()
@@ -1258,7 +1254,7 @@ void CMultiValuePropertyEditor::WriteMultiValueStringsToSPropValue()
 	{
 		WriteMultiValueStringsToSPropValue((LPVOID)m_lpAllocParent, m_lpsOutputValue);
 	}
-} // CMultiValuePropertyEditor::WriteMultiValueStringsToSPropValue
+}
 
 // Given a pointer to an SPropValue structure which has already been allocated, fill out the values
 void CMultiValuePropertyEditor::WriteMultiValueStringsToSPropValue(_In_ LPVOID lpParent, _In_ LPSPropValue lpsProp)
@@ -1381,7 +1377,7 @@ void CMultiValuePropertyEditor::WriteMultiValueStringsToSPropValue(_In_ LPVOID l
 			}
 		}
 	}
-} // CMultiValuePropertyEditor::WriteMultiValueStringsToSPropValue
+}
 
 void CMultiValuePropertyEditor::WriteSPropValueToObject()
 {
@@ -1400,7 +1396,7 @@ void CMultiValuePropertyEditor::WriteSPropValueToObject()
 	MAPIFreeBuffer(lpProblemArray);
 
 	EC_MAPI(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
-} // CMultiValuePropertyEditor::WriteSPropValueToObject
+}
 
 // Callers beware: Detatches and returns the modified prop value - this must be MAPIFreeBuffered!
 _Check_return_ LPSPropValue CMultiValuePropertyEditor::DetachModifiedSPropValue()
@@ -1408,7 +1404,7 @@ _Check_return_ LPSPropValue CMultiValuePropertyEditor::DetachModifiedSPropValue(
 	LPSPropValue m_lpRet = m_lpsOutputValue;
 	m_lpsOutputValue = NULL;
 	return m_lpRet;
-} // CMultiValuePropertyEditor::DetachModifiedSPropValue
+}
 
 _Check_return_ bool CMultiValuePropertyEditor::DoListEdit(ULONG /*ulListNum*/, int iItem, _In_ SortListData* lpData)
 {
@@ -1514,7 +1510,7 @@ _Check_return_ bool CMultiValuePropertyEditor::DoListEdit(ULONG /*ulListNum*/, i
 	// Remember we didn't have an allocation parent - this is safe
 	MAPIFreeBuffer(lpNewValue);
 	return false;
-} // CMultiValuePropertyEditor::DoListEdit
+}
 
 void CMultiValuePropertyEditor::UpdateListRow(_In_ LPSPropValue lpProp, ULONG iMVCount)
 {
@@ -1538,7 +1534,7 @@ void CMultiValuePropertyEditor::UpdateListRow(_In_ LPSPropValue lpProp, ULONG iM
 
 		if (!szSmartView.empty()) SetListStringW(0, iMVCount, 3, szSmartView.c_str());
 	}
-} // CMultiValuePropertyEditor::UpdateListRow
+}
 
 void CMultiValuePropertyEditor::UpdateSmartView()
 {

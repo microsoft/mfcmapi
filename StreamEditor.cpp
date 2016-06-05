@@ -1,6 +1,3 @@
-// StreamEditor.cpp : implementation file
-//
-
 #include "stdafx.h"
 #include "StreamEditor.h"
 #include "InterpretProp2.h"
@@ -144,7 +141,7 @@ CStreamEditor::CStreamEditor(
 	}
 
 	wstring szPromptPostFix = format(L"\r\n%ws", TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, false).c_str()); // STRING_OK
-	SetPromptPostFix(wstringToCString(szPromptPostFix));
+	SetPromptPostFix(szPromptPostFix);
 
 	// Let's crack our property open and see what kind of controls we'll need for it
 	// One control for text stream, one for binary

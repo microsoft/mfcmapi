@@ -1,8 +1,4 @@
 #pragma once
-// Editor.h : Generic edit dialog built on CMyDialog
-
-class CParentWnd;
-
 #include "Dialog.h"
 #include "enums.h"
 #include "ViewPane\ViewPane.h"
@@ -14,20 +10,22 @@ class CParentWnd;
 #include "ViewPane\CountedTextPane.h"
 #include "ViewPane\SmartViewPane.h"
 
+class CParentWnd;
+
 // Buttons for CEditor
-//#define CEDITOR_BUTTON_OK		0x00000001 // Duplicated from MFCMAPI.h - do not modify
-#define CEDITOR_BUTTON_ACTION1	0x00000002
-#define CEDITOR_BUTTON_ACTION2	0x00000004
-//#define CEDITOR_BUTTON_CANCEL	0x00000008 // Duplicated from MFCMAPI.h - do not modify
-#define CEDITOR_BUTTON_ACTION3	0x00000010
+//#define CEDITOR_BUTTON_OK 0x00000001 // Duplicated from MFCMAPI.h - do not modify
+#define CEDITOR_BUTTON_ACTION1 0x00000002
+#define CEDITOR_BUTTON_ACTION2 0x00000004
+//#define CEDITOR_BUTTON_CANCEL 0x00000008 // Duplicated from MFCMAPI.h - do not modify
+#define CEDITOR_BUTTON_ACTION3 0x00000010
 
 union ControlStruct
 {
-	ViewPane*            lpPane;
-	TextPane*            lpTextPane;
-	CheckPane*           lpCheckPane;
-	ListPane*            lpListPane;
-	DropDownPane*        lpDropDownPane;
+	ViewPane* lpPane;
+	TextPane* lpTextPane;
+	CheckPane* lpCheckPane;
+	ListPane* lpListPane;
+	DropDownPane* lpDropDownPane;
 	CollapsibleTextPane* lpCollapsibleTextPane;
 };
 
@@ -55,7 +53,7 @@ public:
 	_Check_return_ HRESULT DisplayDialog();
 
 	// These functions can be used to set up a data editing dialog
-	void SetPromptPostFix(_In_opt_z_ LPCTSTR szMsg);
+	void SetPromptPostFix(_In_ wstring szMsg);
 	void CreateControls(ULONG ulCount);
 	void InitPane(ULONG iNum, ViewPane* lpPane);
 	void SetStringA(ULONG i, _In_opt_z_ LPCSTR szMsg, size_t cchsz = -1);
@@ -76,21 +74,21 @@ public:
 
 	// Get values after we've done the DisplayDialog
 	ViewPane* GetControl(ULONG iControl);
-	LPSTR  GetStringA(ULONG i);
+	LPSTR GetStringA(ULONG i);
 	LPWSTR GetStringW(ULONG i);
 #ifdef UNICODE
-#define GetString  GetStringW
+#define GetString GetStringW
 #else
-#define GetString  GetStringA
+#define GetString GetStringA
 #endif
 	_Check_return_ ULONG GetHex(ULONG i);
 	_Check_return_ ULONG GetDecimal(ULONG i);
 	_Check_return_ ULONG GetPropTag(ULONG i);
-	_Check_return_ bool  GetCheck(ULONG i);
-	_Check_return_ int   GetDropDown(ULONG i);
+	_Check_return_ bool GetCheck(ULONG i);
+	_Check_return_ int GetDropDown(ULONG i);
 	_Check_return_ DWORD_PTR GetDropDownValue(ULONG i);
 	_Check_return_ HRESULT GetEntryID(ULONG i, bool bIsBase64, _Out_ size_t* lpcbBin, _Out_ LPENTRYID* lpEID);
-	_Check_return_ bool  GetSelectedGUID(ULONG iControl, bool bByteSwapped, _In_ LPGUID lpSelectedGUID);
+	_Check_return_ bool GetSelectedGUID(ULONG iControl, bool bByteSwapped, _In_ LPGUID lpSelectedGUID);
 
 	// AddIn functions
 	void SetAddInTitle(_In_z_ LPWSTR szTitle);
@@ -117,16 +115,16 @@ protected:
 
 	// Functions used by derived classes during handle change events
 	_Check_return_ CString GetStringUseControl(ULONG iControl);
-	_Check_return_ ULONG   GetHexUseControl(ULONG i);
-	_Check_return_ ULONG   GetDecimalUseControl(ULONG i);
-	_Check_return_ ULONG   GetPropTagUseControl(ULONG iControl);
-	_Check_return_ bool    GetBinaryUseControl(ULONG i, _Out_ size_t* cbBin, _Out_ LPBYTE* lpBin);
-	_Check_return_ bool    GetCheckUseControl(ULONG iControl);
-	_Check_return_ LPSTR   GetEditBoxTextA(ULONG iControl, _Out_ size_t* lpcchText = NULL);
-	_Check_return_ LPWSTR  GetEditBoxTextW(ULONG iControl, _Out_ size_t* lpcchText = NULL);
-	_Check_return_ ULONG   GetListCount(ULONG iControl);
+	_Check_return_ ULONG GetHexUseControl(ULONG i);
+	_Check_return_ ULONG GetDecimalUseControl(ULONG i);
+	_Check_return_ ULONG GetPropTagUseControl(ULONG iControl);
+	_Check_return_ bool GetBinaryUseControl(ULONG i, _Out_ size_t* cbBin, _Out_ LPBYTE* lpBin);
+	_Check_return_ bool GetCheckUseControl(ULONG iControl);
+	_Check_return_ LPSTR GetEditBoxTextA(ULONG iControl, _Out_ size_t* lpcchText = NULL);
+	_Check_return_ LPWSTR GetEditBoxTextW(ULONG iControl, _Out_ size_t* lpcchText = NULL);
+	_Check_return_ ULONG GetListCount(ULONG iControl);
 	_Check_return_ SortListData* GetListRowData(ULONG iControl, int iRow);
-	_Check_return_ bool    IsDirty(ULONG iControl);
+	_Check_return_ bool IsDirty(ULONG iControl);
 
 	// Called to enable/disable buttons based on number of items
 	void UpdateListButtons();
@@ -136,7 +134,6 @@ protected:
 	_Check_return_ bool IsValidCheck(ULONG ulNum);
 	BOOL OnInitDialog();
 	void OnOK();
-	void OnContextMenu(_In_ CWnd *pWnd, CPoint pos);
 	void OnRecalcLayout();
 
 	// protected since derived classes need to call the base implementation
@@ -162,32 +159,32 @@ private:
 		UINT uidActionButtonText2,
 		UINT uidActionButtonText3);
 
-	void    DeleteControls();
+	void DeleteControls();
 	_Check_return_ SIZE ComputeWorkArea(SIZE sScreen);
-	void    OnGetMinMaxInfo(_Inout_ MINMAXINFO* lpMMI);
-	void    OnSetDefaultSize();
+	void OnGetMinMaxInfo(_Inout_ MINMAXINFO* lpMMI);
+	void OnSetDefaultSize();
 	_Check_return_ LRESULT OnNcHitTest(CPoint point);
-	void    OnSize(UINT nType, int cx, int cy);
+	void OnSize(UINT nType, int cx, int cy);
 	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
-	void    SetMargins();
+	void SetMargins();
 
 	// List functions and data
-	_Check_return_ bool    OnEditListEntry(ULONG ulListNum);
-	_Check_return_ bool    IsValidListWithButtons(ULONG ulNum);
-	ULONG	m_ulListNum; // Only supporting one list right now - this is the control number for it
+	_Check_return_ bool OnEditListEntry(ULONG ulListNum);
+	_Check_return_ bool IsValidListWithButtons(ULONG ulNum);
+	ULONG m_ulListNum; // Only supporting one list right now - this is the control number for it
 
 	// Our UI controls. Only valid during display.
-	bool	m_bHasPrompt;
-	CEdit	m_Prompt;
-	CButton	m_OkButton;
-	CButton	m_ActionButton1;
-	CButton	m_ActionButton2;
-	CButton	m_ActionButton3;
-	CButton	m_CancelButton;
-	ULONG	m_cButtons;
+	bool m_bHasPrompt;
+	CEdit m_Prompt;
+	CButton m_OkButton;
+	CButton m_ActionButton1;
+	CButton m_ActionButton2;
+	CButton m_ActionButton3;
+	CButton m_CancelButton;
+	ULONG m_cButtons;
 
 	// Variables that get set in the constructor
-	ULONG	m_bButtonFlags;
+	ULONG m_bButtonFlags;
 
 	// Size calculations
 	int m_iMargin;
@@ -202,19 +199,19 @@ private:
 	int m_iMinHeight;
 
 	// Title bar, prompt and icon
-	UINT	m_uidTitle;
-	CString	m_szTitle;
-	UINT	m_uidPrompt;
-	CString	m_szPromptPostFix;
-	CString m_szAddInTitle;
-	HICON	m_hIcon;
+	UINT m_uidTitle;
+	wstring m_szTitle;
+	UINT m_uidPrompt;
+	wstring m_szPromptPostFix;
+	wstring m_szAddInTitle;
+	HICON m_hIcon;
 
-	UINT	m_uidActionButtonText1;
-	UINT	m_uidActionButtonText2;
-	UINT	m_uidActionButtonText3;
+	UINT m_uidActionButtonText1;
+	UINT m_uidActionButtonText2;
+	UINT m_uidActionButtonText3;
 
-	ControlStruct*	m_lpControls; // array of controls
-	ULONG			m_cControls; // count of controls
+	ControlStruct* m_lpControls; // array of controls
+	ULONG m_cControls; // count of controls
 
 	bool m_bEnableScroll;
 	CWnd m_ScrollWindow;
