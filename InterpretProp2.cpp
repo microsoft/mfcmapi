@@ -193,9 +193,10 @@ void PropTagToPropName(ULONG ulPropTag, bool bIsAB, _Deref_opt_out_opt_z_ LPTSTR
 }
 
 // Strictly does a lookup in the array. Does not convert otherwise
-_Check_return_ HRESULT LookupPropName(_In_z_ LPCWSTR lpszPropName, _Out_ ULONG* ulPropTag)
+_Check_return_ HRESULT LookupPropName(_In_ wstring lpszPropName, _Out_ ULONG* ulPropTag)
 {
-	if (!lpszPropName || !ulPropTag) return MAPI_E_INVALID_PARAMETER;
+	ulPropTag = 0;
+	if (lpszPropName.empty() || !ulPropTag) return MAPI_E_INVALID_PARAMETER;
 
 	HRESULT hRes = S_OK;
 	ULONG ulCur = 0;
@@ -206,7 +207,7 @@ _Check_return_ HRESULT LookupPropName(_In_z_ LPCWSTR lpszPropName, _Out_ ULONG* 
 
 	for (ulCur = 0; ulCur < ulPropTagArray; ulCur++)
 	{
-		if (0 == lstrcmpiW(lpszPropName, PropTagArray[ulCur].lpszName))
+		if (0 == lstrcmpiW(lpszPropName.c_str(), PropTagArray[ulCur].lpszName))
 		{
 			*ulPropTag = PropTagArray[ulCur].ulValue;
 			break;
@@ -214,16 +215,17 @@ _Check_return_ HRESULT LookupPropName(_In_z_ LPCWSTR lpszPropName, _Out_ ULONG* 
 	}
 
 	return hRes;
-} // LookupPropName
+}
 
-_Check_return_ HRESULT PropNameToPropTagW(_In_z_ LPCWSTR lpszPropName, _Out_ ULONG* ulPropTag)
+_Check_return_ HRESULT PropNameToPropTag(_In_ wstring lpszPropName, _Out_ ULONG* ulPropTag)
 {
-	if (!lpszPropName || !ulPropTag) return MAPI_E_INVALID_PARAMETER;
+	ulPropTag = 0;
+	if (lpszPropName.empty() || !ulPropTag) return MAPI_E_INVALID_PARAMETER;
 
 	*ulPropTag = NULL;
 
 	LPWSTR szEnd = NULL;
-	ULONG ulTag = wcstoul(lpszPropName, &szEnd, 16);
+	ULONG ulTag = wcstoul(lpszPropName.c_str(), &szEnd, 16);
 	if (*szEnd == NULL)
 	{
 		*ulPropTag = ulTag;
@@ -231,26 +233,7 @@ _Check_return_ HRESULT PropNameToPropTagW(_In_z_ LPCWSTR lpszPropName, _Out_ ULO
 	}
 
 	return LookupPropName(lpszPropName, ulPropTag);;
-} // PropNameToPropTagW
-
-_Check_return_ HRESULT PropNameToPropTagA(_In_z_ LPCSTR lpszPropName, _Out_ ULONG* ulPropTag)
-{
-	if (!lpszPropName || !ulPropTag) return MAPI_E_INVALID_PARAMETER;
-
-	HRESULT hRes = S_OK;
-
-	*ulPropTag = NULL;
-	if (!ulPropTagArray || !PropTagArray) return S_OK;
-
-	LPWSTR szPropName = NULL;
-	EC_H(AnsiToUnicode(lpszPropName, &szPropName));
-	if (SUCCEEDED(hRes))
-	{
-		EC_H(PropNameToPropTagW(szPropName, ulPropTag));
-	}
-	delete[] szPropName;
-	return hRes;
-} // PropNameToPropTagA
+}
 
 _Check_return_ ULONG PropTypeNameToPropTypeA(_In_z_ LPCSTR lpszPropType)
 {
@@ -263,7 +246,7 @@ _Check_return_ ULONG PropTypeNameToPropTypeA(_In_z_ LPCSTR lpszPropType)
 	delete[] szPropType;
 
 	return ulPropType;
-} // PropTypeNameToPropTypeA
+}
 
 _Check_return_ ULONG PropTypeNameToPropTypeW(_In_z_ LPCWSTR lpszPropType)
 {
@@ -290,7 +273,7 @@ _Check_return_ ULONG PropTypeNameToPropTypeW(_In_z_ LPCWSTR lpszPropType)
 	}
 
 	return ulPropType;
-} // PropTypeNameToPropTypeW
+}
 
 wstring GUIDToString(_In_opt_ LPCGUID lpGUID)
 {

@@ -363,7 +363,7 @@ void DoStore(_In_ MYOPTIONS ProgOpts)
 	// For now, we don't support dispids
 	if (!ProgOpts.lpszUnswitchedOption.empty() && !(ProgOpts.ulOptions & OPT_DODISPID))
 	{
-		WC_H(PropNameToPropTagW(ProgOpts.lpszUnswitchedOption.c_str(), &ulPropTag));
+		WC_H(PropNameToPropTag(ProgOpts.lpszUnswitchedOption, &ulPropTag));
 		hRes = S_OK;
 	}
 

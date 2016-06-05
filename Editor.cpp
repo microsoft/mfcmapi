@@ -1,6 +1,3 @@
-// Editor.cpp : implementation file
-//
-
 #include "stdafx.h"
 #include "Editor.h"
 #include "UIFunctions.h"
@@ -10,17 +7,10 @@
 #include "InterpretProp2.h"
 #include "ImportProcs.h"
 #include "MyWinApp.h"
-extern CMyWinApp theApp;
-
-// tmschema.h has been deprecated, but older compilers do not ship vssym32.h
-// Use the replacement when we're on VS 2008 or higher.
-#if defined(_MSC_VER) && (_MSC_VER >= 1500)
 #include <vssym32.h>
-#else
-#include <tmschema.h>
-#endif
-
 #include "AboutDlg.h"
+
+extern CMyWinApp theApp;
 
 static wstring CLASS = L"CEditor";
 
@@ -292,7 +282,7 @@ LRESULT CEditor::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		return 0;
 	}
 	break;
-	} // end switch
+	}
 	return CMyDialog::WindowProc(message, wParam, lParam);
 }
 
@@ -327,7 +317,7 @@ LRESULT CALLBACK DrawScrollProc(
 		break;
 	}
 	return DefSubclassProc(hWnd, uMsg, wParam, lParam);
-} // DrawScrollProc
+}
 
 // The order these controls are created dictates our tab order - be careful moving things around!
 BOOL CEditor::OnInitDialog()
@@ -1340,7 +1330,7 @@ void CleanPropString(_In_ CString* lpString)
 	// remove any whitespace or nonsense punctuation
 	lpString->Replace(_T(","), _T("")); // STRING_OK
 	lpString->Replace(_T(" "), _T("")); // STRING_OK
-} // CleanPropString
+}
 
 _Check_return_ ULONG CEditor::GetPropTagUseControl(ULONG i)
 {
@@ -1359,7 +1349,7 @@ _Check_return_ ULONG CEditor::GetPropTagUseControl(ULONG i)
 
 	if (*szEnd != NULL) // If we didn't consume the whole string, try a lookup
 	{
-		EC_H(PropNameToPropTag((LPCTSTR)szTag, &ulTag));
+		EC_H(PropNameToPropTag(LPCTSTRToWstring(szTag), &ulTag));
 	}
 
 	// Figure if this is a full tag or just an ID
@@ -1382,7 +1372,7 @@ _Check_return_ ULONG CEditor::GetPropTag(ULONG i)
 	ULONG ulPropTag = NULL;
 	ULONG ulTag = NULL;
 
-	EC_H(PropNameToPropTagW(m_lpControls[i].lpTextPane->GetStringW(), &ulTag));
+	EC_H(PropNameToPropTag(m_lpControls[i].lpTextPane->GetStringW(), &ulTag));
 
 	// Figure if this is a full tag or just an ID
 	if (ulTag & PROP_TAG_MASK) // Full prop tag
@@ -1393,6 +1383,7 @@ _Check_return_ ULONG CEditor::GetPropTag(ULONG i)
 	{
 		ulPropTag = PROP_TAG(PT_UNSPECIFIED, ulTag);
 	}
+
 	return ulPropTag;
 }
 
