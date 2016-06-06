@@ -235,37 +235,23 @@ _Check_return_ HRESULT PropNameToPropTag(_In_ wstring lpszPropName, _Out_ ULONG*
 	return LookupPropName(lpszPropName, ulPropTag);;
 }
 
-_Check_return_ ULONG PropTypeNameToPropTypeA(_In_z_ LPCSTR lpszPropType)
+_Check_return_ ULONG PropTypeNameToPropType(_In_ wstring lpszPropType)
 {
-	ULONG ulPropType = PT_UNSPECIFIED;
-
-	HRESULT hRes = S_OK;
-	LPWSTR szPropType = NULL;
-	EC_H(AnsiToUnicode(lpszPropType, &szPropType));
-	ulPropType = PropTypeNameToPropTypeW(szPropType);
-	delete[] szPropType;
-
-	return ulPropType;
-}
-
-_Check_return_ ULONG PropTypeNameToPropTypeW(_In_z_ LPCWSTR lpszPropType)
-{
-	if (!lpszPropType || !ulPropTypeArray || !PropTypeArray) return PT_UNSPECIFIED;
+	if (lpszPropType.empty() || !ulPropTypeArray || !PropTypeArray) return PT_UNSPECIFIED;
 
 	// Check for numbers first before trying the string as an array lookup.
 	// This will translate '0x102' to 0x102, 0x3 to 3, etc.
 	LPWSTR szEnd = NULL;
-	ULONG ulType = wcstoul(lpszPropType, &szEnd, 16);
+	ULONG ulType = wcstoul(lpszPropType.c_str(), &szEnd, 16);
 	if (*szEnd == NULL) return ulType;
 
 	ULONG ulCur = 0;
 
 	ULONG ulPropType = PT_UNSPECIFIED;
 
-	LPCWSTR szPropType = lpszPropType;
 	for (ulCur = 0; ulCur < ulPropTypeArray; ulCur++)
 	{
-		if (0 == lstrcmpiW(szPropType, PropTypeArray[ulCur].lpszName))
+		if (0 == lstrcmpiW(lpszPropType.c_str(), PropTypeArray[ulCur].lpszName))
 		{
 			ulPropType = PropTypeArray[ulCur].ulValue;
 			break;
