@@ -30,13 +30,13 @@ CPropertyTagEditor::CPropertyTagEditor(
 	_In_opt_ LPMAPIPROP lpMAPIProp,
 	_In_ CWnd* pParentWnd) :
 	CEditor(pParentWnd,
-	uidTitle ? uidTitle : IDS_PROPTAGEDITOR,
-	uidPrompt,
-	0,
-	CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL | CEDITOR_BUTTON_ACTION1 | (lpMAPIProp ? CEDITOR_BUTTON_ACTION2 : 0),
-	IDS_ACTIONSELECTPTAG,
-	IDS_ACTIONCREATENAMEDPROP,
-	NULL)
+		uidTitle ? uidTitle : IDS_PROPTAGEDITOR,
+		uidPrompt,
+		0,
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL | CEDITOR_BUTTON_ACTION1 | (lpMAPIProp ? CEDITOR_BUTTON_ACTION2 : 0),
+		IDS_ACTIONSELECTPTAG,
+		IDS_ACTIONCREATENAMEDPROP,
+		NULL)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	m_ulPropTag = ulPropTag;
@@ -59,13 +59,13 @@ CPropertyTagEditor::CPropertyTagEditor(
 		InitPane(PROPTAG_NAMEPROPNAME, CreateSingleLinePane(IDS_NAMEPROPNAME, NULL, false));
 		InitPane(PROPTAG_NAMEPROPGUID, CreateDropDownGuidPane(IDS_NAMEPROPGUID, false));
 	}
-} // CPropertyTagEditor::CPropertyTagEditor
+}
 
 CPropertyTagEditor::~CPropertyTagEditor()
 {
 	TRACE_DESTRUCTOR(CLASS);
 	if (m_lpMAPIProp) m_lpMAPIProp->Release();
-} // CPropertyTagEditor::~CPropertyTagEditor
+}
 
 BOOL CPropertyTagEditor::OnInitDialog()
 {
@@ -100,12 +100,12 @@ BOOL CPropertyTagEditor::OnInitDialog()
 	PopulateFields(NOSKIPFIELD);
 
 	return bRet;
-} // CPropertyTagEditor::OnInitDialog
+}
 
 _Check_return_ ULONG CPropertyTagEditor::GetPropertyTag()
 {
 	return m_ulPropTag;
-} // CPropertyTagEditor::GetPropertyTag
+}
 
 // Select a property tag
 void CPropertyTagEditor::OnEditAction1()
@@ -122,7 +122,7 @@ void CPropertyTagEditor::OnEditAction1()
 
 	m_ulPropTag = MyData.GetPropertyTag();
 	PopulateFields(NOSKIPFIELD);
-} // CPropertyTagEditor::OnEditAction1
+}
 
 // GetNamesFromIDs - always with MAPI_CREATE
 void CPropertyTagEditor::OnEditAction2()
@@ -132,7 +132,7 @@ void CPropertyTagEditor::OnEditAction2()
 	LookupNamedProp(NOSKIPFIELD, true);
 
 	PopulateFields(NOSKIPFIELD);
-} // CPropertyTagEditor::OnEditAction2
+}
 
 // Search for properties matching lpszDispIDName on a substring
 _Check_return_ LPNAMEID_ARRAY_ENTRY GetDispIDFromName(_In_z_ LPCWSTR lpszDispIDName)
@@ -176,7 +176,7 @@ void CPropertyTagEditor::LookupNamedProp(ULONG ulSkipField, bool bCreate)
 		if (1 == iCurSel) NamedID.ulKind = MNID_ID;
 	}
 	CString szName;
-	LPWSTR	szWideName = NULL;
+	LPWSTR szWideName = NULL;
 	szName = GetStringUseControl(PROPTAG_NAMEPROPNAME);
 
 	// Convert our prop tag name to a wide character string
@@ -261,7 +261,7 @@ void CPropertyTagEditor::LookupNamedProp(ULONG ulSkipField, bool bCreate)
 #ifndef UNICODE
 	delete[] szWideName;
 #endif
-} // CPropertyTagEditor::LookupNamedProp
+}
 
 _Check_return_ ULONG CPropertyTagEditor::GetSelectedPropType()
 {
@@ -279,10 +279,8 @@ _Check_return_ ULONG CPropertyTagEditor::GetSelectedPropType()
 		szType = GetDropStringUseControl(PROPTAG_TYPE);
 	}
 
-	ULONG ulType = PropTypeNameToPropType(szType);
-
-	return ulType;
-} // CPropertyTagEditor::GetSelectedPropType
+	return PropTypeNameToPropType(LPCTSTRToWstring(szType));
+}
 
 _Check_return_ ULONG CPropertyTagEditor::HandleChange(UINT nID)
 {
@@ -324,7 +322,7 @@ _Check_return_ ULONG CPropertyTagEditor::HandleChange(UINT nID)
 	PopulateFields(i);
 
 	return i;
-} // CPropertyTagEditor::HandleChange
+}
 
 // Fill out the fields in the form
 // Don't touch the field passed in ulSkipField
@@ -375,10 +373,10 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField)
 	if (m_lpMAPIProp && !m_bIsAB &&
 		(PROPTAG_TAG == ulSkipField || PROPTAG_ID == ulSkipField))
 	{
-		ULONG			ulPropNames = 0;
-		SPropTagArray	sTagArray = { 0 };
+		ULONG ulPropNames = 0;
+		SPropTagArray sTagArray = { 0 };
 		LPSPropTagArray lpTagArray = &sTagArray;
-		LPMAPINAMEID*	lppPropNames = NULL;
+		LPMAPINAMEID* lppPropNames = NULL;
 
 		lpTagArray->cValues = 1;
 		lpTagArray->aulPropTag[0] = m_ulPropTag;
@@ -498,13 +496,13 @@ CPropertySelector::CPropertySelector(
 
 	CreateControls(1);
 	InitPane(0, CreateListPane(IDS_KNOWNPROPTAGS, true, true, this));
-} // CPropertySelector::CPropertySelector
+}
 
 CPropertySelector::~CPropertySelector()
 {
 	TRACE_DESTRUCTOR(CLASS);
 	if (m_lpMAPIProp) m_lpMAPIProp->Release();
-} // CPropertySelector::~CPropertySelector
+}
 
 BOOL CPropertySelector::OnInitDialog()
 {
@@ -554,7 +552,7 @@ BOOL CPropertySelector::OnInitDialog()
 	}
 
 	return bRet;
-} // CPropertySelector::OnInitDialog
+}
 
 void CPropertySelector::OnOK()
 {
@@ -563,7 +561,7 @@ void CPropertySelector::OnOK()
 		m_ulPropTag = lpListData->data.Prop.ulPropTag;
 
 	CEditor::OnOK();
-} // CPropertySelector::OnOK
+}
 
 // We're not actually editing the list here - just overriding this to allow double-click
 // So it's OK to return false
@@ -571,12 +569,12 @@ _Check_return_ bool CPropertySelector::DoListEdit(ULONG /*ulListNum*/, int /*iIt
 {
 	OnOK();
 	return false;
-} // CPropertySelector::DoListEdit
+}
 
 _Check_return_ ULONG CPropertySelector::GetPropertyTag()
 {
 	return m_ulPropTag;
-} // CPropertySelector::GetPropertyTag
+}
 
 _Check_return_ SortListData* CPropertySelector::GetSelectedListRowData(ULONG iControl)
 {

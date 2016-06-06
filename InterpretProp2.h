@@ -19,13 +19,7 @@ void PropTagToPropName(ULONG ulPropTag, bool bIsAB, _Deref_opt_out_opt_z_ LPTSTR
 _Check_return_ HRESULT LookupPropName(_In_ wstring lpszPropName, _Out_ ULONG* ulPropTag);
 
 _Check_return_ HRESULT PropNameToPropTag(_In_ wstring lpszPropName, _Out_ ULONG* ulPropTag);
-_Check_return_ ULONG PropTypeNameToPropTypeW(_In_z_ LPCWSTR lpszPropType);
-_Check_return_ ULONG PropTypeNameToPropTypeA(_In_z_ LPCSTR lpszPropType);
-#ifdef UNICODE
-#define PropTypeNameToPropType PropTypeNameToPropTypeW
-#else
-#define PropTypeNameToPropType PropTypeNameToPropTypeA
-#endif
+_Check_return_ ULONG PropTypeNameToPropType(_In_ wstring lpszPropType);
 
 wstring GUIDToString(_In_opt_ LPCGUID lpGUID);
 wstring GUIDToStringAndName(_In_opt_ LPCGUID lpGUID);
