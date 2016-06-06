@@ -745,12 +745,12 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 
 	Outputf(ulDbgLvl, fFile, false, L"\t<property tag = \"0x%08X\" type = \"%ws\" >\n", lpProp->ulPropTag, TypeToString(lpProp->ulPropTag).c_str());
 
-	LPTSTR szExactMatches = NULL;
-	LPTSTR szPartialMatches = NULL;
+	wstring szExactMatches;
+	wstring szPartialMatches;
 
 	PropTagToPropName(lpProp->ulPropTag, false, &szExactMatches, &szPartialMatches);
-	if (!IsNullOrEmpty(szExactMatches)) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPEXACTNAMES].uidName, LPCTSTRToWstring(szExactMatches), false, iIndent);
-	if (!IsNullOrEmpty(szPartialMatches)) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPPARTIALNAMES].uidName, LPCTSTRToWstring(szPartialMatches), false, iIndent);
+	if (!szExactMatches.empty()) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPEXACTNAMES].uidName, szExactMatches, false, iIndent);
+	if (!szPartialMatches.empty()) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPPARTIALNAMES].uidName, szPartialMatches, false, iIndent);
 
 	wstring szNamedPropName;
 	wstring szNamedPropGUID;
@@ -785,8 +785,6 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 
 	Output(ulDbgLvl, fFile, false, L"\t</property>\n");
 
-	delete[] szPartialMatches;
-	delete[] szExactMatches;
 	if (lpLargeProp) MAPIFreeBuffer(lpLargeProp);
 }
 

@@ -648,8 +648,8 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 	wstring PropTag = format(L"0x%08X", ulPropTag);
 	wstring PropString;
 	wstring AltPropString;
-	LPTSTR szExactMatches = NULL;
-	LPTSTR szPartialMatches = NULL;
+	wstring szExactMatches;
+	wstring szPartialMatches;
 	wstring szNamedPropName;
 	wstring szNamedPropGUID;
 	wstring szNamedPropDASL;
@@ -667,16 +667,16 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 		szNamedPropDASL);
 
 	PropTagToPropName(ulPropTag, m_bIsAB, &szExactMatches, &szPartialMatches);
-	if (!IsNullOrEmpty(szExactMatches))
+	if (!szExactMatches.empty())
 	{
-		SetItemText(iRow, pcPROPEXACTNAMES, szExactMatches);
+		SetItemTextW(iRow, pcPROPEXACTNAMES, szExactMatches.c_str());
 	}
 	else
 	{
 		SetItemTextW(iRow, pcPROPEXACTNAMES, PropTag.c_str());
 	}
 
-	SetItemText(iRow, pcPROPPARTIALNAMES, !IsNullOrEmpty(szPartialMatches) ? szPartialMatches : _T(""));
+	SetItemTextW(iRow, pcPROPPARTIALNAMES, szPartialMatches.c_str());
 
 	SetItemTextW(iRow, pcPROPTAG, PropTag.c_str());
 	SetItemTextW(iRow, pcPROPTYPE, TypeToString(ulPropTag).c_str());
@@ -695,9 +695,6 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 	if (!szSmartView.empty()) SetItemTextW(iRow, pcPROPSMARTVIEW, szSmartView.c_str());
 	if (!szNamedPropName.empty()) SetItemTextW(iRow, pcPROPNAMEDNAME, szNamedPropName.c_str());
 	if (!szNamedPropGUID.empty()) SetItemTextW(iRow, pcPROPNAMEDIID, szNamedPropGUID.c_str());
-
-	delete[] szPartialMatches;
-	delete[] szExactMatches;
 }
 
 _Check_return_ HRESULT CSingleMAPIPropListCtrl::GetDisplayedProps(ULONG FAR* lpcValues, LPSPropValue FAR* lppPropArray)
