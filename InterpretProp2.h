@@ -13,7 +13,7 @@ void FindTagArrayMatches(_In_ ULONG ulTarget,
 
 // Function to convert property tags to their names
 // Free lpszExactMatch and lpszPartialMatches with MAPIFreeBuffer
-void PropTagToPropName(ULONG ulPropTag, bool bIsAB, _Deref_opt_out_opt_z_ LPTSTR* lpszExactMatch, _Deref_opt_out_opt_z_ LPTSTR* lpszPartialMatches);
+void PropTagToPropName(ULONG ulPropTag, bool bIsAB, _In_opt_  wstring* lpszExactMatch, _In_opt_  wstring* lpszPartialMatches);
 
 // Strictly does a lookup in the array. Does not convert otherwise
 _Check_return_ HRESULT LookupPropName(_In_ wstring lpszPropName, _Out_ ULONG* ulPropTag);

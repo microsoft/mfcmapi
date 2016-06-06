@@ -33,14 +33,14 @@ CTagArrayEditor::CTagArrayEditor(
 
 	CreateControls(1);
 	InitPane(0, CreateListPane(IDS_PROPTAGARRAY, false, false, this));
-} // CTagArrayEditor::CTagArrayEditor
+}
 
 CTagArrayEditor::~CTagArrayEditor()
 {
 	TRACE_DESTRUCTOR(CLASS);
 	MAPIFreeBuffer(m_lpOutputTagArray);
 	if (m_lpMAPIProp) m_lpMAPIProp->Release();
-} // CTagArrayEditor::~CTagArrayEditor
+}
 
 // Used to call functions which need to be called AFTER controls are created
 BOOL CTagArrayEditor::OnInitDialog()
@@ -51,7 +51,7 @@ BOOL CTagArrayEditor::OnInitDialog()
 
 	UpdateListButtons();
 	return bRet;
-} // CTagArrayEditor::OnInitDialog
+}
 
 void CTagArrayEditor::OnOK()
 {
@@ -66,16 +66,16 @@ void CTagArrayEditor::OnOK()
 	}
 
 	CMyDialog::OnOK(); // don't need to call CEditor::OnOK
-} // CTagArrayEditor::OnOK
+}
 
 _Check_return_ bool CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData)
 {
 	if (!IsValidList(ulListNum)) return false;
 	if (!lpData) return false;
 
-	HRESULT	hRes = S_OK;
-	ULONG	ulOrigPropTag = lpData->data.Tag.ulPropTag;
-	ULONG	ulNewPropTag = ulOrigPropTag;
+	HRESULT hRes = S_OK;
+	ULONG ulOrigPropTag = lpData->data.Tag.ulPropTag;
+	ULONG ulNewPropTag = ulOrigPropTag;
 
 	CPropertyTagEditor MyPropertyTag(
 		NULL, // title
@@ -91,14 +91,10 @@ _Check_return_ bool CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 
 	if (ulNewPropTag != ulOrigPropTag)
 	{
-		CString szTmp;
 		lpData->data.Tag.ulPropTag = ulNewPropTag;
 
-		szTmp.Format(_T("0x%08X"), ulNewPropTag); // STRING_OK
-		SetListString(ulListNum, iItem, 1, szTmp);
-
-		LPTSTR szExactMatch = NULL;
-		LPTSTR szPartialMatch = NULL;
+		wstring szExactMatch;
+		wstring szPartialMatch;
 		wstring szNamedPropName;
 		wstring szNamedPropGUID;
 		wstring szNamedPropDASL;
@@ -115,20 +111,18 @@ _Check_return_ bool CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 
 		PropTagToPropName(ulNewPropTag, m_bIsAB, &szExactMatch, &szPartialMatch);
 
-		SetListString(ulListNum, iItem, 2, szExactMatch);
-		SetListString(ulListNum, iItem, 3, szPartialMatch);
+		SetListStringW(ulListNum, iItem, 1, format(L"0x%08X", ulNewPropTag).c_str());
+		SetListStringW(ulListNum, iItem, 2, szExactMatch.c_str());
+		SetListStringW(ulListNum, iItem, 3, szPartialMatch.c_str());
 		SetListStringW(ulListNum, iItem, 4, TypeToString(ulNewPropTag).c_str());
 		SetListStringW(ulListNum, iItem, 5, szNamedPropName.c_str());
 		SetListStringW(ulListNum, iItem, 6, szNamedPropGUID.c_str());
-
-		delete[] szPartialMatch;
-		delete[] szExactMatch;
 
 		ResizeList(ulListNum, false);
 		return true;
 	}
 	return false;
-} // CTagArrayEditor::DoListEdit
+}
 
 void CTagArrayEditor::ReadTagArrayToList(ULONG ulListNum)
 {
@@ -163,9 +157,8 @@ void CTagArrayEditor::ReadTagArrayToList(ULONG ulListNum)
 				lpData->bItemFullyLoaded = true;
 			}
 
-			CString PropTag;
-			LPTSTR szExactMatch = NULL;
-			LPTSTR szPartialMatch = NULL;
+			wstring szExactMatch;
+			wstring szPartialMatch;
 			wstring szNamedPropName;
 			wstring szNamedPropGUID;
 			wstring szNamedPropDASL;
@@ -180,23 +173,19 @@ void CTagArrayEditor::ReadTagArrayToList(ULONG ulListNum)
 				szNamedPropGUID, // Built from lpProp & lpMAPIProp
 				szNamedPropDASL);
 
-			PropTag.Format(_T("0x%08X"), ulPropTag);
-			SetListString(ulListNum, iTagCount, 1, PropTag);
-
 			PropTagToPropName(ulPropTag, m_bIsAB, &szExactMatch, &szPartialMatch);
-			SetListString(ulListNum, iTagCount, 2, szExactMatch);
-			SetListString(ulListNum, iTagCount, 3, szPartialMatch);
+
+			SetListStringW(ulListNum, iTagCount, 1, format(L"0x%08X", ulPropTag).c_str());
+			SetListStringW(ulListNum, iTagCount, 2, szExactMatch.c_str());
+			SetListStringW(ulListNum, iTagCount, 3, szPartialMatch.c_str());
 			SetListStringW(ulListNum, iTagCount, 4, TypeToString(ulPropTag).c_str());
 			SetListStringW(ulListNum, iTagCount, 5, szNamedPropName.c_str());
 			SetListStringW(ulListNum, iTagCount, 6, szNamedPropGUID.c_str());
-
-			delete[] szPartialMatch;
-			delete[] szExactMatch;
 		}
 	}
 
 	ResizeList(ulListNum, false);
-} // CTagArrayEditor::ReadTagArrayToList
+}
 
 void CTagArrayEditor::WriteListToTagArray(ULONG ulListNum)
 {
@@ -221,16 +210,15 @@ void CTagArrayEditor::WriteListToTagArray(ULONG ulListNum)
 			if (lpData)
 				m_lpOutputTagArray->aulPropTag[iTagCount] = lpData->data.Tag.ulPropTag;
 		}
-
 	}
-} // CTagArrayEditor::WriteListToTagArray
+}
 
 _Check_return_ LPSPropTagArray CTagArrayEditor::DetachModifiedTagArray()
 {
 	LPSPropTagArray lpRetArray = m_lpOutputTagArray;
 	m_lpOutputTagArray = NULL;
 	return lpRetArray;
-} // CTagArrayEditor::DetachModifiedTagArray
+}
 
 // QueryColumns flags
 void CTagArrayEditor::OnEditAction1()

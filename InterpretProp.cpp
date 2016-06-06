@@ -203,8 +203,8 @@ wstring TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB, bool
 	wstring szRet;
 	wstring szTemp;
 
-	LPTSTR szExactMatches = NULL;
-	LPTSTR szPartialMatches = NULL;
+	wstring szExactMatches;
+	wstring szPartialMatches;
 	wstring szNamedPropName;
 	wstring szNamedPropGUID;
 	wstring szNamedPropDASL;
@@ -225,8 +225,8 @@ wstring TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB, bool
 	if (bSingleLine)
 	{
 		szFormatString = L"0x%1!08X! (%2)"; // STRING_OK
-		if (!IsNullOrEmpty(szExactMatches)) szFormatString += L": %3!ws!"; // STRING_OK
-		if (!IsNullOrEmpty(szPartialMatches)) szFormatString += L": (%4!ws!)"; // STRING_OK
+		if (!szExactMatches.empty()) szFormatString += L": %3!ws!"; // STRING_OK
+		if (!szPartialMatches.empty()) szFormatString += L": (%4!ws!)"; // STRING_OK
 		if (!szNamedPropName.empty())
 		{
 			szFormatString += loadstring(IDS_NAMEDPROPSINGLELINE);
@@ -240,12 +240,12 @@ wstring TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB, bool
 	else
 	{
 		szFormatString = loadstring(IDS_TAGMULTILINE);
-		if (!IsNullOrEmpty(szExactMatches))
+		if (!szExactMatches.empty())
 		{
 			szFormatString += loadstring(IDS_PROPNAMEMULTILINE);
 		}
 
-		if (!IsNullOrEmpty(szPartialMatches))
+		if (!szPartialMatches.empty())
 		{
 			szFormatString += loadstring(IDS_OTHERNAMESMULTILINE);
 		}
@@ -273,14 +273,11 @@ wstring TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB, bool
 	szRet = formatmessage(szFormatString,
 		ulPropTag,
 		TypeToString(ulPropTag).c_str(),
-		LPCTSTRToWstring(szExactMatches).c_str(),
-		LPCTSTRToWstring(szPartialMatches).c_str(),
+		szExactMatches.c_str(),
+		szPartialMatches.c_str(),
 		szNamedPropName.c_str(),
 		szNamedPropGUID.c_str(),
 		szNamedPropDASL.c_str());
-
-	delete[] szPartialMatches;
-	delete[] szExactMatches;
 
 	if (fIsSet(DBGTest))
 	{

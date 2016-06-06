@@ -389,13 +389,9 @@ _Check_return_ HRESULT CContentsTableListCtrl::AddColumn(UINT uidHeaderName, ULO
 	}
 	else
 	{
-		LPTSTR szExactMatches = NULL;
-		PropTagToPropName(ulPropTag, m_bIsAB, &szExactMatches, NULL);
-		if (IsNullOrEmpty(szExactMatches))
+		PropTagToPropName(ulPropTag, m_bIsAB, &szHeaderString, NULL);
+		if (szHeaderString.empty())
 			szHeaderString = format(L"0x%08X", ulPropTag); // STRING_OK
-		else
-			szHeaderString = LPCTSTRToWstring(szExactMatches);
-		delete[] szExactMatches;
 	}
 
 	auto iRetVal = InsertColumn(ulCurHeaderCol, wstringToCString(szHeaderString));

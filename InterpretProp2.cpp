@@ -123,10 +123,8 @@ unordered_map<ULONG64, NameMapEntry> g_PropNames;
 
 // lpszExactMatch and lpszPartialMatches allocated with new
 // clean up with delete[]
-void PropTagToPropName(ULONG ulPropTag, bool bIsAB, _Deref_opt_out_opt_z_ LPTSTR* lpszExactMatch, _Deref_opt_out_opt_z_ LPTSTR* lpszPartialMatches)
+void PropTagToPropName(ULONG ulPropTag, bool bIsAB, _In_opt_  wstring* lpszExactMatch, _In_opt_  wstring* lpszPartialMatches)
 {
-	if (lpszExactMatch) *lpszExactMatch = NULL;
-	if (lpszPartialMatches) *lpszPartialMatches = NULL;
 	if (!lpszExactMatch && !lpszPartialMatches) return;
 
 	ULONG64 ulKey = (bIsAB ? (_int64)1 << 32 : 0) | ulPropTag;
@@ -136,12 +134,12 @@ void PropTagToPropName(ULONG ulPropTag, bool bIsAB, _Deref_opt_out_opt_z_ LPTSTR
 	{
 		if (lpszExactMatch)
 		{
-			*lpszExactMatch = wstringToLPTSTR(match->second.szExactMatch);
+			*lpszExactMatch = match->second.szExactMatch;
 		}
 
 		if (lpszPartialMatches)
 		{
-			*lpszPartialMatches = wstringToLPTSTR(match->second.szPartialMatches);
+			*lpszPartialMatches = match->second.szPartialMatches;
 		}
 
 		return;
@@ -166,7 +164,7 @@ void PropTagToPropName(ULONG ulPropTag, bool bIsAB, _Deref_opt_out_opt_z_ LPTSTR
 				}
 			}
 
-			*lpszExactMatch = wstringToLPTSTR(entry.szExactMatch);
+			*lpszExactMatch = entry.szExactMatch;
 		}
 	}
 
@@ -184,7 +182,7 @@ void PropTagToPropName(ULONG ulPropTag, bool bIsAB, _Deref_opt_out_opt_z_ LPTSTR
 					}
 				}
 
-				*lpszPartialMatches = wstringToLPTSTR(entry.szPartialMatches);
+				*lpszPartialMatches = entry.szPartialMatches;
 			}
 		}
 	}

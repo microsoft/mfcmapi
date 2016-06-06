@@ -350,19 +350,16 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField)
 	if (PROPTAG_TYPE != ulSkipField) SetDropDownSelection(PROPTAG_TYPE, wstringToCString(TypeToString(m_ulPropTag)));
 	if (PROPTAG_NAME != ulSkipField)
 	{
-		LPTSTR szExactMatch = NULL;
-		LPTSTR szPartialMatch = NULL;
+		wstring szExactMatch;
+		wstring szPartialMatch;
 		PropTagToPropName(m_ulPropTag, m_bIsAB, &szExactMatch, &szPartialMatch);
 
-		if (PROP_ID(m_ulPropTag) && (!IsNullOrEmpty(szExactMatch) || !IsNullOrEmpty(szPartialMatch)))
-			SetStringf(PROPTAG_NAME, _T("%s (%s)"), !IsNullOrEmpty(szExactMatch) ? szExactMatch : _T(""), !IsNullOrEmpty(szPartialMatch) ? szPartialMatch : _T("")); // STRING_OK
+		if (PROP_ID(m_ulPropTag) && (!szExactMatch.empty()) || !szPartialMatch.empty())
+			SetStringf(PROPTAG_NAME, _T("%ws (%ws)"), szExactMatch.c_str(), szPartialMatch.c_str()); // STRING_OK
 		else if (!szNamedPropName.empty())
 			SetStringf(PROPTAG_NAME, _T("%ws"), szNamedPropName.c_str()); // STRING_OK
 		else
 			LoadString(PROPTAG_NAME, IDS_UNKNOWNPROPERTY);
-
-		delete[] szPartialMatch;
-		delete[] szExactMatch;
 	}
 
 	if (PROPTAG_TYPESTRING != ulSkipField) SetStringW(PROPTAG_TYPESTRING, TypeToString(m_ulPropTag).c_str());

@@ -67,23 +67,20 @@ _Check_return_ wstring PropsToString(DWORD PropCount, LPSPropValue Prop)
 				i,
 				Prop[i].ulPropTag);
 
-			LPTSTR szExactMatches = NULL;
-			LPTSTR szPartialMatches = NULL;
+			wstring szExactMatches;
+			wstring szPartialMatches;
 			PropTagToPropName(Prop[i].ulPropTag, false, &szExactMatches, &szPartialMatches);
-			if (!IsNullOrEmpty(szExactMatches))
+			if (!szExactMatches.empty())
 			{
 				szProperty += formatmessage(IDS_PROPERTYDATAEXACTMATCHES,
-					LPCTSTRToWstring(szExactMatches).c_str());
+					szExactMatches.c_str());
 			}
 
-			if (!IsNullOrEmpty(szPartialMatches))
+			if (!szPartialMatches.empty())
 			{
 				szProperty += formatmessage(IDS_PROPERTYDATAPARTIALMATCHES,
-					LPCTSTRToWstring(szPartialMatches).c_str());
+					szPartialMatches.c_str());
 			}
-
-			delete[] szExactMatches;
-			delete[] szPartialMatches;
 
 			InterpretProp(&Prop[i], &PropString, &AltPropString);
 			szProperty += formatmessage(IDS_PROPERTYDATA,
