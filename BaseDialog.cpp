@@ -619,7 +619,7 @@ void CBaseDialog::UpdateTitleBarText(_In_ wstring& szMsg)
 	wstring szTitle = formatmessage(IDS_TITLEBARMESSAGE, m_szTitle.c_str(), szMsg.c_str());
 
 	// set the title bar
-	SetWindowText(wstringToCString(szTitle));
+	SetWindowTextW(m_hWnd, szTitle.c_str());
 }
 
 void CBaseDialog::UpdateTitleBarText()
@@ -627,7 +627,7 @@ void CBaseDialog::UpdateTitleBarText()
 	wstring szTitle = formatmessage(IDS_TITLEBARPLAIN, m_szTitle.c_str());
 
 	// set the title bar
-	SetWindowText(wstringToCString(szTitle));
+	SetWindowTextW(m_hWnd, szTitle.c_str());
 }
 
 void CBaseDialog::UpdateStatus(HWND hWndHost, __StatusPaneEnum pane, wstring status)
