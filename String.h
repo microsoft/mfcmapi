@@ -22,7 +22,7 @@ wstring StripCarriage(wstring szString);
 _Check_return_ HRESULT AnsiToUnicode(_In_opt_z_ LPCSTR pszA, _Out_z_cap_(cchszA) LPWSTR* ppszW, size_t cchszA = -1);
 _Check_return_ HRESULT UnicodeToAnsi(_In_z_ LPCWSTR pszW, _Out_z_cap_(cchszW) LPSTR* ppszA, size_t cchszW = -1);
 
-bool IsNullOrEmptyW(LPWSTR szStr);
+bool IsNullOrEmptyW(LPCWSTR szStr);
 bool IsNullOrEmptyA(LPCSTR szStr);
 
 #ifdef UNICODE

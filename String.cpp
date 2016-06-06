@@ -170,7 +170,7 @@ ULONG wstringToUlong(wstring const& src, int radix)
 // Converts a CString to a number. Will return 0 if string is empty or contains non-numeric data.
 ULONG CStringToUlong(CString const& src, int radix)
 {
-	if (IsNullOrEmpty(src)) return 0;
+	if (IsNullOrEmpty((LPCTSTR)src)) return 0;
 
 	LPTSTR szEndPtr = NULL;
 	ULONG ulArg = _tcstoul((LPCTSTR)src, &szEndPtr, radix);
@@ -203,7 +203,7 @@ _Check_return_ HRESULT AnsiToUnicode(_In_opt_z_ LPCSTR pszA, _Out_z_cap_(cchszA)
 	// Get our buffer size
 	int iRet = 0;
 	EC_D(iRet, MultiByteToWideChar(
-		CP_ACP,
+		CP_UTF8,
 		0,
 		pszA,
 		(int)cchszA,
@@ -215,7 +215,7 @@ _Check_return_ HRESULT AnsiToUnicode(_In_opt_z_ LPCSTR pszA, _Out_z_cap_(cchszA)
 		LPWSTR pszW = new WCHAR[iRet];
 
 		EC_D(iRet, MultiByteToWideChar(
-			CP_ACP,
+			CP_UTF8,
 			0,
 			pszA,
 			(int)cchszA,
@@ -246,7 +246,7 @@ _Check_return_ HRESULT UnicodeToAnsi(_In_z_ LPCWSTR pszW, _Out_z_cap_(cchszW) LP
 	// Get our buffer size
 	int iRet = 0;
 	EC_D(iRet, WideCharToMultiByte(
-		CP_ACP,
+		CP_UTF8,
 		0,
 		pszW,
 		(int)cchszW,
@@ -260,7 +260,7 @@ _Check_return_ HRESULT UnicodeToAnsi(_In_z_ LPCWSTR pszW, _Out_z_cap_(cchszW) LP
 		LPSTR pszA = (LPSTR) new BYTE[iRet];
 
 		EC_D(iRet, WideCharToMultiByte(
-			CP_ACP,
+			CP_UTF8,
 			0,
 			pszW,
 			(int)cchszW,
@@ -281,7 +281,7 @@ _Check_return_ HRESULT UnicodeToAnsi(_In_z_ LPCWSTR pszW, _Out_z_cap_(cchszW) LP
 	return hRes;
 }
 
-bool IsNullOrEmptyW(LPWSTR szStr)
+bool IsNullOrEmptyW(LPCWSTR szStr)
 {
 	return !szStr || !szStr[0];
 }

@@ -24,18 +24,18 @@ CProfileListDlg::CProfileListDlg(
 	_In_ CParentWnd* pParentWnd,
 	_In_ CMapiObjects* lpMapiObjects,
 	_In_ LPMAPITABLE lpMAPITable
-	) :
+) :
 	CContentsTableDlg(
-	pParentWnd,
-	lpMapiObjects,
-	IDS_PROFILES,
-	mfcmapiDO_NOT_CALL_CREATE_DIALOG,
-	lpMAPITable,
-	(LPSPropTagArray)&sptPROFLISTCols,
-	NUMPROFLISTCOLUMNS,
-	PROFLISTColumns,
-	IDR_MENU_PROFILE_POPUP,
-	MENU_CONTEXT_PROFILE_LIST)
+		pParentWnd,
+		lpMapiObjects,
+		IDS_PROFILES,
+		mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+		lpMAPITable,
+		(LPSPropTagArray)&sptPROFLISTCols,
+		NUMPROFLISTCOLUMNS,
+		PROFLISTColumns,
+		IDR_MENU_PROFILE_POPUP,
+		MENU_CONTEXT_PROFILE_LIST)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 
@@ -615,34 +615,25 @@ void CProfileListDlg::OnExportProfile()
 		WCHAR szFileName[MAX_PATH] = { 0 };
 		INT_PTR iDlgRet = IDOK;
 
-		CStringW szFileSpec;
-		EC_B(szFileSpec.LoadString(IDS_XMLFILES));
-
-		LPWSTR szProfileName = NULL;
-		EC_H(AnsiToUnicode(lpListData->data.Contents.szProfileDisplayName, &szProfileName));
-		if (SUCCEEDED(hRes))
-		{
-			WC_H(BuildFileNameAndPath(
-				szFileName,
-				_countof(szFileName),
-				L".xml", // STRING_OK
-				4,
-				szProfileName,
-				NULL,
-				NULL));
-		}
-		delete[] szProfileName;
-
+		wstring szProfileName = LPCSTRToWstring(lpListData->data.Contents.szProfileDisplayName);
+		WC_H(BuildFileNameAndPath(
+			szFileName,
+			_countof(szFileName),
+			L".xml", // STRING_OK
+			4,
+			szProfileName.c_str(),
+			NULL,
+			NULL));
 		DebugPrint(DBGGeneric, L"BuildFileNameAndPath built file name \"%ws\"\n", szFileName);
 
+		wstring szFileSpec = loadstring(IDS_XMLFILES);
 		CFileDialogExW dlgFilePicker;
-
 		EC_D_DIALOG(dlgFilePicker.DisplayDialog(
 			false,
 			L"xml", // STRING_OK
 			szFileName,
 			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-			szFileSpec,
+			szFileSpec.c_str(),
 			this));
 
 		if (iDlgRet == IDOK)

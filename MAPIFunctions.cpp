@@ -341,7 +341,7 @@ _Check_return_ HRESULT CopyFolderContents(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LP
 		lpDestFolder,
 		bCopyAssociatedContents,
 		bMove
-		);
+	);
 
 	if (!lpSrcFolder || !lpDestFolder) return MAPI_E_INVALID_PARAMETER;
 
@@ -2412,35 +2412,24 @@ _Check_return_ DWORD ComputeStoreHash(ULONG cbStoreEID, _In_count_(cbStoreEID) L
 
 const WORD kwBaseOffset = 0xAC00; // Hangul char range (AC00-D7AF)
 // Allocates with new, free with delete[]
-_Check_return_ LPWSTR EncodeID(ULONG cbEID, _In_ LPENTRYID rgbID)
+_Check_return_ wstring EncodeID(ULONG cbEID, _In_ LPENTRYID rgbID)
 {
-	ULONG   i = 0;
-	LPWSTR  pwzDst = NULL;
-	LPBYTE  pbSrc = NULL;
-	LPWSTR  pwzIDEncoded = NULL;
+	ULONG i = 0;
+	LPBYTE pbSrc = NULL;
+	wstring wzIDEncoded;
 
 	// rgbID is the item Entry ID or the attachment ID
 	// cbID is the size in bytes of rgbID
-
-	// Allocate memory for pwzIDEncoded
-	pwzIDEncoded = new WCHAR[cbEID + 1];
-	if (!pwzIDEncoded) return NULL;
-
-	for (i = 0, pbSrc = (LPBYTE)rgbID, pwzDst = pwzIDEncoded;
-		i < cbEID;
-		i++, pbSrc++, pwzDst++)
+	for (i = 0, pbSrc = (LPBYTE)rgbID; i < cbEID; i++, pbSrc++)
 	{
-		*pwzDst = (WCHAR)(*pbSrc + kwBaseOffset);
+		wzIDEncoded += (WCHAR)(*pbSrc + kwBaseOffset);
 	}
 
-	// Ensure NULL terminated
-	*pwzDst = L'\0';
-
 	// pwzIDEncoded now contains the entry ID encoded.
-	return pwzIDEncoded;
-} // EncodeID
+	return wzIDEncoded;
+}
 
-_Check_return_ LPWSTR DecodeID(ULONG cbBuffer, _In_count_(cbBuffer) LPBYTE lpbBuffer)
+wstring DecodeID(ULONG cbBuffer, _In_count_(cbBuffer) LPBYTE lpbBuffer)
 {
 	if (cbBuffer % 2) return NULL;
 
@@ -2456,7 +2445,7 @@ _Check_return_ LPWSTR DecodeID(ULONG cbBuffer, _In_count_(cbBuffer) LPBYTE lpbBu
 
 	// Subtract kwBaseOffset from every character and place result in lpDecoded
 	for (i = 0, lpwzSrc = (LPWSTR)lpbBuffer, lpDst = lpDecoded;
-		i < cbDecodedBuffer; 	i++, lpwzSrc++, lpDst++)
+		i < cbDecodedBuffer; i++, lpwzSrc++, lpDst++)
 	{
 		*lpDst = (BYTE)(*lpwzSrc - kwBaseOffset);
 	}
@@ -2468,19 +2457,8 @@ _Check_return_ LPWSTR DecodeID(ULONG cbBuffer, _In_count_(cbBuffer) LPBYTE lpbBu
 		true,
 		&szBin);
 	delete[] lpDecoded;
-#ifdef UNICODE
-	return szBin;
-#else
-	HRESULT hRes = S_OK;
-	LPWSTR szBinW = NULL;
-	if (szBin)
-	{
-		EC_H(AnsiToUnicode(szBin, &szBinW));
-		delete[] szBin;
-	}
-	return szBinW;
-#endif
-} // DecodeID
+	return LPCTSTRToWstring(szBin);
+}
 
 HRESULT HrEmsmdbUIDFromStore(_In_ LPMAPISESSION pmsess,
 	_In_ MAPIUID const * const puidService,
