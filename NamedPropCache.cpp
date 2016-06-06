@@ -3,7 +3,6 @@
 
 #include "stdafx.h"
 #include "NamedPropCache.h"
-#include <vector>
 
 // We keep a vector of named prop cache entries
 std::vector<LPNAMEDPROPCACHEENTRY> g_lpNamedPropCache;

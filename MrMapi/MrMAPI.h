@@ -1,6 +1,7 @@
 #pragma once
 // MrMAPI.h : MrMAPI command line
 #include <string>
+#include <vector>
 using namespace std;
 
 #define ulNoMatch 0xffffffff

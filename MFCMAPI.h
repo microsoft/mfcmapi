@@ -554,6 +554,7 @@ _Check_return_ LPMENUITEM GetAddinMenuItem(HWND hWnd, UINT uidMsg);
 void InvokeAddInMenu(_In_opt_ LPADDINMENUPARAMS lpParams);
 void MergeAddInArrays();
 #include <string>
+#include <vector>
 using namespace std;
 wstring AddInSmartView(__ParsingTypeEnum iStructType, ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
 
