@@ -7,7 +7,6 @@
 #include "..\InterpretProp2.h"
 #include "MMStore.h"
 #include "..\String.h"
-#include <vector>
 using namespace std;
 
 // Search folder for entry ID of child folder by name.

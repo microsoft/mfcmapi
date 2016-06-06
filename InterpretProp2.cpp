@@ -2,10 +2,8 @@
 #include "InterpretProp2.h"
 #include "InterpretProp.h"
 #include "String.h"
-#include <vector>
 #include <algorithm>
 #include <unordered_map>
-using namespace std;
 
 #define ulNoMatch 0xffffffff
 static WCHAR szPropSeparator[] = L", "; // STRING_OK
