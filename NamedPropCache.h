@@ -1,6 +1,5 @@
 #pragma once
 // Named Property Cache
-#include <string>
 
 class NamedPropCacheEntry
 {
