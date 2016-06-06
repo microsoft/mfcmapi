@@ -228,7 +228,7 @@ void CPropertyTagEditor::LookupNamedProp(ULONG ulSkipField, bool bCreate)
 		}
 		else
 		{
-			NamedID.Kind.lID = _tcstoul((LPCTSTR)szName, NULL, 16);
+			NamedID.Kind.lID = CStringToUlong(szName, 16);
 		}
 	}
 	else if (MNID_STRING == NamedID.ulKind)
@@ -297,7 +297,7 @@ _Check_return_ ULONG CPropertyTagEditor::HandleChange(UINT nID)
 	{
 		CString szID;
 		szID = GetStringUseControl(PROPTAG_ID);
-		ULONG ulID = _tcstoul((LPCTSTR)szID, NULL, 16);
+		ULONG ulID = CStringToUlong(szID, 16);
 
 		m_ulPropTag = PROP_TAG(PROP_TYPE(m_ulPropTag), ulID);
 	}

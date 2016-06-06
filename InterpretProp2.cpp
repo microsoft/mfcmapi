@@ -220,9 +220,8 @@ _Check_return_ HRESULT PropNameToPropTag(_In_ wstring lpszPropName, _Out_ ULONG*
 
 	*ulPropTag = NULL;
 
-	LPWSTR szEnd = NULL;
-	ULONG ulTag = wcstoul(lpszPropName.c_str(), &szEnd, 16);
-	if (*szEnd == NULL)
+	ULONG ulTag = wstringToUlong(lpszPropName, 16);
+	if (ulTag != NULL)
 	{
 		*ulPropTag = ulTag;
 		return S_OK;
@@ -237,9 +236,8 @@ _Check_return_ ULONG PropTypeNameToPropType(_In_ wstring lpszPropType)
 
 	// Check for numbers first before trying the string as an array lookup.
 	// This will translate '0x102' to 0x102, 0x3 to 3, etc.
-	LPWSTR szEnd = NULL;
-	ULONG ulType = wcstoul(lpszPropType.c_str(), &szEnd, 16);
-	if (*szEnd == NULL) return ulType;
+	ULONG ulType = wstringToUlong(lpszPropType, 16);
+	if (ulType != NULL) return ulType;
 
 	ULONG ulCur = 0;
 

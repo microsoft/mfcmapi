@@ -1276,7 +1276,7 @@ _Check_return_ ULONG CEditor::GetHex(ULONG i)
 {
 	if (!IsValidEdit(i)) return 0;
 
-	return wcstoul(m_lpControls[i].lpTextPane->GetStringW(), NULL, 16);
+	return wstringToUlong(m_lpControls[i].lpTextPane->GetStringW(), 16);
 }
 
 _Check_return_ CString CEditor::GetStringUseControl(ULONG iControl)
@@ -1311,7 +1311,7 @@ _Check_return_ ULONG CEditor::GetHexUseControl(ULONG i)
 
 	CString szTmpString = GetStringUseControl(i);
 
-	return _tcstoul((LPCTSTR)szTmpString, NULL, 16);
+	return CStringToUlong(szTmpString, 16);
 }
 
 _Check_return_ ULONG CEditor::GetDecimalUseControl(ULONG i)
@@ -1320,7 +1320,7 @@ _Check_return_ ULONG CEditor::GetDecimalUseControl(ULONG i)
 
 	CString szTmpString = GetStringUseControl(i);
 
-	return _tcstoul((LPCTSTR)szTmpString, NULL, 10);
+	return CStringToUlong(szTmpString, 10);
 }
 
 void CleanPropString(_In_ CString* lpString)
@@ -1344,10 +1344,9 @@ _Check_return_ ULONG CEditor::GetPropTagUseControl(ULONG i)
 	// remove any whitespace or nonsense punctuation
 	CleanPropString(&szTag);
 
-	LPTSTR szEnd = NULL;
-	ULONG ulTag = _tcstoul((LPCTSTR)szTag, &szEnd, 16);
+	ULONG ulTag = CStringToUlong(szTag, 16);
 
-	if (*szEnd != NULL) // If we didn't consume the whole string, try a lookup
+	if (ulTag == NULL) // If we didn't convert, try a lookup
 	{
 		EC_H(PropNameToPropTag(LPCTSTRToWstring(szTag), &ulTag));
 	}
@@ -1391,7 +1390,7 @@ _Check_return_ ULONG CEditor::GetDecimal(ULONG i)
 {
 	if (!IsValidEdit(i)) return 0;
 
-	return wcstoul(m_lpControls[i].lpTextPane->GetStringW(), NULL, 10);
+	return wstringToUlong(m_lpControls[i].lpTextPane->GetStringW(), 10);
 }
 
 _Check_return_ bool CEditor::GetCheck(ULONG i)
