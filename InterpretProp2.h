@@ -1,7 +1,4 @@
 #pragma once
-#include <vector>
-#include <string>
-using namespace std;
 
 #define PROP_TAG_MASK 0xffff0000
 void FindTagArrayMatches(_In_ ULONG ulTarget,
