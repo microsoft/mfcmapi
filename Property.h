@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Attributes.h"
-using namespace std;
 
 class Parsing
 {

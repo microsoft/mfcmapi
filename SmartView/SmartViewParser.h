@@ -1,5 +1,4 @@
 #pragma once
-using namespace std;
 #include "BinaryParser.h"
 
 #define _MaxBytes 0xFFFF
