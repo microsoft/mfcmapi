@@ -16,9 +16,9 @@ public:
 	ULONG cbSig;            // Size and...
 	LPBYTE lpSig;           // Value of PR_MAPPING_SIGNATURE
 	bool bStringsCached;    // We have cached strings
-	std::wstring lpszPropName;    // Cached strings
-	std::wstring lpszPropGUID;    //
-	std::wstring lpszDASL;        //
+	wstring lpszPropName;    // Cached strings
+	wstring lpszPropGUID;    //
+	wstring lpszDASL;        //
 
 private:
 };

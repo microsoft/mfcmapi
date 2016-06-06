@@ -88,10 +88,10 @@ wstring unescape(_In_ wstring lpsz)
 	DebugPrint(DBGGeneric, L"unescape: working on path \"%ws\"\n", lpsz.c_str());
 
 	size_t index = 0;
-	while (index != std::string::npos)
+	while (index != string::npos)
 	{
 		index = lpsz.find(wszDoubleBackslash, index);
-		if (index == std::string::npos) break;
+		if (index == string::npos) break;
 		lpsz.replace(index, 2, wszBackslashStr);
 		index++;
 	}

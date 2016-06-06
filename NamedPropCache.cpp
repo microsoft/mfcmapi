@@ -5,7 +5,7 @@
 #include "NamedPropCache.h"
 
 // We keep a vector of named prop cache entries
-std::vector<LPNAMEDPROPCACHEENTRY> g_lpNamedPropCache;
+vector<LPNAMEDPROPCACHEENTRY> g_lpNamedPropCache;
 
 void UninitializeNamedPropCache()
 {

@@ -147,7 +147,7 @@ wstring LPCSTRToWstring(LPCSTR src)
 
 void wstringToLower(wstring src)
 {
-	std::transform(src.begin(), src.end(), src.begin(), ::tolower);
+	transform(src.begin(), src.end(), src.begin(), ::tolower);
 }
 
 // Converts a wstring to a number. Will return 0 if string is empty or contains non-numeric data.
@@ -169,7 +169,7 @@ ULONG wstringToUlong(wstring const& src, int radix)
 
 wstring StripCarriage(wstring szString)
 {
-	szString.erase(std::remove(szString.begin(), szString.end(), L'\r'), szString.end());
+	szString.erase(remove(szString.begin(), szString.end(), L'\r'), szString.end());
 	return szString;
 }
 
