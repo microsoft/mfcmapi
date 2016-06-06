@@ -93,8 +93,8 @@ _Check_return_ HRESULT CopyNamedProps(_In_ LPMAPIPROP lpSource, _In_ LPGUID lpPr
 
 _Check_return_ bool CheckStringProp(_In_opt_ LPSPropValue lpProp, ULONG ulPropType);
 _Check_return_ DWORD ComputeStoreHash(ULONG cbStoreEID, _In_count_(cbStoreEID) LPBYTE pbStoreEID, _In_opt_z_ LPCSTR pszFileName, _In_opt_z_ LPCWSTR pwzFileName, bool bPublicStore);
-_Check_return_ LPWSTR EncodeID(ULONG cbEID, _In_ LPENTRYID rgbID);
-_Check_return_ LPWSTR DecodeID(ULONG cbBuffer, _In_count_(cbBuffer) LPBYTE lpbBuffer);
+wstring EncodeID(ULONG cbEID, _In_ LPENTRYID rgbID);
+wstring DecodeID(ULONG cbBuffer, _In_count_(cbBuffer) LPBYTE lpbBuffer);
 
 HRESULT HrEmsmdbUIDFromStore(_In_ LPMAPISESSION pmsess,
 	_In_ MAPIUID const * const puidService,

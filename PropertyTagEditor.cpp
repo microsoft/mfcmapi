@@ -176,15 +176,8 @@ void CPropertyTagEditor::LookupNamedProp(ULONG ulSkipField, bool bCreate)
 		if (1 == iCurSel) NamedID.ulKind = MNID_ID;
 	}
 	CString szName;
-	LPWSTR szWideName = NULL;
 	szName = GetStringUseControl(PROPTAG_NAMEPROPNAME);
-
-	// Convert our prop tag name to a wide character string
-#ifdef UNICODE
-	szWideName = (LPWSTR)(LPCWSTR)szName;
-#else
-	EC_H(AnsiToUnicode(szName, &szWideName));
-#endif
+	wstring szWideName = LPCTSTRToWstring(szName);
 
 	if (GetSelectedGUID(PROPTAG_NAMEPROPGUID, false, &guid))
 	{
@@ -196,7 +189,7 @@ void CPropertyTagEditor::LookupNamedProp(ULONG ulSkipField, bool bCreate)
 
 	if (MNID_ID == NamedID.ulKind)
 	{
-		lpNameIDEntry = GetDispIDFromName(szWideName);
+		lpNameIDEntry = GetDispIDFromName(szWideName.c_str());
 
 		// If we matched on a dispid name, use that for our lookup
 		// Note that we should only ever reach this case if the user typed a dispid name
@@ -233,7 +226,7 @@ void CPropertyTagEditor::LookupNamedProp(ULONG ulSkipField, bool bCreate)
 	}
 	else if (MNID_STRING == NamedID.ulKind)
 	{
-		NamedID.Kind.lpwstrName = szWideName;
+		NamedID.Kind.lpwstrName = (LPWSTR)szWideName.c_str();
 	}
 
 	if (NamedID.lpguid &&
@@ -253,14 +246,6 @@ void CPropertyTagEditor::LookupNamedProp(ULONG ulSkipField, bool bCreate)
 			MAPIFreeBuffer(lpNamedPropTags);
 		}
 	}
-
-	if (MNID_STRING == NamedID.ulKind)
-	{
-		MAPIFreeBuffer(NamedID.Kind.lpwstrName);
-	}
-#ifndef UNICODE
-	delete[] szWideName;
-#endif
 }
 
 _Check_return_ ULONG CPropertyTagEditor::GetSelectedPropType()

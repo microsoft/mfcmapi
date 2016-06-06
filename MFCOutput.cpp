@@ -23,17 +23,7 @@ void OpenDebugFile()
 	// only open the file if we really need to
 	if (0 != RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD)
 	{
-#ifdef UNICODE
-		g_fDebugFile = MyOpenFile(RegKeys[regkeyDEBUG_FILE_NAME].szCurSTRING, false);
-#else
-		LPWSTR szDebugFileW = NULL;
-		HRESULT hRes = AnsiToUnicode(RegKeys[regkeyDEBUG_FILE_NAME].szCurSTRING, &szDebugFileW);
-		if (SUCCEEDED(hRes) && szDebugFileW)
-		{
-			g_fDebugFile = MyOpenFile(szDebugFileW, false);
-			delete[] szDebugFileW;
-		}
-#endif
+		g_fDebugFile = MyOpenFile(LPCTSTRToWstring(RegKeys[regkeyDEBUG_FILE_NAME].szCurSTRING), false);
 	}
 }
 

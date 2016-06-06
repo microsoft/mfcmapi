@@ -30,19 +30,7 @@ _Check_return_ HRESULT AppendEntryID(_Inout_z_count_(cchFileName) LPWSTR szFileN
 	if (szBin)
 	{
 		EC_H(StringCchCatNW(szFileName, cchFileName, L"_", 1)); // STRING_OK
-#ifdef UNICODE
-		EC_H(StringCchCatNW(szFileName, cchFileName, szBin, cchMaxAppend - 1));
-#else
-		LPWSTR szWideBin = NULL;
-		EC_H(AnsiToUnicode(
-			szBin,
-			&szWideBin));
-		if (szWideBin)
-		{
-			EC_H(StringCchCatNW(szFileName, cchFileName, szWideBin, cchMaxAppend - 1));
-		}
-		delete[] szWideBin;
-#endif
+		EC_H(StringCchCatNW(szFileName, cchFileName, LPCTSTRToWstring(szBin).c_str(), cchMaxAppend - 1));
 		delete[] szBin;
 	}
 

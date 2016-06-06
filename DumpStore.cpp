@@ -305,7 +305,7 @@ void OutputMessageList(
 
 	WCHAR szFileName[MAX_PATH] = { 0 };
 
-	LPCWSTR szSubj = NULL;
+	wstring szSubj;
 	LPSBinary lpRecordKey = NULL;
 	LPSPropValue lpTemp = NULL;
 	LPSPropValue lpMessageClass = NULL;
@@ -324,9 +324,7 @@ void OutputMessageList(
 		lpTemp = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PR_SUBJECT_A);
 		if (lpTemp && CheckStringProp(lpTemp, PT_STRING8))
 		{
-			WC_H(AnsiToUnicode(lpTemp->Value.lpszA, &szTemp));
-			if (SUCCEEDED(hRes)) szSubj = szTemp;
-			hRes = S_OK;
+			szSubj = LPCSTRToWstring(lpTemp->Value.lpszA);
 		}
 	}
 	lpTemp = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PR_RECORD_KEY);
@@ -336,9 +334,9 @@ void OutputMessageList(
 	}
 	lpMessageClass = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, CHANGE_PROP_TYPE(PR_MESSAGE_CLASS, PT_UNSPECIFIED));
 
-	WC_H(BuildFileNameAndPath(szFileName, _countof(szFileName), szExt, 4, szSubj, lpRecordKey, szFolderPath));
+	WC_H(BuildFileNameAndPath(szFileName, _countof(szFileName), szExt, 4, szSubj.c_str(), lpRecordKey, szFolderPath));
 
-	_tprintf(_T("\"%ws\""), szSubj ? szSubj : L"");
+	_tprintf(_T("\"%ws\""), szSubj.c_str());
 	if (lpMessageClass)
 	{
 		if (PT_STRING8 == PROP_TYPE(lpMessageClass->ulPropTag))

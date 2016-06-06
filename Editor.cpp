@@ -1043,16 +1043,7 @@ void CEditor::SetStringA(ULONG i, _In_opt_z_ LPCSTR szMsg, size_t cchsz)
 {
 	if (!IsValidEdit(i)) return;
 
-	if (!szMsg) szMsg = "";
-	HRESULT hRes = S_OK;
-
-	LPWSTR szMsgW = NULL;
-	EC_H(AnsiToUnicode(szMsg, &szMsgW, cchsz));
-	if (SUCCEEDED(hRes))
-	{
-		SetStringW(i, szMsgW, cchsz);
-	}
-	delete[] szMsgW;
+	m_lpControls[i].lpTextPane->SetStringA(szMsg, cchsz);
 }
 
 // Sets m_lpControls[i].lpEdit->lpszW

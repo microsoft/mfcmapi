@@ -453,22 +453,14 @@ wstring InterpretBinaryAsString(SBinary myBin, __ParsingTypeEnum iStructType, _I
 	}
 
 	// These parsers have some special casing
-	LPWSTR szTmp = NULL;
-
 	switch (iStructType)
 	{
 	case IDS_STDECODEENTRYID:
-		szTmp = DecodeID(myBin.cb, myBin.lpb);
+		szResultString = DecodeID(myBin.cb, myBin.lpb);
 		break;
 	case IDS_STENCODEENTRYID:
-		szTmp = EncodeID(myBin.cb, (LPENTRYID)myBin.lpb);
+		szResultString = EncodeID(myBin.cb, (LPENTRYID)myBin.lpb);
 		break;
-	}
-
-	if (szTmp)
-	{
-		szResultString = szTmp;
-		delete[] szTmp;
 	}
 
 	return szResultString;

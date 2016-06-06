@@ -948,7 +948,6 @@ bool LoadMAPIVersion(wstring lpszVersion)
 	MAPIPathIterator* mpi = new MAPIPathIterator(true);
 	if (mpi)
 	{
-		LPWSTR szEndPtr = NULL;
 		ULONG ulVersion = wstringToUlong(lpszVersion, 10);
 
 		if (ulVersion == NULL)
