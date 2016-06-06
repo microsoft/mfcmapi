@@ -40,7 +40,7 @@ void LogFunctionCall(
 	wstring szErrString = formatmessage(
 		FAILED(hRes) ? IDS_ERRFORMATSTRING : IDS_WARNFORMATSTRING,
 		szErrorMsg.c_str(),
-		ErrorNameFromErrorCode(hRes),
+		ErrorNameFromErrorCode(hRes).c_str(),
 		hRes,
 		szFunction,
 		szFile,
