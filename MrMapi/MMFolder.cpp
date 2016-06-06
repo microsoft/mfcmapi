@@ -222,7 +222,7 @@ static HRESULT HrLookupRootFolderW(
 	{
 		// Maybe one of our folder constants was passed.
 		// These are base 10.
-		ULONG ulFolder = wcstoul(lpszRootFolder.c_str(), NULL, 10);
+		ULONG ulFolder = wstringToUlong(lpszRootFolder, 10);
 		if (0 < ulFolder && ulFolder < NUM_DEFAULT_PROPS)
 		{
 			WC_H(GetDefaultFolderEID(ulFolder, lpMDB, lpcbeid, lppeid));
@@ -231,7 +231,7 @@ static HRESULT HrLookupRootFolderW(
 
 		// Still no match?
 		// Maybe a prop tag was passed as hex
-		ulPropTag = wcstoul(lpszRootFolder.c_str(), NULL, 16);
+		ulPropTag = wstringToUlong(lpszRootFolder, 16);
 	}
 
 	if (!ulPropTag) return MAPI_E_NOT_FOUND;

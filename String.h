@@ -15,6 +15,7 @@ wstring LPCTSTRToWstring(LPCTSTR src);
 wstring LPCSTRToWstring(LPCSTR src);
 void wstringToLower(wstring src);
 ULONG wstringToUlong(wstring const& src, int radix);
+ULONG CStringToUlong(CString const& src, int radix);
 wstring StripCarriage(wstring szString);
 
 // Unicode support

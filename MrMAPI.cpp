@@ -945,12 +945,13 @@ bool LoadMAPIVersion(wstring lpszVersion)
 
 	LPWSTR szPath = NULL;
 
-	LPWSTR szEndPtr = NULL;
-	ULONG ulVersion = wcstoul(lpszVersion.c_str(), &szEndPtr, 10);
 	MAPIPathIterator* mpi = new MAPIPathIterator(true);
 	if (mpi)
 	{
-		if (szEndPtr[0])
+		LPWSTR szEndPtr = NULL;
+		ULONG ulVersion = wstringToUlong(lpszVersion, 10);
+
+		if (ulVersion == NULL)
 		{
 			DebugPrint(DBGGeneric, L"Got a string\n");
 

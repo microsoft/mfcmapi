@@ -542,7 +542,7 @@ void CSortListCtrl::SortClickedColumn()
 			{
 				MAPIFreeBuffer(lpData->szSortText);
 				lpData->szSortText = NULL;
-				lpData->ulSortValue.QuadPart = _tcstoul(szText, NULL, 10);
+				lpData->ulSortValue.QuadPart = CStringToUlong(szText, 10);
 			}
 		}
 		break;

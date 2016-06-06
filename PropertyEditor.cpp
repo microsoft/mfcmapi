@@ -583,7 +583,7 @@ void CPropertyEditor::WriteStringsToSPropValue()
 			break;
 		case PT_LONG: // treat as unsigned long
 			szTmpString = GetStringUseControl(0);
-			lVal = (LONG)_tcstoul(szTmpString, NULL, 10);
+			lVal = static_cast<LONG>(CStringToUlong(szTmpString, 10));
 			m_lpsOutputValue->Value.l = lVal;
 			break;
 		case PT_R4:
@@ -598,9 +598,9 @@ void CPropertyEditor::WriteStringsToSPropValue()
 			break;
 		case PT_CURRENCY:
 			szTmpString = GetStringUseControl(0);
-			curVal.Hi = _tcstoul(szTmpString, NULL, 16);
+			curVal.Hi = CStringToUlong(szTmpString, 16);
 			szTmpString = GetStringUseControl(1);
-			curVal.Lo = _tcstoul(szTmpString, NULL, 16);
+			curVal.Lo = CStringToUlong(szTmpString, 16);
 			m_lpsOutputValue->Value.cur = curVal;
 			break;
 		case PT_APPTIME:
@@ -610,7 +610,7 @@ void CPropertyEditor::WriteStringsToSPropValue()
 			break;
 		case PT_ERROR: // unsigned
 			szTmpString = GetStringUseControl(0);
-			errVal = (SCODE)_tcstoul(szTmpString, NULL, 16);
+			errVal = static_cast<SCODE>(CStringToUlong(szTmpString,  16));
 			m_lpsOutputValue->Value.err = errVal;
 			break;
 		case PT_BOOLEAN:
@@ -619,9 +619,9 @@ void CPropertyEditor::WriteStringsToSPropValue()
 			break;
 		case PT_I8:
 			szTmpString = GetStringUseControl(0);
-			liVal.HighPart = (long)_tcstoul(szTmpString, NULL, 16);
+			liVal.HighPart = static_cast<long>(CStringToUlong(szTmpString, 16));
 			szTmpString = GetStringUseControl(1);
-			liVal.LowPart = (long)_tcstoul(szTmpString, NULL, 16);
+			liVal.LowPart = static_cast<long>(CStringToUlong(szTmpString, 16));
 			m_lpsOutputValue->Value.li = liVal;
 			break;
 		case PT_STRING8:
@@ -666,9 +666,9 @@ void CPropertyEditor::WriteStringsToSPropValue()
 			break;
 		case PT_SYSTIME:
 			szTmpString = GetStringUseControl(0);
-			ftVal.dwLowDateTime = _tcstoul(szTmpString, NULL, 16);
+			ftVal.dwLowDateTime = CStringToUlong(szTmpString, 16);
 			szTmpString = GetStringUseControl(1);
-			ftVal.dwHighDateTime = _tcstoul(szTmpString, NULL, 16);
+			ftVal.dwHighDateTime = CStringToUlong(szTmpString, 16);
 			m_lpsOutputValue->Value.ft = ftVal;
 			break;
 		case PT_CLSID:
@@ -816,12 +816,12 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		szTmpString = GetStringUseControl(i);
 		if (0 == i)
 		{
-			lVal = (LONG)_tcstoul(szTmpString, NULL, 10);
+			lVal = (LONG)CStringToUlong(szTmpString, 10);
 			SetHex(1, lVal);
 		}
 		else if (1 == i)
 		{
-			lVal = (LONG)_tcstoul(szTmpString, NULL, 16);
+			lVal = (LONG)CStringToUlong(szTmpString, 16);
 			SetStringf(0, _T("%d"), lVal); // STRING_OK
 		}
 
@@ -842,9 +842,9 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		if (0 == i || 1 == i)
 		{
 			szTmpString = GetStringUseControl(0);
-			curVal.Hi = _tcstoul(szTmpString, NULL, 16);
+			curVal.Hi = CStringToUlong(szTmpString, 16);
 			szTmpString = GetStringUseControl(1);
-			curVal.Lo = _tcstoul(szTmpString, NULL, 16);
+			curVal.Lo = CStringToUlong(szTmpString, 16);
 			SetStringW(2, CurrencyToString(curVal).c_str());
 		}
 		else if (2 == i)
@@ -861,9 +861,9 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		if (0 == i || 1 == i)
 		{
 			szTmpString = GetStringUseControl(0);
-			liVal.HighPart = (long)_tcstoul(szTmpString, NULL, 16);
+			liVal.HighPart = static_cast<long>(CStringToUlong(szTmpString, 16));
 			szTmpString = GetStringUseControl(1);
-			liVal.LowPart = (long)_tcstoul(szTmpString, NULL, 16);
+			liVal.LowPart = static_cast<long>(CStringToUlong(szTmpString, 16));
 			SetStringf(2, _T("%I64d"), liVal.QuadPart); // STRING_OK
 		}
 		else if (2 == i)
@@ -889,9 +889,9 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		break;
 	case PT_SYSTIME: // components are unsigned hex
 		szTmpString = GetStringUseControl(0);
-		ftVal.dwLowDateTime = _tcstoul(szTmpString, NULL, 16);
+		ftVal.dwLowDateTime = CStringToUlong(szTmpString, 16);
 		szTmpString = GetStringUseControl(1);
-		ftVal.dwHighDateTime = _tcstoul(szTmpString, NULL, 16);
+		ftVal.dwHighDateTime = CStringToUlong(szTmpString, 16);
 
 		FileTimeToString(&ftVal, szTemp1, szTemp2);
 		SetStringW(2, szTemp1.c_str());
