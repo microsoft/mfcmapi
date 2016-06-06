@@ -2,7 +2,6 @@
 
 #include "Attributes.h"
 #include <vector>
-#include <string>
 using namespace std;
 
 class Parsing

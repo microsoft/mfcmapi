@@ -1,5 +1,4 @@
 #pragma once
-#include <string>
 using namespace std;
 
 wstring InterpretPropSmartView(_In_opt_ LPSPropValue lpProp, // required property value
