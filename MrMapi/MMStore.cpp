@@ -139,9 +139,7 @@ HRESULT HrMAPIOpenStoreAndFolder(
 				}
 			}
 
-#ifdef UNICODE
 			delete[] szPath;
-#endif
 		}
 		else
 		{

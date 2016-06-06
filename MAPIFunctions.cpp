@@ -2871,10 +2871,7 @@ HRESULT CopyTo(HWND hWnd, _In_ LPMAPIPROP lpSource, _In_ LPMAPIPROP lpDest, LPCG
 			2,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		LPTSTR szGuid = wstringToLPTSTR(GUIDToStringAndName(lpGUID));
-		MyData.InitPane(0, CreateSingleLinePane(IDS_INTERFACE, szGuid, false));
-		delete[] szGuid;
-		szGuid = NULL;
+		MyData.InitPane(0, CreateSingleLinePaneW(IDS_INTERFACE, GUIDToStringAndName(lpGUID).c_str(), false));
 		MyData.InitPane(1, CreateSingleLinePane(IDS_FLAGS, NULL, false));
 		MyData.SetHex(1, MAPI_DIALOG);
 
