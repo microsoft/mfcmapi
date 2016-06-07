@@ -17,6 +17,9 @@
 // Version number of this header file. Will be bumped when breaking changes are made
 #define MFCMAPI_HEADER_CURRENT_VERSION MFCMAPI_HEADER_V3
 
+// Force all ATL (like CString) to use CP_ACP
+#define _CONVERSION_DONT_USE_THREAD_LOCALE
+
 // Property tags and types - used by GetPropTags and GetPropTypes
 struct NAME_ARRAY_ENTRY
 {

@@ -215,7 +215,7 @@ _Check_return_ HRESULT AnsiToUnicode(_In_opt_z_ LPCSTR pszA, _Out_z_cap_(cchszA)
 	// Get our buffer size
 	int iRet = 0;
 	EC_D(iRet, MultiByteToWideChar(
-		CP_UTF8,
+		CP_ACP,
 		0,
 		pszA,
 		(int)cchszA,
@@ -227,7 +227,7 @@ _Check_return_ HRESULT AnsiToUnicode(_In_opt_z_ LPCSTR pszA, _Out_z_cap_(cchszA)
 		LPWSTR pszW = new WCHAR[iRet];
 
 		EC_D(iRet, MultiByteToWideChar(
-			CP_UTF8,
+			CP_ACP,
 			0,
 			pszA,
 			(int)cchszA,
@@ -258,7 +258,7 @@ _Check_return_ HRESULT UnicodeToAnsi(_In_z_ LPCWSTR pszW, _Out_z_cap_(cchszW) LP
 	// Get our buffer size
 	int iRet = 0;
 	EC_D(iRet, WideCharToMultiByte(
-		CP_UTF8,
+		CP_ACP,
 		0,
 		pszW,
 		(int)cchszW,
@@ -272,7 +272,7 @@ _Check_return_ HRESULT UnicodeToAnsi(_In_z_ LPCWSTR pszW, _Out_z_cap_(cchszW) LP
 		LPSTR pszA = (LPSTR) new BYTE[iRet];
 
 		EC_D(iRet, WideCharToMultiByte(
-			CP_UTF8,
+			CP_ACP,
 			0,
 			pszW,
 			(int)cchszW,
