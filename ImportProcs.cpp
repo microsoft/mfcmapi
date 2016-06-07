@@ -12,7 +12,7 @@ HMODULE hModShell32 = NULL;
 
 typedef HTHEME(STDMETHODCALLTYPE CLOSETHEMEDATA)
 (
-HTHEME hTheme);
+	HTHEME hTheme);
 typedef CLOSETHEMEDATA* LPCLOSETHEMEDATA;
 
 typedef bool (WINAPI HEAPSETINFORMATION) (
@@ -30,31 +30,31 @@ typedef GETMODULEHANDLEEXW* LPGETMODULEHANDLEEXW;
 
 typedef HRESULT(STDMETHODCALLTYPE MIMEOLEGETCODEPAGECHARSET)
 (
-CODEPAGEID cpiCodePage,
-CHARSETTYPE ctCsetType,
-LPHCHARSET phCharset
-);
+	CODEPAGEID cpiCodePage,
+	CHARSETTYPE ctCsetType,
+	LPHCHARSET phCharset
+	);
 typedef MIMEOLEGETCODEPAGECHARSET* LPMIMEOLEGETCODEPAGECHARSET;
 
 typedef UINT(WINAPI MSIPROVIDECOMPONENTW)
 (
-LPCWSTR szProduct,
-LPCWSTR szFeature,
-LPCWSTR szComponent,
-DWORD   dwInstallMode,
-LPWSTR  lpPathBuf,
-LPDWORD pcchPathBuf
-);
+	LPCWSTR szProduct,
+	LPCWSTR szFeature,
+	LPCWSTR szComponent,
+	DWORD   dwInstallMode,
+	LPWSTR  lpPathBuf,
+	LPDWORD pcchPathBuf
+	);
 typedef MSIPROVIDECOMPONENTW FAR * LPMSIPROVIDECOMPONENTW;
 
 typedef UINT(WINAPI MSIPROVIDEQUALIFIEDCOMPONENTW)
 (
-LPCWSTR szCategory,
-LPCWSTR szQualifier,
-DWORD   dwInstallMode,
-LPWSTR  lpPathBuf,
-LPDWORD pcchPathBuf
-);
+	LPCWSTR szCategory,
+	LPCWSTR szQualifier,
+	DWORD   dwInstallMode,
+	LPWSTR  lpPathBuf,
+	LPDWORD pcchPathBuf
+	);
 typedef MSIPROVIDEQUALIFIEDCOMPONENTW FAR * LPMSIPROVIDEQUALIFIEDCOMPONENTW;
 
 LPEDITSECURITY				pfnEditSecurity = NULL;
@@ -216,7 +216,7 @@ void ImportProcs()
 	LoadProc(_T("uxtheme.dll"), &hModUxTheme, "SetWindowTheme", (FARPROC*)&pfnSetWindowTheme); // STRING_OK;
 	LoadProc(_T("uxtheme.dll"), &hModUxTheme, "GetThemeSysSize", (FARPROC*)&pfnGetThemeSysSize); // STRING_OK;
 	LoadProc(_T("msi.dll"), &hModMSI, "MsiGetFileVersionW", (FARPROC*)&pfnMsiGetFileVersion); // STRING_OK;
-	LoadProc(_T("msi.dll"), &hModMSI, "MsiProvideQualifiedComponentW", (FARPROC*) &pfnMsiProvideQualifiedComponent); // STRING_OK;
+	LoadProc(_T("msi.dll"), &hModMSI, "MsiProvideQualifiedComponentW", (FARPROC*)&pfnMsiProvideQualifiedComponent); // STRING_OK;
 	LoadProc(_T("shell32.dll"), &hModShell32, "SHGetPropertyStoreForWindow", (FARPROC*)&pfnSHGetPropertyStoreForWindow); // STRING_OK;
 } // ImportProcs
 
@@ -351,7 +351,7 @@ void GetMAPIPath(_In_opt_z_ LPCTSTR szClient, _Inout_z_count_(cchMAPIPath) LPTST
 	if (szComponentID)
 	{
 #ifdef UNICODE
-		CHAR lpszPath[MAX_PATH] = {0};
+		CHAR lpszPath[MAX_PATH] = { 0 };
 		ULONG cchPath = _countof(lpszPath);
 #else
 		LPSTR lpszPath = szMAPIPath;
@@ -390,7 +390,7 @@ void GetMAPIPath(_In_opt_z_ LPCTSTR szClient, _Inout_z_count_(cchMAPIPath) LPTST
 #ifdef UNICODE
 		int iRet = 0;
 		// Convert to Unicode.
-		EC_D(iRet,MultiByteToWideChar(
+		EC_D(iRet, MultiByteToWideChar(
 			CP_ACP,
 			0,
 			lpszPath,
@@ -434,26 +434,16 @@ _Check_return_ STDMETHODIMP MyOpenStreamOnFile(_In_ LPALLOCATEBUFFER lpAllocateB
 		lppStream);
 	if (MAPI_E_CALL_FAILED == hRes)
 	{
-		hRes = S_OK;
-		// Convert new file name to Ansi
-		LPSTR lpAnsiCharStr = NULL;
-		EC_H(UnicodeToAnsi(
-			lpszFileName,
-			&lpAnsiCharStr));
-		if (SUCCEEDED(hRes))
-		{
-			hRes = OpenStreamOnFile(
-				lpAllocateBuffer,
-				lpFreeBuffer,
-				ulFlags,
-				(LPTSTR)lpAnsiCharStr,
-				NULL,
-				lppStream);
-		}
-		delete[] lpAnsiCharStr;
+		hRes = OpenStreamOnFile(
+			lpAllocateBuffer,
+			lpFreeBuffer,
+			ulFlags,
+			wstringToCString(lpszFileName),
+			NULL,
+			lppStream);
 	}
 	return hRes;
-} // MyOpenStreamOnFile
+}
 
 _Check_return_ HRESULT HrDupPropset(
 	int cprop,
@@ -691,8 +681,7 @@ _Check_return_ HRESULT HrCopyRestrictionArray(
 	_In_ LPSRestriction lpResSrc, // source restriction
 	_In_ LPVOID lpObject, // ptr to existing MAPI buffer
 	ULONG cRes, // # elements in array
-	_In_count_(cRes) LPSRestriction lpResDest // destination restriction
-	)
+	_In_count_(cRes) LPSRestriction lpResDest) // destination restriction
 {
 	if (!lpResSrc || !lpResDest || !lpObject) return MAPI_E_INVALID_PARAMETER;
 	HRESULT hRes = S_OK;
@@ -831,8 +820,7 @@ _Check_return_ HRESULT HrCopyRestrictionArray(
 _Check_return_ STDAPI HrCopyRestriction(
 	_In_ LPSRestriction lpResSrc, // source restriction ptr
 	_In_opt_ LPVOID lpObject, // ptr to existing MAPI buffer
-	_In_ LPSRestriction* lppResDest // dest restriction buffer ptr
-	)
+	_In_ LPSRestriction* lppResDest) // dest restriction buffer ptr
 {
 	if (!lppResDest) return MAPI_E_INVALID_PARAMETER;
 	*lppResDest = NULL;

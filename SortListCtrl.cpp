@@ -764,14 +764,8 @@ void CSortListCtrl::SetItemTextA(int nItem, int nSubItem, _In_z_ LPCSTR lpszText
 		szWhitespace[0] = ' ';
 		szWhitespace = (LPSTR)strpbrk(szWhitespace, "\r\n\t"); // STRING_OK
 	}
-#ifdef UNICODE
-	LPWSTR lpszTextW = NULL;
-	(void)AnsiToUnicode(lpszText, &lpszTextW);
-	(void)CListCtrl::SetItemText(nItem, nSubItem, lpszTextW);
-	delete[] lpszTextW;
-#else
-	(void)CListCtrl::SetItemText(nItem, nSubItem, lpszText);
-#endif
+
+	(void)CListCtrl::SetItemText(nItem, nSubItem, LPCSTRToCString(lpszText));
 } // CSortListCtrl::SetItemTextA
 
 void CSortListCtrl::SetItemTextW(int nItem, int nSubItem, _In_z_ LPCWSTR lpszText)
@@ -783,17 +777,8 @@ void CSortListCtrl::SetItemTextW(int nItem, int nSubItem, _In_z_ LPCWSTR lpszTex
 		szWhitespace[0] = L' ';
 		szWhitespace = (LPWSTR)wcspbrk(szWhitespace, L"\r\n\t"); // STRING_OK
 	}
-#ifdef UNICODE
-	(void) CListCtrl::SetItemText(nItem, nSubItem, lpszText);
-#else
-	LPSTR lpszTextA = NULL;
-	HRESULT hRes = UnicodeToAnsi(lpszText, &lpszTextA);
-	if (SUCCEEDED(hRes) && lpszTextA)
-	{
-		(void)CListCtrl::SetItemText(nItem, nSubItem, lpszTextA);
-		delete[] lpszTextA;
-	}
-#endif
+
+	(void) CListCtrl::SetItemText(nItem, nSubItem, wstringToCString(lpszText));
 } // CSortListCtrl::SetItemTextW
 
 // if asked to select the item after the last item - will select the last item.

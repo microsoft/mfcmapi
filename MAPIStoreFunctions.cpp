@@ -341,16 +341,7 @@ _Check_return_ HRESULT GetServerName(_In_ LPMAPISESSION lpSession, _Deref_out_op
 
 	if (CheckStringProp(lpServerName, PT_STRING8)) // profiles are ASCII only
 	{
-#ifdef UNICODE
-		LPWSTR	szWideServer = NULL;
-		EC_H(AnsiToUnicode(
-			lpServerName->Value.lpszA,
-			&szWideServer));
-		EC_H(CopyStringW(szServerName,szWideServer,NULL));
-		delete[] szWideServer;
-#else
-		EC_H(CopyStringA(szServerName, lpServerName->Value.lpszA, NULL));
-#endif
+		EC_H(CopyString(szServerName, LPCSTRToCString(lpServerName->Value.lpszA), NULL));
 	}
 #ifndef MRMAPI
 	else
@@ -476,18 +467,8 @@ _Check_return_ HRESULT CreateStoreEntryID(
 {
 	HRESULT hRes = S_OK;
 
-#ifdef UNICODE
-	LPSTR szAnsiMsgStoreDN = NULL;
-	LPSTR szAnsiMailboxDN = NULL;
-	if (lpszMsgStoreDN) EC_H(UnicodeToAnsi(lpszMsgStoreDN, &szAnsiMsgStoreDN));
-	if (lpszMailboxDN) EC_H(UnicodeToAnsi(lpszMailboxDN, &szAnsiMailboxDN));
-#else
-	LPCSTR szAnsiMsgStoreDN = lpszMsgStoreDN;
-	LPCSTR szAnsiMailboxDN = lpszMailboxDN;
-#endif
-
 	// Use a NULL MailboxDN to open the public store
-	if (szAnsiMailboxDN == NULL || !*szAnsiMailboxDN)
+	if (lpszMailboxDN == NULL || !*lpszMailboxDN)
 	{
 		ulFlags |= OPENSTORE_PUBLIC;
 	}
@@ -496,8 +477,8 @@ _Check_return_ HRESULT CreateStoreEntryID(
 	{
 		EC_MAPI(CreateStoreEntryID(
 			lpMDB,
-			(LPSTR)szAnsiMsgStoreDN,
-			(LPSTR)szAnsiMailboxDN,
+			LPCTSTRToCStringA(lpszMsgStoreDN),
+			LPCTSTRToCStringA(lpszMailboxDN),
 			ulFlags,
 			lpcbEntryID,
 			lppEntryID));
@@ -506,17 +487,12 @@ _Check_return_ HRESULT CreateStoreEntryID(
 	{
 		EC_MAPI(CreateStoreEntryID2(
 			lpMDB,
-			(LPSTR)szAnsiMsgStoreDN,
-			(LPSTR)szAnsiMailboxDN,
+			LPCTSTRToCStringA(lpszMsgStoreDN),
+			LPCTSTRToCStringA(lpszMailboxDN),
 			ulFlags,
 			lpcbEntryID,
 			lppEntryID));
 	}
-
-#ifdef UNICODE
-	delete[] szAnsiMsgStoreDN;
-	delete[] szAnsiMailboxDN;
-#endif
 
 	return hRes;
 }

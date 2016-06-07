@@ -151,21 +151,10 @@ void SmartViewPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 	{
 		for (iDropNum = 0; iDropNum < ulSmartViewParserTypeArray; iDropNum++)
 		{
-#ifdef UNICODE
 			m_DropDown.InsertString(
 				iDropNum,
-				SmartViewParserTypeArray[iDropNum].lpszName);
-#else
-			LPSTR szAnsiName = NULL;
-			EC_H(UnicodeToAnsi(SmartViewParserTypeArray[iDropNum].lpszName, &szAnsiName));
-			if (SUCCEEDED(hRes))
-			{
-				m_DropDown.InsertString(
-					iDropNum,
-					szAnsiName);
-			}
-			delete[] szAnsiName;
-#endif
+				wstringToCString(SmartViewParserTypeArray[iDropNum].lpszName));
+
 			m_DropDown.SetItemData(
 				iDropNum,
 				SmartViewParserTypeArray[iDropNum].ulValue);

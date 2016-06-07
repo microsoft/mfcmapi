@@ -164,21 +164,10 @@ void DropDownPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC /*hdc*/
 	{
 		for (iDropNum = 0; iDropNum < m_ulDropList; iDropNum++)
 		{
-#ifdef UNICODE
 			m_DropDown.InsertString(
 				iDropNum,
-				m_lpnaeDropList[iDropNum].lpszName);
-#else
-			LPSTR szAnsiName = NULL;
-			EC_H(UnicodeToAnsi(m_lpnaeDropList[iDropNum].lpszName, &szAnsiName));
-			if (SUCCEEDED(hRes))
-			{
-				m_DropDown.InsertString(
-					iDropNum,
-					szAnsiName);
-			}
-			delete[] szAnsiName;
-#endif
+				wstringToCString(m_lpnaeDropList[iDropNum].lpszName));
+
 			m_DropDown.SetItemData(
 				iDropNum,
 				m_lpnaeDropList[iDropNum].ulValue);
