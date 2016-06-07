@@ -204,11 +204,12 @@ wstring StripCarriage(wstring szString)
 
 // if cchszA == -1, MultiByteToWideChar will compute the length
 // Delete with delete[]
-_Check_return_ HRESULT AnsiToUnicode(_In_opt_z_ LPCSTR pszA, _Out_z_cap_(cchszA) LPWSTR* ppszW, size_t cchszA)
+_Check_return_ HRESULT AnsiToUnicode(_In_opt_z_ LPCSTR pszA, _Out_z_cap_(cchszA) LPWSTR* ppszW, _Out_ size_t* cchszW, size_t cchszA)
 {
 	HRESULT hRes = S_OK;
-	if (!ppszW) return MAPI_E_INVALID_PARAMETER;
+	if (!ppszW || *cchszW) return MAPI_E_INVALID_PARAMETER;
 	*ppszW = NULL;
+	*cchszW = 0;
 	if (NULL == pszA) return S_OK;
 	if (!cchszA) return S_OK;
 
@@ -236,6 +237,7 @@ _Check_return_ HRESULT AnsiToUnicode(_In_opt_z_ LPCSTR pszA, _Out_z_cap_(cchszA)
 		if (SUCCEEDED(hRes))
 		{
 			*ppszW = pszW;
+			*cchszW = iRet;
 		}
 		else
 		{
@@ -244,6 +246,14 @@ _Check_return_ HRESULT AnsiToUnicode(_In_opt_z_ LPCSTR pszA, _Out_z_cap_(cchszA)
 	}
 
 	return hRes;
+}
+
+// if cchszA == -1, MultiByteToWideChar will compute the length
+// Delete with delete[]
+_Check_return_ HRESULT AnsiToUnicode(_In_opt_z_ LPCSTR pszA, _Out_z_cap_(cchszA) LPWSTR* ppszW, size_t cchszA)
+{
+	size_t cchsW = 0;
+	return AnsiToUnicode(pszA, ppszW, &cchsW, cchszA);
 }
 
 // if cchszW == -1, WideCharToMultiByte will compute the length
