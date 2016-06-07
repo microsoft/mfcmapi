@@ -330,11 +330,11 @@ void TextPane::SetStringA(_In_opt_z_ LPCSTR szMsg, size_t cchsz)
 	HRESULT hRes = S_OK;
 
 	LPWSTR szMsgW = NULL;
-	EC_H(AnsiToUnicode(szMsg, &szMsgW, cchsz));
+	size_t cchszW = 0;
+	EC_H(AnsiToUnicode(szMsg, &szMsgW, &cchszW, cchsz));
 	if (SUCCEEDED(hRes))
 	{
-		// TODO: This is wrong - cchsz was the size of the original string, but the new string may be a different length
-		SetStringW(szMsgW, cchsz);
+		SetStringW(szMsgW, cchszW);
 	}
 
 	delete[] szMsgW;
