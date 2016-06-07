@@ -155,18 +155,7 @@ void ViewPane::SetMargins(
 
 void ViewPane::SetAddInLabel(_In_z_ LPWSTR szLabel)
 {
-#ifdef UNICODE
-	m_szLabel = szLabel;
-#else
-	LPSTR szLabelA = NULL;
-	HRESULT hRes = UnicodeToAnsi(szLabel, &szLabelA);
-	if (SUCCEEDED(hRes) && szLabelA)
-	{
-		m_szLabel = szLabelA;
-		m_bUseLabelControl = true;
-		delete[] szLabelA;
-	}
-#endif
+	m_szLabel = wstringToCString(szLabel);
 }
 
 bool ViewPane::MatchID(UINT nID)

@@ -27,6 +27,7 @@ wstring formatV(wstring const& szMsg, va_list argList)
 	return L"";
 }
 
+// Takes format strings with %x %d...
 wstring format(LPCWSTR szMsg, ...)
 {
 	va_list argList;
@@ -52,14 +53,14 @@ wstring loadstring(DWORD dwID)
 
 wstring formatmessageV(wstring const& szMsg, va_list argList)
 {
-		LPWSTR buffer = NULL;
-		DWORD dw = FormatMessageW(FORMAT_MESSAGE_FROM_STRING | FORMAT_MESSAGE_ALLOCATE_BUFFER, szMsg.c_str(), 0, 0, (LPWSTR)&buffer, 0, &argList);
-		if (dw)
-		{
-			wstring ret = wstring(buffer);
-			(void)LocalFree(buffer);
-			return ret;
-		}
+	LPWSTR buffer = NULL;
+	DWORD dw = FormatMessageW(FORMAT_MESSAGE_FROM_STRING | FORMAT_MESSAGE_ALLOCATE_BUFFER, szMsg.c_str(), 0, 0, (LPWSTR)&buffer, 0, &argList);
+	if (dw)
+	{
+		wstring ret = wstring(buffer);
+		(void)LocalFree(buffer);
+		return ret;
+	}
 
 	return L"";
 }
@@ -78,6 +79,7 @@ wstring formatmessagesys(DWORD dwID)
 	return L"";
 }
 
+// Takes format strings with %1 %2 %3...
 wstring formatmessage(DWORD dwID, ...)
 {
 	va_list argList;
@@ -87,6 +89,7 @@ wstring formatmessage(DWORD dwID, ...)
 	return ret;
 }
 
+// Takes format strings with %1 %2 %3...
 wstring formatmessage(wstring const szMsg, ...)
 {
 	va_list argList;
@@ -96,6 +99,7 @@ wstring formatmessage(wstring const szMsg, ...)
 	return ret;
 }
 
+// Allocates with new. Free with delete[]
 LPTSTR wstringToLPTSTR(wstring const& src)
 {
 	LPTSTR dst = NULL;
@@ -119,20 +123,18 @@ LPTSTR wstringToLPTSTR(wstring const& src)
 
 CString wstringToCString(wstring const& src)
 {
-	CString dst;
-#ifdef UNICODE
-	dst = src.c_str();
-#else
-	dst.Format("%ws", src.c_str());
-#endif
-	return dst;
+	return src.c_str();
+}
+
+CStringA wstringToCStringA(wstring const& src)
+{
+	return src.c_str();
 }
 
 wstring LPCTSTRToWstring(LPCTSTR src)
 {
 #ifdef UNICODE
-	if (!src) return L"";
-	return src;
+	return src ? src : L"";
 #else
 	return LPCSTRToWstring(src);
 #endif
@@ -143,6 +145,16 @@ wstring LPCSTRToWstring(LPCSTR src)
 	if (!src) return L"";
 	string ansi = src;
 	return wstring(ansi.begin(), ansi.end());
+}
+
+CString LPCSTRToCString(LPCSTR src)
+{
+	return src;
+}
+
+CStringA LPCTSTRToCStringA(LPCTSTR src)
+{
+	return src;
 }
 
 void wstringToLower(wstring src)

@@ -1201,30 +1201,22 @@ _Check_return_ __declspec(dllexport) HRESULT __cdecl ComplexDialog(_In_ LPADDIND
 				break;
 			case ADDIN_CTRL_EDIT_TEXT:
 			{
-				LPTSTR szDefaultText = NULL;
-#ifdef UNICODE
-				szDefaultText = lpDialog->lpDialogControls[i].szDefaultText;
-#else
-				EC_H(UnicodeToAnsi(lpDialog->lpDialogControls[i].szDefaultText, &szDefaultText));
-#endif
 				if (lpDialog->lpDialogControls[i].bMultiLine)
 				{
 					MyComplexDialog.InitPane(i, CreateCollapsibleTextPane(
 						NULL,
 						lpDialog->lpDialogControls[i].bReadOnly));
-					MyComplexDialog.SetString(i, szDefaultText);
+					MyComplexDialog.SetStringW(i, lpDialog->lpDialogControls[i].szDefaultText);
 				}
 				else
 				{
-					MyComplexDialog.InitPane(i, CreateSingleLinePane(
+					MyComplexDialog.InitPane(i, CreateSingleLinePaneW(
 						NULL,
-						szDefaultText,
+						lpDialog->lpDialogControls[i].szDefaultText,
 						lpDialog->lpDialogControls[i].bReadOnly));
 
 				}
-#ifndef UNICODE
-				delete[] szDefaultText;
-#endif
+
 				break;
 			}
 			case ADDIN_CTRL_EDIT_BINARY:

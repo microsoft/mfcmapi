@@ -77,18 +77,7 @@ BOOL CPropertyTagEditor::OnInitDialog()
 	// prop types
 	for (ulDropNum = 0; ulDropNum < ulPropTypeArray; ulDropNum++)
 	{
-#ifdef UNICODE
-		InsertDropString(PROPTAG_TYPE, ulDropNum, PropTypeArray[ulDropNum].lpszName);
-#else
-		HRESULT hRes = S_OK;
-		LPSTR szAnsiName = NULL;
-		EC_H(UnicodeToAnsi(PropTypeArray[ulDropNum].lpszName, &szAnsiName));
-		if (SUCCEEDED(hRes))
-		{
-			InsertDropString(PROPTAG_TYPE, ulDropNum, szAnsiName);
-		}
-		delete[] szAnsiName;
-#endif
+		InsertDropString(PROPTAG_TYPE, ulDropNum, wstringToCString(PropTypeArray[ulDropNum].lpszName));
 	}
 
 	if (m_lpMAPIProp)
@@ -503,18 +492,7 @@ BOOL CPropertySelector::OnInitDialog()
 		for (i = 0; i < ulPropTagArray; i++)
 		{
 			if (!m_bIncludeABProps && (PropTagArray[i].ulValue & 0x80000000)) continue;
-#ifdef UNICODE
-			lpData = InsertListRow(0, ulCurRow, PropTagArray[i].lpszName);
-#else
-			HRESULT hRes = S_OK;
-			LPSTR szAnsiName = NULL;
-			EC_H(UnicodeToAnsi(PropTagArray[i].lpszName, &szAnsiName));
-			if (SUCCEEDED(hRes))
-			{
-				lpData = InsertListRow(0, ulCurRow, szAnsiName);
-			}
-			delete[] szAnsiName;
-#endif
+			lpData = InsertListRow(0, ulCurRow, wstringToCString(PropTagArray[i].lpszName));
 
 			if (lpData)
 			{
