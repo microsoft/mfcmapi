@@ -6,6 +6,8 @@
 #include "String.h"
 #include "InterpretProp.h"
 #include "InterpretProp2.h"
+#include <algorithm>
+#include <cctype>
 
 wstring BuildErrorPropString(_In_ LPSPropValue lpProp)
 {
@@ -50,8 +52,8 @@ wstring BinToTextString(_In_ LPSBinary lpBin, bool bMultiLine)
 		// If we allow multiple lines, we accept tab, LF and CR
 		else if (bMultiLine &&
 			(lpBin->lpb[i] == 9 || // Tab
-			lpBin->lpb[i] == 10 || // Line Feed
-			lpBin->lpb[i] == 13))  // Carriage Return
+				lpBin->lpb[i] == 10 || // Line Feed
+				lpBin->lpb[i] == 13))  // Carriage Return
 		{
 			szBin += lpBin->lpb[i];
 		}
@@ -104,6 +106,60 @@ wstring BinToHexString(_In_opt_ LPSBinary lpBin, bool bPrependCB)
 		lpBin->lpb,
 		lpBin->cb,
 		bPrependCB);
+}
+
+bool stripPrefix(wstring& str, wstring prefix)
+{
+	size_t length = prefix.length();
+	if (str.compare(0, length, prefix) == 0)
+	{
+		str.erase(0, length);
+		return true;
+	}
+
+	return false;
+}
+
+vector<BYTE> HexStringToBin(_In_ wstring lpsz)
+{
+	// remove junk
+	WCHAR szJunk[] = L"\r\n\t -.,\\/'{}`\""; // STRING_OK
+	for (unsigned int i = 0; i < _countof(szJunk); ++i)
+	{
+		lpsz.erase(std::remove(lpsz.begin(), lpsz.end(), szJunk[i]), lpsz.end());
+	}
+
+	// strip one (and only one) prefix
+	stripPrefix(lpsz, L"0x") ||
+		stripPrefix(lpsz, L"0X") ||
+		stripPrefix(lpsz, L"x") ||
+		stripPrefix(lpsz, L"X");
+
+	size_t iCur = 0;
+	WCHAR szTmp[3] = { 0 };
+	size_t cchStrLen = lpsz.length();
+	vector<BYTE> lpb;
+
+	// We have a clean string now. If it's of odd length, we're done.
+	if (cchStrLen % 2 != 0) return vector<BYTE>();
+
+	// convert two characters at a time
+	int iTmp = 0;
+	while (iCur < cchStrLen)
+	{
+		// Check for valid hex characters
+		if (!isxdigit(lpsz[iCur]) || !isxdigit(lpsz[iCur + 1]))
+		{
+			return vector<BYTE>();
+		}
+
+		szTmp[0] = lpsz[iCur];
+		szTmp[1] = lpsz[iCur + 1];
+		lpb.push_back((BYTE)wcstol(szTmp, NULL, 16));
+		iCur += 2;
+	}
+
+	return lpb;
 }
 
 Property ParseMVProperty(_In_ LPSPropValue lpProp, ULONG ulMVRow)

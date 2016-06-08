@@ -9,6 +9,7 @@
 #include "MyWinApp.h"
 #include <vssym32.h>
 #include "AboutDlg.h"
+#include "ParseProperty.h"
 
 extern CMyWinApp theApp;
 
@@ -1112,30 +1113,25 @@ _Check_return_ bool CEditor::GetBinaryUseControl(ULONG i, _Out_ size_t* cbBin, _
 {
 	if (!IsValidEdit(i)) return false;
 	if (!cbBin || !lpBin) return false;
-	CString szString;
-
 	*cbBin = NULL;
 	*lpBin = NULL;
 
-	szString = GetStringUseControl(i);
-	if (!MyBinFromHex(
-		(LPCTSTR)szString,
-		NULL,
-		(ULONG*)cbBin)) return false;
+	wstring szString = LPCSTRToWstring(GetStringUseControl(i));
+	vector<BYTE> bin = HexStringToBin(szString);
+	if (bin.empty()) return false;
 
-	*lpBin = new BYTE[*cbBin + 2]; // lil extra space to shove a NULL terminator on there
-	if (*lpBin)
-	{
-		(void)MyBinFromHex(
-			(LPCTSTR)szString,
-			*lpBin,
-			(ULONG*)cbBin);
-		// In case we try printing this...
-		(*lpBin)[*cbBin] = 0;
-		(*lpBin)[*cbBin + 1] = 0;
-		return true;
-	}
-	return false;
+	// Remember the size of the converted binary
+	*cbBin = bin.size();
+
+	// Add some extra nulls just in case this is ever printed
+	bin.push_back(0);
+	bin.push_back(0);
+
+	*lpBin = new BYTE[bin.size()];
+	memset(*lpBin, 0, bin.size());
+	memcpy(*lpBin, &bin[0], bin.size());
+
+	return true;
 }
 
 _Check_return_ bool CEditor::GetCheckUseControl(ULONG iControl)
