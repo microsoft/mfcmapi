@@ -439,3 +439,19 @@ vector<BYTE> HexStringToBin(_In_ wstring lpsz)
 
 	return lpb;
 }
+
+// Converts byte vector to LPBYTE allocated with new
+LPBYTE ByteVectorToLPBYTE(vector<BYTE> bin)
+{
+	if (bin.empty()) return NULL;
+
+	LPBYTE lpBin = new BYTE[bin.size()];
+	if (lpBin != NULL)
+	{
+		memset(lpBin, 0, bin.size());
+		memcpy(lpBin, &bin[0], bin.size());
+		return lpBin;
+	}
+
+	return NULL;
+}

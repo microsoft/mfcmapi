@@ -1126,9 +1126,12 @@ _Check_return_ bool CEditor::GetBinaryUseControl(ULONG i, _Out_ size_t* cbBin, _
 	bin.push_back(0);
 	bin.push_back(0);
 
-	*lpBin = new BYTE[bin.size()];
-	memset(*lpBin, 0, bin.size());
-	memcpy(*lpBin, &bin[0], bin.size());
+	*lpBin = ByteVectorToLPBYTE(bin);
+	if (!*lpBin)
+	{
+		*cbBin = 0;
+		return false;
+	}
 
 	return true;
 }
@@ -1162,20 +1165,9 @@ _Check_return_ HRESULT CEditor::GetEntryID(ULONG i, bool bIsBase64, _Out_ size_t
 		}
 		else // Entry was hexized string
 		{
-			if (MyBinFromHex(
-				(LPCTSTR)szString,
-				NULL,
-				(ULONG*)lpcbBin) && *lpcbBin)
-			{
-				*lppEID = (LPENTRYID) new BYTE[*lpcbBin];
-				if (*lppEID)
-				{
-					EC_B(MyBinFromHex(
-						szString,
-						(LPBYTE)*lppEID,
-						(ULONG*)lpcbBin));
-				}
-			}
+			vector<BYTE> bin = HexStringToBin(LPCSTRToWstring(szString));
+			*lppEID = (LPENTRYID)ByteVectorToLPBYTE(bin);
+			*lpcbBin = bin.size();
 		}
 	}
 

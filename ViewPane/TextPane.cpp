@@ -468,12 +468,12 @@ void TextPane::CommitUIValues()
 
 	if (lpszW)
 	{
-		memset(lpszW, 0, cchText*sizeof(WCHAR));
+		memset(lpszW, 0, cchText * sizeof(WCHAR));
 
 		if (cchText > 1) // No point in checking if the string is just a null terminator
 		{
 			GETTEXTEX getText = { 0 };
-			getText.cb = (DWORD)cchText*sizeof(WCHAR);
+			getText.cb = (DWORD)cchText * sizeof(WCHAR);
 			getText.flags = GT_DEFAULT;
 			getText.codepage = 1200;
 
@@ -488,7 +488,7 @@ void TextPane::CommitUIValues()
 				LPSTR lpszA = (CHAR*) new CHAR[cchText];
 				if (lpszA)
 				{
-					memset(lpszA, 0, cchText*sizeof(CHAR));
+					memset(lpszA, 0, cchText * sizeof(CHAR));
 					HRESULT hRes = S_OK;
 					cchW = ::SendMessage(
 						m_EditBox.m_hWnd,
@@ -554,31 +554,16 @@ void TextPane::InitEditFromBinaryStream(_In_ LPSTREAM lpStreamIn)
 void TextPane::WriteToBinaryStream(_In_ LPSTREAM lpStreamOut)
 {
 	HRESULT hRes = S_OK;
-	LPBYTE lpb = NULL;
-	size_t cb = 0;
-	ULONG cbWritten = 0;
 
-	CString szString;
-
-	szString = GetStringUseControl();
-	if (!MyBinFromHex(
-		(LPCTSTR)szString,
-		NULL,
-		(ULONG*)&cb)) return;
-
-	lpb = new BYTE[cb];
-	if (lpb)
+	auto bin = HexStringToBin(LPCTSTRToWstring(GetStringUseControl()));
+	if (bin.data() != 0)
 	{
-		(void)MyBinFromHex(
-			(LPCTSTR)szString,
-			lpb,
-			(ULONG*)&cb);
-		EC_MAPI(lpStreamOut->Write(lpb, (ULONG)cb, &cbWritten));
+		ULONG cbWritten = 0;
+		EC_MAPI(lpStreamOut->Write(bin.data(), bin.size(), &cbWritten));
 		DebugPrintEx(DBGStream, CLASS, L"WriteToBinaryStream", L"wrote 0x%X bytes to the stream\n", cbWritten);
 
 		EC_MAPI(lpStreamOut->Commit(STGC_DEFAULT));
 	}
-	delete[] lpb;
 }
 
 void TextPane::ShowWindow(int nCmdShow)

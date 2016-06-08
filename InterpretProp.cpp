@@ -167,13 +167,12 @@ _Check_return_ HRESULT StringToGUID(_In_ wstring szGUID, bool bByteSwapped, _Ino
 	HRESULT hRes = S_OK;
 	if (szGUID.empty() || !lpGUID) return MAPI_E_INVALID_PARAMETER;
 
-	ULONG cbGUID = sizeof(GUID);
-
 	// Now we use MyBinFromHex to do the work.
-	(void)MyBinFromHex(wstringToCString(szGUID), (LPBYTE)lpGUID, &cbGUID);
+	vector<BYTE> bin = HexStringToBin(szGUID);
+	lpGUID = (LPGUID)ByteVectorToLPBYTE(bin);
 
 	// Note that we get the bByteSwapped behavior by default. We have to work to get the 'normal' behavior
-	if (!bByteSwapped)
+	if (!bByteSwapped && lpGUID != NULL)
 	{
 		LPBYTE lpByte = (LPBYTE)lpGUID;
 		BYTE bByte = 0;
@@ -184,6 +183,7 @@ _Check_return_ HRESULT StringToGUID(_In_ wstring szGUID, bool bByteSwapped, _Ino
 		lpByte[1] = lpByte[2];
 		lpByte[2] = bByte;
 	}
+
 	return hRes;
 }
 
