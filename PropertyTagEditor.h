@@ -29,8 +29,8 @@ private:
 	void  LookupNamedProp(ULONG ulSkipField, bool bCreate);
 	_Check_return_ CString GetDropStringUseControl(ULONG iControl);
 	_Check_return_ int GetDropDownSelection(ULONG iControl);
-	void InsertDropString(ULONG iControl, int iRow, _In_z_ LPCTSTR szText);
-	void SetDropDownSelection(ULONG i, _In_opt_z_ LPCTSTR szText);
+	void InsertDropString(ULONG iControl, int iRow, _In_ wstring szText);
+	void SetDropDownSelection(ULONG i, _In_ wstring szText);
 
 	ULONG		m_ulPropTag;
 	bool		m_bIsAB;
