@@ -13,9 +13,8 @@ void FindTagArrayMatches(_In_ ULONG ulTarget,
 void PropTagToPropName(ULONG ulPropTag, bool bIsAB, _In_opt_  wstring* lpszExactMatch, _In_opt_  wstring* lpszPartialMatches);
 
 // Strictly does a lookup in the array. Does not convert otherwise
-_Check_return_ HRESULT LookupPropName(_In_ wstring lpszPropName, _Out_ ULONG* ulPropTag);
-
-_Check_return_ HRESULT PropNameToPropTag(_In_ wstring lpszPropName, _Out_ ULONG* ulPropTag);
+_Check_return_ ULONG LookupPropName(_In_ wstring lpszPropName);
+_Check_return_ ULONG PropNameToPropTag(_In_ wstring lpszPropName);
 _Check_return_ ULONG PropTypeNameToPropType(_In_ wstring lpszPropType);
 
 wstring GUIDToString(_In_opt_ LPCGUID lpGUID);

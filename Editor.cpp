@@ -1327,7 +1327,6 @@ _Check_return_ ULONG CEditor::GetPropTagUseControl(ULONG i)
 {
 	if (!IsValidEdit(i)) return 0;
 
-	HRESULT hRes = S_OK;
 	ULONG ulPropTag = NULL;
 	CString szTag;
 	szTag = GetStringUseControl(i);
@@ -1339,7 +1338,7 @@ _Check_return_ ULONG CEditor::GetPropTagUseControl(ULONG i)
 
 	if (ulTag == NULL) // If we didn't convert, try a lookup
 	{
-		EC_H(PropNameToPropTag(LPCTSTRToWstring(szTag), &ulTag));
+		ulTag = PropNameToPropTag(LPCTSTRToWstring(szTag));
 	}
 
 	// Figure if this is a full tag or just an ID
@@ -1351,6 +1350,7 @@ _Check_return_ ULONG CEditor::GetPropTagUseControl(ULONG i)
 	{
 		ulPropTag = PROP_TAG(PT_UNSPECIFIED, ulTag);
 	}
+
 	return ulPropTag;
 }
 
@@ -1358,23 +1358,18 @@ _Check_return_ ULONG CEditor::GetPropTag(ULONG i)
 {
 	if (!IsValidEdit(i)) return 0;
 
-	HRESULT hRes = S_OK;
 	ULONG ulPropTag = NULL;
-	ULONG ulTag = NULL;
-
-	EC_H(PropNameToPropTag(m_lpControls[i].lpTextPane->GetStringW(), &ulTag));
+	ULONG ulTag = PropNameToPropTag(m_lpControls[i].lpTextPane->GetStringW());
 
 	// Figure if this is a full tag or just an ID
 	if (ulTag & PROP_TAG_MASK) // Full prop tag
 	{
-		ulPropTag = ulTag;
+		return ulTag;
 	}
 	else // Just an ID
 	{
-		ulPropTag = PROP_TAG(PT_UNSPECIFIED, ulTag);
+		return PROP_TAG(PT_UNSPECIFIED, ulTag);
 	}
-
-	return ulPropTag;
 }
 
 _Check_return_ ULONG CEditor::GetDecimal(ULONG i)

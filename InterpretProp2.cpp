@@ -189,45 +189,33 @@ void PropTagToPropName(ULONG ulPropTag, bool bIsAB, _In_opt_  wstring* lpszExact
 }
 
 // Strictly does a lookup in the array. Does not convert otherwise
-_Check_return_ HRESULT LookupPropName(_In_ wstring lpszPropName, _Out_ ULONG* ulPropTag)
+_Check_return_ ULONG LookupPropName(_In_ wstring lpszPropName)
 {
-	ulPropTag = 0;
-	if (lpszPropName.empty() || !ulPropTag) return MAPI_E_INVALID_PARAMETER;
-
-	HRESULT hRes = S_OK;
+	if (lpszPropName.empty() || !ulPropTagArray || !PropTagArray) return 0;
 	ULONG ulCur = 0;
-
-	*ulPropTag = NULL;
-
-	if (!ulPropTagArray || !PropTagArray) return S_OK;
 
 	for (ulCur = 0; ulCur < ulPropTagArray; ulCur++)
 	{
 		if (0 == lstrcmpiW(lpszPropName.c_str(), PropTagArray[ulCur].lpszName))
 		{
-			*ulPropTag = PropTagArray[ulCur].ulValue;
-			break;
+			return  PropTagArray[ulCur].ulValue;
 		}
 	}
 
-	return hRes;
+	return 0;
 }
 
-_Check_return_ HRESULT PropNameToPropTag(_In_ wstring lpszPropName, _Out_ ULONG* ulPropTag)
+_Check_return_ ULONG PropNameToPropTag(_In_ wstring lpszPropName)
 {
-	ulPropTag = 0;
-	if (lpszPropName.empty() || !ulPropTag) return S_OK;
-
-	*ulPropTag = NULL;
+	if (lpszPropName.empty()) return 0;
 
 	ULONG ulTag = wstringToUlong(lpszPropName, 16);
 	if (ulTag != NULL)
 	{
-		*ulPropTag = ulTag;
-		return S_OK;
+		return ulTag;
 	}
 
-	return LookupPropName(lpszPropName, ulPropTag);;
+	return LookupPropName(lpszPropName);
 }
 
 _Check_return_ ULONG PropTypeNameToPropType(_In_ wstring lpszPropType)
