@@ -2,7 +2,6 @@
 #include "..\stdafx.h"
 #include "PCL.h"
 #include "..\String.h"
-#include "..\ParseProperty.h"
 #include "..\InterpretProp2.h"
 
 PCL::PCL(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)

@@ -5,7 +5,6 @@
 #include "MAPIProfileFunctions.h"
 #include "MAPIFunctions.h"
 #include "InterpretProp2.h"
-#include "ParseProperty.h"
 
 void ExportProfileSection(FILE* fProfile, LPPROFSECT lpSect, LPSBinary lpSectBin)
 {

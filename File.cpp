@@ -12,7 +12,6 @@
 #include "MFCUtilityFunctions.h"
 #include <shlobj.h>
 #include "Dumpstore.h"
-#include "ParseProperty.h"
 
 // Add current Entry ID to file name
 _Check_return_ HRESULT AppendEntryID(_Inout_z_count_(cchFileName) LPWSTR szFileName, size_t cchFileName, _In_ LPSBinary lpBin, size_t cchMaxAppend)

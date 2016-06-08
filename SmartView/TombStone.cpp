@@ -2,7 +2,6 @@
 #include "..\stdafx.h"
 #include "TombStone.h"
 #include "..\String.h"
-#include "..\ParseProperty.h"
 #include "SmartView.h"
 
 TombStone::TombStone(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)

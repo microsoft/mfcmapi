@@ -9,7 +9,6 @@
 #include "MyWinApp.h"
 #include <vssym32.h>
 #include "AboutDlg.h"
-#include "ParseProperty.h"
 
 extern CMyWinApp theApp;
 

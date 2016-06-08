@@ -19,7 +19,6 @@
 #include "ImportProcs.h"
 #include "SmartView\SmartView.h"
 #include "Options.h"
-#include "ParseProperty.h"
 
 static wstring CLASS = L"CBaseDialog";
 

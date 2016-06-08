@@ -3,7 +3,6 @@
 #include "WebViewPersistStream.h"
 #include "..\String.h"
 #include "..\InterpretProp2.h"
-#include "..\ParseProperty.h"
 #include "..\ExtraPropTags.h"
 
 WebViewPersistStream::WebViewPersistStream(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)

@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <vector>
 using namespace std;
 
 extern wstring emptystring; 
@@ -34,3 +35,8 @@ bool IsNullOrEmptyA(LPCSTR szStr);
 #else
 #define IsNullOrEmpty IsNullOrEmptyA
 #endif
+
+wstring BinToTextString(_In_ LPSBinary lpBin, bool bMultiLine);
+wstring BinToHexString(_In_opt_count_(cb) LPBYTE lpb, size_t cb, bool bPrependCB);
+wstring BinToHexString(_In_opt_ LPSBinary lpBin, bool bPrependCB);
+vector<BYTE> HexStringToBin(_In_ wstring lpsz);

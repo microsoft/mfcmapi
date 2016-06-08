@@ -4,7 +4,6 @@
 #include "..\MAPIFunctions.h"
 #include "..\String.h"
 #include "..\UIFunctions.h"
-#include "..\ParseProperty.h"
 
 static wstring CLASS = L"TextPane";
 
