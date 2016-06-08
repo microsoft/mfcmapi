@@ -215,9 +215,7 @@ static HRESULT HrLookupRootFolderW(
 	// Implicitly recognize no root folder as THE root folder
 	if (lpszRootFolder.empty()) return S_OK;
 
-	ULONG ulPropTag = NULL;
-
-	WC_H(LookupPropName(lpszRootFolder, &ulPropTag));
+	ULONG ulPropTag = LookupPropName(lpszRootFolder);
 	if (!ulPropTag)
 	{
 		// Maybe one of our folder constants was passed.

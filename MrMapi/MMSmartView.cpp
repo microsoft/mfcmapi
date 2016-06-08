@@ -41,6 +41,7 @@ void DoSmartView(_In_ MYOPTIONS ProgOpts)
 				memset(lpbIn, 0, sizeof(BYTE)*(iLength + 1));
 				fread(lpbIn, sizeof(BYTE), iLength, fIn);
 				SBinary Bin = { 0 };
+				vector<BYTE> bin;
 				if (ProgOpts.ulOptions & OPT_BINARYFILE)
 				{
 					Bin.cb = iLength;
@@ -48,29 +49,10 @@ void DoSmartView(_In_ MYOPTIONS ProgOpts)
 				}
 				else
 				{
-					LPTSTR szIn = NULL;
-#ifdef UNICODE
-					EC_H(AnsiToUnicode((LPCSTR) lpbIn,&szIn));
-#else
-					szIn = (LPSTR)lpbIn;
-#endif
-					if (MyBinFromHex(
-						(LPCTSTR)szIn,
-						NULL,
-						&Bin.cb))
-					{
-						Bin.lpb = new BYTE[Bin.cb];
-						if (Bin.lpb)
-						{
-							(void)MyBinFromHex(
-								(LPCTSTR)szIn,
-								Bin.lpb,
-								&Bin.cb);
-						}
-					}
-#ifdef UNICODE
-					delete[] szIn;
-#endif
+					wstring str = LPCSTRToWstring((LPCSTR)lpbIn);
+					bin = HexStringToBin(str);
+					Bin.cb = bin.size();
+					Bin.lpb = bin.data();
 				}
 
 				wstring szString = InterpretBinaryAsString(Bin, ulStructType, NULL);
@@ -86,7 +68,6 @@ void DoSmartView(_In_ MYOPTIONS ProgOpts)
 					}
 				}
 
-				if (!(ProgOpts.ulOptions & OPT_BINARYFILE)) delete[] Bin.lpb;
 				delete[] lpbIn;
 			}
 		}
