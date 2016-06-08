@@ -2,7 +2,6 @@
 #include "..\stdafx.h"
 #include "TaskAssigners.h"
 #include "..\String.h"
-#include "..\ParseProperty.h"
 
 TaskAssigners::TaskAssigners(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
 {

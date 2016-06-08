@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "..\stdafx.h"
 #include "XID.h"
-#include "..\ParseProperty.h"
 #include "..\InterpretProp2.h"
 
 XID::XID(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)

@@ -5,7 +5,6 @@
 #include "..\String.h"
 #include "..\Guids.h"
 #include "..\Interpretprop2.h"
-#include "..\ParseProperty.h"
 #include "..\ExtraPropTags.h"
 
 EntryIdStruct::EntryIdStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)

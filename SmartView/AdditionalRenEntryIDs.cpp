@@ -4,7 +4,6 @@
 #include "..\String.h"
 #include "..\InterpretProp2.h"
 #include "..\ExtraPropTags.h"
-#include "..\ParseProperty.h"
 
 AdditionalRenEntryIDs::AdditionalRenEntryIDs(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
 {

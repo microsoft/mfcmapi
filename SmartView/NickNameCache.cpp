@@ -2,7 +2,6 @@
 #include "..\stdafx.h"
 #include "NickNameCache.h"
 #include "..\String.h"
-#include "..\ParseProperty.h"
 #include "SmartView.h"
 #include "PropertyStruct.h"
 

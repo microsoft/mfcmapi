@@ -4,7 +4,6 @@
 #include "RestrictionStruct.h"
 #include "PropertyStruct.h"
 #include "..\String.h"
-#include "..\ParseProperty.h"
 #include "..\ExtraPropTags.h"
 
 SearchFolderDefinition::SearchFolderDefinition(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)

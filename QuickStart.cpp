@@ -11,7 +11,6 @@
 #include "MainDlg.h"
 #include "QSSpecialFolders.h"
 #include "MAPIABFunctions.h"
-#include "ParseProperty.h"
 
 LPMAPISESSION OpenSessionForQuickStart(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 {

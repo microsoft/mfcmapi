@@ -3,7 +3,6 @@
 #include "PropertyDefinitionStream.h"
 #include "..\String.h"
 #include "..\InterpretProp2.h"
-#include "..\ParseProperty.h"
 #include "..\ExtraPropTags.h"
 
 PropertyDefinitionStream::PropertyDefinitionStream(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)

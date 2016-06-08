@@ -2,7 +2,6 @@
 #include "..\stdafx.h"
 #include "GlobalObjectId.h"
 #include "..\String.h"
-#include "..\ParseProperty.h"
 #include "..\InterpretProp.h"
 #include "..\InterpretProp2.h"
 #include "..\ExtraPropTags.h"

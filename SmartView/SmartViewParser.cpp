@@ -2,7 +2,6 @@
 #include "..\stdafx.h"
 #include "SmartViewParser.h"
 #include "..\String.h"
-#include "..\ParseProperty.h"
 
 SmartViewParser::SmartViewParser(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {

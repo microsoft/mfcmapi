@@ -312,3 +312,130 @@ bool IsNullOrEmptyA(LPCSTR szStr)
 {
 	return !szStr || !szStr[0];
 }
+
+wstring BinToTextString(_In_ LPSBinary lpBin, bool bMultiLine)
+{
+	if (!lpBin || !lpBin->cb || !lpBin->lpb) return L"";
+
+	wstring szBin;
+
+	ULONG i;
+	for (i = 0; i < lpBin->cb; i++)
+	{
+		// Any printable extended ASCII character gets mapped directly
+		if (lpBin->lpb[i] >= 0x20 &&
+			lpBin->lpb[i] <= 0xFE)
+		{
+			szBin += lpBin->lpb[i];
+		}
+		// If we allow multiple lines, we accept tab, LF and CR
+		else if (bMultiLine &&
+			(lpBin->lpb[i] == 9 || // Tab
+				lpBin->lpb[i] == 10 || // Line Feed
+				lpBin->lpb[i] == 13))  // Carriage Return
+		{
+			szBin += lpBin->lpb[i];
+		}
+		// Everything else is a dot
+		else
+		{
+			szBin += L'.';
+		}
+	}
+
+	return szBin;
+}
+
+wstring BinToHexString(_In_opt_count_(cb) LPBYTE lpb, size_t cb, bool bPrependCB)
+{
+	wstring lpsz;
+
+	if (bPrependCB)
+	{
+		lpsz = format(L"cb: %u lpb: ", (UINT)cb); // STRING_OK
+	}
+
+	if (!cb || !lpb)
+	{
+		lpsz += L"NULL";
+	}
+	else
+	{
+		ULONG i = 0;
+		for (i = 0; i < cb; i++)
+		{
+			BYTE bLow = (BYTE)((lpb[i]) & 0xf);
+			BYTE bHigh = (BYTE)((lpb[i] >> 4) & 0xf);
+			wchar_t szLow = (wchar_t)((bLow <= 0x9) ? L'0' + bLow : L'A' + bLow - 0xa);
+			wchar_t szHigh = (wchar_t)((bHigh <= 0x9) ? L'0' + bHigh : L'A' + bHigh - 0xa);
+
+			lpsz += szHigh;
+			lpsz += szLow;
+		}
+	}
+
+	return lpsz;
+}
+
+wstring BinToHexString(_In_opt_ LPSBinary lpBin, bool bPrependCB)
+{
+	if (!lpBin) return L"";
+
+	return BinToHexString(
+		lpBin->lpb,
+		lpBin->cb,
+		bPrependCB);
+}
+
+bool stripPrefix(wstring& str, wstring prefix)
+{
+	size_t length = prefix.length();
+	if (str.compare(0, length, prefix) == 0)
+	{
+		str.erase(0, length);
+		return true;
+	}
+
+	return false;
+}
+
+vector<BYTE> HexStringToBin(_In_ wstring lpsz)
+{
+	// remove junk
+	WCHAR szJunk[] = L"\r\n\t -.,\\/'{}`\""; // STRING_OK
+	for (unsigned int i = 0; i < _countof(szJunk); ++i)
+	{
+		lpsz.erase(std::remove(lpsz.begin(), lpsz.end(), szJunk[i]), lpsz.end());
+	}
+
+	// strip one (and only one) prefix
+	stripPrefix(lpsz, L"0x") ||
+		stripPrefix(lpsz, L"0X") ||
+		stripPrefix(lpsz, L"x") ||
+		stripPrefix(lpsz, L"X");
+
+	size_t iCur = 0;
+	WCHAR szTmp[3] = { 0 };
+	size_t cchStrLen = lpsz.length();
+	vector<BYTE> lpb;
+
+	// We have a clean string now. If it's of odd length, we're done.
+	if (cchStrLen % 2 != 0) return vector<BYTE>();
+
+	// convert two characters at a time
+	while (iCur < cchStrLen)
+	{
+		// Check for valid hex characters
+		if (!isxdigit(lpsz[iCur]) || !isxdigit(lpsz[iCur + 1]))
+		{
+			return vector<BYTE>();
+		}
+
+		szTmp[0] = lpsz[iCur];
+		szTmp[1] = lpsz[iCur + 1];
+		lpb.push_back((BYTE)wcstol(szTmp, NULL, 16));
+		iCur += 2;
+	}
+
+	return lpb;
+}

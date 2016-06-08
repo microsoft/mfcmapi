@@ -9,7 +9,6 @@
 #include "MAPIFunctions.h"
 #include "ImportProcs.h"
 #include "ExtraPropTags.h"
-#include "ParseProperty.h"
 
 static wstring COMPCLASS = L"CResCompareEditor"; // STRING_OK
 class CResCompareEditor : public CEditor
