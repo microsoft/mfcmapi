@@ -82,7 +82,6 @@ HRESULT HrMAPIOpenStoreAndFolder(
 		{
 			// Skip the '#'
 			lpszFolderPath.erase(0, 1);
-			SBinary Bin = { 0 };
 			LPSTR szPath = wstringToLPTSTR(lpszFolderPath);
 
 			// Find our slash if we have one and null terminate at it
@@ -92,32 +91,28 @@ HRESULT HrMAPIOpenStoreAndFolder(
 				szSlash[0] = L'\0';
 			}
 
-			// MyBinFromHex will balk at odd string length or forbidden characters
+			vector<BYTE> bin = HexStringToBin(LPCSTRToWstring(szPath));
 			// In order for cb to get bigger than 1, the string has to have at least 4 characters
 			// Which is larger than any reasonable store number. So we use that to distinguish.
-			if (MyBinFromHex((LPCTSTR)szPath, NULL, &Bin.cb) && Bin.cb > 1)
+			if (bin.size() > 1 && bin.data() != NULL)
 			{
-				Bin.lpb = new BYTE[Bin.cb];
-				if (Bin.lpb)
+				SBinary Bin = { 0 };
+				Bin.cb = bin.size();
+				Bin.lpb = bin.data();
+				WC_H(CallOpenMsgStore(
+					lpMAPISession,
+					NULL,
+					&Bin,
+					MDB_NO_DIALOG | MDB_WRITE,
+					&lpMDB));
+				size_t slashPos = lpszFolderPath.find_first_of(L'\\');
+				if (slashPos != string::npos)
 				{
-					(void)MyBinFromHex((LPCTSTR)szPath, Bin.lpb, &Bin.cb);
-					WC_H(CallOpenMsgStore(
-						lpMAPISession,
-						NULL,
-						&Bin,
-						MDB_NO_DIALOG | MDB_WRITE,
-						&lpMDB));
-					size_t slashPos = lpszFolderPath.find_first_of(L'\\');
-					if (slashPos != string::npos)
-					{
-						lpszFolderPath = lpszFolderPath.substr(slashPos, string::npos);
-					}
-					else
-					{
-						lpszFolderPath = L"";
-					}
-
-					delete[] Bin.lpb;
+					lpszFolderPath = lpszFolderPath.substr(slashPos, string::npos);
+				}
+				else
+				{
+					lpszFolderPath = L"";
 				}
 			}
 			else
