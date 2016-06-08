@@ -677,8 +677,7 @@ void CPropertyEditor::WriteStringsToSPropValue()
 				(LPVOID*)&m_lpsOutputValue->Value.lpguid));
 			if (m_lpsOutputValue->Value.lpguid)
 			{
-				EC_H(StringToGUID(LPCTSTRToWstring(GetStringUseControl(0)), m_lpsOutputValue->Value.lpguid));
-				if (FAILED(hRes)) bFailed = true;
+				*m_lpsOutputValue->Value.lpguid = StringToGUID(LPCTSTRToWstring(GetStringUseControl(0)));
 			}
 
 			break;

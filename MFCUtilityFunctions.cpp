@@ -21,6 +21,7 @@
 #include "SingleMessageDialog.h"
 #include "AttachmentsDlg.h"
 #include "RecipientsDlg.h"
+#include "InterpretProp2.h"
 
 _Check_return_ HRESULT DisplayObject(
 	_In_ LPMAPIPROP lpUnk,
@@ -543,8 +544,8 @@ void DisplayMailboxTable(_In_ CParentWnd*	lpParent,
 					{
 						bHaveGUID = true;
 
-						WC_H(StringToGUID(MyData.GetStringW(2), &MyGUID));
-						if (FAILED(hRes))
+						MyGUID = StringToGUID(MyData.GetStringW(2));
+						if (MyGUID == GUID_NULL)
 						{
 							ErrDialog(__FILE__, __LINE__, IDS_EDINVALIDGUID);
 							break;
@@ -689,8 +690,8 @@ void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
 					{
 						bHaveGUID = true;
 
-						WC_H(StringToGUID(MyData.GetStringW(3), &MyGUID));
-						if (FAILED(hRes))
+						MyGUID = StringToGUID(MyData.GetStringW(3));
+						if (MyGUID == GUID_NULL)
 						{
 							ErrDialog(__FILE__, __LINE__, IDS_EDINVALIDGUID);
 							break;

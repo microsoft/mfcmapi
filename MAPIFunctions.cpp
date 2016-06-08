@@ -2749,8 +2749,6 @@ HRESULT CopyTo(HWND hWnd, _In_ LPMAPIPROP lpSource, _In_ LPMAPIPROP lpDest, LPCG
 #endif
 
 #ifndef MRMAPI
-	GUID MyGUID = { 0 };
-
 	if (bAllowUI)
 	{
 		CEditor MyData(
@@ -2768,7 +2766,7 @@ HRESULT CopyTo(HWND hWnd, _In_ LPMAPIPROP lpSource, _In_ LPMAPIPROP lpDest, LPCG
 
 		if (S_OK == hRes)
 		{
-			EC_H(StringToGUID(MyData.GetStringW(0), &MyGUID));
+			GUID MyGUID = StringToGUID(MyData.GetStringW(0));
 			lpGUIDLocal = &MyGUID;
 			ulCopyFlags = MyData.GetHex(1);
 			if (hWnd)

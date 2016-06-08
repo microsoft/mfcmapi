@@ -559,7 +559,7 @@ void TextPane::WriteToBinaryStream(_In_ LPSTREAM lpStreamOut)
 	if (bin.data() != 0)
 	{
 		ULONG cbWritten = 0;
-		EC_MAPI(lpStreamOut->Write(bin.data(), bin.size(), &cbWritten));
+		EC_MAPI(lpStreamOut->Write(bin.data(), (ULONG)bin.size(), &cbWritten));
 		DebugPrintEx(DBGStream, CLASS, L"WriteToBinaryStream", L"wrote 0x%X bytes to the stream\n", cbWritten);
 
 		EC_MAPI(lpStreamOut->Commit(STGC_DEFAULT));
