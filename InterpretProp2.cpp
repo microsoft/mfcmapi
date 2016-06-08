@@ -216,7 +216,7 @@ _Check_return_ HRESULT LookupPropName(_In_ wstring lpszPropName, _Out_ ULONG* ul
 _Check_return_ HRESULT PropNameToPropTag(_In_ wstring lpszPropName, _Out_ ULONG* ulPropTag)
 {
 	ulPropTag = 0;
-	if (lpszPropName.empty() || !ulPropTag) return MAPI_E_INVALID_PARAMETER;
+	if (lpszPropName.empty() || !ulPropTag) return S_OK;
 
 	*ulPropTag = NULL;
 

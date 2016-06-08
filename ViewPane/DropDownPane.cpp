@@ -179,9 +179,7 @@ void DropDownPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC /*hdc*/
 	{
 		for (iDropNum = 0; iDropNum < ulPropGuidArray; iDropNum++)
 		{
-			LPTSTR szGUID = wstringToLPTSTR(GUIDToStringAndName(PropGuidArray[iDropNum].lpGuid));
-			InsertDropString(iDropNum, szGUID);
-			delete[] szGUID;
+			InsertDropString(iDropNum, GUIDToStringAndName(PropGuidArray[iDropNum].lpGuid).c_str());
 		}
 	}
 
@@ -190,9 +188,9 @@ void DropDownPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC /*hdc*/
 	m_bInitialized = true;
 }
 
-void DropDownPane::InsertDropString(int iRow, _In_z_ LPCTSTR szText)
+void DropDownPane::InsertDropString(int iRow, _In_ wstring szText)
 {
-	m_DropDown.InsertString(iRow, szText);
+	m_DropDown.InsertString(iRow, wstringToCString(szText));
 	m_ulDropList++;
 }
 
@@ -281,11 +279,11 @@ _Check_return_ bool DropDownPane::GetSelectedGUID(bool bByteSwapped, _In_ LPGUID
 	}
 }
 
-void DropDownPane::SetDropDownSelection(_In_opt_z_ LPCTSTR szText)
+void DropDownPane::SetDropDownSelection(_In_ wstring szText)
 {
 	HRESULT hRes = S_OK;
-
-	int iSelect = m_DropDown.SelectString(0, szText);
+	CString text = wstringToCString(szText);
+	int iSelect = m_DropDown.SelectString(0, text);
 
 	// if we can't select, try pushing the text in there
 	// not all dropdowns will support this!
@@ -295,7 +293,7 @@ void DropDownPane::SetDropDownSelection(_In_opt_z_ LPCTSTR szText)
 			m_DropDown.m_hWnd,
 			WM_SETTEXT,
 			NULL,
-			(LPARAM)szText));
+			(LPARAM)(LPCTSTR)text));
 	}
 }
 

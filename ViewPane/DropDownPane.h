@@ -21,9 +21,9 @@ public:
 	virtual int GetFixedHeight();
 	virtual int GetLines();
 
-	void SetDropDownSelection(_In_opt_z_ LPCTSTR szText);
+	void SetDropDownSelection(_In_ wstring szText);
 
-	void InsertDropString(int iRow, _In_z_ LPCTSTR szText);
+	void InsertDropString(int iRow, _In_ wstring szText);
 	_Check_return_ CString GetDropStringUseControl();
 	_Check_return_ int GetDropDownSelection();
 	_Check_return_ DWORD_PTR GetDropDownSelectionValue();
