@@ -680,9 +680,7 @@ void DoFolderProps(_In_ MYOPTIONS ProgOpts)
 {
 	if (ProgOpts.lpFolder)
 	{
-		ULONG ulPropTag = NULL;
-		(void)PropNameToPropTag(ProgOpts.lpszUnswitchedOption, &ulPropTag);
-		PrintObjectProperties(L"folderprops", ProgOpts.lpFolder, ulPropTag);
+		PrintObjectProperties(L"folderprops", ProgOpts.lpFolder, PropNameToPropTag(ProgOpts.lpszUnswitchedOption));
 	}
 }
 
