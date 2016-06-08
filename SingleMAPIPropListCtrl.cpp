@@ -1572,11 +1572,8 @@ void CSingleMAPIPropListCtrl::OnPasteProperty()
 			WC_H(MyCopyData.DisplayDialog());
 			if (S_OK == hRes)
 			{
-				GUID MyGUID = { 0 };
-				EC_H(StringToGUID(MyCopyData.GetStringW(0), &MyGUID));
-
+				GUID MyGUID = StringToGUID(MyCopyData.GetStringW(0));
 				LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIProp::CopyProps"), m_lpHostDlg->m_hWnd); // STRING_OK
-
 				ULONG ulCopyFlags = MyCopyData.GetHex(1);
 
 				if (lpProgress)
@@ -1855,9 +1852,7 @@ void CSingleMAPIPropListCtrl::OnPasteNamedProps()
 		{
 			ULONG ulObjType = 0;
 			LPMAPIPROP lpSource = NULL;
-			GUID propSetGUID = { 0 };
-
-			EC_H(StringToGUID(MyData.GetStringW(0), &propSetGUID));
+			GUID propSetGUID = StringToGUID(MyData.GetStringW(0));
 
 			if (S_OK == hRes)
 			{

@@ -157,36 +157,6 @@ _Check_return_ HRESULT Base64Encode(size_t cbSourceBuf, _In_count_(cbSourceBuf) 
 	return hRes;
 }
 
-_Check_return_ HRESULT StringToGUID(_In_ wstring szGUID, _Inout_ LPGUID lpGUID)
-{
-	return StringToGUID(szGUID, false, lpGUID);
-}
-
-_Check_return_ HRESULT StringToGUID(_In_ wstring szGUID, bool bByteSwapped, _Inout_ LPGUID lpGUID)
-{
-	HRESULT hRes = S_OK;
-	if (szGUID.empty() || !lpGUID) return MAPI_E_INVALID_PARAMETER;
-
-	// Now we use MyBinFromHex to do the work.
-	vector<BYTE> bin = HexStringToBin(szGUID);
-	lpGUID = (LPGUID)ByteVectorToLPBYTE(bin);
-
-	// Note that we get the bByteSwapped behavior by default. We have to work to get the 'normal' behavior
-	if (!bByteSwapped && lpGUID != NULL)
-	{
-		LPBYTE lpByte = (LPBYTE)lpGUID;
-		BYTE bByte = 0;
-		bByte = lpByte[0];
-		lpByte[0] = lpByte[3];
-		lpByte[3] = bByte;
-		bByte = lpByte[1];
-		lpByte[1] = lpByte[2];
-		lpByte[2] = bByte;
-	}
-
-	return hRes;
-}
-
 wstring CurrencyToString(CURRENCY curVal)
 {
 	wstring szCur = format(L"%05I64d", curVal.int64); // STRING_OK

@@ -1115,7 +1115,7 @@ _Check_return_ bool CEditor::GetBinaryUseControl(ULONG i, _Out_ size_t* cbBin, _
 	*cbBin = NULL;
 	*lpBin = NULL;
 
-	wstring szString = LPCSTRToWstring(GetStringUseControl(i));
+	wstring szString = LPCTSTRToWstring(GetStringUseControl(i));
 	vector<BYTE> bin = HexStringToBin(szString);
 	if (bin.empty()) return false;
 
@@ -1155,17 +1155,17 @@ _Check_return_ HRESULT CEditor::GetEntryID(ULONG i, bool bIsBase64, _Out_ size_t
 	*lppEID = NULL;
 
 	HRESULT hRes = S_OK;
-	LPCTSTR szString = GetString(i);
+	wstring szString = GetStringW(i);
 
-	if (szString)
+	if (!szString.empty())
 	{
 		if (bIsBase64) // entry was BASE64 encoded
 		{
-			EC_H(Base64Decode(szString, lpcbBin, (LPBYTE*)lppEID));
+			EC_H(Base64Decode(wstringToCString(szString), lpcbBin, (LPBYTE*)lppEID));
 		}
 		else // Entry was hexized string
 		{
-			vector<BYTE> bin = HexStringToBin(LPCSTRToWstring(szString));
+			vector<BYTE> bin = HexStringToBin(szString);
 			*lppEID = (LPENTRYID)ByteVectorToLPBYTE(bin);
 			*lpcbBin = bin.size();
 		}

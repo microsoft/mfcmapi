@@ -399,7 +399,9 @@ bool stripPrefix(wstring& str, wstring prefix)
 	return false;
 }
 
-vector<BYTE> HexStringToBin(_In_ wstring lpsz)
+// Converts hex string in lpsz to a binary buffer.
+// If cbTarget != 0, caps the number of bytes converted at cbTarget
+vector<BYTE> HexStringToBin(_In_ wstring lpsz, size_t cbTarget)
 {
 	// remove junk
 	WCHAR szJunk[] = L"\r\n\t -.,\\/'{}`\""; // STRING_OK
@@ -414,16 +416,19 @@ vector<BYTE> HexStringToBin(_In_ wstring lpsz)
 		stripPrefix(lpsz, L"x") ||
 		stripPrefix(lpsz, L"X");
 
-	size_t iCur = 0;
-	WCHAR szTmp[3] = { 0 };
 	size_t cchStrLen = lpsz.length();
-	vector<BYTE> lpb;
 
 	// We have a clean string now. If it's of odd length, we're done.
 	if (cchStrLen % 2 != 0) return vector<BYTE>();
 
+	
+	vector<BYTE> lpb;
+	WCHAR szTmp[3] = { 0 };
+	size_t iCur = 0;
+	size_t cbConverted = 0;
+
 	// convert two characters at a time
-	while (iCur < cchStrLen)
+	while (iCur < cchStrLen && cbConverted < cbTarget)
 	{
 		// Check for valid hex characters
 		if (!isxdigit(lpsz[iCur]) || !isxdigit(lpsz[iCur + 1]))
@@ -435,6 +440,7 @@ vector<BYTE> HexStringToBin(_In_ wstring lpsz)
 		szTmp[1] = lpsz[iCur + 1];
 		lpb.push_back((BYTE)wcstol(szTmp, NULL, 16));
 		iCur += 2;
+		cbConverted++;
 	}
 
 	return lpb;

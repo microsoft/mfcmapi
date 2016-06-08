@@ -97,7 +97,7 @@ HRESULT HrMAPIOpenStoreAndFolder(
 			if (bin.size() > 1 && bin.data() != NULL)
 			{
 				SBinary Bin = { 0 };
-				Bin.cb = bin.size();
+				Bin.cb = static_cast<ULONG>(bin.size());
 				Bin.lpb = bin.data();
 				WC_H(CallOpenMsgStore(
 					lpMAPISession,

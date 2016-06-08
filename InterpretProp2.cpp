@@ -289,7 +289,6 @@ wstring GUIDToStringAndName(_In_opt_ LPCGUID lpGUID)
 
 LPCGUID GUIDNameToGUID(_In_ wstring szGUID, bool bByteSwapped)
 {
-	HRESULT hRes = S_OK;
 	LPGUID lpGuidRet = NULL;
 	LPCGUID lpGUID = NULL;
 	GUID guid = { 0 };
@@ -311,10 +310,8 @@ LPCGUID GUIDNameToGUID(_In_ wstring szGUID, bool bByteSwapped)
 
 	if (!lpGUID) // no match - try it like a guid {}
 	{
-		hRes = S_OK;
-		WC_H(StringToGUID(szGUID, bByteSwapped, &guid));
-
-		if (SUCCEEDED(hRes))
+		guid = StringToGUID(szGUID, bByteSwapped);
+		if (guid != GUID_NULL)
 		{
 			lpGUID = &guid;
 		}
@@ -330,6 +327,39 @@ LPCGUID GUIDNameToGUID(_In_ wstring szGUID, bool bByteSwapped)
 	}
 
 	return lpGuidRet;
+}
+
+_Check_return_ GUID StringToGUID(_In_ wstring szGUID)
+{
+	return StringToGUID(szGUID, false);
+}
+
+_Check_return_ GUID StringToGUID(_In_ wstring szGUID, bool bByteSwapped)
+{
+	GUID guid = GUID_NULL;
+	if (szGUID.empty()) return guid;
+
+	// Now we use MyBinFromHex to do the work.
+	vector<BYTE> bin = HexStringToBin(szGUID, sizeof(GUID));
+	if (bin.size() == sizeof(GUID))
+	{
+		memcpy(&guid, bin.data(), sizeof(GUID));
+
+		// Note that we get the bByteSwapped behavior by default. We have to work to get the 'normal' behavior
+		if (!bByteSwapped)
+		{
+			LPBYTE lpByte = (LPBYTE)&guid;
+			BYTE bByte = 0;
+			bByte = lpByte[0];
+			lpByte[0] = lpByte[3];
+			lpByte[3] = bByte;
+			bByte = lpByte[1];
+			lpByte[1] = lpByte[2];
+			lpByte[2] = bByte;
+		}
+	}
+
+	return guid;
 }
 
 // Returns string built from NameIDArray
@@ -374,7 +404,7 @@ wstring NameIDToPropName(_In_ LPMAPINAMEID lpNameID)
 	return szResultString;
 }
 
-_Check_return_ wstring InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, wstring szPrefix);
+//_Check_return_ wstring InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, wstring szPrefix);
 
 // Interprets a flag value according to a flag name and returns a string
 // Will not return a string if the flag name is not recognized
