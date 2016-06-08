@@ -65,7 +65,7 @@ wstring BinToTextString(_In_ LPSBinary lpBin, bool bMultiLine)
 	return szBin;
 }
 
-wstring MyHexFromBin(_In_opt_count_(cb) LPBYTE lpb, size_t cb, bool bPrependCB)
+wstring BinToHexString(_In_opt_count_(cb) LPBYTE lpb, size_t cb, bool bPrependCB)
 {
 	wstring lpsz;
 
@@ -100,7 +100,7 @@ wstring BinToHexString(_In_opt_ LPSBinary lpBin, bool bPrependCB)
 {
 	if (!lpBin) return L"";
 
-	return MyHexFromBin(
+	return BinToHexString(
 		lpBin->lpb,
 		lpBin->cb,
 		bPrependCB);

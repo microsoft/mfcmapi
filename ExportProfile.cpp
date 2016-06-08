@@ -5,6 +5,7 @@
 #include "MAPIProfileFunctions.h"
 #include "MAPIFunctions.h"
 #include "InterpretProp2.h"
+#include "ParseProperty.h"
 
 void ExportProfileSection(FILE* fProfile, LPPROFSECT lpSect, LPSBinary lpSectBin)
 {
@@ -24,14 +25,13 @@ void ExportProfileSection(FILE* fProfile, LPPROFSECT lpSect, LPSBinary lpSectBin
 	}
 	else if (lpAllProps)
 	{
-		LPTSTR szBin = NULL;
+		wstring szBin;
 		if (lpSectBin)
 		{
-			MyHexFromBin(lpSectBin->lpb, lpSectBin->cb, false, &szBin);
+			szBin = BinToHexString(lpSectBin, false);
 		}
-		OutputToFilef(fProfile, L"<properties listtype=\"profilesection\" profilesection=\"%ws\">\n", LPCTSTRToWstring(szBin).c_str());
 
-		delete[] szBin;
+		OutputToFilef(fProfile, L"<properties listtype=\"profilesection\" profilesection=\"%ws\">\n", szBin.c_str());
 
 		OutputPropertiesToFile(fProfile, cValues, lpAllProps, NULL, false);
 

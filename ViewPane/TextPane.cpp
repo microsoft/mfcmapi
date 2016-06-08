@@ -4,6 +4,7 @@
 #include "..\MAPIFunctions.h"
 #include "..\String.h"
 #include "..\UIFunctions.h"
+#include "..\ParseProperty.h"
 
 static wstring CLASS = L"TextPane";
 
@@ -61,7 +62,6 @@ ViewPane* CreateSingleLinePaneID(UINT uidLabel, UINT uidVal, bool bReadOnly)
 }
 
 // Imports binary data from a stream, converting it to hex format before returning
-// Incorporates a custom version of MyHexFromBin to minimize new/delete
 _Check_return_ static DWORD CALLBACK EditStreamReadCallBack(
 	DWORD_PTR dwCookie,
 	_In_ LPBYTE pbBuff,
@@ -378,20 +378,12 @@ void TextPane::SetStringW(_In_opt_z_ LPCWSTR szMsg, size_t cchsz)
 
 void TextPane::SetBinary(_In_opt_count_(cb) LPBYTE lpb, size_t cb)
 {
-	LPTSTR lpszStr = NULL;
-	MyHexFromBin(
+	wstring lpszStr = BinToHexString(
 		lpb,
 		cb,
-		false,
-		&lpszStr);
+		false);
 
-	// If lpszStr happens to be NULL, SetString will deal with it
-#ifdef UNICODE
-	SetStringW(lpszStr);
-#else
-	SetStringA(lpszStr);
-#endif
-	delete[] lpszStr;
+	SetStringW(lpszStr.c_str());
 }
 
 // This is used by the DbgView - don't call any debugger functions here!!!
