@@ -13,6 +13,7 @@
 #include "NamedPropCache.h"
 #include "SmartView\SmartView.h"
 #include "TagArrayEditor.h"
+#include "ParseProperty.h"
 
 // I don't use MAPIOID.h, which is needed to deal with PR_ATTACH_TAG, but if I did, here's how to include it
 /*
@@ -1369,93 +1370,6 @@ _Check_return_ HRESULT ManuallyEmptyFolder(_In_ LPMAPIFOLDER lpFolder, BOOL bAss
 	return hRes;
 } // ManuallyEmptyFolder
 
-// Count of characters in 'cb:  lpb: '
-#define CBPREPEND 10
-// returns pointer to a string
-// delete with delete[]
-void MyHexFromBin(_In_opt_count_(cb) LPBYTE lpb, size_t cb, bool bPrependCB, _Deref_out_opt_z_ LPTSTR* lpsz)
-{
-	ULONG i = 0;
-	if (!lpsz)
-	{
-		DebugPrint(DBGGeneric, L"MyHexFromBin called with null lpsz\n");
-		return;
-	}
-	*lpsz = NULL;
-	if (!bPrependCB && (!lpb || !cb))
-	{
-		DebugPrint(DBGGeneric, L"MyHexFromBin called with null lpb or null cb\n");
-		return;
-	}
-	size_t cchOut = 1;
-
-	// We might be given a cb without an lpb. We want to print the count, but won't need space for the string.
-	if (lpb) cchOut += 2 * cb;
-
-	ULONG cchCB = 0;
-	if (bPrependCB)
-	{
-		size_t cbTemp = cb;
-		cchOut += CBPREPEND;
-
-		// Account for 0 and 'NULL'
-		if (!cb)
-		{
-			cchCB = 1;
-		}
-		if (!cb || !lpb)
-		{
-			cchOut += 4;
-		}
-
-		// Count how many digits we need for cb
-		while (cbTemp > 0)
-		{
-			cbTemp /= 10;
-			cchCB += 1;
-		}
-		cchOut += cchCB;
-	}
-
-	*lpsz = new TCHAR[cchOut];
-	if (*lpsz)
-	{
-		TCHAR* lpszCur = *lpsz;
-		memset(*lpsz, 0, cchOut);
-		if (bPrependCB)
-		{
-			StringCchPrintf(*lpsz, cchOut, _T("cb: %u lpb: "), (UINT)cb); // STRING_OK
-			lpszCur += CBPREPEND + cchCB;
-		}
-		if (!cb || !lpb)
-		{
-			memcpy(lpszCur, _T("NULL"), 4 * sizeof(TCHAR)); // STRING_OK
-			lpszCur += 4;
-		}
-		else
-		{
-			for (i = 0; i < cb; i++)
-			{
-				BYTE bLow;
-				BYTE bHigh;
-				TCHAR szLow;
-				TCHAR szHigh;
-
-				bLow = (BYTE)((lpb[i]) & 0xf);
-				bHigh = (BYTE)((lpb[i] >> 4) & 0xf);
-				szLow = (TCHAR)((bLow <= 0x9) ? _T('0') + bLow : _T('A') + bLow - 0xa);
-				szHigh = (TCHAR)((bHigh <= 0x9) ? _T('0') + bHigh : _T('A') + bHigh - 0xa);
-
-				*lpszCur = szHigh;
-				lpszCur++;
-				*lpszCur = szLow;
-				lpszCur++;
-			}
-		}
-		*lpszCur = _T('\0');
-	}
-} // MyHexFromBin
-
 // Pass NULL for lpb and a pointer to a count to find out how much memory to allocate
 // Returns false if the string cannot be converted
 // If lpb is passed, lpcb must point to the size in bytes of lpb
@@ -2450,14 +2364,12 @@ wstring DecodeID(ULONG cbBuffer, _In_count_(cbBuffer) LPBYTE lpbBuffer)
 		*lpDst = (BYTE)(*lpwzSrc - kwBaseOffset);
 	}
 
-	LPTSTR szBin = NULL;
-	MyHexFromBin(
+	wstring szBin = BinToHexString(
 		lpDecoded,
 		cbDecodedBuffer,
-		true,
-		&szBin);
+		true);
 	delete[] lpDecoded;
-	return LPCTSTRToWstring(szBin);
+	return szBin;
 }
 
 HRESULT HrEmsmdbUIDFromStore(_In_ LPMAPISESSION pmsess,

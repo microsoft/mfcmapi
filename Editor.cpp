@@ -1358,7 +1358,6 @@ _Check_return_ ULONG CEditor::GetPropTag(ULONG i)
 {
 	if (!IsValidEdit(i)) return 0;
 
-	ULONG ulPropTag = NULL;
 	ULONG ulTag = PropNameToPropTag(m_lpControls[i].lpTextPane->GetStringW());
 
 	// Figure if this is a full tag or just an ID

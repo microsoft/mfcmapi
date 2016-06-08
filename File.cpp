@@ -12,30 +12,24 @@
 #include "MFCUtilityFunctions.h"
 #include <shlobj.h>
 #include "Dumpstore.h"
+#include "ParseProperty.h"
 
 // Add current Entry ID to file name
 _Check_return_ HRESULT AppendEntryID(_Inout_z_count_(cchFileName) LPWSTR szFileName, size_t cchFileName, _In_ LPSBinary lpBin, size_t cchMaxAppend)
 {
 	HRESULT hRes = S_OK;
-	LPTSTR szBin = NULL;
-
 	if (!lpBin || !lpBin->cb || !szFileName || cchMaxAppend <= 1) return MAPI_E_INVALID_PARAMETER;
 
-	MyHexFromBin(
-		lpBin->lpb,
-		lpBin->cb,
-		false,
-		&szBin);
+	wstring szBin = BinToHexString(lpBin, false);
 
-	if (szBin)
+	if (!szBin.empty())
 	{
 		EC_H(StringCchCatNW(szFileName, cchFileName, L"_", 1)); // STRING_OK
-		EC_H(StringCchCatNW(szFileName, cchFileName, LPCTSTRToWstring(szBin).c_str(), cchMaxAppend - 1));
-		delete[] szBin;
+		EC_H(StringCchCatNW(szFileName, cchFileName, szBin.c_str(), cchMaxAppend - 1));
 	}
 
 	return hRes;
-} // AppendEntryID
+}
 
 _Check_return_ HRESULT GetDirectoryPath(HWND hWnd, _Inout_z_ LPWSTR szPath)
 {
@@ -894,20 +888,20 @@ _Check_return_ HRESULT SaveToTNEF(_In_ LPMESSAGE lpMessage, _In_ LPADRBOOK lpAdr
 				0,
 				NULL,
 				(LPSPropTagArray)&lpPropTnefExcludeArray
-				));
+			));
 			EC_MAPI(lpTNEF->AddProps(
 				TNEF_PROP_EXCLUDE | TNEF_PROP_ATTACHMENTS_ONLY,
 				0,
 				NULL,
 				(LPSPropTagArray)&lpPropTnefExcludeArray
-				));
+			));
 
 			EC_MAPI(lpTNEF->AddProps(
 				TNEF_PROP_INCLUDE,
 				0,
 				NULL,
 				(LPSPropTagArray)&lpPropTnefIncludeArray
-				));
+			));
 
 			EC_MAPI(lpTNEF->Finish(0, &dwKey, &lpError));
 
