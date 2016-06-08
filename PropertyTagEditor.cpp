@@ -238,7 +238,7 @@ _Check_return_ ULONG CPropertyTagEditor::GetSelectedPropType()
 {
 	if (!IsValidDropDown(PROPTAG_TYPE)) return PT_NULL;
 
-	CString szType;
+	wstring szType;
 	int iCurSel = 0;
 	iCurSel = GetDropDownSelection(PROPTAG_TYPE);
 	if (iCurSel != CB_ERR)
@@ -250,7 +250,7 @@ _Check_return_ ULONG CPropertyTagEditor::GetSelectedPropType()
 		szType = GetDropStringUseControl(PROPTAG_TYPE);
 	}
 
-	return PropTypeNameToPropType(LPCTSTRToWstring(szType));
+	return PropTypeNameToPropType(szType);
 }
 
 _Check_return_ ULONG CPropertyTagEditor::HandleChange(UINT nID)
@@ -404,7 +404,7 @@ void CPropertyTagEditor::SetDropDownSelection(ULONG i, _In_ wstring szText)
 	}
 }
 
-_Check_return_ CString CPropertyTagEditor::GetDropStringUseControl(ULONG iControl)
+_Check_return_ wstring CPropertyTagEditor::GetDropStringUseControl(ULONG iControl)
 {
 	if (IsValidDropDown(iControl))
 	{
@@ -414,7 +414,8 @@ _Check_return_ CString CPropertyTagEditor::GetDropStringUseControl(ULONG iContro
 			return lpPane->GetDropStringUseControl();
 		}
 	}
-	return _T("");
+
+	return emptystring;
 }
 
 _Check_return_ int CPropertyTagEditor::GetDropDownSelection(ULONG iControl)
@@ -427,6 +428,7 @@ _Check_return_ int CPropertyTagEditor::GetDropDownSelection(ULONG iControl)
 			return lpPane->GetDropDownSelection();
 		}
 	}
+
 	return CB_ERR;
 }
 
@@ -477,7 +479,6 @@ BOOL CPropertySelector::OnInitDialog()
 
 	if (IsValidList(0))
 	{
-		CString szTmp;
 		SortListData* lpData = NULL;
 		ULONG i = 0;
 		InsertColumn(0, 1, IDS_PROPERTYNAMES);
@@ -497,8 +498,7 @@ BOOL CPropertySelector::OnInitDialog()
 				lpData->bItemFullyLoaded = true;
 			}
 
-			szTmp.Format(_T("0x%08X"), PropTagArray[i].ulValue); // STRING_OK
-			SetListString(0, ulCurRow, 1, szTmp);
+			SetListStringW(0, ulCurRow, 1, format(L"0x%08X", PropTagArray[i].ulValue).c_str()); // STRING_OK
 			SetListStringW(0, ulCurRow, 2, TypeToString(PropTagArray[i].ulValue).c_str());
 			ulCurRow++;
 		}

@@ -202,12 +202,12 @@ void DropDownPane::CommitUIValues()
 	m_bInitialized = false; // must be last
 }
 
-_Check_return_ CString DropDownPane::GetDropStringUseControl()
+_Check_return_ wstring DropDownPane::GetDropStringUseControl()
 {
 	CString szText;
 	m_DropDown.GetWindowText(szText);
 
-	return szText;
+	return LPCTSTRToWstring(szText);
 }
 
 // This should work whether the editor is active/displayed or not
@@ -261,18 +261,18 @@ _Check_return_ bool DropDownPane::GetSelectedGUID(bool bByteSwapped, _In_ LPGUID
 	else
 	{
 		// no match - need to do a lookup
-		CString szText;
+		wstring szText;
 		if (m_bInitialized)
 		{
 			szText = GetDropStringUseControl();
 		}
 
-		if (szText.IsEmpty())
+		if (szText.empty())
 		{
 			szText = m_lpszSelectionString;
 		}
 
-		LPCGUID lpGUID = GUIDNameToGUID(LPCTSTRToWstring(szText).c_str(), bByteSwapped);
+		LPCGUID lpGUID = GUIDNameToGUID(szText, bByteSwapped);
 		memcpy(lpSelectedGUID, lpGUID, sizeof(GUID));
 		delete[] lpGUID;
 		return true;

@@ -24,7 +24,7 @@ public:
 	void SetDropDownSelection(_In_ wstring szText);
 
 	void InsertDropString(int iRow, _In_ wstring szText);
-	_Check_return_ CString GetDropStringUseControl();
+	_Check_return_ wstring GetDropStringUseControl();
 	_Check_return_ int GetDropDownSelection();
 	_Check_return_ DWORD_PTR GetDropDownSelectionValue();
 	_Check_return_ bool GetSelectedGUID(bool bByteSwapped, _In_ LPGUID lpSelectedGUID);
@@ -42,6 +42,6 @@ private:
 	ULONG m_ulDropList; // count of entries in szDropList
 	LPNAME_ARRAY_ENTRY m_lpnaeDropList;
 	int m_iDropSelection;
-	CString m_lpszSelectionString;
+	wstring m_lpszSelectionString;
 	bool m_bGUID;
 };

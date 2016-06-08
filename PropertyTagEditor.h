@@ -21,20 +21,20 @@ public:
 
 private:
 	_Check_return_ ULONG HandleChange(UINT nID);
-	void  OnEditAction1();
-	void  OnEditAction2();
-	BOOL  OnInitDialog();
-	void  PopulateFields(ULONG ulSkipField);
+	void OnEditAction1();
+	void OnEditAction2();
+	BOOL OnInitDialog();
+	void PopulateFields(ULONG ulSkipField);
 	_Check_return_ ULONG GetSelectedPropType();
-	void  LookupNamedProp(ULONG ulSkipField, bool bCreate);
-	_Check_return_ CString GetDropStringUseControl(ULONG iControl);
+	void LookupNamedProp(ULONG ulSkipField, bool bCreate);
+	_Check_return_ wstring GetDropStringUseControl(ULONG iControl);
 	_Check_return_ int GetDropDownSelection(ULONG iControl);
 	void InsertDropString(ULONG iControl, int iRow, _In_ wstring szText);
 	void SetDropDownSelection(ULONG i, _In_ wstring szText);
 
-	ULONG		m_ulPropTag;
-	bool		m_bIsAB;
-	LPMAPIPROP	m_lpMAPIProp;
+	ULONG m_ulPropTag;
+	bool m_bIsAB;
+	LPMAPIPROP m_lpMAPIProp;
 };
 
 class CPropertySelector : public CEditor
@@ -54,7 +54,7 @@ private:
 	void OnOK();
 	_Check_return_ SortListData* GetSelectedListRowData(ULONG iControl);
 
-	ULONG		m_ulPropTag;
-	bool		m_bIncludeABProps;
-	LPMAPIPROP	m_lpMAPIProp;
+	ULONG m_ulPropTag;
+	bool m_bIncludeABProps;
+	LPMAPIPROP m_lpMAPIProp;
 };
