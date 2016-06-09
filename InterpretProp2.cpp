@@ -339,7 +339,6 @@ _Check_return_ GUID StringToGUID(_In_ wstring szGUID, bool bByteSwapped)
 	GUID guid = GUID_NULL;
 	if (szGUID.empty()) return guid;
 
-	// Now we use MyBinFromHex to do the work.
 	vector<BYTE> bin = HexStringToBin(szGUID, sizeof(GUID));
 	if (bin.size() == sizeof(GUID))
 	{

@@ -503,8 +503,6 @@ void CPropertyEditor::InitPropertyControls()
 void CPropertyEditor::WriteStringsToSPropValue()
 {
 	HRESULT hRes = S_OK;
-	CString szTmpString;
-	ULONG cbBin = NULL;
 
 	// Check first if we'll have anything to write
 	switch (PROP_TYPE(m_ulPropTag))
@@ -513,26 +511,6 @@ void CPropertyEditor::WriteStringsToSPropValue()
 	case PT_SRESTRICTION:
 	case PT_ACTIONS:
 		return;
-	case PT_BINARY:
-		// Check that we've got valid hex string before we allocate anything. Note that we're
-		// reading szTmpString now and will assume it's read when we get to the real PT_BINARY case
-		szTmpString = GetStringUseControl(0);
-		if (!MyBinFromHex(
-			(LPCTSTR)szTmpString,
-			NULL,
-			&cbBin)) return;
-		break;
-	case PT_STRING8:
-	case PT_UNICODE:
-		// Check that we've got valid hex string before we allocate anything. Note that we're
-		// reading szTmpString now and will assume it's read when we get to the real PT_STRING8/PT_UNICODE cases
-		szTmpString = GetStringUseControl(1);
-		if (!MyBinFromHex(
-			(LPCTSTR)szTmpString,
-			NULL,
-			&cbBin)) return;
-		if (PROP_TYPE(m_ulPropTag) == PT_UNICODE && cbBin & 1) return;
-		break;
 	default: break;
 	}
 
@@ -572,6 +550,8 @@ void CPropertyEditor::WriteStringsToSPropValue()
 		bool bVal = false;
 		LARGE_INTEGER liVal = { 0 };
 		FILETIME ftVal = { 0 };
+		vector<BYTE> bin;
+		CString szTmpString;
 
 		switch (PROP_TYPE(m_ulPropTag))
 		{
@@ -609,7 +589,7 @@ void CPropertyEditor::WriteStringsToSPropValue()
 			break;
 		case PT_ERROR: // unsigned
 			szTmpString = GetStringUseControl(0);
-			errVal = static_cast<SCODE>(CStringToUlong(szTmpString,  16));
+			errVal = static_cast<SCODE>(CStringToUlong(szTmpString, 16));
 			m_lpsOutputValue->Value.err = errVal;
 			break;
 		case PT_BOOLEAN:
@@ -626,42 +606,16 @@ void CPropertyEditor::WriteStringsToSPropValue()
 		case PT_STRING8:
 			// We read strings out of the hex control in order to preserve any hex level tweaks the user
 			// may have done. The RichEdit control likes throwing them away.
-			m_lpsOutputValue->Value.lpszA = NULL;
-
-			EC_H(MAPIAllocateMore(
-				cbBin + sizeof(char), // NULL terminator
-				m_lpAllocParent,
-				(LPVOID*)&m_lpsOutputValue->Value.lpszA));
-			if (FAILED(hRes)) bFailed = true;
-			else
-			{
-				EC_B(MyBinFromHex(
-					(LPCTSTR)szTmpString,
-					(LPBYTE)m_lpsOutputValue->Value.lpszA,
-					&cbBin));
-				m_lpsOutputValue->Value.lpszA[cbBin] = NULL;
-			}
-
+			szTmpString = GetStringUseControl(1);
+			bin = HexStringToBin(LPCTSTRToWstring(szTmpString));
+			m_lpsOutputValue->Value.lpszA = (LPSTR)ByteVectorToMAPI(bin, m_lpAllocParent);
 			break;
 		case PT_UNICODE:
 			// We read strings out of the hex control in order to preserve any hex level tweaks the user
 			// may have done. The RichEdit control likes throwing them away.
-			m_lpsOutputValue->Value.lpszW = NULL;
-
-			EC_H(MAPIAllocateMore(
-				cbBin + sizeof(WCHAR), // NULL terminator
-				m_lpAllocParent,
-				(LPVOID*)&m_lpsOutputValue->Value.lpszW));
-			if (FAILED(hRes)) bFailed = true;
-			else
-			{
-				EC_B(MyBinFromHex(
-					(LPCTSTR)szTmpString,
-					(LPBYTE)m_lpsOutputValue->Value.lpszW,
-					&cbBin));
-				m_lpsOutputValue->Value.lpszW[cbBin / sizeof(WCHAR)] = NULL;
-			}
-
+			szTmpString = GetStringUseControl(1);
+			bin = HexStringToBin(LPCTSTRToWstring(szTmpString));
+			m_lpsOutputValue->Value.lpszW = (LPWSTR)ByteVectorToMAPI(bin, m_lpAllocParent);
 			break;
 		case PT_SYSTIME:
 			szTmpString = GetStringUseControl(0);
@@ -683,27 +637,10 @@ void CPropertyEditor::WriteStringsToSPropValue()
 			break;
 		case PT_BINARY:
 			// remember we already read szTmpString and ulStrLen and found ulStrLen was even
-			m_lpsOutputValue->Value.bin.cb = cbBin;
-			if (0 == m_lpsOutputValue->Value.bin.cb)
-			{
-				m_lpsOutputValue->Value.bin.lpb = 0;
-			}
-			else
-			{
-				EC_H(MAPIAllocateMore(
-					m_lpsOutputValue->Value.bin.cb,
-					m_lpAllocParent,
-					(LPVOID*)&m_lpsOutputValue->Value.bin.lpb));
-				if (FAILED(hRes)) bFailed = true;
-				else
-				{
-					EC_B(MyBinFromHex(
-						(LPCTSTR)szTmpString,
-						m_lpsOutputValue->Value.bin.lpb,
-						&m_lpsOutputValue->Value.bin.cb));
-				}
-			}
-
+			szTmpString = GetStringUseControl(0);
+			bin = HexStringToBin(LPCTSTRToWstring(szTmpString));
+			m_lpsOutputValue->Value.bin.lpb = ByteVectorToMAPI(bin, m_lpAllocParent);
+			m_lpsOutputValue->Value.bin.cb = (ULONG)bin.size();
 			break;
 		default:
 			// We shouldn't ever get here unless some new prop type shows up

@@ -40,4 +40,4 @@ wstring BinToTextString(_In_ LPSBinary lpBin, bool bMultiLine);
 wstring BinToHexString(_In_opt_count_(cb) LPBYTE lpb, size_t cb, bool bPrependCB);
 wstring BinToHexString(_In_opt_ LPSBinary lpBin, bool bPrependCB);
 vector<BYTE> HexStringToBin(_In_ wstring lpsz, size_t cbTarget = 0);
-LPBYTE ByteVectorToLPBYTE(vector<BYTE> bin);
+LPBYTE ByteVectorToLPBYTE(vector<BYTE>& bin);

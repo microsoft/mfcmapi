@@ -57,7 +57,7 @@ _Check_return_ HRESULT GetSpecialFolderEID(_In_ LPMDB lpMDB, ULONG ulFolderPropT
 _Check_return_ HRESULT IsAttachmentBlocked(_In_ LPMAPISESSION lpMAPISession, _In_z_ LPCWSTR pwszFileName, _Out_ bool* pfBlocked);
 _Check_return_ bool IsDuplicateProp(_In_ LPSPropTagArray lpArray, ULONG ulPropTag);
 _Check_return_ HRESULT ManuallyEmptyFolder(_In_ LPMAPIFOLDER lpFolder, BOOL bAssoc, BOOL bHardDelete);
-_Check_return_ bool MyBinFromHex(_In_z_ LPCTSTR lpsz, _Out_opt_bytecapcount_(*lpcb) LPBYTE lpb, _Inout_ ULONG* lpcb);
+_Check_return_ LPBYTE ByteVectorToMAPI(vector<BYTE>& bin, LPVOID lpParent);
 _Check_return_ HRESULT RemoveOneOff(_In_ LPMESSAGE lpMessage, bool bRemovePropDef);
 _Check_return_ HRESULT ResendMessages(
 	_In_ LPMAPIFOLDER lpFolder,
