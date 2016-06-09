@@ -1489,31 +1489,16 @@ _Check_return_ bool CCriteriaEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 	WC_H(BinEdit.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		szTmp = BinEdit.GetString(0);
-		if (MyBinFromHex(
-			(LPCTSTR)szTmp,
-			NULL,
-			&lpData->data.Binary.NewBin.cb))
+		vector<BYTE> bin = HexStringToBin(BinEdit.GetStringW(0));
+		lpData->data.Binary.NewBin.lpb = ByteVectorToMAPI(bin, m_lpNewEntryList);
+		if (lpData->data.Binary.NewBin.lpb)
 		{
-			// Don't free an existing lpData->data.Binary.NewBin.lpb since it's allocated with MAPIAllocateMore
-			// It'll get freed when we eventually clean up m_lpNewEntryList
-			EC_H(MAPIAllocateMore(
-				lpData->data.Binary.NewBin.cb,
-				m_lpNewEntryList,
-				(LPVOID*)&lpData->data.Binary.NewBin.lpb));
-			if (lpData->data.Binary.NewBin.lpb)
-			{
-				EC_B(MyBinFromHex(
-					(LPCTSTR)szTmp,
-					lpData->data.Binary.NewBin.lpb,
-					&lpData->data.Binary.NewBin.cb));
-
-				szTmp.Format(_T("%u"), lpData->data.Binary.NewBin.cb); // STRING_OK
-				SetListString(ulListNum, iItem, 1, szTmp);
-				SetListStringW(ulListNum, iItem, 2, BinToHexString(&lpData->data.Binary.NewBin, false).c_str());
-				SetListStringW(ulListNum, iItem, 3, BinToTextString(&lpData->data.Binary.NewBin, true).c_str());
-				return true;
-			}
+			lpData->data.Binary.NewBin.cb = bin.size();
+			szTmp.Format(_T("%u"), lpData->data.Binary.NewBin.cb); // STRING_OK
+			SetListString(ulListNum, iItem, 1, szTmp);
+			SetListStringW(ulListNum, iItem, 2, BinToHexString(&lpData->data.Binary.NewBin, false).c_str());
+			SetListStringW(ulListNum, iItem, 3, BinToTextString(&lpData->data.Binary.NewBin, true).c_str());
+			return true;
 		}
 	}
 

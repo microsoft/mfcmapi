@@ -421,14 +421,13 @@ vector<BYTE> HexStringToBin(_In_ wstring lpsz, size_t cbTarget)
 	// We have a clean string now. If it's of odd length, we're done.
 	if (cchStrLen % 2 != 0) return vector<BYTE>();
 
-	
 	vector<BYTE> lpb;
 	WCHAR szTmp[3] = { 0 };
 	size_t iCur = 0;
 	size_t cbConverted = 0;
 
 	// convert two characters at a time
-	while (iCur < cchStrLen && cbConverted < cbTarget)
+	while (iCur < cchStrLen && (cbTarget == 0 || cbConverted < cbTarget))
 	{
 		// Check for valid hex characters
 		if (!isxdigit(lpsz[iCur]) || !isxdigit(lpsz[iCur + 1]))
@@ -447,7 +446,7 @@ vector<BYTE> HexStringToBin(_In_ wstring lpsz, size_t cbTarget)
 }
 
 // Converts byte vector to LPBYTE allocated with new
-LPBYTE ByteVectorToLPBYTE(vector<BYTE> bin)
+LPBYTE ByteVectorToLPBYTE(vector<BYTE>& bin)
 {
 	if (bin.empty()) return NULL;
 

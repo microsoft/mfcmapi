@@ -1369,98 +1369,28 @@ _Check_return_ HRESULT ManuallyEmptyFolder(_In_ LPMAPIFOLDER lpFolder, BOOL bAss
 	return hRes;
 } // ManuallyEmptyFolder
 
-// Pass NULL for lpb and a pointer to a count to find out how much memory to allocate
-// Returns false if the string cannot be converted
-// If lpb is passed, lpcb must point to the size in bytes of lpb
-_Check_return_ bool MyBinFromHex(_In_z_ LPCTSTR lpsz, _Out_opt_bytecapcount_(*lpcb) LPBYTE lpb, _Inout_ ULONG* lpcb)
+// Converts byte vector to LPBYTE allocated with MAPIAllocateMore
+_Check_return_ LPBYTE ByteVectorToMAPI(vector<BYTE>& bin, LPVOID lpParent)
 {
+	if (bin.empty()) return NULL;
+
 	HRESULT hRes = S_OK;
-	size_t cchStrLen = NULL;
-	size_t iCur = 0;
-	ULONG iBinPos = 0;
-	TCHAR szTmp[3] = { 0 };
-	szTmp[2] = 0;
-	TCHAR szJunk[] = _T("\r\n\t -.,\\/'{}`\""); // STRING_OK
+	LPBYTE lpBin = NULL;
 
-	if (!lpcb)
+	// We allocate a couple extra bytes (initialized to NULL) in case this buffer is printed.
+	WC_H(MAPIAllocateMore(
+		bin.size() + sizeof(WCHAR),
+		lpParent,
+		(LPVOID*)&lpBin));
+	if (SUCCEEDED(hRes) && lpBin)
 	{
-		DebugPrint(DBGGeneric, L"MyBinFromHex called with null lpcb\n");
-		return false;
+		memset(lpBin, 0, bin.size() + sizeof(WCHAR));
+		memcpy(lpBin, &bin[0], bin.size());
+		return lpBin;
 	}
 
-	if (!lpb) *lpcb = NULL;
-
-	EC_H(StringCchLength(lpsz, STRSAFE_MAX_CCH, &cchStrLen));
-	if (!lpsz || !cchStrLen)
-	{
-		DebugPrint(DBGGeneric, L"MyBinFromHex called with null lpsz\n");
-		return true; // this is not a failure
-	}
-
-	// Skip leading junk
-	while (lpsz[iCur] && iCur < cchStrLen && _tcschr(szJunk, lpsz[iCur])) iCur++;
-
-	// Skip leading X or 0X
-	if (cchStrLen - iCur > 2 &&
-		lpsz[iCur] == _T('0') &&
-		(lpsz[iCur + 1] == _T('x') || lpsz[iCur + 1] == _T('X')))
-	{
-		iCur += 2;
-	}
-	else if (cchStrLen - iCur > 1 &&
-		lpsz[iCur] == _T('x') || lpsz[iCur] == _T('X'))
-	{
-		iCur++;
-	}
-
-	// We should be at the start of the hex string now
-	// Loop over the characters finding the next two that aren't acceptable junk
-	// If we encounter unacceptable junk, fail.
-
-	// convert two characters at a time
-	int iTmp = 0;
-	while (iCur < cchStrLen)
-	{
-		// Skip acceptable junk characters
-		while (lpsz[iCur] && iCur < cchStrLen && _tcschr(szJunk, lpsz[iCur])) iCur++;
-
-		// End of buffer - stop parsing
-		if (iCur == cchStrLen) break;
-
-		// Check for valid hex characters
-		if (lpsz[iCur] >= '0' && lpsz[iCur] <= '9') {}
-		else if (lpsz[iCur] >= 'A' && lpsz[iCur] <= 'F') {}
-		else if (lpsz[iCur] >= 'a' && lpsz[iCur] <= 'f') {}
-		else
-		{
-			return false;
-		}
-
-		szTmp[iTmp] = lpsz[iCur];
-		iCur++;
-		iTmp++;
-
-		// Every time we read two characters, convert and reset
-		if (iTmp == 2)
-		{
-			if (lpb)
-			{
-				if (iBinPos > *lpcb) return false;
-				lpb[iBinPos] = (BYTE)_tcstol(szTmp, NULL, 16);
-			}
-			iTmp = 0;
-			iBinPos += 1;
-		}
-	}
-
-	// If we got here with no unparsed characters, we won
-	if (iTmp == 0)
-	{
-		if (!lpb) *lpcb = iBinPos;
-		return true;
-	}
-	return false;
-} // MyBinFromHex
+	return NULL;
+}
 
 ULONG aulOneOffIDs[] = { dispidFormStorage,
 dispidPageDirStream,
