@@ -12,26 +12,23 @@
 
 static wstring CLASS = L"CRecipientsDlg";
 
-/////////////////////////////////////////////////////////////////////////////
-// CRecipientsDlg dialog
-
 CRecipientsDlg::CRecipientsDlg(
 	_In_ CParentWnd* pParentWnd,
 	_In_ CMapiObjects* lpMapiObjects,
 	_In_ LPMAPITABLE lpMAPITable,
 	_In_ LPMESSAGE lpMessage
-	) :
+) :
 	CContentsTableDlg(
-	pParentWnd,
-	lpMapiObjects,
-	IDS_RECIPIENTS,
-	mfcmapiDO_NOT_CALL_CREATE_DIALOG,
-	lpMAPITable,
-	(LPSPropTagArray)&sptDEFCols,
-	NUMDEFCOLUMNS,
-	DEFColumns,
-	IDR_MENU_RECIPIENTS_POPUP,
-	MENU_CONTEXT_RECIPIENT_TABLE)
+		pParentWnd,
+		lpMapiObjects,
+		IDS_RECIPIENTS,
+		mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+		lpMAPITable,
+		(LPSPropTagArray)&sptDEFCols,
+		NUMDEFCOLUMNS,
+		DEFColumns,
+		IDR_MENU_RECIPIENTS_POPUP,
+		MENU_CONTEXT_RECIPIENT_TABLE)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	m_lpMessage = lpMessage;
@@ -40,7 +37,7 @@ CRecipientsDlg::CRecipientsDlg(
 	m_bViewRecipientABEntry = false;
 
 	CreateDialogAndMenu(IDR_MENU_RECIPIENTS);
-} // CRecipientsDlg::CRecipientsDlg
+}
 
 CRecipientsDlg::~CRecipientsDlg()
 {
@@ -53,7 +50,7 @@ CRecipientsDlg::~CRecipientsDlg()
 		EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 		m_lpMessage->Release();
 	}
-} // CRecipientsDlg::~CRecipientsDlg
+}
 
 BEGIN_MESSAGE_MAP(CRecipientsDlg, CContentsTableDlg)
 	ON_COMMAND(ID_DELETESELECTEDITEM, OnDeleteSelectedItem)
@@ -78,7 +75,7 @@ void CRecipientsDlg::OnInitMenu(_In_ CMenu* pMenu)
 		pMenu->CheckMenuItem(ID_VIEWRECIPIENTABENTRY, CHECK(m_bViewRecipientABEntry));
 	}
 	CContentsTableDlg::OnInitMenu(pMenu);
-} // CRecipientsDlg::OnInitMenu
+}
 
 _Check_return_ HRESULT CRecipientsDlg::OpenItemProp(
 	int iSelectedItem,
@@ -95,24 +92,24 @@ _Check_return_ HRESULT CRecipientsDlg::OpenItemProp(
 
 	// Do nothing, ensuring we work with the row
 	return S_OK;
-} // CRecipientsDlg::OpenItemProp
+}
 
 void CRecipientsDlg::OnViewRecipientABEntry()
 {
 	m_bViewRecipientABEntry = !m_bViewRecipientABEntry;
 	OnRefreshView();
-} // CRecipientsDlg::OnViewRecipientABEntry
+}
 
 void CRecipientsDlg::OnDeleteSelectedItem()
 {
-	HRESULT		hRes = S_OK;
-	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
+	HRESULT hRes = S_OK;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpMessage || !m_lpContentsTableListCtrl) return;
 
-	int				iItem = -1;
-	SortListData*	lpListData = NULL;
-	LPADRLIST		lpAdrList = NULL;
+	int iItem = -1;
+	SortListData* lpListData = NULL;
+	LPADRLIST lpAdrList = NULL;
 
 	int iNumSelected = m_lpContentsTableListCtrl->GetSelectedCount();
 
@@ -163,12 +160,12 @@ void CRecipientsDlg::OnDeleteSelectedItem()
 			FreePadrlist(lpAdrList);
 		}
 	}
-} // CRecipientsDlg::OnDeleteSelectedItem
+}
 
 void CRecipientsDlg::OnModifyRecipients()
 {
-	HRESULT		hRes = S_OK;
-	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
+	HRESULT hRes = S_OK;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpMessage || !m_lpContentsTableListCtrl || !m_lpPropDisplay) return;
 
@@ -182,7 +179,7 @@ void CRecipientsDlg::OnModifyRecipients()
 
 	if (lpProps)
 	{
-		ADRLIST	adrList = { 0 };
+		ADRLIST adrList = { 0 };
 		adrList.cEntries = 1;
 		adrList.aEntries[0].ulReserved1 = 0;
 		adrList.aEntries[0].cValues = cProps;
@@ -211,12 +208,12 @@ void CRecipientsDlg::OnModifyRecipients()
 
 		OnRefreshView();
 	}
-} // CRecipientsDlg::OnModifyRecipients
+}
 
 void CRecipientsDlg::OnRecipOptions()
 {
-	HRESULT		hRes = S_OK;
-	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
+	HRESULT hRes = S_OK;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpMessage || !m_lpContentsTableListCtrl || !m_lpPropDisplay || !m_lpMapiObjects) return;
 
@@ -276,7 +273,7 @@ void CRecipientsDlg::OnRecipOptions()
 			}
 		}
 	}
-} // CRecipientsDlg::OnRecipOptions
+}
 
 void CRecipientsDlg::OnSaveChanges()
 {
@@ -286,4 +283,4 @@ void CRecipientsDlg::OnSaveChanges()
 
 		EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 	}
-} // CRecipientsDlg::OnSaveChanges
+}

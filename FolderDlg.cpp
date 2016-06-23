@@ -28,26 +28,23 @@
 
 static wstring CLASS = L"CFolderDlg";
 
-/////////////////////////////////////////////////////////////////////////////
-// CFolderDlg dialog
-
 CFolderDlg::CFolderDlg(
 	_In_ CParentWnd* pParentWnd,
 	_In_ CMapiObjects* lpMapiObjects,
 	_In_ LPMAPIFOLDER lpMAPIFolder,
 	ULONG ulDisplayFlags
-	) :
+) :
 	CContentsTableDlg(
-	pParentWnd,
-	lpMapiObjects,
-	IDS_FOLDER,
-	mfcmapiDO_NOT_CALL_CREATE_DIALOG,
-	NULL,
-	(LPSPropTagArray)&sptMSGCols,
-	NUMMSGCOLUMNS,
-	MSGColumns,
-	IDR_MENU_FOLDER_POPUP,
-	MENU_CONTEXT_FOLDER_CONTENTS)
+		pParentWnd,
+		lpMapiObjects,
+		IDS_FOLDER,
+		mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+		NULL,
+		(LPSPropTagArray)&sptMSGCols,
+		NUMMSGCOLUMNS,
+		MSGColumns,
+		IDR_MENU_FOLDER_POPUP,
+		MENU_CONTEXT_FOLDER_CONTENTS)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	m_ulDisplayFlags = ulDisplayFlags;
@@ -56,12 +53,12 @@ CFolderDlg::CFolderDlg(
 	if (m_lpContainer) m_lpContainer->AddRef();
 
 	CreateDialogAndMenu(IDR_MENU_FOLDER);
-} // CFolderDlg::CFolderDlg
+}
 
 CFolderDlg::~CFolderDlg()
 {
 	TRACE_DESTRUCTOR(CLASS);
-} // CFolderDlg::~CFolderDlg
+}
 
 _Check_return_ bool CFolderDlg::HandleMenu(WORD wMenuSelect)
 {
@@ -110,18 +107,18 @@ _Check_return_ bool CFolderDlg::HandleMenu(WORD wMenuSelect)
 	if (MultiSelectComplex(wMenuSelect)) return true;
 
 	return CContentsTableDlg::HandleMenu(wMenuSelect);
-} // CFolderDlg::HandleMenu
+}
 
 typedef HRESULT(CFolderDlg::* LPSIMPLEMULTI)
 (
-int				iItem,
-SortListData*	lpData
-);
+	int iItem,
+	SortListData* lpData
+	);
 
 _Check_return_ bool CFolderDlg::MultiSelectSimple(WORD wMenuSelect)
 {
-	LPSIMPLEMULTI	lpFunc = NULL;
-	HRESULT			hRes = S_OK;
+	LPSIMPLEMULTI lpFunc = NULL;
+	HRESULT hRes = S_OK;
 
 	if (m_lpContentsTableListCtrl)
 	{
@@ -157,7 +154,7 @@ _Check_return_ bool CFolderDlg::MultiSelectSimple(WORD wMenuSelect)
 		}
 		if (lpFunc)
 		{
-			SortListData*	lpData = 0;
+			SortListData* lpData = 0;
 			int iItem = m_lpContentsTableListCtrl->GetNextItem(
 				-1,
 				LVNI_SELECTED);
@@ -178,7 +175,7 @@ _Check_return_ bool CFolderDlg::MultiSelectSimple(WORD wMenuSelect)
 		}
 	}
 	return false;
-} // CFolderDlg::MultiSelectSimple
+}
 
 _Check_return_ bool CFolderDlg::MultiSelectComplex(WORD wMenuSelect)
 {
@@ -195,7 +192,7 @@ _Check_return_ bool CFolderDlg::MultiSelectComplex(WORD wMenuSelect)
 	case ID_DELETEATTACHMENTS: OnDeleteAttachments(); return true;
 	}
 	return false;
-} // CFolderDlg::MultiSelectComplex
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // CFolderDlg message handlers
@@ -226,13 +223,13 @@ void CFolderDlg::OnDisplayItem()
 			lpMAPIProp = NULL;
 		}
 	} while (iItem != -1);
-} // CFolderDlg::OnDisplayItem
+}
 
 void CFolderDlg::OnInitMenu(_In_ CMenu* pMenu)
 {
 	if (pMenu && m_lpContentsTableListCtrl)
 	{
-		LPMAPISESSION	lpMAPISession = NULL;
+		LPMAPISESSION lpMAPISession = NULL;
 		int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
 		if (m_lpMapiObjects)
 		{
@@ -287,8 +284,9 @@ void CFolderDlg::OnInitMenu(_In_ CMenu* pMenu)
 		pMenu->EnableMenuItem(ID_CONTENTS, DIM(m_lpContainer && !(m_ulDisplayFlags == dfNormal)));
 		pMenu->EnableMenuItem(ID_HIDDENCONTENTS, DIM(m_lpContainer && !(m_ulDisplayFlags & dfAssoc)));
 	}
+
 	CContentsTableDlg::OnInitMenu(pMenu);
-} // CFolderDlg::OnInitMenu
+}
 
 // Checks flags on add-in menu items to ensure they should be enabled
 // Override to support context sensitive scenarios
@@ -309,37 +307,45 @@ void CFolderDlg::EnableAddInMenus(_In_ HMENU hMenu, ULONG ulMenu, _In_ LPMENUITE
 			if (!(m_ulDisplayFlags == dfNormal)) uiEnable = MF_GRAYED;
 		}
 	}
+
 	if (hMenu) ::EnableMenuItem(hMenu, ulMenu, uiEnable);
-} // CFolderDlg::EnableAddInMenus
+}
 
 /////////////////////////////////////////////////////////////////////////////////////
-//  Menu Commands
+// Menu Commands
 
 void CFolderDlg::OnAddOneOffAddress()
 {
-	HRESULT			hRes = S_OK;
-	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
+	HRESULT hRes = S_OK;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return;
-	LPMAPISESSION	lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
+	LPMAPISESSION lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
 	CEditor MyData(
 		this,
 		IDS_ADDONEOFF,
 		NULL,
-		4,
+		5,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 	MyData.InitPane(0, CreateSingleLinePaneID(IDS_DISPLAYNAME, IDS_DISPLAYNAMEVALUE, false));
-	MyData.InitPane(1, CreateSingleLinePane(IDS_ADDRESSTYPE, _T("EX"), false)); // STRING_OK
+	MyData.InitPane(1, CreateSingleLinePaneW(IDS_ADDRESSTYPE, L"EX", false)); // STRING_OK
 	MyData.InitPane(2, CreateSingleLinePaneID(IDS_ADDRESS, IDS_ADDRESSVALUE, false));
-	MyData.InitPane(3, CreateSingleLinePane(IDS_RECIPTYPE, NULL, false));
+	MyData.InitPane(3, CreateSingleLinePaneW(IDS_RECIPTYPE, NULL, false));
 	MyData.SetHex(3, MAPI_TO);
+	MyData.InitPane(4, CreateSingleLinePaneW(IDS_RECIPCOUNT, NULL, false));
+	MyData.SetDecimal(4, 1);
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
 	{
+		wstring displayName = MyData.GetStringW(0);
+		wstring addressType = MyData.GetStringW(1);
+		wstring address = MyData.GetStringW(2);
+		ULONG recipientType = MyData.GetHex(3);
+		ULONG count = MyData.GetDecimal(4);
 		LPMESSAGE lpMessage = NULL;
 		int iItem = m_lpContentsTableListCtrl->GetNextItem(
 			-1,
@@ -353,13 +359,31 @@ void CFolderDlg::OnAddOneOffAddress()
 
 			if (lpMessage)
 			{
-				EC_H(AddOneOffAddress(
-					lpMAPISession,
-					lpMessage,
-					MyData.GetString(0),
-					MyData.GetString(1),
-					MyData.GetString(2),
-					MyData.GetHex(3)));
+				if (count <= 1)
+				{
+					EC_H(AddOneOffAddress(
+						lpMAPISession,
+						lpMessage,
+						displayName,
+						addressType,
+						address,
+						recipientType));
+				}
+				else
+				{
+					ULONG i = 0;
+					for (i = 0; i < count; i++)
+					{
+						wstring countedDisplayName = displayName + format(L"%d", i); // STRING_OK
+						EC_H(AddOneOffAddress(
+							lpMAPISession,
+							lpMessage,
+							countedDisplayName,
+							addressType,
+							address,
+							recipientType));
+					}
+				}
 
 				lpMessage->Release();
 				lpMessage = NULL;
@@ -374,13 +398,13 @@ void CFolderDlg::OnAddOneOffAddress()
 			}
 		}
 	}
-} // CFolderDlg::OnAddOneOffAddress
+}
 
 _Check_return_ HRESULT CFolderDlg::OnAttachmentProperties(int iItem, _In_ SortListData* /*lpData*/)
 {
-	HRESULT			hRes = S_OK;
-	LPMESSAGE		lpMessage = NULL;
-	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
+	HRESULT hRes = S_OK;
+	LPMESSAGE lpMessage = NULL;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (-1 == iItem) return MAPI_E_INVALID_PARAMETER;
 
@@ -397,12 +421,12 @@ _Check_return_ HRESULT CFolderDlg::OnAttachmentProperties(int iItem, _In_ SortLi
 	}
 
 	return hRes;
-} // CFolderDlg::OnAttachmentProperties
+}
 
 void CFolderDlg::HandleCopy()
 {
-	HRESULT			hRes = S_OK;
-	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
+	HRESULT hRes = S_OK;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	DebugPrintEx(DBGGeneric, CLASS, L"HandleCopy", L"\n");
 	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return;
@@ -413,14 +437,14 @@ void CFolderDlg::HandleCopy()
 
 	// m_lpMapiObjects takes over ownership of lpEIDs - don't free now
 	m_lpMapiObjects->SetMessagesToCopy(lpEIDs, (LPMAPIFOLDER)m_lpContainer);
-} // CFolderDlg::HandleCopy
+}
 
 _Check_return_ bool CFolderDlg::HandlePaste()
 {
 	if (CBaseDialog::HandlePaste()) return true;
 
-	HRESULT		hRes = S_OK;
-	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
+	HRESULT hRes = S_OK;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	DebugPrintEx(DBGGeneric, CLASS, L"HandlePaste", L"\n");
 	if (!m_lpMapiObjects || !m_lpContainer) return false;
@@ -434,17 +458,17 @@ _Check_return_ bool CFolderDlg::HandlePaste()
 
 	MyData.InitPane(0, CreateCheckPane(IDS_MESSAGEMOVE, false, false));
 	UINT uidDropDown[] = {
-		IDS_DDCOPYMESSAGES,
-		IDS_DDCOPYTO
+	IDS_DDCOPYMESSAGES,
+	IDS_DDCOPYTO
 	};
 	MyData.InitPane(1, CreateDropDownPane(IDS_COPYINTERFACE, _countof(uidDropDown), uidDropDown, true));
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		LPENTRYLIST	lpEIDs = m_lpMapiObjects->GetMessagesToCopy();
+		LPENTRYLIST lpEIDs = m_lpMapiObjects->GetMessagesToCopy();
 		LPMAPIFOLDER lpMAPISourceFolder = m_lpMapiObjects->GetSourceParentFolder();
-		ULONG		ulMoveMessage = MyData.GetCheck(0) ? MESSAGE_MOVE : 0;
+		ULONG ulMoveMessage = MyData.GetCheck(0) ? MESSAGE_MOVE : 0;
 
 		if (lpEIDs && lpMAPISourceFolder)
 		{
@@ -470,20 +494,20 @@ _Check_return_ bool CFolderDlg::HandlePaste()
 			}
 			else
 			{ // CopyTo
-				// Specify properties to exclude in the copy operation. These are
-				// the properties that Exchange excludes to save bits and time.
-				// Should not be necessary to exclude these, but speeds the process
-				// when a lot of messages are being copied.
+			// Specify properties to exclude in the copy operation. These are
+			// the properties that Exchange excludes to save bits and time.
+			// Should not be necessary to exclude these, but speeds the process
+			// when a lot of messages are being copied.
 				static const SizedSPropTagArray(7, excludeTags) =
 				{
-					7,
-					PR_ACCESS,
-					PR_BODY,
-					PR_RTF_SYNC_BODY_COUNT,
-					PR_RTF_SYNC_BODY_CRC,
-					PR_RTF_SYNC_BODY_TAG,
-					PR_RTF_SYNC_PREFIX_COUNT,
-					PR_RTF_SYNC_TRAILING_COUNT
+				7,
+				PR_ACCESS,
+				PR_BODY,
+				PR_RTF_SYNC_BODY_COUNT,
+				PR_RTF_SYNC_BODY_CRC,
+				PR_RTF_SYNC_BODY_TAG,
+				PR_RTF_SYNC_PREFIX_COUNT,
+				PR_RTF_SYNC_TRAILING_COUNT
 				};
 
 				LPSPropTagArray lpTagsToExclude = GetExcludedTags((LPSPropTagArray)&excludeTags, m_lpContainer, m_bIsAB);
@@ -561,11 +585,11 @@ _Check_return_ bool CFolderDlg::HandlePaste()
 		if (lpMAPISourceFolder) lpMAPISourceFolder->Release();
 	}
 	return true;
-} // CFolderDlg::HandlePaste
+}
 
 void CFolderDlg::OnDeleteAttachments()
 {
-	HRESULT			hRes = S_OK;
+	HRESULT hRes = S_OK;
 
 	CEditor MyData(
 		this,
@@ -579,7 +603,7 @@ void CFolderDlg::OnDeleteAttachments()
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
+		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 		CString szAttName = MyData.GetString(0);
 		LPCTSTR lpszAttName = NULL;
@@ -595,7 +619,7 @@ void CFolderDlg::OnDeleteAttachments()
 
 		while (-1 != iItem)
 		{
-			LPMESSAGE		lpMessage = NULL;
+			LPMESSAGE lpMessage = NULL;
 
 			EC_H(OpenItemProp(
 				iItem,
@@ -615,24 +639,24 @@ void CFolderDlg::OnDeleteAttachments()
 				LVNI_SELECTED);
 		}
 	}
-} // CFolderDlg::OnDeleteAttachments
+}
 
 void CFolderDlg::OnDeleteSelectedItem()
 {
-	HRESULT			hRes = S_OK;
-	LPMDB			lpMDB = NULL;
-	CWaitCursor		Wait; // Change the mouse to an hourglass while we work.
+	HRESULT hRes = S_OK;
+	LPMDB lpMDB = NULL;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl || !m_lpContainer) return;
 
-	LPMAPISESSION	lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
+	LPMAPISESSION lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
 	EC_H(OpenDefaultMessageStore(lpMAPISession, &lpMDB));
 	if (!lpMDB) return;
 
-	bool	bMove = false;
-	ULONG	ulFlag = MESSAGE_DIALOG;
+	bool bMove = false;
+	ULONG ulFlag = MESSAGE_DIALOG;
 
 	if (m_ulDisplayFlags & dfDeleted)
 	{
@@ -649,9 +673,9 @@ void CFolderDlg::OnDeleteSelectedItem()
 			1,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		UINT uidDropDown[] = {
-			IDS_DDDELETETODELETED,
-			IDS_DDDELETETORETENTION,
-			IDS_DDDELETEHARDDELETE
+		IDS_DDDELETETODELETED,
+		IDS_DDDELETETORETENTION,
+		IDS_DDDELETEHARDDELETE
 		};
 
 		if (bShift)
@@ -715,15 +739,15 @@ void CFolderDlg::OnDeleteSelectedItem()
 	}
 
 	lpMDB->Release();
-} // CFolderDlg::OnDeleteSelectedItem
+}
 
 void CFolderDlg::OnGetPropsUsingLongTermEID()
 {
-	HRESULT			hRes = S_OK;
-	LPSBinary		lpMessageEID = NULL;
-	int				iItem = -1;
-	SortListData*	lpListData = NULL;
-	CWaitCursor		Wait; // Change the mouse to an hourglass while we work.
+	HRESULT hRes = S_OK;
+	LPSBinary lpMessageEID = NULL;
+	int iItem = -1;
+	SortListData* lpListData = NULL;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpContentsTableListCtrl) return;
 
@@ -738,7 +762,7 @@ void CFolderDlg::OnGetPropsUsingLongTermEID()
 		{
 			LPMAPIPROP lpMAPIProp = NULL;
 
-			LPMDB		lpMDB = m_lpMapiObjects->GetMDB(); // do not release
+			LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 			if (lpMDB)
 			{
 				WC_H(CallOpenEntry(
@@ -759,7 +783,7 @@ void CFolderDlg::OnGetPropsUsingLongTermEID()
 			if (lpMAPIProp) lpMAPIProp->Release();
 		}
 	}
-} // CFolderDlg::OnGetPropsUsingLongTermEID
+}
 
 // Use CFileDialogExW to locate a .MSG file to load,
 // Pass the file name and a message to load in to LoadFromMsg to do the work.
@@ -767,9 +791,9 @@ void CFolderDlg::OnLoadFromMSG()
 {
 	if (!m_lpContainer) return;
 
-	HRESULT			hRes = S_OK;
-	LPMESSAGE		lpNewMessage = NULL;
-	INT_PTR			iDlgRet = IDOK;
+	HRESULT hRes = S_OK;
+	LPMESSAGE lpNewMessage = NULL;
+	INT_PTR iDlgRet = IDOK;
 
 	CStringW szFileSpec;
 	EC_B(szFileSpec.LoadString(IDS_MSGFILES));
@@ -793,8 +817,8 @@ void CFolderDlg::OnLoadFromMSG()
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 		UINT uidDropDown[] = {
-			IDS_DDLOADTOFOLDER,
-			IDS_DDDISPLAYPROPSONLY
+		IDS_DDLOADTOFOLDER,
+		IDS_DDDISPLAYPROPSONLY
 		};
 		MyData.InitPane(0, CreateDropDownPane(IDS_LOADSTYLE, _countof(uidDropDown), uidDropDown, true));
 
@@ -843,7 +867,7 @@ void CFolderDlg::OnLoadFromMSG()
 			}
 		}
 	}
-} // CFolderDlg::OnLoadFromMSG
+}
 
 void CFolderDlg::OnResolveMessageClass()
 {
@@ -856,7 +880,7 @@ void CFolderDlg::OnResolveMessageClass()
 		OnUpdateSingleMAPIPropListCtrl(lpMAPIFormInfo, NULL);
 		lpMAPIFormInfo->Release();
 	}
-} // CFolderDlg::OnResolveMessageClass
+}
 
 void CFolderDlg::OnSelectForm()
 {
@@ -871,18 +895,18 @@ void CFolderDlg::OnSelectForm()
 		// TODO: Put some code in here which works with the returned Form Info pointer
 		lpMAPIFormInfo->Release();
 	}
-} // CFolderDlg::OnSelectForm
+}
 
 void CFolderDlg::OnManualResolve()
 {
-	HRESULT			hRes = S_OK;
-	LPMESSAGE		lpMessage = NULL;
-	int				iItem = -1;
-	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
+	HRESULT hRes = S_OK;
+	LPMESSAGE lpMessage = NULL;
+	int iItem = -1;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return;
 
-	LPMAPISESSION	lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
+	LPMAPISESSION lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
 	CPropertyTagEditor MyPropertyTag(
@@ -930,12 +954,12 @@ void CFolderDlg::OnManualResolve()
 			} while (iItem != -1);
 		}
 	}
-} // CFolderDlg::OnManualResolve
+}
 
 void CFolderDlg::NewSpecialItem(WORD wMenuSelect)
 {
-	HRESULT			hRes = S_OK;
-	LPMAPIFOLDER	lpFolder = NULL; // DO NOT RELEASE
+	HRESULT hRes = S_OK;
+	LPMAPIFOLDER lpFolder = NULL; // DO NOT RELEASE
 
 	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return;
 
@@ -999,11 +1023,11 @@ void CFolderDlg::NewSpecialItem(WORD wMenuSelect)
 		}
 		if (lpSpecialFolder) lpSpecialFolder->Release();
 	}
-} // CFolderDlg::NewSpecialItem
+}
 
 void CFolderDlg::OnNewMessage()
 {
-	HRESULT	hRes = S_OK;
+	HRESULT hRes = S_OK;
 	LPMESSAGE lpMessage = NULL;
 
 	EC_MAPI(((LPMAPIFOLDER)m_lpContainer)->CreateMessage(
@@ -1016,11 +1040,11 @@ void CFolderDlg::OnNewMessage()
 		EC_MAPI(lpMessage->SaveChanges(NULL));
 		lpMessage->Release();
 	}
-} // CFolderDlg::OnNewMessage
+}
 
 void CFolderDlg::OnNewCustomForm()
 {
-	HRESULT			hRes = S_OK;
+	HRESULT hRes = S_OK;
 
 	if (!m_lpMapiObjects || !m_lpContainer || !m_lpContentsTableListCtrl) return;
 
@@ -1038,9 +1062,9 @@ void CFolderDlg::OnNewCustomForm()
 			1,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		UINT uidDropDown[] = {
-			IDS_DDENTERFORMCLASS,
-			IDS_DDFOLDERFORMLIBRARY,
-			IDS_DDORGFORMLIBRARY
+		IDS_DDENTERFORMCLASS,
+		IDS_DDFOLDERFORMLIBRARY,
+		IDS_DDORGFORMLIBRARY
 		};
 		MyPrompt1.InitPane(0, CreateDropDownPane(IDS_LOCATIONOFFORM, _countof(uidDropDown), uidDropDown, true));
 
@@ -1048,8 +1072,8 @@ void CFolderDlg::OnNewCustomForm()
 
 		if (S_OK == hRes)
 		{
-			LPCSTR			szClass = NULL;
-			LPSPropValue	lpProp = NULL;
+			LPCSTR szClass = NULL;
+			LPSPropValue lpProp = NULL;
 
 			CEditor MyClass(
 				this,
@@ -1072,8 +1096,8 @@ void CFolderDlg::OnNewCustomForm()
 			case 1:
 			case 2:
 			{
-				LPMAPIFORMMGR	lpMAPIFormMgr = NULL;
-				LPMAPIFORMINFO	lpMAPIFormInfo = NULL;
+				LPMAPIFORMMGR lpMAPIFormMgr = NULL;
+				LPMAPIFORMINFO lpMAPIFormInfo = NULL;
 				EC_MAPI(MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr));
 
 				if (lpMAPIFormMgr)
@@ -1129,13 +1153,13 @@ void CFolderDlg::OnNewCustomForm()
 			MAPIFreeBuffer(lpProp);
 		}
 	}
-} // CFolderDlg::OnNewCustomForm
+}
 
 _Check_return_ HRESULT CFolderDlg::OnOpenModal(int iItem, _In_ SortListData* /*lpData*/)
 {
-	HRESULT			hRes = S_OK;
-	LPMESSAGE		lpMessage = NULL;
-	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
+	HRESULT hRes = S_OK;
+	LPMESSAGE lpMessage = NULL;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (-1 == iItem) return MAPI_E_INVALID_PARAMETER;
 	if (!m_lpMapiObjects || !m_lpContainer) return MAPI_E_INVALID_PARAMETER;
@@ -1171,13 +1195,13 @@ _Check_return_ HRESULT CFolderDlg::OnOpenModal(int iItem, _In_ SortListData* /*l
 		}
 	}
 	return hRes;
-} // CFolderDlg::OnOpenModal
+}
 
 _Check_return_ HRESULT CFolderDlg::OnOpenNonModal(int iItem, _In_ SortListData* /*lpData*/)
 {
-	HRESULT			hRes = S_OK;
-	LPMESSAGE		lpMessage = NULL;
-	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
+	HRESULT hRes = S_OK;
+	LPMESSAGE lpMessage = NULL;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (-1 == iItem) return MAPI_E_INVALID_PARAMETER;
 	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl || !m_lpContainer) return MAPI_E_INVALID_PARAMETER;
@@ -1219,12 +1243,12 @@ _Check_return_ HRESULT CFolderDlg::OnOpenNonModal(int iItem, _In_ SortListData* 
 		}
 	}
 	return hRes;
-} // CFolderDlg::OnOpenNonModal
+}
 
 void CFolderDlg::OnExecuteVerbOnForm()
 {
-	HRESULT			hRes = S_OK;
-	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
+	HRESULT hRes = S_OK;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return;
 
@@ -1278,12 +1302,12 @@ void CFolderDlg::OnExecuteVerbOnForm()
 			}
 		}
 	}
-} // CFolderDlg::OnExecuteVerbOnForm
+}
 
 _Check_return_ HRESULT CFolderDlg::OnResendSelectedItem(int /*iItem*/, _In_ SortListData* lpData)
 {
-	HRESULT			hRes = S_OK;
-	CWaitCursor		Wait; // Change the mouse to an hourglass while we work.
+	HRESULT hRes = S_OK;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (!lpData || !m_lpContainer) return MAPI_E_INVALID_PARAMETER;
 
@@ -1295,13 +1319,13 @@ _Check_return_ HRESULT CFolderDlg::OnResendSelectedItem(int /*iItem*/, _In_ Sort
 			m_hWnd));
 	}
 	return hRes;
-} // CFolderDlg::OnResendSelectedItem
+}
 
 _Check_return_ HRESULT CFolderDlg::OnRecipientProperties(int iItem, _In_ SortListData* /*lpData*/)
 {
-	HRESULT			hRes = S_OK;
-	LPMESSAGE		lpMessage = NULL;
-	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
+	HRESULT hRes = S_OK;
+	LPMESSAGE lpMessage = NULL;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (-1 == iItem) return MAPI_E_INVALID_PARAMETER;
 
@@ -1318,12 +1342,12 @@ _Check_return_ HRESULT CFolderDlg::OnRecipientProperties(int iItem, _In_ SortLis
 	}
 
 	return hRes;
-} // CFolderDlg::OnRecipientProperties
+}
 
 void CFolderDlg::OnRemoveOneOff()
 {
-	HRESULT			hRes = S_OK;
-	CWaitCursor		Wait; // Change the mouse to an hourglass while we work.
+	HRESULT hRes = S_OK;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpContentsTableListCtrl) return;
 
@@ -1338,7 +1362,7 @@ void CFolderDlg::OnRemoveOneOff()
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		LPMESSAGE	lpMessage = NULL;
+		LPMESSAGE lpMessage = NULL;
 
 		int iItem = m_lpContentsTableListCtrl->GetNextItem(
 			-1,
@@ -1370,14 +1394,14 @@ void CFolderDlg::OnRemoveOneOff()
 			}
 		}
 	}
-} // CFolderDlg::OnRemoveOneOff
+}
 
 #define RTF_SYNC_HTML_CHANGED ((ULONG) 0x00000004)
 
 void CFolderDlg::OnRTFSync()
 {
-	HRESULT			hRes = S_OK;
-	CWaitCursor		Wait; // Change the mouse to an hourglass while we work.
+	HRESULT hRes = S_OK;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpContentsTableListCtrl) return;
 
@@ -1394,8 +1418,8 @@ void CFolderDlg::OnRTFSync()
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		LPMESSAGE	lpMessage = NULL;
-		BOOL		bMessageUpdated = false;
+		LPMESSAGE lpMessage = NULL;
+		BOOL bMessageUpdated = false;
 
 		int iItem = m_lpContentsTableListCtrl->GetNextItem(
 			-1,
@@ -1432,13 +1456,13 @@ void CFolderDlg::OnRTFSync()
 			}
 		}
 	}
-} // CFolderDlg::OnRTFSync
+}
 
 _Check_return_ HRESULT CFolderDlg::OnSaveAttachments(int iItem, _In_ SortListData* /*lpData*/)
 {
-	HRESULT			hRes = S_OK;
-	LPMESSAGE		lpMessage = NULL;
-	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
+	HRESULT hRes = S_OK;
+	LPMESSAGE lpMessage = NULL;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (-1 == iItem) return MAPI_E_INVALID_PARAMETER;
 
@@ -1455,7 +1479,7 @@ _Check_return_ HRESULT CFolderDlg::OnSaveAttachments(int iItem, _In_ SortListDat
 		lpMessage->Release();
 	}
 	return hRes;
-} // CFolderDlg::OnSaveAttachments
+}
 
 void CFolderDlg::OnSaveFolderContentsAsTextFiles()
 {
@@ -1473,11 +1497,11 @@ void CFolderDlg::OnSaveFolderContentsAsTextFiles()
 		(m_ulDisplayFlags & dfAssoc) ? true : false,
 		false,
 		m_hWnd);
-} // CFolderDlg::OnSaveFolderContentsAsTextFiles
+}
 
 void CFolderDlg::OnSaveMessageToFile()
 {
-	HRESULT	hRes = S_OK;
+	HRESULT hRes = S_OK;
 
 	DebugPrintEx(DBGGeneric, CLASS, L"OnSaveMessageToFile", L"\n");
 
@@ -1489,22 +1513,22 @@ void CFolderDlg::OnSaveMessageToFile()
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 	UINT uidDropDown[] = {
-		IDS_DDTEXTFILE,
-		IDS_DDMSGFILEANSI,
-		IDS_DDMSGFILEUNICODE,
-		IDS_DDEMLFILE,
-		IDS_DDEMLFILEUSINGICONVERTERSESSION,
-		IDS_DDTNEFFILE
+	IDS_DDTEXTFILE,
+	IDS_DDMSGFILEANSI,
+	IDS_DDMSGFILEUNICODE,
+	IDS_DDEMLFILE,
+	IDS_DDEMLFILEUSINGICONVERTERSESSION,
+	IDS_DDTNEFFILE
 	};
 	MyData.InitPane(0, CreateDropDownPane(IDS_FORMATTOSAVEMESSAGE, _countof(uidDropDown), uidDropDown, true));
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		LPCWSTR		szExt = NULL;
-		LPCWSTR		szDotExt = NULL;
-		ULONG		ulDotExtLen = NULL;
-		CStringW	szFilter;
-		LPADRBOOK	lpAddrBook = NULL;
+		LPCWSTR szExt = NULL;
+		LPCWSTR szDotExt = NULL;
+		ULONG ulDotExtLen = NULL;
+		CStringW szFilter;
+		LPADRBOOK lpAddrBook = NULL;
 		switch (MyData.GetDropDown(0))
 		{
 		case 0:
@@ -1543,9 +1567,9 @@ void CFolderDlg::OnSaveMessageToFile()
 			LVNI_SELECTED);
 		while (-1 != iItem)
 		{
-			LPMESSAGE	lpMessage = NULL;
-			WCHAR		szFileName[MAX_PATH] = { 0 };
-			INT_PTR		iDlgRet = IDOK;
+			LPMESSAGE lpMessage = NULL;
+			WCHAR szFileName[MAX_PATH] = { 0 };
+			INT_PTR iDlgRet = IDOK;
 
 			EC_H(OpenItemProp(
 				iItem,
@@ -1645,15 +1669,15 @@ void CFolderDlg::OnSaveMessageToFile()
 			}
 		}
 	}
-} // CFolderDlg::OnSaveMessageToFile
+}
 
 // Use CFileDialogExW to locate a .DAT or .TNEF file to load,
 // Pass the file name and a message to load in to LoadFromTNEF to do the work.
 void CFolderDlg::OnLoadFromTNEF()
 {
-	HRESULT			hRes = S_OK;
-	LPMESSAGE		lpNewMessage = NULL;
-	INT_PTR			iDlgRet = IDOK;
+	HRESULT hRes = S_OK;
+	LPMESSAGE lpNewMessage = NULL;
+	INT_PTR iDlgRet = IDOK;
 
 	if (!m_lpContainer) return;
 
@@ -1698,7 +1722,7 @@ void CFolderDlg::OnLoadFromTNEF()
 	}
 
 	if (lpNewMessage) lpNewMessage->Release();
-} // CFolderDlg::OnLoadFromTNEF
+}
 
 // Use CFileDialogExW to locate a .EML file to load,
 // Pass the file name and a message to load in to ImportEMLToIMessage to do the work.
@@ -1706,9 +1730,9 @@ void CFolderDlg::OnLoadFromEML()
 {
 	if (!m_lpContainer) return;
 
-	HRESULT			hRes = S_OK;
-	LPMESSAGE		lpNewMessage = NULL;
-	INT_PTR			iDlgRet = IDOK;
+	HRESULT hRes = S_OK;
+	LPMESSAGE lpNewMessage = NULL;
+	INT_PTR iDlgRet = IDOK;
 
 	ULONG ulConvertFlags = CCSF_SMTP;
 	bool bDoAdrBook = false;
@@ -1761,11 +1785,11 @@ void CFolderDlg::OnLoadFromEML()
 			}
 		}
 	}
-} // CFolderDlg::OnLoadFromEML
+}
 
 void CFolderDlg::OnSendBulkMail()
 {
-	HRESULT			hRes = S_OK;
+	HRESULT hRes = S_OK;
 
 	CEditor MyData(
 		this,
@@ -1815,12 +1839,12 @@ void CFolderDlg::OnSendBulkMail()
 			}
 		}
 	}
-} // CFolderDlg::OnSendBulkMail
+}
 
 void CFolderDlg::OnSetReadFlag()
 {
-	HRESULT			hRes = S_OK;
-	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
+	HRESULT hRes = S_OK;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpContentsTableListCtrl) return;
 
@@ -1884,12 +1908,12 @@ void CFolderDlg::OnSetReadFlag()
 			MAPIFreeBuffer(lpEIDs);
 		}
 	}
-} // CFolderDlg::OnSetReadFlag
+}
 
 void CFolderDlg::OnGetMessageOptions()
 {
-	HRESULT			hRes = S_OK;
-	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
+	HRESULT hRes = S_OK;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpContentsTableListCtrl) return;
 
@@ -1941,13 +1965,13 @@ void CFolderDlg::OnGetMessageOptions()
 			}
 		}
 	}
-} // CFolderDlg::OnGetMessageOptions
+}
 
 _Check_return_ HRESULT CFolderDlg::OnGetMessageStatus(int /*iItem*/, _In_ SortListData* lpData)
 {
-	HRESULT			hRes = S_OK;
-	LPSBinary		lpMessageEID = NULL;
-	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
+	HRESULT hRes = S_OK;
+	LPSBinary lpMessageEID = NULL;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (!lpData || !m_lpContainer) return MAPI_E_INVALID_PARAMETER;
 
@@ -1977,12 +2001,12 @@ _Check_return_ HRESULT CFolderDlg::OnGetMessageStatus(int /*iItem*/, _In_ SortLi
 		WC_H(MyStatus.DisplayDialog());
 	}
 	return hRes;
-} // CFolderDlg::OnGetMessageStatus
+}
 
 void CFolderDlg::OnSetMessageStatus()
 {
-	HRESULT			hRes = S_OK;
-	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
+	HRESULT hRes = S_OK;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpContentsTableListCtrl || !m_lpContainer) return;
 
@@ -2002,8 +2026,8 @@ void CFolderDlg::OnSetMessageStatus()
 
 	if (S_OK == hRes)
 	{
-		SortListData*	lpListData = NULL;
-		LPSBinary		lpMessageEID = NULL;
+		SortListData* lpListData = NULL;
+		LPSBinary lpMessageEID = NULL;
 		int iItem = m_lpContentsTableListCtrl->GetNextItem(
 			-1,
 			LVNI_SELECTED);
@@ -2036,13 +2060,13 @@ void CFolderDlg::OnSetMessageStatus()
 			}
 		}
 	}
-} // CFolderDlg::OnSetMessageStatus
+}
 
 _Check_return_ HRESULT CFolderDlg::OnSubmitMessage(int iItem, _In_ SortListData* /*lpData*/)
 {
-	HRESULT			hRes = S_OK;
-	LPMESSAGE		lpMessage = NULL;
-	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
+	HRESULT hRes = S_OK;
+	LPMESSAGE lpMessage = NULL;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	DebugPrintEx(DBGGeneric, CLASS, L"OnSubmitMesssage", L"\n");
 
@@ -2062,14 +2086,14 @@ _Check_return_ HRESULT CFolderDlg::OnSubmitMessage(int iItem, _In_ SortListData*
 		lpMessage->Release();
 	}
 	return hRes;
-} // CFolderDlg::OnSubmitMessage
+}
 
 _Check_return_ HRESULT CFolderDlg::OnAbortSubmit(int iItem, _In_ SortListData* lpData)
 {
-	HRESULT			hRes = S_OK;
-	LPMDB			lpMDB = NULL;
-	LPSBinary		lpMessageEID = NULL;
-	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
+	HRESULT hRes = S_OK;
+	LPMDB lpMDB = NULL;
+	LPSBinary lpMessageEID = NULL;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	DebugPrintEx(DBGGeneric, CLASS, L"OnSubmitMesssage", L"\n");
 
@@ -2090,7 +2114,7 @@ _Check_return_ HRESULT CFolderDlg::OnAbortSubmit(int iItem, _In_ SortListData* l
 	}
 
 	return hRes;
-} // CFolderDlg::OnAbortSubmit
+}
 
 void CFolderDlg::OnDisplayFolder(WORD wMenuSelect)
 {
@@ -2130,4 +2154,4 @@ void CFolderDlg::HandleAddInMenuSingle(
 	}
 
 	InvokeAddInMenu(lpParams);
-} // CFolderDlg::HandleAddInMenuSingle
+}

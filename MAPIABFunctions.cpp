@@ -40,14 +40,14 @@ _Check_return_ HRESULT HrAllocAdrList(ULONG ulNumProps, _Deref_out_opt_ LPADRLIS
 	}
 
 	return hRes;
-} // HrAllocAdrList
+}
 
 _Check_return_ HRESULT AddOneOffAddress(
 	_In_ LPMAPISESSION lpMAPISession,
 	_In_ LPMESSAGE lpMessage,
-	_In_z_ LPCTSTR szDisplayName,
-	_In_z_ LPCTSTR szAddrType,
-	_In_z_ LPCTSTR szEmailAddress,
+	_In_ wstring& szDisplayName,
+	_In_ wstring& szAddrType,
+	_In_ wstring& szEmailAddress,
 	ULONG ulRecipientType)
 {
 	HRESULT hRes = S_OK;
@@ -80,18 +80,18 @@ _Check_return_ HRESULT AddOneOffAddress(
 
 	if (SUCCEEDED(hRes) && lpAdrList)
 	{
-		lpAdrList->cEntries = 1;	// How many recipients.
+		lpAdrList->cEntries = 1; // How many recipients.
 		lpAdrList->aEntries[0].cValues = NUM_RECIP_PROPS; // How many properties per recipient
 
 		// Set the SPropValue members == the desired values.
-		lpAdrList->aEntries[0].rgPropVals[NAME].ulPropTag = PR_DISPLAY_NAME;
-		lpAdrList->aEntries[0].rgPropVals[NAME].Value.LPSZ = (LPTSTR)szDisplayName;
+		lpAdrList->aEntries[0].rgPropVals[NAME].ulPropTag = PR_DISPLAY_NAME_W;
+		lpAdrList->aEntries[0].rgPropVals[NAME].Value.lpszW = (LPWSTR)szDisplayName.c_str();
 
-		lpAdrList->aEntries[0].rgPropVals[ADDR].ulPropTag = PR_ADDRTYPE;
-		lpAdrList->aEntries[0].rgPropVals[ADDR].Value.LPSZ = (LPTSTR)szAddrType;
+		lpAdrList->aEntries[0].rgPropVals[ADDR].ulPropTag = PR_ADDRTYPE_W;
+		lpAdrList->aEntries[0].rgPropVals[ADDR].Value.lpszW = (LPWSTR)szAddrType.c_str();
 
-		lpAdrList->aEntries[0].rgPropVals[EMAIL].ulPropTag = PR_EMAIL_ADDRESS;
-		lpAdrList->aEntries[0].rgPropVals[EMAIL].Value.LPSZ = (LPTSTR)szEmailAddress;
+		lpAdrList->aEntries[0].rgPropVals[EMAIL].ulPropTag = PR_EMAIL_ADDRESS_W;
+		lpAdrList->aEntries[0].rgPropVals[EMAIL].Value.lpszW = (LPWSTR)szEmailAddress.c_str();
 
 		lpAdrList->aEntries[0].rgPropVals[RECIP].ulPropTag = PR_RECIPIENT_TYPE;
 		lpAdrList->aEntries[0].rgPropVals[RECIP].Value.l = ulRecipientType;
@@ -100,17 +100,17 @@ _Check_return_ HRESULT AddOneOffAddress(
 
 		// Create the One-off address and get an EID for it.
 		EC_MAPI(lpAddrBook->CreateOneOff(
-			lpAdrList->aEntries[0].rgPropVals[NAME].Value.LPSZ,
-			lpAdrList->aEntries[0].rgPropVals[ADDR].Value.LPSZ,
-			lpAdrList->aEntries[0].rgPropVals[EMAIL].Value.LPSZ,
-			fMapiUnicode,
+			(LPTSTR)lpAdrList->aEntries[0].rgPropVals[NAME].Value.lpszW,
+			(LPTSTR)lpAdrList->aEntries[0].rgPropVals[ADDR].Value.lpszW,
+			(LPTSTR)lpAdrList->aEntries[0].rgPropVals[EMAIL].Value.lpszW,
+			MAPI_UNICODE,
 			&lpAdrList->aEntries[0].rgPropVals[EID].Value.bin.cb,
 			&lpEID));
 		lpAdrList->aEntries[0].rgPropVals[EID].Value.bin.lpb = (LPBYTE)lpEID;
 
 		EC_MAPI(lpAddrBook->ResolveName(
 			0L,
-			fMapiUnicode,
+			MAPI_UNICODE,
 			NULL,
 			lpAdrList));
 
@@ -125,7 +125,7 @@ _Check_return_ HRESULT AddOneOffAddress(
 	if (lpAdrList) FreePadrlist(lpAdrList);
 	if (lpAddrBook) lpAddrBook->Release();
 	return hRes;
-} // AddOneOffAddress
+}
 
 _Check_return_ HRESULT AddRecipient(
 	_In_ LPMAPISESSION lpMAPISession,
@@ -133,9 +133,9 @@ _Check_return_ HRESULT AddRecipient(
 	_In_z_ LPCTSTR szName,
 	ULONG ulRecipientType)
 {
-	HRESULT			hRes = S_OK;
-	LPADRLIST		lpAdrList = NULL; // ModifyRecips takes LPADRLIST
-	LPADRBOOK		lpAddrBook = NULL;
+	HRESULT hRes = S_OK;
+	LPADRLIST lpAdrList = NULL; // ModifyRecips takes LPADRLIST
+	LPADRBOOK lpAddrBook = NULL;
 
 	enum
 	{
@@ -158,7 +158,7 @@ _Check_return_ HRESULT AddRecipient(
 	{
 		// Setup the One Time recipient by indicating how many recipients
 		// and how many properties will be set on each recipient.
-		lpAdrList->cEntries = 1;	// How many recipients.
+		lpAdrList->cEntries = 1; // How many recipients.
 		lpAdrList->aEntries[0].cValues = NUM_RECIP_PROPS; // How many properties per recipient
 
 		// Set the SPropValue members == the desired values.
@@ -184,7 +184,7 @@ _Check_return_ HRESULT AddRecipient(
 	if (lpAdrList) FreePadrlist(lpAdrList);
 	if (lpAddrBook) lpAddrBook->Release();
 	return hRes;
-} // AddRecipient
+}
 
 // Same as CreatePropertyStringRestriction, but skips the existence part.
 _Check_return_ HRESULT CreateANRRestriction(ULONG ulPropTag,
@@ -193,9 +193,9 @@ _Check_return_ HRESULT CreateANRRestriction(ULONG ulPropTag,
 	_Deref_out_opt_ LPSRestriction* lppRes)
 {
 	HRESULT hRes = S_OK;
-	LPSRestriction	lpRes = NULL;
-	LPSPropValue	lpspvSubject = NULL;
-	LPVOID			lpAllocationParent = NULL;
+	LPSRestriction lpRes = NULL;
+	LPSPropValue lpspvSubject = NULL;
+	LPVOID lpAllocationParent = NULL;
 
 	*lppRes = NULL;
 
@@ -262,13 +262,13 @@ _Check_return_ HRESULT CreateANRRestriction(ULONG ulPropTag,
 		*lppRes = NULL;
 	}
 	return hRes;
-} // CreateANRRestriction
+}
 
 _Check_return_ HRESULT GetABContainerTable(_In_ LPADRBOOK lpAdrBook, _Deref_out_opt_ LPMAPITABLE* lpABContainerTable)
 {
-	HRESULT		hRes = S_OK;
-	LPABCONT	lpABRootContainer = NULL;
-	LPMAPITABLE	lpTable = NULL;
+	HRESULT hRes = S_OK;
+	LPABCONT lpABRootContainer = NULL;
+	LPMAPITABLE lpTable = NULL;
 
 	*lpABContainerTable = NULL;
 	if (!lpAdrBook) return MAPI_E_INVALID_PARAMETER;
@@ -294,7 +294,7 @@ _Check_return_ HRESULT GetABContainerTable(_In_ LPADRBOOK lpAdrBook, _Deref_out_
 	}
 
 	return hRes;
-} // GetABContainerTable
+}
 
 // Manually resolve a name in the address book and add it to the message
 _Check_return_ HRESULT ManualResolve(
@@ -303,15 +303,15 @@ _Check_return_ HRESULT ManualResolve(
 	_In_z_ LPCTSTR szName,
 	ULONG PropTagToCompare)
 {
-	HRESULT			hRes = S_OK;
-	ULONG			ulObjType = 0;
-	LPADRBOOK		lpAdrBook = NULL;
-	LPSRowSet		lpABRow = NULL;
-	LPMAPITABLE		lpABContainerTable = NULL;
-	LPADRLIST		lpAdrList = NULL;
-	LPABCONT		lpABContainer = NULL;
-	LPMAPITABLE		pTable = NULL;
-	LPSPropValue	lpFoundRow = NULL;
+	HRESULT hRes = S_OK;
+	ULONG ulObjType = 0;
+	LPADRBOOK lpAdrBook = NULL;
+	LPSRowSet lpABRow = NULL;
+	LPMAPITABLE lpABContainerTable = NULL;
+	LPADRLIST lpAdrList = NULL;
+	LPABCONT lpABContainer = NULL;
+	LPMAPITABLE pTable = NULL;
+	LPSPropValue lpFoundRow = NULL;
 
 	enum
 	{
@@ -322,9 +322,9 @@ _Check_return_ HRESULT ManualResolve(
 
 	static const SizedSPropTagArray(abcNUM_COLS, abcCols) =
 	{
-		abcNUM_COLS,
-		PR_ENTRYID,
-		PR_DISPLAY_NAME,
+	abcNUM_COLS,
+	PR_ENTRYID,
+	PR_DISPLAY_NAME,
 	};
 
 	enum
@@ -491,7 +491,7 @@ _Check_return_ HRESULT ManualResolve(
 	if (lpABContainer) lpABContainer->Release();
 	if (lpAdrBook) lpAdrBook->Release();
 	return hRes;
-} // ManualResolve
+}
 
 _Check_return_ HRESULT SearchContentsTableForName(
 	_In_ LPMAPITABLE pTable,
@@ -499,9 +499,9 @@ _Check_return_ HRESULT SearchContentsTableForName(
 	ULONG PropTagToCompare,
 	_Deref_out_opt_ LPSPropValue *lppPropsFound)
 {
-	HRESULT			hRes = S_OK;
+	HRESULT hRes = S_OK;
 
-	LPSRowSet		pRows = NULL;
+	LPSRowSet pRows = NULL;
 
 	enum
 	{
@@ -516,13 +516,13 @@ _Check_return_ HRESULT SearchContentsTableForName(
 
 	const SizedSPropTagArray(abNUM_COLS, abCols) =
 	{
-		abNUM_COLS,
-		PR_ENTRYID,
-		PR_DISPLAY_NAME,
-		PR_RECIPIENT_TYPE,
-		PR_ADDRTYPE,
-		PR_DISPLAY_TYPE,
-		PropTagToCompare
+	abNUM_COLS,
+	PR_ENTRYID,
+	PR_DISPLAY_NAME,
+	PR_RECIPIENT_TYPE,
+	PR_ADDRTYPE,
+	PR_DISPLAY_TYPE,
+	PropTagToCompare
 	};
 
 	*lppPropsFound = NULL;
@@ -531,7 +531,7 @@ _Check_return_ HRESULT SearchContentsTableForName(
 	DebugPrint(DBGGeneric, L"SearchContentsTableForName: Looking for \"%ws\"\n", LPCTSTRToWstring(szName).c_str());
 
 	// Set a restriction so we only find close matches
-	LPSRestriction	lpSRes = NULL;
+	LPSRestriction lpSRes = NULL;
 
 	EC_H(CreateANRRestriction(
 		PR_ANR,
@@ -551,7 +551,7 @@ _Check_return_ HRESULT SearchContentsTableForName(
 	EC_MAPI(pTable->Restrict(
 		lpSRes,
 		NULL
-		));
+	));
 
 	// Now we iterate through each of the matching entries
 	if (!FAILED(hRes)) for (;;)
@@ -592,7 +592,7 @@ _Check_return_ HRESULT SearchContentsTableForName(
 	MAPIFreeBuffer(lpSRes);
 	if (pRows) FreeProws(pRows);
 	return hRes;
-} // SearchContentsTableForName
+}
 
 _Check_return_ HRESULT SelectUser(_In_ LPADRBOOK lpAdrBook, HWND hwnd, _Out_opt_ ULONG* lpulObjType, _Deref_out_opt_ LPMAILUSER* lppMailUser)
 {

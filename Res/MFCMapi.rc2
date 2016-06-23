@@ -3,7 +3,7 @@
 //
 
 #ifdef APSTUDIO_INVOKED
-	#error this file is not editable by Microsoft Visual C++
+#error this file is not editable by Microsoft Visual C++
 #endif // APSTUDIO_INVOKED
 
 /////////////////////////////////////////////////////////////////////////////
@@ -47,17 +47,17 @@ STYLE DS_MODALFRAME | WS_CAPTION | WS_SYSMENU | DS_SHELLFONT
 CAPTION "" // About MFCMAPI
 FONT 8, "Segoe UI"
 BEGIN
-    DEFPUSHBUTTON   "OK",				IDOK,               327, 15, 54,14,WS_GROUP
-    CONTROL         IDB_MFCMAPILOGO,	IDC_STATIC,"Static",SS_BITMAP,1,2,64,64
-    LTEXT           "ProductName",		IDD_ABOUTVERFIRST,   50,0,263, 0
-    LTEXT           "FileDescription",	IDD_ABOUTVERFIRST+1, 50,0,263, 0
-    LTEXT           "FileVersion",		IDD_ABOUTVERFIRST+2, 50,0,263, 0
-    LTEXT           "LegalCopyright",	IDD_ABOUTVERFIRST+3, 50,0,350, 0
+DEFPUSHBUTTON   "OK", IDOK, 327, 15, 54, 14, WS_GROUP
+CONTROL         IDB_MFCMAPILOGO, IDC_STATIC, "Static", SS_BITMAP, 1, 2, 64, 64
+LTEXT           "ProductName", IDD_ABOUTVERFIRST, 50, 0, 263, 0
+LTEXT           "FileDescription", IDD_ABOUTVERFIRST + 1, 50, 0, 263, 0
+LTEXT           "FileVersion", IDD_ABOUTVERFIRST + 2, 50, 0, 263, 0
+LTEXT           "LegalCopyright", IDD_ABOUTVERFIRST + 3, 50, 0, 350, 0
 END
 
 IDD_BLANK_DIALOG DIALOGEX 0, 0, 456, 294
 STYLE WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_VISIBLE | WS_CAPTION | WS_SYSMENU |
-    WS_THICKFRAME | WS_CLIPCHILDREN | DS_SHELLFONT
+WS_THICKFRAME | WS_CLIPCHILDREN | DS_SHELLFONT
 EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "Segoe UI"
 BEGIN
@@ -65,23 +65,23 @@ END
 
 STRINGTABLE DISCARDABLE
 BEGIN
-    ID_PRODUCTNAME          RC_VERSION_FILE_DESCRIPTION
+ID_PRODUCTNAME          RC_VERSION_FILE_DESCRIPTION
 END
 
 // Keep in sync with definition of IDS_VER_LAST
 STRINGTABLE DISCARDABLE
 BEGIN
-    IDS_VER_FIRST           "ProductName"
-    IDS_VER_FIRST+1         "InternalName"
-    IDS_VER_FIRST+2         "OriginalFilename"
-    IDS_VER_FIRST+3         "LegalCopyright"
-    IDS_VER_FIRST+4         "CompanyName"
-    IDS_VER_FIRST+5         "FileDescription"
-    IDS_VER_FIRST+6         "FileVersion"
-    IDS_VER_FIRST+7         "ProductVersion"
-    IDS_VER_FIRST+8         "LegalTrademarks"
+IDS_VER_FIRST           "ProductName"
+IDS_VER_FIRST + 1         "InternalName"
+IDS_VER_FIRST + 2         "OriginalFilename"
+IDS_VER_FIRST + 3         "LegalCopyright"
+IDS_VER_FIRST + 4         "CompanyName"
+IDS_VER_FIRST + 5         "FileDescription"
+IDS_VER_FIRST + 6         "FileVersion"
+IDS_VER_FIRST + 7         "ProductVersion"
+IDS_VER_FIRST + 8         "LegalTrademarks"
 #ifdef PRIVATE_BUILD
-    IDS_VER_FIRST+9         "PrivateBuild"
+IDS_VER_FIRST + 9         "PrivateBuild"
 #endif
 END
 
@@ -822,6 +822,7 @@ IDS_DISPLAYNAME "Display Name"
 IDS_ADDRESSTYPE "Address Type"
 IDS_ADDRESS "Address"
 IDS_RECIPTYPE "Recipient Type"
+IDS_RECIPCOUNT "Recipient Count"
 IDS_MESSAGEMOVE "Move message instead of copy"
 IDS_COPYINTERFACE "Copy interface"
 IDS_FILENAME "File Name"
@@ -872,139 +873,139 @@ OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP = 0x9\r\n\
 OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP | OPENSTORE_PUBLIC = 0xB\r\n\
 OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP | OPENSTORE_RESTORE_DATABASE | \r\n\
    OPENSTORE_OVERRIDE_HOME_MDB  | OPENSTORE_HOME_LOGON = 0x10001D\r\n"
-// MAPIProfileFunctions.cpp
-IDS_EXCHANGE "Exchange"
-IDS_PST "PST"
-// MFCUtilityFunctions.cpp
-IDS_FBRIGHTSVISIBLE "Free Busy Rights Visible"
-IDS_ERROR "Error"
-IDS_OFFSET "Offset (in hex):"
-// MsgServiceTableDlg.cpp
-IDS_MAPIUID "MAPI UID:"
-IDS_MAPIUIDBYTESWAPPED "Byte swapped (useful for a UID read from the registry or memory)"
-// MsgStoreDlg.cpp
-IDS_PASTEFOLDERCONTENTS "Paste folder contents only"
-IDS_FOLDERNAME "Folder Name:"
-IDS_COPYSUBFOLDERS "Copy subfolders"
-IDS_FOLDERMOVE "Move folder instead of copy"
-IDS_COPYASSOCIATEDITEMS "Copy associated items"
-IDS_MOVEMESSAGES "Move messages"
-IDS_SINGLECALLCOPY "Use single call to CopyMessages to do copy"
-IDS_REPLACERULES "Replace existing rules"
-IDS_FOLDERTYPE "Folder Type:"
-IDS_FOLDERCOMMENT "Folder Comment:"
-IDS_PASSOPENIFEXISTS "Pass OPEN_IF_EXISTS"
-IDS_DELASSOCIATED "Delete associated (hidden) items"
-IDS_HARDDELETION "Hard Deletion"
-IDS_MANUALLYEMPTYFOLDER "Delete items manually"
-IDS_SAVEUNICODE "Save as Unicode MSG"
-IDS_RECURSESUBFOLDERS "Recurse into subfolders"
-IDS_SAVEREGULARCONTENTS "Save regular items"
-IDS_SAVEASSOCIATEDCONTENTS "Save associated items"
-IDS_DELETEASSOCIATION "Delete association"
-IDS_MAPIFORCECREATE "Force IPM folder creation"
-IDS_MAPIFULLIPMTREE "Create full IPM subtree"
-// ProfileListDlg.cpp
-IDS_MAILBOXNAME "Mailbox Name:"
-IDS_DISPLAYSERVICEUI "Display service UI:"
-// PropertyEditor.cpp
-IDS_PROPVALUES "Property Values"
-IDS_UNSIGNEDDECIMAL "Unsigned Decimal"
-IDS_BOOLEAN "Boolean"
-IDS_DOUBLE "Double"
-IDS_OBJECT "Object"
-IDS_FLOAT "Float"
-IDS_BIN "Binary"
-IDS_HI "Hi (decimal)"
-IDS_LO "Lo (decimal)"
-IDS_CURRENCY "Currency"
-IDS_ERRORCODEHEX "Error Code (Hex)"
-IDS_ERRORNAME "Error Name"
-IDS_SIGNEDDECIMAL "Signed Decimal"
-IDS_HIGHPART "HighPart"
-IDS_LOWPART "LowPart"
-IDS_DECIMAL "Decimal"
-IDS_TEXT "Text"
-IDS_LOWDATETIME "LowDateTime"
-IDS_HIGHDATETIME "HighDateTime"
-IDS_DATE "Date"
-IDS_GUID "GUID"
-IDS_RESTRICTION "Restriction"
-IDS_ACTIONS "Actions"
-IDS_VALUE "Value"
-IDS_ALTERNATEVIEW "Alternate View"
-// PropertyTagEditor.cpp
-IDS_PROPTAG "Property Tag"
-IDS_PROPID "Property ID"
-IDS_PROPTYPE "Property Type"
-IDS_PROPNAME "Property Name"
-IDS_NAMEPROPKIND "Named Property Kind"
-IDS_NAMEPROPNAME "Named Property Name (MNID_ID names in hex)"
-IDS_NAMEPROPGUID "Named Property GUID"
-IDS_MAPICREATE "MAPI_CREATE"
-IDS_KNOWNPROPTAGS "Known Property Tags"
-// Registry.cpp
-IDS_REGKEY_DEBUG_TAG "Debug flags (0 = None, ffff = Verbose. See help.):"
-IDS_REGKEY_DEBUG_TO_FILE "Enable debug output to file"
-IDS_REGKEY_DEBUG_FILE_NAME "Debug output file:"
-IDS_REGKEY_PARSED_NAMED_PROPS "Parse named properties"
-IDS_REGKEY_GETPROPNAMES_ON_ALL_PROPS "Parse named properties for all props (including those below 0x8000)"
-IDS_REGKEY_THROTTLE_LEVEL "Limit displayed table rows:"
-IDS_REGKEY_HIER_EXPAND_NOTIFS "Register for notifications when you navigate to a folder"
-IDS_REGKEY_HIER_ROOT_NOTIFS "Allow notifications on root container (may cause infinite loop in address book)"
-IDS_REGKEY_DO_SMART_VIEW "Enable Smart View"
-IDS_REGKEY_ONLYADDITIONALPROPERTIES "Only display additional properties in property pane"
-IDS_REGKEY_USE_GETPROPLIST "Use GetPropList for GetProps call (otherwise use NULL tag list)"
-IDS_REGKEY_CACHE_NAMED_PROPS "Cache named property mappings"
-IDS_REGKEY_ALLOW_DUPE_COLUMNS "Allow duplicate columns of different types"
-IDS_REGKEY_USE_ROW_DATA_FOR_SINGLEPROPLIST "Use row data for properties instead of GetProps"
-IDS_REGKEY_DO_COLUMN_NAMES "Use 'nice' column names"
-IDS_REGKEY_EDIT_COLUMNS_ON_LOAD "When loading tables, display the SetColumns edit dialog"
-IDS_REGKEY_MDB_ONLINE "Use the MDB_ONLINE flag when calling OpenMsgStore"
-IDS_REGKEY_MAPI_NO_CACHE "Use the MAPI_NO_CACHE flag when calling OpenEntry"
-IDS_REGKEY_ALLOW_PERSIST_CACHE "Cache IPersistMessage when opening forms in compose mode"
-IDS_REGKEY_USE_IMAPIPROGRESS "Enable IMAPIProgress tracing"
-IDS_REGKEY_USE_MESSAGERAW "Use IID_IMessageRaw when opening messages"
-IDS_REGKEY_SUPPRESS_NOTFOUND "Suppress MAPI_E_NOT_FOUND in contents table views"
-IDS_REGKEY_HEAPENABLETERMINATIONONCORRUPTION "Terminate on heap corruption (requires restart)"
-IDS_REGKEY_LOADADDINS "Load add-ins (requires restart)"
-IDS_REGKEY_FORCEOUTLOOKMAPI "Force the use of Outlook's MAPI files"
-IDS_REGKEY_FORCESYSTEMMAPI "Force the use of the system's MAPI files"
+	// MAPIProfileFunctions.cpp
+	IDS_EXCHANGE "Exchange"
+	IDS_PST "PST"
+	// MFCUtilityFunctions.cpp
+	IDS_FBRIGHTSVISIBLE "Free Busy Rights Visible"
+	IDS_ERROR "Error"
+	IDS_OFFSET "Offset (in hex):"
+	// MsgServiceTableDlg.cpp
+	IDS_MAPIUID "MAPI UID:"
+	IDS_MAPIUIDBYTESWAPPED "Byte swapped (useful for a UID read from the registry or memory)"
+	// MsgStoreDlg.cpp
+	IDS_PASTEFOLDERCONTENTS "Paste folder contents only"
+	IDS_FOLDERNAME "Folder Name:"
+	IDS_COPYSUBFOLDERS "Copy subfolders"
+	IDS_FOLDERMOVE "Move folder instead of copy"
+	IDS_COPYASSOCIATEDITEMS "Copy associated items"
+	IDS_MOVEMESSAGES "Move messages"
+	IDS_SINGLECALLCOPY "Use single call to CopyMessages to do copy"
+	IDS_REPLACERULES "Replace existing rules"
+	IDS_FOLDERTYPE "Folder Type:"
+	IDS_FOLDERCOMMENT "Folder Comment:"
+	IDS_PASSOPENIFEXISTS "Pass OPEN_IF_EXISTS"
+	IDS_DELASSOCIATED "Delete associated (hidden) items"
+	IDS_HARDDELETION "Hard Deletion"
+	IDS_MANUALLYEMPTYFOLDER "Delete items manually"
+	IDS_SAVEUNICODE "Save as Unicode MSG"
+	IDS_RECURSESUBFOLDERS "Recurse into subfolders"
+	IDS_SAVEREGULARCONTENTS "Save regular items"
+	IDS_SAVEASSOCIATEDCONTENTS "Save associated items"
+	IDS_DELETEASSOCIATION "Delete association"
+	IDS_MAPIFORCECREATE "Force IPM folder creation"
+	IDS_MAPIFULLIPMTREE "Create full IPM subtree"
+	// ProfileListDlg.cpp
+	IDS_MAILBOXNAME "Mailbox Name:"
+	IDS_DISPLAYSERVICEUI "Display service UI:"
+	// PropertyEditor.cpp
+	IDS_PROPVALUES "Property Values"
+	IDS_UNSIGNEDDECIMAL "Unsigned Decimal"
+	IDS_BOOLEAN "Boolean"
+	IDS_DOUBLE "Double"
+	IDS_OBJECT "Object"
+	IDS_FLOAT "Float"
+	IDS_BIN "Binary"
+	IDS_HI "Hi (decimal)"
+	IDS_LO "Lo (decimal)"
+	IDS_CURRENCY "Currency"
+	IDS_ERRORCODEHEX "Error Code (Hex)"
+	IDS_ERRORNAME "Error Name"
+	IDS_SIGNEDDECIMAL "Signed Decimal"
+	IDS_HIGHPART "HighPart"
+	IDS_LOWPART "LowPart"
+	IDS_DECIMAL "Decimal"
+	IDS_TEXT "Text"
+	IDS_LOWDATETIME "LowDateTime"
+	IDS_HIGHDATETIME "HighDateTime"
+	IDS_DATE "Date"
+	IDS_GUID "GUID"
+	IDS_RESTRICTION "Restriction"
+	IDS_ACTIONS "Actions"
+	IDS_VALUE "Value"
+	IDS_ALTERNATEVIEW "Alternate View"
+	// PropertyTagEditor.cpp
+	IDS_PROPTAG "Property Tag"
+	IDS_PROPID "Property ID"
+	IDS_PROPTYPE "Property Type"
+	IDS_PROPNAME "Property Name"
+	IDS_NAMEPROPKIND "Named Property Kind"
+	IDS_NAMEPROPNAME "Named Property Name (MNID_ID names in hex)"
+	IDS_NAMEPROPGUID "Named Property GUID"
+	IDS_MAPICREATE "MAPI_CREATE"
+	IDS_KNOWNPROPTAGS "Known Property Tags"
+	// Registry.cpp
+	IDS_REGKEY_DEBUG_TAG "Debug flags (0 = None, ffff = Verbose. See help.):"
+	IDS_REGKEY_DEBUG_TO_FILE "Enable debug output to file"
+	IDS_REGKEY_DEBUG_FILE_NAME "Debug output file:"
+	IDS_REGKEY_PARSED_NAMED_PROPS "Parse named properties"
+	IDS_REGKEY_GETPROPNAMES_ON_ALL_PROPS "Parse named properties for all props (including those below 0x8000)"
+	IDS_REGKEY_THROTTLE_LEVEL "Limit displayed table rows:"
+	IDS_REGKEY_HIER_EXPAND_NOTIFS "Register for notifications when you navigate to a folder"
+	IDS_REGKEY_HIER_ROOT_NOTIFS "Allow notifications on root container (may cause infinite loop in address book)"
+	IDS_REGKEY_DO_SMART_VIEW "Enable Smart View"
+	IDS_REGKEY_ONLYADDITIONALPROPERTIES "Only display additional properties in property pane"
+	IDS_REGKEY_USE_GETPROPLIST "Use GetPropList for GetProps call (otherwise use NULL tag list)"
+	IDS_REGKEY_CACHE_NAMED_PROPS "Cache named property mappings"
+	IDS_REGKEY_ALLOW_DUPE_COLUMNS "Allow duplicate columns of different types"
+	IDS_REGKEY_USE_ROW_DATA_FOR_SINGLEPROPLIST "Use row data for properties instead of GetProps"
+	IDS_REGKEY_DO_COLUMN_NAMES "Use 'nice' column names"
+	IDS_REGKEY_EDIT_COLUMNS_ON_LOAD "When loading tables, display the SetColumns edit dialog"
+	IDS_REGKEY_MDB_ONLINE "Use the MDB_ONLINE flag when calling OpenMsgStore"
+	IDS_REGKEY_MAPI_NO_CACHE "Use the MAPI_NO_CACHE flag when calling OpenEntry"
+	IDS_REGKEY_ALLOW_PERSIST_CACHE "Cache IPersistMessage when opening forms in compose mode"
+	IDS_REGKEY_USE_IMAPIPROGRESS "Enable IMAPIProgress tracing"
+	IDS_REGKEY_USE_MESSAGERAW "Use IID_IMessageRaw when opening messages"
+	IDS_REGKEY_SUPPRESS_NOTFOUND "Suppress MAPI_E_NOT_FOUND in contents table views"
+	IDS_REGKEY_HEAPENABLETERMINATIONONCORRUPTION "Terminate on heap corruption (requires restart)"
+	IDS_REGKEY_LOADADDINS "Load add-ins (requires restart)"
+	IDS_REGKEY_FORCEOUTLOOKMAPI "Force the use of Outlook's MAPI files"
+	IDS_REGKEY_FORCESYSTEMMAPI "Force the use of the system's MAPI files"
 
-// RestrictEditor.cpp
-IDS_RELOP "relop"
-IDS_ULPROPTAG1 "ulPropTag1"
-IDS_ULPROPTAG2 "ulPropTag2"
-IDS_ULPROPTAG "ulPropTag"
-IDS_LPPROPULPROPTAG "lpProp->ulPropTag"
-IDS_LPPROP "lpProp"
-IDS_LPPROPALTVIEW "lpProp - alternate view"
-IDS_RELBMR "relBMR"
-IDS_MASK "ulMask"
-IDS_ULSUBOBJECT "ulSubObject"
-IDS_LPRES "lpRes"
-IDS_SUBRESTRICTIONS "Subrestrictions"
-IDS_SUBRESTRICTION "Subrestriction"
-IDS_RESTRICTIONTEXT "Restriction Text"
-IDS_RESTRICTIONTYPE "Restriction Type"
-IDS_SEARCHSTATE "Search State"
-IDS_SEARCHFLAGS "Search Flags"
-IDS_EIDLIST "Entry ID List"
-// SingleMAPIPropListCtrl.cpp
-IDS_LOWERBOUND "Lower Bound (in hex):"
-IDS_UPPERBOUND "Upper Bound (in hex):"
-IDS_ULINCODEPAGE "ulInCodePage (in Decimal)"
-IDS_ULOUTCODEPAGE "ulOutCodePage (in Decimal)"
-IDS_COPYSTYLE "Copy style"
-IDS_SOURCEPROP "Source Prop"
-IDS_TARGETPROP "Target Prop"
-IDS_INTERFACE "Interface"
-IDS_OPENASEXTABLE "Open as Exchange Table"
-IDS_MAPIMOVE "MAPI_MOVE (move instead of copy)"
-IDS_MAPINOREPLACE "MAPI_NOREPLACE (do not replace existing properties)"
-IDS_HIGHESTNAMEDPROPNOTFOUND "No named properties were found"
-IDS_HIGHESTNAMEDPROPNUM "Highest named property found:"
-IDS_HIGHESTNAMEDPROPNAME "MAPI Property ID: 0x%1!04X!\r\n\
+	// RestrictEditor.cpp
+	IDS_RELOP "relop"
+	IDS_ULPROPTAG1 "ulPropTag1"
+	IDS_ULPROPTAG2 "ulPropTag2"
+	IDS_ULPROPTAG "ulPropTag"
+	IDS_LPPROPULPROPTAG "lpProp->ulPropTag"
+	IDS_LPPROP "lpProp"
+	IDS_LPPROPALTVIEW "lpProp - alternate view"
+	IDS_RELBMR "relBMR"
+	IDS_MASK "ulMask"
+	IDS_ULSUBOBJECT "ulSubObject"
+	IDS_LPRES "lpRes"
+	IDS_SUBRESTRICTIONS "Subrestrictions"
+	IDS_SUBRESTRICTION "Subrestriction"
+	IDS_RESTRICTIONTEXT "Restriction Text"
+	IDS_RESTRICTIONTYPE "Restriction Type"
+	IDS_SEARCHSTATE "Search State"
+	IDS_SEARCHFLAGS "Search Flags"
+	IDS_EIDLIST "Entry ID List"
+	// SingleMAPIPropListCtrl.cpp
+	IDS_LOWERBOUND "Lower Bound (in hex):"
+	IDS_UPPERBOUND "Upper Bound (in hex):"
+	IDS_ULINCODEPAGE "ulInCodePage (in Decimal)"
+	IDS_ULOUTCODEPAGE "ulOutCodePage (in Decimal)"
+	IDS_COPYSTYLE "Copy style"
+	IDS_SOURCEPROP "Source Prop"
+	IDS_TARGETPROP "Target Prop"
+	IDS_INTERFACE "Interface"
+	IDS_OPENASEXTABLE "Open as Exchange Table"
+	IDS_MAPIMOVE "MAPI_MOVE (move instead of copy)"
+	IDS_MAPINOREPLACE "MAPI_NOREPLACE (do not replace existing properties)"
+	IDS_HIGHESTNAMEDPROPNOTFOUND "No named properties were found"
+	IDS_HIGHESTNAMEDPROPNUM "Highest named property found:"
+	IDS_HIGHESTNAMEDPROPNAME "MAPI Property ID: 0x%1!04X!\r\n\
 Named property Name = %2!ws!\r\n\
 Named property GUID = %3!ws!"
 IDS_HIGHESTNAMEDPROPTOTAL "Total number of named properties (out of 32767):"
