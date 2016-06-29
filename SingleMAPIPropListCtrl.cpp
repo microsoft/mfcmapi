@@ -207,6 +207,11 @@ void CSingleMAPIPropListCtrl::InitMenu(_In_ CMenu* pMenu)
 				pMenu->EnableMenuItem(ulMenu, uiEnable);
 			}
 		}
+
+		if (!m_lpPropBag || m_lpPropBag->GetType() == pbRow)
+		{
+			pMenu->EnableMenuItem(ID_DELETEPROPERTY, DIM(false));
+		}
 	}
 }
 
@@ -1187,7 +1192,7 @@ void CSingleMAPIPropListCtrl::OnDeleteProperty()
 	HRESULT hRes = S_OK;
 	ULONG ulPropTag = NULL;
 
-	if (!m_lpPropBag) return;
+	if (!m_lpPropBag || m_lpPropBag->GetType() == pbRow) return;
 
 	GetSelectedPropTag(&ulPropTag);
 	if (!ulPropTag) return;
