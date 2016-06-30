@@ -29,8 +29,7 @@ private:
 	// Menu items
 	void OnOpenWithFlags();
 
-	LPTSTR m_lpszServerName;
+	wstring m_lpszServerName;
 
 	DECLARE_MESSAGE_MAP()
 };
-
