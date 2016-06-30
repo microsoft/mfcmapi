@@ -52,40 +52,14 @@ _Check_return_ HRESULT CallOpenMsgStore(
 	return hRes;
 } // CallOpenMsgStore
 
-// Build a server DN. Allocates memory. Free with MAPIFreeBuffer.
-_Check_return_ HRESULT BuildServerDN(
-	_In_z_ LPCTSTR szServerName,
-	_In_z_ LPCTSTR szPost,
-	_Deref_out_z_ LPTSTR* lpszServerDN)
+// Build a server DN.
+wstring BuildServerDN(
+	wstring szServerName,
+	wstring szPost)
 {
-	HRESULT hRes = S_OK;
-	if (!lpszServerDN) return MAPI_E_INVALID_PARAMETER;
-
-	static LPCTSTR szPre = _T("/cn=Configuration/cn=Servers/cn="); // STRING_OK
-	size_t cbPreLen = 0;
-	size_t cbServerLen = 0;
-	size_t cbPostLen = 0;
-	size_t cbServerDN = 0;
-
-	EC_H(StringCbLength(szPre, STRSAFE_MAX_CCH * sizeof(TCHAR), &cbPreLen));
-	EC_H(StringCbLength(szServerName, STRSAFE_MAX_CCH * sizeof(TCHAR), &cbServerLen));
-	EC_H(StringCbLength(szPost, STRSAFE_MAX_CCH * sizeof(TCHAR), &cbPostLen));
-
-	cbServerDN = cbPreLen + cbServerLen + cbPostLen + sizeof(TCHAR);
-
-	EC_H(MAPIAllocateBuffer(
-		(ULONG)cbServerDN,
-		(LPVOID*)lpszServerDN));
-
-	EC_H(StringCbPrintf(
-		*lpszServerDN,
-		cbServerDN,
-		_T("%s%s%s"), // STRING_OK
-		szPre,
-		szServerName,
-		szPost));
-	return hRes;
-} // BuildServerDN
+	static wstring szPre = L"/cn=Configuration/cn=Servers/cn="; // STRING_OK
+	return szPre + szServerName + szPost;
+}
 
 _Check_return_ HRESULT GetMailboxTable1(
 	_In_ LPMDB lpMDB,
@@ -190,18 +164,16 @@ _Check_return_ HRESULT GetMailboxTable(
 	*lpMailboxTable = NULL;
 
 	HRESULT	hRes = S_OK;
-	LPTSTR	szServerDN = NULL;
 	LPMAPITABLE lpLocalTable = NULL;
 
-	EC_H(BuildServerDN(
-		szServerName,
-		_T(""),
-		&szServerDN));
-	if (szServerDN)
+	wstring szServerDN = BuildServerDN(
+		LPCTSTRToWstring(szServerName),
+		L"");
+	if (!szServerDN.empty())
 	{
 		WC_H(GetMailboxTable3(
 			lpMDB,
-			szServerDN,
+			wstringToCString(szServerDN),
 			ulOffset,
 			fMapiUnicode,
 			&lpLocalTable));
@@ -210,16 +182,15 @@ _Check_return_ HRESULT GetMailboxTable(
 		{
 			WC_H(GetMailboxTable1(
 				lpMDB,
-				szServerDN,
+				wstringToCString(szServerDN),
 				fMapiUnicode,
 				&lpLocalTable));
 		}
 	}
 
 	*lpMailboxTable = lpLocalTable;
-	MAPIFreeBuffer(szServerDN);
 	return hRes;
-} // GetMailboxTable
+}
 
 _Check_return_ HRESULT GetPublicFolderTable1(
 	_In_ LPMDB lpMDB,
@@ -314,16 +285,15 @@ _Check_return_ HRESULT GetPublicFolderTable5(
 } // GetPublicFolderTable5
 
 // Get server name from the profile
-_Check_return_ HRESULT GetServerName(_In_ LPMAPISESSION lpSession, _Deref_out_opt_z_ LPTSTR* szServerName)
+wstring GetServerName(_In_ LPMAPISESSION lpSession)
 {
 	HRESULT			hRes = S_OK;
 	LPSERVICEADMIN	pSvcAdmin = NULL;
 	LPPROFSECT		pGlobalProfSect = NULL;
 	LPSPropValue	lpServerName = NULL;
+	wstring serverName;
 
-	if (!lpSession) return MAPI_E_INVALID_PARAMETER;
-
-	*szServerName = NULL;
+	if (!lpSession) return emptystring;
 
 	EC_MAPI(lpSession->AdminServices(
 		0,
@@ -341,7 +311,7 @@ _Check_return_ HRESULT GetServerName(_In_ LPMAPISESSION lpSession, _Deref_out_op
 
 	if (CheckStringProp(lpServerName, PT_STRING8)) // profiles are ASCII only
 	{
-		EC_H(CopyString(szServerName, LPCSTRToCString(lpServerName->Value.lpszA), NULL));
+		serverName = LPCSTRToWstring(lpServerName->Value.lpszA);
 	}
 #ifndef MRMAPI
 	else
@@ -359,15 +329,15 @@ _Check_return_ HRESULT GetServerName(_In_ LPMAPISESSION lpSession, _Deref_out_op
 
 		if (S_OK == hRes)
 		{
-			EC_H(CopyString(szServerName, MyData.GetString(0), NULL));
+			serverName = MyData.GetStringW(0);
 		}
 	}
 #endif
 	MAPIFreeBuffer(lpServerName);
 	if (pGlobalProfSect) pGlobalProfSect->Release();
 	if (pSvcAdmin) pSvcAdmin->Release();
-	return hRes;
-} // GetServerName
+	return serverName;
+}
 
 _Check_return_ HRESULT CreateStoreEntryID(
 	_In_ LPMDB lpMDB, // open message store
@@ -626,50 +596,43 @@ _Check_return_ HRESULT OpenOtherUsersMailbox(
 	_Deref_out_opt_ LPMDB* lppOtherUserMDB)
 {
 	HRESULT		hRes = S_OK;
-
-	LPTSTR		szServerNameFromProfile = NULL;
-	LPCTSTR		szServerNamePTR = NULL; // Just a pointer. Do not free.
+	wstring		szServerNameForLogon = LPCTSTRToWstring(szServerName);
 
 	*lppOtherUserMDB = NULL;
 
 	DebugPrint(DBGGeneric, L"OpenOtherUsersMailbox called with lpMAPISession = %p, lpMDB = %p, Server = \"%ws\", Mailbox = \"%ws\"\n", lpMAPISession, lpMDB, LPCTSTRToWstring(szServerName).c_str(), LPCTSTRToWstring(szMailboxDN).c_str());
 	if (!lpMAPISession || !lpMDB || !szMailboxDN || !StoreSupportsManageStore(lpMDB)) return MAPI_E_INVALID_PARAMETER;
 
-	szServerNamePTR = szServerName;
-	if (!szServerName)
+	if (szServerNameForLogon.empty())
 	{
 		// If we weren't given a server name, get one from the profile
-		EC_H(GetServerName(lpMAPISession, &szServerNameFromProfile));
-		szServerNamePTR = szServerNameFromProfile;
+		szServerNameForLogon = GetServerName(lpMAPISession);
 	}
 
-	if (szServerNamePTR)
+	if (!szServerNameForLogon.empty())
 	{
-		LPTSTR	szServerDN = NULL;
+		wstring szServerDN = NULL;
 
-		EC_H(BuildServerDN(
-			szServerNamePTR,
-			_T("/cn=Microsoft Private MDB"), // STRING_OK
-			&szServerDN));
+		szServerDN = BuildServerDN(
+			szServerNameForLogon,
+			L"/cn=Microsoft Private MDB"); // STRING_OK
 
-		if (szServerDN)
+		if (!szServerDN.empty())
 		{
-			DebugPrint(DBGGeneric, L"Calling HrMailboxLogon with Server DN = \"%ws\"\n", LPCTSTRToWstring(szServerDN).c_str());
+			DebugPrint(DBGGeneric, L"Calling HrMailboxLogon with Server DN = \"%ws\"\n", szServerDN.c_str());
 			WC_H(HrMailboxLogon(
 				lpMAPISession,
 				lpMDB,
-				szServerDN,
+				wstringToCString(szServerDN),
 				szMailboxDN,
 				ulFlags,
 				bForceServer,
 				lppOtherUserMDB));
-			MAPIFreeBuffer(szServerDN);
 		}
 	}
 
-	MAPIFreeBuffer(szServerNameFromProfile);
 	return hRes;
-} // OpenOtherUsersMailbox
+}
 
 #ifndef MRMAPI
 _Check_return_ HRESULT OpenMailboxWithPrompt(
@@ -725,13 +688,12 @@ _Check_return_ HRESULT OpenOtherUsersMailboxFromGal(
 	LPSPropValue lpEmailAddress = NULL;
 	LPMAILUSER lpMailUser = NULL;
 	LPMDB lpPrivateMDB = NULL;
-	LPTSTR szServerName = NULL;
 
 	*lppOtherUserMDB = NULL;
 
 	if (!lpMAPISession || !lpAddrBook) return MAPI_E_INVALID_PARAMETER;
 
-	EC_H(GetServerName(lpMAPISession, &szServerName));
+	wstring szServerName = GetServerName(lpMAPISession);
 
 	WC_H(OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpPrivateMDB));
 	if (lpPrivateMDB && StoreSupportsManageStore(lpPrivateMDB))
@@ -749,7 +711,7 @@ _Check_return_ HRESULT OpenOtherUsersMailboxFromGal(
 				WC_H(OpenMailboxWithPrompt(
 					lpMAPISession,
 					lpPrivateMDB,
-					szServerName,
+					wstringToCString(szServerName),
 					lpEmailAddress->Value.LPSZ,
 					OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP,
 					lppOtherUserMDB));
@@ -757,12 +719,11 @@ _Check_return_ HRESULT OpenOtherUsersMailboxFromGal(
 		}
 	}
 
-	MAPIFreeBuffer(szServerName);
 	MAPIFreeBuffer(lpEmailAddress);
 	if (lpMailUser) lpMailUser->Release();
 	if (lpPrivateMDB) lpPrivateMDB->Release();
 	return hRes;
-} // OpenOtherUsersMailboxFromGal
+}
 #endif
 
 // Use these guids:
@@ -868,24 +829,22 @@ _Check_return_ HRESULT OpenPublicMessageStore(
 
 		if (CheckStringProp(lpServerName, PT_TSTRING))
 		{
-			LPTSTR	szServerDN = NULL;
+			wstring szServerDN;
 
-			EC_H(BuildServerDN(
-				lpServerName->Value.LPSZ,
-				_T("/cn=Microsoft Public MDB"), // STRING_OK
-				&szServerDN));
+			szServerDN = BuildServerDN(
+				LPCTSTRToWstring(lpServerName->Value.LPSZ),
+				L"/cn=Microsoft Public MDB"); // STRING_OK
 
-			if (szServerDN)
+			if (!szServerDN.empty())
 			{
 				WC_H(HrMailboxLogon(
 					lpMAPISession,
 					lpPublicMDBNonAdmin,
-					szServerDN,
+					wstringToCString(szServerDN),
 					NULL,
 					ulFlags,
 					false,
 					lppPublicMDB));
-				MAPIFreeBuffer(szServerDN);
 			}
 		}
 	}

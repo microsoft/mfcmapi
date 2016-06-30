@@ -1493,7 +1493,7 @@ _Check_return_ bool CCriteriaEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 		lpData->data.Binary.NewBin.lpb = ByteVectorToMAPI(bin, m_lpNewEntryList);
 		if (lpData->data.Binary.NewBin.lpb)
 		{
-			lpData->data.Binary.NewBin.cb = bin.size();
+			lpData->data.Binary.NewBin.cb = (ULONG)bin.size();
 			szTmp.Format(_T("%u"), lpData->data.Binary.NewBin.cb); // STRING_OK
 			SetListString(ulListNum, iItem, 1, szTmp);
 			SetListStringW(ulListNum, iItem, 2, BinToHexString(&lpData->data.Binary.NewBin, false).c_str());

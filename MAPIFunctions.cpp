@@ -1379,7 +1379,7 @@ _Check_return_ LPBYTE ByteVectorToMAPI(vector<BYTE>& bin, LPVOID lpParent)
 
 	// We allocate a couple extra bytes (initialized to NULL) in case this buffer is printed.
 	WC_H(MAPIAllocateMore(
-		bin.size() + sizeof(WCHAR),
+		(ULONG)bin.size() + sizeof(WCHAR),
 		lpParent,
 		(LPVOID*)&lpBin));
 	if (SUCCEEDED(hRes) && lpBin)

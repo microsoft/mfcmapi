@@ -640,14 +640,13 @@ void CMainDlg::OnOpenMailboxWithDN()
 	HRESULT hRes = S_OK;
 	LPMDB lpMDB = NULL;
 	LPMDB lpOtherMDB = NULL;
-	LPTSTR szServerName = NULL;
 
 	if (!m_lpMapiObjects) return;
 
 	LPMAPISESSION lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
-	EC_H(GetServerName(lpMAPISession, &szServerName));
+	wstring szServerName = GetServerName(lpMAPISession);
 
 	EC_H(OpenDefaultMessageStore(lpMAPISession, &lpMDB));
 	if (!lpMDB) return;
@@ -657,7 +656,7 @@ void CMainDlg::OnOpenMailboxWithDN()
 		WC_H(OpenMailboxWithPrompt(
 			lpMAPISession,
 			lpMDB,
-			szServerName,
+			wstringToCString(szServerName),
 			NULL,
 			OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP,
 			&lpOtherMDB));
@@ -673,8 +672,6 @@ void CMainDlg::OnOpenMailboxWithDN()
 		}
 	}
 	lpMDB->Release();
-
-	MAPIFreeBuffer(szServerName);
 }
 
 void CMainDlg::OnOpenMessageStoreTable()
@@ -836,14 +833,13 @@ void CMainDlg::OnDumpServerContents()
 {
 	HRESULT hRes = S_OK;
 	WCHAR szDir[MAX_PATH] = { 0 };
-	LPTSTR szServerName = NULL;
 
 	if (!m_lpMapiObjects) return;
 
 	LPMAPISESSION lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
-	EC_H(GetServerName(lpMAPISession, &szServerName));
+	wstring szServerName = GetServerName(lpMAPISession);
 
 	CEditor MyData(
 		this,
@@ -851,7 +847,7 @@ void CMainDlg::OnDumpServerContents()
 		IDS_SERVERNAMEPROMPT,
 		1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyData.InitPane(0, CreateSingleLinePane(IDS_SERVERNAME, szServerName, false));
+	MyData.InitPane(0, CreateSingleLinePaneW(IDS_SERVERNAME, szServerName.c_str(), false));
 
 	WC_H(MyData.DisplayDialog());
 
@@ -869,7 +865,6 @@ void CMainDlg::OnDumpServerContents()
 			MyDumpStore.ProcessMailboxTable(MyData.GetString(0));
 		}
 	}
-	MAPIFreeBuffer(szServerName);
 }
 
 void CMainDlg::OnLogoff()

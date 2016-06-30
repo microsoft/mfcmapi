@@ -8,10 +8,9 @@ _Check_return_ HRESULT CallOpenMsgStore(
 	_In_ LPSBinary		lpEID,
 	ULONG			ulFlags,
 	_Deref_out_ LPMDB*			lpMDB);
-_Check_return_ HRESULT BuildServerDN(
-	_In_z_ LPCTSTR szServerName,
-	_In_z_ LPCTSTR szPost,
-	_Deref_out_z_ LPTSTR* lpszServerDN);
+wstring BuildServerDN(
+	wstring szServerName,
+	wstring szPost);
 _Check_return_ HRESULT GetMailboxTable(
 	_In_ LPMDB lpMDB,
 	_In_z_ LPCTSTR szServerName,
@@ -53,7 +52,7 @@ _Check_return_ HRESULT GetPublicFolderTable5(
 	ULONG ulFlags,
 	_In_opt_ LPGUID lpGuidMDB,
 	_Deref_out_opt_ LPMAPITABLE* lpPFTable);
-_Check_return_ HRESULT GetServerName(_In_ LPMAPISESSION lpSession, _Deref_out_opt_z_ LPTSTR* szServerName);
+wstring GetServerName(_In_ LPMAPISESSION lpSession);
 _Check_return_ HRESULT HrMailboxLogon(
 	_In_ LPMAPISESSION		lplhSession,	// ptr to MAPI session handle
 	_In_ LPMDB				lpMDB,			// ptr to message store
