@@ -469,8 +469,7 @@ void DisplayMailboxTable(_In_ CParentWnd*	lpParent,
 	if (lpMDB && StoreSupportsManageStore(lpMDB))
 	{
 		LPMAPITABLE	lpMailboxTable = NULL;
-		LPTSTR		szServerName = NULL;
-		EC_H(GetServerName(lpMAPISession, &szServerName));
+		wstring szServerName = GetServerName(lpMAPISession);
 
 		CEditor MyData(
 			(CWnd*)lpParent,
@@ -478,7 +477,7 @@ void DisplayMailboxTable(_In_ CParentWnd*	lpParent,
 			IDS_SERVERNAMEPROMPT,
 			4,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.InitPane(0, CreateSingleLinePane(IDS_SERVERNAME, szServerName, false));
+		MyData.InitPane(0, CreateSingleLinePaneW(IDS_SERVERNAME, szServerName.c_str(), false));
 		MyData.InitPane(1, CreateSingleLinePane(IDS_OFFSET, NULL, false));
 		MyData.SetHex(1, 0);
 		MyData.InitPane(2, CreateSingleLinePane(IDS_MAILBOXGUID, NULL, false));
@@ -497,13 +496,10 @@ void DisplayMailboxTable(_In_ CParentWnd*	lpParent,
 
 		else if (S_OK == hRes)
 		{
-			LPTSTR	szServerDN = NULL;
-
-			EC_H(BuildServerDN(
-				MyData.GetString(0),
-				_T(""),
-				&szServerDN));
-			if (szServerDN)
+			wstring szServerDN = BuildServerDN(
+				MyData.GetStringW(0),
+				L"");
+			if (!szServerDN.empty())
 			{
 				LPMDB lpOldMDB = NULL;
 
@@ -520,14 +516,14 @@ void DisplayMailboxTable(_In_ CParentWnd*	lpParent,
 				case 0:
 					EC_H(GetMailboxTable1(
 						lpMDB,
-						szServerDN,
+						wstringToCString(szServerDN),
 						fMapiUnicode,
 						&lpMailboxTable));
 					break;
 				case 1:
 					EC_H(GetMailboxTable3(
 						lpMDB,
-						szServerDN,
+						wstringToCString(szServerDN),
 						MyData.GetHex(1),
 						fMapiUnicode,
 						&lpMailboxTable));
@@ -537,14 +533,13 @@ void DisplayMailboxTable(_In_ CParentWnd*	lpParent,
 					GUID MyGUID = { 0 };
 					bool bHaveGUID = false;
 
-					LPTSTR pszGUID = NULL;
-					pszGUID = MyData.GetString(2);
+					wstring pszGUID = MyData.GetStringW(2);
 
-					if (_T('\0') != pszGUID[0])
+					if (!pszGUID.empty())
 					{
 						bHaveGUID = true;
 
-						MyGUID = StringToGUID(MyData.GetStringW(2));
+						MyGUID = StringToGUID(pszGUID);
 						if (MyGUID == GUID_NULL)
 						{
 							ErrDialog(__FILE__, __LINE__, IDS_EDINVALIDGUID);
@@ -554,7 +549,7 @@ void DisplayMailboxTable(_In_ CParentWnd*	lpParent,
 
 					EC_H(GetMailboxTable5(
 						lpMDB,
-						szServerDN,
+						wstringToCString(szServerDN),
 						MyData.GetHex(1),
 						fMapiUnicode,
 						bHaveGUID ? &MyGUID : 0,
@@ -585,10 +580,9 @@ void DisplayMailboxTable(_In_ CParentWnd*	lpParent,
 					if (lpOldMDB) lpOldMDB->Release();
 				}
 			}
-			MAPIFreeBuffer(szServerDN);
 		}
-		MAPIFreeBuffer(szServerName);
 	}
+
 	if (lpPrivateMDB) lpPrivateMDB->Release();
 }
 
@@ -612,8 +606,7 @@ void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
 	if (lpMDB && StoreSupportsManageStore(lpMDB))
 	{
 		LPMAPITABLE	lpPFTable = NULL;
-		LPTSTR		szServerName = NULL;
-		EC_H(GetServerName(lpMAPISession, &szServerName));
+		wstring szServerName = GetServerName(lpMAPISession);
 
 		CEditor MyData(
 			(CWnd*)lpParent,
@@ -621,7 +614,7 @@ void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
 			IDS_DISPLAYPFTABLEPROMPT,
 			5,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.InitPane(0, CreateSingleLinePane(IDS_SERVERNAME, szServerName, false));
+		MyData.InitPane(0, CreateSingleLinePaneW(IDS_SERVERNAME, szServerName.c_str(), false));
 		MyData.InitPane(1, CreateSingleLinePane(IDS_OFFSET, NULL, false));
 		MyData.SetHex(1, 0);
 		MyData.InitPane(2, CreateSingleLinePane(IDS_FLAGS, NULL, false));
@@ -642,13 +635,10 @@ void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
 
 		else if (S_OK == hRes)
 		{
-			LPTSTR	szServerDN = NULL;
-
-			EC_H(BuildServerDN(
-				MyData.GetString(0),
-				_T(""),
-				&szServerDN));
-			if (szServerDN)
+			wstring szServerDN = BuildServerDN(
+				MyData.GetStringW(0),
+				L"");
+			if (!szServerDN.empty())
 			{
 				LPMDB lpOldMDB = NULL;
 
@@ -666,14 +656,14 @@ void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
 				case 0:
 					EC_H(GetPublicFolderTable1(
 						lpMDB,
-						szServerDN,
+						wstringToCString(szServerDN),
 						MyData.GetHex(2) | fMapiUnicode,
 						&lpPFTable));
 					break;
 				case 1:
 					EC_H(GetPublicFolderTable4(
 						lpMDB,
-						szServerDN,
+						wstringToCString(szServerDN),
 						MyData.GetHex(1),
 						MyData.GetHex(2) | fMapiUnicode,
 						&lpPFTable));
@@ -700,7 +690,7 @@ void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
 
 					EC_H(GetPublicFolderTable5(
 						lpMDB,
-						szServerDN,
+						wstringToCString(szServerDN),
 						MyData.GetHex(1),
 						MyData.GetHex(2) | fMapiUnicode,
 						bHaveGUID ? &MyGUID : 0,
@@ -731,10 +721,9 @@ void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
 					if (lpOldMDB) lpOldMDB->Release();
 				}
 			}
-			MAPIFreeBuffer(szServerDN);
 		}
-		MAPIFreeBuffer(szServerName);
 	}
+
 	if (lpPrivateMDB) lpPrivateMDB->Release();
 }
 
