@@ -380,7 +380,7 @@ _Check_return_ HRESULT CopyFolderContents(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LP
 				}
 			}
 
-			LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIFolder::CopyMessages"), hWnd); // STRING_OK
+			LPMAPIPROGRESS lpProgress = GetMAPIProgress(L"IMAPIFolder::CopyMessages", hWnd); // STRING_OK
 
 			ULONG ulCopyFlags = bMove ? MESSAGE_MOVE : 0;
 
@@ -423,7 +423,7 @@ _Check_return_ HRESULT CopyFolderContents(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LP
 					sbaEID.cValues = 1;
 					sbaEID.lpbin = &pRows->aRow->lpProps[fldPR_ENTRYID].Value.bin;
 
-					LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIFolder::CopyMessages"), hWnd); // STRING_OK
+					LPMAPIPROGRESS lpProgress = GetMAPIProgress(L"IMAPIFolder::CopyMessages", hWnd); // STRING_OK
 
 					ULONG ulCopyFlags = bMove ? MESSAGE_MOVE : 0;
 
@@ -975,7 +975,7 @@ _Check_return_ HRESULT DeleteToDeletedItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLDER 
 
 	if (lpWasteFolder)
 	{
-		LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIFolder::CopyMessages"), hWnd); // STRING_OK
+		LPMAPIPROGRESS lpProgress = GetMAPIProgress(L"IMAPIFolder::CopyMessages", hWnd); // STRING_OK
 
 		ULONG ulCopyFlags = MESSAGE_MOVE;
 
@@ -1739,7 +1739,7 @@ _Check_return_ HRESULT ResendSingleMessage(
 
 				DebugPrint(DBGGeneric, L"Copying recipients and attachments to new message.\n");
 
-				LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIProp::CopyProps"), hWnd); // STRING_OK
+				LPMAPIPROGRESS lpProgress = GetMAPIProgress(L"IMAPIProp::CopyProps", hWnd); // STRING_OK
 
 				EC_MAPI(lpAttachMsg->CopyProps(
 					(LPSPropTagArray)&atObjs,
@@ -2050,7 +2050,7 @@ _Check_return_ HRESULT CopyNamedProps(_In_ LPMAPIPROP lpSource, _In_ LPGUID lpPr
 		if (bDoMove)		ulFlags |= MAPI_MOVE;
 		if (bDoNoReplace)	ulFlags |= MAPI_NOREPLACE;
 
-		LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIProp::CopyProps"), hWnd); // STRING_OK
+		LPMAPIPROGRESS lpProgress = GetMAPIProgress(L"IMAPIProp::CopyProps", hWnd); // STRING_OK
 
 		if (lpProgress)
 			ulFlags |= MAPI_DIALOG;
@@ -2701,7 +2701,7 @@ HRESULT CopyTo(HWND hWnd, _In_ LPMAPIPROP lpSource, _In_ LPMAPIPROP lpDest, LPCG
 			ulCopyFlags = MyData.GetHex(1);
 			if (hWnd)
 			{
-				lpProgress = GetMAPIProgress(_T("CopyTo"), hWnd); // STRING_OK
+				lpProgress = GetMAPIProgress(L"CopyTo", hWnd); // STRING_OK
 				if (lpProgress)
 					ulCopyFlags |= MAPI_DIALOG;
 			}

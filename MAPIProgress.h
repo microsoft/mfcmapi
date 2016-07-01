@@ -22,12 +22,12 @@ private:
 
 	void OutputState(wstring lpszFunction);
 
-	LONG		m_cRef;
-	ULONG		m_ulMin;
-	ULONG		m_ulMax;
-	ULONG		m_ulFlags;
-	wstring		m_szContext;
-	HWND		m_hWnd;
+	LONG m_cRef;
+	ULONG m_ulMin;
+	ULONG m_ulMax;
+	ULONG m_ulFlags;
+	wstring m_szContext;
+	HWND m_hWnd;
 };
 
-_Check_return_ CMAPIProgress* GetMAPIProgress(_In_z_ LPCTSTR lpszContext, _In_ HWND hWnd);
+_Check_return_ CMAPIProgress* GetMAPIProgress(wstring lpszContext, _In_ HWND hWnd);

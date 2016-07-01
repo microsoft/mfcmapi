@@ -474,7 +474,7 @@ _Check_return_ bool CFolderDlg::HandlePaste()
 		{
 			if (0 == MyData.GetDropDown(1))
 			{ // CopyMessages
-				LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIFolder::CopyMessages"), m_hWnd); // STRING_OK
+				LPMAPIPROGRESS lpProgress = GetMAPIProgress(L"IMAPIFolder::CopyMessages", m_hWnd); // STRING_OK
 
 				if (lpProgress)
 					ulMoveMessage |= MESSAGE_DIALOG;
@@ -539,7 +539,7 @@ _Check_return_ bool CFolderDlg::HandlePaste()
 								LPSPropProblemArray lpProblems = NULL;
 
 								// copy message properties to IMessage object opened on top of IStorage.
-								LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIProp::CopyTo"), m_hWnd); // STRING_OK
+								LPMAPIPROGRESS lpProgress = GetMAPIProgress(L"IMAPIProp::CopyTo", m_hWnd); // STRING_OK
 
 								if (lpProgress)
 									ulMoveMessage |= MAPI_DIALOG;
@@ -719,7 +719,7 @@ void CFolderDlg::OnDeleteSelectedItem()
 		}
 		else
 		{
-			LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIFolder::DeleteMessages"), m_hWnd); // STRING_OK
+			LPMAPIPROGRESS lpProgress = GetMAPIProgress(L"IMAPIFolder::DeleteMessages", m_hWnd); // STRING_OK
 
 			if (lpProgress)
 				ulFlag |= MESSAGE_DIALOG;
@@ -1887,7 +1887,7 @@ void CFolderDlg::OnSetReadFlag()
 
 			EC_H(m_lpContentsTableListCtrl->GetSelectedItemEIDs(&lpEIDs));
 
-			LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIFolder::SetReadFlags"), m_hWnd); // STRING_OK
+			LPMAPIPROGRESS lpProgress = GetMAPIProgress(L"IMAPIFolder::SetReadFlags", m_hWnd); // STRING_OK
 
 			ULONG ulFlags = MyFlags.GetHex(0);
 

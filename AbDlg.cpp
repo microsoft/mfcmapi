@@ -309,7 +309,7 @@ _Check_return_ bool CAbDlg::HandlePaste()
 		WC_H(MyData.DisplayDialog());
 		if (S_OK == hRes)
 		{
-			LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IABContainer::CopyEntries"), m_hWnd); // STRING_OK
+			LPMAPIPROGRESS lpProgress = GetMAPIProgress(L"IABContainer::CopyEntries", m_hWnd); // STRING_OK
 
 			EC_MAPI(((LPABCONT)m_lpContainer)->CopyEntries(
 				lpEIDs,
