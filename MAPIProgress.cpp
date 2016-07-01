@@ -7,18 +7,18 @@
 static wstring CLASS = L"CMAPIProgress";
 
 #ifdef MRMAPI
-_Check_return_ CMAPIProgress* GetMAPIProgress(_In_z_ LPCTSTR /*lpszContext*/, _In_ HWND /*hWnd*/)
+_Check_return_ CMAPIProgress* GetMAPIProgress(wstring /*lpszContext*/, _In_ HWND /*hWnd*/)
 {
 	return NULL;
-} // GetMAPIProgress
+}
 #endif
 
 #ifndef MRMAPI
-_Check_return_ CMAPIProgress* GetMAPIProgress(_In_z_ LPCTSTR lpszContext, _In_ HWND hWnd)
+_Check_return_ CMAPIProgress* GetMAPIProgress(wstring lpszContext, _In_ HWND hWnd)
 {
 	if (RegKeys[regkeyUSE_IMAPIPROGRESS].ulCurDWORD)
 	{
-		CMAPIProgress * pProgress = new CMAPIProgress(LPCTSTRToWstring(lpszContext), hWnd);
+		CMAPIProgress * pProgress = new CMAPIProgress(lpszContext, hWnd);
 
 		return pProgress;
 	}

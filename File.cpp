@@ -180,7 +180,7 @@ _Check_return_ HRESULT LoadFromMSG(_In_z_ LPCWSTR szMessageFile, _In_ LPMESSAGE 
 	{
 		LPSPropProblemArray lpProblems = NULL;
 
-		LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMAPIProp::CopyTo"), hWnd); // STRING_OK
+		LPMAPIPROGRESS lpProgress = GetMAPIProgress(L"IMAPIProp::CopyTo", hWnd); // STRING_OK
 
 		EC_MAPI(pIMsg->CopyTo(
 			0,
@@ -986,7 +986,7 @@ _Check_return_ HRESULT DeleteAttachments(_In_ LPMESSAGE lpMessage, _In_opt_z_ LP
 					}
 
 					// Open the attachment
-					LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMessage::DeleteAttach"), hWnd); // STRING_OK
+					LPMAPIPROGRESS lpProgress = GetMAPIProgress(L"IMessage::DeleteAttach", hWnd); // STRING_OK
 
 					EC_MAPI(lpMessage->DeleteAttach(
 						pRows->aRow[iRow].lpProps[ATTACHNUM].Value.l,

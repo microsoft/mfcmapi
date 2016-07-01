@@ -306,7 +306,7 @@ _Check_return_ bool CAttachmentsDlg::HandlePaste()
 				EC_MAPI(m_lpMessage->CreateAttach(NULL, MAPI_DEFERRED_ERRORS, &ulAttNum, &lpAttDst));
 				if (lpAttDst)
 				{
-					LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IAttach::CopyTo"), m_hWnd); // STRING_OK
+					LPMAPIPROGRESS lpProgress = GetMAPIProgress(L"IAttach::CopyTo", m_hWnd); // STRING_OK
 
 					// Copy from source to destination
 					EC_MAPI(lpAttSrc->CopyTo(
@@ -378,7 +378,7 @@ void CAttachmentsDlg::OnDeleteSelectedItem()
 			{
 				DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L"Deleting attachment 0x%08X\n", lpAttNumList[iSelection]);
 
-				LPMAPIPROGRESS lpProgress = GetMAPIProgress(_T("IMessage::DeleteAttach"), m_hWnd); // STRING_OK
+				LPMAPIPROGRESS lpProgress = GetMAPIProgress(L"IMessage::DeleteAttach", m_hWnd); // STRING_OK
 
 				EC_MAPI(m_lpMessage->DeleteAttach(
 					lpAttNumList[iSelection],
