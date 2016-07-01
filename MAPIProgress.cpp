@@ -18,7 +18,7 @@ _Check_return_ CMAPIProgress* GetMAPIProgress(_In_z_ LPCTSTR lpszContext, _In_ H
 {
 	if (RegKeys[regkeyUSE_IMAPIPROGRESS].ulCurDWORD)
 	{
-		CMAPIProgress * pProgress = new CMAPIProgress(lpszContext, hWnd);
+		CMAPIProgress * pProgress = new CMAPIProgress(LPCTSTRToWstring(lpszContext), hWnd);
 
 		return pProgress;
 	}
@@ -26,7 +26,7 @@ _Check_return_ CMAPIProgress* GetMAPIProgress(_In_z_ LPCTSTR lpszContext, _In_ H
 	return NULL;
 }
 
-CMAPIProgress::CMAPIProgress(_In_z_ LPCTSTR lpszContext, _In_ HWND hWnd)
+CMAPIProgress::CMAPIProgress(wstring lpszContext, _In_ HWND hWnd)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 
@@ -36,14 +36,13 @@ CMAPIProgress::CMAPIProgress(_In_z_ LPCTSTR lpszContext, _In_ HWND hWnd)
 	m_ulFlags = MAPI_TOP_LEVEL;
 	m_hWnd = hWnd;
 
-	if (lpszContext)
+	if (!lpszContext.empty())
 	{
 		m_szContext = lpszContext;
 	}
 	else
 	{
-		HRESULT hRes = S_OK;
-		EC_B(m_szContext.LoadString(IDS_NOCONTEXT));
+		m_szContext = loadstring(IDS_NOCONTEXT);
 	}
 }
 
@@ -84,14 +83,14 @@ STDMETHODIMP_(ULONG) CMAPIProgress::Release()
 _Check_return_ STDMETHODIMP CMAPIProgress::Progress(ULONG ulValue, ULONG ulCount, ULONG ulTotal)
 {
 	DebugPrintEx(DBGGeneric, CLASS, L"Progress", L"(%ws) - ulValue = %u, ulCount = %u, ulTotal = %u\n",
-		LPCTSTRToWstring(m_szContext).c_str(), ulValue, ulCount, ulTotal);
+		m_szContext.c_str(), ulValue, ulCount, ulTotal);
 
-	OutputState(_T("Progress"));
+	OutputState(L"Progress");
 
 	if (m_hWnd)
 	{
 		int iPercent = ::MulDiv(ulValue - m_ulMin, 100, m_ulMax - m_ulMin);
-		CBaseDialog::UpdateStatus(m_hWnd, STATUSINFOTEXT, formatmessage(IDS_PERCENTLOADED, m_szContext, iPercent));
+		CBaseDialog::UpdateStatus(m_hWnd, STATUSINFOTEXT, formatmessage(IDS_PERCENTLOADED, m_szContext.c_str(), iPercent));
 	}
 
 	return S_OK;
@@ -104,7 +103,7 @@ STDMETHODIMP CMAPIProgress::GetFlags(ULONG* lpulFlags)
 		return MAPI_E_INVALID_PARAMETER;
 	}
 
-	OutputState(_T("GetFlags"));
+	OutputState(L"GetFlags");
 
 	*lpulFlags = m_ulFlags;
 	return S_OK;
@@ -115,7 +114,7 @@ STDMETHODIMP CMAPIProgress::GetMax(ULONG* lpulMax)
 	if (!lpulMax)
 		return MAPI_E_INVALID_PARAMETER;
 
-	OutputState(_T("GetMax"));
+	OutputState(L"GetMax");
 
 	*lpulMax = m_ulMax;
 	return S_OK;
@@ -126,7 +125,7 @@ STDMETHODIMP CMAPIProgress::GetMin(ULONG* lpulMin)
 	if (!lpulMin)
 		return MAPI_E_INVALID_PARAMETER;
 
-	OutputState(_T("GetMin"));
+	OutputState(L"GetMin");
 
 	*lpulMin = m_ulMin;
 	return S_OK;
@@ -134,7 +133,7 @@ STDMETHODIMP CMAPIProgress::GetMin(ULONG* lpulMin)
 
 STDMETHODIMP CMAPIProgress::SetLimits(ULONG* lpulMin, ULONG* lpulMax, ULONG* lpulFlags)
 {
-	OutputState(_T("SetLimits"));
+	OutputState(L"SetLimits");
 
 	HRESULT hRes = S_OK;
 	TCHAR szMin[16];
@@ -169,7 +168,7 @@ STDMETHODIMP CMAPIProgress::SetLimits(ULONG* lpulMin, ULONG* lpulMax, ULONG* lpu
 	}
 
 	DebugPrintEx(DBGGeneric, CLASS, L"SetLimits", L"(%ws) - Passed Values: lpulMin = %ws, lpulMax = %ws, lpulFlags = %ws\n",
-		LPCTSTRToWstring(m_szContext).c_str(), LPCTSTRToWstring(szMin).c_str(), LPCTSTRToWstring(szMax).c_str(), LPCTSTRToWstring(szFlags).c_str());
+		m_szContext.c_str(), LPCTSTRToWstring(szMin).c_str(), LPCTSTRToWstring(szMax).c_str(), LPCTSTRToWstring(szFlags).c_str());
 
 	if (lpulMin)
 		m_ulMin = *lpulMin;
@@ -180,14 +179,14 @@ STDMETHODIMP CMAPIProgress::SetLimits(ULONG* lpulMin, ULONG* lpulMax, ULONG* lpu
 	if (lpulFlags)
 		m_ulFlags = *lpulFlags;
 
-	OutputState(_T("SetLimits"));
+	OutputState(L"SetLimits");
 
 	return S_OK;
 }
 
-void CMAPIProgress::OutputState(_In_z_ LPCTSTR lpszFunction)
+void CMAPIProgress::OutputState(wstring lpszFunction)
 {
 	DebugPrint(DBGGeneric, L"%ws::%ws(%ws) - Current Values: Min = %u, Max = %u, Flags = %u\n",
-		CLASS, LPCTSTRToWstring(lpszFunction).c_str(), LPCTSTRToWstring(m_szContext).c_str(), m_ulMin, m_ulMax, m_ulFlags);
+		CLASS, lpszFunction.c_str(), m_szContext.c_str(), m_ulMin, m_ulMax, m_ulFlags);
 }
 #endif
