@@ -1933,6 +1933,8 @@ szEmailAddress = %5!hs!"
 
 IDS_ENTRYIDUNKNOWN "Entry ID:\r\n"
 
+IDS_ENTRYIDEPHEMERALADDRESS "Ephemeral Entry ID:\r\n"
+
 IDS_ENTRYIDSHORTTERM "Short Term Entry ID:\r\n"
 
 IDS_ENTRYIDEXCHANGEFOLDER "Exchange Folder Entry ID:\r\n"
@@ -1959,6 +1961,9 @@ abFlags[1] = 0x%3!02X!= %4!ws!\r\n\
 abFlags[2..3] = 0x%5!02X!%6!02X!\r\n"
 
 IDS_ENTRYIDPROVIDERGUID "Provider GUID = %1!ws!"
+
+IDS_ENTRYIDEPHEMERALADDRESSDATA "\r\nVersion = 0x%1!08X! = %2!ws!\r\n\
+Type = 0x%3!08X! = %4!ws!"
 
 IDS_ENTRYIDEXCHANGEADDRESSDATA "\r\nVersion = 0x%1!08X! = %2!ws!\r\n\
 Type = 0x%3!08X! = %4!ws!\r\n\

@@ -4,6 +4,7 @@
 enum EIDStructType
 {
 	eidtUnknown = 0,
+	eidtEphemeral,
 	eidtShortTerm,
 	eidtFolder,
 	eidtMessage,
@@ -88,6 +89,11 @@ private:
 			LPWSTR v3SmtpAddress;
 			BYTE v2Reserved[2];
 		} MessageDatabaseObject;
+		struct
+		{
+			ULONG Version;
+			ULONG Type;
+		} EphemeralObject;
 		struct
 		{
 			DWORD Bitmask;
