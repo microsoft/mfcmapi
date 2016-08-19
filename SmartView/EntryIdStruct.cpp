@@ -60,8 +60,13 @@ void EntryIdStruct::Parse()
 	m_Parser.GetBYTE(&m_abFlags[3]);
 	m_Parser.GetBYTESNoAlloc(sizeof(m_ProviderUID), sizeof(m_ProviderUID), (LPBYTE)&m_ProviderUID);
 
+	// Ephemeral entry ID:
+	if (m_abFlags[0] == EPHEMERAL)
+	{
+		m_ObjectType = eidtEphemeral;
+	}
 	// One Off Recipient
-	if (!memcmp(m_ProviderUID, &muidOOP, sizeof(GUID)))
+	else if (!memcmp(m_ProviderUID, &muidOOP, sizeof(GUID)))
 	{
 		m_ObjectType = eidtOneOff;
 	}
@@ -103,6 +108,11 @@ void EntryIdStruct::Parse()
 	{
 		switch (m_ObjectType)
 		{
+			// Ephemeral Recipient
+		case eidtEphemeral:
+			m_Parser.GetDWORD(&m_ProviderData.EphemeralObject.Version);
+			m_Parser.GetDWORD(&m_ProviderData.EphemeralObject.Type);
+			break;
 			// One Off Recipient
 		case eidtOneOff:
 			m_Parser.GetDWORD(&m_ProviderData.OneOffRecipientObject.Bitmask);
@@ -192,11 +202,11 @@ void EntryIdStruct::Parse()
 			// We only know how to parse emsmdb.dll's wrapped entry IDs
 			if (m_ProviderData.MessageDatabaseObject.DLLFileName &&
 				CSTR_EQUAL == CompareStringA(LOCALE_INVARIANT,
-				NORM_IGNORECASE,
-				m_ProviderData.MessageDatabaseObject.DLLFileName,
-				-1,
-				"emsmdb.dll", // STRING_OK
-				-1))
+					NORM_IGNORECASE,
+					m_ProviderData.MessageDatabaseObject.DLLFileName,
+					-1,
+					"emsmdb.dll", // STRING_OK
+					-1))
 			{
 				m_ProviderData.MessageDatabaseObject.bIsExchange = true;
 				size_t cbRead = m_Parser.GetCurrentOffset();
@@ -222,7 +232,7 @@ void EntryIdStruct::Parse()
 				// Either we're not a PF eid, or this PF EID wasn't followed directly by a magic value
 				if (!(m_ProviderData.MessageDatabaseObject.WrappedType & OPENSTORE_PUBLIC) ||
 					(m_ProviderData.MessageDatabaseObject.MagicVersion != MDB_STORE_EID_V2_MAGIC &&
-					m_ProviderData.MessageDatabaseObject.MagicVersion != MDB_STORE_EID_V3_MAGIC))
+						m_ProviderData.MessageDatabaseObject.MagicVersion != MDB_STORE_EID_V3_MAGIC))
 				{
 					m_Parser.GetStringA(&m_ProviderData.MessageDatabaseObject.MailboxDN);
 				}
@@ -329,6 +339,9 @@ _Check_return_ wstring EntryIdStruct::ToStringInternal()
 	case eidtUnknown:
 		szEntryId = formatmessage(IDS_ENTRYIDUNKNOWN);
 		break;
+	case eidtEphemeral:
+		szEntryId = formatmessage(IDS_ENTRYIDEPHEMERALADDRESS);
+		break;
 	case eidtShortTerm:
 		szEntryId = formatmessage(IDS_ENTRYIDSHORTTERM);
 		break;
@@ -376,7 +389,16 @@ _Check_return_ wstring EntryIdStruct::ToStringInternal()
 	wstring szGUID = GUIDToStringAndName((LPGUID)&m_ProviderUID);
 	szEntryId += formatmessage(IDS_ENTRYIDPROVIDERGUID, szGUID.c_str());
 
-	if (eidtOneOff == m_ObjectType)
+	if (eidtEphemeral == m_ObjectType)
+	{
+		wstring szVersion = InterpretFlags(flagExchangeABVersion, m_ProviderData.EphemeralObject.Version);
+		wstring szType = InterpretNumberAsStringProp(m_ProviderData.EphemeralObject.Type, PR_DISPLAY_TYPE);
+
+		szEntryId += formatmessage(IDS_ENTRYIDEPHEMERALADDRESSDATA,
+			m_ProviderData.AddressBookObject.Version, szVersion.c_str(),
+			m_ProviderData.AddressBookObject.Type, szType.c_str());
+	}
+	else if (eidtOneOff == m_ObjectType)
 	{
 		wstring szFlags = InterpretFlags(flagOneOffEntryId, m_ProviderData.OneOffRecipientObject.Bitmask);
 		if (MAPI_UNICODE & m_ProviderData.OneOffRecipientObject.Bitmask)
