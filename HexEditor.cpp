@@ -19,7 +19,7 @@ enum __HexEditorFields
 };
 
 CHexEditor::CHexEditor(_In_ CParentWnd* pParentWnd, _In_ CMapiObjects* lpMapiObjects) :
-CEditor(pParentWnd, IDS_HEXEDITOR, NULL, 0, CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_ACTION2 | CEDITOR_BUTTON_ACTION3, IDS_IMPORT, IDS_EXPORT, IDS_CLOSE)
+	CEditor(pParentWnd, IDS_HEXEDITOR, NULL, 0, CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_ACTION2 | CEDITOR_BUTTON_ACTION3, IDS_IMPORT, IDS_EXPORT, IDS_CLOSE)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	m_lpMapiObjects = lpMapiObjects;
@@ -61,7 +61,7 @@ void CleanString(_In_ CString* lpString)
 	lpString->Replace(_T("\n"), _T("")); // STRING_OK
 	lpString->Replace(_T("\t"), _T("")); // STRING_OK
 	lpString->Replace(_T(" "), _T("")); // STRING_OK
-} // CleanString
+}
 
 _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 {
@@ -71,13 +71,13 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 	if ((ULONG)-1 == i) return (ULONG)-1;
 
 	CString szTmpString;
-	LPBYTE	lpb = NULL;
-	size_t	cb = 0;
-	LPTSTR	szEncodeStr = NULL;
-	size_t	cchEncodeStr = 0;
+	LPBYTE lpb = NULL;
+	size_t cb = 0;
+	wstring szEncodeStr;
+	size_t cchEncodeStr = 0;
 	switch (i)
 	{
-	case(HEXED_ANSI) :
+	case HEXED_ANSI:
 	{
 		size_t cchStr = NULL;
 		lpb = (LPBYTE)GetEditBoxTextA(HEXED_ANSI, &cchStr);
@@ -89,13 +89,13 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 		if (cchStr) cchStr -= 1;
 		cb = cchStr * sizeof(CHAR);
 
-		WC_H(Base64Encode(cb, lpb, &cchEncodeStr, &szEncodeStr));
-		SetString(HEXED_BASE64, szEncodeStr);
+		szEncodeStr = Base64Encode(cb, lpb);
+		SetStringW(HEXED_BASE64, szEncodeStr.c_str());
 
 		SetBinary(HEXED_HEX, lpb, cb);
 	}
-					 break;
-	case(HEXED_UNICODE) : // Unicode string changed
+	break;
+	case HEXED_UNICODE: // Unicode string changed
 	{
 		size_t cchStr = NULL;
 		lpb = (LPBYTE)GetEditBoxTextW(HEXED_UNICODE, &cchStr);
@@ -107,13 +107,13 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 		if (cchStr) cchStr -= 1;
 		cb = cchStr * sizeof(WCHAR);
 
-		WC_H(Base64Encode(cb, lpb, &cchEncodeStr, &szEncodeStr));
-		SetString(HEXED_BASE64, szEncodeStr);
+		szEncodeStr = Base64Encode(cb, lpb);
+		SetStringW(HEXED_BASE64, szEncodeStr.c_str());
 
 		SetBinary(HEXED_HEX, lpb, cb);
 	}
-						  break;
-	case(HEXED_BASE64) : // base64 changed
+	break;
+	case HEXED_BASE64: // base64 changed
 	{
 		szTmpString = GetStringUseControl(HEXED_BASE64);
 
@@ -144,8 +144,8 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 		}
 		delete[] lpb;
 	}
-						 break;
-	case(HEXED_HEX) : // binary changed
+	break;
+	case HEXED_HEX: // binary changed
 	{
 		if (GetBinaryUseControl(HEXED_HEX, &cb, &lpb))
 		{
@@ -164,8 +164,8 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 				SetString(HEXED_UNICODE, _T(""));
 			}
 
-			WC_H(Base64Encode(cb, lpb, &cchEncodeStr, &szEncodeStr));
-			SetString(HEXED_BASE64, szEncodeStr);
+			szEncodeStr = Base64Encode(cb, lpb);
+			SetStringW(HEXED_BASE64, szEncodeStr.c_str());
 		}
 		else
 		{
@@ -176,7 +176,7 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 		delete[] lpb;
 
 	}
-					  break;
+	break;
 	default:
 		break;
 	}
@@ -198,13 +198,12 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 	}
 	// Update any parsing we've got:
 	UpdateParser();
-	delete[] szEncodeStr;
 
 	// Force the new layout
 	OnRecalcLayout();
 
 	return i;
-} // CHexEditor::HandleChange
+}
 
 void CHexEditor::UpdateParser()
 {
@@ -219,7 +218,7 @@ void CHexEditor::UpdateParser()
 			delete[] Bin.lpb;
 		}
 	}
-} // CHexEditor::UpdateParser
+}
 
 // Import
 void CHexEditor::OnEditAction1()
