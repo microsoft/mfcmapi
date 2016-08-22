@@ -110,51 +110,40 @@ char pIndex[] = { // and decoding table.
  0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x2b, 0x2f
 };
 
-// allocates output string with new
-// delete with delete[]
-_Check_return_ HRESULT Base64Encode(size_t cbSourceBuf, _In_count_(cbSourceBuf) LPBYTE lpSourceBuffer, _Inout_ size_t* cchEncodedStr, _Out_ _Deref_post_cap_(*cchEncodedStr) LPTSTR* szEncodedStr)
+wstring Base64Encode(size_t cbSourceBuf, _In_count_(cbSourceBuf) LPBYTE lpSourceBuffer)
 {
-	HRESULT hRes = S_OK;
-
-	size_t cchEncodeLen = ((cbSourceBuf + 2) / 3) * 4; // 4 * number of size three blocks, round up, plus null terminator
-	*szEncodedStr = new TCHAR[cchEncodeLen + 1]; // allocate a touch extra for some NULL terminators
-	if (cchEncodedStr) *cchEncodedStr = cchEncodeLen;
-	if (!*szEncodedStr) return MAPI_E_CALL_FAILED;
-
-	size_t cbBuf = 0; // General purpose integers.
-	TCHAR* szOutChar = NULL;
-	szOutChar = *szEncodedStr;
+	wstring szEncodedStr;
+	size_t cbBuf = 0;
 
 	// Using integer division to round down here
 	while (cbBuf < (cbSourceBuf / 3) * 3) // encode each 3 byte octet.
 	{
-		*szOutChar++ = pIndex[lpSourceBuffer[cbBuf] >> 2];
-		*szOutChar++ = pIndex[((lpSourceBuffer[cbBuf] & 0x03) << 4) + (lpSourceBuffer[cbBuf + 1] >> 4)];
-		*szOutChar++ = pIndex[((lpSourceBuffer[cbBuf + 1] & 0x0f) << 2) + (lpSourceBuffer[cbBuf + 2] >> 6)];
-		*szOutChar++ = pIndex[lpSourceBuffer[cbBuf + 2] & 0x3f];
+		szEncodedStr += pIndex[lpSourceBuffer[cbBuf] >> 2];
+		szEncodedStr += pIndex[((lpSourceBuffer[cbBuf] & 0x03) << 4) + (lpSourceBuffer[cbBuf + 1] >> 4)];
+		szEncodedStr += pIndex[((lpSourceBuffer[cbBuf + 1] & 0x0f) << 2) + (lpSourceBuffer[cbBuf + 2] >> 6)];
+		szEncodedStr += pIndex[lpSourceBuffer[cbBuf + 2] & 0x3f];
 		cbBuf += 3; // Next octet.
 	}
 
 	if (cbSourceBuf - cbBuf) // Partial octet remaining?
 	{
-		*szOutChar++ = pIndex[lpSourceBuffer[cbBuf] >> 2]; // Yes, encode it.
+		szEncodedStr += pIndex[lpSourceBuffer[cbBuf] >> 2]; // Yes, encode it.
 
 		if (cbSourceBuf - cbBuf == 1) // End of octet?
 		{
-			*szOutChar++ = pIndex[(lpSourceBuffer[cbBuf] & 0x03) << 4];
-			*szOutChar++ = _T('=');
-			*szOutChar++ = _T('=');
+			szEncodedStr += pIndex[(lpSourceBuffer[cbBuf] & 0x03) << 4];
+			szEncodedStr += _T('=');
+			szEncodedStr += _T('=');
 		}
 		else
 		{ // No, one more part.
-			*szOutChar++ = pIndex[((lpSourceBuffer[cbBuf] & 0x03) << 4) + (lpSourceBuffer[cbBuf + 1] >> 4)];
-			*szOutChar++ = pIndex[(lpSourceBuffer[cbBuf + 1] & 0x0f) << 2];
-			*szOutChar++ = _T('=');
+			szEncodedStr += pIndex[((lpSourceBuffer[cbBuf] & 0x03) << 4) + (lpSourceBuffer[cbBuf + 1] >> 4)];
+			szEncodedStr += pIndex[(lpSourceBuffer[cbBuf + 1] & 0x0f) << 2];
+			szEncodedStr += _T('=');
 		}
 	}
-	*szOutChar = _T('\0');
 
-	return hRes;
+	return szEncodedStr;
 }
 
 wstring CurrencyToString(CURRENCY curVal)
