@@ -121,7 +121,9 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 		CleanString(&szTmpString);
 
 		cchEncodeStr = szTmpString.GetLength();
-		WC_H(Base64Decode(LPCTSTRToWstring((LPCTSTR)szTmpString), &cb, &lpb));
+		vector<BYTE> bin = Base64Decode(LPCTSTRToWstring((LPCTSTR)szTmpString));
+		lpb = ByteVectorToLPBYTE(bin);
+		cb = bin.size();
 
 		if (S_OK == hRes)
 		{
@@ -134,6 +136,7 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 			{
 				SetString(HEXED_UNICODE, _T(""));
 			}
+
 			SetBinary(HEXED_HEX, lpb, cb);
 		}
 		else
