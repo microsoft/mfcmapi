@@ -1159,16 +1159,18 @@ _Check_return_ HRESULT CEditor::GetEntryID(ULONG i, bool bIsBase64, _Out_ size_t
 
 	if (!szString.empty())
 	{
+		vector<BYTE> bin;
 		if (bIsBase64) // entry was BASE64 encoded
 		{
-			EC_H(Base64Decode(szString, lpcbBin, (LPBYTE*)lppEID));
+			bin = Base64Decode(szString);
 		}
 		else // Entry was hexized string
 		{
-			vector<BYTE> bin = HexStringToBin(szString);
-			*lppEID = (LPENTRYID)ByteVectorToLPBYTE(bin);
-			*lpcbBin = bin.size();
+			bin = HexStringToBin(szString);
 		}
+
+		*lppEID = (LPENTRYID)ByteVectorToLPBYTE(bin);
+		*lpcbBin = bin.size();
 	}
 
 	return hRes;

@@ -7,6 +7,7 @@
 #include "SmartView\SmartView.h"
 #include "ParseProperty.h"
 #include "String.h"
+#include <vector>
 
 static const char pBase64[] = {
  0x3e, 0x7f, 0x7f, 0x7f, 0x3f, 0x34, 0x35, 0x36,
@@ -24,45 +25,31 @@ static const char pBase64[] = {
 // allocates output buffer with new
 // delete with delete[]
 // suprisingly, this algorithm works in a unicode build as well
-_Check_return_ HRESULT Base64Decode(wstring szEncodedStr, _Inout_ size_t* cbBuf, _Out_ _Deref_post_cap_(*cbBuf) LPBYTE* lpDecodedBuffer)
+vector<BYTE> Base64Decode(wstring szEncodedStr)
 {
 	HRESULT hRes = S_OK;
 	LPCWSTR szEncodedStrPtr = szEncodedStr.c_str();
 	size_t cchLen = szEncodedStr.length();
-	if (cchLen % 4) return MAPI_E_INVALID_PARAMETER;
+	vector<BYTE> lpb;
+	if (cchLen % 4) return lpb;
 
 	// look for padding at the end
-	static const WCHAR szPadding[] = _T("=="); // STRING_OK
-	const WCHAR* szPaddingLoc = NULL;
-	szPaddingLoc = _tcschr(szEncodedStrPtr, szPadding[0]);
-	size_t cchPaddingLen = 0;
+	static const WCHAR szPadding[] = L"=="; // STRING_OK
+	const WCHAR* szPaddingLoc = wcschr(szEncodedStrPtr, szPadding[0]);
 	if (NULL != szPaddingLoc)
 	{
+		size_t cchPaddingLen = 0;
 		// check padding length
 		EC_H(StringCchLength(szPaddingLoc, STRSAFE_MAX_CCH, &cchPaddingLen));
-		if (cchPaddingLen >= 3) return MAPI_E_INVALID_PARAMETER;
+		if (cchPaddingLen >= 3) return lpb;
 
 		// check for bad characters after the first '='
-		if (_tcsncmp(szPaddingLoc, (TCHAR *)szPadding, cchPaddingLen)) return MAPI_E_INVALID_PARAMETER;
+		if (wcsncmp(szPaddingLoc, (WCHAR*)szPadding, cchPaddingLen)) return lpb;
+
+		// cchPaddingLen == 0,1,2 now
 	}
-	// cchPaddingLen == 0,1,2 now
 
-	size_t cchDecodedLen = ((cchLen + 3) / 4) * 3; // 3 times number of 4 tuplets, rounded up
-
-	// back off the decoded length to the correct length
-	// xx== ->y
-	// xxx= ->yY
-	// x=== ->this is a bad case which should never happen
-	cchDecodedLen -= cchPaddingLen;
-	// we have no room for error now!
-	*lpDecodedBuffer = new BYTE[cchDecodedLen];
-	if (!*lpDecodedBuffer) return MAPI_E_CALL_FAILED;
-
-	*cbBuf = cchDecodedLen;
-
-	LPBYTE lpOutByte = *lpDecodedBuffer;
-
-	TCHAR c[4] = { 0 };
+	WCHAR c[4] = { 0 };
 	BYTE bTmp[3] = { 0 }; // output
 
 	while (*szEncodedStrPtr)
@@ -72,28 +59,30 @@ _Check_return_ HRESULT Base64Decode(wstring szEncodedStr, _Inout_ size_t* cbBuf,
 		for (i = 0; i < 4; i++)
 		{
 			c[i] = *(szEncodedStrPtr + i);
-			if (c[i] == _T('='))
+			if (c[i] == L'=')
 			{
 				iOutlen = i - 1;
 				break;
 			}
-			if ((c[i] < 0x2b) || (c[i] > 0x7a)) return MAPI_E_INVALID_PARAMETER;
+
+			if ((c[i] < 0x2b) || (c[i] > 0x7a)) return vector<BYTE>();
 
 			c[i] = pBase64[c[i] - 0x2b];
 		}
+
 		bTmp[0] = (BYTE)((c[0] << 2) | (c[1] >> 4));
 		bTmp[1] = (BYTE)((c[1] & 0x0f) << 4 | (c[2] >> 2));
 		bTmp[2] = (BYTE)((c[2] & 0x03) << 6 | c[3]);
 
 		for (i = 0; i < iOutlen; i++)
 		{
-			lpOutByte[i] = bTmp[i];
+			lpb.push_back(bTmp[i]);
 		}
-		lpOutByte += 3;
+
 		szEncodedStrPtr += 4;
 	}
 
-	return hRes;
+	return lpb;
 }
 
 static const // Base64 Index into encoding
@@ -123,21 +112,21 @@ wstring Base64Encode(size_t cbSourceBuf, _In_count_(cbSourceBuf) LPBYTE lpSource
 		cbBuf += 3; // Next octet.
 	}
 
-	if (cbSourceBuf - cbBuf) // Partial octet remaining?
+	if (cbSourceBuf - cbBuf != 0) // Partial octet remaining?
 	{
 		szEncodedStr += pIndex[lpSourceBuffer[cbBuf] >> 2]; // Yes, encode it.
 
 		if (cbSourceBuf - cbBuf == 1) // End of octet?
 		{
 			szEncodedStr += pIndex[(lpSourceBuffer[cbBuf] & 0x03) << 4];
-			szEncodedStr += _T('=');
-			szEncodedStr += _T('=');
+			szEncodedStr += L'=';
+			szEncodedStr += L'=';
 		}
 		else
 		{ // No, one more part.
 			szEncodedStr += pIndex[((lpSourceBuffer[cbBuf] & 0x03) << 4) + (lpSourceBuffer[cbBuf + 1] >> 4)];
 			szEncodedStr += pIndex[(lpSourceBuffer[cbBuf + 1] & 0x0f) << 2];
-			szEncodedStr += _T('=');
+			szEncodedStr += L'=';
 		}
 	}
 
