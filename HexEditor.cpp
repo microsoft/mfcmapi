@@ -121,7 +121,7 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 		CleanString(&szTmpString);
 
 		cchEncodeStr = szTmpString.GetLength();
-		WC_H(Base64Decode(szTmpString, &cb, &lpb));
+		WC_H(Base64Decode(LPCTSTRToWstring((LPCTSTR)szTmpString), &cb, &lpb));
 
 		if (S_OK == hRes)
 		{

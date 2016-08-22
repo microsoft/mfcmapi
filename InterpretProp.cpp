@@ -24,19 +24,17 @@ static const char pBase64[] = {
 // allocates output buffer with new
 // delete with delete[]
 // suprisingly, this algorithm works in a unicode build as well
-_Check_return_ HRESULT Base64Decode(_In_z_ LPCTSTR szEncodedStr, _Inout_ size_t* cbBuf, _Out_ _Deref_post_cap_(*cbBuf) LPBYTE* lpDecodedBuffer)
+_Check_return_ HRESULT Base64Decode(wstring szEncodedStr, _Inout_ size_t* cbBuf, _Out_ _Deref_post_cap_(*cbBuf) LPBYTE* lpDecodedBuffer)
 {
 	HRESULT hRes = S_OK;
-	size_t cchLen = 0;
-
-	EC_H(StringCchLength(szEncodedStr, STRSAFE_MAX_CCH, &cchLen));
-
+	LPCWSTR szEncodedStrPtr = szEncodedStr.c_str();
+	size_t cchLen = szEncodedStr.length();
 	if (cchLen % 4) return MAPI_E_INVALID_PARAMETER;
 
 	// look for padding at the end
-	static const TCHAR szPadding[] = _T("=="); // STRING_OK
-	const TCHAR* szPaddingLoc = NULL;
-	szPaddingLoc = _tcschr(szEncodedStr, szPadding[0]);
+	static const WCHAR szPadding[] = _T("=="); // STRING_OK
+	const WCHAR* szPaddingLoc = NULL;
+	szPaddingLoc = _tcschr(szEncodedStrPtr, szPadding[0]);
 	size_t cchPaddingLen = 0;
 	if (NULL != szPaddingLoc)
 	{
@@ -67,13 +65,13 @@ _Check_return_ HRESULT Base64Decode(_In_z_ LPCTSTR szEncodedStr, _Inout_ size_t*
 	TCHAR c[4] = { 0 };
 	BYTE bTmp[3] = { 0 }; // output
 
-	while (*szEncodedStr)
+	while (*szEncodedStrPtr)
 	{
 		int i = 0;
 		int iOutlen = 3;
 		for (i = 0; i < 4; i++)
 		{
-			c[i] = *(szEncodedStr + i);
+			c[i] = *(szEncodedStrPtr + i);
 			if (c[i] == _T('='))
 			{
 				iOutlen = i - 1;
@@ -92,7 +90,7 @@ _Check_return_ HRESULT Base64Decode(_In_z_ LPCTSTR szEncodedStr, _Inout_ size_t*
 			lpOutByte[i] = bTmp[i];
 		}
 		lpOutByte += 3;
-		szEncodedStr += 4;
+		szEncodedStrPtr += 4;
 	}
 
 	return hRes;
