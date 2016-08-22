@@ -1161,7 +1161,7 @@ _Check_return_ HRESULT CEditor::GetEntryID(ULONG i, bool bIsBase64, _Out_ size_t
 	{
 		if (bIsBase64) // entry was BASE64 encoded
 		{
-			EC_H(Base64Decode(wstringToCString(szString), lpcbBin, (LPBYTE*)lppEID));
+			EC_H(Base64Decode(szString, lpcbBin, (LPBYTE*)lppEID));
 		}
 		else // Entry was hexized string
 		{
