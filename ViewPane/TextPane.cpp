@@ -377,12 +377,14 @@ void TextPane::SetStringW(_In_opt_z_ LPCWSTR szMsg, size_t cchsz)
 
 void TextPane::SetBinary(_In_opt_count_(cb) LPBYTE lpb, size_t cb)
 {
-	wstring lpszStr = BinToHexString(
-		lpb,
-		cb,
-		false);
-
-	SetStringW(lpszStr.c_str());
+	if (!lpb || !cb)
+	{
+		SetStringW(NULL);
+	}
+	else
+	{
+		SetStringW(BinToHexString(lpb, cb, false).c_str());
+	}
 }
 
 // This is used by the DbgView - don't call any debugger functions here!!!
