@@ -110,7 +110,7 @@ void SpecialFolderEditor::LoadFolders()
 		InsertColumn(ulListNum, i, g_sfCol[i].ulID, g_sfCol[i].ulType);
 	}
 
-	CString szTmp;
+	wstring szTmp;
 	wstring szProp;
 
 	// This will iterate over all the special folders we know how to get.
@@ -120,14 +120,14 @@ void SpecialFolderEditor::LoadFolders()
 		ULONG cb = NULL;
 		LPENTRYID lpeid = NULL;
 
-		szTmp.Format(_T("%u"), i); // STRING_OK
-		SortListData* lpData = InsertListRow(ulListNum, i - 1, szTmp);
+		szTmp = format(L"%u", i); // STRING_OK
+		SortListData* lpData = InsertListRow(ulListNum, i - 1, wstringToLPTSTR(szTmp));
 		if (lpData)
 		{
 			int iCol = 1;
 			int iRow = i - 1;
 
-			SetListStringA(ulListNum, iRow, iCol, FolderNames[i]);
+			SetListStringW(ulListNum, iRow, iCol, FolderNames[i]);
 			iCol++;
 
 			WC_H(GetDefaultFolderEID(i, m_lpMDB, &cb, &lpeid));
@@ -152,36 +152,36 @@ void SpecialFolderEditor::LoadFolders()
 					ULONG ulPropNum = 0;
 					for (ulPropNum = 0; ulPropNum < ulProps; ulPropNum++)
 					{
-						szTmp.Empty();
+						szTmp.clear();
 						if (PT_LONG == PROP_TYPE(lpProps[ulPropNum].ulPropTag))
 						{
-							wstring szSmartView = InterpretNumberAsString(
+							szTmp = InterpretNumberAsString(
 								lpProps[ulPropNum].Value,
 								lpProps[ulPropNum].ulPropTag,
 								NULL,
 								NULL,
 								NULL,
 								false);
-							szTmp = szSmartView.c_str();
 						}
 
-						if (szTmp.IsEmpty() && PT_ERROR != PROP_TYPE(lpProps[ulPropNum].ulPropTag))
+						if (szTmp.empty() && PT_ERROR != PROP_TYPE(lpProps[ulPropNum].ulPropTag))
 						{
 							InterpretProp(&lpProps[ulPropNum], &szProp, NULL);
 							SetListStringW(ulListNum, iRow, iCol, szProp.c_str());
 						}
 						else
 						{
-							SetListString(ulListNum, iRow, iCol, szTmp);
+							SetListStringW(ulListNum, iRow, iCol, szTmp.c_str());
 						}
+
 						iCol++;
 					}
 				}
 				else
 				{
 					// We couldn't open the folder - log the error
-					szTmp.FormatMessage(IDS_QSSFCANNOTOPEN, ErrorNameFromErrorCode(hRes).c_str(), hRes);
-					SetListString(ulListNum, iRow, iCol, szTmp);
+					szTmp = formatmessage(IDS_QSSFCANNOTOPEN, ErrorNameFromErrorCode(hRes).c_str(), hRes);
+					SetListStringW(ulListNum, iRow, iCol, szTmp.c_str());
 				}
 
 				if (lpFolder) lpFolder->Release();
@@ -190,8 +190,8 @@ void SpecialFolderEditor::LoadFolders()
 			else
 			{
 				// We couldn't locate the entry ID- log the error
-				szTmp.FormatMessage(IDS_QSSFCANNOTLOCATE, ErrorNameFromErrorCode(hRes).c_str(), hRes);
-				SetListString(ulListNum, iRow, iCol, szTmp);
+				szTmp = formatmessage(IDS_QSSFCANNOTLOCATE, ErrorNameFromErrorCode(hRes).c_str(), hRes);
+				SetListStringW(ulListNum, iRow, iCol, szTmp.c_str());
 			}
 
 			MAPIFreeBuffer(lpeid);

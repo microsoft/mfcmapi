@@ -127,27 +127,27 @@ enum
 };
 
 // Keep this in sync with the NUM_DEFAULT_PROPS enum above
-static LPSTR FolderNames[] = {
- "",
- "Calendar",
- "Contacts",
- "Journal",
- "Notes",
- "Tasks",
- "Reminders",
- "Drafts",
- "Sent Items",
- "Outbox",
- "Deleted Items",
- "Finder",
- "IPM_SUBTREE",
- "Inbox",
- "Local Freebusy",
- "Conflicts",
- "Sync Issues",
- "Local Failures",
- "Server Failures",
- "Junk E-mail",
+static LPWSTR FolderNames[] = {
+ L"",
+ L"Calendar",
+ L"Contacts",
+ L"Journal",
+ L"Notes",
+ L"Tasks",
+ L"Reminders",
+ L"Drafts",
+ L"Sent Items",
+ L"Outbox",
+ L"Deleted Items",
+ L"Finder",
+ L"IPM_SUBTREE",
+ L"Inbox",
+ L"Local Freebusy",
+ L"Conflicts",
+ L"Sync Issues",
+ L"Local Failures",
+ L"Server Failures",
+ L"Junk E-mail",
 };
 
 STDMETHODIMP OpenDefaultFolder(_In_ ULONG ulFolder, _In_ LPMDB lpMDB, _Deref_out_opt_ LPMAPIFOLDER *lpFolder);
