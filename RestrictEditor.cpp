@@ -537,7 +537,7 @@ void CResAndOrEditor::InitListFromRestriction(ULONG ulListNum, _In_ LPSRestricti
 			{
 				lpData->ulSortDataType = SORTLIST_RES;
 				lpData->data.Res.lpOldRes = &lpRes->res.resAnd.lpRes[i]; // save off address of source restriction
-				SetListStringW(ulListNum, i, 1, RestrictionToString(lpData->data.Res.lpOldRes, NULL).c_str());
+				SetListString(ulListNum, i, 1, RestrictionToString(lpData->data.Res.lpOldRes, NULL));
 				lpData->bItemFullyLoaded = true;
 			}
 		}
@@ -553,7 +553,7 @@ void CResAndOrEditor::InitListFromRestriction(ULONG ulListNum, _In_ LPSRestricti
 			{
 				lpData->ulSortDataType = SORTLIST_RES;
 				lpData->data.Res.lpOldRes = &lpRes->res.resOr.lpRes[i]; // save off address of source restriction
-				SetListStringW(ulListNum, i, 1, RestrictionToString(lpData->data.Res.lpOldRes, NULL).c_str());
+				SetListString(ulListNum, i, 1, RestrictionToString(lpData->data.Res.lpOldRes, NULL));
 				lpData->bItemFullyLoaded = true;
 			}
 		}
@@ -583,7 +583,7 @@ _Check_return_ bool CResAndOrEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 	{
 		// Since lpData->data.Res.lpNewRes was owned by an m_lpAllocParent, we don't free it directly
 		lpData->data.Res.lpNewRes = MyResEditor.DetachModifiedSRestriction();
-		SetListStringW(ulListNum, iItem, 1, RestrictionToString(lpData->data.Res.lpNewRes, NULL).c_str());
+		SetListString(ulListNum, iItem, 1, RestrictionToString(lpData->data.Res.lpNewRes, NULL));
 		return true;
 	}
 	return false;
@@ -743,10 +743,10 @@ void CResCommentEditor::InitListFromPropArray(ULONG ulListNum, ULONG cProps, _In
 		{
 			lpData->ulSortDataType = SORTLIST_COMMENT;
 			lpData->data.Comment.lpOldProp = &lpProps[i];
-			SetListStringW(ulListNum, i, 1, TagToString(lpProps[i].ulPropTag, NULL, false, true).c_str());
+			SetListString(ulListNum, i, 1, TagToString(lpProps[i].ulPropTag, NULL, false, true));
 			InterpretProp(&lpProps[i], &szProp, &szAltProp);
-			SetListStringW(ulListNum, i, 2, szProp.c_str());
-			SetListStringW(ulListNum, i, 3, szAltProp.c_str());
+			SetListString(ulListNum, i, 2, szProp);
+			SetListString(ulListNum, i, 3, szAltProp);
 			lpData->bItemFullyLoaded = true;
 		}
 	}
@@ -819,10 +819,10 @@ _Check_return_ bool CResCommentEditor::DoListEdit(ULONG ulListNum, int iItem, _I
 	{
 		wstring szTmp;
 		wstring szAltTmp;
-		SetListStringW(ulListNum, iItem, 1, TagToString(lpData->data.Comment.lpNewProp->ulPropTag, NULL, false, true).c_str());
+		SetListString(ulListNum, iItem, 1, TagToString(lpData->data.Comment.lpNewProp->ulPropTag, NULL, false, true));
 		InterpretProp(lpData->data.Comment.lpNewProp, &szTmp, &szAltTmp);
-		SetListStringW(ulListNum, iItem, 2, szTmp.c_str());
-		SetListStringW(ulListNum, iItem, 3, szAltTmp.c_str());
+		SetListString(ulListNum, iItem, 2, szTmp);
+		SetListString(ulListNum, iItem, 3, szAltTmp);
 		return true;
 	}
 
@@ -1425,9 +1425,9 @@ void CCriteriaEditor::InitListFromEntryList(ULONG ulListNum, _In_ LPENTRYLIST lp
 			}
 
 			szTmp = format(L"%u", lpEntryList->lpbin[i].cb); // STRING_OK
-			SetListStringW(ulListNum, i, 1, szTmp.c_str());
-			SetListStringW(ulListNum, i, 2, BinToHexString(&lpEntryList->lpbin[i], false).c_str());
-			SetListStringW(ulListNum, i, 3, BinToTextString(&lpEntryList->lpbin[i], true).c_str());
+			SetListString(ulListNum, i, 1, szTmp);
+			SetListString(ulListNum, i, 2, BinToHexString(&lpEntryList->lpbin[i], false));
+			SetListString(ulListNum, i, 3, BinToTextString(&lpEntryList->lpbin[i], true));
 			if (lpData) lpData->bItemFullyLoaded = true;
 		}
 	}
@@ -1494,9 +1494,9 @@ _Check_return_ bool CCriteriaEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 		{
 			lpData->data.Binary.NewBin.cb = (ULONG)bin.size();
 			szTmp = format(L"%u", lpData->data.Binary.NewBin.cb); // STRING_OK
-			SetListStringW(ulListNum, iItem, 1, szTmp.c_str());
-			SetListStringW(ulListNum, iItem, 2, BinToHexString(&lpData->data.Binary.NewBin, false).c_str());
-			SetListStringW(ulListNum, iItem, 3, BinToTextString(&lpData->data.Binary.NewBin, true).c_str());
+			SetListString(ulListNum, iItem, 1, szTmp);
+			SetListString(ulListNum, iItem, 2, BinToHexString(&lpData->data.Binary.NewBin, false));
+			SetListString(ulListNum, iItem, 3, BinToTextString(&lpData->data.Binary.NewBin, true));
 			return true;
 		}
 	}

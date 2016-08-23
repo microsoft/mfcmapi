@@ -28,8 +28,7 @@ public:
 	virtual int GetLines();
 	virtual ULONG HandleChange(UINT nID);
 
-	void SetListStringA(ULONG iListRow, ULONG iListCol, _In_opt_z_ LPCSTR szListString);
-	void SetListStringW(ULONG iListRow, ULONG iListCol, _In_opt_z_ LPCWSTR szListString);
+	void SetListString(ULONG iListRow, ULONG iListCol, wstring szListString);
 
 	_Check_return_ SortListData* InsertRow(int iRow, _In_z_ LPCTSTR szText);
 	void ClearList();

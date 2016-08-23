@@ -1186,18 +1186,11 @@ void CEditor::SetDecimal(ULONG i, ULONG ulVal)
 	SetStringf(i, _T("%u"), ulVal); // STRING_OK
 }
 
-void CEditor::SetListStringA(ULONG iControl, ULONG iListRow, ULONG iListCol, _In_opt_z_ LPCSTR szListString)
+void CEditor::SetListString(ULONG iControl, ULONG iListRow, ULONG iListCol, wstring szListString)
 {
 	if (!IsValidList(iControl)) return;
 
-	m_lpControls[iControl].lpListPane->SetListStringA(iListRow, iListCol, szListString ? szListString : "");
-}
-
-void CEditor::SetListStringW(ULONG iControl, ULONG iListRow, ULONG iListCol, _In_opt_z_ LPCWSTR szListString)
-{
-	if (!IsValidList(iControl)) return;
-
-	m_lpControls[iControl].lpListPane->SetListStringW(iListRow, iListCol, szListString ? szListString : L"");
+	m_lpControls[iControl].lpListPane->SetListString(iListRow, iListCol, szListString);
 }
 
 _Check_return_ SortListData* CEditor::InsertListRow(ULONG iControl, int iRow, _In_z_ LPCTSTR szText)

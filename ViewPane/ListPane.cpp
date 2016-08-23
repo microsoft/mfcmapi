@@ -183,14 +183,9 @@ void ListPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 	m_bInitialized = true;
 }
 
-void ListPane::SetListStringA(ULONG iListRow, ULONG iListCol, _In_opt_z_ LPCSTR szListString)
+void ListPane::SetListString(ULONG iListRow, ULONG iListCol, wstring szListString)
 {
-	m_List.SetItemTextA(iListRow, iListCol, szListString ? szListString : "");
-}
-
-void ListPane::SetListStringW(ULONG iListRow, ULONG iListCol, _In_opt_z_ LPCWSTR szListString)
-{
-	m_List.SetItemTextW(iListRow, iListCol, szListString ? szListString : L"");
+	m_List.SetItemTextW(iListRow, iListCol, szListString.c_str());
 }
 
 _Check_return_ SortListData* ListPane::InsertRow(int iRow, _In_z_ LPCTSTR szText)

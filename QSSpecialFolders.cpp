@@ -127,7 +127,7 @@ void SpecialFolderEditor::LoadFolders()
 			int iCol = 1;
 			int iRow = i - 1;
 
-			SetListStringW(ulListNum, iRow, iCol, FolderNames[i]);
+			SetListString(ulListNum, iRow, iCol, FolderNames[i]);
 			iCol++;
 
 			WC_H(GetDefaultFolderEID(i, m_lpMDB, &cb, &lpeid));
@@ -138,7 +138,7 @@ void SpecialFolderEditor::LoadFolders()
 				eid.Value.bin.cb = cb;
 				eid.Value.bin.lpb = (LPBYTE)lpeid;
 				InterpretProp(&eid, &szProp, NULL);
-				SetListStringW(ulListNum, iRow, iCol, szProp.c_str());
+				SetListString(ulListNum, iRow, iCol, szProp);
 				iCol++;
 
 				LPMAPIFOLDER lpFolder = NULL;
@@ -167,11 +167,11 @@ void SpecialFolderEditor::LoadFolders()
 						if (szTmp.empty() && PT_ERROR != PROP_TYPE(lpProps[ulPropNum].ulPropTag))
 						{
 							InterpretProp(&lpProps[ulPropNum], &szProp, NULL);
-							SetListStringW(ulListNum, iRow, iCol, szProp.c_str());
+							SetListString(ulListNum, iRow, iCol, szProp);
 						}
 						else
 						{
-							SetListStringW(ulListNum, iRow, iCol, szTmp.c_str());
+							SetListString(ulListNum, iRow, iCol, szTmp);
 						}
 
 						iCol++;
@@ -181,7 +181,7 @@ void SpecialFolderEditor::LoadFolders()
 				{
 					// We couldn't open the folder - log the error
 					szTmp = formatmessage(IDS_QSSFCANNOTOPEN, ErrorNameFromErrorCode(hRes).c_str(), hRes);
-					SetListStringW(ulListNum, iRow, iCol, szTmp.c_str());
+					SetListString(ulListNum, iRow, iCol, szTmp);
 				}
 
 				if (lpFolder) lpFolder->Release();
@@ -191,7 +191,7 @@ void SpecialFolderEditor::LoadFolders()
 			{
 				// We couldn't locate the entry ID- log the error
 				szTmp = formatmessage(IDS_QSSFCANNOTLOCATE, ErrorNameFromErrorCode(hRes).c_str(), hRes);
-				SetListStringW(ulListNum, iRow, iCol, szTmp.c_str());
+				SetListString(ulListNum, iRow, iCol, szTmp);
 			}
 
 			MAPIFreeBuffer(lpeid);
