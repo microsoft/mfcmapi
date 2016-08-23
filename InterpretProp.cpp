@@ -22,33 +22,22 @@ static const char pBase64[] = {
  0x2c, 0x2d, 0x2e, 0x2f, 0x30, 0x31, 0x32, 0x33
 };
 
-// allocates output buffer with new
-// delete with delete[]
-// suprisingly, this algorithm works in a unicode build as well
 vector<BYTE> Base64Decode(wstring szEncodedStr)
 {
-	HRESULT hRes = S_OK;
-	LPCWSTR szEncodedStrPtr = szEncodedStr.c_str();
 	size_t cchLen = szEncodedStr.length();
 	vector<BYTE> lpb;
 	if (cchLen % 4) return lpb;
 
 	// look for padding at the end
-	static const WCHAR szPadding[] = L"=="; // STRING_OK
-	const WCHAR* szPaddingLoc = wcschr(szEncodedStrPtr, szPadding[0]);
-	if (NULL != szPaddingLoc)
+	size_t posEqual = szEncodedStr.find(L"=");
+	if (posEqual != wstring::npos)
 	{
-		size_t cchPaddingLen = 0;
-		// check padding length
-		EC_H(StringCchLength(szPaddingLoc, STRSAFE_MAX_CCH, &cchPaddingLen));
-		if (cchPaddingLen >= 3) return lpb;
-
-		// check for bad characters after the first '='
-		if (wcsncmp(szPaddingLoc, (WCHAR*)szPadding, cchPaddingLen)) return lpb;
-
-		// cchPaddingLen == 0,1,2 now
+		wstring suffix = szEncodedStr.substr(posEqual);
+		if (suffix.length() >= 3 ||
+			suffix.find_first_not_of(L"=") != wstring::npos) return lpb;
 	}
 
+	LPCWSTR szEncodedStrPtr = szEncodedStr.c_str();
 	WCHAR c[4] = { 0 };
 	BYTE bTmp[3] = { 0 }; // output
 
