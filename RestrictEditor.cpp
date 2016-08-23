@@ -520,8 +520,6 @@ void CResAndOrEditor::InitListFromRestriction(ULONG ulListNum, _In_ LPSRestricti
 	ClearList(ulListNum);
 
 	InsertColumn(ulListNum, 0, IDS_SHARP);
-	CString szTmp;
-	CString szAltTmp;
 	SortListData* lpData = NULL;
 	ULONG i = 0;
 	switch (lpRes->rt)
@@ -531,8 +529,7 @@ void CResAndOrEditor::InitListFromRestriction(ULONG ulListNum, _In_ LPSRestricti
 
 		for (i = 0; i < lpRes->res.resAnd.cRes; i++)
 		{
-			szTmp.Format(_T("%u"), i); // STRING_OK
-			lpData = InsertListRow(ulListNum, i, szTmp);
+			lpData = InsertListRow(ulListNum, i, format(L"%u", i)); // STRING_OK
 			if (lpData)
 			{
 				lpData->ulSortDataType = SORTLIST_RES;
@@ -547,8 +544,7 @@ void CResAndOrEditor::InitListFromRestriction(ULONG ulListNum, _In_ LPSRestricti
 
 		for (i = 0; i < lpRes->res.resOr.cRes; i++)
 		{
-			szTmp.Format(_T("%u"), i); // STRING_OK
-			lpData = InsertListRow(ulListNum, i, szTmp);
+			lpData = InsertListRow(ulListNum, i, format(L"%u", i)); // STRING_OK
 			if (lpData)
 			{
 				lpData->ulSortDataType = SORTLIST_RES;
@@ -726,7 +722,6 @@ void CResCommentEditor::InitListFromPropArray(ULONG ulListNum, ULONG cProps, _In
 	ClearList(ulListNum);
 
 	InsertColumn(ulListNum, 0, IDS_SHARP);
-	CString szTmp;
 	wstring szProp;
 	wstring szAltProp;
 	SortListData* lpData = NULL;
@@ -737,8 +732,7 @@ void CResCommentEditor::InitListFromPropArray(ULONG ulListNum, ULONG cProps, _In
 
 	for (i = 0; i < cProps; i++)
 	{
-		szTmp.Format(_T("%u"), i); // STRING_OK
-		lpData = InsertListRow(ulListNum, i, szTmp);
+		lpData = InsertListRow(ulListNum, i, format(L"%u", i)); // STRING_OK
 		if (lpData)
 		{
 			lpData->ulSortDataType = SORTLIST_COMMENT;
@@ -750,6 +744,7 @@ void CResCommentEditor::InitListFromPropArray(ULONG ulListNum, ULONG cProps, _In
 			lpData->bItemFullyLoaded = true;
 		}
 	}
+
 	ResizeList(ulListNum, false);
 }
 
@@ -1402,7 +1397,6 @@ void CCriteriaEditor::InitListFromEntryList(ULONG ulListNum, _In_ LPENTRYLIST lp
 	ClearList(ulListNum);
 
 	InsertColumn(ulListNum, 0, IDS_SHARP);
-	wstring szTmp;
 	SortListData* lpData = NULL;
 	ULONG i = 0;
 	InsertColumn(ulListNum, 1, IDS_CB);
@@ -1413,8 +1407,7 @@ void CCriteriaEditor::InitListFromEntryList(ULONG ulListNum, _In_ LPENTRYLIST lp
 	{
 		for (i = 0; i < lpEntryList->cValues; i++)
 		{
-			szTmp = format(L"%u", i); // STRING_OK
-			lpData = InsertListRow(ulListNum, i, wstringToLPTSTR(szTmp));
+			lpData = InsertListRow(ulListNum, i, format(L"%u", i)); // STRING_OK
 			if (lpData)
 			{
 				lpData->ulSortDataType = SORTLIST_BINARY;
@@ -1424,13 +1417,13 @@ void CCriteriaEditor::InitListFromEntryList(ULONG ulListNum, _In_ LPENTRYLIST lp
 				lpData->data.Binary.NewBin.lpb = NULL;
 			}
 
-			szTmp = format(L"%u", lpEntryList->lpbin[i].cb); // STRING_OK
-			SetListString(ulListNum, i, 1, szTmp);
+			SetListString(ulListNum, i, 1, format(L"%u", lpEntryList->lpbin[i].cb)); // STRING_OK
 			SetListString(ulListNum, i, 2, BinToHexString(&lpEntryList->lpbin[i], false));
 			SetListString(ulListNum, i, 3, BinToTextString(&lpEntryList->lpbin[i], true));
 			if (lpData) lpData->bItemFullyLoaded = true;
 		}
 	}
+
 	ResizeList(ulListNum, false);
 }
 

@@ -489,7 +489,7 @@ BOOL CPropertySelector::OnInitDialog()
 		for (i = 0; i < ulPropTagArray; i++)
 		{
 			if (!m_bIncludeABProps && (PropTagArray[i].ulValue & 0x80000000)) continue;
-			lpData = InsertListRow(0, ulCurRow, wstringToCString(PropTagArray[i].lpszName));
+			lpData = InsertListRow(0, ulCurRow, PropTagArray[i].lpszName);
 
 			if (lpData)
 			{

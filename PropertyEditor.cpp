@@ -1090,14 +1090,12 @@ void CMultiValuePropertyEditor::ReadMultiValueStringsFromProperty()
 	if (!m_lpsInputValue) return;
 	if (!(PROP_TYPE(m_lpsInputValue->ulPropTag) & MV_FLAG)) return;
 
-	CString szTmp;
 	ULONG iMVCount = 0;
 	// All the MV structures are basically the same, so we can cheat when we pull the count
 	ULONG cValues = m_lpsInputValue->Value.MVi.cValues;
 	for (iMVCount = 0; iMVCount < cValues; iMVCount++)
 	{
-		szTmp.Format(_T("%u"), iMVCount); // STRING_OK
-		SortListData* lpData = InsertListRow(0, iMVCount, szTmp);
+		SortListData* lpData = InsertListRow(0, iMVCount, format(L"%u", iMVCount)); // STRING_OK
 
 		if (lpData)
 		{
