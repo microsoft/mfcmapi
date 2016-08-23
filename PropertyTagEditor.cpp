@@ -498,8 +498,8 @@ BOOL CPropertySelector::OnInitDialog()
 				lpData->bItemFullyLoaded = true;
 			}
 
-			SetListStringW(0, ulCurRow, 1, format(L"0x%08X", PropTagArray[i].ulValue).c_str()); // STRING_OK
-			SetListStringW(0, ulCurRow, 2, TypeToString(PropTagArray[i].ulValue).c_str());
+			SetListString(0, ulCurRow, 1, format(L"0x%08X", PropTagArray[i].ulValue)); // STRING_OK
+			SetListString(0, ulCurRow, 2, TypeToString(PropTagArray[i].ulValue));
 			ulCurRow++;
 		}
 

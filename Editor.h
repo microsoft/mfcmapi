@@ -102,13 +102,7 @@ protected:
 	// Functions used by derived classes during init
 	void InsertColumn(ULONG ulListNum, int nCol, UINT uidText);
 	void InsertColumn(ULONG ulListNum, int nCol, UINT uidText, ULONG ulPropType);
-	void SetListStringA(ULONG iControl, ULONG iListRow, ULONG iListCol, _In_opt_z_ LPCSTR szListString);
-	void SetListStringW(ULONG iControl, ULONG iListRow, ULONG iListCol, _In_opt_z_ LPCWSTR szListString);
-#ifdef UNICODE
-#define SetListString SetListStringW
-#else
-#define SetListString SetListStringA
-#endif
+	void SetListString(ULONG iControl, ULONG iListRow, ULONG iListCol, wstring szListString);
 	_Check_return_ SortListData* InsertListRow(ULONG iControl, int iRow, _In_z_ LPCTSTR szText);
 	void ClearList(ULONG iControl);
 	void ResizeList(ULONG uControl, bool bSort);

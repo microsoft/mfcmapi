@@ -111,12 +111,12 @@ _Check_return_ bool CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 
 		PropTagToPropName(ulNewPropTag, m_bIsAB, &szExactMatch, &szPartialMatch);
 
-		SetListStringW(ulListNum, iItem, 1, format(L"0x%08X", ulNewPropTag).c_str());
-		SetListStringW(ulListNum, iItem, 2, szExactMatch.c_str());
-		SetListStringW(ulListNum, iItem, 3, szPartialMatch.c_str());
-		SetListStringW(ulListNum, iItem, 4, TypeToString(ulNewPropTag).c_str());
-		SetListStringW(ulListNum, iItem, 5, szNamedPropName.c_str());
-		SetListStringW(ulListNum, iItem, 6, szNamedPropGUID.c_str());
+		SetListString(ulListNum, iItem, 1, format(L"0x%08X", ulNewPropTag));
+		SetListString(ulListNum, iItem, 2, szExactMatch);
+		SetListString(ulListNum, iItem, 3, szPartialMatch);
+		SetListString(ulListNum, iItem, 4, TypeToString(ulNewPropTag));
+		SetListString(ulListNum, iItem, 5, szNamedPropName);
+		SetListString(ulListNum, iItem, 6, szNamedPropGUID);
 
 		ResizeList(ulListNum, false);
 		return true;
@@ -175,12 +175,12 @@ void CTagArrayEditor::ReadTagArrayToList(ULONG ulListNum)
 
 			PropTagToPropName(ulPropTag, m_bIsAB, &szExactMatch, &szPartialMatch);
 
-			SetListStringW(ulListNum, iTagCount, 1, format(L"0x%08X", ulPropTag).c_str());
-			SetListStringW(ulListNum, iTagCount, 2, szExactMatch.c_str());
-			SetListStringW(ulListNum, iTagCount, 3, szPartialMatch.c_str());
-			SetListStringW(ulListNum, iTagCount, 4, TypeToString(ulPropTag).c_str());
-			SetListStringW(ulListNum, iTagCount, 5, szNamedPropName.c_str());
-			SetListStringW(ulListNum, iTagCount, 6, szNamedPropGUID.c_str());
+			SetListString(ulListNum, iTagCount, 1, format(L"0x%08X", ulPropTag));
+			SetListString(ulListNum, iTagCount, 2, szExactMatch);
+			SetListString(ulListNum, iTagCount, 3, szPartialMatch);
+			SetListString(ulListNum, iTagCount, 4, TypeToString(ulPropTag));
+			SetListString(ulListNum, iTagCount, 5, szNamedPropName);
+			SetListString(ulListNum, iTagCount, 6, szNamedPropGUID);
 		}
 	}
 

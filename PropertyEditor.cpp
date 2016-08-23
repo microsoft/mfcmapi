@@ -1452,8 +1452,8 @@ void CMultiValuePropertyEditor::UpdateListRow(_In_ LPSPropValue lpProp, ULONG iM
 	wstring szAltTmp;
 
 	InterpretProp(lpProp, &szTmp, &szAltTmp);
-	SetListStringW(0, iMVCount, 1, szTmp.c_str());
-	SetListStringW(0, iMVCount, 2, szAltTmp.c_str());
+	SetListString(0, iMVCount, 1, szTmp);
+	SetListString(0, iMVCount, 2, szAltTmp);
 
 	if (PT_MV_LONG == PROP_TYPE(m_ulPropTag) ||
 		PT_MV_BINARY == PROP_TYPE(m_ulPropTag))
@@ -1466,7 +1466,7 @@ void CMultiValuePropertyEditor::UpdateListRow(_In_ LPSPropValue lpProp, ULONG iM
 			m_bIsAB,
 			true);
 
-		if (!szSmartView.empty()) SetListStringW(0, iMVCount, 3, szSmartView.c_str());
+		if (!szSmartView.empty()) SetListString(0, iMVCount, 3, szSmartView);
 	}
 }
 
