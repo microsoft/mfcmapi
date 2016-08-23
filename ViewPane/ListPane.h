@@ -30,7 +30,7 @@ public:
 
 	void SetListString(ULONG iListRow, ULONG iListCol, wstring szListString);
 
-	_Check_return_ SortListData* InsertRow(int iRow, _In_z_ LPCTSTR szText);
+	_Check_return_ SortListData* InsertRow(int iRow, wstring szText);
 	void ClearList();
 	void ResizeList(bool bSort);
 	_Check_return_ ULONG GetItemCount();

@@ -188,9 +188,9 @@ void ListPane::SetListString(ULONG iListRow, ULONG iListCol, wstring szListStrin
 	m_List.SetItemTextW(iListRow, iListCol, szListString.c_str());
 }
 
-_Check_return_ SortListData* ListPane::InsertRow(int iRow, _In_z_ LPCTSTR szText)
+_Check_return_ SortListData* ListPane::InsertRow(int iRow, wstring szText)
 {
-	return m_List.InsertRow(iRow, (LPTSTR)szText);
+	return m_List.InsertRow(iRow, szText);
 }
 
 void ListPane::ClearList()
@@ -399,10 +399,7 @@ void ListPane::OnAddListEntry()
 {
 	int iItem = m_List.GetItemCount();
 
-	CString szTmp;
-	szTmp.Format(_T("%d"), iItem); // STRING_OK
-
-	SortListData* lpData = InsertRow(iItem, szTmp);
+	SortListData* lpData = InsertRow(iItem, format(L"%d", iItem)); // STRING_OK
 	if (lpData) lpData->ulSortDataType = SORTLIST_MVPROP;
 
 	m_List.SetSelectedItem(iItem);
