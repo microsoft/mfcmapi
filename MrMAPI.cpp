@@ -71,7 +71,7 @@ _Check_return_ HRESULT OpenExchangeOrDefaultMessageStore(
 		if (SUCCEEDED(hRes)) hRes = MAPI_E_CALL_FAILED;
 	}
 	return hRes;
-} // OpenExchangeOrDefaultMessageStore
+}
 
 enum __CommandLineSwitch
 {
@@ -448,7 +448,7 @@ void DisplayUsage(BOOL bFull)
 		// Print Folders
 		for (i = 1; i < NUM_DEFAULT_PROPS; i++)
 		{
-			printf("   %2u %hs\n", i, FolderNames[i]);
+			printf("   %2u %ws\n", i, FolderNames[i]);
 		}
 		printf("\n");
 		printf("Examples:\n");

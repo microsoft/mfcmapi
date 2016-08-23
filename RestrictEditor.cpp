@@ -44,7 +44,7 @@ CResCompareEditor::CResCompareEditor(
 	InitPane(4, CreateSingleLinePane(IDS_ULPROPTAG2, NULL, false));
 	SetHex(4, ulPropTag2);
 	InitPane(5, CreateSingleLinePaneW(IDS_ULPROPTAG1, TagToString(ulPropTag2, NULL, false, true).c_str(), true));
-} // CResCompareEditor::CResCompareEditor
+}
 
 _Check_return_ ULONG CResCompareEditor::HandleChange(UINT nID)
 {
@@ -64,7 +64,7 @@ _Check_return_ ULONG CResCompareEditor::HandleChange(UINT nID)
 		SetStringW(5, TagToString(GetPropTagUseControl(4), NULL, false, true).c_str());
 	}
 	return i;
-} // CResCompareEditor::HandleChange
+}
 
 // This class is only invoked by CRestrictEditor. CRestrictEditor always passes an alloc parent.
 // So all memory detached from this class is owned by a parent and must not be freed manually
@@ -183,14 +183,14 @@ _Check_return_ ULONG CResCombinedEditor::HandleChange(UINT nID)
 		SetString(7, NULL);
 	}
 	return i;
-} // CResCombinedEditor::HandleChange
+}
 
 _Check_return_ LPSPropValue CResCombinedEditor::DetachModifiedSPropValue()
 {
 	LPSPropValue m_lpRet = m_lpNewProp;
 	m_lpNewProp = NULL;
 	return m_lpRet;
-} // CResCombinedEditor::DetachModifiedSPropValue
+}
 
 void CResCombinedEditor::OnEditAction1()
 {
@@ -225,7 +225,7 @@ void CResCombinedEditor::OnEditAction1()
 		SetStringW(6, szProp.c_str());
 		SetStringW(7, szAltProp.c_str());
 	}
-} // CResCombinedEditor::OnEditAction1
+}
 
 static wstring BITMASKCLASS = L"CResBitmaskEditor"; // STRING_OK
 class CResBitmaskEditor : public CEditor
@@ -261,7 +261,7 @@ CResBitmaskEditor::CResBitmaskEditor(
 
 	InitPane(4, CreateSingleLinePane(IDS_MASK, NULL, false));
 	SetHex(4, ulMask);
-} // CResBitmaskEditor::CResBitmaskEditor
+}
 
 _Check_return_ ULONG CResBitmaskEditor::HandleChange(UINT nID)
 {
@@ -277,7 +277,7 @@ _Check_return_ ULONG CResBitmaskEditor::HandleChange(UINT nID)
 		SetStringW(3, TagToString(GetPropTagUseControl(2), NULL, false, true).c_str());
 	}
 	return i;
-} // CResBitmaskEditor::HandleChange
+}
 
 static wstring SIZECLASS = L"CResSizeEditor"; // STRING_OK
 class CResSizeEditor : public CEditor
@@ -314,7 +314,7 @@ CResSizeEditor::CResSizeEditor(
 
 	InitPane(4, CreateSingleLinePane(IDS_CB, NULL, false));
 	SetHex(4, cb);
-} // CResSizeEditor::CResSizeEditor
+}
 
 _Check_return_ ULONG CResSizeEditor::HandleChange(UINT nID)
 {
@@ -330,7 +330,7 @@ _Check_return_ ULONG CResSizeEditor::HandleChange(UINT nID)
 		SetStringW(3, TagToString(GetPropTagUseControl(2), NULL, false, true).c_str());
 	}
 	return i;
-} // CResSizeEditor::HandleChange
+}
 
 static wstring EXISTCLASS = L"CResExistEditor"; // STRING_OK
 class CResExistEditor : public CEditor
@@ -354,7 +354,7 @@ CResExistEditor::CResExistEditor(
 	InitPane(0, CreateSingleLinePane(IDS_ULPROPTAG, NULL, false));
 	SetHex(0, ulPropTag);
 	InitPane(1, CreateSingleLinePaneW(IDS_ULPROPTAG, TagToString(ulPropTag, NULL, false, true).c_str(), true));
-} // CResExistEditor::CResExistEditor
+}
 
 _Check_return_ ULONG CResExistEditor::HandleChange(UINT nID)
 {
@@ -365,7 +365,7 @@ _Check_return_ ULONG CResExistEditor::HandleChange(UINT nID)
 		SetStringW(1, TagToString(GetPropTagUseControl(0), NULL, false, true).c_str());
 	}
 	return i;
-} // CResExistEditor::HandleChange
+}
 
 // This class is only invoked by CRestrictEditor. CRestrictEditor always passes an alloc parent.
 // So all memory detached from this class is owned by a parent and must not be freed manually
@@ -408,7 +408,7 @@ CResSubResEditor::CResSubResEditor(
 	InitPane(1, CreateSingleLinePaneW(IDS_ULSUBOBJECT, TagToString(ulSubObject, NULL, false, true).c_str(), true));
 
 	InitPane(2, CreateMultiLinePaneW(IDS_LPRES, RestrictionToString(lpRes, NULL).c_str(), true));
-} // CResSubResEditor::CResSubResEditor
+}
 
 _Check_return_ ULONG CResSubResEditor::HandleChange(UINT nID)
 {
@@ -419,14 +419,14 @@ _Check_return_ ULONG CResSubResEditor::HandleChange(UINT nID)
 		SetStringW(1, TagToString(GetPropTagUseControl(0), NULL, false, true).c_str());
 	}
 	return i;
-} // CResSubResEditor::HandleChange
+}
 
 _Check_return_ LPSRestriction CResSubResEditor::DetachModifiedSRestriction()
 {
 	LPSRestriction m_lpRet = m_lpNewRes;
 	m_lpNewRes = NULL;
 	return m_lpRet;
-} // CResSubResEditor::DetachModifiedSRestriction
+}
 
 void CResSubResEditor::OnEditAction1()
 {
@@ -445,7 +445,7 @@ void CResSubResEditor::OnEditAction1()
 
 		SetStringW(2, RestrictionToString(m_lpNewRes, NULL).c_str());
 	}
-} // CResSubResEditor::OnEditAction1
+}
 
 // This class is only invoked by CRestrictEditor. CRestrictEditor always passes an alloc parent.
 // So all memory detached from this class is owned by a parent and must not be freed manually
@@ -486,7 +486,7 @@ CResAndOrEditor::CResAndOrEditor(
 	m_lpAllocParent = lpAllocParent;
 
 	InitPane(0, CreateListPane(IDS_SUBRESTRICTIONS, false, false, this));
-} // CResAndOrEditor::CResAndOrEditor
+}
 
 // Used to call functions which need to be called AFTER controls are created
 BOOL CResAndOrEditor::OnInitDialog()
@@ -498,19 +498,19 @@ BOOL CResAndOrEditor::OnInitDialog()
 	UpdateListButtons();
 
 	return bRet;
-} // CResAndOrEditor::OnInitDialog
+}
 
 _Check_return_ LPSRestriction CResAndOrEditor::DetachModifiedSRestrictionArray()
 {
 	LPSRestriction m_lpRet = m_lpNewResArray;
 	m_lpNewResArray = NULL;
 	return m_lpRet;
-} // CResAndOrEditor::DetachModifiedSRestrictionArray
+}
 
 _Check_return_ ULONG CResAndOrEditor::GetResCount()
 {
 	return m_ulNewResCount;
-} // CResAndOrEditor::GetResCount
+}
 
 void CResAndOrEditor::InitListFromRestriction(ULONG ulListNum, _In_ LPSRestriction lpRes)
 {
@@ -560,7 +560,7 @@ void CResAndOrEditor::InitListFromRestriction(ULONG ulListNum, _In_ LPSRestricti
 		break;
 	}
 	ResizeList(ulListNum, false);
-} // CResAndOrEditor::InitListFromRestriction
+}
 
 _Check_return_ bool CResAndOrEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData)
 {
@@ -587,7 +587,7 @@ _Check_return_ bool CResAndOrEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 		return true;
 	}
 	return false;
-} // CResAndOrEditor::DoListEdit
+}
 
 // Create our LPSRestriction array from the dialog here
 void CResAndOrEditor::OnOK()
@@ -631,7 +631,7 @@ void CResAndOrEditor::OnOK()
 		m_ulNewResCount = ulNewResCount;
 		m_lpNewResArray = lpNewResArray;
 	}
-} // CResAndOrEditor::OnOK
+}
 
 // This class is only invoked by CRestrictEditor. CRestrictEditor always passes an alloc parent.
 // So all memory detached from this class is owned by a parent and must not be freed manually
@@ -679,7 +679,7 @@ CResCommentEditor::CResCommentEditor(
 
 	InitPane(0, CreateListPane(IDS_SUBRESTRICTION, false, false, this));
 	InitPane(1, CreateMultiLinePaneW(IDS_RESTRICTIONTEXT, RestrictionToString(m_lpSourceRes->res.resComment.lpRes, NULL).c_str(), true));
-} // CResCommentEditor::CResCommentEditor
+}
 
 // Used to call functions which need to be called AFTER controls are created
 BOOL CResCommentEditor::OnInitDialog()
@@ -691,33 +691,33 @@ BOOL CResCommentEditor::OnInitDialog()
 	UpdateListButtons();
 
 	return bRet;
-} // CResCommentEditor::OnInitDialog
+}
 
 _Check_return_ LPSRestriction CResCommentEditor::GetSourceRes()
 {
 	if (m_lpNewCommentRes) return m_lpNewCommentRes;
 	if (m_lpSourceRes && m_lpSourceRes->res.resComment.lpRes) return m_lpSourceRes->res.resComment.lpRes;
 	return NULL;
-} // CResCommentEditor::GetSourceRe
+}
 
 _Check_return_ LPSRestriction CResCommentEditor::DetachModifiedSRestriction()
 {
 	LPSRestriction m_lpRet = m_lpNewCommentRes;
 	m_lpNewCommentRes = NULL;
 	return m_lpRet;
-} // CResCommentEditor::DetachModifiedSRestriction
+}
 
 _Check_return_ LPSPropValue CResCommentEditor::DetachModifiedSPropValue()
 {
 	LPSPropValue m_lpRet = m_lpNewCommentProp;
 	m_lpNewCommentProp = NULL;
 	return m_lpRet;
-} // CResCommentEditor::DetachModifiedSPropValue
+}
 
 _Check_return_ ULONG CResCommentEditor::GetSPropValueCount()
 {
 	return m_ulNewCommentProp;
-} // CResCommentEditor::GetSPropValueCount
+}
 
 void CResCommentEditor::InitListFromPropArray(ULONG ulListNum, ULONG cProps, _In_count_(cProps) LPSPropValue lpProps)
 {
@@ -751,7 +751,7 @@ void CResCommentEditor::InitListFromPropArray(ULONG ulListNum, ULONG cProps, _In
 		}
 	}
 	ResizeList(ulListNum, false);
-} // CResCommentEditor::InitListFromPropArray
+}
 
 void CResCommentEditor::OnEditAction1()
 {
@@ -771,7 +771,7 @@ void CResCommentEditor::OnEditAction1()
 		m_lpNewCommentRes = MyResEditor.DetachModifiedSRestriction();
 		SetStringW(1, RestrictionToString(m_lpNewCommentRes, NULL).c_str());
 	}
-} // CResCommentEditor::OnEditAction1
+}
 
 _Check_return_ bool CResCommentEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData)
 {
@@ -827,7 +827,7 @@ _Check_return_ bool CResCommentEditor::DoListEdit(ULONG ulListNum, int iItem, _I
 	}
 
 	return false;
-} // CResCommentEditor::DoListEdit
+}
 
 void CResCommentEditor::OnOK()
 {
@@ -879,7 +879,7 @@ void CResCommentEditor::OnOK()
 	{
 		EC_H(HrCopyRestriction(m_lpSourceRes->res.resComment.lpRes, m_lpAllocParent, &m_lpNewCommentRes));
 	}
-} // CResCommentEditor::OnOK
+}
 
 // Note that an alloc parent is passed in to CRestrictEditor. If a parent isn't passed, we allocate one ourselves.
 // All other memory allocated in CRestrictEditor is owned by the parent and must not be freed manually
@@ -932,7 +932,7 @@ CRestrictEditor::CRestrictEditor(
 	InitPane(0, CreateSingleLinePane(IDS_RESTRICTIONTYPE, NULL, false)); // type as a number
 	InitPane(1, CreateSingleLinePane(IDS_RESTRICTIONTYPE, NULL, true)); // type as a string (flagRestrictionType)
 	InitPane(2, CreateMultiLinePaneW(IDS_RESTRICTIONTEXT, RestrictionToString(GetSourceRes(), NULL).c_str(), true));
-} // CRestrictEditor::CRestrictEditor
+}
 
 CRestrictEditor::~CRestrictEditor()
 {
@@ -942,7 +942,7 @@ CRestrictEditor::~CRestrictEditor()
 	{
 		MAPIFreeBuffer(m_lpOutputRes);
 	}
-} // CRestrictEditor::~CRestrictEditor
+}
 
 // Used to call functions which need to be called AFTER controls are created
 BOOL CRestrictEditor::OnInitDialog()
@@ -959,19 +959,19 @@ BOOL CRestrictEditor::OnInitDialog()
 	}
 
 	return bRet;
-} // CRestrictEditor::OnInitDialog
+}
 
 _Check_return_ LPSRestriction CRestrictEditor::GetSourceRes()
 {
 	if (m_lpRes && !m_bModified) return m_lpRes;
 	return m_lpOutputRes;
-} // CRestrictEditor::GetSourceRes
+}
 
 // Create our LPSRestriction from the dialog here
 void CRestrictEditor::OnOK()
 {
 	CMyDialog::OnOK(); // don't need to call CEditor::OnOK
-} // CRestrictEditor::OnOK
+}
 
 _Check_return_ LPSRestriction CRestrictEditor::DetachModifiedSRestriction()
 {
@@ -979,7 +979,7 @@ _Check_return_ LPSRestriction CRestrictEditor::DetachModifiedSRestriction()
 	LPSRestriction m_lpRet = m_lpOutputRes;
 	m_lpOutputRes = NULL;
 	return m_lpRet;
-} // CRestrictEditor::DetachModifiedSRestriction
+}
 
 // CEditor::HandleChange will return the control number of what changed
 // so I can react to it if I need to
@@ -1035,7 +1035,7 @@ _Check_return_ ULONG CRestrictEditor::HandleChange(UINT nID)
 		SetStringW(2, RestrictionToString(m_lpOutputRes, NULL).c_str());
 	}
 	return i;
-} // CRestrictEditor::HandleChange
+}
 
 void CRestrictEditor::OnEditAction1()
 {
@@ -1334,14 +1334,14 @@ CCriteriaEditor::CCriteriaEditor(
 	InitPane(3, CreateSingleLinePane(IDS_SEARCHFLAGS, NULL, true));
 	InitPane(4, CreateListPane(IDS_EIDLIST, false, false, this));
 	InitPane(5, CreateMultiLinePaneW(IDS_RESTRICTIONTEXT, RestrictionToString(m_lpSourceRes, NULL).c_str(), true));
-} // CCriteriaEditor::CCriteriaEditor
+}
 
 CCriteriaEditor::~CCriteriaEditor()
 {
 	// If these structures weren't detached, we need to free them
 	MAPIFreeBuffer(m_lpNewEntryList);
 	MAPIFreeBuffer(m_lpNewRes);
-} // CCriteriaEditor::~CCriteriaEditor
+}
 
 // Used to call functions which need to be called AFTER controls are created
 BOOL CCriteriaEditor::OnInitDialog()
@@ -1353,13 +1353,13 @@ BOOL CCriteriaEditor::OnInitDialog()
 	UpdateListButtons();
 
 	return bRet;
-} // CCriteriaEditor::OnInitDialog
+}
 
 _Check_return_ LPSRestriction CCriteriaEditor::GetSourceRes()
 {
 	if (m_lpNewRes) return m_lpNewRes;
 	return m_lpSourceRes;
-} // CCriteriaEditor::GetSourceRes
+}
 
 _Check_return_ ULONG CCriteriaEditor::HandleChange(UINT nID)
 {
@@ -1372,7 +1372,7 @@ _Check_return_ ULONG CCriteriaEditor::HandleChange(UINT nID)
 	}
 
 	return i;
-} // CCriteriaEditor::HandleChange
+}
 
 // Whoever gets this MUST MAPIFreeBuffer
 _Check_return_ LPSRestriction CCriteriaEditor::DetachModifiedSRestriction()
@@ -1380,7 +1380,7 @@ _Check_return_ LPSRestriction CCriteriaEditor::DetachModifiedSRestriction()
 	LPSRestriction m_lpRet = m_lpNewRes;
 	m_lpNewRes = NULL;
 	return m_lpRet;
-} // CCriteriaEditor::DetachModifiedSRestriction
+}
 
 // Whoever gets this MUST MAPIFreeBuffer
 _Check_return_ LPENTRYLIST CCriteriaEditor::DetachModifiedEntryList()
@@ -1388,12 +1388,12 @@ _Check_return_ LPENTRYLIST CCriteriaEditor::DetachModifiedEntryList()
 	LPENTRYLIST m_lpRet = m_lpNewEntryList;
 	m_lpNewEntryList = NULL;
 	return m_lpRet;
-} // CCriteriaEditor::DetachModifiedEntryList
+}
 
 _Check_return_ ULONG CCriteriaEditor::GetSearchFlags()
 {
 	return m_ulNewSearchFlags;
-} // CCriteriaEditor::GetSearchFlags
+}
 
 void CCriteriaEditor::InitListFromEntryList(ULONG ulListNum, _In_ LPENTRYLIST lpEntryList)
 {
@@ -1402,7 +1402,7 @@ void CCriteriaEditor::InitListFromEntryList(ULONG ulListNum, _In_ LPENTRYLIST lp
 	ClearList(ulListNum);
 
 	InsertColumn(ulListNum, 0, IDS_SHARP);
-	CString szTmp;
+	wstring szTmp;
 	SortListData* lpData = NULL;
 	ULONG i = 0;
 	InsertColumn(ulListNum, 1, IDS_CB);
@@ -1413,8 +1413,8 @@ void CCriteriaEditor::InitListFromEntryList(ULONG ulListNum, _In_ LPENTRYLIST lp
 	{
 		for (i = 0; i < lpEntryList->cValues; i++)
 		{
-			szTmp.Format(_T("%u"), i); // STRING_OK
-			lpData = InsertListRow(ulListNum, i, szTmp);
+			szTmp = format(L"%u", i); // STRING_OK
+			lpData = InsertListRow(ulListNum, i, wstringToLPTSTR(szTmp));
 			if (lpData)
 			{
 				lpData->ulSortDataType = SORTLIST_BINARY;
@@ -1424,15 +1424,15 @@ void CCriteriaEditor::InitListFromEntryList(ULONG ulListNum, _In_ LPENTRYLIST lp
 				lpData->data.Binary.NewBin.lpb = NULL;
 			}
 
-			szTmp.Format(_T("%u"), lpEntryList->lpbin[i].cb); // STRING_OK
-			SetListString(ulListNum, i, 1, szTmp);
+			szTmp = format(L"%u", lpEntryList->lpbin[i].cb); // STRING_OK
+			SetListStringW(ulListNum, i, 1, szTmp.c_str());
 			SetListStringW(ulListNum, i, 2, BinToHexString(&lpEntryList->lpbin[i], false).c_str());
 			SetListStringW(ulListNum, i, 3, BinToTextString(&lpEntryList->lpbin[i], true).c_str());
 			if (lpData) lpData->bItemFullyLoaded = true;
 		}
 	}
 	ResizeList(ulListNum, false);
-} // CCriteriaEditor::InitListFromEntryList
+}
 
 void CCriteriaEditor::OnEditAction1()
 {
@@ -1457,15 +1457,14 @@ void CCriteriaEditor::OnEditAction1()
 			SetStringW(5, RestrictionToString(m_lpNewRes, NULL).c_str());
 		}
 	}
-} // CCriteriaEditor::OnEditAction1
+}
 
 _Check_return_ bool CCriteriaEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData)
 {
 	if (!lpData) return false;
 	if (!IsValidList(ulListNum)) return false;
 	HRESULT hRes = S_OK;
-	CString szTmp;
-	CString szAltTmp;
+	wstring szTmp;
 
 	CEditor BinEdit(
 		this,
@@ -1494,8 +1493,8 @@ _Check_return_ bool CCriteriaEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 		if (lpData->data.Binary.NewBin.lpb)
 		{
 			lpData->data.Binary.NewBin.cb = (ULONG)bin.size();
-			szTmp.Format(_T("%u"), lpData->data.Binary.NewBin.cb); // STRING_OK
-			SetListString(ulListNum, iItem, 1, szTmp);
+			szTmp = format(L"%u", lpData->data.Binary.NewBin.cb); // STRING_OK
+			SetListStringW(ulListNum, iItem, 1, szTmp.c_str());
 			SetListStringW(ulListNum, iItem, 2, BinToHexString(&lpData->data.Binary.NewBin, false).c_str());
 			SetListStringW(ulListNum, iItem, 3, BinToTextString(&lpData->data.Binary.NewBin, true).c_str());
 			return true;
@@ -1503,7 +1502,7 @@ _Check_return_ bool CCriteriaEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 	}
 
 	return false;
-} // CCriteriaEditor::DoListEdit
+}
 
 void CCriteriaEditor::OnOK()
 {
@@ -1552,4 +1551,4 @@ void CCriteriaEditor::OnOK()
 		EC_H(HrCopyRestriction(m_lpSourceRes, NULL, &m_lpNewRes))
 	}
 	m_ulNewSearchFlags = GetHexUseControl(2);
-} // CCriteriaEditor::OnOK
+}
