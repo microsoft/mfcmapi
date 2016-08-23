@@ -1193,11 +1193,13 @@ void CEditor::SetListString(ULONG iControl, ULONG iListRow, ULONG iListCol, wstr
 	m_lpControls[iControl].lpListPane->SetListString(iListRow, iListCol, szListString);
 }
 
-_Check_return_ SortListData* CEditor::InsertListRow(ULONG iControl, int iRow, _In_z_ LPCTSTR szText)
+_Check_return_ SortListData* CEditor::InsertListRow(ULONG iControl, int iRow, wstring szText)
 {
 	if (!IsValidList(iControl)) return NULL;
 
-	return m_lpControls[iControl].lpListPane->InsertRow(iRow, (LPTSTR)szText);
+	LPCTSTR szRowText = wstringToLPTSTR(szText);
+	return m_lpControls[iControl].lpListPane->InsertRow(iRow, szRowText);
+	delete[] szRowText;
 }
 
 void CEditor::ClearList(ULONG iControl)

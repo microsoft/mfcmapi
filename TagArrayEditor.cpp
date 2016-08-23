@@ -140,7 +140,6 @@ void CTagArrayEditor::ReadTagArrayToList(ULONG ulListNum)
 
 	if (m_lpTagArray)
 	{
-		CString szTmp;
 		ULONG iTagCount = 0;
 		ULONG cValues = m_lpTagArray->cValues;
 
@@ -148,8 +147,7 @@ void CTagArrayEditor::ReadTagArrayToList(ULONG ulListNum)
 		{
 			ULONG ulPropTag = m_lpTagArray->aulPropTag[iTagCount];
 			SortListData* lpData = NULL;
-			szTmp.Format(_T("%u"), iTagCount); // STRING_OK
-			lpData = InsertListRow(ulListNum, iTagCount, szTmp);
+			lpData = InsertListRow(ulListNum, iTagCount, format(L"%u", iTagCount)); // STRING_OK
 			if (lpData)
 			{
 				lpData->ulSortDataType = SORTLIST_TAGARRAY;

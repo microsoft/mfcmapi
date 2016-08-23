@@ -103,7 +103,7 @@ protected:
 	void InsertColumn(ULONG ulListNum, int nCol, UINT uidText);
 	void InsertColumn(ULONG ulListNum, int nCol, UINT uidText, ULONG ulPropType);
 	void SetListString(ULONG iControl, ULONG iListRow, ULONG iListCol, wstring szListString);
-	_Check_return_ SortListData* InsertListRow(ULONG iControl, int iRow, _In_z_ LPCTSTR szText);
+	_Check_return_ SortListData* InsertListRow(ULONG iControl, int iRow, wstring szText);
 	void ClearList(ULONG iControl);
 	void ResizeList(ULONG uControl, bool bSort);
 

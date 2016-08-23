@@ -120,8 +120,7 @@ void SpecialFolderEditor::LoadFolders()
 		ULONG cb = NULL;
 		LPENTRYID lpeid = NULL;
 
-		szTmp = format(L"%u", i); // STRING_OK
-		SortListData* lpData = InsertListRow(ulListNum, i - 1, wstringToLPTSTR(szTmp));
+		SortListData* lpData = InsertListRow(ulListNum, i - 1, format(L"%u", i)); // STRING_OK
 		if (lpData)
 		{
 			int iCol = 1;
