@@ -1,6 +1,3 @@
-// SortListCtrl.cpp : implementation file
-//
-
 #include "stdafx.h"
 #include "SortListCtrl.h"
 #include "MapiObjects.h"
@@ -27,7 +24,7 @@ void FreeSortListData(_In_ SortListData* lpData)
 	case SORTLIST_BINARY: // _BinaryData
 	case SORTLIST_RES: // _ResData
 	case SORTLIST_COMMENT: // _CommentData
-		// Nothing to do
+	// Nothing to do
 		break;
 	case SORTLIST_TREENODE: // _NodeData
 		if (lpData->data.Node.lpAdviseSink)
@@ -37,13 +34,15 @@ void FreeSortListData(_In_ SortListData* lpData)
 				lpData->data.Node.lpHierarchyTable->Unadvise(lpData->data.Node.ulAdviseConnection);
 			lpData->data.Node.lpAdviseSink->Release();
 		}
+
 		if (lpData->data.Node.lpHierarchyTable) lpData->data.Node.lpHierarchyTable->Release();
 		break;
 	}
+
 	MAPIFreeBuffer(lpData->szSortText);
 	MAPIFreeBuffer(lpData->lpSourceProps);
 	MAPIFreeBuffer(lpData);
-} // FreeSortListData
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // CSortListCtrl
@@ -59,28 +58,28 @@ CSortListCtrl::CSortListCtrl()
 	m_bHeaderSubclassed = false;
 	m_iItemCurHover = -1;
 	m_bAllowEscapeClose = false;
-} // CSortListCtrl::CSortListCtrl
+}
 
 CSortListCtrl::~CSortListCtrl()
 {
 	TRACE_DESTRUCTOR(CLASS);
 	DestroyWindow();
-} // CSortListCtrl::~CSortListCtrl
+}
 
 STDMETHODIMP_(ULONG) CSortListCtrl::AddRef()
 {
 	LONG lCount(InterlockedIncrement(&m_cRef));
 	TRACE_ADDREF(CLASS, lCount);
 	return lCount;
-} // CSortListCtrl::AddRef
+}
 
 STDMETHODIMP_(ULONG) CSortListCtrl::Release()
 {
 	LONG lCount(InterlockedDecrement(&m_cRef));
 	TRACE_RELEASE(CLASS, lCount);
-	if (!lCount)  delete this;
+	if (!lCount) delete this;
 	return lCount;
-} // CSortListCtrl::Release
+}
 
 BEGIN_MESSAGE_MAP(CSortListCtrl, CListCtrl)
 	ON_WM_KEYDOWN()
@@ -126,7 +125,7 @@ _Check_return_ HRESULT CSortListCtrl::Create(_In_ CWnd* pCreateParent, ULONG ulF
 	}
 
 	return hRes;
-} // CSortListCtrl::Create
+}
 
 static bool s_bInTrack = false;
 static int s_iTrack = 0;
@@ -142,7 +141,7 @@ void OnBeginTrack(_In_ NMHDR* pNMHDR, _In_ HWND hWndParent)
 	s_iTrack = rcHeader.right;
 	s_iHeaderHeight = rcHeader.bottom - rcHeader.top;
 	DrawTrackingBar(pHdr->hdr.hwndFrom, hWndParent, s_iTrack, s_iHeaderHeight, false);
-} // OnBeginTrack
+}
 
 void OnEndTrack(_In_ NMHDR* pNMHDR, _In_ HWND hWndParent)
 {
@@ -151,7 +150,7 @@ void OnEndTrack(_In_ NMHDR* pNMHDR, _In_ HWND hWndParent)
 		DrawTrackingBar(pNMHDR->hwndFrom, hWndParent, s_iTrack, s_iHeaderHeight, true);
 	}
 	s_bInTrack = false;
-} // OnEndTrack
+}
 
 void OnTrack(_In_ NMHDR* pNMHDR, _In_ HWND hWndParent)
 {
@@ -167,7 +166,7 @@ void OnTrack(_In_ NMHDR* pNMHDR, _In_ HWND hWndParent)
 			DrawTrackingBar(pHdr->hdr.hwndFrom, hWndParent, s_iTrack, s_iHeaderHeight, false);
 		}
 	}
-} // OnTrack
+}
 
 LRESULT CSortListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -227,7 +226,7 @@ LRESULT CSortListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	}
 	case WM_MOUSEMOVE:
 	{
-		LVHITTESTINFO  lvHitTestInfo = { 0 };
+		LVHITTESTINFO lvHitTestInfo = { 0 };
 		lvHitTestInfo.pt.x = GET_X_LPARAM(lParam);
 		lvHitTestInfo.pt.y = GET_Y_LPARAM(lParam);
 
@@ -274,20 +273,20 @@ LRESULT CSortListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			DrawListItemGlow(m_hWnd, iItemCur);
 		}
 		break;
-	} // end switch
+	}
 	return CListCtrl::WindowProc(message, wParam, lParam);
-} // CSortListCtrl::WindowProc
+}
 
 // Override for list item painting
 void CSortListCtrl::OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 {
 	CustomDrawList(pNMHDR, pResult, m_iItemCurHover);
-} // CSortListCtrl::OnCustomDraw
+}
 
 void CSortListCtrl::OnDeleteAllItems(_In_ NMHDR* /*pNMHDR*/, _In_ LRESULT* pResult)
 {
 	*pResult = false; // make sure we get LVN_DELETEITEM for all items
-} // CSortListCtrl::OnDeleteAllItems
+}
 
 void CSortListCtrl::OnDeleteItem(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 {
@@ -300,17 +299,17 @@ void CSortListCtrl::OnDeleteItem(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 		FreeSortListData(lpData);
 	}
 	*pResult = 0;
-} // CSortListCtrl::OnDeleteItem
+}
 
-_Check_return_ SortListData* CSortListCtrl::InsertRow(int iRow, _In_z_ LPCTSTR szText)
+_Check_return_ SortListData* CSortListCtrl::InsertRow(int iRow, wstring szText)
 {
 	return InsertRow(iRow, szText, 0, 0);
-} // CSortListCtrl::InsertRow
+}
 
-_Check_return_ SortListData* CSortListCtrl::InsertRow(int iRow, _In_z_ LPCTSTR szText, int iIndent, int iImage)
+_Check_return_ SortListData* CSortListCtrl::InsertRow(int iRow, wstring szText, int iIndent, int iImage)
 {
-	HRESULT			hRes = S_OK;
-	SortListData*	lpData = NULL;
+	HRESULT hRes = S_OK;
+	SortListData* lpData = NULL;
 
 	EC_H(MAPIAllocateBuffer(
 		(ULONG)sizeof(SortListData),
@@ -320,18 +319,18 @@ _Check_return_ SortListData* CSortListCtrl::InsertRow(int iRow, _In_z_ LPCTSTR s
 		memset(lpData, 0, sizeof(SortListData));
 	}
 
-	LVITEM lvItem = { 0 };
+	LVITEMW lvItem = { 0 };
 	lvItem.iItem = iRow;
 	lvItem.iSubItem = 0;
 	lvItem.mask = LVIF_TEXT | LVIF_PARAM | LVIF_INDENT | LVIF_IMAGE;
-	lvItem.pszText = (LPTSTR)szText;
+	lvItem.pszText = (LPWSTR)szText.c_str();
 	lvItem.iIndent = iIndent;
 	lvItem.iImage = iImage;
 	lvItem.lParam = (LPARAM)lpData;
-	iRow = InsertItem(&lvItem); // Assign result to iRow in case it changes
+	iRow = (int) ::SendMessage(m_hWnd, LVM_INSERTITEMW, 0, (LPARAM)&lvItem);
 
 	return lpData;
-} // CSortListCtrl::InsertRow
+}
 
 void CSortListCtrl::MySetRedraw(bool bRedraw)
 {
@@ -351,7 +350,7 @@ void CSortListCtrl::MySetRedraw(bool bRedraw)
 		}
 		m_iRedrawCount++;
 	}
-} // CSortListCtrl::MySetRedraw
+}
 
 enum __SortStyle
 {
@@ -362,8 +361,8 @@ enum __SortStyle
 
 struct SortInfo
 {
-	bool		bSortUp;
-	__SortStyle	sortstyle;
+	bool bSortUp;
+	__SortStyle sortstyle;
 };
 
 #define sortEqual 0
@@ -450,25 +449,25 @@ _Check_return_ int CALLBACK CSortListCtrl::MyCompareProc(_In_ LPARAM lParam1, _I
 		break;
 	}
 	return 0;
-} // CSortListCtrl::MyCompareProc
+}
 
 #ifndef HDF_SORTUP
-#define HDF_SORTUP              0x0400
+#define HDF_SORTUP 0x0400
 #endif
 #ifndef HDF_SORTDOWN
-#define HDF_SORTDOWN            0x0200
+#define HDF_SORTDOWN 0x0200
 #endif
 
 void CSortListCtrl::SortClickedColumn()
 {
-	HRESULT			hRes = S_OK;
-	HDITEM			hdItem = { 0 };
-	ULONG			ulPropTag = NULL;
-	CHeaderCtrl*	lpMyHeader = NULL;
-	SortInfo		sortinfo = { 0 };
+	HRESULT hRes = S_OK;
+	HDITEM hdItem = { 0 };
+	ULONG ulPropTag = NULL;
+	CHeaderCtrl* lpMyHeader = NULL;
+	SortInfo sortinfo = { 0 };
 
 	// There's little point in getting more than 128 characters for sorting
-	TCHAR			szText[128];
+	TCHAR szText[128];
 
 	m_bHaveSorted = true;
 	lpMyHeader = GetHeaderCtrl();
@@ -497,23 +496,23 @@ void CSortListCtrl::SortClickedColumn()
 		}
 	}
 
-	// #define PT_UNSPECIFIED	((ULONG)  0)	/* (Reserved for interface use) type doesn't matter to caller */
-	// #define PT_NULL			((ULONG)  1)	/* NULL property value */
-	// #define	PT_I2			((ULONG)  2)	/* Signed 16-bit value */
-	// #define PT_LONG			((ULONG)  3)	/* Signed 32-bit value */
-	// #define	PT_R4			((ULONG)  4)	/* 4-byte floating point */
-	// #define PT_DOUBLE		((ULONG)  5)	/* Floating point double */
-	// #define PT_CURRENCY		((ULONG)  6)	/* Signed 64-bit int (decimal w/	4 digits right of decimal pt) */
-	// #define	PT_APPTIME		((ULONG)  7)	/* Application time */
-	// #define PT_ERROR		((ULONG) 10)	/* 32-bit error value */
-	// #define PT_BOOLEAN		((ULONG) 11)	/* 16-bit boolean (non-zero true) */
-	// #define PT_OBJECT		((ULONG) 13)	/* Embedded object in a property */
-	// #define	PT_I8			((ULONG) 20)	/* 8-byte signed integer */
-	// #define PT_STRING8		((ULONG) 30)	/* Null terminated 8-bit character string */
-	// #define PT_UNICODE		((ULONG) 31)	/* Null terminated Unicode string */
-	// #define PT_SYSTIME		((ULONG) 64)	/* FILETIME 64-bit int w/ number of 100ns periods since Jan 1,1601 */
-	// #define	PT_CLSID		((ULONG) 72)	/* OLE GUID */
-	// #define PT_BINARY		((ULONG) 258)	/* Uninterpreted (counted byte array) */
+	// #define PT_UNSPECIFIED ((ULONG) 0) /* (Reserved for interface use) type doesn't matter to caller */
+	// #define PT_NULL ((ULONG) 1) /* NULL property value */
+	// #define PT_I2 ((ULONG) 2) /* Signed 16-bit value */
+	// #define PT_LONG ((ULONG) 3) /* Signed 32-bit value */
+	// #define PT_R4 ((ULONG) 4) /* 4-byte floating point */
+	// #define PT_DOUBLE ((ULONG) 5) /* Floating point double */
+	// #define PT_CURRENCY ((ULONG) 6) /* Signed 64-bit int (decimal w/ 4 digits right of decimal pt) */
+	// #define PT_APPTIME ((ULONG) 7) /* Application time */
+	// #define PT_ERROR ((ULONG) 10) /* 32-bit error value */
+	// #define PT_BOOLEAN ((ULONG) 11) /* 16-bit boolean (non-zero true) */
+	// #define PT_OBJECT ((ULONG) 13) /* Embedded object in a property */
+	// #define PT_I8 ((ULONG) 20) /* 8-byte signed integer */
+	// #define PT_STRING8 ((ULONG) 30) /* Null terminated 8-bit character string */
+	// #define PT_UNICODE ((ULONG) 31) /* Null terminated Unicode string */
+	// #define PT_SYSTIME ((ULONG) 64) /* FILETIME 64-bit int w/ number of 100ns periods since Jan 1,1601 */
+	// #define PT_CLSID ((ULONG) 72) /* OLE GUID */
+	// #define PT_BINARY ((ULONG) 258) /* Uninterpreted (counted byte array) */
 	// Set our sort text
 	LVITEM lvi = { 0 };
 	lvi.mask = LVIF_PARAM | LVIF_TEXT;
@@ -624,7 +623,7 @@ void CSortListCtrl::SortClickedColumn()
 
 	sortinfo.bSortUp = m_bSortUp;
 	EC_B(SortItems(MyCompareProc, (LPARAM)&sortinfo));
-} // CSortListCtrl::SortClickedColumn
+}
 
 // Leverage in support for sorting columns.
 // Basically a call to CListCtrl::SortItems with MyCompareProc
@@ -640,7 +639,7 @@ void CSortListCtrl::OnColumnClick(int iColumn)
 		m_iClickedColumn = iColumn;
 	}
 	SortClickedColumn();
-} // CSortListCtrl::OnColumnClick
+}
 
 // Used by child classes to force a sort order on a column
 void CSortListCtrl::FakeClickColumn(int iColumn, bool bSortUp)
@@ -648,7 +647,7 @@ void CSortListCtrl::FakeClickColumn(int iColumn, bool bSortUp)
 	m_iClickedColumn = iColumn;
 	m_bSortUp = bSortUp;
 	SortClickedColumn();
-} // CSortListCtrl::FakeClickColumn
+}
 
 void CSortListCtrl::AutoSizeColumn(int iColumn, int iMaxWidth, int iMinWidth)
 {
@@ -660,12 +659,12 @@ void CSortListCtrl::AutoSizeColumn(int iColumn, int iMaxWidth, int iMinWidth)
 	if (iMaxWidth && width > iMaxWidth) SetColumnWidth(iColumn, iMaxWidth);
 	else if (width < iMinWidth) SetColumnWidth(iColumn, iMinWidth);
 	MySetRedraw(true);
-} // CSortListCtrl::AutoSizeColumn
+}
 
 void CSortListCtrl::AutoSizeColumns(bool bMinWidth)
 {
-	CHeaderCtrl*	lpMyHeader = NULL;
-	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
+	CHeaderCtrl* lpMyHeader = NULL;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	DebugPrintEx(DBGGeneric, CLASS, L"AutoSizeColumns", L"Sizing columns\n");
 	lpMyHeader = GetHeaderCtrl();
@@ -678,16 +677,16 @@ void CSortListCtrl::AutoSizeColumns(bool bMinWidth)
 		}
 		MySetRedraw(true);
 	}
-} // CSortListCtrl::AutoSizeColumns
+}
 
 void CSortListCtrl::DeleteAllColumns(bool bShutdown)
 {
-	HRESULT			hRes = S_OK;
-	CHeaderCtrl*	lpMyHeader = NULL;
-	HDITEM			hdItem = { 0 };
+	HRESULT hRes = S_OK;
+	CHeaderCtrl* lpMyHeader = NULL;
+	HDITEM hdItem = { 0 };
 
 	DebugPrintEx(DBGGeneric, CLASS, L"DeleteAllColumns", L"Deleting existing columns\n");
-	CWaitCursor		Wait; // Change the mouse to an hourglass while we work.
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	lpMyHeader = GetHeaderCtrl();
 	if (lpMyHeader)
@@ -713,7 +712,7 @@ void CSortListCtrl::DeleteAllColumns(bool bShutdown)
 			if (!bShutdown) MySetRedraw(true);
 		}
 	}
-} // CSortListCtrl::DeleteAllColumns
+}
 
 void CSortListCtrl::AllowEscapeClose()
 {
@@ -744,7 +743,7 @@ _Check_return_ UINT CSortListCtrl::OnGetDlgCode()
 	}
 
 	return iDlgCode;
-} // CSortListCtrl::OnGetDlgCode
+}
 
 void CSortListCtrl::SetItemText(int nItem, int nSubItem, _In_z_ LPCTSTR lpszText)
 {
@@ -753,7 +752,7 @@ void CSortListCtrl::SetItemText(int nItem, int nSubItem, _In_z_ LPCTSTR lpszText
 #else
 	SetItemTextA(nItem, nSubItem, lpszText);
 #endif
-} // CSortListCtrl::SetItemText
+}
 
 void CSortListCtrl::SetItemTextA(int nItem, int nSubItem, _In_z_ LPCSTR lpszText)
 {
@@ -766,7 +765,7 @@ void CSortListCtrl::SetItemTextA(int nItem, int nSubItem, _In_z_ LPCSTR lpszText
 	}
 
 	(void)CListCtrl::SetItemText(nItem, nSubItem, LPCSTRToCString(lpszText));
-} // CSortListCtrl::SetItemTextA
+}
 
 void CSortListCtrl::SetItemTextW(int nItem, int nSubItem, _In_z_ LPCWSTR lpszText)
 {
@@ -778,8 +777,8 @@ void CSortListCtrl::SetItemTextW(int nItem, int nSubItem, _In_z_ LPCWSTR lpszTex
 		szWhitespace = (LPWSTR)wcspbrk(szWhitespace, L"\r\n\t"); // STRING_OK
 	}
 
-	(void) CListCtrl::SetItemText(nItem, nSubItem, wstringToCString(lpszText));
-} // CSortListCtrl::SetItemTextW
+	(void)CListCtrl::SetItemText(nItem, nSubItem, wstringToCString(lpszText));
+}
 
 // if asked to select the item after the last item - will select the last item.
 void CSortListCtrl::SetSelectedItem(int iItem)
@@ -799,4 +798,4 @@ void CSortListCtrl::SetSelectedItem(int iItem)
 		EC_B(SetItemState(iItem - 1, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED));
 		EnsureVisible(iItem - 1, false);
 	}
-} // CSortListCtrl::SetSelectedItem
+}

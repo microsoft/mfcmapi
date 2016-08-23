@@ -1197,9 +1197,7 @@ _Check_return_ SortListData* CEditor::InsertListRow(ULONG iControl, int iRow, ws
 {
 	if (!IsValidList(iControl)) return NULL;
 
-	LPCTSTR szRowText = wstringToLPTSTR(szText);
-	return m_lpControls[iControl].lpListPane->InsertRow(iRow, szRowText);
-	delete[] szRowText;
+	return m_lpControls[iControl].lpListPane->InsertRow(iRow, szText);
 }
 
 void CEditor::ClearList(ULONG iControl)

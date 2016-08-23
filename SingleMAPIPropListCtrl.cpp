@@ -641,7 +641,7 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 	}
 
 	SortListData* lpData = NULL;
-	lpData = InsertRow(iRow, _T(""), 0, ulImage);
+	lpData = InsertRow(iRow, L"", 0, ulImage);
 	// Data used to refer to specific property tags. See GetSelectedPropTag.
 	if (lpData)
 	{

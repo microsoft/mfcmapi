@@ -1175,7 +1175,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::RefreshItem(int iRow, _In_ LPSRow
 		ULONG ulImage = slIconDefault;
 		GetDepthAndImage(lpsRowData, &ulDepth, &ulImage);
 
-		lpData = InsertRow(iRow, _T("TempRefreshItem"), ulDepth, ulImage); // STRING_OK
+		lpData = InsertRow(iRow, L"TempRefreshItem", ulDepth, ulImage); // STRING_OK
 	}
 
 	if (lpData)
