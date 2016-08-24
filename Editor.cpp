@@ -1115,7 +1115,7 @@ _Check_return_ bool CEditor::GetBinaryUseControl(ULONG i, _Out_ size_t* cbBin, _
 	*cbBin = NULL;
 	*lpBin = NULL;
 
-	wstring szString = LPCTSTRToWstring(GetStringUseControl(i));
+	wstring szString = GetStringUseControl(i);
 	vector<BYTE> bin = HexStringToBin(szString);
 	if (bin.empty()) return false;
 
@@ -1252,9 +1252,9 @@ _Check_return_ ULONG CEditor::GetHex(ULONG i)
 	return wstringToUlong(m_lpControls[i].lpTextPane->GetStringW(), 16);
 }
 
-_Check_return_ CString CEditor::GetStringUseControl(ULONG iControl)
+_Check_return_ wstring CEditor::GetStringUseControl(ULONG iControl)
 {
-	if (!IsValidEdit(iControl)) return _T("");
+	if (!IsValidEdit(iControl)) return L"";
 
 	return m_lpControls[iControl].lpTextPane->GetStringUseControl();
 }
@@ -1282,27 +1282,18 @@ _Check_return_ ULONG CEditor::GetHexUseControl(ULONG i)
 {
 	if (!IsValidEdit(i)) return 0;
 
-	CString szTmpString = GetStringUseControl(i);
+	wstring szTmpString = GetStringUseControl(i);
 
-	return CStringToUlong(szTmpString, 16);
+	return wstringToUlong(szTmpString, 16);
 }
 
 _Check_return_ ULONG CEditor::GetDecimalUseControl(ULONG i)
 {
 	if (!IsValidEdit(i)) return 0;
 
-	CString szTmpString = GetStringUseControl(i);
+	wstring szTmpString = GetStringUseControl(i);
 
-	return CStringToUlong(szTmpString, 10);
-}
-
-void CleanPropString(_In_ CString* lpString)
-{
-	if (!lpString) return;
-
-	// remove any whitespace or nonsense punctuation
-	lpString->Replace(_T(","), _T("")); // STRING_OK
-	lpString->Replace(_T(" "), _T("")); // STRING_OK
+	return wstringToUlong(szTmpString, 10);
 }
 
 _Check_return_ ULONG CEditor::GetPropTagUseControl(ULONG i)
@@ -1310,17 +1301,16 @@ _Check_return_ ULONG CEditor::GetPropTagUseControl(ULONG i)
 	if (!IsValidEdit(i)) return 0;
 
 	ULONG ulPropTag = NULL;
-	CString szTag;
-	szTag = GetStringUseControl(i);
+	wstring szTag = GetStringUseControl(i);
 
 	// remove any whitespace or nonsense punctuation
-	CleanPropString(&szTag);
+	szTag = CleanString(szTag);
 
-	ULONG ulTag = CStringToUlong(szTag, 16);
+	ULONG ulTag = wstringToUlong(szTag, 16);
 
 	if (ulTag == NULL) // If we didn't convert, try a lookup
 	{
-		ulTag = PropNameToPropTag(LPCTSTRToWstring(szTag));
+		ulTag = PropNameToPropTag(szTag);
 	}
 
 	// Figure if this is a full tag or just an ID

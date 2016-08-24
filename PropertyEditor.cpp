@@ -540,89 +540,69 @@ void CPropertyEditor::WriteStringsToSPropValue()
 		bool bFailed = false; // set true if we fail to get a prop and have to clean up memory
 		m_lpsOutputValue->ulPropTag = m_ulPropTag;
 		m_lpsOutputValue->dwAlignPad = NULL;
-		short int iVal = 0;
-		LONG lVal = 0;
-		float fVal = 0;
-		double dVal = 0;
-		CURRENCY curVal = { 0 };
-		double atVal = 0;
-		SCODE errVal = 0;
-		bool bVal = false;
-		LARGE_INTEGER liVal = { 0 };
-		FILETIME ftVal = { 0 };
 		vector<BYTE> bin;
-		CString szTmpString;
+		wstring szTmpString;
 
 		switch (PROP_TYPE(m_ulPropTag))
 		{
 		case PT_I2: // treat as signed long
 			szTmpString = GetStringUseControl(0);
-			iVal = (short int)_tcstol(szTmpString, NULL, 10);
-			m_lpsOutputValue->Value.i = iVal;
+			m_lpsOutputValue->Value.i = static_cast<short int>(wstringToLong(szTmpString, 10));
 			break;
 		case PT_LONG: // treat as unsigned long
 			szTmpString = GetStringUseControl(0);
-			lVal = static_cast<LONG>(CStringToUlong(szTmpString, 10));
-			m_lpsOutputValue->Value.l = lVal;
+			m_lpsOutputValue->Value.l = static_cast<LONG>(wstringToUlong(szTmpString, 10));
 			break;
 		case PT_R4:
 			szTmpString = GetStringUseControl(0);
-			fVal = (float)_tcstod(szTmpString, NULL);
-			m_lpsOutputValue->Value.flt = fVal;
+			m_lpsOutputValue->Value.flt = static_cast<float>(wstringToDouble(szTmpString));
 			break;
 		case PT_DOUBLE:
 			szTmpString = GetStringUseControl(0);
-			dVal = (double)_tcstod(szTmpString, NULL);
-			m_lpsOutputValue->Value.dbl = dVal;
+			m_lpsOutputValue->Value.dbl = wstringToDouble(szTmpString);
 			break;
 		case PT_CURRENCY:
 			szTmpString = GetStringUseControl(0);
-			curVal.Hi = CStringToUlong(szTmpString, 16);
+			m_lpsOutputValue->Value.cur.Hi = wstringToUlong(szTmpString, 16);
 			szTmpString = GetStringUseControl(1);
-			curVal.Lo = CStringToUlong(szTmpString, 16);
-			m_lpsOutputValue->Value.cur = curVal;
+			m_lpsOutputValue->Value.cur.Lo = wstringToUlong(szTmpString, 16);
 			break;
 		case PT_APPTIME:
 			szTmpString = GetStringUseControl(0);
-			atVal = (double)_tcstod(szTmpString, NULL);
-			m_lpsOutputValue->Value.at = atVal;
+			m_lpsOutputValue->Value.at = wstringToDouble(szTmpString);
 			break;
 		case PT_ERROR: // unsigned
 			szTmpString = GetStringUseControl(0);
-			errVal = static_cast<SCODE>(CStringToUlong(szTmpString, 16));
-			m_lpsOutputValue->Value.err = errVal;
+			m_lpsOutputValue->Value.err = static_cast<SCODE>(wstringToUlong(szTmpString, 16));
 			break;
 		case PT_BOOLEAN:
-			bVal = GetCheckUseControl(0);
-			m_lpsOutputValue->Value.b = (unsigned short)bVal;
+			m_lpsOutputValue->Value.b = static_cast<unsigned short>(GetCheckUseControl(0));
 			break;
 		case PT_I8:
 			szTmpString = GetStringUseControl(0);
-			liVal.HighPart = static_cast<long>(CStringToUlong(szTmpString, 16));
+			m_lpsOutputValue->Value.li.HighPart = static_cast<long>(wstringToUlong(szTmpString, 16));
 			szTmpString = GetStringUseControl(1);
-			liVal.LowPart = static_cast<long>(CStringToUlong(szTmpString, 16));
-			m_lpsOutputValue->Value.li = liVal;
+			m_lpsOutputValue->Value.li.LowPart = static_cast<long>(wstringToUlong(szTmpString, 16));
 			break;
 		case PT_STRING8:
 			// We read strings out of the hex control in order to preserve any hex level tweaks the user
 			// may have done. The RichEdit control likes throwing them away.
 			szTmpString = GetStringUseControl(1);
-			bin = HexStringToBin(LPCTSTRToWstring(szTmpString));
+			bin = HexStringToBin(szTmpString);
 			m_lpsOutputValue->Value.lpszA = (LPSTR)ByteVectorToMAPI(bin, m_lpAllocParent);
 			break;
 		case PT_UNICODE:
 			// We read strings out of the hex control in order to preserve any hex level tweaks the user
 			// may have done. The RichEdit control likes throwing them away.
 			szTmpString = GetStringUseControl(1);
-			bin = HexStringToBin(LPCTSTRToWstring(szTmpString));
+			bin = HexStringToBin(szTmpString);
 			m_lpsOutputValue->Value.lpszW = (LPWSTR)ByteVectorToMAPI(bin, m_lpAllocParent);
 			break;
 		case PT_SYSTIME:
 			szTmpString = GetStringUseControl(0);
-			ftVal.dwLowDateTime = CStringToUlong(szTmpString, 16);
+			m_lpsOutputValue->Value.ft.dwLowDateTime = wstringToUlong(szTmpString, 16);
 			szTmpString = GetStringUseControl(1);
-			ftVal.dwHighDateTime = CStringToUlong(szTmpString, 16);
-			m_lpsOutputValue->Value.ft = ftVal;
+			m_lpsOutputValue->Value.ft.dwHighDateTime = wstringToUlong(szTmpString, 16);
 			break;
 		case PT_CLSID:
 			EC_H(MAPIAllocateMore(
@@ -631,14 +611,14 @@ void CPropertyEditor::WriteStringsToSPropValue()
 				(LPVOID*)&m_lpsOutputValue->Value.lpguid));
 			if (m_lpsOutputValue->Value.lpguid)
 			{
-				*m_lpsOutputValue->Value.lpguid = StringToGUID(LPCTSTRToWstring(GetStringUseControl(0)));
+				*m_lpsOutputValue->Value.lpguid = StringToGUID(GetStringUseControl(0));
 			}
 
 			break;
 		case PT_BINARY:
 			// remember we already read szTmpString and ulStrLen and found ulStrLen was even
 			szTmpString = GetStringUseControl(0);
-			bin = HexStringToBin(LPCTSTRToWstring(szTmpString));
+			bin = HexStringToBin(szTmpString);
 			m_lpsOutputValue->Value.bin.lpb = ByteVectorToMAPI(bin, m_lpAllocParent);
 			m_lpsOutputValue->Value.bin.cb = (ULONG)bin.size();
 			break;
@@ -700,7 +680,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 
 	if ((ULONG)-1 == i) return (ULONG)-1;
 
-	CString szTmpString;
+	wstring szTmpString;
 	wstring szTemp1;
 	wstring szTemp2;
 	wstring szSmartView;
@@ -725,12 +705,12 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		szTmpString = GetStringUseControl(i);
 		if (0 == i)
 		{
-			iVal = (short int)_tcstol(szTmpString, NULL, 10);
+			iVal = static_cast<short int>(wstringToLong(szTmpString, 10));
 			SetHex(1, iVal);
 		}
 		else if (1 == i)
 		{
-			iVal = (short int)_tcstol(szTmpString, NULL, 16);
+			lVal = static_cast<short int>(wstringToLong(szTmpString, 16));
 			SetDecimal(0, iVal);
 		}
 
@@ -751,12 +731,12 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		szTmpString = GetStringUseControl(i);
 		if (0 == i)
 		{
-			lVal = (LONG)CStringToUlong(szTmpString, 10);
+			lVal = (LONG)wstringToUlong(szTmpString, 10);
 			SetHex(1, lVal);
 		}
 		else if (1 == i)
 		{
-			lVal = (LONG)CStringToUlong(szTmpString, 16);
+			lVal = (LONG)wstringToUlong(szTmpString, 16);
 			SetStringf(0, _T("%d"), lVal); // STRING_OK
 		}
 
@@ -777,16 +757,16 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		if (0 == i || 1 == i)
 		{
 			szTmpString = GetStringUseControl(0);
-			curVal.Hi = CStringToUlong(szTmpString, 16);
+			curVal.Hi = wstringToUlong(szTmpString, 16);
 			szTmpString = GetStringUseControl(1);
-			curVal.Lo = CStringToUlong(szTmpString, 16);
+			curVal.Lo = wstringToUlong(szTmpString, 16);
 			SetStringW(2, CurrencyToString(curVal).c_str());
 		}
 		else if (2 == i)
 		{
 			szTmpString = GetStringUseControl(i);
-			szTmpString.Remove(_T('.'));
-			curVal.int64 = _ttoi64(szTmpString);
+			szTmpString = StripCharacter(szTmpString, L'.');
+			curVal.int64 = wstringToInt64(szTmpString);
 			SetHex(0, (int)curVal.Hi);
 			SetHex(1, (int)curVal.Lo);
 		}
@@ -796,15 +776,15 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		if (0 == i || 1 == i)
 		{
 			szTmpString = GetStringUseControl(0);
-			liVal.HighPart = static_cast<long>(CStringToUlong(szTmpString, 16));
+			liVal.HighPart = static_cast<long>(wstringToUlong(szTmpString, 16));
 			szTmpString = GetStringUseControl(1);
-			liVal.LowPart = static_cast<long>(CStringToUlong(szTmpString, 16));
+			liVal.LowPart = static_cast<long>(wstringToUlong(szTmpString, 16));
 			SetStringf(2, _T("%I64d"), liVal.QuadPart); // STRING_OK
 		}
 		else if (2 == i)
 		{
 			szTmpString = GetStringUseControl(i);
-			liVal.QuadPart = _ttoi64(szTmpString);
+			liVal.QuadPart = wstringToInt64(szTmpString);
 			SetHex(0, (int)liVal.HighPart);
 			SetHex(1, (int)liVal.LowPart);
 		}
@@ -824,9 +804,9 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		break;
 	case PT_SYSTIME: // components are unsigned hex
 		szTmpString = GetStringUseControl(0);
-		ftVal.dwLowDateTime = CStringToUlong(szTmpString, 16);
+		ftVal.dwLowDateTime = wstringToUlong(szTmpString, 16);
 		szTmpString = GetStringUseControl(1);
-		ftVal.dwHighDateTime = CStringToUlong(szTmpString, 16);
+		ftVal.dwHighDateTime = wstringToUlong(szTmpString, 16);
 
 		FileTimeToString(&ftVal, szTemp1, szTemp2);
 		SetStringW(2, szTemp1.c_str());

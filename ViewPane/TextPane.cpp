@@ -526,12 +526,12 @@ _Check_return_ LPWSTR TextPane::GetEditBoxTextW(_Out_ size_t* lpcchText)
 	return GetStringW();
 }
 
-_Check_return_ CString TextPane::GetStringUseControl()
+_Check_return_ wstring TextPane::GetStringUseControl()
 {
-	CString szText;
-	m_EditBox.GetWindowText(szText);
-
-	return szText;
+	int len = GetWindowTextLength(m_EditBox.m_hWnd) + 1;
+	vector<wchar_t> text(len);
+	GetWindowTextW(m_EditBox.m_hWnd, &text[0], len);
+	return &text[0];
 }
 
 // Takes a binary stream and initializes an edit control with the HEX version of this stream
@@ -557,7 +557,7 @@ void TextPane::WriteToBinaryStream(_In_ LPSTREAM lpStreamOut)
 {
 	HRESULT hRes = S_OK;
 
-	auto bin = HexStringToBin(LPCTSTRToWstring(GetStringUseControl()));
+	auto bin = HexStringToBin(GetStringUseControl());
 	if (bin.data() != 0)
 	{
 		ULONG cbWritten = 0;

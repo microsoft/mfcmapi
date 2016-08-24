@@ -73,7 +73,8 @@ void COptions::OnOK()
 	ULONG ulReg = 0;
 
 	// need to grab this FIRST
-	EC_H(StringCchCopy(RegKeys[regkeyDEBUG_FILE_NAME].szCurSTRING, _countof(RegKeys[regkeyDEBUG_FILE_NAME].szCurSTRING), GetStringUseControl(regkeyDEBUG_FILE_NAME)));
+	wstring filename = GetStringUseControl(regkeyDEBUG_FILE_NAME);
+	EC_H(StringCchCopy(RegKeys[regkeyDEBUG_FILE_NAME].szCurSTRING, _countof(RegKeys[regkeyDEBUG_FILE_NAME].szCurSTRING), wstringToCString(filename)));
 
 	if (GetHex(regkeyDEBUG_TAG) != RegKeys[regkeyDEBUG_TAG].ulCurDWORD)
 	{
