@@ -90,6 +90,7 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 		cb = cchStr * sizeof(CHAR);
 
 		szEncodeStr = Base64Encode(cb, lpb);
+		cchEncodeStr = szEncodeStr.length();
 		SetStringW(HEXED_BASE64, szEncodeStr.c_str());
 
 		SetBinary(HEXED_HEX, lpb, cb);
@@ -108,6 +109,7 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 		cb = cchStr * sizeof(WCHAR);
 
 		szEncodeStr = Base64Encode(cb, lpb);
+		cchEncodeStr = szEncodeStr.length();
 		SetStringW(HEXED_BASE64, szEncodeStr.c_str());
 
 		SetBinary(HEXED_HEX, lpb, cb);
