@@ -165,7 +165,7 @@ void CPropertyTagEditor::LookupNamedProp(ULONG ulSkipField, bool bCreate)
 		if (1 == iCurSel) NamedID.ulKind = MNID_ID;
 	}
 
-	wstring szName = LPCTSTRToWstring(GetStringUseControl(PROPTAG_NAMEPROPNAME));
+	wstring szName = GetStringUseControl(PROPTAG_NAMEPROPNAME);
 
 	if (GetSelectedGUID(PROPTAG_NAMEPROPGUID, false, &guid))
 	{
@@ -266,9 +266,8 @@ _Check_return_ ULONG CPropertyTagEditor::HandleChange(UINT nID)
 		break;
 	case PROPTAG_ID: // Prop ID changed
 	{
-		CString szID;
-		szID = GetStringUseControl(PROPTAG_ID);
-		ULONG ulID = CStringToUlong(szID, 16);
+		wstring szID = GetStringUseControl(PROPTAG_ID);
+		ULONG ulID = wstringToUlong(szID, 16);
 
 		m_ulPropTag = PROP_TAG(PROP_TYPE(m_ulPropTag), ulID);
 	}

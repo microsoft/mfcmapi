@@ -70,7 +70,6 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 
 	if ((ULONG)-1 == i) return (ULONG)-1;
 
-	CString szTmpString;
 	LPBYTE lpb = NULL;
 	size_t cb = 0;
 	wstring szEncodeStr;
@@ -117,13 +116,13 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 	break;
 	case HEXED_BASE64: // base64 changed
 	{
-		szTmpString = GetStringUseControl(HEXED_BASE64);
+		wstring szTmpString = GetStringUseControl(HEXED_BASE64);
 
 		// remove any whitespace before decoding
-		CleanString(&szTmpString);
+		szTmpString = CleanString(szTmpString);
 
-		cchEncodeStr = szTmpString.GetLength();
-		vector<BYTE> bin = Base64Decode(LPCTSTRToWstring((LPCTSTR)szTmpString));
+		cchEncodeStr = szTmpString.length();
+		vector<BYTE> bin = Base64Decode(szTmpString);
 		lpb = ByteVectorToLPBYTE(bin);
 		cb = bin.size();
 

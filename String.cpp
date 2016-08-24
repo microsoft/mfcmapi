@@ -162,7 +162,7 @@ void wstringToLower(wstring src)
 	transform(src.begin(), src.end(), src.begin(), ::tolower);
 }
 
-// Converts a wstring to a number. Will return 0 if string is empty or contains non-numeric data.
+// Converts a wstring to a ulong. Will return 0 if string is empty or contains non-numeric data.
 ULONG wstringToUlong(wstring const& src, int radix)
 {
 	if (src.empty()) return 0;
@@ -177,6 +177,47 @@ ULONG wstringToUlong(wstring const& src, int radix)
 	}
 
 	return ulArg;
+}
+
+// Converts a wstring to a long. Will return 0 if string is empty or contains non-numeric data.
+long wstringToLong(wstring const& src, int radix)
+{
+	if (src.empty()) return 0;
+
+	LPWSTR szEndPtr = NULL;
+	LONG lArg = wcstol(src.c_str(), &szEndPtr, radix);
+
+	// if szEndPtr is pointing to something other than NULL, this must be a string
+	if (!szEndPtr || *szEndPtr)
+	{
+		lArg = NULL;
+	}
+
+	return lArg;
+}
+
+// Converts a wstring to a double. Will return 0 if string is empty or contains non-numeric data.
+double wstringToDouble(wstring const& src)
+{
+	if (src.empty()) return 0;
+
+	LPWSTR szEndPtr = NULL;
+	double dArg = wcstod(src.c_str(), &szEndPtr);
+
+	// if szEndPtr is pointing to something other than NULL, this must be a string
+	if (!szEndPtr || *szEndPtr)
+	{
+		dArg = NULL;
+	}
+
+	return dArg;
+}
+
+__int64 wstringToInt64(wstring const& src)
+{
+	if (src.empty()) return 0;
+
+	return _wtoi64(src.c_str());
 }
 
 // Converts a CString to a number. Will return 0 if string is empty or contains non-numeric data.
@@ -196,11 +237,32 @@ ULONG CStringToUlong(CString const& src, int radix)
 	return ulArg;
 }
 
-wstring StripCarriage(wstring szString)
+wstring StripCharacter(wstring szString, WCHAR character)
 {
-	szString.erase(remove(szString.begin(), szString.end(), L'\r'), szString.end());
+	szString.erase(remove(szString.begin(), szString.end(), character), szString.end());
 	return szString;
 }
+
+wstring StripCarriage(wstring szString)
+{
+	return StripCharacter(szString, L'\r');
+}
+
+wstring CleanString(wstring szString)
+{
+	// TODO: Find a better/faster way to do this
+	return StripCharacter(StripCharacter(szString, L','), L' ');
+}
+
+void CleanPropString(_In_ CString* lpString)
+{
+	if (!lpString) return;
+
+	// remove any whitespace or nonsense punctuation
+	lpString->Replace(_T(","), _T("")); // STRING_OK
+	lpString->Replace(_T(" "), _T("")); // STRING_OK
+}
+
 
 // if cchszA == -1, MultiByteToWideChar will compute the length
 // Delete with delete[]

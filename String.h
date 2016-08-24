@@ -19,8 +19,15 @@ CString LPCSTRToCString(LPCSTR src);
 CStringA LPCTSTRToCStringA(LPCTSTR src);
 void wstringToLower(wstring src);
 ULONG wstringToUlong(wstring const& src, int radix);
+long wstringToLong(wstring const& src, int radix);
+double wstringToDouble(wstring const& src);
+__int64 wstringToInt64(wstring const& src);
 ULONG CStringToUlong(CString const& src, int radix);
+
+wstring StripCharacter(wstring szString, WCHAR character);
 wstring StripCarriage(wstring szString);
+wstring CleanString(wstring szString);
+void CleanPropString(_In_ CString* lpString);
 
 // Unicode support
 _Check_return_ HRESULT AnsiToUnicode(_In_opt_z_ LPCSTR pszA, _Out_z_cap_(cchszA) LPWSTR* ppszW, _Out_ size_t* cchszW, size_t cchszA);

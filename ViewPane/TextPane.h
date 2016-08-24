@@ -47,7 +47,7 @@ public:
 	LPSTR GetStringA();
 	_Check_return_ LPSTR GetEditBoxTextA(_Out_ size_t* lpcchText);
 	_Check_return_ LPWSTR GetEditBoxTextW(_Out_ size_t* lpcchText);
-	_Check_return_ CString GetStringUseControl();
+	_Check_return_ wstring GetStringUseControl();
 
 protected:
 	CRichEditCtrl m_EditBox;
