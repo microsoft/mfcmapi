@@ -88,9 +88,7 @@ public:
 	void          SetSelectedItem(int iItem);
 	void          SortClickedColumn();
 	_Check_return_ SortListData* InsertRow(int iRow, wstring szText);
-	void SetItemText(int nItem, int nSubItem, _In_z_ LPCTSTR lpszText);
-	void SetItemTextA(int nItem, int nSubItem, _In_z_ LPCSTR lpszText);
-	void SetItemTextW(int nItem, int nSubItem, _In_z_ LPCWSTR lpszText);
+	void SetItemText(int nItem, int nSubItem, wstring lpszText);
 	wstring GetItemText(_In_ int nItem, _In_ int nSubItem) const;
 	void AllowEscapeClose();
 
