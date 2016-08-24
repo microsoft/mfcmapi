@@ -1,6 +1,3 @@
-// QSSpecialFolders.cpp : implementation file
-//
-
 #include "stdafx.h"
 #include "QSSpecialFolders.h"
 #include "QuickStart.h"
@@ -61,21 +58,21 @@ struct sfCol
 };
 
 sfCol g_sfCol[] = {
-	{ IDS_SHARP, PT_LONG },
-	{ IDS_QSSFFOLDERNAME, PT_NULL },
-	{ IDS_QSSFSTENTRYID, PT_NULL },
-	{ IDS_QSSFLOCALNAME, PT_NULL },
-	{ IDS_QSSFCONTAINERCLASS, PT_NULL },
-	{ IDS_QSSFCOMMENT, PT_LONG },
-	{ IDS_QSSFCONTENTCOUNT, PT_LONG },
-	{ IDS_QSSFHIDDENCONTENTCOUNT, PT_LONG },
-	{ IDS_QSSFUNREAD, PT_LONG },
-	{ IDS_QSSFCHILDCOUNT, PT_LONG },
-	{ IDS_QSSFFOLDERTYPE, PT_NULL },
-	{ IDS_QSSFCREATIONTIME, PT_NULL },
-	{ IDS_QSSFLASTMODIFICATIONTIME, PT_NULL },
-	{ IDS_QSSFRIGHTS, PT_NULL },
-	{ IDS_QSSFLTENTRYID, PT_NULL },
+ { IDS_SHARP, PT_LONG },
+ { IDS_QSSFFOLDERNAME, PT_NULL },
+ { IDS_QSSFSTENTRYID, PT_NULL },
+ { IDS_QSSFLOCALNAME, PT_NULL },
+ { IDS_QSSFCONTAINERCLASS, PT_NULL },
+ { IDS_QSSFCOMMENT, PT_LONG },
+ { IDS_QSSFCONTENTCOUNT, PT_LONG },
+ { IDS_QSSFHIDDENCONTENTCOUNT, PT_LONG },
+ { IDS_QSSFUNREAD, PT_LONG },
+ { IDS_QSSFCHILDCOUNT, PT_LONG },
+ { IDS_QSSFFOLDERTYPE, PT_NULL },
+ { IDS_QSSFCREATIONTIME, PT_NULL },
+ { IDS_QSSFLASTMODIFICATIONTIME, PT_NULL },
+ { IDS_QSSFRIGHTS, PT_NULL },
+ { IDS_QSSFLTENTRYID, PT_NULL },
 };
 ULONG g_ulsfCol = _countof(g_sfCol);
 
@@ -87,19 +84,19 @@ void SpecialFolderEditor::LoadFolders()
 
 	static const SizedSPropTagArray(12, lptaFolderProps) =
 	{
-		12,
-		PR_DISPLAY_NAME,
-		PR_CONTAINER_CLASS,
-		PR_COMMENT,
-		PR_CONTENT_COUNT,
-		PR_ASSOC_CONTENT_COUNT,
-		PR_CONTENT_UNREAD,
-		PR_FOLDER_CHILD_COUNT,
-		PR_FOLDER_TYPE,
-		PR_CREATION_TIME,
-		PR_LAST_MODIFICATION_TIME,
-		PR_RIGHTS,
-		PR_ENTRYID,
+	12,
+	PR_DISPLAY_NAME,
+	PR_CONTAINER_CLASS,
+	PR_COMMENT,
+	PR_CONTENT_COUNT,
+	PR_ASSOC_CONTENT_COUNT,
+	PR_CONTENT_UNREAD,
+	PR_FOLDER_CHILD_COUNT,
+	PR_FOLDER_TYPE,
+	PR_CREATION_TIME,
+	PR_LAST_MODIFICATION_TIME,
+	PR_RIGHTS,
+	PR_ENTRYID,
 	};
 
 	ClearList(ulListNum);
@@ -197,6 +194,7 @@ void SpecialFolderEditor::LoadFolders()
 			lpData->bItemFullyLoaded = true;
 		}
 	}
+
 	ResizeList(ulListNum, false);
 }
 
@@ -205,7 +203,7 @@ _Check_return_ bool SpecialFolderEditor::DoListEdit(ULONG ulListNum, int iItem, 
 	if (!IsValidList(ulListNum)) return false;
 	if (!lpData) return false;
 
-	HRESULT	hRes = S_OK;
+	HRESULT hRes = S_OK;
 
 	CEditor MyResults(
 		this,
@@ -215,24 +213,25 @@ _Check_return_ bool SpecialFolderEditor::DoListEdit(ULONG ulListNum, int iItem, 
 		CEDITOR_BUTTON_OK);
 	MyResults.InitPane(0, CreateMultiLinePane(NULL, NULL, true));
 
-	CString szTemp1;
+	wstring szTmp;
 	ListPane* listPane = (ListPane*)GetControl(ulListNum);
 	if (listPane)
 	{
-		CString szLabel;
-		CString szData;
+		wstring szLabel;
+		wstring szData;
 		ULONG i = 0;
 		// We skip the first column, which is just the index
 		for (i = 1; i < g_ulsfCol; i++)
 		{
-			(void)szLabel.LoadString(g_sfCol[i].ulID);
+			szLabel = loadstring(g_sfCol[i].ulID);
 			szData = listPane->GetItemText(iItem, i);
-			szTemp1 += szLabel + ": " + szData + "\n";
+			szTmp += szLabel + L": " + szData + L"\n";
 		}
 	}
-	if (szTemp1)
+
+	if (!szTmp.empty())
 	{
-		MyResults.SetString(0, szTemp1);
+		MyResults.SetStringW(0, szTmp.c_str());
 	}
 
 	WC_H(MyResults.DisplayDialog());
@@ -260,5 +259,6 @@ void OnQSCheckSpecialFolders(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 
 		lpMDB->Release();
 	}
+
 	lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, emptystring);
 }

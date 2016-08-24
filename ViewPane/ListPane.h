@@ -1,6 +1,4 @@
 #pragma once
-// ListPane.h : header file
-
 #include "ViewPane.h"
 #include "..\SortListCtrl.h"
 
@@ -47,7 +45,7 @@ public:
 	void OnAddListEntry();
 	void OnDeleteListEntry(bool bDoDirty);
 	_Check_return_ bool OnEditListEntry();
-	CString GetItemText(_In_ int nItem, _In_ int nSubItem);
+	wstring GetItemText(_In_ int nItem, _In_ int nSubItem);
 
 private:
 	CSortListCtrl m_List;
