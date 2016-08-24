@@ -454,5 +454,5 @@ _Check_return_ bool ListPane::OnEditListEntry()
 
 wstring ListPane::GetItemText(_In_ int nItem, _In_ int nSubItem)
 {
-	return LPCTSTRToWstring(m_List.GetItemText(nItem, nSubItem));
+	return m_List.GetItemText(nItem, nSubItem);
 }

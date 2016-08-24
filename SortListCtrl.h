@@ -91,6 +91,7 @@ public:
 	void SetItemText(int nItem, int nSubItem, _In_z_ LPCTSTR lpszText);
 	void SetItemTextA(int nItem, int nSubItem, _In_z_ LPCSTR lpszText);
 	void SetItemTextW(int nItem, int nSubItem, _In_z_ LPCWSTR lpszText);
+	wstring GetItemText(_In_ int nItem, _In_ int nSubItem) const;
 	void AllowEscapeClose();
 
 protected:

@@ -780,6 +780,11 @@ void CSortListCtrl::SetItemTextW(int nItem, int nSubItem, _In_z_ LPCWSTR lpszTex
 	(void)CListCtrl::SetItemText(nItem, nSubItem, wstringToCString(lpszText));
 }
 
+wstring CSortListCtrl::GetItemText(_In_ int nItem, _In_ int nSubItem) const
+{
+	return LPCTSTRToWstring(CListCtrl::GetItemText(nItem, nSubItem));
+}
+
 // if asked to select the item after the last item - will select the last item.
 void CSortListCtrl::SetSelectedItem(int iItem)
 {
