@@ -91,8 +91,8 @@ public:
 	_Check_return_ bool GetSelectedGUID(ULONG iControl, bool bByteSwapped, _In_ LPGUID lpSelectedGUID);
 
 	// AddIn functions
-	void SetAddInTitle(_In_z_ LPWSTR szTitle);
-	void SetAddInLabel(ULONG i, _In_z_ LPWSTR szLabel);
+	void SetAddInTitle(wstring szTitle);
+	void SetAddInLabel(ULONG i, wstring szLabel);
 
 	// Use this function to implement list editing
 	// return true to indicate the entry was changed, false to indicate it was not

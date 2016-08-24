@@ -287,12 +287,12 @@ LRESULT CEditor::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 // AddIn functions
-void CEditor::SetAddInTitle(_In_z_ LPWSTR szTitle)
+void CEditor::SetAddInTitle(wstring szTitle)
 {
 	m_szAddInTitle = szTitle;
 }
 
-void CEditor::SetAddInLabel(ULONG i, _In_z_ LPWSTR szLabel)
+void CEditor::SetAddInLabel(ULONG i, wstring szLabel)
 {
 	if (INVALIDRANGE(i)) return;
 	m_lpControls[i].lpPane->SetAddInLabel(szLabel);

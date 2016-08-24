@@ -48,7 +48,7 @@ public:
 		int iLargeHeightMargin,
 		int iButtonHeight, // Height of buttons below the control
 		int iEditHeight); // height of an edit control
-	void SetAddInLabel(_In_z_ LPWSTR szLabel);
+	void SetAddInLabel(wstring szLabel);
 	bool MatchID(UINT nID);
 
 protected:
@@ -56,7 +56,7 @@ protected:
 	bool m_bInitialized;
 	bool m_bReadOnly;
 	bool m_bUseLabelControl; // whether we have a label to display
-	CString m_szLabel; // Text to push into UI in Initialize
+	wstring m_szLabel; // Text to push into UI in Initialize
 	int m_iLabelWidth; // The width of the label
 	CEdit m_Label;
 	UINT m_nID; // id for matching change notifications back to controls
