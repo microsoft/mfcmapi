@@ -821,20 +821,20 @@ void CSingleMAPIPropListCtrl::SavePropsToXML()
 				OutputToFile(fProps, L"<propertypane>\n");
 				for (iRow = 0; iRow < iItemCount; iRow++)
 				{
-					wstring szTemp1 = LPCTSTRToWstring(GetItemText(iRow, pcPROPTAG));
-					wstring szTemp2 = LPCTSTRToWstring(GetItemText(iRow, pcPROPTYPE));
+					wstring szTemp1 = GetItemText(iRow, pcPROPTAG);
+					wstring szTemp2 = GetItemText(iRow, pcPROPTYPE);
 					OutputToFilef(fProps, L"\t<property tag = \"%ws\" type = \"%ws\">\n", szTemp1.c_str(), szTemp2.c_str());
 
-					szTemp1 = LPCTSTRToWstring(GetItemText(iRow, pcPROPEXACTNAMES));
+					szTemp1 = GetItemText(iRow, pcPROPEXACTNAMES);
 					OutputXMLValueToFile(fProps, PropXMLNames[pcPROPEXACTNAMES].uidName, szTemp1, false, 2);
 
-					szTemp1 = LPCTSTRToWstring(GetItemText(iRow, pcPROPPARTIALNAMES));
+					szTemp1 = GetItemText(iRow, pcPROPPARTIALNAMES);
 					OutputXMLValueToFile(fProps, PropXMLNames[pcPROPPARTIALNAMES].uidName, szTemp1, false, 2);
 
-					szTemp1 = LPCTSTRToWstring(GetItemText(iRow, pcPROPNAMEDIID));
+					szTemp1 = GetItemText(iRow, pcPROPNAMEDIID);
 					OutputXMLValueToFile(fProps, PropXMLNames[pcPROPNAMEDIID].uidName, szTemp1, false, 2);
 
-					szTemp1 = LPCTSTRToWstring(GetItemText(iRow, pcPROPNAMEDNAME));
+					szTemp1 = GetItemText(iRow, pcPROPNAMEDNAME);
 					OutputXMLValueToFile(fProps, PropXMLNames[pcPROPNAMEDNAME].uidName, szTemp1, false, 2);
 
 					SortListData* lpListData = ((SortListData*)GetItemData(iRow));
@@ -842,8 +842,8 @@ void CSingleMAPIPropListCtrl::SavePropsToXML()
 					if (lpListData)
 						ulPropType = PROP_TYPE(lpListData->data.Prop.ulPropTag);
 
-					szTemp1 = LPCTSTRToWstring(GetItemText(iRow, pcPROPVAL));
-					szTemp2 = LPCTSTRToWstring(GetItemText(iRow, pcPROPVALALT));
+					szTemp1 = GetItemText(iRow, pcPROPVAL);
+					szTemp2 = GetItemText(iRow, pcPROPVALALT);
 					switch (ulPropType)
 					{
 					case PT_STRING8:
@@ -867,7 +867,7 @@ void CSingleMAPIPropListCtrl::SavePropsToXML()
 					}
 					}
 
-					szTemp1 = LPCTSTRToWstring(GetItemText(iRow, pcPROPSMARTVIEW));
+					szTemp1 = GetItemText(iRow, pcPROPSMARTVIEW);
 					OutputXMLValueToFile(fProps, PropXMLNames[pcPROPSMARTVIEW].uidName, szTemp1, true, 2);
 
 					OutputToFile(fProps, L"\t</property>\n");
