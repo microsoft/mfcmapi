@@ -28,9 +28,7 @@ ViewPane::ViewPane(UINT uidLabel, bool bReadOnly)
 	if (m_uidLabel)
 	{
 		m_bUseLabelControl = true;
-
-		HRESULT hRes = S_OK;
-		EC_B(m_szLabel.LoadString(m_uidLabel));
+		m_szLabel = loadstring(m_uidLabel);
 	}
 }
 
@@ -78,7 +76,7 @@ void ViewPane::Initialize(int iControl, _In_ CWnd* pParent, _In_opt_ HDC /*hdc*/
 		CRect(0, 0, 0, 0),
 		pParent,
 		iCurIDLabel));
-	m_Label.SetWindowText(m_szLabel);
+	SetWindowTextW(m_Label.m_hWnd, m_szLabel.c_str());
 	SubclassLabel(m_Label.m_hWnd);
 
 	if (vpCollapsible & GetFlags())
@@ -111,7 +109,7 @@ ULONG ViewPane::GetFlags()
 int ViewPane::GetMinWidth(_In_ HDC hdc)
 {
 	SIZE sizeText = { 0 };
-	::GetTextExtentPoint32(hdc, m_szLabel, m_szLabel.GetLength(), &sizeText);
+	::GetTextExtentPoint32W(hdc, m_szLabel.c_str(), m_szLabel.length(), &sizeText);
 	m_iLabelWidth = sizeText.cx;
 	return m_iLabelWidth;
 }
@@ -153,9 +151,10 @@ void ViewPane::SetMargins(
 	m_iEditHeight = iEditHeight;
 }
 
-void ViewPane::SetAddInLabel(_In_z_ LPWSTR szLabel)
+void ViewPane::SetAddInLabel(wstring szLabel)
 {
-	m_szLabel = wstringToCString(szLabel);
+	m_bUseLabelControl = true;
+	m_szLabel = szLabel;
 }
 
 bool ViewPane::MatchID(UINT nID)
