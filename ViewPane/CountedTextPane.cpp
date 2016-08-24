@@ -20,8 +20,7 @@ CountedTextPane::CountedTextPane(UINT uidLabel, bool bReadOnly, UINT uidCountLab
 
 	if (m_uidCountLabel)
 	{
-		HRESULT hRes = S_OK;
-		EC_B(m_szCountLabel.LoadString(m_uidCountLabel));
+		m_szCountLabel = loadstring(m_uidCountLabel);
 	}
 }
 
@@ -40,12 +39,12 @@ int CountedTextPane::GetMinWidth(_In_ HDC hdc)
 	int cx = 0;
 	int iLabelWidth = TextPane::GetMinWidth(hdc);
 
-	CString szCount;
-	szCount.Format(_T("%s: 0x%08X = %u"), (LPCTSTR)m_szCountLabel, (int)m_iCount, (UINT)m_iCount); // STRING_OK
-	m_Count.SetWindowText(szCount);
+	wstring szCount;
+	szCount = format(L"%ws: 0x%08X = %u", m_szCountLabel.c_str(), (int)m_iCount, (UINT)m_iCount); // STRING_OK
+	SetWindowTextW(m_Count.m_hWnd, szCount.c_str());
 
 	SIZE sizeText = { 0 };
-	::GetTextExtentPoint32(hdc, szCount, szCount.GetLength(), &sizeText);
+	::GetTextExtentPoint32W(hdc, szCount.c_str(), szCount.length(), &sizeText);
 	m_iCountLabelWidth = sizeText.cx + m_iSideMargin;
 
 	// Button, margin, label, margin, count label
@@ -136,7 +135,7 @@ void CountedTextPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 		CRect(0, 0, 0, 0),
 		pParent,
 		IDD_COUNTLABEL));
-	m_Count.SetWindowText(m_szCountLabel);
+	SetWindowTextW(m_Count.m_hWnd, m_szCountLabel.c_str());
 	SubclassLabel(m_Count.m_hWnd);
 	StyleLabel(m_Count.m_hWnd, lsPaneHeader);
 

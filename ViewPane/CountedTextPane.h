@@ -24,7 +24,7 @@ public:
 private:
 	CEdit m_Count; // The display of the count
 	UINT m_uidCountLabel; // UID for the name of the count
-	CString m_szCountLabel; // String name of the count
+	wstring m_szCountLabel; // String name of the count
 	int m_iCountLabelWidth; // The width of the string
 	size_t m_iCount; // The numeric count
 };
