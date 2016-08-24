@@ -1,8 +1,5 @@
 #pragma once
-// CSortListCtrl window
-
 #include "enums.h"
-
 #include "SortHeader.h"
 
 enum __SortListDataTypes
@@ -78,24 +75,24 @@ public:
 	CSortListCtrl();
 	virtual ~CSortListCtrl();
 
-	STDMETHODIMP_(ULONG)	AddRef();
-	STDMETHODIMP_(ULONG)	Release();
+	STDMETHODIMP_(ULONG) AddRef();
+	STDMETHODIMP_(ULONG) Release();
 
 	// Exported manipulation functions
-	_Check_return_ HRESULT       Create(_In_ CWnd* pCreateParent, ULONG ulFlags, UINT nID, bool bImages);
-	void          AutoSizeColumns(bool bMinWidth);
-	void          DeleteAllColumns(bool bShutdown = false);
-	void          SetSelectedItem(int iItem);
-	void          SortClickedColumn();
+	_Check_return_ HRESULT Create(_In_ CWnd* pCreateParent, ULONG ulFlags, UINT nID, bool bImages);
+	void AutoSizeColumns(bool bMinWidth);
+	void DeleteAllColumns(bool bShutdown = false);
+	void SetSelectedItem(int iItem);
+	void SortClickedColumn();
 	_Check_return_ SortListData* InsertRow(int iRow, wstring szText);
 	void SetItemText(int nItem, int nSubItem, wstring lpszText);
 	wstring GetItemText(_In_ int nItem, _In_ int nSubItem) const;
 	void AllowEscapeClose();
 
 protected:
-	void          MySetRedraw(bool bRedraw);
+	void MySetRedraw(bool bRedraw);
 	_Check_return_ SortListData* InsertRow(int iRow, wstring szText, int iIndent, int iImage);
-	void          FakeClickColumn(int iColumn, bool bSortUp);
+	void FakeClickColumn(int iColumn, bool bSortUp);
 
 	// protected since derived classes need to call the base implementation
 	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
@@ -111,16 +108,16 @@ private:
 	void OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 	_Check_return_ static int CALLBACK MyCompareProc(_In_ LPARAM lParam1, _In_ LPARAM lParam2, _In_ LPARAM lParamSort);
 
-	LONG		m_cRef;
-	int			m_iRedrawCount;
-	CImageList	m_ImageList;
-	bool		m_bHaveSorted;
-	bool		m_bHeaderSubclassed;
-	CSortHeader	m_cSortHeader;
-	int			m_iClickedColumn;
-	bool		m_bSortUp;
-	int			m_iItemCurHover;
-	bool		m_bAllowEscapeClose;
+	LONG m_cRef;
+	int m_iRedrawCount;
+	CImageList m_ImageList;
+	bool m_bHaveSorted;
+	bool m_bHeaderSubclassed;
+	CSortHeader m_cSortHeader;
+	int m_iClickedColumn;
+	bool m_bSortUp;
+	int m_iItemCurHover;
+	bool m_bAllowEscapeClose;
 
 	DECLARE_MESSAGE_MAP()
 };
