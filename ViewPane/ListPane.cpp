@@ -187,7 +187,7 @@ void ListPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 
 void ListPane::SetListString(ULONG iListRow, ULONG iListCol, wstring szListString)
 {
-	m_List.SetItemTextW(iListRow, iListCol, szListString.c_str());
+	m_List.SetItemText(iListRow, iListCol, szListString);
 }
 
 _Check_return_ SortListData* ListPane::InsertRow(int iRow, wstring szText)
@@ -315,8 +315,8 @@ void ListPane::SwapListItems(ULONG ulFirstItem, ULONG ulSecondItem)
 		{
 			wstring szText1 = GetItemText(ulFirstItem, i);
 			wstring szText2 = GetItemText(ulSecondItem, i);
-			m_List.SetItemTextW(ulFirstItem, i, szText2.c_str());
-			m_List.SetItemTextW(ulSecondItem, i, szText1.c_str());
+			m_List.SetItemText(ulFirstItem, i, szText2);
+			m_List.SetItemText(ulSecondItem, i, szText1);
 		}
 	}
 }

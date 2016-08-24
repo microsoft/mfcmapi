@@ -674,21 +674,21 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 	PropTagToPropName(ulPropTag, m_bIsAB, &szExactMatches, &szPartialMatches);
 	if (!szExactMatches.empty())
 	{
-		SetItemTextW(iRow, pcPROPEXACTNAMES, szExactMatches.c_str());
+		SetItemText(iRow, pcPROPEXACTNAMES, szExactMatches);
 	}
 	else
 	{
-		SetItemTextW(iRow, pcPROPEXACTNAMES, PropTag.c_str());
+		SetItemText(iRow, pcPROPEXACTNAMES, PropTag);
 	}
 
-	SetItemTextW(iRow, pcPROPPARTIALNAMES, szPartialMatches.c_str());
+	SetItemText(iRow, pcPROPPARTIALNAMES, szPartialMatches);
 
-	SetItemTextW(iRow, pcPROPTAG, PropTag.c_str());
-	SetItemTextW(iRow, pcPROPTYPE, TypeToString(ulPropTag).c_str());
+	SetItemText(iRow, pcPROPTAG, PropTag);
+	SetItemText(iRow, pcPROPTYPE, TypeToString(ulPropTag));
 
 	InterpretProp(lpsPropToAdd, &PropString, &AltPropString);
-	SetItemTextW(iRow, pcPROPVAL, PropString.c_str());
-	SetItemTextW(iRow, pcPROPVALALT, AltPropString.c_str());
+	SetItemText(iRow, pcPROPVAL, PropString);
+	SetItemText(iRow, pcPROPVALALT, AltPropString);
 
 	wstring szSmartView = InterpretPropSmartView(
 		lpsPropToAdd,
@@ -697,9 +697,9 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 		lpMappingSignature,
 		m_bIsAB,
 		false); // Built from lpProp & lpMAPIProp
-	if (!szSmartView.empty()) SetItemTextW(iRow, pcPROPSMARTVIEW, szSmartView.c_str());
-	if (!szNamedPropName.empty()) SetItemTextW(iRow, pcPROPNAMEDNAME, szNamedPropName.c_str());
-	if (!szNamedPropGUID.empty()) SetItemTextW(iRow, pcPROPNAMEDIID, szNamedPropGUID.c_str());
+	if (!szSmartView.empty()) SetItemText(iRow, pcPROPSMARTVIEW, szSmartView);
+	if (!szNamedPropName.empty()) SetItemText(iRow, pcPROPNAMEDNAME, szNamedPropName);
+	if (!szNamedPropGUID.empty()) SetItemText(iRow, pcPROPNAMEDIID, szNamedPropGUID);
 }
 
 _Check_return_ HRESULT CSingleMAPIPropListCtrl::GetDisplayedProps(ULONG FAR* lpcValues, LPSPropValue FAR* lppPropArray)

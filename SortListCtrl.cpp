@@ -745,32 +745,10 @@ _Check_return_ UINT CSortListCtrl::OnGetDlgCode()
 	return iDlgCode;
 }
 
-void CSortListCtrl::SetItemText(int nItem, int nSubItem, _In_z_ LPCTSTR lpszText)
-{
-#ifdef UNICODE
-	SetItemTextW(nItem, nSubItem, lpszText);
-#else
-	SetItemTextA(nItem, nSubItem, lpszText);
-#endif
-}
-
-void CSortListCtrl::SetItemTextA(int nItem, int nSubItem, _In_z_ LPCSTR lpszText)
+void CSortListCtrl::SetItemText(int nItem, int nSubItem, wstring lpszText)
 {
 	// Remove any whitespace before setting in the list
-	LPSTR szWhitespace = (LPSTR)strpbrk(lpszText, "\r\n\t"); // STRING_OK
-	while (szWhitespace != NULL)
-	{
-		szWhitespace[0] = ' ';
-		szWhitespace = (LPSTR)strpbrk(szWhitespace, "\r\n\t"); // STRING_OK
-	}
-
-	(void)CListCtrl::SetItemText(nItem, nSubItem, LPCSTRToCString(lpszText));
-}
-
-void CSortListCtrl::SetItemTextW(int nItem, int nSubItem, _In_z_ LPCWSTR lpszText)
-{
-	// Remove any whitespace before setting in the list
-	LPWSTR szWhitespace = (LPWSTR)wcspbrk(lpszText, L"\r\n\t"); // STRING_OK
+	LPWSTR szWhitespace = (LPWSTR)wcspbrk(lpszText.c_str(), L"\r\n\t"); // STRING_OK
 	while (szWhitespace != NULL)
 	{
 		szWhitespace[0] = L' ';

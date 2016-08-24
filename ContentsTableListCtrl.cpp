@@ -1043,7 +1043,7 @@ void CContentsTableListCtrl::SetRowStrings(int iRow, _In_ LPSRow lpsRowData)
 				{
 					if (0 == iColumn)
 					{
-						SetItemText(iRow, iColumn, _T(""));
+						SetItemText(iRow, iColumn, L"");
 					}
 
 					continue;
@@ -1059,7 +1059,7 @@ void CContentsTableListCtrl::SetRowStrings(int iRow, _In_ LPSRow lpsRowData)
 					PropString += L")"; // STRING_OK
 				}
 
-				SetItemTextW(iRow, iColumn, PropString.c_str());
+				SetItemText(iRow, iColumn, PropString);
 			}
 			else
 			{
