@@ -211,7 +211,7 @@ _Check_return_ bool SpecialFolderEditor::DoListEdit(ULONG ulListNum, int iItem, 
 		NULL,
 		1,
 		CEDITOR_BUTTON_OK);
-	MyResults.InitPane(0, CreateMultiLinePane(NULL, NULL, true));
+	MyResults.InitPane(0, CreateMultiLinePane(NULL, true));
 
 	wstring szTmp;
 	ListPane* listPane = (ListPane*)GetControl(ulListNum);

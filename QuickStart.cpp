@@ -429,7 +429,7 @@ void OnQSDisplayQuota(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 			NULL,
 			1,
 			CEDITOR_BUTTON_OK);
-		MyResults.InitPane(0, CreateMultiLinePane(NULL, NULL, true));
+		MyResults.InitPane(0, CreateMultiLinePane(NULL, true));
 		MyResults.SetString(0, szQuotaString);
 
 		WC_H(MyResults.DisplayDialog());

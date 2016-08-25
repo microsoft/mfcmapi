@@ -1801,7 +1801,7 @@ void CFolderDlg::OnSendBulkMail()
 	MyData.InitPane(1, CreateSingleLinePane(IDS_RECIPNAME, false));
 	MyData.InitPane(2, CreateSingleLinePane(IDS_SUBJECT, false));
 	MyData.InitPane(3, CreateSingleLinePane(IDS_CLASS, L"IPM.Note", false)); // STRING_OK
-	MyData.InitPane(4, CreateMultiLinePane(IDS_BODY, NULL, false));
+	MyData.InitPane(4, CreateMultiLinePane(IDS_BODY, false));
 
 	if (!m_lpContainer) return;
 

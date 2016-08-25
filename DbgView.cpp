@@ -57,7 +57,7 @@ CEditor(pParentWnd, IDS_DBGVIEW, NULL, 0, CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTO
 	InitPane(DBGVIEW_TAGS, CreateSingleLinePane(IDS_REGKEY_DEBUG_TAG, false));
 	SetHex(DBGVIEW_TAGS, GetDebugLevel());
 	InitPane(DBGVIEW_PAUSE, CreateCheckPane(IDS_PAUSE, false, false));
-	InitPane(DBGVIEW_VIEW, CreateMultiLinePane(NULL, NULL, true));
+	InitPane(DBGVIEW_VIEW, CreateMultiLinePane(NULL, true));
 	m_bPaused = false;
 	DisplayParentedDialog(pParentWnd, 800);
 }

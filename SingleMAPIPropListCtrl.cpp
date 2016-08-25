@@ -1154,7 +1154,7 @@ void CSingleMAPIPropListCtrl::CountNamedProps()
 		MyResult.InitPane(0, CreateSingleLinePane(IDS_HIGHESTNAMEDPROPTOTAL, true));
 		MyResult.SetDecimal(0, ulHighestKnown - 0x8000);
 
-		MyResult.InitPane(1, CreateMultiLinePane(IDS_HIGHESTNAMEDPROPNUM, NULL, true));
+		MyResult.InitPane(1, CreateMultiLinePane(IDS_HIGHESTNAMEDPROPNUM, true));
 
 		if (S_OK == hRes && ulPropNames == 1 && lppPropNames && *lppPropNames)
 		{
