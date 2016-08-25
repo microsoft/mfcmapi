@@ -720,7 +720,7 @@ void CBaseDialog::OnOutlookVersion()
 		szVersionString = loadstring(IDS_NOOUTLOOK);
 	}
 
-	MyEID.InitPane(0, CreateMultiLinePaneW(IDS_OUTLOOKVERSIONPROMPT, szVersionString.c_str(), true));
+	MyEID.InitPane(0, CreateMultiLinePane(IDS_OUTLOOKVERSIONPROMPT, szVersionString, true));
 	WC_H(MyEID.DisplayDialog());
 }
 

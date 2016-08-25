@@ -7,25 +7,14 @@
 
 static wstring CLASS = L"TextPane";
 
-ViewPane* CreateMultiLinePaneA(UINT uidLabel, _In_opt_z_ LPCSTR szVal, bool bReadOnly)
+ViewPane* CreateMultiLinePane(UINT uidLabel, bool bReadOnly)
 {
-	return CreateSingleLinePaneA(uidLabel, szVal, bReadOnly, true);
+	return CreateSingleLinePane(uidLabel, bReadOnly, true);
 }
 
-ViewPane* CreateMultiLinePaneW(UINT uidLabel, _In_opt_z_ LPCWSTR szVal, bool bReadOnly)
+ViewPane* CreateMultiLinePane(UINT uidLabel, wstring szVal, bool bReadOnly)
 {
 	return CreateSingleLinePane(uidLabel, szVal, bReadOnly, true);
-}
-
-ViewPane* CreateSingleLinePaneA(UINT uidLabel, _In_opt_z_ LPCSTR szVal, bool bReadOnly, bool bMultiLine)
-{
-	TextPane* lpPane = new TextPane(uidLabel, bReadOnly, bMultiLine);
-	if (lpPane)
-	{
-		lpPane->SetStringA(szVal);
-	}
-
-	return lpPane;
 }
 
 ViewPane* CreateSingleLinePane(UINT uidLabel, bool bReadOnly, bool bMultiLine)
@@ -55,9 +44,8 @@ ViewPane* CreateSingleLinePaneID(UINT uidLabel, UINT uidVal, bool bReadOnly)
 		if (uidVal)
 		{
 			szTemp = loadstring(uidVal);
+			lpPane->SetStringW(szTemp.c_str());
 		}
-
-		lpPane->SetStringW(szTemp.c_str());
 	}
 
 	return lpPane;

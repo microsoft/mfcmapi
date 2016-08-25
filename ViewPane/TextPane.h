@@ -3,17 +3,11 @@
 
 #include "ViewPane.h"
 
-ViewPane* CreateMultiLinePaneA(UINT uidLabel, _In_opt_z_ LPCSTR szVal, bool bReadOnly);
-ViewPane* CreateMultiLinePaneW(UINT uidLabel, _In_opt_z_ LPCWSTR szVal, bool bReadOnly);
-ViewPane* CreateSingleLinePaneA(UINT uidLabel, _In_opt_z_ LPCSTR szVal, bool bReadOnly, bool bMultiLine = false);
+ViewPane* CreateMultiLinePane(UINT uidLabel, bool bReadOnly);
+ViewPane* CreateMultiLinePane(UINT uidLabel, wstring szVal, bool bReadOnly);
 ViewPane* CreateSingleLinePane(UINT uidLabel, bool bReadOnly, bool bMultiLine = false);
 ViewPane* CreateSingleLinePane(UINT uidLabel, wstring szVal, bool bReadOnly, bool bMultiLine = false);
 ViewPane* CreateSingleLinePaneID(UINT uidLabel, UINT uidVal, bool bReadOnly);
-#ifdef UNICODE
-#define CreateMultiLinePane CreateMultiLinePaneW
-#else
-#define CreateMultiLinePane CreateMultiLinePaneA
-#endif
 
 #define LINES_MULTILINEEDIT 4
 

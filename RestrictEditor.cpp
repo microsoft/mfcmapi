@@ -148,8 +148,8 @@ CResCombinedEditor::CResCombinedEditor(
 	wstring szProp;
 	wstring szAltProp;
 	if (lpProp) InterpretProp(lpProp, &szProp, &szAltProp);
-	InitPane(6, CreateMultiLinePaneW(IDS_LPPROP, szProp.c_str(), true));
-	InitPane(7, CreateMultiLinePaneW(IDS_LPPROPALTVIEW, szAltProp.c_str(), true));
+	InitPane(6, CreateMultiLinePane(IDS_LPPROP, szProp, true));
+	InitPane(7, CreateMultiLinePane(IDS_LPPROPALTVIEW, szAltProp, true));
 }
 
 _Check_return_ ULONG CResCombinedEditor::HandleChange(UINT nID)
@@ -407,7 +407,7 @@ CResSubResEditor::CResSubResEditor(
 	SetHex(0, ulSubObject);
 	InitPane(1, CreateSingleLinePane(IDS_ULSUBOBJECT, TagToString(ulSubObject, NULL, false, true), true));
 
-	InitPane(2, CreateMultiLinePaneW(IDS_LPRES, RestrictionToString(lpRes, NULL).c_str(), true));
+	InitPane(2, CreateMultiLinePane(IDS_LPRES, RestrictionToString(lpRes, NULL), true));
 }
 
 _Check_return_ ULONG CResSubResEditor::HandleChange(UINT nID)
@@ -674,7 +674,7 @@ CResCommentEditor::CResCommentEditor(
 	m_lpAllocParent = lpAllocParent;
 
 	InitPane(0, CreateListPane(IDS_SUBRESTRICTION, false, false, this));
-	InitPane(1, CreateMultiLinePaneW(IDS_RESTRICTIONTEXT, RestrictionToString(m_lpSourceRes->res.resComment.lpRes, NULL).c_str(), true));
+	InitPane(1, CreateMultiLinePane(IDS_RESTRICTIONTEXT, RestrictionToString(m_lpSourceRes->res.resComment.lpRes, NULL), true));
 }
 
 // Used to call functions which need to be called AFTER controls are created
@@ -926,7 +926,7 @@ CRestrictEditor::CRestrictEditor(
 	SetPromptPostFix(AllFlagsToString(flagRestrictionType, true));
 	InitPane(0, CreateSingleLinePane(IDS_RESTRICTIONTYPE, false)); // type as a number
 	InitPane(1, CreateSingleLinePane(IDS_RESTRICTIONTYPE, true)); // type as a string (flagRestrictionType)
-	InitPane(2, CreateMultiLinePaneW(IDS_RESTRICTIONTEXT, RestrictionToString(GetSourceRes(), NULL).c_str(), true));
+	InitPane(2, CreateMultiLinePane(IDS_RESTRICTIONTEXT, RestrictionToString(GetSourceRes(), NULL), true));
 }
 
 CRestrictEditor::~CRestrictEditor()
@@ -1328,7 +1328,7 @@ CCriteriaEditor::CCriteriaEditor(
 	SetHex(2, 0);
 	InitPane(3, CreateSingleLinePane(IDS_SEARCHFLAGS, true));
 	InitPane(4, CreateListPane(IDS_EIDLIST, false, false, this));
-	InitPane(5, CreateMultiLinePaneW(IDS_RESTRICTIONTEXT, RestrictionToString(m_lpSourceRes, NULL).c_str(), true));
+	InitPane(5, CreateMultiLinePane(IDS_RESTRICTIONTEXT, RestrictionToString(m_lpSourceRes, NULL), true));
 }
 
 CCriteriaEditor::~CCriteriaEditor()

@@ -14,7 +14,7 @@ ViewPane* CreateSmartViewPane(UINT uidLabel)
 
 SmartViewPane::SmartViewPane(UINT uidLabel) :DropDownPane(uidLabel, true, ulSmartViewParserTypeArray, NULL, SmartViewParserTypeArray, false)
 {
-	m_lpTextPane = (TextPane*)CreateMultiLinePane(NULL, NULL, true);
+	m_lpTextPane = (TextPane*)CreateMultiLinePane(NULL, true);
 	m_bHasData = false;
 	m_bDoDropDown = true;
 }

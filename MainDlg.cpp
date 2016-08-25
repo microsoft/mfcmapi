@@ -1314,7 +1314,7 @@ void CMainDlg::OnQueryDefaultMessageOpt()
 						szProp.c_str(),
 						szAltProp.c_str());
 				}
-				MyResult.InitPane(1, CreateMultiLinePaneW(IDS_OPTIONS, szPropString.c_str(), true));
+				MyResult.InitPane(1, CreateMultiLinePane(IDS_OPTIONS, szPropString, true));
 			}
 
 			WC_H(MyResult.DisplayDialog());
@@ -1378,7 +1378,7 @@ void CMainDlg::OnQueryDefaultRecipOpt()
 						szProp.c_str(),
 						szAltProp.c_str());
 				}
-				MyResult.InitPane(1, CreateMultiLinePaneW(IDS_OPTIONS, szPropString.c_str(), true));
+				MyResult.InitPane(1, CreateMultiLinePane(IDS_OPTIONS, szPropString, true));
 			}
 
 			WC_H(MyResult.DisplayDialog());
