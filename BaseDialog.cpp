@@ -736,7 +736,7 @@ void CBaseDialog::OnOpenEntryID(_In_opt_ LPSBinary lpBin)
 		10,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-	MyEID.InitPane(0, CreateSingleLinePaneW(IDS_EID, BinToHexString(lpBin, false).c_str(), false));
+	MyEID.InitPane(0, CreateSingleLinePane(IDS_EID, BinToHexString(lpBin, false), false));
 
 	LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 	MyEID.InitPane(1, CreateCheckPane(IDS_USEMDB, lpMDB ? true : false, lpMDB ? false : true));
@@ -850,8 +850,8 @@ void CBaseDialog::OnCompareEntryIDs()
 		4,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-	MyEIDs.InitPane(0, CreateSingleLinePane(IDS_EID1, nullptr, false));
-	MyEIDs.InitPane(1, CreateSingleLinePane(IDS_EID2, nullptr, false));
+	MyEIDs.InitPane(0, CreateSingleLinePane(IDS_EID1, false));
+	MyEIDs.InitPane(1, CreateSingleLinePane(IDS_EID2, false));
 
 	UINT uidDropDown[] = {
 	IDS_DDMESSAGESTORE,
@@ -925,9 +925,9 @@ void CBaseDialog::OnComputeStoreHash()
 		4,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-	MyStoreEID.InitPane(0, CreateSingleLinePane(IDS_STOREEID, nullptr, false));
+	MyStoreEID.InitPane(0, CreateSingleLinePane(IDS_STOREEID, false));
 	MyStoreEID.InitPane(1, CreateCheckPane(IDS_EIDBASE64ENCODED, false, false));
-	MyStoreEID.InitPane(2, CreateSingleLinePane(IDS_FILENAME, nullptr, false));
+	MyStoreEID.InitPane(2, CreateSingleLinePane(IDS_FILENAME, false));
 	MyStoreEID.InitPane(3, CreateCheckPane(IDS_PUBLICFOLDERSTORE, false, false));
 
 	WC_H(MyStoreEID.DisplayDialog());
@@ -970,8 +970,8 @@ void CBaseDialog::OnNotificationsOn()
 		3,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.SetPromptPostFix(AllFlagsToString(flagNotifEventType, true));
-	MyData.InitPane(0, CreateSingleLinePane(IDS_EID, nullptr, false));
-	MyData.InitPane(1, CreateSingleLinePane(IDS_ULEVENTMASK, nullptr, false));
+	MyData.InitPane(0, CreateSingleLinePane(IDS_EID, false));
+	MyData.InitPane(1, CreateSingleLinePane(IDS_ULEVENTMASK, false));
 	MyData.SetHex(1, fnevNewMail);
 	UINT uidDropDown[] = {
 	IDS_DDMESSAGESTORE,

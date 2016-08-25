@@ -230,7 +230,7 @@ void CFormContainerDlg::OnInstallForm()
 		IDS_INSTALLFORMPROMPT,
 		(ULONG)1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyFlags.InitPane(0, CreateSingleLinePane(IDS_FLAGS, NULL, false));
+	MyFlags.InitPane(0, CreateSingleLinePane(IDS_FLAGS, false));
 	MyFlags.SetHex(0, MAPIFORM_INSTALL_DIALOG);
 
 	WC_H(MyFlags.DisplayDialog());
@@ -291,7 +291,7 @@ void CFormContainerDlg::OnRemoveForm()
 		IDS_REMOVEFORMPROMPT,
 		(ULONG)1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyClass.InitPane(0, CreateSingleLinePane(IDS_CLASS, NULL, false));
+	MyClass.InitPane(0, CreateSingleLinePane(IDS_CLASS, false));
 
 	WC_H(MyClass.DisplayDialog());
 	if (S_OK == hRes)
@@ -319,8 +319,8 @@ void CFormContainerDlg::OnResolveMessageClass()
 		IDS_RESOLVECLASSPROMPT,
 		(ULONG)2,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyData.InitPane(0, CreateSingleLinePane(IDS_CLASS, NULL, false));
-	MyData.InitPane(1, CreateSingleLinePane(IDS_FLAGS, NULL, false));
+	MyData.InitPane(0, CreateSingleLinePane(IDS_CLASS, false));
+	MyData.InitPane(1, CreateSingleLinePane(IDS_FLAGS, false));
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -356,9 +356,9 @@ void CFormContainerDlg::OnResolveMultipleMessageClasses()
 		IDS_RESOLVECLASSESPROMPT,
 		(ULONG)2,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyData.InitPane(0, CreateSingleLinePane(IDS_NUMBER, NULL, false));
+	MyData.InitPane(0, CreateSingleLinePane(IDS_NUMBER, false));
 	MyData.SetDecimal(0, 1);
-	MyData.InitPane(1, CreateSingleLinePane(IDS_FLAGS, NULL, false));
+	MyData.InitPane(1, CreateSingleLinePane(IDS_FLAGS, false));
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -382,7 +382,7 @@ void CFormContainerDlg::OnResolveMultipleMessageClasses()
 						IDS_ENTERMSGCLASSPROMPT,
 						(ULONG)1,
 						CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-					MyClass.InitPane(0, CreateSingleLinePane(IDS_CLASS, NULL, false));
+					MyClass.InitPane(0, CreateSingleLinePane(IDS_CLASS, false));
 
 					WC_H(MyClass.DisplayDialog());
 					if (S_OK == hRes)
@@ -440,7 +440,7 @@ void CFormContainerDlg::OnCalcFormPropSet()
 		IDS_CALCFORMPROPSETPROMPT,
 		(ULONG)1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyData.InitPane(0, CreateSingleLinePane(IDS_FLAGS, NULL, false));
+	MyData.InitPane(0, CreateSingleLinePane(IDS_FLAGS, false));
 	MyData.SetHex(0, FORMPROPSET_UNION);
 
 	WC_H(MyData.DisplayDialog());
@@ -477,7 +477,7 @@ void CFormContainerDlg::OnGetDisplay()
 			IDS_GETDISPLAYPROMPT,
 			1,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyOutput.InitPane(0, CreateSingleLinePane(IDS_GETDISPLAY, lpszDisplayName, true));
+		MyOutput.InitPane(0, CreateSingleLinePane(IDS_GETDISPLAY, LPCTSTRToWstring(lpszDisplayName), true));
 		WC_H(MyOutput.DisplayDialog());
 		MAPIFreeBuffer(lpszDisplayName);
 	}

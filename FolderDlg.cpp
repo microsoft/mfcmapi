@@ -331,11 +331,11 @@ void CFolderDlg::OnAddOneOffAddress()
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 	MyData.InitPane(0, CreateSingleLinePaneID(IDS_DISPLAYNAME, IDS_DISPLAYNAMEVALUE, false));
-	MyData.InitPane(1, CreateSingleLinePaneW(IDS_ADDRESSTYPE, L"EX", false)); // STRING_OK
+	MyData.InitPane(1, CreateSingleLinePane(IDS_ADDRESSTYPE, L"EX", false)); // STRING_OK
 	MyData.InitPane(2, CreateSingleLinePaneID(IDS_ADDRESS, IDS_ADDRESSVALUE, false));
-	MyData.InitPane(3, CreateSingleLinePaneW(IDS_RECIPTYPE, NULL, false));
+	MyData.InitPane(3, CreateSingleLinePane(IDS_RECIPTYPE, false));
 	MyData.SetHex(3, MAPI_TO);
-	MyData.InitPane(4, CreateSingleLinePaneW(IDS_RECIPCOUNT, NULL, false));
+	MyData.InitPane(4, CreateSingleLinePane(IDS_RECIPCOUNT, false));
 	MyData.SetDecimal(4, 1);
 
 	WC_H(MyData.DisplayDialog());
@@ -598,7 +598,7 @@ void CFolderDlg::OnDeleteAttachments()
 		1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-	MyData.InitPane(0, CreateSingleLinePane(IDS_FILENAME, NULL, false));
+	MyData.InitPane(0, CreateSingleLinePane(IDS_FILENAME, false));
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -927,7 +927,7 @@ void CFolderDlg::OnManualResolve()
 			1,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		MyData.InitPane(0, CreateSingleLinePane(IDS_DISPLAYNAME, NULL, false));
+		MyData.InitPane(0, CreateSingleLinePane(IDS_DISPLAYNAME, false));
 
 		WC_H(MyData.DisplayDialog());
 		if (S_OK == hRes)
@@ -1081,7 +1081,7 @@ void CFolderDlg::OnNewCustomForm()
 				IDS_NEWCUSTOMFORMPROMPT2,
 				1,
 				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-			MyClass.InitPane(0, CreateSingleLinePane(IDS_FORMTYPE, _T("IPM.Note"), false)); // STRING_OK
+			MyClass.InitPane(0, CreateSingleLinePane(IDS_FORMTYPE, L"IPM.Note", false)); // STRING_OK
 
 			switch (MyPrompt1.GetDropDown(0))
 			{
@@ -1266,7 +1266,7 @@ void CFolderDlg::OnExecuteVerbOnForm()
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_LAST_VERB_EXECUTED), false));
 
-		MyData.InitPane(0, CreateSingleLinePane(IDS_VERB, NULL, false));
+		MyData.InitPane(0, CreateSingleLinePane(IDS_VERB, false));
 		MyData.SetDecimal(0, EXCHIVERB_OPEN);
 
 		WC_H(MyData.DisplayDialog());
@@ -1412,7 +1412,7 @@ void CFolderDlg::OnRTFSync()
 		1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-	MyData.InitPane(0, CreateSingleLinePane(IDS_FLAGS, NULL, false));
+	MyData.InitPane(0, CreateSingleLinePane(IDS_FLAGS, false));
 	MyData.SetHex(0, RTF_SYNC_RTF_CHANGED);
 
 	WC_H(MyData.DisplayDialog());
@@ -1797,10 +1797,10 @@ void CFolderDlg::OnSendBulkMail()
 		IDS_SENDBULKMAILPROMPT,
 		5,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyData.InitPane(0, CreateSingleLinePane(IDS_NUMMESSAGES, NULL, false));
-	MyData.InitPane(1, CreateSingleLinePane(IDS_RECIPNAME, NULL, false));
-	MyData.InitPane(2, CreateSingleLinePane(IDS_SUBJECT, NULL, false));
-	MyData.InitPane(3, CreateSingleLinePane(IDS_CLASS, _T("IPM.Note"), false)); // STRING_OK
+	MyData.InitPane(0, CreateSingleLinePane(IDS_NUMMESSAGES, false));
+	MyData.InitPane(1, CreateSingleLinePane(IDS_RECIPNAME, false));
+	MyData.InitPane(2, CreateSingleLinePane(IDS_SUBJECT, false));
+	MyData.InitPane(3, CreateSingleLinePane(IDS_CLASS, L"IPM.Note", false)); // STRING_OK
 	MyData.InitPane(4, CreateMultiLinePane(IDS_BODY, NULL, false));
 
 	if (!m_lpContainer) return;
@@ -1857,7 +1857,7 @@ void CFolderDlg::OnSetReadFlag()
 		1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-	MyFlags.InitPane(0, CreateSingleLinePane(IDS_FLAGSINHEX, NULL, false));
+	MyFlags.InitPane(0, CreateSingleLinePane(IDS_FLAGSINHEX, false));
 	MyFlags.SetHex(0, CLEAR_READ_FLAG);
 
 	WC_H(MyFlags.DisplayDialog());
@@ -1928,7 +1928,7 @@ void CFolderDlg::OnGetMessageOptions()
 		IDS_ADDRESSTYPEPROMPT,
 		1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyAddress.InitPane(0, CreateSingleLinePane(IDS_ADDRESSTYPE, _T("EX"), false)); // STRING_OK
+	MyAddress.InitPane(0, CreateSingleLinePane(IDS_ADDRESSTYPE, L"EX", false)); // STRING_OK
 	WC_H(MyAddress.DisplayDialog());
 
 	if (S_OK == hRes)
@@ -1995,7 +1995,7 @@ _Check_return_ HRESULT CFolderDlg::OnGetMessageStatus(int /*iItem*/, _In_ SortLi
 			NULL,
 			1,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyStatus.InitPane(0, CreateSingleLinePane(IDS_MESSAGESTATUS, NULL, true));
+		MyStatus.InitPane(0, CreateSingleLinePane(IDS_MESSAGESTATUS, true));
 		MyStatus.SetHex(0, ulMessageStatus);
 
 		WC_H(MyStatus.DisplayDialog());
@@ -2017,8 +2017,8 @@ void CFolderDlg::OnSetMessageStatus()
 		2,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-	MyData.InitPane(0, CreateSingleLinePane(IDS_STATUSINHEX, NULL, false));
-	MyData.InitPane(1, CreateSingleLinePane(IDS_MASKINHEX, NULL, false));
+	MyData.InitPane(0, CreateSingleLinePane(IDS_STATUSINHEX, false));
+	MyData.InitPane(1, CreateSingleLinePane(IDS_MASKINHEX, false));
 
 	DebugPrintEx(DBGGeneric, CLASS, L"OnSetMessageStatus", L"\n");
 

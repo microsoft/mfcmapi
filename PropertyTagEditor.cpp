@@ -46,17 +46,17 @@ CPropertyTagEditor::CPropertyTagEditor(
 	if (m_lpMAPIProp) m_lpMAPIProp->AddRef();
 
 	CreateControls(m_lpMAPIProp ? 8 : 5);
-	InitPane(PROPTAG_TAG, CreateSingleLinePane(IDS_PROPTAG, NULL, false));
-	InitPane(PROPTAG_ID, CreateSingleLinePane(IDS_PROPID, NULL, false));
+	InitPane(PROPTAG_TAG, CreateSingleLinePane(IDS_PROPTAG, false));
+	InitPane(PROPTAG_ID, CreateSingleLinePane(IDS_PROPID, false));
 	InitPane(PROPTAG_TYPE, CreateDropDownPane(IDS_PROPTYPE, 0, NULL, false));
-	InitPane(PROPTAG_NAME, CreateSingleLinePane(IDS_PROPNAME, NULL, true));
-	InitPane(PROPTAG_TYPESTRING, CreateSingleLinePane(IDS_PROPTYPE, NULL, true));
+	InitPane(PROPTAG_NAME, CreateSingleLinePane(IDS_PROPNAME, true));
+	InitPane(PROPTAG_TYPESTRING, CreateSingleLinePane(IDS_PROPTYPE, true));
 
 	// Map named properties if we can, but not for Address Books
 	if (m_lpMAPIProp && !m_bIsAB)
 	{
 		InitPane(PROPTAG_NAMEPROPKIND, CreateDropDownPane(IDS_NAMEPROPKIND, 0, NULL, true));
-		InitPane(PROPTAG_NAMEPROPNAME, CreateSingleLinePane(IDS_NAMEPROPNAME, NULL, false));
+		InitPane(PROPTAG_NAMEPROPNAME, CreateSingleLinePane(IDS_NAMEPROPNAME, false));
 		InitPane(PROPTAG_NAMEPROPGUID, CreateDropDownGuidPane(IDS_NAMEPROPGUID, false));
 	}
 }

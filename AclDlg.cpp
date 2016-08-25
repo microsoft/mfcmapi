@@ -129,8 +129,8 @@ void CAclDlg::OnAddItem()
 		2,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_MEMBER_RIGHTS), true));
-	MyData.InitPane(0, CreateSingleLinePane(IDS_USEREID, NULL, false));
-	MyData.InitPane(1, CreateSingleLinePane(IDS_MASKINHEX, NULL, false));
+	MyData.InitPane(0, CreateSingleLinePane(IDS_USEREID, false));
+	MyData.InitPane(1, CreateSingleLinePane(IDS_MASKINHEX, false));
 	MyData.SetHex(1, 0);
 
 	WC_H(MyData.DisplayDialog());

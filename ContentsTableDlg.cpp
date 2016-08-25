@@ -503,8 +503,8 @@ void CContentsTableDlg::OnCreatePropertyStringRestriction()
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.SetPromptPostFix(AllFlagsToString(flagFuzzyLevel, true));
 
-		MyData.InitPane(0, CreateSingleLinePane(IDS_PROPVALUE, NULL, false));
-		MyData.InitPane(1, CreateSingleLinePane(IDS_ULFUZZYLEVEL, NULL, false));
+		MyData.InitPane(0, CreateSingleLinePane(IDS_PROPVALUE, false));
+		MyData.InitPane(1, CreateSingleLinePane(IDS_ULFUZZYLEVEL, false));
 		MyData.SetHex(1, FL_IGNORECASE | FL_PREFIX);
 		MyData.InitPane(2, CreateCheckPane(IDS_APPLYUSINGFINDROW, false, false));
 
@@ -563,7 +563,7 @@ void CContentsTableDlg::OnCreateRangeRestriction()
 			2,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		MyData.InitPane(0, CreateSingleLinePane(IDS_SUBSTRING, NULL, false));
+		MyData.InitPane(0, CreateSingleLinePane(IDS_SUBSTRING, false));
 		MyData.InitPane(1, CreateCheckPane(IDS_APPLYUSINGFINDROW, false, false));
 
 		WC_H(MyData.DisplayDialog());
@@ -668,9 +668,9 @@ void CContentsTableDlg::OnSortTable()
 		6,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-	MyData.InitPane(0, CreateSingleLinePane(IDS_CSORTS, NULL, false));
-	MyData.InitPane(1, CreateSingleLinePane(IDS_CCATS, NULL, false));
-	MyData.InitPane(2, CreateSingleLinePane(IDS_CEXPANDED, NULL, false));
+	MyData.InitPane(0, CreateSingleLinePane(IDS_CSORTS, false));
+	MyData.InitPane(1, CreateSingleLinePane(IDS_CCATS, false));
+	MyData.InitPane(2, CreateSingleLinePane(IDS_CEXPANDED, false));
 	MyData.InitPane(3, CreateCheckPane(IDS_TBLASYNC, false, false));
 	MyData.InitPane(4, CreateCheckPane(IDS_TBLBATCH, false, false));
 	MyData.InitPane(5, CreateCheckPane(IDS_REFRESHAFTERSORT, true, false));

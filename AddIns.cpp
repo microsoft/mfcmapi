@@ -1210,11 +1210,7 @@ _Check_return_ __declspec(dllexport) HRESULT __cdecl ComplexDialog(_In_ LPADDIND
 				}
 				else
 				{
-					MyComplexDialog.InitPane(i, CreateSingleLinePaneW(
-						NULL,
-						lpDialog->lpDialogControls[i].szDefaultText,
-						lpDialog->lpDialogControls[i].bReadOnly));
-
+					MyComplexDialog.InitPane(i, CreateSingleLinePane(NULL, (wstring)lpDialog->lpDialogControls[i].szDefaultText, lpDialog->lpDialogControls[i].bReadOnly));
 				}
 
 				break;
@@ -1228,10 +1224,7 @@ _Check_return_ __declspec(dllexport) HRESULT __cdecl ComplexDialog(_In_ LPADDIND
 				}
 				else
 				{
-					MyComplexDialog.InitPane(i, CreateSingleLinePane(
-						NULL,
-						NULL,
-						lpDialog->lpDialogControls[i].bReadOnly));
+					MyComplexDialog.InitPane(i, CreateSingleLinePane(NULL, lpDialog->lpDialogControls[i].bReadOnly));
 
 				}
 				MyComplexDialog.SetBinary(
@@ -1240,19 +1233,13 @@ _Check_return_ __declspec(dllexport) HRESULT __cdecl ComplexDialog(_In_ LPADDIND
 					lpDialog->lpDialogControls[i].cbBin);
 				break;
 			case ADDIN_CTRL_EDIT_NUM_DECIMAL:
-				MyComplexDialog.InitPane(i, CreateSingleLinePane(
-					NULL,
-					NULL,
-					lpDialog->lpDialogControls[i].bReadOnly));
+				MyComplexDialog.InitPane(i, CreateSingleLinePane(NULL, lpDialog->lpDialogControls[i].bReadOnly));
 				MyComplexDialog.SetDecimal(
 					i,
 					lpDialog->lpDialogControls[i].ulDefaultNum);
 				break;
 			case ADDIN_CTRL_EDIT_NUM_HEX:
-				MyComplexDialog.InitPane(i, CreateSingleLinePane(
-					NULL,
-					NULL,
-					lpDialog->lpDialogControls[i].bReadOnly));
+				MyComplexDialog.InitPane(i, CreateSingleLinePane(NULL, lpDialog->lpDialogControls[i].bReadOnly));
 				MyComplexDialog.SetHex(
 					i,
 					lpDialog->lpDialogControls[i].ulDefaultNum);

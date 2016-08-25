@@ -506,7 +506,7 @@ void CMsgStoreDlg::OnPasteFolder()
 			IDS_PASTEFOLDERNEWNAMEPROMPT,
 			3,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.InitPane(0, CreateSingleLinePane(IDS_FOLDERNAME, NULL, false));
+		MyData.InitPane(0, CreateSingleLinePane(IDS_FOLDERNAME, false));
 		MyData.InitPane(1, CreateCheckPane(IDS_COPYSUBFOLDERS, false, false));
 		MyData.InitPane(2, CreateCheckPane(IDS_FOLDERMOVE, false, false));
 
@@ -675,11 +675,11 @@ void CMsgStoreDlg::OnCreateSubFolder()
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_FOLDER_TYPE), true));
 	MyData.InitPane(0, CreateSingleLinePaneID(IDS_FOLDERNAME, IDS_FOLDERNAMEVALUE, false));
-	MyData.InitPane(1, CreateSingleLinePane(IDS_FOLDERTYPE, NULL, false));
+	MyData.InitPane(1, CreateSingleLinePane(IDS_FOLDERTYPE, false));
 	MyData.SetHex(1, FOLDER_GENERIC);
 	wstring szProduct = loadstring(ID_PRODUCTNAME);
 	wstring szFolderComment = formatmessage(IDS_FOLDERCOMMENTVALUE, szProduct.c_str());
-	MyData.InitPane(2, CreateSingleLinePaneW(IDS_FOLDERCOMMENT, szFolderComment.c_str(), false));
+	MyData.InitPane(2, CreateSingleLinePane(IDS_FOLDERCOMMENT, szFolderComment, false));
 	MyData.InitPane(3, CreateCheckPane(IDS_PASSOPENIFEXISTS, false, false));
 
 	LPMAPIFOLDER lpMAPIFolder = (LPMAPIFOLDER)m_lpHierarchyTableTreeCtrl->GetSelectedContainer(
@@ -1034,7 +1034,7 @@ void CMsgStoreDlg::OnSetReceiveFolder()
 		IDS_SETRECFOLDERPROMPT,
 		2,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyData.InitPane(0, CreateSingleLinePane(IDS_CLASS, NULL, false));
+	MyData.InitPane(0, CreateSingleLinePane(IDS_CLASS, false));
 	MyData.InitPane(1, CreateCheckPane(IDS_DELETEASSOCIATION, false, false));
 
 	// Find the highlighted item
@@ -1147,7 +1147,7 @@ void CMsgStoreDlg::OnRestoreDeletedFolder()
 			IDS_RESTOREDELFOLDPROMPT,
 			2,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.InitPane(0, CreateSingleLinePane(IDS_FOLDERNAME, NULL, false));
+		MyData.InitPane(0, CreateSingleLinePane(IDS_FOLDERNAME, false));
 		MyData.InitPane(1, CreateCheckPane(IDS_COPYSUBFOLDERS, false, false));
 
 		if (lpProps)

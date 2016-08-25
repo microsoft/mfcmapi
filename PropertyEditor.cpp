@@ -235,7 +235,7 @@ void CPropertyEditor::InitPropertyControls()
 	switch (PROP_TYPE(m_ulPropTag))
 	{
 	case PT_APPTIME:
-		InitPane(0, CreateSingleLinePane(IDS_DOUBLE, NULL, false));
+		InitPane(0, CreateSingleLinePane(IDS_DOUBLE, false));
 		if (m_lpsInputValue)
 		{
 			SetStringf(0, _T("%f"), m_lpsInputValue->Value.at); // STRING_OK
@@ -250,7 +250,7 @@ void CPropertyEditor::InitPropertyControls()
 		InitPane(0, CreateCheckPane(IDS_BOOLEAN, m_lpsInputValue ? (0 != m_lpsInputValue->Value.b) : false, false));
 		break;
 	case PT_DOUBLE:
-		InitPane(0, CreateSingleLinePane(IDS_DOUBLE, NULL, false));
+		InitPane(0, CreateSingleLinePane(IDS_DOUBLE, false));
 		if (m_lpsInputValue)
 		{
 			SetStringf(0, _T("%f"), m_lpsInputValue->Value.dbl); // STRING_OK
@@ -265,7 +265,7 @@ void CPropertyEditor::InitPropertyControls()
 		InitPane(0, CreateSingleLinePaneID(IDS_OBJECT, IDS_OBJECTVALUE, true));
 		break;
 	case PT_R4:
-		InitPane(0, CreateSingleLinePane(IDS_FLOAT, NULL, false));
+		InitPane(0, CreateSingleLinePane(IDS_FLOAT, false));
 		if (m_lpsInputValue)
 		{
 			SetStringf(0, _T("%f"), m_lpsInputValue->Value.flt); // STRING_OK
@@ -325,9 +325,9 @@ void CPropertyEditor::InitPropertyControls()
 
 		break;
 	case PT_CURRENCY:
-		InitPane(0, CreateSingleLinePane(IDS_HI, NULL, false));
-		InitPane(1, CreateSingleLinePane(IDS_LO, NULL, false));
-		InitPane(2, CreateSingleLinePane(IDS_CURRENCY, NULL, false));
+		InitPane(0, CreateSingleLinePane(IDS_HI, false));
+		InitPane(1, CreateSingleLinePane(IDS_LO, false));
+		InitPane(2, CreateSingleLinePane(IDS_CURRENCY, false));
 		if (m_lpsInputValue)
 		{
 			SetHex(0, m_lpsInputValue->Value.cur.Hi);
@@ -343,8 +343,8 @@ void CPropertyEditor::InitPropertyControls()
 
 		break;
 	case PT_ERROR:
-		InitPane(0, CreateSingleLinePane(IDS_ERRORCODEHEX, NULL, true));
-		InitPane(1, CreateSingleLinePane(IDS_ERRORNAME, NULL, true));
+		InitPane(0, CreateSingleLinePane(IDS_ERRORCODEHEX, true));
+		InitPane(1, CreateSingleLinePane(IDS_ERRORNAME, true));
 		if (m_lpsInputValue)
 		{
 			SetHex(0, m_lpsInputValue->Value.err);
@@ -353,8 +353,8 @@ void CPropertyEditor::InitPropertyControls()
 
 		break;
 	case PT_I2:
-		InitPane(0, CreateSingleLinePane(IDS_SIGNEDDECIMAL, NULL, false));
-		InitPane(1, CreateSingleLinePane(IDS_HEX, NULL, false));
+		InitPane(0, CreateSingleLinePane(IDS_SIGNEDDECIMAL, false));
+		InitPane(1, CreateSingleLinePane(IDS_HEX, false));
 		InitPane(2, m_lpSmartView);
 		if (m_lpsInputValue)
 		{
@@ -375,9 +375,9 @@ void CPropertyEditor::InitPropertyControls()
 
 		break;
 	case PT_I8:
-		InitPane(0, CreateSingleLinePane(IDS_HIGHPART, NULL, false));
-		InitPane(1, CreateSingleLinePane(IDS_LOWPART, NULL, false));
-		InitPane(2, CreateSingleLinePane(IDS_DECIMAL, NULL, false));
+		InitPane(0, CreateSingleLinePane(IDS_HIGHPART, false));
+		InitPane(1, CreateSingleLinePane(IDS_LOWPART, false));
+		InitPane(2, CreateSingleLinePane(IDS_DECIMAL, false));
 		InitPane(3, m_lpSmartView);
 
 		if (m_lpsInputValue)
@@ -427,8 +427,8 @@ void CPropertyEditor::InitPropertyControls()
 
 		break;
 	case PT_LONG:
-		InitPane(0, CreateSingleLinePane(IDS_UNSIGNEDDECIMAL, NULL, false));
-		InitPane(1, CreateSingleLinePane(IDS_HEX, NULL, false));
+		InitPane(0, CreateSingleLinePane(IDS_UNSIGNEDDECIMAL, false));
+		InitPane(1, CreateSingleLinePane(IDS_HEX, false));
 		InitPane(2, m_lpSmartView);
 		if (m_lpsInputValue)
 		{
@@ -450,9 +450,9 @@ void CPropertyEditor::InitPropertyControls()
 
 		break;
 	case PT_SYSTIME:
-		InitPane(0, CreateSingleLinePane(IDS_LOWDATETIME, NULL, false));
-		InitPane(1, CreateSingleLinePane(IDS_HIGHDATETIME, NULL, false));
-		InitPane(2, CreateSingleLinePane(IDS_DATE, NULL, true));
+		InitPane(0, CreateSingleLinePane(IDS_LOWDATETIME, false));
+		InitPane(1, CreateSingleLinePane(IDS_HIGHDATETIME, false));
+		InitPane(2, CreateSingleLinePane(IDS_DATE, true));
 		if (m_lpsInputValue)
 		{
 			SetHex(0, (int)m_lpsInputValue->Value.ft.dwLowDateTime);
@@ -468,7 +468,7 @@ void CPropertyEditor::InitPropertyControls()
 
 		break;
 	case PT_CLSID:
-		InitPane(0, CreateSingleLinePane(IDS_GUID, NULL, false));
+		InitPane(0, CreateSingleLinePane(IDS_GUID, false));
 		if (m_lpsInputValue)
 		{
 			szGuid = GUIDToStringAndName(m_lpsInputValue->Value.lpguid);

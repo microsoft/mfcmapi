@@ -6,14 +6,13 @@
 ViewPane* CreateMultiLinePaneA(UINT uidLabel, _In_opt_z_ LPCSTR szVal, bool bReadOnly);
 ViewPane* CreateMultiLinePaneW(UINT uidLabel, _In_opt_z_ LPCWSTR szVal, bool bReadOnly);
 ViewPane* CreateSingleLinePaneA(UINT uidLabel, _In_opt_z_ LPCSTR szVal, bool bReadOnly, bool bMultiLine = false);
-ViewPane* CreateSingleLinePaneW(UINT uidLabel, _In_opt_z_ LPCWSTR szVal, bool bReadOnly, bool bMultiLine = false);
+ViewPane* CreateSingleLinePane(UINT uidLabel, bool bReadOnly, bool bMultiLine = false);
+ViewPane* CreateSingleLinePane(UINT uidLabel, wstring szVal, bool bReadOnly, bool bMultiLine = false);
 ViewPane* CreateSingleLinePaneID(UINT uidLabel, UINT uidVal, bool bReadOnly);
 #ifdef UNICODE
 #define CreateMultiLinePane CreateMultiLinePaneW
-#define CreateSingleLinePane CreateSingleLinePaneW
 #else
 #define CreateMultiLinePane CreateMultiLinePaneA
-#define CreateSingleLinePane CreateSingleLinePaneA
 #endif
 
 #define LINES_MULTILINEEDIT 4

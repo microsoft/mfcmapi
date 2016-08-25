@@ -154,7 +154,7 @@ void CMailboxTableDlg::OnOpenWithFlags()
 		1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyPrompt.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
-	MyPrompt.InitPane(0, CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, NULL, false));
+	MyPrompt.InitPane(0, CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, false));
 	MyPrompt.SetHex(0, OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP);
 	WC_H(MyPrompt.DisplayDialog());
 	if (S_OK == hRes)
@@ -187,8 +187,8 @@ void CMailboxTableDlg::OnCreatePropertyStringRestriction()
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.SetPromptPostFix(AllFlagsToString(flagFuzzyLevel, true));
 
-		MyData.InitPane(0, CreateSingleLinePane(IDS_NAME, NULL, false));
-		MyData.InitPane(1, CreateSingleLinePane(IDS_ULFUZZYLEVEL, NULL, false));
+		MyData.InitPane(0, CreateSingleLinePane(IDS_NAME, false));
+		MyData.InitPane(1, CreateSingleLinePane(IDS_ULFUZZYLEVEL, false));
 		MyData.SetHex(1, FL_IGNORECASE | FL_PREFIX);
 
 		WC_H(MyData.DisplayDialog());
