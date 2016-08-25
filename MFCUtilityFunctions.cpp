@@ -435,8 +435,7 @@ _Check_return_ bool bShouldCancel(_In_opt_ CWnd* cWnd, HRESULT hResPrev)
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		if (bGotError)
 		{
-			CString szPrevErr;
-			szPrevErr.FormatMessage(IDS_PREVIOUSCALL, ErrorNameFromErrorCode(hResPrev).c_str(), hResPrev);
+			wstring szPrevErr = formatmessage(IDS_PREVIOUSCALL, ErrorNameFromErrorCode(hResPrev).c_str(), hResPrev);
 			Cancel.InitPane(0, CreateSingleLinePane(IDS_ERROR, szPrevErr, true));
 		}
 		WC_H(Cancel.DisplayDialog());
@@ -477,10 +476,10 @@ void DisplayMailboxTable(_In_ CParentWnd* lpParent,
 			IDS_SERVERNAMEPROMPT,
 			4,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.InitPane(0, CreateSingleLinePaneW(IDS_SERVERNAME, szServerName.c_str(), false));
-		MyData.InitPane(1, CreateSingleLinePane(IDS_OFFSET, NULL, false));
+		MyData.InitPane(0, CreateSingleLinePane(IDS_SERVERNAME, szServerName, false));
+		MyData.InitPane(1, CreateSingleLinePane(IDS_OFFSET, false));
 		MyData.SetHex(1, 0);
-		MyData.InitPane(2, CreateSingleLinePane(IDS_MAILBOXGUID, NULL, false));
+		MyData.InitPane(2, CreateSingleLinePane(IDS_MAILBOXGUID, false));
 		UINT uidDropDown[] = {
 		IDS_GETMBXINTERFACE1,
 		IDS_GETMBXINTERFACE3,
@@ -614,12 +613,12 @@ void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
 			IDS_DISPLAYPFTABLEPROMPT,
 			5,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.InitPane(0, CreateSingleLinePaneW(IDS_SERVERNAME, szServerName.c_str(), false));
-		MyData.InitPane(1, CreateSingleLinePane(IDS_OFFSET, NULL, false));
+		MyData.InitPane(0, CreateSingleLinePane(IDS_SERVERNAME, szServerName, false));
+		MyData.InitPane(1, CreateSingleLinePane(IDS_OFFSET, false));
 		MyData.SetHex(1, 0);
-		MyData.InitPane(2, CreateSingleLinePane(IDS_FLAGS, NULL, false));
+		MyData.InitPane(2, CreateSingleLinePane(IDS_FLAGS, false));
 		MyData.SetHex(2, MDB_IPM);
-		MyData.InitPane(3, CreateSingleLinePane(IDS_PUBLICFOLDERGUID, NULL, false));
+		MyData.InitPane(3, CreateSingleLinePane(IDS_PUBLICFOLDERGUID, false));
 		UINT uidDropDown[] = {
 		IDS_GETPFINTERFACE1,
 		IDS_GETPFINTERFACE4,
@@ -748,8 +747,8 @@ void ResolveMessageClass(_In_ CMapiObjects* lpMapiObjects, _In_opt_ LPMAPIFOLDER
 			IDS_RESOLVECLASSPROMPT,
 			(ULONG)2,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.InitPane(0, CreateSingleLinePane(IDS_CLASS, NULL, false));
-		MyData.InitPane(1, CreateSingleLinePane(IDS_FLAGS, NULL, false));
+		MyData.InitPane(0, CreateSingleLinePane(IDS_CLASS, false));
+		MyData.InitPane(1, CreateSingleLinePane(IDS_FLAGS, false));
 
 		WC_H(MyData.DisplayDialog());
 		if (S_OK == hRes)

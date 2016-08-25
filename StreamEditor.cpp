@@ -149,8 +149,8 @@ CStreamEditor::CStreamEditor(
 	InitPane(m_iTextBox, CreateCollapsibleTextPane(IDS_STREAMTEXT, false));
 	if (bUseWrapEx)
 	{
-		InitPane(m_iFlagBox, CreateSingleLinePane(IDS_STREAMFLAGS, NULL, true));
-		InitPane(m_iCodePageBox, CreateSingleLinePane(IDS_CODEPAGE, NULL, true));
+		InitPane(m_iFlagBox, CreateSingleLinePane(IDS_STREAMFLAGS, true));
+		InitPane(m_iCodePageBox, CreateSingleLinePane(IDS_CODEPAGE, true));
 	}
 
 	InitPane(m_iBinBox, CreateCountedTextPane(IDS_STREAMBIN, false, IDS_CB));

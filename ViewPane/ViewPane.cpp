@@ -109,7 +109,7 @@ ULONG ViewPane::GetFlags()
 int ViewPane::GetMinWidth(_In_ HDC hdc)
 {
 	SIZE sizeText = { 0 };
-	::GetTextExtentPoint32W(hdc, m_szLabel.c_str(), m_szLabel.length(), &sizeText);
+	::GetTextExtentPoint32W(hdc, m_szLabel.c_str(), static_cast<int>(m_szLabel.length()), &sizeText);
 	m_iLabelWidth = sizeText.cx;
 	return m_iLabelWidth;
 }

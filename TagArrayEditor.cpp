@@ -231,7 +231,7 @@ void CTagArrayEditor::OnEditAction1()
 		IDS_QUERYCOLUMNSPROMPT,
 		1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyData.InitPane(0, CreateSingleLinePane(IDS_QUERYCOLUMNFLAGS, NULL, false));
+	MyData.InitPane(0, CreateSingleLinePane(IDS_QUERYCOLUMNFLAGS, false));
 	MyData.SetHex(0, ulQueryColumnFlags);
 
 	WC_H(MyData.DisplayDialog());
@@ -267,7 +267,7 @@ void CTagArrayEditor::OnEditAction2()
 		IDS_SETCOLUMNSPROMPT,
 		1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyData.InitPane(0, CreateSingleLinePane(IDS_SETCOLUMNFLAGS, NULL, false));
+	MyData.InitPane(0, CreateSingleLinePane(IDS_SETCOLUMNFLAGS, false));
 	MyData.SetHex(0, m_ulSetColumnsFlags);
 
 	WC_H(MyData.DisplayDialog());

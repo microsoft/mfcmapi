@@ -213,11 +213,11 @@ void CContentsTableListCtrl::GetStatus()
 			IDS_GETSTATUSPROMPT,
 			4,
 			CEDITOR_BUTTON_OK);
-		MyData.InitPane(0, CreateSingleLinePane(IDS_ULTABLESTATUS, NULL, true));
+		MyData.InitPane(0, CreateSingleLinePane(IDS_ULTABLESTATUS, true));
 		MyData.SetHex(0, ulTableStatus);
 		wstring szFlags = InterpretFlags(flagTableStatus, ulTableStatus);
 		MyData.InitPane(1, CreateMultiLinePaneW(IDS_ULTABLESTATUS, szFlags.c_str(), true));
-		MyData.InitPane(2, CreateSingleLinePane(IDS_ULTABLETYPE, NULL, true));
+		MyData.InitPane(2, CreateSingleLinePane(IDS_ULTABLETYPE, true));
 		MyData.SetHex(2, ulTableType);
 		szFlags = InterpretFlags(flagTableType, ulTableType);
 		MyData.InitPane(3, CreateMultiLinePaneW(IDS_ULTABLETYPE, szFlags.c_str(), true));

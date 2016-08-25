@@ -61,7 +61,7 @@ void DisplayMAPISVCPath(_In_ CWnd* pParentWnd)
 		IDS_MAPISVCTEXT,
 		1,
 		CEDITOR_BUTTON_OK);
-	MyData.InitPane(0, CreateSingleLinePane(IDS_FILEPATH, NULL, true));
+	MyData.InitPane(0, CreateSingleLinePane(IDS_FILEPATH, true));
 	MyData.SetString(0, szServicesIni);
 
 	WC_H(MyData.DisplayDialog());

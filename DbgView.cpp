@@ -54,7 +54,7 @@ CEditor(pParentWnd, IDS_DBGVIEW, NULL, 0, CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTO
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	CreateControls(DBGVIEW_NUMFIELDS);
-	InitPane(DBGVIEW_TAGS, CreateSingleLinePane(IDS_REGKEY_DEBUG_TAG, NULL, false));
+	InitPane(DBGVIEW_TAGS, CreateSingleLinePane(IDS_REGKEY_DEBUG_TAG, false));
 	SetHex(DBGVIEW_TAGS, GetDebugLevel());
 	InitPane(DBGVIEW_PAUSE, CreateCheckPane(IDS_PAUSE, false, false));
 	InitPane(DBGVIEW_VIEW, CreateMultiLinePane(NULL, NULL, true));

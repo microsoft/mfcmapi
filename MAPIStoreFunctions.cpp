@@ -323,7 +323,7 @@ wstring GetServerName(_In_ LPMAPISESSION lpSession)
 			IDS_SERVERNAMEMISSINGPROMPT,
 			1,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.InitPane(0, CreateSingleLinePane(IDS_SERVERNAME, NULL, false));
+		MyData.InitPane(0, CreateSingleLinePane(IDS_SERVERNAME, false));
 
 		WC_H(MyData.DisplayDialog());
 
@@ -654,9 +654,9 @@ _Check_return_ HRESULT OpenMailboxWithPrompt(
 		4,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyPrompt.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
-	MyPrompt.InitPane(0, CreateSingleLinePaneW(IDS_SERVERNAME, szServerName.c_str(), false));
-	MyPrompt.InitPane(1, CreateSingleLinePaneW(IDS_USERDN, szMailboxDN.c_str(), false));
-	MyPrompt.InitPane(2, CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, NULL, false));
+	MyPrompt.InitPane(0, CreateSingleLinePane(IDS_SERVERNAME, szServerName, false));
+	MyPrompt.InitPane(1, CreateSingleLinePane(IDS_USERDN, szMailboxDN, false));
+	MyPrompt.InitPane(2, CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, false));
 	MyPrompt.SetHex(2, ulFlags);
 	MyPrompt.InitPane(3, CreateCheckPane(IDS_FORCESERVER, false, false));
 	WC_H(MyPrompt.DisplayDialog());
