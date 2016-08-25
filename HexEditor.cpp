@@ -169,6 +169,7 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 			}
 
 			szEncodeStr = Base64Encode(cb, lpb);
+			cchEncodeStr = szEncodeStr.length();
 			SetStringW(HEXED_BASE64, szEncodeStr.c_str());
 		}
 		else
