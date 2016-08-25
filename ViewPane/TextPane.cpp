@@ -43,20 +43,16 @@ ViewPane* CreateSingleLinePaneID(UINT uidLabel, UINT uidVal, bool bReadOnly)
 
 	if (lpPane)
 	{
-		CString szTemp;
+		wstring szTemp;
 
 		if (uidVal)
 		{
-			HRESULT hRes = S_OK;
-			EC_B(szTemp.LoadString(uidVal));
+			szTemp = loadstring(uidVal);
 		}
 
-#ifdef UNICODE
-		lpPane->SetStringW((LPCTSTR)szTemp);
-#else
-		lpPane->SetStringA((LPCTSTR)szTemp);
-#endif
+		lpPane->SetStringW(szTemp.c_str());
 	}
+
 	return lpPane;
 }
 
