@@ -850,8 +850,7 @@ void CContentsTableListCtrl::BuildDataItem(_In_ LPSRow lpsRowData, _Inout_ SortL
 	LPSPropValue lpProp = NULL; // do not free this
 
 	lpData->bItemFullyLoaded = false;
-	MAPIFreeBuffer(lpData->szSortText);
-	lpData->szSortText = NULL;
+	lpData->szSortText = emptystring;
 
 	// this guy gets stolen from lpsRowData and is freed separately in FreeSortListData
 	// So I do need to free it here before losing the pointer
