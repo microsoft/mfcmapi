@@ -163,17 +163,20 @@ void wstringToLower(wstring src)
 }
 
 // Converts a wstring to a ulong. Will return 0 if string is empty or contains non-numeric data.
-ULONG wstringToUlong(wstring const& src, int radix)
+ULONG wstringToUlong(wstring const& src, int radix, bool rejectInvalidCharacters)
 {
 	if (src.empty()) return 0;
 
 	LPWSTR szEndPtr = NULL;
 	ULONG ulArg = wcstoul(src.c_str(), &szEndPtr, radix);
 
-	// if szEndPtr is pointing to something other than NULL, this must be a string
-	if (!szEndPtr || *szEndPtr)
+	if (rejectInvalidCharacters)
 	{
-		ulArg = NULL;
+		// if szEndPtr is pointing to something other than NULL, this must be a string
+		if (!szEndPtr || *szEndPtr)
+		{
+			ulArg = NULL;
+		}
 	}
 
 	return ulArg;

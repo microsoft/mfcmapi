@@ -39,7 +39,6 @@ void FreeSortListData(_In_ SortListData* lpData)
 		break;
 	}
 
-	MAPIFreeBuffer(lpData->szSortText);
 	MAPIFreeBuffer(lpData->lpSourceProps);
 	MAPIFreeBuffer(lpData);
 }
@@ -374,6 +373,7 @@ struct SortInfo
 _Check_return_ int CALLBACK CSortListCtrl::MyCompareProc(_In_ LPARAM lParam1, _In_ LPARAM lParam2, _In_ LPARAM lParamSort)
 {
 	if (!lParamSort) return sortEqual;
+	int iRet = 0;
 	SortInfo* lpSortInfo = (SortInfo*)lParamSort;
 	SortListData* lpData1 = (SortListData*)lParam1;
 	SortListData* lpData2 = (SortListData*)lParam2;
@@ -389,36 +389,21 @@ _Check_return_ int CALLBACK CSortListCtrl::MyCompareProc(_In_ LPARAM lParam1, _I
 	switch (lpSortInfo->sortstyle)
 	{
 	case SORTSTYLE_STRING:
-	{
-		TCHAR* sz1 = lpData1->szSortText;
-		TCHAR* sz2 = lpData2->szSortText;
 		// Empty strings should always sort after non-empty strings
-		if (!sz1) return sort2First;
-		if (!sz1[0]) return sort2First;
-		if (!sz2) return sort1First;
-		if (!sz2[0]) return sort1First;
-		int iRet = lstrcmpi(
-			sz1,
-			sz2);
+		if (lpData1->szSortText.empty()) return sort2First;
+		if (lpData2->szSortText.empty()) return sort1First;
+		iRet = lpData1->szSortText.compare(lpData2->szSortText);
 
 		return (lpSortInfo->bSortUp ? -iRet : iRet);
-	}
-	break;
+		break;
 	case SORTSTYLE_HEX:
-	{
-		TCHAR* sz1 = lpData1->szSortText;
-		TCHAR* sz2 = lpData2->szSortText;
-
 		// Empty strings should always sort after non-empty strings
-		if (!sz1) return sort2First;
-		if (!sz1[0]) return sort2First;
-		if (!sz2) return sort1First;
-		if (!sz2[0]) return sort1First;
+		if (lpData1->szSortText.empty()) return sort2First;
+		if (lpData2->szSortText.empty()) return sort1First;
 
-		int iRet = 0;
 		if (lpData1->ulSortValue.LowPart == lpData2->ulSortValue.LowPart)
 		{
-			iRet = lstrcmpi(sz1, sz2);
+			iRet = lpData1->szSortText.compare(lpData2->szSortText);
 		}
 		else
 		{
@@ -427,17 +412,16 @@ _Check_return_ int CALLBACK CSortListCtrl::MyCompareProc(_In_ LPARAM lParam1, _I
 
 			for (i = 0; i < lCheck; i++)
 			{
-				if (sz1[i] != sz2[i])
+				if (lpData1->szSortText[i] != lpData2->szSortText[i])
 				{
-					iRet = (sz1[i] < sz2[i]) ? -1 : 1;
+					iRet = (lpData1->szSortText[i] < lpData2->szSortText[i]) ? -1 : 1;
 					break;
 				}
 			}
 		}
 
 		return (lpSortInfo->bSortUp ? -iRet : iRet);
-	}
-	break;
+		break;
 	case SORTSTYLE_NUMERIC:
 	{
 		ULARGE_INTEGER ul1 = lpData1->ulSortValue;
@@ -448,6 +432,7 @@ _Check_return_ int CALLBACK CSortListCtrl::MyCompareProc(_In_ LPARAM lParam1, _I
 	default:
 		break;
 	}
+
 	return 0;
 }
 
@@ -466,8 +451,9 @@ void CSortListCtrl::SortClickedColumn()
 	CHeaderCtrl* lpMyHeader = NULL;
 	SortInfo sortinfo = { 0 };
 
+	// szText will be filled out by our LVM_GETITEMW calls
 	// There's little point in getting more than 128 characters for sorting
-	TCHAR szText[128];
+	WCHAR szText[128];
 
 	m_bHaveSorted = true;
 	lpMyHeader = GetHeaderCtrl();
@@ -496,25 +482,8 @@ void CSortListCtrl::SortClickedColumn()
 		}
 	}
 
-	// #define PT_UNSPECIFIED ((ULONG) 0) /* (Reserved for interface use) type doesn't matter to caller */
-	// #define PT_NULL ((ULONG) 1) /* NULL property value */
-	// #define PT_I2 ((ULONG) 2) /* Signed 16-bit value */
-	// #define PT_LONG ((ULONG) 3) /* Signed 32-bit value */
-	// #define PT_R4 ((ULONG) 4) /* 4-byte floating point */
-	// #define PT_DOUBLE ((ULONG) 5) /* Floating point double */
-	// #define PT_CURRENCY ((ULONG) 6) /* Signed 64-bit int (decimal w/ 4 digits right of decimal pt) */
-	// #define PT_APPTIME ((ULONG) 7) /* Application time */
-	// #define PT_ERROR ((ULONG) 10) /* 32-bit error value */
-	// #define PT_BOOLEAN ((ULONG) 11) /* 16-bit boolean (non-zero true) */
-	// #define PT_OBJECT ((ULONG) 13) /* Embedded object in a property */
-	// #define PT_I8 ((ULONG) 20) /* 8-byte signed integer */
-	// #define PT_STRING8 ((ULONG) 30) /* Null terminated 8-bit character string */
-	// #define PT_UNICODE ((ULONG) 31) /* Null terminated Unicode string */
-	// #define PT_SYSTIME ((ULONG) 64) /* FILETIME 64-bit int w/ number of 100ns periods since Jan 1,1601 */
-	// #define PT_CLSID ((ULONG) 72) /* OLE GUID */
-	// #define PT_BINARY ((ULONG) 258) /* Uninterpreted (counted byte array) */
 	// Set our sort text
-	LVITEM lvi = { 0 };
+	LVITEMW lvi = { 0 };
 	lvi.mask = LVIF_PARAM | LVIF_TEXT;
 	lvi.iSubItem = m_iClickedColumn;
 	lvi.cchTextMax = _countof(szText);
@@ -535,13 +504,12 @@ void CSortListCtrl::SortClickedColumn()
 			lvi.iItem = i;
 			lvi.lParam = 0;
 			szText[0] = NULL;
-			::SendMessage(m_hWnd, LVM_GETITEM, (WPARAM)0, (LPARAM)&lvi);
+			::SendMessage(m_hWnd, LVM_GETITEMW, (WPARAM)0, (LPARAM)&lvi);
 			SortListData* lpData = (SortListData*)lvi.lParam;
 			if (lpData)
 			{
-				MAPIFreeBuffer(lpData->szSortText);
-				lpData->szSortText = NULL;
-				lpData->ulSortValue.QuadPart = CStringToUlong(szText, 10);
+				lpData->szSortText.clear();
+				lpData->ulSortValue.QuadPart = wstringToUlong(szText, 10, false);
 			}
 		}
 		break;
@@ -559,8 +527,7 @@ void CSortListCtrl::SortClickedColumn()
 			SortListData* lpData = (SortListData*)GetItemData(i);
 			if (lpData)
 			{
-				MAPIFreeBuffer(lpData->szSortText);
-				lpData->szSortText = NULL;
+				lpData->szSortText.clear();
 				lpData->ulSortValue.QuadPart = 0;
 				if (ulSourceCol < lpData->cSourceProps && PROP_TYPE(lpData->lpSourceProps[ulSourceCol].ulPropTag) == PT_SYSTIME)
 				{
@@ -578,24 +545,19 @@ void CSortListCtrl::SortClickedColumn()
 			lvi.iItem = i;
 			lvi.lParam = 0;
 			szText[0] = NULL;
-			::SendMessage(m_hWnd, LVM_GETITEM, (WPARAM)0, (LPARAM)&lvi);
+			::SendMessage(m_hWnd, LVM_GETITEMW, (WPARAM)0, (LPARAM)&lvi);
 			SortListData* lpData = (SortListData*)lvi.lParam;
 			if (lpData)
 			{
-				MAPIFreeBuffer(lpData->szSortText);
-
-				LPCTSTR szHex = StrStr(szText, _T("lpb: ")); // STRING_OK
-				EC_H(CopyString(
-					&lpData->szSortText,
-					szHex,
-					NULL)); // Do not allocate off of lpData - If we do that we'll 'leak' memory every time we sort until we close the window
-				size_t cchStr = NULL;
-				if (szHex)
+				// Remove the lpb prefix
+				lpData->szSortText = wstring(szText);
+				size_t pos = lpData->szSortText.find(L"lpb: "); // STRING_OK
+				if (pos != string::npos)
 				{
-					EC_H(StringCchLength(szHex, STRSAFE_MAX_CCH, &cchStr));
+					lpData->szSortText = lpData->szSortText.substr(pos);
 				}
 
-				lpData->ulSortValue.LowPart = (DWORD)cchStr;
+				lpData->ulSortValue.LowPart = lpData->szSortText.length();
 			}
 		}
 		break;
@@ -606,15 +568,11 @@ void CSortListCtrl::SortClickedColumn()
 			lvi.iItem = i;
 			lvi.lParam = 0;
 			szText[0] = NULL;
-			::SendMessage(m_hWnd, LVM_GETITEM, (WPARAM)0, (LPARAM)&lvi);
+			::SendMessage(m_hWnd, LVM_GETITEMW, (WPARAM)0, (LPARAM)&lvi);
 			SortListData* lpData = (SortListData*)lvi.lParam;
 			if (lpData)
 			{
-				MAPIFreeBuffer(lpData->szSortText);
-				EC_H(CopyString(
-					&lpData->szSortText,
-					szText,
-					NULL)); // Do not allocate off of lpData - If we do that we'll 'leak' memory every time we sort until we close the window
+				lpData->szSortText = szText;
 				lpData->ulSortValue.QuadPart = NULL;
 			}
 		}
