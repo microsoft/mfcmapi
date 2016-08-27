@@ -130,7 +130,7 @@ _Check_return_ HRESULT AddOneOffAddress(
 _Check_return_ HRESULT AddRecipient(
 	_In_ LPMAPISESSION lpMAPISession,
 	_In_ LPMESSAGE lpMessage,
-	_In_z_ LPCTSTR szName,
+	_In_ wstring szName,
 	ULONG ulRecipientType)
 {
 	HRESULT hRes = S_OK;
@@ -162,8 +162,8 @@ _Check_return_ HRESULT AddRecipient(
 		lpAdrList->aEntries[0].cValues = NUM_RECIP_PROPS; // How many properties per recipient
 
 		// Set the SPropValue members == the desired values.
-		lpAdrList->aEntries[0].rgPropVals[NAME].ulPropTag = PR_DISPLAY_NAME;
-		lpAdrList->aEntries[0].rgPropVals[NAME].Value.LPSZ = (LPTSTR)szName;
+		lpAdrList->aEntries[0].rgPropVals[NAME].ulPropTag = PR_DISPLAY_NAME_W;
+		lpAdrList->aEntries[0].rgPropVals[NAME].Value.lpszW = const_cast<LPWSTR>(szName.c_str());
 
 		lpAdrList->aEntries[0].rgPropVals[RECIP].ulPropTag = PR_RECIPIENT_TYPE;
 		lpAdrList->aEntries[0].rgPropVals[RECIP].Value.l = ulRecipientType;
