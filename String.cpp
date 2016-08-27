@@ -223,23 +223,6 @@ __int64 wstringToInt64(wstring const& src)
 	return _wtoi64(src.c_str());
 }
 
-// Converts a CString to a number. Will return 0 if string is empty or contains non-numeric data.
-ULONG CStringToUlong(CString const& src, int radix)
-{
-	if (IsNullOrEmpty((LPCTSTR)src)) return 0;
-
-	LPTSTR szEndPtr = NULL;
-	ULONG ulArg = _tcstoul((LPCTSTR)src, &szEndPtr, radix);
-
-	// if szEndPtr is pointing to something other than NULL, this must be a string
-	if (!szEndPtr || *szEndPtr)
-	{
-		ulArg = NULL;
-	}
-
-	return ulArg;
-}
-
 wstring StripCharacter(wstring szString, WCHAR character)
 {
 	szString.erase(remove(szString.begin(), szString.end(), character), szString.end());

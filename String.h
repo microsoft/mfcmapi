@@ -22,7 +22,6 @@ ULONG wstringToUlong(wstring const& src, int radix, bool rejectInvalidCharacters
 long wstringToLong(wstring const& src, int radix);
 double wstringToDouble(wstring const& src);
 __int64 wstringToInt64(wstring const& src);
-ULONG CStringToUlong(CString const& src, int radix);
 
 wstring StripCharacter(wstring szString, WCHAR character);
 wstring StripCarriage(wstring szString);

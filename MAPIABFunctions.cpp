@@ -188,10 +188,16 @@ _Check_return_ HRESULT AddRecipient(
 
 // Same as CreatePropertyStringRestriction, but skips the existence part.
 _Check_return_ HRESULT CreateANRRestriction(ULONG ulPropTag,
-	_In_z_ LPCTSTR szString,
+	wstring szString,
 	_In_opt_ LPVOID lpParent,
 	_Deref_out_opt_ LPSRestriction* lppRes)
 {
+	if (PROP_TYPE(ulPropTag) != PT_UNICODE)
+	{
+		DebugPrint(DBGGeneric, L"Failed to create restriction - property was not PT_UNICODE\n");
+		return MAPI_E_INVALID_PARAMETER;
+	}
+
 	HRESULT hRes = S_OK;
 	LPSRestriction lpRes = NULL;
 	LPSPropValue lpspvSubject = NULL;
@@ -219,7 +225,6 @@ _Check_return_ HRESULT CreateANRRestriction(ULONG ulPropTag,
 		lpAllocationParent = lpRes;
 	}
 
-
 	EC_H(MAPIAllocateMore(
 		sizeof(SPropValue),
 		lpAllocationParent,
@@ -241,12 +246,9 @@ _Check_return_ HRESULT CreateANRRestriction(ULONG ulPropTag,
 		lpspvSubject->ulPropTag = ulPropTag;
 		lpspvSubject->Value.LPSZ = NULL;
 
-		if (szString)
+		if (!szString.empty())
 		{
-			EC_H(CopyString(
-				&lpspvSubject->Value.LPSZ,
-				szString,
-				lpAllocationParent));
+			lpspvSubject->Value.lpszW = const_cast<LPWSTR>(szString.c_str());
 		}
 
 		DebugPrint(DBGGeneric, L"CreateANRRestriction built restriction:\n");
@@ -261,6 +263,7 @@ _Check_return_ HRESULT CreateANRRestriction(ULONG ulPropTag,
 		MAPIFreeBuffer(lpRes);
 		*lppRes = NULL;
 	}
+
 	return hRes;
 }
 
@@ -300,7 +303,7 @@ _Check_return_ HRESULT GetABContainerTable(_In_ LPADRBOOK lpAdrBook, _Deref_out_
 _Check_return_ HRESULT ManualResolve(
 	_In_ LPMAPISESSION lpMAPISession,
 	_In_ LPMESSAGE lpMessage,
-	_In_z_ LPCTSTR szName,
+	_In_ wstring& szName,
 	ULONG PropTagToCompare)
 {
 	HRESULT hRes = S_OK;
@@ -339,8 +342,9 @@ _Check_return_ HRESULT ManualResolve(
 	};
 
 	if (!lpMAPISession) return MAPI_E_INVALID_PARAMETER;
+	if (PROP_TYPE(PropTagToCompare) != PT_UNICODE) return MAPI_E_INVALID_PARAMETER;
 
-	DebugPrint(DBGGeneric, L"ManualResolve: Asked to resolve \"%ws\"\n", LPCTSTRToWstring(szName).c_str());
+	DebugPrint(DBGGeneric, L"ManualResolve: Asked to resolve \"%ws\"\n", szName.c_str());
 
 	EC_MAPI(lpMAPISession->OpenAddressBook(
 		NULL,
@@ -495,7 +499,7 @@ _Check_return_ HRESULT ManualResolve(
 
 _Check_return_ HRESULT SearchContentsTableForName(
 	_In_ LPMAPITABLE pTable,
-	_In_z_ LPCTSTR szName,
+	_In_ wstring& szName,
 	ULONG PropTagToCompare,
 	_Deref_out_opt_ LPSPropValue *lppPropsFound)
 {
@@ -526,15 +530,16 @@ _Check_return_ HRESULT SearchContentsTableForName(
 	};
 
 	*lppPropsFound = NULL;
-	if (!pTable || !szName) return MAPI_E_INVALID_PARAMETER;
+	if (!pTable || szName.empty()) return MAPI_E_INVALID_PARAMETER;
+	if (PROP_TYPE(PropTagToCompare) != PT_UNICODE) return MAPI_E_INVALID_PARAMETER;
 
-	DebugPrint(DBGGeneric, L"SearchContentsTableForName: Looking for \"%ws\"\n", LPCTSTRToWstring(szName).c_str());
+	DebugPrint(DBGGeneric, L"SearchContentsTableForName: Looking for \"%ws\"\n", szName.c_str());
 
 	// Set a restriction so we only find close matches
 	LPSRestriction lpSRes = NULL;
 
 	EC_H(CreateANRRestriction(
-		PR_ANR,
+		PR_ANR_W,
 		szName,
 		NULL,
 		&lpSRes));
@@ -568,10 +573,10 @@ _Check_return_ HRESULT SearchContentsTableForName(
 		// An error at this point is an error with the current entry, so we can continue this for statement
 		// Unless it's an allocation error. Those are bad.
 		if (PropTagToCompare == pRows->aRow->lpProps[abPropTagToCompare].ulPropTag &&
-			CheckStringProp(&pRows->aRow->lpProps[abPropTagToCompare], PT_TSTRING))
+			CheckStringProp(&pRows->aRow->lpProps[abPropTagToCompare], PT_UNICODE))
 		{
 			DebugPrint(DBGGeneric, L"SearchContentsTableForName: found \"%ws\"\n", LPCTSTRToWstring(pRows->aRow->lpProps[abPropTagToCompare].Value.LPSZ).c_str());
-			if (lstrcmpi(szName, pRows->aRow->lpProps[abPropTagToCompare].Value.LPSZ) == 0)
+			if (szName == pRows->aRow->lpProps[abPropTagToCompare].Value.lpszW)
 			{
 				DebugPrint(DBGGeneric, L"SearchContentsTableForName: This is an exact match!\n");
 				// We found a match! Return it!
