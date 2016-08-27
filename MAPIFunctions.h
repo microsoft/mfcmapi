@@ -1,5 +1,4 @@
 // MAPIFunctions.h : Stand alone MAPI functions
-
 #pragma once
 
 _Check_return_ HRESULT CallOpenEntry(
@@ -39,7 +38,7 @@ _Check_return_ HRESULT CopyStringW(_Deref_out_z_ LPWSTR* lpszDestination, _In_z_
 #define CopyString CopyStringA
 #endif
 _Check_return_ HRESULT CreatePropertyStringRestriction(ULONG ulPropTag,
-	_In_z_ LPCTSTR szString,
+	_In_ wstring& szString,
 	ULONG ulFuzzyLevel,
 	_In_opt_ LPVOID lpParent,
 	_Deref_out_opt_ LPSRestriction* lppRes);

@@ -45,10 +45,10 @@ _Check_return_ HRESULT CallOpenEntry(
 	_Deref_out_opt_ LPUNKNOWN* lppUnk) // required
 {
 	if (!lppUnk) return MAPI_E_INVALID_PARAMETER;
-	HRESULT			hRes = S_OK;
-	ULONG			ulObjType = NULL;
-	LPUNKNOWN		lpUnk = NULL;
-	ULONG			ulNoCacheFlags = NULL;
+	HRESULT hRes = S_OK;
+	ULONG ulObjType = NULL;
+	LPUNKNOWN lpUnk = NULL;
+	ULONG ulNoCacheFlags = NULL;
 
 	*lppUnk = NULL;
 
@@ -200,7 +200,7 @@ _Check_return_ HRESULT CallOpenEntry(
 	}
 	if (ulObjTypeRet) *ulObjTypeRet = ulObjType;
 	return hRes;
-} // CallOpenEntry
+}
 
 _Check_return_ HRESULT CallOpenEntry(
 	_In_opt_ LPMDB lpMDB,
@@ -213,7 +213,7 @@ _Check_return_ HRESULT CallOpenEntry(
 	_Out_opt_ ULONG* ulObjTypeRet,
 	_Deref_out_opt_ LPUNKNOWN* lppUnk)
 {
-	HRESULT			hRes = S_OK;
+	HRESULT hRes = S_OK;
 	WC_H(CallOpenEntry(
 		lpMDB,
 		lpAB,
@@ -226,7 +226,7 @@ _Check_return_ HRESULT CallOpenEntry(
 		ulObjTypeRet,
 		lppUnk));
 	return hRes;
-} // CallOpenEntry
+}
 
 // Concatenate two property arrays without duplicates
 _Check_return_ HRESULT ConcatSPropTagArrays(
@@ -281,6 +281,7 @@ _Check_return_ HRESULT ConcatSPropTagArrays(
 				}
 			}
 		}
+
 		if (lpArray2)
 		{
 			for (iSourceArray = 0; iSourceArray < lpArray2->cValues; iSourceArray++)
@@ -312,17 +313,17 @@ _Check_return_ HRESULT ConcatSPropTagArrays(
 	}
 
 	return hRes;
-} // ConcatSPropTagArrays
+}
 
 // May not behave correctly if lpSrcFolder == lpDestFolder
 // We can check that the pointers aren't equal, but they could be different
 // and still refer to the same folder.
 _Check_return_ HRESULT CopyFolderContents(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LPMAPIFOLDER lpDestFolder, bool bCopyAssociatedContents, bool bMove, bool bSingleCall, _In_ HWND hWnd)
 {
-	HRESULT			hRes = S_OK;
-	LPMAPITABLE		lpSrcContents = NULL;
-	LPSRowSet		pRows = NULL;
-	ULONG			ulRowsCopied = 0;
+	HRESULT hRes = S_OK;
+	LPMAPITABLE lpSrcContents = NULL;
+	LPSRowSet pRows = NULL;
+	ULONG ulRowsCopied = 0;
 
 	enum
 	{
@@ -332,8 +333,8 @@ _Check_return_ HRESULT CopyFolderContents(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LP
 
 	static const SizedSPropTagArray(fldNUM_COLS, fldCols) =
 	{
-		fldNUM_COLS,
-		PR_ENTRYID,
+	fldNUM_COLS,
+	PR_ENTRYID,
 	};
 
 	DebugPrint(DBGGeneric, L"CopyFolderContents: lpSrcFolder = %p, lpDestFolder = %p, bCopyAssociatedContents = %d, bMove = %d\n",
@@ -353,7 +354,7 @@ _Check_return_ HRESULT CopyFolderContents(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LP
 	{
 		EC_MAPI(lpSrcContents->SetColumns((LPSPropTagArray)&fldCols, TBL_BATCH));
 
-		ULONG			ulRowCount = 0;
+		ULONG ulRowCount = 0;
 		EC_MAPI(lpSrcContents->GetRowCount(0, &ulRowCount));
 
 		if (bSingleCall && ulRowCount < ULONG_MAX / sizeof(SBinary))
@@ -454,14 +455,14 @@ _Check_return_ HRESULT CopyFolderContents(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LP
 
 	if (pRows) FreeProws(pRows);
 	return hRes;
-} // CopyFolderContents
+}
 
 _Check_return_ HRESULT CopyFolderRules(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LPMAPIFOLDER lpDestFolder, bool bReplace)
 {
 	if (!lpSrcFolder || !lpDestFolder) return MAPI_E_INVALID_PARAMETER;
-	HRESULT					hRes = S_OK;
-	LPEXCHANGEMODIFYTABLE	lpSrcTbl = NULL;
-	LPEXCHANGEMODIFYTABLE	lpDstTbl = NULL;
+	HRESULT hRes = S_OK;
+	LPEXCHANGEMODIFYTABLE lpSrcTbl = NULL;
+	LPEXCHANGEMODIFYTABLE lpDstTbl = NULL;
 
 	EC_MAPI(lpSrcFolder->OpenProperty(
 		PR_RULES_TABLE,
@@ -486,16 +487,16 @@ _Check_return_ HRESULT CopyFolderRules(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LPMAP
 		{
 			static const SizedSPropTagArray(9, ruleTags) =
 			{
-				9,
-				PR_RULE_ACTIONS,
-				PR_RULE_CONDITION,
-				PR_RULE_LEVEL,
-				PR_RULE_NAME,
-				PR_RULE_PROVIDER,
-				PR_RULE_PROVIDER_DATA,
-				PR_RULE_SEQUENCE,
-				PR_RULE_STATE,
-				PR_RULE_USER_FLAGS,
+			9,
+			PR_RULE_ACTIONS,
+			PR_RULE_CONDITION,
+			PR_RULE_LEVEL,
+			PR_RULE_NAME,
+			PR_RULE_PROVIDER,
+			PR_RULE_PROVIDER_DATA,
+			PR_RULE_SEQUENCE,
+			PR_RULE_STATE,
+			PR_RULE_USER_FLAGS,
 			};
 
 			EC_MAPI(lpTable->SetColumns((LPSPropTagArray)&ruleTags, 0));
@@ -551,9 +552,11 @@ _Check_return_ HRESULT CopyFolderRules(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LPMAP
 									lpTempList));
 								ulDst++;
 							}
+
 							lpTempList->aEntries[iArrayPos].cValues = ulDst;
 						}
 					}
+
 					ULONG ulFlags = 0;
 					if (bReplace) ulFlags = ROWLIST_REPLACE;
 
@@ -561,8 +564,10 @@ _Check_return_ HRESULT CopyFolderRules(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LPMAP
 
 					MAPIFreeBuffer(lpTempList);
 				}
+
 				FreeProws(lpRows);
 			}
+
 			lpTable->Release();
 		}
 	}
@@ -570,7 +575,7 @@ _Check_return_ HRESULT CopyFolderRules(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LPMAP
 	if (lpDstTbl) lpDstTbl->Release();
 	if (lpSrcTbl) lpSrcTbl->Release();
 	return hRes;
-} // CopyFolderRules
+}
 
 // Copy a property using the stream interface
 // Does not call SaveChanges
@@ -579,13 +584,13 @@ _Check_return_ HRESULT CopyPropertyAsStream(_In_ LPMAPIPROP lpSourcePropObj,
 	ULONG ulSourceTag,
 	ULONG ulTargetTag)
 {
-	HRESULT			hRes = S_OK;
-	LPSTREAM		lpStmSource = NULL;
-	LPSTREAM		lpStmTarget = NULL;
-	LARGE_INTEGER	li;
-	ULARGE_INTEGER	uli;
-	ULARGE_INTEGER	ulBytesRead;
-	ULARGE_INTEGER	ulBytesWritten;
+	HRESULT hRes = S_OK;
+	LPSTREAM lpStmSource = NULL;
+	LPSTREAM lpStmTarget = NULL;
+	LARGE_INTEGER li;
+	ULARGE_INTEGER uli;
+	ULARGE_INTEGER ulBytesRead;
+	ULARGE_INTEGER ulBytesWritten;
 
 	if (!lpSourcePropObj || !lpTargetPropObj || !ulSourceTag || !ulTargetTag) return MAPI_E_INVALID_PARAMETER;
 	if (PROP_TYPE(ulSourceTag) != PROP_TYPE(ulTargetTag)) return MAPI_E_INVALID_PARAMETER;
@@ -622,19 +627,18 @@ _Check_return_ HRESULT CopyPropertyAsStream(_In_ LPMAPIPROP lpSourcePropObj,
 	if (lpStmTarget) lpStmTarget->Release();
 	if (lpStmSource) lpStmSource->Release();
 	return hRes;
-} // CopyPropertyAsStream
+}
 
 ///////////////////////////////////////////////////////////////////////////////
-//	CopySBinary()
+// CopySBinary()
 //
-//	Parameters
-//		psbDest - Address of the destination binary
-//		psbSrc  - Address of the source binary
-//		lpParent - Pointer to parent object (not, however, pointer to pointer!)
+// Parameters
+// psbDest - Address of the destination binary
+// psbSrc - Address of the source binary
+// lpParent - Pointer to parent object (not, however, pointer to pointer!)
 //
-//	Purpose
-//		Allocates a new SBinary and copies psbSrc into it
-//
+// Purpose
+// Allocates a new SBinary and copies psbSrc into it
 _Check_return_ HRESULT CopySBinary(_Out_ LPSBinary psbDest, _In_ const LPSBinary psbSrc, _In_ LPVOID lpParent)
 {
 	HRESULT hRes = S_OK;
@@ -658,29 +662,29 @@ _Check_return_ HRESULT CopySBinary(_Out_ LPSBinary psbDest, _In_ const LPSBinary
 				psbSrc->cb,
 				(LPVOID *)&psbDest->lpb));
 		}
+
 		if (S_OK == hRes)
 			CopyMemory(psbDest->lpb, psbSrc->lpb, psbSrc->cb);
 	}
 
 	return hRes;
-} // CopySBinary
+}
 
 ///////////////////////////////////////////////////////////////////////////////
-//	CopyString()
+// CopyString()
 //
-//	Parameters
-//		lpszDestination - Address of pointer to destination string
-//		szSource        - Pointer to source string
-//		lpParent        - Pointer to parent object (not, however, pointer to pointer!)
+// Parameters
+// lpszDestination - Address of pointer to destination string
+// szSource - Pointer to source string
+// lpParent - Pointer to parent object (not, however, pointer to pointer!)
 //
-//	Purpose
-//		Uses MAPI to allocate a new string (szDestination) and copy szSource into it
-//		Uses lpParent as the parent for MAPIAllocateMore if possible
-//
+// Purpose
+// Uses MAPI to allocate a new string (szDestination) and copy szSource into it
+// Uses lpParent as the parent for MAPIAllocateMore if possible
 _Check_return_ HRESULT CopyStringA(_Deref_out_z_ LPSTR* lpszDestination, _In_z_ LPCSTR szSource, _In_opt_ LPVOID pParent)
 {
-	HRESULT	hRes = S_OK;
-	size_t	cbSource = 0;
+	HRESULT hRes = S_OK;
+	size_t cbSource = 0;
 
 	if (!szSource)
 	{
@@ -704,15 +708,16 @@ _Check_return_ HRESULT CopyStringA(_Deref_out_z_ LPSTR* lpszDestination, _In_z_ 
 			(ULONG)cbSource,
 			(LPVOID*)lpszDestination));
 	}
+
 	EC_H(StringCbCopyA(*lpszDestination, cbSource, szSource));
 
 	return hRes;
-} // CopyStringA
+}
 
 _Check_return_ HRESULT CopyStringW(_Deref_out_z_ LPWSTR* lpszDestination, _In_z_ LPCWSTR szSource, _In_opt_ LPVOID pParent)
 {
-	HRESULT	hRes = S_OK;
-	size_t	cbSource = 0;
+	HRESULT hRes = S_OK;
+	size_t cbSource = 0;
 
 	if (!szSource)
 	{
@@ -736,29 +741,32 @@ _Check_return_ HRESULT CopyStringW(_Deref_out_z_ LPWSTR* lpszDestination, _In_z_
 			(ULONG)cbSource,
 			(LPVOID*)lpszDestination));
 	}
+
 	EC_H(StringCbCopyW(*lpszDestination, cbSource, szSource));
 
 	return hRes;
-} // CopyStringW
+}
 
 // Allocates and creates a restriction that looks for existence of
 // a particular property that matches the given string
 // If lpParent is passed in, it is used as the allocation parent.
 _Check_return_ HRESULT CreatePropertyStringRestriction(ULONG ulPropTag,
-	_In_z_ LPCTSTR szString,
+	_In_ wstring& szString,
 	ULONG ulFuzzyLevel,
 	_In_opt_ LPVOID lpParent,
 	_Deref_out_opt_ LPSRestriction* lppRes)
 {
+	if (PROP_TYPE(ulPropTag) != PT_UNICODE) return MAPI_E_INVALID_PARAMETER;
+
 	HRESULT hRes = S_OK;
-	LPSRestriction	lpRes = NULL;
-	LPSRestriction	lpResLevel1 = NULL;
-	LPSPropValue	lpspvSubject = NULL;
-	LPVOID			lpAllocationParent = NULL;
+	LPSRestriction lpRes = NULL;
+	LPSRestriction lpResLevel1 = NULL;
+	LPSPropValue lpspvSubject = NULL;
+	LPVOID lpAllocationParent = NULL;
 
 	*lppRes = NULL;
 
-	if (!szString) return MAPI_E_INVALID_PARAMETER;
+	if (szString.empty()) return MAPI_E_INVALID_PARAMETER;
 
 	// Allocate and create our SRestriction
 	// Allocate base memory:
@@ -815,9 +823,9 @@ _Check_return_ HRESULT CreatePropertyStringRestriction(ULONG ulPropTag,
 		// Allocate and fill out properties:
 		lpspvSubject->ulPropTag = ulPropTag;
 
-		EC_H(CopyString(
-			&lpspvSubject->Value.LPSZ,
-			szString,
+		EC_H(CopyStringW(
+			&lpspvSubject->Value.lpszW,
+			szString.c_str(),
 			lpAllocationParent));
 
 		DebugPrint(DBGGeneric, L"CreatePropertyStringRestriction built restriction:\n");
@@ -832,8 +840,9 @@ _Check_return_ HRESULT CreatePropertyStringRestriction(ULONG ulPropTag,
 		MAPIFreeBuffer(lpRes);
 		*lppRes = NULL;
 	}
+
 	return hRes;
-} // CreatePropertyStringRestriction
+}
 
 _Check_return_ HRESULT CreateRangeRestriction(ULONG ulPropTag,
 	_In_z_ LPCTSTR szString,
@@ -841,10 +850,10 @@ _Check_return_ HRESULT CreateRangeRestriction(ULONG ulPropTag,
 	_Deref_out_opt_ LPSRestriction* lppRes)
 {
 	HRESULT hRes = S_OK;
-	LPSRestriction	lpRes = NULL;
-	LPSRestriction	lpResLevel1 = NULL;
-	LPSPropValue	lpspvSubject = NULL;
-	LPVOID			lpAllocationParent = NULL;
+	LPSRestriction lpRes = NULL;
+	LPSRestriction lpResLevel1 = NULL;
+	LPSPropValue lpspvSubject = NULL;
+	LPVOID lpAllocationParent = NULL;
 
 	*lppRes = NULL;
 
@@ -922,13 +931,14 @@ _Check_return_ HRESULT CreateRangeRestriction(ULONG ulPropTag,
 		MAPIFreeBuffer(lpRes);
 		*lppRes = NULL;
 	}
+
 	return hRes;
-} // CreateRangeRestriction
+}
 
 _Check_return_ HRESULT DeleteProperty(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
 {
 	HRESULT hRes = S_OK;
-	SPropTagArray		ptaTag;
+	SPropTagArray ptaTag;
 	LPSPropProblemArray pProbArray = NULL;
 
 	if (!lpMAPIProp) return MAPI_E_INVALID_PARAMETER;
@@ -954,10 +964,11 @@ _Check_return_ HRESULT DeleteProperty(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTa
 	{
 		EC_MAPI(lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
 	}
+
 	MAPIFreeBuffer(pProbArray);
 
 	return hRes;
-} // DeleteProperty
+}
 
 // Delete items to the wastebasket of the passed in mdb, if it exists.
 _Check_return_ HRESULT DeleteToDeletedItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLDER lpSourceFolder, _In_ LPENTRYLIST lpEIDs, _In_ HWND hWnd)
@@ -995,7 +1006,7 @@ _Check_return_ HRESULT DeleteToDeletedItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLDER 
 
 	if (lpWasteFolder) lpWasteFolder->Release();
 	return hRes;
-} // DeleteToDeletedItems
+}
 
 _Check_return_ bool FindPropInPropTagArray(_In_ LPSPropTagArray lpspTagArray, ULONG ulPropToFind, _Out_ ULONG* lpulRowFound)
 {
@@ -1010,8 +1021,9 @@ _Check_return_ bool FindPropInPropTagArray(_In_ LPSPropTagArray lpspTagArray, UL
 			return true;
 		}
 	}
+
 	return false;
-} // FindPropInPropTagArray
+}
 
 // See list of types (like MAPI_FOLDER) in mapidefs.h
 _Check_return_ ULONG GetMAPIObjectType(_In_opt_ LPMAPIPROP lpMAPIProp)
@@ -1032,13 +1044,13 @@ _Check_return_ ULONG GetMAPIObjectType(_In_opt_ LPMAPIPROP lpMAPIProp)
 
 	MAPIFreeBuffer(lpProp);
 	return ulObjType;
-} // GetMAPIObjectType
+}
 
 _Check_return_ HRESULT GetInbox(_In_ LPMDB lpMDB, _Out_opt_ ULONG* lpcbeid, _Deref_out_opt_ LPENTRYID* lppeid)
 {
-	HRESULT			hRes = S_OK;
-	ULONG			cbInboxEID = NULL;
-	LPENTRYID		lpInboxEID = NULL;
+	HRESULT hRes = S_OK;
+	ULONG cbInboxEID = NULL;
+	LPENTRYID lpInboxEID = NULL;
 
 	DebugPrint(DBGGeneric, L"GetInbox: getting Inbox\n");
 
@@ -1063,13 +1075,13 @@ _Check_return_ HRESULT GetInbox(_In_ LPMDB lpMDB, _Out_opt_ ULONG* lpcbeid, _Der
 
 	MAPIFreeBuffer(lpInboxEID);
 	return hRes;
-} // GetInbox
+}
 
 _Check_return_ HRESULT GetInbox(_In_ LPMDB lpMDB, _Deref_out_opt_ LPMAPIFOLDER* lpInbox)
 {
-	HRESULT			hRes = S_OK;
-	ULONG			cbInboxEID = NULL;
-	LPENTRYID		lpInboxEID = NULL;
+	HRESULT hRes = S_OK;
+	ULONG cbInboxEID = NULL;
+	LPENTRYID lpInboxEID = NULL;
 
 	DebugPrint(DBGGeneric, L"GetInbox: getting Inbox from %p\n", lpMDB);
 
@@ -1097,13 +1109,13 @@ _Check_return_ HRESULT GetInbox(_In_ LPMDB lpMDB, _Deref_out_opt_ LPMAPIFOLDER* 
 
 	MAPIFreeBuffer(lpInboxEID);
 	return hRes;
-} // GetInbox
+}
 
 _Check_return_ HRESULT GetParentFolder(_In_ LPMAPIFOLDER lpChildFolder, _In_ LPMDB lpMDB, _Deref_out_opt_ LPMAPIFOLDER* lpParentFolder)
 {
-	HRESULT			hRes = S_OK;
-	ULONG			cProps;
-	LPSPropValue	lpProps = NULL;
+	HRESULT hRes = S_OK;
+	ULONG cProps;
+	LPSPropValue lpProps = NULL;
 
 	*lpParentFolder = NULL;
 
@@ -1116,8 +1128,8 @@ _Check_return_ HRESULT GetParentFolder(_In_ LPMAPIFOLDER lpChildFolder, _In_ LPM
 	};
 	static const SizedSPropTagArray(NUM_COLS, sptaSrcFolder) =
 	{
-		NUM_COLS,
-		PR_PARENT_ENTRYID
+	NUM_COLS,
+	PR_PARENT_ENTRYID
 	};
 
 	// Get PR_PARENT_ENTRYID
@@ -1144,7 +1156,7 @@ _Check_return_ HRESULT GetParentFolder(_In_ LPMAPIFOLDER lpChildFolder, _In_ LPM
 
 	MAPIFreeBuffer(lpProps);
 	return hRes;
-} // GetParentFolder
+}
 
 _Check_return_ HRESULT GetPropsNULL(_In_ LPMAPIPROP lpMAPIProp, ULONG ulFlags, _Out_ ULONG* lpcValues, _Deref_out_opt_ LPSPropValue* lppPropArray)
 {
@@ -1186,7 +1198,7 @@ _Check_return_ HRESULT GetPropsNULL(_In_ LPMAPIPROP lpMAPIProp, ULONG ulFlags, _
 	MAPIFreeBuffer(lpTags);
 
 	return hRes;
-} // GetPropsNULL
+}
 
 _Check_return_ HRESULT GetSpecialFolderEID(_In_ LPMDB lpMDB, ULONG ulFolderPropTag, _Out_opt_ ULONG* lpcbeid, _Deref_out_opt_ LPENTRYID* lppeid)
 {
@@ -1238,13 +1250,15 @@ _Check_return_ HRESULT GetSpecialFolderEID(_In_ LPMDB lpMDB, ULONG ulFolderPropT
 			CopyMemory(*lppeid, lpProp->Value.bin.lpb, *lpcbeid);
 		}
 	}
+
 	if (MAPI_E_NOT_FOUND == hRes)
 	{
 		DebugPrint(DBGGeneric, L"Special folder not found.\n");
 	}
+
 	MAPIFreeBuffer(lpProp);
 	return hRes;
-} // GetSpecialFolderEID
+}
 
 _Check_return_ HRESULT IsAttachmentBlocked(_In_ LPMAPISESSION lpMAPISession, _In_z_ LPCWSTR pwszFileName, _Out_ bool* pfBlocked)
 {
@@ -1259,11 +1273,12 @@ _Check_return_ HRESULT IsAttachmentBlocked(_In_ LPMAPISESSION lpMAPISession, _In
 	{
 		EC_MAPI(lpAttachSec->IsAttachmentBlocked(pwszFileName, &bBlocked));
 	}
+
 	if (lpAttachSec) lpAttachSec->Release();
 
 	*pfBlocked = !!bBlocked;
 	return hRes;
-} // IsAttachmentBlocked
+}
 
 _Check_return_ bool IsDuplicateProp(_In_ LPSPropTagArray lpArray, ULONG ulPropTag)
 {
@@ -1287,7 +1302,7 @@ _Check_return_ bool IsDuplicateProp(_In_ LPSPropTagArray lpArray, ULONG ulPropTa
 	}
 
 	return false;
-} // IsDuplicateProp
+}
 
 _Check_return_ HRESULT ManuallyEmptyFolder(_In_ LPMAPIFOLDER lpFolder, BOOL bAssoc, BOOL bHardDelete)
 {
@@ -1308,8 +1323,8 @@ _Check_return_ HRESULT ManuallyEmptyFolder(_In_ LPMAPIFOLDER lpFolder, BOOL bAss
 
 	static const SizedSPropTagArray(eidNUM_COLS, eidCols) =
 	{
-		eidNUM_COLS,
-		PR_ENTRYID,
+	eidNUM_COLS,
+	PR_ENTRYID,
 	};
 
 	// Get the table of contents of the folder
@@ -1361,13 +1376,14 @@ _Check_return_ HRESULT ManuallyEmptyFolder(_In_ LPMAPIFOLDER lpFolder, BOOL bAss
 				}
 			}
 		}
+
 		DebugPrint(DBGGeneric, L"ManuallyEmptyFolder deleted %u items\n", iItemCount);
 	}
 
 	if (pRows) FreeProws(pRows);
 	if (lpContentsTable) lpContentsTable->Release();
 	return hRes;
-} // ManuallyEmptyFolder
+}
 
 // Converts byte vector to LPBYTE allocated with MAPIAllocateMore
 _Check_return_ LPBYTE ByteVectorToMAPI(vector<BYTE>& bin, LPVOID lpParent)
@@ -1407,7 +1423,7 @@ _Check_return_ HRESULT RemoveOneOff(_In_ LPMESSAGE lpMessage, bool bRemovePropDe
 	DebugPrint(DBGNamedProp, L"RemoveOneOff - removing one off named properties.\n");
 
 	HRESULT hRes = S_OK;
-	MAPINAMEID  rgnmid[ulNumOneOffIDs];
+	MAPINAMEID rgnmid[ulNumOneOffIDs];
 	LPMAPINAMEID rgpnmid[ulNumOneOffIDs];
 	LPSPropTagArray lpTags = NULL;
 
@@ -1451,9 +1467,9 @@ _Check_return_ HRESULT RemoveOneOff(_In_ LPMESSAGE lpMessage, bool bRemovePropDe
 				DebugPrint(DBGNamedProp, L"RemoveOneOff - DeleteProps problem array:\n%ws\n", ProblemArrayToString(lpProbArray).c_str());
 			}
 
-			SPropTagArray	pTag = { 0 };
-			ULONG			cProp = 0;
-			LPSPropValue	lpCustomFlag = NULL;
+			SPropTagArray pTag = { 0 };
+			ULONG cProp = 0;
+			LPSPropValue lpCustomFlag = NULL;
 
 			// Grab dispidCustomFlag, the last tag in the array
 			pTag.cValues = 1;
@@ -1481,8 +1497,10 @@ _Check_return_ HRESULT RemoveOneOff(_In_ LPMESSAGE lpMessage, bool bRemovePropDe
 				{
 					DebugPrint(DBGNamedProp, L"RemoveOneOff - SetProps problem array:\n%ws\n", ProblemArrayToString(lpProbArray2).c_str());
 				}
+
 				MAPIFreeBuffer(lpProbArray2);
 			}
+
 			hRes = S_OK;
 
 			EC_MAPI(lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
@@ -1492,19 +1510,20 @@ _Check_return_ HRESULT RemoveOneOff(_In_ LPMESSAGE lpMessage, bool bRemovePropDe
 				DebugPrint(DBGNamedProp, L"RemoveOneOff - One-off properties removed.\n");
 			}
 		}
+
 		MAPIFreeBuffer(lpProbArray);
 	}
-	MAPIFreeBuffer(lpTags);
 
+	MAPIFreeBuffer(lpTags);
 	return hRes;
-} // RemoveOneOff
+}
 
 _Check_return_ HRESULT ResendMessages(_In_ LPMAPIFOLDER lpFolder, _In_ HWND hWnd)
 {
-	HRESULT		hRes = S_OK;
-	LPMAPITABLE	lpContentsTable = NULL;
-	LPSRowSet	pRows = NULL;
-	ULONG		i;
+	HRESULT hRes = S_OK;
+	LPMAPITABLE lpContentsTable = NULL;
+	LPSRowSet pRows = NULL;
+	ULONG i;
 
 	// You define a SPropTagArray array here using the SizedSPropTagArray Macro
 	// This enum will allows you to access portions of the array by a name instead of a number.
@@ -1517,8 +1536,8 @@ _Check_return_ HRESULT ResendMessages(_In_ LPMAPIFOLDER lpFolder, _In_ HWND hWnd
 	// These tags represent the message information we would like to pick up
 	static const SizedSPropTagArray(NUM_COLS, sptCols) =
 	{
-		NUM_COLS,
-		PR_ENTRYID
+	NUM_COLS,
+	PR_ENTRYID
 	};
 
 	if (!lpFolder) return MAPI_E_INVALID_PARAMETER;
@@ -1565,7 +1584,7 @@ _Check_return_ HRESULT ResendMessages(_In_ LPMAPIFOLDER lpFolder, _In_ HWND hWnd
 	if (pRows) FreeProws(pRows);
 	if (lpContentsTable) lpContentsTable->Release();
 	return hRes;
-} // ResendMessages
+}
 
 _Check_return_ HRESULT ResendSingleMessage(
 	_In_ LPMAPIFOLDER lpFolder,
@@ -1598,24 +1617,24 @@ _Check_return_ HRESULT ResendSingleMessage(
 
 	if (lpMessage) lpMessage->Release();
 	return hRes;
-} // ResendSingleMessage
+}
 
 _Check_return_ HRESULT ResendSingleMessage(
 	_In_ LPMAPIFOLDER lpFolder,
 	_In_ LPMESSAGE lpMessage,
 	_In_ HWND hWnd)
 {
-	HRESULT			hRes = S_OK;
-	HRESULT			hResRet = S_OK;
-	LPATTACH		lpAttach = NULL;
-	LPMESSAGE		lpAttachMsg = NULL;
-	LPMAPITABLE		lpAttachTable = NULL;
-	LPSRowSet		pRows = NULL;
-	LPMESSAGE		lpNewMessage = NULL;
+	HRESULT hRes = S_OK;
+	HRESULT hResRet = S_OK;
+	LPATTACH lpAttach = NULL;
+	LPMESSAGE lpAttachMsg = NULL;
+	LPMAPITABLE lpAttachTable = NULL;
+	LPSRowSet pRows = NULL;
+	LPMESSAGE lpNewMessage = NULL;
 	LPSPropTagArray lpsMessageTags = NULL;
 	LPSPropProblemArray lpsPropProbs = NULL;
-	ULONG			ulProp = NULL;
-	SPropValue		sProp = { 0 };
+	ULONG ulProp = NULL;
+	SPropValue sProp = { 0 };
 
 	enum
 	{
@@ -1627,17 +1646,17 @@ _Check_return_ HRESULT ResendSingleMessage(
 
 	static const SizedSPropTagArray(atNUM_COLS, atCols) =
 	{
-		atNUM_COLS,
-		PR_ATTACH_METHOD,
-		PR_ATTACH_NUM,
-		PR_DISPLAY_NAME
+	atNUM_COLS,
+	PR_ATTACH_METHOD,
+	PR_ATTACH_NUM,
+	PR_DISPLAY_NAME
 	};
 
 	static const SizedSPropTagArray(2, atObjs) =
 	{
-		2,
-		PR_MESSAGE_RECIPIENTS,
-		PR_MESSAGE_ATTACHMENTS
+	2,
+	PR_MESSAGE_RECIPIENTS,
+	PR_MESSAGE_ATTACHMENTS
 	};
 
 	if (!lpMessage || !lpFolder) return MAPI_E_INVALID_PARAMETER;
@@ -1797,20 +1816,20 @@ _Check_return_ HRESULT ResendSingleMessage(
 	if (lpAttachTable) lpAttachTable->Release();
 	if (FAILED(hResRet)) return hResRet;
 	return hRes;
-} // ResendSingleMessage
+}
 
 _Check_return_ HRESULT ResetPermissionsOnItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLDER lpMAPIFolder)
 {
-	LPSRowSet		pRows = NULL;
-	HRESULT			hRes = S_OK;
-	HRESULT			hResOverall = S_OK;
-	ULONG			iItemCount = 0;
-	ULONG			iCurPropRow = 0;
-	ULONG			ulFlags = NULL;
-	LPMAPITABLE		lpContentsTable = NULL;
-	LPMESSAGE		lpMessage = NULL;
-	CWaitCursor		Wait; // Change the mouse to an hourglass while we work.
-	int				i = 0;
+	LPSRowSet pRows = NULL;
+	HRESULT hRes = S_OK;
+	HRESULT hResOverall = S_OK;
+	ULONG iItemCount = 0;
+	ULONG iCurPropRow = 0;
+	ULONG ulFlags = NULL;
+	LPMAPITABLE lpContentsTable = NULL;
+	LPMESSAGE lpMessage = NULL;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
+	int i = 0;
 
 	enum
 	{
@@ -1820,8 +1839,8 @@ _Check_return_ HRESULT ResetPermissionsOnItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLD
 
 	static const SizedSPropTagArray(eidNUM_COLS, eidCols) =
 	{
-		eidNUM_COLS,
-		PR_ENTRYID,
+	eidNUM_COLS,
+	PR_ENTRYID,
 	};
 
 	if (!lpMDB || !lpMAPIFolder) return MAPI_E_INVALID_PARAMETER;
@@ -1899,6 +1918,7 @@ _Check_return_ HRESULT ResetPermissionsOnItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLD
 					iItemCount++;
 				}
 			}
+
 			DebugPrint(DBGGeneric, L"ResetPermissionsOnItems reset permissions on %u items\n", iItemCount);
 		}
 	}
@@ -1908,7 +1928,7 @@ _Check_return_ HRESULT ResetPermissionsOnItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLD
 	if (lpContentsTable) lpContentsTable->Release();
 	if (S_OK != hResOverall) return hResOverall;
 	return hRes;
-} // ResetPermissionsOnItems
+}
 
 // This function creates a new message based in m_lpContainer
 // Then sends the message
@@ -1920,8 +1940,8 @@ _Check_return_ HRESULT SendTestMessage(
 	_In_z_ LPCTSTR szSubject,
 	_In_z_ LPCTSTR szClass)
 {
-	HRESULT			hRes = S_OK;
-	LPMESSAGE		lpNewMessage = NULL;
+	HRESULT hRes = S_OK;
+	LPMESSAGE lpNewMessage = NULL;
 
 	if (!lpMAPISession || !lpFolder) return MAPI_E_INVALID_PARAMETER;
 
@@ -1983,7 +2003,7 @@ _Check_return_ HRESULT SendTestMessage(
 
 	if (lpNewMessage) lpNewMessage->Release();
 	return hRes;
-} // SendTestMessage
+}
 
 // Declaration missing from headers
 STDAPI_(HRESULT) WrapCompressedRTFStreamEx(
@@ -2020,8 +2040,8 @@ _Check_return_ HRESULT WrapStreamForRTF(
 
 		wcsinfo.size = sizeof(RTF_WCSINFO);
 		wcsinfo.ulFlags = ulFlags;
-		wcsinfo.ulInCodePage = ulInCodePage;			// Get ulCodePage from PR_INTERNET_CPID on the IMessage
-		wcsinfo.ulOutCodePage = ulOutCodePage;			// Desired code page for return
+		wcsinfo.ulInCodePage = ulInCodePage; // Get ulCodePage from PR_INTERNET_CPID on the IMessage
+		wcsinfo.ulOutCodePage = ulOutCodePage; // Desired code page for return
 
 		WC_MAPI(WrapCompressedRTFStreamEx(
 			lpCompressedRTFStream,
@@ -2032,23 +2052,23 @@ _Check_return_ HRESULT WrapStreamForRTF(
 	}
 
 	return hRes;
-} // WrapStreamForRTF
+}
 
 _Check_return_ HRESULT CopyNamedProps(_In_ LPMAPIPROP lpSource, _In_ LPGUID lpPropSetGUID, bool bDoMove, bool bDoNoReplace, _In_ LPMAPIPROP lpTarget, _In_ HWND hWnd)
 {
 	if ((!lpSource) || (!lpTarget)) return MAPI_E_INVALID_PARAMETER;
 
-	HRESULT			hRes = S_OK;
-	LPSPropTagArray	lpPropTags = NULL;
+	HRESULT hRes = S_OK;
+	LPSPropTagArray lpPropTags = NULL;
 
 	EC_H(GetNamedPropsByGUID(lpSource, lpPropSetGUID, &lpPropTags));
 
 	if (!FAILED(hRes) && lpPropTags)
 	{
-		LPSPropProblemArray	lpProblems = NULL;
-		ULONG				ulFlags = NULL;
-		if (bDoMove)		ulFlags |= MAPI_MOVE;
-		if (bDoNoReplace)	ulFlags |= MAPI_NOREPLACE;
+		LPSPropProblemArray lpProblems = NULL;
+		ULONG ulFlags = NULL;
+		if (bDoMove) ulFlags |= MAPI_MOVE;
+		if (bDoNoReplace) ulFlags |= MAPI_NOREPLACE;
 
 		LPMAPIPROGRESS lpProgress = GetMAPIProgress(L"IMAPIProp::CopyProps", hWnd); // STRING_OK
 
@@ -2075,7 +2095,7 @@ _Check_return_ HRESULT CopyNamedProps(_In_ LPMAPIPROP lpSource, _In_ LPGUID lpPr
 	MAPIFreeBuffer(lpPropTags);
 
 	return hRes;
-} // CopyNamedProps
+}
 
 _Check_return_ HRESULT GetNamedPropsByGUID(_In_ LPMAPIPROP lpSource, _In_ LPGUID lpPropSetGUID, _Deref_out_ LPSPropTagArray* lpOutArray)
 {
@@ -2091,8 +2111,8 @@ _Check_return_ HRESULT GetNamedPropsByGUID(_In_ LPMAPIPROP lpSource, _In_ LPGUID
 
 	if (S_OK == hRes && lpAllProps)
 	{
-		ULONG			cProps = 0;
-		LPMAPINAMEID*	lppNameIDs = NULL;
+		ULONG cProps = 0;
+		LPMAPINAMEID* lppNameIDs = NULL;
 
 		WC_H(GetNamesFromIDs(lpSource,
 			&lpAllProps,
@@ -2134,14 +2154,17 @@ _Check_return_ HRESULT GetNamedPropsByGUID(_In_ LPMAPIPROP lpSource, _In_ LPGUID
 						lpFilteredProps->cValues++;
 					}
 				}
+
 				*lpOutArray = lpFilteredProps;
 			}
 		}
+
 		MAPIFreeBuffer(lppNameIDs);
 	}
+
 	MAPIFreeBuffer(lpAllProps);
 	return hRes;
-} // GetNamedPropsByGUID
+}
 
 _Check_return_ bool CheckStringProp(_In_opt_ LPSPropValue lpProp, ULONG ulPropType)
 {
@@ -2150,6 +2173,7 @@ _Check_return_ bool CheckStringProp(_In_opt_ LPSPropValue lpProp, ULONG ulPropTy
 		DebugPrint(DBGGeneric, L"CheckStringProp: Called with invalid ulPropType of 0x%X\n", ulPropType);
 		return false;
 	}
+
 	if (!lpProp)
 	{
 		DebugPrint(DBGGeneric, L"CheckStringProp: lpProp is NULL\n");
@@ -2187,16 +2211,16 @@ _Check_return_ bool CheckStringProp(_In_opt_ LPSPropValue lpProp, ULONG ulPropTy
 	}
 
 	return true;
-} // CheckStringProp
+}
 
 _Check_return_ DWORD ComputeStoreHash(ULONG cbStoreEID, _In_count_(cbStoreEID) LPBYTE pbStoreEID, _In_opt_z_ LPCSTR pszFileName, _In_opt_z_ LPCWSTR pwzFileName, bool bPublicStore)
 {
-	DWORD  dwHash = 0;
-	ULONG  cdw = 0;
+	DWORD dwHash = 0;
+	ULONG cdw = 0;
 	DWORD* pdw = NULL;
-	ULONG  cb = 0;
-	BYTE*  pb = NULL;
-	ULONG  i = 0;
+	ULONG cb = 0;
+	BYTE* pb = NULL;
+	ULONG i = 0;
 
 	if (!cbStoreEID || !pbStoreEID) return dwHash;
 	// We shouldn't see both of these at the same time.
@@ -2227,6 +2251,7 @@ _Check_return_ DWORD ComputeStoreHash(ULONG cbStoreEID, _In_count_(cbStoreEID) L
 		// augment to make sure it is unique else could be same as the private store
 		dwHash = (dwHash << 5) + dwHash + 0x2E505542; // this is '.PUB'
 	}
+
 	if (pwzFileName || pszFileName)
 		DebugPrint(DBGGeneric, L"ComputeStoreHash, hash (before adding path) = 0x%08X\n", dwHash);
 
@@ -2246,12 +2271,13 @@ _Check_return_ DWORD ComputeStoreHash(ULONG cbStoreEID, _In_count_(cbStoreEID) L
 			dwHash = (dwHash << 5) + dwHash + *pszFileName++;
 		}
 	}
+
 	if (pwzFileName || pszFileName)
 		DebugPrint(DBGGeneric, L"ComputeStoreHash, hash (after adding path) = 0x%08X\n", dwHash);
 
 	// dwHash now contains the hash to be used. It should be written in hex when building a URL.
 	return dwHash;
-} // ComputeStoreHash
+}
 
 const WORD kwBaseOffset = 0xAC00; // Hangul char range (AC00-D7AF)
 // Allocates with new, free with delete[]
@@ -2323,11 +2349,11 @@ HRESULT HrEmsmdbUIDFromStore(_In_ LPMAPISESSION pmsess,
 	};
 	static const SizedSPropTagArray(eMax, tagaCols) =
 	{
-		eMax,
-		{
-			PR_ENTRYID,
-			PR_EMSMDB_SECTION_UID,
-		}
+	eMax,
+	{
+	PR_ENTRYID,
+	PR_EMSMDB_SECTION_UID,
+	}
 	};
 
 	EC_MAPI(pmsess->AdminServices(0, (LPSERVICEADMIN*)&spSvcAdmin));
@@ -2364,23 +2390,25 @@ HRESULT HrEmsmdbUIDFromStore(_In_ LPMAPISESSION pmsess,
 			}
 			FreeProws(pRows);
 		}
+
 		if (spmtab) spmtab->Release();
 	}
+
 	if (spSvcAdmin) spSvcAdmin->Release();
 	return hRes;
-} // HrEmsmdbUIDFromStore
+}
 
 bool FExchangePrivateStore(_In_ LPMAPIUID lpmapiuid)
 {
 	if (!lpmapiuid) return false;
 	return IsEqualMAPIUID(lpmapiuid, (LPMAPIUID)pbExchangeProviderPrimaryUserGuid);
-} // FExchangePrivateStore
+}
 
 bool FExchangePublicStore(_In_ LPMAPIUID lpmapiuid)
 {
 	if (!lpmapiuid) return false;
 	return IsEqualMAPIUID(lpmapiuid, (LPMAPIUID)pbExchangeProviderPublicGuid);
-} // FExchangePublicStore
+}
 
 STDMETHODIMP GetEntryIDFromMDB(LPMDB lpMDB, ULONG ulPropTag, _Out_opt_ ULONG* lpcbeid, _Deref_out_opt_ LPENTRYID* lppeid)
 {
@@ -2402,7 +2430,7 @@ STDMETHODIMP GetEntryIDFromMDB(LPMDB lpMDB, ULONG ulPropTag, _Out_opt_ ULONG* lp
 
 	MAPIFreeBuffer(lpEIDProp);
 	return hRes;
-} // GetEntryIDFromMDB
+}
 
 STDMETHODIMP GetMVEntryIDFromInboxByIndex(LPMDB lpMDB, ULONG ulPropTag, ULONG ulIndex, _Out_opt_ ULONG* lpcbeid, _Deref_out_opt_ LPENTRYID* lppeid)
 {
@@ -2429,12 +2457,13 @@ STDMETHODIMP GetMVEntryIDFromInboxByIndex(LPMDB lpMDB, ULONG ulPropTag, ULONG ul
 				CopyMemory(*lppeid, lpEIDProp->Value.MVbin.lpbin[ulIndex].lpb, *lpcbeid);
 			}
 		}
+
 		MAPIFreeBuffer(lpEIDProp);
 	}
 	if (lpInbox) lpInbox->Release();
 
 	return hRes;
-} // GetMVEntryIDFromInboxByIndex
+}
 
 STDMETHODIMP GetDefaultFolderEID(
 	_In_ ULONG ulFolder,
@@ -2510,7 +2539,7 @@ STDMETHODIMP GetDefaultFolderEID(
 	}
 
 	return hRes;
-} // GetDefaultFolderEID
+}
 
 STDMETHODIMP OpenDefaultFolder(_In_ ULONG ulFolder, _In_ LPMDB lpMDB, _Deref_out_opt_ LPMAPIFOLDER *lpFolder)
 {
@@ -2546,17 +2575,17 @@ STDMETHODIMP OpenDefaultFolder(_In_ ULONG ulFolder, _In_ LPMDB lpMDB, _Deref_out
 			lpTemp->Release();
 		}
 	}
-	MAPIFreeBuffer(lpeid);
 
+	MAPIFreeBuffer(lpeid);
 	return hRes;
-} // OpenDefaultFolder
+}
 
 
 ULONG g_DisplayNameProps[] =
 {
-	PR_DISPLAY_NAME,
-	PR_MAILBOX_OWNER_NAME,
-	PR_SUBJECT,
+ PR_DISPLAY_NAME,
+ PR_MAILBOX_OWNER_NAME,
+ PR_SUBJECT,
 };
 
 
@@ -2654,7 +2683,7 @@ LPSPropTagArray GetExcludedTags(_In_opt_ LPSPropTagArray lpTagArray, _In_opt_ LP
 	if (S_OK == hRes)
 	{
 		return TagEditor.DetachModifiedTagArray();
-	}
+}
 
 	return NULL;
 }
