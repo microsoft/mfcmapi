@@ -73,10 +73,10 @@ _Check_return_ HRESULT ResetPermissionsOnItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLD
 _Check_return_ HRESULT SendTestMessage(
 	_In_ LPMAPISESSION lpMAPISession,
 	_In_ LPMAPIFOLDER lpFolder,
-	_In_z_ LPCTSTR szRecipient,
-	_In_z_ LPCTSTR szBody,
-	_In_z_ LPCTSTR szSubject,
-	_In_z_ LPCTSTR szClass);
+	_In_ wstring szRecipient,
+	_In_ wstring szBody,
+	_In_ wstring& szSubject,
+	_In_ wstring szClass);
 _Check_return_ HRESULT WrapStreamForRTF(
 	_In_ LPSTREAM lpCompressedRTFStream,
 	bool bUseWrapEx,

@@ -12,7 +12,7 @@ _Check_return_ HRESULT AddOneOffAddress(
 _Check_return_ HRESULT AddRecipient(
 	_In_ LPMAPISESSION lpMAPISession,
 	_In_ LPMESSAGE lpMessage,
-	_In_z_ LPCTSTR szName,
+	_In_ wstring szName,
 	ULONG ulRecipientType);
 
 _Check_return_ HRESULT CreateANRRestriction(ULONG ulPropTag,

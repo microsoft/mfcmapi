@@ -1278,7 +1278,7 @@ IDS_OBJECTVALUE "Object"
 
 IDS_PREVIOUSCALL "Previous call returned %1!ws! == 0x%2!08X!"
 
-IDS_TESTSUBJECT "%1: %2!d!"
+IDS_TESTSUBJECT "%1!ws!: %2!d!"
 IDS_ROOTCONTAINER "Root Container"
 IDS_UNKNOWNNAME "Unknown name"
 IDS_UNKNOWNPROPERTY "Unknown Property"

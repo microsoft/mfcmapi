@@ -1936,10 +1936,10 @@ _Check_return_ HRESULT ResetPermissionsOnItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLD
 _Check_return_ HRESULT SendTestMessage(
 	_In_ LPMAPISESSION lpMAPISession,
 	_In_ LPMAPIFOLDER lpFolder,
-	_In_z_ LPCTSTR szRecipient,
-	_In_z_ LPCTSTR szBody,
-	_In_z_ LPCTSTR szSubject,
-	_In_z_ LPCTSTR szClass)
+	_In_ wstring szRecipient,
+	_In_ wstring szBody,
+	_In_ wstring& szSubject,
+	_In_ wstring szClass)
 {
 	HRESULT hRes = S_OK;
 	LPMESSAGE lpNewMessage = NULL;
@@ -1963,24 +1963,24 @@ _Check_return_ HRESULT SendTestMessage(
 		EC_MAPI(HrSetOneProp(lpNewMessage, &sProp));
 
 		sProp.dwAlignPad = 0;
-		sProp.ulPropTag = PR_BODY;
-		sProp.Value.LPSZ = (LPTSTR)szBody;
+		sProp.ulPropTag = PR_BODY_W;
+		sProp.Value.lpszW = const_cast<LPWSTR>(szBody.c_str());
 
-		DebugPrint(DBGGeneric, L"Setting PR_BODY to %ws.\n", LPCTSTRToWstring(szBody).c_str());
+		DebugPrint(DBGGeneric, L"Setting PR_BODY to %ws.\n", szBody.c_str());
 		EC_MAPI(HrSetOneProp(lpNewMessage, &sProp));
 
 		sProp.dwAlignPad = 0;
-		sProp.ulPropTag = PR_SUBJECT;
-		sProp.Value.LPSZ = (LPTSTR)szSubject;
+		sProp.ulPropTag = PR_SUBJECT_W;
+		sProp.Value.lpszW = const_cast<LPWSTR>(szSubject.c_str());
 
-		DebugPrint(DBGGeneric, L"Setting PR_SUBJECT to %ws.\n", LPCTSTRToWstring(szSubject).c_str());
+		DebugPrint(DBGGeneric, L"Setting PR_SUBJECT to %ws.\n", szSubject.c_str());
 		EC_MAPI(HrSetOneProp(lpNewMessage, &sProp));
 
 		sProp.dwAlignPad = 0;
-		sProp.ulPropTag = PR_MESSAGE_CLASS;
-		sProp.Value.LPSZ = (LPTSTR)szClass;
+		sProp.ulPropTag = PR_MESSAGE_CLASS_W;
+		sProp.Value.lpszW = const_cast<LPWSTR>(szClass.c_str());
 
-		DebugPrint(DBGGeneric, L"Setting PR_MESSAGE_CLASS to %ws.\n", LPCTSTRToWstring(szSubject).c_str());
+		DebugPrint(DBGGeneric, L"Setting PR_MESSAGE_CLASS to %ws.\n", szSubject.c_str());
 		EC_MAPI(HrSetOneProp(lpNewMessage, &sProp));
 
 		SPropTagArray sPropTagArray;
@@ -1991,7 +1991,7 @@ _Check_return_ HRESULT SendTestMessage(
 		DebugPrint(DBGGeneric, L"Deleting PR_SENTMAIL_ENTRYID\n");
 		EC_MAPI(lpNewMessage->DeleteProps(&sPropTagArray, NULL));
 
-		DebugPrint(DBGGeneric, L"Adding recipient: %ws.\n", LPCTSTRToWstring(szRecipient).c_str());
+		DebugPrint(DBGGeneric, L"Adding recipient: %ws.\n", szRecipient.c_str());
 		EC_H(AddRecipient(
 			lpMAPISession,
 			lpNewMessage,

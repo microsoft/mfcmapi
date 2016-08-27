@@ -1822,24 +1822,22 @@ void CFolderDlg::OnSendBulkMail()
 	{
 		ULONG ulNumMessages = 0;
 		ULONG i = 0;
-		LPTSTR szSubject = NULL;
 
 		ulNumMessages = MyData.GetDecimal(0);
-		szSubject = MyData.GetString(2);
+		wstring szSubject = MyData.GetStringW(2);
 
 		for (i = 0; i < ulNumMessages; i++)
 		{
 			hRes = S_OK;
-			CString szTestSubject;
-			szTestSubject.FormatMessage(IDS_TESTSUBJECT, szSubject, i);
+			wstring szTestSubject = formatmessage(IDS_TESTSUBJECT, szSubject.c_str(), i);
 
 			EC_H(SendTestMessage(
 				lpMAPISession,
 				(LPMAPIFOLDER)m_lpContainer,
-				MyData.GetString(1),
-				MyData.GetString(4),
+				MyData.GetStringW(1),
+				MyData.GetStringW(4),
 				szTestSubject,
-				MyData.GetString(3)));
+				MyData.GetStringW(3)));
 			if (FAILED(hRes))
 			{
 				CHECKHRESMSG(hRes, IDS_ERRORSENDINGMSGS);
