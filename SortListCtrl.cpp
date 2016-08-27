@@ -557,7 +557,7 @@ void CSortListCtrl::SortClickedColumn()
 					lpData->szSortText = lpData->szSortText.substr(pos);
 				}
 
-				lpData->ulSortValue.LowPart = lpData->szSortText.length();
+				lpData->ulSortValue.LowPart = static_cast<DWORD>(lpData->szSortText.length());
 			}
 		}
 		break;

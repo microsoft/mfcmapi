@@ -584,6 +584,7 @@ _Check_return_ bool CFolderDlg::HandlePaste()
 
 		if (lpMAPISourceFolder) lpMAPISourceFolder->Release();
 	}
+
 	return true;
 }
 
@@ -605,38 +606,34 @@ void CFolderDlg::OnDeleteAttachments()
 	{
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		CString szAttName = MyData.GetString(0);
-		LPCTSTR lpszAttName = NULL;
+		wstring szAttName = MyData.GetStringW(0);
 
-		if (!szAttName.IsEmpty())
+		if (!szAttName.empty())
 		{
-			lpszAttName = (LPCTSTR)szAttName;
-		}
-
-		int iItem = m_lpContentsTableListCtrl->GetNextItem(
-			-1,
-			LVNI_SELECTED);
-
-		while (-1 != iItem)
-		{
-			LPMESSAGE lpMessage = NULL;
-
-			EC_H(OpenItemProp(
-				iItem,
-				mfcmapiREQUEST_MODIFY,
-				(LPMAPIPROP*)&lpMessage));
-
-			if (lpMessage)
-			{
-				EC_H(DeleteAttachments(
-					lpMessage, lpszAttName, m_hWnd));
-
-				lpMessage->Release();
-			}
-
-			iItem = m_lpContentsTableListCtrl->GetNextItem(
-				iItem,
+			int iItem = m_lpContentsTableListCtrl->GetNextItem(
+				-1,
 				LVNI_SELECTED);
+
+			while (-1 != iItem)
+			{
+				LPMESSAGE lpMessage = NULL;
+
+				EC_H(OpenItemProp(
+					iItem,
+					mfcmapiREQUEST_MODIFY,
+					(LPMAPIPROP*)&lpMessage));
+
+				if (lpMessage)
+				{
+					EC_H(DeleteAttachments(lpMessage, szAttName, m_hWnd));
+
+					lpMessage->Release();
+				}
+
+				iItem = m_lpContentsTableListCtrl->GetNextItem(
+					iItem,
+					LVNI_SELECTED);
+			}
 		}
 	}
 }

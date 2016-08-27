@@ -70,15 +70,15 @@ _Check_return_ HRESULT GetDirectoryPath(HWND hWnd, _Inout_z_ LPWSTR szPath)
 
 	lpMalloc->Release();
 	return hRes;
-} // GetDirectoryPath
+}
 
 // Opens storage with best access
 _Check_return_ HRESULT MyStgOpenStorage(_In_z_ LPCWSTR szMessageFile, bool bBestAccess, _Deref_out_ LPSTORAGE* lppStorage)
 {
 	if (!lppStorage) return MAPI_E_INVALID_PARAMETER;
 	DebugPrint(DBGGeneric, L"MyStgOpenStorage: Opening \"%ws\", bBestAccess == %ws\n", szMessageFile, bBestAccess ? L"True" : L"False");
-	HRESULT		hRes = S_OK;
-	ULONG		ulFlags = STGM_TRANSACTED;
+	HRESULT hRes = S_OK;
+	ULONG ulFlags = STGM_TRANSACTED;
 
 	if (bBestAccess) ulFlags |= STGM_READWRITE;
 
@@ -98,16 +98,16 @@ _Check_return_ HRESULT MyStgOpenStorage(_In_z_ LPCWSTR szMessageFile, bool bBest
 	}
 
 	return hRes;
-} // MyStgOpenStorage
+}
 
 // Creates an LPMESSAGE on top of the MSG file
 _Check_return_ HRESULT LoadMSGToMessage(_In_z_ LPCWSTR szMessageFile, _Deref_out_opt_ LPMESSAGE* lppMessage)
 {
 	if (!lppMessage) return MAPI_E_INVALID_PARAMETER;
 
-	HRESULT		hRes = S_OK;
-	LPSTORAGE	pStorage = NULL;
-	LPMALLOC	lpMalloc = NULL;
+	HRESULT hRes = S_OK;
+	LPSTORAGE pStorage = NULL;
+	LPMALLOC lpMalloc = NULL;
 
 	*lppMessage = NULL;
 
@@ -138,14 +138,14 @@ _Check_return_ HRESULT LoadMSGToMessage(_In_z_ LPCWSTR szMessageFile, _Deref_out
 
 	if (pStorage) pStorage->Release();
 	return hRes;
-} // LoadMSGToMessage
+}
 
 // Loads the MSG file into an LPMESSAGE pointer, then copies it into the passed in message
 // lpMessage must be created first
 _Check_return_ HRESULT LoadFromMSG(_In_z_ LPCWSTR szMessageFile, _In_ LPMESSAGE lpMessage, HWND hWnd)
 {
-	HRESULT				hRes = S_OK;
-	LPMESSAGE			pIMsg = NULL;
+	HRESULT hRes = S_OK;
+	LPMESSAGE pIMsg = NULL;
 
 	// Specify properties to exclude in the copy operation. These are
 	// the properties that Exchange excludes to save bits and time.
@@ -153,25 +153,25 @@ _Check_return_ HRESULT LoadFromMSG(_In_z_ LPCWSTR szMessageFile, _In_ LPMESSAGE 
 	// when a lot of messages are being copied.
 	static const SizedSPropTagArray(18, excludeTags) =
 	{
-		18,
-		PR_REPLICA_VERSION,
-		PR_DISPLAY_BCC,
-		PR_DISPLAY_CC,
-		PR_DISPLAY_TO,
-		PR_ENTRYID,
-		PR_MESSAGE_SIZE,
-		PR_PARENT_ENTRYID,
-		PR_RECORD_KEY,
-		PR_STORE_ENTRYID,
-		PR_STORE_RECORD_KEY,
-		PR_MDB_PROVIDER,
-		PR_ACCESS,
-		PR_HASATTACH,
-		PR_OBJECT_TYPE,
-		PR_ACCESS_LEVEL,
-		PR_HAS_NAMED_PROPERTIES,
-		PR_REPLICA_SERVER,
-		PR_HAS_DAMS
+	18,
+	PR_REPLICA_VERSION,
+	PR_DISPLAY_BCC,
+	PR_DISPLAY_CC,
+	PR_DISPLAY_TO,
+	PR_ENTRYID,
+	PR_MESSAGE_SIZE,
+	PR_PARENT_ENTRYID,
+	PR_RECORD_KEY,
+	PR_STORE_ENTRYID,
+	PR_STORE_RECORD_KEY,
+	PR_MDB_PROVIDER,
+	PR_ACCESS,
+	PR_HASATTACH,
+	PR_OBJECT_TYPE,
+	PR_ACCESS_LEVEL,
+	PR_HAS_NAMED_PROPERTIES,
+	PR_REPLICA_SERVER,
+	PR_HAS_DAMS
 	};
 
 	EC_H(LoadMSGToMessage(szMessageFile, &pIMsg));
@@ -208,16 +208,16 @@ _Check_return_ HRESULT LoadFromMSG(_In_z_ LPCWSTR szMessageFile, _In_ LPMESSAGE 
 
 	if (pIMsg) pIMsg->Release();
 	return hRes;
-} // LoadFromMSG
+}
 
 // lpMessage must be created first
 _Check_return_ HRESULT LoadFromTNEF(_In_z_ LPCWSTR szMessageFile, _In_ LPADRBOOK lpAdrBook, _In_ LPMESSAGE lpMessage)
 {
-	HRESULT				hRes = S_OK;
-	LPSTREAM			lpStream = NULL;
-	LPITNEF				lpTNEF = NULL;
-	LPSTnefProblemArray	lpError = NULL;
-	LPSTREAM			lpBodyStream = NULL;
+	HRESULT hRes = S_OK;
+	LPSTREAM lpStream = NULL;
+	LPITNEF lpTNEF = NULL;
+	LPSTnefProblemArray lpError = NULL;
+	LPSTREAM lpBodyStream = NULL;
 
 	if (!szMessageFile || !lpAdrBook || !lpMessage) return MAPI_E_INVALID_PARAMETER;
 	static WORD dwKey = (WORD)::GetTickCount();
@@ -228,8 +228,8 @@ _Check_return_ HRESULT LoadFromTNEF(_In_z_ LPCWSTR szMessageFile, _In_ LPADRBOOK
 	};
 	static const SizedSPropTagArray(ulNumTNEFExcludeProps, lpPropTnefExcludeArray) =
 	{
-		ulNumTNEFExcludeProps,
-		PR_URL_COMP_NAME
+	ulNumTNEFExcludeProps,
+	PR_URL_COMP_NAME
 	};
 
 	// Get a Stream interface on the input TNEF file
@@ -276,7 +276,7 @@ _Check_return_ HRESULT LoadFromTNEF(_In_z_ LPCWSTR szMessageFile, _In_ LPADRBOOK
 	if (lpTNEF) lpTNEF->Release();
 	if (lpStream) lpStream->Release();
 	return hRes;
-} // LoadFromTNEF
+}
 
 // Builds a file name out of the passed in message and extension
 _Check_return_ HRESULT BuildFileName(_Inout_z_count_(cchFileOut) LPWSTR szFileOut,
@@ -301,9 +301,9 @@ _Check_return_ HRESULT BuildFileName(_Inout_z_count_(cchFileOut) LPWSTR szFileOu
 	};
 	static const SizedSPropTagArray(NUM_COLS, sptaMessageProps) =
 	{
-		NUM_COLS,
-		PR_SUBJECT_W,
-		PR_RECORD_KEY
+	NUM_COLS,
+	PR_SUBJECT_W,
+	PR_RECORD_KEY
 	};
 
 	// Get subject line of message
@@ -336,7 +336,7 @@ _Check_return_ HRESULT BuildFileName(_Inout_z_count_(cchFileOut) LPWSTR szFileOu
 
 	MAPIFreeBuffer(lpProps);
 	return hRes;
-} // BuildFileName
+}
 
 // Problem here is that cchFileOut can't be longer than MAX_PATH
 // So the file name we generate must be shorter than MAX_PATH
@@ -399,7 +399,7 @@ _Check_return_ HRESULT BuildFileNameAndPath(_Inout_z_count_(cchFileOut) LPWSTR s
 	{
 		// don't have enough space - need to shorten things:
 		if (cchSubj > MAXSUBJ) cchSubj = MAXSUBJ;
-		if (cchBin > MAXBIN)  cchBin = MAXBIN;
+		if (cchBin > MAXBIN) cchBin = MAXBIN;
 	}
 	if (cchCharRemaining < cchSubj + cchBin + cchExt + 1)
 	{
@@ -436,7 +436,7 @@ _Check_return_ HRESULT BuildFileNameAndPath(_Inout_z_count_(cchFileOut) LPWSTR s
 	}
 
 	return hRes;
-} // BuildFileNameAndPath
+}
 
 // Takes szFileIn and copies it to szFileOut, replacing non file system characters with underscores
 // Do NOT call with full path - just file names
@@ -456,7 +456,7 @@ _Check_return_ HRESULT SanitizeFileNameA(
 		*szCur = '_';
 	}
 	return hRes;
-} // SanitizeFileNameA
+}
 
 _Check_return_ HRESULT SanitizeFileNameW(
 	_Inout_z_count_(cchFileOut) LPWSTR szFileOut, // output buffer
@@ -473,7 +473,7 @@ _Check_return_ HRESULT SanitizeFileNameW(
 		*szCur = L'_';
 	}
 	return hRes;
-} // SanitizeFileNameW
+}
 
 void SaveFolderContentsToTXT(_In_ LPMDB lpMDB, _In_ LPMAPIFOLDER lpFolder, bool bRegular, bool bAssoc, bool bDescend, HWND hWnd)
 {
@@ -498,10 +498,10 @@ void SaveFolderContentsToTXT(_In_ LPMDB lpMDB, _In_ LPMAPIFOLDER lpFolder, bool 
 
 _Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_z_ LPCWSTR szPathName, bool bAssoc, bool bUnicode, HWND hWnd)
 {
-	HRESULT			hRes = S_OK;
-	LPMAPITABLE		lpFolderContents = NULL;
-	LPMESSAGE		lpMessage = NULL;
-	LPSRowSet		pRows = NULL;
+	HRESULT hRes = S_OK;
+	LPMAPITABLE lpFolderContents = NULL;
+	LPMESSAGE lpMessage = NULL;
+	LPSRowSet pRows = NULL;
 
 	enum
 	{
@@ -513,10 +513,10 @@ _Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_z
 
 	static const SizedSPropTagArray(fldNUM_COLS, fldCols) =
 	{
-		fldNUM_COLS,
-		PR_ENTRYID,
-		PR_SUBJECT_W,
-		PR_RECORD_KEY
+	fldNUM_COLS,
+	PR_ENTRYID,
+	PR_SUBJECT_W,
+	PR_RECORD_KEY
 	};
 
 	if (!lpFolder || !szPathName) return MAPI_E_INVALID_PARAMETER;
@@ -592,7 +592,7 @@ _Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_z
 	if (lpMessage) lpMessage->Release();
 	if (lpFolderContents) lpFolderContents->Release();
 	return hRes;
-} // SaveFolderContentsToMSG
+}
 
 _Check_return_ HRESULT WriteStreamToFile(_In_ LPSTREAM pStrmSrc, _In_z_ LPCWSTR szFileName)
 {
@@ -635,7 +635,7 @@ _Check_return_ HRESULT WriteStreamToFile(_In_ LPSTREAM pStrmSrc, _In_z_ LPCWSTR 
 _Check_return_ HRESULT SaveToEML(_In_ LPMESSAGE lpMessage, _In_z_ LPCWSTR szFileName)
 {
 	HRESULT hRes = S_OK;
-	LPSTREAM		pStrmSrc = NULL;
+	LPSTREAM pStrmSrc = NULL;
 
 	if (!lpMessage || !szFileName) return MAPI_E_INVALID_PARAMETER;
 	DebugPrint(DBGGeneric, L"SaveToEML: Saving message to \"%ws\"\n", szFileName);
@@ -666,7 +666,7 @@ _Check_return_ HRESULT SaveToEML(_In_ LPMESSAGE lpMessage, _In_z_ LPCWSTR szFile
 	}
 
 	return hRes;
-} // SaveToEML
+}
 
 _Check_return_ HRESULT STDAPICALLTYPE MyStgCreateStorageEx(IN const WCHAR* pName,
 	DWORD grfMode,
@@ -696,16 +696,16 @@ _Check_return_ HRESULT STDAPICALLTYPE MyStgCreateStorageEx(IN const WCHAR* pName
 		0,
 		(LPSTORAGE*)ppObjectOpen);
 	return hRes;
-} // MyStgCreateStorageEx
+}
 
 _Check_return_ HRESULT CreateNewMSG(_In_z_ LPCWSTR szFileName, bool bUnicode, _Deref_out_opt_ LPMESSAGE* lppMessage, _Deref_out_opt_ LPSTORAGE* lppStorage)
 {
 	if (!szFileName || !lppMessage || !lppStorage) return MAPI_E_INVALID_PARAMETER;
 
-	HRESULT		hRes = S_OK;
-	LPSTORAGE	pStorage = NULL;
-	LPMESSAGE	pIMsg = NULL;
-	LPMALLOC	pMalloc = NULL;
+	HRESULT hRes = S_OK;
+	LPSTORAGE pStorage = NULL;
+	LPMESSAGE pIMsg = NULL;
+	LPMALLOC pMalloc = NULL;
 
 	*lppMessage = NULL;
 	*lppStorage = NULL;
@@ -766,7 +766,7 @@ _Check_return_ HRESULT CreateNewMSG(_In_z_ LPCWSTR szFileName, bool bUnicode, _D
 	}
 
 	return hRes;
-} // CreateNewMSG
+}
 
 _Check_return_ HRESULT SaveToMSG(_In_ LPMESSAGE lpMessage, _In_z_ LPCWSTR szFileName, bool bUnicode, HWND hWnd, bool bAllowUI)
 {
@@ -787,14 +787,14 @@ _Check_return_ HRESULT SaveToMSG(_In_ LPMESSAGE lpMessage, _In_z_ LPCWSTR szFile
 		// when a lot of messages are being copied.
 		static const SizedSPropTagArray(7, excludeTags) =
 		{
-			7,
-			PR_ACCESS,
-			PR_BODY,
-			PR_RTF_SYNC_BODY_COUNT,
-			PR_RTF_SYNC_BODY_CRC,
-			PR_RTF_SYNC_BODY_TAG,
-			PR_RTF_SYNC_PREFIX_COUNT,
-			PR_RTF_SYNC_TRAILING_COUNT
+		7,
+		PR_ACCESS,
+		PR_BODY,
+		PR_RTF_SYNC_BODY_COUNT,
+		PR_RTF_SYNC_BODY_CRC,
+		PR_RTF_SYNC_BODY_TAG,
+		PR_RTF_SYNC_PREFIX_COUNT,
+		PR_RTF_SYNC_TRAILING_COUNT
 		};
 
 		EC_H(CopyTo(
@@ -817,7 +817,7 @@ _Check_return_ HRESULT SaveToMSG(_In_ LPMESSAGE lpMessage, _In_z_ LPCWSTR szFile
 	if (pIMsg) pIMsg->Release();
 
 	return hRes;
-} // SaveToMSG
+}
 
 _Check_return_ HRESULT SaveToTNEF(_In_ LPMESSAGE lpMessage, _In_ LPADRBOOK lpAdrBook, _In_z_ LPCWSTR szFileName)
 {
@@ -829,9 +829,9 @@ _Check_return_ HRESULT SaveToTNEF(_In_ LPMESSAGE lpMessage, _In_ LPADRBOOK lpAdr
 	};
 	static const SizedSPropTagArray(ulNumTNEFIncludeProps, lpPropTnefIncludeArray) =
 	{
-		ulNumTNEFIncludeProps,
-		PR_MESSAGE_RECIPIENTS,
-		PR_ATTACH_DATA_BIN
+	ulNumTNEFIncludeProps,
+	PR_MESSAGE_RECIPIENTS,
+	PR_ATTACH_DATA_BIN
 	};
 
 	enum
@@ -840,16 +840,16 @@ _Check_return_ HRESULT SaveToTNEF(_In_ LPMESSAGE lpMessage, _In_ LPADRBOOK lpAdr
 	};
 	static const SizedSPropTagArray(ulNumTNEFExcludeProps, lpPropTnefExcludeArray) =
 	{
-		ulNumTNEFExcludeProps,
-		PR_URL_COMP_NAME
+	ulNumTNEFExcludeProps,
+	PR_URL_COMP_NAME
 	};
 
 	if (!lpMessage || !lpAdrBook || !szFileName) return MAPI_E_INVALID_PARAMETER;
 	DebugPrint(DBGGeneric, L"SaveToTNEF: Saving message to \"%ws\"\n", szFileName);
 
-	LPSTREAM			lpStream = NULL;
-	LPITNEF				lpTNEF = NULL;
-	LPSTnefProblemArray	lpError = NULL;
+	LPSTREAM lpStream = NULL;
+	LPITNEF lpTNEF = NULL;
+	LPSTnefProblemArray lpError = NULL;
 
 	static WORD dwKey = (WORD)::GetTickCount();
 
@@ -916,15 +916,15 @@ _Check_return_ HRESULT SaveToTNEF(_In_ LPMESSAGE lpMessage, _In_ LPADRBOOK lpAdr
 	}
 
 	return hRes;
-} // SaveToTNEF
+}
 
-_Check_return_ HRESULT DeleteAttachments(_In_ LPMESSAGE lpMessage, _In_opt_z_ LPCTSTR szAttName, HWND hWnd)
+_Check_return_ HRESULT DeleteAttachments(_In_ LPMESSAGE lpMessage, _In_ wstring& szAttName, HWND hWnd)
 {
-	LPSPropValue	pProps = NULL;
-	HRESULT			hRes = S_OK;
-	LPMAPITABLE		lpAttTbl = NULL;
-	LPSRowSet		pRows = NULL;
-	ULONG			iRow;
+	LPSPropValue pProps = NULL;
+	HRESULT hRes = S_OK;
+	LPMAPITABLE lpAttTbl = NULL;
+	LPSRowSet pRows = NULL;
+	ULONG iRow;
 
 	enum
 	{
@@ -934,9 +934,9 @@ _Check_return_ HRESULT DeleteAttachments(_In_ LPMESSAGE lpMessage, _In_opt_z_ LP
 	};
 	static const SizedSPropTagArray(NUM_COLS, sptAttachTableCols) =
 	{
-		NUM_COLS,
-		PR_ATTACH_NUM,
-		PR_ATTACH_LONG_FILENAME
+	NUM_COLS,
+	PR_ATTACH_NUM,
+	PR_ATTACH_LONG_FILENAME_W
 	};
 
 	if (!lpMessage) return MAPI_E_INVALID_PARAMETER;
@@ -958,7 +958,7 @@ _Check_return_ HRESULT DeleteAttachments(_In_ LPMESSAGE lpMessage, _In_opt_z_ LP
 		if (lpAttTbl)
 		{
 			// I would love to just pass a restriction
-			// to HrQueryAllRows for the file name.  However,
+			// to HrQueryAllRows for the file name. However,
 			// we don't support restricting attachment tables (EMSMDB32 that is)
 			// So I have to compare the strings myself (see below)
 			EC_MAPI(HrQueryAllRows(lpAttTbl,
@@ -978,10 +978,10 @@ _Check_return_ HRESULT DeleteAttachments(_In_ LPMESSAGE lpMessage, _In_opt_z_ LP
 
 					if (PR_ATTACH_NUM != pRows->aRow[iRow].lpProps[ATTACHNUM].ulPropTag) continue;
 
-					if (szAttName)
+					if (!szAttName.empty())
 					{
-						if (PR_ATTACH_LONG_FILENAME != pRows->aRow[iRow].lpProps[ATTACHNAME].ulPropTag ||
-							lstrcmpi(szAttName, pRows->aRow[iRow].lpProps[ATTACHNAME].Value.LPSZ) != 0)
+						if (PR_ATTACH_LONG_FILENAME_W != pRows->aRow[iRow].lpProps[ATTACHNAME].ulPropTag ||
+							szAttName != pRows->aRow[iRow].lpProps[ATTACHNAME].Value.lpszW)
 							continue;
 					}
 
@@ -1017,17 +1017,17 @@ _Check_return_ HRESULT DeleteAttachments(_In_ LPMESSAGE lpMessage, _In_opt_z_ LP
 	MAPIFreeBuffer(pProps);
 
 	return hRes;
-} // DeleteAllAttachments
+}
 
 #ifndef MRMAPI
 _Check_return_ HRESULT WriteAttachmentsToFile(_In_ LPMESSAGE lpMessage, HWND hWnd)
 {
-	LPSPropValue	pProps = NULL;
-	HRESULT			hRes = S_OK;
-	LPMAPITABLE		lpAttTbl = NULL;
-	LPSRowSet		pRows = NULL;
-	ULONG			iRow;
-	LPATTACH		lpAttach = NULL;
+	LPSPropValue pProps = NULL;
+	HRESULT hRes = S_OK;
+	LPMAPITABLE lpAttTbl = NULL;
+	LPSRowSet pRows = NULL;
+	ULONG iRow;
+	LPATTACH lpAttach = NULL;
 
 	enum
 	{
@@ -1036,8 +1036,8 @@ _Check_return_ HRESULT WriteAttachmentsToFile(_In_ LPMESSAGE lpMessage, HWND hWn
 	};
 	static const SizedSPropTagArray(NUM_COLS, sptAttachTableCols) =
 	{
-		NUM_COLS,
-		PR_ATTACH_NUM
+	NUM_COLS,
+	PR_ATTACH_NUM
 	};
 
 	if (!lpMessage) return MAPI_E_INVALID_PARAMETER;
@@ -1101,13 +1101,13 @@ _Check_return_ HRESULT WriteAttachmentsToFile(_In_ LPMESSAGE lpMessage, HWND hWn
 	MAPIFreeBuffer(pProps);
 
 	return hRes;
-} // WriteAttachmentsToFile
+}
 #endif
 
 _Check_return_ HRESULT WriteEmbeddedMSGToFile(_In_ LPATTACH lpAttach, _In_z_ LPCWSTR szFileName, bool bUnicode, HWND hWnd)
 {
-	HRESULT			hRes = S_OK;
-	LPMESSAGE		lpAttachMsg = NULL;
+	HRESULT hRes = S_OK;
+	LPMESSAGE lpAttachMsg = NULL;
 
 	if (!lpAttach || !szFileName) return MAPI_E_INVALID_PARAMETER;
 
@@ -1127,12 +1127,12 @@ _Check_return_ HRESULT WriteEmbeddedMSGToFile(_In_ LPATTACH lpAttach, _In_z_ LPC
 	}
 
 	return hRes;
-} // WriteEmbeddedMSGToFile
+}
 
 _Check_return_ HRESULT WriteAttachStreamToFile(_In_ LPATTACH lpAttach, _In_z_ LPCWSTR szFileName)
 {
-	HRESULT			hRes = S_OK;
-	LPSTREAM		pStrmSrc = NULL;
+	HRESULT hRes = S_OK;
+	LPSTREAM pStrmSrc = NULL;
 
 	if (!lpAttach || !szFileName) return MAPI_E_INVALID_PARAMETER;
 
@@ -1163,15 +1163,15 @@ _Check_return_ HRESULT WriteAttachStreamToFile(_In_ LPATTACH lpAttach, _In_z_ LP
 	}
 
 	return hRes;
-} // WriteAttachStreamToFile
+}
 
 // Pretty sure this covers all OLE attachments - we don't need to look at PR_ATTACH_TAG
 _Check_return_ HRESULT WriteOleToFile(_In_ LPATTACH lpAttach, _In_z_ LPCWSTR szFileName)
 {
-	HRESULT			hRes = S_OK;
-	LPSTORAGE		lpStorageSrc = NULL;
-	LPSTORAGE		lpStorageDest = NULL;
-	LPSTREAM		pStrmSrc = NULL;
+	HRESULT hRes = S_OK;
+	LPSTORAGE lpStorageSrc = NULL;
+	LPSTORAGE lpStorageDest = NULL;
+	LPSTREAM pStrmSrc = NULL;
 
 	// Open the property of the attachment containing the OLE data
 	// Try to get it as an IStreamDocFile file first as that will be faster
@@ -1225,16 +1225,16 @@ _Check_return_ HRESULT WriteOleToFile(_In_ LPATTACH lpAttach, _In_z_ LPCWSTR szF
 	}
 
 	return hRes;
-} // WriteOleToFile
+}
 
 #ifndef MRMAPI
 _Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd)
 {
-	HRESULT			hRes = S_OK;
-	LPSPropValue	lpProps = NULL;
-	ULONG			ulProps = 0;
-	WCHAR			szFileName[MAX_PATH] = { 0 };
-	INT_PTR			iDlgRet = 0;
+	HRESULT hRes = S_OK;
+	LPSPropValue lpProps = NULL;
+	ULONG ulProps = 0;
+	WCHAR szFileName[MAX_PATH] = { 0 };
+	INT_PTR iDlgRet = 0;
 
 	enum
 	{
@@ -1246,11 +1246,11 @@ _Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd)
 	};
 	static const SizedSPropTagArray(NUM_COLS, sptaAttachProps) =
 	{
-		NUM_COLS,
-		PR_ATTACH_METHOD,
-		PR_ATTACH_LONG_FILENAME_W,
-		PR_ATTACH_FILENAME_W,
-		PR_DISPLAY_NAME_W
+	NUM_COLS,
+	PR_ATTACH_METHOD,
+	PR_ATTACH_LONG_FILENAME_W,
+	PR_ATTACH_FILENAME_W,
+	PR_DISPLAY_NAME_W
 	};
 
 	if (!lpAttach) return MAPI_E_INVALID_PARAMETER;
@@ -1361,5 +1361,5 @@ _Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd)
 
 	MAPIFreeBuffer(lpProps);
 	return hRes;
-} // WriteAttachmentToFile
+}
 #endif
