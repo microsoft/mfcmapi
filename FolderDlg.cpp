@@ -1,5 +1,4 @@
-// FolderDlg.cpp : implementation file
-// Displays the contents of a folder
+// FolderDlg.cpp : Displays the contents of a folder
 
 #include "stdafx.h"
 #include "FolderDlg.h"
@@ -171,9 +170,11 @@ _Check_return_ bool CFolderDlg::MultiSelectSimple(WORD wMenuSelect)
 					hRes = S_OK;
 				}
 			}
+
 			return true;
 		}
 	}
+
 	return false;
 }
 
@@ -191,11 +192,9 @@ _Check_return_ bool CFolderDlg::MultiSelectComplex(WORD wMenuSelect)
 	case ID_GETMESSAGEOPTIONS: OnGetMessageOptions(); return true;
 	case ID_DELETEATTACHMENTS: OnDeleteAttachments(); return true;
 	}
+
 	return false;
 }
-
-/////////////////////////////////////////////////////////////////////////////
-// CFolderDlg message handlers
 
 void CFolderDlg::OnDisplayItem()
 {
@@ -577,6 +576,7 @@ _Check_return_ bool CFolderDlg::HandlePaste()
 							lpMessage = NULL;
 						}
 					}
+
 					MAPIFreeBuffer(lpTagsToExclude);
 				}
 			}
@@ -735,6 +735,7 @@ void CFolderDlg::OnDeleteSelectedItem()
 
 			lpProgress = NULL;
 		}
+
 		MAPIFreeBuffer(lpEIDs);
 	}
 
@@ -942,11 +943,12 @@ void CFolderDlg::OnManualResolve()
 
 				if (lpMessage)
 				{
+					wstring name = MyData.GetStringW(0);
 					EC_H(ManualResolve(
 						lpMAPISession,
 						lpMessage,
-						MyData.GetString(0),
-						CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_TSTRING)));
+						name,
+						CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_UNICODE)));
 
 					lpMessage->Release();
 					lpMessage = NULL;
@@ -1021,6 +1023,7 @@ void CFolderDlg::NewSpecialItem(WORD wMenuSelect)
 				szClass,
 				lpFolder));
 		}
+
 		if (lpSpecialFolder) lpSpecialFolder->Release();
 	}
 }
@@ -1133,8 +1136,10 @@ void CFolderDlg::OnNewCustomForm()
 						{
 							szClass = lpProp->Value.lpszA;
 						}
+
 						lpMAPIFormInfo->Release();
 					}
+
 					lpMAPIFormMgr->Release();
 				}
 			}
@@ -1191,6 +1196,7 @@ _Check_return_ HRESULT CFolderDlg::OnOpenModal(int iItem, _In_ SortListData* /*l
 
 				lpMessage->Release();
 			}
+
 			lpFormMgr->Release();
 		}
 	}
@@ -1239,6 +1245,7 @@ _Check_return_ HRESULT CFolderDlg::OnOpenNonModal(int iItem, _In_ SortListData* 
 
 				lpMessage->Release();
 			}
+
 			lpFormMgr->Release();
 		}
 	}
@@ -1318,6 +1325,7 @@ _Check_return_ HRESULT CFolderDlg::OnResendSelectedItem(int /*iItem*/, _In_ Sort
 			lpData->data.Contents.lpEntryID,
 			m_hWnd));
 	}
+
 	return hRes;
 }
 
@@ -1384,6 +1392,7 @@ void CFolderDlg::OnRemoveOneOff()
 				lpMessage->Release();
 				lpMessage = NULL;
 			}
+
 			iItem = m_lpContentsTableListCtrl->GetNextItem(
 				iItem,
 				LVNI_SELECTED);
@@ -1446,6 +1455,7 @@ void CFolderDlg::OnRTFSync()
 				lpMessage->Release();
 				lpMessage = NULL;
 			}
+
 			iItem = m_lpContentsTableListCtrl->GetNextItem(
 				iItem,
 				LVNI_SELECTED);
@@ -1562,6 +1572,7 @@ void CFolderDlg::OnSaveMessageToFile()
 		default:
 			break;
 		}
+
 		int iItem = m_lpContentsTableListCtrl->GetNextItem(
 			-1,
 			LVNI_SELECTED);
@@ -1955,6 +1966,7 @@ void CFolderDlg::OnGetMessageOptions()
 				lpMessage->Release();
 				lpMessage = NULL;
 			}
+
 			iItem = m_lpContentsTableListCtrl->GetNextItem(
 				iItem,
 				LVNI_SELECTED);
@@ -2050,6 +2062,7 @@ void CFolderDlg::OnSetMessageStatus()
 						&ulOldStatus));
 				}
 			}
+
 			iItem = m_lpContentsTableListCtrl->GetNextItem(
 				iItem,
 				LVNI_SELECTED);

@@ -1,5 +1,4 @@
 // MAPIABFunctions.h : Stand alone MAPI Address Book functions
-
 #pragma once
 
 _Check_return_ HRESULT AddOneOffAddress(
@@ -17,7 +16,7 @@ _Check_return_ HRESULT AddRecipient(
 	ULONG ulRecipientType);
 
 _Check_return_ HRESULT CreateANRRestriction(ULONG ulPropTag,
-	_In_z_ LPCTSTR szString,
+	wstring szString,
 	_In_opt_ LPVOID lpParent,
 	_Deref_out_opt_ LPSRestriction* lppRes);
 
@@ -28,12 +27,12 @@ _Check_return_ HRESULT HrAllocAdrList(ULONG ulNumProps, _Deref_out_opt_ LPADRLIS
 _Check_return_ HRESULT ManualResolve(
 	_In_ LPMAPISESSION lpMAPISession,
 	_In_ LPMESSAGE lpMessage,
-	_In_z_ LPCTSTR szName,
+	_In_ wstring& szName,
 	ULONG PropTagToCompare);
 
 _Check_return_ HRESULT SearchContentsTableForName(
 	_In_ LPMAPITABLE pTable,
-	_In_z_ LPCTSTR szName,
+	_In_ wstring& szName,
 	ULONG PropTagToCompare,
 	_Deref_out_opt_ LPSPropValue *lppPropsFound);
 
