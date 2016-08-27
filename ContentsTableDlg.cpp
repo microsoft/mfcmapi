@@ -570,10 +570,11 @@ void CContentsTableDlg::OnCreateRangeRestriction()
 		WC_H(MyData.DisplayDialog());
 		if (S_OK != hRes) return;
 
+		wstring szString = MyData.GetStringW(0);
 		// Allocate and create our SRestriction
 		EC_H(CreateRangeRestriction(
-			CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_TSTRING),
-			MyData.GetString(0),
+			CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_UNICODE),
+			szString,
 			NULL,
 			&lpRes));
 		if (S_OK != hRes)

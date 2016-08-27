@@ -845,7 +845,7 @@ _Check_return_ HRESULT CreatePropertyStringRestriction(ULONG ulPropTag,
 }
 
 _Check_return_ HRESULT CreateRangeRestriction(ULONG ulPropTag,
-	_In_z_ LPCTSTR szString,
+	_In_ wstring& szString,
 	_In_opt_ LPVOID lpParent,
 	_Deref_out_opt_ LPSRestriction* lppRes)
 {
@@ -857,7 +857,8 @@ _Check_return_ HRESULT CreateRangeRestriction(ULONG ulPropTag,
 
 	*lppRes = NULL;
 
-	if (!szString) return MAPI_E_INVALID_PARAMETER;
+	if (szString.empty()) return MAPI_E_INVALID_PARAMETER;
+	if (PROP_TYPE(ulPropTag) != PT_UNICODE) return MAPI_E_INVALID_PARAMETER;
 
 	// Allocate and create our SRestriction
 	// Allocate base memory:
@@ -914,9 +915,9 @@ _Check_return_ HRESULT CreateRangeRestriction(ULONG ulPropTag,
 		// Allocate and fill out properties:
 		lpspvSubject->ulPropTag = ulPropTag;
 
-		EC_H(CopyString(
-			&lpspvSubject->Value.LPSZ,
-			szString,
+		EC_H(CopyStringW(
+			&lpspvSubject->Value.lpszW,
+			szString.c_str(),
 			lpAllocationParent));
 
 		DebugPrint(DBGGeneric, L"CreateRangeRestriction built restriction:\n");
