@@ -76,9 +76,9 @@ void CMAPIProcessor::InitSortOrder(_In_ LPSSortOrderSet lpSort)
 
 // Server name MUST be passed
 void CMAPIProcessor::ProcessMailboxTable(
-	_In_z_ LPCTSTR szExchangeServerName)
+	_In_ wstring szExchangeServerName)
 {
-	if (!szExchangeServerName) return;
+	if (szExchangeServerName.empty()) return;
 	HRESULT hRes = S_OK;
 
 	LPMAPITABLE lpMailBoxTable = NULL;
@@ -99,7 +99,7 @@ void CMAPIProcessor::ProcessMailboxTable(
 		hRes = S_OK;
 		WC_H(GetMailboxTable(
 			lpPrimaryMDB,
-			LPCTSTRToWstring(szExchangeServerName),
+			szExchangeServerName,
 			ulOffset,
 			&lpMailBoxTable));
 		if (lpMailBoxTable)
@@ -143,7 +143,7 @@ void CMAPIProcessor::ProcessMailboxTable(
 				WC_H(OpenOtherUsersMailbox(
 					m_lpSession,
 					lpPrimaryMDB,
-					LPCTSTRToWstring(szExchangeServerName),
+					szExchangeServerName,
 					LPCTSTRToWstring(lpEmailAddress->Value.LPSZ),
 					OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP,
 					false,
@@ -743,7 +743,7 @@ void CMAPIProcessor::FreeFolderList()
 // Worker Functions
 // --------------------------------------------------------------------------------- //
 
-void CMAPIProcessor::BeginMailboxTableWork(_In_z_ LPCTSTR /*szExchangeServerName*/)
+void CMAPIProcessor::BeginMailboxTableWork(_In_ wstring /*szExchangeServerName*/)
 {
 }
 

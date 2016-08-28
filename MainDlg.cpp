@@ -862,7 +862,7 @@ void CMainDlg::OnDumpServerContents()
 			CDumpStore MyDumpStore;
 			MyDumpStore.InitMailboxTablePathRoot(szDir);
 			MyDumpStore.InitSession(lpMAPISession);
-			MyDumpStore.ProcessMailboxTable(MyData.GetString(0));
+			MyDumpStore.ProcessMailboxTable(MyData.GetStringW(0));
 		}
 	}
 }

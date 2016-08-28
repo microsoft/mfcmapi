@@ -1,7 +1,7 @@
-//  MODULE:   DumpStore.cpp
+// MODULE: DumpStore.cpp
 //
-//  PURPOSE:  Contains routines used in dumping the contents of the Exchange store
-//            in to a log file
+// PURPOSE: Contains routines used in dumping the contents of the Exchange store
+// in to a log file
 
 #include "stdafx.h"
 #include "dumpstore.h"
@@ -28,7 +28,7 @@ CDumpStore::CDumpStore()
 	m_bOutputAttachments = true;
 	m_bOutputMSG = false;
 	m_bOutputList = false;
-} // CDumpStore::CDumpStore
+}
 
 CDumpStore::~CDumpStore()
 {
@@ -36,7 +36,7 @@ CDumpStore::~CDumpStore()
 	if (m_fFolderContents) CloseFile(m_fFolderContents);
 	if (m_fMailboxTable) CloseFile(m_fMailboxTable);
 	MAPIFreeBuffer(m_szFolderPath);
-} // CDumpStore::~CDumpStore
+}
 
 // --------------------------------------------------------------------------------- //
 
@@ -51,7 +51,7 @@ void CDumpStore::InitMessagePath(_In_z_ LPCWSTR szMessageFileName)
 	{
 		m_szMessageFileName[0] = L'\0';
 	}
-} // CDumpStore::InitMessagePath
+}
 
 void CDumpStore::InitFolderPathRoot(_In_z_ LPCWSTR szFolderPathRoot)
 {
@@ -64,7 +64,7 @@ void CDumpStore::InitFolderPathRoot(_In_z_ LPCWSTR szFolderPathRoot)
 	{
 		m_szFolderPathRoot[0] = L'\0';
 	}
-} // CDumpStore::InitFolderPathRoot
+}
 
 void CDumpStore::InitMailboxTablePathRoot(_In_z_ LPCWSTR szMailboxTablePathRoot)
 {
@@ -77,17 +77,17 @@ void CDumpStore::InitMailboxTablePathRoot(_In_z_ LPCWSTR szMailboxTablePathRoot)
 	{
 		m_szMailboxTablePathRoot[0] = L'\0';
 	}
-} // CDumpStore::InitMailboxTablePathRoot
+}
 
 void CDumpStore::EnableMSG()
 {
 	m_bOutputMSG = true;
-} // CDumpStore::EnableMSG
+}
 
 void CDumpStore::EnableList()
 {
 	m_bOutputList = true;
-} // CDumpStore::EnableMSG
+}
 
 void CDumpStore::DisableStreamRetry()
 {
@@ -101,7 +101,7 @@ void CDumpStore::DisableEmbeddedAttachments()
 
 // --------------------------------------------------------------------------------- //
 
-void CDumpStore::BeginMailboxTableWork(_In_z_ LPCTSTR szExchangeServerName)
+void CDumpStore::BeginMailboxTableWork(_In_ wstring szExchangeServerName)
 {
 	if (m_bOutputList) return;
 	wstring szTableContentsFile = format(
@@ -111,7 +111,7 @@ void CDumpStore::BeginMailboxTableWork(_In_z_ LPCTSTR szExchangeServerName)
 	if (m_fMailboxTable)
 	{
 		OutputToFile(m_fMailboxTable, g_szXMLHeader);
-		OutputToFilef(m_fMailboxTable, L"<mailboxtable server=\"%s\">\n", LPCTSTRToWstring(szExchangeServerName));
+		OutputToFilef(m_fMailboxTable, L"<mailboxtable server=\"%ws\">\n", szExchangeServerName.c_str());
 	}
 }
 
@@ -119,9 +119,9 @@ void CDumpStore::DoMailboxTablePerRowWork(_In_ LPMDB lpMDB, _In_ LPSRow lpSRow, 
 {
 	if (!lpSRow || !m_fMailboxTable) return;
 	if (m_bOutputList) return;
-	HRESULT			hRes = S_OK;
-	LPSPropValue	lpEmailAddress = NULL;
-	LPSPropValue	lpDisplayName = NULL;
+	HRESULT hRes = S_OK;
+	LPSPropValue lpEmailAddress = NULL;
+	LPSPropValue lpDisplayName = NULL;
 
 	lpEmailAddress = PpropFindProp(
 		lpSRow->lpProps,
@@ -170,7 +170,7 @@ void CDumpStore::DoMailboxTablePerRowWork(_In_ LPMDB lpMDB, _In_ LPSRow lpSRow, 
 	}
 
 	OutputToFile(m_fMailboxTable, L"</mailbox>\n");
-} // CDumpStore::DoMailboxTablePerRowWork
+}
 
 void CDumpStore::EndMailboxTableWork()
 {
@@ -181,20 +181,20 @@ void CDumpStore::EndMailboxTableWork()
 		CloseFile(m_fMailboxTable);
 	}
 	m_fMailboxTable = NULL;
-} // CDumpStore::EndMailboxTableWork(
+}
 
 void CDumpStore::BeginStoreWork()
 {
-} // CDumpStore::BeginStoreWork
+}
 
 void CDumpStore::EndStoreWork()
 {
-} // CDumpStore::EndStoreWork
+}
 
 void CDumpStore::BeginFolderWork()
 {
 	HRESULT hRes = S_OK;
-	WCHAR	szFolderPath[MAX_PATH];
+	WCHAR szFolderPath[MAX_PATH];
 #ifdef UNICODE
 	WC_H(StringCchPrintfW(szFolderPath, _countof(szFolderPath),
 		L"%s%ws", // STRING_OK
@@ -224,8 +224,8 @@ void CDumpStore::BeginFolderWork()
 	OutputToFile(m_fFolderProps, g_szXMLHeader);
 	OutputToFile(m_fFolderProps, L"<folderprops>\n");
 
-	LPSPropValue	lpAllProps = NULL;
-	ULONG			cValues = 0L;
+	LPSPropValue lpAllProps = NULL;
+	ULONG cValues = 0L;
 
 	WC_H_GETPROPS(GetPropsNULL(m_lpFolder,
 		fMapiUnicode,
@@ -256,7 +256,7 @@ void CDumpStore::DoFolderPerHierarchyTableRowWork(_In_ LPSRow lpSRow)
 	OutputToFile(m_fFolderProps, L"<row>\n");
 	OutputSRowToFile(m_fFolderProps, lpSRow, m_lpMDB);
 	OutputToFile(m_fFolderProps, L"</row>\n");
-} // CDumpStore::DoFolderPerHierarchyTableRowWork
+}
 
 void CDumpStore::EndFolderWork()
 {
@@ -268,7 +268,7 @@ void CDumpStore::EndFolderWork()
 		CloseFile(m_fFolderProps);
 	}
 	m_fFolderProps = NULL;
-} // CDumpStore::EndFolderWork
+}
 
 void CDumpStore::BeginContentsTableWork(ULONG ulFlags, ULONG ulCountRows)
 {
@@ -350,7 +350,7 @@ void OutputMessageList(
 	}
 	_tprintf(_T(",\"%ws\"\n"), szFileName);
 	delete[] szTemp;
-} // OutputMessageList
+}
 
 bool CDumpStore::DoContentsTablePerRowWork(_In_ LPSRow lpSRow, ULONG ulCurRow)
 {
@@ -367,7 +367,7 @@ bool CDumpStore::DoContentsTablePerRowWork(_In_ LPSRow lpSRow, ULONG ulCurRow)
 
 	OutputToFile(m_fFolderContents, L"</message>\n");
 	return true;
-} // CDumpStore::DoContentsTablePerRowWork
+}
 
 void CDumpStore::EndContentsTableWork()
 {
@@ -378,7 +378,7 @@ void CDumpStore::EndContentsTableWork()
 		CloseFile(m_fFolderContents);
 	}
 	m_fFolderContents = NULL;
-} // CDumpStore::EndContentsTableWork
+}
 
 // TODO: This fails in unicode builds since PR_RTF_COMPRESSED is always ascii.
 void OutputBody(_In_ FILE* fMessageProps, _In_ LPMESSAGE lpMessage, ULONG ulBodyTag, _In_z_ LPCTSTR szBodyName, bool bWrapEx, ULONG ulCPID)
@@ -458,7 +458,7 @@ void OutputBody(_In_ FILE* fMessageProps, _In_ LPMESSAGE lpMessage, ULONG ulBody
 	}
 	if (lpRTFUncompressed) lpRTFUncompressed->Release();
 	if (lpStream) lpStream->Release();
-} // OutputBody
+}
 
 void OutputMessageXML(
 	_In_ LPMESSAGE lpMessage,
@@ -503,7 +503,7 @@ void OutputMessageXML(
 	{
 		// Take the parent filename/path, remove any extension, and append -Attach.xml
 		// Should we append something for attachment number?
-		size_t  cchLen = 0;
+		size_t cchLen = 0;
 
 		// Copy the source string over
 		WC_H(StringCchCopyW(lpMsgData->szFilePath, _countof(lpMsgData->szFilePath), ((LPMESSAGEDATA)lpParentMessageData)->szFilePath));
@@ -569,16 +569,16 @@ void OutputMessageXML(
 #define NUMPROPS 9
 			static const SizedSPropTagArray(NUMPROPS, sptCols) =
 			{
-				NUMPROPS,
-				PR_MESSAGE_CLASS_W,
-				PR_SUBJECT_W,
-				PR_SENDER_ADDRTYPE_W,
-				PR_SENDER_EMAIL_ADDRESS_W,
-				PR_MESSAGE_DELIVERY_TIME,
-				PR_ENTRYID,
-				PR_SEARCH_KEY,
-				PR_RECORD_KEY,
-				PR_INTERNET_CPID,
+			NUMPROPS,
+			PR_MESSAGE_CLASS_W,
+			PR_SUBJECT_W,
+			PR_SENDER_ADDRTYPE_W,
+			PR_SENDER_EMAIL_ADDRESS_W,
+			PR_MESSAGE_DELIVERY_TIME,
+			PR_ENTRYID,
+			PR_SEARCH_KEY,
+			PR_RECORD_KEY,
+			PR_INTERNET_CPID,
 			};
 
 			ULONG i = 0;
@@ -636,9 +636,9 @@ void OutputMessageMSG(
 
 	static const SizedSPropTagArray(msgNUM_COLS, msgProps) =
 	{
-		msgNUM_COLS,
-		PR_SUBJECT_W,
-		PR_RECORD_KEY
+	msgNUM_COLS,
+	PR_SUBJECT_W,
+	PR_RECORD_KEY
 	};
 
 	if (!lpMessage || !szFolderPath) return;
@@ -682,7 +682,7 @@ void OutputMessageMSG(
 		fMapiUnicode ? true : false,
 		NULL,
 		false));
-} // OutputMessageMSG
+}
 
 bool CDumpStore::BeginMessageWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpParentMessageData, _Deref_out_opt_ LPVOID* lpData)
 {
@@ -709,7 +709,7 @@ bool CDumpStore::BeginRecipientWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID lp
 	if (m_bOutputList) return false;
 	OutputToFile(((LPMESSAGEDATA)lpData)->fMessageProps, L"<recipients>\n");
 	return true;
-} // CDumpStore::BeginRecipientWork
+}
 
 void CDumpStore::DoMessagePerRecipientWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData, _In_ LPSRow lpSRow, ULONG ulCurRow)
 {
@@ -724,7 +724,7 @@ void CDumpStore::DoMessagePerRecipientWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID
 	OutputSRowToFile(lpMsgData->fMessageProps, lpSRow, lpMessage);
 
 	OutputToFile(lpMsgData->fMessageProps, L"</recipient>\n");
-} // CDumpStore::DoMessagePerRecipientWork
+}
 
 void CDumpStore::EndRecipientWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID lpData)
 {
@@ -732,7 +732,7 @@ void CDumpStore::EndRecipientWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID lpDa
 	if (m_bOutputMSG) return; // When outputting message files, no recipient work is needed
 	if (m_bOutputList) return;
 	OutputToFile(((LPMESSAGEDATA)lpData)->fMessageProps, L"</recipients>\n");
-} // CDumpStore::EndRecipientWork
+}
 
 bool CDumpStore::BeginAttachmentWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID lpData)
 {
@@ -741,7 +741,7 @@ bool CDumpStore::BeginAttachmentWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID l
 	if (m_bOutputList) return false;
 	OutputToFile(((LPMESSAGEDATA)lpData)->fMessageProps, L"<attachments>\n");
 	return true;
-} // CDumpStore::BeginAttachmentWork
+}
 
 void CDumpStore::DoMessagePerAttachmentWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData, _In_ LPSRow lpSRow, _In_ LPATTACH lpAttach, ULONG ulCurRow)
 {
@@ -787,8 +787,8 @@ void CDumpStore::DoMessagePerAttachmentWork(_In_ LPMESSAGE lpMessage, _In_ LPVOI
 
 	if (lpAttach)
 	{
-		ULONG			ulAllProps = 0;
-		LPSPropValue	lpAllProps = NULL;
+		ULONG ulAllProps = 0;
+		LPSPropValue lpAllProps = NULL;
 		// Let's get all props from the message and dump them.
 		WC_H_GETPROPS(GetPropsNULL(lpAttach,
 			fMapiUnicode,
@@ -817,7 +817,7 @@ void CDumpStore::EndAttachmentWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID lpD
 	if (m_bOutputMSG) return; // When outputting message files, no attachment work is needed
 	if (m_bOutputList) return;
 	OutputToFile(((LPMESSAGEDATA)lpData)->fMessageProps, L"</attachments>\n");
-} // CDumpStore::EndAttachmentWork
+}
 
 void CDumpStore::EndMessageWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID lpData)
 {
@@ -831,4 +831,4 @@ void CDumpStore::EndMessageWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID lpData
 		CloseFile(lpMsgData->fMessageProps);
 	}
 	delete lpMsgData;
-} // CDumpStore::EndMessageWork
+}
