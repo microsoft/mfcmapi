@@ -1955,7 +1955,7 @@ void CFolderDlg::OnGetMessageOptions()
 				EC_MAPI(lpMAPISession->MessageOptions(
 					(ULONG_PTR)m_hWnd,
 					NULL, // API doesn't like Unicode
-					(LPTSTR)MyAddress.GetStringA(0),
+					(LPTSTR)(LPCSTR)wstringToCStringA(MyAddress.GetStringW(0)),
 					lpMessage));
 
 				lpMessage->Release();
