@@ -12,7 +12,7 @@ ViewPane* CreateMultiLinePane(UINT uidLabel, bool bReadOnly)
 	return CreateSingleLinePane(uidLabel, bReadOnly, true);
 }
 
-ViewPane* CreateMultiLinePane(UINT uidLabel, wstring szVal, bool bReadOnly)
+ViewPane* CreateMultiLinePane(UINT uidLabel, _In_ wstring szVal, bool bReadOnly)
 {
 	return CreateSingleLinePane(uidLabel, szVal, bReadOnly, true);
 }
@@ -22,7 +22,7 @@ ViewPane* CreateSingleLinePane(UINT uidLabel, bool bReadOnly, bool bMultiLine)
 	return new TextPane(uidLabel, bReadOnly, bMultiLine);
 }
 
-ViewPane* CreateSingleLinePane(UINT uidLabel, wstring szVal, bool bReadOnly, bool bMultiLine)
+ViewPane* CreateSingleLinePane(UINT uidLabel, _In_ wstring szVal, bool bReadOnly, bool bMultiLine)
 {
 	TextPane* lpPane = new TextPane(uidLabel, bReadOnly, bMultiLine);
 	if (lpPane)
