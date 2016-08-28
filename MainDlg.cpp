@@ -949,17 +949,12 @@ void CMainDlg::OnLogonWithFlags()
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		CString szProfile = MyData.GetString(0);
-		LPCTSTR lpszProfile = NULL;
+		wstring szProfile = MyData.GetStringW(0);
 
-		if (!szProfile.IsEmpty())
-		{
-			lpszProfile = (LPCTSTR)szProfile;
-		}
 		m_lpMapiObjects->MAPILogonEx(
 			m_hWnd, // handle of current window (from def'n of CWnd)
-			(LPTSTR)lpszProfile, // profile name
-			MyData.GetHex(1));
+			szProfile.empty()?nullptr:(LPTSTR)szProfile.c_str(), // profile name
+			MyData.GetHex(1) | MAPI_UNICODE);
 	}
 	else
 	{
