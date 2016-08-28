@@ -1127,7 +1127,7 @@ void CMainDlg::OnLoadMAPI()
 	{
 		HMODULE hMAPI = NULL;
 		UnLoadPrivateMAPI();
-		EC_D(hMAPI, MyLoadLibrary(MyData.GetString(0)));
+		EC_D(hMAPI, MyLoadLibraryW(MyData.GetStringW(0)));
 		SetMAPIHandle(hMAPI);
 	}
 }
