@@ -19,7 +19,7 @@ static wstring CLASS = L"CMailboxTableDlg";
 CMailboxTableDlg::CMailboxTableDlg(
 	_In_ CParentWnd* pParentWnd,
 	_In_ CMapiObjects* lpMapiObjects,
-	_In_z_ LPCTSTR lpszServerName,
+	_In_ wstring lpszServerName,
 	_In_ LPMAPITABLE lpMAPITable
 ) :
 	CContentsTableDlg(
@@ -36,7 +36,7 @@ CMailboxTableDlg::CMailboxTableDlg(
 	)
 {
 	TRACE_CONSTRUCTOR(CLASS);
-	m_lpszServerName = LPCTSTRToWstring(lpszServerName);
+	m_lpszServerName = lpszServerName;
 	CreateDialogAndMenu(IDR_MENU_MAILBOX_TABLE);
 }
 
@@ -88,6 +88,7 @@ void CMailboxTableDlg::DisplayItem(ULONG ulFlags)
 	{
 		EC_H(OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpGUIDMDB));
 	}
+
 	LPMDB lpSourceMDB = NULL; // do not release
 
 	lpSourceMDB = lpMDB ? lpMDB : lpGUIDMDB;
@@ -132,6 +133,7 @@ void CMailboxTableDlg::DisplayItem(ULONG ulFlags)
 		} while (iItem != -1);
 
 	}
+
 	if (lpGUIDMDB) lpGUIDMDB->Release();
 }
 

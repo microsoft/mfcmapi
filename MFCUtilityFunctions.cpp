@@ -562,7 +562,7 @@ void DisplayMailboxTable(_In_ CParentWnd* lpParent,
 					new CMailboxTableDlg(
 						lpParent,
 						lpMapiObjects,
-						MyData.GetString(0),
+						MyData.GetStringW(0),
 						lpMailboxTable);
 				}
 				else if (MAPI_E_NO_ACCESS == hRes || MAPI_E_NETWORK_ERROR == hRes)
