@@ -13,42 +13,41 @@
 // Appointment, Contact, StickyNote, and Task can only be created in those folders
 // Attempting to create one of those in the Inbox will result in an
 // 'Internal Application Error' when you save.
-
 _Check_return_ HRESULT CreateAndDisplayNewMailInFolder(
 	_In_ HWND hwndParent,
 	_In_ LPMDB lpMDB,
 	_In_ LPMAPISESSION lpMAPISession,
 	_In_ CContentsTableListCtrl *lpContentsTableListCtrl,
 	int iItem,
-	_In_opt_z_ LPCSTR szMessageClass,
+	_In_ wstring szMessageClass,
 	_In_ LPMAPIFOLDER lpFolder)
 {
-	HRESULT				hRes = S_OK;
-	LPMAPIFORMMGR		lpMAPIFormMgr = NULL;
+	HRESULT hRes = S_OK;
+	LPMAPIFORMMGR lpMAPIFormMgr = NULL;
 
 	if (!lpFolder || !lpMAPISession) return MAPI_E_INVALID_PARAMETER;
 
-	EC_H_MSG(MAPIOpenFormMgr(lpMAPISession,&lpMAPIFormMgr),IDS_NOFORMMANAGER);
+	EC_H_MSG(MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr), IDS_NOFORMMANAGER);
 
 	if (!lpMAPIFormMgr) return hRes;
 
-	LPMAPIFORMINFO		lpMAPIFormInfo = NULL;
-	LPPERSISTMESSAGE	lpPersistMessage = NULL;
+	LPMAPIFORMINFO lpMAPIFormInfo = NULL;
+	LPPERSISTMESSAGE lpPersistMessage = NULL;
 
 	EC_H_MSG(lpMAPIFormMgr->ResolveMessageClass(
-		szMessageClass, // class
-		NULL, // flags
+		wstringToCStringA(szMessageClass), // class
+		0, // flags
 		lpFolder, // folder to resolve to
 		&lpMAPIFormInfo),
 		IDS_NOCLASSHANDLER);
 	if (lpMAPIFormInfo)
 	{
 		EC_MAPI(lpMAPIFormMgr->CreateForm(
-			(ULONG_PTR) hwndParent, // parent window
+			(ULONG_PTR)hwndParent, // parent window
 			MAPI_DIALOG, // display status window
 			lpMAPIFormInfo, // form info
 			IID_IPersistMessage, // riid to open
-			(LPVOID *) &lpPersistMessage)); // form to open into
+			(LPVOID *)&lpPersistMessage)); // form to open into
 
 		if (lpPersistMessage)
 		{
@@ -60,7 +59,7 @@ _Check_return_ HRESULT CreateAndDisplayNewMailInFolder(
 				&lpMessage));
 			if (lpMessage)
 			{
-				CMyMAPIFormViewer*	lpMAPIFormViewer = NULL;
+				CMyMAPIFormViewer* lpMAPIFormViewer = NULL;
 				lpMAPIFormViewer = new CMyMAPIFormViewer(
 					hwndParent,
 					lpMDB,
@@ -74,16 +73,16 @@ _Check_return_ HRESULT CreateAndDisplayNewMailInFolder(
 				{
 					// put everything together with the default info
 					EC_MAPI(lpPersistMessage->InitNew(
-						(LPMAPIMESSAGESITE) lpMAPIFormViewer,
+						(LPMAPIMESSAGESITE)lpMAPIFormViewer,
 						lpMessage));
 
 					LPMAPIFORM lpForm = NULL;
-					EC_MAPI(lpPersistMessage->QueryInterface(IID_IMAPIForm,(LPVOID*) &lpForm));
+					EC_MAPI(lpPersistMessage->QueryInterface(IID_IMAPIForm, (LPVOID*)&lpForm));
 
 					if (lpForm)
 					{
 						EC_MAPI(lpForm->SetViewContext(
-							(LPMAPIVIEWCONTEXT) lpMAPIFormViewer));
+							(LPMAPIVIEWCONTEXT)lpMAPIFormViewer));
 
 						EC_MAPI(lpMAPIFormViewer->CallDoVerb(
 							lpForm,
@@ -101,7 +100,7 @@ _Check_return_ HRESULT CreateAndDisplayNewMailInFolder(
 	}
 	lpMAPIFormMgr->Release();
 	return hRes;
-} // CreateAndDisplayNewMailInFolder
+}
 
 _Check_return_ HRESULT OpenMessageNonModal(
 	_In_ HWND hwndParent,
@@ -114,11 +113,11 @@ _Check_return_ HRESULT OpenMessageNonModal(
 	LONG lVerb,
 	_In_opt_ LPCRECT lpRect)
 {
-	HRESULT					hRes = S_OK;
-	ULONG					cValuesShow = 0;
-	LPSPropValue			lpspvaShow = NULL;
-	ULONG					ulMessageStatus = NULL;
-	LPMAPIVIEWCONTEXT		lpViewContextTemp = NULL;
+	HRESULT hRes = S_OK;
+	ULONG cValuesShow = 0;
+	LPSPropValue lpspvaShow = NULL;
+	ULONG ulMessageStatus = NULL;
+	LPMAPIVIEWCONTEXT lpViewContextTemp = NULL;
 
 	enum
 	{
@@ -127,19 +126,19 @@ _Check_return_ HRESULT OpenMessageNonModal(
 		EID,
 		NUM_COLS
 	};
-	static const SizedSPropTagArray(NUM_COLS,sptaShowForm) =
+	static const SizedSPropTagArray(NUM_COLS, sptaShowForm) =
 	{
-		NUM_COLS,
-		PR_MESSAGE_FLAGS,
-		PR_MESSAGE_CLASS_A,
-		PR_ENTRYID
+	NUM_COLS,
+	PR_MESSAGE_FLAGS,
+	PR_MESSAGE_CLASS_A,
+	PR_ENTRYID
 	};
 
 	if (!lpMessage || !lpMAPISession || !lpSourceFolder) return MAPI_E_INVALID_PARAMETER;
 
 	// Get required properties from the message
 	EC_H_GETPROPS(lpMessage->GetProps(
-		(LPSPropTagArray) &sptaShowForm, // property tag array
+		(LPSPropTagArray)&sptaShowForm, // property tag array
 		fMapiUnicode, // flags
 		&cValuesShow, // Count of values returned
 		&lpspvaShow)); // Values returned
@@ -176,7 +175,7 @@ _Check_return_ HRESULT OpenMessageNonModal(
 					ulMessageStatus,
 					lpspvaShow[FLAGS].Value.ul);
 				EC_MAPI(lpMAPIFormMgr->LoadForm(
-					(ULONG_PTR) hwndParent,
+					(ULONG_PTR)hwndParent,
 					0, // flags
 					lpspvaShow[CLASS].Value.lpszA,
 					ulMessageStatus,
@@ -186,7 +185,7 @@ _Check_return_ HRESULT OpenMessageNonModal(
 					lpMessage,
 					lpMAPIFormViewer,
 					IID_IMAPIForm, // riid
-					(LPVOID *) &lpForm));
+					(LPVOID *)&lpForm));
 				lpMAPIFormMgr->Release();
 				lpMAPIFormMgr = NULL;
 			}
@@ -199,12 +198,12 @@ _Check_return_ HRESULT OpenMessageNonModal(
 					lpRect));
 				// Fix for unknown typed freedocs.
 				WC_MAPI(lpForm->GetViewContext(&lpViewContextTemp));
-				if (SUCCEEDED(hRes)){
-					if (lpViewContextTemp){
+				if (SUCCEEDED(hRes)) {
+					if (lpViewContextTemp) {
 						// If we got a pointer back, we'll just release it and continue.
 						lpViewContextTemp->Release();
 					}
-					else{
+					else {
 						// If the pointer came back NULL, then we need to call ShutdownForm but don't release.
 						WC_MAPI(lpForm->ShutdownForm(SAVEOPTS_NOSAVE));
 					}
@@ -223,18 +222,18 @@ _Check_return_ HRESULT OpenMessageNonModal(
 		MAPIFreeBuffer(lpspvaShow);
 	}
 	return hRes;
-} // OpenMessageNonModal
+}
 
 _Check_return_ HRESULT OpenMessageModal(_In_ LPMAPIFOLDER lpParentFolder,
-										_In_ LPMAPISESSION lpMAPISession,
-										_In_ LPMDB lpMDB,
-										_In_ LPMESSAGE lpMessage)
+	_In_ LPMAPISESSION lpMAPISession,
+	_In_ LPMDB lpMDB,
+	_In_ LPMESSAGE lpMessage)
 {
-	HRESULT			hRes = S_OK;
-	ULONG			cValuesShow;
-	LPSPropValue	lpspvaShow = NULL;
-	ULONG_PTR		Token = NULL;
-	ULONG			ulMessageStatus = NULL;
+	HRESULT hRes = S_OK;
+	ULONG cValuesShow;
+	LPSPropValue lpspvaShow = NULL;
+	ULONG_PTR Token = NULL;
+	ULONG ulMessageStatus = NULL;
 
 	enum
 	{
@@ -244,20 +243,20 @@ _Check_return_ HRESULT OpenMessageModal(_In_ LPMAPIFOLDER lpParentFolder,
 		EID,
 		NUM_COLS
 	};
-	static const SizedSPropTagArray(NUM_COLS,sptaShowForm) =
+	static const SizedSPropTagArray(NUM_COLS, sptaShowForm) =
 	{
-		NUM_COLS,
-		PR_MESSAGE_FLAGS,
-		PR_MESSAGE_CLASS_A,
-		PR_ACCESS,
-		PR_ENTRYID
+	NUM_COLS,
+	PR_MESSAGE_FLAGS,
+	PR_MESSAGE_CLASS_A,
+	PR_ACCESS,
+	PR_ENTRYID
 	};
 
 	if (!lpMessage || !lpParentFolder || !lpMAPISession || !lpMDB) return MAPI_E_INVALID_PARAMETER;
 
 	// Get required properties from the message
 	EC_H_GETPROPS(lpMessage->GetProps(
-		(LPSPropTagArray) &sptaShowForm, // property tag array
+		(LPSPropTagArray)&sptaShowForm, // property tag array
 		fMapiUnicode, // flags
 		&cValuesShow, // Count of values returned
 		&lpspvaShow)); // Values returned
@@ -292,4 +291,4 @@ _Check_return_ HRESULT OpenMessageModal(_In_ LPMAPIFOLDER lpParentFolder,
 
 	MAPIFreeBuffer(lpspvaShow);
 	return hRes;
-} // OpenMessageModal
+}
