@@ -330,7 +330,7 @@ void CFolderDlg::OnAddOneOffAddress()
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 	MyData.InitPane(0, CreateSingleLinePaneID(IDS_DISPLAYNAME, IDS_DISPLAYNAMEVALUE, false));
-	MyData.InitPane(1, CreateSingleLinePane(IDS_ADDRESSTYPE, L"EX", false)); // STRING_OK
+	MyData.InitPane(1, CreateSingleLinePane(IDS_ADDRESSTYPE, wstring(L"EX"), false)); // STRING_OK
 	MyData.InitPane(2, CreateSingleLinePaneID(IDS_ADDRESS, IDS_ADDRESSVALUE, false));
 	MyData.InitPane(3, CreateSingleLinePane(IDS_RECIPTYPE, false));
 	MyData.SetHex(3, MAPI_TO);
@@ -1081,7 +1081,7 @@ void CFolderDlg::OnNewCustomForm()
 				IDS_NEWCUSTOMFORMPROMPT2,
 				1,
 				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-			MyClass.InitPane(0, CreateSingleLinePane(IDS_FORMTYPE, L"IPM.Note", false)); // STRING_OK
+			MyClass.InitPane(0, CreateSingleLinePane(IDS_FORMTYPE, wstring(L"IPM.Note"), false)); // STRING_OK
 
 			switch (MyPrompt1.GetDropDown(0))
 			{
@@ -1808,7 +1808,7 @@ void CFolderDlg::OnSendBulkMail()
 	MyData.InitPane(0, CreateSingleLinePane(IDS_NUMMESSAGES, false));
 	MyData.InitPane(1, CreateSingleLinePane(IDS_RECIPNAME, false));
 	MyData.InitPane(2, CreateSingleLinePane(IDS_SUBJECT, false));
-	MyData.InitPane(3, CreateSingleLinePane(IDS_CLASS, L"IPM.Note", false)); // STRING_OK
+	MyData.InitPane(3, CreateSingleLinePane(IDS_CLASS, wstring(L"IPM.Note"), false)); // STRING_OK
 	MyData.InitPane(4, CreateMultiLinePane(IDS_BODY, false));
 
 	if (!m_lpContainer) return;
@@ -1934,7 +1934,7 @@ void CFolderDlg::OnGetMessageOptions()
 		IDS_ADDRESSTYPEPROMPT,
 		1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyAddress.InitPane(0, CreateSingleLinePane(IDS_ADDRESSTYPE, L"EX", false)); // STRING_OK
+	MyAddress.InitPane(0, CreateSingleLinePane(IDS_ADDRESSTYPE, wstring(L"EX"), false)); // STRING_OK
 	WC_H(MyAddress.DisplayDialog());
 
 	if (S_OK == hRes)

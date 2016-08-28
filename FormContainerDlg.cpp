@@ -470,14 +470,15 @@ void CFormContainerDlg::OnGetDisplay()
 
 	if (lpszDisplayName)
 	{
-		DebugPrintEx(DBGForms, CLASS, L"OnGetDisplay", L"Got display name \"%ws\"\n", LPCTSTRToWstring(lpszDisplayName).c_str());
+		wstring szDisplayName = LPCTSTRToWstring(lpszDisplayName);
+		DebugPrintEx(DBGForms, CLASS, L"OnGetDisplay", L"Got display name \"%ws\"\n", szDisplayName.c_str());
 		CEditor MyOutput(
 			this,
 			IDS_GETDISPLAY,
 			IDS_GETDISPLAYPROMPT,
 			1,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyOutput.InitPane(0, CreateSingleLinePane(IDS_GETDISPLAY, LPCTSTRToWstring(lpszDisplayName), true));
+		MyOutput.InitPane(0, CreateSingleLinePane(IDS_GETDISPLAY, szDisplayName, true));
 		WC_H(MyOutput.DisplayDialog());
 		MAPIFreeBuffer(lpszDisplayName);
 	}

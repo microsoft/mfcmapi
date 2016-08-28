@@ -4,9 +4,9 @@
 #include "ViewPane.h"
 
 ViewPane* CreateMultiLinePane(UINT uidLabel, bool bReadOnly);
-ViewPane* CreateMultiLinePane(UINT uidLabel, wstring szVal, bool bReadOnly);
+ViewPane* CreateMultiLinePane(UINT uidLabel, _In_ wstring szVal, bool bReadOnly);
 ViewPane* CreateSingleLinePane(UINT uidLabel, bool bReadOnly, bool bMultiLine = false);
-ViewPane* CreateSingleLinePane(UINT uidLabel, wstring szVal, bool bReadOnly, bool bMultiLine = false);
+ViewPane* CreateSingleLinePane(UINT uidLabel, _In_ wstring szVal, bool bReadOnly, bool bMultiLine = false);
 ViewPane* CreateSingleLinePaneID(UINT uidLabel, UINT uidVal, bool bReadOnly);
 
 #define LINES_MULTILINEEDIT 4

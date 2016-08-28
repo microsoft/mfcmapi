@@ -1210,7 +1210,7 @@ _Check_return_ __declspec(dllexport) HRESULT __cdecl ComplexDialog(_In_ LPADDIND
 				}
 				else
 				{
-					MyComplexDialog.InitPane(i, CreateSingleLinePane(NULL, (wstring)lpDialog->lpDialogControls[i].szDefaultText, lpDialog->lpDialogControls[i].bReadOnly));
+					MyComplexDialog.InitPane(i, CreateSingleLinePane(NULL, wstring(lpDialog->lpDialogControls[i].szDefaultText), lpDialog->lpDialogControls[i].bReadOnly));
 				}
 
 				break;

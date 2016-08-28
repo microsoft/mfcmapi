@@ -170,7 +170,7 @@ void CProfileListDlg::OnLaunchProfileWizard()
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.InitPane(0, CreateSingleLinePane(IDS_FLAGS, false));
 	MyData.SetHex(0, MAPI_PW_LAUNCHED_BY_CONFIG);
-	MyData.InitPane(1, CreateSingleLinePane(IDS_SERVICE, L"MSEMS", false)); // STRING_OK
+	MyData.InitPane(1, CreateSingleLinePane(IDS_SERVICE, wstring(L"MSEMS"), false)); // STRING_OK
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
