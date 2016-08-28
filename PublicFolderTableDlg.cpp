@@ -13,7 +13,7 @@ static wstring CLASS = L"CPublicFolderTableDlg";
 CPublicFolderTableDlg::CPublicFolderTableDlg(
 	_In_ CParentWnd* pParentWnd,
 	_In_ CMapiObjects* lpMapiObjects,
-	_In_ LPCTSTR lpszServerName,
+	_In_ wstring lpszServerName,
 	_In_ LPMAPITABLE lpMAPITable
 ) :
 	CContentsTableDlg(
@@ -29,17 +29,13 @@ CPublicFolderTableDlg::CPublicFolderTableDlg(
 		MENU_CONTEXT_PUBLIC_FOLDER_TABLE)
 {
 	TRACE_CONSTRUCTOR(CLASS);
-	HRESULT hRes = S_OK;
-
-	EC_H(CopyString(&m_lpszServerName, lpszServerName, NULL));
-
+	m_lpszServerName = lpszServerName;
 	CreateDialogAndMenu(NULL);
 }
 
 CPublicFolderTableDlg::~CPublicFolderTableDlg()
 {
 	TRACE_DESTRUCTOR(CLASS);
-	MAPIFreeBuffer(m_lpszServerName);
 }
 
 void CPublicFolderTableDlg::CreateDialogAndMenu(UINT nIDMenuResource)
