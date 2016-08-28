@@ -701,7 +701,7 @@ void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
 					new CPublicFolderTableDlg(
 						lpParent,
 						lpMapiObjects,
-						MyData.GetString(0),
+						MyData.GetStringW(0),
 						lpPFTable);
 				}
 				else if (MAPI_E_NO_ACCESS == hRes || MAPI_E_NETWORK_ERROR == hRes)
