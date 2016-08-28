@@ -33,7 +33,7 @@ _Check_return_ HRESULT HrAddExchangeToProfile(
 _Check_return_ HRESULT HrAddPSTToProfile(
 	_In_ ULONG_PTR ulUIParam, // hwnd for CreateMsgService
 	bool bUnicodePST,
-	_In_z_ LPCTSTR lpszPSTPath, // PST name
+	_In_ wstring lpszPSTPath, // PST name
 	_In_z_ LPCSTR lpszProfileName, // profile name
 	bool bPasswordSet, // whether or not to include a password
 	_In_z_ LPCSTR lpszPassword); // password to include
