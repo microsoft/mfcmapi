@@ -27,7 +27,7 @@ public:
 
 private:
 	// Worker functions (dump messages, scan for something, etc)
-	virtual void BeginMailboxTableWork(_In_z_ LPCTSTR szExchangeServerName);
+	virtual void BeginMailboxTableWork(_In_ wstring szExchangeServerName);
 	virtual void DoMailboxTablePerRowWork(_In_ LPMDB lpMDB, _In_ LPSRow lpSRow, ULONG ulCurRow);
 	virtual void EndMailboxTableWork();
 

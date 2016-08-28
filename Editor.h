@@ -74,11 +74,6 @@ public:
 	ViewPane* GetControl(ULONG iControl);
 	LPSTR GetStringA(ULONG i);
 	LPWSTR GetStringW(ULONG i);
-#ifdef UNICODE
-#define GetString GetStringW
-#else
-#define GetString GetStringA
-#endif
 	_Check_return_ ULONG GetHex(ULONG i);
 	_Check_return_ ULONG GetDecimal(ULONG i);
 	_Check_return_ ULONG GetPropTag(ULONG i);

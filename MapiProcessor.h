@@ -32,7 +32,7 @@ public:
 	void InitSortOrder(_In_ LPSSortOrderSet lpSort);
 
 	// Processing functions
-	void ProcessMailboxTable(_In_z_ LPCTSTR szExchangeServerName);
+	void ProcessMailboxTable(_In_ wstring szExchangeServerName);
 	void ProcessStore();
 	void ProcessFolders(bool bDoRegular, bool bDoAssociated, bool bDoDescent);
 	void ProcessMessage(_In_ LPMESSAGE lpMessage, bool bHasAttach, _In_opt_ LPVOID lpParentMessageData);
@@ -45,7 +45,7 @@ protected:
 
 private:
 	// Worker functions (dump messages, scan for something, etc)
-	virtual void BeginMailboxTableWork(_In_z_ LPCTSTR szExchangeServerName);
+	virtual void BeginMailboxTableWork(_In_ wstring szExchangeServerName);
 	virtual void DoMailboxTablePerRowWork(_In_ LPMDB lpMDB, _In_ LPSRow lpSRow, ULONG ulCurRow);
 	virtual void EndMailboxTableWork();
 
