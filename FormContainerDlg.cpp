@@ -296,12 +296,12 @@ void CFormContainerDlg::OnRemoveForm()
 	WC_H(MyClass.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		LPSTR szClass = MyClass.GetStringA(0); // RemoveForm requires an ANSI string
-		if (szClass)
+		wstring szClass = MyClass.GetStringW(0); // RemoveForm requires an ANSI string
+		if (!szClass.empty())
 		{
 			DebugPrintEx(DBGForms, CLASS, L"OnRemoveForm",
-				L"Calling RemoveForm(\"%hs\")\n", szClass); // STRING_OK
-			EC_MAPI(m_lpFormContainer->RemoveForm(szClass));
+				L"Calling RemoveForm(\"%ws\")\n", szClass.c_str()); // STRING_OK
+			EC_MAPI(m_lpFormContainer->RemoveForm(wstringToCStringA(szClass)));
 			OnRefreshView(); // Update the view since we don't have notifications here.
 		}
 	}
@@ -325,14 +325,14 @@ void CFormContainerDlg::OnResolveMessageClass()
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		LPSTR szClass = MyData.GetStringA(0); // ResolveMessageClass requires an ANSI string
+		wstring szClass = MyData.GetStringW(0); // ResolveMessageClass requires an ANSI string
 		ULONG ulFlags = MyData.GetHex(1);
-		if (szClass)
+		if (!szClass.empty())
 		{
 			LPMAPIFORMINFO lpMAPIFormInfo = NULL;
 			DebugPrintEx(DBGForms, CLASS, L"OnResolveMessageClass",
-				L"Calling ResolveMessageClass(\"%hs\",0x%08X)\n", szClass, ulFlags); // STRING_OK
-			EC_MAPI(m_lpFormContainer->ResolveMessageClass(szClass, ulFlags, &lpMAPIFormInfo));
+				L"Calling ResolveMessageClass(\"%ws\",0x%08X)\n", szClass.c_str(), ulFlags); // STRING_OK
+			EC_MAPI(m_lpFormContainer->ResolveMessageClass(wstringToCStringA(szClass), ulFlags, &lpMAPIFormInfo));
 			if (lpMAPIFormInfo)
 			{
 				OnUpdateSingleMAPIPropListCtrl(lpMAPIFormInfo, NULL);
@@ -387,15 +387,14 @@ void CFormContainerDlg::OnResolveMultipleMessageClasses()
 					WC_H(MyClass.DisplayDialog());
 					if (S_OK == hRes)
 					{
-						LPSTR szClass = MyClass.GetStringA(0); // MSDN says always use ANSI strings here
-						size_t cbClass = 0;
-						EC_H(StringCbLengthA(szClass, STRSAFE_MAX_CCH * sizeof(char), &cbClass));
+						wstring szClass = MyClass.GetStringW(0); // MSDN says always use ANSI strings here
+						size_t cbClass = szClass.length();
 
 						if (cbClass)
 						{
 							cbClass++; // for the NULL terminator
 							EC_H(MAPIAllocateMore((ULONG)cbClass, lpMSGClassArray, (LPVOID*)&lpMSGClassArray->aMessageClass[i]));
-							EC_H(StringCbCopyA((LPSTR)lpMSGClassArray->aMessageClass[i], cbClass, szClass));
+							EC_H(StringCbCopyA((LPSTR)lpMSGClassArray->aMessageClass[i], cbClass, wstringToCStringA(szClass)));
 						}
 						else bCancel = true;
 					}
@@ -404,6 +403,7 @@ void CFormContainerDlg::OnResolveMultipleMessageClasses()
 				}
 			}
 		}
+
 		if (!bCancel)
 		{
 			LPSMAPIFORMINFOARRAY lpMAPIFormInfoArray = NULL;
@@ -421,9 +421,11 @@ void CFormContainerDlg::OnResolveMultipleMessageClasses()
 						lpMAPIFormInfoArray->aFormInfo[i]->Release();
 					}
 				}
+
 				MAPIFreeBuffer(lpMAPIFormInfoArray);
 			}
 		}
+
 		MAPIFreeBuffer(lpMSGClassArray);
 	}
 }
