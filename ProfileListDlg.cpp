@@ -44,12 +44,12 @@ CProfileListDlg::CProfileListDlg(
 	// Wipe the reference to the contents table to get around profile table refresh problems
 	if (m_lpContentsTable) m_lpContentsTable->Release();
 	m_lpContentsTable = NULL;
-} // CProfileListDlg::CProfileListDlg
+}
 
 CProfileListDlg::~CProfileListDlg()
 {
 	TRACE_DESTRUCTOR(CLASS);
-} // CProfileListDlg::~CProfileListDlg
+}
 
 BEGIN_MESSAGE_MAP(CProfileListDlg, CContentsTableDlg)
 	ON_COMMAND(ID_GETMAPISVCINF, OnGetMAPISVC)
@@ -89,7 +89,7 @@ void CProfileListDlg::OnInitMenu(_In_ CMenu* pMenu)
 		}
 	}
 	CContentsTableDlg::OnInitMenu(pMenu);
-} // CProfileListDlg::OnInitMenu
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // CProfileListDlg message handlers
@@ -130,15 +130,15 @@ void CProfileListDlg::OnRefreshView()
 		lpProfTable->Release();
 	}
 	lpProfAdmin->Release();
-} // CProfileListDlg::OnRefreshView
+}
 
 void CProfileListDlg::OnDisplayItem()
 {
-	HRESULT			hRes = S_OK;
-	CHAR*			szProfileName = NULL;
-	int				iItem = -1;
-	SortListData*	lpListData = NULL;
-	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
+	HRESULT hRes = S_OK;
+	CHAR* szProfileName = NULL;
+	int iItem = -1;
+	SortListData* lpListData = NULL;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return;
 
@@ -157,7 +157,7 @@ void CProfileListDlg::OnDisplayItem()
 				szProfileName);
 		}
 	} while (iItem != -1);
-} // CProfileListDlg::OnDisplayItem
+}
 
 void CProfileListDlg::OnLaunchProfileWizard()
 {
@@ -185,28 +185,28 @@ void CProfileListDlg::OnLaunchProfileWizard()
 			szProfName);
 		OnRefreshView(); // Update the view since we don't have notifications here.
 	}
-} // CProfileListDlg::OnLaunchProfileWizard
+}
 
 void CProfileListDlg::OnGetMAPISVC()
 {
 	DisplayMAPISVCPath(this);
-} // CProfileListDlg::OnGetMAPISVC
+}
 
 void CProfileListDlg::OnAddServicesToMAPISVC()
 {
 	AddServicesToMapiSvcInf();
-} // CProfileListDlg::OnAddServicesToMAPISVC
+}
 
 void CProfileListDlg::OnRemoveServicesFromMAPISVC()
 {
 	RemoveServicesFromMapiSvcInf();
-} // CProfileListDlg::OnRemoveServicesFromMAPISVC
+}
 
 void CProfileListDlg::OnAddExchangeToProfile()
 {
-	HRESULT			hRes = S_OK;
-	int				iItem = -1;
-	SortListData*	lpListData = NULL;
+	HRESULT hRes = S_OK;
+	int iItem = -1;
+	SortListData* lpListData = NULL;
 
 	if (!m_lpContentsTableListCtrl) return;
 
@@ -252,14 +252,14 @@ void CProfileListDlg::OnAddExchangeToProfile()
 			} while (iItem != -1);
 		}
 	}
-} // CProfileListDlg::OnAddExchangeToProfile
+}
 
 void CProfileListDlg::AddPSTToProfile(bool bUnicodePST)
 {
-	HRESULT			hRes = S_OK;
-	int				iItem = -1;
-	SortListData*	lpListData = NULL;
-	INT_PTR			iDlgRet = IDOK;
+	HRESULT hRes = S_OK;
+	int iItem = -1;
+	SortListData* lpListData = NULL;
+	INT_PTR iDlgRet = IDOK;
 
 	CString szFileSpec;
 	EC_B(szFileSpec.LoadString(IDS_PSTFILES));
@@ -297,12 +297,12 @@ void CProfileListDlg::AddPSTToProfile(bool bUnicodePST)
 
 			if (S_OK == hRes)
 			{
-				LPTSTR szPath = MyFile.GetString(0);
+				wstring szPath = MyFile.GetStringW(0);
 				bool bPasswordSet = MyFile.GetCheck(1);
 				LPSTR szPwd = MyFile.GetStringA(2);
 
 				DebugPrintEx(DBGGeneric, CLASS, L"AddPSTToProfile", L"Adding PST \"%ws\" to profile \"%hs\", bUnicodePST = 0x%X\n, bPasswordSet = 0x%X, password = \"%hs\"\n",
-					LPCTSTRToWstring(szPath).c_str(),
+					szPath.c_str(),
 					lpListData->data.Contents.szProfileDisplayName,
 					bUnicodePST,
 					bPasswordSet,
@@ -313,23 +313,23 @@ void CProfileListDlg::AddPSTToProfile(bool bUnicodePST)
 			}
 		} while (iItem != -1);
 	}
-} // CProfileListDlg::AddPSTToProfile
+}
 
 void CProfileListDlg::OnAddPSTToProfile()
 {
 	AddPSTToProfile(false);
-} // CProfileListDlg::OnAddPSTToProfile
+}
 
 void CProfileListDlg::OnAddUnicodePSTToProfile()
 {
 	AddPSTToProfile(true);
-} // CProfileListDlg::OnAddUnicodePSTToProfile
+}
 
 void CProfileListDlg::OnAddServiceToProfile()
 {
-	HRESULT			hRes = S_OK;
-	int				iItem = -1;
-	SortListData*	lpListData = NULL;
+	HRESULT hRes = S_OK;
+	int iItem = -1;
+	SortListData* lpListData = NULL;
 
 	if (!m_lpContentsTableListCtrl) return;
 
@@ -360,11 +360,11 @@ void CProfileListDlg::OnAddServiceToProfile()
 			EC_H(HrAddServiceToProfile(szService, (ULONG_PTR)m_hWnd, MyData.GetCheck(1) ? SERVICE_UI_ALWAYS : 0, 0, 0, lpListData->data.Contents.szProfileDisplayName));
 		} while (iItem != -1);
 	}
-} // CProfileListDlg::OnAddServiceToProfile
+}
 
 void CProfileListDlg::OnCreateProfile()
 {
-	HRESULT			hRes = S_OK;
+	HRESULT hRes = S_OK;
 
 	CEditor MyData(
 		this,
@@ -378,7 +378,7 @@ void CProfileListDlg::OnCreateProfile()
 
 	if (S_OK == hRes)
 	{
-		CWaitCursor		Wait; // Change the mouse to an hourglass while we work.
+		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 		LPSTR szProfile = MyData.GetStringA(0);
 
 		DebugPrintEx(DBGGeneric, CLASS,
@@ -391,14 +391,14 @@ void CProfileListDlg::OnCreateProfile()
 		// Since we may have created a profile, update even if we failed.
 		OnRefreshView(); // Update the view since we don't have notifications here.
 	}
-} // CProfileListDlg::OnCreateProfile
+}
 
 void CProfileListDlg::OnDeleteSelectedItem()
 {
-	HRESULT		hRes = S_OK;
-	int			iItem = -1;
-	SortListData*	lpListData = NULL;
-	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
+	HRESULT hRes = S_OK;
+	int iItem = -1;
+	SortListData* lpListData = NULL;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpContentsTableListCtrl) return;
 
@@ -415,14 +415,14 @@ void CProfileListDlg::OnDeleteSelectedItem()
 	} while (iItem != -1);
 
 	OnRefreshView(); // Update the view since we don't have notifications here.
-} // CProfileListDlg::OnDeleteSelectedItem
+}
 
 void CProfileListDlg::OnGetProfileServiceVersion()
 {
-	HRESULT		hRes = S_OK;
-	int			iItem = -1;
-	SortListData*	lpListData = NULL;
-	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
+	HRESULT hRes = S_OK;
+	int iItem = -1;
+	SortListData* lpListData = NULL;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpContentsTableListCtrl) return;
 
@@ -497,7 +497,7 @@ void CProfileListDlg::OnGetProfileServiceVersion()
 		}
 		WC_H(MyData.DisplayDialog());
 	} while (iItem != -1);
-} // CProfileListDlg::OnGetProfileServiceVersion
+}
 
 void CProfileListDlg::OnSetDefaultProfile()
 {
@@ -518,7 +518,7 @@ void CProfileListDlg::OnSetDefaultProfile()
 
 		OnRefreshView(); // Update the view since we don't have notifications here.
 	}
-} // CProfileListDlg::OnSetDefaultProfile
+}
 
 void CProfileListDlg::OnOpenProfileByName()
 {
@@ -546,7 +546,7 @@ void CProfileListDlg::OnOpenProfileByName()
 				szProfileName);
 		}
 	}
-} // CProfileListDlg::OnOpenProfileByName
+}
 
 void CProfileListDlg::HandleCopy()
 {
@@ -563,7 +563,7 @@ void CProfileListDlg::HandleCopy()
 	{
 		m_lpMapiObjects->SetProfileToCopy(lpListData->data.Contents.szProfileDisplayName);
 	}
-} // CProfileListDlg::HandleCopy
+}
 
 _Check_return_ bool CProfileListDlg::HandlePaste()
 {
@@ -596,7 +596,7 @@ _Check_return_ bool CProfileListDlg::HandlePaste()
 		OnRefreshView(); // Update the view since we don't have notifications here.
 	}
 	return true;
-} // CProfileListDlg::HandlePaste
+}
 
 void CProfileListDlg::OnExportProfile()
 {
