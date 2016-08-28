@@ -970,31 +970,31 @@ void CFolderDlg::NewSpecialItem(WORD wMenuSelect)
 	if (lpMAPISession)
 	{
 		ULONG ulFolder = NULL;
-		LPCSTR szClass = NULL;
+		wstring szClass;
 
 		switch (wMenuSelect)
 		{
 		case ID_NEW_APPOINTMENT:
 			ulFolder = DEFAULT_CALENDAR;
-			szClass = "IPM.APPOINTMENT"; // STRING_OK
+			szClass = L"IPM.APPOINTMENT"; // STRING_OK
 			break;
 		case ID_NEW_CONTACT:
 			ulFolder = DEFAULT_CONTACTS;
-			szClass = "IPM.CONTACT"; // STRING_OK
+			szClass = L"IPM.CONTACT"; // STRING_OK
 			break;
 		case ID_NEW_IPMNOTE:
-			szClass = "IPM.NOTE"; // STRING_OK
+			szClass = L"IPM.NOTE"; // STRING_OK
 			break;
 		case ID_NEW_IPMPOST:
-			szClass = "IPM.POST"; // STRING_OK
+			szClass = L"IPM.POST"; // STRING_OK
 			break;
 		case ID_NEW_TASK:
 			ulFolder = DEFAULT_TASKS;
-			szClass = "IPM.TASK"; // STRING_OK
+			szClass = L"IPM.TASK"; // STRING_OK
 			break;
 		case ID_NEW_STICKYNOTE:
 			ulFolder = DEFAULT_NOTES;
-			szClass = "IPM.STICKYNOTE"; // STRING_OK
+			szClass = L"IPM.STICKYNOTE"; // STRING_OK
 			break;
 
 		}
@@ -1072,7 +1072,7 @@ void CFolderDlg::OnNewCustomForm()
 
 		if (S_OK == hRes)
 		{
-			LPCSTR szClass = NULL;
+			wstring szClass;
 			LPSPropValue lpProp = NULL;
 
 			CEditor MyClass(
@@ -1090,7 +1090,7 @@ void CFolderDlg::OnNewCustomForm()
 
 				if (S_OK == hRes)
 				{
-					szClass = MyClass.GetStringA(0);
+					szClass = MyClass.GetStringW(0);
 				}
 				break;
 			case 1:
@@ -1127,11 +1127,11 @@ void CFolderDlg::OnNewCustomForm()
 					{
 						EC_MAPI(HrGetOneProp(
 							lpMAPIFormInfo,
-							PR_MESSAGE_CLASS_A,
+							PR_MESSAGE_CLASS_W,
 							&lpProp));
-						if (CheckStringProp(lpProp, PT_STRING8))
+						if (CheckStringProp(lpProp, PT_UNICODE))
 						{
-							szClass = lpProp->Value.lpszA;
+							szClass = lpProp->Value.lpszW;
 						}
 
 						lpMAPIFormInfo->Release();
