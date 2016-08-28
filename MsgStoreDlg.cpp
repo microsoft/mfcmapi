@@ -537,7 +537,7 @@ void CMsgStoreDlg::OnPasteFolder()
 
 			LPMAPIPROGRESS lpProgress = GetMAPIProgress(L"IMAPIFolder::CopyFolder", m_hWnd); // STRING_OK
 
-			ULONG ulCopyFlags = fMapiUnicode;
+			ULONG ulCopyFlags = MAPI_UNICODE;
 			if (MyData.GetCheck(1))
 				ulCopyFlags |= COPY_SUBFOLDERS;
 			if (MyData.GetCheck(2))
@@ -550,7 +550,7 @@ void CMsgStoreDlg::OnPasteFolder()
 				(LPENTRYID)lpProps[EID].Value.bin.lpb,
 				&IID_IMAPIFolder,
 				lpMAPIDestFolder,
-				MyData.GetString(0),
+				reinterpret_cast<LPTSTR>(MyData.GetStringW(0)),
 				lpProgress ? (ULONG_PTR)m_hWnd : NULL, // UI
 				lpProgress, // Progress
 				ulCopyFlags));
