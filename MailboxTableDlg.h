@@ -14,7 +14,7 @@ public:
 	CMailboxTableDlg(
 		_In_ CParentWnd* pParentWnd,
 		_In_ CMapiObjects* lpMapiObjects,
-		_In_z_ LPCTSTR lpszServerName,
+		_In_ wstring lpszServerName,
 		_In_ LPMAPITABLE lpMAPITable);
 	virtual ~CMailboxTableDlg();
 
