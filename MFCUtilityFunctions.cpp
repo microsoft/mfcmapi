@@ -672,14 +672,12 @@ void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
 					GUID MyGUID = { 0 };
 					bool bHaveGUID = false;
 
-					LPTSTR pszGUID = NULL;
-					pszGUID = MyData.GetString(3);
-
-					if (_T('\0') != pszGUID[0])
+					wstring pszGUID = MyData.GetStringW(3);
+					if (!pszGUID.empty())
 					{
 						bHaveGUID = true;
 
-						MyGUID = StringToGUID(MyData.GetStringW(3));
+						MyGUID = StringToGUID(pszGUID);
 						if (MyGUID == GUID_NULL)
 						{
 							ErrDialog(__FILE__, __LINE__, IDS_EDINVALIDGUID);
