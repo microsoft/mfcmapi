@@ -72,7 +72,6 @@ public:
 
 	// Get values after we've done the DisplayDialog
 	ViewPane* GetControl(ULONG iControl);
-	LPSTR GetStringA(ULONG i);
 	LPWSTR GetStringW(ULONG i);
 	_Check_return_ ULONG GetHex(ULONG i);
 	_Check_return_ ULONG GetDecimal(ULONG i);

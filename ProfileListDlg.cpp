@@ -134,8 +134,6 @@ void CProfileListDlg::OnRefreshView()
 
 void CProfileListDlg::OnDisplayItem()
 {
-	HRESULT hRes = S_OK;
-	CHAR* szProfileName = NULL;
 	int iItem = -1;
 	SortListData* lpListData = NULL;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
@@ -144,12 +142,11 @@ void CProfileListDlg::OnDisplayItem()
 
 	do
 	{
-		hRes = S_OK;
 		lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 		if (!lpListData) break;
 
-		szProfileName = lpListData->data.Contents.szProfileDisplayName;
-		if (szProfileName)
+		wstring szProfileName = LPCSTRToWstring(lpListData->data.Contents.szProfileDisplayName);
+		if (!szProfileName.empty())
 		{
 			new CMsgServiceTableDlg(
 				m_lpParent,
@@ -178,7 +175,7 @@ void CProfileListDlg::OnLaunchProfileWizard()
 		wstring szProfName = LaunchProfileWizard(
 			m_hWnd,
 			MyData.GetHex(0),
-			MyData.GetStringW(1));
+			wstringTostring(MyData.GetStringW(1)));
 		OnRefreshView(); // Update the view since we don't have notifications here.
 	}
 }
@@ -221,10 +218,10 @@ void CProfileListDlg::OnAddExchangeToProfile()
 	if (S_OK == hRes)
 	{
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
-		LPSTR szServer = MyData.GetStringA(0);
-		LPSTR szMailbox = MyData.GetStringA(1);
+		string szServer = wstringTostring(MyData.GetStringW(0));
+		string szMailbox = wstringTostring(MyData.GetStringW(1));
 
-		if (szServer && szMailbox)
+		if (!szServer.empty() && !szMailbox.empty())
 		{
 			do
 			{
@@ -236,8 +233,8 @@ void CProfileListDlg::OnAddExchangeToProfile()
 				DebugPrintEx(DBGGeneric, CLASS,
 					L"OnAddExchangeToProfile", // STRING_OK
 					L"Adding Server \"%hs\" and Mailbox \"%hs\" to profile \"%hs\"\n", // STRING_OK
-					szServer,
-					szMailbox,
+					szServer.c_str(),
+					szMailbox.c_str(),
 					lpListData->data.Contents.szProfileDisplayName);
 
 				EC_H(HrAddExchangeToProfile(
@@ -295,14 +292,14 @@ void CProfileListDlg::AddPSTToProfile(bool bUnicodePST)
 			{
 				wstring szPath = MyFile.GetStringW(0);
 				bool bPasswordSet = MyFile.GetCheck(1);
-				LPSTR szPwd = MyFile.GetStringA(2);
+				string szPwd = wstringTostring(MyFile.GetStringW(2));
 
 				DebugPrintEx(DBGGeneric, CLASS, L"AddPSTToProfile", L"Adding PST \"%ws\" to profile \"%hs\", bUnicodePST = 0x%X\n, bPasswordSet = 0x%X, password = \"%hs\"\n",
 					szPath.c_str(),
 					lpListData->data.Contents.szProfileDisplayName,
 					bUnicodePST,
 					bPasswordSet,
-					szPwd);
+					szPwd.c_str());
 
 				CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 				EC_H(HrAddPSTToProfile((ULONG_PTR)m_hWnd, bUnicodePST, szPath, lpListData->data.Contents.szProfileDisplayName, bPasswordSet, szPwd));
@@ -343,7 +340,7 @@ void CProfileListDlg::OnAddServiceToProfile()
 	if (S_OK == hRes)
 	{
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
-		LPSTR szService = MyData.GetStringA(0);
+		string szService = wstringTostring(MyData.GetStringW(0));
 		do
 		{
 			hRes = S_OK;
@@ -351,7 +348,7 @@ void CProfileListDlg::OnAddServiceToProfile()
 			lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 			if (!lpListData) break;
 
-			DebugPrintEx(DBGGeneric, CLASS, L"OnAddServiceToProfile", L"Adding service \"%hs\" to profile \"%hs\"\n", szService, lpListData->data.Contents.szProfileDisplayName);
+			DebugPrintEx(DBGGeneric, CLASS, L"OnAddServiceToProfile", L"Adding service \"%ws\" to profile \"%hs\"\n", szService, lpListData->data.Contents.szProfileDisplayName);
 
 			EC_H(HrAddServiceToProfile(szService, (ULONG_PTR)m_hWnd, MyData.GetCheck(1) ? SERVICE_UI_ALWAYS : 0, 0, 0, lpListData->data.Contents.szProfileDisplayName));
 		} while (iItem != -1);
@@ -375,12 +372,12 @@ void CProfileListDlg::OnCreateProfile()
 	if (S_OK == hRes)
 	{
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
-		LPSTR szProfile = MyData.GetStringA(0);
+		string szProfile = wstringTostring(MyData.GetStringW(0));
 
 		DebugPrintEx(DBGGeneric, CLASS,
 			L"OnCreateProfile", // STRING_OK
 			L"Creating profile \"%hs\"\n", // STRING_OK
-			szProfile);
+			szProfile.c_str());
 
 		EC_H(HrCreateProfile(szProfile));
 
@@ -436,7 +433,8 @@ void CProfileListDlg::OnGetProfileServiceVersion()
 		bool bFoundServerVersion = false;
 		bool bFoundServerFullVersion = false;
 
-		WC_H(GetProfileServiceVersion(lpListData->data.Contents.szProfileDisplayName,
+		WC_H(GetProfileServiceVersion(
+			lpListData->data.Contents.szProfileDisplayName,
 			&ulServerVersion,
 			&storeVersion,
 			&bFoundServerVersion,
@@ -519,7 +517,6 @@ void CProfileListDlg::OnSetDefaultProfile()
 void CProfileListDlg::OnOpenProfileByName()
 {
 	HRESULT hRes = S_OK;
-	CHAR* szProfileName = NULL;
 
 	CEditor MyData(
 		this,
@@ -533,8 +530,8 @@ void CProfileListDlg::OnOpenProfileByName()
 
 	if (S_OK == hRes)
 	{
-		szProfileName = MyData.GetStringA(0);
-		if (szProfileName)
+		wstring szProfileName = MyData.GetStringW(0);
+		if (!szProfileName.empty())
 		{
 			new CMsgServiceTableDlg(
 				m_lpParent,
@@ -587,10 +584,11 @@ _Check_return_ bool CProfileListDlg::HandlePaste()
 	{
 		wstring szNewProfile = MyData.GetStringW(0);
 
-		WC_MAPI(HrCopyProfile(wstringToCStringA(szOldProfile), wstringToCStringA(szNewProfile)));
+		WC_MAPI(HrCopyProfile(wstringTostring(szOldProfile), wstringTostring(szNewProfile)));
 
 		OnRefreshView(); // Update the view since we don't have notifications here.
 	}
+
 	return true;
 }
 
