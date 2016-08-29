@@ -1,5 +1,4 @@
-// MsgServiceTableDlg.cpp : implementation file
-// Displays the list of services in a profile
+// MsgServiceTableDlg.cpp : Displays the list of services in a profile
 
 #include "stdafx.h"
 #include "MsgServiceTableDlg.h"
@@ -15,14 +14,10 @@
 
 static wstring CLASS = L"CMsgServiceTableDlg";
 
-/////////////////////////////////////////////////////////////////////////////
-// CMsgServiceTableDlg dialog
-
-
 CMsgServiceTableDlg::CMsgServiceTableDlg(
 	_In_ CParentWnd* pParentWnd,
 	_In_ CMapiObjects* lpMapiObjects,
-	_In_z_ LPCSTR szProfileName
+	_In_ wstring szProfileName
 	) :
 	CContentsTableDlg(
 	pParentWnd,
@@ -38,20 +33,17 @@ CMsgServiceTableDlg::CMsgServiceTableDlg(
 {
 	TRACE_CONSTRUCTOR(CLASS);
 
-	m_szProfileName = NULL;
 	m_lpServiceAdmin = NULL;
 
 	CreateDialogAndMenu(IDR_MENU_MSGSERVICE);
 
-	(void)CopyStringA(&m_szProfileName, szProfileName, NULL);
+	m_szProfileName = szProfileName;
 	OnRefreshView();
 } // CMsgServiceTableDlg::CMsgServiceTableDlg
 
 CMsgServiceTableDlg::~CMsgServiceTableDlg()
 {
 	TRACE_DESTRUCTOR(CLASS);
-	if (m_szProfileName) MAPIFreeBuffer(m_szProfileName);
-	m_szProfileName = NULL;
 	// little hack to keep our releases in the right order - crash in o2k3 otherwise
 	if (m_lpContentsTable) m_lpContentsTable->Release();
 	m_lpContentsTable = NULL;
@@ -89,7 +81,7 @@ void CMsgServiceTableDlg::OnRefreshView()
 	HRESULT hRes = S_OK;
 
 	// Make sure we've got something to work with
-	if (!m_szProfileName || !m_lpContentsTableListCtrl || !m_lpMapiObjects) return;
+	if (m_szProfileName.empty() || !m_lpContentsTableListCtrl || !m_lpMapiObjects) return;
 
 	// cancel any loading which may be occuring
 	if (m_lpContentsTableListCtrl->IsLoading()) m_lpContentsTableListCtrl->OnCancelTableLoad();
@@ -113,8 +105,8 @@ void CMsgServiceTableDlg::OnRefreshView()
 #pragma warning(disable:4616)
 #pragma warning(disable:6276)
 		EC_MAPI(lpProfAdmin->AdminServices(
-			(TCHAR*)m_szProfileName,
-			(TCHAR*)"",
+			const_cast<LPTSTR>(wstringTostring(m_szProfileName).c_str()),
+			(LPTSTR)"",
 			NULL,
 			MAPI_DIALOG,
 			&m_lpServiceAdmin));

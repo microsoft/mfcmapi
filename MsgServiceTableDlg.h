@@ -15,7 +15,7 @@ public:
 	CMsgServiceTableDlg(
 		_In_ CParentWnd* pParentWnd,
 		_In_ CMapiObjects* lpMapiObjects,
-		_In_z_ LPCSTR szProfileName);
+		_In_ wstring szProfileName);
 	virtual ~CMsgServiceTableDlg();
 
 private:
@@ -35,7 +35,7 @@ private:
 	void OnOpenProfileSection();
 
 	LPSERVICEADMIN	m_lpServiceAdmin;
-	LPSTR			m_szProfileName;
+	wstring m_szProfileName;
 
 	DECLARE_MESSAGE_MAP()
 };

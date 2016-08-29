@@ -1579,7 +1579,7 @@ void CMainDlg::OnLaunchProfileWizard()
 		wstring szProfName = LaunchProfileWizard(
 			m_hWnd,
 			MyData.GetHex(0),
-			MyData.GetStringW(1));
+			wstringTostring(MyData.GetStringW(1)));
 	}
 }
 

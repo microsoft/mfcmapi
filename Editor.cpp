@@ -1221,13 +1221,6 @@ LPWSTR CEditor::GetStringW(ULONG i)
 	return m_lpControls[i].lpTextPane->GetStringW();
 }
 
-LPSTR CEditor::GetStringA(ULONG i)
-{
-	if (!IsValidEdit(i)) return NULL;
-
-	return m_lpControls[i].lpTextPane->GetStringA();
-}
-
 // No need to free this - treat it like a static
 _Check_return_ LPSTR CEditor::GetEditBoxTextA(ULONG iControl, _Out_ size_t* lpcchText)
 {
