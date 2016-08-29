@@ -751,13 +751,13 @@ void ResolveMessageClass(_In_ CMapiObjects* lpMapiObjects, _In_opt_ LPMAPIFOLDER
 		WC_H(MyData.DisplayDialog());
 		if (S_OK == hRes)
 		{
-			LPSTR szClass = MyData.GetStringA(0); // ResolveMessageClass requires an ANSI string
+			wstring szClass = MyData.GetStringW(0); // ResolveMessageClass requires an ANSI string
 			ULONG ulFlags = MyData.GetHex(1);
-			if (szClass)
+			if (!szClass.empty())
 			{
 				LPMAPIFORMINFO lpMAPIFormInfo = NULL;
-				DebugPrint(DBGForms, L"OnResolveMessageClass: Calling ResolveMessageClass(\"%hs\",0x%08X)\n", szClass, ulFlags); // STRING_OK
-				EC_MAPI(lpMAPIFormMgr->ResolveMessageClass(szClass, ulFlags, lpMAPIFolder, &lpMAPIFormInfo));
+				DebugPrint(DBGForms, L"OnResolveMessageClass: Calling ResolveMessageClass(\"%ws\",0x%08X)\n", szClass.c_str(), ulFlags); // STRING_OK
+				EC_MAPI(lpMAPIFormMgr->ResolveMessageClass(wstringToCStringA(szClass), ulFlags, lpMAPIFolder, &lpMAPIFormInfo));
 				if (lpMAPIFormInfo)
 				{
 					DebugPrintFormInfo(DBGForms, lpMAPIFormInfo);
@@ -765,6 +765,7 @@ void ResolveMessageClass(_In_ CMapiObjects* lpMapiObjects, _In_opt_ LPMAPIFOLDER
 				}
 			}
 		}
+
 		lpMAPIFormMgr->Release();
 	}
 }
