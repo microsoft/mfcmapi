@@ -2,12 +2,10 @@
 
 #pragma once
 
-void LaunchProfileWizard(
+wstring LaunchProfileWizard(
 						 _In_ HWND hParentWnd,
 						 ULONG ulFlags,
-						 _In_z_ LPCSTR* lppszServiceNameToAdd,
-						 ULONG cchBufferMax,
-						 _Out_cap_(cchBufferMax) LPSTR lpszNewProfileName);
+						 _In_ wstring szServiceNameToAdd);
 
 _Check_return_ HRESULT HrMAPIProfileExists(
 	_In_ LPPROFADMIN lpProfAdmin,

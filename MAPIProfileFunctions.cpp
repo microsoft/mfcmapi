@@ -16,14 +16,16 @@ STDAPI STDAPICALLTYPE LaunchWizard(HWND hParentWnd,
 	ULONG cchBufferMax,
 	_Out_cap_(cchBufferMax) LPSTR lpszNewProfileName);
 
-void LaunchProfileWizard(
+wstring LaunchProfileWizard(
 	_In_ HWND hParentWnd,
 	ULONG ulFlags,
-	_In_z_ LPCSTR* lppszServiceNameToAdd,
-	ULONG cchBufferMax,
-	_Out_cap_(cchBufferMax) LPSTR lpszNewProfileName)
+	_In_ wstring szServiceNameToAdd)
 {
 	HRESULT hRes = S_OK;
+	CHAR szProfName[80] = { 0 };
+	ULONG cchProfName = _countof(szProfName);
+	string szServiceNameToAddAscii = wstringTostring(szServiceNameToAdd);
+	LPCSTR szServices[] = { szServiceNameToAddAscii.c_str(), NULL };
 
 	DebugPrint(DBGGeneric, L"LaunchProfileWizard: Using LAUNCHWIZARDENTRY to launch wizard API.\n");
 
@@ -31,9 +33,9 @@ void LaunchProfileWizard(
 	WC_MAPI(LaunchWizard(
 		hParentWnd,
 		ulFlags,
-		lppszServiceNameToAdd,
-		cchBufferMax,
-		lpszNewProfileName));
+		szServices,
+		cchProfName,
+		szProfName));
 	if (MAPI_E_CALL_FAILED == hRes)
 	{
 		CHECKHRESMSG(hRes, IDS_LAUNCHWIZARDFAILED);
@@ -42,8 +44,10 @@ void LaunchProfileWizard(
 
 	if (SUCCEEDED(hRes))
 	{
-		DebugPrint(DBGGeneric, L"LaunchProfileWizard: Profile \"%hs\" configured.\n", lpszNewProfileName);
+		DebugPrint(DBGGeneric, L"LaunchProfileWizard: Profile \"%hs\" configured.\n", szProfName);
 	}
+
+	return LPCSTRToWstring(szProfName);
 }
 
 void DisplayMAPISVCPath(_In_ CWnd* pParentWnd)

@@ -13,6 +13,7 @@ wstring formatmessage(wstring const szMsg, ...);
 LPTSTR wstringToLPTSTR(wstring const& src);
 CString wstringToCString(wstring const& src);
 CStringA wstringToCStringA(wstring const& src);
+string wstringTostring(wstring const& src);
 wstring LPCTSTRToWstring(LPCTSTR src);
 wstring LPCSTRToWstring(LPCSTR src);
 CString LPCSTRToCString(LPCSTR src);

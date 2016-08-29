@@ -953,7 +953,7 @@ void CMainDlg::OnLogonWithFlags()
 
 		m_lpMapiObjects->MAPILogonEx(
 			m_hWnd, // handle of current window (from def'n of CWnd)
-			szProfile.empty()?nullptr:(LPTSTR)szProfile.c_str(), // profile name
+			szProfile.empty() ? nullptr : (LPTSTR)szProfile.c_str(), // profile name
 			MyData.GetHex(1) | MAPI_UNICODE);
 	}
 	else
@@ -1573,15 +1573,10 @@ void CMainDlg::OnLaunchProfileWizard()
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		CHAR szProfName[80] = { 0 };
-		LPSTR szServices[] = { MyData.GetStringA(1), NULL };
-
-		LaunchProfileWizard(
+		wstring szProfName = LaunchProfileWizard(
 			m_hWnd,
 			MyData.GetHex(0),
-			(LPCSTR*)szServices,
-			_countof(szProfName),
-			szProfName);
+			MyData.GetStringW(1));
 	}
 }
 

@@ -131,6 +131,12 @@ CStringA wstringToCStringA(wstring const& src)
 	return src.c_str();
 }
 
+string wstringTostring(wstring const& src)
+{
+	std::string str(src.begin(), src.end());
+	return str;
+}
+
 wstring LPCTSTRToWstring(LPCTSTR src)
 {
 #ifdef UNICODE
