@@ -175,14 +175,10 @@ void CProfileListDlg::OnLaunchProfileWizard()
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		CHAR szProfName[80] = { 0 };
-		LPSTR szServices[] = { MyData.GetStringA(1), NULL };
-		LaunchProfileWizard(
+		wstring szProfName = LaunchProfileWizard(
 			m_hWnd,
 			MyData.GetHex(0),
-			(LPCSTR*)szServices,
-			_countof(szProfName),
-			szProfName);
+			MyData.GetStringW(1));
 		OnRefreshView(); // Update the view since we don't have notifications here.
 	}
 }
