@@ -624,11 +624,7 @@ _Check_return_ HRESULT SelectUser(_In_ LPADRBOOK lpAdrBook, HWND hwnd, _Out_opt_
 		_countof(szTitle)));
 
 	AdrParm.ulFlags = DIALOG_MODAL | ADDRESS_ONE | AB_SELECTONLY | AB_RESOLVE;
-#pragma warning(push)
-#pragma warning(disable:4616)
-#pragma warning(disable:6276)
 	AdrParm.lpszCaption = (LPTSTR)szTitle;
-#pragma warning(pop)
 
 	EC_H_CANCEL(lpAdrBook->Address(
 		(ULONG_PTR*)&hwnd,

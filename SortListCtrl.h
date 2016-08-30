@@ -1,19 +1,7 @@
 #pragma once
 #include "enums.h"
 #include "SortHeader.h"
-
-enum __SortListDataTypes
-{
-	SORTLIST_UNKNOWN = 0,
-	SORTLIST_CONTENTS,
-	SORTLIST_PROP,
-	SORTLIST_MVPROP,
-	SORTLIST_TAGARRAY,
-	SORTLIST_RES,
-	SORTLIST_COMMENT,
-	SORTLIST_BINARY,
-	SORTLIST_TREENODE
-};
+#include "SortListData.h"
 
 // This enum maps to icons.bmp
 // Reorder at your own risk!!!
@@ -66,8 +54,6 @@ enum __SortListIconNames
 	slIconMAPI_SESSION,
 	slIconMAPI_FORMINFO,
 };
-
-void FreeSortListData(_In_ SortListData* lpData);
 
 class CSortListCtrl : public CListCtrl
 {

@@ -172,16 +172,12 @@ void ExportProfile(_In_z_ LPCSTR szProfile, _In_z_ LPCWSTR szProfileSection, boo
 	if (lpProfAdmin)
 	{
 		LPSERVICEADMIN lpServiceAdmin = NULL;
-#pragma warning(push)
-#pragma warning(disable:4616)
-#pragma warning(disable:6276)
 		EC_MAPI(lpProfAdmin->AdminServices(
 			(TCHAR*)szProfile,
 			(TCHAR*)"",
 			NULL,
 			MAPI_DIALOG,
 			&lpServiceAdmin));
-#pragma warning(pop)
 		if (lpServiceAdmin)
 		{
 			if (szProfileSection)

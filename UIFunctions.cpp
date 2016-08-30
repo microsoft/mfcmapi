@@ -5,6 +5,7 @@
 #include "Windowsx.h"
 #include "ImportProcs.h"
 #include "RichEditOleCallback.h"
+#include "..\SortListData.h"
 
 HFONT g_hFontSegoe = NULL;
 HFONT g_hFontSegoeBold = NULL;

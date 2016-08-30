@@ -795,16 +795,12 @@ void SelectForm(_In_ HWND hWnd, _In_ CMapiObjects* lpMapiObjects, _In_opt_ LPMAP
 			IDS_SELECTFORMPROPS,
 			szTitle,
 			_countof(szTitle)));
-#pragma warning(push)
-#pragma warning(disable:4616)
-#pragma warning(disable:6276)
 		EC_H_CANCEL(lpMAPIFormMgr->SelectForm(
 			(ULONG_PTR)hWnd,
 			0, // fMapiUnicode,
 			(LPCTSTR)szTitle,
 			lpMAPIFolder,
 			&lpMAPIFormInfo));
-#pragma warning(pop)
 
 		if (lpMAPIFormInfo)
 		{

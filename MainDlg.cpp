@@ -1277,7 +1277,7 @@ void CMainDlg::OnQueryDefaultMessageOpt()
 		string adrType = wstringTostring(MyData.GetStringW(0));
 
 		EC_MAPI(lpMAPISession->QueryDefaultMessageOpt(
-			const_cast<LPTSTR>(adrType.c_str()),
+			reinterpret_cast<LPTSTR>(const_cast<LPSTR>(adrType.c_str())),
 			NULL, // API doesn't like Unicode
 			&cValues,
 			&lpOptions));
@@ -1343,7 +1343,7 @@ void CMainDlg::OnQueryDefaultRecipOpt()
 		string adrType = wstringTostring(MyData.GetStringW(0));
 
 		EC_MAPI(lpAddrBook->QueryDefaultRecipOpt(
-			const_cast<LPTSTR>(adrType.c_str()),
+			reinterpret_cast<LPTSTR>(const_cast<LPSTR>(adrType.c_str())),
 			NULL, // API doesn't like Unicode
 			&cValues,
 			&lpOptions));

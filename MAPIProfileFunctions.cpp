@@ -592,7 +592,7 @@ _Check_return_ HRESULT HrAddServiceToProfile(
 	if (!lpProfAdmin) return hRes;
 
 	EC_MAPI(lpProfAdmin->AdminServices(
-		const_cast<LPTSTR>(lpszProfileName.c_str()),
+		reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszProfileName.c_str())),
 		(LPTSTR)_T(""),
 		0,
 		0,
@@ -609,8 +609,8 @@ _Check_return_ HRESULT HrAddServiceToProfile(
 		if (SUCCEEDED(hRes) && lpServiceAdmin2)
 		{
 			EC_H_MSG(lpServiceAdmin2->CreateMsgServiceEx(
-				const_cast<LPTSTR>(lpszServiceName.c_str()),
-				const_cast<LPTSTR>(lpszServiceName.c_str()),
+				reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszServiceName.c_str())),
+				reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszServiceName.c_str())),
 				ulUIParam,
 				ulFlags,
 				&uidService),
@@ -626,8 +626,8 @@ _Check_return_ HRESULT HrAddServiceToProfile(
 				EC_H(HrMarkExistingProviders(lpServiceAdmin, true));
 			}
 			EC_H_MSG(lpServiceAdmin->CreateMsgService(
-				const_cast<LPTSTR>(lpszServiceName.c_str()),
-				const_cast<LPTSTR>(lpszServiceName.c_str()),
+				reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszServiceName.c_str())),
+				reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszServiceName.c_str())),
 				ulUIParam,
 				ulFlags),
 				IDS_CREATEMSGSERVICEFAILED);
@@ -752,7 +752,7 @@ _Check_return_ HRESULT HrCreateProfile(
 
 	// Create the profile
 	WC_MAPI(lpProfAdmin->CreateProfile(
-		const_cast<LPTSTR>(lpszProfileName.c_str()),
+		reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszProfileName.c_str())),
 		NULL,
 		0,
 		NULL)); // fMapiUnicode is not supported!
@@ -781,7 +781,7 @@ _Check_return_ HRESULT HrRemoveProfile(
 	EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
 	if (!lpProfAdmin) return hRes;
 
-	EC_MAPI(lpProfAdmin->DeleteProfile(const_cast<LPTSTR>(lpszProfileName.c_str()), 0));
+	EC_MAPI(lpProfAdmin->DeleteProfile(reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszProfileName.c_str())), 0));
 
 	lpProfAdmin->Release();
 
@@ -804,7 +804,7 @@ _Check_return_ HRESULT HrSetDefaultProfile(
 	EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
 	if (!lpProfAdmin) return hRes;
 
-	EC_MAPI(lpProfAdmin->SetDefaultProfile(const_cast<LPTSTR>(lpszProfileName.c_str()), 0));
+	EC_MAPI(lpProfAdmin->SetDefaultProfile(reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszProfileName.c_str())), 0));
 
 	lpProfAdmin->Release();
 
@@ -917,7 +917,7 @@ _Check_return_ HRESULT GetProfileServiceVersion(
 	if (!lpProfAdmin) return hRes;
 
 	EC_MAPI(lpProfAdmin->AdminServices(
-		const_cast<LPTSTR>(lpszProfileName.c_str()),
+		reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszProfileName.c_str())),
 		(LPTSTR)_T(""),
 		0,
 		0,
@@ -990,9 +990,9 @@ _Check_return_ HRESULT HrCopyProfile(
 	if (!lpProfAdmin) return hRes;
 
 	EC_MAPI(lpProfAdmin->CopyProfile(
-		const_cast<LPTSTR>(lpszOldProfileName.c_str()),
+		reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszOldProfileName.c_str())),
 		NULL,
-		const_cast<LPTSTR>(lpszNewProfileName.c_str()),
+		reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszNewProfileName.c_str())),
 		NULL,
 		NULL));
 

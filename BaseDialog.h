@@ -7,6 +7,7 @@ class CAdviseSink;
 
 #include "Dialog.h"
 #include "enums.h"
+#include "SortListData.h"
 
 class CBaseDialog : public CMyDialog
 {

@@ -18,18 +18,18 @@ CMsgServiceTableDlg::CMsgServiceTableDlg(
 	_In_ CParentWnd* pParentWnd,
 	_In_ CMapiObjects* lpMapiObjects,
 	_In_ wstring szProfileName
-	) :
+) :
 	CContentsTableDlg(
-	pParentWnd,
-	lpMapiObjects,
-	IDS_SERVICES,
-	mfcmapiDO_NOT_CALL_CREATE_DIALOG,
-	NULL,
-	(LPSPropTagArray)&sptSERVICECols,
-	NUMSERVICECOLUMNS,
-	SERVICEColumns,
-	IDR_MENU_MSGSERVICE_POPUP,
-	MENU_CONTEXT_PROFILE_SERVICES)
+		pParentWnd,
+		lpMapiObjects,
+		IDS_SERVICES,
+		mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+		NULL,
+		(LPSPropTagArray)&sptSERVICECols,
+		NUMSERVICECOLUMNS,
+		SERVICEColumns,
+		IDR_MENU_MSGSERVICE_POPUP,
+		MENU_CONTEXT_PROFILE_SERVICES)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 
@@ -101,16 +101,12 @@ void CMsgServiceTableDlg::OnRefreshView()
 
 	if (lpProfAdmin)
 	{
-#pragma warning(push)
-#pragma warning(disable:4616)
-#pragma warning(disable:6276)
 		EC_MAPI(lpProfAdmin->AdminServices(
-			const_cast<LPTSTR>(wstringTostring(m_szProfileName).c_str()),
+			reinterpret_cast<LPTSTR>(const_cast<LPSTR>(wstringTostring(m_szProfileName).c_str())),
 			(LPTSTR)"",
 			NULL,
 			MAPI_DIALOG,
 			&m_lpServiceAdmin));
-#pragma warning(pop)
 		if (m_lpServiceAdmin)
 		{
 			LPMAPITABLE lpServiceTable = NULL;

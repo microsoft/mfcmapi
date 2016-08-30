@@ -1267,6 +1267,12 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="SmartView\VerbStream.h" />
     <ClInclude Include="SmartView\WebViewPersistStream.h" />
     <ClInclude Include="SmartView\XID.h" />
+    <ClInclude Include="SortListData.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="String.h" />
     <ClInclude Include="ViewPane\CheckPane.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
@@ -2188,6 +2194,12 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="SortListCtrl.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="SortListData.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>

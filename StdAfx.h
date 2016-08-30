@@ -85,54 +85,6 @@ struct TagNames
 	UINT uidName;
 };
 
-struct _ContentsData
-{
-	LPSBinary lpEntryID; // Allocated with MAPIAllocateMore
-	LPSBinary lpLongtermID; // Allocated with MAPIAllocateMore
-	LPSBinary lpInstanceKey; // Allocated with MAPIAllocateMore
-	LPSBinary lpServiceUID; // Allocated with MAPIAllocateMore
-	LPSBinary lpProviderUID; // Allocated with MAPIAllocateMore
-	TCHAR* szDN; // Allocated with MAPIAllocateMore
-	CHAR* szProfileDisplayName; // Allocated with MAPIAllocateMore
-	ULONG ulAttachNum;
-	ULONG ulAttachMethod;
-	ULONG ulRowID; // for recipients
-	ULONG ulRowType; // PR_ROW_TYPE
-};
-
-struct _PropListData
-{
-	ULONG ulPropTag;
-};
-
-struct _MVPropData
-{
-	_PV val; // Allocated with MAPIAllocateMore
-};
-
-struct _TagData
-{
-	ULONG ulPropTag;
-};
-
-struct _ResData
-{
-	LPSRestriction lpOldRes; // not allocated - just a pointer
-	LPSRestriction lpNewRes; // Owned by an alloc parent - do not free
-};
-
-struct _CommentData
-{
-	LPSPropValue lpOldProp; // not allocated - just a pointer
-	LPSPropValue lpNewProp; // Owned by an alloc parent - do not free
-};
-
-struct _BinaryData
-{
-	SBinary OldBin; // not allocated - just a pointer
-	SBinary NewBin; // MAPIAllocateMore from m_lpNewEntryList
-};
-
 class CAdviseSink;
 
 struct _NodeData
@@ -143,28 +95,6 @@ struct _NodeData
 	CAdviseSink* lpAdviseSink; // Object - free with Release
 	ULONG_PTR ulAdviseConnection;
 	LONG cSubfolders; // -1 for unknown, 0 for no subfolders, >0 for at least one subfolder
-};
-
-struct SortListData
-{
-	wstring szSortText;
-	ULARGE_INTEGER ulSortValue;
-	ULONG ulSortDataType;
-	union
-	{
-		_ContentsData Contents; // SORTLIST_CONTENTS
-		_PropListData Prop; // SORTLIST_PROP
-		_MVPropData MV; // SORTLIST_MVPROP
-		_TagData Tag; // SORTLIST_TAGARRAY
-		_ResData Res; // SORTLIST_RES
-		_CommentData Comment; // SORTLIST_COMMENT
-		_BinaryData Binary; // SORTLIST_BINARY
-		_NodeData Node; // SORTLIST_TREENODE
-
-	} data;
-	ULONG cSourceProps;
-	LPSPropValue lpSourceProps; // Stolen from lpsRowData in CContentsTableListCtrl::BuildDataItem - free with MAPIFreeBuffer
-	bool bItemFullyLoaded;
 };
 
 // Macros to assist in OnInitMenu
