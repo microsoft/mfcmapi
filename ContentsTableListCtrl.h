@@ -61,7 +61,6 @@ private:
 	_Check_return_ HRESULT AddColumn(UINT uidHeaderName, ULONG ulCurHeaderCol, ULONG ulCurTagArrayRow, ULONG ulPropTag);
 	_Check_return_ HRESULT AddColumns(_In_ LPSPropTagArray lpCurColTagArray);
 	_Check_return_ HRESULT AddItemToListBox(int iRow, _In_ LPSRow lpsRowToAdd);
-	void BuildDataItem(_In_ LPSRow lpsRowData, _Inout_ SortListData* lpData);
 	_Check_return_ HRESULT DoExpandCollapse();
 	_Check_return_ int FindRow(_In_ LPSBinary lpInstance);
 	_Check_return_ int GetNextSelectedItemNum(_Inout_opt_ int *iCurItem);
