@@ -82,8 +82,7 @@ struct SortListData
 	bool bItemFullyLoaded;
 };
 
-void FreeSortListData(_In_ SortListData* lpData);
-
+// SORTLIST_TREENODE
 SortListData* BuildNodeData(
 	ULONG cProps,
 	_In_opt_ LPSPropValue lpProps,
@@ -92,4 +91,10 @@ SortListData* BuildNodeData(
 	ULONG bSubfolders,
 	ULONG ulContainerFlags);
 
+// SORTLIST_TREENODE
 SortListData* BuildNodeData(_In_ LPSRow lpsRow);
+
+// SORTLIST_CONTENTS
+void BuildDataItem(_In_ LPSRow lpsRowData, _Inout_ SortListData* lpData);
+
+void FreeSortListData(_In_ SortListData* lpData);
