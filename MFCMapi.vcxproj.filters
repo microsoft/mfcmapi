@@ -438,6 +438,9 @@
     <ClInclude Include="SmartView\XID.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SortListData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Res\bldver.rc">
@@ -860,6 +863,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SmartView\XID.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SortListData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

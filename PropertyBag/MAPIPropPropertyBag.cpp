@@ -4,6 +4,7 @@
 #include "..\MAPIFunctions.h"
 #include "..\Error.h"
 #include "..\InterpretProp.h"
+#include "..\SortListData.h"
 
 MAPIPropPropertyBag::MAPIPropPropertyBag(LPMAPIPROP lpProp, SortListData* lpListData)
 {

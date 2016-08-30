@@ -2,6 +2,7 @@
 // RowPropertyBag.h : header file
 
 #include "PropertyBag.h"
+#include "..\SortListData.h"
 
 class RowPropertyBag : public IMAPIPropertyBag
 {

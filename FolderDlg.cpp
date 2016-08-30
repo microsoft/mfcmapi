@@ -1112,16 +1112,12 @@ void CFolderDlg::OnNewCustomForm()
 						IDS_SELECTFORMCREATE,
 						szTitle,
 						_countof(szTitle)));
-#pragma warning(push)
-#pragma warning(disable:4616)
-#pragma warning(disable:6276)
 					EC_H_CANCEL(lpMAPIFormMgr->SelectForm(
 						(ULONG_PTR)m_hWnd,
-						0, // fMapiUnicode,
+						0,
 						(LPCTSTR)szTitle,
 						lpFormSource,
 						&lpMAPIFormInfo));
-#pragma warning(pop)
 
 					if (lpMAPIFormInfo)
 					{

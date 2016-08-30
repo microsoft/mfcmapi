@@ -12,40 +12,6 @@
 
 static wstring CLASS = L"CSortListCtrl";
 
-void FreeSortListData(_In_ SortListData* lpData)
-{
-	if (!lpData) return;
-	switch (lpData->ulSortDataType)
-	{
-	case SORTLIST_CONTENTS: // _ContentsData
-	case SORTLIST_PROP: // _PropListData
-	case SORTLIST_MVPROP: // _MVPropData
-	case SORTLIST_TAGARRAY: // _TagData
-	case SORTLIST_BINARY: // _BinaryData
-	case SORTLIST_RES: // _ResData
-	case SORTLIST_COMMENT: // _CommentData
-	// Nothing to do
-		break;
-	case SORTLIST_TREENODE: // _NodeData
-		if (lpData->data.Node.lpAdviseSink)
-		{
-			// unadvise before releasing our sink
-			if (lpData->data.Node.ulAdviseConnection && lpData->data.Node.lpHierarchyTable)
-				lpData->data.Node.lpHierarchyTable->Unadvise(lpData->data.Node.ulAdviseConnection);
-			lpData->data.Node.lpAdviseSink->Release();
-		}
-
-		if (lpData->data.Node.lpHierarchyTable) lpData->data.Node.lpHierarchyTable->Release();
-		break;
-	}
-
-	MAPIFreeBuffer(lpData->lpSourceProps);
-	MAPIFreeBuffer(lpData);
-}
-
-/////////////////////////////////////////////////////////////////////////////
-// CSortListCtrl
-
 CSortListCtrl::CSortListCtrl()
 {
 	TRACE_CONSTRUCTOR(CLASS);
