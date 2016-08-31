@@ -280,7 +280,7 @@ void SetNodeData(HWND hWnd, HTREEITEM hItem, SortListData* lpData)
 		if (TreeView_GetItem(hWnd, &tvItem) && tvItem.lParam)
 		{
 			DebugPrintEx(DBGHierarchy, CLASS, L"SetNodeData", L"Node %p, replacing data\n", hItem);
-			FreeSortListData((SortListData*)tvItem.lParam);
+			delete (SortListData*)tvItem.lParam;
 		}
 		else
 		{
@@ -1043,7 +1043,7 @@ void CHierarchyTableTreeCtrl::OnDeleteItem(_In_ NMHDR* pNMHDR, _In_ LRESULT* pRe
 		{
 			DebugPrintEx(DBGHierarchy, CLASS, L"OnDeleteItem", L"Unadvising %p, ulAdviseConnection = 0x%08X\n", lpData->data.Node.lpAdviseSink, (int)lpData->data.Node.ulAdviseConnection);
 		}
-		if (lpData) FreeSortListData(lpData);
+		if (lpData) delete lpData;
 		lpData = NULL;
 
 		if (!m_bShuttingDown)

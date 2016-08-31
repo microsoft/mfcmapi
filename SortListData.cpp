@@ -270,19 +270,18 @@ void BuildDataItem(_In_ LPSRow lpsRowData, _Inout_ SortListData* lpData)
 	}
 }
 
-void FreeSortListData(_In_ SortListData* lpData)
+SortListData::~SortListData()
 {
-	if (!lpData) return;
-	switch (lpData->ulSortDataType)
+	switch (ulSortDataType)
 	{
 	case SORTLIST_CONTENTS: // _ContentsData
-		MAPIFreeBuffer(lpData->data.Contents.lpInstanceKey);
-		MAPIFreeBuffer(lpData->data.Contents.lpEntryID);
-		MAPIFreeBuffer(lpData->data.Contents.lpLongtermID);
-		MAPIFreeBuffer(lpData->data.Contents.lpServiceUID);
-		MAPIFreeBuffer(lpData->data.Contents.lpProviderUID);
-		MAPIFreeBuffer(lpData->data.Contents.szProfileDisplayName);
-		MAPIFreeBuffer(lpData->data.Contents.szDN);
+		MAPIFreeBuffer(data.Contents.lpInstanceKey);
+		MAPIFreeBuffer(data.Contents.lpEntryID);
+		MAPIFreeBuffer(data.Contents.lpLongtermID);
+		MAPIFreeBuffer(data.Contents.lpServiceUID);
+		MAPIFreeBuffer(data.Contents.lpProviderUID);
+		MAPIFreeBuffer(data.Contents.szProfileDisplayName);
+		MAPIFreeBuffer(data.Contents.szDN);
 		break;
 	case SORTLIST_PROP: // _PropListData
 	case SORTLIST_MVPROP: // _MVPropData
@@ -292,21 +291,20 @@ void FreeSortListData(_In_ SortListData* lpData)
 	case SORTLIST_COMMENT: // _CommentData
 		break;
 	case SORTLIST_TREENODE: // _NodeData
-		MAPIFreeBuffer(lpData->data.Contents.lpInstanceKey);
-		MAPIFreeBuffer(lpData->data.Contents.lpEntryID);
+		MAPIFreeBuffer(data.Contents.lpInstanceKey);
+		MAPIFreeBuffer(data.Contents.lpEntryID);
 
-		if (lpData->data.Node.lpAdviseSink)
+		if (data.Node.lpAdviseSink)
 		{
 			// unadvise before releasing our sink
-			if (lpData->data.Node.ulAdviseConnection && lpData->data.Node.lpHierarchyTable)
-				lpData->data.Node.lpHierarchyTable->Unadvise(lpData->data.Node.ulAdviseConnection);
-			lpData->data.Node.lpAdviseSink->Release();
+			if (data.Node.ulAdviseConnection && data.Node.lpHierarchyTable)
+				data.Node.lpHierarchyTable->Unadvise(data.Node.ulAdviseConnection);
+			data.Node.lpAdviseSink->Release();
 		}
 
-		if (lpData->data.Node.lpHierarchyTable) lpData->data.Node.lpHierarchyTable->Release();
+		if (data.Node.lpHierarchyTable) data.Node.lpHierarchyTable->Release();
 		break;
 	}
 
-	MAPIFreeBuffer(lpData->lpSourceProps);
-	delete lpData;
+	MAPIFreeBuffer(lpSourceProps);
 }
