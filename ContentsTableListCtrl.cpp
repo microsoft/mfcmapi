@@ -103,6 +103,7 @@ LRESULT CContentsTableListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM l
 		{
 			return true;
 		}
+
 		break;
 	case WM_PAINT:
 		if (LVS_NOCOLUMNHEADER & GetStyle())
@@ -110,6 +111,7 @@ LRESULT CContentsTableListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM l
 			DrawHelpText(m_hWnd, IDS_HELPTEXTSTARTHERE);
 			return true;
 		}
+
 		break;
 	case WM_LBUTTONDBLCLK:
 		WC_H(DoExpandCollapse());
@@ -123,9 +125,11 @@ LRESULT CContentsTableListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM l
 		{
 			CHECKHRESMSG(hRes, IDS_EXPANDCOLLAPSEFAILED);
 		}
+
 		return NULL;
 		break;
-	} // end switch
+	}
+
 	return CSortListCtrl::WindowProc(message, wParam, lParam);
 }
 
@@ -141,6 +145,7 @@ void CContentsTableListCtrl::OnContextMenu(_In_ CWnd* pWnd, CPoint pos)
 		::ClientToScreen(pWnd->m_hWnd, &point);
 		pos = point;
 	}
+
 	DisplayContextMenu(m_nIDContextMenu, IDR_MENU_TABLE, m_lpHostDlg->m_hWnd, pos.x, pos.y);
 }
 
@@ -181,6 +186,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::SetContentsTable(
 		m_lpContentsTable->Release();
 		m_lpContentsTable = NULL;
 	}
+
 	m_lpContentsTable = lpContentsTable;
 	if (m_lpContentsTable) m_lpContentsTable->AddRef();
 
@@ -664,6 +670,7 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 				&pRows)));
 			if (FAILED(hRes)) break;
 		}
+
 		if (FAILED(hRes) || !pRows || !pRows->cRows) break;
 
 		DebugPrintEx(DBGGeneric, CLASS, L"ThreadFuncLoadTable", L"Got this many rows: 0x%X\n", pRows->cRows);
@@ -716,7 +723,7 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 	delete lpThreadInfo;
 
 	return 0;
-} // ThreadFuncLoadTable
+}
 
 _Check_return_ bool CContentsTableListCtrl::IsLoading()
 {
@@ -975,6 +982,7 @@ void GetDepthAndImage(_In_ LPSRow lpsRowData, _In_ ULONG* lpulDepth, _In_ ULONG*
 		{
 			lpProp = PpropFindProp(lpsRowData->lpProps, lpsRowData->cValues, PR_PROVIDER_UID);
 		}
+
 		if (lpProp)
 		{
 			ulImage = slIconMAPI_PROFSECT;
@@ -983,7 +991,7 @@ void GetDepthAndImage(_In_ LPSRow lpsRowData, _In_ ULONG* lpulDepth, _In_ ULONG*
 
 	if (lpulDepth) *lpulDepth = ulDepth;
 	if (lpulImage) *lpulImage = ulImage;
-} // GetDepthAndImage
+}
 
 _Check_return_ HRESULT CContentsTableListCtrl::RefreshItem(int iRow, _In_ LPSRow lpsRowData, bool bItemExists)
 {
@@ -1096,19 +1104,19 @@ _Check_return_ HRESULT CContentsTableListCtrl::GetSelectedItemEIDs(_Deref_out_op
 				if (-1 != iSelectedItem)
 				{
 					SortListData* lpData = (SortListData*)GetItemData(iSelectedItem);
-					if (lpData && lpData->data.Contents.lpEntryID)
+					if (lpData && lpData->Contents() && lpData->Contents()->lpEntryID)
 					{
-						lpTempList->lpbin[iArrayPos].cb = lpData->data.Contents.lpEntryID->cb;
+						lpTempList->lpbin[iArrayPos].cb = lpData->Contents()->lpEntryID->cb;
 						EC_H(MAPIAllocateMore(
-							lpData->data.Contents.lpEntryID->cb,
+							lpData->Contents()->lpEntryID->cb,
 							lpTempList,
 							(LPVOID *)&lpTempList->lpbin[iArrayPos].lpb));
 						if (lpTempList->lpbin[iArrayPos].lpb)
 						{
 							CopyMemory(
 								lpTempList->lpbin[iArrayPos].lpb,
-								lpData->data.Contents.lpEntryID->lpb,
-								lpData->data.Contents.lpEntryID->cb);
+								lpData->Contents()->lpEntryID->lpb,
+								lpData->Contents()->lpEntryID->cb);
 						}
 					}
 				}
@@ -1137,6 +1145,7 @@ _Check_return_ int CContentsTableListCtrl::GetNextSelectedItemNum(
 	{
 		iItem = -1;
 	}
+
 	DebugPrintEx(DBGGeneric, CLASS, L"GetNextSelectedItemNum", L"iItem before = 0x%X\n", iItem);
 
 	iItem = GetNextItem(
@@ -1197,8 +1206,8 @@ _Check_return_ HRESULT CContentsTableListCtrl::DefaultOpenItemProp(
 	SortListData* lpListData = NULL;
 	lpListData = (SortListData*)GetItemData(iItem);
 
-	if (!lpListData) return S_OK;
-	lpEID = lpListData->data.Contents.lpEntryID;
+	if (!lpListData || !lpListData->Contents()) return S_OK;
+	lpEID = lpListData->Contents()->lpEntryID;
 	if (!lpEID || (lpEID->cb == 0)) return S_OK;
 
 	DebugPrint(DBGGeneric, L"Item being opened:\n");
@@ -1221,6 +1230,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::DefaultOpenItemProp(
 			NULL,
 			(LPUNKNOWN*)lppProp));
 	}
+
 	break;
 	case(MAPI_FOLDER):
 	{
@@ -1247,6 +1257,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::DefaultOpenItemProp(
 			ErrDialog(__FILE__, __LINE__, IDS_EDMESSAGERAWNOTSUPPORTED);
 		}
 	}
+
 	break;
 	default:
 	{
@@ -1262,8 +1273,10 @@ _Check_return_ HRESULT CContentsTableListCtrl::DefaultOpenItemProp(
 			NULL,
 			(LPUNKNOWN*)lppProp));
 	}
+
 	break;
 	}
+
 	if (!*lppProp && FAILED(hRes) && mfcmapiREQUEST_MODIFY == bModify && MAPI_E_NOT_FOUND != hRes)
 	{
 		DebugPrint(DBGGeneric, L"\tOpenEntry failed: 0x%X. Will try again without MAPI_MODIFY\n", hRes);
@@ -1298,6 +1311,7 @@ void CContentsTableListCtrl::SelectAll()
 		EC_B(SetItemState(iIndex, LVIS_SELECTED, LVIS_SELECTED | LVIS_FOCUSED));
 		hRes = S_OK;
 	}
+
 	MySetRedraw(true);
 	if (m_lpHostDlg)
 		m_lpHostDlg->OnUpdateSingleMAPIPropListCtrl(NULL, NULL);
@@ -1417,6 +1431,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::NotificationOn()
 					// We're not on an Exchange server. We don't need to generate RPC after all.
 					hRes = S_OK;
 				}
+
 				MAPIFreeBuffer(lpProp);
 			}
 		}
@@ -1482,9 +1497,9 @@ _Check_return_ HRESULT CContentsTableListCtrl::DoExpandCollapse()
 
 	// No lpData or wrong type of row - no work done
 	if (!lpData ||
-		lpData->ulSortDataType != SORTLIST_CONTENTS ||
-		lpData->data.Contents.ulRowType == TBL_LEAF_ROW ||
-		lpData->data.Contents.ulRowType == TBL_EMPTY_CATEGORY)
+		!lpData->Contents() ||
+		lpData->Contents()->ulRowType == TBL_LEAF_ROW ||
+		lpData->Contents()->ulRowType == TBL_EMPTY_CATEGORY)
 		return S_FALSE;
 
 	bool bDidWork = false;
@@ -1492,20 +1507,20 @@ _Check_return_ HRESULT CContentsTableListCtrl::DoExpandCollapse()
 	lvItem.iItem = iItem;
 	lvItem.iSubItem = 0;
 	lvItem.mask = LVIF_IMAGE;
-	switch (lpData->data.Contents.ulRowType)
+	switch (lpData->Contents()->ulRowType)
 	{
 	default:
 		break;
 	case TBL_COLLAPSED_CATEGORY:
 	{
-		if (lpData->data.Contents.lpInstanceKey)
+		if (lpData->Contents()->lpInstanceKey)
 		{
 			LPSRowSet lpRowSet = NULL;
 			ULONG ulRowsAdded = 0;
 
 			EC_MAPI(m_lpContentsTable->ExpandRow(
-				lpData->data.Contents.lpInstanceKey->cb,
-				lpData->data.Contents.lpInstanceKey->lpb,
+				lpData->Contents()->lpInstanceKey->cb,
+				lpData->Contents()->lpInstanceKey->lpb,
 				256,
 				NULL,
 				&lpRowSet,
@@ -1522,21 +1537,23 @@ _Check_return_ HRESULT CContentsTableListCtrl::DoExpandCollapse()
 					lpRowSet->aRow[i].lpProps = NULL;
 				}
 			}
+
 			FreeProws(lpRowSet);
-			lpData->data.Contents.ulRowType = TBL_EXPANDED_CATEGORY;
+			lpData->Contents()->ulRowType = TBL_EXPANDED_CATEGORY;
 			lvItem.iImage = slIconNodeExpanded;
 			bDidWork = true;
 		}
 	}
+
 	break;
 	case TBL_EXPANDED_CATEGORY:
-		if (lpData->data.Contents.lpInstanceKey)
+		if (lpData->Contents()->lpInstanceKey)
 		{
 			ULONG ulRowsRemoved = 0;
 
 			EC_MAPI(m_lpContentsTable->CollapseRow(
-				lpData->data.Contents.lpInstanceKey->cb,
-				lpData->data.Contents.lpInstanceKey->lpb,
+				lpData->Contents()->lpInstanceKey->cb,
+				lpData->Contents()->lpInstanceKey->lpb,
 				NULL,
 				&ulRowsRemoved));
 			if (S_OK == hRes && ulRowsRemoved)
@@ -1547,12 +1564,15 @@ _Check_return_ HRESULT CContentsTableListCtrl::DoExpandCollapse()
 					EC_B(DeleteItem(i));
 				}
 			}
-			lpData->data.Contents.ulRowType = TBL_COLLAPSED_CATEGORY;
+
+			lpData->Contents()->ulRowType = TBL_COLLAPSED_CATEGORY;
 			lvItem.iImage = slIconNodeCollapsed;
 			bDidWork = true;
 		}
+
 		break;
 	}
+
 	if (bDidWork)
 	{
 		EC_B(SetItem(&lvItem)); // Set new image for the row
@@ -1565,13 +1585,15 @@ _Check_return_ HRESULT CContentsTableListCtrl::DoExpandCollapse()
 			PR_ROW_TYPE);
 		if (lpProp && PR_ROW_TYPE == lpProp->ulPropTag)
 		{
-			lpProp->Value.l = lpData->data.Contents.ulRowType;
+			lpProp->Value.l = lpData->Contents()->ulRowType;
 		}
+
 		SRow sRowData = { 0 };
 		sRowData.cValues = lpData->cSourceProps;
 		sRowData.lpProps = lpData->lpSourceProps;
 		SetRowStrings(iItem, &sRowData);
 	}
+
 	return hRes;
 }
 
@@ -1736,9 +1758,9 @@ _Check_return_ int CContentsTableListCtrl::FindRow(_In_ LPSBinary lpInstance)
 	for (iItem = 0; iItem < GetItemCount(); iItem++)
 	{
 		lpListData = (SortListData*)GetItemData(iItem);
-		if (lpListData)
+		if (lpListData && lpListData->Contents())
 		{
-			lpCurInstance = lpListData->data.Contents.lpInstanceKey;
+			lpCurInstance = lpListData->Contents()->lpInstanceKey;
 			if (lpCurInstance)
 			{
 				if (!memcmp(lpCurInstance->lpb, lpInstance->lpb, lpInstance->cb))

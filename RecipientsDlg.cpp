@@ -1,5 +1,4 @@
-// RecipientsDlg.cpp : implementation file
-// Displays the recipient table for a message
+// RecipientsDlg.cpp : Displays the recipient table for a message
 
 #include "stdafx.h"
 #include "RecipientsDlg.h"
@@ -72,8 +71,10 @@ void CRecipientsDlg::OnInitMenu(_In_ CMenu* pMenu)
 			pMenu->EnableMenuItem(ID_MODIFYRECIPIENT,
 				DIM(1 == iNumSel && m_lpPropDisplay && m_lpPropDisplay->IsModifiedPropVals()));
 		}
+
 		pMenu->CheckMenuItem(ID_VIEWRECIPIENTABENTRY, CHECK(m_bViewRecipientABEntry));
 	}
+
 	CContentsTableDlg::OnInitMenu(pMenu);
 }
 
@@ -140,14 +141,15 @@ void CRecipientsDlg::OnDeleteSelectedItem()
 					lpProp->dwAlignPad = 0;
 					// Find the highlighted item AttachNum
 					lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
-					if (lpListData)
+					if (lpListData && lpListData->Contents())
 					{
-						lpProp->Value.l = lpListData->data.Contents.ulRowID;
+						lpProp->Value.l = lpListData->Contents()->ulRowID;
 					}
 					else
 					{
 						lpProp->Value.l = 0;
 					}
+
 					DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L"Deleting row 0x%08X\n", lpProp->Value.l);
 				}
 			}

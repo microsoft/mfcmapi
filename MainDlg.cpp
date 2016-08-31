@@ -144,8 +144,8 @@ void CMainDlg::AddLoadMAPIMenus()//HMENU hMenu, ULONG ulAddInContext)
 		}
 
 		delete mpi;
-
 	}
+
 	DebugPrint(DBGLoadMAPI, L"Done extending menus\n");
 }
 
@@ -200,6 +200,7 @@ void CMainDlg::OnInitMenu(_In_ CMenu* pMenu)
 			lpAddrBook = m_lpMapiObjects->GetAddrBook(false); // do not release
 			bMAPIInitialized = m_lpMapiObjects->bMAPIInitialized();
 		}
+
 		bool bInLoadOp = m_lpContentsTableListCtrl && m_lpContentsTableListCtrl->IsLoading();
 
 		pMenu->EnableMenuItem(ID_LOADMAPI, DIM(!hMAPI && !bInLoadOp));
@@ -247,6 +248,7 @@ void CMainDlg::OnInitMenu(_In_ CMenu* pMenu)
 			pMenu->EnableMenuItem(ID_DUMPSTORECONTENTS, DIM(lpMAPISession && 1 == iNumSel));
 			pMenu->EnableMenuItem(ID_COMPUTEGIVENSTOREHASH, DIM(lpMAPISession && 1 == iNumSel));
 		}
+
 		pMenu->EnableMenuItem(ID_OPENADDRESSBOOK, DIM(lpMAPISession && !lpAddrBook));
 		pMenu->CheckMenuItem(ID_OPENADDRESSBOOK, CHECK(lpAddrBook));
 		pMenu->EnableMenuItem(ID_CLOSEADDRESSBOOK, DIM(lpAddrBook));
@@ -261,11 +263,9 @@ void CMainDlg::OnInitMenu(_In_ CMenu* pMenu)
 			pMenu->EnableMenuItem(uidCurMenu, DIM(!hMAPI && !bInLoadOp));
 		}
 	}
+
 	CContentsTableDlg::OnInitMenu(pMenu);
 }
-
-/////////////////////////////////////////////////////////////////////////////////////
-// Menu Commands
 
 void CMainDlg::OnCloseAddressBook()
 {
@@ -346,6 +346,7 @@ void CMainDlg::OnOpenDefaultDir()
 
 		lpDefaultDir->Release();
 	}
+
 	MAPIFreeBuffer(lpEID);
 }
 
@@ -385,6 +386,7 @@ void CMainDlg::OnOpenPAB()
 
 		lpPAB->Release();
 	}
+
 	MAPIFreeBuffer(lpEID);
 }
 
@@ -412,10 +414,10 @@ _Check_return_ HRESULT CMainDlg::OpenItemProp(int iSelectedItem, __mfcmapiModify
 
 	SortListData* lpListData = NULL;
 	lpListData = (SortListData*)m_lpContentsTableListCtrl->GetItemData(iSelectedItem);
-	if (lpListData)
+	if (lpListData && lpListData->Contents())
 	{
 		LPSBinary lpEntryID = NULL;
-		lpEntryID = lpListData->data.Contents.lpEntryID;
+		lpEntryID = lpListData->Contents()->lpEntryID;
 		if (lpEntryID)
 		{
 			ULONG ulFlags = NULL;
@@ -429,6 +431,7 @@ _Check_return_ HRESULT CMainDlg::OpenItemProp(int iSelectedItem, __mfcmapiModify
 				(LPMDB*)lppMAPIProp));
 		}
 	}
+
 	return hRes;
 }
 
@@ -464,6 +467,7 @@ void CMainDlg::OnOpenDefaultMessageStore()
 			ulFlags = MyPrompt.GetHex(0);
 		}
 	}
+
 	if (ulFlags)
 	{
 		ULONG cbEntryID = 0;
@@ -516,8 +520,10 @@ void CMainDlg::OnOpenDefaultMessageStore()
 						lpAdminMDB->Release();
 					}
 				}
+
 				lpIdentity->Release();
 			}
+
 			MAPIFreeBuffer(lpEntryID);
 		}
 	}
@@ -590,8 +596,8 @@ void CMainDlg::OnOpenMessageStoreEID()
 					this));
 			}
 		}
-
 	}
+
 	delete[] sBin.lpb;
 }
 
@@ -671,6 +677,7 @@ void CMainDlg::OnOpenMailboxWithDN()
 			lpOtherMDB->Release();
 		}
 	}
+
 	lpMDB->Release();
 }
 
@@ -748,11 +755,9 @@ void CMainDlg::OnOpenSelectedStoreDeletedFolders()
 	{
 		hRes = S_OK;
 		lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
-		if (!lpListData) continue;
-
-		if (lpListData)
+		if (lpListData && lpListData->Contents())
 		{
-			lpItemEID = lpListData->data.Contents.lpEntryID;
+			lpItemEID = lpListData->Contents()->lpEntryID;
 			if (lpItemEID)
 			{
 				EC_H(CallOpenMsgStore(
@@ -798,9 +803,9 @@ void CMainDlg::OnDumpStoreContents()
 	{
 		hRes = S_OK;
 		lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
-		if (lpListData)
+		if (lpListData && lpListData->Contents())
 		{
-			lpItemEID = lpListData->data.Contents.lpEntryID;
+			lpItemEID = lpListData->Contents()->lpEntryID;
 			if (lpItemEID)
 			{
 				EC_H(CallOpenMsgStore(
@@ -821,6 +826,7 @@ void CMainDlg::OnDumpStoreContents()
 						MyDumpStore.InitMDB(lpMDB);
 						MyDumpStore.ProcessStore();
 					}
+
 					lpMDB->Release();
 					lpMDB = NULL;
 				}
@@ -1032,6 +1038,7 @@ void CMainDlg::OnSelectFormContainer()
 				lpMAPIFormContainer->Release();
 			}
 		}
+
 		lpMAPIFormMgr->Release();
 	}
 }
@@ -1077,6 +1084,7 @@ void CMainDlg::OnOpenFormContainer()
 				lpMAPIFormContainer->Release();
 			}
 		}
+
 		lpMAPIFormMgr->Release();
 	}
 }
@@ -1310,11 +1318,13 @@ void CMainDlg::OnQueryDefaultMessageOpt()
 						szProp.c_str(),
 						szAltProp.c_str());
 				}
+
 				MyResult.InitPane(1, CreateMultiLinePane(IDS_OPTIONS, szPropString, true));
 			}
 
 			WC_H(MyResult.DisplayDialog());
 		}
+
 		MAPIFreeBuffer(lpOptions);
 	}
 }
@@ -1376,11 +1386,13 @@ void CMainDlg::OnQueryDefaultRecipOpt()
 						szProp.c_str(),
 						szAltProp.c_str());
 				}
+
 				MyResult.InitPane(1, CreateMultiLinePane(IDS_OPTIONS, szPropString, true));
 			}
 
 			WC_H(MyResult.DisplayDialog());
 		}
+
 		MAPIFreeBuffer(lpOptions);
 	}
 }
@@ -1450,6 +1462,7 @@ void CMainDlg::OnQueryIdentity()
 				}
 			}
 		}
+
 		MAPIFreeBuffer(lpEntryID);
 	}
 }
@@ -1466,9 +1479,9 @@ void CMainDlg::OnSetDefaultStore()
 	if (!lpMAPISession) return;
 
 	lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(NULL);
-	if (lpListData)
+	if (lpListData && lpListData->Contents())
 	{
-		lpItemEID = lpListData->data.Contents.lpEntryID;
+		lpItemEID = lpListData->Contents()->lpEntryID;
 		if (lpItemEID)
 		{
 			CEditor MyData(
@@ -1553,6 +1566,7 @@ void CMainDlg::OnShowProfiles()
 
 		lpProfTable->Release();
 	}
+
 	lpProfAdmin->Release();
 }
 
@@ -1863,9 +1877,9 @@ void CMainDlg::OnComputeGivenStoreHash()
 	if (!lpMAPISession) return;
 
 	lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(NULL);
-	if (lpListData)
+	if (lpListData && lpListData->Contents())
 	{
-		LPSBinary lpItemEID = lpListData->data.Contents.lpEntryID;
+		LPSBinary lpItemEID = lpListData->Contents()->lpEntryID;
 
 		if (lpItemEID)
 		{
@@ -1892,6 +1906,7 @@ void CMainDlg::OnComputeGivenStoreHash()
 				fPublicExchangeStore = FExchangePublicStore((LPMAPIUID)lpProviderUID->lpb);
 				fPrivateExchangeStore = FExchangePrivateStore((LPMAPIUID)lpProviderUID->lpb);
 			}
+
 			bool fCached = false;
 			LPSPropValue lpConfigProp = NULL;
 			LPSPropValue lpPathPropA = NULL;
@@ -1913,9 +1928,11 @@ void CMainDlg::OnComputeGivenStoreHash()
 						wstring szGUID = GUIDToString((LPCGUID)&emsmdbUID);
 						DebugPrint(DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, emsmdbUID from PR_EMSMDB_SECTION_UID = %ws\n", szGUID.c_str());
 					}
+
 					WC_MAPI(lpMAPISession->OpenProfileSection(&emsmdbUID, NULL, 0, &lpProfSect));
 				}
 			}
+
 			if (!lpServiceUID || FAILED(hRes))
 			{
 				hRes = S_OK;
@@ -1934,11 +1951,13 @@ void CMainDlg::OnComputeGivenStoreHash()
 					{
 						fCached = ((lpConfigProp->Value.l & CONFIG_OST_CACHE_PRIVATE) != 0);
 					}
+
 					if (fPublicExchangeStore)
 					{
 						fCached = ((lpConfigProp->Value.l & CONFIG_OST_CACHE_PUBLIC) == CONFIG_OST_CACHE_PUBLIC);
 					}
 				}
+
 				DebugPrint(DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, fPrivateExchangeStore = %d\n", fPrivateExchangeStore);
 				DebugPrint(DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, fPublicExchangeStore = %d\n", fPublicExchangeStore);
 				DebugPrint(DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, fCached = %d\n", fCached);
@@ -1952,6 +1971,7 @@ void CMainDlg::OnComputeGivenStoreHash()
 						hRes = S_OK;
 						WC_MAPI(HrGetOneProp(lpProfSect, PR_PROFILE_OFFLINE_STORE_PATH_A, &lpPathPropA));
 					}
+
 					if (SUCCEEDED(hRes))
 					{
 						if (lpPathPropW && lpPathPropW->Value.lpszW)
@@ -1971,14 +1991,17 @@ void CMainDlg::OnComputeGivenStoreHash()
 						hRes = S_OK;
 						WC_MAPI(HrGetOneProp(lpProfSect, PR_MAPPING_SIGNATURE, &lpMappingSig));
 					}
+
 					hRes = S_OK;
 				}
 			}
+
 			DWORD dwSigHash = NULL;
 			if (lpMappingSig && PT_BINARY == PROP_TYPE(lpMappingSig->ulPropTag))
 			{
 				dwSigHash = ComputeStoreHash(lpMappingSig->Value.bin.cb, lpMappingSig->Value.bin.lpb, NULL, NULL, fPublicExchangeStore);
 			}
+
 			DWORD dwEIDHash = ComputeStoreHash(lpItemEID->cb, lpItemEID->lpb, szPath, wzPath, fPublicExchangeStore);
 
 			wstring szHash;
@@ -1990,6 +2013,7 @@ void CMainDlg::OnComputeGivenStoreHash()
 			{
 				szHash = formatmessage(IDS_STOREHASHVAL, dwEIDHash);
 			}
+
 			DebugPrint(DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, Entry ID hash = 0x%08X\n", dwEIDHash);
 			if (dwSigHash)
 				DebugPrint(DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, Mapping Signature hash = 0x%08X\n", dwSigHash);

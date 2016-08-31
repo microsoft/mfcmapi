@@ -12,8 +12,11 @@ enum __SortListDataTypes
 	SORTLIST_TREENODE
 };
 
-struct _ContentsData
+class ContentsData
 {
+public:
+	ContentsData(_In_ LPSRow lpsRowData);
+	~ContentsData();
 	LPSBinary lpEntryID; // Allocated with MAPIAllocateBuffer
 	LPSBinary lpLongtermID; // Allocated with MAPIAllocateBuffer
 	LPSBinary lpInstanceKey; // Allocated with MAPIAllocateBuffer
@@ -79,7 +82,6 @@ public:
 	ULONG ulSortDataType;
 	union
 	{
-		_ContentsData Contents; // SORTLIST_CONTENTS
 		_PropListData Prop; // SORTLIST_PROP
 		_MVPropData MV; // SORTLIST_MVPROP
 		_TagData Tag; // SORTLIST_TAGARRAY
@@ -89,9 +91,13 @@ public:
 		_NodeData Node; // SORTLIST_TREENODE
 
 	} data;
+	ContentsData* Contents(); // SORTLIST_CONTENTS
+
 	ULONG cSourceProps;
 	LPSPropValue lpSourceProps; // Stolen from lpsRowData in CContentsTableListCtrl::BuildDataItem - free with MAPIFreeBuffer
 	bool bItemFullyLoaded;
+
+	LPVOID m_lpData;
 };
 
 // SORTLIST_TREENODE

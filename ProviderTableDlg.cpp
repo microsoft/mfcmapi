@@ -1,5 +1,4 @@
-// ProviderTableDlg.cpp : implementation file
-// Displays the list of providers in a message service in a profile
+// ProviderTableDlg.cpp : Displays the list of providers in a message service in a profile
 
 #include "stdafx.h"
 #include "ProviderTableDlg.h"
@@ -14,27 +13,23 @@
 
 static wstring CLASS = L"CProviderTableDlg";
 
-/////////////////////////////////////////////////////////////////////////////
-// CProviderTableDlg dialog
-
-
 CProviderTableDlg::CProviderTableDlg(
 	_In_ CParentWnd* pParentWnd,
 	_In_ CMapiObjects* lpMapiObjects,
 	_In_ LPMAPITABLE lpMAPITable,
 	_In_ LPPROVIDERADMIN lpProviderAdmin
-	) :
+) :
 	CContentsTableDlg(
-	pParentWnd,
-	lpMapiObjects,
-	IDS_PROVIDERS,
-	mfcmapiDO_NOT_CALL_CREATE_DIALOG,
-	lpMAPITable,
-	(LPSPropTagArray)&sptPROVIDERCols,
-	NUMPROVIDERCOLUMNS,
-	PROVIDERColumns,
-	NULL,
-	MENU_CONTEXT_PROFILE_PROVIDERS)
+		pParentWnd,
+		lpMapiObjects,
+		IDS_PROVIDERS,
+		mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+		lpMAPITable,
+		(LPSPropTagArray)&sptPROVIDERCols,
+		NUMPROVIDERCOLUMNS,
+		PROVIDERColumns,
+		NULL,
+		MENU_CONTEXT_PROFILE_PROVIDERS)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 
@@ -42,7 +37,7 @@ CProviderTableDlg::CProviderTableDlg(
 
 	m_lpProviderAdmin = lpProviderAdmin;
 	if (m_lpProviderAdmin) m_lpProviderAdmin->AddRef();
-} // CProviderTableDlg::CProviderTableDlg
+}
 
 CProviderTableDlg::~CProviderTableDlg()
 {
@@ -51,20 +46,17 @@ CProviderTableDlg::~CProviderTableDlg()
 	if (m_lpContentsTable) m_lpContentsTable->Release();
 	m_lpContentsTable = NULL;
 	if (m_lpProviderAdmin) m_lpProviderAdmin->Release();
-} // CProviderTableDlg::~CProviderTableDlg
+}
 
 BEGIN_MESSAGE_MAP(CProviderTableDlg, CContentsTableDlg)
 	ON_COMMAND(ID_OPENPROFILESECTION, OnOpenProfileSection)
 END_MESSAGE_MAP()
 
-/////////////////////////////////////////////////////////////////////////////
-// CProviderTableDlg message handlers
-
 _Check_return_ HRESULT CProviderTableDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum /*bModify*/, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
 {
-	HRESULT			hRes = S_OK;
-	LPSBinary		lpProviderUID = NULL;
-	SortListData*	lpListData = NULL;
+	HRESULT hRes = S_OK;
+	LPSBinary lpProviderUID = NULL;
+	SortListData* lpListData = NULL;
 
 	DebugPrintEx(DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
 
@@ -73,9 +65,9 @@ _Check_return_ HRESULT CProviderTableDlg::OpenItemProp(int iSelectedItem, __mfcm
 	*lppMAPIProp = NULL;
 
 	lpListData = (SortListData*)m_lpContentsTableListCtrl->GetItemData(iSelectedItem);
-	if (lpListData)
+	if (lpListData && lpListData->Contents())
 	{
-		lpProviderUID = lpListData->data.Contents.lpProviderUID;
+		lpProviderUID = lpListData->Contents()->lpProviderUID;
 		if (lpProviderUID)
 		{
 			EC_H(OpenProfileSection(
@@ -84,12 +76,13 @@ _Check_return_ HRESULT CProviderTableDlg::OpenItemProp(int iSelectedItem, __mfcm
 				(LPPROFSECT*)lppMAPIProp));
 		}
 	}
+
 	return hRes;
-} // CProviderTableDlg::OpenItemProp
+}
 
 void CProviderTableDlg::OnOpenProfileSection()
 {
-	HRESULT			hRes = S_OK;
+	HRESULT hRes = S_OK;
 
 	if (!m_lpProviderAdmin) return;
 
@@ -128,10 +121,12 @@ void CProviderTableDlg::OnOpenProfileSection()
 				this));
 			lpTemp->Release();
 		}
+
 		lpProfSect->Release();
 	}
+
 	MAPIFreeBuffer(MapiUID.lpb);
-} // CProviderTableDlg::OnOpenProfileSection
+}
 
 void CProviderTableDlg::HandleAddInMenuSingle(
 	_In_ LPADDINMENUPARAMS lpParams,
@@ -144,4 +139,4 @@ void CProviderTableDlg::HandleAddInMenuSingle(
 	}
 
 	InvokeAddInMenu(lpParams);
-} // CProviderTableDlg::HandleAddInMenuSingle
+}
