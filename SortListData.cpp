@@ -13,13 +13,7 @@ SortListData* BuildNodeData(
 	ULONG ulContainerFlags)
 {
 	HRESULT hRes = S_OK;
-	SortListData* lpData = NULL;
-	// We're gonna set up a data item to pass off to the tree
-	// Allocate some space
-	WC_H(MAPIAllocateBuffer(
-		(ULONG)sizeof(SortListData),
-		(LPVOID *)&lpData));
-
+	SortListData* lpData = new SortListData();
 	if (lpData)
 	{
 		memset(lpData, 0, sizeof(SortListData));
@@ -27,28 +21,26 @@ SortListData* BuildNodeData(
 
 		if (lpEntryID)
 		{
-			WC_H(MAPIAllocateMore(
+			WC_H(MAPIAllocateBuffer(
 				(ULONG)sizeof(SBinary),
-				lpData,
 				(LPVOID*)&lpData->data.Node.lpEntryID));
 
 			// Copy the data over
 			WC_H(CopySBinary(
 				lpData->data.Node.lpEntryID,
 				lpEntryID,
-				lpData));
+				lpData->data.Node.lpEntryID));
 		}
 
 		if (lpInstanceKey)
 		{
-			WC_H(MAPIAllocateMore(
+			WC_H(MAPIAllocateBuffer(
 				(ULONG)sizeof(SBinary),
-				lpData,
 				(LPVOID*)&lpData->data.Node.lpInstanceKey));
 			WC_H(CopySBinary(
 				lpData->data.Node.lpInstanceKey,
 				lpInstanceKey,
-				lpData));
+				lpData->data.Node.lpInstanceKey));
 		}
 
 		lpData->data.Node.cSubfolders = -1;
@@ -60,12 +52,14 @@ SortListData* BuildNodeData(
 		{
 			lpData->data.Node.cSubfolders = (ulContainerFlags & AB_SUBCONTAINERS) ? 1 : 0;
 		}
+
 		lpData->cSourceProps = cProps;
 		lpData->lpSourceProps = lpProps;
 
 		return lpData;
 	}
-	return NULL;
+
+	return nullptr;
 }
 
 SortListData* BuildNodeData(_In_ LPSRow lpsRow)
@@ -143,11 +137,10 @@ void BuildDataItem(_In_ LPSRow lpsRowData, _Inout_ SortListData* lpData)
 		PR_INSTANCE_KEY);
 	if (lpProp && PR_INSTANCE_KEY == lpProp->ulPropTag)
 	{
-		EC_H(MAPIAllocateMore(
+		EC_H(MAPIAllocateBuffer(
 			(ULONG)sizeof(SBinary),
-			lpData,
 			(LPVOID*)&lpData->data.Contents.lpInstanceKey));
-		EC_H(CopySBinary(lpData->data.Contents.lpInstanceKey, &lpProp->Value.bin, lpData));
+		EC_H(CopySBinary(lpData->data.Contents.lpInstanceKey, &lpProp->Value.bin, lpData->data.Contents.lpInstanceKey));
 	}
 
 	// Save the attachment number into lpData
@@ -200,11 +193,10 @@ void BuildDataItem(_In_ LPSRow lpsRowData, _Inout_ SortListData* lpData)
 		PR_ENTRYID);
 	if (lpProp && PR_ENTRYID == lpProp->ulPropTag)
 	{
-		EC_H(MAPIAllocateMore(
+		EC_H(MAPIAllocateBuffer(
 			(ULONG)sizeof(SBinary),
-			lpData,
 			(LPVOID*)&lpData->data.Contents.lpEntryID));
-		EC_H(CopySBinary(lpData->data.Contents.lpEntryID, &lpProp->Value.bin, lpData));
+		EC_H(CopySBinary(lpData->data.Contents.lpEntryID, &lpProp->Value.bin, lpData->data.Contents.lpEntryID));
 	}
 
 	// Save the Longterm Entry ID into lpData
@@ -214,11 +206,10 @@ void BuildDataItem(_In_ LPSRow lpsRowData, _Inout_ SortListData* lpData)
 		PR_LONGTERM_ENTRYID_FROM_TABLE);
 	if (lpProp && PR_LONGTERM_ENTRYID_FROM_TABLE == lpProp->ulPropTag)
 	{
-		EC_H(MAPIAllocateMore(
+		EC_H(MAPIAllocateBuffer(
 			(ULONG)sizeof(SBinary),
-			lpData,
 			(LPVOID*)&lpData->data.Contents.lpLongtermID));
-		EC_H(CopySBinary(lpData->data.Contents.lpLongtermID, &lpProp->Value.bin, lpData));
+		EC_H(CopySBinary(lpData->data.Contents.lpLongtermID, &lpProp->Value.bin, lpData->data.Contents.lpLongtermID));
 	}
 
 	// Save the Service ID into lpData
@@ -229,11 +220,10 @@ void BuildDataItem(_In_ LPSRow lpsRowData, _Inout_ SortListData* lpData)
 	if (lpProp && PR_SERVICE_UID == lpProp->ulPropTag)
 	{
 		// Allocate some space
-		EC_H(MAPIAllocateMore(
+		EC_H(MAPIAllocateBuffer(
 			(ULONG)sizeof(SBinary),
-			lpData,
 			(LPVOID*)&lpData->data.Contents.lpServiceUID));
-		EC_H(CopySBinary(lpData->data.Contents.lpServiceUID, &lpProp->Value.bin, lpData));
+		EC_H(CopySBinary(lpData->data.Contents.lpServiceUID, &lpProp->Value.bin, lpData->data.Contents.lpServiceUID));
 	}
 
 	// Save the Provider ID into lpData
@@ -244,11 +234,10 @@ void BuildDataItem(_In_ LPSRow lpsRowData, _Inout_ SortListData* lpData)
 	if (lpProp && PR_PROVIDER_UID == lpProp->ulPropTag)
 	{
 		// Allocate some space
-		EC_H(MAPIAllocateMore(
+		EC_H(MAPIAllocateBuffer(
 			(ULONG)sizeof(SBinary),
-			lpData,
 			(LPVOID*)&lpData->data.Contents.lpProviderUID));
-		EC_H(CopySBinary(lpData->data.Contents.lpProviderUID, &lpProp->Value.bin, lpData));
+		EC_H(CopySBinary(lpData->data.Contents.lpProviderUID, &lpProp->Value.bin, lpData->data.Contents.lpProviderUID));
 	}
 
 	// Save the DisplayName into lpData
@@ -263,7 +252,7 @@ void BuildDataItem(_In_ LPSRow lpsRowData, _Inout_ SortListData* lpData)
 		EC_H(CopyStringA(
 			&lpData->data.Contents.szProfileDisplayName,
 			lpProp->Value.lpszA,
-			lpData));
+			nullptr));
 	}
 
 	// Save the e-mail address (if it exists on the object) into lpData
@@ -277,7 +266,7 @@ void BuildDataItem(_In_ LPSRow lpsRowData, _Inout_ SortListData* lpData)
 		EC_H(CopyString(
 			&lpData->data.Contents.szDN,
 			lpProp->Value.LPSZ,
-			lpData));
+			nullptr));
 	}
 }
 
@@ -287,6 +276,14 @@ void FreeSortListData(_In_ SortListData* lpData)
 	switch (lpData->ulSortDataType)
 	{
 	case SORTLIST_CONTENTS: // _ContentsData
+		MAPIFreeBuffer(lpData->data.Contents.lpInstanceKey);
+		MAPIFreeBuffer(lpData->data.Contents.lpEntryID);
+		MAPIFreeBuffer(lpData->data.Contents.lpLongtermID);
+		MAPIFreeBuffer(lpData->data.Contents.lpServiceUID);
+		MAPIFreeBuffer(lpData->data.Contents.lpProviderUID);
+		MAPIFreeBuffer(lpData->data.Contents.szProfileDisplayName);
+		MAPIFreeBuffer(lpData->data.Contents.szDN);
+		break;
 	case SORTLIST_PROP: // _PropListData
 	case SORTLIST_MVPROP: // _MVPropData
 	case SORTLIST_TAGARRAY: // _TagData
@@ -295,6 +292,9 @@ void FreeSortListData(_In_ SortListData* lpData)
 	case SORTLIST_COMMENT: // _CommentData
 		break;
 	case SORTLIST_TREENODE: // _NodeData
+		MAPIFreeBuffer(lpData->data.Contents.lpInstanceKey);
+		MAPIFreeBuffer(lpData->data.Contents.lpEntryID);
+
 		if (lpData->data.Node.lpAdviseSink)
 		{
 			// unadvise before releasing our sink
@@ -308,5 +308,5 @@ void FreeSortListData(_In_ SortListData* lpData)
 	}
 
 	MAPIFreeBuffer(lpData->lpSourceProps);
-	MAPIFreeBuffer(lpData);
+	delete lpData;
 }

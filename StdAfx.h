@@ -87,16 +87,6 @@ struct TagNames
 
 class CAdviseSink;
 
-struct _NodeData
-{
-	LPSBinary lpEntryID; // Allocated with MAPIAllocateMore
-	LPSBinary lpInstanceKey; // Allocated with MAPIAllocateMore
-	LPMAPITABLE lpHierarchyTable; // Object - free with Release
-	CAdviseSink* lpAdviseSink; // Object - free with Release
-	ULONG_PTR ulAdviseConnection;
-	LONG cSubfolders; // -1 for unknown, 0 for no subfolders, >0 for at least one subfolder
-};
-
 // Macros to assist in OnInitMenu
 #define CHECK(state) ((state)?MF_CHECKED:MF_UNCHECKED)
 #define DIM(state) ((state)?MF_ENABLED:MF_GRAYED)
