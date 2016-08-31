@@ -70,8 +70,10 @@ struct _NodeData
 	LONG cSubfolders; // -1 for unknown, 0 for no subfolders, >0 for at least one subfolder
 };
 
-struct SortListData
+class SortListData
 {
+public:
+	~SortListData();
 	wstring szSortText;
 	ULARGE_INTEGER ulSortValue;
 	ULONG ulSortDataType;
@@ -106,5 +108,3 @@ SortListData* BuildNodeData(_In_ LPSRow lpsRow);
 
 // SORTLIST_CONTENTS
 void BuildDataItem(_In_ LPSRow lpsRowData, _Inout_ SortListData* lpData);
-
-void FreeSortListData(_In_ SortListData* lpData);

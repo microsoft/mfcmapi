@@ -261,7 +261,7 @@ void CSortListCtrl::OnDeleteItem(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 	{
 		SortListData* lpData;
 		lpData = (SortListData*)GetItemData(pNMV->iItem);
-		FreeSortListData(lpData);
+		delete lpData;
 	}
 	*pResult = 0;
 }
