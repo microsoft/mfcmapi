@@ -14,13 +14,13 @@ enum __SortListDataTypes
 
 struct _ContentsData
 {
-	LPSBinary lpEntryID; // Allocated with MAPIAllocateMore
-	LPSBinary lpLongtermID; // Allocated with MAPIAllocateMore
-	LPSBinary lpInstanceKey; // Allocated with MAPIAllocateMore
-	LPSBinary lpServiceUID; // Allocated with MAPIAllocateMore
-	LPSBinary lpProviderUID; // Allocated with MAPIAllocateMore
-	TCHAR* szDN; // Allocated with MAPIAllocateMore
-	CHAR* szProfileDisplayName; // Allocated with MAPIAllocateMore
+	LPSBinary lpEntryID; // Allocated with MAPIAllocateBuffer
+	LPSBinary lpLongtermID; // Allocated with MAPIAllocateBuffer
+	LPSBinary lpInstanceKey; // Allocated with MAPIAllocateBuffer
+	LPSBinary lpServiceUID; // Allocated with MAPIAllocateBuffer
+	LPSBinary lpProviderUID; // Allocated with MAPIAllocateBuffer
+	TCHAR* szDN; // Allocated with MAPIAllocateBuffer
+	CHAR* szProfileDisplayName; // Allocated with MAPIAllocateBuffer
 	ULONG ulAttachNum;
 	ULONG ulAttachMethod;
 	ULONG ulRowID; // for recipients
@@ -58,6 +58,16 @@ struct _BinaryData
 {
 	SBinary OldBin; // not allocated - just a pointer
 	SBinary NewBin; // MAPIAllocateMore from m_lpNewEntryList
+};
+
+struct _NodeData
+{
+	LPSBinary lpEntryID; // Allocated with MAPIAllocateBuffer
+	LPSBinary lpInstanceKey; // Allocated with MAPIAllocateBuffer
+	LPMAPITABLE lpHierarchyTable; // Object - free with Release
+	CAdviseSink* lpAdviseSink; // Object - free with Release
+	ULONG_PTR ulAdviseConnection;
+	LONG cSubfolders; // -1 for unknown, 0 for no subfolders, >0 for at least one subfolder
 };
 
 struct SortListData

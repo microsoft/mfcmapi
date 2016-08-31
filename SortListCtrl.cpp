@@ -273,12 +273,7 @@ _Check_return_ SortListData* CSortListCtrl::InsertRow(int iRow, wstring szText)
 
 _Check_return_ SortListData* CSortListCtrl::InsertRow(int iRow, wstring szText, int iIndent, int iImage)
 {
-	HRESULT hRes = S_OK;
-	SortListData* lpData = NULL;
-
-	EC_H(MAPIAllocateBuffer(
-		(ULONG)sizeof(SortListData),
-		(LPVOID*)&lpData));
+	SortListData* lpData = new SortListData();
 	if (lpData)
 	{
 		memset(lpData, 0, sizeof(SortListData));
