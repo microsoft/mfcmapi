@@ -103,9 +103,9 @@ void CMailboxTableDlg::DisplayItem(ULONG ulFlags)
 		{
 			hRes = S_OK;
 			lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
-			if (lpListData)
+			if (lpListData && lpListData->Contents())
 			{
-				szMailboxDN = LPCTSTRToWstring(lpListData->data.Contents.szDN);
+				szMailboxDN = LPCTSTRToWstring(lpListData->Contents()->szDN);
 
 				if (!szMailboxDN.empty())
 				{

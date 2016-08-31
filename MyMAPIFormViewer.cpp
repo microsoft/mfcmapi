@@ -1,6 +1,4 @@
 // MyMAPIFormViewer.cpp: implementation of the CMyMAPIFormViewer class.
-//
-//////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
 #include "MyMAPIFormViewer.h"
@@ -13,10 +11,6 @@
 extern CMyWinApp theApp;
 
 static wstring CLASS = L"CMyMAPIFormViewer";
-
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
 
 CMyMAPIFormViewer::CMyMAPIFormViewer(
 	_In_ HWND hwndParent,
@@ -52,22 +46,24 @@ CMyMAPIFormViewer::CMyMAPIFormViewer(
 	{
 		m_hwndParent = GetActiveWindow();
 	}
+
 	if (!m_hwndParent && theApp.m_pMainWnd)
 	{
 		m_hwndParent = theApp.m_pMainWnd->m_hWnd;
 	}
+
 	if (!m_hwndParent)
 	{
 		ErrDialog(__FILE__, __LINE__, IDS_EDFORMVIEWERNULLPARENT);
 		DebugPrint(DBGFormViewer, L"Form Viewer created with a NULL parent!\n");
 	}
-} // CMyMAPIFormViewer::CMyMAPIFormViewer
+}
 
 CMyMAPIFormViewer::~CMyMAPIFormViewer()
 {
 	TRACE_DESTRUCTOR(CLASS);
 	ReleaseObjects();
-} // CMyMAPIFormViewer::~CMyMAPIFormViewer
+}
 
 void CMyMAPIFormViewer::ReleaseObjects()
 {
@@ -85,7 +81,7 @@ void CMyMAPIFormViewer::ReleaseObjects()
 	m_lpMAPISession = NULL;
 	m_lpMapiFormAdviseSink = NULL;
 	m_lpContentsTableListCtrl = NULL;
-} // CMyMAPIFormViewer::ReleaseObjects
+}
 
 STDMETHODIMP CMyMAPIFormViewer::QueryInterface(REFIID riid,
 	LPVOID * ppvObj)
@@ -102,6 +98,7 @@ STDMETHODIMP CMyMAPIFormViewer::QueryInterface(REFIID riid,
 		AddRef();
 		return S_OK;
 	}
+
 	if (riid == IID_IMAPIViewContext)
 	{
 		DebugPrint(DBGFormViewer, L"Requested IID_IMAPIViewContext\n");
@@ -109,6 +106,7 @@ STDMETHODIMP CMyMAPIFormViewer::QueryInterface(REFIID riid,
 		AddRef();
 		return S_OK;
 	}
+
 	if (riid == IID_IMAPIViewAdviseSink)
 	{
 		DebugPrint(DBGFormViewer, L"Requested IID_IMAPIViewAdviseSink\n");
@@ -116,6 +114,7 @@ STDMETHODIMP CMyMAPIFormViewer::QueryInterface(REFIID riid,
 		AddRef();
 		return S_OK;
 	}
+
 	if (riid == IID_IUnknown)
 	{
 		DebugPrint(DBGFormViewer, L"Requested IID_IUnknown\n");
@@ -123,28 +122,26 @@ STDMETHODIMP CMyMAPIFormViewer::QueryInterface(REFIID riid,
 		AddRef();
 		return S_OK;
 	}
+
 	DebugPrint(DBGFormViewer, L"Unknown interface requested\n");
 	return E_NOINTERFACE;
-} // CMyMAPIFormViewer::QueryInterface
+}
 
 STDMETHODIMP_(ULONG) CMyMAPIFormViewer::AddRef()
 {
 	LONG lCount = InterlockedIncrement(&m_cRef);
 	TRACE_ADDREF(CLASS, lCount);
 	return lCount;
-} // CMyMAPIFormViewer::AddRef
+}
 
 STDMETHODIMP_(ULONG) CMyMAPIFormViewer::Release()
 {
 	LONG lCount = InterlockedDecrement(&m_cRef);
 	TRACE_RELEASE(CLASS, lCount);
-	if (!lCount)  delete this;
+	if (!lCount) delete this;
 	return lCount;
-} // CMyMAPIFormViewer::Release
+}
 
-///////////////////////////////////////////////////////////////////////////////
-// IMAPIMessageSite implementation
-///////////////////////////////////////////////////////////////////////////////
 STDMETHODIMP CMyMAPIFormViewer::GetSession(LPMAPISESSION* ppSession)
 {
 	DebugPrintEx(DBGFormViewer, CLASS, L"GetSession", L"\n");
@@ -158,7 +155,7 @@ STDMETHODIMP CMyMAPIFormViewer::GetSession(LPMAPISESSION* ppSession)
 	{
 		return S_FALSE;
 	}
-} // CMyMAPIFormViewer::GetSession
+}
 
 STDMETHODIMP CMyMAPIFormViewer::GetStore(LPMDB* ppStore)
 {
@@ -173,7 +170,7 @@ STDMETHODIMP CMyMAPIFormViewer::GetStore(LPMDB* ppStore)
 	{
 		return S_FALSE;
 	}
-} // CMyMAPIFormViewer::GetStore
+}
 
 STDMETHODIMP CMyMAPIFormViewer::GetFolder(LPMAPIFOLDER* ppFolder)
 {
@@ -188,7 +185,7 @@ STDMETHODIMP CMyMAPIFormViewer::GetFolder(LPMAPIFOLDER* ppFolder)
 	{
 		return S_FALSE;
 	}
-} // CMyMAPIFormViewer::GetFolder
+}
 
 STDMETHODIMP CMyMAPIFormViewer::GetMessage(LPMESSAGE* ppmsg)
 {
@@ -203,7 +200,7 @@ STDMETHODIMP CMyMAPIFormViewer::GetMessage(LPMESSAGE* ppmsg)
 	{
 		return S_FALSE;
 	}
-} // CMyMAPIFormViewer::GetMessage
+}
 
 STDMETHODIMP CMyMAPIFormViewer::GetFormManager(LPMAPIFORMMGR* ppFormMgr)
 {
@@ -211,7 +208,7 @@ STDMETHODIMP CMyMAPIFormViewer::GetFormManager(LPMAPIFORMMGR* ppFormMgr)
 	DebugPrintEx(DBGFormViewer, CLASS, L"GetFormManager", L"\n");
 	EC_MAPI(MAPIOpenFormMgr(m_lpMAPISession, ppFormMgr));
 	return hRes;
-} // CMyMAPIFormViewer::GetFormManager
+}
 
 STDMETHODIMP CMyMAPIFormViewer::NewMessage(ULONG fComposeInFolder,
 	LPMAPIFOLDER pFolderFocus,
@@ -259,13 +256,13 @@ STDMETHODIMP CMyMAPIFormViewer::NewMessage(ULONG fComposeInFolder,
 	}
 
 	return hRes;
-} // CMyMAPIFormViewer::NewMessage
+}
 
 STDMETHODIMP CMyMAPIFormViewer::CopyMessage(LPMAPIFOLDER /*pFolderDestination*/)
 {
 	DebugPrintEx(DBGFormViewer, CLASS, L"CopyMessage", L"\n");
 	return MAPI_E_NO_SUPPORT;
-} // CMyMAPIFormViewer::CopyMessage
+}
 
 STDMETHODIMP CMyMAPIFormViewer::MoveMessage(LPMAPIFOLDER /*pFolderDestination*/,
 	LPMAPIVIEWCONTEXT /*pViewContext*/,
@@ -273,14 +270,14 @@ STDMETHODIMP CMyMAPIFormViewer::MoveMessage(LPMAPIFOLDER /*pFolderDestination*/,
 {
 	DebugPrintEx(DBGFormViewer, CLASS, L"MoveMessage", L"\n");
 	return MAPI_E_NO_SUPPORT;
-} // CMyMAPIFormViewer::MoveMessage
+}
 
 STDMETHODIMP CMyMAPIFormViewer::DeleteMessage(LPMAPIVIEWCONTEXT /*pViewContext*/,
 	LPCRECT /*prcPosRect*/)
 {
 	DebugPrintEx(DBGFormViewer, CLASS, L"DeleteMessage", L"\n");
 	return MAPI_E_NO_SUPPORT;
-} // CMyMAPIFormViewer::DeleteMessage
+}
 
 STDMETHODIMP CMyMAPIFormViewer::SaveMessage()
 {
@@ -310,7 +307,7 @@ STDMETHODIMP CMyMAPIFormViewer::SaveMessage()
 	}
 
 	return hRes;
-} // CMyMAPIFormViewer::SaveMessage
+}
 
 STDMETHODIMP CMyMAPIFormViewer::SubmitMessage(ULONG ulFlags)
 {
@@ -342,7 +339,7 @@ STDMETHODIMP CMyMAPIFormViewer::SubmitMessage(ULONG ulFlags)
 	m_lpMessage->Release();
 	m_lpMessage = NULL;
 	return S_OK;
-} // CMyMAPIFormViewer::SubmitMessage
+}
 
 STDMETHODIMP CMyMAPIFormViewer::GetSiteStatus(LPULONG lpulStatus)
 {
@@ -356,8 +353,9 @@ STDMETHODIMP CMyMAPIFormViewer::GetSiteStatus(LPULONG lpulStatus)
 			VCSTATUS_SUBMIT |
 			NULL;
 	}
+
 	return S_OK;
-} // CMyMAPIFormViewer::GetSiteStatus
+}
 
 STDMETHODIMP CMyMAPIFormViewer::GetLastError(HRESULT hResult,
 	ULONG ulFlags,
@@ -365,28 +363,20 @@ STDMETHODIMP CMyMAPIFormViewer::GetLastError(HRESULT hResult,
 {
 	DebugPrintEx(DBGFormViewer, CLASS, L"GetLastError", L"hResult = 0x%08X, ulFlags = 0x%08X\n", hResult, ulFlags);
 	return MAPI_E_NO_SUPPORT;
-} // CMyMAPIFormViewer::GetLastError
-
-///////////////////////////////////////////////////////////////////////////////
-// End IMAPIMessageSite implementation
-///////////////////////////////////////////////////////////////////////////////
-
-///////////////////////////////////////////////////////////////////////////////
-// IMAPIViewAdviseSink implementation
-///////////////////////////////////////////////////////////////////////////////
+}
 
 // Assuming we've advised on this form, we need to Unadvise it now, or it will never unload
 STDMETHODIMP CMyMAPIFormViewer::OnShutdown()
 {
 	DebugPrintEx(DBGFormViewer, CLASS, L"OnShutdown", L"\n");
 	return MAPI_E_NO_SUPPORT;
-} // CMyMAPIFormViewer::OnShutdown
+}
 
 STDMETHODIMP CMyMAPIFormViewer::OnNewMessage()
 {
 	DebugPrintEx(DBGFormViewer, CLASS, L"OnNewMessage", L"\n");
 	return MAPI_E_NO_SUPPORT;
-} // CMyMAPIFormViewer::OnNewMessage
+}
 
 STDMETHODIMP CMyMAPIFormViewer::OnPrint(
 	ULONG dwPageNumber,
@@ -397,24 +387,19 @@ STDMETHODIMP CMyMAPIFormViewer::OnPrint(
 		dwPageNumber,
 		hrStatus);
 	return MAPI_E_NO_SUPPORT;
-} // CMyMAPIFormViewer::OnPrint
+}
 
 STDMETHODIMP CMyMAPIFormViewer::OnSubmitted()
 {
 	DebugPrintEx(DBGFormViewer, CLASS, L"OnSubmitted", L"\n");
 	return MAPI_E_NO_SUPPORT;
-} // CMyMAPIFormViewer::OnSubmitted
+}
 
 STDMETHODIMP CMyMAPIFormViewer::OnSaved()
 {
 	DebugPrintEx(DBGFormViewer, CLASS, L"OnSaved", L"\n");
 	return MAPI_E_NO_SUPPORT;
-} // CMyMAPIFormViewer::OnSaved
-
-///////////////////////////////////////////////////////////////////////////////
-// End IMAPIViewAdviseSink implementation
-///////////////////////////////////////////////////////////////////////////////
-
+}
 
 // Only call this when we really plan on shutting down
 void CMyMAPIFormViewer::ShutdownPersist()
@@ -427,7 +412,7 @@ void CMyMAPIFormViewer::ShutdownPersist()
 		m_lpPersistMessage->Release();
 		m_lpPersistMessage = NULL;
 	}
-} // CMyMAPIFormViewer::ShutdownPersist
+}
 
 // Used to set or clear our m_lpPersistMessage
 // Can take either a persist or a form interface, but not both
@@ -440,11 +425,11 @@ _Check_return_ HRESULT CMyMAPIFormViewer::SetPersist(_In_opt_ LPMAPIFORM lpForm,
 
 	static const SizedSPropTagArray(1, sptaFlags) =
 	{
-		1,
-		PR_MESSAGE_FLAGS
+	1,
+	PR_MESSAGE_FLAGS
 	};
-	ULONG			cValues = 0L;
-	LPSPropValue	lpPropArray = NULL;
+	ULONG cValues = 0L;
+	LPSPropValue lpPropArray = NULL;
 
 	EC_MAPI(m_lpMessage->GetProps((LPSPropTagArray)&sptaFlags, 0, &cValues, &lpPropArray));
 	bool bComposing = (lpPropArray && (lpPropArray->Value.l & MSGFLAG_UNSENT));
@@ -452,11 +437,12 @@ _Check_return_ HRESULT CMyMAPIFormViewer::SetPersist(_In_opt_ LPMAPIFORM lpForm,
 
 	if (bComposing && !RegKeys[regkeyALLOW_PERSIST_CACHE].ulCurDWORD)
 	{
-		//	Message is in compose mode - caching the IPersistMessage might hose Outlook
-		//	However, if we don't cache the IPersistMessage, we can't support SaveMessage or SubmitMessage
+		// Message is in compose mode - caching the IPersistMessage might hose Outlook
+		// However, if we don't cache the IPersistMessage, we can't support SaveMessage or SubmitMessage
 		DebugPrint(DBGFormViewer, L"Not caching the persist\n");
 		return S_OK;
 	}
+
 	DebugPrint(DBGFormViewer, L"Caching the persist\n");
 
 	// Doing this part (saving the persist) will leak Winword in compose mode - which is why we make the above check
@@ -472,7 +458,7 @@ _Check_return_ HRESULT CMyMAPIFormViewer::SetPersist(_In_opt_ LPMAPIFORM lpForm,
 	}
 
 	return hRes;
-} // CMyMAPIFormViewer::SetPersist
+}
 
 _Check_return_ HRESULT CMyMAPIFormViewer::CallDoVerb(_In_ LPMAPIFORM lpMapiForm,
 	LONG lVerb,
@@ -506,12 +492,9 @@ _Check_return_ HRESULT CMyMAPIFormViewer::CallDoVerb(_In_ LPMAPIFORM lpMapiForm,
 			(ULONG_PTR)m_hwndParent, // parent window
 			&Rect)); // RECT structure with size
 	}
-	return hRes;
-} // CMyMAPIFormViewer::CallDoVerb
 
-///////////////////////////////////////////////////////////////////////////////
-// IMAPIViewContext implementation
-///////////////////////////////////////////////////////////////////////////////
+	return hRes;
+}
 
 STDMETHODIMP CMyMAPIFormViewer::SetAdviseSink(LPMAPIFORMADVISESINK pmvns)
 {
@@ -526,14 +509,15 @@ STDMETHODIMP CMyMAPIFormViewer::SetAdviseSink(LPMAPIFORMADVISESINK pmvns)
 	{
 		m_lpMapiFormAdviseSink = NULL;
 	}
+
 	return S_OK;
-} // CMyMAPIFormViewer::SetAdviseSink
+}
 
 STDMETHODIMP CMyMAPIFormViewer::ActivateNext(ULONG ulDir,
 	LPCRECT lpRect)
 {
 	DebugPrintEx(DBGFormViewer, CLASS, L"ActivateNext", L"ulDir = 0x%X\n", ulDir);
-	HRESULT	hRes = S_OK;
+	HRESULT hRes = S_OK;
 
 	enum
 	{
@@ -543,21 +527,21 @@ STDMETHODIMP CMyMAPIFormViewer::ActivateNext(ULONG ulDir,
 	};
 	static const SizedSPropTagArray(NUM_COLS, sptaShowForm) =
 	{
-		NUM_COLS,
-		PR_MESSAGE_FLAGS,
-		PR_MESSAGE_CLASS_A
+	NUM_COLS,
+	PR_MESSAGE_FLAGS,
+	PR_MESSAGE_CLASS_A
 	};
 
-	int			iNewItem = -1;
-	LPMESSAGE	lpNewMessage = NULL;
-	ULONG		ulMessageStatus = NULL;
-	bool		bUsedCurrentSite = false;
+	int iNewItem = -1;
+	LPMESSAGE lpNewMessage = NULL;
+	ULONG ulMessageStatus = NULL;
+	bool bUsedCurrentSite = false;
 
 	WC_H(GetNextMessage(ulDir, &iNewItem, &ulMessageStatus, &lpNewMessage));
 	if (lpNewMessage)
 	{
-		ULONG			cValuesShow = 0;
-		LPSPropValue	lpspvaShow = NULL;
+		ULONG cValuesShow = 0;
+		LPSPropValue lpspvaShow = NULL;
 
 		EC_H_GETPROPS(lpNewMessage->GetProps(
 			(LPSPropTagArray)&sptaShowForm, // property tag array
@@ -631,19 +615,20 @@ STDMETHODIMP CMyMAPIFormViewer::ActivateNext(ULONG ulDir,
 			if (lpNewPersistMessage) lpNewPersistMessage->Release();
 			MAPIFreeBuffer(lpspvaShow);
 		}
+
 		lpNewMessage->Release();
 	}
 
 	if (!bUsedCurrentSite) return S_FALSE;
 	return hRes;
-} // CMyMAPIFormViewer::ActivateNext
+}
 
 STDMETHODIMP CMyMAPIFormViewer::GetPrintSetup(ULONG ulFlags,
 	LPFORMPRINTSETUP* /*lppFormPrintSetup*/)
 {
 	DebugPrintEx(DBGFormViewer, CLASS, L"GetPrintSetup", L"ulFlags = 0x%08X\n", ulFlags);
 	return MAPI_E_NO_SUPPORT;
-} // CMyMAPIFormViewer::GetPrintSetup
+}
 
 STDMETHODIMP CMyMAPIFormViewer::GetSaveStream(ULONG* /*pulFlags*/,
 	ULONG* /*pulFormat*/,
@@ -651,7 +636,7 @@ STDMETHODIMP CMyMAPIFormViewer::GetSaveStream(ULONG* /*pulFlags*/,
 {
 	DebugPrintEx(DBGFormViewer, CLASS, L"GetSaveStream", L"\n");
 	return MAPI_E_NO_SUPPORT;
-} // CMyMAPIFormViewer::GetSaveStream
+}
 
 STDMETHODIMP CMyMAPIFormViewer::GetViewStatus(LPULONG lpulStatus)
 {
@@ -673,13 +658,10 @@ STDMETHODIMP CMyMAPIFormViewer::GetViewStatus(LPULONG lpulStatus)
 			*lpulStatus |= VCSTATUS_PREV;
 		}
 	}
+
 	DebugPrintEx(DBGFormViewer, CLASS, L"GetViewStatus", L"Returning 0x%X\n", *lpulStatus);
 	return hRes;
-} // CMyMAPIFormViewer::GetViewStatus
-
-///////////////////////////////////////////////////////////////////////////////
-// End IMAPIViewContext implementation
-///////////////////////////////////////////////////////////////////////////////
+}
 
 _Check_return_ HRESULT CMyMAPIFormViewer::GetNextMessage(
 	ULONG ulDir,
@@ -706,6 +688,7 @@ _Check_return_ HRESULT CMyMAPIFormViewer::GetNextMessage(
 	{
 		*piNewItem = m_lpContentsTableListCtrl->GetNextItem(m_iItem, LVNI_ABOVE);
 	}
+
 	if (*piNewItem == -1)
 	{
 		hRes = S_FALSE;
@@ -715,10 +698,10 @@ _Check_return_ HRESULT CMyMAPIFormViewer::GetNextMessage(
 		SortListData* lpData = NULL; // do not free
 		lpData = (SortListData*)m_lpContentsTableListCtrl->GetItemData(*piNewItem);
 
-		if (lpData)
+		if (lpData && lpData->Contents())
 		{
 			LPSBinary lpEID = NULL;
-			lpEID = lpData->data.Contents.lpEntryID;
+			lpEID = lpData->Contents()->lpEntryID;
 			if (lpEID)
 			{
 				EC_H(CallOpenEntry(
@@ -754,4 +737,4 @@ _Check_return_ HRESULT CMyMAPIFormViewer::GetNextMessage(
 	}
 
 	return hRes;
-} // CMyMAPIFormViewer::GetNextMessage
+}

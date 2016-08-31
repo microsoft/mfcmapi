@@ -74,6 +74,7 @@ _Check_return_ bool CFolderDlg::HandleMenu(WORD wMenuSelect)
 				otACL,
 				this));
 		}
+
 		return true;
 	case ID_LOADFROMMSG: OnLoadFromMSG(); return true;
 	case ID_LOADFROMTNEF: OnLoadFromTNEF(); return true;
@@ -151,6 +152,7 @@ _Check_return_ bool CFolderDlg::MultiSelectSimple(WORD wMenuSelect)
 			lpFunc = &CFolderDlg::OnRecipientProperties;
 			break;
 		}
+
 		if (lpFunc)
 		{
 			SortListData* lpData = 0;
@@ -310,9 +312,6 @@ void CFolderDlg::EnableAddInMenus(_In_ HMENU hMenu, ULONG ulMenu, _In_ LPMENUITE
 	if (hMenu) ::EnableMenuItem(hMenu, ulMenu, uiEnable);
 }
 
-/////////////////////////////////////////////////////////////////////////////////////
-// Menu Commands
-
 void CFolderDlg::OnAddOneOffAddress()
 {
 	HRESULT hRes = S_OK;
@@ -387,6 +386,7 @@ void CFolderDlg::OnAddOneOffAddress()
 				lpMessage->Release();
 				lpMessage = NULL;
 			}
+
 			iItem = m_lpContentsTableListCtrl->GetNextItem(
 				iItem,
 				LVNI_SELECTED);
@@ -752,9 +752,9 @@ void CFolderDlg::OnGetPropsUsingLongTermEID()
 	hRes = S_OK;
 	lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 
-	if (lpListData)
+	if (lpListData && lpListData->Contents())
 	{
-		lpMessageEID = lpListData->data.Contents.lpLongtermID;
+		lpMessageEID = lpListData->Contents()->lpLongtermID;
 
 		if (lpMessageEID)
 		{
@@ -841,6 +841,7 @@ void CFolderDlg::OnLoadFromMSG()
 							lpszPath,
 							lpNewMessage, m_hWnd));
 					}
+
 					break;
 				case 1:
 					if (m_lpPropDisplay)
@@ -854,6 +855,7 @@ void CFolderDlg::OnLoadFromMSG()
 							EC_H(m_lpPropDisplay->SetDataSource(lpNewMessage, NULL, false));
 						}
 					}
+
 					break;
 				}
 
@@ -998,6 +1000,7 @@ void CFolderDlg::NewSpecialItem(WORD wMenuSelect)
 			break;
 
 		}
+
 		LPMAPIFOLDER lpSpecialFolder = NULL;
 		if (ulFolder)
 		{
@@ -1092,6 +1095,7 @@ void CFolderDlg::OnNewCustomForm()
 				{
 					szClass = MyClass.GetStringW(0);
 				}
+
 				break;
 			case 1:
 			case 2:
@@ -1136,6 +1140,7 @@ void CFolderDlg::OnNewCustomForm()
 					lpMAPIFormMgr->Release();
 				}
 			}
+
 			break;
 			}
 
@@ -1193,6 +1198,7 @@ _Check_return_ HRESULT CFolderDlg::OnOpenModal(int iItem, _In_ SortListData* /*l
 			lpFormMgr->Release();
 		}
 	}
+
 	return hRes;
 }
 
@@ -1242,6 +1248,7 @@ _Check_return_ HRESULT CFolderDlg::OnOpenNonModal(int iItem, _In_ SortListData* 
 			lpFormMgr->Release();
 		}
 	}
+
 	return hRes;
 }
 
@@ -1309,13 +1316,13 @@ _Check_return_ HRESULT CFolderDlg::OnResendSelectedItem(int /*iItem*/, _In_ Sort
 	HRESULT hRes = S_OK;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-	if (!lpData || !m_lpContainer) return MAPI_E_INVALID_PARAMETER;
+	if (!lpData || !lpData->Contents() || !m_lpContainer) return MAPI_E_INVALID_PARAMETER;
 
-	if (lpData->data.Contents.lpEntryID)
+	if (lpData->Contents()->lpEntryID)
 	{
 		EC_H(ResendSingleMessage(
 			(LPMAPIFOLDER)m_lpContainer,
-			lpData->data.Contents.lpEntryID,
+			lpData->Contents()->lpEntryID,
 			m_hWnd));
 	}
 
@@ -1481,6 +1488,7 @@ _Check_return_ HRESULT CFolderDlg::OnSaveAttachments(int iItem, _In_ SortListDat
 
 		lpMessage->Release();
 	}
+
 	return hRes;
 }
 
@@ -1608,6 +1616,7 @@ void CFolderDlg::OnSaveMessageToFile()
 						// Just assume this message might have attachments
 						MyDumpStore.ProcessMessage(lpMessage, true, NULL);
 					}
+
 					break;
 					case 1:
 						EC_H(SaveToMSG(lpMessage, dlgFilePicker.GetFileName(), false, m_hWnd, true));
@@ -1642,6 +1651,7 @@ void CFolderDlg::OnSaveMessageToFile()
 								lpAdrBook));
 						}
 					}
+
 					break;
 					case 5:
 						EC_H(SaveToTNEF(lpMessage, lpAddrBook, dlgFilePicker.GetFileName()));
@@ -1976,13 +1986,13 @@ _Check_return_ HRESULT CFolderDlg::OnGetMessageStatus(int /*iItem*/, _In_ SortLi
 	LPSBinary lpMessageEID = NULL;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-	if (!lpData || !m_lpContainer) return MAPI_E_INVALID_PARAMETER;
+	if (!lpData || !lpData->Contents() || !m_lpContainer) return MAPI_E_INVALID_PARAMETER;
 
 	DebugPrintEx(DBGGeneric, CLASS, L"OnGetMessageStatus", L"\n");
 
 	ULONG ulMessageStatus = NULL;
 
-	lpMessageEID = lpData->data.Contents.lpEntryID;
+	lpMessageEID = lpData->Contents()->lpEntryID;
 
 	if (lpMessageEID)
 	{
@@ -2003,6 +2013,7 @@ _Check_return_ HRESULT CFolderDlg::OnGetMessageStatus(int /*iItem*/, _In_ SortLi
 
 		WC_H(MyStatus.DisplayDialog());
 	}
+
 	return hRes;
 }
 
@@ -2037,9 +2048,9 @@ void CFolderDlg::OnSetMessageStatus()
 		while (iItem != -1)
 		{
 			lpListData = (SortListData*)m_lpContentsTableListCtrl->GetItemData(iItem);
-			if (lpListData)
+			if (lpListData && lpListData->Contents())
 			{
-				lpMessageEID = lpListData->data.Contents.lpEntryID;
+				lpMessageEID = lpListData->Contents()->lpEntryID;
 
 				if (lpMessageEID)
 				{
@@ -2089,6 +2100,7 @@ _Check_return_ HRESULT CFolderDlg::OnSubmitMessage(int iItem, _In_ SortListData*
 
 		lpMessage->Release();
 	}
+
 	return hRes;
 }
 
@@ -2102,12 +2114,11 @@ _Check_return_ HRESULT CFolderDlg::OnAbortSubmit(int iItem, _In_ SortListData* l
 	DebugPrintEx(DBGGeneric, CLASS, L"OnSubmitMesssage", L"\n");
 
 	if (-1 == iItem) return MAPI_E_INVALID_PARAMETER;
-	if (!m_lpMapiObjects || !lpData) return MAPI_E_INVALID_PARAMETER;
-	if (SORTLIST_CONTENTS != lpData->ulSortDataType) return MAPI_E_INVALID_PARAMETER;
+	if (!m_lpMapiObjects || !lpData || !lpData->Contents()) return MAPI_E_INVALID_PARAMETER;
 
 	lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 
-	lpMessageEID = lpData->data.Contents.lpEntryID;
+	lpMessageEID = lpData->Contents()->lpEntryID;
 
 	if (lpMDB && lpMessageEID)
 	{

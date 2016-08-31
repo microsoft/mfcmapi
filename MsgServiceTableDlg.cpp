@@ -39,7 +39,7 @@ CMsgServiceTableDlg::CMsgServiceTableDlg(
 
 	m_szProfileName = szProfileName;
 	OnRefreshView();
-} // CMsgServiceTableDlg::CMsgServiceTableDlg
+}
 
 CMsgServiceTableDlg::~CMsgServiceTableDlg()
 {
@@ -48,7 +48,7 @@ CMsgServiceTableDlg::~CMsgServiceTableDlg()
 	if (m_lpContentsTable) m_lpContentsTable->Release();
 	m_lpContentsTable = NULL;
 	if (m_lpServiceAdmin) m_lpServiceAdmin->Release();
-} // CMsgServiceTableDlg::~CMsgServiceTableDlg
+}
 
 BEGIN_MESSAGE_MAP(CMsgServiceTableDlg, CContentsTableDlg)
 	ON_COMMAND(ID_CONFIGUREMSGSERVICE, OnConfigureMsgService)
@@ -67,11 +67,9 @@ void CMsgServiceTableDlg::OnInitMenu(_In_ CMenu* pMenu)
 			pMenu->EnableMenuItem(ID_CONFIGUREMSGSERVICE, DIMMSOK(iNumSel));
 		}
 	}
-	CContentsTableDlg::OnInitMenu(pMenu);
-} // CMsgServiceTableDlg::OnInitMenu
 
-/////////////////////////////////////////////////////////////////////////////
-// CMsgServiceTableDlg message handlers
+	CContentsTableDlg::OnInitMenu(pMenu);
+}
 
 // Clear the current list and get a new one with whatever code we've got in LoadMAPIPropList
 void CMsgServiceTableDlg::OnRefreshView()
@@ -125,19 +123,20 @@ void CMsgServiceTableDlg::OnRefreshView()
 				lpServiceTable->Release();
 			}
 		}
+
 		lpProfAdmin->Release();
 	}
-} // CMsgServiceTableDlg::OnRefreshView
+}
 
 void CMsgServiceTableDlg::OnDisplayItem()
 {
-	HRESULT			hRes = S_OK;
-	LPSBinary		lpServiceUID = NULL;
-	LPPROVIDERADMIN	lpProviderAdmin = NULL;
-	LPMAPITABLE		lpProviderTable = NULL;
-	int				iItem = -1;
-	SortListData*	lpListData = NULL;
-	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
+	HRESULT hRes = S_OK;
+	LPSBinary lpServiceUID = NULL;
+	LPPROVIDERADMIN lpProviderAdmin = NULL;
+	LPMAPITABLE lpProviderTable = NULL;
+	int iItem = -1;
+	SortListData* lpListData = NULL;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpContentsTableListCtrl || !m_lpServiceAdmin) return;
 
@@ -145,9 +144,9 @@ void CMsgServiceTableDlg::OnDisplayItem()
 	{
 		hRes = S_OK;
 		lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
-		if (lpListData)
+		if (lpListData && lpListData->Contents())
 		{
-			lpServiceUID = lpListData->data.Contents.lpServiceUID;
+			lpServiceUID = lpListData->Contents()->lpServiceUID;
 			if (lpServiceUID)
 			{
 				EC_MAPI(m_lpServiceAdmin->AdminProviders(
@@ -171,21 +170,22 @@ void CMsgServiceTableDlg::OnDisplayItem()
 						lpProviderTable->Release();
 						lpProviderTable = NULL;
 					}
+
 					lpProviderAdmin->Release();
 					lpProviderAdmin = NULL;
 				}
 			}
 		}
 	} while (iItem != -1);
-} // CMsgServiceTableDlg::OnDisplayItem
+}
 
 void CMsgServiceTableDlg::OnConfigureMsgService()
 {
-	HRESULT			hRes = S_OK;
-	LPSBinary		lpServiceUID = NULL;
-	int				iItem = -1;
-	SortListData*	lpListData = NULL;
-	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
+	HRESULT hRes = S_OK;
+	LPSBinary lpServiceUID = NULL;
+	int iItem = -1;
+	SortListData* lpListData = NULL;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpContentsTableListCtrl || !m_lpServiceAdmin) return;
 
@@ -193,9 +193,9 @@ void CMsgServiceTableDlg::OnConfigureMsgService()
 	{
 		hRes = S_OK;
 		lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
-		if (lpListData)
+		if (lpListData && lpListData->Contents())
 		{
-			lpServiceUID = lpListData->data.Contents.lpServiceUID;
+			lpServiceUID = lpListData->Contents()->lpServiceUID;
 			if (lpServiceUID)
 			{
 				EC_H_CANCEL(m_lpServiceAdmin->ConfigureMsgService(
@@ -207,13 +207,13 @@ void CMsgServiceTableDlg::OnConfigureMsgService()
 			}
 		}
 	} while (iItem != -1);
-} // CMsgServiceTableDlg::OnConfigureMsgService
+}
 
 _Check_return_ HRESULT CMsgServiceTableDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum /*bModify*/, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
 {
-	HRESULT		hRes = S_OK;
-	LPSBinary	lpServiceUID = NULL;
-	SortListData*	lpListData = NULL;
+	HRESULT hRes = S_OK;
+	LPSBinary lpServiceUID = NULL;
+	SortListData* lpListData = NULL;
 
 	DebugPrintEx(DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
 
@@ -222,9 +222,9 @@ _Check_return_ HRESULT CMsgServiceTableDlg::OpenItemProp(int iSelectedItem, __mf
 	if (!m_lpServiceAdmin || !m_lpContentsTableListCtrl || !lppMAPIProp) return MAPI_E_INVALID_PARAMETER;
 
 	lpListData = (SortListData*)m_lpContentsTableListCtrl->GetItemData(iSelectedItem);
-	if (lpListData)
+	if (lpListData && lpListData->Contents())
 	{
-		lpServiceUID = lpListData->data.Contents.lpServiceUID;
+		lpServiceUID = lpListData->Contents()->lpServiceUID;
 		if (lpServiceUID)
 		{
 			EC_H(OpenProfileSection(
@@ -233,12 +233,13 @@ _Check_return_ HRESULT CMsgServiceTableDlg::OpenItemProp(int iSelectedItem, __mf
 				(LPPROFSECT*)lppMAPIProp));
 		}
 	}
+
 	return hRes;
-} // CMsgServiceTableDlg::OpenItemProp
+}
 
 void CMsgServiceTableDlg::OnOpenProfileSection()
 {
-	HRESULT			hRes = S_OK;
+	HRESULT hRes = S_OK;
 
 	if (!m_lpServiceAdmin) return;
 
@@ -277,17 +278,19 @@ void CMsgServiceTableDlg::OnOpenProfileSection()
 				this));
 			lpTemp->Release();
 		}
+
 		lpProfSect->Release();
 	}
+
 	MAPIFreeBuffer(MapiUID.lpb);
-} // CMsgServiceTableDlg::OnOpenProfileSection
+}
 
 void CMsgServiceTableDlg::OnDeleteSelectedItem()
 {
-	HRESULT		hRes = S_OK;
-	int			iItem = -1;
-	LPSBinary	lpServiceUID = NULL;
-	SortListData*	lpListData = NULL;
+	HRESULT hRes = S_OK;
+	int iItem = -1;
+	LPSBinary lpServiceUID = NULL;
+	SortListData* lpListData = NULL;
 
 	if (!m_lpServiceAdmin || !m_lpContentsTableListCtrl) return;
 
@@ -296,11 +299,11 @@ void CMsgServiceTableDlg::OnDeleteSelectedItem()
 		hRes = S_OK;
 		// Find the highlighted item AttachNum
 		lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
-		if (!lpListData) break;
+		if (!lpListData || !lpListData->Contents()) break;
 
-		DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L"Deleting service from \"%hs\"\n", lpListData->data.Contents.szProfileDisplayName);
+		DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L"Deleting service from \"%hs\"\n", lpListData->Contents()->szProfileDisplayName);
 
-		lpServiceUID = lpListData->data.Contents.lpServiceUID;
+		lpServiceUID = lpListData->Contents()->lpServiceUID;
 		if (lpServiceUID)
 		{
 			WC_MAPI(m_lpServiceAdmin->DeleteMsgService(
@@ -309,7 +312,7 @@ void CMsgServiceTableDlg::OnDeleteSelectedItem()
 	} while (iItem != -1);
 
 	OnRefreshView(); // Update the view since we don't have notifications here.
-} // CMsgServiceTableDlg::OnDeleteSelectedItem
+}
 
 void CMsgServiceTableDlg::HandleAddInMenuSingle(
 	_In_ LPADDINMENUPARAMS lpParams,
@@ -322,4 +325,4 @@ void CMsgServiceTableDlg::HandleAddInMenuSingle(
 	}
 
 	InvokeAddInMenu(lpParams);
-} // CMsgServiceTableDlg::HandleAddInMenuSingle
+}

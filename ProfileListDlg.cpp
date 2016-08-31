@@ -1,5 +1,4 @@
-// ProfileListDlg.cpp : implementation file
-// Displays the list of profiles
+// ProfileListDlg.cpp : Displays the list of profiles
 
 #include "stdafx.h"
 #include "ProfileListDlg.h"
@@ -15,10 +14,6 @@
 #include "ExportProfile.h"
 
 static wstring CLASS = L"CProfileListDlg";
-
-/////////////////////////////////////////////////////////////////////////////
-// CProfileListDlg dialog
-
 
 CProfileListDlg::CProfileListDlg(
 	_In_ CParentWnd* pParentWnd,
@@ -88,11 +83,9 @@ void CProfileListDlg::OnInitMenu(_In_ CMenu* pMenu)
 			pMenu->EnableMenuItem(ID_PASTE, DIM(ulStatus & BUFFER_PROFILE));
 		}
 	}
+
 	CContentsTableDlg::OnInitMenu(pMenu);
 }
-
-/////////////////////////////////////////////////////////////////////////////
-// CProfileListDlg message handlers
 
 // Clear the current list and get a new one with whatever code we've got in LoadMAPIPropList
 void CProfileListDlg::OnRefreshView()
@@ -129,6 +122,7 @@ void CProfileListDlg::OnRefreshView()
 
 		lpProfTable->Release();
 	}
+
 	lpProfAdmin->Release();
 }
 
@@ -143,9 +137,9 @@ void CProfileListDlg::OnDisplayItem()
 	do
 	{
 		lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
-		if (!lpListData) break;
+		if (!lpListData || !lpListData->Contents()) break;
 
-		wstring szProfileName = LPCSTRToWstring(lpListData->data.Contents.szProfileDisplayName);
+		wstring szProfileName = LPCSTRToWstring(lpListData->Contents()->szProfileDisplayName);
 		if (!szProfileName.empty())
 		{
 			new CMsgServiceTableDlg(
@@ -228,20 +222,20 @@ void CProfileListDlg::OnAddExchangeToProfile()
 				hRes = S_OK;
 				// Find the highlighted item
 				lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
-				if (!lpListData) break;
+				if (!lpListData || !lpListData->Contents()) break;
 
 				DebugPrintEx(DBGGeneric, CLASS,
 					L"OnAddExchangeToProfile", // STRING_OK
 					L"Adding Server \"%hs\" and Mailbox \"%hs\" to profile \"%hs\"\n", // STRING_OK
 					szServer.c_str(),
 					szMailbox.c_str(),
-					lpListData->data.Contents.szProfileDisplayName);
+					lpListData->Contents()->szProfileDisplayName);
 
 				EC_H(HrAddExchangeToProfile(
 					(ULONG_PTR)m_hWnd,
 					szServer,
 					szMailbox,
-					lpListData->data.Contents.szProfileDisplayName));
+					lpListData->Contents()->szProfileDisplayName));
 			} while (iItem != -1);
 		}
 	}
@@ -274,7 +268,7 @@ void CProfileListDlg::AddPSTToProfile(bool bUnicodePST)
 			hRes = S_OK;
 			// Find the highlighted item
 			lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
-			if (!lpListData) break;
+			if (!lpListData || !lpListData->Contents()) break;
 
 			CEditor MyFile(
 				this,
@@ -296,13 +290,13 @@ void CProfileListDlg::AddPSTToProfile(bool bUnicodePST)
 
 				DebugPrintEx(DBGGeneric, CLASS, L"AddPSTToProfile", L"Adding PST \"%ws\" to profile \"%hs\", bUnicodePST = 0x%X\n, bPasswordSet = 0x%X, password = \"%hs\"\n",
 					szPath.c_str(),
-					lpListData->data.Contents.szProfileDisplayName,
+					lpListData->Contents()->szProfileDisplayName,
 					bUnicodePST,
 					bPasswordSet,
 					szPwd.c_str());
 
 				CWaitCursor Wait; // Change the mouse to an hourglass while we work.
-				EC_H(HrAddPSTToProfile((ULONG_PTR)m_hWnd, bUnicodePST, szPath, lpListData->data.Contents.szProfileDisplayName, bPasswordSet, szPwd));
+				EC_H(HrAddPSTToProfile((ULONG_PTR)m_hWnd, bUnicodePST, szPath, lpListData->Contents()->szProfileDisplayName, bPasswordSet, szPwd));
 			}
 		} while (iItem != -1);
 	}
@@ -346,11 +340,11 @@ void CProfileListDlg::OnAddServiceToProfile()
 			hRes = S_OK;
 			// Find the highlighted item
 			lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
-			if (!lpListData) break;
+			if (!lpListData || !lpListData->Contents()) break;
 
-			DebugPrintEx(DBGGeneric, CLASS, L"OnAddServiceToProfile", L"Adding service \"%ws\" to profile \"%hs\"\n", szService, lpListData->data.Contents.szProfileDisplayName);
+			DebugPrintEx(DBGGeneric, CLASS, L"OnAddServiceToProfile", L"Adding service \"%ws\" to profile \"%hs\"\n", szService, lpListData->Contents()->szProfileDisplayName);
 
-			EC_H(HrAddServiceToProfile(szService, (ULONG_PTR)m_hWnd, MyData.GetCheck(1) ? SERVICE_UI_ALWAYS : 0, 0, 0, lpListData->data.Contents.szProfileDisplayName));
+			EC_H(HrAddServiceToProfile(szService, (ULONG_PTR)m_hWnd, MyData.GetCheck(1) ? SERVICE_UI_ALWAYS : 0, 0, 0, lpListData->Contents()->szProfileDisplayName));
 		} while (iItem != -1);
 	}
 }
@@ -400,11 +394,11 @@ void CProfileListDlg::OnDeleteSelectedItem()
 		hRes = S_OK;
 		// Find the highlighted item AttachNum
 		lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
-		if (!lpListData) break;
+		if (!lpListData || !lpListData->Contents()) break;
 
-		DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L"Deleting profile \"%hs\"\n", lpListData->data.Contents.szProfileDisplayName);
+		DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L"Deleting profile \"%hs\"\n", lpListData->Contents()->szProfileDisplayName);
 
-		EC_H(HrRemoveProfile(lpListData->data.Contents.szProfileDisplayName));
+		EC_H(HrRemoveProfile(lpListData->Contents()->szProfileDisplayName));
 	} while (iItem != -1);
 
 	OnRefreshView(); // Update the view since we don't have notifications here.
@@ -424,9 +418,9 @@ void CProfileListDlg::OnGetProfileServiceVersion()
 		hRes = S_OK;
 		// Find the highlighted item AttachNum
 		lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
-		if (!lpListData) break;
+		if (!lpListData || !lpListData->Contents()) break;
 
-		DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnGetProfileServiceVersion", L"Getting profile service version for \"%hs\"\n", lpListData->data.Contents.szProfileDisplayName);
+		DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnGetProfileServiceVersion", L"Getting profile service version for \"%hs\"\n", lpListData->Contents()->szProfileDisplayName);
 
 		ULONG ulServerVersion = 0;
 		EXCHANGE_STORE_VERSION_NUM storeVersion = { 0 };
@@ -434,7 +428,7 @@ void CProfileListDlg::OnGetProfileServiceVersion()
 		bool bFoundServerFullVersion = false;
 
 		WC_H(GetProfileServiceVersion(
-			lpListData->data.Contents.szProfileDisplayName,
+			lpListData->Contents()->szProfileDisplayName,
 			&ulServerVersion,
 			&storeVersion,
 			&bFoundServerVersion,
@@ -489,6 +483,7 @@ void CProfileListDlg::OnGetProfileServiceVersion()
 			MyData.LoadString(3, IDS_NOTFOUND);
 			MyData.LoadString(4, IDS_NOTFOUND);
 		}
+
 		WC_H(MyData.DisplayDialog());
 	} while (iItem != -1);
 }
@@ -504,11 +499,11 @@ void CProfileListDlg::OnSetDefaultProfile()
 
 	// Find the highlighted item AttachNum
 	lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
-	if (lpListData)
+	if (lpListData || !lpListData->Contents())
 	{
-		DebugPrintEx(DBGGeneric, CLASS, L"OnSetDefaultProfile", L"Setting profile \"%hs\" as default\n", lpListData->data.Contents.szProfileDisplayName);
+		DebugPrintEx(DBGGeneric, CLASS, L"OnSetDefaultProfile", L"Setting profile \"%hs\" as default\n", lpListData->Contents()->szProfileDisplayName);
 
-		EC_H(HrSetDefaultProfile(lpListData->data.Contents.szProfileDisplayName));
+		EC_H(HrSetDefaultProfile(lpListData->Contents()->szProfileDisplayName));
 
 		OnRefreshView(); // Update the view since we don't have notifications here.
 	}
@@ -552,9 +547,9 @@ void CProfileListDlg::HandleCopy()
 
 	// Find the highlighted profile
 	lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
-	if (lpListData)
+	if (lpListData || !lpListData->Contents())
 	{
-		m_lpMapiObjects->SetProfileToCopy(lpListData->data.Contents.szProfileDisplayName);
+		m_lpMapiObjects->SetProfileToCopy(lpListData->Contents()->szProfileDisplayName);
 	}
 }
 
@@ -604,12 +599,12 @@ void CProfileListDlg::OnExportProfile()
 
 	// Find the highlighted profile
 	lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
-	if (lpListData)
+	if (lpListData && lpListData->Contents())
 	{
 		WCHAR szFileName[MAX_PATH] = { 0 };
 		INT_PTR iDlgRet = IDOK;
 
-		wstring szProfileName = LPCSTRToWstring(lpListData->data.Contents.szProfileDisplayName);
+		wstring szProfileName = LPCSTRToWstring(lpListData->Contents()->szProfileDisplayName);
 		WC_H(BuildFileNameAndPath(
 			szFileName,
 			_countof(szFileName),
@@ -632,7 +627,7 @@ void CProfileListDlg::OnExportProfile()
 
 		if (iDlgRet == IDOK)
 		{
-			ExportProfile(lpListData->data.Contents.szProfileDisplayName, NULL, false, dlgFilePicker.GetFileName());
+			ExportProfile(lpListData->Contents()->szProfileDisplayName, NULL, false, dlgFilePicker.GetFileName());
 		}
 	}
 }
