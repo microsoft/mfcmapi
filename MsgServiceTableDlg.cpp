@@ -10,7 +10,7 @@
 #include "ProviderTableDlg.h"
 #include "MAPIProfileFunctions.h"
 #include "Editor.h"
-#include "MAPIFunctions.h"
+#include "SortList/ContentsData.h"
 
 static wstring CLASS = L"CMsgServiceTableDlg";
 

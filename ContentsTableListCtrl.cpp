@@ -17,6 +17,7 @@
 #include <process.h>
 #include "UIFunctions.h"
 #include "String.h"
+#include "SortList/ContentsData.h"
 
 static wstring CLASS = L"CContentsTableListCtrl";
 

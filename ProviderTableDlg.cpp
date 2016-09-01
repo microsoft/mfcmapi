@@ -9,7 +9,7 @@
 #include "MFCUtilityFunctions.h"
 #include "MAPIProfileFunctions.h"
 #include "Editor.h"
-#include "MapiFunctions.h"
+#include "SortList/ContentsData.h"
 
 static wstring CLASS = L"CProviderTableDlg";
 
