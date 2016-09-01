@@ -216,12 +216,6 @@
     <ClInclude Include="SingleMAPIPropListCtrl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SortHeader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SortListCtrl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="StdAfx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -438,7 +432,13 @@
     <ClInclude Include="SmartView\XID.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SortListData.h">
+    <ClInclude Include="SortList\SortListCtrl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SortList\SortListData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SortList\SortHeader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -652,12 +652,6 @@
     <ClCompile Include="SingleMAPIPropListCtrl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SortHeader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SortListCtrl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="StreamEditor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -865,7 +859,13 @@
     <ClCompile Include="SmartView\XID.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SortListData.cpp">
+    <ClCompile Include="SortList\SortListCtrl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SortList\SortListData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SortList\SortHeader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

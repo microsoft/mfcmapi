@@ -16,7 +16,7 @@
 #include "PropertyTagEditor.h"
 #include "MAPIProgress.h"
 #include "NamedPropCache.h"
-#include "SmartView\SmartView.h"
+#include "SmartView/SmartView.h"
 #include "PropertyBag/PropertyBag.h"
 #include "PropertyBag/MAPIPropPropertyBag.h"
 #include "PropertyBag/RowPropertyBag.h"

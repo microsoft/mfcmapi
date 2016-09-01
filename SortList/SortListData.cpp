@@ -1,7 +1,8 @@
-#include "StdAfx.h"
+#include "stdafx.h"
+#include "../stdafx.h"
 #include "SortListData.h"
-#include "MAPIFunctions.h"
-#include "AdviseSink.h"
+#include "../MAPIFunctions.h"
+#include "../AdviseSink.h"
 
 // TODO: Move code to copy props here and normalize calling code so it doesn't appear to leak
 SortListData* BuildNodeData(

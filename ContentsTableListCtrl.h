@@ -1,5 +1,5 @@
 #pragma once
-#include "SortListCtrl.h"
+#include "SortList\SortListCtrl.h"
 #include "enums.h"
 
 class CMapiObjects;
