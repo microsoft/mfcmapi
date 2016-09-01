@@ -12,6 +12,7 @@
 #include "String.h"
 #include "File.h"
 #include "ExportProfile.h"
+#include "SortList/ContentsData.h"
 
 static wstring CLASS = L"CProfileListDlg";
 

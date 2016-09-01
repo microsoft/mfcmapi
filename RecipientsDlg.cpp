@@ -8,6 +8,7 @@
 #include "SingleMAPIPropListCtrl.h"
 #include "InterpretProp.h"
 #include "string.h"
+#include "SortList/ContentsData.h"
 
 static wstring CLASS = L"CRecipientsDlg";
 

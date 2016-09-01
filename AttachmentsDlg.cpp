@@ -11,6 +11,7 @@
 #include "MAPIProgress.h"
 #include "MFCUtilityFunctions.h"
 #include "ImportProcs.h"
+#include "SortList/ContentsData.h"
 
 static wstring CLASS = L"CAttachmentsDlg";
 

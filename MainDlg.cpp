@@ -21,6 +21,7 @@
 #include "InterpretProp2.h"
 #include "QuickStart.h"
 #include "UIFunctions.h"
+#include "SortList/ContentsData.h"
 
 static wstring CLASS = L"CMainDlg";
 

@@ -8,6 +8,8 @@
 #include "Editor.h"
 #include "InterpretProp2.h"
 #include "MyWinApp.h"
+#include "SortList/ContentsData.h"
+
 extern CMyWinApp theApp;
 
 static wstring CLASS = L"CMyMAPIFormViewer";

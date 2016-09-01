@@ -13,6 +13,7 @@
 #include "Editor.h"
 #include "PropertyTagEditor.h"
 #include "InterpretProp2.h"
+#include "SortList/ContentsData.h"
 
 static wstring CLASS = L"CMailboxTableDlg";
 
