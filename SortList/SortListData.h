@@ -91,7 +91,7 @@ public:
 		_NodeData Node; // SORTLIST_TREENODE
 
 	} data;
-	ContentsData* Contents(); // SORTLIST_CONTENTS
+	ContentsData* Contents() const; // SORTLIST_CONTENTS
 
 	ULONG cSourceProps;
 	LPSPropValue lpSourceProps; // Stolen from lpsRowData in CContentsTableListCtrl::BuildDataItem - free with MAPIFreeBuffer

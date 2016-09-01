@@ -23,8 +23,8 @@ SortListData* BuildNodeData(
 		if (lpEntryID)
 		{
 			WC_H(MAPIAllocateBuffer(
-				(ULONG)sizeof(SBinary),
-				(LPVOID*)&lpData->data.Node.lpEntryID));
+				static_cast<ULONG>(sizeof(SBinary)),
+				reinterpret_cast<LPVOID*>(&lpData->data.Node.lpEntryID)));
 
 			// Copy the data over
 			WC_H(CopySBinary(
@@ -36,8 +36,8 @@ SortListData* BuildNodeData(
 		if (lpInstanceKey)
 		{
 			WC_H(MAPIAllocateBuffer(
-				(ULONG)sizeof(SBinary),
-				(LPVOID*)&lpData->data.Node.lpInstanceKey));
+				static_cast<ULONG>(sizeof(SBinary)),
+				reinterpret_cast<LPVOID*>(&lpData->data.Node.lpInstanceKey)));
 			WC_H(CopySBinary(
 				lpData->data.Node.lpInstanceKey,
 				lpInstanceKey,
@@ -65,31 +65,28 @@ SortListData* BuildNodeData(
 
 SortListData* BuildNodeData(_In_ LPSRow lpsRow)
 {
-	if (!lpsRow) return NULL;
+	if (!lpsRow) return nullptr;
 
-	LPSPropValue lpEID = NULL; // don't free
-	LPSPropValue lpInstance = NULL; // don't free
-	LPSBinary lpEIDBin = NULL; // don't free
-	LPSBinary lpInstanceBin = NULL; // don't free
-	LPSPropValue lpSubfolders = NULL; // don't free
-	LPSPropValue lpContainerFlags = NULL; // don't free
+	LPSBinary lpEIDBin = nullptr; // don't free
+	LPSBinary lpInstanceBin = nullptr; // don't free
 
-	lpEID = PpropFindProp(
+	LPSPropValue lpEID = PpropFindProp(
 		lpsRow->lpProps,
 		lpsRow->cValues,
 		PR_ENTRYID);
 	if (lpEID) lpEIDBin = &lpEID->Value.bin;
-	lpInstance = PpropFindProp(
+
+	LPSPropValue lpInstance = PpropFindProp(
 		lpsRow->lpProps,
 		lpsRow->cValues,
 		PR_INSTANCE_KEY);
 	if (lpInstance) lpInstanceBin = &lpInstance->Value.bin;
 
-	lpSubfolders = PpropFindProp(
+	LPSPropValue lpSubfolders = PpropFindProp(
 		lpsRow->lpProps,
 		lpsRow->cValues,
 		PR_SUBFOLDERS);
-	lpContainerFlags = PpropFindProp(
+	LPSPropValue lpContainerFlags = PpropFindProp(
 		lpsRow->lpProps,
 		lpsRow->cValues,
 		PR_CONTAINER_FLAGS);
@@ -99,7 +96,7 @@ SortListData* BuildNodeData(_In_ LPSRow lpsRow)
 		lpsRow->lpProps, // pass on props to be archived in node
 		lpEIDBin,
 		lpInstanceBin,
-		lpSubfolders ? (ULONG)lpSubfolders->Value.b : MAPI_E_NOT_FOUND,
+		lpSubfolders ? static_cast<ULONG>(lpSubfolders->Value.b) : MAPI_E_NOT_FOUND,
 		lpContainerFlags ? lpContainerFlags->Value.ul : MAPI_E_NOT_FOUND);
 }
 
@@ -117,7 +114,7 @@ void BuildDataItem(_In_ LPSRow lpsRowData, _Inout_ SortListData* lpData)
 	// this guy gets stolen from lpsRowData and is freed separately in FreeSortListData
 	// So I do need to free it here before losing the pointer
 	MAPIFreeBuffer(lpData->lpSourceProps);
-	lpData->lpSourceProps = NULL;
+	lpData->lpSourceProps = nullptr;
 
 	lpData->ulSortValue.QuadPart = NULL;
 	lpData->cSourceProps = 0;
@@ -146,18 +143,17 @@ ContentsData::ContentsData(_In_ LPSRow lpsRowData)
 	if (!lpsRowData) return;
 
 	HRESULT hRes = S_OK;
-	LPSPropValue lpProp = NULL; // do not free this
 
 	// Save the instance key into lpData
-	lpProp = PpropFindProp(
+	LPSPropValue lpProp = PpropFindProp(
 		lpsRowData->lpProps,
 		lpsRowData->cValues,
 		PR_INSTANCE_KEY);
 	if (lpProp && PR_INSTANCE_KEY == lpProp->ulPropTag)
 	{
 		EC_H(MAPIAllocateBuffer(
-			(ULONG)sizeof(SBinary),
-			(LPVOID*)&lpInstanceKey));
+			static_cast<ULONG>(sizeof(SBinary)),
+			reinterpret_cast<LPVOID*>(&lpInstanceKey)));
 		EC_H(CopySBinary(lpInstanceKey, &lpProp->Value.bin, lpInstanceKey));
 	}
 
@@ -212,8 +208,8 @@ ContentsData::ContentsData(_In_ LPSRow lpsRowData)
 	if (lpProp && PR_ENTRYID == lpProp->ulPropTag)
 	{
 		EC_H(MAPIAllocateBuffer(
-			(ULONG)sizeof(SBinary),
-			(LPVOID*)& lpEntryID));
+			static_cast<ULONG>(sizeof(SBinary)),
+			reinterpret_cast<LPVOID*>(& lpEntryID)));
 		EC_H(CopySBinary(lpEntryID, &lpProp->Value.bin, lpEntryID));
 	}
 
@@ -225,8 +221,8 @@ ContentsData::ContentsData(_In_ LPSRow lpsRowData)
 	if (lpProp && PR_LONGTERM_ENTRYID_FROM_TABLE == lpProp->ulPropTag)
 	{
 		EC_H(MAPIAllocateBuffer(
-			(ULONG)sizeof(SBinary),
-			(LPVOID*)& lpLongtermID));
+			static_cast<ULONG>(sizeof(SBinary)),
+			reinterpret_cast<LPVOID*>(& lpLongtermID)));
 		EC_H(CopySBinary(lpLongtermID, &lpProp->Value.bin, lpLongtermID));
 	}
 
@@ -239,8 +235,8 @@ ContentsData::ContentsData(_In_ LPSRow lpsRowData)
 	{
 		// Allocate some space
 		EC_H(MAPIAllocateBuffer(
-			(ULONG)sizeof(SBinary),
-			(LPVOID*)& lpServiceUID));
+			static_cast<ULONG>(sizeof(SBinary)),
+			reinterpret_cast<LPVOID*>(& lpServiceUID)));
 		EC_H(CopySBinary(lpServiceUID, &lpProp->Value.bin, lpServiceUID));
 	}
 
@@ -253,8 +249,8 @@ ContentsData::ContentsData(_In_ LPSRow lpsRowData)
 	{
 		// Allocate some space
 		EC_H(MAPIAllocateBuffer(
-			(ULONG)sizeof(SBinary),
-			(LPVOID*)& lpProviderUID));
+			static_cast<ULONG>(sizeof(SBinary)),
+			reinterpret_cast<LPVOID*>(& lpProviderUID)));
 		EC_H(CopySBinary(lpProviderUID, &lpProp->Value.bin, lpProviderUID));
 	}
 
@@ -331,7 +327,7 @@ SortListData::~SortListData()
 	MAPIFreeBuffer(lpSourceProps);
 }
 
-ContentsData* SortListData::Contents()
+ContentsData* SortListData::Contents() const
 {
 	if (ulSortDataType == SORTLIST_CONTENTS)
 	{
