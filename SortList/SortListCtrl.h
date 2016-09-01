@@ -81,7 +81,7 @@ protected:
 	void FakeClickColumn(int iColumn, bool bSortUp);
 
 	// protected since derived classes need to call the base implementation
-	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
 
 private:
 	// Overrides from base class
