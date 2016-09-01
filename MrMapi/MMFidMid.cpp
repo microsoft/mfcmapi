@@ -8,12 +8,12 @@
 #include "..\SmartView\SmartView.h"
 #include "..\String.h"
 
-inline void PrintFolder(wstring szFid, LPCTSTR szFolder)
+void PrintFolder(wstring szFid, LPCTSTR szFolder)
 {
 	printf("%-15ws %s\n", szFid.c_str(), szFolder);
 }
 
-inline void PrintMessage(LPCWSTR szMid, bool fAssociated, wstring szSubject, wstring szClass)
+void PrintMessage(LPCWSTR szMid, bool fAssociated, wstring szSubject, wstring szClass)
 {
 	wprintf(L"     %-15ws %wc %ws (%ws)\n", szMid, (fAssociated ? L'A' : L'R'), szSubject.c_str(), szClass.c_str());
 }
