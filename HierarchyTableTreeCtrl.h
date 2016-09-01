@@ -1,6 +1,6 @@
 #pragma once
 #include "enums.h"
-#include "SortListData.h"
+#include "SortList\SortListData.h"
 
 class CMapiObjects;
 class CHierarchyTableDlg;

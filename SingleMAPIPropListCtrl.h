@@ -1,6 +1,6 @@
 #pragma once
-#include "SortListCtrl.h"
-#include "PropertyBag/PropertyBag.h"
+#include "SortList\SortListCtrl.h"
+#include "PropertyBag\PropertyBag.h"
 
 class CBaseDialog;
 class CMapiObjects;

@@ -1,14 +1,10 @@
 #include "stdafx.h"
+#include "../stdafx.h"
 #include "SortListCtrl.h"
-#include "MapiObjects.h"
-#include "ContentsTableDlg.h"
-#include "MAPIFunctions.h"
-#include "String.h"
-#include "UIFunctions.h"
-#include "InterpretProp.h"
-#include "AboutDlg.h"
 #include "SortHeader.h"
-#include "AdviseSink.h"
+#include "../ContentsTableDlg.h"
+#include "../String.h"
+#include "../UIFunctions.h"
 
 static wstring CLASS = L"CSortListCtrl";
 

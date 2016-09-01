@@ -1,7 +1,7 @@
 #include "stdafx.h"
-#include "..\stdafx.h"
+#include "../stdafx.h"
 #include "RowPropertyBag.h"
-#include "..\ImportProcs.h"
+#include "../ImportProcs.h"
 
 RowPropertyBag::RowPropertyBag(SortListData* lpListData)
 {

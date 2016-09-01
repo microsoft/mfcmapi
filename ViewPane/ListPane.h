@@ -1,6 +1,6 @@
 #pragma once
 #include "ViewPane.h"
-#include "..\SortListCtrl.h"
+#include "..\SortList\SortListCtrl.h"
 
 ViewPane* CreateListPane(UINT uidLabel, bool bAllowSort, bool bReadOnly, LPVOID lpEdit);
 

@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "SortListCtrl.h"
+#include "SortList/SortListCtrl.h"
 #include "ContentsTableListCtrl.h"
 #include "MapiObjects.h"
 #include "ContentsTableDlg.h"
@@ -13,7 +13,7 @@
 #include "TagArrayEditor.h"
 #include "Guids.h"
 #include "ExtraPropTags.h"
-#include "SmartView\Smartview.h"
+#include "SmartView/Smartview.h"
 #include <process.h>
 #include "UIFunctions.h"
 #include "String.h"
