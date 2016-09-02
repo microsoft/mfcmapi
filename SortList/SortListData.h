@@ -73,18 +73,3 @@ public:
 
 	LPVOID m_lpData;
 };
-
-// SORTLIST_TREENODE
-SortListData* BuildNodeData(
-	ULONG cProps,
-	_In_opt_ LPSPropValue lpProps,
-	_In_opt_ LPSBinary lpEntryID,
-	_In_opt_ LPSBinary lpInstanceKey,
-	ULONG bSubfolders,
-	ULONG ulContainerFlags);
-
-// SORTLIST_TREENODE
-SortListData* BuildNodeData(_In_ LPSRow lpsRow);
-
-// SORTLIST_CONTENTS
-void BuildDataItem(_In_ LPSRow lpsRowData, _Inout_ SortListData* lpData);

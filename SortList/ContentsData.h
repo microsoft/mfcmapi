@@ -1,4 +1,6 @@
 #pragma once
+class SortListData;
+
 class ContentsData
 {
 public:
@@ -16,3 +18,6 @@ public:
 	ULONG ulRowID; // for recipients
 	ULONG ulRowType; // PR_ROW_TYPE
 };
+
+// SORTLIST_CONTENTS
+void BuildDataItem(_In_ LPSRow lpsRowData, _Inout_ SortListData* lpData);
