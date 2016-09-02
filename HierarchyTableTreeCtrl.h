@@ -25,18 +25,18 @@ public:
 
 	// Selected item accessors
 	_Check_return_ LPMAPICONTAINER GetSelectedContainer(__mfcmapiModifyEnum bModify);
-	_Check_return_ LPSBinary GetSelectedItemEID();
-	_Check_return_ SortListData* GetSelectedItemData();
-	_Check_return_ bool IsItemSelected();
+	_Check_return_ LPSBinary GetSelectedItemEID() const;
+	_Check_return_ SortListData* GetSelectedItemData() const;
+	_Check_return_ bool IsItemSelected() const;
 
 private:
 	// Overrides from base class
-	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
 	void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 
 	_Check_return_ HRESULT ExpandNode(HTREEITEM Parent);
-	_Check_return_ HTREEITEM FindNode(_In_ LPSBinary lpInstance, HTREEITEM hParent);
-	void GetContainer(HTREEITEM Item, __mfcmapiModifyEnum bModify, _In_ LPMAPICONTAINER *lpContainer);
+	_Check_return_ HTREEITEM FindNode(_In_ LPSBinary lpInstance, HTREEITEM hParent) const;
+	void GetContainer(HTREEITEM Item, __mfcmapiModifyEnum bModify, _In_ LPMAPICONTAINER *lpContainer) const;
 	_Check_return_ LPMAPITABLE GetHierarchyTable(HTREEITEM hItem, _In_opt_ LPMAPICONTAINER lpMAPIContainer, bool bGetTable);
 	void OnContextMenu(_In_ CWnd *pWnd, CPoint pos);
 	void OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);

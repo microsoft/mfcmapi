@@ -1,5 +1,6 @@
 #pragma once
 class ContentsData;
+class NodeData;
 
 enum __SortListDataTypes
 {
@@ -47,16 +48,6 @@ struct _BinaryData
 	SBinary NewBin; // MAPIAllocateMore from m_lpNewEntryList
 };
 
-struct _NodeData
-{
-	LPSBinary lpEntryID; // Allocated with MAPIAllocateBuffer
-	LPSBinary lpInstanceKey; // Allocated with MAPIAllocateBuffer
-	LPMAPITABLE lpHierarchyTable; // Object - free with Release
-	CAdviseSink* lpAdviseSink; // Object - free with Release
-	ULONG_PTR ulAdviseConnection;
-	LONG cSubfolders; // -1 for unknown, 0 for no subfolders, >0 for at least one subfolder
-};
-
 class SortListData
 {
 public:
@@ -72,10 +63,9 @@ public:
 		_ResData Res; // SORTLIST_RES
 		_CommentData Comment; // SORTLIST_COMMENT
 		_BinaryData Binary; // SORTLIST_BINARY
-		_NodeData Node; // SORTLIST_TREENODE
-
 	} data;
 	ContentsData* Contents() const; // SORTLIST_CONTENTS
+	NodeData* Node() const; // SORTLIST_TREENODE
 
 	ULONG cSourceProps;
 	LPSPropValue lpSourceProps; // Stolen from lpsRowData in CContentsTableListCtrl::BuildDataItem - free with MAPIFreeBuffer

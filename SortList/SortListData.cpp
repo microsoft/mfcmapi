@@ -2,10 +2,8 @@
 #include "../stdafx.h"
 #include "SortListData.h"
 #include "ContentsData.h"
-#include "../MAPIFunctions.h"
-#include "../AdviseSink.h"
+#include "NodeData.h"
 
-// TODO: Move code to copy props here and normalize calling code so it doesn't appear to leak
 SortListData* BuildNodeData(
 	ULONG cProps,
 	_In_opt_ LPSPropValue lpProps,
@@ -14,49 +12,19 @@ SortListData* BuildNodeData(
 	ULONG bSubfolders,
 	ULONG ulContainerFlags)
 {
-	auto hRes = S_OK;
 	auto lpData = new SortListData();
 	if (lpData)
 	{
-		memset(lpData, 0, sizeof(SortListData));
 		lpData->ulSortDataType = SORTLIST_TREENODE;
-
-		if (lpEntryID)
-		{
-			WC_H(MAPIAllocateBuffer(
-				static_cast<ULONG>(sizeof(SBinary)),
-				reinterpret_cast<LPVOID*>(&lpData->data.Node.lpEntryID)));
-
-			// Copy the data over
-			WC_H(CopySBinary(
-				lpData->data.Node.lpEntryID,
-				lpEntryID,
-				lpData->data.Node.lpEntryID));
-		}
-
-		if (lpInstanceKey)
-		{
-			WC_H(MAPIAllocateBuffer(
-				static_cast<ULONG>(sizeof(SBinary)),
-				reinterpret_cast<LPVOID*>(&lpData->data.Node.lpInstanceKey)));
-			WC_H(CopySBinary(
-				lpData->data.Node.lpInstanceKey,
-				lpInstanceKey,
-				lpData->data.Node.lpInstanceKey));
-		}
-
-		lpData->data.Node.cSubfolders = -1;
-		if (bSubfolders != MAPI_E_NOT_FOUND)
-		{
-			lpData->data.Node.cSubfolders = (bSubfolders != 0);
-		}
-		else if (ulContainerFlags != MAPI_E_NOT_FOUND)
-		{
-			lpData->data.Node.cSubfolders = (ulContainerFlags & AB_SUBCONTAINERS) ? 1 : 0;
-		}
 
 		lpData->cSourceProps = cProps;
 		lpData->lpSourceProps = lpProps;
+
+		lpData->m_lpData = new NodeData(
+			lpEntryID,
+			lpInstanceKey,
+			bSubfolders,
+			ulContainerFlags);
 
 		return lpData;
 	}
@@ -139,23 +107,10 @@ SortListData::~SortListData()
 	case SORTLIST_RES: // _ResData
 	case SORTLIST_COMMENT: // _CommentData
 		break;
-	case SORTLIST_TREENODE: // _NodeData
-		MAPIFreeBuffer(data.Node.lpInstanceKey);
-		MAPIFreeBuffer(data.Node.lpEntryID);
-
-		if (data.Node.lpAdviseSink)
-		{
-			// unadvise before releasing our sink
-			if (data.Node.ulAdviseConnection && data.Node.lpHierarchyTable)
-				data.Node.lpHierarchyTable->Unadvise(data.Node.ulAdviseConnection);
-			data.Node.lpAdviseSink->Release();
-		}
-
-		if (data.Node.lpHierarchyTable) data.Node.lpHierarchyTable->Release();
-		break;
 	}
 
 	if (Contents() != nullptr) delete Contents();
+	if (Node() != nullptr) delete Node();
 
 	MAPIFreeBuffer(lpSourceProps);
 }
@@ -165,6 +120,16 @@ ContentsData* SortListData::Contents() const
 	if (ulSortDataType == SORTLIST_CONTENTS)
 	{
 		return reinterpret_cast<ContentsData*>(m_lpData);
+	}
+
+	return nullptr;
+}
+
+NodeData* SortListData::Node() const
+{
+	if (ulSortDataType == SORTLIST_TREENODE)
+	{
+		return reinterpret_cast<NodeData*>(m_lpData);
 	}
 
 	return nullptr;
