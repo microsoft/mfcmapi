@@ -1,5 +1,4 @@
 #pragma once
-#include "../enums.h"
 #include "SortHeader.h"
 #include "SortListData.h"
 

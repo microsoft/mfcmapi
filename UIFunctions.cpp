@@ -1,11 +1,10 @@
 // UIFunctions.h : Common UI functions for MFCMAPI
-
 #include "stdafx.h"
 #include "UIFunctions.h"
 #include "Windowsx.h"
 #include "ImportProcs.h"
 #include "RichEditOleCallback.h"
-#include "../SortList/SortListData.h"
+#include "SortList/SortListData.h"
 #include "SortList/NodeData.h"
 
 HFONT g_hFontSegoe = nullptr;

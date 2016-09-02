@@ -1,8 +1,6 @@
 #pragma once
 // SortHeader.h : header file for our custom sort list control header
 
-#include "../InterpretProp.h"
-
 struct HeaderData
 {
 	ULONG ulTagArrayRow;

@@ -1,7 +1,6 @@
 #include "stdafx.h"
-#include "../stdafx.h"
 #include "ContentsData.h"
-#include "../MAPIFunctions.h"
+#include "MAPIFunctions.h"
 
 ContentsData::ContentsData(_In_ LPSRow lpsRowData)
 {

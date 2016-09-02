@@ -1,8 +1,7 @@
 #include "stdafx.h"
-#include "../stdafx.h"
 #include "NodeData.h"
-#include "../AdviseSink.h"
-#include "../MAPIFunctions.h"
+#include "AdviseSink.h"
+#include "MAPIFunctions.h"
 
 // TODO: Move code to copy props here and normalize calling code so it doesn't appear to leak
 NodeData::NodeData(

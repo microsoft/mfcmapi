@@ -75,6 +75,7 @@ typedef ULONG(STDAPICALLTYPE FREEBUFFER)(
 
 #include "MFCOutput.h"
 #include "registry.h"
+#include "InterpretProp.h"
 #include "error.h"
 
 #include "MFCMAPI.h"

@@ -2,7 +2,7 @@
 // MAPIPropPropertyBag.h : header file
 
 #include "PropertyBag.h"
-#include "../SortList/SortListData.h"
+#include "SortList/SortListData.h"
 
 class MAPIPropPropertyBag : public IMAPIPropertyBag
 {
