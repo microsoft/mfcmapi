@@ -1,10 +1,8 @@
 #include "stdafx.h"
-#include "../stdafx.h"
 #include "MAPIPropPropertyBag.h"
-#include "../MAPIFunctions.h"
-#include "../Error.h"
-#include "../InterpretProp.h"
-#include "../SortList/SortListData.h"
+#include "MAPIFunctions.h"
+#include "InterpretProp.h"
+#include "SortList/SortListData.h"
 
 MAPIPropPropertyBag::MAPIPropPropertyBag(LPMAPIPROP lpProp, SortListData* lpListData)
 {

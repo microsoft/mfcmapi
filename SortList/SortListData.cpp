@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "../stdafx.h"
 #include "SortListData.h"
 #include "ContentsData.h"
 #include "NodeData.h"
