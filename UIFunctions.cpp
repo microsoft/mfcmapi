@@ -5,10 +5,11 @@
 #include "Windowsx.h"
 #include "ImportProcs.h"
 #include "RichEditOleCallback.h"
-#include "..\SortList\SortListData.h"
+#include "../SortList/SortListData.h"
+#include "SortList/NodeData.h"
 
-HFONT g_hFontSegoe = NULL;
-HFONT g_hFontSegoeBold = NULL;
+HFONT g_hFontSegoe = nullptr;
+HFONT g_hFontSegoeBold = nullptr;
 
 #define SEGOE _T("Segoe UI") // STRING_OK
 #define SEGOEW L"Segoe UI" // STRING_OK
@@ -37,16 +38,16 @@ enum myColor
 // Keep in sync with enum myColor
 COLORREF g_Colors[cColorEnd] =
 {
-	RGB(0xFF, 0xFF, 0xFF), // cWhite
-	RGB(0xD3, 0xD3, 0xD3), // cLightGrey
-	RGB(0xAD, 0xAC, 0xAE), // cGrey
-	RGB(0x64, 0x64, 0x64), // cDarkGrey
-	RGB(0x00, 0x00, 0x00), // cBlack
-	RGB(0x00, 0xFF, 0xFF), // cCyan
-	RGB(0xFF, 0x00, 0xFF), // cMagenta
-	RGB(0x00, 0x72, 0xC6), // cBlue
-	RGB(0xCD, 0xE6, 0xF7), // cMedBlue
-	RGB(0xE6, 0xF2, 0xFA), // cPaleBlue
+ RGB(0xFF, 0xFF, 0xFF), // cWhite
+ RGB(0xD3, 0xD3, 0xD3), // cLightGrey
+ RGB(0xAD, 0xAC, 0xAE), // cGrey
+ RGB(0x64, 0x64, 0x64), // cDarkGrey
+ RGB(0x00, 0x00, 0x00), // cBlack
+ RGB(0x00, 0xFF, 0xFF), // cCyan
+ RGB(0xFF, 0x00, 0xFF), // cMagenta
+ RGB(0x00, 0x72, 0xC6), // cBlue
+ RGB(0xCD, 0xE6, 0xF7), // cMedBlue
+ RGB(0xE6, 0xF2, 0xFA), // cPaleBlue
 };
 
 // Fixed mapping of UI elements to colors
@@ -55,63 +56,63 @@ COLORREF g_Colors[cColorEnd] =
 // We can swap in cCyan for various entries to test coverage
 myColor g_FixedColors[cUIEnd] =
 {
-	cWhite, // cBackground
-	cLightGrey, // cBackgroundReadOnly
-	cBlue, // cGlow
-	cPaleBlue, // cGlowBackground
-	cBlack, // cGlowText
-	cBlack, // cFrameSelected
-	cGrey, // cFrameUnselected
-	cMedBlue, // cSelectedBackground
-	cGrey, // cArrow
-	cBlack, // cText
-	cGrey, // cTextDisabled
-	cBlack, // cTextReadOnly
-	cMagenta, // cBitmapTransBack
-	cCyan, // cBitmapTransFore
-	cBlue, // cStatus
-	cWhite, // cStatusText
-	cPaleBlue, // cPaneHeaderBackground,
-	cBlack, // cPaneHeaderText,
+ cWhite, // cBackground
+ cLightGrey, // cBackgroundReadOnly
+ cBlue, // cGlow
+ cPaleBlue, // cGlowBackground
+ cBlack, // cGlowText
+ cBlack, // cFrameSelected
+ cGrey, // cFrameUnselected
+ cMedBlue, // cSelectedBackground
+ cGrey, // cArrow
+ cBlack, // cText
+ cGrey, // cTextDisabled
+ cBlack, // cTextReadOnly
+ cMagenta, // cBitmapTransBack
+ cCyan, // cBitmapTransFore
+ cBlue, // cStatus
+ cWhite, // cStatusText
+ cPaleBlue, // cPaneHeaderBackground,
+ cBlack, // cPaneHeaderText,
 };
 
 // Mapping of UI elements to system colors
 // NULL entries will get the fixed mapping from g_FixedColors
 int g_SysColors[cUIEnd] =
 {
-	COLOR_WINDOW, // cBackground
-	NULL, // cBackgroundReadOnly
-	NULL, // cGlow
-	NULL, // cGlowBackground
-	NULL, // cGlowText
-	COLOR_WINDOWTEXT, // cFrameSelected
-	COLOR_3DLIGHT, // cFrameUnselected
-	NULL,
-	COLOR_GRAYTEXT, // cArrow
-	COLOR_WINDOWTEXT, // cText
-	COLOR_GRAYTEXT, // cTextDisabled
-	NULL, // cTextReadOnly
-	NULL, // cBitmapTransBack
-	NULL, // cBitmapTransFore
-	NULL, // cStatus
-	NULL, // cStatusText
+ COLOR_WINDOW, // cBackground
+ NULL, // cBackgroundReadOnly
+ NULL, // cGlow
+ NULL, // cGlowBackground
+ NULL, // cGlowText
+ COLOR_WINDOWTEXT, // cFrameSelected
+ COLOR_3DLIGHT, // cFrameUnselected
+ NULL,
+ COLOR_GRAYTEXT, // cArrow
+ COLOR_WINDOWTEXT, // cText
+ COLOR_GRAYTEXT, // cTextDisabled
+ NULL, // cTextReadOnly
+ NULL, // cBitmapTransBack
+ NULL, // cBitmapTransFore
+ NULL, // cStatus
+ NULL, // cStatusText
 };
 
 // Mapping of bitmap resources to constants
 // NULL entries will get the fixed mapping from g_FixedColors
 int g_BitmapResources[cBitmapEnd] =
 {
-	IDB_ADVISE, // cNotify,
-	IDB_CLOSE, // cClose,
-	IDB_MINIMIZE, // cMinimize,
-	IDB_MAXIMIZE, // cMaximize,
-	IDB_RESTORE, // cRestore,
+ IDB_ADVISE, // cNotify,
+ IDB_CLOSE, // cClose,
+ IDB_MINIMIZE, // cMinimize,
+ IDB_MAXIMIZE, // cMaximize,
+ IDB_RESTORE, // cRestore,
 };
 
-HBRUSH g_FixedBrushes[cColorEnd] = { 0 };
-HBRUSH g_SysBrushes[cUIEnd] = { 0 };
-HPEN g_Pens[cPenEnd] = { 0 };
-HBITMAP g_Bitmaps[cBitmapEnd] = { 0 };
+HBRUSH g_FixedBrushes[cColorEnd] = { nullptr };
+HBRUSH g_SysBrushes[cUIEnd] = { nullptr };
+HPEN g_Pens[cPenEnd] = { nullptr };
+HBITMAP g_Bitmaps[cBitmapEnd] = { nullptr };
 
 void DrawSegoeTextW(
 	_In_ HDC hdc,
@@ -135,7 +136,7 @@ void DrawSegoeTextA(
 #define DrawSegoeText DrawSegoeTextA
 #endif
 
-CDoubleBuffer::CDoubleBuffer() : m_hdcMem(NULL), m_hbmpMem(NULL), m_hdcPaint(NULL)
+CDoubleBuffer::CDoubleBuffer() : m_hdcMem(nullptr), m_hbmpMem(nullptr), m_hdcPaint(nullptr)
 {
 	ZeroMemory(&m_rcPaint, sizeof(m_rcPaint));
 }
@@ -164,7 +165,7 @@ void CDoubleBuffer::Begin(_Inout_ HDC& hdc, _In_ RECT CONST* prcPaint)
 				(void) ::OffsetWindowOrgEx(m_hdcMem,
 					m_rcPaint.left,
 					m_rcPaint.top,
-					NULL);
+					nullptr);
 
 				(void) ::SelectObject(m_hdcMem, GetCurrentObject(hdc, OBJ_FONT));
 				(void) ::SelectObject(m_hdcMem, GetCurrentObject(hdc, OBJ_BRUSH));
@@ -207,16 +208,16 @@ void CDoubleBuffer::Cleanup()
 	if (m_hbmpMem)
 	{
 		(void) ::DeleteObject(m_hbmpMem);
-		m_hbmpMem = NULL;
+		m_hbmpMem = nullptr;
 	}
 
 	if (m_hdcMem)
 	{
 		(void) ::DeleteDC(m_hdcMem);
-		m_hdcMem = NULL;
+		m_hdcMem = nullptr;
 	}
 
-	m_hdcPaint = NULL;
+	m_hdcPaint = nullptr;
 	ZeroMemory(&m_rcPaint, sizeof(m_rcPaint));
 }
 
@@ -227,17 +228,17 @@ void InitializeGDI()
 void UninitializeGDI()
 {
 	if (g_hFontSegoe) ::DeleteObject(g_hFontSegoe);
-	g_hFontSegoe = NULL;
+	g_hFontSegoe = nullptr;
 	if (g_hFontSegoeBold) ::DeleteObject(g_hFontSegoeBold);
-	g_hFontSegoeBold = NULL;
+	g_hFontSegoeBold = nullptr;
 
-	int i = 0;
+	auto i = 0;
 	for (i = 0; i < cColorEnd; i++)
 	{
 		if (g_FixedBrushes[i])
 		{
 			::DeleteObject(g_FixedBrushes[i]);
-			g_FixedBrushes[i] = NULL;
+			g_FixedBrushes[i] = nullptr;
 		}
 	}
 	for (i = 0; i < cUIEnd; i++)
@@ -245,7 +246,7 @@ void UninitializeGDI()
 		if (g_SysBrushes[i])
 		{
 			::DeleteObject(g_SysBrushes[i]);
-			g_SysBrushes[i] = NULL;
+			g_SysBrushes[i] = nullptr;
 		}
 	}
 
@@ -254,7 +255,7 @@ void UninitializeGDI()
 		if (g_Pens[i])
 		{
 			::DeleteObject(g_Pens[i]);
-			g_Pens[i] = NULL;
+			g_Pens[i] = nullptr;
 		}
 	}
 
@@ -263,15 +264,15 @@ void UninitializeGDI()
 		if (g_Bitmaps[i])
 		{
 			::DeleteObject(g_Bitmaps[i]);
-			g_Bitmaps[i] = NULL;
+			g_Bitmaps[i] = nullptr;
 		}
 	}
 }
 
 _Check_return_ LPMENUENTRY CreateMenuEntry(_In_z_ LPWSTR szMenu)
 {
-	HRESULT hRes = S_OK;
-	LPMENUENTRY lpMenu = new MenuEntry;
+	auto hRes = S_OK;
+	auto lpMenu = new MenuEntry;
 	if (lpMenu)
 	{
 		ZeroMemory(lpMenu, sizeof(MenuEntry));
@@ -285,17 +286,17 @@ _Check_return_ LPMENUENTRY CreateMenuEntry(_In_z_ LPWSTR szMenu)
 		{
 			WC_H(StringCchCopyW(lpMenu->m_MSAA.pszWText, iLen + 1, szMenu));
 			lpMenu->m_pName = lpMenu->m_MSAA.pszWText;
-			lpMenu->m_MSAA.cchWText = (DWORD)iLen;
+			lpMenu->m_MSAA.cchWText = static_cast<DWORD>(iLen);
 		}
 		return lpMenu;
 	}
-	return NULL;
+	return nullptr;
 }
 
 _Check_return_ LPMENUENTRY CreateMenuEntry(UINT iudMenu)
 {
 	WCHAR szMenu[128] = { 0 };
-	::LoadStringW(GetModuleHandle(NULL), iudMenu, szMenu, _countof(szMenu));
+	::LoadStringW(GetModuleHandle(nullptr), iudMenu, szMenu, _countof(szMenu));
 	return CreateMenuEntry(szMenu);
 }
 
@@ -309,8 +310,7 @@ void DeleteMenuEntry(_In_ LPMENUENTRY lpMenu)
 void DeleteMenuEntries(_In_ HMENU hMenu)
 {
 	UINT nPosition = 0;
-	UINT nCount = 0;
-	nCount = ::GetMenuItemCount(hMenu);
+	UINT nCount = ::GetMenuItemCount(hMenu);
 	if (-1 == nCount) return;
 
 	for (nPosition = 0; nPosition < nCount; nPosition++)
@@ -322,7 +322,7 @@ void DeleteMenuEntries(_In_ HMENU hMenu)
 		::GetMenuItemInfoW(hMenu, nPosition, true, &menuiteminfo);
 		if (menuiteminfo.dwItemData)
 		{
-			DeleteMenuEntry((LPMENUENTRY)menuiteminfo.dwItemData);
+			DeleteMenuEntry(reinterpret_cast<LPMENUENTRY>(menuiteminfo.dwItemData));
 		}
 
 		if (menuiteminfo.hSubMenu)
@@ -336,9 +336,7 @@ void DeleteMenuEntries(_In_ HMENU hMenu)
 void ConvertMenuOwnerDraw(_In_ HMENU hMenu, bool bRoot)
 {
 	UINT nPosition = 0;
-	UINT nCount = 0;
-
-	nCount = ::GetMenuItemCount(hMenu);
+	UINT nCount = ::GetMenuItemCount(hMenu);
 	if (-1 == nCount) return;
 
 	for (nPosition = 0; nPosition < nCount; nPosition++)
@@ -351,16 +349,16 @@ void ConvertMenuOwnerDraw(_In_ HMENU hMenu, bool bRoot)
 		menuiteminfo.dwTypeData = szMenu;
 
 		::GetMenuItemInfoW(hMenu, nPosition, true, &menuiteminfo);
-		bool bOwnerDrawn = (menuiteminfo.fType & MF_OWNERDRAW) != 0;
+		auto bOwnerDrawn = (menuiteminfo.fType & MF_OWNERDRAW) != 0;
 		if (!bOwnerDrawn)
 		{
-			LPMENUENTRY lpMenuEntry = CreateMenuEntry(szMenu);
+			auto lpMenuEntry = CreateMenuEntry(szMenu);
 			if (lpMenuEntry)
 			{
 				lpMenuEntry->b_OnMenuBar = bRoot;
 				menuiteminfo.fMask = MIIM_DATA | MIIM_FTYPE;
 				menuiteminfo.fType |= MF_OWNERDRAW;
-				menuiteminfo.dwItemData = (ULONG_PTR)lpMenuEntry;
+				menuiteminfo.dwItemData = reinterpret_cast<ULONG_PTR>(lpMenuEntry);
 				::SetMenuItemInfoW(hMenu, nPosition, true, &menuiteminfo);
 			}
 		}
@@ -374,13 +372,13 @@ void ConvertMenuOwnerDraw(_In_ HMENU hMenu, bool bRoot)
 
 void UpdateMenuString(_In_ HWND hWnd, UINT uiMenuTag, UINT uidNewString)
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
 	WCHAR szNewString[128] = { 0 };
-	::LoadStringW(GetModuleHandle(NULL), uidNewString, szNewString, _countof(szNewString));
+	::LoadStringW(GetModuleHandle(nullptr), uidNewString, szNewString, _countof(szNewString));
 
 	DebugPrint(DBGMenu, L"UpdateMenuString: Changing menu item 0x%X on window %p to \"%ws\"\n", uiMenuTag, hWnd, szNewString);
-	HMENU hMenu = ::GetMenu(hWnd);
+	auto hMenu = ::GetMenu(hWnd);
 	if (!hMenu) return;
 
 	MENUITEMINFOW MenuInfo = { 0 };
@@ -401,33 +399,33 @@ void UpdateMenuString(_In_ HWND hWnd, UINT uiMenuTag, UINT uidNewString)
 void MergeMenu(_In_ HMENU hMenuDestination, _In_ const HMENU hMenuAdd)
 {
 	::GetMenuItemCount(hMenuDestination);
-	int iMenuDestItemCount = ::GetMenuItemCount(hMenuDestination);
-	int iMenuAddItemCount = ::GetMenuItemCount(hMenuAdd);
+	auto iMenuDestItemCount = ::GetMenuItemCount(hMenuDestination);
+	auto iMenuAddItemCount = ::GetMenuItemCount(hMenuAdd);
 
 	if (iMenuAddItemCount == 0) return;
 
-	if (iMenuDestItemCount > 0) ::AppendMenu(hMenuDestination, MF_SEPARATOR, NULL, NULL);
+	if (iMenuDestItemCount > 0) ::AppendMenu(hMenuDestination, MF_SEPARATOR, NULL, nullptr);
 
 	WCHAR szMenu[128] = { 0 };
-	int iLoop = 0;
+	auto iLoop = 0;
 	for (iLoop = 0; iLoop < iMenuAddItemCount; iLoop++)
 	{
 		::GetMenuStringW(hMenuAdd, iLoop, szMenu, _countof(szMenu), MF_BYPOSITION);
 
-		HMENU hSubMenu = ::GetSubMenu(hMenuAdd, iLoop);
+		auto hSubMenu = ::GetSubMenu(hMenuAdd, iLoop);
 		if (!hSubMenu)
 		{
-			UINT nState = GetMenuState(hMenuAdd, iLoop, MF_BYPOSITION);
-			UINT nItemID = GetMenuItemID(hMenuAdd, iLoop);
+			auto nState = GetMenuState(hMenuAdd, iLoop, MF_BYPOSITION);
+			auto nItemID = GetMenuItemID(hMenuAdd, iLoop);
 
 			::AppendMenuW(hMenuDestination, nState, nItemID, szMenu);
 			iMenuDestItemCount++;
 		}
 		else
 		{
-			int iInsertPosDefault = GetMenuItemCount(hMenuDestination);
+			auto iInsertPosDefault = GetMenuItemCount(hMenuDestination);
 
-			HMENU hNewPopupMenu = ::CreatePopupMenu();
+			auto hNewPopupMenu = ::CreatePopupMenu();
 
 			MergeMenu(hNewPopupMenu, hSubMenu);
 
@@ -435,7 +433,7 @@ void MergeMenu(_In_ HMENU hMenuDestination, _In_ const HMENU hMenuAdd)
 				hMenuDestination,
 				iInsertPosDefault,
 				MF_BYPOSITION | MF_POPUP | MF_ENABLED,
-				(UINT_PTR)hNewPopupMenu,
+				reinterpret_cast<UINT_PTR>(hNewPopupMenu),
 				szMenu);
 			iMenuDestItemCount++;
 		}
@@ -445,23 +443,23 @@ void MergeMenu(_In_ HMENU hMenuDestination, _In_ const HMENU hMenuAdd)
 void DisplayContextMenu(UINT uiClassMenu, UINT uiControlMenu, _In_ HWND hWnd, int x, int y)
 {
 	if (!uiClassMenu) uiClassMenu = IDR_MENU_DEFAULT_POPUP;
-	HMENU hPopup = ::CreateMenu();
-	HMENU hContext = ::LoadMenu(NULL, MAKEINTRESOURCE(uiClassMenu));
+	auto hPopup = ::CreateMenu();
+	auto hContext = ::LoadMenu(nullptr, MAKEINTRESOURCE(uiClassMenu));
 
 	::InsertMenu(
 		hPopup,
 		0,
 		MF_BYPOSITION | MF_POPUP,
-		(UINT_PTR)hContext,
+		reinterpret_cast<UINT_PTR>(hContext),
 		_T(""));
 
-	HMENU hRealPopup = ::GetSubMenu(hPopup, 0);
+	auto hRealPopup = ::GetSubMenu(hPopup, 0);
 
 	if (hRealPopup)
 	{
 		if (uiControlMenu)
 		{
-			HMENU hAppended = ::LoadMenu(NULL, MAKEINTRESOURCE(uiControlMenu));
+			auto hAppended = ::LoadMenu(nullptr, MAKEINTRESOURCE(uiControlMenu));
 			if (hAppended)
 			{
 				MergeMenu(hRealPopup, hAppended);
@@ -475,7 +473,7 @@ void DisplayContextMenu(UINT uiClassMenu, UINT uiControlMenu, _In_ HWND hWnd, in
 		}
 
 		ConvertMenuOwnerDraw(hRealPopup, false);
-		::TrackPopupMenu(hRealPopup, TPM_LEFTALIGN | TPM_RIGHTBUTTON, x, y, NULL, hWnd, NULL);
+		::TrackPopupMenu(hRealPopup, TPM_LEFTALIGN | TPM_RIGHTBUTTON, x, y, NULL, hWnd, nullptr);
 		DeleteMenuEntries(hRealPopup);
 	}
 
@@ -486,10 +484,8 @@ void DisplayContextMenu(UINT uiClassMenu, UINT uiControlMenu, _In_ HWND hWnd, in
 HMENU LocateSubmenu(_In_ HMENU hMenu, UINT uid)
 {
 	UINT nPosition = 0;
-	UINT nCount = 0;
-
-	nCount = ::GetMenuItemCount(hMenu);
-	if (-1 == nCount) return NULL;
+	UINT nCount = ::GetMenuItemCount(hMenu);
+	if (-1 == nCount) return nullptr;
 
 	for (nPosition = 0; nPosition < nCount; nPosition++)
 	{
@@ -503,20 +499,20 @@ HMENU LocateSubmenu(_In_ HMENU hMenu, UINT uid)
 
 		if (menuiteminfo.hSubMenu)
 		{
-			HMENU hSub = LocateSubmenu(menuiteminfo.hSubMenu, uid);
+			auto hSub = LocateSubmenu(menuiteminfo.hSubMenu, uid);
 			if (hSub) return hSub;
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 _Check_return_ int GetEditHeight(_In_ HWND hwndEdit)
 {
-	HRESULT		hRes = S_OK;
-	HFONT		hOldFont = 0;
-	HDC			hdc = 0;
-	TEXTMETRIC	tmFont = { 0 };
-	int			iHeight = 0;
+	auto hRes = S_OK;
+	HFONT hOldFont = nullptr;
+	HDC hdc = nullptr;
+	TEXTMETRIC tmFont = { 0 };
+	auto iHeight = 0;
 
 	// Get the DC for the edit control.
 	WC_D(hdc, GetDC(hwndEdit));
@@ -524,7 +520,7 @@ _Check_return_ int GetEditHeight(_In_ HWND hwndEdit)
 	if (hdc)
 	{
 		// Get the metrics for the Segoe font.
-		hOldFont = (HFONT)SelectObject(hdc, GetSegoeFont());
+		hOldFont = static_cast<HFONT>(SelectObject(hdc, GetSegoeFont()));
 		WC_B(::GetTextMetrics(hdc, &tmFont));
 		SelectObject(hdc, hOldFont);
 		ReleaseDC(hwndEdit, hdc);
@@ -540,11 +536,11 @@ _Check_return_ int GetEditHeight(_In_ HWND hwndEdit)
 
 _Check_return_ int GetTextHeight(_In_ HWND hwndEdit)
 {
-	HRESULT		hRes = S_OK;
-	HFONT		hOldFont = 0;
-	HDC			hdc = 0;
-	TEXTMETRIC	tmFont = { 0 };
-	int			iHeight = 0;
+	auto hRes = S_OK;
+	HFONT hOldFont = nullptr;
+	HDC hdc = nullptr;
+	TEXTMETRIC tmFont = { 0 };
+	auto iHeight = 0;
 
 	// Get the DC for the edit control.
 	WC_D(hdc, GetDC(hwndEdit));
@@ -552,7 +548,7 @@ _Check_return_ int GetTextHeight(_In_ HWND hwndEdit)
 	if (hdc)
 	{
 		// Get the metrics for the Segoe font.
-		hOldFont = (HFONT)SelectObject(hdc, GetSegoeFont());
+		hOldFont = static_cast<HFONT>(SelectObject(hdc, GetSegoeFont()));
 		WC_B(::GetTextMetrics(hdc, &tmFont));
 		SelectObject(hdc, hOldFont);
 		ReleaseDC(hwndEdit, hdc);
@@ -570,22 +566,22 @@ int CALLBACK EnumFontFamExProcW(
 	LPARAM lParam)
 {
 	// Use a 9 point font
-	lplf->lfHeight = -MulDiv(9, GetDeviceCaps(::GetDC(NULL), LOGPIXELSY), 72);
+	lplf->lfHeight = -MulDiv(9, GetDeviceCaps(::GetDC(nullptr), LOGPIXELSY), 72);
 	lplf->lfWidth = 0;
 	lplf->lfCharSet = DEFAULT_CHARSET;
-	*((HFONT *)lParam) = CreateFontIndirectW(lplf);
+	*reinterpret_cast<HFONT *>(lParam) = CreateFontIndirectW(lplf);
 	return 0;
 }
 
 // This font is not cached and must be delete manually
 HFONT GetFont(_In_z_ LPCWSTR szFont)
 {
-	HFONT hFont = 0;
+	HFONT hFont = nullptr;
 	LOGFONTW lfFont = { 0 };
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	WC_H(StringCchCopyW(lfFont.lfFaceName, _countof(lfFont.lfFaceName), szFont));
 
-	EnumFontFamiliesExW(GetDC(NULL), &lfFont, (FONTENUMPROCW)EnumFontFamExProcW, (LPARAM)&hFont, 0);
+	EnumFontFamiliesExW(GetDC(nullptr), &lfFont, reinterpret_cast<FONTENUMPROCW>(EnumFontFamExProcW), reinterpret_cast<LPARAM>(&hFont), 0);
 	if (hFont) return hFont;
 
 	// If we can't get our font, fallback to a system font
@@ -625,7 +621,7 @@ _Check_return_ HBRUSH GetSysBrush(uiColor uc)
 	// Return a cached brush if we have one
 	if (g_SysBrushes[uc]) return g_SysBrushes[uc];
 	// No cached brush found, cache and return a system brush if requested
-	int iSysColor = g_SysColors[uc];
+	auto iSysColor = g_SysColors[uc];
 	if (iSysColor)
 	{
 		g_SysBrushes[uc] = GetSysColorBrush(iSysColor);
@@ -633,7 +629,7 @@ _Check_return_ HBRUSH GetSysBrush(uiColor uc)
 	}
 
 	// No system brush for this color, cache and return a solid brush of the requested color
-	myColor mc = g_FixedColors[uc];
+	auto mc = g_FixedColors[uc];
 	if (g_FixedBrushes[mc]) return g_FixedBrushes[mc];
 	g_FixedBrushes[mc] = CreateSolidBrush(g_Colors[mc]);
 	return g_FixedBrushes[mc];
@@ -642,11 +638,11 @@ _Check_return_ HBRUSH GetSysBrush(uiColor uc)
 _Check_return_ COLORREF MyGetSysColor(uiColor uc)
 {
 	// Return a system color if we have one in g_SysColors
-	int iSysColor = g_SysColors[uc];
+	auto iSysColor = g_SysColors[uc];
 	if (iSysColor) return ::GetSysColor(iSysColor);
 
 	// No system color listed in g_SysColors, return a hard coded color
-	myColor mc = g_FixedColors[uc];
+	auto mc = g_FixedColors[uc];
 	return g_Colors[mc];
 }
 
@@ -661,17 +657,15 @@ _Check_return_ HPEN GetPen(uiPen up)
 	case cSolidPen:
 	{
 		lbr.lbColor = MyGetSysColor(cFrameSelected);
-		g_Pens[cSolidPen] = ExtCreatePen(PS_SOLID, 1, &lbr, 0, NULL);
+		g_Pens[cSolidPen] = ExtCreatePen(PS_SOLID, 1, &lbr, 0, nullptr);
 		return g_Pens[cSolidPen];
 	}
-	break;
 	case cSolidGreyPen:
 	{
 		lbr.lbColor = MyGetSysColor(cFrameUnselected);
-		g_Pens[cSolidGreyPen] = ExtCreatePen(PS_SOLID, 1, &lbr, 0, NULL);
+		g_Pens[cSolidGreyPen] = ExtCreatePen(PS_SOLID, 1, &lbr, 0, nullptr);
 		return g_Pens[cSolidGreyPen];
 	}
-	break;
 	case cDashedPen:
 	{
 		lbr.lbColor = MyGetSysColor(cFrameUnselected);
@@ -679,16 +673,15 @@ _Check_return_ HPEN GetPen(uiPen up)
 		g_Pens[cDashedPen] = ExtCreatePen(PS_GEOMETRIC | PS_USERSTYLE, 1, &lbr, 2, rgStyle);
 		return g_Pens[cDashedPen];
 	}
-	break;
 	}
-	return NULL;
+	return nullptr;
 }
 
 HBITMAP GetBitmap(uiBitmap ub)
 {
 	if (g_Bitmaps[ub]) return g_Bitmaps[ub];
 
-	g_Bitmaps[ub] = ::LoadBitmap(GetModuleHandle(NULL), MAKEINTRESOURCE(g_BitmapResources[ub]));
+	g_Bitmaps[ub] = ::LoadBitmap(GetModuleHandle(nullptr), MAKEINTRESOURCE(g_BitmapResources[ub]));
 	return g_Bitmaps[ub];
 }
 
@@ -700,8 +693,8 @@ void DrawSegoeTextW(
 	bool bBold,
 	_In_ UINT format)
 {
-	HGDIOBJ hfontOld = ::SelectObject(hdc, bBold ? GetSegoeFontBold() : GetSegoeFont());
-	COLORREF crText = ::SetTextColor(hdc, color);
+	auto hfontOld = ::SelectObject(hdc, bBold ? GetSegoeFontBold() : GetSegoeFont());
+	auto crText = ::SetTextColor(hdc, color);
 	::SetBkMode(hdc, TRANSPARENT);
 	::DrawTextW(
 		hdc,
@@ -721,8 +714,8 @@ void DrawSegoeTextA(
 	bool bBold,
 	_In_ UINT format)
 {
-	HGDIOBJ hfontOld = ::SelectObject(hdc, bBold ? GetSegoeFontBold() : GetSegoeFont());
-	COLORREF crText = ::SetTextColor(hdc, color);
+	auto hfontOld = ::SelectObject(hdc, bBold ? GetSegoeFontBold() : GetSegoeFont());
+	auto crText = ::SetTextColor(hdc, color);
 	::SetBkMode(hdc, TRANSPARENT);
 	::DrawTextA(
 		hdc,
@@ -746,16 +739,16 @@ void ClearEditFormatting(_In_ HWND hWnd, bool bReadOnly)
 	cf.dwMask = CFM_COLOR | CFM_FACE | CFM_BOLD | CFM_ITALIC | CFM_UNDERLINE | CFM_STRIKEOUT;
 	cf.crTextColor = MyGetSysColor(bReadOnly ? cTextReadOnly : cText);
 	StringCchCopy(cf.szFaceName, _countof(cf.szFaceName), SEGOE);
-	(void) ::SendMessage(hWnd, EM_SETCHARFORMAT, SCF_ALL, (LPARAM)&cf);
+	(void) ::SendMessage(hWnd, EM_SETCHARFORMAT, SCF_ALL, reinterpret_cast<LPARAM>(&cf));
 }
 
 // Lighten the colors of the base, being careful not to overflow
 COLORREF LightColor(COLORREF crBase)
 {
-	double f = .20;
-	BYTE bRed = (BYTE)(GetRValue(crBase) + 255 * f);
-	BYTE bGreen = (BYTE)(GetGValue(crBase) + 255 * f);
-	BYTE bBlue = (BYTE)(GetBValue(crBase) + 255 * f);
+	auto f = .20;
+	auto bRed = static_cast<BYTE>(GetRValue(crBase) + 255 * f);
+	auto bGreen = static_cast<BYTE>(GetGValue(crBase) + 255 * f);
+	auto bBlue = static_cast<BYTE>(GetBValue(crBase) + 255 * f);
 	if (bRed < GetRValue(crBase)) bRed = 0xff;
 	if (bGreen < GetGValue(crBase)) bGreen = 0xff;
 	if (bBlue < GetBValue(crBase)) bBlue = 0xff;
@@ -765,8 +758,8 @@ COLORREF LightColor(COLORREF crBase)
 void GradientFillRect(_In_ HDC hdc, RECT rc, uiColor uc)
 {
 	// Gradient fill the background
-	COLORREF crGlow = MyGetSysColor(uc);
-	COLORREF crLightGlow = LightColor(crGlow);
+	auto crGlow = MyGetSysColor(uc);
+	auto crLightGlow = LightColor(crGlow);
 
 	TRIVERTEX vertex[2] = { 0 };
 	// Light at the top
@@ -794,9 +787,9 @@ void GradientFillRect(_In_ HDC hdc, RECT rc, uiColor uc)
 
 void DrawFilledPolygon(_In_ HDC hdc, _In_count_(cpt) CONST POINT *apt, _In_ int cpt, COLORREF cEdge, _In_ HBRUSH hFill)
 {
-	HPEN hPen = ::CreatePen(PS_SOLID, 0, cEdge);
-	HGDIOBJ hBrushOld = ::SelectObject(hdc, hFill);
-	HGDIOBJ hPenOld = ::SelectObject(hdc, hPen);
+	auto hPen = ::CreatePen(PS_SOLID, 0, cEdge);
+	auto hBrushOld = ::SelectObject(hdc, hFill);
+	auto hPenOld = ::SelectObject(hdc, hPen);
 	::Polygon(hdc, apt, cpt);
 	::SelectObject(hdc, hPenOld);
 	::SelectObject(hdc, hBrushOld);
@@ -817,10 +810,9 @@ LRESULT CALLBACK DrawEditProc(
 	case WM_NCDESTROY:
 		RemoveWindowSubclass(hWnd, DrawEditProc, uIdSubclass);
 		return DefSubclassProc(hWnd, uMsg, wParam, lParam);
-		break;
 	case WM_NCPAINT:
 	{
-		HDC hdc = ::GetWindowDC(hWnd);
+		auto hdc = ::GetWindowDC(hWnd);
 		if (hdc)
 		{
 			RECT rc = { 0 };
@@ -832,20 +824,19 @@ LRESULT CALLBACK DrawEditProc(
 
 		// Let the system paint the scroll bar if we have one
 		// Be sure to use window coordinates
-		LONG_PTR ws = GetWindowLongPtr(hWnd, GWL_STYLE);
+		auto ws = GetWindowLongPtr(hWnd, GWL_STYLE);
 		if (ws & WS_VSCROLL)
 		{
 			RECT rcScroll = { 0 };
 			::GetWindowRect(hWnd, &rcScroll);
 			::InflateRect(&rcScroll, -1, -1);
 			rcScroll.left = rcScroll.right - GetSystemMetrics(SM_CXHSCROLL);
-			HRGN hRgnCaption = ::CreateRectRgnIndirect(&rcScroll);
-			::DefWindowProc(hWnd, WM_NCPAINT, (WPARAM)hRgnCaption, NULL);
+			auto hRgnCaption = ::CreateRectRgnIndirect(&rcScroll);
+			::DefWindowProc(hWnd, WM_NCPAINT, reinterpret_cast<WPARAM>(hRgnCaption), NULL);
 			DeleteObject(hRgnCaption);
 		}
 		return 0;
 	}
-	break;
 	}
 	return DefSubclassProc(hWnd, uMsg, wParam, lParam);
 }
@@ -854,42 +845,43 @@ void SubclassEdit(_In_ HWND hWnd, _In_ HWND hWndParent, bool bReadOnly)
 {
 	SetWindowSubclass(hWnd, DrawEditProc, 0, 0);
 
-	LONG_PTR lStyle = ::GetWindowLongPtr(hWnd, GWL_EXSTYLE);
+	auto lStyle = ::GetWindowLongPtr(hWnd, GWL_EXSTYLE);
 	lStyle &= ~WS_EX_CLIENTEDGE;
 	(void) ::SetWindowLongPtr(hWnd, GWL_EXSTYLE, lStyle);
 	if (bReadOnly) {
-		(void) ::SendMessage(hWnd, EM_SETBKGNDCOLOR, (WPARAM)0, (LPARAM)MyGetSysColor(cBackgroundReadOnly));
+		(void) ::SendMessage(hWnd, EM_SETBKGNDCOLOR, static_cast<WPARAM>(0), static_cast<LPARAM>(MyGetSysColor(cBackgroundReadOnly)));
 		(void) ::SendMessage(hWnd, EM_SETREADONLY, true, 0L);
 	}
 	else
 	{
-		(void) ::SendMessage(hWnd, EM_SETBKGNDCOLOR, (WPARAM)0, (LPARAM)MyGetSysColor(cBackground));
+		(void) ::SendMessage(hWnd, EM_SETBKGNDCOLOR, static_cast<WPARAM>(0), static_cast<LPARAM>(MyGetSysColor(cBackground)));
 	}
+
 	ClearEditFormatting(hWnd, bReadOnly);
 
 	// Set up callback to control paste and context menus
-	CRichEditOleCallback* reCallback = new CRichEditOleCallback(hWnd, hWndParent);
+	auto reCallback = new CRichEditOleCallback(hWnd, hWndParent);
 	if (reCallback)
 	{
 		(void) ::SendMessage(
 			hWnd,
 			EM_SETOLECALLBACK,
-			(WPARAM)0,
-			(LPARAM)reCallback);
+			static_cast<WPARAM>(0),
+			reinterpret_cast<LPARAM>(reCallback));
 		reCallback->Release();
 	}
 }
 
 void CustomDrawList(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, int iItemCurHover)
 {
-	static bool bSelected = false;
+	static auto bSelected = false;
 	if (!pNMHDR) return;
-	LPNMLVCUSTOMDRAW lvcd = (LPNMLVCUSTOMDRAW)pNMHDR;
-	int iItem = (int)lvcd->nmcd.dwItemSpec;
+	auto lvcd = reinterpret_cast<LPNMLVCUSTOMDRAW>(pNMHDR);
+	auto iItem = static_cast<int>(lvcd->nmcd.dwItemSpec);
 
 	// If there's nothing to paint, this is a "fake paint" and we don't want to toggle selection highlight
 	// Toggling selection highlight causes a repaint, so this logic prevents flicker
-	bool bFakePaint = (lvcd->nmcd.rc.bottom == 0 &&
+	auto bFakePaint = (lvcd->nmcd.rc.bottom == 0 &&
 		lvcd->nmcd.rc.top == 0 &&
 		lvcd->nmcd.rc.left == 0 &&
 		lvcd->nmcd.rc.right == 0);
@@ -917,7 +909,7 @@ void CustomDrawList(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, int iItemCurHover
 
 		// On some systems, top/bottom will both be zero, but not left/right. We want to consider those
 		// as if they had positive area, so bump bottom to 1 and remember to reset it after.
-		bool bResetBottom = false;
+		auto bResetBottom = false;
 		if (0 == lvcd->nmcd.rc.top && 0 == lvcd->nmcd.rc.bottom)
 		{
 			lvcd->nmcd.rc.bottom = 1;
@@ -975,7 +967,7 @@ void DrawListItemGlow(_In_ HWND hWnd, UINT itemID)
 	if (-1 == itemID) return;
 
 	// If the item already has the selection glow, we don't need to redraw
-	bool bSelected = ListView_GetItemState(hWnd, itemID, LVIS_SELECTED) != 0;
+	auto bSelected = ListView_GetItemState(hWnd, itemID, LVIS_SELECTED) != 0;
 	if (bSelected) return;
 
 	RECT rcIcon = { 0 };
@@ -987,7 +979,7 @@ void DrawListItemGlow(_In_ HWND hWnd, UINT itemID)
 	RECT rcClient = { 0 };
 	::GetClientRect(hWnd, &rcClient); // Get our client size
 	::IntersectRect(&rcLabels, &rcLabels, &rcClient);
-	RedrawWindow(hWnd, &rcLabels, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
+	RedrawWindow(hWnd, &rcLabels, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
 }
 
 void DrawTreeItemGlow(_In_ HWND hWnd, _In_ HTREEITEM hItem)
@@ -1007,7 +999,7 @@ void CopyBitmap(HDC hdcSource, HDC hdcTarget, int iWidth, int iHeight, int ibmWi
 {
 	RECT rcBM = { 0, 0, iWidth, iHeight };
 
-	HBITMAP hbmTarget = CreateCompatibleBitmap(
+	auto hbmTarget = CreateCompatibleBitmap(
 		hdcSource,
 		iWidth,
 		iHeight);
@@ -1040,19 +1032,19 @@ void DrawBitmap(_In_ HDC hdc, _In_ LPRECT rcTarget, uiBitmap iBitmap, bool bHove
 	int iHeight = rcTarget->bottom - rcTarget->top;
 
 	// hdcBitmap: Load the image
-	HDC hdcBitmap = ::CreateCompatibleDC(hdc);
-	HBITMAP hbmBitmap = GetBitmap(iBitmap);
+	auto hdcBitmap = ::CreateCompatibleDC(hdc);
+	auto hbmBitmap = GetBitmap(iBitmap);
 	(void) ::SelectObject(hdcBitmap, hbmBitmap);
 
 	BITMAP bm = { 0 };
 	::GetObject(hbmBitmap, sizeof(bm), &bm);
 
 	// hdcForeReplace: Create a bitmap compatible with hdc, select it, fill with cFrameSelected, copy from hdcBitmap, with cBitmapTransFore transparent
-	HDC hdcForeReplace = ::CreateCompatibleDC(hdc);
+	auto hdcForeReplace = ::CreateCompatibleDC(hdc);
 	CopyBitmap(hdcBitmap, hdcForeReplace, iWidth, iHeight, bm.bmWidth, bm.bmHeight, cBitmapTransFore, cFrameSelected);
 
 	// hdcBackReplace: Create a bitmap compatible with hdc, select it, fill with cBackground, copy from hdcForeReplace, with cBitmapTransBack transparent
-	HDC hdcBackReplace = ::CreateCompatibleDC(hdc);
+	auto hdcBackReplace = ::CreateCompatibleDC(hdc);
 	CopyBitmap(hdcForeReplace, hdcBackReplace, iWidth, iHeight, bm.bmWidth, bm.bmHeight, cBitmapTransBack, bHover ? cGlowBackground : cBackground);
 
 	// hdc: BitBlt from hdcBackReplace
@@ -1075,8 +1067,7 @@ void DrawBitmap(_In_ HDC hdc, _In_ LPRECT rcTarget, uiBitmap iBitmap, bool bHove
 void CustomDrawTree(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, bool bHover, _In_ HTREEITEM hItemCurHover)
 {
 	if (!pNMHDR) return;
-	static bool bHighlighted = false;
-	LPNMTVCUSTOMDRAW lvcd = (LPNMTVCUSTOMDRAW)pNMHDR;
+	auto lvcd = reinterpret_cast<LPNMTVCUSTOMDRAW>(pNMHDR);
 
 	switch (lvcd->nmcd.dwDrawStage)
 	{
@@ -1086,7 +1077,7 @@ void CustomDrawTree(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, bool bHover, _In_
 
 	case CDDS_ITEMPREPAINT:
 	{
-		HTREEITEM hItem = (HTREEITEM)lvcd->nmcd.dwItemSpec;
+		auto hItem = reinterpret_cast<HTREEITEM>(lvcd->nmcd.dwItemSpec);
 
 		if (hItem)
 		{
@@ -1110,7 +1101,7 @@ void CustomDrawTree(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, bool bHover, _In_
 	case CDDS_ITEMPOSTPAINT:
 	{
 		// If we've advised on this object, add a little icon to let the user know
-		HTREEITEM hItem = (HTREEITEM)lvcd->nmcd.dwItemSpec;
+		auto hItem = reinterpret_cast<HTREEITEM>(lvcd->nmcd.dwItemSpec);
 
 		if (hItem)
 		{
@@ -1121,8 +1112,8 @@ void CustomDrawTree(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, bool bHover, _In_
 			tvi.mask = TVIF_PARAM;
 			tvi.hItem = hItem;
 			TreeView_GetItem(lvcd->nmcd.hdr.hwndFrom, &tvi);
-			SortListData* lpData = (SortListData*)tvi.lParam;
-			if (lpData && lpData->data.Node.lpAdviseSink)
+			auto lpData = reinterpret_cast<SortListData*>(tvi.lParam);
+			if (lpData && lpData->Node() && lpData->Node()->lpAdviseSink)
 			{
 				RECT rect = { 0 };
 				TreeView_GetItemRect(lvcd->nmcd.hdr.hwndFrom, hItem, &rect, 1);
@@ -1146,7 +1137,7 @@ void DrawExpandTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ HTREEITEM hItem, bool
 	tvitem.hItem = hItem;
 	tvitem.mask = TVIF_CHILDREN | TVIF_STATE;
 	TreeView_GetItem(hWnd, &tvitem);
-	bool bHasChildren = tvitem.cChildren != 0;
+	auto bHasChildren = tvitem.cChildren != 0;
 	if (bHasChildren)
 	{
 		RECT rcButton = { 0 };
@@ -1165,7 +1156,7 @@ void DrawExpandTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ HTREEITEM hItem, bool
 		RECT rcTriangle = { 0 };
 
 		POINT tri[3] = { 0 };
-		bool bExpanded = (TVIS_EXPANDED == (tvitem.state & TVIS_EXPANDED));
+		auto bExpanded = (TVIS_EXPANDED == (tvitem.state & TVIS_EXPANDED));
 		if (bExpanded)
 		{
 			rcTriangle.top = (rcButton.top + rcButton.bottom) / 2 - 3;
@@ -1252,7 +1243,7 @@ void DrawTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ CONST RECT* lprc, bool bBut
 		tri[2].x = lCenter + TRIANGLE_SIZE;
 		tri[2].y = lTop;
 	}
-	uiColor uiArrow = cArrow;
+	auto uiArrow = cArrow;
 	if (bButton) uiArrow = cPaneHeaderText;
 	DrawFilledPolygon(hdc, tri, _countof(tri), MyGetSysColor(uiArrow), GetSysBrush(uiArrow));
 
@@ -1261,15 +1252,15 @@ void DrawTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ CONST RECT* lprc, bool bBut
 
 void DrawHeaderItem(_In_ HWND hWnd, _In_ HDC hdc, UINT itemID, _In_ LPRECT lprc)
 {
-	bool bSorted = false;
-	bool bSortUp = true;
+	auto bSorted = false;
+	auto bSortUp = true;
 
 	WCHAR szHeader[255] = { 0 };
 	HDITEMW hdItem = { 0 };
 	hdItem.mask = HDI_TEXT | HDI_FORMAT;
 	hdItem.pszText = szHeader;
 	hdItem.cchTextMax = _countof(szHeader);
-	::SendMessage(hWnd, HDM_GETITEMW, (WPARAM)itemID, (LPARAM)&hdItem);
+	::SendMessage(hWnd, HDM_GETITEMW, static_cast<WPARAM>(itemID), reinterpret_cast<LPARAM>(&hdItem));
 
 	if (hdItem.fmt & (HDF_SORTUP | HDF_SORTDOWN))
 		bSorted = true;
@@ -1281,7 +1272,7 @@ void DrawHeaderItem(_In_ HWND hWnd, _In_ HDC hdc, UINT itemID, _In_ LPRECT lprc)
 	CDoubleBuffer db;
 	db.Begin(hdc, lprc);
 
-	RECT rcHeader = *lprc;
+	auto rcHeader = *lprc;
 	::FillRect(hdc, &rcHeader, GetSysBrush(cBackground));
 
 	if (bSorted)
@@ -1289,7 +1280,7 @@ void DrawHeaderItem(_In_ HWND hWnd, _In_ HDC hdc, UINT itemID, _In_ LPRECT lprc)
 		DrawTriangle(hWnd, hdc, lprc, false, bSortUp);
 	}
 
-	RECT rcText = rcHeader;
+	auto rcText = rcHeader;
 	rcText.left += GetSystemMetrics(SM_CXEDGE);
 	DrawSegoeTextW(
 		hdc,
@@ -1300,8 +1291,8 @@ void DrawHeaderItem(_In_ HWND hWnd, _In_ HDC hdc, UINT itemID, _In_ LPRECT lprc)
 		DT_END_ELLIPSIS | DT_SINGLELINE | DT_VCENTER);
 
 	// Draw a line under for some visual separation
-	HGDIOBJ hpenOld = ::SelectObject(hdc, GetPen(cSolidGreyPen));
-	::MoveToEx(hdc, rcHeader.left, rcHeader.bottom - 1, NULL);
+	auto hpenOld = ::SelectObject(hdc, GetPen(cSolidGreyPen));
+	::MoveToEx(hdc, rcHeader.left, rcHeader.bottom - 1, nullptr);
 	::LineTo(hdc, rcHeader.right, rcHeader.bottom - 1);
 	(void) ::SelectObject(hdc, hpenOld);
 
@@ -1319,7 +1310,7 @@ void DrawHeaderItem(_In_ HWND hWnd, _In_ HDC hdc, UINT itemID, _In_ LPRECT lprc)
 void CustomDrawHeader(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 {
 	if (!pNMHDR) return;
-	LPNMCUSTOMDRAW lvcd = (LPNMCUSTOMDRAW)pNMHDR;
+	auto lvcd = reinterpret_cast<LPNMCUSTOMDRAW>(pNMHDR);
 
 	switch (lvcd->dwDrawStage)
 	{
@@ -1328,7 +1319,7 @@ void CustomDrawHeader(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 		break;
 
 	case CDDS_ITEMPREPAINT:
-		DrawHeaderItem(lvcd->hdr.hwndFrom, lvcd->hdc, (UINT)lvcd->dwItemSpec, &lvcd->rc);
+		DrawHeaderItem(lvcd->hdr.hwndFrom, lvcd->hdc, static_cast<UINT>(lvcd->dwItemSpec), &lvcd->rc);
 		*pResult = CDRF_SKIPDEFAULT;
 		break;
 
@@ -1338,11 +1329,11 @@ void CustomDrawHeader(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 		// Get the rc for the entire header
 		::GetClientRect(lvcd->hdr.hwndFrom, &rc);
 		// Get the last item in the header
-		int iCount = Header_GetItemCount(lvcd->hdr.hwndFrom);
+		auto iCount = Header_GetItemCount(lvcd->hdr.hwndFrom);
 		if (iCount)
 		{
 			// Find the index of the last item in the header
-			int iIndex = Header_OrderToIndex(lvcd->hdr.hwndFrom, iCount - 1);
+			auto iIndex = Header_OrderToIndex(lvcd->hdr.hwndFrom, iCount - 1);
 
 			RECT rcRight = { 0 };
 			// Compute the right edge of the last item
@@ -1370,11 +1361,11 @@ void DrawTrackingBar(_In_ HWND hWndHeader, _In_ HWND hWndList, int x, int iHeade
 {
 	RECT rcTracker = { 0 };
 	::GetClientRect(hWndList, &rcTracker);
-	HDC hdc = ::GetDC(hWndList);
+	auto hdc = ::GetDC(hWndList);
 	rcTracker.top += iHeaderHeight;
 	rcTracker.left = x - 1; // this lines us up under the splitter line we drew in the header
 	rcTracker.right = x;
-	::MapWindowPoints(hWndHeader, hWndList, (LPPOINT)&rcTracker, 2);
+	::MapWindowPoints(hWndHeader, hWndList, reinterpret_cast<LPPOINT>(&rcTracker), 2);
 	if (bRedraw)
 	{
 		::InvalidateRect(hWndList, &rcTracker, true);
@@ -1388,27 +1379,27 @@ void DrawTrackingBar(_In_ HWND hWndHeader, _In_ HWND hWndList, int x, int iHeade
 
 void StyleButton(_In_ HWND hWnd, uiButtonStyle bsStyle)
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
-	EC_B(::SetProp(hWnd, BUTTON_STYLE, (HANDLE)bsStyle));
+	EC_B(::SetProp(hWnd, BUTTON_STYLE, reinterpret_cast<HANDLE>(bsStyle)));
 }
 
 void DrawButton(_In_ HWND hWnd, _In_ HDC hDC, _In_ LPRECT lprc, UINT itemState)
 {
 	::FillRect(hDC, lprc, GetSysBrush(cBackground));
 
-	intptr_t bsStyle = reinterpret_cast<intptr_t>(::GetProp(hWnd, BUTTON_STYLE));
+	auto bsStyle = reinterpret_cast<intptr_t>(::GetProp(hWnd, BUTTON_STYLE));
 	switch (bsStyle)
 	{
 	case bsUnstyled:
 	{
 		WCHAR szButton[255] = { 0 };
 		::GetWindowTextW(hWnd, szButton, _countof(szButton));
-		int iState = (int) ::SendMessage(hWnd, BM_GETSTATE, NULL, NULL);
-		bool bGlow = (iState & BST_HOT) != 0;
-		bool bPushed = (iState & BST_PUSHED) != 0;
-		bool bDisabled = (itemState & CDIS_DISABLED) != 0;
-		bool bFocused = (itemState & CDIS_FOCUS) != 0;
+		auto iState = static_cast<int>(::SendMessage(hWnd, BM_GETSTATE, NULL, NULL));
+		auto bGlow = (iState & BST_HOT) != 0;
+		auto bPushed = (iState & BST_PUSHED) != 0;
+		auto bDisabled = (itemState & CDIS_DISABLED) != 0;
+		auto bFocused = (itemState & CDIS_FOCUS) != 0;
 
 		::FrameRect(hDC, lprc, (bFocused || bGlow || bPushed) ? GetSysBrush(cFrameSelected) : GetSysBrush(cFrameUnselected));
 
@@ -1434,14 +1425,14 @@ void DrawCheckButton(_In_ HWND hWnd, _In_ HDC hDC, _In_ LPRECT lprc, UINT itemSt
 {
 	WCHAR szButton[255];
 	::GetWindowTextW(hWnd, szButton, _countof(szButton));
-	int iState = (int) ::SendMessage(hWnd, BM_GETSTATE, NULL, NULL);
-	bool bGlow = (BST_HOT == (iState & BST_HOT));
-	bool bChecked = (iState & BST_CHECKED) != 0;
-	bool bDisabled = (itemState & CDIS_DISABLED) != 0;
-	bool bFocused = (itemState & CDIS_FOCUS) != 0;
+	auto iState = static_cast<int>(::SendMessage(hWnd, BM_GETSTATE, NULL, NULL));
+	auto bGlow = (BST_HOT == (iState & BST_HOT));
+	auto bChecked = (iState & BST_CHECKED) != 0;
+	auto bDisabled = (itemState & CDIS_DISABLED) != 0;
+	auto bFocused = (itemState & CDIS_FOCUS) != 0;
 
 	long lSpacing = GetSystemMetrics(SM_CYEDGE);
-	long lCheck = lprc->bottom - lprc->top - 2 * lSpacing;
+	auto lCheck = lprc->bottom - lprc->top - 2 * lSpacing;
 	RECT rcCheck = { 0 };
 	rcCheck.right = rcCheck.left + lCheck;
 	rcCheck.top = lprc->top + lSpacing;
@@ -1451,7 +1442,7 @@ void DrawCheckButton(_In_ HWND hWnd, _In_ HDC hDC, _In_ LPRECT lprc, UINT itemSt
 	::FrameRect(hDC, &rcCheck, GetSysBrush(bDisabled ? cFrameUnselected : ((bGlow || bFocused) ? cGlow : cFrameSelected)));
 	if (bChecked)
 	{
-		RECT rcFill = rcCheck;
+		auto rcFill = rcCheck;
 		::InflateRect(&rcFill, -3, -3);
 		::FillRect(hDC, &rcFill, GetSysBrush(cGlow));
 	}
@@ -1470,8 +1461,7 @@ void DrawCheckButton(_In_ HWND hWnd, _In_ HDC hDC, _In_ LPRECT lprc, UINT itemSt
 bool CustomDrawButton(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 {
 	if (!pNMHDR) return false;
-	static bool bHighlighted = false;
-	LPNMCUSTOMDRAW lvcd = (LPNMCUSTOMDRAW)pNMHDR;
+	auto lvcd = reinterpret_cast<LPNMCUSTOMDRAW>(pNMHDR);
 
 	// Ensure we only handle painting for buttons
 	WCHAR szClass[64] = { 0 };
@@ -1482,7 +1472,7 @@ bool CustomDrawButton(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 	{
 	case CDDS_PREPAINT:
 	{
-		LONG lStyle = BS_TYPEMASK & ::GetWindowLongA(lvcd->hdr.hwndFrom, GWL_STYLE);
+		auto lStyle = BS_TYPEMASK & ::GetWindowLongA(lvcd->hdr.hwndFrom, GWL_STYLE);
 
 		*pResult = CDRF_SKIPDEFAULT;
 		if (BS_AUTOCHECKBOX == lStyle)
@@ -1509,21 +1499,20 @@ bool CustomDrawButton(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 void MeasureMenu(_In_ LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 {
 	if (!lpMeasureItemStruct) return;
-	LPMENUENTRY lpMenuEntry = (LPMENUENTRY)lpMeasureItemStruct->itemData;
+	auto lpMenuEntry = reinterpret_cast<LPMENUENTRY>(lpMeasureItemStruct->itemData);
 	if (!lpMenuEntry) return;
 
-	HDC hdc = ::GetDC(NULL);
+	auto hdc = ::GetDC(nullptr);
 	if (hdc)
 	{
-		HGDIOBJ hfontOld = NULL;
-		hfontOld = ::SelectObject(hdc, GetSegoeFont());
+		auto hfontOld = ::SelectObject(hdc, GetSegoeFont());
 
 		// In order to compute the right width, we need to drop our prefix characters
 		CString szText = lpMenuEntry->m_MSAA.pszWText;
 		szText.Replace(_T("&"), _T("")); // STRING_OK
 
 		SIZE size = { 0 };
-		GetTextExtentPoint32(hdc, (LPCTSTR)szText, szText.GetLength(), &size);
+		GetTextExtentPoint32(hdc, static_cast<LPCTSTR>(szText), szText.GetLength(), &size);
 		lpMeasureItemStruct->itemWidth = size.cx + 2 * GetSystemMetrics(SM_CXEDGE);
 		lpMeasureItemStruct->itemHeight = size.cy + 2 * GetSystemMetrics(SM_CYEDGE);
 
@@ -1534,7 +1523,7 @@ void MeasureMenu(_In_ LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 		}
 
 		::SelectObject(hdc, hfontOld);
-		::ReleaseDC(NULL, hdc);
+		::ReleaseDC(nullptr, hdc);
 	}
 }
 
@@ -1547,40 +1536,40 @@ void MeasureItem(_In_ LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 	// Important to keep this case even if we do not use it - CDialog::OnMeasureItem asserts.
 	else if (ODT_COMBOBOX == lpMeasureItemStruct->CtlType)
 	{
-		//		DebugPrint(DBGGeneric,"Combo Box\n");
+		// DebugPrint(DBGGeneric,"Combo Box\n");
 	}
 }
 
 void DrawMenu(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
 {
 	if (!lpDrawItemStruct) return;
-	LPMENUENTRY lpMenuEntry = (LPMENUENTRY)lpDrawItemStruct->itemData;
+	auto lpMenuEntry = reinterpret_cast<LPMENUENTRY>(lpDrawItemStruct->itemData);
 	if (!lpMenuEntry) return;
 
-	bool bSeparator = !lpMenuEntry->m_MSAA.cchWText; // Cheap way to find separators. Revisit if odd effects show.
-	bool bAccel = (lpDrawItemStruct->itemState & ODS_NOACCEL) != 0;
-	bool bHot = (lpDrawItemStruct->itemState & (ODS_HOTLIGHT | ODS_SELECTED)) != 0;
-	bool bDisabled = (lpDrawItemStruct->itemState & (ODS_GRAYED | ODS_DISABLED)) != 0;
+	auto bSeparator = !lpMenuEntry->m_MSAA.cchWText; // Cheap way to find separators. Revisit if odd effects show.
+	auto bAccel = (lpDrawItemStruct->itemState & ODS_NOACCEL) != 0;
+	auto bHot = (lpDrawItemStruct->itemState & (ODS_HOTLIGHT | ODS_SELECTED)) != 0;
+	auto bDisabled = (lpDrawItemStruct->itemState & (ODS_GRAYED | ODS_DISABLED)) != 0;
 
 	// Double buffer our menu painting
 	CDoubleBuffer db;
-	HDC hdc = lpDrawItemStruct->hDC;
+	auto hdc = lpDrawItemStruct->hDC;
 	db.Begin(hdc, &lpDrawItemStruct->rcItem);
 
 	// Draw background
-	RECT rcItem = lpDrawItemStruct->rcItem;
-	RECT rcText = rcItem;
+	auto rcItem = lpDrawItemStruct->rcItem;
+	auto rcText = rcItem;
 
 	if (!lpMenuEntry->b_OnMenuBar)
 	{
-		RECT rectGutter = rcText;
+		auto rectGutter = rcText;
 		rcText.left += GetSystemMetrics(SM_CXMENUCHECK);
 		rectGutter.right = rcText.left;
 		::FillRect(hdc, &rectGutter, GetSysBrush(cBackgroundReadOnly));
 	}
 
-	uiColor cBack = cBackground;
-	uiColor cFore = cText;
+	auto cBack = cBackground;
+	auto cFore = cText;
 	if (bHot && !bDisabled)
 	{
 		cBack = cSelectedBackground;
@@ -1596,9 +1585,9 @@ void DrawMenu(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
 	if (bSeparator)
 	{
 		::InflateRect(&rcText, -3, 0);
-		LONG lMid = (rcText.bottom + rcText.top) / 2;
-		HGDIOBJ hpenOld = ::SelectObject(hdc, GetPen(cSolidGreyPen));
-		::MoveToEx(hdc, rcText.left, lMid, NULL);
+		auto lMid = (rcText.bottom + rcText.top) / 2;
+		auto hpenOld = ::SelectObject(hdc, GetPen(cSolidGreyPen));
+		::MoveToEx(hdc, rcText.left, lMid, nullptr);
 		::LineTo(hdc, rcText.right, lMid);
 		(void) ::SelectObject(hdc, hpenOld);
 	}
@@ -1626,8 +1615,8 @@ void DrawMenu(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
 			UINT nWidth = GetSystemMetrics(SM_CXMENUCHECK);
 			UINT nHeight = GetSystemMetrics(SM_CYMENUCHECK);
 			RECT rc = { 0 };
-			HBITMAP bm = CreateBitmap(nWidth, nHeight, 1, 1, NULL);
-			HDC hdcMem = CreateCompatibleDC(hdc);
+			auto bm = CreateBitmap(nWidth, nHeight, 1, 1, nullptr);
+			auto hdcMem = CreateCompatibleDC(hdc);
 
 			SelectObject(hdcMem, bm);
 			SetRect(&rc, 0, 0, nWidth, nHeight);
@@ -1661,10 +1650,10 @@ void DrawComboBox(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
 
 	TCHAR szText[128] = { 0 };
 	// Get and display the text for the list item.
-	::SendMessage(lpDrawItemStruct->hwndItem, CB_GETLBTEXT, lpDrawItemStruct->itemID, (LPARAM)szText);
-	bool bHot = 0 != (lpDrawItemStruct->itemState & (ODS_FOCUS | ODS_SELECTED));
-	uiColor cBack = cBackground;
-	uiColor cFore = cText;
+	::SendMessage(lpDrawItemStruct->hwndItem, CB_GETLBTEXT, lpDrawItemStruct->itemID, reinterpret_cast<LPARAM>(szText));
+	auto bHot = 0 != (lpDrawItemStruct->itemState & (ODS_FOCUS | ODS_SELECTED));
+	auto cBack = cBackground;
+	auto cFore = cText;
 	if (bHot)
 	{
 		cBack = cGlowBackground;
@@ -1712,15 +1701,15 @@ void DrawStatus(
 	{
 		rcStatus.top = rcStatus.bottom - iStatusHeight;
 	}
-	PAINTSTRUCT ps = { 0 };
+	PAINTSTRUCT ps = { nullptr };
 	::BeginPaint(hwnd, &ps);
 
 	CDoubleBuffer db;
 	db.Begin(ps.hdc, &rcStatus);
 
-	RECT rcGrad = rcStatus;
-	RECT rcText = rcGrad;
-	COLORREF crFore = MyGetSysColor(cStatusText);
+	auto rcGrad = rcStatus;
+	auto rcText = rcGrad;
+	auto crFore = MyGetSysColor(cStatusText);
 
 	// We start painting a little lower to allow our gradiants to line up
 	rcGrad.bottom += GetSystemMetrics(SM_CYSIZEFRAME) - BORDER_VISIBLEWIDTH;
@@ -1773,30 +1762,30 @@ void GetCaptionRects(HWND hWnd,
 	RECT rcCaptionText = { 0 };
 
 	RECT rcWindow = { 0 };
-	DWORD dwWinStyle = GetWindowStyle(hWnd);
-	bool bModal = (DS_MODALFRAME == (dwWinStyle & DS_MODALFRAME));
-	bool bThickFrame = (WS_THICKFRAME == (dwWinStyle & WS_THICKFRAME));
-	bool bMinBox = (WS_MINIMIZEBOX == (dwWinStyle & WS_MINIMIZEBOX));
-	bool bMaxBox = (WS_MAXIMIZEBOX == (dwWinStyle & WS_MAXIMIZEBOX));
+	auto dwWinStyle = GetWindowStyle(hWnd);
+	auto bModal = (DS_MODALFRAME == (dwWinStyle & DS_MODALFRAME));
+	auto bThickFrame = (WS_THICKFRAME == (dwWinStyle & WS_THICKFRAME));
+	auto bMinBox = (WS_MINIMIZEBOX == (dwWinStyle & WS_MINIMIZEBOX));
+	auto bMaxBox = (WS_MAXIMIZEBOX == (dwWinStyle & WS_MAXIMIZEBOX));
 
 	::GetWindowRect(hWnd, &rcWindow); // Get our non-client size
 	::OffsetRect(&rcWindow, -rcWindow.left, -rcWindow.top); // shift the origin to 0 since that's where our DC paints
 	// At this point, we have rectangles for our window and client area
 	// rcWindow is the outer rectangle for our NC frame
 
-	int cxPaddedBorder = GetSystemMetrics(SM_CXPADDEDBORDER);
-	int cxFixedFrame = GetSystemMetrics(SM_CXFIXEDFRAME);
-	int cyFixedFrame = GetSystemMetrics(SM_CYFIXEDFRAME);
-	int cxSizeFrame = GetSystemMetrics(SM_CXSIZEFRAME);
-	int cySizeFrame = GetSystemMetrics(SM_CYSIZEFRAME);
-	int cySize = GetSystemMetrics(SM_CYSIZE);
-	int cxSizeButton = cySize;
-	if (pfnGetThemeSysSize) cxSizeButton = pfnGetThemeSysSize(0, SM_CXSIZE);
-	int cxBorder = GetSystemMetrics(SM_CXBORDER);
-	int cyBorder = GetSystemMetrics(SM_CYBORDER);
+	auto cxPaddedBorder = GetSystemMetrics(SM_CXPADDEDBORDER);
+	auto cxFixedFrame = GetSystemMetrics(SM_CXFIXEDFRAME);
+	auto cyFixedFrame = GetSystemMetrics(SM_CYFIXEDFRAME);
+	auto cxSizeFrame = GetSystemMetrics(SM_CXSIZEFRAME);
+	auto cySizeFrame = GetSystemMetrics(SM_CYSIZEFRAME);
+	auto cySize = GetSystemMetrics(SM_CYSIZE);
+	auto cxSizeButton = cySize;
+	if (pfnGetThemeSysSize) cxSizeButton = pfnGetThemeSysSize(nullptr, SM_CXSIZE);
+	auto cxBorder = GetSystemMetrics(SM_CXBORDER);
+	auto cyBorder = GetSystemMetrics(SM_CYBORDER);
 
-	int cxFrame = bThickFrame ? cxSizeFrame : cxFixedFrame;
-	int cyFrame = bThickFrame ? cySizeFrame : cyFixedFrame;
+	auto cxFrame = bThickFrame ? cxSizeFrame : cxFixedFrame;
+	auto cyFrame = bThickFrame ? cySizeFrame : cyFixedFrame;
 
 	// If padded borders are in effect, we fall back to a single width for both thick and thin frames
 	if (cxPaddedBorder)
@@ -1855,21 +1844,21 @@ void GetCaptionRects(HWND hWnd,
 
 void DrawSystemButtons(_In_ HWND hWnd, _In_opt_ HDC hdc, int iHitTest)
 {
-	HDC hdcLocal = NULL;
+	HDC hdcLocal = nullptr;
 	if (!hdc)
 	{
 		hdcLocal = ::GetWindowDC(hWnd);
 		hdc = hdcLocal;
 	}
 
-	DWORD dwWinStyle = GetWindowStyle(hWnd);
-	bool bMinBox = (WS_MINIMIZEBOX == (dwWinStyle & WS_MINIMIZEBOX));
-	bool bMaxBox = (WS_MAXIMIZEBOX == (dwWinStyle & WS_MAXIMIZEBOX));
+	auto dwWinStyle = GetWindowStyle(hWnd);
+	auto bMinBox = (WS_MINIMIZEBOX == (dwWinStyle & WS_MINIMIZEBOX));
+	auto bMaxBox = (WS_MAXIMIZEBOX == (dwWinStyle & WS_MAXIMIZEBOX));
 
 	RECT rcCloseIcon = { 0 };
 	RECT rcMaxIcon = { 0 };
 	RECT rcMinIcon = { 0 };
-	GetCaptionRects(hWnd, NULL, NULL, &rcCloseIcon, &rcMaxIcon, &rcMinIcon, NULL);
+	GetCaptionRects(hWnd, nullptr, nullptr, &rcCloseIcon, &rcMaxIcon, &rcMinIcon, nullptr);
 
 	// Draw our system buttons appropriately
 	(void) ::OffsetRect(&rcCloseIcon, (HTCLOSE == iHitTest) ? 1 : 0, (HTCLOSE == iHitTest) ? 1 : 0);
@@ -1892,31 +1881,31 @@ void DrawSystemButtons(_In_ HWND hWnd, _In_opt_ HDC hdc, int iHitTest)
 
 void DrawWindowFrame(_In_ HWND hWnd, bool bActive, int iStatusHeight)
 {
-	int cxPaddedBorder = GetSystemMetrics(SM_CXPADDEDBORDER);
-	int cxFixedFrame = GetSystemMetrics(SM_CXFIXEDFRAME);
-	int cyFixedFrame = GetSystemMetrics(SM_CYFIXEDFRAME);
-	int cxSizeFrame = GetSystemMetrics(SM_CXSIZEFRAME);
-	int cySizeFrame = GetSystemMetrics(SM_CYSIZEFRAME);
+	auto cxPaddedBorder = GetSystemMetrics(SM_CXPADDEDBORDER);
+	auto cxFixedFrame = GetSystemMetrics(SM_CXFIXEDFRAME);
+	auto cyFixedFrame = GetSystemMetrics(SM_CYFIXEDFRAME);
+	auto cxSizeFrame = GetSystemMetrics(SM_CXSIZEFRAME);
+	auto cySizeFrame = GetSystemMetrics(SM_CYSIZEFRAME);
 
-	DWORD dwWinStyle = GetWindowStyle(hWnd);
-	bool bModal = (DS_MODALFRAME == (dwWinStyle & DS_MODALFRAME));
-	bool bThickFrame = (WS_THICKFRAME == (dwWinStyle & WS_THICKFRAME));
+	auto dwWinStyle = GetWindowStyle(hWnd);
+	auto bModal = (DS_MODALFRAME == (dwWinStyle & DS_MODALFRAME));
+	auto bThickFrame = (WS_THICKFRAME == (dwWinStyle & WS_THICKFRAME));
 
 	RECT rcWindow = { 0 };
 	RECT rcClient = { 0 };
 	::GetWindowRect(hWnd, &rcWindow); // Get our non-client size
 	::GetClientRect(hWnd, &rcClient); // Get our client size
-	::MapWindowPoints(hWnd, NULL, (LPPOINT)&rcClient, 2); // locate our client rect on the screen
+	::MapWindowPoints(hWnd, nullptr, reinterpret_cast<LPPOINT>(&rcClient), 2); // locate our client rect on the screen
 
 	// Before we fiddle with our client and window rects further, paint the menu
 	// This must be in window coordinates for WM_NCPAINT to work!!!
-	RECT rcMenu = rcWindow;
+	auto rcMenu = rcWindow;
 	rcMenu.top = rcMenu.top + cySizeFrame + ::GetSystemMetrics(SM_CYCAPTION);
 	rcMenu.bottom = rcClient.top;
 	rcMenu.left += cxSizeFrame;
 	rcMenu.right -= cxSizeFrame;
-	HRGN hRgnCaption = ::CreateRectRgnIndirect(&rcMenu);
-	::DefWindowProc(hWnd, WM_NCPAINT, (WPARAM)hRgnCaption, NULL);
+	auto hRgnCaption = ::CreateRectRgnIndirect(&rcMenu);
+	::DefWindowProc(hWnd, WM_NCPAINT, reinterpret_cast<WPARAM>(hRgnCaption), NULL);
 	DeleteObject(hRgnCaption);
 
 	::OffsetRect(&rcClient, -rcWindow.left, -rcWindow.top); // shift the origin to 0 since that's where our DC paints
@@ -1931,8 +1920,8 @@ void DrawWindowFrame(_In_ HWND hWnd, bool bActive, int iStatusHeight)
 		iStatusHeight = rcClient.bottom - rcClient.top;
 	}
 
-	int cxFrame = bThickFrame ? cxSizeFrame : cxFixedFrame;
-	int cyFrame = bThickFrame ? cySizeFrame : cyFixedFrame;
+	auto cxFrame = bThickFrame ? cxSizeFrame : cxFixedFrame;
+	auto cyFrame = bThickFrame ? cySizeFrame : cyFixedFrame;
 
 	// If padded borders are in effect, we fall back to a single width for both thick and thin frames
 	if (cxPaddedBorder)
@@ -1950,7 +1939,7 @@ void DrawWindowFrame(_In_ HWND hWnd, bool bActive, int iStatusHeight)
 	RECT rcWindowGutterLeft = { 0 };
 	RECT rcWindowGutterRight = { 0 };
 
-	GetCaptionRects(hWnd, &rcFullCaption, &rcIcon, NULL, NULL, NULL, &rcCaptionText);
+	GetCaptionRects(hWnd, &rcFullCaption, &rcIcon, nullptr, nullptr, nullptr, &rcCaptionText);
 
 	rcMenuGutterLeft.left =
 		rcWindowGutterLeft.left =
@@ -1977,11 +1966,11 @@ void DrawWindowFrame(_In_ HWND hWnd, bool bActive, int iStatusHeight)
 
 	// Get a DC where the upper left corner of the window is 0,0
 	// All of our rectangles were computed with this DC in mind
-	HDC hdcWin = ::GetWindowDC(hWnd);
+	auto hdcWin = ::GetWindowDC(hWnd);
 	if (hdcWin)
 	{
 		CDoubleBuffer db;
-		HDC hdc = hdcWin;
+		auto hdc = hdcWin;
 		db.Begin(hdc, &rcWindow);
 
 		// Copy the current screen over to preserve it
@@ -1997,8 +1986,8 @@ void DrawWindowFrame(_In_ HWND hWnd, bool bActive, int iStatusHeight)
 			SRCCOPY);
 
 		// Draw a line under the menu from gutter to gutter
-		HGDIOBJ hpenOld = ::SelectObject(hdc, GetPen(cSolidGreyPen));
-		::MoveToEx(hdc, rcMenuGutterLeft.right, rcClient.top - 1, NULL);
+		auto hpenOld = ::SelectObject(hdc, GetPen(cSolidGreyPen));
+		::MoveToEx(hdc, rcMenuGutterLeft.right, rcClient.top - 1, nullptr);
 		::LineTo(hdc, rcMenuGutterRight.left, rcClient.top - 1);
 		(void) ::SelectObject(hdc, hpenOld);
 
@@ -2010,13 +1999,13 @@ void DrawWindowFrame(_In_ HWND hWnd, bool bActive, int iStatusHeight)
 		// Draw our icon
 		if (!bModal)
 		{
-			HICON hIcon = (HICON) ::LoadImage(
+			auto hIcon = static_cast<HICON>(::LoadImage(
 				AfxGetInstanceHandle(),
 				MAKEINTRESOURCE(IDR_MAINFRAME),
 				IMAGE_ICON,
 				rcIcon.right - rcIcon.left,
 				rcIcon.bottom - rcIcon.top,
-				LR_DEFAULTCOLOR);
+				LR_DEFAULTCOLOR));
 
 			::DrawIconEx(hdc,
 				rcIcon.left,
@@ -2039,7 +2028,7 @@ void DrawWindowFrame(_In_ HWND hWnd, bool bActive, int iStatusHeight)
 
 		if (iStatusHeight)
 		{
-			RECT rcStatus = rcClient;
+			auto rcStatus = rcClient;
 			rcStatus.top = rcClient.bottom - iStatusHeight;
 
 			RECT rcFullStatus = { 0 };
@@ -2075,7 +2064,7 @@ void DrawWindowFrame(_In_ HWND hWnd, bool bActive, int iStatusHeight)
 		// Finally, we paint our border glow if we're not maximized
 		if (!::IsZoomed(hWnd))
 		{
-			RECT rcInnerFrame = rcWindow;
+			auto rcInnerFrame = rcWindow;
 			::InflateRect(&rcInnerFrame, -BORDER_VISIBLEWIDTH, -BORDER_VISIBLEWIDTH);
 			::ExcludeClipRect(hdc, rcInnerFrame.left, rcInnerFrame.top, rcInnerFrame.right, rcInnerFrame.bottom);
 			::FillRect(hdc, &rcWindow, GetSysBrush(bActive ? cGlow : cFrameUnselected));
@@ -2094,33 +2083,31 @@ _Check_return_ bool HandleControlUI(UINT message, WPARAM wParam, LPARAM lParam, 
 	{
 	case WM_ERASEBKGND:
 		return true;
-		break;
 	case WM_CTLCOLORSTATIC:
 	case WM_CTLCOLOREDIT:
 	{
-		intptr_t lsStyle = reinterpret_cast<intptr_t>(::GetProp((HWND)lParam, LABEL_STYLE));
-		uiColor uiText = cText;
-		uiColor uiBackground = cBackground;
+		auto lsStyle = reinterpret_cast<intptr_t>(::GetProp(reinterpret_cast<HWND>(lParam), LABEL_STYLE));
+		auto uiText = cText;
+		auto uiBackground = cBackground;
 
 		if (lsStyle == lsPaneHeader)
 		{
 			uiText = cPaneHeaderText;
 			uiBackground = cPaneHeaderBackground;
 		}
-		HDC hdc = (HDC)wParam;
+		auto hdc = reinterpret_cast<HDC>(wParam);
 		if (hdc)
 		{
 			::SetTextColor(hdc, MyGetSysColor(uiText));
 			::SetBkMode(hdc, TRANSPARENT);
 			::SelectObject(hdc, GetSegoeFont());
 		}
-		*lpResult = (LRESULT)GetSysBrush(uiBackground);
+		*lpResult = reinterpret_cast<LRESULT>(GetSysBrush(uiBackground));
 		return true;
 	}
-	break;
 	case WM_NOTIFY:
 	{
-		LPNMHDR pHdr = (LPNMHDR)lParam;
+		auto pHdr = reinterpret_cast<LPNMHDR>(lParam);
 
 		switch (pHdr->code)
 		{
@@ -2137,8 +2124,8 @@ _Check_return_ bool HandleControlUI(UINT message, WPARAM wParam, LPARAM lParam, 
 
 void DrawHelpText(_In_ HWND hWnd, _In_ UINT uIDText)
 {
-	HRESULT hRes = S_OK;
-	PAINTSTRUCT ps = { 0 };
+	auto hRes = S_OK;
+	PAINTSTRUCT ps = { nullptr };
 	::BeginPaint(hWnd, &ps);
 
 	if (ps.hdc)
@@ -2147,14 +2134,14 @@ void DrawHelpText(_In_ HWND hWnd, _In_ UINT uIDText)
 		::GetClientRect(hWnd, &rcWin);
 
 		CDoubleBuffer db;
-		HDC hdc = ps.hdc;
+		auto hdc = ps.hdc;
 		db.Begin(hdc, &rcWin);
 
-		RECT rcText = rcWin;
+		auto rcText = rcWin;
 		::FillRect(hdc, &rcText, GetSysBrush(cBackground));
 
 		TCHAR szHelpText[256];
-		int iRet = NULL;
+		auto iRet = NULL;
 		WC_D(iRet, LoadString(GetModuleHandle(NULL),
 			uIDText,
 			szHelpText,
@@ -2187,7 +2174,6 @@ LRESULT CALLBACK LabelProc(
 	case WM_NCDESTROY:
 		RemoveWindowSubclass(hWnd, LabelProc, uIdSubclass);
 		return DefSubclassProc(hWnd, uMsg, wParam, lParam);
-		break;
 	case WM_ERASEBKGND:
 		return true;
 	}
@@ -2197,13 +2183,13 @@ LRESULT CALLBACK LabelProc(
 void SubclassLabel(_In_ HWND hWnd)
 {
 	SetWindowSubclass(hWnd, LabelProc, 0, 0);
-	::SendMessageA(hWnd, WM_SETFONT, (WPARAM)GetSegoeFont(), false);
+	::SendMessageA(hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(GetSegoeFont()), false);
 	::SendMessage(hWnd, EM_SETMARGINS, EC_LEFTMARGIN | EC_RIGHTMARGIN, 0);
 }
 
 void StyleLabel(_In_ HWND hWnd, uiLabelStyle lsStyle)
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
-	EC_B(::SetProp(hWnd, LABEL_STYLE, (HANDLE)lsStyle));
+	EC_B(::SetProp(hWnd, LABEL_STYLE, reinterpret_cast<HANDLE>(lsStyle)));
 }
