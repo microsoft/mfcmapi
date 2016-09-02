@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "ContentsData.h"
 #include "MAPIFunctions.h"
+#include "SortListData.h"
 
 ContentsData::ContentsData(_In_ LPSRow lpsRowData)
 {
@@ -169,4 +170,30 @@ ContentsData::~ContentsData()
 	MAPIFreeBuffer(lpProviderUID);
 	MAPIFreeBuffer(szProfileDisplayName);
 	MAPIFreeBuffer(szDN);
+}
+
+// Sets data from the LPSRow into the SortListData structure
+// Assumes the structure is either an existing structure or a new one which has been memset to 0
+// If it's an existing structure - we need to free up some memory
+// SORTLIST_CONTENTS
+void BuildDataItem(_In_ LPSRow lpsRowData, _Inout_ SortListData* lpData)
+{
+	if (!lpData || !lpsRowData) return;
+
+	lpData->bItemFullyLoaded = false;
+	lpData->szSortText = emptystring;
+
+	// this guy gets stolen from lpsRowData and is freed separately in FreeSortListData
+	// So I do need to free it here before losing the pointer
+	MAPIFreeBuffer(lpData->lpSourceProps);
+	lpData->lpSourceProps = nullptr;
+
+	lpData->ulSortValue.QuadPart = NULL;
+	lpData->cSourceProps = 0;
+	lpData->ulSortDataType = SORTLIST_CONTENTS;
+	lpData->m_lpData = new ContentsData(lpsRowData);
+
+	// Save off the source props
+	lpData->lpSourceProps = lpsRowData->lpProps;
+	lpData->cSourceProps = lpsRowData->cValues;
 }

@@ -1,4 +1,6 @@
 #pragma once
+class SortListData;
+
 class NodeData
 {
 public:
@@ -15,3 +17,15 @@ public:
 	ULONG_PTR ulAdviseConnection;
 	LONG cSubfolders; // -1 for unknown, 0 for no subfolders, >0 for at least one subfolder
 };
+
+// SORTLIST_TREENODE
+SortListData* BuildNodeData(
+	ULONG cProps,
+	_In_opt_ LPSPropValue lpProps,
+	_In_opt_ LPSBinary lpEntryID,
+	_In_opt_ LPSBinary lpInstanceKey,
+	ULONG bSubfolders,
+	ULONG ulContainerFlags);
+
+// SORTLIST_TREENODE
+SortListData* BuildNodeData(_In_ LPSRow lpsRow);
