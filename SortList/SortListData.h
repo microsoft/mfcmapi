@@ -51,7 +51,21 @@ struct _BinaryData
 class SortListData
 {
 public:
+	SortListData();
 	~SortListData();
+	void Clean();
+	// SORTLIST_CONTENTS
+	void InitializeContents(_In_ LPSRow lpsRowData);
+	// SORTLIST_TREENODE
+	void InitializeNode(
+		ULONG cProps,
+		_In_opt_ LPSPropValue lpProps,
+		_In_opt_ LPSBinary lpEntryID,
+		_In_opt_ LPSBinary lpInstanceKey,
+		ULONG bSubfolders,
+		ULONG ulContainerFlags);
+	void InitializeNode(_In_ LPSRow lpsRow);
+
 	wstring szSortText;
 	ULARGE_INTEGER ulSortValue;
 	ULONG ulSortDataType;
@@ -68,7 +82,7 @@ public:
 	NodeData* Node() const; // SORTLIST_TREENODE
 
 	ULONG cSourceProps;
-	LPSPropValue lpSourceProps; // Stolen from lpsRowData in CContentsTableListCtrl::BuildDataItem - free with MAPIFreeBuffer
+	LPSPropValue lpSourceProps; // Stolen from lpsRowData in SortListData::InitializeContents - free with MAPIFreeBuffer
 	bool bItemFullyLoaded;
 
 	LPVOID m_lpData;
