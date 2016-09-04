@@ -492,7 +492,7 @@ BOOL CPropertySelector::OnInitDialog()
 
 			if (lpData)
 			{
-				lpData->ulSortDataType = SORTLIST_PROP;
+				lpData->m_Type = SORTLIST_PROP;
 				lpData->data.Prop.ulPropTag = PropTagArray[i].ulValue;
 				lpData->bItemFullyLoaded = true;
 			}

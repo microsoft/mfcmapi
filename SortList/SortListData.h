@@ -68,7 +68,7 @@ public:
 
 	wstring szSortText;
 	ULARGE_INTEGER ulSortValue;
-	ULONG ulSortDataType;
+	__SortListDataTypes m_Type;
 	union
 	{
 		_PropListData Prop; // SORTLIST_PROP

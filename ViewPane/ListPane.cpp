@@ -396,7 +396,7 @@ void ListPane::OnAddListEntry()
 	int iItem = m_List.GetItemCount();
 
 	SortListData* lpData = InsertRow(iItem, format(L"%d", iItem)); // STRING_OK
-	if (lpData) lpData->ulSortDataType = SORTLIST_MVPROP;
+	if (lpData) lpData->m_Type = SORTLIST_MVPROP;
 
 	m_List.SetSelectedItem(iItem);
 

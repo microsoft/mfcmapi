@@ -4,7 +4,7 @@
 #include "NodeData.h"
 
 SortListData::SortListData() :
-	ulSortDataType(SORTLIST_UNKNOWN),
+	m_Type(SORTLIST_UNKNOWN),
 	cSourceProps(0),
 	lpSourceProps(nullptr),
 	bItemFullyLoaded(false),
@@ -20,18 +20,23 @@ SortListData::~SortListData()
 
 void SortListData::Clean()
 {
-	if (Contents() != nullptr)
+	switch (m_Type)
 	{
-		delete Contents();
-	}
-	else if (Node() != nullptr)
-	{
-		delete Node();
+	case SORTLIST_UNKNOWN: break;
+	case SORTLIST_CONTENTS: delete Contents(); break;
+	case SORTLIST_PROP: break;
+	case SORTLIST_MVPROP: break;
+	case SORTLIST_TAGARRAY: break;
+	case SORTLIST_RES: break;
+	case SORTLIST_COMMENT: break;
+	case SORTLIST_BINARY: break;
+	case SORTLIST_TREENODE: delete Node(); break;
+	default: break;
 	}
 
 	m_lpData = nullptr;
 
-	ulSortDataType = SORTLIST_UNKNOWN;
+	m_Type = SORTLIST_UNKNOWN;
 	MAPIFreeBuffer(lpSourceProps);
 	lpSourceProps = nullptr;
 	cSourceProps = 0;
@@ -44,7 +49,7 @@ void SortListData::Clean()
 
 ContentsData* SortListData::Contents() const
 {
-	if (ulSortDataType == SORTLIST_CONTENTS)
+	if (m_Type == SORTLIST_CONTENTS)
 	{
 		return reinterpret_cast<ContentsData*>(m_lpData);
 	}
@@ -54,7 +59,7 @@ ContentsData* SortListData::Contents() const
 
 NodeData* SortListData::Node() const
 {
-	if (ulSortDataType == SORTLIST_TREENODE)
+	if (m_Type == SORTLIST_TREENODE)
 	{
 		return reinterpret_cast<NodeData*>(m_lpData);
 	}
@@ -71,7 +76,7 @@ void SortListData::InitializeContents(_In_ LPSRow lpsRowData)
 	Clean();
 	if (!lpsRowData) return;
 
-	ulSortDataType = SORTLIST_CONTENTS;
+	m_Type = SORTLIST_CONTENTS;
 	lpSourceProps = lpsRowData->lpProps;
 	cSourceProps = lpsRowData->cValues;
 	m_lpData = new ContentsData(lpsRowData);
@@ -87,7 +92,7 @@ void SortListData::InitializeNode(
 {
 	Clean();
 
-	ulSortDataType = SORTLIST_TREENODE;
+	m_Type = SORTLIST_TREENODE;
 	cSourceProps = cProps;
 	lpSourceProps = lpProps;
 	m_lpData = new NodeData(
