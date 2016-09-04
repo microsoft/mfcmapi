@@ -1,6 +1,7 @@
 #pragma once
 class ContentsData;
 class NodeData;
+class PropListData;
 
 enum __SortListDataTypes
 {
@@ -13,11 +14,6 @@ enum __SortListDataTypes
 	SORTLIST_COMMENT,
 	SORTLIST_BINARY,
 	SORTLIST_TREENODE
-};
-
-struct _PropListData
-{
-	ULONG ulPropTag;
 };
 
 struct _MVPropData
@@ -65,13 +61,13 @@ public:
 		ULONG bSubfolders,
 		ULONG ulContainerFlags);
 	void InitializeNode(_In_ LPSRow lpsRow);
+	void InitializePropList(_In_ ULONG ulPropTag);
 
 	wstring szSortText;
 	ULARGE_INTEGER ulSortValue;
 	__SortListDataTypes m_Type;
 	union
 	{
-		_PropListData Prop; // SORTLIST_PROP
 		_MVPropData MV; // SORTLIST_MVPROP
 		_TagData Tag; // SORTLIST_TAGARRAY
 		_ResData Res; // SORTLIST_RES
@@ -80,6 +76,7 @@ public:
 	} data;
 	ContentsData* Contents() const; // SORTLIST_CONTENTS
 	NodeData* Node() const; // SORTLIST_TREENODE
+	PropListData* Prop() const; // SORTLIST_PROP
 
 	ULONG cSourceProps;
 	LPSPropValue lpSourceProps; // Stolen from lpsRowData in SortListData::InitializeContents - free with MAPIFreeBuffer

@@ -2,6 +2,7 @@
 #include "SortListData.h"
 #include "ContentsData.h"
 #include "NodeData.h"
+#include "PropListData.h"
 
 SortListData::SortListData() :
 	m_Type(SORTLIST_UNKNOWN),
@@ -24,7 +25,7 @@ void SortListData::Clean()
 	{
 	case SORTLIST_UNKNOWN: break;
 	case SORTLIST_CONTENTS: delete Contents(); break;
-	case SORTLIST_PROP: break;
+	case SORTLIST_PROP: delete Prop(); break;
 	case SORTLIST_MVPROP: break;
 	case SORTLIST_TAGARRAY: break;
 	case SORTLIST_RES: break;
@@ -62,6 +63,16 @@ NodeData* SortListData::Node() const
 	if (m_Type == SORTLIST_TREENODE)
 	{
 		return reinterpret_cast<NodeData*>(m_lpData);
+	}
+
+	return nullptr;
+}
+
+PropListData* SortListData::Prop() const
+{
+	if (m_Type == SORTLIST_PROP)
+	{
+		return reinterpret_cast<PropListData*>(m_lpData);
 	}
 
 	return nullptr;
@@ -139,4 +150,13 @@ void SortListData::InitializeNode(_In_ LPSRow lpsRow)
 		lpInstanceBin,
 		lpSubfolders ? static_cast<ULONG>(lpSubfolders->Value.b) : MAPI_E_NOT_FOUND,
 		lpContainerFlags ? lpContainerFlags->Value.ul : MAPI_E_NOT_FOUND);
+}
+
+void SortListData::InitializePropList(_In_ ULONG ulPropTag)
+{
+	Clean();
+	m_Type = SORTLIST_PROP;
+	bItemFullyLoaded = true;
+	m_lpData = new PropListData(
+		ulPropTag);
 }

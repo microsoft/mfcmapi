@@ -1,6 +1,6 @@
 #pragma once
-#include "SortList\SortListCtrl.h"
-#include "PropertyBag\PropertyBag.h"
+#include "SortList/SortListCtrl.h"
+#include "PropertyBag/PropertyBag.h"
 
 class CBaseDialog;
 class CMapiObjects;
@@ -22,17 +22,17 @@ public:
 	_Check_return_ HRESULT RefreshMAPIPropList();
 
 	// Selected item accessors
-	_Check_return_ HRESULT GetDisplayedProps(ULONG FAR* lpcValues, LPSPropValue FAR* lppPropArray);
-	void GetSelectedPropTag(_Out_ ULONG* lpPropTag);
-	_Check_return_ bool IsModifiedPropVals();
+	_Check_return_ HRESULT GetDisplayedProps(ULONG FAR* lpcValues, LPSPropValue FAR* lppPropArray) const;
+	void GetSelectedPropTag(_Out_ ULONG* lpPropTag) const;
+	_Check_return_ bool IsModifiedPropVals() const;
 
 	_Check_return_ bool HandleMenu(WORD wMenuSelect);
-	void InitMenu(_In_ CMenu* pMenu);
+	void InitMenu(_In_ CMenu* pMenu) const;
 	void SavePropsToXML();
 	void OnPasteProperty();
 
 private:
-	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
 	_Check_return_ HRESULT AddPropToExtraProps(ULONG ulPropTag, bool bRefresh);
 	_Check_return_ HRESULT AddPropsToExtraProps(_In_ LPSPropTagArray lpPropsToAdd, bool bRefresh);
 	void FindAllNamedProps();
@@ -46,13 +46,13 @@ private:
 		_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
 		_In_ LPSPropValue lpsPropToAdd);
 
-	_Check_return_ bool HandleAddInMenu(WORD wMenuSelect);
+	_Check_return_ bool HandleAddInMenu(WORD wMenuSelect) const;
 	void OnContextMenu(_In_ CWnd *pWnd, CPoint pos);
 	void OnDblclk(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
-	void OnCopyProperty();
+	void OnCopyProperty() const;
 	void OnCopyTo();
 	void OnDeleteProperty();
-	void OnDisplayPropertyAsSecurityDescriptorPropSheet();
+	void OnDisplayPropertyAsSecurityDescriptorPropSheet() const;
 	void OnEditGivenProp(ULONG ulPropTag);
 	void OnEditGivenProperty();
 	void OnEditProp();
@@ -60,7 +60,7 @@ private:
 	void OnEditPropAsStream(ULONG ulType, bool bEditAsRTF);
 	void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 	void OnModifyExtraProps();
-	void OnOpenProperty();
+	void OnOpenProperty() const;
 	void OnOpenPropertyAsTable();
 	void OnPasteNamedProps();
 
