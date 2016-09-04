@@ -1,6 +1,4 @@
 #pragma once
-// PropertyTagEditor.h : header file
-
 #include "Editor.h"
 
 #define NOSKIPFIELD ((ULONG)0xffffffff)
@@ -17,13 +15,13 @@ public:
 		_In_ CWnd* pParentWnd);
 	virtual ~CPropertyTagEditor();
 
-	_Check_return_ ULONG GetPropertyTag();
+	_Check_return_ ULONG GetPropertyTag() const;
 
 private:
-	_Check_return_ ULONG HandleChange(UINT nID);
-	void OnEditAction1();
-	void OnEditAction2();
-	BOOL OnInitDialog();
+	_Check_return_ ULONG HandleChange(UINT nID) override;
+	void OnEditAction1() override;
+	void OnEditAction2() override;
+	BOOL OnInitDialog() override;
 	void PopulateFields(ULONG ulSkipField);
 	_Check_return_ ULONG GetSelectedPropType();
 	void LookupNamedProp(ULONG ulSkipField, bool bCreate);
@@ -46,12 +44,12 @@ public:
 		_In_ CWnd* pParentWnd);
 	virtual ~CPropertySelector();
 
-	_Check_return_ ULONG GetPropertyTag();
+	_Check_return_ ULONG GetPropertyTag() const;
 
 private:
-	BOOL OnInitDialog();
-	_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData);
-	void OnOK();
+	BOOL OnInitDialog() override;
+	_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData) override;
+	void OnOK() override;
 	_Check_return_ SortListData* GetSelectedListRowData(ULONG iControl);
 
 	ULONG m_ulPropTag;

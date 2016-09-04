@@ -447,6 +447,9 @@
     <ClInclude Include="SortList\NodeData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SortList\PropListData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Res\bldver.rc">
@@ -878,6 +881,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SortList\NodeData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SortList\PropListData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
