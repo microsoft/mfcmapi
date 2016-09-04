@@ -294,12 +294,9 @@ _Check_return_ HRESULT CHierarchyTableTreeCtrl::AddRootNode(_In_ LPMAPICONTAINER
 	LPSPropValue lpProps = nullptr;
 	LPSPropValue lpRootName = nullptr; // don't free
 	LPSBinary lpEIDBin = nullptr; // don't free
-
-	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
-
 	if (!m_hWnd) return S_OK;
-
 	if (!lpMAPIContainer) return MAPI_E_INVALID_PARAMETER;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	ULONG cVals = 0;
 
@@ -336,19 +333,23 @@ _Check_return_ HRESULT CHierarchyTableTreeCtrl::AddRootNode(_In_ LPMAPICONTAINER
 		szName = loadstring(IDS_ROOTCONTAINER);
 	}
 
-	auto lpData = BuildNodeData(
-		cVals,
-		lpProps, // pass our lpProps to be archived
-		lpEIDBin,
-		nullptr,
-		true, // Always assume root nodes have children so we always paint an expanding icon
-		lpProps ? lpProps[htPR_CONTAINER_FLAGS].Value.ul : MAPI_E_NOT_FOUND);
+	auto lpData = new SortListData();
+	if (lpData)
+	{
+		lpData->InitializeNode(
+			cVals,
+			lpProps, // pass our lpProps to be archived
+			lpEIDBin,
+			nullptr,
+			true, // Always assume root nodes have children so we always paint an expanding icon
+			lpProps ? lpProps[htPR_CONTAINER_FLAGS].Value.ul : MAPI_E_NOT_FOUND);
 
-	AddNode(
-		szName,
-		TVI_ROOT,
-		lpData,
-		true);
+		AddNode(
+			szName,
+			TVI_ROOT,
+			lpData,
+			true);
+	}
 
 	// Node owns the lpProps memory now, so we don't free it
 	return hRes;
@@ -399,13 +400,17 @@ void CHierarchyTableTreeCtrl::AddNode(_In_ LPSRow lpsRow, HTREEITEM hParent, boo
 	}
 	DebugPrintEx(DBGHierarchy, CLASS, L"AddNode", L"Adding to %p: %ws\n", hParent, szName.c_str());
 
-	auto lpData = BuildNodeData(lpsRow);
+	auto lpData = new SortListData();
+	if (lpData)
+	{
+		lpData->InitializeNode(lpsRow);
 
-	AddNode(
-		szName,
-		hParent,
-		lpData,
-		bGetTable);
+		AddNode(
+			szName,
+			hParent,
+			lpData,
+			bGetTable);
+	}
 }
 
 _Check_return_ LPMAPITABLE CHierarchyTableTreeCtrl::GetHierarchyTable(HTREEITEM hItem, _In_opt_ LPMAPICONTAINER lpMAPIContainer, bool bRegNotifs)
@@ -1053,7 +1058,7 @@ _Check_return_ LRESULT CHierarchyTableTreeCtrl::msgOnAddItem(WPARAM wParam, LPAR
 	if (iState & TVIS_EXPANDEDONCE)
 	{
 		auto hRes = S_OK;
-		// We make this copy here and pass it in to AddNode, where it is grabbed by BuildDataItem to be part of the item data
+		// We make this copy here and pass it in to AddNode, where it is grabbed by SortListData::InitializeContents to be part of the item data
 		// The mem will be freed when the item data is cleaned up - do not free here
 		SRow NewRow = { 0 };
 		NewRow.cValues = tab->row.cValues;
@@ -1147,8 +1152,13 @@ _Check_return_ LRESULT CHierarchyTableTreeCtrl::msgOnModifyItem(WPARAM wParam, L
 			tab->row.lpProps,
 			MAPIAllocateBuffer,
 			&NewRow.lpProps));
-		auto lpData = BuildNodeData(&NewRow);
-		SetNodeData(m_hWnd, hModifyItem, lpData);
+		auto lpData = new SortListData();
+		if (lpData)
+		{
+			lpData->InitializeNode(&NewRow);
+			SetNodeData(m_hWnd, hModifyItem, lpData);
+		}
+
 		if (hParent) EC_B(SortChildren(hParent));
 	}
 

@@ -1016,7 +1016,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::RefreshItem(int iRow, _In_ LPSRow
 
 	if (lpData)
 	{
-		BuildDataItem(lpsRowData, lpData);
+		lpData->InitializeContents(lpsRowData);
 
 		SetRowStrings(iRow, lpsRowData);
 		// Do this last so that our row can't get sorted before we're done!
@@ -1657,7 +1657,7 @@ _Check_return_ LRESULT CContentsTableListCtrl::msgOnAddItem(WPARAM wParam, LPARA
 		iNewRow = FindRow(&tab->propPrior.Value.bin) + 1;
 	}
 
-	// We make this copy here and pass it in to AddItemToListBox, where it is grabbed by BuildDataItem to be part of the item data
+	// We make this copy here and pass it in to AddItemToListBox, where it is grabbed by SortListData::InitializeContents to be part of the item data
 	// The mem will be freed when the item data is cleaned up - do not free here
 	SRow NewRow = { 0 };
 	NewRow.cValues = tab->row.cValues;
@@ -1716,7 +1716,7 @@ _Check_return_ LRESULT CContentsTableListCtrl::msgOnModifyItem(WPARAM wParam, LP
 	{
 		DebugPrintEx(DBGGeneric, CLASS, L"msgOnModifyItem", L"Received message to modify row %d with %p\n", iItem, &tab->row);
 
-		// We make this copy here and pass it in to RefreshItem, where it is grabbed by BuildDataItem to be part of the item data
+		// We make this copy here and pass it in to RefreshItem, where it is grabbed by SortListData::InitializeContents to be part of the item data
 		// The mem will be freed when the item data is cleaned up - do not free here
 		SRow NewRow = { 0 };
 		NewRow.cValues = tab->row.cValues;
