@@ -150,7 +150,7 @@ void CTagArrayEditor::ReadTagArrayToList(ULONG ulListNum)
 			lpData = InsertListRow(ulListNum, iTagCount, format(L"%u", iTagCount)); // STRING_OK
 			if (lpData)
 			{
-				lpData->ulSortDataType = SORTLIST_TAGARRAY;
+				lpData->m_Type = SORTLIST_TAGARRAY;
 				lpData->data.Tag.ulPropTag = ulPropTag;
 				lpData->bItemFullyLoaded = true;
 			}

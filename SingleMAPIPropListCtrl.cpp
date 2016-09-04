@@ -647,7 +647,7 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 	{
 		lpData->data.Prop.ulPropTag = ulPropTag;
 		lpData->bItemFullyLoaded = true;
-		lpData->ulSortDataType = SORTLIST_PROP;
+		lpData->m_Type = SORTLIST_PROP;
 	}
 
 	wstring PropTag = format(L"0x%08X", ulPropTag);

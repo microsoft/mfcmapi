@@ -1079,7 +1079,7 @@ void CMultiValuePropertyEditor::ReadMultiValueStringsFromProperty()
 
 		if (lpData)
 		{
-			lpData->ulSortDataType = SORTLIST_MVPROP;
+			lpData->m_Type = SORTLIST_MVPROP;
 			switch (PROP_TYPE(m_lpsInputValue->ulPropTag))
 			{
 			case PT_MV_I2:

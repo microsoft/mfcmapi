@@ -532,7 +532,7 @@ void CResAndOrEditor::InitListFromRestriction(ULONG ulListNum, _In_ LPSRestricti
 			lpData = InsertListRow(ulListNum, i, format(L"%u", i)); // STRING_OK
 			if (lpData)
 			{
-				lpData->ulSortDataType = SORTLIST_RES;
+				lpData->m_Type = SORTLIST_RES;
 				lpData->data.Res.lpOldRes = &lpRes->res.resAnd.lpRes[i]; // save off address of source restriction
 				SetListString(ulListNum, i, 1, RestrictionToString(lpData->data.Res.lpOldRes, NULL));
 				lpData->bItemFullyLoaded = true;
@@ -547,7 +547,7 @@ void CResAndOrEditor::InitListFromRestriction(ULONG ulListNum, _In_ LPSRestricti
 			lpData = InsertListRow(ulListNum, i, format(L"%u", i)); // STRING_OK
 			if (lpData)
 			{
-				lpData->ulSortDataType = SORTLIST_RES;
+				lpData->m_Type = SORTLIST_RES;
 				lpData->data.Res.lpOldRes = &lpRes->res.resOr.lpRes[i]; // save off address of source restriction
 				SetListString(ulListNum, i, 1, RestrictionToString(lpData->data.Res.lpOldRes, NULL));
 				lpData->bItemFullyLoaded = true;
@@ -735,7 +735,7 @@ void CResCommentEditor::InitListFromPropArray(ULONG ulListNum, ULONG cProps, _In
 		lpData = InsertListRow(ulListNum, i, format(L"%u", i)); // STRING_OK
 		if (lpData)
 		{
-			lpData->ulSortDataType = SORTLIST_COMMENT;
+			lpData->m_Type = SORTLIST_COMMENT;
 			lpData->data.Comment.lpOldProp = &lpProps[i];
 			SetListString(ulListNum, i, 1, TagToString(lpProps[i].ulPropTag, NULL, false, true));
 			InterpretProp(&lpProps[i], &szProp, &szAltProp);
@@ -1410,7 +1410,7 @@ void CCriteriaEditor::InitListFromEntryList(ULONG ulListNum, _In_ LPENTRYLIST lp
 			lpData = InsertListRow(ulListNum, i, format(L"%u", i)); // STRING_OK
 			if (lpData)
 			{
-				lpData->ulSortDataType = SORTLIST_BINARY;
+				lpData->m_Type = SORTLIST_BINARY;
 				lpData->data.Binary.OldBin.cb = lpEntryList->lpbin[i].cb;
 				lpData->data.Binary.OldBin.lpb = lpEntryList->lpbin[i].lpb;
 				lpData->data.Binary.NewBin.cb = NULL;
