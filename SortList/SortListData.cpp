@@ -3,6 +3,7 @@
 #include "ContentsData.h"
 #include "NodeData.h"
 #include "PropListData.h"
+#include "MVPropData.h"
 
 SortListData::SortListData() :
 	m_Type(SORTLIST_UNKNOWN),
@@ -26,7 +27,7 @@ void SortListData::Clean()
 	case SORTLIST_UNKNOWN: break;
 	case SORTLIST_CONTENTS: delete Contents(); break;
 	case SORTLIST_PROP: delete Prop(); break;
-	case SORTLIST_MVPROP: break;
+	case SORTLIST_MVPROP: delete MV(); break;
 	case SORTLIST_TAGARRAY: break;
 	case SORTLIST_RES: break;
 	case SORTLIST_COMMENT: break;
@@ -78,6 +79,16 @@ PropListData* SortListData::Prop() const
 	return nullptr;
 }
 
+MVPropData* SortListData::MV() const
+{
+	if (m_Type == SORTLIST_MVPROP)
+	{
+		return reinterpret_cast<MVPropData*>(m_lpData);
+	}
+
+	return nullptr;
+}
+
 // Sets data from the LPSRow into the SortListData structure
 // Assumes the structure is either an existing structure or a new one which has been memset to 0
 // If it's an existing structure - we need to free up some memory
@@ -85,9 +96,9 @@ PropListData* SortListData::Prop() const
 void SortListData::InitializeContents(_In_ LPSRow lpsRowData)
 {
 	Clean();
-	if (!lpsRowData) return;
-
 	m_Type = SORTLIST_CONTENTS;
+
+	if (!lpsRowData) return;
 	lpSourceProps = lpsRowData->lpProps;
 	cSourceProps = lpsRowData->cValues;
 	m_lpData = new ContentsData(lpsRowData);
@@ -102,7 +113,6 @@ void SortListData::InitializeNode(
 	ULONG ulContainerFlags)
 {
 	Clean();
-
 	m_Type = SORTLIST_TREENODE;
 	cSourceProps = cProps;
 	lpSourceProps = lpProps;
@@ -157,6 +167,19 @@ void SortListData::InitializePropList(_In_ ULONG ulPropTag)
 	Clean();
 	m_Type = SORTLIST_PROP;
 	bItemFullyLoaded = true;
-	m_lpData = new PropListData(
-		ulPropTag);
+	m_lpData = new PropListData(ulPropTag);
+}
+
+void SortListData::InitializeMV(_In_ LPSPropValue lpProp, ULONG iProp)
+{
+	Clean();
+	m_Type = SORTLIST_MVPROP;
+	m_lpData = new MVPropData(lpProp, iProp);
+}
+
+void SortListData::InitializeMV(_In_ LPSPropValue lpProp)
+{
+	Clean();
+	m_Type = SORTLIST_MVPROP;
+	m_lpData = new MVPropData(lpProp);
 }

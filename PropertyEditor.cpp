@@ -2,7 +2,8 @@
 #include "PropertyEditor.h"
 #include "InterpretProp2.h"
 #include "MAPIFunctions.h"
-#include "SmartView\SmartView.h"
+#include "SmartView/SmartView.h"
+#include "SortList/MVPropData.h"
 
 _Check_return_ HRESULT DisplayPropertyEditor(_In_ CWnd* pParentWnd,
 	UINT uidTitle,
@@ -15,8 +16,8 @@ _Check_return_ HRESULT DisplayPropertyEditor(_In_ CWnd* pParentWnd,
 	_In_opt_ LPSPropValue lpsPropValue,
 	_Inout_opt_ LPSPropValue* lpNewValue)
 {
-	HRESULT hRes = S_OK;
-	bool bShouldFreeInputValue = false;
+	auto hRes = S_OK;
+	auto bShouldFreeInputValue = false;
 
 	// We got a MAPI prop object and no input value, go look one up
 	if (lpMAPIProp && !lpsPropValue)
@@ -36,7 +37,7 @@ _Check_return_ HRESULT DisplayPropertyEditor(_In_ CWnd* pParentWnd,
 			)
 		{
 			MAPIFreeBuffer(lpsPropValue);
-			lpsPropValue = NULL;
+			lpsPropValue = nullptr;
 		}
 
 		if (MAPI_E_CALL_FAILED == hRes)
@@ -118,20 +119,20 @@ CPropertyEditor::CPropertyEditor(
 	m_bIsAB = bIsAB;
 	m_bMVRow = bMVRow;
 	m_lpAllocParent = lpAllocParent;
-	m_lpsOutputValue = NULL;
+	m_lpsOutputValue = nullptr;
 	m_bDirty = false;
 
 	m_lpMAPIProp = lpMAPIProp;
 	if (m_lpMAPIProp) m_lpMAPIProp->AddRef();
 	m_ulPropTag = ulPropTag;
 	m_lpsInputValue = lpsPropValue;
-	m_lpSmartView = NULL;
+	m_lpSmartView = nullptr;
 
 	// If we didn't have an input value, we are creating a new property
 	// So by definition, we're already dirty
 	if (!m_lpsInputValue) m_bDirty = true;
 
-	wstring szPromptPostFix = format(L"%ws%ws", uidPrompt ? L"\r\n" : L"", TagToString(m_ulPropTag | (m_bMVRow ? MV_FLAG : NULL), m_lpMAPIProp, m_bIsAB, false).c_str()); // STRING_OK
+	auto szPromptPostFix = format(L"%ws%ws", uidPrompt ? L"\r\n" : L"", TagToString(m_ulPropTag | (m_bMVRow ? MV_FLAG : NULL), m_lpMAPIProp, m_bIsAB, false).c_str()); // STRING_OK
 	SetPromptPostFix(szPromptPostFix);
 
 	// Let's crack our property open and see what kind of controls we'll need for it
@@ -148,7 +149,7 @@ CPropertyEditor::~CPropertyEditor()
 
 BOOL CPropertyEditor::OnInitDialog()
 {
-	BOOL bRet = CEditor::OnInitDialog();
+	auto bRet = CEditor::OnInitDialog();
 	return bRet;
 }
 
@@ -214,21 +215,21 @@ void CPropertyEditor::InitPropertyControls()
 	case PT_BINARY:
 	case PT_LONG:
 		// This will be freed by the pane that we pass it to.
-		m_lpSmartView = (SmartViewPane*)CreateSmartViewPane(IDS_SMARTVIEW);
+		m_lpSmartView = static_cast<SmartViewPane*>(CreateSmartViewPane(IDS_SMARTVIEW));
 	}
 
-	__ParsingTypeEnum iStructType = FindSmartViewParserForProp(m_lpsInputValue ? m_lpsInputValue->ulPropTag : m_ulPropTag, NULL, NULL, m_bMVRow);
-	wstring szSmartView = InterpretPropSmartView(
+	auto iStructType = FindSmartViewParserForProp(m_lpsInputValue ? m_lpsInputValue->ulPropTag : m_ulPropTag, NULL, nullptr, m_bMVRow);
+	auto szSmartView = InterpretPropSmartView(
 		m_lpsInputValue,
 		m_lpMAPIProp,
-		NULL,
-		NULL,
+		nullptr,
+		nullptr,
 		m_bIsAB,
 		m_bMVRow); // Built from lpProp & lpMAPIProp
 
 	wstring szTemp1;
 	wstring szTemp2;
-	CountedTextPane* lpPane = NULL;
+	CountedTextPane* lpPane = nullptr;
 	size_t cbStr = 0;
 	wstring szGuid;
 
@@ -283,19 +284,19 @@ void CPropertyEditor::InitPropertyControls()
 		{
 			SetStringA(0, m_lpsInputValue->Value.lpszA);
 
-			lpPane = (CountedTextPane*)GetControl(1);
+			lpPane = static_cast<CountedTextPane*>(GetControl(1));
 			if (lpPane)
 			{
-				HRESULT hRes = S_OK;
+				auto hRes = S_OK;
 				EC_H(StringCbLengthA(m_lpsInputValue->Value.lpszA, STRSAFE_MAX_CCH * sizeof(char), &cbStr));
 
 				lpPane->SetCount(cbStr);
 				lpPane->SetBinary(
-					(LPBYTE)m_lpsInputValue->Value.lpszA,
+					reinterpret_cast<LPBYTE>(m_lpsInputValue->Value.lpszA),
 					cbStr);
 			}
 
-			lpPane = (CountedTextPane*)GetControl(0);
+			lpPane = static_cast<CountedTextPane*>(GetControl(0));
 			if (lpPane) lpPane->SetCount(cbStr);
 		}
 
@@ -307,19 +308,19 @@ void CPropertyEditor::InitPropertyControls()
 		{
 			SetStringW(0, m_lpsInputValue->Value.lpszW);
 
-			lpPane = (CountedTextPane*)GetControl(1);
+			lpPane = static_cast<CountedTextPane*>(GetControl(1));
 			if (lpPane)
 			{
-				HRESULT hRes = S_OK;
+				auto hRes = S_OK;
 				EC_H(StringCbLengthW(m_lpsInputValue->Value.lpszW, STRSAFE_MAX_CCH * sizeof(WCHAR), &cbStr));
 
 				lpPane->SetCount(cbStr);
 				lpPane->SetBinary(
-					(LPBYTE)m_lpsInputValue->Value.lpszW,
+					reinterpret_cast<LPBYTE>(m_lpsInputValue->Value.lpszW),
 					cbStr);
 			}
 
-			lpPane = (CountedTextPane*)GetControl(0);
+			lpPane = static_cast<CountedTextPane*>(GetControl(0));
 			if (lpPane) lpPane->SetCount((cbStr % sizeof(WCHAR)) ? 0 : cbStr / sizeof(WCHAR));
 		}
 
@@ -382,8 +383,8 @@ void CPropertyEditor::InitPropertyControls()
 
 		if (m_lpsInputValue)
 		{
-			SetHex(0, (int)m_lpsInputValue->Value.li.HighPart);
-			SetHex(1, (int)m_lpsInputValue->Value.li.LowPart);
+			SetHex(0, static_cast<int>(m_lpsInputValue->Value.li.HighPart));
+			SetHex(1, static_cast<int>(m_lpsInputValue->Value.li.LowPart));
 			SetStringf(2, _T("%I64d"), m_lpsInputValue->Value.li.QuadPart); // STRING_OK
 		}
 		else
@@ -401,7 +402,7 @@ void CPropertyEditor::InitPropertyControls()
 
 		break;
 	case PT_BINARY:
-		lpPane = (CountedTextPane*)CreateCountedTextPane(IDS_BIN, false, IDS_CB);
+		lpPane = static_cast<CountedTextPane*>(CreateCountedTextPane(IDS_BIN, false, IDS_CB));
 		InitPane(0, lpPane);
 		InitPane(1, CreateCountedTextPane(IDS_TEXT, false, IDS_CCH));
 		InitPane(2, m_lpSmartView);
@@ -412,10 +413,10 @@ void CPropertyEditor::InitPropertyControls()
 			{
 				lpPane->SetCount(m_lpsInputValue->Value.bin.cb);
 				lpPane->SetStringW(BinToHexString(&m_lpsInputValue->Value.bin, false).c_str());
-				SetStringA(1, (LPCSTR)m_lpsInputValue->Value.bin.lpb, m_lpsInputValue->Value.bin.cb + 1);
+				SetStringA(1, reinterpret_cast<LPCSTR>(m_lpsInputValue->Value.bin.lpb), m_lpsInputValue->Value.bin.cb + 1);
 			}
 
-			lpPane = (CountedTextPane*)GetControl(1);
+			lpPane = static_cast<CountedTextPane*>(GetControl(1));
 			if (lpPane) lpPane->SetCount(m_lpsInputValue->Value.bin.cb);
 		}
 
@@ -455,8 +456,8 @@ void CPropertyEditor::InitPropertyControls()
 		InitPane(2, CreateSingleLinePane(IDS_DATE, true));
 		if (m_lpsInputValue)
 		{
-			SetHex(0, (int)m_lpsInputValue->Value.ft.dwLowDateTime);
-			SetHex(1, (int)m_lpsInputValue->Value.ft.dwHighDateTime);
+			SetHex(0, static_cast<int>(m_lpsInputValue->Value.ft.dwLowDateTime));
+			SetHex(1, static_cast<int>(m_lpsInputValue->Value.ft.dwHighDateTime));
 			FileTimeToString(&m_lpsInputValue->Value.ft, szTemp1, szTemp2);
 			SetStringW(2, szTemp1.c_str());
 		}
@@ -475,19 +476,19 @@ void CPropertyEditor::InitPropertyControls()
 		}
 		else
 		{
-			szGuid = GUIDToStringAndName(0);
+			szGuid = GUIDToStringAndName(nullptr);
 		}
 
 		SetStringW(0, szGuid.c_str());
 		break;
 	case PT_SRESTRICTION:
 		InitPane(0, CreateCollapsibleTextPane(IDS_RESTRICTION, true));
-		InterpretProp(m_lpsInputValue, &szTemp1, NULL);
+		InterpretProp(m_lpsInputValue, &szTemp1, nullptr);
 		SetStringW(0, szTemp1.c_str());
 		break;
 	case PT_ACTIONS:
 		InitPane(0, CreateCollapsibleTextPane(IDS_ACTIONS, true));
-		InterpretProp(m_lpsInputValue, &szTemp1, NULL);
+		InterpretProp(m_lpsInputValue, &szTemp1, nullptr);
 		SetStringW(0, szTemp1.c_str());
 		break;
 	default:
@@ -502,7 +503,7 @@ void CPropertyEditor::InitPropertyControls()
 
 void CPropertyEditor::WriteStringsToSPropValue()
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
 	// Check first if we'll have anything to write
 	switch (PROP_TYPE(m_ulPropTag))
@@ -524,20 +525,20 @@ void CPropertyEditor::WriteStringsToSPropValue()
 			EC_H(MAPIAllocateMore(
 				sizeof(SPropValue),
 				m_lpAllocParent,
-				(LPVOID*)&m_lpsOutputValue));
+				reinterpret_cast<LPVOID*>(&m_lpsOutputValue)));
 		}
 		else
 		{
 			EC_H(MAPIAllocateBuffer(
 				sizeof(SPropValue),
-				(LPVOID*)&m_lpsOutputValue));
+				reinterpret_cast<LPVOID*>(&m_lpsOutputValue)));
 			m_lpAllocParent = m_lpsOutputValue;
 		}
 	}
 
 	if (m_lpsOutputValue)
 	{
-		bool bFailed = false; // set true if we fail to get a prop and have to clean up memory
+		auto bFailed = false; // set true if we fail to get a prop and have to clean up memory
 		m_lpsOutputValue->ulPropTag = m_ulPropTag;
 		m_lpsOutputValue->dwAlignPad = NULL;
 		vector<BYTE> bin;
@@ -589,14 +590,14 @@ void CPropertyEditor::WriteStringsToSPropValue()
 			// may have done. The RichEdit control likes throwing them away.
 			szTmpString = GetStringUseControl(1);
 			bin = HexStringToBin(szTmpString);
-			m_lpsOutputValue->Value.lpszA = (LPSTR)ByteVectorToMAPI(bin, m_lpAllocParent);
+			m_lpsOutputValue->Value.lpszA = reinterpret_cast<LPSTR>(ByteVectorToMAPI(bin, m_lpAllocParent));
 			break;
 		case PT_UNICODE:
 			// We read strings out of the hex control in order to preserve any hex level tweaks the user
 			// may have done. The RichEdit control likes throwing them away.
 			szTmpString = GetStringUseControl(1);
 			bin = HexStringToBin(szTmpString);
-			m_lpsOutputValue->Value.lpszW = (LPWSTR)ByteVectorToMAPI(bin, m_lpAllocParent);
+			m_lpsOutputValue->Value.lpszW = reinterpret_cast<LPWSTR>(ByteVectorToMAPI(bin, m_lpAllocParent));
 			break;
 		case PT_SYSTIME:
 			szTmpString = GetStringUseControl(0);
@@ -608,7 +609,7 @@ void CPropertyEditor::WriteStringsToSPropValue()
 			EC_H(MAPIAllocateMore(
 				sizeof(GUID),
 				m_lpAllocParent,
-				(LPVOID*)&m_lpsOutputValue->Value.lpguid));
+				reinterpret_cast<LPVOID*>(&m_lpsOutputValue->Value.lpguid)));
 			if (m_lpsOutputValue->Value.lpguid)
 			{
 				*m_lpsOutputValue->Value.lpguid = StringToGUID(GetStringUseControl(0));
@@ -620,7 +621,7 @@ void CPropertyEditor::WriteStringsToSPropValue()
 			szTmpString = GetStringUseControl(0);
 			bin = HexStringToBin(szTmpString);
 			m_lpsOutputValue->Value.bin.lpb = ByteVectorToMAPI(bin, m_lpAllocParent);
-			m_lpsOutputValue->Value.bin.cb = (ULONG)bin.size();
+			m_lpsOutputValue->Value.bin.cb = static_cast<ULONG>(bin.size());
 			break;
 		default:
 			// We shouldn't ever get here unless some new prop type shows up
@@ -634,26 +635,26 @@ void CPropertyEditor::WriteStringsToSPropValue()
 			if (!m_lpAllocParent || m_lpAllocParent == m_lpsOutputValue)
 			{
 				MAPIFreeBuffer(m_lpsOutputValue);
-				m_lpsOutputValue = NULL;
-				m_lpAllocParent = NULL;
+				m_lpsOutputValue = nullptr;
+				m_lpAllocParent = nullptr;
 			}
 			else
 			{
 				// If m_lpsOutputValue was allocated off a parent, we can't free it here
 				// Just drop the reference and m_lpAllocParent's free will clean it up
-				m_lpsOutputValue = NULL;
+				m_lpsOutputValue = nullptr;
 			}
 		}
 	}
 }
 
-void CPropertyEditor::WriteSPropValueToObject()
+void CPropertyEditor::WriteSPropValueToObject() const
 {
 	if (!m_lpsOutputValue || !m_lpMAPIProp) return;
 
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
-	LPSPropProblemArray lpProblemArray = NULL;
+	LPSPropProblemArray lpProblemArray = nullptr;
 
 	EC_MAPI(m_lpMAPIProp->SetProps(
 		1,
@@ -669,16 +670,16 @@ void CPropertyEditor::WriteSPropValueToObject()
 // Callers beware: Detatches and returns the modified prop value - this must be MAPIFreeBuffered!
 _Check_return_ LPSPropValue CPropertyEditor::DetachModifiedSPropValue()
 {
-	LPSPropValue m_lpRet = m_lpsOutputValue;
-	m_lpsOutputValue = NULL;
+	auto m_lpRet = m_lpsOutputValue;
+	m_lpsOutputValue = nullptr;
 	return m_lpRet;
 }
 
 _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 {
-	ULONG i = CEditor::HandleChange(nID);
+	auto i = CEditor::HandleChange(nID);
 
-	if ((ULONG)-1 == i) return (ULONG)-1;
+	if (static_cast<ULONG>(-1) == i) return static_cast<ULONG>(-1);
 
 	wstring szTmpString;
 	wstring szTemp1;
@@ -691,10 +692,10 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 	CURRENCY curVal = { 0 };
 	LARGE_INTEGER liVal = { 0 };
 	FILETIME ftVal = { 0 };
-	LPBYTE lpb = NULL;
+	LPBYTE lpb = nullptr;
 	SBinary Bin = { 0 };
 
-	CountedTextPane* lpPane = NULL;
+	CountedTextPane* lpPane = nullptr;
 
 	// If we get here, something changed - set the dirty flag
 	m_bDirty = true;
@@ -711,7 +712,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		else if (1 == i)
 		{
 			lVal = static_cast<short int>(wstringToLong(szTmpString, 16));
-			SetDecimal(0, iVal);
+			SetDecimal(0, lVal);
 		}
 
 		sProp.ulPropTag = m_ulPropTag;
@@ -719,8 +720,8 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 
 		szSmartView = InterpretPropSmartView(&sProp,
 			m_lpMAPIProp,
-			NULL,
-			NULL,
+			nullptr,
+			nullptr,
 			m_bIsAB,
 			m_bMVRow);
 
@@ -731,12 +732,12 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		szTmpString = GetStringUseControl(i);
 		if (0 == i)
 		{
-			lVal = (LONG)wstringToUlong(szTmpString, 10);
+			lVal = static_cast<LONG>(wstringToUlong(szTmpString, 10));
 			SetHex(1, lVal);
 		}
 		else if (1 == i)
 		{
-			lVal = (LONG)wstringToUlong(szTmpString, 16);
+			lVal = static_cast<LONG>(wstringToUlong(szTmpString, 16));
 			SetStringf(0, _T("%d"), lVal); // STRING_OK
 		}
 
@@ -745,8 +746,8 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 
 		szSmartView = InterpretPropSmartView(&sProp,
 			m_lpMAPIProp,
-			NULL,
-			NULL,
+			nullptr,
+			nullptr,
 			m_bIsAB,
 			m_bMVRow);
 
@@ -767,8 +768,8 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 			szTmpString = GetStringUseControl(i);
 			szTmpString = StripCharacter(szTmpString, L'.');
 			curVal.int64 = wstringToInt64(szTmpString);
-			SetHex(0, (int)curVal.Hi);
-			SetHex(1, (int)curVal.Lo);
+			SetHex(0, static_cast<int>(curVal.Hi));
+			SetHex(1, static_cast<int>(curVal.Lo));
 		}
 
 		break;
@@ -785,8 +786,8 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		{
 			szTmpString = GetStringUseControl(i);
 			liVal.QuadPart = wstringToInt64(szTmpString);
-			SetHex(0, (int)liVal.HighPart);
-			SetHex(1, (int)liVal.LowPart);
+			SetHex(0, static_cast<int>(liVal.HighPart));
+			SetHex(1, static_cast<int>(liVal.LowPart));
 		}
 
 		sProp.ulPropTag = m_ulPropTag;
@@ -794,8 +795,8 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 
 		szSmartView = InterpretPropSmartView(&sProp,
 			m_lpMAPIProp,
-			NULL,
-			NULL,
+			nullptr,
+			nullptr,
 			m_bIsAB,
 			m_bMVRow);
 
@@ -814,47 +815,47 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 	case PT_BINARY:
 		if (0 == i || 2 == i)
 		{
-			if (GetBinaryUseControl(0, (size_t*)&Bin.cb, &lpb))
+			if (GetBinaryUseControl(0, reinterpret_cast<size_t*>(&Bin.cb), &lpb))
 			{
 				Bin.lpb = lpb;
 				// Treat as a NULL terminated string
 				// GetBinaryUseControl includes extra NULLs at the end of the buffer to make this work
-				if (0 == i) SetStringA(1, (LPCSTR)Bin.lpb, Bin.cb + 1); // ansi string
+				if (0 == i) SetStringA(1, reinterpret_cast<LPCSTR>(Bin.lpb), Bin.cb + 1); // ansi string
 			}
 		}
 		else if (1 == i)
 		{
 			size_t cchStr = NULL;
-			LPSTR lpszA = GetEditBoxTextA(1, &cchStr); // Do not free this
-			Bin.lpb = (LPBYTE)lpszA;
+			auto lpszA = GetEditBoxTextA(1, &cchStr); // Do not free this
+			Bin.lpb = reinterpret_cast<LPBYTE>(lpszA);
 
 			// What we just read includes a NULL terminator, in both the string and count.
 			// When we write binary, we don't want to include this NULL
 			if (cchStr) cchStr -= 1;
-			Bin.cb = (ULONG)cchStr * sizeof(CHAR);
+			Bin.cb = static_cast<ULONG>(cchStr) * sizeof(CHAR);
 
-			SetBinary(0, (LPBYTE)Bin.lpb, Bin.cb);
+			SetBinary(0, static_cast<LPBYTE>(Bin.lpb), Bin.cb);
 		}
 
-		lpPane = (CountedTextPane*)GetControl(0);
+		lpPane = static_cast<CountedTextPane*>(GetControl(0));
 		if (lpPane) lpPane->SetCount(Bin.cb);
 
-		lpPane = (CountedTextPane*)GetControl(1);
+		lpPane = static_cast<CountedTextPane*>(GetControl(1));
 		if (lpPane) lpPane->SetCount(Bin.cb);
 
 		if (m_lpSmartView) m_lpSmartView->Parse(Bin);
 
 		delete[] lpb;
-		lpb = NULL;
+		lpb = nullptr;
 		break;
 	case PT_STRING8:
 		if (0 == i)
 		{
 			size_t cbStr = 0;
 			size_t cchStr = 0;
-			LPSTR lpszA = GetEditBoxTextA(0, &cchStr);
+			auto lpszA = GetEditBoxTextA(0, &cchStr);
 
-			lpPane = (CountedTextPane*)GetControl(1);
+			lpPane = static_cast<CountedTextPane*>(GetControl(1));
 			if (lpPane)
 			{
 				// What we just read includes a NULL terminator, in both the string and count.
@@ -864,11 +865,11 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 
 				// Even if we don't have a string, still make the call to SetBinary
 				// This will blank out the binary control when lpszA is NULL
-				lpPane->SetBinary((LPBYTE)lpszA, cbStr);
+				lpPane->SetBinary(reinterpret_cast<LPBYTE>(lpszA), cbStr);
 				lpPane->SetCount(cbStr);
 			}
 
-			lpPane = (CountedTextPane*)GetControl(0);
+			lpPane = static_cast<CountedTextPane*>(GetControl(0));
 			if (lpPane) lpPane->SetCount(cbStr);
 		}
 		else if (1 == i)
@@ -878,40 +879,39 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 			(void)GetBinaryUseControl(1, &cb, &lpb);
 
 			// GetBinaryUseControl includes extra NULLs at the end of the buffer to make this work
-			SetStringA(0, (LPCSTR)lpb, cb + 1);
+			SetStringA(0, reinterpret_cast<LPCSTR>(lpb), cb + 1);
 
-			lpPane = (CountedTextPane*)GetControl(0);
+			lpPane = static_cast<CountedTextPane*>(GetControl(0));
 			if (lpPane) lpPane->SetCount(cb);
 
-			lpPane = (CountedTextPane*)GetControl(1);
+			lpPane = static_cast<CountedTextPane*>(GetControl(1));
 			if (lpPane) lpPane->SetCount(cb);
 			delete[] lpb;
-			lpb = NULL;
+			lpb = nullptr;
 		}
 
 		break;
 	case PT_UNICODE:
 		if (0 == i)
 		{
-			size_t cbStr = 0;
 			size_t cchStr = 0;
-			LPWSTR lpszW = GetEditBoxTextW(0, &cchStr);
+			auto lpszW = GetEditBoxTextW(0, &cchStr);
 
-			lpPane = (CountedTextPane*)GetControl(1);
+			lpPane = static_cast<CountedTextPane*>(GetControl(1));
 			if (lpPane)
 			{
 				// What we just read includes a NULL terminator, in both the string and count.
 				// When we write binary, we don't want to include this NULL
 				if (cchStr) cchStr -= 1;
-				cbStr = cchStr * sizeof(WCHAR);
+				auto cbStr = cchStr * sizeof(WCHAR);
 
 				// Even if we don't have a string, still make the call to SetBinary
 				// This will blank out the binary control when lpszW is NULL
-				lpPane->SetBinary((LPBYTE)lpszW, cbStr);
+				lpPane->SetBinary(reinterpret_cast<LPBYTE>(lpszW), cbStr);
 				lpPane->SetCount(cbStr);
 			}
 
-			lpPane = (CountedTextPane*)GetControl(0);
+			lpPane = static_cast<CountedTextPane*>(GetControl(0));
 			if (lpPane) lpPane->SetCount(cchStr);
 		}
 		else if (1 == i)
@@ -921,20 +921,20 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 			if (GetBinaryUseControl(1, &cb, &lpb) && !(cb % sizeof(WCHAR)))
 			{
 				// GetBinaryUseControl includes extra NULLs at the end of the buffer to make this work
-				SetStringW(0, (LPCWSTR)lpb, cb / sizeof(WCHAR) + 1);
+				SetStringW(0, reinterpret_cast<LPCWSTR>(lpb), cb / sizeof(WCHAR) + 1);
 			}
 			else
 			{
-				SetStringW(0, NULL);
+				SetStringW(0, nullptr);
 			}
 
-			lpPane = (CountedTextPane*)GetControl(1);
+			lpPane = static_cast<CountedTextPane*>(GetControl(1));
 			if (lpPane) lpPane->SetCount(cb);
 
-			lpPane = (CountedTextPane*)GetControl(0);
+			lpPane = static_cast<CountedTextPane*>(GetControl(0));
 			if (lpPane) lpPane->SetCount((cb % sizeof(WCHAR)) ? 0 : cb / sizeof(WCHAR));
 			delete[] lpb;
-			lpb = NULL;
+			lpb = nullptr;
 		}
 
 		break;
@@ -964,14 +964,14 @@ CMultiValuePropertyEditor::CMultiValuePropertyEditor(
 
 	m_bIsAB = bIsAB;
 	m_lpAllocParent = lpAllocParent;
-	m_lpsOutputValue = NULL;
+	m_lpsOutputValue = nullptr;
 
 	m_lpMAPIProp = lpMAPIProp;
 	if (m_lpMAPIProp) m_lpMAPIProp->AddRef();
 	m_ulPropTag = ulPropTag;
 	m_lpsInputValue = lpsPropValue;
 
-	wstring szPromptPostFix = format(L"\r\n%ws", TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, false).c_str()); // STRING_OK
+	auto szPromptPostFix = format(L"\r\n%ws", TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, false).c_str()); // STRING_OK
 	SetPromptPostFix(szPromptPostFix);
 
 	// Let's crack our property open and see what kind of controls we'll need for it
@@ -988,22 +988,22 @@ CMultiValuePropertyEditor::~CMultiValuePropertyEditor()
 
 BOOL CMultiValuePropertyEditor::OnInitDialog()
 {
-	BOOL bRet = CEditor::OnInitDialog();
+	auto bRet = CEditor::OnInitDialog();
 
 	ReadMultiValueStringsFromProperty();
 	ResizeList(0, false);
 
-	__ParsingTypeEnum iStructType = FindSmartViewParserForProp(m_lpsInputValue->ulPropTag, NULL, NULL, true);
-	wstring szSmartView = InterpretPropSmartView(
+	auto iStructType = FindSmartViewParserForProp(m_lpsInputValue->ulPropTag, NULL, nullptr, true);
+	auto szSmartView = InterpretPropSmartView(
 		m_lpsInputValue,
 		m_lpMAPIProp,
-		NULL,
-		NULL,
+		nullptr,
+		nullptr,
 		m_bIsAB,
 		true);
 	if (!szSmartView.empty())
 	{
-		SmartViewPane* lpPane = (SmartViewPane*)GetControl(1);
+		auto lpPane = static_cast<SmartViewPane*>(GetControl(1));
 		if (lpPane)
 		{
 			lpPane->SetParser(iStructType);
@@ -1043,7 +1043,7 @@ void CMultiValuePropertyEditor::InitPropertyControls()
 	if (PT_MV_BINARY == PROP_TYPE(m_ulPropTag) ||
 		PT_MV_LONG == PROP_TYPE(m_ulPropTag))
 	{
-		SmartViewPane* lpPane = (SmartViewPane*)CreateSmartViewPane(IDS_SMARTVIEW);
+		auto lpPane = static_cast<SmartViewPane*>(CreateSmartViewPane(IDS_SMARTVIEW));
 		InitPane(1, lpPane);
 
 		if (lpPane && PT_MV_LONG == PROP_TYPE(m_ulPropTag))
@@ -1072,59 +1072,18 @@ void CMultiValuePropertyEditor::ReadMultiValueStringsFromProperty()
 
 	ULONG iMVCount = 0;
 	// All the MV structures are basically the same, so we can cheat when we pull the count
-	ULONG cValues = m_lpsInputValue->Value.MVi.cValues;
+	auto cValues = m_lpsInputValue->Value.MVi.cValues;
 	for (iMVCount = 0; iMVCount < cValues; iMVCount++)
 	{
-		SortListData* lpData = InsertListRow(0, iMVCount, format(L"%u", iMVCount)); // STRING_OK
+		auto lpData = InsertListRow(0, iMVCount, format(L"%u", iMVCount)); // STRING_OK
 
 		if (lpData)
 		{
-			lpData->m_Type = SORTLIST_MVPROP;
-			switch (PROP_TYPE(m_lpsInputValue->ulPropTag))
-			{
-			case PT_MV_I2:
-				lpData->data.MV.val.i = m_lpsInputValue->Value.MVi.lpi[iMVCount];
-				break;
-			case PT_MV_LONG:
-				lpData->data.MV.val.l = m_lpsInputValue->Value.MVl.lpl[iMVCount];
-				break;
-			case PT_MV_DOUBLE:
-				lpData->data.MV.val.dbl = m_lpsInputValue->Value.MVdbl.lpdbl[iMVCount];
-				break;
-			case PT_MV_CURRENCY:
-				lpData->data.MV.val.cur = m_lpsInputValue->Value.MVcur.lpcur[iMVCount];
-				break;
-			case PT_MV_APPTIME:
-				lpData->data.MV.val.at = m_lpsInputValue->Value.MVat.lpat[iMVCount];
-				break;
-			case PT_MV_SYSTIME:
-				lpData->data.MV.val.ft = m_lpsInputValue->Value.MVft.lpft[iMVCount];
-				break;
-			case PT_MV_I8:
-				lpData->data.MV.val.li = m_lpsInputValue->Value.MVli.lpli[iMVCount];
-				break;
-			case PT_MV_R4:
-				lpData->data.MV.val.flt = m_lpsInputValue->Value.MVflt.lpflt[iMVCount];
-				break;
-			case PT_MV_STRING8:
-				lpData->data.MV.val.lpszA = m_lpsInputValue->Value.MVszA.lppszA[iMVCount];
-				break;
-			case PT_MV_UNICODE:
-				lpData->data.MV.val.lpszW = m_lpsInputValue->Value.MVszW.lppszW[iMVCount];
-				break;
-			case PT_MV_BINARY:
-				lpData->data.MV.val.bin = m_lpsInputValue->Value.MVbin.lpbin[iMVCount];
-				break;
-			case PT_MV_CLSID:
-				lpData->data.MV.val.lpguid = &m_lpsInputValue->Value.MVguid.lpguid[iMVCount];
-				break;
-			default:
-				break;
-			}
+			lpData->InitializeMV(m_lpsInputValue, iMVCount);
 
 			SPropValue sProp = { 0 };
 			sProp.ulPropTag = CHANGE_PROP_TYPE(m_lpsInputValue->ulPropTag, PROP_TYPE(m_lpsInputValue->ulPropTag) & ~MV_FLAG);
-			sProp.Value = lpData->data.MV.val;
+			sProp.Value = lpData->MV()->m_val;
 			UpdateListRow(&sProp, iMVCount);
 
 			lpData->bItemFullyLoaded = true;
@@ -1142,7 +1101,7 @@ void CMultiValuePropertyEditor::WriteMultiValueStringsToSPropValue()
 	// So we're implicitly dirty.
 	if (!IsDirty(0) && m_lpsInputValue) return;
 
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	// Take care of allocations first
 	if (!m_lpsOutputValue)
 	{
@@ -1151,20 +1110,20 @@ void CMultiValuePropertyEditor::WriteMultiValueStringsToSPropValue()
 			EC_H(MAPIAllocateMore(
 				sizeof(SPropValue),
 				m_lpAllocParent,
-				(LPVOID*)&m_lpsOutputValue));
+				reinterpret_cast<LPVOID*>(&m_lpsOutputValue)));
 		}
 		else
 		{
 			EC_H(MAPIAllocateBuffer(
 				sizeof(SPropValue),
-				(LPVOID*)&m_lpsOutputValue));
+				reinterpret_cast<LPVOID*>(&m_lpsOutputValue)));
 			m_lpAllocParent = m_lpsOutputValue;
 		}
 	}
 
 	if (m_lpsOutputValue)
 	{
-		WriteMultiValueStringsToSPropValue((LPVOID)m_lpAllocParent, m_lpsOutputValue);
+		WriteMultiValueStringsToSPropValue(static_cast<LPVOID>(m_lpAllocParent), m_lpsOutputValue);
 	}
 }
 
@@ -1173,8 +1132,8 @@ void CMultiValuePropertyEditor::WriteMultiValueStringsToSPropValue(_In_ LPVOID l
 {
 	if (!lpParent || !lpsProp) return;
 
-	HRESULT hRes = S_OK;
-	ULONG ulNumVals = GetListCount(0);
+	auto hRes = S_OK;
+	auto ulNumVals = GetListCount(0);
 	ULONG iMVCount = 0;
 
 	lpsProp->ulPropTag = m_ulPropTag;
@@ -1183,51 +1142,51 @@ void CMultiValuePropertyEditor::WriteMultiValueStringsToSPropValue(_In_ LPVOID l
 	switch (PROP_TYPE(lpsProp->ulPropTag))
 	{
 	case PT_MV_I2:
-		EC_H(MAPIAllocateMore(sizeof(short int)* ulNumVals, lpParent, (LPVOID*)&lpsProp->Value.MVi.lpi));
+		EC_H(MAPIAllocateMore(sizeof(short int)* ulNumVals, lpParent, reinterpret_cast<LPVOID*>(&lpsProp->Value.MVi.lpi)));
 		lpsProp->Value.MVi.cValues = ulNumVals;
 		break;
 	case PT_MV_LONG:
-		EC_H(MAPIAllocateMore(sizeof(LONG)* ulNumVals, lpParent, (LPVOID*)&lpsProp->Value.MVl.lpl));
+		EC_H(MAPIAllocateMore(sizeof(LONG)* ulNumVals, lpParent, reinterpret_cast<LPVOID*>(&lpsProp->Value.MVl.lpl)));
 		lpsProp->Value.MVl.cValues = ulNumVals;
 		break;
 	case PT_MV_DOUBLE:
-		EC_H(MAPIAllocateMore(sizeof(double)* ulNumVals, lpParent, (LPVOID*)&lpsProp->Value.MVdbl.lpdbl));
+		EC_H(MAPIAllocateMore(sizeof(double)* ulNumVals, lpParent, reinterpret_cast<LPVOID*>(&lpsProp->Value.MVdbl.lpdbl)));
 		lpsProp->Value.MVdbl.cValues = ulNumVals;
 		break;
 	case PT_MV_CURRENCY:
-		EC_H(MAPIAllocateMore(sizeof(CURRENCY)* ulNumVals, lpParent, (LPVOID*)&lpsProp->Value.MVcur.lpcur));
+		EC_H(MAPIAllocateMore(sizeof(CURRENCY)* ulNumVals, lpParent, reinterpret_cast<LPVOID*>(&lpsProp->Value.MVcur.lpcur)));
 		lpsProp->Value.MVcur.cValues = ulNumVals;
 		break;
 	case PT_MV_APPTIME:
-		EC_H(MAPIAllocateMore(sizeof(double)* ulNumVals, lpParent, (LPVOID*)&lpsProp->Value.MVat.lpat));
+		EC_H(MAPIAllocateMore(sizeof(double)* ulNumVals, lpParent, reinterpret_cast<LPVOID*>(&lpsProp->Value.MVat.lpat)));
 		lpsProp->Value.MVat.cValues = ulNumVals;
 		break;
 	case PT_MV_SYSTIME:
-		EC_H(MAPIAllocateMore(sizeof(FILETIME)* ulNumVals, lpParent, (LPVOID*)&lpsProp->Value.MVft.lpft));
+		EC_H(MAPIAllocateMore(sizeof(FILETIME)* ulNumVals, lpParent, reinterpret_cast<LPVOID*>(&lpsProp->Value.MVft.lpft)));
 		lpsProp->Value.MVft.cValues = ulNumVals;
 		break;
 	case PT_MV_I8:
-		EC_H(MAPIAllocateMore(sizeof(LARGE_INTEGER)* ulNumVals, lpParent, (LPVOID*)&lpsProp->Value.MVli.lpli));
+		EC_H(MAPIAllocateMore(sizeof(LARGE_INTEGER)* ulNumVals, lpParent, reinterpret_cast<LPVOID*>(&lpsProp->Value.MVli.lpli)));
 		lpsProp->Value.MVli.cValues = ulNumVals;
 		break;
 	case PT_MV_R4:
-		EC_H(MAPIAllocateMore(sizeof(float)* ulNumVals, lpParent, (LPVOID*)&lpsProp->Value.MVflt.lpflt));
+		EC_H(MAPIAllocateMore(sizeof(float)* ulNumVals, lpParent, reinterpret_cast<LPVOID*>(&lpsProp->Value.MVflt.lpflt)));
 		lpsProp->Value.MVflt.cValues = ulNumVals;
 		break;
 	case PT_MV_STRING8:
-		EC_H(MAPIAllocateMore(sizeof(LPSTR)* ulNumVals, lpParent, (LPVOID*)&lpsProp->Value.MVszA.lppszA));
+		EC_H(MAPIAllocateMore(sizeof(LPSTR)* ulNumVals, lpParent, reinterpret_cast<LPVOID*>(&lpsProp->Value.MVszA.lppszA)));
 		lpsProp->Value.MVszA.cValues = ulNumVals;
 		break;
 	case PT_MV_UNICODE:
-		EC_H(MAPIAllocateMore(sizeof(LPWSTR)* ulNumVals, lpParent, (LPVOID*)&lpsProp->Value.MVszW.lppszW));
+		EC_H(MAPIAllocateMore(sizeof(LPWSTR)* ulNumVals, lpParent, reinterpret_cast<LPVOID*>(&lpsProp->Value.MVszW.lppszW)));
 		lpsProp->Value.MVszW.cValues = ulNumVals;
 		break;
 	case PT_MV_BINARY:
-		EC_H(MAPIAllocateMore(sizeof(SBinary)* ulNumVals, lpParent, (LPVOID*)&lpsProp->Value.MVbin.lpbin));
+		EC_H(MAPIAllocateMore(sizeof(SBinary)* ulNumVals, lpParent, reinterpret_cast<LPVOID*>(&lpsProp->Value.MVbin.lpbin)));
 		lpsProp->Value.MVbin.cValues = ulNumVals;
 		break;
 	case PT_MV_CLSID:
-		EC_H(MAPIAllocateMore(sizeof(GUID)* ulNumVals, lpParent, (LPVOID*)&lpsProp->Value.MVguid.lpguid));
+		EC_H(MAPIAllocateMore(sizeof(GUID)* ulNumVals, lpParent, reinterpret_cast<LPVOID*>(&lpsProp->Value.MVguid.lpguid)));
 		lpsProp->Value.MVguid.cValues = ulNumVals;
 		break;
 	default:
@@ -1238,49 +1197,49 @@ void CMultiValuePropertyEditor::WriteMultiValueStringsToSPropValue(_In_ LPVOID l
 	// Now write our data into the space we allocated
 	for (iMVCount = 0; iMVCount < ulNumVals; iMVCount++)
 	{
-		SortListData* lpData = GetListRowData(0, iMVCount);
+		auto lpData = GetListRowData(0, iMVCount);
 
-		if (lpData)
+		if (lpData && lpData->MV())
 		{
 			switch (PROP_TYPE(lpsProp->ulPropTag))
 			{
 			case PT_MV_I2:
-				lpsProp->Value.MVi.lpi[iMVCount] = lpData->data.MV.val.i;
+				lpsProp->Value.MVi.lpi[iMVCount] = lpData->MV()->m_val.i;
 				break;
 			case PT_MV_LONG:
-				lpsProp->Value.MVl.lpl[iMVCount] = lpData->data.MV.val.l;
+				lpsProp->Value.MVl.lpl[iMVCount] = lpData->MV()->m_val.l;
 				break;
 			case PT_MV_DOUBLE:
-				lpsProp->Value.MVdbl.lpdbl[iMVCount] = lpData->data.MV.val.dbl;
+				lpsProp->Value.MVdbl.lpdbl[iMVCount] = lpData->MV()->m_val.dbl;
 				break;
 			case PT_MV_CURRENCY:
-				lpsProp->Value.MVcur.lpcur[iMVCount] = lpData->data.MV.val.cur;
+				lpsProp->Value.MVcur.lpcur[iMVCount] = lpData->MV()->m_val.cur;
 				break;
 			case PT_MV_APPTIME:
-				lpsProp->Value.MVat.lpat[iMVCount] = lpData->data.MV.val.at;
+				lpsProp->Value.MVat.lpat[iMVCount] = lpData->MV()->m_val.at;
 				break;
 			case PT_MV_SYSTIME:
-				lpsProp->Value.MVft.lpft[iMVCount] = lpData->data.MV.val.ft;
+				lpsProp->Value.MVft.lpft[iMVCount] = lpData->MV()->m_val.ft;
 				break;
 			case PT_MV_I8:
-				lpsProp->Value.MVli.lpli[iMVCount] = lpData->data.MV.val.li;
+				lpsProp->Value.MVli.lpli[iMVCount] = lpData->MV()->m_val.li;
 				break;
 			case PT_MV_R4:
-				lpsProp->Value.MVflt.lpflt[iMVCount] = lpData->data.MV.val.flt;
+				lpsProp->Value.MVflt.lpflt[iMVCount] = lpData->MV()->m_val.flt;
 				break;
 			case PT_MV_STRING8:
-				EC_H(CopyStringA(&lpsProp->Value.MVszA.lppszA[iMVCount], lpData->data.MV.val.lpszA, lpParent));
+				EC_H(CopyStringA(&lpsProp->Value.MVszA.lppszA[iMVCount], lpData->MV()->m_val.lpszA, lpParent));
 				break;
 			case PT_MV_UNICODE:
-				EC_H(CopyStringW(&lpsProp->Value.MVszW.lppszW[iMVCount], lpData->data.MV.val.lpszW, lpParent));
+				EC_H(CopyStringW(&lpsProp->Value.MVszW.lppszW[iMVCount], lpData->MV()->m_val.lpszW, lpParent));
 				break;
 			case PT_MV_BINARY:
-				EC_H(CopySBinary(&lpsProp->Value.MVbin.lpbin[iMVCount], &lpData->data.MV.val.bin, lpParent));
+				EC_H(CopySBinary(&lpsProp->Value.MVbin.lpbin[iMVCount], &lpData->MV()->m_val.bin, lpParent));
 				break;
 			case PT_MV_CLSID:
-				if (lpData->data.MV.val.lpguid)
+				if (lpData->MV()->m_val.lpguid)
 				{
-					lpsProp->Value.MVguid.lpguid[iMVCount] = *lpData->data.MV.val.lpguid;
+					lpsProp->Value.MVguid.lpguid[iMVCount] = *lpData->MV()->m_val.lpguid;
 				}
 
 				break;
@@ -1291,13 +1250,13 @@ void CMultiValuePropertyEditor::WriteMultiValueStringsToSPropValue(_In_ LPVOID l
 	}
 }
 
-void CMultiValuePropertyEditor::WriteSPropValueToObject()
+void CMultiValuePropertyEditor::WriteSPropValueToObject() const
 {
 	if (!m_lpsOutputValue || !m_lpMAPIProp) return;
 
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
-	LPSPropProblemArray lpProblemArray = NULL;
+	LPSPropProblemArray lpProblemArray = nullptr;
 
 	EC_MAPI(m_lpMAPIProp->SetProps(
 		1,
@@ -1313,23 +1272,23 @@ void CMultiValuePropertyEditor::WriteSPropValueToObject()
 // Callers beware: Detatches and returns the modified prop value - this must be MAPIFreeBuffered!
 _Check_return_ LPSPropValue CMultiValuePropertyEditor::DetachModifiedSPropValue()
 {
-	LPSPropValue m_lpRet = m_lpsOutputValue;
-	m_lpsOutputValue = NULL;
+	auto m_lpRet = m_lpsOutputValue;
+	m_lpsOutputValue = nullptr;
 	return m_lpRet;
 }
 
 _Check_return_ bool CMultiValuePropertyEditor::DoListEdit(ULONG /*ulListNum*/, int iItem, _In_ SortListData* lpData)
 {
-	if (!lpData) return false;
+	if (!lpData || !lpData->MV()) return false;
 	if (!IsValidList(0)) return false;
 
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	SPropValue tmpPropVal = { 0 };
 	// Strip off MV_FLAG since we're displaying only a row
 	tmpPropVal.ulPropTag = m_ulPropTag & ~MV_FLAG;
-	tmpPropVal.Value = lpData->data.MV.val;
+	tmpPropVal.Value = lpData->MV()->m_val;
 
-	LPSPropValue lpNewValue = NULL;
+	LPSPropValue lpNewValue = nullptr;
 	WC_H(DisplayPropertyEditor(
 		this,
 		IDS_EDITROW,
@@ -1344,74 +1303,7 @@ _Check_return_ bool CMultiValuePropertyEditor::DoListEdit(ULONG /*ulListNum*/, i
 
 	if (S_OK == hRes && lpNewValue)
 	{
-		ULONG ulBufSize = 0;
-		size_t cbStr = 0;
-
-		// This handles most cases by default - cases needing a buffer copied are handled below
-		lpData->data.MV.val = lpNewValue->Value;
-		switch (PROP_TYPE(lpNewValue->ulPropTag))
-		{
-		case PT_STRING8:
-			// When the lpData is ultimately freed, MAPI will take care of freeing this.
-			// This will be true even if we do this multiple times off the same lpData!
-			EC_H(StringCbLengthA(lpNewValue->Value.lpszA, STRSAFE_MAX_CCH * sizeof(char), &cbStr));
-			cbStr += sizeof(char);
-
-			EC_H(MAPIAllocateMore(
-				(ULONG)cbStr,
-				lpData,
-				(LPVOID*)&lpData->data.MV.val.lpszA));
-
-			if (S_OK == hRes)
-			{
-				memcpy(lpData->data.MV.val.lpszA, lpNewValue->Value.lpszA, cbStr);
-			}
-
-			break;
-		case PT_UNICODE:
-			EC_H(StringCbLengthW(lpNewValue->Value.lpszW, STRSAFE_MAX_CCH * sizeof(WCHAR), &cbStr));
-			cbStr += sizeof(WCHAR);
-
-			EC_H(MAPIAllocateMore(
-				(ULONG)cbStr,
-				lpData,
-				(LPVOID*)&lpData->data.MV.val.lpszW));
-
-			if (S_OK == hRes)
-			{
-				memcpy(lpData->data.MV.val.lpszW, lpNewValue->Value.lpszW, cbStr);
-			}
-
-			break;
-		case PT_BINARY:
-			ulBufSize = lpNewValue->Value.bin.cb;
-			EC_H(MAPIAllocateMore(
-				ulBufSize,
-				lpData,
-				(LPVOID*)&lpData->data.MV.val.bin.lpb));
-
-			if (S_OK == hRes)
-			{
-				memcpy(lpData->data.MV.val.bin.lpb, lpNewValue->Value.bin.lpb, ulBufSize);
-			}
-
-			break;
-		case PT_CLSID:
-			ulBufSize = sizeof(GUID);
-			EC_H(MAPIAllocateMore(
-				ulBufSize,
-				lpData,
-				(LPVOID*)&lpData->data.MV.val.lpguid));
-
-			if (S_OK == hRes)
-			{
-				memcpy(lpData->data.MV.val.lpguid, lpNewValue->Value.lpguid, ulBufSize);
-			}
-
-			break;
-		default:
-			break;
-		}
+		lpData->InitializeMV(lpNewValue);
 
 		// update the UI
 		UpdateListRow(lpNewValue, iItem);
@@ -1436,11 +1328,11 @@ void CMultiValuePropertyEditor::UpdateListRow(_In_ LPSPropValue lpProp, ULONG iM
 	if (PT_MV_LONG == PROP_TYPE(m_ulPropTag) ||
 		PT_MV_BINARY == PROP_TYPE(m_ulPropTag))
 	{
-		wstring szSmartView = InterpretPropSmartView(
+		auto szSmartView = InterpretPropSmartView(
 			lpProp,
 			m_lpMAPIProp,
-			NULL,
-			NULL,
+			nullptr,
+			nullptr,
 			m_bIsAB,
 			true);
 
@@ -1450,27 +1342,27 @@ void CMultiValuePropertyEditor::UpdateListRow(_In_ LPSPropValue lpProp, ULONG iM
 
 void CMultiValuePropertyEditor::UpdateSmartView()
 {
-	HRESULT hRes = S_OK;
-	SmartViewPane* lpPane = (SmartViewPane*)GetControl(1);
+	auto hRes = S_OK;
+	auto lpPane = static_cast<SmartViewPane*>(GetControl(1));
 	if (lpPane)
 	{
-		LPSPropValue lpsProp = NULL;
+		LPSPropValue lpsProp = nullptr;
 		EC_H(MAPIAllocateBuffer(
 			sizeof(SPropValue),
-			(LPVOID*)&lpsProp));
+			reinterpret_cast<LPVOID*>(&lpsProp)));
 		if (lpsProp)
 		{
-			WriteMultiValueStringsToSPropValue((LPVOID)lpsProp, lpsProp);
+			WriteMultiValueStringsToSPropValue(static_cast<LPVOID>(lpsProp), lpsProp);
 
-			__ParsingTypeEnum iStructType = IDS_STNOPARSING;
+			auto iStructType = IDS_STNOPARSING;
 			wstring szSmartView;
 			switch (PROP_TYPE(m_ulPropTag))
 			{
 			case PT_MV_LONG:
-				szSmartView = InterpretPropSmartView(lpsProp, m_lpMAPIProp, NULL, NULL, m_bIsAB, true);
+				szSmartView = InterpretPropSmartView(lpsProp, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, true);
 				break;
 			case PT_MV_BINARY:
-				iStructType = (__ParsingTypeEnum)lpPane->GetDropDownSelectionValue();
+				iStructType = static_cast<__ParsingTypeEnum>(lpPane->GetDropDownSelectionValue());
 				if (iStructType)
 				{
 					szSmartView = InterpretMVBinaryAsString(lpsProp->Value.MVbin, iStructType, m_lpMAPIProp);
@@ -1490,11 +1382,11 @@ void CMultiValuePropertyEditor::UpdateSmartView()
 
 _Check_return_ ULONG CMultiValuePropertyEditor::HandleChange(UINT nID)
 {
-	ULONG i = (ULONG)-1;
+	auto i = static_cast<ULONG>(-1);
 
 	// We check against the list pane first so we can track if it handled the change,
 	// because if it did, we're going to recalculate smart view.
-	ListPane* lpPane = (ListPane*)GetControl(0);
+	auto lpPane = static_cast<ListPane*>(GetControl(0));
 	if (lpPane)
 	{
 		i = lpPane->HandleChange(nID);
@@ -1505,7 +1397,7 @@ _Check_return_ ULONG CMultiValuePropertyEditor::HandleChange(UINT nID)
 		i = CEditor::HandleChange(nID);
 	}
 
-	if ((ULONG)-1 == i) return (ULONG)-1;
+	if (static_cast<ULONG>(-1) == i) return static_cast<ULONG>(-1);
 
 	UpdateSmartView();
 	OnRecalcLayout();
