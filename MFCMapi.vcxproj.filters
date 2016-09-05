@@ -450,6 +450,9 @@
     <ClInclude Include="SortList\PropListData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SortList\MVPropData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Res\bldver.rc">
@@ -884,6 +887,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SortList\PropListData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SortList\MVPropData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

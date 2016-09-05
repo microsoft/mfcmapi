@@ -2,6 +2,7 @@
 class ContentsData;
 class NodeData;
 class PropListData;
+class MVPropData;
 
 enum __SortListDataTypes
 {
@@ -14,11 +15,6 @@ enum __SortListDataTypes
 	SORTLIST_COMMENT,
 	SORTLIST_BINARY,
 	SORTLIST_TREENODE
-};
-
-struct _MVPropData
-{
-	_PV val; // Allocated with MAPIAllocateMore
 };
 
 struct _TagData
@@ -62,13 +58,14 @@ public:
 		ULONG ulContainerFlags);
 	void InitializeNode(_In_ LPSRow lpsRow);
 	void InitializePropList(_In_ ULONG ulPropTag);
+	void InitializeMV(_In_ LPSPropValue lpProp, ULONG iProp);
+	void InitializeMV(_In_ LPSPropValue lpProp);
 
 	wstring szSortText;
 	ULARGE_INTEGER ulSortValue;
 	__SortListDataTypes m_Type;
 	union
 	{
-		_MVPropData MV; // SORTLIST_MVPROP
 		_TagData Tag; // SORTLIST_TAGARRAY
 		_ResData Res; // SORTLIST_RES
 		_CommentData Comment; // SORTLIST_COMMENT
@@ -77,6 +74,7 @@ public:
 	ContentsData* Contents() const; // SORTLIST_CONTENTS
 	NodeData* Node() const; // SORTLIST_TREENODE
 	PropListData* Prop() const; // SORTLIST_PROP
+	MVPropData* MV() const; // SORTLIST_MVPROP
 
 	ULONG cSourceProps;
 	LPSPropValue lpSourceProps; // Stolen from lpsRowData in SortListData::InitializeContents - free with MAPIFreeBuffer
