@@ -11,7 +11,7 @@ public:
 	LPSBinary lpInstanceKey; // Allocated with MAPIAllocateBuffer
 	LPSBinary lpServiceUID; // Allocated with MAPIAllocateBuffer
 	LPSBinary lpProviderUID; // Allocated with MAPIAllocateBuffer
-	TCHAR* szDN; // Allocated with MAPIAllocateBuffer
+	wstring m_szDN;
 	string m_szProfileDisplayName;
 	ULONG ulAttachNum;
 	ULONG ulAttachMethod;
