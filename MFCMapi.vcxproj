@@ -1275,6 +1275,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="SortList\MVPropData.h" />
     <ClInclude Include="SortList\NodeData.h" />
     <ClInclude Include="SortList\PropListData.h" />
+    <ClInclude Include="SortList\ResData.h" />
     <ClInclude Include="SortList\SortListData.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
@@ -2199,6 +2200,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="SortList\MVPropData.cpp" />
     <ClCompile Include="SortList\NodeData.cpp" />
     <ClCompile Include="SortList\PropListData.cpp" />
+    <ClCompile Include="SortList\ResData.cpp" />
     <ClCompile Include="SortList\SortHeader.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>

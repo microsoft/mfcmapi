@@ -1,7 +1,4 @@
 #pragma once
-// RestrictEditor.h : header file
-//
-
 #include "Editor.h"
 
 class CRestrictEditor : public CEditor
@@ -16,7 +13,7 @@ public:
 	_Check_return_ LPSRestriction DetachModifiedSRestriction();
 
 private:
-	void  OnEditAction1();
+	void OnEditAction1() override;
 	HRESULT CRestrictEditor::EditCompare(LPSRestriction lpSourceRes);
 	HRESULT CRestrictEditor::EditAndOr(LPSRestriction lpSourceRes);
 	HRESULT CRestrictEditor::EditRestrict(LPSRestriction lpSourceRes);
@@ -26,19 +23,19 @@ private:
 	HRESULT CRestrictEditor::EditExist(LPSRestriction lpSourceRes);
 	HRESULT CRestrictEditor::EditSubrestriction(LPSRestriction lpSourceRes);
 	HRESULT CRestrictEditor::EditComment(LPSRestriction lpSourceRes);
-	BOOL  OnInitDialog();
-	_Check_return_ ULONG HandleChange(UINT nID);
-	void  OnOK();
+	BOOL OnInitDialog() override;
+	_Check_return_ ULONG HandleChange(UINT nID) override;
+	void OnOK() override;
 
-	_Check_return_ LPSRestriction GetSourceRes();
+	_Check_return_ LPSRestriction GetSourceRes() const;
 
 	// source variables
-	LPSRestriction			m_lpRes;
-	LPVOID					m_lpAllocParent;
+	LPSRestriction m_lpRes;
+	LPVOID m_lpAllocParent;
 
 	// output variable
-	LPSRestriction			m_lpOutputRes;
-	bool					m_bModified;
+	LPSRestriction m_lpOutputRes;
+	bool m_bModified;
 };
 
 
@@ -54,24 +51,24 @@ public:
 
 	_Check_return_ LPSRestriction DetachModifiedSRestriction();
 	_Check_return_ LPENTRYLIST DetachModifiedEntryList();
-	_Check_return_ ULONG GetSearchFlags();
+	_Check_return_ ULONG GetSearchFlags() const;
 
 private:
 	// Use this function to implement list editing
-	_Check_return_ bool  DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData);
-	void  OnEditAction1();
-	BOOL  OnInitDialog();
-	_Check_return_ ULONG HandleChange(UINT nID);
-	void  InitListFromEntryList(ULONG ulListNum, _In_ LPENTRYLIST lpEntryList);
-	void  OnOK();
+	_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData) override;
+	void OnEditAction1() override;
+	BOOL OnInitDialog() override;
+	_Check_return_ ULONG HandleChange(UINT nID) override;
+	void InitListFromEntryList(ULONG ulListNum, _In_ LPENTRYLIST lpEntryList);
+	void OnOK() override;
 
-	_Check_return_ LPSRestriction GetSourceRes();
+	_Check_return_ LPSRestriction GetSourceRes() const;
 
-	LPSRestriction	m_lpSourceRes;
-	LPSRestriction	m_lpNewRes;
+	LPSRestriction m_lpSourceRes;
+	LPSRestriction m_lpNewRes;
 
-	LPENTRYLIST		m_lpSourceEntryList;
-	LPENTRYLIST		m_lpNewEntryList;
+	LPENTRYLIST m_lpSourceEntryList;
+	LPENTRYLIST m_lpNewEntryList;
 
-	ULONG			m_ulNewSearchFlags;
+	ULONG m_ulNewSearchFlags;
 };
