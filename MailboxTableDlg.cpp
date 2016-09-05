@@ -29,7 +29,7 @@ CMailboxTableDlg::CMailboxTableDlg(
 		IDS_MAILBOXTABLE,
 		mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 		lpMAPITable,
-		(LPSPropTagArray)&sptMBXCols,
+		LPSPropTagArray(&sptMBXCols),
 		NUMMBXCOLUMNS,
 		MBXColumns,
 		IDR_MENU_MAILBOX_TABLE_POPUP,
@@ -77,44 +77,38 @@ void CMailboxTableDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 
 void CMailboxTableDlg::DisplayItem(ULONG ulFlags)
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-	LPMAPISESSION lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
+	auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
-	LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release
-	LPMDB lpGUIDMDB = NULL;
+	auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
+	LPMDB lpGUIDMDB = nullptr;
 	if (!lpMDB)
 	{
 		EC_H(OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpGUIDMDB));
 	}
 
-	LPMDB lpSourceMDB = NULL; // do not release
-
-	lpSourceMDB = lpMDB ? lpMDB : lpGUIDMDB;
+	auto lpSourceMDB = lpMDB ? lpMDB : lpGUIDMDB; // do not release
 
 	if (lpSourceMDB)
 	{
-		LPMDB lpNewMDB = NULL;
-		wstring szMailboxDN = NULL;
-		int iItem = -1;
-		SortListData* lpListData = NULL;
+		LPMDB lpNewMDB = nullptr;
+		auto iItem = -1;
 		do
 		{
 			hRes = S_OK;
-			lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
+			auto lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 			if (lpListData && lpListData->Contents())
 			{
-				szMailboxDN = LPCTSTRToWstring(lpListData->Contents()->szDN);
-
-				if (!szMailboxDN.empty())
+				if (!lpListData->Contents()->m_szDN.empty())
 				{
 					EC_H(OpenOtherUsersMailbox(
 						lpMAPISession,
 						lpSourceMDB,
 						m_lpszServerName,
-						szMailboxDN,
+						lpListData->Contents()->m_szDN,
 						ulFlags,
 						false,
 						&lpNewMDB));
@@ -122,12 +116,12 @@ void CMailboxTableDlg::DisplayItem(ULONG ulFlags)
 					if (lpNewMDB)
 					{
 						EC_H(DisplayObject(
-							(LPMAPIPROP)lpNewMDB,
+							static_cast<LPMAPIPROP>(lpNewMDB),
 							NULL,
 							otStore,
 							this));
 						lpNewMDB->Release();
-						lpNewMDB = NULL;
+						lpNewMDB = nullptr;
 					}
 				}
 			}
@@ -145,7 +139,7 @@ void CMailboxTableDlg::OnDisplayItem()
 
 void CMailboxTableDlg::OnOpenWithFlags()
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
 	CEditor MyPrompt(
 		this,
@@ -165,8 +159,8 @@ void CMailboxTableDlg::OnOpenWithFlags()
 
 void CMailboxTableDlg::OnCreatePropertyStringRestriction()
 {
-	HRESULT hRes = S_OK;
-	LPSRestriction lpRes = NULL;
+	auto hRes = S_OK;
+	LPSRestriction lpRes = nullptr;
 
 	CPropertyTagEditor MyPropertyTag(
 		IDS_PROPRES,
@@ -205,7 +199,7 @@ void CMailboxTableDlg::OnCreatePropertyStringRestriction()
 		if (hRes != S_OK)
 		{
 			MAPIFreeBuffer(lpRes);
-			lpRes = NULL;
+			lpRes = nullptr;
 		}
 
 		m_lpContentsTableListCtrl->SetRestriction(lpRes);

@@ -9,7 +9,6 @@ ContentsData::ContentsData(_In_ LPSRow lpsRowData)
 	lpInstanceKey = nullptr;
 	lpServiceUID = nullptr;
 	lpProviderUID = nullptr;
-	szDN = nullptr;
 	ulAttachNum = 0;
 	ulAttachMethod = 0;
 	ulRowID = 0;
@@ -136,9 +135,8 @@ ContentsData::ContentsData(_In_ LPSRow lpsRowData)
 		PR_DISPLAY_NAME_A); // We pull this properties for profiles, which do not support Unicode
 	if (CheckStringProp(lpProp, PT_STRING8))
 	{
-		DebugPrint(DBGGeneric, L"\tPR_DISPLAY_NAME_A = %hs\n", lpProp->Value.lpszA);
-
 		m_szProfileDisplayName = lpProp->Value.lpszA;
+		DebugPrint(DBGGeneric, L"\tPR_DISPLAY_NAME_A = %hs\n", m_szProfileDisplayName.c_str());
 	}
 
 	// Save the e-mail address (if it exists on the object) into lpData
@@ -148,11 +146,8 @@ ContentsData::ContentsData(_In_ LPSRow lpsRowData)
 		PR_EMAIL_ADDRESS);
 	if (CheckStringProp(lpProp, PT_TSTRING))
 	{
-		DebugPrint(DBGGeneric, L"\tPR_EMAIL_ADDRESS = %ws\n", LPCTSTRToWstring(lpProp->Value.LPSZ).c_str());
-		EC_H(CopyString(
-			&szDN,
-			lpProp->Value.LPSZ,
-			nullptr));
+		m_szDN = LPCTSTRToWstring(lpProp->Value.LPSZ);
+		DebugPrint(DBGGeneric, L"\tPR_EMAIL_ADDRESS = %ws\n", m_szDN.c_str());
 	}
 }
 
@@ -163,5 +158,4 @@ ContentsData::~ContentsData()
 	MAPIFreeBuffer(lpLongtermID);
 	MAPIFreeBuffer(lpServiceUID);
 	MAPIFreeBuffer(lpProviderUID);
-	MAPIFreeBuffer(szDN);
 }
