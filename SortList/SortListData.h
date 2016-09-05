@@ -4,6 +4,7 @@ class NodeData;
 class PropListData;
 class MVPropData;
 class ResData;
+class CommentData;
 
 enum __SortListDataTypes
 {
@@ -15,12 +16,6 @@ enum __SortListDataTypes
 	SORTLIST_COMMENT,
 	SORTLIST_BINARY,
 	SORTLIST_TREENODE
-};
-
-struct _CommentData
-{
-	LPSPropValue lpOldProp; // not allocated - just a pointer
-	LPSPropValue lpNewProp; // Owned by an alloc parent - do not free
 };
 
 struct _BinaryData
@@ -53,13 +48,14 @@ public:
 	void InitializeMV(_In_ LPSPropValue lpProp);
 	// SORTLIST_RES
 	void InitializeRes(_In_ LPSRestriction lpOldRes);
+	// SORTLIST_COMMENT
+	void InitializeComment(_In_ LPSPropValue lpOldProp);
 
 	wstring szSortText;
 	ULARGE_INTEGER ulSortValue;
 	__SortListDataTypes m_Type;
 	union
 	{
-		_CommentData Comment; // SORTLIST_COMMENT
 		_BinaryData Binary; // SORTLIST_BINARY
 	} data;
 	ContentsData* Contents() const; // SORTLIST_CONTENTS
@@ -67,6 +63,7 @@ public:
 	PropListData* Prop() const; // SORTLIST_PROP
 	MVPropData* MV() const; // SORTLIST_MVPROP
 	ResData* Res() const; // SORTLIST_RES
+	CommentData* Comment() const; // SORTLIST_COMMENT
 
 	ULONG cSourceProps;
 	LPSPropValue lpSourceProps; // Stolen from lpsRowData in SortListData::InitializeContents - free with MAPIFreeBuffer

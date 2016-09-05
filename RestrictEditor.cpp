@@ -7,6 +7,7 @@
 #include "ImportProcs.h"
 #include "ExtraPropTags.h"
 #include "SortList/ResData.h"
+#include "SortList/CommentData.h"
 
 static wstring COMPCLASS = L"CResCompareEditor"; // STRING_OK
 class CResCompareEditor : public CEditor
@@ -728,13 +729,11 @@ void CResCommentEditor::InitListFromPropArray(ULONG ulListNum, ULONG cProps, _In
 		auto lpData = InsertListRow(ulListNum, i, format(L"%u", i)); // STRING_OK
 		if (lpData)
 		{
-			lpData->m_Type = SORTLIST_COMMENT;
-			lpData->data.Comment.lpOldProp = &lpProps[i];
+			lpData->InitializeComment(&lpProps[i]);
 			SetListString(ulListNum, i, 1, TagToString(lpProps[i].ulPropTag, nullptr, false, true));
 			InterpretProp(&lpProps[i], &szProp, &szAltProp);
 			SetListString(ulListNum, i, 2, szProp);
 			SetListString(ulListNum, i, 3, szAltProp);
-			lpData->bItemFullyLoaded = true;
 		}
 	}
 
@@ -763,13 +762,13 @@ void CResCommentEditor::OnEditAction1()
 
 _Check_return_ bool CResCommentEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData)
 {
-	if (!lpData) return false;
+	if (!lpData || !lpData->Comment()) return false;
 	if (!IsValidList(ulListNum)) return false;
 	if (!m_lpAllocParent) return false;
 	auto hRes = S_OK;
 
-	auto lpSourceProp = lpData->data.Comment.lpNewProp;
-	if (!lpSourceProp) lpSourceProp = lpData->data.Comment.lpOldProp;
+	auto lpSourceProp = lpData->Comment()->m_lpNewProp;
+	if (!lpSourceProp) lpSourceProp = lpData->Comment()->m_lpOldProp;
 
 	SPropValue sProp = { 0 };
 
@@ -800,15 +799,15 @@ _Check_return_ bool CResCommentEditor::DoListEdit(ULONG ulListNum, int iItem, _I
 		NULL,
 		false,
 		lpSourceProp,
-		&lpData->data.Comment.lpNewProp));
+		&lpData->Comment()->m_lpNewProp));
 
 	// Since lpData->data.Comment.lpNewProp was owned by an m_lpAllocParent, we don't free it directly
-	if (S_OK == hRes && lpData->data.Comment.lpNewProp)
+	if (S_OK == hRes && lpData->Comment()->m_lpNewProp)
 	{
 		wstring szTmp;
 		wstring szAltTmp;
-		SetListString(ulListNum, iItem, 1, TagToString(lpData->data.Comment.lpNewProp->ulPropTag, nullptr, false, true));
-		InterpretProp(lpData->data.Comment.lpNewProp, &szTmp, &szAltTmp);
+		SetListString(ulListNum, iItem, 1, TagToString(lpData->Comment()->m_lpNewProp->ulPropTag, nullptr, false, true));
+		InterpretProp(lpData->Comment()->m_lpNewProp, &szTmp, &szAltTmp);
 		SetListString(ulListNum, iItem, 2, szTmp);
 		SetListString(ulListNum, iItem, 3, szAltTmp);
 		return true;
@@ -839,13 +838,13 @@ void CResCommentEditor::OnOK()
 			for (i = 0; i < ulNewCommentProp; i++)
 			{
 				auto lpData = GetListRowData(0, i);
-				if (lpData)
+				if (lpData && lpData->Comment())
 				{
-					if (lpData->data.Comment.lpNewProp)
+					if (lpData->Comment()->m_lpNewProp)
 					{
 						EC_H(MyPropCopyMore(
 							&lpNewCommentProp[i],
-							lpData->data.Comment.lpNewProp,
+							lpData->Comment()->m_lpNewProp,
 							MAPIAllocateMore,
 							m_lpAllocParent));
 					}
@@ -853,7 +852,7 @@ void CResCommentEditor::OnOK()
 					{
 						EC_H(MyPropCopyMore(
 							&lpNewCommentProp[i],
-							lpData->data.Comment.lpOldProp,
+							lpData->Comment()->m_lpOldProp,
 							MAPIAllocateMore,
 							m_lpAllocParent));
 					}

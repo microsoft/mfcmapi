@@ -456,6 +456,9 @@
     <ClInclude Include="SortList\ResData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SortList\CommentData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Res\bldver.rc">
@@ -896,6 +899,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SortList\ResData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SortList\CommentData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
