@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "ContentsData.h"
 #include "MAPIFunctions.h"
-#include "SortListData.h"
 
 ContentsData::ContentsData(_In_ LPSRow lpsRowData)
 {
@@ -11,7 +10,6 @@ ContentsData::ContentsData(_In_ LPSRow lpsRowData)
 	lpServiceUID = nullptr;
 	lpProviderUID = nullptr;
 	szDN = nullptr;
-	szProfileDisplayName = nullptr;
 	ulAttachNum = 0;
 	ulAttachMethod = 0;
 	ulRowID = 0;
@@ -140,10 +138,7 @@ ContentsData::ContentsData(_In_ LPSRow lpsRowData)
 	{
 		DebugPrint(DBGGeneric, L"\tPR_DISPLAY_NAME_A = %hs\n", lpProp->Value.lpszA);
 
-		EC_H(CopyStringA(
-			&szProfileDisplayName,
-			lpProp->Value.lpszA,
-			nullptr));
+		m_szProfileDisplayName = lpProp->Value.lpszA;
 	}
 
 	// Save the e-mail address (if it exists on the object) into lpData
@@ -168,6 +163,5 @@ ContentsData::~ContentsData()
 	MAPIFreeBuffer(lpLongtermID);
 	MAPIFreeBuffer(lpServiceUID);
 	MAPIFreeBuffer(lpProviderUID);
-	MAPIFreeBuffer(szProfileDisplayName);
 	MAPIFreeBuffer(szDN);
 }
