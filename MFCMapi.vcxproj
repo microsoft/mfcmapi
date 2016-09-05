@@ -1271,6 +1271,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="SmartView\VerbStream.h" />
     <ClInclude Include="SmartView\WebViewPersistStream.h" />
     <ClInclude Include="SmartView\XID.h" />
+    <ClInclude Include="SortList\BinaryData.h" />
     <ClInclude Include="SortList\CommentData.h" />
     <ClInclude Include="SortList\ContentsData.h" />
     <ClInclude Include="SortList\MVPropData.h" />
@@ -2197,6 +2198,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="SmartView\VerbStream.cpp" />
     <ClCompile Include="SmartView\WebViewPersistStream.cpp" />
     <ClCompile Include="SmartView\XID.cpp" />
+    <ClCompile Include="SortList\BinaryData.cpp" />
     <ClCompile Include="SortList\CommentData.cpp" />
     <ClCompile Include="SortList\ContentsData.cpp" />
     <ClCompile Include="SortList\MVPropData.cpp" />

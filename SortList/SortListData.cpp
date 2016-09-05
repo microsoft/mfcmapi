@@ -6,12 +6,13 @@
 #include "MVPropData.h"
 #include "ResData.h"
 #include "CommentData.h"
+#include "BinaryData.h"
 
 SortListData::SortListData() :
-	m_Type(SORTLIST_UNKNOWN),
 	cSourceProps(0),
 	lpSourceProps(nullptr),
 	bItemFullyLoaded(false),
+	m_Type(SORTLIST_UNKNOWN),
 	m_lpData(nullptr)
 {
 	ulSortValue.QuadPart = NULL;
@@ -32,7 +33,7 @@ void SortListData::Clean()
 	case SORTLIST_MVPROP: delete MV(); break;
 	case SORTLIST_RES: delete Res(); break;
 	case SORTLIST_COMMENT: delete Comment(); break;
-	case SORTLIST_BINARY: break;
+	case SORTLIST_BINARY: delete Binary(); break;
 	case SORTLIST_TREENODE: delete Node(); break;
 	default: break;
 	}
@@ -105,6 +106,16 @@ CommentData* SortListData::Comment() const
 	if (m_Type == SORTLIST_COMMENT)
 	{
 		return reinterpret_cast<CommentData*>(m_lpData);
+	}
+
+	return nullptr;
+}
+
+BinaryData* SortListData::Binary() const
+{
+	if (m_Type == SORTLIST_BINARY)
+	{
+		return reinterpret_cast<BinaryData*>(m_lpData);
 	}
 
 	return nullptr;
@@ -219,4 +230,11 @@ void SortListData::InitializeComment(_In_ LPSPropValue lpOldProp)
 	m_Type = SORTLIST_COMMENT;
 	bItemFullyLoaded = true;
 	m_lpData = new CommentData(lpOldProp);
+}
+
+void SortListData::InitializeBinary(_In_ LPSBinary lpOldBin)
+{
+	Clean();
+	m_Type = SORTLIST_BINARY;
+	m_lpData = new BinaryData(lpOldBin);
 }

@@ -3,6 +3,9 @@
 
 MVPropData::MVPropData(_In_ LPSPropValue lpProp, ULONG iProp)
 {
+	m_val = { 0 };
+	if (!lpProp) return;
+
 	switch (PROP_TYPE(lpProp->ulPropTag))
 	{
 	case PT_MV_I2:
@@ -55,6 +58,9 @@ MVPropData::MVPropData(_In_ LPSPropValue lpProp, ULONG iProp)
 
 MVPropData::MVPropData(_In_ LPSPropValue lpProp)
 {
+	m_val = { 0 };
+	if (!lpProp) return;
+
 	// This handles most cases by default - cases needing a buffer copied are handled below
 	m_val = lpProp->Value;
 

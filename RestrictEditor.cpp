@@ -8,6 +8,7 @@
 #include "ExtraPropTags.h"
 #include "SortList/ResData.h"
 #include "SortList/CommentData.h"
+#include "SortList/BinaryData.h"
 
 static wstring COMPCLASS = L"CResCompareEditor"; // STRING_OK
 class CResCompareEditor : public CEditor
@@ -521,13 +522,12 @@ void CResAndOrEditor::InitListFromRestriction(ULONG ulListNum, _In_ LPSRestricti
 
 	InsertColumn(ulListNum, 0, IDS_SHARP);
 	SortListData* lpData = nullptr;
-	ULONG i = 0;
 	switch (lpRes->rt)
 	{
 	case RES_AND:
 		InsertColumn(ulListNum, 1, IDS_SUBRESTRICTION);
 
-		for (i = 0; i < lpRes->res.resAnd.cRes; i++)
+		for (ULONG i = 0; i < lpRes->res.resAnd.cRes; i++)
 		{
 			lpData = InsertListRow(ulListNum, i, format(L"%u", i)); // STRING_OK
 			if (lpData)
@@ -540,7 +540,7 @@ void CResAndOrEditor::InitListFromRestriction(ULONG ulListNum, _In_ LPSRestricti
 	case RES_OR:
 		InsertColumn(ulListNum, 1, IDS_SUBRESTRICTION);
 
-		for (i = 0; i < lpRes->res.resOr.cRes; i++)
+		for (ULONG i = 0; i < lpRes->res.resOr.cRes; i++)
 		{
 			lpData = InsertListRow(ulListNum, i, format(L"%u", i)); // STRING_OK
 			if (lpData)
@@ -598,8 +598,7 @@ void CResAndOrEditor::OnOK()
 
 	if (lpNewResArray)
 	{
-		ULONG i = 0;
-		for (i = 0; i < ulNewResCount; i++)
+		for (ULONG i = 0; i < ulNewResCount; i++)
 		{
 			auto lpData = GetListRowData(0, i);
 			if (lpData && lpData->Res())
@@ -719,12 +718,11 @@ void CResCommentEditor::InitListFromPropArray(ULONG ulListNum, ULONG cProps, _In
 	InsertColumn(ulListNum, 0, IDS_SHARP);
 	wstring szProp;
 	wstring szAltProp;
-	ULONG i = 0;
 	InsertColumn(ulListNum, 1, IDS_PROPERTY);
 	InsertColumn(ulListNum, 2, IDS_VALUE);
 	InsertColumn(ulListNum, 3, IDS_ALTERNATEVIEW);
 
-	for (i = 0; i < cProps; i++)
+	for (ULONG i = 0; i < cProps; i++)
 	{
 		auto lpData = InsertListRow(ulListNum, i, format(L"%u", i)); // STRING_OK
 		if (lpData)
@@ -834,8 +832,7 @@ void CResCommentEditor::OnOK()
 
 		if (lpNewCommentProp)
 		{
-			ULONG i = 0;
-			for (i = 0; i < ulNewCommentProp; i++)
+			for (ULONG i = 0; i < ulNewCommentProp; i++)
 			{
 				auto lpData = GetListRowData(0, i);
 				if (lpData && lpData->Comment())
@@ -1389,23 +1386,18 @@ void CCriteriaEditor::InitListFromEntryList(ULONG ulListNum, _In_ LPENTRYLIST lp
 	ClearList(ulListNum);
 
 	InsertColumn(ulListNum, 0, IDS_SHARP);
-	ULONG i = 0;
 	InsertColumn(ulListNum, 1, IDS_CB);
 	InsertColumn(ulListNum, 2, IDS_BINARY);
 	InsertColumn(ulListNum, 3, IDS_TEXTVIEW);
 
 	if (lpEntryList)
 	{
-		for (i = 0; i < lpEntryList->cValues; i++)
+		for (ULONG i = 0; i < lpEntryList->cValues; i++)
 		{
 			auto lpData = InsertListRow(ulListNum, i, format(L"%u", i)); // STRING_OK
 			if (lpData)
 			{
-				lpData->m_Type = SORTLIST_BINARY;
-				lpData->data.Binary.OldBin.cb = lpEntryList->lpbin[i].cb;
-				lpData->data.Binary.OldBin.lpb = lpEntryList->lpbin[i].lpb;
-				lpData->data.Binary.NewBin.cb = NULL;
-				lpData->data.Binary.NewBin.lpb = nullptr;
+				lpData->InitializeBinary(&lpEntryList->lpbin[i]);
 			}
 
 			SetListString(ulListNum, i, 1, format(L"%u", lpEntryList->lpbin[i].cb)); // STRING_OK
@@ -1445,7 +1437,7 @@ void CCriteriaEditor::OnEditAction1()
 
 _Check_return_ bool CCriteriaEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData)
 {
-	if (!lpData) return false;
+	if (!lpData && !lpData->Binary()) return false;
 	if (!IsValidList(ulListNum)) return false;
 	auto hRes = S_OK;
 	wstring szTmp;
@@ -1458,13 +1450,13 @@ _Check_return_ bool CCriteriaEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 	LPSBinary lpSourcebin = nullptr;
-	if (lpData->data.Binary.OldBin.lpb)
+	if (lpData->Binary()->m_OldBin.lpb)
 	{
-		lpSourcebin = &lpData->data.Binary.OldBin;
+		lpSourcebin = &lpData->Binary()->m_OldBin;
 	}
 	else
 	{
-		lpSourcebin = &lpData->data.Binary.NewBin;
+		lpSourcebin = &lpData->Binary()->m_NewBin;
 	}
 
 	BinEdit.InitPane(0, CreateSingleLinePane(IDS_EID, BinToHexString(lpSourcebin, false), false));
@@ -1473,14 +1465,14 @@ _Check_return_ bool CCriteriaEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 	if (S_OK == hRes)
 	{
 		auto bin = HexStringToBin(BinEdit.GetStringW(0));
-		lpData->data.Binary.NewBin.lpb = ByteVectorToMAPI(bin, m_lpNewEntryList);
-		if (lpData->data.Binary.NewBin.lpb)
+		lpData->Binary()->m_NewBin.lpb = ByteVectorToMAPI(bin, m_lpNewEntryList);
+		if (lpData->Binary()->m_NewBin.lpb)
 		{
-			lpData->data.Binary.NewBin.cb = static_cast<ULONG>(bin.size());
-			szTmp = format(L"%u", lpData->data.Binary.NewBin.cb); // STRING_OK
+			lpData->Binary()->m_NewBin.cb = static_cast<ULONG>(bin.size());
+			szTmp = format(L"%u", lpData->Binary()->m_NewBin.cb); // STRING_OK
 			SetListString(ulListNum, iItem, 1, szTmp);
-			SetListString(ulListNum, iItem, 2, BinToHexString(&lpData->data.Binary.NewBin, false));
-			SetListString(ulListNum, iItem, 3, BinToTextString(&lpData->data.Binary.NewBin, true));
+			SetListString(ulListNum, iItem, 2, BinToHexString(&lpData->Binary()->m_NewBin, false));
+			SetListString(ulListNum, iItem, 3, BinToTextString(&lpData->Binary()->m_NewBin, true));
 			return true;
 		}
 	}
@@ -1504,35 +1496,36 @@ void CCriteriaEditor::OnOK()
 			m_lpNewEntryList,
 			reinterpret_cast<LPVOID*>(&m_lpNewEntryList->lpbin)));
 
-		ULONG i = 0;
-		for (i = 0; i < m_lpNewEntryList->cValues; i++)
+		for (ULONG i = 0; i < m_lpNewEntryList->cValues; i++)
 		{
 			auto lpData = GetListRowData(LISTNUM, i);
-			if (lpData)
+			if (lpData && lpData->Binary())
 			{
-				if (lpData->data.Binary.NewBin.lpb)
+				if (lpData->Binary()->m_NewBin.lpb)
 				{
-					m_lpNewEntryList->lpbin[i].cb = lpData->data.Binary.NewBin.cb;
-					m_lpNewEntryList->lpbin[i].lpb = lpData->data.Binary.NewBin.lpb;
+					m_lpNewEntryList->lpbin[i].cb = lpData->Binary()->m_NewBin.cb;
+					m_lpNewEntryList->lpbin[i].lpb = lpData->Binary()->m_NewBin.lpb;
 					// clean out the source
-					lpData->data.Binary.OldBin.lpb = nullptr;
+					lpData->Binary()->m_OldBin.lpb = nullptr;
 				}
 				else
 				{
-					m_lpNewEntryList->lpbin[i].cb = lpData->data.Binary.OldBin.cb;
+					m_lpNewEntryList->lpbin[i].cb = lpData->Binary()->m_OldBin.cb;
 					EC_H(MAPIAllocateMore(
 						m_lpNewEntryList->lpbin[i].cb,
 						m_lpNewEntryList,
 						reinterpret_cast<LPVOID*>(&m_lpNewEntryList->lpbin[i].lpb)));
 
-					memcpy(m_lpNewEntryList->lpbin[i].lpb, lpData->data.Binary.OldBin.lpb, m_lpNewEntryList->lpbin[i].cb);
+					memcpy(m_lpNewEntryList->lpbin[i].lpb, lpData->Binary()->m_OldBin.lpb, m_lpNewEntryList->lpbin[i].cb);
 				}
 			}
 		}
 	}
+
 	if (!m_lpNewRes && m_lpSourceRes)
 	{
 		EC_H(HrCopyRestriction(m_lpSourceRes, NULL, &m_lpNewRes))
 	}
+
 	m_ulNewSearchFlags = GetHexUseControl(2);
 }

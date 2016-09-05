@@ -1,11 +1,10 @@
 #include "stdafx.h"
-#include "..\stdafx.h"
 #include "ListPane.h"
-#include "..\Editor.h"
+#include "Editor.h"
 
 ViewPane* CreateListPane(UINT uidLabel, bool bAllowSort, bool bReadOnly, LPVOID lpEdit)
 {
-	return new ListPane(uidLabel, bReadOnly, bAllowSort, (CEditor*)lpEdit);
+	return new ListPane(uidLabel, bReadOnly, bAllowSort, static_cast<CEditor*>(lpEdit));
 }
 
 static wstring CLASS = L"ListPane";
@@ -22,7 +21,7 @@ __ListButtons ListButtons[NUMLISTBUTTONS] = {
 
 #define LINES_LIST 6
 
-ListPane::ListPane(UINT uidLabel, bool bReadOnly, bool bAllowSort, CEditor* lpEdit) :ViewPane(uidLabel, bReadOnly)
+ListPane::ListPane(UINT uidLabel, bool bReadOnly, bool bAllowSort, CEditor* lpEdit) :ViewPane(uidLabel, bReadOnly), m_bDirty(false)
 {
 	m_bAllowSort = bAllowSort;
 	m_lpEdit = lpEdit;
@@ -50,7 +49,7 @@ int ListPane::GetMinWidth(_In_ HDC hdc)
 
 int ListPane::GetFixedHeight()
 {
-	int iHeight = 0;
+	auto iHeight = 0;
 	if (0 != m_iControl) iHeight += m_iSmallHeightMargin; // Top margin
 
 	if (m_bUseLabelControl)
@@ -82,7 +81,7 @@ ULONG ListPane::HandleChange(UINT nID)
 	case IDD_LISTMOVEUP: OnMoveListEntryUp(); break;
 	case IDD_LISTMOVETOBOTTOM: OnMoveListEntryToBottom(); break;
 	case IDD_LISTMOVETOTOP: OnMoveListEntryToTop(); break;
-	default: return (ULONG)-1;
+	default: return static_cast<ULONG>(-1);
 	}
 
 	return m_iControl;
@@ -90,9 +89,9 @@ ULONG ListPane::HandleChange(UINT nID)
 
 void ListPane::SetWindowPos(int x, int y, int width, int height)
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
-	int variableHeight = height - GetFixedHeight();
+	auto variableHeight = height - GetFixedHeight();
 
 	if (0 != m_iControl)
 	{
@@ -103,7 +102,7 @@ void ListPane::SetWindowPos(int x, int y, int width, int height)
 	if (m_bUseLabelControl)
 	{
 		EC_B(m_Label.SetWindowPos(
-			0,
+			nullptr,
 			x,
 			y,
 			width,
@@ -127,14 +126,13 @@ void ListPane::SetWindowPos(int x, int y, int width, int height)
 		// buttons go below the list:
 		y += m_iLargeHeightMargin;
 
-		int iSlotWidth = m_iButtonWidth + m_iMargin;
-		int iOffset = width + m_iSideMargin + m_iMargin;
-		int iButton = 0;
+		auto iSlotWidth = m_iButtonWidth + m_iMargin;
+		auto iOffset = width + m_iSideMargin + m_iMargin;
 
-		for (iButton = 0; iButton < NUMLISTBUTTONS; iButton++)
+		for (auto iButton = 0; iButton < NUMLISTBUTTONS; iButton++)
 		{
 			EC_B(m_ButtonArray[iButton].SetWindowPos(
-				0,
+				nullptr,
 				iOffset - iSlotWidth * (NUMLISTBUTTONS - iButton),
 				y,
 				m_iButtonWidth,
@@ -146,9 +144,9 @@ void ListPane::SetWindowPos(int x, int y, int width, int height)
 
 void ListPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 {
-	ViewPane::Initialize(iControl, pParent, NULL);
+	ViewPane::Initialize(iControl, pParent, nullptr);
 
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
 	SIZE sizeText = { 0 };
 	DWORD dwListStyle = LVS_SINGLESEL | WS_BORDER;
@@ -159,9 +157,7 @@ void ListPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 	// read only lists don't need buttons
 	if (!m_bReadOnly)
 	{
-		int iButton = 0;
-
-		for (iButton = 0; iButton < NUMLISTBUTTONS; iButton++)
+		for (auto iButton = 0; iButton < NUMLISTBUTTONS; iButton++)
 		{
 			CString szButtonText;
 			EC_B(szButtonText.LoadString(ListButtons[iButton].uiButtonID));
@@ -197,7 +193,7 @@ _Check_return_ SortListData* ListPane::InsertRow(int iRow, wstring szText)
 
 void ListPane::ClearList()
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
 	m_List.DeleteAllColumns();
 	EC_B(m_List.DeleteAllItems());
@@ -213,57 +209,54 @@ void ListPane::ResizeList(bool bSort)
 	m_List.AutoSizeColumns(false);
 }
 
-_Check_return_ ULONG ListPane::GetItemCount()
+_Check_return_ ULONG ListPane::GetItemCount() const
 {
 	return m_List.GetItemCount();
 }
 
-_Check_return_ SortListData* ListPane::GetItemData(int iRow)
+_Check_return_ SortListData* ListPane::GetItemData(int iRow) const
 {
-	return (SortListData*)m_List.GetItemData(iRow);
+	return reinterpret_cast<SortListData*>(m_List.GetItemData(iRow));
 }
 
-_Check_return_ SortListData* ListPane::GetSelectedListRowData()
+_Check_return_ SortListData* ListPane::GetSelectedListRowData() const
 {
-	int iItem = m_List.GetNextItem(-1, LVNI_FOCUSED | LVNI_SELECTED);
+	auto iItem = m_List.GetNextItem(-1, LVNI_FOCUSED | LVNI_SELECTED);
 
 	if (-1 != iItem)
 	{
 		return GetItemData(iItem);
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 void ListPane::InsertColumn(int nCol, UINT uidText)
 {
 	CString szText;
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	EC_B(szText.LoadString(uidText));
 
 	m_List.InsertColumn(nCol, szText);
 }
 
-void ListPane::SetColumnType(int nCol, ULONG ulPropType)
+void ListPane::SetColumnType(int nCol, ULONG ulPropType) const
 {
-	HRESULT hRes = S_OK;
-	CHeaderCtrl* lpMyHeader = NULL;
+	auto hRes = S_OK;
 	HDITEM hdItem = { 0 };
-	lpMyHeader = m_List.GetHeaderCtrl();
+	auto lpMyHeader = m_List.GetHeaderCtrl();
 
 	if (lpMyHeader)
 	{
 		hdItem.mask = HDI_LPARAM;
-		LPHEADERDATA lpHeaderData = NULL;
-
-		lpHeaderData = new HeaderData; // Will be deleted in CSortListCtrl::DeleteAllColumns
+		auto lpHeaderData = new HeaderData; // Will be deleted in CSortListCtrl::DeleteAllColumns
 		if (lpHeaderData)
 		{
 			lpHeaderData->ulTagArrayRow = NULL;
 			lpHeaderData->ulPropTag = PROP_TAG(ulPropType, PROP_ID_NULL);
 			lpHeaderData->bIsAB = false;
 			lpHeaderData->szTipString[0] = NULL;
-			hdItem.lParam = (LPARAM)lpHeaderData;
+			hdItem.lParam = reinterpret_cast<LPARAM>(lpHeaderData);
 			EC_B(lpMyHeader->SetItem(nCol, &hdItem));
 		}
 	}
@@ -273,10 +266,8 @@ void ListPane::UpdateListButtons()
 {
 	ULONG ulNumItems = m_List.GetItemCount();
 
-	HRESULT hRes = S_OK;
-	int iButton = 0;
-
-	for (iButton = 0; iButton < NUMLISTBUTTONS; iButton++)
+	auto hRes = S_OK;
+	for (auto iButton = 0; iButton < NUMLISTBUTTONS; iButton++)
 	{
 		switch (ListButtons[iButton].uiButtonID)
 		{
@@ -298,23 +289,22 @@ void ListPane::UpdateListButtons()
 
 void ListPane::SwapListItems(ULONG ulFirstItem, ULONG ulSecondItem)
 {
-	HRESULT hRes = S_OK;
-	SortListData* lpData1 = GetItemData(ulFirstItem);
-	SortListData* lpData2 = GetItemData(ulSecondItem);
+	auto hRes = S_OK;
+	auto lpData1 = GetItemData(ulFirstItem);
+	auto lpData2 = GetItemData(ulSecondItem);
 
 	// swap the data
-	EC_B(m_List.SetItemData(ulFirstItem, (DWORD_PTR)lpData2));
-	EC_B(m_List.SetItemData(ulSecondItem, (DWORD_PTR)lpData1));
+	EC_B(m_List.SetItemData(ulFirstItem, reinterpret_cast<DWORD_PTR>(lpData2)));
+	EC_B(m_List.SetItemData(ulSecondItem, reinterpret_cast<DWORD_PTR>(lpData1)));
 
 	// swap the text (skip the first column!)
-	CHeaderCtrl* lpMyHeader = NULL;
-	lpMyHeader = m_List.GetHeaderCtrl();
+	auto lpMyHeader = m_List.GetHeaderCtrl();
 	if (lpMyHeader)
 	{
-		for (int i = 1; i < lpMyHeader->GetItemCount(); i++)
+		for (auto i = 1; i < lpMyHeader->GetItemCount(); i++)
 		{
-			wstring szText1 = GetItemText(ulFirstItem, i);
-			wstring szText2 = GetItemText(ulSecondItem, i);
+			auto szText1 = GetItemText(ulFirstItem, i);
+			auto szText2 = GetItemText(ulSecondItem, i);
 			m_List.SetItemText(ulFirstItem, i, szText2);
 			m_List.SetItemText(ulSecondItem, i, szText1);
 		}
@@ -323,9 +313,7 @@ void ListPane::SwapListItems(ULONG ulFirstItem, ULONG ulSecondItem)
 
 void ListPane::OnMoveListEntryUp()
 {
-	int iItem = NULL;
-
-	iItem = m_List.GetNextItem(-1, LVNI_FOCUSED | LVNI_SELECTED);
+	auto iItem = m_List.GetNextItem(-1, LVNI_FOCUSED | LVNI_SELECTED);
 	DebugPrintEx(DBGGeneric, CLASS, L"OnMoveListEntryUp", L"This item was selected: 0x%08X\n", iItem);
 
 	if (-1 == iItem) return;
@@ -338,9 +326,7 @@ void ListPane::OnMoveListEntryUp()
 
 void ListPane::OnMoveListEntryDown()
 {
-	int iItem = NULL;
-
-	iItem = m_List.GetNextItem(-1, LVNI_FOCUSED | LVNI_SELECTED);
+	auto iItem = m_List.GetNextItem(-1, LVNI_FOCUSED | LVNI_SELECTED);
 	DebugPrintEx(DBGGeneric, CLASS, L"OnMoveListEntryDown", L"This item was selected: 0x%08X\n", iItem);
 
 	if (-1 == iItem) return;
@@ -353,16 +339,13 @@ void ListPane::OnMoveListEntryDown()
 
 void ListPane::OnMoveListEntryToTop()
 {
-	int iItem = NULL;
-
-	iItem = m_List.GetNextItem(-1, LVNI_FOCUSED | LVNI_SELECTED);
+	auto iItem = m_List.GetNextItem(-1, LVNI_FOCUSED | LVNI_SELECTED);
 	DebugPrintEx(DBGGeneric, CLASS, L"OnMoveListEntryToTop", L"This item was selected: 0x%08X\n", iItem);
 
 	if (-1 == iItem) return;
 	if (0 == iItem) return;
 
-	int i = 0;
-	for (i = iItem; i > 0; i--)
+	for (auto i = iItem; i > 0; i--)
 	{
 		SwapListItems(i, i - 1);
 	}
@@ -373,16 +356,13 @@ void ListPane::OnMoveListEntryToTop()
 
 void ListPane::OnMoveListEntryToBottom()
 {
-	int iItem = NULL;
-
-	iItem = m_List.GetNextItem(-1, LVNI_FOCUSED | LVNI_SELECTED);
+	auto iItem = m_List.GetNextItem(-1, LVNI_FOCUSED | LVNI_SELECTED);
 	DebugPrintEx(DBGGeneric, CLASS, L"OnMoveListEntryDown", L"This item was selected: 0x%08X\n", iItem);
 
 	if (-1 == iItem) return;
 	if (m_List.GetItemCount() == iItem + 1) return;
 
-	int i = 0;
-	for (i = iItem; i < m_List.GetItemCount() - 1; i++)
+	for (auto i = iItem; i < m_List.GetItemCount() - 1; i++)
 	{
 		SwapListItems(i, i + 1);
 	}
@@ -393,14 +373,17 @@ void ListPane::OnMoveListEntryToBottom()
 
 void ListPane::OnAddListEntry()
 {
-	int iItem = m_List.GetItemCount();
+	auto iItem = m_List.GetItemCount();
 
-	SortListData* lpData = InsertRow(iItem, format(L"%d", iItem)); // STRING_OK
-	if (lpData) lpData->m_Type = SORTLIST_MVPROP;
+	auto lpData = InsertRow(iItem, format(L"%d", iItem)); // STRING_OK
+	if (lpData)
+	{
+		lpData->InitializeMV(nullptr);
+	}
 
 	m_List.SetSelectedItem(iItem);
 
-	bool bDidEdit = OnEditListEntry();
+	auto bDidEdit = OnEditListEntry();
 
 	// if we didn't do anything in the edit, undo the add
 	// pass false to make sure we don't mark the list dirty if it wasn't already
@@ -411,14 +394,12 @@ void ListPane::OnAddListEntry()
 
 void ListPane::OnDeleteListEntry(bool bDoDirty)
 {
-	int iItem = NULL;
-
-	iItem = m_List.GetNextItem(-1, LVNI_FOCUSED | LVNI_SELECTED);
+	auto iItem = m_List.GetNextItem(-1, LVNI_FOCUSED | LVNI_SELECTED);
 	DebugPrintEx(DBGGeneric, CLASS, L"OnDeleteListEntry", L"This item was selected: 0x%08X\n", iItem);
 
 	if (iItem == -1) return;
 
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
 	EC_B(m_List.DeleteItem(iItem));
 	m_List.SetSelectedItem(iItem);
@@ -433,26 +414,23 @@ void ListPane::OnDeleteListEntry(bool bDoDirty)
 
 _Check_return_ bool ListPane::OnEditListEntry()
 {
-	int iItem = NULL;
-
-	iItem = m_List.GetNextItem(-1, LVNI_FOCUSED | LVNI_SELECTED);
+	auto iItem = m_List.GetNextItem(-1, LVNI_FOCUSED | LVNI_SELECTED);
 	DebugPrintEx(DBGGeneric, CLASS, L"OnEditListEntry", L"This item was selected: 0x%08X\n", iItem);
 
 	if (iItem == -1) return false;
 
-	SortListData* lpData = GetItemData(iItem);
-
+	auto lpData = GetItemData(iItem);
 	if (!lpData) return false;
 
 	// TODO: Figure out a way to do this that doesn't involve caching the edit control
-	bool bDidEdit = m_lpEdit->DoListEdit(m_iControl, iItem, lpData);
+	auto bDidEdit = m_lpEdit->DoListEdit(m_iControl, iItem, lpData);
 
 	// the list is dirty now if the edit succeeded or it was already dirty
 	m_bDirty = bDidEdit || m_bDirty;
 	return bDidEdit;
 }
 
-wstring ListPane::GetItemText(_In_ int nItem, _In_ int nSubItem)
+wstring ListPane::GetItemText(_In_ int nItem, _In_ int nSubItem) const
 {
 	return m_List.GetItemText(nItem, nSubItem);
 }

@@ -31,11 +31,11 @@ public:
 	_Check_return_ SortListData* InsertRow(int iRow, wstring szText);
 	void ClearList();
 	void ResizeList(bool bSort);
-	_Check_return_ ULONG GetItemCount();
-	_Check_return_ SortListData* GetItemData(int iRow);
-	_Check_return_ SortListData* GetSelectedListRowData();
+	_Check_return_ ULONG GetItemCount() const;
+	_Check_return_ SortListData* GetItemData(int iRow) const;
+	_Check_return_ SortListData* GetSelectedListRowData() const;
 	void InsertColumn(int nCol, UINT uidText);
-	void SetColumnType(int nCol, ULONG ulPropType);
+	void SetColumnType(int nCol, ULONG ulPropType) const;
 	void UpdateListButtons();
 	void SwapListItems(ULONG ulFirstItem, ULONG ulSecondItem);
 	void OnMoveListEntryUp();
@@ -45,7 +45,7 @@ public:
 	void OnAddListEntry();
 	void OnDeleteListEntry(bool bDoDirty);
 	_Check_return_ bool OnEditListEntry();
-	wstring GetItemText(_In_ int nItem, _In_ int nSubItem);
+	wstring GetItemText(_In_ int nItem, _In_ int nSubItem) const;
 
 private:
 	CSortListCtrl m_List;
