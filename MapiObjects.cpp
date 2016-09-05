@@ -39,7 +39,7 @@ public:
 	_Check_return_ ULONG* GetAttachmentsToCopy();
 	_Check_return_ ULONG GetNumAttachments();
 
-	void SetProfileToCopy(_In_ LPSTR szProfileName);
+	void SetProfileToCopy(_In_ LPCSTR szProfileName);
 	_Check_return_ LPSTR GetProfileToCopy();
 
 	_Check_return_ LPMAPIFOLDER GetSourceParentFolder();
@@ -243,7 +243,7 @@ _Check_return_ ULONG CGlobalCache::GetNumAttachments()
 	return m_ulNumAttachments;
 } // CGlobalCache::GetNumAttachments
 
-void CGlobalCache::SetProfileToCopy(_In_ LPSTR szProfileName)
+void CGlobalCache::SetProfileToCopy(_In_ LPCSTR szProfileName)
 {
 	(void)CopyStringA(&m_szProfileToCopy, szProfileName, NULL);
 } // CGlobalCache::SetProfileToCopy
@@ -552,7 +552,7 @@ _Check_return_ ULONG CMapiObjects::GetNumAttachments()
 	return NULL;
 } // CMapiObjects::GetNumAttachments
 
-void CMapiObjects::SetProfileToCopy(_In_ LPSTR szProfileName)
+void CMapiObjects::SetProfileToCopy(_In_ LPCSTR szProfileName)
 {
 	if (m_lpGlobalCache)
 	{

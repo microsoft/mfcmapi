@@ -17,7 +17,7 @@ static wstring CLASS = L"CMsgServiceTableDlg";
 CMsgServiceTableDlg::CMsgServiceTableDlg(
 	_In_ CParentWnd* pParentWnd,
 	_In_ CMapiObjects* lpMapiObjects,
-	_In_ wstring szProfileName
+	_In_ string szProfileName
 ) :
 	CContentsTableDlg(
 		pParentWnd,
@@ -100,7 +100,7 @@ void CMsgServiceTableDlg::OnRefreshView()
 	if (lpProfAdmin)
 	{
 		EC_MAPI(lpProfAdmin->AdminServices(
-			reinterpret_cast<LPTSTR>(const_cast<LPSTR>(wstringTostring(m_szProfileName).c_str())),
+			reinterpret_cast<LPTSTR>(const_cast<LPSTR>(m_szProfileName.c_str())),
 			(LPTSTR)"",
 			NULL,
 			MAPI_DIALOG,
@@ -301,7 +301,7 @@ void CMsgServiceTableDlg::OnDeleteSelectedItem()
 		lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 		if (!lpListData || !lpListData->Contents()) break;
 
-		DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L"Deleting service from \"%hs\"\n", lpListData->Contents()->szProfileDisplayName);
+		DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L"Deleting service from \"%hs\"\n", lpListData->Contents()->m_szProfileDisplayName.c_str());
 
 		lpServiceUID = lpListData->Contents()->lpServiceUID;
 		if (lpServiceUID)

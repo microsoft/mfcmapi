@@ -12,7 +12,7 @@ public:
 	LPSBinary lpServiceUID; // Allocated with MAPIAllocateBuffer
 	LPSBinary lpProviderUID; // Allocated with MAPIAllocateBuffer
 	TCHAR* szDN; // Allocated with MAPIAllocateBuffer
-	CHAR* szProfileDisplayName; // Allocated with MAPIAllocateBuffer
+	string m_szProfileDisplayName;
 	ULONG ulAttachNum;
 	ULONG ulAttachMethod;
 	ULONG ulRowID; // for recipients
