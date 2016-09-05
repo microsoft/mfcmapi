@@ -45,7 +45,7 @@ void SortListData::Clean()
 	cSourceProps = 0;
 
 	bItemFullyLoaded = false;
-	szSortText = emptystring;
+	szSortText.clear();
 
 	ulSortValue.QuadPart = NULL;
 }
