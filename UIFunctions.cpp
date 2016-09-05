@@ -1112,7 +1112,7 @@ void CustomDrawTree(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, bool bHover, _In_
 			tvi.hItem = hItem;
 			TreeView_GetItem(lvcd->nmcd.hdr.hwndFrom, &tvi);
 			auto lpData = reinterpret_cast<SortListData*>(tvi.lParam);
-			if (lpData && lpData->Node() && lpData->Node()->lpAdviseSink)
+			if (lpData && lpData->Node() && lpData->Node()->m_lpAdviseSink)
 			{
 				RECT rect = { 0 };
 				TreeView_GetItemRect(lvcd->nmcd.hdr.hwndFrom, hItem, &rect, 1);
