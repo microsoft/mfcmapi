@@ -17,12 +17,6 @@ enum __SortListDataTypes
 	SORTLIST_TREENODE
 };
 
-struct _ResData
-{
-	LPSRestriction lpOldRes; // not allocated - just a pointer
-	LPSRestriction lpNewRes; // Owned by an alloc parent - do not free
-};
-
 struct _CommentData
 {
 	LPSPropValue lpOldProp; // not allocated - just a pointer
