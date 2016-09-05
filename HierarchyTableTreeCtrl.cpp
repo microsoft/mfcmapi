@@ -420,7 +420,7 @@ _Check_return_ LPMAPITABLE CHierarchyTableTreeCtrl::GetHierarchyTable(HTREEITEM 
 
 	if (!lpData || !lpData->Node()) return nullptr;
 
-	if (!lpData->Node()->lpHierarchyTable)
+	if (!lpData->Node()->m_lpHierarchyTable)
 	{
 		if (lpMAPIContainer)
 		{
@@ -449,30 +449,30 @@ _Check_return_ LPMAPITABLE CHierarchyTableTreeCtrl::GetHierarchyTable(HTREEITEM 
 					TBL_BATCH));
 			}
 
-			lpData->Node()->lpHierarchyTable = lpHierarchyTable;
+			lpData->Node()->m_lpHierarchyTable = lpHierarchyTable;
 			lpMAPIContainer->Release();
 		}
 	}
 
-	if (lpData->Node()->lpHierarchyTable && !lpData->Node()->lpAdviseSink)
+	if (lpData->Node()->m_lpHierarchyTable && !lpData->Node()->m_lpAdviseSink)
 	{
 		// set up our advise sink
 		if (bRegNotifs &&
 			(RegKeys[regkeyHIER_ROOT_NOTIFS].ulCurDWORD || GetRootItem() != hItem))
 		{
 			DebugPrintEx(DBGNotify, CLASS, L"GetHierarchyTable", L"Advise sink for \"%ws\" = %p\n", LPCTSTRToWstring(GetItemText(hItem)).c_str(), hItem);
-			lpData->Node()->lpAdviseSink = new CAdviseSink(m_hWnd, hItem);
+			lpData->Node()->m_lpAdviseSink = new CAdviseSink(m_hWnd, hItem);
 
-			if (lpData->Node()->lpAdviseSink)
+			if (lpData->Node()->m_lpAdviseSink)
 			{
-				WC_MAPI(lpData->Node()->lpHierarchyTable->Advise(
+				WC_MAPI(lpData->Node()->m_lpHierarchyTable->Advise(
 					fnevTableModified,
-					static_cast<IMAPIAdviseSink *>(lpData->Node()->lpAdviseSink),
-					&lpData->Node()->ulAdviseConnection));
+					static_cast<IMAPIAdviseSink *>(lpData->Node()->m_lpAdviseSink),
+					&lpData->Node()->m_ulAdviseConnection));
 				if (MAPI_E_NO_SUPPORT == hRes) // Some tables don't support this!
 				{
-					if (lpData->Node()->lpAdviseSink) lpData->Node()->lpAdviseSink->Release();
-					lpData->Node()->lpAdviseSink = nullptr;
+					if (lpData->Node()->m_lpAdviseSink) lpData->Node()->m_lpAdviseSink->Release();
+					lpData->Node()->m_lpAdviseSink = nullptr;
 					DebugPrint(DBGNotify, L"This table doesn't support notifications\n");
 				}
 				else if (S_OK == hRes)
@@ -480,7 +480,7 @@ _Check_return_ LPMAPITABLE CHierarchyTableTreeCtrl::GetHierarchyTable(HTREEITEM 
 					auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 					if (lpMDB)
 					{
-						lpData->Node()->lpAdviseSink->SetAdviseTarget(lpMDB);
+						lpData->Node()->m_lpAdviseSink->SetAdviseTarget(lpMDB);
 
 						LPSPropValue lpProp = nullptr;
 						// Try to trigger some RPC to get the notifications going
@@ -493,11 +493,11 @@ _Check_return_ LPMAPITABLE CHierarchyTableTreeCtrl::GetHierarchyTable(HTREEITEM 
 					}
 				}
 
-				DebugPrintEx(DBGNotify, CLASS, L"GetHierarchyTable", L"Advise sink %p, ulAdviseConnection = 0x%08X\n", lpData->Node()->lpAdviseSink, static_cast<int>(lpData->Node()->ulAdviseConnection));
+				DebugPrintEx(DBGNotify, CLASS, L"GetHierarchyTable", L"Advise sink %p, ulAdviseConnection = 0x%08X\n", lpData->Node()->m_lpAdviseSink, static_cast<int>(lpData->Node()->m_ulAdviseConnection));
 			}
 		}
 	}
-	return lpData->Node()->lpHierarchyTable;
+	return lpData->Node()->m_lpHierarchyTable;
 }
 
 // Add the first level contents of lpMAPIContainer under the Parent node
@@ -565,17 +565,17 @@ void CHierarchyTableTreeCtrl::OnGetDispInfo(_In_ NMHDR* pNMHDR, _In_ LRESULT* pR
 			{
 				lpDispInfo->item.cChildren = 1;
 			}
-			else if (lpData->Node()->cSubfolders >= 0)
+			else if (lpData->Node()->m_cSubfolders >= 0)
 			{
-				lpDispInfo->item.cChildren = lpData->Node()->cSubfolders ? 1 : 0;
+				lpDispInfo->item.cChildren = lpData->Node()->m_cSubfolders ? 1 : 0;
 			}
 			else
 			{
 				LPCTSTR szName = nullptr;
 				if (PROP_TYPE(lpData->lpSourceProps[0].ulPropTag) == PT_TSTRING) szName = lpData->lpSourceProps[0].Value.LPSZ;
-				DebugPrintEx(DBGHierarchy, CLASS, L"OnGetDispInfo", L"Using Hierarchy table %d %p %ws\n", lpData->Node()->cSubfolders, lpData->Node()->lpHierarchyTable, LPCTSTRToWstring(szName).c_str());
+				DebugPrintEx(DBGHierarchy, CLASS, L"OnGetDispInfo", L"Using Hierarchy table %d %p %ws\n", lpData->Node()->m_cSubfolders, lpData->Node()->m_lpHierarchyTable, LPCTSTRToWstring(szName).c_str());
 				// won't force the hierarchy table - just get it if we've already got it
-				auto lpHierarchyTable = lpData->Node()->lpHierarchyTable;
+				auto lpHierarchyTable = lpData->Node()->m_lpHierarchyTable;
 				if (lpHierarchyTable)
 				{
 					lpDispInfo->item.cChildren = 1;
@@ -846,7 +846,7 @@ _Check_return_ LPSBinary CHierarchyTableTreeCtrl::GetSelectedItemEID() const
 	{
 		auto lpData = reinterpret_cast<SortListData*>(GetItemData(Item));
 		if (lpData && lpData->Node())
-			return lpData->Node()->lpEntryID;
+			return lpData->Node()->m_lpEntryID;
 	}
 	return nullptr;
 }
@@ -887,7 +887,7 @@ void CHierarchyTableTreeCtrl::GetContainer(
 
 	auto ulFlags = (mfcmapiREQUEST_MODIFY == bModify ? MAPI_MODIFY : NULL);
 
-	auto lpCurBin = lpData->Node()->lpEntryID;
+	auto lpCurBin = lpData->Node()->m_lpEntryID;
 	if (!lpCurBin) lpCurBin = &NullBin;
 
 	// Check the type of the root container to know whether the MDB or AddrBook object is valid
@@ -1008,10 +1008,11 @@ void CHierarchyTableTreeCtrl::OnDeleteItem(_In_ NMHDR* pNMHDR, _In_ LRESULT* pRe
 		auto* lpData = reinterpret_cast<SortListData*>(pNMTreeView->itemOld.lParam);
 		DebugPrintEx(DBGHierarchy, CLASS, L"OnDeleteItem", L"Deleting item %p \"%ws\"\n", pNMTreeView->itemOld.hItem, LPCTSTRToWstring(GetItemText(pNMTreeView->itemOld.hItem)).c_str());
 
-		if (lpData&& lpData->Node() && lpData->Node()->lpAdviseSink)
+		if (lpData&& lpData->Node() && lpData->Node()->m_lpAdviseSink)
 		{
-			DebugPrintEx(DBGHierarchy, CLASS, L"OnDeleteItem", L"Unadvising %p, ulAdviseConnection = 0x%08X\n", lpData->Node()->lpAdviseSink, static_cast<int>(lpData->Node()->ulAdviseConnection));
+			DebugPrintEx(DBGHierarchy, CLASS, L"OnDeleteItem", L"Unadvising %p, ulAdviseConnection = 0x%08X\n", lpData->Node()->m_lpAdviseSink, static_cast<int>(lpData->Node()->m_ulAdviseConnection));
 		}
+
 		if (lpData) delete lpData;
 
 		if (!m_bShuttingDown)
@@ -1033,7 +1034,7 @@ void CHierarchyTableTreeCtrl::OnDeleteItem(_In_ NMHDR* pNMHDR, _In_ LRESULT* pRe
 					lpData = reinterpret_cast<SortListData*>(tvItem.lParam);
 					if (lpData && lpData->Node())
 					{
-						lpData->Node()->cSubfolders = 0;
+						lpData->Node()->m_cSubfolders = 0;
 					}
 				}
 			}
@@ -1081,7 +1082,7 @@ _Check_return_ LRESULT CHierarchyTableTreeCtrl::msgOnAddItem(WPARAM wParam, LPAR
 			auto lpData = reinterpret_cast<SortListData*>(tvItem.lParam);
 			if (lpData && lpData->Node())
 			{
-				lpData->Node()->cSubfolders = 1;
+				lpData->Node()->m_cSubfolders = 1;
 			}
 		}
 	}
@@ -1194,10 +1195,10 @@ _Check_return_ LRESULT CHierarchyTableTreeCtrl::msgOnRefreshTable(WPARAM wParam,
 
 			if (lpData && lpData->Node())
 			{
-				if (lpData->Node()->lpHierarchyTable)
+				if (lpData->Node()->m_lpHierarchyTable)
 				{
 					ULONG ulRowCount = NULL;
-					WC_MAPI(lpData->Node()->lpHierarchyTable->GetRowCount(
+					WC_MAPI(lpData->Node()->m_lpHierarchyTable->GetRowCount(
 						NULL,
 						&ulRowCount));
 					if (S_OK != hRes || ulRowCount)
@@ -1227,7 +1228,7 @@ _Check_return_ HTREEITEM CHierarchyTableTreeCtrl::FindNode(_In_ LPSBinary lpInst
 		auto lpListData = reinterpret_cast<SortListData*>(GetItemData(hCurrent));
 		if (lpListData && lpListData->Node())
 		{
-			auto lpCurInstance = lpListData->Node()->lpInstanceKey;
+			auto lpCurInstance = lpListData->Node()->m_lpInstanceKey;
 			if (lpCurInstance)
 			{
 				if (!memcmp(lpCurInstance->lpb, lpInstance->lpb, lpInstance->cb))

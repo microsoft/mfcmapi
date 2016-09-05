@@ -10,10 +10,11 @@ public:
 		ULONG bSubfolders,
 		ULONG ulContainerFlags);
 	~NodeData();
-	LPSBinary lpEntryID; // Allocated with MAPIAllocateBuffer
-	LPSBinary lpInstanceKey; // Allocated with MAPIAllocateBuffer
-	LPMAPITABLE lpHierarchyTable; // Object - free with Release
-	CAdviseSink* lpAdviseSink; // Object - free with Release
-	ULONG_PTR ulAdviseConnection;
-	LONG cSubfolders; // -1 for unknown, 0 for no subfolders, >0 for at least one subfolder
+
+	LPSBinary m_lpEntryID; // Allocated with MAPIAllocateBuffer
+	LPSBinary m_lpInstanceKey; // Allocated with MAPIAllocateBuffer
+	LPMAPITABLE m_lpHierarchyTable; // Object - free with Release
+	CAdviseSink* m_lpAdviseSink; // Object - free with Release
+	ULONG_PTR m_ulAdviseConnection;
+	LONG m_cSubfolders; // -1 for unknown, 0 for no subfolders, >0 for at least one subfolder
 };
