@@ -265,10 +265,6 @@ _Check_return_ SortListData* CSortListCtrl::InsertRow(int iRow, wstring szText)
 _Check_return_ SortListData* CSortListCtrl::InsertRow(int iRow, wstring szText, int iIndent, int iImage)
 {
 	SortListData* lpData = new SortListData();
-	if (lpData)
-	{
-		memset(lpData, 0, sizeof(SortListData));
-	}
 
 	LVITEMW lvItem = { 0 };
 	lvItem.iItem = iRow;
