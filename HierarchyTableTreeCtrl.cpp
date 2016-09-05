@@ -362,15 +362,14 @@ void CHierarchyTableTreeCtrl::AddNode(
 	bool bGetTable)
 {
 	DebugPrintEx(DBGHierarchy, CLASS, L"AddNode", L"Adding Node \"%ws\" under node %p, bGetTable = 0x%X\n", szName.c_str(), hParent, bGetTable);
-	TVINSERTSTRUCT tvInsert = { nullptr };
+	TVINSERTSTRUCTW tvInsert = { nullptr };
 
 	tvInsert.hParent = hParent;
 	tvInsert.hInsertAfter = TVI_SORT;
 	tvInsert.item.mask = TVIF_CHILDREN | TVIF_TEXT;
 	tvInsert.item.cChildren = I_CHILDRENCALLBACK;
-	tvInsert.item.pszText = wstringToLPTSTR(szName);
-
-	auto hItem = TreeView_InsertItem(m_hWnd, &tvInsert);
+	tvInsert.item.pszText = const_cast<LPWSTR>(szName.c_str());
+	auto hItem = reinterpret_cast<HTREEITEM>(::SendMessage(m_hWnd, TVM_INSERTITEMW, 0, reinterpret_cast<LPARAM>(&tvInsert)));
 
 	SetNodeData(m_hWnd, hItem, lpData);
 
