@@ -3,6 +3,7 @@ class ContentsData;
 class NodeData;
 class PropListData;
 class MVPropData;
+class ResData;
 
 enum __SortListDataTypes
 {
@@ -56,13 +57,14 @@ public:
 	// SORTLIST_MVPROP
 	void InitializeMV(_In_ LPSPropValue lpProp, ULONG iProp);
 	void InitializeMV(_In_ LPSPropValue lpProp);
+	// SORTLIST_RES
+	void InitializeRes(_In_ LPSRestriction lpOldRes);
 
 	wstring szSortText;
 	ULARGE_INTEGER ulSortValue;
 	__SortListDataTypes m_Type;
 	union
 	{
-		_ResData Res; // SORTLIST_RES
 		_CommentData Comment; // SORTLIST_COMMENT
 		_BinaryData Binary; // SORTLIST_BINARY
 	} data;
@@ -70,6 +72,7 @@ public:
 	NodeData* Node() const; // SORTLIST_TREENODE
 	PropListData* Prop() const; // SORTLIST_PROP
 	MVPropData* MV() const; // SORTLIST_MVPROP
+	ResData* Res() const; // SORTLIST_RES
 
 	ULONG cSourceProps;
 	LPSPropValue lpSourceProps; // Stolen from lpsRowData in SortListData::InitializeContents - free with MAPIFreeBuffer

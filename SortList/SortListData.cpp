@@ -4,6 +4,7 @@
 #include "NodeData.h"
 #include "PropListData.h"
 #include "MVPropData.h"
+#include "ResData.h"
 
 SortListData::SortListData() :
 	m_Type(SORTLIST_UNKNOWN),
@@ -28,7 +29,7 @@ void SortListData::Clean()
 	case SORTLIST_CONTENTS: delete Contents(); break;
 	case SORTLIST_PROP: delete Prop(); break;
 	case SORTLIST_MVPROP: delete MV(); break;
-	case SORTLIST_RES: break;
+	case SORTLIST_RES: delete Res();  break;
 	case SORTLIST_COMMENT: break;
 	case SORTLIST_BINARY: break;
 	case SORTLIST_TREENODE: delete Node(); break;
@@ -83,6 +84,16 @@ MVPropData* SortListData::MV() const
 	if (m_Type == SORTLIST_MVPROP)
 	{
 		return reinterpret_cast<MVPropData*>(m_lpData);
+	}
+
+	return nullptr;
+}
+
+ResData* SortListData::Res() const
+{
+	if (m_Type == SORTLIST_RES)
+	{
+		return reinterpret_cast<ResData*>(m_lpData);
 	}
 
 	return nullptr;
@@ -181,4 +192,12 @@ void SortListData::InitializeMV(_In_ LPSPropValue lpProp)
 	Clean();
 	m_Type = SORTLIST_MVPROP;
 	m_lpData = new MVPropData(lpProp);
+}
+
+void SortListData::InitializeRes(_In_ LPSRestriction lpOldRes)
+{
+	Clean();
+	m_Type = SORTLIST_RES;
+	bItemFullyLoaded = true;
+	m_lpData = new ResData(lpOldRes);
 }
