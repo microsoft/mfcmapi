@@ -28,7 +28,6 @@ void SortListData::Clean()
 	case SORTLIST_CONTENTS: delete Contents(); break;
 	case SORTLIST_PROP: delete Prop(); break;
 	case SORTLIST_MVPROP: delete MV(); break;
-	case SORTLIST_TAGARRAY: break;
 	case SORTLIST_RES: break;
 	case SORTLIST_COMMENT: break;
 	case SORTLIST_BINARY: break;

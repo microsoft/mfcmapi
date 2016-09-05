@@ -10,16 +10,10 @@ enum __SortListDataTypes
 	SORTLIST_CONTENTS,
 	SORTLIST_PROP,
 	SORTLIST_MVPROP,
-	SORTLIST_TAGARRAY,
 	SORTLIST_RES,
 	SORTLIST_COMMENT,
 	SORTLIST_BINARY,
 	SORTLIST_TREENODE
-};
-
-struct _TagData
-{
-	ULONG ulPropTag;
 };
 
 struct _ResData
@@ -57,7 +51,9 @@ public:
 		ULONG bSubfolders,
 		ULONG ulContainerFlags);
 	void InitializeNode(_In_ LPSRow lpsRow);
+	// SORTLIST_PROP
 	void InitializePropList(_In_ ULONG ulPropTag);
+	// SORTLIST_MVPROP
 	void InitializeMV(_In_ LPSPropValue lpProp, ULONG iProp);
 	void InitializeMV(_In_ LPSPropValue lpProp);
 
@@ -66,7 +62,6 @@ public:
 	__SortListDataTypes m_Type;
 	union
 	{
-		_TagData Tag; // SORTLIST_TAGARRAY
 		_ResData Res; // SORTLIST_RES
 		_CommentData Comment; // SORTLIST_COMMENT
 		_BinaryData Binary; // SORTLIST_BINARY
