@@ -375,11 +375,7 @@ void ListPane::OnAddListEntry()
 {
 	auto iItem = m_List.GetItemCount();
 
-	auto lpData = InsertRow(iItem, format(L"%d", iItem)); // STRING_OK
-	if (lpData)
-	{
-		lpData->InitializePropList(0);
-	}
+	(void)InsertRow(iItem, format(L"%d", iItem)); // STRING_OK
 
 	m_List.SetSelectedItem(iItem);
 

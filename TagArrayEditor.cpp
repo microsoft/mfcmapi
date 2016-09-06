@@ -68,7 +68,11 @@ void CTagArrayEditor::OnOK()
 _Check_return_ bool CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData)
 {
 	if (!IsValidList(ulListNum)) return false;
-	if (!lpData || !lpData->Prop()) return false;
+	if (!lpData) return false;
+	if (!lpData->Prop())
+	{
+		lpData->InitializePropList(0);
+	}
 
 	auto hRes = S_OK;
 	auto ulOrigPropTag = lpData->Prop()->m_ulPropTag;
