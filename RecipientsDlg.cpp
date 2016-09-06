@@ -24,7 +24,7 @@ CRecipientsDlg::CRecipientsDlg(
 		IDS_RECIPIENTS,
 		mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 		lpMAPITable,
-		(LPSPropTagArray)&sptDEFCols,
+		LPSPropTagArray(&sptDEFCols),
 		NUMDEFCOLUMNS,
 		DEFColumns,
 		IDR_MENU_RECIPIENTS_POPUP,
@@ -45,7 +45,7 @@ CRecipientsDlg::~CRecipientsDlg()
 
 	if (m_lpMessage)
 	{
-		HRESULT hRes = S_OK;
+		auto hRes = S_OK;
 
 		EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 		m_lpMessage->Release();
@@ -88,7 +88,7 @@ _Check_return_ HRESULT CRecipientsDlg::OpenItemProp(
 
 	if (!m_lpContentsTableListCtrl || !lppMAPIProp) return MAPI_E_INVALID_PARAMETER;
 
-	*lppMAPIProp = NULL;
+	*lppMAPIProp = nullptr;
 
 	if (m_bViewRecipientABEntry) return CContentsTableDlg::OpenItemProp(iSelectedItem, bModify, lppMAPIProp);
 
@@ -104,34 +104,32 @@ void CRecipientsDlg::OnViewRecipientABEntry()
 
 void CRecipientsDlg::OnDeleteSelectedItem()
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpMessage || !m_lpContentsTableListCtrl) return;
 
-	int iItem = -1;
-	SortListData* lpListData = NULL;
-	LPADRLIST lpAdrList = NULL;
+	auto iItem = -1;
+	LPADRLIST lpAdrList = nullptr;
 
 	int iNumSelected = m_lpContentsTableListCtrl->GetSelectedCount();
 
 	if (iNumSelected && iNumSelected < MAXNewADRLIST)
 	{
 		EC_H(MAPIAllocateBuffer(
-			(ULONG)CbNewADRLIST(iNumSelected),
-			(LPVOID*)&lpAdrList));
+			CbNewADRLIST(iNumSelected),
+			reinterpret_cast<LPVOID*>(&lpAdrList)));
 		if (lpAdrList)
 		{
 			ZeroMemory(lpAdrList, CbNewADRLIST(iNumSelected));
 			lpAdrList->cEntries = iNumSelected;
 
-			int iSelection = 0;
-			for (iSelection = 0; iSelection < iNumSelected; iSelection++)
+			for (auto iSelection = 0; iSelection < iNumSelected; iSelection++)
 			{
-				LPSPropValue lpProp = NULL;
+				LPSPropValue lpProp = nullptr;
 				EC_H(MAPIAllocateBuffer(
 					sizeof(SPropValue),
-					(LPVOID*)&lpProp));
+					reinterpret_cast<LPVOID*>(&lpProp)));
 
 				if (lpProp)
 				{
@@ -141,10 +139,10 @@ void CRecipientsDlg::OnDeleteSelectedItem()
 					lpProp->ulPropTag = PR_ROWID;
 					lpProp->dwAlignPad = 0;
 					// Find the highlighted item AttachNum
-					lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
+					auto lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 					if (lpListData && lpListData->Contents())
 					{
-						lpProp->Value.l = lpListData->Contents()->ulRowID;
+						lpProp->Value.l = lpListData->Contents()->m_ulRowID;
 					}
 					else
 					{
@@ -167,7 +165,7 @@ void CRecipientsDlg::OnDeleteSelectedItem()
 
 void CRecipientsDlg::OnModifyRecipients()
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpMessage || !m_lpContentsTableListCtrl || !m_lpPropDisplay) return;
@@ -177,7 +175,7 @@ void CRecipientsDlg::OnModifyRecipients()
 	if (!m_lpPropDisplay->IsModifiedPropVals()) return;
 
 	ULONG cProps = 0;
-	LPSPropValue lpProps = NULL;
+	LPSPropValue lpProps = nullptr;
 	EC_H(m_lpPropDisplay->GetDisplayedProps(&cProps, &lpProps));
 
 	if (lpProps)
@@ -193,7 +191,7 @@ void CRecipientsDlg::OnModifyRecipients()
 			lpProps,
 			&ulSizeProps));
 
-		EC_H(MAPIAllocateBuffer(ulSizeProps, (LPVOID*)&adrList.aEntries[0].rgPropVals));
+		EC_H(MAPIAllocateBuffer(ulSizeProps, reinterpret_cast<LPVOID*>(&adrList.aEntries[0].rgPropVals)));
 
 		EC_MAPI(ScCopyProps(
 			adrList.aEntries[0].cValues,
@@ -215,7 +213,7 @@ void CRecipientsDlg::OnModifyRecipients()
 
 void CRecipientsDlg::OnRecipOptions()
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpMessage || !m_lpContentsTableListCtrl || !m_lpPropDisplay || !m_lpMapiObjects) return;
@@ -223,12 +221,12 @@ void CRecipientsDlg::OnRecipOptions()
 	if (1 != m_lpContentsTableListCtrl->GetSelectedCount()) return;
 
 	ULONG cProps = 0;
-	LPSPropValue lpProps = NULL;
+	LPSPropValue lpProps = nullptr;
 	EC_H(m_lpPropDisplay->GetDisplayedProps(&cProps, &lpProps));
 
 	if (lpProps)
 	{
-		LPADRBOOK lpAB = m_lpMapiObjects->GetAddrBook(true); // do not release
+		auto lpAB = m_lpMapiObjects->GetAddrBook(true); // do not release
 		if (lpAB)
 		{
 			ADRENTRY adrEntry = { 0 };
@@ -238,13 +236,13 @@ void CRecipientsDlg::OnRecipOptions()
 			DebugPrintEx(DBGGeneric, CLASS, L"OnRecipOptions", L"Calling RecipOptions\n");
 
 			EC_MAPI(lpAB->RecipOptions(
-				(ULONG_PTR)m_hWnd,
+				reinterpret_cast<ULONG_PTR>(m_hWnd),
 				NULL,
 				&adrEntry));
 
 			if (MAPI_W_ERRORS_RETURNED == hRes)
 			{
-				LPMAPIERROR lpErr = NULL;
+				LPMAPIERROR lpErr = nullptr;
 				WC_MAPI(lpAB->GetLastError(hRes, fMapiUnicode, &lpErr));
 				if (lpErr)
 				{
@@ -261,12 +259,12 @@ void CRecipientsDlg::OnRecipOptions()
 				adrList.aEntries[0].cValues = adrEntry.cValues;
 				adrList.aEntries[0].rgPropVals = adrEntry.rgPropVals;
 
-				wstring szAdrList = AdrListToString(&adrList);
+				auto szAdrList = AdrListToString(&adrList);
 
 				DebugPrintEx(DBGGeneric, CLASS, L"OnRecipOptions", L"RecipOptions returned the following ADRLIST:\n");
 				// Note - debug output may be truncated due to limitations of OutputDebugString,
 				// but output to file is complete
-				Output(DBGGeneric, NULL, false, szAdrList);
+				Output(DBGGeneric, nullptr, false, szAdrList);
 
 				EC_MAPI(m_lpMessage->ModifyRecipients(
 					MODRECIP_MODIFY,
@@ -282,7 +280,7 @@ void CRecipientsDlg::OnSaveChanges()
 {
 	if (m_lpMessage)
 	{
-		HRESULT hRes = S_OK;
+		auto hRes = S_OK;
 
 		EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 	}

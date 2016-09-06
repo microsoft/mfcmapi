@@ -27,7 +27,7 @@ CAttachmentsDlg::CAttachmentsDlg(
 		IDS_ATTACHMENTS,
 		mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 		lpMAPITable,
-		(LPSPropTagArray)&sptATTACHCols,
+		LPSPropTagArray(&sptATTACHCols),
 		NUMATTACHCOLUMNS,
 		ATTACHColumns,
 		IDR_MENU_ATTACHMENTS_POPUP,
@@ -38,8 +38,8 @@ CAttachmentsDlg::CAttachmentsDlg(
 	if (m_lpMessage) m_lpMessage->AddRef();
 
 	m_bDisplayAttachAsEmbeddedMessage = false;
-	m_lpAttach = NULL;
-	m_ulAttachNum = (ULONG)-1;
+	m_lpAttach = nullptr;
+	m_ulAttachNum = static_cast<ULONG>(-1);
 
 	CreateDialogAndMenu(IDR_MENU_ATTACHMENTS);
 }
@@ -50,7 +50,7 @@ CAttachmentsDlg::~CAttachmentsDlg()
 	if (m_lpAttach) m_lpAttach->Release();
 	if (m_lpMessage)
 	{
-		HRESULT hRes = S_OK;
+		auto hRes = S_OK;
 
 		WC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 		m_lpMessage->Release();
@@ -75,7 +75,7 @@ void CAttachmentsDlg::OnInitMenu(_In_ CMenu* pMenu)
 			int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
 			if (m_lpMapiObjects)
 			{
-				ULONG ulStatus = m_lpMapiObjects->GetBufferStatus();
+				auto ulStatus = m_lpMapiObjects->GetBufferStatus();
 				pMenu->EnableMenuItem(ID_PASTE, DIM(ulStatus & BUFFER_ATTACHMENTS));
 			}
 
@@ -94,31 +94,29 @@ void CAttachmentsDlg::OnInitMenu(_In_ CMenu* pMenu)
 
 void CAttachmentsDlg::OnDisplayItem()
 {
-	HRESULT hRes = S_OK;
-	int iItem = -1;
-	SortListData* lpListData = NULL;
+	auto hRes = S_OK;
+	auto iItem = -1;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpContentsTableListCtrl || !m_lpMessage) return;
 	if (!m_lpAttach) return;
 
-	lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
-	if (lpListData && lpListData->Contents() && ATTACH_EMBEDDED_MSG == lpListData->Contents()->ulAttachMethod)
+	auto lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
+	if (lpListData && lpListData->Contents() && ATTACH_EMBEDDED_MSG == lpListData->Contents()->m_ulAttachMethod)
 	{
-		LPMESSAGE lpMessage = OpenEmbeddedMessage();
+		auto lpMessage = OpenEmbeddedMessage();
 		if (lpMessage)
 		{
 			WC_H(DisplayObject(lpMessage, MAPI_MESSAGE, otDefault, this));
 			lpMessage->Release();
-			lpMessage = NULL;
 		}
 	}
 }
 
-_Check_return_ LPATTACH CAttachmentsDlg::OpenAttach(ULONG ulAttachNum)
+_Check_return_ LPATTACH CAttachmentsDlg::OpenAttach(ULONG ulAttachNum) const
 {
-	HRESULT hRes = S_OK;
-	LPATTACH lpAttach = NULL;
+	auto hRes = S_OK;
+	LPATTACH lpAttach = nullptr;
 
 	WC_MAPI(m_lpMessage->OpenAttach(
 		ulAttachNum,
@@ -138,27 +136,27 @@ _Check_return_ LPATTACH CAttachmentsDlg::OpenAttach(ULONG ulAttachNum)
 	return lpAttach;
 }
 
-_Check_return_ LPMESSAGE CAttachmentsDlg::OpenEmbeddedMessage()
+_Check_return_ LPMESSAGE CAttachmentsDlg::OpenEmbeddedMessage() const
 {
-	if (!m_lpAttach) return NULL;
-	HRESULT hRes = S_OK;
+	if (!m_lpAttach) return nullptr;
+	auto hRes = S_OK;
 
-	LPMESSAGE lpMessage = NULL;
+	LPMESSAGE lpMessage = nullptr;
 	WC_MAPI(m_lpAttach->OpenProperty(
 		PR_ATTACH_DATA_OBJ,
-		(LPIID)&IID_IMessage,
+		const_cast<LPIID>(&IID_IMessage),
 		0,
 		MAPI_MODIFY,
-		(LPUNKNOWN *)&lpMessage));
+		reinterpret_cast<LPUNKNOWN *>(&lpMessage)));
 	if (hRes == MAPI_E_NO_ACCESS)
 	{
 		hRes = S_OK;
 		WC_MAPI(m_lpAttach->OpenProperty(
 			PR_ATTACH_DATA_OBJ,
-			(LPIID)&IID_IMessage,
+			const_cast<LPIID>(&IID_IMessage),
 			0,
 			MAPI_BEST_ACCESS,
-			(LPUNKNOWN *)&lpMessage));
+			reinterpret_cast<LPUNKNOWN *>(&lpMessage)));
 	}
 
 	if (hRes == MAPI_E_INTERFACE_NOT_SUPPORTED ||
@@ -175,31 +173,28 @@ _Check_return_ HRESULT CAttachmentsDlg::OpenItemProp(
 	__mfcmapiModifyEnum /*bModify*/,
 	_Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
 {
-	HRESULT hRes = S_OK;
-	SortListData* lpListData = NULL;
+	auto hRes = S_OK;
 
 	DebugPrintEx(DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
 
 	if (!m_lpContentsTableListCtrl || !lppMAPIProp) return MAPI_E_INVALID_PARAMETER;
 
-	*lppMAPIProp = NULL;
+	*lppMAPIProp = nullptr;
 
 	// Find the highlighted item AttachNum
-	lpListData = (SortListData*)m_lpContentsTableListCtrl->GetItemData(iSelectedItem);
+	auto lpListData = reinterpret_cast<SortListData*>(m_lpContentsTableListCtrl->GetItemData(iSelectedItem));
 
 	if (lpListData && lpListData->Contents())
 	{
-		ULONG ulAttachNum = 0;
-		ULONG ulAttachMethod = 0;
-		ulAttachNum = lpListData->Contents()->ulAttachNum;
-		ulAttachMethod = lpListData->Contents()->ulAttachMethod;
+		auto ulAttachNum = lpListData->Contents()->m_ulAttachNum;
+		auto ulAttachMethod = lpListData->Contents()->m_ulAttachMethod;
 
 		// Check for matching cached attachment to avoid reopen
 		if (ulAttachNum != m_ulAttachNum || !m_lpAttach)
 		{
 			if (m_lpAttach) m_lpAttach->Release();
 			m_lpAttach = OpenAttach(ulAttachNum);
-			m_ulAttachNum = (ULONG)-1;
+			m_ulAttachNum = static_cast<ULONG>(-1);
 			if (m_lpAttach)
 			{
 				m_ulAttachNum = ulAttachNum;
@@ -212,7 +207,7 @@ _Check_return_ HRESULT CAttachmentsDlg::OpenItemProp(
 			// The view might be holding the embedded message we're trying to open, so we clear
 			// it from the view to allow us to reopen it.
 			// TODO: Consider caching our embedded message so this isn't necessary
-			OnUpdateSingleMAPIPropListCtrl(NULL, NULL);
+			OnUpdateSingleMAPIPropListCtrl(nullptr, nullptr);
 			*lppMAPIProp = OpenEmbeddedMessage();
 		}
 		else
@@ -228,14 +223,13 @@ _Check_return_ HRESULT CAttachmentsDlg::OpenItemProp(
 void CAttachmentsDlg::HandleCopy()
 {
 	if (!m_lpContentsTableListCtrl || !m_lpMessage) return;
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	DebugPrintEx(DBGGeneric, CLASS, L"HandleCopy", L"\n");
 	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return;
 
-	ULONG* lpAttNumList = NULL;
-	SortListData* lpListData = NULL;
+	ULONG* lpAttNumList = nullptr;
 
 	ULONG ulNumSelected = m_lpContentsTableListCtrl->GetSelectedCount();
 
@@ -243,18 +237,17 @@ void CAttachmentsDlg::HandleCopy()
 	{
 		EC_H(MAPIAllocateBuffer(
 			ulNumSelected * sizeof(ULONG),
-			(LPVOID*)&lpAttNumList));
+			reinterpret_cast<LPVOID*>(&lpAttNumList)));
 		if (lpAttNumList)
 		{
 			ZeroMemory(lpAttNumList, ulNumSelected * sizeof(ULONG));
-			ULONG ulSelection = 0;
-			for (ulSelection = 0; ulSelection < ulNumSelected; ulSelection++)
+			for (ULONG ulSelection = 0; ulSelection < ulNumSelected; ulSelection++)
 			{
-				int iItem = -1;
-				lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
+				auto iItem = -1;
+				auto lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 				if (lpListData && lpListData->Contents())
 				{
-					lpAttNumList[ulSelection] = lpListData->Contents()->ulAttachNum;
+					lpAttNumList[ulSelection] = lpListData->Contents()->m_ulAttachNum;
 				}
 			}
 
@@ -271,27 +264,24 @@ _Check_return_ bool CAttachmentsDlg::HandlePaste()
 	if (!m_lpContentsTableListCtrl || !m_lpMessage || !m_lpMapiObjects) return false;
 	DebugPrintEx(DBGGeneric, CLASS, L"HandlePaste", L"\n");
 
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-	ULONG ulStatus = m_lpMapiObjects->GetBufferStatus();
+	auto ulStatus = m_lpMapiObjects->GetBufferStatus();
 	if (!(ulStatus & BUFFER_ATTACHMENTS) || !(ulStatus & BUFFER_SOURCEPROPOBJ)) return false;
 
-	ULONG* lpAttNumList = m_lpMapiObjects->GetAttachmentsToCopy();
-	ULONG iNumSelected = m_lpMapiObjects->GetNumAttachments();
-	LPMESSAGE lpSourceMessage = (LPMESSAGE)m_lpMapiObjects->GetSourcePropObject();
+	auto lpAttNumList = m_lpMapiObjects->GetAttachmentsToCopy();
+	auto iNumSelected = m_lpMapiObjects->GetNumAttachments();
+	auto lpSourceMessage = static_cast<LPMESSAGE>(m_lpMapiObjects->GetSourcePropObject());
 
 	if (lpAttNumList && iNumSelected && lpSourceMessage)
 	{
-		// If we failed on one pass, try the rest
-		hRes = S_OK;
 		// Go through each attachment and copy it
-		ULONG ulAtt = 0;
-		for (ulAtt = 0; ulAtt < iNumSelected; ++ulAtt)
+		for (ULONG ulAtt = 0; ulAtt < iNumSelected; ++ulAtt)
 		{
-			LPATTACH lpAttSrc = NULL;
-			LPATTACH lpAttDst = NULL;
-			LPSPropProblemArray lpProblems = NULL;
+			LPATTACH lpAttSrc = nullptr;
+			LPATTACH lpAttDst = nullptr;
+			LPSPropProblemArray lpProblems = nullptr;
 
 			// Open the attachment source
 			EC_MAPI(lpSourceMessage->OpenAttach(
@@ -313,16 +303,15 @@ _Check_return_ bool CAttachmentsDlg::HandlePaste()
 					EC_MAPI(lpAttSrc->CopyTo(
 						0,
 						NULL,
-						0,
-						lpProgress ? (ULONG_PTR)m_hWnd : NULL,
+						nullptr,
+						lpProgress ? reinterpret_cast<ULONG_PTR>(m_hWnd) : NULL,
 						lpProgress,
-						(LPIID)&IID_IAttachment,
+						const_cast<LPIID>(&IID_IAttachment),
 						lpAttDst,
 						lpProgress ? MAPI_DIALOG : 0,
 						&lpProblems));
 
 					if (lpProgress) lpProgress->Release();
-					lpProgress = NULL;
 
 					EC_PROBLEMARRAY(lpProblems);
 					MAPIFreeBuffer(lpProblems);
@@ -330,14 +319,17 @@ _Check_return_ bool CAttachmentsDlg::HandlePaste()
 			}
 
 			if (lpAttSrc) lpAttSrc->Release();
-			lpAttSrc = NULL;
+			lpAttSrc = nullptr;
 
 			if (lpAttDst)
 			{
 				EC_MAPI(lpAttDst->SaveChanges(KEEP_OPEN_READWRITE));
 				lpAttDst->Release();
-				lpAttDst = NULL;
+				lpAttDst = nullptr;
 			}
+
+			// If we failed on one pass, try the rest
+			hRes = S_OK;
 		}
 
 		EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
@@ -350,11 +342,10 @@ _Check_return_ bool CAttachmentsDlg::HandlePaste()
 void CAttachmentsDlg::OnDeleteSelectedItem()
 {
 	if (!m_lpContentsTableListCtrl || !m_lpMessage) return;
-	HRESULT hRes = S_OK;
-	ULONG* lpAttNumList = NULL;
+	auto hRes = S_OK;
+	ULONG* lpAttNumList = nullptr;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
-	int iItem = -1;
-	SortListData* lpListData = NULL;
+	auto iItem = -1;
 
 	int iNumSelected = m_lpContentsTableListCtrl->GetSelectedCount();
 
@@ -362,21 +353,20 @@ void CAttachmentsDlg::OnDeleteSelectedItem()
 	{
 		EC_H(MAPIAllocateBuffer(
 			iNumSelected * sizeof(ULONG),
-			(LPVOID*)&lpAttNumList));
+			reinterpret_cast<LPVOID*>(&lpAttNumList)));
 		if (lpAttNumList)
 		{
 			ZeroMemory(lpAttNumList, iNumSelected * sizeof(ULONG));
-			int iSelection = 0;
-			for (iSelection = 0; iSelection < iNumSelected; iSelection++)
+			for (auto iSelection = 0; iSelection < iNumSelected; iSelection++)
 			{
-				lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
+				auto lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 				if (lpListData && lpListData->Contents())
 				{
-					lpAttNumList[iSelection] = lpListData->Contents()->ulAttachNum;
+					lpAttNumList[iSelection] = lpListData->Contents()->m_ulAttachNum;
 				}
 			}
 
-			for (iSelection = 0; iSelection < iNumSelected; iSelection++)
+			for (auto iSelection = 0; iSelection < iNumSelected; iSelection++)
 			{
 				DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L"Deleting attachment 0x%08X\n", lpAttNumList[iSelection]);
 
@@ -384,14 +374,12 @@ void CAttachmentsDlg::OnDeleteSelectedItem()
 
 				EC_MAPI(m_lpMessage->DeleteAttach(
 					lpAttNumList[iSelection],
-					lpProgress ? (ULONG_PTR)m_hWnd : NULL,
+					lpProgress ? reinterpret_cast<ULONG_PTR>(m_hWnd) : NULL,
 					lpProgress,
 					lpProgress ? ATTACH_DIALOG : 0));
 
 				if (lpProgress)
 					lpProgress->Release();
-
-				lpProgress = NULL;
 			}
 
 			MAPIFreeBuffer(lpAttNumList);
@@ -405,7 +393,7 @@ void CAttachmentsDlg::OnModifySelectedItem()
 {
 	if (m_lpAttach)
 	{
-		HRESULT hRes = S_OK;
+		auto hRes = S_OK;
 
 		EC_MAPI(m_lpAttach->SaveChanges(KEEP_OPEN_READWRITE));
 	}
@@ -415,7 +403,7 @@ void CAttachmentsDlg::OnSaveChanges()
 {
 	if (m_lpMessage)
 	{
-		HRESULT hRes = S_OK;
+		auto hRes = S_OK;
 
 		EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
 	}
@@ -423,11 +411,9 @@ void CAttachmentsDlg::OnSaveChanges()
 
 void CAttachmentsDlg::OnSaveToFile()
 {
-	HRESULT hRes = S_OK;
-	LPATTACH lpAttach = NULL;
-	ULONG ulAttachNum = 0;
-	int iItem = -1;
-	SortListData* lpListData = NULL;
+	auto hRes = S_OK;
+	LPATTACH lpAttach = nullptr;
+	auto iItem = -1;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpContentsTableListCtrl || !m_lpMessage) return;
@@ -435,7 +421,7 @@ void CAttachmentsDlg::OnSaveToFile()
 	do
 	{
 		// Find the highlighted item AttachNum
-		lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
+		auto lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 		if (S_OK != hRes && -1 != iItem)
 		{
 			if (bShouldCancel(this, hRes)) break;
@@ -444,20 +430,20 @@ void CAttachmentsDlg::OnSaveToFile()
 
 		if (lpListData && lpListData->Contents())
 		{
-			ulAttachNum = lpListData->Contents()->ulAttachNum;
+			auto ulAttachNum = lpListData->Contents()->m_ulAttachNum;
 
 			EC_MAPI(m_lpMessage->OpenAttach(
 				ulAttachNum,
 				NULL,
 				MAPI_BEST_ACCESS, // TODO: Is best access really needed?
-				(LPATTACH*)&lpAttach));
+				static_cast<LPATTACH*>(&lpAttach)));
 
 			if (lpAttach)
 			{
 				WC_H(WriteAttachmentToFile(lpAttach, m_hWnd));
 
 				lpAttach->Release();
-				lpAttach = NULL;
+				lpAttach = nullptr;
 			}
 		}
 	} while (iItem != -1);
@@ -486,14 +472,14 @@ void CAttachmentsDlg::OnAddAttachment()
 		szFileSpec));
 	if (iDlgRet == IDOK)
 	{
-		LPATTACH lpAttachment = NULL;
+		LPATTACH lpAttachment = nullptr;
 		ULONG ulAttachNum = 0;
 
 		EC_MAPI(m_lpMessage->CreateAttach(NULL, NULL, &ulAttachNum, &lpAttachment));
 
 		if (SUCCEEDED(hRes) && lpAttachment)
 		{
-			LPWSTR szAttachName = dlgFilePicker.GetFileName();
+			auto szAttachName = dlgFilePicker.GetFileName();
 			SPropValue spvAttach[4];
 			spvAttach[0].ulPropTag = PR_ATTACH_METHOD;
 			spvAttach[0].Value.l = ATTACH_BY_VALUE;
@@ -507,7 +493,7 @@ void CAttachmentsDlg::OnAddAttachment()
 			EC_MAPI(lpAttachment->SetProps(_countof(spvAttach), spvAttach, NULL));
 			if (SUCCEEDED(hRes))
 			{
-				LPSTREAM pStreamFile = NULL;
+				LPSTREAM pStreamFile = nullptr;
 
 				EC_MAPI(MyOpenStreamOnFile(
 					MAPIAllocateBuffer,
@@ -518,15 +504,15 @@ void CAttachmentsDlg::OnAddAttachment()
 					&pStreamFile));
 				if (SUCCEEDED(hRes) && pStreamFile)
 				{
-					LPSTREAM pStreamAtt = NULL;
-					STATSTG StatInfo = { 0 };
+					LPSTREAM pStreamAtt = nullptr;
+					STATSTG StatInfo = { nullptr };
 
 					EC_MAPI(lpAttachment->OpenProperty(
 						PR_ATTACH_DATA_BIN,
 						&IID_IStream,
 						0,
 						MAPI_MODIFY | MAPI_CREATE,
-						(LPUNKNOWN *)&pStreamAtt));
+						reinterpret_cast<LPUNKNOWN *>(&pStreamAtt)));
 					if (SUCCEEDED(hRes) && pStreamAtt)
 					{
 						EC_MAPI(pStreamFile->Stat(&StatInfo, STATFLAG_NONAME));
@@ -557,7 +543,7 @@ void CAttachmentsDlg::HandleAddInMenuSingle(
 	if (lpParams)
 	{
 		lpParams->lpMessage = m_lpMessage;
-		lpParams->lpAttach = (LPATTACH)lpMAPIProp; // OpenItemProp returns LPATTACH
+		lpParams->lpAttach = static_cast<LPATTACH>(lpMAPIProp); // OpenItemProp returns LPATTACH
 	}
 
 	InvokeAddInMenu(lpParams);

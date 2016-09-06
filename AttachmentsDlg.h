@@ -24,8 +24,8 @@ private:
 	void OnDeleteSelectedItem();
 	void OnDisplayItem();
 	void OnInitMenu(_In_ CMenu* pMenu);
-	_Check_return_ LPATTACH OpenAttach(ULONG ulAttachNum);
-	_Check_return_ LPMESSAGE CAttachmentsDlg::OpenEmbeddedMessage();
+	_Check_return_ LPATTACH OpenAttach(ULONG ulAttachNum) const;
+	_Check_return_ LPMESSAGE CAttachmentsDlg::OpenEmbeddedMessage() const;
 	_Check_return_ HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp);
 
 	// Menu items

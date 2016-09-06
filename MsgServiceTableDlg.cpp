@@ -24,8 +24,8 @@ CMsgServiceTableDlg::CMsgServiceTableDlg(
 		lpMapiObjects,
 		IDS_SERVICES,
 		mfcmapiDO_NOT_CALL_CREATE_DIALOG,
-		NULL,
-		(LPSPropTagArray)&sptSERVICECols,
+		nullptr,
+		LPSPropTagArray(&sptSERVICECols),
 		NUMSERVICECOLUMNS,
 		SERVICEColumns,
 		IDR_MENU_MSGSERVICE_POPUP,
@@ -33,12 +33,12 @@ CMsgServiceTableDlg::CMsgServiceTableDlg(
 {
 	TRACE_CONSTRUCTOR(CLASS);
 
-	m_lpServiceAdmin = NULL;
+	m_lpServiceAdmin = nullptr;
 
 	CreateDialogAndMenu(IDR_MENU_MSGSERVICE);
 
 	m_szProfileName = szProfileName;
-	OnRefreshView();
+	CMsgServiceTableDlg::OnRefreshView();
 }
 
 CMsgServiceTableDlg::~CMsgServiceTableDlg()
@@ -46,7 +46,7 @@ CMsgServiceTableDlg::~CMsgServiceTableDlg()
 	TRACE_DESTRUCTOR(CLASS);
 	// little hack to keep our releases in the right order - crash in o2k3 otherwise
 	if (m_lpContentsTable) m_lpContentsTable->Release();
-	m_lpContentsTable = NULL;
+	m_lpContentsTable = nullptr;
 	if (m_lpServiceAdmin) m_lpServiceAdmin->Release();
 }
 
@@ -76,7 +76,7 @@ void CMsgServiceTableDlg::OnRefreshView()
 {
 	DebugPrintEx(DBGGeneric, CLASS, L"OnRefreshView", L"\n");
 
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
 	// Make sure we've got something to work with
 	if (m_szProfileName.empty() || !m_lpContentsTableListCtrl || !m_lpMapiObjects) return;
@@ -92,22 +92,22 @@ void CMsgServiceTableDlg::OnRefreshView()
 		NULL));
 
 	if (m_lpServiceAdmin) m_lpServiceAdmin->Release();
-	m_lpServiceAdmin = NULL;
+	m_lpServiceAdmin = nullptr;
 
-	LPPROFADMIN lpProfAdmin = NULL;
+	LPPROFADMIN lpProfAdmin = nullptr;
 	EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
 
 	if (lpProfAdmin)
 	{
 		EC_MAPI(lpProfAdmin->AdminServices(
 			reinterpret_cast<LPTSTR>(const_cast<LPSTR>(m_szProfileName.c_str())),
-			(LPTSTR)"",
+			reinterpret_cast<LPTSTR>(""),
 			NULL,
 			MAPI_DIALOG,
 			&m_lpServiceAdmin));
 		if (m_lpServiceAdmin)
 		{
-			LPMAPITABLE lpServiceTable = NULL;
+			LPMAPITABLE lpServiceTable = nullptr;
 
 			EC_MAPI(m_lpServiceAdmin->GetMsgServiceTable(
 				0, // fMapiUnicode is not supported
@@ -130,27 +130,24 @@ void CMsgServiceTableDlg::OnRefreshView()
 
 void CMsgServiceTableDlg::OnDisplayItem()
 {
-	HRESULT hRes = S_OK;
-	LPSBinary lpServiceUID = NULL;
-	LPPROVIDERADMIN lpProviderAdmin = NULL;
-	LPMAPITABLE lpProviderTable = NULL;
-	int iItem = -1;
-	SortListData* lpListData = NULL;
+	auto hRes = S_OK;
+	LPPROVIDERADMIN lpProviderAdmin = nullptr;
+	LPMAPITABLE lpProviderTable = nullptr;
+	auto iItem = -1;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpContentsTableListCtrl || !m_lpServiceAdmin) return;
 
 	do
 	{
-		hRes = S_OK;
-		lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
+		auto lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 		if (lpListData && lpListData->Contents())
 		{
-			lpServiceUID = lpListData->Contents()->lpServiceUID;
+			auto lpServiceUID = lpListData->Contents()->m_lpServiceUID;
 			if (lpServiceUID)
 			{
 				EC_MAPI(m_lpServiceAdmin->AdminProviders(
-					(LPMAPIUID)lpServiceUID->lpb,
+					reinterpret_cast<LPMAPIUID>(lpServiceUID->lpb),
 					0, // fMapiUnicode is not supported
 					&lpProviderAdmin));
 
@@ -168,69 +165,68 @@ void CMsgServiceTableDlg::OnDisplayItem()
 							lpProviderTable,
 							lpProviderAdmin);
 						lpProviderTable->Release();
-						lpProviderTable = NULL;
+						lpProviderTable = nullptr;
 					}
 
 					lpProviderAdmin->Release();
-					lpProviderAdmin = NULL;
+					lpProviderAdmin = nullptr;
 				}
 			}
 		}
+
+		hRes = S_OK;
 	} while (iItem != -1);
 }
 
 void CMsgServiceTableDlg::OnConfigureMsgService()
 {
-	HRESULT hRes = S_OK;
-	LPSBinary lpServiceUID = NULL;
-	int iItem = -1;
-	SortListData* lpListData = NULL;
+	auto hRes = S_OK;
+	auto iItem = -1;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpContentsTableListCtrl || !m_lpServiceAdmin) return;
 
 	do
 	{
-		hRes = S_OK;
-		lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
+		auto lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 		if (lpListData && lpListData->Contents())
 		{
-			lpServiceUID = lpListData->Contents()->lpServiceUID;
+			auto lpServiceUID = lpListData->Contents()->m_lpServiceUID;
 			if (lpServiceUID)
 			{
 				EC_H_CANCEL(m_lpServiceAdmin->ConfigureMsgService(
-					(LPMAPIUID)lpServiceUID->lpb,
-					(ULONG_PTR)m_hWnd,
+					reinterpret_cast<LPMAPIUID>(lpServiceUID->lpb),
+					reinterpret_cast<ULONG_PTR>(m_hWnd),
 					SERVICE_UI_ALWAYS,
 					0,
-					0));
+					nullptr));
 			}
 		}
+
+		hRes = S_OK;
 	} while (iItem != -1);
 }
 
 _Check_return_ HRESULT CMsgServiceTableDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum /*bModify*/, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
 {
-	HRESULT hRes = S_OK;
-	LPSBinary lpServiceUID = NULL;
-	SortListData* lpListData = NULL;
+	auto hRes = S_OK;
 
 	DebugPrintEx(DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
 
-	*lppMAPIProp = NULL;
+	*lppMAPIProp = nullptr;
 
 	if (!m_lpServiceAdmin || !m_lpContentsTableListCtrl || !lppMAPIProp) return MAPI_E_INVALID_PARAMETER;
 
-	lpListData = (SortListData*)m_lpContentsTableListCtrl->GetItemData(iSelectedItem);
+	auto lpListData = reinterpret_cast<SortListData*>(m_lpContentsTableListCtrl->GetItemData(iSelectedItem));
 	if (lpListData && lpListData->Contents())
 	{
-		lpServiceUID = lpListData->Contents()->lpServiceUID;
+		auto lpServiceUID = lpListData->Contents()->m_lpServiceUID;
 		if (lpServiceUID)
 		{
 			EC_H(OpenProfileSection(
 				m_lpServiceAdmin,
 				lpServiceUID,
-				(LPPROFSECT*)lppMAPIProp));
+				reinterpret_cast<LPPROFSECT*>(lppMAPIProp)));
 		}
 	}
 
@@ -239,7 +235,7 @@ _Check_return_ HRESULT CMsgServiceTableDlg::OpenItemProp(int iSelectedItem, __mf
 
 void CMsgServiceTableDlg::OnOpenProfileSection()
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
 	if (!m_lpServiceAdmin) return;
 
@@ -257,18 +253,18 @@ void CMsgServiceTableDlg::OnOpenProfileSection()
 	if (S_OK != hRes) return;
 
 	GUID guid = { 0 };
-	SBinary MapiUID = { sizeof(GUID), (LPBYTE)&guid };
+	SBinary MapiUID = { sizeof(GUID), reinterpret_cast<LPBYTE>(&guid) };
 	(void)MyUID.GetSelectedGUID(0, MyUID.GetCheck(1), &guid);
 
-	LPPROFSECT lpProfSect = NULL;
+	LPPROFSECT lpProfSect = nullptr;
 	EC_H(OpenProfileSection(
 		m_lpServiceAdmin,
 		&MapiUID,
 		&lpProfSect));
 	if (lpProfSect)
 	{
-		LPMAPIPROP lpTemp = NULL;
-		EC_MAPI(lpProfSect->QueryInterface(IID_IMAPIProp, (LPVOID*)&lpTemp));
+		LPMAPIPROP lpTemp = nullptr;
+		EC_MAPI(lpProfSect->QueryInterface(IID_IMAPIProp, reinterpret_cast<LPVOID*>(&lpTemp)));
 		if (lpTemp)
 		{
 			EC_H(DisplayObject(
@@ -287,28 +283,27 @@ void CMsgServiceTableDlg::OnOpenProfileSection()
 
 void CMsgServiceTableDlg::OnDeleteSelectedItem()
 {
-	HRESULT hRes = S_OK;
-	int iItem = -1;
-	LPSBinary lpServiceUID = NULL;
-	SortListData* lpListData = NULL;
+	auto hRes = S_OK;
+	auto iItem = -1;
 
 	if (!m_lpServiceAdmin || !m_lpContentsTableListCtrl) return;
 
 	do
 	{
-		hRes = S_OK;
 		// Find the highlighted item AttachNum
-		lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
+		auto lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 		if (!lpListData || !lpListData->Contents()) break;
 
 		DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L"Deleting service from \"%hs\"\n", lpListData->Contents()->m_szProfileDisplayName.c_str());
 
-		lpServiceUID = lpListData->Contents()->lpServiceUID;
+		auto lpServiceUID = lpListData->Contents()->m_lpServiceUID;
 		if (lpServiceUID)
 		{
 			WC_MAPI(m_lpServiceAdmin->DeleteMsgService(
-				(LPMAPIUID)lpServiceUID->lpb));
+				reinterpret_cast<LPMAPIUID>(lpServiceUID->lpb)));
 		}
+
+		hRes = S_OK;
 	} while (iItem != -1);
 
 	OnRefreshView(); // Update the view since we don't have notifications here.
@@ -321,7 +316,7 @@ void CMsgServiceTableDlg::HandleAddInMenuSingle(
 {
 	if (lpParams)
 	{
-		lpParams->lpProfSect = (LPPROFSECT)lpMAPIProp; // OpenItemProp returns LPPROFSECT
+		lpParams->lpProfSect = static_cast<LPPROFSECT>(lpMAPIProp); // OpenItemProp returns LPPROFSECT
 	}
 
 	InvokeAddInMenu(lpParams);

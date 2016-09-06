@@ -4,15 +4,15 @@
 
 ContentsData::ContentsData(_In_ LPSRow lpsRowData)
 {
-	lpEntryID = nullptr;
-	lpLongtermID = nullptr;
-	lpInstanceKey = nullptr;
-	lpServiceUID = nullptr;
-	lpProviderUID = nullptr;
-	ulAttachNum = 0;
-	ulAttachMethod = 0;
-	ulRowID = 0;
-	ulRowType = 0;
+	m_lpEntryID = nullptr;
+	m_lpLongtermID = nullptr;
+	m_lpInstanceKey = nullptr;
+	m_lpServiceUID = nullptr;
+	m_lpProviderUID = nullptr;
+	m_ulAttachNum = 0;
+	m_ulAttachMethod = 0;
+	m_ulRowID = 0;
+	m_ulRowType = 0;
 
 	if (!lpsRowData) return;
 
@@ -27,8 +27,8 @@ ContentsData::ContentsData(_In_ LPSRow lpsRowData)
 	{
 		EC_H(MAPIAllocateBuffer(
 			static_cast<ULONG>(sizeof(SBinary)),
-			reinterpret_cast<LPVOID*>(&lpInstanceKey)));
-		EC_H(CopySBinary(lpInstanceKey, &lpProp->Value.bin, lpInstanceKey));
+			reinterpret_cast<LPVOID*>(&m_lpInstanceKey)));
+		EC_H(CopySBinary(m_lpInstanceKey, &lpProp->Value.bin, m_lpInstanceKey));
 	}
 
 	// Save the attachment number into lpData
@@ -39,7 +39,7 @@ ContentsData::ContentsData(_In_ LPSRow lpsRowData)
 	if (lpProp && PR_ATTACH_NUM == lpProp->ulPropTag)
 	{
 		DebugPrint(DBGGeneric, L"\tPR_ATTACH_NUM = %d\n", lpProp->Value.l);
-		ulAttachNum = lpProp->Value.l;
+		m_ulAttachNum = lpProp->Value.l;
 	}
 
 	lpProp = PpropFindProp(
@@ -49,7 +49,7 @@ ContentsData::ContentsData(_In_ LPSRow lpsRowData)
 	if (lpProp && PR_ATTACH_METHOD == lpProp->ulPropTag)
 	{
 		DebugPrint(DBGGeneric, L"\tPR_ATTACH_METHOD = %d\n", lpProp->Value.l);
-		ulAttachMethod = lpProp->Value.l;
+		m_ulAttachMethod = lpProp->Value.l;
 	}
 
 	// Save the row ID (recipients) into lpData
@@ -60,7 +60,7 @@ ContentsData::ContentsData(_In_ LPSRow lpsRowData)
 	if (lpProp && PR_ROWID == lpProp->ulPropTag)
 	{
 		DebugPrint(DBGGeneric, L"\tPR_ROWID = %d\n", lpProp->Value.l);
-		ulRowID = lpProp->Value.l;
+		m_ulRowID = lpProp->Value.l;
 	}
 
 	// Save the row type (header/leaf) into lpData
@@ -71,7 +71,7 @@ ContentsData::ContentsData(_In_ LPSRow lpsRowData)
 	if (lpProp && PR_ROW_TYPE == lpProp->ulPropTag)
 	{
 		DebugPrint(DBGGeneric, L"\tPR_ROW_TYPE = %d\n", lpProp->Value.l);
-		ulRowType = lpProp->Value.l;
+		m_ulRowType = lpProp->Value.l;
 	}
 
 	// Save the Entry ID into lpData
@@ -83,8 +83,8 @@ ContentsData::ContentsData(_In_ LPSRow lpsRowData)
 	{
 		EC_H(MAPIAllocateBuffer(
 			static_cast<ULONG>(sizeof(SBinary)),
-			reinterpret_cast<LPVOID*>(&lpEntryID)));
-		EC_H(CopySBinary(lpEntryID, &lpProp->Value.bin, lpEntryID));
+			reinterpret_cast<LPVOID*>(&m_lpEntryID)));
+		EC_H(CopySBinary(m_lpEntryID, &lpProp->Value.bin, m_lpEntryID));
 	}
 
 	// Save the Longterm Entry ID into lpData
@@ -96,8 +96,8 @@ ContentsData::ContentsData(_In_ LPSRow lpsRowData)
 	{
 		EC_H(MAPIAllocateBuffer(
 			static_cast<ULONG>(sizeof(SBinary)),
-			reinterpret_cast<LPVOID*>(&lpLongtermID)));
-		EC_H(CopySBinary(lpLongtermID, &lpProp->Value.bin, lpLongtermID));
+			reinterpret_cast<LPVOID*>(&m_lpLongtermID)));
+		EC_H(CopySBinary(m_lpLongtermID, &lpProp->Value.bin, m_lpLongtermID));
 	}
 
 	// Save the Service ID into lpData
@@ -110,8 +110,8 @@ ContentsData::ContentsData(_In_ LPSRow lpsRowData)
 		// Allocate some space
 		EC_H(MAPIAllocateBuffer(
 			static_cast<ULONG>(sizeof(SBinary)),
-			reinterpret_cast<LPVOID*>(&lpServiceUID)));
-		EC_H(CopySBinary(lpServiceUID, &lpProp->Value.bin, lpServiceUID));
+			reinterpret_cast<LPVOID*>(&m_lpServiceUID)));
+		EC_H(CopySBinary(m_lpServiceUID, &lpProp->Value.bin, m_lpServiceUID));
 	}
 
 	// Save the Provider ID into lpData
@@ -124,8 +124,8 @@ ContentsData::ContentsData(_In_ LPSRow lpsRowData)
 		// Allocate some space
 		EC_H(MAPIAllocateBuffer(
 			static_cast<ULONG>(sizeof(SBinary)),
-			reinterpret_cast<LPVOID*>(&lpProviderUID)));
-		EC_H(CopySBinary(lpProviderUID, &lpProp->Value.bin, lpProviderUID));
+			reinterpret_cast<LPVOID*>(&m_lpProviderUID)));
+		EC_H(CopySBinary(m_lpProviderUID, &lpProp->Value.bin, m_lpProviderUID));
 	}
 
 	// Save the DisplayName into lpData
@@ -153,9 +153,9 @@ ContentsData::ContentsData(_In_ LPSRow lpsRowData)
 
 ContentsData::~ContentsData()
 {
-	MAPIFreeBuffer(lpInstanceKey);
-	MAPIFreeBuffer(lpEntryID);
-	MAPIFreeBuffer(lpLongtermID);
-	MAPIFreeBuffer(lpServiceUID);
-	MAPIFreeBuffer(lpProviderUID);
+	MAPIFreeBuffer(m_lpInstanceKey);
+	MAPIFreeBuffer(m_lpEntryID);
+	MAPIFreeBuffer(m_lpLongtermID);
+	MAPIFreeBuffer(m_lpServiceUID);
+	MAPIFreeBuffer(m_lpProviderUID);
 }

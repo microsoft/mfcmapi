@@ -781,7 +781,7 @@ _Check_return_ HRESULT CSingleMAPIPropListCtrl::SetDataSource(_In_opt_ LPMAPIPRO
 void CSingleMAPIPropListCtrl::SavePropsToXML()
 {
 	auto hRes = S_OK;
-	auto iDlgRet = 0;
+	INT_PTR iDlgRet = 0;
 
 	auto szFileSpec = loadstring(IDS_XMLFILES);
 

@@ -6,15 +6,15 @@ class ContentsData
 public:
 	ContentsData(_In_ LPSRow lpsRowData);
 	~ContentsData();
-	LPSBinary lpEntryID; // Allocated with MAPIAllocateBuffer
-	LPSBinary lpLongtermID; // Allocated with MAPIAllocateBuffer
-	LPSBinary lpInstanceKey; // Allocated with MAPIAllocateBuffer
-	LPSBinary lpServiceUID; // Allocated with MAPIAllocateBuffer
-	LPSBinary lpProviderUID; // Allocated with MAPIAllocateBuffer
+	LPSBinary m_lpEntryID; // Allocated with MAPIAllocateBuffer
+	LPSBinary m_lpLongtermID; // Allocated with MAPIAllocateBuffer
+	LPSBinary m_lpInstanceKey; // Allocated with MAPIAllocateBuffer
+	LPSBinary m_lpServiceUID; // Allocated with MAPIAllocateBuffer
+	LPSBinary m_lpProviderUID; // Allocated with MAPIAllocateBuffer
 	wstring m_szDN;
 	string m_szProfileDisplayName;
-	ULONG ulAttachNum;
-	ULONG ulAttachMethod;
-	ULONG ulRowID; // for recipients
-	ULONG ulRowType; // PR_ROW_TYPE
+	ULONG m_ulAttachNum;
+	ULONG m_ulAttachMethod;
+	ULONG m_ulRowID; // for recipients
+	ULONG m_ulRowType; // PR_ROW_TYPE
 };

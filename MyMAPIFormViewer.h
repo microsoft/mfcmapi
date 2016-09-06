@@ -4,7 +4,7 @@
 class CContentsTableListCtrl;
 
 class CMyMAPIFormViewer :
-	public IMAPIMessageSite ,
+	public IMAPIMessageSite,
 	public IMAPIViewAdviseSink,
 	public IMAPIViewContext
 {
@@ -20,72 +20,72 @@ public:
 	virtual ~CMyMAPIFormViewer();
 
 	// IUnknown
-	STDMETHODIMP QueryInterface (REFIID riid, LPVOID * ppvObj);
-	STDMETHODIMP_(ULONG) AddRef();
-	STDMETHODIMP_(ULONG) Release();
+	STDMETHODIMP QueryInterface(REFIID riid, LPVOID * ppvObj) override;
+	STDMETHODIMP_(ULONG) AddRef() override;
+	STDMETHODIMP_(ULONG) Release() override;
 
 	STDMETHODIMP GetLastError(
 		HRESULT hResult,
 		ULONG ulFlags,
-		LPMAPIERROR* lppMAPIError);
+		LPMAPIERROR* lppMAPIError) override;
 
 	// IMAPIMessageSite
-	STDMETHODIMP GetSession (
-		LPMAPISESSION* ppSession);
-	STDMETHODIMP GetStore (
-		LPMDB* ppStore);
-	STDMETHODIMP GetFolder (
-		LPMAPIFOLDER* ppFolder);
-	STDMETHODIMP GetMessage (
-		LPMESSAGE* ppmsg);
-	STDMETHODIMP GetFormManager (
-		LPMAPIFORMMGR* ppFormMgr);
-	STDMETHODIMP NewMessage (
+	STDMETHODIMP GetSession(
+		LPMAPISESSION* ppSession) override;
+	STDMETHODIMP GetStore(
+		LPMDB* ppStore) override;
+	STDMETHODIMP GetFolder(
+		LPMAPIFOLDER* ppFolder) override;
+	STDMETHODIMP GetMessage(
+		LPMESSAGE* ppmsg) override;
+	STDMETHODIMP GetFormManager(
+		LPMAPIFORMMGR* ppFormMgr) override;
+	STDMETHODIMP NewMessage(
 		ULONG fComposeInFolder,
 		LPMAPIFOLDER pFolderFocus,
 		LPPERSISTMESSAGE pPersistMessage,
 		LPMESSAGE* ppMessage,
 		LPMAPIMESSAGESITE* ppMessageSite,
-		LPMAPIVIEWCONTEXT* ppViewContext);
-	STDMETHODIMP CopyMessage (
-		LPMAPIFOLDER pFolderDestination);
-	STDMETHODIMP MoveMessage (
+		LPMAPIVIEWCONTEXT* ppViewContext) override;
+	STDMETHODIMP CopyMessage(
+		LPMAPIFOLDER pFolderDestination) override;
+	STDMETHODIMP MoveMessage(
 		LPMAPIFOLDER pFolderDestination,
 		LPMAPIVIEWCONTEXT pViewContext,
-		LPCRECT prcPosRect);
-	STDMETHODIMP DeleteMessage (
+		LPCRECT prcPosRect) override;
+	STDMETHODIMP DeleteMessage(
 		LPMAPIVIEWCONTEXT pViewContext,
-		LPCRECT prcPosRect);
-	STDMETHODIMP SaveMessage();
+		LPCRECT prcPosRect) override;
+	STDMETHODIMP SaveMessage() override;
 	STDMETHODIMP SubmitMessage(
-		ULONG ulFlags);
+		ULONG ulFlags) override;
 	STDMETHODIMP GetSiteStatus(
-		LPULONG lpulStatus);
+		LPULONG lpulStatus) override;
 
 	// IMAPIViewAdviseSink
-	STDMETHODIMP OnShutdown();
-	STDMETHODIMP OnNewMessage();
+	STDMETHODIMP OnShutdown() override;
+	STDMETHODIMP OnNewMessage() override;
 	STDMETHODIMP OnPrint(
 		ULONG dwPageNumber,
-		HRESULT hrStatus);
-	STDMETHODIMP OnSubmitted();
-	STDMETHODIMP OnSaved();
+		HRESULT hrStatus) override;
+	STDMETHODIMP OnSubmitted() override;
+	STDMETHODIMP OnSaved() override;
 
 	// IMAPIViewContext
 	STDMETHODIMP SetAdviseSink(
-		LPMAPIFORMADVISESINK pmvns);
+		LPMAPIFORMADVISESINK pmvns) override;
 	STDMETHODIMP ActivateNext(
 		ULONG ulDir,
-		LPCRECT prcPosRect);
+		LPCRECT prcPosRect) override;
 	STDMETHODIMP GetPrintSetup(
 		ULONG ulFlags,
-		LPFORMPRINTSETUP* lppFormPrintSetup);
+		LPFORMPRINTSETUP* lppFormPrintSetup) override;
 	STDMETHODIMP GetSaveStream(
 		ULONG* pulFlags,
 		ULONG* pulFormat,
-		LPSTREAM* ppstm);
+		LPSTREAM* ppstm) override;
 	STDMETHODIMP GetViewStatus(
-		LPULONG lpulStatus);
+		LPULONG lpulStatus) override;
 
 	_Check_return_ HRESULT CallDoVerb(_In_ LPMAPIFORM lpMapiForm,
 		LONG lVerb,
@@ -97,7 +97,7 @@ private:
 		ULONG ulDir,
 		_Out_ int* piNewItem,
 		_Out_ ULONG* pulStatus,
-		_Deref_out_opt_ LPMESSAGE* ppMessage);
+		_Deref_out_opt_ LPMESSAGE* ppMessage) const;
 	_Check_return_ HRESULT SetPersist(_In_opt_ LPMAPIFORM lpForm, _In_opt_ LPPERSISTMESSAGE lpPersist);
 	void ShutdownPersist();
 	void ReleaseObjects();

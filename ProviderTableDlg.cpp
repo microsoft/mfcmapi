@@ -25,7 +25,7 @@ CProviderTableDlg::CProviderTableDlg(
 		IDS_PROVIDERS,
 		mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 		lpMAPITable,
-		(LPSPropTagArray)&sptPROVIDERCols,
+		LPSPropTagArray(&sptPROVIDERCols),
 		NUMPROVIDERCOLUMNS,
 		PROVIDERColumns,
 		NULL,
@@ -44,7 +44,7 @@ CProviderTableDlg::~CProviderTableDlg()
 	TRACE_DESTRUCTOR(CLASS);
 	// little hack to keep our releases in the right order - crash in o2k3 otherwise
 	if (m_lpContentsTable) m_lpContentsTable->Release();
-	m_lpContentsTable = NULL;
+	m_lpContentsTable = nullptr;
 	if (m_lpProviderAdmin) m_lpProviderAdmin->Release();
 }
 
@@ -54,26 +54,24 @@ END_MESSAGE_MAP()
 
 _Check_return_ HRESULT CProviderTableDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum /*bModify*/, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
 {
-	HRESULT hRes = S_OK;
-	LPSBinary lpProviderUID = NULL;
-	SortListData* lpListData = NULL;
+	auto hRes = S_OK;
 
 	DebugPrintEx(DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
 
 	if (!lppMAPIProp || !m_lpContentsTableListCtrl || !m_lpProviderAdmin) return MAPI_E_INVALID_PARAMETER;
 
-	*lppMAPIProp = NULL;
+	*lppMAPIProp = nullptr;
 
-	lpListData = (SortListData*)m_lpContentsTableListCtrl->GetItemData(iSelectedItem);
+	auto lpListData = reinterpret_cast<SortListData*>(m_lpContentsTableListCtrl->GetItemData(iSelectedItem));
 	if (lpListData && lpListData->Contents())
 	{
-		lpProviderUID = lpListData->Contents()->lpProviderUID;
+		auto lpProviderUID = lpListData->Contents()->m_lpProviderUID;
 		if (lpProviderUID)
 		{
 			EC_H(OpenProfileSection(
 				m_lpProviderAdmin,
 				lpProviderUID,
-				(LPPROFSECT*)lppMAPIProp));
+				reinterpret_cast<LPPROFSECT*>(lppMAPIProp)));
 		}
 	}
 
@@ -82,7 +80,7 @@ _Check_return_ HRESULT CProviderTableDlg::OpenItemProp(int iSelectedItem, __mfcm
 
 void CProviderTableDlg::OnOpenProfileSection()
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
 	if (!m_lpProviderAdmin) return;
 
@@ -100,18 +98,18 @@ void CProviderTableDlg::OnOpenProfileSection()
 	if (S_OK != hRes) return;
 
 	GUID guid = { 0 };
-	SBinary MapiUID = { sizeof(GUID), (LPBYTE)&guid };
+	SBinary MapiUID = { sizeof(GUID), reinterpret_cast<LPBYTE>(&guid) };
 	(void)MyUID.GetSelectedGUID(0, MyUID.GetCheck(1), &guid);
 
-	LPPROFSECT lpProfSect = NULL;
+	LPPROFSECT lpProfSect = nullptr;
 	EC_H(OpenProfileSection(
 		m_lpProviderAdmin,
 		&MapiUID,
 		&lpProfSect));
 	if (lpProfSect)
 	{
-		LPMAPIPROP lpTemp = NULL;
-		EC_MAPI(lpProfSect->QueryInterface(IID_IMAPIProp, (LPVOID*)&lpTemp));
+		LPMAPIPROP lpTemp = nullptr;
+		EC_MAPI(lpProfSect->QueryInterface(IID_IMAPIProp, reinterpret_cast<LPVOID*>(&lpTemp)));
 		if (lpTemp)
 		{
 			EC_H(DisplayObject(
@@ -135,7 +133,7 @@ void CProviderTableDlg::HandleAddInMenuSingle(
 {
 	if (lpParams)
 	{
-		lpParams->lpProfSect = (LPPROFSECT)lpMAPIProp;
+		lpParams->lpProfSect = static_cast<LPPROFSECT>(lpMAPIProp);
 	}
 
 	InvokeAddInMenu(lpParams);
