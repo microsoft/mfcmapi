@@ -24,14 +24,14 @@ private:
 	void HandleAddInMenuSingle(
 		_In_ LPADDINMENUPARAMS lpParams,
 		_In_ LPMAPIPROP lpMAPIProp,
-		_In_ LPMAPICONTAINER lpContainer);
-	_Check_return_ bool HandleMenu(WORD wMenuSelect);
-	_Check_return_ HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp);
-	void OnDisplayItem();
+		_In_ LPMAPICONTAINER lpContainer) override;
+	_Check_return_ bool HandleMenu(WORD wMenuSelect) override;
+	_Check_return_ HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp) override;
+	void OnDisplayItem() override;
 	void OnInitMenu(_In_ CMenu* pMenu);
 
-	void AddLoadMAPIMenus();
-	bool InvokeLoadMAPIMenu(WORD wMenuSelect);
+	void AddLoadMAPIMenus() const;
+	bool InvokeLoadMAPIMenu(WORD wMenuSelect) const;
 
 // Menu items
 	void OnABHierarchy();

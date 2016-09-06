@@ -1,6 +1,4 @@
 #pragma once
-// RecipientsDlg.h : header file
-
 class CContentsTableListCtrl;
 class CSingleMAPIPropListCtrl;
 class CParentWnd;
@@ -20,9 +18,9 @@ public:
 
 private:
 	// Overrides from base class
-	void OnDeleteSelectedItem();
+	void OnDeleteSelectedItem() override;
 	void OnInitMenu(_In_ CMenu* pMenu);
-	_Check_return_ HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp);
+	_Check_return_ HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp) override;
 
 	// Menu items
 	void OnModifyRecipients();

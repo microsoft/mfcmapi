@@ -26,34 +26,34 @@ public:
 		ULONG ulContainerType);
 
 	// Selected item accessors
-	_Check_return_ HRESULT GetSelectedItemEIDs(_Deref_out_opt_ LPENTRYLIST* lppEntryIDs);
-	_Check_return_ SortListData* GetNextSelectedItemData(_Inout_opt_ int* iCurItem);
-	_Check_return_ HRESULT OpenNextSelectedItemProp(_Inout_opt_ int* iCurItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppProp);
+	_Check_return_ HRESULT GetSelectedItemEIDs(_Deref_out_opt_ LPENTRYLIST* lppEntryIDs) const;
+	_Check_return_ SortListData* GetNextSelectedItemData(_Inout_opt_ int* iCurItem) const;
+	_Check_return_ HRESULT OpenNextSelectedItemProp(_Inout_opt_ int* iCurItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppProp) const;
 
-	_Check_return_ HRESULT ApplyRestriction();
-	_Check_return_ HRESULT DefaultOpenItemProp(int iItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppProp);
+	_Check_return_ HRESULT ApplyRestriction() const;
+	_Check_return_ HRESULT DefaultOpenItemProp(int iItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppProp) const;
 	void NotificationOff();
 	_Check_return_ HRESULT NotificationOn();
 	_Check_return_ HRESULT RefreshTable();
 	void OnCancelTableLoad();
-	void OnOutputTable(wstring szFileName);
-	_Check_return_ HRESULT SetSortTable(_In_ LPSSortOrderSet lpSortOrderSet, ULONG ulFlags);
+	void OnOutputTable(wstring szFileName) const;
+	_Check_return_ HRESULT SetSortTable(_In_ LPSSortOrderSet lpSortOrderSet, ULONG ulFlags) const;
 	_Check_return_ HRESULT SetUIColumns(_In_ LPSPropTagArray lpTags);
-	_Check_return_ bool IsLoading();
+	_Check_return_ bool IsLoading() const;
 	void ClearLoading();
 	void SetRestriction(_In_opt_ LPSRestriction lpRes);
-	_Check_return_ LPSRestriction GetRestriction();
-	_Check_return_ __mfcmapiRestrictionTypeEnum GetRestrictionType();
+	_Check_return_ LPSRestriction GetRestriction() const;
+	_Check_return_ __mfcmapiRestrictionTypeEnum GetRestrictionType() const;
 	void SetRestrictionType(__mfcmapiRestrictionTypeEnum RestrictionType);
-	_Check_return_ ULONG GetContainerType();
-	_Check_return_ bool IsAdviseSet();
-	_Check_return_ bool IsContentsTableSet();
+	_Check_return_ ULONG GetContainerType() const;
+	_Check_return_ bool IsAdviseSet() const;
+	_Check_return_ bool IsContentsTableSet() const;
 	void DoSetColumns(bool bAddExtras, bool bDisplayEditor);
 	void GetStatus();
 
 private:
 	// Overrides from base class
-	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
 	void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 	void OnItemChanged(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 	void OnContextMenu(_In_ CWnd *pWnd, CPoint pos);
@@ -62,8 +62,8 @@ private:
 	_Check_return_ HRESULT AddColumns(_In_ LPSPropTagArray lpCurColTagArray);
 	_Check_return_ HRESULT AddItemToListBox(int iRow, _In_ LPSRow lpsRowToAdd);
 	_Check_return_ HRESULT DoExpandCollapse();
-	_Check_return_ int FindRow(_In_ LPSBinary lpInstance);
-	_Check_return_ int GetNextSelectedItemNum(_Inout_opt_ int *iCurItem);
+	_Check_return_ int FindRow(_In_ LPSBinary lpInstance) const;
+	_Check_return_ int GetNextSelectedItemNum(_Inout_opt_ int *iCurItem) const;
 	_Check_return_ HRESULT LoadContentsTableIntoView();
 	_Check_return_ HRESULT RefreshItem(int iRow, _In_ LPSRow lpsRowData, bool bItemExists);
 	void SelectAll();

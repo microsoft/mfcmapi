@@ -20,16 +20,16 @@ public:
 
 private:
 	// Overrides from base class
-	void EnableAddInMenus(_In_ HMENU hMenu, ULONG ulMenu, _In_ LPMENUITEM lpAddInMenu, UINT uiEnable);
+	void EnableAddInMenus(_In_ HMENU hMenu, ULONG ulMenu, _In_ LPMENUITEM lpAddInMenu, UINT uiEnable) override;
 	void HandleAddInMenuSingle(
 		_In_ LPADDINMENUPARAMS lpParams,
 		_In_ LPMAPIPROP lpMAPIProp,
-		_In_ LPMAPICONTAINER lpContainer);
-	void HandleCopy();
-	_Check_return_ bool HandleMenu(WORD wMenuSelect);
-	_Check_return_ bool HandlePaste();
-	void OnDeleteSelectedItem();
-	void OnDisplayItem();
+		_In_ LPMAPICONTAINER lpContainer) override;
+	void HandleCopy() override;
+	_Check_return_ bool HandleMenu(WORD wMenuSelect) override;
+	_Check_return_ bool HandlePaste() override;
+	void OnDeleteSelectedItem() override;
+	void OnDisplayItem() override;
 	void OnInitMenu(_In_ CMenu* pMenu);
 
 	// Menu items
@@ -66,5 +66,5 @@ private:
 
 	_Check_return_ bool MultiSelectComplex(WORD wMenuSelect);
 	_Check_return_ bool MultiSelectSimple(WORD wMenuSelect);
-	void NewSpecialItem(WORD wMenuSelect);
+	void NewSpecialItem(WORD wMenuSelect) const;
 };
