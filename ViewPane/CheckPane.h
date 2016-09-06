@@ -10,17 +10,17 @@ class CheckPane : public ViewPane
 public:
 	CheckPane(UINT uidLabel, bool bReadOnly, bool bCheck);
 
-	virtual bool IsType(__ViewTypes vType);
-	virtual void Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc);
-	virtual void SetWindowPos(int x, int y, int width, int height);
-	virtual void CommitUIValues();
-	virtual ULONG GetFlags();
-	virtual int GetMinWidth(_In_ HDC hdc);
-	virtual int GetFixedHeight();
-	virtual int GetLines();
+	bool IsType(__ViewTypes vType) override;
+	void Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc) override;
+	void SetWindowPos(int x, int y, int width, int height) override;
+	void CommitUIValues() override;
+	ULONG GetFlags() override;
+	int GetMinWidth(_In_ HDC hdc) override;
+	int GetFixedHeight() override;
+	int GetLines() override;
 
-	bool GetCheck();
-	bool GetCheckUseControl();
+	bool GetCheck() const;
+	bool GetCheckUseControl() const;
 
 private:
 	CButton m_Check;

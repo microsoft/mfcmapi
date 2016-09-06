@@ -1,6 +1,6 @@
 #pragma once
 #include "ViewPane.h"
-#include "..\SortList\SortListCtrl.h"
+#include "SortList/SortListCtrl.h"
 
 ViewPane* CreateListPane(UINT uidLabel, bool bAllowSort, bool bReadOnly, LPVOID lpEdit);
 
@@ -17,18 +17,18 @@ class ListPane : public ViewPane
 public:
 	ListPane(UINT uidLabel, bool bReadOnly, bool bAllowSort, CEditor* lpEdit);
 
-	virtual bool IsType(__ViewTypes vType);
-	virtual void Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc);
-	virtual void SetWindowPos(int x, int y, int width, int height);
-	virtual ULONG GetFlags();
-	virtual int GetMinWidth(_In_ HDC hdc);
-	virtual int GetFixedHeight();
-	virtual int GetLines();
-	virtual ULONG HandleChange(UINT nID);
+	bool IsType(__ViewTypes vType) override;
+	void Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc) override;
+	void SetWindowPos(int x, int y, int width, int height) override;
+	ULONG GetFlags() override;
+	int GetMinWidth(_In_ HDC hdc) override;
+	int GetFixedHeight() override;
+	int GetLines() override;
+	ULONG HandleChange(UINT nID) override;
 
 	void SetListString(ULONG iListRow, ULONG iListCol, wstring szListString);
 
-	_Check_return_ SortListData* InsertRow(int iRow, wstring szText);
+	_Check_return_ SortListData* InsertRow(int iRow, wstring szText) const;
 	void ClearList();
 	void ResizeList(bool bSort);
 	_Check_return_ ULONG GetItemCount() const;

@@ -1,9 +1,7 @@
 #include "stdafx.h"
-#include "..\stdafx.h"
 #include "TextPane.h"
-#include "..\MAPIFunctions.h"
-#include "..\String.h"
-#include "..\UIFunctions.h"
+#include "String.h"
+#include "UIFunctions.h"
 
 static wstring CLASS = L"TextPane";
 
@@ -24,7 +22,7 @@ ViewPane* CreateSingleLinePane(UINT uidLabel, bool bReadOnly, bool bMultiLine)
 
 ViewPane* CreateSingleLinePane(UINT uidLabel, _In_ wstring szVal, bool bReadOnly, bool bMultiLine)
 {
-	TextPane* lpPane = new TextPane(uidLabel, bReadOnly, bMultiLine);
+	auto lpPane = new TextPane(uidLabel, bReadOnly, bMultiLine);
 	if (lpPane)
 	{
 		lpPane->SetStringW(szVal.c_str());
@@ -35,7 +33,7 @@ ViewPane* CreateSingleLinePane(UINT uidLabel, _In_ wstring szVal, bool bReadOnly
 
 ViewPane* CreateSingleLinePaneID(UINT uidLabel, UINT uidVal, bool bReadOnly)
 {
-	TextPane* lpPane = new TextPane(uidLabel, bReadOnly, false);
+	auto lpPane = new TextPane(uidLabel, bReadOnly, false);
 
 	if (lpPane)
 	{
@@ -58,18 +56,18 @@ _Check_return_ static DWORD CALLBACK EditStreamReadCallBack(
 	LONG cb,
 	_In_count_(cb) LONG *pcb)
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	if (!pbBuff || !pcb || !dwCookie) return 0;
 
-	LPSTREAM stmData = (LPSTREAM)dwCookie;
+	auto stmData = reinterpret_cast<LPSTREAM>(dwCookie);
 
 	*pcb = 0;
 
 	DebugPrint(DBGStream, L"EditStreamReadCallBack: cb = %d\n", cb);
 
-	LONG cbTemp = cb / 2;
+	auto cbTemp = cb / 2;
 	ULONG cbTempRead = 0;
-	LPBYTE pbTempBuff = new BYTE[cbTemp];
+	auto pbTempBuff = new BYTE[cbTemp];
 
 	if (pbTempBuff)
 	{
@@ -77,19 +75,18 @@ _Check_return_ static DWORD CALLBACK EditStreamReadCallBack(
 		DebugPrint(DBGStream, L"EditStreamReadCallBack: read %u bytes\n", cbTempRead);
 
 		memset(pbBuff, 0, cbTempRead * 2);
-		ULONG i = 0;
 		ULONG iBinPos = 0;
-		for (i = 0; i < cbTempRead; i++)
+		for (ULONG i = 0; i < cbTempRead; i++)
 		{
 			BYTE bLow;
 			BYTE bHigh;
 			CHAR szLow;
 			CHAR szHigh;
 
-			bLow = (BYTE)((pbTempBuff[i]) & 0xf);
-			bHigh = (BYTE)((pbTempBuff[i] >> 4) & 0xf);
-			szLow = (CHAR)((bLow <= 0x9) ? '0' + bLow : 'A' + bLow - 0xa);
-			szHigh = (CHAR)((bHigh <= 0x9) ? '0' + bHigh : 'A' + bHigh - 0xa);
+			bLow = static_cast<BYTE>(pbTempBuff[i] & 0xf);
+			bHigh = static_cast<BYTE>(pbTempBuff[i] >> 4 & 0xf);
+			szLow = static_cast<CHAR>(bLow <= 0x9 ? '0' + bLow : 'A' + bLow - 0xa);
+			szHigh = static_cast<CHAR>(bHigh <= 0x9 ? '0' + bHigh : 'A' + bHigh - 0xa);
 
 			pbBuff[iBinPos] = szHigh;
 			pbBuff[iBinPos + 1] = szLow;
@@ -107,8 +104,8 @@ _Check_return_ static DWORD CALLBACK EditStreamReadCallBack(
 
 TextPane::TextPane(UINT uidLabel, bool bReadOnly, bool bMultiLine) :ViewPane(uidLabel, bReadOnly)
 {
-	m_lpszW = NULL;
-	m_lpszA = NULL;
+	m_lpszW = nullptr;
+	m_lpszA = nullptr;
 	m_cchsz = 0;
 	m_bMultiline = bMultiLine;
 }
@@ -133,7 +130,7 @@ ULONG TextPane::GetFlags()
 
 int TextPane::GetFixedHeight()
 {
-	int iHeight = 0;
+	auto iHeight = 0;
 	if (0 != m_iControl) iHeight += m_iSmallHeightMargin; // Top margin
 
 	if (m_bUseLabelControl)
@@ -158,15 +155,13 @@ int TextPane::GetLines()
 	{
 		return LINES_MULTILINEEDIT;
 	}
-	else
-	{
-		return 0;
-	}
+
+	return 0;
 }
 
 void TextPane::SetWindowPos(int x, int y, int width, int height)
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	if (0 != m_iControl)
 	{
 		y += m_iSmallHeightMargin;
@@ -176,7 +171,7 @@ void TextPane::SetWindowPos(int x, int y, int width, int height)
 	if (m_bUseLabelControl)
 	{
 		EC_B(m_Label.SetWindowPos(
-			0,
+			nullptr,
 			x,
 			y,
 			width,
@@ -193,9 +188,9 @@ void TextPane::SetWindowPos(int x, int y, int width, int height)
 
 void TextPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC /*hdc*/)
 {
-	ViewPane::Initialize(iControl, pParent, NULL);
+	ViewPane::Initialize(iControl, pParent, nullptr);
 
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
 	EC_B(m_EditBox.Create(
 		WS_TABSTOP
@@ -219,8 +214,8 @@ void TextPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC /*hdc*/)
 	(void) ::SendMessage(
 		m_EditBox.m_hWnd,
 		EM_EXLIMITTEXT,
-		(WPARAM)0,
-		(LPARAM)-1);
+		static_cast<WPARAM>(0),
+		static_cast<LPARAM>(-1));
 
 	SetEditBoxText();
 
@@ -235,8 +230,8 @@ void TextPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC /*hdc*/)
 		::PostMessage(
 			m_EditBox.m_hWnd,
 			EM_SETSEL,
-			(WPARAM)0,
-			(LPARAM)0);
+			static_cast<WPARAM>(0),
+			static_cast<LPARAM>(0));
 	}
 }
 
@@ -255,14 +250,14 @@ _Check_return_ static DWORD CALLBACK FakeEditStreamReadCallBack(
 {
 	if (!pbBuff || !pcb || !dwCookie) return 0;
 
-	FakeStream* lpfs = (FakeStream*)dwCookie;
+	auto lpfs = reinterpret_cast<FakeStream*>(dwCookie);
 	if (!lpfs) return 0;
-	ULONG cbRemaining = (ULONG)(lpfs->cbszW - lpfs->cbCur);
-	ULONG cbRead = min((ULONG)cb, cbRemaining);
+	auto cbRemaining = static_cast<ULONG>(lpfs->cbszW - lpfs->cbCur);
+	auto cbRead = min((ULONG)cb, cbRemaining);
 
 	*pcb = cbRead;
 
-	if (cbRead) memcpy(pbBuff, ((LPBYTE)lpfs->lpszW) + lpfs->cbCur, cbRead);
+	if (cbRead) memcpy(pbBuff, reinterpret_cast<LPBYTE>(lpfs->lpszW) + lpfs->cbCur, cbRead);
 
 	lpfs->cbCur += cbRead;
 
@@ -282,18 +277,17 @@ void TextPane::SetEditBoxText()
 	EDITSTREAM es = { 0, 0, FakeEditStreamReadCallBack };
 	UINT uFormat = SF_TEXT | SF_UNICODE;
 
-	FakeStream fs = { 0 };
+	FakeStream fs = { nullptr };
 	fs.lpszW = m_lpszW;
 	fs.cbszW = m_cchsz * sizeof(WCHAR);
 
 	// The edit control's gonna read in the actual NULL terminator, which we do not want, so back off one character
 	if (fs.cbszW) fs.cbszW -= sizeof(WCHAR);
 
-	es.dwCookie = (DWORD_PTR)&fs;
+	es.dwCookie = reinterpret_cast<DWORD_PTR>(&fs);
 
 	// read the 'text stream' into control
-	long lBytesRead = 0;
-	lBytesRead = m_EditBox.StreamIn(uFormat, es);
+	auto lBytesRead = m_EditBox.StreamIn(uFormat, es);
 	DebugPrintEx(DBGStream, CLASS, L"SetEditBoxText", L"read %d bytes from the stream\n", lBytesRead);
 
 	// Clear the modify bit so this stream appears untouched
@@ -307,8 +301,8 @@ void TextPane::ClearString()
 {
 	delete[] m_lpszW;
 	delete[] m_lpszA;
-	m_lpszW = NULL;
-	m_lpszA = NULL;
+	m_lpszW = nullptr;
+	m_lpszA = nullptr;
 	m_cchsz = NULL;
 }
 
@@ -317,9 +311,9 @@ void TextPane::ClearString()
 void TextPane::SetStringA(_In_opt_z_ LPCSTR szMsg, size_t cchsz)
 {
 	if (!szMsg) szMsg = "";
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
-	LPWSTR szMsgW = NULL;
+	LPWSTR szMsgW = nullptr;
 	size_t cchszW = 0;
 	EC_H(AnsiToUnicode(szMsg, &szMsgW, &cchszW, cchsz));
 	if (SUCCEEDED(hRes))
@@ -338,8 +332,8 @@ void TextPane::SetStringW(_In_opt_z_ LPCWSTR szMsg, size_t cchsz)
 	ClearString();
 
 	if (!szMsg) szMsg = L"";
-	HRESULT hRes = S_OK;
-	size_t cchszW = cchsz;
+	auto hRes = S_OK;
+	auto cchszW = cchsz;
 
 	if (-1 == cchszW)
 	{
@@ -370,7 +364,7 @@ void TextPane::SetBinary(_In_opt_count_(cb) LPBYTE lpb, size_t cb)
 {
 	if (!lpb || !cb)
 	{
-		SetStringW(NULL);
+		SetStringW(nullptr);
 	}
 	else
 	{
@@ -382,11 +376,8 @@ void TextPane::SetBinary(_In_opt_count_(cb) LPBYTE lpb, size_t cb)
 void TextPane::AppendString(_In_z_ LPCTSTR szMsg)
 {
 	m_EditBox.HideSelection(false, true);
-	GETTEXTLENGTHEX getTextLength = { 0 };
-	getTextLength.flags = GTL_PRECISE | GTL_NUMCHARS;
-	getTextLength.codepage = 1200;
 
-	int cchText = m_EditBox.GetWindowTextLength();
+	auto cchText = m_EditBox.GetWindowTextLength();
 	m_EditBox.SetSel(cchText, cchText);
 	m_EditBox.ReplaceSel(szMsg);
 }
@@ -399,7 +390,7 @@ void TextPane::ClearView()
 		m_EditBox.m_hWnd,
 		WM_SETTEXT,
 		NULL,
-		(LPARAM)_T(""));
+		reinterpret_cast<LPARAM>(""));
 }
 
 void TextPane::SetEditReadOnly()
@@ -408,17 +399,17 @@ void TextPane::SetEditReadOnly()
 	m_EditBox.SetReadOnly();
 }
 
-LPWSTR TextPane::GetStringW()
+LPWSTR TextPane::GetStringW() const
 {
 	return m_lpszW;
 }
 
 LPSTR TextPane::GetStringA()
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	// Don't use ClearString - that would wipe the lpszW too!
 	delete[] m_lpszA;
-	m_lpszA = NULL;
+	m_lpszA = nullptr;
 
 	// We're not leaking this conversion
 	// It goes into m_lpControls[i].UI.lpEdit->lpszA, which we manage
@@ -436,28 +427,25 @@ void TextPane::CommitUIValues()
 	getTextLength.flags = GTL_PRECISE | GTL_NUMCHARS;
 	getTextLength.codepage = 1200;
 
-	size_t cchText = 0;
-
-	cchText = (size_t)::SendMessage(
+	auto cchText = static_cast<size_t>(::SendMessage(
 		m_EditBox.m_hWnd,
 		EM_GETTEXTLENGTHEX,
-		(WPARAM)&getTextLength,
-		(LPARAM)0);
+		reinterpret_cast<WPARAM>(&getTextLength),
+		static_cast<LPARAM>(0)));
 	if (E_INVALIDARG == cchText)
 	{
 		// we didn't get a length - try another method
-		cchText = (size_t)::SendMessage(
+		cchText = static_cast<size_t>(::SendMessage(
 			m_EditBox.m_hWnd,
 			WM_GETTEXTLENGTH,
-			(WPARAM)0,
-			(LPARAM)0);
+			static_cast<WPARAM>(0),
+			static_cast<LPARAM>(0)));
 	}
 
 	// cchText will never include the NULL terminator, so add one to our count
 	cchText += 1;
 
-	LPWSTR lpszW = (WCHAR*) new WCHAR[cchText];
-	size_t cchW = 0;
+	auto lpszW = new WCHAR[cchText];
 
 	if (lpszW)
 	{
@@ -466,28 +454,28 @@ void TextPane::CommitUIValues()
 		if (cchText > 1) // No point in checking if the string is just a null terminator
 		{
 			GETTEXTEX getText = { 0 };
-			getText.cb = (DWORD)cchText * sizeof(WCHAR);
+			getText.cb = static_cast<DWORD>(cchText) * sizeof(WCHAR);
 			getText.flags = GT_DEFAULT;
 			getText.codepage = 1200;
 
-			cchW = ::SendMessage(
+			auto cchW = ::SendMessage(
 				m_EditBox.m_hWnd,
 				EM_GETTEXTEX,
-				(WPARAM)&getText,
-				(LPARAM)lpszW);
+				reinterpret_cast<WPARAM>(&getText),
+				reinterpret_cast<LPARAM>(lpszW));
 			if (0 == cchW)
 			{
 				// Didn't get a string from this message, fall back to WM_GETTEXT
-				LPSTR lpszA = (CHAR*) new CHAR[cchText];
+				auto lpszA = new CHAR[cchText];
 				if (lpszA)
 				{
 					memset(lpszA, 0, cchText * sizeof(CHAR));
-					HRESULT hRes = S_OK;
+					auto hRes = S_OK;
 					cchW = ::SendMessage(
 						m_EditBox.m_hWnd,
 						WM_GETTEXT,
-						(WPARAM)cchText,
-						(LPARAM)lpszA);
+						static_cast<WPARAM>(cchText),
+						reinterpret_cast<LPARAM>(lpszA));
 					if (0 != cchW)
 					{
 						EC_H(StringCchPrintfW(lpszW, cchText, L"%hs", lpszA)); // STRING_OK
@@ -517,9 +505,9 @@ _Check_return_ LPWSTR TextPane::GetEditBoxTextW(_Out_ size_t* lpcchText)
 	return GetStringW();
 }
 
-_Check_return_ wstring TextPane::GetStringUseControl()
+_Check_return_ wstring TextPane::GetStringUseControl() const
 {
-	int len = GetWindowTextLength(m_EditBox.m_hWnd) + 1;
+	auto len = GetWindowTextLength(m_EditBox.m_hWnd) + 1;
 	vector<wchar_t> text(len);
 	GetWindowTextW(m_EditBox.m_hWnd, &text[0], len);
 	return &text[0];
@@ -531,12 +519,10 @@ void TextPane::InitEditFromBinaryStream(_In_ LPSTREAM lpStreamIn)
 	EDITSTREAM es = { 0, 0, EditStreamReadCallBack };
 	UINT uFormat = SF_TEXT;
 
-	long lBytesRead = 0;
-
-	es.dwCookie = (DWORD_PTR)lpStreamIn;
+	es.dwCookie = reinterpret_cast<DWORD_PTR>(lpStreamIn);
 
 	// read the 'text' stream into control
-	lBytesRead = m_EditBox.StreamIn(uFormat, es);
+	auto lBytesRead = m_EditBox.StreamIn(uFormat, es);
 	DebugPrintEx(DBGStream, CLASS, L"InitEditFromStream", L"read %d bytes from the stream\n", lBytesRead);
 
 	// Clear the modify bit so this stream appears untouched
@@ -544,15 +530,15 @@ void TextPane::InitEditFromBinaryStream(_In_ LPSTREAM lpStreamIn)
 }
 
 // Writes a hex pane out to a binary stream
-void TextPane::WriteToBinaryStream(_In_ LPSTREAM lpStreamOut)
+void TextPane::WriteToBinaryStream(_In_ LPSTREAM lpStreamOut) const
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
 	auto bin = HexStringToBin(GetStringUseControl());
-	if (bin.data() != 0)
+	if (bin.data() != nullptr)
 	{
 		ULONG cbWritten = 0;
-		EC_MAPI(lpStreamOut->Write(bin.data(), (ULONG)bin.size(), &cbWritten));
+		EC_MAPI(lpStreamOut->Write(bin.data(), static_cast<ULONG>(bin.size()), &cbWritten));
 		DebugPrintEx(DBGStream, CLASS, L"WriteToBinaryStream", L"wrote 0x%X bytes to the stream\n", cbWritten);
 
 		EC_MAPI(lpStreamOut->Commit(STGC_DEFAULT));
