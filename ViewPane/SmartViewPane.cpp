@@ -1,9 +1,7 @@
 #include "stdafx.h"
-#include "..\stdafx.h"
 #include "SmartViewPane.h"
-#include "..\String.h"
-#include "..\UIFunctions.h"
-#include "..\SmartView\SmartView.h"
+#include "String.h"
+#include "SmartView\SmartView.h"
 
 static wstring CLASS = L"SmartViewPane";
 
@@ -12,9 +10,9 @@ ViewPane* CreateSmartViewPane(UINT uidLabel)
 	return new SmartViewPane(uidLabel);
 }
 
-SmartViewPane::SmartViewPane(UINT uidLabel) :DropDownPane(uidLabel, true, ulSmartViewParserTypeArray, NULL, SmartViewParserTypeArray, false)
+SmartViewPane::SmartViewPane(UINT uidLabel) :DropDownPane(uidLabel, true, ulSmartViewParserTypeArray, nullptr, SmartViewParserTypeArray, false)
 {
-	m_lpTextPane = (TextPane*)CreateMultiLinePane(NULL, true);
+	m_lpTextPane = static_cast<TextPane*>(CreateMultiLinePane(NULL, true));
 	m_bHasData = false;
 	m_bDoDropDown = true;
 }
@@ -38,7 +36,7 @@ int SmartViewPane::GetFixedHeight()
 {
 	if (!m_bDoDropDown && !m_bHasData) return 0;
 
-	int iHeight = 0;
+	auto iHeight = 0;
 
 	if (0 != m_iControl) iHeight += m_iSmallHeightMargin; // Top margin
 
@@ -57,20 +55,18 @@ int SmartViewPane::GetFixedHeight()
 
 int SmartViewPane::GetLines()
 {
-	DWORD_PTR iStructType = GetDropDownSelectionValue();
+	auto iStructType = GetDropDownSelectionValue();
 	if (!m_bCollapsed && (m_bHasData || iStructType))
 	{
 		return m_lpTextPane->GetLines();
 	}
-	else
-	{
-		return 0;
-	}
+
+	return 0;
 }
 
 void SmartViewPane::SetWindowPos(int x, int y, int width, int height)
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	if (!m_bDoDropDown && !m_bHasData)
 	{
 		EC_B(m_CollapseButton.ShowWindow(SW_HIDE));
@@ -108,7 +104,7 @@ void SmartViewPane::SetWindowPos(int x, int y, int width, int height)
 			// Note - Real height of a combo box is fixed at m_iEditHeight
 			// Height we set here influences the amount of dropdown entries we see
 			// Only really matters on Win2k and below.
-			ULONG ulDrops = 1 + min(ulSmartViewParserTypeArray, 4);
+			auto ulDrops = 1 + min(ulSmartViewParserTypeArray, 4);
 			EC_B(m_DropDown.SetWindowPos(NULL, x, y, width, m_iEditHeight * ulDrops, SWP_NOZORDER));
 
 			y += m_iEditHeight;
@@ -125,7 +121,7 @@ void SmartViewPane::SetWindowPos(int x, int y, int width, int height)
 
 void SmartViewPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
 	ViewPane::Initialize(iControl, pParent, hdc);
 
@@ -145,11 +141,9 @@ void SmartViewPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 		pParent,
 		m_nID));
 
-	ULONG iDropNum = 0;
-
 	if (SmartViewParserTypeArray)
 	{
-		for (iDropNum = 0; iDropNum < ulSmartViewParserTypeArray; iDropNum++)
+		for (ULONG iDropNum = 0; iDropNum < ulSmartViewParserTypeArray; iDropNum++)
 		{
 			m_DropDown.InsertString(
 				iDropNum,
@@ -160,7 +154,7 @@ void SmartViewPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 				SmartViewParserTypeArray[iDropNum].ulValue);
 		}
 	}
-	m_DropDown.SetCurSel((int)m_iDropSelectionValue);
+	m_DropDown.SetCurSel(static_cast<int>(m_iDropSelectionValue));
 
 	// Passing a control # of 1 gives us a built in margin
 	m_lpTextPane->Initialize(1, pParent, hdc);
@@ -201,13 +195,11 @@ void SmartViewPane::DisableDropDown()
 
 void SmartViewPane::SetParser(__ParsingTypeEnum iParser)
 {
-	ULONG iDropNum = 0;
-
 	if (SmartViewParserTypeArray)
 	{
-		for (iDropNum = 0; iDropNum < ulSmartViewParserTypeArray; iDropNum++)
+		for (ULONG iDropNum = 0; iDropNum < ulSmartViewParserTypeArray; iDropNum++)
 		{
-			if (iParser == (__ParsingTypeEnum)SmartViewParserTypeArray[iDropNum].ulValue)
+			if (iParser == static_cast<__ParsingTypeEnum>(SmartViewParserTypeArray[iDropNum].ulValue))
 			{
 				SetSelection(iDropNum);
 				break;
@@ -218,8 +210,8 @@ void SmartViewPane::SetParser(__ParsingTypeEnum iParser)
 
 void SmartViewPane::Parse(SBinary myBin)
 {
-	__ParsingTypeEnum iStructType = (__ParsingTypeEnum)GetDropDownSelectionValue();
-	wstring szSmartView = InterpretBinaryAsString(myBin, iStructType, NULL);
+	auto iStructType = static_cast<__ParsingTypeEnum>(GetDropDownSelectionValue());
+	auto szSmartView = InterpretBinaryAsString(myBin, iStructType, nullptr);
 
 	if (!szSmartView.empty())
 	{

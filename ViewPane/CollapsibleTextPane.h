@@ -11,9 +11,9 @@ class CollapsibleTextPane : public TextPane
 public:
 	CollapsibleTextPane(UINT uidLabel, bool bReadOnly);
 
-	virtual bool IsType(__ViewTypes vType);
-	virtual ULONG GetFlags();
-	virtual void SetWindowPos(int x, int y, int width, int height);
-	virtual int GetFixedHeight();
-	virtual int GetLines();
+	bool IsType(__ViewTypes vType) override;
+	ULONG GetFlags() override;
+	void SetWindowPos(int x, int y, int width, int height) override;
+	int GetFixedHeight() override;
+	int GetLines() override;
 };

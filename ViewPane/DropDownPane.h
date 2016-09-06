@@ -12,24 +12,24 @@ class DropDownPane : public ViewPane
 public:
 	DropDownPane(UINT uidLabel, bool bReadOnly, ULONG ulDropList, _In_opt_count_(ulDropList) UINT* lpuidDropList, _In_opt_count_(ulDropList) LPNAME_ARRAY_ENTRY lpnaeDropList, bool bGUID);
 
-	virtual bool IsType(__ViewTypes vType);
-	virtual void Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc);
-	virtual void SetWindowPos(int x, int y, int width, int height);
-	virtual void CommitUIValues();
-	virtual ULONG GetFlags();
-	virtual int GetMinWidth(_In_ HDC hdc);
-	virtual int GetFixedHeight();
-	virtual int GetLines();
+	bool IsType(__ViewTypes vType) override;
+	void Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc) override;
+	void SetWindowPos(int x, int y, int width, int height) override;
+	void CommitUIValues() override;
+	ULONG GetFlags() override;
+	int GetMinWidth(_In_ HDC hdc) override;
+	int GetFixedHeight() override;
+	int GetLines() override;
 
 	void SetDropDownSelection(_In_ wstring szText);
 
 	void InsertDropString(int iRow, _In_ wstring szText);
-	_Check_return_ wstring GetDropStringUseControl();
-	_Check_return_ int GetDropDownSelection();
-	_Check_return_ DWORD_PTR GetDropDownSelectionValue();
-	_Check_return_ bool GetSelectedGUID(bool bByteSwapped, _In_ LPGUID lpSelectedGUID);
-	_Check_return_ int DropDownPane::GetDropDown();
-	_Check_return_ DWORD_PTR DropDownPane::GetDropDownValue();
+	_Check_return_ wstring GetDropStringUseControl() const;
+	_Check_return_ int GetDropDownSelection() const;
+	_Check_return_ DWORD_PTR GetDropDownSelectionValue() const;
+	_Check_return_ bool GetSelectedGUID(bool bByteSwapped, _In_ LPGUID lpSelectedGUID) const;
+	_Check_return_ int DropDownPane::GetDropDown() const;
+	_Check_return_ DWORD_PTR DropDownPane::GetDropDownValue() const;
 
 protected:
 	CComboBox m_DropDown;

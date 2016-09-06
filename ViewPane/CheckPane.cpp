@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "..\stdafx.h"
 #include "CheckPane.h"
 
 static wstring CLASS = L"CheckPane";
@@ -43,9 +42,9 @@ int CheckPane::GetLines()
 
 void CheckPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC /*hdc*/)
 {
-	ViewPane::Initialize(iControl, pParent, NULL);
+	ViewPane::Initialize(iControl, pParent, nullptr);
 
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
 	EC_B(m_Check.Create(
 		NULL,
@@ -66,7 +65,7 @@ void CheckPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC /*hdc*/)
 
 void CheckPane::SetWindowPos(int x, int y, int width, int height)
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	EC_B(m_Check.SetWindowPos(NULL, x, y, width, height, SWP_NOZORDER));
 }
 
@@ -75,12 +74,12 @@ void CheckPane::CommitUIValues()
 	m_bCheckValue = GetCheckUseControl();
 }
 
-bool CheckPane::GetCheck()
+bool CheckPane::GetCheck() const
 {
 	return m_bCheckValue;
 }
 
-bool CheckPane::GetCheckUseControl()
+bool CheckPane::GetCheckUseControl() const
 {
-	return (0 != m_Check.GetCheck());
+	return 0 != m_Check.GetCheck();
 }

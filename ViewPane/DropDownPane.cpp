@@ -1,24 +1,23 @@
 #include "stdafx.h"
-#include "..\stdafx.h"
 #include "DropDownPane.h"
-#include "..\String.h"
-#include "..\InterpretProp2.h"
+#include "String.h"
+#include "InterpretProp2.h"
 
 static wstring CLASS = L"DropDownPane";
 
 ViewPane* CreateDropDownPane(UINT uidLabel, ULONG ulDropList, _In_opt_count_(ulDropList) UINT* lpuidDropList, bool bReadOnly)
 {
-	return new DropDownPane(uidLabel, bReadOnly, ulDropList, lpuidDropList, NULL, false);
+	return new DropDownPane(uidLabel, bReadOnly, ulDropList, lpuidDropList, nullptr, false);
 }
 
 ViewPane* CreateDropDownArrayPane(UINT uidLabel, ULONG ulDropList, _In_opt_count_(ulDropList) LPNAME_ARRAY_ENTRY lpnaeDropList, bool bReadOnly)
 {
-	return new DropDownPane(uidLabel, bReadOnly, ulDropList, NULL, lpnaeDropList, false);
+	return new DropDownPane(uidLabel, bReadOnly, ulDropList, nullptr, lpnaeDropList, false);
 }
 
 ViewPane* CreateDropDownGuidPane(UINT uidLabel, bool bReadOnly)
 {
-	return new DropDownPane(uidLabel, bReadOnly, 0, NULL, NULL, true);
+	return new DropDownPane(uidLabel, bReadOnly, 0, nullptr, nullptr, true);
 }
 
 DropDownPane::DropDownPane(UINT uidLabel, bool bReadOnly, ULONG ulDropList, _In_opt_count_(ulDropList) UINT* lpuidDropList, _In_opt_count_(ulDropList) LPNAME_ARRAY_ENTRY lpnaeDropList, bool bGUID) :ViewPane(uidLabel, bReadOnly)
@@ -45,9 +44,8 @@ ULONG DropDownPane::GetFlags()
 
 int DropDownPane::GetMinWidth(_In_ HDC hdc)
 {
-	int cxDropDown = 0;
-	ULONG iDropString = 0;
-	for (iDropString = 0; iDropString < m_ulDropList; iDropString++)
+	auto cxDropDown = 0;
+	for (ULONG iDropString = 0; iDropString < m_ulDropList; iDropString++)
 	{
 		SIZE sizeDrop = { 0 };
 		CString szDropString;
@@ -64,7 +62,7 @@ int DropDownPane::GetMinWidth(_In_ HDC hdc)
 
 int DropDownPane::GetFixedHeight()
 {
-	int iHeight = 0;
+	auto iHeight = 0;
 
 	if (0 != m_iControl) iHeight += m_iSmallHeightMargin; // Top margin
 
@@ -84,41 +82,41 @@ int DropDownPane::GetLines()
 	return 0;
 }
 
-void DropDownPane::SetWindowPos(int x, int y, int width, int height)
+void DropDownPane::SetWindowPos(int x, int y, int width, int /*height*/)
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	if (0 != m_iControl)
 	{
 		y += m_iSmallHeightMargin;
-		height -= m_iSmallHeightMargin;
+		// height -= m_iSmallHeightMargin;
 	}
 
 	if (m_bUseLabelControl)
 	{
 		EC_B(m_Label.SetWindowPos(
-			0,
+			nullptr,
 			x,
 			y,
 			width,
 			m_iLabelHeight,
 			SWP_NOZORDER));
 		y += m_iLabelHeight;
-		height -= m_iLabelHeight;
+		// height -= m_iLabelHeight;
 	}
 
 	// Note - Real height of a combo box is fixed at m_iEditHeight
 	// Height we set here influences the amount of dropdown entries we see
 	// Only really matters on Win2k and below.
-	ULONG ulDrops = 1 + min(m_ulDropList, 4);
+	auto ulDrops = 1 + min(m_ulDropList, 4);
 
 	EC_B(m_DropDown.SetWindowPos(NULL, x, y, width, m_iEditHeight * ulDrops, SWP_NOZORDER));
 }
 
 void DropDownPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC /*hdc*/)
 {
-	ViewPane::Initialize(iControl, pParent, NULL);
+	ViewPane::Initialize(iControl, pParent, nullptr);
 
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	// bReadOnly means you can't type...
 	DWORD dwDropStyle;
 	if (m_bReadOnly)
@@ -145,10 +143,9 @@ void DropDownPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC /*hdc*/
 		pParent,
 		m_nID));
 
-	ULONG iDropNum = 0;
 	if (m_lpuidDropList)
 	{
-		for (iDropNum = 0; iDropNum < m_ulDropList; iDropNum++)
+		for (ULONG iDropNum = 0; iDropNum < m_ulDropList; iDropNum++)
 		{
 			CString szDropString;
 			EC_B(szDropString.LoadString(m_lpuidDropList[iDropNum]));
@@ -162,7 +159,7 @@ void DropDownPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC /*hdc*/
 	}
 	else if (m_lpnaeDropList)
 	{
-		for (iDropNum = 0; iDropNum < m_ulDropList; iDropNum++)
+		for (ULONG iDropNum = 0; iDropNum < m_ulDropList; iDropNum++)
 		{
 			m_DropDown.InsertString(
 				iDropNum,
@@ -177,13 +174,13 @@ void DropDownPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC /*hdc*/
 	// If this is a GUID list, load up our list of guids
 	if (m_bGUID)
 	{
-		for (iDropNum = 0; iDropNum < ulPropGuidArray; iDropNum++)
+		for (ULONG iDropNum = 0; iDropNum < ulPropGuidArray; iDropNum++)
 		{
 			InsertDropString(iDropNum, GUIDToStringAndName(PropGuidArray[iDropNum].lpGuid).c_str());
 		}
 	}
 
-	m_DropDown.SetCurSel((int)m_iDropSelectionValue);
+	m_DropDown.SetCurSel(static_cast<int>(m_iDropSelectionValue));
 
 	m_bInitialized = true;
 }
@@ -202,7 +199,7 @@ void DropDownPane::CommitUIValues()
 	m_bInitialized = false; // must be last
 }
 
-_Check_return_ wstring DropDownPane::GetDropStringUseControl()
+_Check_return_ wstring DropDownPane::GetDropStringUseControl() const
 {
 	CString szText;
 	m_DropDown.GetWindowText(szText);
@@ -211,7 +208,7 @@ _Check_return_ wstring DropDownPane::GetDropStringUseControl()
 }
 
 // This should work whether the editor is active/displayed or not
-_Check_return_ int DropDownPane::GetDropDownSelection()
+_Check_return_ int DropDownPane::GetDropDownSelection() const
 {
 	if (m_bInitialized) return m_DropDown.GetCurSel();
 
@@ -219,11 +216,11 @@ _Check_return_ int DropDownPane::GetDropDownSelection()
 	return m_iDropSelection;
 }
 
-_Check_return_ DWORD_PTR DropDownPane::GetDropDownSelectionValue()
+_Check_return_ DWORD_PTR DropDownPane::GetDropDownSelectionValue() const
 {
 	if (m_bInitialized)
 	{
-		int iSel = m_DropDown.GetCurSel();
+		auto iSel = m_DropDown.GetCurSel();
 
 		if (CB_ERR != iSel)
 		{
@@ -237,53 +234,51 @@ _Check_return_ DWORD_PTR DropDownPane::GetDropDownSelectionValue()
 	return 0;
 }
 
-_Check_return_ int DropDownPane::GetDropDown()
+_Check_return_ int DropDownPane::GetDropDown() const
 {
 	return m_iDropSelection;
 }
 
-_Check_return_ DWORD_PTR DropDownPane::GetDropDownValue()
+_Check_return_ DWORD_PTR DropDownPane::GetDropDownValue() const
 {
 	return m_iDropSelectionValue;
 }
 
 // This should work whether the editor is active/displayed or not
-_Check_return_ bool DropDownPane::GetSelectedGUID(bool bByteSwapped, _In_ LPGUID lpSelectedGUID)
+_Check_return_ bool DropDownPane::GetSelectedGUID(bool bByteSwapped, _In_ LPGUID lpSelectedGUID) const
 {
 	if (!lpSelectedGUID) return NULL;
 
-	int iCurSel = GetDropDownSelection();
+	auto iCurSel = GetDropDownSelection();
 	if (iCurSel != CB_ERR)
 	{
 		memcpy(lpSelectedGUID, PropGuidArray[iCurSel].lpGuid, sizeof(GUID));
 		return true;
 	}
-	else
+
+	// no match - need to do a lookup
+	wstring szText;
+	if (m_bInitialized)
 	{
-		// no match - need to do a lookup
-		wstring szText;
-		if (m_bInitialized)
-		{
-			szText = GetDropStringUseControl();
-		}
-
-		if (szText.empty())
-		{
-			szText = m_lpszSelectionString;
-		}
-
-		LPCGUID lpGUID = GUIDNameToGUID(szText, bByteSwapped);
-		memcpy(lpSelectedGUID, lpGUID, sizeof(GUID));
-		delete[] lpGUID;
-		return true;
+		szText = GetDropStringUseControl();
 	}
+
+	if (szText.empty())
+	{
+		szText = m_lpszSelectionString;
+	}
+
+	auto lpGUID = GUIDNameToGUID(szText, bByteSwapped);
+	memcpy(lpSelectedGUID, lpGUID, sizeof(GUID));
+	delete[] lpGUID;
+	return true;
 }
 
 void DropDownPane::SetDropDownSelection(_In_ wstring szText)
 {
-	HRESULT hRes = S_OK;
-	CString text = wstringToCString(szText);
-	int iSelect = m_DropDown.SelectString(0, text);
+	auto hRes = S_OK;
+	auto text = wstringToCString(szText);
+	auto iSelect = m_DropDown.SelectString(0, text);
 
 	// if we can't select, try pushing the text in there
 	// not all dropdowns will support this!
@@ -293,7 +288,7 @@ void DropDownPane::SetDropDownSelection(_In_ wstring szText)
 			m_DropDown.m_hWnd,
 			WM_SETTEXT,
 			NULL,
-			(LPARAM)(LPCTSTR)text));
+			reinterpret_cast<LPARAM>(static_cast<LPCTSTR>(text))));
 	}
 }
 
@@ -305,6 +300,6 @@ void DropDownPane::SetSelection(DWORD_PTR iSelection)
 	}
 	else
 	{
-		m_DropDown.SetCurSel((int)iSelection);
+		m_DropDown.SetCurSel(static_cast<int>(iSelection));
 	}
 }

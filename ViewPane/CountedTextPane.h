@@ -11,13 +11,13 @@ class CountedTextPane : public TextPane
 public:
 	CountedTextPane(UINT uidLabel, bool bReadOnly, UINT uidCountLabel);
 
-	virtual bool IsType(__ViewTypes vType);
-	virtual ULONG GetFlags();
-	virtual void Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc);
-	virtual void SetWindowPos(int x, int y, int width, int height);
-	virtual int GetMinWidth(_In_ HDC hdc);
-	virtual int GetFixedHeight();
-	virtual int GetLines();
+	bool IsType(__ViewTypes vType) override;
+	ULONG GetFlags() override;
+	void Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc) override;
+	void SetWindowPos(int x, int y, int width, int height) override;
+	int GetMinWidth(_In_ HDC hdc) override;
+	int GetFixedHeight() override;
+	int GetLines() override;
 
 	void SetCount(size_t iCount);
 

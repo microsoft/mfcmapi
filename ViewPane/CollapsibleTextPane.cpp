@@ -1,13 +1,11 @@
 #include "stdafx.h"
-#include "..\stdafx.h"
 #include "CollapsibleTextPane.h"
-#include "..\UIFunctions.h"
 
 static wstring CLASS = L"CollapsibleTextPane";
 
 ViewPane* CreateCollapsibleTextPane(UINT uidLabel, bool bReadOnly)
 {
-	CollapsibleTextPane* lpPane = new CollapsibleTextPane(uidLabel, bReadOnly);
+	auto lpPane = new CollapsibleTextPane(uidLabel, bReadOnly);
 	return lpPane;
 }
 
@@ -17,7 +15,7 @@ CollapsibleTextPane::CollapsibleTextPane(UINT uidLabel, bool bReadOnly) :TextPan
 
 bool CollapsibleTextPane::IsType(__ViewTypes vType)
 {
-	return (CTRL_COLLAPSIBLETEXTPANE == vType) || TextPane::IsType(vType);
+	return CTRL_COLLAPSIBLETEXTPANE == vType || TextPane::IsType(vType);
 }
 
 ULONG CollapsibleTextPane::GetFlags()
@@ -27,7 +25,7 @@ ULONG CollapsibleTextPane::GetFlags()
 
 int CollapsibleTextPane::GetFixedHeight()
 {
-	int iHeight = 0;
+	auto iHeight = 0;
 	if (0 != m_iControl) iHeight += m_iSmallHeightMargin; // Top margin
 
 	// Our expand/collapse button
@@ -50,16 +48,14 @@ int CollapsibleTextPane::GetLines()
 	{
 		return 0;
 	}
-	else
-	{
-		return LINES_MULTILINEEDIT;
-	}
+
+	return LINES_MULTILINEEDIT;
 }
 
 void CollapsibleTextPane::SetWindowPos(int x, int y, int width, int height)
 {
-	HRESULT hRes = S_OK;
-	int(iVariableHeight) = height - GetFixedHeight();
+	auto hRes = S_OK;
+	auto iVariableHeight = height - GetFixedHeight();
 	if (0 != m_iControl)
 	{
 		y += m_iSmallHeightMargin;

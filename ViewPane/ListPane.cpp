@@ -96,7 +96,7 @@ void ListPane::SetWindowPos(int x, int y, int width, int height)
 	if (0 != m_iControl)
 	{
 		y += m_iSmallHeightMargin;
-		height -= m_iSmallHeightMargin;
+		// height -= m_iSmallHeightMargin;
 	}
 
 	if (m_bUseLabelControl)
@@ -109,7 +109,7 @@ void ListPane::SetWindowPos(int x, int y, int width, int height)
 			m_iLabelHeight,
 			SWP_NOZORDER));
 		y += m_iLabelHeight;
-		height -= m_iLabelHeight;
+		// height -= m_iLabelHeight;
 	}
 
 	EC_B(m_List.SetWindowPos(
@@ -186,7 +186,7 @@ void ListPane::SetListString(ULONG iListRow, ULONG iListCol, wstring szListStrin
 	m_List.SetItemText(iListRow, iListCol, szListString);
 }
 
-_Check_return_ SortListData* ListPane::InsertRow(int iRow, wstring szText)
+_Check_return_ SortListData* ListPane::InsertRow(int iRow, wstring szText) const
 {
 	return m_List.InsertRow(iRow, szText);
 }

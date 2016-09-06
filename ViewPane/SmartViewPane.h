@@ -12,21 +12,21 @@ public:
 	SmartViewPane(UINT uidLabel);
 	virtual ~SmartViewPane();
 
-	virtual bool IsType(__ViewTypes vType);
-	virtual ULONG GetFlags();
-	virtual void Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc);
-	virtual void SetWindowPos(int x, int y, int width, int height);
-	virtual int GetFixedHeight();
-	virtual int GetLines();
+	bool IsType(__ViewTypes vType) override;
+	ULONG GetFlags() override;
+	void Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc) override;
+	void SetWindowPos(int x, int y, int width, int height) override;
+	int GetFixedHeight() override;
+	int GetLines() override;
 
-	virtual void SetMargins(
+	void SetMargins(
 		int iMargin,
 		int iSideMargin,
 		int iLabelHeight, // Height of the label
 		int iSmallHeightMargin,
 		int iLargeHeightMargin,
 		int iButtonHeight, // Height of buttons below the control
-		int iEditHeight); // height of an edit control
+		int iEditHeight) override; // height of an edit control
 
 	void SetStringW(_In_opt_z_ LPCWSTR szMsg);
 	void DisableDropDown();
