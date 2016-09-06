@@ -8,11 +8,11 @@ wstring emptystring = L"";
 
 wstring formatV(wstring const& szMsg, va_list argList)
 {
-	int len = _vscwprintf(szMsg.c_str(), argList);
+	auto len = _vscwprintf(szMsg.c_str(), argList);
 	if (0 != len)
 	{
 		len++;
-		LPWSTR buffer = new wchar_t[len];
+		auto buffer = new wchar_t[len];
 		memset(buffer, 0, sizeof(wchar_t)* len);
 		if (_vsnwprintf_s(buffer, len, _TRUNCATE, szMsg.c_str(), argList) > 0)
 		{
@@ -32,7 +32,7 @@ wstring format(LPCWSTR szMsg, ...)
 {
 	va_list argList;
 	va_start(argList, szMsg);
-	wstring ret = formatV(szMsg, argList);
+	auto ret = formatV(szMsg, argList);
 	va_end(argList);
 	return ret;
 }
@@ -40,8 +40,8 @@ wstring format(LPCWSTR szMsg, ...)
 wstring loadstring(DWORD dwID)
 {
 	wstring fmtString;
-	LPWSTR buffer = 0;
-	size_t len = ::LoadStringW(NULL, dwID, (PWCHAR)&buffer, 0);
+	LPWSTR buffer = nullptr;
+	size_t len = ::LoadStringW(nullptr, dwID, reinterpret_cast<PWCHAR>(&buffer), 0);
 
 	if (len)
 	{
@@ -53,11 +53,11 @@ wstring loadstring(DWORD dwID)
 
 wstring formatmessageV(wstring const& szMsg, va_list argList)
 {
-	LPWSTR buffer = NULL;
-	DWORD dw = FormatMessageW(FORMAT_MESSAGE_FROM_STRING | FORMAT_MESSAGE_ALLOCATE_BUFFER, szMsg.c_str(), 0, 0, (LPWSTR)&buffer, 0, &argList);
+	LPWSTR buffer = nullptr;
+	auto dw = FormatMessageW(FORMAT_MESSAGE_FROM_STRING | FORMAT_MESSAGE_ALLOCATE_BUFFER, szMsg.c_str(), 0, 0, reinterpret_cast<LPWSTR>(&buffer), 0, &argList);
 	if (dw)
 	{
-		wstring ret = wstring(buffer);
+		auto ret = wstring(buffer);
 		(void)LocalFree(buffer);
 		return ret;
 	}
@@ -67,11 +67,11 @@ wstring formatmessageV(wstring const& szMsg, va_list argList)
 
 wstring formatmessagesys(DWORD dwID)
 {
-	LPWSTR buffer = NULL;
-	DWORD dw = FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, 0, dwID, 0, (LPWSTR)&buffer, 0, 0);
+	LPWSTR buffer = nullptr;
+	auto dw = FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, nullptr, dwID, 0, reinterpret_cast<LPWSTR>(&buffer), 0, nullptr);
 	if (dw)
 	{
-		wstring ret = wstring(buffer);
+		auto ret = wstring(buffer);
 		(void)LocalFree(buffer);
 		return ret;
 	}
@@ -84,7 +84,7 @@ wstring formatmessage(DWORD dwID, ...)
 {
 	va_list argList;
 	va_start(argList, dwID);
-	wstring ret = formatmessageV(loadstring(dwID), argList);
+	auto ret = formatmessageV(loadstring(dwID), argList);
 	va_end(argList);
 	return ret;
 }
@@ -94,7 +94,7 @@ wstring formatmessage(wstring const szMsg, ...)
 {
 	va_list argList;
 	va_start(argList, szMsg);
-	wstring ret = formatmessageV(szMsg, argList);
+	auto ret = formatmessageV(szMsg, argList);
 	va_end(argList);
 	return ret;
 }
@@ -102,18 +102,18 @@ wstring formatmessage(wstring const szMsg, ...)
 // Allocates with new. Free with delete[]
 LPTSTR wstringToLPTSTR(wstring const& src)
 {
-	LPTSTR dst = NULL;
 #ifdef UNICODE
-	size_t cch = src.length();
-	if (!cch) return NULL;
+	auto cch = src.length();
+	if (!cch) return nullptr;
 
 	cch++; // Null terminator
-	dst = new WCHAR[cch];
+	auto dst = new WCHAR[cch];
 	if (dst)
 	{
 		memcpy(dst, src.c_str(), cch * sizeof(WCHAR));
 	}
 #else
+	LPTSTR dst = NULL;
 	HRESULT hRes = S_OK;
 	EC_H(UnicodeToAnsi(src.c_str(), &dst));
 #endif
@@ -173,8 +173,8 @@ ULONG wstringToUlong(wstring const& src, int radix, bool rejectInvalidCharacters
 {
 	if (src.empty()) return 0;
 
-	LPWSTR szEndPtr = NULL;
-	ULONG ulArg = wcstoul(src.c_str(), &szEndPtr, radix);
+	LPWSTR szEndPtr = nullptr;
+	auto ulArg = wcstoul(src.c_str(), &szEndPtr, radix);
 
 	if (rejectInvalidCharacters)
 	{
@@ -193,8 +193,8 @@ long wstringToLong(wstring const& src, int radix)
 {
 	if (src.empty()) return 0;
 
-	LPWSTR szEndPtr = NULL;
-	LONG lArg = wcstol(src.c_str(), &szEndPtr, radix);
+	LPWSTR szEndPtr = nullptr;
+	auto lArg = wcstol(src.c_str(), &szEndPtr, radix);
 
 	// if szEndPtr is pointing to something other than NULL, this must be a string
 	if (!szEndPtr || *szEndPtr)
@@ -210,8 +210,8 @@ double wstringToDouble(wstring const& src)
 {
 	if (src.empty()) return 0;
 
-	LPWSTR szEndPtr = NULL;
-	double dArg = wcstod(src.c_str(), &szEndPtr);
+	LPWSTR szEndPtr = nullptr;
+	auto dArg = wcstod(src.c_str(), &szEndPtr);
 
 	// if szEndPtr is pointing to something other than NULL, this must be a string
 	if (!szEndPtr || *szEndPtr)
@@ -260,32 +260,32 @@ void CleanPropString(_In_ CString* lpString)
 // Delete with delete[]
 _Check_return_ HRESULT AnsiToUnicode(_In_opt_z_ LPCSTR pszA, _Out_z_cap_(cchszA) LPWSTR* ppszW, _Out_ size_t* cchszW, size_t cchszA)
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	if (!ppszW || *cchszW) return MAPI_E_INVALID_PARAMETER;
-	*ppszW = NULL;
+	*ppszW = nullptr;
 	*cchszW = 0;
 	if (NULL == pszA) return S_OK;
 	if (!cchszA) return S_OK;
 
 	// Get our buffer size
-	int iRet = 0;
+	auto iRet = 0;
 	EC_D(iRet, MultiByteToWideChar(
 		CP_ACP,
 		0,
 		pszA,
-		(int)cchszA,
+		static_cast<int>(cchszA),
 		NULL,
 		NULL));
 	if (SUCCEEDED(hRes) && 0 != iRet)
 	{
 		// MultiByteToWideChar returns num of chars
-		LPWSTR pszW = new WCHAR[iRet];
+		auto pszW = new WCHAR[iRet];
 
 		EC_D(iRet, MultiByteToWideChar(
 			CP_ACP,
 			0,
 			pszA,
-			(int)cchszA,
+			static_cast<int>(cchszA),
 			pszW,
 			iRet));
 		if (SUCCEEDED(hRes))
@@ -314,18 +314,18 @@ _Check_return_ HRESULT AnsiToUnicode(_In_opt_z_ LPCSTR pszA, _Out_z_cap_(cchszA)
 // Delete with delete[]
 _Check_return_ HRESULT UnicodeToAnsi(_In_z_ LPCWSTR pszW, _Out_z_cap_(cchszW) LPSTR* ppszA, size_t cchszW)
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	if (!ppszA) return MAPI_E_INVALID_PARAMETER;
-	*ppszA = NULL;
+	*ppszA = nullptr;
 	if (NULL == pszW) return S_OK;
 
 	// Get our buffer size
-	int iRet = 0;
+	auto iRet = 0;
 	EC_D(iRet, WideCharToMultiByte(
 		CP_ACP,
 		0,
 		pszW,
-		(int)cchszW,
+		static_cast<int>(cchszW),
 		NULL,
 		NULL,
 		NULL,
@@ -333,13 +333,13 @@ _Check_return_ HRESULT UnicodeToAnsi(_In_z_ LPCWSTR pszW, _Out_z_cap_(cchszW) LP
 	if (SUCCEEDED(hRes) && 0 != iRet)
 	{
 		// WideCharToMultiByte returns num of bytes
-		LPSTR pszA = (LPSTR) new BYTE[iRet];
+		auto pszA = reinterpret_cast<LPSTR>(new BYTE[iRet]);
 
 		EC_D(iRet, WideCharToMultiByte(
 			CP_ACP,
 			0,
 			pszW,
-			(int)cchszW,
+			static_cast<int>(cchszW),
 			pszA,
 			iRet,
 			NULL,
@@ -406,7 +406,7 @@ wstring BinToHexString(_In_opt_count_(cb) LPBYTE lpb, size_t cb, bool bPrependCB
 
 	if (bPrependCB)
 	{
-		lpsz = format(L"cb: %u lpb: ", (UINT)cb); // STRING_OK
+		lpsz = format(L"cb: %u lpb: ", static_cast<UINT>(cb)); // STRING_OK
 	}
 
 	if (!cb || !lpb)
@@ -415,13 +415,12 @@ wstring BinToHexString(_In_opt_count_(cb) LPBYTE lpb, size_t cb, bool bPrependCB
 	}
 	else
 	{
-		ULONG i = 0;
-		for (i = 0; i < cb; i++)
+		for (ULONG i = 0; i < cb; i++)
 		{
-			BYTE bLow = (BYTE)((lpb[i]) & 0xf);
-			BYTE bHigh = (BYTE)((lpb[i] >> 4) & 0xf);
-			wchar_t szLow = (wchar_t)((bLow <= 0x9) ? L'0' + bLow : L'A' + bLow - 0xa);
-			wchar_t szHigh = (wchar_t)((bHigh <= 0x9) ? L'0' + bHigh : L'A' + bHigh - 0xa);
+			auto bLow = static_cast<BYTE>(lpb[i] & 0xf);
+			auto bHigh = static_cast<BYTE>(lpb[i] >> 4 & 0xf);
+			auto szLow = static_cast<wchar_t>(bLow <= 0x9 ? L'0' + bLow : L'A' + bLow - 0xa);
+			auto szHigh = static_cast<wchar_t>(bHigh <= 0x9 ? L'0' + bHigh : L'A' + bHigh - 0xa);
 
 			lpsz += szHigh;
 			lpsz += szLow;
@@ -443,7 +442,7 @@ wstring BinToHexString(_In_opt_ LPSBinary lpBin, bool bPrependCB)
 
 bool stripPrefix(wstring& str, wstring prefix)
 {
-	size_t length = prefix.length();
+	auto length = prefix.length();
 	if (str.compare(0, length, prefix) == 0)
 	{
 		str.erase(0, length);
@@ -470,7 +469,7 @@ vector<BYTE> HexStringToBin(_In_ wstring lpsz, size_t cbTarget)
 		stripPrefix(lpsz, L"x") ||
 		stripPrefix(lpsz, L"X");
 
-	size_t cchStrLen = lpsz.length();
+	auto cchStrLen = lpsz.length();
 
 	// We have a clean string now. If it's of odd length, we're done.
 	if (cchStrLen % 2 != 0) return vector<BYTE>();
@@ -491,7 +490,7 @@ vector<BYTE> HexStringToBin(_In_ wstring lpsz, size_t cbTarget)
 
 		szTmp[0] = lpsz[iCur];
 		szTmp[1] = lpsz[iCur + 1];
-		lpb.push_back((BYTE)wcstol(szTmp, NULL, 16));
+		lpb.push_back(static_cast<BYTE>(wcstol(szTmp, nullptr, 16)));
 		iCur += 2;
 		cbConverted++;
 	}
@@ -502,15 +501,15 @@ vector<BYTE> HexStringToBin(_In_ wstring lpsz, size_t cbTarget)
 // Converts byte vector to LPBYTE allocated with new
 LPBYTE ByteVectorToLPBYTE(vector<BYTE>& bin)
 {
-	if (bin.empty()) return NULL;
+	if (bin.empty()) return nullptr;
 
-	LPBYTE lpBin = new BYTE[bin.size()];
-	if (lpBin != NULL)
+	auto lpBin = new BYTE[bin.size()];
+	if (lpBin != nullptr)
 	{
 		memset(lpBin, 0, bin.size());
 		memcpy(lpBin, &bin[0], bin.size());
 		return lpBin;
 	}
 
-	return NULL;
+	return nullptr;
 }
