@@ -10,32 +10,32 @@ public:
 	RowPropertyBag(SortListData* lpListData);
 	virtual ~RowPropertyBag();
 
-	virtual ULONG GetFlags();
-	virtual propBagType GetType();
-	virtual bool IsEqual(LPMAPIPROPERTYBAG lpPropBag);
+	ULONG GetFlags() override;
+	propBagType GetType() override;
+	bool IsEqual(LPMAPIPROPERTYBAG lpPropBag) override;
 
-	virtual _Check_return_ LPMAPIPROP GetMAPIProp();
+	_Check_return_ LPMAPIPROP GetMAPIProp() override;
 
-	virtual _Check_return_ HRESULT Commit();
-	virtual _Check_return_ HRESULT GetAllProps(
+	_Check_return_ HRESULT Commit() override;
+	_Check_return_ HRESULT GetAllProps(
 		ULONG FAR* lpcValues,
-		LPSPropValue FAR* lppPropArray);
-	virtual _Check_return_ HRESULT GetProps(
+		LPSPropValue FAR* lppPropArray) override;
+	_Check_return_ HRESULT GetProps(
 		LPSPropTagArray lpPropTagArray,
 		ULONG ulFlags,
 		ULONG FAR* lpcValues,
-		LPSPropValue FAR* lppPropArray);
-	virtual _Check_return_ HRESULT GetProp(
+		LPSPropValue FAR* lppPropArray) override;
+	_Check_return_ HRESULT GetProp(
 		ULONG ulPropTag,
-		LPSPropValue FAR* lppProp);
-	virtual void FreeBuffer(LPSPropValue lpProp);
-	virtual _Check_return_ HRESULT SetProps(
+		LPSPropValue FAR* lppProp) override;
+	void FreeBuffer(LPSPropValue lpProp) override;
+	_Check_return_ HRESULT SetProps(
 		ULONG cValues,
-		LPSPropValue lpPropArray);
-	virtual _Check_return_ HRESULT SetProp(
-		LPSPropValue lpProp);
-	virtual _Check_return_ HRESULT DeleteProp(
-		ULONG ulPropTag);
+		LPSPropValue lpPropArray) override;
+	_Check_return_ HRESULT SetProp(
+		LPSPropValue lpProp) override;
+	_Check_return_ HRESULT DeleteProp(
+		ULONG ulPropTag) override;
 
 private:
 	SortListData* m_lpListData;

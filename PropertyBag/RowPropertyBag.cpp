@@ -34,7 +34,7 @@ bool RowPropertyBag::IsEqual(LPMAPIPROPERTYBAG lpPropBag)
 	if (!lpPropBag) return false;
 	if (GetType() != lpPropBag->GetType()) return false;
 
-	RowPropertyBag* lpOther = static_cast<RowPropertyBag*>(lpPropBag);
+	auto lpOther = static_cast<RowPropertyBag*>(lpPropBag);
 	if (lpOther)
 	{
 		if (m_lpListData != lpOther->m_lpListData) return false;
@@ -49,7 +49,7 @@ bool RowPropertyBag::IsEqual(LPMAPIPROPERTYBAG lpPropBag)
 // Returns the underlying MAPI prop object, if one exists. Does NOT ref count it.
 _Check_return_ LPMAPIPROP RowPropertyBag::GetMAPIProp()
 {
-	return NULL;
+	return nullptr;
 }
 
 _Check_return_ HRESULT RowPropertyBag::Commit()
@@ -119,13 +119,13 @@ _Check_return_ HRESULT ConcatLPSPropValue(
 	if (ulVal1 && !lpVal1) return MAPI_E_INVALID_PARAMETER;
 	if (ulVal2 && !lpVal2) return MAPI_E_INVALID_PARAMETER;
 	*lpulRetVal = NULL;
-	*lppRetVal = NULL;
-	HRESULT hRes = S_OK;
+	*lppRetVal = nullptr;
+	auto hRes = S_OK;
 
 	ULONG ulSourceArray = 0;
 	ULONG ulTargetArray = 0;
-	ULONG ulNewArraySize = NULL;
-	LPSPropValue lpNewArray = NULL;
+	ULONG ulNewArraySize = 0;
+	LPSPropValue lpNewArray = nullptr;
 
 	// Add the sizes of the passed in arrays
 	if (ulVal2 && ulVal1)
@@ -148,7 +148,7 @@ _Check_return_ HRESULT ConcatLPSPropValue(
 	if (ulNewArraySize)
 	{
 		// Allocate the base array - MyPropCopyMore will allocmore as needed for string/bin/etc
-		EC_H(MAPIAllocateBuffer(ulNewArraySize*sizeof(SPropValue), (LPVOID*) &lpNewArray));
+		EC_H(MAPIAllocateBuffer(ulNewArraySize*sizeof(SPropValue), reinterpret_cast<LPVOID*>(&lpNewArray)));
 
 		if (SUCCEEDED(hRes) && lpNewArray)
 		{
@@ -224,9 +224,9 @@ _Check_return_ HRESULT ConcatLPSPropValue(
 _Check_return_ HRESULT RowPropertyBag::SetProp(
 	LPSPropValue lpProp)
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	ULONG ulNewArray = NULL;
-	LPSPropValue lpNewArray = NULL;
+	LPSPropValue lpNewArray = nullptr;
 
 	EC_H(ConcatLPSPropValue(
 		1,
