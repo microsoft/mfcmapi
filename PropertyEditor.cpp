@@ -1279,8 +1279,12 @@ _Check_return_ LPSPropValue CMultiValuePropertyEditor::DetachModifiedSPropValue(
 
 _Check_return_ bool CMultiValuePropertyEditor::DoListEdit(ULONG /*ulListNum*/, int iItem, _In_ SortListData* lpData)
 {
-	if (!lpData || !lpData->MV()) return false;
 	if (!IsValidList(0)) return false;
+	if (!lpData) return false;
+	if (!lpData->MV())
+	{
+		lpData->InitializeMV(nullptr);
+	}
 
 	auto hRes = S_OK;
 	SPropValue tmpPropVal = { 0 };
