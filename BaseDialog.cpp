@@ -17,7 +17,7 @@
 #include "ExtraPropTags.h"
 #include <msi.h>
 #include "ImportProcs.h"
-#include "SmartView\SmartView.h"
+#include "SmartView/SmartView.h"
 #include "Options.h"
 
 static wstring CLASS = L"CBaseDialog";
@@ -29,7 +29,7 @@ CBaseDialog::CBaseDialog(
 ) : CMyDialog()
 {
 	TRACE_CONSTRUCTOR(CLASS);
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	m_szTitle = loadstring(IDS_BASEDIALOG);
 	m_bDisplayingMenuText = false;
 
@@ -61,7 +61,7 @@ CBaseDialog::CBaseDialog(
 CBaseDialog::~CBaseDialog()
 {
 	TRACE_DESTRUCTOR(CLASS);
-	HMENU hMenu = ::GetMenu(this->m_hWnd);
+	auto hMenu = ::GetMenu(this->m_hWnd);
 	if (hMenu)
 	{
 		DeleteMenuEntries(hMenu);
@@ -77,7 +77,7 @@ CBaseDialog::~CBaseDialog()
 
 STDMETHODIMP_(ULONG) CBaseDialog::AddRef()
 {
-	LONG lCount = InterlockedIncrement(&m_cRef);
+	auto lCount = InterlockedIncrement(&m_cRef);
 	TRACE_ADDREF(CLASS, lCount);
 	DebugPrint(DBGRefCount, L"CBaseDialog::AddRef(\"%ws\")\n", m_szTitle.c_str());
 	return lCount;
@@ -85,7 +85,7 @@ STDMETHODIMP_(ULONG) CBaseDialog::AddRef()
 
 STDMETHODIMP_(ULONG) CBaseDialog::Release()
 {
-	LONG lCount = InterlockedDecrement(&m_cRef);
+	auto lCount = InterlockedDecrement(&m_cRef);
 	TRACE_RELEASE(CLASS, lCount);
 	DebugPrint(DBGRefCount, L"CBaseDialog::Release(\"%ws\")\n", m_szTitle.c_str());
 	if (!lCount) delete this;
@@ -116,7 +116,7 @@ LRESULT CBaseDialog::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_COMMAND:
 	{
-		WORD idFrom = LOWORD(wParam);
+		auto idFrom = LOWORD(wParam);
 		// idFrom is the menu item selected
 		if (HandleMenu(idFrom)) return S_OK;
 		break;
@@ -177,7 +177,7 @@ void CBaseDialog::CreateDialogAndMenu(UINT nIDMenuResource, UINT uiClassMenuReso
 		hMenu = ::CreateMenu();
 	}
 
-	HMENU hMenuOld = ::GetMenu(m_hWnd);
+	auto hMenuOld = ::GetMenu(m_hWnd);
 	if (hMenuOld) ::DestroyMenu(hMenuOld);
 	::SetMenu(m_hWnd, hMenu);
 
@@ -189,7 +189,7 @@ void CBaseDialog::CreateDialogAndMenu(UINT nIDMenuResource, UINT uiClassMenuReso
 
 	AddMenu(hMenu, IDR_MENU_TOOLS, IDS_TOOLSMENU, static_cast<UINT>(-1));
 
-	HMENU hSub = ::GetSubMenu(hMenu, 0);
+	auto hSub = ::GetSubMenu(hMenu, 0);
 	::AppendMenu(hSub, MF_SEPARATOR, NULL, nullptr);
 	WCHAR szExit[16] = { 0 };
 	(void)LoadStringW(GetModuleHandle(nullptr),
@@ -375,13 +375,13 @@ void CBaseDialog::OnEscHit()
 
 void CBaseDialog::OnOptions()
 {
-	ULONG ulNiceNamesBefore = RegKeys[regkeyDO_COLUMN_NAMES].ulCurDWORD;
-	ULONG ulSuppressNotFoundBefore = RegKeys[regkeySUPPRESS_NOT_FOUND].ulCurDWORD;
-	bool bNeedPropRefresh = DisplayOptionsDlg(this);
-	bool bNiceNamesChanged = ulNiceNamesBefore != RegKeys[regkeyDO_COLUMN_NAMES].ulCurDWORD;
-	bool bSuppressNotFoundChanged = ulSuppressNotFoundBefore != RegKeys[regkeySUPPRESS_NOT_FOUND].ulCurDWORD;
-	HRESULT hRes = S_OK;
-	bool bResetColumns = false;
+	auto ulNiceNamesBefore = RegKeys[regkeyDO_COLUMN_NAMES].ulCurDWORD;
+	auto ulSuppressNotFoundBefore = RegKeys[regkeySUPPRESS_NOT_FOUND].ulCurDWORD;
+	auto bNeedPropRefresh = DisplayOptionsDlg(this);
+	auto bNiceNamesChanged = ulNiceNamesBefore != RegKeys[regkeyDO_COLUMN_NAMES].ulCurDWORD;
+	auto bSuppressNotFoundChanged = ulSuppressNotFoundBefore != RegKeys[regkeySUPPRESS_NOT_FOUND].ulCurDWORD;
+	auto hRes = S_OK;
+	auto bResetColumns = false;
 
 	if (bNiceNamesChanged || bSuppressNotFoundChanged)
 	{
@@ -398,7 +398,7 @@ void CBaseDialog::OnOptions()
 
 void CBaseDialog::OnOpenMainWindow()
 {
-	CMainDlg* pMain = new CMainDlg(m_lpParent, m_lpMapiObjects);
+	auto pMain = new CMainDlg(m_lpParent, m_lpMapiObjects);
 	if (pMain) pMain->OnOpenMessageStoreTable();
 }
 
@@ -410,9 +410,9 @@ void CBaseDialog::HandleCopy()
 _Check_return_ bool CBaseDialog::HandlePaste()
 {
 	DebugPrintEx(DBGGeneric, CLASS, L"HandlePaste", L"\n");
-	ULONG ulStatus = m_lpMapiObjects->GetBufferStatus();
+	auto ulStatus = m_lpMapiObjects->GetBufferStatus();
 
-	if (m_lpPropDisplay && (ulStatus & BUFFER_PROPTAG) && (ulStatus & BUFFER_SOURCEPROPOBJ))
+	if (m_lpPropDisplay && ulStatus & BUFFER_PROPTAG && ulStatus & BUFFER_SOURCEPROPOBJ)
 	{
 		m_lpPropDisplay->OnPasteProperty();
 		return true;
@@ -438,7 +438,7 @@ void CBaseDialog::OnRefreshView()
 
 void CBaseDialog::OnUpdateSingleMAPIPropListCtrl(_In_opt_ LPMAPIPROP lpMAPIProp, _In_opt_ SortListData* lpListData)
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	DebugPrintEx(DBGGeneric, CLASS, L"OnUpdateSingleMAPIPropListCtrl", L"Setting item %p\n", lpMAPIProp);
 
 	if (m_lpPropDisplay)
@@ -452,7 +452,7 @@ void CBaseDialog::OnUpdateSingleMAPIPropListCtrl(_In_opt_ LPMAPIPROP lpMAPIProp,
 
 void CBaseDialog::AddMenu(HMENU hMenuBar, UINT uiResource, UINT uidTitle, UINT uiPos)
 {
-	HMENU hMenuToAdd = ::LoadMenu(nullptr, MAKEINTRESOURCE(uiResource));
+	auto hMenuToAdd = ::LoadMenu(nullptr, MAKEINTRESOURCE(uiResource));
 
 	if (hMenuBar && hMenuToAdd)
 	{
@@ -468,7 +468,7 @@ void CBaseDialog::AddMenu(HMENU hMenuBar, UINT uiResource, UINT uidTitle, UINT u
 
 void CBaseDialog::OnActivate(UINT nState, _In_ CWnd* pWndOther, BOOL bMinimized)
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	CMyDialog::OnActivate(nState, pWndOther, bMinimized);
 	if (nState == 1 && !bMinimized) EC_B(RedrawWindow());
 }
@@ -476,18 +476,17 @@ void CBaseDialog::OnActivate(UINT nState, _In_ CWnd* pWndOther, BOOL bMinimized)
 void CBaseDialog::SetStatusWidths()
 {
 	// Get the width of the strings
-	int iData1Len = static_cast<int>(m_StatusMessages[STATUSDATA1].length());
-	int iData2Len = static_cast<int>(m_StatusMessages[STATUSDATA2].length());
+	auto iData1Len = static_cast<int>(m_StatusMessages[STATUSDATA1].length());
+	auto iData2Len = static_cast<int>(m_StatusMessages[STATUSDATA2].length());
 
 	SIZE sizeData1 = { 0 };
 	SIZE sizeData2 = { 0 };
 	if (iData1Len != 0 || iData2Len != 0)
 	{
-		HDC hdc = ::GetDC(m_hWnd);
+		auto hdc = ::GetDC(m_hWnd);
 		if (hdc)
 		{
-			HGDIOBJ hfontOld = nullptr;
-			hfontOld = ::SelectObject(hdc, GetSegoeFontBold());
+			auto hfontOld = ::SelectObject(hdc, GetSegoeFontBold());
 
 			if (iData1Len)
 			{
@@ -504,10 +503,10 @@ void CBaseDialog::SetStatusWidths()
 		}
 	}
 
-	int nSpacing = GetSystemMetrics(SM_CXEDGE);
+	auto nSpacing = GetSystemMetrics(SM_CXEDGE);
 
-	int iWidthData1 = 0;
-	int iWidthData2 = 0;
+	auto iWidthData1 = 0;
+	auto iWidthData2 = 0;
 	if (sizeData1.cx) iWidthData1 = sizeData1.cx + 4 * nSpacing;
 	if (sizeData2.cx) iWidthData2 = sizeData2.cx + 4 * nSpacing;
 
@@ -524,15 +523,15 @@ void CBaseDialog::SetStatusWidths()
 
 void CBaseDialog::OnSize(UINT/* nType*/, int cx, int cy)
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	HDWP hdwp = nullptr;
 
 	WC_D(hdwp, BeginDeferWindowPos(1));
 
 	if (hdwp)
 	{
-		int iHeight = GetStatusHeight();
-		int iNewCY = cy - iHeight;
+		auto iHeight = GetStatusHeight();
+		auto iNewCY = cy - iHeight;
 		RECT rcStatus = { 0 };
 		::GetClientRect(m_hWnd, &rcStatus);
 		if (rcStatus.bottom - rcStatus.top > iHeight)
@@ -577,7 +576,7 @@ void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg
 	// MAPI Load paths take special handling
 	if (uidMsg >= ID_LOADMAPIMENUMIN && uidMsg <= ID_LOADMAPIMENUMAX)
 	{
-		HRESULT hRes = S_OK;
+		auto hRes = S_OK;
 		MENUITEMINFOW mii = { 0 };
 		mii.cbSize = sizeof(MENUITEMINFO);
 		mii.fMask = MIIM_DATA;
@@ -589,13 +588,13 @@ void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg
 			&mii));
 		if (mii.dwItemData)
 		{
-			LPMENUENTRY lme = reinterpret_cast<LPMENUENTRY>(mii.dwItemData);
+			auto lme = reinterpret_cast<LPMENUENTRY>(mii.dwItemData);
 			szStatBarString = formatmessage(IDS_LOADMAPISTATUS, lme->m_pName);
 		}
 	}
 	else
 	{
-		LPMENUITEM lpAddInMenu = GetAddinMenuItem(m_hWnd, uidMsg);
+		auto lpAddInMenu = GetAddinMenuItem(m_hWnd, uidMsg);
 		if (lpAddInMenu && lpAddInMenu->szHelp)
 		{
 			szStatBarString = format(L"%ws", lpAddInMenu->szHelp); // STRING_OK
@@ -613,17 +612,17 @@ void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg
 	UpdateStatusBarText(nPos, szStatBarString);
 }
 
-void CBaseDialog::UpdateTitleBarText(_In_ wstring& szMsg)
+void CBaseDialog::UpdateTitleBarText(_In_ wstring& szMsg) const
 {
-	wstring szTitle = formatmessage(IDS_TITLEBARMESSAGE, m_szTitle.c_str(), szMsg.c_str());
+	auto szTitle = formatmessage(IDS_TITLEBARMESSAGE, m_szTitle.c_str(), szMsg.c_str());
 
 	// set the title bar
 	::SetWindowTextW(m_hWnd, szTitle.c_str());
 }
 
-void CBaseDialog::UpdateTitleBarText()
+void CBaseDialog::UpdateTitleBarText() const
 {
-	wstring szTitle = formatmessage(IDS_TITLEBARPLAIN, m_szTitle.c_str());
+	auto szTitle = formatmessage(IDS_TITLEBARPLAIN, m_szTitle.c_str());
 
 	// set the title bar
 	::SetWindowTextW(m_hWnd, szTitle.c_str());
@@ -631,13 +630,13 @@ void CBaseDialog::UpdateTitleBarText()
 
 void CBaseDialog::UpdateStatus(HWND hWndHost, __StatusPaneEnum pane, wstring status)
 {
-	(void) ::SendMessage(hWndHost, WM_MFCMAPI_UPDATESTATUSBAR, pane, (LPARAM)status.c_str());
+	(void) ::SendMessage(hWndHost, WM_MFCMAPI_UPDATESTATUSBAR, pane, reinterpret_cast<LPARAM>(status.c_str()));
 }
 
 // WM_MFCMAPI_UPDATESTATUSBAR
 _Check_return_ LRESULT CBaseDialog::msgOnUpdateStatusBar(WPARAM wParam, LPARAM lParam)
 {
-	__StatusPaneEnum iPane = static_cast<__StatusPaneEnum>(wParam);
+	auto iPane = static_cast<__StatusPaneEnum>(wParam);
 	wstring szStr = reinterpret_cast<LPWSTR>(lParam);
 	UpdateStatusBarText(iPane, szStr);
 
@@ -659,24 +658,21 @@ void CBaseDialog::OnHexEditor()
 
 wstring GetOutlookVersionString()
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
 	if (!pfnMsiProvideQualifiedComponent || !pfnMsiGetFileVersion) return emptystring;
 
-	int i = 0;
 	wstring szOut;
 
-	for (i = oqcOfficeBegin; i < oqcOfficeEnd; i++)
+	for (auto i = oqcOfficeBegin; i < oqcOfficeEnd; i++)
 	{
-		bool b64 = false;
-		LPWSTR lpszTempPath = GetOutlookPath(g_pszOutlookQualifiedComponents[i], &b64);
+		auto b64 = false;
+		auto lpszTempPath = GetOutlookPath(g_pszOutlookQualifiedComponents[i], &b64);
 
 		if (lpszTempPath)
 		{
-			LPWSTR lpszTempVer = nullptr;
-			LPWSTR lpszTempLang = nullptr;
-			lpszTempVer = new WCHAR[MAX_PATH];
-			lpszTempLang = new WCHAR[MAX_PATH];
+			auto lpszTempVer = new WCHAR[MAX_PATH];
+			auto lpszTempLang = new WCHAR[MAX_PATH];
 			if (lpszTempVer && lpszTempLang)
 			{
 				UINT ret = 0;
@@ -705,7 +701,7 @@ wstring GetOutlookVersionString()
 
 void CBaseDialog::OnOutlookVersion()
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
 	CEditor MyEID(
 		this,
@@ -714,7 +710,7 @@ void CBaseDialog::OnOutlookVersion()
 		1,
 		CEDITOR_BUTTON_OK);
 
-	wstring szVersionString = GetOutlookVersionString();
+	auto szVersionString = GetOutlookVersionString();
 	if (szVersionString.empty())
 	{
 		szVersionString = loadstring(IDS_NOOUTLOOK);
@@ -726,7 +722,7 @@ void CBaseDialog::OnOutlookVersion()
 
 void CBaseDialog::OnOpenEntryID(_In_opt_ LPSBinary lpBin)
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	if (!m_lpMapiObjects) return;
 
 	CEditor MyEID(
@@ -738,13 +734,13 @@ void CBaseDialog::OnOpenEntryID(_In_opt_ LPSBinary lpBin)
 
 	MyEID.InitPane(0, CreateSingleLinePane(IDS_EID, BinToHexString(lpBin, false), false));
 
-	LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release
+	auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 	MyEID.InitPane(1, CreateCheckPane(IDS_USEMDB, lpMDB ? true : false, lpMDB ? false : true));
 
-	LPADRBOOK lpAB = m_lpMapiObjects->GetAddrBook(false); // do not release
+	auto lpAB = m_lpMapiObjects->GetAddrBook(false); // do not release
 	MyEID.InitPane(2, CreateCheckPane(IDS_USEAB, lpAB ? true : false, lpAB ? false : true));
 
-	LPMAPISESSION lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
+	auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	MyEID.InitPane(3, CreateCheckPane(IDS_SESSION, lpMAPISession ? true : false, lpMAPISession ? false : true));
 
 	MyEID.InitPane(4, CreateCheckPane(IDS_PASSMAPIMODIFY, false, false));
@@ -779,7 +775,7 @@ void CBaseDialog::OnOpenEntryID(_In_opt_ LPSBinary lpBin)
 
 	if (MyEID.GetCheck(8) && lpAB) // Do IAddrBook->Details here
 	{
-		ULONG_PTR ulUIParam = reinterpret_cast<ULONG_PTR>(static_cast<void*>(m_hWnd));
+		auto ulUIParam = reinterpret_cast<ULONG_PTR>(static_cast<void*>(m_hWnd));
 
 		EC_H_CANCEL(lpAB->Details(
 			&ulUIParam,
@@ -813,7 +809,7 @@ void CBaseDialog::OnOpenEntryID(_In_opt_ LPSBinary lpBin)
 
 		if (lpUnk)
 		{
-			wstring szFlags = InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE);
+			auto szFlags = InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE);
 			DebugPrint(DBGGeneric, L"OnOpenEntryID: Got object (%p) of type 0x%08X = %ws\n", lpUnk, ulObjType, szFlags.c_str());
 
 			LPMAPIPROP lpTemp = nullptr;
@@ -836,12 +832,12 @@ void CBaseDialog::OnOpenEntryID(_In_opt_ LPSBinary lpBin)
 
 void CBaseDialog::OnCompareEntryIDs()
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	if (!m_lpMapiObjects) return;
 
-	LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release
-	LPMAPISESSION lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
-	LPADRBOOK lpAB = m_lpMapiObjects->GetAddrBook(false); // do not release
+	auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
+	auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
+	auto lpAB = m_lpMapiObjects->GetAddrBook(false); // do not release
 
 	CEditor MyEIDs(
 		this,
@@ -865,9 +861,9 @@ void CBaseDialog::OnCompareEntryIDs()
 	WC_H(MyEIDs.DisplayDialog());
 	if (S_OK != hRes) return;
 
-	if ((0 == MyEIDs.GetDropDown(2) && !lpMDB) ||
-		(1 == MyEIDs.GetDropDown(2) && !lpMAPISession) ||
-		(2 == MyEIDs.GetDropDown(2) && !lpAB))
+	if (0 == MyEIDs.GetDropDown(2) && !lpMDB ||
+		1 == MyEIDs.GetDropDown(2) && !lpMAPISession ||
+		2 == MyEIDs.GetDropDown(2) && !lpAB)
 	{
 		ErrDialog(__FILE__, __LINE__, IDS_EDCOMPAREEID);
 		return;
@@ -897,8 +893,8 @@ void CBaseDialog::OnCompareEntryIDs()
 
 	if (SUCCEEDED(hRes))
 	{
-		wstring szResult = loadstring(ulResult ? IDS_TRUE : IDS_FALSE);
-		wstring szRet = formatmessage(IDS_COMPAREEIDBOOL, ulResult, szResult.c_str());
+		auto szResult = loadstring(ulResult ? IDS_TRUE : IDS_FALSE);
+		auto szRet = formatmessage(IDS_COMPAREEIDBOOL, ulResult, szResult.c_str());
 
 		CEditor Result(
 			this,
@@ -916,7 +912,7 @@ void CBaseDialog::OnCompareEntryIDs()
 
 void CBaseDialog::OnComputeStoreHash()
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
 	CEditor MyStoreEID(
 		this,
@@ -938,8 +934,8 @@ void CBaseDialog::OnComputeStoreHash()
 	size_t cbBin = NULL;
 	EC_H(MyStoreEID.GetEntryID(0, MyStoreEID.GetCheck(1), &cbBin, &lpEntryID));
 
-	DWORD dwHash = ComputeStoreHash(static_cast<ULONG>(cbBin), reinterpret_cast<LPBYTE>(lpEntryID), nullptr, MyStoreEID.GetStringW(2), MyStoreEID.GetCheck(3));
-	wstring szHash = formatmessage(IDS_STOREHASHVAL, dwHash);
+	auto dwHash = ComputeStoreHash(static_cast<ULONG>(cbBin), reinterpret_cast<LPBYTE>(lpEntryID), nullptr, MyStoreEID.GetStringW(2).c_str(), MyStoreEID.GetCheck(3));
+	auto szHash = formatmessage(IDS_STOREHASHVAL, dwHash);
 
 	CEditor Result(
 		this,
@@ -955,13 +951,13 @@ void CBaseDialog::OnComputeStoreHash()
 
 void CBaseDialog::OnNotificationsOn()
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
 	if (m_lpBaseAdviseSink || !m_lpMapiObjects) return;
 
-	LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release
-	LPMAPISESSION lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
-	LPADRBOOK lpAB = m_lpMapiObjects->GetAddrBook(false); // do not release
+	auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
+	auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
+	auto lpAB = m_lpMapiObjects->GetAddrBook(false); // do not release
 
 	CEditor MyData(
 		this,
@@ -984,9 +980,9 @@ void CBaseDialog::OnNotificationsOn()
 
 	if (S_OK == hRes)
 	{
-		if ((0 == MyData.GetDropDown(2) && !lpMDB) ||
-			(1 == MyData.GetDropDown(2) && !lpMAPISession) ||
-			(2 == MyData.GetDropDown(2) && !lpAB))
+		if (0 == MyData.GetDropDown(2) && !lpMDB ||
+			1 == MyData.GetDropDown(2) && !lpMAPISession ||
+			2 == MyData.GetDropDown(2) && !lpAB)
 		{
 			ErrDialog(__FILE__, __LINE__, IDS_EDADVISE);
 			return;
@@ -1061,7 +1057,7 @@ void CBaseDialog::OnNotificationsOn()
 
 void CBaseDialog::OnNotificationsOff()
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
 	if (m_ulBaseAdviseConnection && m_lpMapiObjects)
 	{
@@ -1069,19 +1065,19 @@ void CBaseDialog::OnNotificationsOff()
 		{
 		case MAPI_SESSION:
 		{
-			LPMAPISESSION lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
+			auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 			if (lpMAPISession) EC_MAPI(lpMAPISession->Unadvise(m_ulBaseAdviseConnection));
 			break;
 		}
 		case MAPI_STORE:
 		{
-			LPMDB lpMDB = m_lpMapiObjects->GetMDB(); // do not release
+			auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 			if (lpMDB) EC_MAPI(lpMDB->Unadvise(m_ulBaseAdviseConnection));
 			break;
 		}
 		case MAPI_ADDRBOOK:
 		{
-			LPADRBOOK lpAB = m_lpMapiObjects->GetAddrBook(false); // do not release
+			auto lpAB = m_lpMapiObjects->GetAddrBook(false); // do not release
 			if (lpAB) EC_MAPI(lpAB->Unadvise(m_ulBaseAdviseConnection));
 			break;
 		}
@@ -1096,7 +1092,7 @@ void CBaseDialog::OnNotificationsOff()
 
 void CBaseDialog::OnDispatchNotifications()
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
 	EC_MAPI(HrDispatchNotifications(NULL));
 }

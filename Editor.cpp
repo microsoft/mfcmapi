@@ -1,13 +1,10 @@
 #include "stdafx.h"
 #include "Editor.h"
 #include "UIFunctions.h"
-#include "MAPIFunctions.h"
 #include "String.h"
 #include "InterpretProp.h"
 #include "InterpretProp2.h"
-#include "ImportProcs.h"
 #include "MyWinApp.h"
-#include <vssym32.h>
 #include "AboutDlg.h"
 
 extern CMyWinApp theApp;
@@ -79,7 +76,7 @@ void CEditor::Constructor(
 	m_ulListNum = NOLIST;
 
 	m_bEnableScroll = false;
-	m_hWndVertScroll = NULL;
+	m_hWndVertScroll = nullptr;
 	m_iScrollClient = 0;
 	m_bScrollVisible = false;
 
@@ -97,12 +94,12 @@ void CEditor::Constructor(
 	m_iMinWidth = 0;
 	m_iMinHeight = 0;
 
-	m_lpControls = 0;
+	m_lpControls = nullptr;
 	m_cControls = 0;
 
 	m_uidTitle = uidTitle;
 	m_uidPrompt = uidPrompt;
-	m_bHasPrompt = (m_uidPrompt != NULL);
+	m_bHasPrompt = m_uidPrompt != NULL;
 
 	m_uidActionButtonText1 = uidActionButtonText1;
 	m_uidActionButtonText2 = uidActionButtonText2;
@@ -116,7 +113,7 @@ void CEditor::Constructor(
 	if (m_bButtonFlags & CEDITOR_BUTTON_CANCEL) m_cButtons++;
 
 	// Note that LoadIcon does not require a subsequent DestroyIcon in Win32
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	WC_D(m_hIcon, AfxGetApp()->LoadIcon(IDR_MAINFRAME));
 
 	m_pParentWnd = pParentWnd;
@@ -155,12 +152,11 @@ LRESULT CEditor::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_HELP:
 		DisplayAboutDlg(this);
 		return true;
-		break;
 		// I can handle notify messages for my child list control since I am the parent window
 		// This makes it easy for me to customize the child control to do what I want
 	case WM_NOTIFY:
 	{
-		LPNMHDR pHdr = (LPNMHDR)lParam;
+		auto pHdr = reinterpret_cast<LPNMHDR>(lParam);
 
 		switch (pHdr->code)
 		{
@@ -171,14 +167,13 @@ LRESULT CEditor::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 				(void)m_lpControls[m_ulListNum].lpPane->HandleChange(IDD_LISTEDIT);
 			}
 			return NULL;
-			break;
 		}
 		break;
 	}
 	case WM_COMMAND:
 	{
-		WORD nCode = HIWORD(wParam);
-		WORD idFrom = LOWORD(wParam);
+		auto nCode = HIWORD(wParam);
+		auto idFrom = LOWORD(wParam);
 		if (EN_CHANGE == nCode ||
 			CBN_SELCHANGE == nCode ||
 			CBN_EDITCHANGE == nCode)
@@ -202,44 +197,42 @@ LRESULT CEditor::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		RECT rect = { 0 };
 		::GetClientRect(m_hWnd, &rect);
-		HGDIOBJ hOld = ::SelectObject((HDC)wParam, GetSysBrush(cBackground));
-		BOOL bRet = ::PatBlt((HDC)wParam, 0, 0, rect.right - rect.left, rect.bottom - rect.top, PATCOPY);
-		::SelectObject((HDC)wParam, hOld);
+		auto hOld = ::SelectObject(reinterpret_cast<HDC>(wParam), GetSysBrush(cBackground));
+		auto bRet = ::PatBlt(reinterpret_cast<HDC>(wParam), 0, 0, rect.right - rect.left, rect.bottom - rect.top, PATCOPY);
+		::SelectObject(reinterpret_cast<HDC>(wParam), hOld);
 		return bRet;
 	}
-	break;
 	case WM_MOUSEWHEEL:
 	{
 		if (!m_bScrollVisible) break;
 
-		static int s_DeltaTotal = 0;
-		short zDelta = GET_WHEEL_DELTA_WPARAM(wParam);
+		static auto s_DeltaTotal = 0;
+		auto zDelta = GET_WHEEL_DELTA_WPARAM(wParam);
 		s_DeltaTotal += zDelta;
 
 		int nLines = s_DeltaTotal / WHEEL_DELTA;
 		s_DeltaTotal -= nLines * WHEEL_DELTA;
-		int i = 0;
-		for (i = 0; i != abs(nLines); ++i)
+		for (auto i = 0; i != abs(nLines); ++i)
 		{
 			::SendMessage(m_hWnd,
 				WM_VSCROLL,
-				(nLines < 0) ? (WPARAM)SB_LINEDOWN : (WPARAM)SB_LINEUP,
-				(LPARAM)m_hWndVertScroll);
+				nLines < 0 ? static_cast<WPARAM>(SB_LINEDOWN) : static_cast<WPARAM>(SB_LINEUP),
+				reinterpret_cast<LPARAM>(m_hWndVertScroll));
 		}
 		break;
 	}
 	case WM_VSCROLL:
 	{
-		WORD wScrollType = LOWORD(wParam);
-		HWND hWndScroll = (HWND)lParam;
+		auto wScrollType = LOWORD(wParam);
+		auto hWndScroll = reinterpret_cast<HWND>(lParam);
 		SCROLLINFO si = { 0 };
 
-		si.cbSize = sizeof(si);
+		si.cbSize = sizeof si;
 		si.fMask = SIF_ALL;
 		::GetScrollInfo(hWndScroll, SB_CTL, &si);
 
 		// Save the position for comparison later on.
-		int yPos = si.nPos;
+		auto yPos = si.nPos;
 		switch (wScrollType)
 		{
 		case SB_TOP:
@@ -276,12 +269,11 @@ LRESULT CEditor::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		// If the position has changed, scroll window and update it.
 		if (si.nPos != yPos)
 		{
-			::ScrollWindowEx(m_ScrollWindow.m_hWnd, 0, yPos - si.nPos, NULL, NULL, NULL, NULL, SW_SCROLLCHILDREN | SW_INVALIDATE);
+			::ScrollWindowEx(m_ScrollWindow.m_hWnd, 0, yPos - si.nPos, nullptr, nullptr, nullptr, nullptr, SW_SCROLLCHILDREN | SW_INVALIDATE);
 		}
 
 		return 0;
 	}
-	break;
 	}
 	return CMyDialog::WindowProc(message, wParam, lParam);
 }
@@ -292,7 +284,7 @@ void CEditor::SetAddInTitle(wstring szTitle)
 	m_szAddInTitle = szTitle;
 }
 
-void CEditor::SetAddInLabel(ULONG i, wstring szLabel)
+void CEditor::SetAddInLabel(ULONG i, wstring szLabel) const
 {
 	if (INVALIDRANGE(i)) return;
 	m_lpControls[i].lpPane->SetAddInLabel(szLabel);
@@ -314,7 +306,6 @@ LRESULT CALLBACK DrawScrollProc(
 	case WM_NCDESTROY:
 		RemoveWindowSubclass(hWnd, DrawScrollProc, uIdSubclass);
 		return DefSubclassProc(hWnd, uMsg, wParam, lParam);
-		break;
 	}
 	return DefSubclassProc(hWnd, uMsg, wParam, lParam);
 }
@@ -322,12 +313,12 @@ LRESULT CALLBACK DrawScrollProc(
 // The order these controls are created dictates our tab order - be careful moving things around!
 BOOL CEditor::OnInitDialog()
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	wstring szPrefix;
-	wstring szPostfix = loadstring(m_uidTitle);
+	auto szPostfix = loadstring(m_uidTitle);
 	wstring szFullString;
 
-	BOOL bRet = CMyDialog::OnInitDialog();
+	auto bRet = CMyDialog::OnInitDialog();
 
 	m_szTitle = szPostfix + m_szAddInTitle;
 	::SetWindowTextW(m_hWnd, m_szTitle.c_str());
@@ -362,9 +353,9 @@ BOOL CEditor::OnInitDialog()
 	}
 
 	// setup to get button widths
-	HDC hdc = ::GetDC(m_hWnd);
+	auto hdc = ::GetDC(m_hWnd);
 	if (!hdc) return false; // fatal error
-	HGDIOBJ hfontOld = ::SelectObject(hdc, GetSegoeFont());
+	auto hfontOld = ::SelectObject(hdc, GetSegoeFont());
 	SIZE sizeText = { 0 };
 
 	CWnd* pParent = this;
@@ -373,7 +364,7 @@ BOOL CEditor::OnInitDialog()
 		m_ScrollWindow.CreateEx(
 			0,
 			_T("Static"), // STRING_OK
-			(LPCTSTR)NULL,
+			nullptr,
 			WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN,
 			CRect(0, 0, 0, 0),
 			this,
@@ -381,21 +372,20 @@ BOOL CEditor::OnInitDialog()
 		m_hWndVertScroll = ::CreateWindowEx(
 			0,
 			_T("SCROLLBAR"), // STRING_OK
-			(LPCTSTR)NULL,
+			nullptr,
 			WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | SBS_VERT | SBS_RIGHTALIGN,
 			0, 0, 0, 0,
 			m_hWnd,
-			NULL,
-			NULL,
-			NULL);
+			nullptr,
+			nullptr,
+			nullptr);
 		// Subclass static control so we can ensure we're drawing everything right
-		SetWindowSubclass(m_ScrollWindow.m_hWnd, DrawScrollProc, 0, (DWORD_PTR)m_ScrollWindow.m_hWnd);
+		SetWindowSubclass(m_ScrollWindow.m_hWnd, DrawScrollProc, 0, reinterpret_cast<DWORD_PTR>(m_ScrollWindow.m_hWnd));
 		pParent = &m_ScrollWindow;
 	}
 
 	SetMargins(); // Not all margins have been computed yet, but some have and we can use them during Initialize
-	ULONG i = 0;
-	for (i = 0; i < m_cControls; i++)
+	for (ULONG i = 0; i < m_cControls; i++)
 	{
 		if (m_lpControls[i].lpPane)
 		{
@@ -488,7 +478,7 @@ BOOL CEditor::OnInitDialog()
 	}
 
 	// tear down from our width computations
-	hfontOld = ::SelectObject(hdc, hfontOld);
+	(void)::SelectObject(hdc, hfontOld);
 	::ReleaseDC(m_hWnd, hdc);
 
 	m_iButtonWidth += m_iMargin;
@@ -515,19 +505,19 @@ BOOL CEditor::OnInitDialog()
 void CEditor::OnOK()
 {
 	// save data from the UI back into variables that we can query later
-	ULONG j = 0;
-	for (j = 0; j < m_cControls; j++)
+	for (ULONG j = 0; j < m_cControls; j++)
 	{
 		if (m_lpControls[j].lpPane)
 		{
 			m_lpControls[j].lpPane->CommitUIValues();
 		}
 	}
+
 	CMyDialog::OnOK();
 }
 
 // This should work whether the editor is active/displayed or not
-_Check_return_ bool CEditor::GetSelectedGUID(ULONG iControl, bool bByteSwapped, _In_ LPGUID lpSelectedGUID)
+_Check_return_ bool CEditor::GetSelectedGUID(ULONG iControl, bool bByteSwapped, _In_ LPGUID lpSelectedGUID) const
 {
 	if (!lpSelectedGUID) return NULL;
 	if (!IsValidDropDown(iControl)) return NULL;
@@ -537,7 +527,7 @@ _Check_return_ bool CEditor::GetSelectedGUID(ULONG iControl, bool bByteSwapped, 
 
 _Check_return_ HRESULT CEditor::DisplayDialog()
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	INT_PTR iDlgRet = 0;
 
 	EC_D_DIALOG(DoModal());
@@ -548,25 +538,20 @@ _Check_return_ HRESULT CEditor::DisplayDialog()
 		DebugPrint(DBGGeneric, L"Dialog box could not be created!\n");
 		MessageBox(_T("Dialog box could not be created!")); // STRING_OK
 		return MAPI_E_CALL_FAILED;
-		break;
 	case IDABORT:
 	case IDCANCEL:
 		return MAPI_E_USER_CANCEL;
-		break;
 	case IDOK:
 		return S_OK;
-		break;
 	default:
-		return HRESULT_FROM_WIN32((unsigned long)iDlgRet);
-		break;
+		return HRESULT_FROM_WIN32(static_cast<unsigned long>(iDlgRet));
 	}
 }
 
 // Push current margin settings to the view panes
-void CEditor::SetMargins()
+void CEditor::SetMargins() const
 {
-	ULONG j = 0;
-	for (j = 0; j < m_cControls; j++)
+	for (ULONG j = 0; j < m_cControls; j++)
 	{
 		if (m_lpControls[j].lpPane)
 		{
@@ -585,28 +570,26 @@ void CEditor::SetMargins()
 int ComputePromptWidth(CEdit* lpPrompt, HDC hdc, int iMaxWidth, int* iLineCount)
 {
 	if (!lpPrompt) return 0;
-	int cx = 0;
-	int iPromptLineCount = 0;
+	auto cx = 0;
 	CRect OldRect;
 	lpPrompt->GetRect(OldRect);
 	// Make the edit rect big so we can get an accurate line count
 	lpPrompt->SetRectNP(CRect(0, 0, MAX_WIDTH, iMaxWidth));
 
-	iPromptLineCount = lpPrompt->GetLineCount();
+	auto iPromptLineCount = lpPrompt->GetLineCount();
 
-	int i = 0;
-	for (i = 0; i < iPromptLineCount; i++)
+	for (auto i = 0; i < iPromptLineCount; i++)
 	{
 		// length of line i:
-		int len = lpPrompt->LineLength(lpPrompt->LineIndex(i));
+		auto len = lpPrompt->LineLength(lpPrompt->LineIndex(i));
 		if (len)
 		{
-			LPTSTR szLine = new TCHAR[len + 1];
+			auto szLine = new TCHAR[len + 1];
 			memset(szLine, 0, len + 1);
 
 			lpPrompt->GetLine(i, szLine, len);
 
-			int iWidth = LOWORD(::GetTabbedTextExtent(hdc, szLine, len, 0, 0));
+			int iWidth = LOWORD(::GetTabbedTextExtent(hdc, szLine, len, 0, nullptr));
 			delete[] szLine;
 			cx = max(cx, iWidth);
 		}
@@ -621,15 +604,13 @@ int ComputePromptWidth(CEdit* lpPrompt, HDC hdc, int iMaxWidth, int* iLineCount)
 
 int ComputeCaptionWidth(HDC hdc, wstring szTitle, int iMargin)
 {
-	int iCaptionWidth = NULL;
-
 	SIZE sizeTitle = { 0 };
 	::GetTextExtentPoint32W(hdc, szTitle.c_str(), static_cast<int>(szTitle.length()), &sizeTitle);
-	iCaptionWidth = sizeTitle.cx + iMargin; // Allow for some whitespace between the caption and buttons
+	auto iCaptionWidth = sizeTitle.cx + iMargin; // Allow for some whitespace between the caption and buttons
 
-	int iIconWidth = GetSystemMetrics(SM_CXFIXEDFRAME) + GetSystemMetrics(SM_CXSMICON);
-	int iButtonsWidth = GetSystemMetrics(SM_CXBORDER) + 3 * GetSystemMetrics(SM_CYSIZE);
-	int iCaptionMargin = GetSystemMetrics(SM_CXFIXEDFRAME) + GetSystemMetrics(SM_CXBORDER);
+	auto iIconWidth = GetSystemMetrics(SM_CXFIXEDFRAME) + GetSystemMetrics(SM_CXSMICON);
+	auto iButtonsWidth = GetSystemMetrics(SM_CXBORDER) + 3 * GetSystemMetrics(SM_CYSIZE);
+	auto iCaptionMargin = GetSystemMetrics(SM_CXFIXEDFRAME) + GetSystemMetrics(SM_CXBORDER);
 
 	iCaptionWidth += iIconWidth + iButtonsWidth + iCaptionMargin;
 
@@ -643,21 +624,20 @@ _Check_return_ SIZE CEditor::ComputeWorkArea(SIZE sScreen)
 	SIZE sArea = { 0 };
 
 	// Figure a good width (cx)
-	int cx = 0;
+	auto cx = 0;
 
-	HDC hdc = ::GetDC(m_hWnd);
-	HGDIOBJ hfontOld = ::SelectObject(hdc, GetSegoeFont());
+	auto hdc = ::GetDC(m_hWnd);
+	auto hfontOld = ::SelectObject(hdc, GetSegoeFont());
 
-	int iPromptLineCount = 0;
+	auto iPromptLineCount = 0;
 	if (m_bHasPrompt)
 	{
 		cx = max(cx, ComputePromptWidth(&m_Prompt, hdc, sScreen.cy, &iPromptLineCount));
 	}
 
 	SetMargins();
-	ULONG j = 0;
 	// width
-	for (j = 0; j < m_cControls; j++)
+	for (ULONG j = 0; j < m_cControls; j++)
 	{
 		if (m_lpControls[j].lpPane)
 		{
@@ -685,14 +665,13 @@ _Check_return_ SIZE CEditor::ComputeWorkArea(SIZE sScreen)
 	// Done figuring a good width (cx)
 
 	// Figure a good height (cy)
-	int cy = 0;
-	cy = 2 * m_iMargin; // margins top and bottom
+	auto cy = 2 * m_iMargin; // margins top and bottom
 	cy += iPromptLineCount * m_iTextHeight; // prompt text
 	cy += m_iButtonHeight; // Button height
 	cy += m_iMargin; // add a little height between the buttons and our edit controls
 
-	int iControlHeight = 0;
-	for (j = 0; j < m_cControls; j++)
+	auto iControlHeight = 0;
+	for (ULONG j = 0; j < m_cControls; j++)
 	{
 		if (m_lpControls[j].lpPane)
 		{
@@ -720,15 +699,15 @@ _Check_return_ SIZE CEditor::ComputeWorkArea(SIZE sScreen)
 
 void CEditor::OnSetDefaultSize()
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
 	CRect rcMaxScreen;
-	EC_B(SystemParametersInfo(SPI_GETWORKAREA, NULL, (LPVOID)(LPRECT)rcMaxScreen, NULL));
-	int cxFullScreen = rcMaxScreen.Width();
-	int cyFullScreen = rcMaxScreen.Height();
+	EC_B(SystemParametersInfo(SPI_GETWORKAREA, NULL, static_cast<LPVOID>(static_cast<LPRECT>(rcMaxScreen)), NULL));
+	auto cxFullScreen = rcMaxScreen.Width();
+	auto cyFullScreen = rcMaxScreen.Height();
 
 	SIZE sScreen = { cxFullScreen, cyFullScreen };
-	SIZE sArea = ComputeWorkArea(sScreen);
+	auto sArea = ComputeWorkArea(sScreen);
 	// inflate the rectangle according to the title bar, border, etc...
 	CRect MyRect(0, 0, sArea.cx, sArea.cy);
 	// Add width and height for the nonclient frame - all previous calculations were done without it
@@ -773,8 +752,8 @@ void CEditor::OnRecalcLayout()
 	::GetClientRect(m_hWnd, &rc);
 	(void) ::PostMessage(m_hWnd,
 		WM_SIZE,
-		(WPARAM)SIZE_RESTORED,
-		(LPARAM)MAKELPARAM(rc.right - rc.left, rc.bottom - rc.top));
+		static_cast<WPARAM>(SIZE_RESTORED),
+		static_cast<LPARAM>(MAKELPARAM(rc.right - rc.left, rc.bottom - rc.top)));
 }
 
 // Artificially expand our gripper region to make it easier to expand dialogs
@@ -791,34 +770,32 @@ _Check_return_ LRESULT CEditor::OnNcHitTest(CPoint point)
 	{
 		return HTBOTTOMRIGHT;
 	}
-	else
-	{
-		return CMyDialog::OnNcHitTest(point);
-	}
+
+	return CMyDialog::OnNcHitTest(point);
 }
 
 void CEditor::OnSize(UINT nType, int cx, int cy)
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	CMyDialog::OnSize(nType, cx, cy);
-	int iCXMargin = m_iSideMargin;
+	auto iCXMargin = m_iSideMargin;
 
-	int iFullWidth = cx - 2 * iCXMargin;
+	auto iFullWidth = cx - 2 * iCXMargin;
 
-	int iPromptLineCount = 0;
+	auto iPromptLineCount = 0;
 	if (m_bHasPrompt)
 	{
 		iPromptLineCount = m_Prompt.GetLineCount() + 1; // we allow space for the prompt and one line of whitespace
 	}
 
-	int iCYBottom = cy - m_iButtonHeight - m_iMargin; // Top of Buttons
-	int iCYTop = m_iTextHeight * iPromptLineCount + m_iMargin; // Bottom of prompt
+	auto iCYBottom = cy - m_iButtonHeight - m_iMargin; // Top of Buttons
+	auto iCYTop = m_iTextHeight * iPromptLineCount + m_iMargin; // Bottom of prompt
 
 	if (m_bHasPrompt)
 	{
 		// Position prompt at top
 		EC_B(m_Prompt.SetWindowPos(
-			0, // z-order
+			nullptr, // z-order
 			iCXMargin, // new x
 			m_iMargin, // new y
 			iFullWidth, // Full width
@@ -828,15 +805,15 @@ void CEditor::OnSize(UINT nType, int cx, int cy)
 
 	if (m_cButtons)
 	{
-		int iSlotWidth = m_iButtonWidth + m_iMargin;
-		int iOffset = cx - m_iSideMargin + m_iMargin;
-		int iButton = 0;
+		auto iSlotWidth = m_iButtonWidth + m_iMargin;
+		auto iOffset = cx - m_iSideMargin + m_iMargin;
+		auto iButton = 0;
 
 		// Position buttons at the bottom, on the right
 		if (m_bButtonFlags & CEDITOR_BUTTON_OK)
 		{
 			EC_B(m_OkButton.SetWindowPos(
-				0,
+				nullptr,
 				iOffset - iSlotWidth * (m_cButtons - iButton), // new x
 				iCYBottom, // new y
 				m_iButtonWidth,
@@ -848,7 +825,7 @@ void CEditor::OnSize(UINT nType, int cx, int cy)
 		if (m_bButtonFlags & CEDITOR_BUTTON_ACTION1)
 		{
 			EC_B(m_ActionButton1.SetWindowPos(
-				0,
+				nullptr,
 				iOffset - iSlotWidth * (m_cButtons - iButton), // new x
 				iCYBottom, // new y
 				m_iButtonWidth,
@@ -860,7 +837,7 @@ void CEditor::OnSize(UINT nType, int cx, int cy)
 		if (m_bButtonFlags & CEDITOR_BUTTON_ACTION2)
 		{
 			EC_B(m_ActionButton2.SetWindowPos(
-				0,
+				nullptr,
 				iOffset - iSlotWidth * (m_cButtons - iButton), // new x
 				iCYBottom, // new y
 				m_iButtonWidth,
@@ -872,7 +849,7 @@ void CEditor::OnSize(UINT nType, int cx, int cy)
 		if (m_bButtonFlags & CEDITOR_BUTTON_ACTION3)
 		{
 			EC_B(m_ActionButton3.SetWindowPos(
-				0,
+				nullptr,
 				iOffset - iSlotWidth * (m_cButtons - iButton), // new x
 				iCYBottom, // new y
 				m_iButtonWidth,
@@ -884,13 +861,12 @@ void CEditor::OnSize(UINT nType, int cx, int cy)
 		if (m_bButtonFlags & CEDITOR_BUTTON_CANCEL)
 		{
 			EC_B(m_CancelButton.SetWindowPos(
-				0,
+				nullptr,
 				iOffset - iSlotWidth * (m_cButtons - iButton), // new x
 				iCYBottom, // new y
 				m_iButtonWidth,
 				m_iButtonHeight,
 				SWP_NOZORDER));
-			iButton++;
 		}
 	}
 
@@ -898,11 +874,10 @@ void CEditor::OnSize(UINT nType, int cx, int cy)
 	// at this point, iCYTop and iCYBottom reflect our free space, so we can calc multiline height
 
 	// Calculate how much space a 'line' of a variable height control should be
-	int iLineHeight = 0;
-	int iFixedHeight = 0;
-	int iVariableLines = 0;
-	ULONG j = 0;
-	for (j = 0; j < m_cControls; j++)
+	auto iLineHeight = 0;
+	auto iFixedHeight = 0;
+	auto iVariableLines = 0;
+	for (ULONG j = 0; j < m_cControls; j++)
 	{
 		if (m_lpControls[j].lpPane)
 		{
@@ -915,16 +890,16 @@ void CEditor::OnSize(UINT nType, int cx, int cy)
 	// There may be some unaccounted slack space after all this. Compute it so we can give it to a control.
 	UINT iSlackSpace = iCYBottom - iCYTop - iFixedHeight - iVariableLines * iLineHeight;
 
-	int iScrollPos = 0;
+	auto iScrollPos = 0;
 	if (m_bEnableScroll)
 	{
 		if (iCYBottom - iCYTop < m_iScrollClient)
 		{
-			int iScrollWidth = GetSystemMetrics(SM_CXVSCROLL);
+			auto iScrollWidth = GetSystemMetrics(SM_CXVSCROLL);
 			iFullWidth -= iScrollWidth;
-			::SetWindowPos(m_hWndVertScroll, 0, iFullWidth + iCXMargin, iCYTop, iScrollWidth, iCYBottom - iCYTop, SWP_NOZORDER);
+			::SetWindowPos(m_hWndVertScroll, nullptr, iFullWidth + iCXMargin, iCYTop, iScrollWidth, iCYBottom - iCYTop, SWP_NOZORDER);
 			SCROLLINFO si = { 0 };
-			si.cbSize = sizeof(si);
+			si.cbSize = sizeof si;
 			si.fMask = SIF_POS;
 			::GetScrollInfo(m_hWndVertScroll, SB_CTL, &si);
 			iScrollPos = si.nPos;
@@ -943,18 +918,18 @@ void CEditor::OnSize(UINT nType, int cx, int cy)
 			m_bScrollVisible = false;
 		}
 
-		::SetWindowPos(m_ScrollWindow.m_hWnd, 0, iCXMargin, iCYTop, iFullWidth, iCYBottom - iCYTop, SWP_NOZORDER);
+		::SetWindowPos(m_ScrollWindow.m_hWnd, nullptr, iCXMargin, iCYTop, iFullWidth, iCYBottom - iCYTop, SWP_NOZORDER);
 		iCYTop = -iScrollPos; // We get scrolling for free by adjusting our top
 	}
 
-	for (j = 0; j < m_cControls; j++)
+	for (ULONG j = 0; j < m_cControls; j++)
 	{
 		// Calculate height for multiline edit boxes and lists
 		// If we had any slack space, parcel it out Monopoly house style over the controls
 		// This ensures a smooth resize experience
 		if (m_lpControls[j].lpPane)
 		{
-			int iViewHeight = 0;
+			auto iViewHeight = 0;
 			UINT iLines = m_lpControls[j].lpPane->GetLines();
 			if (iLines)
 			{
@@ -971,7 +946,7 @@ void CEditor::OnSize(UINT nType, int cx, int cy)
 				}
 			}
 
-			int iControlHeight = iViewHeight + m_lpControls[j].lpPane->GetFixedHeight();
+			auto iControlHeight = iViewHeight + m_lpControls[j].lpPane->GetFixedHeight();
 			m_lpControls[j].lpPane->SetWindowPos(
 				iCXMargin, // x
 				iCYTop, // y
@@ -992,10 +967,9 @@ void CEditor::CreateControls(ULONG ulCount)
 	}
 	if (m_lpControls)
 	{
-		ULONG i = 0;
-		for (i = 0; i < m_cControls; i++)
+		for (ULONG i = 0; i < m_cControls; i++)
 		{
-			m_lpControls[i].lpPane = NULL;
+			m_lpControls[i].lpPane = nullptr;
 		}
 	}
 }
@@ -1004,8 +978,7 @@ void CEditor::DeleteControls()
 {
 	if (m_lpControls)
 	{
-		ULONG i = 0;
-		for (i = 0; i < m_cControls; i++)
+		for (ULONG i = 0; i < m_cControls; i++)
 		{
 			if (m_lpControls[i].lpPane)
 			{
@@ -1014,7 +987,7 @@ void CEditor::DeleteControls()
 		}
 		delete[] m_lpControls;
 	}
-	m_lpControls = NULL;
+	m_lpControls = nullptr;
 	m_cControls = 0;
 }
 
@@ -1025,9 +998,9 @@ void CEditor::InitPane(ULONG iNum, ViewPane* lpPane)
 	m_lpControls[iNum].lpPane = lpPane;
 }
 
-ViewPane* CEditor::GetControl(ULONG iControl)
+ViewPane* CEditor::GetControl(ULONG iControl) const
 {
-	if (INVALIDRANGE(iControl)) return NULL;
+	if (INVALIDRANGE(iControl)) return nullptr;
 	return m_lpControls[iControl].lpPane;
 }
 
@@ -1039,7 +1012,7 @@ void CEditor::SetPromptPostFix(_In_ wstring szMsg)
 
 // Sets m_lpControls[i].lpEdit->lpszW using SetStringW
 // cchsz of -1 lets AnsiToUnicode and SetStringW calculate the length on their own
-void CEditor::SetStringA(ULONG i, _In_opt_z_ LPCSTR szMsg, size_t cchsz)
+void CEditor::SetStringA(ULONG i, _In_opt_z_ LPCSTR szMsg, size_t cchsz) const
 {
 	if (!IsValidEdit(i)) return;
 
@@ -1049,7 +1022,7 @@ void CEditor::SetStringA(ULONG i, _In_opt_z_ LPCSTR szMsg, size_t cchsz)
 // Sets m_lpControls[i].lpEdit->lpszW
 // cchsz may or may not include the NULL terminator (if one is present)
 // If it is missing, we'll make sure we add it
-void CEditor::SetStringW(ULONG i, _In_opt_z_ LPCWSTR szMsg, size_t cchsz)
+void CEditor::SetStringW(ULONG i, _In_opt_z_ LPCWSTR szMsg, size_t cchsz) const
 {
 	if (!IsValidEdit(i)) return;
 
@@ -1057,7 +1030,7 @@ void CEditor::SetStringW(ULONG i, _In_opt_z_ LPCWSTR szMsg, size_t cchsz)
 }
 
 // Updates m_lpControls[i].lpEdit->lpszW using SetStringW
-void __cdecl CEditor::SetStringf(ULONG i, _Printf_format_string_ LPCTSTR szMsg, ...)
+void __cdecl CEditor::SetStringf(ULONG i, _Printf_format_string_ LPCTSTR szMsg, ...) const
 {
 	if (!IsValidEdit(i)) return;
 
@@ -1065,17 +1038,17 @@ void __cdecl CEditor::SetStringf(ULONG i, _Printf_format_string_ LPCTSTR szMsg, 
 
 	if (szMsg)
 	{
-		va_list argList = NULL;
+		va_list argList = nullptr;
 		va_start(argList, szMsg);
 		szTemp.FormatV(szMsg, argList);
 		va_end(argList);
 	}
 
-	SetString(i, (LPCTSTR)szTemp);
+	SetString(i, static_cast<LPCTSTR>(szTemp));
 }
 
 // Updates m_lpControls[i].lpEdit->lpszW using SetStringW
-void CEditor::LoadString(ULONG i, UINT uidMsg)
+void CEditor::LoadString(ULONG i, UINT uidMsg) const
 {
 	if (!IsValidEdit(i)) return;
 
@@ -1083,15 +1056,15 @@ void CEditor::LoadString(ULONG i, UINT uidMsg)
 
 	if (uidMsg)
 	{
-		HRESULT hRes = S_OK;
+		auto hRes = S_OK;
 		EC_B(szTemp.LoadString(uidMsg));
 	}
 
-	SetString(i, (LPCTSTR)szTemp);
+	SetString(i, static_cast<LPCTSTR>(szTemp));
 }
 
 // Updates m_lpControls[i].lpEdit->lpszW using SetStringW
-void CEditor::SetBinary(ULONG i, _In_opt_count_(cb) LPBYTE lpb, size_t cb)
+void CEditor::SetBinary(ULONG i, _In_opt_count_(cb) LPBYTE lpb, size_t cb) const
 {
 	if (!IsValidEdit(i)) return;
 
@@ -1099,24 +1072,24 @@ void CEditor::SetBinary(ULONG i, _In_opt_count_(cb) LPBYTE lpb, size_t cb)
 }
 
 // Updates m_lpControls[i].lpEdit->lpszW using SetStringW
-void CEditor::SetSize(ULONG i, size_t cb)
+void CEditor::SetSize(ULONG i, size_t cb) const
 {
-	SetStringf(i, _T("0x%08X = %u"), (int)cb, (UINT)cb); // STRING_OK
+	SetStringf(i, _T("0x%08X = %u"), static_cast<int>(cb), static_cast<UINT>(cb)); // STRING_OK
 }
 
 // returns false if we failed to get a binary
 // Returns a binary buffer which is represented by the hex string
 // cb will be the exact length of the decoded buffer
 // Uncounted NULLs will be present on the end to aid in converting to strings
-_Check_return_ bool CEditor::GetBinaryUseControl(ULONG i, _Out_ size_t* cbBin, _Out_ LPBYTE* lpBin)
+_Check_return_ bool CEditor::GetBinaryUseControl(ULONG i, _Out_ size_t* cbBin, _Out_ LPBYTE* lpBin) const
 {
 	if (!IsValidEdit(i)) return false;
 	if (!cbBin || !lpBin) return false;
 	*cbBin = NULL;
-	*lpBin = NULL;
+	*lpBin = nullptr;
 
-	wstring szString = GetStringUseControl(i);
-	vector<BYTE> bin = HexStringToBin(szString);
+	auto szString = GetStringUseControl(i);
+	auto bin = HexStringToBin(szString);
 	if (bin.empty()) return false;
 
 	// Remember the size of the converted binary
@@ -1136,7 +1109,7 @@ _Check_return_ bool CEditor::GetBinaryUseControl(ULONG i, _Out_ size_t* cbBin, _
 	return true;
 }
 
-_Check_return_ bool CEditor::GetCheckUseControl(ULONG iControl)
+_Check_return_ bool CEditor::GetCheckUseControl(ULONG iControl) const
 {
 	if (!IsValidCheck(iControl)) return false;
 
@@ -1146,16 +1119,16 @@ _Check_return_ bool CEditor::GetCheckUseControl(ULONG iControl)
 // converts string in a text(edit) control into an entry ID
 // Can base64 decode if needed
 // entryID is allocated with new, free with delete[]
-_Check_return_ HRESULT CEditor::GetEntryID(ULONG i, bool bIsBase64, _Out_ size_t* lpcbBin, _Out_ LPENTRYID* lppEID)
+_Check_return_ HRESULT CEditor::GetEntryID(ULONG i, bool bIsBase64, _Out_ size_t* lpcbBin, _Out_ LPENTRYID* lppEID) const
 {
 	if (!IsValidEdit(i)) return MAPI_E_INVALID_PARAMETER;
 	if (!lpcbBin || !lppEID) return MAPI_E_INVALID_PARAMETER;
 
 	*lpcbBin = NULL;
-	*lppEID = NULL;
+	*lppEID = nullptr;
 
-	HRESULT hRes = S_OK;
-	wstring szString = GetStringW(i);
+	auto hRes = S_OK;
+	auto szString = GetStringW(i);
 
 	if (!szString.empty())
 	{
@@ -1169,137 +1142,136 @@ _Check_return_ HRESULT CEditor::GetEntryID(ULONG i, bool bIsBase64, _Out_ size_t
 			bin = HexStringToBin(szString);
 		}
 
-		*lppEID = (LPENTRYID)ByteVectorToLPBYTE(bin);
+		*lppEID = reinterpret_cast<LPENTRYID>(ByteVectorToLPBYTE(bin));
 		*lpcbBin = bin.size();
 	}
 
 	return hRes;
 }
 
-void CEditor::SetHex(ULONG i, ULONG ulVal)
+void CEditor::SetHex(ULONG i, ULONG ulVal) const
 {
 	SetStringf(i, _T("0x%08X"), ulVal); // STRING_OK
 }
 
-void CEditor::SetDecimal(ULONG i, ULONG ulVal)
+void CEditor::SetDecimal(ULONG i, ULONG ulVal) const
 {
 	SetStringf(i, _T("%u"), ulVal); // STRING_OK
 }
 
-void CEditor::SetListString(ULONG iControl, ULONG iListRow, ULONG iListCol, wstring szListString)
+void CEditor::SetListString(ULONG iControl, ULONG iListRow, ULONG iListCol, wstring szListString) const
 {
 	if (!IsValidList(iControl)) return;
 
 	m_lpControls[iControl].lpListPane->SetListString(iListRow, iListCol, szListString);
 }
 
-_Check_return_ SortListData* CEditor::InsertListRow(ULONG iControl, int iRow, wstring szText)
+_Check_return_ SortListData* CEditor::InsertListRow(ULONG iControl, int iRow, wstring szText) const
 {
-	if (!IsValidList(iControl)) return NULL;
+	if (!IsValidList(iControl)) return nullptr;
 
 	return m_lpControls[iControl].lpListPane->InsertRow(iRow, szText);
 }
 
-void CEditor::ClearList(ULONG iControl)
+void CEditor::ClearList(ULONG iControl) const
 {
 	if (!IsValidList(iControl)) return;
 
 	m_lpControls[iControl].lpListPane->ClearList();
 }
 
-void CEditor::ResizeList(ULONG iControl, bool bSort)
+void CEditor::ResizeList(ULONG iControl, bool bSort) const
 {
 	if (!IsValidList(iControl)) return;
 
 	m_lpControls[iControl].lpListPane->ResizeList(bSort);
 }
 
-LPWSTR CEditor::GetStringW(ULONG i)
+wstring CEditor::GetStringW(ULONG i) const
 {
-	if (!IsValidEdit(i)) return NULL;
+	if (!IsValidEdit(i)) return emptystring;
 
 	return m_lpControls[i].lpTextPane->GetStringW();
 }
 
 // No need to free this - treat it like a static
-_Check_return_ LPSTR CEditor::GetEditBoxTextA(ULONG iControl, _Out_ size_t* lpcchText)
+_Check_return_ LPSTR CEditor::GetEditBoxTextA(ULONG iControl, _Out_ size_t* lpcchText) const
 {
 	if (lpcchText) *lpcchText = NULL;
-	if (!IsValidEdit(iControl)) return NULL;
+	if (!IsValidEdit(iControl)) return nullptr;
 
 	return m_lpControls[iControl].lpTextPane->GetEditBoxTextA(lpcchText);
 }
 
-_Check_return_ LPWSTR CEditor::GetEditBoxTextW(ULONG iControl, _Out_ size_t* lpcchText)
+_Check_return_ wstring CEditor::GetEditBoxTextW(ULONG iControl, _Out_ size_t* lpcchText) const
 {
 	if (lpcchText) *lpcchText = NULL;
-	if (!IsValidEdit(iControl)) return NULL;
+	if (!IsValidEdit(iControl)) return emptystring;
 
 	return m_lpControls[iControl].lpTextPane->GetEditBoxTextW(lpcchText);
 }
 
-_Check_return_ ULONG CEditor::GetHex(ULONG i)
+_Check_return_ ULONG CEditor::GetHex(ULONG i) const
 {
 	if (!IsValidEdit(i)) return 0;
 
 	return wstringToUlong(m_lpControls[i].lpTextPane->GetStringW(), 16);
 }
 
-_Check_return_ wstring CEditor::GetStringUseControl(ULONG iControl)
+_Check_return_ wstring CEditor::GetStringUseControl(ULONG iControl) const
 {
 	if (!IsValidEdit(iControl)) return L"";
 
 	return m_lpControls[iControl].lpTextPane->GetStringUseControl();
 }
 
-_Check_return_ ULONG CEditor::GetListCount(ULONG iControl)
+_Check_return_ ULONG CEditor::GetListCount(ULONG iControl) const
 {
 	if (!IsValidList(iControl)) return 0;
 
 	return m_lpControls[iControl].lpListPane->GetItemCount();
 }
 
-_Check_return_ SortListData* CEditor::GetListRowData(ULONG iControl, int iRow)
+_Check_return_ SortListData* CEditor::GetListRowData(ULONG iControl, int iRow) const
 {
-	if (!IsValidList(iControl)) return 0;
+	if (!IsValidList(iControl)) return nullptr;
 
-	return (SortListData*)m_lpControls[iControl].lpListPane->GetItemData(iRow);
+	return static_cast<SortListData*>(m_lpControls[iControl].lpListPane->GetItemData(iRow));
 }
 
-_Check_return_ bool CEditor::IsDirty(ULONG iControl)
+_Check_return_ bool CEditor::IsDirty(ULONG iControl) const
 {
 	return vpDirty == (vpDirty & m_lpControls[iControl].lpPane->GetFlags());
 }
 
-_Check_return_ ULONG CEditor::GetHexUseControl(ULONG i)
+_Check_return_ ULONG CEditor::GetHexUseControl(ULONG i) const
 {
 	if (!IsValidEdit(i)) return 0;
 
-	wstring szTmpString = GetStringUseControl(i);
+	auto szTmpString = GetStringUseControl(i);
 
 	return wstringToUlong(szTmpString, 16);
 }
 
-_Check_return_ ULONG CEditor::GetDecimalUseControl(ULONG i)
+_Check_return_ ULONG CEditor::GetDecimalUseControl(ULONG i) const
 {
 	if (!IsValidEdit(i)) return 0;
 
-	wstring szTmpString = GetStringUseControl(i);
+	auto szTmpString = GetStringUseControl(i);
 
 	return wstringToUlong(szTmpString, 10);
 }
 
-_Check_return_ ULONG CEditor::GetPropTagUseControl(ULONG i)
+_Check_return_ ULONG CEditor::GetPropTagUseControl(ULONG i) const
 {
 	if (!IsValidEdit(i)) return 0;
 
-	ULONG ulPropTag = NULL;
-	wstring szTag = GetStringUseControl(i);
+	auto szTag = GetStringUseControl(i);
 
 	// remove any whitespace or nonsense punctuation
 	szTag = CleanString(szTag);
 
-	ULONG ulTag = wstringToUlong(szTag, 16);
+	auto ulTag = wstringToUlong(szTag, 16);
 
 	if (ulTag == NULL) // If we didn't convert, try a lookup
 	{
@@ -1309,69 +1281,65 @@ _Check_return_ ULONG CEditor::GetPropTagUseControl(ULONG i)
 	// Figure if this is a full tag or just an ID
 	if (ulTag & PROP_TAG_MASK) // Full prop tag
 	{
-		ulPropTag = ulTag;
-	}
-	else // Just an ID
-	{
-		ulPropTag = PROP_TAG(PT_UNSPECIFIED, ulTag);
+		return ulTag;
 	}
 
-	return ulPropTag;
+	// Just an ID
+	return PROP_TAG(PT_UNSPECIFIED, ulTag);
 }
 
-_Check_return_ ULONG CEditor::GetPropTag(ULONG i)
+_Check_return_ ULONG CEditor::GetPropTag(ULONG i) const
 {
 	if (!IsValidEdit(i)) return 0;
 
-	ULONG ulTag = PropNameToPropTag(m_lpControls[i].lpTextPane->GetStringW());
+	auto ulTag = PropNameToPropTag(m_lpControls[i].lpTextPane->GetStringW());
 
 	// Figure if this is a full tag or just an ID
 	if (ulTag & PROP_TAG_MASK) // Full prop tag
 	{
 		return ulTag;
 	}
-	else // Just an ID
-	{
-		return PROP_TAG(PT_UNSPECIFIED, ulTag);
-	}
+
+	// Just an ID
+	return PROP_TAG(PT_UNSPECIFIED, ulTag);
 }
 
-_Check_return_ ULONG CEditor::GetDecimal(ULONG i)
+_Check_return_ ULONG CEditor::GetDecimal(ULONG i) const
 {
 	if (!IsValidEdit(i)) return 0;
 
 	return wstringToUlong(m_lpControls[i].lpTextPane->GetStringW(), 10);
 }
 
-_Check_return_ bool CEditor::GetCheck(ULONG i)
+_Check_return_ bool CEditor::GetCheck(ULONG i) const
 {
 	if (!IsValidCheck(i)) return false;
 
 	return m_lpControls[i].lpCheckPane->GetCheck();
 }
 
-_Check_return_ int CEditor::GetDropDown(ULONG i)
+_Check_return_ int CEditor::GetDropDown(ULONG i) const
 {
 	if (!IsValidDropDown(i)) return CB_ERR;
 
 	return m_lpControls[i].lpDropDownPane->GetDropDown();
 }
 
-_Check_return_ DWORD_PTR CEditor::GetDropDownValue(ULONG i)
+_Check_return_ DWORD_PTR CEditor::GetDropDownValue(ULONG i) const
 {
 	if (!IsValidDropDown(i)) return 0;
 
 	return m_lpControls[i].lpDropDownPane->GetDropDownValue();
 }
 
-void CEditor::InsertColumn(ULONG ulListNum, int nCol, UINT uidText)
+void CEditor::InsertColumn(ULONG ulListNum, int nCol, UINT uidText) const
 {
 	if (!IsValidList(ulListNum)) return;
 
 	m_lpControls[ulListNum].lpListPane->InsertColumn(nCol, uidText);
 }
 
-void CEditor::InsertColumn(ULONG ulListNum, int nCol, UINT uidText, ULONG ulPropType)
+void CEditor::InsertColumn(ULONG ulListNum, int nCol, UINT uidText, ULONG ulPropType) const
 {
 	if (!IsValidList(ulListNum)) return;
 
@@ -1381,9 +1349,8 @@ void CEditor::InsertColumn(ULONG ulListNum, int nCol, UINT uidText, ULONG ulProp
 
 _Check_return_ ULONG CEditor::HandleChange(UINT nID)
 {
-	if (!m_lpControls) return (ULONG)-1;
-	ULONG i = 0;
-	for (i = 0; i < m_cControls; i++)
+	if (!m_lpControls) return static_cast<ULONG>(-1);
+	for (ULONG i = 0; i < m_cControls; i++)
 	{
 		if (!m_lpControls[i].lpPane) continue;
 		// Either our change came from one of our top level controls/views
@@ -1397,14 +1364,14 @@ _Check_return_ ULONG CEditor::HandleChange(UINT nID)
 		// We do not return the control number because this is a button event, not an edit change
 		if (-1 != m_lpControls[i].lpPane->HandleChange(nID))
 		{
-			return (ULONG)-1;
+			return static_cast<ULONG>(-1);
 		}
 	}
 
-	return (ULONG)-1;
+	return static_cast<ULONG>(-1);
 }
 
-_Check_return_ bool CEditor::IsValidDropDown(ULONG ulNum)
+_Check_return_ bool CEditor::IsValidDropDown(ULONG ulNum) const
 {
 	if (!INVALIDRANGE(ulNum) &&
 		m_lpControls &&
@@ -1413,7 +1380,7 @@ _Check_return_ bool CEditor::IsValidDropDown(ULONG ulNum)
 	return false;
 }
 
-_Check_return_ bool CEditor::IsValidEdit(ULONG ulNum)
+_Check_return_ bool CEditor::IsValidEdit(ULONG ulNum) const
 {
 	if (!INVALIDRANGE(ulNum) &&
 		m_lpControls &&
@@ -1422,7 +1389,7 @@ _Check_return_ bool CEditor::IsValidEdit(ULONG ulNum)
 	return false;
 }
 
-_Check_return_ bool CEditor::IsValidList(ULONG ulNum)
+_Check_return_ bool CEditor::IsValidList(ULONG ulNum) const
 {
 	if (NOLIST != ulNum &&
 		!INVALIDRANGE(ulNum) &&
@@ -1432,14 +1399,14 @@ _Check_return_ bool CEditor::IsValidList(ULONG ulNum)
 	return false;
 }
 
-_Check_return_ bool CEditor::IsValidListWithButtons(ULONG ulNum)
+_Check_return_ bool CEditor::IsValidListWithButtons(ULONG ulNum) const
 {
 	if (IsValidList(ulNum) &&
 		vpReadonly != (vpReadonly & m_lpControls[ulNum].lpPane->GetFlags())) return true;
 	return false;
 }
 
-_Check_return_ bool CEditor::IsValidCheck(ULONG ulNum)
+_Check_return_ bool CEditor::IsValidCheck(ULONG ulNum) const
 {
 	if (!INVALIDRANGE(ulNum) &&
 		m_lpControls &&
@@ -1448,7 +1415,7 @@ _Check_return_ bool CEditor::IsValidCheck(ULONG ulNum)
 	return false;
 }
 
-void CEditor::UpdateListButtons()
+void CEditor::UpdateListButtons() const
 {
 	if (!IsValidListWithButtons(m_ulListNum)) return;
 

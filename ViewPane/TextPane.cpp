@@ -399,9 +399,9 @@ void TextPane::SetEditReadOnly()
 	m_EditBox.SetReadOnly();
 }
 
-LPWSTR TextPane::GetStringW() const
+wstring TextPane::GetStringW() const
 {
-	return m_lpszW;
+	return wstring(m_lpszW, m_lpszW + m_cchsz);
 }
 
 LPSTR TextPane::GetStringA()
@@ -498,7 +498,7 @@ _Check_return_ LPSTR TextPane::GetEditBoxTextA(_Out_ size_t* lpcchText)
 	return GetStringA();
 }
 
-_Check_return_ LPWSTR TextPane::GetEditBoxTextW(_Out_ size_t* lpcchText)
+_Check_return_ wstring TextPane::GetEditBoxTextW(_Out_ size_t* lpcchText)
 {
 	CommitUIValues();
 	if (lpcchText) *lpcchText = m_cchsz;

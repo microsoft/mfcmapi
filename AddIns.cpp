@@ -1,7 +1,6 @@
 // AddIns.cpp : Functions supporting AddIns
 
 #include "stdafx.h"
-#include "BaseDialog.h"
 #include "MFCMAPI.h"
 #include "ImportProcs.h"
 #include "String.h"
@@ -17,9 +16,9 @@
 #include "GuidArray.h"
 #include "NameIDArray.h"
 #include "PropTypeArray.h"
-#include "SmartView\SmartViewParsers.h"
+#include "SmartView/SmartViewParsers.h"
 
-LPADDIN g_lpMyAddins = NULL;
+LPADDIN g_lpMyAddins = nullptr;
 
 // Count of built-in arrays
 ULONG g_ulPropTagArray = _countof(g_PropTagArray);
@@ -31,31 +30,31 @@ ULONG g_ulSmartViewParserArray = _countof(g_SmartViewParserArray);
 ULONG g_ulSmartViewParserTypeArray = _countof(g_SmartViewParserTypeArray);
 
 // Arrays and counts declared in mfcmapi.h
-LPNAME_ARRAY_ENTRY PropTypeArray = NULL;
+LPNAME_ARRAY_ENTRY PropTypeArray = nullptr;
 ULONG ulPropTypeArray = NULL;
 
-LPNAME_ARRAY_ENTRY_V2 PropTagArray = NULL;
+LPNAME_ARRAY_ENTRY_V2 PropTagArray = nullptr;
 ULONG ulPropTagArray = NULL;
 
-LPGUID_ARRAY_ENTRY PropGuidArray = NULL;
+LPGUID_ARRAY_ENTRY PropGuidArray = nullptr;
 ULONG ulPropGuidArray = NULL;
 
-LPNAMEID_ARRAY_ENTRY NameIDArray = NULL;
+LPNAMEID_ARRAY_ENTRY NameIDArray = nullptr;
 ULONG ulNameIDArray;
 
-LPFLAG_ARRAY_ENTRY FlagArray = NULL;
+LPFLAG_ARRAY_ENTRY FlagArray = nullptr;
 ULONG ulFlagArray = NULL;
 
-LPSMARTVIEW_PARSER_ARRAY_ENTRY SmartViewParserArray = NULL;
+LPSMARTVIEW_PARSER_ARRAY_ENTRY SmartViewParserArray = nullptr;
 ULONG ulSmartViewParserArray;
 
-LPNAME_ARRAY_ENTRY SmartViewParserTypeArray = NULL;
+LPNAME_ARRAY_ENTRY SmartViewParserTypeArray = nullptr;
 ULONG ulSmartViewParserTypeArray;
 
 _Check_return_ ULONG GetAddinVersion(HMODULE hMod)
 {
-	HRESULT hRes = S_OK;
-	LPGETAPIVERSION pfnGetAPIVersion = NULL;
+	auto hRes = S_OK;
+	LPGETAPIVERSION pfnGetAPIVersion = nullptr;
 	WC_D(pfnGetAPIVersion, (LPGETAPIVERSION)GetProcAddress(hMod, szGetAPIVersion));
 	if (pfnGetAPIVersion)
 	{
@@ -73,20 +72,19 @@ void LoadLegacyPropTags(
 	_In_ LPNAME_ARRAY_ENTRY_V2* lppPropTags // Array of NAME_ARRAY_ENTRY_V2 structures
 )
 {
-	HRESULT hRes = S_OK;
-	LPGETPROPTAGS pfnGetPropTags = NULL;
-	LPNAME_ARRAY_ENTRY lpPropTags = NULL;
+	auto hRes = S_OK;
+	LPGETPROPTAGS pfnGetPropTags = nullptr;
+	LPNAME_ARRAY_ENTRY lpPropTags = nullptr;
 	WC_D(pfnGetPropTags, (LPGETPROPTAGS)GetProcAddress(hMod, szGetPropTags));
 	if (pfnGetPropTags)
 	{
 		pfnGetPropTags(lpulPropTags, &lpPropTags);
 		if (lpPropTags && *lpulPropTags)
 		{
-			LPNAME_ARRAY_ENTRY_V2 lpPropTagsV2 = new NAME_ARRAY_ENTRY_V2[*lpulPropTags];
+			auto lpPropTagsV2 = new NAME_ARRAY_ENTRY_V2[*lpulPropTags];
 			if (lpPropTagsV2)
 			{
-				ULONG i = 0;
-				for (i = 0; i < *lpulPropTags; i++)
+				for (ULONG i = 0; i < *lpulPropTags; i++)
 				{
 					lpPropTagsV2[i].lpszName = lpPropTags[i].lpszName;
 					lpPropTagsV2[i].ulValue = lpPropTags[i].ulValue;
@@ -103,7 +101,7 @@ void LoadSingleAddIn(_In_ LPADDIN lpAddIn, HMODULE hMod, _In_ LPLOADADDIN pfnLoa
 	DebugPrint(DBGAddInPlumbing, L"Loading AddIn\n");
 	if (!lpAddIn) return;
 	if (!pfnLoadAddIn) return;
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	lpAddIn->hMod = hMod;
 	pfnLoadAddIn(&lpAddIn->szName);
 	if (lpAddIn->szName)
@@ -111,10 +109,10 @@ void LoadSingleAddIn(_In_ LPADDIN lpAddIn, HMODULE hMod, _In_ LPLOADADDIN pfnLoa
 		DebugPrint(DBGAddInPlumbing, L"Loading \"%ws\"\n", lpAddIn->szName);
 	}
 
-	ULONG ulVersion = GetAddinVersion(hMod);
+	auto ulVersion = GetAddinVersion(hMod);
 	DebugPrint(DBGAddInPlumbing, L"AddIn version = %u\n", ulVersion);
 
-	LPGETMENUS pfnGetMenus = NULL;
+	LPGETMENUS pfnGetMenus = nullptr;
 	WC_D(pfnGetMenus, (LPGETMENUS)GetProcAddress(hMod, szGetMenus));
 	if (pfnGetMenus)
 	{
@@ -123,12 +121,11 @@ void LoadSingleAddIn(_In_ LPADDIN lpAddIn, HMODULE hMod, _In_ LPLOADADDIN pfnLoa
 		{
 			DebugPrint(DBGAddInPlumbing, L"AddIn returned invalid menus\n");
 			lpAddIn->ulMenu = NULL;
-			lpAddIn->lpMenu = NULL;
+			lpAddIn->lpMenu = nullptr;
 		}
 		if (lpAddIn->ulMenu && lpAddIn->lpMenu)
 		{
-			ULONG ulMenu = 0;
-			for (ulMenu = 0; ulMenu < lpAddIn->ulMenu; ulMenu++)
+			for (ULONG ulMenu = 0; ulMenu < lpAddIn->ulMenu; ulMenu++)
 			{
 				// Save off our add-in struct
 				lpAddIn->lpMenu[ulMenu].lpAddIn = lpAddIn;
@@ -145,7 +142,7 @@ void LoadSingleAddIn(_In_ LPADDIN lpAddIn, HMODULE hMod, _In_ LPLOADADDIN pfnLoa
 
 	hRes = S_OK;
 	lpAddIn->bLegacyPropTags = false;
-	LPGETPROPTAGSV2 pfnGetPropTagsV2 = NULL;
+	LPGETPROPTAGSV2 pfnGetPropTagsV2 = nullptr;
 	WC_D(pfnGetPropTagsV2, (LPGETPROPTAGSV2)GetProcAddress(hMod, szGetPropTagsV2));
 	if (pfnGetPropTagsV2)
 	{
@@ -158,7 +155,7 @@ void LoadSingleAddIn(_In_ LPADDIN lpAddIn, HMODULE hMod, _In_ LPLOADADDIN pfnLoa
 	}
 
 	hRes = S_OK;
-	LPGETPROPTYPES pfnGetPropTypes = NULL;
+	LPGETPROPTYPES pfnGetPropTypes = nullptr;
 	WC_D(pfnGetPropTypes, (LPGETPROPTYPES)GetProcAddress(hMod, szGetPropTypes));
 	if (pfnGetPropTypes)
 	{
@@ -166,7 +163,7 @@ void LoadSingleAddIn(_In_ LPADDIN lpAddIn, HMODULE hMod, _In_ LPLOADADDIN pfnLoa
 	}
 
 	hRes = S_OK;
-	LPGETPROPGUIDS pfnGetPropGuids = NULL;
+	LPGETPROPGUIDS pfnGetPropGuids = nullptr;
 	WC_D(pfnGetPropGuids, (LPGETPROPGUIDS)GetProcAddress(hMod, szGetPropGuids));
 	if (pfnGetPropGuids)
 	{
@@ -177,7 +174,7 @@ void LoadSingleAddIn(_In_ LPADDIN lpAddIn, HMODULE hMod, _In_ LPLOADADDIN pfnLoa
 	if (MFCMAPI_HEADER_V2 <= ulVersion)
 	{
 		hRes = S_OK;
-		LPGETNAMEIDS pfnGetNameIDs = NULL;
+		LPGETNAMEIDS pfnGetNameIDs = nullptr;
 		WC_D(pfnGetNameIDs, (LPGETNAMEIDS)GetProcAddress(hMod, szGetNameIDs));
 		if (pfnGetNameIDs)
 		{
@@ -186,7 +183,7 @@ void LoadSingleAddIn(_In_ LPADDIN lpAddIn, HMODULE hMod, _In_ LPLOADADDIN pfnLoa
 	}
 
 	hRes = S_OK;
-	LPGETPROPFLAGS pfnGetPropFlags = NULL;
+	LPGETPROPFLAGS pfnGetPropFlags = nullptr;
 	WC_D(pfnGetPropFlags, (LPGETPROPFLAGS)GetProcAddress(hMod, szGetPropFlags));
 	if (pfnGetPropFlags)
 	{
@@ -194,7 +191,7 @@ void LoadSingleAddIn(_In_ LPADDIN lpAddIn, HMODULE hMod, _In_ LPLOADADDIN pfnLoa
 	}
 
 	hRes = S_OK;
-	LPGETSMARTVIEWPARSERARRAY pfnGetSmartViewParserArray = NULL;
+	LPGETSMARTVIEWPARSERARRAY pfnGetSmartViewParserArray = nullptr;
 	WC_D(pfnGetSmartViewParserArray, (LPGETSMARTVIEWPARSERARRAY)GetProcAddress(hMod, szGetSmartViewParserArray));
 	if (pfnGetSmartViewParserArray)
 	{
@@ -202,7 +199,7 @@ void LoadSingleAddIn(_In_ LPADDIN lpAddIn, HMODULE hMod, _In_ LPLOADADDIN pfnLoa
 	}
 
 	hRes = S_OK;
-	LPGETSMARTVIEWPARSERTYPEARRAY pfnGetSmartViewParserTypeArray = NULL;
+	LPGETSMARTVIEWPARSERTYPEARRAY pfnGetSmartViewParserTypeArray = nullptr;
 	WC_D(pfnGetSmartViewParserTypeArray, (LPGETSMARTVIEWPARSERTYPEARRAY)GetProcAddress(hMod, szGetSmartViewParserTypeArray));
 	if (pfnGetSmartViewParserTypeArray)
 	{
@@ -223,7 +220,7 @@ public:
 	CFileList(_In_z_ LPCTSTR szKey);
 	~CFileList();
 	void AddToList(_In_z_ LPTSTR szDLL);
-	bool IsOnList(_In_z_ LPTSTR szDLL);
+	bool IsOnList(_In_z_ LPTSTR szDLL) const;
 
 	LPCTSTR m_szKey;
 	HKEY m_hRootKey;
@@ -236,10 +233,10 @@ public:
 // Read in registry and build a list of invalid add-in DLLs
 CFileList::CFileList(_In_z_ LPCTSTR szKey)
 {
-	HRESULT hRes = S_OK;
-	LPTSTR lpszReg = NULL;
+	auto hRes = S_OK;
+	LPTSTR lpszReg = nullptr;
 
-	m_lpList = NULL;
+	m_lpList = nullptr;
 	m_hRootKey = CreateRootKey();
 	m_szKey = szKey;
 
@@ -250,17 +247,17 @@ CFileList::CFileList(_In_z_ LPCTSTR szKey)
 			m_hRootKey,
 			m_szKey,
 			&dwKeyType,
-			(LPVOID*)&lpszReg));
+			reinterpret_cast<LPVOID*>(&lpszReg)));
 	}
 
 	if (lpszReg)
 	{
-		LPTSTR szContext = NULL;
-		LPTSTR szDLL = _tcstok_s(lpszReg, SEPARATOR, &szContext);
+		LPTSTR szContext = nullptr;
+		auto szDLL = _tcstok_s(lpszReg, SEPARATOR, &szContext);
 		while (szDLL)
 		{
 			AddToList(szDLL);
-			szDLL = _tcstok_s(NULL, SEPARATOR, &szContext);
+			szDLL = _tcstok_s(nullptr, SEPARATOR, &szContext);
 		}
 	}
 	delete[] lpszReg;
@@ -269,9 +266,9 @@ CFileList::CFileList(_In_z_ LPCTSTR szKey)
 // Write the list back to registry
 CFileList::~CFileList()
 {
-	HRESULT hRes = S_OK;
-	DLLEntry* lpCur = m_lpList;
-	LPTSTR szList = NULL;
+	auto hRes = S_OK;
+	auto lpCur = m_lpList;
+	LPTSTR szList = nullptr;
 	size_t cchList = 0;
 	size_t cchDLL = 0;
 
@@ -321,7 +318,7 @@ CFileList::~CFileList()
 	while (m_lpList)
 	{
 		delete[] m_lpList->szDLL;
-		DLLEntry* lpNext = m_lpList->lpNext;
+		auto lpNext = m_lpList->lpNext;
 		delete m_lpList;
 		m_lpList = lpNext;
 	}
@@ -333,33 +330,32 @@ void CFileList::AddToList(_In_z_ LPTSTR szDLL)
 {
 	if (!szDLL) return;
 
-	DLLEntry* lpNewEntry = new DLLEntry;
+	auto lpNewEntry = new DLLEntry;
 	if (lpNewEntry)
 	{
-		lpNewEntry->szDLL = NULL;
+		lpNewEntry->szDLL = nullptr;
 		lpNewEntry->lpNext = m_lpList;
 		m_lpList = lpNewEntry;
 
 		size_t cchDLL = NULL;
-		HRESULT hRes = S_OK;
-		hRes = StringCchLength(szDLL, STRSAFE_MAX_CCH, &cchDLL);
+		auto hRes = StringCchLength(szDLL, STRSAFE_MAX_CCH, &cchDLL);
 		if (SUCCEEDED(hRes) && cchDLL)
 		{
 			lpNewEntry->szDLL = new TCHAR[cchDLL + 1];
 
 			if (lpNewEntry->szDLL)
 			{
-				hRes = StringCchCopy(lpNewEntry->szDLL, cchDLL + 1, szDLL);
+				(void)StringCchCopy(lpNewEntry->szDLL, cchDLL + 1, szDLL);
 			}
 		}
 	}
 }
 
 // Check this DLL name against the list
-bool CFileList::IsOnList(_In_z_ LPTSTR szDLL)
+bool CFileList::IsOnList(_In_z_ LPTSTR szDLL) const
 {
 	if (!szDLL) return true;
-	DLLEntry* lpCur = m_lpList;
+	auto lpCur = m_lpList;
 	while (lpCur)
 	{
 		if (!_tcsicmp(szDLL, lpCur->szDLL)) return true;
@@ -372,7 +368,7 @@ void LoadAddIns()
 {
 	DebugPrint(DBGAddInPlumbing, L"Loading AddIns\n");
 	// First, we look at each DLL in the current dir and see if it exports 'LoadAddIn'
-	LPADDIN lpCurAddIn = NULL;
+	LPADDIN lpCurAddIn = nullptr;
 	// Allocate space to hold information on all DLLs in the directory
 
 	if (!RegKeys[regkeyLOADADDINS].ulCurDWORD)
@@ -381,7 +377,7 @@ void LoadAddIns()
 	}
 	else
 	{
-		HRESULT hRes = S_OK;
+		auto hRes = S_OK;
 		TCHAR szFilePath[MAX_PATH];
 		DWORD dwDir = NULL;
 		EC_D(dwDir, GetModuleFileName(NULL, szFilePath, _countof(szFilePath)));
@@ -392,13 +388,14 @@ void LoadAddIns()
 			// We got the path to mfcmapi.exe - need to strip it
 			if (SUCCEEDED(hRes) && szFilePath[0] != _T('\0'))
 			{
-				LPTSTR lpszSlash = NULL;
-				LPTSTR lpszCur = szFilePath;
+				LPTSTR lpszSlash = nullptr;
+				auto lpszCur = szFilePath;
 
-				for (lpszSlash = lpszCur; *lpszCur; lpszCur = lpszCur++)
+				for (lpszSlash = lpszCur; *lpszCur; lpszCur++)
 				{
 					if (*lpszCur == _T('\\')) lpszSlash = lpszCur;
 				}
+
 				*lpszSlash = _T('\0');
 			}
 		}
@@ -416,7 +413,7 @@ void LoadAddIns()
 				DebugPrint(DBGAddInPlumbing, L"File spec = \"%ws\"\n", LPCTSTRToWstring(szFilePath).c_str());
 
 				WIN32_FIND_DATA FindFileData = { 0 };
-				HANDLE hFind = FindFirstFile(szFilePath, &FindFileData);
+				auto hFind = FindFirstFile(szFilePath, &FindFileData);
 
 				if (hFind == INVALID_HANDLE_VALUE)
 				{
@@ -428,7 +425,7 @@ void LoadAddIns()
 					{
 						hRes = S_OK;
 						DebugPrint(DBGAddInPlumbing, L"Examining \"%ws\"\n", LPCTSTRToWstring(FindFileData.cFileName).c_str());
-						HMODULE hMod = NULL;
+						HMODULE hMod = nullptr;
 
 						// If we know the Add-in is good, just load it.
 						// If we know it's bad, skip it.
@@ -444,13 +441,13 @@ void LoadAddIns()
 						{
 							if (!ExclusionList.IsOnList(FindFileData.cFileName))
 							{
-								hMod = LoadLibraryEx(FindFileData.cFileName, NULL, DONT_RESOLVE_DLL_REFERENCES);
+								hMod = LoadLibraryEx(FindFileData.cFileName, nullptr, DONT_RESOLVE_DLL_REFERENCES);
 								if (hMod)
 								{
-									LPLOADADDIN pfnLoadAddIn = NULL;
+									LPLOADADDIN pfnLoadAddIn = nullptr;
 									WC_D(pfnLoadAddIn, (LPLOADADDIN)GetProcAddress(hMod, szLoadAddIn));
 									FreeLibrary(hMod);
-									hMod = NULL;
+									hMod = nullptr;
 
 									if (pfnLoadAddIn)
 									{
@@ -472,7 +469,7 @@ void LoadAddIns()
 						if (hMod)
 						{
 							DebugPrint(DBGAddInPlumbing, L"Opened module\n");
-							LPLOADADDIN pfnLoadAddIn = NULL;
+							LPLOADADDIN pfnLoadAddIn = nullptr;
 							WC_D(pfnLoadAddIn, (LPLOADADDIN)GetProcAddress(hMod, szLoadAddIn));
 
 							if (pfnLoadAddIn && GetAddinVersion(hMod) == MFCMAPI_HEADER_CURRENT_VERSION)
@@ -511,7 +508,7 @@ void LoadAddIns()
 						if (!FindNextFile(hFind, &FindFileData)) break;
 					}
 
-					DWORD dwRet = GetLastError();
+					auto dwRet = GetLastError();
 					FindClose(hFind);
 					if (dwRet != ERROR_NO_MORE_FILES)
 					{
@@ -557,7 +554,7 @@ void UnloadAddIns()
 	DebugPrint(DBGAddInPlumbing, L"Unloading AddIns\n");
 	if (g_lpMyAddins)
 	{
-		LPADDIN lpCurAddIn = g_lpMyAddins;
+		auto lpCurAddIn = g_lpMyAddins;
 		while (lpCurAddIn)
 		{
 			DebugPrint(DBGAddInPlumbing, L"Freeing add-in\n");
@@ -567,18 +564,18 @@ void UnloadAddIns()
 			}
 			if (lpCurAddIn->hMod)
 			{
-				HRESULT hRes = S_OK;
+				auto hRes = S_OK;
 				if (lpCurAddIn->szName)
 				{
 					DebugPrint(DBGAddInPlumbing, L"Unloading \"%ws\"\n", lpCurAddIn->szName);
 				}
-				LPUNLOADADDIN pfnUnLoadAddIn = NULL;
+				LPUNLOADADDIN pfnUnLoadAddIn = nullptr;
 				WC_D(pfnUnLoadAddIn, (LPUNLOADADDIN)GetProcAddress(lpCurAddIn->hMod, szUnloadAddIn));
 				if (pfnUnLoadAddIn) pfnUnLoadAddIn();
 
 				FreeLibrary(lpCurAddIn->hMod);
 			}
-			LPADDIN lpAddInToFree = lpCurAddIn;
+			auto lpAddInToFree = lpCurAddIn;
 			lpCurAddIn = lpCurAddIn->lpNextAddIn;
 			delete lpAddInToFree;
 		}
@@ -595,7 +592,7 @@ void UnloadAddIns()
 _Check_return_ ULONG ExtendAddInMenu(HMENU hMenu, ULONG ulAddInContext)
 {
 	DebugPrint(DBGAddInPlumbing, L"Extending menus, ulAddInContext = 0x%08X\n", ulAddInContext);
-	HMENU hAddInMenu = NULL;
+	HMENU hAddInMenu = nullptr;
 
 	UINT uidCurMenu = ID_ADDINMENU;
 
@@ -606,19 +603,19 @@ _Check_return_ ULONG ExtendAddInMenu(HMENU hMenu, ULONG ulAddInContext)
 
 	if (g_lpMyAddins)
 	{
-		LPADDIN lpCurAddIn = g_lpMyAddins;
+		auto lpCurAddIn = g_lpMyAddins;
 		while (lpCurAddIn)
 		{
 			DebugPrint(DBGAddInPlumbing, L"Examining add-in for menus\n");
 			if (lpCurAddIn->hMod)
 			{
-				HRESULT hRes = S_OK;
+				auto hRes = S_OK;
 				if (lpCurAddIn->szName)
 				{
 					DebugPrint(DBGAddInPlumbing, L"Examining \"%ws\"\n", lpCurAddIn->szName);
 				}
-				ULONG ulMenu = 0;
-				for (ulMenu = 0; ulMenu < lpCurAddIn->ulMenu && SUCCEEDED(hRes); ulMenu++)
+
+				for (ULONG ulMenu = 0; ulMenu < lpCurAddIn->ulMenu && SUCCEEDED(hRes); ulMenu++)
 				{
 					if ((lpCurAddIn->lpMenu[ulMenu].ulFlags & MENU_FLAGS_SINGLESELECT) &&
 						(lpCurAddIn->lpMenu[ulMenu].ulFlags & MENU_FLAGS_MULTISELECT))
@@ -634,7 +631,7 @@ _Check_return_ ULONG ExtendAddInMenu(HMENU hMenu, ULONG ulAddInContext)
 						if (!hAddInMenu)
 						{
 							WCHAR szAddInTitle[8] = { 0 }; // The length of IDS_ADDINSMENU
-							int iRet = NULL;
+							auto iRet = NULL;
 							EC_D(iRet, LoadStringW(GetModuleHandle(NULL),
 								IDS_ADDINSMENU,
 								szAddInTitle,
@@ -643,26 +640,26 @@ _Check_return_ ULONG ExtendAddInMenu(HMENU hMenu, ULONG ulAddInContext)
 							hAddInMenu = CreatePopupMenu();
 							::InsertMenuW(
 								hMenu,
-								(UINT)-1,
+								static_cast<UINT>(-1),
 								MF_BYPOSITION | MF_POPUP | MF_ENABLED,
-								(UINT_PTR)hAddInMenu,
-								(LPCWSTR)szAddInTitle);
+								reinterpret_cast<UINT_PTR>(hAddInMenu),
+								static_cast<LPCWSTR>(szAddInTitle));
 						}
 
 						// Now add each of the menu entries
 						if (SUCCEEDED(hRes))
 						{
-							LPMENUENTRY lpMenu = CreateMenuEntry(lpCurAddIn->lpMenu[ulMenu].szMenu);
+							auto lpMenu = CreateMenuEntry(lpCurAddIn->lpMenu[ulMenu].szMenu);
 							if (lpMenu)
 							{
-								lpMenu->m_AddInData = (ULONG_PTR)&lpCurAddIn->lpMenu[ulMenu];
+								lpMenu->m_AddInData = reinterpret_cast<ULONG_PTR>(&lpCurAddIn->lpMenu[ulMenu]);
 							}
 
 							EC_B(AppendMenu(
 								hAddInMenu,
 								MF_ENABLED | MF_OWNERDRAW,
 								uidCurMenu,
-								(LPCTSTR)lpMenu));
+								reinterpret_cast<LPCTSTR>(lpMenu)));
 							uidCurMenu++;
 						}
 					}
@@ -677,7 +674,7 @@ _Check_return_ ULONG ExtendAddInMenu(HMENU hMenu, ULONG ulAddInContext)
 
 _Check_return_ LPMENUITEM GetAddinMenuItem(HWND hWnd, UINT uidMsg)
 {
-	if (uidMsg < ID_ADDINMENU) return NULL;
+	if (uidMsg < ID_ADDINMENU) return nullptr;
 
 	MENUITEMINFOW subMenu = { 0 };
 	subMenu.cbSize = sizeof(MENUITEMINFO);
@@ -690,15 +687,15 @@ _Check_return_ LPMENUITEM GetAddinMenuItem(HWND hWnd, UINT uidMsg)
 		&subMenu) &&
 		subMenu.dwItemData)
 	{
-		return (LPMENUITEM)((LPMENUENTRY)subMenu.dwItemData)->m_AddInData;
+		return reinterpret_cast<LPMENUITEM>(reinterpret_cast<LPMENUENTRY>(subMenu.dwItemData)->m_AddInData);
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 void InvokeAddInMenu(_In_opt_ LPADDINMENUPARAMS lpParams)
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
 	if (!lpParams) return;
 	if (!lpParams->lpAddInMenu) return;
@@ -725,8 +722,8 @@ void InvokeAddInMenu(_In_opt_ LPADDINMENUPARAMS lpParams)
 // Compare type arrays.
 int _cdecl CompareTypes(_In_ const void* a1, _In_ const void* a2)
 {
-	LPNAME_ARRAY_ENTRY lpType1 = (LPNAME_ARRAY_ENTRY)a1;
-	LPNAME_ARRAY_ENTRY lpType2 = (LPNAME_ARRAY_ENTRY)a2;
+	auto lpType1 = LPNAME_ARRAY_ENTRY(a1);
+	auto lpType2 = LPNAME_ARRAY_ENTRY(a2);
 
 	if (lpType1->ulValue > lpType2->ulValue) return 1;
 	if (lpType1->ulValue == lpType2->ulValue)
@@ -739,8 +736,8 @@ int _cdecl CompareTypes(_In_ const void* a1, _In_ const void* a2)
 // Compare tag arrays. Pay no attention to sort order - we'll sort on sort order during output.
 int _cdecl CompareTags(_In_ const void* a1, _In_ const void* a2)
 {
-	LPNAME_ARRAY_ENTRY_V2 lpTag1 = (LPNAME_ARRAY_ENTRY_V2)a1;
-	LPNAME_ARRAY_ENTRY_V2 lpTag2 = (LPNAME_ARRAY_ENTRY_V2)a2;
+	auto lpTag1 = LPNAME_ARRAY_ENTRY_V2(a1);
+	auto lpTag2 = LPNAME_ARRAY_ENTRY_V2(a2);
 
 	if (lpTag1->ulValue > lpTag2->ulValue) return 1;
 	if (lpTag1->ulValue == lpTag2->ulValue)
@@ -752,13 +749,13 @@ int _cdecl CompareTags(_In_ const void* a1, _In_ const void* a2)
 
 int _cdecl CompareNameID(_In_ const void* a1, _In_ const void* a2)
 {
-	LPNAMEID_ARRAY_ENTRY lpID1 = (LPNAMEID_ARRAY_ENTRY)a1;
-	LPNAMEID_ARRAY_ENTRY lpID2 = (LPNAMEID_ARRAY_ENTRY)a2;
+	auto lpID1 = LPNAMEID_ARRAY_ENTRY(a1);
+	auto lpID2 = LPNAMEID_ARRAY_ENTRY(a2);
 
 	if (lpID1->lValue > lpID2->lValue) return 1;
 	if (lpID1->lValue == lpID2->lValue)
 	{
-		int iCmp = wcscmp(lpID1->lpszName, lpID2->lpszName);
+		auto iCmp = wcscmp(lpID1->lpszName, lpID2->lpszName);
 		if (iCmp) return iCmp;
 		if (IsEqualGUID(*lpID1->lpGuid, *lpID2->lpGuid)) return 0;
 	}
@@ -767,8 +764,8 @@ int _cdecl CompareNameID(_In_ const void* a1, _In_ const void* a2)
 
 int _cdecl CompareSmartViewParser(_In_ const void* a1, _In_ const void* a2)
 {
-	LPSMARTVIEW_PARSER_ARRAY_ENTRY lpParser1 = (LPSMARTVIEW_PARSER_ARRAY_ENTRY)a1;
-	LPSMARTVIEW_PARSER_ARRAY_ENTRY lpParser2 = (LPSMARTVIEW_PARSER_ARRAY_ENTRY)a2;
+	auto lpParser1 = LPSMARTVIEW_PARSER_ARRAY_ENTRY(a1);
+	auto lpParser2 = LPSMARTVIEW_PARSER_ARRAY_ENTRY(a2);
 
 	if (lpParser1->ulIndex > lpParser2->ulIndex) return 1;
 	if (lpParser1->ulIndex == lpParser2->ulIndex)
@@ -804,16 +801,15 @@ void MergeArrays(
 	if (*lpOut)
 	{
 		memset(*lpOut, 0, *lpcOut * width);
-		char* iIn1 = (char*)In1;
-		char* iIn2 = (char*)In2;
+		auto iIn1 = static_cast<char*>(In1);
+		auto iIn2 = static_cast<char*>(In2);
 		LPVOID endIn1 = iIn1 + width * (cIn1 - 1);
 		LPVOID endIn2 = iIn2 + width * (cIn2 - 1);
-		char* iOut = (char*)*lpOut;
-		int iComp = 0;
+		auto iOut = static_cast<char*>(*lpOut);
 
 		while (iIn1 <= endIn1 && iIn2 <= endIn2)
 		{
-			iComp = comp(iIn1, iIn2);
+			auto iComp = comp(iIn1, iIn2);
 			if (iComp < 0)
 			{
 				memcpy(iOut, iIn1, width);
@@ -846,7 +842,7 @@ void MergeArrays(
 			iOut += width;
 		}
 
-		*lpcOut = (iOut - (char*)*lpOut) / width;
+		*lpcOut = (iOut - static_cast<char*>(*lpOut)) / width;
 	}
 }
 
@@ -855,11 +851,10 @@ void MergeArrays(
 // qsort doesn't guarantee this, so we do it manually with an insertion sort
 void SortFlagArray(_In_count_(ulFlags) LPFLAG_ARRAY_ENTRY lpFlags, _In_ ULONG ulFlags)
 {
-	ULONG i = 0;
 	ULONG iLoc = 0;
-	for (i = 1; i < ulFlags; i++)
+	for (ULONG i = 1; i < ulFlags; i++)
 	{
-		FLAG_ARRAY_ENTRY NextItem = lpFlags[i];
+		auto NextItem = lpFlags[i];
 		for (iLoc = i; iLoc > 0; iLoc--)
 		{
 			if (lpFlags[iLoc - 1].ulFlagName <= NextItem.ulFlagName) break;
@@ -874,8 +869,8 @@ void SortFlagArray(_In_count_(ulFlags) LPFLAG_ARRAY_ENTRY lpFlags, _In_ ULONG ul
 // Increases *lpiSource regardless
 void AppendFlagIfNotDupe(_In_count_(*lpcArray) LPFLAG_ARRAY_ENTRY lpTarget, _In_ size_t* lpcArray, _In_count_(*lpiSource + 1) LPFLAG_ARRAY_ENTRY lpSource, _In_ size_t* lpiSource)
 {
-	size_t iTarget = *lpcArray;
-	size_t iSource = *lpiSource;
+	auto iTarget = *lpcArray;
+	auto iSource = *lpiSource;
 	(*lpiSource)++;
 	while (iTarget)
 	{
@@ -908,7 +903,7 @@ void MergeFlagArrays(
 
 	// Assume no duplicates
 	*lpcOut = cIn1 + cIn2;
-	LPFLAG_ARRAY_ENTRY Out = new FLAG_ARRAY_ENTRY[*lpcOut];
+	auto Out = new FLAG_ARRAY_ENTRY[*lpcOut];
 
 	if (Out)
 	{
@@ -961,9 +956,9 @@ void MergeAddInArrays()
 	if (!g_lpMyAddins) return;
 
 	// First pass - count up any the size of the guid array
-	ULONG ulAddInPropGuidArray = g_ulPropGuidArray;
+	auto ulAddInPropGuidArray = g_ulPropGuidArray;
 
-	LPADDIN lpCurAddIn = g_lpMyAddins;
+	auto lpCurAddIn = g_lpMyAddins;
 	while (lpCurAddIn)
 	{
 		DebugPrint(DBGAddInPlumbing, L"Looking at %ws\n", lpCurAddIn->szName);
@@ -980,13 +975,12 @@ void MergeAddInArrays()
 
 	// if count has gone up - we need to merge
 	// Allocate a larger array and initialize it with our hardcoded data
-	ULONG i = 0;
 	if (ulAddInPropGuidArray != g_ulPropGuidArray)
 	{
 		PropGuidArray = new GUID_ARRAY_ENTRY[ulAddInPropGuidArray];
 		if (PropGuidArray)
 		{
-			for (i = 0; i < g_ulPropGuidArray; i++)
+			for (ULONG i = 0; i < g_ulPropGuidArray; i++)
 			{
 				PropGuidArray[i] = g_PropGuidArray[i];
 			}
@@ -994,98 +988,98 @@ void MergeAddInArrays()
 	}
 
 	// Second pass - merge our arrays to the hardcoded arrays
-	ULONG ulCurPropGuid = g_ulPropGuidArray;
+	auto ulCurPropGuid = g_ulPropGuidArray;
 	lpCurAddIn = g_lpMyAddins;
 	while (lpCurAddIn)
 	{
 		if (lpCurAddIn->ulPropTypes)
 		{
 			qsort(lpCurAddIn->lpPropTypes, lpCurAddIn->ulPropTypes, sizeof(NAME_ARRAY_ENTRY), &CompareTypes);
-			LPNAME_ARRAY_ENTRY newPropTypeArray = NULL;
+			LPNAME_ARRAY_ENTRY newPropTypeArray = nullptr;
 			size_t ulnewPropTypeArray = NULL;
 			MergeArrays(PropTypeArray, ulPropTypeArray,
 				lpCurAddIn->lpPropTypes, lpCurAddIn->ulPropTypes,
-				(LPVOID*)&newPropTypeArray, &ulnewPropTypeArray,
+				reinterpret_cast<LPVOID*>(&newPropTypeArray), &ulnewPropTypeArray,
 				sizeof(NAME_ARRAY_ENTRY),
 				CompareTypes);
 			if (PropTypeArray != g_PropTypeArray) delete[] PropTypeArray;
 			PropTypeArray = newPropTypeArray;
-			ulPropTypeArray = (ULONG)ulnewPropTypeArray;
+			ulPropTypeArray = static_cast<ULONG>(ulnewPropTypeArray);
 		}
 
 		if (lpCurAddIn->ulPropTags)
 		{
 			qsort(lpCurAddIn->lpPropTags, lpCurAddIn->ulPropTags, sizeof(NAME_ARRAY_ENTRY_V2), &CompareTags);
-			LPNAME_ARRAY_ENTRY_V2 newPropTagArray = NULL;
+			LPNAME_ARRAY_ENTRY_V2 newPropTagArray = nullptr;
 			size_t ulnewPropTagArray = NULL;
 			MergeArrays(PropTagArray, ulPropTagArray,
 				lpCurAddIn->lpPropTags, lpCurAddIn->ulPropTags,
-				(LPVOID*)&newPropTagArray, &ulnewPropTagArray,
+				reinterpret_cast<LPVOID*>(&newPropTagArray), &ulnewPropTagArray,
 				sizeof(NAME_ARRAY_ENTRY_V2),
 				CompareTags);
 			if (PropTagArray != g_PropTagArray) delete[] PropTagArray;
 			PropTagArray = newPropTagArray;
-			ulPropTagArray = (ULONG)ulnewPropTagArray;
+			ulPropTagArray = static_cast<ULONG>(ulnewPropTagArray);
 		}
 
 		if (lpCurAddIn->ulNameIDs)
 		{
 			qsort(lpCurAddIn->lpNameIDs, lpCurAddIn->ulNameIDs, sizeof(NAMEID_ARRAY_ENTRY), &CompareNameID);
-			LPNAMEID_ARRAY_ENTRY newNameIDArray = NULL;
+			LPNAMEID_ARRAY_ENTRY newNameIDArray = nullptr;
 			size_t ulnewNameIDArray = NULL;
 			MergeArrays(NameIDArray, ulNameIDArray,
 				lpCurAddIn->lpNameIDs, lpCurAddIn->ulNameIDs,
-				(LPVOID*)&newNameIDArray, &ulnewNameIDArray,
+				reinterpret_cast<LPVOID*>(&newNameIDArray), &ulnewNameIDArray,
 				sizeof(NAMEID_ARRAY_ENTRY),
 				CompareNameID);
 			if (NameIDArray != g_NameIDArray) delete[] NameIDArray;
 			NameIDArray = newNameIDArray;
-			ulNameIDArray = (ULONG)ulnewNameIDArray;
+			ulNameIDArray = static_cast<ULONG>(ulnewNameIDArray);
 		}
 
 		if (lpCurAddIn->ulPropFlags)
 		{
 			SortFlagArray(lpCurAddIn->lpPropFlags, lpCurAddIn->ulPropFlags);
-			LPFLAG_ARRAY_ENTRY newFlagArray = NULL;
+			LPFLAG_ARRAY_ENTRY newFlagArray = nullptr;
 			size_t ulnewFlagArray = NULL;
 			MergeFlagArrays(FlagArray, ulFlagArray,
 				lpCurAddIn->lpPropFlags, lpCurAddIn->ulPropFlags,
 				&newFlagArray, &ulnewFlagArray);
 			if (FlagArray != g_FlagArray) delete[] FlagArray;
 			FlagArray = newFlagArray;
-			ulFlagArray = (ULONG)ulnewFlagArray;
+			ulFlagArray = static_cast<ULONG>(ulnewFlagArray);
 		}
 
 		if (lpCurAddIn->ulSmartViewParsers)
 		{
 			qsort(lpCurAddIn->lpSmartViewParsers, lpCurAddIn->ulSmartViewParsers, sizeof(SMARTVIEW_PARSER_ARRAY_ENTRY), &CompareSmartViewParser);
-			LPSMARTVIEW_PARSER_ARRAY_ENTRY newSmartViewParserArray = NULL;
+			LPSMARTVIEW_PARSER_ARRAY_ENTRY newSmartViewParserArray = nullptr;
 			size_t ulnewSmartViewParserArray = NULL;
 			MergeArrays(SmartViewParserArray, ulSmartViewParserArray,
 				lpCurAddIn->lpSmartViewParsers, lpCurAddIn->ulSmartViewParsers,
-				(LPVOID*)&newSmartViewParserArray, &ulnewSmartViewParserArray,
+				reinterpret_cast<LPVOID*>(&newSmartViewParserArray), &ulnewSmartViewParserArray,
 				sizeof(SMARTVIEW_PARSER_ARRAY_ENTRY),
 				CompareSmartViewParser);
 			if (SmartViewParserArray != g_SmartViewParserArray) delete[] SmartViewParserArray;
 			SmartViewParserArray = newSmartViewParserArray;
-			ulSmartViewParserArray = (ULONG)ulnewSmartViewParserArray;
+			ulSmartViewParserArray = static_cast<ULONG>(ulnewSmartViewParserArray);
 		}
 
 		// We add our new parsers to the end of the array, assigning ids starting with IDS_STEND
 		static ULONG s_ulNextParser = IDS_STEND;
 		if (lpCurAddIn->ulSmartViewParserTypes)
 		{
-			ULONG ulNewArray = lpCurAddIn->ulSmartViewParserTypes + ulSmartViewParserTypeArray;
-			LPNAME_ARRAY_ENTRY lpNewArray = new NAME_ARRAY_ENTRY[ulNewArray];
+			auto ulNewArray = lpCurAddIn->ulSmartViewParserTypes + ulSmartViewParserTypeArray;
+			auto lpNewArray = new NAME_ARRAY_ENTRY[ulNewArray];
 
 			if (lpNewArray)
 			{
-				for (i = 0; i < ulSmartViewParserTypeArray; i++)
+				for (ULONG i = 0; i < ulSmartViewParserTypeArray; i++)
 				{
 					lpNewArray[i] = SmartViewParserTypeArray[i];
 				}
 
-				for (i = 0; i < lpCurAddIn->ulSmartViewParserTypes; i++)
+				for (ULONG i = 0; i < lpCurAddIn->ulSmartViewParserTypes; i++)
 				{
 					lpNewArray[i + ulSmartViewParserTypeArray].ulValue = s_ulNextParser++;
 					lpNewArray[i + ulSmartViewParserTypeArray].lpszName = lpCurAddIn->lpSmartViewParserTypes[i];
@@ -1099,12 +1093,11 @@ void MergeAddInArrays()
 		if (lpCurAddIn->ulPropGuids)
 		{
 			// Copy guids from lpCurAddIn->lpPropGuids, checking for dupes on the way
-			for (i = 0; i < lpCurAddIn->ulPropGuids; i++)
+			for (ULONG i = 0; i < lpCurAddIn->ulPropGuids; i++)
 			{
-				ULONG iCur = 0;
-				bool bDupe = false;
+				auto bDupe = false;
 				// Since this array isn't sorted, we have to compare against all valid entries for dupes
-				for (iCur = 0; iCur < ulCurPropGuid; iCur++)
+				for (ULONG iCur = 0; iCur < ulCurPropGuid; iCur++)
 				{
 					if (IsEqualGUID(*lpCurAddIn->lpPropGuids[i].lpGuid, *PropGuidArray[iCur].lpGuid))
 					{
@@ -1138,30 +1131,30 @@ __declspec(dllexport) void __cdecl AddInLog(bool bPrintThreadTime, _Printf_forma
 {
 	if (!fIsSet(DBGAddIn)) return;
 
-	va_list argList = NULL;
+	va_list argList = nullptr;
 	va_start(argList, szMsg);
-	wstring szAddInLogString = formatV(szMsg, argList);
+	auto szAddInLogString = formatV(szMsg, argList);
 	va_end(argList);
 
-	Output(DBGAddIn, NULL, bPrintThreadTime, szAddInLogString);
+	Output(DBGAddIn, nullptr, bPrintThreadTime, szAddInLogString);
 }
 
 #ifndef MRMAPI
 _Check_return_ __declspec(dllexport) HRESULT __cdecl SimpleDialog(_In_z_ LPWSTR szTitle, _Printf_format_string_ LPWSTR szMsg, ...)
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
 	CEditor MySimpleDialog(
-		NULL,
+		nullptr,
 		NULL,
 		NULL,
 		0,
 		CEDITOR_BUTTON_OK);
 	MySimpleDialog.SetAddInTitle(szTitle);
 
-	va_list argList = NULL;
+	va_list argList = nullptr;
 	va_start(argList, szMsg);
-	wstring szDialogString = formatV(szMsg, argList);
+	auto szDialogString = formatV(szMsg, argList);
 	va_end(argList);
 
 	MySimpleDialog.SetPromptPostFix(szDialogString);
@@ -1175,11 +1168,10 @@ _Check_return_ __declspec(dllexport) HRESULT __cdecl ComplexDialog(_In_ LPADDIND
 	if (!lpDialog) return MAPI_E_INVALID_PARAMETER;
 	// Reject any flags except CEDITOR_BUTTON_OK and CEDITOR_BUTTON_CANCEL
 	if (lpDialog->ulButtonFlags & ~(CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)) return MAPI_E_INVALID_PARAMETER;
-	HRESULT hRes = S_OK;
-	ULONG i = 0;
+	auto hRes = S_OK;
 
 	CEditor MyComplexDialog(
-		NULL,
+		nullptr,
 		NULL,
 		NULL,
 		lpDialog->ulNumControls,
@@ -1189,7 +1181,7 @@ _Check_return_ __declspec(dllexport) HRESULT __cdecl ComplexDialog(_In_ LPADDIND
 
 	if (lpDialog->ulNumControls && lpDialog->lpDialogControls)
 	{
-		for (i = 0; i < lpDialog->ulNumControls; i++)
+		for (ULONG i = 0; i < lpDialog->ulNumControls; i++)
 		{
 			switch (lpDialog->lpDialogControls[i].cType)
 			{
@@ -1256,7 +1248,7 @@ _Check_return_ __declspec(dllexport) HRESULT __cdecl ComplexDialog(_In_ LPADDIND
 	// Put together results if needed
 	if (SUCCEEDED(hRes) && lppDialogResult && lpDialog->ulNumControls && lpDialog->lpDialogControls)
 	{
-		LPADDINDIALOGRESULT lpResults = new _AddInDialogResult;
+		auto lpResults = new _AddInDialogResult;
 		if (lpResults)
 		{
 			lpResults->ulNumControls = lpDialog->ulNumControls;
@@ -1264,7 +1256,7 @@ _Check_return_ __declspec(dllexport) HRESULT __cdecl ComplexDialog(_In_ LPADDIND
 			if (lpResults->lpDialogControlResults)
 			{
 				ZeroMemory(lpResults->lpDialogControlResults, sizeof(_AddInDialogControlResult)*lpDialog->ulNumControls);
-				for (i = 0; i < lpDialog->ulNumControls; i++)
+				for (ULONG i = 0; i < lpDialog->ulNumControls; i++)
 				{
 					lpResults->lpDialogControlResults[i].cType = lpDialog->lpDialogControls[i].cType;
 					switch (lpDialog->lpDialogControls[i].cType)
@@ -1274,11 +1266,10 @@ _Check_return_ __declspec(dllexport) HRESULT __cdecl ComplexDialog(_In_ LPADDIND
 						break;
 					case ADDIN_CTRL_EDIT_TEXT:
 					{
-						LPWSTR szText = MyComplexDialog.GetStringW(i);
-						if (szText)
+						auto szText = MyComplexDialog.GetStringW(i);
+						if (!szText.empty())
 						{
-							size_t cchText = NULL;
-							WC_H(StringCchLengthW(szText, STRSAFE_MAX_CCH, &cchText));
+							auto cchText = szText.length();
 
 							cchText++;
 							lpResults->lpDialogControlResults[i].szText = new WCHAR[cchText];
@@ -1288,7 +1279,7 @@ _Check_return_ __declspec(dllexport) HRESULT __cdecl ComplexDialog(_In_ LPADDIND
 								EC_H(StringCchCopyW(
 									lpResults->lpDialogControlResults[i].szText,
 									cchText,
-									szText));
+									szText.c_str()));
 							}
 						}
 						break;
@@ -1299,7 +1290,7 @@ _Check_return_ __declspec(dllexport) HRESULT __cdecl ComplexDialog(_In_ LPADDIND
 							i,
 							false,
 							&lpResults->lpDialogControlResults[i].cbBin,
-							(LPENTRYID*)&lpResults->lpDialogControlResults[i].lpBin));
+							reinterpret_cast<LPENTRYID*>(&lpResults->lpDialogControlResults[i].lpBin)));
 						break;
 					case ADDIN_CTRL_EDIT_NUM_DECIMAL:
 						lpResults->lpDialogControlResults[i].ulVal = MyComplexDialog.GetDecimal(i);
@@ -1327,13 +1318,13 @@ __declspec(dllexport) void __cdecl FreeDialogResult(_In_ LPADDINDIALOGRESULT lpD
 	{
 		if (lpDialogResult->lpDialogControlResults)
 		{
-			ULONG i = 0;
-			for (i = 0; i < lpDialogResult->ulNumControls; i++)
+			for (ULONG i = 0; i < lpDialogResult->ulNumControls; i++)
 			{
 				delete[] lpDialogResult->lpDialogControlResults[i].lpBin;
 				delete[] lpDialogResult->lpDialogControlResults[i].szText;
 			}
 		}
+
 		delete[] lpDialogResult;
 	}
 }
@@ -1352,10 +1343,9 @@ __declspec(dllexport) void __cdecl GetMAPIModule(_In_ HMODULE* lphModule, bool b
 
 wstring AddInStructTypeToString(__ParsingTypeEnum iStructType)
 {
-	ULONG i = 0;
-	for (i = 0; i < ulSmartViewParserTypeArray; i++)
+	for (ULONG i = 0; i < ulSmartViewParserTypeArray; i++)
 	{
-		if (SmartViewParserTypeArray[i].ulValue == (ULONG)iStructType)
+		if (SmartViewParserTypeArray[i].ulValue == static_cast<ULONG>(iStructType))
 		{
 			return SmartViewParserTypeArray[i].lpszName;
 		}
@@ -1369,29 +1359,28 @@ wstring AddInSmartView(__ParsingTypeEnum iStructType, ULONG cbBin, _In_count_(cb
 	// Don't let add-ins hijack our built in types
 	if (iStructType <= IDS_STEND - 1) return L"";
 
-	wstring szStructType = AddInStructTypeToString(iStructType);
+	auto szStructType = AddInStructTypeToString(iStructType);
 	if (szStructType.empty()) return L"";
 
-	LPADDIN lpCurAddIn = g_lpMyAddins;
+	auto lpCurAddIn = g_lpMyAddins;
 	while (lpCurAddIn)
 	{
 		if (lpCurAddIn->ulSmartViewParserTypes)
 		{
-			ULONG i = 0;
-			for (i = 0; i < lpCurAddIn->ulSmartViewParserTypes; i++)
+			for (ULONG i = 0; i < lpCurAddIn->ulSmartViewParserTypes; i++)
 			{
 				if (0 == szStructType.compare(lpCurAddIn->lpSmartViewParserTypes[i]))
 				{
-					HRESULT hRes = S_OK;
-					LPSMARTVIEWPARSE pfnSmartViewParse = NULL;
+					auto hRes = S_OK;
+					LPSMARTVIEWPARSE pfnSmartViewParse = nullptr;
 					WC_D(pfnSmartViewParse, (LPSMARTVIEWPARSE)GetProcAddress(lpCurAddIn->hMod, szSmartViewParse));
 
-					LPFREEPARSE pfnFreeParse = NULL;
+					LPFREEPARSE pfnFreeParse = nullptr;
 					WC_D(pfnFreeParse, (LPFREEPARSE)GetProcAddress(lpCurAddIn->hMod, szFreeParse));
 
 					if (pfnSmartViewParse && pfnFreeParse)
 					{
-						LPWSTR szParse = pfnSmartViewParse(szStructType.c_str(), cbBin, lpBin);
+						auto szParse = pfnSmartViewParse(szStructType.c_str(), cbBin, lpBin);
 						wstring szRet = szParse;
 
 						pfnFreeParse(szParse);

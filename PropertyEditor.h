@@ -1,5 +1,6 @@
 #pragma once
 #include "Editor.h"
+#include "ViewPane/SmartViewPane.h"
 
 _Check_return_ HRESULT DisplayPropertyEditor(_In_ CWnd* pParentWnd,
 	UINT uidTitle,
@@ -77,12 +78,12 @@ private:
 	BOOL OnInitDialog() override;
 	void CreatePropertyControls();
 	void InitPropertyControls();
-	void ReadMultiValueStringsFromProperty();
+	void ReadMultiValueStringsFromProperty() const;
 	void WriteSPropValueToObject() const;
 	void WriteMultiValueStringsToSPropValue();
-	void WriteMultiValueStringsToSPropValue(_In_ LPVOID lpParent, _In_ LPSPropValue lpsProp);
-	void UpdateListRow(_In_ LPSPropValue lpProp, ULONG iMVCount);
-	void UpdateSmartView();
+	void WriteMultiValueStringsToSPropValue(_In_ LPVOID lpParent, _In_ LPSPropValue lpsProp) const;
+	void UpdateListRow(_In_ LPSPropValue lpProp, ULONG iMVCount) const;
+	void UpdateSmartView() const;
 	_Check_return_ ULONG HandleChange(UINT nID) override;
 	void OnOK() override;
 

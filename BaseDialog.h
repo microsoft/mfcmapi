@@ -7,7 +7,7 @@ class CAdviseSink;
 
 #include "Dialog.h"
 #include "enums.h"
-#include "SortList\SortListData.h"
+#include "SortList/SortListData.h"
 
 class CBaseDialog : public CMyDialog
 {
@@ -24,8 +24,8 @@ public:
 	void OnUpdateSingleMAPIPropListCtrl(_In_opt_ LPMAPIPROP lpMAPIProp, _In_opt_ SortListData* lpListData);
 	_Check_return_ bool HandleKeyDown(UINT nChar, bool bShift, bool bCtrl, bool bMenu);
 
-	void UpdateTitleBarText(_In_ wstring& szMsg);
-	void UpdateTitleBarText();
+	void UpdateTitleBarText(_In_ wstring& szMsg) const;
+	void UpdateTitleBarText() const;
 	void UpdateStatusBarText(__StatusPaneEnum nPos, _In_ wstring& szMsg);
 	void __cdecl UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg);
 	void __cdecl UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg, ULONG ulParam1);
@@ -58,7 +58,7 @@ protected:
 
 private:
 	_Check_return_ virtual bool HandleAddInMenu(WORD wMenuSelect);
-	void AddMenu(HMENU hMenuBar, UINT uiResource, UINT uidTitle, UINT uiPos);
+	static void AddMenu(HMENU hMenuBar, UINT uiResource, UINT uidTitle, UINT uiPos);
 	virtual void HandleCopy();
 	virtual void OnDeleteSelectedItem();
 	virtual void OnEscHit();
