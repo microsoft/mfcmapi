@@ -3,8 +3,10 @@
 #include "InterpretProp2.h"
 #include "MAPIFunctions.h"
 #include "ExtraPropTags.h"
-#include "SmartView\SmartView.h"
+#include "SmartView/SmartView.h"
 #include "String.h"
+#include "ViewPane/CountedTextPane.h"
+#include "ViewPane/SmartViewPane.h"
 
 enum __StreamEditorTypes
 {
@@ -18,11 +20,11 @@ static wstring CLASS = L"CStreamEditor";
 
 ULONG PreferredStreamType(ULONG ulPropTag)
 {
-	ULONG ulPropType = PROP_TYPE(ulPropTag);
+	auto ulPropType = PROP_TYPE(ulPropTag);
 
 	if (PT_ERROR != ulPropType && PT_UNSPECIFIED != ulPropType) return ulPropTag;
 
-	ULONG ulPropID = PROP_ID(ulPropTag);
+	auto ulPropID = PROP_ID(ulPropTag);
 
 	switch (ulPropID)
 	{
@@ -88,7 +90,7 @@ CStreamEditor::CStreamEditor(
 	m_ulOutCodePage = ulOutCodePage;
 	m_ulStreamFlags = NULL;
 	m_bDocFile = false;
-	m_lpStream = NULL;
+	m_lpStream = nullptr;
 	m_StreamError = S_OK;
 	m_bDisableSave = false;
 
@@ -106,7 +108,7 @@ CStreamEditor::CStreamEditor(
 		m_iBinBox = 1;
 	}
 
-	UINT iNumBoxes = m_iBinBox + 1;
+	auto iNumBoxes = m_iBinBox + 1;
 
 	m_iSmartViewBox = 0xFFFFFFFF;
 	m_bDoSmartView = false;
@@ -140,7 +142,7 @@ CStreamEditor::CStreamEditor(
 		}
 	}
 
-	wstring szPromptPostFix = format(L"\r\n%ws", TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, false).c_str()); // STRING_OK
+	auto szPromptPostFix = format(L"\r\n%ws", TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, false).c_str()); // STRING_OK
 	SetPromptPostFix(szPromptPostFix);
 
 	// Let's crack our property open and see what kind of controls we'll need for it
@@ -158,37 +160,37 @@ CStreamEditor::CStreamEditor(
 	{
 		InitPane(m_iSmartViewBox, CreateSmartViewPane(IDS_SMARTVIEW));
 	}
-} // CStreamEditor::CStreamEditor
+}
 
 CStreamEditor::~CStreamEditor()
 {
 	TRACE_DESTRUCTOR(CLASS);
 	if (m_lpStream) m_lpStream->Release();
-} // CStreamEditor::~CStreamEditor
+}
 
 // Used to call functions which need to be called AFTER controls are created
 BOOL CStreamEditor::OnInitDialog()
 {
-	BOOL bRet = CEditor::OnInitDialog();
+	auto bRet = CEditor::OnInitDialog();
 
 	ReadTextStreamFromProperty();
 
 	if (m_bDoSmartView)
 	{
 		// Load initial smart view here
-		SmartViewPane* lpSmartView = (SmartViewPane*)GetControl(m_iSmartViewBox);
+		auto lpSmartView = static_cast<SmartViewPane*>(GetControl(m_iSmartViewBox));
 		if (lpSmartView)
 		{
 			SPropValue sProp = { 0 };
 			sProp.ulPropTag = CHANGE_PROP_TYPE(m_ulPropTag, PT_BINARY);
-			if (GetBinaryUseControl(m_iBinBox, (size_t*)&sProp.Value.bin.cb, &sProp.Value.bin.lpb))
+			if (GetBinaryUseControl(m_iBinBox, reinterpret_cast<size_t*>(&sProp.Value.bin.cb), &sProp.Value.bin.lpb))
 			{
-				__ParsingTypeEnum iStructType = FindSmartViewParserForProp(sProp.ulPropTag, NULL, NULL, false);
-				wstring szSmartView = InterpretPropSmartView(
+				auto iStructType = FindSmartViewParserForProp(sProp.ulPropTag, NULL, nullptr, false);
+				auto szSmartView = InterpretPropSmartView(
 					&sProp,
 					m_lpMAPIProp,
-					NULL,
-					NULL,
+					nullptr,
+					nullptr,
 					m_bIsAB,
 					false);
 
@@ -201,13 +203,13 @@ BOOL CStreamEditor::OnInitDialog()
 	}
 
 	return bRet;
-} // CStreamEditor::OnInitDialog
+}
 
 void CStreamEditor::OnOK()
 {
 	WriteTextStreamToProperty();
 	CMyDialog::OnOK(); // don't need to call CEditor::OnOK
-} // CStreamEditor::OnOK
+}
 
 void CStreamEditor::OpenPropertyStream(bool bWrite, bool bRTF)
 {
@@ -215,20 +217,18 @@ void CStreamEditor::OpenPropertyStream(bool bWrite, bool bRTF)
 
 	// Clear the previous stream if we have one
 	if (m_lpStream) m_lpStream->Release();
-	m_lpStream = NULL;
+	m_lpStream = nullptr;
 
-	HRESULT hRes = S_OK;
-	LPSTREAM lpTmpStream = NULL;
-	ULONG ulStgFlags = NULL;
-	ULONG ulFlags = NULL;
-	ULONG ulRTFFlags = m_ulRTFFlags;
+	auto hRes = S_OK;
+	LPSTREAM lpTmpStream = nullptr;
+	auto ulRTFFlags = m_ulRTFFlags;
 
 	DebugPrintEx(DBGStream, CLASS, L"OpenPropertyStream", L"opening property 0x%X (= %ws) from %p, bWrite = 0x%X\n", m_ulPropTag, TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, true).c_str(), m_lpMAPIProp, bWrite);
 
 	if (bWrite)
 	{
-		ulStgFlags = STGM_READWRITE;
-		ulFlags = MAPI_CREATE | MAPI_MODIFY;
+		auto ulStgFlags = STGM_READWRITE;
+		auto ulFlags = MAPI_CREATE | MAPI_MODIFY;
 		ulRTFFlags |= MAPI_MODIFY;
 
 		if (m_bDocFile)
@@ -238,7 +238,7 @@ void CStreamEditor::OpenPropertyStream(bool bWrite, bool bRTF)
 				&IID_IStreamDocfile,
 				ulStgFlags,
 				ulFlags,
-				(LPUNKNOWN *)&lpTmpStream));
+				reinterpret_cast<LPUNKNOWN *>(&lpTmpStream)));
 		}
 		else
 		{
@@ -247,24 +247,24 @@ void CStreamEditor::OpenPropertyStream(bool bWrite, bool bRTF)
 				&IID_IStream,
 				ulStgFlags,
 				ulFlags,
-				(LPUNKNOWN *)&lpTmpStream));
+				reinterpret_cast<LPUNKNOWN *>(&lpTmpStream)));
 		}
 	}
 	else
 	{
-		ulStgFlags = STGM_READ;
-		ulFlags = NULL;
+		auto ulStgFlags = STGM_READ;
+		auto ulFlags = NULL;
 		WC_MAPI(m_lpMAPIProp->OpenProperty(
 			m_ulPropTag,
 			&IID_IStream,
 			ulStgFlags,
 			ulFlags,
-			(LPUNKNOWN *)&lpTmpStream));
+			reinterpret_cast<LPUNKNOWN *>(&lpTmpStream)));
 
 		// If we're guessing types, try again as a different type
 		if (MAPI_E_NOT_FOUND == hRes && m_bAllowTypeGuessing)
 		{
-			ULONG ulPropTag = m_ulPropTag;
+			auto ulPropTag = m_ulPropTag;
 			switch (PROP_TYPE(ulPropTag))
 			{
 			case PT_STRING8:
@@ -285,7 +285,7 @@ void CStreamEditor::OpenPropertyStream(bool bWrite, bool bRTF)
 					&IID_IStream,
 					ulStgFlags,
 					ulFlags,
-					(LPUNKNOWN *)&lpTmpStream));
+					reinterpret_cast<LPUNKNOWN *>(&lpTmpStream)));
 				if (SUCCEEDED(hRes))
 				{
 					m_ulPropTag = ulPropTag;
@@ -302,7 +302,7 @@ void CStreamEditor::OpenPropertyStream(bool bWrite, bool bRTF)
 				&IID_IStreamDocfile,
 				ulStgFlags,
 				ulFlags,
-				(LPUNKNOWN *)&lpTmpStream));
+				reinterpret_cast<LPUNKNOWN *>(&lpTmpStream)));
 			if (SUCCEEDED(hRes))
 			{
 				m_bDocFile = true;
@@ -314,7 +314,7 @@ void CStreamEditor::OpenPropertyStream(bool bWrite, bool bRTF)
 	if (!bRTF)
 	{
 		m_lpStream = lpTmpStream;
-		lpTmpStream = NULL;
+		lpTmpStream = nullptr;
 	}
 	else if (lpTmpStream)
 	{
@@ -365,13 +365,13 @@ void CStreamEditor::ReadTextStreamFromProperty()
 
 	if (m_lpStream)
 	{
-		TextPane* lpPane = (TextPane*)GetControl(m_iBinBox);
+		auto lpPane = static_cast<TextPane*>(GetControl(m_iBinBox));
 		if (lpPane)
 		{
 			return lpPane->InitEditFromBinaryStream(m_lpStream);
 		}
 	}
-} // CStreamEditor::ReadTextStreamFromProperty
+}
 
 // this will not work if we're using WrapCompressedRTFStreamEx
 void CStreamEditor::WriteTextStreamToProperty()
@@ -383,7 +383,7 @@ void CStreamEditor::WriteTextStreamToProperty()
 	if (!IsDirty(m_iBinBox) && !IsDirty(m_iTextBox)) return; // If we didn't change it, don't write
 	if (m_bUseWrapEx) return;
 
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
 	// Reopen the property stream as writeable
 	OpenPropertyStream(true, EDITOR_RTF == m_ulEditorType);
@@ -392,13 +392,13 @@ void CStreamEditor::WriteTextStreamToProperty()
 	if (m_lpStream)
 	{
 		// We used to use EDITSTREAM here, but instead, just use GetBinaryUseControl and write it out.
-		LPBYTE	lpb = NULL;
-		size_t	cb = 0;
+		LPBYTE lpb = nullptr;
+		size_t cb = 0;
 		ULONG cbWritten = 0;
 
 		if (GetBinaryUseControl(m_iBinBox, &cb, &lpb))
 		{
-			EC_MAPI(m_lpStream->Write(lpb, (ULONG)cb, &cbWritten));
+			EC_MAPI(m_lpStream->Write(lpb, static_cast<ULONG>(cb), &cbWritten));
 			DebugPrintEx(DBGStream, CLASS, L"WriteTextStreamToProperty", L"wrote 0x%X\n", cbWritten);
 
 			EC_MAPI(m_lpStream->Commit(STGC_DEFAULT));
@@ -418,23 +418,22 @@ void CStreamEditor::WriteTextStreamToProperty()
 
 	DebugPrintEx(DBGStream, CLASS, L"WriteTextStreamToProperty", L"Wrote out this stream:\n");
 	DebugPrintStream(DBGStream, m_lpStream);
-} // CStreamEditor::WriteTextStreamToProperty
+}
 
 _Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
 {
-	ULONG i = CEditor::HandleChange(nID);
+	auto i = CEditor::HandleChange(nID);
 
-	if ((ULONG)-1 == i) return (ULONG)-1;
+	if (static_cast<ULONG>(-1) == i) return static_cast<ULONG>(-1);
 
-	LPBYTE	lpb = NULL;
-	size_t	cb = 0;
+	LPBYTE lpb = nullptr;
+	size_t cb = 0;
 
-	CountedTextPane* lpBinPane = (CountedTextPane*)GetControl(m_iBinBox);
+	auto lpBinPane = static_cast<CountedTextPane*>(GetControl(m_iBinBox));
 	if (m_iTextBox == i && lpBinPane)
 	{
 		size_t cchStr = 0;
-		LPSTR lpszA = NULL;
-		LPWSTR lpszW = NULL;
+		LPSTR lpszA = nullptr;
 
 		switch (m_ulEditorType)
 		{
@@ -448,18 +447,18 @@ _Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
 			// When we write binary, we don't want to include this NULL
 			if (cchStr) cchStr -= 1;
 
-			lpBinPane->SetBinary((LPBYTE)lpszA, cchStr * sizeof(CHAR));
+			lpBinPane->SetBinary(reinterpret_cast<LPBYTE>(lpszA), cchStr * sizeof(CHAR));
 			lpBinPane->SetCount(cchStr * sizeof(CHAR));
 			break;
 
 		case EDITOR_STREAM_UNICODE:
-			lpszW = GetEditBoxTextW(m_iTextBox, &cchStr);
+			auto lpszW = GetEditBoxTextW(m_iTextBox, &cchStr);
 
 			// What we just read includes a NULL terminator, in both the string and count.
 			// When we write binary, we don't want to include this NULL
 			if (cchStr) cchStr -= 1;
 
-			lpBinPane->SetBinary((LPBYTE)lpszW, cchStr * sizeof(WCHAR));
+			lpBinPane->SetBinary(LPBYTE(lpszW.c_str()), cchStr * sizeof(WCHAR));
 			lpBinPane->SetCount(cchStr * sizeof(WCHAR));
 			break;
 		}
@@ -476,13 +475,13 @@ _Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
 			default:
 				// Treat as a NULL terminated string
 				// GetBinaryUseControl includes extra NULLs at the end of the buffer to make this work
-				SetStringA(m_iTextBox, (LPCSTR)lpb, cb / sizeof(CHAR) + 1);
+				SetStringA(m_iTextBox, reinterpret_cast<LPCSTR>(lpb), cb / sizeof(CHAR) + 1);
 				if (lpBinPane) lpBinPane->SetCount(cb);
 				break;
 			case EDITOR_STREAM_UNICODE:
 				// Treat as a NULL terminated string
 				// GetBinaryUseControl includes extra NULLs at the end of the buffer to make this work
-				SetStringW(m_iTextBox, (LPCWSTR)lpb, cb / sizeof(WCHAR) + 1);
+				SetStringW(m_iTextBox, reinterpret_cast<LPCWSTR>(lpb), cb / sizeof(WCHAR) + 1);
 				if (lpBinPane) lpBinPane->SetCount(cb);
 				break;
 			}
@@ -491,13 +490,13 @@ _Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
 
 	if (m_bDoSmartView)
 	{
-		SmartViewPane* lpSmartView = (SmartViewPane*)GetControl(m_iSmartViewBox);
+		auto lpSmartView = static_cast<SmartViewPane*>(GetControl(m_iSmartViewBox));
 		if (lpSmartView)
 		{
 			if (!cb && !lpb) (void)GetBinaryUseControl(m_iBinBox, &cb, &lpb);
 
 			SBinary Bin = { 0 };
-			Bin.cb = (ULONG)cb;
+			Bin.cb = static_cast<ULONG>(cb);
 			Bin.lpb = lpb;
 
 			lpSmartView->Parse(Bin);
@@ -508,9 +507,9 @@ _Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
 
 	if (m_bUseWrapEx)
 	{
-		wstring szFlags = InterpretFlags(flagStreamFlag, m_ulStreamFlags);
+		auto szFlags = InterpretFlags(flagStreamFlag, m_ulStreamFlags);
 		SetStringf(m_iFlagBox, _T("0x%08X = %ws"), m_ulStreamFlags, szFlags.c_str()); // STRING_OK
-		wstring szTmp = formatmessage(IDS_CODEPAGES, m_ulInCodePage, m_ulOutCodePage);
+		auto szTmp = formatmessage(IDS_CODEPAGES, m_ulInCodePage, m_ulOutCodePage);
 		SetStringW(m_iCodePageBox, szTmp.c_str());
 	}
 
@@ -522,7 +521,7 @@ void CStreamEditor::SetEditReadOnly(ULONG iControl)
 {
 	if (IsValidEdit(iControl))
 	{
-		TextPane* lpPane = (TextPane*)GetControl(iControl);
+		auto lpPane = static_cast<TextPane*>(GetControl(iControl));
 		if (lpPane)
 		{
 			lpPane->SetEditReadOnly();

@@ -950,7 +950,7 @@ void CMainDlg::OnLogonWithFlags()
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		wstring szProfile = MyData.GetStringW(0);
+		auto szProfile = MyData.GetStringW(0);
 
 		m_lpMapiObjects->MAPILogonEx(
 			m_hWnd, // handle of current window (from def'n of CWnd)
@@ -1130,7 +1130,7 @@ void CMainDlg::OnLoadMAPI()
 	{
 		HMODULE hMAPI = nullptr;
 		UnLoadPrivateMAPI();
-		EC_D(hMAPI, MyLoadLibraryW(MyData.GetStringW(0)));
+		EC_D(hMAPI, MyLoadLibraryW(MyData.GetStringW(0).c_str()));
 		SetMAPIHandle(hMAPI);
 	}
 }
@@ -1513,7 +1513,7 @@ void CMainDlg::OnIsAttachmentBlocked()
 	if (S_OK == hRes)
 	{
 		auto bBlocked = false;
-		EC_H(IsAttachmentBlocked(lpMAPISession, MyData.GetStringW(0), &bBlocked));
+		EC_H(IsAttachmentBlocked(lpMAPISession, MyData.GetStringW(0).c_str(), &bBlocked));
 		if (SUCCEEDED(hRes))
 		{
 			CEditor MyResult(
@@ -1936,12 +1936,12 @@ void CMainDlg::OnComputeGivenStoreHash()
 				{
 					if (fPrivateExchangeStore)
 					{
-						fCached = ((lpConfigProp->Value.l & CONFIG_OST_CACHE_PRIVATE) != 0);
+						fCached = (lpConfigProp->Value.l & CONFIG_OST_CACHE_PRIVATE) != 0;
 					}
 
 					if (fPublicExchangeStore)
 					{
-						fCached = ((lpConfigProp->Value.l & CONFIG_OST_CACHE_PUBLIC) == CONFIG_OST_CACHE_PUBLIC);
+						fCached = (lpConfigProp->Value.l & CONFIG_OST_CACHE_PUBLIC) == CONFIG_OST_CACHE_PUBLIC;
 					}
 				}
 

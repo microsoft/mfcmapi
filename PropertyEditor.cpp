@@ -4,6 +4,7 @@
 #include "MAPIFunctions.h"
 #include "SmartView/SmartView.h"
 #include "SortList/MVPropData.h"
+#include "ViewPane/CountedTextPane.h"
 
 _Check_return_ HRESULT DisplayPropertyEditor(_In_ CWnd* pParentWnd,
 	UINT uidTitle,
@@ -24,7 +25,7 @@ _Check_return_ HRESULT DisplayPropertyEditor(_In_ CWnd* pParentWnd,
 	{
 		SPropTagArray sTag = { 0 };
 		sTag.cValues = 1;
-		sTag.aulPropTag[0] = (PT_ERROR == PROP_TYPE(ulPropTag)) ? CHANGE_PROP_TYPE(ulPropTag, PT_UNSPECIFIED) : ulPropTag;
+		sTag.aulPropTag[0] = PT_ERROR == PROP_TYPE(ulPropTag) ? CHANGE_PROP_TYPE(ulPropTag, PT_UNSPECIFIED) : ulPropTag;
 		ULONG ulValues = NULL;
 
 		WC_MAPI(lpMAPIProp->GetProps(&sTag, NULL, &ulValues, &lpsPropValue));
@@ -248,7 +249,7 @@ void CPropertyEditor::InitPropertyControls()
 
 		break;
 	case PT_BOOLEAN:
-		InitPane(0, CreateCheckPane(IDS_BOOLEAN, m_lpsInputValue ? (0 != m_lpsInputValue->Value.b) : false, false));
+		InitPane(0, CreateCheckPane(IDS_BOOLEAN, m_lpsInputValue ? 0 != m_lpsInputValue->Value.b : false, false));
 		break;
 	case PT_DOUBLE:
 		InitPane(0, CreateSingleLinePane(IDS_DOUBLE, false));
@@ -321,7 +322,7 @@ void CPropertyEditor::InitPropertyControls()
 			}
 
 			lpPane = static_cast<CountedTextPane*>(GetControl(0));
-			if (lpPane) lpPane->SetCount((cbStr % sizeof(WCHAR)) ? 0 : cbStr / sizeof(WCHAR));
+			if (lpPane) lpPane->SetCount(cbStr % sizeof(WCHAR) ? 0 : cbStr / sizeof(WCHAR));
 		}
 
 		break;
@@ -413,7 +414,7 @@ void CPropertyEditor::InitPropertyControls()
 			{
 				lpPane->SetCount(m_lpsInputValue->Value.bin.cb);
 				lpPane->SetStringW(BinToHexString(&m_lpsInputValue->Value.bin, false).c_str());
-				SetStringA(1, reinterpret_cast<LPCSTR>(m_lpsInputValue->Value.bin.lpb), m_lpsInputValue->Value.bin.cb + 1);
+				SetStringA(1, reinterpret_cast<LPCSTR>(m_lpsInputValue->Value.bin.lpb), m_lpsInputValue->Value.bin.cb);
 			}
 
 			lpPane = static_cast<CountedTextPane*>(GetControl(1));
@@ -907,7 +908,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 
 				// Even if we don't have a string, still make the call to SetBinary
 				// This will blank out the binary control when lpszW is NULL
-				lpPane->SetBinary(reinterpret_cast<LPBYTE>(lpszW), cbStr);
+				lpPane->SetBinary(LPBYTE(lpszW.c_str()), cbStr);
 				lpPane->SetCount(cbStr);
 			}
 
@@ -932,7 +933,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 			if (lpPane) lpPane->SetCount(cb);
 
 			lpPane = static_cast<CountedTextPane*>(GetControl(0));
-			if (lpPane) lpPane->SetCount((cb % sizeof(WCHAR)) ? 0 : cb / sizeof(WCHAR));
+			if (lpPane) lpPane->SetCount(cb % sizeof(WCHAR) ? 0 : cb / sizeof(WCHAR));
 			delete[] lpb;
 			lpb = nullptr;
 		}
@@ -1054,7 +1055,7 @@ void CMultiValuePropertyEditor::InitPropertyControls()
 }
 
 // Function must be called AFTER dialog controls have been created, not before
-void CMultiValuePropertyEditor::ReadMultiValueStringsFromProperty()
+void CMultiValuePropertyEditor::ReadMultiValueStringsFromProperty() const
 {
 	if (!IsValidList(0)) return;
 
@@ -1070,10 +1071,9 @@ void CMultiValuePropertyEditor::ReadMultiValueStringsFromProperty()
 	if (!m_lpsInputValue) return;
 	if (!(PROP_TYPE(m_lpsInputValue->ulPropTag) & MV_FLAG)) return;
 
-	ULONG iMVCount = 0;
 	// All the MV structures are basically the same, so we can cheat when we pull the count
 	auto cValues = m_lpsInputValue->Value.MVi.cValues;
-	for (iMVCount = 0; iMVCount < cValues; iMVCount++)
+	for (ULONG iMVCount = 0; iMVCount < cValues; iMVCount++)
 	{
 		auto lpData = InsertListRow(0, iMVCount, format(L"%u", iMVCount)); // STRING_OK
 
@@ -1128,13 +1128,12 @@ void CMultiValuePropertyEditor::WriteMultiValueStringsToSPropValue()
 }
 
 // Given a pointer to an SPropValue structure which has already been allocated, fill out the values
-void CMultiValuePropertyEditor::WriteMultiValueStringsToSPropValue(_In_ LPVOID lpParent, _In_ LPSPropValue lpsProp)
+void CMultiValuePropertyEditor::WriteMultiValueStringsToSPropValue(_In_ LPVOID lpParent, _In_ LPSPropValue lpsProp) const
 {
 	if (!lpParent || !lpsProp) return;
 
 	auto hRes = S_OK;
 	auto ulNumVals = GetListCount(0);
-	ULONG iMVCount = 0;
 
 	lpsProp->ulPropTag = m_ulPropTag;
 	lpsProp->dwAlignPad = NULL;
@@ -1195,7 +1194,7 @@ void CMultiValuePropertyEditor::WriteMultiValueStringsToSPropValue(_In_ LPVOID l
 	// Allocation is now done
 
 	// Now write our data into the space we allocated
-	for (iMVCount = 0; iMVCount < ulNumVals; iMVCount++)
+	for (ULONG iMVCount = 0; iMVCount < ulNumVals; iMVCount++)
 	{
 		auto lpData = GetListRowData(0, iMVCount);
 
@@ -1320,7 +1319,7 @@ _Check_return_ bool CMultiValuePropertyEditor::DoListEdit(ULONG /*ulListNum*/, i
 	return false;
 }
 
-void CMultiValuePropertyEditor::UpdateListRow(_In_ LPSPropValue lpProp, ULONG iMVCount)
+void CMultiValuePropertyEditor::UpdateListRow(_In_ LPSPropValue lpProp, ULONG iMVCount) const
 {
 	wstring szTmp;
 	wstring szAltTmp;
@@ -1344,7 +1343,7 @@ void CMultiValuePropertyEditor::UpdateListRow(_In_ LPSPropValue lpProp, ULONG iM
 	}
 }
 
-void CMultiValuePropertyEditor::UpdateSmartView()
+void CMultiValuePropertyEditor::UpdateSmartView() const
 {
 	auto hRes = S_OK;
 	auto lpPane = static_cast<SmartViewPane*>(GetControl(1));
@@ -1358,7 +1357,6 @@ void CMultiValuePropertyEditor::UpdateSmartView()
 		{
 			WriteMultiValueStringsToSPropValue(static_cast<LPVOID>(lpsProp), lpsProp);
 
-			auto iStructType = IDS_STNOPARSING;
 			wstring szSmartView;
 			switch (PROP_TYPE(m_ulPropTag))
 			{
@@ -1366,7 +1364,7 @@ void CMultiValuePropertyEditor::UpdateSmartView()
 				szSmartView = InterpretPropSmartView(lpsProp, m_lpMAPIProp, nullptr, nullptr, m_bIsAB, true);
 				break;
 			case PT_MV_BINARY:
-				iStructType = static_cast<__ParsingTypeEnum>(lpPane->GetDropDownSelectionValue());
+				auto iStructType = static_cast<__ParsingTypeEnum>(lpPane->GetDropDownSelectionValue());
 				if (iStructType)
 				{
 					szSmartView = InterpretMVBinaryAsString(lpsProp->Value.MVbin, iStructType, m_lpMAPIProp);

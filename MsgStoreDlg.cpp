@@ -135,7 +135,7 @@ void CMsgStoreDlg::OnInitMenu(_In_ CMenu* pMenu)
 
 	pMenu->EnableMenuItem(ID_RESENDALLMESSAGES, DIM(bItemSelected));
 	pMenu->EnableMenuItem(ID_RESETPERMISSIONSONITEMS, DIM(bItemSelected));
-	pMenu->EnableMenuItem(ID_RESTOREDELETEDFOLDER, DIM(bItemSelected && (m_ulDisplayFlags & dfDeleted)));
+	pMenu->EnableMenuItem(ID_RESTOREDELETEDFOLDER, DIM(bItemSelected && m_ulDisplayFlags & dfDeleted));
 
 	pMenu->EnableMenuItem(ID_COPY, DIM(bItemSelected));
 	pMenu->EnableMenuItem(ID_DELETESELECTEDITEM, DIM(bItemSelected));
@@ -374,11 +374,11 @@ _Check_return_ bool CMsgStoreDlg::HandlePaste()
 	// Get the destination Folder
 	auto lpMAPIDestFolder = static_cast<LPMAPIFOLDER>(m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY));
 
-	if (lpMAPIDestFolder && (ulStatus & BUFFER_MESSAGES) && (ulStatus & BUFFER_PARENTFOLDER))
+	if (lpMAPIDestFolder && ulStatus & BUFFER_MESSAGES && ulStatus & BUFFER_PARENTFOLDER)
 	{
 		OnPasteMessages();
 	}
-	else if (lpMAPIDestFolder && (ulStatus & BUFFER_FOLDER))
+	else if (lpMAPIDestFolder && ulStatus & BUFFER_FOLDER)
 	{
 		CEditor MyData(
 			this,
@@ -536,7 +536,7 @@ void CMsgStoreDlg::OnPasteFolder()
 				reinterpret_cast<LPENTRYID>(lpProps[EID].Value.bin.lpb),
 				&IID_IMAPIFolder,
 				lpMAPIDestFolder,
-				reinterpret_cast<LPTSTR>(MyData.GetStringW(0)),
+				LPTSTR(MyData.GetStringW(0).c_str()),
 				lpProgress ? reinterpret_cast<ULONG_PTR>(m_hWnd) : NULL,
 				lpProgress, // Progress
 				ulCopyFlags));
@@ -674,8 +674,8 @@ void CMsgStoreDlg::OnCreateSubFolder()
 
 		EC_MAPI(lpMAPIFolder->CreateFolder(
 			MyData.GetHex(1),
-			reinterpret_cast<LPTSTR>(MyData.GetStringW(0)),
-			reinterpret_cast<LPTSTR>(MyData.GetStringW(2)),
+			LPTSTR(MyData.GetStringW(0).c_str()),
+			LPTSTR(MyData.GetStringW(2).c_str()),
 			NULL, // interface
 			MAPI_UNICODE | (MyData.GetCheck(3) ? OPEN_IF_EXISTS : 0),
 			&lpMAPISubFolder));
@@ -882,7 +882,7 @@ void CMsgStoreDlg::OnDeleteSelectedItem()
 			if (S_OK == hRes)
 			{
 				auto ulFlags = DEL_FOLDERS | DEL_MESSAGES;
-				ulFlags |= (bShiftPressed || MyData.GetCheck(0)) ? DELETE_HARD_DELETE : 0;
+				ulFlags |= bShiftPressed || MyData.GetCheck(0) ? DELETE_HARD_DELETE : 0;
 
 				DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L"Calling DeleteFolder on folder. ulFlags = 0x%08X.\n", ulFlags);
 				DebugPrintBinary(DBGGeneric, lpItemEID);
@@ -1025,7 +1025,7 @@ void CMsgStoreDlg::OnSetReceiveFolder()
 		if (MyData.GetCheck(1))
 		{
 			EC_MAPI(lpMDB->SetReceiveFolder(
-				reinterpret_cast<LPTSTR>(MyData.GetStringW(0)),
+				LPTSTR(MyData.GetStringW(0).c_str()),
 				MAPI_UNICODE,
 				NULL,
 				NULL));
@@ -1033,7 +1033,7 @@ void CMsgStoreDlg::OnSetReceiveFolder()
 		else if (lpEID)
 		{
 			EC_MAPI(lpMDB->SetReceiveFolder(
-				reinterpret_cast<LPTSTR>(MyData.GetStringW(0)),
+				LPTSTR(MyData.GetStringW(0).c_str()),
 				MAPI_UNICODE,
 				lpEID->cb,
 				reinterpret_cast<LPENTRYID>(lpEID->lpb)));
@@ -1161,7 +1161,7 @@ void CMsgStoreDlg::OnRestoreDeletedFolder()
 				reinterpret_cast<LPENTRYID>(lpProps[EID].Value.bin.lpb),
 				&IID_IMAPIFolder,
 				static_cast<LPMAPIFOLDER>(m_lpContainer),
-				reinterpret_cast<LPTSTR>(MyData.GetStringW(0)),
+				LPTSTR(MyData.GetStringW(0).c_str()),
 				lpProgress ? reinterpret_cast<ULONG_PTR>(m_hWnd) : NULL,
 				lpProgress,
 				ulCopyFlags));

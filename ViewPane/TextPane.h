@@ -36,10 +36,10 @@ public:
 
 	void SetEditReadOnly();
 
-	LPWSTR GetStringW() const;
+	wstring GetStringW() const;
 	LPSTR GetStringA();
 	_Check_return_ LPSTR GetEditBoxTextA(_Out_ size_t* lpcchText);
-	_Check_return_ LPWSTR GetEditBoxTextW(_Out_ size_t* lpcchText);
+	_Check_return_ wstring GetEditBoxTextW(_Out_ size_t* lpcchText);
 	_Check_return_ wstring GetStringUseControl() const;
 
 protected:
