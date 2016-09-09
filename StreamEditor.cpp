@@ -334,7 +334,7 @@ void CStreamEditor::OpenPropertyStream(bool bWrite, bool bRTF)
 	m_StreamError = hRes;
 }
 
-void CStreamEditor::ReadTextStreamFromProperty()
+void CStreamEditor::ReadTextStreamFromProperty() const
 {
 	if (!m_lpMAPIProp) return;
 
@@ -433,7 +433,6 @@ _Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
 	if (m_iTextBox == i && lpBinPane)
 	{
 		size_t cchStr = 0;
-		LPSTR lpszA = nullptr;
 
 		switch (m_ulEditorType)
 		{
@@ -441,16 +440,17 @@ _Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
 		case EDITOR_RTF:
 		case EDITOR_STREAM_BINARY:
 		default:
-			lpszA = GetEditBoxTextA(m_iTextBox, &cchStr);
+		{
+			auto lpszA = GetEditBoxTextA(m_iTextBox, &cchStr);
 
 			// What we just read includes a NULL terminator, in both the string and count.
 			// When we write binary, we don't want to include this NULL
 			if (cchStr) cchStr -= 1;
 
-			lpBinPane->SetBinary(reinterpret_cast<LPBYTE>(lpszA), cchStr * sizeof(CHAR));
+			lpBinPane->SetBinary(LPBYTE(lpszA.c_str()), cchStr * sizeof(CHAR));
 			lpBinPane->SetCount(cchStr * sizeof(CHAR));
 			break;
-
+		}
 		case EDITOR_STREAM_UNICODE:
 			auto lpszW = GetEditBoxTextW(m_iTextBox, &cchStr);
 
@@ -517,7 +517,7 @@ _Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
 	return i;
 }
 
-void CStreamEditor::SetEditReadOnly(ULONG iControl)
+void CStreamEditor::SetEditReadOnly(ULONG iControl) const
 {
 	if (IsValidEdit(iControl))
 	{

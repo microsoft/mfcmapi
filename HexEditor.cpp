@@ -4,8 +4,8 @@
 #include "HexEditor.h"
 #include "FileDialogEx.h"
 #include "ImportProcs.h"
-#include "ViewPane\CountedTextPane.h"
-#include "ViewPane\SmartViewPane.h"
+#include "ViewPane/CountedTextPane.h"
+#include "ViewPane/SmartViewPane.h"
 
 static wstring CLASS = L"CHexEditor";
 
@@ -79,9 +79,10 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 	case HEXED_ANSI:
 	{
 		size_t cchStr = NULL;
-		lpb = reinterpret_cast<LPBYTE>(GetEditBoxTextA(HEXED_ANSI, &cchStr));
+		auto text = GetEditBoxTextA(HEXED_ANSI, &cchStr);
+		SetStringA(HEXED_UNICODE, text.c_str(), cchStr);
 
-		SetStringA(HEXED_UNICODE, reinterpret_cast<LPCSTR>(lpb), cchStr);
+		lpb = LPBYTE(text.c_str());
 
 		// What we just read includes a NULL terminator, in both the string and count.
 		// When we write binary/base64, we don't want to include this NULL
@@ -99,10 +100,9 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 	{
 		size_t cchStr = NULL;
 		auto text = GetEditBoxTextW(HEXED_UNICODE, &cchStr);
+		SetStringW(HEXED_ANSI, text.c_str(), cchStr);
+
 		lpb = LPBYTE(text.c_str());
-
-		SetStringW(HEXED_ANSI, reinterpret_cast<LPWSTR>(lpb), cchStr);
-
 		// What we just read includes a NULL terminator, in both the string and count.
 		// When we write binary/base64, we don't want to include this NULL
 		if (cchStr) cchStr -= 1;
@@ -211,7 +211,7 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 	return i;
 }
 
-void CHexEditor::UpdateParser()
+void CHexEditor::UpdateParser() const
 {
 	// Find out how to interpret the data
 	auto lpPane = static_cast<SmartViewPane*>(GetControl(HEXED_SMARTVIEW));

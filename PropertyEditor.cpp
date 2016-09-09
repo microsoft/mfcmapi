@@ -828,7 +828,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		{
 			size_t cchStr = NULL;
 			auto lpszA = GetEditBoxTextA(1, &cchStr); // Do not free this
-			Bin.lpb = reinterpret_cast<LPBYTE>(lpszA);
+			Bin.lpb = LPBYTE(lpszA.c_str());
 
 			// What we just read includes a NULL terminator, in both the string and count.
 			// When we write binary, we don't want to include this NULL
@@ -866,7 +866,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 
 				// Even if we don't have a string, still make the call to SetBinary
 				// This will blank out the binary control when lpszA is NULL
-				lpPane->SetBinary(reinterpret_cast<LPBYTE>(lpszA), cbStr);
+				lpPane->SetBinary(LPBYTE(lpszA.c_str()), cbStr);
 				lpPane->SetCount(cbStr);
 			}
 

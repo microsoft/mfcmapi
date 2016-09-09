@@ -1195,7 +1195,7 @@ wstring CEditor::GetStringW(ULONG i) const
 }
 
 // No need to free this - treat it like a static
-_Check_return_ LPSTR CEditor::GetEditBoxTextA(ULONG iControl, _Out_ size_t* lpcchText) const
+_Check_return_ string CEditor::GetEditBoxTextA(ULONG iControl, _Out_ size_t* lpcchText) const
 {
 	if (lpcchText) *lpcchText = NULL;
 	if (!IsValidEdit(iControl)) return nullptr;
@@ -1422,7 +1422,7 @@ void CEditor::UpdateListButtons() const
 	m_lpControls[m_ulListNum].lpListPane->UpdateListButtons();
 }
 
-_Check_return_ bool CEditor::OnEditListEntry(ULONG ulListNum)
+_Check_return_ bool CEditor::OnEditListEntry(ULONG ulListNum) const
 {
 	if (!IsValidList(ulListNum)) return false;
 

@@ -14,14 +14,14 @@ public:
 	virtual ~CHexEditor();
 
 private:
-	_Check_return_ ULONG HandleChange(UINT nID);
-	void OnEditAction1();
-	void OnEditAction2();
-	void OnEditAction3();
-	void UpdateParser();
+	_Check_return_ ULONG HandleChange(UINT nID) override;
+	void OnEditAction1() override;
+	void OnEditAction2() override;
+	void OnEditAction3() override;
+	void UpdateParser() const;
 
-	void OnOK();
-	void OnCancel();
+	void OnOK() override;
+	void OnCancel() override;
 
 	CMapiObjects* m_lpMapiObjects;
 };
