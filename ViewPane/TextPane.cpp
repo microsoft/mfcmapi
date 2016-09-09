@@ -100,19 +100,11 @@ _Check_return_ static DWORD CALLBACK EditStreamReadCallBack(
 	}
 
 	return 0;
-} // EditStreamReadCallBack
+}
 
 TextPane::TextPane(UINT uidLabel, bool bReadOnly, bool bMultiLine) :ViewPane(uidLabel, bReadOnly)
 {
-	m_lpszW = nullptr;
-	m_lpszA = nullptr;
-	m_cchsz = 0;
 	m_bMultiline = bMultiLine;
-}
-
-TextPane::~TextPane()
-{
-	ClearString();
 }
 
 bool TextPane::IsType(__ViewTypes vType)
@@ -237,7 +229,7 @@ void TextPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC /*hdc*/)
 
 struct FakeStream
 {
-	LPWSTR lpszW;
+	wstring lpszW;
 	size_t cbszW;
 	size_t cbCur;
 };
@@ -257,7 +249,7 @@ _Check_return_ static DWORD CALLBACK FakeEditStreamReadCallBack(
 
 	*pcb = cbRead;
 
-	if (cbRead) memcpy(pbBuff, reinterpret_cast<LPBYTE>(lpfs->lpszW) + lpfs->cbCur, cbRead);
+	if (cbRead) memcpy(pbBuff, LPBYTE(lpfs->lpszW.c_str()) + lpfs->cbCur, cbRead);
 
 	lpfs->cbCur += cbRead;
 
@@ -277,12 +269,10 @@ void TextPane::SetEditBoxText()
 	EDITSTREAM es = { 0, 0, FakeEditStreamReadCallBack };
 	UINT uFormat = SF_TEXT | SF_UNICODE;
 
-	FakeStream fs = { nullptr };
+	FakeStream fs;
 	fs.lpszW = m_lpszW;
-	fs.cbszW = m_cchsz * sizeof(WCHAR);
-
-	// The edit control's gonna read in the actual NULL terminator, which we do not want, so back off one character
-	if (fs.cbszW) fs.cbszW -= sizeof(WCHAR);
+	fs.cbszW = m_lpszW.length() * sizeof(WCHAR);
+	fs.cbCur = 0;
 
 	es.dwCookie = reinterpret_cast<DWORD_PTR>(&fs);
 
@@ -294,16 +284,6 @@ void TextPane::SetEditBoxText()
 	m_EditBox.SetModify(false);
 
 	m_EditBox.SetEventMask(ulEventMask); // put original mask back
-}
-
-// Clears the strings out of an lpEdit
-void TextPane::ClearString()
-{
-	delete[] m_lpszW;
-	delete[] m_lpszA;
-	m_lpszW = nullptr;
-	m_lpszA = nullptr;
-	m_cchsz = NULL;
 }
 
 // Sets m_lpControls[i].UI.lpEdit->lpszW using SetStringW
@@ -329,7 +309,7 @@ void TextPane::SetStringA(_In_opt_z_ LPCSTR szMsg, size_t cchsz)
 // If it is missing, we'll make sure we add it
 void TextPane::SetStringW(_In_opt_z_ LPCWSTR szMsg, size_t cchsz)
 {
-	ClearString();
+	m_lpszW.clear();
 
 	if (!szMsg) szMsg = L"";
 	auto hRes = S_OK;
@@ -347,15 +327,7 @@ void TextPane::SetStringW(_In_opt_z_ LPCWSTR szMsg, size_t cchsz)
 	}
 	// cchszW is now the length of our string not counting the NULL terminator
 
-	// add one for a NULL terminator
-	m_cchsz = cchszW + 1;
-	m_lpszW = new WCHAR[cchszW + 1];
-
-	if (m_lpszW)
-	{
-		memcpy(m_lpszW, szMsg, cchszW * sizeof(WCHAR));
-		m_lpszW[cchszW] = NULL;
-	}
+	m_lpszW = wstring(szMsg, szMsg + cchszW);
 
 	SetEditBoxText();
 }
@@ -385,7 +357,7 @@ void TextPane::AppendString(_In_z_ LPCTSTR szMsg)
 // This is used by the DbgView - don't call any debugger functions here!!!
 void TextPane::ClearView()
 {
-	ClearString();
+	m_lpszW.clear();
 	::SendMessage(
 		m_EditBox.m_hWnd,
 		WM_SETTEXT,
@@ -401,27 +373,18 @@ void TextPane::SetEditReadOnly()
 
 wstring TextPane::GetStringW() const
 {
-	return wstring(m_lpszW, m_lpszW + m_cchsz);
+	return m_lpszW;
 }
 
-LPSTR TextPane::GetStringA()
+string TextPane::GetStringA() const
 {
-	auto hRes = S_OK;
-	// Don't use ClearString - that would wipe the lpszW too!
-	delete[] m_lpszA;
-	m_lpszA = nullptr;
-
-	// We're not leaking this conversion
-	// It goes into m_lpControls[i].UI.lpEdit->lpszA, which we manage
-	EC_H(UnicodeToAnsi(m_lpszW, &m_lpszA, m_cchsz));
-
-	return m_lpszA;
+	return wstringTostring(m_lpszW);
 }
 
 // Gets string from edit box and places it in m_lpControls[i].UI.lpEdit->lpszW
 void TextPane::CommitUIValues()
 {
-	ClearString();
+	m_lpszW.clear();
 
 	GETTEXTLENGTHEX getTextLength = { 0 };
 	getTextLength.flags = GTL_PRECISE | GTL_NUMCHARS;
@@ -451,7 +414,7 @@ void TextPane::CommitUIValues()
 	{
 		memset(lpszW, 0, cchText * sizeof(WCHAR));
 
-		if (cchText > 1) // No point in checking if the string is just a null terminator
+		if (cchText >= 1) // No point in checking if the string is just a null terminator
 		{
 			GETTEXTEX getText = { 0 };
 			getText.cb = static_cast<DWORD>(cchText) * sizeof(WCHAR);
@@ -485,23 +448,22 @@ void TextPane::CommitUIValues()
 			}
 		}
 
-		m_lpszW = lpszW;
-		m_cchsz = cchText;
+		m_lpszW = wstring(lpszW, lpszW + cchText);
 	}
 }
 
 // No need to free this - treat it like a static
-_Check_return_ LPSTR TextPane::GetEditBoxTextA(_Out_ size_t* lpcchText)
+_Check_return_ string TextPane::GetEditBoxTextA(_Out_ size_t* lpcchText)
 {
 	CommitUIValues();
-	if (lpcchText) *lpcchText = m_cchsz;
+	if (lpcchText) *lpcchText = m_lpszW.length();
 	return GetStringA();
 }
 
 _Check_return_ wstring TextPane::GetEditBoxTextW(_Out_ size_t* lpcchText)
 {
 	CommitUIValues();
-	if (lpcchText) *lpcchText = m_cchsz;
+	if (lpcchText) *lpcchText = m_lpszW.length();
 	return GetStringW();
 }
 

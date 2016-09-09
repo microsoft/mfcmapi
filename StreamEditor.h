@@ -26,11 +26,11 @@ public:
 private:
 	BOOL  OnInitDialog();
 	void  OpenPropertyStream(bool bWrite, bool bRTF);
-	void  ReadTextStreamFromProperty();
+	void  ReadTextStreamFromProperty() const;
 	void  WriteTextStreamToProperty();
 	_Check_return_ ULONG HandleChange(UINT nID);
 	void  OnOK();
-	void SetEditReadOnly(ULONG iControl);
+	void SetEditReadOnly(ULONG iControl) const;
 
 	// source variables
 	LPMAPIPROP	m_lpMAPIProp;

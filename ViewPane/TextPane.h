@@ -15,7 +15,6 @@ class TextPane : public ViewPane
 {
 public:
 	TextPane(UINT uidLabel, bool bReadOnly, bool bMultiLine);
-	virtual ~TextPane();
 
 	bool IsType(__ViewTypes vType) override;
 	void Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc) override;
@@ -37,8 +36,8 @@ public:
 	void SetEditReadOnly();
 
 	wstring GetStringW() const;
-	LPSTR GetStringA();
-	_Check_return_ LPSTR GetEditBoxTextA(_Out_ size_t* lpcchText);
+	string GetStringA() const;
+	_Check_return_ string GetEditBoxTextA(_Out_ size_t* lpcchText);
 	_Check_return_ wstring GetEditBoxTextW(_Out_ size_t* lpcchText);
 	_Check_return_ wstring GetStringUseControl() const;
 
@@ -47,10 +46,7 @@ protected:
 
 private:
 	void SetEditBoxText();
-	void ClearString();
 
-	LPWSTR m_lpszW;
-	LPSTR m_lpszA; // on demand conversion of lpszW
-	size_t m_cchsz; // length of string - maintained to preserve possible internal NULLs, includes NULL terminator
+	wstring m_lpszW;
 	bool m_bMultiline;
 };
