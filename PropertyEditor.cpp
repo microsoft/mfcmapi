@@ -822,11 +822,9 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		}
 		else if (1 == i)
 		{
-			size_t cchStr = NULL;
-			auto lpszA = GetEditBoxTextA(1, &cchStr); // Do not free this
+			auto lpszA = GetEditBoxTextA(1); // Do not free this
 			Bin.lpb = LPBYTE(lpszA.c_str());
-
-			Bin.cb = static_cast<ULONG>(cchStr) * sizeof(CHAR);
+			Bin.cb = lpszA.length() * sizeof(CHAR);
 
 			SetBinary(0, static_cast<LPBYTE>(Bin.lpb), Bin.cb);
 		}
@@ -843,13 +841,12 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		if (0 == i)
 		{
 			size_t cbStr = 0;
-			size_t cchStr = 0;
-			auto lpszA = GetEditBoxTextA(0, &cchStr);
+			auto lpszA = GetEditBoxTextA(0);
 
 			lpPane = static_cast<CountedTextPane*>(GetControl(1));
 			if (lpPane)
 			{
-				cbStr = cchStr * sizeof(CHAR);
+				cbStr = lpszA.length() * sizeof(CHAR);
 
 				// Even if we don't have a string, still make the call to SetBinary
 				// This will blank out the binary control when lpszA is NULL
@@ -877,13 +874,12 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 	case PT_UNICODE:
 		if (0 == i)
 		{
-			size_t cchStr = 0;
-			auto lpszW = GetEditBoxTextW(0, &cchStr);
+			auto lpszW = GetEditBoxTextW(0);
 
 			lpPane = static_cast<CountedTextPane*>(GetControl(1));
 			if (lpPane)
 			{
-				auto cbStr = cchStr * sizeof(WCHAR);
+				auto cbStr = lpszW.length() * sizeof(WCHAR);
 
 				// Even if we don't have a string, still make the call to SetBinary
 				// This will blank out the binary control when lpszW is NULL
@@ -892,7 +888,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 			}
 
 			lpPane = static_cast<CountedTextPane*>(GetControl(0));
-			if (lpPane) lpPane->SetCount(cchStr);
+			if (lpPane) lpPane->SetCount(lpszW.length());
 		}
 		else if (1 == i)
 		{

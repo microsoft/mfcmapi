@@ -424,8 +424,6 @@ _Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
 	auto lpBinPane = static_cast<CountedTextPane*>(GetControl(m_iBinBox));
 	if (m_iTextBox == i && lpBinPane)
 	{
-		size_t cchStr = 0;
-
 		switch (m_ulEditorType)
 		{
 		case EDITOR_STREAM_ANSI:
@@ -433,17 +431,17 @@ _Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
 		case EDITOR_STREAM_BINARY:
 		default:
 		{
-			auto lpszA = GetEditBoxTextA(m_iTextBox, &cchStr);
+			auto lpszA = GetEditBoxTextA(m_iTextBox);
 
-			lpBinPane->SetBinary(LPBYTE(lpszA.c_str()), cchStr * sizeof(CHAR));
-			lpBinPane->SetCount(cchStr * sizeof(CHAR));
+			lpBinPane->SetBinary(LPBYTE(lpszA.c_str()), lpszA.length() * sizeof(CHAR));
+			lpBinPane->SetCount(lpszA.length() * sizeof(CHAR));
 			break;
 		}
 		case EDITOR_STREAM_UNICODE:
-			auto lpszW = GetEditBoxTextW(m_iTextBox, &cchStr);
+			auto lpszW = GetEditBoxTextW(m_iTextBox);
 
-			lpBinPane->SetBinary(LPBYTE(lpszW.c_str()), cchStr * sizeof(WCHAR));
-			lpBinPane->SetCount(cchStr * sizeof(WCHAR));
+			lpBinPane->SetBinary(LPBYTE(lpszW.c_str()), lpszW .length() * sizeof(WCHAR));
+			lpBinPane->SetCount(lpszW.length() * sizeof(WCHAR));
 			break;
 		}
 	}

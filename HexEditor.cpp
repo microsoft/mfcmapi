@@ -77,12 +77,11 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 	{
 	case HEXED_ANSI:
 	{
-		size_t cchStr = NULL;
-		auto text = GetEditBoxTextA(HEXED_ANSI, &cchStr);
-		SetStringA(HEXED_UNICODE, text.c_str(), cchStr);
+		auto text = GetEditBoxTextA(HEXED_ANSI);
+		SetStringA(HEXED_UNICODE, text.c_str(), text.length());
 
 		lpb = LPBYTE(text.c_str());
-		cb = cchStr * sizeof(CHAR);
+		cb = text.length() * sizeof(CHAR);
 
 		szEncodeStr = Base64Encode(cb, lpb);
 		cchEncodeStr = szEncodeStr.length();
@@ -93,12 +92,11 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 	break;
 	case HEXED_UNICODE: // Unicode string changed
 	{
-		size_t cchStr = NULL;
-		auto text = GetEditBoxTextW(HEXED_UNICODE, &cchStr);
-		SetStringW(HEXED_ANSI, text.c_str(), cchStr);
+		auto text = GetEditBoxTextW(HEXED_UNICODE);
+		SetStringW(HEXED_ANSI, text.c_str(), text.length());
 
 		lpb = LPBYTE(text.c_str());
-		cb = cchStr * sizeof(WCHAR);
+		cb = text.length() * sizeof(WCHAR);
 
 		szEncodeStr = Base64Encode(cb, lpb);
 		cchEncodeStr = szEncodeStr.length();

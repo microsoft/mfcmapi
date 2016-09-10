@@ -266,18 +266,15 @@ void TextPane::SetEditBoxText()
 
 	// In order to support strings with embedded NULLs, we're going to stream the string in
 	// We don't have to build a real stream interface - we can fake a lightweight one
-	EDITSTREAM es = { 0, 0, FakeEditStreamReadCallBack };
-	UINT uFormat = SF_TEXT | SF_UNICODE;
-
 	FakeStream fs;
 	fs.lpszW = m_lpszW;
 	fs.cbszW = m_lpszW.length() * sizeof(WCHAR);
 	fs.cbCur = 0;
 
-	es.dwCookie = reinterpret_cast<DWORD_PTR>(&fs);
+	EDITSTREAM es = { reinterpret_cast<DWORD_PTR>(&fs), 0, FakeEditStreamReadCallBack };
 
 	// read the 'text stream' into control
-	auto lBytesRead = m_EditBox.StreamIn(uFormat, es);
+	auto lBytesRead = m_EditBox.StreamIn(SF_TEXT | SF_UNICODE, es);
 	DebugPrintEx(DBGStream, CLASS, L"SetEditBoxText", L"read %d bytes from the stream\n", lBytesRead);
 
 	// Clear the modify bit so this stream appears untouched
@@ -336,7 +333,7 @@ void TextPane::SetBinary(_In_opt_count_(cb) LPBYTE lpb, size_t cb)
 {
 	if (!lpb || !cb)
 	{
-		SetStringW(nullptr);
+		SetStringW(L"");
 	}
 	else
 	{
@@ -446,17 +443,15 @@ void TextPane::CommitUIValues()
 }
 
 // No need to free this - treat it like a static
-_Check_return_ string TextPane::GetEditBoxTextA(_Out_ size_t* lpcchText)
+_Check_return_ string TextPane::GetEditBoxTextA()
 {
 	CommitUIValues();
-	if (lpcchText) *lpcchText = m_lpszW.length();
 	return GetStringA();
 }
 
-_Check_return_ wstring TextPane::GetEditBoxTextW(_Out_ size_t* lpcchText)
+_Check_return_ wstring TextPane::GetEditBoxTextW()
 {
 	CommitUIValues();
-	if (lpcchText) *lpcchText = m_lpszW.length();
 	return GetStringW();
 }
 
