@@ -657,7 +657,7 @@ ulFuzzyLevel Flags:"
 // QuickStart.cpp
 IDS_QUOTADISPLAYNAME              "Display Name = %1!ws!"
 IDS_QUOTASIZE                     "\r\nPR_MESSAGE_SIZE_EXTENDED = %1!I64d! bytes = %2!I64d! kilobytes"
-IDS_QUOTAPROP                     "\r\n%1 = 0x%2!08X! = %2!d! kilobytes"
+IDS_QUOTAPROP                     "\r\n%1!ws! = 0x%2!08X! = %2!d! kilobytes"
 IDS_QUOTAMASK                     "\r\n\r\nStore Support Mask = 0x%1!08X! = %2!ws!"
 IDS_QUOTAPROVIDER                 "\r\nMDB Provider = %1!ws!"
 IDS_QSSPECIALFOLDERS              "Special folders"

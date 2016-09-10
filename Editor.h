@@ -55,11 +55,6 @@ public:
 	void InitPane(ULONG iNum, ViewPane* lpPane);
 	void SetStringA(ULONG i, _In_opt_z_ LPCSTR szMsg, size_t cchsz = -1) const;
 	void SetStringW(ULONG i, _In_opt_z_ LPCWSTR szMsg, size_t cchsz = -1) const;
-#ifdef UNICODE
-#define SetString SetStringW
-#else
-#define SetString SetStringA
-#endif
 	void __cdecl SetStringf(ULONG i, _Printf_format_string_ LPCTSTR szMsg, ...) const;
 	void LoadString(ULONG i, UINT uidMsg) const;
 	void SetBinary(ULONG i, _In_opt_count_(cb) LPBYTE lpb, size_t cb) const;
