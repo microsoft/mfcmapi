@@ -37,8 +37,8 @@ public:
 
 	wstring GetStringW() const;
 	string GetStringA() const;
-	_Check_return_ string GetEditBoxTextA(_Out_ size_t* lpcchText);
-	_Check_return_ wstring GetEditBoxTextW(_Out_ size_t* lpcchText);
+	_Check_return_ string GetEditBoxTextA();
+	_Check_return_ wstring GetEditBoxTextW();
 	_Check_return_ wstring GetStringUseControl() const;
 
 protected:

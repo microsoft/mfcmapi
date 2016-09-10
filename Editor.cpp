@@ -1170,21 +1170,18 @@ wstring CEditor::GetStringW(ULONG i) const
 	return m_lpControls[i].lpTextPane->GetStringW();
 }
 
-// No need to free this - treat it like a static
-_Check_return_ string CEditor::GetEditBoxTextA(ULONG iControl, _Out_ size_t* lpcchText) const
+_Check_return_ string CEditor::GetEditBoxTextA(ULONG iControl) const
 {
-	if (lpcchText) *lpcchText = NULL;
 	if (!IsValidEdit(iControl)) return nullptr;
 
-	return m_lpControls[iControl].lpTextPane->GetEditBoxTextA(lpcchText);
+	return m_lpControls[iControl].lpTextPane->GetEditBoxTextA();
 }
 
-_Check_return_ wstring CEditor::GetEditBoxTextW(ULONG iControl, _Out_ size_t* lpcchText) const
+_Check_return_ wstring CEditor::GetEditBoxTextW(ULONG iControl) const
 {
-	if (lpcchText) *lpcchText = NULL;
 	if (!IsValidEdit(iControl)) return emptystring;
 
-	return m_lpControls[iControl].lpTextPane->GetEditBoxTextW(lpcchText);
+	return m_lpControls[iControl].lpTextPane->GetEditBoxTextW();
 }
 
 _Check_return_ ULONG CEditor::GetHex(ULONG i) const
