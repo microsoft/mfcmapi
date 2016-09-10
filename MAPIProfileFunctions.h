@@ -47,7 +47,7 @@ _Check_return_ HRESULT OpenProfileSection(_In_ LPPROVIDERADMIN lpProviderAdmin, 
 
 void AddServicesToMapiSvcInf();
 void RemoveServicesFromMapiSvcInf();
-void GetMAPISVCPath(_Inout_z_count_(cchMAPIDir) LPTSTR szMAPIDir, ULONG cchMAPIDir);
+wstring GetMAPISVCPath();
 void DisplayMAPISVCPath(_In_ CWnd* pParentWnd);
 
 // http://msdn2.microsoft.com/en-us/library/bb820969.aspx
