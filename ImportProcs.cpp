@@ -2,13 +2,13 @@
 #include "ImportProcs.h"
 #include "String.h"
 
-HMODULE hModAclui = NULL;
-HMODULE hModOle32 = NULL;
-HMODULE hModUxTheme = NULL;
-HMODULE hModInetComm = NULL;
-HMODULE hModMSI = NULL;
-HMODULE hModKernel32 = NULL;
-HMODULE hModShell32 = NULL;
+HMODULE hModAclui = nullptr;
+HMODULE hModOle32 = nullptr;
+HMODULE hModUxTheme = nullptr;
+HMODULE hModInetComm = nullptr;
+HMODULE hModMSI = nullptr;
+HMODULE hModKernel32 = nullptr;
+HMODULE hModShell32 = nullptr;
 
 typedef HTHEME(STDMETHODCALLTYPE CLOSETHEMEDATA)
 (
@@ -23,7 +23,7 @@ typedef bool (WINAPI HEAPSETINFORMATION) (
 typedef HEAPSETINFORMATION* LPHEAPSETINFORMATION;
 
 typedef bool (WINAPI GETMODULEHANDLEEXW) (
-	DWORD    dwFlags,
+	DWORD dwFlags,
 	LPCWSTR lpModuleName,
 	HMODULE* phModule);
 typedef GETMODULEHANDLEEXW* LPGETMODULEHANDLEEXW;
@@ -41,8 +41,8 @@ typedef UINT(WINAPI MSIPROVIDECOMPONENTW)
 	LPCWSTR szProduct,
 	LPCWSTR szFeature,
 	LPCWSTR szComponent,
-	DWORD   dwInstallMode,
-	LPWSTR  lpPathBuf,
+	DWORD dwInstallMode,
+	LPWSTR lpPathBuf,
 	LPDWORD pcchPathBuf
 	);
 typedef MSIPROVIDECOMPONENTW FAR * LPMSIPROVIDECOMPONENTW;
@@ -51,41 +51,41 @@ typedef UINT(WINAPI MSIPROVIDEQUALIFIEDCOMPONENTW)
 (
 	LPCWSTR szCategory,
 	LPCWSTR szQualifier,
-	DWORD   dwInstallMode,
-	LPWSTR  lpPathBuf,
+	DWORD dwInstallMode,
+	LPWSTR lpPathBuf,
 	LPDWORD pcchPathBuf
 	);
 typedef MSIPROVIDEQUALIFIEDCOMPONENTW FAR * LPMSIPROVIDEQUALIFIEDCOMPONENTW;
 
-LPEDITSECURITY				pfnEditSecurity = NULL;
+LPEDITSECURITY pfnEditSecurity = nullptr;
 
-LPSTGCREATESTORAGEEX		pfnStgCreateStorageEx = NULL;
+LPSTGCREATESTORAGEEX pfnStgCreateStorageEx = nullptr;
 
-LPOPENTHEMEDATA				pfnOpenThemeData = NULL;
-LPCLOSETHEMEDATA			pfnCloseThemeData = NULL;
-LPGETTHEMEMARGINS			pfnGetThemeMargins = NULL;
-LPSETWINDOWTHEME			pfnSetWindowTheme = NULL;
-LPGETTHEMESYSSIZE			pfnGetThemeSysSize = NULL;
-LPSHGETPROPERTYSTOREFORWINDOW pfnSHGetPropertyStoreForWindow = NULL;
+LPOPENTHEMEDATA pfnOpenThemeData = nullptr;
+LPCLOSETHEMEDATA pfnCloseThemeData = nullptr;
+LPGETTHEMEMARGINS pfnGetThemeMargins = nullptr;
+LPSETWINDOWTHEME pfnSetWindowTheme = nullptr;
+LPGETTHEMESYSSIZE pfnGetThemeSysSize = nullptr;
+LPSHGETPROPERTYSTOREFORWINDOW pfnSHGetPropertyStoreForWindow = nullptr;
 
 // From inetcomm.dll
-LPMIMEOLEGETCODEPAGECHARSET pfnMimeOleGetCodePageCharset = NULL;
+LPMIMEOLEGETCODEPAGECHARSET pfnMimeOleGetCodePageCharset = nullptr;
 
 // From MSI.dll
-LPMSIPROVIDEQUALIFIEDCOMPONENT pfnMsiProvideQualifiedComponent = NULL;
-LPMSIGETFILEVERSION pfnMsiGetFileVersion = NULL;
-LPMSIPROVIDECOMPONENTW pfnMsiProvideComponentW = NULL;
-LPMSIPROVIDEQUALIFIEDCOMPONENTW pfnMsiProvideQualifiedComponentW = NULL;
+LPMSIPROVIDEQUALIFIEDCOMPONENT pfnMsiProvideQualifiedComponent = nullptr;
+LPMSIGETFILEVERSION pfnMsiGetFileVersion = nullptr;
+LPMSIPROVIDECOMPONENTW pfnMsiProvideComponentW = nullptr;
+LPMSIPROVIDEQUALIFIEDCOMPONENTW pfnMsiProvideQualifiedComponentW = nullptr;
 
 // From kernel32.dll
-LPHEAPSETINFORMATION pfnHeapSetInformation = NULL;
-LPGETMODULEHANDLEEXW pfnGetModuleHandleExW = NULL;
+LPHEAPSETINFORMATION pfnHeapSetInformation = nullptr;
+LPGETMODULEHANDLEEXW pfnGetModuleHandleExW = nullptr;
 
 // Exists to allow some logging
 _Check_return_ HMODULE MyLoadLibraryA(_In_z_ LPCSTR lpszLibFileName)
 {
-	HMODULE hMod = NULL;
-	HRESULT hRes = S_OK;
+	HMODULE hMod = nullptr;
+	auto hRes = S_OK;
 	DebugPrint(DBGLoadLibrary, L"MyLoadLibraryA - loading \"%hs\"\n", lpszLibFileName);
 	WC_D(hMod, LoadLibraryA(lpszLibFileName));
 	if (hMod)
@@ -97,13 +97,13 @@ _Check_return_ HMODULE MyLoadLibraryA(_In_z_ LPCSTR lpszLibFileName)
 		DebugPrint(DBGLoadLibrary, L"MyLoadLibraryA - \"%hs\" failed to load\n", lpszLibFileName);
 	}
 	return hMod;
-} // MyLoadLibraryA
+}
 
 // Exists to allow some logging
 _Check_return_ HMODULE MyLoadLibraryW(_In_z_ LPCWSTR lpszLibFileName)
 {
-	HMODULE hMod = NULL;
-	HRESULT hRes = S_OK;
+	HMODULE hMod = nullptr;
+	auto hRes = S_OK;
 	DebugPrint(DBGLoadLibrary, L"MyLoadLibraryW - loading \"%ws\"\n", lpszLibFileName);
 	WC_D(hMod, LoadLibraryW(lpszLibFileName));
 	if (hMod)
@@ -115,7 +115,7 @@ _Check_return_ HMODULE MyLoadLibraryW(_In_z_ LPCWSTR lpszLibFileName)
 		DebugPrint(DBGLoadLibrary, L"MyLoadLibraryW - \"%ws\" failed to load\n", lpszLibFileName);
 	}
 	return hMod;
-} // MyLoadLibraryW
+}
 
 // Loads szModule at the handle given by lphModule, then looks for szEntryPoint.
 // Will not load a module or entry point twice
@@ -127,25 +127,26 @@ void LoadProc(LPCTSTR szModule, HMODULE* lphModule, LPCSTR szEntryPoint, FARPROC
 	{
 		*lphModule = LoadFromSystemDir(szModule);
 	}
+
 	if (!*lphModule) return;
 
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	WC_D(*lpfn, GetProcAddress(
 		*lphModule,
 		szEntryPoint));
-} // LoadProc
+}
 
 _Check_return_ HMODULE LoadFromSystemDir(_In_z_ LPCTSTR szDLLName)
 {
-	if (!szDLLName) return NULL;
+	if (!szDLLName) return nullptr;
 
-	HRESULT	hRes = S_OK;
-	HMODULE	hModRet = NULL;
-	TCHAR	szDLLPath[MAX_PATH] = { 0 };
-	UINT	uiRet = NULL;
+	auto hRes = S_OK;
+	HMODULE hModRet = nullptr;
+	TCHAR szDLLPath[MAX_PATH] = { 0 };
+	UINT uiRet = NULL;
 
-	static TCHAR	szSystemDir[MAX_PATH] = { 0 };
-	static bool		bSystemDirLoaded = false;
+	static TCHAR szSystemDir[MAX_PATH] = { 0 };
+	static auto bSystemDirLoaded = false;
 
 	DebugPrint(DBGLoadLibrary, L"LoadFromSystemDir - loading \"%ws\"\n", LPCTSTRToWstring(szDLLName).c_str());
 
@@ -160,24 +161,23 @@ _Check_return_ HMODULE LoadFromSystemDir(_In_z_ LPCTSTR szDLLName)
 	hModRet = MyLoadLibrary(szDLLPath);
 
 	return hModRet;
-} // LoadFromSystemDir
+}
 
 _Check_return_ HMODULE LoadFromOLMAPIDir(_In_z_ LPCTSTR szDLLName)
 {
-	HMODULE hModRet = NULL;
+	HMODULE hModRet = nullptr;
 
 	DebugPrint(DBGLoadLibrary, L"LoadFromOLMAPIDir - loading \"%ws\"\n", LPCTSTRToWstring(szDLLName).c_str());
 
-	MAPIPathIterator* mpi = new MAPIPathIterator(true);
+	auto mpi = new MAPIPathIterator(true);
 	if (mpi)
 	{
-		int i = 0;
-		for (i = oqcOfficeBegin; i < oqcOfficeEnd; i++)
+		for (auto i = oqcOfficeBegin; i < oqcOfficeEnd; i++)
 		{
-			LPWSTR szOutlookMAPIPath = mpi->GetInstalledOutlookMAPI(i);
+			auto szOutlookMAPIPath = mpi->GetInstalledOutlookMAPI(i);
 			if (szOutlookMAPIPath)
 			{
-				HRESULT hRes = S_OK;
+				auto hRes = S_OK;
 				UINT ret = 0;
 				WCHAR szDrive[_MAX_DRIVE] = { 0 };
 				WCHAR szMAPIPath[MAX_PATH] = { 0 };
@@ -185,7 +185,7 @@ _Check_return_ HMODULE LoadFromOLMAPIDir(_In_z_ LPCTSTR szDLLName)
 
 				if (SUCCEEDED(hRes))
 				{
-					LPWSTR szFullPath = new WCHAR[MAX_PATH];
+					auto szFullPath = new WCHAR[MAX_PATH];
 #ifdef UNICODE
 					swprintf_s(szFullPath, MAX_PATH, L"%s%s%s", szDrive, szMAPIPath, szDLLName);
 #else
@@ -204,21 +204,21 @@ _Check_return_ HMODULE LoadFromOLMAPIDir(_In_z_ LPCTSTR szDLLName)
 	delete mpi;
 
 	return hModRet;
-} // LoadFromOLMAPIDir
+}
 
 void ImportProcs()
 {
-	LoadProc(_T("aclui.dll"), &hModAclui, "EditSecurity", (FARPROC*)&pfnEditSecurity); // STRING_OK;
-	LoadProc(_T("ole32.dll"), &hModOle32, "StgCreateStorageEx", (FARPROC*)&pfnStgCreateStorageEx); // STRING_OK;
-	LoadProc(_T("uxtheme.dll"), &hModUxTheme, "OpenThemeData", (FARPROC*)&pfnOpenThemeData); // STRING_OK;
-	LoadProc(_T("uxtheme.dll"), &hModUxTheme, "CloseThemeData", (FARPROC*)&pfnCloseThemeData); // STRING_OK;
-	LoadProc(_T("uxtheme.dll"), &hModUxTheme, "GetThemeMargins", (FARPROC*)&pfnGetThemeMargins); // STRING_OK;
-	LoadProc(_T("uxtheme.dll"), &hModUxTheme, "SetWindowTheme", (FARPROC*)&pfnSetWindowTheme); // STRING_OK;
-	LoadProc(_T("uxtheme.dll"), &hModUxTheme, "GetThemeSysSize", (FARPROC*)&pfnGetThemeSysSize); // STRING_OK;
-	LoadProc(_T("msi.dll"), &hModMSI, "MsiGetFileVersionW", (FARPROC*)&pfnMsiGetFileVersion); // STRING_OK;
-	LoadProc(_T("msi.dll"), &hModMSI, "MsiProvideQualifiedComponentW", (FARPROC*)&pfnMsiProvideQualifiedComponent); // STRING_OK;
-	LoadProc(_T("shell32.dll"), &hModShell32, "SHGetPropertyStoreForWindow", (FARPROC*)&pfnSHGetPropertyStoreForWindow); // STRING_OK;
-} // ImportProcs
+	LoadProc(_T("aclui.dll"), &hModAclui, "EditSecurity", reinterpret_cast<FARPROC*>(&pfnEditSecurity)); // STRING_OK;
+	LoadProc(_T("ole32.dll"), &hModOle32, "StgCreateStorageEx", reinterpret_cast<FARPROC*>(&pfnStgCreateStorageEx)); // STRING_OK;
+	LoadProc(_T("uxtheme.dll"), &hModUxTheme, "OpenThemeData", reinterpret_cast<FARPROC*>(&pfnOpenThemeData)); // STRING_OK;
+	LoadProc(_T("uxtheme.dll"), &hModUxTheme, "CloseThemeData", reinterpret_cast<FARPROC*>(&pfnCloseThemeData)); // STRING_OK;
+	LoadProc(_T("uxtheme.dll"), &hModUxTheme, "GetThemeMargins", reinterpret_cast<FARPROC*>(&pfnGetThemeMargins)); // STRING_OK;
+	LoadProc(_T("uxtheme.dll"), &hModUxTheme, "SetWindowTheme", reinterpret_cast<FARPROC*>(&pfnSetWindowTheme)); // STRING_OK;
+	LoadProc(_T("uxtheme.dll"), &hModUxTheme, "GetThemeSysSize", reinterpret_cast<FARPROC*>(&pfnGetThemeSysSize)); // STRING_OK;
+	LoadProc(_T("msi.dll"), &hModMSI, "MsiGetFileVersionW", reinterpret_cast<FARPROC*>(&pfnMsiGetFileVersion)); // STRING_OK;
+	LoadProc(_T("msi.dll"), &hModMSI, "MsiProvideQualifiedComponentW", reinterpret_cast<FARPROC*>(&pfnMsiProvideQualifiedComponent)); // STRING_OK;
+	LoadProc(_T("shell32.dll"), &hModShell32, "SHGetPropertyStoreForWindow", reinterpret_cast<FARPROC*>(&pfnSHGetPropertyStoreForWindow)); // STRING_OK;
+}
 
 // Opens the mail key for the specified MAPI client, such as 'Microsoft Outlook' or 'ExchangeMAPI'
 // Pass NULL to open the mail key for the default MAPI client
@@ -227,14 +227,14 @@ _Check_return_ HKEY GetMailKey(_In_opt_z_ LPCTSTR szClient)
 	wstring lpszClient = L"Default";
 	if (szClient) lpszClient = LPCTSTRToWstring(szClient);
 	DebugPrint(DBGLoadLibrary, L"Enter GetMailKey(%ws)\n", lpszClient.c_str());
-	HRESULT hRes = S_OK;
-	HKEY hMailKey = NULL;
-	bool bClientIsDefault = false;
+	auto hRes = S_OK;
+	HKEY hMailKey = nullptr;
+	auto bClientIsDefault = false;
 
 	// If szClient is NULL, we need to read the name of the default MAPI client
 	if (!szClient)
 	{
-		HKEY hDefaultMailKey = NULL;
+		HKEY hDefaultMailKey = nullptr;
 		WC_W32(RegOpenKeyEx(
 			HKEY_LOCAL_MACHINE,
 			_T("Software\\Clients\\Mail"), // STRING_OK
@@ -244,6 +244,7 @@ _Check_return_ HKEY GetMailKey(_In_opt_z_ LPCTSTR szClient)
 		if (hDefaultMailKey)
 		{
 			DWORD dwKeyType = NULL;
+
 			WC_H(HrGetRegistryValue(
 				hDefaultMailKey,
 				_T(""), // get the default value
@@ -278,7 +279,7 @@ _Check_return_ HKEY GetMailKey(_In_opt_z_ LPCTSTR szClient)
 	if (bClientIsDefault) delete[] szClient;
 
 	return hMailKey;
-} // GetMailKey
+}
 
 // Gets MSI IDs for the specified MAPI client, such as 'Microsoft Outlook' or 'ExchangeMAPI'
 // Pass NULL to get the IDs for the default MAPI client
@@ -286,13 +287,13 @@ _Check_return_ HKEY GetMailKey(_In_opt_z_ LPCTSTR szClient)
 void GetMapiMsiIds(_In_opt_z_ LPCTSTR szClient, _Deref_out_opt_z_ LPSTR* lpszComponentID, _Deref_out_opt_z_ LPSTR* lpszAppLCID, _Deref_out_opt_z_ LPSTR* lpszOfficeLCID)
 {
 	DebugPrint(DBGLoadLibrary, L"GetMapiMsiIds(%ws)\n", LPCTSTRToWstring(szClient).c_str());
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
-	if (lpszComponentID) *lpszComponentID = 0;
-	if (lpszAppLCID) *lpszAppLCID = 0;
-	if (lpszOfficeLCID) *lpszOfficeLCID = 0;
+	if (lpszComponentID) *lpszComponentID = nullptr;
+	if (lpszAppLCID) *lpszAppLCID = nullptr;
+	if (lpszOfficeLCID) *lpszOfficeLCID = nullptr;
 
-	HKEY hKey = GetMailKey(szClient);
+	auto hKey = GetMailKey(szClient);
 
 	if (hKey)
 	{
@@ -304,7 +305,7 @@ void GetMapiMsiIds(_In_opt_z_ LPCTSTR szClient, _Deref_out_opt_z_ LPSTR* lpszCom
 				hKey,
 				"MSIComponentID", // STRING_OK
 				&dwKeyType,
-				(LPVOID*)lpszComponentID));
+				reinterpret_cast<LPVOID*>(lpszComponentID)));
 			DebugPrint(DBGLoadLibrary, L"MSIComponentID = %hs\n", *lpszComponentID ? *lpszComponentID : "<not found>");
 			hRes = S_OK;
 		}
@@ -315,7 +316,7 @@ void GetMapiMsiIds(_In_opt_z_ LPCTSTR szClient, _Deref_out_opt_z_ LPSTR* lpszCom
 				hKey,
 				"MSIApplicationLCID", // STRING_OK
 				&dwKeyType,
-				(LPVOID*)lpszAppLCID));
+				reinterpret_cast<LPVOID*>(lpszAppLCID)));
 			DebugPrint(DBGLoadLibrary, L"MSIApplicationLCID = %hs\n", *lpszAppLCID ? *lpszAppLCID : "<not found>");
 			hRes = S_OK;
 		}
@@ -326,38 +327,30 @@ void GetMapiMsiIds(_In_opt_z_ LPCTSTR szClient, _Deref_out_opt_z_ LPSTR* lpszCom
 				hKey,
 				"MSIOfficeLCID", // STRING_OK
 				&dwKeyType,
-				(LPVOID*)lpszOfficeLCID));
+				reinterpret_cast<LPVOID*>(lpszOfficeLCID)));
 			DebugPrint(DBGLoadLibrary, L"MSIOfficeLCID = %hs\n", *lpszOfficeLCID ? *lpszOfficeLCID : "<not found>");
 			hRes = S_OK;
 		}
 
 		EC_W32(RegCloseKey(hKey));
 	}
-} // GetMapiMsiIds
+}
 
-void GetMAPIPath(_In_opt_z_ LPCTSTR szClient, _Inout_z_count_(cchMAPIPath) LPTSTR szMAPIPath, ULONG cchMAPIPath)
+wstring GetMAPIPath(wstring szClient)
 {
-	HRESULT hRes = S_OK;
-
-	szMAPIPath[0] = '\0'; // Terminate String at pos 0 (safer if we fail below)
+	auto hRes = S_OK;
+	CHAR lpszPath[MAX_PATH] = { 0 };
+	ULONG cchPath = _countof(lpszPath);
 
 	// Find some strings:
-	LPSTR szComponentID = NULL;
-	LPSTR szAppLCID = NULL;
-	LPSTR szOfficeLCID = NULL;
+	LPSTR szComponentID = nullptr;
+	LPSTR szAppLCID = nullptr;
+	LPSTR szOfficeLCID = nullptr;
 
-	GetMapiMsiIds(szClient, &szComponentID, &szAppLCID, &szOfficeLCID);
+	GetMapiMsiIds(wstringToCString(szClient), &szComponentID, &szAppLCID, &szOfficeLCID);
 
 	if (szComponentID)
 	{
-#ifdef UNICODE
-		CHAR lpszPath[MAX_PATH] = { 0 };
-		ULONG cchPath = _countof(lpszPath);
-#else
-		LPSTR lpszPath = szMAPIPath;
-		ULONG cchPath = cchMAPIPath;
-#endif
-
 		if (szAppLCID)
 		{
 			WC_B(GetComponentPath(
@@ -367,6 +360,7 @@ void GetMAPIPath(_In_opt_z_ LPCTSTR szClient, _Inout_z_count_(cchMAPIPath) LPTST
 				cchPath,
 				false));
 		}
+
 		if ((FAILED(hRes) || lpszPath[0] == _T('\0')) && szOfficeLCID)
 		{
 			hRes = S_OK;
@@ -377,6 +371,7 @@ void GetMAPIPath(_In_opt_z_ LPCTSTR szClient, _Inout_z_count_(cchMAPIPath) LPTST
 				cchPath,
 				false));
 		}
+
 		if (FAILED(hRes) || lpszPath[0] == _T('\0'))
 		{
 			hRes = S_OK;
@@ -387,23 +382,14 @@ void GetMAPIPath(_In_opt_z_ LPCTSTR szClient, _Inout_z_count_(cchMAPIPath) LPTST
 				cchPath,
 				false));
 		}
-#ifdef UNICODE
-		int iRet = 0;
-		// Convert to Unicode.
-		EC_D(iRet, MultiByteToWideChar(
-			CP_ACP,
-			0,
-			lpszPath,
-			_countof(lpszPath),
-			szMAPIPath,
-			cchMAPIPath));
-#endif
 	}
 
 	delete[] szComponentID;
 	delete[] szOfficeLCID;
 	delete[] szAppLCID;
-} // GetMAPIPath
+
+	return LPCSTRToWstring(lpszPath);
+}
 
 // Declaration missing from MAPI headers
 _Check_return_ STDAPI OpenStreamOnFileW(_In_ LPALLOCATEBUFFER lpAllocateBuffer,
@@ -423,14 +409,12 @@ _Check_return_ STDMETHODIMP MyOpenStreamOnFile(_In_ LPALLOCATEBUFFER lpAllocateB
 	_In_opt_z_ LPCWSTR /*lpszPrefix*/,
 	_Out_ LPSTREAM FAR * lppStream)
 {
-	HRESULT hRes = S_OK;
-
-	hRes = OpenStreamOnFileW(
+	auto hRes = OpenStreamOnFileW(
 		lpAllocateBuffer,
 		lpFreeBuffer,
 		ulFlags,
 		lpszFileName,
-		NULL,
+		nullptr,
 		lppStream);
 	if (MAPI_E_CALL_FAILED == hRes)
 	{
@@ -439,7 +423,7 @@ _Check_return_ STDMETHODIMP MyOpenStreamOnFile(_In_ LPALLOCATEBUFFER lpAllocateB
 			lpFreeBuffer,
 			ulFlags,
 			wstringToCString(lpszFileName),
-			NULL,
+			nullptr,
 			lppStream);
 	}
 	return hRes;
@@ -449,35 +433,35 @@ _Check_return_ HRESULT HrDupPropset(
 	int cprop,
 	_In_count_(cprop) LPSPropValue rgprop,
 	_In_ LPVOID lpObject,
-	_In_ LPSPropValue*	prgprop)
+	_In_ LPSPropValue* prgprop)
 {
 	ULONG cb = NULL;
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
-	//	Find out how much memory we need
+	// Find out how much memory we need
 	EC_MAPI(ScCountProps(cprop, rgprop, &cb));
 
 	if (SUCCEEDED(hRes) && cb)
 	{
-		//	Obtain memory
-		if (lpObject != NULL)
+		// Obtain memory
+		if (lpObject != nullptr)
 		{
-			EC_H(MAPIAllocateMore(cb, lpObject, (LPVOID*)prgprop));
+			EC_H(MAPIAllocateMore(cb, lpObject, reinterpret_cast<LPVOID*>(prgprop)));
 		}
 		else
 		{
-			EC_H(MAPIAllocateBuffer(cb, (LPVOID*)prgprop));
+			EC_H(MAPIAllocateBuffer(cb, reinterpret_cast<LPVOID*>(prgprop)));
 		}
 
 		if (SUCCEEDED(hRes) && prgprop)
 		{
-			//	Copy the properties
+			// Copy the properties
 			EC_MAPI(ScCopyProps(cprop, rgprop, *prgprop, &cb));
 		}
 	}
 
 	return hRes;
-} // HrDupPropset
+}
 
 typedef ACTIONS* LPACTIONS;
 
@@ -485,40 +469,37 @@ typedef ACTIONS* LPACTIONS;
 _Check_return_ STDAPI HrCopyActions(
 	_In_ LPACTIONS lpActsSrc, // source action ptr
 	_In_ LPVOID lpObject, // ptr to existing MAPI buffer
-	_In_ LPACTIONS*	lppActsDst) // ptr to destination ACTIONS buffer
+	_In_ LPACTIONS* lppActsDst) // ptr to destination ACTIONS buffer
 {
 	if (!lpActsSrc || !lppActsDst) return MAPI_E_INVALID_PARAMETER;
-	if (lpActsSrc->cActions <= 0 || lpActsSrc->lpAction == NULL) return MAPI_E_INVALID_PARAMETER;
+	if (lpActsSrc->cActions <= 0 || lpActsSrc->lpAction == nullptr) return MAPI_E_INVALID_PARAMETER;
 
-	bool fNullObject = (lpObject == NULL);
-	HRESULT hRes = S_OK;
+	auto fNullObject = lpObject == nullptr;
+	auto hRes = S_OK;
 	ULONG i = 0;
-	LPACTION lpActDst = NULL;
-	LPACTION lpActSrc = NULL;
-	LPACTIONS lpActsDst = NULL;
 
-	*lppActsDst = NULL;
+	*lppActsDst = nullptr;
 
-	if (lpObject != NULL)
+	if (lpObject != nullptr)
 	{
-		WC_H(MAPIAllocateMore(sizeof(ACTIONS), lpObject, (LPVOID*)lppActsDst));
+		WC_H(MAPIAllocateMore(sizeof(ACTIONS), lpObject, reinterpret_cast<LPVOID*>(lppActsDst)));
 	}
 	else
 	{
-		WC_H(MAPIAllocateBuffer(sizeof(ACTIONS), (LPVOID*)lppActsDst));
+		WC_H(MAPIAllocateBuffer(sizeof(ACTIONS), reinterpret_cast<LPVOID*>(lppActsDst)));
 		lpObject = *lppActsDst;
 	}
 
 	if (FAILED(hRes)) return hRes;
 	// no short circuit returns after here
 
-	lpActsDst = *lppActsDst;
+	auto lpActsDst = *lppActsDst;
 	*lpActsDst = *lpActsSrc;
-	lpActsDst->lpAction = NULL;
+	lpActsDst->lpAction = nullptr;
 
 	WC_H(MAPIAllocateMore(sizeof(ACTION) * lpActsDst->cActions,
 		lpObject,
-		(LPVOID*)&(lpActsDst->lpAction)));
+		reinterpret_cast<LPVOID*>(&lpActsDst->lpAction)));
 	if (SUCCEEDED(hRes) && lpActsDst->lpAction)
 	{
 		// Initialize acttype values for all members of the array to a value
@@ -529,22 +510,21 @@ _Check_return_ STDAPI HrCopyActions(
 		// Now actually copy all the members of the array.
 		for (i = 0; i < lpActsDst->cActions; i++)
 		{
-			lpActDst = &(lpActsDst->lpAction[i]);
-			lpActSrc = &(lpActsSrc->lpAction[i]);
+			auto lpActDst = &lpActsDst->lpAction[i];
+			auto lpActSrc = &lpActsSrc->lpAction[i];
 
 			*lpActDst = *lpActSrc;
 
 			switch (lpActSrc->acttype)
 			{
-			case OP_MOVE:			// actMoveCopy
+			case OP_MOVE: // actMoveCopy
 			case OP_COPY:
 				if (lpActDst->actMoveCopy.cbStoreEntryId &&
 					lpActDst->actMoveCopy.lpStoreEntryId)
 				{
 					WC_H(MAPIAllocateMore(lpActDst->actMoveCopy.cbStoreEntryId,
 						lpObject,
-						(LPVOID*)
-						&(lpActDst->actMoveCopy.lpStoreEntryId)));
+						reinterpret_cast<LPVOID*>(&lpActDst->actMoveCopy.lpStoreEntryId)));
 					if (FAILED(hRes)) break;
 
 					memcpy(lpActDst->actMoveCopy.lpStoreEntryId,
@@ -558,8 +538,7 @@ _Check_return_ STDAPI HrCopyActions(
 				{
 					WC_H(MAPIAllocateMore(lpActDst->actMoveCopy.cbFldEntryId,
 						lpObject,
-						(LPVOID*)
-						&(lpActDst->actMoveCopy.lpFldEntryId)));
+						reinterpret_cast<LPVOID*>(&lpActDst->actMoveCopy.lpFldEntryId)));
 					if (FAILED(hRes)) break;
 
 					memcpy(lpActDst->actMoveCopy.lpFldEntryId,
@@ -569,15 +548,14 @@ _Check_return_ STDAPI HrCopyActions(
 
 				break;
 
-			case OP_REPLY:			// actReply
+			case OP_REPLY: // actReply
 			case OP_OOF_REPLY:
 				if (lpActDst->actReply.cbEntryId &&
 					lpActDst->actReply.lpEntryId)
 				{
 					WC_H(MAPIAllocateMore(lpActDst->actReply.cbEntryId,
 						lpObject,
-						(LPVOID*)
-						&(lpActDst->actReply.lpEntryId)));
+						reinterpret_cast<LPVOID*>(&lpActDst->actReply.lpEntryId)));
 					if (FAILED(hRes)) break;
 
 					memcpy(lpActDst->actReply.lpEntryId,
@@ -586,14 +564,13 @@ _Check_return_ STDAPI HrCopyActions(
 				}
 				break;
 
-			case OP_DEFER_ACTION:	// actDeferAction
+			case OP_DEFER_ACTION: // actDeferAction
 				if (lpActSrc->actDeferAction.pbData &&
 					lpActSrc->actDeferAction.cbData)
 				{
 					WC_H(MAPIAllocateMore(lpActDst->actDeferAction.cbData,
 						lpObject,
-						(LPVOID*)
-						&(lpActDst->actDeferAction.pbData)));
+						reinterpret_cast<LPVOID*>(&lpActDst->actDeferAction.pbData)));
 					if (FAILED(hRes)) break;
 
 					memcpy(lpActDst->actDeferAction.pbData,
@@ -602,26 +579,24 @@ _Check_return_ STDAPI HrCopyActions(
 				}
 				break;
 
-			case OP_FORWARD:		// lpadrlist
+			case OP_FORWARD: // lpadrlist
 			case OP_DELEGATE:
-				lpActDst->lpadrlist = NULL;
+				lpActDst->lpadrlist = nullptr;
 
 				if (lpActSrc->lpadrlist && lpActSrc->lpadrlist->cEntries)
 				{
-					ULONG j = 0;
-
 					WC_H(MAPIAllocateMore(CbADRLIST(lpActSrc->lpadrlist),
 						lpObject,
-						(LPVOID*)&(lpActDst->lpadrlist)));
+						reinterpret_cast<LPVOID*>(&lpActDst->lpadrlist)));
 					if (FAILED(hRes)) break;
 
 					lpActDst->lpadrlist->cEntries = lpActSrc->lpadrlist->cEntries;
 
 					// Initialize the new ADRENTRYs and validate cValues.
-					for (j = 0; j < lpActSrc->lpadrlist->cEntries; j++)
+					for (ULONG j = 0; j < lpActSrc->lpadrlist->cEntries; j++)
 					{
 						lpActDst->lpadrlist->aEntries[j] = lpActSrc->lpadrlist->aEntries[j];
-						lpActDst->lpadrlist->aEntries[j].rgPropVals = NULL;
+						lpActDst->lpadrlist->aEntries[j].rgPropVals = nullptr;
 
 						if (lpActDst->lpadrlist->aEntries[j].cValues == 0)
 						{
@@ -631,7 +606,7 @@ _Check_return_ STDAPI HrCopyActions(
 					}
 
 					// Copy the rgPropVals.
-					for (j = 0; j < lpActSrc->lpadrlist->cEntries; j++)
+					for (ULONG j = 0; j < lpActSrc->lpadrlist->cEntries; j++)
 					{
 						WC_MAPI(HrDupPropset(
 							lpActDst->lpadrlist->aEntries[j].cValues,
@@ -644,7 +619,7 @@ _Check_return_ STDAPI HrCopyActions(
 
 				break;
 
-			case OP_TAG:			// propTag
+			case OP_TAG: // propTag
 				WC_H(MyPropCopyMore(
 					&lpActDst->propTag,
 					&lpActSrc->propTag,
@@ -654,12 +629,12 @@ _Check_return_ STDAPI HrCopyActions(
 
 				break;
 
-			case OP_BOUNCE:			// scBounceCode
-			case OP_DELETE:			// union not used
+			case OP_BOUNCE: // scBounceCode
+			case OP_DELETE: // union not used
 			case OP_MARK_AS_READ:
 				break; // Nothing to do!
 
-			default:				// error!
+			default: // error!
 			{
 				hRes = MAPI_E_INVALID_PARAMETER;
 				break;
@@ -675,7 +650,7 @@ _Check_return_ STDAPI HrCopyActions(
 	}
 
 	return hRes;
-} // HrCopyActions
+}
 
 _Check_return_ HRESULT HrCopyRestrictionArray(
 	_In_ LPSRestriction lpResSrc, // source restriction
@@ -684,10 +659,9 @@ _Check_return_ HRESULT HrCopyRestrictionArray(
 	_In_count_(cRes) LPSRestriction lpResDest) // destination restriction
 {
 	if (!lpResSrc || !lpResDest || !lpObject) return MAPI_E_INVALID_PARAMETER;
-	HRESULT hRes = S_OK;
-	ULONG i = 0;
+	auto hRes = S_OK;
 
-	for (i = 0; i < cRes; i++)
+	for (ULONG i = 0; i < cRes; i++)
 	{
 		// Copy all the members over
 		lpResDest[i] = lpResSrc[i];
@@ -707,8 +681,7 @@ _Check_return_ HRESULT HrCopyRestrictionArray(
 				}
 				WC_H(MAPIAllocateMore(sizeof(SRestriction) * lpResSrc[i].res.resAnd.cRes,
 					lpObject,
-					(LPVOID*)
-					&lpResDest[i].res.resAnd.lpRes));
+					reinterpret_cast<LPVOID*>(&lpResDest[i].res.resAnd.lpRes)));
 				if (FAILED(hRes)) break;
 
 				WC_H(HrCopyRestrictionArray(
@@ -727,8 +700,7 @@ _Check_return_ HRESULT HrCopyRestrictionArray(
 			{
 				WC_H(MAPIAllocateMore(sizeof(SRestriction),
 					lpObject,
-					(LPVOID*)
-					&lpResDest[i].res.resNot.lpRes));
+					reinterpret_cast<LPVOID*>(&lpResDest[i].res.resNot.lpRes)));
 				if (FAILED(hRes)) break;
 
 				WC_H(HrCopyRestrictionArray(
@@ -765,8 +737,7 @@ _Check_return_ HRESULT HrCopyRestrictionArray(
 			{
 				WC_H(MAPIAllocateMore(sizeof(SRestriction),
 					lpObject,
-					(LPVOID*)
-					&lpResDest[i].res.resSub.lpRes));
+					reinterpret_cast<LPVOID*>(&lpResDest[i].res.resSub.lpRes)));
 				if (FAILED(hRes)) break;
 
 				WC_H(HrCopyRestrictionArray(
@@ -785,8 +756,7 @@ _Check_return_ HRESULT HrCopyRestrictionArray(
 			{
 				WC_H(MAPIAllocateMore(sizeof(SRestriction),
 					lpObject,
-					(LPVOID*)
-					&lpResDest[i].res.resComment.lpRes));
+					reinterpret_cast<LPVOID*>(&lpResDest[i].res.resComment.lpRes)));
 				if (FAILED(hRes)) break;
 
 				WC_H(HrCopyRestrictionArray(
@@ -815,7 +785,7 @@ _Check_return_ HRESULT HrCopyRestrictionArray(
 	}
 
 	return hRes;
-} // HrCopyRestrictionArray
+}
 
 _Check_return_ STDAPI HrCopyRestriction(
 	_In_ LPSRestriction lpResSrc, // source restriction ptr
@@ -823,22 +793,22 @@ _Check_return_ STDAPI HrCopyRestriction(
 	_In_ LPSRestriction* lppResDest) // dest restriction buffer ptr
 {
 	if (!lppResDest) return MAPI_E_INVALID_PARAMETER;
-	*lppResDest = NULL;
+	*lppResDest = nullptr;
 	if (!lpResSrc) return S_OK;
 
-	bool fNullObject = (lpObject == NULL);
-	HRESULT	hRes = S_OK;
+	auto fNullObject = lpObject == nullptr;
+	auto hRes = S_OK;
 
-	if (lpObject != NULL)
+	if (lpObject != nullptr)
 	{
 		WC_H(MAPIAllocateMore(sizeof(SRestriction),
 			lpObject,
-			(LPVOID*)lppResDest));
+			reinterpret_cast<LPVOID*>(lppResDest)));
 	}
 	else
 	{
 		WC_H(MAPIAllocateBuffer(sizeof(SRestriction),
-			(LPVOID*)lppResDest));
+			reinterpret_cast<LPVOID*>(lppResDest)));
 		lpObject = *lppResDest;
 	}
 	if (FAILED(hRes)) return hRes;
@@ -857,7 +827,7 @@ _Check_return_ STDAPI HrCopyRestriction(
 	}
 
 	return hRes;
-} // HrCopyRestriction
+}
 
 // This augmented PropCopyMore is implicitly tied to the built-in MAPIAllocateMore and MAPIAllocateBuffer through
 // the calls to HrCopyRestriction and HrCopyActions. Rewriting those functions to accept function pointers is
@@ -867,33 +837,33 @@ _Check_return_ STDAPI_(SCODE) MyPropCopyMore(_In_ LPSPropValue lpSPropValueDest,
 	_In_ ALLOCATEMORE * lpfAllocMore,
 	_In_ LPVOID lpvObject)
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	switch (PROP_TYPE(lpSPropValueSrc->ulPropTag))
 	{
 	case PT_SRESTRICTION:
 	case PT_ACTIONS:
 	{
 		// It's an action or restriction - we know how to copy those:
-		memcpy((BYTE *)lpSPropValueDest,
-			(BYTE *)lpSPropValueSrc,
+		memcpy(reinterpret_cast<BYTE *>(lpSPropValueDest),
+			reinterpret_cast<BYTE *>(lpSPropValueSrc),
 			sizeof(SPropValue));
 		if (PT_SRESTRICTION == PROP_TYPE(lpSPropValueSrc->ulPropTag))
 		{
-			LPSRestriction lpNewRes = NULL;
+			LPSRestriction lpNewRes = nullptr;
 			WC_H(HrCopyRestriction(
-				(LPSRestriction)lpSPropValueSrc->Value.lpszA,
+				reinterpret_cast<LPSRestriction>(lpSPropValueSrc->Value.lpszA),
 				lpvObject,
 				&lpNewRes));
-			lpSPropValueDest->Value.lpszA = (LPSTR)lpNewRes;
+			lpSPropValueDest->Value.lpszA = reinterpret_cast<LPSTR>(lpNewRes);
 		}
 		else
 		{
-			ACTIONS* lpNewAct = NULL;
+			ACTIONS* lpNewAct = nullptr;
 			WC_H(HrCopyActions(
-				(ACTIONS*)lpSPropValueSrc->Value.lpszA,
+				reinterpret_cast<ACTIONS*>(lpSPropValueSrc->Value.lpszA),
 				lpvObject,
 				&lpNewAct));
-			lpSPropValueDest->Value.lpszA = (LPSTR)lpNewAct;
+			lpSPropValueDest->Value.lpszA = reinterpret_cast<LPSTR>(lpNewAct);
 		}
 		break;
 	}
@@ -901,7 +871,7 @@ _Check_return_ STDAPI_(SCODE) MyPropCopyMore(_In_ LPSPropValue lpSPropValueDest,
 		WC_MAPI(PropCopyMore(lpSPropValueDest, lpSPropValueSrc, lpfAllocMore, lpvObject));
 	}
 	return hRes;
-} // MyPropCopyMore
+}
 
 void WINAPI MyHeapSetInformation(_In_opt_ HANDLE HeapHandle,
 	_In_ HEAP_INFORMATION_CLASS HeapInformationClass,
@@ -910,11 +880,11 @@ void WINAPI MyHeapSetInformation(_In_opt_ HANDLE HeapHandle,
 {
 	if (!pfnHeapSetInformation)
 	{
-		LoadProc(_T("kernel32.dll"), &hModKernel32, "HeapSetInformation", (FARPROC*)&pfnHeapSetInformation); // STRING_OK;
+		LoadProc(_T("kernel32.dll"), &hModKernel32, "HeapSetInformation", reinterpret_cast<FARPROC*>(&pfnHeapSetInformation)); // STRING_OK;
 	}
 
 	if (pfnHeapSetInformation) pfnHeapSetInformation(HeapHandle, HeapInformationClass, HeapInformation, HeapInformationLength);
-} // MyHeapSetInformation
+}
 
 HRESULT WINAPI MyMimeOleGetCodePageCharset(
 	CODEPAGEID cpiCodePage,
@@ -923,12 +893,12 @@ HRESULT WINAPI MyMimeOleGetCodePageCharset(
 {
 	if (!pfnMimeOleGetCodePageCharset)
 	{
-		LoadProc(_T("inetcomm.dll"), &hModInetComm, "MimeOleGetCodePageCharset", (FARPROC*)&pfnMimeOleGetCodePageCharset); // STRING_OK;
+		LoadProc(_T("inetcomm.dll"), &hModInetComm, "MimeOleGetCodePageCharset", reinterpret_cast<FARPROC*>(&pfnMimeOleGetCodePageCharset)); // STRING_OK;
 	}
 
 	if (pfnMimeOleGetCodePageCharset) return pfnMimeOleGetCodePageCharset(cpiCodePage, ctCsetType, phCharset);
 	return MAPI_E_CALL_FAILED;
-} // MyMimeOleGetCodePageCharset
+}
 
 STDAPI_(UINT) MsiProvideComponentW(
 	LPCWSTR szProduct,
@@ -940,12 +910,12 @@ STDAPI_(UINT) MsiProvideComponentW(
 {
 	if (!pfnMsiProvideComponentW)
 	{
-		LoadProc(_T("msi.dll"), &hModMSI, "MimeOleGetCodePageCharset", (FARPROC*)&pfnMsiProvideComponentW); // STRING_OK;
+		LoadProc(_T("msi.dll"), &hModMSI, "MimeOleGetCodePageCharset", reinterpret_cast<FARPROC*>(&pfnMsiProvideComponentW)); // STRING_OK;
 	}
 
 	if (pfnMsiProvideComponentW) return pfnMsiProvideComponentW(szProduct, szFeature, szComponent, dwInstallMode, lpPathBuf, pcchPathBuf);
 	return ERROR_NOT_SUPPORTED;
-} // MsiProvideComponentW
+}
 
 STDAPI_(UINT) MsiProvideQualifiedComponentW(
 	LPCWSTR szCategory,
@@ -956,12 +926,12 @@ STDAPI_(UINT) MsiProvideQualifiedComponentW(
 {
 	if (!pfnMsiProvideQualifiedComponentW)
 	{
-		LoadProc(_T("msi.dll"), &hModMSI, "MsiProvideQualifiedComponentW", (FARPROC*)&pfnMsiProvideQualifiedComponentW); // STRING_OK;
+		LoadProc(_T("msi.dll"), &hModMSI, "MsiProvideQualifiedComponentW", reinterpret_cast<FARPROC*>(&pfnMsiProvideQualifiedComponentW)); // STRING_OK;
 	}
 
 	if (pfnMsiProvideQualifiedComponentW) return pfnMsiProvideQualifiedComponentW(szCategory, szQualifier, dwInstallMode, lpPathBuf, pcchPathBuf);
 	return ERROR_NOT_SUPPORTED;
-} // MsiProvideQualifiedComponentW
+}
 
 BOOL WINAPI MyGetModuleHandleExW(
 	DWORD dwFlags,
@@ -970,10 +940,10 @@ BOOL WINAPI MyGetModuleHandleExW(
 {
 	if (!pfnGetModuleHandleExW)
 	{
-		LoadProc(_T("kernel32.dll"), &hModMSI, "GetModuleHandleExW", (FARPROC*)&pfnGetModuleHandleExW); // STRING_OK;
+		LoadProc(_T("kernel32.dll"), &hModMSI, "GetModuleHandleExW", reinterpret_cast<FARPROC*>(&pfnGetModuleHandleExW)); // STRING_OK;
 	}
 
 	if (pfnGetModuleHandleExW) return pfnGetModuleHandleExW(dwFlags, lpModuleName, phModule);
 	*phModule = GetModuleHandleW(lpModuleName);
-	return (*phModule != NULL);
-} // MyGetModuleHandleExW
+	return *phModule != nullptr;
+}
