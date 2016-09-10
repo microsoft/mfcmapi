@@ -331,23 +331,22 @@ static const SizedSPropTagArray(qNUM_COLS, sptaQuota) =
 	PR_MDB_PROVIDER,
 };
 
-CString FormatQuota(LPSPropValue lpProp, ULONG ulPropTag, LPCTSTR szName)
+wstring FormatQuota(LPSPropValue lpProp, ULONG ulPropTag, wstring szName)
 {
 	if (lpProp && lpProp->ulPropTag == ulPropTag)
 	{
-		CString szTmp;
-		szTmp.FormatMessage(IDS_QUOTAPROP, szName, lpProp->Value.l);
-		return szTmp;
+		return formatmessage(IDS_QUOTAPROP, szName.c_str(), lpProp->Value.l);
 	}
-	return _T("");
+
+	return L"";
 }
 
-#define AddFormattedQuota(__TAG)   szQuotaString += FormatQuota(&lpProps[q##__TAG], __TAG, _T(#__TAG));
+#define AddFormattedQuota(__TAG) szQuotaString += FormatQuota(&lpProps[q##__TAG], __TAG, L#__TAG);
 
 void OnQSDisplayQuota(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 {
 	auto hRes = S_OK;
-	CString szQuotaString;
+	wstring szQuotaString;
 
 	lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, IDS_STATUSTEXTLOADINGQUOTA);
 	lpHostDlg->SendMessage(WM_PAINT, NULL, NULL); // force paint so we update the status now
@@ -369,32 +368,22 @@ void OnQSDisplayQuota(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 
 		if (lpProps)
 		{
-			CString szTmp;
-
 			if (lpProps[qPR_DISPLAY_NAME_W].ulPropTag == PR_DISPLAY_NAME_W)
 			{
-				WCHAR szNotFound[16];
-				auto szDisplayName = lpProps[qPR_DISPLAY_NAME_W].Value.lpszW;
-				if (!szDisplayName[0])
+				wstring szDisplayName = lpProps[qPR_DISPLAY_NAME_W].Value.lpszW;
+				if (szDisplayName.empty())
 				{
-					auto iRet = NULL;
-					WC_D(iRet, LoadStringW(GetModuleHandle(NULL),
-						IDS_NOTFOUND,
-						szNotFound,
-						_countof(szNotFound)));
-					szDisplayName = szNotFound;
+					szDisplayName = loadstring(IDS_NOTFOUND);
 				}
 
-				szTmp.FormatMessage(IDS_QUOTADISPLAYNAME, szDisplayName);
-				szQuotaString += szTmp;
+				szQuotaString += formatmessage(IDS_QUOTADISPLAYNAME, szDisplayName.c_str());
 			}
 
 			if (lpProps[qPR_MESSAGE_SIZE_EXTENDED].ulPropTag == PR_MESSAGE_SIZE_EXTENDED)
 			{
-				szTmp.FormatMessage(IDS_QUOTASIZE,
+				szQuotaString += formatmessage(IDS_QUOTASIZE,
 					lpProps[qPR_MESSAGE_SIZE_EXTENDED].Value.li.QuadPart,
 					lpProps[qPR_MESSAGE_SIZE_EXTENDED].Value.li.QuadPart / 1024);
-				szQuotaString += szTmp;
 			}
 
 			// All of these properties are in kilobytes. Be careful adding a property not in kilobytes.
@@ -409,14 +398,12 @@ void OnQSDisplayQuota(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 			if (lpProps[qPR_STORE_SUPPORT_MASK].ulPropTag == PR_STORE_SUPPORT_MASK)
 			{
 				auto szFlags = InterpretNumberAsStringProp(lpProps[qPR_STORE_SUPPORT_MASK].Value.l, PR_STORE_SUPPORT_MASK);
-				szTmp.FormatMessage(IDS_QUOTAMASK, lpProps[qPR_STORE_SUPPORT_MASK].Value.l, szFlags.c_str());
-				szQuotaString += szTmp;
+				szQuotaString += formatmessage(IDS_QUOTAMASK, lpProps[qPR_STORE_SUPPORT_MASK].Value.l, szFlags.c_str());
 			}
 
 			if (lpProps[qPR_MDB_PROVIDER].ulPropTag == PR_MDB_PROVIDER)
 			{
-				szTmp.FormatMessage(IDS_QUOTAPROVIDER, BinToHexString(&lpProps[qPR_MDB_PROVIDER].Value.bin, true).c_str());
-				szQuotaString += szTmp;
+				szQuotaString += formatmessage(IDS_QUOTAPROVIDER, BinToHexString(&lpProps[qPR_MDB_PROVIDER].Value.bin, true).c_str());
 			}
 
 			MAPIFreeBuffer(lpProps);
@@ -431,7 +418,7 @@ void OnQSDisplayQuota(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 			1,
 			CEDITOR_BUTTON_OK);
 		MyResults.InitPane(0, CreateMultiLinePane(NULL, true));
-		MyResults.SetString(0, szQuotaString);
+		MyResults.SetStringW(0, szQuotaString.c_str());
 
 		WC_H(MyResults.DisplayDialog());
 	}
