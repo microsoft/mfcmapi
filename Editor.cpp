@@ -1034,17 +1034,17 @@ void __cdecl CEditor::SetStringf(ULONG i, _Printf_format_string_ LPCTSTR szMsg, 
 {
 	if (!IsValidEdit(i)) return;
 
-	CString szTemp;
-
 	if (szMsg)
 	{
 		va_list argList = nullptr;
 		va_start(argList, szMsg);
-		szTemp.FormatV(szMsg, argList);
+		SetStringW(i, formatV(LPCTSTRToWstring(szMsg), argList).c_str());
 		va_end(argList);
 	}
-
-	SetString(i, static_cast<LPCTSTR>(szTemp));
+	else
+	{
+		SetStringW(i, L"");
+	}
 }
 
 // Updates m_lpControls[i].lpEdit->lpszW using SetStringW
@@ -1052,15 +1052,14 @@ void CEditor::LoadString(ULONG i, UINT uidMsg) const
 {
 	if (!IsValidEdit(i)) return;
 
-	CString szTemp;
-
 	if (uidMsg)
 	{
-		auto hRes = S_OK;
-		EC_B(szTemp.LoadString(uidMsg));
+		SetStringW(i, loadstring(uidMsg).c_str());
 	}
-
-	SetString(i, static_cast<LPCTSTR>(szTemp));
+	else
+	{
+		SetStringW(i, L"");
+	}
 }
 
 // Updates m_lpControls[i].lpEdit->lpszW using SetStringW

@@ -365,7 +365,7 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField)
 			}
 			else
 			{
-				if (PROPTAG_NAMEPROPNAME != ulSkipField) SetString(PROPTAG_NAMEPROPNAME, nullptr);
+				if (PROPTAG_NAMEPROPNAME != ulSkipField) SetStringW(PROPTAG_NAMEPROPNAME, L"");
 			}
 
 			if (PROPTAG_NAMEPROPGUID != ulSkipField)
@@ -380,7 +380,7 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField)
 				PROPTAG_NAMEPROPGUID != ulSkipField)
 			{
 				SetDropDownSelection(PROPTAG_NAMEPROPKIND, emptystring);
-				SetString(PROPTAG_NAMEPROPNAME, nullptr);
+				SetStringW(PROPTAG_NAMEPROPNAME, L"");
 				SetDropDownSelection(PROPTAG_NAMEPROPGUID, emptystring);
 			}
 		}

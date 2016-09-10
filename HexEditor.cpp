@@ -189,7 +189,7 @@ void CHexEditor::UpdateParser() const
 		auto bin = GetBinaryUseControl(HEXED_HEX);
 		SBinary Bin = { 0 };
 		Bin.lpb = bin.data();
-		Bin.cb = bin.size();
+		Bin.cb = ULONG(bin.size());
 		lpPane->Parse(Bin);
 	}
 }

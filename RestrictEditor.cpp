@@ -179,8 +179,8 @@ _Check_return_ ULONG CResCombinedEditor::HandleChange(UINT nID)
 		SetStringW(5, TagToString(GetPropTagUseControl(4), nullptr, false, true).c_str());
 		m_lpOldProp = nullptr;
 		m_lpNewProp = nullptr;
-		SetString(6, nullptr);
-		SetString(7, nullptr);
+		SetStringW(6, L"");
+		SetStringW(7, L"");
 	}
 	return i;
 }

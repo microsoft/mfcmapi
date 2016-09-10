@@ -340,7 +340,7 @@ void CPropertyEditor::InitPropertyControls()
 		{
 			SetHex(0, 0);
 			SetHex(1, 0);
-			SetString(2, _T("0.0000")); // STRING_OK
+			SetStringW(2, L"0.0000"); // STRING_OK
 		}
 
 		break;
@@ -818,13 +818,13 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 			auto bin = GetBinaryUseControl(0);
 			if (0 == i) SetStringA(1, reinterpret_cast<LPCSTR>(bin.data()), bin.size()); // ansi string
 			Bin.lpb = bin.data();
-			Bin.cb = bin.size();
+			Bin.cb = ULONG(bin.size());
 		}
 		else if (1 == i)
 		{
 			auto lpszA = GetEditBoxTextA(1); // Do not free this
 			Bin.lpb = LPBYTE(lpszA.c_str());
-			Bin.cb = lpszA.length() * sizeof(CHAR);
+			Bin.cb = ULONG(lpszA.length() * sizeof(CHAR));
 
 			SetBinary(0, static_cast<LPBYTE>(Bin.lpb), Bin.cb);
 		}
