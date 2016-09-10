@@ -381,7 +381,7 @@ string TextPane::GetStringA() const
 	return wstringTostring(m_lpszW);
 }
 
-// Gets string from edit box and places it in m_lpControls[i].UI.lpEdit->lpszW
+// Gets string from edit box and places it in m_lpszW
 void TextPane::CommitUIValues()
 {
 	m_lpszW.clear();
@@ -397,7 +397,7 @@ void TextPane::CommitUIValues()
 		static_cast<LPARAM>(0)));
 	if (E_INVALIDARG == cchText)
 	{
-		// we didn't get a length - try another method
+		// We didn't get a length - try another method
 		cchText = static_cast<size_t>(::SendMessage(
 			m_EditBox.m_hWnd,
 			WM_GETTEXTLENGTH,
@@ -405,51 +405,44 @@ void TextPane::CommitUIValues()
 			static_cast<LPARAM>(0)));
 	}
 
-	// cchText will never include the NULL terminator, so add one to our count
-	cchText += 1;
+	if (!cchText) return;
 
-	auto lpszW = new WCHAR[cchText];
-
-	if (lpszW)
+	// Allocate a buffer large enough for either kind of string, along with a null terminator
+	auto cchTextWithNULL = cchText + 1;
+	auto cbBuffer = cchTextWithNULL * sizeof(WCHAR);
+	auto buffer = new BYTE[cbBuffer];
+	if (buffer)
 	{
-		memset(lpszW, 0, cchText * sizeof(WCHAR));
+		GETTEXTEX getText = { 0 };
+		getText.cb = DWORD(cbBuffer);
+		getText.flags = GT_DEFAULT;
+		getText.codepage = 1200;
 
-		if (cchText >= 1) // No point in checking if the string is just a null terminator
+		auto cchW = ::SendMessage(
+			m_EditBox.m_hWnd,
+			EM_GETTEXTEX,
+			reinterpret_cast<WPARAM>(&getText),
+			reinterpret_cast<LPARAM>(buffer));
+		if (cchW != 0)
 		{
-			GETTEXTEX getText = { 0 };
-			getText.cb = static_cast<DWORD>(cchText) * sizeof(WCHAR);
-			getText.flags = GT_DEFAULT;
-			getText.codepage = 1200;
-
-			auto cchW = ::SendMessage(
+			m_lpszW = wstring(LPWSTR(buffer), cchText);
+		}
+		else
+		{
+			// Didn't get a string from EM_GETTEXTEX, fall back to WM_GETTEXT
+			cchW = ::SendMessage(
 				m_EditBox.m_hWnd,
-				EM_GETTEXTEX,
-				reinterpret_cast<WPARAM>(&getText),
-				reinterpret_cast<LPARAM>(lpszW));
-			if (0 == cchW)
+				WM_GETTEXT,
+				static_cast<WPARAM>(cchTextWithNULL),
+				reinterpret_cast<LPARAM>(buffer));
+			if (cchW != 0)
 			{
-				// Didn't get a string from this message, fall back to WM_GETTEXT
-				auto lpszA = new CHAR[cchText];
-				if (lpszA)
-				{
-					memset(lpszA, 0, cchText * sizeof(CHAR));
-					auto hRes = S_OK;
-					cchW = ::SendMessage(
-						m_EditBox.m_hWnd,
-						WM_GETTEXT,
-						static_cast<WPARAM>(cchText),
-						reinterpret_cast<LPARAM>(lpszA));
-					if (0 != cchW)
-					{
-						EC_H(StringCchPrintfW(lpszW, cchText, L"%hs", lpszA)); // STRING_OK
-					}
-					delete[] lpszA;
-				}
+				m_lpszW = LPCSTRToWstring(string(LPSTR(buffer), cchText).c_str());
 			}
 		}
-
-		m_lpszW = wstring(lpszW, lpszW + cchText);
 	}
+
+	delete[] buffer;
 }
 
 // No need to free this - treat it like a static

@@ -32,25 +32,25 @@ CHexEditor::CHexEditor(_In_ CParentWnd* pParentWnd, _In_ CMapiObjects* lpMapiObj
 	InitPane(HEXED_HEX, CreateCountedTextPane(IDS_HEX, false, IDS_CB));
 	InitPane(HEXED_SMARTVIEW, CreateSmartViewPane(IDS_SMARTVIEW));
 	DisplayParentedDialog(pParentWnd, 1000);
-} // CHexEditor::CHexEditor
+}
 
 CHexEditor::~CHexEditor()
 {
 	TRACE_DESTRUCTOR(CLASS);
 
 	if (m_lpMapiObjects) m_lpMapiObjects->Release();
-} // CHexEditor::~CHexEditor
+}
 
 void CHexEditor::OnOK()
 {
 	ShowWindow(SW_HIDE);
 	delete this;
-} // CHexEditor::OnOK
+}
 
 void CHexEditor::OnCancel()
 {
 	OnOK();
-} // CHexEditor::OnCancel
+}
 
 void CleanString(_In_ CString* lpString)
 {
@@ -65,7 +65,6 @@ void CleanString(_In_ CString* lpString)
 
 _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 {
-	auto hRes = S_OK;
 	auto i = CEditor::HandleChange(nID);
 
 	if (static_cast<ULONG>(-1) == i) return static_cast<ULONG>(-1);
@@ -83,10 +82,6 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 		SetStringA(HEXED_UNICODE, text.c_str(), cchStr);
 
 		lpb = LPBYTE(text.c_str());
-
-		// What we just read includes a NULL terminator, in both the string and count.
-		// When we write binary/base64, we don't want to include this NULL
-		if (cchStr) cchStr -= 1;
 		cb = cchStr * sizeof(CHAR);
 
 		szEncodeStr = Base64Encode(cb, lpb);
@@ -103,9 +98,6 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 		SetStringW(HEXED_ANSI, text.c_str(), cchStr);
 
 		lpb = LPBYTE(text.c_str());
-		// What we just read includes a NULL terminator, in both the string and count.
-		// When we write binary/base64, we don't want to include this NULL
-		if (cchStr) cchStr -= 1;
 		cb = cchStr * sizeof(WCHAR);
 
 		szEncodeStr = Base64Encode(cb, lpb);
@@ -124,49 +116,35 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 
 		cchEncodeStr = szTmpString.length();
 		auto bin = Base64Decode(szTmpString);
-		lpb = ByteVectorToLPBYTE(bin);
+		lpb = bin.data();
 		cb = bin.size();
 
-		if (S_OK == hRes)
+		SetStringA(HEXED_ANSI, reinterpret_cast<LPCSTR>(lpb), cb);
+		if (!(cb % 2)) // Set Unicode String
 		{
-			SetStringA(HEXED_ANSI, reinterpret_cast<LPCSTR>(lpb), cb);
-			if (!(cb % 2)) // Set Unicode String
-			{
-				SetStringW(HEXED_UNICODE, reinterpret_cast<LPWSTR>(lpb), cb / sizeof(WCHAR));
-			}
-			else
-			{
-				SetString(HEXED_UNICODE, _T(""));
-			}
-
-			SetBinary(HEXED_HEX, lpb, cb);
+			SetStringW(HEXED_UNICODE, reinterpret_cast<LPWSTR>(lpb), cb / sizeof(WCHAR));
 		}
 		else
 		{
-			SetString(HEXED_ANSI, _T(""));
-			SetString(HEXED_UNICODE, _T(""));
-			SetBinary(HEXED_HEX, nullptr, 0);
+			SetStringW(HEXED_UNICODE, L"");
 		}
-		delete[] lpb;
+
+		SetBinary(HEXED_HEX, lpb, cb);
 	}
 	break;
 	case HEXED_HEX: // binary changed
 	{
 		if (GetBinaryUseControl(HEXED_HEX, &cb, &lpb))
 		{
-			// Treat as a NULL terminated string
-			// GetBinaryUseControl includes extra NULLs at the end of the buffer to make this work
-			SetStringA(HEXED_ANSI, reinterpret_cast<LPCSTR>(lpb), cb + 1); // ansi string
+			SetStringA(HEXED_ANSI, reinterpret_cast<LPCSTR>(lpb), cb); // ansi string
 
 			if (!(cb % 2)) // Set Unicode String
 			{
-				// Treat as a NULL terminated string
-				// GetBinaryUseControl includes extra NULLs at the end of the buffer to make this work
-				SetStringW(HEXED_UNICODE, reinterpret_cast<LPWSTR>(lpb), cb / sizeof(WCHAR) + 1);
+				SetStringW(HEXED_UNICODE, reinterpret_cast<LPWSTR>(lpb), cb / sizeof(WCHAR));
 			}
 			else
 			{
-				SetString(HEXED_UNICODE, _T(""));
+				SetStringW(HEXED_UNICODE, L"");
 			}
 
 			szEncodeStr = Base64Encode(cb, lpb);
@@ -175,10 +153,11 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 		}
 		else
 		{
-			SetString(HEXED_ANSI, _T(""));
-			SetString(HEXED_UNICODE, _T(""));
-			SetString(HEXED_BASE64, _T(""));
+			SetStringW(HEXED_ANSI, L"");
+			SetStringW(HEXED_UNICODE, L"");
+			SetStringW(HEXED_BASE64, L"");
 		}
+
 		delete[] lpb;
 
 	}
@@ -202,6 +181,7 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 			lpPane->SetCount(cb);
 		}
 	}
+
 	// Update any parsing we've got:
 	UpdateParser();
 

@@ -443,20 +443,12 @@ _Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
 		{
 			auto lpszA = GetEditBoxTextA(m_iTextBox, &cchStr);
 
-			// What we just read includes a NULL terminator, in both the string and count.
-			// When we write binary, we don't want to include this NULL
-			if (cchStr) cchStr -= 1;
-
 			lpBinPane->SetBinary(LPBYTE(lpszA.c_str()), cchStr * sizeof(CHAR));
 			lpBinPane->SetCount(cchStr * sizeof(CHAR));
 			break;
 		}
 		case EDITOR_STREAM_UNICODE:
 			auto lpszW = GetEditBoxTextW(m_iTextBox, &cchStr);
-
-			// What we just read includes a NULL terminator, in both the string and count.
-			// When we write binary, we don't want to include this NULL
-			if (cchStr) cchStr -= 1;
 
 			lpBinPane->SetBinary(LPBYTE(lpszW.c_str()), cchStr * sizeof(WCHAR));
 			lpBinPane->SetCount(cchStr * sizeof(WCHAR));
@@ -473,15 +465,11 @@ _Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
 			case EDITOR_RTF:
 			case EDITOR_STREAM_BINARY:
 			default:
-				// Treat as a NULL terminated string
-				// GetBinaryUseControl includes extra NULLs at the end of the buffer to make this work
-				SetStringA(m_iTextBox, reinterpret_cast<LPCSTR>(lpb), cb / sizeof(CHAR) + 1);
+				SetStringA(m_iTextBox, reinterpret_cast<LPCSTR>(lpb), cb / sizeof(CHAR));
 				if (lpBinPane) lpBinPane->SetCount(cb);
 				break;
 			case EDITOR_STREAM_UNICODE:
-				// Treat as a NULL terminated string
-				// GetBinaryUseControl includes extra NULLs at the end of the buffer to make this work
-				SetStringW(m_iTextBox, reinterpret_cast<LPCWSTR>(lpb), cb / sizeof(WCHAR) + 1);
+				SetStringW(m_iTextBox, reinterpret_cast<LPCWSTR>(lpb), cb / sizeof(WCHAR));
 				if (lpBinPane) lpBinPane->SetCount(cb);
 				break;
 			}
