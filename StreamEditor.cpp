@@ -183,22 +183,21 @@ BOOL CStreamEditor::OnInitDialog()
 		{
 			SPropValue sProp = { 0 };
 			sProp.ulPropTag = CHANGE_PROP_TYPE(m_ulPropTag, PT_BINARY);
-			if (GetBinaryUseControl(m_iBinBox, reinterpret_cast<size_t*>(&sProp.Value.bin.cb), &sProp.Value.bin.lpb))
-			{
-				auto iStructType = FindSmartViewParserForProp(sProp.ulPropTag, NULL, nullptr, false);
-				auto szSmartView = InterpretPropSmartView(
-					&sProp,
-					m_lpMAPIProp,
-					nullptr,
-					nullptr,
-					m_bIsAB,
-					false);
+			auto bin = GetBinaryUseControl(m_iBinBox);
+			sProp.Value.bin.lpb = bin.data();
+			sProp.Value.bin.cb = bin.size();
 
-				lpSmartView->SetParser(iStructType);
-				lpSmartView->SetStringW(szSmartView.c_str());
-			}
+			auto iStructType = FindSmartViewParserForProp(sProp.ulPropTag, NULL, nullptr, false);
+			auto szSmartView = InterpretPropSmartView(
+				&sProp,
+				m_lpMAPIProp,
+				nullptr,
+				nullptr,
+				m_bIsAB,
+				false);
 
-			delete[] sProp.Value.bin.lpb;
+			lpSmartView->SetParser(iStructType);
+			lpSmartView->SetStringW(szSmartView.c_str());
 		}
 	}
 
@@ -392,28 +391,24 @@ void CStreamEditor::WriteTextStreamToProperty()
 	if (m_lpStream)
 	{
 		// We used to use EDITSTREAM here, but instead, just use GetBinaryUseControl and write it out.
-		LPBYTE lpb = nullptr;
-		size_t cb = 0;
 		ULONG cbWritten = 0;
 
-		if (GetBinaryUseControl(m_iBinBox, &cb, &lpb))
+		auto bin = GetBinaryUseControl(m_iBinBox);
+
+		EC_MAPI(m_lpStream->Write(bin.data(), static_cast<ULONG>(bin.size()), &cbWritten));
+		DebugPrintEx(DBGStream, CLASS, L"WriteTextStreamToProperty", L"wrote 0x%X\n", cbWritten);
+
+		EC_MAPI(m_lpStream->Commit(STGC_DEFAULT));
+
+		if (m_bDisableSave)
 		{
-			EC_MAPI(m_lpStream->Write(lpb, static_cast<ULONG>(cb), &cbWritten));
-			DebugPrintEx(DBGStream, CLASS, L"WriteTextStreamToProperty", L"wrote 0x%X\n", cbWritten);
-
-			EC_MAPI(m_lpStream->Commit(STGC_DEFAULT));
-
-			if (m_bDisableSave)
-			{
-				DebugPrintEx(DBGStream, CLASS, L"WriteTextStreamToProperty", L"Save was disabled.\n");
-			}
-			else
-			{
-				EC_MAPI(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
-			}
+			DebugPrintEx(DBGStream, CLASS, L"WriteTextStreamToProperty", L"Save was disabled.\n");
+		}
+		else
+		{
+			EC_MAPI(m_lpMAPIProp->SaveChanges(KEEP_OPEN_READWRITE));
 		}
 
-		delete[] lpb;
 	}
 
 	DebugPrintEx(DBGStream, CLASS, L"WriteTextStreamToProperty", L"Wrote out this stream:\n");
@@ -425,9 +420,6 @@ _Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
 	auto i = CEditor::HandleChange(nID);
 
 	if (static_cast<ULONG>(-1) == i) return static_cast<ULONG>(-1);
-
-	LPBYTE lpb = nullptr;
-	size_t cb = 0;
 
 	auto lpBinPane = static_cast<CountedTextPane*>(GetControl(m_iBinBox));
 	if (m_iTextBox == i && lpBinPane)
@@ -457,7 +449,7 @@ _Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
 	}
 	else if (m_iBinBox == i)
 	{
-		if (GetBinaryUseControl(m_iBinBox, &cb, &lpb))
+		auto bin = GetBinaryUseControl(m_iBinBox);
 		{
 			switch (m_ulEditorType)
 			{
@@ -465,12 +457,12 @@ _Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
 			case EDITOR_RTF:
 			case EDITOR_STREAM_BINARY:
 			default:
-				SetStringA(m_iTextBox, reinterpret_cast<LPCSTR>(lpb), cb / sizeof(CHAR));
-				if (lpBinPane) lpBinPane->SetCount(cb);
+				SetStringA(m_iTextBox, reinterpret_cast<LPCSTR>(bin.data()), bin.size() / sizeof(CHAR));
+				if (lpBinPane) lpBinPane->SetCount(bin.size());
 				break;
 			case EDITOR_STREAM_UNICODE:
-				SetStringW(m_iTextBox, reinterpret_cast<LPCWSTR>(lpb), cb / sizeof(WCHAR));
-				if (lpBinPane) lpBinPane->SetCount(cb);
+				SetStringW(m_iTextBox, reinterpret_cast<LPCWSTR>(bin.data()), bin.size() / sizeof(WCHAR));
+				if (lpBinPane) lpBinPane->SetCount(bin.size());
 				break;
 			}
 		}
@@ -481,17 +473,15 @@ _Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
 		auto lpSmartView = static_cast<SmartViewPane*>(GetControl(m_iSmartViewBox));
 		if (lpSmartView)
 		{
-			if (!cb && !lpb) (void)GetBinaryUseControl(m_iBinBox, &cb, &lpb);
+			auto bin = GetBinaryUseControl(m_iBinBox);
 
 			SBinary Bin = { 0 };
-			Bin.cb = static_cast<ULONG>(cb);
-			Bin.lpb = lpb;
+			Bin.cb = bin.size();
+			Bin.lpb = bin.data();
 
 			lpSmartView->Parse(Bin);
 		}
 	}
-
-	delete[] lpb;
 
 	if (m_bUseWrapEx)
 	{

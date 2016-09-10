@@ -1077,36 +1077,12 @@ void CEditor::SetSize(ULONG i, size_t cb) const
 	SetStringf(i, _T("0x%08X = %u"), static_cast<int>(cb), static_cast<UINT>(cb)); // STRING_OK
 }
 
-// returns false if we failed to get a binary
 // Returns a binary buffer which is represented by the hex string
-// cb will be the exact length of the decoded buffer
-// Uncounted NULLs will be present on the end to aid in converting to strings
-_Check_return_ bool CEditor::GetBinaryUseControl(ULONG i, _Out_ size_t* cbBin, _Out_ LPBYTE* lpBin) const
+vector<BYTE> CEditor::GetBinaryUseControl(ULONG i) const
 {
-	if (!IsValidEdit(i)) return false;
-	if (!cbBin || !lpBin) return false;
-	*cbBin = NULL;
-	*lpBin = nullptr;
+	if (!IsValidEdit(i)) return vector<BYTE>();
 
-	auto szString = GetStringUseControl(i);
-	auto bin = HexStringToBin(szString);
-	if (bin.empty()) return false;
-
-	// Remember the size of the converted binary
-	*cbBin = bin.size();
-
-	// Add some extra nulls just in case this is ever printed
-	bin.push_back(0);
-	bin.push_back(0);
-
-	*lpBin = ByteVectorToLPBYTE(bin);
-	if (!*lpBin)
-	{
-		*cbBin = 0;
-		return false;
-	}
-
-	return true;
+	return HexStringToBin(GetStringUseControl(i));
 }
 
 _Check_return_ bool CEditor::GetCheckUseControl(ULONG iControl) const

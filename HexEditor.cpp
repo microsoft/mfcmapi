@@ -134,32 +134,23 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 	break;
 	case HEXED_HEX: // binary changed
 	{
-		if (GetBinaryUseControl(HEXED_HEX, &cb, &lpb))
+		auto bin = GetBinaryUseControl(HEXED_HEX);
+		lpb = bin.data();
+		cb = bin.size();
+		SetStringA(HEXED_ANSI, reinterpret_cast<LPCSTR>(lpb), cb); // ansi string
+
+		if (!(cb % 2)) // Set Unicode String
 		{
-			SetStringA(HEXED_ANSI, reinterpret_cast<LPCSTR>(lpb), cb); // ansi string
-
-			if (!(cb % 2)) // Set Unicode String
-			{
-				SetStringW(HEXED_UNICODE, reinterpret_cast<LPWSTR>(lpb), cb / sizeof(WCHAR));
-			}
-			else
-			{
-				SetStringW(HEXED_UNICODE, L"");
-			}
-
-			szEncodeStr = Base64Encode(cb, lpb);
-			cchEncodeStr = szEncodeStr.length();
-			SetStringW(HEXED_BASE64, szEncodeStr.c_str());
+			SetStringW(HEXED_UNICODE, reinterpret_cast<LPWSTR>(lpb), cb / sizeof(WCHAR));
 		}
 		else
 		{
-			SetStringW(HEXED_ANSI, L"");
 			SetStringW(HEXED_UNICODE, L"");
-			SetStringW(HEXED_BASE64, L"");
 		}
 
-		delete[] lpb;
-
+		szEncodeStr = Base64Encode(cb, lpb);
+		cchEncodeStr = szEncodeStr.length();
+		SetStringW(HEXED_BASE64, szEncodeStr.c_str());
 	}
 	break;
 	default:
@@ -197,12 +188,11 @@ void CHexEditor::UpdateParser() const
 	auto lpPane = static_cast<SmartViewPane*>(GetControl(HEXED_SMARTVIEW));
 	if (lpPane)
 	{
+		auto bin = GetBinaryUseControl(HEXED_HEX);
 		SBinary Bin = { 0 };
-		if (GetBinaryUseControl(HEXED_HEX, reinterpret_cast<size_t*>(&Bin.cb), &Bin.lpb))
-		{
-			lpPane->Parse(Bin);
-			delete[] Bin.lpb;
-		}
+		Bin.lpb = bin.data();
+		Bin.cb = bin.size();
+		lpPane->Parse(Bin);
 	}
 }
 
