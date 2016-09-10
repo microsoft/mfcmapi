@@ -830,9 +830,6 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 			auto lpszA = GetEditBoxTextA(1, &cchStr); // Do not free this
 			Bin.lpb = LPBYTE(lpszA.c_str());
 
-			// What we just read includes a NULL terminator, in both the string and count.
-			// When we write binary, we don't want to include this NULL
-			if (cchStr) cchStr -= 1;
 			Bin.cb = static_cast<ULONG>(cchStr) * sizeof(CHAR);
 
 			SetBinary(0, static_cast<LPBYTE>(Bin.lpb), Bin.cb);
@@ -859,9 +856,6 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 			lpPane = static_cast<CountedTextPane*>(GetControl(1));
 			if (lpPane)
 			{
-				// What we just read includes a NULL terminator, in both the string and count.
-				// When we write binary, we don't want to include this NULL
-				if (cchStr) cchStr -= 1;
 				cbStr = cchStr * sizeof(CHAR);
 
 				// Even if we don't have a string, still make the call to SetBinary
@@ -901,9 +895,6 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 			lpPane = static_cast<CountedTextPane*>(GetControl(1));
 			if (lpPane)
 			{
-				// What we just read includes a NULL terminator, in both the string and count.
-				// When we write binary, we don't want to include this NULL
-				if (cchStr) cchStr -= 1;
 				auto cbStr = cchStr * sizeof(WCHAR);
 
 				// Even if we don't have a string, still make the call to SetBinary
