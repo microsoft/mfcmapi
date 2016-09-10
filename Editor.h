@@ -101,7 +101,7 @@ protected:
 	_Check_return_ ULONG GetHexUseControl(ULONG i) const;
 	_Check_return_ ULONG GetDecimalUseControl(ULONG i) const;
 	_Check_return_ ULONG GetPropTagUseControl(ULONG iControl) const;
-	_Check_return_ bool GetBinaryUseControl(ULONG i, _Out_ size_t* cbBin, _Out_ LPBYTE* lpBin) const;
+	vector<BYTE> GetBinaryUseControl(ULONG i) const;
 	_Check_return_ bool GetCheckUseControl(ULONG iControl) const;
 	_Check_return_ string GetEditBoxTextA(ULONG iControl, _Out_ size_t* lpcchText = nullptr) const;
 	_Check_return_ wstring GetEditBoxTextW(ULONG iControl, _Out_ size_t* lpcchText = nullptr) const;

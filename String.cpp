@@ -113,8 +113,8 @@ LPTSTR wstringToLPTSTR(wstring const& src)
 		memcpy(dst, src.c_str(), cch * sizeof(WCHAR));
 	}
 #else
-	LPTSTR dst = NULL;
-	HRESULT hRes = S_OK;
+	LPTSTR dst = nullptr;
+	auto hRes = S_OK;
 	EC_H(UnicodeToAnsi(src.c_str(), &dst));
 #endif
 

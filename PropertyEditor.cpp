@@ -693,7 +693,6 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 	CURRENCY curVal = { 0 };
 	LARGE_INTEGER liVal = { 0 };
 	FILETIME ftVal = { 0 };
-	LPBYTE lpb = nullptr;
 	SBinary Bin = { 0 };
 
 	CountedTextPane* lpPane = nullptr;
@@ -816,13 +815,10 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 	case PT_BINARY:
 		if (0 == i || 2 == i)
 		{
-			if (GetBinaryUseControl(0, reinterpret_cast<size_t*>(&Bin.cb), &lpb))
-			{
-				Bin.lpb = lpb;
-				// Treat as a NULL terminated string
-				// GetBinaryUseControl includes extra NULLs at the end of the buffer to make this work
-				if (0 == i) SetStringA(1, reinterpret_cast<LPCSTR>(Bin.lpb), Bin.cb + 1); // ansi string
-			}
+			auto bin = GetBinaryUseControl(0);
+			if (0 == i) SetStringA(1, reinterpret_cast<LPCSTR>(bin.data()), bin.size()); // ansi string
+			Bin.lpb = bin.data();
+			Bin.cb = bin.size();
 		}
 		else if (1 == i)
 		{
@@ -842,9 +838,6 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		if (lpPane) lpPane->SetCount(Bin.cb);
 
 		if (m_lpSmartView) m_lpSmartView->Parse(Bin);
-
-		delete[] lpb;
-		lpb = nullptr;
 		break;
 	case PT_STRING8:
 		if (0 == i)
@@ -869,20 +862,15 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		}
 		else if (1 == i)
 		{
-			size_t cb = 0;
+			auto bin = GetBinaryUseControl(1);
 
-			(void)GetBinaryUseControl(1, &cb, &lpb);
-
-			// GetBinaryUseControl includes extra NULLs at the end of the buffer to make this work
-			SetStringA(0, reinterpret_cast<LPCSTR>(lpb), cb + 1);
+			SetStringA(0, reinterpret_cast<LPCSTR>(bin.data()), bin.size());
 
 			lpPane = static_cast<CountedTextPane*>(GetControl(0));
-			if (lpPane) lpPane->SetCount(cb);
+			if (lpPane) lpPane->SetCount(bin.size());
 
 			lpPane = static_cast<CountedTextPane*>(GetControl(1));
-			if (lpPane) lpPane->SetCount(cb);
-			delete[] lpb;
-			lpb = nullptr;
+			if (lpPane) lpPane->SetCount(bin.size());
 		}
 
 		break;
@@ -908,25 +896,21 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		}
 		else if (1 == i)
 		{
-			size_t cb = 0;
-
-			if (GetBinaryUseControl(1, &cb, &lpb) && !(cb % sizeof(WCHAR)))
+			lpPane = static_cast<CountedTextPane*>(GetControl(0));
+			auto bin = GetBinaryUseControl(1);
+			if (bin.size() % sizeof(WCHAR))
 			{
-				// GetBinaryUseControl includes extra NULLs at the end of the buffer to make this work
-				SetStringW(0, reinterpret_cast<LPCWSTR>(lpb), cb / sizeof(WCHAR) + 1);
+				SetStringW(0, reinterpret_cast<LPCWSTR>(bin.data()), bin.size() / sizeof(WCHAR));
+				if (lpPane) lpPane->SetCount(bin.size() / sizeof(WCHAR));
 			}
 			else
 			{
 				SetStringW(0, nullptr);
+				if (lpPane) lpPane->SetCount(0);
 			}
 
 			lpPane = static_cast<CountedTextPane*>(GetControl(1));
-			if (lpPane) lpPane->SetCount(cb);
-
-			lpPane = static_cast<CountedTextPane*>(GetControl(0));
-			if (lpPane) lpPane->SetCount(cb % sizeof(WCHAR) ? 0 : cb / sizeof(WCHAR));
-			delete[] lpb;
-			lpb = nullptr;
+			if (lpPane) lpPane->SetCount(bin.size());
 		}
 
 		break;
