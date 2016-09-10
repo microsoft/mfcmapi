@@ -185,7 +185,7 @@ BOOL CStreamEditor::OnInitDialog()
 			sProp.ulPropTag = CHANGE_PROP_TYPE(m_ulPropTag, PT_BINARY);
 			auto bin = GetBinaryUseControl(m_iBinBox);
 			sProp.Value.bin.lpb = bin.data();
-			sProp.Value.bin.cb = bin.size();
+			sProp.Value.bin.cb = ULONG(bin.size());
 
 			auto iStructType = FindSmartViewParserForProp(sProp.ulPropTag, NULL, nullptr, false);
 			auto szSmartView = InterpretPropSmartView(
@@ -345,12 +345,11 @@ void CStreamEditor::ReadTextStreamFromProperty() const
 	// If we don't have a stream to display, put up an error instead
 	if (FAILED(m_StreamError) || !m_lpStream)
 	{
-		CString szStreamErr;
-		szStreamErr.FormatMessage(
+		auto szStreamErr = formatmessage(
 			IDS_CANNOTOPENSTREAM,
 			ErrorNameFromErrorCode(m_StreamError).c_str(),
 			m_StreamError);
-		SetString(m_iTextBox, szStreamErr);
+		SetStringW(m_iTextBox, szStreamErr.c_str());
 		SetEditReadOnly(m_iTextBox);
 		SetEditReadOnly(m_iBinBox);
 		return;
@@ -474,7 +473,7 @@ _Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
 			auto bin = GetBinaryUseControl(m_iBinBox);
 
 			SBinary Bin = { 0 };
-			Bin.cb = bin.size();
+			Bin.cb = ULONG(bin.size());
 			Bin.lpb = bin.data();
 
 			lpSmartView->Parse(Bin);

@@ -468,7 +468,7 @@ void CMsgStoreDlg::OnPasteFolder()
 	static const SizedSPropTagArray(NUM_COLS, sptaSrcFolder) =
 	{
 		NUM_COLS,
-		PR_DISPLAY_NAME,
+		PR_DISPLAY_NAME_W,
 		PR_ENTRYID
 	};
 
@@ -507,8 +507,8 @@ void CMsgStoreDlg::OnPasteFolder()
 		{
 			if (CheckStringProp(&lpProps[NAME], PT_TSTRING))
 			{
-				DebugPrint(DBGGeneric, L"Folder Source Name = \"%ws\"\n", LPCTSTRToWstring(lpProps[NAME].Value.LPSZ).c_str());
-				MyData.SetString(0, lpProps[NAME].Value.LPSZ);
+				DebugPrint(DBGGeneric, L"Folder Source Name = \"%ws\"\n", lpProps[NAME].Value.lpszW);
+				MyData.SetStringW(0, lpProps[NAME].Value.lpszW);
 			}
 		}
 
@@ -1097,7 +1097,7 @@ void CMsgStoreDlg::OnRestoreDeletedFolder()
 	static const SizedSPropTagArray(NUM_COLS, sptaSrcFolder) =
 	{
 		NUM_COLS,
-		PR_DISPLAY_NAME,
+		PR_DISPLAY_NAME_W,
 		PR_ENTRYID
 	};
 
@@ -1132,8 +1132,8 @@ void CMsgStoreDlg::OnRestoreDeletedFolder()
 		{
 			if (CheckStringProp(&lpProps[NAME], PT_TSTRING))
 			{
-				DebugPrint(DBGGeneric, L"Folder Source Name = \"%ws\"\n", LPCTSTRToWstring(lpProps[NAME].Value.LPSZ).c_str());
-				MyData.SetString(0, lpProps[NAME].Value.LPSZ);
+				DebugPrint(DBGGeneric, L"Folder Source Name = \"%ws\"\n", lpProps[NAME].Value.lpszW);
+				MyData.SetStringW(0, lpProps[NAME].Value.lpszW);
 			}
 		}
 

@@ -1156,7 +1156,7 @@ void CMainDlg::OnUnloadMAPI()
 void CMainDlg::OnDisplayMAPIPath()
 {
 	auto hRes = S_OK;
-	TCHAR szMAPIPath[MAX_PATH] = { 0 };
+	WCHAR szMAPIPath[MAX_PATH] = { 0 };
 
 	DebugPrint(DBGGeneric, L"OnDisplayMAPIPath()\n");
 	auto hMAPI = GetMAPIHandle();
@@ -1170,10 +1170,10 @@ void CMainDlg::OnDisplayMAPIPath()
 	MyData.InitPane(0, CreateSingleLinePane(IDS_FILEPATH, true));
 	if (hMAPI)
 	{
-		auto dw = GetModuleFileName(hMAPI, szMAPIPath, _countof(szMAPIPath));
+		auto dw = GetModuleFileNameW(hMAPI, szMAPIPath, _countof(szMAPIPath));
 		if (dw)
 		{
-			MyData.SetString(0, szMAPIPath);
+			MyData.SetStringW(0, szMAPIPath);
 		}
 	}
 
