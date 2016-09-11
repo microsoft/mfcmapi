@@ -593,7 +593,7 @@ void CProfileListDlg::OnExportProfile()
 		WCHAR szFileName[MAX_PATH] = { 0 };
 		INT_PTR iDlgRet = IDOK;
 
-		auto szProfileName = LPCSTRToWstring(lpListData->Contents()->m_szProfileDisplayName.c_str());
+		auto szProfileName = stringTowstring(lpListData->Contents()->m_szProfileDisplayName);
 		WC_H(BuildFileNameAndPath(
 			szFileName,
 			_countof(szFileName),

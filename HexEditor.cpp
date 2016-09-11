@@ -78,7 +78,7 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 	case HEXED_ANSI:
 	{
 		auto text = GetEditBoxTextA(HEXED_ANSI);
-		SetStringA(HEXED_UNICODE, text.c_str(), text.length());
+		SetStringA(HEXED_UNICODE, text);
 
 		lpb = LPBYTE(text.c_str());
 		cb = text.length() * sizeof(CHAR);
@@ -117,7 +117,7 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 		lpb = bin.data();
 		cb = bin.size();
 
-		SetStringA(HEXED_ANSI, reinterpret_cast<LPCSTR>(lpb), cb);
+		SetStringA(HEXED_ANSI, string(LPCSTR(lpb), cb));
 		if (!(cb % 2)) // Set Unicode String
 		{
 			SetStringW(HEXED_UNICODE, reinterpret_cast<LPWSTR>(lpb), cb / sizeof(WCHAR));
@@ -135,7 +135,7 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 		auto bin = GetBinaryUseControl(HEXED_HEX);
 		lpb = bin.data();
 		cb = bin.size();
-		SetStringA(HEXED_ANSI, reinterpret_cast<LPCSTR>(lpb), cb); // ansi string
+		SetStringA(HEXED_ANSI, string(LPCSTR(lpb), cb)); // ansi string
 
 		if (!(cb % 2)) // Set Unicode String
 		{

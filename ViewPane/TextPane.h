@@ -25,7 +25,7 @@ public:
 	int GetLines() override;
 
 	void ClearView();
-	virtual void SetStringA(_In_opt_z_ LPCSTR szMsg, size_t cchsz = -1);
+	virtual void SetStringA(string szMsg);
 	virtual void SetStringW(_In_opt_z_ LPCWSTR szMsg, size_t cchsz = -1);
 	void SetBinary(_In_opt_count_(cb) LPBYTE lpb, size_t cb);
 	void InitEditFromBinaryStream(_In_ LPSTREAM lpStreamIn);
