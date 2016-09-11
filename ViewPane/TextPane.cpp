@@ -25,7 +25,7 @@ ViewPane* CreateSingleLinePane(UINT uidLabel, _In_ wstring szVal, bool bReadOnly
 	auto lpPane = new TextPane(uidLabel, bReadOnly, bMultiLine);
 	if (lpPane)
 	{
-		lpPane->SetStringW(szVal.c_str());
+		lpPane->SetStringW(szVal);
 	}
 
 	return lpPane;
@@ -35,15 +35,9 @@ ViewPane* CreateSingleLinePaneID(UINT uidLabel, UINT uidVal, bool bReadOnly)
 {
 	auto lpPane = new TextPane(uidLabel, bReadOnly, false);
 
-	if (lpPane)
+	if (lpPane && uidVal)
 	{
-		wstring szTemp;
-
-		if (uidVal)
-		{
-			szTemp = loadstring(uidVal);
-			lpPane->SetStringW(szTemp.c_str());
-		}
+		lpPane->SetStringW(loadstring(uidVal));
 	}
 
 	return lpPane;
@@ -283,38 +277,16 @@ void TextPane::SetEditBoxText()
 	m_EditBox.SetEventMask(ulEventMask); // put original mask back
 }
 
-// Sets m_lpControls[i].UI.lpEdit->lpszW using SetStringW
-// cchsz of -1 lets AnsiToUnicode and SetStringW calculate the length on their own
+// Sets m_lpszW using SetStringW
 void TextPane::SetStringA(string szMsg)
 {
-	auto szMsgW = stringTowstring(szMsg);
-	SetStringW(szMsgW.c_str(), szMsgW.length());
+	SetStringW(stringTowstring(szMsg));
 }
 
-// Sets m_lpControls[i].UI.lpEdit->lpszW
-// cchsz may or may not include the NULL terminator (if one is present)
-// If it is missing, we'll make sure we add it
-void TextPane::SetStringW(_In_opt_z_ LPCWSTR szMsg, size_t cchsz)
+// Sets m_lpszW
+void TextPane::SetStringW(wstring szMsg)
 {
-	m_lpszW.clear();
-
-	if (!szMsg) szMsg = L"";
-	auto hRes = S_OK;
-	auto cchszW = cchsz;
-
-	if (-1 == cchszW)
-	{
-		EC_H(StringCchLengthW(szMsg, STRSAFE_MAX_CCH, &cchszW));
-	}
-	// If we were passed a NULL terminated string,
-	// cchszW counts the NULL terminator. Back off one.
-	else if (cchszW && szMsg[cchszW - 1] == NULL)
-	{
-		cchszW--;
-	}
-	// cchszW is now the length of our string not counting the NULL terminator
-
-	m_lpszW = wstring(szMsg, szMsg + cchszW);
+	m_lpszW = szMsg;
 
 	SetEditBoxText();
 }
@@ -327,7 +299,7 @@ void TextPane::SetBinary(_In_opt_count_(cb) LPBYTE lpb, size_t cb)
 	}
 	else
 	{
-		SetStringW(BinToHexString(lpb, cb, false).c_str());
+		SetStringW(BinToHexString(lpb, cb, false));
 	}
 }
 

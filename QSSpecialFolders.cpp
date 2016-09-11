@@ -2,8 +2,7 @@
 #include "QSSpecialFolders.h"
 #include "QuickStart.h"
 #include "MAPIFunctions.h"
-#include "InterpretProp2.h"
-#include "SmartView\SmartView.h"
+#include "SmartView/SmartView.h"
 #include "Editor.h"
 
 static wstring SPECIALFOLDERCLASS = L"SpecialFolderEditor"; // STRING_OK
@@ -16,9 +15,9 @@ public:
 	~SpecialFolderEditor();
 
 private:
-	BOOL OnInitDialog();
-	void LoadFolders();
-	_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData);
+	BOOL OnInitDialog() override;
+	void LoadFolders() const;
+	_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData) override;
 
 	LPMDB m_lpMDB;
 };
@@ -41,12 +40,12 @@ SpecialFolderEditor::~SpecialFolderEditor()
 	TRACE_DESTRUCTOR(SPECIALFOLDERCLASS);
 
 	if (m_lpMDB) m_lpMDB->Release();
-	m_lpMDB = NULL;
+	m_lpMDB = nullptr;
 }
 
 BOOL SpecialFolderEditor::OnInitDialog()
 {
-	BOOL bRet = CEditor::OnInitDialog();
+	auto bRet = CEditor::OnInitDialog();
 	LoadFolders();
 	return bRet;
 }
@@ -76,9 +75,9 @@ sfCol g_sfCol[] = {
 };
 ULONG g_ulsfCol = _countof(g_sfCol);
 
-void SpecialFolderEditor::LoadFolders()
+void SpecialFolderEditor::LoadFolders() const
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	ULONG ulListNum = 0;
 	if (!IsValidList(ulListNum)) return;
 
@@ -101,8 +100,7 @@ void SpecialFolderEditor::LoadFolders()
 
 	ClearList(ulListNum);
 
-	ULONG i = 0;
-	for (i = 0; i < g_ulsfCol; i++)
+	for (ULONG i = 0; i < g_ulsfCol; i++)
 	{
 		InsertColumn(ulListNum, i, g_sfCol[i].ulID, g_sfCol[i].ulType);
 	}
@@ -111,16 +109,16 @@ void SpecialFolderEditor::LoadFolders()
 	wstring szProp;
 
 	// This will iterate over all the special folders we know how to get.
-	for (i = DEFAULT_UNSPECIFIED + 1; i < NUM_DEFAULT_PROPS; i++)
+	for (ULONG i = DEFAULT_UNSPECIFIED + 1; i < NUM_DEFAULT_PROPS; i++)
 	{
 		hRes = S_OK;
 		ULONG cb = NULL;
-		LPENTRYID lpeid = NULL;
+		LPENTRYID lpeid = nullptr;
 
-		SortListData* lpData = InsertListRow(ulListNum, i - 1, format(L"%u", i)); // STRING_OK
+		auto lpData = InsertListRow(ulListNum, i - 1, format(L"%u", i)); // STRING_OK
 		if (lpData)
 		{
-			int iCol = 1;
+			auto iCol = 1;
 			int iRow = i - 1;
 
 			SetListString(ulListNum, iRow, iCol, FolderNames[i]);
@@ -132,21 +130,20 @@ void SpecialFolderEditor::LoadFolders()
 				SPropValue eid = { 0 };
 				eid.ulPropTag = PR_ENTRYID;
 				eid.Value.bin.cb = cb;
-				eid.Value.bin.lpb = (LPBYTE)lpeid;
-				InterpretProp(&eid, &szProp, NULL);
+				eid.Value.bin.lpb = reinterpret_cast<LPBYTE>(lpeid);
+				InterpretProp(&eid, &szProp, nullptr);
 				SetListString(ulListNum, iRow, iCol, szProp);
 				iCol++;
 
-				LPMAPIFOLDER lpFolder = NULL;
-				WC_H(CallOpenEntry(m_lpMDB, NULL, NULL, NULL, cb, lpeid, NULL, NULL, NULL, (LPUNKNOWN*)&lpFolder));
+				LPMAPIFOLDER lpFolder = nullptr;
+				WC_H(CallOpenEntry(m_lpMDB, NULL, NULL, NULL, cb, lpeid, NULL, NULL, NULL, reinterpret_cast<LPUNKNOWN*>(&lpFolder)));
 				if (SUCCEEDED(hRes) && lpFolder)
 				{
 					ULONG ulProps = 0;
-					LPSPropValue lpProps = NULL;
-					WC_H_GETPROPS(lpFolder->GetProps((LPSPropTagArray)&lptaFolderProps, fMapiUnicode, &ulProps, &lpProps));
+					LPSPropValue lpProps = nullptr;
+					WC_H_GETPROPS(lpFolder->GetProps(LPSPropTagArray(&lptaFolderProps), fMapiUnicode, &ulProps, &lpProps));
 
-					ULONG ulPropNum = 0;
-					for (ulPropNum = 0; ulPropNum < ulProps; ulPropNum++)
+					for (ULONG ulPropNum = 0; ulPropNum < ulProps; ulPropNum++)
 					{
 						szTmp.clear();
 						if (PT_LONG == PROP_TYPE(lpProps[ulPropNum].ulPropTag))
@@ -155,14 +152,14 @@ void SpecialFolderEditor::LoadFolders()
 								lpProps[ulPropNum].Value,
 								lpProps[ulPropNum].ulPropTag,
 								NULL,
-								NULL,
-								NULL,
+								nullptr,
+								nullptr,
 								false);
 						}
 
 						if (szTmp.empty() && PT_ERROR != PROP_TYPE(lpProps[ulPropNum].ulPropTag))
 						{
-							InterpretProp(&lpProps[ulPropNum], &szProp, NULL);
+							InterpretProp(&lpProps[ulPropNum], &szProp, nullptr);
 							SetListString(ulListNum, iRow, iCol, szProp);
 						}
 						else
@@ -181,7 +178,7 @@ void SpecialFolderEditor::LoadFolders()
 				}
 
 				if (lpFolder) lpFolder->Release();
-				lpFolder = NULL;
+				lpFolder = nullptr;
 			}
 			else
 			{
@@ -203,7 +200,7 @@ _Check_return_ bool SpecialFolderEditor::DoListEdit(ULONG ulListNum, int iItem, 
 	if (!IsValidList(ulListNum)) return false;
 	if (!lpData) return false;
 
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
 	CEditor MyResults(
 		this,
@@ -214,14 +211,13 @@ _Check_return_ bool SpecialFolderEditor::DoListEdit(ULONG ulListNum, int iItem, 
 	MyResults.InitPane(0, CreateMultiLinePane(NULL, true));
 
 	wstring szTmp;
-	ListPane* listPane = (ListPane*)GetControl(ulListNum);
+	auto listPane = static_cast<ListPane*>(GetControl(ulListNum));
 	if (listPane)
 	{
 		wstring szLabel;
 		wstring szData;
-		ULONG i = 0;
 		// We skip the first column, which is just the index
-		for (i = 1; i < g_ulsfCol; i++)
+		for (ULONG i = 1; i < g_ulsfCol; i++)
 		{
 			szLabel = loadstring(g_sfCol[i].ulID);
 			szData = listPane->GetItemText(iItem, i);
@@ -231,7 +227,7 @@ _Check_return_ bool SpecialFolderEditor::DoListEdit(ULONG ulListNum, int iItem, 
 
 	if (!szTmp.empty())
 	{
-		MyResults.SetStringW(0, szTmp.c_str());
+		MyResults.SetStringW(0, szTmp);
 	}
 
 	WC_H(MyResults.DisplayDialog());
@@ -243,12 +239,12 @@ _Check_return_ bool SpecialFolderEditor::DoListEdit(ULONG ulListNum, int iItem, 
 
 void OnQSCheckSpecialFolders(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
 	lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, IDS_STATUSTEXTCHECKINGSPECIALFOLDERS);
 	lpHostDlg->SendMessage(WM_PAINT, NULL, NULL); // force paint so we update the status now
 
-	LPMDB lpMDB = NULL;
+	LPMDB lpMDB = nullptr;
 	WC_H(OpenStoreForQuickStart(lpHostDlg, hwnd, &lpMDB));
 
 	if (lpMDB)

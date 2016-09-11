@@ -26,7 +26,7 @@ public:
 
 	void ClearView();
 	virtual void SetStringA(string szMsg);
-	virtual void SetStringW(_In_opt_z_ LPCWSTR szMsg, size_t cchsz = -1);
+	virtual void SetStringW(wstring szMsg);
 	void SetBinary(_In_opt_count_(cb) LPBYTE lpb, size_t cb);
 	void InitEditFromBinaryStream(_In_ LPSTREAM lpStreamIn);
 	void WriteToBinaryStream(_In_ LPSTREAM lpStreamOut) const;

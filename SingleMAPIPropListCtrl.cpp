@@ -71,8 +71,7 @@ CSingleMAPIPropListCtrl::CSingleMAPIPropListCtrl(
 
 			if (pnOrder)
 			{
-				auto i = 0;
-				for (i = 0; i < nColumnCount; i++)
+				for (auto i = 0; i < nColumnCount; i++)
 				{
 					pnOrder[i] = RegKeys[regkeyPROP_COLUMN_ORDER].szCurSTRING[i] - 'a';
 				}
@@ -122,6 +121,7 @@ LRESULT CSingleMAPIPropListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM 
 		{
 			return true;
 		}
+
 		break;
 	case WM_PAINT:
 		if (!m_lpPropBag)
@@ -129,8 +129,10 @@ LRESULT CSingleMAPIPropListCtrl::WindowProc(UINT message, WPARAM wParam, LPARAM 
 			DrawHelpText(m_hWnd, IDS_HELPTEXTNOPROPS);
 			return true;
 		}
+
 		break;
-	} // end switch
+	}
+
 	return CSortListCtrl::WindowProc(message, wParam, lParam);
 }
 
@@ -150,8 +152,7 @@ _Check_return_ LRESULT CSingleMAPIPropListCtrl::msgOnSaveColumnOrder(WPARAM /*wP
 			if (pnOrder)
 			{
 				EC_B(GetColumnOrderArray(pnOrder, nColumnCount));
-				ULONG i = 0;
-				for (i = 0; i < nColumnCount; i++)
+				for (ULONG i = 0; i < nColumnCount; i++)
 					RegKeys[regkeyPROP_COLUMN_ORDER].szCurSTRING[i] = static_cast<char>('a' + pnOrder[i]);
 				RegKeys[regkeyPROP_COLUMN_ORDER].szCurSTRING[nColumnCount] = '\0';
 			}
@@ -169,7 +170,7 @@ void CSingleMAPIPropListCtrl::InitMenu(_In_ CMenu* pMenu) const
 		auto bHasSource = m_lpPropBag != nullptr;
 
 		GetSelectedPropTag(&ulPropTag);
-		auto bPropSelected = (NULL != ulPropTag);
+		auto bPropSelected = NULL != ulPropTag;
 
 		if (m_lpMapiObjects)
 		{
@@ -198,8 +199,7 @@ void CSingleMAPIPropListCtrl::InitMenu(_In_ CMenu* pMenu) const
 
 		if (m_lpHostDlg)
 		{
-			ULONG ulMenu = ID_ADDINPROPERTYMENU;
-			for (ulMenu = ID_ADDINPROPERTYMENU;; ulMenu++)
+			for (ULONG ulMenu = ID_ADDINPROPERTYMENU;; ulMenu++)
 			{
 				auto lpAddInMenu = GetAddinMenuItem(m_lpHostDlg->m_hWnd, ulMenu);
 				if (!lpAddInMenu) break;
@@ -291,7 +291,6 @@ _Check_return_ HRESULT CSingleMAPIPropListCtrl::LoadMAPIPropList()
 {
 	auto hRes = S_OK;
 	ULONG ulCurListBoxRow = 0;
-	ULONG ulCurPropRow = 0;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 	ULONG ulProps = 0;
 	LPSPropValue lpPropsToAdd = nullptr;
@@ -350,7 +349,7 @@ _Check_return_ HRESULT CSingleMAPIPropListCtrl::LoadMAPIPropList()
 					}
 					else
 					{
-						for (ulCurPropRow = 0; ulCurPropRow < ulProps; ulCurPropRow++)
+						for (ULONG ulCurPropRow = 0; ulCurPropRow < ulProps; ulCurPropRow++)
 						{
 							if (PROP_ID(lpPropsToAdd[ulCurPropRow].ulPropTag) >= 0x8000) ulNamedProps++;
 						}
@@ -369,14 +368,14 @@ _Check_return_ HRESULT CSingleMAPIPropListCtrl::LoadMAPIPropList()
 							lpTag->cValues = ulNamedProps;
 							if (RegKeys[regkeyGETPROPNAMES_ON_ALL_PROPS].ulCurDWORD)
 							{
-								for (ulCurPropRow = 0; ulCurPropRow < ulProps; ulCurPropRow++)
+								for (ULONG ulCurPropRow = 0; ulCurPropRow < ulProps; ulCurPropRow++)
 								{
 									lpTag->aulPropTag[ulCurPropRow] = lpPropsToAdd[ulCurPropRow].ulPropTag;
 								}
 							}
 							else
 							{
-								for (ulCurPropRow = 0; ulCurPropRow < ulProps; ulCurPropRow++)
+								for (ULONG ulCurPropRow = 0; ulCurPropRow < ulProps; ulCurPropRow++)
 								{
 									if (PROP_ID(lpPropsToAdd[ulCurPropRow].ulPropTag) >= 0x8000)
 									{
@@ -394,7 +393,6 @@ _Check_return_ HRESULT CSingleMAPIPropListCtrl::LoadMAPIPropList()
 								NULL,
 								&ulPropNames,
 								&lppPropNames));
-							hRes = S_OK;
 
 							MAPIFreeBuffer(lpTag);
 						}
@@ -410,7 +408,7 @@ _Check_return_ HRESULT CSingleMAPIPropListCtrl::LoadMAPIPropList()
 
 			// get each property in turn and add it to the list
 			ulCurTag = 0;
-			for (ulCurPropRow = 0; ulCurPropRow < ulProps; ulCurPropRow++)
+			for (ULONG ulCurPropRow = 0; ulCurPropRow < ulProps; ulCurPropRow++)
 			{
 				LPMAPINAMEID lpNameIDInfo = nullptr;
 				// We shouldn't need to check ulCurTag < ulPropNames, but I fear bad GetNamesFromIDs implementations
@@ -444,11 +442,10 @@ _Check_return_ HRESULT CSingleMAPIPropListCtrl::LoadMAPIPropList()
 		ULONG cExtraProps = 0;
 		LPSPropValue pExtraProps = nullptr;
 		SPropValue ExtraPropForList;
-		ULONG iCurExtraProp = 0;
 		SPropTagArray pNewTag;
 		pNewTag.cValues = 1;
 
-		for (iCurExtraProp = 0; iCurExtraProp < m_sptExtraProps->cValues; iCurExtraProp++)
+		for (ULONG iCurExtraProp = 0; iCurExtraProp < m_sptExtraProps->cValues; iCurExtraProp++)
 		{
 			hRes = S_OK; // clear the error flag before each run
 			pNewTag.aulPropTag[0] = m_sptExtraProps->aulPropTag[iCurExtraProp];
@@ -628,8 +625,7 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 	ULONG ulImage = slIconDefault;
 	if (lpsPropToAdd)
 	{
-		auto i = 0;
-		for (i = 0; i < NUMPROPTYPES; i++)
+		for (auto i = 0; i < NUMPROPTYPES; i++)
 		{
 			if (_PropTypeIcons[i][0] == PROP_TYPE(lpsPropToAdd->ulPropTag))
 			{
@@ -844,23 +840,17 @@ void CSingleMAPIPropListCtrl::SavePropsToXML()
 					{
 					case PT_STRING8:
 					case PT_UNICODE:
-					{
 						OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVAL].uidName, szTemp1, true, 2);
 						OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVALALT].uidName, szTemp2, false, 2);
 						break;
-					}
 					case PT_BINARY:
-					{
 						OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVAL].uidName, szTemp1, false, 2);
 						OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVALALT].uidName, szTemp2, true, 2);
 						break;
-					}
 					default:
-					{
 						OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVAL].uidName, szTemp1, false, 2);
 						OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVALALT].uidName, szTemp2, false, 2);
 						break;
-					}
 					}
 
 					szTemp1 = GetItemText(iRow, pcPROPSMARTVIEW);
@@ -1025,8 +1015,7 @@ void CSingleMAPIPropListCtrl::FindAllNamedProps()
 				SPropTagArray tag = { 0 };
 				tag.cValues = 1;
 				lptag = &tag;
-				ULONG iTag = 0;
-				for (iTag = ulLowerBound; iTag <= ulUpperBound; iTag++)
+				for (ULONG iTag = ulLowerBound; iTag <= ulUpperBound; iTag++)
 				{
 					LPMAPINAMEID* lppPropNames = nullptr;
 					ULONG ulPropNames = 0;
@@ -1165,8 +1154,7 @@ void CSingleMAPIPropListCtrl::CountNamedProps()
 				szNamedPropName,
 				szNamedPropGUID,
 				szNamedPropDASL);
-			auto szNamedProp = formatmessage(IDS_HIGHESTNAMEDPROPNAME, ulHighestKnown, szNamedPropName.c_str(), szNamedPropGUID.c_str());
-			MyResult.SetStringW(1, szNamedProp.c_str());
+			MyResult.SetStringW(1, formatmessage(IDS_HIGHESTNAMEDPROPNAME, ulHighestKnown, szNamedPropName.c_str(), szNamedPropGUID.c_str()));
 
 			MAPIFreeBuffer(lppPropNames);
 			lppPropNames = nullptr;
@@ -1314,7 +1302,7 @@ void CSingleMAPIPropListCtrl::OnEditGivenProp(ULONG ulPropTag)
 				true).c_str());
 	}
 
-	ulPropTag = (PT_ERROR == PROP_TYPE(ulPropTag)) ? CHANGE_PROP_TYPE(ulPropTag, PT_UNSPECIFIED) : ulPropTag;
+	ulPropTag = PT_ERROR == PROP_TYPE(ulPropTag) ? CHANGE_PROP_TYPE(ulPropTag, PT_UNSPECIFIED) : ulPropTag;
 
 	if (PT_SRESTRICTION == PROP_TYPE(ulPropTag))
 	{
@@ -1691,30 +1679,25 @@ void CSingleMAPIPropListCtrl::OnOpenProperty() const
 		{
 			switch (PROP_TYPE(lpProp->ulPropTag))
 			{
-			case (PT_BINARY):
-			{
+			case PT_BINARY:
 				DebugPrintEx(DBGGeneric, CLASS, L"OnOpenProperty", L"property is PT_BINARY\n");
 				m_lpHostDlg->OnOpenEntryID(&lpProp->Value.bin);
 				break;
-			}
-			case (PT_MV_BINARY):
-			{
-				ULONG i = 0;
-
+			case PT_MV_BINARY:
 				DebugPrintEx(DBGGeneric, CLASS, L"OnOpenProperty", L"property is PT_MV_BINARY\n");
 				if (S_OK == hRes && lpProp && PT_MV_BINARY == PROP_TYPE(lpProp->ulPropTag))
 				{
 					DebugPrintEx(DBGGeneric, CLASS, L"OnOpenProperty", L"opened MV structure. There are 0x%X binaries in it.\n", lpProp->Value.MVbin.cValues);
-					for (i = 0; i < lpProp->Value.MVbin.cValues; i++)
+					for (ULONG i = 0; i < lpProp->Value.MVbin.cValues; i++)
 					{
 						m_lpHostDlg->OnOpenEntryID(&lpProp->Value.MVbin.lpbin[i]);
 					}
 				}
 				break;
 			}
-			}
 		}
 	}
+
 	if (m_lpPropBag)
 	{
 		m_lpPropBag->FreeBuffer(lpProp);

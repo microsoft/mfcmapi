@@ -197,7 +197,7 @@ BOOL CStreamEditor::OnInitDialog()
 				false);
 
 			lpSmartView->SetParser(iStructType);
-			lpSmartView->SetStringW(szSmartView.c_str());
+			lpSmartView->SetStringW(szSmartView);
 		}
 	}
 
@@ -349,7 +349,7 @@ void CStreamEditor::ReadTextStreamFromProperty() const
 			IDS_CANNOTOPENSTREAM,
 			ErrorNameFromErrorCode(m_StreamError).c_str(),
 			m_StreamError);
-		SetStringW(m_iTextBox, szStreamErr.c_str());
+		SetStringW(m_iTextBox, szStreamErr);
 		SetEditReadOnly(m_iTextBox);
 		SetEditReadOnly(m_iBinBox);
 		return;
@@ -458,7 +458,7 @@ _Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
 				if (lpBinPane) lpBinPane->SetCount(bin.size());
 				break;
 			case EDITOR_STREAM_UNICODE:
-				SetStringW(m_iTextBox, reinterpret_cast<LPCWSTR>(bin.data()), bin.size() / sizeof(WCHAR));
+				SetStringW(m_iTextBox, wstring(LPWSTR(bin.data()), bin.size() / sizeof(WCHAR)));
 				if (lpBinPane) lpBinPane->SetCount(bin.size());
 				break;
 			}
@@ -484,8 +484,7 @@ _Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
 	{
 		auto szFlags = InterpretFlags(flagStreamFlag, m_ulStreamFlags);
 		SetStringf(m_iFlagBox, L"0x%08X = %ws", m_ulStreamFlags, szFlags.c_str()); // STRING_OK
-		auto szTmp = formatmessage(IDS_CODEPAGES, m_ulInCodePage, m_ulOutCodePage);
-		SetStringW(m_iCodePageBox, szTmp.c_str());
+		SetStringW(m_iCodePageBox, formatmessage(IDS_CODEPAGES, m_ulInCodePage, m_ulOutCodePage));
 	}
 
 	OnRecalcLayout();

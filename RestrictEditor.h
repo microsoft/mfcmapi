@@ -59,7 +59,7 @@ private:
 	void OnEditAction1() override;
 	BOOL OnInitDialog() override;
 	_Check_return_ ULONG HandleChange(UINT nID) override;
-	void InitListFromEntryList(ULONG ulListNum, _In_ LPENTRYLIST lpEntryList);
+	void InitListFromEntryList(ULONG ulListNum, _In_ LPENTRYLIST lpEntryList) const;
 	void OnOK() override;
 
 	_Check_return_ LPSRestriction GetSourceRes() const;

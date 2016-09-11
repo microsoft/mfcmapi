@@ -54,7 +54,7 @@ public:
 	void CreateControls(ULONG ulCount);
 	void InitPane(ULONG iNum, ViewPane* lpPane);
 	void SetStringA(ULONG i, string szMsg) const;
-	void SetStringW(ULONG i, _In_opt_z_ LPCWSTR szMsg, size_t cchsz = -1) const;
+	void SetStringW(ULONG i, wstring szMsg) const;
 	void SetStringf(ULONG i, wstring szMsg, ...) const;
 	void LoadString(ULONG i, UINT uidMsg) const;
 	void SetBinary(ULONG i, _In_opt_count_(cb) LPBYTE lpb, size_t cb) const;
