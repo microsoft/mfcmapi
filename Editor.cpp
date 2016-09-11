@@ -1030,15 +1030,15 @@ void CEditor::SetStringW(ULONG i, _In_opt_z_ LPCWSTR szMsg, size_t cchsz) const
 }
 
 // Updates m_lpControls[i].lpEdit->lpszW using SetStringW
-void __cdecl CEditor::SetStringf(ULONG i, _Printf_format_string_ LPCTSTR szMsg, ...) const
+void CEditor::SetStringf(ULONG i, wstring szMsg, ...) const
 {
 	if (!IsValidEdit(i)) return;
 
-	if (szMsg)
+	if (!szMsg.empty())
 	{
 		va_list argList = nullptr;
 		va_start(argList, szMsg);
-		SetStringW(i, formatV(LPCTSTRToWstring(szMsg), argList).c_str());
+		SetStringW(i, formatV(szMsg, argList).c_str());
 		va_end(argList);
 	}
 	else
@@ -1073,7 +1073,7 @@ void CEditor::SetBinary(ULONG i, _In_opt_count_(cb) LPBYTE lpb, size_t cb) const
 // Updates m_lpControls[i].lpEdit->lpszW using SetStringW
 void CEditor::SetSize(ULONG i, size_t cb) const
 {
-	SetStringf(i, _T("0x%08X = %u"), static_cast<int>(cb), static_cast<UINT>(cb)); // STRING_OK
+	SetStringf(i, L"0x%08X = %u", static_cast<int>(cb), static_cast<UINT>(cb)); // STRING_OK
 }
 
 // Returns a binary buffer which is represented by the hex string
@@ -1126,12 +1126,12 @@ _Check_return_ HRESULT CEditor::GetEntryID(ULONG i, bool bIsBase64, _Out_ size_t
 
 void CEditor::SetHex(ULONG i, ULONG ulVal) const
 {
-	SetStringf(i, _T("0x%08X"), ulVal); // STRING_OK
+	SetStringf(i, L"0x%08X", ulVal); // STRING_OK
 }
 
 void CEditor::SetDecimal(ULONG i, ULONG ulVal) const
 {
-	SetStringf(i, _T("%u"), ulVal); // STRING_OK
+	SetStringf(i, L"%u", ulVal); // STRING_OK
 }
 
 void CEditor::SetListString(ULONG iControl, ULONG iListRow, ULONG iListCol, wstring szListString) const

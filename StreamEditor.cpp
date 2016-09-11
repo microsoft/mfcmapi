@@ -483,7 +483,7 @@ _Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
 	if (m_bUseWrapEx)
 	{
 		auto szFlags = InterpretFlags(flagStreamFlag, m_ulStreamFlags);
-		SetStringf(m_iFlagBox, _T("0x%08X = %ws"), m_ulStreamFlags, szFlags.c_str()); // STRING_OK
+		SetStringf(m_iFlagBox, L"0x%08X = %ws", m_ulStreamFlags, szFlags.c_str()); // STRING_OK
 		auto szTmp = formatmessage(IDS_CODEPAGES, m_ulInCodePage, m_ulOutCodePage);
 		SetStringW(m_iCodePageBox, szTmp.c_str());
 	}
