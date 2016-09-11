@@ -289,7 +289,7 @@ void OnQSDisplayNicknameCache(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 			{
 				auto lpPane = static_cast<CountedTextPane*>(MyResults.GetControl(1));
 				if (lpPane) lpPane->SetCount(lpsProp->Value.bin.cb);
-				MyResults.SetBinary(1, lpsProp->Value.bin.lpb, lpsProp->Value.bin.cb);
+				MyResults.SetBinary(1, lpsProp->Value.bin);
 			}
 
 			WC_H(MyResults.DisplayDialog());
@@ -507,7 +507,7 @@ void OnQSLookupThumbail(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 
 		auto lpPane = static_cast<CountedTextPane*>(MyResults.GetControl(0));
 		if (lpPane) lpPane->SetCount(lpThumbnail->Value.bin.cb);
-		MyResults.SetBinary(0, lpThumbnail->Value.bin.lpb, lpThumbnail->Value.bin.cb);
+		MyResults.SetBinary(0, lpThumbnail->Value.bin);
 
 		MyResults.SetStringA(1, string(LPCSTR(lpThumbnail->Value.bin.lpb), lpThumbnail->Value.bin.cb));
 	}
