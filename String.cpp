@@ -99,28 +99,6 @@ wstring formatmessage(wstring const szMsg, ...)
 	return ret;
 }
 
-// Allocates with new. Free with delete[]
-LPTSTR wstringToLPTSTR(wstring const& src)
-{
-#ifdef UNICODE
-	auto cch = src.length();
-	if (!cch) return nullptr;
-
-	cch++; // Null terminator
-	auto dst = new WCHAR[cch];
-	if (dst)
-	{
-		memcpy(dst, src.c_str(), cch * sizeof(WCHAR));
-	}
-#else
-	LPTSTR dst = nullptr;
-	auto hRes = S_OK;
-	EC_H(UnicodeToAnsi(src.c_str(), &dst));
-#endif
-
-	return dst;
-}
-
 CString wstringToCString(wstring const& src)
 {
 	return src.c_str();

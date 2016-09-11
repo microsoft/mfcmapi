@@ -10,7 +10,6 @@ wstring format(LPCWSTR szMsg, ...);
 wstring formatmessagesys(DWORD dwID);
 wstring formatmessage(DWORD dwID, ...);
 wstring formatmessage(wstring const szMsg, ...);
-LPTSTR wstringToLPTSTR(wstring const& src);
 CString wstringToCString(wstring const& src);
 CStringA wstringToCStringA(wstring const& src);
 string wstringTostring(wstring const& src);

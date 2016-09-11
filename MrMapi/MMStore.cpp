@@ -1,22 +1,21 @@
 #include "stdafx.h"
-#include "..\stdafx.h"
 #include "MrMAPI.h"
 #include "MMStore.h"
 #include "MMFolder.h"
-#include "..\ColumnTags.h"
-#include "..\InterpretProp2.h"
-#include "..\MAPIFunctions.h"
-#include "..\MAPIStoreFunctions.h"
-#include "..\String.h"
+#include "../ColumnTags.h"
+#include "../InterpretProp2.h"
+#include "../MAPIFunctions.h"
+#include "../MAPIStoreFunctions.h"
+#include "../String.h"
 
 HRESULT OpenStore(_In_ LPMAPISESSION lpMAPISession, ULONG ulIndex, _Out_ LPMDB* lppMDB)
 {
-	HRESULT hRes = S_OK;
-	LPMAPITABLE lpStoreTable = NULL;
-	LPMDB lpMDB = NULL;
+	auto hRes = S_OK;
+	LPMAPITABLE lpStoreTable = nullptr;
+	LPMDB lpMDB = nullptr;
 	if (!lpMAPISession || !lppMDB) return MAPI_E_INVALID_PARAMETER;
 
-	*lppMDB = NULL;
+	*lppMDB = nullptr;
 
 	WC_MAPI(lpMAPISession->GetMsgStoresTable(0, &lpStoreTable));
 
@@ -27,11 +26,11 @@ HRESULT OpenStore(_In_ LPMAPISESSION lpMAPISession, ULONG ulIndex, _Out_ LPMDB* 
 			1,
 			PR_ENTRYID,
 		};
-		WC_MAPI(lpStoreTable->SetColumns((LPSPropTagArray)&sptStore, TBL_ASYNC));
+		WC_MAPI(lpStoreTable->SetColumns(LPSPropTagArray(&sptStore), TBL_ASYNC));
 
 		if (SUCCEEDED(hRes))
 		{
-			LPSRowSet lpRow = NULL;
+			LPSRowSet lpRow = nullptr;
 			WC_MAPI(lpStoreTable->SeekRow(BOOKMARK_BEGINNING, ulIndex, NULL));
 			WC_MAPI(lpStoreTable->QueryRows(
 				1,
@@ -71,9 +70,9 @@ HRESULT HrMAPIOpenStoreAndFolder(
 	_Out_opt_ LPMDB* lppMDB,
 	_Deref_out_opt_ LPMAPIFOLDER* lppFolder)
 {
-	HRESULT hRes = S_OK;
-	LPMDB lpMDB = NULL;
-	LPMAPIFOLDER lpFolder = NULL;
+	auto hRes = S_OK;
+	LPMDB lpMDB = nullptr;
+	LPMAPIFOLDER lpFolder = nullptr;
 
 	if (lpMAPISession)
 	{
@@ -82,19 +81,14 @@ HRESULT HrMAPIOpenStoreAndFolder(
 		{
 			// Skip the '#'
 			lpszFolderPath.erase(0, 1);
-			LPSTR szPath = wstringToLPTSTR(lpszFolderPath);
 
 			// Find our slash if we have one and null terminate at it
-			LPSTR szSlash = strchr(szPath + 1, '\\');
-			if (szSlash)
-			{
-				szSlash[0] = L'\0';
-			}
+			lpszFolderPath.erase(lpszFolderPath.find_last_of(L'\\'), wstring::npos);
 
-			vector<BYTE> bin = HexStringToBin(LPCSTRToWstring(szPath));
+			auto bin = HexStringToBin(lpszFolderPath);
 			// In order for cb to get bigger than 1, the string has to have at least 4 characters
 			// Which is larger than any reasonable store number. So we use that to distinguish.
-			if (bin.size() > 1 && bin.data() != NULL)
+			if (bin.size() > 1)
 			{
 				SBinary Bin = { 0 };
 				Bin.cb = static_cast<ULONG>(bin.size());
@@ -105,7 +99,7 @@ HRESULT HrMAPIOpenStoreAndFolder(
 					&Bin,
 					MDB_NO_DIALOG | MDB_WRITE,
 					&lpMDB));
-				size_t slashPos = lpszFolderPath.find_first_of(L'\\');
+				auto slashPos = lpszFolderPath.find_first_of(L'\\');
 				if (slashPos != string::npos)
 				{
 					lpszFolderPath = lpszFolderPath.substr(slashPos, string::npos);
@@ -118,8 +112,8 @@ HRESULT HrMAPIOpenStoreAndFolder(
 			else
 			{
 				hRes = S_OK;
-				LPWSTR szEndPtr = NULL;
-				ULONG ulStore = wcstoul(lpszFolderPath.c_str(), &szEndPtr, 10);
+				LPWSTR szEndPtr = nullptr;
+				auto ulStore = wcstoul(lpszFolderPath.c_str(), &szEndPtr, 10);
 
 				// Only '\' and NULL are acceptable next characters after our store number
 				if (szEndPtr && (szEndPtr[0] == L'\\' || szEndPtr[0] == L'\0'))
@@ -133,8 +127,6 @@ HRESULT HrMAPIOpenStoreAndFolder(
 					hRes = MAPI_E_INVALID_PARAMETER;
 				}
 			}
-
-			delete[] szPath;
 		}
 		else
 		{
@@ -191,10 +183,10 @@ HRESULT HrMAPIOpenStoreAndFolder(
 
 void PrintObjectProperty(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	if (!lpMAPIProp || !ulPropTag) return;
 
-	LPSPropValue lpAllProps = NULL;
+	LPSPropValue lpAllProps = nullptr;
 	ULONG cValues = 0L;
 
 	SPropTagArray sTag = { 0 };
@@ -213,13 +205,13 @@ void PrintObjectProperty(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
 
 void PrintObjectProperties(wstring const& szObjType, _In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	if (!lpMAPIProp) return;
 
 	wprintf(g_szXMLHeader.c_str());
 	wprintf(L"<%ws>\n", szObjType.c_str());
 
-	LPSPropValue lpAllProps = NULL;
+	LPSPropValue lpAllProps = nullptr;
 	ULONG cValues = 0L;
 
 	if (ulPropTag)
@@ -263,8 +255,8 @@ void PrintStoreProperty(_In_ LPMAPISESSION lpMAPISession, ULONG ulIndex, ULONG u
 {
 	if (!lpMAPISession || !ulPropTag) return;
 
-	HRESULT hRes = S_OK;
-	LPMDB lpMDB = NULL;
+	auto hRes = S_OK;
+	LPMDB lpMDB = nullptr;
 	WC_H(OpenStore(lpMAPISession, ulIndex, &lpMDB));
 	if (lpMDB)
 	{
@@ -281,8 +273,8 @@ void PrintStoreProperties(_In_ LPMDB lpMDB, ULONG ulPropTag)
 
 void PrintStoreTable(_In_ LPMAPISESSION lpMAPISession, ULONG ulPropTag)
 {
-	HRESULT hRes = S_OK;
-	LPMAPITABLE lpStoreTable = NULL;
+	auto hRes = S_OK;
+	LPMAPITABLE lpStoreTable = nullptr;
 	if (!lpMAPISession) return;
 
 	wprintf(g_szXMLHeader.c_str());
@@ -291,7 +283,7 @@ void PrintStoreTable(_In_ LPMAPISESSION lpMAPISession, ULONG ulPropTag)
 
 	if (lpStoreTable)
 	{
-		LPSPropTagArray sTags = (LPSPropTagArray)&sptSTORECols;
+		auto sTags = LPSPropTagArray(&sptSTORECols);
 		SPropTagArray sTag = { 0 };
 		if (ulPropTag)
 		{
@@ -304,23 +296,21 @@ void PrintStoreTable(_In_ LPMAPISESSION lpMAPISession, ULONG ulPropTag)
 
 		if (SUCCEEDED(hRes))
 		{
-			LPSRowSet lpRows = NULL;
+			LPSRowSet lpRows = nullptr;
 			ULONG iCurStore = 0;
 			if (!FAILED(hRes)) for (;;)
 			{
 				hRes = S_OK;
 				if (lpRows) FreeProws(lpRows);
-				lpRows = NULL;
+				lpRows = nullptr;
 				WC_MAPI(lpStoreTable->QueryRows(
 					10,
 					NULL,
 					&lpRows));
 				if (FAILED(hRes) || !lpRows || !lpRows->cRows) break;
 
-				ULONG i = 0;
-				for (i = 0; i < lpRows->cRows; i++)
+				for (ULONG i = 0; i < lpRows->cRows; i++)
 				{
-					hRes = S_OK;
 					wprintf(L"<properties index=\"%u\">\n", iCurStore);
 					if (ulPropTag &&
 						lpRows->aRow[0].lpProps &&
@@ -331,7 +321,7 @@ void PrintStoreTable(_In_ LPMAPISESSION lpMAPISession, ULONG ulPropTag)
 					}
 					else
 					{
-						_OutputProperties(DBGNoDebug, stdout, lpRows->aRow[i].cValues, lpRows->aRow[i].lpProps, NULL, false);
+						_OutputProperties(DBGNoDebug, stdout, lpRows->aRow[i].cValues, lpRows->aRow[i].lpProps, nullptr, false);
 					}
 
 					wprintf(L"</properties>\n");
@@ -349,7 +339,7 @@ void PrintStoreTable(_In_ LPMAPISESSION lpMAPISession, ULONG ulPropTag)
 
 void DoStore(_In_ MYOPTIONS ProgOpts)
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	ULONG ulPropTag = NULL;
 
 	// If we have a prop tag, parse it
@@ -359,7 +349,7 @@ void DoStore(_In_ MYOPTIONS ProgOpts)
 		ulPropTag = PropNameToPropTag(ProgOpts.lpszUnswitchedOption);
 	}
 
-	LPMDB lpMDB = NULL;
+	LPMDB lpMDB = nullptr;
 	if (ProgOpts.lpMAPISession)
 	{
 		if (0 == ProgOpts.ulStore)
