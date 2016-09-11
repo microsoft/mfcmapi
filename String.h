@@ -17,7 +17,6 @@ string wstringTostring(wstring const& src);
 wstring stringTowstring(string const& src);
 wstring LPCTSTRToWstring(LPCTSTR src);
 wstring LPCSTRToWstring(LPCSTR src);
-CString LPCSTRToCString(LPCSTR src);
 CStringA LPCTSTRToCStringA(LPCTSTR src);
 void wstringToLower(wstring src);
 ULONG wstringToUlong(wstring const& src, int radix, bool rejectInvalidCharacters = true);
