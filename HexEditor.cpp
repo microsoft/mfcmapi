@@ -127,7 +127,7 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 			SetStringW(HEXED_UNICODE, L"");
 		}
 
-		SetBinary(HEXED_HEX, lpb, cb);
+		SetBinary(HEXED_HEX, bin);
 	}
 	break;
 	case HEXED_HEX: // binary changed

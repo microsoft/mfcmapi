@@ -1067,6 +1067,20 @@ void CEditor::SetBinary(ULONG i, _In_opt_count_(cb) LPBYTE lpb, size_t cb) const
 	m_lpControls[i].lpTextPane->SetBinary(lpb, cb);
 }
 
+void CEditor::SetBinary(ULONG i, _In_ vector<BYTE> bin) const
+{
+	if (!IsValidEdit(i)) return;
+
+	m_lpControls[i].lpTextPane->SetBinary(bin.data(), bin.size());
+}
+
+void CEditor::SetBinary(ULONG i, _In_ SBinary bin) const
+{
+	if (!IsValidEdit(i)) return;
+
+	m_lpControls[i].lpTextPane->SetBinary(bin.lpb, bin.cb);
+}
+
 // Updates m_lpControls[i].lpTextPane->m_lpszW using SetStringW
 void CEditor::SetSize(ULONG i, size_t cb) const
 {
