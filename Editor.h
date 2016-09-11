@@ -53,7 +53,7 @@ public:
 	void SetPromptPostFix(_In_ wstring szMsg);
 	void CreateControls(ULONG ulCount);
 	void InitPane(ULONG iNum, ViewPane* lpPane);
-	void SetStringA(ULONG i, _In_opt_z_ LPCSTR szMsg, size_t cchsz = -1) const;
+	void SetStringA(ULONG i, string szMsg) const;
 	void SetStringW(ULONG i, _In_opt_z_ LPCWSTR szMsg, size_t cchsz = -1) const;
 	void SetStringf(ULONG i, wstring szMsg, ...) const;
 	void LoadString(ULONG i, UINT uidMsg) const;

@@ -414,7 +414,7 @@ void CPropertyEditor::InitPropertyControls()
 			{
 				lpPane->SetCount(m_lpsInputValue->Value.bin.cb);
 				lpPane->SetStringW(BinToHexString(&m_lpsInputValue->Value.bin, false).c_str());
-				SetStringA(1, reinterpret_cast<LPCSTR>(m_lpsInputValue->Value.bin.lpb), m_lpsInputValue->Value.bin.cb);
+				SetStringA(1, string(LPCSTR(m_lpsInputValue->Value.bin.lpb), m_lpsInputValue->Value.bin.cb));
 			}
 
 			lpPane = static_cast<CountedTextPane*>(GetControl(1));
@@ -816,7 +816,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		if (0 == i || 2 == i)
 		{
 			auto bin = GetBinaryUseControl(0);
-			if (0 == i) SetStringA(1, reinterpret_cast<LPCSTR>(bin.data()), bin.size()); // ansi string
+			if (0 == i) SetStringA(1, string(LPCSTR(bin.data()), bin.size())); // ansi string
 			Bin.lpb = bin.data();
 			Bin.cb = ULONG(bin.size());
 		}
@@ -861,7 +861,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		{
 			auto bin = GetBinaryUseControl(1);
 
-			SetStringA(0, reinterpret_cast<LPCSTR>(bin.data()), bin.size());
+			SetStringA(0, string(LPCSTR(bin.data()), bin.size()));
 
 			lpPane = static_cast<CountedTextPane*>(GetControl(0));
 			if (lpPane) lpPane->SetCount(bin.size());

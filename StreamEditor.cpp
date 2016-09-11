@@ -454,7 +454,7 @@ _Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
 			case EDITOR_RTF:
 			case EDITOR_STREAM_BINARY:
 			default:
-				SetStringA(m_iTextBox, reinterpret_cast<LPCSTR>(bin.data()), bin.size() / sizeof(CHAR));
+				SetStringA(m_iTextBox, string(LPCSTR(bin.data()), bin.size() / sizeof(CHAR)));
 				if (lpBinPane) lpBinPane->SetCount(bin.size());
 				break;
 			case EDITOR_STREAM_UNICODE:

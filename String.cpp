@@ -133,8 +133,12 @@ CStringA wstringToCStringA(wstring const& src)
 
 string wstringTostring(wstring const& src)
 {
-	std::string str(src.begin(), src.end());
-	return str;
+	return string(src.begin(), src.end());
+}
+
+wstring stringTowstring(string const& src)
+{
+	return wstring(src.begin(), src.end());
 }
 
 wstring LPCTSTRToWstring(LPCTSTR src)
@@ -146,6 +150,8 @@ wstring LPCTSTRToWstring(LPCTSTR src)
 #endif
 }
 
+// Careful calling this with string as it *will* lose embedded null
+// use stringTowstring instead
 wstring LPCSTRToWstring(LPCSTR src)
 {
 	if (!src) return L"";

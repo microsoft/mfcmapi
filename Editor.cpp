@@ -1012,11 +1012,11 @@ void CEditor::SetPromptPostFix(_In_ wstring szMsg)
 
 // Sets m_lpControls[i].lpEdit->lpszW using SetStringW
 // cchsz of -1 lets AnsiToUnicode and SetStringW calculate the length on their own
-void CEditor::SetStringA(ULONG i, _In_opt_z_ LPCSTR szMsg, size_t cchsz) const
+void CEditor::SetStringA(ULONG i, string szMsg) const
 {
 	if (!IsValidEdit(i)) return;
 
-	m_lpControls[i].lpTextPane->SetStringA(szMsg, cchsz);
+	m_lpControls[i].lpTextPane->SetStringA(szMsg);
 }
 
 // Sets m_lpControls[i].lpEdit->lpszW

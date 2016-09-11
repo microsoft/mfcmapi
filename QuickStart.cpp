@@ -509,7 +509,7 @@ void OnQSLookupThumbail(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 		if (lpPane) lpPane->SetCount(lpThumbnail->Value.bin.cb);
 		MyResults.SetBinary(0, lpThumbnail->Value.bin.lpb, lpThumbnail->Value.bin.cb);
 
-		MyResults.SetStringA(1, reinterpret_cast<LPCSTR>(lpThumbnail->Value.bin.lpb), lpThumbnail->Value.bin.cb + 1); // ansi string
+		MyResults.SetStringA(1, string(LPCSTR(lpThumbnail->Value.bin.lpb), lpThumbnail->Value.bin.cb));
 	}
 	else
 	{

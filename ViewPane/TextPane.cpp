@@ -285,20 +285,10 @@ void TextPane::SetEditBoxText()
 
 // Sets m_lpControls[i].UI.lpEdit->lpszW using SetStringW
 // cchsz of -1 lets AnsiToUnicode and SetStringW calculate the length on their own
-void TextPane::SetStringA(_In_opt_z_ LPCSTR szMsg, size_t cchsz)
+void TextPane::SetStringA(string szMsg)
 {
-	if (!szMsg) szMsg = "";
-	auto hRes = S_OK;
-
-	LPWSTR szMsgW = nullptr;
-	size_t cchszW = 0;
-	EC_H(AnsiToUnicode(szMsg, &szMsgW, &cchszW, cchsz));
-	if (SUCCEEDED(hRes))
-	{
-		SetStringW(szMsgW, cchszW);
-	}
-
-	delete[] szMsgW;
+	auto szMsgW = stringTowstring(szMsg);
+	SetStringW(szMsgW.c_str(), szMsgW.length());
 }
 
 // Sets m_lpControls[i].UI.lpEdit->lpszW
@@ -434,7 +424,7 @@ void TextPane::CommitUIValues()
 				reinterpret_cast<LPARAM>(buffer));
 			if (cchW != 0)
 			{
-				m_lpszW = LPCSTRToWstring(string(LPSTR(buffer), cchText).c_str());
+				m_lpszW = stringTowstring(string(LPSTR(buffer), cchText));
 			}
 		}
 	}
