@@ -159,11 +159,6 @@ wstring LPCSTRToWstring(LPCSTR src)
 	return wstring(ansi.begin(), ansi.end());
 }
 
-CString LPCSTRToCString(LPCSTR src)
-{
-	return src;
-}
-
 CStringA LPCTSTRToCStringA(LPCTSTR src)
 {
 	return src;
