@@ -30,7 +30,7 @@ public:
 	void SetBinary(_In_opt_count_(cb) LPBYTE lpb, size_t cb);
 	void InitEditFromBinaryStream(_In_ LPSTREAM lpStreamIn);
 	void WriteToBinaryStream(_In_ LPSTREAM lpStreamOut) const;
-	void AppendString(_In_z_ LPCTSTR szMsg);
+	void AppendString(_In_ wstring szMsg);
 	void ShowWindow(int nCmdShow);
 
 	void SetEditReadOnly();

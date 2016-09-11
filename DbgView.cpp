@@ -13,19 +13,19 @@ class CDbgView : public CEditor
 public:
 	CDbgView(_In_ CParentWnd* pParentWnd);
 	virtual ~CDbgView();
-	void AppendText(wstring szMsg);
+	void AppendText(wstring szMsg) const;
 
 private:
-	_Check_return_ ULONG HandleChange(UINT nID);
-	void  OnEditAction1();
-	void  OnEditAction2();
+	_Check_return_ ULONG HandleChange(UINT nID) override;
+	void  OnEditAction1() override;
+	void  OnEditAction2() override;
 
-	void OnOK();
-	void OnCancel();
+	void OnOK() override;
+	void OnCancel() override;
 	bool m_bPaused;
 };
 
-CDbgView* g_DgbView = NULL;
+CDbgView* g_DgbView = nullptr;
 
 // Displays the debug viewer - only one may exist at a time
 void DisplayDbgView(_In_ CParentWnd* pParentWnd)
@@ -50,7 +50,7 @@ enum __DbgViewFields
 static wstring CLASS = L"CDbgView";
 
 CDbgView::CDbgView(_In_ CParentWnd* pParentWnd) :
-CEditor(pParentWnd, IDS_DBGVIEW, NULL, 0, CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_ACTION2, IDS_CLEAR, IDS_CLOSE, NULL)
+	CEditor(pParentWnd, IDS_DBGVIEW, NULL, 0, CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_ACTION2, IDS_CLEAR, IDS_CLOSE, NULL)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	CreateControls(DBGVIEW_NUMFIELDS);
@@ -65,7 +65,7 @@ CEditor(pParentWnd, IDS_DBGVIEW, NULL, 0, CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTO
 CDbgView::~CDbgView()
 {
 	TRACE_DESTRUCTOR(CLASS);
-	g_DgbView = NULL;
+	g_DgbView = nullptr;
 }
 
 void CDbgView::OnOK()
@@ -81,23 +81,23 @@ void CDbgView::OnCancel()
 
 _Check_return_ ULONG CDbgView::HandleChange(UINT nID)
 {
-	ULONG i = CEditor::HandleChange(nID);
+	auto i = CEditor::HandleChange(nID);
 
-	if ((ULONG)-1 == i) return (ULONG)-1;
+	if (static_cast<ULONG>(-1) == i) return static_cast<ULONG>(-1);
 
 	switch (i)
 	{
-	case (DBGVIEW_TAGS) :
+	case DBGVIEW_TAGS:
 	{
-		ULONG ulTag = GetHexUseControl(DBGVIEW_TAGS);
-		SetDebugLevel(ulTag); return true;
+		auto ulTag = GetHexUseControl(DBGVIEW_TAGS);
+		SetDebugLevel(ulTag);
+		return true;
 	}
-						break;
-	case (DBGVIEW_PAUSE) :
+	case DBGVIEW_PAUSE:
 	{
 		m_bPaused = GetCheckUseControl(DBGVIEW_PAUSE);
 	}
-						 break;
+	break;
 
 	default:
 		break;
@@ -111,7 +111,7 @@ void CDbgView::OnEditAction1()
 {
 	if (IsValidEdit(DBGVIEW_VIEW))
 	{
-		TextPane* lpPane = (TextPane*)GetControl(DBGVIEW_VIEW);
+		auto lpPane = static_cast<TextPane*>(GetControl(DBGVIEW_VIEW));
 		if (lpPane)
 		{
 			return lpPane->ClearView();
@@ -125,18 +125,16 @@ void CDbgView::OnEditAction2()
 	OnCancel();
 }
 
-void CDbgView::AppendText(wstring szMsg)
+void CDbgView::AppendText(wstring szMsg) const
 {
 	if (m_bPaused) return;
 
 	if (IsValidEdit(DBGVIEW_VIEW))
 	{
-		TextPane* lpPane = (TextPane*)GetControl(DBGVIEW_VIEW);
+		auto lpPane = static_cast<TextPane*>(GetControl(DBGVIEW_VIEW));
 		if (lpPane)
 		{
-			LPCTSTR lpszMsg = wstringToLPTSTR(szMsg);
-			lpPane->AppendString(lpszMsg);
-			delete[] lpszMsg;
+			lpPane->AppendString(szMsg);
 		}
 	}
 }

@@ -304,13 +304,13 @@ void TextPane::SetBinary(_In_opt_count_(cb) LPBYTE lpb, size_t cb)
 }
 
 // This is used by the DbgView - don't call any debugger functions here!!!
-void TextPane::AppendString(_In_z_ LPCTSTR szMsg)
+void TextPane::AppendString(_In_z_ wstring szMsg)
 {
 	m_EditBox.HideSelection(false, true);
 
 	auto cchText = m_EditBox.GetWindowTextLength();
 	m_EditBox.SetSel(cchText, cchText);
-	m_EditBox.ReplaceSel(szMsg);
+	m_EditBox.ReplaceSel(wstringToCString(szMsg));
 }
 
 // This is used by the DbgView - don't call any debugger functions here!!!
