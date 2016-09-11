@@ -240,7 +240,7 @@ void CPropertyEditor::InitPropertyControls()
 		InitPane(0, CreateSingleLinePane(IDS_DOUBLE, false));
 		if (m_lpsInputValue)
 		{
-			SetStringf(0, _T("%f"), m_lpsInputValue->Value.at); // STRING_OK
+			SetStringf(0, L"%f", m_lpsInputValue->Value.at); // STRING_OK
 		}
 		else
 		{
@@ -255,7 +255,7 @@ void CPropertyEditor::InitPropertyControls()
 		InitPane(0, CreateSingleLinePane(IDS_DOUBLE, false));
 		if (m_lpsInputValue)
 		{
-			SetStringf(0, _T("%f"), m_lpsInputValue->Value.dbl); // STRING_OK
+			SetStringf(0, L"%f", m_lpsInputValue->Value.dbl); // STRING_OK
 		}
 		else
 		{
@@ -270,7 +270,7 @@ void CPropertyEditor::InitPropertyControls()
 		InitPane(0, CreateSingleLinePane(IDS_FLOAT, false));
 		if (m_lpsInputValue)
 		{
-			SetStringf(0, _T("%f"), m_lpsInputValue->Value.flt); // STRING_OK
+			SetStringf(0, L"%f", m_lpsInputValue->Value.flt); // STRING_OK
 		}
 		else
 		{
@@ -386,7 +386,7 @@ void CPropertyEditor::InitPropertyControls()
 		{
 			SetHex(0, static_cast<int>(m_lpsInputValue->Value.li.HighPart));
 			SetHex(1, static_cast<int>(m_lpsInputValue->Value.li.LowPart));
-			SetStringf(2, _T("%I64d"), m_lpsInputValue->Value.li.QuadPart); // STRING_OK
+			SetStringf(2, L"%I64d", m_lpsInputValue->Value.li.QuadPart); // STRING_OK
 		}
 		else
 		{
@@ -434,7 +434,7 @@ void CPropertyEditor::InitPropertyControls()
 		InitPane(2, m_lpSmartView);
 		if (m_lpsInputValue)
 		{
-			SetStringf(0, _T("%d"), m_lpsInputValue->Value.l); // STRING_OK
+			SetStringf(0, L"%d", m_lpsInputValue->Value.l); // STRING_OK
 			SetHex(1, m_lpsInputValue->Value.l);
 		}
 		else
@@ -738,7 +738,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		else if (1 == i)
 		{
 			lVal = static_cast<LONG>(wstringToUlong(szTmpString, 16));
-			SetStringf(0, _T("%d"), lVal); // STRING_OK
+			SetStringf(0, L"%d", lVal); // STRING_OK
 		}
 
 		sProp.ulPropTag = m_ulPropTag;
@@ -780,7 +780,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 			liVal.HighPart = static_cast<long>(wstringToUlong(szTmpString, 16));
 			szTmpString = GetStringUseControl(1);
 			liVal.LowPart = static_cast<long>(wstringToUlong(szTmpString, 16));
-			SetStringf(2, _T("%I64d"), liVal.QuadPart); // STRING_OK
+			SetStringf(2, L"%I64d", liVal.QuadPart); // STRING_OK
 		}
 		else if (2 == i)
 		{
