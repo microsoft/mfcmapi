@@ -6,7 +6,6 @@
 #include "Editor.h"
 #include "MAPIFunctions.h"
 #include "ExtraPropTags.h"
-#include "Guids.h"
 
 #ifndef MRMAPI
 // This declaration is missing from the MAPI headers
@@ -55,8 +54,6 @@ void DisplayMAPISVCPath(_In_ CWnd* pParentWnd)
 
 	DebugPrint(DBGGeneric, L"DisplayMAPISVCPath()\n");
 
-	auto path = GetMAPISVCPath();
-
 	CEditor MyData(
 		pParentWnd,
 		IDS_MAPISVCTITLE,
@@ -64,7 +61,7 @@ void DisplayMAPISVCPath(_In_ CWnd* pParentWnd)
 		1,
 		CEDITOR_BUTTON_OK);
 	MyData.InitPane(0, CreateSingleLinePane(IDS_FILEPATH, true));
-	MyData.SetStringW(0, path.c_str());
+	MyData.SetStringW(0, GetMAPISVCPath());
 
 	WC_H(MyData.DisplayDialog());
 }
@@ -273,7 +270,6 @@ static SERVICESINIREC aREMOVE_MSPSTServicesIni[] =
 _Check_return_ HRESULT HrSetProfileParameters(_In_ SERVICESINIREC *lpServicesIni)
 {
 	auto hRes = S_OK;
-	UINT n = 0;
 
 	DebugPrint(DBGGeneric, L"HrSetProfileParameters()\n");
 
@@ -290,7 +286,7 @@ _Check_return_ HRESULT HrSetProfileParameters(_In_ SERVICESINIREC *lpServicesIni
 		DebugPrint(DBGGeneric, L"Writing to this file: \"%ws\"\n", szServicesIni.c_str());
 
 		// Loop through and add items to MAPISVC.INF
-		n = 0;
+		auto n = 0;
 
 		while (lpServicesIni[n].lpszSection != nullptr)
 		{
@@ -556,7 +552,7 @@ _Check_return_ HRESULT HrAddServiceToProfile(
 
 	EC_MAPI(lpProfAdmin->AdminServices(
 		reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszProfileName.c_str())),
-		(LPTSTR)_T(""),
+		LPTSTR(""),
 		0,
 		0,
 		&lpServiceAdmin));
@@ -878,7 +874,7 @@ _Check_return_ HRESULT GetProfileServiceVersion(
 
 	EC_MAPI(lpProfAdmin->AdminServices(
 		reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszProfileName.c_str())),
-		(LPTSTR)_T(""),
+		LPTSTR(""),
 		0,
 		0,
 		&lpServiceAdmin));
@@ -887,7 +883,7 @@ _Check_return_ HRESULT GetProfileServiceVersion(
 	{
 		LPPROFSECT lpProfSect = nullptr;
 		EC_MAPI(lpServiceAdmin->OpenProfileSection(
-			(LPMAPIUID)pbGlobalProfileSectionGuid,
+			LPMAPIUID(pbGlobalProfileSectionGuid),
 			NULL,
 			0,
 			&lpProfSect));

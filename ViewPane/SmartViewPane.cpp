@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "SmartViewPane.h"
 #include "String.h"
-#include "SmartView\SmartView.h"
+#include "SmartView/SmartView.h"
 
 static wstring CLASS = L"SmartViewPane";
 
@@ -175,9 +175,9 @@ void SmartViewPane::SetMargins(
 	ViewPane::SetMargins(iMargin, iSideMargin, iLabelHeight, iSmallHeightMargin, iLargeHeightMargin, iButtonHeight, iEditHeight);
 }
 
-void SmartViewPane::SetStringW(_In_opt_z_ LPCWSTR szMsg)
+void SmartViewPane::SetStringW(wstring szMsg)
 {
-	if (szMsg && szMsg[0])
+	if (!szMsg.empty())
 	{
 		m_bHasData = true;
 	}
@@ -185,6 +185,7 @@ void SmartViewPane::SetStringW(_In_opt_z_ LPCWSTR szMsg)
 	{
 		m_bHasData = false;
 	}
+
 	m_lpTextPane->SetStringW(szMsg);
 }
 
@@ -213,15 +214,6 @@ void SmartViewPane::Parse(SBinary myBin)
 	auto iStructType = static_cast<__ParsingTypeEnum>(GetDropDownSelectionValue());
 	auto szSmartView = InterpretBinaryAsString(myBin, iStructType, nullptr);
 
-	if (!szSmartView.empty())
-	{
-		m_bHasData = true;
-		SetStringW(szSmartView.c_str());
-	}
-	else
-	{
-		m_bHasData = false;
-		SetStringW(L"");
-	}
-
+	m_bHasData = !szSmartView.empty();
+	SetStringW(szSmartView);
 }

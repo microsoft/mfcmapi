@@ -85,7 +85,7 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 
 		szEncodeStr = Base64Encode(cb, lpb);
 		cchEncodeStr = szEncodeStr.length();
-		SetStringW(HEXED_BASE64, szEncodeStr.c_str());
+		SetStringW(HEXED_BASE64, szEncodeStr);
 
 		SetBinary(HEXED_HEX, lpb, cb);
 	}
@@ -93,14 +93,14 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 	case HEXED_UNICODE: // Unicode string changed
 	{
 		auto text = GetEditBoxTextW(HEXED_UNICODE);
-		SetStringW(HEXED_ANSI, text.c_str(), text.length());
+		SetStringW(HEXED_ANSI, text);
 
 		lpb = LPBYTE(text.c_str());
 		cb = text.length() * sizeof(WCHAR);
 
 		szEncodeStr = Base64Encode(cb, lpb);
 		cchEncodeStr = szEncodeStr.length();
-		SetStringW(HEXED_BASE64, szEncodeStr.c_str());
+		SetStringW(HEXED_BASE64, szEncodeStr);
 
 		SetBinary(HEXED_HEX, lpb, cb);
 	}
@@ -120,7 +120,7 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 		SetStringA(HEXED_ANSI, string(LPCSTR(lpb), cb));
 		if (!(cb % 2)) // Set Unicode String
 		{
-			SetStringW(HEXED_UNICODE, reinterpret_cast<LPWSTR>(lpb), cb / sizeof(WCHAR));
+			SetStringW(HEXED_UNICODE, wstring(LPWSTR(lpb), cb / sizeof(WCHAR)));
 		}
 		else
 		{
@@ -139,7 +139,7 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 
 		if (!(cb % 2)) // Set Unicode String
 		{
-			SetStringW(HEXED_UNICODE, reinterpret_cast<LPWSTR>(lpb), cb / sizeof(WCHAR));
+			SetStringW(HEXED_UNICODE, wstring(LPWSTR(lpb), cb / sizeof(WCHAR)));
 		}
 		else
 		{
@@ -148,7 +148,7 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 
 		szEncodeStr = Base64Encode(cb, lpb);
 		cchEncodeStr = szEncodeStr.length();
-		SetStringW(HEXED_BASE64, szEncodeStr.c_str());
+		SetStringW(HEXED_BASE64, szEncodeStr);
 	}
 	break;
 	default:

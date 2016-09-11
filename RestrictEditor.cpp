@@ -52,16 +52,15 @@ _Check_return_ ULONG CResCompareEditor::HandleChange(UINT nID)
 
 	if (0 == i)
 	{
-		auto szFlags = InterpretFlags(flagRelop, GetHexUseControl(0));
-		SetStringW(1, szFlags.c_str());
+		SetStringW(1, InterpretFlags(flagRelop, GetHexUseControl(0)));
 	}
 	else if (2 == i)
 	{
-		SetStringW(3, TagToString(GetPropTagUseControl(2), nullptr, false, true).c_str());
+		SetStringW(3, TagToString(GetPropTagUseControl(2), nullptr, false, true));
 	}
 	else if (4 == i)
 	{
-		SetStringW(5, TagToString(GetPropTagUseControl(4), nullptr, false, true).c_str());
+		SetStringW(5, TagToString(GetPropTagUseControl(4), nullptr, false, true));
 	}
 	return i;
 }
@@ -161,22 +160,20 @@ _Check_return_ ULONG CResCombinedEditor::HandleChange(UINT nID)
 	{
 		if (RES_CONTENT == m_ulResType)
 		{
-			szFlags = InterpretFlags(flagFuzzyLevel, GetHexUseControl(0));
-			SetStringW(1, szFlags.c_str());
+			SetStringW(1, InterpretFlags(flagFuzzyLevel, GetHexUseControl(0)));
 		}
 		else if (RES_PROPERTY == m_ulResType)
 		{
-			szFlags = InterpretFlags(flagRelop, GetHexUseControl(0));
-			SetStringW(1, szFlags.c_str());
+			SetStringW(1, InterpretFlags(flagRelop, GetHexUseControl(0)));
 		}
 	}
 	else if (2 == i)
 	{
-		SetStringW(3, TagToString(GetPropTagUseControl(2), nullptr, false, true).c_str());
+		SetStringW(3, TagToString(GetPropTagUseControl(2), nullptr, false, true));
 	}
 	else if (4 == i)
 	{
-		SetStringW(5, TagToString(GetPropTagUseControl(4), nullptr, false, true).c_str());
+		SetStringW(5, TagToString(GetPropTagUseControl(4), nullptr, false, true));
 		m_lpOldProp = nullptr;
 		m_lpNewProp = nullptr;
 		SetStringW(6, L"");
@@ -222,8 +219,8 @@ void CResCombinedEditor::OnEditAction1()
 		wstring szAltProp;
 
 		InterpretProp(m_lpNewProp, &szProp, &szAltProp);
-		SetStringW(6, szProp.c_str());
-		SetStringW(7, szAltProp.c_str());
+		SetStringW(6, szProp);
+		SetStringW(7, szAltProp);
 	}
 }
 
@@ -269,13 +266,13 @@ _Check_return_ ULONG CResBitmaskEditor::HandleChange(UINT nID)
 
 	if (0 == i)
 	{
-		auto szFlags = InterpretFlags(flagBitmask, GetHexUseControl(0));
-		SetStringW(1, szFlags.c_str());
+		SetStringW(1, InterpretFlags(flagBitmask, GetHexUseControl(0)));
 	}
 	else if (2 == i)
 	{
-		SetStringW(3, TagToString(GetPropTagUseControl(2), nullptr, false, true).c_str());
+		SetStringW(3, TagToString(GetPropTagUseControl(2), nullptr, false, true));
 	}
+
 	return i;
 }
 
@@ -322,12 +319,11 @@ _Check_return_ ULONG CResSizeEditor::HandleChange(UINT nID)
 
 	if (0 == i)
 	{
-		auto szFlags = InterpretFlags(flagRelop, GetHexUseControl(0));
-		SetStringW(1, szFlags.c_str());
+		SetStringW(1, InterpretFlags(flagRelop, GetHexUseControl(0)));
 	}
 	else if (2 == i)
 	{
-		SetStringW(3, TagToString(GetPropTagUseControl(2), nullptr, false, true).c_str());
+		SetStringW(3, TagToString(GetPropTagUseControl(2), nullptr, false, true));
 	}
 	return i;
 }
@@ -362,7 +358,7 @@ _Check_return_ ULONG CResExistEditor::HandleChange(UINT nID)
 
 	if (0 == i)
 	{
-		SetStringW(1, TagToString(GetPropTagUseControl(0), nullptr, false, true).c_str());
+		SetStringW(1, TagToString(GetPropTagUseControl(0), nullptr, false, true));
 	}
 	return i;
 }
@@ -416,7 +412,7 @@ _Check_return_ ULONG CResSubResEditor::HandleChange(UINT nID)
 
 	if (0 == i)
 	{
-		SetStringW(1, TagToString(GetPropTagUseControl(0), nullptr, false, true).c_str());
+		SetStringW(1, TagToString(GetPropTagUseControl(0), nullptr, false, true));
 	}
 
 	return i;
@@ -444,7 +440,7 @@ void CResSubResEditor::OnEditAction1()
 		// Since m_lpNewRes was owned by an m_lpAllocParent, we don't free it directly
 		m_lpNewRes = ResEdit.DetachModifiedSRestriction();
 
-		SetStringW(2, RestrictionToString(m_lpNewRes, nullptr).c_str());
+		SetStringW(2, RestrictionToString(m_lpNewRes, nullptr));
 	}
 }
 
@@ -465,7 +461,7 @@ public:
 private:
 	_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData) override;
 	BOOL OnInitDialog() override;
-	void InitListFromRestriction(ULONG ulListNum, _In_ LPSRestriction lpRes);
+	void InitListFromRestriction(ULONG ulListNum, _In_ LPSRestriction lpRes) const;
 	void OnOK() override;
 
 	LPVOID m_lpAllocParent;
@@ -513,7 +509,7 @@ _Check_return_ ULONG CResAndOrEditor::GetResCount() const
 	return m_ulNewResCount;
 }
 
-void CResAndOrEditor::InitListFromRestriction(ULONG ulListNum, _In_ LPSRestriction lpRes)
+void CResAndOrEditor::InitListFromRestriction(ULONG ulListNum, _In_ LPSRestriction lpRes) const
 {
 	if (!IsValidList(ulListNum)) return;
 	if (!lpRes) return;
@@ -642,7 +638,7 @@ private:
 	void OnEditAction1() override;
 	_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData) override;
 	BOOL OnInitDialog() override;
-	void InitListFromPropArray(ULONG ulListNum, ULONG cProps, _In_count_(cProps) LPSPropValue lpProps);
+	void InitListFromPropArray(ULONG ulListNum, ULONG cProps, _In_count_(cProps) LPSPropValue lpProps) const;
 	_Check_return_ LPSRestriction GetSourceRes() const;
 	void OnOK() override;
 
@@ -709,7 +705,7 @@ _Check_return_ ULONG CResCommentEditor::GetSPropValueCount() const
 	return m_ulNewCommentProp;
 }
 
-void CResCommentEditor::InitListFromPropArray(ULONG ulListNum, ULONG cProps, _In_count_(cProps) LPSPropValue lpProps)
+void CResCommentEditor::InitListFromPropArray(ULONG ulListNum, ULONG cProps, _In_count_(cProps) LPSPropValue lpProps) const
 {
 	if (!IsValidList(ulListNum)) return;
 
@@ -754,7 +750,7 @@ void CResCommentEditor::OnEditAction1()
 	{
 		// Since m_lpNewCommentRes was owned by an m_lpAllocParent, we don't free it directly
 		m_lpNewCommentRes = MyResEditor.DetachModifiedSRestriction();
-		SetStringW(1, RestrictionToString(m_lpNewCommentRes, nullptr).c_str());
+		SetStringW(1, RestrictionToString(m_lpNewCommentRes, nullptr));
 	}
 }
 
@@ -938,8 +934,7 @@ BOOL CRestrictEditor::OnInitDialog()
 	if (lpSourceRes)
 	{
 		SetHex(0, lpSourceRes->rt);
-		auto szFlags = InterpretFlags(flagRestrictionType, lpSourceRes->rt);
-		SetStringW(1, szFlags.c_str());
+		SetStringW(1, InterpretFlags(flagRestrictionType, lpSourceRes->rt));
 	}
 
 	return bRet;
@@ -981,8 +976,7 @@ _Check_return_ ULONG CRestrictEditor::HandleChange(UINT nID)
 
 		if (ulOldResType == ulNewResType) return i;
 
-		auto szFlags = InterpretFlags(flagRestrictionType, ulNewResType);
-		SetStringW(1, szFlags.c_str());
+		SetStringW(1, InterpretFlags(flagRestrictionType, ulNewResType));
 
 		m_bModified = true;
 		if ((ulOldResType == RES_AND || ulOldResType == RES_OR) &&
@@ -1016,7 +1010,7 @@ _Check_return_ ULONG CRestrictEditor::HandleChange(UINT nID)
 			m_lpOutputRes->rt = ulNewResType;
 		}
 
-		SetStringW(2, RestrictionToString(m_lpOutputRes, nullptr).c_str());
+		SetStringW(2, RestrictionToString(m_lpOutputRes, nullptr));
 	}
 	return i;
 }
@@ -1069,7 +1063,7 @@ void CRestrictEditor::OnEditAction1()
 	if (S_OK == hRes)
 	{
 		m_bModified = true;
-		SetStringW(2, RestrictionToString(m_lpOutputRes, nullptr).c_str());
+		SetStringW(2, RestrictionToString(m_lpOutputRes, nullptr));
 	}
 }
 
@@ -1351,8 +1345,7 @@ _Check_return_ ULONG CCriteriaEditor::HandleChange(UINT nID)
 
 	if (2 == i)
 	{
-		auto szFlags = InterpretFlags(flagSearchFlag, GetHexUseControl(i));
-		SetStringW(3, szFlags.c_str());
+		SetStringW(3, InterpretFlags(flagSearchFlag, GetHexUseControl(i)));
 	}
 
 	return i;
@@ -1379,7 +1372,7 @@ _Check_return_ ULONG CCriteriaEditor::GetSearchFlags() const
 	return m_ulNewSearchFlags;
 }
 
-void CCriteriaEditor::InitListFromEntryList(ULONG ulListNum, _In_ LPENTRYLIST lpEntryList)
+void CCriteriaEditor::InitListFromEntryList(ULONG ulListNum, _In_ LPENTRYLIST lpEntryList) const
 {
 	if (!IsValidList(ulListNum)) return;
 
@@ -1430,7 +1423,7 @@ void CCriteriaEditor::OnEditAction1()
 			// We didn't pass an alloc parent to CRestrictEditor, so we must free what came back
 			MAPIFreeBuffer(m_lpNewRes);
 			m_lpNewRes = lpModRes;
-			SetStringW(5, RestrictionToString(m_lpNewRes, nullptr).c_str());
+			SetStringW(5, RestrictionToString(m_lpNewRes, nullptr));
 		}
 	}
 }

@@ -283,7 +283,7 @@ void OnQSDisplayNicknameCache(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 			MyResults.InitPane(0, CreateCollapsibleTextPane(NULL, true));
 			MyResults.InitPane(1, CreateCountedTextPane(IDS_HEX, true, IDS_CB));
 
-			MyResults.SetStringW(0, szNicknames.c_str());
+			MyResults.SetStringW(0, szNicknames);
 
 			if (lpsProp)
 			{
@@ -418,7 +418,7 @@ void OnQSDisplayQuota(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 			1,
 			CEDITOR_BUTTON_OK);
 		MyResults.InitPane(0, CreateMultiLinePane(NULL, true));
-		MyResults.SetStringW(0, szQuotaString.c_str());
+		MyResults.SetStringW(0, szQuotaString);
 
 		WC_H(MyResults.DisplayDialog());
 	}

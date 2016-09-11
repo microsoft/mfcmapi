@@ -505,7 +505,7 @@ void CMsgStoreDlg::OnPasteFolder()
 
 		if (lpProps)
 		{
-			if (CheckStringProp(&lpProps[NAME], PT_TSTRING))
+			if (CheckStringProp(&lpProps[NAME], PT_UNICODE))
 			{
 				DebugPrint(DBGGeneric, L"Folder Source Name = \"%ws\"\n", lpProps[NAME].Value.lpszW);
 				MyData.SetStringW(0, lpProps[NAME].Value.lpszW);
@@ -1130,7 +1130,7 @@ void CMsgStoreDlg::OnRestoreDeletedFolder()
 
 		if (lpProps)
 		{
-			if (CheckStringProp(&lpProps[NAME], PT_TSTRING))
+			if (CheckStringProp(&lpProps[NAME], PT_UNICODE))
 			{
 				DebugPrint(DBGGeneric, L"Folder Source Name = \"%ws\"\n", lpProps[NAME].Value.lpszW);
 				MyData.SetStringW(0, lpProps[NAME].Value.lpszW);

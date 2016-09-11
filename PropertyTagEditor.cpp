@@ -325,7 +325,7 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField) const
 			LoadString(PROPTAG_NAME, IDS_UNKNOWNPROPERTY);
 	}
 
-	if (PROPTAG_TYPESTRING != ulSkipField) SetStringW(PROPTAG_TYPESTRING, TypeToString(m_ulPropTag).c_str());
+	if (PROPTAG_TYPESTRING != ulSkipField) SetStringW(PROPTAG_TYPESTRING, TypeToString(m_ulPropTag));
 
 	// Do a named property lookup and fill out fields
 	// But only if PROPTAG_TAG or PROPTAG_ID is what the user changed

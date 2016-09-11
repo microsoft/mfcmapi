@@ -334,7 +334,7 @@ void CPropertyEditor::InitPropertyControls()
 		{
 			SetHex(0, m_lpsInputValue->Value.cur.Hi);
 			SetHex(1, m_lpsInputValue->Value.cur.Lo);
-			SetStringW(2, CurrencyToString(m_lpsInputValue->Value.cur).c_str());
+			SetStringW(2, CurrencyToString(m_lpsInputValue->Value.cur));
 		}
 		else
 		{
@@ -350,7 +350,7 @@ void CPropertyEditor::InitPropertyControls()
 		if (m_lpsInputValue)
 		{
 			SetHex(0, m_lpsInputValue->Value.err);
-			SetStringW(1, ErrorNameFromErrorCode(m_lpsInputValue->Value.err).c_str());
+			SetStringW(1, ErrorNameFromErrorCode(m_lpsInputValue->Value.err));
 		}
 
 		break;
@@ -372,7 +372,7 @@ void CPropertyEditor::InitPropertyControls()
 		if (m_lpSmartView)
 		{
 			m_lpSmartView->DisableDropDown();
-			m_lpSmartView->SetStringW(szSmartView.c_str());
+			m_lpSmartView->SetStringW(szSmartView);
 		}
 
 		break;
@@ -398,7 +398,7 @@ void CPropertyEditor::InitPropertyControls()
 		if (m_lpSmartView)
 		{
 			m_lpSmartView->DisableDropDown();
-			m_lpSmartView->SetStringW(szSmartView.c_str());
+			m_lpSmartView->SetStringW(szSmartView);
 		}
 
 		break;
@@ -413,7 +413,7 @@ void CPropertyEditor::InitPropertyControls()
 			if (lpPane)
 			{
 				lpPane->SetCount(m_lpsInputValue->Value.bin.cb);
-				lpPane->SetStringW(BinToHexString(&m_lpsInputValue->Value.bin, false).c_str());
+				lpPane->SetStringW(BinToHexString(&m_lpsInputValue->Value.bin, false));
 				SetStringA(1, string(LPCSTR(m_lpsInputValue->Value.bin.lpb), m_lpsInputValue->Value.bin.cb));
 			}
 
@@ -424,7 +424,7 @@ void CPropertyEditor::InitPropertyControls()
 		if (m_lpSmartView)
 		{
 			m_lpSmartView->SetParser(iStructType);
-			m_lpSmartView->SetStringW(szSmartView.c_str());
+			m_lpSmartView->SetStringW(szSmartView);
 		}
 
 		break;
@@ -447,7 +447,7 @@ void CPropertyEditor::InitPropertyControls()
 		if (m_lpSmartView)
 		{
 			m_lpSmartView->DisableDropDown();
-			m_lpSmartView->SetStringW(szSmartView.c_str());
+			m_lpSmartView->SetStringW(szSmartView);
 		}
 
 		break;
@@ -460,7 +460,7 @@ void CPropertyEditor::InitPropertyControls()
 			SetHex(0, static_cast<int>(m_lpsInputValue->Value.ft.dwLowDateTime));
 			SetHex(1, static_cast<int>(m_lpsInputValue->Value.ft.dwHighDateTime));
 			FileTimeToString(&m_lpsInputValue->Value.ft, szTemp1, szTemp2);
-			SetStringW(2, szTemp1.c_str());
+			SetStringW(2, szTemp1);
 		}
 		else
 		{
@@ -480,24 +480,24 @@ void CPropertyEditor::InitPropertyControls()
 			szGuid = GUIDToStringAndName(nullptr);
 		}
 
-		SetStringW(0, szGuid.c_str());
+		SetStringW(0, szGuid);
 		break;
 	case PT_SRESTRICTION:
 		InitPane(0, CreateCollapsibleTextPane(IDS_RESTRICTION, true));
 		InterpretProp(m_lpsInputValue, &szTemp1, nullptr);
-		SetStringW(0, szTemp1.c_str());
+		SetStringW(0, szTemp1);
 		break;
 	case PT_ACTIONS:
 		InitPane(0, CreateCollapsibleTextPane(IDS_ACTIONS, true));
 		InterpretProp(m_lpsInputValue, &szTemp1, nullptr);
-		SetStringW(0, szTemp1.c_str());
+		SetStringW(0, szTemp1);
 		break;
 	default:
 		InterpretProp(m_lpsInputValue, &szTemp1, &szTemp2);
 		InitPane(0, CreateCollapsibleTextPane(IDS_VALUE, true));
 		InitPane(1, CreateCollapsibleTextPane(IDS_ALTERNATEVIEW, true));
-		SetStringW(IDS_VALUE, szTemp1.c_str());
-		SetStringW(IDS_ALTERNATEVIEW, szTemp2.c_str());
+		SetStringW(IDS_VALUE, szTemp1);
+		SetStringW(IDS_ALTERNATEVIEW, szTemp2);
 		break;
 	}
 }
@@ -725,7 +725,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 			m_bIsAB,
 			m_bMVRow);
 
-		if (m_lpSmartView) m_lpSmartView->SetStringW(szSmartView.c_str());
+		if (m_lpSmartView) m_lpSmartView->SetStringW(szSmartView);
 
 		break;
 	case PT_LONG: // unsigned 32 bit
@@ -751,7 +751,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 			m_bIsAB,
 			m_bMVRow);
 
-		if (m_lpSmartView) m_lpSmartView->SetStringW(szSmartView.c_str());
+		if (m_lpSmartView) m_lpSmartView->SetStringW(szSmartView);
 
 		break;
 	case PT_CURRENCY:
@@ -761,7 +761,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 			curVal.Hi = wstringToUlong(szTmpString, 16);
 			szTmpString = GetStringUseControl(1);
 			curVal.Lo = wstringToUlong(szTmpString, 16);
-			SetStringW(2, CurrencyToString(curVal).c_str());
+			SetStringW(2, CurrencyToString(curVal));
 		}
 		else if (2 == i)
 		{
@@ -800,7 +800,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 			m_bIsAB,
 			m_bMVRow);
 
-		if (m_lpSmartView) m_lpSmartView->SetStringW(szSmartView.c_str());
+		if (m_lpSmartView) m_lpSmartView->SetStringW(szSmartView);
 
 		break;
 	case PT_SYSTIME: // components are unsigned hex
@@ -810,7 +810,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		ftVal.dwHighDateTime = wstringToUlong(szTmpString, 16);
 
 		FileTimeToString(&ftVal, szTemp1, szTemp2);
-		SetStringW(2, szTemp1.c_str());
+		SetStringW(2, szTemp1);
 		break;
 	case PT_BINARY:
 		if (0 == i || 2 == i)
@@ -894,14 +894,14 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		{
 			lpPane = static_cast<CountedTextPane*>(GetControl(0));
 			auto bin = GetBinaryUseControl(1);
-			if (bin.size() % sizeof(WCHAR))
+			if (!(bin.size() % sizeof(WCHAR)))
 			{
-				SetStringW(0, reinterpret_cast<LPCWSTR>(bin.data()), bin.size() / sizeof(WCHAR));
+				SetStringW(0, wstring(LPCWSTR(bin.data()), bin.size() / sizeof(WCHAR)));
 				if (lpPane) lpPane->SetCount(bin.size() / sizeof(WCHAR));
 			}
 			else
 			{
-				SetStringW(0, nullptr);
+				SetStringW(0, L"");
 				if (lpPane) lpPane->SetCount(0);
 			}
 
@@ -979,7 +979,7 @@ BOOL CMultiValuePropertyEditor::OnInitDialog()
 		if (lpPane)
 		{
 			lpPane->SetParser(iStructType);
-			lpPane->SetStringW(szSmartView.c_str());
+			lpPane->SetStringW(szSmartView);
 		}
 	}
 
@@ -1345,7 +1345,7 @@ void CMultiValuePropertyEditor::UpdateSmartView() const
 
 			if (!szSmartView.empty())
 			{
-				lpPane->SetStringW(szSmartView.c_str());
+				lpPane->SetStringW(szSmartView);
 			}
 		}
 

@@ -28,7 +28,7 @@ public:
 		int iButtonHeight, // Height of buttons below the control
 		int iEditHeight) override; // height of an edit control
 
-	void SetStringW(_In_opt_z_ LPCWSTR szMsg);
+	void SetStringW(wstring szMsg);
 	void DisableDropDown();
 	void SetParser(__ParsingTypeEnum iParser);
 

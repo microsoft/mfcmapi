@@ -1010,8 +1010,7 @@ void CEditor::SetPromptPostFix(_In_ wstring szMsg)
 	m_bHasPrompt = true;
 }
 
-// Sets m_lpControls[i].lpEdit->lpszW using SetStringW
-// cchsz of -1 lets AnsiToUnicode and SetStringW calculate the length on their own
+// Sets m_lpControls[i].lpTextPane->m_lpszW using SetStringW
 void CEditor::SetStringA(ULONG i, string szMsg) const
 {
 	if (!IsValidEdit(i)) return;
@@ -1019,17 +1018,15 @@ void CEditor::SetStringA(ULONG i, string szMsg) const
 	m_lpControls[i].lpTextPane->SetStringA(szMsg);
 }
 
-// Sets m_lpControls[i].lpEdit->lpszW
-// cchsz may or may not include the NULL terminator (if one is present)
-// If it is missing, we'll make sure we add it
-void CEditor::SetStringW(ULONG i, _In_opt_z_ LPCWSTR szMsg, size_t cchsz) const
+// Sets m_lpControls[i].lpTextPane->m_lpszW
+void CEditor::SetStringW(ULONG i, wstring szMsg) const
 {
 	if (!IsValidEdit(i)) return;
 
-	m_lpControls[i].lpTextPane->SetStringW(szMsg, cchsz);
+	m_lpControls[i].lpTextPane->SetStringW(szMsg);
 }
 
-// Updates m_lpControls[i].lpEdit->lpszW using SetStringW
+// Updates m_lpControls[i].lpTextPane->m_lpszW using SetStringW
 void CEditor::SetStringf(ULONG i, wstring szMsg, ...) const
 {
 	if (!IsValidEdit(i)) return;
@@ -1038,7 +1035,7 @@ void CEditor::SetStringf(ULONG i, wstring szMsg, ...) const
 	{
 		va_list argList = nullptr;
 		va_start(argList, szMsg);
-		SetStringW(i, formatV(szMsg, argList).c_str());
+		SetStringW(i, formatV(szMsg, argList));
 		va_end(argList);
 	}
 	else
@@ -1047,14 +1044,14 @@ void CEditor::SetStringf(ULONG i, wstring szMsg, ...) const
 	}
 }
 
-// Updates m_lpControls[i].lpEdit->lpszW using SetStringW
+// Updates m_lpControls[i].lpTextPane->m_lpszW using SetStringW
 void CEditor::LoadString(ULONG i, UINT uidMsg) const
 {
 	if (!IsValidEdit(i)) return;
 
 	if (uidMsg)
 	{
-		SetStringW(i, loadstring(uidMsg).c_str());
+		SetStringW(i, loadstring(uidMsg));
 	}
 	else
 	{
@@ -1062,7 +1059,7 @@ void CEditor::LoadString(ULONG i, UINT uidMsg) const
 	}
 }
 
-// Updates m_lpControls[i].lpEdit->lpszW using SetStringW
+// Updates m_lpControls[i].lpTextPane->m_lpszW using SetBinary
 void CEditor::SetBinary(ULONG i, _In_opt_count_(cb) LPBYTE lpb, size_t cb) const
 {
 	if (!IsValidEdit(i)) return;
@@ -1070,7 +1067,7 @@ void CEditor::SetBinary(ULONG i, _In_opt_count_(cb) LPBYTE lpb, size_t cb) const
 	m_lpControls[i].lpTextPane->SetBinary(lpb, cb);
 }
 
-// Updates m_lpControls[i].lpEdit->lpszW using SetStringW
+// Updates m_lpControls[i].lpTextPane->m_lpszW using SetStringW
 void CEditor::SetSize(ULONG i, size_t cb) const
 {
 	SetStringf(i, L"0x%08X = %u", static_cast<int>(cb), static_cast<UINT>(cb)); // STRING_OK
@@ -1220,18 +1217,14 @@ _Check_return_ ULONG CEditor::GetHexUseControl(ULONG i) const
 {
 	if (!IsValidEdit(i)) return 0;
 
-	auto szTmpString = GetStringUseControl(i);
-
-	return wstringToUlong(szTmpString, 16);
+	return wstringToUlong(GetStringUseControl(i), 16);
 }
 
 _Check_return_ ULONG CEditor::GetDecimalUseControl(ULONG i) const
 {
 	if (!IsValidEdit(i)) return 0;
 
-	auto szTmpString = GetStringUseControl(i);
-
-	return wstringToUlong(szTmpString, 10);
+	return wstringToUlong(GetStringUseControl(i), 10);
 }
 
 _Check_return_ ULONG CEditor::GetPropTagUseControl(ULONG i) const
