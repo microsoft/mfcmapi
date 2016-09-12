@@ -468,7 +468,7 @@ void DisplayMailboxTable(_In_ CParentWnd* lpParent,
 	if (lpMDB && StoreSupportsManageStore(lpMDB))
 	{
 		LPMAPITABLE lpMailboxTable = NULL;
-		wstring szServerName = GetServerName(lpMAPISession);
+		auto szServerName = stringTowstring(GetServerName(lpMAPISession));
 
 		CEditor MyData(
 			(CWnd*)lpParent,
@@ -495,9 +495,9 @@ void DisplayMailboxTable(_In_ CParentWnd* lpParent,
 
 		else if (S_OK == hRes)
 		{
-			wstring szServerDN = BuildServerDN(
-				MyData.GetStringW(0),
-				L"");
+			auto szServerDN = BuildServerDN(
+				wstringTostring(MyData.GetStringW(0)),
+				"");
 			if (!szServerDN.empty())
 			{
 				LPMDB lpOldMDB = NULL;
@@ -605,7 +605,7 @@ void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
 	if (lpMDB && StoreSupportsManageStore(lpMDB))
 	{
 		LPMAPITABLE lpPFTable = NULL;
-		wstring szServerName = GetServerName(lpMAPISession);
+		auto szServerName = stringTowstring(GetServerName(lpMAPISession));
 
 		CEditor MyData(
 			(CWnd*)lpParent,
@@ -634,9 +634,9 @@ void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
 
 		else if (S_OK == hRes)
 		{
-			wstring szServerDN = BuildServerDN(
-				MyData.GetStringW(0),
-				L"");
+			auto szServerDN = BuildServerDN(
+				wstringTostring(MyData.GetStringW(0)),
+				"");
 			if (!szServerDN.empty())
 			{
 				LPMDB lpOldMDB = NULL;

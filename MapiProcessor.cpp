@@ -99,7 +99,7 @@ void CMAPIProcessor::ProcessMailboxTable(
 		hRes = S_OK;
 		WC_H(GetMailboxTable(
 			lpPrimaryMDB,
-			szExchangeServerName,
+			wstringTostring(szExchangeServerName),
 			ulOffset,
 			&lpMailBoxTable));
 		if (lpMailBoxTable)
@@ -143,8 +143,8 @@ void CMAPIProcessor::ProcessMailboxTable(
 				WC_H(OpenOtherUsersMailbox(
 					m_lpSession,
 					lpPrimaryMDB,
-					szExchangeServerName,
-					LPCTSTRToWstring(lpEmailAddress->Value.LPSZ),
+					wstringTostring(szExchangeServerName),
+					wstringTostring(LPCTSTRToWstring(lpEmailAddress->Value.LPSZ)),
 					OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP,
 					false,
 					&m_lpMDB));

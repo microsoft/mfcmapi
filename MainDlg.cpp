@@ -493,17 +493,17 @@ void CMainDlg::OnOpenDefaultMessageStore()
 			{
 				EC_MAPI(HrGetOneProp(
 					lpIdentity,
-					PR_EMAIL_ADDRESS,
+					PR_EMAIL_ADDRESS_A,
 					&lpMailboxName));
 
-				if (CheckStringProp(lpMailboxName, PT_TSTRING))
+				if (CheckStringProp(lpMailboxName, PT_STRING8))
 				{
 					LPMDB lpAdminMDB = nullptr;
 					EC_H(OpenOtherUsersMailbox(
 						lpMAPISession,
 						lpMDB,
-						emptystring,
-						LPCTSTRToWstring(lpMailboxName->Value.LPSZ),
+						"",
+						lpMailboxName->Value.lpszA,
 						ulFlags,
 						false,
 						&lpAdminMDB));
@@ -840,7 +840,7 @@ void CMainDlg::OnDumpServerContents()
 	auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
-	auto szServerName = GetServerName(lpMAPISession);
+	auto szServerName = stringTowstring(GetServerName(lpMAPISession));
 
 	CEditor MyData(
 		this,
