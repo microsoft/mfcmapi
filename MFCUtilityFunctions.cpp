@@ -757,7 +757,7 @@ void ResolveMessageClass(_In_ CMapiObjects* lpMapiObjects, _In_opt_ LPMAPIFOLDER
 			{
 				LPMAPIFORMINFO lpMAPIFormInfo = nullptr;
 				DebugPrint(DBGForms, L"OnResolveMessageClass: Calling ResolveMessageClass(\"%ws\",0x%08X)\n", szClass.c_str(), ulFlags); // STRING_OK
-				EC_MAPI(lpMAPIFormMgr->ResolveMessageClass(wstringToCStringA(szClass), ulFlags, lpMAPIFolder, &lpMAPIFormInfo));
+				EC_MAPI(lpMAPIFormMgr->ResolveMessageClass(wstringTostring(szClass).c_str(), ulFlags, lpMAPIFolder, &lpMAPIFormInfo));
 				if (lpMAPIFormInfo)
 				{
 					DebugPrintFormInfo(DBGForms, lpMAPIFormInfo);
@@ -790,7 +790,7 @@ void SelectForm(_In_ HWND hWnd, _In_ CMapiObjects* lpMapiObjects, _In_opt_ LPMAP
 		// Apparently, SelectForm doesn't support unicode
 		// CString doesn't provide a way to extract just ANSI strings, so we do this manually
 		CHAR szTitle[256];
-		int iRet = NULL;
+		auto iRet = NULL;
 		EC_D(iRet, LoadStringA(GetModuleHandle(NULL),
 			IDS_SELECTFORMPROPS,
 			szTitle,

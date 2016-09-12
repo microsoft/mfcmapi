@@ -104,11 +104,6 @@ CString wstringToCString(wstring const& src)
 	return src.c_str();
 }
 
-CStringA wstringToCStringA(wstring const& src)
-{
-	return src.c_str();
-}
-
 string wstringTostring(wstring const& src)
 {
 	return string(src.begin(), src.end());

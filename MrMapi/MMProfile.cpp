@@ -1,19 +1,17 @@
 #include "stdafx.h"
-#include "..\stdafx.h"
 #include "MrMAPI.h"
 #include "MMProfile.h"
-#include "..\ExportProfile.h"
-#include "..\MAPIFunctions.h"
-#include "..\String.h"
-#include "..\MAPIProfileFunctions.h"
+#include "../ExportProfile.h"
+#include "../MAPIFunctions.h"
+#include "../String.h"
 
 void ExportProfileList()
 {
 	printf("Profile List\n");
 	printf(" # Default Name\n");
-	HRESULT hRes = S_OK;
-	LPMAPITABLE lpProfTable = NULL;
-	LPPROFADMIN lpProfAdmin = NULL;
+	auto hRes = S_OK;
+	LPMAPITABLE lpProfTable = nullptr;
+	LPPROFADMIN lpProfAdmin = nullptr;
 
 	static const SizedSPropTagArray(2, rgPropTag) =
 	{
@@ -31,11 +29,11 @@ void ExportProfileList()
 
 	if (lpProfTable)
 	{
-		LPSRowSet lpRows = NULL;
+		LPSRowSet lpRows = nullptr;
 
 		EC_MAPI(HrQueryAllRows(
 			lpProfTable,
-			(LPSPropTagArray)&rgPropTag,
+			LPSPropTagArray(&rgPropTag),
 			NULL,
 			NULL,
 			0,
@@ -50,8 +48,7 @@ void ExportProfileList()
 			}
 			else
 			{
-				ULONG i = 0;
-				if (!FAILED(hRes)) for (i = 0; i < lpRows->cRows; i++)
+				if (!FAILED(hRes)) for (ULONG i = 0; i < lpRows->cRows; i++)
 				{
 					printf("%2d ", i);
 					if (PR_DEFAULT_PROFILE == lpRows->aRow[i].lpProps[0].ulPropTag && lpRows->aRow[i].lpProps[0].Value.b)
@@ -91,7 +88,7 @@ void DoProfile(_In_ MYOPTIONS ProgOpts)
 		printf("Options specified:\n");
 		printf("   Profile: %ws\n", ProgOpts.lpszProfile.c_str());
 		printf("   Output File: %ws\n", ProgOpts.lpszOutput.c_str());
-		ExportProfile(wstringToCStringA(ProgOpts.lpszProfile), ProgOpts.lpszProfileSection.c_str(), ProgOpts.bByteSwapped, ProgOpts.lpszOutput);
+		ExportProfile(wstringTostring(ProgOpts.lpszProfile).c_str(), ProgOpts.lpszProfileSection.c_str(), ProgOpts.bByteSwapped, ProgOpts.lpszOutput);
 	}
 	else
 	{
