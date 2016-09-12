@@ -17,7 +17,7 @@
 #include "RulesDlg.h"
 #include "MailboxTableDlg.h"
 #include "PublicFolderTableDlg.h"
-#include "SmartView\SmartView.h"
+#include "SmartView/SmartView.h"
 #include "SingleMessageDialog.h"
 #include "AttachmentsDlg.h"
 #include "RecipientsDlg.h"
@@ -29,46 +29,46 @@ _Check_return_ HRESULT DisplayObject(
 	ObjectType tType,
 	_In_ CBaseDialog* lpHostDlg)
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
 	if (!lpHostDlg || !lpUnk) return MAPI_E_INVALID_PARAMETER;
 
-	CMapiObjects* lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
+	auto lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
 	if (!lpMapiObjects) return MAPI_E_INVALID_PARAMETER;
 
-	CParentWnd* lpParentWnd = lpHostDlg->GetParentWnd(); // do not release
+	auto lpParentWnd = lpHostDlg->GetParentWnd(); // do not release
 	if (!lpParentWnd) return MAPI_E_INVALID_PARAMETER;
 
 	// If we weren't passed an object type, go get one - careful! Some objects lie!
 	if (!ulObjType)
 	{
-		ulObjType = GetMAPIObjectType((LPMAPIPROP)lpUnk);
+		ulObjType = GetMAPIObjectType(static_cast<LPMAPIPROP>(lpUnk));
 	}
 
-	wstring szFlags = InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE);
+	auto szFlags = InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE);
 	DebugPrint(DBGGeneric, L"DisplayObject asked to display %p, with ObjectType of 0x%08X and MAPI type of 0x%08X = %ws\n",
 		lpUnk,
 		tType,
 		ulObjType,
 		szFlags.c_str());
 
-	LPMDB lpMDB = NULL;
+	LPMDB lpMDB = nullptr;
 	// call the dialog
 	switch (ulObjType)
 	{
 		// #define MAPI_STORE ((ULONG) 0x00000001) /* Message Store */
 	case MAPI_STORE:
-		lpHostDlg->OnUpdateSingleMAPIPropListCtrl(lpUnk, NULL);
+		lpHostDlg->OnUpdateSingleMAPIPropListCtrl(lpUnk, nullptr);
 
 		lpMDB = lpMapiObjects->GetMDB(); // do not release
 		if (lpMDB) lpMDB->AddRef(); // hold on to this so that...
-		lpMapiObjects->SetMDB((LPMDB)lpUnk);
+		lpMapiObjects->SetMDB(static_cast<LPMDB>(lpUnk));
 
 		new CMsgStoreDlg(
 			lpParentWnd,
 			lpMapiObjects,
-			NULL,
-			(otStoreDeletedItems == tType) ? dfDeleted : dfNormal);
+			nullptr,
+			otStoreDeletedItems == tType ? dfDeleted : dfNormal);
 
 		// restore the old MDB
 		lpMapiObjects->SetMDB(lpMDB); // ...we can put it back
@@ -85,17 +85,17 @@ _Check_return_ HRESULT DisplayObject(
 				new CMsgStoreDlg(
 					lpParentWnd,
 					lpMapiObjects,
-					(LPMAPIFOLDER)lpUnk,
+					static_cast<LPMAPIFOLDER>(lpUnk),
 					dfNormal);
 			}
 			else
 			{
 				// Since lpMDB was NULL, let's get a good MDB
-				LPMAPISESSION lpMAPISession = lpMapiObjects->GetSession(); // do not release
+				auto lpMAPISession = lpMapiObjects->GetSession(); // do not release
 				if (lpMAPISession)
 				{
-					LPMDB lpNewMDB = NULL;
-					EC_H(OpenStoreFromMAPIProp(lpMAPISession, (LPMAPIPROP)lpUnk, &lpNewMDB));
+					LPMDB lpNewMDB = nullptr;
+					EC_H(OpenStoreFromMAPIProp(lpMAPISession, static_cast<LPMAPIPROP>(lpUnk), &lpNewMDB));
 					if (lpNewMDB)
 					{
 						lpMapiObjects->SetMDB(lpNewMDB);
@@ -103,11 +103,11 @@ _Check_return_ HRESULT DisplayObject(
 						new CMsgStoreDlg(
 							lpParentWnd,
 							lpMapiObjects,
-							(LPMAPIFOLDER)lpUnk,
+							static_cast<LPMAPIFOLDER>(lpUnk),
 							dfNormal);
 
 						// restore the old MDB
-						lpMapiObjects->SetMDB(NULL);
+						lpMapiObjects->SetMDB(nullptr);
 						lpNewMDB->Release();
 					}
 				}
@@ -118,8 +118,8 @@ _Check_return_ HRESULT DisplayObject(
 			new CFolderDlg(
 				lpParentWnd,
 				lpMapiObjects,
-				(LPMAPIFOLDER)lpUnk,
-				(otAssocContents == tType) ? dfAssoc : dfNormal);
+				static_cast<LPMAPIFOLDER>(lpUnk),
+				otAssocContents == tType ? dfAssoc : dfNormal);
 		}
 		break;
 		// #define MAPI_ABCONT ((ULONG) 0x00000004) /* Address Book Container */
@@ -127,32 +127,32 @@ _Check_return_ HRESULT DisplayObject(
 		new CAbDlg(
 			lpParentWnd,
 			lpMapiObjects,
-			(LPABCONT)lpUnk);
+			static_cast<LPABCONT>(lpUnk));
 		break;
 		// #define MAPI_MESSAGE ((ULONG) 0x00000005) /* Message */
 	case MAPI_MESSAGE:
 		new SingleMessageDialog(
 			lpParentWnd,
 			lpMapiObjects,
-			(LPMESSAGE)lpUnk);
+			static_cast<LPMESSAGE>(lpUnk));
 		break;
 		// #define MAPI_MAILUSER ((ULONG) 0x00000006) /* Individual Recipient */
 	case MAPI_MAILUSER:
 		new SingleRecipientDialog(
 			lpParentWnd,
 			lpMapiObjects,
-			(LPMAILUSER)lpUnk);
+			static_cast<LPMAILUSER>(lpUnk));
 		break;
 		// #define MAPI_DISTLIST ((ULONG) 0x00000008) /* Distribution List Recipient */
 	case MAPI_DISTLIST: // A DistList is really an Address book anyways
 		new SingleRecipientDialog(
 			lpParentWnd,
 			lpMapiObjects,
-			(LPMAILUSER)lpUnk);
+			static_cast<LPMAILUSER>(lpUnk));
 		new CAbDlg(
 			lpParentWnd,
 			lpMapiObjects,
-			(LPABCONT)lpUnk);
+			static_cast<LPABCONT>(lpUnk));
 		break;
 		// The following types don't have special viewers - just dump their props in the property pane
 		// #define MAPI_ADDRBOOK ((ULONG) 0x00000002) /* Address Book */
@@ -162,7 +162,7 @@ _Check_return_ HRESULT DisplayObject(
 		// #define MAPI_SESSION ((ULONG) 0x0000000B) /* Session */
 		// #define MAPI_FORMINFO ((ULONG) 0x0000000C) /* Form Information */
 	default:
-		lpHostDlg->OnUpdateSingleMAPIPropListCtrl(lpUnk, NULL);
+		lpHostDlg->OnUpdateSingleMAPIPropListCtrl(lpUnk, nullptr);
 
 		szFlags = InterpretNumberAsStringProp(ulObjType, PR_OBJECT_TYPE);
 		DebugPrint(DBGGeneric,
@@ -183,10 +183,10 @@ _Check_return_ HRESULT DisplayTable(
 {
 	if (!lpHostDlg) return MAPI_E_INVALID_PARAMETER;
 
-	CMapiObjects* lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
+	auto lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
 	if (!lpMapiObjects) return MAPI_E_INVALID_PARAMETER;
 
-	CParentWnd* lpParentWnd = lpHostDlg->GetParentWnd(); // do not release
+	auto lpParentWnd = lpHostDlg->GetParentWnd(); // do not release
 	if (!lpParentWnd) return MAPI_E_INVALID_PARAMETER;
 
 	DebugPrint(DBGGeneric, L"DisplayTable asked to display %p\n", lpTable);
@@ -202,7 +202,7 @@ _Check_return_ HRESULT DisplayTable(
 			IDS_STATUSTABLE,
 			mfcmapiCALL_CREATE_DIALOG,
 			lpTable,
-			(LPSPropTagArray)&sptSTATUSCols,
+			LPSPropTagArray(&sptSTATUSCols),
 			NUMSTATUSCOLUMNS,
 			STATUSColumns,
 			NULL,
@@ -218,7 +218,7 @@ _Check_return_ HRESULT DisplayTable(
 			IDS_RECEIVEFOLDERTABLE,
 			mfcmapiCALL_CREATE_DIALOG,
 			lpTable,
-			(LPSPropTagArray)&sptRECEIVECols,
+			LPSPropTagArray(&sptRECEIVECols),
 			NUMRECEIVECOLUMNS,
 			RECEIVEColumns,
 			NULL,
@@ -234,7 +234,7 @@ _Check_return_ HRESULT DisplayTable(
 			IDS_HIERARCHYTABLE,
 			mfcmapiCALL_CREATE_DIALOG,
 			lpTable,
-			(LPSPropTagArray)&sptHIERARCHYCols,
+			LPSPropTagArray(&sptHIERARCHYCols),
 			NUMHIERARCHYCOLUMNS,
 			HIERARCHYColumns,
 			NULL,
@@ -252,7 +252,7 @@ _Check_return_ HRESULT DisplayTable(
 			IDS_CONTENTSTABLE,
 			mfcmapiCALL_CREATE_DIALOG,
 			lpTable,
-			(LPSPropTagArray)&sptDEFCols,
+			LPSPropTagArray(&sptDEFCols),
 			NUMDEFCOLUMNS,
 			DEFColumns,
 			NULL,
@@ -270,8 +270,8 @@ _Check_return_ HRESULT DisplayTable(
 	ObjectType tType,
 	_In_ CBaseDialog* lpHostDlg)
 {
-	HRESULT hRes = S_OK;
-	LPMAPITABLE lpTable = NULL;
+	auto hRes = S_OK;
+	LPMAPITABLE lpTable = nullptr;
 
 	if (!lpHostDlg || !lpMAPIProp) return MAPI_E_INVALID_PARAMETER;
 	if (PT_OBJECT != PROP_TYPE(ulPropTag)) return MAPI_E_INVALID_TYPE;
@@ -281,19 +281,19 @@ _Check_return_ HRESULT DisplayTable(
 		&IID_IMAPITable,
 		fMapiUnicode,
 		0,
-		(LPUNKNOWN *)&lpTable));
+		reinterpret_cast<LPUNKNOWN *>(&lpTable)));
 	if (MAPI_E_INTERFACE_NOT_SUPPORTED == hRes)
 	{
 		hRes = S_OK;
 		switch (PROP_ID(ulPropTag))
 		{
 		case PROP_ID(PR_MESSAGE_ATTACHMENTS):
-			((LPMESSAGE)lpMAPIProp)->GetAttachmentTable(
+			static_cast<LPMESSAGE>(lpMAPIProp)->GetAttachmentTable(
 				NULL,
 				&lpTable);
 			break;
 		case PROP_ID(PR_MESSAGE_RECIPIENTS):
-			((LPMESSAGE)lpMAPIProp)->GetRecipientTable(
+			static_cast<LPMESSAGE>(lpMAPIProp)->GetRecipientTable(
 				NULL,
 				&lpTable);
 			break;
@@ -309,14 +309,14 @@ _Check_return_ HRESULT DisplayTable(
 				lpHostDlg->GetParentWnd(),
 				lpHostDlg->GetMapiObjects(),
 				lpTable,
-				(LPMESSAGE)lpMAPIProp);
+				static_cast<LPMESSAGE>(lpMAPIProp));
 			break;
 		case PROP_ID(PR_MESSAGE_RECIPIENTS):
 			new CRecipientsDlg(
 				lpHostDlg->GetParentWnd(),
 				lpHostDlg->GetMapiObjects(),
 				lpTable,
-				(LPMESSAGE)lpMAPIProp);
+				static_cast<LPMESSAGE>(lpMAPIProp));
 			break;
 		default:
 			EC_H(DisplayTable(
@@ -338,25 +338,25 @@ _Check_return_ HRESULT DisplayExchangeTable(
 	ObjectType tType,
 	_In_ CBaseDialog* lpHostDlg)
 {
-	HRESULT hRes = S_OK;
-	LPEXCHANGEMODIFYTABLE lpExchTbl = NULL;
-	LPMAPITABLE lpMAPITable = NULL;
+	auto hRes = S_OK;
+	LPEXCHANGEMODIFYTABLE lpExchTbl = nullptr;
+	LPMAPITABLE lpMAPITable = nullptr;
 
 	if (!lpMAPIProp || !lpHostDlg) return MAPI_E_INVALID_PARAMETER;
 
-	CMapiObjects* lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
+	auto lpMapiObjects = lpHostDlg->GetMapiObjects(); // do not release
 	if (!lpMapiObjects) return MAPI_E_INVALID_PARAMETER;
 
-	CParentWnd* lpParentWnd = lpHostDlg->GetParentWnd(); // do not release
+	auto lpParentWnd = lpHostDlg->GetParentWnd(); // do not release
 	if (!lpParentWnd) return MAPI_E_INVALID_PARAMETER;
 
 	// Open the table in an IExchangeModifyTable interface
 	EC_MAPI(lpMAPIProp->OpenProperty(
 		ulPropTag,
-		(LPGUID)&IID_IExchangeModifyTable,
+		const_cast<LPGUID>(&IID_IExchangeModifyTable),
 		0,
 		MAPI_DEFERRED_ERRORS,
-		(LPUNKNOWN*)&lpExchTbl));
+		reinterpret_cast<LPUNKNOWN*>(&lpExchTbl)));
 
 	if (lpExchTbl)
 	{
@@ -416,7 +416,7 @@ _Check_return_ HRESULT DisplayExchangeTable(
 
 _Check_return_ bool bShouldCancel(_In_opt_ CWnd* cWnd, HRESULT hResPrev)
 {
-	bool bGotError = false;
+	auto bGotError = false;
 
 	if (S_OK != hResPrev)
 	{
@@ -425,7 +425,7 @@ _Check_return_ bool bShouldCancel(_In_opt_ CWnd* cWnd, HRESULT hResPrev)
 			bGotError = true;
 		}
 
-		HRESULT hRes = S_OK;
+		auto hRes = S_OK;
 
 		CEditor Cancel(
 			cWnd,
@@ -435,7 +435,7 @@ _Check_return_ bool bShouldCancel(_In_opt_ CWnd* cWnd, HRESULT hResPrev)
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		if (bGotError)
 		{
-			wstring szPrevErr = formatmessage(IDS_PREVIOUSCALL, ErrorNameFromErrorCode(hResPrev).c_str(), hResPrev);
+			auto szPrevErr = formatmessage(IDS_PREVIOUSCALL, ErrorNameFromErrorCode(hResPrev).c_str(), hResPrev);
 			Cancel.InitPane(0, CreateSingleLinePane(IDS_ERROR, szPrevErr, true));
 		}
 		WC_H(Cancel.DisplayDialog());
@@ -452,10 +452,10 @@ void DisplayMailboxTable(_In_ CParentWnd* lpParent,
 	_In_ CMapiObjects* lpMapiObjects)
 {
 	if (!lpParent || !lpMapiObjects) return;
-	HRESULT hRes = S_OK;
-	LPMDB lpPrivateMDB = NULL;
-	LPMDB lpMDB = lpMapiObjects->GetMDB(); // do not release
-	LPMAPISESSION lpMAPISession = lpMapiObjects->GetSession(); // do not release
+	auto hRes = S_OK;
+	LPMDB lpPrivateMDB = nullptr;
+	auto lpMDB = lpMapiObjects->GetMDB(); // do not release
+	auto lpMAPISession = lpMapiObjects->GetSession(); // do not release
 
 	// try the 'current' MDB first
 	if (!StoreSupportsManageStore(lpMDB))
@@ -467,11 +467,11 @@ void DisplayMailboxTable(_In_ CParentWnd* lpParent,
 
 	if (lpMDB && StoreSupportsManageStore(lpMDB))
 	{
-		LPMAPITABLE lpMailboxTable = NULL;
+		LPMAPITABLE lpMailboxTable = nullptr;
 		auto szServerName = stringTowstring(GetServerName(lpMAPISession));
 
 		CEditor MyData(
-			(CWnd*)lpParent,
+			static_cast<CWnd*>(lpParent),
 			IDS_DISPLAYMAILBOXTABLE,
 			IDS_SERVERNAMEPROMPT,
 			4,
@@ -500,7 +500,7 @@ void DisplayMailboxTable(_In_ CParentWnd* lpParent,
 				"");
 			if (!szServerDN.empty())
 			{
-				LPMDB lpOldMDB = NULL;
+				LPMDB lpOldMDB = nullptr;
 
 				// if we got a new MDB, set it in lpMapiObjects
 				if (lpPrivateMDB)
@@ -530,9 +530,9 @@ void DisplayMailboxTable(_In_ CParentWnd* lpParent,
 				case 2:
 				{
 					GUID MyGUID = { 0 };
-					bool bHaveGUID = false;
+					auto bHaveGUID = false;
 
-					wstring pszGUID = MyData.GetStringW(2);
+					auto pszGUID = MyData.GetStringW(2);
 
 					if (!pszGUID.empty())
 					{
@@ -589,10 +589,10 @@ void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
 	_In_ CMapiObjects* lpMapiObjects)
 {
 	if (!lpParent || !lpMapiObjects) return;
-	HRESULT hRes = S_OK;
-	LPMDB lpPrivateMDB = NULL;
-	LPMDB lpMDB = lpMapiObjects->GetMDB(); // do not release
-	LPMAPISESSION lpMAPISession = lpMapiObjects->GetSession(); // do not release
+	auto hRes = S_OK;
+	LPMDB lpPrivateMDB = nullptr;
+	auto lpMDB = lpMapiObjects->GetMDB(); // do not release
+	auto lpMAPISession = lpMapiObjects->GetSession(); // do not release
 
 	// try the 'current' MDB first
 	if (!StoreSupportsManageStore(lpMDB))
@@ -604,11 +604,11 @@ void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
 
 	if (lpMDB && StoreSupportsManageStore(lpMDB))
 	{
-		LPMAPITABLE lpPFTable = NULL;
+		LPMAPITABLE lpPFTable = nullptr;
 		auto szServerName = stringTowstring(GetServerName(lpMAPISession));
 
 		CEditor MyData(
-			(CWnd*)lpParent,
+			static_cast<CWnd*>(lpParent),
 			IDS_DISPLAYPFTABLE,
 			IDS_DISPLAYPFTABLEPROMPT,
 			5,
@@ -639,7 +639,7 @@ void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
 				"");
 			if (!szServerDN.empty())
 			{
-				LPMDB lpOldMDB = NULL;
+				LPMDB lpOldMDB = nullptr;
 
 				// if we got a new MDB, set it in lpMapiObjects
 				if (lpPrivateMDB)
@@ -670,9 +670,9 @@ void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
 				case 2:
 				{
 					GUID MyGUID = { 0 };
-					bool bHaveGUID = false;
+					auto bHaveGUID = false;
 
-					wstring pszGUID = MyData.GetStringW(3);
+					auto pszGUID = MyData.GetStringW(3);
 					if (!pszGUID.empty())
 					{
 						bHaveGUID = true;
@@ -726,13 +726,13 @@ void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
 
 void ResolveMessageClass(_In_ CMapiObjects* lpMapiObjects, _In_opt_ LPMAPIFOLDER lpMAPIFolder, _Out_ LPMAPIFORMINFO* lppMAPIFormInfo)
 {
-	HRESULT hRes = S_OK;
-	LPMAPIFORMMGR lpMAPIFormMgr = NULL;
+	auto hRes = S_OK;
+	LPMAPIFORMMGR lpMAPIFormMgr = nullptr;
 	if (!lpMapiObjects || !lppMAPIFormInfo) return;
 
-	*lppMAPIFormInfo = NULL;
+	*lppMAPIFormInfo = nullptr;
 
-	LPMAPISESSION lpMAPISession = lpMapiObjects->GetSession(); // do not release
+	auto lpMAPISession = lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
 	EC_MAPI(MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr));
@@ -740,10 +740,10 @@ void ResolveMessageClass(_In_ CMapiObjects* lpMapiObjects, _In_opt_ LPMAPIFOLDER
 	{
 		DebugPrint(DBGForms, L"OnResolveMessageClass: resolving message class\n");
 		CEditor MyData(
-			NULL,
+			nullptr,
 			IDS_RESOLVECLASS,
 			IDS_RESOLVECLASSPROMPT,
-			(ULONG)2,
+			static_cast<ULONG>(2),
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.InitPane(0, CreateSingleLinePane(IDS_CLASS, false));
 		MyData.InitPane(1, CreateSingleLinePane(IDS_FLAGS, false));
@@ -751,11 +751,11 @@ void ResolveMessageClass(_In_ CMapiObjects* lpMapiObjects, _In_opt_ LPMAPIFOLDER
 		WC_H(MyData.DisplayDialog());
 		if (S_OK == hRes)
 		{
-			wstring szClass = MyData.GetStringW(0); // ResolveMessageClass requires an ANSI string
-			ULONG ulFlags = MyData.GetHex(1);
+			auto szClass = MyData.GetStringW(0); // ResolveMessageClass requires an ANSI string
+			auto ulFlags = MyData.GetHex(1);
 			if (!szClass.empty())
 			{
-				LPMAPIFORMINFO lpMAPIFormInfo = NULL;
+				LPMAPIFORMINFO lpMAPIFormInfo = nullptr;
 				DebugPrint(DBGForms, L"OnResolveMessageClass: Calling ResolveMessageClass(\"%ws\",0x%08X)\n", szClass.c_str(), ulFlags); // STRING_OK
 				EC_MAPI(lpMAPIFormMgr->ResolveMessageClass(wstringToCStringA(szClass), ulFlags, lpMAPIFolder, &lpMAPIFormInfo));
 				if (lpMAPIFormInfo)
@@ -772,21 +772,21 @@ void ResolveMessageClass(_In_ CMapiObjects* lpMapiObjects, _In_opt_ LPMAPIFOLDER
 
 void SelectForm(_In_ HWND hWnd, _In_ CMapiObjects* lpMapiObjects, _In_opt_ LPMAPIFOLDER lpMAPIFolder, _Out_ LPMAPIFORMINFO* lppMAPIFormInfo)
 {
-	HRESULT hRes = S_OK;
-	LPMAPIFORMMGR lpMAPIFormMgr = NULL;
+	auto hRes = S_OK;
+	LPMAPIFORMMGR lpMAPIFormMgr = nullptr;
 
 	if (!lpMapiObjects || !lppMAPIFormInfo) return;
 
-	*lppMAPIFormInfo = NULL;
+	*lppMAPIFormInfo = nullptr;
 
-	LPMAPISESSION lpMAPISession = lpMapiObjects->GetSession(); // do not release
+	auto lpMAPISession = lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
 	EC_MAPI(MAPIOpenFormMgr(lpMAPISession, &lpMAPIFormMgr));
 
 	if (lpMAPIFormMgr)
 	{
-		LPMAPIFORMINFO lpMAPIFormInfo = NULL;
+		LPMAPIFORMINFO lpMAPIFormInfo = nullptr;
 		// Apparently, SelectForm doesn't support unicode
 		// CString doesn't provide a way to extract just ANSI strings, so we do this manually
 		CHAR szTitle[256];
@@ -796,9 +796,9 @@ void SelectForm(_In_ HWND hWnd, _In_ CMapiObjects* lpMapiObjects, _In_opt_ LPMAP
 			szTitle,
 			_countof(szTitle)));
 		EC_H_CANCEL(lpMAPIFormMgr->SelectForm(
-			(ULONG_PTR)hWnd,
+			reinterpret_cast<ULONG_PTR>(hWnd),
 			0, // fMapiUnicode,
-			(LPCTSTR)szTitle,
+			reinterpret_cast<LPCTSTR>(szTitle),
 			lpMAPIFolder,
 			&lpMAPIFormInfo));
 
