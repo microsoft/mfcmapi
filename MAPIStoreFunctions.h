@@ -8,56 +8,56 @@ _Check_return_ HRESULT CallOpenMsgStore(
 	_In_ LPSBinary lpEID,
 	ULONG ulFlags,
 	_Deref_out_ LPMDB* lpMDB);
-wstring BuildServerDN(
-	wstring szServerName,
-	wstring szPost);
+string BuildServerDN(
+	string szServerName,
+	string szPost);
 _Check_return_ HRESULT GetMailboxTable(
 	_In_ LPMDB lpMDB,
-	wstring szServerName,
+	string szServerName,
 	ULONG ulOffset,
 	_Deref_out_opt_ LPMAPITABLE* lpMailboxTable);
 _Check_return_ HRESULT GetMailboxTable1(
 	_In_ LPMDB lpMDB,
-	wstring szServerDN,
+	string szServerDN,
 	ULONG ulFlags,
 	_Deref_out_opt_ LPMAPITABLE* lpMailboxTable);
 _Check_return_ HRESULT GetMailboxTable3(
 	_In_ LPMDB lpMDB,
-	wstring szServerDN,
+	string szServerDN,
 	ULONG ulOffset,
 	ULONG ulFlags,
 	_Deref_out_opt_ LPMAPITABLE* lpMailboxTable);
 _Check_return_ HRESULT GetMailboxTable5(
 	_In_ LPMDB lpMDB,
-	wstring szServerDN,
+	string szServerDN,
 	ULONG ulOffset,
 	ULONG ulFlags,
 	_In_opt_ LPGUID lpGuidMDB,
 	_Deref_out_opt_ LPMAPITABLE* lpMailboxTable);
 _Check_return_ HRESULT GetPublicFolderTable1(
 	_In_ LPMDB lpMDB,
-	wstring szServerDN,
+	string szServerDN,
 	ULONG ulFlags,
 	_Deref_out_opt_ LPMAPITABLE* lpPFTable);
 _Check_return_ HRESULT GetPublicFolderTable4(
 	_In_ LPMDB lpMDB,
-	wstring szServerDN,
+	string szServerDN,
 	ULONG ulOffset,
 	ULONG ulFlags,
 	_Deref_out_opt_ LPMAPITABLE* lpPFTable);
 _Check_return_ HRESULT GetPublicFolderTable5(
 	_In_ LPMDB lpMDB,
-	wstring szServerDN,
+	string szServerDN,
 	ULONG ulOffset,
 	ULONG ulFlags,
 	_In_opt_ LPGUID lpGuidMDB,
 	_Deref_out_opt_ LPMAPITABLE* lpPFTable);
-wstring GetServerName(_In_ LPMAPISESSION lpSession);
+string GetServerName(_In_ LPMAPISESSION lpSession);
 _Check_return_ HRESULT HrMailboxLogon(
 	_In_ LPMAPISESSION lplhSession, // ptr to MAPI session handle
 	_In_ LPMDB lpMDB, // ptr to message store
-	wstring lpszMsgStoreDN, // ptr to message store DN
-	wstring lpszMailboxDN, // ptr to mailbox DN
+	string lpszMsgStoreDN, // ptr to message store DN
+	string lpszMailboxDN, // ptr to mailbox DN
 	ULONG ulFlags, // desired flags for CreateStoreEntryID
 	bool bForceServer, // Use CreateStoreEntryID2
 	_Deref_out_opt_ LPMDB* lppMailboxMDB); // ptr to mailbox message store ptr
@@ -67,15 +67,15 @@ _Check_return_ HRESULT OpenDefaultMessageStore(
 _Check_return_ HRESULT OpenOtherUsersMailbox(
 	_In_ LPMAPISESSION lpMAPISession,
 	_In_ LPMDB lpMDB,
-	wstring szServerName,
-	wstring szMailboxDN,
+	string szServerName,
+	string szMailboxDN,
 	ULONG ulFlags, // desired flags for CreateStoreEntryID
 	bool bForceServer, // Use CreateStoreEntryID2
 	_Deref_out_opt_ LPMDB* lppOtherUserMDB);
 _Check_return_ HRESULT OpenMailboxWithPrompt(
 	_In_ LPMAPISESSION lpMAPISession,
 	_In_ LPMDB lpMDB,
-	wstring szServerName,
+	string szServerName,
 	wstring szMailboxDN,
 	ULONG ulFlags, // desired flags for CreateStoreEntryID
 	_Deref_out_opt_ LPMDB* lppOtherUserMDB);
