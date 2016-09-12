@@ -132,11 +132,6 @@ wstring LPCSTRToWstring(LPCSTR src)
 	return wstring(ansi.begin(), ansi.end());
 }
 
-CStringA LPCTSTRToCStringA(LPCTSTR src)
-{
-	return src;
-}
-
 void wstringToLower(wstring src)
 {
 	transform(src.begin(), src.end(), src.begin(), ::tolower);
