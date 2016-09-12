@@ -188,7 +188,7 @@ void CMailboxTableDlg::OnCreatePropertyStringRestriction()
 		WC_H(MyData.DisplayDialog());
 		if (S_OK != hRes) return;
 
-		wstring szString = MyData.GetStringW(0);
+		auto szString = MyData.GetStringW(0);
 		// Allocate and create our SRestriction
 		EC_H(CreatePropertyStringRestriction(
 			CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_UNICODE),
