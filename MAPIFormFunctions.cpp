@@ -3,7 +3,6 @@
 #include "stdafx.h"
 #include "MAPIFormFunctions.h"
 #include "MyMAPIFormViewer.h"
-#include "MAPIFunctions.h"
 
 // This function creates a new message of class szMessageClass, based in m_lpContainer
 // The function will also take care of launching the form
@@ -22,8 +21,8 @@ _Check_return_ HRESULT CreateAndDisplayNewMailInFolder(
 	_In_ wstring szMessageClass,
 	_In_ LPMAPIFOLDER lpFolder)
 {
-	HRESULT hRes = S_OK;
-	LPMAPIFORMMGR lpMAPIFormMgr = NULL;
+	auto hRes = S_OK;
+	LPMAPIFORMMGR lpMAPIFormMgr = nullptr;
 
 	if (!lpFolder || !lpMAPISession) return MAPI_E_INVALID_PARAMETER;
 
@@ -31,11 +30,11 @@ _Check_return_ HRESULT CreateAndDisplayNewMailInFolder(
 
 	if (!lpMAPIFormMgr) return hRes;
 
-	LPMAPIFORMINFO lpMAPIFormInfo = NULL;
-	LPPERSISTMESSAGE lpPersistMessage = NULL;
+	LPMAPIFORMINFO lpMAPIFormInfo = nullptr;
+	LPPERSISTMESSAGE lpPersistMessage = nullptr;
 
 	EC_H_MSG(lpMAPIFormMgr->ResolveMessageClass(
-		wstringToCStringA(szMessageClass), // class
+		wstringTostring(szMessageClass).c_str(), // class
 		0, // flags
 		lpFolder, // folder to resolve to
 		&lpMAPIFormInfo),
@@ -43,15 +42,15 @@ _Check_return_ HRESULT CreateAndDisplayNewMailInFolder(
 	if (lpMAPIFormInfo)
 	{
 		EC_MAPI(lpMAPIFormMgr->CreateForm(
-			(ULONG_PTR)hwndParent, // parent window
+			reinterpret_cast<ULONG_PTR>(hwndParent), // parent window
 			MAPI_DIALOG, // display status window
 			lpMAPIFormInfo, // form info
 			IID_IPersistMessage, // riid to open
-			(LPVOID *)&lpPersistMessage)); // form to open into
+			reinterpret_cast<LPVOID *>(&lpPersistMessage))); // form to open into
 
 		if (lpPersistMessage)
 		{
-			LPMESSAGE lpMessage = NULL;
+			LPMESSAGE lpMessage = nullptr;
 			// Get a message
 			EC_MAPI(lpFolder->CreateMessage(
 				NULL, // default interface
@@ -59,8 +58,7 @@ _Check_return_ HRESULT CreateAndDisplayNewMailInFolder(
 				&lpMessage));
 			if (lpMessage)
 			{
-				CMyMAPIFormViewer* lpMAPIFormViewer = NULL;
-				lpMAPIFormViewer = new CMyMAPIFormViewer(
+				auto lpMAPIFormViewer = new CMyMAPIFormViewer(
 					hwndParent,
 					lpMDB,
 					lpMAPISession,
@@ -73,16 +71,16 @@ _Check_return_ HRESULT CreateAndDisplayNewMailInFolder(
 				{
 					// put everything together with the default info
 					EC_MAPI(lpPersistMessage->InitNew(
-						(LPMAPIMESSAGESITE)lpMAPIFormViewer,
+						static_cast<LPMAPIMESSAGESITE>(lpMAPIFormViewer),
 						lpMessage));
 
-					LPMAPIFORM lpForm = NULL;
-					EC_MAPI(lpPersistMessage->QueryInterface(IID_IMAPIForm, (LPVOID*)&lpForm));
+					LPMAPIFORM lpForm = nullptr;
+					EC_MAPI(lpPersistMessage->QueryInterface(IID_IMAPIForm, reinterpret_cast<LPVOID*>(&lpForm)));
 
 					if (lpForm)
 					{
 						EC_MAPI(lpForm->SetViewContext(
-							(LPMAPIVIEWCONTEXT)lpMAPIFormViewer));
+							static_cast<LPMAPIVIEWCONTEXT>(lpMAPIFormViewer)));
 
 						EC_MAPI(lpMAPIFormViewer->CallDoVerb(
 							lpForm,
@@ -113,11 +111,11 @@ _Check_return_ HRESULT OpenMessageNonModal(
 	LONG lVerb,
 	_In_opt_ LPCRECT lpRect)
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	ULONG cValuesShow = 0;
-	LPSPropValue lpspvaShow = NULL;
+	LPSPropValue lpspvaShow = nullptr;
 	ULONG ulMessageStatus = NULL;
-	LPMAPIVIEWCONTEXT lpViewContextTemp = NULL;
+	LPMAPIVIEWCONTEXT lpViewContextTemp = nullptr;
 
 	enum
 	{
@@ -138,7 +136,7 @@ _Check_return_ HRESULT OpenMessageNonModal(
 
 	// Get required properties from the message
 	EC_H_GETPROPS(lpMessage->GetProps(
-		(LPSPropTagArray)&sptaShowForm, // property tag array
+		LPSPropTagArray(&sptaShowForm), // property tag array
 		fMapiUnicode, // flags
 		&cValuesShow, // Count of values returned
 		&lpspvaShow)); // Values returned
@@ -147,12 +145,11 @@ _Check_return_ HRESULT OpenMessageNonModal(
 	{
 		EC_MAPI(lpSourceFolder->GetMessageStatus(
 			lpspvaShow[EID].Value.bin.cb,
-			(LPENTRYID)lpspvaShow[EID].Value.bin.lpb,
+			reinterpret_cast<LPENTRYID>(lpspvaShow[EID].Value.bin.lpb),
 			0,
 			&ulMessageStatus));
 
-		CMyMAPIFormViewer* lpMAPIFormViewer = NULL;
-		lpMAPIFormViewer = new CMyMAPIFormViewer(
+		auto lpMAPIFormViewer = new CMyMAPIFormViewer(
 			hwndParent,
 			lpMDB,
 			lpMAPISession,
@@ -163,8 +160,8 @@ _Check_return_ HRESULT OpenMessageNonModal(
 
 		if (lpMAPIFormViewer)
 		{
-			LPMAPIFORMMGR lpMAPIFormMgr = NULL;
-			LPMAPIFORM lpForm = NULL;
+			LPMAPIFORMMGR lpMAPIFormMgr = nullptr;
+			LPMAPIFORM lpForm = nullptr;
 
 			EC_MAPI(lpMAPIFormViewer->GetFormManager(&lpMAPIFormMgr));
 
@@ -175,7 +172,7 @@ _Check_return_ HRESULT OpenMessageNonModal(
 					ulMessageStatus,
 					lpspvaShow[FLAGS].Value.ul);
 				EC_MAPI(lpMAPIFormMgr->LoadForm(
-					(ULONG_PTR)hwndParent,
+					reinterpret_cast<ULONG_PTR>(hwndParent),
 					0, // flags
 					lpspvaShow[CLASS].Value.lpszA,
 					ulMessageStatus,
@@ -185,9 +182,9 @@ _Check_return_ HRESULT OpenMessageNonModal(
 					lpMessage,
 					lpMAPIFormViewer,
 					IID_IMAPIForm, // riid
-					(LPVOID *)&lpForm));
+					reinterpret_cast<LPVOID *>(&lpForm)));
 				lpMAPIFormMgr->Release();
-				lpMAPIFormMgr = NULL;
+				lpMAPIFormMgr = nullptr;
 			}
 
 			if (lpForm)
@@ -229,9 +226,9 @@ _Check_return_ HRESULT OpenMessageModal(_In_ LPMAPIFOLDER lpParentFolder,
 	_In_ LPMDB lpMDB,
 	_In_ LPMESSAGE lpMessage)
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	ULONG cValuesShow;
-	LPSPropValue lpspvaShow = NULL;
+	LPSPropValue lpspvaShow = nullptr;
 	ULONG_PTR Token = NULL;
 	ULONG ulMessageStatus = NULL;
 
@@ -256,7 +253,7 @@ _Check_return_ HRESULT OpenMessageModal(_In_ LPMAPIFOLDER lpParentFolder,
 
 	// Get required properties from the message
 	EC_H_GETPROPS(lpMessage->GetProps(
-		(LPSPropTagArray)&sptaShowForm, // property tag array
+		LPSPropTagArray(&sptaShowForm), // property tag array
 		fMapiUnicode, // flags
 		&cValuesShow, // Count of values returned
 		&lpspvaShow)); // Values returned
@@ -265,7 +262,7 @@ _Check_return_ HRESULT OpenMessageModal(_In_ LPMAPIFOLDER lpParentFolder,
 	{
 		EC_MAPI(lpParentFolder->GetMessageStatus(
 			lpspvaShow[EID].Value.bin.cb,
-			(LPENTRYID)lpspvaShow[EID].Value.bin.lpb,
+			reinterpret_cast<LPENTRYID>(lpspvaShow[EID].Value.bin.lpb),
 			0,
 			&ulMessageStatus));
 
