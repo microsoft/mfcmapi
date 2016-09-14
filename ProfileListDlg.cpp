@@ -245,15 +245,14 @@ void CProfileListDlg::AddPSTToProfile(bool bUnicodePST)
 	auto iItem = -1;
 	INT_PTR iDlgRet = IDOK;
 
-	CString szFileSpec;
-	EC_B(szFileSpec.LoadString(IDS_PSTFILES));
+	auto szFileSpec = loadstring(IDS_PSTFILES);
 
 	if (!m_lpContentsTableListCtrl) return;
 
-	CFileDialogEx dlgFilePicker;
+	CFileDialogExW dlgFilePicker;
 	EC_D_DIALOG(dlgFilePicker.DisplayDialog(
 		true,
-		_T("pst"), // STRING_OK
+		L"pst", // STRING_OK
 		NULL,
 		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
 		szFileSpec,
@@ -273,7 +272,7 @@ void CProfileListDlg::AddPSTToProfile(bool bUnicodePST)
 				IDS_PSTPATHPROMPT,
 				3,
 				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-			MyFile.InitPane(0, CreateSingleLinePane(IDS_SERVICE, LPCTSTRToWstring(dlgFilePicker.GetFileName()), false));
+			MyFile.InitPane(0, CreateSingleLinePane(IDS_SERVICE, wstring(dlgFilePicker.GetFileName()), false));
 			MyFile.InitPane(1, CreateCheckPane(IDS_PSTDOPW, false, false));
 			MyFile.InitPane(2, CreateSingleLinePane(IDS_PSTPW, false));
 
