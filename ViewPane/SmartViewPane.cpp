@@ -15,6 +15,7 @@ SmartViewPane::SmartViewPane(UINT uidLabel) :DropDownPane(uidLabel, true, ulSmar
 	m_lpTextPane = static_cast<TextPane*>(CreateMultiLinePane(NULL, true));
 	m_bHasData = false;
 	m_bDoDropDown = true;
+	m_bReadOnly = true;
 }
 
 SmartViewPane::~SmartViewPane()
@@ -101,11 +102,7 @@ void SmartViewPane::SetWindowPos(int x, int y, int width, int height)
 		if (m_bDoDropDown)
 		{
 			EC_B(m_DropDown.ShowWindow(SW_SHOW));
-			// Note - Real height of a combo box is fixed at m_iEditHeight
-			// Height we set here influences the amount of dropdown entries we see
-			// Only really matters on Win2k and below.
-			auto ulDrops = 1 + min(ulSmartViewParserTypeArray, 4);
-			EC_B(m_DropDown.SetWindowPos(NULL, x, y, width, m_iEditHeight * ulDrops, SWP_NOZORDER));
+			EC_B(m_DropDown.SetWindowPos(NULL, x, y, width, m_iEditHeight, SWP_NOZORDER));
 
 			y += m_iEditHeight;
 			height -= m_iEditHeight;
@@ -121,39 +118,17 @@ void SmartViewPane::SetWindowPos(int x, int y, int width, int height)
 
 void SmartViewPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 {
-	auto hRes = S_OK;
-
-	ViewPane::Initialize(iControl, pParent, hdc);
-
-	EC_B(m_DropDown.Create(
-		WS_TABSTOP
-		| WS_CHILD
-		| WS_CLIPSIBLINGS
-		| WS_BORDER
-		| WS_VISIBLE
-		| WS_VSCROLL
-		| CBS_OWNERDRAWFIXED
-		| CBS_HASSTRINGS
-		| CBS_AUTOHSCROLL
-		| CBS_DISABLENOSCROLL
-		| CBS_DROPDOWNLIST, // does not allow typing
-		CRect(0, 0, 0, 0),
-		pParent,
-		m_nID));
+	DoInit(iControl, pParent, hdc);
 
 	if (SmartViewParserTypeArray)
 	{
 		for (ULONG iDropNum = 0; iDropNum < ulSmartViewParserTypeArray; iDropNum++)
 		{
-			m_DropDown.InsertString(
-				iDropNum,
-				wstringToCString(SmartViewParserTypeArray[iDropNum].lpszName));
-
-			m_DropDown.SetItemData(
-				iDropNum,
-				SmartViewParserTypeArray[iDropNum].ulValue);
+			auto szDropString = wstring(SmartViewParserTypeArray[iDropNum].lpszName);
+			InsertDropString(iDropNum, szDropString, SmartViewParserTypeArray[iDropNum].ulValue);
 		}
 	}
+
 	m_DropDown.SetCurSel(static_cast<int>(m_iDropSelectionValue));
 
 	// Passing a control # of 1 gives us a built in margin

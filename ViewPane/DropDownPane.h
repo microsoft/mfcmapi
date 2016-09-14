@@ -23,7 +23,7 @@ public:
 
 	void SetDropDownSelection(_In_ wstring szText);
 
-	void InsertDropString(int iRow, _In_ wstring szText);
+	void InsertDropString(int iRow, _In_ wstring szText, ULONG ulValue) const;
 	_Check_return_ wstring GetDropStringUseControl() const;
 	_Check_return_ int GetDropDownSelection() const;
 	_Check_return_ DWORD_PTR GetDropDownSelectionValue() const;
@@ -32,14 +32,15 @@ public:
 	_Check_return_ DWORD_PTR DropDownPane::GetDropDownValue() const;
 
 protected:
-	CComboBox m_DropDown;
+	CComboBoxEx m_DropDown;
 	DWORD_PTR m_iDropSelectionValue;
 
 	void SetSelection(DWORD_PTR iSelection);
+	void DoInit(int iControl, _In_ CWnd* pParent, _In_ HDC hdc);
 
 private:
+	ULONG m_ulDropList; // count of entries in m_lpuidDropList or m_lpnaeDropList
 	UINT* m_lpuidDropList;
-	ULONG m_ulDropList; // count of entries in szDropList
 	LPNAME_ARRAY_ENTRY m_lpnaeDropList;
 	int m_iDropSelection;
 	wstring m_lpszSelectionString;
