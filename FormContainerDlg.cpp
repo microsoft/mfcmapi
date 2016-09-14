@@ -225,14 +225,13 @@ void CFormContainerDlg::OnInstallForm()
 	if (S_OK == hRes)
 	{
 		INT_PTR iDlgRet = IDOK;
-		CStringA szFileSpec;
-		EC_B(szFileSpec.LoadString(IDS_CFGFILES));
+		auto szFileSpec= loadstring(IDS_CFGFILES);
 
-		CFileDialogExA dlgFilePicker;
+		CFileDialogExW dlgFilePicker;
 
 		EC_D_DIALOG(dlgFilePicker.DisplayDialog(
 			true,
-			"cfg", // STRING_OK
+			L"cfg", // STRING_OK
 			NULL,
 			OFN_FILEMUSTEXIST | OFN_ALLOWMULTISELECT,
 			szFileSpec,
@@ -241,13 +240,13 @@ void CFormContainerDlg::OnInstallForm()
 		{
 			auto ulFlags = MyFlags.GetHex(0);
 			auto hwnd = ulFlags & MAPIFORM_INSTALL_DIALOG ? m_hWnd : 0;
-			LPSTR lpszPath = nullptr;
-			while (NULL != (lpszPath = dlgFilePicker.GetNextFileName()))
+			wstring lpszPath;
+			while (lpszPath = dlgFilePicker.GetNextFileName(), !lpszPath.empty())
 			{
 				hRes = S_OK;
 				DebugPrintEx(DBGForms, CLASS, L"OnInstallForm",
-					L"Calling InstallForm(%p,0x%08X,\"%hs\")\n", hwnd, ulFlags, lpszPath); // STRING_OK
-				WC_MAPI(m_lpFormContainer->InstallForm(reinterpret_cast<ULONG_PTR>(hwnd), ulFlags, reinterpret_cast<LPTSTR>(lpszPath)));
+					L"Calling InstallForm(%p,0x%08X,\"%ws\")\n", hwnd, ulFlags, lpszPath.c_str()); // STRING_OK
+				WC_MAPI(m_lpFormContainer->InstallForm(reinterpret_cast<ULONG_PTR>(hwnd), ulFlags, LPCTSTR(wstringTostring(lpszPath).c_str())));
 				if (MAPI_E_EXTENDED_ERROR == hRes)
 				{
 					LPMAPIERROR lpErr = nullptr;
@@ -335,7 +334,6 @@ void CFormContainerDlg::OnResolveMessageClass()
 void CFormContainerDlg::OnResolveMultipleMessageClasses()
 {
 	auto hRes = S_OK;
-	ULONG i = 0;
 	if (!m_lpFormContainer) return;
 
 	DebugPrintEx(DBGForms, CLASS, L"OnResolveMultipleMessageClasses", L"resolving multiple message classes\n");
@@ -363,7 +361,7 @@ void CFormContainerDlg::OnResolveMultipleMessageClasses()
 			if (lpMSGClassArray)
 			{
 				lpMSGClassArray->cValues = ulNumClasses;
-				for (i = 0; i < ulNumClasses; i++)
+				for (ULONG i = 0; i < ulNumClasses; i++)
 				{
 					CEditor MyClass(
 						this,
@@ -402,7 +400,7 @@ void CFormContainerDlg::OnResolveMultipleMessageClasses()
 			if (lpMAPIFormInfoArray)
 			{
 				DebugPrintEx(DBGForms, CLASS, L"OnResolveMultipleMessageClasses", L"Got 0x%08X forms\n", lpMAPIFormInfoArray->cForms);
-				for (i = 0; i < lpMAPIFormInfoArray->cForms; i++)
+				for (ULONG i = 0; i < lpMAPIFormInfoArray->cForms; i++)
 				{
 					if (lpMAPIFormInfoArray->aFormInfo[i])
 					{
