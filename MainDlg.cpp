@@ -1655,10 +1655,9 @@ void CMainDlg::OnViewMSGProperties()
 	LPMESSAGE lpNewMessage = nullptr;
 	INT_PTR iDlgRet = IDOK;
 
-	CStringW szFileSpec;
 	CFileDialogExW dlgFilePicker;
 
-	EC_B(szFileSpec.LoadString(IDS_MSGFILES));
+	auto szFileSpec = loadstring(IDS_MSGFILES);
 
 	EC_D_DIALOG(dlgFilePicker.DisplayDialog(
 		true,
@@ -1701,9 +1700,8 @@ void CMainDlg::OnConvertMSGToEML()
 
 		INT_PTR iDlgRet = IDOK;
 
-		CStringW szFileSpec;
 		CFileDialogExW dlgFilePickerMSG;
-		EC_B(szFileSpec.LoadString(IDS_MSGFILES));
+		auto szFileSpec = loadstring(IDS_MSGFILES);
 
 		EC_D_DIALOG(dlgFilePickerMSG.DisplayDialog(
 			true,
@@ -1714,7 +1712,7 @@ void CMainDlg::OnConvertMSGToEML()
 			this));
 		if (iDlgRet == IDOK)
 		{
-			EC_B(szFileSpec.LoadString(IDS_EMLFILES));
+			szFileSpec = loadstring(IDS_EMLFILES);
 
 			CFileDialogExW dlgFilePickerEML;
 
@@ -1761,8 +1759,7 @@ void CMainDlg::OnConvertEMLToMSG()
 
 		INT_PTR iDlgRet = IDOK;
 
-		CStringW szFileSpec;
-		EC_B(szFileSpec.LoadString(IDS_EMLFILES));
+		auto szFileSpec = loadstring(IDS_EMLFILES);
 
 		CFileDialogExW dlgFilePickerEML;
 
@@ -1775,7 +1772,7 @@ void CMainDlg::OnConvertEMLToMSG()
 			this));
 		if (iDlgRet == IDOK)
 		{
-			EC_B(szFileSpec.LoadString(IDS_MSGFILES));
+			szFileSpec = loadstring(IDS_MSGFILES);
 
 			CFileDialogExW dlgFilePickerMSG;
 			EC_D_DIALOG(dlgFilePickerMSG.DisplayDialog(
@@ -1811,9 +1808,8 @@ void CMainDlg::OnConvertMSGToXML()
 
 	INT_PTR iDlgRet = IDOK;
 
-	CStringW szFileSpec;
 	CFileDialogExW dlgFilePickerMSG;
-	EC_B(szFileSpec.LoadString(IDS_MSGFILES));
+	auto szFileSpec = loadstring(IDS_MSGFILES);
 
 	EC_D_DIALOG(dlgFilePickerMSG.DisplayDialog(
 		true,
@@ -1824,7 +1820,7 @@ void CMainDlg::OnConvertMSGToXML()
 		this));
 	if (iDlgRet == IDOK)
 	{
-		EC_B(szFileSpec.LoadString(IDS_XMLFILES));
+		szFileSpec = loadstring(IDS_XMLFILES);
 
 		CFileDialogExW dlgFilePickerXML;
 

@@ -48,11 +48,10 @@ _Check_return_ HRESULT GetDirectoryPath(HWND hWnd, _Inout_z_ LPWSTR szPath)
 
 	szPath[0] = NULL;
 
-	CStringW szInputString;
-	EC_B(szInputString.LoadString(IDS_DIRPROMPT));
+	auto szInputString = loadstring(IDS_DIRPROMPT);
 
 	BrowseInfo.hwndOwner = hWnd;
-	BrowseInfo.lpszTitle = szInputString;
+	BrowseInfo.lpszTitle = szInputString.c_str();
 	BrowseInfo.pszDisplayName = szPath;
 	BrowseInfo.ulFlags = BIF_USENEWUI | BIF_RETURNONLYFSDIRS;
 
@@ -1292,8 +1291,7 @@ _Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd)
 		case ATTACH_BY_REF_RESOLVE:
 		case ATTACH_BY_REF_ONLY:
 		{
-			CStringW szFileSpec;
-			EC_B(szFileSpec.LoadString(IDS_ALLFILES));
+			auto szFileSpec = loadstring(IDS_ALLFILES);
 
 			CFileDialogExW dlgFilePicker;
 
@@ -1314,8 +1312,7 @@ _Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd)
 		case ATTACH_EMBEDDED_MSG:
 			// Get File Name
 		{
-			CStringW szFileSpec;
-			EC_B(szFileSpec.LoadString(IDS_MSGFILES));
+			auto szFileSpec = loadstring(IDS_MSGFILES);
 
 			CFileDialogExW dlgFilePicker;
 
@@ -1335,8 +1332,7 @@ _Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd)
 		break;
 		case ATTACH_OLE:
 		{
-			CStringW szFileSpec;
-			EC_B(szFileSpec.LoadString(IDS_ALLFILES));
+			auto szFileSpec = loadstring(IDS_ALLFILES);
 
 			CFileDialogExW dlgFilePicker;
 

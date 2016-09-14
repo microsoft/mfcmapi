@@ -61,7 +61,7 @@ public:
 		_In_opt_z_ LPCWSTR lpszDefExt = NULL,
 		_In_opt_z_ LPCWSTR lpszFileName = NULL,
 		DWORD dwFlags = OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-		_In_opt_z_ LPCWSTR lpszFilter = NULL,
+		_In_ wstring lpszFilter = wstring(L""),
 		_In_opt_ CWnd* pParentWnd = NULL);
 
 public:
