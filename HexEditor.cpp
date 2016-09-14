@@ -202,8 +202,7 @@ void CHexEditor::OnEditAction1()
 	{
 		INT_PTR iDlgRet = IDOK;
 
-		CStringW szFileSpec;
-		EC_B(szFileSpec.LoadString(IDS_ALLFILES));
+		auto szFileSpec = loadstring(IDS_ALLFILES);
 
 		CFileDialogExW dlgFilePicker;
 
@@ -249,8 +248,7 @@ void CHexEditor::OnEditAction2()
 	{
 		INT_PTR iDlgRet = IDOK;
 
-		CStringW szFileSpec;
-		EC_B(szFileSpec.LoadString(IDS_ALLFILES));
+		auto szFileSpec = loadstring(IDS_ALLFILES);
 
 		CFileDialogExW dlgFilePicker;
 

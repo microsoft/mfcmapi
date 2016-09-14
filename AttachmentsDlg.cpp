@@ -459,8 +459,7 @@ void CAttachmentsDlg::OnAddAttachment()
 {
 	HRESULT hRes = 0;
 	INT_PTR iDlgRet = 0;
-	CStringW szFileSpec;
-	EC_B(szFileSpec.LoadString(IDS_ALLFILES));
+	auto szFileSpec = loadstring(IDS_ALLFILES);
 
 	CFileDialogExW dlgFilePicker;
 

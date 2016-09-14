@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "FileDialogEx.h"
+#include <algorithm>
 
-///////////////////////////////////////////////////////////////////////////
 // CFileDialogExA / CFileDialogExW
 
 #define CCHBIGBUFF 8192
@@ -150,7 +150,7 @@ _Check_return_ INT_PTR CFileDialogExW::DisplayDialog(bool bOpenFileDialog, // tr
 	_In_opt_z_ LPCWSTR lpszDefExt,
 	_In_opt_z_ LPCWSTR lpszFileName,
 	DWORD dwFlags,
-	_In_opt_z_ LPCWSTR lpszFilter,
+	_In_ wstring lpszFilter,
 	_In_opt_ CWnd* pParentWnd)
 {
 	m_szBigBuff = NULL;
@@ -187,15 +187,11 @@ _Check_return_ INT_PTR CFileDialogExW::DisplayDialog(bool bOpenFileDialog, // tr
 		wcsncpy_s(m_szFileName, _countof(m_szFileName), lpszFileName, _TRUNCATE);
 
 	// Translate filter into commdlg format (lots of \0)
-	CStringW strFilter; // filter string
-	if (lpszFilter != NULL)
+	wstring strFilter; // filter string
+	if (!lpszFilter.empty())
 	{
-		strFilter = lpszFilter;
-		LPWSTR pch = strFilter.GetBuffer(0); // modify the buffer in place
-		// MFC delimits with '|' not '\0'
-		while ((pch = wcschr(pch, L'|')) != NULL)
-			*pch++ = L'\0';
-		m_ofn.lpstrFilter = strFilter;
+		std::replace(lpszFilter.begin(), lpszFilter.end(), L'|', L'\0');
+		m_ofn.lpstrFilter = lpszFilter.c_str();
 	}
 
 	int nResult;

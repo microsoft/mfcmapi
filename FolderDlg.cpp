@@ -781,8 +781,7 @@ void CFolderDlg::OnLoadFromMSG()
 	LPMESSAGE lpNewMessage = nullptr;
 	INT_PTR iDlgRet = IDOK;
 
-	CStringW szFileSpec;
-	EC_B(szFileSpec.LoadString(IDS_MSGFILES));
+	auto szFileSpec = loadstring(IDS_MSGFILES);
 
 	CFileDialogExW dlgFilePicker;
 	EC_D_DIALOG(dlgFilePicker.DisplayDialog(
@@ -1521,7 +1520,7 @@ void CFolderDlg::OnSaveMessageToFile()
 		LPCWSTR szExt = nullptr;
 		LPCWSTR szDotExt = nullptr;
 		ULONG ulDotExtLen = NULL;
-		CStringW szFilter;
+		wstring szFilter;
 		LPADRBOOK lpAddrBook = nullptr;
 		switch (MyData.GetDropDown(0))
 		{
@@ -1529,27 +1528,27 @@ void CFolderDlg::OnSaveMessageToFile()
 			szExt = L"xml"; // STRING_OK
 			szDotExt = L".xml"; // STRING_OK
 			ulDotExtLen = 4;
-			EC_B(szFilter.LoadString(IDS_XMLFILES));
+			szFilter = loadstring(IDS_XMLFILES);
 			break;
 		case 1:
 		case 2:
 			szExt = L"msg"; // STRING_OK
 			szDotExt = L".msg"; // STRING_OK
 			ulDotExtLen = 4;
-			EC_B(szFilter.LoadString(IDS_MSGFILES));
+			szFilter = loadstring(IDS_MSGFILES);
 			break;
 		case 3:
 		case 4:
 			szExt = L"eml"; // STRING_OK
 			szDotExt = L".eml"; // STRING_OK
 			ulDotExtLen = 4;
-			EC_B(szFilter.LoadString(IDS_EMLFILES));
+			szFilter = loadstring(IDS_EMLFILES);
 			break;
 		case 5:
 			szExt = L"tnef"; // STRING_OK
 			szDotExt = L".tnef"; // STRING_OK
 			ulDotExtLen = 5;
-			EC_B(szFilter.LoadString(IDS_TNEFFILES));
+			szFilter = loadstring(IDS_TNEFFILES);
 
 			lpAddrBook = m_lpMapiObjects->GetAddrBook(true); // do not release
 			break;
@@ -1681,8 +1680,7 @@ void CFolderDlg::OnLoadFromTNEF()
 	auto lpAddrBook = m_lpMapiObjects->GetAddrBook(true); // do not release
 	if (lpAddrBook)
 	{
-		CStringW szFileSpec;
-		EC_B(szFileSpec.LoadString(IDS_TNEFFILES));
+		auto szFileSpec = loadstring(IDS_TNEFFILES);
 
 		CFileDialogExW dlgFilePicker;
 		EC_D_DIALOG(dlgFilePicker.DisplayDialog(
@@ -1743,9 +1741,8 @@ void CFolderDlg::OnLoadFromEML()
 		if (bDoAdrBook) lpAdrBook = m_lpMapiObjects->GetAddrBook(true); // do not release
 
 		CFileDialogExW dlgFilePicker;
-		CStringW szFileSpec;
 
-		EC_B(szFileSpec.LoadString(IDS_EMLFILES));
+		auto szFileSpec = loadstring(IDS_EMLFILES);
 		EC_D_DIALOG(dlgFilePicker.DisplayDialog(
 			true,
 			L"eml", // STRING_OK
