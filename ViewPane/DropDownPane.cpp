@@ -2,6 +2,7 @@
 #include "DropDownPane.h"
 #include "String.h"
 #include "InterpretProp2.h"
+#include <UIFunctions.h>
 
 static wstring CLASS = L"DropDownPane";
 
@@ -45,7 +46,7 @@ ULONG DropDownPane::GetFlags()
 int DropDownPane::GetMinWidth(_In_ HDC hdc)
 {
 	auto cxDropDown = 0;
-	for (ULONG iDropString = 0; iDropString < m_ulDropList; iDropString++)
+	for (auto iDropString = 0; iDropString < m_DropDown.GetCount(); iDropString++)
 	{
 		SIZE sizeDrop = { 0 };
 		CString szDropString;
@@ -104,20 +105,19 @@ void DropDownPane::SetWindowPos(int x, int y, int width, int /*height*/)
 		// height -= m_iLabelHeight;
 	}
 
-	// Note - Real height of a combo box is fixed at m_iEditHeight
-	// Height we set here influences the amount of dropdown entries we see
-	// Only really matters on Win2k and below.
-	auto ulDrops = 1 + min(m_ulDropList, 4);
-
-	EC_B(m_DropDown.SetWindowPos(NULL, x, y, width, m_iEditHeight * ulDrops, SWP_NOZORDER));
+	EC_B(m_DropDown.SetWindowPos(NULL, x, y, width, m_iEditHeight, SWP_NOZORDER));
 }
 
-void DropDownPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC /*hdc*/)
+void DropDownPane::DoInit(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 {
-	ViewPane::Initialize(iControl, pParent, nullptr);
-
 	auto hRes = S_OK;
-	// bReadOnly means you can't type...
+
+	ViewPane::Initialize(iControl, pParent, hdc);
+
+	auto ulDrops = 1 + (m_ulDropList ? min(m_ulDropList, 4) : 4);
+	auto dropHeight = ulDrops * (pParent ? GetEditHeight(pParent->m_hWnd) : 0x1e);
+
+	// m_bReadOnly means you can't type...
 	DWORD dwDropStyle;
 	if (m_bReadOnly)
 	{
@@ -127,6 +127,7 @@ void DropDownPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC /*hdc*/
 	{
 		dwDropStyle = CBS_DROPDOWN; // allows typing
 	}
+
 	EC_B(m_DropDown.Create(
 		WS_TABSTOP
 		| WS_CHILD
@@ -135,39 +136,32 @@ void DropDownPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC /*hdc*/
 		| WS_VISIBLE
 		| WS_VSCROLL
 		| CBS_OWNERDRAWFIXED
-		| CBS_HASSTRINGS
 		| CBS_AUTOHSCROLL
 		| CBS_DISABLENOSCROLL
 		| dwDropStyle,
-		CRect(0, 0, 0, 0),
+		CRect(0, 0, 0, dropHeight),
 		pParent,
 		m_nID));
+}
+
+void DropDownPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
+{
+	DoInit(iControl, pParent, hdc);
 
 	if (m_lpuidDropList)
 	{
 		for (ULONG iDropNum = 0; iDropNum < m_ulDropList; iDropNum++)
 		{
-			CString szDropString;
-			EC_B(szDropString.LoadString(m_lpuidDropList[iDropNum]));
-			m_DropDown.InsertString(
-				iDropNum,
-				szDropString);
-			m_DropDown.SetItemData(
-				iDropNum,
-				m_lpuidDropList[iDropNum]);
+			auto szDropString = loadstring(m_lpuidDropList[iDropNum]);
+			InsertDropString(iDropNum, szDropString, m_lpuidDropList[iDropNum]);
 		}
 	}
 	else if (m_lpnaeDropList)
 	{
 		for (ULONG iDropNum = 0; iDropNum < m_ulDropList; iDropNum++)
 		{
-			m_DropDown.InsertString(
-				iDropNum,
-				wstringToCString(m_lpnaeDropList[iDropNum].lpszName));
-
-			m_DropDown.SetItemData(
-				iDropNum,
-				m_lpnaeDropList[iDropNum].ulValue);
+			auto szDropString = wstring(m_lpnaeDropList[iDropNum].lpszName);
+			InsertDropString(iDropNum, szDropString, m_lpnaeDropList[iDropNum].ulValue);
 		}
 	}
 
@@ -176,7 +170,7 @@ void DropDownPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC /*hdc*/
 	{
 		for (ULONG iDropNum = 0; iDropNum < ulPropGuidArray; iDropNum++)
 		{
-			InsertDropString(iDropNum, GUIDToStringAndName(PropGuidArray[iDropNum].lpGuid).c_str());
+			InsertDropString(iDropNum, GUIDToStringAndName(PropGuidArray[iDropNum].lpGuid), iDropNum);
 		}
 	}
 
@@ -185,10 +179,16 @@ void DropDownPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC /*hdc*/
 	m_bInitialized = true;
 }
 
-void DropDownPane::InsertDropString(int iRow, _In_ wstring szText)
+void DropDownPane::InsertDropString(int iRow, _In_ wstring szText, ULONG ulValue) const
 {
-	m_DropDown.InsertString(iRow, wstringToCString(szText));
-	m_ulDropList++;
+	COMBOBOXEXITEMW item = { 0 };
+	item.mask = CBEIF_TEXT | CBEIF_LPARAM;
+	item.iItem = iRow;
+	item.pszText = LPWSTR(szText.c_str());
+	item.cchTextMax = szText.length();
+	item.lParam = ulValue;
+
+	(void) ::SendMessage(m_DropDown.m_hWnd, CBEM_INSERTITEMW, WPARAM(0), LPARAM(&item));
 }
 
 void DropDownPane::CommitUIValues()
@@ -231,6 +231,7 @@ _Check_return_ DWORD_PTR DropDownPane::GetDropDownSelectionValue() const
 	{
 		return m_iDropSelectionValue;
 	}
+
 	return 0;
 }
 

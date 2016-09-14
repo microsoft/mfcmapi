@@ -431,7 +431,7 @@ void CPropertyTagEditor::InsertDropString(ULONG iControl, int iRow, _In_ wstring
 		auto lpPane = static_cast<DropDownPane*>(GetControl(iControl));
 		if (lpPane)
 		{
-			return lpPane->InsertDropString(iRow, szText);
+			lpPane->InsertDropString(iRow, szText, iRow);
 		}
 	}
 }
