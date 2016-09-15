@@ -253,7 +253,7 @@ void CProfileListDlg::AddPSTToProfile(bool bUnicodePST)
 	EC_D_DIALOG(dlgFilePicker.DisplayDialog(
 		true,
 		L"pst", // STRING_OK
-		NULL,
+		emptystring,
 		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
 		szFileSpec,
 		this));

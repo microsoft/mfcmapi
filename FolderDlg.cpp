@@ -23,6 +23,7 @@
 #include "MAPIMime.h"
 #include "InterpretProp2.h"
 #include "SortList/ContentsData.h"
+#include <algorithm>
 
 static wstring CLASS = L"CFolderDlg";
 
@@ -787,7 +788,7 @@ void CFolderDlg::OnLoadFromMSG()
 	EC_D_DIALOG(dlgFilePicker.DisplayDialog(
 		true,
 		L"msg", // STRING_OK
-		NULL,
+		emptystring,
 		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_FILEMUSTEXIST | OFN_ALLOWMULTISELECT,
 		szFileSpec,
 		this));
@@ -810,8 +811,7 @@ void CFolderDlg::OnLoadFromMSG()
 		WC_H(MyData.DisplayDialog());
 		if (S_OK == hRes)
 		{
-			LPWSTR lpszPath = nullptr;
-			while (NULL != (lpszPath = dlgFilePicker.GetNextFileName()))
+			for (auto& lpszPath : dlgFilePicker.GetFileNames())
 			{
 				hRes = S_OK;
 				switch (MyData.GetDropDown(0))
@@ -825,7 +825,7 @@ void CFolderDlg::OnLoadFromMSG()
 					if (lpNewMessage)
 					{
 						EC_H(LoadFromMSG(
-							lpszPath,
+							lpszPath.c_str(),
 							lpNewMessage, m_hWnd));
 					}
 
@@ -834,7 +834,7 @@ void CFolderDlg::OnLoadFromMSG()
 					if (m_lpPropDisplay)
 					{
 						EC_H(LoadMSGToMessage(
-							lpszPath,
+							lpszPath.c_str(),
 							&lpNewMessage));
 
 						if (lpNewMessage)
@@ -1588,26 +1588,27 @@ void CFolderDlg::OnSaveMessageToFile()
 
 				if (iDlgRet == IDOK)
 				{
+					auto filename = dlgFilePicker.GetFileName();
 					switch (MyData.GetDropDown(0))
 					{
 					case 0:
 						// Idea is to capture anything that may be important about this message to disk so it can be analyzed.
 					{
 						CDumpStore MyDumpStore;
-						MyDumpStore.InitMessagePath(dlgFilePicker.GetFileName());
+						MyDumpStore.InitMessagePath(filename.c_str());
 						// Just assume this message might have attachments
 						MyDumpStore.ProcessMessage(lpMessage, true, nullptr);
 					}
 
 					break;
 					case 1:
-						EC_H(SaveToMSG(lpMessage, dlgFilePicker.GetFileName(), false, m_hWnd, true));
+						EC_H(SaveToMSG(lpMessage, filename.c_str(), false, m_hWnd, true));
 						break;
 					case 2:
-						EC_H(SaveToMSG(lpMessage, dlgFilePicker.GetFileName(), true, m_hWnd, true));
+						EC_H(SaveToMSG(lpMessage, filename.c_str(), true, m_hWnd, true));
 						break;
 					case 3:
-						EC_H(SaveToEML(lpMessage, dlgFilePicker.GetFileName()));
+						EC_H(SaveToEML(lpMessage, filename.c_str()));
 						break;
 					case 4:
 					{
@@ -1625,7 +1626,7 @@ void CFolderDlg::OnSaveMessageToFile()
 
 							EC_H(ExportIMessageToEML(
 								lpMessage,
-								dlgFilePicker.GetFileName(),
+								filename.c_str(),
 								ulConvertFlags,
 								et,
 								mst,
@@ -1636,7 +1637,7 @@ void CFolderDlg::OnSaveMessageToFile()
 
 					break;
 					case 5:
-						EC_H(SaveToTNEF(lpMessage, lpAddrBook, dlgFilePicker.GetFileName()));
+						EC_H(SaveToTNEF(lpMessage, lpAddrBook, filename.c_str()));
 						break;
 					default:
 						break;
@@ -1686,15 +1687,14 @@ void CFolderDlg::OnLoadFromTNEF()
 		EC_D_DIALOG(dlgFilePicker.DisplayDialog(
 			true,
 			L"tnef", // STRING_OK
-			NULL,
+			emptystring,
 			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_FILEMUSTEXIST | OFN_ALLOWMULTISELECT,
 			szFileSpec,
 			this));
 
 		if (iDlgRet == IDOK)
 		{
-			LPWSTR lpszPath = nullptr;
-			while (NULL != (lpszPath = dlgFilePicker.GetNextFileName()))
+			for (auto& lpszPath : dlgFilePicker.GetFileNames())
 			{
 				hRes = S_OK;
 				EC_MAPI((static_cast<LPMAPIFOLDER>(m_lpContainer))->CreateMessage(
@@ -1705,7 +1705,7 @@ void CFolderDlg::OnLoadFromTNEF()
 				if (lpNewMessage)
 				{
 					EC_H(LoadFromTNEF(
-						lpszPath,
+						lpszPath.c_str(),
 						lpAddrBook,
 						lpNewMessage));
 
@@ -1746,15 +1746,14 @@ void CFolderDlg::OnLoadFromEML()
 		EC_D_DIALOG(dlgFilePicker.DisplayDialog(
 			true,
 			L"eml", // STRING_OK
-			NULL,
+			emptystring,
 			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_FILEMUSTEXIST | OFN_ALLOWMULTISELECT,
 			szFileSpec,
 			this));
 
 		if (iDlgRet == IDOK)
 		{
-			LPWSTR lpszPath = nullptr;
-			while (NULL != (lpszPath = dlgFilePicker.GetNextFileName()))
+			for (auto& lpszPath : dlgFilePicker.GetFileNames())
 			{
 				hRes = S_OK;
 				EC_MAPI((static_cast<LPMAPIFOLDER>(m_lpContainer))->CreateMessage(
@@ -1765,7 +1764,7 @@ void CFolderDlg::OnLoadFromEML()
 				if (lpNewMessage)
 				{
 					EC_H(ImportEMLToIMessage(
-						lpszPath,
+						lpszPath.c_str(),
 						lpNewMessage,
 						ulConvertFlags,
 						bDoApply,

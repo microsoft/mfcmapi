@@ -1662,14 +1662,14 @@ void CMainDlg::OnViewMSGProperties()
 	EC_D_DIALOG(dlgFilePicker.DisplayDialog(
 		true,
 		L"msg", // STRING_OK
-		NULL,
+		emptystring,
 		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_FILEMUSTEXIST,
 		szFileSpec,
 		this));
 	if (iDlgRet == IDOK)
 	{
 		EC_H(LoadMSGToMessage(
-			dlgFilePicker.GetFileName(),
+			dlgFilePicker.GetFileName().c_str(),
 			&lpNewMessage));
 		if (lpNewMessage)
 		{
@@ -1706,7 +1706,7 @@ void CMainDlg::OnConvertMSGToEML()
 		EC_D_DIALOG(dlgFilePickerMSG.DisplayDialog(
 			true,
 			L"msg", // STRING_OK
-			NULL,
+			emptystring,
 			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_FILEMUSTEXIST,
 			szFileSpec,
 			this));
@@ -1719,15 +1719,15 @@ void CMainDlg::OnConvertMSGToEML()
 			EC_D_DIALOG(dlgFilePickerEML.DisplayDialog(
 				true,
 				L"eml", // STRING_OK
-				NULL,
+				emptystring,
 				OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
 				szFileSpec,
 				this));
 			if (iDlgRet == IDOK)
 			{
 				EC_H(ConvertMSGToEML(
-					dlgFilePickerMSG.GetFileName(),
-					dlgFilePickerEML.GetFileName(),
+					dlgFilePickerMSG.GetFileName().c_str(),
+					dlgFilePickerEML.GetFileName().c_str(),
 					ulConvertFlags,
 					et,
 					mst,
@@ -1766,7 +1766,7 @@ void CMainDlg::OnConvertEMLToMSG()
 		EC_D_DIALOG(dlgFilePickerEML.DisplayDialog(
 			true,
 			L"eml", // STRING_OK
-			NULL,
+			emptystring,
 			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_FILEMUSTEXIST,
 			szFileSpec,
 			this));
@@ -1778,15 +1778,15 @@ void CMainDlg::OnConvertEMLToMSG()
 			EC_D_DIALOG(dlgFilePickerMSG.DisplayDialog(
 				true,
 				L"msg", // STRING_OK
-				NULL,
+				emptystring,
 				OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
 				szFileSpec,
 				this));
 			if (iDlgRet == IDOK)
 			{
 				EC_H(ConvertEMLToMSG(
-					dlgFilePickerEML.GetFileName(),
-					dlgFilePickerMSG.GetFileName(),
+					dlgFilePickerEML.GetFileName().c_str(),
+					dlgFilePickerMSG.GetFileName().c_str(),
 					ulConvertFlags,
 					bDoApply,
 					hCharSet,
@@ -1814,7 +1814,7 @@ void CMainDlg::OnConvertMSGToXML()
 	EC_D_DIALOG(dlgFilePickerMSG.DisplayDialog(
 		true,
 		L"msg", // STRING_OK
-		NULL,
+		emptystring,
 		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_FILEMUSTEXIST,
 		szFileSpec,
 		this));
@@ -1827,7 +1827,7 @@ void CMainDlg::OnConvertMSGToXML()
 		EC_D_DIALOG(dlgFilePickerXML.DisplayDialog(
 			true,
 			L"xml", // STRING_OK
-			NULL,
+			emptystring,
 			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
 			szFileSpec,
 			this));
@@ -1835,12 +1835,12 @@ void CMainDlg::OnConvertMSGToXML()
 		{
 			LPMESSAGE lpMessage = nullptr;
 
-			EC_H(LoadMSGToMessage(dlgFilePickerMSG.GetFileName(), &lpMessage));
+			EC_H(LoadMSGToMessage(dlgFilePickerMSG.GetFileName().c_str(), &lpMessage));
 
 			if (lpMessage)
 			{
 				CDumpStore MyDumpStore;
-				MyDumpStore.InitMessagePath(dlgFilePickerXML.GetFileName());
+				MyDumpStore.InitMessagePath(dlgFilePickerXML.GetFileName().c_str());
 				// Just assume this message might have attachments
 				MyDumpStore.ProcessMessage(lpMessage, true, nullptr);
 

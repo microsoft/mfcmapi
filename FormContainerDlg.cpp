@@ -232,7 +232,7 @@ void CFormContainerDlg::OnInstallForm()
 		EC_D_DIALOG(dlgFilePicker.DisplayDialog(
 			true,
 			L"cfg", // STRING_OK
-			NULL,
+			emptystring,
 			OFN_FILEMUSTEXIST | OFN_ALLOWMULTISELECT,
 			szFileSpec,
 			this));
@@ -240,8 +240,7 @@ void CFormContainerDlg::OnInstallForm()
 		{
 			auto ulFlags = MyFlags.GetHex(0);
 			auto hwnd = ulFlags & MAPIFORM_INSTALL_DIALOG ? m_hWnd : 0;
-			wstring lpszPath;
-			while (lpszPath = dlgFilePicker.GetNextFileName(), !lpszPath.empty())
+			for (auto& lpszPath : dlgFilePicker.GetFileNames())
 			{
 				hRes = S_OK;
 				DebugPrintEx(DBGForms, CLASS, L"OnInstallForm",
