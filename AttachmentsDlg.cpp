@@ -465,8 +465,8 @@ void CAttachmentsDlg::OnAddAttachment()
 
 	EC_D_DIALOG(dlgFilePicker.DisplayDialog(
 		true,
-		NULL,
-		NULL,
+		emptystring,
+		emptystring,
 		NULL,
 		szFileSpec));
 	if (iDlgRet == IDOK)
@@ -485,9 +485,9 @@ void CAttachmentsDlg::OnAddAttachment()
 			spvAttach[1].ulPropTag = PR_RENDERING_POSITION;
 			spvAttach[1].Value.l = -1;
 			spvAttach[2].ulPropTag = PR_ATTACH_FILENAME_W;
-			spvAttach[2].Value.lpszW = szAttachName;
+			spvAttach[2].Value.lpszW = LPWSTR(szAttachName.c_str());
 			spvAttach[3].ulPropTag = PR_DISPLAY_NAME_W;
-			spvAttach[3].Value.lpszW = szAttachName;
+			spvAttach[3].Value.lpszW = LPWSTR(szAttachName.c_str());
 
 			EC_MAPI(lpAttachment->SetProps(_countof(spvAttach), spvAttach, NULL));
 			if (SUCCEEDED(hRes))
@@ -498,7 +498,7 @@ void CAttachmentsDlg::OnAddAttachment()
 					MAPIAllocateBuffer,
 					MAPIFreeBuffer,
 					STGM_READ,
-					szAttachName,
+					szAttachName.c_str(),
 					NULL,
 					&pStreamFile));
 				if (SUCCEEDED(hRes) && pStreamFile)

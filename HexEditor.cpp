@@ -208,12 +208,12 @@ void CHexEditor::OnEditAction1()
 
 		EC_D_DIALOG(dlgFilePicker.DisplayDialog(
 			true,
-			NULL,
-			NULL,
+			emptystring,
+			emptystring,
 			OFN_FILEMUSTEXIST,
 			szFileSpec,
 			this));
-		if (iDlgRet == IDOK && dlgFilePicker.GetFileName())
+		if (iDlgRet == IDOK && !dlgFilePicker.GetFileName().empty())
 		{
 			if (m_lpMapiObjects) m_lpMapiObjects->MAPIInitialize(NULL);
 			LPSTREAM lpStream = nullptr;
@@ -223,7 +223,7 @@ void CHexEditor::OnEditAction1()
 				MAPIAllocateBuffer,
 				MAPIFreeBuffer,
 				STGM_READ,
-				dlgFilePicker.GetFileName(),
+				dlgFilePicker.GetFileName().c_str(),
 				NULL,
 				&lpStream));
 
@@ -254,12 +254,12 @@ void CHexEditor::OnEditAction2()
 
 		EC_D_DIALOG(dlgFilePicker.DisplayDialog(
 			false,
-			NULL,
-			NULL,
+			emptystring,
+			emptystring,
 			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
 			szFileSpec,
 			this));
-		if (iDlgRet == IDOK && dlgFilePicker.GetFileName())
+		if (iDlgRet == IDOK && !dlgFilePicker.GetFileName().empty())
 		{
 			if (m_lpMapiObjects) m_lpMapiObjects->MAPIInitialize(NULL);
 			LPSTREAM lpStream = nullptr;
@@ -269,7 +269,7 @@ void CHexEditor::OnEditAction2()
 				MAPIAllocateBuffer,
 				MAPIFreeBuffer,
 				STGM_CREATE | STGM_READWRITE,
-				dlgFilePicker.GetFileName(),
+				dlgFilePicker.GetFileName().c_str(),
 				NULL,
 				&lpStream));
 

@@ -1305,7 +1305,7 @@ _Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd)
 				szFileSpec));
 			if (iDlgRet == IDOK)
 			{
-				EC_H(WriteAttachStreamToFile(lpAttach, dlgFilePicker.GetFileName()));
+				EC_H(WriteAttachStreamToFile(lpAttach, dlgFilePicker.GetFileName().c_str()));
 			}
 		}
 		break;
@@ -1326,7 +1326,7 @@ _Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd)
 				szFileSpec));
 			if (iDlgRet == IDOK)
 			{
-				EC_H(WriteEmbeddedMSGToFile(lpAttach, dlgFilePicker.GetFileName(), (MAPI_UNICODE == fMapiUnicode) ? true : false, hWnd));
+				EC_H(WriteEmbeddedMSGToFile(lpAttach, dlgFilePicker.GetFileName().c_str(), (MAPI_UNICODE == fMapiUnicode) ? true : false, hWnd));
 			}
 		}
 		break;
@@ -1339,13 +1339,13 @@ _Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd)
 			DebugPrint(DBGGeneric, L"WriteAttachmentToFile: Prompting with \"%ws\"\n", szFileName);
 			EC_D_DIALOG(dlgFilePicker.DisplayDialog(
 				false,
-				NULL,
+				emptystring,
 				szFileName,
 				OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
 				szFileSpec));
 			if (iDlgRet == IDOK)
 			{
-				EC_H(WriteOleToFile(lpAttach, dlgFilePicker.GetFileName()));
+				EC_H(WriteOleToFile(lpAttach, dlgFilePicker.GetFileName().c_str()));
 			}
 		}
 		break;

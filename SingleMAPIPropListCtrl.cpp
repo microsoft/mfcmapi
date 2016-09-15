@@ -794,12 +794,12 @@ void CSingleMAPIPropListCtrl::SavePropsToXML()
 	{
 		auto szFileName = dlgFilePicker.GetFileName();
 
-		if (szFileName)
+		if (!szFileName.empty())
 		{
 			auto fProps = MyOpenFile(szFileName, true);
 			if (fProps)
 			{
-				DebugPrintEx(DBGGeneric, CLASS, L"SavePropsToXML", L"saving to %ws\n", szFileName);
+				DebugPrintEx(DBGGeneric, CLASS, L"SavePropsToXML", L"saving to %ws\n", szFileName.c_str());
 
 				// Force a sort on the tag column to make output consistent
 				FakeClickColumn(pcPROPTAG, false);
