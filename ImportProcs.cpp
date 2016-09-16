@@ -476,7 +476,6 @@ _Check_return_ STDAPI HrCopyActions(
 
 	auto fNullObject = lpObject == nullptr;
 	auto hRes = S_OK;
-	ULONG i = 0;
 
 	*lppActsDst = nullptr;
 
@@ -504,11 +503,11 @@ _Check_return_ STDAPI HrCopyActions(
 	{
 		// Initialize acttype values for all members of the array to a value
 		// that will not cause deallocation errors should the copy fail.
-		for (i = 0; i < lpActsDst->cActions; i++)
+		for (ULONG i = 0; i < lpActsDst->cActions; i++)
 			lpActsDst->lpAction[i].acttype = OP_BOUNCE;
 
 		// Now actually copy all the members of the array.
-		for (i = 0; i < lpActsDst->cActions; i++)
+		for (ULONG i = 0; i < lpActsDst->cActions; i++)
 		{
 			auto lpActDst = &lpActsDst->lpAction[i];
 			auto lpActSrc = &lpActsSrc->lpAction[i];

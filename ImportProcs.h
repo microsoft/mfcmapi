@@ -57,13 +57,13 @@ public:
 	MAPIPathIterator(bool bBypassRestrictions);
 	~MAPIPathIterator();
 	LPWSTR GetNextMAPIPath();
-	LPWSTR GetInstalledOutlookMAPI(int iOutlook);
-	LPWSTR GetMAPISystemDir();
+	LPWSTR GetInstalledOutlookMAPI(int iOutlook) const;
+	LPWSTR GetMAPISystemDir() const;
 
 private:
 	LPWSTR GetRegisteredMapiClient(LPCWSTR pwzProviderOverride, bool bDLL, bool bEx);
-	LPWSTR GetMailClientFromMSIData(HKEY hkeyMapiClient);
-	LPWSTR GetMailClientFromDllPath(HKEY hkeyMapiClient, bool bEx);
+	LPWSTR GetMailClientFromMSIData(HKEY hkeyMapiClient) const;
+	static LPWSTR GetMailClientFromDllPath(HKEY hkeyMapiClient, bool bEx);
 	LPWSTR GetNextInstalledOutlookMAPI();
 
 	mapiSource CurrentSource;
