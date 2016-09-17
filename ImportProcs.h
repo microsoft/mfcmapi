@@ -38,11 +38,12 @@ bool GetComponentPath(LPCSTR szComponent, LPSTR szQualifier, LPSTR szDllPath, DW
 
 // Keep this in sync with g_pszOutlookQualifiedComponents
 #define oqcOfficeBegin 0
-#define oqcOffice15 oqcOfficeBegin + 0
-#define oqcOffice14 oqcOfficeBegin + 1
-#define oqcOffice12 oqcOfficeBegin + 2
-#define oqcOffice11 oqcOfficeBegin + 3
-#define oqcOffice11Debug oqcOfficeBegin + 4
+#define oqcOffice16 oqcOfficeBegin + 0
+#define oqcOffice15 oqcOfficeBegin + 1
+#define oqcOffice14 oqcOfficeBegin + 2
+#define oqcOffice12 oqcOfficeBegin + 3
+#define oqcOffice11 oqcOfficeBegin + 4
+#define oqcOffice11Debug oqcOfficeBegin + 5
 #define oqcOfficeEnd oqcOffice11Debug
 
 extern WCHAR g_pszOutlookQualifiedComponents[][MAX_PATH];
@@ -56,11 +57,12 @@ class MAPIPathIterator
 public:
 	MAPIPathIterator(bool bBypassRestrictions);
 	~MAPIPathIterator();
-	wstring GetNextMAPIPath();
+	vector<wstring> GetMAPIPaths(bool bBypassRestrictions);
 	wstring GetInstalledOutlookMAPI(int iOutlook) const;
 	static wstring GetMAPISystemDir();
 
 private:
+	wstring GetNextMAPIPath();
 	wstring GetRegisteredMapiClient(wstring pwzProviderOverride, bool bDLL, bool bEx);
 	static wstring GetMailClientFromMSIData(HKEY hkeyMapiClient);
 	wstring GetMailClientFromDllPath(HKEY hkeyMapiClient, bool bEx) const;

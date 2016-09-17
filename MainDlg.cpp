@@ -125,10 +125,10 @@ void CMainDlg::AddLoadMAPIMenus() const
 
 		if (mpi)
 		{
-			while (uidCurMenu <= ID_LOADMAPIMENUMAX)
+			auto paths = mpi->GetMAPIPaths(true);
+			for (auto szPath : paths)
 			{
-				auto szPath = mpi->GetNextMAPIPath();
-				if (szPath.empty()) break;
+				if (uidCurMenu > ID_LOADMAPIMENUMAX) break;
 
 				DebugPrint(DBGLoadMAPI, L"Found MAPI path %ws\n", szPath.c_str());
 				auto lpMenu = CreateMenuEntry(szPath.c_str());

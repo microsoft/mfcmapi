@@ -434,6 +434,7 @@ void DisplayUsage(BOOL bFull)
 		printf("              12 - Outlook 2007 (12)\n");
 		printf("              14 - Outlook 2010 (14)\n");
 		printf("              15 - Outlook 2013 (15)\n");
+		printf("              16 - Outlook 2016 (16)\n");
 		printf("           You can also pass a string, which will load the first MAPI whose path contains the string.\n");
 		printf("\n");
 		printf("Smart View Parsers:\n");
@@ -812,7 +813,7 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 			pRunOpts->cSetType = static_cast<CHARSETTYPE>(strtoul(argv[i + 2], &szEndPtr, 10));
 			if (pRunOpts->cSetType > CHARSET_WEB) { bHitError = true; break; }
 			pRunOpts->cSetApplyType = static_cast<CSETAPPLYTYPE>(strtoul(argv[i + 3], &szEndPtr, 10));
-			if (pRunOpts->cSetApplyType > CSET_APPLY_TAG_ALL)  { bHitError = true; break; }
+			if (pRunOpts->cSetApplyType > CSET_APPLY_TAG_ALL) { bHitError = true; break; }
 			pRunOpts->ulMAPIMIMEFlags |= MAPIMIME_CHARSET;
 			i += 3;
 			break;
@@ -915,14 +916,14 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 		// Make sure there's no MIME-only options specified in a MIME->MAPI conversion
 		if (CHECKFLAG(MAPIMIME_TOMAPI) &&
 			(CHECKFLAG(MAPIMIME_RFC822) ||
-			CHECKFLAG(MAPIMIME_ENCODING) ||
-			CHECKFLAG(MAPIMIME_WRAP)))
+				CHECKFLAG(MAPIMIME_ENCODING) ||
+				CHECKFLAG(MAPIMIME_WRAP)))
 			return false;
 
 		// Make sure there's no MAPI-only options specified in a MAPI->MIME conversion
 		if (CHECKFLAG(MAPIMIME_TOMIME) &&
 			(CHECKFLAG(MAPIMIME_CHARSET) ||
-			CHECKFLAG(MAPIMIME_UNICODE)))
+				CHECKFLAG(MAPIMIME_UNICODE)))
 			return false;
 		break;
 	case cmdmodeProfile:
@@ -962,43 +963,41 @@ bool LoadMAPIVersion(wstring lpszVersion)
 {
 	// Load DLLS and get functions from them
 	ImportProcs();
-	DebugPrint(DBGGeneric, L"LoadMAPIVersion(%ws)\n", lpszVersion);
+	DebugPrint(DBGGeneric, L"LoadMAPIVersion(%ws)\n", lpszVersion.c_str());
 
 	wstring szPath;
 	auto mpi = new MAPIPathIterator(true);
 	if (mpi)
 	{
-		auto ulVersion = wstringToUlong(lpszVersion, 10);
+		auto paths = mpi->GetMAPIPaths(true);
+		if (lpszVersion == L"0")
+		{
+			DebugPrint(DBGGeneric, L"Listing MAPI\n");
+			for (auto path : paths)
+			{
+				wstringToLower(path);
 
-		if (ulVersion == NULL)
+				printf("MAPI path: %ws\n", path.c_str());
+			}
+			return true;
+		}
+
+		auto ulVersion = wstringToUlong(lpszVersion, 10);
+		if (ulVersion == 0)
 		{
 			DebugPrint(DBGGeneric, L"Got a string\n");
 
 			wstringToLower(lpszVersion);
-			for (;;)
+			for (auto path : paths)
 			{
-				szPath = mpi->GetNextMAPIPath();
-				if (szPath.empty()) break;
-				wstringToLower(szPath);
+				wstringToLower(path);
 
-				if (szPath.find(lpszVersion) != wstring::npos)
+				if (path.find(lpszVersion) != wstring::npos)
 				{
+					szPath = path;
 					break;
 				}
 			}
-		}
-		else if (0 == ulVersion)
-		{
-			DebugPrint(DBGGeneric, L"Listing MAPI\n");
-			for (;;)
-			{
-				szPath = mpi->GetNextMAPIPath();
-				if (szPath.empty()) break;
-				wstringToLower(szPath);
-
-				printf("MAPI path: %ws\n", szPath.c_str());
-			}
-			return true;
 		}
 		else
 		{
@@ -1019,6 +1018,9 @@ bool LoadMAPIVersion(wstring lpszVersion)
 				break;
 			case 15: // Outlook 2013 (15)
 				szPath = mpi->GetInstalledOutlookMAPI(oqcOffice15);
+				break;
+			case 16: // Outlook 2016 (16)
+				szPath = mpi->GetInstalledOutlookMAPI(oqcOffice16);
 				break;
 			}
 		}
