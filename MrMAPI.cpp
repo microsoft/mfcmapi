@@ -1,26 +1,26 @@
 #include "stdafx.h"
 
-#include "MrMAPI\MrMAPI.h"
+#include "MrMAPI/MrMAPI.h"
 #include "MAPIFunctions.h"
 #include "String.h"
 #include "InterpretProp2.h"
-#include "Smartview\SmartView.h"
-#include "MrMAPI\MMAcls.h"
-#include "MrMAPI\MMContents.h"
-#include "MrMAPI\MMErr.h"
-#include "MrMAPI\MMFidMid.h"
-#include "MrMAPI\MMFolder.h"
-#include "MrMAPI\MMProfile.h"
-#include "MrMAPI\MMPropTag.h"
-#include "MrMAPI\MMRules.h"
-#include "MrMAPI\MMSmartView.h"
-#include "MrMAPI\MMStore.h"
-#include "MrMAPI\MMMapiMime.h"
+#include "Smartview/SmartView.h"
+#include "MrMAPI/MMAcls.h"
+#include "MrMAPI/MMContents.h"
+#include "MrMAPI/MMErr.h"
+#include "MrMAPI/MMFidMid.h"
+#include "MrMAPI/MMFolder.h"
+#include "MrMAPI/MMProfile.h"
+#include "MrMAPI/MMPropTag.h"
+#include "MrMAPI/MMRules.h"
+#include "MrMAPI/MMSmartView.h"
+#include "MrMAPI/MMStore.h"
+#include "MrMAPI/MMMapiMime.h"
 #include <shlwapi.h>
 #include "ImportProcs.h"
 #include "MAPIStoreFunctions.h"
-#include "MrMAPI\MMPst.h"
-#include "MrMAPI\MMReceiveFolder.h"
+#include "MrMAPI/MMPst.h"
+#include "MrMAPI/MMReceiveFolder.h"
 #include "NamedPropCache.h"
 
 // Initialize MFC for LoadString support later on
@@ -29,13 +29,13 @@ void InitMFC()
 #pragma warning(push)
 #pragma warning(disable:6309)
 #pragma warning(disable:6387)
-	if (!AfxWinInit(::GetModuleHandle(NULL), NULL, ::GetCommandLine(), 0)) return;
+	if (!AfxWinInit(::GetModuleHandle(nullptr), nullptr, ::GetCommandLine(), 0)) return;
 #pragma warning(pop)
 }
 
 _Check_return_ HRESULT MrMAPILogonEx(wstring const& lpszProfile, _Deref_out_opt_ LPMAPISESSION* lppSession)
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	ULONG ulFlags = MAPI_EXTENDED | MAPI_NO_MAIL | MAPI_UNICODE | MAPI_NEW_SESSION;
 	if (lpszProfile.empty()) ulFlags |= MAPI_USE_DEFAULT;
 
@@ -50,9 +50,9 @@ _Check_return_ HRESULT OpenExchangeOrDefaultMessageStore(
 	_Deref_out_opt_ LPMDB* lppMDB)
 {
 	if (!lpMAPISession || !lppMDB) return MAPI_E_INVALID_PARAMETER;
-	HRESULT hRes = S_OK;
-	LPMDB lpMDB = NULL;
-	*lppMDB = NULL;
+	auto hRes = S_OK;
+	LPMDB lpMDB = nullptr;
+	*lppMDB = nullptr;
 
 	WC_H(OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpMDB));
 	if (FAILED(hRes) || !lpMDB)
@@ -200,7 +200,7 @@ void DisplayUsage(BOOL bFull)
 {
 	printf("MAPI data collection and parsing tool. Supports property tag lookup, error translation,\n");
 	printf("   smart view processing, rule tables, ACL tables, contents tables, and MAPI<->MIME conversion.\n");
-	LPADDIN lpCurAddIn = g_lpMyAddins;
+	auto lpCurAddIn = g_lpMyAddins;
 	if (bFull)
 	{
 		if (lpCurAddIn)
@@ -438,18 +438,19 @@ void DisplayUsage(BOOL bFull)
 		printf("\n");
 		printf("Smart View Parsers:\n");
 		// Print smart view options
-		ULONG i = 1;
-		for (i = 1; i < ulSmartViewParserTypeArray; i++)
+		for (ULONG i = 1; i < ulSmartViewParserTypeArray; i++)
 		{
 			_tprintf(_T("   %2u %ws\n"), i, SmartViewParserTypeArray[i].lpszName);
 		}
+
 		printf("\n");
 		printf("Folders:\n");
 		// Print Folders
-		for (i = 1; i < NUM_DEFAULT_PROPS; i++)
+		for (ULONG i = 1; i < NUM_DEFAULT_PROPS; i++)
 		{
 			printf("   %2u %ws\n", i, FolderNames[i]);
 		}
+
 		printf("\n");
 		printf("Examples:\n");
 		printf("   MrMAPI PR_DISPLAY_NAME\n");
@@ -479,7 +480,7 @@ void DisplayUsage(BOOL bFull)
 
 bool bSetMode(_In_ CmdMode* pMode, _In_ CmdMode TargetMode)
 {
-	if (pMode && ((cmdmodeUnknown == *pMode) || (TargetMode == *pMode)))
+	if (pMode && (cmdmodeUnknown == *pMode || TargetMode == *pMode))
 	{
 		*pMode = TargetMode;
 		return true;
@@ -567,20 +568,19 @@ MYOPTIONS::MYOPTIONS()
 	bByteSwapped = false;
 	cSetType = CHARSET_BODY;
 	cSetApplyType = CSET_APPLY_UNTAGGED;
-	lpMAPISession = NULL;
-	lpMDB = NULL;
-	lpFolder = NULL;
+	lpMAPISession = nullptr;
+	lpMDB = nullptr;
+	lpFolder = nullptr;
 }
 
 OptParser* GetParser(__CommandLineSwitch Switch)
 {
-	int i = 0;
-	for (i = 0; i < _countof(g_Parsers); i++)
+	for (auto i = 0; i < _countof(g_Parsers); i++)
 	{
 		if (Switch == g_Parsers[i].Switch) return &g_Parsers[i];
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 // Checks if szArg is an option, and if it is, returns which option it is
@@ -589,8 +589,7 @@ __CommandLineSwitch ParseArgument(_In_z_ LPCSTR szArg)
 {
 	if (!szArg || !szArg[0]) return switchNoSwitch;
 
-	ULONG i = 0;
-	LPCSTR szSwitch = NULL;
+	LPCSTR szSwitch = nullptr;
 
 	// Check if this is a switch at all
 	switch (szArg[0])
@@ -602,10 +601,9 @@ __CommandLineSwitch ParseArgument(_In_z_ LPCSTR szArg)
 		break;
 	default:
 		return switchNoSwitch;
-		break;
 	}
 
-	for (i = 0; i < g_ulSwitches; i++)
+	for (ULONG i = 0; i < g_ulSwitches; i++)
 	{
 		// If we have a match
 		if (StrStrIA(g_Switches[i].szSwitch, szSwitch) == g_Switches[i].szSwitch)
@@ -620,7 +618,7 @@ __CommandLineSwitch ParseArgument(_In_z_ LPCSTR szArg)
 // Parses command line arguments and fills out MYOPTIONS
 bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * pRunOpts)
 {
-	LPSTR szEndPtr = NULL;
+	LPSTR szEndPtr = nullptr;
 
 	pRunOpts->ulTypeNum = ulNoMatch;
 	pRunOpts->ulFolder = DEFAULT_INBOX;
@@ -628,12 +626,12 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 	if (!pRunOpts) return false;
 	if (1 == argc) return false;
 
-	bool bHitError = false;
+	auto bHitError = false;
 
-	for (int i = 1; i < argc; i++)
+	for (auto i = 1; i < argc; i++)
 	{
-		__CommandLineSwitch iSwitch = ParseArgument(argv[i]);
-		OptParser* opt = GetParser(iSwitch);
+		auto iSwitch = ParseArgument(argv[i]);
+		auto opt = GetParser(iSwitch);
 
 		if (opt)
 		{
@@ -652,8 +650,7 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 			// Commands with variable argument counts can special case themselves
 			if (opt->MinArgs > 0)
 			{
-				int iArg = 0;
-				for (iArg = 1; iArg <= opt->MinArgs; iArg++)
+				for (auto iArg = 1; iArg <= opt->MinArgs; iArg++)
 				{
 					if (argc <= i + iArg || switchNoSwitch != ParseArgument(argv[i + iArg]))
 					{
@@ -812,9 +809,9 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 			break;
 		case switchCharset:
 			pRunOpts->ulCodePage = strtoul(argv[i + 1], &szEndPtr, 10);
-			pRunOpts->cSetType = (CHARSETTYPE)strtoul(argv[i + 2], &szEndPtr, 10);
+			pRunOpts->cSetType = static_cast<CHARSETTYPE>(strtoul(argv[i + 2], &szEndPtr, 10));
 			if (pRunOpts->cSetType > CHARSET_WEB) { bHitError = true; break; }
-			pRunOpts->cSetApplyType = (CSETAPPLYTYPE)strtoul(argv[i + 3], &szEndPtr, 10);
+			pRunOpts->cSetApplyType = static_cast<CSETAPPLYTYPE>(strtoul(argv[i + 3], &szEndPtr, 10));
 			if (pRunOpts->cSetApplyType > CSET_APPLY_TAG_ALL)  { bHitError = true; break; }
 			pRunOpts->ulMAPIMIMEFlags |= MAPIMIME_CHARSET;
 			i += 3;
@@ -835,6 +832,30 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 			// display help
 			bHitError = true;
 			break;
+		case switchHelp: break;
+		case switchVerbose: break;
+		case switchSearch: break;
+		case switchDecimal: break;
+		case switchDispid: break;
+		case switchGuid: break;
+		case switchError: break;
+		case switchBinary: break;
+		case switchAcl: break;
+		case switchRule: break;
+		case switchContents: break;
+		case switchAssociatedContents: break;
+		case switchMoreProperties: break;
+		case switchNoAddins: break;
+		case switchOnline: break;
+		case switchXML: break;
+		case switchMSG: break;
+		case switchList: break;
+		case switchChildFolders: break;
+		case switchSize: break;
+		case switchPST: break;
+		case switchSkip: break;
+		case switchSearchState: break;
+		default: break;
 		}
 	}
 
@@ -876,9 +897,9 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 	switch (pRunOpts->Mode)
 	{
 	case cmdmodePropTag:
-		if (!(pRunOpts->ulOptions & OPT_DOTYPE) && !(pRunOpts->ulOptions & OPT_DOPARTIALSEARCH) && (pRunOpts->lpszUnswitchedOption.empty())) return false;
-		if ((pRunOpts->ulOptions & OPT_DOPARTIALSEARCH) && (pRunOpts->ulOptions & OPT_DOTYPE) && ulNoMatch == pRunOpts->ulTypeNum) return false;
-		if ((pRunOpts->ulOptions & OPT_DOFLAG) && ((pRunOpts->ulOptions & OPT_DOPARTIALSEARCH) || (pRunOpts->ulOptions & OPT_DOTYPE))) return false;
+		if (!(pRunOpts->ulOptions & OPT_DOTYPE) && !(pRunOpts->ulOptions & OPT_DOPARTIALSEARCH) && pRunOpts->lpszUnswitchedOption.empty()) return false;
+		if (pRunOpts->ulOptions & OPT_DOPARTIALSEARCH && pRunOpts->ulOptions & OPT_DOTYPE && ulNoMatch == pRunOpts->ulTypeNum) return false;
+		if (pRunOpts->ulOptions & OPT_DOFLAG && (pRunOpts->ulOptions & OPT_DOPARTIALSEARCH || pRunOpts->ulOptions & OPT_DOTYPE)) return false;
 		break;
 	case cmdmodeSmartView:
 		if (!pRunOpts->ulSVParser) return false;
@@ -943,12 +964,11 @@ bool LoadMAPIVersion(wstring lpszVersion)
 	ImportProcs();
 	DebugPrint(DBGGeneric, L"LoadMAPIVersion(%ws)\n", lpszVersion);
 
-	LPWSTR szPath = NULL;
-
-	MAPIPathIterator* mpi = new MAPIPathIterator(true);
+	wstring szPath;
+	auto mpi = new MAPIPathIterator(true);
 	if (mpi)
 	{
-		ULONG ulVersion = wstringToUlong(lpszVersion, 10);
+		auto ulVersion = wstringToUlong(lpszVersion, 10);
 
 		if (ulVersion == NULL)
 		{
@@ -958,16 +978,13 @@ bool LoadMAPIVersion(wstring lpszVersion)
 			for (;;)
 			{
 				szPath = mpi->GetNextMAPIPath();
-				if (!szPath) break;
-				_wcslwr(szPath);
+				if (szPath.empty()) break;
+				wstringToLower(szPath);
 
-				if (wcsstr(szPath, lpszVersion.c_str()))
+				if (szPath.find(lpszVersion) != wstring::npos)
 				{
 					break;
 				}
-
-				delete[] szPath;
-				szPath = NULL;
 			}
 		}
 		else if (0 == ulVersion)
@@ -976,12 +993,10 @@ bool LoadMAPIVersion(wstring lpszVersion)
 			for (;;)
 			{
 				szPath = mpi->GetNextMAPIPath();
-				if (!szPath) break;
-				_wcslwr(szPath);
+				if (szPath.empty()) break;
+				wstringToLower(szPath);
 
-				printf("MAPI path: %ws\n", szPath);
-				delete[] szPath;
-				szPath = NULL;
+				printf("MAPI path: %ws\n", szPath.c_str());
 			}
 			return true;
 		}
@@ -1009,14 +1024,13 @@ bool LoadMAPIVersion(wstring lpszVersion)
 		}
 	}
 
-	if (szPath)
+	if (!szPath.empty())
 	{
-		DebugPrint(DBGGeneric, L"Found MAPI path %ws\n", szPath);
-		HMODULE hMAPI = NULL;
-		HRESULT hRes = S_OK;
-		WC_D(hMAPI, MyLoadLibraryW(szPath));
+		DebugPrint(DBGGeneric, L"Found MAPI path %ws\n", szPath.c_str());
+		HMODULE hMAPI = nullptr;
+		auto hRes = S_OK;
+		WC_D(hMAPI, MyLoadLibraryW(szPath.c_str()));
 		SetMAPIHandle(hMAPI);
-		delete[] szPath;
 	}
 
 	delete mpi;
@@ -1025,11 +1039,11 @@ bool LoadMAPIVersion(wstring lpszVersion)
 
 void main(_In_ int argc, _In_count_(argc) char * argv[])
 {
-	HRESULT hRes = S_OK;
-	bool bMAPIInit = false;
+	auto hRes = S_OK;
+	auto bMAPIInit = false;
 
 	SetDllDirectory("");
-	MyHeapSetInformation(NULL, HeapEnableTerminationOnCorruption, NULL, 0);
+	MyHeapSetInformation(nullptr, HeapEnableTerminationOnCorruption, nullptr, 0);
 
 	// Set up our property arrays or nothing works
 	MergeAddInArrays();
@@ -1040,7 +1054,7 @@ void main(_In_ int argc, _In_count_(argc) char * argv[])
 	RegKeys[regkeyCACHE_NAME_DPROPS].ulCurDWORD = 1;
 
 	MYOPTIONS ProgOpts;
-	bool bGoodCommandLine = ParseArgs(argc, argv, &ProgOpts);
+	auto bGoodCommandLine = ParseArgs(argc, argv, &ProgOpts);
 
 	// Must be first after ParseArgs
 	if (ProgOpts.ulOptions & OPT_INITMFC)
@@ -1180,6 +1194,9 @@ void main(_In_ int argc, _In_count_(argc) char * argv[])
 		case cmdmodeSearchState:
 			DoSearchState(ProgOpts);
 			break;
+		case cmdmodeUnknown: break;
+		case cmdmodeHelp: break;
+		default: break;
 		}
 	}
 

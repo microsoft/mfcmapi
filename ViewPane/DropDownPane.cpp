@@ -185,7 +185,7 @@ void DropDownPane::InsertDropString(int iRow, _In_ wstring szText, ULONG ulValue
 	item.mask = CBEIF_TEXT | CBEIF_LPARAM;
 	item.iItem = iRow;
 	item.pszText = LPWSTR(szText.c_str());
-	item.cchTextMax = szText.length();
+	item.cchTextMax = int(szText.length());
 	item.lParam = ulValue;
 
 	(void) ::SendMessage(m_DropDown.m_hWnd, CBEM_INSERTITEMW, WPARAM(0), LPARAM(&item));

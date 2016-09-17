@@ -48,7 +48,7 @@ bool GetComponentPath(LPCSTR szComponent, LPSTR szQualifier, LPSTR szDllPath, DW
 extern WCHAR g_pszOutlookQualifiedComponents[][MAX_PATH];
 
 // Looks up Outlook's path given its qualified component guid
-LPWSTR GetOutlookPath(_In_z_ LPCWSTR szCategory, _Out_opt_ bool* lpb64);
+wstring GetOutlookPath(_In_ wstring szCategory, _Out_opt_ bool* lpb64);
 
 enum mapiSource;
 class MAPIPathIterator
@@ -56,21 +56,20 @@ class MAPIPathIterator
 public:
 	MAPIPathIterator(bool bBypassRestrictions);
 	~MAPIPathIterator();
-	LPWSTR GetNextMAPIPath();
-	LPWSTR GetInstalledOutlookMAPI(int iOutlook) const;
-	LPWSTR GetMAPISystemDir() const;
+	wstring GetNextMAPIPath();
+	wstring GetInstalledOutlookMAPI(int iOutlook) const;
+	static wstring GetMAPISystemDir();
 
 private:
-	LPWSTR GetRegisteredMapiClient(LPCWSTR pwzProviderOverride, bool bDLL, bool bEx);
-	LPWSTR GetMailClientFromMSIData(HKEY hkeyMapiClient) const;
-	static LPWSTR GetMailClientFromDllPath(HKEY hkeyMapiClient, bool bEx);
-	LPWSTR GetNextInstalledOutlookMAPI();
+	wstring GetRegisteredMapiClient(wstring pwzProviderOverride, bool bDLL, bool bEx);
+	static wstring GetMailClientFromMSIData(HKEY hkeyMapiClient);
+	wstring GetMailClientFromDllPath(HKEY hkeyMapiClient, bool bEx) const;
+	wstring GetNextInstalledOutlookMAPI();
 
 	mapiSource CurrentSource;
 	HKEY m_hMailKey;
 	HKEY m_hkeyMapiClient;
-	LPWSTR m_rgchMailClient;
-	LPCWSTR m_szRegisteredClient;
+	wstring m_defaultClient;
 	bool m_bBypassRestrictions;
 
 	int m_iCurrentOutlook;

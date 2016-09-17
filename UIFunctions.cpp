@@ -268,7 +268,7 @@ void UninitializeGDI()
 	}
 }
 
-_Check_return_ LPMENUENTRY CreateMenuEntry(_In_z_ LPWSTR szMenu)
+_Check_return_ LPMENUENTRY CreateMenuEntry(_In_z_ LPCWSTR szMenu)
 {
 	auto hRes = S_OK;
 	auto lpMenu = new MenuEntry;
