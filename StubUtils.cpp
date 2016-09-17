@@ -231,6 +231,26 @@ MAPIPathIterator::~MAPIPathIterator()
 	if (m_hkeyMapiClient) RegCloseKey(m_hkeyMapiClient);
 }
 
+vector<wstring> MAPIPathIterator::GetMAPIPaths(bool bBypassRestrictions)
+{
+	auto paths = vector<wstring>();
+	if (bBypassRestrictions)
+	{
+		CurrentSource = msInstalledOutlook;
+	}
+	else
+	{
+		CurrentSource = !s_fForceSystemMAPI ? msRegisteredMSI : msSystem;
+	}
+
+	while (CurrentSource != msEnd)
+	{
+		paths.push_back(GetNextMAPIPath());
+	}
+
+	return paths;
+}
+
 wstring MAPIPathIterator::GetNextMAPIPath()
 {
 	// Mini state machine here will get the path from the current source then set the next source to search
@@ -583,13 +603,12 @@ HMODULE GetDefaultMapiHandle()
 
 	if (mpi)
 	{
-		while (!hinstMapi)
+		auto paths = mpi->GetMAPIPaths(true);
+		for (auto szPath : paths)
 		{
-			auto szPath = mpi->GetNextMAPIPath();
-			if (szPath.empty()) break;
-
 			DebugPrint(DBGLoadMAPI, L"Trying %ws\n", szPath.c_str());
 			hinstMapi = MyLoadLibraryW(szPath.c_str());
+			if (hinstMapi) break;
 		}
 	}
 
