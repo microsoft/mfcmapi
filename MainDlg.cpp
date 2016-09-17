@@ -128,17 +128,16 @@ void CMainDlg::AddLoadMAPIMenus() const
 			while (uidCurMenu <= ID_LOADMAPIMENUMAX)
 			{
 				auto szPath = mpi->GetNextMAPIPath();
-				if (!szPath) break;
+				if (szPath.empty()) break;
 
-				DebugPrint(DBGLoadMAPI, L"Found MAPI path %ws\n", szPath);
-				auto lpMenu = CreateMenuEntry(szPath);
+				DebugPrint(DBGLoadMAPI, L"Found MAPI path %ws\n", szPath.c_str());
+				auto lpMenu = CreateMenuEntry(szPath.c_str());
 
 				EC_B(AppendMenu(
 					hAddInMenu,
 					MF_ENABLED | MF_OWNERDRAW,
 					uidCurMenu++,
 					reinterpret_cast<LPCTSTR>(lpMenu)));
-				delete[] szPath;
 			}
 		}
 

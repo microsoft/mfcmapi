@@ -175,13 +175,13 @@ _Check_return_ HMODULE LoadFromOLMAPIDir(_In_z_ LPCTSTR szDLLName)
 		for (auto i = oqcOfficeBegin; i < oqcOfficeEnd; i++)
 		{
 			auto szOutlookMAPIPath = mpi->GetInstalledOutlookMAPI(i);
-			if (szOutlookMAPIPath)
+			if (!szOutlookMAPIPath.empty())
 			{
 				auto hRes = S_OK;
 				UINT ret = 0;
 				WCHAR szDrive[_MAX_DRIVE] = { 0 };
 				WCHAR szMAPIPath[MAX_PATH] = { 0 };
-				WC_D(ret, _wsplitpath_s(szOutlookMAPIPath, szDrive, _MAX_DRIVE, szMAPIPath, MAX_PATH, NULL, NULL, NULL, NULL));
+				WC_D(ret, _wsplitpath_s(szOutlookMAPIPath.c_str(), szDrive, _MAX_DRIVE, szMAPIPath, MAX_PATH, NULL, NULL, NULL, NULL));
 
 				if (SUCCEEDED(hRes))
 				{
@@ -197,7 +197,7 @@ _Check_return_ HMODULE LoadFromOLMAPIDir(_In_z_ LPCTSTR szDLLName)
 
 				}
 			}
-			delete[] szOutlookMAPIPath;
+
 			if (hModRet) break;
 		}
 	}

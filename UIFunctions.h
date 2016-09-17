@@ -110,7 +110,7 @@ struct MenuEntry
 };
 typedef MenuEntry* LPMENUENTRY;
 
-_Check_return_ LPMENUENTRY CreateMenuEntry(_In_z_ LPWSTR szMenu);
+_Check_return_ LPMENUENTRY CreateMenuEntry(_In_z_ LPCWSTR szMenu);
 void ConvertMenuOwnerDraw(_In_ HMENU hMenu, bool bRoot);
 void DeleteMenuEntries(_In_ HMENU hMenu);
 

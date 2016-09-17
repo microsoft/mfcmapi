@@ -669,7 +669,7 @@ wstring GetOutlookVersionString()
 		auto b64 = false;
 		auto lpszTempPath = GetOutlookPath(g_pszOutlookQualifiedComponents[i], &b64);
 
-		if (lpszTempPath)
+		if (!lpszTempPath.empty())
 		{
 			auto lpszTempVer = new WCHAR[MAX_PATH];
 			auto lpszTempLang = new WCHAR[MAX_PATH];
@@ -677,22 +677,21 @@ wstring GetOutlookVersionString()
 			{
 				UINT ret = 0;
 				DWORD dwValueBuf = MAX_PATH;
-				WC_D(ret, pfnMsiGetFileVersion(lpszTempPath,
+				WC_D(ret, pfnMsiGetFileVersion(lpszTempPath.c_str(),
 					lpszTempVer,
 					&dwValueBuf,
 					lpszTempLang,
 					&dwValueBuf));
 				if (ERROR_SUCCESS == ret)
 				{
-					szOut = formatmessage(IDS_OUTLOOKVERSIONSTRING, lpszTempPath, lpszTempVer, lpszTempLang);
+					szOut = formatmessage(IDS_OUTLOOKVERSIONSTRING, lpszTempPath.c_str(), lpszTempVer, lpszTempLang);
 					szOut += formatmessage(b64 ? IDS_TRUE : IDS_FALSE);
 					szOut += L"\n"; // STRING_OK
 				}
+
 				delete[] lpszTempLang;
 				delete[] lpszTempVer;
 			}
-
-			delete[] lpszTempPath;
 		}
 	}
 
