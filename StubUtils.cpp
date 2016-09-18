@@ -531,7 +531,7 @@ HMODULE GetDefaultMapiHandle()
 	for (auto szPath : paths)
 	{
 		DebugPrint(DBGLoadMAPI, L"Trying %ws\n", szPath.c_str());
-		hinstMapi = MyLoadLibraryW(szPath.c_str());
+		hinstMapi = MyLoadLibraryW(szPath);
 		if (hinstMapi) break;
 	}
 

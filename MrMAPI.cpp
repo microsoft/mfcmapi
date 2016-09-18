@@ -1025,7 +1025,7 @@ bool LoadMAPIVersion(wstring lpszVersion)
 		DebugPrint(DBGGeneric, L"Found MAPI path %ws\n", szPath.c_str());
 		HMODULE hMAPI = nullptr;
 		auto hRes = S_OK;
-		WC_D(hMAPI, MyLoadLibraryW(szPath.c_str()));
+		WC_D(hMAPI, MyLoadLibraryW(szPath));
 		SetMAPIHandle(hMAPI);
 	}
 
