@@ -132,9 +132,11 @@ wstring LPCSTRToWstring(LPCSTR src)
 	return wstring(ansi.begin(), ansi.end());
 }
 
-void wstringToLower(wstring src)
+wstring wstringToLower(wstring src)
 {
-	transform(src.begin(), src.end(), src.begin(), ::tolower);
+	auto dst = src;
+	transform(dst.begin(), dst.end(), dst.begin(), ::tolower);
+	return dst;
 }
 
 // Converts a wstring to a ulong. Will return 0 if string is empty or contains non-numeric data.

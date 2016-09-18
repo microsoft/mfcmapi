@@ -972,9 +972,8 @@ bool LoadMAPIVersion(wstring lpszVersion)
 		DebugPrint(DBGGeneric, L"Listing MAPI\n");
 		for (auto path : paths)
 		{
-			wstringToLower(path);
 
-			printf("MAPI path: %ws\n", path.c_str());
+			printf("MAPI path: %ws\n", wstringToLower(path).c_str());
 		}
 		return true;
 	}
@@ -984,12 +983,11 @@ bool LoadMAPIVersion(wstring lpszVersion)
 	{
 		DebugPrint(DBGGeneric, L"Got a string\n");
 
-		wstringToLower(lpszVersion);
 		for (auto path : paths)
 		{
 			wstringToLower(path);
 
-			if (path.find(lpszVersion) != wstring::npos)
+			if (wstringToLower(path).find(wstringToLower(lpszVersion)) != wstring::npos)
 			{
 				szPath = path;
 				break;
