@@ -193,18 +193,17 @@ void ImportProcs()
 }
 
 // Opens the mail key for the specified MAPI client, such as 'Microsoft Outlook' or 'ExchangeMAPI'
-// Pass NULL to open the mail key for the default MAPI client
-_Check_return_ HKEY GetMailKey(_In_opt_z_ LPCTSTR szClient)
+// Pass empty string to open the mail key for the default MAPI client
+_Check_return_ HKEY GetMailKey(_In_ wstring szClient)
 {
 	wstring lpszClient = L"Default";
-	if (szClient) lpszClient = LPCTSTRToWstring(szClient);
+	if (!szClient.empty()) lpszClient = szClient;
 	DebugPrint(DBGLoadLibrary, L"Enter GetMailKey(%ws)\n", lpszClient.c_str());
 	auto hRes = S_OK;
 	HKEY hMailKey = nullptr;
-	auto bClientIsDefault = false;
 
-	// If szClient is NULL, we need to read the name of the default MAPI client
-	if (!szClient)
+	// If szClient is empty, we need to read the name of the default MAPI client
+	if (szClient.empty())
 	{
 		HKEY hDefaultMailKey = nullptr;
 		WC_W32(RegOpenKeyEx(
@@ -216,93 +215,99 @@ _Check_return_ HKEY GetMailKey(_In_opt_z_ LPCTSTR szClient)
 		if (hDefaultMailKey)
 		{
 			DWORD dwKeyType = NULL;
+			LPTSTR lpszReg = nullptr;
 
 			WC_H(HrGetRegistryValue(
 				hDefaultMailKey,
 				_T(""), // get the default value
 				&dwKeyType,
-				(LPVOID*)&szClient));
-			if (szClient) lpszClient = LPCTSTRToWstring(szClient);
-			DebugPrint(DBGLoadLibrary, L"Default MAPI = %ws\n", lpszClient.c_str());
-			bClientIsDefault = true;
+				reinterpret_cast<LPVOID*>(&lpszReg)));
+			if (lpszReg)
+			{
+				lpszClient = LPCTSTRToWstring(lpszReg);
+				DebugPrint(DBGLoadLibrary, L"Default MAPI = %ws\n", lpszClient.c_str());
+				delete[] lpszReg;
+			}
+
 			EC_W32(RegCloseKey(hDefaultMailKey));
 		}
 	}
 
-	if (szClient)
+	if (!szClient.empty())
 	{
-		TCHAR szMailKey[256];
-		EC_H(StringCchPrintf(
-			szMailKey,
-			_countof(szMailKey),
-			_T("Software\\Clients\\Mail\\%s"), // STRING_OK
-			szClient));
+		auto szMailKey = wstring(L"Software\\Clients\\Mail\\") + szClient; // STRING_OK
 
 		if (SUCCEEDED(hRes))
 		{
-			WC_W32(RegOpenKeyEx(
+			WC_W32(RegOpenKeyExW(
 				HKEY_LOCAL_MACHINE,
-				szMailKey,
+				szMailKey.c_str(),
 				NULL,
 				KEY_READ,
 				&hMailKey));
 		}
 	}
-	if (bClientIsDefault) delete[] szClient;
 
 	return hMailKey;
 }
 
 // Gets MSI IDs for the specified MAPI client, such as 'Microsoft Outlook' or 'ExchangeMAPI'
-// Pass NULL to get the IDs for the default MAPI client
-// Allocates with new, delete with delete[]
-void GetMapiMsiIds(_In_opt_z_ LPCTSTR szClient, _Deref_out_opt_z_ LPSTR* lpszComponentID, _Deref_out_opt_z_ LPSTR* lpszAppLCID, _Deref_out_opt_z_ LPSTR* lpszOfficeLCID)
+// Pass empty string to get the IDs for the default MAPI client
+void GetMapiMsiIds(_In_ wstring szClient, _In_ wstring& lpszComponentID, _In_ wstring& lpszAppLCID, _In_ wstring& lpszOfficeLCID)
 {
-	DebugPrint(DBGLoadLibrary, L"GetMapiMsiIds(%ws)\n", LPCTSTRToWstring(szClient).c_str());
+	DebugPrint(DBGLoadLibrary, L"GetMapiMsiIds(%ws)\n", szClient.c_str());
 	auto hRes = S_OK;
-
-	if (lpszComponentID) *lpszComponentID = nullptr;
-	if (lpszAppLCID) *lpszAppLCID = nullptr;
-	if (lpszOfficeLCID) *lpszOfficeLCID = nullptr;
 
 	auto hKey = GetMailKey(szClient);
 
 	if (hKey)
 	{
 		DWORD dwKeyType = NULL;
+		LPWSTR szBuf = nullptr;
 
-		if (lpszComponentID)
+		WC_H(HrGetRegistryValueW(
+			hKey,
+			L"MSIComponentID", // STRING_OK
+			&dwKeyType,
+			reinterpret_cast<LPVOID*>(&szBuf)));
+		if (szBuf)
 		{
-			WC_H(HrGetRegistryValueA(
-				hKey,
-				"MSIComponentID", // STRING_OK
-				&dwKeyType,
-				reinterpret_cast<LPVOID*>(lpszComponentID)));
-			DebugPrint(DBGLoadLibrary, L"MSIComponentID = %hs\n", *lpszComponentID ? *lpszComponentID : "<not found>");
-			hRes = S_OK;
+			lpszComponentID = szBuf;
+			delete[] szBuf;
+			szBuf = nullptr;
 		}
 
-		if (lpszAppLCID)
+		DebugPrint(DBGLoadLibrary, L"MSIComponentID = %ws\n", !lpszComponentID.empty() ? lpszComponentID.c_str() : L"<not found>");
+		hRes = S_OK;
+
+		WC_H(HrGetRegistryValueW(
+			hKey,
+			L"MSIApplicationLCID", // STRING_OK
+			&dwKeyType,
+			reinterpret_cast<LPVOID*>(&szBuf)));
+		if (szBuf)
 		{
-			WC_H(HrGetRegistryValueA(
-				hKey,
-				"MSIApplicationLCID", // STRING_OK
-				&dwKeyType,
-				reinterpret_cast<LPVOID*>(lpszAppLCID)));
-			DebugPrint(DBGLoadLibrary, L"MSIApplicationLCID = %hs\n", *lpszAppLCID ? *lpszAppLCID : "<not found>");
-			hRes = S_OK;
+			lpszAppLCID = szBuf;
+			delete[] szBuf;
+			szBuf = nullptr;
 		}
 
-		if (lpszOfficeLCID)
+		DebugPrint(DBGLoadLibrary, L"MSIApplicationLCID = %ws\n", !lpszAppLCID.empty() ? lpszAppLCID.c_str() : L"<not found>");
+		hRes = S_OK;
+
+		WC_H(HrGetRegistryValueW(
+			hKey,
+			L"MSIOfficeLCID", // STRING_OK
+			&dwKeyType,
+			reinterpret_cast<LPVOID*>(&szBuf)));
+		if (szBuf)
 		{
-			WC_H(HrGetRegistryValueA(
-				hKey,
-				"MSIOfficeLCID", // STRING_OK
-				&dwKeyType,
-				reinterpret_cast<LPVOID*>(lpszOfficeLCID)));
-			DebugPrint(DBGLoadLibrary, L"MSIOfficeLCID = %hs\n", *lpszOfficeLCID ? *lpszOfficeLCID : "<not found>");
-			hRes = S_OK;
+			lpszOfficeLCID = szBuf;
+			delete[] szBuf;
 		}
+
+		DebugPrint(DBGLoadLibrary, L"MSIOfficeLCID = %ws\n", !lpszOfficeLCID.empty() ? lpszOfficeLCID.c_str() : L"<not found>");
+		hRes = S_OK;
 
 		EC_W32(RegCloseKey(hKey));
 	}
@@ -310,57 +315,43 @@ void GetMapiMsiIds(_In_opt_z_ LPCTSTR szClient, _Deref_out_opt_z_ LPSTR* lpszCom
 
 wstring GetMAPIPath(wstring szClient)
 {
-	auto hRes = S_OK;
-	CHAR lpszPath[MAX_PATH] = { 0 };
-	ULONG cchPath = _countof(lpszPath);
+	wstring lpszPath;
 
 	// Find some strings:
-	LPSTR szComponentID = nullptr;
-	LPSTR szAppLCID = nullptr;
-	LPSTR szOfficeLCID = nullptr;
+	wstring szComponentID;
+	wstring szAppLCID;
+	wstring szOfficeLCID;
 
-	GetMapiMsiIds(wstringToCString(szClient), &szComponentID, &szAppLCID, &szOfficeLCID);
+	GetMapiMsiIds(szClient, szComponentID, szAppLCID, szOfficeLCID);
 
-	if (szComponentID)
+	if (!szComponentID.empty())
 	{
-		if (szAppLCID)
+		if (!szAppLCID.empty())
 		{
-			WC_B(GetComponentPath(
+			lpszPath = GetComponentPath(
 				szComponentID,
 				szAppLCID,
-				lpszPath,
-				cchPath,
-				false));
+				false);
 		}
 
-		if ((FAILED(hRes) || lpszPath[0] == _T('\0')) && szOfficeLCID)
+		if (lpszPath.empty() && !szOfficeLCID.empty())
 		{
-			hRes = S_OK;
-			WC_B(GetComponentPath(
+			lpszPath = GetComponentPath(
 				szComponentID,
 				szOfficeLCID,
-				lpszPath,
-				cchPath,
-				false));
+				false);
 		}
 
-		if (FAILED(hRes) || lpszPath[0] == _T('\0'))
+		if (lpszPath.empty())
 		{
-			hRes = S_OK;
-			WC_B(GetComponentPath(
+			lpszPath = GetComponentPath(
 				szComponentID,
-				NULL,
-				lpszPath,
-				cchPath,
-				false));
+				emptystring,
+				false);
 		}
 	}
 
-	delete[] szComponentID;
-	delete[] szOfficeLCID;
-	delete[] szAppLCID;
-
-	return LPCSTRToWstring(lpszPath);
+	return lpszPath;
 }
 
 // Declaration missing from MAPI headers

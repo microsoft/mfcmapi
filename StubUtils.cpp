@@ -41,8 +41,8 @@ const WCHAR WszKeyNameMailClient[] = L"Software\\Clients\\Mail";
 const WCHAR WszValueNameDllPathEx[] = L"DllPathEx";
 const WCHAR WszValueNameDllPath[] = L"DllPath";
 
-const CHAR SzValueNameMSI[] = "MSIComponentID";
-const CHAR SzValueNameLCID[] = "MSIApplicationLCID";
+const WCHAR WszValueNameMSI[] = L"MSIComponentID";
+const WCHAR WszValueNameLCID[] = L"MSIApplicationLCID";
 
 const WCHAR WszOutlookMapiClientName[] = L"Microsoft Outlook";
 
@@ -171,11 +171,12 @@ wstring RegQueryWszExpand(HKEY hKey, wstring lpValueName)
  * Wrapper around mapi32.dll->FGetComponentPath which maps an MSI component ID to
  * a DLL location from the default MAPI client registration values
  */
-bool GetComponentPath(LPCSTR szComponent, LPSTR szQualifier, LPSTR szDllPath, DWORD cchBufferSize, bool fInstall)
+wstring GetComponentPath(wstring szComponent, wstring szQualifier, bool fInstall)
 {
-	DebugPrint(DBGLoadMAPI, L"Enter GetComponentPath: szComponent = %hs, szQualifier = %hs, cchBufferSize = 0x%08X, fInstall = 0x%08X\n",
-		szComponent, szQualifier, cchBufferSize, fInstall);
+	DebugPrint(DBGLoadMAPI, L"Enter GetComponentPath: szComponent = %ws, szQualifier = %ws, fInstall = 0x%08X\n",
+		szComponent.c_str(), szQualifier.c_str(), fInstall);
 	bool fReturn = FALSE;
+	wstring path;
 
 	typedef bool (STDAPICALLTYPE *FGetComponentPathType)(LPCSTR, LPSTR, LPSTR, DWORD, bool);
 
@@ -189,15 +190,19 @@ bool GetComponentPath(LPCSTR szComponent, LPSTR szQualifier, LPSTR szDllPath, DW
 
 		if (pFGetCompPath)
 		{
-			fReturn = pFGetCompPath(szComponent, szQualifier, szDllPath, cchBufferSize, fInstall);
-			DebugPrint(DBGLoadMAPI, L"GetComponentPath: szDllPath = %hs\n", szDllPath);
+			CHAR lpszPath[MAX_PATH] = { 0 };
+			ULONG cchPath = _countof(lpszPath);
+
+			fReturn = pFGetCompPath(wstringTostring(szComponent).c_str(), LPSTR(wstringTostring(szQualifier).c_str()), lpszPath, cchPath, fInstall);
+			if (fReturn) path = LPCSTRToWstring(lpszPath);
+			DebugPrint(DBGLoadMAPI, L"GetComponentPath: path = %ws\n", path.c_str());
 		}
 
 		FreeLibrary(hMapiStub);
 	}
 
 	DebugPrint(DBGLoadMAPI, L"Exit GetComponentPath: fReturn = 0x%08X\n", fReturn);
-	return fReturn;
+	return path;
 }
 
 vector<wstring> GetMAPIPaths(bool bBypassRestrictions)
@@ -239,22 +244,18 @@ vector<wstring> GetMAPIPaths(bool bBypassRestrictions)
 wstring GetMailClientFromMSIData(HKEY hkeyMapiClient)
 {
 	DebugPrint(DBGLoadMAPI, L"Enter GetMailClientFromMSIData\n");
-	CHAR rgchMSIComponentID[MAX_PATH] = { 0 };
-	CHAR rgchMSIApplicationLCID[MAX_PATH] = { 0 };
-	CHAR rgchComponentPath[MAX_PATH] = { 0 };
+	WCHAR rgchMSIComponentID[MAX_PATH] = { 0 };
+	WCHAR rgchMSIApplicationLCID[MAX_PATH] = { 0 };
 	DWORD dwType = 0;
 	wstring szPath;
 
 	DWORD dwSizeComponentID = sizeof rgchMSIComponentID;
 	DWORD dwSizeLCID = sizeof rgchMSIApplicationLCID;
 
-	if (ERROR_SUCCESS == RegQueryValueExA(hkeyMapiClient, SzValueNameMSI, nullptr, &dwType, reinterpret_cast<LPBYTE>(&rgchMSIComponentID), &dwSizeComponentID) &&
-		ERROR_SUCCESS == RegQueryValueExA(hkeyMapiClient, SzValueNameLCID, nullptr, &dwType, reinterpret_cast<LPBYTE>(&rgchMSIApplicationLCID), &dwSizeLCID))
+	if (ERROR_SUCCESS == RegQueryValueExW(hkeyMapiClient, WszValueNameMSI, nullptr, &dwType, reinterpret_cast<LPBYTE>(&rgchMSIComponentID), &dwSizeComponentID) &&
+		ERROR_SUCCESS == RegQueryValueExW(hkeyMapiClient, WszValueNameLCID, nullptr, &dwType, reinterpret_cast<LPBYTE>(&rgchMSIApplicationLCID), &dwSizeLCID))
 	{
-		if (GetComponentPath(rgchMSIComponentID, rgchMSIApplicationLCID, rgchComponentPath, _countof(rgchComponentPath), FALSE))
-		{
-			szPath = stringTowstring(rgchComponentPath);
-		}
+		szPath = GetComponentPath(rgchMSIComponentID, rgchMSIApplicationLCID, FALSE);
 	}
 
 	DebugPrint(DBGLoadMAPI, L"Exit GetMailClientFromMSIData: szPath = %ws\n", szPath.c_str());
@@ -402,12 +403,11 @@ wstring GetInstalledOutlookMAPI(int iOutlook)
 
 	if (!pfnMsiProvideQualifiedComponent || !pfnMsiGetFileVersion) return nullptr;
 
-	UINT ret = 0;
-
 	auto lpszTempPath = GetOutlookPath(g_pszOutlookQualifiedComponents[iOutlook], nullptr);
 
 	if (!lpszTempPath.empty())
 	{
+		UINT ret = 0;
 		WCHAR szDrive[_MAX_DRIVE] = { 0 };
 		WCHAR szOutlookPath[MAX_PATH] = { 0 };
 		WC_D(ret, _wsplitpath_s(lpszTempPath.c_str(), szDrive, _MAX_DRIVE, szOutlookPath, MAX_PATH, NULL, NULL, NULL, NULL));

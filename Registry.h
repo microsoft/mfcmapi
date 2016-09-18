@@ -20,15 +20,15 @@ enum __REGOPTIONTYPE
 
 struct __RegKeys
 {
-	TCHAR*	szKeyName;
-	ULONG	ulRegKeyType;
-	ULONG	ulRegOptType;
-	ULONG	ulDefDWORD;
-	ULONG	ulCurDWORD;
-	TCHAR	szDefSTRING[MAX_PATH];
-	TCHAR	szCurSTRING[MAX_PATH];
-	bool	bRefresh;
-	UINT	uiOptionsPrompt;
+	TCHAR* szKeyName;
+	ULONG ulRegKeyType;
+	ULONG ulRegOptType;
+	ULONG ulDefDWORD;
+	ULONG ulCurDWORD;
+	TCHAR szDefSTRING[MAX_PATH];
+	TCHAR szCurSTRING[MAX_PATH];
+	bool bRefresh;
+	UINT uiOptionsPrompt;
 };
 
 // Registry key Names
@@ -80,7 +80,7 @@ void WriteStringToRegistry(_In_ HKEY hKey, _In_z_ LPCTSTR szValueName, _In_z_ LP
 
 _Check_return_ HRESULT HrGetRegistryValueW(
 	_In_ HKEY hKey, // the key.
-	_In_z_ LPCTSTR lpszValue, // value name in key.
+	_In_z_ LPCWSTR lpszValue, // value name in key.
 	_Out_ DWORD* lpType, // where to put type info.
 	_Out_ LPVOID* lppData); // where to put the data.
 _Check_return_ HRESULT HrGetRegistryValueA(
