@@ -98,7 +98,7 @@ void SetMAPIHandle(HMODULE hinstMAPI)
 		// Preload pstprx32 to prevent crash when using autodiscover to build a new profile
 		if (!g_hModPstPrx32)
 		{
-			g_hModPstPrx32 = LoadFromOLMAPIDir(_T("pstprx32.dll")); // STRING_OK
+			g_hModPstPrx32 = LoadFromOLMAPIDir(L"pstprx32.dll"); // STRING_OK
 		}
 
 		// Set the value only if the global is NULL
