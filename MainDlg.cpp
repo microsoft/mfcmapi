@@ -121,27 +121,20 @@ void CMainDlg::AddLoadMAPIMenus() const
 	// Now add each of the menu entries
 	if (SUCCEEDED(hRes))
 	{
-		auto  mpi = new MAPIPathIterator();
-
-		if (mpi)
+		auto paths = GetMAPIPaths(true);
+		for (auto szPath : paths)
 		{
-			auto paths = mpi->GetMAPIPaths(true);
-			for (auto szPath : paths)
-			{
-				if (uidCurMenu > ID_LOADMAPIMENUMAX) break;
+			if (uidCurMenu > ID_LOADMAPIMENUMAX) break;
 
-				DebugPrint(DBGLoadMAPI, L"Found MAPI path %ws\n", szPath.c_str());
-				auto lpMenu = CreateMenuEntry(szPath.c_str());
+			DebugPrint(DBGLoadMAPI, L"Found MAPI path %ws\n", szPath.c_str());
+			auto lpMenu = CreateMenuEntry(szPath.c_str());
 
-				EC_B(AppendMenu(
-					hAddInMenu,
-					MF_ENABLED | MF_OWNERDRAW,
-					uidCurMenu++,
-					reinterpret_cast<LPCTSTR>(lpMenu)));
-			}
+			EC_B(AppendMenu(
+				hAddInMenu,
+				MF_ENABLED | MF_OWNERDRAW,
+				uidCurMenu++,
+				reinterpret_cast<LPCTSTR>(lpMenu)));
 		}
-
-		delete mpi;
 	}
 
 	DebugPrint(DBGLoadMAPI, L"Done extending menus\n");

@@ -34,6 +34,9 @@ HMODULE GetPrivateMAPI();
 void UnLoadPrivateMAPI();
 void ForceOutlookMAPI(bool fForce);
 
+static wstring GetRegisteredMapiClient(wstring pwzProviderOverride, bool bDLL, bool bEx);
+vector<wstring> GetInstalledOutlookMAPI();
+
 const WCHAR WszKeyNameMailClient[] = L"Software\\Clients\\Mail";
 const WCHAR WszValueNameDllPathEx[] = L"DllPathEx";
 const WCHAR WszValueNameDllPath[] = L"DllPath";
@@ -197,17 +200,7 @@ bool GetComponentPath(LPCSTR szComponent, LPSTR szQualifier, LPSTR szDllPath, DW
 	return fReturn;
 }
 
-enum mapiSource
-{
-	msInstalledOutlook,
-	msRegisteredMSI,
-	msRegisteredDLLEx,
-	msRegisteredDLL,
-	msSystem,
-	msEnd,
-};
-
-vector<wstring> MAPIPathIterator::GetMAPIPaths(bool bBypassRestrictions) const
+vector<wstring> GetMAPIPaths(bool bBypassRestrictions)
 {
 	auto paths = vector<wstring>();
 	wstring szPath;
@@ -243,7 +236,7 @@ vector<wstring> MAPIPathIterator::GetMAPIPaths(bool bBypassRestrictions) const
  * GetMailClientFromMSIData
  * Attempt to locate the MAPI provider DLL via HKLM\Software\Clients\Mail\(provider)\MSIComponentID
  */
-wstring MAPIPathIterator::GetMailClientFromMSIData(HKEY hkeyMapiClient)
+wstring GetMailClientFromMSIData(HKEY hkeyMapiClient)
 {
 	DebugPrint(DBGLoadMAPI, L"Enter GetMailClientFromMSIData\n");
 	CHAR rgchMSIComponentID[MAX_PATH] = { 0 };
@@ -272,7 +265,7 @@ wstring MAPIPathIterator::GetMailClientFromMSIData(HKEY hkeyMapiClient)
  * GetMailClientFromDllPath
  * Attempt to locate the MAPI provider DLL via HKLM\Software\Clients\Mail\(provider)\DllPathEx
  */
-wstring MAPIPathIterator::GetMailClientFromDllPath(HKEY hkeyMapiClient, bool bEx)
+wstring GetMailClientFromDllPath(HKEY hkeyMapiClient, bool bEx)
 {
 	DebugPrint(DBGLoadMAPI, L"Enter GetMailClientFromDllPath: hkeyMapiClient = %p, bEx = %d\n", hkeyMapiClient, bEx);
 	wstring szPath;
@@ -298,7 +291,7 @@ wstring MAPIPathIterator::GetMailClientFromDllPath(HKEY hkeyMapiClient, bool bEx
  * If wzOverrideProvider is specified, this function will load that MAPI Provider instead of the
  * currently registered provider
  */
-wstring MAPIPathIterator::GetRegisteredMapiClient(wstring pwzProviderOverride, bool bDLL, bool bEx)
+wstring GetRegisteredMapiClient(wstring pwzProviderOverride, bool bDLL, bool bEx)
 {
 	DebugPrint(DBGLoadMAPI, L"Enter GetRegisteredMapiClient\n");
 	auto hRes = S_OK;
@@ -386,7 +379,7 @@ wstring MAPIPathIterator::GetRegisteredMapiClient(wstring pwzProviderOverride, b
  * GetMAPISystemDir
  * Fall back for loading System32\Mapi32.dll if all else fails
  */
-wstring MAPIPathIterator::GetMAPISystemDir()
+wstring GetMAPISystemDir()
 {
 	DebugPrint(DBGLoadMAPI, L"Enter GetMAPISystemDir\n");
 	WCHAR szSystemDir[MAX_PATH] = { 0 };
@@ -402,7 +395,7 @@ wstring MAPIPathIterator::GetMAPISystemDir()
 	return emptystring;
 }
 
-wstring MAPIPathIterator::GetInstalledOutlookMAPI(int iOutlook) const
+wstring GetInstalledOutlookMAPI(int iOutlook)
 {
 	DebugPrint(DBGLoadMAPI, L"Enter GetInstalledOutlookMAPI(%d)\n", iOutlook);
 	auto hRes = S_OK;
@@ -432,7 +425,7 @@ wstring MAPIPathIterator::GetInstalledOutlookMAPI(int iOutlook) const
 	return emptystring;
 }
 
-vector<wstring> MAPIPathIterator::GetInstalledOutlookMAPI() const
+vector<wstring> GetInstalledOutlookMAPI()
 {
 	DebugPrint(DBGLoadMAPI, L"Enter GetInstalledOutlookMAPI\n");
 	auto paths = vector<wstring>();
@@ -534,20 +527,14 @@ HMODULE GetDefaultMapiHandle()
 	DebugPrint(DBGLoadMAPI, L"Enter GetDefaultMapiHandle\n");
 	HMODULE hinstMapi = nullptr;
 
-	auto mpi = new MAPIPathIterator();
-
-	if (mpi)
+	auto paths = GetMAPIPaths(true);
+	for (auto szPath : paths)
 	{
-		auto paths = mpi->GetMAPIPaths(true);
-		for (auto szPath : paths)
-		{
-			DebugPrint(DBGLoadMAPI, L"Trying %ws\n", szPath.c_str());
-			hinstMapi = MyLoadLibraryW(szPath.c_str());
-			if (hinstMapi) break;
-		}
+		DebugPrint(DBGLoadMAPI, L"Trying %ws\n", szPath.c_str());
+		hinstMapi = MyLoadLibraryW(szPath.c_str());
+		if (hinstMapi) break;
 	}
 
-	delete mpi;
 	DebugPrint(DBGLoadMAPI, L"Exit GetDefaultMapiHandle: hinstMapi = %p\n", hinstMapi);
 	return hinstMapi;
 }

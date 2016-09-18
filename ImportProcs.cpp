@@ -169,39 +169,34 @@ _Check_return_ HMODULE LoadFromOLMAPIDir(_In_z_ LPCTSTR szDLLName)
 
 	DebugPrint(DBGLoadLibrary, L"LoadFromOLMAPIDir - loading \"%ws\"\n", LPCTSTRToWstring(szDLLName).c_str());
 
-	auto mpi = new MAPIPathIterator();
-	if (mpi)
+	for (auto i = oqcOfficeBegin; i < oqcOfficeEnd; i++)
 	{
-		for (auto i = oqcOfficeBegin; i < oqcOfficeEnd; i++)
+		auto szOutlookMAPIPath = GetInstalledOutlookMAPI(i);
+		if (!szOutlookMAPIPath.empty())
 		{
-			auto szOutlookMAPIPath = mpi->GetInstalledOutlookMAPI(i);
-			if (!szOutlookMAPIPath.empty())
-			{
-				auto hRes = S_OK;
-				UINT ret = 0;
-				WCHAR szDrive[_MAX_DRIVE] = { 0 };
-				WCHAR szMAPIPath[MAX_PATH] = { 0 };
-				WC_D(ret, _wsplitpath_s(szOutlookMAPIPath.c_str(), szDrive, _MAX_DRIVE, szMAPIPath, MAX_PATH, NULL, NULL, NULL, NULL));
+			auto hRes = S_OK;
+			UINT ret = 0;
+			WCHAR szDrive[_MAX_DRIVE] = { 0 };
+			WCHAR szMAPIPath[MAX_PATH] = { 0 };
+			WC_D(ret, _wsplitpath_s(szOutlookMAPIPath.c_str(), szDrive, _MAX_DRIVE, szMAPIPath, MAX_PATH, NULL, NULL, NULL, NULL));
 
-				if (SUCCEEDED(hRes))
-				{
-					auto szFullPath = new WCHAR[MAX_PATH];
+			if (SUCCEEDED(hRes))
+			{
+				auto szFullPath = new WCHAR[MAX_PATH];
 #ifdef UNICODE
 					swprintf_s(szFullPath, MAX_PATH, L"%s%s%s", szDrive, szMAPIPath, szDLLName);
 #else
-					swprintf_s(szFullPath, MAX_PATH, L"%s%s%hs", szDrive, szMAPIPath, szDLLName);
+				swprintf_s(szFullPath, MAX_PATH, L"%s%s%hs", szDrive, szMAPIPath, szDLLName);
 #endif
-					DebugPrint(DBGLoadLibrary, L"LoadFromOLMAPIDir - loading from \"%ws\"\n", szFullPath);
-					WC_D(hModRet, MyLoadLibraryW(szFullPath));
-					delete[] szFullPath;
+				DebugPrint(DBGLoadLibrary, L"LoadFromOLMAPIDir - loading from \"%ws\"\n", szFullPath);
+				WC_D(hModRet, MyLoadLibraryW(szFullPath));
+				delete[] szFullPath;
 
-				}
 			}
-
-			if (hModRet) break;
 		}
+
+		if (hModRet) break;
 	}
-	delete mpi;
 
 	return hModRet;
 }

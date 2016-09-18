@@ -51,20 +51,9 @@ extern WCHAR g_pszOutlookQualifiedComponents[][MAX_PATH];
 // Looks up Outlook's path given its qualified component guid
 wstring GetOutlookPath(_In_ wstring szCategory, _Out_opt_ bool* lpb64);
 
-enum mapiSource;
-class MAPIPathIterator
-{
-public:
-	vector<wstring> GetMAPIPaths(bool bBypassRestrictions) const;
-	wstring GetInstalledOutlookMAPI(int iOutlook) const;
-	static wstring GetMAPISystemDir();
-
-private:
-	static wstring GetRegisteredMapiClient(wstring pwzProviderOverride, bool bDLL, bool bEx);
-	static wstring GetMailClientFromMSIData(HKEY hkeyMapiClient);
-	static wstring GetMailClientFromDllPath(HKEY hkeyMapiClient, bool bEx);
-	vector<wstring> GetInstalledOutlookMAPI() const;
-};
+vector<wstring> GetMAPIPaths(bool bBypassRestrictions);
+wstring GetInstalledOutlookMAPI(int iOutlook);
+wstring GetMAPISystemDir();
 
 _Check_return_ STDAPI HrCopyRestriction(
 	_In_ LPSRestriction lpResSrc, // source restriction ptr
