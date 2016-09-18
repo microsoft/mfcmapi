@@ -211,32 +211,28 @@ void LoadSingleAddIn(_In_ LPADDIN lpAddIn, HMODULE hMod, _In_ LPLOADADDIN pfnLoa
 
 class CFileList
 {
-	struct DLLEntry
-	{
-		TCHAR* szDLL;
-		DLLEntry* lpNext;
-	};
 public:
-	CFileList(_In_z_ LPCTSTR szKey);
+	CFileList(_In_ wstring szKey);
 	~CFileList();
-	void AddToList(_In_z_ LPTSTR szDLL);
-	bool IsOnList(_In_z_ LPTSTR szDLL) const;
+	void AddToList(_In_ wstring szDLL);
+	bool IsOnList(_In_ wstring szDLL) const;
 
-	LPCTSTR m_szKey;
+	wstring m_szKey;
 	HKEY m_hRootKey;
-	DLLEntry* m_lpList;
-};
-#define EXCLUSION_LIST _T("AddInExclusionList") // STRING_OK
-#define INCLUSION_LIST _T("AddInInclusionList") // STRING_OK
+	vector<wstring> m_lpList;
+
+#define EXCLUSION_LIST L"AddInExclusionList" // STRING_OK
+#define INCLUSION_LIST L"AddInInclusionList" // STRING_OK
+#define SEPARATORW L";" // STRING_OK
 #define SEPARATOR _T(";") // STRING_OK
+};
 
 // Read in registry and build a list of invalid add-in DLLs
-CFileList::CFileList(_In_z_ LPCTSTR szKey)
+CFileList::CFileList(_In_ wstring szKey)
 {
 	auto hRes = S_OK;
 	LPTSTR lpszReg = nullptr;
 
-	m_lpList = nullptr;
 	m_hRootKey = CreateRootKey();
 	m_szKey = szKey;
 
@@ -245,7 +241,7 @@ CFileList::CFileList(_In_z_ LPCTSTR szKey)
 		DWORD dwKeyType = NULL;
 		WC_H(HrGetRegistryValue(
 			m_hRootKey,
-			m_szKey,
+			wstringToCString(m_szKey),
 			&dwKeyType,
 			reinterpret_cast<LPVOID*>(&lpszReg)));
 	}
@@ -256,10 +252,11 @@ CFileList::CFileList(_In_z_ LPCTSTR szKey)
 		auto szDLL = _tcstok_s(lpszReg, SEPARATOR, &szContext);
 		while (szDLL)
 		{
-			AddToList(szDLL);
+			AddToList(LPCTSTRToWstring(szDLL));
 			szDLL = _tcstok_s(nullptr, SEPARATOR, &szContext);
 		}
 	}
+
 	delete[] lpszReg;
 }
 
@@ -267,100 +264,41 @@ CFileList::CFileList(_In_z_ LPCTSTR szKey)
 CFileList::~CFileList()
 {
 	auto hRes = S_OK;
-	auto lpCur = m_lpList;
-	LPTSTR szList = nullptr;
-	size_t cchList = 0;
-	size_t cchDLL = 0;
+	wstring szList;
 
-	while (lpCur)
+	if (!m_lpList.empty())
 	{
-		if (lpCur->szDLL)
+		for (auto dll : m_lpList)
 		{
-			hRes = StringCchLength(lpCur->szDLL, STRSAFE_MAX_CCH, &cchDLL);
-
-			if (SUCCEEDED(hRes) && cchDLL)
-			{
-				cchList += cchDLL + 1; // length + ; or null terminator
-			}
+			szList += dll;
+			szList += SEPARATORW;
 		}
-		lpCur = lpCur->lpNext;
-	}
 
-	if (cchList)
-	{
-		szList = new TCHAR[cchList];
-	}
-
-	if (szList)
-	{
-		szList[0] = NULL;
-		lpCur = m_lpList;
-		while (lpCur)
-		{
-			if (lpCur->szDLL)
-			{
-				hRes = StringCchCat(szList, cchList, lpCur->szDLL);
-				if (lpCur->lpNext)
-				{
-					hRes = StringCchCat(szList, cchList, SEPARATOR);
-				}
-			}
-			lpCur = lpCur->lpNext;
-		}
 		WriteStringToRegistry(
 			m_hRootKey,
-			m_szKey,
-			szList);
-
-		delete[] szList;
+			wstringToCString(m_szKey),
+			wstringToCString(szList));
 	}
 
-	while (m_lpList)
-	{
-		delete[] m_lpList->szDLL;
-		auto lpNext = m_lpList->lpNext;
-		delete m_lpList;
-		m_lpList = lpNext;
-	}
 	EC_W32(RegCloseKey(m_hRootKey));
 }
 
 // Add the DLL to the list
-void CFileList::AddToList(_In_z_ LPTSTR szDLL)
+void CFileList::AddToList(_In_ wstring szDLL)
 {
-	if (!szDLL) return;
-
-	auto lpNewEntry = new DLLEntry;
-	if (lpNewEntry)
-	{
-		lpNewEntry->szDLL = nullptr;
-		lpNewEntry->lpNext = m_lpList;
-		m_lpList = lpNewEntry;
-
-		size_t cchDLL = NULL;
-		auto hRes = StringCchLength(szDLL, STRSAFE_MAX_CCH, &cchDLL);
-		if (SUCCEEDED(hRes) && cchDLL)
-		{
-			lpNewEntry->szDLL = new TCHAR[cchDLL + 1];
-
-			if (lpNewEntry->szDLL)
-			{
-				(void)StringCchCopy(lpNewEntry->szDLL, cchDLL + 1, szDLL);
-			}
-		}
-	}
+	if (szDLL.empty()) return;
+	m_lpList.push_back(szDLL);
 }
 
 // Check this DLL name against the list
-bool CFileList::IsOnList(_In_z_ LPTSTR szDLL) const
+bool CFileList::IsOnList(_In_ wstring szDLL) const
 {
-	if (!szDLL) return true;
-	auto lpCur = m_lpList;
-	while (lpCur)
+	if (szDLL.empty()) return true;
+	for (auto dll : m_lpList)
 	{
-		if (!_tcsicmp(szDLL, lpCur->szDLL)) return true;
-		lpCur = lpCur->lpNext;
+		if (wstringToLower(dll) == wstringToLower(szDLL)) return true;
 	}
+
 	return false;
 }
 
@@ -378,42 +316,28 @@ void LoadAddIns()
 	else
 	{
 		auto hRes = S_OK;
-		TCHAR szFilePath[MAX_PATH];
+		WCHAR szFilePath[MAX_PATH];
 		DWORD dwDir = NULL;
-		EC_D(dwDir, GetModuleFileName(NULL, szFilePath, _countof(szFilePath)));
+		EC_D(dwDir, GetModuleFileNameW(NULL, szFilePath, _countof(szFilePath)));
 		if (!dwDir) return;
 
-		if (szFilePath[0])
-		{
-			// We got the path to mfcmapi.exe - need to strip it
-			if (SUCCEEDED(hRes) && szFilePath[0] != _T('\0'))
-			{
-				LPTSTR lpszSlash = nullptr;
-				auto lpszCur = szFilePath;
-
-				for (lpszSlash = lpszCur; *lpszCur; lpszCur++)
-				{
-					if (*lpszCur == _T('\\')) lpszSlash = lpszCur;
-				}
-
-				*lpszSlash = _T('\0');
-			}
-		}
+		// We got the path to mfcmapi.exe - need to strip it
+		wstring szDir = szFilePath;
+		szDir = szDir.substr(0, szDir.find_last_of(L'\\'));
 
 		CFileList ExclusionList(EXCLUSION_LIST);
 		CFileList InclusionList(INCLUSION_LIST);
 
-#define SPECLEN 6 // for '\\*.dll'
-		if (szFilePath[0])
+		if (!szDir.empty())
 		{
-			DebugPrint(DBGAddInPlumbing, L"Current dir = \"%ws\"\n", LPCTSTRToWstring(szFilePath).c_str());
-			hRes = StringCchCatN(szFilePath, MAX_PATH, _T("\\*.dll"), SPECLEN); // STRING_OK
+			DebugPrint(DBGAddInPlumbing, L"Current dir = \"%ws\"\n", szDir.c_str());
+			auto szSpec = szDir + L"\\*.dll"; // STRING_OK
 			if (SUCCEEDED(hRes))
 			{
-				DebugPrint(DBGAddInPlumbing, L"File spec = \"%ws\"\n", LPCTSTRToWstring(szFilePath).c_str());
+				DebugPrint(DBGAddInPlumbing, L"File spec = \"%ws\"\n", szSpec.c_str());
 
-				WIN32_FIND_DATA FindFileData = { 0 };
-				auto hFind = FindFirstFile(szFilePath, &FindFileData);
+				WIN32_FIND_DATAW FindFileData = { 0 };
+				auto hFind = FindFirstFileW(szSpec.c_str(), &FindFileData);
 
 				if (hFind == INVALID_HANDLE_VALUE)
 				{
@@ -424,7 +348,7 @@ void LoadAddIns()
 					for (;;)
 					{
 						hRes = S_OK;
-						DebugPrint(DBGAddInPlumbing, L"Examining \"%ws\"\n", LPCTSTRToWstring(FindFileData.cFileName).c_str());
+						DebugPrint(DBGAddInPlumbing, L"Examining \"%ws\"\n", FindFileData.cFileName);
 						HMODULE hMod = nullptr;
 
 						// If we know the Add-in is good, just load it.
@@ -435,13 +359,13 @@ void LoadAddIns()
 						// Only if we're interested do we reload the DLL for real
 						if (InclusionList.IsOnList(FindFileData.cFileName))
 						{
-							hMod = MyLoadLibrary(FindFileData.cFileName);
+							hMod = MyLoadLibraryW(FindFileData.cFileName);
 						}
 						else
 						{
 							if (!ExclusionList.IsOnList(FindFileData.cFileName))
 							{
-								hMod = LoadLibraryEx(FindFileData.cFileName, nullptr, DONT_RESOLVE_DLL_REFERENCES);
+								hMod = LoadLibraryExW(FindFileData.cFileName, nullptr, DONT_RESOLVE_DLL_REFERENCES);
 								if (hMod)
 								{
 									LPLOADADDIN pfnLoadAddIn = nullptr;
@@ -454,7 +378,7 @@ void LoadAddIns()
 										// Remember this as a good add-in
 										InclusionList.AddToList(FindFileData.cFileName);
 										// We found a candidate, load it for real now
-										hMod = MyLoadLibrary(FindFileData.cFileName);
+										hMod = MyLoadLibraryW(FindFileData.cFileName);
 										// GetProcAddress again just in case we loaded at a different address
 										WC_D(pfnLoadAddIn, (LPLOADADDIN)GetProcAddress(hMod, szLoadAddIn));
 									}
@@ -483,6 +407,7 @@ void LoadAddIns()
 										g_lpMyAddins = new _AddIn;
 										ZeroMemory(g_lpMyAddins, sizeof(_AddIn));
 									}
+
 									lpCurAddIn = g_lpMyAddins;
 								}
 								else if (lpCurAddIn)
@@ -504,8 +429,9 @@ void LoadAddIns()
 								FreeLibrary(hMod);
 							}
 						}
+
 						// get next file
-						if (!FindNextFile(hFind, &FindFileData)) break;
+						if (!FindNextFileW(hFind, &FindFileData)) break;
 					}
 
 					auto dwRet = GetLastError();
