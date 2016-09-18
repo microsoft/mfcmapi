@@ -28,7 +28,7 @@ void ForceOutlookMAPI(bool fForce);
 void ForceSystemMAPI(bool fForce);
 void SetMAPIHandle(HMODULE hinstMAPI);
 HMODULE GetPrivateMAPI();
-bool GetComponentPath(LPCSTR szComponent, LPSTR szQualifier, LPSTR szDllPath, DWORD cchBufferSize, bool fInstall);
+wstring GetComponentPath(wstring szComponent, wstring szQualifier, bool fInstall);
 
 // Keep this in sync with g_pszOutlookQualifiedComponents
 #define oqcOfficeBegin 0
