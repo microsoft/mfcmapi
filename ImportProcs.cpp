@@ -82,38 +82,21 @@ LPHEAPSETINFORMATION pfnHeapSetInformation = nullptr;
 LPGETMODULEHANDLEEXW pfnGetModuleHandleExW = nullptr;
 
 // Exists to allow some logging
-_Check_return_ HMODULE MyLoadLibraryA(_In_z_ LPCSTR lpszLibFileName)
+_Check_return_ HMODULE MyLoadLibraryW(_In_ wstring lpszLibFileName)
 {
 	HMODULE hMod = nullptr;
 	auto hRes = S_OK;
-	DebugPrint(DBGLoadLibrary, L"MyLoadLibraryA - loading \"%hs\"\n", lpszLibFileName);
-	WC_D(hMod, LoadLibraryA(lpszLibFileName));
+	DebugPrint(DBGLoadLibrary, L"MyLoadLibraryW - loading \"%ws\"\n", lpszLibFileName.c_str());
+	WC_D(hMod, LoadLibraryW(lpszLibFileName.c_str()));
 	if (hMod)
 	{
-		DebugPrint(DBGLoadLibrary, L"MyLoadLibraryA - \"%hs\" loaded at %p\n", lpszLibFileName, hMod);
+		DebugPrint(DBGLoadLibrary, L"MyLoadLibraryW - \"%ws\" loaded at %p\n", lpszLibFileName.c_str(), hMod);
 	}
 	else
 	{
-		DebugPrint(DBGLoadLibrary, L"MyLoadLibraryA - \"%hs\" failed to load\n", lpszLibFileName);
+		DebugPrint(DBGLoadLibrary, L"MyLoadLibraryW - \"%ws\" failed to load\n", lpszLibFileName.c_str());
 	}
-	return hMod;
-}
 
-// Exists to allow some logging
-_Check_return_ HMODULE MyLoadLibraryW(_In_z_ LPCWSTR lpszLibFileName)
-{
-	HMODULE hMod = nullptr;
-	auto hRes = S_OK;
-	DebugPrint(DBGLoadLibrary, L"MyLoadLibraryW - loading \"%ws\"\n", lpszLibFileName);
-	WC_D(hMod, LoadLibraryW(lpszLibFileName));
-	if (hMod)
-	{
-		DebugPrint(DBGLoadLibrary, L"MyLoadLibraryW - \"%ws\" loaded at %p\n", lpszLibFileName, hMod);
-	}
-	else
-	{
-		DebugPrint(DBGLoadLibrary, L"MyLoadLibraryW - \"%ws\" failed to load\n", lpszLibFileName);
-	}
 	return hMod;
 }
 
@@ -158,7 +141,7 @@ _Check_return_ HMODULE LoadFromSystemDir(_In_ wstring szDLLName)
 
 	szDLLPath = wstring(szSystemDir) + L"\\" + szDLLName;
 	DebugPrint(DBGLoadLibrary, L"LoadFromSystemDir - loading from \"%ws\"\n", szDLLPath.c_str());
-	hModRet = MyLoadLibraryW(szDLLPath.c_str());
+	hModRet = MyLoadLibraryW(szDLLPath);
 
 	return hModRet;
 }
@@ -185,7 +168,7 @@ _Check_return_ HMODULE LoadFromOLMAPIDir(_In_ wstring  szDLLName)
 				auto szFullPath = wstring(szDrive) + wstring(szMAPIPath) + szDLLName;
 
 				DebugPrint(DBGLoadLibrary, L"LoadFromOLMAPIDir - loading from \"%ws\"\n", szFullPath.c_str());
-				WC_D(hModRet, MyLoadLibraryW(szFullPath.c_str()));
+				WC_D(hModRet, MyLoadLibraryW(szFullPath));
 			}
 		}
 

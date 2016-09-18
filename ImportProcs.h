@@ -15,13 +15,7 @@ extern LPSHGETPROPERTYSTOREFORWINDOW pfnSHGetPropertyStoreForWindow;
 _Check_return_ HMODULE LoadFromSystemDir(_In_ wstring szDLLName);
 _Check_return_ HMODULE LoadFromOLMAPIDir(_In_ wstring szDLLName);
 
-_Check_return_ HMODULE MyLoadLibraryA(_In_z_ LPCSTR lpszLibFileName);
-_Check_return_ HMODULE MyLoadLibraryW(_In_z_ LPCWSTR lpszLibFileName);
-#ifdef UNICODE
-#define MyLoadLibrary MyLoadLibraryW
-#else
-#define MyLoadLibrary MyLoadLibraryA
-#endif
+_Check_return_ HMODULE MyLoadLibraryW(_In_ wstring lpszLibFileName);
 
 void ImportProcs();
 
