@@ -20,13 +20,13 @@ enum __REGOPTIONTYPE
 
 struct __RegKeys
 {
-	TCHAR* szKeyName;
+	wstring szKeyName;
 	ULONG ulRegKeyType;
 	ULONG ulRegOptType;
-	ULONG ulDefDWORD;
-	ULONG ulCurDWORD;
-	TCHAR szDefSTRING[MAX_PATH];
-	TCHAR szCurSTRING[MAX_PATH];
+	DWORD ulDefDWORD;
+	DWORD ulCurDWORD;
+	wstring szDefSTRING;
+	wstring szCurSTRING;
 	bool bRefresh;
 	UINT uiOptionsPrompt;
 };
@@ -75,8 +75,10 @@ void ReadFromRegistry();
 
 _Check_return_ HKEY CreateRootKey();
 
-void ReadDWORDFromRegistry(_In_ HKEY hKey, _In_z_ LPCTSTR szValue, _Out_ DWORD* lpdwVal);
-void WriteStringToRegistry(_In_ HKEY hKey, _In_z_ LPCTSTR szValueName, _In_z_ LPCTSTR szValue);
+DWORD ReadDWORDFromRegistry(_In_ HKEY hKey, _In_ wstring szValue, _In_ DWORD dwDefaultVal);
+wstring ReadStringFromRegistry(_In_ HKEY hKey, _In_ wstring szValue, _In_ wstring szDefault);
+
+void WriteStringToRegistry(_In_ HKEY hKey, _In_ wstring szValueName, _In_ wstring szValue);
 
 _Check_return_ HRESULT HrGetRegistryValueW(
 	_In_ HKEY hKey, // the key.

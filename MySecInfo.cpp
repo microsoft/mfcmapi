@@ -10,54 +10,54 @@ static wstring CLASS = L"CMySecInfo";
 // The following array defines the permission names for Exchange objects.
 SI_ACCESS siExchangeAccessesFolder[] =
 {
-	{ &GUID_NULL, frightsReadAny, MAKEINTRESOURCEW(IDS_ACCESSREADANY), SI_ACCESS_GENERAL },
-	{ &GUID_NULL, rightsReadOnly, MAKEINTRESOURCEW(IDS_ACCESSREADONLY), SI_ACCESS_GENERAL },
-	{ &GUID_NULL, frightsCreate, MAKEINTRESOURCEW(IDS_ACCESSCREATE), SI_ACCESS_GENERAL },
-	{ &GUID_NULL, frightsEditOwned, MAKEINTRESOURCEW(IDS_ACCESSEDITOWN), SI_ACCESS_GENERAL },
-	{ &GUID_NULL, frightsDeleteOwned, MAKEINTRESOURCEW(IDS_ACCESSDELETEOWN), SI_ACCESS_CONTAINER },
-	{ &GUID_NULL, frightsEditAny, MAKEINTRESOURCEW(IDS_ACCESSEDITANY), SI_ACCESS_GENERAL },
-	{ &GUID_NULL, rightsReadWrite, MAKEINTRESOURCEW(IDS_ACCESSREADWRITE), SI_ACCESS_GENERAL },
-	{ &GUID_NULL, frightsDeleteAny, MAKEINTRESOURCEW(IDS_ACCESSDELETEANY), SI_ACCESS_GENERAL },
-	{ &GUID_NULL, frightsCreateSubfolder, MAKEINTRESOURCEW(IDS_ACCESSCREATESUBFOLDER), SI_ACCESS_GENERAL },
-	{ &GUID_NULL, frightsOwner, MAKEINTRESOURCEW(IDS_ACCESSOWNER), SI_ACCESS_GENERAL },
-	{ &GUID_NULL, frightsVisible, MAKEINTRESOURCEW(IDS_ACCESSVISIBLE), SI_ACCESS_GENERAL },
-	{ &GUID_NULL, frightsContact, MAKEINTRESOURCEW(IDS_ACCESSCONTACT), SI_ACCESS_GENERAL }
+ { &GUID_NULL, frightsReadAny, MAKEINTRESOURCEW(IDS_ACCESSREADANY), SI_ACCESS_GENERAL },
+ { &GUID_NULL, rightsReadOnly, MAKEINTRESOURCEW(IDS_ACCESSREADONLY), SI_ACCESS_GENERAL },
+ { &GUID_NULL, frightsCreate, MAKEINTRESOURCEW(IDS_ACCESSCREATE), SI_ACCESS_GENERAL },
+ { &GUID_NULL, frightsEditOwned, MAKEINTRESOURCEW(IDS_ACCESSEDITOWN), SI_ACCESS_GENERAL },
+ { &GUID_NULL, frightsDeleteOwned, MAKEINTRESOURCEW(IDS_ACCESSDELETEOWN), SI_ACCESS_CONTAINER },
+ { &GUID_NULL, frightsEditAny, MAKEINTRESOURCEW(IDS_ACCESSEDITANY), SI_ACCESS_GENERAL },
+ { &GUID_NULL, rightsReadWrite, MAKEINTRESOURCEW(IDS_ACCESSREADWRITE), SI_ACCESS_GENERAL },
+ { &GUID_NULL, frightsDeleteAny, MAKEINTRESOURCEW(IDS_ACCESSDELETEANY), SI_ACCESS_GENERAL },
+ { &GUID_NULL, frightsCreateSubfolder, MAKEINTRESOURCEW(IDS_ACCESSCREATESUBFOLDER), SI_ACCESS_GENERAL },
+ { &GUID_NULL, frightsOwner, MAKEINTRESOURCEW(IDS_ACCESSOWNER), SI_ACCESS_GENERAL },
+ { &GUID_NULL, frightsVisible, MAKEINTRESOURCEW(IDS_ACCESSVISIBLE), SI_ACCESS_GENERAL },
+ { &GUID_NULL, frightsContact, MAKEINTRESOURCEW(IDS_ACCESSCONTACT), SI_ACCESS_GENERAL }
 };
 
 SI_ACCESS siExchangeAccessesMessage[] =
 {
-	{ &GUID_NULL, fsdrightDelete, MAKEINTRESOURCEW(IDS_ACCESSDELETE), SI_ACCESS_GENERAL },
-	{ &GUID_NULL, fsdrightReadProperty, MAKEINTRESOURCEW(IDS_ACCESSREADPROPERTY), SI_ACCESS_GENERAL },
-	{ &GUID_NULL, fsdrightWriteProperty, MAKEINTRESOURCEW(IDS_ACCESSWRITEPROPERTY), SI_ACCESS_GENERAL },
-	// { &GUID_NULL, fsdrightCreateMessage, MAKEINTRESOURCEW(IDS_ACCESSCREATEMESSAGE), SI_ACCESS_GENERAL },
-	// { &GUID_NULL, fsdrightSaveMessage, MAKEINTRESOURCEW(IDS_ACCESSSAVEMESSAGE), SI_ACCESS_GENERAL },
-	// { &GUID_NULL, fsdrightOpenMessage, MAKEINTRESOURCEW(IDS_ACCESSOPENMESSAGE), SI_ACCESS_GENERAL },
-	{ &GUID_NULL, fsdrightWriteSD, MAKEINTRESOURCEW(IDS_ACCESSWRITESD), SI_ACCESS_GENERAL },
-	{ &GUID_NULL, fsdrightWriteOwner, MAKEINTRESOURCEW(IDS_ACCESSWRITEOWNER), SI_ACCESS_GENERAL },
-	{ &GUID_NULL, fsdrightReadControl, MAKEINTRESOURCEW(IDS_ACCESSREADCONTROL), SI_ACCESS_GENERAL },
+ { &GUID_NULL, fsdrightDelete, MAKEINTRESOURCEW(IDS_ACCESSDELETE), SI_ACCESS_GENERAL },
+ { &GUID_NULL, fsdrightReadProperty, MAKEINTRESOURCEW(IDS_ACCESSREADPROPERTY), SI_ACCESS_GENERAL },
+ { &GUID_NULL, fsdrightWriteProperty, MAKEINTRESOURCEW(IDS_ACCESSWRITEPROPERTY), SI_ACCESS_GENERAL },
+ // { &GUID_NULL, fsdrightCreateMessage, MAKEINTRESOURCEW(IDS_ACCESSCREATEMESSAGE), SI_ACCESS_GENERAL },
+ // { &GUID_NULL, fsdrightSaveMessage, MAKEINTRESOURCEW(IDS_ACCESSSAVEMESSAGE), SI_ACCESS_GENERAL },
+ // { &GUID_NULL, fsdrightOpenMessage, MAKEINTRESOURCEW(IDS_ACCESSOPENMESSAGE), SI_ACCESS_GENERAL },
+ { &GUID_NULL, fsdrightWriteSD, MAKEINTRESOURCEW(IDS_ACCESSWRITESD), SI_ACCESS_GENERAL },
+ { &GUID_NULL, fsdrightWriteOwner, MAKEINTRESOURCEW(IDS_ACCESSWRITEOWNER), SI_ACCESS_GENERAL },
+ { &GUID_NULL, fsdrightReadControl, MAKEINTRESOURCEW(IDS_ACCESSREADCONTROL), SI_ACCESS_GENERAL },
 };
 
 SI_ACCESS siExchangeAccessesFreeBusy[] =
 {
-	{ &GUID_NULL, fsdrightFreeBusySimple, MAKEINTRESOURCEW(IDS_ACCESSSIMPLEFREEBUSY), SI_ACCESS_GENERAL },
-	{ &GUID_NULL, fsdrightFreeBusyDetailed, MAKEINTRESOURCEW(IDS_ACCESSDETAILEDFREEBUSY), SI_ACCESS_GENERAL },
+ { &GUID_NULL, fsdrightFreeBusySimple, MAKEINTRESOURCEW(IDS_ACCESSSIMPLEFREEBUSY), SI_ACCESS_GENERAL },
+ { &GUID_NULL, fsdrightFreeBusyDetailed, MAKEINTRESOURCEW(IDS_ACCESSDETAILEDFREEBUSY), SI_ACCESS_GENERAL },
 };
 
 GENERIC_MAPPING gmFolders =
 {
-	frightsReadAny,
-	frightsEditOwned | frightsDeleteOwned,
-	rightsNone,
-	rightsAll
+ frightsReadAny,
+ frightsEditOwned | frightsDeleteOwned,
+ rightsNone,
+ rightsAll
 };
 
 
 GENERIC_MAPPING gmMessages =
 {
-	msgrightsGenericRead,
-	msgrightsGenericWrite,
-	msgrightsGenericExecute,
-	msgrightsGenericAll
+ msgrightsGenericRead,
+ msgrightsGenericWrite,
+ msgrightsGenericExecute,
+ msgrightsGenericAll
 };
 
 CMySecInfo::CMySecInfo(_In_ LPMAPIPROP lpMAPIProp,
@@ -69,13 +69,12 @@ CMySecInfo::CMySecInfo(_In_ LPMAPIPROP lpMAPIProp,
 	m_lpMAPIProp = lpMAPIProp;
 	m_acetype = acetypeMessage;
 	m_cbHeader = 0;
-	m_lpHeader = NULL;
+	m_lpHeader = nullptr;
 
 	if (m_lpMAPIProp)
 	{
-		ULONG m_ulObjType = 0;
 		m_lpMAPIProp->AddRef();
-		m_ulObjType = GetMAPIObjectType(m_lpMAPIProp);
+		auto m_ulObjType = GetMAPIObjectType(m_lpMAPIProp);
 		switch (m_ulObjType)
 		{
 		case MAPI_STORE:
@@ -90,7 +89,7 @@ CMySecInfo::CMySecInfo(_In_ LPMAPIPROP lpMAPIProp,
 	if (PR_FREEBUSY_NT_SECURITY_DESCRIPTOR == m_ulPropTag)
 		m_acetype = acetypeFreeBusy;
 
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	int iRet = NULL;
 	// CString doesn't provide a way to extract just Unicode strings, so we do this manually
 	EC_D(iRet, LoadStringW(GetModuleHandle(NULL),
@@ -98,57 +97,59 @@ CMySecInfo::CMySecInfo(_In_ LPMAPIPROP lpMAPIProp,
 		m_wszObject,
 		_countof(m_wszObject)));
 
-} // CMySecInfo::CMySecInfo
+}
 
 CMySecInfo::~CMySecInfo()
 {
 	TRACE_DESTRUCTOR(CLASS);
 	MAPIFreeBuffer(m_lpHeader);
 	if (m_lpMAPIProp) m_lpMAPIProp->Release();
-} // CMySecInfo::~CMySecInfo
+}
 
 STDMETHODIMP CMySecInfo::QueryInterface(_In_ REFIID riid,
 	_Deref_out_opt_ LPVOID* ppvObj)
 {
-	*ppvObj = 0;
+	*ppvObj = nullptr;
 	if (riid == IID_ISecurityInformation ||
 		riid == IID_IUnknown)
 	{
-		*ppvObj = (ISecurityInformation *) this;
+		*ppvObj = static_cast<ISecurityInformation *>(this);
 		AddRef();
 		return S_OK;
 	}
-	else if (riid == IID_ISecurityInformation2)
+
+	if (riid == IID_ISecurityInformation2)
 	{
-		*ppvObj = (ISecurityInformation2 *) this;
+		*ppvObj = static_cast<ISecurityInformation2 *>(this);
 		AddRef();
 		return S_OK;
 	}
+
 	return E_NOINTERFACE;
-} // CMySecInfo::QueryInterface
+}
 
 STDMETHODIMP_(ULONG) CMySecInfo::AddRef()
 {
-	LONG lCount = InterlockedIncrement(&m_cRef);
+	auto lCount = InterlockedIncrement(&m_cRef);
 	TRACE_ADDREF(CLASS, lCount);
 	return lCount;
-} // CMySecInfo::AddRef
+}
 
 STDMETHODIMP_(ULONG) CMySecInfo::Release()
 {
-	LONG lCount = InterlockedDecrement(&m_cRef);
+	auto lCount = InterlockedDecrement(&m_cRef);
 	TRACE_RELEASE(CLASS, lCount);
 	if (!lCount) delete this;
 	return lCount;
-} // CMySecInfo::Release
+}
 
 STDMETHODIMP CMySecInfo::GetObjectInformation(PSI_OBJECT_INFO pObjectInfo)
 {
 	DebugPrint(DBGGeneric, L"CMySecInfo::GetObjectInformation\n");
-	HRESULT hRes = S_OK;
-	bool bAllowEdits = false;
+	auto hRes = S_OK;
+	auto bAllowEdits = false;
 
-	HKEY hRootKey = NULL;
+	HKEY hRootKey = nullptr;
 
 	WC_W32(RegOpenKeyEx(
 		HKEY_CURRENT_USER,
@@ -159,45 +160,43 @@ STDMETHODIMP CMySecInfo::GetObjectInformation(PSI_OBJECT_INFO pObjectInfo)
 
 	if (hRootKey)
 	{
-		ReadDWORDFromRegistry(
+		bAllowEdits = !!ReadDWORDFromRegistry(
 			hRootKey,
-			_T("AllowUnsupportedSecurityEdits"), // STRING_OK
-			(DWORD*)&bAllowEdits);
+			L"AllowUnsupportedSecurityEdits", // STRING_OK
+			DWORD(bAllowEdits));
 		EC_W32(RegCloseKey(hRootKey));
 	}
 
 	if (bAllowEdits)
 	{
-		pObjectInfo->dwFlags = SI_EDIT_PERMS | SI_EDIT_OWNER | SI_ADVANCED | ((acetypeContainer == m_acetype) ? SI_CONTAINER : 0);
+		pObjectInfo->dwFlags = SI_EDIT_PERMS | SI_EDIT_OWNER | SI_ADVANCED | (acetypeContainer == m_acetype ? SI_CONTAINER : 0);
 	}
 	else
 	{
-		pObjectInfo->dwFlags = SI_READONLY | SI_ADVANCED | ((acetypeContainer == m_acetype) ? SI_CONTAINER : 0);
+		pObjectInfo->dwFlags = SI_READONLY | SI_ADVANCED | (acetypeContainer == m_acetype ? SI_CONTAINER : 0);
 	}
 	pObjectInfo->pszObjectName = m_wszObject; // Object being edited
-	pObjectInfo->pszServerName = NULL; // specify DC for lookups
+	pObjectInfo->pszServerName = nullptr; // specify DC for lookups
 	return S_OK;
-} // CMySecInfo::GetObjectInformation
+}
 
 STDMETHODIMP CMySecInfo::GetSecurity(SECURITY_INFORMATION /*RequestedInformation*/,
 	PSECURITY_DESCRIPTOR *ppSecurityDescriptor,
 	BOOL /*fDefault*/)
 {
 	DebugPrint(DBGGeneric, L"CMySecInfo::GetSecurity\n");
-	HRESULT	hRes = S_OK;
-	LPSPropValue lpsProp = NULL;
+	auto hRes = S_OK;
+	LPSPropValue lpsProp = nullptr;
 
-	*ppSecurityDescriptor = NULL;
-
-	PSECURITY_DESCRIPTOR pSecDesc = NULL; // will be a pointer into lpPropArray, do not free!
+	*ppSecurityDescriptor = nullptr;
 
 	EC_H(GetLargeBinaryProp(m_lpMAPIProp, m_ulPropTag, &lpsProp));
 
 	if (lpsProp && PROP_TYPE(lpsProp->ulPropTag) == PT_BINARY && lpsProp->Value.bin.lpb)
 	{
-		LPBYTE	lpSDBuffer = lpsProp->Value.bin.lpb;
-		ULONG	cbSBBuffer = lpsProp->Value.bin.cb;
-		pSecDesc = SECURITY_DESCRIPTOR_OF(lpSDBuffer);
+		auto lpSDBuffer = lpsProp->Value.bin.lpb;
+		auto cbSBBuffer = lpsProp->Value.bin.cb;
+		auto pSecDesc = SECURITY_DESCRIPTOR_OF(lpSDBuffer); // will be a pointer into lpPropArray, do not free!
 
 		if (IsValidSecurityDescriptor(pSecDesc))
 		{
@@ -206,17 +205,16 @@ STDMETHODIMP CMySecInfo::GetSecurity(SECURITY_INFORMATION /*RequestedInformation
 				int cbBuffer = GetSecurityDescriptorLength(pSecDesc);
 				*ppSecurityDescriptor = LocalAlloc(LMEM_FIXED, cbBuffer);
 
-				if ((*ppSecurityDescriptor))
+				if (*ppSecurityDescriptor)
 				{
-					memcpy(*ppSecurityDescriptor, pSecDesc, (size_t)cbBuffer);
+					memcpy(*ppSecurityDescriptor, pSecDesc, static_cast<size_t>(cbBuffer));
 				}
 			}
 
 			// Grab our header for writes
 			// header is right at the start of the buffer
 			MAPIFreeBuffer(m_lpHeader);
-			m_lpHeader = NULL;
-
+			m_lpHeader = nullptr;
 			m_cbHeader = CbSecurityDescriptorHeader(lpSDBuffer);
 
 			// make sure we don't try to copy more than we really got
@@ -224,7 +222,7 @@ STDMETHODIMP CMySecInfo::GetSecurity(SECURITY_INFORMATION /*RequestedInformation
 			{
 				EC_H(MAPIAllocateBuffer(
 					m_cbHeader,
-					(LPVOID*)&m_lpHeader));
+					reinterpret_cast<LPVOID*>(&m_lpHeader)));
 
 				if (m_lpHeader)
 				{
@@ -245,7 +243,7 @@ STDMETHODIMP CMySecInfo::GetSecurity(SECURITY_INFORMATION /*RequestedInformation
 
 	if (!*ppSecurityDescriptor) return MAPI_E_NOT_FOUND;
 	return hRes;
-} // CMySecInfo::GetSecurity
+}
 
 // This is very dangerous code and should only be executed under very controlled circumstances
 // The code, as written, does nothing to ensure the DACL is ordered correctly, so it will probably cause problems
@@ -255,11 +253,11 @@ STDMETHODIMP CMySecInfo::SetSecurity(SECURITY_INFORMATION /*SecurityInformation*
 	PSECURITY_DESCRIPTOR pSecurityDescriptor)
 {
 	DebugPrint(DBGGeneric, L"CMySecInfo::SetSecurity\n");
-	HRESULT		hRes = S_OK;
-	SPropValue	Blob = { 0 };
-	ULONG		cbBlob = 0;
-	LPBYTE		lpBlob = NULL;
-	DWORD		dwSDLength = 0;
+	auto hRes = S_OK;
+	SPropValue Blob = { 0 };
+	ULONG cbBlob = 0;
+	LPBYTE lpBlob = nullptr;
+	DWORD dwSDLength = 0;
 
 	if (!m_lpHeader || !pSecurityDescriptor || !m_lpMAPIProp) return MAPI_E_INVALID_PARAMETER;
 	if (!IsValidSecurityDescriptor(pSecurityDescriptor)) return MAPI_E_INVALID_PARAMETER;
@@ -270,7 +268,7 @@ STDMETHODIMP CMySecInfo::SetSecurity(SECURITY_INFORMATION /*SecurityInformation*
 
 	EC_H(MAPIAllocateBuffer(
 		cbBlob,
-		(LPVOID*)&lpBlob));
+		reinterpret_cast<LPVOID*>(&lpBlob)));
 
 	if (lpBlob)
 	{
@@ -290,7 +288,7 @@ STDMETHODIMP CMySecInfo::SetSecurity(SECURITY_INFORMATION /*SecurityInformation*
 		MAPIFreeBuffer(lpBlob);
 	}
 	return hRes;
-} // CMySecInfo::SetSecurity
+}
 
 STDMETHODIMP CMySecInfo::GetAccessRights(const GUID* /*pguidObjectType*/,
 	DWORD /*dwFlags*/,
@@ -318,7 +316,7 @@ STDMETHODIMP CMySecInfo::GetAccessRights(const GUID* /*pguidObjectType*/,
 
 	*piDefaultAccess = 0;
 	return S_OK;
-} // CMySecInfo::GetAccessRights
+}
 
 STDMETHODIMP CMySecInfo::MapGeneric(const GUID* /*pguidObjectType*/,
 	UCHAR* /*pAceFlags*/,
@@ -339,32 +337,32 @@ STDMETHODIMP CMySecInfo::MapGeneric(const GUID* /*pguidObjectType*/,
 		break;
 	};
 	return S_OK;
-} // CMySecInfo::MapGeneric
+}
 
 STDMETHODIMP CMySecInfo::GetInheritTypes(PSI_INHERIT_TYPE* /*ppInheritTypes*/,
 	ULONG* /*pcInheritTypes*/)
 {
 	DebugPrint(DBGGeneric, L"CMySecInfo::GetInheritTypes\n");
 	return E_NOTIMPL;
-} // CMySecInfo::GetInheritTypes
+}
 
 STDMETHODIMP CMySecInfo::PropertySheetPageCallback(HWND /*hwnd*/, UINT uMsg, SI_PAGE_TYPE uPage)
 {
 	DebugPrint(DBGGeneric, L"CMySecInfo::PropertySheetPageCallback, uMsg = 0x%X, uPage = 0x%X\n", uMsg, uPage);
 	return S_OK;
-} // CMySecInfo::PropertySheetPageCallback
+}
 
 STDMETHODIMP_(BOOL) CMySecInfo::IsDaclCanonical(PACL /*pDacl*/)
 {
 	DebugPrint(DBGGeneric, L"CMySecInfo::IsDaclCanonical - always returns true.\n");
 	return true;
-} // CMySecInfo::IsDaclCanonical
+}
 
 STDMETHODIMP CMySecInfo::LookupSids(ULONG /*cSids*/, PSID* /*rgpSids*/, LPDATAOBJECT* /*ppdo*/)
 {
 	DebugPrint(DBGGeneric, L"CMySecInfo::LookupSids\n");
 	return E_NOTIMPL;
-} // CMySecInfo::LookupSids
+}
 
 _Check_return_ wstring GetTextualSid(_In_ PSID pSid)
 {
@@ -372,43 +370,42 @@ _Check_return_ wstring GetTextualSid(_In_ PSID pSid)
 	if (!IsValidSid(pSid)) return L"";
 
 	// Get the identifier authority value from the SID.
-	PSID_IDENTIFIER_AUTHORITY psia = GetSidIdentifierAuthority(pSid);
+	auto psia = GetSidIdentifierAuthority(pSid);
 
 	// Get the number of subauthorities in the SID.
-	PUCHAR lpSubAuthoritiesCount = GetSidSubAuthorityCount(pSid);
+	auto lpSubAuthoritiesCount = GetSidSubAuthorityCount(pSid);
 
 	// Compute the buffer length.
 	// S-SID_REVISION- + IdentifierAuthority- + subauthorities- + NULL
 	// Add 'S' prefix and revision number to the string.
-	wstring TextualSid = format(L"S-%lu-", SID_REVISION); // STRING_OK
+	auto TextualSid = format(L"S-%lu-", SID_REVISION); // STRING_OK
 
 	// Add SID identifier authority to the string.
-	if ((psia->Value[0] != 0) || (psia->Value[1] != 0))
+	if (psia->Value[0] != 0 || psia->Value[1] != 0)
 	{
 		TextualSid += format(
 			L"0x%02hx%02hx%02hx%02hx%02hx%02hx", // STRING_OK
-			(USHORT)psia->Value[0],
-			(USHORT)psia->Value[1],
-			(USHORT)psia->Value[2],
-			(USHORT)psia->Value[3],
-			(USHORT)psia->Value[4],
-			(USHORT)psia->Value[5]);
+			static_cast<USHORT>(psia->Value[0]),
+			static_cast<USHORT>(psia->Value[1]),
+			static_cast<USHORT>(psia->Value[2]),
+			static_cast<USHORT>(psia->Value[3]),
+			static_cast<USHORT>(psia->Value[4]),
+			static_cast<USHORT>(psia->Value[5]));
 	}
 	else
 	{
 		TextualSid += format(
 			L"%lu", // STRING_OK
-			(ULONG)(psia->Value[5]) +
-			(ULONG)(psia->Value[4] << 8) +
-			(ULONG)(psia->Value[3] << 16) +
-			(ULONG)(psia->Value[2] << 24));
+			static_cast<ULONG>(psia->Value[4] << 8) +
+			static_cast<ULONG>(psia->Value[5]) +
+			static_cast<ULONG>(psia->Value[3] << 16) +
+			static_cast<ULONG>(psia->Value[2] << 24));
 	}
 
 	// Add SID subauthorities to the string.
 	if (lpSubAuthoritiesCount)
 	{
-		DWORD dwCounter = 0;
-		for (dwCounter = 0; dwCounter < *lpSubAuthoritiesCount; dwCounter++)
+		for (DWORD dwCounter = 0; dwCounter < *lpSubAuthoritiesCount; dwCounter++)
 		{
 			TextualSid += format(
 				L"-%lu", // STRING_OK
@@ -421,7 +418,7 @@ _Check_return_ wstring GetTextualSid(_In_ PSID pSid)
 
 wstring ACEToString(_In_ void* pACE, eAceType acetype)
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	wstring AceString;
 	BYTE AceType = 0;
 	BYTE AceFlags = 0;
@@ -429,39 +426,39 @@ wstring ACEToString(_In_ void* pACE, eAceType acetype)
 	DWORD Flags = 0;
 	GUID ObjectType = { 0 };
 	GUID InheritedObjectType = { 0 };
-	SID* SidStart = NULL;
-	bool bObjectFound = false;
+	SID* SidStart = nullptr;
+	auto bObjectFound = false;
 
 	if (!pACE) return L"";
 
-	AceType = ((PACE_HEADER)pACE)->AceType;
-	AceFlags = ((PACE_HEADER)pACE)->AceFlags;
+	AceType = static_cast<PACE_HEADER>(pACE)->AceType;
+	AceFlags = static_cast<PACE_HEADER>(pACE)->AceFlags;
 
 	/* Check type of ACE */
 	switch (AceType)
 	{
 	case ACCESS_ALLOWED_ACE_TYPE:
-		Mask = ((ACCESS_ALLOWED_ACE *)pACE)->Mask;
-		SidStart = (SID *)&((ACCESS_ALLOWED_ACE *)pACE)->SidStart;
+		Mask = static_cast<ACCESS_ALLOWED_ACE *>(pACE)->Mask;
+		SidStart = reinterpret_cast<SID *>(&static_cast<ACCESS_ALLOWED_ACE *>(pACE)->SidStart);
 		break;
 	case ACCESS_DENIED_ACE_TYPE:
-		Mask = ((ACCESS_DENIED_ACE *)pACE)->Mask;
-		SidStart = (SID *)&((ACCESS_DENIED_ACE *)pACE)->SidStart;
+		Mask = static_cast<ACCESS_DENIED_ACE *>(pACE)->Mask;
+		SidStart = reinterpret_cast<SID *>(&static_cast<ACCESS_DENIED_ACE *>(pACE)->SidStart);
 		break;
 	case ACCESS_ALLOWED_OBJECT_ACE_TYPE:
-		Mask = ((ACCESS_ALLOWED_OBJECT_ACE *)pACE)->Mask;
-		Flags = ((ACCESS_ALLOWED_OBJECT_ACE *)pACE)->Flags;
-		ObjectType = ((ACCESS_ALLOWED_OBJECT_ACE *)pACE)->ObjectType;
-		InheritedObjectType = ((ACCESS_ALLOWED_OBJECT_ACE *)pACE)->InheritedObjectType;
-		SidStart = (SID *)&((ACCESS_ALLOWED_OBJECT_ACE *)pACE)->SidStart;
+		Mask = static_cast<ACCESS_ALLOWED_OBJECT_ACE *>(pACE)->Mask;
+		Flags = static_cast<ACCESS_ALLOWED_OBJECT_ACE *>(pACE)->Flags;
+		ObjectType = static_cast<ACCESS_ALLOWED_OBJECT_ACE *>(pACE)->ObjectType;
+		InheritedObjectType = static_cast<ACCESS_ALLOWED_OBJECT_ACE *>(pACE)->InheritedObjectType;
+		SidStart = reinterpret_cast<SID *>(&static_cast<ACCESS_ALLOWED_OBJECT_ACE *>(pACE)->SidStart);
 		bObjectFound = true;
 		break;
 	case ACCESS_DENIED_OBJECT_ACE_TYPE:
-		Mask = ((ACCESS_DENIED_OBJECT_ACE *)pACE)->Mask;
-		Flags = ((ACCESS_DENIED_OBJECT_ACE *)pACE)->Flags;
-		ObjectType = ((ACCESS_DENIED_OBJECT_ACE *)pACE)->ObjectType;
-		InheritedObjectType = ((ACCESS_DENIED_OBJECT_ACE *)pACE)->InheritedObjectType;
-		SidStart = (SID *)&((ACCESS_DENIED_OBJECT_ACE *)pACE)->SidStart;
+		Mask = static_cast<ACCESS_DENIED_OBJECT_ACE *>(pACE)->Mask;
+		Flags = static_cast<ACCESS_DENIED_OBJECT_ACE *>(pACE)->Flags;
+		ObjectType = static_cast<ACCESS_DENIED_OBJECT_ACE *>(pACE)->ObjectType;
+		InheritedObjectType = static_cast<ACCESS_DENIED_OBJECT_ACE *>(pACE)->InheritedObjectType;
+		SidStart = reinterpret_cast<SID *>(&static_cast<ACCESS_DENIED_OBJECT_ACE *>(pACE)->SidStart);
 		bObjectFound = true;
 		break;
 	}
@@ -480,8 +477,8 @@ wstring ACEToString(_In_ void* pACE, eAceType acetype)
 		&SidNameUse));
 	hRes = S_OK;
 
-	LPTSTR lpSidName = NULL;
-	LPTSTR lpSidDomain = NULL;
+	LPTSTR lpSidName = nullptr;
+	LPTSTR lpSidDomain = nullptr;
 
 #pragma warning(push)
 #pragma warning(disable:6211)
@@ -503,9 +500,9 @@ wstring ACEToString(_In_ void* pACE, eAceType acetype)
 		hRes = S_OK;
 	}
 
-	wstring lpStringSid = GetTextualSid(SidStart);
-	wstring szAceType = InterpretFlags(flagACEType, AceType);
-	wstring szAceFlags = InterpretFlags(flagACEFlag, AceFlags);
+	auto lpStringSid = GetTextualSid(SidStart);
+	auto szAceType = InterpretFlags(flagACEType, AceType);
+	auto szAceFlags = InterpretFlags(flagACEFlag, AceFlags);
 	wstring szAceMask;
 
 	switch (acetype)
@@ -521,9 +518,9 @@ wstring ACEToString(_In_ void* pACE, eAceType acetype)
 		break;
 	};
 
-	wstring szDomain = lpSidDomain ? LPCTSTRToWstring(lpSidDomain) : formatmessage(IDS_NODOMAIN);
-	wstring szName = lpSidName ? LPCTSTRToWstring(lpSidName) : formatmessage(IDS_NONAME);
-	wstring szSID = GetTextualSid(SidStart);
+	auto szDomain = lpSidDomain ? LPCTSTRToWstring(lpSidDomain) : formatmessage(IDS_NODOMAIN);
+	auto szName = lpSidName ? LPCTSTRToWstring(lpSidName) : formatmessage(IDS_NONAME);
+	auto szSID = GetTextualSid(SidStart);
 	if (szSID.empty()) szSID = formatmessage(IDS_NOSID);
 	delete[] lpSidDomain;
 	delete[] lpSidName;
@@ -551,15 +548,14 @@ wstring ACEToString(_In_ void* pACE, eAceType acetype)
 
 _Check_return_ HRESULT SDToString(_In_count_(cbBuf) LPBYTE lpBuf, ULONG cbBuf, eAceType acetype, _In_ wstring& SDString, _In_ wstring& sdInfo)
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	BOOL bValidDACL = false;
-	PACL pACL = NULL;
+	PACL pACL = nullptr;
 	BOOL bDACLDefaulted = false;
-	PSECURITY_DESCRIPTOR pSecurityDescriptor = NULL;
 
 	if (!lpBuf) return MAPI_E_NOT_FOUND;
 
-	pSecurityDescriptor = SECURITY_DESCRIPTOR_OF(lpBuf);
+	auto pSecurityDescriptor = SECURITY_DESCRIPTOR_OF(lpBuf);
 
 	if (CbSecurityDescriptorHeader(lpBuf) > cbBuf || !IsValidSecurityDescriptor(pSecurityDescriptor))
 	{
@@ -585,7 +581,7 @@ _Check_return_ HRESULT SDToString(_In_count_(cbBuf) LPBYTE lpBuf, ULONG cbBuf, e
 
 		for (DWORD i = 0; i < ACLSizeInfo.AceCount; i++)
 		{
-			void* pACE = NULL;
+			void* pACE = nullptr;
 
 			EC_B(GetAce(pACL, i, &pACE));
 

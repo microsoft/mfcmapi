@@ -276,8 +276,8 @@ CFileList::~CFileList()
 
 		WriteStringToRegistry(
 			m_hRootKey,
-			wstringToCString(m_szKey),
-			wstringToCString(szList));
+			m_szKey,
+			szList);
 	}
 
 	EC_W32(RegCloseKey(m_hRootKey));
