@@ -966,63 +966,59 @@ bool LoadMAPIVersion(wstring lpszVersion)
 	DebugPrint(DBGGeneric, L"LoadMAPIVersion(%ws)\n", lpszVersion.c_str());
 
 	wstring szPath;
-	auto mpi = new MAPIPathIterator();
-	if (mpi)
+	auto paths = GetMAPIPaths(true);
+	if (lpszVersion == L"0")
 	{
-		auto paths = mpi->GetMAPIPaths(true);
-		if (lpszVersion == L"0")
+		DebugPrint(DBGGeneric, L"Listing MAPI\n");
+		for (auto path : paths)
 		{
-			DebugPrint(DBGGeneric, L"Listing MAPI\n");
-			for (auto path : paths)
-			{
-				wstringToLower(path);
+			wstringToLower(path);
 
-				printf("MAPI path: %ws\n", path.c_str());
-			}
-			return true;
+			printf("MAPI path: %ws\n", path.c_str());
 		}
+		return true;
+	}
 
-		auto ulVersion = wstringToUlong(lpszVersion, 10);
-		if (ulVersion == 0)
+	auto ulVersion = wstringToUlong(lpszVersion, 10);
+	if (ulVersion == 0)
+	{
+		DebugPrint(DBGGeneric, L"Got a string\n");
+
+		wstringToLower(lpszVersion);
+		for (auto path : paths)
 		{
-			DebugPrint(DBGGeneric, L"Got a string\n");
+			wstringToLower(path);
 
-			wstringToLower(lpszVersion);
-			for (auto path : paths)
+			if (path.find(lpszVersion) != wstring::npos)
 			{
-				wstringToLower(path);
-
-				if (path.find(lpszVersion) != wstring::npos)
-				{
-					szPath = path;
-					break;
-				}
+				szPath = path;
+				break;
 			}
 		}
-		else
+	}
+	else
+	{
+		DebugPrint(DBGGeneric, L"Got a number %u\n", ulVersion);
+		switch (ulVersion)
 		{
-			DebugPrint(DBGGeneric, L"Got a number %u\n", ulVersion);
-			switch (ulVersion)
-			{
-			case 1: // system
-				szPath = mpi->GetMAPISystemDir();
-				break;
-			case 11: // Outlook 2003 (11)
-				szPath = mpi->GetInstalledOutlookMAPI(oqcOffice11);
-				break;
-			case 12: // Outlook 2007 (12)
-				szPath = mpi->GetInstalledOutlookMAPI(oqcOffice12);
-				break;
-			case 14: // Outlook 2010 (14)
-				szPath = mpi->GetInstalledOutlookMAPI(oqcOffice14);
-				break;
-			case 15: // Outlook 2013 (15)
-				szPath = mpi->GetInstalledOutlookMAPI(oqcOffice15);
-				break;
-			case 16: // Outlook 2016 (16)
-				szPath = mpi->GetInstalledOutlookMAPI(oqcOffice16);
-				break;
-			}
+		case 1: // system
+			szPath = GetMAPISystemDir();
+			break;
+		case 11: // Outlook 2003 (11)
+			szPath = GetInstalledOutlookMAPI(oqcOffice11);
+			break;
+		case 12: // Outlook 2007 (12)
+			szPath = GetInstalledOutlookMAPI(oqcOffice12);
+			break;
+		case 14: // Outlook 2010 (14)
+			szPath = GetInstalledOutlookMAPI(oqcOffice14);
+			break;
+		case 15: // Outlook 2013 (15)
+			szPath = GetInstalledOutlookMAPI(oqcOffice15);
+			break;
+		case 16: // Outlook 2016 (16)
+			szPath = GetInstalledOutlookMAPI(oqcOffice16);
+			break;
 		}
 	}
 
@@ -1035,7 +1031,6 @@ bool LoadMAPIVersion(wstring lpszVersion)
 		SetMAPIHandle(hMAPI);
 	}
 
-	delete mpi;
 	return false;
 }
 
