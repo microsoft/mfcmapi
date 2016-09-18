@@ -4,44 +4,42 @@
 // Keep this in sync with REGKEYNAMES
 __RegKeys RegKeys[] = {
 #ifdef _DEBUG
-	{_T("DebugTag"),					regDWORD,regoptStringHex,	DBGAll		,0,_T(""),_T(""),false,	IDS_REGKEY_DEBUG_TAG}, // STRING_OK
+	{ L"DebugTag",					regDWORD,regoptStringHex,	DBGAll		,0,L"",L"",false,	IDS_REGKEY_DEBUG_TAG }, // STRING_OK
 #else
-	{_T("DebugTag"),					regDWORD,regoptStringHex,	DBGNoDebug	,0,_T(""),_T(""),false,	IDS_REGKEY_DEBUG_TAG }, // STRING_OK
+	{ L"DebugTag",					regDWORD,regoptStringHex,	DBGNoDebug	,0,L"",L"",false,	IDS_REGKEY_DEBUG_TAG }, // STRING_OK
 #endif
-	{_T("DebugToFile"),					regDWORD,regoptCheck,		0			,0,_T(""),_T(""),false,	IDS_REGKEY_DEBUG_TO_FILE}, // STRING_OK
-	{_T("DebugFileName"),				regSTRING,regoptString,		0			,0,_T("c:\\mfcmapi.log"),_T(""),false,	IDS_REGKEY_DEBUG_FILE_NAME}, // STRING_OK
-	{_T("ParseNamedProps"),				regDWORD,regoptCheck,		true		,0,_T(""),_T(""),true,	IDS_REGKEY_PARSED_NAMED_PROPS}, // STRING_OK
-	{_T("GetPropNamesOnAllProps"),		regDWORD,regoptCheck,		false		,0,_T(""),_T(""),true,	IDS_REGKEY_GETPROPNAMES_ON_ALL_PROPS}, // STRING_OK
-	{_T("ThrottleLevel"),				regDWORD,regoptStringDec,	0			,0,_T(""),_T(""),false,	IDS_REGKEY_THROTTLE_LEVEL}, // STRING_OK
-	{_T("HierExpandNotifications"),		regDWORD,regoptCheck,		true		,0,_T(""),_T(""),false,	IDS_REGKEY_HIER_EXPAND_NOTIFS}, // STRING_OK
-	{_T("HierRootNotifs"),				regDWORD,regoptCheck,		false		,0,_T(""),_T(""),false,	IDS_REGKEY_HIER_ROOT_NOTIFS}, // STRING_OK
-	{_T("DoSmartView"),					regDWORD,regoptCheck,		true		,0,_T(""),_T(""),true,	IDS_REGKEY_DO_SMART_VIEW}, // STRING_OK
-	{_T("OnlyAdditionalProperties"),	regDWORD,regoptCheck,		false		,0,_T(""),_T(""),true,	IDS_REGKEY_ONLYADDITIONALPROPERTIES}, // STRING_OK
-	{_T("UseRowDataForSinglePropList"),	regDWORD,regoptCheck,		false		,0,_T(""),_T(""),true,	IDS_REGKEY_USE_ROW_DATA_FOR_SINGLEPROPLIST}, // STRING_OK
-	{_T("UseGetPropList"),				regDWORD,regoptCheck,		true		,0,_T(""),_T(""),true,	IDS_REGKEY_USE_GETPROPLIST}, // STRING_OK
-	{_T("CacheNamedProps"),				regDWORD,regoptCheck,		true		,0,_T(""),_T(""),false,	IDS_REGKEY_CACHE_NAMED_PROPS}, // STRING_OK
-	{_T("AllowDupeColumns"),			regDWORD,regoptCheck,		false		,0,_T(""),_T(""),false,	IDS_REGKEY_ALLOW_DUPE_COLUMNS}, // STRING_OK
-	{_T("DoColumnNames"),				regDWORD,regoptCheck,		true		,0,_T(""),_T(""),false,	IDS_REGKEY_DO_COLUMN_NAMES}, // STRING_OK
-	{_T("EditColumnsOnLoad"),			regDWORD,regoptCheck,		false		,0,_T(""),_T(""),false,	IDS_REGKEY_EDIT_COLUMNS_ON_LOAD}, // STRING_OK
-	{_T("ForceMDBOnline"),				regDWORD,regoptCheck,		false		,0,_T(""),_T(""),false,	IDS_REGKEY_MDB_ONLINE}, // STRING_OK
-	{_T("ForceMapiNoCache"),			regDWORD,regoptCheck,		false		,0,_T(""),_T(""),false,	IDS_REGKEY_MAPI_NO_CACHE}, // STRING_OK
-	{_T("AllowPersistCache"),			regDWORD,regoptCheck,		false		,0,_T(""),_T(""),false,	IDS_REGKEY_ALLOW_PERSIST_CACHE }, // STRING_OK
-	{_T("UseIMAPIProgress"),			regDWORD,regoptCheck,		false		,0,_T(""),_T(""),false,	IDS_REGKEY_USE_IMAPIPROGRESS}, // STRING_OK
-	{_T("UseMessageRaw"),				regDWORD,regoptCheck,		false		,0,_T(""),_T(""),false,	IDS_REGKEY_USE_MESSAGERAW}, // STRING_OK
-	{_T("SuppressNotFound"),			regDWORD,regoptCheck,		true		,0,_T(""),_T(""),false,	IDS_REGKEY_SUPPRESS_NOTFOUND}, // STRING_OK
-	{_T("HeapEnableTerminationOnCorruption"),regDWORD,regoptCheck,	true		,0,_T(""),_T(""),false,	IDS_REGKEY_HEAPENABLETERMINATIONONCORRUPTION}, // STRING_OK
-	{_T("LoadAddIns"),					regDWORD,regoptCheck,		true		,0,_T(""),_T(""),false,	IDS_REGKEY_LOADADDINS}, // STRING_OK
-	{_T("ForceOutlookMAPI"),			regDWORD,regoptCheck,		false		,0,_T(""),_T(""),false,	IDS_REGKEY_FORCEOUTLOOKMAPI}, // STRING_OK
-	{_T("ForceSystemMAPI"),				regDWORD,regoptCheck,		false		,0,_T(""),_T(""),false,	IDS_REGKEY_FORCESYSTEMMAPI}, // STRING_OK
-	{_T("DisplayAboutDialog"),			regDWORD,regoptCheck,		true		,0,_T(""),_T(""),false,	NULL}, // STRING_OK
-	{_T("PropertyColumnOrder"),			regSTRING,regoptCheck,		0			,0,_T(""),_T(""),false,	NULL}, // STRING_OK
-	// {KeyName,						keytype,opttype,			defaultDWORD,0,defaultString,NULL,bRefresh,IDS_REGKEY_*} // Regkey template
+	{ L"DebugToFile",				regDWORD,regoptCheck,		0			,0,L"",L"",false,	IDS_REGKEY_DEBUG_TO_FILE }, // STRING_OK
+	{ L"DebugFileName",				regSTRING,regoptString,		0			,0,L"c:\\mfcmapi.log",L"",false,	IDS_REGKEY_DEBUG_FILE_NAME }, // STRING_OK
+	{ L"ParseNamedProps",			regDWORD,regoptCheck,		true		,0,L"",L"",true,	IDS_REGKEY_PARSED_NAMED_PROPS }, // STRING_OK
+	{ L"GetPropNamesOnAllProps",	regDWORD,regoptCheck,		false		,0,L"",L"",true,	IDS_REGKEY_GETPROPNAMES_ON_ALL_PROPS }, // STRING_OK
+	{ L"ThrottleLevel",				regDWORD,regoptStringDec,	0			,0,L"",L"",false,	IDS_REGKEY_THROTTLE_LEVEL }, // STRING_OK
+	{ L"HierExpandNotifications",	regDWORD,regoptCheck,		true		,0,L"",L"",false,	IDS_REGKEY_HIER_EXPAND_NOTIFS }, // STRING_OK
+	{ L"HierRootNotifs",			regDWORD,regoptCheck,		false		,0,L"",L"",false,	IDS_REGKEY_HIER_ROOT_NOTIFS }, // STRING_OK
+	{ L"DoSmartView",				regDWORD,regoptCheck,		true		,0,L"",L"",true,	IDS_REGKEY_DO_SMART_VIEW }, // STRING_OK
+	{ L"OnlyAdditionalProperties",	regDWORD,regoptCheck,		false		,0,L"",L"",true,	IDS_REGKEY_ONLYADDITIONALPROPERTIES }, // STRING_OK
+	{ L"UseRowDataForSinglePropList",	regDWORD,regoptCheck,	false		,0,L"",L"",true,	IDS_REGKEY_USE_ROW_DATA_FOR_SINGLEPROPLIST }, // STRING_OK
+	{ L"UseGetPropList",			regDWORD,regoptCheck,		true		,0,L"",L"",true,	IDS_REGKEY_USE_GETPROPLIST }, // STRING_OK
+	{ L"CacheNamedProps",			regDWORD,regoptCheck,		true		,0,L"",L"",false,	IDS_REGKEY_CACHE_NAMED_PROPS }, // STRING_OK
+	{ L"AllowDupeColumns",			regDWORD,regoptCheck,		false		,0,L"",L"",false,	IDS_REGKEY_ALLOW_DUPE_COLUMNS }, // STRING_OK
+	{ L"DoColumnNames",				regDWORD,regoptCheck,		true		,0,L"",L"",false,	IDS_REGKEY_DO_COLUMN_NAMES }, // STRING_OK
+	{ L"EditColumnsOnLoad",			regDWORD,regoptCheck,		false		,0,L"",L"",false,	IDS_REGKEY_EDIT_COLUMNS_ON_LOAD }, // STRING_OK
+	{ L"ForceMDBOnline",			regDWORD,regoptCheck,		false		,0,L"",L"",false,	IDS_REGKEY_MDB_ONLINE }, // STRING_OK
+	{ L"ForceMapiNoCache",			regDWORD,regoptCheck,		false		,0,L"",L"",false,	IDS_REGKEY_MAPI_NO_CACHE }, // STRING_OK
+	{ L"AllowPersistCache",			regDWORD,regoptCheck,		false		,0,L"",L"",false,	IDS_REGKEY_ALLOW_PERSIST_CACHE }, // STRING_OK
+	{ L"UseIMAPIProgress",			regDWORD,regoptCheck,		false		,0,L"",L"",false,	IDS_REGKEY_USE_IMAPIPROGRESS }, // STRING_OK
+	{ L"UseMessageRaw",				regDWORD,regoptCheck,		false		,0,L"",L"",false,	IDS_REGKEY_USE_MESSAGERAW }, // STRING_OK
+	{ L"SuppressNotFound",			regDWORD,regoptCheck,		true		,0,L"",L"",false,	IDS_REGKEY_SUPPRESS_NOTFOUND }, // STRING_OK
+	{ L"HeapEnableTerminationOnCorruption",regDWORD,regoptCheck,true		,0,L"",L"",false,	IDS_REGKEY_HEAPENABLETERMINATIONONCORRUPTION }, // STRING_OK
+	{ L"LoadAddIns",				regDWORD,regoptCheck,		true		,0,L"",L"",false,	IDS_REGKEY_LOADADDINS }, // STRING_OK
+	{ L"ForceOutlookMAPI",			regDWORD,regoptCheck,		false		,0,L"",L"",false,	IDS_REGKEY_FORCEOUTLOOKMAPI }, // STRING_OK
+	{ L"ForceSystemMAPI",			regDWORD,regoptCheck,		false		,0,L"",L"",false,	IDS_REGKEY_FORCESYSTEMMAPI }, // STRING_OK
+	{ L"DisplayAboutDialog",		regDWORD,regoptCheck,		true		,0,L"",L"",false,	NULL }, // STRING_OK
+	{ L"PropertyColumnOrder",		regSTRING,regoptCheck,		0			,0,L"",L"",false,	NULL }, // STRING_OK
+																											// {KeyName,						keytype,opttype,			defaultDWORD,0,defaultString,NULL,bRefresh,IDS_REGKEY_*} // Regkey template
 };
 
 void SetDefaults()
 {
-	auto hRes = S_OK;
-
 	// Set some defaults to begin with:
 	for (auto i = 0; i < NUMRegKeys; i++)
 	{
@@ -51,13 +49,11 @@ void SetDefaults()
 		}
 		else if (RegKeys[i].ulRegKeyType == regSTRING)
 		{
-			EC_H(StringCchCopy(
-				RegKeys[i].szCurSTRING,
-				_countof(RegKeys[i].szCurSTRING),
-				RegKeys[i].szDefSTRING));
+			RegKeys[i].szCurSTRING = RegKeys[i].szDefSTRING;
 		}
 	}
 }
+
 // $--HrGetRegistryValueW---------------------------------------------------------
 // Get a registry value - allocating memory using new to hold it.
 // -----------------------------------------------------------------------------
@@ -167,49 +163,51 @@ _Check_return_ HRESULT HrGetRegistryValueA(
 
 	return hRes;
 }
-// If the value is not set in the registry, do not alter the passed in DWORD
-void ReadDWORDFromRegistry(_In_ HKEY hKey, _In_z_ LPCTSTR szValue, _Out_ DWORD* lpdwVal)
+// If the value is not set in the registry, return the default value
+DWORD ReadDWORDFromRegistry(_In_ HKEY hKey, _In_ wstring szValue, _In_ DWORD dwDefaultVal)
 {
+	if (szValue.empty()) return dwDefaultVal;
 	auto hRes = S_OK;
-
-	if (!szValue || !lpdwVal) return;
 	DWORD dwKeyType = NULL;
 	DWORD* lpValue = nullptr;
+	auto ret = dwDefaultVal;
 
-	WC_H(HrGetRegistryValue(
+	WC_H(HrGetRegistryValueW(
 		hKey,
-		szValue,
+		szValue.c_str(),
 		&dwKeyType,
 		reinterpret_cast<LPVOID*>(&lpValue)));
 	if (hRes == S_OK && REG_DWORD == dwKeyType && lpValue)
 	{
-		*lpdwVal = *lpValue;
+		ret = *lpValue;
 	}
 
 	delete[] lpValue;
+	return ret;
 }
-// If the value is not set in the registry, do not alter the passed in string
-void ReadStringFromRegistry(_In_ HKEY hKey, _In_z_ LPCTSTR szValue, _In_z_ LPTSTR szDest, ULONG cchDestLen)
+// If the value is not set in the registry, return the default value
+wstring ReadStringFromRegistry(_In_ HKEY hKey, _In_ wstring szValue, _In_ wstring szDefault)
 {
+	if (szValue.empty()) return szDefault;
 	auto hRes = S_OK;
-
-	if (!szValue || !szDest || cchDestLen < 1) return;
-
 	DWORD dwKeyType = NULL;
-	LPTSTR szBuf = nullptr;
+	LPWSTR szBuf = nullptr;
+	auto ret = szDefault;
 
-	WC_H(HrGetRegistryValue(
+	WC_H(HrGetRegistryValueW(
 		hKey,
-		szValue,
+		szValue.c_str(),
 		&dwKeyType,
 		reinterpret_cast<LPVOID*>(&szBuf)));
 	if (hRes == S_OK && REG_SZ == dwKeyType && szBuf)
 	{
-		WC_H(StringCchCopy(szDest, cchDestLen, szBuf));
+		ret = szBuf;
 	}
 
 	delete[] szBuf;
+	return ret;
 }
+
 void ReadFromRegistry()
 {
 	auto hRes = S_OK;
@@ -229,25 +227,17 @@ void ReadFromRegistry()
 		{
 			if (RegKeys[i].ulRegKeyType == regDWORD)
 			{
-				ReadDWORDFromRegistry(
+				RegKeys[i].ulCurDWORD = ReadDWORDFromRegistry(
 					hRootKey,
 					RegKeys[i].szKeyName,
-					&RegKeys[i].ulCurDWORD);
+					RegKeys[i].ulCurDWORD);
 			}
 			else if (RegKeys[i].ulRegKeyType == regSTRING)
 			{
-				ReadStringFromRegistry(
+				RegKeys[i].szCurSTRING = ReadStringFromRegistry(
 					hRootKey,
 					RegKeys[i].szKeyName,
-					RegKeys[i].szCurSTRING,
-					_countof(RegKeys[i].szCurSTRING));
-				if (RegKeys[i].szCurSTRING[0] == _T('\0'))
-				{
-					EC_H(StringCchCopy(
-						RegKeys[i].szCurSTRING,
-						_countof(RegKeys[i].szCurSTRING),
-						RegKeys[i].szDefSTRING));
-				}
+					RegKeys[i].szCurSTRING);
 			}
 		}
 
@@ -257,19 +247,21 @@ void ReadFromRegistry()
 	SetDebugLevel(RegKeys[regkeyDEBUG_TAG].ulCurDWORD);
 	DebugPrintVersion(DBGVersionBanner);
 }
-void WriteDWORDToRegistry(_In_ HKEY hKey, _In_z_ LPCTSTR szValueName, DWORD dwValue)
+
+void WriteDWORDToRegistry(_In_ HKEY hKey, _In_ wstring szValueName, DWORD dwValue)
 {
 	auto hRes = S_OK;
 
-	WC_W32(RegSetValueEx(
+	WC_W32(RegSetValueExW(
 		hKey,
-		szValueName,
+		szValueName.c_str(),
 		NULL,
 		REG_DWORD,
 		reinterpret_cast<LPBYTE>(&dwValue),
 		sizeof(DWORD)));
 }
-void CommitDWORDIfNeeded(_In_ HKEY hKey, _In_z_ LPCTSTR szValueName, DWORD dwValue, DWORD dwDefaultValue)
+
+void CommitDWORDIfNeeded(_In_ HKEY hKey, _In_ wstring szValueName, DWORD dwValue, DWORD dwDefaultValue)
 {
 	auto hRes = S_OK;
 	if (dwValue != dwDefaultValue)
@@ -281,30 +273,32 @@ void CommitDWORDIfNeeded(_In_ HKEY hKey, _In_z_ LPCTSTR szValueName, DWORD dwVal
 	}
 	else
 	{
-		WC_W32(RegDeleteValue(hKey, szValueName));
+		WC_W32(RegDeleteValueW(hKey, szValueName.c_str()));
 	}
 }
-void WriteStringToRegistry(_In_ HKEY hKey, _In_z_ LPCTSTR szValueName, _In_z_ LPCTSTR szValue)
+
+void WriteStringToRegistry(_In_ HKEY hKey, _In_ wstring szValueName, _In_ wstring szValue)
 {
 	auto hRes = S_OK;
 	size_t cbValue = 0;
 
 	// Reg needs bytes, so CB is correct here
-	EC_H(StringCbLength(szValue, STRSAFE_MAX_CCH * sizeof(TCHAR), &cbValue));
-	cbValue += sizeof(TCHAR); // NULL terminator
+	cbValue = szValue.length() * sizeof(WCHAR);
+	cbValue += sizeof(WCHAR); // NULL terminator
 
-	WC_W32(RegSetValueEx(
+	WC_W32(RegSetValueExW(
 		hKey,
-		szValueName,
+		szValueName.c_str(),
 		NULL,
 		REG_SZ,
-		LPBYTE(szValue),
+		LPBYTE(szValue.c_str()),
 		static_cast<DWORD>(cbValue)));
 }
-void CommitStringIfNeeded(_In_ HKEY hKey, _In_z_ LPCTSTR szValueName, _In_z_ LPCTSTR szValue, _In_z_ LPCTSTR szDefaultValue)
+
+void CommitStringIfNeeded(_In_ HKEY hKey, _In_ wstring szValueName, _In_ wstring szValue, _In_ wstring szDefaultValue)
 {
 	auto hRes = S_OK;
-	if (0 != lstrcmpi(szValue, szDefaultValue))
+	if (wstringToLower(szValue) != wstringToLower(szDefaultValue))
 	{
 		WriteStringToRegistry(
 			hKey,
@@ -313,9 +307,10 @@ void CommitStringIfNeeded(_In_ HKEY hKey, _In_z_ LPCTSTR szValueName, _In_z_ LPC
 	}
 	else
 	{
-		WC_W32(RegDeleteValue(hKey, szValueName));
+		WC_W32(RegDeleteValueW(hKey, szValueName.c_str()));
 	}
 }
+
 _Check_return_ HKEY CreateRootKey()
 {
 	auto hRes = S_OK;

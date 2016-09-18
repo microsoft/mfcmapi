@@ -59,12 +59,11 @@ CSingleMAPIPropListCtrl::CSingleMAPIPropListCtrl(
 
 	// Column orders are stored as lowercase letters
 	// bacdefghi would mean the first two columns are swapped
-	if (lpMyHeader && RegKeys[regkeyPROP_COLUMN_ORDER].szCurSTRING[0] != '\0')
+	if (lpMyHeader && !RegKeys[regkeyPROP_COLUMN_ORDER].szCurSTRING.empty())
 	{
 		auto bSetCols = false;
 		auto nColumnCount = lpMyHeader->GetItemCount();
-		size_t cchOrder = NULL;
-		WC_H(StringCchLength(RegKeys[regkeyPROP_COLUMN_ORDER].szCurSTRING, MAX_SORT_COLS, &cchOrder));
+		auto cchOrder = RegKeys[regkeyPROP_COLUMN_ORDER].szCurSTRING.length();
 		if (SUCCEEDED(hRes) && nColumnCount == static_cast<int>(cchOrder))
 		{
 			auto pnOrder = new int[nColumnCount];
@@ -73,7 +72,7 @@ CSingleMAPIPropListCtrl::CSingleMAPIPropListCtrl(
 			{
 				for (auto i = 0; i < nColumnCount; i++)
 				{
-					pnOrder[i] = RegKeys[regkeyPROP_COLUMN_ORDER].szCurSTRING[i] - 'a';
+					pnOrder[i] = RegKeys[regkeyPROP_COLUMN_ORDER].szCurSTRING[i] - L'a';
 				}
 
 				if (SetColumnOrderArray(nColumnCount, pnOrder))
@@ -84,8 +83,9 @@ CSingleMAPIPropListCtrl::CSingleMAPIPropListCtrl(
 
 			delete[] pnOrder;
 		}
+
 		// If we didn't like the reg key, clear it so we don't see it again
-		if (!bSetCols) RegKeys[regkeyPROP_COLUMN_ORDER].szCurSTRING[0] = '\0';
+		if (!bSetCols) RegKeys[regkeyPROP_COLUMN_ORDER].szCurSTRING.clear();
 	}
 
 	AutoSizeColumns(false);

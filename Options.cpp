@@ -1,5 +1,4 @@
 // Options.cpp : implementation file
-//
 
 #include "stdafx.h"
 #include "Editor.h"
@@ -12,12 +11,12 @@ public:
 	COptions(
 		_In_ CWnd* pParentWnd);
 	virtual ~COptions();
-	bool NeedPropRefresh();
+	bool NeedPropRefresh() const;
 
 private:
-	_Check_return_ ULONG HandleChange(UINT nID);
+	_Check_return_ ULONG HandleChange(UINT nID) override;
 
-	void OnOK();
+	void OnOK() override;
 
 	bool m_bNeedPropRefresh;
 };
@@ -36,17 +35,15 @@ CEditor(pWnd, IDS_SETOPTS, NULL, 0, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
 
 	DebugPrintEx(DBGGeneric, CLASS, L"COptions(", L"Building option sheet - adding fields\n");
 
-	ULONG ulReg = 0;
-
-	for (ulReg = 0; ulReg < NumRegOptionKeys; ulReg++)
+	for (ULONG ulReg = 0; ulReg < NumRegOptionKeys; ulReg++)
 	{
 		if (regoptCheck == RegKeys[ulReg].ulRegOptType)
 		{
-			InitPane(ulReg, CreateCheckPane(RegKeys[ulReg].uiOptionsPrompt, (0 != RegKeys[ulReg].ulCurDWORD), false));
+			InitPane(ulReg, CreateCheckPane(RegKeys[ulReg].uiOptionsPrompt, 0 != RegKeys[ulReg].ulCurDWORD, false));
 		}
 		else if (regoptString == RegKeys[ulReg].ulRegOptType)
 		{
-			InitPane(ulReg, CreateSingleLinePane(RegKeys[ulReg].uiOptionsPrompt, LPCTSTRToWstring(RegKeys[ulReg].szCurSTRING), false));
+			InitPane(ulReg, CreateSingleLinePane(RegKeys[ulReg].uiOptionsPrompt, RegKeys[ulReg].szCurSTRING, false));
 		}
 		else if (regoptStringHex == RegKeys[ulReg].ulRegOptType)
 		{
@@ -59,22 +56,17 @@ CEditor(pWnd, IDS_SETOPTS, NULL, 0, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
 			SetDecimal(ulReg, RegKeys[ulReg].ulCurDWORD);
 		}
 	}
-} // COptions::CHexEditor
+}
 
 COptions::~COptions()
 {
 	TRACE_DESTRUCTOR(CLASS);
-} // COptions::~CHexEditor
+}
 
 void COptions::OnOK()
 {
-	// Do OK work
-	HRESULT hRes = S_OK;
-	ULONG ulReg = 0;
-
 	// need to grab this FIRST
-	wstring filename = GetStringUseControl(regkeyDEBUG_FILE_NAME);
-	EC_H(StringCchCopy(RegKeys[regkeyDEBUG_FILE_NAME].szCurSTRING, _countof(RegKeys[regkeyDEBUG_FILE_NAME].szCurSTRING), wstringToCString(filename)));
+	RegKeys[regkeyDEBUG_FILE_NAME].szCurSTRING = GetStringUseControl(regkeyDEBUG_FILE_NAME);
 
 	if (GetHex(regkeyDEBUG_TAG) != RegKeys[regkeyDEBUG_TAG].ulCurDWORD)
 	{
@@ -85,11 +77,11 @@ void COptions::OnOK()
 	SetDebugOutputToFile(GetCheck(regkeyDEBUG_TO_FILE));
 
 	// Remaining options require no special handling - loop through them
-	for (ulReg = 0; ulReg < NumRegOptionKeys; ulReg++)
+	for (ULONG ulReg = 0; ulReg < NumRegOptionKeys; ulReg++)
 	{
 		if (regoptCheck == RegKeys[ulReg].ulRegOptType)
 		{
-			if (RegKeys[ulReg].bRefresh && RegKeys[ulReg].ulCurDWORD != (ULONG)GetCheckUseControl(ulReg))
+			if (RegKeys[ulReg].bRefresh && RegKeys[ulReg].ulCurDWORD != static_cast<ULONG>(GetCheckUseControl(ulReg)))
 			{
 				m_bNeedPropRefresh = true;
 			}
@@ -109,18 +101,17 @@ void COptions::OnOK()
 	WriteToRegistry();
 
 	CEditor::OnOK();
-} // COptions::OnOK
+}
 
 _Check_return_ ULONG COptions::HandleChange(UINT nID)
 {
-	ULONG i = CEditor::HandleChange(nID);
-	return i;
-} // COptions::HandleChange
+	return CEditor::HandleChange(nID);
+}
 
-bool COptions::NeedPropRefresh()
+bool COptions::NeedPropRefresh() const
 {
 	return m_bNeedPropRefresh;
-} // COptions::NeedPropRefresh
+}
 
 bool DisplayOptionsDlg(_In_ CWnd* lpParentWnd)
 {
@@ -130,4 +121,4 @@ bool DisplayOptionsDlg(_In_ CWnd* lpParentWnd)
 	ForceOutlookMAPI(0 != RegKeys[regkeyFORCEOUTLOOKMAPI].ulCurDWORD);
 	ForceSystemMAPI(0 != RegKeys[regkeyFORCESYSTEMMAPI].ulCurDWORD);
 	return MyOptions.NeedPropRefresh();
-} // DisplayOptionsDlg
+}

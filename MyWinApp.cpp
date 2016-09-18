@@ -1,5 +1,4 @@
 // MyWinApp.cpp : Defines the class behaviors for the application.
-//
 
 #include "stdafx.h"
 #include "MyWinApp.h"
@@ -8,22 +7,16 @@
 #include "MapiObjects.h"
 #include "ImportProcs.h"
 
-/////////////////////////////////////////////////////////////////////////////
-// CMyWinApp
-
-/////////////////////////////////////////////////////////////////////////////
 // The one and only CMyWinApp object
 CMyWinApp theApp;
 
 CMyWinApp::CMyWinApp()
 {
 	// Assume true if we don't find a reg key set to false.
-	bool bTerminateOnCorruption = true;
+	auto bTerminateOnCorruption = true;
 
-	HKEY hRootKey = NULL;
-	LONG lStatus = ERROR_SUCCESS;
-
-	lStatus = RegOpenKeyEx(
+	HKEY hRootKey = nullptr;
+	auto lStatus = RegOpenKeyEx(
 		HKEY_CURRENT_USER,
 		RKEY_ROOT,
 		NULL,
@@ -33,13 +26,13 @@ CMyWinApp::CMyWinApp()
 	{
 		DWORD dwRegVal = 0;
 		DWORD dwType = REG_DWORD;
-		ULONG cb = sizeof(dwRegVal);
-		lStatus = RegQueryValueEx(
+		ULONG cb = sizeof dwRegVal;
+		lStatus = RegQueryValueExW(
 			hRootKey,
-			RegKeys[regkeyHEAPENABLETERMINATIONONCORRUPTION].szKeyName,
-			NULL,
+			RegKeys[regkeyHEAPENABLETERMINATIONONCORRUPTION].szKeyName.c_str(),
+			nullptr,
 			&dwType,
-			(LPBYTE)&dwRegVal,
+			reinterpret_cast<LPBYTE>(&dwRegVal),
 			&cb);
 		if (ERROR_SUCCESS == lStatus && !dwRegVal)
 		{
@@ -51,22 +44,20 @@ CMyWinApp::CMyWinApp()
 
 	if (bTerminateOnCorruption)
 	{
-		MyHeapSetInformation(NULL, HeapEnableTerminationOnCorruption, NULL, 0);
+		MyHeapSetInformation(nullptr, HeapEnableTerminationOnCorruption, nullptr, 0);
 	}
-} // CMyWinApp
+}
 
-/////////////////////////////////////////////////////////////////////////////
 // CMyWinApp initialization
-
 BOOL CMyWinApp::InitInstance()
 {
 	// Create a parent window that all objects get a pointer to, ensuring we don't
 	// quit this thread until all objects have freed themselves.
-	CParentWnd *pWnd = new CParentWnd();
+	auto pWnd = new CParentWnd();
 	if (pWnd)
 	{
-		m_pMainWnd = (CWnd *)pWnd;
-		CMapiObjects* MyObjects = new CMapiObjects(NULL);
+		m_pMainWnd = static_cast<CWnd *>(pWnd);
+		auto MyObjects = new CMapiObjects(nullptr);
 		if (MyObjects)
 		{
 			new CMainDlg(pWnd, MyObjects);
@@ -76,4 +67,4 @@ BOOL CMyWinApp::InitInstance()
 	}
 
 	return true;
-} // CMyWinApp::InitInstance
+}
