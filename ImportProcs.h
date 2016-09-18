@@ -55,26 +55,15 @@ enum mapiSource;
 class MAPIPathIterator
 {
 public:
-	MAPIPathIterator(bool bBypassRestrictions);
-	~MAPIPathIterator();
-	vector<wstring> GetMAPIPaths(bool bBypassRestrictions);
+	vector<wstring> GetMAPIPaths(bool bBypassRestrictions) const;
 	wstring GetInstalledOutlookMAPI(int iOutlook) const;
 	static wstring GetMAPISystemDir();
 
 private:
-	wstring GetNextMAPIPath();
-	wstring GetRegisteredMapiClient(wstring pwzProviderOverride, bool bDLL, bool bEx);
+	static wstring GetRegisteredMapiClient(wstring pwzProviderOverride, bool bDLL, bool bEx);
 	static wstring GetMailClientFromMSIData(HKEY hkeyMapiClient);
-	wstring GetMailClientFromDllPath(HKEY hkeyMapiClient, bool bEx) const;
-	wstring GetNextInstalledOutlookMAPI();
-
-	mapiSource CurrentSource;
-	HKEY m_hMailKey;
-	HKEY m_hkeyMapiClient;
-	wstring m_defaultClient;
-	bool m_bBypassRestrictions;
-
-	int m_iCurrentOutlook;
+	static wstring GetMailClientFromDllPath(HKEY hkeyMapiClient, bool bEx);
+	vector<wstring> GetInstalledOutlookMAPI() const;
 };
 
 _Check_return_ STDAPI HrCopyRestriction(

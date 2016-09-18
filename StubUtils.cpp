@@ -207,99 +207,36 @@ enum mapiSource
 	msEnd,
 };
 
-MAPIPathIterator::MAPIPathIterator(bool bBypassRestrictions)
-{
-	m_bBypassRestrictions = bBypassRestrictions;
-	if (bBypassRestrictions)
-	{
-		CurrentSource = msInstalledOutlook;
-	}
-	else
-	{
-		CurrentSource = !s_fForceSystemMAPI ? msRegisteredMSI : msSystem;
-	}
-
-	m_hMailKey = nullptr;
-	m_hkeyMapiClient = nullptr;
-
-	m_iCurrentOutlook = oqcOfficeBegin;
-}
-
-MAPIPathIterator::~MAPIPathIterator()
-{
-	if (m_hMailKey) RegCloseKey(m_hMailKey);
-	if (m_hkeyMapiClient) RegCloseKey(m_hkeyMapiClient);
-}
-
-vector<wstring> MAPIPathIterator::GetMAPIPaths(bool bBypassRestrictions)
+vector<wstring> MAPIPathIterator::GetMAPIPaths(bool bBypassRestrictions) const
 {
 	auto paths = vector<wstring>();
-	if (bBypassRestrictions)
+	wstring szPath;
+	if (s_fForceSystemMAPI && !bBypassRestrictions)
 	{
-		CurrentSource = msInstalledOutlook;
-	}
-	else
-	{
-		CurrentSource = !s_fForceSystemMAPI ? msRegisteredMSI : msSystem;
+		szPath = GetMAPISystemDir();
+		if (!szPath.empty()) paths.push_back(szPath);
+		return paths;
 	}
 
-	while (CurrentSource != msEnd)
+	if (bBypassRestrictions)
 	{
-		paths.push_back(GetNextMAPIPath());
+		auto outlookPaths = GetInstalledOutlookMAPI();
+		paths.insert(end(paths), begin(outlookPaths), end(outlookPaths));
+	}
+
+	szPath = GetRegisteredMapiClient(WszOutlookMapiClientName, false, false);
+	if (!szPath.empty()) paths.push_back(szPath);
+	szPath = GetRegisteredMapiClient(WszOutlookMapiClientName, true, true);
+	if (!szPath.empty()) paths.push_back(szPath);
+	szPath = GetRegisteredMapiClient(WszOutlookMapiClientName, true, false);
+	if (!szPath.empty()) paths.push_back(szPath);
+	if (bBypassRestrictions || !s_fForceOutlookMAPI)
+	{
+		szPath = GetMAPISystemDir();
+		if (!szPath.empty()) paths.push_back(szPath);
 	}
 
 	return paths;
-}
-
-wstring MAPIPathIterator::GetNextMAPIPath()
-{
-	// Mini state machine here will get the path from the current source then set the next source to search
-	// Either returns the next available MAPI path or NULL if none remain
-	wstring szPath;
-	while (msEnd != CurrentSource && szPath.empty())
-	{
-		switch (CurrentSource)
-		{
-		case msInstalledOutlook:
-			szPath = GetNextInstalledOutlookMAPI();
-
-			// We'll keep trying GetNextInstalledOutlookMAPI as long as it returns results
-			if (szPath.empty())
-			{
-				CurrentSource = msRegisteredMSI;
-			}
-
-			break;
-		case msRegisteredMSI:
-			szPath = GetRegisteredMapiClient(WszOutlookMapiClientName, false, false);
-			CurrentSource = msRegisteredDLLEx;
-			break;
-		case msRegisteredDLLEx:
-			szPath = GetRegisteredMapiClient(WszOutlookMapiClientName, true, true);
-			CurrentSource = msRegisteredDLL;
-			break;
-		case msRegisteredDLL:
-			szPath = GetRegisteredMapiClient(WszOutlookMapiClientName, true, false);
-			if (s_fForceOutlookMAPI && !m_bBypassRestrictions)
-			{
-				CurrentSource = msEnd;
-			}
-			else
-			{
-				CurrentSource = msSystem;
-			}
-			break;
-		case msSystem:
-			szPath = GetMAPISystemDir();
-			CurrentSource = msEnd;
-			break;
-		case msEnd:
-		default:
-			break;
-		}
-	}
-
-	return szPath;
 }
 
 /*
@@ -335,7 +272,7 @@ wstring MAPIPathIterator::GetMailClientFromMSIData(HKEY hkeyMapiClient)
  * GetMailClientFromDllPath
  * Attempt to locate the MAPI provider DLL via HKLM\Software\Clients\Mail\(provider)\DllPathEx
  */
-wstring MAPIPathIterator::GetMailClientFromDllPath(HKEY hkeyMapiClient, bool bEx) const
+wstring MAPIPathIterator::GetMailClientFromDllPath(HKEY hkeyMapiClient, bool bEx)
 {
 	DebugPrint(DBGLoadMAPI, L"Enter GetMailClientFromDllPath: hkeyMapiClient = %p, bEx = %d\n", hkeyMapiClient, bEx);
 	wstring szPath;
@@ -366,23 +303,23 @@ wstring MAPIPathIterator::GetRegisteredMapiClient(wstring pwzProviderOverride, b
 	DebugPrint(DBGLoadMAPI, L"Enter GetRegisteredMapiClient\n");
 	auto hRes = S_OK;
 	auto pwzProvider = pwzProviderOverride;
+	HKEY hMailKey = nullptr;
+	HKEY hkeyMapiClient = nullptr;
 
-	if (!m_hMailKey)
+	// Open HKLM\Software\Clients\Mail
+	WC_W32(RegOpenKeyExW(HKEY_LOCAL_MACHINE,
+		WszKeyNameMailClient,
+		0,
+		KEY_READ,
+		&hMailKey));
+	if (FAILED(hRes))
 	{
-		// Open HKLM\Software\Clients\Mail
-		WC_W32(RegOpenKeyExW(HKEY_LOCAL_MACHINE,
-			WszKeyNameMailClient,
-			0,
-			KEY_READ,
-			&m_hMailKey));
-		if (FAILED(hRes))
-		{
-			m_hMailKey = nullptr;
-		}
+		hMailKey = nullptr;
 	}
 
 	// If a specific provider wasn't specified, load the name of the default MAPI provider
-	if (m_hMailKey && pwzProvider.empty() && m_defaultClient.empty())
+	wstring defaultClient;
+	if (hMailKey && pwzProvider.empty())
 	{
 		auto rgchMailClient = new WCHAR[MAX_PATH];
 		if (rgchMailClient)
@@ -391,7 +328,7 @@ wstring MAPIPathIterator::GetRegisteredMapiClient(wstring pwzProviderOverride, b
 			DWORD dwSize = MAX_PATH;
 			DWORD dwType = 0;
 			WC_W32(RegQueryValueExW(
-				m_hMailKey,
+				hMailKey,
 				NULL,
 				nullptr,
 				&dwType,
@@ -399,47 +336,49 @@ wstring MAPIPathIterator::GetRegisteredMapiClient(wstring pwzProviderOverride, b
 				&dwSize));
 			if (SUCCEEDED(hRes))
 			{
-				m_defaultClient = rgchMailClient;
-				DebugPrint(DBGLoadMAPI, L"GetRegisteredMapiClient: HKLM\\%ws = %ws\n", WszKeyNameMailClient, m_defaultClient.c_str());
+				defaultClient = rgchMailClient;
+				DebugPrint(DBGLoadMAPI, L"GetRegisteredMapiClient: HKLM\\%ws = %ws\n", WszKeyNameMailClient, defaultClient.c_str());
 			}
 
 			delete[] rgchMailClient;
 		}
 	}
 
-	if (pwzProvider.empty()) pwzProvider = m_defaultClient;
+	if (pwzProvider.empty()) pwzProvider = defaultClient;
 
-	if (m_hMailKey && !pwzProvider.empty() && !m_hkeyMapiClient)
+	if (hMailKey && !pwzProvider.empty())
 	{
 		DebugPrint(DBGLoadMAPI, L"GetRegisteredMapiClient: pwzProvider = %ws\n", pwzProvider.c_str());
 		WC_W32(RegOpenKeyExW(
-			m_hMailKey,
+			hMailKey,
 			pwzProvider.c_str(),
 			0,
 			KEY_READ,
-			&m_hkeyMapiClient));
+			&hkeyMapiClient));
 		if (FAILED(hRes))
 		{
-			m_hkeyMapiClient = nullptr;
+			hkeyMapiClient = nullptr;
 		}
 	}
 
 	wstring szPath;
-	if (m_hkeyMapiClient)
+	if (hkeyMapiClient)
 	{
 		if (bDLL)
 		{
-			szPath = GetMailClientFromDllPath(m_hkeyMapiClient, bEx);
+			szPath = GetMailClientFromDllPath(hkeyMapiClient, bEx);
 		}
 		else
 		{
-			szPath = GetMailClientFromMSIData(m_hkeyMapiClient);
+			szPath = GetMailClientFromMSIData(hkeyMapiClient);
 		}
 
 	}
 
 	DebugPrint(DBGLoadMAPI, L"Exit GetRegisteredMapiClient: szPath = %ws\n", szPath.c_str());
 
+	if (hkeyMapiClient) RegCloseKey(hkeyMapiClient);
+	if (hMailKey) RegCloseKey(hMailKey);
 	return szPath;
 }
 
@@ -493,24 +432,20 @@ wstring MAPIPathIterator::GetInstalledOutlookMAPI(int iOutlook) const
 	return emptystring;
 }
 
-wstring MAPIPathIterator::GetNextInstalledOutlookMAPI()
+vector<wstring> MAPIPathIterator::GetInstalledOutlookMAPI() const
 {
-	DebugPrint(DBGLoadMAPI, L"Enter GetNextInstalledOutlookMAPI\n");
+	DebugPrint(DBGLoadMAPI, L"Enter GetInstalledOutlookMAPI\n");
+	auto paths = vector<wstring>();
+	if (!pfnMsiProvideQualifiedComponent || !pfnMsiGetFileVersion) return paths;
 
-	if (!pfnMsiProvideQualifiedComponent || !pfnMsiGetFileVersion) return nullptr;
-
-	for (; m_iCurrentOutlook < oqcOfficeEnd; m_iCurrentOutlook++)
+	for (auto iCurrentOutlook = oqcOfficeBegin; iCurrentOutlook < oqcOfficeEnd; iCurrentOutlook++)
 	{
-		auto szPath = GetInstalledOutlookMAPI(m_iCurrentOutlook);
-		if (!szPath.empty())
-		{
-			m_iCurrentOutlook++; // Make sure we don't repeat this Outlook
-			return szPath;
-		}
+		auto szPath = GetInstalledOutlookMAPI(iCurrentOutlook);
+		if (!szPath.empty()) paths.push_back(szPath);
 	}
 
-	DebugPrint(DBGLoadMAPI, L"Exit GetNextInstalledOutlookMAPI: found nothing\n");
-	return emptystring;
+	DebugPrint(DBGLoadMAPI, L"Exit GetInstalledOutlookMAPI: found nothing\n");
+	return paths;
 }
 
 WCHAR g_pszOutlookQualifiedComponents[][MAX_PATH] = {
@@ -599,7 +534,7 @@ HMODULE GetDefaultMapiHandle()
 	DebugPrint(DBGLoadMAPI, L"Enter GetDefaultMapiHandle\n");
 	HMODULE hinstMapi = nullptr;
 
-	auto mpi = new MAPIPathIterator(false);
+	auto mpi = new MAPIPathIterator();
 
 	if (mpi)
 	{

@@ -169,7 +169,7 @@ _Check_return_ HMODULE LoadFromOLMAPIDir(_In_z_ LPCTSTR szDLLName)
 
 	DebugPrint(DBGLoadLibrary, L"LoadFromOLMAPIDir - loading \"%ws\"\n", LPCTSTRToWstring(szDLLName).c_str());
 
-	auto mpi = new MAPIPathIterator(true);
+	auto mpi = new MAPIPathIterator();
 	if (mpi)
 	{
 		for (auto i = oqcOfficeBegin; i < oqcOfficeEnd; i++)

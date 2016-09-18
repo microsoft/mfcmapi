@@ -121,7 +121,7 @@ void CMainDlg::AddLoadMAPIMenus() const
 	// Now add each of the menu entries
 	if (SUCCEEDED(hRes))
 	{
-		auto  mpi = new MAPIPathIterator(true);
+		auto  mpi = new MAPIPathIterator();
 
 		if (mpi)
 		{
