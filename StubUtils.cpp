@@ -205,96 +205,9 @@ wstring GetComponentPath(wstring szComponent, wstring szQualifier, bool fInstall
 	return path;
 }
 
-vector<wstring> GetMAPIPaths(bool bBypassRestrictions)
+HKEY GetHKeyMapiClient(wstring pwzProviderOverride)
 {
-	auto paths = vector<wstring>();
-	wstring szPath;
-	if (s_fForceSystemMAPI && !bBypassRestrictions)
-	{
-		szPath = GetMAPISystemDir();
-		if (!szPath.empty()) paths.push_back(szPath);
-		return paths;
-	}
-
-	if (bBypassRestrictions)
-	{
-		auto outlookPaths = GetInstalledOutlookMAPI();
-		paths.insert(end(paths), begin(outlookPaths), end(outlookPaths));
-	}
-
-	szPath = GetRegisteredMapiClient(WszOutlookMapiClientName, false, false);
-	if (!szPath.empty()) paths.push_back(szPath);
-	szPath = GetRegisteredMapiClient(WszOutlookMapiClientName, true, true);
-	if (!szPath.empty()) paths.push_back(szPath);
-	szPath = GetRegisteredMapiClient(WszOutlookMapiClientName, true, false);
-	if (!szPath.empty()) paths.push_back(szPath);
-	if (bBypassRestrictions || !s_fForceOutlookMAPI)
-	{
-		szPath = GetMAPISystemDir();
-		if (!szPath.empty()) paths.push_back(szPath);
-	}
-
-	return paths;
-}
-
-/*
- * GetMailClientFromMSIData
- * Attempt to locate the MAPI provider DLL via HKLM\Software\Clients\Mail\(provider)\MSIComponentID
- */
-wstring GetMailClientFromMSIData(HKEY hkeyMapiClient)
-{
-	DebugPrint(DBGLoadMAPI, L"Enter GetMailClientFromMSIData\n");
-	WCHAR rgchMSIComponentID[MAX_PATH] = { 0 };
-	WCHAR rgchMSIApplicationLCID[MAX_PATH] = { 0 };
-	DWORD dwType = 0;
-	wstring szPath;
-
-	DWORD dwSizeComponentID = sizeof rgchMSIComponentID;
-	DWORD dwSizeLCID = sizeof rgchMSIApplicationLCID;
-
-	if (ERROR_SUCCESS == RegQueryValueExW(hkeyMapiClient, WszValueNameMSI, nullptr, &dwType, reinterpret_cast<LPBYTE>(&rgchMSIComponentID), &dwSizeComponentID) &&
-		ERROR_SUCCESS == RegQueryValueExW(hkeyMapiClient, WszValueNameLCID, nullptr, &dwType, reinterpret_cast<LPBYTE>(&rgchMSIApplicationLCID), &dwSizeLCID))
-	{
-		szPath = GetComponentPath(rgchMSIComponentID, rgchMSIApplicationLCID, FALSE);
-	}
-
-	DebugPrint(DBGLoadMAPI, L"Exit GetMailClientFromMSIData: szPath = %ws\n", szPath.c_str());
-	return szPath;
-}
-
-/*
- * GetMailClientFromDllPath
- * Attempt to locate the MAPI provider DLL via HKLM\Software\Clients\Mail\(provider)\DllPathEx
- */
-wstring GetMailClientFromDllPath(HKEY hkeyMapiClient, bool bEx)
-{
-	DebugPrint(DBGLoadMAPI, L"Enter GetMailClientFromDllPath: hkeyMapiClient = %p, bEx = %d\n", hkeyMapiClient, bEx);
-	wstring szPath;
-
-	if (bEx)
-	{
-		szPath = RegQueryWszExpand(hkeyMapiClient, WszValueNameDllPathEx);
-	}
-	else
-	{
-		szPath = RegQueryWszExpand(hkeyMapiClient, WszValueNameDllPath);
-	}
-
-	DebugPrint(DBGLoadMAPI, L"Exit GetMailClientFromDllPath: szPath = %ws\n", szPath.c_str());
-
-	return szPath;
-}
-
-/*
- * GetRegisteredMapiClient
- * Read the registry to discover the registered MAPI client and attempt to load its MAPI DLL.
- *
- * If wzOverrideProvider is specified, this function will load that MAPI Provider instead of the
- * currently registered provider
- */
-wstring GetRegisteredMapiClient(wstring pwzProviderOverride, bool bDLL, bool bEx)
-{
-	DebugPrint(DBGLoadMAPI, L"Enter GetRegisteredMapiClient\n");
+	DebugPrint(DBGLoadMAPI, L"Enter GetHKeyMapiClient (%ws)\n", pwzProviderOverride);
 	auto hRes = S_OK;
 	auto pwzProvider = pwzProviderOverride;
 	HKEY hMailKey = nullptr;
@@ -331,7 +244,7 @@ wstring GetRegisteredMapiClient(wstring pwzProviderOverride, bool bDLL, bool bEx
 			if (SUCCEEDED(hRes))
 			{
 				defaultClient = rgchMailClient;
-				DebugPrint(DBGLoadMAPI, L"GetRegisteredMapiClient: HKLM\\%ws = %ws\n", WszKeyNameMailClient, defaultClient.c_str());
+				DebugPrint(DBGLoadMAPI, L"GetHKeyMapiClient: HKLM\\%ws = %ws\n", WszKeyNameMailClient, defaultClient.c_str());
 			}
 
 			delete[] rgchMailClient;
@@ -342,7 +255,7 @@ wstring GetRegisteredMapiClient(wstring pwzProviderOverride, bool bDLL, bool bEx
 
 	if (hMailKey && !pwzProvider.empty())
 	{
-		DebugPrint(DBGLoadMAPI, L"GetRegisteredMapiClient: pwzProvider = %ws\n", pwzProvider.c_str());
+		DebugPrint(DBGLoadMAPI, L"GetHKeyMapiClient: pwzProvider = %ws\n", pwzProvider.c_str());
 		WC_W32(RegOpenKeyExW(
 			hMailKey,
 			pwzProvider.c_str(),
@@ -355,25 +268,71 @@ wstring GetRegisteredMapiClient(wstring pwzProviderOverride, bool bDLL, bool bEx
 		}
 	}
 
-	wstring szPath;
-	if (hkeyMapiClient)
-	{
-		if (bDLL)
-		{
-			szPath = GetMailClientFromDllPath(hkeyMapiClient, bEx);
-		}
-		else
-		{
-			szPath = GetMailClientFromMSIData(hkeyMapiClient);
-		}
+	DebugPrint(DBGLoadMAPI, L"Exit GetHKeyMapiClient.hkeyMapiClient found (%ws)\n", hkeyMapiClient ? L"true" : L"false");
 
+	if (hMailKey) RegCloseKey(hMailKey);
+	return hkeyMapiClient;
+}
+
+/*
+ * GetMailClientFromMSIData
+ * Attempt to locate the MAPI provider DLL via HKLM\Software\Clients\Mail\(provider)\MSIComponentID
+ */
+wstring GetMailClientFromMSIData(HKEY hkeyMapiClient)
+{
+	DebugPrint(DBGLoadMAPI, L"Enter GetMailClientFromMSIData\n");
+	if (!hkeyMapiClient) return emptystring;
+	WCHAR rgchMSIComponentID[MAX_PATH] = { 0 };
+	WCHAR rgchMSIApplicationLCID[MAX_PATH] = { 0 };
+	DWORD dwType = 0;
+	wstring szPath;
+
+	DWORD dwSizeComponentID = sizeof rgchMSIComponentID;
+	DWORD dwSizeLCID = sizeof rgchMSIApplicationLCID;
+
+	if (ERROR_SUCCESS == RegQueryValueExW(hkeyMapiClient, WszValueNameMSI, nullptr, &dwType, reinterpret_cast<LPBYTE>(&rgchMSIComponentID), &dwSizeComponentID) &&
+		ERROR_SUCCESS == RegQueryValueExW(hkeyMapiClient, WszValueNameLCID, nullptr, &dwType, reinterpret_cast<LPBYTE>(&rgchMSIApplicationLCID), &dwSizeLCID))
+	{
+		szPath = GetComponentPath(rgchMSIComponentID, rgchMSIApplicationLCID, FALSE);
 	}
 
-	DebugPrint(DBGLoadMAPI, L"Exit GetRegisteredMapiClient: szPath = %ws\n", szPath.c_str());
+	DebugPrint(DBGLoadMAPI, L"Exit GetMailClientFromMSIData: szPath = %ws\n", szPath.c_str());
+	return szPath;
+}
+
+vector<wstring> GetMAPIPaths()
+{
+	auto paths = vector<wstring>();
+	wstring szPath;
+	if (s_fForceSystemMAPI)
+	{
+		szPath = GetMAPISystemDir();
+		if (!szPath.empty()) paths.push_back(szPath);
+		return paths;
+	}
+
+	auto hkeyMapiClient = GetHKeyMapiClient(WszOutlookMapiClientName);
+
+	szPath = RegQueryWszExpand(hkeyMapiClient, WszValueNameDllPathEx);
+	if (!szPath.empty()) paths.push_back(szPath);
+
+	auto outlookPaths = GetInstalledOutlookMAPI();
+	paths.insert(end(paths), begin(outlookPaths), end(outlookPaths));
+
+	szPath = RegQueryWszExpand(hkeyMapiClient, WszValueNameDllPath);
+	if (!szPath.empty()) paths.push_back(szPath);
+
+	szPath = GetMailClientFromMSIData(hkeyMapiClient);
+	if (!szPath.empty()) paths.push_back(szPath);
+
+	if (!s_fForceOutlookMAPI)
+	{
+		szPath = GetMAPISystemDir();
+		if (!szPath.empty()) paths.push_back(szPath);
+	}
 
 	if (hkeyMapiClient) RegCloseKey(hkeyMapiClient);
-	if (hMailKey) RegCloseKey(hMailKey);
-	return szPath;
+	return paths;
 }
 
 /*
@@ -527,7 +486,7 @@ HMODULE GetDefaultMapiHandle()
 	DebugPrint(DBGLoadMAPI, L"Enter GetDefaultMapiHandle\n");
 	HMODULE hinstMapi = nullptr;
 
-	auto paths = GetMAPIPaths(true);
+	auto paths = GetMAPIPaths();
 	for (auto szPath : paths)
 	{
 		DebugPrint(DBGLoadMAPI, L"Trying %ws\n", szPath.c_str());

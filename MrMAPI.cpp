@@ -966,7 +966,7 @@ bool LoadMAPIVersion(wstring lpszVersion)
 	DebugPrint(DBGGeneric, L"LoadMAPIVersion(%ws)\n", lpszVersion.c_str());
 
 	wstring szPath;
-	auto paths = GetMAPIPaths(true);
+	auto paths = GetMAPIPaths();
 	if (lpszVersion == L"0")
 	{
 		DebugPrint(DBGGeneric, L"Listing MAPI\n");
