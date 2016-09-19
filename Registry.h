@@ -85,13 +85,3 @@ _Check_return_ HRESULT HrGetRegistryValueW(
 	_In_z_ LPCWSTR lpszValue, // value name in key.
 	_Out_ DWORD* lpType, // where to put type info.
 	_Out_ LPVOID* lppData); // where to put the data.
-_Check_return_ HRESULT HrGetRegistryValueA(
-	_In_ HKEY hKey, // the key.
-	_In_z_ LPCSTR lpszValue, // value name in key.
-	_Out_ DWORD* lpType, // where to put type info.
-	_Out_ LPVOID* lppData); // where to put the data.
-#ifdef UNICODE
-#define HrGetRegistryValue HrGetRegistryValueW
-#else
-#define HrGetRegistryValue HrGetRegistryValueA
-#endif

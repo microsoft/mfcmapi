@@ -65,7 +65,7 @@ _Check_return_ HRESULT HrGetRegistryValueW(
 {
 	auto hRes = S_OK;
 
-	DebugPrint(DBGGeneric, L"HrGetRegistryValue(%ws)\n", lpszValue);
+	DebugPrint(DBGGeneric, L"HrGetRegistryValueW(%ws)\n", lpszValue);
 
 	*lppData = nullptr;
 	DWORD cb = NULL;
@@ -107,62 +107,7 @@ _Check_return_ HRESULT HrGetRegistryValueW(
 
 	return hRes;
 }
-// $--HrGetRegistryValueA---------------------------------------------------------
-// Get a registry value - allocating memory using new to hold it.
-// -----------------------------------------------------------------------------
-_Check_return_ HRESULT HrGetRegistryValueA(
-	_In_ HKEY hKey, // the key.
-	_In_z_ LPCSTR lpszValue, // value name in key.
-	_Out_ DWORD* lpType, // where to put type info.
-	_Out_ LPVOID* lppData) // where to put the data.
-{
-	auto hRes = S_OK;
 
-	DebugPrint(DBGGeneric, L"HrGetRegistryValueA(%hs)\n", lpszValue);
-
-	*lppData = nullptr;
-	DWORD cb = NULL;
-
-	// Get its size
-	WC_W32(RegQueryValueExA(
-		hKey,
-		lpszValue,
-		NULL,
-		lpType,
-		NULL,
-		&cb));
-
-	// only handle types we know about - all others are bad
-	if (S_OK == hRes && cb &&
-		(REG_SZ == *lpType || REG_DWORD == *lpType || REG_MULTI_SZ == *lpType))
-	{
-		*lppData = new BYTE[cb];
-
-		if (*lppData)
-		{
-			// Get the current value
-			EC_W32(RegQueryValueExA(
-				hKey,
-				lpszValue,
-				NULL,
-				lpType,
-				static_cast<unsigned char*>(*lppData),
-				&cb));
-
-			if (FAILED(hRes))
-			{
-				delete[] * lppData;
-				*lppData = nullptr;
-			}
-		}
-	}
-	else if (SUCCEEDED(hRes))
-	{
-		hRes = MAPI_E_INVALID_PARAMETER;
-	}
-
-	return hRes;
-}
 // If the value is not set in the registry, return the default value
 DWORD ReadDWORDFromRegistry(_In_ HKEY hKey, _In_ wstring szValue, _In_ DWORD dwDefaultVal)
 {
