@@ -223,15 +223,14 @@ public:
 
 #define EXCLUSION_LIST L"AddInExclusionList" // STRING_OK
 #define INCLUSION_LIST L"AddInInclusionList" // STRING_OK
-#define SEPARATORW L";" // STRING_OK
-#define SEPARATOR _T(";") // STRING_OK
+#define SEPARATOR L";" // STRING_OK
 };
 
 // Read in registry and build a list of invalid add-in DLLs
 CFileList::CFileList(_In_ wstring szKey)
 {
 	auto hRes = S_OK;
-	LPTSTR lpszReg = nullptr;
+	LPWSTR lpszReg = nullptr;
 
 	m_hRootKey = CreateRootKey();
 	m_szKey = szKey;
@@ -239,21 +238,21 @@ CFileList::CFileList(_In_ wstring szKey)
 	if (m_hRootKey)
 	{
 		DWORD dwKeyType = NULL;
-		WC_H(HrGetRegistryValue(
+		WC_H(HrGetRegistryValueW(
 			m_hRootKey,
-			wstringToCString(m_szKey),
+			m_szKey.c_str(),
 			&dwKeyType,
 			reinterpret_cast<LPVOID*>(&lpszReg)));
 	}
 
 	if (lpszReg)
 	{
-		LPTSTR szContext = nullptr;
-		auto szDLL = _tcstok_s(lpszReg, SEPARATOR, &szContext);
+		LPWSTR szContext = nullptr;
+		auto szDLL = wcstok_s(lpszReg, SEPARATOR, &szContext);
 		while (szDLL)
 		{
-			AddToList(LPCTSTRToWstring(szDLL));
-			szDLL = _tcstok_s(nullptr, SEPARATOR, &szContext);
+			AddToList(szDLL);
+			szDLL = wcstok_s(nullptr, SEPARATOR, &szContext);
 		}
 	}
 
@@ -271,7 +270,7 @@ CFileList::~CFileList()
 		for (auto dll : m_lpList)
 		{
 			szList += dll;
-			szList += SEPARATORW;
+			szList += SEPARATOR;
 		}
 
 		WriteStringToRegistry(

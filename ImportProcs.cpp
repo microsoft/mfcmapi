@@ -206,25 +206,25 @@ _Check_return_ HKEY GetMailKey(_In_ wstring szClient)
 	if (szClient.empty())
 	{
 		HKEY hDefaultMailKey = nullptr;
-		WC_W32(RegOpenKeyEx(
+		WC_W32(RegOpenKeyExW(
 			HKEY_LOCAL_MACHINE,
-			_T("Software\\Clients\\Mail"), // STRING_OK
+			L"Software\\Clients\\Mail", // STRING_OK
 			NULL,
 			KEY_READ,
 			&hDefaultMailKey));
 		if (hDefaultMailKey)
 		{
 			DWORD dwKeyType = NULL;
-			LPTSTR lpszReg = nullptr;
+			LPWSTR lpszReg = nullptr;
 
-			WC_H(HrGetRegistryValue(
+			WC_H(HrGetRegistryValueW(
 				hDefaultMailKey,
-				_T(""), // get the default value
+				L"", // get the default value
 				&dwKeyType,
 				reinterpret_cast<LPVOID*>(&lpszReg)));
 			if (lpszReg)
 			{
-				lpszClient = LPCTSTRToWstring(lpszReg);
+				lpszClient = lpszReg;
 				DebugPrint(DBGLoadLibrary, L"Default MAPI = %ws\n", lpszClient.c_str());
 				delete[] lpszReg;
 			}

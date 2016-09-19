@@ -788,7 +788,6 @@ void SelectForm(_In_ HWND hWnd, _In_ CMapiObjects* lpMapiObjects, _In_opt_ LPMAP
 	{
 		LPMAPIFORMINFO lpMAPIFormInfo = nullptr;
 		// Apparently, SelectForm doesn't support unicode
-		// CString doesn't provide a way to extract just ANSI strings, so we do this manually
 		auto szTitle = wstringTostring(loadstring(IDS_SELECTFORMPROPS));
 		EC_H_CANCEL(lpMAPIFormMgr->SelectForm(
 			reinterpret_cast<ULONG_PTR>(hWnd),
