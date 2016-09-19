@@ -89,14 +89,7 @@ CMySecInfo::CMySecInfo(_In_ LPMAPIPROP lpMAPIProp,
 	if (PR_FREEBUSY_NT_SECURITY_DESCRIPTOR == m_ulPropTag)
 		m_acetype = acetypeFreeBusy;
 
-	auto hRes = S_OK;
-	int iRet = NULL;
-	// CString doesn't provide a way to extract just Unicode strings, so we do this manually
-	EC_D(iRet, LoadStringW(GetModuleHandle(NULL),
-		IDS_OBJECT,
-		m_wszObject,
-		_countof(m_wszObject)));
-
+	m_wszObject = loadstring(IDS_OBJECT);
 }
 
 CMySecInfo::~CMySecInfo()
@@ -175,7 +168,7 @@ STDMETHODIMP CMySecInfo::GetObjectInformation(PSI_OBJECT_INFO pObjectInfo)
 	{
 		pObjectInfo->dwFlags = SI_READONLY | SI_ADVANCED | (acetypeContainer == m_acetype ? SI_CONTAINER : 0);
 	}
-	pObjectInfo->pszObjectName = m_wszObject; // Object being edited
+	pObjectInfo->pszObjectName = LPWSTR(m_wszObject.c_str()); // Object being edited
 	pObjectInfo->pszServerName = nullptr; // specify DC for lookups
 	return S_OK;
 }
@@ -255,15 +248,13 @@ STDMETHODIMP CMySecInfo::SetSecurity(SECURITY_INFORMATION /*SecurityInformation*
 	DebugPrint(DBGGeneric, L"CMySecInfo::SetSecurity\n");
 	auto hRes = S_OK;
 	SPropValue Blob = { 0 };
-	ULONG cbBlob = 0;
 	LPBYTE lpBlob = nullptr;
-	DWORD dwSDLength = 0;
 
 	if (!m_lpHeader || !pSecurityDescriptor || !m_lpMAPIProp) return MAPI_E_INVALID_PARAMETER;
 	if (!IsValidSecurityDescriptor(pSecurityDescriptor)) return MAPI_E_INVALID_PARAMETER;
 
-	dwSDLength = ::GetSecurityDescriptorLength(pSecurityDescriptor);
-	cbBlob = m_cbHeader + dwSDLength;
+	auto dwSDLength = ::GetSecurityDescriptorLength(pSecurityDescriptor);
+	auto cbBlob = m_cbHeader + dwSDLength;
 	if (cbBlob < m_cbHeader || cbBlob < dwSDLength) return MAPI_E_INVALID_PARAMETER;
 
 	EC_H(MAPIAllocateBuffer(
@@ -420,8 +411,6 @@ wstring ACEToString(_In_ void* pACE, eAceType acetype)
 {
 	auto hRes = S_OK;
 	wstring AceString;
-	BYTE AceType = 0;
-	BYTE AceFlags = 0;
 	ACCESS_MASK Mask = 0;
 	DWORD Flags = 0;
 	GUID ObjectType = { 0 };
@@ -431,8 +420,8 @@ wstring ACEToString(_In_ void* pACE, eAceType acetype)
 
 	if (!pACE) return L"";
 
-	AceType = static_cast<PACE_HEADER>(pACE)->AceType;
-	AceFlags = static_cast<PACE_HEADER>(pACE)->AceFlags;
+	auto AceType = static_cast<PACE_HEADER>(pACE)->AceType;
+	auto AceFlags = static_cast<PACE_HEADER>(pACE)->AceFlags;
 
 	/* Check type of ACE */
 	switch (AceType)
@@ -497,7 +486,6 @@ wstring ACEToString(_In_ void* pACE, eAceType acetype)
 			lpSidDomain,
 			&dwSidDomain,
 			&SidNameUse));
-		hRes = S_OK;
 	}
 
 	auto lpStringSid = GetTextualSid(SidStart);
@@ -576,7 +564,7 @@ _Check_return_ HRESULT SDToString(_In_count_(cbBuf) LPBYTE lpBuf, ULONG cbBuf, e
 		EC_B(GetAclInformation(
 			pACL,
 			&ACLSizeInfo,
-			sizeof(ACLSizeInfo),
+			sizeof ACLSizeInfo,
 			AclSizeInformation));
 
 		for (DWORD i = 0; i < ACLSizeInfo.AceCount; i++)
