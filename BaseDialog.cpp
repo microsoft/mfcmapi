@@ -191,12 +191,8 @@ void CBaseDialog::CreateDialogAndMenu(UINT nIDMenuResource, UINT uiClassMenuReso
 
 	auto hSub = ::GetSubMenu(hMenu, 0);
 	::AppendMenu(hSub, MF_SEPARATOR, NULL, nullptr);
-	WCHAR szExit[16] = { 0 };
-	(void)LoadStringW(GetModuleHandle(nullptr),
-		IDS_EXIT,
-		szExit,
-		_countof(szExit));
-	::AppendMenuW(hSub, MF_ENABLED | MF_STRING, IDCANCEL, szExit);
+	auto szExit = loadstring(IDS_EXIT);
+	::AppendMenuW(hSub, MF_ENABLED | MF_STRING, IDCANCEL, szExit.c_str());
 
 	// Make sure the menu background is filled in the right color
 	MENUINFO mi = { 0 };
