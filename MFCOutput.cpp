@@ -357,7 +357,7 @@ void _OutputFormInfo(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMINFO l
 					true,
 					L"\t\tDoVerb value: 0x%X\n\t\tUnicode Name: %ws\n\t\tFlags: 0x%X\n\t\tAttributes: 0x%X\n", // STRING_OK
 					lpMAPIVerbArray->aMAPIVerb[i].lVerb,
-					reinterpret_cast<LPWSTR>(lpMAPIVerbArray->aMAPIVerb[i].szVerbname),
+					LPWSTR(lpMAPIVerbArray->aMAPIVerb[i].szVerbname),
 					lpMAPIVerbArray->aMAPIVerb[i].fuFlags,
 					lpMAPIVerbArray->aMAPIVerb[i].grfAttribs);
 			}
@@ -400,7 +400,7 @@ void _OutputFormPropArray(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMP
 		{
 			Outputf(ulDbgLvl, fFile, true,
 				L"\t\tProperty Name: %ws\n\t\tProperty Type: %ws\n\t\tSpecial Type: 0x%X\n\t\tNum Vals: 0x%X\n", // STRING_OK
-				reinterpret_cast<LPWSTR>(lpMAPIFormPropArray->aFormProp[i].pszDisplayName),
+				LPWSTR(lpMAPIFormPropArray->aFormProp[i].pszDisplayName),
 				TypeToString(lpMAPIFormPropArray->aFormProp[i].nPropType).c_str(),
 				lpMAPIFormPropArray->aFormProp[i].nSpecialType,
 				lpMAPIFormPropArray->aFormProp[i].u.s1.cfpevAvailable);
@@ -423,7 +423,7 @@ void _OutputFormPropArray(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPIFORMP
 				Outputf(ulDbgLvl, fFile, true,
 					L"\t\t\tEnum 0x%X\nEnumVal Name: %ws\t\t\t\nEnumVal enumeration: 0x%X\n", // STRING_OK
 					j,
-					reinterpret_cast<LPWSTR>(lpMAPIFormPropArray->aFormProp[i].u.s1.pfpevAvailable[j].pszDisplayName),
+					LPWSTR(lpMAPIFormPropArray->aFormProp[i].u.s1.pfpevAvailable[j].pszDisplayName),
 					lpMAPIFormPropArray->aFormProp[i].u.s1.pfpevAvailable[j].nVal);
 			}
 			else
@@ -903,6 +903,7 @@ void _OutputStream(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSTREAM lpStream)
 		{
 			bBuf[ulNumBytes] = 0;
 			bBuf[ulNumBytes + 1] = 0; // In case we are in Unicode
+			// TODO: Check how this works in Unicode vs ANSI
 			Output(ulDbgLvl, fFile, true, StripCarriage(LPCTSTRToWstring(reinterpret_cast<TCHAR*>(bBuf))));
 		}
 	} while (ulNumBytes > 0);

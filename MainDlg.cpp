@@ -121,7 +121,7 @@ void CMainDlg::AddLoadMAPIMenus() const
 	// Now add each of the menu entries
 	if (SUCCEEDED(hRes))
 	{
-		auto paths = GetMAPIPaths(true);
+		auto paths = GetMAPIPaths();
 		for (auto szPath : paths)
 		{
 			if (uidCurMenu > ID_LOADMAPIMENUMAX) break;
