@@ -144,7 +144,7 @@ STDMETHODIMP CMySecInfo::GetObjectInformation(PSI_OBJECT_INFO pObjectInfo)
 
 	HKEY hRootKey = nullptr;
 
-	WC_W32(RegOpenKeyEx(
+	WC_W32(RegOpenKeyExW(
 		HKEY_CURRENT_USER,
 		RKEY_ROOT,
 		NULL,

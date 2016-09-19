@@ -16,7 +16,7 @@ CMyWinApp::CMyWinApp()
 	auto bTerminateOnCorruption = true;
 
 	HKEY hRootKey = nullptr;
-	auto lStatus = RegOpenKeyEx(
+	auto lStatus = RegOpenKeyExW(
 		HKEY_CURRENT_USER,
 		RKEY_ROOT,
 		NULL,

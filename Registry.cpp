@@ -54,18 +54,18 @@ void SetDefaults()
 	}
 }
 
-// $--HrGetRegistryValueW---------------------------------------------------------
+// $--HrGetRegistryValue---------------------------------------------------------
 // Get a registry value - allocating memory using new to hold it.
 // -----------------------------------------------------------------------------
-_Check_return_ HRESULT HrGetRegistryValueW(
+_Check_return_ HRESULT HrGetRegistryValue(
 	_In_ HKEY hKey, // the key.
-	_In_z_ LPCWSTR lpszValue, // value name in key.
+	_In_ wstring lpszValue, // value name in key.
 	_Out_ DWORD* lpType, // where to put type info.
 	_Out_ LPVOID* lppData) // where to put the data.
 {
 	auto hRes = S_OK;
 
-	DebugPrint(DBGGeneric, L"HrGetRegistryValueW(%ws)\n", lpszValue);
+	DebugPrint(DBGGeneric, L"HrGetRegistryValue(%ws)\n", lpszValue.c_str());
 
 	*lppData = nullptr;
 	DWORD cb = NULL;
@@ -73,7 +73,7 @@ _Check_return_ HRESULT HrGetRegistryValueW(
 	// Get its size
 	WC_W32(RegQueryValueExW(
 		hKey,
-		lpszValue,
+		lpszValue.c_str(),
 		NULL,
 		lpType,
 		NULL,
@@ -90,7 +90,7 @@ _Check_return_ HRESULT HrGetRegistryValueW(
 			// Get the current value
 			EC_W32(RegQueryValueExW(
 				hKey,
-				lpszValue,
+				lpszValue.c_str(),
 				NULL,
 				lpType,
 				static_cast<unsigned char*>(*lppData),
@@ -117,9 +117,9 @@ DWORD ReadDWORDFromRegistry(_In_ HKEY hKey, _In_ wstring szValue, _In_ DWORD dwD
 	DWORD* lpValue = nullptr;
 	auto ret = dwDefaultVal;
 
-	WC_H(HrGetRegistryValueW(
+	WC_H(HrGetRegistryValue(
 		hKey,
-		szValue.c_str(),
+		szValue,
 		&dwKeyType,
 		reinterpret_cast<LPVOID*>(&lpValue)));
 	if (hRes == S_OK && REG_DWORD == dwKeyType && lpValue)
@@ -139,9 +139,9 @@ wstring ReadStringFromRegistry(_In_ HKEY hKey, _In_ wstring szValue, _In_ wstrin
 	LPWSTR szBuf = nullptr;
 	auto ret = szDefault;
 
-	WC_H(HrGetRegistryValueW(
+	WC_H(HrGetRegistryValue(
 		hKey,
-		szValue.c_str(),
+		szValue,
 		&dwKeyType,
 		reinterpret_cast<LPVOID*>(&szBuf)));
 	if (hRes == S_OK && REG_SZ == dwKeyType && szBuf)
@@ -158,7 +158,7 @@ void ReadFromRegistry()
 	auto hRes = S_OK;
 	HKEY hRootKey = nullptr;
 
-	WC_W32(RegOpenKeyEx(
+	WC_W32(RegOpenKeyExW(
 		HKEY_CURRENT_USER,
 		RKEY_ROOT,
 		NULL,
@@ -225,10 +225,9 @@ void CommitDWORDIfNeeded(_In_ HKEY hKey, _In_ wstring szValueName, DWORD dwValue
 void WriteStringToRegistry(_In_ HKEY hKey, _In_ wstring szValueName, _In_ wstring szValue)
 {
 	auto hRes = S_OK;
-	size_t cbValue = 0;
 
 	// Reg needs bytes, so CB is correct here
-	cbValue = szValue.length() * sizeof(WCHAR);
+	auto cbValue = szValue.length() * sizeof(WCHAR);
 	cbValue += sizeof(WCHAR); // NULL terminator
 
 	WC_W32(RegSetValueExW(
@@ -262,7 +261,7 @@ _Check_return_ HKEY CreateRootKey()
 	HKEY hkSub = nullptr;
 
 	// Try to open the root key before we do the work to create it
-	WC_W32(RegOpenKeyEx(
+	WC_W32(RegOpenKeyExW(
 		HKEY_CURRENT_USER,
 		RKEY_ROOT,
 		NULL,
@@ -271,7 +270,7 @@ _Check_return_ HKEY CreateRootKey()
 	if (SUCCEEDED(hRes) && hkSub) return hkSub;
 
 	hRes = S_OK;
-	WC_W32(RegCreateKeyEx(
+	WC_W32(RegCreateKeyExW(
 		HKEY_CURRENT_USER,
 		RKEY_ROOT,
 		0,

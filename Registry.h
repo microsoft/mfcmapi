@@ -1,8 +1,7 @@
 // Registry.h : header file for the MFCMAPI application registry functions
-//
 
 #pragma once
-#define RKEY_ROOT _T("SOFTWARE\\Microsoft\\MFCMAPI") // STRING_OK
+#define RKEY_ROOT L"SOFTWARE\\Microsoft\\MFCMAPI" // STRING_OK
 
 enum __REGKEYTYPES
 {
@@ -75,13 +74,7 @@ void ReadFromRegistry();
 
 _Check_return_ HKEY CreateRootKey();
 
-DWORD ReadDWORDFromRegistry(_In_ HKEY hKey, _In_ wstring szValue, _In_ DWORD dwDefaultVal);
-wstring ReadStringFromRegistry(_In_ HKEY hKey, _In_ wstring szValue, _In_ wstring szDefault);
+DWORD ReadDWORDFromRegistry(_In_ HKEY hKey, _In_ wstring szValue, _In_ DWORD dwDefaultVal = 0);
+wstring ReadStringFromRegistry(_In_ HKEY hKey, _In_ wstring szValue, _In_ wstring szDefault = emptystring);
 
 void WriteStringToRegistry(_In_ HKEY hKey, _In_ wstring szValueName, _In_ wstring szValue);
-
-_Check_return_ HRESULT HrGetRegistryValueW(
-	_In_ HKEY hKey, // the key.
-	_In_z_ LPCWSTR lpszValue, // value name in key.
-	_Out_ DWORD* lpType, // where to put type info.
-	_Out_ LPVOID* lppData); // where to put the data.
