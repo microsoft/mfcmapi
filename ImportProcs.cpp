@@ -214,19 +214,13 @@ _Check_return_ HKEY GetMailKey(_In_ wstring szClient)
 			&hDefaultMailKey));
 		if (hDefaultMailKey)
 		{
-			DWORD dwKeyType = NULL;
-			LPWSTR lpszReg = nullptr;
-
-			WC_H(HrGetRegistryValueW(
+			auto lpszReg = ReadStringFromRegistry(
 				hDefaultMailKey,
-				L"", // get the default value
-				&dwKeyType,
-				reinterpret_cast<LPVOID*>(&lpszReg)));
-			if (lpszReg)
+				L""); // get the default value
+			if (!lpszReg.empty())
 			{
 				lpszClient = lpszReg;
 				DebugPrint(DBGLoadLibrary, L"Default MAPI = %ws\n", lpszClient.c_str());
-				delete[] lpszReg;
 			}
 
 			EC_W32(RegCloseKey(hDefaultMailKey));
@@ -256,58 +250,19 @@ _Check_return_ HKEY GetMailKey(_In_ wstring szClient)
 void GetMapiMsiIds(_In_ wstring szClient, _In_ wstring& lpszComponentID, _In_ wstring& lpszAppLCID, _In_ wstring& lpszOfficeLCID)
 {
 	DebugPrint(DBGLoadLibrary, L"GetMapiMsiIds(%ws)\n", szClient.c_str());
-	auto hRes = S_OK;
 
 	auto hKey = GetMailKey(szClient);
-
 	if (hKey)
 	{
-		DWORD dwKeyType = NULL;
-		LPWSTR szBuf = nullptr;
-
-		WC_H(HrGetRegistryValueW(
-			hKey,
-			L"MSIComponentID", // STRING_OK
-			&dwKeyType,
-			reinterpret_cast<LPVOID*>(&szBuf)));
-		if (szBuf)
-		{
-			lpszComponentID = szBuf;
-			delete[] szBuf;
-			szBuf = nullptr;
-		}
-
+		lpszComponentID = ReadStringFromRegistry(hKey, L"MSIComponentID"); // STRING_OK
 		DebugPrint(DBGLoadLibrary, L"MSIComponentID = %ws\n", !lpszComponentID.empty() ? lpszComponentID.c_str() : L"<not found>");
-		hRes = S_OK;
 
-		WC_H(HrGetRegistryValueW(
-			hKey,
-			L"MSIApplicationLCID", // STRING_OK
-			&dwKeyType,
-			reinterpret_cast<LPVOID*>(&szBuf)));
-		if (szBuf)
-		{
-			lpszAppLCID = szBuf;
-			delete[] szBuf;
-			szBuf = nullptr;
-		}
-
+		lpszAppLCID = ReadStringFromRegistry(hKey, L"MSIApplicationLCID"); // STRING_OK
 		DebugPrint(DBGLoadLibrary, L"MSIApplicationLCID = %ws\n", !lpszAppLCID.empty() ? lpszAppLCID.c_str() : L"<not found>");
-		hRes = S_OK;
 
-		WC_H(HrGetRegistryValueW(
-			hKey,
-			L"MSIOfficeLCID", // STRING_OK
-			&dwKeyType,
-			reinterpret_cast<LPVOID*>(&szBuf)));
-		if (szBuf)
-		{
-			lpszOfficeLCID = szBuf;
-			delete[] szBuf;
-		}
-
+		lpszOfficeLCID = ReadStringFromRegistry(hKey, L"MSIOfficeLCID"); // STRING_OK
 		DebugPrint(DBGLoadLibrary, L"MSIOfficeLCID = %ws\n", !lpszOfficeLCID.empty() ? lpszOfficeLCID.c_str() : L"<not found>");
-		hRes = S_OK;
+		auto hRes = S_OK;
 
 		EC_W32(RegCloseKey(hKey));
 	}

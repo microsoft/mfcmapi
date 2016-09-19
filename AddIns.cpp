@@ -229,34 +229,28 @@ public:
 // Read in registry and build a list of invalid add-in DLLs
 CFileList::CFileList(_In_ wstring szKey)
 {
-	auto hRes = S_OK;
-	LPWSTR lpszReg = nullptr;
+	wstring lpszReg;
 
 	m_hRootKey = CreateRootKey();
 	m_szKey = szKey;
 
 	if (m_hRootKey)
 	{
-		DWORD dwKeyType = NULL;
-		WC_H(HrGetRegistryValueW(
+		lpszReg = ReadStringFromRegistry(
 			m_hRootKey,
-			m_szKey.c_str(),
-			&dwKeyType,
-			reinterpret_cast<LPVOID*>(&lpszReg)));
+			m_szKey);
 	}
 
-	if (lpszReg)
+	if (!lpszReg.empty())
 	{
 		LPWSTR szContext = nullptr;
-		auto szDLL = wcstok_s(lpszReg, SEPARATOR, &szContext);
+		auto szDLL = wcstok_s(LPWSTR(lpszReg.c_str()), SEPARATOR, &szContext);
 		while (szDLL)
 		{
 			AddToList(szDLL);
 			szDLL = wcstok_s(nullptr, SEPARATOR, &szContext);
 		}
 	}
-
-	delete[] lpszReg;
 }
 
 // Write the list back to registry
