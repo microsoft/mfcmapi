@@ -270,9 +270,14 @@ _Check_return_ bool DropDownPane::GetSelectedGUID(bool bByteSwapped, _In_ LPGUID
 	}
 
 	auto lpGUID = GUIDNameToGUID(szText, bByteSwapped);
-	memcpy(lpSelectedGUID, lpGUID, sizeof(GUID));
-	delete[] lpGUID;
-	return true;
+	if (lpGUID)
+	{
+		memcpy(lpSelectedGUID, lpGUID, sizeof(GUID));
+		delete[] lpGUID;
+		return true;
+	}
+
+	return false;
 }
 
 void DropDownPane::SetDropDownSelection(_In_ wstring szText)
