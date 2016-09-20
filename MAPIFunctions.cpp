@@ -2301,7 +2301,7 @@ _Check_return_ wstring EncodeID(ULONG cbEID, _In_ LPENTRYID rgbID)
 
 wstring DecodeID(ULONG cbBuffer, _In_count_(cbBuffer) LPBYTE lpbBuffer)
 {
-	if (cbBuffer % 2) return NULL;
+	if (cbBuffer % 2) return emptystring;
 
 	ULONG i = 0;
 	ULONG cbDecodedBuffer = cbBuffer / 2;
@@ -2311,7 +2311,7 @@ wstring DecodeID(ULONG cbBuffer, _In_count_(cbBuffer) LPBYTE lpbBuffer)
 
 	// Allocate memory for lpDecoded
 	lpDecoded = new BYTE[cbDecodedBuffer];
-	if (!lpDecoded) return NULL;
+	if (!lpDecoded) return emptystring;
 
 	// Subtract kwBaseOffset from every character and place result in lpDecoded
 	for (i = 0, lpwzSrc = (LPWSTR)lpbBuffer, lpDst = lpDecoded;
