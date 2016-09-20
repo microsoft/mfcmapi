@@ -136,6 +136,7 @@ void DropDownPane::DoInit(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 		| WS_VISIBLE
 		| WS_VSCROLL
 		| CBS_OWNERDRAWFIXED
+		| CBS_HASSTRINGS
 		| CBS_AUTOHSCROLL
 		| CBS_DISABLENOSCROLL
 		| dwDropStyle,
@@ -179,16 +180,10 @@ void DropDownPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 	m_bInitialized = true;
 }
 
-void DropDownPane::InsertDropString(int iRow, _In_ wstring szText, ULONG ulValue) const
+void DropDownPane::InsertDropString(int iRow, _In_ wstring szText, ULONG ulValue)
 {
-	COMBOBOXEXITEMW item = { 0 };
-	item.mask = CBEIF_TEXT | CBEIF_LPARAM;
-	item.iItem = iRow;
-	item.pszText = LPWSTR(szText.c_str());
-	item.cchTextMax = int(szText.length());
-	item.lParam = ulValue;
-
-	(void) ::SendMessage(m_DropDown.m_hWnd, CBEM_INSERTITEMW, WPARAM(0), LPARAM(&item));
+	m_DropDown.InsertString(iRow, wstringToCString(szText));
+	m_DropDown.SetItemData(iRow, ulValue);
 }
 
 void DropDownPane::CommitUIValues()
