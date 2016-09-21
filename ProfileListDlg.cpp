@@ -538,7 +538,7 @@ void CProfileListDlg::HandleCopy()
 	auto lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 	if (lpListData || !lpListData->Contents())
 	{
-		m_lpMapiObjects->SetProfileToCopy(lpListData->Contents()->m_szProfileDisplayName.c_str());
+		m_lpMapiObjects->SetProfileToCopy(lpListData->Contents()->m_szProfileDisplayName);
 	}
 }
 
