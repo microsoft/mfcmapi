@@ -2,7 +2,6 @@
 
 #include "stdafx.h"
 #include "MapiObjects.h"
-#include "MAPIFunctions.h"
 
 static wstring GCCLASS = L"CGlobalCache"; // STRING_OK
 
@@ -37,8 +36,8 @@ public:
 	_Check_return_ ULONG* GetAttachmentsToCopy() const;
 	_Check_return_ ULONG GetNumAttachments() const;
 
-	void SetProfileToCopy(_In_ LPCSTR szProfileName);
-	_Check_return_ LPSTR GetProfileToCopy() const;
+	void SetProfileToCopy(_In_ string szProfileName);
+	_Check_return_ string GetProfileToCopy() const;
 
 	_Check_return_ LPMAPIFOLDER GetSourceParentFolder() const;
 
@@ -54,7 +53,7 @@ private:
 	ULONG m_ulPropTagToCopy;
 	ULONG* m_lpulAttachmentsToCopy;
 	ULONG m_ulNumAttachments;
-	LPSTR m_szProfileToCopy;
+	string m_szProfileToCopy;
 	LPMAPIFOLDER m_lpSourceParent;
 	LPMAPIPROP m_lpSourcePropObject;
 	bool m_bMAPIInitialized;
@@ -76,8 +75,6 @@ CGlobalCache::CGlobalCache()
 
 	m_lpulAttachmentsToCopy = nullptr;
 	m_ulNumAttachments = 0;
-
-	m_szProfileToCopy = nullptr;
 }
 
 CGlobalCache::~CGlobalCache()
@@ -142,7 +139,7 @@ void CGlobalCache::EmptyBuffer()
 	if (m_lpAddressEntriesToCopy) MAPIFreeBuffer(m_lpAddressEntriesToCopy);
 	if (m_lpMessagesToCopy) MAPIFreeBuffer(m_lpMessagesToCopy);
 	if (m_lpulAttachmentsToCopy) MAPIFreeBuffer(m_lpulAttachmentsToCopy);
-	if (m_szProfileToCopy) MAPIFreeBuffer(m_szProfileToCopy);
+	m_szProfileToCopy.clear();
 	if (m_lpFolderToCopy) m_lpFolderToCopy->Release();
 	if (m_lpSourceParent) m_lpSourceParent->Release();
 	if (m_lpSourcePropObject) m_lpSourcePropObject->Release();
@@ -155,7 +152,6 @@ void CGlobalCache::EmptyBuffer()
 	m_lpSourcePropObject = nullptr;
 	m_lpulAttachmentsToCopy = nullptr;
 	m_ulNumAttachments = 0;
-	m_szProfileToCopy = nullptr;
 }
 
 void CGlobalCache::SetABEntriesToCopy(_In_ LPENTRYLIST lpEBEntriesToCopy)
@@ -241,12 +237,12 @@ _Check_return_ ULONG CGlobalCache::GetNumAttachments() const
 	return m_ulNumAttachments;
 }
 
-void CGlobalCache::SetProfileToCopy(_In_ LPCSTR szProfileName)
+void CGlobalCache::SetProfileToCopy(_In_ string szProfileName)
 {
-	(void)CopyStringA(&m_szProfileToCopy, szProfileName, nullptr);
+	m_szProfileToCopy = szProfileName;
 }
 
-_Check_return_ LPSTR CGlobalCache::GetProfileToCopy() const
+_Check_return_ string CGlobalCache::GetProfileToCopy() const
 {
 	return m_szProfileToCopy;
 }
@@ -261,7 +257,7 @@ _Check_return_ ULONG CGlobalCache::GetBufferStatus() const
 	if (m_ulPropTagToCopy) ulStatus |= BUFFER_PROPTAG;
 	if (m_lpSourcePropObject) ulStatus |= BUFFER_SOURCEPROPOBJ;
 	if (m_lpulAttachmentsToCopy) ulStatus |= BUFFER_ATTACHMENTS;
-	if (m_szProfileToCopy) ulStatus |= BUFFER_PROFILE;
+	if (!m_szProfileToCopy.empty()) ulStatus |= BUFFER_PROFILE;
 	return ulStatus;
 }
 
@@ -553,13 +549,13 @@ void CMapiObjects::SetProfileToCopy(_In_ LPCSTR szProfileName) const
 	}
 }
 
-_Check_return_ LPSTR CMapiObjects::GetProfileToCopy() const
+_Check_return_ string CMapiObjects::GetProfileToCopy() const
 {
 	if (m_lpGlobalCache)
 	{
 		return m_lpGlobalCache->GetProfileToCopy();
 	}
-	return nullptr;
+	return "";
 }
 
 _Check_return_ ULONG CMapiObjects::GetBufferStatus() const

@@ -552,7 +552,7 @@ _Check_return_ bool CProfileListDlg::HandlePaste()
 	DebugPrintEx(DBGGeneric, CLASS, L"HandlePaste", L"\n");
 	if (!m_lpMapiObjects) return false;
 
-	auto szOldProfile = LPCSTRToWstring(m_lpMapiObjects->GetProfileToCopy());
+	auto szOldProfile = m_lpMapiObjects->GetProfileToCopy();
 
 	CEditor MyData(
 		this,
@@ -561,14 +561,14 @@ _Check_return_ bool CProfileListDlg::HandlePaste()
 		1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-	MyData.InitPane(0, CreateSingleLinePane(IDS_COPYPROFILEPROMPT, szOldProfile, false));
+	MyData.InitPane(0, CreateSingleLinePane(IDS_COPYPROFILEPROMPT, stringTowstring(szOldProfile), false));
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		auto szNewProfile = MyData.GetStringW(0);
+		auto szNewProfile = wstringTostring(MyData.GetStringW(0));
 
-		WC_MAPI(HrCopyProfile(wstringTostring(szOldProfile), wstringTostring(szNewProfile)));
+		WC_MAPI(HrCopyProfile(szOldProfile, szNewProfile));
 
 		OnRefreshView(); // Update the view since we don't have notifications here.
 	}
