@@ -46,7 +46,7 @@ public:
 	_Check_return_ ULONG* GetAttachmentsToCopy() const;
 	_Check_return_ ULONG GetNumAttachments() const;
 
-	_Check_return_ LPSTR GetProfileToCopy() const;
+	_Check_return_ string GetProfileToCopy() const;
 
 	void SetABEntriesToCopy(_In_ LPENTRYLIST lpEBEntriesToCopy) const;
 	void SetMessagesToCopy(_In_ LPENTRYLIST lpMessagesToCopy, _In_ LPMAPIFOLDER lpSourceParent) const;
