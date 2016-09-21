@@ -541,7 +541,7 @@ _Check_return_ ULONG CMapiObjects::GetNumAttachments() const
 	return 0;
 }
 
-void CMapiObjects::SetProfileToCopy(_In_ LPCSTR szProfileName) const
+void CMapiObjects::SetProfileToCopy(_In_ string szProfileName) const
 {
 	if (m_lpGlobalCache)
 	{
