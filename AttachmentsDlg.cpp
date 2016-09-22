@@ -223,36 +223,28 @@ _Check_return_ HRESULT CAttachmentsDlg::OpenItemProp(
 void CAttachmentsDlg::HandleCopy()
 {
 	if (!m_lpContentsTableListCtrl || !m_lpMessage) return;
-	auto hRes = S_OK;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	DebugPrintEx(DBGGeneric, CLASS, L"HandleCopy", L"\n");
 	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return;
 
-	ULONG* lpAttNumList = nullptr;
-
 	ULONG ulNumSelected = m_lpContentsTableListCtrl->GetSelectedCount();
 
 	if (ulNumSelected && ulNumSelected < ULONG_MAX / sizeof(ULONG))
 	{
-		EC_H(MAPIAllocateBuffer(
-			ulNumSelected * sizeof(ULONG),
-			reinterpret_cast<LPVOID*>(&lpAttNumList)));
-		if (lpAttNumList)
+		auto lpAttNumList = vector<ULONG>();
 		{
-			ZeroMemory(lpAttNumList, ulNumSelected * sizeof(ULONG));
 			for (ULONG ulSelection = 0; ulSelection < ulNumSelected; ulSelection++)
 			{
 				auto iItem = -1;
 				auto lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 				if (lpListData && lpListData->Contents())
 				{
-					lpAttNumList[ulSelection] = lpListData->Contents()->m_ulAttachNum;
+					lpAttNumList.push_back(lpListData->Contents()->m_ulAttachNum);
 				}
 			}
 
-			// m_lpMapiObjects takes over ownership of lpAttNumList - don't free now
-			m_lpMapiObjects->SetAttachmentsToCopy(m_lpMessage, ulNumSelected, lpAttNumList);
+			m_lpMapiObjects->SetAttachmentsToCopy(m_lpMessage, lpAttNumList);
 		}
 	}
 }
@@ -271,13 +263,12 @@ _Check_return_ bool CAttachmentsDlg::HandlePaste()
 	if (!(ulStatus & BUFFER_ATTACHMENTS) || !(ulStatus & BUFFER_SOURCEPROPOBJ)) return false;
 
 	auto lpAttNumList = m_lpMapiObjects->GetAttachmentsToCopy();
-	auto iNumSelected = m_lpMapiObjects->GetNumAttachments();
 	auto lpSourceMessage = static_cast<LPMESSAGE>(m_lpMapiObjects->GetSourcePropObject());
 
-	if (lpAttNumList && iNumSelected && lpSourceMessage)
+	if (!lpAttNumList.empty() && lpSourceMessage)
 	{
 		// Go through each attachment and copy it
-		for (ULONG ulAtt = 0; ulAtt < iNumSelected; ++ulAtt)
+		for (auto ulAtt: lpAttNumList)
 		{
 			LPATTACH lpAttSrc = nullptr;
 			LPATTACH lpAttDst = nullptr;
@@ -285,7 +276,7 @@ _Check_return_ bool CAttachmentsDlg::HandlePaste()
 
 			// Open the attachment source
 			EC_MAPI(lpSourceMessage->OpenAttach(
-				lpAttNumList[ulAtt],
+				ulAtt,
 				NULL,
 				MAPI_DEFERRED_ERRORS,
 				&lpAttSrc));

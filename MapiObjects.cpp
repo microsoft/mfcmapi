@@ -32,9 +32,8 @@ public:
 	_Check_return_ ULONG GetPropertyToCopy() const;
 	_Check_return_ LPMAPIPROP GetSourcePropObject() const;
 
-	void SetAttachmentsToCopy(_In_ LPMESSAGE lpMessage, ULONG ulNumAttachments, _In_ ULONG* lpAttNumList);
-	_Check_return_ ULONG* GetAttachmentsToCopy() const;
-	_Check_return_ ULONG GetNumAttachments() const;
+	void SetAttachmentsToCopy(_In_ LPMESSAGE lpMessage, _In_ vector<ULONG> attNumList);
+	_Check_return_ _In_ vector<ULONG> GetAttachmentsToCopy() const;
 
 	void SetProfileToCopy(_In_ string szProfileName);
 	_Check_return_ string GetProfileToCopy() const;
@@ -51,8 +50,7 @@ private:
 	LPENTRYLIST m_lpMessagesToCopy;
 	LPMAPIFOLDER m_lpFolderToCopy;
 	ULONG m_ulPropTagToCopy;
-	ULONG* m_lpulAttachmentsToCopy;
-	ULONG m_ulNumAttachments;
+	vector<ULONG> m_attachmentsToCopy;
 	string m_szProfileToCopy;
 	LPMAPIFOLDER m_lpSourceParent;
 	LPMAPIPROP m_lpSourcePropObject;
@@ -72,9 +70,6 @@ CGlobalCache::CGlobalCache()
 
 	m_lpSourceParent = nullptr;
 	m_lpSourcePropObject = nullptr;
-
-	m_lpulAttachmentsToCopy = nullptr;
-	m_ulNumAttachments = 0;
 }
 
 CGlobalCache::~CGlobalCache()
@@ -138,7 +133,7 @@ void CGlobalCache::EmptyBuffer()
 {
 	if (m_lpAddressEntriesToCopy) MAPIFreeBuffer(m_lpAddressEntriesToCopy);
 	if (m_lpMessagesToCopy) MAPIFreeBuffer(m_lpMessagesToCopy);
-	if (m_lpulAttachmentsToCopy) MAPIFreeBuffer(m_lpulAttachmentsToCopy);
+	m_attachmentsToCopy.clear();
 	m_szProfileToCopy.clear();
 	if (m_lpFolderToCopy) m_lpFolderToCopy->Release();
 	if (m_lpSourceParent) m_lpSourceParent->Release();
@@ -150,8 +145,6 @@ void CGlobalCache::EmptyBuffer()
 	m_ulPropTagToCopy = 0;
 	m_lpSourceParent = nullptr;
 	m_lpSourcePropObject = nullptr;
-	m_lpulAttachmentsToCopy = nullptr;
-	m_ulNumAttachments = 0;
 }
 
 void CGlobalCache::SetABEntriesToCopy(_In_ LPENTRYLIST lpEBEntriesToCopy)
@@ -218,23 +211,17 @@ _Check_return_ LPMAPIPROP CGlobalCache::GetSourcePropObject() const
 	return m_lpSourcePropObject;
 }
 
-void CGlobalCache::SetAttachmentsToCopy(_In_ LPMESSAGE lpMessage, ULONG ulNumAttachments, _In_ ULONG* lpAttNumList)
+void CGlobalCache::SetAttachmentsToCopy(_In_ LPMESSAGE lpMessage, _In_ vector<ULONG> attNumList)
 {
 	EmptyBuffer();
-	m_lpulAttachmentsToCopy = lpAttNumList;
-	m_ulNumAttachments = ulNumAttachments;
 	m_lpSourcePropObject = lpMessage;
+	m_attachmentsToCopy = attNumList;
 	if (m_lpSourcePropObject) m_lpSourcePropObject->AddRef();
 }
 
-_Check_return_ ULONG* CGlobalCache::GetAttachmentsToCopy() const
+_Check_return_ vector<ULONG> CGlobalCache::GetAttachmentsToCopy() const
 {
-	return m_lpulAttachmentsToCopy;
-}
-
-_Check_return_ ULONG CGlobalCache::GetNumAttachments() const
-{
-	return m_ulNumAttachments;
+	return m_attachmentsToCopy;
 }
 
 void CGlobalCache::SetProfileToCopy(_In_ string szProfileName)
@@ -256,7 +243,7 @@ _Check_return_ ULONG CGlobalCache::GetBufferStatus() const
 	if (m_lpAddressEntriesToCopy) ulStatus |= BUFFER_ABENTRIES;
 	if (m_ulPropTagToCopy) ulStatus |= BUFFER_PROPTAG;
 	if (m_lpSourcePropObject) ulStatus |= BUFFER_SOURCEPROPOBJ;
-	if (m_lpulAttachmentsToCopy) ulStatus |= BUFFER_ATTACHMENTS;
+	if (!m_attachmentsToCopy.empty()) ulStatus |= BUFFER_ATTACHMENTS;
 	if (!m_szProfileToCopy.empty()) ulStatus |= BUFFER_PROFILE;
 	return ulStatus;
 }
@@ -515,30 +502,21 @@ _Check_return_ LPMAPIPROP CMapiObjects::GetSourcePropObject() const
 	return nullptr;
 }
 
-void CMapiObjects::SetAttachmentsToCopy(_In_ LPMESSAGE lpMessage, ULONG ulNumAttachments, _In_ ULONG* lpAttNumList) const
+void CMapiObjects::SetAttachmentsToCopy(_In_ LPMESSAGE lpMessage, _In_ vector<ULONG> attNumList) const
 {
 	if (m_lpGlobalCache)
 	{
-		m_lpGlobalCache->SetAttachmentsToCopy(lpMessage, ulNumAttachments, lpAttNumList);
+		m_lpGlobalCache->SetAttachmentsToCopy(lpMessage, attNumList);
 	}
 }
 
-_Check_return_ ULONG* CMapiObjects::GetAttachmentsToCopy() const
+_Check_return_ vector<ULONG> CMapiObjects::GetAttachmentsToCopy() const
 {
 	if (m_lpGlobalCache)
 	{
 		return m_lpGlobalCache->GetAttachmentsToCopy();
 	}
-	return nullptr;
-}
-
-_Check_return_ ULONG CMapiObjects::GetNumAttachments() const
-{
-	if (m_lpGlobalCache)
-	{
-		return m_lpGlobalCache->GetNumAttachments();
-	}
-	return 0;
+	return vector<ULONG>();
 }
 
 void CMapiObjects::SetProfileToCopy(_In_ string szProfileName) const
