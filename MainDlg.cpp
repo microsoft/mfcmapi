@@ -22,6 +22,7 @@
 #include "QuickStart.h"
 #include "UIFunctions.h"
 #include "SortList/ContentsData.h"
+#include "GlobalCache.h"
 
 static wstring CLASS = L"CMainDlg";
 
@@ -182,14 +183,13 @@ void CMainDlg::OnInitMenu(_In_ CMenu* pMenu)
 	{
 		LPMAPISESSION lpMAPISession = nullptr;
 		LPADRBOOK lpAddrBook = nullptr;
-		auto bMAPIInitialized = false;
+		auto bMAPIInitialized = CGlobalCache::getInstance().bMAPIInitialized();
 		auto hMAPI = GetMAPIHandle();
 		if (m_lpMapiObjects)
 		{
 			// Don't care if these fail
 			lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 			lpAddrBook = m_lpMapiObjects->GetAddrBook(false); // do not release
-			bMAPIInitialized = m_lpMapiObjects->bMAPIInitialized();
 		}
 
 		auto bInLoadOp = m_lpContentsTableListCtrl && m_lpContentsTableListCtrl->IsLoading();
@@ -260,7 +260,7 @@ void CMainDlg::OnInitMenu(_In_ CMenu* pMenu)
 
 void CMainDlg::OnCloseAddressBook()
 {
-	m_lpMapiObjects->SetAddrBook(nullptr);
+	if (!m_lpMapiObjects) m_lpMapiObjects->SetAddrBook(nullptr);
 }
 
 void CMainDlg::OnOpenAddressBook()
@@ -398,7 +398,7 @@ _Check_return_ HRESULT CMainDlg::OpenItemProp(int iSelectedItem, __mfcmapiModify
 	*lppMAPIProp = nullptr;
 	DebugPrintEx(DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
 
-	if (!m_lpContentsTableListCtrl || !lppMAPIProp) return MAPI_E_INVALID_PARAMETER;
+	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl || !lppMAPIProp) return MAPI_E_INVALID_PARAMETER;
 
 	auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return MAPI_E_INVALID_PARAMETER;
@@ -1078,9 +1078,8 @@ void CMainDlg::OnOpenFormContainer()
 
 void CMainDlg::OnMAPIOpenLocalFormContainer()
 {
-	if (!m_lpMapiObjects) return;
-	m_lpMapiObjects->MAPIInitialize(NULL);
-	if (!m_lpMapiObjects->bMAPIInitialized()) return;
+	CGlobalCache::getInstance().MAPIInitialize(NULL);
+	if (!CGlobalCache::getInstance().bMAPIInitialized()) return;
 
 	auto hRes = S_OK;
 	LPMAPIFORMCONTAINER lpMAPILocalFormContainer = nullptr;
@@ -1192,14 +1191,13 @@ void CMainDlg::OnMAPIInitialize()
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		m_lpMapiObjects->MAPIInitialize(MyData.GetHex(0));
+		CGlobalCache::getInstance().MAPIInitialize(MyData.GetHex(0));
 	}
 }
 
 void CMainDlg::OnMAPIUninitialize()
 {
 	auto hRes = S_OK;
-	if (!m_lpMapiObjects) return;
 
 	CEditor MyData(
 		this,
@@ -1211,7 +1209,7 @@ void CMainDlg::OnMAPIUninitialize()
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		m_lpMapiObjects->MAPIUninitialize();
+		CGlobalCache::getInstance().MAPIUninitialize();
 	}
 }
 
@@ -1527,8 +1525,7 @@ void CMainDlg::OnShowProfiles()
 	auto hRes = S_OK;
 	LPMAPITABLE lpProfTable = nullptr;
 
-	if (!m_lpMapiObjects) return;
-	m_lpMapiObjects->MAPIInitialize(NULL);
+	CGlobalCache::getInstance().MAPIInitialize(NULL);
 
 	LPPROFADMIN lpProfAdmin = nullptr;
 	EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
@@ -1553,9 +1550,8 @@ void CMainDlg::OnShowProfiles()
 
 void CMainDlg::OnLaunchProfileWizard()
 {
-	if (!m_lpMapiObjects) return;
-	m_lpMapiObjects->MAPIInitialize(NULL);
-	if (!m_lpMapiObjects->bMAPIInitialized()) return;
+	CGlobalCache::getInstance().MAPIInitialize(NULL);
+	if (!CGlobalCache::getInstance().bMAPIInitialized()) return;
 
 	auto hRes = S_OK;
 	CEditor MyData(
@@ -1639,9 +1635,9 @@ void CMainDlg::OnDisplayPublicFolderTable()
 
 void CMainDlg::OnViewMSGProperties()
 {
-	if (!m_lpMapiObjects || !m_lpPropDisplay) return;
-	m_lpMapiObjects->MAPIInitialize(NULL);
-	if (!m_lpMapiObjects->bMAPIInitialized()) return;
+	if (!m_lpPropDisplay) return;
+	CGlobalCache::getInstance().MAPIInitialize(NULL);
+	if (!CGlobalCache::getInstance().bMAPIInitialized()) return;
 
 	auto hRes = S_OK;
 	LPMESSAGE lpNewMessage = nullptr;
@@ -1673,9 +1669,8 @@ void CMainDlg::OnViewMSGProperties()
 
 void CMainDlg::OnConvertMSGToEML()
 {
-	if (!m_lpMapiObjects) return;
-	m_lpMapiObjects->MAPIInitialize(NULL);
-	if (!m_lpMapiObjects->bMAPIInitialized()) return;
+	CGlobalCache::getInstance().MAPIInitialize(NULL);
+	if (!CGlobalCache::getInstance().bMAPIInitialized()) return;
 
 	auto hRes = S_OK;
 	ULONG ulConvertFlags = CCSF_SMTP;
@@ -1732,9 +1727,8 @@ void CMainDlg::OnConvertMSGToEML()
 
 void CMainDlg::OnConvertEMLToMSG()
 {
-	if (!m_lpMapiObjects) return;
-	m_lpMapiObjects->MAPIInitialize(NULL);
-	if (!m_lpMapiObjects->bMAPIInitialized()) return;
+	CGlobalCache::getInstance().MAPIInitialize(NULL);
+	if (!CGlobalCache::getInstance().bMAPIInitialized()) return;
 
 	auto hRes = S_OK;
 	ULONG ulConvertFlags = CCSF_SMTP;
@@ -1792,9 +1786,8 @@ void CMainDlg::OnConvertEMLToMSG()
 
 void CMainDlg::OnConvertMSGToXML()
 {
-	if (!m_lpMapiObjects) return;
-	m_lpMapiObjects->MAPIInitialize(NULL);
-	if (!m_lpMapiObjects->bMAPIInitialized()) return;
+	CGlobalCache::getInstance().MAPIInitialize(NULL);
+	if (!CGlobalCache::getInstance().bMAPIInitialized()) return;
 
 	auto hRes = S_OK;
 

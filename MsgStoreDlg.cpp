@@ -16,6 +16,7 @@
 #include "MAPIProgress.h"
 #include "FormContainerDlg.h"
 #include "SortList/NodeData.h"
+#include "GlobalCache.h"
 
 static wstring CLASS = L"CMsgStoreDlg";
 
@@ -110,10 +111,11 @@ void CMsgStoreDlg::OnInitMenu(_In_ CMenu* pMenu)
 	if (m_lpMapiObjects)
 	{
 		lpMDB = m_lpMapiObjects->GetMDB(); // do not release
-		auto ulStatus = m_lpMapiObjects->GetBufferStatus();
-		pMenu->EnableMenuItem(ID_PASTE, DIM((ulStatus != BUFFER_EMPTY) && bItemSelected));
-		pMenu->EnableMenuItem(ID_PASTE_RULES, DIM((ulStatus & BUFFER_FOLDER) && bItemSelected));
 	}
+
+	auto ulStatus = CGlobalCache::getInstance().GetBufferStatus();
+	pMenu->EnableMenuItem(ID_PASTE, DIM((ulStatus != BUFFER_EMPTY) && bItemSelected));
+	pMenu->EnableMenuItem(ID_PASTE_RULES, DIM((ulStatus & BUFFER_FOLDER) && bItemSelected));
 
 	pMenu->EnableMenuItem(ID_DISPLAYASSOCIATEDCONTENTS, DIM(bItemSelected));
 	pMenu->EnableMenuItem(ID_DISPLAYDELETEDCONTENTS, DIM(bItemSelected));
@@ -353,7 +355,7 @@ void CMsgStoreDlg::HandleCopy()
 	LPMAPIFOLDER lpSrcParentFolder = nullptr;
 	WC_H(GetParentFolder(lpMAPISourceFolder, lpMDB, &lpSrcParentFolder));
 
-	m_lpMapiObjects->SetFolderToCopy(lpMAPISourceFolder, lpSrcParentFolder);
+	CGlobalCache::getInstance().SetFolderToCopy(lpMAPISourceFolder, lpSrcParentFolder);
 
 	if (lpSrcParentFolder) lpSrcParentFolder->Release();
 	if (lpMAPISourceFolder) lpMAPISourceFolder->Release();
@@ -367,9 +369,9 @@ _Check_return_ bool CMsgStoreDlg::HandlePaste()
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	DebugPrintEx(DBGGeneric, CLASS, L"HandlePaste", L"\n");
-	if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return false;
+	if (!m_lpHierarchyTableTreeCtrl) return false;
 
-	auto ulStatus = m_lpMapiObjects->GetBufferStatus();
+	auto ulStatus = CGlobalCache::getInstance().GetBufferStatus();
 
 	// Get the destination Folder
 	auto lpMAPIDestFolder = static_cast<LPMAPIFOLDER>(m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY));
@@ -406,11 +408,11 @@ void CMsgStoreDlg::OnPasteMessages()
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	DebugPrintEx(DBGGeneric, CLASS, L"OnPasteMessages", L"\n");
-	if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return;
+	if (!m_lpHierarchyTableTreeCtrl) return;
 
 	// Get the source Messages
-	auto lpEIDs = m_lpMapiObjects->GetMessagesToCopy();
-	auto lpMAPISourceFolder = m_lpMapiObjects->GetSourceParentFolder();
+	auto lpEIDs = CGlobalCache::getInstance().GetMessagesToCopy();
+	auto lpMAPISourceFolder = CGlobalCache::getInstance().GetSourceParentFolder();
 	// Get the destination Folder
 	auto lpMAPIDestFolder = static_cast<LPMAPIFOLDER>(m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY));
 
@@ -457,8 +459,6 @@ void CMsgStoreDlg::OnPasteFolder()
 	ULONG cProps;
 	LPSPropValue lpProps = nullptr;
 
-	if (!m_lpMapiObjects) return;
-
 	enum
 	{
 		NAME,
@@ -475,8 +475,8 @@ void CMsgStoreDlg::OnPasteFolder()
 	DebugPrintEx(DBGGeneric, CLASS, L"OnPasteFolder", L"\n");
 
 	// Get the source folder
-	auto lpMAPISourceFolder = m_lpMapiObjects->GetFolderToCopy();
-	auto lpSrcParentFolder = m_lpMapiObjects->GetSourceParentFolder();
+	auto lpMAPISourceFolder = CGlobalCache::getInstance().GetFolderToCopy();
+	auto lpSrcParentFolder = CGlobalCache::getInstance().GetSourceParentFolder();
 	// Get the Destination Folder
 	auto lpMAPIDestFolder = static_cast<LPMAPIFOLDER>(m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY));
 
@@ -564,10 +564,10 @@ void CMsgStoreDlg::OnPasteFolderContents()
 
 	DebugPrintEx(DBGGeneric, CLASS, L"OnPasteFolderContents", L"\n");
 
-	if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return;
+	if (!m_lpHierarchyTableTreeCtrl) return;
 
 	// Get the Source Folder
-	auto lpMAPISourceFolder = m_lpMapiObjects->GetFolderToCopy();
+	auto lpMAPISourceFolder = CGlobalCache::getInstance().GetFolderToCopy();
 	// Get the Destination Folder
 	auto lpMAPIDestFolder = static_cast<LPMAPIFOLDER>(m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY));
 
@@ -610,10 +610,10 @@ void CMsgStoreDlg::OnPasteRules()
 
 	DebugPrintEx(DBGGeneric, CLASS, L"OnPasteRules", L"\n");
 
-	if (!m_lpMapiObjects || !m_lpHierarchyTableTreeCtrl) return;
+	if (!m_lpHierarchyTableTreeCtrl) return;
 
 	// Get the Source Folder
-	auto lpMAPISourceFolder = m_lpMapiObjects->GetFolderToCopy();
+	auto lpMAPISourceFolder = CGlobalCache::getInstance().GetFolderToCopy();
 	// Get the Destination Folder
 	auto lpMAPIDestFolder = static_cast<LPMAPIFOLDER>(m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY));
 

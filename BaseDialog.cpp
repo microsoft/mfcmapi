@@ -19,6 +19,7 @@
 #include "ImportProcs.h"
 #include "SmartView/SmartView.h"
 #include "Options.h"
+#include "GlobalCache.h"
 
 static wstring CLASS = L"CBaseDialog";
 
@@ -229,11 +230,8 @@ _Check_return_ bool CBaseDialog::HandleMenu(WORD wMenuSelect)
 
 void CBaseDialog::OnInitMenu(_In_opt_ CMenu* pMenu)
 {
-	auto bMAPIInitialized = false;
-	if (m_lpMapiObjects)
-	{
-		bMAPIInitialized = m_lpMapiObjects->bMAPIInitialized();
-	}
+	auto bMAPIInitialized = CGlobalCache::getInstance().bMAPIInitialized();
+
 	if (pMenu)
 	{
 		if (m_lpPropDisplay) m_lpPropDisplay->InitMenu(pMenu);
@@ -406,7 +404,7 @@ void CBaseDialog::HandleCopy()
 _Check_return_ bool CBaseDialog::HandlePaste()
 {
 	DebugPrintEx(DBGGeneric, CLASS, L"HandlePaste", L"\n");
-	auto ulStatus = m_lpMapiObjects->GetBufferStatus();
+	auto ulStatus = CGlobalCache::getInstance().GetBufferStatus();
 
 	if (m_lpPropDisplay && ulStatus & BUFFER_PROPTAG && ulStatus & BUFFER_SOURCEPROPOBJ)
 	{

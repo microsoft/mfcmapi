@@ -12,6 +12,7 @@
 #include "MFCUtilityFunctions.h"
 #include "ImportProcs.h"
 #include "SortList/ContentsData.h"
+#include "GlobalCache.h"
 
 static wstring CLASS = L"CAttachmentsDlg";
 
@@ -73,11 +74,8 @@ void CAttachmentsDlg::OnInitMenu(_In_ CMenu* pMenu)
 		if (m_lpContentsTableListCtrl)
 		{
 			int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
-			if (m_lpMapiObjects)
-			{
-				auto ulStatus = m_lpMapiObjects->GetBufferStatus();
-				pMenu->EnableMenuItem(ID_PASTE, DIM(ulStatus & BUFFER_ATTACHMENTS));
-			}
+			auto ulStatus = CGlobalCache::getInstance().GetBufferStatus();
+			pMenu->EnableMenuItem(ID_PASTE, DIM(ulStatus & BUFFER_ATTACHMENTS));
 
 			pMenu->EnableMenuItem(ID_COPY, DIMMSOK(iNumSel));
 			pMenu->EnableMenuItem(ID_DELETESELECTEDITEM, DIMMSOK(iNumSel));
@@ -226,7 +224,7 @@ void CAttachmentsDlg::HandleCopy()
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	DebugPrintEx(DBGGeneric, CLASS, L"HandleCopy", L"\n");
-	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return;
+	if (!m_lpContentsTableListCtrl) return;
 
 	ULONG ulNumSelected = m_lpContentsTableListCtrl->GetSelectedCount();
 
@@ -244,7 +242,7 @@ void CAttachmentsDlg::HandleCopy()
 				}
 			}
 
-			m_lpMapiObjects->SetAttachmentsToCopy(m_lpMessage, lpAttNumList);
+			CGlobalCache::getInstance().SetAttachmentsToCopy(m_lpMessage, lpAttNumList);
 		}
 	}
 }
@@ -253,17 +251,17 @@ _Check_return_ bool CAttachmentsDlg::HandlePaste()
 {
 	if (CBaseDialog::HandlePaste()) return true;
 
-	if (!m_lpContentsTableListCtrl || !m_lpMessage || !m_lpMapiObjects) return false;
+	if (!m_lpContentsTableListCtrl || !m_lpMessage) return false;
 	DebugPrintEx(DBGGeneric, CLASS, L"HandlePaste", L"\n");
 
 	auto hRes = S_OK;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-	auto ulStatus = m_lpMapiObjects->GetBufferStatus();
+	auto ulStatus = CGlobalCache::getInstance().GetBufferStatus();
 	if (!(ulStatus & BUFFER_ATTACHMENTS) || !(ulStatus & BUFFER_SOURCEPROPOBJ)) return false;
 
-	auto lpAttNumList = m_lpMapiObjects->GetAttachmentsToCopy();
-	auto lpSourceMessage = static_cast<LPMESSAGE>(m_lpMapiObjects->GetSourcePropObject());
+	auto lpAttNumList = CGlobalCache::getInstance().GetAttachmentsToCopy();
+	auto lpSourceMessage = static_cast<LPMESSAGE>(CGlobalCache::getInstance().GetSourcePropObject());
 
 	if (!lpAttNumList.empty() && lpSourceMessage)
 	{

@@ -13,6 +13,7 @@
 #include "File.h"
 #include "ExportProfile.h"
 #include "SortList/ContentsData.h"
+#include "GlobalCache.h"
 
 static wstring CLASS = L"CProfileListDlg";
 
@@ -80,7 +81,7 @@ void CProfileListDlg::OnInitMenu(_In_ CMenu* pMenu)
 			pMenu->EnableMenuItem(ID_EXPORTPROFILE, DIMMSNOK(iNumSel));
 
 			pMenu->EnableMenuItem(ID_COPY, DIMMSNOK(iNumSel));
-			auto ulStatus = m_lpMapiObjects->GetBufferStatus();
+			auto ulStatus = CGlobalCache::getInstance().GetBufferStatus();
 			pMenu->EnableMenuItem(ID_PASTE, DIM(ulStatus & BUFFER_PROFILE));
 		}
 	}
@@ -94,7 +95,7 @@ void CProfileListDlg::OnRefreshView()
 	auto hRes = S_OK;
 	LPMAPITABLE lpProfTable = nullptr;
 
-	if (!m_lpContentsTableListCtrl || !m_lpMapiObjects) return;
+	if (!m_lpContentsTableListCtrl) return;
 
 	if (m_lpContentsTableListCtrl->IsLoading()) m_lpContentsTableListCtrl->OnCancelTableLoad();
 	DebugPrintEx(DBGGeneric, CLASS, L"OnRefreshView", L"\n");
@@ -132,7 +133,7 @@ void CProfileListDlg::OnDisplayItem()
 	auto iItem = -1;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return;
+	if (!m_lpContentsTableListCtrl) return;
 
 	do
 	{
@@ -532,13 +533,13 @@ void CProfileListDlg::HandleCopy()
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	DebugPrintEx(DBGGeneric, CLASS, L"HandleCopy", L"\n");
-	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return;
+	if (!m_lpContentsTableListCtrl) return;
 
 	// Find the highlighted profile
 	auto lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 	if (lpListData || !lpListData->Contents())
 	{
-		m_lpMapiObjects->SetProfileToCopy(lpListData->Contents()->m_szProfileDisplayName);
+		CGlobalCache::getInstance().SetProfileToCopy(lpListData->Contents()->m_szProfileDisplayName);
 	}
 }
 
@@ -550,9 +551,8 @@ _Check_return_ bool CProfileListDlg::HandlePaste()
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	DebugPrintEx(DBGGeneric, CLASS, L"HandlePaste", L"\n");
-	if (!m_lpMapiObjects) return false;
 
-	auto szOldProfile = m_lpMapiObjects->GetProfileToCopy();
+	auto szOldProfile = CGlobalCache::getInstance().GetProfileToCopy();
 
 	CEditor MyData(
 		this,
@@ -583,7 +583,7 @@ void CProfileListDlg::OnExportProfile()
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	DebugPrintEx(DBGGeneric, CLASS, L"OnExportProfile", L"\n");
-	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return;
+	if (!m_lpContentsTableListCtrl) return;
 
 	// Find the highlighted profile
 	auto lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
