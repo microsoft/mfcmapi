@@ -27,13 +27,6 @@ CMapiObjects::CMapiObjects(_In_opt_ CMapiObjects *OldMapiObjects)
 
 		m_lpAddrBook = OldMapiObjects->m_lpAddrBook;
 		if (m_lpAddrBook) m_lpAddrBook->AddRef();
-
-		m_lpGlobalCache = OldMapiObjects->m_lpGlobalCache;
-		if (m_lpGlobalCache) m_lpGlobalCache->AddRef();
-	}
-	else
-	{
-		m_lpGlobalCache = new CGlobalCache();
 	}
 }
 
@@ -43,9 +36,6 @@ CMapiObjects::~CMapiObjects()
 	if (m_lpAddrBook) m_lpAddrBook->Release();
 	if (m_lpMDB) m_lpMDB->Release();
 	if (m_lpMAPISession) m_lpMAPISession->Release();
-
-	// Must be last - uninitializes MAPI
-	if (m_lpGlobalCache) m_lpGlobalCache->Release();
 }
 
 STDMETHODIMP_(ULONG) CMapiObjects::AddRef()
@@ -149,154 +139,90 @@ _Check_return_ LPADRBOOK CMapiObjects::GetAddrBook(bool bForceOpen)
 
 void CMapiObjects::MAPIInitialize(ULONG ulFlags) const
 {
-	if (m_lpGlobalCache)
-	{
-		m_lpGlobalCache->MAPIInitialize(ulFlags);
-	}
+	CGlobalCache::getInstance().MAPIInitialize(ulFlags);
 }
 
 void CMapiObjects::MAPIUninitialize() const
 {
-	if (m_lpGlobalCache)
-	{
-		m_lpGlobalCache->MAPIUninitialize();
-	}
+	CGlobalCache::getInstance().MAPIUninitialize();
 }
 
 _Check_return_ bool CMapiObjects::bMAPIInitialized() const
 {
-	if (m_lpGlobalCache)
-	{
-		return m_lpGlobalCache->bMAPIInitialized();
-	}
-	return false;
+	return CGlobalCache::getInstance().bMAPIInitialized();
 }
 
 void CMapiObjects::SetABEntriesToCopy(_In_ LPENTRYLIST lpEBEntriesToCopy) const
 {
-	if (m_lpGlobalCache)
-	{
-		m_lpGlobalCache->SetABEntriesToCopy(lpEBEntriesToCopy);
-	}
+	CGlobalCache::getInstance().SetABEntriesToCopy(lpEBEntriesToCopy);
 }
 
 _Check_return_ LPENTRYLIST CMapiObjects::GetABEntriesToCopy() const
 {
-	if (m_lpGlobalCache)
-	{
-		return m_lpGlobalCache->GetABEntriesToCopy();
-	}
-	return nullptr;
+	return CGlobalCache::getInstance().GetABEntriesToCopy();
 }
 
 void CMapiObjects::SetMessagesToCopy(_In_ LPENTRYLIST lpMessagesToCopy, _In_ LPMAPIFOLDER lpSourceParent) const
 {
-	if (m_lpGlobalCache)
-	{
-		m_lpGlobalCache->SetMessagesToCopy(lpMessagesToCopy, lpSourceParent);
-	}
+	CGlobalCache::getInstance().SetMessagesToCopy(lpMessagesToCopy, lpSourceParent);
 }
 
 _Check_return_ LPENTRYLIST CMapiObjects::GetMessagesToCopy() const
 {
-	if (m_lpGlobalCache)
-	{
-		return m_lpGlobalCache->GetMessagesToCopy();
-	}
-	return nullptr;
+	return CGlobalCache::getInstance().GetMessagesToCopy();
 }
 
 void CMapiObjects::SetFolderToCopy(_In_ LPMAPIFOLDER lpFolderToCopy, _In_ LPMAPIFOLDER lpSourceParent) const
 {
-	if (m_lpGlobalCache)
-	{
-		m_lpGlobalCache->SetFolderToCopy(lpFolderToCopy, lpSourceParent);
-	}
+	CGlobalCache::getInstance().SetFolderToCopy(lpFolderToCopy, lpSourceParent);
 }
 
 _Check_return_ LPMAPIFOLDER CMapiObjects::GetFolderToCopy() const
 {
-	if (m_lpGlobalCache)
-	{
-		return m_lpGlobalCache->GetFolderToCopy();
-	}
-	return nullptr;
+	return CGlobalCache::getInstance().GetFolderToCopy();
 }
 
 _Check_return_ LPMAPIFOLDER CMapiObjects::GetSourceParentFolder() const
 {
-	if (m_lpGlobalCache)
-	{
-		return m_lpGlobalCache->GetSourceParentFolder();
-	}
-	return nullptr;
+	return CGlobalCache::getInstance().GetSourceParentFolder();
 }
 
 void CMapiObjects::SetPropertyToCopy(ULONG ulPropTag, _In_ LPMAPIPROP lpSourcePropObject) const
 {
-	if (m_lpGlobalCache)
-	{
-		m_lpGlobalCache->SetPropertyToCopy(ulPropTag, lpSourcePropObject);
-	}
+	CGlobalCache::getInstance().SetPropertyToCopy(ulPropTag, lpSourcePropObject);
 }
 
 _Check_return_ ULONG CMapiObjects::GetPropertyToCopy() const
 {
-	if (m_lpGlobalCache)
-	{
-		return m_lpGlobalCache->GetPropertyToCopy();
-	}
-	return 0;
+	return CGlobalCache::getInstance().GetPropertyToCopy();
 }
 
 _Check_return_ LPMAPIPROP CMapiObjects::GetSourcePropObject() const
 {
-	if (m_lpGlobalCache)
-	{
-		return m_lpGlobalCache->GetSourcePropObject();
-	}
-	return nullptr;
+	return CGlobalCache::getInstance().GetSourcePropObject();
 }
 
 void CMapiObjects::SetAttachmentsToCopy(_In_ LPMESSAGE lpMessage, _In_ vector<ULONG> attNumList) const
 {
-	if (m_lpGlobalCache)
-	{
-		m_lpGlobalCache->SetAttachmentsToCopy(lpMessage, attNumList);
-	}
+	CGlobalCache::getInstance().SetAttachmentsToCopy(lpMessage, attNumList);
 }
 
 _Check_return_ vector<ULONG> CMapiObjects::GetAttachmentsToCopy() const
 {
-	if (m_lpGlobalCache)
-	{
-		return m_lpGlobalCache->GetAttachmentsToCopy();
-	}
-	return vector<ULONG>();
+	return CGlobalCache::getInstance().GetAttachmentsToCopy();
 }
 
 void CMapiObjects::SetProfileToCopy(_In_ string szProfileName) const
 {
-	if (m_lpGlobalCache)
-	{
-		m_lpGlobalCache->SetProfileToCopy(szProfileName);
-	}
+	CGlobalCache::getInstance().SetProfileToCopy(szProfileName);
 }
 
 _Check_return_ string CMapiObjects::GetProfileToCopy() const
 {
-	if (m_lpGlobalCache)
-	{
-		return m_lpGlobalCache->GetProfileToCopy();
-	}
-	return "";
+	return CGlobalCache::getInstance().GetProfileToCopy();
 }
 
 _Check_return_ ULONG CMapiObjects::GetBufferStatus() const
 {
-	if (m_lpGlobalCache)
-	{
-		return m_lpGlobalCache->GetBufferStatus();
-	}
-	return BUFFER_EMPTY;
+	return CGlobalCache::getInstance().GetBufferStatus();
 }

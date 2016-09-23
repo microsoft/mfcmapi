@@ -53,5 +53,4 @@ private:
 	LPMDB m_lpMDB;
 	LPMAPISESSION m_lpMAPISession;
 	LPADRBOOK m_lpAddrBook;
-	CGlobalCache* m_lpGlobalCache;
 };
