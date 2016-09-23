@@ -6,7 +6,6 @@ static wstring GCCLASS = L"CGlobalCache"; // STRING_OK
 CGlobalCache::CGlobalCache()
 {
 	TRACE_CONSTRUCTOR(GCCLASS);
-	m_cRef = 1;
 	m_bMAPIInitialized = false;
 
 	m_lpMessagesToCopy = nullptr;
@@ -23,21 +22,6 @@ CGlobalCache::~CGlobalCache()
 	TRACE_DESTRUCTOR(GCCLASS);
 	EmptyBuffer();
 	CGlobalCache::MAPIUninitialize();
-}
-
-STDMETHODIMP_(ULONG) CGlobalCache::AddRef()
-{
-	auto lCount = InterlockedIncrement(&m_cRef);
-	TRACE_ADDREF(GCCLASS, lCount);
-	return lCount;
-}
-
-STDMETHODIMP_(ULONG) CGlobalCache::Release()
-{
-	auto lCount = InterlockedDecrement(&m_cRef);
-	TRACE_RELEASE(GCCLASS, lCount);
-	if (!lCount) delete this;
-	return lCount;
 }
 
 void CGlobalCache::MAPIInitialize(ULONG ulFlags)

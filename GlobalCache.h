@@ -11,15 +11,27 @@
 #define BUFFER_ATTACHMENTS ((ULONG) 0x00000040)
 #define BUFFER_PROFILE ((ULONG) 0x00000080)
 
+class CGlobalCache;
+
+static CGlobalCache* GlobalCache();
+
 // A single instance cache of objects available to all
 class CGlobalCache
 {
 public:
+	static CGlobalCache& getInstance()
+	{
+		static CGlobalCache instance;
+		return instance;
+	}
+
+private:
 	CGlobalCache();
 	virtual ~CGlobalCache();
 
-	STDMETHODIMP_(ULONG) AddRef();
-	STDMETHODIMP_(ULONG) Release();
+public:
+	CGlobalCache(CGlobalCache const&) = delete;
+	void operator=(CGlobalCache const&) = delete;
 
 	void MAPIInitialize(ULONG ulFlags);
 	void MAPIUninitialize();
@@ -51,7 +63,6 @@ public:
 private:
 	void EmptyBuffer();
 
-	LONG m_cRef;
 	LPENTRYLIST m_lpAddressEntriesToCopy;
 	LPENTRYLIST m_lpMessagesToCopy;
 	LPMAPIFOLDER m_lpFolderToCopy;
