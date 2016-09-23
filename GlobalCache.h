@@ -11,10 +11,6 @@
 #define BUFFER_ATTACHMENTS ((ULONG) 0x00000040)
 #define BUFFER_PROFILE ((ULONG) 0x00000080)
 
-class CGlobalCache;
-
-static CGlobalCache* GlobalCache();
-
 // A single instance cache of objects available to all
 class CGlobalCache
 {
