@@ -1,18 +1,6 @@
 #pragma once
 // MapiObjects.h: interface for the CMapiObjects class.
-
-class CGlobalCache;
-
-// For GetBufferStatus
-#define BUFFER_EMPTY ((ULONG) 0x00000000)
-#define BUFFER_MESSAGES ((ULONG) 0x00000001)
-#define BUFFER_FOLDER ((ULONG) 0x00000002)
-#define BUFFER_PARENTFOLDER ((ULONG) 0x00000004)
-#define BUFFER_ABENTRIES ((ULONG) 0x00000008)
-#define BUFFER_PROPTAG ((ULONG) 0x00000010)
-#define BUFFER_SOURCEPROPOBJ ((ULONG) 0x00000020)
-#define BUFFER_ATTACHMENTS ((ULONG) 0x00000040)
-#define BUFFER_PROFILE ((ULONG) 0x00000080)
+#include "GlobalCache.h"
 
 class CMapiObjects
 {
