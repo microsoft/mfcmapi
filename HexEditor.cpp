@@ -6,6 +6,7 @@
 #include "ImportProcs.h"
 #include "ViewPane/CountedTextPane.h"
 #include "ViewPane/SmartViewPane.h"
+#include "GlobalCache.h"
 
 static wstring CLASS = L"CHexEditor";
 
@@ -215,7 +216,7 @@ void CHexEditor::OnEditAction1()
 			this));
 		if (iDlgRet == IDOK && !dlgFilePicker.GetFileName().empty())
 		{
-			if (m_lpMapiObjects) m_lpMapiObjects->MAPIInitialize(NULL);
+			CGlobalCache::getInstance().MAPIInitialize(NULL);
 			LPSTREAM lpStream = nullptr;
 
 			// Get a Stream interface on the input file
@@ -261,7 +262,7 @@ void CHexEditor::OnEditAction2()
 			this));
 		if (iDlgRet == IDOK && !dlgFilePicker.GetFileName().empty())
 		{
-			if (m_lpMapiObjects) m_lpMapiObjects->MAPIInitialize(NULL);
+			CGlobalCache::getInstance().MAPIInitialize(NULL);
 			LPSTREAM lpStream = nullptr;
 
 			// Get a Stream interface on the input file

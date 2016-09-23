@@ -12,6 +12,7 @@
 #include "MAPIABFunctions.h"
 #include "MAPIProgress.h"
 #include "MAPIFunctions.h"
+#include "GlobalCache.h"
 
 static wstring CLASS = L"CAbDlg";
 
@@ -72,11 +73,8 @@ void CAbDlg::OnInitMenu(_In_ CMenu* pMenu)
 {
 	if (pMenu && m_lpContentsTableListCtrl)
 	{
-		if (m_lpMapiObjects)
-		{
-			auto ulStatus = m_lpMapiObjects->GetBufferStatus();
-			pMenu->EnableMenuItem(ID_PASTE, DIM(ulStatus & BUFFER_ABENTRIES));
-		}
+		auto ulStatus = CGlobalCache::getInstance().GetBufferStatus();
+		pMenu->EnableMenuItem(ID_PASTE, DIM(ulStatus & BUFFER_ABENTRIES));
 
 		int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
 		pMenu->EnableMenuItem(ID_COPY, DIMMSOK(iNumSel));
@@ -181,7 +179,7 @@ void CAbDlg::OnOpenManager()
 	auto iItem = -1;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return;
+	if (!m_lpContentsTableListCtrl) return;
 
 	do
 	{
@@ -212,7 +210,7 @@ void CAbDlg::OnOpenOwner()
 	auto iItem = -1;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return;
+	if (!m_lpContentsTableListCtrl) return;
 
 	do
 	{
@@ -267,14 +265,14 @@ void CAbDlg::HandleCopy()
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	DebugPrintEx(DBGGeneric, CLASS, L"HandleCopy", L"\n");
-	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return;
+	if (!m_lpContentsTableListCtrl) return;
 
 	LPENTRYLIST lpEIDs = nullptr;
 
 	EC_H(m_lpContentsTableListCtrl->GetSelectedItemEIDs(&lpEIDs));
 
-	// m_lpMapiObjects takes over ownership of lpEIDs - don't free now
-	m_lpMapiObjects->SetABEntriesToCopy(lpEIDs);
+	// CGlobalCache takes over ownership of lpEIDs - don't free now
+	CGlobalCache::getInstance().SetABEntriesToCopy(lpEIDs);
 }
 
 _Check_return_ bool CAbDlg::HandlePaste()
@@ -285,9 +283,9 @@ _Check_return_ bool CAbDlg::HandlePaste()
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	DebugPrintEx(DBGGeneric, CLASS, L"HandlePaste", L"pasting address Book entries\n");
-	if (!m_lpMapiObjects || !m_lpContainer) return false;
+	if (!m_lpContainer) return false;
 
-	auto lpEIDs = m_lpMapiObjects->GetABEntriesToCopy();
+	auto lpEIDs = CGlobalCache::getInstance().GetABEntriesToCopy();
 
 	if (lpEIDs)
 	{

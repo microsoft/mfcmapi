@@ -22,6 +22,7 @@
 #include "PropertyBag/RowPropertyBag.h"
 #include "String.h"
 #include "SortList/PropListData.h"
+#include "GlobalCache.h"
 
 static wstring CLASS = L"CSingleMAPIPropListCtrl";
 
@@ -172,14 +173,12 @@ void CSingleMAPIPropListCtrl::InitMenu(_In_ CMenu* pMenu) const
 		GetSelectedPropTag(&ulPropTag);
 		auto bPropSelected = NULL != ulPropTag;
 
-		if (m_lpMapiObjects)
-		{
-			auto ulStatus = m_lpMapiObjects->GetBufferStatus();
-			auto lpEIDsToCopy = m_lpMapiObjects->GetMessagesToCopy();
-			pMenu->EnableMenuItem(ID_PASTE_PROPERTY, DIM(bHasSource && (ulStatus & BUFFER_PROPTAG) && (ulStatus & BUFFER_SOURCEPROPOBJ)));
-			pMenu->EnableMenuItem(ID_COPYTO, DIM(bHasSource && (ulStatus & BUFFER_SOURCEPROPOBJ)));
-			pMenu->EnableMenuItem(ID_PASTE_NAMEDPROPS, DIM(bHasSource && (ulStatus & BUFFER_MESSAGES) && lpEIDsToCopy && 1 == lpEIDsToCopy->cValues));
-		}
+		auto ulStatus = CGlobalCache::getInstance().GetBufferStatus();
+		auto lpEIDsToCopy = CGlobalCache::getInstance().GetMessagesToCopy();
+		pMenu->EnableMenuItem(ID_PASTE_PROPERTY, DIM(bHasSource && (ulStatus & BUFFER_PROPTAG) && (ulStatus & BUFFER_SOURCEPROPOBJ)));
+		pMenu->EnableMenuItem(ID_COPYTO, DIM(bHasSource && (ulStatus & BUFFER_SOURCEPROPOBJ)));
+		pMenu->EnableMenuItem(ID_PASTE_NAMEDPROPS, DIM(bHasSource && (ulStatus & BUFFER_MESSAGES) && lpEIDsToCopy && 1 == lpEIDsToCopy->cValues));
+
 		pMenu->EnableMenuItem(ID_COPY_PROPERTY, DIM(bHasSource));
 
 		pMenu->EnableMenuItem(ID_DELETEPROPERTY, DIM(bHasSource && bPropSelected));
@@ -1489,22 +1488,22 @@ void CSingleMAPIPropListCtrl::OnEditPropAsStream(ULONG ulType, bool bEditAsRTF)
 void CSingleMAPIPropListCtrl::OnCopyProperty() const
 {
 	// for now, we only copy from objects - copying from rows would be difficult to generalize
-	if (!m_lpMapiObjects || !m_lpPropBag) return;
+	if (!m_lpPropBag) return;
 
 	ULONG ulPropTag = NULL;
 	GetSelectedPropTag(&ulPropTag);
 
-	m_lpMapiObjects->SetPropertyToCopy(ulPropTag, m_lpPropBag->GetMAPIProp());
+	CGlobalCache::getInstance().SetPropertyToCopy(ulPropTag, m_lpPropBag->GetMAPIProp());
 }
 
 void CSingleMAPIPropListCtrl::OnPasteProperty()
 {
 	// For now, we only paste to objects - copying to rows would be difficult to generalize
 	// TODO: Now that we have property bags, figure out how to generalize this
-	if (!m_lpHostDlg || !m_lpMapiObjects || !m_lpPropBag) return;
+	if (!m_lpHostDlg || !m_lpPropBag) return;
 
-	auto ulSourcePropTag = m_lpMapiObjects->GetPropertyToCopy();
-	auto lpSourcePropObj = m_lpMapiObjects->GetSourcePropObject();
+	auto ulSourcePropTag = CGlobalCache::getInstance().GetPropertyToCopy();
+	auto lpSourcePropObj = CGlobalCache::getInstance().GetSourcePropObject();
 	if (!lpSourcePropObj) return;
 
 	auto hRes = S_OK;
@@ -1622,9 +1621,9 @@ void CSingleMAPIPropListCtrl::OnPasteProperty()
 void CSingleMAPIPropListCtrl::OnCopyTo()
 {
 	// for now, we only copy from objects - copying from rows would be difficult to generalize
-	if (!m_lpHostDlg || !m_lpMapiObjects || !m_lpPropBag) return;
+	if (!m_lpHostDlg || !m_lpPropBag) return;
 
-	auto lpSourcePropObj = m_lpMapiObjects->GetSourcePropObject();
+	auto lpSourcePropObj = CGlobalCache::getInstance().GetSourcePropObject();
 	if (!lpSourcePropObj) return;
 
 	auto hRes = S_OK;
@@ -1706,8 +1705,7 @@ void CSingleMAPIPropListCtrl::OnOpenProperty() const
 
 void CSingleMAPIPropListCtrl::OnModifyExtraProps()
 {
-	if (!m_lpMapiObjects) return;
-	m_lpMapiObjects->MAPIInitialize(NULL);
+	CGlobalCache::getInstance().MAPIInitialize(NULL);
 
 	auto hRes = S_OK;
 
@@ -1806,12 +1804,12 @@ void CSingleMAPIPropListCtrl::OnOpenPropertyAsTable()
 
 void CSingleMAPIPropListCtrl::OnPasteNamedProps()
 {
-	if (!m_lpPropBag || !m_lpMapiObjects) return;
+	if (!m_lpPropBag) return;
 
 	auto hRes = S_OK;
-	auto lpSourceMsgEID = m_lpMapiObjects->GetMessagesToCopy();
+	auto lpSourceMsgEID = CGlobalCache::getInstance().GetMessagesToCopy();
 
-	if (m_lpMapiObjects->GetBufferStatus() & BUFFER_MESSAGES
+	if (CGlobalCache::getInstance().GetBufferStatus() & BUFFER_MESSAGES
 		&& lpSourceMsgEID
 		&& 1 == lpSourceMsgEID->cValues)
 	{
@@ -1840,7 +1838,7 @@ void CSingleMAPIPropListCtrl::OnPasteNamedProps()
 				EC_H(CallOpenEntry(
 					NULL,
 					NULL,
-					m_lpMapiObjects->GetSourceParentFolder(),
+					CGlobalCache::getInstance().GetSourceParentFolder(),
 					NULL,
 					lpSourceMsgEID->lpbin,
 					NULL,

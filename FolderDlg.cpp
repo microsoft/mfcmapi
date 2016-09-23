@@ -24,6 +24,7 @@
 #include "InterpretProp2.h"
 #include "SortList/ContentsData.h"
 #include <algorithm>
+#include "GlobalCache.h"
 
 static wstring CLASS = L"CFolderDlg";
 
@@ -232,10 +233,11 @@ void CFolderDlg::OnInitMenu(_In_ CMenu* pMenu)
 	{
 		LPMAPISESSION lpMAPISession = nullptr;
 		int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
+		auto ulStatus = CGlobalCache::getInstance().GetBufferStatus();
+		pMenu->EnableMenuItem(ID_PASTE, DIM(ulStatus & BUFFER_MESSAGES));
+
 		if (m_lpMapiObjects)
 		{
-			auto ulStatus = m_lpMapiObjects->GetBufferStatus();
-			pMenu->EnableMenuItem(ID_PASTE, DIM(ulStatus & BUFFER_MESSAGES));
 			lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 		}
 
@@ -339,9 +341,9 @@ void CFolderDlg::OnAddOneOffAddress()
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		wstring displayName = MyData.GetStringW(0);
-		wstring addressType = MyData.GetStringW(1);
-		wstring address = MyData.GetStringW(2);
+		auto displayName = MyData.GetStringW(0);
+		auto addressType = MyData.GetStringW(1);
+		auto address = MyData.GetStringW(2);
 		auto recipientType = MyData.GetHex(3);
 		auto count = MyData.GetDecimal(4);
 		LPMESSAGE lpMessage = nullptr;
@@ -427,14 +429,14 @@ void CFolderDlg::HandleCopy()
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	DebugPrintEx(DBGGeneric, CLASS, L"HandleCopy", L"\n");
-	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return;
+	if (!m_lpContentsTableListCtrl) return;
 
 	LPENTRYLIST lpEIDs = nullptr;
 
 	EC_H(m_lpContentsTableListCtrl->GetSelectedItemEIDs(&lpEIDs));
 
-	// m_lpMapiObjects takes over ownership of lpEIDs - don't free now
-	m_lpMapiObjects->SetMessagesToCopy(lpEIDs, static_cast<LPMAPIFOLDER>(m_lpContainer));
+	// CGlobalCache takes over ownership of lpEIDs - don't free now
+	CGlobalCache::getInstance().SetMessagesToCopy(lpEIDs, static_cast<LPMAPIFOLDER>(m_lpContainer));
 }
 
 _Check_return_ bool CFolderDlg::HandlePaste()
@@ -445,7 +447,7 @@ _Check_return_ bool CFolderDlg::HandlePaste()
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	DebugPrintEx(DBGGeneric, CLASS, L"HandlePaste", L"\n");
-	if (!m_lpMapiObjects || !m_lpContainer) return false;
+	if (!m_lpContainer) return false;
 
 	CEditor MyData(
 		this,
@@ -464,8 +466,8 @@ _Check_return_ bool CFolderDlg::HandlePaste()
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		auto lpEIDs = m_lpMapiObjects->GetMessagesToCopy();
-		auto lpMAPISourceFolder = m_lpMapiObjects->GetSourceParentFolder();
+		auto lpEIDs = CGlobalCache::getInstance().GetMessagesToCopy();
+		auto lpMAPISourceFolder = CGlobalCache::getInstance().GetSourceParentFolder();
 		auto ulMoveMessage = MyData.GetCheck(0) ? MESSAGE_MOVE : 0;
 
 		if (lpEIDs && lpMAPISourceFolder)
@@ -528,7 +530,7 @@ _Check_return_ bool CFolderDlg::HandlePaste()
 						if (lpMessage)
 						{
 							LPMESSAGE lpNewMessage = nullptr;
-							EC_MAPI((static_cast<LPMAPIFOLDER>(m_lpContainer))->CreateMessage(NULL, (m_ulDisplayFlags & dfAssoc) ? MAPI_ASSOCIATED : NULL, &lpNewMessage));
+							EC_MAPI((static_cast<LPMAPIFOLDER>(m_lpContainer))->CreateMessage(NULL, m_ulDisplayFlags & dfAssoc ? MAPI_ASSOCIATED : NULL, &lpNewMessage));
 							if (lpNewMessage)
 							{
 								LPSPropProblemArray lpProblems = nullptr;
@@ -600,7 +602,7 @@ void CFolderDlg::OnDeleteAttachments()
 	{
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-		wstring szAttName = MyData.GetStringW(0);
+		auto szAttName = MyData.GetStringW(0);
 
 		if (!szAttName.empty())
 		{
@@ -737,7 +739,7 @@ void CFolderDlg::OnGetPropsUsingLongTermEID()
 	auto iItem = -1;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-	if (!m_lpContentsTableListCtrl) return;
+	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return;
 
 	auto lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 
@@ -819,7 +821,7 @@ void CFolderDlg::OnLoadFromMSG()
 				case 0:
 					EC_MAPI((static_cast<LPMAPIFOLDER>(m_lpContainer))->CreateMessage(
 						NULL,
-						(m_ulDisplayFlags & dfAssoc) ? MAPI_ASSOCIATED : NULL,
+						m_ulDisplayFlags & dfAssoc ? MAPI_ASSOCIATED : NULL,
 						&lpNewMessage));
 
 					if (lpNewMessage)
@@ -929,7 +931,7 @@ void CFolderDlg::OnManualResolve()
 
 				if (lpMessage)
 				{
-					wstring name = MyData.GetStringW(0);
+					auto name = MyData.GetStringW(0);
 					EC_H(ManualResolve(
 						lpMAPISession,
 						lpMessage,
@@ -1486,8 +1488,8 @@ void CFolderDlg::OnSaveFolderContentsAsTextFiles()
 	SaveFolderContentsToTXT(
 		lpMDB,
 		static_cast<LPMAPIFOLDER>(m_lpContainer),
-		(m_ulDisplayFlags & dfAssoc) ? false : true,
-		(m_ulDisplayFlags & dfAssoc) ? true : false,
+		m_ulDisplayFlags & dfAssoc ? false : true,
+		m_ulDisplayFlags & dfAssoc ? true : false,
 		false,
 		m_hWnd);
 }
@@ -1699,7 +1701,7 @@ void CFolderDlg::OnLoadFromTNEF()
 				hRes = S_OK;
 				EC_MAPI((static_cast<LPMAPIFOLDER>(m_lpContainer))->CreateMessage(
 					NULL,
-					(m_ulDisplayFlags & dfAssoc) ? MAPI_ASSOCIATED : 0,
+					m_ulDisplayFlags & dfAssoc ? MAPI_ASSOCIATED : 0,
 					&lpNewMessage));
 
 				if (lpNewMessage)
@@ -1758,7 +1760,7 @@ void CFolderDlg::OnLoadFromEML()
 				hRes = S_OK;
 				EC_MAPI((static_cast<LPMAPIFOLDER>(m_lpContainer))->CreateMessage(
 					NULL,
-					(m_ulDisplayFlags & dfAssoc) ? MAPI_ASSOCIATED : 0,
+					m_ulDisplayFlags & dfAssoc ? MAPI_ASSOCIATED : 0,
 					&lpNewMessage));
 
 				if (lpNewMessage)
@@ -1806,7 +1808,7 @@ void CFolderDlg::OnSendBulkMail()
 	if (S_OK == hRes)
 	{
 		auto ulNumMessages = MyData.GetDecimal(0);
-		wstring szSubject = MyData.GetStringW(2);
+		auto szSubject = MyData.GetStringW(2);
 
 		for (ULONG i = 0; i < ulNumMessages; i++)
 		{
@@ -1957,7 +1959,6 @@ void CFolderDlg::OnGetMessageOptions()
 _Check_return_ HRESULT CFolderDlg::OnGetMessageStatus(int /*iItem*/, _In_ SortListData* lpData)
 {
 	auto hRes = S_OK;
-	LPSBinary lpMessageEID = nullptr;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (!lpData || !lpData->Contents() || !m_lpContainer) return MAPI_E_INVALID_PARAMETER;
@@ -1966,7 +1967,7 @@ _Check_return_ HRESULT CFolderDlg::OnGetMessageStatus(int /*iItem*/, _In_ SortLi
 
 	ULONG ulMessageStatus = NULL;
 
-	lpMessageEID = lpData->Contents()->m_lpEntryID;
+	auto lpMessageEID = lpData->Contents()->m_lpEntryID;
 
 	if (lpMessageEID)
 	{
