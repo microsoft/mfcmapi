@@ -12,9 +12,9 @@ These worker functions are intended to be overridden by specialized classes inhe
 typedef struct FolderNode* LPFOLDERNODE;
 struct FolderNode
 {
-	LPSBinary		lpFolderEID;
-	LPTSTR			szFolderOffsetPath;
-	LPFOLDERNODE	lpNextFolder;
+	LPSBinary lpFolderEID;
+	LPTSTR szFolderOffsetPath;
+	LPFOLDERNODE lpNextFolder;
 };
 
 class CMAPIProcessor
@@ -38,10 +38,10 @@ public:
 	void ProcessMessage(_In_ LPMESSAGE lpMessage, bool bHasAttach, _In_opt_ LPVOID lpParentMessageData);
 
 protected:
-	LPMAPISESSION	m_lpSession;
-	LPMDB			m_lpMDB;
-	LPMAPIFOLDER	m_lpFolder;
-	LPTSTR			m_szFolderOffset; // Offset to the folder, including trailing slash
+	LPMAPISESSION m_lpSession;
+	LPMDB m_lpMDB;
+	LPMAPIFOLDER m_lpFolder;
+	LPTSTR m_szFolderOffset; // Offset to the folder, including trailing slash
 
 private:
 	// Worker functions (dump messages, scan for something, etc)
