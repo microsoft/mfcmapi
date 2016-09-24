@@ -5,7 +5,7 @@
 
 struct MessageData
 {
-	WCHAR	szFilePath[MAX_PATH]; // Holds file name prepended with path
+	WCHAR szFilePath[MAX_PATH]; // Holds file name prepended with path
 	FILE* fMessageProps;
 	ULONG ulCurAttNum;
 };
@@ -27,29 +27,29 @@ public:
 
 private:
 	// Worker functions (dump messages, scan for something, etc)
-	virtual void BeginMailboxTableWork(_In_ wstring szExchangeServerName);
-	virtual void DoMailboxTablePerRowWork(_In_ LPMDB lpMDB, _In_ LPSRow lpSRow, ULONG ulCurRow);
-	virtual void EndMailboxTableWork();
+	void BeginMailboxTableWork(_In_ wstring szExchangeServerName) override;
+	void DoMailboxTablePerRowWork(_In_ LPMDB lpMDB, _In_ LPSRow lpSRow, ULONG ulCurRow) override;
+	void EndMailboxTableWork() override;
 
-	virtual void BeginStoreWork();
-	virtual void EndStoreWork();
+	void BeginStoreWork() override;
+	void EndStoreWork() override;
 
-	virtual void BeginFolderWork();
-	virtual void DoFolderPerHierarchyTableRowWork(_In_ LPSRow lpSRow);
-	virtual void EndFolderWork();
+	void BeginFolderWork() override;
+	void DoFolderPerHierarchyTableRowWork(_In_ LPSRow lpSRow) override;
+	void EndFolderWork() override;
 
-	virtual void BeginContentsTableWork(ULONG ulFlags, ULONG ulCountRows);
-	virtual bool DoContentsTablePerRowWork(_In_ LPSRow lpSRow, ULONG ulCurRow);
-	virtual void EndContentsTableWork();
+	void BeginContentsTableWork(ULONG ulFlags, ULONG ulCountRows) override;
+	bool DoContentsTablePerRowWork(_In_ LPSRow lpSRow, ULONG ulCurRow) override;
+	void EndContentsTableWork() override;
 
-	virtual bool BeginMessageWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpParentMessageData, _Deref_out_opt_ LPVOID* lpData);
-	virtual bool BeginRecipientWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData);
-	virtual void DoMessagePerRecipientWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData, _In_ LPSRow lpSRow, ULONG ulCurRow);
-	virtual void EndRecipientWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData);
-	virtual bool BeginAttachmentWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData);
-	virtual void DoMessagePerAttachmentWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData, _In_ LPSRow lpSRow, _In_ LPATTACH lpAttach, ULONG ulCurRow);
-	virtual void EndAttachmentWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData);
-	virtual void EndMessageWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData);
+	bool BeginMessageWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpParentMessageData, _Deref_out_opt_ LPVOID* lpData) override;
+	bool BeginRecipientWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData) override;
+	void DoMessagePerRecipientWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData, _In_ LPSRow lpSRow, ULONG ulCurRow) override;
+	void EndRecipientWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData) override;
+	bool BeginAttachmentWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData) override;
+	void DoMessagePerAttachmentWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData, _In_ LPSRow lpSRow, _In_ LPATTACH lpAttach, ULONG ulCurRow) override;
+	void EndAttachmentWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData) override;
+	void EndMessageWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData) override;
 
 	WCHAR m_szMailboxTablePathRoot[MAX_PATH];
 	WCHAR m_szFolderPathRoot[MAX_PATH];

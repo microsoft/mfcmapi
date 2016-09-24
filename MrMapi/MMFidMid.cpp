@@ -1,12 +1,11 @@
 #include "stdafx.h"
-#include "..\stdafx.h"
 #include "MrMAPI.h"
 #include "MMFidMid.h"
-#include "..\MAPIFunctions.h"
-#include "..\MapiProcessor.h"
-#include "..\ExtraPropTags.h"
-#include "..\SmartView\SmartView.h"
-#include "..\String.h"
+#include "../MAPIFunctions.h"
+#include "../MapiProcessor.h"
+#include "../ExtraPropTags.h"
+#include "../SmartView/SmartView.h"
+#include "../String.h"
 
 void PrintFolder(wstring szFid, LPCTSTR szFolder)
 {
@@ -15,7 +14,7 @@ void PrintFolder(wstring szFid, LPCTSTR szFolder)
 
 void PrintMessage(LPCWSTR szMid, bool fAssociated, wstring szSubject, wstring szClass)
 {
-	wprintf(L"     %-15ws %wc %ws (%ws)\n", szMid, (fAssociated ? L'A' : L'R'), szSubject.c_str(), szClass.c_str());
+	wprintf(L" %-15ws %wc %ws (%ws)\n", szMid, fAssociated ? L'A' : L'R', szSubject.c_str(), szClass.c_str());
 }
 
 class CFindFidMid : public CMAPIProcessor
@@ -25,11 +24,11 @@ public:
 	void InitFidMid(wstring szFid, wstring szMid, bool bMid);
 
 private:
-	virtual bool ContinueProcessingFolders();
-	virtual bool ShouldProcessContentsTable();
-	virtual void BeginFolderWork();
-	virtual void BeginContentsTableWork(ULONG ulFlags, ULONG ulCountRows);
-	virtual bool DoContentsTablePerRowWork(_In_ LPSRow lpSRow, ULONG ulCurRow);
+	bool ContinueProcessingFolders() override;
+	bool ShouldProcessContentsTable() override;
+	void BeginFolderWork() override;
+	void BeginContentsTableWork(ULONG ulFlags, ULONG ulCountRows) override;
+	bool DoContentsTablePerRowWork(_In_ LPSRow lpSRow, ULONG ulCurRow) override;
 
 	wstring m_szFid;
 	wstring m_szMid;
@@ -44,6 +43,7 @@ private:
 
 CFindFidMid::CFindFidMid()
 {
+	m_bMid = false;
 	m_fFIDMatch = false;
 	m_fFIDExactMatch = false;
 	m_fFIDPrinted = false;
@@ -67,7 +67,7 @@ bool MatchFid(wstring inputFid, wstring currentFid)
 
 	auto pos = currentFid.find('-');
 	if (pos == string::npos) return false;
-	wstring trimmedFid = currentFid.substr(pos + 1, string::npos);
+	auto trimmedFid = currentFid.substr(pos + 1, string::npos);
 	if (_wcsicmp(inputFid.c_str(), trimmedFid.c_str()) == 0)
 	{
 		return true;
@@ -85,9 +85,9 @@ void CFindFidMid::BeginFolderWork()
 	m_szCurrentFid.clear();
 	if (!m_lpFolder) return;
 
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	ULONG ulProps = NULL;
-	LPSPropValue lpProps = NULL;
+	LPSPropValue lpProps = nullptr;
 
 	enum
 	{
@@ -97,20 +97,20 @@ void CFindFidMid::BeginFolderWork()
 	};
 	static const SizedSPropTagArray(NUM_COLS, sptaFolderProps) =
 	{
-		NUM_COLS,
-		PR_DISPLAY_NAME_W,
-		PidTagFolderId
+	NUM_COLS,
+	PR_DISPLAY_NAME_W,
+	PidTagFolderId
 	};
 
 	WC_H_GETPROPS(m_lpFolder->GetProps(
-		(LPSPropTagArray)&sptaFolderProps,
+		LPSPropTagArray(&sptaFolderProps),
 		NULL,
 		&ulProps,
 		&lpProps));
 	DebugPrint(DBGGeneric, L"CFindFidMid::DoFolderPerHierarchyTableRowWork: m_szFolderOffset %ws\n", LPCTSTRToWstring(m_szFolderOffset).c_str());
 
 	// Now get the FID
-	LPWSTR lpszDisplayName = NULL;
+	LPWSTR lpszDisplayName = nullptr;
 
 	if (lpProps && PR_DISPLAY_NAME_W == lpProps[ePR_DISPLAY_NAME_W].ulPropTag)
 	{
@@ -172,21 +172,18 @@ bool CFindFidMid::ShouldProcessContentsTable()
 
 void CFindFidMid::BeginContentsTableWork(ULONG ulFlags, ULONG /*ulCountRows*/)
 {
-	m_fAssociated = ((ulFlags & MAPI_ASSOCIATED) == MAPI_ASSOCIATED);
+	m_fAssociated = (ulFlags & MAPI_ASSOCIATED) == MAPI_ASSOCIATED;
 }
 
 bool CFindFidMid::DoContentsTablePerRowWork(_In_ LPSRow lpSRow, ULONG /*ulCurRow*/)
 {
 	if (!lpSRow) return false;
 
-	LPSPropValue lpPropMid = NULL;
-	LPSPropValue lpPropSubject = NULL;
-	LPSPropValue lpPropClass = NULL;
 	wstring lpszThisMid;
 	wstring lpszSubject;
 	wstring lpszClass;
 
-	lpPropMid = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PidTagMid);
+	auto lpPropMid = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PidTagMid);
 	if (lpPropMid)
 	{
 		lpszThisMid = FidMidToSzString(lpPropMid->Value.li.QuadPart, false);
@@ -209,13 +206,13 @@ bool CFindFidMid::DoContentsTablePerRowWork(_In_ LPSRow lpSRow, ULONG /*ulCurRow
 			m_fFIDPrinted = true;
 		}
 
-		lpPropSubject = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PR_SUBJECT);
+		auto lpPropSubject = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PR_SUBJECT);
 		if (lpPropSubject)
 		{
 			lpszSubject = LPCTSTRToWstring(lpPropSubject->Value.LPSZ);
 		}
 
-		lpPropClass = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PR_MESSAGE_CLASS);
+		auto lpPropClass = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PR_MESSAGE_CLASS);
 		if (lpPropClass)
 		{
 			lpszClass = LPCTSTRToWstring(lpPropClass->Value.LPSZ);
@@ -241,8 +238,8 @@ void DumpFidMid(
 	RegKeys[regkeyMDB_ONLINE].ulCurDWORD = true;
 
 	DebugPrint(DBGGeneric, L"DumpFidMid: Outputting from profile %ws. FID: %ws, MID: %ws\n", lpszProfile, lpszFid.c_str(), lpszMid.c_str());
-	HRESULT hRes = S_OK;
-	LPMAPIFOLDER lpFolder = NULL;
+	auto hRes = S_OK;
+	LPMAPIFOLDER lpFolder = nullptr;
 
 	if (lpMDB)
 	{
@@ -256,7 +253,7 @@ void DumpFidMid(
 			NULL,
 			MAPI_BEST_ACCESS,
 			NULL,
-			(LPUNKNOWN*)&lpFolder));
+			reinterpret_cast<LPUNKNOWN*>(&lpFolder)));
 	}
 
 	if (lpFolder)
