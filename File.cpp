@@ -362,45 +362,8 @@ wstring BuildFileNameAndPath(
 	return szFileOut;
 }
 
-// Takes szFileIn and copies it to szFileOut, replacing non file system characters with underscores
+// Processes szFileIn, replacing non file system characters with underscores
 // Do NOT call with full path - just file names
-// Resulting string will have no more than cchCharsToCopy characters
-_Check_return_ HRESULT SanitizeFileNameA(
-	_Inout_z_count_(cchFileOut) LPSTR szFileOut, // output buffer
-	size_t cchFileOut, // length of output buffer
-	_In_z_ LPCSTR szFileIn, // File name in
-	size_t cchCharsToCopy)
-{
-	auto hRes = S_OK;
-	LPSTR szCur = nullptr;
-
-	EC_H(StringCchCopyNA(szFileOut, cchFileOut, szFileIn, cchCharsToCopy));
-	while (NULL != (szCur = strpbrk(szFileOut, "^&*-+=[]\\|;:\",<>/?"))) // STRING_OK
-	{
-		*szCur = '_';
-	}
-
-	return hRes;
-}
-
-_Check_return_ HRESULT SanitizeFileNameW(
-	_Inout_z_count_(cchFileOut) LPWSTR szFileOut, // output buffer
-	size_t cchFileOut, // length of output buffer
-	_In_z_ LPCWSTR szFileIn, // File name in
-	size_t cchCharsToCopy)
-{
-	auto hRes = S_OK;
-	LPWSTR szCur = nullptr;
-
-	EC_H(StringCchCopyNW(szFileOut, cchFileOut, szFileIn, cchCharsToCopy));
-	while (NULL != (szCur = wcspbrk(szFileOut, L"^&*-+=[]\\|;:\",<>/?\r\n"))) // STRING_OK
-	{
-		*szCur = L'_';
-	}
-
-	return hRes;
-}
-
 wstring SanitizeFileNameW(_In_ wstring szFileIn)
 {
 	std::replace_if(

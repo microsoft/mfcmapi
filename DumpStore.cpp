@@ -15,7 +15,6 @@ CDumpStore::CDumpStore()
 {
 	m_szMessageFileName[0] = L'\0';
 	m_szMailboxTablePathRoot[0] = L'\0';
-	m_szFolderPathRoot[0] = L'\0';
 
 	m_szFolderPath = nullptr;
 
@@ -54,15 +53,7 @@ void CDumpStore::InitMessagePath(_In_z_ LPCWSTR szMessageFileName)
 
 void CDumpStore::InitFolderPathRoot(_In_z_ LPCWSTR szFolderPathRoot)
 {
-	if (szFolderPathRoot)
-	{
-		auto hRes = S_OK;
-		EC_H(StringCchCopyW(m_szFolderPathRoot, _countof(m_szFolderPathRoot), szFolderPathRoot));
-	}
-	else
-	{
-		m_szFolderPathRoot[0] = L'\0';
-	}
+	m_szFolderPathRoot = szFolderPathRoot;
 }
 
 void CDumpStore::InitMailboxTablePathRoot(_In_z_ LPCWSTR szMailboxTablePathRoot)
@@ -147,22 +138,14 @@ void CDumpStore::DoMailboxTablePerRowWork(_In_ LPMDB lpMDB, _In_ LPSRow lpSRow, 
 	// build a path for our store's folder output:
 	if (CheckStringProp(lpEmailAddress, PT_TSTRING) && CheckStringProp(lpDisplayName, PT_TSTRING))
 	{
-		TCHAR szTemp[MAX_PATH / 2] = { 0 };
-		// Clean up the file name before appending it to the path
-		EC_H(SanitizeFileName(szTemp, _countof(szTemp), lpDisplayName->Value.LPSZ, _countof(szTemp)));
+		auto szTemp = SanitizeFileNameW(LPCTSTRToWstring(lpDisplayName->Value.LPSZ));
 
-#ifdef UNICODE
-		EC_H(StringCchPrintfW(m_szFolderPathRoot, _countof(m_szFolderPathRoot),
-			L"%s\\%ws", // STRING_OK
-			m_szMailboxTablePathRoot, szTemp));
-#else
-		EC_H(StringCchPrintfW(m_szFolderPathRoot, _countof(m_szFolderPathRoot),
-			L"%s\\%hs", // STRING_OK
-			m_szMailboxTablePathRoot, szTemp));
-#endif
+		m_szFolderPathRoot = format(
+			L"%ws\\%ws", // STRING_OK
+			m_szMailboxTablePathRoot, szTemp.c_str());
 
 		// suppress any error here since the folder may already exist
-		WC_B(CreateDirectoryW(m_szFolderPathRoot, NULL));
+		WC_B(CreateDirectoryW(m_szFolderPathRoot.c_str(), NULL));
 	}
 
 	OutputToFile(m_fMailboxTable, L"</mailbox>\n");
@@ -191,18 +174,11 @@ void CDumpStore::EndStoreWork()
 void CDumpStore::BeginFolderWork()
 {
 	auto hRes = S_OK;
-	WCHAR szFolderPath[MAX_PATH];
-#ifdef UNICODE
-	WC_H(StringCchPrintfW(szFolderPath, _countof(szFolderPath),
-		L"%s%ws", // STRING_OK
-		m_szFolderPathRoot, m_szFolderOffset));
-#else
-	WC_H(StringCchPrintfW(szFolderPath, _countof(szFolderPath),
-		L"%s%hs", // STRING_OK
-		m_szFolderPathRoot, m_szFolderOffset));
-#endif
+	auto szFolderPath = format(
+		L"%ws%hs", // STRING_OK
+		m_szFolderPathRoot, LPCTSTRToWstring(m_szFolderOffset).c_str());
 
-	WC_H(CopyStringW(&m_szFolderPath, szFolderPath, NULL));
+	WC_H(CopyStringW(&m_szFolderPath, szFolderPath.c_str(), NULL));
 
 	// We've done all the setup we need. If we're just outputting a list, we don't need to do the rest
 	if (m_bOutputList) return;
@@ -270,7 +246,7 @@ void CDumpStore::EndFolderWork()
 
 void CDumpStore::BeginContentsTableWork(ULONG ulFlags, ULONG ulCountRows)
 {
-	if (!m_szFolderPathRoot) return;
+	if (m_szFolderPathRoot.empty()) return;
 	if (m_bOutputList)
 	{
 		_tprintf(_T("Subject, Message Class, Filename\n"));

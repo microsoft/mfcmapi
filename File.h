@@ -2,14 +2,7 @@
 // File.h : header file
 
 _Check_return_ HRESULT GetDirectoryPath(HWND hWnd, _Inout_z_ LPWSTR szPath);
-_Check_return_ HRESULT SanitizeFileNameA(_Inout_z_count_(cchFileOut) LPSTR szFileOut, size_t cchFileOut, _In_z_ LPCSTR szFileIn, size_t cchCharsToCopy);
-_Check_return_ HRESULT SanitizeFileNameW(_Inout_z_count_(cchFileOut) LPWSTR szFileOut, size_t cchFileOut, _In_z_ LPCWSTR szFileIn, size_t cchCharsToCopy);
 wstring SanitizeFileNameW(_In_ wstring szFileIn);
-#ifdef UNICODE
-#define SanitizeFileName SanitizeFileNameW
-#else
-#define SanitizeFileName SanitizeFileNameA
-#endif
 
 wstring BuildFileName(
 	_In_ wstring szExt,
