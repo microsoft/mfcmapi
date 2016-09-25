@@ -297,20 +297,11 @@ void OutputMessageList(
 	_In_z_ LPWSTR szFolderPath,
 	bool bOutputMSG)
 {
-	auto hRes = S_OK;
-
 	if (!lpSRow || !szFolderPath) return;
-
-	WCHAR szFileName[MAX_PATH] = { 0 };
-
-	wstring szSubj;
-	LPSBinary lpRecordKey = nullptr;
-	LPWSTR szTemp = nullptr;
-	auto szExt = L".xml"; // STRING_OK
-	if (bOutputMSG) szExt = L".msg"; // STRING_OK
 
 	// Get required properties from the message
 	auto lpTemp = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PR_SUBJECT_W);
+	wstring szSubj;
 	if (lpTemp && CheckStringProp(lpTemp, PT_UNICODE))
 	{
 		szSubj = lpTemp->Value.lpszW;
@@ -320,10 +311,12 @@ void OutputMessageList(
 		lpTemp = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PR_SUBJECT_A);
 		if (lpTemp && CheckStringProp(lpTemp, PT_STRING8))
 		{
-			szSubj = LPCSTRToWstring(lpTemp->Value.lpszA);
+			szSubj = stringTowstring(lpTemp->Value.lpszA);
 		}
 	}
+
 	lpTemp = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PR_RECORD_KEY);
+	LPSBinary lpRecordKey = nullptr;
 	if (lpTemp && PR_RECORD_KEY == lpTemp->ulPropTag)
 	{
 		lpRecordKey = &lpTemp->Value.bin;
@@ -331,22 +324,24 @@ void OutputMessageList(
 
 	auto lpMessageClass = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, CHANGE_PROP_TYPE(PR_MESSAGE_CLASS, PT_UNSPECIFIED));
 
-	WC_H(BuildFileNameAndPath(szFileName, _countof(szFileName), szExt, 4, szSubj.c_str(), lpRecordKey, szFolderPath));
-
-	_tprintf(_T("\"%ws\""), szSubj.c_str());
+	wprintf(L"\"%ws\"", szSubj.c_str());
 	if (lpMessageClass)
 	{
 		if (PT_STRING8 == PROP_TYPE(lpMessageClass->ulPropTag))
 		{
-			_tprintf(_T(",\"%hs\""), lpMessageClass->Value.lpszA ? lpMessageClass->Value.lpszA : "");
+			wprintf(L",\"%hs\"", lpMessageClass->Value.lpszA ? lpMessageClass->Value.lpszA : "");
 		}
 		else if (PT_UNICODE == PROP_TYPE(lpMessageClass->ulPropTag))
 		{
-			_tprintf(_T(",\"%ws\""), lpMessageClass->Value.lpszW ? lpMessageClass->Value.lpszW : L"");
+			wprintf(L",\"%ws\"", lpMessageClass->Value.lpszW ? lpMessageClass->Value.lpszW : L"");
 		}
 	}
-	_tprintf(_T(",\"%ws\"\n"), szFileName);
-	delete[] szTemp;
+
+	auto szExt = L".xml"; // STRING_OK
+	if (bOutputMSG) szExt = L".msg"; // STRING_OK
+
+	auto szFileName = BuildFileNameAndPath(szExt, szSubj, szFolderPath, lpRecordKey);
+	wprintf(L",\"%ws\"\n", szFileName.c_str());
 }
 
 bool CDumpStore::DoContentsTablePerRowWork(_In_ LPSRow lpSRow, ULONG ulCurRow)
@@ -452,8 +447,10 @@ void OutputBody(_In_ FILE* fMessageProps, _In_ LPMESSAGE lpMessage, ULONG ulBody
 				OutputCDataClose(DBGNoDebug, fMessageProps);
 			}
 		}
+
 		OutputToFile(fMessageProps, L"</body>\n");
 	}
+
 	if (lpRTFUncompressed) lpRTFUncompressed->Release();
 	if (lpStream) lpStream->Release();
 }
@@ -494,39 +491,30 @@ void OutputMessageXML(
 			&lpAllProps));
 	}
 
-	lpMsgData->szFilePath[0] = NULL;
 	// If we've got a parent message, we're an attachment - use attachment filename logic
 	if (lpParentMessageData)
 	{
 		// Take the parent filename/path, remove any extension, and append -Attach.xml
 		// Should we append something for attachment number?
-		size_t cchLen = 0;
 
 		// Copy the source string over
-		WC_H(StringCchCopyW(lpMsgData->szFilePath, _countof(lpMsgData->szFilePath), (static_cast<LPMESSAGEDATA>(lpParentMessageData))->szFilePath));
+		lpMsgData->szFilePath = (static_cast<LPMESSAGEDATA>(lpParentMessageData))->szFilePath;
 
 		// Remove any extension
-		WC_H(StringCchLengthW(lpMsgData->szFilePath, _countof(lpMsgData->szFilePath), &cchLen));
-		while (cchLen > 0 && lpMsgData->szFilePath[cchLen] != L'.') cchLen--;
-		if (lpMsgData->szFilePath[cchLen] == L'.') lpMsgData->szFilePath[cchLen] = L'\0';
+		lpMsgData->szFilePath = lpMsgData->szFilePath.substr(0, lpMsgData->szFilePath.find_last_of(L'.'));
 
-		// build a string for appending
-		WCHAR szNewExt[MAX_PATH];
-		WC_H(StringCchPrintfW(szNewExt, _countof(szNewExt), L"-Attach%u.xml", (static_cast<LPMESSAGEDATA>(lpParentMessageData))->ulCurAttNum)); // STRING_OK
+		// Update file name and add extension
+		lpMsgData->szFilePath += format(L"-Attach%u.xml", (static_cast<LPMESSAGEDATA>(lpParentMessageData))->ulCurAttNum); // STRING_OK
 
-		// append our string
-		WC_H(StringCchCatW(lpMsgData->szFilePath, _countof(lpMsgData->szFilePath), szNewExt));
-
-		OutputToFilef(static_cast<LPMESSAGEDATA>(lpParentMessageData)->fMessageProps, L"<embeddedmessage path=\"%ws\"/>\n", lpMsgData->szFilePath);
+		OutputToFilef(static_cast<LPMESSAGEDATA>(lpParentMessageData)->fMessageProps, L"<embeddedmessage path=\"%ws\"/>\n", lpMsgData->szFilePath.c_str());
 	}
 	else if (szMessageFileName[0]) // if we've got a file name, use it
 	{
-		WC_H(StringCchCopyW(lpMsgData->szFilePath, _countof(lpMsgData->szFilePath), szMessageFileName));
+		lpMsgData->szFilePath = szMessageFileName;
 	}
 	else
 	{
-		LPCWSTR szSubj = nullptr; // BuildFileNameAndPath will substitute a subject if we don't find one
-		LPWSTR szTemp = nullptr;
+		wstring szSubj; // BuildFileNameAndPath will substitute a subject if we don't find one
 		LPSBinary lpRecordKey = nullptr;
 
 		auto lpTemp = PpropFindProp(lpAllProps, cValues, PR_SUBJECT_W);
@@ -539,21 +527,20 @@ void OutputMessageXML(
 			lpTemp = PpropFindProp(lpAllProps, cValues, PR_SUBJECT_A);
 			if (lpTemp && CheckStringProp(lpTemp, PT_STRING8))
 			{
-				WC_H(AnsiToUnicode(lpTemp->Value.lpszA, &szTemp));
-				if (SUCCEEDED(hRes)) szSubj = szTemp;
-				hRes = S_OK;
+				szSubj = stringTowstring(lpTemp->Value.lpszA);
 			}
 		}
+
 		lpTemp = PpropFindProp(lpAllProps, cValues, PR_RECORD_KEY);
 		if (lpTemp && PR_RECORD_KEY == lpTemp->ulPropTag)
 		{
 			lpRecordKey = &lpTemp->Value.bin;
 		}
-		WC_H(BuildFileNameAndPath(lpMsgData->szFilePath, _countof(lpMsgData->szFilePath), L".xml", 4, szSubj, lpRecordKey, szFolderPath)); // STRING_OK
-		delete[] szTemp;
+
+		lpMsgData->szFilePath = BuildFileNameAndPath(L".xml", szSubj, szFolderPath, lpRecordKey); // STRING_OK
 	}
 
-	DebugPrint(DBGGeneric, L"OutputMessagePropertiesToFile: Saving to \"%ws\"\n", lpMsgData->szFilePath);
+	DebugPrint(DBGGeneric, L"OutputMessagePropertiesToFile: Saving to \"%ws\"\n", lpMsgData->szFilePath.c_str());
 	lpMsgData->fMessageProps = MyOpenFile(lpMsgData->szFilePath, true);
 
 	if (lpMsgData->fMessageProps)
@@ -641,14 +628,11 @@ void OutputMessageMSG(
 
 	DebugPrint(DBGGeneric, L"OutputMessageMSG: Saving message to \"%ws\"\n", szFolderPath);
 
-	WCHAR szFileName[MAX_PATH] = { 0 };
-
-	LPCWSTR szSubj = nullptr;
+	wstring szSubj;
 
 	ULONG cProps = 0;
 	LPSPropValue lpsProps = nullptr;
 	LPSBinary lpRecordKey = nullptr;
-
 
 	// Get required properties from the message
 	EC_H_GETPROPS(lpMessage->GetProps(
@@ -668,13 +652,14 @@ void OutputMessageMSG(
 			lpRecordKey = &lpsProps[msgPR_RECORD_KEY].Value.bin;
 		}
 	}
-	WC_H(BuildFileNameAndPath(szFileName, _countof(szFileName), L".msg", 4, szSubj, lpRecordKey, szFolderPath)); // STRING_OK
 
-	DebugPrint(DBGGeneric, L"Saving to = \"%ws\"\n", szFileName);
+	auto szFileName = BuildFileNameAndPath(L".msg", szSubj, szFolderPath, lpRecordKey); // STRING_OK
+
+	DebugPrint(DBGGeneric, L"Saving to = \"%ws\"\n", szFileName.c_str());
 
 	WC_H(SaveToMSG(
 		lpMessage,
-		szFileName,
+		szFileName.c_str(),
 		fMapiUnicode ? true : false,
 		NULL,
 		false));

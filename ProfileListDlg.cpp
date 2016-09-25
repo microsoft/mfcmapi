@@ -589,19 +589,15 @@ void CProfileListDlg::OnExportProfile()
 	auto lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 	if (lpListData && lpListData->Contents())
 	{
-		WCHAR szFileName[MAX_PATH] = { 0 };
 		INT_PTR iDlgRet = IDOK;
 
 		auto szProfileName = stringTowstring(lpListData->Contents()->m_szProfileDisplayName);
-		WC_H(BuildFileNameAndPath(
-			szFileName,
-			_countof(szFileName),
+		auto szFileName = BuildFileNameAndPath(
 			L".xml", // STRING_OK
-			4,
-			szProfileName.c_str(),
-			NULL,
-			NULL));
-		DebugPrint(DBGGeneric, L"BuildFileNameAndPath built file name \"%ws\"\n", szFileName);
+			szProfileName,
+			emptystring,
+			nullptr);
+		DebugPrint(DBGGeneric, L"BuildFileNameAndPath built file name \"%ws\"\n", szFileName.c_str());
 
 		auto szFileSpec = loadstring(IDS_XMLFILES);
 		CFileDialogExW dlgFilePicker;

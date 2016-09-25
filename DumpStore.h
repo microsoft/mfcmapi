@@ -5,7 +5,7 @@
 
 struct MessageData
 {
-	WCHAR szFilePath[MAX_PATH]; // Holds file name prepended with path
+	wstring szFilePath; // Holds file name prepended with path
 	FILE* fMessageProps;
 	ULONG ulCurAttNum;
 };
