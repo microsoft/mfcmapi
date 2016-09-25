@@ -52,7 +52,7 @@ private:
 	void EndMessageWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData) override;
 
 	WCHAR m_szMailboxTablePathRoot[MAX_PATH];
-	WCHAR m_szFolderPathRoot[MAX_PATH];
+	wstring m_szFolderPathRoot;
 	WCHAR m_szMessageFileName[MAX_PATH];
 	LPWSTR m_szFolderPath; // Root plus offset
 
