@@ -10,7 +10,6 @@ CMAPIProcessor::CMAPIProcessor()
 	m_lpSession = nullptr;
 	m_lpMDB = nullptr;
 	m_lpFolder = nullptr;
-	m_szFolderOffset = nullptr;
 	m_lpListHead = nullptr;
 	m_lpListTail = nullptr;
 	m_lpResFolderContents = nullptr;
@@ -21,7 +20,6 @@ CMAPIProcessor::CMAPIProcessor()
 CMAPIProcessor::~CMAPIProcessor()
 {
 	FreeFolderList();
-	MAPIFreeBuffer(m_szFolderOffset);
 	if (m_lpFolder) m_lpFolder->Release();
 	if (m_lpMDB) m_lpMDB->Release();
 	if (m_lpSession) m_lpSession->Release();
@@ -48,9 +46,7 @@ void CMAPIProcessor::InitFolder(_In_ LPMAPIFOLDER lpFolder)
 	if (m_lpFolder) m_lpFolder->Release();
 	m_lpFolder = lpFolder;
 	if (m_lpFolder) m_lpFolder->AddRef();
-	MAPIFreeBuffer(m_szFolderOffset);
-	auto hRes = S_OK;
-	WC_H(CopyString(&m_szFolderOffset, _T("\\"), NULL)); // STRING_OK
+	m_szFolderOffset = L"\\"; // STRING_OK
 }
 
 void CMAPIProcessor::InitFolderContentsRestriction(_In_opt_ LPSRestriction lpRes)
@@ -176,7 +172,7 @@ void CMAPIProcessor::ProcessStore()
 
 	BeginStoreWork();
 
-	AddFolderToFolderList(nullptr, _T("\\")); // STRING_OK
+	AddFolderToFolderList(nullptr, L"\\"); // STRING_OK
 
 	ProcessFolders(true, true, true);
 
@@ -305,14 +301,14 @@ void CMAPIProcessor::ProcessFolder(bool bDoRegular,
 						if (CheckStringProp(lpFolderDisplayName, PT_TSTRING))
 						{
 							// Clean up the folder name before appending it to the offset
-							szSubFolderOffset = LPCTSTRToWstring(m_szFolderOffset) + L'\\' + SanitizeFileNameW(LPCTSTRToWstring(lpFolderDisplayName->Value.LPSZ)) + L'\\'; // STRING_OK
+							szSubFolderOffset = m_szFolderOffset + SanitizeFileNameW(LPCTSTRToWstring(lpFolderDisplayName->Value.LPSZ)) + L'\\'; // STRING_OK
 						}
 						else
 						{
-							szSubFolderOffset = LPCTSTRToWstring(m_szFolderOffset) + L"\\UnknownFolder\\"; // STRING_OK
+							szSubFolderOffset = m_szFolderOffset + L"UnknownFolder\\"; // STRING_OK
 						}
 
-						AddFolderToFolderList(&lpRows->aRow[ulRow].lpProps[EID].Value.bin, wstringToCString(szSubFolderOffset));
+						AddFolderToFolderList(&lpRows->aRow[ulRow].lpProps[EID].Value.bin, szSubFolderOffset);
 					}
 				}
 			}
@@ -633,7 +629,7 @@ void CMAPIProcessor::ProcessAttachments(_In_ LPMESSAGE lpMessage, bool bHasAttac
 // --------------------------------------------------------------------------------- //
 // List Functions
 // --------------------------------------------------------------------------------- //
-void CMAPIProcessor::AddFolderToFolderList(_In_opt_ LPSBinary lpFolderEID, _In_z_ LPCTSTR szFolderOffsetPath)
+void CMAPIProcessor::AddFolderToFolderList(_In_opt_ LPSBinary lpFolderEID, _In_ wstring szFolderOffsetPath)
 {
 	auto hRes = S_OK;
 	LPFOLDERNODE lpNewNode = nullptr;
@@ -650,7 +646,7 @@ void CMAPIProcessor::AddFolderToFolderList(_In_opt_ LPSBinary lpFolderEID, _In_z
 		WC_H(CopySBinary(lpNewNode->lpFolderEID, lpFolderEID, lpNewNode));
 	}
 
-	WC_H(CopyString(&lpNewNode->szFolderOffsetPath, szFolderOffsetPath, lpNewNode));
+	lpNewNode->szFolderOffsetPath = szFolderOffsetPath;
 
 	if (!m_lpListHead)
 	{
@@ -670,8 +666,7 @@ void CMAPIProcessor::OpenFirstFolderInList()
 {
 	auto hRes = S_OK;
 	LPMAPIFOLDER lpFolder = nullptr;
-	MAPIFreeBuffer(m_szFolderOffset);
-	m_szFolderOffset = nullptr;
+	m_szFolderOffset.clear();
 
 	if (m_lpFolder) m_lpFolder->Release();
 	m_lpFolder = nullptr;
@@ -691,9 +686,9 @@ void CMAPIProcessor::OpenFirstFolderInList()
 			MAPI_BEST_ACCESS,
 			NULL,
 			reinterpret_cast<LPUNKNOWN*>(&lpFolder)));
-		if (m_lpListHead->szFolderOffsetPath)
+		if (!m_lpListHead->szFolderOffsetPath.empty())
 		{
-			WC_H(CopyString(&m_szFolderOffset, m_lpListHead->szFolderOffsetPath, NULL));
+			m_szFolderOffset = m_lpListHead->szFolderOffsetPath;
 		}
 
 		auto lpTempNode = m_lpListHead;
