@@ -205,7 +205,7 @@ wstring TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB, bool
 		}
 	}
 
-	szRet = formatmessage(szFormatString,
+	szRet = format(szFormatString.c_str(),
 		ulPropTag,
 		TypeToString(ulPropTag).c_str(),
 		szExactMatches.c_str(),
@@ -874,11 +874,11 @@ void NameIDToStrings(_In_ LPMAPINAMEID lpNameID,
 			DebugPrint(DBGNamedProp, L"lpNameID->Kind.lpwstrName = \"%hs\"\n", (LPCSTR)lpNameID->Kind.lpwstrName);
 
 			wstring szComment = loadstring(IDS_NAMEWASANSI);
-			szPropName = format(L"sz: \"%hs\" %ws", (LPSTR)lpNameID->Kind.lpwstrName, szComment);
+			szPropName = format(L"sz: \"%hs\" %ws", (LPSTR)lpNameID->Kind.lpwstrName, szComment.c_str());
 
 			szDASL = format(L"string/%ws/%hs", // STRING_OK
 				szDASLGuid.c_str(),
-				lpNameID->Kind.lpwstrName);
+				LPSTR(lpNameID->Kind.lpwstrName));
 		}
 	}
 

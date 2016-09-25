@@ -27,6 +27,10 @@ wstring formatV(wstring const& szMsg, va_list argList)
 	return L"";
 }
 
+#ifdef CHECKFORMATPARAMS
+#undef format
+#endif
+
 // Takes format strings with %x %d...
 wstring format(LPCWSTR szMsg, ...)
 {
@@ -85,16 +89,6 @@ wstring formatmessage(DWORD dwID, ...)
 	va_list argList;
 	va_start(argList, dwID);
 	auto ret = formatmessageV(loadstring(dwID), argList);
-	va_end(argList);
-	return ret;
-}
-
-// Takes format strings with %1 %2 %3...
-wstring formatmessage(wstring const szMsg, ...)
-{
-	va_list argList;
-	va_start(argList, szMsg);
-	auto ret = formatmessageV(szMsg, argList);
 	va_end(argList);
 	return ret;
 }

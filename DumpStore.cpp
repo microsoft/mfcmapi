@@ -176,7 +176,7 @@ void CDumpStore::BeginFolderWork()
 	auto hRes = S_OK;
 	auto szFolderPath = format(
 		L"%ws%ws", // STRING_OK
-		m_szFolderPathRoot, m_szFolderOffset);
+		m_szFolderPathRoot.c_str(), m_szFolderOffset.c_str());
 
 	WC_H(CopyStringW(&m_szFolderPath, szFolderPath.c_str(), NULL));
 
