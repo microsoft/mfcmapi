@@ -12,23 +12,7 @@
 #include "MFCUtilityFunctions.h"
 #include <shlobj.h>
 #include "Dumpstore.h"
-
-// Add current Entry ID to file name
-_Check_return_ HRESULT AppendEntryID(_Inout_z_count_(cchFileName) LPWSTR szFileName, size_t cchFileName, _In_ LPSBinary lpBin, size_t cchMaxAppend)
-{
-	auto hRes = S_OK;
-	if (!lpBin || !lpBin->cb || !szFileName || cchMaxAppend <= 1) return MAPI_E_INVALID_PARAMETER;
-
-	auto szBin = BinToHexString(lpBin, false);
-
-	if (!szBin.empty())
-	{
-		EC_H(StringCchCatNW(szFileName, cchFileName, L"_", 1)); // STRING_OK
-		EC_H(StringCchCatNW(szFileName, cchFileName, szBin.c_str(), cchMaxAppend - 1));
-	}
-
-	return hRes;
-}
+#include <algorithm>
 
 _Check_return_ HRESULT GetDirectoryPath(HWND hWnd, _Inout_z_ LPWSTR szPath)
 {
@@ -244,7 +228,7 @@ _Check_return_ HRESULT LoadFromTNEF(_In_z_ LPCWSTR szMessageFile, _In_ LPADRBOOK
 	EC_H(OpenTnefStreamEx(
 		NULL,
 		lpStream,
-		static_cast<LPTSTR>("winmail.dat"), // STRING_OK - despite its signature, this function is ANSI only
+		LPTSTR("winmail.dat"), // STRING_OK - despite its signature, this function is ANSI only
 		TNEF_DECODE,
 		lpMessage,
 		dwKey,
@@ -273,19 +257,11 @@ _Check_return_ HRESULT LoadFromTNEF(_In_z_ LPCWSTR szMessageFile, _In_ LPADRBOOK
 }
 
 // Builds a file name out of the passed in message and extension
-_Check_return_ HRESULT BuildFileName(_Inout_z_count_(cchFileOut) LPWSTR szFileOut,
-	size_t cchFileOut,
-	_In_z_count_(cchExt) LPCWSTR szExt,
-	size_t cchExt,
+wstring BuildFileName(
+	_In_ wstring szExt,
 	_In_ LPMESSAGE lpMessage)
 {
-	auto hRes = S_OK;
-	ULONG ulProps = NULL;
-	LPSPropValue lpProps = nullptr;
-	LPWSTR szSubj = nullptr;
-	LPSBinary lpRecordKey = nullptr;
-
-	if (!lpMessage || !szFileOut) return MAPI_E_INVALID_PARAMETER;
+	if (!lpMessage) return emptystring;
 
 	enum
 	{
@@ -302,6 +278,9 @@ _Check_return_ HRESULT BuildFileName(_Inout_z_count_(cchFileOut) LPWSTR szFileOu
 
 	// Get subject line of message
 	// This will be used as the new file name.
+	auto hRes = S_OK;
+	ULONG ulProps = NULL;
+	LPSPropValue lpProps = nullptr;
 	WC_H_GETPROPS(lpMessage->GetProps(
 		LPSPropTagArray(&sptaMessageProps),
 		fMapiUnicode,
@@ -309,125 +288,78 @@ _Check_return_ HRESULT BuildFileName(_Inout_z_count_(cchFileOut) LPWSTR szFileOu
 		&lpProps));
 	hRes = S_OK;
 
-	szFileOut[0] = NULL;
+	wstring szSubj;
 	if (CheckStringProp(&lpProps[ePR_SUBJECT_W], PT_UNICODE))
 	{
 		szSubj = lpProps[ePR_SUBJECT_W].Value.lpszW;
 	}
+
+	LPSBinary lpRecordKey = nullptr;
 	if (PR_RECORD_KEY == lpProps[ePR_RECORD_KEY].ulPropTag)
 	{
 		lpRecordKey = &lpProps[ePR_RECORD_KEY].Value.bin;
 	}
 
-	EC_H(BuildFileNameAndPath(
-		szFileOut,
-		cchFileOut,
+	auto szFileOut = BuildFileNameAndPath(
 		szExt,
-		cchExt,
 		szSubj,
-		lpRecordKey,
-		NULL));
+		emptystring,
+		lpRecordKey);
 
 	MAPIFreeBuffer(lpProps);
-	return hRes;
+	return szFileOut;
 }
 
-// Problem here is that cchFileOut can't be longer than MAX_PATH
-// So the file name we generate must be shorter than MAX_PATH
+// The file name we generate should be shorter than MAX_PATH
 // This includes our directory name too!
-// So directory is part of the input and output now
 #define MAXSUBJ 25
 #define MAXBIN 141
-_Check_return_ HRESULT BuildFileNameAndPath(_Inout_z_count_(cchFileOut) LPWSTR szFileOut,
-	size_t cchFileOut,
-	_In_z_count_(cchExt) LPCWSTR szExt,
-	size_t cchExt,
-	_In_opt_z_ LPCWSTR szSubj,
-	_In_opt_ LPSBinary lpBin,
-	_In_opt_z_ LPCWSTR szRootPath)
+wstring BuildFileNameAndPath(
+	_In_ wstring szExt,
+	_In_ wstring szSubj,
+	_In_ wstring szRootPath,
+	_In_opt_ LPSBinary lpBin)
 {
 	auto hRes = S_OK;
 
-	if (!szFileOut) return MAPI_E_INVALID_PARAMETER;
-	if (cchFileOut > MAX_PATH) return MAPI_E_INVALID_PARAMETER;
-
-	szFileOut[0] = L'\0'; // initialize our string to NULL
-	auto cchCharRemaining = cchFileOut;
-
-	size_t cchShortPath = NULL;
-
 	// set up the path portion of the output:
 	WCHAR szShortPath[MAX_PATH] = { 0 };
-	if (szRootPath)
+	if (!szRootPath.empty())
 	{
+		size_t cchShortPath = NULL;
 		// Use the short path to give us as much room as possible
-		EC_D(cchShortPath, GetShortPathNameW(szRootPath, szShortPath, _countof(szShortPath)));
-		// stuff a slash in there if we need one
-		if (cchShortPath && cchShortPath + 1 < _countof(szShortPath))
+		EC_D(cchShortPath, GetShortPathNameW(szRootPath.c_str(), szShortPath, _countof(szShortPath)));
+		szRootPath = szShortPath;
+		if (szRootPath.back() != L'\\')
 		{
-			if (szShortPath[cchShortPath - 1] != L'\\')
-			{
-				szShortPath[cchShortPath] = L'\\';
-				szShortPath[cchShortPath + 1] = L'\0';
-				cchShortPath++;
-			}
-
-			EC_H(StringCchCopyW(szFileOut, cchFileOut, szShortPath));
-			cchCharRemaining -= cchShortPath;
+			szRootPath += L'\\';
 		}
 	}
 
-	// We now have cchCharRemaining characters in which to work
-	// Suppose this is 0? Need at least 12 for an 8.3 name
-
-	size_t cchBin = 0;
-	if (lpBin) cchBin = 2 * lpBin->cb + 1; // bin + '_'
-
-	size_t cchSubj = 14; // length of 'UnknownSubject'
-	if (szSubj)
+	if (!szSubj.empty())
 	{
-		EC_H(StringCchLengthW(szSubj, STRSAFE_MAX_CCH, &cchSubj));
-	}
-
-	if (cchCharRemaining < cchSubj + cchBin + cchExt + 1)
-	{
-		// don't have enough space - need to shorten things:
-		if (cchSubj > MAXSUBJ) cchSubj = MAXSUBJ;
-		if (cchBin > MAXBIN) cchBin = MAXBIN;
-	}
-	if (cchCharRemaining < cchSubj + cchBin + cchExt + 1)
-	{
-		// still don't have enough space - need to shorten things:
-		// TODO: generate a unique 8.3 name and return it
-		return MAPI_E_INVALID_PARAMETER;
-	}
-
-	if (szSubj)
-	{
-		EC_H(SanitizeFileNameW(
-			szFileOut + cchShortPath,
-			cchCharRemaining,
-			szSubj,
-			cchSubj));
+		szSubj = SanitizeFileNameW(szSubj);
 	}
 	else
 	{
 		// We must have failed to get a subject before. Make one up.
-		EC_H(StringCchCopyW(szFileOut + cchShortPath, cchCharRemaining, L"UnknownSubject")); // STRING_OK
+		szSubj = L"UnknownSubject"; // STRING_OK
 	}
 
+	wstring szBin;
 	if (lpBin && lpBin->cb)
 	{
-		EC_H(AppendEntryID(szFileOut, cchFileOut, lpBin, cchBin));
+		szBin = L"_" + BinToHexString(lpBin, false);
 	}
 
-	// Add our extension
-	if (szExt && cchExt)
+	auto szFileOut = szRootPath + szSubj + szBin + szExt;
+
+	if (szFileOut.length() > MAX_PATH)
 	{
-		EC_H(StringCchCatNW(szFileOut, cchFileOut, szExt, cchExt));
+		szFileOut = szRootPath + szSubj.substr(0, MAXSUBJ) + szBin.substr(0, MAXBIN) + szExt;
 	}
 
-	return hRes;
+	return szFileOut;
 }
 
 // Takes szFileIn and copies it to szFileOut, replacing non file system characters with underscores
@@ -467,6 +399,17 @@ _Check_return_ HRESULT SanitizeFileNameW(
 	}
 
 	return hRes;
+}
+
+wstring SanitizeFileNameW(_In_ wstring szFileIn)
+{
+	std::replace_if(
+		szFileIn.begin(),
+		szFileIn.end(),
+		[](WCHAR chr) { return wstring(L"^&*-+=[]\\|;:\",<>/?\r\n").find(chr) != wstring::npos; },
+		L'_');
+
+	return szFileIn;
 }
 
 void SaveFolderContentsToTXT(_In_ LPMDB lpMDB, _In_ LPMAPIFOLDER lpFolder, bool bRegular, bool bAssoc, bool bDescend, HWND hWnd)
@@ -558,21 +501,20 @@ _Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_z
 					reinterpret_cast<LPUNKNOWN*>(&lpMessage)));
 				if (!lpMessage) continue;
 
-				WCHAR szFileName[MAX_PATH] = { 0 };
-
 				auto szSubj = L"UnknownSubject"; // STRING_OK
 
 				if (CheckStringProp(&pRows->aRow->lpProps[fldPR_SUBJECT_W], PT_UNICODE))
 				{
 					szSubj = pRows->aRow->lpProps[fldPR_SUBJECT_W].Value.lpszW;
 				}
-				EC_H(BuildFileNameAndPath(szFileName, _countof(szFileName), L".msg", 4, szSubj, &pRows->aRow->lpProps[fldPR_RECORD_KEY].Value.bin, szPathName)); // STRING_OK
+
+				auto szFileName = BuildFileNameAndPath(L".msg", szSubj, szPathName, &pRows->aRow->lpProps[fldPR_RECORD_KEY].Value.bin); // STRING_OK
 
 				DebugPrint(DBGGeneric, L"Saving to = \"%ws\"\n", szFileName);
 
 				EC_H(SaveToMSG(
 					lpMessage,
-					szFileName,
+					szFileName.c_str(),
 					bUnicode,
 					hWnd,
 					false));
@@ -864,7 +806,7 @@ _Check_return_ HRESULT SaveToTNEF(_In_ LPMESSAGE lpMessage, _In_ LPADRBOOK lpAdr
 		EC_H(OpenTnefStreamEx(
 			NULL,
 			lpStream,
-			static_cast<LPTSTR>("winmail.dat"), // STRING_OK - despite its signature, this function is ANSI only
+			LPTSTR("winmail.dat"), // STRING_OK - despite its signature, this function is ANSI only
 			TNEF_ENCODE,
 			lpMessage,
 			dwKey,
@@ -1224,8 +1166,7 @@ _Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd)
 	auto hRes = S_OK;
 	LPSPropValue lpProps = nullptr;
 	ULONG ulProps = 0;
-	WCHAR szFileName[MAX_PATH] = { 0 };
-	auto iDlgRet = 0;
+	INT_PTR iDlgRet = 0;
 
 	enum
 	{
@@ -1273,7 +1214,7 @@ _Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd)
 			szName = lpProps[DISPLAY_NAME_W].Value.lpszW;
 		}
 
-		EC_H(SanitizeFileNameW(szFileName, _countof(szFileName), szName, _countof(szFileName)));
+		auto szFileName = SanitizeFileNameW(szName);
 
 		// Get File Name
 		switch (lpProps[ATTACH_METHOD].Value.l)
@@ -1287,7 +1228,7 @@ _Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd)
 
 			CFileDialogExW dlgFilePicker;
 
-			DebugPrint(DBGGeneric, L"WriteAttachmentToFile: Prompting with \"%ws\"\n", szFileName);
+			DebugPrint(DBGGeneric, L"WriteAttachmentToFile: Prompting with \"%ws\"\n", szFileName.c_str());
 
 			EC_D_DIALOG(dlgFilePicker.DisplayDialog(
 				false,
@@ -1308,7 +1249,7 @@ _Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd)
 
 			CFileDialogExW dlgFilePicker;
 
-			DebugPrint(DBGGeneric, L"WriteAttachmentToFile: Prompting with \"%ws\"\n", szFileName);
+			DebugPrint(DBGGeneric, L"WriteAttachmentToFile: Prompting with \"%ws\"\n", szFileName.c_str());
 
 			EC_D_DIALOG(dlgFilePicker.DisplayDialog(
 				false,
@@ -1328,7 +1269,7 @@ _Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd)
 
 			CFileDialogExW dlgFilePicker;
 
-			DebugPrint(DBGGeneric, L"WriteAttachmentToFile: Prompting with \"%ws\"\n", szFileName);
+			DebugPrint(DBGGeneric, L"WriteAttachmentToFile: Prompting with \"%ws\"\n", szFileName.c_str());
 			EC_D_DIALOG(dlgFilePicker.DisplayDialog(
 				false,
 				emptystring,

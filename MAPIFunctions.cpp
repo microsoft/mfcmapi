@@ -393,9 +393,7 @@ _Check_return_ HRESULT CopyFolderContents(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LP
 				ulCopyFlags));
 			MAPIFreeBuffer(sbaEID.lpbin);
 
-			if (lpProgress)
-				lpProgress->Release();
-			lpProgress = nullptr;
+			if (lpProgress) lpProgress->Release();
 		}
 		else
 		{
@@ -436,14 +434,13 @@ _Check_return_ HRESULT CopyFolderContents(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LP
 
 					if (S_OK == hRes) DebugPrint(DBGGeneric, L"Message Copied\n");
 
-					if (lpProgress)
-						lpProgress->Release();
-					lpProgress = nullptr;
+					if (lpProgress) lpProgress->Release();
 				}
 
 				if (S_OK != hRes) DebugPrint(DBGGeneric, L"Message Copy Failed\n");
 			}
 		}
+
 		lpSrcContents->Release();
 	}
 
@@ -1049,7 +1046,7 @@ _Check_return_ HRESULT GetInbox(_In_ LPMDB lpMDB, _Out_opt_ ULONG* lpcbeid, _Der
 	if (!lpMDB || !lpcbeid || !lppeid) return MAPI_E_INVALID_PARAMETER;
 
 	EC_MAPI(lpMDB->GetReceiveFolder(
-		static_cast<LPTSTR>("IPM.Note"), // STRING_OK this is the class of message we want
+		LPTSTR("IPM.Note"), // STRING_OK this is the class of message we want
 		fMapiUnicode, // flags
 		&cbInboxEID, // size and...
 		&lpInboxEID, // value of entry ID
@@ -1764,9 +1761,7 @@ _Check_return_ HRESULT ResendSingleMessage(
 					continue;
 				}
 
-				if (lpProgress)
-					lpProgress->Release();
-				lpProgress = nullptr;
+				if (lpProgress) lpProgress->Release();
 
 				sProp.dwAlignPad = 0;
 				sProp.ulPropTag = PR_DELETE_AFTER_SUBMIT;
@@ -2067,9 +2062,7 @@ _Check_return_ HRESULT CopyNamedProps(_In_ LPMAPIPROP lpSource, _In_ LPGUID lpPr
 			ulFlags,
 			&lpProblems));
 
-		if (lpProgress)
-			lpProgress->Release();
-		lpProgress = nullptr;
+		if (lpProgress) lpProgress->Release();
 
 		EC_PROBLEMARRAY(lpProblems);
 		MAPIFreeBuffer(lpProblems);
@@ -2699,15 +2692,15 @@ HRESULT CopyTo(HWND hWnd, _In_ LPMAPIPROP lpSource, _In_ LPMAPIPROP lpDest, LPCG
 				lpProgress = GetMAPIProgress(L"CopyTo", hWnd); // STRING_OK
 				if (lpProgress)
 					ulCopyFlags |= MAPI_DIALOG;
-		}
+			}
 
 			lpUITags = GetExcludedTags(lpTagArray, lpSource, bIsAB);
 			if (lpUITags)
 			{
 				lpExcludedTags = lpUITags;
 			}
+		}
 	}
-}
 #endif
 
 	if (S_OK == hRes)
@@ -2725,11 +2718,7 @@ HRESULT CopyTo(HWND hWnd, _In_ LPMAPIPROP lpSource, _In_ LPMAPIPROP lpDest, LPCG
 	}
 
 	MAPIFreeBuffer(lpUITags);
-	if (lpProgress)
-	{
-		lpProgress->Release();
-		lpProgress = nullptr;
-	}
+	if (lpProgress) lpProgress->Release();
 
 	if (lpProblems)
 	{

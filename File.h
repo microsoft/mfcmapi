@@ -1,28 +1,24 @@
 #pragma once
 // File.h : header file
 
-_Check_return_ HRESULT AppendEntryID(_Inout_z_count_(cchFileName) LPWSTR szFileName, size_t cchFileName, _In_ LPSBinary lpBin, size_t cchMaxAppend);
 _Check_return_ HRESULT GetDirectoryPath(HWND hWnd, _Inout_z_ LPWSTR szPath);
 _Check_return_ HRESULT SanitizeFileNameA(_Inout_z_count_(cchFileOut) LPSTR szFileOut, size_t cchFileOut, _In_z_ LPCSTR szFileIn, size_t cchCharsToCopy);
 _Check_return_ HRESULT SanitizeFileNameW(_Inout_z_count_(cchFileOut) LPWSTR szFileOut, size_t cchFileOut, _In_z_ LPCWSTR szFileIn, size_t cchCharsToCopy);
+wstring SanitizeFileNameW(_In_ wstring szFileIn);
 #ifdef UNICODE
 #define SanitizeFileName SanitizeFileNameW
 #else
 #define SanitizeFileName SanitizeFileNameA
 #endif
 
-_Check_return_ HRESULT BuildFileName(_Inout_z_count_(cchFileOut) LPWSTR szFileOut,
-	size_t cchFileOut,
-	_In_z_count_(cchExt) LPCWSTR szExt,
-	size_t cchExt,
+wstring BuildFileName(
+	_In_ wstring szExt,
 	_In_ LPMESSAGE lpMessage);
-_Check_return_ HRESULT BuildFileNameAndPath(_Inout_z_count_(cchFileOut) LPWSTR szFileOut,
-	size_t cchFileOut,
-	_In_z_count_(cchExt) LPCWSTR szExt,
-	size_t cchExt,
-	_In_opt_z_ LPCWSTR szSubj,
-	_In_opt_ LPSBinary lpBin,
-	_In_opt_z_ LPCWSTR szRootPath);
+wstring BuildFileNameAndPath(
+	_In_ wstring szExt,
+	_In_ wstring szSubj,
+	_In_ wstring szRootPath,
+	_In_opt_ LPSBinary lpBin);
 
 _Check_return_ HRESULT LoadMSGToMessage(_In_z_ LPCWSTR szMessageFile, _Deref_out_opt_ LPMESSAGE* lppMessage);
 

@@ -1564,7 +1564,6 @@ void CFolderDlg::OnSaveMessageToFile()
 		while (-1 != iItem)
 		{
 			LPMESSAGE lpMessage = nullptr;
-			WCHAR szFileName[MAX_PATH] = { 0 };
 			INT_PTR iDlgRet = IDOK;
 
 			EC_H(OpenItemProp(
@@ -1574,9 +1573,9 @@ void CFolderDlg::OnSaveMessageToFile()
 
 			if (lpMessage)
 			{
-				WC_H(BuildFileName(szFileName, _countof(szFileName), szDotExt, ulDotExtLen, lpMessage));
+				auto szFileName = BuildFileName(szDotExt, lpMessage);
 
-				DebugPrint(DBGGeneric, L"BuildFileNameAndPath built file name \"%ws\"\n", szFileName);
+				DebugPrint(DBGGeneric, L"BuildFileName built file name \"%ws\"\n", szFileName.c_str());
 
 				CFileDialogExW dlgFilePicker;
 
