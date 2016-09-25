@@ -7,9 +7,9 @@
 #include "../SmartView/SmartView.h"
 #include "../String.h"
 
-void PrintFolder(wstring szFid, LPCTSTR szFolder)
+void PrintFolder(wstring szFid, wstring szFolder)
 {
-	printf("%-15ws %s\n", szFid.c_str(), szFolder);
+	printf("%-15ws %ws\n", szFid.c_str(), szFolder.c_str());
 }
 
 void PrintMessage(LPCWSTR szMid, bool fAssociated, wstring szSubject, wstring szClass)
@@ -78,7 +78,7 @@ bool MatchFid(wstring inputFid, wstring currentFid)
 
 void CFindFidMid::BeginFolderWork()
 {
-	DebugPrint(DBGGeneric, L"CFindFidMid::BeginFolderWork: m_szFolderOffset %ws\n", LPCTSTRToWstring(m_szFolderOffset).c_str());
+	DebugPrint(DBGGeneric, L"CFindFidMid::BeginFolderWork: m_szFolderOffset %ws\n", m_szFolderOffset.c_str());
 	m_fFIDMatch = false;
 	m_fFIDExactMatch = false;
 	m_fFIDPrinted = false;
@@ -107,7 +107,7 @@ void CFindFidMid::BeginFolderWork()
 		NULL,
 		&ulProps,
 		&lpProps));
-	DebugPrint(DBGGeneric, L"CFindFidMid::DoFolderPerHierarchyTableRowWork: m_szFolderOffset %ws\n", LPCTSTRToWstring(m_szFolderOffset).c_str());
+	DebugPrint(DBGGeneric, L"CFindFidMid::DoFolderPerHierarchyTableRowWork: m_szFolderOffset %ws\n", m_szFolderOffset.c_str());
 
 	// Now get the FID
 	LPWSTR lpszDisplayName = nullptr;

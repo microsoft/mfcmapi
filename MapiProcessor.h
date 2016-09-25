@@ -13,7 +13,7 @@ typedef struct FolderNode* LPFOLDERNODE;
 struct FolderNode
 {
 	LPSBinary lpFolderEID;
-	LPTSTR szFolderOffsetPath;
+	wstring szFolderOffsetPath;
 	LPFOLDERNODE lpNextFolder;
 };
 
@@ -41,7 +41,7 @@ protected:
 	LPMAPISESSION m_lpSession;
 	LPMDB m_lpMDB;
 	LPMAPIFOLDER m_lpFolder;
-	LPTSTR m_szFolderOffset; // Offset to the folder, including trailing slash
+	wstring m_szFolderOffset; // Offset to the folder, including trailing slash
 
 private:
 	// Worker functions (dump messages, scan for something, etc)
@@ -91,7 +91,7 @@ private:
 
 	// FolderList functions
 	// Add a new node to the end of the folder list
-	void AddFolderToFolderList(_In_opt_ LPSBinary lpFolderEID, _In_z_ LPCTSTR szFolderOffsetPath);
+	void AddFolderToFolderList(_In_opt_ LPSBinary lpFolderEID, _In_ wstring szFolderOffsetPath);
 
 	// Call OpenEntry on the first folder in the list, remove it from the list
 	void OpenFirstFolderInList();
