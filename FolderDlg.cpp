@@ -1596,7 +1596,7 @@ void CFolderDlg::OnSaveMessageToFile()
 						// Idea is to capture anything that may be important about this message to disk so it can be analyzed.
 					{
 						CDumpStore MyDumpStore;
-						MyDumpStore.InitMessagePath(filename.c_str());
+						MyDumpStore.InitMessagePath(filename);
 						// Just assume this message might have attachments
 						MyDumpStore.ProcessMessage(lpMessage, true, nullptr);
 					}

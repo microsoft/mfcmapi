@@ -9,12 +9,12 @@
 
 void PrintFolder(wstring szFid, wstring szFolder)
 {
-	printf("%-15ws %ws\n", szFid.c_str(), szFolder.c_str());
+	wprintf(L"%-15ws %ws\n", szFid.c_str(), szFolder.c_str());
 }
 
-void PrintMessage(LPCWSTR szMid, bool fAssociated, wstring szSubject, wstring szClass)
+void PrintMessage(wstring szMid, bool fAssociated, wstring szSubject, wstring szClass)
 {
-	wprintf(L" %-15ws %wc %ws (%ws)\n", szMid, fAssociated ? L'A' : L'R', szSubject.c_str(), szClass.c_str());
+	wprintf(L" %-15ws %wc %ws (%ws)\n", szMid.c_str(), fAssociated ? L'A' : L'R', szSubject.c_str(), szClass.c_str());
 }
 
 class CFindFidMid : public CMAPIProcessor
@@ -218,7 +218,7 @@ bool CFindFidMid::DoContentsTablePerRowWork(_In_ LPSRow lpSRow, ULONG /*ulCurRow
 			lpszClass = LPCTSTRToWstring(lpPropClass->Value.LPSZ);
 		}
 
-		PrintMessage(lpszThisMid.c_str(), m_fAssociated, lpszSubject, lpszClass);
+		PrintMessage(lpszThisMid, m_fAssociated, lpszSubject, lpszClass);
 		DebugPrint(DBGGeneric, L"EnumMessages::ProcessRow: Matched MID %ws, \"%ws\", \"%ws\"\n", lpszThisMid.c_str(), lpszSubject.c_str(), lpszClass.c_str());
 	}
 
@@ -227,17 +227,17 @@ bool CFindFidMid::DoContentsTablePerRowWork(_In_ LPSRow lpSRow, ULONG /*ulCurRow
 }
 
 void DumpFidMid(
-	_In_z_ LPCWSTR lpszProfile,
+	_In_ wstring lpszProfile,
 	_In_ LPMDB lpMDB,
-	wstring lpszFid,
-	wstring lpszMid,
+	_In_ wstring lpszFid,
+	_In_ wstring lpszMid,
 	bool bMid)
 {
 	// FID/MID lookups only succeed online, so go ahead and force it
 	RegKeys[regKeyMAPI_NO_CACHE].ulCurDWORD = true;
 	RegKeys[regkeyMDB_ONLINE].ulCurDWORD = true;
 
-	DebugPrint(DBGGeneric, L"DumpFidMid: Outputting from profile %ws. FID: %ws, MID: %ws\n", lpszProfile, lpszFid.c_str(), lpszMid.c_str());
+	DebugPrint(DBGGeneric, L"DumpFidMid: Outputting from profile %ws. FID: %ws, MID: %ws\n", lpszProfile.c_str(), lpszFid.c_str(), lpszMid.c_str());
 	auto hRes = S_OK;
 	LPMAPIFOLDER lpFolder = nullptr;
 
@@ -274,9 +274,9 @@ void DumpFidMid(
 void DoFidMid(_In_ MYOPTIONS ProgOpts)
 {
 	DumpFidMid(
-		ProgOpts.lpszProfile.c_str(),
+		ProgOpts.lpszProfile,
 		ProgOpts.lpMDB,
-		ProgOpts.lpszFid.c_str(),
-		ProgOpts.lpszMid.c_str(),
+		ProgOpts.lpszFid,
+		ProgOpts.lpszMid,
 		OPT_MID == (ProgOpts.ulOptions & OPT_MID));
 }
