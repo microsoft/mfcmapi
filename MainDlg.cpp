@@ -1825,7 +1825,7 @@ void CMainDlg::OnConvertMSGToXML()
 			if (lpMessage)
 			{
 				CDumpStore MyDumpStore;
-				MyDumpStore.InitMessagePath(dlgFilePickerXML.GetFileName().c_str());
+				MyDumpStore.InitMessagePath(dlgFilePickerXML.GetFileName());
 				// Just assume this message might have attachments
 				MyDumpStore.ProcessMessage(lpMessage, true, nullptr);
 

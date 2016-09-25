@@ -17,9 +17,9 @@ public:
 	CDumpStore();
 	virtual ~CDumpStore();
 
-	void InitMessagePath(_In_z_ LPCWSTR szMessageFileName);
-	void InitFolderPathRoot(_In_z_ LPCWSTR szFolderPathRoot);
-	void InitMailboxTablePathRoot(_In_z_ LPCWSTR szMailboxTablePathRoot);
+	void InitMessagePath(_In_ wstring szMessageFileName);
+	void InitFolderPathRoot(_In_ wstring szFolderPathRoot);
+	void InitMailboxTablePathRoot(_In_ wstring szMailboxTablePathRoot);
 	void EnableMSG();
 	void EnableList();
 	void DisableStreamRetry();
@@ -51,10 +51,10 @@ private:
 	void EndAttachmentWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData) override;
 	void EndMessageWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData) override;
 
-	WCHAR m_szMailboxTablePathRoot[MAX_PATH];
+	wstring m_szMailboxTablePathRoot;
 	wstring m_szFolderPathRoot;
-	WCHAR m_szMessageFileName[MAX_PATH];
-	LPWSTR m_szFolderPath; // Root plus offset
+	wstring m_szMessageFileName;
+	wstring m_szFolderPath; // Root plus offset
 
 	FILE* m_fFolderProps;
 	FILE* m_fFolderContents;
