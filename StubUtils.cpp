@@ -207,7 +207,7 @@ wstring GetComponentPath(wstring szComponent, wstring szQualifier, bool fInstall
 
 HKEY GetHKeyMapiClient(wstring pwzProviderOverride)
 {
-	DebugPrint(DBGLoadMAPI, L"Enter GetHKeyMapiClient (%ws)\n", pwzProviderOverride);
+	DebugPrint(DBGLoadMAPI, L"Enter GetHKeyMapiClient (%ws)\n", pwzProviderOverride.c_str());
 	auto hRes = S_OK;
 	auto pwzProvider = pwzProviderOverride;
 	HKEY hMailKey = nullptr;

@@ -19,34 +19,34 @@ void SetDebugOutputToFile(bool bDoOutput);
 // The global debug level - combination of flags from below
 // RegKeys[regkeyDEBUG_TAG].ulCurDWORD
 
-#define	DBGNoDebug							((ULONG) 0x00000000)
-#define	DBGGeneric							((ULONG) 0x00000001)
-#define	DBGVersionBanner					((ULONG) 0x00000002)
-#define	DBGFatalError						((ULONG) 0x00000004)
-#define	DBGRefCount							((ULONG) 0x00000008)
-#define	DBGConDes							((ULONG) 0x00000010)
-#define	DBGNotify							((ULONG) 0x00000020)
-#define	DBGHRes								((ULONG) 0x00000040)
-#define DBGCreateDialog						((ULONG) 0x00000080)
-#define DBGOpenItemProp						((ULONG) 0x00000100)
-#define DBGDeleteSelectedItem				((ULONG) 0x00000200)
-#define DBGTest								((ULONG) 0x00000400)
-#define DBGFormViewer						((ULONG) 0x00000800)
-#define DBGNamedProp						((ULONG) 0x00001000)
-#define DBGLoadLibrary						((ULONG) 0x00002000)
-#define DBGForms							((ULONG) 0x00004000)
-#define DBGAddInPlumbing					((ULONG) 0x00008000)
-#define DBGAddIn							((ULONG) 0x00010000)
-#define DBGStream							((ULONG) 0x00020000)
-#define DBGSmartView						((ULONG) 0x00040000)
-#define DBGLoadMAPI							((ULONG) 0x00080000)
-#define DBGHierarchy						((ULONG) 0x00100000)
-#define DBGMAPIFunctions					((ULONG) 0x40000000)
-#define DBGMenu								((ULONG) 0x80000000)
+#define DBGNoDebug ((ULONG) 0x00000000)
+#define DBGGeneric ((ULONG) 0x00000001)
+#define DBGVersionBanner ((ULONG) 0x00000002)
+#define DBGFatalError ((ULONG) 0x00000004)
+#define DBGRefCount ((ULONG) 0x00000008)
+#define DBGConDes ((ULONG) 0x00000010)
+#define DBGNotify ((ULONG) 0x00000020)
+#define DBGHRes ((ULONG) 0x00000040)
+#define DBGCreateDialog ((ULONG) 0x00000080)
+#define DBGOpenItemProp ((ULONG) 0x00000100)
+#define DBGDeleteSelectedItem ((ULONG) 0x00000200)
+#define DBGTest ((ULONG) 0x00000400)
+#define DBGFormViewer ((ULONG) 0x00000800)
+#define DBGNamedProp ((ULONG) 0x00001000)
+#define DBGLoadLibrary ((ULONG) 0x00002000)
+#define DBGForms ((ULONG) 0x00004000)
+#define DBGAddInPlumbing ((ULONG) 0x00008000)
+#define DBGAddIn ((ULONG) 0x00010000)
+#define DBGStream ((ULONG) 0x00020000)
+#define DBGSmartView ((ULONG) 0x00040000)
+#define DBGLoadMAPI ((ULONG) 0x00080000)
+#define DBGHierarchy ((ULONG) 0x00100000)
+#define DBGMAPIFunctions ((ULONG) 0x40000000)
+#define DBGMenu ((ULONG) 0x80000000)
 
 // Super verbose is really overkill - scale back for our ALL default
-#define DBGAll								((ULONG) 0x0000ffff)
-#define DBGSuperVerbose						((ULONG) 0xffffffff)
+#define DBGAll ((ULONG) 0x0000ffff)
+#define DBGSuperVerbose ((ULONG) 0xffffffff)
 
 #define fIsSet(ulTag) (RegKeys[regkeyDEBUG_TAG].ulCurDWORD & (ulTag))
 #define fIsSetv(ulTag) (((ulTag) != DBGNoDebug) && (RegKeys[regkeyDEBUG_TAG].ulCurDWORD & (ulTag)))
@@ -55,13 +55,30 @@ _Check_return_ FILE* MyOpenFile(wstring szFileName, bool bNewFile);
 void CloseFile(_In_opt_ FILE* fFile);
 
 void Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, wstring const& szMsg);
-void __cdecl Outputf(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, wstring const szMsg, ...);
+void __cdecl Outputf(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, LPCWSTR szMsg, ...);
+#ifdef CHECKFORMATPARAMS
+#undef Outputf
+#define Outputf(ulDbgLvl, fFile, bPrintThreadTime, szMsg, ...) (wprintf(szMsg, __VA_ARGS__), Outputf(ulDbgLvl, fFile, bPrintThreadTime, szMsg, __VA_ARGS__))
+#endif
 
 #define OutputToFile(fFile, szMsg) Output((DBGNoDebug), (fFile), true, (szMsg))
-void __cdecl OutputToFilef(_In_opt_ FILE* fFile, wstring const szMsg, ...);
+void __cdecl OutputToFilef(_In_opt_ FILE* fFile, LPCWSTR szMsg, ...);
+#ifdef CHECKFORMATPARAMS
+#undef OutputToFilef
+#define OutputToFilef(fFile, szMsg, ...) (wprintf(szMsg, __VA_ARGS__), OutputToFilef(fFile, szMsg, __VA_ARGS__))
+#endif
 
-void __cdecl DebugPrint(ULONG ulDbgLvl, wstring const szMsg, ...);
-void __cdecl DebugPrintEx(ULONG ulDbgLvl, wstring const& szClass, wstring const& szFunc, wstring const szMsg, ...);
+void __cdecl DebugPrint(ULONG ulDbgLvl, LPCWSTR szMsg, ...);
+#ifdef CHECKFORMATPARAMS
+#undef DebugPrint
+#define DebugPrint(ulDbgLvl, szMsg, ...) (wprintf(szMsg, __VA_ARGS__), DebugPrint(ulDbgLvl, szMsg, __VA_ARGS__))
+#endif
+
+void __cdecl DebugPrintEx(ULONG ulDbgLvl, wstring& szClass, wstring szFunc, LPCWSTR szMsg, ...);
+#ifdef CHECKFORMATPARAMS
+#undef DebugPrintEx
+#define DebugPrintEx(ulDbgLvl, szClass, szFunc, szMsg, ...) (wprintf(szMsg, __VA_ARGS__), DebugPrintEx(ulDbgLvl, szClass, szFunc, szMsg, __VA_ARGS__))
+#endif
 
 // Template for the Output functions
 // void Output(ULONG ulDbgLvl, FILE* fFile,stufftooutput)
@@ -87,23 +104,23 @@ void _OutputTable(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPITABLE lpMAPIT
 void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify, _In_count_(cNotify) LPNOTIFICATION lpNotifications, _In_opt_ LPMAPIPROP lpObj);
 void _OutputEntryList(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPENTRYLIST lpEntryList);
 
-#define DebugPrintBinary(ulDbgLvl, lpBin)						_OutputBinary((ulDbgLvl), NULL, (lpBin))
-#define DebugPrintProperties(ulDbgLvl, cProps, lpProps, lpObj)	_OutputProperties((ulDbgLvl), NULL, (cProps), (lpProps), (lpObj), false)
-#define DebugPrintRestriction(ulDbgLvl, lpRes, lpObj)			_OutputRestriction((ulDbgLvl), NULL, (lpRes), (lpObj))
-#define DebugPrintStream(ulDbgLvl, lpStream)					_OutputStream((ulDbgLvl), NULL, lpStream)
-#define DebugPrintVersion(ulDbgLvl)								_OutputVersion((ulDbgLvl), NULL)
-#define DebugPrintFormInfo(ulDbgLvl,lpMAPIFormInfo)				_OutputFormInfo((ulDbgLvl),NULL, (lpMAPIFormInfo))
-#define DebugPrintFormPropArray(ulDbgLvl,lpMAPIFormPropArray)	_OutputFormPropArray((ulDbgLvl),NULL, (lpMAPIFormPropArray))
-#define DebugPrintPropTagArray(ulDbgLvl,lpTagsToDump)			_OutputPropTagArray((ulDbgLvl),NULL, (lpTagsToDump))
-#define DebugPrintNotifications(ulDbgLvl, cNotify, lpNotifications, lpObj)		_OutputNotifications((ulDbgLvl),NULL, (cNotify), (lpNotifications), (lpObj))
-#define DebugPrintSRowSet(ulDbgLvl, lpRowSet, lpObj)			_OutputSRowSet((ulDbgLvl), NULL, (lpRowSet), (lpObj))
-#define DebugPrintEntryList(ulDbgLvl, lpEntryList)				_OutputEntryList((ulDbgLvl), NULL, (lpEntryList))
+#define DebugPrintBinary(ulDbgLvl, lpBin) _OutputBinary((ulDbgLvl), NULL, (lpBin))
+#define DebugPrintProperties(ulDbgLvl, cProps, lpProps, lpObj) _OutputProperties((ulDbgLvl), NULL, (cProps), (lpProps), (lpObj), false)
+#define DebugPrintRestriction(ulDbgLvl, lpRes, lpObj) _OutputRestriction((ulDbgLvl), NULL, (lpRes), (lpObj))
+#define DebugPrintStream(ulDbgLvl, lpStream) _OutputStream((ulDbgLvl), NULL, lpStream)
+#define DebugPrintVersion(ulDbgLvl) _OutputVersion((ulDbgLvl), NULL)
+#define DebugPrintFormInfo(ulDbgLvl,lpMAPIFormInfo) _OutputFormInfo((ulDbgLvl),NULL, (lpMAPIFormInfo))
+#define DebugPrintFormPropArray(ulDbgLvl,lpMAPIFormPropArray) _OutputFormPropArray((ulDbgLvl),NULL, (lpMAPIFormPropArray))
+#define DebugPrintPropTagArray(ulDbgLvl,lpTagsToDump) _OutputPropTagArray((ulDbgLvl),NULL, (lpTagsToDump))
+#define DebugPrintNotifications(ulDbgLvl, cNotify, lpNotifications, lpObj) _OutputNotifications((ulDbgLvl),NULL, (cNotify), (lpNotifications), (lpObj))
+#define DebugPrintSRowSet(ulDbgLvl, lpRowSet, lpObj) _OutputSRowSet((ulDbgLvl), NULL, (lpRowSet), (lpObj))
+#define DebugPrintEntryList(ulDbgLvl, lpEntryList) _OutputEntryList((ulDbgLvl), NULL, (lpEntryList))
 
-#define OutputStreamToFile(fFile, lpStream)						_OutputStream(DBGNoDebug, (fFile), (lpStream))
-#define OutputTableToFile(fFile, lpMAPITable)					_OutputTable(DBGNoDebug, (fFile), (lpMAPITable))
-#define OutputSRowToFile(fFile, lpSRow, lpObj)					_OutputSRow(DBGNoDebug,fFile, lpSRow, lpObj)
+#define OutputStreamToFile(fFile, lpStream) _OutputStream(DBGNoDebug, (fFile), (lpStream))
+#define OutputTableToFile(fFile, lpMAPITable) _OutputTable(DBGNoDebug, (fFile), (lpMAPITable))
+#define OutputSRowToFile(fFile, lpSRow, lpObj) _OutputSRow(DBGNoDebug,fFile, lpSRow, lpObj)
 #define OutputPropertiesToFile(fFile,cProps,lpProps,lpObj,bRetry) _OutputProperties(DBGNoDebug,fFile, cProps, lpProps, lpObj, bRetry)
-#define OutputPropertyToFile(fFile, lpProp, lpObj, bRetry)		_OutputProperty(DBGNoDebug,fFile, lpProp, lpObj, bRetry)
+#define OutputPropertyToFile(fFile, lpProp, lpObj, bRetry) _OutputProperty(DBGNoDebug,fFile, lpProp, lpObj, bRetry)
 
 // We'll only output this information in debug builds.
 #ifdef _DEBUG

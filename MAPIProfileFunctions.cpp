@@ -304,8 +304,8 @@ _Check_return_ HRESULT HrSetProfileParameters(_In_ SERVICESINIREC *lpServicesIni
 			// Write the item to MAPISVC.INF
 			DebugPrint(DBGGeneric, L"\tWriting: \"%ws\"::\"%ws\"::\"%ws\"\n",
 				lpServicesIni[n].lpszSection,
-				lpszProp,
-				lpszValue);
+				lpszProp.c_str(),
+				lpszValue.c_str());
 
 			EC_B(WritePrivateProfileStringW(
 				lpServicesIni[n].lpszSection,
@@ -670,7 +670,7 @@ _Check_return_ HRESULT HrAddPSTToProfile(
 {
 	auto hRes = S_OK;
 
-	DebugPrint(DBGGeneric, L"HrAddPSTToProfile(0x%X,%ws,%hs,0x%X,%hs)\n", bUnicodePST, lpszPSTPath.c_str(), lpszProfileName, bPasswordSet, lpszPassword.c_str());
+	DebugPrint(DBGGeneric, L"HrAddPSTToProfile(0x%X,%ws,%hs,0x%X,%hs)\n", bUnicodePST, lpszPSTPath.c_str(), lpszProfileName.c_str(), bPasswordSet, lpszPassword.c_str());
 
 	if (lpszPSTPath.empty() || lpszProfileName.empty()) return MAPI_E_INVALID_PARAMETER;
 
@@ -779,7 +779,6 @@ _Check_return_ HRESULT HrMAPIProfileExists(
 	auto hRes = S_OK;
 	LPMAPITABLE lpTable = nullptr;
 	LPSRowSet lpRows = nullptr;
-	LPSPropValue lpProp = nullptr;
 
 	static const SizedSPropTagArray(1, rgPropTag) =
 	{
@@ -819,7 +818,7 @@ _Check_return_ HRESULT HrMAPIProfileExists(
 			if (!FAILED(hRes)) for (ULONG i = 0; i < lpRows->cRows; i++)
 			{
 				hRes = S_OK;
-				lpProp = lpRows->aRow[i].lpProps;
+				auto lpProp = lpRows->aRow[i].lpProps;
 
 				ULONG ulComp = NULL;
 

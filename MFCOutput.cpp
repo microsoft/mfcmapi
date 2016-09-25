@@ -12,6 +12,13 @@
 #include "ParseProperty.h"
 #include <algorithm>
 
+#ifdef CHECKFORMATPARAMS
+#undef Outputf
+#undef OutputToFilef
+#undef DebugPrint
+#undef DebugPrintEx
+#endif
+
 wstring g_szXMLHeader = L"<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n";
 FILE* g_fDebugFile = nullptr;
 
@@ -199,7 +206,7 @@ void Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, wstring
 	}
 }
 
-void __cdecl Outputf(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, wstring const szMsg, ...)
+void __cdecl Outputf(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, LPCWSTR szMsg, ...)
 {
 	CHKPARAM;
 	EARLYABORT;
@@ -210,7 +217,7 @@ void __cdecl Outputf(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime
 	va_end(argList);
 }
 
-void __cdecl OutputToFilef(_In_opt_ FILE* fFile, wstring const szMsg, ...)
+void __cdecl OutputToFilef(_In_opt_ FILE* fFile, LPCWSTR szMsg, ...)
 {
 	if (!fFile) return;
 
@@ -229,7 +236,7 @@ void __cdecl OutputToFilef(_In_opt_ FILE* fFile, wstring const szMsg, ...)
 
 }
 
-void __cdecl DebugPrint(ULONG ulDbgLvl, wstring const szMsg, ...)
+void __cdecl DebugPrint(ULONG ulDbgLvl, LPCWSTR szMsg, ...)
 {
 	if (!fIsSetv(ulDbgLvl) && !RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD) return;
 
@@ -247,16 +254,16 @@ void __cdecl DebugPrint(ULONG ulDbgLvl, wstring const szMsg, ...)
 	va_end(argList);
 }
 
-void __cdecl DebugPrintEx(ULONG ulDbgLvl, wstring const& szClass, wstring const& szFunc, wstring const szMsg, ...)
+void __cdecl DebugPrintEx(ULONG ulDbgLvl, wstring& szClass, wstring szFunc, LPCWSTR szMsg, ...)
 {
 	if (!fIsSetv(ulDbgLvl) && !RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD) return;
 
-	auto szMsgEx = format(L"%ws::%ws %ws", szClass.c_str(), szFunc.c_str(), szMsg.c_str()); // STRING_OK
+	auto szMsgEx = format(L"%ws::%ws %ws", szClass.c_str(), szFunc.c_str(), szMsg); // STRING_OK
 	va_list argList = nullptr;
 	va_start(argList, szMsg);
 	if (argList)
 	{
-		Output(ulDbgLvl, nullptr, true, formatV(szMsgEx, argList));
+		Output(ulDbgLvl, nullptr, true, formatV(szMsgEx.c_str(), argList));
 	}
 	else
 	{

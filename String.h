@@ -3,14 +3,19 @@
 #include <vector>
 using namespace std;
 
-// Enable this macro to build with paramert checking for format()
+// Enable this macro to build with parameter checking for format()
 // Do NOT check in with this macro enabled!
 //#define CHECKFORMATPARAMS
 
 extern wstring emptystring;
 wstring loadstring(DWORD dwID);
-wstring formatV(wstring const& szMsg, va_list argList);
+wstring formatV(LPCWSTR szMsg, va_list argList);
 wstring format(LPCWSTR szMsg, ...);
+#ifdef CHECKFORMATPARAMS
+#undef format
+#define format(fmt,...) (wprintf(fmt,__VA_ARGS__), format(fmt,__VA_ARGS__))
+#endif
+
 wstring formatmessagesys(DWORD dwID);
 wstring formatmessage(DWORD dwID, ...);
 CString wstringToCString(wstring const& src);
@@ -49,7 +54,3 @@ wstring BinToHexString(_In_opt_ LPSBinary lpBin, bool bPrependCB);
 vector<BYTE> HexStringToBin(_In_ wstring lpsz, size_t cbTarget = 0);
 LPBYTE ByteVectorToLPBYTE(vector<BYTE>& bin);
 
-#ifdef CHECKFORMATPARAMS
-#undef format
-#define format(fmt,...) (wprintf(fmt,__VA_ARGS__), wstring(L""))
-#endif

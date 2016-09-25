@@ -55,7 +55,12 @@ public:
 	void InitPane(ULONG iNum, ViewPane* lpPane);
 	void SetStringA(ULONG i, string szMsg) const;
 	void SetStringW(ULONG i, wstring szMsg) const;
-	void SetStringf(ULONG i, wstring szMsg, ...) const;
+	void SetStringf(ULONG i, LPCWSTR szMsg, ...) const;
+#ifdef CHECKFORMATPARAMS
+#undef SetStringf
+#define SetStringf(i, fmt,...) SetStringf(i, fmt, __VA_ARGS__), wprintf(fmt, __VA_ARGS__)
+#endif
+
 	void LoadString(ULONG i, UINT uidMsg) const;
 	void SetBinary(ULONG i, _In_opt_count_(cb) LPBYTE lpb, size_t cb) const;
 	void SetBinary(ULONG i, _In_ vector<BYTE> bin) const;

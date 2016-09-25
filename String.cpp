@@ -6,15 +6,15 @@
 
 wstring emptystring = L"";
 
-wstring formatV(wstring const& szMsg, va_list argList)
+wstring formatV(LPCWSTR szMsg, va_list argList)
 {
-	auto len = _vscwprintf(szMsg.c_str(), argList);
+	auto len = _vscwprintf(szMsg, argList);
 	if (0 != len)
 	{
 		len++;
 		auto buffer = new wchar_t[len];
 		memset(buffer, 0, sizeof(wchar_t)* len);
-		if (_vsnwprintf_s(buffer, len, _TRUNCATE, szMsg.c_str(), argList) > 0)
+		if (_vsnwprintf_s(buffer, len, _TRUNCATE, szMsg, argList) > 0)
 		{
 			wstring szOut(buffer);
 			delete[] buffer;
