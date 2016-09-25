@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "MAPIProgress.h"
-#include "MAPIFunctions.h"
 #include "enums.h"
 #include "BaseDialog.h"
 
@@ -187,6 +186,6 @@ STDMETHODIMP CMAPIProgress::SetLimits(ULONG* lpulMin, ULONG* lpulMax, ULONG* lpu
 void CMAPIProgress::OutputState(wstring lpszFunction)
 {
 	DebugPrint(DBGGeneric, L"%ws::%ws(%ws) - Current Values: Min = %u, Max = %u, Flags = %u\n",
-		CLASS, lpszFunction.c_str(), m_szContext.c_str(), m_ulMin, m_ulMax, m_ulFlags);
+		CLASS.c_str(), lpszFunction.c_str(), m_szContext.c_str(), m_ulMin, m_ulMax, m_ulFlags);
 }
 #endif

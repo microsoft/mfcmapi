@@ -338,7 +338,7 @@ void CProfileListDlg::OnAddServiceToProfile()
 			auto lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 			if (!lpListData || !lpListData->Contents()) break;
 
-			DebugPrintEx(DBGGeneric, CLASS, L"OnAddServiceToProfile", L"Adding service \"%ws\" to profile \"%hs\"\n", szService, lpListData->Contents()->m_szProfileDisplayName.c_str());
+			DebugPrintEx(DBGGeneric, CLASS, L"OnAddServiceToProfile", L"Adding service \"%hs\" to profile \"%hs\"\n", szService.c_str(), lpListData->Contents()->m_szProfileDisplayName.c_str());
 
 			EC_H(HrAddServiceToProfile(szService, reinterpret_cast<ULONG_PTR>(m_hWnd), MyData.GetCheck(1) ? SERVICE_UI_ALWAYS : 0, 0, nullptr, lpListData->Contents()->m_szProfileDisplayName));
 		} while (iItem != -1);

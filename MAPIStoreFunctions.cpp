@@ -619,7 +619,7 @@ _Check_return_ HRESULT OpenOtherUsersMailbox(
 
 		if (!szServerDN.empty())
 		{
-			DebugPrint(DBGGeneric, L"Calling HrMailboxLogon with Server DN = \"%ws\"\n", szServerDN.c_str());
+			DebugPrint(DBGGeneric, L"Calling HrMailboxLogon with Server DN = \"%hs\"\n", szServerDN.c_str());
 			WC_H(HrMailboxLogon(
 				lpMAPISession,
 				lpMDB,

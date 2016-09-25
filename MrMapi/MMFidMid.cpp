@@ -187,7 +187,7 @@ bool CFindFidMid::DoContentsTablePerRowWork(_In_ LPSRow lpSRow, ULONG /*ulCurRow
 	if (lpPropMid)
 	{
 		lpszThisMid = FidMidToSzString(lpPropMid->Value.li.QuadPart, false);
-		DebugPrint(DBGGeneric, L"CFindFidMid::DoContentsTablePerRowWork: Found MID %ws\n", lpszThisMid);
+		DebugPrint(DBGGeneric, L"CFindFidMid::DoContentsTablePerRowWork: Found MID %ws\n", lpszThisMid.c_str());
 	}
 	else
 	{

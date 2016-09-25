@@ -286,7 +286,6 @@ wstring BuildFileName(
 		fMapiUnicode,
 		&ulProps,
 		&lpProps));
-	hRes = S_OK;
 
 	wstring szSubj;
 	if (CheckStringProp(&lpProps[ePR_SUBJECT_W], PT_UNICODE))
@@ -473,7 +472,7 @@ _Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_z
 
 				auto szFileName = BuildFileNameAndPath(L".msg", szSubj, szPathName, &pRows->aRow->lpProps[fldPR_RECORD_KEY].Value.bin); // STRING_OK
 
-				DebugPrint(DBGGeneric, L"Saving to = \"%ws\"\n", szFileName);
+				DebugPrint(DBGGeneric, L"Saving to = \"%ws\"\n", szFileName.c_str());
 
 				EC_H(SaveToMSG(
 					lpMessage,

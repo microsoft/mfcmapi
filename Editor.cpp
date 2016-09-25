@@ -1026,12 +1026,16 @@ void CEditor::SetStringW(ULONG i, wstring szMsg) const
 	m_lpControls[i].lpTextPane->SetStringW(szMsg);
 }
 
+#ifdef CHECKFORMATPARAMS
+#undef SetStringf
+#endif
+
 // Updates m_lpControls[i].lpTextPane->m_lpszW using SetStringW
-void CEditor::SetStringf(ULONG i, wstring szMsg, ...) const
+void CEditor::SetStringf(ULONG i, LPCWSTR szMsg, ...) const
 {
 	if (!IsValidEdit(i)) return;
 
-	if (!szMsg.empty())
+	if (szMsg[0])
 	{
 		va_list argList = nullptr;
 		va_start(argList, szMsg);
