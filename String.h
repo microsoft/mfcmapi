@@ -18,6 +18,7 @@ wstring format(LPCWSTR szMsg, ...);
 
 wstring formatmessagesys(DWORD dwID);
 wstring formatmessage(DWORD dwID, ...);
+wstring formatmessage(wstring const szMsg, ...);
 CString wstringToCString(wstring const& src);
 string wstringTostring(wstring const& src);
 wstring stringTowstring(string const& src);
