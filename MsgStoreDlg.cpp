@@ -916,8 +916,6 @@ void CMsgStoreDlg::OnDeleteSelectedItem()
 void CMsgStoreDlg::OnSaveFolderContentsAsMSG()
 {
 	auto hRes = S_OK;
-	WCHAR szFilePath[MAX_PATH] = { 0 };
-
 	if (!m_lpHierarchyTableTreeCtrl) return;
 
 	DebugPrintEx(DBGGeneric, CLASS, L"OnSaveFolderContentsAsMSG", L"\n");
@@ -938,15 +936,14 @@ void CMsgStoreDlg::OnSaveFolderContentsAsMSG()
 
 	if (S_OK == hRes)
 	{
-		WC_H(GetDirectoryPath(m_hWnd, szFilePath));
-
-		if (S_OK == hRes && szFilePath[0])
+		auto szDir = GetDirectoryPath(m_hWnd);
+		if (!szDir.empty())
 		{
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 			EC_H(SaveFolderContentsToMSG(
 				lpMAPIFolder,
-				szFilePath,
+				szDir.c_str(),
 				MyData.GetCheck(0) ? true : false,
 				MyData.GetCheck(1) ? true : false,
 				m_hWnd));

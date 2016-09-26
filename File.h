@@ -1,7 +1,7 @@
 #pragma once
 // File.h : header file
 
-_Check_return_ HRESULT GetDirectoryPath(HWND hWnd, _Inout_z_ LPWSTR szPath);
+wstring GetDirectoryPath(HWND hWnd);
 wstring SanitizeFileNameW(_In_ wstring szFileIn);
 
 wstring BuildFileName(
