@@ -93,6 +93,16 @@ wstring formatmessage(DWORD dwID, ...)
 	return ret;
 }
 
+// Takes format strings with %1 %2 %3...
+wstring formatmessage(wstring const szMsg, ...)
+{
+	va_list argList;
+	va_start(argList, szMsg);
+	auto ret = formatmessageV(szMsg, argList);
+	va_end(argList);
+	return ret;
+}
+
 CString wstringToCString(wstring const& src)
 {
 	return src.c_str();

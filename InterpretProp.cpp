@@ -203,7 +203,7 @@ wstring TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB, bool
 		}
 	}
 
-	szRet = format(szFormatString.c_str(),
+	szRet = formatmessage(szFormatString.c_str(),
 		ulPropTag,
 		TypeToString(ulPropTag).c_str(),
 		szExactMatches.c_str(),
