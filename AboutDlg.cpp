@@ -1,72 +1,61 @@
 // AboutDlg.cpp : implementation file
-//
 
 #include "stdafx.h"
 #include "AboutDlg.h"
-#include "ParentWnd.h"
 #include "UIFunctions.h"
 
 void DisplayAboutDlg(_In_ CWnd* lpParentWnd)
 {
 	CAboutDlg AboutDlg(lpParentWnd);
-	HRESULT hRes = S_OK;
-	INT_PTR iDlgRet = 0;
+	auto hRes = S_OK;
+	auto iDlgRet = 0;
 
 	EC_D_DIALOG(AboutDlg.DoModal());
-} // DisplayAboutDlg
+}
 
 static wstring CLASS = L"CAboutDlg";
 
 CAboutDlg::CAboutDlg(
 	_In_ CWnd* pParentWnd
-	) :CMyDialog(IDD_ABOUT, pParentWnd)
+) :CMyDialog(IDD_ABOUT, pParentWnd)
 {
 	TRACE_CONSTRUCTOR(CLASS);
-} // CAboutDlg::CAboutDlg
+}
 
 CAboutDlg::~CAboutDlg()
 {
 	TRACE_DESTRUCTOR(CLASS);
-} // CAboutDlg::~CAboutDlg
+}
 
 BOOL CAboutDlg::OnInitDialog()
 {
-	HRESULT hRes = S_OK;
-	BOOL bRet = CMyDialog::OnInitDialog();
+	auto hRes = S_OK;
+	auto bRet = CMyDialog::OnInitDialog();
 	TCHAR szFullPath[256];
 	DWORD dwVerHnd = 0;
 	DWORD dwRet = 0;
 	DWORD dwVerInfoSize = 0;
-	int iTextHeight = GetTextHeight(m_hWnd);
-	int iCheckHeight = iTextHeight + GetSystemMetrics(SM_CYEDGE) * 2;
-	int iMargin = GetSystemMetrics(SM_CXHSCROLL) / 2 + 1;
-	int i = 0;
-	int iRet = 0;
-	static TCHAR szProductName[128];
+	auto iTextHeight = GetTextHeight(m_hWnd);
+	auto iCheckHeight = iTextHeight + GetSystemMetrics(SM_CYEDGE) * 2;
+	auto iMargin = GetSystemMetrics(SM_CXHSCROLL) / 2 + 1;
+	auto szProductName = loadstring(ID_PRODUCTNAME);
 
-	WC_D(iRet, LoadString(
-		GetModuleHandle(NULL),
-		ID_PRODUCTNAME,
-		szProductName,
-		_countof(szProductName)));
-
-	SetWindowText(szProductName);
+	SetWindowTextW(m_hWnd, szProductName.c_str());
 
 	RECT rcClient = { 0 };
 	RECT rcIcon = { 0 };
 	RECT rcButton = { 0 };
 	RECT rcText = { 0 };
 	RECT rcHelpText = { 0 };
-	RECT rcCheck = { 0 };
 
 	::GetClientRect(m_hWnd, &rcClient);
 
-	HWND hWndIcon = ::GetDlgItem(m_hWnd, IDC_STATIC);
+	auto hWndIcon = ::GetDlgItem(m_hWnd, IDC_STATIC);
 	::GetWindowRect(hWndIcon, &rcIcon);
 	::OffsetRect(&rcIcon, iMargin - rcIcon.left, iMargin - rcIcon.top);
 	::MoveWindow(hWndIcon, rcIcon.left, rcIcon.top, rcIcon.right - rcIcon.left, rcIcon.bottom - rcIcon.top, false);
 
-	HWND hWndButton = ::GetDlgItem(m_hWnd, IDOK);
+	auto hWndButton = ::GetDlgItem(m_hWnd, IDOK);
 	::GetWindowRect(hWndButton, &rcButton);
 	::OffsetRect(&rcButton, rcClient.right - rcButton.right - iMargin, iMargin + ((IDD_ABOUTVERLAST - IDD_ABOUTVERFIRST + 1) * iTextHeight - iCheckHeight) / 2 - rcButton.top);
 	::MoveWindow(hWndButton, rcButton.left, rcButton.top, rcButton.right - rcButton.left, rcButton.bottom - rcButton.top, false);
@@ -74,9 +63,9 @@ BOOL CAboutDlg::OnInitDialog()
 	// Position our about text with proper height
 	rcText.left = rcIcon.right + iMargin;
 	rcText.right = rcButton.left - iMargin;
-	for (i = IDD_ABOUTVERFIRST; i <= IDD_ABOUTVERLAST; i++)
+	for (auto i = IDD_ABOUTVERFIRST; i <= IDD_ABOUTVERLAST; i++)
 	{
-		HWND hWndAboutText = ::GetDlgItem(m_hWnd, i);
+		auto hWndAboutText = ::GetDlgItem(m_hWnd, i);
 		rcText.top = rcIcon.top + iTextHeight * (i - IDD_ABOUTVERFIRST);
 		rcText.bottom = rcText.top + iTextHeight;
 		::MoveWindow(hWndAboutText, rcText.left, rcText.top, rcText.right - rcText.left, rcText.bottom - rcText.top, false);
@@ -106,11 +95,10 @@ BOOL CAboutDlg::OnInitDialog()
 	::SendMessage(m_HelpText.m_hWnd, EM_AUTOURLDETECT, true, NULL);
 	m_HelpText.SetFont(GetFont());
 
-	CString szHelpText;
-	szHelpText.FormatMessage(IDS_HELPTEXT, szProductName);
-	m_HelpText.SetWindowText(szHelpText);
+	auto szHelpText = formatmessage(IDS_HELPTEXT, szProductName.c_str());
+	SetWindowTextW(m_HelpText.m_hWnd, szHelpText.c_str());
 
-	rcCheck = rcHelpText;
+	auto rcCheck = rcHelpText;
 	rcCheck.top = rcHelpText.bottom + iMargin;
 	rcCheck.bottom = rcCheck.top + iCheckHeight;
 
@@ -125,9 +113,8 @@ BOOL CAboutDlg::OnInitDialog()
 		this,
 		IDD_DISPLAYABOUT));
 	m_DisplayAboutCheck.SetCheck(RegKeys[regkeyDISPLAY_ABOUT_DIALOG].ulCurDWORD ? BST_CHECKED : BST_UNCHECKED);
-	CString szDisplayAboutCheck;
-	EC_B(szDisplayAboutCheck.LoadString(IDS_DISPLAYABOUTCHECK));
-	m_DisplayAboutCheck.SetWindowText(szDisplayAboutCheck);
+	auto szDisplayAboutCheck = loadstring(IDS_DISPLAYABOUTCHECK);
+	SetWindowTextW(m_DisplayAboutCheck.m_hWnd, szDisplayAboutCheck.c_str());
 
 	// Get version information from the application.
 	EC_D(dwRet, GetModuleFileName(NULL, szFullPath, _countof(szFullPath)));
@@ -137,27 +124,26 @@ BOOL CAboutDlg::OnInitDialog()
 		// If we were able to get the information, process it.
 		size_t cchRoot = 0;
 
-		BYTE* pbData = NULL;
-		pbData = new BYTE[dwVerInfoSize];
+		auto pbData = new BYTE[dwVerInfoSize];
 
 		if (pbData)
 		{
 			EC_D(bRet, GetFileVersionInfo(szFullPath,
-				dwVerHnd, dwVerInfoSize, (void*)pbData));
+				dwVerHnd, dwVerInfoSize, static_cast<void*>(pbData)));
 
 			struct LANGANDCODEPAGE {
 				WORD wLanguage;
 				WORD wCodePage;
-			} *lpTranslate = { 0 };
+			} *lpTranslate = { nullptr };
 
-			UINT	cbTranslate = 0;
-			TCHAR	szGetName[256];
+			UINT cbTranslate = 0;
+			TCHAR szGetName[256];
 
 			// Read the list of languages and code pages.
 			EC_B(VerQueryValue(
 				pbData,
 				_T("\\VarFileInfo\\Translation"), // STRING_OK
-				(LPVOID*)&lpTranslate,
+				reinterpret_cast<LPVOID*>(&lpTranslate),
 				&cbTranslate));
 
 			// Read the file description for the first language/codepage
@@ -173,10 +159,10 @@ BOOL CAboutDlg::OnInitDialog()
 				EC_H(StringCchLength(szGetName, 256, &cchRoot));
 
 				// Walk through the dialog box items that we want to replace.
-				if (!FAILED(hRes)) for (i = IDD_ABOUTVERFIRST; i <= IDD_ABOUTVERLAST; i++)
+				if (!FAILED(hRes)) for (auto i = IDD_ABOUTVERFIRST; i <= IDD_ABOUTVERLAST; i++)
 				{
-					UINT  cchVer = 0;
-					TCHAR*pszVer = NULL;
+					UINT cchVer = 0;
+					TCHAR*pszVer = nullptr;
 					TCHAR szResult[256];
 
 					hRes = S_OK;
@@ -186,9 +172,9 @@ BOOL CAboutDlg::OnInitDialog()
 					EC_H(StringCchCopy(&szGetName[cchRoot], _countof(szGetName) - cchRoot, szResult));
 
 					EC_B(VerQueryValue(
-						(void*)pbData,
+						static_cast<void*>(pbData),
 						szGetName,
-						(void**)&pszVer,
+						reinterpret_cast<void**>(&pszVer),
 						&cchVer));
 
 					if (S_OK == hRes && cchVer && pszVer)
@@ -204,7 +190,7 @@ BOOL CAboutDlg::OnInitDialog()
 		}
 	}
 	return bRet;
-} // CAboutDlg::OnInitDialog
+}
 
 LRESULT CAboutDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -212,10 +198,9 @@ LRESULT CAboutDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_HELP:
 		return true;
-		break;
 	case WM_NOTIFY:
 	{
-		ENLINK* lpel = (ENLINK*)lParam;
+		auto lpel = reinterpret_cast<ENLINK*>(lParam);
 		if (lpel)
 		{
 			switch (lpel->nmhdr.code)
@@ -228,12 +213,11 @@ LRESULT CAboutDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 					TEXTRANGE tr = { 0 };
 					tr.lpstrText = szLink;
 					tr.chrg = lpel->chrg;
-					::SendMessage(lpel->nmhdr.hwndFrom, EM_GETTEXTRANGE, NULL, (LPARAM)&tr);
-					ShellExecute(NULL, _T("open"), szLink, NULL, NULL, SW_SHOWNORMAL); // STRING_OK
+					::SendMessage(lpel->nmhdr.hwndFrom, EM_GETTEXTRANGE, NULL, reinterpret_cast<LPARAM>(&tr));
+					ShellExecute(nullptr, _T("open"), szLink, nullptr, nullptr, SW_SHOWNORMAL); // STRING_OK
 				}
 				return NULL;
 			}
-			break;
 			}
 		}
 		break;
@@ -242,23 +226,22 @@ LRESULT CAboutDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		RECT rect = { 0 };
 		::GetClientRect(m_hWnd, &rect);
-		HGDIOBJ hOld = ::SelectObject((HDC)wParam, GetSysBrush(cBackground));
-		BOOL bRet = ::PatBlt((HDC)wParam, 0, 0, rect.right - rect.left, rect.bottom - rect.top, PATCOPY);
-		::SelectObject((HDC)wParam, hOld);
+		auto hOld = ::SelectObject(reinterpret_cast<HDC>(wParam), GetSysBrush(cBackground));
+		auto bRet = ::PatBlt(reinterpret_cast<HDC>(wParam), 0, 0, rect.right - rect.left, rect.bottom - rect.top, PATCOPY);
+		::SelectObject(reinterpret_cast<HDC>(wParam), hOld);
 		return bRet;
 	}
-	break;
-	} // end switch
+	}
 	return CMyDialog::WindowProc(message, wParam, lParam);
-} // CAboutDlg::WindowProc
+}
 
 void CAboutDlg::OnOK()
 {
 	CMyDialog::OnOK();
-	int iCheckState = m_DisplayAboutCheck.GetCheck();
+	auto iCheckState = m_DisplayAboutCheck.GetCheck();
 
 	if (BST_CHECKED == iCheckState)
 		RegKeys[regkeyDISPLAY_ABOUT_DIALOG].ulCurDWORD = true;
 	else
 		RegKeys[regkeyDISPLAY_ABOUT_DIALOG].ulCurDWORD = false;
-} // CAboutDlg::OnOK
+}
