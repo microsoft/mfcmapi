@@ -69,7 +69,7 @@ _Check_return_ wstring PropsToString(DWORD PropCount, LPSPropValue Prop)
 
 			wstring szExactMatches;
 			wstring szPartialMatches;
-			PropTagToPropName(Prop[i].ulPropTag, false, &szExactMatches, &szPartialMatches);
+			PropTagToPropName(Prop[i].ulPropTag, false, szExactMatches, szPartialMatches);
 			if (!szExactMatches.empty())
 			{
 				szProperty += formatmessage(IDS_PROPERTYDATAEXACTMATCHES,

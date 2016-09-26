@@ -152,7 +152,7 @@ wstring TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB, bool
 		szNamedPropGUID, // Built from lpProp & lpMAPIProp
 		szNamedPropDASL); // Built from ulPropTag & lpMAPIProp
 
-	PropTagToPropName(ulPropTag, bIsAB, &szExactMatches, &szPartialMatches);
+	PropTagToPropName(ulPropTag, bIsAB, szExactMatches, szPartialMatches);
 
 	wstring szFormatString;
 	if (bSingleLine)

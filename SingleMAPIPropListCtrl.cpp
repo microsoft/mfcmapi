@@ -662,7 +662,7 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 		szNamedPropGUID, // Built from lpProp & lpMAPIProp
 		szNamedPropDASL);
 
-	PropTagToPropName(ulPropTag, m_bIsAB, &szExactMatches, &szPartialMatches);
+	PropTagToPropName(ulPropTag, m_bIsAB, szExactMatches, szPartialMatches);
 	if (!szExactMatches.empty())
 	{
 		SetItemText(iRow, pcPROPEXACTNAMES, szExactMatches);

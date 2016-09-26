@@ -391,7 +391,8 @@ _Check_return_ HRESULT CContentsTableListCtrl::AddColumn(UINT uidHeaderName, ULO
 	}
 	else
 	{
-		PropTagToPropName(ulPropTag, m_bIsAB, &szHeaderString, nullptr);
+		wstring szPartialMatches;
+		PropTagToPropName(ulPropTag, m_bIsAB, szHeaderString, szPartialMatches);
 		if (szHeaderString.empty())
 			szHeaderString = format(L"0x%08X", ulPropTag); // STRING_OK
 	}

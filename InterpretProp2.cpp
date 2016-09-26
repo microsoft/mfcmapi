@@ -118,27 +118,15 @@ struct NameMapEntry
 
 unordered_map<ULONG64, NameMapEntry> g_PropNames;
 
-// lpszExactMatch and lpszPartialMatches allocated with new
-// clean up with delete[]
-void PropTagToPropName(ULONG ulPropTag, bool bIsAB, _In_opt_  wstring* lpszExactMatch, _In_opt_  wstring* lpszPartialMatches)
+void PropTagToPropName(ULONG ulPropTag, bool bIsAB, _In_opt_  wstring& lpszExactMatch, _In_opt_  wstring& lpszPartialMatches)
 {
-	if (!lpszExactMatch && !lpszPartialMatches) return;
-
 	auto ulKey = (bIsAB ? static_cast<ULONG64>(1) << 32 : 0) | ulPropTag;
 
 	auto match = g_PropNames.find(ulKey);
 	if (match != g_PropNames.end())
 	{
-		if (lpszExactMatch)
-		{
-			*lpszExactMatch = match->second.szExactMatch;
-		}
-
-		if (lpszPartialMatches)
-		{
-			*lpszPartialMatches = match->second.szPartialMatches;
-		}
-
+		lpszExactMatch = match->second.szExactMatch;
+		lpszPartialMatches = match->second.szPartialMatches;
 		return;
 	}
 
@@ -148,39 +136,33 @@ void PropTagToPropName(ULONG ulPropTag, bool bIsAB, _In_opt_  wstring* lpszExact
 
 	NameMapEntry entry;
 
-	if (lpszExactMatch)
+	if (ulExacts.size())
 	{
-		if (ulExacts.size())
+		for (auto ulMatch : ulExacts)
 		{
-			for (auto ulMatch : ulExacts)
+			entry.szExactMatch += format(L"%ws", PropTagArray[ulMatch].lpszName);
+			if (ulMatch != ulExacts.back())
 			{
-				entry.szExactMatch += format(L"%ws", PropTagArray[ulMatch].lpszName);
-				if (ulMatch != ulExacts.back())
-				{
-					entry.szExactMatch += szPropSeparator;
-				}
+				entry.szExactMatch += szPropSeparator;
 			}
-
-			*lpszExactMatch = entry.szExactMatch;
 		}
+
+		lpszExactMatch = entry.szExactMatch;
 	}
 
-	if (lpszPartialMatches)
+	if (ulPartials.size())
 	{
-		if (ulPartials.size())
 		{
+			for (auto ulMatch : ulPartials)
 			{
-				for (auto ulMatch : ulPartials)
+				entry.szPartialMatches += format(L"%ws", PropTagArray[ulMatch].lpszName);
+				if (ulMatch != ulPartials.back())
 				{
-					entry.szPartialMatches += format(L"%ws", PropTagArray[ulMatch].lpszName);
-					if (ulMatch != ulPartials.back())
-					{
-						entry.szPartialMatches += szPropSeparator;
-					}
+					entry.szPartialMatches += szPropSeparator;
 				}
-
-				*lpszPartialMatches = entry.szPartialMatches;
 			}
+
+			lpszPartialMatches = entry.szPartialMatches;
 		}
 	}
 

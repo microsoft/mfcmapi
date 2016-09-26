@@ -737,7 +737,7 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 	wstring szExactMatches;
 	wstring szPartialMatches;
 
-	PropTagToPropName(lpProp->ulPropTag, false, &szExactMatches, &szPartialMatches);
+	PropTagToPropName(lpProp->ulPropTag, false, szExactMatches, szPartialMatches);
 	if (!szExactMatches.empty()) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPEXACTNAMES].uidName, szExactMatches, false, iIndent);
 	if (!szPartialMatches.empty()) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPPARTIALNAMES].uidName, szPartialMatches, false, iIndent);
 

@@ -110,7 +110,7 @@ _Check_return_ bool CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 			szNamedPropGUID, // Built from lpProp & lpMAPIProp
 			szNamedPropDASL);
 
-		PropTagToPropName(ulNewPropTag, m_bIsAB, &szExactMatch, &szPartialMatch);
+		PropTagToPropName(ulNewPropTag, m_bIsAB, szExactMatch, szPartialMatch);
 
 		SetListString(ulListNum, iItem, 1, format(L"0x%08X", ulNewPropTag));
 		SetListString(ulListNum, iItem, 2, szExactMatch);
@@ -169,7 +169,7 @@ void CTagArrayEditor::ReadTagArrayToList(ULONG ulListNum)
 				szNamedPropGUID, // Built from lpProp & lpMAPIProp
 				szNamedPropDASL);
 
-			PropTagToPropName(ulPropTag, m_bIsAB, &szExactMatch, &szPartialMatch);
+			PropTagToPropName(ulPropTag, m_bIsAB, szExactMatch, szPartialMatch);
 
 			SetListString(ulListNum, iTagCount, 1, format(L"0x%08X", ulPropTag));
 			SetListString(ulListNum, iTagCount, 2, szExactMatch);
