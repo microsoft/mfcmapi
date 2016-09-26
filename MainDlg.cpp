@@ -778,7 +778,6 @@ void CMainDlg::OnDumpStoreContents()
 	auto hRes = S_OK;
 	LPMDB lpMDB = nullptr;
 	auto iItem = -1;
-	WCHAR szDir[MAX_PATH];
 
 	if (!m_lpContentsTableListCtrl || !m_lpMapiObjects) return;
 
@@ -801,8 +800,8 @@ void CMainDlg::OnDumpStoreContents()
 					&lpMDB));
 				if (lpMDB)
 				{
-					WC_H(GetDirectoryPath(m_hWnd, szDir));
-					if (S_OK == hRes && szDir[0])
+					auto szDir = GetDirectoryPath(m_hWnd);
+					if (!szDir.empty())
 					{
 						CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
@@ -825,7 +824,6 @@ void CMainDlg::OnDumpStoreContents()
 void CMainDlg::OnDumpServerContents()
 {
 	auto hRes = S_OK;
-	WCHAR szDir[MAX_PATH] = { 0 };
 
 	if (!m_lpMapiObjects) return;
 
@@ -846,9 +844,8 @@ void CMainDlg::OnDumpServerContents()
 
 	if (S_OK == hRes)
 	{
-		WC_H(GetDirectoryPath(m_hWnd, szDir));
-
-		if (S_OK == hRes && szDir[0])
+		auto szDir = GetDirectoryPath(m_hWnd);
+		if (!szDir.empty())
 		{
 			CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 

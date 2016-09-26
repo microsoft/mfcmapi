@@ -14,22 +14,17 @@
 #include "Dumpstore.h"
 #include <algorithm>
 
-_Check_return_ HRESULT GetDirectoryPath(HWND hWnd, _Inout_z_ LPWSTR szPath)
+wstring GetDirectoryPath(HWND hWnd)
 {
-	BROWSEINFOW BrowseInfo;
+	WCHAR szPath[MAX_PATH] = { 0 };
+	BROWSEINFOW BrowseInfo = { 0 };
 	auto hRes = S_OK;
-
-	if (!szPath) return MAPI_E_INVALID_PARAMETER;
 
 	LPMALLOC lpMalloc = nullptr;
 
 	EC_H(SHGetMalloc(&lpMalloc));
 
-	if (!lpMalloc) return hRes;
-
-	memset(&BrowseInfo, NULL, sizeof(BROWSEINFO));
-
-	szPath[0] = NULL;
+	if (!lpMalloc) return emptystring;
 
 	auto szInputString = loadstring(IDS_DIRPROMPT);
 
@@ -45,13 +40,9 @@ _Check_return_ HRESULT GetDirectoryPath(HWND hWnd, _Inout_z_ LPWSTR szPath)
 		EC_B(SHGetPathFromIDListW(lpItemIdList, szPath));
 		lpMalloc->Free(lpItemIdList);
 	}
-	else
-	{
-		hRes = MAPI_E_USER_CANCEL;
-	}
 
 	lpMalloc->Release();
-	return hRes;
+	return szPath;
 }
 
 // Opens storage with best access
@@ -376,12 +367,9 @@ wstring SanitizeFileNameW(_In_ wstring szFileIn)
 
 void SaveFolderContentsToTXT(_In_ LPMDB lpMDB, _In_ LPMAPIFOLDER lpFolder, bool bRegular, bool bAssoc, bool bDescend, HWND hWnd)
 {
-	auto hRes = S_OK;
-	WCHAR szDir[MAX_PATH] = { 0 };
+	auto szDir = GetDirectoryPath(hWnd);
 
-	WC_H(GetDirectoryPath(hWnd, szDir));
-
-	if (S_OK == hRes && szDir[0])
+	if (!szDir.empty())
 	{
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 		CDumpStore MyDumpStore;
