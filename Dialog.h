@@ -6,15 +6,15 @@ class CMyDialog : public CDialog
 {
 public:
 	CMyDialog();
-	CMyDialog(UINT nIDTemplate, CWnd* pParentWnd = NULL);
+	CMyDialog(UINT nIDTemplate, CWnd* pParentWnd = nullptr);
 	virtual ~CMyDialog();
 	void DisplayParentedDialog(CParentWnd* lpNonModalParent, UINT iAutoCenterWidth);
 
 protected:
-	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
-	virtual BOOL CheckAutoCenter();
+	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
+	BOOL CheckAutoCenter() override;
 	void SetStatusHeight(int iHeight);
-	int GetStatusHeight();
+	int GetStatusHeight() const;
 
 private:
 	void Constructor();
