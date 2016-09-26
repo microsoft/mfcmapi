@@ -694,6 +694,9 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 	LARGE_INTEGER liVal = { 0 };
 	FILETIME ftVal = { 0 };
 	SBinary Bin = { 0 };
+	vector<BYTE> bin;
+	string lpszA;
+	wstring lpszW;
 
 	CountedTextPane* lpPane = nullptr;
 
@@ -815,14 +818,14 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 	case PT_BINARY:
 		if (0 == i || 2 == i)
 		{
-			auto bin = GetBinaryUseControl(0);
+			bin = GetBinaryUseControl(0);
 			if (0 == i) SetStringA(1, string(LPCSTR(bin.data()), bin.size())); // ansi string
 			Bin.lpb = bin.data();
 			Bin.cb = ULONG(bin.size());
 		}
 		else if (1 == i)
 		{
-			auto lpszA = GetEditBoxTextA(1); // Do not free this
+			lpszA = GetEditBoxTextA(1); // Do not free this
 			Bin.lpb = LPBYTE(lpszA.c_str());
 			Bin.cb = ULONG(lpszA.length() * sizeof(CHAR));
 
@@ -841,7 +844,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		if (0 == i)
 		{
 			size_t cbStr = 0;
-			auto lpszA = GetEditBoxTextA(0);
+			lpszA = GetEditBoxTextA(0);
 
 			lpPane = static_cast<CountedTextPane*>(GetControl(1));
 			if (lpPane)
@@ -859,7 +862,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		}
 		else if (1 == i)
 		{
-			auto bin = GetBinaryUseControl(1);
+			bin = GetBinaryUseControl(1);
 
 			SetStringA(0, string(LPCSTR(bin.data()), bin.size()));
 
@@ -874,7 +877,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 	case PT_UNICODE:
 		if (0 == i)
 		{
-			auto lpszW = GetEditBoxTextW(0);
+			lpszW = GetEditBoxTextW(0);
 
 			lpPane = static_cast<CountedTextPane*>(GetControl(1));
 			if (lpPane)
@@ -893,7 +896,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		else if (1 == i)
 		{
 			lpPane = static_cast<CountedTextPane*>(GetControl(0));
-			auto bin = GetBinaryUseControl(1);
+			bin = GetBinaryUseControl(1);
 			if (!(bin.size() % sizeof(WCHAR)))
 			{
 				SetStringW(0, wstring(LPCWSTR(bin.data()), bin.size() / sizeof(WCHAR)));
