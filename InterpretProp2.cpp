@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "InterpretProp2.h"
-#include "InterpretProp.h"
 #include "String.h"
 #include <algorithm>
 #include <unordered_map>
@@ -11,8 +10,8 @@ static WCHAR szPropSeparator[] = L", "; // STRING_OK
 // Compare tag sort order.
 bool CompareTagsSortOrder(int a1, int a2)
 {
-	LPNAME_ARRAY_ENTRY_V2 lpTag1 = &PropTagArray[a1];
-	LPNAME_ARRAY_ENTRY_V2 lpTag2 = &PropTagArray[a2];;
+	auto lpTag1 = &PropTagArray[a1];
+	auto lpTag2 = &PropTagArray[a2];;
 
 	if (lpTag1->ulSortOrder < lpTag2->ulSortOrder) return false;
 	if (lpTag1->ulSortOrder == lpTag2->ulSortOrder)
@@ -42,13 +41,13 @@ void FindTagArrayMatches(_In_ ULONG ulTarget,
 	}
 
 	ULONG ulLowerBound = 0;
-	ULONG ulUpperBound = ulMyArray - 1; // ulMyArray-1 is the last entry
-	ULONG ulMidPoint = (ulUpperBound + ulLowerBound) / 2;
+	auto ulUpperBound = ulMyArray - 1; // ulMyArray-1 is the last entry
+	auto ulMidPoint = (ulUpperBound + ulLowerBound) / 2;
 	ULONG ulFirstMatch = ulNoMatch;
-	ULONG ulMaskedTarget = ulTarget & PROP_TAG_MASK;
+	auto ulMaskedTarget = ulTarget & PROP_TAG_MASK;
 
 	// Short circuit property IDs with the high bit set if bIsAB wasn't passed
-	if (!bIsAB && (ulTarget & 0x80000000)) return;
+	if (!bIsAB && ulTarget & 0x80000000) return;
 
 	// Find A partial match
 	while (ulUpperBound - ulLowerBound > 1)
@@ -125,7 +124,7 @@ void PropTagToPropName(ULONG ulPropTag, bool bIsAB, _In_opt_  wstring* lpszExact
 {
 	if (!lpszExactMatch && !lpszPartialMatches) return;
 
-	ULONG64 ulKey = (bIsAB ? (_int64)1 << 32 : 0) | ulPropTag;
+	auto ulKey = (bIsAB ? static_cast<ULONG64>(1) << 32 : 0) | ulPropTag;
 
 	auto match = g_PropNames.find(ulKey);
 	if (match != g_PropNames.end())
@@ -153,7 +152,7 @@ void PropTagToPropName(ULONG ulPropTag, bool bIsAB, _In_opt_  wstring* lpszExact
 	{
 		if (ulExacts.size())
 		{
-			for (ULONG ulMatch : ulExacts)
+			for (auto ulMatch : ulExacts)
 			{
 				entry.szExactMatch += format(L"%ws", PropTagArray[ulMatch].lpszName);
 				if (ulMatch != ulExacts.back())
@@ -171,7 +170,7 @@ void PropTagToPropName(ULONG ulPropTag, bool bIsAB, _In_opt_  wstring* lpszExact
 		if (ulPartials.size())
 		{
 			{
-				for (ULONG ulMatch : ulPartials)
+				for (auto ulMatch : ulPartials)
 				{
 					entry.szPartialMatches += format(L"%ws", PropTagArray[ulMatch].lpszName);
 					if (ulMatch != ulPartials.back())
@@ -192,9 +191,8 @@ void PropTagToPropName(ULONG ulPropTag, bool bIsAB, _In_opt_  wstring* lpszExact
 _Check_return_ ULONG LookupPropName(_In_ wstring lpszPropName)
 {
 	if (lpszPropName.empty() || !ulPropTagArray || !PropTagArray) return 0;
-	ULONG ulCur = 0;
 
-	for (ulCur = 0; ulCur < ulPropTagArray; ulCur++)
+	for (ULONG ulCur = 0; ulCur < ulPropTagArray; ulCur++)
 	{
 		if (0 == lstrcmpiW(lpszPropName.c_str(), PropTagArray[ulCur].lpszName))
 		{
@@ -209,7 +207,7 @@ _Check_return_ ULONG PropNameToPropTag(_In_ wstring lpszPropName)
 {
 	if (lpszPropName.empty()) return 0;
 
-	ULONG ulTag = wstringToUlong(lpszPropName, 16);
+	auto ulTag = wstringToUlong(lpszPropName, 16);
 	if (ulTag != NULL)
 	{
 		return ulTag;
@@ -224,14 +222,12 @@ _Check_return_ ULONG PropTypeNameToPropType(_In_ wstring lpszPropType)
 
 	// Check for numbers first before trying the string as an array lookup.
 	// This will translate '0x102' to 0x102, 0x3 to 3, etc.
-	ULONG ulType = wstringToUlong(lpszPropType, 16);
+	auto ulType = wstringToUlong(lpszPropType, 16);
 	if (ulType != NULL) return ulType;
-
-	ULONG ulCur = 0;
 
 	ULONG ulPropType = PT_UNSPECIFIED;
 
-	for (ulCur = 0; ulCur < ulPropTypeArray; ulCur++)
+	for (ULONG ulCur = 0; ulCur < ulPropTypeArray; ulCur++)
 	{
 		if (0 == lstrcmpiW(lpszPropType.c_str(), PropTypeArray[ulCur].lpszName))
 		{
@@ -268,14 +264,13 @@ wstring GUIDToString(_In_opt_ LPCGUID lpGUID)
 
 wstring GUIDToStringAndName(_In_opt_ LPCGUID lpGUID)
 {
-	ULONG ulCur = 0;
-	wstring szGUID = GUIDToString(lpGUID);
+	auto szGUID = GUIDToString(lpGUID);
 
 	szGUID += L" = "; // STRING_OK
 
 	if (lpGUID && ulPropGuidArray && PropGuidArray)
 	{
-		for (ulCur = 0; ulCur < ulPropGuidArray; ulCur++)
+		for (ULONG ulCur = 0; ulCur < ulPropGuidArray; ulCur++)
 		{
 			if (IsEqualGUID(*lpGUID, *PropGuidArray[ulCur].lpGuid))
 			{
@@ -289,16 +284,14 @@ wstring GUIDToStringAndName(_In_opt_ LPCGUID lpGUID)
 
 LPCGUID GUIDNameToGUID(_In_ wstring szGUID, bool bByteSwapped)
 {
-	LPGUID lpGuidRet = NULL;
-	LPCGUID lpGUID = NULL;
+	LPGUID lpGuidRet = nullptr;
+	LPCGUID lpGUID = nullptr;
 	GUID guid = { 0 };
 
 	// Try the GUID like PS_* first
 	if (ulPropGuidArray && PropGuidArray)
 	{
-		ULONG ulCur = 0;
-
-		for (ulCur = 0; ulCur < ulPropGuidArray; ulCur++)
+		for (ULONG ulCur = 0; ulCur < ulPropGuidArray; ulCur++)
 		{
 			if (0 == lstrcmpiW(szGUID.c_str(), PropGuidArray[ulCur].lpszName))
 			{
@@ -336,10 +329,10 @@ _Check_return_ GUID StringToGUID(_In_ wstring szGUID)
 
 _Check_return_ GUID StringToGUID(_In_ wstring szGUID, bool bByteSwapped)
 {
-	GUID guid = GUID_NULL;
+	auto guid = GUID_NULL;
 	if (szGUID.empty()) return guid;
 
-	vector<BYTE> bin = HexStringToBin(szGUID, sizeof(GUID));
+	auto bin = HexStringToBin(szGUID, sizeof(GUID));
 	if (bin.size() == sizeof(GUID))
 	{
 		memcpy(&guid, bin.data(), sizeof(GUID));
@@ -347,9 +340,8 @@ _Check_return_ GUID StringToGUID(_In_ wstring szGUID, bool bByteSwapped)
 		// Note that we get the bByteSwapped behavior by default. We have to work to get the 'normal' behavior
 		if (!bByteSwapped)
 		{
-			LPBYTE lpByte = (LPBYTE)&guid;
-			BYTE bByte = 0;
-			bByte = lpByte[0];
+			auto lpByte = reinterpret_cast<LPBYTE>(&guid);
+			auto bByte = lpByte[0];
 			lpByte[0] = lpByte[3];
 			lpByte[3] = bByte;
 			bByte = lpByte[1];
@@ -367,12 +359,11 @@ wstring NameIDToPropName(_In_ LPMAPINAMEID lpNameID)
 	wstring szResultString;
 	if (!lpNameID) return szResultString;
 	if (lpNameID->ulKind != MNID_ID) return szResultString;
-	ULONG ulCur = 0;
 	ULONG ulMatch = ulNoMatch;
 
 	if (!ulNameIDArray || !NameIDArray) return szResultString;
 
-	for (ulCur = 0; ulCur < ulNameIDArray; ulCur++)
+	for (ULONG ulCur = 0; ulCur < ulNameIDArray; ulCur++)
 	{
 		if (NameIDArray[ulCur].lValue == lpNameID->Kind.lID)
 		{
@@ -383,7 +374,7 @@ wstring NameIDToPropName(_In_ LPMAPINAMEID lpNameID)
 
 	if (ulNoMatch != ulMatch)
 	{
-		for (ulCur = ulMatch; ulCur < ulNameIDArray; ulCur++)
+		for (auto ulCur = ulMatch; ulCur < ulNameIDArray; ulCur++)
 		{
 			if (NameIDArray[ulCur].lValue != lpNameID->Kind.lID) break;
 			// We don't acknowledge array entries without guids
@@ -423,9 +414,9 @@ wstring InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue)
 	if (FlagArray[ulCurEntry].ulFlagName != ulFlagName) return L"";
 
 	// We've matched our flag name to the array - we SHOULD return a string at this point
-	bool bNeedSeparator = false;
+	auto bNeedSeparator = false;
 
-	LONG lTempValue = lFlagValue;
+	auto lTempValue = lFlagValue;
 	wstring szTempString;
 	for (; FlagArray[ulCurEntry].ulFlagName == ulFlagName; ulCurEntry++)
 	{
@@ -459,7 +450,7 @@ wstring InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue)
 		}
 		else if (flagVALUEHIGHBYTES == FlagArray[ulCurEntry].ulFlagType)
 		{
-			if (FlagArray[ulCurEntry].lFlagValue == ((lTempValue >> 16) & 0xFFFF))
+			if (FlagArray[ulCurEntry].lFlagValue == (lTempValue >> 16 & 0xFFFF))
 			{
 				if (bNeedSeparator)
 				{
@@ -473,7 +464,7 @@ wstring InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue)
 		}
 		else if (flagVALUE3RDBYTE == FlagArray[ulCurEntry].ulFlagType)
 		{
-			if (FlagArray[ulCurEntry].lFlagValue == ((lTempValue >> 8) & 0xFF))
+			if (FlagArray[ulCurEntry].lFlagValue == (lTempValue >> 8 & 0xFF))
 			{
 				if (bNeedSeparator)
 				{
@@ -516,7 +507,7 @@ wstring InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue)
 		else if (flagCLEARBITS == FlagArray[ulCurEntry].ulFlagType)
 		{
 			// find any bits we need to clear
-			LONG lClearedBits = FlagArray[ulCurEntry].lFlagValue & lTempValue;
+			auto lClearedBits = FlagArray[ulCurEntry].lFlagValue & lTempValue;
 			// report what we found
 			if (0 != lClearedBits)
 			{
@@ -606,37 +597,37 @@ _Check_return_ HRESULT GetLargeProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag,
 	if (!lpMAPIProp || !lppProp) return MAPI_E_INVALID_PARAMETER;
 	DebugPrint(DBGGeneric, L"GetLargeProp getting buffer from 0x%08X\n", ulPropTag);
 
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	ULONG cValues = 0;
-	LPSPropValue lpPropArray = NULL;
-	bool bSuccess = false;
+	LPSPropValue lpPropArray = nullptr;
+	auto bSuccess = false;
 
 	const SizedSPropTagArray(1, sptaBuffer) =
 	{
 	1,
 	ulPropTag
 	};
-	*lppProp = NULL;
+	*lppProp = nullptr;
 
-	WC_H_GETPROPS(lpMAPIProp->GetProps((LPSPropTagArray)&sptaBuffer, 0, &cValues, &lpPropArray));
+	WC_H_GETPROPS(lpMAPIProp->GetProps(LPSPropTagArray(&sptaBuffer), 0, &cValues, &lpPropArray));
 
 	if (lpPropArray && PT_ERROR == PROP_TYPE(lpPropArray->ulPropTag) && MAPI_E_NOT_ENOUGH_MEMORY == lpPropArray->Value.err)
 	{
 		DebugPrint(DBGGeneric, L"GetLargeProp property reported in GetProps as large.\n");
 		MAPIFreeBuffer(lpPropArray);
-		lpPropArray = NULL;
+		lpPropArray = nullptr;
 		// need to get the data as a stream
-		LPSTREAM lpStream = NULL;
+		LPSTREAM lpStream = nullptr;
 
 		WC_MAPI(lpMAPIProp->OpenProperty(
 			ulPropTag,
 			&IID_IStream,
 			STGM_READ,
 			0,
-			(LPUNKNOWN*)&lpStream));
+			reinterpret_cast<LPUNKNOWN*>(&lpStream)));
 		if (SUCCEEDED(hRes) && lpStream)
 		{
-			STATSTG StatInfo = { 0 };
+			STATSTG StatInfo = { nullptr };
 			lpStream->Stat(&StatInfo, STATFLAG_NONAME); // find out how much space we need
 
 			// We're not going to try to support MASSIVE properties.
@@ -644,7 +635,7 @@ _Check_return_ HRESULT GetLargeProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag,
 			{
 				EC_H(MAPIAllocateBuffer(
 					sizeof(SPropValue),
-					(LPVOID*)&lpPropArray));
+					reinterpret_cast<LPVOID*>(&lpPropArray)));
 				if (lpPropArray)
 				{
 					memset(lpPropArray, 0, sizeof(SPropValue));
@@ -652,8 +643,8 @@ _Check_return_ HRESULT GetLargeProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag,
 
 					if (StatInfo.cbSize.LowPart)
 					{
-						LPBYTE lpBuffer = NULL;
-						ULONG ulBufferSize = StatInfo.cbSize.LowPart;
+						LPBYTE lpBuffer = nullptr;
+						auto ulBufferSize = StatInfo.cbSize.LowPart;
 						ULONG ulTrailingNullSize = 0;
 						switch (PROP_TYPE(ulPropTag))
 						{
@@ -666,7 +657,7 @@ _Check_return_ HRESULT GetLargeProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag,
 						EC_H(MAPIAllocateMore(
 							ulBufferSize + ulTrailingNullSize,
 							lpPropArray,
-							(LPVOID*)&lpBuffer));
+							reinterpret_cast<LPVOID*>(&lpBuffer)));
 						if (lpBuffer)
 						{
 							memset(lpBuffer, 0, ulBufferSize + ulTrailingNullSize);
@@ -677,10 +668,10 @@ _Check_return_ HRESULT GetLargeProp(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag,
 								switch (PROP_TYPE(ulPropTag))
 								{
 								case PT_STRING8:
-									lpPropArray->Value.lpszA = (LPSTR)lpBuffer;
+									lpPropArray->Value.lpszA = reinterpret_cast<LPSTR>(lpBuffer);
 									break;
 								case PT_UNICODE:
-									lpPropArray->Value.lpszW = (LPWSTR)lpBuffer;
+									lpPropArray->Value.lpszW = reinterpret_cast<LPWSTR>(lpBuffer);
 									break;
 								case PT_BINARY:
 									lpPropArray->Value.bin.cb = ulBufferSize;

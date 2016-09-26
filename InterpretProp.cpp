@@ -1,10 +1,9 @@
 #include "stdafx.h"
 #include "InterpretProp.h"
-#include "MAPIFunctions.h"
 #include "InterpretProp2.h"
 #include "ExtraPropTags.h"
 #include "NamedPropCache.h"
-#include "SmartView\SmartView.h"
+#include "SmartView/SmartView.h"
 #include "ParseProperty.h"
 #include "String.h"
 #include <vector>
@@ -24,28 +23,27 @@ static const char pBase64[] = {
 
 vector<BYTE> Base64Decode(wstring szEncodedStr)
 {
-	size_t cchLen = szEncodedStr.length();
+	auto cchLen = szEncodedStr.length();
 	vector<BYTE> lpb;
 	if (cchLen % 4) return lpb;
 
 	// look for padding at the end
-	size_t posEqual = szEncodedStr.find(L"=");
+	auto posEqual = szEncodedStr.find(L"=");
 	if (posEqual != wstring::npos)
 	{
-		wstring suffix = szEncodedStr.substr(posEqual);
+		auto suffix = szEncodedStr.substr(posEqual);
 		if (suffix.length() >= 3 ||
 			suffix.find_first_not_of(L"=") != wstring::npos) return lpb;
 	}
 
-	LPCWSTR szEncodedStrPtr = szEncodedStr.c_str();
+	auto szEncodedStrPtr = szEncodedStr.c_str();
 	WCHAR c[4] = { 0 };
 	BYTE bTmp[3] = { 0 }; // output
 
 	while (*szEncodedStrPtr)
 	{
-		int i = 0;
-		int iOutlen = 3;
-		for (i = 0; i < 4; i++)
+		auto iOutlen = 3;
+		for (auto i = 0; i < 4; i++)
 		{
 			c[i] = *(szEncodedStrPtr + i);
 			if (c[i] == L'=')
@@ -54,16 +52,16 @@ vector<BYTE> Base64Decode(wstring szEncodedStr)
 				break;
 			}
 
-			if ((c[i] < 0x2b) || (c[i] > 0x7a)) return vector<BYTE>();
+			if (c[i] < 0x2b || c[i] > 0x7a) return vector<BYTE>();
 
 			c[i] = pBase64[c[i] - 0x2b];
 		}
 
-		bTmp[0] = (BYTE)((c[0] << 2) | (c[1] >> 4));
-		bTmp[1] = (BYTE)((c[1] & 0x0f) << 4 | (c[2] >> 2));
-		bTmp[2] = (BYTE)((c[2] & 0x03) << 6 | c[3]);
+		bTmp[0] = static_cast<BYTE>(c[0] << 2 | c[1] >> 4);
+		bTmp[1] = static_cast<BYTE>((c[1] & 0x0f) << 4 | c[2] >> 2);
+		bTmp[2] = static_cast<BYTE>((c[2] & 0x03) << 6 | c[3]);
 
-		for (i = 0; i < iOutlen; i++)
+		for (auto i = 0; i < iOutlen; i++)
 		{
 			lpb.push_back(bTmp[i]);
 		}
@@ -92,7 +90,7 @@ wstring Base64Encode(size_t cbSourceBuf, _In_count_(cbSourceBuf) LPBYTE lpSource
 	size_t cbBuf = 0;
 
 	// Using integer division to round down here
-	while (cbBuf < (cbSourceBuf / 3) * 3) // encode each 3 byte octet.
+	while (cbBuf < cbSourceBuf / 3 * 3) // encode each 3 byte octet.
 	{
 		szEncodedStr += pIndex[lpSourceBuffer[cbBuf] >> 2];
 		szEncodedStr += pIndex[((lpSourceBuffer[cbBuf] & 0x03) << 4) + (lpSourceBuffer[cbBuf + 1] >> 4)];
@@ -124,7 +122,7 @@ wstring Base64Encode(size_t cbSourceBuf, _In_count_(cbSourceBuf) LPBYTE lpSource
 
 wstring CurrencyToString(CURRENCY curVal)
 {
-	wstring szCur = format(L"%05I64d", curVal.int64); // STRING_OK
+	auto szCur = format(L"%05I64d", curVal.int64); // STRING_OK
 	if (szCur.length() > 4)
 	{
 		szCur.insert(szCur.length() - 4, L"."); // STRING_OK
@@ -147,8 +145,8 @@ wstring TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB, bool
 	NameIDToStrings(
 		ulPropTag,
 		lpObj,
-		NULL,
-		NULL,
+		nullptr,
+		nullptr,
 		bIsAB,
 		szNamedPropName, // Built from lpProp & lpMAPIProp
 		szNamedPropGUID, // Built from lpProp & lpMAPIProp
@@ -217,9 +215,9 @@ wstring TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB, bool
 	if (fIsSet(DBGTest))
 	{
 		static size_t cchMaxBuff = 0;
-		size_t cchBuff = szRet.length();
+		auto cchBuff = szRet.length();
 		cchMaxBuff = max(cchBuff, cchMaxBuff);
-		DebugPrint(DBGTest, L"TagToString parsing 0x%08X returned %u chars - max %u\n", ulPropTag, (UINT)cchBuff, (UINT)cchMaxBuff);
+		DebugPrint(DBGTest, L"TagToString parsing 0x%08X returned %u chars - max %u\n", ulPropTag, static_cast<UINT>(cchBuff), static_cast<UINT>(cchMaxBuff));
 	}
 
 	return szRet;
@@ -230,13 +228,12 @@ wstring ProblemArrayToString(_In_ LPSPropProblemArray lpProblems)
 	wstring szOut;
 	if (lpProblems)
 	{
-		ULONG i = 0;
-		for (i = 0; i < lpProblems->cProblem; i++)
+		for (ULONG i = 0; i < lpProblems->cProblem; i++)
 		{
-			wstring szTemp = formatmessage(
+			auto szTemp = formatmessage(
 				IDS_PROBLEMARRAY,
 				lpProblems->aProblem[i].ulIndex,
-				TagToString(lpProblems->aProblem[i].ulPropTag, NULL, false, false).c_str(),
+				TagToString(lpProblems->aProblem[i].ulPropTag, nullptr, false, false).c_str(),
 				lpProblems->aProblem[i].scode,
 				ErrorNameFromErrorCode(lpProblems->aProblem[i].scode).c_str());
 			szOut += szTemp;
@@ -270,11 +267,11 @@ wstring TnefProblemArrayToString(_In_ LPSTnefProblemArray lpError)
 	{
 		for (ULONG iError = 0; iError < lpError->cProblem; iError++)
 		{
-			wstring szTemp = formatmessage(
+			auto szTemp = formatmessage(
 				IDS_TNEFPROBARRAY,
 				lpError->aProblem[iError].ulComponent,
 				lpError->aProblem[iError].ulAttribute,
-				TagToString(lpError->aProblem[iError].ulPropTag, NULL, false, false).c_str(),
+				TagToString(lpError->aProblem[iError].ulPropTag, nullptr, false, false).c_str(),
 				lpError->aProblem[iError].scode,
 				ErrorNameFromErrorCode(lpError->aProblem[iError].scode).c_str());
 			szOut += szTemp;
@@ -288,7 +285,6 @@ wstring TnefProblemArrayToString(_In_ LPSTnefProblemArray lpError)
 
 wstring RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj, ULONG ulTabLevel)
 {
-	ULONG i = 0;
 	if (!lpRes)
 	{
 		return loadstring(IDS_NULLRES);
@@ -303,13 +299,13 @@ wstring RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj
 	wstring szAltProp;
 
 	wstring szTabs;
-	for (i = 0; i < ulTabLevel; i++)
+	for (ULONG i = 0; i < ulTabLevel; i++)
 	{
 		szTabs += L"\t"; // STRING_OK
 	}
 
 	wstring szPropNum;
-	wstring szFlags = InterpretFlags(flagRestrictionType, lpRes->rt);
+	auto szFlags = InterpretFlags(flagRestrictionType, lpRes->rt);
 	resString += formatmessage(IDS_RESTYPE, szTabs.c_str(), lpRes->rt, szFlags.c_str());
 
 	switch (lpRes->rt)
@@ -328,7 +324,7 @@ wstring RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj
 		resString += formatmessage(IDS_RESANDCOUNT, szTabs.c_str(), lpRes->res.resAnd.cRes);
 		if (lpRes->res.resAnd.lpRes)
 		{
-			for (i = 0; i < lpRes->res.resAnd.cRes; i++)
+			for (ULONG i = 0; i < lpRes->res.resAnd.cRes; i++)
 			{
 				resString += formatmessage(IDS_RESANDPOINTER, szTabs.c_str(), i);
 				resString += RestrictionToString(&lpRes->res.resAnd.lpRes[i], lpObj, ulTabLevel + 1);
@@ -339,7 +335,7 @@ wstring RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj
 		resString += formatmessage(IDS_RESORCOUNT, szTabs.c_str(), lpRes->res.resOr.cRes);
 		if (lpRes->res.resOr.lpRes)
 		{
-			for (i = 0; i < lpRes->res.resOr.cRes; i++)
+			for (ULONG i = 0; i < lpRes->res.resOr.cRes; i++)
 			{
 				resString += formatmessage(IDS_RESORPOINTER, szTabs.c_str(), i);
 				resString += RestrictionToString(&lpRes->res.resOr.lpRes[i], lpObj, ulTabLevel + 1);
@@ -397,7 +393,7 @@ wstring RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj
 				TagToString(lpRes->res.resProperty.lpProp->ulPropTag, lpObj, false, true).c_str(),
 				szProp.c_str(),
 				szAltProp.c_str());
-			szPropNum = InterpretNumberAsString(lpRes->res.resProperty.lpProp->Value, lpRes->res.resProperty.lpProp->ulPropTag, NULL, NULL, NULL, false);
+			szPropNum = InterpretNumberAsString(lpRes->res.resProperty.lpProp->Value, lpRes->res.resProperty.lpProp->ulPropTag, NULL, nullptr, nullptr, false);
 			if (!szPropNum.empty())
 			{
 				resString += formatmessage(IDS_RESPROPPROPFLAGS, szTabs.c_str(), szPropNum.c_str());
@@ -451,7 +447,7 @@ wstring RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj
 		resString += formatmessage(IDS_RESCOMMENT, szTabs.c_str(), lpRes->res.resComment.cValues);
 		if (lpRes->res.resComment.lpProp)
 		{
-			for (i = 0; i < lpRes->res.resComment.cValues; i++)
+			for (ULONG i = 0; i < lpRes->res.resComment.cValues; i++)
 			{
 				InterpretProp(&lpRes->res.resComment.lpProp[i], &szProp, &szAltProp);
 				resString += formatmessage(
@@ -472,7 +468,7 @@ wstring RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj
 		resString += formatmessage(IDS_RESANNOTATION, szTabs.c_str(), lpRes->res.resComment.cValues);
 		if (lpRes->res.resComment.lpProp)
 		{
-			for (i = 0; i < lpRes->res.resComment.cValues; i++)
+			for (ULONG i = 0; i < lpRes->res.resComment.cValues; i++)
 			{
 				InterpretProp(&lpRes->res.resComment.lpProp[i], &szProp, &szAltProp);
 				resString += formatmessage(
@@ -512,20 +508,18 @@ wstring AdrListToString(_In_ LPADRLIST lpAdrList)
 	wstring szAltProp;
 	adrstring = formatmessage(IDS_ADRLISTCOUNT, lpAdrList->cEntries);
 
-	ULONG i = 0;
-	for (i = 0; i < lpAdrList->cEntries; i++)
+	for (ULONG i = 0; i < lpAdrList->cEntries; i++)
 	{
 		adrstring += formatmessage(IDS_ADRLISTENTRIESCOUNT, i, lpAdrList->aEntries[i].cValues);
 
-		ULONG j = 0;
-		for (j = 0; j < lpAdrList->aEntries[i].cValues; j++)
+		for (ULONG j = 0; j < lpAdrList->aEntries[i].cValues; j++)
 		{
 			InterpretProp(&lpAdrList->aEntries[i].rgPropVals[j], &szProp, &szAltProp);
 			adrstring += formatmessage(
 				IDS_ADRLISTENTRY,
 				i,
 				j,
-				TagToString(lpAdrList->aEntries[i].rgPropVals[j].ulPropTag, NULL, false, false).c_str(),
+				TagToString(lpAdrList->aEntries[i].rgPropVals[j].ulPropTag, nullptr, false, false).c_str(),
 				szProp.c_str(),
 				szAltProp.c_str());
 		}
@@ -544,13 +538,13 @@ _Check_return_ wstring ActionToString(_In_ ACTION* lpAction)
 	wstring actstring;
 	wstring szProp;
 	wstring szAltProp;
-	wstring szFlags = InterpretFlags(flagAccountType, lpAction->acttype);
-	wstring szFlags2 = InterpretFlags(flagRuleFlag, lpAction->ulFlags);
+	auto szFlags = InterpretFlags(flagAccountType, lpAction->acttype);
+	auto szFlags2 = InterpretFlags(flagRuleFlag, lpAction->ulFlags);
 	actstring = formatmessage(
 		IDS_ACTION,
 		lpAction->acttype,
 		szFlags.c_str(),
-		RestrictionToString(lpAction->lpRes, NULL).c_str(),
+		RestrictionToString(lpAction->lpRes, nullptr).c_str(),
 		lpAction->ulFlags,
 		szFlags2.c_str());
 
@@ -562,9 +556,9 @@ _Check_return_ wstring ActionToString(_In_ ACTION* lpAction)
 		SBinary sBinStore = { 0 };
 		SBinary sBinFld = { 0 };
 		sBinStore.cb = lpAction->actMoveCopy.cbStoreEntryId;
-		sBinStore.lpb = (LPBYTE)lpAction->actMoveCopy.lpStoreEntryId;
+		sBinStore.lpb = reinterpret_cast<LPBYTE>(lpAction->actMoveCopy.lpStoreEntryId);
 		sBinFld.cb = lpAction->actMoveCopy.cbFldEntryId;
-		sBinFld.lpb = (LPBYTE)lpAction->actMoveCopy.lpFldEntryId;
+		sBinFld.lpb = reinterpret_cast<LPBYTE>(lpAction->actMoveCopy.lpFldEntryId);
 
 		actstring += formatmessage(IDS_ACTIONOPMOVECOPY,
 			BinToHexString(&sBinStore, true).c_str(),
@@ -579,8 +573,8 @@ _Check_return_ wstring ActionToString(_In_ ACTION* lpAction)
 
 		SBinary sBin = { 0 };
 		sBin.cb = lpAction->actReply.cbEntryId;
-		sBin.lpb = (LPBYTE)lpAction->actReply.lpEntryId;
-		wstring szGUID = GUIDToStringAndName(&lpAction->actReply.guidReplyTemplate);
+		sBin.lpb = reinterpret_cast<LPBYTE>(lpAction->actReply.lpEntryId);
+		auto szGUID = GUIDToStringAndName(&lpAction->actReply.guidReplyTemplate);
 
 		actstring += formatmessage(IDS_ACTIONOPREPLY,
 			BinToHexString(&sBin, true).c_str(),
@@ -592,7 +586,7 @@ _Check_return_ wstring ActionToString(_In_ ACTION* lpAction)
 	{
 		SBinary sBin = { 0 };
 		sBin.cb = lpAction->actDeferAction.cbData;
-		sBin.lpb = (LPBYTE)lpAction->actDeferAction.pbData;
+		sBin.lpb = static_cast<LPBYTE>(lpAction->actDeferAction.pbData);
 
 		actstring += formatmessage(IDS_ACTIONOPDEFER,
 			BinToHexString(&sBin, true).c_str(),
@@ -617,11 +611,12 @@ _Check_return_ wstring ActionToString(_In_ ACTION* lpAction)
 	{
 		InterpretProp(&lpAction->propTag, &szProp, &szAltProp);
 		actstring += formatmessage(IDS_ACTIONOPTAG,
-			TagToString(lpAction->propTag.ulPropTag, NULL, false, true).c_str(),
+			TagToString(lpAction->propTag.ulPropTag, nullptr, false, true).c_str(),
 			szProp.c_str(),
 			szAltProp.c_str());
 		break;
 	}
+	default: break;
 	}
 
 	switch (lpAction->acttype)
@@ -636,6 +631,7 @@ _Check_return_ wstring ActionToString(_In_ ACTION* lpAction)
 		szFlags = InterpretFlags(flagOpForward, lpAction->ulActionFlavor);
 		break;
 	}
+	default: break;
 	}
 
 	actstring += formatmessage(IDS_ACTIONFLAVOR, lpAction->ulActionFlavor, szFlags.c_str());
@@ -647,12 +643,11 @@ _Check_return_ wstring ActionToString(_In_ ACTION* lpAction)
 	else
 	{
 		actstring += formatmessage(IDS_ACTIONTAGARRAYCOUNT, lpAction->lpPropTagArray->cValues);
-		ULONG i = 0;
-		for (i = 0; i < lpAction->lpPropTagArray->cValues; i++)
+		for (ULONG i = 0; i < lpAction->lpPropTagArray->cValues; i++)
 		{
 			actstring += formatmessage(IDS_ACTIONTAGARRAYTAG,
 				i,
-				TagToString(lpAction->lpPropTagArray->aulPropTag[i], NULL, false, false).c_str());
+				TagToString(lpAction->lpPropTagArray->aulPropTag[i], nullptr, false, false).c_str());
 		}
 	}
 
@@ -666,14 +661,13 @@ wstring ActionsToString(_In_ ACTIONS* lpActions)
 		return loadstring(IDS_ACTIONSNULL);
 	}
 
-	wstring szFlags = InterpretFlags(flagRulesVersion, lpActions->ulVersion);
-	wstring actstring = formatmessage(IDS_ACTIONSMEMBERS,
+	auto szFlags = InterpretFlags(flagRulesVersion, lpActions->ulVersion);
+	auto actstring = formatmessage(IDS_ACTIONSMEMBERS,
 		lpActions->ulVersion,
 		szFlags.c_str(),
 		lpActions->cActions);
 
-	UINT i = 0;
-	for (i = 0; i < lpActions->cActions; i++)
+	for (ULONG i = 0; i < lpActions->cActions; i++)
 	{
 		actstring += formatmessage(IDS_ACTIONSACTION, i);
 		actstring += ActionToString(&lpActions->lpAction[i]);
@@ -684,12 +678,12 @@ wstring ActionsToString(_In_ ACTIONS* lpActions)
 
 void FileTimeToString(_In_ FILETIME* lpFileTime, _In_ wstring& PropString, _In_opt_ wstring& AltPropString)
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	SYSTEMTIME SysTime = { 0 };
 
 	if (!lpFileTime) return;
 
-	WC_B(FileTimeToSystemTime((FILETIME*)lpFileTime, &SysTime));
+	WC_B(FileTimeToSystemTime(static_cast<FILETIME*>(lpFileTime), &SysTime));
 
 	if (S_OK == hRes)
 	{
@@ -698,7 +692,7 @@ void FileTimeToString(_In_ FILETIME* lpFileTime, _In_ wstring& PropString, _In_o
 		wchar_t szDateStr[MAX_PATH] = { 0 };
 
 		// shove millisecond info into our format string since GetTimeFormat doesn't use it
-		wstring szFormatStr = formatmessage(IDS_FILETIMEFORMAT, SysTime.wMilliseconds);
+		auto szFormatStr = formatmessage(IDS_FILETIMEFORMAT, SysTime.wMilliseconds);
 
 		WC_D(iRet, GetTimeFormatW(
 			LOCALE_USER_DEFAULT,
@@ -741,7 +735,7 @@ void InterpretProp(_In_ LPSPropValue lpProp, _In_opt_ wstring* PropString, _In_o
 {
 	if (!lpProp) return;
 
-	Property parsedProperty = ParseProperty(lpProp);
+	auto parsedProperty = ParseProperty(lpProp);
 
 	if (PropString) *PropString = parsedProperty.toString();
 	if (AltPropString) *AltPropString = parsedProperty.toAltString();
@@ -751,17 +745,16 @@ wstring TypeToString(ULONG ulPropTag)
 {
 	wstring tmpPropType;
 
-	bool bNeedInstance = false;
+	auto bNeedInstance = false;
 	if (ulPropTag & MV_INSTANCE)
 	{
 		ulPropTag &= ~MV_INSTANCE;
 		bNeedInstance = true;
 	}
 
-	ULONG ulCur = 0;
-	bool bTypeFound = false;
+	auto bTypeFound = false;
 
-	for (ulCur = 0; ulCur < ulPropTypeArray; ulCur++)
+	for (ULONG ulCur = 0; ulCur < ulPropTypeArray; ulCur++)
 	{
 		if (PropTypeArray[ulCur].ulValue == PROP_TYPE(ulPropTag))
 		{
@@ -786,12 +779,12 @@ void NameIDToStrings(_In_ LPMAPINAMEID lpNameID,
 	_In_ wstring& szPropGUID,
 	_In_ wstring& szDASL)
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
 	// Can't generate strings without a MAPINAMEID structure
 	if (!lpNameID) return;
 
-	LPNAMEDPROPCACHEENTRY lpNamedPropCacheEntry = NULL;
+	LPNAMEDPROPCACHEENTRY lpNamedPropCacheEntry = nullptr;
 
 	// If we're using the cache, look up the answer there and return
 	if (fCacheNamedProps())
@@ -818,12 +811,12 @@ void NameIDToStrings(_In_ LPMAPINAMEID lpNameID,
 	szPropGUID = GUIDToStringAndName(lpNameID->lpguid);
 	DebugPrint(DBGNamedProp, L"lpNameID->lpguid = %ws\n", szPropGUID.c_str());
 
-	wstring szDASLGuid = GUIDToString(lpNameID->lpguid);
+	auto szDASLGuid = GUIDToString(lpNameID->lpguid);
 
 	if (lpNameID->ulKind == MNID_ID)
 	{
 		DebugPrint(DBGNamedProp, L"lpNameID->Kind.lID = 0x%04X = %d\n", lpNameID->Kind.lID, lpNameID->Kind.lID);
-		wstring szName = NameIDToPropName(lpNameID);
+		auto szName = NameIDToPropName(lpNameID);
 
 		if (!szName.empty())
 		{
@@ -854,7 +847,7 @@ void NameIDToStrings(_In_ LPMAPINAMEID lpNameID,
 		// So we check the string length both ways to make our best guess
 		size_t cchShortLen = NULL;
 		size_t cchWideLen = NULL;
-		WC_H(StringCchLengthA((LPSTR)lpNameID->Kind.lpwstrName, STRSAFE_MAX_CCH, &cchShortLen));
+		WC_H(StringCchLengthA(reinterpret_cast<LPSTR>(lpNameID->Kind.lpwstrName), STRSAFE_MAX_CCH, &cchShortLen));
 		WC_H(StringCchLengthW(lpNameID->Kind.lpwstrName, STRSAFE_MAX_CCH, &cchWideLen));
 
 		if (cchShortLen < cchWideLen)
@@ -871,10 +864,10 @@ void NameIDToStrings(_In_ LPMAPINAMEID lpNameID,
 		{
 			// this is the case where ANSI data was shoved into a unicode string.
 			DebugPrint(DBGNamedProp, L"Warning: ANSI data was found in a unicode field. This is a bug on the part of the creator of this named property\n");
-			DebugPrint(DBGNamedProp, L"lpNameID->Kind.lpwstrName = \"%hs\"\n", (LPCSTR)lpNameID->Kind.lpwstrName);
+			DebugPrint(DBGNamedProp, L"lpNameID->Kind.lpwstrName = \"%hs\"\n", reinterpret_cast<LPCSTR>(lpNameID->Kind.lpwstrName));
 
-			wstring szComment = loadstring(IDS_NAMEWASANSI);
-			szPropName = format(L"sz: \"%hs\" %ws", (LPSTR)lpNameID->Kind.lpwstrName, szComment.c_str());
+			auto szComment = loadstring(IDS_NAMEWASANSI);
+			szPropName = format(L"sz: \"%hs\" %ws", reinterpret_cast<LPSTR>(lpNameID->Kind.lpwstrName), szComment.c_str());
 
 			szDASL = format(L"string/%ws/%hs", // STRING_OK
 				szDASLGuid.c_str(),
@@ -903,10 +896,10 @@ void NameIDToStrings(
 	_In_ wstring& lpszNamedPropGUID, // Built from ulPropTag & lpMAPIProp
 	_In_ wstring& lpszNamedPropDASL) // Built from ulPropTag & lpMAPIProp
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
 	// Named Props
-	LPMAPINAMEID* lppPropNames = 0;
+	LPMAPINAMEID* lppPropNames = nullptr;
 
 	// If we weren't passed named property information and we need it, look it up
 	// We check bIsAB here - some address book providers return garbage which will crash us
@@ -917,7 +910,7 @@ void NameIDToStrings(
 		(RegKeys[regkeyGETPROPNAMES_ON_ALL_PROPS].ulCurDWORD || PROP_ID(ulPropTag) >= 0x8000)) // and it's either a named prop or we're doing all props
 	{
 		SPropTagArray tag = { 0 };
-		LPSPropTagArray lpTag = &tag;
+		auto lpTag = &tag;
 		ULONG ulPropNames = 0;
 		tag.cValues = 1;
 		tag.aulPropTag[0] = ulPropTag;
