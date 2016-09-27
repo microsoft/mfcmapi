@@ -395,10 +395,9 @@ BOOL CEditor::OnInitDialog()
 
 	if (m_bButtonFlags & CEDITOR_BUTTON_OK)
 	{
-		CString szOk;
-		EC_B(szOk.LoadString(IDS_OK));
+		auto szOk = loadstring(IDS_OK);
 		EC_B(m_OkButton.Create(
-			szOk,
+			wstringToCString(szOk),
 			WS_TABSTOP
 			| WS_CHILD
 			| WS_CLIPSIBLINGS
@@ -410,10 +409,9 @@ BOOL CEditor::OnInitDialog()
 
 	if (m_bButtonFlags & CEDITOR_BUTTON_ACTION1)
 	{
-		CString szActionButtonText1;
-		EC_B(szActionButtonText1.LoadString(m_uidActionButtonText1));
+		auto szActionButtonText1 = loadstring(m_uidActionButtonText1);
 		EC_B(m_ActionButton1.Create(
-			szActionButtonText1,
+			wstringToCString(szActionButtonText1),
 			WS_TABSTOP
 			| WS_CHILD
 			| WS_CLIPSIBLINGS
@@ -422,16 +420,15 @@ BOOL CEditor::OnInitDialog()
 			this,
 			IDD_EDITACTION1));
 
-		::GetTextExtentPoint32(hdc, szActionButtonText1, szActionButtonText1.GetLength(), &sizeText);
+		::GetTextExtentPoint32W(hdc, szActionButtonText1.c_str(), szActionButtonText1.length(), &sizeText);
 		m_iButtonWidth = max(m_iButtonWidth, sizeText.cx);
 	}
 
 	if (m_bButtonFlags & CEDITOR_BUTTON_ACTION2)
 	{
-		CString szActionButtonText2;
-		EC_B(szActionButtonText2.LoadString(m_uidActionButtonText2));
+		auto szActionButtonText2 = loadstring(m_uidActionButtonText2);
 		EC_B(m_ActionButton2.Create(
-			szActionButtonText2,
+			wstringToCString(szActionButtonText2),
 			WS_TABSTOP
 			| WS_CHILD
 			| WS_CLIPSIBLINGS
@@ -440,16 +437,15 @@ BOOL CEditor::OnInitDialog()
 			this,
 			IDD_EDITACTION2));
 
-		::GetTextExtentPoint32(hdc, szActionButtonText2, szActionButtonText2.GetLength(), &sizeText);
+		::GetTextExtentPoint32W(hdc, szActionButtonText2.c_str(), szActionButtonText2.length(), &sizeText);
 		m_iButtonWidth = max(m_iButtonWidth, sizeText.cx);
 	}
 
 	if (m_bButtonFlags & CEDITOR_BUTTON_ACTION3)
 	{
-		CString szActionButtonText3;
-		EC_B(szActionButtonText3.LoadString(m_uidActionButtonText3));
+		auto szActionButtonText3 = loadstring(m_uidActionButtonText3);
 		EC_B(m_ActionButton3.Create(
-			szActionButtonText3,
+			wstringToCString(szActionButtonText3),
 			WS_TABSTOP
 			| WS_CHILD
 			| WS_CLIPSIBLINGS
@@ -458,16 +454,15 @@ BOOL CEditor::OnInitDialog()
 			this,
 			IDD_EDITACTION3));
 
-		::GetTextExtentPoint32(hdc, szActionButtonText3, szActionButtonText3.GetLength(), &sizeText);
+		::GetTextExtentPoint32W(hdc, szActionButtonText3.c_str(), szActionButtonText3.length(), &sizeText);
 		m_iButtonWidth = max(m_iButtonWidth, sizeText.cx);
 	}
 
 	if (m_bButtonFlags & CEDITOR_BUTTON_CANCEL)
 	{
-		CString szCancel;
-		EC_B(szCancel.LoadString(IDS_CANCEL));
+		auto szCancel = loadstring(IDS_CANCEL);
 		EC_B(m_CancelButton.Create(
-			szCancel,
+			wstringToCString(szCancel),
 			WS_TABSTOP
 			| WS_CHILD
 			| WS_CLIPSIBLINGS
