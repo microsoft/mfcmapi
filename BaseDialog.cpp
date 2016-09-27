@@ -450,9 +450,8 @@ void CBaseDialog::AddMenu(HMENU hMenuBar, UINT uiResource, UINT uidTitle, UINT u
 
 	if (hMenuBar && hMenuToAdd)
 	{
-		CString szTitle;
-		(void)szTitle.LoadString(uidTitle);
-		::InsertMenu(hMenuBar, uiPos, MF_BYPOSITION | MF_POPUP, reinterpret_cast<UINT_PTR>(hMenuToAdd), static_cast<LPCTSTR>(szTitle));
+		auto szTitle = loadstring(uidTitle);
+		::InsertMenuW(hMenuBar, uiPos, MF_BYPOSITION | MF_POPUP, reinterpret_cast<UINT_PTR>(hMenuToAdd), szTitle.c_str());
 		if (IDR_MENU_PROPERTY == uiResource)
 		{
 			(void)ExtendAddInMenu(hMenuToAdd, MENU_CONTEXT_PROPERTY);
