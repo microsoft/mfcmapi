@@ -43,9 +43,9 @@ ULONG DropDownPane::GetFlags()
 	return ulFlags;
 }
 
-wstring GetLBText(CComboBox& box, int nIndex)
+wstring GetLBText(const CComboBox& box, int nIndex)
 {
-	auto len = box.GetLBTextLen(nIndex);
+	auto len = box.GetLBTextLen(nIndex) + 1;
 	auto buffer = new TCHAR[len];
 	memset(buffer, 0, sizeof(TCHAR)* len);
 	box.GetLBText(nIndex, buffer);
@@ -206,10 +206,13 @@ void DropDownPane::CommitUIValues()
 
 _Check_return_ wstring DropDownPane::GetDropStringUseControl() const
 {
-	CString szText;
-	m_DropDown.GetWindowText(szText);
-
-	return LPCTSTRToWstring(szText);
+	auto len = m_DropDown.GetWindowTextLength() + 1;
+	auto buffer = new WCHAR[len];
+	memset(buffer, 0, sizeof(WCHAR)* len);
+	::GetWindowTextW(m_DropDown.m_hWnd, buffer, len);
+	wstring szOut = buffer;
+	delete[] buffer;
+	return szOut;
 }
 
 // This should work whether the editor is active/displayed or not
