@@ -7,6 +7,15 @@ using namespace std;
 // Do NOT check in with this macro enabled!
 //#define CHECKFORMATPARAMS
 
+namespace std
+{
+#ifdef _UNICODE 
+	typedef wstring tstring;
+#else
+	typedef string tstring;
+#endif
+};
+
 extern wstring emptystring;
 wstring loadstring(DWORD dwID);
 wstring formatV(LPCWSTR szMsg, va_list argList);
@@ -19,7 +28,7 @@ wstring format(LPCWSTR szMsg, ...);
 wstring formatmessagesys(DWORD dwID);
 wstring formatmessage(DWORD dwID, ...);
 wstring formatmessage(wstring const szMsg, ...);
-CString wstringToCString(wstring const& src);
+tstring wstringTotstring(wstring const& src);
 string wstringTostring(wstring const& src);
 wstring stringTowstring(string const& src);
 wstring LPCTSTRToWstring(LPCTSTR src);

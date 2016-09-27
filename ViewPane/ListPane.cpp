@@ -162,7 +162,7 @@ void ListPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 			auto szButtonText = loadstring(ListButtons[iButton].uiButtonID);
 
 			EC_B(m_ButtonArray[iButton].Create(
-				wstringToCString(szButtonText),
+				wstringTotstring(szButtonText).c_str(),
 				WS_TABSTOP
 				| WS_CHILD
 				| WS_CLIPSIBLINGS
@@ -171,7 +171,7 @@ void ListPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 				pParent,
 				ListButtons[iButton].uiButtonID));
 
-			::GetTextExtentPoint32W(hdc, szButtonText.c_str(), szButtonText.length(), &sizeText);
+			::GetTextExtentPoint32W(hdc, szButtonText.c_str(), int(szButtonText.length()), &sizeText);
 			m_iButtonWidth = max(m_iButtonWidth, sizeText.cx);
 		}
 	}
@@ -232,7 +232,7 @@ _Check_return_ SortListData* ListPane::GetSelectedListRowData() const
 
 void ListPane::InsertColumn(int nCol, UINT uidText)
 {
-	m_List.InsertColumn(nCol, wstringToCString(loadstring(uidText)));
+	m_List.InsertColumn(nCol, wstringTotstring(loadstring(uidText)).c_str());
 }
 
 void ListPane::SetColumnType(int nCol, ULONG ulPropType) const

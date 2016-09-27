@@ -61,7 +61,7 @@ int DropDownPane::GetMinWidth(_In_ HDC hdc)
 	{
 		SIZE sizeDrop = { 0 };
 		auto szDropString = GetLBText(m_DropDown, iDropString);
-		::GetTextExtentPoint32W(hdc, szDropString.c_str(), szDropString.length(), &sizeDrop);
+		::GetTextExtentPoint32W(hdc, szDropString.c_str(), int(szDropString.length()), &sizeDrop);
 		cxDropDown = max(cxDropDown, sizeDrop.cx);
 	}
 
@@ -192,7 +192,7 @@ void DropDownPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 
 void DropDownPane::InsertDropString(int iRow, _In_ wstring szText, ULONG ulValue)
 {
-	m_DropDown.InsertString(iRow, wstringToCString(szText));
+	m_DropDown.InsertString(iRow, wstringTotstring(szText).c_str());
 	m_DropDown.SetItemData(iRow, ulValue);
 }
 
@@ -291,7 +291,7 @@ _Check_return_ bool DropDownPane::GetSelectedGUID(bool bByteSwapped, _In_ LPGUID
 void DropDownPane::SetDropDownSelection(_In_ wstring szText)
 {
 	auto hRes = S_OK;
-	auto text = wstringToCString(szText);
+	auto text = wstringTotstring(szText).c_str();
 	auto iSelect = m_DropDown.SelectString(0, text);
 
 	// if we can't select, try pushing the text in there

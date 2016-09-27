@@ -1500,7 +1500,7 @@ void MeasureMenu(_In_ LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 		auto szText = StripCharacter(lpMenuEntry->m_MSAA.pszWText, L'&');
 
 		SIZE size = { 0 };
-		GetTextExtentPoint32W(hdc, szText.c_str(), szText.length(), &size);
+		GetTextExtentPoint32W(hdc, szText.c_str(), int(szText.length()), &size);
 		lpMeasureItemStruct->itemWidth = size.cx + 2 * GetSystemMetrics(SM_CXEDGE);
 		lpMeasureItemStruct->itemHeight = size.cy + 2 * GetSystemMetrics(SM_CYEDGE);
 

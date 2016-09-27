@@ -310,7 +310,7 @@ void TextPane::AppendString(_In_z_ wstring szMsg)
 
 	auto cchText = m_EditBox.GetWindowTextLength();
 	m_EditBox.SetSel(cchText, cchText);
-	m_EditBox.ReplaceSel(wstringToCString(szMsg));
+	m_EditBox.ReplaceSel(wstringTotstring(szMsg).c_str());
 }
 
 // This is used by the DbgView - don't call any debugger functions here!!!

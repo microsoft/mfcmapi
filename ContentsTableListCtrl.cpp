@@ -397,7 +397,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::AddColumn(UINT uidHeaderName, ULO
 			szHeaderString = format(L"0x%08X", ulPropTag); // STRING_OK
 	}
 
-	auto iRetVal = InsertColumn(ulCurHeaderCol, wstringToCString(szHeaderString));
+	auto iRetVal = InsertColumn(ulCurHeaderCol, wstringTotstring(szHeaderString).c_str());
 
 	if (-1 == iRetVal)
 	{
