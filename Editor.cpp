@@ -336,6 +336,7 @@ BOOL CEditor::OnInitDialog()
 			// Make sure we clear the prefix out or it might show up in the prompt
 			szPrefix = emptystring;
 		}
+
 		szFullString = szPrefix + m_szPromptPostFix;
 
 		EC_B(m_Prompt.Create(
@@ -356,7 +357,6 @@ BOOL CEditor::OnInitDialog()
 	auto hdc = ::GetDC(m_hWnd);
 	if (!hdc) return false; // fatal error
 	auto hfontOld = ::SelectObject(hdc, GetSegoeFont());
-	SIZE sizeText = { 0 };
 
 	CWnd* pParent = this;
 	if (m_bEnableScroll)
@@ -420,7 +420,7 @@ BOOL CEditor::OnInitDialog()
 			this,
 			IDD_EDITACTION1));
 
-		::GetTextExtentPoint32W(hdc, szActionButtonText1.c_str(), int(szActionButtonText1.length()), &sizeText);
+		auto sizeText = GetTextExtentPoint32(hdc, szActionButtonText1);
 		m_iButtonWidth = max(m_iButtonWidth, sizeText.cx);
 	}
 
@@ -437,7 +437,7 @@ BOOL CEditor::OnInitDialog()
 			this,
 			IDD_EDITACTION2));
 
-		::GetTextExtentPoint32W(hdc, szActionButtonText2.c_str(), int(szActionButtonText2.length()), &sizeText);
+		auto sizeText = GetTextExtentPoint32(hdc, szActionButtonText2);
 		m_iButtonWidth = max(m_iButtonWidth, sizeText.cx);
 	}
 
@@ -454,7 +454,7 @@ BOOL CEditor::OnInitDialog()
 			this,
 			IDD_EDITACTION3));
 
-		::GetTextExtentPoint32W(hdc, szActionButtonText3.c_str(), int(szActionButtonText3.length()), &sizeText);
+		auto sizeText = GetTextExtentPoint32(hdc, szActionButtonText3);
 		m_iButtonWidth = max(m_iButtonWidth, sizeText.cx);
 	}
 
@@ -599,8 +599,7 @@ int ComputePromptWidth(CEdit* lpPrompt, HDC hdc, int iMaxWidth, int* iLineCount)
 
 int ComputeCaptionWidth(HDC hdc, wstring szTitle, int iMargin)
 {
-	SIZE sizeTitle = { 0 };
-	::GetTextExtentPoint32W(hdc, szTitle.c_str(), static_cast<int>(szTitle.length()), &sizeTitle);
+	auto sizeTitle = GetTextExtentPoint32(hdc, szTitle);
 	auto iCaptionWidth = sizeTitle.cx + iMargin; // Allow for some whitespace between the caption and buttons
 
 	auto iIconWidth = GetSystemMetrics(SM_CXFIXEDFRAME) + GetSystemMetrics(SM_CXSMICON);

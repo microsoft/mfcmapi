@@ -59,9 +59,8 @@ int DropDownPane::GetMinWidth(_In_ HDC hdc)
 	auto cxDropDown = 0;
 	for (auto iDropString = 0; iDropString < m_DropDown.GetCount(); iDropString++)
 	{
-		SIZE sizeDrop = { 0 };
 		auto szDropString = GetLBText(m_DropDown, iDropString);
-		::GetTextExtentPoint32W(hdc, szDropString.c_str(), int(szDropString.length()), &sizeDrop);
+		auto sizeDrop = GetTextExtentPoint32(hdc, szDropString);
 		cxDropDown = max(cxDropDown, sizeDrop.cx);
 	}
 

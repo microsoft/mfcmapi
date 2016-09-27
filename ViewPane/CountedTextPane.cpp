@@ -41,8 +41,7 @@ int CountedTextPane::GetMinWidth(_In_ HDC hdc)
 	auto szCount = format(L"%ws: 0x%08X = %u", m_szCountLabel.c_str(), static_cast<int>(m_iCount), static_cast<UINT>(m_iCount)); // STRING_OK
 	SetWindowTextW(m_Count.m_hWnd, szCount.c_str());
 
-	SIZE sizeText = { 0 };
-	::GetTextExtentPoint32W(hdc, szCount.c_str(), static_cast<int>(szCount.length()), &sizeText);
+	auto sizeText = GetTextExtentPoint32(hdc, szCount);
 	m_iCountLabelWidth = sizeText.cx + m_iSideMargin;
 
 	// Button, margin, label, margin, count label

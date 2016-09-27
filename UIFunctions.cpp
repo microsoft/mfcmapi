@@ -123,7 +123,7 @@ void DrawSegoeTextW(
 
 void DrawSegoeTextA(
 	_In_ HDC hdc,
-	_In_z_ LPCTSTR lpchText,
+	_In_z_ LPCSTR lpchText,
 	_In_ COLORREF color,
 	_In_ LPRECT lprc,
 	bool bBold,
@@ -546,6 +546,13 @@ _Check_return_ int GetTextHeight(_In_ HWND hwndEdit)
 	// Calculate the new height for the static control.
 	iHeight = tmFont.tmHeight;
 	return iHeight;
+}
+
+SIZE GetTextExtentPoint32(HDC hdc, wstring szText)
+{
+	SIZE size = { 0 };
+	::GetTextExtentPoint32W(hdc, szText.c_str(), static_cast<int>(szText.length()), &size);
+	return size;
 }
 
 int CALLBACK EnumFontFamExProcW(
@@ -1499,8 +1506,7 @@ void MeasureMenu(_In_ LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 		// In order to compute the right width, we need to drop our prefix characters
 		auto szText = StripCharacter(lpMenuEntry->m_MSAA.pszWText, L'&');
 
-		SIZE size = { 0 };
-		GetTextExtentPoint32W(hdc, szText.c_str(), int(szText.length()), &size);
+		auto size = GetTextExtentPoint32(hdc, szText);
 		lpMeasureItemStruct->itemWidth = size.cx + 2 * GetSystemMetrics(SM_CXEDGE);
 		lpMeasureItemStruct->itemHeight = size.cy + 2 * GetSystemMetrics(SM_CYEDGE);
 

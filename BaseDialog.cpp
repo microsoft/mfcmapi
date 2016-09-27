@@ -468,27 +468,26 @@ void CBaseDialog::OnActivate(UINT nState, _In_ CWnd* pWndOther, BOOL bMinimized)
 
 void CBaseDialog::SetStatusWidths()
 {
-	// Get the width of the strings
-	auto iData1Len = static_cast<int>(m_StatusMessages[STATUSDATA1].length());
-	auto iData2Len = static_cast<int>(m_StatusMessages[STATUSDATA2].length());
+	auto iData1 = !m_StatusMessages[STATUSDATA1].empty();
+	auto iData2 = !m_StatusMessages[STATUSDATA2].empty();
 
 	SIZE sizeData1 = { 0 };
 	SIZE sizeData2 = { 0 };
-	if (iData1Len != 0 || iData2Len != 0)
+	if (iData1 || iData2)
 	{
 		auto hdc = ::GetDC(m_hWnd);
 		if (hdc)
 		{
 			auto hfontOld = ::SelectObject(hdc, GetSegoeFontBold());
 
-			if (iData1Len)
+			if (iData1)
 			{
-				::GetTextExtentPoint32W(hdc, m_StatusMessages[STATUSDATA1].c_str(), iData1Len, &sizeData1);
+				sizeData1 = GetTextExtentPoint32(hdc, m_StatusMessages[STATUSDATA1]);
 			}
 
-			if (iData2Len)
+			if (iData2)
 			{
-				::GetTextExtentPoint32W(hdc, m_StatusMessages[STATUSDATA2].c_str(), iData2Len, &sizeData2);
+				sizeData2 = GetTextExtentPoint32(hdc, m_StatusMessages[STATUSDATA2]);
 			}
 
 			::SelectObject(hdc, hfontOld);

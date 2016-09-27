@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "ListPane.h"
 #include "Editor.h"
+#include "UIFunctions.h"
 
 ViewPane* CreateListPane(UINT uidLabel, bool bAllowSort, bool bReadOnly, LPVOID lpEdit)
 {
@@ -148,7 +149,6 @@ void ListPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 
 	auto hRes = S_OK;
 
-	SIZE sizeText = { 0 };
 	DWORD dwListStyle = LVS_SINGLESEL | WS_BORDER;
 	if (!m_bAllowSort)
 		dwListStyle |= LVS_NOSORTHEADER;
@@ -171,7 +171,7 @@ void ListPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 				pParent,
 				ListButtons[iButton].uiButtonID));
 
-			::GetTextExtentPoint32W(hdc, szButtonText.c_str(), int(szButtonText.length()), &sizeText);
+			auto sizeText = GetTextExtentPoint32(hdc, szButtonText);
 			m_iButtonWidth = max(m_iButtonWidth, sizeText.cx);
 		}
 	}
