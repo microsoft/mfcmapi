@@ -1159,6 +1159,7 @@ void DrawExpandTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ HTREEITEM hItem, bool
 			cEdge = bExpanded ? cFrameSelected : cArrow;
 			cFill = bExpanded ? cFrameSelected : cBackground;
 		}
+
 		DrawFilledPolygon(hdc, tri, _countof(tri), MyGetSysColor(cEdge), GetSysBrush(cFill));
 	}
 }
@@ -1335,6 +1336,7 @@ void DrawTrackingBar(_In_ HWND hWndHeader, _In_ HWND hWndList, int x, int iHeade
 	{
 		::FillRect(hdc, &rcTracker, GetSysBrush(cFrameSelected));
 	}
+
 	::ReleaseDC(hWndList, hdc);
 }
 
@@ -2021,7 +2023,7 @@ void DrawWindowFrame(_In_ HWND hWnd, bool bActive, int iStatusHeight)
 		}
 
 		WCHAR szTitle[256] = { 0 };
-		GetWindowTextW(hWnd, szTitle, _countof(szTitle));
+		::GetWindowTextW(hWnd, szTitle, _countof(szTitle));
 		DrawSegoeTextW(
 			hdc,
 			szTitle,
@@ -2064,6 +2066,7 @@ _Check_return_ bool HandleControlUI(UINT message, WPARAM wParam, LPARAM lParam, 
 			uiText = cPaneHeaderText;
 			uiBackground = cPaneHeaderBackground;
 		}
+
 		auto hdc = reinterpret_cast<HDC>(wParam);
 		if (hdc)
 		{
@@ -2071,6 +2074,7 @@ _Check_return_ bool HandleControlUI(UINT message, WPARAM wParam, LPARAM lParam, 
 			::SetBkMode(hdc, TRANSPARENT);
 			::SelectObject(hdc, GetSegoeFont());
 		}
+
 		*lpResult = reinterpret_cast<LRESULT>(GetSysBrush(uiBackground));
 		return true;
 	}
@@ -2093,7 +2097,6 @@ _Check_return_ bool HandleControlUI(UINT message, WPARAM wParam, LPARAM lParam, 
 
 void DrawHelpText(_In_ HWND hWnd, _In_ UINT uIDText)
 {
-	auto hRes = S_OK;
 	PAINTSTRUCT ps = { nullptr };
 	::BeginPaint(hWnd, &ps);
 
@@ -2121,6 +2124,7 @@ void DrawHelpText(_In_ HWND hWnd, _In_ UINT uIDText)
 
 		db.End(hdc);
 	}
+
 	::EndPaint(hWnd, &ps);
 }
 
