@@ -33,7 +33,6 @@ __int64 wstringToInt64(wstring const& src);
 wstring StripCharacter(wstring szString, WCHAR character);
 wstring StripCarriage(wstring szString);
 wstring CleanString(wstring szString);
-void CleanPropString(_In_ CString* lpString);
 wstring ScrubStringForXML(_In_ wstring szString);
 wstring indent(int iIndent);
 

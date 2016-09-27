@@ -53,17 +53,6 @@ void CHexEditor::OnCancel()
 	OnOK();
 }
 
-void CleanString(_In_ CString* lpString)
-{
-	if (!lpString) return;
-
-	// remove any whitespace
-	lpString->Replace(_T("\r"), _T("")); // STRING_OK
-	lpString->Replace(_T("\n"), _T("")); // STRING_OK
-	lpString->Replace(_T("\t"), _T("")); // STRING_OK
-	lpString->Replace(_T(" "), _T("")); // STRING_OK
-}
-
 _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 {
 	auto i = CEditor::HandleChange(nID);

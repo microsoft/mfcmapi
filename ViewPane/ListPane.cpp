@@ -233,11 +233,7 @@ _Check_return_ SortListData* ListPane::GetSelectedListRowData() const
 
 void ListPane::InsertColumn(int nCol, UINT uidText)
 {
-	CString szText;
-	auto hRes = S_OK;
-	EC_B(szText.LoadString(uidText));
-
-	m_List.InsertColumn(nCol, szText);
+	m_List.InsertColumn(nCol, wstringToCString(loadstring(uidText)));
 }
 
 void ListPane::SetColumnType(int nCol, ULONG ulPropType) const
