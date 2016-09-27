@@ -70,7 +70,7 @@ private:
 public:
 	CDoubleBuffer();
 	~CDoubleBuffer();
-	void Begin(_Inout_ HDC& hdc, _In_ CONST RECT* prcPaint);
+	void Begin(_Inout_ HDC& hdc, _In_ RECT CONST* prcPaint);
 	void End(_Inout_ HDC& hdc);
 };
 
@@ -85,6 +85,7 @@ HMENU LocateSubmenu(_In_ HMENU hMenu, UINT uid);
 
 _Check_return_ int GetEditHeight(_In_ HWND hwndEdit);
 _Check_return_ int GetTextHeight(_In_ HWND hwndEdit);
+SIZE GetTextExtentPoint32(HDC hdc, wstring szText);
 
 HFONT GetSegoeFont();
 HFONT GetSegoeFontBold();
