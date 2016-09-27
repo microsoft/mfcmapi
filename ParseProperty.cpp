@@ -6,7 +6,6 @@
 #include "String.h"
 #include "InterpretProp.h"
 #include "InterpretProp2.h"
-#include <algorithm>
 #include <cctype>
 
 wstring BuildErrorPropString(_In_ LPSPropValue lpProp)
@@ -107,8 +106,7 @@ Property ParseProperty(_In_ LPSPropValue lpProp)
 		// Don't bother with the loop if we don't have data
 		if (lpProp->Value.MVi.lpi)
 		{
-			ULONG iMVCount = 0;
-			for (iMVCount = 0; iMVCount < lpProp->Value.MVi.cValues; iMVCount++)
+			for (ULONG iMVCount = 0; iMVCount < lpProp->Value.MVi.cValues; iMVCount++)
 			{
 				properties.AddMVParsing(ParseMVProperty(lpProp, iMVCount));
 			}
@@ -117,11 +115,11 @@ Property ParseProperty(_In_ LPSPropValue lpProp)
 	else
 	{
 		wstring szTmp;
-		bool bPropXMLSafe = true;
+		auto bPropXMLSafe = true;
 		Attributes attributes;
 
 		wstring szAltTmp;
-		bool bAltPropXMLSafe = true;
+		auto bAltPropXMLSafe = true;
 		Attributes altAttributes;
 
 		switch (PROP_TYPE(lpProp->ulPropTag))
@@ -147,7 +145,7 @@ Property ParseProperty(_In_ LPSPropValue lpProp)
 				szTmp.insert(szTmp.length() - 4, L".");
 			}
 
-			szAltTmp = format(L"0x%08X:0x%08X", (int)(lpProp->Value.cur.Hi), (int)lpProp->Value.cur.Lo); // STRING_OK
+			szAltTmp = format(L"0x%08X:0x%08X", static_cast<int>(lpProp->Value.cur.Hi), static_cast<int>(lpProp->Value.cur.Lo)); // STRING_OK
 			break;
 		case PT_APPTIME:
 			szTmp = to_wstring(lpProp->Value.at); // STRING_OK
@@ -165,7 +163,7 @@ Property ParseProperty(_In_ LPSPropValue lpProp)
 			szTmp = loadstring(IDS_OBJECT);
 			break;
 		case PT_I8: // LARGE_INTEGER
-			szTmp = format(L"0x%08X:0x%08X", (int)(lpProp->Value.li.HighPart), (int)lpProp->Value.li.LowPart); // STRING_OK
+			szTmp = format(L"0x%08X:0x%08X", static_cast<int>(lpProp->Value.li.HighPart), static_cast<int>(lpProp->Value.li.LowPart)); // STRING_OK
 			szAltTmp = format(L"%I64d", lpProp->Value.li.QuadPart); // STRING_OK
 			break;
 		case PT_STRING8:
@@ -175,8 +173,8 @@ Property ParseProperty(_In_ LPSPropValue lpProp)
 				bPropXMLSafe = false;
 
 				SBinary sBin = { 0 };
-				sBin.cb = (ULONG)szTmp.length();
-				sBin.lpb = (LPBYTE)lpProp->Value.lpszA;
+				sBin.cb = static_cast<ULONG>(szTmp.length());
+				sBin.lpb = reinterpret_cast<LPBYTE>(lpProp->Value.lpszA);
 				szAltTmp = BinToHexString(&sBin, false);
 
 				altAttributes.AddAttribute(L"cb", to_wstring(sBin.cb)); // STRING_OK
@@ -189,8 +187,8 @@ Property ParseProperty(_In_ LPSPropValue lpProp)
 				bPropXMLSafe = false;
 
 				SBinary sBin = { 0 };
-				sBin.cb = ((ULONG)szTmp.length()) * sizeof(WCHAR);
-				sBin.lpb = (LPBYTE)lpProp->Value.lpszW;
+				sBin.cb = static_cast<ULONG>(szTmp.length()) * sizeof(WCHAR);
+				sBin.lpb = reinterpret_cast<LPBYTE>(lpProp->Value.lpszW);
 				szAltTmp = BinToHexString(&sBin, false);
 
 				altAttributes.AddAttribute(L"cb", to_wstring(sBin.cb)); // STRING_OK
@@ -211,11 +209,11 @@ Property ParseProperty(_In_ LPSPropValue lpProp)
 			attributes.AddAttribute(L"cb", to_wstring(lpProp->Value.bin.cb)); // STRING_OK
 			break;
 		case PT_SRESTRICTION:
-			szTmp = RestrictionToString((LPSRestriction)lpProp->Value.lpszA, NULL);
+			szTmp = RestrictionToString(reinterpret_cast<LPSRestriction>(lpProp->Value.lpszA), nullptr);
 			bPropXMLSafe = false;
 			break;
 		case PT_ACTIONS:
-			szTmp = ActionsToString((ACTIONS*)lpProp->Value.lpszA);
+			szTmp = ActionsToString(reinterpret_cast<ACTIONS*>(lpProp->Value.lpszA));
 			bPropXMLSafe = false;
 			break;
 		default:

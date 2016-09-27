@@ -34,6 +34,8 @@ wstring StripCharacter(wstring szString, WCHAR character);
 wstring StripCarriage(wstring szString);
 wstring CleanString(wstring szString);
 void CleanPropString(_In_ CString* lpString);
+wstring ScrubStringForXML(_In_ wstring szString);
+wstring indent(int iIndent);
 
 // Unicode support
 _Check_return_ HRESULT AnsiToUnicode(_In_opt_z_ LPCSTR pszA, _Out_z_cap_(cchszA) LPWSTR* ppszW, _Out_ size_t* cchszW, size_t cchszA);
