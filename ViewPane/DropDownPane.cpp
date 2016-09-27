@@ -43,23 +43,12 @@ ULONG DropDownPane::GetFlags()
 	return ulFlags;
 }
 
-wstring GetLBText(const CComboBox& box, int nIndex)
-{
-	auto len = box.GetLBTextLen(nIndex) + 1;
-	auto buffer = new TCHAR[len];
-	memset(buffer, 0, sizeof(TCHAR)* len);
-	box.GetLBText(nIndex, buffer);
-	auto szOut = LPCTSTRToWstring(buffer);
-	delete[] buffer;
-	return szOut;
-}
-
 int DropDownPane::GetMinWidth(_In_ HDC hdc)
 {
 	auto cxDropDown = 0;
 	for (auto iDropString = 0; iDropString < m_DropDown.GetCount(); iDropString++)
 	{
-		auto szDropString = GetLBText(m_DropDown, iDropString);
+		auto szDropString = GetLBText(m_DropDown.m_hWnd, iDropString);
 		auto sizeDrop = GetTextExtentPoint32(hdc, szDropString);
 		cxDropDown = max(cxDropDown, sizeDrop.cx);
 	}
