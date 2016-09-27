@@ -8,7 +8,7 @@ void DisplayAboutDlg(_In_ CWnd* lpParentWnd)
 {
 	CAboutDlg AboutDlg(lpParentWnd);
 	auto hRes = S_OK;
-	auto iDlgRet = 0;
+	INT_PTR iDlgRet = 0;
 
 	EC_D_DIALOG(AboutDlg.DoModal());
 }
@@ -31,36 +31,30 @@ BOOL CAboutDlg::OnInitDialog()
 {
 	auto hRes = S_OK;
 	auto bRet = CMyDialog::OnInitDialog();
-	TCHAR szFullPath[256];
-	DWORD dwVerHnd = 0;
-	DWORD dwRet = 0;
-	DWORD dwVerInfoSize = 0;
-	auto iTextHeight = GetTextHeight(m_hWnd);
-	auto iCheckHeight = iTextHeight + GetSystemMetrics(SM_CYEDGE) * 2;
-	auto iMargin = GetSystemMetrics(SM_CXHSCROLL) / 2 + 1;
-	auto szProductName = loadstring(ID_PRODUCTNAME);
 
-	SetWindowTextW(m_hWnd, szProductName.c_str());
+	auto szProductName = loadstring(ID_PRODUCTNAME);
+	::SetWindowTextW(m_hWnd, szProductName.c_str());
 
 	RECT rcClient = { 0 };
-	RECT rcIcon = { 0 };
-	RECT rcButton = { 0 };
-	RECT rcText = { 0 };
-	RECT rcHelpText = { 0 };
-
 	::GetClientRect(m_hWnd, &rcClient);
 
 	auto hWndIcon = ::GetDlgItem(m_hWnd, IDC_STATIC);
+	RECT rcIcon = { 0 };
 	::GetWindowRect(hWndIcon, &rcIcon);
+	auto iMargin = GetSystemMetrics(SM_CXHSCROLL) / 2 + 1;
 	::OffsetRect(&rcIcon, iMargin - rcIcon.left, iMargin - rcIcon.top);
 	::MoveWindow(hWndIcon, rcIcon.left, rcIcon.top, rcIcon.right - rcIcon.left, rcIcon.bottom - rcIcon.top, false);
 
 	auto hWndButton = ::GetDlgItem(m_hWnd, IDOK);
+	RECT rcButton = { 0 };
 	::GetWindowRect(hWndButton, &rcButton);
+	auto iTextHeight = GetTextHeight(m_hWnd);
+	auto iCheckHeight = iTextHeight + GetSystemMetrics(SM_CYEDGE) * 2;
 	::OffsetRect(&rcButton, rcClient.right - rcButton.right - iMargin, iMargin + ((IDD_ABOUTVERLAST - IDD_ABOUTVERFIRST + 1) * iTextHeight - iCheckHeight) / 2 - rcButton.top);
 	::MoveWindow(hWndButton, rcButton.left, rcButton.top, rcButton.right - rcButton.left, rcButton.bottom - rcButton.top, false);
 
 	// Position our about text with proper height
+	RECT rcText = { 0 };
 	rcText.left = rcIcon.right + iMargin;
 	rcText.right = rcButton.left - iMargin;
 	for (auto i = IDD_ABOUTVERFIRST; i <= IDD_ABOUTVERLAST; i++)
@@ -71,6 +65,7 @@ BOOL CAboutDlg::OnInitDialog()
 		::MoveWindow(hWndAboutText, rcText.left, rcText.top, rcText.right - rcText.left, rcText.bottom - rcText.top, false);
 	}
 
+	RECT rcHelpText = { 0 };
 	rcHelpText.left = rcClient.left + iMargin;
 	rcHelpText.top = rcText.bottom + iMargin * 2;
 	rcHelpText.right = rcClient.right - iMargin;
@@ -96,7 +91,7 @@ BOOL CAboutDlg::OnInitDialog()
 	m_HelpText.SetFont(GetFont());
 
 	auto szHelpText = formatmessage(IDS_HELPTEXT, szProductName.c_str());
-	SetWindowTextW(m_HelpText.m_hWnd, szHelpText.c_str());
+	::SetWindowTextW(m_HelpText.m_hWnd, szHelpText.c_str());
 
 	auto rcCheck = rcHelpText;
 	rcCheck.top = rcHelpText.bottom + iMargin;
@@ -114,21 +109,23 @@ BOOL CAboutDlg::OnInitDialog()
 		IDD_DISPLAYABOUT));
 	m_DisplayAboutCheck.SetCheck(RegKeys[regkeyDISPLAY_ABOUT_DIALOG].ulCurDWORD ? BST_CHECKED : BST_UNCHECKED);
 	auto szDisplayAboutCheck = loadstring(IDS_DISPLAYABOUTCHECK);
-	SetWindowTextW(m_DisplayAboutCheck.m_hWnd, szDisplayAboutCheck.c_str());
+	::SetWindowTextW(m_DisplayAboutCheck.m_hWnd, szDisplayAboutCheck.c_str());
 
 	// Get version information from the application.
-	EC_D(dwRet, GetModuleFileName(NULL, szFullPath, _countof(szFullPath)));
-	EC_D(dwVerInfoSize, GetFileVersionInfoSize(szFullPath, &dwVerHnd));
+	WCHAR szFullPath[256];
+	DWORD dwRet = 0;
+	EC_D(dwRet, GetModuleFileNameW(NULL, szFullPath, _countof(szFullPath)));
+	DWORD dwVerInfoSize = 0;
+	DWORD dwVerHnd = 0;
+	EC_D(dwVerInfoSize, GetFileVersionInfoSizeW(szFullPath, &dwVerHnd));
 	if (dwVerInfoSize)
 	{
 		// If we were able to get the information, process it.
-		size_t cchRoot = 0;
-
 		auto pbData = new BYTE[dwVerInfoSize];
 
 		if (pbData)
 		{
-			EC_D(bRet, GetFileVersionInfo(szFullPath,
+			EC_D(bRet, GetFileVersionInfoW(szFullPath,
 				dwVerHnd, dwVerInfoSize, static_cast<void*>(pbData)));
 
 			struct LANGANDCODEPAGE {
@@ -137,58 +134,51 @@ BOOL CAboutDlg::OnInitDialog()
 			} *lpTranslate = { nullptr };
 
 			UINT cbTranslate = 0;
-			TCHAR szGetName[256];
 
 			// Read the list of languages and code pages.
-			EC_B(VerQueryValue(
+			EC_B(VerQueryValueW(
 				pbData,
-				_T("\\VarFileInfo\\Translation"), // STRING_OK
+				L"\\VarFileInfo\\Translation", // STRING_OK
 				reinterpret_cast<LPVOID*>(&lpTranslate),
 				&cbTranslate));
 
 			// Read the file description for the first language/codepage
 			if (S_OK == hRes && lpTranslate)
 			{
-				EC_H(StringCchPrintf(
-					szGetName,
-					_countof(szGetName),
-					_T("\\StringFileInfo\\%04x%04x\\"), // STRING_OK
+				auto szGetName = format(
+					L"\\StringFileInfo\\%04x%04x\\", // STRING_OK
 					lpTranslate[0].wLanguage,
-					lpTranslate[0].wCodePage));
-
-				EC_H(StringCchLength(szGetName, 256, &cchRoot));
+					lpTranslate[0].wCodePage);
 
 				// Walk through the dialog box items that we want to replace.
 				if (!FAILED(hRes)) for (auto i = IDD_ABOUTVERFIRST; i <= IDD_ABOUTVERLAST; i++)
 				{
 					UINT cchVer = 0;
-					TCHAR*pszVer = nullptr;
-					TCHAR szResult[256];
+					WCHAR* pszVer = nullptr;
+					WCHAR szResult[256];
 
 					hRes = S_OK;
-
 					UINT uiRet = 0;
-					EC_D(uiRet, GetDlgItemText(i, szResult, _countof(szResult)));
-					EC_H(StringCchCopy(&szGetName[cchRoot], _countof(szGetName) - cchRoot, szResult));
+					EC_D(uiRet, ::GetDlgItemTextW(m_hWnd, i, szResult, _countof(szResult)));
 
-					EC_B(VerQueryValue(
+					EC_B(VerQueryValueW(
 						static_cast<void*>(pbData),
-						szGetName,
+						(szGetName + szResult).c_str(),
 						reinterpret_cast<void**>(&pszVer),
 						&cchVer));
 
 					if (S_OK == hRes && cchVer && pszVer)
 					{
 						// Replace the dialog box item text with version information.
-						EC_H(StringCchCopy(szResult, _countof(szResult), pszVer));
-
-						SetDlgItemText(i, szResult);
+						::SetDlgItemTextW(m_hWnd, i, pszVer);
 					}
 				}
 			}
+
 			delete[] pbData;
 		}
 	}
+
 	return bRet;
 }
 
@@ -216,6 +206,7 @@ LRESULT CAboutDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 					::SendMessage(lpel->nmhdr.hwndFrom, EM_GETTEXTRANGE, NULL, reinterpret_cast<LPARAM>(&tr));
 					ShellExecute(nullptr, _T("open"), szLink, nullptr, nullptr, SW_SHOWNORMAL); // STRING_OK
 				}
+
 				return NULL;
 			}
 			}
@@ -232,6 +223,7 @@ LRESULT CAboutDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		return bRet;
 	}
 	}
+
 	return CMyDialog::WindowProc(message, wParam, lParam);
 }
 
