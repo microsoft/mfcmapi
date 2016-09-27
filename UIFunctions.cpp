@@ -121,20 +121,6 @@ void DrawSegoeTextW(
 	bool bBold,
 	_In_ UINT format);
 
-void DrawSegoeTextA(
-	_In_ HDC hdc,
-	_In_z_ LPCSTR lpchText,
-	_In_ COLORREF color,
-	_In_ LPRECT lprc,
-	bool bBold,
-	_In_ UINT format);
-
-#ifdef UNICODE
-#define DrawSegoeText DrawSegoeTextW
-#else
-#define DrawSegoeText DrawSegoeTextA
-#endif
-
 CDoubleBuffer::CDoubleBuffer() : m_hdcMem(nullptr), m_hbmpMem(nullptr), m_hdcPaint(nullptr)
 {
 	ZeroMemory(&m_rcPaint, sizeof m_rcPaint);
@@ -693,27 +679,6 @@ void DrawSegoeTextW(
 	auto crText = ::SetTextColor(hdc, color);
 	::SetBkMode(hdc, TRANSPARENT);
 	::DrawTextW(
-		hdc,
-		lpchText,
-		-1,
-		lprc,
-		format);
-	::SelectObject(hdc, hfontOld);
-	(void) ::SetTextColor(hdc, crText);
-}
-
-void DrawSegoeTextA(
-	_In_ HDC hdc,
-	_In_z_ LPCSTR lpchText,
-	_In_ COLORREF color,
-	_In_ LPRECT lprc,
-	bool bBold,
-	_In_ UINT format)
-{
-	auto hfontOld = ::SelectObject(hdc, bBold ? GetSegoeFontBold() : GetSegoeFont());
-	auto crText = ::SetTextColor(hdc, color);
-	::SetBkMode(hdc, TRANSPARENT);
-	::DrawTextA(
 		hdc,
 		lpchText,
 		-1,
