@@ -142,6 +142,7 @@ void DrawTrackingBar(_In_ HWND hWndHeader, _In_ HWND hWndList, int x, int iHeade
 // Menu and Combo box
 void MeasureItem(_In_ LPMEASUREITEMSTRUCT lpMeasureItemStruct);
 void DrawItem(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct);
+wstring GetLBText(HWND hwnd, int nIndex);
 
 // Status Bar
 void DrawStatus(

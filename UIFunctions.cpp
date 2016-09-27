@@ -1637,14 +1637,24 @@ void DrawMenu(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
 	db.End(hdc);
 }
 
+wstring GetLBText(HWND hwnd, int nIndex)
+{
+	auto len = ComboBox_GetLBTextLen(hwnd, nIndex) + 1;
+	auto buffer = new TCHAR[len];
+	memset(buffer, 0, sizeof(TCHAR)* len); 
+	ComboBox_GetLBText(hwnd, nIndex, buffer);
+	auto szOut = LPCTSTRToWstring(buffer);
+	delete[] buffer;
+	return szOut;
+}
+
 void DrawComboBox(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
 {
 	if (!lpDrawItemStruct) return;
 	if (lpDrawItemStruct->itemID == -1) return;
 
-	TCHAR szText[128] = { 0 };
 	// Get and display the text for the list item.
-	::SendMessage(lpDrawItemStruct->hwndItem, CB_GETLBTEXT, lpDrawItemStruct->itemID, reinterpret_cast<LPARAM>(szText));
+	auto szText = GetLBText(lpDrawItemStruct->hwndItem, lpDrawItemStruct->itemID);
 	auto bHot = 0 != (lpDrawItemStruct->itemState & (ODS_FOCUS | ODS_SELECTED));
 	auto cBack = cBackground;
 	auto cFore = cText;
@@ -1656,9 +1666,9 @@ void DrawComboBox(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
 
 	::FillRect(lpDrawItemStruct->hDC, &lpDrawItemStruct->rcItem, GetSysBrush(cBack));
 
-	DrawSegoeText(
+	DrawSegoeTextW(
 		lpDrawItemStruct->hDC,
-		szText,
+		szText.c_str(),
 		MyGetSysColor(cFore),
 		&lpDrawItemStruct->rcItem,
 		false,
@@ -2045,9 +2055,9 @@ void DrawWindowFrame(_In_ HWND hWnd, bool bActive, int iStatusHeight)
 			::FillRect(hdc, &rcBottomGutter, GetSysBrush(cBackground));
 		}
 
-		TCHAR szTitle[256] = { 0 };
-		GetWindowText(hWnd, szTitle, _countof(szTitle));
-		DrawSegoeText(
+		WCHAR szTitle[256] = { 0 };
+		GetWindowTextW(hWnd, szTitle, _countof(szTitle));
+		DrawSegoeTextW(
 			hdc,
 			szTitle,
 			MyGetSysColor(cText),
@@ -2134,16 +2144,11 @@ void DrawHelpText(_In_ HWND hWnd, _In_ UINT uIDText)
 		auto rcText = rcWin;
 		::FillRect(hdc, &rcText, GetSysBrush(cBackground));
 
-		TCHAR szHelpText[256];
-		auto iRet = NULL;
-		WC_D(iRet, LoadString(GetModuleHandle(NULL),
-			uIDText,
-			szHelpText,
-			_countof(szHelpText)));
+		auto szHelpText = loadstring(uIDText);
 
-		DrawSegoeText(
+		DrawSegoeTextW(
 			hdc,
-			szHelpText,
+			szHelpText.c_str(),
 			MyGetSysColor(cTextDisabled),
 			&rcText,
 			true,
