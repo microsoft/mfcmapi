@@ -1497,11 +1497,10 @@ void MeasureMenu(_In_ LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 		auto hfontOld = ::SelectObject(hdc, GetSegoeFont());
 
 		// In order to compute the right width, we need to drop our prefix characters
-		CString szText = lpMenuEntry->m_MSAA.pszWText;
-		szText.Replace(_T("&"), _T("")); // STRING_OK
+		auto szText = StripCharacter(lpMenuEntry->m_MSAA.pszWText, L'&');
 
 		SIZE size = { 0 };
-		GetTextExtentPoint32(hdc, static_cast<LPCTSTR>(szText), szText.GetLength(), &size);
+		GetTextExtentPoint32W(hdc, szText.c_str(), szText.length(), &size);
 		lpMeasureItemStruct->itemWidth = size.cx + 2 * GetSystemMetrics(SM_CXEDGE);
 		lpMeasureItemStruct->itemHeight = size.cy + 2 * GetSystemMetrics(SM_CYEDGE);
 

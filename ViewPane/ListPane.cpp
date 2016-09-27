@@ -159,11 +159,10 @@ void ListPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 	{
 		for (auto iButton = 0; iButton < NUMLISTBUTTONS; iButton++)
 		{
-			CString szButtonText;
-			EC_B(szButtonText.LoadString(ListButtons[iButton].uiButtonID));
+			auto szButtonText = loadstring(ListButtons[iButton].uiButtonID);
 
 			EC_B(m_ButtonArray[iButton].Create(
-				szButtonText,
+				wstringToCString(szButtonText),
 				WS_TABSTOP
 				| WS_CHILD
 				| WS_CLIPSIBLINGS
@@ -172,7 +171,7 @@ void ListPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 				pParent,
 				ListButtons[iButton].uiButtonID));
 
-			::GetTextExtentPoint32(hdc, szButtonText, szButtonText.GetLength(), &sizeText);
+			::GetTextExtentPoint32W(hdc, szButtonText.c_str(), szButtonText.length(), &sizeText);
 			m_iButtonWidth = max(m_iButtonWidth, sizeText.cx);
 		}
 	}
