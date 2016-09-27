@@ -3,15 +3,14 @@
 class Attribute
 {
 public:
-	Attribute();
 	Attribute(wstring const& key, wstring const& value);
 	Attribute(Attribute const& other);
 
-	bool empty();
-	wstring Key();
-	wstring Value();
+	bool empty() const;
+	wstring Key() const;
+	wstring Value() const;
 
-	wstring toXML();
+	wstring toXML() const;
 
 private:
 	wstring m_key;

@@ -230,6 +230,33 @@ void CleanPropString(_In_ CString* lpString)
 	lpString->Replace(_T(" "), _T("")); // STRING_OK
 }
 
+wstring ScrubStringForXML(_In_ wstring szString)
+{
+	for (size_t i = 0; i < szString.length(); i++)
+	{
+		switch (szString[i])
+		{
+		case L'\t':
+		case L'\r':
+		case L'\n':
+			break;
+		default:
+			if (szString[i] < 0x20)
+			{
+				szString[i] = L'.';
+			}
+
+			break;
+		}
+	}
+
+	return szString;
+}
+
+wstring indent(int iIndent)
+{
+	return wstring(iIndent, L'\t');
+}
 
 // if cchszA == -1, MultiByteToWideChar will compute the length
 // Delete with delete[]

@@ -3,42 +3,8 @@
 #include "ColumnTags.h"
 #include "String.h"
 
-wstring ScrubStringForXML(_In_ wstring szString)
-{
-	size_t i = 0;
-
-	for (i = 0; i < szString.length(); i++)
-	{
-		switch (szString[i])
-		{
-		case L'\t':
-		case L'\r':
-		case L'\n':
-			break;
-		default:
-			if (szString[i] < 0x20)
-			{
-				szString[i] = L'.';
-			}
-
-			break;
-		}
-	}
-
-	return szString;
-}
-
-wstring indent(int iIndent)
-{
-	wstring szIndent;
-	int i = 0;
-	for (i = 0; i < iIndent; i++)
-	{
-		szIndent += L"\t";
-	}
-
-	return szIndent;
-}
+wstring cdataopen = L"<![CDATA[";
+wstring cdataclose = L"]]>";
 
 wstring tagopen(_In_ wstring szTag, int iIndent)
 {
@@ -49,9 +15,6 @@ wstring tagclose(_In_ wstring szTag, int iIndent)
 {
 	return indent(iIndent) + L"</" + szTag + L">\n";
 }
-
-wstring cdataopen = L"<![CDATA[";
-wstring cdataclose = L"]]>";
 
 Parsing::Parsing(wstring const& szParsing, bool bXMLSafe, Attributes const& attributes)
 {
@@ -71,8 +34,8 @@ wstring Parsing::toXML(UINT uidTag, int iIndent)
 {
 	if (m_szParsing.empty()) return L"";
 
-	wstring szTag = loadstring(uidTag);
-	wstring szXML = tagopen(szTag + m_attributes.toXML(), iIndent);
+	auto szTag = loadstring(uidTag);
+	auto szXML = tagopen(szTag + m_attributes.toXML(), iIndent);
 
 	if (!m_bXMLSafe)
 	{
@@ -93,13 +56,13 @@ wstring Parsing::toXML(UINT uidTag, int iIndent)
 
 wstring Parsing::toString()
 {
-	wstring cb = m_attributes.GetAttribute(L"cb");
+	auto cb = m_attributes.GetAttribute(L"cb");
 	if (!cb.empty())
 	{
 		return L"cb: " + cb + L" lpb: " + m_szParsing;
 	}
 
-	wstring err = m_attributes.GetAttribute(L"err");
+	auto err = m_attributes.GetAttribute(L"err");
 	if (!err.empty())
 	{
 		return L"Err: " + err + L"=" + m_szParsing;
@@ -129,29 +92,31 @@ void Property::AddAttribute(wstring const& key, wstring const& value)
 
 wstring Property::toXML(int iIndent)
 {
-	wstring mv = m_attributes.GetAttribute(L"mv");
+	auto mv = m_attributes.GetAttribute(L"mv");
+	wstring szXML;
 
 	if (mv == L"true")
 	{
-		wstring szValue = loadstring(PropXMLNames[pcPROPVAL].uidName);
-		wstring szRow = loadstring(IDS_ROW);
+		auto szValue = loadstring(PropXMLNames[pcPROPVAL].uidName);
+		auto szRow = loadstring(IDS_ROW);
 
-		wstring szXML = tagopen(szValue + m_attributes.toXML(), iIndent) + L"\n";
+		szXML = tagopen(szValue + m_attributes.toXML(), iIndent) + L"\n";
 
-		size_t iRow = 0;
-		for (iRow = 0; iRow < m_MainParsing.size(); iRow++)
+		for (auto parsing : m_MainParsing)
 		{
 			szXML += tagopen(szRow, iIndent + 1) + L"\n";
-			szXML += m_MainParsing[iRow].toXML(PropXMLNames[pcPROPVAL].uidName, iIndent + 2);
-			szXML += m_AltParsing[iRow].toXML(PropXMLNames[pcPROPVALALT].uidName, iIndent + 2);
+			szXML += parsing.toXML(PropXMLNames[pcPROPVAL].uidName, iIndent + 2);
+			szXML += parsing.toXML(PropXMLNames[pcPROPVALALT].uidName, iIndent + 2);
 			szXML += tagclose(szRow, iIndent + 1);
 		}
 
 		return szXML + tagclose(szValue, iIndent);
 	}
 
-	return m_MainParsing[0].toXML(PropXMLNames[pcPROPVAL].uidName, iIndent) + 
-		m_AltParsing[0].toXML(PropXMLNames[pcPROPVALALT].uidName, iIndent);
+	if (m_MainParsing.size() == 1) szXML += m_MainParsing[0].toXML(PropXMLNames[pcPROPVAL].uidName, iIndent);
+	if (m_AltParsing.size() == 1) szXML += m_AltParsing[0].toXML(PropXMLNames[pcPROPVAL].uidName, iIndent);
+
+	return szXML;
 }
 
 wstring Property::toString()
@@ -164,28 +129,30 @@ wstring Property::toAltString()
 	return toString(m_AltParsing);
 }
 
-wstring Property::toString(vector<Parsing>& parsing)
+wstring Property::toString(vector<Parsing>& parsings)
 {
-	wstring mv = m_attributes.GetAttribute(L"mv");
+	auto mv = m_attributes.GetAttribute(L"mv");
 	if (mv == L"true")
 	{
-		size_t iRow = 0;
-		wstring szString = m_attributes.GetAttribute(L"count") + L": ";
-		for (iRow = 0; iRow < parsing.size(); iRow++)
+		auto szString = m_attributes.GetAttribute(L"count") + L": ";
+		auto first = true;
+		for (auto parsing: parsings)
 		{
-			if (iRow != 0)
+			if (!first)
 			{
 				szString += L"; ";
 			}
 
-			szString += parsing[iRow].toString();
+			szString += parsing.toString();
+			first = false;
 		}
 
 		return szString;
 	}
-	else if (parsing.size() == 1)
+
+	if (parsings.size() == 1)
 	{
-		return parsing[0].toString();
+		return parsings[0].toString();
 	}
 
 	return L"";
