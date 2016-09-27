@@ -1137,9 +1137,8 @@ _Check_return_ LRESULT CHierarchyTableTreeCtrl::msgOnModifyItem(WPARAM wParam, L
 		}
 		else
 		{
-			CString szText;
-			EC_B(szText.LoadString(IDS_UNKNOWNNAME));
-			EC_B(SetItemText(hModifyItem, szText));
+			auto szText = loadstring(IDS_UNKNOWNNAME);
+			EC_B(SetItemText(hModifyItem, wstringToCString(szText)));
 		}
 
 		// We make this copy here and pass it in to the node

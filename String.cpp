@@ -221,15 +221,6 @@ wstring CleanString(wstring szString)
 	return StripCharacter(StripCharacter(szString, L','), L' ');
 }
 
-void CleanPropString(_In_ CString* lpString)
-{
-	if (!lpString) return;
-
-	// remove any whitespace or nonsense punctuation
-	lpString->Replace(_T(","), _T("")); // STRING_OK
-	lpString->Replace(_T(" "), _T("")); // STRING_OK
-}
-
 wstring ScrubStringForXML(_In_ wstring szString)
 {
 	for (size_t i = 0; i < szString.length(); i++)
