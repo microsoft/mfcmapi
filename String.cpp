@@ -103,9 +103,13 @@ wstring formatmessage(wstring const szMsg, ...)
 	return ret;
 }
 
-CString wstringToCString(wstring const& src)
+tstring wstringTotstring(wstring const& src)
 {
-	return src.c_str();
+#ifdef _UNICODE
+	return src;
+#else
+	return wstringTostring(src);
+#endif
 }
 
 string wstringTostring(wstring const& src)

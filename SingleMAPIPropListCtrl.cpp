@@ -53,7 +53,7 @@ CSingleMAPIPropListCtrl::CSingleMAPIPropListCtrl(
 	for (ULONG i = 0; i < NUMPROPCOLUMNS; i++)
 	{
 		auto szHeaderName = loadstring(PropColumns[i].uidName);
-		InsertColumn(i, wstringToCString(szHeaderName));
+		InsertColumn(i, wstringTotstring(szHeaderName).c_str());
 	}
 
 	auto lpMyHeader = GetHeaderCtrl();

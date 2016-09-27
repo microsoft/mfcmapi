@@ -1138,7 +1138,7 @@ _Check_return_ LRESULT CHierarchyTableTreeCtrl::msgOnModifyItem(WPARAM wParam, L
 		else
 		{
 			auto szText = loadstring(IDS_UNKNOWNNAME);
-			EC_B(SetItemText(hModifyItem, wstringToCString(szText)));
+			EC_B(SetItemText(hModifyItem, wstringTotstring(szText).c_str()));
 		}
 
 		// We make this copy here and pass it in to the node

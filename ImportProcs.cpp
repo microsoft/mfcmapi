@@ -340,7 +340,7 @@ _Check_return_ STDMETHODIMP MyOpenStreamOnFile(_In_ LPALLOCATEBUFFER lpAllocateB
 			lpAllocateBuffer,
 			lpFreeBuffer,
 			ulFlags,
-			wstringToCString(lpszFileName),
+			wstringTotstring(lpszFileName).c_str(),
 			nullptr,
 			lppStream);
 	}

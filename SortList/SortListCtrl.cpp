@@ -655,7 +655,7 @@ void CSortListCtrl::SetItemText(int nItem, int nSubItem, wstring lpszText)
 		szWhitespace = static_cast<LPWSTR>(wcspbrk(szWhitespace, L"\r\n\t")); // STRING_OK
 	}
 
-	(void)CListCtrl::SetItemText(nItem, nSubItem, wstringToCString(lpszText));
+	(void)CListCtrl::SetItemText(nItem, nSubItem, wstringTotstring(lpszText).c_str());
 }
 
 wstring CSortListCtrl::GetItemText(_In_ int nItem, _In_ int nSubItem) const
