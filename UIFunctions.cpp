@@ -6,6 +6,7 @@
 #include "RichEditOleCallback.h"
 #include "SortList/SortListData.h"
 #include "SortList/NodeData.h"
+#include "DoubleBuffer.h"
 
 HFONT g_hFontSegoe = nullptr;
 HFONT g_hFontSegoeBold = nullptr;
@@ -113,99 +114,6 @@ HBRUSH g_SysBrushes[cUIEnd] = { nullptr };
 HPEN g_Pens[cPenEnd] = { nullptr };
 HBITMAP g_Bitmaps[cBitmapEnd] = { nullptr };
 
-void DrawSegoeTextW(
-	_In_ HDC hdc,
-	_In_z_ LPCWSTR lpchText,
-	_In_ COLORREF color,
-	_In_ LPRECT lprc,
-	bool bBold,
-	_In_ UINT format);
-
-CDoubleBuffer::CDoubleBuffer() : m_hdcMem(nullptr), m_hbmpMem(nullptr), m_hdcPaint(nullptr)
-{
-	ZeroMemory(&m_rcPaint, sizeof m_rcPaint);
-}
-
-CDoubleBuffer::~CDoubleBuffer()
-{
-	Cleanup();
-}
-
-void CDoubleBuffer::Begin(_Inout_ HDC& hdc, _In_ RECT CONST* prcPaint)
-{
-	if (hdc)
-	{
-		m_hdcMem = ::CreateCompatibleDC(hdc);
-		if (m_hdcMem)
-		{
-			m_hbmpMem = ::CreateCompatibleBitmap(
-				hdc,
-				prcPaint->right - prcPaint->left,
-				prcPaint->bottom - prcPaint->top);
-
-			if (m_hbmpMem)
-			{
-				(void) ::SelectObject(m_hdcMem, m_hbmpMem);
-				(void) ::CopyRect(&m_rcPaint, prcPaint);
-				(void) ::OffsetWindowOrgEx(m_hdcMem,
-					m_rcPaint.left,
-					m_rcPaint.top,
-					nullptr);
-
-				(void) ::SelectObject(m_hdcMem, GetCurrentObject(hdc, OBJ_FONT));
-				(void) ::SelectObject(m_hdcMem, GetCurrentObject(hdc, OBJ_BRUSH));
-				(void) ::SelectObject(m_hdcMem, GetCurrentObject(hdc, OBJ_PEN));
-				// cache the original DC and pass out the memory DC
-				m_hdcPaint = hdc;
-				hdc = m_hdcMem;
-			}
-			else
-			{
-				Cleanup();
-			}
-		}
-	}
-}
-
-void CDoubleBuffer::End(_Inout_ HDC& hdc)
-{
-	if (hdc && hdc == m_hdcMem)
-	{
-		::BitBlt(m_hdcPaint,
-			m_rcPaint.left,
-			m_rcPaint.top,
-			m_rcPaint.right - m_rcPaint.left,
-			m_rcPaint.bottom - m_rcPaint.top,
-			m_hdcMem,
-			m_rcPaint.left,
-			m_rcPaint.top,
-			SRCCOPY);
-
-		// restore the original DC
-		hdc = m_hdcPaint;
-
-		Cleanup();
-	}
-}
-
-void CDoubleBuffer::Cleanup()
-{
-	if (m_hbmpMem)
-	{
-		(void) ::DeleteObject(m_hbmpMem);
-		m_hbmpMem = nullptr;
-	}
-
-	if (m_hdcMem)
-	{
-		(void) ::DeleteDC(m_hdcMem);
-		m_hdcMem = nullptr;
-	}
-
-	m_hdcPaint = nullptr;
-	ZeroMemory(&m_rcPaint, sizeof m_rcPaint);
-}
-
 void InitializeGDI()
 {
 }
@@ -225,6 +133,7 @@ void UninitializeGDI()
 			g_FixedBrushes[i] = nullptr;
 		}
 	}
+
 	for (auto i = 0; i < cUIEnd; i++)
 	{
 		if (g_SysBrushes[i])
@@ -989,6 +898,10 @@ void CopyBitmap(HDC hdcSource, HDC hdcTarget, int iWidth, int iHeight, int ibmWi
 void DrawBitmap(_In_ HDC hdc, _In_ LPRECT rcTarget, uiBitmap iBitmap, bool bHover)
 {
 	if (!rcTarget) return;
+#ifdef SKIPBUFFER
+	UNREFERENCED_PARAMETER(iBitmap);
+	::FrameRect(hdc, rcTarget, GetSysBrush(bHover ? cBitmapTransFore : cBitmapTransBack));
+#else
 	int iWidth = rcTarget->right - rcTarget->left;
 	int iHeight = rcTarget->bottom - rcTarget->top;
 
@@ -1023,6 +936,7 @@ void DrawBitmap(_In_ HDC hdc, _In_ LPRECT rcTarget, uiBitmap iBitmap, bool bHove
 	if (hdcBackReplace) ::DeleteDC(hdcBackReplace);
 	if (hdcForeReplace) ::DeleteDC(hdcForeReplace);
 	if (hdcBitmap) ::DeleteDC(hdcBitmap);
+#endif
 }
 
 void CustomDrawTree(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, bool bHover, _In_ HTREEITEM hItemCurHover)
@@ -1608,7 +1522,7 @@ wstring GetLBText(HWND hwnd, int nIndex)
 {
 	auto len = ComboBox_GetLBTextLen(hwnd, nIndex) + 1;
 	auto buffer = new TCHAR[len];
-	memset(buffer, 0, sizeof(TCHAR)* len); 
+	memset(buffer, 0, sizeof(TCHAR)* len);
 	ComboBox_GetLBText(hwnd, nIndex, buffer);
 	auto szOut = LPCTSTRToWstring(buffer);
 	delete[] buffer;
@@ -1800,13 +1714,13 @@ void GetCaptionRects(HWND hWnd,
 	{
 		rcCaptionText.left = rcIcon.right + cxFixedFrame + cxBorder;
 	}
+
 	rcCaptionText.right = rcCloseIcon.left;
 	if (bMinBox) rcCaptionText.right = rcMinIcon.left;
 	else if (bMaxBox) rcCaptionText.right = rcMaxIcon.left;
 
 	if (lprcFullCaption) *lprcFullCaption = rcFullCaption;
 	if (lprcIcon) *lprcIcon = rcIcon;
-	if (lprcCloseIcon) *lprcCloseIcon = rcCloseIcon;
 	if (lprcCloseIcon) *lprcCloseIcon = rcCloseIcon;
 	if (lprcMaxIcon) *lprcMaxIcon = rcMaxIcon;
 	if (lprcMinIcon) *lprcMinIcon = rcMinIcon;

@@ -5,7 +5,7 @@ class CBaseDialog;
 
 enum SplitType
 {
-	SplitVertical   = 0,
+	SplitVertical = 0,
 	SplitHorizontal = 1
 };
 
@@ -24,27 +24,27 @@ public:
 	void SetSplitType(SplitType stSplitType);
 
 private:
-	void    OnSize(UINT nType, int cx, int cy);
-	void    OnPaint();
-	void    OnMouseMove(UINT nFlags,CPoint point);
+	void OnSize(UINT nType, int cx, int cy);
+	void OnPaint();
+	void OnMouseMove(UINT nFlags, CPoint point);
 	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
-	_Check_return_ int     HitTest(LONG x, LONG y);
+	_Check_return_ int HitTest(LONG x, LONG y) const;
 
 	// starting and stopping tracking
 	void StartTracking(int ht);
 	void StopTracking();
 	void CalcSplitPos();
 
-	CBaseDialog*	m_lpHostDlg;
-	bool			m_bTracking;
-	FLOAT			m_flSplitPercent;
-	CWnd*			m_PaneOne;
-	CWnd*			m_PaneTwo;
-	int				m_iSplitWidth;
-	int				m_iSplitPos;
-	SplitType		m_SplitType;
-	HCURSOR			m_hSplitCursorV;
-	HCURSOR			m_hSplitCursorH;
+	CBaseDialog* m_lpHostDlg;
+	bool m_bTracking;
+	FLOAT m_flSplitPercent;
+	CWnd* m_PaneOne;
+	CWnd* m_PaneTwo;
+	int m_iSplitWidth;
+	int m_iSplitPos;
+	SplitType m_SplitType;
+	HCURSOR m_hSplitCursorV;
+	HCURSOR m_hSplitCursorH;
 
 	DECLARE_MESSAGE_MAP()
 };

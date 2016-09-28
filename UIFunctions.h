@@ -57,23 +57,6 @@ enum uiLabelStyle
 	lsPaneHeader,
 };
 
-class CDoubleBuffer
-{
-private:
-	HDC m_hdcMem;
-	HBITMAP m_hbmpMem;
-	HDC m_hdcPaint;
-	RECT m_rcPaint;
-
-	void Cleanup();
-
-public:
-	CDoubleBuffer();
-	~CDoubleBuffer();
-	void Begin(_Inout_ HDC& hdc, _In_ RECT CONST* prcPaint);
-	void End(_Inout_ HDC& hdc);
-};
-
 void InitializeGDI();
 void UninitializeGDI();
 
@@ -154,6 +137,13 @@ void DrawStatus(
 	int iStatusData2,
 	wstring& szStatusInfo);
 
+void GetCaptionRects(HWND hWnd,
+	RECT* lprcFullCaption,
+	RECT* lprcIcon,
+	RECT* lprcCloseIcon,
+	RECT* lprcMaxIcon,
+	RECT* lprcMinIcon,
+	RECT* lprcCaptionText);
 void DrawSystemButtons(_In_ HWND hWnd, _In_opt_ HDC hdc, int iHitTest);
 void DrawWindowFrame(_In_ HWND hWnd, bool bActive, int iStatusHeight);
 
