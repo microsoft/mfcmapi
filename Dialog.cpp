@@ -1,5 +1,4 @@
 // Dialog.cpp : implementation file
-//
 
 #include "stdafx.h"
 #include "Dialog.h"
@@ -58,6 +57,28 @@ int CMyDialog::GetStatusHeight() const
 	return m_iStatusHeight;
 }
 
+int CMyDialog::NCHitTest(WPARAM wParam, LPARAM lParam)
+{
+	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+	DebugPrint(DBGUI, L"WM_NCHITTEST: pt = 0x%X 0x%X", pt.x, pt.y);
+	(void) ::MapWindowPoints(m_hWnd, nullptr, &pt, 1); // Map our client point to the screen
+	Outputf(DBGUI, nullptr, false, L" mapped = 0x%X 0x%X", pt.x, pt.y);
+	auto ret = CDialog::WindowProc(WM_NCHITTEST, wParam, lParam);
+	auto szRet = format(L"0x%X", ret);
+	switch (ret)
+	{
+	case HTNOWHERE: szRet = L"HTNOWHERE"; break;
+	case HTCLIENT: szRet = L"HTCLIENT"; break;
+	case HTCAPTION: szRet = L"HTCAPTION"; break;
+	case HTCLOSE: szRet = L"HTCLOSE"; break;
+	case HTMAXBUTTON: szRet = L"HTMAXBUTTON"; break;
+	case HTMINBUTTON: szRet = L"HTMINBUTTON"; break;
+	}
+
+	Outputf(DBGUI, nullptr, false, L" ret = %ws\n", szRet.c_str());
+	return ret;
+}
+
 // Performs an NC hittest using coordinates from WM_MOUSE* messages
 int NCHitTestMouse(HWND hWnd, LPARAM lParam)
 {
@@ -80,16 +101,13 @@ bool DepressSystemButton(HWND hWnd, int iHitTest)
 			switch (msg.message)
 			{
 			case WM_LBUTTONUP:
-			{
 				if (bDepressed)
 					DrawSystemButtons(hWnd, nullptr, NULL);
 				ReleaseCapture();
 				if (NCHitTestMouse(hWnd, msg.lParam) == iHitTest) return true;
 				return false;
-			}
 
 			case WM_MOUSEMOVE:
-			{
 				if (NCHitTestMouse(hWnd, msg.lParam) == iHitTest)
 				{
 					DrawSystemButtons(hWnd, nullptr, iHitTest);
@@ -98,8 +116,7 @@ bool DepressSystemButton(HWND hWnd, int iHitTest)
 				{
 					DrawSystemButtons(hWnd, nullptr, NULL);
 				}
-			}
-			break;
+				break;
 			}
 		}
 	}
@@ -118,6 +135,9 @@ LRESULT CMyDialog::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_NCUAHDRAWCAPTION:
 	case WM_NCUAHDRAWFRAME:
 		return 0;
+	case WM_NCHITTEST:
+		NCHitTest(wParam, lParam);
+		break;
 	case WM_NCLBUTTONDOWN:
 		switch (wParam)
 		{

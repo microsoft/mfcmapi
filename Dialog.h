@@ -20,6 +20,7 @@ private:
 	void Constructor();
 	void OnMeasureItem(int nIDCtl, _In_ LPMEASUREITEMSTRUCT lpMeasureItemStruct);
 	void OnDrawItem(int nIDCtl, _In_ LPDRAWITEMSTRUCT lpDrawItemStruct);
+	int NCHitTest(WPARAM wParam, LPARAM lParam);
 	CParentWnd* m_lpNonModalParent;
 	CWnd* m_hwndCenteringWindow;
 	UINT m_iAutoCenterWidth;
