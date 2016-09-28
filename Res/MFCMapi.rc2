@@ -1132,6 +1132,7 @@ Supported tags:\n\
 0x00040000 DBGSmartView\n\
 0x00080000 DBGLoadMAPI\n\
 0x00100000 DBGHierarchy\n\
+0x20000000 DBGUI\n\
 0x40000000 DBGMAPIFunctions\n\
 0x80000000 DBGMenu"
 
