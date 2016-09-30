@@ -57,15 +57,10 @@ int CMyDialog::GetStatusHeight() const
 	return m_iStatusHeight;
 }
 
-int CMyDialog::NCHitTest(WPARAM wParam, LPARAM lParam)
+wstring FormatHT(LRESULT ht)
 {
-	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-	DebugPrint(DBGUI, L"WM_NCHITTEST: pt = 0x%X 0x%X", pt.x, pt.y);
-	(void) ::MapWindowPoints(m_hWnd, nullptr, &pt, 1); // Map our client point to the screen
-	Outputf(DBGUI, nullptr, false, L" mapped = 0x%X 0x%X", pt.x, pt.y);
-	auto ret = CDialog::WindowProc(WM_NCHITTEST, wParam, lParam);
-	auto szRet = format(L"0x%X", ret);
-	switch (ret)
+	wstring szRet;
+	switch (ht)
 	{
 	case HTNOWHERE: szRet = L"HTNOWHERE"; break;
 	case HTCLIENT: szRet = L"HTCLIENT"; break;
@@ -75,17 +70,78 @@ int CMyDialog::NCHitTest(WPARAM wParam, LPARAM lParam)
 	case HTMINBUTTON: szRet = L"HTMINBUTTON"; break;
 	}
 
-	Outputf(DBGUI, nullptr, false, L" ret = %ws\n", szRet.c_str());
+	return format(L"ht = 0x%X = %ws", ht, szRet.c_str());
+
+}
+
+// Point should be screen relative coordinates
+// Upper left of screen is (0,0)
+// If this point is inside our caption rects, return the HT matching the hit
+// Else return HTNOWHERE
+LRESULT CheckButtons(HWND hWnd, POINT pt)
+{
+	auto ret = HTNOWHERE;
+	DebugPrint(DBGUI, L"CheckButtons: pt = %d %d", pt.x, pt.y);
+
+	// Get the screen coordinates of our window
+	RECT rcWindow = { 0 };
+	::GetWindowRect(hWnd, &rcWindow);
+
+	// We subtract to get coordinates relative to our window
+	// GetCaptionRects coordinates are now compatible
+	pt.x -= rcWindow.left;
+	pt.y -= rcWindow.top;
+	Outputf(DBGUI, nullptr, false, L" mapped = %d %d\r\n", pt.x, pt.y);
+
+	RECT rcCloseIcon = { 0 };
+	RECT rcMaxIcon = { 0 };
+	RECT rcMinIcon = { 0 };
+	GetCaptionRects(hWnd, nullptr, nullptr, &rcCloseIcon, &rcMaxIcon, &rcMinIcon, nullptr);
+	DebugPrint(DBGUI, L"rcMinIcon: %d %d %d %d\n", rcMinIcon.left, rcMinIcon.top, rcMinIcon.right, rcMinIcon.bottom);
+	DebugPrint(DBGUI, L"rcMaxIcon: %d %d %d %d\n", rcMaxIcon.left, rcMaxIcon.top, rcMaxIcon.right, rcMaxIcon.bottom);
+	DebugPrint(DBGUI, L"rcCloseIcon: %d %d %d %d\n", rcCloseIcon.left, rcCloseIcon.top, rcCloseIcon.right, rcCloseIcon.bottom);
+	if (PtInRect(&rcCloseIcon, pt)) ret = HTCLOSE;
+	if (PtInRect(&rcMaxIcon, pt)) ret = HTMAXBUTTON;
+	if (PtInRect(&rcMinIcon, pt)) ret = HTMINBUTTON;
+
+	DebugPrint(DBGUI, L"CheckButtons result: %ws\r\n", FormatHT(ret).c_str());
+
 	return ret;
 }
 
-// Performs an NC hittest using coordinates from WM_MOUSE* messages
-int NCHitTestMouse(HWND hWnd, LPARAM lParam)
+// Handles WM_NCHITTEST, substituting our custom button locations for the default ones
+// Everything else stays the same
+LRESULT CMyDialog::NCHitTest(WPARAM wParam, LPARAM lParam)
 {
+	// These are screen coordinates of the mouse pointer
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+	DebugPrint(DBGUI, L"WM_NCHITTEST: pt = %d %d\r\n", pt.x, pt.y);
+
+	auto ht = CDialog::WindowProc(WM_NCHITTEST, wParam, lParam);
+	if (ht == HTCAPTION || ht == HTCLOSE || ht == HTMAXBUTTON || ht == HTMINBUTTON)
+	{
+		ht = CheckButtons(m_hWnd, pt);
+
+		// If we weren't on a button, but CDialog::WindowProc thought we were, we must be on the caption
+		if (ht == HTNOWHERE) ht = HTCAPTION;
+	}
+
+	DebugPrint(DBGUI, L"%ws\r\n", FormatHT(ht).c_str());
+	return ht;
+}
+
+// Performs an non-client hittest using coordinates from WM_MOUSE* messages
+LRESULT NCHitTestMouse(HWND hWnd, LPARAM lParam)
+{
+	// These are client coordinates - we need to translate them to screen coordinates
+	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+	DebugPrint(DBGUI, L"NCHitTestMouse: pt = %d %d", pt.x, pt.y);
 	(void) ::MapWindowPoints(hWnd, nullptr, &pt, 1); // Map our client point to the screen
-	lParam = MAKELONG(pt.x, pt.y);
-	return static_cast<int>(::SendMessage(hWnd, WM_NCHITTEST, NULL, lParam));
+	Outputf(DBGUI, nullptr, false, L" mapped = %d %d\r\n", pt.x, pt.y);
+
+	auto ht = CheckButtons(hWnd, pt);
+	DebugPrint(DBGUI, L"%ws\r\n", FormatHT(ht).c_str());
+	return ht;
 }
 
 bool DepressSystemButton(HWND hWnd, int iHitTest)
@@ -101,21 +157,24 @@ bool DepressSystemButton(HWND hWnd, int iHitTest)
 			switch (msg.message)
 			{
 			case WM_LBUTTONUP:
+				DebugPrint(DBGUI, L"WM_LBUTTONUP\n");
 				if (bDepressed)
-					DrawSystemButtons(hWnd, nullptr, NULL);
+					DrawSystemButtons(hWnd, nullptr, HTNOWHERE);
 				ReleaseCapture();
 				if (NCHitTestMouse(hWnd, msg.lParam) == iHitTest) return true;
 				return false;
 
 			case WM_MOUSEMOVE:
+				DebugPrint(DBGUI, L"WM_MOUSEMOVE\n");
 				if (NCHitTestMouse(hWnd, msg.lParam) == iHitTest)
 				{
 					DrawSystemButtons(hWnd, nullptr, iHitTest);
 				}
 				else
 				{
-					DrawSystemButtons(hWnd, nullptr, NULL);
+					DrawSystemButtons(hWnd, nullptr, HTNOWHERE);
 				}
+
 				break;
 			}
 		}
@@ -136,8 +195,7 @@ LRESULT CMyDialog::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_NCUAHDRAWFRAME:
 		return 0;
 	case WM_NCHITTEST:
-		NCHitTest(wParam, lParam);
-		break;
+		return NCHitTest(wParam, lParam);
 	case WM_NCLBUTTONDOWN:
 		switch (wParam)
 		{
@@ -159,8 +217,10 @@ LRESULT CMyDialog::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 					break;
 				}
 			}
+
 			return 0;
 		}
+
 		break;
 	case WM_NCACTIVATE:
 		// Pass -1 to DefWindowProc to signal we do not want our client repainted.
