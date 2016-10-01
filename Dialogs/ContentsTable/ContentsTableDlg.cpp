@@ -42,8 +42,8 @@ CContentsTableDlg::CContentsTableDlg(
 		m_szTitle = loadstring(IDS_TABLEASCONTENTS);
 	}
 
-	m_lpContentsTableListCtrl = NULL;
-	m_lpContainer = NULL;
+	m_lpContentsTableListCtrl = nullptr;
+	m_lpContainer = nullptr;
 	m_nIDContextMenu = nIDContextMenu;
 
 	m_ulDisplayFlags = dfNormal;
@@ -65,7 +65,7 @@ CContentsTableDlg::~CContentsTableDlg()
 {
 	TRACE_DESTRUCTOR(CLASS);
 	if (m_lpContentsTable) m_lpContentsTable->Release();
-	m_lpContentsTable = NULL;
+	m_lpContentsTable = nullptr;
 }
 
 _Check_return_ bool CContentsTableDlg::HandleMenu(WORD wMenuSelect)
@@ -83,9 +83,7 @@ _Check_return_ bool CContentsTableDlg::HandleMenu(WORD wMenuSelect)
 
 BOOL CContentsTableDlg::OnInitDialog()
 {
-	HRESULT hRes = S_OK;
-	BOOL bRet = CBaseDialog::OnInitDialog();
-	ULONG ulFlags = NULL;
+	auto bRet = CBaseDialog::OnInitDialog();
 
 	m_lpContentsTableListCtrl = new CContentsTableListCtrl(
 		m_lpFakeSplitter,
@@ -100,7 +98,7 @@ BOOL CContentsTableDlg::OnInitDialog()
 	if (m_lpContentsTableListCtrl && m_lpFakeSplitter)
 	{
 		m_lpFakeSplitter->SetPaneOne(m_lpContentsTableListCtrl);
-		m_lpFakeSplitter->SetPercent((FLOAT) 0.40);
+		m_lpFakeSplitter->SetPercent(static_cast<FLOAT>(0.40));
 		m_lpFakeSplitter->SetSplitType(SplitVertical);
 	}
 
@@ -115,14 +113,14 @@ BOOL CContentsTableDlg::OnInitDialog()
 		}
 
 		if (m_lpContentsTable) m_lpContentsTable->Release();
-		m_lpContentsTable = NULL;
+		m_lpContentsTable = nullptr;
 
-		ulFlags =
+		auto ulFlags =
 			(m_ulDisplayFlags & dfAssoc ? MAPI_ASSOCIATED : NULL) |
 			(m_ulDisplayFlags & dfDeleted ? SHOW_SOFT_DELETES : NULL) |
 			fMapiUnicode;
 
-		hRes = S_OK;
+		auto hRes = S_OK;
 		// Get the table of contents of the IMAPIContainer!!!
 		EC_MAPI(m_lpContainer->GetContentsTable(
 			ulFlags,
@@ -136,16 +134,14 @@ BOOL CContentsTableDlg::OnInitDialog()
 
 void CContentsTableDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
 	DebugPrintEx(DBGCreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
 	CBaseDialog::CreateDialogAndMenu(nIDMenuResource, IDR_MENU_TABLE, IDS_TABLEMENU);
 
 	if (m_lpContentsTableListCtrl && m_lpContentsTable)
 	{
-		ULONG ulPropType = NULL;
-
-		ulPropType = GetMAPIObjectType(m_lpContainer);
+		auto ulPropType = GetMAPIObjectType(m_lpContainer);
 
 		// Pass the contents table to the list control, but don't render yet - call BuildUIForContentsTable from CreateDialogAndMenu for that
 		WC_H(m_lpContentsTableListCtrl->SetContentsTable(
@@ -183,7 +179,7 @@ void CContentsTableDlg::OnInitMenu(_In_opt_ CMenu* pMenu)
 
 		pMenu->EnableMenuItem(ID_DISPLAYSELECTEDITEM, DIMMSOK(iNumSel));
 
-		__mfcmapiRestrictionTypeEnum RestrictionType = m_lpContentsTableListCtrl->GetRestrictionType();
+		auto RestrictionType = m_lpContentsTableListCtrl->GetRestrictionType();
 		pMenu->CheckMenuItem(ID_APPLYFINDROW, CHECK(mfcmapiFINDROW_RESTRICTION == RestrictionType));
 		pMenu->CheckMenuItem(ID_APPLYRESTRICTION, CHECK(mfcmapiNORMAL_RESTRICTION == RestrictionType));
 		pMenu->CheckMenuItem(ID_CLEARRESTRICTION, CHECK(mfcmapiNO_RESTRICTION == RestrictionType));
@@ -204,13 +200,12 @@ void CContentsTableDlg::OnInitMenu(_In_opt_ CMenu* pMenu)
 		pMenu->EnableMenuItem(ID_CLEARRESTRICTION, DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
 		pMenu->EnableMenuItem(ID_REFRESHVIEW, DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
 
-		ULONG ulMenu = ID_ADDINMENU;
-		for (ulMenu = ID_ADDINMENU; ulMenu < ID_ADDINMENU + m_ulAddInMenuItems; ulMenu++)
+		for (ULONG ulMenu = ID_ADDINMENU; ulMenu < ID_ADDINMENU + m_ulAddInMenuItems; ulMenu++)
 		{
-			LPMENUITEM lpAddInMenu = GetAddinMenuItem(m_hWnd, ulMenu);
+			auto lpAddInMenu = GetAddinMenuItem(m_hWnd, ulMenu);
 			if (!lpAddInMenu) continue;
 
-			ULONG ulFlags = lpAddInMenu->ulFlags;
+			auto ulFlags = lpAddInMenu->ulFlags;
 			UINT uiEnable = MF_ENABLED;
 
 			if ((ulFlags & MENU_FLAGS_SINGLESELECT) && iNumSel != 1) uiEnable = MF_GRAYED;
@@ -230,7 +225,7 @@ void CContentsTableDlg::OnCancel()
 	if (m_lpContentsTableListCtrl) m_lpContentsTableListCtrl->OnCancelTableLoad();
 
 	if (m_lpContentsTableListCtrl) m_lpContentsTableListCtrl->Release();
-	m_lpContentsTableListCtrl = NULL;
+	m_lpContentsTableListCtrl = nullptr;
 	CBaseDialog::OnCancel();
 }
 
@@ -252,14 +247,13 @@ void CContentsTableDlg::SetRestrictionType(__mfcmapiRestrictionTypeEnum Restrict
 
 void CContentsTableDlg::OnDisplayItem()
 {
-	HRESULT hRes = S_OK;
-	LPMAPIPROP lpMAPIProp = NULL;
-	int iItem = -1;
+	LPMAPIPROP lpMAPIProp = nullptr;
+	auto iItem = -1;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	do
 	{
-		hRes = S_OK;
+		auto hRes = S_OK;
 		EC_H(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(
 			&iItem,
 			mfcmapiREQUEST_MODIFY,
@@ -273,7 +267,7 @@ void CContentsTableDlg::OnDisplayItem()
 				otHierarchy,
 				this));
 			lpMAPIProp->Release();
-			lpMAPIProp = NULL;
+			lpMAPIProp = nullptr;
 		}
 	} while (iItem != -1);
 }
@@ -281,7 +275,7 @@ void CContentsTableDlg::OnDisplayItem()
 // Clear the current list and get a new one with whatever code we've got in LoadMAPIPropList
 void CContentsTableDlg::OnRefreshView()
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
 	DebugPrintEx(DBGGeneric, CLASS, L"OnRefreshView", L"\n");
 	if (m_lpContentsTableListCtrl->IsLoading()) m_lpContentsTableListCtrl->OnCancelTableLoad();
@@ -291,7 +285,7 @@ void CContentsTableDlg::OnRefreshView()
 void CContentsTableDlg::OnNotificationOn()
 {
 	if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	EC_H(m_lpContentsTableListCtrl->NotificationOn());
 }
 
@@ -306,18 +300,18 @@ void CContentsTableDlg::OnNotificationOff()
 void CContentsTableDlg::OnCreateMessageRestriction()
 {
 	if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	ULONG cVals = 0;
-	LPSPropValue lpProps = NULL;
-	LPMAPIPROP lpMAPIProp = NULL;
+	LPSPropValue lpProps = nullptr;
+	LPMAPIPROP lpMAPIProp = nullptr;
 
-	LPSRestriction lpRes = NULL;
-	LPSRestriction lpResLevel1 = NULL;
-	LPSRestriction lpResLevel2 = NULL;
+	LPSRestriction lpRes = nullptr;
+	LPSRestriction lpResLevel1 = nullptr;
+	LPSRestriction lpResLevel2 = nullptr;
 
-	LPSPropValue lpspvSubject = NULL;
-	LPSPropValue lpspvSubmitTime = NULL;
-	LPSPropValue lpspvDeliveryTime = NULL;
+	LPSPropValue lpspvSubject = nullptr;
+	LPSPropValue lpspvSubmitTime = nullptr;
+	LPSPropValue lpspvDeliveryTime = nullptr;
 
 	// These are the properties we're going to copy off of the current message and store
 	// in some object level variables
@@ -346,7 +340,7 @@ void CContentsTableDlg::OnCreateMessageRestriction()
 	if (lpMAPIProp)
 	{
 		EC_H_GETPROPS(lpMAPIProp->GetProps(
-			(LPSPropTagArray)&sptFRCols,
+			LPSPropTagArray(&sptFRCols),
 			fMapiUnicode,
 			&cVals,
 			&lpProps));
@@ -356,32 +350,32 @@ void CContentsTableDlg::OnCreateMessageRestriction()
 			// Allocate base memory:
 			EC_H(MAPIAllocateBuffer(
 				sizeof(SRestriction),
-				(LPVOID*)&lpRes));
+				reinterpret_cast<LPVOID*>(&lpRes)));
 
 			EC_H(MAPIAllocateMore(
 				sizeof(SRestriction) * 2,
 				lpRes,
-				(LPVOID*)&lpResLevel1));
+				reinterpret_cast<LPVOID*>(&lpResLevel1)));
 
 			EC_H(MAPIAllocateMore(
 				sizeof(SRestriction) * 2,
 				lpRes,
-				(LPVOID*)&lpResLevel2));
+				reinterpret_cast<LPVOID*>(&lpResLevel2)));
 
 			EC_H(MAPIAllocateMore(
 				sizeof(SPropValue),
 				lpRes,
-				(LPVOID*)&lpspvSubject));
+				reinterpret_cast<LPVOID*>(&lpspvSubject)));
 
 			EC_H(MAPIAllocateMore(
 				sizeof(SPropValue),
 				lpRes,
-				(LPVOID*)&lpspvDeliveryTime));
+				reinterpret_cast<LPVOID*>(&lpspvDeliveryTime)));
 
 			EC_H(MAPIAllocateMore(
 				sizeof(SPropValue),
 				lpRes,
-				(LPVOID*)&lpspvSubmitTime));
+				reinterpret_cast<LPVOID*>(&lpspvSubmitTime)));
 
 			// Check that all our allocations were good before going on
 			if (!FAILED(hRes))
@@ -429,7 +423,7 @@ void CContentsTableDlg::OnCreateMessageRestriction()
 						lpProps[frPR_SUBJECT].Value.LPSZ,
 						lpRes));
 				}
-				else lpspvSubject->Value.LPSZ = NULL;
+				else lpspvSubject->Value.LPSZ = nullptr;
 
 				lpspvSubmitTime->ulPropTag = PR_CLIENT_SUBMIT_TIME;
 				if (PR_CLIENT_SUBMIT_TIME == lpProps[frPR_CLIENT_SUBMIT_TIME].ulPropTag)
@@ -463,7 +457,7 @@ void CContentsTableDlg::OnCreateMessageRestriction()
 				// We failed in our allocations - clean up what we got before we apply
 				// Everything was allocated off of lpRes, so cleaning up that will suffice
 				if (lpRes) MAPIFreeBuffer(lpRes);
-				lpRes = NULL;
+				lpRes = nullptr;
 			}
 			m_lpContentsTableListCtrl->SetRestriction(lpRes);
 
@@ -476,8 +470,8 @@ void CContentsTableDlg::OnCreateMessageRestriction()
 
 void CContentsTableDlg::OnCreatePropertyStringRestriction()
 {
-	HRESULT hRes = S_OK;
-	LPSRestriction lpRes = NULL;
+	auto hRes = S_OK;
+	LPSRestriction lpRes = nullptr;
 
 	if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
 
@@ -508,7 +502,7 @@ void CContentsTableDlg::OnCreatePropertyStringRestriction()
 		WC_H(MyData.DisplayDialog());
 		if (S_OK != hRes) return;
 
-		wstring szString = MyData.GetStringW(0);
+		auto szString = MyData.GetStringW(0);
 		// Allocate and create our SRestriction
 		EC_H(CreatePropertyStringRestriction(
 			CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_UNICODE),
@@ -519,8 +513,7 @@ void CContentsTableDlg::OnCreatePropertyStringRestriction()
 		if (S_OK != hRes)
 		{
 			MAPIFreeBuffer(lpRes);
-			lpRes = NULL;
-			hRes = S_OK;
+			lpRes = nullptr;
 		}
 
 		m_lpContentsTableListCtrl->SetRestriction(lpRes);
@@ -538,8 +531,8 @@ void CContentsTableDlg::OnCreatePropertyStringRestriction()
 
 void CContentsTableDlg::OnCreateRangeRestriction()
 {
-	HRESULT hRes = S_OK;
-	LPSRestriction lpRes = NULL;
+	auto hRes = S_OK;
+	LPSRestriction lpRes = nullptr;
 
 	if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
 
@@ -567,7 +560,7 @@ void CContentsTableDlg::OnCreateRangeRestriction()
 		WC_H(MyData.DisplayDialog());
 		if (S_OK != hRes) return;
 
-		wstring szString = MyData.GetStringW(0);
+		auto szString = MyData.GetStringW(0);
 		// Allocate and create our SRestriction
 		EC_H(CreateRangeRestriction(
 			CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_UNICODE),
@@ -577,8 +570,7 @@ void CContentsTableDlg::OnCreateRangeRestriction()
 		if (S_OK != hRes)
 		{
 			MAPIFreeBuffer(lpRes);
-			lpRes = NULL;
-			hRes = S_OK;
+			lpRes = nullptr;
 		}
 
 		m_lpContentsTableListCtrl->SetRestriction(lpRes);
@@ -596,13 +588,13 @@ void CContentsTableDlg::OnCreateRangeRestriction()
 
 void CContentsTableDlg::OnEditRestriction()
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
 	if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
 
 	CRestrictEditor MyRestrict(
 		this,
-		NULL, // No alloc parent - we must MAPIFreeBuffer the result
+		nullptr, // No alloc parent - we must MAPIFreeBuffer the result
 		m_lpContentsTableListCtrl->GetRestriction());
 
 	WC_H(MyRestrict.DisplayDialog());
@@ -614,29 +606,16 @@ void CContentsTableDlg::OnEditRestriction()
 void CContentsTableDlg::OnOutputTable()
 {
 	if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
-	HRESULT hRes = S_OK;
-	INT_PTR iDlgRet = 0;
-
-	wstring szFileSpec = loadstring(IDS_TEXTFILES);
-
-	CFileDialogExW dlgFilePicker;
-
-	EC_D_DIALOG(dlgFilePicker.DisplayDialog(
-		false, // Save As dialog
+	auto szFileName = CFileDialogExW::SaveAs(
 		L"txt", // STRING_OK
 		L"table.txt", // STRING_OK
 		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-		szFileSpec.c_str(),
-		this));
-	if (IDOK == iDlgRet)
+		loadstring(IDS_TEXTFILES),
+		this);
+	if (!szFileName.empty())
 	{
-		wstring szFileName = dlgFilePicker.GetFileName();
-		if (szFileName.length() != 0)
-		{
-			DebugPrintEx(DBGGeneric, CLASS, L"OnOutputTable", L"saving to %ws\n", szFileName.c_str());
-
-			m_lpContentsTableListCtrl->OnOutputTable(szFileName);
-		}
+		DebugPrintEx(DBGGeneric, CLASS, L"OnOutputTable", L"saving to %ws\n", szFileName.c_str());
+		m_lpContentsTableListCtrl->OnOutputTable(szFileName);
 	}
 }
 
@@ -656,7 +635,7 @@ void CContentsTableDlg::OnGetStatus()
 
 void CContentsTableDlg::OnSortTable()
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
 	if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
 
@@ -677,9 +656,9 @@ void CContentsTableDlg::OnSortTable()
 	WC_H(MyData.DisplayDialog());
 	if (S_OK != hRes) return;
 
-	ULONG cSorts = MyData.GetDecimal(0);
-	ULONG cCategories = MyData.GetDecimal(1);
-	ULONG cExpanded = MyData.GetDecimal(2);
+	auto cSorts = MyData.GetDecimal(0);
+	auto cCategories = MyData.GetDecimal(1);
+	auto cExpanded = MyData.GetDecimal(2);
 
 	if (cSorts < cCategories || cCategories < cExpanded)
 	{
@@ -687,19 +666,18 @@ void CContentsTableDlg::OnSortTable()
 		return;
 	}
 
-	LPSSortOrderSet lpMySortOrders = NULL;
+	LPSSortOrderSet lpMySortOrders = nullptr;
 
-	EC_H(MAPIAllocateBuffer(CbNewSSortOrderSet(cSorts), (LPVOID*)&lpMySortOrders));
+	EC_H(MAPIAllocateBuffer(CbNewSSortOrderSet(cSorts), reinterpret_cast<LPVOID*>(&lpMySortOrders)));
 
 	if (lpMySortOrders)
 	{
 		lpMySortOrders->cSorts = cSorts;
 		lpMySortOrders->cCategories = cCategories;
 		lpMySortOrders->cExpanded = cExpanded;
-		bool bNoError = true;
+		auto bNoError = true;
 
-		ULONG i = 0;
-		for (i = 0; i < cSorts; i++)
+		for (ULONG i = 0; i < cSorts; i++)
 		{
 			CPropertyTagEditor MyPropertyTag(
 				NULL, // title
@@ -773,7 +751,7 @@ void CContentsTableDlg::OnSortTable()
 // this virtual function allows us to override the default method with the method used by the table we've written a special class for.
 _Check_return_ HRESULT CContentsTableDlg::OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	DebugPrintEx(DBGOpenItemProp, CLASS, L"OpenItemProp", L"iSelectedItem = 0x%X\n", iSelectedItem);
 
 	if (!lppMAPIProp || !m_lpContentsTableListCtrl) return MAPI_E_INVALID_PARAMETER;
@@ -799,7 +777,7 @@ _Check_return_ HRESULT CContentsTableDlg::OpenItemProp(int iSelectedItem, __mfcm
 
 _Check_return_ HRESULT CContentsTableDlg::OpenAttachmentsFromMessage(_In_ LPMESSAGE lpMessage)
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
 	if (NULL == lpMessage) return MAPI_E_INVALID_PARAMETER;
 
@@ -810,7 +788,7 @@ _Check_return_ HRESULT CContentsTableDlg::OpenAttachmentsFromMessage(_In_ LPMESS
 
 _Check_return_ HRESULT CContentsTableDlg::OpenRecipientsFromMessage(_In_ LPMESSAGE lpMessage)
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
 	EC_H(DisplayTable(lpMessage, PR_MESSAGE_RECIPIENTS, otDefault, this));
 
@@ -821,20 +799,20 @@ _Check_return_ bool CContentsTableDlg::HandleAddInMenu(WORD wMenuSelect)
 {
 	if (wMenuSelect < ID_ADDINMENU || ID_ADDINMENU + m_ulAddInMenuItems < wMenuSelect) return false;
 	if (!m_lpContentsTableListCtrl) return false;
-	LPMAPIPROP lpMAPIProp = NULL;
-	int iItem = -1;
+	LPMAPIPROP lpMAPIProp = nullptr;
+	auto iItem = -1;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-	LPMENUITEM lpAddInMenu = GetAddinMenuItem(m_hWnd, wMenuSelect);
+	auto lpAddInMenu = GetAddinMenuItem(m_hWnd, wMenuSelect);
 	if (!lpAddInMenu) return false;
 
-	ULONG ulFlags = lpAddInMenu->ulFlags;
+	auto ulFlags = lpAddInMenu->ulFlags;
 
-	__mfcmapiModifyEnum fRequestModify =
+	auto fRequestModify =
 		(ulFlags & MENU_FLAGS_REQUESTMODIFY) ? mfcmapiREQUEST_MODIFY : mfcmapiDO_NOT_REQUEST_MODIFY;
 
 	// Get the stuff we need for any case
-	_AddInMenuParams MyAddInMenuParams = { 0 };
+	_AddInMenuParams MyAddInMenuParams = { nullptr };
 	MyAddInMenuParams.lpAddInMenu = lpAddInMenu;
 	MyAddInMenuParams.ulAddInContext = m_ulAddInContext;
 	MyAddInMenuParams.hWndParent = m_hWnd;
@@ -855,16 +833,16 @@ _Check_return_ bool CContentsTableDlg::HandleAddInMenu(WORD wMenuSelect)
 	{
 		HandleAddInMenuSingle(
 			&MyAddInMenuParams,
-			NULL,
-			NULL);
+			nullptr,
+			nullptr);
 	}
 	else
 	{
 		// Add appropriate flag to context
-		MyAddInMenuParams.ulCurrentFlags |= (ulFlags & (MENU_FLAGS_SINGLESELECT | MENU_FLAGS_MULTISELECT));
+		MyAddInMenuParams.ulCurrentFlags |= ulFlags & (MENU_FLAGS_SINGLESELECT | MENU_FLAGS_MULTISELECT);
 		for (;;)
 		{
-			SortListData* lpData = (SortListData*)m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
+			auto lpData = static_cast<SortListData*>(m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem));
 			if (-1 == iItem) break;
 			SRow MyRow = { 0 };
 
@@ -881,14 +859,14 @@ _Check_return_ bool CContentsTableDlg::HandleAddInMenu(WORD wMenuSelect)
 			{
 				if (FAILED(OpenItemProp(iItem, fRequestModify, &lpMAPIProp)))
 				{
-					lpMAPIProp = NULL;
+					lpMAPIProp = nullptr;
 				}
 			}
 
 			HandleAddInMenuSingle(
 				&MyAddInMenuParams,
 				lpMAPIProp,
-				NULL);
+				nullptr);
 			if (lpMAPIProp) lpMAPIProp->Release();
 
 			// If we're not doing multiselect, then we're done after a single pass
@@ -909,10 +887,10 @@ void CContentsTableDlg::HandleAddInMenuSingle(
 		switch (lpParams->ulAddInContext)
 		{
 		case MENU_CONTEXT_RECIEVE_FOLDER_TABLE:
-			lpParams->lpFolder = (LPMAPIFOLDER)lpMAPIProp; // OpenItemProp returns LPMAPIFOLDER
+			lpParams->lpFolder = static_cast<LPMAPIFOLDER>(lpMAPIProp); // OpenItemProp returns LPMAPIFOLDER
 			break;
 		case MENU_CONTEXT_HIER_TABLE:
-			lpParams->lpFolder = (LPMAPIFOLDER)lpMAPIProp; // OpenItemProp returns LPMAPIFOLDER
+			lpParams->lpFolder = static_cast<LPMAPIFOLDER>(lpMAPIProp); // OpenItemProp returns LPMAPIFOLDER
 			break;
 		}
 	}

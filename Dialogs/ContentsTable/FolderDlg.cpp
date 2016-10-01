@@ -782,20 +782,15 @@ void CFolderDlg::OnLoadFromMSG()
 
 	auto hRes = S_OK;
 	LPMESSAGE lpNewMessage = nullptr;
-	INT_PTR iDlgRet = IDOK;
 
-	auto szFileSpec = loadstring(IDS_MSGFILES);
-
-	CFileDialogExW dlgFilePicker;
-	EC_D_DIALOG(dlgFilePicker.DisplayDialog(
-		true,
+	auto files = CFileDialogExW::OpenFiles(
 		L"msg", // STRING_OK
 		emptystring,
-		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_FILEMUSTEXIST | OFN_ALLOWMULTISELECT,
-		szFileSpec,
-		this));
+		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_FILEMUSTEXIST,
+		loadstring(IDS_MSGFILES),
+		this);
 
-	if (iDlgRet == IDOK)
+	if (!files.empty())
 	{
 		CEditor MyData(
 			this,
@@ -813,7 +808,7 @@ void CFolderDlg::OnLoadFromMSG()
 		WC_H(MyData.DisplayDialog());
 		if (S_OK == hRes)
 		{
-			for (auto& lpszPath : dlgFilePicker.GetFileNames())
+			for (auto& lpszPath : files)
 			{
 				hRes = S_OK;
 				switch (MyData.GetDropDown(0))
@@ -1521,7 +1516,6 @@ void CFolderDlg::OnSaveMessageToFile()
 	{
 		LPCWSTR szExt = nullptr;
 		LPCWSTR szDotExt = nullptr;
-		ULONG ulDotExtLen = NULL;
 		wstring szFilter;
 		LPADRBOOK lpAddrBook = nullptr;
 		switch (MyData.GetDropDown(0))
@@ -1529,27 +1523,23 @@ void CFolderDlg::OnSaveMessageToFile()
 		case 0:
 			szExt = L"xml"; // STRING_OK
 			szDotExt = L".xml"; // STRING_OK
-			ulDotExtLen = 4;
 			szFilter = loadstring(IDS_XMLFILES);
 			break;
 		case 1:
 		case 2:
 			szExt = L"msg"; // STRING_OK
 			szDotExt = L".msg"; // STRING_OK
-			ulDotExtLen = 4;
 			szFilter = loadstring(IDS_MSGFILES);
 			break;
 		case 3:
 		case 4:
 			szExt = L"eml"; // STRING_OK
 			szDotExt = L".eml"; // STRING_OK
-			ulDotExtLen = 4;
 			szFilter = loadstring(IDS_EMLFILES);
 			break;
 		case 5:
 			szExt = L"tnef"; // STRING_OK
 			szDotExt = L".tnef"; // STRING_OK
-			ulDotExtLen = 5;
 			szFilter = loadstring(IDS_TNEFFILES);
 
 			lpAddrBook = m_lpMapiObjects->GetAddrBook(true); // do not release
@@ -1564,7 +1554,6 @@ void CFolderDlg::OnSaveMessageToFile()
 		while (-1 != iItem)
 		{
 			LPMESSAGE lpMessage = nullptr;
-			INT_PTR iDlgRet = IDOK;
 
 			EC_H(OpenItemProp(
 				iItem,
@@ -1574,22 +1563,16 @@ void CFolderDlg::OnSaveMessageToFile()
 			if (lpMessage)
 			{
 				auto szFileName = BuildFileName(szDotExt, lpMessage);
-
 				DebugPrint(DBGGeneric, L"BuildFileName built file name \"%ws\"\n", szFileName.c_str());
 
-				CFileDialogExW dlgFilePicker;
-
-				EC_D_DIALOG(dlgFilePicker.DisplayDialog(
-					false,
+				auto filename = CFileDialogExW::SaveAs(
 					szExt,
 					szFileName,
 					OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
 					szFilter,
-					this));
-
-				if (iDlgRet == IDOK)
+					this);
+				if (!filename.empty())
 				{
-					auto filename = dlgFilePicker.GetFileName();
 					switch (MyData.GetDropDown(0))
 					{
 					case 0:
@@ -1644,7 +1627,7 @@ void CFolderDlg::OnSaveMessageToFile()
 						break;
 					}
 				}
-				else if (iDlgRet == IDCANCEL)
+				else
 				{
 					hRes = MAPI_E_USER_CANCEL;
 				}
@@ -1660,7 +1643,7 @@ void CFolderDlg::OnSaveMessageToFile()
 			iItem = m_lpContentsTableListCtrl->GetNextItem(
 				iItem,
 				LVNI_SELECTED);
-			if ((IDOK != iDlgRet || S_OK != hRes) && -1 != iItem)
+			if (S_OK != hRes && -1 != iItem)
 			{
 				if (bShouldCancel(this, hRes)) break;
 				hRes = S_OK;
@@ -1673,31 +1656,25 @@ void CFolderDlg::OnSaveMessageToFile()
 // Pass the file name and a message to load in to LoadFromTNEF to do the work.
 void CFolderDlg::OnLoadFromTNEF()
 {
-	auto hRes = S_OK;
 	LPMESSAGE lpNewMessage = nullptr;
-	INT_PTR iDlgRet = IDOK;
 
 	if (!m_lpContainer) return;
 
 	auto lpAddrBook = m_lpMapiObjects->GetAddrBook(true); // do not release
 	if (lpAddrBook)
 	{
-		auto szFileSpec = loadstring(IDS_TNEFFILES);
-
-		CFileDialogExW dlgFilePicker;
-		EC_D_DIALOG(dlgFilePicker.DisplayDialog(
-			true,
+		auto files = CFileDialogExW::OpenFiles(
 			L"tnef", // STRING_OK
 			emptystring,
-			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_FILEMUSTEXIST | OFN_ALLOWMULTISELECT,
-			szFileSpec,
-			this));
+			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_FILEMUSTEXIST,
+			loadstring(IDS_TNEFFILES),
+			this);
 
-		if (iDlgRet == IDOK)
+		if (!files.empty())
 		{
-			for (auto& lpszPath : dlgFilePicker.GetFileNames())
+			for (auto& lpszPath : files)
 			{
-				hRes = S_OK;
+				auto hRes = S_OK;
 				EC_MAPI((static_cast<LPMAPIFOLDER>(m_lpContainer))->CreateMessage(
 					NULL,
 					m_ulDisplayFlags & dfAssoc ? MAPI_ASSOCIATED : 0,
@@ -1728,7 +1705,6 @@ void CFolderDlg::OnLoadFromEML()
 
 	auto hRes = S_OK;
 	LPMESSAGE lpNewMessage = nullptr;
-	INT_PTR iDlgRet = IDOK;
 
 	ULONG ulConvertFlags = CCSF_SMTP;
 	auto bDoAdrBook = false;
@@ -1741,20 +1717,16 @@ void CFolderDlg::OnLoadFromEML()
 		LPADRBOOK lpAdrBook = nullptr;
 		if (bDoAdrBook) lpAdrBook = m_lpMapiObjects->GetAddrBook(true); // do not release
 
-		CFileDialogExW dlgFilePicker;
-
-		auto szFileSpec = loadstring(IDS_EMLFILES);
-		EC_D_DIALOG(dlgFilePicker.DisplayDialog(
-			true,
+		auto files = CFileDialogExW::OpenFiles(
 			L"eml", // STRING_OK
 			emptystring,
-			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_FILEMUSTEXIST | OFN_ALLOWMULTISELECT,
-			szFileSpec,
-			this));
+			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_FILEMUSTEXIST,
+			loadstring(IDS_EMLFILES),
+			this);
 
-		if (iDlgRet == IDOK)
+		if (!files.empty())
 		{
-			for (auto& lpszPath : dlgFilePicker.GetFileNames())
+			for (auto& lpszPath : files)
 			{
 				hRes = S_OK;
 				EC_MAPI((static_cast<LPMAPIFOLDER>(m_lpContainer))->CreateMessage(

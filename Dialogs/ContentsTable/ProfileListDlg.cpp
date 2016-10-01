@@ -242,27 +242,21 @@ void CProfileListDlg::OnAddExchangeToProfile()
 
 void CProfileListDlg::AddPSTToProfile(bool bUnicodePST)
 {
-	auto hRes = S_OK;
 	auto iItem = -1;
-	INT_PTR iDlgRet = IDOK;
-
-	auto szFileSpec = loadstring(IDS_PSTFILES);
 
 	if (!m_lpContentsTableListCtrl) return;
 
-	CFileDialogExW dlgFilePicker;
-	EC_D_DIALOG(dlgFilePicker.DisplayDialog(
-		true,
+	auto file = CFileDialogExW::OpenFile(
 		L"pst", // STRING_OK
 		emptystring,
 		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-		szFileSpec,
-		this));
-	if (IDOK == iDlgRet)
+		loadstring(IDS_PSTFILES),
+		this);
+	if (!file.empty())
 	{
 		do
 		{
-			hRes = S_OK;
+			auto hRes = S_OK;
 			// Find the highlighted item
 			auto lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 			if (!lpListData || !lpListData->Contents()) break;
@@ -273,7 +267,7 @@ void CProfileListDlg::AddPSTToProfile(bool bUnicodePST)
 				IDS_PSTPATHPROMPT,
 				3,
 				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-			MyFile.InitPane(0, CreateSingleLinePane(IDS_SERVICE, wstring(dlgFilePicker.GetFileName()), false));
+			MyFile.InitPane(0, CreateSingleLinePane(IDS_SERVICE, file, false));
 			MyFile.InitPane(1, CreateCheckPane(IDS_PSTDOPW, false, false));
 			MyFile.InitPane(2, CreateSingleLinePane(IDS_PSTPW, false));
 
@@ -578,19 +572,16 @@ _Check_return_ bool CProfileListDlg::HandlePaste()
 
 void CProfileListDlg::OnExportProfile()
 {
-	auto hRes = S_OK;
-	auto iItem = -1;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	DebugPrintEx(DBGGeneric, CLASS, L"OnExportProfile", L"\n");
 	if (!m_lpContentsTableListCtrl) return;
 
 	// Find the highlighted profile
+	auto iItem = -1;
 	auto lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 	if (lpListData && lpListData->Contents())
 	{
-		INT_PTR iDlgRet = IDOK;
-
 		auto szProfileName = stringTowstring(lpListData->Contents()->m_szProfileDisplayName);
 		auto szFileName = BuildFileNameAndPath(
 			L".xml", // STRING_OK
@@ -599,19 +590,15 @@ void CProfileListDlg::OnExportProfile()
 			nullptr);
 		DebugPrint(DBGGeneric, L"BuildFileNameAndPath built file name \"%ws\"\n", szFileName.c_str());
 
-		auto szFileSpec = loadstring(IDS_XMLFILES);
-		CFileDialogExW dlgFilePicker;
-		EC_D_DIALOG(dlgFilePicker.DisplayDialog(
-			false,
+		auto file = CFileDialogExW::SaveAs(
 			L"xml", // STRING_OK
 			szFileName,
 			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-			szFileSpec.c_str(),
-			this));
-
-		if (iDlgRet == IDOK)
+			loadstring(IDS_XMLFILES),
+			this);
+		if (!file.empty())
 		{
-			ExportProfile(lpListData->Contents()->m_szProfileDisplayName.c_str(), nullptr, false, dlgFilePicker.GetFileName());
+			ExportProfile(lpListData->Contents()->m_szProfileDisplayName.c_str(), nullptr, false, file);
 		}
 	}
 }

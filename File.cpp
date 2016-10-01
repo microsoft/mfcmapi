@@ -1161,61 +1161,45 @@ _Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd)
 		case ATTACH_BY_REF_RESOLVE:
 		case ATTACH_BY_REF_ONLY:
 		{
-			auto szFileSpec = loadstring(IDS_ALLFILES);
-
-			CFileDialogExW dlgFilePicker;
-
 			DebugPrint(DBGGeneric, L"WriteAttachmentToFile: Prompting with \"%ws\"\n", szFileName.c_str());
 
-			EC_D_DIALOG(dlgFilePicker.DisplayDialog(
-				false,
+			auto file = CFileDialogExW::SaveAs(
 				L"txt", // STRING_OK
 				szFileName,
 				OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-				szFileSpec));
-			if (iDlgRet == IDOK)
+				loadstring(IDS_ALLFILES));
+			if (!file.empty())
 			{
-				EC_H(WriteAttachStreamToFile(lpAttach, dlgFilePicker.GetFileName().c_str()));
+				EC_H(WriteAttachStreamToFile(lpAttach, file.c_str()));
 			}
 		}
 		break;
 		case ATTACH_EMBEDDED_MSG:
 			// Get File Name
 		{
-			auto szFileSpec = loadstring(IDS_MSGFILES);
-
-			CFileDialogExW dlgFilePicker;
-
 			DebugPrint(DBGGeneric, L"WriteAttachmentToFile: Prompting with \"%ws\"\n", szFileName.c_str());
-
-			EC_D_DIALOG(dlgFilePicker.DisplayDialog(
-				false,
+			auto file = CFileDialogExW::SaveAs(
 				L"msg", // STRING_OK
 				szFileName,
 				OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-				szFileSpec));
-			if (iDlgRet == IDOK)
+				loadstring(IDS_MSGFILES));
+			if (!file.empty())
 			{
-				EC_H(WriteEmbeddedMSGToFile(lpAttach, dlgFilePicker.GetFileName().c_str(), (MAPI_UNICODE == fMapiUnicode) ? true : false, hWnd));
+				EC_H(WriteEmbeddedMSGToFile(lpAttach, file.c_str(), (MAPI_UNICODE == fMapiUnicode) ? true : false, hWnd));
 			}
 		}
 		break;
 		case ATTACH_OLE:
 		{
-			auto szFileSpec = loadstring(IDS_ALLFILES);
-
-			CFileDialogExW dlgFilePicker;
-
 			DebugPrint(DBGGeneric, L"WriteAttachmentToFile: Prompting with \"%ws\"\n", szFileName.c_str());
-			EC_D_DIALOG(dlgFilePicker.DisplayDialog(
-				false,
+			auto file = CFileDialogExW::SaveAs(
 				emptystring,
 				szFileName,
 				OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-				szFileSpec));
-			if (iDlgRet == IDOK)
+				loadstring(IDS_ALLFILES));
+			if (!file.empty())
 			{
-				EC_H(WriteOleToFile(lpAttach, dlgFilePicker.GetFileName().c_str()));
+				EC_H(WriteOleToFile(lpAttach, file.c_str()));
 			}
 		}
 		break;

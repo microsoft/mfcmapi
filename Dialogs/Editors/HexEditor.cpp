@@ -190,20 +190,13 @@ void CHexEditor::OnEditAction1()
 	auto hRes = S_OK;
 	if (S_OK == hRes)
 	{
-		INT_PTR iDlgRet = IDOK;
-
-		auto szFileSpec = loadstring(IDS_ALLFILES);
-
-		CFileDialogExW dlgFilePicker;
-
-		EC_D_DIALOG(dlgFilePicker.DisplayDialog(
-			true,
+		auto file = CFileDialogExW::OpenFile(
 			emptystring,
 			emptystring,
 			OFN_FILEMUSTEXIST,
-			szFileSpec,
-			this));
-		if (iDlgRet == IDOK && !dlgFilePicker.GetFileName().empty())
+			loadstring(IDS_ALLFILES),
+			this);
+		if (!file.empty())
 		{
 			CGlobalCache::getInstance().MAPIInitialize(NULL);
 			LPSTREAM lpStream = nullptr;
@@ -213,7 +206,7 @@ void CHexEditor::OnEditAction1()
 				MAPIAllocateBuffer,
 				MAPIFreeBuffer,
 				STGM_READ,
-				dlgFilePicker.GetFileName().c_str(),
+				file.c_str(),
 				NULL,
 				&lpStream));
 
@@ -224,6 +217,7 @@ void CHexEditor::OnEditAction1()
 				{
 					lpPane->InitEditFromBinaryStream(lpStream);
 				}
+
 				lpStream->Release();
 			}
 		}
@@ -236,20 +230,13 @@ void CHexEditor::OnEditAction2()
 	auto hRes = S_OK;
 	if (S_OK == hRes)
 	{
-		INT_PTR iDlgRet = IDOK;
-
-		auto szFileSpec = loadstring(IDS_ALLFILES);
-
-		CFileDialogExW dlgFilePicker;
-
-		EC_D_DIALOG(dlgFilePicker.DisplayDialog(
-			false,
+		auto file = CFileDialogExW::SaveAs(
 			emptystring,
 			emptystring,
 			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-			szFileSpec,
-			this));
-		if (iDlgRet == IDOK && !dlgFilePicker.GetFileName().empty())
+			loadstring(IDS_ALLFILES),
+			this);
+		if (!file.empty())
 		{
 			CGlobalCache::getInstance().MAPIInitialize(NULL);
 			LPSTREAM lpStream = nullptr;
@@ -259,7 +246,7 @@ void CHexEditor::OnEditAction2()
 				MAPIAllocateBuffer,
 				MAPIFreeBuffer,
 				STGM_CREATE | STGM_READWRITE,
-				dlgFilePicker.GetFileName().c_str(),
+				file.c_str(),
 				NULL,
 				&lpStream));
 
