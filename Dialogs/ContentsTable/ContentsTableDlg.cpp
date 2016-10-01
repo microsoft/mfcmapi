@@ -22,8 +22,7 @@ CContentsTableDlg::CContentsTableDlg(
 	__mfcmapiCreateDialogEnum bCreateDialog,
 	_In_opt_ LPMAPITABLE lpContentsTable,
 	_In_ LPSPropTagArray sptExtraColumnTags,
-	ULONG iNumExtraDisplayColumns,
-	_In_count_(iNumExtraDisplayColumns) TagNames* lpExtraDisplayColumns,
+	_In_ vector<TagNames> lpExtraDisplayColumns,
 	ULONG nIDContextMenu,
 	ULONG ulAddInContext
 ) :
@@ -52,7 +51,6 @@ CContentsTableDlg::CContentsTableDlg(
 	if (m_lpContentsTable) m_lpContentsTable->AddRef();
 
 	m_sptExtraColumnTags = sptExtraColumnTags;
-	m_iNumExtraDisplayColumns = iNumExtraDisplayColumns;
 	m_lpExtraDisplayColumns = lpExtraDisplayColumns;
 
 	if (mfcmapiCALL_CREATE_DIALOG == bCreateDialog)
@@ -89,7 +87,6 @@ BOOL CContentsTableDlg::OnInitDialog()
 		m_lpFakeSplitter,
 		m_lpMapiObjects,
 		m_sptExtraColumnTags,
-		m_iNumExtraDisplayColumns,
 		m_lpExtraDisplayColumns,
 		m_nIDContextMenu,
 		m_bIsAB,

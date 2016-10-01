@@ -41,7 +41,6 @@ CFolderDlg::CFolderDlg(
 		mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 		nullptr,
 		LPSPropTagArray(&sptMSGCols),
-		NUMMSGCOLUMNS,
 		MSGColumns,
 		IDR_MENU_FOLDER_POPUP,
 		MENU_CONTEXT_FOLDER_CONTENTS)
@@ -52,7 +51,7 @@ CFolderDlg::CFolderDlg(
 	m_lpContainer = lpMAPIFolder;
 	if (m_lpContainer) m_lpContainer->AddRef();
 
-	CreateDialogAndMenu(IDR_MENU_FOLDER);
+	CContentsTableDlg::CreateDialogAndMenu(IDR_MENU_FOLDER);
 }
 
 CFolderDlg::~CFolderDlg()

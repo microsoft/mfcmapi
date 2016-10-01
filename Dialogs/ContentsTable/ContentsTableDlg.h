@@ -13,8 +13,7 @@ public:
 		__mfcmapiCreateDialogEnum bCreateDialog,
 		_In_opt_ LPMAPITABLE lpContentsTable,
 		_In_ LPSPropTagArray sptExtraColumnTags,
-		ULONG iNumExtraDisplayColumns,
-		_In_count_(iNumExtraDisplayColumns) TagNames* lpExtraDisplayColumns,
+		_In_ vector<TagNames> lpExtraDisplayColumns,
 		ULONG nIDContextMenu,
 		ULONG ulAddInContext
 	);
@@ -24,7 +23,7 @@ public:
 
 protected:
 	// Overrides from base class
-	void CreateDialogAndMenu(UINT nIDMenuResource);
+	virtual void CreateDialogAndMenu(UINT nIDMenuResource);
 	_Check_return_ bool HandleMenu(WORD wMenuSelect);
 	BOOL OnInitDialog();
 	void OnInitMenu(_In_opt_ CMenu* pMenu);
@@ -68,8 +67,7 @@ private:
 	_Check_return_ LRESULT msgOnResetColumns(WPARAM wParam, LPARAM lParam);
 
 	// Values held only for use in InitDialog to create our CContentsTableListCtrl
-	ULONG m_iNumExtraDisplayColumns;
-	TagNames* m_lpExtraDisplayColumns;
+	vector<TagNames> m_lpExtraDisplayColumns;
 	LPSPropTagArray m_sptExtraColumnTags;
 	UINT m_nIDContextMenu;
 

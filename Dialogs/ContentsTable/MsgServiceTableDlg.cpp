@@ -26,7 +26,6 @@ CMsgServiceTableDlg::CMsgServiceTableDlg(
 		mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 		nullptr,
 		LPSPropTagArray(&sptSERVICECols),
-		NUMSERVICECOLUMNS,
 		SERVICEColumns,
 		IDR_MENU_MSGSERVICE_POPUP,
 		MENU_CONTEXT_PROFILE_SERVICES)
@@ -35,7 +34,7 @@ CMsgServiceTableDlg::CMsgServiceTableDlg(
 
 	m_lpServiceAdmin = nullptr;
 
-	CreateDialogAndMenu(IDR_MENU_MSGSERVICE);
+	CContentsTableDlg::CreateDialogAndMenu(IDR_MENU_MSGSERVICE);
 
 	m_szProfileName = szProfileName;
 	CMsgServiceTableDlg::OnRefreshView();

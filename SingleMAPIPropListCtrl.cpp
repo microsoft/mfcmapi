@@ -50,7 +50,7 @@ CSingleMAPIPropListCtrl::CSingleMAPIPropListCtrl(
 	m_lpHostDlg = lpHostDlg;
 	if (m_lpHostDlg) m_lpHostDlg->AddRef();
 
-	for (ULONG i = 0; i < NUMPROPCOLUMNS; i++)
+	for (ULONG i = 0; i < PropColumns.size(); i++)
 	{
 		auto szHeaderName = loadstring(PropColumns[i].uidName);
 		InsertColumn(i, wstringTotstring(szHeaderName).c_str());
@@ -750,7 +750,6 @@ _Check_return_ HRESULT CSingleMAPIPropListCtrl::SetDataSource(_In_opt_ LPMAPIPRO
 	// Reset our header widths if weren't showing anything before and are now
 	if (S_OK == hRes && !m_bHaveEverDisplayedSomething && m_lpPropBag && GetItemCount())
 	{
-		int iCurCol;
 		m_bHaveEverDisplayedSomething = true;
 
 		auto lpMyHeader = GetHeaderCtrl();
@@ -759,11 +758,12 @@ _Check_return_ HRESULT CSingleMAPIPropListCtrl::SetDataSource(_In_opt_ LPMAPIPRO
 		{
 			// This fixes a ton of flashing problems
 			lpMyHeader->SetRedraw(true);
-			for (iCurCol = 0; iCurCol < NUMPROPCOLUMNS; iCurCol++)
+			for (size_t iCurCol = 0; iCurCol < PropColumns.size(); iCurCol++)
 			{
 				SetColumnWidth(iCurCol, LVSCW_AUTOSIZE_USEHEADER);
 				if (GetColumnWidth(iCurCol) > 200) SetColumnWidth(iCurCol, 200);
 			}
+
 			lpMyHeader->SetRedraw(false);
 		}
 	}

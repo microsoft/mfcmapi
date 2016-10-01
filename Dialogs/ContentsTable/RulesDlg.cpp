@@ -14,9 +14,6 @@ static wstring CLASS = L"CRulesDlg";
 #define RULE_INCLUDE_ID 0x00000001
 #define RULE_INCLUDE_OTHER 0x00000002
 
-/////////////////////////////////////////////////////////////////////////////
-// CRulesDlg dialog
-
 CRulesDlg::CRulesDlg(
 	_In_ CParentWnd* pParentWnd,
 	_In_ CMapiObjects* lpMapiObjects,
@@ -28,7 +25,6 @@ CRulesDlg::CRulesDlg(
 		mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 		nullptr,
 		LPSPropTagArray(&sptRULECols),
-		NUMRULECOLUMNS,
 		RULEColumns,
 		IDR_MENU_RULES_POPUP,
 		MENU_CONTEXT_RULES_TABLE)
@@ -38,7 +34,7 @@ CRulesDlg::CRulesDlg(
 	if (m_lpExchTbl) m_lpExchTbl->AddRef();
 	m_bIsAB = false;
 
-	CreateDialogAndMenu(IDR_MENU_RULES);
+	CContentsTableDlg::CreateDialogAndMenu(IDR_MENU_RULES);
 
 	CRulesDlg::OnRefreshView();
 }

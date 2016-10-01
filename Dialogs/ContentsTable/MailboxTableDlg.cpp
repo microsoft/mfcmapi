@@ -30,7 +30,6 @@ CMailboxTableDlg::CMailboxTableDlg(
 		mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 		lpMAPITable,
 		LPSPropTagArray(&sptMBXCols),
-		NUMMBXCOLUMNS,
 		MBXColumns,
 		IDR_MENU_MAILBOX_TABLE_POPUP,
 		MENU_CONTEXT_MAILBOX_TABLE
@@ -38,7 +37,7 @@ CMailboxTableDlg::CMailboxTableDlg(
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	m_lpszServerName = lpszServerName;
-	CreateDialogAndMenu(IDR_MENU_MAILBOX_TABLE);
+	CMailboxTableDlg::CreateDialogAndMenu(IDR_MENU_MAILBOX_TABLE);
 }
 
 CMailboxTableDlg::~CMailboxTableDlg()

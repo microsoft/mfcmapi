@@ -12,8 +12,7 @@ public:
 		_In_ CWnd* pCreateParent,
 		_In_ CMapiObjects* lpMapiObjects,
 		_In_ LPSPropTagArray sptExtraColumnTags,
-		ULONG ulNumExtraDisplayColumns,
-		_In_count_(ulNumExtraDisplayColumns) TagNames* lpExtraDisplayColumns,
+		_In_ vector<TagNames> lpExtraDisplayColumns,
 		UINT nIDContextMenu,
 		bool bIsAB,
 		_In_ CContentsTableDlg* lpHostDlg);
@@ -27,7 +26,6 @@ public:
 
 	// Selected item accessors
 	_Check_return_ HRESULT GetSelectedItemEIDs(_Deref_out_opt_ LPENTRYLIST* lppEntryIDs) const;
-	// TODO: incorporate this everywhere
 	_Check_return_ SortListData* GetSortListData(int iItem) const;
 	_Check_return_ HRESULT OpenNextSelectedItemProp(_Inout_opt_ int* iCurItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppProp) const;
 	_Check_return_ vector<int> GetSelectedItemNums() const;
@@ -85,11 +83,10 @@ private:
 	HANDLE m_LoadThreadHandle;
 	CContentsTableDlg* m_lpHostDlg;
 	CMapiObjects* m_lpMapiObjects;
-	TagNames* m_lpExtraDisplayColumns;
+	vector<TagNames> m_lpExtraDisplayColumns;
 	LPSPropTagArray m_sptExtraColumnTags;
 	ULONG m_ulHeaderColumns;
 	ULONG_PTR m_ulAdviseConnection;
-	ULONG m_ulNumExtraDisplayColumns;
 	ULONG m_ulDisplayNameColumn;
 	UINT m_nIDContextMenu;
 	bool m_bIsAB;

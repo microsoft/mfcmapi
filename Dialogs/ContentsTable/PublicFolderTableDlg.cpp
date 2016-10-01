@@ -22,15 +22,14 @@ CPublicFolderTableDlg::CPublicFolderTableDlg(
 		IDS_PUBLICFOLDERTABLE,
 		mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 		lpMAPITable,
-		(LPSPropTagArray)&sptPFCols,
-		NUMPFCOLUMNS,
+		LPSPropTagArray(&sptPFCols),
 		PFColumns,
 		NULL,
 		MENU_CONTEXT_PUBLIC_FOLDER_TABLE)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	m_lpszServerName = lpszServerName;
-	CreateDialogAndMenu(NULL);
+	CPublicFolderTableDlg::CreateDialogAndMenu(NULL);
 }
 
 CPublicFolderTableDlg::~CPublicFolderTableDlg()
@@ -55,14 +54,14 @@ void CPublicFolderTableDlg::OnDisplayItem()
 
 _Check_return_ HRESULT CPublicFolderTableDlg::OpenItemProp(int /*iSelectedItem*/, __mfcmapiModifyEnum /*bModify*/, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
 {
-	if (lppMAPIProp) *lppMAPIProp = NULL;
+	if (lppMAPIProp) *lppMAPIProp = nullptr;
 	return S_OK;
 }
 
 void CPublicFolderTableDlg::OnCreatePropertyStringRestriction()
 {
-	HRESULT hRes = S_OK;
-	LPSRestriction lpRes = NULL;
+	auto hRes = S_OK;
+	LPSRestriction lpRes = nullptr;
 
 	CPropertyTagEditor MyPropertyTag(
 		IDS_PROPRES, // title
@@ -90,7 +89,7 @@ void CPublicFolderTableDlg::OnCreatePropertyStringRestriction()
 		WC_H(MyData.DisplayDialog());
 		if (S_OK != hRes) return;
 
-		wstring szString = MyData.GetStringW(0);
+		auto szString = MyData.GetStringW(0);
 		// Allocate and create our SRestriction
 		EC_H(CreatePropertyStringRestriction(
 			CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_UNICODE),
@@ -101,7 +100,7 @@ void CPublicFolderTableDlg::OnCreatePropertyStringRestriction()
 		if (S_OK != hRes && lpRes)
 		{
 			MAPIFreeBuffer(lpRes);
-			lpRes = NULL;
+			lpRes = nullptr;
 		}
 
 		m_lpContentsTableListCtrl->SetRestriction(lpRes);

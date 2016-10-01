@@ -26,14 +26,13 @@ CProviderTableDlg::CProviderTableDlg(
 		mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 		lpMAPITable,
 		LPSPropTagArray(&sptPROVIDERCols),
-		NUMPROVIDERCOLUMNS,
 		PROVIDERColumns,
 		NULL,
 		MENU_CONTEXT_PROFILE_PROVIDERS)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 
-	CreateDialogAndMenu(IDR_MENU_PROVIDER);
+	CContentsTableDlg::CreateDialogAndMenu(IDR_MENU_PROVIDER);
 
 	m_lpProviderAdmin = lpProviderAdmin;
 	if (m_lpProviderAdmin) m_lpProviderAdmin->AddRef();
