@@ -149,7 +149,7 @@ _Check_return_ HRESULT CFormContainerDlg::OpenItemProp(int iSelectedItem, __mfcm
 
 	*lppMAPIProp = nullptr;
 
-	auto lpListData = reinterpret_cast<SortListData*>(m_lpContentsTableListCtrl->GetItemData(iSelectedItem));
+	auto lpListData = m_lpContentsTableListCtrl->GetSortListData(iSelectedItem);
 	if (lpListData)
 	{
 		auto lpProp = PpropFindProp(

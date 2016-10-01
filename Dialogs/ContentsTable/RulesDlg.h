@@ -30,7 +30,7 @@ private:
 	// Menu items
 	void OnModifySelectedItem();
 
-	_Check_return_ HRESULT GetSelectedItems(ULONG ulFlags, ULONG ulRowFlags, _In_ LPROWLIST* lppRowList);
+	_Check_return_ HRESULT GetSelectedItems(ULONG ulFlags, ULONG ulRowFlags, _In_ LPROWLIST* lppRowList) const;
 
 	LPEXCHANGEMODIFYTABLE m_lpExchTbl;
 

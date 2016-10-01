@@ -213,7 +213,7 @@ _Check_return_ HRESULT CMsgServiceTableDlg::OpenItemProp(int iSelectedItem, __mf
 
 	if (!m_lpServiceAdmin || !m_lpContentsTableListCtrl || !lppMAPIProp) return MAPI_E_INVALID_PARAMETER;
 
-	auto lpListData = reinterpret_cast<SortListData*>(m_lpContentsTableListCtrl->GetItemData(iSelectedItem));
+	auto lpListData = m_lpContentsTableListCtrl->GetSortListData(iSelectedItem);
 	if (lpListData && lpListData->Contents())
 	{
 		auto lpServiceUID = lpListData->Contents()->m_lpServiceUID;

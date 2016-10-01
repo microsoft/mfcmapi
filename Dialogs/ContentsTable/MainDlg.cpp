@@ -403,7 +403,7 @@ _Check_return_ HRESULT CMainDlg::OpenItemProp(int iSelectedItem, __mfcmapiModify
 	auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return MAPI_E_INVALID_PARAMETER;
 
-	auto  lpListData = reinterpret_cast<SortListData*>(m_lpContentsTableListCtrl->GetItemData(iSelectedItem));
+	auto  lpListData = m_lpContentsTableListCtrl->GetSortListData(iSelectedItem);
 	if (lpListData && lpListData->Contents())
 	{
 		auto lpEntryID = lpListData->Contents()->m_lpEntryID;

@@ -179,7 +179,7 @@ _Check_return_ HRESULT CAttachmentsDlg::OpenItemProp(
 	*lppMAPIProp = nullptr;
 
 	// Find the highlighted item AttachNum
-	auto lpListData = reinterpret_cast<SortListData*>(m_lpContentsTableListCtrl->GetItemData(iSelectedItem));
+	auto lpListData = m_lpContentsTableListCtrl->GetSortListData(iSelectedItem);
 
 	if (lpListData && lpListData->Contents())
 	{

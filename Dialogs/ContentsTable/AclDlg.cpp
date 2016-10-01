@@ -12,26 +12,23 @@
 
 static wstring CLASS = L"CAclDlg";
 
-#define ACL_INCLUDE_ID			0x00000001
-#define ACL_INCLUDE_OTHER		0x00000002
-
-/////////////////////////////////////////////////////////////////////////////
-// CAclDlg dialog
+#define ACL_INCLUDE_ID 0x00000001
+#define ACL_INCLUDE_OTHER 0x00000002
 
 CAclDlg::CAclDlg(_In_ CParentWnd* pParentWnd,
 	_In_ CMapiObjects* lpMapiObjects,
 	_In_ LPEXCHANGEMODIFYTABLE lpExchTbl,
 	bool fFreeBusyVisible)
 	: CContentsTableDlg(pParentWnd,
-	lpMapiObjects,
-	(fFreeBusyVisible ? IDS_ACLFBTABLE : IDS_ACLTABLE),
-	mfcmapiDO_NOT_CALL_CREATE_DIALOG,
-	NULL,
-	(LPSPropTagArray)&sptACLCols,
-	NUMACLCOLUMNS,
-	ACLColumns,
-	IDR_MENU_ACL_POPUP,
-	MENU_CONTEXT_ACL_TABLE)
+		lpMapiObjects,
+		fFreeBusyVisible ? IDS_ACLFBTABLE : IDS_ACLTABLE,
+		mfcmapiDO_NOT_CALL_CREATE_DIALOG,
+		nullptr,
+		LPSPropTagArray(&sptACLCols),
+		NUMACLCOLUMNS,
+		ACLColumns,
+		IDR_MENU_ACL_POPUP,
+		MENU_CONTEXT_ACL_TABLE)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	m_lpExchTbl = lpExchTbl;
@@ -49,7 +46,7 @@ CAclDlg::CAclDlg(_In_ CParentWnd* pParentWnd,
 	CreateDialogAndMenu(IDR_MENU_ACL);
 
 	OnRefreshView();
-} // CAclDlg::CAclDlg
+}
 
 CAclDlg::~CAclDlg()
 {
@@ -57,7 +54,7 @@ CAclDlg::~CAclDlg()
 
 	if (m_lpExchTbl)
 		m_lpExchTbl->Release();
-} // CAclDlg::~CAclDlg
+}
 
 BEGIN_MESSAGE_MAP(CAclDlg, CContentsTableDlg)
 	ON_COMMAND(ID_ADDITEM, OnAddItem)
@@ -68,10 +65,10 @@ END_MESSAGE_MAP()
 
 _Check_return_ HRESULT CAclDlg::OpenItemProp(int /*iSelectedItem*/, __mfcmapiModifyEnum /*bModify*/, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
 {
-	if (lppMAPIProp) *lppMAPIProp = NULL;
+	if (lppMAPIProp) *lppMAPIProp = nullptr;
 	// Don't do anything because we don't want to override the properties that we have
 	return S_OK;
-} // CAclDlg::OpenItemProp
+}
 
 void CAclDlg::OnInitMenu(_In_ CMenu* pMenu)
 {
@@ -85,12 +82,12 @@ void CAclDlg::OnInitMenu(_In_ CMenu* pMenu)
 		}
 	}
 	CContentsTableDlg::OnInitMenu(pMenu);
-} // CAclDlg::OnInitMenu
+}
 
 // Clear the current list and get a new one with whatever code we've got in LoadMAPIPropList
 void CAclDlg::OnRefreshView()
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
 	if (!m_lpExchTbl || !m_lpContentsTableListCtrl)
 		return;
@@ -101,7 +98,7 @@ void CAclDlg::OnRefreshView()
 
 	if (m_lpExchTbl)
 	{
-		LPMAPITABLE lpMAPITable = NULL;
+		LPMAPITABLE lpMAPITable = nullptr;
 		// Open a MAPI table on the Exchange table property. This table can be
 		// read to determine what the Exchange table looks like.
 		EC_MAPI(m_lpExchTbl->GetTable(m_ulTableFlags, &lpMAPITable));
@@ -116,11 +113,11 @@ void CAclDlg::OnRefreshView()
 			lpMAPITable->Release();
 		}
 	}
-} // CAclDlg::OnRefreshView
+}
 
 void CAclDlg::OnAddItem()
 {
-	HRESULT			hRes = S_OK;
+	auto hRes = S_OK;
 
 	CEditor MyData(
 		this,
@@ -140,28 +137,28 @@ void CAclDlg::OnAddItem()
 		return;
 	}
 
-	LPROWLIST lpNewItem = NULL;
+	LPROWLIST lpNewItem = nullptr;
 
-	EC_H(MAPIAllocateBuffer(CbNewROWLIST(1), (LPVOID*)&lpNewItem));
+	EC_H(MAPIAllocateBuffer(CbNewROWLIST(1), reinterpret_cast<LPVOID*>(&lpNewItem)));
 
 	if (lpNewItem)
 	{
 		lpNewItem->cEntries = 1;
 		lpNewItem->aEntries[0].ulRowFlags = ROW_ADD;
 		lpNewItem->aEntries[0].cValues = 2;
-		lpNewItem->aEntries[0].rgPropVals = 0;
+		lpNewItem->aEntries[0].rgPropVals = nullptr;
 
-		EC_H(MAPIAllocateMore(2 * sizeof(SPropValue), lpNewItem, (LPVOID*)&lpNewItem->aEntries[0].rgPropVals));
+		EC_H(MAPIAllocateMore(2 * sizeof(SPropValue), lpNewItem, reinterpret_cast<LPVOID*>(&lpNewItem->aEntries[0].rgPropVals)));
 
 		if (lpNewItem->aEntries[0].rgPropVals)
 		{
-			LPENTRYID lpEntryID = NULL;
+			LPENTRYID lpEntryID = nullptr;
 			size_t cbBin = 0;
 			EC_H(MyData.GetEntryID(0, false, &cbBin, &lpEntryID));
 
 			lpNewItem->aEntries[0].rgPropVals[0].ulPropTag = PR_MEMBER_ENTRYID;
-			lpNewItem->aEntries[0].rgPropVals[0].Value.bin.cb = (ULONG)cbBin;
-			lpNewItem->aEntries[0].rgPropVals[0].Value.bin.lpb = (LPBYTE)lpEntryID;
+			lpNewItem->aEntries[0].rgPropVals[0].Value.bin.cb = static_cast<ULONG>(cbBin);
+			lpNewItem->aEntries[0].rgPropVals[0].Value.bin.lpb = reinterpret_cast<LPBYTE>(lpEntryID);
 			lpNewItem->aEntries[0].rgPropVals[1].ulPropTag = PR_MEMBER_RIGHTS;
 			lpNewItem->aEntries[0].rgPropVals[1].Value.ul = MyData.GetHex(1);
 
@@ -175,14 +172,14 @@ void CAclDlg::OnAddItem()
 			delete[] lpEntryID;
 		}
 	}
-} // CAclDlg::OnAddItem
+}
 
 void CAclDlg::OnDeleteSelectedItem()
 {
-	HRESULT		hRes = S_OK;
-	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
+	auto hRes = S_OK;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-	LPROWLIST lpSelectedItems = NULL;
+	LPROWLIST lpSelectedItems = nullptr;
 
 	EC_H(GetSelectedItems(ACL_INCLUDE_ID, ROW_REMOVE, &lpSelectedItems));
 
@@ -195,15 +192,15 @@ void CAclDlg::OnDeleteSelectedItem()
 		if (S_OK == hRes)
 			OnRefreshView();
 	}
-} // CAclDlg::OnDeleteSelectedItem
+}
 
 
 void CAclDlg::OnModifySelectedItem()
 {
-	HRESULT		hRes = S_OK;
-	CWaitCursor	Wait; // Change the mouse to an hourglass while we work.
+	auto hRes = S_OK;
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-	LPROWLIST lpSelectedItems = NULL;
+	LPROWLIST lpSelectedItems = nullptr;
 
 	EC_H(GetSelectedItems(ACL_INCLUDE_ID | ACL_INCLUDE_OTHER, ROW_MODIFY, &lpSelectedItems));
 
@@ -215,51 +212,50 @@ void CAclDlg::OnModifySelectedItem()
 		MAPIFreeBuffer(lpSelectedItems);
 		if (S_OK == hRes) OnRefreshView();
 	}
-} // CAclDlg::OnModifySelectedItem
+}
 
-_Check_return_ HRESULT CAclDlg::GetSelectedItems(ULONG ulFlags, ULONG ulRowFlags, _In_ LPROWLIST* lppRowList)
+_Check_return_ HRESULT CAclDlg::GetSelectedItems(ULONG ulFlags, ULONG ulRowFlags, _In_ LPROWLIST* lppRowList) const
 {
 	if (!lppRowList || !m_lpContentsTableListCtrl)
 		return MAPI_E_INVALID_PARAMETER;
 
-	*lppRowList = NULL;
-	HRESULT hRes = S_OK;
+	*lppRowList = nullptr;
+	auto hRes = S_OK;
 	int iNumItems = m_lpContentsTableListCtrl->GetSelectedCount();
 
 	if (!iNumItems) return S_OK;
 	if (iNumItems > MAXNewROWLIST) return MAPI_E_INVALID_PARAMETER;
 
-	LPROWLIST lpTempList = NULL;
+	LPROWLIST lpTempList = nullptr;
 
-	EC_H(MAPIAllocateBuffer(CbNewROWLIST(iNumItems), (LPVOID*)&lpTempList));
+	EC_H(MAPIAllocateBuffer(CbNewROWLIST(iNumItems), reinterpret_cast<LPVOID*>(&lpTempList)));
 
 	if (lpTempList)
 	{
 		lpTempList->cEntries = iNumItems;
-		int iArrayPos = 0;
-		int iSelectedItem = -1;
+		auto iSelectedItem = -1;
 
-		for (iArrayPos = 0; iArrayPos < iNumItems; iArrayPos++)
+		for (auto iArrayPos = 0; iArrayPos < iNumItems; iArrayPos++)
 		{
 			lpTempList->aEntries[iArrayPos].ulRowFlags = ulRowFlags;
 			lpTempList->aEntries[iArrayPos].cValues = 0;
-			lpTempList->aEntries[iArrayPos].rgPropVals = 0;
+			lpTempList->aEntries[iArrayPos].rgPropVals = nullptr;
 			iSelectedItem = m_lpContentsTableListCtrl->GetNextItem(
 				iSelectedItem,
 				LVNI_SELECTED);
 			if (-1 != iSelectedItem)
 			{
-				SortListData* lpData = (SortListData*)m_lpContentsTableListCtrl->GetItemData(iSelectedItem);
+				// TODO: rewrite with GetSelectedItems
+				auto lpData = m_lpContentsTableListCtrl->GetSortListData(iSelectedItem);
 				if (lpData)
 				{
 					if (ulFlags & ACL_INCLUDE_ID && ulFlags & ACL_INCLUDE_OTHER)
 					{
-						LPSPropValue lpSPropValue = NULL;
-						EC_H(MAPIAllocateMore(2 * sizeof(SPropValue), lpTempList, (LPVOID*)&lpTempList->aEntries[iArrayPos].rgPropVals));
+						EC_H(MAPIAllocateMore(2 * sizeof(SPropValue), lpTempList, reinterpret_cast<LPVOID*>(&lpTempList->aEntries[iArrayPos].rgPropVals)));
 
 						lpTempList->aEntries[iArrayPos].cValues = 2;
 
-						lpSPropValue = PpropFindProp(
+						auto lpSPropValue = PpropFindProp(
 							lpData->lpSourceProps,
 							lpData->cSourceProps,
 							PR_MEMBER_ID);
@@ -290,7 +286,7 @@ _Check_return_ HRESULT CAclDlg::GetSelectedItems(ULONG ulFlags, ULONG ulRowFlags
 
 	*lppRowList = lpTempList;
 	return hRes;
-} // CAclDlg::GetSelectedItems
+}
 
 void CAclDlg::HandleAddInMenuSingle(
 	_In_ LPADDINMENUPARAMS lpParams,
@@ -303,4 +299,4 @@ void CAclDlg::HandleAddInMenuSingle(
 	}
 
 	InvokeAddInMenu(lpParams);
-} // CAclDlg::HandleAddInMenuSingle
+}

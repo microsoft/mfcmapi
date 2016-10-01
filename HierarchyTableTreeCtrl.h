@@ -1,6 +1,6 @@
 #pragma once
 #include "enums.h"
-#include "SortList\SortListData.h"
+#include "SortList/SortListData.h"
 
 class CMapiObjects;
 class CHierarchyTableDlg;
@@ -24,9 +24,10 @@ public:
 	_Check_return_ HRESULT RefreshHierarchyTable();
 
 	// Selected item accessors
-	_Check_return_ LPMAPICONTAINER GetSelectedContainer(__mfcmapiModifyEnum bModify);
+	_Check_return_ LPMAPICONTAINER GetSelectedContainer(__mfcmapiModifyEnum bModify) const;
 	_Check_return_ LPSBinary GetSelectedItemEID() const;
 	_Check_return_ SortListData* GetSelectedItemData() const;
+	_Check_return_ SortListData* GetSortListData(HTREEITEM iItem) const;
 	_Check_return_ bool IsItemSelected() const;
 
 private:
@@ -34,10 +35,10 @@ private:
 	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
 	void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 
-	_Check_return_ HRESULT ExpandNode(HTREEITEM Parent);
+	_Check_return_ HRESULT ExpandNode(HTREEITEM Parent) const;
 	_Check_return_ HTREEITEM FindNode(_In_ LPSBinary lpInstance, HTREEITEM hParent) const;
 	void GetContainer(HTREEITEM Item, __mfcmapiModifyEnum bModify, _In_ LPMAPICONTAINER *lpContainer) const;
-	_Check_return_ LPMAPITABLE GetHierarchyTable(HTREEITEM hItem, _In_opt_ LPMAPICONTAINER lpMAPIContainer, bool bGetTable);
+	_Check_return_ LPMAPITABLE GetHierarchyTable(HTREEITEM hItem, _In_opt_ LPMAPICONTAINER lpMAPIContainer, bool bGetTable) const;
 	void OnContextMenu(_In_ CWnd *pWnd, CPoint pos);
 	void OnCustomDraw(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 	void OnDblclk(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
@@ -48,16 +49,16 @@ private:
 	void OnItemExpanding(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 	void OnRightClick(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 	void OnSelChanged(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
-	void UpdateSelectionUI(HTREEITEM hItem);
+	void UpdateSelectionUI(HTREEITEM hItem) const;
 
 	// Node insertion
-	_Check_return_ HRESULT AddRootNode(_In_ LPMAPICONTAINER lpMAPIContainer);
+	_Check_return_ HRESULT AddRootNode(_In_ LPMAPICONTAINER lpMAPIContainer) const;
 	void AddNode(
 		_In_ wstring szName,
 		HTREEITEM hParent,
 		SortListData* lpData,
-		bool bGetTable);
-	void AddNode(_In_ LPSRow lpsRow, HTREEITEM hParent, bool bGetTable);
+		bool bGetTable) const;
+	void AddNode(_In_ LPSRow lpsRow, HTREEITEM hParent, bool bGetTable) const;
 
 	// Custom messages
 	_Check_return_ LRESULT msgOnAddItem(WPARAM wParam, LPARAM lParam);
