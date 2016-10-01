@@ -4,7 +4,7 @@
 #include "ExtraPropTags.h"
 #include "NamedPropCache.h"
 #include "SmartView/SmartView.h"
-#include "ParseProperty.h"
+#include "Property/ParseProperty.h"
 #include "String.h"
 #include <vector>
 
