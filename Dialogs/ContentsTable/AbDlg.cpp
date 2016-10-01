@@ -28,7 +28,6 @@ CAbDlg::CAbDlg(
 		mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 		nullptr,
 		LPSPropTagArray(&sptABCols),
-		NUMABCOLUMNS,
 		ABColumns,
 		IDR_MENU_AB_VIEW_POPUP,
 		MENU_CONTEXT_AB_CONTENTS)

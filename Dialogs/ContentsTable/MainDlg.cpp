@@ -37,14 +37,13 @@ CMainDlg::CMainDlg(
 		mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 		nullptr,
 		LPSPropTagArray(&sptSTORECols),
-		NUMSTORECOLUMNS,
 		STOREColumns,
 		IDR_MENU_MAIN_POPUP,
 		MENU_CONTEXT_MAIN)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 
-	CreateDialogAndMenu(IDR_MENU_MAIN);
+	CContentsTableDlg::CreateDialogAndMenu(IDR_MENU_MAIN);
 	AddLoadMAPIMenus();
 
 	if (RegKeys[regkeyDISPLAY_ABOUT_DIALOG].ulCurDWORD)

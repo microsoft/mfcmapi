@@ -203,7 +203,6 @@ _Check_return_ HRESULT DisplayTable(
 			mfcmapiCALL_CREATE_DIALOG,
 			lpTable,
 			LPSPropTagArray(&sptSTATUSCols),
-			NUMSTATUSCOLUMNS,
 			STATUSColumns,
 			NULL,
 			MENU_CONTEXT_STATUS_TABLE);
@@ -219,7 +218,6 @@ _Check_return_ HRESULT DisplayTable(
 			mfcmapiCALL_CREATE_DIALOG,
 			lpTable,
 			LPSPropTagArray(&sptRECEIVECols),
-			NUMRECEIVECOLUMNS,
 			RECEIVEColumns,
 			NULL,
 			MENU_CONTEXT_RECIEVE_FOLDER_TABLE);
@@ -235,7 +233,6 @@ _Check_return_ HRESULT DisplayTable(
 			mfcmapiCALL_CREATE_DIALOG,
 			lpTable,
 			LPSPropTagArray(&sptHIERARCHYCols),
-			NUMHIERARCHYCOLUMNS,
 			HIERARCHYColumns,
 			NULL,
 			MENU_CONTEXT_HIER_TABLE);
@@ -253,7 +250,6 @@ _Check_return_ HRESULT DisplayTable(
 			mfcmapiCALL_CREATE_DIALOG,
 			lpTable,
 			LPSPropTagArray(&sptDEFCols),
-			NUMDEFCOLUMNS,
 			DEFColumns,
 			NULL,
 			MENU_CONTEXT_DEFAULT_TABLE);

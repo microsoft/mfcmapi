@@ -37,13 +37,12 @@ static const SizedSPropTagArray(DEFTAGS_NUM_COLS, sptDEFCols) =
 	PR_OBJECT_TYPE,
 };
 
-static TagNames DEFColumns[] = {
+static vector<TagNames> DEFColumns = {
 	{ deftagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY },
 	{ deftagPR_DISPLAY_NAME, IDS_COLDISPLAYNAME },
 	{ deftagPR_ROW_TYPE, IDS_COLROWTYPE },
 	{ deftagPR_DEPTH, IDS_COLDEPTH }
 };
-#define NUMDEFCOLUMNS _countof(DEFColumns)
 
 // Message store properties and columns
 enum
@@ -81,7 +80,7 @@ static const SizedSPropTagArray(STORETAGS_NUM_COLS, sptSTORECols) =
 	PR_PROVIDER_UID,
 };
 
-static TagNames STOREColumns[] = {
+static vector<TagNames> STOREColumns = {
 	{ storetagPR_DISPLAY_NAME, IDS_COLDISPLAYNAME },
 	{ storetagPR_DEFAULT_STORE, IDS_COLDEFAULTSTORE },
 	{ storetagPR_PROVIDER_DISPLAY, IDS_COLPROVIDERDISPLAY },
@@ -90,7 +89,6 @@ static TagNames STOREColumns[] = {
 	{ storetagPR_OBJECT_TYPE, IDS_COLOBJECTTYPE },
 	{ storetagPR_RESOURCE_TYPE, IDS_COLRESOURCETYPE },
 };
-#define NUMSTORECOLUMNS _countof(STOREColumns)
 
 // Message properties and columns
 enum
@@ -146,7 +144,7 @@ static const SizedSPropTagArray(MSGTAGS_NUM_COLS, sptMSGCols) =
 	PR_CONTENT_FILTER_SCL,
 };
 
-static TagNames MSGColumns[] = {
+static vector<TagNames> MSGColumns = {
 	{ msgtagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY },
 	{ msgtagPR_HASATTACH, IDS_COLATT },
 	{ msgtagPR_SENT_REPRESENTING_NAME, IDS_COLFROM },
@@ -166,8 +164,6 @@ static TagNames MSGColumns[] = {
 	{ msgtagPR_LONGTERM_ENTRYID_FROM_TABLE, IDS_COLLONGTERMEID },
 	{ msgtagPR_CONTENT_FILTER_SCL, IDS_COLCONTENTSCL }
 };
-#define NUMMSGCOLUMNS _countof(MSGColumns)
-
 
 // Address Book entry properties and columns
 enum
@@ -195,7 +191,7 @@ static const SizedSPropTagArray(ABTAGS_NUM_COLS, sptABCols) =
 	PR_ADDRTYPE,
 };
 
-static TagNames ABColumns[] = {
+static vector<TagNames> ABColumns = {
 	{ abtagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY },
 	{ abtagPR_DISPLAY_NAME, IDS_COLDISPLAYNAME },
 	{ abtagPR_EMAIL_ADDRESS, IDS_COLEMAIL },
@@ -203,8 +199,6 @@ static TagNames ABColumns[] = {
 	{ abtagPR_OBJECT_TYPE, IDS_COLOBJECTTYPE },
 	{ abtagPR_ADDRTYPE, IDS_COLADDRTYPE },
 };
-#define NUMABCOLUMNS _countof(ABColumns)
-
 
 // Attachment properties and columns
 enum
@@ -230,14 +224,12 @@ static const SizedSPropTagArray(ATTACHTAGS_NUM_COLS, sptATTACHCols) =
 	PR_OBJECT_TYPE,
 };
 
-static TagNames ATTACHColumns[] = {
+static vector<TagNames> ATTACHColumns = {
 	{ attachtagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY },
 	{ attachtagPR_ATTACH_NUM, IDS_COLNUM },
 	{ attachtagPR_ATTACH_METHOD, IDS_COLMETHOD },
 	{ attachtagPR_ATTACH_FILENAME, IDS_COLFILENAME },
 };
-#define NUMATTACHCOLUMNS _countof(ATTACHColumns)
-
 
 // Mailbox properties and columns
 enum
@@ -293,7 +285,7 @@ static const SizedSPropTagArray(MBXTAGS_NUM_COLS, sptMBXCols) =
 	PR_INTERNET_MDNS,
 };
 
-static TagNames MBXColumns[] = {
+static vector<TagNames> MBXColumns = {
 	{ mbxtagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY },
 	{ mbxtagPR_DISPLAY_NAME, IDS_COLDISPLAYNAME },
 	{ mbxtagPR_EMAIL_ADDRESS, IDS_COLEMAILADDRESS },
@@ -316,8 +308,6 @@ static TagNames MBXColumns[] = {
 	{ mbxtagPR_QUOTA_RECEIVE_THRESHOLD, IDS_COLQUOTARECEIVE },
 	{ mbxtagPR_INTERNET_MDNS, IDS_COLINTERNETMDNS },
 };
-#define NUMMBXCOLUMNS _countof(MBXColumns)
-
 
 // Public Folder properties and columns
 enum
@@ -397,14 +387,12 @@ static const SizedSPropTagArray(PFTAGS_NUM_COLS, sptPFCols) =
 	PR_SORT_LOCALE_ID,
 };
 
-static TagNames PFColumns[] = {
+static vector<TagNames> PFColumns = {
 	{ pftagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY },
 	{ pftagPR_DISPLAY_NAME, IDS_COLDISPLAYNAME },
 	{ pftagPR_CONTENT_COUNT, IDS_COLCONTENTCOUNT },
 	{ pftagPR_MESSAGE_SIZE, IDS_COLMESSAGESIZE }
 };
-#define NUMPFCOLUMNS _countof(PFColumns)
-
 
 // Status table properties and columns
 enum
@@ -442,7 +430,7 @@ static const SizedSPropTagArray(STATUSTAGS_NUM_COLS, sptSTATUSCols) =
 	PR_OBJECT_TYPE,
 };
 
-static TagNames STATUSColumns[] = {
+static vector<TagNames> STATUSColumns = {
 	{ statustagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY },
 	{ statustagPR_DISPLAY_NAME, IDS_COLDISPLAYNAME },
 	{ statustagPR_IDENTITY_DISPLAY, IDS_COLIDENTITY },
@@ -453,8 +441,6 @@ static TagNames STATUSColumns[] = {
 	{ statustagPR_STATUS_CODE, IDS_COLSTATUSCODE },
 	{ statustagPR_OBJECT_TYPE, IDS_COLOBJECTTYPE }
 };
-#define NUMSTATUSCOLUMNS _countof(STATUSColumns)
-
 
 // Receive table properties and columns
 enum
@@ -476,12 +462,10 @@ static const SizedSPropTagArray(RECEIVETAGS_NUM_COLS, sptRECEIVECols) =
 	PR_OBJECT_TYPE,
 };
 
-static TagNames RECEIVEColumns[] = {
+static vector<TagNames> RECEIVEColumns = {
 	{ receivetagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY },
 	{ receivetagPR_MESSAGE_CLASS, IDS_COLMESSAGECLASS }
 };
-#define NUMRECEIVECOLUMNS _countof(RECEIVEColumns)
-
 
 // Hierarchy table properties and columns
 enum
@@ -507,15 +491,13 @@ static const SizedSPropTagArray(HIERARCHYTAGS_NUM_COLS, sptHIERARCHYCols) =
 	PR_SORT_PARENTID,
 };
 
-static TagNames HIERARCHYColumns[] = {
+static vector<TagNames> HIERARCHYColumns = {
 	{ hiertagPR_DISPLAY_NAME, IDS_COLDISPLAYNAME },
 	{ hiertagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY },
 	{ hiertagPR_DEPTH, IDS_COLDEPTH },
 	{ hiertagPR_SORT_POSITION, IDS_COLSORTPOSITION },
 	{ hiertagPR_SORT_PARENTID, IDS_COLSORTPARENTID },
 };
-#define NUMHIERARCHYCOLUMNS _countof(HIERARCHYColumns)
-
 
 // Profile list properties and columns
 enum
@@ -533,12 +515,10 @@ static const SizedSPropTagArray(PROFLISTTAGS_NUM_COLS, sptPROFLISTCols) =
 	PR_DISPLAY_NAME_A,
 };
 
-static TagNames PROFLISTColumns[] = {
+static vector<TagNames> PROFLISTColumns = {
 	{ proflisttagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY },
 	{ proflisttagPR_DISPLAY_NAME, IDS_COLDISPLAYNAME }
 };
-#define NUMPROFLISTCOLUMNS _countof(PROFLISTColumns)
-
 
 // Service list properties and columns
 enum
@@ -556,12 +536,10 @@ static const SizedSPropTagArray(SERVICETAGS_NUM_COLS, sptSERVICECols) =
 	PR_DISPLAY_NAME,
 };
 
-static TagNames SERVICEColumns[] = {
+static vector<TagNames> SERVICEColumns = {
 	{ servicetagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY },
 	{ servicetagPR_DISPLAY_NAME, IDS_COLDISPLAYNAME }
 };
-#define NUMSERVICECOLUMNS _countof(SERVICEColumns)
-
 
 // Provider list properties and columns
 enum
@@ -579,12 +557,10 @@ static const SizedSPropTagArray(PROVIDERTAGS_NUM_COLS, sptPROVIDERCols) =
 	PR_DISPLAY_NAME,
 };
 
-static TagNames PROVIDERColumns[] = {
+static vector<TagNames> PROVIDERColumns = {
 	{ providertagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY },
 	{ providertagPR_DISPLAY_NAME, IDS_COLDISPLAYNAME }
 };
-#define NUMPROVIDERCOLUMNS _countof(PROVIDERColumns)
-
 
 // Rules properties and columns
 enum
@@ -602,12 +578,10 @@ static const SizedSPropTagArray(RULETAGS_NUM_COLS, sptRULECols) =
 	PR_RULE_NAME
 };
 
-static TagNames RULEColumns[] = {
+static vector<TagNames> RULEColumns = {
 	{ ruletagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY },
 	{ ruletagPR_RULE_NAME, IDS_COLRULENAME }
 };
-#define NUMRULECOLUMNS _countof(RULEColumns)
-
 
 // ACL properties and columns
 enum
@@ -625,12 +599,10 @@ static const SizedSPropTagArray(ACLTAGS_NUM_COLS, sptACLCols) =
 	PR_MEMBER_RIGHTS
 };
 
-static TagNames ACLColumns[] = {
+static vector<TagNames> ACLColumns = {
 	{ acltagPR_MEMBER_ID, IDS_COLMEMBERID },
 	{ acltagPR_MEMBER_RIGHTS, IDS_COLMEMBERRIGHTS }
 };
-#define NUMACLCOLUMNS _countof(ACLColumns)
-
 
 // These structures define the columns used in SingleMAPIPropListCtrl
 enum
@@ -647,7 +619,7 @@ enum
 	PROPCOLTAGS_NUM_COLS
 };
 
-static TagNames PropColumns[] = {
+static vector<TagNames> PropColumns = {
 	{ pcPROPEXACTNAMES, IDS_COLPROPERTYNAMES },
 	{ pcPROPPARTIALNAMES, IDS_COLOTHERNAMES },
 	{ pcPROPTAG, IDS_COLTAG },
@@ -658,9 +630,8 @@ static TagNames PropColumns[] = {
 	{ pcPROPNAMEDNAME, IDS_COLNAMED_PROP_NAME },
 	{ pcPROPNAMEDIID, IDS_COLNAMED_PROP_GUID },
 };
-#define NUMPROPCOLUMNS _countof(PropColumns)
 
-static TagNames PropXMLNames[] = {
+static vector<TagNames> PropXMLNames = {
 	{ pcPROPEXACTNAMES, IDS_COLEXACTNAMES },
 	{ pcPROPPARTIALNAMES, IDS_COLPARTIALNAMES },
 	{ pcPROPTAG, IDS_COLTAG },

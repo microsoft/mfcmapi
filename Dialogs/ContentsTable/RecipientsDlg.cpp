@@ -25,7 +25,6 @@ CRecipientsDlg::CRecipientsDlg(
 		mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 		lpMAPITable,
 		LPSPropTagArray(&sptDEFCols),
-		NUMDEFCOLUMNS,
 		DEFColumns,
 		IDR_MENU_RECIPIENTS_POPUP,
 		MENU_CONTEXT_RECIPIENT_TABLE)
@@ -36,7 +35,7 @@ CRecipientsDlg::CRecipientsDlg(
 	m_bIsAB = true; // Recipients are from the AB
 	m_bViewRecipientABEntry = false;
 
-	CreateDialogAndMenu(IDR_MENU_RECIPIENTS);
+	CContentsTableDlg::CreateDialogAndMenu(IDR_MENU_RECIPIENTS);
 }
 
 CRecipientsDlg::~CRecipientsDlg()

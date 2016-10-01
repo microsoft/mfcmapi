@@ -26,8 +26,7 @@ CContentsTableListCtrl::CContentsTableListCtrl(
 	_In_ CWnd* pCreateParent,
 	_In_ CMapiObjects* lpMapiObjects,
 	_In_ LPSPropTagArray sptExtraColumnTags,
-	ULONG ulNumExtraDisplayColumns,
-	_In_count_(ulNumExtraDisplayColumns) TagNames *lpExtraDisplayColumns,
+	_In_ vector<TagNames> lpExtraDisplayColumns,
 	UINT nIDContextMenu,
 	bool bIsAB,
 	_In_ CContentsTableDlg *lpHostDlg)
@@ -51,7 +50,6 @@ CContentsTableListCtrl::CContentsTableListCtrl(
 	if (m_lpHostDlg) m_lpHostDlg->AddRef();
 
 	m_sptExtraColumnTags = sptExtraColumnTags;
-	m_ulNumExtraDisplayColumns = ulNumExtraDisplayColumns;
 	m_lpExtraDisplayColumns = lpExtraDisplayColumns;
 	m_ulDisplayFlags = dfNormal;
 	m_ulDisplayNameColumn = NODISPLAYNAME;
@@ -443,28 +441,26 @@ _Check_return_ HRESULT CContentsTableListCtrl::AddColumns(_In_ LPSPropTagArray l
 	{
 		DebugPrintEx(DBGGeneric, CLASS, L"AddColumns", L"Adding named columns\n");
 		// If we have named columns, put them up front
-		if (m_lpExtraDisplayColumns)
+
+		// Walk through the list of named/extra columns and add them to our header list
+		for (auto extraCol: m_lpExtraDisplayColumns)
 		{
-			// Walk through the list of named/extra columns and add them to our header list
-			for (ULONG ulCurExtraCol = 0; ulCurExtraCol < m_ulNumExtraDisplayColumns; ulCurExtraCol++)
+			auto ulExtraColRowNum = extraCol.ulMatchingTableColumn;
+			auto ulExtraColTag = m_sptExtraColumnTags->aulPropTag[ulExtraColRowNum];
+
+			ULONG ulCurTagArrayRow = 0;
+			if (FindPropInPropTagArray(lpCurColTagArray, ulExtraColTag, &ulCurTagArrayRow))
 			{
-				auto ulExtraColRowNum = m_lpExtraDisplayColumns[ulCurExtraCol].ulMatchingTableColumn;
-				auto ulExtraColTag = m_sptExtraColumnTags->aulPropTag[ulExtraColRowNum];
+				hRes = S_OK;
+				EC_H(AddColumn(
+					extraCol.uidName,
+					ulCurHeaderCol,
+					ulCurTagArrayRow,
+					lpCurColTagArray->aulPropTag[ulCurTagArrayRow]));
+				// Strike out the value in the tag array so we can ignore it later!
+				lpCurColTagArray->aulPropTag[ulCurTagArrayRow] = NULL;
 
-				ULONG ulCurTagArrayRow = 0;
-				if (FindPropInPropTagArray(lpCurColTagArray, ulExtraColTag, &ulCurTagArrayRow))
-				{
-					hRes = S_OK;
-					EC_H(AddColumn(
-						m_lpExtraDisplayColumns[ulCurExtraCol].uidName,
-						ulCurHeaderCol,
-						ulCurTagArrayRow,
-						lpCurColTagArray->aulPropTag[ulCurTagArrayRow]));
-					// Strike out the value in the tag array so we can ignore it later!
-					lpCurColTagArray->aulPropTag[ulCurTagArrayRow] = NULL;
-
-					ulCurHeaderCol++;
-				}
+				ulCurHeaderCol++;
 			}
 		}
 	}

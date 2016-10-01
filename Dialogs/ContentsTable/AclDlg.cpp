@@ -25,7 +25,6 @@ CAclDlg::CAclDlg(_In_ CParentWnd* pParentWnd,
 		mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 		nullptr,
 		LPSPropTagArray(&sptACLCols),
-		NUMACLCOLUMNS,
 		ACLColumns,
 		IDR_MENU_ACL_POPUP,
 		MENU_CONTEXT_ACL_TABLE)

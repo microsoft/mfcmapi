@@ -25,7 +25,6 @@ CFormContainerDlg::CFormContainerDlg(
 		mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 		nullptr,
 		LPSPropTagArray(&sptDEFCols),
-		NUMDEFCOLUMNS,
 		DEFColumns,
 		IDR_MENU_FORM_CONTAINER_POPUP,
 		MENU_CONTEXT_FORM_CONTAINER)
@@ -44,7 +43,8 @@ CFormContainerDlg::CFormContainerDlg(
 			MAPIFreeBuffer(lpszDisplayName);
 		}
 	}
-	CreateDialogAndMenu(IDR_MENU_FORM_CONTAINER);
+
+	CContentsTableDlg::CreateDialogAndMenu(IDR_MENU_FORM_CONTAINER);
 }
 
 CFormContainerDlg::~CFormContainerDlg()

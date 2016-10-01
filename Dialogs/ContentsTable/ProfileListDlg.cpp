@@ -29,14 +29,13 @@ CProfileListDlg::CProfileListDlg(
 		mfcmapiDO_NOT_CALL_CREATE_DIALOG,
 		lpMAPITable,
 		LPSPropTagArray(&sptPROFLISTCols),
-		NUMPROFLISTCOLUMNS,
 		PROFLISTColumns,
 		IDR_MENU_PROFILE_POPUP,
 		MENU_CONTEXT_PROFILE_LIST)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 
-	CreateDialogAndMenu(IDR_MENU_PROFILE);
+	CContentsTableDlg::CreateDialogAndMenu(IDR_MENU_PROFILE);
 
 	// Wipe the reference to the contents table to get around profile table refresh problems
 	if (m_lpContentsTable) m_lpContentsTable->Release();
