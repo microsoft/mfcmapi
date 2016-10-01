@@ -5,7 +5,7 @@
 #include "MAPIFunctions.h"
 #include "MAPIFormFunctions.h"
 #include "ContentsTableListCtrl.h"
-#include "Editor.h"
+#include <Dialogs/Editors/Editor.h>
 #include "InterpretProp2.h"
 #include "MyWinApp.h"
 #include "SortList/ContentsData.h"
@@ -153,10 +153,8 @@ STDMETHODIMP CMyMAPIFormViewer::GetSession(LPMAPISESSION* ppSession)
 		m_lpMAPISession->AddRef();
 		return S_OK;
 	}
-	else
-	{
-		return S_FALSE;
-	}
+
+	return S_FALSE;
 }
 
 STDMETHODIMP CMyMAPIFormViewer::GetStore(LPMDB* ppStore)
@@ -168,10 +166,8 @@ STDMETHODIMP CMyMAPIFormViewer::GetStore(LPMDB* ppStore)
 		m_lpMDB->AddRef();
 		return S_OK;
 	}
-	else
-	{
-		return S_FALSE;
-	}
+
+	return S_FALSE;
 }
 
 STDMETHODIMP CMyMAPIFormViewer::GetFolder(LPMAPIFOLDER* ppFolder)
@@ -183,10 +179,8 @@ STDMETHODIMP CMyMAPIFormViewer::GetFolder(LPMAPIFOLDER* ppFolder)
 		m_lpFolder->AddRef();
 		return S_OK;
 	}
-	else
-	{
-		return S_FALSE;
-	}
+
+	return S_FALSE;
 }
 
 STDMETHODIMP CMyMAPIFormViewer::GetMessage(LPMESSAGE* ppmsg)
@@ -198,10 +192,8 @@ STDMETHODIMP CMyMAPIFormViewer::GetMessage(LPMESSAGE* ppmsg)
 		m_lpMessage->AddRef();
 		return S_OK;
 	}
-	else
-	{
-		return S_FALSE;
-	}
+
+	return S_FALSE;
 }
 
 STDMETHODIMP CMyMAPIFormViewer::GetFormManager(LPMAPIFORMMGR* ppFormMgr)
@@ -226,7 +218,7 @@ STDMETHODIMP CMyMAPIFormViewer::NewMessage(ULONG fComposeInFolder,
 	*ppMessageSite = nullptr;
 	if (ppViewContext) *ppViewContext = nullptr;
 
-	if ((fComposeInFolder == false) || !pFolderFocus)
+	if (fComposeInFolder == false || !pFolderFocus)
 	{
 		pFolderFocus = m_lpFolder;
 	}
@@ -434,7 +426,7 @@ _Check_return_ HRESULT CMyMAPIFormViewer::SetPersist(_In_opt_ LPMAPIFORM lpForm,
 	LPSPropValue lpPropArray = nullptr;
 
 	EC_MAPI(m_lpMessage->GetProps(LPSPropTagArray(&sptaFlags), 0, &cValues, &lpPropArray));
-	auto bComposing = (lpPropArray && (lpPropArray->Value.l & MSGFLAG_UNSENT));
+	auto bComposing = lpPropArray && lpPropArray->Value.l & MSGFLAG_UNSENT;
 	MAPIFreeBuffer(lpPropArray);
 
 	if (bComposing && !RegKeys[regkeyALLOW_PERSIST_CACHE].ulCurDWORD)

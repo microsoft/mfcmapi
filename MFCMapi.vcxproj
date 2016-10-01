@@ -877,25 +877,25 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="ABContDlg.h">
+    <ClInclude Include="Dialogs\HierarchyTable\ABContDlg.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="ABDlg.h">
+    <ClInclude Include="Dialogs\ContentsTable\ABDlg.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="AboutDlg.h">
+    <ClInclude Include="Dialogs\AboutDlg.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="AclDlg.h">
+    <ClInclude Include="Dialogs\ContentsTable\AclDlg.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
@@ -908,13 +908,13 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Property\Attributes.h" />
-    <ClInclude Include="AttachmentsDlg.h">
+    <ClInclude Include="Dialogs\ContentsTable\AttachmentsDlg.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="BaseDialog.h">
+    <ClInclude Include="Dialogs\BaseDialog.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
@@ -923,7 +923,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="DoubleBuffer.h" />
     <ClInclude Include="GlobalCache.h" />
     <ClInclude Include="ColumnTags.h" />
-    <ClInclude Include="ContentsTableDlg.h">
+    <ClInclude Include="Dialogs\ContentsTable\ContentsTableDlg.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
@@ -935,20 +935,20 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="DbgView.h">
+    <ClInclude Include="Dialogs\Editors\DbgView.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="Dialog.h">
+    <ClInclude Include="Dialogs\Dialog.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="DumpStore.h" />
-    <ClInclude Include="Editor.h">
+    <ClInclude Include="Dialogs\Editors\Editor.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
@@ -972,13 +972,13 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Flags.h" />
-    <ClInclude Include="FolderDlg.h">
+    <ClInclude Include="Dialogs\ContentsTable\FolderDlg.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="FormContainerDlg.h">
+    <ClInclude Include="Dialogs\ContentsTable\FormContainerDlg.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
@@ -987,13 +987,13 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="GenTagArray.h" />
     <ClInclude Include="GUIDArray.h" />
     <ClInclude Include="Guids.h" />
-    <ClInclude Include="HexEditor.h">
+    <ClInclude Include="Dialogs\Editors\HexEditor.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="HierarchyTableDlg.h">
+    <ClInclude Include="Dialogs\HierarchyTable\HierarchyTableDlg.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
@@ -1008,13 +1008,13 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClInclude Include="ImportProcs.h" />
     <ClInclude Include="InterpretProp.h" />
     <ClInclude Include="InterpretProp2.h" />
-    <ClInclude Include="MailboxTableDlg.h">
+    <ClInclude Include="Dialogs\ContentsTable\MailboxTableDlg.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="MainDlg.h">
+    <ClInclude Include="Dialogs\ContentsTable\MainDlg.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
@@ -1225,7 +1225,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="QSSpecialFolders.h">
+    <ClInclude Include="Dialogs\Editors\QSSpecialFolders.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
@@ -1237,7 +1237,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="SingleRecipientDialog.h">
+    <ClInclude Include="Dialogs\SingleRecipientDialog.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
@@ -1503,13 +1503,13 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </CustomBuildStep>
-    <ClInclude Include="MsgServiceTableDlg.h">
+    <ClInclude Include="Dialogs\ContentsTable\MsgServiceTableDlg.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="MsgStoreDlg.h">
+    <ClInclude Include="Dialogs\HierarchyTable\MsgStoreDlg.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
@@ -1530,7 +1530,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     </ClInclude>
     <ClInclude Include="NamedPropCache.h" />
     <ClInclude Include="nameidarray.h" />
-    <ClInclude Include="Options.h">
+    <ClInclude Include="Dialogs\Editors\Options.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
@@ -1542,7 +1542,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="ProfileListDlg.h">
+    <ClInclude Include="Dialogs\ContentsTable\ProfileListDlg.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
@@ -1554,26 +1554,26 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="PropertyEditor.h">
+    <ClInclude Include="Dialogs\Editors\PropertyEditor.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="PropertyTagEditor.h">
+    <ClInclude Include="Dialogs\Editors\PropertyTagEditor.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="PropTypeArray.h" />
-    <ClInclude Include="ProviderTableDlg.h">
+    <ClInclude Include="Dialogs\ContentsTable\ProviderTableDlg.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="PublicFolderTableDlg.h">
+    <ClInclude Include="Dialogs\ContentsTable\PublicFolderTableDlg.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
@@ -1585,7 +1585,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="RecipientsDlg.h">
+    <ClInclude Include="Dialogs\ContentsTable\RecipientsDlg.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
@@ -1593,7 +1593,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     </ClInclude>
     <ClInclude Include="Registry.h" />
     <ClInclude Include="Resource.h" />
-    <ClInclude Include="RestrictEditor.h">
+    <ClInclude Include="Dialogs\Editors\RestrictEditor.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
@@ -1605,13 +1605,13 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="RulesDlg.h">
+    <ClInclude Include="Dialogs\ContentsTable\RulesDlg.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="SingleMessageDialog.h">
+    <ClInclude Include="Dialogs\SingleMessageDialog.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
@@ -1638,13 +1638,13 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="StdAfx.h" />
-    <ClInclude Include="StreamEditor.h">
+    <ClInclude Include="Dialogs\Editors\StreamEditor.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="TagArrayEditor.h">
+    <ClInclude Include="Dialogs\Editors\TagArrayEditor.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
@@ -1687,25 +1687,25 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <None Include="Issues.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ABContDlg.cpp">
+    <ClCompile Include="Dialogs\HierarchyTable\ABContDlg.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="AbDlg.cpp">
+    <ClCompile Include="Dialogs\ContentsTable\AbDlg.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="AboutDlg.cpp">
+    <ClCompile Include="Dialogs\AboutDlg.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="AclDlg.cpp">
+    <ClCompile Include="Dialogs\ContentsTable\AclDlg.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
@@ -1718,14 +1718,14 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="AttachmentsDlg.cpp">
+    <ClCompile Include="Dialogs\ContentsTable\AttachmentsDlg.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Property\Attributes.cpp" />
-    <ClCompile Include="BaseDialog.cpp">
+    <ClCompile Include="Dialogs\BaseDialog.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
@@ -1733,7 +1733,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     </ClCompile>
     <ClCompile Include="DoubleBuffer.cpp" />
     <ClCompile Include="GlobalCache.cpp" />
-    <ClCompile Include="ContentsTableDlg.cpp">
+    <ClCompile Include="Dialogs\ContentsTable\ContentsTableDlg.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
@@ -1745,20 +1745,20 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="DbgView.cpp">
+    <ClCompile Include="Dialogs\Editors\DbgView.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="Dialog.cpp">
+    <ClCompile Include="Dialogs\Dialog.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="DumpStore.cpp" />
-    <ClCompile Include="Editor.cpp">
+    <ClCompile Include="Dialogs\Editors\Editor.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
@@ -1778,26 +1778,26 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="FolderDlg.cpp">
+    <ClCompile Include="Dialogs\ContentsTable\FolderDlg.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="FormContainerDlg.cpp">
+    <ClCompile Include="Dialogs\ContentsTable\FormContainerDlg.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Guids.cpp" />
-    <ClCompile Include="HexEditor.cpp">
+    <ClCompile Include="Dialogs\Editors\HexEditor.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="HierarchyTableDlg.cpp">
+    <ClCompile Include="Dialogs\HierarchyTable\HierarchyTableDlg.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
@@ -1812,13 +1812,13 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     <ClCompile Include="ImportProcs.cpp" />
     <ClCompile Include="InterpretProp.cpp" />
     <ClCompile Include="InterpretProp2.cpp" />
-    <ClCompile Include="MailboxTableDlg.cpp">
+    <ClCompile Include="Dialogs\ContentsTable\MailboxTableDlg.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="MainDlg.cpp">
+    <ClCompile Include="Dialogs\ContentsTable\MainDlg.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
@@ -2032,13 +2032,13 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="MsgServiceTableDlg.cpp">
+    <ClCompile Include="Dialogs\ContentsTable\MsgServiceTableDlg.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="MsgStoreDlg.cpp">
+    <ClCompile Include="Dialogs\HierarchyTable\MsgStoreDlg.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
@@ -2058,7 +2058,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="NamedPropCache.cpp" />
-    <ClCompile Include="Options.cpp">
+    <ClCompile Include="Dialogs\Editors\Options.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
@@ -2080,37 +2080,37 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="ProfileListDlg.cpp">
+    <ClCompile Include="Dialogs\ContentsTable\ProfileListDlg.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="PropertyEditor.cpp">
+    <ClCompile Include="Dialogs\Editors\PropertyEditor.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="PropertyTagEditor.cpp">
+    <ClCompile Include="Dialogs\Editors\PropertyTagEditor.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="ProviderTableDlg.cpp">
+    <ClCompile Include="Dialogs\ContentsTable\ProviderTableDlg.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="PublicFolderTableDlg.cpp">
+    <ClCompile Include="Dialogs\ContentsTable\PublicFolderTableDlg.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="QSSpecialFolders.cpp">
+    <ClCompile Include="Dialogs\Editors\QSSpecialFolders.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
@@ -2122,14 +2122,14 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="RecipientsDlg.cpp">
+    <ClCompile Include="Dialogs\ContentsTable\RecipientsDlg.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Registry.cpp" />
-    <ClCompile Include="RestrictEditor.cpp">
+    <ClCompile Include="Dialogs\Editors\RestrictEditor.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
@@ -2147,7 +2147,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="RulesDlg.cpp">
+    <ClCompile Include="Dialogs\ContentsTable\RulesDlg.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
@@ -2159,13 +2159,13 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="SingleMessageDialog.cpp">
+    <ClCompile Include="Dialogs\SingleMessageDialog.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="SingleRecipientDialog.cpp">
+    <ClCompile Include="Dialogs\SingleRecipientDialog.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
@@ -2227,7 +2227,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="StreamEditor.cpp">
+    <ClCompile Include="Dialogs\Editors\StreamEditor.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
@@ -2235,7 +2235,7 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
     </ClCompile>
     <ClCompile Include="String.cpp" />
     <ClCompile Include="StubUtils.cpp" />
-    <ClCompile Include="TagArrayEditor.cpp">
+    <ClCompile Include="Dialogs\Editors\TagArrayEditor.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>

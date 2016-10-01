@@ -3,9 +3,9 @@
 #include "stdafx.h"
 #include "MyWinApp.h"
 #include "ParentWnd.h"
-#include "MainDlg.h"
 #include "MapiObjects.h"
 #include "ImportProcs.h"
+#include "Dialogs/ContentsTable/MainDlg.h"
 
 // The one and only CMyWinApp object
 CMyWinApp theApp;

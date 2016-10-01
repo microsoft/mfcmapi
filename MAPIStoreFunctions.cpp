@@ -4,7 +4,7 @@
 #include "MAPIStoreFunctions.h"
 #include "MAPIFunctions.h"
 #include "String.h"
-#include "Editor.h"
+#include <Dialogs/Editors/Editor.h>
 #include "Guids.h"
 #include "InterpretProp2.h"
 #include "ExtraPropTags.h"

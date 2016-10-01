@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "ListPane.h"
-#include "Editor.h"
+#include <Dialogs/Editors/Editor.h>
 #include "UIFunctions.h"
 
 ViewPane* CreateListPane(UINT uidLabel, bool bAllowSort, bool bReadOnly, LPVOID lpEdit)

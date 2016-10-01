@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Error.h"
-#include "Editor.h"
+#include <Dialogs/Editors/Editor.h>
 #include "ErrorArray.h"
 
 void LogFunctionCall(

@@ -1,7 +1,7 @@
 #pragma once
 // MFCUtilityFunctions.h : Common functions for MFC MAPI
 
-#include "BaseDialog.h"
+#include <Dialogs/BaseDialog.h>
 #include "ParentWnd.h"
 #include "MAPIObjects.h"
 

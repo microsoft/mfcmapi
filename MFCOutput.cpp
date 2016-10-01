@@ -6,11 +6,11 @@
 #include "String.h"
 #include "InterpretProp.h"
 #include "InterpretProp2.h"
-#include "DbgView.h"
 #include "SmartView/SmartView.h"
 #include "ColumnTags.h"
 #include "Property/ParseProperty.h"
 #include <algorithm>
+#include "Dialogs/Editors/DbgView.h"
 
 #ifdef CHECKFORMATPARAMS
 #undef Outputf
