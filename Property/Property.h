@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Attributes.h"
 
 class Parsing

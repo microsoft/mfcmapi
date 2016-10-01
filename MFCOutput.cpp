@@ -9,7 +9,7 @@
 #include "DbgView.h"
 #include "SmartView/SmartView.h"
 #include "ColumnTags.h"
-#include "ParseProperty.h"
+#include "Property/ParseProperty.h"
 #include <algorithm>
 
 #ifdef CHECKFORMATPARAMS

@@ -1,7 +1,6 @@
 #include "StdAfx.h"
 #include "Property.h"
 #include "ColumnTags.h"
-#include "String.h"
 
 wstring cdataopen = L"<![CDATA[";
 wstring cdataclose = L"]]>";
