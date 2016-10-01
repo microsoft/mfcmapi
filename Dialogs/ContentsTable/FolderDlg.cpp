@@ -736,13 +736,11 @@ void CFolderDlg::OnDeleteSelectedItem()
 void CFolderDlg::OnGetPropsUsingLongTermEID()
 {
 	auto hRes = S_OK;
-	auto iItem = -1;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return;
 
-	auto lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
-
+	auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
 	if (lpListData && lpListData->Contents())
 	{
 		auto lpMessageEID = lpListData->Contents()->m_lpLongtermID;

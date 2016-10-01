@@ -728,9 +728,6 @@ void CMainDlg::OnOpenOtherUsersMailboxFromGAL()
 
 void CMainDlg::OnOpenSelectedStoreDeletedFolders()
 {
-	auto hRes = S_OK;
-	LPMDB lpMDB = nullptr;
-	auto iItem = -1;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpMapiObjects || !m_lpContentsTableListCtrl) return;
@@ -738,14 +735,16 @@ void CMainDlg::OnOpenSelectedStoreDeletedFolders()
 	auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
-	do
+	auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
+	for (auto lpListData : items)
 	{
-		auto lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 		if (lpListData && lpListData->Contents())
 		{
 			auto lpItemEID = lpListData->Contents()->m_lpEntryID;
 			if (lpItemEID)
 			{
+				auto hRes = S_OK;
+				LPMDB lpMDB = nullptr;
 				EC_H(CallOpenMsgStore(
 					lpMAPISession,
 					reinterpret_cast<ULONG_PTR>(m_hWnd),
@@ -766,27 +765,22 @@ void CMainDlg::OnOpenSelectedStoreDeletedFolders()
 				}
 			}
 		}
-
-		hRes = S_OK;
-	} while (iItem != -1);
-
-	if (lpMDB) lpMDB->Release();
+	}
 }
 
 void CMainDlg::OnDumpStoreContents()
 {
 	auto hRes = S_OK;
 	LPMDB lpMDB = nullptr;
-	auto iItem = -1;
 
 	if (!m_lpContentsTableListCtrl || !m_lpMapiObjects) return;
 
 	auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
-	do
+	auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
+	for (auto lpListData : items)
 	{
-		auto lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 		if (lpListData && lpListData->Contents())
 		{
 			auto lpItemEID = lpListData->Contents()->m_lpEntryID;
@@ -818,7 +812,7 @@ void CMainDlg::OnDumpStoreContents()
 
 			hRes = S_OK;
 		}
-	} while (iItem != -1);
+	}
 }
 
 void CMainDlg::OnDumpServerContents()
@@ -1454,7 +1448,7 @@ void CMainDlg::OnSetDefaultStore()
 	auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
-	auto lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(nullptr);
+	auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
 	if (lpListData && lpListData->Contents())
 	{
 		auto lpItemEID = lpListData->Contents()->m_lpEntryID;
@@ -1808,7 +1802,7 @@ void CMainDlg::OnComputeGivenStoreHash()
 	auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
-	auto lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(nullptr);
+	auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
 	if (lpListData && lpListData->Contents())
 	{
 		auto lpItemEID = lpListData->Contents()->m_lpEntryID;

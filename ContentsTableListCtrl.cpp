@@ -1111,6 +1111,53 @@ _Check_return_ HRESULT CContentsTableListCtrl::GetSelectedItemEIDs(_Deref_out_op
 	return hRes;
 }
 
+_Check_return_ vector<int> CContentsTableListCtrl::GetSelectedItemNums() const
+{
+	auto iItem = -1;
+	vector<int> iItems;
+	do
+	{
+		iItem = GetNextItem(
+			iItem,
+			LVNI_SELECTED);
+		if (iItem != -1)
+		{
+			iItems.push_back(iItem);
+			DebugPrintEx(DBGGeneric, CLASS, L"GetSelectedItemNums", L"iItem: 0x%X\n", iItem);
+		}
+	} while (iItem != -1);
+
+	return iItems;
+}
+
+_Check_return_ vector<SortListData*> CContentsTableListCtrl::GetSelectedItemData() const
+{
+	auto iItem = -1;
+	vector<SortListData*> items;
+	do
+	{
+		iItem = GetNextItem(
+			iItem,
+			LVNI_SELECTED);
+		if (iItem != -1)
+		{
+			items.push_back(reinterpret_cast<SortListData*>(GetItemData(iItem)));
+		}
+	} while (iItem != -1);
+
+	return items;
+}
+
+_Check_return_ SortListData* CContentsTableListCtrl::GetFirstSelectedItemData() const
+{
+	auto iItem = GetNextItem(
+		-1,
+		LVNI_SELECTED);
+	if (-1 == iItem) return nullptr;
+
+	return reinterpret_cast<SortListData*>(GetItemData(iItem));
+}
+
 // Pass iCurItem as -1 to get the primary selected item.
 // Call again with the previous iCurItem to get the next one.
 // Stop calling when iCurItem = -1 and/or lppProp is NULL
@@ -1142,12 +1189,8 @@ _Check_return_ int CContentsTableListCtrl::GetNextSelectedItemNum(
 	return iItem;
 }
 
-_Check_return_ SortListData* CContentsTableListCtrl::GetNextSelectedItemData(_Inout_opt_ int *iCurItem) const
+_Check_return_ SortListData* CContentsTableListCtrl::GetSortListData(int iItem) const
 {
-	int iItem;
-
-	iItem = GetNextSelectedItemNum(iCurItem);
-	if (-1 == iItem) return nullptr;
 	return reinterpret_cast<SortListData*>(GetItemData(iItem));
 }
 

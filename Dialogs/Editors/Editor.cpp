@@ -1217,7 +1217,7 @@ _Check_return_ SortListData* CEditor::GetListRowData(ULONG iControl, int iRow) c
 {
 	if (!IsValidList(iControl)) return nullptr;
 
-	return static_cast<SortListData*>(m_lpControls[iControl].lpListPane->GetItemData(iRow));
+	return m_lpControls[iControl].lpListPane->GetItemData(iRow);
 }
 
 _Check_return_ bool CEditor::IsDirty(ULONG iControl) const

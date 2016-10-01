@@ -1,5 +1,5 @@
 #pragma once
-#include "SortList\SortListCtrl.h"
+#include "SortList/SortListCtrl.h"
 #include "enums.h"
 
 class CMapiObjects;
@@ -27,8 +27,12 @@ public:
 
 	// Selected item accessors
 	_Check_return_ HRESULT GetSelectedItemEIDs(_Deref_out_opt_ LPENTRYLIST* lppEntryIDs) const;
-	_Check_return_ SortListData* GetNextSelectedItemData(_Inout_opt_ int* iCurItem) const;
+	// TODO: incorporate this everywhere
+	_Check_return_ SortListData* GetSortListData(int iItem) const;
 	_Check_return_ HRESULT OpenNextSelectedItemProp(_Inout_opt_ int* iCurItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppProp) const;
+	_Check_return_ vector<int> GetSelectedItemNums() const;
+	_Check_return_ vector<SortListData*> GetSelectedItemData() const;
+	_Check_return_ SortListData* GetFirstSelectedItemData() const;
 
 	_Check_return_ HRESULT ApplyRestriction() const;
 	_Check_return_ HRESULT DefaultOpenItemProp(int iItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppProp) const;

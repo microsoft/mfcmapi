@@ -95,11 +95,10 @@ void CMailboxTableDlg::DisplayItem(ULONG ulFlags)
 	if (lpSourceMDB)
 	{
 		LPMDB lpNewMDB = nullptr;
-		auto iItem = -1;
-		do
+		auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
+		for (auto lpListData : items)
 		{
 			hRes = S_OK;
-			auto lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 			if (lpListData && lpListData->Contents())
 			{
 				if (!lpListData->Contents()->m_szDN.empty())
@@ -125,8 +124,7 @@ void CMailboxTableDlg::DisplayItem(ULONG ulFlags)
 					}
 				}
 			}
-		} while (iItem != -1);
-
+		}
 	}
 
 	if (lpGUIDMDB) lpGUIDMDB->Release();

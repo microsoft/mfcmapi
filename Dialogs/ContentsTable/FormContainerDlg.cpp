@@ -175,15 +175,13 @@ _Check_return_ HRESULT CFormContainerDlg::OpenItemProp(int iSelectedItem, __mfcm
 
 void CFormContainerDlg::OnDeleteSelectedItem()
 {
-	auto iItem = -1;
-
 	if (!m_lpFormContainer || !m_lpContentsTableListCtrl) return;
 
-	do
+	auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
+	for (auto lpListData : items)
 	{
 		auto hRes = S_OK;
 		// Find the highlighted item AttachNum
-		auto lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 		if (!lpListData) break;
 
 		auto lpProp = PpropFindProp(
@@ -201,7 +199,7 @@ void CFormContainerDlg::OnDeleteSelectedItem()
 			EC_MAPI(m_lpFormContainer->RemoveForm(
 				lpProp->Value.lpszA));
 		}
-	} while (iItem != -1);
+	}
 
 	OnRefreshView(); // Update the view since we don't have notifications here.
 }
