@@ -852,7 +852,7 @@ void CMsgStoreDlg::OnDeleteSelectedItem()
 	auto hItem = m_lpHierarchyTableTreeCtrl->GetSelectedItem();
 	if (hItem)
 	{
-		auto lpData = reinterpret_cast<SortListData*>(m_lpHierarchyTableTreeCtrl->GetItemData(hItem));
+		auto lpData = m_lpHierarchyTableTreeCtrl->GetSortListData(hItem);
 		if (lpData && lpData->Node()) lpItemEID = lpData->Node()->m_lpEntryID;
 	}
 

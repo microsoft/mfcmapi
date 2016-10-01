@@ -161,7 +161,7 @@ _Check_return_ bool CFolderDlg::MultiSelectSimple(WORD wMenuSelect)
 				LVNI_SELECTED);
 			while (-1 != iItem)
 			{
-				auto lpData = reinterpret_cast<SortListData*>(m_lpContentsTableListCtrl->GetItemData(iItem));
+				auto lpData = m_lpContentsTableListCtrl->GetSortListData(iItem);
 				WC_H((this->*lpFunc)(iItem, lpData));
 				iItem = m_lpContentsTableListCtrl->GetNextItem(
 					iItem,
@@ -1989,7 +1989,7 @@ void CFolderDlg::OnSetMessageStatus()
 			LVNI_SELECTED);
 		while (iItem != -1)
 		{
-			auto lpListData = reinterpret_cast<SortListData*>(m_lpContentsTableListCtrl->GetItemData(iItem));
+			auto lpListData = m_lpContentsTableListCtrl->GetSortListData(iItem);
 			if (lpListData && lpListData->Contents())
 			{
 				auto lpMessageEID = lpListData->Contents()->m_lpEntryID;

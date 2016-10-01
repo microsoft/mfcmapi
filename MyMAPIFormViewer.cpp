@@ -689,8 +689,7 @@ _Check_return_ HRESULT CMyMAPIFormViewer::GetNextMessage(
 	}
 	else
 	{
-		auto  lpData = reinterpret_cast<SortListData*>(m_lpContentsTableListCtrl->GetItemData(*piNewItem));
-
+		auto  lpData = m_lpContentsTableListCtrl->GetSortListData(*piNewItem);
 		if (lpData && lpData->Contents())
 		{
 			auto lpEID = lpData->Contents()->m_lpEntryID;

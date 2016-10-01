@@ -986,7 +986,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::RefreshItem(int iRow, _In_ LPSRow
 
 	if (bItemExists)
 	{
-		lpData = reinterpret_cast<SortListData*>(GetItemData(iRow));
+		lpData = GetSortListData(iRow);
 	}
 	else
 	{
@@ -1086,7 +1086,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::GetSelectedItemEIDs(_Deref_out_op
 					LVNI_SELECTED);
 				if (-1 != iSelectedItem)
 				{
-					auto lpData = reinterpret_cast<SortListData*>(GetItemData(iSelectedItem));
+					auto lpData = GetSortListData(iSelectedItem);
 					if (lpData && lpData->Contents() && lpData->Contents()->m_lpEntryID)
 					{
 						lpTempList->lpbin[iArrayPos].cb = lpData->Contents()->m_lpEntryID->cb;
@@ -1141,7 +1141,7 @@ _Check_return_ vector<SortListData*> CContentsTableListCtrl::GetSelectedItemData
 			LVNI_SELECTED);
 		if (iItem != -1)
 		{
-			items.push_back(reinterpret_cast<SortListData*>(GetItemData(iItem)));
+			items.push_back(GetSortListData(iItem));
 		}
 	} while (iItem != -1);
 
@@ -1155,7 +1155,7 @@ _Check_return_ SortListData* CContentsTableListCtrl::GetFirstSelectedItemData() 
 		LVNI_SELECTED);
 	if (-1 == iItem) return nullptr;
 
-	return reinterpret_cast<SortListData*>(GetItemData(iItem));
+	return GetSortListData(iItem);
 }
 
 // Pass iCurItem as -1 to get the primary selected item.
@@ -1228,9 +1228,9 @@ _Check_return_ HRESULT CContentsTableListCtrl::DefaultOpenItemProp(
 
 	DebugPrintEx(DBGGeneric, CLASS, L"DefaultOpenItemProp", L"iItem = %d, bModify = %d, m_ulContainerType = 0x%X\n", iItem, bModify, m_ulContainerType);
 
-	auto lpListData = reinterpret_cast<SortListData*>(GetItemData(iItem));
-
+	auto lpListData = GetSortListData(iItem);
 	if (!lpListData || !lpListData->Contents()) return S_OK;
+
 	auto lpEID = lpListData->Contents()->m_lpEntryID;
 	if (!lpEID || lpEID->cb == 0) return S_OK;
 
@@ -1362,7 +1362,7 @@ void CContentsTableListCtrl::OnItemChanged(_In_ NMHDR* pNMHDR, _In_ LRESULT* pRe
 			auto hRes = S_OK;
 
 			// go get the original row for display in the prop list control
-			lpData = reinterpret_cast<SortListData*>(GetItemData(pNMListView->iItem));
+			lpData = GetSortListData(pNMListView->iItem);
 			ULONG cValues = 0;
 			LPSPropValue lpProps = nullptr;
 			if (lpData)
@@ -1515,7 +1515,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::DoExpandCollapse()
 	// nothing selected, no work done
 	if (-1 == iItem) return S_FALSE;
 
-	auto lpData = reinterpret_cast<SortListData*>(GetItemData(iItem));
+	auto lpData = GetSortListData(iItem);
 
 	// No lpData or wrong type of row - no work done
 	if (!lpData ||
@@ -1771,7 +1771,7 @@ _Check_return_ int CContentsTableListCtrl::FindRow(_In_ LPSBinary lpInstance) co
 	auto iItem = 0;
 	for (iItem = 0; iItem < GetItemCount(); iItem++)
 	{
-		auto lpListData = reinterpret_cast<SortListData*>(GetItemData(iItem));
+		auto lpListData = GetSortListData(iItem);
 		if (lpListData && lpListData->Contents())
 		{
 			auto lpCurInstance = lpListData->Contents()->m_lpInstanceKey;
