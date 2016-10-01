@@ -109,7 +109,6 @@ void CRecipientsDlg::OnDeleteSelectedItem()
 
 	if (!m_lpMessage || !m_lpContentsTableListCtrl) return;
 
-	auto iItem = -1;
 	LPADRLIST lpAdrList = nullptr;
 
 	int iNumSelected = m_lpContentsTableListCtrl->GetSelectedCount();
@@ -139,7 +138,7 @@ void CRecipientsDlg::OnDeleteSelectedItem()
 					lpProp->ulPropTag = PR_ROWID;
 					lpProp->dwAlignPad = 0;
 					// Find the highlighted item AttachNum
-					auto lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
+					auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
 					if (lpListData && lpListData->Contents())
 					{
 						lpProp->Value.l = lpListData->Contents()->m_ulRowID;

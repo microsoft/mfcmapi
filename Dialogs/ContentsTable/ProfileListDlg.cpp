@@ -130,14 +130,12 @@ void CProfileListDlg::OnRefreshView()
 
 void CProfileListDlg::OnDisplayItem()
 {
-	auto iItem = -1;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpContentsTableListCtrl) return;
-
-	do
+	auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
+	for (auto lpListData : items)
 	{
-		auto lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 		if (!lpListData || !lpListData->Contents()) break;
 
 		if (!lpListData->Contents()->m_szProfileDisplayName.empty())
@@ -147,7 +145,7 @@ void CProfileListDlg::OnDisplayItem()
 				m_lpMapiObjects,
 				lpListData->Contents()->m_szProfileDisplayName);
 		}
-	} while (iItem != -1);
+	}
 }
 
 void CProfileListDlg::OnLaunchProfileWizard()
@@ -192,7 +190,6 @@ void CProfileListDlg::OnRemoveServicesFromMAPISVC()
 void CProfileListDlg::OnAddExchangeToProfile()
 {
 	auto hRes = S_OK;
-	auto iItem = -1;
 
 	if (!m_lpContentsTableListCtrl) return;
 
@@ -216,11 +213,9 @@ void CProfileListDlg::OnAddExchangeToProfile()
 
 		if (!szServer.empty() && !szMailbox.empty())
 		{
-			do
+			auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
+			for (auto lpListData : items)
 			{
-				hRes = S_OK;
-				// Find the highlighted item
-				auto lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 				if (!lpListData || !lpListData->Contents()) break;
 
 				DebugPrintEx(DBGGeneric, CLASS,
@@ -235,15 +230,13 @@ void CProfileListDlg::OnAddExchangeToProfile()
 					szServer,
 					szMailbox,
 					lpListData->Contents()->m_szProfileDisplayName));
-			} while (iItem != -1);
+			}
 		}
 	}
 }
 
 void CProfileListDlg::AddPSTToProfile(bool bUnicodePST)
 {
-	auto iItem = -1;
-
 	if (!m_lpContentsTableListCtrl) return;
 
 	auto file = CFileDialogExW::OpenFile(
@@ -254,13 +247,12 @@ void CProfileListDlg::AddPSTToProfile(bool bUnicodePST)
 		this);
 	if (!file.empty())
 	{
-		do
+		auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
+		for (auto lpListData : items)
 		{
-			auto hRes = S_OK;
-			// Find the highlighted item
-			auto lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 			if (!lpListData || !lpListData->Contents()) break;
 
+			auto hRes = S_OK;
 			CEditor MyFile(
 				this,
 				IDS_PSTPATH,
@@ -289,7 +281,7 @@ void CProfileListDlg::AddPSTToProfile(bool bUnicodePST)
 				CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 				EC_H(HrAddPSTToProfile(reinterpret_cast<ULONG_PTR>(m_hWnd), bUnicodePST, szPath, lpListData->Contents()->m_szProfileDisplayName, bPasswordSet, szPwd));
 			}
-		} while (iItem != -1);
+		}
 	}
 }
 
@@ -306,7 +298,6 @@ void CProfileListDlg::OnAddUnicodePSTToProfile()
 void CProfileListDlg::OnAddServiceToProfile()
 {
 	auto hRes = S_OK;
-	auto iItem = -1;
 
 	if (!m_lpContentsTableListCtrl) return;
 
@@ -325,17 +316,16 @@ void CProfileListDlg::OnAddServiceToProfile()
 	{
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 		auto szService = wstringTostring(MyData.GetStringW(0));
-		do
+		auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
+		for (auto lpListData : items)
 		{
 			hRes = S_OK;
-			// Find the highlighted item
-			auto lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 			if (!lpListData || !lpListData->Contents()) break;
 
 			DebugPrintEx(DBGGeneric, CLASS, L"OnAddServiceToProfile", L"Adding service \"%hs\" to profile \"%hs\"\n", szService.c_str(), lpListData->Contents()->m_szProfileDisplayName.c_str());
 
 			EC_H(HrAddServiceToProfile(szService, reinterpret_cast<ULONG_PTR>(m_hWnd), MyData.GetCheck(1) ? SERVICE_UI_ALWAYS : 0, 0, nullptr, lpListData->Contents()->m_szProfileDisplayName));
-		} while (iItem != -1);
+		}
 	}
 }
 
@@ -372,38 +362,36 @@ void CProfileListDlg::OnCreateProfile()
 
 void CProfileListDlg::OnDeleteSelectedItem()
 {
-	auto iItem = -1;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpContentsTableListCtrl) return;
 
-	do
+	auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
+	for (auto lpListData : items)
 	{
 		auto hRes = S_OK;
 		// Find the highlighted item AttachNum
-		auto lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 		if (!lpListData || !lpListData->Contents()) break;
 
 		DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L"Deleting profile \"%hs\"\n", lpListData->Contents()->m_szProfileDisplayName.c_str());
 
 		EC_H(HrRemoveProfile(lpListData->Contents()->m_szProfileDisplayName));
-	} while (iItem != -1);
+	}
 
 	OnRefreshView(); // Update the view since we don't have notifications here.
 }
 
 void CProfileListDlg::OnGetProfileServiceVersion()
 {
-	auto iItem = -1;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpContentsTableListCtrl) return;
 
-	do
+	auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
+	for (auto lpListData : items)
 	{
 		auto hRes = S_OK;
 		// Find the highlighted item AttachNum
-		auto lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
 		if (!lpListData || !lpListData->Contents()) break;
 
 		DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnGetProfileServiceVersion", L"Getting profile service version for \"%hs\"\n", lpListData->Contents()->m_szProfileDisplayName.c_str());
@@ -471,19 +459,18 @@ void CProfileListDlg::OnGetProfileServiceVersion()
 		}
 
 		WC_H(MyData.DisplayDialog());
-	} while (iItem != -1);
+	}
 }
 
 void CProfileListDlg::OnSetDefaultProfile()
 {
 	auto hRes = S_OK;
-	auto iItem = -1;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (!m_lpContentsTableListCtrl) return;
 
 	// Find the highlighted item AttachNum
-	auto lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
+	auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
 	if (lpListData || !lpListData->Contents())
 	{
 		DebugPrintEx(DBGGeneric, CLASS, L"OnSetDefaultProfile", L"Setting profile \"%hs\" as default\n", lpListData->Contents()->m_szProfileDisplayName.c_str());
@@ -523,14 +510,13 @@ void CProfileListDlg::OnOpenProfileByName()
 
 void CProfileListDlg::HandleCopy()
 {
-	auto iItem = -1;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	DebugPrintEx(DBGGeneric, CLASS, L"HandleCopy", L"\n");
 	if (!m_lpContentsTableListCtrl) return;
 
 	// Find the highlighted profile
-	auto lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
+	auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
 	if (lpListData || !lpListData->Contents())
 	{
 		CGlobalCache::getInstance().SetProfileToCopy(lpListData->Contents()->m_szProfileDisplayName);
@@ -578,8 +564,7 @@ void CProfileListDlg::OnExportProfile()
 	if (!m_lpContentsTableListCtrl) return;
 
 	// Find the highlighted profile
-	auto iItem = -1;
-	auto lpListData = m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem);
+	auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
 	if (lpListData && lpListData->Contents())
 	{
 		auto szProfileName = stringTowstring(lpListData->Contents()->m_szProfileDisplayName);

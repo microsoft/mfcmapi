@@ -800,7 +800,6 @@ _Check_return_ bool CContentsTableDlg::HandleAddInMenu(WORD wMenuSelect)
 	if (wMenuSelect < ID_ADDINMENU || ID_ADDINMENU + m_ulAddInMenuItems < wMenuSelect) return false;
 	if (!m_lpContentsTableListCtrl) return false;
 	LPMAPIPROP lpMAPIProp = nullptr;
-	auto iItem = -1;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	auto lpAddInMenu = GetAddinMenuItem(m_hWnd, wMenuSelect);
@@ -840,12 +839,12 @@ _Check_return_ bool CContentsTableDlg::HandleAddInMenu(WORD wMenuSelect)
 	{
 		// Add appropriate flag to context
 		MyAddInMenuParams.ulCurrentFlags |= ulFlags & (MENU_FLAGS_SINGLESELECT | MENU_FLAGS_MULTISELECT);
-		for (;;)
+		auto items = m_lpContentsTableListCtrl->GetSelectedItemNums();
+		for (auto item : items)
 		{
-			auto lpData = static_cast<SortListData*>(m_lpContentsTableListCtrl->GetNextSelectedItemData(&iItem));
-			if (-1 == iItem) break;
 			SRow MyRow = { 0 };
 
+			auto lpData = m_lpContentsTableListCtrl->GetSortListData(item);
 			// If we have a row to give, give it - it's free
 			if (lpData)
 			{
@@ -857,7 +856,7 @@ _Check_return_ bool CContentsTableDlg::HandleAddInMenu(WORD wMenuSelect)
 
 			if (!(ulFlags & MENU_FLAGS_ROW))
 			{
-				if (FAILED(OpenItemProp(iItem, fRequestModify, &lpMAPIProp)))
+				if (FAILED(OpenItemProp(item, fRequestModify, &lpMAPIProp)))
 				{
 					lpMAPIProp = nullptr;
 				}
