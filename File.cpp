@@ -352,19 +352,6 @@ wstring BuildFileNameAndPath(
 	return szFileOut;
 }
 
-// Processes szFileIn, replacing non file system characters with underscores
-// Do NOT call with full path - just file names
-wstring SanitizeFileNameW(_In_ wstring szFileIn)
-{
-	std::replace_if(
-		szFileIn.begin(),
-		szFileIn.end(),
-		[](WCHAR chr) { return wstring(L"^&*-+=[]\\|;:\",<>/?\r\n").find(chr) != wstring::npos; },
-		L'_');
-
-	return szFileIn;
-}
-
 void SaveFolderContentsToTXT(_In_ LPMDB lpMDB, _In_ LPMAPIFOLDER lpFolder, bool bRegular, bool bAssoc, bool bDescend, HWND hWnd)
 {
 	auto szDir = GetDirectoryPath(hWnd);
