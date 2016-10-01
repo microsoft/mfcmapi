@@ -447,18 +447,12 @@ void CAttachmentsDlg::OnViewEmbeddedMessageProps()
 void CAttachmentsDlg::OnAddAttachment()
 {
 	HRESULT hRes = 0;
-	INT_PTR iDlgRet = 0;
-	auto szFileSpec = loadstring(IDS_ALLFILES);
-
-	CFileDialogExW dlgFilePicker;
-
-	EC_D_DIALOG(dlgFilePicker.DisplayDialog(
-		true,
+	auto szAttachName = CFileDialogExW::OpenFile(
 		emptystring,
 		emptystring,
 		NULL,
-		szFileSpec));
-	if (iDlgRet == IDOK)
+		loadstring(IDS_ALLFILES));
+	if (!szAttachName.empty())
 	{
 		LPATTACH lpAttachment = nullptr;
 		ULONG ulAttachNum = 0;
@@ -467,7 +461,6 @@ void CAttachmentsDlg::OnAddAttachment()
 
 		if (SUCCEEDED(hRes) && lpAttachment)
 		{
-			auto szAttachName = dlgFilePicker.GetFileName();
 			SPropValue spvAttach[4];
 			spvAttach[0].ulPropTag = PR_ATTACH_METHOD;
 			spvAttach[0].Value.l = ATTACH_BY_VALUE;

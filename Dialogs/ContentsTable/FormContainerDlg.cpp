@@ -224,23 +224,17 @@ void CFormContainerDlg::OnInstallForm()
 	WC_H(MyFlags.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		INT_PTR iDlgRet = IDOK;
-		auto szFileSpec= loadstring(IDS_CFGFILES);
-
-		CFileDialogExW dlgFilePicker;
-
-		EC_D_DIALOG(dlgFilePicker.DisplayDialog(
-			true,
+		auto files = CFileDialogExW::OpenFiles(
 			L"cfg", // STRING_OK
 			emptystring,
-			OFN_FILEMUSTEXIST | OFN_ALLOWMULTISELECT,
-			szFileSpec,
-			this));
-		if (iDlgRet == IDOK)
+			OFN_FILEMUSTEXIST,
+			loadstring(IDS_CFGFILES),
+			this);
+		if (!files.empty())
 		{
 			auto ulFlags = MyFlags.GetHex(0);
 			auto hwnd = ulFlags & MAPIFORM_INSTALL_DIALOG ? m_hWnd : 0;
-			for (auto& lpszPath : dlgFilePicker.GetFileNames())
+			for (auto& lpszPath : files)
 			{
 				hRes = S_OK;
 				DebugPrintEx(DBGForms, CLASS, L"OnInstallForm",

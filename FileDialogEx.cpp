@@ -2,6 +2,84 @@
 #include "FileDialogEx.h"
 #include <algorithm>
 
+wstring CFileDialogExW::OpenFile(
+	_In_ wstring lpszDefExt,
+	_In_ wstring lpszFileName,
+	DWORD dwFlags,
+	_In_ wstring lpszFilter,
+	_In_opt_ CWnd* pParentWnd)
+{
+	auto hRes = S_OK;
+	INT_PTR iDlgRet = IDOK;
+	CFileDialogExW dlgFilePicker;
+	EC_D_DIALOG(dlgFilePicker.DisplayDialog(
+		false,
+		lpszDefExt,
+		lpszFileName,
+		dwFlags,
+		lpszFilter,
+		pParentWnd));
+
+	if (iDlgRet == IDOK)
+	{
+		return dlgFilePicker.GetFileName();
+	}
+
+	return wstring();
+}
+
+vector<wstring> CFileDialogExW::OpenFiles(
+	_In_ wstring lpszDefExt,
+	_In_ wstring lpszFileName,
+	DWORD dwFlags,
+	_In_ wstring lpszFilter,
+	_In_opt_ CWnd* pParentWnd)
+{
+	auto hRes = S_OK;
+	INT_PTR iDlgRet = IDOK;
+	CFileDialogExW dlgFilePicker;
+	EC_D_DIALOG(dlgFilePicker.DisplayDialog(
+		false,
+		lpszDefExt,
+		lpszFileName,
+		dwFlags | OFN_ALLOWMULTISELECT,
+		lpszFilter,
+		pParentWnd));
+
+	if (iDlgRet == IDOK)
+	{
+		return dlgFilePicker.GetFileNames();
+	}
+
+	return vector<wstring>();
+}
+
+wstring CFileDialogExW::SaveAs(
+	_In_ wstring lpszDefExt,
+	_In_ wstring lpszFileName,
+	DWORD dwFlags,
+	_In_ wstring lpszFilter,
+	_In_opt_ CWnd* pParentWnd)
+{
+	auto hRes = S_OK;
+	INT_PTR iDlgRet = IDOK;
+	CFileDialogExW dlgFilePicker;
+	EC_D_DIALOG(dlgFilePicker.DisplayDialog(
+		true,
+		lpszDefExt,
+		lpszFileName,
+		dwFlags,
+		lpszFilter,
+		pParentWnd));
+
+	if (iDlgRet == IDOK)
+	{
+		return dlgFilePicker.GetFileName();
+}
+
+	return wstring();
+}
+
 // Make sure OPENFILENAMEEX is the same size regardless of how _WIN32_WINNT is defined
 #if (_WIN32_WINNT >= 0x0500)
 struct OPENFILENAMEEXW : public OPENFILENAMEW {};

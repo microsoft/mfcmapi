@@ -775,92 +775,79 @@ _Check_return_ HRESULT CSingleMAPIPropListCtrl::SetDataSource(_In_opt_ LPMAPIPRO
 
 void CSingleMAPIPropListCtrl::SavePropsToXML()
 {
-	auto hRes = S_OK;
-	INT_PTR iDlgRet = 0;
-
-	auto szFileSpec = loadstring(IDS_XMLFILES);
-
-	CFileDialogExW dlgFilePicker;
-
-	EC_D_DIALOG(dlgFilePicker.DisplayDialog(
-		false, // Save As dialog
+	auto szFileName = CFileDialogExW::SaveAs(
 		L"xml", // STRING_OK
 		L"props.xml", // STRING_OK
 		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-		szFileSpec.c_str(),
-		this));
-	if (IDOK == iDlgRet)
+		loadstring(IDS_XMLFILES),
+		this);
+	if (!szFileName.empty())
 	{
-		auto szFileName = dlgFilePicker.GetFileName();
-
-		if (!szFileName.empty())
+		auto fProps = MyOpenFile(szFileName, true);
+		if (fProps)
 		{
-			auto fProps = MyOpenFile(szFileName, true);
-			if (fProps)
+			DebugPrintEx(DBGGeneric, CLASS, L"SavePropsToXML", L"saving to %ws\n", szFileName.c_str());
+
+			// Force a sort on the tag column to make output consistent
+			FakeClickColumn(pcPROPTAG, false);
+
+			int iRow;
+			auto iItemCount = GetItemCount();
+
+			OutputToFile(fProps, g_szXMLHeader);
+			OutputToFile(fProps, L"<propertypane>\n");
+			for (iRow = 0; iRow < iItemCount; iRow++)
 			{
-				DebugPrintEx(DBGGeneric, CLASS, L"SavePropsToXML", L"saving to %ws\n", szFileName.c_str());
+				auto szTemp1 = GetItemText(iRow, pcPROPTAG);
+				auto szTemp2 = GetItemText(iRow, pcPROPTYPE);
+				OutputToFilef(fProps, L"\t<property tag = \"%ws\" type = \"%ws\">\n", szTemp1.c_str(), szTemp2.c_str());
 
-				// Force a sort on the tag column to make output consistent
-				FakeClickColumn(pcPROPTAG, false);
+				szTemp1 = GetItemText(iRow, pcPROPEXACTNAMES);
+				OutputXMLValueToFile(fProps, PropXMLNames[pcPROPEXACTNAMES].uidName, szTemp1, false, 2);
 
-				int iRow;
-				auto iItemCount = GetItemCount();
+				szTemp1 = GetItemText(iRow, pcPROPPARTIALNAMES);
+				OutputXMLValueToFile(fProps, PropXMLNames[pcPROPPARTIALNAMES].uidName, szTemp1, false, 2);
 
-				OutputToFile(fProps, g_szXMLHeader);
-				OutputToFile(fProps, L"<propertypane>\n");
-				for (iRow = 0; iRow < iItemCount; iRow++)
+				szTemp1 = GetItemText(iRow, pcPROPNAMEDIID);
+				OutputXMLValueToFile(fProps, PropXMLNames[pcPROPNAMEDIID].uidName, szTemp1, false, 2);
+
+				szTemp1 = GetItemText(iRow, pcPROPNAMEDNAME);
+				OutputXMLValueToFile(fProps, PropXMLNames[pcPROPNAMEDNAME].uidName, szTemp1, false, 2);
+
+				auto lpListData = reinterpret_cast<SortListData*>(GetItemData(iRow));
+				ULONG ulPropType = PT_NULL;
+				if (lpListData && lpListData->Prop())
 				{
-					auto szTemp1 = GetItemText(iRow, pcPROPTAG);
-					auto szTemp2 = GetItemText(iRow, pcPROPTYPE);
-					OutputToFilef(fProps, L"\t<property tag = \"%ws\" type = \"%ws\">\n", szTemp1.c_str(), szTemp2.c_str());
-
-					szTemp1 = GetItemText(iRow, pcPROPEXACTNAMES);
-					OutputXMLValueToFile(fProps, PropXMLNames[pcPROPEXACTNAMES].uidName, szTemp1, false, 2);
-
-					szTemp1 = GetItemText(iRow, pcPROPPARTIALNAMES);
-					OutputXMLValueToFile(fProps, PropXMLNames[pcPROPPARTIALNAMES].uidName, szTemp1, false, 2);
-
-					szTemp1 = GetItemText(iRow, pcPROPNAMEDIID);
-					OutputXMLValueToFile(fProps, PropXMLNames[pcPROPNAMEDIID].uidName, szTemp1, false, 2);
-
-					szTemp1 = GetItemText(iRow, pcPROPNAMEDNAME);
-					OutputXMLValueToFile(fProps, PropXMLNames[pcPROPNAMEDNAME].uidName, szTemp1, false, 2);
-
-					auto lpListData = reinterpret_cast<SortListData*>(GetItemData(iRow));
-					ULONG ulPropType = PT_NULL;
-					if (lpListData && lpListData->Prop())
-					{
-						ulPropType = PROP_TYPE(lpListData->Prop()->m_ulPropTag);
-					}
-
-					szTemp1 = GetItemText(iRow, pcPROPVAL);
-					szTemp2 = GetItemText(iRow, pcPROPVALALT);
-					switch (ulPropType)
-					{
-					case PT_STRING8:
-					case PT_UNICODE:
-						OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVAL].uidName, szTemp1, true, 2);
-						OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVALALT].uidName, szTemp2, false, 2);
-						break;
-					case PT_BINARY:
-						OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVAL].uidName, szTemp1, false, 2);
-						OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVALALT].uidName, szTemp2, true, 2);
-						break;
-					default:
-						OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVAL].uidName, szTemp1, false, 2);
-						OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVALALT].uidName, szTemp2, false, 2);
-						break;
-					}
-
-					szTemp1 = GetItemText(iRow, pcPROPSMARTVIEW);
-					OutputXMLValueToFile(fProps, PropXMLNames[pcPROPSMARTVIEW].uidName, szTemp1, true, 2);
-
-					OutputToFile(fProps, L"\t</property>\n");
+					ulPropType = PROP_TYPE(lpListData->Prop()->m_ulPropTag);
 				}
 
-				OutputToFile(fProps, L"</propertypane>");
-				CloseFile(fProps);
+				szTemp1 = GetItemText(iRow, pcPROPVAL);
+				szTemp2 = GetItemText(iRow, pcPROPVALALT);
+				switch (ulPropType)
+				{
+				case PT_STRING8:
+				case PT_UNICODE:
+					OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVAL].uidName, szTemp1, true, 2);
+					OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVALALT].uidName, szTemp2, false, 2);
+					break;
+				case PT_BINARY:
+					OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVAL].uidName, szTemp1, false, 2);
+					OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVALALT].uidName, szTemp2, true, 2);
+					break;
+				default:
+					OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVAL].uidName, szTemp1, false, 2);
+					OutputXMLValueToFile(fProps, PropXMLNames[pcPROPVALALT].uidName, szTemp2, false, 2);
+					break;
+				}
+
+				szTemp1 = GetItemText(iRow, pcPROPSMARTVIEW);
+				OutputXMLValueToFile(fProps, PropXMLNames[pcPROPSMARTVIEW].uidName, szTemp1, true, 2);
+
+				OutputToFile(fProps, L"\t</property>\n");
 			}
+
+			OutputToFile(fProps, L"</propertypane>");
+			CloseFile(fProps);
 		}
 	}
 }
@@ -1131,7 +1118,6 @@ void CSingleMAPIPropListCtrl::CountNamedProps()
 		{
 			DebugPrintEx(DBGNamedProp, CLASS, L"CountNamedProps", L"Found a named property at 0x%04X.\n", ulCurrent);
 			ulHighestKnown = ulCurrent;
-			ulLower = ulCurrent;
 		}
 
 		MyResult.InitPane(0, CreateSingleLinePane(IDS_HIGHESTNAMEDPROPTOTAL, true));

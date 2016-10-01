@@ -1636,25 +1636,18 @@ void CMainDlg::OnViewMSGProperties()
 	CGlobalCache::getInstance().MAPIInitialize(NULL);
 	if (!CGlobalCache::getInstance().bMAPIInitialized()) return;
 
-	auto hRes = S_OK;
-	LPMESSAGE lpNewMessage = nullptr;
-	INT_PTR iDlgRet = IDOK;
-
-	CFileDialogExW dlgFilePicker;
-
-	auto szFileSpec = loadstring(IDS_MSGFILES);
-
-	EC_D_DIALOG(dlgFilePicker.DisplayDialog(
-		true,
+	auto file = CFileDialogExW::OpenFile(
 		L"msg", // STRING_OK
 		emptystring,
 		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_FILEMUSTEXIST,
-		szFileSpec,
-		this));
-	if (iDlgRet == IDOK)
+		loadstring(IDS_MSGFILES),
+		this);
+	if (!file.empty())
 	{
+		auto hRes = S_OK;
+		LPMESSAGE lpNewMessage = nullptr;
 		EC_H(LoadMSGToMessage(
-			dlgFilePicker.GetFileName().c_str(),
+			file.c_str(),
 			&lpNewMessage));
 		if (lpNewMessage)
 		{
@@ -1682,36 +1675,27 @@ void CMainDlg::OnConvertMSGToEML()
 		LPADRBOOK lpAdrBook = nullptr;
 		if (bDoAdrBook) lpAdrBook = m_lpMapiObjects->GetAddrBook(true); // do not release
 
-		INT_PTR iDlgRet = IDOK;
-
-		CFileDialogExW dlgFilePickerMSG;
-		auto szFileSpec = loadstring(IDS_MSGFILES);
-
-		EC_D_DIALOG(dlgFilePickerMSG.DisplayDialog(
-			true,
+		auto msgfile = CFileDialogExW::OpenFile(
 			L"msg", // STRING_OK
 			emptystring,
 			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_FILEMUSTEXIST,
-			szFileSpec,
-			this));
-		if (iDlgRet == IDOK)
+			loadstring(IDS_MSGFILES),
+			this);
+		if (!msgfile.empty())
 		{
-			szFileSpec = loadstring(IDS_EMLFILES);
-
 			CFileDialogExW dlgFilePickerEML;
 
-			EC_D_DIALOG(dlgFilePickerEML.DisplayDialog(
-				true,
+			auto emlfile = CFileDialogExW::SaveAs(
 				L"eml", // STRING_OK
 				emptystring,
 				OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-				szFileSpec,
-				this));
-			if (iDlgRet == IDOK)
+				loadstring(IDS_EMLFILES),
+				this);
+			if (!emlfile.empty())
 			{
 				EC_H(ConvertMSGToEML(
-					dlgFilePickerMSG.GetFileName().c_str(),
-					dlgFilePickerEML.GetFileName().c_str(),
+					msgfile.c_str(),
+					emlfile.c_str(),
 					ulConvertFlags,
 					et,
 					mst,
@@ -1740,36 +1724,25 @@ void CMainDlg::OnConvertEMLToMSG()
 		LPADRBOOK lpAdrBook = nullptr;
 		if (bDoAdrBook) lpAdrBook = m_lpMapiObjects->GetAddrBook(true); // do not release
 
-		INT_PTR iDlgRet = IDOK;
-
-		auto szFileSpec = loadstring(IDS_EMLFILES);
-
-		CFileDialogExW dlgFilePickerEML;
-
-		EC_D_DIALOG(dlgFilePickerEML.DisplayDialog(
-			true,
+		auto emlfile = CFileDialogExW::OpenFile(
 			L"eml", // STRING_OK
 			emptystring,
 			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_FILEMUSTEXIST,
-			szFileSpec,
-			this));
-		if (iDlgRet == IDOK)
+			loadstring(IDS_EMLFILES),
+			this);
+		if (!emlfile.empty())
 		{
-			szFileSpec = loadstring(IDS_MSGFILES);
-
-			CFileDialogExW dlgFilePickerMSG;
-			EC_D_DIALOG(dlgFilePickerMSG.DisplayDialog(
-				true,
+			auto msgfile = CFileDialogExW::SaveAs(
 				L"msg", // STRING_OK
 				emptystring,
 				OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-				szFileSpec,
-				this));
-			if (iDlgRet == IDOK)
+				loadstring(IDS_MSGFILES),
+				this);
+			if (!msgfile.empty())
 			{
 				EC_H(ConvertEMLToMSG(
-					dlgFilePickerEML.GetFileName().c_str(),
-					dlgFilePickerMSG.GetFileName().c_str(),
+					emlfile.c_str(),
+					msgfile.c_str(),
 					ulConvertFlags,
 					bDoApply,
 					hCharSet,
@@ -1788,41 +1761,34 @@ void CMainDlg::OnConvertMSGToXML()
 
 	auto hRes = S_OK;
 
-	INT_PTR iDlgRet = IDOK;
-
-	CFileDialogExW dlgFilePickerMSG;
 	auto szFileSpec = loadstring(IDS_MSGFILES);
 
-	EC_D_DIALOG(dlgFilePickerMSG.DisplayDialog(
-		true,
+	auto msgfile = CFileDialogExW::OpenFile(
 		L"msg", // STRING_OK
 		emptystring,
 		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_FILEMUSTEXIST,
-		szFileSpec,
-		this));
-	if (iDlgRet == IDOK)
+		loadstring(IDS_MSGFILES),
+		this);
+	if (!msgfile.empty())
 	{
-		szFileSpec = loadstring(IDS_XMLFILES);
-
 		CFileDialogExW dlgFilePickerXML;
 
-		EC_D_DIALOG(dlgFilePickerXML.DisplayDialog(
-			true,
+		auto xmlfile = CFileDialogExW::SaveAs(
 			L"xml", // STRING_OK
 			emptystring,
 			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-			szFileSpec,
-			this));
-		if (iDlgRet == IDOK)
+			loadstring(IDS_XMLFILES),
+			this);
+		if (!xmlfile.empty())
 		{
 			LPMESSAGE lpMessage = nullptr;
 
-			EC_H(LoadMSGToMessage(dlgFilePickerMSG.GetFileName().c_str(), &lpMessage));
+			EC_H(LoadMSGToMessage(msgfile.c_str(), &lpMessage));
 
 			if (lpMessage)
 			{
 				CDumpStore MyDumpStore;
-				MyDumpStore.InitMessagePath(dlgFilePickerXML.GetFileName());
+				MyDumpStore.InitMessagePath(xmlfile);
 				// Just assume this message might have attachments
 				MyDumpStore.ProcessMessage(lpMessage, true, nullptr);
 
