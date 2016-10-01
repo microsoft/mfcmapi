@@ -125,13 +125,8 @@ void WriteFile(_In_ FILE* fFile, wstring szString)
 {
 	if (!szString.empty())
 	{
-		char *lpszString = nullptr;
-		auto hRes = UnicodeToAnsi(szString.c_str(), &lpszString);
-		if (SUCCEEDED(hRes))
-		{
-			fputs(lpszString, fFile);
-			delete[] lpszString;
-		}
+		auto szStringA = wstringTostring(szString);
+		fputs(szStringA.c_str(), fFile);
 	}
 }
 

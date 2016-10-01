@@ -2,7 +2,6 @@
 // File.h : header file
 
 wstring GetDirectoryPath(HWND hWnd);
-wstring SanitizeFileNameW(_In_ wstring szFileIn);
 
 wstring BuildFileName(
 	_In_ wstring szExt,

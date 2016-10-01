@@ -140,7 +140,7 @@ wstring LPCSTRToWstring(LPCSTR src)
 	return wstring(ansi.begin(), ansi.end());
 }
 
-wstring wstringToLower(wstring src)
+wstring wstringToLower(wstring const& src)
 {
 	auto dst = src;
 	transform(dst.begin(), dst.end(), dst.begin(), ::tolower);
@@ -214,154 +214,46 @@ wstring StripCharacter(wstring szString, WCHAR character)
 	return szString;
 }
 
-wstring StripCarriage(wstring szString)
+wstring StripCarriage(wstring const& szString)
 {
 	return StripCharacter(szString, L'\r');
 }
 
 wstring CleanString(wstring szString)
 {
-	// TODO: Find a better/faster way to do this
-	return StripCharacter(StripCharacter(szString, L','), L' ');
-}
-
-wstring ScrubStringForXML(_In_ wstring szString)
-{
-	for (size_t i = 0; i < szString.length(); i++)
+	szString.erase(::remove_if(::begin(szString), ::end(szString), [](const WCHAR & chr)
 	{
-		switch (szString[i])
-		{
-		case L'\t':
-		case L'\r':
-		case L'\n':
-			break;
-		default:
-			if (szString[i] < 0x20)
-			{
-				szString[i] = L'.';
-			}
-
-			break;
-		}
-	}
+		return wstring(L", ").find(chr) != wstring::npos;
+	}), ::end(szString));
 
 	return szString;
+}
+
+wstring ScrubStringForXML(wstring szString)
+{
+	std::replace_if(szString.begin(), szString.end(), [](const WCHAR & chr)
+	{
+		return chr < 0x20 && wstring(L"\t\r\n").find(chr) == wstring::npos;
+	}, L'.');
+
+	return szString;
+}
+
+// Processes szFileIn, replacing non file system characters with underscores
+// Do NOT call with full path - just file names
+wstring SanitizeFileNameW(wstring szFileIn)
+{
+	std::replace_if(szFileIn.begin(), szFileIn.end(), [](const WCHAR & chr)
+	{
+		return wstring(L"^&*-+=[]\\|;:\",<>/?\r\n").find(chr) != wstring::npos;
+	}, L'_');
+
+	return szFileIn;
 }
 
 wstring indent(int iIndent)
 {
 	return wstring(iIndent, L'\t');
-}
-
-// if cchszA == -1, MultiByteToWideChar will compute the length
-// Delete with delete[]
-_Check_return_ HRESULT AnsiToUnicode(_In_opt_z_ LPCSTR pszA, _Out_z_cap_(cchszA) LPWSTR* ppszW, _Out_ size_t* cchszW, size_t cchszA)
-{
-	auto hRes = S_OK;
-	if (!ppszW || *cchszW) return MAPI_E_INVALID_PARAMETER;
-	*ppszW = nullptr;
-	*cchszW = 0;
-	if (NULL == pszA) return S_OK;
-	if (!cchszA) return S_OK;
-
-	// Get our buffer size
-	auto iRet = 0;
-	EC_D(iRet, MultiByteToWideChar(
-		CP_ACP,
-		0,
-		pszA,
-		static_cast<int>(cchszA),
-		NULL,
-		NULL));
-	if (SUCCEEDED(hRes) && 0 != iRet)
-	{
-		// MultiByteToWideChar returns num of chars
-		auto pszW = new WCHAR[iRet];
-
-		EC_D(iRet, MultiByteToWideChar(
-			CP_ACP,
-			0,
-			pszA,
-			static_cast<int>(cchszA),
-			pszW,
-			iRet));
-		if (SUCCEEDED(hRes))
-		{
-			*ppszW = pszW;
-			*cchszW = iRet;
-		}
-		else
-		{
-			delete[] pszW;
-		}
-	}
-
-	return hRes;
-}
-
-// if cchszA == -1, MultiByteToWideChar will compute the length
-// Delete with delete[]
-_Check_return_ HRESULT AnsiToUnicode(_In_opt_z_ LPCSTR pszA, _Out_z_cap_(cchszA) LPWSTR* ppszW, size_t cchszA)
-{
-	size_t cchsW = 0;
-	return AnsiToUnicode(pszA, ppszW, &cchsW, cchszA);
-}
-
-// if cchszW == -1, WideCharToMultiByte will compute the length
-// Delete with delete[]
-_Check_return_ HRESULT UnicodeToAnsi(_In_z_ LPCWSTR pszW, _Out_z_cap_(cchszW) LPSTR* ppszA, size_t cchszW)
-{
-	auto hRes = S_OK;
-	if (!ppszA) return MAPI_E_INVALID_PARAMETER;
-	*ppszA = nullptr;
-	if (NULL == pszW) return S_OK;
-
-	// Get our buffer size
-	auto iRet = 0;
-	EC_D(iRet, WideCharToMultiByte(
-		CP_ACP,
-		0,
-		pszW,
-		static_cast<int>(cchszW),
-		NULL,
-		NULL,
-		NULL,
-		NULL));
-	if (SUCCEEDED(hRes) && 0 != iRet)
-	{
-		// WideCharToMultiByte returns num of bytes
-		auto pszA = reinterpret_cast<LPSTR>(new BYTE[iRet]);
-
-		EC_D(iRet, WideCharToMultiByte(
-			CP_ACP,
-			0,
-			pszW,
-			static_cast<int>(cchszW),
-			pszA,
-			iRet,
-			NULL,
-			NULL));
-		if (SUCCEEDED(hRes))
-		{
-			*ppszA = pszA;
-		}
-		else
-		{
-			delete[] pszA;
-		}
-	}
-
-	return hRes;
-}
-
-bool IsNullOrEmptyW(LPCWSTR szStr)
-{
-	return !szStr || !szStr[0];
-}
-
-bool IsNullOrEmptyA(LPCSTR szStr)
-{
-	return !szStr || !szStr[0];
 }
 
 wstring BinToTextString(_In_ LPSBinary lpBin, bool bMultiLine)
@@ -496,7 +388,7 @@ vector<BYTE> HexStringToBin(_In_ wstring lpsz, size_t cbTarget)
 }
 
 // Converts byte vector to LPBYTE allocated with new
-LPBYTE ByteVectorToLPBYTE(vector<BYTE>& bin)
+LPBYTE ByteVectorToLPBYTE(vector<BYTE> const& bin)
 {
 	if (bin.empty()) return nullptr;
 
