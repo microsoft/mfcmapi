@@ -1,7 +1,7 @@
 // FakeSplitter.cpp : implementation file
 #include "stdafx.h"
 #include "FakeSplitter.h"
-#include "BaseDialog.h"
+#include <Dialogs/BaseDialog.h>
 #include "UIFunctions.h"
 #include "DoubleBuffer.h"
 

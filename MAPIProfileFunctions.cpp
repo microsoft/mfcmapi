@@ -3,7 +3,7 @@
 #include "stdafx.h"
 #include "MAPIProfileFunctions.h"
 #include "ImportProcs.h"
-#include "Editor.h"
+#include <Dialogs/Editors/Editor.h>
 #include "MAPIFunctions.h"
 #include "ExtraPropTags.h"
 

@@ -1,17 +1,16 @@
 #include "stdafx.h"
 #include "MAPIStoreFunctions.h"
 #include "MAPIFunctions.h"
-#include "MapiObjects.h"
 #include "MFCUtilityFunctions.h"
-#include "AbContDlg.h"
+#include <Dialogs/HierarchyTable/AbContDlg.h>
 #include "ExtraPropTags.h"
 #include "InterpretProp2.h"
 #include "SmartView/SmartView.h"
-#include "Editor.h"
-#include "MainDlg.h"
-#include "QSSpecialFolders.h"
+#include <Dialogs/Editors/Editor.h>
 #include "MAPIABFunctions.h"
 #include "ViewPane/CountedTextPane.h"
+#include "Dialogs/ContentsTable/MainDlg.h"
+#include "Dialogs/Editors/QSSpecialFolders.h"
 
 LPMAPISESSION OpenSessionForQuickStart(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 {

@@ -20,7 +20,7 @@ private:
 	STDMETHODIMP GetMin(ULONG* lpulMin);
 	STDMETHODIMP SetLimits(ULONG* lpulMin, ULONG* lpulMax, ULONG* lpulFlags);
 
-	void OutputState(wstring lpszFunction);
+	void OutputState(wstring lpszFunction) const;
 
 	LONG m_cRef;
 	ULONG m_ulMin;

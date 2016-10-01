@@ -4,7 +4,7 @@
 #include "MFCMAPI.h"
 #include "ImportProcs.h"
 #include "String.h"
-#include "Editor.h"
+#include <Dialogs/Editors/Editor.h>
 #include "Guids.h"
 #ifndef MRMAPI
 #include "UIFunctions.h"

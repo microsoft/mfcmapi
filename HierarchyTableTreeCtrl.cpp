@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "HierarchyTableTreeCtrl.h"
-#include "BaseDialog.h"
-#include "HierarchyTableDlg.h"
+#include <Dialogs/BaseDialog.h>
+#include <Dialogs/HierarchyTable/HierarchyTableDlg.h>
 #include "MapiObjects.h"
 #include "MAPIFunctions.h"
 #include "UIFunctions.h"

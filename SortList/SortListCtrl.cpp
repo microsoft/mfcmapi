@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "SortListCtrl.h"
 #include "SortHeader.h"
-#include "ContentsTableDlg.h"
 #include "String.h"
 #include "UIFunctions.h"
 
@@ -342,7 +341,7 @@ _Check_return_ int CALLBACK CSortListCtrl::MyCompareProc(_In_ LPARAM lParam1, _I
 		if (lpData2->szSortText.empty()) return sort1First;
 		iRet = lpData1->szSortText.compare(lpData2->szSortText);
 
-		return (lpSortInfo->bSortUp ? -iRet : iRet);
+		return lpSortInfo->bSortUp ? -iRet : iRet;
 	case SORTSTYLE_HEX:
 		// Empty strings should always sort after non-empty strings
 		if (lpData1->szSortText.empty()) return sort2First;
@@ -360,18 +359,18 @@ _Check_return_ int CALLBACK CSortListCtrl::MyCompareProc(_In_ LPARAM lParam1, _I
 			{
 				if (lpData1->szSortText[i] != lpData2->szSortText[i])
 				{
-					iRet = (lpData1->szSortText[i] < lpData2->szSortText[i]) ? -1 : 1;
+					iRet = lpData1->szSortText[i] < lpData2->szSortText[i] ? -1 : 1;
 					break;
 				}
 			}
 		}
 
-		return (lpSortInfo->bSortUp ? -iRet : iRet);
+		return lpSortInfo->bSortUp ? -iRet : iRet;
 	case SORTSTYLE_NUMERIC:
 	{
 		auto ul1 = lpData1->ulSortValue;
 		auto ul2 = lpData2->ulSortValue;
-		return (lpSortInfo->bSortUp ? ul2.QuadPart > ul1.QuadPart:ul1.QuadPart >= ul2.QuadPart);
+		return lpSortInfo->bSortUp ? ul2.QuadPart > ul1.QuadPart:ul1.QuadPart >= ul2.QuadPart;
 	}
 	default:
 		break;
@@ -628,7 +627,7 @@ _Check_return_ UINT CSortListCtrl::OnGetDlgCode()
 	iDlgCode |= DLGC_WANTMESSAGE;
 
 	// to make sure that the control key is not pressed
-	if ((GetKeyState(VK_CONTROL) >= 0) && (m_hWnd == ::GetFocus()))
+	if (GetKeyState(VK_CONTROL) >= 0 && m_hWnd == ::GetFocus())
 	{
 		// to make sure that the Tab key is pressed
 		if (GetKeyState(VK_TAB) < 0)

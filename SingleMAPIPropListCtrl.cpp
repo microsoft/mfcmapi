@@ -1,19 +1,13 @@
 #include "stdafx.h"
 #include "SingleMAPIPropListCtrl.h"
-#include "StreamEditor.h"
-#include "BaseDialog.h"
 #include "MAPIFunctions.h"
 #include "ColumnTags.h"
 #include "MFCUtilityFunctions.h"
 #include "UIFunctions.h"
 #include "MySecInfo.h"
-#include "PropertyEditor.h"
 #include "InterpretProp2.h"
-#include "TagArrayEditor.h"
 #include "FileDialogEx.h"
 #include "ImportProcs.h"
-#include "RestrictEditor.h"
-#include "PropertyTagEditor.h"
 #include "MAPIProgress.h"
 #include "NamedPropCache.h"
 #include "SmartView/SmartView.h"
@@ -23,6 +17,12 @@
 #include "String.h"
 #include "SortList/PropListData.h"
 #include "GlobalCache.h"
+#include "Dialogs/Editors/Editor.h"
+#include "Dialogs/Editors/RestrictEditor.h"
+#include "Dialogs/Editors/StreamEditor.h"
+#include "Dialogs/Editors/TagArrayEditor.h"
+#include "Dialogs/Editors/PropertyEditor.h"
+#include "Dialogs/Editors/PropertyTagEditor.h"
 
 static wstring CLASS = L"CSingleMAPIPropListCtrl";
 
@@ -1014,7 +1014,7 @@ void CSingleMAPIPropListCtrl::FindAllNamedProps()
 				SPropTagArray tag = { 0 };
 				tag.cValues = 1;
 				lptag = &tag;
-				for (ULONG iTag = ulLowerBound; iTag <= ulUpperBound; iTag++)
+				for (auto iTag = ulLowerBound; iTag <= ulUpperBound; iTag++)
 				{
 					LPMAPINAMEID* lppPropNames = nullptr;
 					ULONG ulPropNames = 0;

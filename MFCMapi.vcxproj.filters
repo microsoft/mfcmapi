@@ -15,43 +15,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ABContDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AboutDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AclDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="AdviseSink.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AttachmentsDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BaseDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ColumnTags.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ContentsTableDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ContentsTableListCtrl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DbgView.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Dialog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="DumpStore.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Editor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Enums.h">
@@ -72,16 +42,7 @@
     <ClInclude Include="File.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FileDialogEx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Flags.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FolderDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FormContainerDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GenTagArray.h">
@@ -93,15 +54,6 @@
     <ClInclude Include="Guids.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="HexEditor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="HierarchyTableDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="HierarchyTableTreeCtrl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ImportProcs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -109,12 +61,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="InterpretProp2.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MailboxTableDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MainDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MAPIABFunctions.h">
@@ -153,12 +99,6 @@
     <ClInclude Include="MFCUtilityFunctions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MsgServiceTableDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MsgStoreDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="MyMAPIFormViewer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -174,31 +114,10 @@
     <ClInclude Include="nameidarray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Options.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ParentWnd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ProfileListDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PropertyEditor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PropertyTagEditor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="PropTypeArray.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ProviderTableDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PublicFolderTableDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RecipientsDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Registry.h">
@@ -207,22 +126,7 @@
     <ClInclude Include="Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RestrictEditor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RulesDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SingleMAPIPropListCtrl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="StdAfx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="StreamEditor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TagArrayEditor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="UIFunctions.h">
@@ -238,9 +142,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PropertyBag\RowPropertyBag.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SingleMessageDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ViewPane\CheckPane.h">
@@ -265,12 +166,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ViewPane\SmartViewPane.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SingleRecipientDialog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="QSSpecialFolders.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="RichEditOleCallback.h">
@@ -417,9 +312,6 @@
     <ClInclude Include="MrMapi\MrMAPI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ABDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="SmartView\XID.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -468,6 +360,114 @@
     <ClInclude Include="Property\Property.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Dialogs\SingleMessageDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\SingleRecipientDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\BaseDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\AboutDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\Dialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\HierarchyTable\ABContDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\HierarchyTable\MsgStoreDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\HierarchyTable\HierarchyTableDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HierarchyTableTreeCtrl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ContentsTableListCtrl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SingleMAPIPropListCtrl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\ContentsTable\ABDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\ContentsTable\AclDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\ContentsTable\AttachmentsDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\ContentsTable\ContentsTableDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FileDialogEx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\ContentsTable\FolderDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\ContentsTable\FormContainerDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\ContentsTable\MailboxTableDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\ContentsTable\MainDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\ContentsTable\MsgServiceTableDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\ContentsTable\ProfileListDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\ContentsTable\RulesDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\ContentsTable\ProviderTableDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\ContentsTable\PublicFolderTableDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\ContentsTable\RecipientsDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\Editors\DbgView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\Editors\Editor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\Editors\HexEditor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\Editors\Options.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\Editors\PropertyEditor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\Editors\PropertyTagEditor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\Editors\QSSpecialFolders.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\Editors\RestrictEditor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\Editors\StreamEditor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs\Editors\TagArrayEditor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Res\bldver.rc">
@@ -502,46 +502,13 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ABContDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="AbDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="AboutDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="AclDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="AddIns.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="AdviseSink.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AttachmentsDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BaseDialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ContentsTableDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ContentsTableListCtrl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DbgView.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Dialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="DumpStore.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Editor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Error.cpp">
@@ -553,25 +520,7 @@
     <ClCompile Include="File.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FileDialogEx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FolderDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FormContainerDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Guids.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="HexEditor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="HierarchyTableDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="HierarchyTableTreeCtrl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ImportProcs.cpp">
@@ -581,12 +530,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="InterpretProp2.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MailboxTableDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MainDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MAPIABFunctions.cpp">
@@ -625,12 +568,6 @@
     <ClCompile Include="MFCUtilityFunctions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MsgServiceTableDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MsgStoreDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="MyMAPIFormViewer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -643,49 +580,13 @@
     <ClCompile Include="NamedPropCache.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Options.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ParentWnd.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ProfileListDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PropertyEditor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PropertyTagEditor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ProviderTableDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PublicFolderTableDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RecipientsDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Registry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RestrictEditor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RulesDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SingleMAPIPropListCtrl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="StreamEditor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="StubUtils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TagArrayEditor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="UIFunctions.cpp">
@@ -715,9 +616,6 @@
     <ClCompile Include="ViewPane\ViewPane.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SingleMessageDialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ViewPane\CollapsibleTextPane.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -725,12 +623,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ViewPane\SmartViewPane.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="QSSpecialFolders.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SingleRecipientDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RichEditOleCallback.cpp">
@@ -920,6 +812,114 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Property\Property.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\SingleMessageDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\SingleRecipientDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\BaseDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\AboutDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\Dialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\HierarchyTable\ABContDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\HierarchyTable\MsgStoreDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\HierarchyTable\HierarchyTableDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HierarchyTableTreeCtrl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ContentsTableListCtrl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SingleMAPIPropListCtrl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\ContentsTable\AbDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\ContentsTable\AclDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\ContentsTable\AttachmentsDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\ContentsTable\ContentsTableDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FileDialogEx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\ContentsTable\FolderDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\ContentsTable\FormContainerDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\ContentsTable\MailboxTableDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\ContentsTable\MainDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\ContentsTable\MsgServiceTableDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\ContentsTable\ProfileListDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\ContentsTable\ProviderTableDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\ContentsTable\PublicFolderTableDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\ContentsTable\RecipientsDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\ContentsTable\RulesDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\Editors\DbgView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\Editors\Editor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\Editors\HexEditor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\Editors\Options.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\Editors\PropertyEditor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\Editors\PropertyTagEditor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\Editors\QSSpecialFolders.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\Editors\RestrictEditor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\Editors\StreamEditor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Dialogs\Editors\TagArrayEditor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

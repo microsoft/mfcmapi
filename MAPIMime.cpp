@@ -1,9 +1,8 @@
 #include "stdafx.h"
 #include "MAPIMime.h"
 #include "File.h"
-#include "MAPIFunctions.h"
 #include "Guids.h"
-#include "Editor.h"
+#include <Dialogs/Editors/Editor.h>
 #include "ImportProcs.h"
 #include "ExtraPropTags.h"
 
@@ -18,17 +17,17 @@ _Check_return_ HRESULT ImportEMLToIMessage(
 {
 	if (!lpszEMLFile || !lpMsg) return MAPI_E_INVALID_PARAMETER;
 
-	HRESULT hRes = S_OK;
-	LPCONVERTERSESSION lpConverter = NULL;
+	auto hRes = S_OK;
+	LPCONVERTERSESSION lpConverter = nullptr;
 
 	EC_H_MSG(CoCreateInstance(CLSID_IConverterSession,
 		NULL,
 		CLSCTX_INPROC_SERVER,
 		IID_IConverterSession,
-		(LPVOID*)&lpConverter),IDS_NOCONVERTERSESSION);
+		reinterpret_cast<LPVOID*>(&lpConverter)),IDS_NOCONVERTERSESSION);
 	if (SUCCEEDED(hRes) && lpConverter)
 	{
-		LPSTREAM lpEMLStm = NULL;
+		LPSTREAM lpEMLStm = nullptr;
 
 		EC_H(MyOpenStreamOnFile(MAPIAllocateBuffer,
 			MAPIFreeBuffer,
@@ -73,15 +72,15 @@ _Check_return_ HRESULT ExportIMessageToEML(_In_ LPMESSAGE lpMsg, _In_z_ LPCWSTR 
 {
 	if (!lpszEMLFile || !lpMsg) return MAPI_E_INVALID_PARAMETER;
 
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
-	LPCONVERTERSESSION lpConverter = NULL;
+	LPCONVERTERSESSION lpConverter = nullptr;
 
 	EC_H_MSG(CoCreateInstance(CLSID_IConverterSession,
 		NULL,
 		CLSCTX_INPROC_SERVER,
 		IID_IConverterSession,
-		(LPVOID*)&lpConverter),IDS_NOCONVERTERSESSION);
+		reinterpret_cast<LPVOID*>(&lpConverter)),IDS_NOCONVERTERSESSION);
 	if (SUCCEEDED(hRes) && lpConverter)
 	{
 		if (lpAdrBook)
@@ -103,7 +102,7 @@ _Check_return_ HRESULT ExportIMessageToEML(_In_ LPMESSAGE lpMsg, _In_z_ LPCWSTR 
 
 		if (SUCCEEDED(hRes))
 		{
-			LPSTREAM lpMimeStm = NULL;
+			LPSTREAM lpMimeStm = nullptr;
 
 			EC_H(CreateStreamOnHGlobal(NULL, true, &lpMimeStm));
 			if (SUCCEEDED(hRes) && lpMimeStm)
@@ -113,7 +112,7 @@ _Check_return_ HRESULT ExportIMessageToEML(_In_ LPMESSAGE lpMsg, _In_z_ LPCWSTR 
 				EC_MAPI(lpConverter->MAPIToMIMEStm(lpMsg, lpMimeStm, ulConvertFlags));
 				if (SUCCEEDED(hRes))
 				{
-					LPSTREAM lpFileStm = NULL;
+					LPSTREAM lpFileStm = nullptr;
 
 					EC_H(MyOpenStreamOnFile(MAPIAllocateBuffer,
 						MAPIFreeBuffer,
@@ -158,9 +157,9 @@ _Check_return_ HRESULT ConvertEMLToMSG(_In_z_ LPCWSTR lpszEMLFile,
 {
 	if (!lpszEMLFile || !lpszMSGFile) return MAPI_E_INVALID_PARAMETER;
 
-	HRESULT hRes = S_OK;
-	LPSTORAGE pStorage = NULL;
-	LPMESSAGE pMessage = NULL;
+	auto hRes = S_OK;
+	LPSTORAGE pStorage = nullptr;
+	LPMESSAGE pMessage = nullptr;
 
 	EC_H(CreateNewMSG(lpszMSGFile, bUnicode, &pMessage, &pStorage));
 	if (SUCCEEDED(hRes) && pMessage && pStorage)
@@ -195,8 +194,8 @@ _Check_return_ HRESULT ConvertMSGToEML(_In_z_ LPCWSTR lpszMSGFile,
 {
 	if (!lpszEMLFile || !lpszMSGFile) return MAPI_E_INVALID_PARAMETER;
 
-	HRESULT hRes = S_OK;
-	LPMESSAGE pMessage = NULL;
+	auto hRes = S_OK;
+	LPMESSAGE pMessage = nullptr;
 
 	EC_H(LoadMSGToMessage(lpszMSGFile, &pMessage));
 	if (SUCCEEDED(hRes) && pMessage)
@@ -225,7 +224,7 @@ _Check_return_ HRESULT GetConversionToEMLOptions(_In_ CWnd* pParentWnd,
 												 _Out_ bool* pDoAdrBook)
 {
 	if (!lpulConvertFlags || !lpet || !lpmst || !lpulWrapLines || !pDoAdrBook) return MAPI_E_INVALID_PARAMETER;
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
 	CEditor MyData(
 		pParentWnd,
@@ -251,8 +250,8 @@ _Check_return_ HRESULT GetConversionToEMLOptions(_In_ CWnd* pParentWnd,
 	if (S_OK == hRes)
 	{
 		*lpulConvertFlags = MyData.GetHex(0);
-		*lpulWrapLines =  MyData.GetCheck(1)?(ENCODINGTYPE)MyData.GetDecimal(2):IET_UNKNOWN;
-		*lpmst =  MyData.GetCheck(3)?(MIMESAVETYPE)MyData.GetHex(4):USE_DEFAULT_SAVETYPE;
+		*lpulWrapLines =  MyData.GetCheck(1)?static_cast<ENCODINGTYPE>(MyData.GetDecimal(2)):IET_UNKNOWN;
+		*lpmst =  MyData.GetCheck(3)?static_cast<MIMESAVETYPE>(MyData.GetHex(4)):USE_DEFAULT_SAVETYPE;
 		*lpulWrapLines = MyData.GetCheck(5)?MyData.GetDecimal(6):USE_DEFAULT_WRAPPING;
 		*pDoAdrBook = MyData.GetCheck(7);
 	}
@@ -268,7 +267,7 @@ _Check_return_ HRESULT GetConversionFromEMLOptions(_In_ CWnd* pParentWnd,
 												   _Out_opt_ bool* pbUnicode)
 {
 	if (!lpulConvertFlags || !pDoAdrBook || !pDoApply || !phCharSet || !pcSetApplyType) return MAPI_E_INVALID_PARAMETER;
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
 	CEditor MyData(
 		pParentWnd,
@@ -299,10 +298,10 @@ _Check_return_ HRESULT GetConversionFromEMLOptions(_In_ CWnd* pParentWnd,
 		if (MyData.GetCheck(1))
 		{
 			if (SUCCEEDED(hRes)) *pDoApply = true;
-			*pcSetApplyType = (CSETAPPLYTYPE) MyData.GetDecimal(4);
+			*pcSetApplyType = static_cast<CSETAPPLYTYPE>(MyData.GetDecimal(4));
 			if (*pcSetApplyType > CSET_APPLY_TAG_ALL) return MAPI_E_INVALID_PARAMETER;
-			ULONG ulCodePage = MyData.GetDecimal(2);
-			CHARSETTYPE cCharSetType = (CHARSETTYPE) MyData.GetDecimal(3);
+			auto ulCodePage = MyData.GetDecimal(2);
+			auto cCharSetType = static_cast<CHARSETTYPE>(MyData.GetDecimal(3));
 			if (cCharSetType > CHARSET_WEB) return MAPI_E_INVALID_PARAMETER;
 			EC_H(MyMimeOleGetCodePageCharset(ulCodePage,cCharSetType,phCharSet));
 		}

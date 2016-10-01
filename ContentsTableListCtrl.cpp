@@ -2,20 +2,21 @@
 #include "SortList/SortListCtrl.h"
 #include "ContentsTableListCtrl.h"
 #include "MapiObjects.h"
-#include "ContentsTableDlg.h"
 #include "MAPIFunctions.h"
 #include "UIFunctions.h"
 #include "AdviseSink.h"
 #include "InterpretProp.h"
 #include "InterpretProp2.h"
-#include "Editor.h"
+#include <Dialogs/Editors/Editor.h>
 #include "SingleMAPIPropListCtrl.h"
-#include "TagArrayEditor.h"
+#include <Dialogs/Editors/TagArrayEditor.h>
 #include "ExtraPropTags.h"
 #include "SmartView/Smartview.h"
 #include <process.h>
 #include "String.h"
 #include "SortList/ContentsData.h"
+#include "Dialogs/BaseDialog.h"
+#include "Dialogs/ContentsTable/ContentsTableDlg.h"
 
 static wstring CLASS = L"CContentsTableListCtrl";
 
@@ -191,7 +192,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::SetContentsTable(
 	// Set up the columns on the new contents table and refresh!
 	DoSetColumns(
 		true,
-		(0 != RegKeys[regkeyEDIT_COLUMNS_ON_LOAD].ulCurDWORD));
+		0 != RegKeys[regkeyEDIT_COLUMNS_ON_LOAD].ulCurDWORD);
 
 	return hRes;
 }
@@ -653,10 +654,10 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 		}
 		else
 		{
-			DebugPrintEx(DBGGeneric, CLASS, L"ThreadFuncLoadTable", L"Calling QueryRows. Asking for 0x%X rows.\n", (ulThrottleLevel) ? ulThrottleLevel : NUMROWSPERLOOP);
+			DebugPrintEx(DBGGeneric, CLASS, L"ThreadFuncLoadTable", L"Calling QueryRows. Asking for 0x%X rows.\n", ulThrottleLevel ? ulThrottleLevel : NUMROWSPERLOOP);
 			// Pull back a sizable block of rows to add to the list box
 			CHECKABORT(EC_MAPI(lpContentsTable->QueryRows(
-				(ulThrottleLevel) ? ulThrottleLevel : NUMROWSPERLOOP,
+				ulThrottleLevel ? ulThrottleLevel : NUMROWSPERLOOP,
 				NULL,
 				&pRows)));
 			if (FAILED(hRes)) break;
@@ -804,7 +805,7 @@ void CContentsTableListCtrl::OnCancelTableLoad()
 			false,
 			INFINITE,
 			QS_ALLINPUT);
-		if (dwRet == (WAIT_OBJECT_0 + 0)) break;
+		if (dwRet == WAIT_OBJECT_0 + 0) break;
 
 		// Read all of the messages in this next loop, removing each message as we read it.
 		// If we don't do this, the thread never stops
@@ -1188,7 +1189,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::DefaultOpenItemProp(
 
 	if (!lpListData || !lpListData->Contents()) return S_OK;
 	auto lpEID = lpListData->Contents()->m_lpEntryID;
-	if (!lpEID || (lpEID->cb == 0)) return S_OK;
+	if (!lpEID || lpEID->cb == 0) return S_OK;
 
 	DebugPrint(DBGGeneric, L"Item being opened:\n");
 	DebugPrintBinary(DBGGeneric, lpEID);
@@ -1206,7 +1207,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::DefaultOpenItemProp(
 			NULL,
 			lpEID,
 			NULL,
-			(bModify == mfcmapiREQUEST_MODIFY) ? MAPI_MODIFY : MAPI_BEST_ACCESS,
+			bModify == mfcmapiREQUEST_MODIFY ? MAPI_MODIFY : MAPI_BEST_ACCESS,
 			NULL,
 			reinterpret_cast<LPUNKNOWN*>(lppProp)));
 	}
@@ -1229,7 +1230,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::DefaultOpenItemProp(
 			NULL,
 			lpEID,
 			lpInterface,
-			(bModify == mfcmapiREQUEST_MODIFY) ? MAPI_MODIFY : MAPI_BEST_ACCESS,
+			bModify == mfcmapiREQUEST_MODIFY ? MAPI_MODIFY : MAPI_BEST_ACCESS,
 			NULL,
 			reinterpret_cast<LPUNKNOWN*>(lppProp)));
 		if (MAPI_E_INTERFACE_NOT_SUPPORTED == hRes && RegKeys[regkeyUSE_MESSAGERAW].ulCurDWORD)
@@ -1249,7 +1250,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::DefaultOpenItemProp(
 			lpMAPISession, // use session
 			lpEID,
 			NULL,
-			(bModify == mfcmapiREQUEST_MODIFY) ? MAPI_MODIFY : MAPI_BEST_ACCESS,
+			bModify == mfcmapiREQUEST_MODIFY ? MAPI_MODIFY : MAPI_BEST_ACCESS,
 			NULL,
 			reinterpret_cast<LPUNKNOWN*>(lppProp)));
 	}
@@ -1308,7 +1309,7 @@ void CContentsTableListCtrl::OnItemChanged(_In_ NMHDR* pNMHDR, _In_ LRESULT* pRe
 	if (GetKeyState(VK_RIGHT) < 0 || GetKeyState(VK_LEFT) < 0) return;
 
 	// Keep all our logic in here
-	if ((pNMListView->uNewState & LVIS_FOCUSED) && m_lpHostDlg)
+	if (pNMListView->uNewState & LVIS_FOCUSED && m_lpHostDlg)
 	{
 		LPMAPIPROP lpMAPIProp = nullptr;
 		SortListData* lpData = nullptr;
