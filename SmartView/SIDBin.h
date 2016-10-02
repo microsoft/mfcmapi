@@ -11,7 +11,7 @@ private:
 	void Parse();
 	_Check_return_ wstring ToStringInternal();
 
-	LPTSTR m_lpSidName;
-	LPTSTR m_lpSidDomain;
+	LPWSTR m_lpSidName;
+	LPWSTR m_lpSidDomain;
 	wstring m_lpStringSid;
 };

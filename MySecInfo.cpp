@@ -456,7 +456,7 @@ wstring ACEToString(_In_ void* pACE, eAceType acetype)
 	DWORD dwSidDomain = 0;
 	SID_NAME_USE SidNameUse;
 
-	WC_B(LookupAccountSid(
+	WC_B(LookupAccountSidW(
 		NULL,
 		SidStart,
 		NULL,
@@ -466,19 +466,19 @@ wstring ACEToString(_In_ void* pACE, eAceType acetype)
 		&SidNameUse));
 	hRes = S_OK;
 
-	LPTSTR lpSidName = nullptr;
-	LPTSTR lpSidDomain = nullptr;
+	LPWSTR lpSidName = nullptr;
+	LPWSTR lpSidDomain = nullptr;
 
 #pragma warning(push)
 #pragma warning(disable:6211)
-	if (dwSidName) lpSidName = new TCHAR[dwSidName];
-	if (dwSidDomain) lpSidDomain = new TCHAR[dwSidDomain];
+	if (dwSidName) lpSidName = new WCHAR[dwSidName];
+	if (dwSidDomain) lpSidDomain = new WCHAR[dwSidDomain];
 #pragma warning(pop)
 
 	// Only make the call if we got something to get
 	if (lpSidName || lpSidDomain)
 	{
-		WC_B(LookupAccountSid(
+		WC_B(LookupAccountSidW(
 			NULL,
 			SidStart,
 			lpSidName,
@@ -506,8 +506,8 @@ wstring ACEToString(_In_ void* pACE, eAceType acetype)
 		break;
 	};
 
-	auto szDomain = lpSidDomain ? LPCTSTRToWstring(lpSidDomain) : formatmessage(IDS_NODOMAIN);
-	auto szName = lpSidName ? LPCTSTRToWstring(lpSidName) : formatmessage(IDS_NONAME);
+	auto szDomain = lpSidDomain ? lpSidDomain : formatmessage(IDS_NODOMAIN);
+	auto szName = lpSidName ? lpSidName : formatmessage(IDS_NONAME);
 	auto szSID = GetTextualSid(SidStart);
 	if (szSID.empty()) szSID = formatmessage(IDS_NOSID);
 	delete[] lpSidDomain;
