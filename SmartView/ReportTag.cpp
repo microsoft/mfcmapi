@@ -1,26 +1,25 @@
 #include "stdafx.h"
-#include "..\stdafx.h"
 #include "ReportTag.h"
-#include "..\String.h"
-#include "..\InterpretProp2.h"
-#include "..\ExtraPropTags.h"
+#include "String.h"
+#include "InterpretProp2.h"
+#include "ExtraPropTags.h"
 
 ReportTag::ReportTag(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
 {
-	memset(m_Cookie, 0, sizeof(m_Cookie));
+	memset(m_Cookie, 0, sizeof m_Cookie);
 	m_Version = 0;
 	m_cbStoreEntryID = 0;
-	m_lpStoreEntryID = NULL;
+	m_lpStoreEntryID = nullptr;
 	m_cbFolderEntryID = 0;
-	m_lpFolderEntryID = NULL;
+	m_lpFolderEntryID = nullptr;
 	m_cbMessageEntryID = 0;
-	m_lpMessageEntryID = NULL;
+	m_lpMessageEntryID = nullptr;
 	m_cbSearchFolderEntryID = 0;
-	m_lpSearchFolderEntryID = NULL;
+	m_lpSearchFolderEntryID = nullptr;
 	m_cbMessageSearchKey = 0;
-	m_lpMessageSearchKey = NULL;
+	m_lpMessageSearchKey = nullptr;
 	m_cchAnsiText = 0;
-	m_lpszAnsiText = NULL;
+	m_lpszAnsiText = nullptr;
 }
 
 ReportTag::~ReportTag()
@@ -35,14 +34,14 @@ ReportTag::~ReportTag()
 
 void ReportTag::Parse()
 {
-	m_Parser.GetBYTESNoAlloc(sizeof(m_Cookie), sizeof(m_Cookie), (LPBYTE)m_Cookie);
+	m_Parser.GetBYTESNoAlloc(sizeof m_Cookie, sizeof m_Cookie, reinterpret_cast<LPBYTE>(m_Cookie));
 
 	// Version is big endian, so we have to read individual bytes
 	WORD hiWord = NULL;
 	WORD loWord = NULL;
 	m_Parser.GetWORD(&hiWord);
 	m_Parser.GetWORD(&loWord);
-	m_Version = (hiWord << 16) | loWord;
+	m_Version = hiWord << 16 | loWord;
 
 	m_Parser.GetDWORD(&m_cbStoreEntryID);
 	if (m_cbStoreEntryID)
@@ -88,11 +87,11 @@ _Check_return_ wstring ReportTag::ToStringInternal()
 	szReportTag = formatmessage(IDS_REPORTTAGHEADER);
 
 	SBinary sBin = { 0 };
-	sBin.cb = sizeof(m_Cookie);
-	sBin.lpb = (LPBYTE)m_Cookie;
+	sBin.cb = sizeof m_Cookie;
+	sBin.lpb = reinterpret_cast<LPBYTE>(m_Cookie);
 	szReportTag += BinToHexString(&sBin, true);
 
-	wstring szFlags = InterpretFlags(flagReportTagVersion, m_Version);
+	auto szFlags = InterpretFlags(flagReportTagVersion, m_Version);
 	szReportTag += formatmessage(IDS_REPORTTAGVERSION,
 		m_Version,
 		szFlags.c_str());

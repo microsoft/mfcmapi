@@ -5,9 +5,9 @@
 
 enum __ViewPaneFlags
 {
-	vpNone     = 0x0000,    // None
-	vpDirty    = 0x0001,    // Pane has been edited
-	vpReadonly = 0x0002,    // Pane is read only
+	vpNone = 0x0000, // None
+	vpDirty = 0x0001, // Pane has been edited
+	vpReadonly = 0x0002, // Pane is read only
 	vpCollapsible = 0x0004, // Pane can be collapsed and needs a collapse button
 };
 
@@ -49,7 +49,7 @@ public:
 		int iButtonHeight, // Height of buttons below the control
 		int iEditHeight); // height of an edit control
 	void SetAddInLabel(wstring szLabel);
-	bool MatchID(UINT nID);
+	bool MatchID(UINT nID) const;
 
 protected:
 	int m_iControl; // Number of the view pane in the view - used for callbacks and layout

@@ -1,16 +1,14 @@
 #include "stdafx.h"
-#include "..\stdafx.h"
 #include "RestrictionStruct.h"
-#include "SmartView.h"
 #include "PropertyStruct.h"
-#include "..\String.h"
-#include "..\InterpretProp.h"
+#include "String.h"
+#include "InterpretProp.h"
 
 RestrictionStruct::RestrictionStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, bool bRuleCondition, bool bExtended) : SmartViewParser(cbBin, lpBin)
 {
 	m_bRuleCondition = bRuleCondition;
 	m_bExtended = bExtended;
-	m_lpRes = NULL;
+	m_lpRes = nullptr;
 }
 
 RestrictionStruct::~RestrictionStruct()
@@ -40,7 +38,7 @@ _Check_return_ wstring RestrictionStruct::ToStringInternal()
 	wstring szRestriction;
 
 	szRestriction = formatmessage(IDS_RESTRICTIONDATA);
-	szRestriction += RestrictionToString(m_lpRes, NULL);
+	szRestriction += RestrictionToString(m_lpRes, nullptr);
 
 	return szRestriction;
 }
@@ -60,8 +58,7 @@ bool RestrictionStruct::BinToRestriction(ULONG ulDepth, _In_ LPSRestriction psrR
 	BYTE bTemp = 0;
 	WORD wTemp = 0;
 	DWORD dwTemp = 0;
-	DWORD i = 0;
-	bool bRet = true;
+	auto bRet = true;
 
 	if (bRuleCondition)
 	{
@@ -95,7 +92,7 @@ bool RestrictionStruct::BinToRestriction(ULONG ulDepth, _In_ LPSRestriction psrR
 			if (psrRestriction->res.resAnd.lpRes)
 			{
 				memset(psrRestriction->res.resAnd.lpRes, 0, sizeof(SRestriction)* psrRestriction->res.resAnd.cRes);
-				for (i = 0; i < psrRestriction->res.resAnd.cRes; i++)
+				for (ULONG i = 0; i < psrRestriction->res.resAnd.cRes; i++)
 				{
 					bRet = BinToRestriction(
 						ulDepth + 1,
@@ -128,7 +125,7 @@ bool RestrictionStruct::BinToRestriction(ULONG ulDepth, _In_ LPSRestriction psrR
 		break;
 	case RES_PROPERTY:
 		if (bRuleCondition)
-			m_Parser.GetBYTE((LPBYTE)&psrRestriction->res.resProperty.relop);
+			m_Parser.GetBYTE(reinterpret_cast<LPBYTE>(&psrRestriction->res.resProperty.relop));
 		else
 			m_Parser.GetDWORD(&psrRestriction->res.resProperty.relop);
 
@@ -139,7 +136,7 @@ bool RestrictionStruct::BinToRestriction(ULONG ulDepth, _In_ LPSRestriction psrR
 		break;
 	case RES_COMPAREPROPS:
 		if (bRuleCondition)
-			m_Parser.GetBYTE((LPBYTE)&psrRestriction->res.resCompareProps.relop);
+			m_Parser.GetBYTE(reinterpret_cast<LPBYTE>(&psrRestriction->res.resCompareProps.relop));
 		else
 			m_Parser.GetDWORD(&psrRestriction->res.resCompareProps.relop);
 
@@ -148,7 +145,7 @@ bool RestrictionStruct::BinToRestriction(ULONG ulDepth, _In_ LPSRestriction psrR
 		break;
 	case RES_BITMASK:
 		if (bRuleCondition)
-			m_Parser.GetBYTE((LPBYTE)&psrRestriction->res.resBitMask.relBMR);
+			m_Parser.GetBYTE(reinterpret_cast<LPBYTE>(&psrRestriction->res.resBitMask.relBMR));
 		else
 			m_Parser.GetDWORD(&psrRestriction->res.resBitMask.relBMR);
 
@@ -157,7 +154,7 @@ bool RestrictionStruct::BinToRestriction(ULONG ulDepth, _In_ LPSRestriction psrR
 		break;
 	case RES_SIZE:
 		if (bRuleCondition)
-			m_Parser.GetBYTE((LPBYTE)&psrRestriction->res.resSize.relop);
+			m_Parser.GetBYTE(reinterpret_cast<LPBYTE>(&psrRestriction->res.resSize.relop));
 		else
 			m_Parser.GetDWORD(&psrRestriction->res.resSize.relop);
 
@@ -182,7 +179,7 @@ bool RestrictionStruct::BinToRestriction(ULONG ulDepth, _In_ LPSRestriction psrR
 		break;
 	case RES_COMMENT:
 		if (bRuleCondition)
-			m_Parser.GetBYTE((LPBYTE)&psrRestriction->res.resComment.cValues);
+			m_Parser.GetBYTE(reinterpret_cast<LPBYTE>(&psrRestriction->res.resComment.cValues));
 		else
 			m_Parser.GetDWORD(&psrRestriction->res.resComment.cValues);
 
@@ -226,7 +223,7 @@ bool RestrictionStruct::BinToRestriction(ULONG ulDepth, _In_ LPSRestriction psrR
 }
 
 // Does not delete lpRes, which must be released manually. See RES_AND case below.
-void RestrictionStruct::DeleteRestriction(_In_ LPSRestriction lpRes)
+void RestrictionStruct::DeleteRestriction(_In_ LPSRestriction lpRes) const
 {
 	if (!lpRes) return;
 
@@ -236,8 +233,7 @@ void RestrictionStruct::DeleteRestriction(_In_ LPSRestriction lpRes)
 	case RES_OR:
 		if (lpRes->res.resAnd.lpRes)
 		{
-			DWORD i = 0;
-			for (i = 0; i < lpRes->res.resAnd.cRes; i++)
+			for (ULONG i = 0; i < lpRes->res.resAnd.cRes; i++)
 			{
 				DeleteRestriction(&lpRes->res.resAnd.lpRes[i]);
 			}

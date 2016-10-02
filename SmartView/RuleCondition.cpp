@@ -1,25 +1,23 @@
 #include "stdafx.h"
-#include "..\stdafx.h"
 #include "RuleCondition.h"
 #include "RestrictionStruct.h"
-#include "..\String.h"
-#include "..\InterpretProp2.h"
+#include "String.h"
+#include "InterpretProp2.h"
 
 RuleCondition::RuleCondition(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, bool bExtended) : SmartViewParser(cbBin, lpBin)
 {
 	m_NamedPropertyInformation = { 0 };
-	m_lpRes = NULL;
+	m_lpRes = nullptr;
 	m_bExtended = bExtended;
 }
 
 RuleCondition::~RuleCondition()
 {
 	delete[] m_NamedPropertyInformation.PropId;
-	WORD i = 0;
 	m_NamedPropertyInformation.NoOfNamedProps;
 	if (m_NamedPropertyInformation.PropertyName)
 	{
-		for (i = 0; i < m_NamedPropertyInformation.NoOfNamedProps; i++)
+		for (auto i = 0; i < m_NamedPropertyInformation.NoOfNamedProps; i++)
 		{
 			delete[] m_NamedPropertyInformation.PropertyName[i].Name;
 		}
@@ -31,8 +29,6 @@ RuleCondition::~RuleCondition()
 
 void RuleCondition::Parse()
 {
-	WORD i = 0;
-
 	m_Parser.GetWORD(&m_NamedPropertyInformation.NoOfNamedProps);
 	if (m_NamedPropertyInformation.NoOfNamedProps && m_NamedPropertyInformation.NoOfNamedProps < _MaxEntriesLarge)
 	{
@@ -40,7 +36,7 @@ void RuleCondition::Parse()
 		if (m_NamedPropertyInformation.PropId)
 		{
 			memset(m_NamedPropertyInformation.PropId, 0, m_NamedPropertyInformation.NoOfNamedProps*sizeof(WORD));
-			for (i = 0; i < m_NamedPropertyInformation.NoOfNamedProps; i++)
+			for (auto i = 0; i < m_NamedPropertyInformation.NoOfNamedProps; i++)
 			{
 				m_Parser.GetWORD(&m_NamedPropertyInformation.PropId[i]);
 			}
@@ -51,10 +47,10 @@ void RuleCondition::Parse()
 		if (m_NamedPropertyInformation.PropertyName)
 		{
 			memset(m_NamedPropertyInformation.PropertyName, 0, m_NamedPropertyInformation.NoOfNamedProps*sizeof(PropertyNameStruct));
-			for (i = 0; i < m_NamedPropertyInformation.NoOfNamedProps; i++)
+			for (auto i = 0; i < m_NamedPropertyInformation.NoOfNamedProps; i++)
 			{
 				m_Parser.GetBYTE(&m_NamedPropertyInformation.PropertyName[i].Kind);
-				m_Parser.GetBYTESNoAlloc(sizeof(GUID), sizeof(GUID), (LPBYTE)&m_NamedPropertyInformation.PropertyName[i].Guid);
+				m_Parser.GetBYTESNoAlloc(sizeof(GUID), sizeof(GUID), reinterpret_cast<LPBYTE>(&m_NamedPropertyInformation.PropertyName[i].Guid));
 				if (MNID_ID == m_NamedPropertyInformation.PropertyName[i].Kind)
 				{
 					m_Parser.GetDWORD(&m_NamedPropertyInformation.PropertyName[i].LID);
@@ -71,7 +67,7 @@ void RuleCondition::Parse()
 	}
 
 	m_lpRes = new RestrictionStruct(
-		(ULONG)m_Parser.RemainingBytes(),
+		static_cast<ULONG>(m_Parser.RemainingBytes()),
 		m_Parser.GetCurrentAddress(),
 		true,
 		m_bExtended);
@@ -103,8 +99,7 @@ _Check_return_ wstring RuleCondition::ToStringInternal()
 		szRuleCondition += formatmessage(IDS_RULECONNAMEPROPSIZE,
 			m_NamedPropertyInformation.NamedPropertiesSize);
 
-		WORD i = 0;
-		for (i = 0; i < m_NamedPropertyInformation.NoOfNamedProps; i++)
+		for (auto i = 0; i < m_NamedPropertyInformation.NoOfNamedProps; i++)
 		{
 			szRuleCondition += formatmessage(IDS_RULECONNAMEPROPID, i, m_NamedPropertyInformation.PropId[i]);
 

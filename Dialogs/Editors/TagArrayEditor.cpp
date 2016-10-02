@@ -15,7 +15,7 @@ CTagArrayEditor::CTagArrayEditor(
 	_In_opt_ LPSPropTagArray lpTagArray,
 	bool bIsAB,
 	_In_opt_ LPMAPIPROP lpMAPIProp) :
-	CEditor(pParentWnd, uidTitle, uidPrompt, 0, CEDITOR_BUTTON_OK | (lpContentsTable ? (CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_ACTION2) : 0) | CEDITOR_BUTTON_CANCEL, IDS_QUERYCOLUMNS, IDS_FLAGS, NULL)
+	CEditor(pParentWnd, uidTitle, uidPrompt, 0, CEDITOR_BUTTON_OK | (lpContentsTable ? CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_ACTION2 : 0) | CEDITOR_BUTTON_CANCEL, IDS_QUERYCOLUMNS, IDS_FLAGS, NULL)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 
@@ -76,7 +76,6 @@ _Check_return_ bool CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 
 	auto hRes = S_OK;
 	auto ulOrigPropTag = lpData->Prop()->m_ulPropTag;
-	auto ulNewPropTag = ulOrigPropTag;
 
 	CPropertyTagEditor MyPropertyTag(
 		NULL, // title
@@ -88,7 +87,7 @@ _Check_return_ bool CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 
 	WC_H(MyPropertyTag.DisplayDialog());
 	if (S_OK != hRes) return false;
-	ulNewPropTag = MyPropertyTag.GetPropertyTag();
+	auto ulNewPropTag = MyPropertyTag.GetPropertyTag();
 
 	if (ulNewPropTag != ulOrigPropTag)
 	{
@@ -125,7 +124,7 @@ _Check_return_ bool CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 	return false;
 }
 
-void CTagArrayEditor::ReadTagArrayToList(ULONG ulListNum)
+void CTagArrayEditor::ReadTagArrayToList(ULONG ulListNum) const
 {
 	if (!IsValidList(ulListNum)) return;
 
@@ -141,10 +140,9 @@ void CTagArrayEditor::ReadTagArrayToList(ULONG ulListNum)
 
 	if (m_lpTagArray)
 	{
-		ULONG iTagCount = 0;
 		auto cValues = m_lpTagArray->cValues;
 
-		for (iTagCount = 0; iTagCount < cValues; iTagCount++)
+		for (ULONG iTagCount = 0; iTagCount < cValues; iTagCount++)
 		{
 			auto ulPropTag = m_lpTagArray->aulPropTag[iTagCount];
 			auto lpData = InsertListRow(ulListNum, iTagCount, format(L"%u", iTagCount)); // STRING_OK
@@ -199,8 +197,7 @@ void CTagArrayEditor::WriteListToTagArray(ULONG ulListNum)
 	{
 		m_lpOutputTagArray->cValues = ulListCount;
 
-		ULONG iTagCount = 0;
-		for (iTagCount = 0; iTagCount < m_lpOutputTagArray->cValues; iTagCount++)
+		for (ULONG iTagCount = 0; iTagCount < m_lpOutputTagArray->cValues; iTagCount++)
 		{
 			auto lpData = GetListRowData(ulListNum, iTagCount);
 			if (lpData && lpData->Prop())

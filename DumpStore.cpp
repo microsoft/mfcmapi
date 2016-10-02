@@ -65,8 +65,6 @@ void CDumpStore::DisableEmbeddedAttachments()
 	m_bOutputAttachments = false;
 }
 
-// --------------------------------------------------------------------------------- //
-
 void CDumpStore::BeginMailboxTableWork(_In_ wstring szExchangeServerName)
 {
 	if (m_bOutputList) return;

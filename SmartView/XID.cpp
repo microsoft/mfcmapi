@@ -1,13 +1,12 @@
 #include "stdafx.h"
-#include "..\stdafx.h"
 #include "XID.h"
-#include "..\InterpretProp2.h"
+#include "InterpretProp2.h"
 
 XID::XID(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
 {
 	m_NamespaceGuid = { 0 };
 	m_cbLocalId = 0;
-	m_LocalID = NULL;
+	m_LocalID = nullptr;
 }
 
 XID::~XID()

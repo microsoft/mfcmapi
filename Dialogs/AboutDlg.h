@@ -17,6 +17,6 @@ private:
 	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	BOOL    OnInitDialog();
 
-	CRichEditCtrl	m_HelpText;
-	CButton			m_DisplayAboutCheck;
+	CRichEditCtrl m_HelpText;
+	CButton m_DisplayAboutCheck;
 };

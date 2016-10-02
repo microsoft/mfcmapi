@@ -1,27 +1,24 @@
 #include "stdafx.h"
-#include "..\stdafx.h"
 #include "AdditionalRenEntryIDs.h"
-#include "..\String.h"
-#include "..\InterpretProp2.h"
-#include "..\ExtraPropTags.h"
+#include "String.h"
+#include "InterpretProp2.h"
+#include "ExtraPropTags.h"
 
 AdditionalRenEntryIDs::AdditionalRenEntryIDs(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
 {
 	m_wPersistDataCount = 0;
-	m_ppdPersistData = NULL;
+	m_ppdPersistData = nullptr;
 }
 
 AdditionalRenEntryIDs::~AdditionalRenEntryIDs()
 {
 	if (m_ppdPersistData)
 	{
-		WORD iPersistElement = 0;
-		for (iPersistElement = 0; iPersistElement < m_wPersistDataCount; iPersistElement++)
+		for (WORD iPersistElement = 0; iPersistElement < m_wPersistDataCount; iPersistElement++)
 		{
 			if (m_ppdPersistData[iPersistElement].ppeDataElement)
 			{
-				WORD iDataElement = 0;
-				for (iDataElement = 0; iDataElement < m_ppdPersistData[iPersistElement].wDataElementCount; iDataElement++)
+				for (WORD iDataElement = 0; iDataElement < m_ppdPersistData[iPersistElement].wDataElementCount; iDataElement++)
 				{
 					delete[] m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].lpbElementData;
 				}
@@ -66,8 +63,7 @@ void AdditionalRenEntryIDs::Parse()
 		if (m_ppdPersistData)
 		{
 			memset(m_ppdPersistData, 0, m_wPersistDataCount * sizeof(PersistData));
-			WORD iPersistElement = 0;
-			for (iPersistElement = 0; iPersistElement < m_wPersistDataCount; iPersistElement++)
+			for (WORD iPersistElement = 0; iPersistElement < m_wPersistDataCount; iPersistElement++)
 			{
 				BinToPersistData(
 					&m_ppdPersistData[iPersistElement]);
@@ -113,8 +109,7 @@ void AdditionalRenEntryIDs::BinToPersistData(_Out_ PersistData* ppdPersistData)
 		{
 			memset(ppdPersistData->ppeDataElement, 0, ppdPersistData->wDataElementCount * sizeof(PersistElement));
 
-			WORD iDataElement = 0;
-			for (iDataElement = 0; iDataElement < ppdPersistData->wDataElementCount; iDataElement++)
+			for (WORD iDataElement = 0; iDataElement < ppdPersistData->wDataElementCount; iDataElement++)
 			{
 				m_Parser.GetWORD(&ppdPersistData->ppeDataElement[iDataElement].wElementID);
 				m_Parser.GetWORD(&ppdPersistData->ppeDataElement[iDataElement].wElementDataSize);
@@ -130,7 +125,7 @@ void AdditionalRenEntryIDs::BinToPersistData(_Out_ PersistData* ppdPersistData)
 
 	// We'll trust wDataElementsSize to dictate our record size.
 	// Count the 2 WORD size header fields too.
-	size_t cbRecordSize = ppdPersistData->wDataElementsSize + sizeof(WORD) * 2;
+	auto cbRecordSize = ppdPersistData->wDataElementsSize + sizeof(WORD) * 2;
 
 	// Junk data remains - can't use GetRemainingData here since it would eat the whole buffer
 	if (m_Parser.GetCurrentOffset() < cbRecordSize)
@@ -142,14 +137,13 @@ void AdditionalRenEntryIDs::BinToPersistData(_Out_ PersistData* ppdPersistData)
 
 _Check_return_ wstring AdditionalRenEntryIDs::ToStringInternal()
 {
-	wstring szAdditionalRenEntryIDs = formatmessage(IDS_AEIDHEADER, m_wPersistDataCount);
+	auto szAdditionalRenEntryIDs = formatmessage(IDS_AEIDHEADER, m_wPersistDataCount);
 
 	if (m_ppdPersistData)
 	{
-		WORD iPersistElement = 0;
-		for (iPersistElement = 0; iPersistElement < m_wPersistDataCount; iPersistElement++)
+		for (WORD iPersistElement = 0; iPersistElement < m_wPersistDataCount; iPersistElement++)
 		{
-			wstring szPersistID = InterpretFlags(flagPersistID, m_ppdPersistData[iPersistElement].wPersistID);
+			auto szPersistID = InterpretFlags(flagPersistID, m_ppdPersistData[iPersistElement].wPersistID);
 			szAdditionalRenEntryIDs += formatmessage(IDS_AEIDPERSISTELEMENT,
 				iPersistElement,
 				m_ppdPersistData[iPersistElement].wPersistID,
@@ -158,10 +152,9 @@ _Check_return_ wstring AdditionalRenEntryIDs::ToStringInternal()
 
 			if (m_ppdPersistData[iPersistElement].ppeDataElement)
 			{
-				WORD iDataElement = 0;
-				for (iDataElement = 0; iDataElement < m_ppdPersistData[iPersistElement].wDataElementCount; iDataElement++)
+				for (WORD iDataElement = 0; iDataElement < m_ppdPersistData[iPersistElement].wDataElementCount; iDataElement++)
 				{
-					wstring szElementID = InterpretFlags(flagElementID, m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID);
+					auto szElementID = InterpretFlags(flagElementID, m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID);
 					szAdditionalRenEntryIDs += formatmessage(IDS_AEIDDATAELEMENT,
 						iDataElement,
 						m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID,
@@ -169,7 +162,7 @@ _Check_return_ wstring AdditionalRenEntryIDs::ToStringInternal()
 						m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementDataSize);
 
 					SBinary sBin = { 0 };
-					sBin.cb = (ULONG)m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementDataSize;
+					sBin.cb = static_cast<ULONG>(m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementDataSize);
 					sBin.lpb = m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].lpbElementData;
 					szAdditionalRenEntryIDs += BinToHexString(&sBin, true);
 				}

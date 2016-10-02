@@ -1,28 +1,25 @@
 #include "stdafx.h"
-#include "..\stdafx.h"
 #include "MrMAPI.h"
-#include "..\MAPIFunctions.h"
-#include "..\String.h"
+#include "String.h"
 #include <io.h>
-#include "..\SmartView\SmartView.h"
+#include "SmartView/SmartView.h"
 
 void DoSmartView(_In_ MYOPTIONS ProgOpts)
 {
 	// Ignore the reg key that disables smart view parsing
 	RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD = true;
 
-	__ParsingTypeEnum ulStructType = IDS_STNOPARSING;
+	auto ulStructType = IDS_STNOPARSING;
 
 	if (ProgOpts.ulSVParser && ProgOpts.ulSVParser < ulSmartViewParserTypeArray)
 	{
-		ulStructType = (__ParsingTypeEnum)SmartViewParserTypeArray[ProgOpts.ulSVParser].ulValue;
+		ulStructType = static_cast<__ParsingTypeEnum>(SmartViewParserTypeArray[ProgOpts.ulSVParser].ulValue);
 	}
 
 	if (ulStructType)
 	{
-		FILE* fIn = NULL;
-		FILE* fOut = NULL;
-		fIn = _wfopen(ProgOpts.lpszInput.c_str(), L"rb");
+		FILE* fOut = nullptr;
+		auto fIn = _wfopen(ProgOpts.lpszInput.c_str(), L"rb");
 		if (!fIn) printf("Cannot open input file %ws\n", ProgOpts.lpszInput.c_str());
 		if (!ProgOpts.lpszOutput.empty())
 		{
@@ -32,10 +29,10 @@ void DoSmartView(_In_ MYOPTIONS ProgOpts)
 
 		if (fIn && (ProgOpts.lpszOutput.empty() || fOut))
 		{
-			int iDesc = _fileno(fIn);
-			long iLength = _filelength(iDesc);
+			auto iDesc = _fileno(fIn);
+			auto iLength = _filelength(iDesc);
 
-			LPBYTE lpbIn = new BYTE[iLength + 1]; // +1 for NULL
+			auto lpbIn = new BYTE[iLength + 1]; // +1 for NULL
 			if (lpbIn)
 			{
 				memset(lpbIn, 0, sizeof(BYTE)*(iLength + 1));
@@ -49,13 +46,13 @@ void DoSmartView(_In_ MYOPTIONS ProgOpts)
 				}
 				else
 				{
-					wstring str = LPCSTRToWstring((LPCSTR)lpbIn);
+					auto str = LPCSTRToWstring(reinterpret_cast<LPCSTR>(lpbIn));
 					bin = HexStringToBin(str);
 					Bin.cb = static_cast<ULONG>(bin.size());
 					Bin.lpb = bin.data();
 				}
 
-				wstring szString = InterpretBinaryAsString(Bin, ulStructType, NULL);
+				auto szString = InterpretBinaryAsString(Bin, ulStructType, nullptr);
 				if (!szString.empty())
 				{
 					if (fOut)

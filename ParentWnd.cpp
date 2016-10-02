@@ -1,5 +1,4 @@
 // ParentWnd.cpp : implementation file
-//
 
 #include "stdafx.h"
 #include "ParentWnd.h"
@@ -33,18 +32,15 @@ void CALLBACK MyWinEventProc(
 {
 	if (EVENT_OBJECT_REORDER == event)
 	{
-		HRESULT hRes = S_OK;
+		auto hRes = S_OK;
 		// We don't need to wait on the results - just post the message
 		WC_B(::PostMessage(
 			hwnd,
 			WM_MFCMAPI_SAVECOLUMNORDERHEADER,
-			(WPARAM)NULL,
-			(LPARAM)NULL));
+			WPARAM(NULL),
+			LPARAM(NULL)));
 	}
-} // MyWinEventProc
-
-/////////////////////////////////////////////////////////////////////////////
-// CParentWnd
+}
 
 CParentWnd::CParentWnd()
 {
@@ -72,7 +68,7 @@ CParentWnd::CParentWnd()
 	m_hwinEventHook = SetWinEventHook(
 		EVENT_OBJECT_REORDER,
 		EVENT_OBJECT_REORDER,
-		NULL,
+		nullptr,
 		&MyWinEventProc,
 		GetCurrentProcessId(),
 		NULL,
@@ -85,7 +81,7 @@ CParentWnd::CParentWnd()
 
 	// Notice we never create a window here!
 	TRACE_CONSTRUCTOR(CLASS);
-} // CParentWnd::CParentWnd
+}
 
 CParentWnd::~CParentWnd()
 {
@@ -100,34 +96,35 @@ CParentWnd::~CParentWnd()
 	CloseDebugFile();
 	// Since we're killing what m_pMainWnd points to here, we need to clear it
 	// Else MFC will try to route messages to it
-	theApp.m_pMainWnd = NULL;
+	theApp.m_pMainWnd = nullptr;
 	AfxPostQuitMessage(0);
-} // CParentWnd::~CParentWnd
+}
 
 _Check_return_ STDMETHODIMP CParentWnd::QueryInterface(REFIID riid,
 	_Deref_out_opt_ LPVOID * ppvObj)
 {
-	*ppvObj = 0;
+	*ppvObj = nullptr;
 	if (riid == IID_IUnknown)
 	{
-		*ppvObj = (LPVOID)this;
+		*ppvObj = static_cast<LPVOID>(this);
 		AddRef();
 		return S_OK;
 	}
+
 	return E_NOINTERFACE;
-} // CParentWnd::QueryInterface
+}
 
 STDMETHODIMP_(ULONG) CParentWnd::AddRef()
 {
-	LONG lCount = InterlockedIncrement(&m_cRef);
+	auto lCount = InterlockedIncrement(&m_cRef);
 	TRACE_ADDREF(CLASS, lCount);
 	return lCount;
-} // CParentWnd::AddRef
+}
 
 STDMETHODIMP_(ULONG) CParentWnd::Release()
 {
-	LONG lCount = InterlockedDecrement(&m_cRef);
+	auto lCount = InterlockedDecrement(&m_cRef);
 	TRACE_RELEASE(CLASS, lCount);
 	if (!lCount) delete this;
 	return lCount;
-} // CParentWnd::Release
+}

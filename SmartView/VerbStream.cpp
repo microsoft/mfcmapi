@@ -1,26 +1,23 @@
 #include "stdafx.h"
-#include "..\stdafx.h"
 #include "VerbStream.h"
-#include "..\String.h"
+#include "String.h"
 #include "SmartView.h"
-#include "..\ExtraPropTags.h"
+#include "ExtraPropTags.h"
 
 VerbStream::VerbStream(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
 {
 	m_Version = 0;
 	m_Count = 0;
-	m_lpVerbData = 0;
+	m_lpVerbData = nullptr;
 	m_Version2 = 0;
-	m_lpVerbExtraData = 0;
+	m_lpVerbExtraData = nullptr;
 }
 
 VerbStream::~VerbStream()
 {
 	if (m_Count && m_lpVerbData)
 	{
-		ULONG i = 0;
-
-		for (i = 0; i < m_Count; i++)
+		for (ULONG i = 0; i < m_Count; i++)
 		{
 			delete[] m_lpVerbData[i].DisplayName;
 			delete[] m_lpVerbData[i].MsgClsName;
@@ -33,9 +30,7 @@ VerbStream::~VerbStream()
 
 	if (m_Count && m_lpVerbExtraData)
 	{
-		ULONG i = 0;
-
-		for (i = 0; i < m_Count; i++)
+		for (ULONG i = 0; i < m_Count; i++)
 		{
 			delete[] m_lpVerbExtraData[i].DisplayName;
 			delete[] m_lpVerbExtraData[i].DisplayNameRepeat;
@@ -56,9 +51,7 @@ void VerbStream::Parse()
 	if (m_lpVerbData)
 	{
 		memset(m_lpVerbData, 0, sizeof(VerbDataStruct)*m_Count);
-		ULONG i = 0;
-
-		for (i = 0; i < m_Count; i++)
+		for (ULONG i = 0; i < m_Count; i++)
 		{
 			m_Parser.GetDWORD(&m_lpVerbData[i].VerbType);
 			m_Parser.GetBYTE(&m_lpVerbData[i].DisplayNameCount);
@@ -87,9 +80,7 @@ void VerbStream::Parse()
 	if (m_lpVerbExtraData)
 	{
 		memset(m_lpVerbExtraData, 0, sizeof(VerbExtraDataStruct)*m_Count);
-		ULONG i = 0;
-
-		for (i = 0; i < m_Count; i++)
+		for (ULONG i = 0; i < m_Count; i++)
 		{
 			m_Parser.GetBYTE(&m_lpVerbExtraData[i].DisplayNameCount);
 			m_Parser.GetStringW(m_lpVerbExtraData[i].DisplayNameCount, &m_lpVerbExtraData[i].DisplayName);
@@ -101,14 +92,13 @@ void VerbStream::Parse()
 
 _Check_return_ wstring VerbStream::ToStringInternal()
 {
-	wstring szVerbString = formatmessage(IDS_VERBHEADER, m_Version, m_Count);
+	auto szVerbString = formatmessage(IDS_VERBHEADER, m_Version, m_Count);
 
 	if (m_Count && m_lpVerbData)
 	{
-		ULONG i = 0;
-		for (i = 0; i < m_Count; i++)
+		for (ULONG i = 0; i < m_Count; i++)
 		{
-			wstring szVerb = InterpretNumberAsStringProp(m_lpVerbData[i].ID, PR_LAST_VERB_EXECUTED);
+			auto szVerb = InterpretNumberAsStringProp(m_lpVerbData[i].ID, PR_LAST_VERB_EXECUTED);
 			szVerbString += formatmessage(IDS_VERBDATA,
 				i,
 				m_lpVerbData[i].VerbType,
@@ -136,8 +126,7 @@ _Check_return_ wstring VerbStream::ToStringInternal()
 
 	if (m_Count && m_lpVerbData)
 	{
-		ULONG i = 0;
-		for (i = 0; i < m_Count; i++)
+		for (ULONG i = 0; i < m_Count; i++)
 		{
 			szVerbString += formatmessage(IDS_VERBEXTRADATA,
 				i,

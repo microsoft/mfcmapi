@@ -36,14 +36,14 @@ CHierarchyTableDlg::CHierarchyTableDlg(
 	m_nIDContextMenu = nIDContextMenu;
 
 	m_ulDisplayFlags = dfNormal;
-	m_lpHierarchyTableTreeCtrl = NULL;
-	m_lpContainer = NULL;
+	m_lpHierarchyTableTreeCtrl = nullptr;
+	m_lpContainer = nullptr;
 	// need to make sure whatever gets passed to us is really a container
 	if (lpRootContainer)
 	{
-		HRESULT hRes = S_OK;
-		LPMAPICONTAINER lpTemp = NULL;
-		EC_MAPI(lpRootContainer->QueryInterface(IID_IMAPIContainer, (LPVOID*)&lpTemp));
+		auto hRes = S_OK;
+		LPMAPICONTAINER lpTemp = nullptr;
+		EC_MAPI(lpRootContainer->QueryInterface(IID_IMAPIContainer, reinterpret_cast<LPVOID*>(&lpTemp)));
 		if (lpTemp)
 		{
 			m_lpContainer = lpTemp;
@@ -70,17 +70,16 @@ void CHierarchyTableDlg::OnInitMenu(_In_ CMenu* pMenu)
 	{
 		if (m_lpHierarchyTableTreeCtrl)
 		{
-			bool bItemSelected = m_lpHierarchyTableTreeCtrl->IsItemSelected();
+			auto bItemSelected = m_lpHierarchyTableTreeCtrl->IsItemSelected();
 			pMenu->EnableMenuItem(ID_DISPLAYSELECTEDITEM, DIM(bItemSelected));
 			pMenu->EnableMenuItem(ID_DISPLAYHIERARCHYTABLE, DIM(bItemSelected));
 			pMenu->EnableMenuItem(ID_EDITSEARCHCRITERIA, DIM(bItemSelected));
-			ULONG ulMenu = ID_ADDINMENU;
-			for (ulMenu = ID_ADDINMENU; ulMenu < ID_ADDINMENU + m_ulAddInMenuItems; ulMenu++)
+			for (ULONG ulMenu = ID_ADDINMENU; ulMenu < ID_ADDINMENU + m_ulAddInMenuItems; ulMenu++)
 			{
-				LPMENUITEM lpAddInMenu = GetAddinMenuItem(m_hWnd, ulMenu);
+				auto lpAddInMenu = GetAddinMenuItem(m_hWnd, ulMenu);
 				if (!lpAddInMenu) continue;
 
-				ULONG ulFlags = lpAddInMenu->ulFlags;
+				auto ulFlags = lpAddInMenu->ulFlags;
 				UINT uiEnable = MF_ENABLED;
 
 				if ((ulFlags & MENU_FLAGS_MULTISELECT) && !bItemSelected) uiEnable = MF_GRAYED;
@@ -97,15 +96,15 @@ void CHierarchyTableDlg::OnCancel()
 {
 	ShowWindow(SW_HIDE);
 	if (m_lpHierarchyTableTreeCtrl) m_lpHierarchyTableTreeCtrl->Release();
-	m_lpHierarchyTableTreeCtrl = NULL;
+	m_lpHierarchyTableTreeCtrl = nullptr;
 	CBaseDialog::OnCancel();
 }
 
 void CHierarchyTableDlg::OnDisplayItem()
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
-	LPMAPICONTAINER lpMAPIContainer = m_lpHierarchyTableTreeCtrl->GetSelectedContainer(
+	auto lpMAPIContainer = m_lpHierarchyTableTreeCtrl->GetSelectedContainer(
 		mfcmapiREQUEST_MODIFY);
 	if (!lpMAPIContainer)
 	{
@@ -124,12 +123,12 @@ void CHierarchyTableDlg::OnDisplayItem()
 
 void CHierarchyTableDlg::OnDisplayHierarchyTable()
 {
-	HRESULT hRes = S_OK;
-	LPMAPITABLE lpMAPITable = NULL;
+	auto hRes = S_OK;
+	LPMAPITABLE lpMAPITable = nullptr;
 
 	if (!m_lpHierarchyTableTreeCtrl) return;
 
-	LPMAPICONTAINER lpContainer = m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY);
+	auto lpContainer = m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY);
 
 	if (lpContainer)
 	{
@@ -162,19 +161,19 @@ void CHierarchyTableDlg::OnDisplayHierarchyTable()
 
 void CHierarchyTableDlg::OnEditSearchCriteria()
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
 	if (!m_lpHierarchyTableTreeCtrl) return;
 
 	// Find the highlighted item
-	LPMAPIFOLDER lpMAPIFolder = (LPMAPIFOLDER)m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY);
+	auto lpMAPIFolder = static_cast<LPMAPIFOLDER>(m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiREQUEST_MODIFY));
 
 	if (lpMAPIFolder)
 	{
 		DebugPrintEx(DBGGeneric, CLASS, L"OnEditSearchCriteria", L"Calling GetSearchCriteria on %p.\n", lpMAPIFolder);
 
-		LPSRestriction lpRes = NULL;
-		LPENTRYLIST lpEntryList = NULL;
+		LPSRestriction lpRes = nullptr;
+		LPENTRYLIST lpEntryList = nullptr;
 		ULONG ulSearchState = 0;
 
 		WC_MAPI(lpMAPIFolder->GetSearchCriteria(
@@ -210,9 +209,9 @@ void CHierarchyTableDlg::OnEditSearchCriteria()
 			if (S_OK == hRes)
 			{
 				// do the set search criteria
-				LPSRestriction lpNewRes = MyCriteria.DetachModifiedSRestriction();
-				LPENTRYLIST lpNewEntryList = MyCriteria.DetachModifiedEntryList();
-				ULONG ulSearchFlags = MyCriteria.GetSearchFlags();
+				auto lpNewRes = MyCriteria.DetachModifiedSRestriction();
+				auto lpNewEntryList = MyCriteria.DetachModifiedEntryList();
+				auto ulSearchFlags = MyCriteria.GetSearchFlags();
 				EC_MAPI(lpMAPIFolder->SetSearchCriteria(
 					lpNewRes,
 					lpNewEntryList,
@@ -227,7 +226,7 @@ void CHierarchyTableDlg::OnEditSearchCriteria()
 
 BOOL CHierarchyTableDlg::OnInitDialog()
 {
-	BOOL bRet = CBaseDialog::OnInitDialog();
+	auto bRet = CBaseDialog::OnInitDialog();
 
 	if (m_lpFakeSplitter)
 	{
@@ -253,7 +252,7 @@ BOOL CHierarchyTableDlg::OnInitDialog()
 
 void CHierarchyTableDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
 	DebugPrintEx(DBGCreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);
 	CBaseDialog::CreateDialogAndMenu(nIDMenuResource, IDR_MENU_HIERARCHY_TABLE, IDS_HIERARCHYTABLE);
@@ -276,7 +275,7 @@ BOOL CHierarchyTableDlg::PreTranslateMessage(MSG* pMsg)
 		pMsg->message == WM_KEYDOWN &&
 		(pMsg->wParam == VK_RETURN || pMsg->wParam == VK_ESCAPE))
 	{
-		CEdit* edit = m_lpHierarchyTableTreeCtrl->GetEditControl();
+		auto edit = m_lpHierarchyTableTreeCtrl->GetEditControl();
 		if (edit)
 		{
 			edit->SendMessage(WM_KEYDOWN, pMsg->wParam, pMsg->lParam);
@@ -288,7 +287,7 @@ BOOL CHierarchyTableDlg::PreTranslateMessage(MSG* pMsg)
 
 void CHierarchyTableDlg::OnRefreshView()
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
 	DebugPrintEx(DBGGeneric, CLASS, L"OnRefreshView", L"\n");
 	if (m_lpHierarchyTableTreeCtrl)
@@ -300,19 +299,19 @@ _Check_return_ bool CHierarchyTableDlg::HandleAddInMenu(WORD wMenuSelect)
 	if (wMenuSelect < ID_ADDINMENU || ID_ADDINMENU + m_ulAddInMenuItems < wMenuSelect) return false;
 	if (!m_lpHierarchyTableTreeCtrl) return false;
 
-	LPMAPICONTAINER lpContainer = NULL;
+	LPMAPICONTAINER lpContainer = nullptr;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-	LPMENUITEM lpAddInMenu = GetAddinMenuItem(m_hWnd, wMenuSelect);
+	auto lpAddInMenu = GetAddinMenuItem(m_hWnd, wMenuSelect);
 	if (!lpAddInMenu) return false;
 
-	ULONG ulFlags = lpAddInMenu->ulFlags;
+	auto ulFlags = lpAddInMenu->ulFlags;
 
-	__mfcmapiModifyEnum fRequestModify =
+	auto fRequestModify =
 		(ulFlags & MENU_FLAGS_REQUESTMODIFY) ? mfcmapiREQUEST_MODIFY : mfcmapiDO_NOT_REQUEST_MODIFY;
 
 	// Get the stuff we need for any case
-	_AddInMenuParams MyAddInMenuParams = { 0 };
+	_AddInMenuParams MyAddInMenuParams = { nullptr };
 	MyAddInMenuParams.lpAddInMenu = lpAddInMenu;
 	MyAddInMenuParams.ulAddInContext = m_ulAddInContext;
 	MyAddInMenuParams.hWndParent = m_hWnd;
@@ -333,15 +332,15 @@ _Check_return_ bool CHierarchyTableDlg::HandleAddInMenu(WORD wMenuSelect)
 	{
 		HandleAddInMenuSingle(
 			&MyAddInMenuParams,
-			NULL,
-			NULL);
+			nullptr,
+			nullptr);
 	}
 	else
 	{
 		SRow MyRow = { 0 };
 
 		// If we have a row to give, give it - it's free
-		SortListData* lpData = (SortListData*)m_lpHierarchyTableTreeCtrl->GetSelectedItemData();
+		auto lpData = m_lpHierarchyTableTreeCtrl->GetSelectedItemData();
 		if (lpData)
 		{
 			MyRow.cValues = lpData->cSourceProps;
@@ -357,7 +356,7 @@ _Check_return_ bool CHierarchyTableDlg::HandleAddInMenu(WORD wMenuSelect)
 
 		HandleAddInMenuSingle(
 			&MyAddInMenuParams,
-			NULL,
+			nullptr,
 			lpContainer);
 		if (lpContainer) lpContainer->Release();
 	}

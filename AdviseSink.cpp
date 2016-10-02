@@ -13,48 +13,48 @@ CAdviseSink::CAdviseSink(_In_ HWND hWndParent, _In_opt_ HTREEITEM hTreeParent)
 	m_cRef = 1;
 	m_hWndParent = hWndParent;
 	m_hTreeParent = hTreeParent;
-	m_lpAdviseTarget = NULL;
-} // CAdviseSink::CAdviseSink
+	m_lpAdviseTarget = nullptr;
+}
 
 CAdviseSink::~CAdviseSink()
 {
 	TRACE_DESTRUCTOR(CLASS);
 	if (m_lpAdviseTarget) m_lpAdviseTarget->Release();
-} // CAdviseSink::~CAdviseSink
+}
 
 STDMETHODIMP CAdviseSink::QueryInterface(REFIID riid,
 	LPVOID * ppvObj)
 {
-	*ppvObj = 0;
+	*ppvObj = nullptr;
 	if (riid == IID_IMAPIAdviseSink ||
 		riid == IID_IUnknown)
 	{
-		*ppvObj = (LPVOID)this;
+		*ppvObj = static_cast<LPVOID>(this);
 		AddRef();
 		return S_OK;
 	}
 	return E_NOINTERFACE;
-} // CAdviseSink::QueryInterface
+}
 
 STDMETHODIMP_(ULONG) CAdviseSink::AddRef()
 {
-	LONG lCount = InterlockedIncrement(&m_cRef);
+	auto lCount = InterlockedIncrement(&m_cRef);
 	TRACE_ADDREF(CLASS, lCount);
 	return lCount;
-} // CAdviseSink::AddRef
+}
 
 STDMETHODIMP_(ULONG) CAdviseSink::Release()
 {
-	LONG lCount = InterlockedDecrement(&m_cRef);
+	auto lCount = InterlockedDecrement(&m_cRef);
 	TRACE_RELEASE(CLASS, lCount);
-	if (!lCount)  delete this;
+	if (!lCount) delete this;
 	return lCount;
-} // CAdviseSink::Release
+}
 
 STDMETHODIMP_(ULONG) CAdviseSink::OnNotify(ULONG cNotify,
 	LPNOTIFICATION lpNotifications)
 {
-	HRESULT			hRes = S_OK;
+	auto hRes = S_OK;
 
 	DebugPrintNotifications(DBGNotify, cNotify, lpNotifications, m_lpAdviseTarget);
 
@@ -74,34 +74,34 @@ STDMETHODIMP_(ULONG) CAdviseSink::OnNotify(ULONG cNotify,
 			case TABLE_ERROR:
 			case TABLE_CHANGED:
 			case TABLE_RELOAD:
-				EC_H((HRESULT)::SendMessage(m_hWndParent, WM_MFCMAPI_REFRESHTABLE, (WPARAM)m_hTreeParent, 0));
+				EC_H((HRESULT)::SendMessage(m_hWndParent, WM_MFCMAPI_REFRESHTABLE, reinterpret_cast<WPARAM>(m_hTreeParent), 0));
 				break;
 			case TABLE_ROW_ADDED:
 				EC_H((HRESULT)::SendMessage(
 					m_hWndParent,
 					WM_MFCMAPI_ADDITEM,
-					(WPARAM)&lpNotifications[i].info.tab,
-					(LPARAM)m_hTreeParent));
+					reinterpret_cast<WPARAM>(&lpNotifications[i].info.tab),
+					reinterpret_cast<LPARAM>(m_hTreeParent)));
 				break;
 			case TABLE_ROW_DELETED:
 				EC_H((HRESULT)::SendMessage(
 					m_hWndParent,
 					WM_MFCMAPI_DELETEITEM,
-					(WPARAM)&lpNotifications[i].info.tab,
-					(LPARAM)m_hTreeParent));
+					reinterpret_cast<WPARAM>(&lpNotifications[i].info.tab),
+					reinterpret_cast<LPARAM>(m_hTreeParent)));
 				break;
 			case TABLE_ROW_MODIFIED:
 				EC_H((HRESULT)::SendMessage(
 					m_hWndParent,
 					WM_MFCMAPI_MODIFYITEM,
-					(WPARAM)&lpNotifications[i].info.tab,
-					(LPARAM)m_hTreeParent));
+					reinterpret_cast<WPARAM>(&lpNotifications[i].info.tab),
+					reinterpret_cast<LPARAM>(m_hTreeParent)));
 				break;
 			}
 		}
 	}
 	return 0;
-} // CAdviseSink::OnNotify
+}
 
 void CAdviseSink::SetAdviseTarget(LPMAPIPROP lpProp)
 {

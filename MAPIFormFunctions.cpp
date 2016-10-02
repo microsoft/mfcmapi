@@ -88,14 +88,19 @@ _Check_return_ HRESULT CreateAndDisplayNewMailInFolder(
 							NULL)); // Not passing a RECT here so we'll try to use the default for the form
 						lpForm->Release();
 					}
+
 					lpMAPIFormViewer->Release();
 				}
+
 				lpMessage->Release();
 			}
+
 			lpPersistMessage->Release();
 		}
+
 		lpMAPIFormInfo->Release();
 	}
+
 	lpMAPIFormMgr->Release();
 	return hRes;
 }

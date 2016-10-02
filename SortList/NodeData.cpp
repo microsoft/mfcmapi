@@ -37,11 +37,11 @@ NodeData::NodeData(
 	m_cSubfolders = -1;
 	if (bSubfolders != MAPI_E_NOT_FOUND)
 	{
-		m_cSubfolders = (bSubfolders != 0);
+		m_cSubfolders = bSubfolders != 0;
 	}
 	else if (ulContainerFlags != MAPI_E_NOT_FOUND)
 	{
-		m_cSubfolders = (ulContainerFlags & AB_SUBCONTAINERS) ? 1 : 0;
+		m_cSubfolders = ulContainerFlags & AB_SUBCONTAINERS ? 1 : 0;
 	}
 }
 

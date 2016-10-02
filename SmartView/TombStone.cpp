@@ -1,7 +1,6 @@
 #include "stdafx.h"
-#include "..\stdafx.h"
 #include "TombStone.h"
-#include "..\String.h"
+#include "String.h"
 #include "SmartView.h"
 
 TombStone::TombStone(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
@@ -12,15 +11,14 @@ TombStone::TombStone(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewPar
 	m_RecordsCount = 0;
 	m_ActualRecordsCount = 0;
 	m_RecordsSize = 0;
-	m_lpRecords = NULL;
+	m_lpRecords = nullptr;
 }
 
 TombStone::~TombStone()
 {
 	if (m_ActualRecordsCount && m_lpRecords)
 	{
-		ULONG i = 0;
-		for (i = 0; i < m_ActualRecordsCount; i++)
+		for (ULONG i = 0; i < m_ActualRecordsCount; i++)
 		{
 			delete[] m_lpRecords[i].lpGlobalObjectId;
 			delete[] m_lpRecords[i].szUsername;
@@ -39,7 +37,7 @@ void TombStone::Parse()
 	m_Parser.GetDWORD(&m_RecordsSize);
 
 	// Run through the parser once to count the number of flag structs
-	size_t ulFlagOffset = m_Parser.GetCurrentOffset();
+	auto ulFlagOffset = m_Parser.GetCurrentOffset();
 	for (;;)
 	{
 		// Must have at least 2 bytes left to have another flag
@@ -63,9 +61,7 @@ void TombStone::Parse()
 	if (m_lpRecords)
 	{
 		memset(m_lpRecords, 0, sizeof(TombstoneRecord)*m_ActualRecordsCount);
-		ULONG i = 0;
-
-		for (i = 0; i < m_ActualRecordsCount; i++)
+		for (ULONG i = 0; i < m_ActualRecordsCount; i++)
 		{
 			m_Parser.GetDWORD(&m_lpRecords[i].StartTime);
 			m_Parser.GetDWORD(&m_lpRecords[i].EndTime);
@@ -91,13 +87,12 @@ _Check_return_ wstring TombStone::ToStringInternal()
 
 	if (m_ActualRecordsCount && m_lpRecords)
 	{
-		ULONG i = 0;
-		for (i = 0; i < m_ActualRecordsCount; i++)
+		for (ULONG i = 0; i < m_ActualRecordsCount; i++)
 		{
 			SBinary sBin = { 0 };
 			sBin.cb = m_lpRecords[i].GlobalObjectIdSize;
 			sBin.lpb = m_lpRecords[i].lpGlobalObjectId;
-			wstring szGoid = InterpretBinaryAsString(sBin, IDS_STGLOBALOBJECTID, NULL);
+			auto szGoid = InterpretBinaryAsString(sBin, IDS_STGLOBALOBJECTID, nullptr);
 
 			szTombstoneString += formatmessage(IDS_TOMBSTONERECORD,
 				i,

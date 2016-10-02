@@ -34,7 +34,7 @@ private:
 	void OnConfigureMsgService();
 	void OnOpenProfileSection();
 
-	LPSERVICEADMIN	m_lpServiceAdmin;
+	LPSERVICEADMIN m_lpServiceAdmin;
 	string m_szProfileName;
 
 	DECLARE_MESSAGE_MAP()

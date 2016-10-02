@@ -1,9 +1,8 @@
 #include "stdafx.h"
-#include "..\stdafx.h"
 #include "TimeZoneDefinition.h"
-#include "..\String.h"
-#include "..\InterpretProp2.h"
-#include "..\ExtraPropTags.h"
+#include "String.h"
+#include "InterpretProp2.h"
+#include "ExtraPropTags.h"
 
 TimeZoneDefinition::TimeZoneDefinition(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
 {
@@ -12,9 +11,9 @@ TimeZoneDefinition::TimeZoneDefinition(ULONG cbBin, _In_count_(cbBin) LPBYTE lpB
 	m_cbHeader = 0;
 	m_wReserved = 0;
 	m_cchKeyName = 0;
-	m_szKeyName = 0;
+	m_szKeyName = nullptr;
 	m_cRules = 0;
-	m_lpTZRule = NULL;
+	m_lpTZRule = nullptr;
 }
 
 TimeZoneDefinition::~TimeZoneDefinition()
@@ -39,15 +38,14 @@ void TimeZoneDefinition::Parse()
 	if (m_lpTZRule)
 	{
 		memset(m_lpTZRule, 0, sizeof(TZRule)* m_cRules);
-		ULONG i = 0;
-		for (i = 0; i < m_cRules; i++)
+		for (ULONG i = 0; i < m_cRules; i++)
 		{
 			m_Parser.GetBYTE(&m_lpTZRule[i].bMajorVersion);
 			m_Parser.GetBYTE(&m_lpTZRule[i].bMinorVersion);
 			m_Parser.GetWORD(&m_lpTZRule[i].wReserved);
 			m_Parser.GetWORD(&m_lpTZRule[i].wTZRuleFlags);
 			m_Parser.GetWORD(&m_lpTZRule[i].wYear);
-			m_Parser.GetBYTESNoAlloc(sizeof(m_lpTZRule[i].X), sizeof(m_lpTZRule[i].X), m_lpTZRule[i].X);
+			m_Parser.GetBYTESNoAlloc(sizeof m_lpTZRule[i].X, sizeof m_lpTZRule[i].X, m_lpTZRule[i].X);
 			m_Parser.GetDWORD(&m_lpTZRule[i].lBias);
 			m_Parser.GetDWORD(&m_lpTZRule[i].lStandardBias);
 			m_Parser.GetDWORD(&m_lpTZRule[i].lDaylightBias);
@@ -73,7 +71,7 @@ void TimeZoneDefinition::Parse()
 
 _Check_return_ wstring TimeZoneDefinition::ToStringInternal()
 {
-	wstring szTimeZoneDefinition = formatmessage(IDS_TIMEZONEDEFINITION,
+	auto szTimeZoneDefinition = formatmessage(IDS_TIMEZONEDEFINITION,
 		m_bMajorVersion,
 		m_bMinorVersion,
 		m_cbHeader,
@@ -84,10 +82,9 @@ _Check_return_ wstring TimeZoneDefinition::ToStringInternal()
 
 	if (m_cRules && m_lpTZRule)
 	{
-		WORD i = 0;
-		for (i = 0; i < m_cRules; i++)
+		for (WORD i = 0; i < m_cRules; i++)
 		{
-			wstring szFlags = InterpretFlags(flagTZRule, m_lpTZRule[i].wTZRuleFlags);
+			auto szFlags = InterpretFlags(flagTZRule, m_lpTZRule[i].wTZRuleFlags);
 			szTimeZoneDefinition += formatmessage(IDS_TZRULEHEADER,
 				i,
 				m_lpTZRule[i].bMajorVersion,

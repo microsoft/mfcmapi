@@ -1,22 +1,20 @@
 #include "stdafx.h"
-#include "..\stdafx.h"
 #include "ExtendedFlags.h"
-#include "..\String.h"
-#include "..\InterpretProp2.h"
-#include "..\ExtraPropTags.h"
+#include "String.h"
+#include "InterpretProp2.h"
+#include "ExtraPropTags.h"
 
 ExtendedFlags::ExtendedFlags(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
 {
 	m_ulNumFlags = 0;
-	m_pefExtendedFlags = NULL;
+	m_pefExtendedFlags = nullptr;
 }
 
 ExtendedFlags::~ExtendedFlags()
 {
-	ULONG i = 0;
 	if (m_ulNumFlags && m_pefExtendedFlags)
 	{
-		for (i = 0; i < m_ulNumFlags; i++)
+		for (ULONG i = 0; i < m_ulNumFlags; i++)
 		{
 			delete[] m_pefExtendedFlags[i].lpUnknownData;
 		}
@@ -51,10 +49,9 @@ void ExtendedFlags::Parse()
 	if (m_pefExtendedFlags)
 	{
 		memset(m_pefExtendedFlags, 0, sizeof(ExtendedFlag)*m_ulNumFlags);
-		ULONG i = 0;
-		bool bBadData = false;
+		auto bBadData = false;
 
-		for (i = 0; i < m_ulNumFlags; i++)
+		for (ULONG i = 0; i < m_ulNumFlags; i++)
 		{
 			m_Parser.GetBYTE(&m_pefExtendedFlags[i].Id);
 			m_Parser.GetBYTE(&m_pefExtendedFlags[i].Cb);
@@ -76,7 +73,7 @@ void ExtendedFlags::Parse()
 				break;
 			case EFPB_CLSIDID:
 				if (m_pefExtendedFlags[i].Cb == sizeof(GUID))
-					m_Parser.GetBYTESNoAlloc(sizeof(GUID), sizeof(GUID), (LPBYTE)&m_pefExtendedFlags[i].Data.SearchFolderID);
+					m_Parser.GetBYTESNoAlloc(sizeof(GUID), sizeof(GUID), reinterpret_cast<LPBYTE>(&m_pefExtendedFlags[i].Data.SearchFolderID));
 				else
 					bBadData = true;
 				break;
@@ -109,14 +106,13 @@ void ExtendedFlags::Parse()
 
 _Check_return_ wstring ExtendedFlags::ToStringInternal()
 {
-	wstring szExtendedFlags = formatmessage(IDS_EXTENDEDFLAGSHEADER, m_ulNumFlags);
+	auto szExtendedFlags = formatmessage(IDS_EXTENDEDFLAGSHEADER, m_ulNumFlags);
 
 	if (m_ulNumFlags && m_pefExtendedFlags)
 	{
-		ULONG i = 0;
-		for (i = 0; i < m_ulNumFlags; i++)
+		for (ULONG i = 0; i < m_ulNumFlags; i++)
 		{
-			wstring szFlags = InterpretFlags(flagExtendedFolderFlagType, m_pefExtendedFlags[i].Id);
+			auto szFlags = InterpretFlags(flagExtendedFolderFlagType, m_pefExtendedFlags[i].Id);
 			szExtendedFlags += formatmessage(IDS_EXTENDEDFLAGID,
 				m_pefExtendedFlags[i].Id, szFlags.c_str(),
 				m_pefExtendedFlags[i].Cb);

@@ -23,6 +23,7 @@ STDMETHODIMP CRichEditOleCallback::QueryInterface(REFIID riid,
 		AddRef();
 		return S_OK;
 	}
+
 	return E_NOINTERFACE;
 }
 
@@ -141,7 +142,9 @@ STDMETHODIMP CRichEditOleCallback::GetContextMenu(WORD /*seltype*/,
 			DeleteMenuEntries(hPopup);
 			(void) ::SendMessage(m_hWnd, dwCommand, (WPARAM)0, (LPARAM)(EM_SETSEL == dwCommand) ? -1 : 0);
 		}
+
 		::DestroyMenu(hContext);
 	}
+
 	return S_OK;
 }

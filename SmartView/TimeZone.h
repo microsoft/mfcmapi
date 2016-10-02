@@ -12,7 +12,6 @@ class TimeZone : public SmartViewParser
 {
 public:
 	TimeZone(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
-	~TimeZone();
 
 private:
 	void Parse();

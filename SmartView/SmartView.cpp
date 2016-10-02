@@ -1,13 +1,12 @@
 #include "stdafx.h"
-#include "..\stdafx.h"
 #include "SmartView.h"
-#include "..\InterpretProp.h"
-#include "..\InterpretProp2.h"
-#include "..\ExtraPropTags.h"
-#include "..\MAPIFunctions.h"
-#include "..\String.h"
-#include "..\Guids.h"
-#include "..\NamedPropCache.h"
+#include "InterpretProp.h"
+#include "InterpretProp2.h"
+#include "ExtraPropTags.h"
+#include "MAPIFunctions.h"
+#include "String.h"
+#include "Guids.h"
+#include "NamedPropCache.h"
 
 #include "SmartViewParser.h"
 #include "PCL.h"
@@ -51,101 +50,70 @@ LPSMARTVIEWPARSER GetSmartViewParser(__ParsingTypeEnum iStructType, ULONG cbBin,
 	switch (iStructType)
 	{
 	case IDS_STNOPARSING:
-		return NULL;
-		break;
+		return nullptr;
 	case IDS_STTOMBSTONE:
 		return new TombStone(cbBin, lpBin);
-		break;
 	case IDS_STPCL:
 		return new PCL(cbBin, lpBin);
-		break;
 	case IDS_STVERBSTREAM:
 		return new VerbStream(cbBin, lpBin);
-		break;
 	case IDS_STNICKNAMECACHE:
 		return new NickNameCache(cbBin, lpBin);
-		break;
 	case IDS_STFOLDERUSERFIELDS:
 		return new FolderUserFieldStream(cbBin, lpBin);
-		break;
 	case IDS_STRECIPIENTROWSTREAM:
 		return new RecipientRowStream(cbBin, lpBin);
-		break;
 	case IDS_STWEBVIEWPERSISTSTREAM:
 		return new WebViewPersistStream(cbBin, lpBin);
-		break;
 	case IDS_STFLATENTRYLIST:
 		return new FlatEntryList(cbBin, lpBin);
-		break;
 	case IDS_STADDITIONALRENENTRYIDSEX:
 		return new AdditionalRenEntryIDs(cbBin, lpBin);
-		break;
 	case IDS_STPROPERTYDEFINITIONSTREAM:
 		return new PropertyDefinitionStream(cbBin, lpBin);
-		break;
 	case IDS_STSEARCHFOLDERDEFINITION:
 		return new SearchFolderDefinition(cbBin, lpBin);
-		break;
 	case IDS_STENTRYLIST:
 		return new EntryList(cbBin, lpBin);
-		break;
 	case IDS_STRULECONDITION:
 		return new RuleCondition(cbBin, lpBin, false);
-		break;
 	case IDS_STEXTENDEDRULECONDITION:
 		return new RuleCondition(cbBin, lpBin, true);
-		break;
 	case IDS_STRESTRICTION:
 		return new RestrictionStruct(cbBin, lpBin, false, true);
-		break;
 	case IDS_STPROPERTY:
 		return new PropertyStruct(cbBin, lpBin);
-		break;
 	case IDS_STENTRYID:
 		return new EntryIdStruct(cbBin, lpBin);
-		break;
 	case IDS_STGLOBALOBJECTID:
 		return new GlobalObjectId(cbBin, lpBin);
-		break;
 	case IDS_STTASKASSIGNERS:
 		return new TaskAssigners(cbBin, lpBin);
-		break;
 	case IDS_STCONVERSATIONINDEX:
 		return new ConversationIndex(cbBin, lpBin);
-		break;
 	case IDS_STREPORTTAG:
 		return new ReportTag(cbBin, lpBin);
-		break;
 	case IDS_STTIMEZONEDEFINITION:
 		return new TimeZoneDefinition(cbBin, lpBin);
-		break;
 	case IDS_STTIMEZONE:
 		return new TimeZone(cbBin, lpBin);
-		break;
 	case IDS_STEXTENDEDFOLDERFLAGS:
 		return new ExtendedFlags(cbBin, lpBin);
-		break;
 	case IDS_STAPPOINTMENTRECURRENCEPATTERN:
 		return new AppointmentRecurrencePattern(cbBin, lpBin);
-		break;
 	case IDS_STRECURRENCEPATTERN:
 		return new RecurrencePattern(cbBin, lpBin);
-		break;
 	case IDS_STSID:
 		return new SIDBin(cbBin, lpBin);
-		break;
 	case IDS_STSECURITYDESCRIPTOR:
 		return new SDBin(cbBin, lpBin, lpMAPIProp, false);
-		break;
 	case IDS_STFBSECURITYDESCRIPTOR:
 		return new SDBin(cbBin, lpBin, lpMAPIProp, true);
-		break;
 	case IDS_STXID:
 		return new XID(cbBin, lpBin);
-		break;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 _Check_return_ ULONG BuildFlagIndexFromTag(ULONG ulPropTag,
@@ -153,7 +121,7 @@ _Check_return_ ULONG BuildFlagIndexFromTag(ULONG ulPropTag,
 	_In_opt_z_ LPWSTR lpszPropNameString,
 	_In_opt_ LPCGUID lpguidNamedProp)
 {
-	ULONG ulPropID = PROP_ID(ulPropTag);
+	auto ulPropID = PROP_ID(ulPropTag);
 
 	// Non-zero less than 0x8000 is a regular prop, we use the ID as the index
 	if (ulPropID && ulPropID < 0x8000) return ulPropID;
@@ -184,12 +152,12 @@ _Check_return_ ULONG BuildFlagIndexFromTag(ULONG ulPropTag,
 		// }
 	}
 	return NULL;
-} // BuildFlagIndexFromTag
+}
 
 _Check_return_ __ParsingTypeEnum FindSmartViewParserForProp(const ULONG ulPropTag, const ULONG ulPropNameID, _In_opt_ const LPCGUID lpguidNamedProp)
 {
 	ULONG ulCurEntry = 0;
-	ULONG ulIndex = BuildFlagIndexFromTag(ulPropTag, ulPropNameID, NULL, lpguidNamedProp);
+	auto ulIndex = BuildFlagIndexFromTag(ulPropTag, ulPropNameID, nullptr, lpguidNamedProp);
 	bool bMV = (PROP_TYPE(ulPropTag) & MV_FLAG) == MV_FLAG;
 
 	while (ulCurEntry < ulSmartViewParserArray)
@@ -205,7 +173,7 @@ _Check_return_ __ParsingTypeEnum FindSmartViewParserForProp(const ULONG ulPropTa
 
 _Check_return_ __ParsingTypeEnum FindSmartViewParserForProp(const ULONG ulPropTag, const ULONG ulPropNameID, _In_opt_ const LPCGUID lpguidNamedProp, bool bMVRow)
 {
-	ULONG ulLookupPropTag = ulPropTag;
+	auto ulLookupPropTag = ulPropTag;
 	if (bMVRow) ulLookupPropTag |= MV_FLAG;
 
 	return FindSmartViewParserForProp(ulLookupPropTag, ulPropNameID, lpguidNamedProp);
@@ -223,11 +191,11 @@ wstring InterpretPropSmartView(_In_opt_ LPSPropValue lpProp, // required propert
 	if (!RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD) return L"";
 	if (!lpProp) return L"";
 
-	HRESULT hRes = S_OK;
-	__ParsingTypeEnum iStructType = IDS_STNOPARSING;
+	auto hRes = S_OK;
+	auto iStructType = IDS_STNOPARSING;
 
 	// Named Props
-	LPMAPINAMEID* lppPropNames = 0;
+	LPMAPINAMEID* lppPropNames = nullptr;
 
 	// If we weren't passed named property information and we need it, look it up
 	// We check bIsAB here - some address book providers return garbage which will crash us
@@ -238,7 +206,7 @@ wstring InterpretPropSmartView(_In_opt_ LPSPropValue lpProp, // required propert
 		(RegKeys[regkeyGETPROPNAMES_ON_ALL_PROPS].ulCurDWORD || PROP_ID(lpProp->ulPropTag) >= 0x8000)) // and it's either a named prop or we're doing all props
 	{
 		SPropTagArray tag = { 0 };
-		LPSPropTagArray lpTag = &tag;
+		auto lpTag = &tag;
 		ULONG ulPropNames = 0;
 		tag.cValues = 1;
 		tag.aulPropTag[0] = lpProp->ulPropTag;
@@ -259,7 +227,7 @@ wstring InterpretPropSmartView(_In_opt_ LPSPropValue lpProp, // required propert
 	}
 
 	ULONG ulPropNameID = NULL;
-	LPGUID lpPropNameGUID = NULL;
+	LPGUID lpPropNameGUID = nullptr;
 
 	if (lpNameID)
 	{
@@ -276,7 +244,7 @@ wstring InterpretPropSmartView(_In_opt_ LPSPropValue lpProp, // required propert
 	case PT_LONG:
 	case PT_I2:
 	case PT_I8:
-		lpszSmartView = InterpretNumberAsString(lpProp->Value, lpProp->ulPropTag, ulPropNameID, NULL, lpPropNameGUID, true);
+		lpszSmartView = InterpretNumberAsString(lpProp->Value, lpProp->ulPropTag, ulPropNameID, nullptr, lpPropNameGUID, true);
 		break;
 	case PT_MV_LONG:
 		lpszSmartView = InterpretMVLongAsString(lpProp->Value.MVl, lpProp->ulPropTag, ulPropNameID, lpPropNameGUID);
@@ -289,7 +257,7 @@ wstring InterpretPropSmartView(_In_opt_ LPSPropValue lpProp, // required propert
 		// We special-case this property
 		if (!iStructType && PR_ROAMING_BINARYSTREAM == ulLookupPropTag && lpMAPIProp)
 		{
-			LPSPropValue lpPropSubject = NULL;
+			LPSPropValue lpPropSubject = nullptr;
 
 			WC_MAPI(HrGetOneProp(
 				lpMAPIProp,
@@ -329,10 +297,9 @@ wstring InterpretMVBinaryAsString(SBinaryArray myBinArray, __ParsingTypeEnum  iS
 {
 	if (!RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD) return L"";
 
-	ULONG ulRow = 0;
 	wstring szResult;
 
-	for (ulRow = 0; ulRow < myBinArray.cValues; ulRow++)
+	for (ULONG ulRow = 0; ulRow < myBinArray.cValues; ulRow++)
 	{
 		if (ulRow != 0)
 		{
@@ -350,14 +317,14 @@ wstring InterpretNumberAsStringProp(ULONG ulVal, ULONG ulPropTag)
 {
 	_PV pV = { 0 };
 	pV.ul = ulVal;
-	return InterpretNumberAsString(pV, ulPropTag, NULL, NULL, NULL, false);
+	return InterpretNumberAsString(pV, ulPropTag, NULL, nullptr, nullptr, false);
 }
 
 wstring InterpretNumberAsStringNamedProp(ULONG ulVal, ULONG ulPropNameID, _In_opt_ LPCGUID lpguidNamedProp)
 {
 	_PV pV = { 0 };
 	pV.ul = ulVal;
-	return InterpretNumberAsString(pV, PT_LONG, ulPropNameID, NULL, lpguidNamedProp, false);
+	return InterpretNumberAsString(pV, PT_LONG, ulPropNameID, nullptr, lpguidNamedProp, false);
 }
 
 // Interprets a PT_LONG, PT_I2. or PT_I8 found in lpProp and returns a string
@@ -373,7 +340,7 @@ wstring InterpretNumberAsString(_PV pV, ULONG ulPropTag, ULONG ulPropNameID, _In
 		PROP_TYPE(ulPropTag) != PT_I8) return L"";
 
 	ULONG ulPropID = NULL;
-	__ParsingTypeEnum iParser = FindSmartViewParserForProp(ulPropTag, ulPropNameID, lpguidNamedProp);
+	auto iParser = FindSmartViewParserForProp(ulPropTag, ulPropNameID, lpguidNamedProp);
 	switch (iParser)
 	{
 	case IDS_STLONGRTIME:
@@ -408,16 +375,15 @@ wstring InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropTag, ULONG u
 {
 	if (!RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD) return L"";
 
-	ULONG ulRow = 0;
 	wstring szResult;
 	wstring szSmartView;
-	bool bHasData = false;
+	auto bHasData = false;
 
-	for (ulRow = 0; ulRow < myLongArray.cValues; ulRow++)
+	for (ULONG ulRow = 0; ulRow < myLongArray.cValues; ulRow++)
 	{
 		_PV pV = { 0 };
 		pV.ul = myLongArray.lpl[ulRow];
-		szSmartView = InterpretNumberAsString(pV, CHANGE_PROP_TYPE(ulPropTag, PT_LONG), ulPropNameID, NULL, lpguidNamedProp, true);
+		szSmartView = InterpretNumberAsString(pV, CHANGE_PROP_TYPE(ulPropTag, PT_LONG), ulPropNameID, nullptr, lpguidNamedProp, true);
 		if (!szSmartView.empty())
 		{
 			if (bHasData)
@@ -438,13 +404,13 @@ wstring InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropTag, ULONG u
 wstring InterpretBinaryAsString(SBinary myBin, __ParsingTypeEnum iStructType, _In_opt_ LPMAPIPROP lpMAPIProp)
 {
 	if (!RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD) return L"";
-	wstring szResultString = AddInSmartView(iStructType, myBin.cb, myBin.lpb);
+	auto szResultString = AddInSmartView(iStructType, myBin.cb, myBin.lpb);
 	if (!szResultString.empty())
 	{
 		return szResultString;
 	}
 
-	LPSMARTVIEWPARSER svp = GetSmartViewParser(iStructType, myBin.cb, myBin.lpb, lpMAPIProp);
+	auto svp = GetSmartViewParser(iStructType, myBin.cb, myBin.lpb, lpMAPIProp);
 	if (svp)
 	{
 		szResultString = svp->ToString();
@@ -459,7 +425,7 @@ wstring InterpretBinaryAsString(SBinary myBin, __ParsingTypeEnum iStructType, _I
 		szResultString = DecodeID(myBin.cb, myBin.lpb);
 		break;
 	case IDS_STENCODEENTRYID:
-		szResultString = EncodeID(myBin.cb, (LPENTRYID)myBin.lpb);
+		szResultString = EncodeID(myBin.cb, reinterpret_cast<LPENTRYID>(myBin.lpb));
 		break;
 	}
 
@@ -500,10 +466,8 @@ _Check_return_ wstring PTI8ToSzString(LARGE_INTEGER liI8, bool bLabel)
 	{
 		return formatmessage(IDS_PTI8FORMATLABEL, liI8.LowPart, liI8.HighPart);
 	}
-	else
-	{
-		return formatmessage(IDS_PTI8FORMAT, liI8.LowPart, liI8.HighPart);
-	}
+
+	return formatmessage(IDS_PTI8FORMAT, liI8.LowPart, liI8.HighPart);
 }
 
 typedef WORD REPLID;
@@ -518,29 +482,27 @@ struct ID
 _Check_return_ WORD WGetReplId(ID id)
 {
 	return id.replid;
-} // WGetReplId
+}
 
 _Check_return_ ULONGLONG UllGetIdGlobcnt(ID id)
 {
 	ULONGLONG ul = 0;
-	for (int i = 0; i < cbGlobcnt; ++i)
+	for (auto i = 0; i < cbGlobcnt; ++i)
 	{
 		ul <<= 8;
 		ul += id.globcnt[i];
 	}
 
 	return ul;
-} // UllGetIdGlobcnt
+}
 
 _Check_return_ wstring FidMidToSzString(LONGLONG llID, bool bLabel)
 {
-	ID* pid = (ID*)&llID;
+	auto pid = reinterpret_cast<ID*>(&llID);
 	if (bLabel)
 	{
 		return formatmessage(IDS_FIDMIDFORMATLABEL, WGetReplId(*pid), UllGetIdGlobcnt(*pid));
 	}
-	else
-	{
-		return formatmessage(IDS_FIDMIDFORMAT, WGetReplId(*pid), UllGetIdGlobcnt(*pid));
-	}
+
+	return formatmessage(IDS_FIDMIDFORMAT, WGetReplId(*pid), UllGetIdGlobcnt(*pid));
 }

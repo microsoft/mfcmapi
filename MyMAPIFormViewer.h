@@ -102,16 +102,16 @@ private:
 	void ShutdownPersist();
 	void ReleaseObjects();
 
-	HWND					m_hwndParent;
-	LONG					m_cRef;
+	HWND m_hwndParent;
+	LONG m_cRef;
 	// primary guts of message, folder, MDB for our message site
-	LPMAPIFOLDER			m_lpFolder;
-	LPMESSAGE				m_lpMessage;
-	LPMDB					m_lpMDB;
-	LPMAPISESSION			m_lpMAPISession;
-	CContentsTableListCtrl*	m_lpContentsTableListCtrl;
-	int						m_iItem; // index in list control of item being displayed
+	LPMAPIFOLDER m_lpFolder;
+	LPMESSAGE m_lpMessage;
+	LPMDB m_lpMDB;
+	LPMAPISESSION m_lpMAPISession;
+	CContentsTableListCtrl* m_lpContentsTableListCtrl;
+	int m_iItem; // index in list control of item being displayed
 	// Set in SetAdviseSink, used in ActivateNext
-	LPMAPIFORMADVISESINK	m_lpMapiFormAdviseSink;
-	LPPERSISTMESSAGE		m_lpPersistMessage;
+	LPMAPIFORMADVISESINK m_lpMapiFormAdviseSink;
+	LPPERSISTMESSAGE m_lpPersistMessage;
 };

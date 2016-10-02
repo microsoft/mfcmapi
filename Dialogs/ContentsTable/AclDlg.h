@@ -30,8 +30,8 @@ private:
 
 	_Check_return_ HRESULT GetSelectedItems(ULONG ulFlags, ULONG ulRowFlags, _In_ LPROWLIST* lppRowList) const;
 
-	LPEXCHANGEMODIFYTABLE	m_lpExchTbl;
-	ULONG					m_ulTableFlags;
+	LPEXCHANGEMODIFYTABLE m_lpExchTbl;
+	ULONG m_ulTableFlags;
 
 	DECLARE_MESSAGE_MAP()
 };

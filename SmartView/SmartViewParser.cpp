@@ -1,7 +1,6 @@
 #include "stdafx.h"
-#include "..\stdafx.h"
 #include "SmartViewParser.h"
-#include "..\String.h"
+#include "String.h"
 
 SmartViewParser::SmartViewParser(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
@@ -13,16 +12,12 @@ SmartViewParser::SmartViewParser(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 	m_Parser.Init(m_cbBin, m_lpBin);
 }
 
-SmartViewParser::~SmartViewParser()
-{
-}
-
 void SmartViewParser::DisableJunkParsing()
 {
 	m_bEnableJunk = false;
 }
 
-size_t SmartViewParser::GetCurrentOffset()
+size_t SmartViewParser::GetCurrentOffset() const
 {
 	return m_Parser.GetCurrentOffset();
 }
@@ -39,7 +34,7 @@ _Check_return_ wstring SmartViewParser::ToString()
 	if (m_Parser.Empty()) return L"";
 	EnsureParsed();
 
-	wstring szParsedString = ToStringInternal();
+	auto szParsedString = ToStringInternal();
 
 	if (m_bEnableJunk)
 	{
@@ -49,14 +44,14 @@ _Check_return_ wstring SmartViewParser::ToString()
 	return szParsedString;
 }
 
-_Check_return_ wstring SmartViewParser::JunkDataToString(size_t cbJunkData, _In_count_(cbJunkData) LPBYTE lpJunkData)
+_Check_return_ wstring SmartViewParser::JunkDataToString(size_t cbJunkData, _In_count_(cbJunkData) LPBYTE lpJunkData) const
 {
 	if (!cbJunkData || !lpJunkData) return L"";
-	DebugPrint(DBGSmartView, L"Had 0x%08X = %u bytes left over.\n", (int)cbJunkData, (UINT)cbJunkData);
+	DebugPrint(DBGSmartView, L"Had 0x%08X = %u bytes left over.\n", static_cast<int>(cbJunkData), static_cast<UINT>(cbJunkData));
 	SBinary sBin = { 0 };
-	sBin.cb = (ULONG)cbJunkData;
+	sBin.cb = static_cast<ULONG>(cbJunkData);
 	sBin.lpb = lpJunkData;
-	wstring szJunk = formatmessage(IDS_JUNKDATASIZE, cbJunkData);
+	auto szJunk = formatmessage(IDS_JUNKDATASIZE, cbJunkData);
 	szJunk += BinToHexString(&sBin, true).c_str();
 	return szJunk;
 }
@@ -64,15 +59,13 @@ _Check_return_ wstring SmartViewParser::JunkDataToString(size_t cbJunkData, _In_
 // Caller allocates with new. Clean up with DeleteSPropVal.
 _Check_return_ LPSPropValue SmartViewParser::BinToSPropValue(DWORD dwPropCount, bool bStringPropsExcludeLength)
 {
-	if (!dwPropCount || dwPropCount > _MaxEntriesSmall) return NULL;
-	LPSPropValue pspvProperty = new SPropValue[dwPropCount];
-	if (!pspvProperty) return NULL;
+	if (!dwPropCount || dwPropCount > _MaxEntriesSmall) return nullptr;
+	auto pspvProperty = new SPropValue[dwPropCount];
+	if (!pspvProperty) return nullptr;
 	memset(pspvProperty, 0, sizeof(SPropValue)*dwPropCount);
-	size_t ulCurrOffset = m_Parser.GetCurrentOffset();
+	auto ulCurrOffset = m_Parser.GetCurrentOffset();
 
-	DWORD i = 0;
-
-	for (i = 0; i < dwPropCount; i++)
+	for (DWORD i = 0; i < dwPropCount; i++)
 	{
 		WORD PropType = 0;
 		WORD PropID = 0;
@@ -140,8 +133,7 @@ _Check_return_ LPSPropValue SmartViewParser::BinToSPropValue(DWORD dwPropCount, 
 			if (pspvProperty[i].Value.MVszA.lppszA)
 			{
 				memset(pspvProperty[i].Value.MVszA.lppszA, 0, sizeof(CHAR*)* wTemp);
-				DWORD j = 0;
-				for (j = 0; j < pspvProperty[i].Value.MVszA.cValues; j++)
+				for (ULONG j = 0; j < pspvProperty[i].Value.MVszA.cValues; j++)
 				{
 					m_Parser.GetStringA(&pspvProperty[i].Value.MVszA.lppszA[j]);
 				}
@@ -154,8 +146,7 @@ _Check_return_ LPSPropValue SmartViewParser::BinToSPropValue(DWORD dwPropCount, 
 			if (pspvProperty[i].Value.MVszW.lppszW)
 			{
 				memset(pspvProperty[i].Value.MVszW.lppszW, 0, sizeof(WCHAR*)* wTemp);
-				DWORD j = 0;
-				for (j = 0; j < pspvProperty[i].Value.MVszW.cValues; j++)
+				for (ULONG j = 0; j < pspvProperty[i].Value.MVszW.cValues; j++)
 				{
 					m_Parser.GetStringW(&pspvProperty[i].Value.MVszW.lppszW[j]);
 				}
@@ -170,7 +161,7 @@ _Check_return_ LPSPropValue SmartViewParser::BinToSPropValue(DWORD dwPropCount, 
 	{
 		// We didn't advance at all - we should return nothing.
 		delete[] pspvProperty;
-		pspvProperty = NULL;
+		pspvProperty = nullptr;
 	}
 
 	return pspvProperty;

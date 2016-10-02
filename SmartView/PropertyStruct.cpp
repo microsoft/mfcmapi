@@ -1,14 +1,12 @@
 #include "stdafx.h"
-#include "..\stdafx.h"
 #include "PropertyStruct.h"
-#include "..\String.h"
-#include "..\InterpretProp.h"
-#include "..\InterpretProp2.h"
+#include "InterpretProp.h"
+#include "InterpretProp2.h"
 
 PropertyStruct::PropertyStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
 {
 	m_PropCount = 0;
-	m_Prop = NULL;
+	m_Prop = nullptr;
 }
 
 PropertyStruct::~PropertyStruct()
@@ -20,13 +18,13 @@ void PropertyStruct::Parse()
 {
 	// Have to count how many properties are here.
 	// The only way to do that is to parse them. So we parse once without storing, allocate, then reparse.
-	size_t stBookmark = m_Parser.GetCurrentOffset();
+	auto stBookmark = m_Parser.GetCurrentOffset();
 
 	DWORD dwPropCount = 0;
 
 	for (;;)
 	{
-		LPSPropValue lpProp = BinToSPropValue(1, false);
+		auto lpProp = BinToSPropValue(1, false);
 		if (lpProp)
 		{
 			dwPropCount++;
@@ -54,11 +52,10 @@ _Check_return_ wstring PropertyStruct::ToStringInternal()
 _Check_return_ wstring PropsToString(DWORD PropCount, LPSPropValue Prop)
 {
 	wstring szProperty;
-	DWORD i = 0;
 
 	if (Prop)
 	{
-		for (i = 0; i < PropCount; i++)
+		for (DWORD i = 0; i < PropCount; i++)
 		{
 			wstring PropString;
 			wstring AltPropString;
@@ -87,11 +84,11 @@ _Check_return_ wstring PropsToString(DWORD PropCount, LPSPropValue Prop)
 				PropString.c_str(),
 				AltPropString.c_str());
 
-			wstring szSmartView = InterpretPropSmartView(
+			auto szSmartView = InterpretPropSmartView(
 				&Prop[i],
-				NULL,
-				NULL,
-				NULL,
+				nullptr,
+				nullptr,
+				nullptr,
 				false,
 				false);
 
@@ -109,9 +106,7 @@ _Check_return_ wstring PropsToString(DWORD PropCount, LPSPropValue Prop)
 void DeleteSPropVal(ULONG cVal, _In_count_(cVal) LPSPropValue lpsPropVal)
 {
 	if (!lpsPropVal) return;
-	DWORD i = 0;
-	DWORD j = 0;
-	for (i = 0; i < cVal; i++)
+	for (ULONG i = 0; i < cVal; i++)
 	{
 		switch (PROP_TYPE(lpsPropVal[i].ulPropTag))
 		{
@@ -127,7 +122,7 @@ void DeleteSPropVal(ULONG cVal, _In_count_(cVal) LPSPropValue lpsPropVal)
 		case PT_MV_STRING8:
 			if (lpsPropVal[i].Value.MVszA.lppszA)
 			{
-				for (j = 0; j < lpsPropVal[i].Value.MVszA.cValues; j++)
+				for (ULONG j = 0; j < lpsPropVal[i].Value.MVszA.cValues; j++)
 				{
 					delete[] lpsPropVal[i].Value.MVszA.lppszA[j];
 				}
@@ -138,7 +133,7 @@ void DeleteSPropVal(ULONG cVal, _In_count_(cVal) LPSPropValue lpsPropVal)
 		case PT_MV_UNICODE:
 			if (lpsPropVal[i].Value.MVszW.lppszW)
 			{
-				for (j = 0; j < lpsPropVal[i].Value.MVszW.cValues; j++)
+				for (ULONG j = 0; j < lpsPropVal[i].Value.MVszW.cValues; j++)
 				{
 					delete[] lpsPropVal[i].Value.MVszW.lppszW[j];
 				}
@@ -149,7 +144,7 @@ void DeleteSPropVal(ULONG cVal, _In_count_(cVal) LPSPropValue lpsPropVal)
 		case PT_MV_BINARY:
 			if (lpsPropVal[i].Value.MVbin.lpbin)
 			{
-				for (j = 0; j < lpsPropVal[i].Value.MVbin.cValues; j++)
+				for (ULONG j = 0; j < lpsPropVal[i].Value.MVbin.cValues; j++)
 				{
 					delete[] lpsPropVal[i].Value.MVbin.lpbin[j].lpb;
 				}

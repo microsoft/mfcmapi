@@ -38,7 +38,7 @@ CAbDlg::CAbDlg(
 
 	m_bIsAB = true;
 
-	CreateDialogAndMenu(IDR_MENU_AB_VIEW);
+	CAbDlg::CreateDialogAndMenu(IDR_MENU_AB_VIEW);
 }
 
 CAbDlg::~CAbDlg()

@@ -65,7 +65,7 @@ _Check_return_ HRESULT ImportEMLToIMessage(
 	if (lpConverter) lpConverter->Release();
 
 	return hRes;
-} // ImportEMLToIMessage
+}
 
 _Check_return_ HRESULT ExportIMessageToEML(_In_ LPMESSAGE lpMsg, _In_z_ LPCWSTR lpszEMLFile, ULONG ulConvertFlags,
 										   ENCODINGTYPE et, MIMESAVETYPE mst, ULONG ulWrapLines, _In_opt_ LPADRBOOK lpAdrBook)
@@ -141,10 +141,11 @@ _Check_return_ HRESULT ExportIMessageToEML(_In_ LPMESSAGE lpMsg, _In_z_ LPCWSTR 
 			if (lpMimeStm) lpMimeStm->Release();
 		}
 	}
+
 	if (lpConverter) lpConverter->Release();
 
 	return hRes;
-} // ExportIMessageToEML
+}
 
 _Check_return_ HRESULT ConvertEMLToMSG(_In_z_ LPCWSTR lpszEMLFile,
 									   _In_z_ LPCWSTR lpszMSGFile,
@@ -182,7 +183,7 @@ _Check_return_ HRESULT ConvertEMLToMSG(_In_z_ LPCWSTR lpszEMLFile,
 	if (pStorage) pStorage->Release();
 
 	return hRes;
-} // ConvertEMLToMSG
+}
 
 _Check_return_ HRESULT ConvertMSGToEML(_In_z_ LPCWSTR lpszMSGFile,
 									   _In_z_ LPCWSTR lpszEMLFile,
@@ -213,7 +214,7 @@ _Check_return_ HRESULT ConvertMSGToEML(_In_z_ LPCWSTR lpszMSGFile,
 	if (pMessage) pMessage->Release();
 
 	return hRes;
-} // ConvertMSGToEML
+}
 
 #ifndef MRMAPI
 _Check_return_ HRESULT GetConversionToEMLOptions(_In_ CWnd* pParentWnd,
@@ -256,7 +257,7 @@ _Check_return_ HRESULT GetConversionToEMLOptions(_In_ CWnd* pParentWnd,
 		*pDoAdrBook = MyData.GetCheck(7);
 	}
 	return hRes;
-} // GetConversionToEMLOptions
+}
 
 _Check_return_ HRESULT GetConversionFromEMLOptions(_In_ CWnd* pParentWnd,
 												   _Out_ ULONG* lpulConvertFlags,
@@ -312,5 +313,5 @@ _Check_return_ HRESULT GetConversionFromEMLOptions(_In_ CWnd* pParentWnd,
 		}
 	}
 	return hRes;
-} // GetConversionFromEMLOptions
+}
 #endif
