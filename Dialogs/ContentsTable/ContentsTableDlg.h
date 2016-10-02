@@ -24,10 +24,10 @@ public:
 protected:
 	// Overrides from base class
 	virtual void CreateDialogAndMenu(UINT nIDMenuResource);
-	_Check_return_ bool HandleMenu(WORD wMenuSelect);
-	BOOL OnInitDialog();
+	_Check_return_ bool HandleMenu(WORD wMenuSelect) override;
+	BOOL OnInitDialog() override;
 	void OnInitMenu(_In_opt_ CMenu* pMenu);
-	void OnRefreshView();
+	void OnRefreshView() override;
 
 	virtual void OnDisplayItem();
 
@@ -46,9 +46,9 @@ private:
 		_In_opt_ LPMAPICONTAINER lpContainer);
 
 	// Overrides from base class
-	_Check_return_ bool HandleAddInMenu(WORD wMenuSelect);
-	void OnCancel();
-	void OnEscHit();
+	_Check_return_ bool HandleAddInMenu(WORD wMenuSelect) override;
+	void OnCancel() override;
+	void OnEscHit() override;
 
 	virtual void OnCreatePropertyStringRestriction();
 

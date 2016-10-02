@@ -758,7 +758,7 @@ _Check_return_ HRESULT CSingleMAPIPropListCtrl::SetDataSource(_In_opt_ LPMAPIPRO
 		{
 			// This fixes a ton of flashing problems
 			lpMyHeader->SetRedraw(true);
-			for (size_t iCurCol = 0; iCurCol < PropColumns.size(); iCurCol++)
+			for (auto  iCurCol = 0; iCurCol < int(PropColumns.size()); iCurCol++)
 			{
 				SetColumnWidth(iCurCol, LVSCW_AUTOSIZE_USEHEADER);
 				if (GetColumnWidth(iCurCol) > 200) SetColumnWidth(iCurCol, 200);
