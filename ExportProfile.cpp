@@ -10,8 +10,8 @@ void ExportProfileSection(FILE* fProfile, LPPROFSECT lpSect, LPSBinary lpSectBin
 {
 	if (!fProfile || !lpSect) return;
 
-	HRESULT hRes = S_OK;
-	LPSPropValue lpAllProps = NULL;
+	auto hRes = S_OK;
+	LPSPropValue lpAllProps = nullptr;
 	ULONG cValues = 0L;
 
 	WC_H_GETPROPS(GetPropsNULL(lpSect,
@@ -50,17 +50,15 @@ void ExportProfileProvider(FILE* fProfile, int iRow, LPPROVIDERADMIN lpProviderA
 	OutputSRowToFile(fProfile, lpRow, NULL);
 	OutputToFile(fProfile, L"</properties>\n");
 
-	HRESULT hRes = S_OK;
-	LPSPropValue lpProviderUID = NULL;
-
-	lpProviderUID = PpropFindProp(
+	auto hRes = S_OK;
+	auto lpProviderUID = PpropFindProp(
 		lpRow->lpProps,
 		lpRow->cValues,
 		PR_PROVIDER_UID);
 
 	if (lpProviderUID)
 	{
-		LPPROFSECT lpSect = NULL;
+		LPPROFSECT lpSect = nullptr;
 		EC_H(OpenProfileSection(
 			lpProviderAdmin,
 			&lpProviderUID->Value.bin,
@@ -85,17 +83,15 @@ void ExportProfileService(FILE* fProfile, int iRow, LPSERVICEADMIN lpServiceAdmi
 	OutputSRowToFile(fProfile, lpRow, NULL);
 	OutputToFile(fProfile, L"</properties>\n");
 
-	HRESULT hRes = S_OK;
-	LPSPropValue lpServiceUID = NULL;
-
-	lpServiceUID = PpropFindProp(
+	auto hRes = S_OK;
+	auto lpServiceUID = PpropFindProp(
 		lpRow->lpProps,
 		lpRow->cValues,
 		PR_SERVICE_UID);
 
 	if (lpServiceUID)
 	{
-		LPPROFSECT lpSect = NULL;
+		LPPROFSECT lpSect = nullptr;
 		EC_H(OpenProfileSection(
 			lpServiceAdmin,
 			&lpServiceUID->Value.bin,
@@ -106,23 +102,23 @@ void ExportProfileService(FILE* fProfile, int iRow, LPSERVICEADMIN lpServiceAdmi
 			lpSect->Release();
 		}
 
-		LPPROVIDERADMIN lpProviderAdmin = NULL;
+		LPPROVIDERADMIN lpProviderAdmin = nullptr;
 
 		EC_MAPI(lpServiceAdmin->AdminProviders(
-			(LPMAPIUID)lpServiceUID->Value.bin.lpb,
+			reinterpret_cast<LPMAPIUID>(lpServiceUID->Value.bin.lpb),
 			0, // fMapiUnicode is not supported
 			&lpProviderAdmin));
 
 		if (lpProviderAdmin)
 		{
-			LPMAPITABLE lpProviderTable = NULL;
+			LPMAPITABLE lpProviderTable = nullptr;
 			EC_MAPI(lpProviderAdmin->GetProviderTable(
 				0, // fMapiUnicode is not supported
 				&lpProviderTable));
 
 			if (lpProviderTable)
 			{
-				LPSRowSet lpRowSet = NULL;
+				LPSRowSet lpRowSet = nullptr;
 				EC_MAPI(HrQueryAllRows(lpProviderTable, NULL, NULL, NULL, 0, &lpRowSet));
 				if (lpRowSet && lpRowSet->cRows >= 1)
 				{
@@ -134,11 +130,11 @@ void ExportProfileService(FILE* fProfile, int iRow, LPSERVICEADMIN lpServiceAdmi
 
 				FreeProws(lpRowSet);
 				lpProviderTable->Release();
-				lpProviderTable = NULL;
+				lpProviderTable = nullptr;
 			}
 
 			lpProviderAdmin->Release();
-			lpProviderAdmin = NULL;
+			lpProviderAdmin = nullptr;
 		}
 	}
 
@@ -155,9 +151,9 @@ void ExportProfile(_In_z_ LPCSTR szProfile, _In_z_ LPCWSTR szProfileSection, boo
 		DebugPrint(DBGGeneric, L"ExportProfile: Restricting to \"%ws\"\n", szProfileSection);
 	}
 
-	HRESULT hRes = S_OK;
-	LPPROFADMIN lpProfAdmin = NULL;
-	FILE* fProfile = NULL;
+	auto hRes = S_OK;
+	LPPROFADMIN lpProfAdmin = nullptr;
+	FILE* fProfile = nullptr;
 
 	if (!szFileName.empty())
 	{
@@ -171,10 +167,10 @@ void ExportProfile(_In_z_ LPCSTR szProfile, _In_z_ LPCWSTR szProfileSection, boo
 
 	if (lpProfAdmin)
 	{
-		LPSERVICEADMIN lpServiceAdmin = NULL;
+		LPSERVICEADMIN lpServiceAdmin = nullptr;
 		EC_MAPI(lpProfAdmin->AdminServices(
-			(TCHAR*)szProfile,
-			(TCHAR*)"",
+			const_cast<LPTSTR>(szProfile),
+			static_cast<LPTSTR>(""),
 			NULL,
 			MAPI_DIALOG,
 			&lpServiceAdmin));
@@ -182,14 +178,14 @@ void ExportProfile(_In_z_ LPCSTR szProfile, _In_z_ LPCWSTR szProfileSection, boo
 		{
 			if (szProfileSection)
 			{
-				LPCGUID lpGuid = GUIDNameToGUID(szProfileSection, bByteSwapped);
+				auto lpGuid = GUIDNameToGUID(szProfileSection, bByteSwapped);
 
 				if (lpGuid)
 				{
-					LPPROFSECT lpSect = NULL;
+					LPPROFSECT lpSect = nullptr;
 					SBinary sBin = { 0 };
 					sBin.cb = sizeof(GUID);
-					sBin.lpb = (LPBYTE)lpGuid;
+					sBin.lpb = LPBYTE(lpGuid);
 
 					EC_H(OpenProfileSection(
 						lpServiceAdmin,
@@ -202,7 +198,7 @@ void ExportProfile(_In_z_ LPCSTR szProfile, _In_z_ LPCWSTR szProfileSection, boo
 			}
 			else
 			{
-				LPMAPITABLE lpServiceTable = NULL;
+				LPMAPITABLE lpServiceTable = nullptr;
 
 				EC_MAPI(lpServiceAdmin->GetMsgServiceTable(
 					0, // fMapiUnicode is not supported
@@ -210,12 +206,11 @@ void ExportProfile(_In_z_ LPCSTR szProfile, _In_z_ LPCWSTR szProfileSection, boo
 
 				if (lpServiceTable)
 				{
-					LPSRowSet lpRowSet = NULL;
+					LPSRowSet lpRowSet = nullptr;
 					EC_MAPI(HrQueryAllRows(lpServiceTable, NULL, NULL, NULL, 0, &lpRowSet));
 					if (lpRowSet && lpRowSet->cRows >= 1)
 					{
-						ULONG i = 0;
-						for (i = 0; i < lpRowSet->cRows; i++)
+						for (ULONG i = 0; i < lpRowSet->cRows; i++)
 						{
 							ExportProfileService(fProfile, i, lpServiceAdmin, &lpRowSet->aRow[i]);
 						}
