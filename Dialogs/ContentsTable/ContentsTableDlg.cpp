@@ -55,7 +55,7 @@ CContentsTableDlg::CContentsTableDlg(
 
 	if (mfcmapiCALL_CREATE_DIALOG == bCreateDialog)
 	{
-		CreateDialogAndMenu(NULL);
+		CContentsTableDlg::CreateDialogAndMenu(NULL);
 	}
 }
 

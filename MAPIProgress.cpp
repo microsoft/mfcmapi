@@ -134,40 +134,39 @@ STDMETHODIMP CMAPIProgress::SetLimits(ULONG* lpulMin, ULONG* lpulMax, ULONG* lpu
 {
 	OutputState(L"SetLimits");
 
-	auto hRes = S_OK;
-	TCHAR szMin[16];
-	TCHAR szMax[16];
-	TCHAR szFlags[16];
+	wstring szMin;
+	wstring szMax;
+	wstring szFlags;
 
 	if (lpulMin)
 	{
-		EC_H(StringCchPrintf(szMin, _countof(szMin), _T("%u"), *lpulMin)); // STRING_OK
+		szMin = format(L"%u", *lpulMin); // STRING_OK
 	}
 	else
 	{
-		EC_H(StringCchPrintf(szMin, _countof(szMin), _T("NULL"))); // STRING_OK
+		szMin = L"NULL";
 	}
 
 	if (lpulMax)
 	{
-		EC_H(StringCchPrintf(szMax, _countof(szMax), _T("%u"), *lpulMax)); // STRING_OK
+		szMax = format(L"%u", *lpulMax); // STRING_OK
 	}
 	else
 	{
-		EC_H(StringCchPrintf(szMax, _countof(szMax), _T("NULL"))); // STRING_OK
+		szMin = L"NULL";
 	}
 
 	if (lpulFlags)
 	{
-		EC_H(StringCchPrintf(szFlags, _countof(szFlags), _T("0x%08X"), *lpulFlags)); // STRING_OK
+		szFlags = format(L"0x%08X", *lpulFlags); // STRING_OK
 	}
 	else
 	{
-		EC_H(StringCchPrintf(szFlags, _countof(szFlags), _T("NULL"))); // STRING_OK
+		szMin = L"NULL";
 	}
 
 	DebugPrintEx(DBGGeneric, CLASS, L"SetLimits", L"(%ws) - Passed Values: lpulMin = %ws, lpulMax = %ws, lpulFlags = %ws\n",
-		m_szContext.c_str(), LPCTSTRToWstring(szMin).c_str(), LPCTSTRToWstring(szMax).c_str(), LPCTSTRToWstring(szFlags).c_str());
+		m_szContext.c_str(), szMin.c_str(), szMax.c_str(), szFlags.c_str());
 
 	if (lpulMin)
 		m_ulMin = *lpulMin;

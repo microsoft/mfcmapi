@@ -1090,7 +1090,7 @@ void CMainDlg::OnMAPIOpenLocalFormContainer()
 void CMainDlg::OnLoadMAPI()
 {
 	auto hRes = S_OK;
-	TCHAR szDLLPath[MAX_PATH] = { 0 };
+	WCHAR szDLLPath[MAX_PATH] = { 0 };
 	UINT cchDllPath = 0;
 	CEditor MyData(
 		this,
@@ -1099,11 +1099,11 @@ void CMainDlg::OnLoadMAPI()
 		1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-	WC_D(cchDllPath, GetSystemDirectory(szDLLPath, _countof(szDLLPath)));
+	WC_D(cchDllPath, GetSystemDirectoryW(szDLLPath, _countof(szDLLPath)));
 	if (cchDllPath < _countof(szDLLPath))
 	{
-		WC_H(StringCchCat(szDLLPath, _countof(szDLLPath), _T("\\mapi32.dll"))); // STRING_OK
-		MyData.InitPane(0, CreateSingleLinePane(IDS_PATH, LPCTSTRToWstring(szDLLPath), false));
+		auto szFullPath = wstring(szDLLPath) + L"\\mapi32.dll";
+		MyData.InitPane(0, CreateSingleLinePane(IDS_PATH, szFullPath, false));
 	}
 
 	WC_H(MyData.DisplayDialog());
