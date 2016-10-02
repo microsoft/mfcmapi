@@ -9,7 +9,7 @@ public:
 	CAttachmentsDlg(
 		_In_ CParentWnd* pParentWnd,
 		_In_ CMapiObjects* lpMapiObjects,
-		_In_ LPMAPITABLE	lpMAPITable,
+		_In_ LPMAPITABLE lpMAPITable,
 		_In_ LPMESSAGE lpMessage);
 	virtual ~CAttachmentsDlg();
 
@@ -35,10 +35,10 @@ private:
 	void OnViewEmbeddedMessageProps();
 	void OnAddAttachment();
 
-	LPATTACH	m_lpAttach; // Currently opened attachment
-	ULONG		m_ulAttachNum; // Currently opened attachment number
-	LPMESSAGE	m_lpMessage;
-	bool		m_bDisplayAttachAsEmbeddedMessage;
+	LPATTACH m_lpAttach; // Currently opened attachment
+	ULONG m_ulAttachNum; // Currently opened attachment number
+	LPMESSAGE m_lpMessage;
+	bool m_bDisplayAttachAsEmbeddedMessage;
 
 	DECLARE_MESSAGE_MAP()
 };

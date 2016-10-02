@@ -1,10 +1,7 @@
 #include "stdafx.h"
-#include "..\stdafx.h"
 #include "MrMAPI.h"
-#include "MMStore.h"
-#include "MMFolder.h"
-#include "..\DumpStore.h"
-#include "..\File.h"
+#include "DumpStore.h"
+#include "File.h"
 
 void DumpContentsTable(
 	_In_z_ LPCWSTR lpszProfile,
@@ -59,8 +56,8 @@ void DumpContentsTable(
 
 void DumpMSG(_In_z_ LPCWSTR lpszMSGFile, _In_z_ LPCWSTR lpszXMLFile, _In_ bool bRetryStreamProps, _In_ bool bOutputAttachments)
 {
-	HRESULT hRes = S_OK;
-	LPMESSAGE lpMessage = NULL;
+	auto hRes = S_OK;
+	LPMESSAGE lpMessage = nullptr;
 
 	WC_H(LoadMSGToMessage(lpszMSGFile, &lpMessage));
 
@@ -72,7 +69,7 @@ void DumpMSG(_In_z_ LPCWSTR lpszMSGFile, _In_z_ LPCWSTR lpszXMLFile, _In_ bool b
 		if (!bOutputAttachments) MyDumpStore.DisableEmbeddedAttachments();
 
 		// Just assume this message might have attachments
-		MyDumpStore.ProcessMessage(lpMessage, true, NULL);
+		MyDumpStore.ProcessMessage(lpMessage, true, nullptr);
 		lpMessage->Release();
 	}
 }
@@ -84,7 +81,7 @@ void DoContents(_In_ MYOPTIONS ProgOpts)
 	SRestriction sResSubject[2] = { 0 };
 	SRestriction sResMessageClass[2] = { 0 };
 	SPropValue sPropValue[2] = { 0 };
-	LPSRestriction lpRes = NULL;
+	LPSRestriction lpRes = nullptr;
 	if (!ProgOpts.lpszSubject.empty() || !ProgOpts.lpszMessageClass.empty())
 	{
 		// RES_AND
@@ -94,7 +91,7 @@ void DoContents(_In_ MYOPTIONS ProgOpts)
 		//   RES_AND (optional)
 		//     RES_EXIST - PR_MESSAGE_CLASS_W
 		//     RES_CONTENT - lpszMessageClass
-		int i = 0;
+		auto i = 0;
 		if (!ProgOpts.lpszSubject.empty())
 		{
 			sResMiddle[i].rt = RES_AND;
@@ -107,7 +104,7 @@ void DoContents(_In_ MYOPTIONS ProgOpts)
 			sResSubject[1].res.resContent.ulFuzzyLevel = FL_FULLSTRING | FL_IGNORECASE;
 			sResSubject[1].res.resContent.lpProp = &sPropValue[0];
 			sPropValue[0].ulPropTag = PR_SUBJECT_W;
-			sPropValue[0].Value.lpszW = (LPWSTR)ProgOpts.lpszSubject.c_str();
+			sPropValue[0].Value.lpszW = const_cast<LPWSTR>(ProgOpts.lpszSubject.c_str());
 			i++;
 		}
 
@@ -123,7 +120,7 @@ void DoContents(_In_ MYOPTIONS ProgOpts)
 			sResMessageClass[1].res.resContent.ulFuzzyLevel = FL_FULLSTRING | FL_IGNORECASE;
 			sResMessageClass[1].res.resContent.lpProp = &sPropValue[1];
 			sPropValue[1].ulPropTag = PR_MESSAGE_CLASS_W;
-			sPropValue[1].Value.lpszW = (LPWSTR)ProgOpts.lpszMessageClass.c_str();
+			sPropValue[1].Value.lpszW = const_cast<LPWSTR>(ProgOpts.lpszMessageClass.c_str());
 			i++;
 		}
 		sResTop.rt = RES_AND;

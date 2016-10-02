@@ -1,7 +1,5 @@
 #include "stdafx.h"
-#include "..\stdafx.h"
 #include "TimeZone.h"
-#include "..\String.h"
 
 TimeZone::TimeZone(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
 {
@@ -12,10 +10,6 @@ TimeZone::TimeZone(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParse
 	m_stStandardDate = { 0 };
 	m_wDaylightDate = 0;
 	m_stDaylightDate = { 0 };
-}
-
-TimeZone::~TimeZone()
-{
 }
 
 void TimeZone::Parse()

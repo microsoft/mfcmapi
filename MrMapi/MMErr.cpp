@@ -1,11 +1,8 @@
 #include "stdafx.h"
-#include "..\stdafx.h"
 
 #include "MrMAPI.h"
 #include "MMErr.h"
 #include <shlwapi.h>
-#include <io.h>
-#include "..\String.h"
 
 void PrintErrFromNum(_In_ ULONG ulError)
 {
@@ -14,10 +11,9 @@ void PrintErrFromNum(_In_ ULONG ulError)
 
 void PrintErrFromName(_In_ wstring lpszError)
 {
-	LPCWSTR szErr = lpszError.c_str();
-	ULONG i = 0;
+	auto szErr = lpszError.c_str();
 
-	for (i = 0; i < g_ulErrorArray; i++)
+	for (ULONG i = 0; i < g_ulErrorArray; i++)
 	{
 		if (0 == lstrcmpiW(szErr, g_ErrorArray[i].lpszName))
 		{
@@ -31,10 +27,9 @@ void PrintErrFromPartialName(_In_ wstring lpszError)
 	if (!lpszError.empty()) printf("Searching for \"%ws\"\n", lpszError.c_str());
 	else printf("Searching for all errors\n");
 
-	ULONG ulCur = 0;
 	ULONG ulNumMatches = 0;
 
-	for (ulCur = 0; ulCur < g_ulErrorArray; ulCur++)
+	for (ULONG ulCur = 0; ulCur < g_ulErrorArray; ulCur++)
 	{
 		if (lpszError.empty() || 0 != StrStrIW(g_ErrorArray[ulCur].lpszName, lpszError.c_str()))
 		{
@@ -48,8 +43,8 @@ void PrintErrFromPartialName(_In_ wstring lpszError)
 
 void DoErrorParse(_In_ MYOPTIONS ProgOpts)
 {
-	wstring lpszErr = ProgOpts.lpszUnswitchedOption;
-	ULONG ulErrNum = wstringToUlong(lpszErr, (ProgOpts.ulOptions & OPT_DODECIMAL) ? 10 : 16);
+	auto lpszErr = ProgOpts.lpszUnswitchedOption;
+	auto ulErrNum = wstringToUlong(lpszErr, ProgOpts.ulOptions & OPT_DODECIMAL ? 10 : 16);
 
 	if (ulErrNum)
 	{
@@ -57,7 +52,7 @@ void DoErrorParse(_In_ MYOPTIONS ProgOpts)
 	}
 	else
 	{
-		if ((ProgOpts.ulOptions & OPT_DOPARTIALSEARCH) || lpszErr.empty())
+		if (ProgOpts.ulOptions & OPT_DOPARTIALSEARCH || lpszErr.empty())
 		{
 			PrintErrFromPartialName(lpszErr);
 		}

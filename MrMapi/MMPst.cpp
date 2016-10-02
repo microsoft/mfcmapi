@@ -1,87 +1,86 @@
 #include "stdafx.h"
-#include "..\stdafx.h"
 #include "MrMAPI.h"
 #include "MMPST.h"
 
-#define NDB_CRYPT_NONE		0
-#define NDB_CRYPT_PERMUTE	1
-#define NDB_CRYPT_CYCLIC	2
+#define NDB_CRYPT_NONE 0
+#define NDB_CRYPT_PERMUTE 1
+#define NDB_CRYPT_CYCLIC 2
 
 struct PSTHEADER {
-	DWORD	dwMagic;
-	DWORD	dwCRCPartial;
-	WORD	wMagicClient;
-	WORD	wVer;
-	WORD	wVerClient;
-	BYTE	bPlatformCreate;
-	BYTE	bPlatformAccess;
-	DWORD	dwReserved1;
-	DWORD	dwReserved2;
+	DWORD dwMagic;
+	DWORD dwCRCPartial;
+	WORD wMagicClient;
+	WORD wVer;
+	WORD wVerClient;
+	BYTE bPlatformCreate;
+	BYTE bPlatformAccess;
+	DWORD dwReserved1;
+	DWORD dwReserved2;
 };
 
 #define NDBANSISMALL 14
 #define NDBANSILARGE 15
-#define NDBUNICODE   23
-#define NDBUNICODE2  36
+#define NDBUNICODE 23
+#define NDBUNICODE2 36
 
 struct BREFANSI {
-	DWORD			bid;
-	DWORD			ib;
+	DWORD bid;
+	DWORD ib;
 };
 
 struct ROOTANSI {
-	ULONG		dwReserved;
-	DWORD		ibFileEof;
-	DWORD		ibAMapLast;
-	DWORD		cbAMapFree;
-	DWORD		cbPMapFree;
-	BREFANSI	brefNBT;
-	BREFANSI	brefBBT;
-	BYTE		fAMapValid;
-	BYTE		bARVec;
-	WORD		cARVec;
+	ULONG dwReserved;
+	DWORD ibFileEof;
+	DWORD ibAMapLast;
+	DWORD cbAMapFree;
+	DWORD cbPMapFree;
+	BREFANSI brefNBT;
+	BREFANSI brefBBT;
+	BYTE fAMapValid;
+	BYTE bARVec;
+	WORD cARVec;
 };
 
 struct HEADER2ANSI {
-	DWORD		bidNextB;
-	DWORD		bidNextP;
-	DWORD		dwUnique;
-	BYTE		rgnid[128];
-	ROOTANSI	root;
-	BYTE		rgbFM[128];
-	BYTE		rgbFP[128];
-	BYTE		bSentinel;
-	BYTE		bCryptMethod;
+	DWORD bidNextB;
+	DWORD bidNextP;
+	DWORD dwUnique;
+	BYTE rgnid[128];
+	ROOTANSI root;
+	BYTE rgbFM[128];
+	BYTE rgbFP[128];
+	BYTE bSentinel;
+	BYTE bCryptMethod;
 };
 
 struct BREFUNICODE {
-	ULONGLONG		bid;
-	ULONGLONG		ib;
+	ULONGLONG bid;
+	ULONGLONG ib;
 };
 
 struct ROOTUNICODE {
-	ULONG		dwReserved;
-	ULONGLONG	ibFileEof;
-	ULONGLONG	ibAMapLast;
-	ULONGLONG	cbAMapFree;
-	ULONGLONG	cbPMapFree;
-	BREFUNICODE	brefNBT;
-	BREFUNICODE	brefBBT;
-	BYTE		fAMapValid;
-	BYTE		bARVec;
-	WORD		cARVec;
+	ULONG dwReserved;
+	ULONGLONG ibFileEof;
+	ULONGLONG ibAMapLast;
+	ULONGLONG cbAMapFree;
+	ULONGLONG cbPMapFree;
+	BREFUNICODE brefNBT;
+	BREFUNICODE brefBBT;
+	BYTE fAMapValid;
+	BYTE bARVec;
+	WORD cARVec;
 };
 
 struct HEADER2UNICODE {
-	ULONGLONG	bidUnused;
-	ULONGLONG	bidNextP;
-	DWORD		dwUnique;
-	BYTE		rgnid[128];
-	ROOTUNICODE	root;
-	BYTE		rgbFM[128];
-	BYTE		rgbFP[128];
-	BYTE		bSentinel;
-	BYTE		bCryptMethod;
+	ULONGLONG bidUnused;
+	ULONGLONG bidNextP;
+	DWORD dwUnique;
+	BYTE rgnid[128];
+	ROOTUNICODE root;
+	BYTE rgbFM[128];
+	BYTE rgbFP[128];
+	BYTE bSentinel;
+	BYTE bCryptMethod;
 };
 
 void PrintCryptType(BYTE bCryptMethod)
@@ -89,13 +88,13 @@ void PrintCryptType(BYTE bCryptMethod)
 	printf("0x%02X (", bCryptMethod);
 	switch (bCryptMethod)
 	{
-	case (NDB_CRYPT_NONE) :
+	case NDB_CRYPT_NONE:
 		printf("not encoded");
 		break;
-	case (NDB_CRYPT_PERMUTE) :
+	case NDB_CRYPT_PERMUTE:
 		printf("permutative encoding");
 		break;
-	case (NDB_CRYPT_CYCLIC) :
+	case NDB_CRYPT_CYCLIC:
 		printf("cyclic encoding");
 		break;
 	}
@@ -107,12 +106,12 @@ void PrintAMAPValid(BYTE fAMapValid)
 	printf("0x%02X (", fAMapValid);
 	switch (fAMapValid)
 	{
-	case (0) :
+	case 0:
 		printf("not valid");
 		break;
-	case (1) :
-	case (2) :
-			 printf("valid");
+	case 1:
+	case 2:
+		printf("valid");
 		break;
 	}
 	printf(")");
@@ -127,19 +126,20 @@ void PrintFileSize(ULONGLONG ullFileSize)
 	double scaledSize = 0;
 	if (ullFileSize > GB)
 	{
-		scaledSize = ullFileSize / (double)GB;
+		scaledSize = ullFileSize / static_cast<double>(GB);
 		printf("%.2f GB", scaledSize);
 	}
 	else if (ullFileSize > MB)
 	{
-		scaledSize = ullFileSize / (double)MB;
+		scaledSize = ullFileSize / static_cast<double>(MB);
 		printf("%.2f MB", scaledSize);
 	}
 	else if (ullFileSize > KB)
 	{
-		scaledSize = ullFileSize / (double)KB;
+		scaledSize = ullFileSize / static_cast<double>(KB);
 		printf("%.2f KB", scaledSize);
 	}
+
 	printf(" (%I64u bytes)", ullFileSize);
 }
 
@@ -150,8 +150,7 @@ void DoPST(_In_ MYOPTIONS ProgOpts)
 	struct _stat64 stats = { 0 };
 	_wstati64(ProgOpts.lpszInput.c_str(), &stats);
 
-	FILE* fIn = NULL;
-	fIn = _wfopen(ProgOpts.lpszInput.c_str(), L"rb");
+	auto fIn = _wfopen(ProgOpts.lpszInput.c_str(), L"rb");
 	if (fIn)
 	{
 		PSTHEADER pstHeader = { 0 };
@@ -159,7 +158,7 @@ void DoPST(_In_ MYOPTIONS ProgOpts)
 		{
 			ULONGLONG ibFileEof = 0;
 			ULONGLONG cbAMapFree = 0;
-			double percentFree = 0;
+			double percentFree;
 			BYTE fAMapValid = 0;
 			BYTE bCryptMethod = 0;
 
@@ -188,31 +187,31 @@ void DoPST(_In_ MYOPTIONS ProgOpts)
 				}
 			}
 
-			if (ibFileEof != (ULONGLONG)stats.st_size)
+			if (ibFileEof != static_cast<ULONGLONG>(stats.st_size))
 			{
-				printf("File Size (header)  = ");
+				printf("File Size (header) = ");
 				PrintFileSize(ibFileEof);
 				printf("\n");
-				printf("File Size (actual)  = ");
+				printf("File Size (actual) = ");
 				PrintFileSize(stats.st_size);
 				printf("\n");
 			}
 			else
 			{
-				printf("File Size           = ");
+				printf("File Size = ");
 				PrintFileSize(ibFileEof);
 				printf("\n");
 			}
 
-			printf("Free Space          = ");
+			printf("Free Space = ");
 			PrintFileSize(cbAMapFree);
 			printf("\n");
 			percentFree = cbAMapFree * 100.0 / ibFileEof;
-			printf("Percent free        = %.2f%%\n", percentFree);
+			printf("Percent free = %.2f%%\n", percentFree);
 			if (fIsSet(DBGGeneric))
 			{
 				printf("\n");
-				printf("fAMapValid   = ");
+				printf("fAMapValid = ");
 				PrintAMAPValid(fAMapValid);
 				printf("\n");
 				printf("Crypt Method = ");
@@ -221,8 +220,8 @@ void DoPST(_In_ MYOPTIONS ProgOpts)
 
 				printf("Magic Number = 0x%08X\n", pstHeader.dwMagic);
 				printf("wMagicClient = 0x%04X\n", pstHeader.wMagicClient);
-				printf("wVer         = 0x%04X\n", pstHeader.wVer);
-				printf("wVerClient   = 0x%04X\n", pstHeader.wVerClient);
+				printf("wVer = 0x%04X\n", pstHeader.wVer);
+				printf("wVerClient = 0x%04X\n", pstHeader.wVerClient);
 			}
 		}
 		else

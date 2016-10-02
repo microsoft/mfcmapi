@@ -24,7 +24,7 @@ private:
 	void OnEditAction1() override;
 	void OnEditAction2() override;
 
-	void ReadTagArrayToList(ULONG ulListNum);
+	void ReadTagArrayToList(ULONG ulListNum) const;
 	void WriteListToTagArray(ULONG ulListNum);
 
 	// source variables

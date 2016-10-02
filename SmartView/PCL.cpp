@@ -1,22 +1,19 @@
 #include "stdafx.h"
-#include "..\stdafx.h"
 #include "PCL.h"
-#include "..\String.h"
-#include "..\InterpretProp2.h"
+#include "String.h"
+#include "InterpretProp2.h"
 
 PCL::PCL(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
 {
 	m_cXID = 0;
-	m_lpXID = NULL;
+	m_lpXID = nullptr;
 }
 
 PCL::~PCL()
 {
 	if (m_cXID && m_lpXID)
 	{
-		ULONG i = 0;
-
-		for (i = 0; i < m_cXID; i++)
+		for (DWORD i = 0; i < m_cXID; i++)
 		{
 			delete[] m_lpXID[i].LocalID;
 		}
@@ -54,12 +51,10 @@ void PCL::Parse()
 	if (m_lpXID)
 	{
 		memset(m_lpXID, 0, sizeof(SizedXID)*m_cXID);
-		ULONG i = 0;
-
-		for (i = 0; i < m_cXID; i++)
+		for (DWORD i = 0; i < m_cXID; i++)
 		{
 			m_Parser.GetBYTE(&m_lpXID[i].XidSize);
-			m_Parser.GetBYTESNoAlloc(sizeof(GUID), sizeof(GUID), (LPBYTE)&m_lpXID[i].NamespaceGuid);
+			m_Parser.GetBYTESNoAlloc(sizeof(GUID), sizeof(GUID), reinterpret_cast<LPBYTE>(&m_lpXID[i].NamespaceGuid));
 			m_lpXID[i].cbLocalId = m_lpXID[i].XidSize - sizeof(GUID);
 			if (m_Parser.RemainingBytes() < m_lpXID[i].cbLocalId) break;
 			m_Parser.GetBYTES(m_lpXID[i].cbLocalId, m_lpXID[i].cbLocalId, &m_lpXID[i].LocalID);
@@ -69,7 +64,7 @@ void PCL::Parse()
 
 _Check_return_ wstring PCL::ToStringInternal()
 {
-	wstring szPCLString = formatmessage(IDS_PCLHEADER, m_cXID);
+	auto szPCLString = formatmessage(IDS_PCLHEADER, m_cXID);
 
 	if (m_cXID && m_lpXID)
 	{
@@ -77,7 +72,7 @@ _Check_return_ wstring PCL::ToStringInternal()
 		for (i = 0; i < m_cXID; i++)
 		{
 			SBinary sBin = { 0 };
-			sBin.cb = (ULONG)m_lpXID[i].cbLocalId;
+			sBin.cb = static_cast<ULONG>(m_lpXID[i].cbLocalId);
 			sBin.lpb = m_lpXID[i].LocalID;
 
 			szPCLString += formatmessage(IDS_PCLXID,

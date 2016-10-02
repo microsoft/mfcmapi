@@ -42,9 +42,9 @@ CAclDlg::CAclDlg(_In_ CParentWnd* pParentWnd,
 
 	m_bIsAB = false;
 
-	CreateDialogAndMenu(IDR_MENU_ACL);
+	CContentsTableDlg::CreateDialogAndMenu(IDR_MENU_ACL);
 
-	OnRefreshView();
+	CAclDlg::OnRefreshView();
 }
 
 CAclDlg::~CAclDlg()

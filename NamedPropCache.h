@@ -19,8 +19,6 @@ public:
 	wstring lpszPropName;    // Cached strings
 	wstring lpszPropGUID;    //
 	wstring lpszDASL;        //
-
-private:
 };
 typedef NamedPropCacheEntry *LPNAMEDPROPCACHEENTRY;
 

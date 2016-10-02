@@ -12,8 +12,3 @@ BinaryData::BinaryData(_In_ LPSBinary lpOldBin)
 
 	m_NewBin = { 0 };
 }
-
-BinaryData::~BinaryData()
-{
-
-}

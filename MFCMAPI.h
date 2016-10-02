@@ -4,11 +4,11 @@
 
 // Version history:
 // 1
-//    Original, unversioned header
+// Original, unversioned header
 // 2
-//    NAMEID_ARRAY_ENTRY augmented with ulType and lpszArea
+// NAMEID_ARRAY_ENTRY augmented with ulType and lpszArea
 // 3
-//    lpSmartViewParserTypes and ulSmartViewParserTypes added to _Addin
+// lpSmartViewParserTypes and ulSmartViewParserTypes added to _Addin
 
 #define MFCMAPI_HEADER_V1 1
 #define MFCMAPI_HEADER_V2 2
@@ -47,10 +47,10 @@ typedef GUID_ARRAY_ENTRY* LPGUID_ARRAY_ENTRY;
 // Named property mappings - used by GetNameIDs
 struct NAMEID_ARRAY_ENTRY
 {
-	LONG    lValue;
+	LONG lValue;
 	LPCGUID lpGuid;
 	LPCWSTR lpszName;
-	ULONG   ulType;
+	ULONG ulType;
 	LPCWSTR lpszArea;
 };
 typedef NAMEID_ARRAY_ENTRY* LPNAMEID_ARRAY_ENTRY;
@@ -102,9 +102,9 @@ enum __GuidType
 // Flag parsing array - used by GetPropFlags
 struct FLAG_ARRAY_ENTRY
 {
-	ULONG	ulFlagName;
-	LONG	lFlagValue;
-	ULONG	ulFlagType;
+	ULONG ulFlagName;
+	LONG lFlagValue;
+	ULONG ulFlagType;
 	LPCWSTR lpszName;
 };
 typedef FLAG_ARRAY_ENTRY* LPFLAG_ARRAY_ENTRY;
@@ -165,63 +165,63 @@ typedef SMARTVIEW_PARSER_ARRAY_ENTRY* LPSMARTVIEW_PARSER_ARRAY_ENTRY;
 
 // Menu contexts - denote when a menu item should be present. May be combined.
 // Used in _MenuItem and _AddInMenuParams.
-#define MENU_CONTEXT_MAIN                 0x00000001 // Main window
-#define MENU_CONTEXT_FOLDER_TREE          0x00000002 // Folder hierarchy window
-#define MENU_CONTEXT_FOLDER_CONTENTS      0x00000004 // Folder contents window
-#define MENU_CONTEXT_AB_TREE              0x00000008 // Address book hierarchy window
-#define MENU_CONTEXT_AB_CONTENTS          0x00000010 // Address book contents window
-#define MENU_CONTEXT_PROFILE_LIST         0x00000020 // Profile list window
-#define MENU_CONTEXT_PROFILE_SERVICES     0x00000040 // Profile services window
-#define MENU_CONTEXT_PROFILE_PROVIDERS    0x00000080 // Profile providers window
-#define MENU_CONTEXT_RECIPIENT_TABLE      0x00000100 // Recipient table window
-#define MENU_CONTEXT_ATTACHMENT_TABLE     0x00000200 // Attachment table window
-#define MENU_CONTEXT_ACL_TABLE            0x00000400 // ACL table window
-#define MENU_CONTEXT_RULES_TABLE          0x00000800 // Rules table window
-#define MENU_CONTEXT_FORM_CONTAINER       0x00001000 // Form container window
-#define MENU_CONTEXT_STATUS_TABLE         0x00002000 // Status table window
+#define MENU_CONTEXT_MAIN 0x00000001 // Main window
+#define MENU_CONTEXT_FOLDER_TREE 0x00000002 // Folder hierarchy window
+#define MENU_CONTEXT_FOLDER_CONTENTS 0x00000004 // Folder contents window
+#define MENU_CONTEXT_AB_TREE 0x00000008 // Address book hierarchy window
+#define MENU_CONTEXT_AB_CONTENTS 0x00000010 // Address book contents window
+#define MENU_CONTEXT_PROFILE_LIST 0x00000020 // Profile list window
+#define MENU_CONTEXT_PROFILE_SERVICES 0x00000040 // Profile services window
+#define MENU_CONTEXT_PROFILE_PROVIDERS 0x00000080 // Profile providers window
+#define MENU_CONTEXT_RECIPIENT_TABLE 0x00000100 // Recipient table window
+#define MENU_CONTEXT_ATTACHMENT_TABLE 0x00000200 // Attachment table window
+#define MENU_CONTEXT_ACL_TABLE 0x00000400 // ACL table window
+#define MENU_CONTEXT_RULES_TABLE 0x00000800 // Rules table window
+#define MENU_CONTEXT_FORM_CONTAINER 0x00001000 // Form container window
+#define MENU_CONTEXT_STATUS_TABLE 0x00002000 // Status table window
 #define MENU_CONTEXT_RECIEVE_FOLDER_TABLE 0x00004000 // Receive folder window
-#define MENU_CONTEXT_HIER_TABLE           0x00008000 // Hierarchy table window
-#define MENU_CONTEXT_DEFAULT_TABLE        0x00010000 // Default table window
-#define MENU_CONTEXT_MAILBOX_TABLE        0x00020000 // Mailbox table window
-#define MENU_CONTEXT_PUBLIC_FOLDER_TABLE  0x00040000 // Public Folder table window
-#define MENU_CONTEXT_PROPERTY             0x00080000 // Property pane
+#define MENU_CONTEXT_HIER_TABLE 0x00008000 // Hierarchy table window
+#define MENU_CONTEXT_DEFAULT_TABLE 0x00010000 // Default table window
+#define MENU_CONTEXT_MAILBOX_TABLE 0x00020000 // Mailbox table window
+#define MENU_CONTEXT_PUBLIC_FOLDER_TABLE 0x00040000 // Public Folder table window
+#define MENU_CONTEXT_PROPERTY 0x00080000 // Property pane
 
 // Some helpful constants for common context scenarios
 #define MENU_CONTEXT_ALL_FOLDER MENU_CONTEXT_FOLDER_TREE|MENU_CONTEXT_FOLDER_CONTENTS
 #define MENU_CONTEXT_ALL_AB MENU_CONTEXT_AB_TREE|MENU_CONTEXT_AB_CONTENTS
 #define MENU_CONTEXT_ALL_PROFILE MENU_CONTEXT_PROFILE_LIST|MENU_CONTEXT_PROFILE_SERVICES|MENU_CONTEXT_PROFILE_PROVIDERS
 #define MENU_CONTEXT_ALL_WINDOWS \
-	MENU_CONTEXT_MAIN| \
-	MENU_CONTEXT_ALL_FOLDER| \
-	MENU_CONTEXT_ALL_AB| \
-	MENU_CONTEXT_ALL_PROFILE| \
-	MENU_CONTEXT_RECIPIENT_TABLE| \
-	MENU_CONTEXT_ATTACHMENT_TABLE| \
-	MENU_CONTEXT_ACL_TABLE| \
-	MENU_CONTEXT_RULES_TABLE| \
-	MENU_CONTEXT_FORM_CONTAINER| \
-	MENU_CONTEXT_STATUS_TABLE| \
-	MENU_CONTEXT_RECIEVE_FOLDER_TABLE| \
-	MENU_CONTEXT_HIER_TABLE| \
-	MENU_CONTEXT_DEFAULT_TABLE| \
-	MENU_CONTEXT_MAILBOX_TABLE| \
-	MENU_CONTEXT_PUBLIC_FOLDER_TABLE
+ MENU_CONTEXT_MAIN| \
+ MENU_CONTEXT_ALL_FOLDER| \
+ MENU_CONTEXT_ALL_AB| \
+ MENU_CONTEXT_ALL_PROFILE| \
+ MENU_CONTEXT_RECIPIENT_TABLE| \
+ MENU_CONTEXT_ATTACHMENT_TABLE| \
+ MENU_CONTEXT_ACL_TABLE| \
+ MENU_CONTEXT_RULES_TABLE| \
+ MENU_CONTEXT_FORM_CONTAINER| \
+ MENU_CONTEXT_STATUS_TABLE| \
+ MENU_CONTEXT_RECIEVE_FOLDER_TABLE| \
+ MENU_CONTEXT_HIER_TABLE| \
+ MENU_CONTEXT_DEFAULT_TABLE| \
+ MENU_CONTEXT_MAILBOX_TABLE| \
+ MENU_CONTEXT_PUBLIC_FOLDER_TABLE
 #define MENU_CONTEXT_ALL MENU_CONTEXT_ALL_WINDOWS|MENU_CONTEXT_PROPERTY
 
 // Menu flags - denote when a menu item should be enabled, data to be fetched, etc. May be combined.
 // Used in _MenuItem and _AddInMenuParams.
-#define MENU_FLAGS_FOLDER_REG    0x00000001 // Enable for regular folder contents
-#define MENU_FLAGS_FOLDER_ASSOC  0x00000002 // Enable for associated (FAI) folder contents
-#define MENU_FLAGS_DELETED       0x00000004 // Enable for deleted items and folders
-#define MENU_FLAGS_ROW           0x00000008 // Row data only
-#define MENU_FLAGS_SINGLESELECT  0x00000010 // Enable only when a single item selected
-#define MENU_FLAGS_MULTISELECT   0x00000020 // Enable only when multiple items selected
+#define MENU_FLAGS_FOLDER_REG 0x00000001 // Enable for regular folder contents
+#define MENU_FLAGS_FOLDER_ASSOC 0x00000002 // Enable for associated (FAI) folder contents
+#define MENU_FLAGS_DELETED 0x00000004 // Enable for deleted items and folders
+#define MENU_FLAGS_ROW 0x00000008 // Row data only
+#define MENU_FLAGS_SINGLESELECT 0x00000010 // Enable only when a single item selected
+#define MENU_FLAGS_MULTISELECT 0x00000020 // Enable only when multiple items selected
 #define MENU_FLAGS_REQUESTMODIFY 0x00000040 // Request modify when opening item
 
 #define MENU_FLAGS_ALL_FOLDER \
-	MENU_FLAGS_FOLDER_REG| \
-	MENU_FLAGS_FOLDER_ASSOC| \
-	MENU_FLAGS_DELETED
+ MENU_FLAGS_FOLDER_REG| \
+ MENU_FLAGS_FOLDER_ASSOC| \
+ MENU_FLAGS_DELETED
 
 struct _AddIn; // forward
 typedef _AddIn* LPADDIN;
@@ -229,39 +229,39 @@ typedef _AddIn* LPADDIN;
 // Used by GetMenus
 struct _MenuItem
 {
-	LPWSTR	szMenu;		// Menu string
-	LPWSTR	szHelp;		// Menu help string
-	ULONG	ulContext;	// Context under which menu item should be available (MENU_CONTEXT_*)
-	ULONG	ulFlags;	// Flags (MENU_FLAGS_*)
-	ULONG	ulID;		// Menu ID (For each add-in, each ulID must be unique for each menu item)
-	LPADDIN lpAddIn;	// Pointer to AddIn structure, set by LoadAddIn - must be NULL in return from GetMenus
+	LPWSTR szMenu; // Menu string
+	LPWSTR szHelp; // Menu help string
+	ULONG ulContext; // Context under which menu item should be available (MENU_CONTEXT_*)
+	ULONG ulFlags; // Flags (MENU_FLAGS_*)
+	ULONG ulID; // Menu ID (For each add-in, each ulID must be unique for each menu item)
+	LPADDIN lpAddIn; // Pointer to AddIn structure, set by LoadAddIn - must be NULL in return from GetMenus
 };
 typedef _MenuItem* LPMENUITEM;
 
 // Used in CallMenu
 struct _AddInMenuParams
 {
-	LPMENUITEM            lpAddInMenu; // the menu item which was invoked
-	ULONG                 ulAddInContext; // the context in which the menu item was invoked (MENU_CONTEXT_*)
-	ULONG                 ulCurrentFlags; // flags which apply (MENU_FLAGS_*)
-	HWND                  hWndParent; // handle to the current window (useful for dialogs)
+	LPMENUITEM lpAddInMenu; // the menu item which was invoked
+	ULONG ulAddInContext; // the context in which the menu item was invoked (MENU_CONTEXT_*)
+	ULONG ulCurrentFlags; // flags which apply (MENU_FLAGS_*)
+	HWND hWndParent; // handle to the current window (useful for dialogs)
 	// The following are the MAPI objects/data which may have been available when the menu was invoked
-	LPMAPISESSION         lpMAPISession;
-	LPMDB                 lpMDB;
-	LPMAPIFOLDER          lpFolder;
-	LPMESSAGE             lpMessage;
-	LPMAPITABLE           lpTable;
-	LPADRBOOK             lpAdrBook;
-	LPABCONT              lpAbCont;
-	LPMAILUSER            lpMailUser;
+	LPMAPISESSION lpMAPISession;
+	LPMDB lpMDB;
+	LPMAPIFOLDER lpFolder;
+	LPMESSAGE lpMessage;
+	LPMAPITABLE lpTable;
+	LPADRBOOK lpAdrBook;
+	LPABCONT lpAbCont;
+	LPMAILUSER lpMailUser;
 	LPEXCHANGEMODIFYTABLE lpExchTbl;
-	LPMAPIFORMCONTAINER   lpFormContainer;
-	LPMAPIFORMINFO        lpFormInfoProp;
-	LPPROFSECT            lpProfSect;
-	LPATTACH              lpAttach;
-	ULONG                 ulPropTag;
-	LPSRow                lpRow;
-	LPMAPIPROP            lpMAPIProp; // the selected MAPI object - only used in MENU_CONTEXT_PROPERTY context
+	LPMAPIFORMCONTAINER lpFormContainer;
+	LPMAPIFORMINFO lpFormInfoProp;
+	LPPROFSECT lpProfSect;
+	LPATTACH lpAttach;
+	ULONG ulPropTag;
+	LPSRow lpRow;
+	LPMAPIPROP lpMAPIProp; // the selected MAPI object - only used in MENU_CONTEXT_PROPERTY context
 };
 typedef _AddInMenuParams* LPADDINMENUPARAMS;
 
@@ -291,8 +291,8 @@ struct _AddInDialogControl
 typedef _AddInDialogControl* LPADDINDIALOGCONTROL;
 
 // Values for ulButtonFlags in _AddInDialog. May be combined.
-#define CEDITOR_BUTTON_OK		0x00000001 // Display an OK button
-#define CEDITOR_BUTTON_CANCEL	0x00000008 // Display a Cancel button
+#define CEDITOR_BUTTON_OK 0x00000001 // Display an OK button
+#define CEDITOR_BUTTON_CANCEL 0x00000008 // Display a Cancel button
 
 // Passed in to ComplexDialog
 struct _AddInDialog
@@ -330,7 +330,7 @@ typedef _AddInDialogResult* LPADDINDIALOGRESULT;
 // Function: AddInLog
 // Use: Hooks in to MFCMAPI's debug logging routines.
 // Notes: Uses a 4k buffer for printf parameter expansion. All string to be printed should be smaller than 4k.
-//        Uses the DbgAddIn tag (0x00010000) for printing. This tag must be set in MFCMAPI to get output.
+// Uses the DbgAddIn tag (0x00010000) for printing. This tag must be set in MFCMAPI to get output.
 #define szAddInLog "AddInLog" // STRING_OK
 typedef void (STDMETHODVCALLTYPE ADDINLOG)(
 	bool bPrintThreadTime, // whether to print the thread and time banner.
@@ -372,9 +372,9 @@ typedef FREEDIALOGRESULT* LPFREEDIALOGRESULT;
 // Function: GetMAPIModule
 // Use: Get a handle to MAPI so the add-in does not have to link mapi32.lib
 // Notes: MAPI may not be loaded yet. If it's not loaded and bForce isn't set, then lphModule will return a NULL pointer.
-//        If MAPI isn't loaded yet and bForce is set, then MFCMAPI will load MAPI.
-//        If MAPI is loaded, bForce has no effect.
-//        The handle returned is NOT ref-counted. Pay close attention to return values from GetProcAddress. Do not call FreeLibrary.
+// If MAPI isn't loaded yet and bForce is set, then MFCMAPI will load MAPI.
+// If MAPI is loaded, bForce has no effect.
+// The handle returned is NOT ref-counted. Pay close attention to return values from GetProcAddress. Do not call FreeLibrary.
 #define szGetMAPIModule "GetMAPIModule" // STRING_OK
 typedef void(_cdecl GETMAPIMODULE)(
 	_In_ HMODULE* lphModule,
@@ -414,7 +414,7 @@ typedef GETMENUS* LPGETMENUS;
 // Use: Calls back to AddIn with a menu choice - addin will decode and invoke
 #define szCallMenu "CallMenu" // STRING_OK
 typedef HRESULT(STDMETHODCALLTYPE CALLMENU)(
-	_In_ LPADDINMENUPARAMS lpParams	// Everything the add-in needs to know
+	_In_ LPADDINMENUPARAMS lpParams // Everything the add-in needs to know
 	);
 typedef CALLMENU* LPCALLMENU;
 
@@ -519,27 +519,27 @@ typedef GETAPIVERSION* LPGETAPIVERSION;
 // by the add-in through the CallMenu function, it should only be consulted for debugging purposes.
 struct _AddIn
 {
-	LPADDIN                        lpNextAddIn;        // Pointer to the next add-in
-	HMODULE                        hMod;               // Handle to add-in module
-	LPWSTR                         szName;             // Name of add-in
-	LPCALLMENU                     pfnCallMenu;        // Pointer to function in module for invoking menus
-	ULONG                          ulMenu;             // Count of menu items exposed by add-in
-	LPMENUITEM                     lpMenu;             // Array of menu items exposed by add-in
-	ULONG                          ulPropTags;         // Count of property tags exposed by add-in
-	LPNAME_ARRAY_ENTRY_V2          lpPropTags;         // Array of property tags exposed by add-in
-	ULONG                          ulPropTypes;        // Count of property types exposed by add-in
-	LPNAME_ARRAY_ENTRY             lpPropTypes;        // Array of property types exposed by add-in
-	ULONG                          ulPropGuids;        // Count of property guids exposed by add-in
-	LPGUID_ARRAY_ENTRY             lpPropGuids;        // Array of property guids exposed by add-in
-	ULONG                          ulNameIDs;          // Count of named property mappings exposed by add-in
-	LPNAMEID_ARRAY_ENTRY           lpNameIDs;          // Array of named property mappings exposed by add-in
-	ULONG                          ulPropFlags;        // Count of flags exposed by add-in
-	LPFLAG_ARRAY_ENTRY             lpPropFlags;        // Array of flags exposed by add-in
-	ULONG                          ulSmartViewParsers; // Count of Smart View parsers exposed by add-in
+	LPADDIN lpNextAddIn; // Pointer to the next add-in
+	HMODULE hMod; // Handle to add-in module
+	LPWSTR szName; // Name of add-in
+	LPCALLMENU pfnCallMenu; // Pointer to function in module for invoking menus
+	ULONG ulMenu; // Count of menu items exposed by add-in
+	LPMENUITEM lpMenu; // Array of menu items exposed by add-in
+	ULONG ulPropTags; // Count of property tags exposed by add-in
+	LPNAME_ARRAY_ENTRY_V2 lpPropTags; // Array of property tags exposed by add-in
+	ULONG ulPropTypes; // Count of property types exposed by add-in
+	LPNAME_ARRAY_ENTRY lpPropTypes; // Array of property types exposed by add-in
+	ULONG ulPropGuids; // Count of property guids exposed by add-in
+	LPGUID_ARRAY_ENTRY lpPropGuids; // Array of property guids exposed by add-in
+	ULONG ulNameIDs; // Count of named property mappings exposed by add-in
+	LPNAMEID_ARRAY_ENTRY lpNameIDs; // Array of named property mappings exposed by add-in
+	ULONG ulPropFlags; // Count of flags exposed by add-in
+	LPFLAG_ARRAY_ENTRY lpPropFlags; // Array of flags exposed by add-in
+	ULONG ulSmartViewParsers; // Count of Smart View parsers exposed by add-in
 	LPSMARTVIEW_PARSER_ARRAY_ENTRY lpSmartViewParsers; // Array of Smart View parsers exposed by add-in
-	ULONG                          ulSmartViewParserTypes; // Count of Smart View parser types exposed by add-in
-	LPCWSTR*                       lpSmartViewParserTypes; // Array of Smart View parser types exposed by add-in
-	BOOL                           bLegacyPropTags;    // Flag tracking if legacy property tags have been loaded and upconverted
+	ULONG ulSmartViewParserTypes; // Count of Smart View parser types exposed by add-in
+	LPCWSTR* lpSmartViewParserTypes; // Array of Smart View parser types exposed by add-in
+	BOOL bLegacyPropTags; // Flag tracking if legacy property tags have been loaded and upconverted
 };
 
 // Everything below this point is internal to MFCMAPI and should be removed from this header when including it in an add-in
@@ -556,7 +556,6 @@ _Check_return_ ULONG ExtendAddInMenu(HMENU hMenu, ULONG ulAddInContext);
 _Check_return_ LPMENUITEM GetAddinMenuItem(HWND hWnd, UINT uidMsg);
 void InvokeAddInMenu(_In_opt_ LPADDINMENUPARAMS lpParams);
 void MergeAddInArrays();
-#include <vector>
 using namespace std;
 wstring AddInSmartView(__ParsingTypeEnum iStructType, ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
 

@@ -1,10 +1,9 @@
 #include "stdafx.h"
-#include "..\stdafx.h"
 #include "SearchFolderDefinition.h"
 #include "RestrictionStruct.h"
 #include "PropertyStruct.h"
-#include "..\String.h"
-#include "..\ExtraPropTags.h"
+#include "String.h"
+#include "ExtraPropTags.h"
 
 SearchFolderDefinition::SearchFolderDefinition(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
 {
@@ -13,23 +12,23 @@ SearchFolderDefinition::SearchFolderDefinition(ULONG cbBin, _In_count_(cbBin) LP
 	m_NumericSearch = 0;
 	m_TextSearchLength = 0;
 	m_TextSearchLengthExtended = 0;
-	m_TextSearch = 0;
+	m_TextSearch = nullptr;
 	m_SkipLen1 = 0;
-	m_SkipBytes1 = 0;
+	m_SkipBytes1 = nullptr;
 	m_DeepSearch = 0;
 	m_FolderList1Length = 0;
 	m_FolderList1LengthExtended = 0;
-	m_FolderList1 = 0;
+	m_FolderList1 = nullptr;
 	m_FolderList2Length = 0;
-	m_FolderList2 = 0;
+	m_FolderList2 = nullptr;
 	m_AddressCount = 0;
-	m_Addresses = 0;
+	m_Addresses = nullptr;
 	m_SkipLen2 = 0;
-	m_SkipBytes2 = 0;
+	m_SkipBytes2 = nullptr;
 	m_AdvancedSearchLen = 0;
-	m_AdvancedSearchBytes = 0;
+	m_AdvancedSearchBytes = nullptr;
 	m_SkipLen3 = 0;
-	m_SkipBytes3 = 0;
+	m_SkipBytes3 = nullptr;
 }
 
 SearchFolderDefinition::~SearchFolderDefinition()
@@ -40,8 +39,7 @@ SearchFolderDefinition::~SearchFolderDefinition()
 	if (m_FolderList2) delete m_FolderList2;
 	if (m_Addresses)
 	{
-		DWORD i = 0;
-		for (i = 0; i < m_AddressCount; i++)
+		for (DWORD i = 0; i < m_AddressCount; i++)
 		{
 			DeleteSPropVal(m_Addresses[i].PropertyCount, m_Addresses[i].Props);
 		}
@@ -56,8 +54,6 @@ SearchFolderDefinition::~SearchFolderDefinition()
 
 void SearchFolderDefinition::Parse()
 {
-	size_t cbOffset = 0;
-
 	m_Parser.GetDWORD(&m_Version);
 	m_Parser.GetDWORD(&m_Flags);
 	m_Parser.GetDWORD(&m_NumericSearch);
@@ -97,11 +93,10 @@ void SearchFolderDefinition::Parse()
 
 	if (m_FolderList2Length)
 	{
-		cbOffset = m_Parser.GetCurrentOffset();
-		size_t cbRemainingBytes = m_Parser.RemainingBytes();
+		auto cbRemainingBytes = m_Parser.RemainingBytes();
 		cbRemainingBytes = min(m_FolderList2Length, cbRemainingBytes);
 		m_FolderList2 = new EntryList(
-			(ULONG)cbRemainingBytes,
+			static_cast<ULONG>(cbRemainingBytes),
 			m_Parser.GetCurrentAddress());
 		m_Parser.Advance(cbRemainingBytes);
 	}
@@ -117,8 +112,7 @@ void SearchFolderDefinition::Parse()
 			{
 				memset(m_Addresses, 0, m_AddressCount * sizeof(AddressListEntryStruct));
 
-				DWORD i = 0;
-				for (i = 0; i < m_AddressCount; i++)
+				for (DWORD i = 0; i < m_AddressCount; i++)
 				{
 					m_Parser.GetDWORD(&m_Addresses[i].PropertyCount);
 					m_Parser.GetDWORD(&m_Addresses[i].Pad);
@@ -138,8 +132,8 @@ void SearchFolderDefinition::Parse()
 
 	if (SFST_MRES & m_Flags)
 	{
-		RestrictionStruct* res = new RestrictionStruct(
-			(ULONG)m_Parser.RemainingBytes(),
+		auto res = new RestrictionStruct(
+			static_cast<ULONG>(m_Parser.RemainingBytes()),
 			m_Parser.GetCurrentAddress(),
 			false,
 			true);
@@ -154,12 +148,12 @@ void SearchFolderDefinition::Parse()
 
 	if (SFST_FILTERSTREAM & m_Flags)
 	{
-		size_t cbRemainingBytes = m_Parser.RemainingBytes();
+		auto cbRemainingBytes = m_Parser.RemainingBytes();
 		// Since the format for SFST_FILTERSTREAM isn't documented, just assume that everything remaining
 		// is part of this bucket. We leave DWORD space for the final skip block, which should be empty
 		if (cbRemainingBytes > sizeof(DWORD))
 		{
-			m_AdvancedSearchLen = (DWORD)cbRemainingBytes - sizeof(DWORD);
+			m_AdvancedSearchLen = static_cast<DWORD>(cbRemainingBytes) - sizeof(DWORD);
 			m_Parser.GetBYTES(m_AdvancedSearchLen, m_AdvancedSearchLen, &m_AdvancedSearchBytes);
 		}
 	}
@@ -175,7 +169,7 @@ _Check_return_ wstring SearchFolderDefinition::ToStringInternal()
 {
 	wstring szSearchFolderDefinition;
 
-	wstring szFlags = InterpretNumberAsStringProp(m_Flags, PR_WB_SF_STORAGE_TYPE);
+	auto szFlags = InterpretNumberAsStringProp(m_Flags, PR_WB_SF_STORAGE_TYPE);
 	szSearchFolderDefinition = formatmessage(IDS_SFDEFINITIONHEADER,
 		m_Version,
 		m_Flags,
@@ -201,7 +195,7 @@ _Check_return_ wstring SearchFolderDefinition::ToStringInternal()
 	{
 		SBinary sBin = { 0 };
 
-		sBin.cb = (ULONG)m_SkipLen1;
+		sBin.cb = static_cast<ULONG>(m_SkipLen1);
 		sBin.lpb = m_SkipBytes1;
 
 		szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONSKIPBYTES1);
@@ -238,8 +232,7 @@ _Check_return_ wstring SearchFolderDefinition::ToStringInternal()
 			m_AddressCount);
 		if (m_Addresses && m_AddressCount)
 		{
-			DWORD i = 0;
-			for (i = 0; i < m_AddressCount; i++)
+			for (DWORD i = 0; i < m_AddressCount; i++)
 			{
 				szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONADDRESSES,
 					i, m_Addresses[i].PropertyCount,
@@ -258,7 +251,7 @@ _Check_return_ wstring SearchFolderDefinition::ToStringInternal()
 	{
 		SBinary sBin = { 0 };
 
-		sBin.cb = (ULONG)m_SkipLen2;
+		sBin.cb = static_cast<ULONG>(m_SkipLen2);
 		sBin.lpb = m_SkipBytes2;
 
 		szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONSKIPBYTES2);
@@ -280,7 +273,7 @@ _Check_return_ wstring SearchFolderDefinition::ToStringInternal()
 		{
 			SBinary sBin = { 0 };
 
-			sBin.cb = (ULONG)m_AdvancedSearchLen;
+			sBin.cb = static_cast<ULONG>(m_AdvancedSearchLen);
 			sBin.lpb = m_AdvancedSearchBytes;
 
 			szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONADVANCEDSEARCHBYTES);
@@ -295,7 +288,7 @@ _Check_return_ wstring SearchFolderDefinition::ToStringInternal()
 	{
 		SBinary sBin = { 0 };
 
-		sBin.cb = (ULONG)m_SkipLen3;
+		sBin.cb = static_cast<ULONG>(m_SkipLen3);
 		sBin.lpb = m_SkipBytes3;
 
 		szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONSKIPBYTES3);

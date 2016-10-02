@@ -169,8 +169,8 @@ void ExportProfile(_In_z_ LPCSTR szProfile, _In_z_ LPCWSTR szProfileSection, boo
 	{
 		LPSERVICEADMIN lpServiceAdmin = nullptr;
 		EC_MAPI(lpProfAdmin->AdminServices(
-			const_cast<LPTSTR>(szProfile),
-			static_cast<LPTSTR>(""),
+			LPTSTR(szProfile),
+			LPTSTR(""),
 			NULL,
 			MAPI_DIALOG,
 			&lpServiceAdmin));

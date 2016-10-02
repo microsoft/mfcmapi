@@ -4,7 +4,6 @@
 #include "MAPIFunctions.h"
 #include "String.h"
 #include "InterpretProp2.h"
-#include "Smartview/SmartView.h"
 #include "MrMAPI/MMAcls.h"
 #include "MrMAPI/MMContents.h"
 #include "MrMAPI/MMErr.h"

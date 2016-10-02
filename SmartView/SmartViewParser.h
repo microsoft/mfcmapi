@@ -16,17 +16,16 @@ class SmartViewParser
 {
 public:
 	SmartViewParser(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
-	virtual ~SmartViewParser();
 
 	_Check_return_ wstring ToString();
 
 	void DisableJunkParsing();
-	size_t GetCurrentOffset();
+	size_t GetCurrentOffset() const;
 	void EnsureParsed();
 
 protected:
 	_Check_return_ LPSPropValue BinToSPropValue(DWORD dwPropCount, bool bStringPropsExcludeLength);
-	_Check_return_ wstring JunkDataToString(size_t cbJunkData, _In_count_(cbJunkData) LPBYTE lpJunkData);
+	_Check_return_ wstring JunkDataToString(size_t cbJunkData, _In_count_(cbJunkData) LPBYTE lpJunkData) const;
 
 	CBinaryParser m_Parser;
 

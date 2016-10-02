@@ -1,24 +1,20 @@
 #include "stdafx.h"
-#include "..\stdafx.h"
 #include "RecipientRowStream.h"
-#include "..\String.h"
-#include "SmartView.h"
+#include "String.h"
 #include "PropertyStruct.h"
 
 RecipientRowStream::RecipientRowStream(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
 {
 	m_cVersion = 0;
 	m_cRowCount = 0;
-	m_lpAdrEntry = 0;
+	m_lpAdrEntry = nullptr;
 }
 
 RecipientRowStream::~RecipientRowStream()
 {
 	if (m_lpAdrEntry && m_cRowCount)
 	{
-		ULONG i = 0;
-
-		for (i = 0; i < m_cRowCount; i++)
+		for (DWORD i = 0; i < m_cRowCount; i++)
 		{
 			DeleteSPropVal(m_lpAdrEntry[i].cValues, m_lpAdrEntry[i].rgPropVals);
 		}
@@ -38,9 +34,8 @@ void RecipientRowStream::Parse()
 	if (m_lpAdrEntry)
 	{
 		memset(m_lpAdrEntry, 0, sizeof(ADRENTRY)*m_cRowCount);
-		ULONG i = 0;
 
-		for (i = 0; i < m_cRowCount; i++)
+		for (DWORD i = 0; i < m_cRowCount; i++)
 		{
 			m_Parser.GetDWORD(&m_lpAdrEntry[i].cValues);
 			m_Parser.GetDWORD(&m_lpAdrEntry[i].ulReserved1);
@@ -65,8 +60,7 @@ _Check_return_ wstring RecipientRowStream::ToStringInternal()
 		m_cRowCount);
 	if (m_lpAdrEntry && m_cRowCount)
 	{
-		ULONG i = 0;
-		for (i = 0; i < m_cRowCount; i++)
+		for (DWORD i = 0; i < m_cRowCount; i++)
 		{
 			szRecipientRowStream += formatmessage(
 				IDS_RECIPIENTROWSTREAMROW,

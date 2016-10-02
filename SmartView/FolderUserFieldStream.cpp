@@ -1,9 +1,8 @@
 #include "stdafx.h"
-#include "..\stdafx.h"
 #include "FolderUserFieldStream.h"
-#include "..\String.h"
-#include "..\InterpretProp2.h"
-#include "..\ExtraPropTags.h"
+#include "String.h"
+#include "InterpretProp2.h"
+#include "ExtraPropTags.h"
 
 FolderUserFieldStream::FolderUserFieldStream(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
 {
@@ -13,10 +12,9 @@ FolderUserFieldStream::FolderUserFieldStream(ULONG cbBin, _In_count_(cbBin) LPBY
 
 FolderUserFieldStream::~FolderUserFieldStream()
 {
-	ULONG i = 0;
 	if (m_FolderUserFieldsAnsi.FieldDefinitionCount && m_FolderUserFieldsAnsi.FieldDefinitions)
 	{
-		for (i = 0; i < m_FolderUserFieldsAnsi.FieldDefinitionCount; i++)
+		for (DWORD i = 0; i < m_FolderUserFieldsAnsi.FieldDefinitionCount; i++)
 		{
 			delete[] m_FolderUserFieldsAnsi.FieldDefinitions[i].FieldName;
 			delete[] m_FolderUserFieldsAnsi.FieldDefinitions[i].Common.wszFormula;
@@ -27,7 +25,7 @@ FolderUserFieldStream::~FolderUserFieldStream()
 
 	if (m_FolderUserFieldsUnicode.FieldDefinitionCount && m_FolderUserFieldsUnicode.FieldDefinitions)
 	{
-		for (i = 0; i < m_FolderUserFieldsUnicode.FieldDefinitionCount; i++)
+		for (DWORD i = 0; i < m_FolderUserFieldsUnicode.FieldDefinitionCount; i++)
 		{
 			delete[] m_FolderUserFieldsUnicode.FieldDefinitions[i].FieldName;
 			delete[] m_FolderUserFieldsUnicode.FieldDefinitions[i].Common.wszFormula;
@@ -47,9 +45,8 @@ void FolderUserFieldStream::Parse()
 	if (m_FolderUserFieldsAnsi.FieldDefinitions)
 	{
 		memset(m_FolderUserFieldsAnsi.FieldDefinitions, 0, sizeof(FolderFieldDefinitionA)*m_FolderUserFieldsAnsi.FieldDefinitionCount);
-		ULONG i = 0;
 
-		for (i = 0; i < m_FolderUserFieldsAnsi.FieldDefinitionCount; i++)
+		for (DWORD i = 0; i < m_FolderUserFieldsAnsi.FieldDefinitionCount; i++)
 		{
 			m_Parser.GetDWORD(&m_FolderUserFieldsAnsi.FieldDefinitions[i].FieldType);
 			m_Parser.GetWORD(&m_FolderUserFieldsAnsi.FieldDefinitions[i].FieldNameLength);
@@ -75,9 +72,8 @@ void FolderUserFieldStream::Parse()
 	if (m_FolderUserFieldsUnicode.FieldDefinitions)
 	{
 		memset(m_FolderUserFieldsUnicode.FieldDefinitions, 0, sizeof(FolderFieldDefinitionA)*m_FolderUserFieldsUnicode.FieldDefinitionCount);
-		ULONG i = 0;
 
-		for (i = 0; i < m_FolderUserFieldsUnicode.FieldDefinitionCount; i++)
+		for (DWORD i = 0; i < m_FolderUserFieldsUnicode.FieldDefinitionCount; i++)
 		{
 			m_Parser.GetDWORD(&m_FolderUserFieldsUnicode.FieldDefinitions[i].FieldType);
 			m_Parser.GetWORD(&m_FolderUserFieldsUnicode.FieldDefinitions[i].FieldNameLength);
@@ -100,7 +96,7 @@ void FolderUserFieldStream::BinToFolderFieldDefinitionCommon(_Out_ FolderFieldDe
 {
 	*pffdcFolderFieldDefinitionCommon = FolderFieldDefinitionCommon();
 
-	m_Parser.GetBYTESNoAlloc(sizeof(GUID), sizeof(GUID), (LPBYTE)&pffdcFolderFieldDefinitionCommon->PropSetGuid);
+	m_Parser.GetBYTESNoAlloc(sizeof(GUID), sizeof(GUID), reinterpret_cast<LPBYTE>(&pffdcFolderFieldDefinitionCommon->PropSetGuid));
 	m_Parser.GetDWORD(&pffdcFolderFieldDefinitionCommon->fcapm);
 	m_Parser.GetDWORD(&pffdcFolderFieldDefinitionCommon->dwString);
 	m_Parser.GetDWORD(&pffdcFolderFieldDefinitionCommon->dwBitmap);
@@ -127,12 +123,11 @@ _Check_return_ wstring FolderUserFieldStream::ToStringInternal()
 
 	if (m_FolderUserFieldsAnsi.FieldDefinitionCount && m_FolderUserFieldsAnsi.FieldDefinitions)
 	{
-		ULONG i = 0;
-		for (i = 0; i < m_FolderUserFieldsAnsi.FieldDefinitionCount; i++)
+		for (DWORD i = 0; i < m_FolderUserFieldsAnsi.FieldDefinitionCount; i++)
 		{
-			wstring szGUID = GUIDToString(&m_FolderUserFieldsAnsi.FieldDefinitions[i].Common.PropSetGuid);
-			wstring szFieldType = InterpretFlags(flagFolderType, m_FolderUserFieldsAnsi.FieldDefinitions[i].FieldType);
-			wstring szFieldcap = InterpretFlags(flagFieldCap, m_FolderUserFieldsAnsi.FieldDefinitions[i].Common.fcapm);
+			auto szGUID = GUIDToString(&m_FolderUserFieldsAnsi.FieldDefinitions[i].Common.PropSetGuid);
+			auto szFieldType = InterpretFlags(flagFolderType, m_FolderUserFieldsAnsi.FieldDefinitions[i].FieldType);
+			auto szFieldcap = InterpretFlags(flagFieldCap, m_FolderUserFieldsAnsi.FieldDefinitions[i].Common.fcapm);
 
 			szTmp = formatmessage(
 				IDS_FIELDANSIFIELD,
@@ -159,12 +154,11 @@ _Check_return_ wstring FolderUserFieldStream::ToStringInternal()
 
 	if (m_FolderUserFieldsUnicode.FieldDefinitionCount && m_FolderUserFieldsUnicode.FieldDefinitions)
 	{
-		ULONG i = 0;
-		for (i = 0; i < m_FolderUserFieldsUnicode.FieldDefinitionCount; i++)
+		for (DWORD i = 0; i < m_FolderUserFieldsUnicode.FieldDefinitionCount; i++)
 		{
-			wstring szGUID = GUIDToString(&m_FolderUserFieldsUnicode.FieldDefinitions[i].Common.PropSetGuid);
-			wstring szFieldType = InterpretFlags(flagFolderType, m_FolderUserFieldsUnicode.FieldDefinitions[i].FieldType);
-			wstring szFieldcap = InterpretFlags(flagFieldCap, m_FolderUserFieldsUnicode.FieldDefinitions[i].Common.fcapm);
+			auto szGUID = GUIDToString(&m_FolderUserFieldsUnicode.FieldDefinitions[i].Common.PropSetGuid);
+			auto szFieldType = InterpretFlags(flagFolderType, m_FolderUserFieldsUnicode.FieldDefinitions[i].FieldType);
+			auto szFieldcap = InterpretFlags(flagFieldCap, m_FolderUserFieldsUnicode.FieldDefinitions[i].Common.fcapm);
 
 			szTmp = formatmessage(
 				IDS_FIELDUNICODEFIELD,

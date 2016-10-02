@@ -1,11 +1,10 @@
 #include "stdafx.h"
-#include "..\stdafx.h"
 #include "MrMAPI.h"
 #include "MMMapiMime.h"
-#include "..\MapiMime.h"
-#include "..\ImportProcs.h"
-#include "..\InterpretProp2.h"
-#include "..\ExtraPropTags.h"
+#include "MapiMime.h"
+#include "ImportProcs.h"
+#include "InterpretProp2.h"
+#include "ExtraPropTags.h"
 
 #define CHECKFLAG(__flag) ((ProgOpts.ulMAPIMIMEFlags & (__flag)) == (__flag))
 void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
@@ -61,7 +60,7 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 
 	if (0 != ProgOpts.ulConvertFlags)
 	{
-		wstring szFlags = InterpretFlags(flagCcsf, ProgOpts.ulConvertFlags);
+		auto szFlags = InterpretFlags(flagCcsf, ProgOpts.ulConvertFlags);
 		if (!szFlags.empty())
 		{
 			printf("   Conversion Flags: %ws\n", szFlags.c_str());
@@ -70,7 +69,7 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 
 	if (CHECKFLAG(MAPIMIME_ENCODING))
 	{
-		wstring szType = InterpretFlags(flagIet, ProgOpts.ulEncodingType);
+		auto szType = InterpretFlags(flagIet, ProgOpts.ulEncodingType);
 		if (!szType.empty())
 		{
 			printf("   Encoding Type: %ws\n", szType.c_str());
@@ -82,9 +81,9 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 		printf("   Using Address Book\n");
 	}
 
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
-	LPADRBOOK lpAdrBook = NULL;
+	LPADRBOOK lpAdrBook = nullptr;
 	if (CHECKFLAG(MAPIMIME_ADDRESSBOOK) && ProgOpts.lpMAPISession)
 	{
 		WC_MAPI(ProgOpts.lpMAPISession->OpenAddressBook(NULL, NULL, AB_NO_DIALOG, &lpAdrBook));
@@ -98,7 +97,7 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 			ProgOpts.lpszInput.c_str(),
 			ProgOpts.lpszOutput.c_str(),
 			ProgOpts.ulConvertFlags,
-			CHECKFLAG(MAPIMIME_ENCODING) ? (ENCODINGTYPE)ProgOpts.ulEncodingType : IET_UNKNOWN,
+			CHECKFLAG(MAPIMIME_ENCODING) ? static_cast<ENCODINGTYPE>(ProgOpts.ulEncodingType) : IET_UNKNOWN,
 			CHECKFLAG(MAPIMIME_RFC822) ? SAVE_RFC822 : SAVE_RFC1521,
 			CHECKFLAG(MAPIMIME_WRAP) ? ProgOpts.ulWrapLines : USE_DEFAULT_WRAPPING,
 			lpAdrBook));
@@ -106,7 +105,7 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 	else if (CHECKFLAG(MAPIMIME_TOMAPI))
 	{
 		// Source file is EML, target is MSG
-		HCHARSET hCharSet = NULL;
+		HCHARSET hCharSet = nullptr;
 		if (CHECKFLAG(MAPIMIME_CHARSET))
 		{
 			WC_H(MyMimeOleGetCodePageCharset(ProgOpts.ulCodePage, ProgOpts.cSetType, &hCharSet));
@@ -142,4 +141,4 @@ void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)
 		printf("Conversion returned an error: 0x%08x\n", hRes);
 	}
 	if (lpAdrBook) lpAdrBook->Release();
-} // DoMAPIMIME
+}

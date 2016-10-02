@@ -1,11 +1,9 @@
 #include "stdafx.h"
-#include "..\stdafx.h"
 #include "RecurrencePattern.h"
 #include "SmartView.h"
-#include "..\String.h"
-#include "..\InterpretProp.h"
-#include "..\InterpretProp2.h"
-#include "..\ExtraPropTags.h"
+#include "String.h"
+#include "InterpretProp2.h"
+#include "ExtraPropTags.h"
 
 RecurrencePattern::RecurrencePattern(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
 {
@@ -22,9 +20,9 @@ RecurrencePattern::RecurrencePattern(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin
 	m_OccurrenceCount = 0;
 	m_FirstDOW = 0;
 	m_DeletedInstanceCount = 0;
-	m_DeletedInstanceDates = 0;
+	m_DeletedInstanceDates = nullptr;
 	m_ModifiedInstanceCount = 0;
-	m_ModifiedInstanceDates = 0;
+	m_ModifiedInstanceDates = nullptr;
 	m_StartDate = 0;
 	m_EndDate = 0;
 
@@ -78,8 +76,7 @@ void RecurrencePattern::Parse()
 		if (m_DeletedInstanceDates)
 		{
 			memset(m_DeletedInstanceDates, 0, sizeof(DWORD)* m_DeletedInstanceCount);
-			DWORD i = 0;
-			for (i = 0; i < m_DeletedInstanceCount; i++)
+			for (DWORD i = 0; i < m_DeletedInstanceCount; i++)
 			{
 				m_Parser.GetDWORD(&m_DeletedInstanceDates[i]);
 			}
@@ -96,8 +93,7 @@ void RecurrencePattern::Parse()
 		if (m_ModifiedInstanceDates)
 		{
 			memset(m_ModifiedInstanceDates, 0, sizeof(DWORD)* m_ModifiedInstanceCount);
-			DWORD i = 0;
-			for (i = 0; i < m_ModifiedInstanceCount; i++)
+			for (DWORD i = 0; i < m_ModifiedInstanceCount; i++)
 			{
 				m_Parser.GetDWORD(&m_ModifiedInstanceDates[i]);
 			}
@@ -112,9 +108,9 @@ _Check_return_ wstring RecurrencePattern::ToStringInternal()
 {
 	wstring szRP;
 
-	wstring szRecurFrequency = InterpretFlags(flagRecurFrequency, m_RecurFrequency);
-	wstring szPatternType = InterpretFlags(flagPatternType, m_PatternType);
-	wstring szCalendarType = InterpretFlags(flagCalendarType, m_CalendarType);
+	auto szRecurFrequency = InterpretFlags(flagRecurFrequency, m_RecurFrequency);
+	auto szPatternType = InterpretFlags(flagPatternType, m_PatternType);
+	auto szCalendarType = InterpretFlags(flagCalendarType, m_CalendarType);
 	szRP = formatmessage(IDS_RPHEADER,
 		m_ReaderVersion,
 		m_WriterVersion,
@@ -153,8 +149,8 @@ _Check_return_ wstring RecurrencePattern::ToStringInternal()
 		break;
 	}
 
-	wstring szEndType = InterpretFlags(flagEndType, m_EndType);
-	wstring szFirstDOW = InterpretFlags(flagFirstDOW, m_FirstDOW);
+	auto szEndType = InterpretFlags(flagEndType, m_EndType);
+	auto szFirstDOW = InterpretFlags(flagFirstDOW, m_FirstDOW);
 
 	szRP += formatmessage(IDS_RPHEADER2,
 		m_EndType, szEndType.c_str(),
@@ -164,8 +160,7 @@ _Check_return_ wstring RecurrencePattern::ToStringInternal()
 
 	if (m_DeletedInstanceCount && m_DeletedInstanceDates)
 	{
-		DWORD i = 0;
-		for (i = 0; i < m_DeletedInstanceCount; i++)
+		for (DWORD i = 0; i < m_DeletedInstanceCount; i++)
 		{
 			szRP += formatmessage(IDS_RPDELETEDINSTANCEDATES,
 				i, m_DeletedInstanceDates[i], RTimeToString(m_DeletedInstanceDates[i]).c_str());
@@ -177,8 +172,7 @@ _Check_return_ wstring RecurrencePattern::ToStringInternal()
 
 	if (m_ModifiedInstanceCount && m_ModifiedInstanceDates)
 	{
-		DWORD i = 0;
-		for (i = 0; i < m_ModifiedInstanceCount; i++)
+		for (DWORD i = 0; i < m_ModifiedInstanceCount; i++)
 		{
 			szRP += formatmessage(IDS_RPMODIFIEDINSTANCEDATES,
 				i, m_ModifiedInstanceDates[i], RTimeToString(m_ModifiedInstanceDates[i]).c_str());

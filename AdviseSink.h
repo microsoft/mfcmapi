@@ -15,8 +15,8 @@ public:
 	void SetAdviseTarget(LPMAPIPROP lpProp);
 
 private:
-	LONG		m_cRef;
-	HWND		m_hWndParent;
-	HTREEITEM	m_hTreeParent;
-	LPMAPIPROP  m_lpAdviseTarget; // Used only for named prop lookups in debug logging.
+	LONG m_cRef;
+	HWND m_hWndParent;
+	HTREEITEM m_hTreeParent;
+	LPMAPIPROP m_lpAdviseTarget; // Used only for named prop lookups in debug logging.
 };

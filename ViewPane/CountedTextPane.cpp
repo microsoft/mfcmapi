@@ -35,7 +35,6 @@ ULONG CountedTextPane::GetFlags()
 
 int CountedTextPane::GetMinWidth(_In_ HDC hdc)
 {
-	auto cx = 0;
 	auto iLabelWidth = TextPane::GetMinWidth(hdc);
 
 	auto szCount = format(L"%ws: 0x%08X = %u", m_szCountLabel.c_str(), static_cast<int>(m_iCount), static_cast<UINT>(m_iCount)); // STRING_OK
@@ -45,7 +44,7 @@ int CountedTextPane::GetMinWidth(_In_ HDC hdc)
 	m_iCountLabelWidth = sizeText.cx + m_iSideMargin;
 
 	// Button, margin, label, margin, count label
-	cx = m_iButtonHeight + m_iSideMargin + iLabelWidth + m_iSideMargin + m_iCountLabelWidth;
+	auto cx = m_iButtonHeight + m_iSideMargin + iLabelWidth + m_iSideMargin + m_iCountLabelWidth;
 
 	return cx;
 }

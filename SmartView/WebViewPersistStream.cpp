@@ -1,23 +1,20 @@
 #include "stdafx.h"
-#include "..\stdafx.h"
 #include "WebViewPersistStream.h"
-#include "..\String.h"
-#include "..\InterpretProp2.h"
-#include "..\ExtraPropTags.h"
+#include "String.h"
+#include "InterpretProp2.h"
+#include "ExtraPropTags.h"
 
 WebViewPersistStream::WebViewPersistStream(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
 {
 	m_cWebViews = 0;
-	m_lpWebViews = NULL;
+	m_lpWebViews = nullptr;
 }
 
 WebViewPersistStream::~WebViewPersistStream()
 {
 	if (m_lpWebViews && m_cWebViews)
 	{
-		ULONG i = 0;
-
-		for (i = 0; i < m_cWebViews; i++)
+		for (ULONG i = 0; i < m_cWebViews; i++)
 		{
 			delete[] m_lpWebViews[i].lpData;
 		}
@@ -47,7 +44,7 @@ void WebViewPersistStream::Parse()
 	// Now we parse for real
 	m_Parser.Rewind();
 
-	DWORD cWebViews = m_cWebViews;
+	auto cWebViews = m_cWebViews;
 	if (cWebViews && cWebViews < _MaxEntriesSmall)
 	{
 		m_lpWebViews = new WebViewPersistStruct[cWebViews];
@@ -56,14 +53,12 @@ void WebViewPersistStream::Parse()
 	if (m_lpWebViews)
 	{
 		memset(m_lpWebViews, 0, sizeof(WebViewPersistStruct)*cWebViews);
-		ULONG i = 0;
-
-		for (i = 0; i < cWebViews; i++)
+		for (ULONG i = 0; i < cWebViews; i++)
 		{
 			m_Parser.GetDWORD(&m_lpWebViews[i].dwVersion);
 			m_Parser.GetDWORD(&m_lpWebViews[i].dwType);
 			m_Parser.GetDWORD(&m_lpWebViews[i].dwFlags);
-			m_Parser.GetBYTESNoAlloc(sizeof(m_lpWebViews[i].dwUnused), sizeof(m_lpWebViews[i].dwUnused), (LPBYTE)&m_lpWebViews[i].dwUnused);
+			m_Parser.GetBYTESNoAlloc(sizeof m_lpWebViews[i].dwUnused, sizeof m_lpWebViews[i].dwUnused, reinterpret_cast<LPBYTE>(&m_lpWebViews[i].dwUnused));
 			m_Parser.GetDWORD(&m_lpWebViews[i].cbData);
 			m_Parser.GetBYTES(m_lpWebViews[i].cbData, _MaxBytes, &m_lpWebViews[i].lpData);
 		}
@@ -72,16 +67,14 @@ void WebViewPersistStream::Parse()
 
 _Check_return_ wstring WebViewPersistStream::ToStringInternal()
 {
-	wstring szWebViewPersistStream = formatmessage(IDS_WEBVIEWSTREAMHEADER, m_cWebViews);
+	auto szWebViewPersistStream = formatmessage(IDS_WEBVIEWSTREAMHEADER, m_cWebViews);
 	if (m_lpWebViews && m_cWebViews)
 	{
-		ULONG i = 0;
-
-		for (i = 0; i < m_cWebViews; i++)
+		for (ULONG i = 0; i < m_cWebViews; i++)
 		{
-			wstring szVersion = InterpretFlags(flagWebViewVersion, m_lpWebViews[i].dwVersion);
-			wstring szType = InterpretFlags(flagWebViewType, m_lpWebViews[i].dwType);
-			wstring szFlags = InterpretFlags(flagWebViewFlags, m_lpWebViews[i].dwFlags);
+			auto szVersion = InterpretFlags(flagWebViewVersion, m_lpWebViews[i].dwVersion);
+			auto szType = InterpretFlags(flagWebViewType, m_lpWebViews[i].dwType);
+			auto szFlags = InterpretFlags(flagWebViewFlags, m_lpWebViews[i].dwFlags);
 
 			szWebViewPersistStream += formatmessage(
 				IDS_WEBVIEWHEADER,
@@ -91,8 +84,8 @@ _Check_return_ wstring WebViewPersistStream::ToStringInternal()
 				m_lpWebViews[i].dwFlags, szFlags.c_str());
 
 			SBinary sBin = { 0 };
-			sBin.cb = sizeof(m_lpWebViews[i].dwUnused);
-			sBin.lpb = (LPBYTE)&m_lpWebViews[i].dwUnused;
+			sBin.cb = sizeof m_lpWebViews[i].dwUnused;
+			sBin.lpb = reinterpret_cast<LPBYTE>(&m_lpWebViews[i].dwUnused);
 			szWebViewPersistStream += BinToHexString(&sBin, true);
 
 			szWebViewPersistStream += formatmessage(IDS_WEBVIEWCBDATA, m_lpWebViews[i].cbData);
@@ -103,7 +96,7 @@ _Check_return_ wstring WebViewPersistStream::ToStringInternal()
 			{
 				// Copy lpData to a new buffer and NULL terminate it in case it's not already.
 				size_t cchData = m_lpWebViews[i].cbData / sizeof(WCHAR);
-				WCHAR* lpwzTmp = new WCHAR[cchData + 1];
+				auto lpwzTmp = new WCHAR[cchData + 1];
 				if (lpwzTmp)
 				{
 					memcpy(lpwzTmp, m_lpWebViews[i].lpData, sizeof(WCHAR)* cchData);

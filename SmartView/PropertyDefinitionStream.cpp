@@ -1,23 +1,21 @@
 #include "stdafx.h"
-#include "..\stdafx.h"
 #include "PropertyDefinitionStream.h"
-#include "..\String.h"
-#include "..\InterpretProp2.h"
-#include "..\ExtraPropTags.h"
+#include "String.h"
+#include "InterpretProp2.h"
+#include "ExtraPropTags.h"
 
 PropertyDefinitionStream::PropertyDefinitionStream(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
 {
 	m_wVersion = 0;
 	m_dwFieldDefinitionCount = 0;
-	m_pfdFieldDefinitions = 0;
+	m_pfdFieldDefinitions = nullptr;
 }
 
 PropertyDefinitionStream::~PropertyDefinitionStream()
 {
 	if (m_pfdFieldDefinitions)
 	{
-		DWORD iDef = 0;
-		for (iDef = 0; iDef < m_dwFieldDefinitionCount; iDef++)
+		for (DWORD iDef = 0; iDef < m_dwFieldDefinitionCount; iDef++)
 		{
 			delete[] m_pfdFieldDefinitions[iDef].szNmidName;
 			delete[] m_pfdFieldDefinitions[iDef].pasNameANSI.szCharacters;
@@ -28,8 +26,7 @@ PropertyDefinitionStream::~PropertyDefinitionStream()
 
 			if (m_pfdFieldDefinitions[iDef].psbSkipBlocks)
 			{
-				DWORD iSkip = 0;
-				for (iSkip = 0; iSkip < m_pfdFieldDefinitions[iDef].dwSkipBlockCount; iSkip++)
+				for (DWORD iSkip = 0; iSkip < m_pfdFieldDefinitions[iDef].dwSkipBlockCount; iSkip++)
 				{
 					delete[] m_pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].lpbContent;
 				}
@@ -81,8 +78,7 @@ void PropertyDefinitionStream::Parse()
 		{
 			memset(m_pfdFieldDefinitions, 0, m_dwFieldDefinitionCount * sizeof(FieldDefinition));
 
-			DWORD iDef = 0;
-			for (iDef = 0; iDef < m_dwFieldDefinitionCount; iDef++)
+			for (DWORD iDef = 0; iDef < m_dwFieldDefinitionCount; iDef++)
 			{
 				m_Parser.GetDWORD(&m_pfdFieldDefinitions[iDef].dwFlags);
 				m_Parser.GetWORD(&m_pfdFieldDefinitions[iDef].wVT);
@@ -103,7 +99,7 @@ void PropertyDefinitionStream::Parse()
 
 					// Have to count how many skip blocks are here.
 					// The only way to do that is to parse them. So we parse once without storing, allocate, then reparse.
-					size_t stBookmark = m_Parser.GetCurrentOffset();
+					auto stBookmark = m_Parser.GetCurrentOffset();
 
 					DWORD dwSkipBlockCount = 0;
 
@@ -128,8 +124,7 @@ void PropertyDefinitionStream::Parse()
 						{
 							memset(m_pfdFieldDefinitions[iDef].psbSkipBlocks, 0, m_pfdFieldDefinitions[iDef].dwSkipBlockCount * sizeof(SkipBlock));
 
-							DWORD iSkip = 0;
-							for (iSkip = 0; iSkip < m_pfdFieldDefinitions[iDef].dwSkipBlockCount; iSkip++)
+							for (DWORD iSkip = 0; iSkip < m_pfdFieldDefinitions[iDef].dwSkipBlockCount; iSkip++)
 							{
 								m_Parser.GetDWORD(&m_pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].dwSize);
 								m_Parser.GetBYTES(m_pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].dwSize,
@@ -155,7 +150,7 @@ _Check_return_ wstring PackedAnsiStringToString(DWORD dwFlags, _In_ PackedAnsiSt
 
 	szPackedAnsiString = formatmessage(IDS_PROPDEFPACKEDSTRINGLEN,
 		szFieldName.c_str(),
-		(0xFF == ppasString->cchLength) ? ppasString->cchExtendedLength : ppasString->cchLength);
+		0xFF == ppasString->cchLength ? ppasString->cchExtendedLength : ppasString->cchLength);
 	if (ppasString->szCharacters)
 	{
 		szPackedAnsiString += formatmessage(IDS_PROPDEFPACKEDSTRINGCHARS, szFieldName);
@@ -176,7 +171,7 @@ _Check_return_ wstring PackedUnicodeStringToString(DWORD dwFlags, _In_ PackedUni
 
 	szPackedUnicodeString = formatmessage(IDS_PROPDEFPACKEDSTRINGLEN,
 		szFieldName.c_str(),
-		(0xFF == ppusString->cchLength) ? ppusString->cchExtendedLength : ppusString->cchLength);
+		0xFF == ppusString->cchLength ? ppusString->cchExtendedLength : ppusString->cchLength);
 	if (ppusString->szCharacters)
 	{
 		szPackedUnicodeString += formatmessage(IDS_PROPDEFPACKEDSTRINGCHARS, szFieldName);
@@ -189,7 +184,7 @@ _Check_return_ wstring PackedUnicodeStringToString(DWORD dwFlags, _In_ PackedUni
 _Check_return_ wstring PropertyDefinitionStream::ToStringInternal()
 {
 	wstring szPropertyDefinitionStream;
-	wstring szVersion = InterpretFlags(flagPropDefVersion, m_wVersion);
+	auto szVersion = InterpretFlags(flagPropDefVersion, m_wVersion);
 
 	szPropertyDefinitionStream = formatmessage(IDS_PROPDEFHEADER,
 		m_wVersion, szVersion.c_str(),
@@ -197,11 +192,10 @@ _Check_return_ wstring PropertyDefinitionStream::ToStringInternal()
 
 	if (m_pfdFieldDefinitions)
 	{
-		DWORD iDef = 0;
-		for (iDef = 0; iDef < m_dwFieldDefinitionCount; iDef++)
+		for (DWORD iDef = 0; iDef < m_dwFieldDefinitionCount; iDef++)
 		{
-			wstring szFlags = InterpretFlags(flagPDOFlag, m_pfdFieldDefinitions[iDef].dwFlags);
-			wstring szVarEnum = InterpretFlags(flagVarEnum, m_pfdFieldDefinitions[iDef].wVT);
+			auto szFlags = InterpretFlags(flagPDOFlag, m_pfdFieldDefinitions[iDef].dwFlags);
+			auto szVarEnum = InterpretFlags(flagVarEnum, m_pfdFieldDefinitions[iDef].wVT);
 			szPropertyDefinitionStream += formatmessage(IDS_PROPDEFFIELDHEADER,
 				iDef,
 				m_pfdFieldDefinitions[iDef].dwFlags, szFlags.c_str(),
@@ -223,8 +217,8 @@ _Check_return_ wstring PropertyDefinitionStream::ToStringInternal()
 				else
 				{
 					wstring szDispidName;
-					MAPINAMEID mnid = { 0 };
-					mnid.lpguid = NULL;
+					MAPINAMEID mnid = { nullptr };
+					mnid.lpguid = nullptr;
 					mnid.ulKind = MNID_ID;
 					mnid.Kind.lID = m_pfdFieldDefinitions[iDef].dwDispid;
 					szDispidName = NameIDToPropName(&mnid);
@@ -242,7 +236,7 @@ _Check_return_ wstring PropertyDefinitionStream::ToStringInternal()
 				szPropertyDefinitionStream += m_pfdFieldDefinitions[iDef].szNmidName;
 			}
 
-			wstring szTab1 = formatmessage(IDS_PROPDEFTAB1);
+			auto szTab1 = formatmessage(IDS_PROPDEFTAB1);
 
 			szPropertyDefinitionStream += szTab1 + PackedAnsiStringToString(IDS_PROPDEFNAME, &m_pfdFieldDefinitions[iDef].pasNameANSI);
 			szPropertyDefinitionStream += szTab1 + PackedAnsiStringToString(IDS_PROPDEFFORUMULA, &m_pfdFieldDefinitions[iDef].pasFormulaANSI);
@@ -259,8 +253,7 @@ _Check_return_ wstring PropertyDefinitionStream::ToStringInternal()
 
 				if (m_pfdFieldDefinitions[iDef].psbSkipBlocks)
 				{
-					DWORD iSkip = 0;
-					for (iSkip = 0; iSkip < m_pfdFieldDefinitions[iDef].dwSkipBlockCount; iSkip++)
+					for (DWORD iSkip = 0; iSkip < m_pfdFieldDefinitions[iDef].dwSkipBlockCount; iSkip++)
 					{
 						szPropertyDefinitionStream += formatmessage(IDS_PROPDEFSKIPBLOCK,
 							iSkip,
@@ -284,7 +277,7 @@ _Check_return_ wstring PropertyDefinitionStream::ToStringInternal()
 							else
 							{
 								SBinary sBin = { 0 };
-								sBin.cb = (ULONG)m_pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].dwSize;
+								sBin.cb = static_cast<ULONG>(m_pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].dwSize);
 								sBin.lpb = m_pfdFieldDefinitions[iDef].psbSkipBlocks[iSkip].lpbContent;
 
 								szPropertyDefinitionStream += formatmessage(IDS_PROPDEFCONTENT) + BinToHexString(&sBin, true);

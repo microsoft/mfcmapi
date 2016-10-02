@@ -1,8 +1,7 @@
 #include "stdafx.h"
-#include "..\stdafx.h"
 #include "ViewPane.h"
-#include "..\UIFunctions.h"
-#include "..\String.h"
+#include "UIFunctions.h"
+#include "String.h"
 
 ViewPane::ViewPane(UINT uidLabel, bool bReadOnly)
 {
@@ -23,7 +22,7 @@ ViewPane::ViewPane(UINT uidLabel, bool bReadOnly)
 	m_iLabelWidth = 0;
 
 	m_bUseLabelControl = false;
-	m_hWndParent = NULL;
+	m_hWndParent = nullptr;
 
 	if (m_uidLabel)
 	{
@@ -43,16 +42,16 @@ bool ViewPane::IsType(__ViewTypes vType)
 
 void ViewPane::SetWindowPos(int x, int y, int width, int /*height*/)
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 
 	if (vpCollapsible & GetFlags())
 	{
 		StyleButton(m_CollapseButton.m_hWnd, m_bCollapsed ? bsUpArrow : bsDownArrow);
-		m_CollapseButton.SetWindowPos(NULL, x, y, width, m_iLabelHeight, SWP_NOZORDER);
+		m_CollapseButton.SetWindowPos(nullptr, x, y, width, m_iLabelHeight, SWP_NOZORDER);
 	}
 
 	EC_B(m_Label.SetWindowPos(
-		0,
+		nullptr,
 		x + m_iButtonHeight,
 		y,
 		m_iLabelWidth,
@@ -62,7 +61,7 @@ void ViewPane::SetWindowPos(int x, int y, int width, int /*height*/)
 
 void ViewPane::Initialize(int iControl, _In_ CWnd* pParent, _In_opt_ HDC /*hdc*/)
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	m_iControl = iControl;
 	if (pParent) m_hWndParent = pParent->m_hWnd;
 	UINT iCurIDLabel = IDC_PROP_CONTROL_ID_BASE + 2 * m_iControl;
@@ -115,13 +114,13 @@ int ViewPane::GetMinWidth(_In_ HDC hdc)
 
 ULONG ViewPane::HandleChange(UINT nID)
 {
-	if ((UINT)(IDD_COLLAPSE + m_iControl) == nID)
+	if (static_cast<UINT>(IDD_COLLAPSE + m_iControl) == nID)
 	{
 		OnToggleCollapse();
 		return m_iControl;
 	}
 
-	return (ULONG)-1;
+	return static_cast<ULONG>(-1);
 }
 
 void ViewPane::OnToggleCollapse()
@@ -156,7 +155,7 @@ void ViewPane::SetAddInLabel(wstring szLabel)
 	m_szLabel = szLabel;
 }
 
-bool ViewPane::MatchID(UINT nID)
+bool ViewPane::MatchID(UINT nID) const
 {
 	return nID == m_nID;
 }

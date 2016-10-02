@@ -122,7 +122,6 @@ _Check_return_ HRESULT ConcatLPSPropValue(
 	*lppRetVal = nullptr;
 	auto hRes = S_OK;
 
-	ULONG ulSourceArray = 0;
 	ULONG ulTargetArray = 0;
 	ULONG ulNewArraySize = 0;
 	LPSPropValue lpNewArray = nullptr;
@@ -132,7 +131,7 @@ _Check_return_ HRESULT ConcatLPSPropValue(
 	{
 		ulNewArraySize = ulVal1;
 		// Only count props in the second array if they're not in the first
-		for (ulSourceArray = 0; ulSourceArray < ulVal2; ulSourceArray++)
+		for (ULONG ulSourceArray = 0; ulSourceArray < ulVal2; ulSourceArray++)
 		{
 			if (!PpropFindProp(lpVal1, ulVal1, CHANGE_PROP_TYPE(lpVal2[ulSourceArray].ulPropTag,PT_UNSPECIFIED)))
 			{
@@ -154,7 +153,7 @@ _Check_return_ HRESULT ConcatLPSPropValue(
 		{
 			if (ulVal1)
 			{
-				for (ulSourceArray = 0;ulSourceArray<ulVal1;ulSourceArray++)
+				for (ULONG ulSourceArray = 0;ulSourceArray<ulVal1;ulSourceArray++)
 				{
 					if (!ulTargetArray || // if it's NULL, we haven't added anything yet
 						!PpropFindProp(
@@ -178,7 +177,7 @@ _Check_return_ HRESULT ConcatLPSPropValue(
 
 			if (SUCCEEDED(hRes) && ulVal2)
 			{
-				for (ulSourceArray = 0;ulSourceArray<ulVal2;ulSourceArray++)
+				for (ULONG ulSourceArray = 0;ulSourceArray<ulVal2;ulSourceArray++)
 				{
 					if (!ulTargetArray || // if it's NULL, we haven't added anything yet
 						!PpropFindProp(
@@ -219,7 +218,7 @@ _Check_return_ HRESULT ConcatLPSPropValue(
 	}
 
 	return hRes;
-} // ConcatLPSPropValue
+}
 
 _Check_return_ HRESULT RowPropertyBag::SetProp(
 	LPSPropValue lpProp)

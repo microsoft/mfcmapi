@@ -1,36 +1,33 @@
 #include "stdafx.h"
-#include "..\stdafx.h"
 #include "AppointmentRecurrencePattern.h"
 #include "SmartView.h"
-#include "..\String.h"
-#include "..\InterpretProp.h"
-#include "..\InterpretProp2.h"
-#include "..\ExtraPropTags.h"
-#include "..\Guids.h"
+#include "String.h"
+#include "InterpretProp2.h"
+#include "ExtraPropTags.h"
+#include "Guids.h"
 
 AppointmentRecurrencePattern::AppointmentRecurrencePattern(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
 {
-	m_RecurrencePattern = NULL;
+	m_RecurrencePattern = nullptr;
 	m_ReaderVersion2 = 0;
 	m_WriterVersion2 = 0;
 	m_StartTimeOffset = 0;
 	m_EndTimeOffset = 0;
 	m_ExceptionCount = 0;
-	m_ExceptionInfo = NULL;
+	m_ExceptionInfo = nullptr;
 	m_ReservedBlock1Size = 0;
-	m_ReservedBlock1 = NULL;
-	m_ExtendedException = NULL;
+	m_ReservedBlock1 = nullptr;
+	m_ExtendedException = nullptr;
 	m_ReservedBlock2Size = 0;
-	m_ReservedBlock2 = NULL;
+	m_ReservedBlock2 = nullptr;
 }
 
 AppointmentRecurrencePattern::~AppointmentRecurrencePattern()
 {
 	delete m_RecurrencePattern;
-	int i = 0;
 	if (m_ExceptionCount && m_ExceptionInfo)
 	{
-		for (i = 0; i < m_ExceptionCount; i++)
+		for (auto i = 0; i < m_ExceptionCount; i++)
 		{
 			delete[] m_ExceptionInfo[i].Subject;
 			delete[] m_ExceptionInfo[i].Location;
@@ -42,7 +39,7 @@ AppointmentRecurrencePattern::~AppointmentRecurrencePattern()
 
 	if (m_ExceptionCount && m_ExtendedException)
 	{
-		for (i = 0; i < m_ExceptionCount; i++)
+		for (auto i = 0; i < m_ExceptionCount; i++)
 		{
 			delete[] m_ExtendedException[i].ChangeHighlight.Reserved;
 			delete[] m_ExtendedException[i].ReservedBlockEE1;
@@ -58,7 +55,7 @@ AppointmentRecurrencePattern::~AppointmentRecurrencePattern()
 
 void AppointmentRecurrencePattern::Parse()
 {
-	m_RecurrencePattern = new RecurrencePattern((ULONG)m_Parser.RemainingBytes(), m_Parser.GetCurrentAddress());
+	m_RecurrencePattern = new RecurrencePattern(static_cast<ULONG>(m_Parser.RemainingBytes()), m_Parser.GetCurrentAddress());
 
 	if (m_RecurrencePattern)
 	{
@@ -81,8 +78,7 @@ void AppointmentRecurrencePattern::Parse()
 		if (m_ExceptionInfo)
 		{
 			memset(m_ExceptionInfo, 0, sizeof(ExceptionInfo)* m_ExceptionCount);
-			WORD i = 0;
-			for (i = 0; i < m_ExceptionCount; i++)
+			for (WORD i = 0; i < m_ExceptionCount; i++)
 			{
 				m_Parser.GetDWORD(&m_ExceptionInfo[i].StartDateTime);
 				m_Parser.GetDWORD(&m_ExceptionInfo[i].EndDateTime);
@@ -157,8 +153,7 @@ void AppointmentRecurrencePattern::Parse()
 		if (m_ExtendedException)
 		{
 			memset(m_ExtendedException, 0, sizeof(ExtendedException)* m_ExceptionCount);
-			WORD i = 0;
-			for (i = 0; i < m_ExceptionCount; i++)
+			for (WORD i = 0; i < m_ExceptionCount; i++)
 			{
 				if (m_WriterVersion2 >= 0x0003009)
 				{
@@ -228,14 +223,12 @@ _Check_return_ wstring AppointmentRecurrencePattern::ToStringInternal()
 		m_EndTimeOffset, RTimeToString(m_EndTimeOffset).c_str(),
 		m_ExceptionCount);
 
-	WORD i = 0;
 	if (m_ExceptionCount && m_ExceptionInfo)
 	{
-		for (i = 0; i < m_ExceptionCount; i++)
+		for (WORD i = 0; i < m_ExceptionCount; i++)
 		{
-			wstring szExceptionInfo;
-			wstring szOverrideFlags = InterpretFlags(flagOverrideFlags, m_ExceptionInfo[i].OverrideFlags);
-			szExceptionInfo = formatmessage(IDS_ARPEXHEADER,
+			auto szOverrideFlags = InterpretFlags(flagOverrideFlags, m_ExceptionInfo[i].OverrideFlags);
+			auto szExceptionInfo = formatmessage(IDS_ARPEXHEADER,
 				i, m_ExceptionInfo[i].StartDateTime, RTimeToString(m_ExceptionInfo[i].StartDateTime).c_str(),
 				m_ExceptionInfo[i].EndDateTime, RTimeToString(m_ExceptionInfo[i].EndDateTime).c_str(),
 				m_ExceptionInfo[i].OriginalStartDate, RTimeToString(m_ExceptionInfo[i].OriginalStartDate).c_str(),
@@ -251,7 +244,7 @@ _Check_return_ wstring AppointmentRecurrencePattern::ToStringInternal()
 
 			if (m_ExceptionInfo[i].OverrideFlags & ARO_MEETINGTYPE)
 			{
-				wstring szFlags = InterpretNumberAsStringNamedProp(m_ExceptionInfo[i].MeetingType, dispidApptStateFlags, (LPGUID)&PSETID_Appointment);
+				auto szFlags = InterpretNumberAsStringNamedProp(m_ExceptionInfo[i].MeetingType, dispidApptStateFlags, const_cast<LPGUID>(&PSETID_Appointment));
 				szExceptionInfo += formatmessage(IDS_ARPEXMEETINGTYPE,
 					i, m_ExceptionInfo[i].MeetingType, szFlags.c_str());
 			}
@@ -278,7 +271,7 @@ _Check_return_ wstring AppointmentRecurrencePattern::ToStringInternal()
 
 			if (m_ExceptionInfo[i].OverrideFlags & ARO_BUSYSTATUS)
 			{
-				wstring szFlags = InterpretNumberAsStringNamedProp(m_ExceptionInfo[i].BusyStatus, dispidBusyStatus, (LPGUID)&PSETID_Appointment);
+				auto szFlags = InterpretNumberAsStringNamedProp(m_ExceptionInfo[i].BusyStatus, dispidBusyStatus, const_cast<LPGUID>(&PSETID_Appointment));
 				szExceptionInfo += formatmessage(IDS_ARPEXBUSYSTATUS,
 					i, m_ExceptionInfo[i].BusyStatus, szFlags.c_str());
 			}
@@ -316,12 +309,12 @@ _Check_return_ wstring AppointmentRecurrencePattern::ToStringInternal()
 
 	if (m_ExceptionCount && m_ExtendedException)
 	{
-		for (i = 0; i < m_ExceptionCount; i++)
+		for (auto i = 0; i < m_ExceptionCount; i++)
 		{
 			wstring szExtendedException;
 			if (m_WriterVersion2 >= 0x00003009)
 			{
-				wstring szFlags = InterpretNumberAsStringNamedProp(m_ExtendedException[i].ChangeHighlight.ChangeHighlightValue, dispidChangeHighlight, (LPGUID)&PSETID_Appointment);
+				auto szFlags = InterpretNumberAsStringNamedProp(m_ExtendedException[i].ChangeHighlight.ChangeHighlightValue, dispidChangeHighlight, const_cast<LPGUID>(&PSETID_Appointment));
 				szExtendedException += formatmessage(IDS_ARPEXCHANGEHIGHLIGHT,
 					i, m_ExtendedException[i].ChangeHighlight.ChangeHighlightSize,
 					m_ExtendedException[i].ChangeHighlight.ChangeHighlightValue, szFlags.c_str());

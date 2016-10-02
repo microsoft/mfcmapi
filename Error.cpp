@@ -97,7 +97,7 @@ void __cdecl ErrDialog(_In_z_ LPCSTR szFile, int iLine, UINT uidErrorFmt, ...)
 	Err.SetPromptPostFix(szCombo);
 	(void)Err.DisplayDialog();
 #endif
-} // ErrDialog
+}
 
 #define RETURN_ERR_CASE(err) case (err): return(_T(#err))
 

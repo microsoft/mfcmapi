@@ -133,7 +133,7 @@ LRESULT CBaseDialog::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			m_StatusWidth[STATUSDATA2],
 			m_StatusMessages[STATUSINFOTEXT]);
 		break;
-	} // end switch
+	} 
 
 	return CMyDialog::WindowProc(message, wParam, lParam);
 }

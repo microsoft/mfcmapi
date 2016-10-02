@@ -8,15 +8,15 @@ public:
 	CBinaryParser();
 	CBinaryParser(size_t cbBin, _In_count_(cbBin) LPBYTE lpBin);
 
-	bool Empty();
+	bool Empty() const;
 	void Init(size_t cbBin, _In_count_(cbBin) LPBYTE lpBin);
 	void Advance(size_t cbAdvance);
 	void Rewind();
-	size_t GetCurrentOffset();
-	LPBYTE GetCurrentAddress();
+	size_t GetCurrentOffset() const;
+	LPBYTE GetCurrentAddress() const;
 	// Moves the parser to an offset obtained from GetCurrentOffset
 	void SetCurrentOffset(size_t stOffset);
-	size_t RemainingBytes();
+	size_t RemainingBytes() const;
 	void GetBYTE(_Out_ BYTE* pBYTE);
 	void GetWORD(_Out_ WORD* pWORD);
 	void GetDWORD(_Out_ DWORD* pDWORD);
@@ -30,7 +30,7 @@ public:
 	size_t GetRemainingData(_Out_ LPBYTE* ppRemainingBYTES);
 
 private:
-	bool CheckRemainingBytes(size_t cbBytes);
+	bool CheckRemainingBytes(size_t cbBytes) const;
 	size_t m_cbBin;
 	LPBYTE m_lpBin;
 	LPBYTE m_lpEnd;

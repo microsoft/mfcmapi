@@ -12,10 +12,6 @@
 
 static wstring CLASS = L"SingleMessageDialog";
 
-/////////////////////////////////////////////////////////////////////////////
-// SingleMessageDialog dialog
-
-
 SingleMessageDialog::SingleMessageDialog(
 	_In_ CParentWnd* pParentWnd,
 	_In_ CMapiObjects* lpMapiObjects,
@@ -38,13 +34,13 @@ SingleMessageDialog::~SingleMessageDialog()
 {
 	TRACE_DESTRUCTOR(CLASS);
 	if (m_lpMessage) m_lpMessage->Release();
-	m_lpMessage = NULL;
+	m_lpMessage = nullptr;
 }
 
 BOOL SingleMessageDialog::OnInitDialog()
 {
-	HRESULT hRes = S_OK;
-	BOOL bRet = CBaseDialog::OnInitDialog();
+	auto hRes = S_OK;
+	auto bRet = CBaseDialog::OnInitDialog();
 
 	if (m_lpMessage)
 	{
@@ -80,7 +76,7 @@ void SingleMessageDialog::OnRefreshView()
 
 void SingleMessageDialog::OnAttachmentProperties()
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	if (!m_lpMessage) return;
 
 	EC_H(DisplayTable(m_lpMessage, PR_MESSAGE_ATTACHMENTS, otDefault, this));
@@ -88,7 +84,7 @@ void SingleMessageDialog::OnAttachmentProperties()
 
 void SingleMessageDialog::OnRecipientProperties()
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	if (!m_lpMessage) return;
 
 	EC_H(DisplayTable(m_lpMessage, PR_MESSAGE_RECIPIENTS, otDefault, this));
@@ -96,7 +92,7 @@ void SingleMessageDialog::OnRecipientProperties()
 
 void SingleMessageDialog::OnRTFSync()
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	CEditor MyData(
@@ -133,7 +129,7 @@ void SingleMessageDialog::OnRTFSync()
 
 void SingleMessageDialog::OnTestEditBody()
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (m_lpMessage)
@@ -163,7 +159,7 @@ void SingleMessageDialog::OnTestEditBody()
 
 void SingleMessageDialog::OnTestEditHTML()
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (m_lpMessage)
@@ -193,7 +189,7 @@ void SingleMessageDialog::OnTestEditHTML()
 
 void SingleMessageDialog::OnTestEditRTF()
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (m_lpMessage)
@@ -223,7 +219,7 @@ void SingleMessageDialog::OnTestEditRTF()
 
 void SingleMessageDialog::OnSaveChanges()
 {
-	HRESULT hRes = S_OK;
+	auto hRes = S_OK;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
 	if (m_lpMessage)

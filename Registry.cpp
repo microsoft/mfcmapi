@@ -35,7 +35,7 @@ __RegKeys RegKeys[] = {
 	{ L"ForceSystemMAPI",			regDWORD,regoptCheck,		false		,0,L"",L"",false,	IDS_REGKEY_FORCESYSTEMMAPI }, // STRING_OK
 	{ L"DisplayAboutDialog",		regDWORD,regoptCheck,		true		,0,L"",L"",false,	NULL }, // STRING_OK
 	{ L"PropertyColumnOrder",		regSTRING,regoptCheck,		0			,0,L"",L"",false,	NULL }, // STRING_OK
-																											// {KeyName,						keytype,opttype,			defaultDWORD,0,defaultString,NULL,bRefresh,IDS_REGKEY_*} // Regkey template
+	// {KeyName,					keytype,opttype,			defaultDWORD,0,defaultString,NULL,bRefresh,IDS_REGKEY_*} // Regkey template
 };
 
 void SetDefaults()

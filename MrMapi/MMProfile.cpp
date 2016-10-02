@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "MrMAPI.h"
 #include "MMProfile.h"
-#include "../ExportProfile.h"
-#include "../MAPIFunctions.h"
-#include "../String.h"
+#include "ExportProfile.h"
+#include "MAPIFunctions.h"
+#include "String.h"
 
 void ExportProfileList()
 {
@@ -44,7 +44,6 @@ void ExportProfileList()
 			if (lpRows->cRows == 0)
 			{
 				printf("No profiles exist\n");
-				hRes = S_OK;
 			}
 			else
 			{

@@ -66,7 +66,7 @@ wstring ErrorNameFromErrorCode(ULONG hrErr);
 // Flag parsing array - used by GetPropFlags
 struct ERROR_ARRAY_ENTRY
 {
-	ULONG	ulErrorName;
+	ULONG ulErrorName;
 	LPCWSTR lpszName;
 };
 typedef ERROR_ARRAY_ENTRY* LPERROR_ARRAY_ENTRY;
