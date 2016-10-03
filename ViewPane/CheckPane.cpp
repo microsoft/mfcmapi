@@ -5,10 +5,12 @@ static wstring CLASS = L"CheckPane";
 
 ViewPane* CreateCheckPane(UINT uidLabel, bool bVal, bool bReadOnly)
 {
-	return new CheckPane(uidLabel, bReadOnly, bVal);
+	auto pane = new CheckPane(bVal);
+	pane->SetLabel(uidLabel, bReadOnly);
+	return pane;
 }
 
-CheckPane::CheckPane(UINT uidLabel, bool bReadOnly, bool bCheck) :ViewPane(uidLabel, bReadOnly)
+CheckPane::CheckPane(bool bCheck) :ViewPane()
 {
 	m_bCheckValue = bCheck;
 }

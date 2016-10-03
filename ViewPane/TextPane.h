@@ -14,7 +14,7 @@ ViewPane* CreateSingleLinePaneID(UINT uidLabel, UINT uidVal, bool bReadOnly);
 class TextPane : public ViewPane
 {
 public:
-	TextPane(UINT uidLabel, bool bReadOnly, bool bMultiLine);
+	TextPane(bool bMultiLine);
 
 	bool IsType(__ViewTypes vType) override;
 	void Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc) override;

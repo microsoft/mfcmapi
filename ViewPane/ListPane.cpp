@@ -5,7 +5,9 @@
 
 ViewPane* CreateListPane(UINT uidLabel, bool bAllowSort, bool bReadOnly, LPVOID lpEdit)
 {
-	return new ListPane(uidLabel, bReadOnly, bAllowSort, static_cast<CEditor*>(lpEdit));
+	auto pane = new ListPane( bAllowSort, static_cast<CEditor*>(lpEdit));
+	pane->SetLabel(uidLabel, bReadOnly);
+	return pane;
 }
 
 static wstring CLASS = L"ListPane";
@@ -22,7 +24,7 @@ __ListButtons ListButtons[NUMLISTBUTTONS] = {
 
 #define LINES_LIST 6
 
-ListPane::ListPane(UINT uidLabel, bool bReadOnly, bool bAllowSort, CEditor* lpEdit) :ViewPane(uidLabel, bReadOnly), m_bDirty(false)
+ListPane::ListPane(bool bAllowSort, CEditor* lpEdit) :ViewPane(), m_bDirty(false)
 {
 	m_bAllowSort = bAllowSort;
 	m_lpEdit = lpEdit;
@@ -141,6 +143,10 @@ void ListPane::SetWindowPos(int x, int y, int width, int height)
 				SWP_NOZORDER));
 		}
 	}
+}
+
+void ListPane::CommitUIValues()
+{
 }
 
 void ListPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
