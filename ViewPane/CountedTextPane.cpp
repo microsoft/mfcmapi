@@ -6,11 +6,12 @@ static wstring CLASS = L"CountedTextPane";
 
 ViewPane* CreateCountedTextPane(UINT uidLabel, bool bReadOnly, UINT uidCountLabel)
 {
-	auto lpPane = new CountedTextPane(uidLabel, bReadOnly, uidCountLabel);
+	auto lpPane = new CountedTextPane(uidCountLabel);
+	lpPane->SetLabel(uidLabel, bReadOnly);
 	return lpPane;
 }
 
-CountedTextPane::CountedTextPane(UINT uidLabel, bool bReadOnly, UINT uidCountLabel) :TextPane(uidLabel, bReadOnly, true)
+CountedTextPane::CountedTextPane(UINT uidCountLabel) :TextPane(true)
 {
 	m_iCountLabelWidth = 0;
 

@@ -10,7 +10,7 @@ ViewPane* CreateDropDownGuidPane(UINT uidLabel, bool bReadOnly);
 class DropDownPane : public ViewPane
 {
 public:
-	DropDownPane(UINT uidLabel, bool bReadOnly, ULONG ulDropList, _In_opt_count_(ulDropList) UINT* lpuidDropList, _In_opt_count_(ulDropList) LPNAME_ARRAY_ENTRY lpnaeDropList, bool bGUID);
+	DropDownPane(ULONG ulDropList, _In_opt_count_(ulDropList) UINT* lpuidDropList, _In_opt_count_(ulDropList) LPNAME_ARRAY_ENTRY lpnaeDropList, bool bGUID);
 
 	bool IsType(__ViewTypes vType) override;
 	void Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc) override;

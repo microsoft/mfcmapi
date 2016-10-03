@@ -9,7 +9,7 @@ ViewPane* CreateSmartViewPane(UINT uidLabel);
 class SmartViewPane : public DropDownPane
 {
 public:
-	SmartViewPane(UINT uidLabel);
+	SmartViewPane();
 	virtual ~SmartViewPane();
 
 	bool IsType(__ViewTypes vType) override;

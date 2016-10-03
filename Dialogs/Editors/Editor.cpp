@@ -979,8 +979,10 @@ void CEditor::DeleteControls()
 				delete m_lpControls[i].lpPane;
 			}
 		}
+
 		delete[] m_lpControls;
 	}
+
 	m_lpControls = nullptr;
 	m_cControls = 0;
 }

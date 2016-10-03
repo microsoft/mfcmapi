@@ -17,14 +17,17 @@ ViewPane* CreateMultiLinePane(UINT uidLabel, _In_ wstring szVal, bool bReadOnly)
 
 ViewPane* CreateSingleLinePane(UINT uidLabel, bool bReadOnly, bool bMultiLine)
 {
-	return new TextPane(uidLabel, bReadOnly, bMultiLine);
+	auto pane = new TextPane(bMultiLine);
+	pane->SetLabel(uidLabel, bReadOnly);
+	return pane;
 }
 
 ViewPane* CreateSingleLinePane(UINT uidLabel, _In_ wstring szVal, bool bReadOnly, bool bMultiLine)
 {
-	auto lpPane = new TextPane(uidLabel, bReadOnly, bMultiLine);
+	auto lpPane = new TextPane(bMultiLine);
 	if (lpPane)
 	{
+		lpPane->SetLabel(uidLabel, bReadOnly);
 		lpPane->SetStringW(szVal);
 	}
 
@@ -33,10 +36,11 @@ ViewPane* CreateSingleLinePane(UINT uidLabel, _In_ wstring szVal, bool bReadOnly
 
 ViewPane* CreateSingleLinePaneID(UINT uidLabel, UINT uidVal, bool bReadOnly)
 {
-	auto lpPane = new TextPane(uidLabel, bReadOnly, false);
+	auto lpPane = new TextPane(false);
 
 	if (lpPane && uidVal)
 	{
+		lpPane->SetLabel(uidLabel, bReadOnly);
 		lpPane->SetStringW(loadstring(uidVal));
 	}
 
@@ -96,7 +100,7 @@ _Check_return_ static DWORD CALLBACK EditStreamReadCallBack(
 	return 0;
 }
 
-TextPane::TextPane(UINT uidLabel, bool bReadOnly, bool bMultiLine) :ViewPane(uidLabel, bReadOnly)
+TextPane::TextPane(bool bMultiLine) :ViewPane()
 {
 	m_bMultiline = bMultiLine;
 }

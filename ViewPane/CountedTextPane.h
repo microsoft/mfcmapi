@@ -9,7 +9,7 @@ ViewPane* CreateCountedTextPane(UINT uidLabel, bool bReadOnly, UINT uidCountLabe
 class CountedTextPane : public TextPane
 {
 public:
-	CountedTextPane(UINT uidLabel, bool bReadOnly, UINT uidCountLabel);
+	CountedTextPane(UINT uidCountLabel);
 
 	bool IsType(__ViewTypes vType) override;
 	ULONG GetFlags() override;

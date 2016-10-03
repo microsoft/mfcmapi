@@ -8,7 +8,7 @@ ViewPane* CreateCheckPane(UINT uidLabel, bool bVal, bool bReadOnly);
 class CheckPane : public ViewPane
 {
 public:
-	CheckPane(UINT uidLabel, bool bReadOnly, bool bCheck);
+	CheckPane(bool bCheck);
 
 	bool IsType(__ViewTypes vType) override;
 	void Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc) override;

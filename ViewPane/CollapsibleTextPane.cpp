@@ -5,11 +5,12 @@ static wstring CLASS = L"CollapsibleTextPane";
 
 ViewPane* CreateCollapsibleTextPane(UINT uidLabel, bool bReadOnly)
 {
-	auto lpPane = new CollapsibleTextPane(uidLabel, bReadOnly);
-	return lpPane;
+	auto pane = new CollapsibleTextPane();
+	pane->SetLabel(uidLabel, bReadOnly);
+	return pane;
 }
 
-CollapsibleTextPane::CollapsibleTextPane(UINT uidLabel, bool bReadOnly) :TextPane(uidLabel, bReadOnly, true)
+CollapsibleTextPane::CollapsibleTextPane() :TextPane(true)
 {
 }
 

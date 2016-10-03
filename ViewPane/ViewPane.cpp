@@ -3,13 +3,13 @@
 #include "UIFunctions.h"
 #include "String.h"
 
-ViewPane::ViewPane(UINT uidLabel, bool bReadOnly)
+ViewPane::ViewPane()
 {
 	m_iControl = -1;
-	m_uidLabel = uidLabel;
+	m_uidLabel = 0;
 
 	m_bCollapsed = false;
-	m_bReadOnly = bReadOnly;
+	m_bReadOnly = true;
 	m_bInitialized = false;
 	m_iMargin = 0;
 	m_iSideMargin = 0;
@@ -23,21 +23,10 @@ ViewPane::ViewPane(UINT uidLabel, bool bReadOnly)
 
 	m_bUseLabelControl = false;
 	m_hWndParent = nullptr;
-
-	if (m_uidLabel)
-	{
-		m_bUseLabelControl = true;
-		m_szLabel = loadstring(m_uidLabel);
-	}
 }
 
 ViewPane::~ViewPane()
 {
-}
-
-bool ViewPane::IsType(__ViewTypes vType)
-{
-	return CTRL_UNKNOWN == vType;
 }
 
 void ViewPane::SetWindowPos(int x, int y, int width, int /*height*/)
@@ -57,6 +46,18 @@ void ViewPane::SetWindowPos(int x, int y, int width, int /*height*/)
 		m_iLabelWidth,
 		m_iLabelHeight,
 		SWP_NOZORDER));
+}
+
+void ViewPane::SetLabel(UINT uidLabel, bool bReadOnly)
+{
+	m_uidLabel = uidLabel;
+	m_bReadOnly = bReadOnly;
+
+	if (m_uidLabel)
+	{
+		m_bUseLabelControl = true;
+		m_szLabel = loadstring(m_uidLabel);
+	}
 }
 
 void ViewPane::Initialize(int iControl, _In_ CWnd* pParent, _In_opt_ HDC /*hdc*/)
@@ -92,10 +93,6 @@ void ViewPane::Initialize(int iControl, _In_ CWnd* pParent, _In_opt_ HDC /*hdc*/
 			pParent,
 			IDD_COLLAPSE + iControl));
 	}
-}
-
-void ViewPane::CommitUIValues()
-{
 }
 
 ULONG ViewPane::GetFlags()

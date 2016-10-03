@@ -8,20 +8,26 @@ static wstring CLASS = L"DropDownPane";
 
 ViewPane* CreateDropDownPane(UINT uidLabel, ULONG ulDropList, _In_opt_count_(ulDropList) UINT* lpuidDropList, bool bReadOnly)
 {
-	return new DropDownPane(uidLabel, bReadOnly, ulDropList, lpuidDropList, nullptr, false);
+	auto pane = new DropDownPane(ulDropList, lpuidDropList, nullptr, false);
+	pane->SetLabel(uidLabel, bReadOnly);
+	return pane;
 }
 
 ViewPane* CreateDropDownArrayPane(UINT uidLabel, ULONG ulDropList, _In_opt_count_(ulDropList) LPNAME_ARRAY_ENTRY lpnaeDropList, bool bReadOnly)
 {
-	return new DropDownPane(uidLabel, bReadOnly, ulDropList, nullptr, lpnaeDropList, false);
+	auto pane = new DropDownPane(ulDropList, nullptr, lpnaeDropList, false);
+	pane->SetLabel(uidLabel, bReadOnly);
+	return pane;
 }
 
 ViewPane* CreateDropDownGuidPane(UINT uidLabel, bool bReadOnly)
 {
-	return new DropDownPane(uidLabel, bReadOnly, 0, nullptr, nullptr, true);
+	auto pane = new DropDownPane(0, nullptr, nullptr, true);
+	pane->SetLabel(uidLabel, bReadOnly);
+	return pane;
 }
 
-DropDownPane::DropDownPane(UINT uidLabel, bool bReadOnly, ULONG ulDropList, _In_opt_count_(ulDropList) UINT* lpuidDropList, _In_opt_count_(ulDropList) LPNAME_ARRAY_ENTRY lpnaeDropList, bool bGUID) :ViewPane(uidLabel, bReadOnly)
+DropDownPane::DropDownPane(ULONG ulDropList, _In_opt_count_(ulDropList) UINT* lpuidDropList, _In_opt_count_(ulDropList) LPNAME_ARRAY_ENTRY lpnaeDropList, bool bGUID) :ViewPane()
 {
 	m_ulDropList = ulDropList;
 	m_lpuidDropList = lpuidDropList;

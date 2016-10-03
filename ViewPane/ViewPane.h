@@ -26,13 +26,14 @@ enum __ViewTypes
 class ViewPane
 {
 public:
-	ViewPane(UINT uidLabel, bool bReadOnly);
+	ViewPane();
 	virtual ~ViewPane();
 
-	virtual bool IsType(__ViewTypes vType);
+	virtual bool IsType(__ViewTypes vType) = 0;
+	void SetLabel(UINT uidLabel, bool bReadOnly);
 	virtual void Initialize(int iControl, _In_ CWnd* pParent, _In_opt_ HDC hdc);
 	virtual void SetWindowPos(int x, int y, int width, int height) = 0;
-	virtual void CommitUIValues();
+	virtual void CommitUIValues() = 0;
 	virtual ULONG GetFlags();
 	virtual int GetMinWidth(_In_ HDC hdc);
 	virtual int GetFixedHeight() = 0;

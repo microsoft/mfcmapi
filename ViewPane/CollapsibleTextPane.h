@@ -9,7 +9,7 @@ ViewPane* CreateCollapsibleTextPane(UINT uidLabel, bool bReadOnly);
 class CollapsibleTextPane : public TextPane
 {
 public:
-	CollapsibleTextPane(UINT uidLabel, bool bReadOnly);
+	CollapsibleTextPane();
 
 	bool IsType(__ViewTypes vType) override;
 	ULONG GetFlags() override;
