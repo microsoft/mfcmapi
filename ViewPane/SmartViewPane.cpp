@@ -12,15 +12,6 @@ ViewPane* SmartViewPane::SmartViewPane::Create(UINT uidLabel)
 	return pane;
 }
 
-SmartViewPane::SmartViewPane() :DropDownPane(ulSmartViewParserTypeArray, nullptr, SmartViewParserTypeArray, false)
-{
-	m_TextPane.m_bMultiline = true;
-	m_TextPane.SetLabel(NULL, true);
-	m_bHasData = false;
-	m_bDoDropDown = true;
-	m_bReadOnly = true;
-}
-
 bool SmartViewPane::IsType(__ViewTypes vType)
 {
 	return CTRL_SMARTVIEWPANE == vType || DropDownPane::IsType(vType);
@@ -29,6 +20,34 @@ bool SmartViewPane::IsType(__ViewTypes vType)
 ULONG SmartViewPane::GetFlags()
 {
 	return DropDownPane::GetFlags() | vpCollapsible;
+}
+
+void SmartViewPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
+{
+	Setup(ulSmartViewParserTypeArray, nullptr, SmartViewParserTypeArray, false);
+	m_TextPane.m_bMultiline = true;
+	m_TextPane.SetLabel(NULL, true);
+	m_bHasData = false;
+	m_bDoDropDown = true;
+	m_bReadOnly = true;
+
+	CreateControl(iControl, pParent, hdc);
+
+	if (SmartViewParserTypeArray)
+	{
+		for (ULONG iDropNum = 0; iDropNum < ulSmartViewParserTypeArray; iDropNum++)
+		{
+			auto szDropString = wstring(SmartViewParserTypeArray[iDropNum].lpszName);
+			InsertDropString(iDropNum, szDropString, SmartViewParserTypeArray[iDropNum].ulValue);
+		}
+	}
+
+	m_DropDown.SetCurSel(static_cast<int>(m_iDropSelectionValue));
+
+	// Passing a control # of 1 gives us a built in margin
+	m_TextPane.Initialize(1, pParent, hdc);
+
+	m_bInitialized = true;
 }
 
 int SmartViewPane::GetFixedHeight()
@@ -109,27 +128,6 @@ void SmartViewPane::SetWindowPos(int x, int y, int width, int height)
 		m_TextPane.ShowWindow(SW_SHOW);
 		m_TextPane.SetWindowPos(x, y, width, height);
 	}
-}
-
-void SmartViewPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
-{
-	DoInit(iControl, pParent, hdc);
-
-	if (SmartViewParserTypeArray)
-	{
-		for (ULONG iDropNum = 0; iDropNum < ulSmartViewParserTypeArray; iDropNum++)
-		{
-			auto szDropString = wstring(SmartViewParserTypeArray[iDropNum].lpszName);
-			InsertDropString(iDropNum, szDropString, SmartViewParserTypeArray[iDropNum].ulValue);
-		}
-	}
-
-	m_DropDown.SetCurSel(static_cast<int>(m_iDropSelectionValue));
-
-	// Passing a control # of 1 gives us a built in margin
-	m_TextPane.Initialize(1, pParent, hdc);
-
-	m_bInitialized = true;
 }
 
 void SmartViewPane::SetMargins(

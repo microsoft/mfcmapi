@@ -8,26 +8,41 @@ static wstring CLASS = L"DropDownPane";
 
 ViewPane* DropDownPane::Create(UINT uidLabel, ULONG ulDropList, _In_opt_count_(ulDropList) UINT* lpuidDropList, bool bReadOnly)
 {
-	auto pane = new DropDownPane(ulDropList, lpuidDropList, nullptr, false);
-	pane->SetLabel(uidLabel, bReadOnly);
+	auto pane = new DropDownPane();
+	if (pane)
+	{
+		pane->SetLabel(uidLabel, bReadOnly);
+		pane->Setup(ulDropList, lpuidDropList, nullptr, false);
+	}
+
 	return pane;
 }
 
 ViewPane* DropDownPane::CreateArray(UINT uidLabel, ULONG ulDropList, _In_opt_count_(ulDropList) LPNAME_ARRAY_ENTRY lpnaeDropList, bool bReadOnly)
 {
-	auto pane = new DropDownPane(ulDropList, nullptr, lpnaeDropList, false);
-	pane->SetLabel(uidLabel, bReadOnly);
+	auto pane = new DropDownPane();
+	if (pane)
+	{
+		pane->Setup(ulDropList, nullptr, lpnaeDropList, false);
+		pane->SetLabel(uidLabel, bReadOnly);
+	}
+
 	return pane;
 }
 
 ViewPane* DropDownPane::CreateGuid(UINT uidLabel, bool bReadOnly)
 {
-	auto pane = new DropDownPane(0, nullptr, nullptr, true);
-	pane->SetLabel(uidLabel, bReadOnly);
+	auto pane = new DropDownPane();
+	if (pane)
+	{
+		pane->Setup(0, nullptr, nullptr, true);
+		pane->SetLabel(uidLabel, bReadOnly);
+	}
+
 	return pane;
 }
 
-DropDownPane::DropDownPane(ULONG ulDropList, _In_opt_count_(ulDropList) UINT* lpuidDropList, _In_opt_count_(ulDropList) LPNAME_ARRAY_ENTRY lpnaeDropList, bool bGUID) :ViewPane()
+void DropDownPane::Setup(ULONG ulDropList, _In_opt_count_(ulDropList) UINT* lpuidDropList, _In_opt_count_(ulDropList) LPNAME_ARRAY_ENTRY lpnaeDropList, bool bGUID)
 {
 	m_ulDropList = ulDropList;
 	m_lpuidDropList = lpuidDropList;
@@ -112,7 +127,7 @@ void DropDownPane::SetWindowPos(int x, int y, int width, int /*height*/)
 	EC_B(m_DropDown.SetWindowPos(NULL, x, y, width, m_iEditHeight, SWP_NOZORDER));
 }
 
-void DropDownPane::DoInit(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
+void DropDownPane::CreateControl(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 {
 	auto hRes = S_OK;
 
@@ -151,7 +166,7 @@ void DropDownPane::DoInit(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 
 void DropDownPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 {
-	DoInit(iControl, pParent, hdc);
+	CreateControl(iControl, pParent, hdc);
 
 	if (m_lpuidDropList)
 	{
