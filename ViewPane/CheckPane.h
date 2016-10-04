@@ -11,8 +11,6 @@ public:
 	bool GetCheckUseControl() const;
 
 private:
-	CheckPane(bool bCheck);
-
 	bool IsType(__ViewTypes vType) override;
 	void Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc) override;
 	void SetWindowPos(int x, int y, int width, int height) override;

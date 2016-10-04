@@ -5,14 +5,14 @@ static wstring CLASS = L"CheckPane";
 
 ViewPane* CheckPane::Create(UINT uidLabel, bool bVal, bool bReadOnly)
 {
-	auto pane = new CheckPane(bVal);
-	pane->SetLabel(uidLabel, bReadOnly);
-	return pane;
-}
+	auto pane = new CheckPane();
+	if (pane)
+	{
+		pane->m_bCheckValue = bVal;
+		pane->SetLabel(uidLabel, bReadOnly);
+	}
 
-CheckPane::CheckPane(bool bCheck) :ViewPane()
-{
-	m_bCheckValue = bCheck;
+	return pane;
 }
 
 bool CheckPane::IsType(__ViewTypes vType)
