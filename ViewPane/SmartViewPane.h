@@ -16,7 +16,6 @@ public:
 
 private:
 	SmartViewPane();
-	virtual ~SmartViewPane();
 
 	bool IsType(__ViewTypes vType) override;
 	ULONG GetFlags() override;
@@ -34,7 +33,7 @@ private:
 		int iButtonHeight, // Height of buttons below the control
 		int iEditHeight) override; // height of an edit control
 
-	TextPane* m_lpTextPane;
+	TextPane m_TextPane;
 	bool m_bHasData;
 	bool m_bDoDropDown;
 };

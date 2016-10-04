@@ -34,12 +34,11 @@ public:
 	_Check_return_ string GetEditBoxTextA();
 	_Check_return_ wstring GetEditBoxTextW();
 	_Check_return_ wstring GetStringUseControl() const;
+	bool m_bMultiline;
 
 protected:
-	TextPane();
 	bool IsType(__ViewTypes vType) override;
 	CRichEditCtrl m_EditBox;
-	bool m_bMultiline;
 
 private:
 	void CommitUIValues() override;
