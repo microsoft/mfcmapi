@@ -33,7 +33,7 @@ SpecialFolderEditor::SpecialFolderEditor(
 	m_lpMDB = lpMDB;
 	if (m_lpMDB) m_lpMDB->AddRef();
 
-	InitPane(0, CreateListPane(NULL, true, true, this));
+	InitPane(0, ListPane::Create(NULL, true, true, this));
 }
 
 SpecialFolderEditor::~SpecialFolderEditor()
@@ -209,7 +209,7 @@ _Check_return_ bool SpecialFolderEditor::DoListEdit(ULONG ulListNum, int iItem, 
 		NULL,
 		1,
 		CEDITOR_BUTTON_OK);
-	MyResults.InitPane(0, CreateMultiLinePane(NULL, true));
+	MyResults.InitPane(0, TextPane::CreateMultiLinePane(NULL, true));
 
 	wstring szTmp;
 	auto listPane = static_cast<ListPane*>(GetControl(ulListNum));

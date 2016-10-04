@@ -2676,8 +2676,8 @@ HRESULT CopyTo(HWND hWnd, _In_ LPMAPIPROP lpSource, _In_ LPMAPIPROP lpDest, LPCG
 			2,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		MyData.InitPane(0, CreateSingleLinePane(IDS_INTERFACE, GUIDToStringAndName(lpGUID), false));
-		MyData.InitPane(1, CreateSingleLinePane(IDS_FLAGS, false));
+		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_INTERFACE, GUIDToStringAndName(lpGUID), false));
+		MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 		MyData.SetHex(1, MAPI_DIALOG);
 
 		WC_H(MyData.DisplayDialog());

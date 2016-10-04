@@ -156,9 +156,9 @@ void CProfileListDlg::OnLaunchProfileWizard()
 		IDS_LAUNCHPROFWIZPROMPT,
 		2,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyData.InitPane(0, CreateSingleLinePane(IDS_FLAGS, false));
+	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 	MyData.SetHex(0, MAPI_PW_LAUNCHED_BY_CONFIG);
-	MyData.InitPane(1, CreateSingleLinePane(IDS_SERVICE, wstring(L"MSEMS"), false)); // STRING_OK
+	MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_SERVICE, wstring(L"MSEMS"), false)); // STRING_OK
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -199,8 +199,8 @@ void CProfileListDlg::OnAddExchangeToProfile()
 		2,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-	MyData.InitPane(0, CreateSingleLinePane(IDS_SERVERNAME, false));
-	MyData.InitPane(1, CreateSingleLinePane(IDS_MAILBOXNAME, false));
+	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_SERVERNAME, false));
+	MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_MAILBOXNAME, false));
 
 	WC_H(MyData.DisplayDialog());
 
@@ -258,9 +258,9 @@ void CProfileListDlg::AddPSTToProfile(bool bUnicodePST)
 				IDS_PSTPATHPROMPT,
 				3,
 				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-			MyFile.InitPane(0, CreateSingleLinePane(IDS_SERVICE, file, false));
-			MyFile.InitPane(1, CreateCheckPane(IDS_PSTDOPW, false, false));
-			MyFile.InitPane(2, CreateSingleLinePane(IDS_PSTPW, false));
+			MyFile.InitPane(0, TextPane::CreateSingleLinePane(IDS_SERVICE, file, false));
+			MyFile.InitPane(1, CheckPane::Create(IDS_PSTDOPW, false, false));
+			MyFile.InitPane(2, TextPane::CreateSingleLinePane(IDS_PSTPW, false));
 
 			WC_H(MyFile.DisplayDialog());
 
@@ -306,8 +306,8 @@ void CProfileListDlg::OnAddServiceToProfile()
 		IDS_NEWSERVICEPROMPT,
 		2,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyData.InitPane(0, CreateSingleLinePane(IDS_SERVICE, false));
-	MyData.InitPane(1, CreateCheckPane(IDS_DISPLAYSERVICEUI, true, false));
+	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_SERVICE, false));
+	MyData.InitPane(1, CheckPane::Create(IDS_DISPLAYSERVICEUI, true, false));
 
 	WC_H(MyData.DisplayDialog());
 
@@ -338,7 +338,7 @@ void CProfileListDlg::OnCreateProfile()
 		IDS_NEWPROFPROMPT,
 		1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyData.InitPane(0, CreateSingleLinePane(IDS_PROFILE, false));
+	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_PROFILE, false));
 
 	WC_H(MyData.DisplayDialog());
 
@@ -416,11 +416,11 @@ void CProfileListDlg::OnGetProfileServiceVersion()
 			5,
 			CEDITOR_BUTTON_OK);
 
-		MyData.InitPane(0, CreateSingleLinePane(IDS_PROFILESERVERVERSION, true));
-		MyData.InitPane(1, CreateSingleLinePane(IDS_PROFILESERVERVERSIONMAJOR, true));
-		MyData.InitPane(2, CreateSingleLinePane(IDS_PROFILESERVERVERSIONMINOR, true));
-		MyData.InitPane(3, CreateSingleLinePane(IDS_PROFILESERVERVERSIONBUILD, true));
-		MyData.InitPane(4, CreateSingleLinePane(IDS_PROFILESERVERVERSIONMINORBUILD, true));
+		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_PROFILESERVERVERSION, true));
+		MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_PROFILESERVERVERSIONMAJOR, true));
+		MyData.InitPane(2, TextPane::CreateSingleLinePane(IDS_PROFILESERVERVERSIONMINOR, true));
+		MyData.InitPane(3, TextPane::CreateSingleLinePane(IDS_PROFILESERVERVERSIONBUILD, true));
+		MyData.InitPane(4, TextPane::CreateSingleLinePane(IDS_PROFILESERVERVERSIONMINORBUILD, true));
 
 		if (bFoundServerVersion)
 		{
@@ -490,7 +490,7 @@ void CProfileListDlg::OnOpenProfileByName()
 		NULL,
 		1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyData.InitPane(0, CreateSingleLinePane(IDS_OPENPROFILEPROMPT, false));
+	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_OPENPROFILEPROMPT, false));
 
 	WC_H(MyData.DisplayDialog());
 
@@ -540,7 +540,7 @@ _Check_return_ bool CProfileListDlg::HandlePaste()
 		1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-	MyData.InitPane(0, CreateSingleLinePane(IDS_COPYPROFILEPROMPT, stringTowstring(szOldProfile), false));
+	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_COPYPROFILEPROMPT, stringTowstring(szOldProfile), false));
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)

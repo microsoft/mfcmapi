@@ -3,7 +3,7 @@
 
 static wstring CLASS = L"CheckPane";
 
-ViewPane* CreateCheckPane(UINT uidLabel, bool bVal, bool bReadOnly)
+ViewPane* CheckPane::Create(UINT uidLabel, bool bVal, bool bReadOnly)
 {
 	auto pane = new CheckPane(bVal);
 	pane->SetLabel(uidLabel, bReadOnly);

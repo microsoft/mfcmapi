@@ -4,11 +4,13 @@
 #include "ViewPane.h"
 #include "TextPane.h"
 
-ViewPane* CreateCountedTextPane(UINT uidLabel, bool bReadOnly, UINT uidCountLabel);
-
 class CountedTextPane : public TextPane
 {
 public:
+	static ViewPane* CountedTextPane::Create(UINT uidLabel, bool bReadOnly, UINT uidCountLabel);
+	void SetCount(size_t iCount);
+
+private:
 	CountedTextPane(UINT uidCountLabel);
 
 	bool IsType(__ViewTypes vType) override;
@@ -19,9 +21,6 @@ public:
 	int GetFixedHeight() override;
 	int GetLines() override;
 
-	void SetCount(size_t iCount);
-
-private:
 	CEdit m_Count; // The display of the count
 	UINT m_uidCountLabel; // UID for the name of the count
 	wstring m_szCountLabel; // String name of the count

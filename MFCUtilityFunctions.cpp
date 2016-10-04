@@ -373,7 +373,7 @@ _Check_return_ HRESULT DisplayExchangeTable(
 				1,
 				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-			MyData.InitPane(0, CreateCheckPane(IDS_FBRIGHTSVISIBLE, false, false));
+			MyData.InitPane(0, CheckPane::Create(IDS_FBRIGHTSVISIBLE, false, false));
 
 			WC_H(MyData.DisplayDialog());
 			if (S_OK == hRes)
@@ -432,7 +432,7 @@ _Check_return_ bool bShouldCancel(_In_opt_ CWnd* cWnd, HRESULT hResPrev)
 		if (bGotError)
 		{
 			auto szPrevErr = formatmessage(IDS_PREVIOUSCALL, ErrorNameFromErrorCode(hResPrev).c_str(), hResPrev);
-			Cancel.InitPane(0, CreateSingleLinePane(IDS_ERROR, szPrevErr, true));
+			Cancel.InitPane(0, TextPane::CreateSingleLinePane(IDS_ERROR, szPrevErr, true));
 		}
 		WC_H(Cancel.DisplayDialog());
 		if (S_OK != hRes)
@@ -472,16 +472,16 @@ void DisplayMailboxTable(_In_ CParentWnd* lpParent,
 			IDS_SERVERNAMEPROMPT,
 			4,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.InitPane(0, CreateSingleLinePane(IDS_SERVERNAME, szServerName, false));
-		MyData.InitPane(1, CreateSingleLinePane(IDS_OFFSET, false));
+		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_SERVERNAME, szServerName, false));
+		MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_OFFSET, false));
 		MyData.SetHex(1, 0);
-		MyData.InitPane(2, CreateSingleLinePane(IDS_MAILBOXGUID, false));
+		MyData.InitPane(2, TextPane::CreateSingleLinePane(IDS_MAILBOXGUID, false));
 		UINT uidDropDown[] = {
 		IDS_GETMBXINTERFACE1,
 		IDS_GETMBXINTERFACE3,
 		IDS_GETMBXINTERFACE5
 		};
-		MyData.InitPane(3, CreateDropDownPane(IDS_GETMBXINTERFACE, _countof(uidDropDown), uidDropDown, true));
+		MyData.InitPane(3, DropDownPane::Create(IDS_GETMBXINTERFACE, _countof(uidDropDown), uidDropDown, true));
 		WC_H(MyData.DisplayDialog());
 
 		if (SUCCEEDED(hRes) && 0 != MyData.GetHex(1) && 0 == MyData.GetDropDown(3))
@@ -609,18 +609,18 @@ void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
 			IDS_DISPLAYPFTABLEPROMPT,
 			5,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.InitPane(0, CreateSingleLinePane(IDS_SERVERNAME, szServerName, false));
-		MyData.InitPane(1, CreateSingleLinePane(IDS_OFFSET, false));
+		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_SERVERNAME, szServerName, false));
+		MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_OFFSET, false));
 		MyData.SetHex(1, 0);
-		MyData.InitPane(2, CreateSingleLinePane(IDS_FLAGS, false));
+		MyData.InitPane(2, TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 		MyData.SetHex(2, MDB_IPM);
-		MyData.InitPane(3, CreateSingleLinePane(IDS_PUBLICFOLDERGUID, false));
+		MyData.InitPane(3, TextPane::CreateSingleLinePane(IDS_PUBLICFOLDERGUID, false));
 		UINT uidDropDown[] = {
 		IDS_GETPFINTERFACE1,
 		IDS_GETPFINTERFACE4,
 		IDS_GETPFINTERFACE5
 		};
-		MyData.InitPane(4, CreateDropDownPane(IDS_GETMBXINTERFACE, _countof(uidDropDown), uidDropDown, true));
+		MyData.InitPane(4, DropDownPane::Create(IDS_GETMBXINTERFACE, _countof(uidDropDown), uidDropDown, true));
 		WC_H(MyData.DisplayDialog());
 
 		if (SUCCEEDED(hRes) && 0 != MyData.GetHex(1) && 0 == MyData.GetDropDown(4))
@@ -741,8 +741,8 @@ void ResolveMessageClass(_In_ CMapiObjects* lpMapiObjects, _In_opt_ LPMAPIFOLDER
 			IDS_RESOLVECLASSPROMPT,
 			static_cast<ULONG>(2),
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.InitPane(0, CreateSingleLinePane(IDS_CLASS, false));
-		MyData.InitPane(1, CreateSingleLinePane(IDS_FLAGS, false));
+		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_CLASS, false));
+		MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 
 		WC_H(MyData.DisplayDialog());
 		if (S_OK == hRes)

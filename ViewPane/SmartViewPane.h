@@ -4,11 +4,17 @@
 #include "DropDownPane.h"
 #include "TextPane.h"
 
-ViewPane* CreateSmartViewPane(UINT uidLabel);
-
 class SmartViewPane : public DropDownPane
 {
 public:
+	static ViewPane* Create(UINT uidLabel);
+
+	void SetStringW(wstring szMsg);
+	void DisableDropDown();
+	void SetParser(__ParsingTypeEnum iParser);
+	void Parse(SBinary myBin);
+
+private:
 	SmartViewPane();
 	virtual ~SmartViewPane();
 
@@ -28,15 +34,7 @@ public:
 		int iButtonHeight, // Height of buttons below the control
 		int iEditHeight) override; // height of an edit control
 
-	void SetStringW(wstring szMsg);
-	void DisableDropDown();
-	void SetParser(__ParsingTypeEnum iParser);
-
-	void Parse(SBinary myBin);
-
-private:
 	TextPane* m_lpTextPane;
-
 	bool m_bHasData;
 	bool m_bDoDropDown;
 };

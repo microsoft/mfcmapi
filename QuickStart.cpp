@@ -279,8 +279,8 @@ void OnQSDisplayNicknameCache(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 				NULL,
 				2,
 				CEDITOR_BUTTON_OK);
-			MyResults.InitPane(0, CreateCollapsibleTextPane(NULL, true));
-			MyResults.InitPane(1, CreateCountedTextPane(IDS_HEX, true, IDS_CB));
+			MyResults.InitPane(0, CollapsibleTextPane::Create(NULL, true));
+			MyResults.InitPane(1, CountedTextPane::Create(IDS_HEX, true, IDS_CB));
 
 			MyResults.SetStringW(0, szNicknames);
 
@@ -416,7 +416,7 @@ void OnQSDisplayQuota(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 			NULL,
 			1,
 			CEDITOR_BUTTON_OK);
-		MyResults.InitPane(0, CreateMultiLinePane(NULL, true));
+		MyResults.InitPane(0, TextPane::CreateMultiLinePane(NULL, true));
 		MyResults.SetStringW(0, szQuotaString);
 
 		WC_H(MyResults.DisplayDialog());
@@ -501,8 +501,8 @@ void OnQSLookupThumbail(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 
 	if (lpThumbnail)
 	{
-		MyResults.InitPane(0, CreateCountedTextPane(IDS_HEX, true, IDS_CB));
-		MyResults.InitPane(1, CreateCollapsibleTextPane(IDS_ANSISTRING, true));
+		MyResults.InitPane(0, CountedTextPane::Create(IDS_HEX, true, IDS_CB));
+		MyResults.InitPane(1, CollapsibleTextPane::Create(IDS_ANSISTRING, true));
 
 		auto lpPane = static_cast<CountedTextPane*>(MyResults.GetControl(0));
 		if (lpPane) lpPane->SetCount(lpThumbnail->Value.bin.cb);
@@ -512,7 +512,7 @@ void OnQSLookupThumbail(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	}
 	else
 	{
-		MyResults.InitPane(0, CreateSingleLinePaneID(0, IDS_QSTHUMBNAILNOTFOUND, true));
+		MyResults.InitPane(0, TextPane::CreateSingleLinePaneID(0, IDS_QSTHUMBNAILNOTFOUND, true));
 	}
 
 	WC_H(MyResults.DisplayDialog());

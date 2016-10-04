@@ -60,7 +60,7 @@ void DisplayMAPISVCPath(_In_ CWnd* pParentWnd)
 		IDS_MAPISVCTEXT,
 		1,
 		CEDITOR_BUTTON_OK);
-	MyData.InitPane(0, CreateSingleLinePane(IDS_FILEPATH, true));
+	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_FILEPATH, true));
 	MyData.SetStringW(0, GetMAPISVCPath());
 
 	WC_H(MyData.DisplayDialog());
@@ -331,8 +331,8 @@ void AddServicesToMapiSvcInf()
 		IDS_ADDSERVICESTOINFPROMPT,
 		2,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyData.InitPane(0, CreateCheckPane(IDS_EXCHANGE, false, false));
-	MyData.InitPane(1, CreateCheckPane(IDS_PST, false, false));
+	MyData.InitPane(0, CheckPane::Create(IDS_EXCHANGE, false, false));
+	MyData.InitPane(1, CheckPane::Create(IDS_PST, false, false));
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -358,8 +358,8 @@ void RemoveServicesFromMapiSvcInf()
 		IDS_REMOVEFROMINFPROMPT,
 		2,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyData.InitPane(0, CreateCheckPane(IDS_EXCHANGE, false, false));
-	MyData.InitPane(1, CreateCheckPane(IDS_PST, false, false));
+	MyData.InitPane(0, CheckPane::Create(IDS_EXCHANGE, false, false));
+	MyData.InitPane(1, CheckPane::Create(IDS_PST, false, false));
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
