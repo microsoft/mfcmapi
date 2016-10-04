@@ -15,8 +15,6 @@ public:
 	void Parse(SBinary myBin);
 
 private:
-	SmartViewPane();
-
 	bool IsType(__ViewTypes vType) override;
 	ULONG GetFlags() override;
 	void Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc) override;

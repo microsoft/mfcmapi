@@ -10,7 +10,7 @@ public:
 	static ViewPane* CreateArray(UINT uidLabel, ULONG ulDropList, _In_opt_count_(ulDropList) LPNAME_ARRAY_ENTRY lpnaeDropList, bool bReadOnly);
 	static ViewPane* CreateGuid(UINT uidLabel, bool bReadOnly);
 
-	DropDownPane(ULONG ulDropList, _In_opt_count_(ulDropList) UINT* lpuidDropList, _In_opt_count_(ulDropList) LPNAME_ARRAY_ENTRY lpnaeDropList, bool bGUID);
+	void Setup(ULONG ulDropList, _In_opt_count_(ulDropList) UINT* lpuidDropList, _In_opt_count_(ulDropList) LPNAME_ARRAY_ENTRY lpnaeDropList, bool bGUID);
 
 	void SetDropDownSelection(_In_ wstring szText);
 	void InsertDropString(int iRow, _In_ wstring szText, ULONG ulValue);
@@ -25,7 +25,7 @@ protected:
 	bool IsType(__ViewTypes vType) override;
 	ULONG GetFlags() override;
 	void SetSelection(DWORD_PTR iSelection);
-	void DoInit(int iControl, _In_ CWnd* pParent, _In_ HDC hdc);
+	void CreateControl(int iControl, _In_ CWnd* pParent, _In_ HDC hdc);
 
 	CComboBox m_DropDown;
 	DWORD_PTR m_iDropSelectionValue;
