@@ -10,8 +10,9 @@ ViewPane* CollapsibleTextPane::CollapsibleTextPane::Create(UINT uidLabel, bool b
 	return pane;
 }
 
-CollapsibleTextPane::CollapsibleTextPane() :TextPane(true)
+CollapsibleTextPane::CollapsibleTextPane() :TextPane()
 {
+	m_bMultiline = true;
 }
 
 bool CollapsibleTextPane::IsType(__ViewTypes vType)

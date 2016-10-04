@@ -11,8 +11,9 @@ ViewPane* CountedTextPane::CountedTextPane::Create(UINT uidLabel, bool bReadOnly
 	return lpPane;
 }
 
-CountedTextPane::CountedTextPane(UINT uidCountLabel) :TextPane(true)
+CountedTextPane::CountedTextPane(UINT uidCountLabel) :TextPane()
 {
+	m_bMultiline = true;
 	m_iCountLabelWidth = 0;
 
 	m_uidCountLabel = uidCountLabel;
