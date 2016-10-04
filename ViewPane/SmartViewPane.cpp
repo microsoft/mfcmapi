@@ -14,15 +14,11 @@ ViewPane* SmartViewPane::SmartViewPane::Create(UINT uidLabel)
 
 SmartViewPane::SmartViewPane() :DropDownPane(ulSmartViewParserTypeArray, nullptr, SmartViewParserTypeArray, false)
 {
-	m_lpTextPane = static_cast<TextPane*>(TextPane::CreateMultiLinePane(NULL, true));
+	m_TextPane.m_bMultiline = true;
+	m_TextPane.SetLabel(NULL, true);
 	m_bHasData = false;
 	m_bDoDropDown = true;
 	m_bReadOnly = true;
-}
-
-SmartViewPane::~SmartViewPane()
-{
-	if (m_lpTextPane) delete m_lpTextPane;
 }
 
 bool SmartViewPane::IsType(__ViewTypes vType)
@@ -50,7 +46,7 @@ int SmartViewPane::GetFixedHeight()
 	if (m_bDoDropDown && !m_bCollapsed)
 	{
 		iHeight += m_iEditHeight; // Height of the dropdown
-		iHeight += m_lpTextPane->GetFixedHeight();
+		iHeight += m_TextPane.GetFixedHeight();
 	}
 
 	return iHeight;
@@ -61,7 +57,7 @@ int SmartViewPane::GetLines()
 	auto iStructType = GetDropDownSelectionValue();
 	if (!m_bCollapsed && (m_bHasData || iStructType))
 	{
-		return m_lpTextPane->GetLines();
+		return m_TextPane.GetLines();
 	}
 
 	return 0;
@@ -75,7 +71,7 @@ void SmartViewPane::SetWindowPos(int x, int y, int width, int height)
 		EC_B(m_CollapseButton.ShowWindow(SW_HIDE));
 		EC_B(m_Label.ShowWindow(SW_HIDE));
 		EC_B(m_DropDown.ShowWindow(SW_HIDE));
-		if (m_lpTextPane) m_lpTextPane->ShowWindow(SW_HIDE);
+		m_TextPane.ShowWindow(SW_HIDE);
 	}
 	else
 	{
@@ -97,7 +93,7 @@ void SmartViewPane::SetWindowPos(int x, int y, int width, int height)
 	if (m_bCollapsed)
 	{
 		EC_B(m_DropDown.ShowWindow(SW_HIDE));
-		if (m_lpTextPane) m_lpTextPane->ShowWindow(SW_HIDE);
+		m_TextPane.ShowWindow(SW_HIDE);
 	}
 	else
 	{
@@ -110,11 +106,8 @@ void SmartViewPane::SetWindowPos(int x, int y, int width, int height)
 			height -= m_iEditHeight;
 		}
 
-		if (m_lpTextPane)
-		{
-			m_lpTextPane->ShowWindow(SW_SHOW);
-			m_lpTextPane->SetWindowPos(x, y, width, height);
-		}
+		m_TextPane.ShowWindow(SW_SHOW);
+		m_TextPane.SetWindowPos(x, y, width, height);
 	}
 }
 
@@ -134,7 +127,7 @@ void SmartViewPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 	m_DropDown.SetCurSel(static_cast<int>(m_iDropSelectionValue));
 
 	// Passing a control # of 1 gives us a built in margin
-	m_lpTextPane->Initialize(1, pParent, hdc);
+	m_TextPane.Initialize(1, pParent, hdc);
 
 	m_bInitialized = true;
 }
@@ -148,7 +141,7 @@ void SmartViewPane::SetMargins(
 	int iButtonHeight, // Height of buttons below the control
 	int iEditHeight) // height of an edit control
 {
-	m_lpTextPane->SetMargins(iMargin, iSideMargin, iLabelHeight, iSmallHeightMargin, iLargeHeightMargin, iButtonHeight, iEditHeight);
+	m_TextPane.SetMargins(iMargin, iSideMargin, iLabelHeight, iSmallHeightMargin, iLargeHeightMargin, iButtonHeight, iEditHeight);
 	ViewPane::SetMargins(iMargin, iSideMargin, iLabelHeight, iSmallHeightMargin, iLargeHeightMargin, iButtonHeight, iEditHeight);
 }
 
@@ -163,7 +156,7 @@ void SmartViewPane::SetStringW(wstring szMsg)
 		m_bHasData = false;
 	}
 
-	m_lpTextPane->SetStringW(szMsg);
+	m_TextPane.SetStringW(szMsg);
 }
 
 void SmartViewPane::DisableDropDown()

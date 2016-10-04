@@ -106,10 +106,6 @@ _Check_return_ static DWORD CALLBACK EditStreamReadCallBack(
 	return 0;
 }
 
-TextPane::TextPane() :ViewPane()
-{
-}
-
 bool TextPane::IsType(__ViewTypes vType)
 {
 	return CTRL_TEXTPANE == vType;
