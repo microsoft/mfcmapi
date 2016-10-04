@@ -30,7 +30,7 @@ public:
 	wstring GetItemText(_In_ int nItem, _In_ int nSubItem) const;
 
 private:
-	ListPane(bool bAllowSort, CEditor* lpEdit);
+	void Setup(bool bAllowSort, CEditor* lpEdit);
 
 	bool IsType(__ViewTypes vType) override;
 	void Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc) override;

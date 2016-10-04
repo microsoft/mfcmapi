@@ -5,8 +5,13 @@
 
 ViewPane* ListPane::ListPane::Create(UINT uidLabel, bool bAllowSort, bool bReadOnly, LPVOID lpEdit)
 {
-	auto pane = new ListPane( bAllowSort, static_cast<CEditor*>(lpEdit));
-	pane->SetLabel(uidLabel, bReadOnly);
+	auto pane = new ListPane();
+	if (pane)
+	{
+		pane->Setup(bAllowSort, static_cast<CEditor*>(lpEdit));
+		pane->SetLabel(uidLabel, bReadOnly);
+	}
+
 	return pane;
 }
 
@@ -24,12 +29,10 @@ __ListButtons ListButtons[NUMLISTBUTTONS] = {
 
 #define LINES_LIST 6
 
-ListPane::ListPane(bool bAllowSort, CEditor* lpEdit) :ViewPane(), m_bDirty(false)
+void ListPane::Setup(bool bAllowSort, CEditor* lpEdit)
 {
 	m_bAllowSort = bAllowSort;
 	m_lpEdit = lpEdit;
-	m_iButtonWidth = 50;
-	m_List.AllowEscapeClose();
 }
 
 bool ListPane::IsType(__ViewTypes vType)
@@ -43,6 +46,46 @@ ULONG ListPane::GetFlags()
 	if (m_bDirty) ulFlags |= vpDirty;
 	if (m_bReadOnly) ulFlags |= vpReadonly;
 	return ulFlags;
+}
+
+void ListPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
+{
+	m_iButtonWidth = 50;
+	m_List.AllowEscapeClose();
+	m_bDirty = false;
+	ViewPane::Initialize(iControl, pParent, nullptr);
+
+	auto hRes = S_OK;
+
+	DWORD dwListStyle = LVS_SINGLESEL | WS_BORDER;
+	if (!m_bAllowSort)
+		dwListStyle |= LVS_NOSORTHEADER;
+	EC_H(m_List.Create(pParent, dwListStyle, m_nID, false));
+
+	// read only lists don't need buttons
+	if (!m_bReadOnly)
+	{
+		for (auto iButton = 0; iButton < NUMLISTBUTTONS; iButton++)
+		{
+			auto szButtonText = loadstring(ListButtons[iButton].uiButtonID);
+
+			EC_B(m_ButtonArray[iButton].Create(
+				wstringTotstring(szButtonText).c_str(),
+				WS_TABSTOP
+				| WS_CHILD
+				| WS_CLIPSIBLINGS
+				| WS_VISIBLE,
+				CRect(0, 0, 0, 0),
+				pParent,
+				ListButtons[iButton].uiButtonID));
+
+			auto sizeText = GetTextExtentPoint32(hdc, szButtonText);
+			m_iButtonWidth = max(m_iButtonWidth, sizeText.cx);
+		}
+	}
+
+	m_iButtonWidth += m_iMargin;
+	m_bInitialized = true;
 }
 
 int ListPane::GetMinWidth(_In_ HDC hdc)
@@ -147,43 +190,6 @@ void ListPane::SetWindowPos(int x, int y, int width, int height)
 
 void ListPane::CommitUIValues()
 {
-}
-
-void ListPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
-{
-	ViewPane::Initialize(iControl, pParent, nullptr);
-
-	auto hRes = S_OK;
-
-	DWORD dwListStyle = LVS_SINGLESEL | WS_BORDER;
-	if (!m_bAllowSort)
-		dwListStyle |= LVS_NOSORTHEADER;
-	EC_H(m_List.Create(pParent, dwListStyle, m_nID, false));
-
-	// read only lists don't need buttons
-	if (!m_bReadOnly)
-	{
-		for (auto iButton = 0; iButton < NUMLISTBUTTONS; iButton++)
-		{
-			auto szButtonText = loadstring(ListButtons[iButton].uiButtonID);
-
-			EC_B(m_ButtonArray[iButton].Create(
-				wstringTotstring(szButtonText).c_str(),
-				WS_TABSTOP
-				| WS_CHILD
-				| WS_CLIPSIBLINGS
-				| WS_VISIBLE,
-				CRect(0, 0, 0, 0),
-				pParent,
-				ListButtons[iButton].uiButtonID));
-
-			auto sizeText = GetTextExtentPoint32(hdc, szButtonText);
-			m_iButtonWidth = max(m_iButtonWidth, sizeText.cx);
-		}
-	}
-
-	m_iButtonWidth += m_iMargin;
-	m_bInitialized = true;
 }
 
 void ListPane::SetListString(ULONG iListRow, ULONG iListCol, wstring szListString)
