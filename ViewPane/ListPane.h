@@ -13,7 +13,7 @@ class CEditor;
 class ListPane : public ViewPane
 {
 public:
-	static ViewPane* Create(UINT uidLabel, bool bAllowSort, bool bReadOnly, LPVOID lpEdit);
+	static ListPane* Create(UINT uidLabel, bool bAllowSort, bool bReadOnly, LPVOID lpEdit);
 
 	ULONG HandleChange(UINT nID) override;
 	void SetListString(ULONG iListRow, ULONG iListCol, wstring szListString);

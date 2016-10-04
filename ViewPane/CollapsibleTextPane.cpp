@@ -3,7 +3,7 @@
 
 static wstring CLASS = L"CollapsibleTextPane";
 
-ViewPane* CollapsibleTextPane::CollapsibleTextPane::Create(UINT uidLabel, bool bReadOnly)
+CollapsibleTextPane* CollapsibleTextPane::CollapsibleTextPane::Create(UINT uidLabel, bool bReadOnly)
 {
 	auto pane = new CollapsibleTextPane();
 	if (pane)
