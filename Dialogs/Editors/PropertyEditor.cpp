@@ -216,7 +216,7 @@ void CPropertyEditor::InitPropertyControls()
 	case PT_BINARY:
 	case PT_LONG:
 		// This will be freed by the pane that we pass it to.
-		m_lpSmartView = static_cast<SmartViewPane*>(CreateSmartViewPane(IDS_SMARTVIEW));
+		m_lpSmartView = static_cast<SmartViewPane*>(SmartViewPane::Create(IDS_SMARTVIEW));
 	}
 
 	auto iStructType = FindSmartViewParserForProp(m_lpsInputValue ? m_lpsInputValue->ulPropTag : m_ulPropTag, NULL, nullptr, m_bMVRow);
@@ -237,7 +237,7 @@ void CPropertyEditor::InitPropertyControls()
 	switch (PROP_TYPE(m_ulPropTag))
 	{
 	case PT_APPTIME:
-		InitPane(0, CreateSingleLinePane(IDS_DOUBLE, false));
+		InitPane(0, TextPane::CreateSingleLinePane(IDS_DOUBLE, false));
 		if (m_lpsInputValue)
 		{
 			SetStringf(0, L"%f", m_lpsInputValue->Value.at); // STRING_OK
@@ -249,10 +249,10 @@ void CPropertyEditor::InitPropertyControls()
 
 		break;
 	case PT_BOOLEAN:
-		InitPane(0, CreateCheckPane(IDS_BOOLEAN, m_lpsInputValue ? 0 != m_lpsInputValue->Value.b : false, false));
+		InitPane(0, CheckPane::Create(IDS_BOOLEAN, m_lpsInputValue ? 0 != m_lpsInputValue->Value.b : false, false));
 		break;
 	case PT_DOUBLE:
-		InitPane(0, CreateSingleLinePane(IDS_DOUBLE, false));
+		InitPane(0, TextPane::CreateSingleLinePane(IDS_DOUBLE, false));
 		if (m_lpsInputValue)
 		{
 			SetStringf(0, L"%f", m_lpsInputValue->Value.dbl); // STRING_OK
@@ -264,10 +264,10 @@ void CPropertyEditor::InitPropertyControls()
 
 		break;
 	case PT_OBJECT:
-		InitPane(0, CreateSingleLinePaneID(IDS_OBJECT, IDS_OBJECTVALUE, true));
+		InitPane(0, TextPane::CreateSingleLinePaneID(IDS_OBJECT, IDS_OBJECTVALUE, true));
 		break;
 	case PT_R4:
-		InitPane(0, CreateSingleLinePane(IDS_FLOAT, false));
+		InitPane(0, TextPane::CreateSingleLinePane(IDS_FLOAT, false));
 		if (m_lpsInputValue)
 		{
 			SetStringf(0, L"%f", m_lpsInputValue->Value.flt); // STRING_OK
@@ -279,8 +279,8 @@ void CPropertyEditor::InitPropertyControls()
 
 		break;
 	case PT_STRING8:
-		InitPane(0, CreateCountedTextPane(IDS_ANSISTRING, false, IDS_CCH));
-		InitPane(1, CreateCountedTextPane(IDS_BIN, false, IDS_CB));
+		InitPane(0, CountedTextPane::Create(IDS_ANSISTRING, false, IDS_CCH));
+		InitPane(1, CountedTextPane::Create(IDS_BIN, false, IDS_CB));
 		if (m_lpsInputValue && CheckStringProp(m_lpsInputValue, PT_STRING8))
 		{
 			SetStringA(0, m_lpsInputValue->Value.lpszA);
@@ -303,8 +303,8 @@ void CPropertyEditor::InitPropertyControls()
 
 		break;
 	case PT_UNICODE:
-		InitPane(0, CreateCountedTextPane(IDS_UNISTRING, false, IDS_CCH));
-		InitPane(1, CreateCountedTextPane(IDS_BIN, false, IDS_CB));
+		InitPane(0, CountedTextPane::Create(IDS_UNISTRING, false, IDS_CCH));
+		InitPane(1, CountedTextPane::Create(IDS_BIN, false, IDS_CB));
 		if (m_lpsInputValue && CheckStringProp(m_lpsInputValue, PT_UNICODE))
 		{
 			SetStringW(0, m_lpsInputValue->Value.lpszW);
@@ -327,9 +327,9 @@ void CPropertyEditor::InitPropertyControls()
 
 		break;
 	case PT_CURRENCY:
-		InitPane(0, CreateSingleLinePane(IDS_HI, false));
-		InitPane(1, CreateSingleLinePane(IDS_LO, false));
-		InitPane(2, CreateSingleLinePane(IDS_CURRENCY, false));
+		InitPane(0, TextPane::CreateSingleLinePane(IDS_HI, false));
+		InitPane(1, TextPane::CreateSingleLinePane(IDS_LO, false));
+		InitPane(2, TextPane::CreateSingleLinePane(IDS_CURRENCY, false));
 		if (m_lpsInputValue)
 		{
 			SetHex(0, m_lpsInputValue->Value.cur.Hi);
@@ -345,8 +345,8 @@ void CPropertyEditor::InitPropertyControls()
 
 		break;
 	case PT_ERROR:
-		InitPane(0, CreateSingleLinePane(IDS_ERRORCODEHEX, true));
-		InitPane(1, CreateSingleLinePane(IDS_ERRORNAME, true));
+		InitPane(0, TextPane::CreateSingleLinePane(IDS_ERRORCODEHEX, true));
+		InitPane(1, TextPane::CreateSingleLinePane(IDS_ERRORNAME, true));
 		if (m_lpsInputValue)
 		{
 			SetHex(0, m_lpsInputValue->Value.err);
@@ -355,8 +355,8 @@ void CPropertyEditor::InitPropertyControls()
 
 		break;
 	case PT_I2:
-		InitPane(0, CreateSingleLinePane(IDS_SIGNEDDECIMAL, false));
-		InitPane(1, CreateSingleLinePane(IDS_HEX, false));
+		InitPane(0, TextPane::CreateSingleLinePane(IDS_SIGNEDDECIMAL, false));
+		InitPane(1, TextPane::CreateSingleLinePane(IDS_HEX, false));
 		InitPane(2, m_lpSmartView);
 		if (m_lpsInputValue)
 		{
@@ -377,9 +377,9 @@ void CPropertyEditor::InitPropertyControls()
 
 		break;
 	case PT_I8:
-		InitPane(0, CreateSingleLinePane(IDS_HIGHPART, false));
-		InitPane(1, CreateSingleLinePane(IDS_LOWPART, false));
-		InitPane(2, CreateSingleLinePane(IDS_DECIMAL, false));
+		InitPane(0, TextPane::CreateSingleLinePane(IDS_HIGHPART, false));
+		InitPane(1, TextPane::CreateSingleLinePane(IDS_LOWPART, false));
+		InitPane(2, TextPane::CreateSingleLinePane(IDS_DECIMAL, false));
 		InitPane(3, m_lpSmartView);
 
 		if (m_lpsInputValue)
@@ -403,9 +403,9 @@ void CPropertyEditor::InitPropertyControls()
 
 		break;
 	case PT_BINARY:
-		lpPane = static_cast<CountedTextPane*>(CreateCountedTextPane(IDS_BIN, false, IDS_CB));
+		lpPane = static_cast<CountedTextPane*>(CountedTextPane::Create(IDS_BIN, false, IDS_CB));
 		InitPane(0, lpPane);
-		InitPane(1, CreateCountedTextPane(IDS_TEXT, false, IDS_CCH));
+		InitPane(1, CountedTextPane::Create(IDS_TEXT, false, IDS_CCH));
 		InitPane(2, m_lpSmartView);
 
 		if (m_lpsInputValue)
@@ -429,8 +429,8 @@ void CPropertyEditor::InitPropertyControls()
 
 		break;
 	case PT_LONG:
-		InitPane(0, CreateSingleLinePane(IDS_UNSIGNEDDECIMAL, false));
-		InitPane(1, CreateSingleLinePane(IDS_HEX, false));
+		InitPane(0, TextPane::CreateSingleLinePane(IDS_UNSIGNEDDECIMAL, false));
+		InitPane(1, TextPane::CreateSingleLinePane(IDS_HEX, false));
 		InitPane(2, m_lpSmartView);
 		if (m_lpsInputValue)
 		{
@@ -452,9 +452,9 @@ void CPropertyEditor::InitPropertyControls()
 
 		break;
 	case PT_SYSTIME:
-		InitPane(0, CreateSingleLinePane(IDS_LOWDATETIME, false));
-		InitPane(1, CreateSingleLinePane(IDS_HIGHDATETIME, false));
-		InitPane(2, CreateSingleLinePane(IDS_DATE, true));
+		InitPane(0, TextPane::CreateSingleLinePane(IDS_LOWDATETIME, false));
+		InitPane(1, TextPane::CreateSingleLinePane(IDS_HIGHDATETIME, false));
+		InitPane(2, TextPane::CreateSingleLinePane(IDS_DATE, true));
 		if (m_lpsInputValue)
 		{
 			SetHex(0, static_cast<int>(m_lpsInputValue->Value.ft.dwLowDateTime));
@@ -470,7 +470,7 @@ void CPropertyEditor::InitPropertyControls()
 
 		break;
 	case PT_CLSID:
-		InitPane(0, CreateSingleLinePane(IDS_GUID, false));
+		InitPane(0, TextPane::CreateSingleLinePane(IDS_GUID, false));
 		if (m_lpsInputValue)
 		{
 			szGuid = GUIDToStringAndName(m_lpsInputValue->Value.lpguid);
@@ -483,19 +483,19 @@ void CPropertyEditor::InitPropertyControls()
 		SetStringW(0, szGuid);
 		break;
 	case PT_SRESTRICTION:
-		InitPane(0, CreateCollapsibleTextPane(IDS_RESTRICTION, true));
+		InitPane(0, CollapsibleTextPane::Create(IDS_RESTRICTION, true));
 		InterpretProp(m_lpsInputValue, &szTemp1, nullptr);
 		SetStringW(0, szTemp1);
 		break;
 	case PT_ACTIONS:
-		InitPane(0, CreateCollapsibleTextPane(IDS_ACTIONS, true));
+		InitPane(0, CollapsibleTextPane::Create(IDS_ACTIONS, true));
 		InterpretProp(m_lpsInputValue, &szTemp1, nullptr);
 		SetStringW(0, szTemp1);
 		break;
 	default:
 		InterpretProp(m_lpsInputValue, &szTemp1, &szTemp2);
-		InitPane(0, CreateCollapsibleTextPane(IDS_VALUE, true));
-		InitPane(1, CreateCollapsibleTextPane(IDS_ALTERNATEVIEW, true));
+		InitPane(0, CollapsibleTextPane::Create(IDS_VALUE, true));
+		InitPane(1, CollapsibleTextPane::Create(IDS_ALTERNATEVIEW, true));
 		SetStringW(IDS_VALUE, szTemp1);
 		SetStringW(IDS_ALTERNATEVIEW, szTemp2);
 		break;
@@ -1014,11 +1014,11 @@ void CMultiValuePropertyEditor::CreatePropertyControls()
 
 void CMultiValuePropertyEditor::InitPropertyControls()
 {
-	InitPane(0, CreateListPane(IDS_PROPVALUES, false, false, this));
+	InitPane(0, ListPane::Create(IDS_PROPVALUES, false, false, this));
 	if (PT_MV_BINARY == PROP_TYPE(m_ulPropTag) ||
 		PT_MV_LONG == PROP_TYPE(m_ulPropTag))
 	{
-		auto lpPane = static_cast<SmartViewPane*>(CreateSmartViewPane(IDS_SMARTVIEW));
+		auto lpPane = static_cast<SmartViewPane*>(SmartViewPane::Create(IDS_SMARTVIEW));
 		InitPane(1, lpPane);
 
 		if (lpPane && PT_MV_LONG == PROP_TYPE(m_ulPropTag))

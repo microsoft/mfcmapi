@@ -39,20 +39,20 @@ CEditor(pWnd, IDS_SETOPTS, NULL, 0, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
 	{
 		if (regoptCheck == RegKeys[ulReg].ulRegOptType)
 		{
-			InitPane(ulReg, CreateCheckPane(RegKeys[ulReg].uiOptionsPrompt, 0 != RegKeys[ulReg].ulCurDWORD, false));
+			InitPane(ulReg, CheckPane::Create(RegKeys[ulReg].uiOptionsPrompt, 0 != RegKeys[ulReg].ulCurDWORD, false));
 		}
 		else if (regoptString == RegKeys[ulReg].ulRegOptType)
 		{
-			InitPane(ulReg, CreateSingleLinePane(RegKeys[ulReg].uiOptionsPrompt, RegKeys[ulReg].szCurSTRING, false));
+			InitPane(ulReg, TextPane::CreateSingleLinePane(RegKeys[ulReg].uiOptionsPrompt, RegKeys[ulReg].szCurSTRING, false));
 		}
 		else if (regoptStringHex == RegKeys[ulReg].ulRegOptType)
 		{
-			InitPane(ulReg, CreateSingleLinePane(RegKeys[ulReg].uiOptionsPrompt, false));
+			InitPane(ulReg, TextPane::CreateSingleLinePane(RegKeys[ulReg].uiOptionsPrompt, false));
 			SetHex(ulReg, RegKeys[ulReg].ulCurDWORD);
 		}
 		else if (regoptStringDec == RegKeys[ulReg].ulRegOptType)
 		{
-			InitPane(ulReg, CreateSingleLinePane(RegKeys[ulReg].uiOptionsPrompt, false));
+			InitPane(ulReg, TextPane::CreateSingleLinePane(RegKeys[ulReg].uiOptionsPrompt, false));
 			SetDecimal(ulReg, RegKeys[ulReg].ulCurDWORD);
 		}
 	}

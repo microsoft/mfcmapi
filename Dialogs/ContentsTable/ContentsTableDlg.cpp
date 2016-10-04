@@ -491,10 +491,10 @@ void CContentsTableDlg::OnCreatePropertyStringRestriction()
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.SetPromptPostFix(AllFlagsToString(flagFuzzyLevel, true));
 
-		MyData.InitPane(0, CreateSingleLinePane(IDS_PROPVALUE, false));
-		MyData.InitPane(1, CreateSingleLinePane(IDS_ULFUZZYLEVEL, false));
+		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_PROPVALUE, false));
+		MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_ULFUZZYLEVEL, false));
 		MyData.SetHex(1, FL_IGNORECASE | FL_PREFIX);
-		MyData.InitPane(2, CreateCheckPane(IDS_APPLYUSINGFINDROW, false, false));
+		MyData.InitPane(2, CheckPane::Create(IDS_APPLYUSINGFINDROW, false, false));
 
 		WC_H(MyData.DisplayDialog());
 		if (S_OK != hRes) return;
@@ -551,8 +551,8 @@ void CContentsTableDlg::OnCreateRangeRestriction()
 			2,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		MyData.InitPane(0, CreateSingleLinePane(IDS_SUBSTRING, false));
-		MyData.InitPane(1, CreateCheckPane(IDS_APPLYUSINGFINDROW, false, false));
+		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_SUBSTRING, false));
+		MyData.InitPane(1, CheckPane::Create(IDS_APPLYUSINGFINDROW, false, false));
 
 		WC_H(MyData.DisplayDialog());
 		if (S_OK != hRes) return;
@@ -643,12 +643,12 @@ void CContentsTableDlg::OnSortTable()
 		6,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-	MyData.InitPane(0, CreateSingleLinePane(IDS_CSORTS, false));
-	MyData.InitPane(1, CreateSingleLinePane(IDS_CCATS, false));
-	MyData.InitPane(2, CreateSingleLinePane(IDS_CEXPANDED, false));
-	MyData.InitPane(3, CreateCheckPane(IDS_TBLASYNC, false, false));
-	MyData.InitPane(4, CreateCheckPane(IDS_TBLBATCH, false, false));
-	MyData.InitPane(5, CreateCheckPane(IDS_REFRESHAFTERSORT, true, false));
+	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_CSORTS, false));
+	MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_CCATS, false));
+	MyData.InitPane(2, TextPane::CreateSingleLinePane(IDS_CEXPANDED, false));
+	MyData.InitPane(3, CheckPane::Create(IDS_TBLASYNC, false, false));
+	MyData.InitPane(4, CheckPane::Create(IDS_TBLBATCH, false, false));
+	MyData.InitPane(5, CheckPane::Create(IDS_REFRESHAFTERSORT, true, false));
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK != hRes) return;
@@ -701,7 +701,7 @@ void CContentsTableDlg::OnSortTable()
 				IDS_DDTABLESORTCATEGMAX,
 				IDS_DDTABLESORTCATEGMIN
 				};
-				MySortOrderDlg.InitPane(0, CreateDropDownPane(IDS_SORTORDER, _countof(uidDropDown), uidDropDown, true));
+				MySortOrderDlg.InitPane(0, DropDownPane::Create(IDS_SORTORDER, _countof(uidDropDown), uidDropDown, true));
 
 				WC_H(MySortOrderDlg.DisplayDialog());
 				if (S_OK == hRes)

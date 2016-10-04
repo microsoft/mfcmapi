@@ -216,14 +216,14 @@ void CContentsTableListCtrl::GetStatus()
 			IDS_GETSTATUSPROMPT,
 			4,
 			CEDITOR_BUTTON_OK);
-		MyData.InitPane(0, CreateSingleLinePane(IDS_ULTABLESTATUS, true));
+		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_ULTABLESTATUS, true));
 		MyData.SetHex(0, ulTableStatus);
 		auto szFlags = InterpretFlags(flagTableStatus, ulTableStatus);
-		MyData.InitPane(1, CreateMultiLinePane(IDS_ULTABLESTATUS, szFlags, true));
-		MyData.InitPane(2, CreateSingleLinePane(IDS_ULTABLETYPE, true));
+		MyData.InitPane(1, TextPane::CreateMultiLinePane(IDS_ULTABLESTATUS, szFlags, true));
+		MyData.InitPane(2, TextPane::CreateSingleLinePane(IDS_ULTABLETYPE, true));
 		MyData.SetHex(2, ulTableType);
 		szFlags = InterpretFlags(flagTableType, ulTableType);
-		MyData.InitPane(3, CreateMultiLinePane(IDS_ULTABLETYPE, szFlags, true));
+		MyData.InitPane(3, TextPane::CreateMultiLinePane(IDS_ULTABLETYPE, szFlags, true));
 
 		WC_H(MyData.DisplayDialog());
 	}

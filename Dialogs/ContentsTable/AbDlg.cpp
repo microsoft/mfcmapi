@@ -295,7 +295,7 @@ _Check_return_ bool CAbDlg::HandlePaste()
 			1,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-		MyData.InitPane(0, CreateSingleLinePane(IDS_FLAGS, false));
+		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 		MyData.SetHex(0, CREATE_CHECK_DUP_STRICT);
 
 		WC_H(MyData.DisplayDialog());
@@ -333,7 +333,7 @@ void CAbDlg::OnCreatePropertyStringRestriction()
 		1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-	MyData.InitPane(0, CreateSingleLinePane(IDS_NAME, false));
+	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_NAME, false));
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK != hRes) return;

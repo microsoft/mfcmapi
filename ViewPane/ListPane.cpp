@@ -3,7 +3,7 @@
 #include <Dialogs/Editors/Editor.h>
 #include "UIFunctions.h"
 
-ViewPane* CreateListPane(UINT uidLabel, bool bAllowSort, bool bReadOnly, LPVOID lpEdit)
+ViewPane* ListPane::ListPane::Create(UINT uidLabel, bool bAllowSort, bool bReadOnly, LPVOID lpEdit)
 {
 	auto pane = new ListPane( bAllowSort, static_cast<CEditor*>(lpEdit));
 	pane->SetLabel(uidLabel, bReadOnly);

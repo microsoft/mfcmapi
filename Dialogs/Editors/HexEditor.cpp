@@ -27,11 +27,11 @@ CHexEditor::CHexEditor(_In_ CParentWnd* pParentWnd, _In_ CMapiObjects* lpMapiObj
 	if (m_lpMapiObjects) m_lpMapiObjects->AddRef();
 
 	CreateControls(5);
-	InitPane(HEXED_ANSI, CreateCollapsibleTextPane(IDS_ANSISTRING, false));
-	InitPane(HEXED_UNICODE, CreateCollapsibleTextPane(IDS_UNISTRING, false));
-	InitPane(HEXED_BASE64, CreateCountedTextPane(IDS_BASE64STRING, false, IDS_CCH));
-	InitPane(HEXED_HEX, CreateCountedTextPane(IDS_HEX, false, IDS_CB));
-	InitPane(HEXED_SMARTVIEW, CreateSmartViewPane(IDS_SMARTVIEW));
+	InitPane(HEXED_ANSI, CollapsibleTextPane::Create(IDS_ANSISTRING, false));
+	InitPane(HEXED_UNICODE, CollapsibleTextPane::Create(IDS_UNISTRING, false));
+	InitPane(HEXED_BASE64, CountedTextPane::Create(IDS_BASE64STRING, false, IDS_CCH));
+	InitPane(HEXED_HEX, CountedTextPane::Create(IDS_HEX, false, IDS_CB));
+	InitPane(HEXED_SMARTVIEW, SmartViewPane::Create(IDS_SMARTVIEW));
 	DisplayParentedDialog(pParentWnd, 1000);
 }
 

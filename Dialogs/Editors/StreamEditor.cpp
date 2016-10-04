@@ -148,17 +148,17 @@ CStreamEditor::CStreamEditor(
 	// Let's crack our property open and see what kind of controls we'll need for it
 	// One control for text stream, one for binary
 	CreateControls(iNumBoxes);
-	InitPane(m_iTextBox, CreateCollapsibleTextPane(IDS_STREAMTEXT, false));
+	InitPane(m_iTextBox, CollapsibleTextPane::Create(IDS_STREAMTEXT, false));
 	if (bUseWrapEx)
 	{
-		InitPane(m_iFlagBox, CreateSingleLinePane(IDS_STREAMFLAGS, true));
-		InitPane(m_iCodePageBox, CreateSingleLinePane(IDS_CODEPAGE, true));
+		InitPane(m_iFlagBox, TextPane::CreateSingleLinePane(IDS_STREAMFLAGS, true));
+		InitPane(m_iCodePageBox, TextPane::CreateSingleLinePane(IDS_CODEPAGE, true));
 	}
 
-	InitPane(m_iBinBox, CreateCountedTextPane(IDS_STREAMBIN, false, IDS_CB));
+	InitPane(m_iBinBox, CountedTextPane::Create(IDS_STREAMBIN, false, IDS_CB));
 	if (m_bDoSmartView)
 	{
-		InitPane(m_iSmartViewBox, CreateSmartViewPane(IDS_SMARTVIEW));
+		InitPane(m_iSmartViewBox, SmartViewPane::Create(IDS_SMARTVIEW));
 	}
 }
 

@@ -3,11 +3,14 @@
 
 #include "ViewPane.h"
 
-ViewPane* CreateCheckPane(UINT uidLabel, bool bVal, bool bReadOnly);
-
 class CheckPane : public ViewPane
 {
 public:
+	static ViewPane* Create(UINT uidLabel, bool bVal, bool bReadOnly);
+	bool GetCheck() const;
+	bool GetCheckUseControl() const;
+
+private:
 	CheckPane(bool bCheck);
 
 	bool IsType(__ViewTypes vType) override;
@@ -19,11 +22,6 @@ public:
 	int GetFixedHeight() override;
 	int GetLines() override;
 
-	bool GetCheck() const;
-	bool GetCheckUseControl() const;
-
-private:
 	CButton m_Check;
-
 	bool m_bCheckValue;
 };

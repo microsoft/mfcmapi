@@ -6,21 +6,21 @@
 
 static wstring CLASS = L"DropDownPane";
 
-ViewPane* CreateDropDownPane(UINT uidLabel, ULONG ulDropList, _In_opt_count_(ulDropList) UINT* lpuidDropList, bool bReadOnly)
+ViewPane* DropDownPane::Create(UINT uidLabel, ULONG ulDropList, _In_opt_count_(ulDropList) UINT* lpuidDropList, bool bReadOnly)
 {
 	auto pane = new DropDownPane(ulDropList, lpuidDropList, nullptr, false);
 	pane->SetLabel(uidLabel, bReadOnly);
 	return pane;
 }
 
-ViewPane* CreateDropDownArrayPane(UINT uidLabel, ULONG ulDropList, _In_opt_count_(ulDropList) LPNAME_ARRAY_ENTRY lpnaeDropList, bool bReadOnly)
+ViewPane* DropDownPane::CreateArray(UINT uidLabel, ULONG ulDropList, _In_opt_count_(ulDropList) LPNAME_ARRAY_ENTRY lpnaeDropList, bool bReadOnly)
 {
 	auto pane = new DropDownPane(ulDropList, nullptr, lpnaeDropList, false);
 	pane->SetLabel(uidLabel, bReadOnly);
 	return pane;
 }
 
-ViewPane* CreateDropDownGuidPane(UINT uidLabel, bool bReadOnly)
+ViewPane* DropDownPane::CreateGuid(UINT uidLabel, bool bReadOnly)
 {
 	auto pane = new DropDownPane(0, nullptr, nullptr, true);
 	pane->SetLabel(uidLabel, bReadOnly);

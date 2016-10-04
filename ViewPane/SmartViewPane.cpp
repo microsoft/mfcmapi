@@ -5,7 +5,7 @@
 
 static wstring CLASS = L"SmartViewPane";
 
-ViewPane* CreateSmartViewPane(UINT uidLabel)
+ViewPane* SmartViewPane::SmartViewPane::Create(UINT uidLabel)
 {
 	auto pane = new SmartViewPane();
 	pane->SetLabel(uidLabel, true);
@@ -14,7 +14,7 @@ ViewPane* CreateSmartViewPane(UINT uidLabel)
 
 SmartViewPane::SmartViewPane() :DropDownPane(ulSmartViewParserTypeArray, nullptr, SmartViewParserTypeArray, false)
 {
-	m_lpTextPane = static_cast<TextPane*>(CreateMultiLinePane(NULL, true));
+	m_lpTextPane = static_cast<TextPane*>(TextPane::CreateMultiLinePane(NULL, true));
 	m_bHasData = false;
 	m_bDoDropDown = true;
 	m_bReadOnly = true;

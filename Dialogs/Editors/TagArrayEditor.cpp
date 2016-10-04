@@ -29,7 +29,7 @@ CTagArrayEditor::CTagArrayEditor(
 	if (m_lpMAPIProp) m_lpMAPIProp->AddRef();
 
 	CreateControls(1);
-	InitPane(0, CreateListPane(IDS_PROPTAGARRAY, false, false, this));
+	InitPane(0, ListPane::Create(IDS_PROPTAGARRAY, false, false, this));
 }
 
 CTagArrayEditor::~CTagArrayEditor()
@@ -226,7 +226,7 @@ void CTagArrayEditor::OnEditAction1()
 		IDS_QUERYCOLUMNSPROMPT,
 		1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyData.InitPane(0, CreateSingleLinePane(IDS_QUERYCOLUMNFLAGS, false));
+	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_QUERYCOLUMNFLAGS, false));
 	MyData.SetHex(0, ulQueryColumnFlags);
 
 	WC_H(MyData.DisplayDialog());
@@ -262,7 +262,7 @@ void CTagArrayEditor::OnEditAction2()
 		IDS_SETCOLUMNSPROMPT,
 		1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-	MyData.InitPane(0, CreateSingleLinePane(IDS_SETCOLUMNFLAGS, false));
+	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_SETCOLUMNFLAGS, false));
 	MyData.SetHex(0, m_ulSetColumnsFlags);
 
 	WC_H(MyData.DisplayDialog());

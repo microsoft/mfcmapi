@@ -102,7 +102,7 @@ void SingleMessageDialog::OnRTFSync()
 		1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-	MyData.InitPane(0, CreateSingleLinePane(IDS_FLAGS, false));
+	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 	MyData.SetHex(0, RTF_SYNC_RTF_CHANGED);
 
 	WC_H(MyData.DisplayDialog());

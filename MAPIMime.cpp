@@ -234,18 +234,18 @@ _Check_return_ HRESULT GetConversionToEMLOptions(_In_ CWnd* pParentWnd,
 		8,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 
-	MyData.InitPane(0, CreateSingleLinePane(IDS_CONVERTFLAGS, false));
+	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_CONVERTFLAGS, false));
 	MyData.SetHex(0,CCSF_SMTP);
-	MyData.InitPane(1, CreateCheckPane(IDS_CONVERTDOENCODINGTYPE, false, false));
-	MyData.InitPane(2, CreateSingleLinePane(IDS_CONVERTENCODINGTYPE, false));
+	MyData.InitPane(1, CheckPane::Create(IDS_CONVERTDOENCODINGTYPE, false, false));
+	MyData.InitPane(2, TextPane::CreateSingleLinePane(IDS_CONVERTENCODINGTYPE, false));
 	MyData.SetHex(2,IET_7BIT);
-	MyData.InitPane(3, CreateCheckPane(IDS_CONVERTDOMIMESAVETYPE, false, false));
-	MyData.InitPane(4, CreateSingleLinePane(IDS_CONVERTMIMESAVETYPE, false));
+	MyData.InitPane(3, CheckPane::Create(IDS_CONVERTDOMIMESAVETYPE, false, false));
+	MyData.InitPane(4, TextPane::CreateSingleLinePane(IDS_CONVERTMIMESAVETYPE, false));
 	MyData.SetHex(4,SAVE_RFC822);
-	MyData.InitPane(5, CreateCheckPane(IDS_CONVERTDOWRAPLINES, false, false));
-	MyData.InitPane(6, CreateSingleLinePane(IDS_CONVERTWRAPLINECOUNT, false));
+	MyData.InitPane(5, CheckPane::Create(IDS_CONVERTDOWRAPLINES, false, false));
+	MyData.InitPane(6, TextPane::CreateSingleLinePane(IDS_CONVERTWRAPLINECOUNT, false));
 	MyData.SetDecimal(6,74);
-	MyData.InitPane(7, CreateCheckPane(IDS_CONVERTDOADRBOOK, false, false));
+	MyData.InitPane(7, CheckPane::Create(IDS_CONVERTDOADRBOOK, false, false));
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
@@ -277,19 +277,19 @@ _Check_return_ HRESULT GetConversionFromEMLOptions(_In_ CWnd* pParentWnd,
 		pbUnicode?7:6,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 
-	MyData.InitPane(0, CreateSingleLinePane(IDS_CONVERTFLAGS, false));
+	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_CONVERTFLAGS, false));
 	MyData.SetHex(0,CCSF_SMTP);
-	MyData.InitPane(1, CreateCheckPane(IDS_CONVERTCODEPAGE, false, false));
-	MyData.InitPane(2, CreateSingleLinePane(IDS_CONVERTCODEPAGE, false));
+	MyData.InitPane(1, CheckPane::Create(IDS_CONVERTCODEPAGE, false, false));
+	MyData.InitPane(2, TextPane::CreateSingleLinePane(IDS_CONVERTCODEPAGE, false));
 	MyData.SetDecimal(2,CP_USASCII);
-	MyData.InitPane(3, CreateSingleLinePane(IDS_CONVERTCHARSETTYPE, false));
+	MyData.InitPane(3, TextPane::CreateSingleLinePane(IDS_CONVERTCHARSETTYPE, false));
 	MyData.SetDecimal(3,CHARSET_BODY);
-	MyData.InitPane(4, CreateSingleLinePane(IDS_CONVERTCHARSETAPPLYTYPE, false));
+	MyData.InitPane(4, TextPane::CreateSingleLinePane(IDS_CONVERTCHARSETAPPLYTYPE, false));
 	MyData.SetDecimal(4,CSET_APPLY_UNTAGGED);
-	MyData.InitPane(5, CreateCheckPane(IDS_CONVERTDOADRBOOK, false, false));
+	MyData.InitPane(5, CheckPane::Create(IDS_CONVERTDOADRBOOK, false, false));
 	if (pbUnicode)
 	{
-		MyData.InitPane(6, CreateCheckPane(IDS_SAVEUNICODE, false, false));
+		MyData.InitPane(6, CheckPane::Create(IDS_SAVEUNICODE, false, false));
 	}
 
 	WC_H(MyData.DisplayDialog());
