@@ -5,17 +5,17 @@
 
 static wstring CLASS = L"TextPane";
 
-ViewPane* TextPane::CreateMultiLinePane(UINT uidLabel, bool bReadOnly)
+TextPane* TextPane::CreateMultiLinePane(UINT uidLabel, bool bReadOnly)
 {
 	return CreateSingleLinePane(uidLabel, bReadOnly, true);
 }
 
-ViewPane* TextPane::CreateMultiLinePane(UINT uidLabel, _In_ wstring szVal, bool bReadOnly)
+TextPane* TextPane::CreateMultiLinePane(UINT uidLabel, _In_ wstring szVal, bool bReadOnly)
 {
 	return CreateSingleLinePane(uidLabel, szVal, bReadOnly, true);
 }
 
-ViewPane* TextPane::CreateSingleLinePane(UINT uidLabel, bool bReadOnly, bool bMultiLine)
+TextPane* TextPane::CreateSingleLinePane(UINT uidLabel, bool bReadOnly, bool bMultiLine)
 {
 	auto lpPane = new TextPane();
 	if (lpPane)
@@ -27,7 +27,7 @@ ViewPane* TextPane::CreateSingleLinePane(UINT uidLabel, bool bReadOnly, bool bMu
 	return lpPane;
 }
 
-ViewPane* TextPane::CreateSingleLinePane(UINT uidLabel, _In_ wstring szVal, bool bReadOnly, bool bMultiLine)
+TextPane* TextPane::CreateSingleLinePane(UINT uidLabel, _In_ wstring szVal, bool bReadOnly, bool bMultiLine)
 {
 	auto lpPane = new TextPane();
 	if (lpPane)
@@ -40,7 +40,7 @@ ViewPane* TextPane::CreateSingleLinePane(UINT uidLabel, _In_ wstring szVal, bool
 	return lpPane;
 }
 
-ViewPane* TextPane::CreateSingleLinePaneID(UINT uidLabel, UINT uidVal, bool bReadOnly)
+TextPane* TextPane::CreateSingleLinePaneID(UINT uidLabel, UINT uidVal, bool bReadOnly)
 {
 	auto lpPane = new TextPane();
 

@@ -4,10 +4,10 @@
 #include "ViewPane.h"
 #include "TextPane.h"
 
-class CollapsibleTextPane : private TextPane
+class CollapsibleTextPane : public TextPane
 {
 public:
-	static ViewPane* Create(UINT uidLabel, bool bReadOnly);
+	static CollapsibleTextPane* Create(UINT uidLabel, bool bReadOnly);
 
 private:
 	bool IsType(__ViewTypes vType) override;

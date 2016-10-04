@@ -6,9 +6,9 @@
 class DropDownPane : public ViewPane
 {
 public:
-	static ViewPane* Create(UINT uidLabel, ULONG ulDropList, _In_opt_count_(ulDropList) UINT* lpuidDropList, bool bReadOnly);
-	static ViewPane* CreateArray(UINT uidLabel, ULONG ulDropList, _In_opt_count_(ulDropList) LPNAME_ARRAY_ENTRY lpnaeDropList, bool bReadOnly);
-	static ViewPane* CreateGuid(UINT uidLabel, bool bReadOnly);
+	static DropDownPane* Create(UINT uidLabel, ULONG ulDropList, _In_opt_count_(ulDropList) UINT* lpuidDropList, bool bReadOnly);
+	static DropDownPane* CreateArray(UINT uidLabel, ULONG ulDropList, _In_opt_count_(ulDropList) LPNAME_ARRAY_ENTRY lpnaeDropList, bool bReadOnly);
+	static DropDownPane* CreateGuid(UINT uidLabel, bool bReadOnly);
 
 	void Setup(ULONG ulDropList, _In_opt_count_(ulDropList) UINT* lpuidDropList, _In_opt_count_(ulDropList) LPNAME_ARRAY_ENTRY lpnaeDropList, bool bGUID);
 

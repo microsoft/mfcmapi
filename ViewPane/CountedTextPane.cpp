@@ -4,7 +4,7 @@
 
 static wstring CLASS = L"CountedTextPane";
 
-ViewPane* CountedTextPane::CountedTextPane::Create(UINT uidLabel, bool bReadOnly, UINT uidCountLabel)
+CountedTextPane* CountedTextPane::CountedTextPane::Create(UINT uidLabel, bool bReadOnly, UINT uidCountLabel)
 {
 	auto lpPane = new CountedTextPane();
 	if (lpPane)

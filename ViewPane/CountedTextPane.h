@@ -7,7 +7,7 @@
 class CountedTextPane : public TextPane
 {
 public:
-	static ViewPane* CountedTextPane::Create(UINT uidLabel, bool bReadOnly, UINT uidCountLabel);
+	static CountedTextPane* CountedTextPane::Create(UINT uidLabel, bool bReadOnly, UINT uidCountLabel);
 	void SetCount(size_t iCount);
 
 private:

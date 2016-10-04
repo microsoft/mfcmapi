@@ -3,7 +3,9 @@
 #include <Dialogs/Editors/Editor.h>
 #include "UIFunctions.h"
 
-ViewPane* ListPane::ListPane::Create(UINT uidLabel, bool bAllowSort, bool bReadOnly, LPVOID lpEdit)
+static wstring CLASS = L"ListPane";
+
+ListPane* ListPane::ListPane::Create(UINT uidLabel, bool bAllowSort, bool bReadOnly, LPVOID lpEdit)
 {
 	auto pane = new ListPane();
 	if (pane)
@@ -14,8 +16,6 @@ ViewPane* ListPane::ListPane::Create(UINT uidLabel, bool bAllowSort, bool bReadO
 
 	return pane;
 }
-
-static wstring CLASS = L"ListPane";
 
 __ListButtons ListButtons[NUMLISTBUTTONS] = {
  { IDD_LISTMOVEDOWN },

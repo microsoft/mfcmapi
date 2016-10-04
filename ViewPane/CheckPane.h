@@ -6,7 +6,7 @@
 class CheckPane : public ViewPane
 {
 public:
-	static ViewPane* Create(UINT uidLabel, bool bVal, bool bReadOnly);
+	static CheckPane* Create(UINT uidLabel, bool bVal, bool bReadOnly);
 	bool GetCheck() const;
 	bool GetCheckUseControl() const;
 

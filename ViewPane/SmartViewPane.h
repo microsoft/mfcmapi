@@ -7,7 +7,7 @@
 class SmartViewPane : public DropDownPane
 {
 public:
-	static ViewPane* Create(UINT uidLabel);
+	static SmartViewPane* Create(UINT uidLabel);
 
 	void SetStringW(wstring szMsg);
 	void DisableDropDown();
