@@ -36,9 +36,10 @@ public:
 	_Check_return_ wstring GetStringUseControl() const;
 
 protected:
-	TextPane(bool bMultiLine);
+	TextPane();
 	bool IsType(__ViewTypes vType) override;
 	CRichEditCtrl m_EditBox;
+	bool m_bMultiline;
 
 private:
 	void CommitUIValues() override;
@@ -46,5 +47,4 @@ private:
 	void SetEditBoxText();
 
 	wstring m_lpszW;
-	bool m_bMultiline;
 };
