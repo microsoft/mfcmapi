@@ -6,13 +6,12 @@ static wstring CLASS = L"CollapsibleTextPane";
 ViewPane* CollapsibleTextPane::CollapsibleTextPane::Create(UINT uidLabel, bool bReadOnly)
 {
 	auto pane = new CollapsibleTextPane();
-	pane->SetLabel(uidLabel, bReadOnly);
-	return pane;
-}
+	if (pane)
+	{
+		pane->SetLabel(uidLabel, bReadOnly);
+	}
 
-CollapsibleTextPane::CollapsibleTextPane() :TextPane()
-{
-	m_bMultiline = true;
+	return pane;
 }
 
 bool CollapsibleTextPane::IsType(__ViewTypes vType)
@@ -23,6 +22,13 @@ bool CollapsibleTextPane::IsType(__ViewTypes vType)
 ULONG CollapsibleTextPane::GetFlags()
 {
 	return TextPane::GetFlags() | vpCollapsible;
+}
+
+void CollapsibleTextPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
+{
+	m_bMultiline = true;
+
+	TextPane::Initialize(iControl, pParent, hdc);
 }
 
 int CollapsibleTextPane::GetFixedHeight()

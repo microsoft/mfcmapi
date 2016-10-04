@@ -6,23 +6,14 @@ static wstring CLASS = L"CountedTextPane";
 
 ViewPane* CountedTextPane::CountedTextPane::Create(UINT uidLabel, bool bReadOnly, UINT uidCountLabel)
 {
-	auto lpPane = new CountedTextPane(uidCountLabel);
-	lpPane->SetLabel(uidLabel, bReadOnly);
-	return lpPane;
-}
-
-CountedTextPane::CountedTextPane(UINT uidCountLabel) :TextPane()
-{
-	m_bMultiline = true;
-	m_iCountLabelWidth = 0;
-
-	m_uidCountLabel = uidCountLabel;
-	m_iCount = 0;
-
-	if (m_uidCountLabel)
+	auto lpPane = new CountedTextPane();
+	if (lpPane)
 	{
-		m_szCountLabel = loadstring(m_uidCountLabel);
+		lpPane->m_uidCountLabel = uidCountLabel;
+		lpPane->SetLabel(uidLabel, bReadOnly);
 	}
+
+	return lpPane;
 }
 
 bool CountedTextPane::IsType(__ViewTypes vType)
@@ -34,6 +25,36 @@ ULONG CountedTextPane::GetFlags()
 {
 	return TextPane::GetFlags() | vpCollapsible;
 }
+
+void CountedTextPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
+{
+	auto hRes = S_OK;
+
+	m_bMultiline = true;
+	m_iCountLabelWidth = 0;
+
+	m_iCount = 0;
+
+	if (m_uidCountLabel)
+	{
+		m_szCountLabel = loadstring(m_uidCountLabel);
+	}
+
+	EC_B(m_Count.Create(
+		WS_CHILD
+		| WS_CLIPSIBLINGS
+		| ES_READONLY
+		| WS_VISIBLE,
+		CRect(0, 0, 0, 0),
+		pParent,
+		IDD_COUNTLABEL));
+	SetWindowTextW(m_Count.m_hWnd, m_szCountLabel.c_str());
+	SubclassLabel(m_Count.m_hWnd);
+	StyleLabel(m_Count.m_hWnd, lsPaneHeader);
+
+	TextPane::Initialize(iControl, pParent, hdc);
+}
+
 
 int CountedTextPane::GetMinWidth(_In_ HDC hdc)
 {
@@ -107,7 +128,6 @@ void CountedTextPane::SetWindowPos(int x, int y, int width, int height)
 			SWP_NOZORDER));
 
 		y += m_iLabelHeight + m_iSmallHeightMargin;
-		// height -= m_iLabelHeight + m_iSmallHeightMargin;
 
 		EC_B(m_EditBox.SetWindowPos(NULL, x, y, width, iVariableHeight, SWP_NOZORDER));
 	}
@@ -116,26 +136,6 @@ void CountedTextPane::SetWindowPos(int x, int y, int width, int height)
 		EC_B(m_Count.ShowWindow(SW_HIDE));
 		EC_B(m_EditBox.ShowWindow(SW_HIDE));
 	}
-	// height -= m_iSmallHeightMargin; // This is the bottom margin
-}
-
-void CountedTextPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
-{
-	auto hRes = S_OK;
-
-	EC_B(m_Count.Create(
-		WS_CHILD
-		| WS_CLIPSIBLINGS
-		| ES_READONLY
-		| WS_VISIBLE,
-		CRect(0, 0, 0, 0),
-		pParent,
-		IDD_COUNTLABEL));
-	SetWindowTextW(m_Count.m_hWnd, m_szCountLabel.c_str());
-	SubclassLabel(m_Count.m_hWnd);
-	StyleLabel(m_Count.m_hWnd, lsPaneHeader);
-
-	TextPane::Initialize(iControl, pParent, hdc);
 }
 
 void CountedTextPane::SetCount(size_t iCount)
