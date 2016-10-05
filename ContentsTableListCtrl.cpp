@@ -874,7 +874,7 @@ void CContentsTableListCtrl::SetRowStrings(int iRow, _In_ LPSRow lpsRowData)
 				if (!szFlags.empty())
 				{
 					PropString += L" ("; // STRING_OK
-					PropString += szFlags.c_str();
+					PropString += szFlags;
 					PropString += L")"; // STRING_OK
 				}
 

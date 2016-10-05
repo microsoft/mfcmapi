@@ -52,7 +52,7 @@ _Check_return_ wstring SmartViewParser::JunkDataToString(size_t cbJunkData, _In_
 	sBin.cb = static_cast<ULONG>(cbJunkData);
 	sBin.lpb = lpJunkData;
 	auto szJunk = formatmessage(IDS_JUNKDATASIZE, cbJunkData);
-	szJunk += BinToHexString(&sBin, true).c_str();
+	szJunk += BinToHexString(&sBin, true);
 	return szJunk;
 }
 
