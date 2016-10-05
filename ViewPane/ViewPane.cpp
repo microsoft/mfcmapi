@@ -25,9 +25,7 @@ ViewPane::ViewPane()
 	m_hWndParent = nullptr;
 }
 
-ViewPane::~ViewPane()
-{
-}
+ViewPane::~ViewPane() {}
 
 void ViewPane::SetWindowPos(int x, int y, int width, int /*height*/)
 {

@@ -300,8 +300,8 @@ _Check_return_ bool DropDownPane::GetSelectedGUID(bool bByteSwapped, _In_ LPGUID
 void DropDownPane::SetDropDownSelection(_In_ wstring szText)
 {
 	auto hRes = S_OK;
-	auto text = wstringTotstring(szText).c_str();
-	auto iSelect = m_DropDown.SelectString(0, text);
+	auto text = wstringTotstring(szText);
+	auto iSelect = m_DropDown.SelectString(0, text.c_str());
 
 	// if we can't select, try pushing the text in there
 	// not all dropdowns will support this!
@@ -311,7 +311,7 @@ void DropDownPane::SetDropDownSelection(_In_ wstring szText)
 			m_DropDown.m_hWnd,
 			WM_SETTEXT,
 			NULL,
-			reinterpret_cast<LPARAM>(static_cast<LPCTSTR>(text))));
+			reinterpret_cast<LPARAM>(static_cast<LPCTSTR>(text.c_str()))));
 	}
 }
 
