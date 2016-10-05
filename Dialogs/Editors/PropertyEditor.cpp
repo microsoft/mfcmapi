@@ -239,7 +239,7 @@ void CPropertyEditor::InitPropertyControls()
 		{
 			SetStringA(0, m_lpsInputValue->Value.lpszA);
 
-			lpPane = static_cast<CountedTextPane*>(GetControl(1));
+			lpPane = static_cast<CountedTextPane*>(GetPane(1));
 			if (lpPane)
 			{
 				auto hRes = S_OK;
@@ -251,7 +251,7 @@ void CPropertyEditor::InitPropertyControls()
 					cbStr);
 			}
 
-			lpPane = static_cast<CountedTextPane*>(GetControl(0));
+			lpPane = static_cast<CountedTextPane*>(GetPane(0));
 			if (lpPane) lpPane->SetCount(cbStr);
 		}
 
@@ -263,7 +263,7 @@ void CPropertyEditor::InitPropertyControls()
 		{
 			SetStringW(0, m_lpsInputValue->Value.lpszW);
 
-			lpPane = static_cast<CountedTextPane*>(GetControl(1));
+			lpPane = static_cast<CountedTextPane*>(GetPane(1));
 			if (lpPane)
 			{
 				auto hRes = S_OK;
@@ -275,7 +275,7 @@ void CPropertyEditor::InitPropertyControls()
 					cbStr);
 			}
 
-			lpPane = static_cast<CountedTextPane*>(GetControl(0));
+			lpPane = static_cast<CountedTextPane*>(GetPane(0));
 			if (lpPane) lpPane->SetCount(cbStr % sizeof(WCHAR) ? 0 : cbStr / sizeof(WCHAR));
 		}
 
@@ -371,7 +371,7 @@ void CPropertyEditor::InitPropertyControls()
 				SetStringA(1, string(LPCSTR(m_lpsInputValue->Value.bin.lpb), m_lpsInputValue->Value.bin.cb));
 			}
 
-			lpPane = static_cast<CountedTextPane*>(GetControl(1));
+			lpPane = static_cast<CountedTextPane*>(GetPane(1));
 			if (lpPane) lpPane->SetCount(m_lpsInputValue->Value.bin.cb);
 		}
 
@@ -786,10 +786,10 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 			SetBinary(0, Bin);
 		}
 
-		lpPane = static_cast<CountedTextPane*>(GetControl(0));
+		lpPane = static_cast<CountedTextPane*>(GetPane(0));
 		if (lpPane) lpPane->SetCount(Bin.cb);
 
-		lpPane = static_cast<CountedTextPane*>(GetControl(1));
+		lpPane = static_cast<CountedTextPane*>(GetPane(1));
 		if (lpPane) lpPane->SetCount(Bin.cb);
 
 		if (m_lpSmartView) m_lpSmartView->Parse(Bin);
@@ -800,7 +800,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 			size_t cbStr = 0;
 			lpszA = GetEditBoxTextA(0);
 
-			lpPane = static_cast<CountedTextPane*>(GetControl(1));
+			lpPane = static_cast<CountedTextPane*>(GetPane(1));
 			if (lpPane)
 			{
 				cbStr = lpszA.length() * sizeof(CHAR);
@@ -811,7 +811,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 				lpPane->SetCount(cbStr);
 			}
 
-			lpPane = static_cast<CountedTextPane*>(GetControl(0));
+			lpPane = static_cast<CountedTextPane*>(GetPane(0));
 			if (lpPane) lpPane->SetCount(cbStr);
 		}
 		else if (1 == i)
@@ -820,10 +820,10 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 
 			SetStringA(0, string(LPCSTR(bin.data()), bin.size()));
 
-			lpPane = static_cast<CountedTextPane*>(GetControl(0));
+			lpPane = static_cast<CountedTextPane*>(GetPane(0));
 			if (lpPane) lpPane->SetCount(bin.size());
 
-			lpPane = static_cast<CountedTextPane*>(GetControl(1));
+			lpPane = static_cast<CountedTextPane*>(GetPane(1));
 			if (lpPane) lpPane->SetCount(bin.size());
 		}
 
@@ -833,7 +833,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		{
 			lpszW = GetEditBoxTextW(0);
 
-			lpPane = static_cast<CountedTextPane*>(GetControl(1));
+			lpPane = static_cast<CountedTextPane*>(GetPane(1));
 			if (lpPane)
 			{
 				auto cbStr = lpszW.length() * sizeof(WCHAR);
@@ -844,12 +844,12 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 				lpPane->SetCount(cbStr);
 			}
 
-			lpPane = static_cast<CountedTextPane*>(GetControl(0));
+			lpPane = static_cast<CountedTextPane*>(GetPane(0));
 			if (lpPane) lpPane->SetCount(lpszW.length());
 		}
 		else if (1 == i)
 		{
-			lpPane = static_cast<CountedTextPane*>(GetControl(0));
+			lpPane = static_cast<CountedTextPane*>(GetPane(0));
 			bin = GetBinaryUseControl(1);
 			if (!(bin.size() % sizeof(WCHAR)))
 			{
@@ -862,7 +862,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 				if (lpPane) lpPane->SetCount(0);
 			}
 
-			lpPane = static_cast<CountedTextPane*>(GetControl(1));
+			lpPane = static_cast<CountedTextPane*>(GetPane(1));
 			if (lpPane) lpPane->SetCount(bin.size());
 		}
 
@@ -929,7 +929,7 @@ BOOL CMultiValuePropertyEditor::OnInitDialog()
 		true);
 	if (!szSmartView.empty())
 	{
-		auto lpPane = static_cast<SmartViewPane*>(GetControl(1));
+		auto lpPane = static_cast<SmartViewPane*>(GetPane(1));
 		if (lpPane)
 		{
 			lpPane->SetParser(iStructType);
@@ -1258,7 +1258,7 @@ void CMultiValuePropertyEditor::UpdateListRow(_In_ LPSPropValue lpProp, ULONG iM
 void CMultiValuePropertyEditor::UpdateSmartView() const
 {
 	auto hRes = S_OK;
-	auto lpPane = static_cast<SmartViewPane*>(GetControl(1));
+	auto lpPane = static_cast<SmartViewPane*>(GetPane(1));
 	if (lpPane)
 	{
 		LPSPropValue lpsProp = nullptr;
@@ -1300,7 +1300,7 @@ _Check_return_ ULONG CMultiValuePropertyEditor::HandleChange(UINT nID)
 
 	// We check against the list pane first so we can track if it handled the change,
 	// because if it did, we're going to recalculate smart view.
-	auto lpPane = static_cast<ListPane*>(GetControl(0));
+	auto lpPane = static_cast<ListPane*>(GetPane(0));
 	if (lpPane)
 	{
 		i = lpPane->HandleChange(nID);

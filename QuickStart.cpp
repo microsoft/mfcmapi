@@ -285,7 +285,7 @@ void OnQSDisplayNicknameCache(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 
 			if (lpsProp)
 			{
-				auto lpPane = static_cast<CountedTextPane*>(MyResults.GetControl(1));
+				auto lpPane = static_cast<CountedTextPane*>(MyResults.GetPane(1));
 				if (lpPane) lpPane->SetCount(lpsProp->Value.bin.cb);
 				MyResults.SetBinary(1, lpsProp->Value.bin);
 			}
@@ -496,7 +496,7 @@ void OnQSLookupThumbail(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 		MyResults.InitPane(0, CountedTextPane::Create(IDS_HEX, true, IDS_CB));
 		MyResults.InitPane(1, CollapsibleTextPane::Create(IDS_ANSISTRING, true));
 
-		auto lpPane = static_cast<CountedTextPane*>(MyResults.GetControl(0));
+		auto lpPane = static_cast<CountedTextPane*>(MyResults.GetPane(0));
 		if (lpPane) lpPane->SetCount(lpThumbnail->Value.bin.cb);
 		MyResults.SetBinary(0, lpThumbnail->Value.bin);
 

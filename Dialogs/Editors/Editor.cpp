@@ -154,7 +154,7 @@ LRESULT CEditor::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		case NM_RETURN:
 			if (IsValidList(m_ulListNum))
 			{
-				(void)m_lpControls[m_ulListNum]->HandleChange(IDD_LISTEDIT);
+				(void)GetPane(m_ulListNum)->HandleChange(IDD_LISTEDIT);
 			}
 			return NULL;
 		}
@@ -277,7 +277,8 @@ void CEditor::SetAddInTitle(wstring szTitle)
 void CEditor::SetAddInLabel(ULONG i, wstring szLabel) const
 {
 	if (INVALIDRANGE(i)) return;
-	if (m_lpControls[i]) m_lpControls[i]->SetAddInLabel(szLabel);
+	auto pane = GetPane(i);
+	if (pane) pane->SetAddInLabel(szLabel);
 }
 
 LRESULT CALLBACK DrawScrollProc(
@@ -377,9 +378,10 @@ BOOL CEditor::OnInitDialog()
 	SetMargins(); // Not all margins have been computed yet, but some have and we can use them during Initialize
 	for (ULONG i = 0; i < m_lpControls.size(); i++)
 	{
-		if (m_lpControls[i])
+		auto pane = GetPane(i);
+		if (pane)
 		{
-			m_lpControls[i]->Initialize(i, pParent, hdc);
+			pane->Initialize(i, pParent, hdc);
 		}
 	}
 
@@ -506,7 +508,7 @@ _Check_return_ bool CEditor::GetSelectedGUID(ULONG iControl, bool bByteSwapped, 
 {
 	if (!lpSelectedGUID) return false;
 	if (!IsValidDropDown(iControl)) return false;
-	auto pane = dynamic_cast<DropDownPane*>(m_lpControls[iControl]);
+	auto pane = dynamic_cast<DropDownPane*>(GetPane(iControl));
 	if (pane)
 	{
 		return pane->GetSelectedGUID(bByteSwapped, lpSelectedGUID);
@@ -959,17 +961,15 @@ void CEditor::DeleteControls()
 // TODO: Use iNum as a proper accessor name
 void CEditor::InitPane(ULONG iNum, ViewPane* lpPane)
 {
-	//	if (INVALIDRANGE(iNum)) return;
 	if (lpPane && lpPane->IsType(CTRL_LISTPANE)) m_ulListNum = iNum;
 	m_lpControls.push_back(lpPane);
 }
 
-// TODO: Use iNum as a proper accessor name
-// TODO: Replace ALL m_lpControls[iControl] with this function
-ViewPane* CEditor::GetControl(ULONG iControl) const
+// TODO: Use iPane as a proper accessor name
+ViewPane* CEditor::GetPane(ULONG iPane) const
 {
-	if (INVALIDRANGE(iControl)) return nullptr;
-	return m_lpControls[iControl];
+	if (iPane >= m_lpControls.size()) return nullptr;
+	return m_lpControls[iPane];
 }
 
 void CEditor::SetPromptPostFix(_In_ wstring szMsg)
@@ -978,22 +978,22 @@ void CEditor::SetPromptPostFix(_In_ wstring szMsg)
 	m_bHasPrompt = true;
 }
 
-// Sets m_lpControls[i].lpTextPane->m_lpszW using SetStringW
+// Sets string
 void CEditor::SetStringA(ULONG i, string szMsg) const
 {
 	if (!IsValidEdit(i)) return;
-	auto pane = dynamic_cast<TextPane*>(m_lpControls[i]);
+	auto pane = dynamic_cast<TextPane*>(GetPane(i));
 	if (pane)
 	{
 		pane->SetStringA(szMsg);
 	}
 }
 
-// Sets m_lpControls[i].lpTextPane->m_lpszW
+// Sets string
 void CEditor::SetStringW(ULONG i, wstring szMsg) const
 {
 	if (!IsValidEdit(i)) return;
-	auto pane = dynamic_cast<TextPane*>(m_lpControls[i]);
+	auto pane = dynamic_cast<TextPane*>(GetPane(i));
 	if (pane)
 	{
 		pane->SetStringW(szMsg);
@@ -1004,7 +1004,7 @@ void CEditor::SetStringW(ULONG i, wstring szMsg) const
 #undef SetStringf
 #endif
 
-// Updates m_lpControls[i].lpTextPane->m_lpszW using SetStringW
+// Updates pane using SetStringW
 void CEditor::SetStringf(ULONG i, LPCWSTR szMsg, ...) const
 {
 	if (!IsValidEdit(i)) return;
@@ -1022,7 +1022,7 @@ void CEditor::SetStringf(ULONG i, LPCWSTR szMsg, ...) const
 	}
 }
 
-// Updates m_lpControls[i].lpTextPane->m_lpszW using SetStringW
+// Updates pane using SetStringW
 void CEditor::LoadString(ULONG i, UINT uidMsg) const
 {
 	if (!IsValidEdit(i)) return;
@@ -1037,11 +1037,11 @@ void CEditor::LoadString(ULONG i, UINT uidMsg) const
 	}
 }
 
-// Updates m_lpControls[i].lpTextPane->m_lpszW using SetBinary
+// Updates pane using SetBinary
 void CEditor::SetBinary(ULONG i, _In_opt_count_(cb) LPBYTE lpb, size_t cb) const
 {
 	if (!IsValidEdit(i)) return;
-	auto pane = dynamic_cast<TextPane*>(m_lpControls[i]);
+	auto pane = dynamic_cast<TextPane*>(GetPane(i));
 	if (pane)
 	{
 		pane->SetBinary(lpb, cb);
@@ -1051,7 +1051,7 @@ void CEditor::SetBinary(ULONG i, _In_opt_count_(cb) LPBYTE lpb, size_t cb) const
 void CEditor::SetBinary(ULONG i, _In_ vector<BYTE> bin) const
 {
 	if (!IsValidEdit(i)) return;
-	auto pane = dynamic_cast<TextPane*>(m_lpControls[i]);
+	auto pane = dynamic_cast<TextPane*>(GetPane(i));
 	if (pane)
 	{
 		pane->SetBinary(bin.data(), bin.size());
@@ -1061,14 +1061,14 @@ void CEditor::SetBinary(ULONG i, _In_ vector<BYTE> bin) const
 void CEditor::SetBinary(ULONG i, _In_ SBinary bin) const
 {
 	if (!IsValidEdit(i)) return;
-	auto pane = dynamic_cast<TextPane*>(m_lpControls[i]);
+	auto pane = dynamic_cast<TextPane*>(GetPane(i));
 	if (pane)
 	{
 		pane->SetBinary(bin.lpb, bin.cb);
 	}
 }
 
-// Updates m_lpControls[i].lpTextPane->m_lpszW using SetStringW
+// Updates pane using SetStringW
 void CEditor::SetSize(ULONG i, size_t cb) const
 {
 	SetStringf(i, L"0x%08X = %u", static_cast<int>(cb), static_cast<UINT>(cb)); // STRING_OK
@@ -1085,7 +1085,7 @@ vector<BYTE> CEditor::GetBinaryUseControl(ULONG i) const
 _Check_return_ bool CEditor::GetCheckUseControl(ULONG iControl) const
 {
 	if (!IsValidCheck(iControl)) return false;
-	auto pane = dynamic_cast<CheckPane*>(m_lpControls[iControl]);
+	auto pane = dynamic_cast<CheckPane*>(GetPane(iControl));
 	if (pane)
 	{
 		return pane->GetCheckUseControl();
@@ -1140,7 +1140,7 @@ void CEditor::SetDecimal(ULONG i, ULONG ulVal) const
 void CEditor::SetListString(ULONG iControl, ULONG iListRow, ULONG iListCol, wstring szListString) const
 {
 	if (!IsValidList(iControl)) return;
-	auto pane = dynamic_cast<ListPane*>(m_lpControls[iControl]);
+	auto pane = dynamic_cast<ListPane*>(GetPane(iControl));
 	if (pane)
 	{
 		pane->SetListString(iListRow, iListCol, szListString);
@@ -1150,7 +1150,7 @@ void CEditor::SetListString(ULONG iControl, ULONG iListRow, ULONG iListCol, wstr
 _Check_return_ SortListData* CEditor::InsertListRow(ULONG iControl, int iRow, wstring szText) const
 {
 	if (!IsValidList(iControl)) return nullptr;
-	auto pane = dynamic_cast<ListPane*>(m_lpControls[iControl]);
+	auto pane = dynamic_cast<ListPane*>(GetPane(iControl));
 	if (pane)
 	{
 		return pane->InsertRow(iRow, szText);
@@ -1162,7 +1162,7 @@ _Check_return_ SortListData* CEditor::InsertListRow(ULONG iControl, int iRow, ws
 void CEditor::ClearList(ULONG iControl) const
 {
 	if (!IsValidList(iControl)) return;
-	auto pane = dynamic_cast<ListPane*>(m_lpControls[iControl]);
+	auto pane = dynamic_cast<ListPane*>(GetPane(iControl));
 	if (pane)
 	{
 		pane->ClearList();
@@ -1172,7 +1172,7 @@ void CEditor::ClearList(ULONG iControl) const
 void CEditor::ResizeList(ULONG iControl, bool bSort) const
 {
 	if (!IsValidList(iControl)) return;
-	auto pane = dynamic_cast<ListPane*>(m_lpControls[iControl]);
+	auto pane = dynamic_cast<ListPane*>(GetPane(iControl));
 	if (pane)
 	{
 		pane->ResizeList(bSort);
@@ -1183,7 +1183,7 @@ void CEditor::ResizeList(ULONG iControl, bool bSort) const
 wstring CEditor::GetStringW(ULONG i) const
 {
 	if (!IsValidEdit(i)) return emptystring;
-	auto pane = dynamic_cast<TextPane*>(m_lpControls[i]);
+	auto pane = dynamic_cast<TextPane*>(GetPane(i));
 	if (pane)
 	{
 		return pane->GetStringW();
@@ -1195,7 +1195,7 @@ wstring CEditor::GetStringW(ULONG i) const
 _Check_return_ string CEditor::GetEditBoxTextA(ULONG iControl) const
 {
 	if (!IsValidEdit(iControl)) return "";
-	auto pane = dynamic_cast<TextPane*>(m_lpControls[iControl]);
+	auto pane = dynamic_cast<TextPane*>(GetPane(iControl));
 	if (pane)
 	{
 		return pane->GetEditBoxTextA();
@@ -1207,7 +1207,7 @@ _Check_return_ string CEditor::GetEditBoxTextA(ULONG iControl) const
 _Check_return_ wstring CEditor::GetEditBoxTextW(ULONG iControl) const
 {
 	if (!IsValidEdit(iControl)) return emptystring;
-	auto pane = dynamic_cast<TextPane*>(m_lpControls[iControl]);
+	auto pane = dynamic_cast<TextPane*>(GetPane(iControl));
 	if (pane)
 	{
 		return pane->GetEditBoxTextW();
@@ -1219,7 +1219,7 @@ _Check_return_ wstring CEditor::GetEditBoxTextW(ULONG iControl) const
 _Check_return_ ULONG CEditor::GetHex(ULONG i) const
 {
 	if (!IsValidEdit(i)) return 0;
-	auto pane = dynamic_cast<TextPane*>(m_lpControls[i]);
+	auto pane = dynamic_cast<TextPane*>(GetPane(i));
 	if (pane)
 	{
 		return wstringToUlong(pane->GetStringW(), 16);
@@ -1231,7 +1231,7 @@ _Check_return_ ULONG CEditor::GetHex(ULONG i) const
 _Check_return_ wstring CEditor::GetStringUseControl(ULONG iControl) const
 {
 	if (!IsValidEdit(iControl)) return emptystring;
-	auto pane = dynamic_cast<TextPane*>(m_lpControls[iControl]);
+	auto pane = dynamic_cast<TextPane*>(GetPane(iControl));
 	if (pane)
 	{
 		return pane->GetStringUseControl();
@@ -1243,7 +1243,7 @@ _Check_return_ wstring CEditor::GetStringUseControl(ULONG iControl) const
 _Check_return_ ULONG CEditor::GetListCount(ULONG iControl) const
 {
 	if (!IsValidList(iControl)) return 0;
-	auto pane = dynamic_cast<ListPane*>(m_lpControls[iControl]);
+	auto pane = dynamic_cast<ListPane*>(GetPane(iControl));
 	if (pane)
 	{
 		return pane->GetItemCount();
@@ -1255,7 +1255,7 @@ _Check_return_ ULONG CEditor::GetListCount(ULONG iControl) const
 _Check_return_ SortListData* CEditor::GetListRowData(ULONG iControl, int iRow) const
 {
 	if (!IsValidList(iControl)) return nullptr;
-	auto pane = dynamic_cast<ListPane*>(m_lpControls[iControl]);
+	auto pane = dynamic_cast<ListPane*>(GetPane(iControl));
 	if (pane)
 	{
 		return pane->GetItemData(iRow);
@@ -1266,7 +1266,8 @@ _Check_return_ SortListData* CEditor::GetListRowData(ULONG iControl, int iRow) c
 
 _Check_return_ bool CEditor::IsDirty(ULONG iControl) const
 {
-	return vpDirty == (vpDirty & m_lpControls[iControl]->GetFlags());
+	auto pane = GetPane(iControl);
+	return pane?(vpDirty == (pane->GetFlags() & vpDirty)):false;
 }
 
 _Check_return_ ULONG CEditor::GetHexUseControl(ULONG i) const
@@ -1312,7 +1313,7 @@ _Check_return_ ULONG CEditor::GetPropTagUseControl(ULONG i) const
 _Check_return_ ULONG CEditor::GetPropTag(ULONG i) const
 {
 	if (!IsValidEdit(i)) return 0;
-	auto pane = dynamic_cast<TextPane*>(m_lpControls[i]);
+	auto pane = dynamic_cast<TextPane*>(GetPane(i));
 	if (pane)
 	{
 
@@ -1334,7 +1335,7 @@ _Check_return_ ULONG CEditor::GetPropTag(ULONG i) const
 _Check_return_ ULONG CEditor::GetDecimal(ULONG i) const
 {
 	if (!IsValidEdit(i)) return 0;
-	auto pane = dynamic_cast<TextPane*>(m_lpControls[i]);
+	auto pane = dynamic_cast<TextPane*>(GetPane(i));
 	if (pane)
 	{
 		return wstringToUlong(pane->GetStringW(), 10);
@@ -1346,7 +1347,7 @@ _Check_return_ ULONG CEditor::GetDecimal(ULONG i) const
 _Check_return_ bool CEditor::GetCheck(ULONG i) const
 {
 	if (!IsValidCheck(i)) return false;
-	auto pane = dynamic_cast<CheckPane*>(m_lpControls[i]);
+	auto pane = dynamic_cast<CheckPane*>(GetPane(i));
 	if (pane)
 	{
 		return pane->GetCheck();
@@ -1359,7 +1360,7 @@ _Check_return_ int CEditor::GetDropDown(ULONG i) const
 {
 	if (!IsValidDropDown(i)) return CB_ERR;
 
-	auto pane = dynamic_cast<DropDownPane*>(m_lpControls[i]);
+	auto pane = dynamic_cast<DropDownPane*>(GetPane(i));
 	if (pane)
 	{
 		return pane->GetDropDown();
@@ -1372,7 +1373,7 @@ _Check_return_ DWORD_PTR CEditor::GetDropDownValue(ULONG i) const
 {
 	if (!IsValidDropDown(i)) return 0;
 
-	auto pane = dynamic_cast<DropDownPane*>(m_lpControls[i]);
+	auto pane = dynamic_cast<DropDownPane*>(GetPane(i));
 	if (pane)
 	{
 		return pane->GetDropDownValue();
@@ -1384,7 +1385,7 @@ _Check_return_ DWORD_PTR CEditor::GetDropDownValue(ULONG i) const
 void CEditor::InsertColumn(ULONG ulListNum, int nCol, UINT uidText) const
 {
 	if (!IsValidList(ulListNum)) return;
-	auto pane = dynamic_cast<ListPane*>(m_lpControls[ulListNum]);
+	auto pane = dynamic_cast<ListPane*>(GetPane(ulListNum));
 	if (pane)
 	{
 		pane->InsertColumn(nCol, uidText);
@@ -1394,7 +1395,7 @@ void CEditor::InsertColumn(ULONG ulListNum, int nCol, UINT uidText) const
 void CEditor::InsertColumn(ULONG ulListNum, int nCol, UINT uidText, ULONG ulPropType) const
 {
 	if (!IsValidList(ulListNum)) return;
-	auto pane = dynamic_cast<ListPane*>(m_lpControls[ulListNum]);
+	auto pane = dynamic_cast<ListPane*>(GetPane(ulListNum));
 	if (pane)
 	{
 		pane->InsertColumn(nCol, uidText);
@@ -1407,9 +1408,10 @@ _Check_return_ ULONG CEditor::HandleChange(UINT nID)
 	if (m_lpControls.empty()) return static_cast<ULONG>(-1);
 	for (ULONG i = 0; i < m_lpControls.size(); i++)
 	{
-		if (!m_lpControls[i]) continue;
+		auto pane = GetPane(i);
+		if (!pane) continue;
 		// Either our change came from one of our top level controls/views
-		if (m_lpControls[i]->MatchID(nID))
+		if (pane->MatchID(nID))
 		{
 			return i;
 		}
@@ -1417,7 +1419,7 @@ _Check_return_ ULONG CEditor::HandleChange(UINT nID)
 		// Or the top level control/view has a control in it that can handle it
 		// In which case stop looking.
 		// We do not return the control number because this is a button event, not an edit change
-		if (-1 != m_lpControls[i]->HandleChange(nID))
+		if (-1 != pane->HandleChange(nID))
 		{
 			return static_cast<ULONG>(-1);
 		}
@@ -1471,7 +1473,7 @@ _Check_return_ bool CEditor::IsValidCheck(ULONG ulNum) const
 void CEditor::UpdateListButtons() const
 {
 	if (!IsValidListWithButtons(m_ulListNum)) return;
-	auto pane = dynamic_cast<ListPane*>(m_lpControls[m_ulListNum]);
+	auto pane = dynamic_cast<ListPane*>(GetPane(m_ulListNum));
 	if (pane)
 	{
 		pane->UpdateListButtons();
@@ -1481,7 +1483,7 @@ void CEditor::UpdateListButtons() const
 _Check_return_ bool CEditor::OnEditListEntry(ULONG ulListNum) const
 {
 	if (!IsValidList(ulListNum)) return false;
-	auto pane = dynamic_cast<ListPane*>(m_lpControls[ulListNum]);
+	auto pane = dynamic_cast<ListPane*>(GetPane(ulListNum));
 	if (pane)
 	{
 		return pane->OnEditListEntry();
