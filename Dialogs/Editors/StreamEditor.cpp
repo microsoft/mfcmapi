@@ -336,9 +336,6 @@ void CStreamEditor::ReadTextStreamFromProperty() const
 {
 	if (!m_lpMAPIProp) return;
 
-	if (!IsValidEdit(m_iTextBox)) return;
-	if (!IsValidEdit(m_iBinBox)) return;
-
 	DebugPrintEx(DBGStream, CLASS, L"ReadTextStreamFromProperty", L"opening property 0x%X (= %ws) from %p\n", m_ulPropTag, TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, true).c_str(), m_lpMAPIProp);
 
 	// If we don't have a stream to display, put up an error instead
@@ -373,7 +370,6 @@ void CStreamEditor::ReadTextStreamFromProperty() const
 // this will not work if we're using WrapCompressedRTFStreamEx
 void CStreamEditor::WriteTextStreamToProperty()
 {
-	if (!IsValidEdit(m_iBinBox)) return;
 	// If we couldn't get a read stream, we won't be able to get a write stream
 	if (!m_lpStream) return;
 	if (!m_lpMAPIProp) return;
@@ -438,7 +434,7 @@ _Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
 		case EDITOR_STREAM_UNICODE:
 			auto lpszW = GetEditBoxTextW(m_iTextBox);
 
-			lpBinPane->SetBinary(LPBYTE(lpszW.c_str()), lpszW .length() * sizeof(WCHAR));
+			lpBinPane->SetBinary(LPBYTE(lpszW.c_str()), lpszW.length() * sizeof(WCHAR));
 			lpBinPane->SetCount(lpszW.length() * sizeof(WCHAR));
 			break;
 		}
@@ -492,13 +488,10 @@ _Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
 
 void CStreamEditor::SetEditReadOnly(ULONG iControl) const
 {
-	if (IsValidEdit(iControl))
+	auto lpPane = static_cast<TextPane*>(GetPane(iControl));
+	if (lpPane)
 	{
-		auto lpPane = static_cast<TextPane*>(GetPane(iControl));
-		if (lpPane)
-		{
-			lpPane->SetEditReadOnly();
-		}
+		lpPane->SetEditReadOnly();
 	}
 }
 

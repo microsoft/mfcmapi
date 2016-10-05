@@ -108,13 +108,10 @@ _Check_return_ ULONG CDbgView::HandleChange(UINT nID)
 // Clear
 void CDbgView::OnEditAction1()
 {
-	if (IsValidEdit(DBGVIEW_VIEW))
+	auto lpPane = static_cast<TextPane*>(GetPane(DBGVIEW_VIEW));
+	if (lpPane)
 	{
-		auto lpPane = static_cast<TextPane*>(GetPane(DBGVIEW_VIEW));
-		if (lpPane)
-		{
-			return lpPane->ClearView();
-		}
+		return lpPane->ClearView();
 	}
 }
 
@@ -128,12 +125,9 @@ void CDbgView::AppendText(wstring szMsg) const
 {
 	if (m_bPaused) return;
 
-	if (IsValidEdit(DBGVIEW_VIEW))
+	auto lpPane = static_cast<TextPane*>(GetPane(DBGVIEW_VIEW));
+	if (lpPane)
 	{
-		auto lpPane = static_cast<TextPane*>(GetPane(DBGVIEW_VIEW));
-		if (lpPane)
-		{
-			lpPane->AppendString(szMsg);
-		}
+		lpPane->AppendString(szMsg);
 	}
 }

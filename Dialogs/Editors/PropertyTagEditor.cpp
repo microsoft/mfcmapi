@@ -229,8 +229,6 @@ void CPropertyTagEditor::LookupNamedProp(ULONG ulSkipField, bool bCreate)
 
 _Check_return_ ULONG CPropertyTagEditor::GetSelectedPropType() const
 {
-	if (!IsValidDropDown(PROPTAG_TYPE)) return PT_NULL;
-
 	wstring szType;
 	auto iCurSel = GetDropDownSelection(PROPTAG_TYPE);
 	if (iCurSel != CB_ERR)
@@ -384,25 +382,19 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField) const
 
 void CPropertyTagEditor::SetDropDownSelection(ULONG i, _In_ wstring szText) const
 {
-	if (IsValidDropDown(i))
+	auto lpPane = static_cast<DropDownPane*>(GetPane(i));
+	if (lpPane)
 	{
-		auto lpPane = static_cast<DropDownPane*>(GetPane(i));
-		if (lpPane)
-		{
-			return lpPane->SetDropDownSelection(szText);
-		}
+		return lpPane->SetDropDownSelection(szText);
 	}
 }
 
 _Check_return_ wstring CPropertyTagEditor::GetDropStringUseControl(ULONG iControl) const
 {
-	if (IsValidDropDown(iControl))
+	auto lpPane = static_cast<DropDownPane*>(GetPane(iControl));
+	if (lpPane)
 	{
-		auto lpPane = static_cast<DropDownPane*>(GetPane(iControl));
-		if (lpPane)
-		{
-			return lpPane->GetDropStringUseControl();
-		}
+		return lpPane->GetDropStringUseControl();
 	}
 
 	return emptystring;
@@ -410,13 +402,10 @@ _Check_return_ wstring CPropertyTagEditor::GetDropStringUseControl(ULONG iContro
 
 _Check_return_ int CPropertyTagEditor::GetDropDownSelection(ULONG iControl) const
 {
-	if (IsValidDropDown(iControl))
+	auto lpPane = static_cast<DropDownPane*>(GetPane(iControl));
+	if (lpPane)
 	{
-		auto lpPane = static_cast<DropDownPane*>(GetPane(iControl));
-		if (lpPane)
-		{
-			return lpPane->GetDropDownSelection();
-		}
+		return lpPane->GetDropDownSelection();
 	}
 
 	return CB_ERR;
@@ -424,13 +413,10 @@ _Check_return_ int CPropertyTagEditor::GetDropDownSelection(ULONG iControl) cons
 
 void CPropertyTagEditor::InsertDropString(ULONG iControl, int iRow, _In_ wstring szText) const
 {
-	if (IsValidDropDown(iControl))
+	auto lpPane = static_cast<DropDownPane*>(GetPane(iControl));
+	if (lpPane)
 	{
-		auto lpPane = static_cast<DropDownPane*>(GetPane(iControl));
-		if (lpPane)
-		{
-			lpPane->InsertDropString(iRow, szText, iRow);
-		}
+		lpPane->InsertDropString(iRow, szText, iRow);
 	}
 }
 

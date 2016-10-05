@@ -507,7 +507,6 @@ void CEditor::OnOK()
 _Check_return_ bool CEditor::GetSelectedGUID(ULONG iControl, bool bByteSwapped, _In_ LPGUID lpSelectedGUID) const
 {
 	if (!lpSelectedGUID) return false;
-	if (!IsValidDropDown(iControl)) return false;
 	auto pane = dynamic_cast<DropDownPane*>(GetPane(iControl));
 	if (pane)
 	{
@@ -981,7 +980,6 @@ void CEditor::SetPromptPostFix(_In_ wstring szMsg)
 // Sets string
 void CEditor::SetStringA(ULONG i, string szMsg) const
 {
-	if (!IsValidEdit(i)) return;
 	auto pane = dynamic_cast<TextPane*>(GetPane(i));
 	if (pane)
 	{
@@ -992,7 +990,6 @@ void CEditor::SetStringA(ULONG i, string szMsg) const
 // Sets string
 void CEditor::SetStringW(ULONG i, wstring szMsg) const
 {
-	if (!IsValidEdit(i)) return;
 	auto pane = dynamic_cast<TextPane*>(GetPane(i));
 	if (pane)
 	{
@@ -1007,8 +1004,6 @@ void CEditor::SetStringW(ULONG i, wstring szMsg) const
 // Updates pane using SetStringW
 void CEditor::SetStringf(ULONG i, LPCWSTR szMsg, ...) const
 {
-	if (!IsValidEdit(i)) return;
-
 	if (szMsg[0])
 	{
 		va_list argList = nullptr;
@@ -1025,8 +1020,6 @@ void CEditor::SetStringf(ULONG i, LPCWSTR szMsg, ...) const
 // Updates pane using SetStringW
 void CEditor::LoadString(ULONG i, UINT uidMsg) const
 {
-	if (!IsValidEdit(i)) return;
-
 	if (uidMsg)
 	{
 		SetStringW(i, loadstring(uidMsg));
@@ -1040,7 +1033,6 @@ void CEditor::LoadString(ULONG i, UINT uidMsg) const
 // Updates pane using SetBinary
 void CEditor::SetBinary(ULONG i, _In_opt_count_(cb) LPBYTE lpb, size_t cb) const
 {
-	if (!IsValidEdit(i)) return;
 	auto pane = dynamic_cast<TextPane*>(GetPane(i));
 	if (pane)
 	{
@@ -1050,7 +1042,6 @@ void CEditor::SetBinary(ULONG i, _In_opt_count_(cb) LPBYTE lpb, size_t cb) const
 
 void CEditor::SetBinary(ULONG i, _In_ vector<BYTE> bin) const
 {
-	if (!IsValidEdit(i)) return;
 	auto pane = dynamic_cast<TextPane*>(GetPane(i));
 	if (pane)
 	{
@@ -1060,7 +1051,6 @@ void CEditor::SetBinary(ULONG i, _In_ vector<BYTE> bin) const
 
 void CEditor::SetBinary(ULONG i, _In_ SBinary bin) const
 {
-	if (!IsValidEdit(i)) return;
 	auto pane = dynamic_cast<TextPane*>(GetPane(i));
 	if (pane)
 	{
@@ -1077,8 +1067,6 @@ void CEditor::SetSize(ULONG i, size_t cb) const
 // Returns a binary buffer which is represented by the hex string
 vector<BYTE> CEditor::GetBinaryUseControl(ULONG i) const
 {
-	if (!IsValidEdit(i)) return vector<BYTE>();
-
 	return HexStringToBin(GetStringUseControl(i));
 }
 
@@ -1099,7 +1087,6 @@ _Check_return_ bool CEditor::GetCheckUseControl(ULONG iControl) const
 // entryID is allocated with new, free with delete[]
 _Check_return_ HRESULT CEditor::GetEntryID(ULONG i, bool bIsBase64, _Out_ size_t* lpcbBin, _Out_ LPENTRYID* lppEID) const
 {
-	if (!IsValidEdit(i)) return MAPI_E_INVALID_PARAMETER;
 	if (!lpcbBin || !lppEID) return MAPI_E_INVALID_PARAMETER;
 
 	*lpcbBin = NULL;
@@ -1182,7 +1169,6 @@ void CEditor::ResizeList(ULONG iControl, bool bSort) const
 
 wstring CEditor::GetStringW(ULONG i) const
 {
-	if (!IsValidEdit(i)) return emptystring;
 	auto pane = dynamic_cast<TextPane*>(GetPane(i));
 	if (pane)
 	{
@@ -1194,7 +1180,6 @@ wstring CEditor::GetStringW(ULONG i) const
 
 _Check_return_ string CEditor::GetEditBoxTextA(ULONG iControl) const
 {
-	if (!IsValidEdit(iControl)) return "";
 	auto pane = dynamic_cast<TextPane*>(GetPane(iControl));
 	if (pane)
 	{
@@ -1206,7 +1191,6 @@ _Check_return_ string CEditor::GetEditBoxTextA(ULONG iControl) const
 
 _Check_return_ wstring CEditor::GetEditBoxTextW(ULONG iControl) const
 {
-	if (!IsValidEdit(iControl)) return emptystring;
 	auto pane = dynamic_cast<TextPane*>(GetPane(iControl));
 	if (pane)
 	{
@@ -1218,7 +1202,6 @@ _Check_return_ wstring CEditor::GetEditBoxTextW(ULONG iControl) const
 
 _Check_return_ ULONG CEditor::GetHex(ULONG i) const
 {
-	if (!IsValidEdit(i)) return 0;
 	auto pane = dynamic_cast<TextPane*>(GetPane(i));
 	if (pane)
 	{
@@ -1230,7 +1213,6 @@ _Check_return_ ULONG CEditor::GetHex(ULONG i) const
 
 _Check_return_ wstring CEditor::GetStringUseControl(ULONG iControl) const
 {
-	if (!IsValidEdit(iControl)) return emptystring;
 	auto pane = dynamic_cast<TextPane*>(GetPane(iControl));
 	if (pane)
 	{
@@ -1272,22 +1254,16 @@ _Check_return_ bool CEditor::IsDirty(ULONG iControl) const
 
 _Check_return_ ULONG CEditor::GetHexUseControl(ULONG i) const
 {
-	if (!IsValidEdit(i)) return 0;
-
 	return wstringToUlong(GetStringUseControl(i), 16);
 }
 
 _Check_return_ ULONG CEditor::GetDecimalUseControl(ULONG i) const
 {
-	if (!IsValidEdit(i)) return 0;
-
 	return wstringToUlong(GetStringUseControl(i), 10);
 }
 
 _Check_return_ ULONG CEditor::GetPropTagUseControl(ULONG i) const
 {
-	if (!IsValidEdit(i)) return 0;
-
 	auto szTag = GetStringUseControl(i);
 
 	// remove any whitespace or nonsense punctuation
@@ -1312,7 +1288,6 @@ _Check_return_ ULONG CEditor::GetPropTagUseControl(ULONG i) const
 
 _Check_return_ ULONG CEditor::GetPropTag(ULONG i) const
 {
-	if (!IsValidEdit(i)) return 0;
 	auto pane = dynamic_cast<TextPane*>(GetPane(i));
 	if (pane)
 	{
@@ -1334,7 +1309,6 @@ _Check_return_ ULONG CEditor::GetPropTag(ULONG i) const
 
 _Check_return_ ULONG CEditor::GetDecimal(ULONG i) const
 {
-	if (!IsValidEdit(i)) return 0;
 	auto pane = dynamic_cast<TextPane*>(GetPane(i));
 	if (pane)
 	{
@@ -1346,7 +1320,6 @@ _Check_return_ ULONG CEditor::GetDecimal(ULONG i) const
 
 _Check_return_ bool CEditor::GetCheck(ULONG i) const
 {
-	if (!IsValidCheck(i)) return false;
 	auto pane = dynamic_cast<CheckPane*>(GetPane(i));
 	if (pane)
 	{
@@ -1358,8 +1331,6 @@ _Check_return_ bool CEditor::GetCheck(ULONG i) const
 
 _Check_return_ int CEditor::GetDropDown(ULONG i) const
 {
-	if (!IsValidDropDown(i)) return CB_ERR;
-
 	auto pane = dynamic_cast<DropDownPane*>(GetPane(i));
 	if (pane)
 	{
@@ -1371,8 +1342,6 @@ _Check_return_ int CEditor::GetDropDown(ULONG i) const
 
 _Check_return_ DWORD_PTR CEditor::GetDropDownValue(ULONG i) const
 {
-	if (!IsValidDropDown(i)) return 0;
-
 	auto pane = dynamic_cast<DropDownPane*>(GetPane(i));
 	if (pane)
 	{
@@ -1430,22 +1399,6 @@ _Check_return_ ULONG CEditor::HandleChange(UINT nID)
 
 // TODO: I think I can eliminate all of these IsValid checks
 // Maybe even IsType since we're using dynamic_cast
-_Check_return_ bool CEditor::IsValidDropDown(ULONG ulNum) const
-{
-	if (!INVALIDRANGE(ulNum) &&
-		m_lpControls[ulNum] &&
-		m_lpControls[ulNum]->IsType(CTRL_DROPDOWNPANE)) return true;
-	return false;
-}
-
-_Check_return_ bool CEditor::IsValidEdit(ULONG ulNum) const
-{
-	if (!INVALIDRANGE(ulNum) &&
-		m_lpControls[ulNum] &&
-		m_lpControls[ulNum]->IsType(CTRL_TEXTPANE)) return true;
-	return false;
-}
-
 _Check_return_ bool CEditor::IsValidList(ULONG ulNum) const
 {
 	if (NOLIST != ulNum &&
