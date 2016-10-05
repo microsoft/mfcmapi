@@ -57,7 +57,7 @@ public:
 	void SetSize(ULONG i, size_t cb) const;
 
 	// Get values after we've done the DisplayDialog
-	ViewPane* GetControl(ULONG iControl) const;
+	ViewPane* GetPane(ULONG iPane) const;
 	wstring GetStringW(ULONG i) const;
 	_Check_return_ ULONG GetHex(ULONG i) const;
 	_Check_return_ ULONG GetDecimal(ULONG i) const;

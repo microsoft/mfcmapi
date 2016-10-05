@@ -110,7 +110,7 @@ void CDbgView::OnEditAction1()
 {
 	if (IsValidEdit(DBGVIEW_VIEW))
 	{
-		auto lpPane = static_cast<TextPane*>(GetControl(DBGVIEW_VIEW));
+		auto lpPane = static_cast<TextPane*>(GetPane(DBGVIEW_VIEW));
 		if (lpPane)
 		{
 			return lpPane->ClearView();
@@ -130,7 +130,7 @@ void CDbgView::AppendText(wstring szMsg) const
 
 	if (IsValidEdit(DBGVIEW_VIEW))
 	{
-		auto lpPane = static_cast<TextPane*>(GetControl(DBGVIEW_VIEW));
+		auto lpPane = static_cast<TextPane*>(GetPane(DBGVIEW_VIEW));
 		if (lpPane)
 		{
 			lpPane->AppendString(szMsg);

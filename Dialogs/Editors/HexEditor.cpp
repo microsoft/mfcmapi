@@ -147,13 +147,13 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 	if (HEXED_SMARTVIEW != i)
 	{
 		// length of base64 encoded string
-		auto lpPane = static_cast<CountedTextPane*>(GetControl(HEXED_BASE64));
+		auto lpPane = static_cast<CountedTextPane*>(GetPane(HEXED_BASE64));
 		if (lpPane)
 		{
 			lpPane->SetCount(cchEncodeStr);
 		}
 
-		lpPane = static_cast<CountedTextPane*>(GetControl(HEXED_HEX));
+		lpPane = static_cast<CountedTextPane*>(GetPane(HEXED_HEX));
 		if (lpPane)
 		{
 			lpPane->SetCount(cb);
@@ -172,7 +172,7 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 void CHexEditor::UpdateParser() const
 {
 	// Find out how to interpret the data
-	auto lpPane = static_cast<SmartViewPane*>(GetControl(HEXED_SMARTVIEW));
+	auto lpPane = static_cast<SmartViewPane*>(GetPane(HEXED_SMARTVIEW));
 	if (lpPane)
 	{
 		auto bin = GetBinaryUseControl(HEXED_HEX);
@@ -211,7 +211,7 @@ void CHexEditor::OnEditAction1()
 
 			if (lpStream)
 			{
-				auto lpPane = static_cast<TextPane*>(GetControl(HEXED_HEX));
+				auto lpPane = static_cast<TextPane*>(GetPane(HEXED_HEX));
 				if (lpPane)
 				{
 					lpPane->InitEditFromBinaryStream(lpStream);
@@ -251,7 +251,7 @@ void CHexEditor::OnEditAction2()
 
 			if (lpStream)
 			{
-				auto lpPane = static_cast<TextPane*>(GetControl(HEXED_HEX));
+				auto lpPane = static_cast<TextPane*>(GetPane(HEXED_HEX));
 				if (lpPane)
 				{
 					lpPane->WriteToBinaryStream(lpStream);

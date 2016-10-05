@@ -177,7 +177,7 @@ BOOL CStreamEditor::OnInitDialog()
 	if (m_bDoSmartView)
 	{
 		// Load initial smart view here
-		auto lpSmartView = static_cast<SmartViewPane*>(GetControl(m_iSmartViewBox));
+		auto lpSmartView = static_cast<SmartViewPane*>(GetPane(m_iSmartViewBox));
 		if (lpSmartView)
 		{
 			SPropValue sProp = { 0 };
@@ -362,7 +362,7 @@ void CStreamEditor::ReadTextStreamFromProperty() const
 
 	if (m_lpStream)
 	{
-		auto lpPane = static_cast<TextPane*>(GetControl(m_iBinBox));
+		auto lpPane = static_cast<TextPane*>(GetPane(m_iBinBox));
 		if (lpPane)
 		{
 			return lpPane->InitEditFromBinaryStream(m_lpStream);
@@ -419,7 +419,7 @@ _Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
 
 	if (static_cast<ULONG>(-1) == i) return static_cast<ULONG>(-1);
 
-	auto lpBinPane = static_cast<CountedTextPane*>(GetControl(m_iBinBox));
+	auto lpBinPane = static_cast<CountedTextPane*>(GetPane(m_iBinBox));
 	if (m_iTextBox == i && lpBinPane)
 	{
 		switch (m_ulEditorType)
@@ -466,7 +466,7 @@ _Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
 
 	if (m_bDoSmartView)
 	{
-		auto lpSmartView = static_cast<SmartViewPane*>(GetControl(m_iSmartViewBox));
+		auto lpSmartView = static_cast<SmartViewPane*>(GetPane(m_iSmartViewBox));
 		if (lpSmartView)
 		{
 			auto bin = GetBinaryUseControl(m_iBinBox);
@@ -494,7 +494,7 @@ void CStreamEditor::SetEditReadOnly(ULONG iControl) const
 {
 	if (IsValidEdit(iControl))
 	{
-		auto lpPane = static_cast<TextPane*>(GetControl(iControl));
+		auto lpPane = static_cast<TextPane*>(GetPane(iControl));
 		if (lpPane)
 		{
 			lpPane->SetEditReadOnly();

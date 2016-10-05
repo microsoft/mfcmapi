@@ -211,7 +211,7 @@ _Check_return_ bool SpecialFolderEditor::DoListEdit(ULONG ulListNum, int iItem, 
 	MyResults.InitPane(0, TextPane::CreateMultiLinePane(NULL, true));
 
 	wstring szTmp;
-	auto listPane = static_cast<ListPane*>(GetControl(ulListNum));
+	auto listPane = static_cast<ListPane*>(GetPane(ulListNum));
 	if (listPane)
 	{
 		wstring szLabel;

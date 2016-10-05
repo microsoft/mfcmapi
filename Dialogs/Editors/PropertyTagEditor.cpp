@@ -386,7 +386,7 @@ void CPropertyTagEditor::SetDropDownSelection(ULONG i, _In_ wstring szText) cons
 {
 	if (IsValidDropDown(i))
 	{
-		auto lpPane = static_cast<DropDownPane*>(GetControl(i));
+		auto lpPane = static_cast<DropDownPane*>(GetPane(i));
 		if (lpPane)
 		{
 			return lpPane->SetDropDownSelection(szText);
@@ -398,7 +398,7 @@ _Check_return_ wstring CPropertyTagEditor::GetDropStringUseControl(ULONG iContro
 {
 	if (IsValidDropDown(iControl))
 	{
-		auto lpPane = static_cast<DropDownPane*>(GetControl(iControl));
+		auto lpPane = static_cast<DropDownPane*>(GetPane(iControl));
 		if (lpPane)
 		{
 			return lpPane->GetDropStringUseControl();
@@ -412,7 +412,7 @@ _Check_return_ int CPropertyTagEditor::GetDropDownSelection(ULONG iControl) cons
 {
 	if (IsValidDropDown(iControl))
 	{
-		auto lpPane = static_cast<DropDownPane*>(GetControl(iControl));
+		auto lpPane = static_cast<DropDownPane*>(GetPane(iControl));
 		if (lpPane)
 		{
 			return lpPane->GetDropDownSelection();
@@ -426,7 +426,7 @@ void CPropertyTagEditor::InsertDropString(ULONG iControl, int iRow, _In_ wstring
 {
 	if (IsValidDropDown(iControl))
 	{
-		auto lpPane = static_cast<DropDownPane*>(GetControl(iControl));
+		auto lpPane = static_cast<DropDownPane*>(GetPane(iControl));
 		if (lpPane)
 		{
 			lpPane->InsertDropString(iRow, szText, iRow);
@@ -519,7 +519,7 @@ _Check_return_ SortListData* CPropertySelector::GetSelectedListRowData(ULONG iCo
 {
 	if (IsValidList(iControl))
 	{
-		auto lpPane = static_cast<ListPane*>(GetControl(iControl));
+		auto lpPane = static_cast<ListPane*>(GetPane(iControl));
 		if (lpPane)
 		{
 			return lpPane->GetSelectedListRowData();
