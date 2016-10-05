@@ -100,8 +100,6 @@ protected:
 
 	// Called to enable/disable buttons based on number of items
 	void UpdateListButtons() const;
-	_Check_return_ bool IsValidDropDown(ULONG ulNum) const;
-	_Check_return_ bool IsValidEdit(ULONG ulNum) const;
 	_Check_return_ bool IsValidList(ULONG ulNum) const;
 	_Check_return_ bool IsValidCheck(ULONG ulNum) const;
 	BOOL OnInitDialog() override;
