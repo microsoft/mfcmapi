@@ -87,7 +87,6 @@ void CProviderTableDlg::OnOpenProfileSection()
 		this,
 		IDS_OPENPROFSECT,
 		IDS_OPENPROFSECTPROMPT,
-		2,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 	MyUID.InitPane(0, DropDownPane::CreateGuid(IDS_MAPIUID, false));

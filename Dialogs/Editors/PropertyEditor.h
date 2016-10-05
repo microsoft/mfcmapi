@@ -33,7 +33,6 @@ public:
 
 private:
 	BOOL OnInitDialog() override;
-	void CreatePropertyControls();
 	void InitPropertyControls();
 	void WriteStringsToSPropValue();
 	void WriteSPropValueToObject() const;
@@ -76,7 +75,6 @@ private:
 	// Use this function to implement list editing
 	_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData) override;
 	BOOL OnInitDialog() override;
-	void CreatePropertyControls();
 	void InitPropertyControls();
 	void ReadMultiValueStringsFromProperty() const;
 	void WriteSPropValueToObject() const;

@@ -24,12 +24,10 @@ private:
 static wstring CLASS = L"COptions";
 
 COptions::COptions(_In_ CWnd* pWnd) :
-CEditor(pWnd, IDS_SETOPTS, NULL, 0, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
+CEditor(pWnd, IDS_SETOPTS, NULL, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	EnableScroll();
-
-	CreateControls(NumRegOptionKeys);
 
 	m_bNeedPropRefresh = false;
 

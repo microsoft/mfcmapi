@@ -214,7 +214,6 @@ void CContentsTableListCtrl::GetStatus()
 			this,
 			IDS_GETSTATUS,
 			IDS_GETSTATUSPROMPT,
-			4,
 			CEDITOR_BUTTON_OK);
 		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_ULTABLESTATUS, true));
 		MyData.SetHex(0, ulTableStatus);

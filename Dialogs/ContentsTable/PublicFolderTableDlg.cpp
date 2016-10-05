@@ -78,7 +78,6 @@ void CPublicFolderTableDlg::OnCreatePropertyStringRestriction()
 			this,
 			IDS_SEARCHCRITERIA,
 			IDS_PFSEARCHCRITERIAPROMPT,
-			2,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.SetPromptPostFix(AllFlagsToString(flagFuzzyLevel, true));
 

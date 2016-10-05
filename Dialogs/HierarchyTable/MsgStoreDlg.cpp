@@ -386,7 +386,6 @@ _Check_return_ bool CMsgStoreDlg::HandlePaste()
 			this,
 			IDS_PASTEFOLDER,
 			IDS_PASTEFOLDERPROMPT,
-			1,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 		MyData.InitPane(0, CheckPane::Create(IDS_PASTEFOLDERCONTENTS, false, false));
@@ -422,7 +421,6 @@ void CMsgStoreDlg::OnPasteMessages()
 			this,
 			IDS_COPYMESSAGE,
 			IDS_COPYMESSAGEPROMPT,
-			1,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 		MyData.InitPane(0, CheckPane::Create(IDS_MESSAGEMOVE, false, false));
@@ -490,7 +488,6 @@ void CMsgStoreDlg::OnPasteFolder()
 			this,
 			IDS_PASTEFOLDER,
 			IDS_PASTEFOLDERNEWNAMEPROMPT,
-			3,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_FOLDERNAME, false));
 		MyData.InitPane(1, CheckPane::Create(IDS_COPYSUBFOLDERS, false, false));
@@ -580,7 +577,6 @@ void CMsgStoreDlg::OnPasteFolderContents()
 			this,
 			IDS_COPYFOLDERCONTENTS,
 			IDS_PICKOPTIONSPROMPT,
-			3,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.InitPane(0, CheckPane::Create(IDS_COPYASSOCIATEDITEMS, false, false));
 		MyData.InitPane(1, CheckPane::Create(IDS_MOVEMESSAGES, false, false));
@@ -626,7 +622,6 @@ void CMsgStoreDlg::OnPasteRules()
 			this,
 			IDS_COPYFOLDERRULES,
 			IDS_COPYFOLDERRULESPROMPT,
-			1,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.InitPane(0, CheckPane::Create(IDS_REPLACERULES, false, false));
 		WC_H(MyData.DisplayDialog());
@@ -654,7 +649,6 @@ void CMsgStoreDlg::OnCreateSubFolder()
 		this,
 		IDS_ADDSUBFOLDER,
 		IDS_ADDSUBFOLDERPROMPT,
-		4,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_FOLDER_TYPE), true));
 	MyData.InitPane(0, TextPane::CreateSingleLinePaneID(IDS_FOLDERNAME, IDS_FOLDERNAMEVALUE, false));
@@ -803,7 +797,6 @@ void CMsgStoreDlg::OnEmptyFolder()
 			this,
 			IDS_DELETEITEMSANDSUB,
 			IDS_DELETEITEMSANDSUBPROMPT,
-			3,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.InitPane(0, CheckPane::Create(IDS_DELASSOCIATED, false, false));
 		MyData.InitPane(1, CheckPane::Create(IDS_HARDDELETION, false, false));
@@ -874,7 +867,6 @@ void CMsgStoreDlg::OnDeleteSelectedItem()
 				this,
 				IDS_DELETEFOLDER,
 				IDS_DELETEFOLDERPROMPT,
-				1,
 				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 			MyData.InitPane(0, CheckPane::Create(IDS_HARDDELETION, false, false));
 			if (!bShiftPressed)
@@ -928,7 +920,6 @@ void CMsgStoreDlg::OnSaveFolderContentsAsMSG()
 		this,
 		IDS_SAVEFOLDERASMSG,
 		IDS_SAVEFOLDERASMSGPROMPT,
-		2,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.InitPane(0, CheckPane::Create(IDS_SAVEASSOCIATEDCONTENTS, false, false));
 	MyData.InitPane(1, CheckPane::Create(IDS_SAVEUNICODE, false, false));
@@ -970,7 +961,6 @@ void CMsgStoreDlg::OnSaveFolderContentsAsTextFiles()
 			this,
 			IDS_SAVEFOLDERASPROPFILES,
 			IDS_PICKOPTIONSPROMPT,
-			3,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.InitPane(0, CheckPane::Create(IDS_RECURSESUBFOLDERS, false, false));
 		MyData.InitPane(1, CheckPane::Create(IDS_SAVEREGULARCONTENTS, true, false));
@@ -1007,7 +997,6 @@ void CMsgStoreDlg::OnSetReceiveFolder()
 		this,
 		IDS_SETRECFOLDER,
 		IDS_SETRECFOLDERPROMPT,
-		2,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_CLASS, false));
 	MyData.InitPane(1, CheckPane::Create(IDS_DELETEASSOCIATION, false, false));
@@ -1120,7 +1109,6 @@ void CMsgStoreDlg::OnRestoreDeletedFolder()
 			this,
 			IDS_RESTOREDELFOLD,
 			IDS_RESTOREDELFOLDPROMPT,
-			2,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_FOLDERNAME, false));
 		MyData.InitPane(1, CheckPane::Create(IDS_COPYSUBFOLDERS, false, false));
@@ -1193,7 +1181,6 @@ void CMsgStoreDlg::OnValidateIPMSubtree()
 		this,
 		IDS_VALIDATEIPMSUB,
 		IDS_PICKOPTIONSPROMPT,
-		2,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.InitPane(0, CheckPane::Create(IDS_MAPIFORCECREATE, false, false));
 	MyData.InitPane(1, CheckPane::Create(IDS_MAPIFULLIPMTREE, false, false));

@@ -33,7 +33,6 @@ CPropertyTagEditor::CPropertyTagEditor(
 	CEditor(pParentWnd,
 		uidTitle ? uidTitle : IDS_PROPTAGEDITOR,
 		uidPrompt,
-		0,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL | CEDITOR_BUTTON_ACTION1 | (lpMAPIProp ? CEDITOR_BUTTON_ACTION2 : 0),
 		IDS_ACTIONSELECTPTAG,
 		IDS_ACTIONCREATENAMEDPROP,
@@ -46,7 +45,6 @@ CPropertyTagEditor::CPropertyTagEditor(
 
 	if (m_lpMAPIProp) m_lpMAPIProp->AddRef();
 
-	CreateControls(m_lpMAPIProp ? 8 : 5);
 	InitPane(PROPTAG_TAG, TextPane::CreateSingleLinePane(IDS_PROPTAG, false));
 	InitPane(PROPTAG_ID, TextPane::CreateSingleLinePane(IDS_PROPID, false));
 	InitPane(PROPTAG_TYPE, DropDownPane::Create(IDS_PROPTYPE, 0, nullptr, false));
@@ -442,7 +440,7 @@ CPropertySelector::CPropertySelector(
 	bool bIncludeABProps,
 	_In_ LPMAPIPROP lpMAPIProp,
 	_In_ CWnd* pParentWnd) :
-	CEditor(pParentWnd, IDS_PROPSELECTOR, 0, 0, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
+	CEditor(pParentWnd, IDS_PROPSELECTOR, 0, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	m_ulPropTag = PR_NULL;
@@ -451,7 +449,6 @@ CPropertySelector::CPropertySelector(
 
 	if (m_lpMAPIProp) m_lpMAPIProp->AddRef();
 
-	CreateControls(1);
 	InitPane(0, ListPane::Create(IDS_KNOWNPROPTAGS, true, true, this));
 }
 

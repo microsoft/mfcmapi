@@ -122,7 +122,6 @@ void CAclDlg::OnAddItem()
 		this,
 		IDS_ACLADDITEM,
 		IDS_ACLADDITEMPROMPT,
-		2,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_MEMBER_RIGHTS), true));
 	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_USEREID, false));

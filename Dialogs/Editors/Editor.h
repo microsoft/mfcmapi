@@ -16,16 +16,6 @@ class CParentWnd;
 //#define CEDITOR_BUTTON_CANCEL 0x00000008 // Duplicated from MFCMAPI.h - do not modify
 #define CEDITOR_BUTTON_ACTION3 0x00000010
 
-union ControlStruct
-{
-	ViewPane* lpPane;
-	TextPane* lpTextPane;
-	CheckPane* lpCheckPane;
-	ListPane* lpListPane;
-	DropDownPane* lpDropDownPane;
-	CollapsibleTextPane* lpCollapsibleTextPane;
-};
-
 class CEditor : public CMyDialog
 {
 public:
@@ -34,13 +24,11 @@ public:
 		_In_opt_ CWnd* pParentWnd,
 		UINT uidTitle,
 		UINT uidPrompt,
-		ULONG ulNumFields,
 		ULONG ulButtonFlags);
 	CEditor(
 		_In_opt_ CWnd* pParentWnd,
 		UINT uidTitle,
 		UINT uidPrompt,
-		ULONG ulNumFields,
 		ULONG ulButtonFlags,
 		UINT uidActionButtonText1,
 		UINT uidActionButtonText2,
@@ -51,7 +39,6 @@ public:
 
 	// These functions can be used to set up a data editing dialog
 	void SetPromptPostFix(_In_ wstring szMsg);
-	void CreateControls(ULONG ulCount);
 	void InitPane(ULONG iNum, ViewPane* lpPane);
 	void SetStringA(ULONG i, string szMsg) const;
 	void SetStringW(ULONG i, wstring szMsg) const;
@@ -138,7 +125,6 @@ private:
 		_In_opt_ CWnd* pParentWnd,
 		UINT uidTitle,
 		UINT uidPrompt,
-		ULONG ulNumFields,
 		ULONG ulButtonFlags,
 		UINT uidActionButtonText1,
 		UINT uidActionButtonText2,
@@ -195,8 +181,7 @@ private:
 	UINT m_uidActionButtonText2;
 	UINT m_uidActionButtonText3;
 
-	ControlStruct* m_lpControls; // array of controls
-	ULONG m_cControls; // count of controls
+	vector<ViewPane*> m_lpControls; // array of controls
 
 	bool m_bEnableScroll;
 	CWnd m_ScrollWindow;

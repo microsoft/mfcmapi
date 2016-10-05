@@ -15,7 +15,7 @@ CTagArrayEditor::CTagArrayEditor(
 	_In_opt_ LPSPropTagArray lpTagArray,
 	bool bIsAB,
 	_In_opt_ LPMAPIPROP lpMAPIProp) :
-	CEditor(pParentWnd, uidTitle, uidPrompt, 0, CEDITOR_BUTTON_OK | (lpContentsTable ? CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_ACTION2 : 0) | CEDITOR_BUTTON_CANCEL, IDS_QUERYCOLUMNS, IDS_FLAGS, NULL)
+	CEditor(pParentWnd, uidTitle, uidPrompt, CEDITOR_BUTTON_OK | (lpContentsTable ? CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_ACTION2 : 0) | CEDITOR_BUTTON_CANCEL, IDS_QUERYCOLUMNS, IDS_FLAGS, NULL)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 
@@ -28,7 +28,6 @@ CTagArrayEditor::CTagArrayEditor(
 	m_lpMAPIProp = lpMAPIProp;
 	if (m_lpMAPIProp) m_lpMAPIProp->AddRef();
 
-	CreateControls(1);
 	InitPane(0, ListPane::Create(IDS_PROPTAGARRAY, false, false, this));
 }
 
@@ -224,7 +223,6 @@ void CTagArrayEditor::OnEditAction1()
 		this,
 		IDS_QUERYCOLUMNS,
 		IDS_QUERYCOLUMNSPROMPT,
-		1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_QUERYCOLUMNFLAGS, false));
 	MyData.SetHex(0, ulQueryColumnFlags);
@@ -260,7 +258,6 @@ void CTagArrayEditor::OnEditAction2()
 		this,
 		IDS_SETCOLUMNS,
 		IDS_SETCOLUMNSPROMPT,
-		1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_SETCOLUMNFLAGS, false));
 	MyData.SetHex(0, m_ulSetColumnsFlags);

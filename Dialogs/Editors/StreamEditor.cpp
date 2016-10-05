@@ -64,7 +64,7 @@ CStreamEditor::CStreamEditor(
 	ULONG ulRTFFlags,
 	ULONG ulInCodePage,
 	ULONG ulOutCodePage) :
-	CEditor(pParentWnd, uidTitle, uidPrompt, 0, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
+	CEditor(pParentWnd, uidTitle, uidPrompt, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 
@@ -147,7 +147,6 @@ CStreamEditor::CStreamEditor(
 
 	// Let's crack our property open and see what kind of controls we'll need for it
 	// One control for text stream, one for binary
-	CreateControls(iNumBoxes);
 	InitPane(m_iTextBox, CollapsibleTextPane::Create(IDS_STREAMTEXT, false));
 	if (bUseWrapEx)
 	{

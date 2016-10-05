@@ -20,13 +20,12 @@ enum __HexEditorFields
 };
 
 CHexEditor::CHexEditor(_In_ CParentWnd* pParentWnd, _In_ CMapiObjects* lpMapiObjects) :
-	CEditor(pParentWnd, IDS_HEXEDITOR, NULL, 0, CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_ACTION2 | CEDITOR_BUTTON_ACTION3, IDS_IMPORT, IDS_EXPORT, IDS_CLOSE)
+	CEditor(pParentWnd, IDS_HEXEDITOR, NULL, CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_ACTION2 | CEDITOR_BUTTON_ACTION3, IDS_IMPORT, IDS_EXPORT, IDS_CLOSE)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	m_lpMapiObjects = lpMapiObjects;
 	if (m_lpMapiObjects) m_lpMapiObjects->AddRef();
 
-	CreateControls(5);
 	InitPane(HEXED_ANSI, CollapsibleTextPane::Create(IDS_ANSISTRING, false));
 	InitPane(HEXED_UNICODE, CollapsibleTextPane::Create(IDS_UNISTRING, false));
 	InitPane(HEXED_BASE64, CountedTextPane::Create(IDS_BASE64STRING, false, IDS_CCH));

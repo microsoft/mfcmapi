@@ -966,7 +966,6 @@ void CSingleMAPIPropListCtrl::FindAllNamedProps()
 			this,
 			IDS_FINDNAMEPROPSLIMIT,
 			IDS_FINDNAMEPROPSLIMITPROMPT,
-			2,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_LOWERBOUND, false));
 		MyData.SetHex(0, __LOWERBOUND);
@@ -1101,7 +1100,6 @@ void CSingleMAPIPropListCtrl::CountNamedProps()
 		this,
 		IDS_COUNTNAMEDPROPS,
 		IDS_COUNTNAMEDPROPSPROMPT,
-		static_cast<ULONG>(ulHighestKnown) ? 2 : 1,
 		CEDITOR_BUTTON_OK);
 	if (ulHighestKnown)
 	{
@@ -1170,7 +1168,6 @@ void CSingleMAPIPropListCtrl::OnDeleteProperty()
 		this,
 		IDS_DELETEPROPERTY,
 		IDS_DELETEPROPERTYPROMPT,
-		static_cast<ULONG>(0),
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	WC_H(Query.DisplayDialog());
 	if (S_OK == hRes)
@@ -1402,7 +1399,6 @@ void CSingleMAPIPropListCtrl::OnEditPropAsStream(ULONG ulType, bool bEditAsRTF)
 			this,
 			IDS_USEWRAPEX,
 			IDS_USEWRAPEXPROMPT,
-			1,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyPrompt.InitPane(0, CheckPane::Create(IDS_USEWRAPEX, true, false));
 
@@ -1428,7 +1424,6 @@ void CSingleMAPIPropListCtrl::OnEditPropAsStream(ULONG ulType, bool bEditAsRTF)
 					this,
 					IDS_WRAPEXFLAGS,
 					IDS_WRAPEXFLAGSPROMPT,
-					3,
 					CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 				MyPrompt2.InitPane(0, TextPane::CreateSingleLinePane(IDS_WRAPEXFLAGS, false));
 				MyPrompt2.SetHex(0, MAPI_NATIVE_BODY);
@@ -1502,7 +1497,6 @@ void CSingleMAPIPropListCtrl::OnPasteProperty()
 		this,
 		IDS_PASTEPROP,
 		IDS_PASTEPROPPROMPT,
-		3,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 	UINT uidDropDown[] = {
@@ -1534,7 +1528,6 @@ void CSingleMAPIPropListCtrl::OnPasteProperty()
 				this,
 				IDS_PASTEPROP,
 				IDS_COPYPASTEPROMPT,
-				2,
 				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 			auto szGuid = GUIDToStringAndName(&IID_IMAPIProp);
@@ -1760,7 +1753,6 @@ void CSingleMAPIPropListCtrl::OnOpenPropertyAsTable()
 			this,
 			IDS_OPENPROPASTABLE,
 			IDS_OPENPROPASTABLEPROMPT,
-			1,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 		MyData.InitPane(0, CheckPane::Create(IDS_OPENASEXTABLE, false, false));
@@ -1803,7 +1795,6 @@ void CSingleMAPIPropListCtrl::OnPasteNamedProps()
 			this,
 			IDS_PASTENAMEDPROPS,
 			IDS_PASTENAMEDPROPSPROMPT,
-			3,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 		auto szGuid = GUIDToStringAndName(&PS_PUBLIC_STRINGS);

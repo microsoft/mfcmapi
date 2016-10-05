@@ -698,7 +698,6 @@ void CBaseDialog::OnOutlookVersion()
 		this,
 		IDS_OUTLOOKVERSIONTITLE,
 		NULL,
-		1,
 		CEDITOR_BUTTON_OK);
 
 	auto szVersionString = GetOutlookVersionString();
@@ -720,7 +719,6 @@ void CBaseDialog::OnOpenEntryID(_In_opt_ LPSBinary lpBin)
 		this,
 		IDS_OPENEID,
 		IDS_OPENEIDPROMPT,
-		10,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 	MyEID.InitPane(0, TextPane::CreateSingleLinePane(IDS_EID, BinToHexString(lpBin, false), false));
@@ -834,7 +832,6 @@ void CBaseDialog::OnCompareEntryIDs()
 		this,
 		IDS_COMPAREEIDS,
 		IDS_COMPAREEIDSPROMPTS,
-		4,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 	MyEIDs.InitPane(0, TextPane::CreateSingleLinePane(IDS_EID1, false));
@@ -891,7 +888,6 @@ void CBaseDialog::OnCompareEntryIDs()
 			this,
 			IDS_COMPAREEIDSRESULT,
 			NULL,
-			static_cast<ULONG>(0),
 			CEDITOR_BUTTON_OK);
 		Result.SetPromptPostFix(szRet);
 		(void)Result.DisplayDialog();
@@ -909,7 +905,6 @@ void CBaseDialog::OnComputeStoreHash()
 		this,
 		IDS_COMPUTESTOREHASH,
 		IDS_COMPUTESTOREHASHPROMPT,
-		4,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 	MyStoreEID.InitPane(0, TextPane::CreateSingleLinePane(IDS_STOREEID, false));
@@ -932,7 +927,6 @@ void CBaseDialog::OnComputeStoreHash()
 		this,
 		IDS_STOREHASH,
 		NULL,
-		static_cast<ULONG>(0),
 		CEDITOR_BUTTON_OK);
 	Result.SetPromptPostFix(szHash);
 	(void)Result.DisplayDialog();
@@ -954,7 +948,6 @@ void CBaseDialog::OnNotificationsOn()
 		this,
 		IDS_NOTIFICATIONS,
 		IDS_NOTIFICATIONSPROMPT,
-		3,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.SetPromptPostFix(AllFlagsToString(flagNotifEventType, true));
 	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_EID, false));

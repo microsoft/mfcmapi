@@ -58,7 +58,6 @@ void DisplayMAPISVCPath(_In_ CWnd* pParentWnd)
 		pParentWnd,
 		IDS_MAPISVCTITLE,
 		IDS_MAPISVCTEXT,
-		1,
 		CEDITOR_BUTTON_OK);
 	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_FILEPATH, true));
 	MyData.SetStringW(0, GetMAPISVCPath());
@@ -329,7 +328,6 @@ void AddServicesToMapiSvcInf()
 		nullptr,
 		IDS_ADDSERVICESTOINF,
 		IDS_ADDSERVICESTOINFPROMPT,
-		2,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.InitPane(0, CheckPane::Create(IDS_EXCHANGE, false, false));
 	MyData.InitPane(1, CheckPane::Create(IDS_PST, false, false));
@@ -356,7 +354,6 @@ void RemoveServicesFromMapiSvcInf()
 		nullptr,
 		IDS_REMOVEFROMINF,
 		IDS_REMOVEFROMINFPROMPT,
-		2,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.InitPane(0, CheckPane::Create(IDS_EXCHANGE, false, false));
 	MyData.InitPane(1, CheckPane::Create(IDS_PST, false, false));
