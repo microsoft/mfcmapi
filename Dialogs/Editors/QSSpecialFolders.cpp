@@ -26,7 +26,7 @@ private:
 SpecialFolderEditor::SpecialFolderEditor(
 	_In_ CWnd* pParentWnd,
 	_In_ LPMDB lpMDB) :
-	CEditor(pParentWnd, IDS_QSSPECIALFOLDERS, NULL, 1, CEDITOR_BUTTON_OK, NULL, NULL, NULL)
+	CEditor(pParentWnd, IDS_QSSPECIALFOLDERS, NULL, CEDITOR_BUTTON_OK, NULL, NULL, NULL)
 {
 	TRACE_CONSTRUCTOR(SPECIALFOLDERCLASS);
 
@@ -207,7 +207,6 @@ _Check_return_ bool SpecialFolderEditor::DoListEdit(ULONG ulListNum, int iItem, 
 		this,
 		IDS_QSSPECIALFOLDER,
 		NULL,
-		1,
 		CEDITOR_BUTTON_OK);
 	MyResults.InitPane(0, TextPane::CreateMultiLinePane(NULL, true));
 

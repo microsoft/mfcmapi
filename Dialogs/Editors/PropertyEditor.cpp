@@ -113,7 +113,7 @@ CPropertyEditor::CPropertyEditor(
 	_In_opt_ LPMAPIPROP lpMAPIProp,
 	ULONG ulPropTag,
 	_In_opt_ LPSPropValue lpsPropValue) :
-	CEditor(pParentWnd, uidTitle, uidPrompt, 0, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
+	CEditor(pParentWnd, uidTitle, uidPrompt, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
 {
 	TRACE_CONSTRUCTOR(SVCLASS);
 
@@ -135,9 +135,6 @@ CPropertyEditor::CPropertyEditor(
 
 	auto szPromptPostFix = format(L"%ws%ws", uidPrompt ? L"\r\n" : L"", TagToString(m_ulPropTag | (m_bMVRow ? MV_FLAG : NULL), m_lpMAPIProp, m_bIsAB, false).c_str()); // STRING_OK
 	SetPromptPostFix(szPromptPostFix);
-
-	// Let's crack our property open and see what kind of controls we'll need for it
-	CreatePropertyControls();
 
 	InitPropertyControls();
 }
@@ -162,49 +159,6 @@ void CPropertyEditor::OnOK()
 	// Write the property to the object if we're not editing a row of a MV property
 	if (!m_bMVRow) WriteSPropValueToObject();
 	CMyDialog::OnOK(); // don't need to call CEditor::OnOK
-}
-
-void CPropertyEditor::CreatePropertyControls()
-{
-	switch (PROP_TYPE(m_ulPropTag))
-	{
-	case PT_APPTIME:
-	case PT_BOOLEAN:
-	case PT_DOUBLE:
-	case PT_OBJECT:
-	case PT_R4:
-		CreateControls(1);
-		break;
-	case PT_ERROR:
-		CreateControls(2);
-		break;
-	case PT_I8:
-	case PT_BINARY:
-		CreateControls(3);
-		break;
-	case PT_CURRENCY:
-	case PT_LONG:
-	case PT_I2:
-	case PT_SYSTIME:
-		CreateControls(3);
-		break;
-	case PT_STRING8:
-	case PT_UNICODE:
-		CreateControls(2);
-		break;
-	case PT_CLSID:
-		CreateControls(1);
-		break;
-	case PT_ACTIONS:
-		CreateControls(1);
-		break;
-	case PT_SRESTRICTION:
-		CreateControls(1);
-		break;
-	default:
-		CreateControls(2);
-		break;
-	}
 }
 
 void CPropertyEditor::InitPropertyControls()
@@ -933,7 +887,7 @@ CMultiValuePropertyEditor::CMultiValuePropertyEditor(
 	_In_opt_ LPMAPIPROP lpMAPIProp,
 	ULONG ulPropTag,
 	_In_opt_ LPSPropValue lpsPropValue) :
-	CEditor(pParentWnd, uidTitle, uidPrompt, 0, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
+	CEditor(pParentWnd, uidTitle, uidPrompt, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
 {
 	TRACE_CONSTRUCTOR(MVCLASS);
 
@@ -948,9 +902,6 @@ CMultiValuePropertyEditor::CMultiValuePropertyEditor(
 
 	auto szPromptPostFix = format(L"\r\n%ws", TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, false).c_str()); // STRING_OK
 	SetPromptPostFix(szPromptPostFix);
-
-	// Let's crack our property open and see what kind of controls we'll need for it
-	CreatePropertyControls();
 
 	InitPropertyControls();
 }
@@ -997,19 +948,6 @@ void CMultiValuePropertyEditor::OnOK()
 	WriteMultiValueStringsToSPropValue();
 	WriteSPropValueToObject();
 	CMyDialog::OnOK(); // don't need to call CEditor::OnOK
-}
-
-void CMultiValuePropertyEditor::CreatePropertyControls()
-{
-	if (PT_MV_BINARY == PROP_TYPE(m_ulPropTag) ||
-		PT_MV_LONG == PROP_TYPE(m_ulPropTag))
-	{
-		CreateControls(2);
-	}
-	else
-	{
-		CreateControls(1);
-	}
 }
 
 void CMultiValuePropertyEditor::InitPropertyControls()

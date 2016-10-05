@@ -444,7 +444,6 @@ void CMainDlg::OnOpenDefaultMessageStore()
 			this,
 			IDS_OPENDEFMSGSTORE,
 			IDS_OPENWITHFLAGSPROMPT,
-			1,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyPrompt.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
 		MyPrompt.InitPane(0, TextPane::CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, false));
@@ -531,7 +530,6 @@ void CMainDlg::OnOpenMessageStoreEID()
 		this,
 		IDS_OPENSTOREEID,
 		IDS_OPENSTOREEIDPROMPT,
-		5,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 	MyEID.InitPane(0, TextPane::CreateSingleLinePane(IDS_EID, false));
@@ -603,7 +601,6 @@ void CMainDlg::OnOpenPublicFolders()
 		this,
 		IDS_OPENPUBSTORE,
 		IDS_OPENWITHFLAGSPROMPT,
-		1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyPrompt.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
 	MyPrompt.InitPane(0, TextPane::CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, false));
@@ -829,7 +826,6 @@ void CMainDlg::OnDumpServerContents()
 		this,
 		IDS_DUMPSERVERPRIVATESTORE,
 		IDS_SERVERNAMEPROMPT,
-		1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_SERVERNAME, szServerName, false));
 
@@ -879,7 +875,6 @@ void CMainDlg::OnLogoffWithFlags()
 		this,
 		IDS_LOGOFF,
 		IDS_LOGOFFPROMPT,
-		1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_FLAGSINHEX, false));
 	MyData.SetHex(0, MAPI_LOGOFF_UI);
@@ -923,7 +918,6 @@ void CMainDlg::OnLogonWithFlags()
 		this,
 		IDS_PROFFORMAPILOGON,
 		IDS_PROFFORMAPILOGONPROMPT,
-		2,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_PROFILE, false));
 	MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_FLAGSINHEX, false));
@@ -992,7 +986,6 @@ void CMainDlg::OnSelectFormContainer()
 			this,
 			IDS_SELECTFORM,
 			IDS_SELECTFORMPROMPT,
-			static_cast<ULONG>(1),
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyFlags.InitPane(0, TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 		MyFlags.SetHex(0, MAPIFORM_SELECT_ALL_REGISTRIES);
@@ -1038,7 +1031,6 @@ void CMainDlg::OnOpenFormContainer()
 			this,
 			IDS_OPENFORMCONTAINER,
 			IDS_OPENFORMCONTAINERPROMPT,
-			static_cast<ULONG>(1),
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyFlags.InitPane(0, TextPane::CreateSingleLinePane(IDS_HFRMREG, false));
 		MyFlags.SetHex(0, MAPIFORM_SELECT_ALL_REGISTRIES);
@@ -1096,7 +1088,6 @@ void CMainDlg::OnLoadMAPI()
 		this,
 		IDS_LOADMAPI,
 		IDS_LOADMAPIPROMPT,
-		1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 	WC_D(cchDllPath, GetSystemDirectoryW(szDLLPath, _countof(szDLLPath)));
@@ -1124,7 +1115,6 @@ void CMainDlg::OnUnloadMAPI()
 		this,
 		IDS_UNLOADMAPI,
 		IDS_MAPICRASHWARNING,
-		0,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 	WC_H(MyData.DisplayDialog());
@@ -1146,7 +1136,6 @@ void CMainDlg::OnDisplayMAPIPath()
 		this,
 		IDS_MAPIPATHTITLE,
 		NULL,
-		3,
 		CEDITOR_BUTTON_OK);
 	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_FILEPATH, true));
 	if (hMAPI)
@@ -1173,7 +1162,6 @@ void CMainDlg::OnMAPIInitialize()
 		this,
 		IDS_MAPIINIT,
 		IDS_MAPIINITPROMPT,
-		1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_FLAGSINHEX, false));
 	MyData.SetHex(0, NULL);
@@ -1193,7 +1181,6 @@ void CMainDlg::OnMAPIUninitialize()
 		this,
 		IDS_MAPIUNINIT,
 		IDS_MAPICRASHWARNING,
-		0,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 	WC_H(MyData.DisplayDialog());
@@ -1246,7 +1233,6 @@ void CMainDlg::OnQueryDefaultMessageOpt()
 		this,
 		IDS_QUERYDEFMSGOPT,
 		IDS_ADDRESSTYPEPROMPT,
-		1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_ADDRESSTYPE, wstring(L"EX"), false)); // STRING_OK
 
@@ -1271,7 +1257,6 @@ void CMainDlg::OnQueryDefaultMessageOpt()
 				this,
 				IDS_QUERYDEFMSGOPT,
 				IDS_RESULTOFCALLPROMPT,
-				lpOptions ? 2 : 1,
 				CEDITOR_BUTTON_OK);
 			MyResult.InitPane(0, TextPane::CreateSingleLinePane(IDS_COUNTOPTIONS, true));
 			MyResult.SetHex(0, cValues);
@@ -1312,7 +1297,6 @@ void CMainDlg::OnQueryDefaultRecipOpt()
 		this,
 		IDS_QUERYDEFRECIPOPT,
 		IDS_ADDRESSTYPEPROMPT,
-		1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_ADDRESSTYPE, wstring(L"EX"), false)); // STRING_OK
 
@@ -1338,7 +1322,6 @@ void CMainDlg::OnQueryDefaultRecipOpt()
 				this,
 				IDS_QUERYDEFRECIPOPT,
 				IDS_RESULTOFCALLPROMPT,
-				lpOptions ? 2 : 1,
 				CEDITOR_BUTTON_OK);
 			MyResult.InitPane(0, TextPane::CreateSingleLinePane(IDS_COUNTOPTIONS, true));
 			MyResult.SetHex(0, cValues);
@@ -1390,7 +1373,6 @@ void CMainDlg::OnQueryIdentity()
 			this,
 			IDS_QUERYID,
 			IDS_QUERYIDPROMPT,
-			1,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyPrompt.InitPane(0, CheckPane::Create(IDS_DISPLAYDETAILSDLG, false, false));
 		WC_H(MyPrompt.DisplayDialog());
@@ -1457,7 +1439,6 @@ void CMainDlg::OnSetDefaultStore()
 				this,
 				IDS_SETDEFSTORE,
 				IDS_SETDEFSTOREPROMPT,
-				1,
 				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 			MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 			MyData.SetHex(0, MAPI_DEFAULT_STORE);
@@ -1485,7 +1466,6 @@ void CMainDlg::OnIsAttachmentBlocked()
 		this,
 		IDS_ISATTBLOCKED,
 		IDS_ENTERFILENAME,
-		1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_FILENAME, false));
 
@@ -1500,7 +1480,6 @@ void CMainDlg::OnIsAttachmentBlocked()
 				this,
 				IDS_ISATTBLOCKED,
 				IDS_RESULTOFCALLPROMPT,
-				1,
 				CEDITOR_BUTTON_OK);
 			auto szResult = loadstring(bBlocked ? IDS_TRUE : IDS_FALSE);
 			MyResult.InitPane(0, TextPane::CreateSingleLinePane(IDS_RESULT, szResult, true));
@@ -1548,7 +1527,6 @@ void CMainDlg::OnLaunchProfileWizard()
 		this,
 		IDS_LAUNCHPROFWIZ,
 		IDS_LAUNCHPROFWIZPROMPT,
-		2,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 	MyData.SetHex(0, MAPI_PW_LAUNCHED_BY_CONFIG);
@@ -1944,7 +1922,6 @@ void CMainDlg::OnComputeGivenStoreHash()
 				this,
 				IDS_STOREHASH,
 				NULL,
-				static_cast<ULONG>(0),
 				CEDITOR_BUTTON_OK);
 			Result.SetPromptPostFix(szHash);
 			(void)Result.DisplayDialog();

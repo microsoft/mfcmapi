@@ -50,10 +50,9 @@ enum __DbgViewFields
 static wstring CLASS = L"CDbgView";
 
 CDbgView::CDbgView(_In_ CParentWnd* pParentWnd) :
-	CEditor(pParentWnd, IDS_DBGVIEW, NULL, 0, CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_ACTION2, IDS_CLEAR, IDS_CLOSE, NULL)
+	CEditor(pParentWnd, IDS_DBGVIEW, NULL, CEDITOR_BUTTON_ACTION1 | CEDITOR_BUTTON_ACTION2, IDS_CLEAR, IDS_CLOSE, NULL)
 {
 	TRACE_CONSTRUCTOR(CLASS);
-	CreateControls(DBGVIEW_NUMFIELDS);
 	InitPane(DBGVIEW_TAGS, TextPane::CreateSingleLinePane(IDS_REGKEY_DEBUG_TAG, false));
 	SetHex(DBGVIEW_TAGS, GetDebugLevel());
 	InitPane(DBGVIEW_PAUSE, CheckPane::Create(IDS_PAUSE, false, false));

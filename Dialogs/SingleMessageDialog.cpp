@@ -99,7 +99,6 @@ void SingleMessageDialog::OnRTFSync()
 		this,
 		IDS_CALLRTFSYNC,
 		IDS_CALLRTFSYNCPROMPT,
-		1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_FLAGS, false));

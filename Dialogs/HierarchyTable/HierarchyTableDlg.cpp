@@ -136,7 +136,6 @@ void CHierarchyTableDlg::OnDisplayHierarchyTable()
 			this,
 			IDS_DISPLAYHIEARCHYTABLE,
 			IDS_DISPLAYHIEARCHYTABLEPROMPT,
-			1,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.InitPane(0, CheckPane::Create(IDS_CONVENIENTDEPTH, false, false));
 
@@ -203,7 +202,6 @@ void CHierarchyTableDlg::OnEditSearchCriteria()
 				this,
 				IDS_CALLSETSEARCHCRITERIA,
 				IDS_CALLSETSEARCHCRITERIAPROMPT,
-				0,
 				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 			WC_H(MyYesNoDialog.DisplayDialog());
 			if (S_OK == hRes)

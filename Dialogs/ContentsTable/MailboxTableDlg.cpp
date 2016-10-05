@@ -142,7 +142,6 @@ void CMailboxTableDlg::OnOpenWithFlags()
 		this,
 		IDS_OPENWITHFLAGS,
 		IDS_OPENWITHFLAGSPROMPT,
-		1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyPrompt.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
 	MyPrompt.InitPane(0, TextPane::CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, false));
@@ -174,7 +173,6 @@ void CMailboxTableDlg::OnCreatePropertyStringRestriction()
 			this,
 			IDS_SEARCHCRITERIA,
 			IDS_MBSEARCHCRITERIAPROMPT,
-			2,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.SetPromptPostFix(AllFlagsToString(flagFuzzyLevel, true));
 

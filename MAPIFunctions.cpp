@@ -2673,7 +2673,6 @@ HRESULT CopyTo(HWND hWnd, _In_ LPMAPIPROP lpSource, _In_ LPMAPIPROP lpDest, LPCG
 			nullptr,
 			IDS_COPYTO,
 			IDS_COPYPASTEPROMPT,
-			2,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_INTERFACE, GUIDToStringAndName(lpGUID), false));

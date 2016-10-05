@@ -326,7 +326,6 @@ void CFolderDlg::OnAddOneOffAddress()
 		this,
 		IDS_ADDONEOFF,
 		NULL,
-		5,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 	MyData.InitPane(0, TextPane::CreateSingleLinePaneID(IDS_DISPLAYNAME, IDS_DISPLAYNAMEVALUE, false));
@@ -452,7 +451,6 @@ _Check_return_ bool CFolderDlg::HandlePaste()
 		this,
 		IDS_COPYMESSAGE,
 		IDS_COPYMESSAGEPROMPT,
-		2,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 	MyData.InitPane(0, CheckPane::Create(IDS_MESSAGEMOVE, false, false));
@@ -591,7 +589,6 @@ void CFolderDlg::OnDeleteAttachments()
 		this,
 		IDS_DELETEATTACHMENTS,
 		IDS_DELETEATTACHMENTSPROMPT,
-		1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_FILENAME, false));
@@ -662,7 +659,6 @@ void CFolderDlg::OnDeleteSelectedItem()
 			this,
 			IDS_DELETEITEM,
 			IDS_DELETEITEMPROMPT,
-			1,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		UINT uidDropDown[] = {
 		IDS_DDDELETETODELETED,
@@ -793,7 +789,6 @@ void CFolderDlg::OnLoadFromMSG()
 			this,
 			IDS_LOADMSG,
 			IDS_LOADMSGPROMPT,
-			1,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 		UINT uidDropDown[] = {
@@ -905,7 +900,6 @@ void CFolderDlg::OnManualResolve()
 			this,
 			IDS_MANUALRESOLVE,
 			IDS_MANUALRESOLVEPROMPT,
-			1,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_DISPLAYNAME, false));
@@ -1043,7 +1037,6 @@ void CFolderDlg::OnNewCustomForm()
 			this,
 			IDS_NEWCUSTOMFORM,
 			IDS_NEWCUSTOMFORMPROMPT1,
-			1,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		UINT uidDropDown[] = {
 		IDS_DDENTERFORMCLASS,
@@ -1063,7 +1056,6 @@ void CFolderDlg::OnNewCustomForm()
 				this,
 				IDS_NEWCUSTOMFORM,
 				IDS_NEWCUSTOMFORMPROMPT2,
-				1,
 				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 			MyClass.InitPane(0, TextPane::CreateSingleLinePane(IDS_FORMTYPE, wstring(L"IPM.Note"), false)); // STRING_OK
 
@@ -1245,7 +1237,6 @@ void CFolderDlg::OnExecuteVerbOnForm()
 			this,
 			IDS_EXECUTEVERB,
 			IDS_EXECUTEVERBPROMPT,
-			1,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_LAST_VERB_EXECUTED), false));
 
@@ -1339,7 +1330,6 @@ void CFolderDlg::OnRemoveOneOff()
 		this,
 		IDS_REMOVEONEOFF,
 		IDS_REMOVEONEOFFPROMPT,
-		1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.InitPane(0, CheckPane::Create(IDS_REMOVEPROPDEFSTREAM, true, false));
 
@@ -1394,7 +1384,6 @@ void CFolderDlg::OnRTFSync()
 		this,
 		IDS_CALLRTFSYNC,
 		IDS_CALLRTFSYNCPROMPT,
-		1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_FLAGS, false));
@@ -1496,7 +1485,6 @@ void CFolderDlg::OnSaveMessageToFile()
 		this,
 		IDS_SAVEMESSAGETOFILE,
 		IDS_SAVEMESSAGETOFILEPROMPT,
-		1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 	UINT uidDropDown[] = {
@@ -1758,7 +1746,6 @@ void CFolderDlg::OnSendBulkMail()
 		this,
 		IDS_SENDBULKMAIL,
 		IDS_SENDBULKMAILPROMPT,
-		5,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_NUMMESSAGES, false));
 	MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_RECIPNAME, false));
@@ -1812,7 +1799,6 @@ void CFolderDlg::OnSetReadFlag()
 		this,
 		IDS_SETREADFLAG,
 		IDS_SETREADFLAGPROMPT,
-		1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 	MyFlags.InitPane(0, TextPane::CreateSingleLinePane(IDS_FLAGSINHEX, false));
@@ -1882,7 +1868,6 @@ void CFolderDlg::OnGetMessageOptions()
 		this,
 		IDS_MESSAGEOPTIONS,
 		IDS_ADDRESSTYPEPROMPT,
-		1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyAddress.InitPane(0, TextPane::CreateSingleLinePane(IDS_ADDRESSTYPE, wstring(L"EX"), false)); // STRING_OK
 	WC_H(MyAddress.DisplayDialog());
@@ -1949,7 +1934,6 @@ _Check_return_ HRESULT CFolderDlg::OnGetMessageStatus(int /*iItem*/, _In_ SortLi
 			this,
 			IDS_MESSAGESTATUS,
 			NULL,
-			1,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyStatus.InitPane(0, TextPane::CreateSingleLinePane(IDS_MESSAGESTATUS, true));
 		MyStatus.SetHex(0, ulMessageStatus);
@@ -1971,7 +1955,6 @@ void CFolderDlg::OnSetMessageStatus()
 		this,
 		IDS_SETMSGSTATUS,
 		IDS_SETMSGSTATUSPROMPT,
-		2,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_STATUSINHEX, false));

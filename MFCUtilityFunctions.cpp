@@ -370,7 +370,6 @@ _Check_return_ HRESULT DisplayExchangeTable(
 				lpHostDlg,
 				IDS_ACLTABLE,
 				IDS_ACLTABLEPROMPT,
-				1,
 				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 			MyData.InitPane(0, CheckPane::Create(IDS_FBRIGHTSVISIBLE, false, false));
@@ -427,7 +426,6 @@ _Check_return_ bool bShouldCancel(_In_opt_ CWnd* cWnd, HRESULT hResPrev)
 			cWnd,
 			ID_PRODUCTNAME,
 			IDS_CANCELPROMPT,
-			bGotError ? 1 : 0,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		if (bGotError)
 		{
@@ -470,7 +468,6 @@ void DisplayMailboxTable(_In_ CParentWnd* lpParent,
 			static_cast<CWnd*>(lpParent),
 			IDS_DISPLAYMAILBOXTABLE,
 			IDS_SERVERNAMEPROMPT,
-			4,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_SERVERNAME, szServerName, false));
 		MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_OFFSET, false));
@@ -607,7 +604,6 @@ void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
 			static_cast<CWnd*>(lpParent),
 			IDS_DISPLAYPFTABLE,
 			IDS_DISPLAYPFTABLEPROMPT,
-			5,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_SERVERNAME, szServerName, false));
 		MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_OFFSET, false));
@@ -739,7 +735,6 @@ void ResolveMessageClass(_In_ CMapiObjects* lpMapiObjects, _In_opt_ LPMAPIFOLDER
 			nullptr,
 			IDS_RESOLVECLASS,
 			IDS_RESOLVECLASSPROMPT,
-			static_cast<ULONG>(2),
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_CLASS, false));
 		MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_FLAGS, false));

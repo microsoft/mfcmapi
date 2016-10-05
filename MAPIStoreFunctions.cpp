@@ -324,7 +324,6 @@ string GetServerName(_In_ LPMAPISESSION lpSession)
 			nullptr,
 			IDS_SERVERNAME,
 			IDS_SERVERNAMEMISSINGPROMPT,
-			1,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_SERVERNAME, false));
 
@@ -652,7 +651,6 @@ _Check_return_ HRESULT OpenMailboxWithPrompt(
 		nullptr,
 		IDS_OPENOTHERUSER,
 		IDS_OPENWITHFLAGSPROMPT,
-		4,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyPrompt.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
 	MyPrompt.InitPane(0, TextPane::CreateSingleLinePane(IDS_SERVERNAME, stringTowstring(szServerName), false));

@@ -56,7 +56,6 @@ void LogFunctionCall(
 			nullptr,
 			ID_PRODUCTNAME,
 			NULL,
-			static_cast<ULONG>(0),
 			CEDITOR_BUTTON_OK);
 		Err.SetPromptPostFix(szErrString);
 		(void)Err.DisplayDialog();
@@ -92,7 +91,6 @@ void __cdecl ErrDialog(_In_z_ LPCSTR szFile, int iLine, UINT uidErrorFmt, ...)
 		nullptr,
 		ID_PRODUCTNAME,
 		NULL,
-		static_cast<ULONG>(0),
 		CEDITOR_BUTTON_OK);
 	Err.SetPromptPostFix(szCombo);
 	(void)Err.DisplayDialog();

@@ -231,7 +231,6 @@ _Check_return_ HRESULT GetConversionToEMLOptions(_In_ CWnd* pParentWnd,
 		pParentWnd,
 		IDS_CONVERTTOEML,
 		IDS_CONVERTTOEMLPROMPT,
-		8,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 
 	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_CONVERTFLAGS, false));
@@ -274,7 +273,6 @@ _Check_return_ HRESULT GetConversionFromEMLOptions(_In_ CWnd* pParentWnd,
 		pParentWnd,
 		IDS_CONVERTFROMEML,
 		IDS_CONVERTFROMEMLPROMPT,
-		pbUnicode?7:6,
 		CEDITOR_BUTTON_OK|CEDITOR_BUTTON_CANCEL);
 
 	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_CONVERTFLAGS, false));

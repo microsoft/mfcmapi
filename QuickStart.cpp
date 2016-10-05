@@ -277,7 +277,6 @@ void OnQSDisplayNicknameCache(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 				lpHostDlg,
 				IDS_NICKNAME,
 				NULL,
-				2,
 				CEDITOR_BUTTON_OK);
 			MyResults.InitPane(0, CollapsibleTextPane::Create(NULL, true));
 			MyResults.InitPane(1, CountedTextPane::Create(IDS_HEX, true, IDS_CB));
@@ -414,7 +413,6 @@ void OnQSDisplayQuota(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 			lpHostDlg,
 			IDS_QUOTA,
 			NULL,
-			1,
 			CEDITOR_BUTTON_OK);
 		MyResults.InitPane(0, TextPane::CreateMultiLinePane(NULL, true));
 		MyResults.SetStringW(0, szQuotaString);
@@ -486,17 +484,11 @@ void OnQSLookupThumbail(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 		if (lpMailUser) lpMailUser->Release();
 	}
 
-	auto bPhotoFound = SUCCEEDED(hRes) &&
-		lpThumbnail &&
-		PR_EMS_AB_THUMBNAIL_PHOTO == lpThumbnail->ulPropTag &&
-		lpThumbnail->Value.bin.cb != 0;
-
 	hRes = S_OK;
 	CEditor MyResults(
 		lpHostDlg,
 		IDS_QSTHUMBNAIL,
 		NULL,
-		bPhotoFound?2:1,
 		CEDITOR_BUTTON_OK);
 
 	if (lpThumbnail)

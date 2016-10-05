@@ -1062,7 +1062,6 @@ _Check_return_ __declspec(dllexport) HRESULT __cdecl SimpleDialog(_In_z_ LPWSTR 
 		nullptr,
 		NULL,
 		NULL,
-		0,
 		CEDITOR_BUTTON_OK);
 	MySimpleDialog.SetAddInTitle(szTitle);
 
@@ -1088,7 +1087,6 @@ _Check_return_ __declspec(dllexport) HRESULT __cdecl ComplexDialog(_In_ LPADDIND
 		nullptr,
 		NULL,
 		NULL,
-		lpDialog->ulNumControls,
 		lpDialog->ulButtonFlags);
 	MyComplexDialog.SetAddInTitle(lpDialog->szTitle);
 	MyComplexDialog.SetPromptPostFix(lpDialog->szPrompt);

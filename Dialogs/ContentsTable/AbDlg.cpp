@@ -241,7 +241,6 @@ void CAbDlg::OnDeleteSelectedItem()
 		this,
 		IDS_DELETEABENTRY,
 		IDS_DELETEABENTRYPROMPT,
-		static_cast<ULONG>(0),
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	WC_H(Query.DisplayDialog());
 	if (S_OK == hRes)
@@ -292,7 +291,6 @@ _Check_return_ bool CAbDlg::HandlePaste()
 			this,
 			IDS_CALLCOPYENTRIES,
 			IDS_CALLCOPYENTRIESPROMPT,
-			1,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_FLAGS, false));
@@ -330,7 +328,6 @@ void CAbDlg::OnCreatePropertyStringRestriction()
 		this,
 		IDS_SEARCHCRITERIA,
 		IDS_ABSEARCHCRITERIAPROMPT,
-		1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_NAME, false));

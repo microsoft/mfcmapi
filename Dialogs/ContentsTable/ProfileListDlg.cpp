@@ -154,7 +154,6 @@ void CProfileListDlg::OnLaunchProfileWizard()
 		this,
 		IDS_LAUNCHPROFWIZ,
 		IDS_LAUNCHPROFWIZPROMPT,
-		2,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_FLAGS, false));
 	MyData.SetHex(0, MAPI_PW_LAUNCHED_BY_CONFIG);
@@ -196,7 +195,6 @@ void CProfileListDlg::OnAddExchangeToProfile()
 		this,
 		IDS_NEWEXPROF,
 		IDS_NEWEXPROFPROMPT,
-		2,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_SERVERNAME, false));
@@ -256,7 +254,6 @@ void CProfileListDlg::AddPSTToProfile(bool bUnicodePST)
 				this,
 				IDS_PSTPATH,
 				IDS_PSTPATHPROMPT,
-				3,
 				CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 			MyFile.InitPane(0, TextPane::CreateSingleLinePane(IDS_SERVICE, file, false));
 			MyFile.InitPane(1, CheckPane::Create(IDS_PSTDOPW, false, false));
@@ -304,7 +301,6 @@ void CProfileListDlg::OnAddServiceToProfile()
 		this,
 		IDS_NEWSERVICE,
 		IDS_NEWSERVICEPROMPT,
-		2,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_SERVICE, false));
 	MyData.InitPane(1, CheckPane::Create(IDS_DISPLAYSERVICEUI, true, false));
@@ -336,7 +332,6 @@ void CProfileListDlg::OnCreateProfile()
 		this,
 		IDS_NEWPROF,
 		IDS_NEWPROFPROMPT,
-		1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_PROFILE, false));
 
@@ -413,7 +408,6 @@ void CProfileListDlg::OnGetProfileServiceVersion()
 			this,
 			IDS_PROFILESERVERVERSIONTITLE,
 			IDS_PROFILESERVERVERSIONPROMPT,
-			5,
 			CEDITOR_BUTTON_OK);
 
 		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_PROFILESERVERVERSION, true));
@@ -488,7 +482,6 @@ void CProfileListDlg::OnOpenProfileByName()
 		this,
 		IDS_OPENPROFILE,
 		NULL,
-		1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_OPENPROFILEPROMPT, false));
 
@@ -537,7 +530,6 @@ _Check_return_ bool CProfileListDlg::HandlePaste()
 		this,
 		IDS_COPYPROFILE,
 		NULL,
-		1,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_COPYPROFILEPROMPT, stringTowstring(szOldProfile), false));

@@ -487,7 +487,6 @@ void CContentsTableDlg::OnCreatePropertyStringRestriction()
 			this,
 			IDS_SEARCHCRITERIA,
 			IDS_CONTSEARCHCRITERIAPROMPT,
-			3,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		MyData.SetPromptPostFix(AllFlagsToString(flagFuzzyLevel, true));
 
@@ -548,7 +547,6 @@ void CContentsTableDlg::OnCreateRangeRestriction()
 			this,
 			IDS_SEARCHCRITERIA,
 			IDS_RANGESEARCHCRITERIAPROMPT,
-			2,
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_SUBSTRING, false));
@@ -640,7 +638,6 @@ void CContentsTableDlg::OnSortTable()
 		this,
 		IDS_SORTTABLE,
 		IDS_SORTTABLEPROMPT1,
-		6,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
 	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_CSORTS, false));
@@ -692,7 +689,6 @@ void CContentsTableDlg::OnSortTable()
 					this,
 					IDS_SORTORDER,
 					IDS_SORTORDERPROMPT,
-					1,
 					CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 				UINT uidDropDown[] = {
 				IDS_DDTABLESORTASCEND,
