@@ -1304,17 +1304,20 @@ void CSingleMAPIPropListCtrl::OnEditGivenProp(ULONG ulPropTag)
 
 	auto lpSourceObj = m_lpPropBag->GetMAPIProp();
 
-	// Simple trick to ensure PR_RTF_COMPRESSED is opened with our stream editor - we don't even try it with GetProp
+	auto bUseStream = false;
+
 	if (PROP_ID(PR_RTF_COMPRESSED) == PROP_ID(ulPropTag))
 	{
-		hRes = MAPI_E_NOT_ENOUGH_MEMORY;
+		bUseStream = true;
 	}
 	else
 	{
 		WC_H(m_lpPropBag->GetProp(ulPropTag, &lpEditProp));
 	}
 
-	if (MAPI_E_NOT_ENOUGH_MEMORY == hRes || MAPI_E_NOT_FOUND == hRes)
+	if (MAPI_E_NOT_ENOUGH_MEMORY == hRes) bUseStream = true;
+
+	if (bUseStream)
 	{
 		hRes = S_OK;
 		CStreamEditor MyEditor(
