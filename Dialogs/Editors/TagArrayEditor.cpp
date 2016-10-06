@@ -45,7 +45,7 @@ BOOL CTagArrayEditor::OnInitDialog()
 
 	ReadTagArrayToList(0);
 
-	UpdateListButtons();
+	UpdateButtons();
 	return bRet;
 }
 
@@ -238,7 +238,7 @@ void CTagArrayEditor::OnEditAction1()
 			m_lpTagArray = lpTagArray;
 
 			ReadTagArrayToList(0);
-			UpdateListButtons();
+			UpdateButtons();
 		}
 	}
 }

@@ -26,12 +26,12 @@ public:
 	_Check_return_ SortListData* GetSelectedListRowData() const;
 	void InsertColumn(int nCol, UINT uidText);
 	void SetColumnType(int nCol, ULONG ulPropType) const;
-	void UpdateListButtons();
 	_Check_return_ bool OnEditListEntry();
 	wstring GetItemText(_In_ int nItem, _In_ int nSubItem) const;
 
 private:
 	void Setup(bool bAllowSort, CEditor* lpEdit);
+	void UpdateButtons() override;
 
 	bool IsType(__ViewTypes vType) override;
 	void Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc) override;

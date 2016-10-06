@@ -51,6 +51,7 @@ public:
 		int iEditHeight); // height of an edit control
 	void SetAddInLabel(wstring szLabel);
 	bool MatchID(UINT nID) const;
+	virtual void UpdateButtons();
 
 protected:
 	int m_iControl; // Number of the view pane in the view - used for callbacks and layout

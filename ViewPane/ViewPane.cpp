@@ -154,3 +154,7 @@ bool ViewPane::MatchID(UINT nID) const
 {
 	return nID == m_nID;
 }
+
+void ViewPane::UpdateButtons()
+{
+}

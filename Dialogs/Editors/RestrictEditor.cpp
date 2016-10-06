@@ -491,7 +491,7 @@ BOOL CResAndOrEditor::OnInitDialog()
 
 	InitListFromRestriction(0, m_lpRes);
 
-	UpdateListButtons();
+	UpdateButtons();
 
 	return bRet;
 }
@@ -670,7 +670,7 @@ BOOL CResCommentEditor::OnInitDialog()
 
 	InitListFromPropArray(0, m_lpSourceRes->res.resComment.cValues, m_lpSourceRes->res.resComment.lpProp);
 
-	UpdateListButtons();
+	UpdateButtons();
 
 	return bRet;
 }
@@ -1319,7 +1319,7 @@ BOOL CCriteriaEditor::OnInitDialog()
 
 	InitListFromEntryList(LISTNUM, m_lpSourceEntryList);
 
-	UpdateListButtons();
+	UpdateButtons();
 
 	return bRet;
 }
