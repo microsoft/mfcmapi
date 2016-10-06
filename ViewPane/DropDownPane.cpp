@@ -42,12 +42,20 @@ DropDownPane* DropDownPane::CreateGuid(UINT uidLabel, bool bReadOnly)
 	return pane;
 }
 
+DropDownPane::DropDownPane()
+{
+	m_iDropSelection = CB_ERR;
+	m_iDropSelectionValue = 0;
+	m_ulDropList = 0;
+	m_lpuidDropList = nullptr;
+	m_lpnaeDropList = nullptr;
+	m_bGUID = false;
+}
+
 void DropDownPane::Setup(ULONG ulDropList, _In_opt_count_(ulDropList) UINT* lpuidDropList, _In_opt_count_(ulDropList) LPNAME_ARRAY_ENTRY lpnaeDropList, bool bGUID)
 {
 	m_ulDropList = ulDropList;
 	m_lpuidDropList = lpuidDropList;
-	m_iDropSelection = CB_ERR;
-	m_iDropSelectionValue = 0;
 	m_lpnaeDropList = lpnaeDropList;
 	m_bGUID = bGUID;
 }

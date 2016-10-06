@@ -22,6 +22,7 @@ public:
 	_Check_return_ DWORD_PTR GetDropDownValue() const;
 
 protected:
+	DropDownPane();
 	bool IsType(__ViewTypes vType) override;
 	ULONG GetFlags() override;
 	void SetSelection(DWORD_PTR iSelection);
@@ -29,7 +30,6 @@ protected:
 
 	CComboBox m_DropDown;
 	DWORD_PTR m_iDropSelectionValue;
-
 
 private:
 	void Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc) override;
