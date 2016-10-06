@@ -16,6 +16,14 @@ CountedTextPane* CountedTextPane::CountedTextPane::Create(UINT uidLabel, bool bR
 	return lpPane;
 }
 
+CountedTextPane::CountedTextPane()
+{
+	m_bMultiline = true;
+	m_iCountLabelWidth = 0;
+
+	m_iCount = 0;
+}
+
 bool CountedTextPane::IsType(__ViewTypes vType)
 {
 	return CTRL_COUNTEDTEXTPANE == vType || TextPane::IsType(vType);
@@ -29,11 +37,6 @@ ULONG CountedTextPane::GetFlags()
 void CountedTextPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 {
 	auto hRes = S_OK;
-
-	m_bMultiline = true;
-	m_iCountLabelWidth = 0;
-
-	m_iCount = 0;
 
 	if (m_uidCountLabel)
 	{
