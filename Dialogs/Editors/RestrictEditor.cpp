@@ -510,7 +510,6 @@ _Check_return_ ULONG CResAndOrEditor::GetResCount() const
 
 void CResAndOrEditor::InitListFromRestriction(ULONG ulListNum, _In_ LPSRestriction lpRes) const
 {
-	if (!IsValidList(ulListNum)) return;
 	if (!lpRes) return;
 
 	ClearList(ulListNum);
@@ -552,7 +551,6 @@ void CResAndOrEditor::InitListFromRestriction(ULONG ulListNum, _In_ LPSRestricti
 _Check_return_ bool CResAndOrEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData)
 {
 	if (!lpData || !lpData->Res()) return false;
-	if (!IsValidList(ulListNum)) return false;
 	auto hRes = S_OK;
 
 	auto lpSourceRes = lpData->Res()->m_lpNewRes;
@@ -580,7 +578,6 @@ void CResAndOrEditor::OnOK()
 {
 	CMyDialog::OnOK(); // don't need to call CEditor::OnOK
 
-	if (!IsValidList(0)) return;
 	LPSRestriction lpNewResArray = nullptr;
 	auto ulNewResCount = GetListCount(0);
 
@@ -706,8 +703,6 @@ _Check_return_ ULONG CResCommentEditor::GetSPropValueCount() const
 
 void CResCommentEditor::InitListFromPropArray(ULONG ulListNum, ULONG cProps, _In_count_(cProps) LPSPropValue lpProps) const
 {
-	if (!IsValidList(ulListNum)) return;
-
 	ClearList(ulListNum);
 
 	InsertColumn(ulListNum, 0, IDS_SHARP);
@@ -756,7 +751,6 @@ void CResCommentEditor::OnEditAction1()
 _Check_return_ bool CResCommentEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData)
 {
 	if (!lpData || !lpData->Comment()) return false;
-	if (!IsValidList(ulListNum)) return false;
 	if (!m_lpAllocParent) return false;
 	auto hRes = S_OK;
 
@@ -811,7 +805,6 @@ _Check_return_ bool CResCommentEditor::DoListEdit(ULONG ulListNum, int iItem, _I
 void CResCommentEditor::OnOK()
 {
 	CMyDialog::OnOK(); // don't need to call CEditor::OnOK
-	if (!IsValidList(0)) return;
 
 	LPSPropValue lpNewCommentProp = nullptr;
 	auto ulNewCommentProp = GetListCount(0);
@@ -1372,8 +1365,6 @@ _Check_return_ ULONG CCriteriaEditor::GetSearchFlags() const
 
 void CCriteriaEditor::InitListFromEntryList(ULONG ulListNum, _In_ LPENTRYLIST lpEntryList) const
 {
-	if (!IsValidList(ulListNum)) return;
-
 	ClearList(ulListNum);
 
 	InsertColumn(ulListNum, 0, IDS_SHARP);
@@ -1429,7 +1420,6 @@ void CCriteriaEditor::OnEditAction1()
 _Check_return_ bool CCriteriaEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData)
 {
 	if (!lpData && !lpData->Binary()) return false;
-	if (!IsValidList(ulListNum)) return false;
 	auto hRes = S_OK;
 	wstring szTmp;
 
@@ -1473,7 +1463,6 @@ _Check_return_ bool CCriteriaEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 void CCriteriaEditor::OnOK()
 {
 	CMyDialog::OnOK(); // don't need to call CEditor::OnOK
-	if (!IsValidList(LISTNUM)) return;
 	auto ulValues = GetListCount(LISTNUM);
 
 	auto hRes = S_OK;

@@ -66,7 +66,6 @@ void CTagArrayEditor::OnOK()
 
 _Check_return_ bool CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData)
 {
-	if (!IsValidList(ulListNum)) return false;
 	if (!lpData) return false;
 	if (!lpData->Prop())
 	{
@@ -125,8 +124,6 @@ _Check_return_ bool CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 
 void CTagArrayEditor::ReadTagArrayToList(ULONG ulListNum) const
 {
-	if (!IsValidList(ulListNum)) return;
-
 	ClearList(ulListNum);
 
 	InsertColumn(ulListNum, 0, IDS_SHARP);
@@ -182,8 +179,6 @@ void CTagArrayEditor::ReadTagArrayToList(ULONG ulListNum) const
 
 void CTagArrayEditor::WriteListToTagArray(ULONG ulListNum)
 {
-	if (!IsValidList(ulListNum)) return;
-
 	// If we're not dirty, don't write
 	if (!IsDirty(ulListNum)) return;
 

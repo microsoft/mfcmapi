@@ -969,8 +969,6 @@ void CMultiValuePropertyEditor::InitPropertyControls()
 // Function must be called AFTER dialog controls have been created, not before
 void CMultiValuePropertyEditor::ReadMultiValueStringsFromProperty() const
 {
-	if (!IsValidList(0)) return;
-
 	InsertColumn(0, 0, IDS_ENTRY);
 	InsertColumn(0, 1, IDS_VALUE);
 	InsertColumn(0, 2, IDS_ALTERNATEVIEW);
@@ -1006,8 +1004,6 @@ void CMultiValuePropertyEditor::ReadMultiValueStringsFromProperty() const
 // Perisist the data in the controls to m_lpsOutputValue
 void CMultiValuePropertyEditor::WriteMultiValueStringsToSPropValue()
 {
-	if (!IsValidList(0)) return;
-
 	// If we're not dirty, don't write
 	// Unless we had no input value. Then we're creating a new property.
 	// So we're implicitly dirty.
@@ -1190,7 +1186,6 @@ _Check_return_ LPSPropValue CMultiValuePropertyEditor::DetachModifiedSPropValue(
 
 _Check_return_ bool CMultiValuePropertyEditor::DoListEdit(ULONG /*ulListNum*/, int iItem, _In_ SortListData* lpData)
 {
-	if (!IsValidList(0)) return false;
 	if (!lpData) return false;
 	if (!lpData->MV())
 	{

@@ -100,8 +100,6 @@ protected:
 
 	// Called to enable/disable buttons based on number of items
 	void UpdateListButtons() const;
-	_Check_return_ bool IsValidList(ULONG ulNum) const;
-	_Check_return_ bool IsValidCheck(ULONG ulNum) const;
 	BOOL OnInitDialog() override;
 	void OnOK() override;
 	void OnRecalcLayout();
@@ -139,7 +137,6 @@ private:
 
 	// List functions and data
 	_Check_return_ bool OnEditListEntry(ULONG ulListNum) const;
-	_Check_return_ bool IsValidListWithButtons(ULONG ulNum) const;
 	ULONG m_ulListNum; // Only supporting one list right now - this is the control number for it
 
 	// Our UI controls. Only valid during display.
