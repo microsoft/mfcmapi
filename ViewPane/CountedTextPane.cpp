@@ -20,7 +20,6 @@ CountedTextPane::CountedTextPane()
 {
 	m_bMultiline = true;
 	m_iCountLabelWidth = 0;
-
 	m_iCount = 0;
 }
 
