@@ -152,10 +152,12 @@ LRESULT CEditor::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		{
 		case NM_DBLCLK:
 		case NM_RETURN:
-			if (IsValidList(m_ulListNum))
+			auto pane = dynamic_cast<ListPane*>(GetPane(m_ulListNum));
+			if (pane)
 			{
-				(void)GetPane(m_ulListNum)->HandleChange(IDD_LISTEDIT);
+				(void)pane->HandleChange(IDD_LISTEDIT);
 			}
+
 			return NULL;
 		}
 		break;
@@ -967,7 +969,7 @@ void CEditor::InitPane(ULONG iNum, ViewPane* lpPane)
 // TODO: Use iPane as a proper accessor name
 ViewPane* CEditor::GetPane(ULONG iPane) const
 {
-	if (iPane >= m_lpControls.size()) return nullptr;
+	if (iPane < 0 || iPane >= m_lpControls.size()) return nullptr;
 	return m_lpControls[iPane];
 }
 
@@ -1072,7 +1074,6 @@ vector<BYTE> CEditor::GetBinaryUseControl(ULONG i) const
 
 _Check_return_ bool CEditor::GetCheckUseControl(ULONG iControl) const
 {
-	if (!IsValidCheck(iControl)) return false;
 	auto pane = dynamic_cast<CheckPane*>(GetPane(iControl));
 	if (pane)
 	{
@@ -1126,7 +1127,6 @@ void CEditor::SetDecimal(ULONG i, ULONG ulVal) const
 
 void CEditor::SetListString(ULONG iControl, ULONG iListRow, ULONG iListCol, wstring szListString) const
 {
-	if (!IsValidList(iControl)) return;
 	auto pane = dynamic_cast<ListPane*>(GetPane(iControl));
 	if (pane)
 	{
@@ -1136,7 +1136,6 @@ void CEditor::SetListString(ULONG iControl, ULONG iListRow, ULONG iListCol, wstr
 
 _Check_return_ SortListData* CEditor::InsertListRow(ULONG iControl, int iRow, wstring szText) const
 {
-	if (!IsValidList(iControl)) return nullptr;
 	auto pane = dynamic_cast<ListPane*>(GetPane(iControl));
 	if (pane)
 	{
@@ -1148,7 +1147,6 @@ _Check_return_ SortListData* CEditor::InsertListRow(ULONG iControl, int iRow, ws
 
 void CEditor::ClearList(ULONG iControl) const
 {
-	if (!IsValidList(iControl)) return;
 	auto pane = dynamic_cast<ListPane*>(GetPane(iControl));
 	if (pane)
 	{
@@ -1158,7 +1156,6 @@ void CEditor::ClearList(ULONG iControl) const
 
 void CEditor::ResizeList(ULONG iControl, bool bSort) const
 {
-	if (!IsValidList(iControl)) return;
 	auto pane = dynamic_cast<ListPane*>(GetPane(iControl));
 	if (pane)
 	{
@@ -1224,7 +1221,6 @@ _Check_return_ wstring CEditor::GetStringUseControl(ULONG iControl) const
 
 _Check_return_ ULONG CEditor::GetListCount(ULONG iControl) const
 {
-	if (!IsValidList(iControl)) return 0;
 	auto pane = dynamic_cast<ListPane*>(GetPane(iControl));
 	if (pane)
 	{
@@ -1236,7 +1232,6 @@ _Check_return_ ULONG CEditor::GetListCount(ULONG iControl) const
 
 _Check_return_ SortListData* CEditor::GetListRowData(ULONG iControl, int iRow) const
 {
-	if (!IsValidList(iControl)) return nullptr;
 	auto pane = dynamic_cast<ListPane*>(GetPane(iControl));
 	if (pane)
 	{
@@ -1353,7 +1348,6 @@ _Check_return_ DWORD_PTR CEditor::GetDropDownValue(ULONG i) const
 
 void CEditor::InsertColumn(ULONG ulListNum, int nCol, UINT uidText) const
 {
-	if (!IsValidList(ulListNum)) return;
 	auto pane = dynamic_cast<ListPane*>(GetPane(ulListNum));
 	if (pane)
 	{
@@ -1363,7 +1357,6 @@ void CEditor::InsertColumn(ULONG ulListNum, int nCol, UINT uidText) const
 
 void CEditor::InsertColumn(ULONG ulListNum, int nCol, UINT uidText, ULONG ulPropType) const
 {
-	if (!IsValidList(ulListNum)) return;
 	auto pane = dynamic_cast<ListPane*>(GetPane(ulListNum));
 	if (pane)
 	{
@@ -1397,45 +1390,18 @@ _Check_return_ ULONG CEditor::HandleChange(UINT nID)
 	return static_cast<ULONG>(-1);
 }
 
-// TODO: I think I can eliminate all of these IsValid checks
-// Maybe even IsType since we're using dynamic_cast
-_Check_return_ bool CEditor::IsValidList(ULONG ulNum) const
-{
-	if (NOLIST != ulNum &&
-		!INVALIDRANGE(ulNum) &&
-		m_lpControls[ulNum] &&
-		m_lpControls[ulNum]->IsType(CTRL_LISTPANE)) return true;
-	return false;
-}
-
-_Check_return_ bool CEditor::IsValidListWithButtons(ULONG ulNum) const
-{
-	if (IsValidList(ulNum) &&
-		vpReadonly != (vpReadonly & m_lpControls[ulNum]->GetFlags())) return true;
-	return false;
-}
-
-_Check_return_ bool CEditor::IsValidCheck(ULONG ulNum) const
-{
-	if (!INVALIDRANGE(ulNum) &&
-		m_lpControls[ulNum] &&
-		m_lpControls[ulNum]->IsType(CTRL_CHECKPANE)) return true;
-	return false;
-}
-
 void CEditor::UpdateListButtons() const
 {
-	if (!IsValidListWithButtons(m_ulListNum)) return;
 	auto pane = dynamic_cast<ListPane*>(GetPane(m_ulListNum));
 	if (pane)
 	{
+		if (vpReadonly & pane->GetFlags())
 		pane->UpdateListButtons();
 	}
 }
 
 _Check_return_ bool CEditor::OnEditListEntry(ULONG ulListNum) const
 {
-	if (!IsValidList(ulListNum)) return false;
 	auto pane = dynamic_cast<ListPane*>(GetPane(ulListNum));
 	if (pane)
 	{

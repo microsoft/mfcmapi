@@ -448,31 +448,28 @@ BOOL CPropertySelector::OnInitDialog()
 {
 	auto bRet = CEditor::OnInitDialog();
 
-	if (IsValidList(0))
+	InsertColumn(0, 1, IDS_PROPERTYNAMES);
+	InsertColumn(0, 2, IDS_TAG);
+	InsertColumn(0, 3, IDS_TYPE);
+
+	ULONG ulCurRow = 0;
+	for (ULONG i = 0; i < ulPropTagArray; i++)
 	{
-		InsertColumn(0, 1, IDS_PROPERTYNAMES);
-		InsertColumn(0, 2, IDS_TAG);
-		InsertColumn(0, 3, IDS_TYPE);
+		if (!m_bIncludeABProps && PropTagArray[i].ulValue & 0x80000000) continue;
+		auto lpData = InsertListRow(0, ulCurRow, PropTagArray[i].lpszName);
 
-		ULONG ulCurRow = 0;
-		for (ULONG i = 0; i < ulPropTagArray; i++)
+		if (lpData)
 		{
-			if (!m_bIncludeABProps && PropTagArray[i].ulValue & 0x80000000) continue;
-			auto lpData = InsertListRow(0, ulCurRow, PropTagArray[i].lpszName);
-
-			if (lpData)
-			{
-				lpData->InitializePropList(PropTagArray[i].ulValue);
-			}
-
-			SetListString(0, ulCurRow, 1, format(L"0x%08X", PropTagArray[i].ulValue)); // STRING_OK
-			SetListString(0, ulCurRow, 2, TypeToString(PropTagArray[i].ulValue));
-			ulCurRow++;
+			lpData->InitializePropList(PropTagArray[i].ulValue);
 		}
 
-		// Initial sort is by property tag
-		ResizeList(0, true);
+		SetListString(0, ulCurRow, 1, format(L"0x%08X", PropTagArray[i].ulValue)); // STRING_OK
+		SetListString(0, ulCurRow, 2, TypeToString(PropTagArray[i].ulValue));
+		ulCurRow++;
 	}
+
+	// Initial sort is by property tag
+	ResizeList(0, true);
 
 	return bRet;
 }
@@ -503,13 +500,10 @@ _Check_return_ ULONG CPropertySelector::GetPropertyTag() const
 
 _Check_return_ SortListData* CPropertySelector::GetSelectedListRowData(ULONG iControl) const
 {
-	if (IsValidList(iControl))
+	auto lpPane = static_cast<ListPane*>(GetPane(iControl));
+	if (lpPane)
 	{
-		auto lpPane = static_cast<ListPane*>(GetPane(iControl));
-		if (lpPane)
-		{
-			return lpPane->GetSelectedListRowData();
-		}
+		return lpPane->GetSelectedListRowData();
 	}
 
 	return nullptr;

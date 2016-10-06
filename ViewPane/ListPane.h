@@ -16,6 +16,7 @@ public:
 	static ListPane* Create(UINT uidLabel, bool bAllowSort, bool bReadOnly, LPVOID lpEdit);
 
 	ULONG HandleChange(UINT nID) override;
+	ULONG GetFlags() override;
 	void SetListString(ULONG iListRow, ULONG iListCol, wstring szListString);
 	_Check_return_ SortListData* InsertRow(int iRow, wstring szText) const;
 	void ClearList();
@@ -36,7 +37,6 @@ private:
 	void Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc) override;
 	void SetWindowPos(int x, int y, int width, int height) override;
 	void CommitUIValues() override;
-	ULONG GetFlags() override;
 	int GetMinWidth(_In_ HDC hdc) override;
 	int GetFixedHeight() override;
 	int GetLines() override;

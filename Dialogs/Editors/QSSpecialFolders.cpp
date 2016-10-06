@@ -80,7 +80,6 @@ void SpecialFolderEditor::LoadFolders() const
 {
 	auto hRes = S_OK;
 	ULONG ulListNum = 0;
-	if (!IsValidList(ulListNum)) return;
 
 	static const SizedSPropTagArray(12, lptaFolderProps) =
 	{
@@ -198,7 +197,6 @@ void SpecialFolderEditor::LoadFolders() const
 
 _Check_return_ bool SpecialFolderEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData)
 {
-	if (!IsValidList(ulListNum)) return false;
 	if (!lpData) return false;
 
 	auto hRes = S_OK;
