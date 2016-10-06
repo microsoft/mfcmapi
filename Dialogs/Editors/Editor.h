@@ -99,7 +99,7 @@ protected:
 	_Check_return_ bool IsDirty(ULONG iControl) const;
 
 	// Called to enable/disable buttons based on number of items
-	void UpdateListButtons() const;
+	void UpdateButtons() const;
 	BOOL OnInitDialog() override;
 	void OnOK() override;
 	void OnRecalcLayout();

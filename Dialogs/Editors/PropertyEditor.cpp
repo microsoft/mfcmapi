@@ -937,7 +937,7 @@ BOOL CMultiValuePropertyEditor::OnInitDialog()
 		}
 	}
 
-	UpdateListButtons();
+	UpdateButtons();
 
 	return bRet;
 }

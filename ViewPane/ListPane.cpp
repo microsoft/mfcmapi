@@ -269,7 +269,7 @@ void ListPane::SetColumnType(int nCol, ULONG ulPropType) const
 	}
 }
 
-void ListPane::UpdateListButtons()
+void ListPane::UpdateButtons()
 {
 	ULONG ulNumItems = m_List.GetItemCount();
 
@@ -392,7 +392,7 @@ void ListPane::OnAddListEntry()
 	// pass false to make sure we don't mark the list dirty if it wasn't already
 	if (!bDidEdit) OnDeleteListEntry(false);
 
-	UpdateListButtons();
+	UpdateButtons();
 }
 
 void ListPane::OnDeleteListEntry(bool bDoDirty)
@@ -412,7 +412,7 @@ void ListPane::OnDeleteListEntry(bool bDoDirty)
 		m_bDirty = true;
 	}
 
-	UpdateListButtons();
+	UpdateButtons();
 }
 
 _Check_return_ bool ListPane::OnEditListEntry()

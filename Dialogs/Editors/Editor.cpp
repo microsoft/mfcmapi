@@ -1244,7 +1244,7 @@ _Check_return_ SortListData* CEditor::GetListRowData(ULONG iControl, int iRow) c
 _Check_return_ bool CEditor::IsDirty(ULONG iControl) const
 {
 	auto pane = GetPane(iControl);
-	return pane?(vpDirty == (pane->GetFlags() & vpDirty)):false;
+	return pane ? (vpDirty == (pane->GetFlags() & vpDirty)) : false;
 }
 
 _Check_return_ ULONG CEditor::GetHexUseControl(ULONG i) const
@@ -1390,13 +1390,14 @@ _Check_return_ ULONG CEditor::HandleChange(UINT nID)
 	return static_cast<ULONG>(-1);
 }
 
-void CEditor::UpdateListButtons() const
+void CEditor::UpdateButtons() const
 {
-	auto pane = dynamic_cast<ListPane*>(GetPane(m_ulListNum));
-	if (pane)
+	for (auto pane : m_lpControls)
 	{
-		if (vpReadonly & pane->GetFlags())
-		pane->UpdateListButtons();
+		if (pane)
+		{
+			pane->UpdateButtons();
+		}
 	}
 }
 
