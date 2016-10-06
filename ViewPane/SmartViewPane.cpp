@@ -8,8 +8,21 @@ static wstring CLASS = L"SmartViewPane";
 SmartViewPane* SmartViewPane::SmartViewPane::Create(UINT uidLabel)
 {
 	auto pane = new SmartViewPane();
-	pane->SetLabel(uidLabel, true);
+	if (pane)
+	{
+		pane->SetLabel(uidLabel, true);
+	}
+	
 	return pane;
+}
+
+SmartViewPane::SmartViewPane()
+{
+	m_TextPane.m_bMultiline = true;
+	m_TextPane.SetLabel(NULL, true);
+	m_bHasData = false;
+	m_bDoDropDown = true;
+	m_bReadOnly = true;
 }
 
 bool SmartViewPane::IsType(__ViewTypes vType)
@@ -25,11 +38,6 @@ ULONG SmartViewPane::GetFlags()
 void SmartViewPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 {
 	Setup(ulSmartViewParserTypeArray, nullptr, SmartViewParserTypeArray, false);
-	m_TextPane.m_bMultiline = true;
-	m_TextPane.SetLabel(NULL, true);
-	m_bHasData = false;
-	m_bDoDropDown = true;
-	m_bReadOnly = true;
 
 	CreateControl(iControl, pParent, hdc);
 

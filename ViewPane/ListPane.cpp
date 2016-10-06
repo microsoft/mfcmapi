@@ -3,6 +3,18 @@
 #include <Dialogs/Editors/Editor.h>
 #include "UIFunctions.h"
 
+__ListButtons ListButtons[NUMLISTBUTTONS] = {
+	{ IDD_LISTMOVEDOWN },
+	{ IDD_LISTMOVETOBOTTOM },
+	{ IDD_LISTADD },
+	{ IDD_LISTEDIT },
+	{ IDD_LISTDELETE },
+	{ IDD_LISTMOVETOTOP },
+	{ IDD_LISTMOVEUP },
+};
+
+#define LINES_LIST 6
+
 static wstring CLASS = L"ListPane";
 
 ListPane* ListPane::ListPane::Create(UINT uidLabel, bool bAllowSort, bool bReadOnly, LPVOID lpEdit)
@@ -17,17 +29,12 @@ ListPane* ListPane::ListPane::Create(UINT uidLabel, bool bAllowSort, bool bReadO
 	return pane;
 }
 
-__ListButtons ListButtons[NUMLISTBUTTONS] = {
- { IDD_LISTMOVEDOWN },
- { IDD_LISTMOVETOBOTTOM },
- { IDD_LISTADD },
- { IDD_LISTEDIT },
- { IDD_LISTDELETE },
- { IDD_LISTMOVETOTOP },
- { IDD_LISTMOVEUP },
-};
-
-#define LINES_LIST 6
+ListPane::ListPane()
+{
+	m_iButtonWidth = 50;
+	m_List.AllowEscapeClose();
+	m_bDirty = false;
+}
 
 void ListPane::Setup(bool bAllowSort, CEditor* lpEdit)
 {
@@ -50,9 +57,6 @@ ULONG ListPane::GetFlags()
 
 void ListPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 {
-	m_iButtonWidth = 50;
-	m_List.AllowEscapeClose();
-	m_bDirty = false;
 	ViewPane::Initialize(iControl, pParent, nullptr);
 
 	auto hRes = S_OK;

@@ -14,6 +14,11 @@ CollapsibleTextPane* CollapsibleTextPane::CollapsibleTextPane::Create(UINT uidLa
 	return pane;
 }
 
+CollapsibleTextPane::CollapsibleTextPane()
+{
+	m_bMultiline = true;
+}
+
 bool CollapsibleTextPane::IsType(__ViewTypes vType)
 {
 	return CTRL_COLLAPSIBLETEXTPANE == vType || TextPane::IsType(vType);
@@ -26,8 +31,6 @@ ULONG CollapsibleTextPane::GetFlags()
 
 void CollapsibleTextPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 {
-	m_bMultiline = true;
-
 	TextPane::Initialize(iControl, pParent, hdc);
 }
 
