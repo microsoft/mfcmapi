@@ -68,6 +68,7 @@ GUID_ARRAY_ENTRY g_PropGuidArray[] =
 	GUID_ENTRY(PSETID_Meeting)
 	GUID_ENTRY(PSETID_AirSync)
 	GUID_ENTRY(pbLongTermNonPrivateGuid)
+	GUID_ENTRY(PSETID_Attachment)
 	GUID_ENTRY(muidOOP)
 	GUID_ENTRY(IID_IAttachmentSecurity)
 	GUID_ENTRY(muidEMSAB)
