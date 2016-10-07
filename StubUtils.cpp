@@ -293,7 +293,9 @@ wstring GetMailClientFromMSIData(HKEY hkeyMapiClient)
 	if (ERROR_SUCCESS == RegQueryValueExW(hkeyMapiClient, WszValueNameMSI, nullptr, &dwType, reinterpret_cast<LPBYTE>(&rgchMSIComponentID), &dwSizeComponentID) &&
 		ERROR_SUCCESS == RegQueryValueExW(hkeyMapiClient, WszValueNameLCID, nullptr, &dwType, reinterpret_cast<LPBYTE>(&rgchMSIApplicationLCID), &dwSizeLCID))
 	{
-		szPath = GetComponentPath(rgchMSIComponentID, rgchMSIApplicationLCID, FALSE);
+		auto componentID = wstring(rgchMSIComponentID, dwSizeComponentID);
+		auto applicationID = wstring(rgchMSIApplicationLCID, dwSizeLCID);
+		szPath = GetComponentPath(componentID, applicationID, FALSE);
 	}
 
 	DebugPrint(DBGLoadMAPI, L"Exit GetMailClientFromMSIData: szPath = %ws\n", szPath.c_str());
