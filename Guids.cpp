@@ -3,6 +3,7 @@
 #include "stdafx.h"
 
 #define INITGUID
+#define USES_IID_IMsgStore
 #define USES_IID_IMAPIProgress
 #define USES_IID_IMAPIAdviseSink
 #define USES_IID_IMAPIMessageSite
