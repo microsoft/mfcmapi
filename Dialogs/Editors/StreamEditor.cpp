@@ -186,8 +186,8 @@ BOOL CStreamEditor::OnInitDialog()
 			sProp.Value.bin.lpb = bin.data();
 			sProp.Value.bin.cb = ULONG(bin.size());
 
-			auto iStructType = FindSmartViewParserForProp(sProp.ulPropTag, NULL, nullptr, false);
-			auto szSmartView = InterpretPropSmartView(
+			// TODO: pass in named prop stuff to make this work
+			auto smartView = InterpretPropSmartView2(
 				&sProp,
 				m_lpMAPIProp,
 				nullptr,
@@ -195,8 +195,8 @@ BOOL CStreamEditor::OnInitDialog()
 				m_bIsAB,
 				false);
 
-			lpSmartView->SetParser(iStructType);
-			lpSmartView->SetStringW(szSmartView);
+			lpSmartView->SetParser(smartView.first);
+			lpSmartView->SetStringW(smartView.second);
 		}
 	}
 

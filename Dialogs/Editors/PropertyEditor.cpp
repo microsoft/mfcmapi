@@ -173,14 +173,16 @@ void CPropertyEditor::InitPropertyControls()
 		m_lpSmartView = static_cast<SmartViewPane*>(SmartViewPane::Create(IDS_SMARTVIEW));
 	}
 
-	auto iStructType = FindSmartViewParserForProp(m_lpsInputValue ? m_lpsInputValue->ulPropTag : m_ulPropTag, NULL, nullptr, m_bMVRow);
-	auto szSmartView = InterpretPropSmartView(
+	auto smartView = InterpretPropSmartView2(
 		m_lpsInputValue,
 		m_lpMAPIProp,
 		nullptr,
 		nullptr,
 		m_bIsAB,
 		m_bMVRow); // Built from lpProp & lpMAPIProp
+
+	auto iStructType = smartView.first;
+	auto szSmartView = smartView.second;
 
 	wstring szTemp1;
 	wstring szTemp2;
@@ -919,14 +921,16 @@ BOOL CMultiValuePropertyEditor::OnInitDialog()
 	ReadMultiValueStringsFromProperty();
 	ResizeList(0, false);
 
-	auto iStructType = FindSmartViewParserForProp(m_lpsInputValue->ulPropTag, NULL, nullptr, true);
-	auto szSmartView = InterpretPropSmartView(
+	auto smartView = InterpretPropSmartView2(
 		m_lpsInputValue,
 		m_lpMAPIProp,
 		nullptr,
 		nullptr,
 		m_bIsAB,
 		true);
+
+	auto iStructType = smartView.first;
+	auto szSmartView = smartView.second;
 	if (!szSmartView.empty())
 	{
 		auto lpPane = static_cast<SmartViewPane*>(GetPane(1));
