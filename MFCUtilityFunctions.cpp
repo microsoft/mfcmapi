@@ -52,77 +52,95 @@ _Check_return_ HRESULT DisplayObject(
 		ulObjType,
 		szFlags.c_str());
 
-	LPMDB lpMDB = nullptr;
 	// call the dialog
 	switch (ulObjType)
 	{
 		// #define MAPI_STORE ((ULONG) 0x00000001) /* Message Store */
 	case MAPI_STORE:
-		lpHostDlg->OnUpdateSingleMAPIPropListCtrl(lpUnk, nullptr);
-
-		lpMDB = lpMapiObjects->GetMDB(); // do not release
-		if (lpMDB) lpMDB->AddRef(); // hold on to this so that...
-		lpMapiObjects->SetMDB(static_cast<LPMDB>(lpUnk));
-
-		new CMsgStoreDlg(
-			lpParentWnd,
-			lpMapiObjects,
-			nullptr,
-			otStoreDeletedItems == tType ? dfDeleted : dfNormal);
-
-		// restore the old MDB
-		lpMapiObjects->SetMDB(lpMDB); // ...we can put it back
-		if (lpMDB) lpMDB->Release();
-		break;
-		// #define MAPI_FOLDER ((ULONG) 0x00000003) /* Folder */
-	case MAPI_FOLDER:
-		// There are two ways to display a folder...either the contents table or the hierarchy table.
-		if (otHierarchy == tType)
+	{
+		LPMDB lpTempMDB = nullptr;
+		WC_H(lpUnk->QueryInterface(IID_IMsgStore, (LPVOID*)&lpTempMDB));
+		if (lpTempMDB)
 		{
-			lpMDB = lpMapiObjects->GetMDB(); // do not release
-			if (lpMDB)
+			lpHostDlg->OnUpdateSingleMAPIPropListCtrl(lpUnk, nullptr);
+
+			LPMDB lpMDB = lpMapiObjects->GetMDB(); // do not release
+			if (lpMDB) lpMDB->AddRef(); // hold on to this so that...
+			lpMapiObjects->SetMDB(lpTempMDB);
+
+			new CMsgStoreDlg(
+				lpParentWnd,
+				lpMapiObjects,
+				nullptr,
+				otStoreDeletedItems == tType ? dfDeleted : dfNormal);
+
+			// restore the old MDB
+			lpMapiObjects->SetMDB(lpMDB); // ...we can put it back
+			if (lpMDB) lpMDB->Release();
+			lpTempMDB->Release();
+		}
+
+		break;
+	}
+	// #define MAPI_FOLDER ((ULONG) 0x00000003) /* Folder */
+	case MAPI_FOLDER:
+	{
+		LPMAPIFOLDER lpTempFolder = nullptr;
+		WC_H(lpUnk->QueryInterface(IID_IMAPIFolder, (LPVOID*)&lpTempFolder));
+
+		if (lpTempFolder)
+		{
+			// There are two ways to display a folder...either the contents table or the hierarchy table.
+			if (otHierarchy == tType)
 			{
-				new CMsgStoreDlg(
-					lpParentWnd,
-					lpMapiObjects,
-					static_cast<LPMAPIFOLDER>(lpUnk),
-					dfNormal);
-			}
-			else
-			{
-				// Since lpMDB was NULL, let's get a good MDB
-				auto lpMAPISession = lpMapiObjects->GetSession(); // do not release
-				if (lpMAPISession)
+				LPMDB lpMDB = lpMapiObjects->GetMDB(); // do not release
+				if (lpMDB)
 				{
-					LPMDB lpNewMDB = nullptr;
-					EC_H(OpenStoreFromMAPIProp(lpMAPISession, static_cast<LPMAPIPROP>(lpUnk), &lpNewMDB));
-					if (lpNewMDB)
+					new CMsgStoreDlg(
+						lpParentWnd,
+						lpMapiObjects,
+						lpTempFolder,
+						dfNormal);
+				}
+				else
+				{
+					// Since lpMDB was NULL, let's get a good MDB
+					auto lpMAPISession = lpMapiObjects->GetSession(); // do not release
+					if (lpMAPISession)
 					{
-						lpMapiObjects->SetMDB(lpNewMDB);
+						LPMDB lpNewMDB = nullptr;
+						EC_H(OpenStoreFromMAPIProp(lpMAPISession, static_cast<LPMAPIPROP>(lpUnk), &lpNewMDB));
+						if (lpNewMDB)
+						{
+							lpMapiObjects->SetMDB(lpNewMDB);
 
-						new CMsgStoreDlg(
-							lpParentWnd,
-							lpMapiObjects,
-							static_cast<LPMAPIFOLDER>(lpUnk),
-							dfNormal);
+							new CMsgStoreDlg(
+								lpParentWnd,
+								lpMapiObjects,
+								lpTempFolder,
+								dfNormal);
 
-						// restore the old MDB
-						lpMapiObjects->SetMDB(nullptr);
-						lpNewMDB->Release();
+							// restore the old MDB
+							lpMapiObjects->SetMDB(nullptr);
+							lpNewMDB->Release();
+						}
 					}
 				}
 			}
+			else if (otContents == tType || otAssocContents == tType)
+			{
+				new CFolderDlg(
+					lpParentWnd,
+					lpMapiObjects,
+					lpTempFolder,
+					otAssocContents == tType ? dfAssoc : dfNormal);
+			}
+
+			lpTempFolder->Release();
 		}
-		else if (otContents == tType || otAssocContents == tType)
-		{
-			new CFolderDlg(
-				lpParentWnd,
-				lpMapiObjects,
-				static_cast<LPMAPIFOLDER>(lpUnk),
-				otAssocContents == tType ? dfAssoc : dfNormal);
-		}
-		break;
-		// #define MAPI_ABCONT ((ULONG) 0x00000004) /* Address Book Container */
+	}
+	break;
+	// #define MAPI_ABCONT ((ULONG) 0x00000004) /* Address Book Container */
 	case MAPI_ABCONT:
 		new CAbDlg(
 			lpParentWnd,
