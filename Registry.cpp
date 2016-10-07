@@ -136,17 +136,47 @@ wstring ReadStringFromRegistry(_In_ HKEY hKey, _In_ wstring szValue, _In_ wstrin
 	if (szValue.empty()) return szDefault;
 	auto hRes = S_OK;
 	DWORD dwKeyType = NULL;
-	LPWSTR szBuf = nullptr;
+	LPBYTE szBuf = nullptr;
 	auto ret = szDefault;
 
-	WC_H(HrGetRegistryValue(
+	DebugPrint(DBGGeneric, L"ReadStringFromRegistry(%ws)\n", szValue.c_str());
+
+	DWORD cb = NULL;
+
+	// Get its size
+	WC_W32(RegQueryValueExW(
 		hKey,
-		szValue,
+		szValue.c_str(),
+		NULL,
 		&dwKeyType,
-		reinterpret_cast<LPVOID*>(&szBuf)));
-	if (hRes == S_OK && REG_SZ == dwKeyType && szBuf)
+		NULL,
+		&cb));
+
+	if (S_OK == hRes && cb  && !(cb % 2) && REG_SZ == dwKeyType)
 	{
-		ret = szBuf;
+		szBuf = new BYTE[cb];
+		if (szBuf)
+		{
+			// Get the current value
+			EC_W32(RegQueryValueExW(
+				hKey,
+				szValue.c_str(),
+				NULL,
+				&dwKeyType,
+				szBuf,
+				&cb));
+
+			if (FAILED(hRes))
+			{
+				delete[] szBuf;
+				szBuf = nullptr;
+			}
+		}
+	}
+
+	if (S_OK == hRes && cb && !(cb % 2) && REG_SZ == dwKeyType && szBuf)
+	{
+		ret = wstring(LPWSTR(szBuf), cb / sizeof WCHAR);
 	}
 
 	delete[] szBuf;
