@@ -152,11 +152,14 @@ _Check_return_ LRESULT CSingleMAPIPropListCtrl::msgOnSaveColumnOrder(WPARAM /*wP
 
 			if (pnOrder)
 			{
+				RegKeys[regkeyPROP_COLUMN_ORDER].szCurSTRING.clear();
 				EC_B(GetColumnOrderArray(pnOrder, nColumnCount));
 				for (ULONG i = 0; i < nColumnCount; i++)
-					RegKeys[regkeyPROP_COLUMN_ORDER].szCurSTRING[i] = static_cast<char>('a' + pnOrder[i]);
-				RegKeys[regkeyPROP_COLUMN_ORDER].szCurSTRING[nColumnCount] = '\0';
+				{
+					RegKeys[regkeyPROP_COLUMN_ORDER].szCurSTRING.push_back(static_cast<wchar_t>(L'a' + pnOrder[i]));
+				}
 			}
+
 			delete[] pnOrder;
 		}
 	}
