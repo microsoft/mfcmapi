@@ -27,7 +27,7 @@ class ViewPane
 {
 public:
 	ViewPane();
-	virtual ~ViewPane();
+	virtual ~ViewPane() = default;
 
 	virtual bool IsType(__ViewTypes vType) = 0;
 	void SetLabel(UINT uidLabel, bool bReadOnly);

@@ -25,8 +25,6 @@ ViewPane::ViewPane()
 	m_hWndParent = nullptr;
 }
 
-ViewPane::~ViewPane() {}
-
 void ViewPane::SetWindowPos(int x, int y, int width, int /*height*/)
 {
 	auto hRes = S_OK;
