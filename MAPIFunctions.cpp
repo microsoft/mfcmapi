@@ -1633,7 +1633,7 @@ _Check_return_ HRESULT ResendSingleMessage(
 	atNUM_COLS,
 	PR_ATTACH_METHOD,
 	PR_ATTACH_NUM,
-	PR_DISPLAY_NAME
+	PR_DISPLAY_NAME_W
 	};
 
 	static const SizedSPropTagArray(2, atObjs) =
@@ -1701,9 +1701,9 @@ _Check_return_ HRESULT ResendSingleMessage(
 
 				DebugPrint(DBGGeneric, L"Message opened.\n");
 
-				if (CheckStringProp(&pRows->aRow->lpProps[atPR_DISPLAY_NAME], PT_TSTRING))
+				if (CheckStringProp(&pRows->aRow->lpProps[atPR_DISPLAY_NAME], PT_UNICODE))
 				{
-					DebugPrint(DBGGeneric, L"Resending \"%ws\"\n", LPCTSTRToWstring(pRows->aRow->lpProps[atPR_DISPLAY_NAME].Value.LPSZ).c_str());
+					DebugPrint(DBGGeneric, L"Resending \"%ws\"\n", pRows->aRow->lpProps[atPR_DISPLAY_NAME].Value.lpszW);
 				}
 
 				DebugPrint(DBGGeneric, L"Creating new message.\n");
@@ -2547,9 +2547,9 @@ STDMETHODIMP OpenDefaultFolder(_In_ ULONG ulFolder, _In_ LPMDB lpMDB, _Deref_out
 
 ULONG g_DisplayNameProps[] =
 {
- PR_DISPLAY_NAME,
- PR_MAILBOX_OWNER_NAME,
- PR_SUBJECT,
+ PR_DISPLAY_NAME_W,
+ CHANGE_PROP_TYPE(PR_MAILBOX_OWNER_NAME, PT_UNICODE),
+ PR_SUBJECT_W,
 };
 
 
@@ -2573,11 +2573,12 @@ wstring GetTitle(LPMAPIPROP lpMAPIProp)
 
 		if (lpProp)
 		{
-			if (CheckStringProp(lpProp, PT_TSTRING))
+			if (CheckStringProp(lpProp, PT_UNICODE))
 			{
-				szTitle = LPCTSTRToWstring(lpProp->Value.LPSZ);
+				szTitle = lpProp->Value.lpszW;
 				bFoundName = true;
 			}
+
 			MAPIFreeBuffer(lpProp);
 		}
 	}
