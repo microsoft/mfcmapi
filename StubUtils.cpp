@@ -362,7 +362,7 @@ wstring GetInstalledOutlookMAPI(int iOutlook)
 	DebugPrint(DBGLoadMAPI, L"Enter GetInstalledOutlookMAPI(%d)\n", iOutlook);
 	auto hRes = S_OK;
 
-	if (!pfnMsiProvideQualifiedComponent || !pfnMsiGetFileVersion) return nullptr;
+	if (!pfnMsiProvideQualifiedComponent || !pfnMsiGetFileVersion) return emptystring;
 
 	auto lpszTempPath = GetOutlookPath(g_pszOutlookQualifiedComponents[iOutlook], nullptr);
 
