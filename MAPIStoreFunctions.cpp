@@ -701,16 +701,16 @@ _Check_return_ HRESULT OpenOtherUsersMailboxFromGal(
 		{
 			EC_MAPI(HrGetOneProp(
 				lpMailUser,
-				PR_EMAIL_ADDRESS,
+				PR_EMAIL_ADDRESS_W,
 				&lpEmailAddress));
 
-			if (CheckStringProp(lpEmailAddress, PT_TSTRING))
+			if (CheckStringProp(lpEmailAddress, PT_UNICODE))
 			{
 				WC_H(OpenMailboxWithPrompt(
 					lpMAPISession,
 					lpPrivateMDB,
 					szServerName,
-					LPCTSTRToWstring(lpEmailAddress->Value.LPSZ),
+					lpEmailAddress->Value.lpszW,
 					OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP,
 					lppOtherUserMDB));
 			}

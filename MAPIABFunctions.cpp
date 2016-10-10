@@ -522,9 +522,9 @@ _Check_return_ HRESULT SearchContentsTableForName(
 	{
 	abNUM_COLS,
 	PR_ENTRYID,
-	PR_DISPLAY_NAME,
+	PR_DISPLAY_NAME_W,
 	PR_RECIPIENT_TYPE,
-	PR_ADDRTYPE,
+	PR_ADDRTYPE_W,
 	PR_DISPLAY_TYPE,
 	PropTagToCompare
 	};
@@ -575,7 +575,7 @@ _Check_return_ HRESULT SearchContentsTableForName(
 		if (PropTagToCompare == pRows->aRow->lpProps[abPropTagToCompare].ulPropTag &&
 			CheckStringProp(&pRows->aRow->lpProps[abPropTagToCompare], PT_UNICODE))
 		{
-			DebugPrint(DBGGeneric, L"SearchContentsTableForName: found \"%ws\"\n", LPCTSTRToWstring(pRows->aRow->lpProps[abPropTagToCompare].Value.LPSZ).c_str());
+			DebugPrint(DBGGeneric, L"SearchContentsTableForName: found \"%ws\"\n", pRows->aRow->lpProps[abPropTagToCompare].Value.lpszW);
 			if (szName == pRows->aRow->lpProps[abPropTagToCompare].Value.lpszW)
 			{
 				DebugPrint(DBGGeneric, L"SearchContentsTableForName: This is an exact match!\n");
