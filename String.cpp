@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <locale>
 #include <codecvt>
+#include <sstream>
 
 wstring emptystring = L"";
 
@@ -401,4 +402,30 @@ LPBYTE ByteVectorToLPBYTE(vector<BYTE> const& bin)
 	}
 
 	return nullptr;
+}
+
+vector<wstring> split(const wstring &str, const wchar_t delim)
+{
+	auto ss = wstringstream(str);
+	wstring item;
+	vector<wstring> elems;
+	while (getline(ss, item, delim))
+	{
+		elems.push_back(item);
+	}
+
+	return elems;
+}
+
+wstring join(const vector<wstring> elems, const wchar_t delim)
+{
+	wstringstream ss;
+	for (size_t i = 0; i < elems.size(); ++i)
+	{
+		if (i != 0)
+			ss << delim;
+		ss << elems[i];
+	}
+
+	return ss.str();
 }

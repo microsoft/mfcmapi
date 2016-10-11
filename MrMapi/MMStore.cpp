@@ -74,18 +74,19 @@ HRESULT HrMAPIOpenStoreAndFolder(
 	LPMDB lpMDB = nullptr;
 	LPMAPIFOLDER lpFolder = nullptr;
 
+	auto paths = split(lpszFolderPath, L'\\');
+
 	if (lpMAPISession)
 	{
 		// Check if we were told which store to open
-		if (!lpszFolderPath.empty() && lpszFolderPath[0] == L'#')
+		if (!paths.empty() && paths[0][0] == L'#')
 		{
 			// Skip the '#'
-			lpszFolderPath.erase(0, 1);
+			auto root = paths[0].substr(1);
+			paths.erase(paths.begin());
+			lpszFolderPath = join(paths, L'\\');
 
-			// Find our slash if we have one and null terminate at it
-			lpszFolderPath.erase(lpszFolderPath.find_last_of(L'\\'), wstring::npos);
-
-			auto bin = HexStringToBin(lpszFolderPath);
+			auto bin = HexStringToBin(root);
 			// In order for cb to get bigger than 1, the string has to have at least 4 characters
 			// Which is larger than any reasonable store number. So we use that to distinguish.
 			if (bin.size() > 1)
@@ -99,21 +100,12 @@ HRESULT HrMAPIOpenStoreAndFolder(
 					&Bin,
 					MDB_NO_DIALOG | MDB_WRITE,
 					&lpMDB));
-				auto slashPos = lpszFolderPath.find_first_of(L'\\');
-				if (slashPos != string::npos)
-				{
-					lpszFolderPath = lpszFolderPath.substr(slashPos, string::npos);
-				}
-				else
-				{
-					lpszFolderPath = L"";
-				}
 			}
 			else
 			{
 				hRes = S_OK;
 				LPWSTR szEndPtr = nullptr;
-				auto ulStore = wcstoul(lpszFolderPath.c_str(), &szEndPtr, 10);
+				auto ulStore = wcstoul(root.c_str(), &szEndPtr, 10);
 
 				// Only '\' and NULL are acceptable next characters after our store number
 				if (szEndPtr && (szEndPtr[0] == L'\\' || szEndPtr[0] == L'\0'))
