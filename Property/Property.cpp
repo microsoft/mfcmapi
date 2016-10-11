@@ -113,7 +113,7 @@ wstring Property::toXML(int iIndent)
 	}
 
 	if (m_MainParsing.size() == 1) szXML += m_MainParsing[0].toXML(PropXMLNames[pcPROPVAL].uidName, iIndent);
-	if (m_AltParsing.size() == 1) szXML += m_AltParsing[0].toXML(PropXMLNames[pcPROPVAL].uidName, iIndent);
+	if (m_AltParsing.size() == 1) szXML += m_AltParsing[0].toXML(PropXMLNames[pcPROPVALALT].uidName, iIndent);
 
 	return szXML;
 }
