@@ -1,7 +1,7 @@
 ﻿#include "stdafx.h"
 #include "MVPropData.h"
 
-MVPropData::MVPropData(_In_ LPSPropValue lpProp, ULONG iProp)
+MVPropData::MVPropData(_In_opt_ LPSPropValue lpProp, ULONG iProp)
 {
 	m_val = { 0 };
 	if (!lpProp) return;
@@ -56,7 +56,7 @@ MVPropData::MVPropData(_In_ LPSPropValue lpProp, ULONG iProp)
 	}
 }
 
-MVPropData::MVPropData(_In_ LPSPropValue lpProp)
+MVPropData::MVPropData(_In_opt_ LPSPropValue lpProp)
 {
 	m_val = { 0 };
 	if (!lpProp) return;

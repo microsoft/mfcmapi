@@ -4,8 +4,8 @@
 class MVPropData
 {
 public:
-	MVPropData(_In_ LPSPropValue lpProp, ULONG iProp);
-	MVPropData(_In_ LPSPropValue lpNewValue);
+	MVPropData(_In_opt_ LPSPropValue lpProp, ULONG iProp);
+	MVPropData(_In_opt_ LPSPropValue lpNewValue);
 	_PV m_val;
 private:
 	string m_lpszA;

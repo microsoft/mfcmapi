@@ -209,7 +209,7 @@ void SortListData::InitializeMV(_In_ LPSPropValue lpProp, ULONG iProp)
 	m_lpData = new MVPropData(lpProp, iProp);
 }
 
-void SortListData::InitializeMV(_In_ LPSPropValue lpProp)
+void SortListData::InitializeMV(_In_opt_ LPSPropValue lpProp)
 {
 	Clean();
 	m_Type = SORTLIST_MVPROP;

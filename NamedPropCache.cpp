@@ -124,7 +124,7 @@ NamedPropCacheEntry::NamedPropCacheEntry(
 		}
 	}
 
-	if (cbSig)
+	if (cbSig && lpSig)
 	{
 		this->lpSig = new BYTE[cbSig];
 		if (this->lpSig)

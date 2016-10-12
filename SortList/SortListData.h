@@ -28,7 +28,7 @@ public:
 	void InitializePropList(_In_ ULONG ulPropTag);
 	// SORTLIST_MVPROP
 	void InitializeMV(_In_ LPSPropValue lpProp, ULONG iProp);
-	void InitializeMV(_In_ LPSPropValue lpProp);
+	void InitializeMV(_In_opt_ LPSPropValue lpProp);
 	// SORTLIST_RES
 	void InitializeRes(_In_ LPSRestriction lpOldRes);
 	// SORTLIST_COMMENT
