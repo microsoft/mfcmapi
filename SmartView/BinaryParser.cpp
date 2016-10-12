@@ -126,6 +126,7 @@ void CBinaryParser::GetLARGE_INTEGER(_Out_ LARGE_INTEGER* pLARGE_INTEGER)
 
 void CBinaryParser::GetBYTES(size_t cbBytes, size_t cbMaxBytes, _Out_ LPBYTE* ppBYTES)
 {
+	if (ppBYTES) *ppBYTES = nullptr;
 	if (!cbBytes || !ppBYTES || !CheckRemainingBytes(cbBytes)) return;
 	if (cbBytes > cbMaxBytes) return;
 	*ppBYTES = new BYTE[cbBytes];
@@ -148,9 +149,11 @@ void CBinaryParser::GetBYTESNoAlloc(size_t cbBytes, size_t cbMaxBytes, _In_count
 }
 
 // cchChar is the length of the source string, NOT counting the NULL terminator
-void CBinaryParser::GetStringA(size_t cchChar, _Deref_out_z_ LPSTR* ppStr)
+void CBinaryParser::GetStringA(size_t cchChar, _Deref_out_opt_z_ LPSTR* ppStr)
 {
-	if (!cchChar || !ppStr) return;
+	if (!ppStr) return;
+	*ppStr = nullptr;
+	if (!cchChar) return;
 	if (!CheckRemainingBytes(sizeof(CHAR)* cchChar)) return;
 	*ppStr = new CHAR[cchChar + 1];
 	if (*ppStr)
@@ -164,9 +167,11 @@ void CBinaryParser::GetStringA(size_t cchChar, _Deref_out_z_ LPSTR* ppStr)
 }
 
 // cchChar is the length of the source string, NOT counting the NULL terminator
-void CBinaryParser::GetStringW(size_t cchWChar, _Deref_out_z_ LPWSTR* ppStr)
+void CBinaryParser::GetStringW(size_t cchWChar, _Deref_out_opt_z_ LPWSTR* ppStr)
 {
-	if (!cchWChar || !ppStr) return;
+	if (!ppStr) return;
+	*ppStr = nullptr;
+	if (!cchWChar) return;
 	if (!CheckRemainingBytes(sizeof(WCHAR)* cchWChar)) return;
 	*ppStr = new WCHAR[cchWChar + 1];
 	if (*ppStr)

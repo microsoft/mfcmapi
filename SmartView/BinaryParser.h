@@ -23,8 +23,8 @@ public:
 	void GetLARGE_INTEGER(_Out_ LARGE_INTEGER* pLARGE_INTEGER);
 	void GetBYTES(size_t cbBytes, size_t cbMaxBytes, _Out_ LPBYTE* ppBYTES);
 	void GetBYTESNoAlloc(size_t cbBytes, size_t cbMaxBytes, _In_count_(cbBytes) LPBYTE pBYTES);
-	void GetStringA(size_t cchChar, _Deref_out_z_ LPSTR* ppStr);
-	void GetStringW(size_t cchChar, _Deref_out_z_ LPWSTR* ppStr);
+	void GetStringA(size_t cchChar, _Deref_out_opt_z_ LPSTR* ppStr);
+	void GetStringW(size_t cchChar, _Deref_out_opt_z_ LPWSTR* ppStr);
 	void GetStringA(_Deref_out_opt_z_ LPSTR* ppStr);
 	void GetStringW(_Deref_out_opt_z_ LPWSTR* ppStr);
 	size_t GetRemainingData(_Out_ LPBYTE* ppRemainingBYTES);
