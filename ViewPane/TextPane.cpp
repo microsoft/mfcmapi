@@ -309,7 +309,7 @@ void TextPane::SetBinary(_In_opt_count_(cb) LPBYTE lpb, size_t cb)
 }
 
 // This is used by the DbgView - don't call any debugger functions here!!!
-void TextPane::AppendString(_In_z_ wstring szMsg)
+void TextPane::AppendString(_In_ wstring szMsg)
 {
 	m_EditBox.HideSelection(false, true);
 

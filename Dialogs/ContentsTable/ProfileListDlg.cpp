@@ -464,7 +464,7 @@ void CProfileListDlg::OnSetDefaultProfile()
 
 	// Find the highlighted item AttachNum
 	auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
-	if (lpListData || !lpListData->Contents())
+	if (lpListData && lpListData->Contents())
 	{
 		DebugPrintEx(DBGGeneric, CLASS, L"OnSetDefaultProfile", L"Setting profile \"%hs\" as default\n", lpListData->Contents()->m_szProfileDisplayName.c_str());
 
@@ -509,7 +509,7 @@ void CProfileListDlg::HandleCopy()
 
 	// Find the highlighted profile
 	auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
-	if (lpListData || !lpListData->Contents())
+	if (lpListData && lpListData->Contents())
 	{
 		CGlobalCache::getInstance().SetProfileToCopy(lpListData->Contents()->m_szProfileDisplayName);
 	}
