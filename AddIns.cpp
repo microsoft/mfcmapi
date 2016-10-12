@@ -561,6 +561,7 @@ _Check_return_ ULONG ExtendAddInMenu(HMENU hMenu, ULONG ulAddInContext)
 									reinterpret_cast<UINT_PTR>(hAddInMenu),
 									szAddInTitle.c_str());
 							}
+							else continue;
 						}
 
 						// Now add each of the menu entries
