@@ -2267,7 +2267,7 @@ _Check_return_ wstring EncodeID(ULONG cbEID, _In_ LPENTRYID rgbID)
 	return wzIDEncoded;
 }
 
-wstring DecodeID(ULONG cbBuffer, _In_count_(cbBuffer) LPBYTE lpbBuffer)
+_Check_return_ wstring DecodeID(ULONG cbBuffer, _In_count_(cbBuffer) LPBYTE lpbBuffer)
 {
 	if (cbBuffer % 2) return emptystring;
 
