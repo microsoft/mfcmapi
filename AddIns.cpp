@@ -552,12 +552,15 @@ _Check_return_ ULONG ExtendAddInMenu(HMENU hMenu, ULONG ulAddInContext)
 							auto szAddInTitle = loadstring(IDS_ADDINSMENU);
 
 							hAddInMenu = CreatePopupMenu();
-							::InsertMenuW(
-								hMenu,
-								static_cast<UINT>(-1),
-								MF_BYPOSITION | MF_POPUP | MF_ENABLED,
-								reinterpret_cast<UINT_PTR>(hAddInMenu),
-								szAddInTitle.c_str());
+							if (hAddInMenu)
+							{
+								::InsertMenuW(
+									hMenu,
+									static_cast<UINT>(-1),
+									MF_BYPOSITION | MF_POPUP | MF_ENABLED,
+									reinterpret_cast<UINT_PTR>(hAddInMenu),
+									szAddInTitle.c_str());
+							}
 						}
 
 						// Now add each of the menu entries
@@ -569,11 +572,11 @@ _Check_return_ ULONG ExtendAddInMenu(HMENU hMenu, ULONG ulAddInContext)
 								lpMenu->m_AddInData = reinterpret_cast<ULONG_PTR>(&lpCurAddIn->lpMenu[ulMenu]);
 							}
 
-							EC_B(AppendMenu(
+							EC_B(AppendMenuW(
 								hAddInMenu,
 								MF_ENABLED | MF_OWNERDRAW,
 								uidCurMenu,
-								reinterpret_cast<LPCTSTR>(lpMenu)));
+								reinterpret_cast<LPCWSTR>(lpMenu)));
 							uidCurMenu++;
 						}
 					}
