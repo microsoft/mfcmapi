@@ -248,7 +248,7 @@ wstring CBinaryParser::GetStringW(size_t cchChar)
 vector<BYTE> CBinaryParser::GetBYTES(size_t cbBytes, size_t cbMaxBytes)
 {
 	if (!cbBytes || !CheckRemainingBytes(cbBytes)) return vector<BYTE>();
-	if (cbBytes > cbMaxBytes) return vector<BYTE>();
+	if (cbMaxBytes != -1 && cbBytes > cbMaxBytes) return vector<BYTE>();
 	vector<BYTE> ret(reinterpret_cast<LPBYTE>(m_lpCur), reinterpret_cast<LPBYTE>(m_lpCur + cbBytes));
 	m_lpCur += cbBytes;
 	return ret;

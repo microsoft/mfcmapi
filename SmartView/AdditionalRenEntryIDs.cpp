@@ -1,42 +1,16 @@
 #include "stdafx.h"
 #include "AdditionalRenEntryIDs.h"
-#include "String.h"
 #include "InterpretProp2.h"
 #include "ExtraPropTags.h"
 
-AdditionalRenEntryIDs::AdditionalRenEntryIDs(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
-{
-	m_wPersistDataCount = 0;
-	m_ppdPersistData = nullptr;
-}
-
-AdditionalRenEntryIDs::~AdditionalRenEntryIDs()
-{
-	if (m_ppdPersistData)
-	{
-		for (WORD iPersistElement = 0; iPersistElement < m_wPersistDataCount; iPersistElement++)
-		{
-			if (m_ppdPersistData[iPersistElement].ppeDataElement)
-			{
-				for (WORD iDataElement = 0; iDataElement < m_ppdPersistData[iPersistElement].wDataElementCount; iDataElement++)
-				{
-					delete[] m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].lpbElementData;
-				}
-			}
-
-			delete[] m_ppdPersistData[iPersistElement].ppeDataElement;
-			delete[] m_ppdPersistData[iPersistElement].JunkData;
-		}
-	}
-
-	delete[] m_ppdPersistData;
-}
+AdditionalRenEntryIDs::AdditionalRenEntryIDs(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin) {}
 
 #define PERISIST_SENTINEL 0
 #define ELEMENT_SENTINEL 0
 
 void AdditionalRenEntryIDs::Parse()
 {
+	WORD wPersistDataCount = 0;
 	// Run through the parser once to count the number of PersistData structs
 	for (;;)
 	{
@@ -49,42 +23,35 @@ void AdditionalRenEntryIDs::Parse()
 		if (m_Parser.RemainingBytes() < wDataElementSize) break;
 
 		m_Parser.Advance(wDataElementSize);
-		m_wPersistDataCount++;
+		wPersistDataCount++;
 		if (PERISIST_SENTINEL == wPersistID) break;
 	}
 
 	// Now we parse for real
 	m_Parser.Rewind();
 
-	if (m_wPersistDataCount && m_wPersistDataCount < _MaxEntriesSmall)
+	if (wPersistDataCount && wPersistDataCount < _MaxEntriesSmall)
 	{
-		m_ppdPersistData = new PersistData[m_wPersistDataCount];
-
-		if (m_ppdPersistData)
+		for (WORD iPersistElement = 0; iPersistElement < wPersistDataCount; iPersistElement++)
 		{
-			memset(m_ppdPersistData, 0, m_wPersistDataCount * sizeof(PersistData));
-			for (WORD iPersistElement = 0; iPersistElement < m_wPersistDataCount; iPersistElement++)
-			{
-				BinToPersistData(
-					&m_ppdPersistData[iPersistElement]);
-			}
+			m_ppdPersistData.push_back(BinToPersistData());
 		}
 	}
 }
 
-void AdditionalRenEntryIDs::BinToPersistData(_Out_ PersistData* ppdPersistData)
+PersistData AdditionalRenEntryIDs::BinToPersistData()
 {
-	if (!ppdPersistData) return;
+	PersistData persistData;
+	WORD wDataElementCount = 0;
+	m_Parser.GetWORD(&persistData.wPersistID);
+	m_Parser.GetWORD(&persistData.wDataElementsSize);
 
-	m_Parser.GetWORD(&ppdPersistData->wPersistID);
-	m_Parser.GetWORD(&ppdPersistData->wDataElementsSize);
-
-	if (ppdPersistData->wPersistID != PERISIST_SENTINEL &&
-		m_Parser.RemainingBytes() >= ppdPersistData->wDataElementsSize)
+	if (persistData.wPersistID != PERISIST_SENTINEL &&
+		m_Parser.RemainingBytes() >= persistData.wDataElementsSize)
 	{
 		// Build a new m_Parser to preread and count our elements
 		// This new m_Parser will only contain as much space as suggested in wDataElementsSize
-		CBinaryParser DataElementParser(ppdPersistData->wDataElementsSize, m_Parser.GetCurrentAddress());
+		CBinaryParser DataElementParser(persistData.wDataElementsSize, m_Parser.GetCurrentAddress());
 		for (;;)
 		{
 			if (DataElementParser.RemainingBytes() < 2 * sizeof(WORD)) break;
@@ -96,79 +63,68 @@ void AdditionalRenEntryIDs::BinToPersistData(_Out_ PersistData* ppdPersistData)
 			if (DataElementParser.RemainingBytes() < wElementDataSize) break;
 
 			DataElementParser.Advance(wElementDataSize);
-			ppdPersistData->wDataElementCount++;
+			wDataElementCount++;
 			if (ELEMENT_SENTINEL == wElementID) break;
 		}
 	}
 
-	if (ppdPersistData->wDataElementCount && ppdPersistData->wDataElementCount < _MaxEntriesSmall)
+	if (wDataElementCount && wDataElementCount < _MaxEntriesSmall)
 	{
-		ppdPersistData->ppeDataElement = new PersistElement[ppdPersistData->wDataElementCount];
-
-		if (ppdPersistData->ppeDataElement)
+		for (WORD iDataElement = 0; iDataElement < wDataElementCount; iDataElement++)
 		{
-			memset(ppdPersistData->ppeDataElement, 0, ppdPersistData->wDataElementCount * sizeof(PersistElement));
+			PersistElement persistElement;
+			m_Parser.GetWORD(&persistElement.wElementID);
+			m_Parser.GetWORD(&persistElement.wElementDataSize);
+			if (ELEMENT_SENTINEL == persistElement.wElementID) break;
+			// Since this is a word, the size will never be too large
+			persistElement.lpbElementData = m_Parser.GetBYTES(persistElement.wElementDataSize);
 
-			for (WORD iDataElement = 0; iDataElement < ppdPersistData->wDataElementCount; iDataElement++)
-			{
-				m_Parser.GetWORD(&ppdPersistData->ppeDataElement[iDataElement].wElementID);
-				m_Parser.GetWORD(&ppdPersistData->ppeDataElement[iDataElement].wElementDataSize);
-				if (ELEMENT_SENTINEL == ppdPersistData->ppeDataElement[iDataElement].wElementID) break;
-				// Since this is a word, the size will never be too large
-				m_Parser.GetBYTES(
-					ppdPersistData->ppeDataElement[iDataElement].wElementDataSize,
-					ppdPersistData->ppeDataElement[iDataElement].wElementDataSize,
-					&ppdPersistData->ppeDataElement[iDataElement].lpbElementData);
-			}
+			persistData.ppeDataElement.push_back(persistElement);
 		}
 	}
 
 	// We'll trust wDataElementsSize to dictate our record size.
 	// Count the 2 WORD size header fields too.
-	auto cbRecordSize = ppdPersistData->wDataElementsSize + sizeof(WORD) * 2;
+	auto cbRecordSize = persistData.wDataElementsSize + sizeof(WORD) * 2;
 
 	// Junk data remains - can't use GetRemainingData here since it would eat the whole buffer
 	if (m_Parser.GetCurrentOffset() < cbRecordSize)
 	{
-		ppdPersistData->JunkDataSize = cbRecordSize - m_Parser.GetCurrentOffset();
-		m_Parser.GetBYTES(ppdPersistData->JunkDataSize, ppdPersistData->JunkDataSize, &ppdPersistData->JunkData);
+		persistData.JunkData = m_Parser.GetBYTES(cbRecordSize - m_Parser.GetCurrentOffset());
 	}
+
+	return persistData;
 }
 
 _Check_return_ wstring AdditionalRenEntryIDs::ToStringInternal()
 {
-	auto szAdditionalRenEntryIDs = formatmessage(IDS_AEIDHEADER, m_wPersistDataCount);
+	auto szAdditionalRenEntryIDs = formatmessage(IDS_AEIDHEADER, m_ppdPersistData.size());
 
-	if (m_ppdPersistData)
+	if (m_ppdPersistData.size())
 	{
-		for (WORD iPersistElement = 0; iPersistElement < m_wPersistDataCount; iPersistElement++)
+		for (WORD iPersistElement = 0; iPersistElement < m_ppdPersistData.size(); iPersistElement++)
 		{
-			auto szPersistID = InterpretFlags(flagPersistID, m_ppdPersistData[iPersistElement].wPersistID);
 			szAdditionalRenEntryIDs += formatmessage(IDS_AEIDPERSISTELEMENT,
 				iPersistElement,
 				m_ppdPersistData[iPersistElement].wPersistID,
-				szPersistID.c_str(),
+				InterpretFlags(flagPersistID, m_ppdPersistData[iPersistElement].wPersistID).c_str(),
 				m_ppdPersistData[iPersistElement].wDataElementsSize);
 
-			if (m_ppdPersistData[iPersistElement].ppeDataElement)
+			if (m_ppdPersistData[iPersistElement].ppeDataElement.size())
 			{
-				for (WORD iDataElement = 0; iDataElement < m_ppdPersistData[iPersistElement].wDataElementCount; iDataElement++)
+				for (WORD iDataElement = 0; iDataElement < m_ppdPersistData[iPersistElement].ppeDataElement.size(); iDataElement++)
 				{
-					auto szElementID = InterpretFlags(flagElementID, m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID);
 					szAdditionalRenEntryIDs += formatmessage(IDS_AEIDDATAELEMENT,
 						iDataElement,
 						m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID,
-						szElementID.c_str(),
+						InterpretFlags(flagElementID, m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID).c_str(),
 						m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementDataSize);
 
-					SBinary sBin = { 0 };
-					sBin.cb = static_cast<ULONG>(m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementDataSize);
-					sBin.lpb = m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].lpbElementData;
-					szAdditionalRenEntryIDs += BinToHexString(&sBin, true);
+					szAdditionalRenEntryIDs += BinToHexString(m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].lpbElementData, true);
 				}
 			}
 
-			szAdditionalRenEntryIDs += JunkDataToString(m_ppdPersistData[iPersistElement].JunkDataSize, m_ppdPersistData[iPersistElement].JunkData);
+			szAdditionalRenEntryIDs += JunkDataToString(m_ppdPersistData[iPersistElement].JunkData);
 		}
 	}
 

@@ -320,6 +320,14 @@ wstring BinToHexString(_In_opt_count_(cb) LPBYTE lpb, size_t cb, bool bPrependCB
 	return lpsz;
 }
 
+wstring BinToHexString(const vector<BYTE>& lpByte, bool bPrependCB)
+{
+	SBinary sBin = { 0 };
+	sBin.cb = static_cast<ULONG>(lpByte.size());
+	sBin.lpb = const_cast<LPBYTE>(lpByte.data());
+	return BinToHexString(&sBin, bPrependCB);
+}
+
 wstring BinToHexString(_In_opt_ LPSBinary lpBin, bool bPrependCB)
 {
 	if (!lpBin) return L"";

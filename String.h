@@ -47,6 +47,7 @@ wstring SanitizeFileNameW(wstring szFileIn);
 wstring indent(int iIndent);
 
 wstring BinToTextString(_In_ LPSBinary lpBin, bool bMultiLine);
+wstring BinToHexString(const vector<BYTE>& lpByte, bool bPrependCB);
 wstring BinToHexString(_In_opt_count_(cb) LPBYTE lpb, size_t cb, bool bPrependCB);
 wstring BinToHexString(_In_opt_ LPSBinary lpBin, bool bPrependCB);
 vector<BYTE> HexStringToBin(_In_ wstring lpsz, size_t cbTarget = 0);
