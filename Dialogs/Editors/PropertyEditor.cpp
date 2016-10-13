@@ -278,7 +278,7 @@ void CPropertyEditor::InitPropertyControls()
 			}
 
 			lpPane = static_cast<CountedTextPane*>(GetPane(0));
-			auto cchStr = 0;
+			size_t cchStr = 0;
 			if (cbStr % sizeof(WCHAR)) cchStr = cbStr / sizeof WCHAR;
 			if (lpPane) lpPane->SetCount(cchStr);
 		}
