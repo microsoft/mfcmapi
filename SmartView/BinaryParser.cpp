@@ -215,6 +215,36 @@ void CBinaryParser::GetStringW(_Deref_out_opt_z_ LPWSTR* ppStr)
 	GetStringW(cchChar + 1, ppStr);
 }
 
+string CBinaryParser::GetStringA(size_t cchChar)
+{
+	if (cchChar == -1)
+	{
+		auto hRes = StringCchLengthA(reinterpret_cast<LPCSTR>(m_lpCur), (m_lpEnd - m_lpCur) / sizeof CHAR, &cchChar);
+		if (FAILED(hRes)) return "";
+		cchChar += 1;
+	}
+
+	if (!cchChar || !CheckRemainingBytes(sizeof CHAR * cchChar)) return "";
+	string ret(reinterpret_cast<LPCSTR>(m_lpCur), cchChar);
+	m_lpCur += sizeof CHAR * cchChar;
+	return ret;
+}
+
+wstring CBinaryParser::GetStringW(size_t cchChar)
+{
+	if (cchChar == -1)
+	{
+		auto hRes = StringCchLengthW(reinterpret_cast<LPCWSTR>(m_lpCur), (m_lpEnd - m_lpCur) / sizeof WCHAR, &cchChar);
+		if (FAILED(hRes)) return emptystring;
+		cchChar += 1;
+	}
+
+	if (!cchChar || !CheckRemainingBytes(sizeof WCHAR * cchChar)) return emptystring;
+	wstring ret(reinterpret_cast<LPCWSTR>(m_lpCur), cchChar);
+	m_lpCur += sizeof WCHAR * cchChar;
+	return ret;
+}
+
 size_t CBinaryParser::GetRemainingData(_Out_ LPBYTE* ppRemainingBYTES)
 {
 	if (!ppRemainingBYTES) return 0;
