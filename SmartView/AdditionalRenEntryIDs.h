@@ -5,31 +5,27 @@ struct PersistElement
 {
 	WORD wElementID;
 	WORD wElementDataSize;
-	LPBYTE lpbElementData;
+	vector<BYTE> lpbElementData;
 };
 
 struct PersistData
 {
 	WORD wPersistID;
 	WORD wDataElementsSize;
-	WORD wDataElementCount;
-	PersistElement* ppeDataElement;
+	vector<PersistElement> ppeDataElement;
 
-	size_t JunkDataSize;
-	LPBYTE JunkData;
+	vector<BYTE> JunkData;
 };
 
 class AdditionalRenEntryIDs : public SmartViewParser
 {
 public:
 	AdditionalRenEntryIDs(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
-	~AdditionalRenEntryIDs();
 
 private:
-	void Parse();
-	_Check_return_ wstring ToStringInternal();
-	void BinToPersistData(_Out_ PersistData* ppdPersistData);
+	void Parse() override;
+	_Check_return_ wstring ToStringInternal() override;
+	PersistData BinToPersistData();
 
-	WORD m_wPersistDataCount;
-	PersistData* m_ppdPersistData;
+	vector<PersistData> m_ppdPersistData;
 };

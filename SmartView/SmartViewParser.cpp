@@ -44,6 +44,15 @@ _Check_return_ wstring SmartViewParser::ToString()
 	return szParsedString;
 }
 
+_Check_return_ wstring SmartViewParser::JunkDataToString(const vector<BYTE>& lpJunkData) const
+{
+	if (!lpJunkData.size()) return emptystring;
+	DebugPrint(DBGSmartView, L"Had 0x%08X = %u bytes left over.\n", static_cast<int>(lpJunkData.size()), static_cast<UINT>(lpJunkData.size()));
+	auto szJunk = formatmessage(IDS_JUNKDATASIZE, lpJunkData.size());
+	szJunk += BinToHexString(lpJunkData, true);
+	return szJunk;
+}
+
 _Check_return_ wstring SmartViewParser::JunkDataToString(size_t cbJunkData, _In_count_(cbJunkData) LPBYTE lpJunkData) const
 {
 	if (!cbJunkData || !lpJunkData) return L"";
