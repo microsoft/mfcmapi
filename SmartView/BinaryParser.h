@@ -29,6 +29,7 @@ public:
 	void GetStringW(_Deref_out_opt_z_ LPWSTR* ppStr);
 	string GetStringA(size_t cchChar = -1);
 	wstring GetStringW(size_t cchChar = -1);
+	vector<BYTE> GetBYTES(size_t cbBytes, size_t cbMaxBytes);
 	size_t GetRemainingData(_Out_ LPBYTE* ppRemainingBYTES);
 
 private:
