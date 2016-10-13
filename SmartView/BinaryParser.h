@@ -27,6 +27,8 @@ public:
 	void GetStringW(size_t cchChar, _Deref_out_opt_z_ LPWSTR* ppStr);
 	void GetStringA(_Deref_out_opt_z_ LPSTR* ppStr);
 	void GetStringW(_Deref_out_opt_z_ LPWSTR* ppStr);
+	string GetStringA(size_t cchChar = -1);
+	wstring GetStringW(size_t cchChar = -1);
 	size_t GetRemainingData(_Out_ LPBYTE* ppRemainingBYTES);
 
 private:
