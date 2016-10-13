@@ -13,7 +13,7 @@ wstring CFileDialogExW::OpenFile(
 	INT_PTR iDlgRet = IDOK;
 	CFileDialogExW dlgFilePicker;
 	EC_D_DIALOG(dlgFilePicker.DisplayDialog(
-		false,
+		true,
 		lpszDefExt,
 		lpszFileName,
 		dwFlags,
@@ -39,7 +39,7 @@ vector<wstring> CFileDialogExW::OpenFiles(
 	INT_PTR iDlgRet = IDOK;
 	CFileDialogExW dlgFilePicker;
 	EC_D_DIALOG(dlgFilePicker.DisplayDialog(
-		false,
+		true,
 		lpszDefExt,
 		lpszFileName,
 		dwFlags | OFN_ALLOWMULTISELECT,
@@ -65,7 +65,7 @@ wstring CFileDialogExW::SaveAs(
 	INT_PTR iDlgRet = IDOK;
 	CFileDialogExW dlgFilePicker;
 	EC_D_DIALOG(dlgFilePicker.DisplayDialog(
-		true,
+		false,
 		lpszDefExt,
 		lpszFileName,
 		dwFlags,
