@@ -1610,7 +1610,7 @@ void CMainDlg::OnViewMSGProperties()
 	auto file = CFileDialogExW::OpenFile(
 		L"msg", // STRING_OK
 		emptystring,
-		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_FILEMUSTEXIST,
+		OFN_FILEMUSTEXIST,
 		loadstring(IDS_MSGFILES),
 		this);
 	if (!file.empty())
@@ -1649,7 +1649,7 @@ void CMainDlg::OnConvertMSGToEML()
 		auto msgfile = CFileDialogExW::OpenFile(
 			L"msg", // STRING_OK
 			emptystring,
-			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_FILEMUSTEXIST,
+			OFN_FILEMUSTEXIST,
 			loadstring(IDS_MSGFILES),
 			this);
 		if (!msgfile.empty())
@@ -1698,7 +1698,7 @@ void CMainDlg::OnConvertEMLToMSG()
 		auto emlfile = CFileDialogExW::OpenFile(
 			L"eml", // STRING_OK
 			emptystring,
-			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_FILEMUSTEXIST,
+			OFN_FILEMUSTEXIST,
 			loadstring(IDS_EMLFILES),
 			this);
 		if (!emlfile.empty())
@@ -1737,7 +1737,7 @@ void CMainDlg::OnConvertMSGToXML()
 	auto msgfile = CFileDialogExW::OpenFile(
 		L"msg", // STRING_OK
 		emptystring,
-		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_FILEMUSTEXIST,
+		OFN_FILEMUSTEXIST,
 		loadstring(IDS_MSGFILES),
 		this);
 	if (!msgfile.empty())

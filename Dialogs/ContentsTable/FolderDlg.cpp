@@ -779,7 +779,7 @@ void CFolderDlg::OnLoadFromMSG()
 	auto files = CFileDialogExW::OpenFiles(
 		L"msg", // STRING_OK
 		emptystring,
-		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_FILEMUSTEXIST,
+		OFN_HIDEREADONLY | OFN_FILEMUSTEXIST,
 		loadstring(IDS_MSGFILES),
 		this);
 
@@ -1651,7 +1651,7 @@ void CFolderDlg::OnLoadFromTNEF()
 		auto files = CFileDialogExW::OpenFiles(
 			L"tnef", // STRING_OK
 			emptystring,
-			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_FILEMUSTEXIST,
+			OFN_FILEMUSTEXIST,
 			loadstring(IDS_TNEFFILES),
 			this);
 
@@ -1705,7 +1705,7 @@ void CFolderDlg::OnLoadFromEML()
 		auto files = CFileDialogExW::OpenFiles(
 			L"eml", // STRING_OK
 			emptystring,
-			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT | OFN_FILEMUSTEXIST,
+			OFN_FILEMUSTEXIST,
 			loadstring(IDS_EMLFILES),
 			this);
 
