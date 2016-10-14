@@ -2,15 +2,15 @@
 	#error this file is not editable by Microsoft Visual C++
 #endif // APSTUDIO_INVOKED
 
-#ifdef BUILDNUMBER
-#define INET_VER                    rmj, rmm, rup, rmn
-#define INET_VERSION                BUILDNUMBER
-#else
 #define rmj 16
 #define rmm 0
 #define rup 0
 #define rmn 1044
 
+#ifdef BUILDNUMBER
+#define INET_VER                    rmj, rmm, rup, rmn
+#define INET_VERSION                BUILDNUMBER
+#else
 #define INET_VER                    rmj, rmm, rup, rmn
 #define INET_VERSION                #rmj "." #rmm "." #rup "." #rmn "\0"
 #endif
