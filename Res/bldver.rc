@@ -2,10 +2,14 @@
 	#error this file is not editable by Microsoft Visual C++
 #endif // APSTUDIO_INVOKED
 
-#define rmj 15
+#ifndef BUILDNUMBER
+#define BUILDNUMBER 1044
+#endif
+
+#define rmj 16
 #define rmm 0
 #define rup 0
-#define rmn 1043
+#define rmn BUILDNUMBER
 
 #define MAKEFILEVERSION(_rmaj, _rmin, _bmaj, _bmin)    #_rmaj "." #_rmin "." #_bmaj "." #_bmin "\0"
 #define MAKEFILEVERSIONSTR(_rmaj, _rmin, _bmaj, _bmin) MAKEFILEVERSION(_rmaj, _rmin, _bmaj, _bmin)

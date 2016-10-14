@@ -376,6 +376,7 @@
     <ResourceCompile>
       <PreprocessorDefinitions>_AFXDLL;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
+      <AdditionalOptions>/D "BUILDNUMBER=$(BuildNumber)" %(AdditionalOptions)</AdditionalOptions>
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/debugtype:cv,fixup /safeseh %(AdditionalOptions)</AdditionalOptions>
