@@ -5,20 +5,13 @@
 #define MAKEFILEVERSION(_rmaj, _rmin, _bmaj, _bmin)    #_rmaj "." #_rmin "." #_bmaj "." #_bmin "\0"
 #define MAKEFILEVERSIONSTR(_rmaj, _rmin, _bmaj, _bmin) MAKEFILEVERSION(_rmaj, _rmin, _bmaj, _bmin)
 
-//#undef BUILDNUMBER
-//#define BUILDNUMBER "16.0.1234.02"
 #define rmj 16
 #define rmm 0
 #define rup 0
 #define rmn 1044
 
-//#ifdef BUILDNUMBER
-//#define INET_VER                    BUILDNUMBER
-//#define INET_VERSION                BUILDNUMBER "\0"
-//#else
 #define INET_VER                    rmj, rmm, rup, rmn
 #define INET_VERSION                MAKEFILEVERSIONSTR(rmj, rmm, rup, rmn)
-//#endif
 
 /* Define file version and project version */
 
