@@ -3,3 +3,14 @@
 ################################################################################
 
 /MFCMapi.vcxproj.user
+/bin
+/obj
+/ipch
+/test
+/MFCMapi.VC.db
+/MFCMapi.VC.VC.opendb
+/.vs/MFCMapi/v14/.suo
+/MFCMapi.pdb
+/MFCMapi.exe
+/MrMAPI.pdb
+/MrMAPI.exe
