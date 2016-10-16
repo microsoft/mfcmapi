@@ -111,15 +111,8 @@ $releaseService = New-Object CodePlex.WebServices.Client.ReleaseService
 $releaseService.Credentials = $cred
 
 Write-Host "Creating $project/$release"
-Try
-{
-  $id = $releaseService.CreateARelease($project, $release, $releaseNotes, $null, [CodePlex.WebServices.Client.ReleaseStatus]::Planned, $False, $False)
-  Write-Host "New project id is $id"
-}
-Catch
-{
-  Write-Host "Release already existed"
-}
+$id = $releaseService.CreateARelease($project, $release, $releaseNotes, $null, [CodePlex.WebServices.Client.ReleaseStatus]::Planned, $False, $False)
+Write-Host "New project id is $id"
 
 $releaseFiles = New-Object System.Collections.Generic.List[CodePlex.WebServices.Client.ReleaseFile]
 $releaseFile = Build-ReleaseFile -Name "MFCMAPI 32 bit executable" -FileName "MFCMapi.exe" -Sourcepath $indir -Version $version -Release $release
