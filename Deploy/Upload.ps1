@@ -1,4 +1,5 @@
 $indir = "$Env:SYSTEM_ARTIFACTSDIRECTORY\$Env:BUILD_DEFINITIONNAME\Archives"
+$deploydir = "$Env:SYSTEM_DEFAULTWORKINGDIRECTORY/$Env:BUILD_DEFINITIONNAME\Deploy"
 $version = $Env:BUILD_BUILDNUMBER
 $project = "MFCMAPI"
 $release = $($args[0])
@@ -14,7 +15,7 @@ $secstr = New-Object -TypeName System.Security.SecureString
 $password.ToCharArray() | ForEach-Object {$secstr.AppendChar($_)}
 $cred = new-object -typename System.Management.Automation.PSCredential -argumentlist $username, $secstr
 
-Add-Type -Path .\CodePlex.WebServices.Client.dll
+Add-Type -Path "$deploydir\CodePlex.WebServices.Client.dll"
 
 function Build-FileName {
   <#
