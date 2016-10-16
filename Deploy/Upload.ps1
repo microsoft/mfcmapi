@@ -1,4 +1,4 @@
-$outdir = "$Env:SYSTEM_ARTIFACTSDIRECTORY\out"
+$indir = "$Env:SYSTEM_ARTIFACTSDIRECTORY\$Env:BUILD_DEFINITIONNAME\Archives"
 $version = $Env:BUILD_BUILDNUMBER
 $project = "MFCMAPI"
 $release = $($args[0])
@@ -122,22 +122,22 @@ Catch
 }
 
 $releaseFiles = New-Object System.Collections.Generic.List[CodePlex.WebServices.Client.ReleaseFile]
-$releaseFile = Build-ReleaseFile -Name "MFCMAPI 32 bit executable" -FileName "MFCMapi.exe" -Sourcepath $outdir -Version $version -Release $release
+$releaseFile = Build-ReleaseFile -Name "MFCMAPI 32 bit executable" -FileName "MFCMapi.exe" -Sourcepath $indir -Version $version -Release $release
 $releaseFiles.Add($releaseFile)
-$releaseFile = Build-ReleaseFile -Name "MFCMAPI 32 bit symbol" -FileName "MFCMapi.pdb" -Sourcepath $outdir -Version $version -Release $release
+$releaseFile = Build-ReleaseFile -Name "MFCMAPI 32 bit symbol" -FileName "MFCMapi.pdb" -Sourcepath $indir -Version $version -Release $release
 $releaseFiles.Add($releaseFile)
-$releaseFile = Build-ReleaseFile -Name "MFCMAPI 64 bit executable" -FileName "MFCMapi.exe.x64" -Sourcepath $outdir -Version $version -Release $release
+$releaseFile = Build-ReleaseFile -Name "MFCMAPI 64 bit executable" -FileName "MFCMapi.exe.x64" -Sourcepath $indir -Version $version -Release $release
 $releaseFiles.Add($releaseFile)
-$releaseFile = Build-ReleaseFile -Name "MFCMAPI 64 bit symbol" -FileName "MFCMapi.pdb.x64" -Sourcepath $outdir -Version $version -Release $release
+$releaseFile = Build-ReleaseFile -Name "MFCMAPI 64 bit symbol" -FileName "MFCMapi.pdb.x64" -Sourcepath $indir -Version $version -Release $release
 $releaseFiles.Add($releaseFile)
 
-$releaseFile = Build-ReleaseFile -Name "MrMAPI 32 bit executable" -FileName "MrMAPI.exe" -Sourcepath $outdir -Version $version -Release $release
+$releaseFile = Build-ReleaseFile -Name "MrMAPI 32 bit executable" -FileName "MrMAPI.exe" -Sourcepath $indir -Version $version -Release $release
 $releaseFiles.Add($releaseFile)
-$releaseFile = Build-ReleaseFile -Name "MrMAPI 32 bit symbol" -FileName "MrMAPI.pdb" -Sourcepath $outdir -Version $version -Release $release
+$releaseFile = Build-ReleaseFile -Name "MrMAPI 32 bit symbol" -FileName "MrMAPI.pdb" -Sourcepath $indir -Version $version -Release $release
 $releaseFiles.Add($releaseFile)
-$releaseFile = Build-ReleaseFile -Name "MrMAPI 64 bit executable" -FileName "MrMAPI.exe.x64" -Sourcepath $outdir -Version $version -Release $release
+$releaseFile = Build-ReleaseFile -Name "MrMAPI 64 bit executable" -FileName "MrMAPI.exe.x64" -Sourcepath $indir -Version $version -Release $release
 $releaseFiles.Add($releaseFile)
-$releaseFile = Build-ReleaseFile -Name "MrMAPI 64 bit symbol" -FileName "MrMAPI.pdb.x64" -Sourcepath $outdir -Version $version -Release $release
+$releaseFile = Build-ReleaseFile -Name "MrMAPI 64 bit symbol" -FileName "MrMAPI.pdb.x64" -Sourcepath $indir -Version $version -Release $release
 $releaseFiles.Add($releaseFile)
 
 $default = Build-FileName -FileName "MFCMapi.exe" -Version $version
