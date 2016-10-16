@@ -49,7 +49,7 @@ function Build-ReleaseFile {
   .DESCRIPTION
   Describe the function in more detail
   .EXAMPLE
-  Build-ReleaseFile(releaseService, "MFCMAPI 32 bit executable", "MFCMapi.exe", sourcepath, Version, release, true);
+  Build-ReleaseFile("MFCMAPI 32 bit executable", "MFCMapi.exe", sourcepath, Version, release, true);
   .PARAMETER Name
   Release name of the file.
   .PARAMETER FileName
@@ -89,6 +89,45 @@ function Build-ReleaseFile {
   }
 }
 
+function Upload-ReleaseFile {
+  <#
+  .SYNOPSIS
+  Creates a ReleaseFile for upload
+  .DESCRIPTION
+  Describe the function in more detail
+  .EXAMPLE
+  Upload-ReleaseFile(releaseService, releaseFile, true);
+  .PARAMETER ReleaseService
+  Release service object
+  .PARAMETER ReleaseFile
+  Release file object for upload
+  .PARAMETER Default
+  Upload is default
+  #>
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory=$True)]
+    [CodePlex.WebServices.Client.ReleaseService]$ReleaseService,
+    [Parameter(Mandatory=$True)]
+    [CodePlex.WebServices.Client.ReleaseFile]$ReleaseFile,
+    [switch]$Default
+  )
+  process
+  {
+    $releaseFiles = New-Object System.Collections.Generic.List[CodePlex.WebServices.Client.ReleaseFile]
+    $releaseFiles.Add($ReleaseFile)
+
+    Write-Host "Uploading $ReleaseFile.FileName"
+    
+    switch ($Default)
+    {
+      $true { $releaseService.UploadReleaseFiles($project, $release, $releaseFiles, $ReleaseFile.FileName); break }
+      default { $releaseService.UploadReleaseFiles($project, $release, $releaseFiles); break }
+    }
+  }
+}
+
 $releaseNotes = "Build: *$version*
 
 Full release notes at [url:SGriffin's blog|FIXURL].
@@ -99,14 +138,6 @@ If you just want to run the MFCMAPI or MrMAPI, get the executables. If you want 
 
 [image:Facebook Badge|http://badge.facebook.com/badge/26764016480.2776.1538253884.png|http://www.facebook.com/pages/MFCMAPI/26764016480]"
 
-#Application MFCMAPI 32 bit executable - September 2015 Release (15.0.0.1043) 
-#Application MFCMAPI 32 bit symbol - September 2015 Release (15.0.0.1043) 
-#Application MFCMAPI 64 bit executable - September 2015 Release (15.0.0.1043) 
-#Application MFCMAPI 64 bit symbol - September 2015 Release (15.0.0.1043) 
-#Application MrMAPI 32 bit executable - September 2015 Release (15.0.0.1043) 
-#Application MrMAPI 32 bit symbol - September 2015 Release (15.0.0.1043) 
-#Application MrMAPI 64 bit executable - September 2015 Release (15.0.0.1043) 
-#Application MrMAPI 64 bit symbol - September 2015 Release (15.0.0.1043) 
 $releaseService = New-Object CodePlex.WebServices.Client.ReleaseService
 $releaseService.Credentials = $cred
 
@@ -114,26 +145,20 @@ Write-Host "Creating $project/$release"
 $id = $releaseService.CreateARelease($project, $release, $releaseNotes, $null, [CodePlex.WebServices.Client.ReleaseStatus]::Planned, $False, $False)
 Write-Host "New project id is $id"
 
-$releaseFiles = New-Object System.Collections.Generic.List[CodePlex.WebServices.Client.ReleaseFile]
 $releaseFile = Build-ReleaseFile -Name "MFCMAPI 32 bit executable" -FileName "MFCMapi.exe" -Sourcepath $indir -Version $version -Release $release
-$releaseFiles.Add($releaseFile)
+Upload-ReleaseFile -ReleaseService $releaseService -ReleaseFile $releaseFile -Default
 $releaseFile = Build-ReleaseFile -Name "MFCMAPI 32 bit symbol" -FileName "MFCMapi.pdb" -Sourcepath $indir -Version $version -Release $release
-$releaseFiles.Add($releaseFile)
+Upload-ReleaseFile -ReleaseService $releaseService -ReleaseFile $releaseFile
 $releaseFile = Build-ReleaseFile -Name "MFCMAPI 64 bit executable" -FileName "MFCMapi.exe.x64" -Sourcepath $indir -Version $version -Release $release
-$releaseFiles.Add($releaseFile)
+Upload-ReleaseFile -ReleaseService $releaseService -ReleaseFile $releaseFile
 $releaseFile = Build-ReleaseFile -Name "MFCMAPI 64 bit symbol" -FileName "MFCMapi.pdb.x64" -Sourcepath $indir -Version $version -Release $release
-$releaseFiles.Add($releaseFile)
+Upload-ReleaseFile -ReleaseService $releaseService -ReleaseFile $releaseFile
 
 $releaseFile = Build-ReleaseFile -Name "MrMAPI 32 bit executable" -FileName "MrMAPI.exe" -Sourcepath $indir -Version $version -Release $release
-$releaseFiles.Add($releaseFile)
+Upload-ReleaseFile -ReleaseService $releaseService -ReleaseFile $releaseFile
 $releaseFile = Build-ReleaseFile -Name "MrMAPI 32 bit symbol" -FileName "MrMAPI.pdb" -Sourcepath $indir -Version $version -Release $release
-$releaseFiles.Add($releaseFile)
+Upload-ReleaseFile -ReleaseService $releaseService -ReleaseFile $releaseFile
 $releaseFile = Build-ReleaseFile -Name "MrMAPI 64 bit executable" -FileName "MrMAPI.exe.x64" -Sourcepath $indir -Version $version -Release $release
-$releaseFiles.Add($releaseFile)
+Upload-ReleaseFile -ReleaseService $releaseService -ReleaseFile $releaseFile
 $releaseFile = Build-ReleaseFile -Name "MrMAPI 64 bit symbol" -FileName "MrMAPI.pdb.x64" -Sourcepath $indir -Version $version -Release $release
-$releaseFiles.Add($releaseFile)
-
-$default = Build-FileName -FileName "MFCMapi.exe" -Version $version
-
-Write-Host "Uploading release files"
-$releaseService.UploadReleaseFiles($project, $release, $releaseFiles, $default)
+Upload-ReleaseFile -ReleaseService $releaseService -ReleaseFile $releaseFile
