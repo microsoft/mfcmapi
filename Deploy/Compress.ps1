@@ -9,11 +9,43 @@ Write-Host "Version=$version"
 if (Test-Path $outdir) {Remove-Item -Path $outdir -Recurse}
 if (!(Test-Path $outdir)) {New-Item -Path $outdir -Type Directory}
 
-Compress-Archive "$indir\Win32\MrMAPI\MrMAPI.exe" "$outdir\MrMAPI.exe.$version.zip"
-Compress-Archive "$indir\Win32\MrMAPI\MrMAPI.pdb" "$outdir\MrMAPI.pdb.$version.zip"
-Compress-Archive "$indir\x64\MrMAPI\MrMAPI.exe" "$outdir\MrMAPI.exe.x64.$version.zip"
-Compress-Archive "$indir\x64\MrMAPI\MrMAPI.exe" "$outdir\MrMAPI.pdb.x64.$version.zip"
-Compress-Archive "$indir\Win32\Release\MFCMAPI.exe" "$outdir\MFCMAPI.exe.$version.zip"
-Compress-Archive "$indir\Win32\Release\MFCMAPI.pdb" "$outdir\MFCMAPI.pdb.$version.zip"
-Compress-Archive "$indir\x64\Release\MFCMAPI.exe" "$outdir\MFCMAPI.exe.x64.$version.zip"
-Compress-Archive "$indir\x64\Release\MFCMAPI.exe" "$outdir\MFCMAPI.pdb.x64.$version.zip"
+function Compress {
+  <#
+  .SYNOPSIS
+  Compress a file with logging
+  .EXAMPLE
+   Compress -Source "inpath\MrMAPI.exe" -Target "outpath\MrMAPI.exe.$version.zip"
+  .PARAMETER Source
+  Name of the source file
+  .PARAMETER Target
+  Name of the target file
+  #>
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory=$True)]
+    [string]Source,
+    [Parameter(Mandatory=$True)]
+    [string]Target
+    )
+  process
+  {
+    Write-Host "Compressing $Source to $Target"
+    #Try
+    {
+      Compress-Archive $Source $Target
+    }
+    #Catch
+    {
+    }
+  }
+}
+
+Compress -Source "$indir\Win32\MrMAPI\MrMAPI.exe" -Target "$outdir\MrMAPI.exe.$version.zip"
+Compress -Source "$indir\Win32\MrMAPI\MrMAPI.pdb" -Target "$outdir\MrMAPI.pdb.$version.zip"
+Compress -Source "$indir\x64\MrMAPI\MrMAPI.exe" -Target "$outdir\MrMAPI.exe.x64.$version.zip"
+Compress -Source "$indir\x64\MrMAPI\MrMAPI.exe" -Target "$outdir\MrMAPI.pdb.x64.$version.zip"
+Compress -Source "$indir\Win32\Release\MFCMAPI.exe" -Target "$outdir\MFCMAPI.exe.$version.zip"
+Compress -Source "$indir\Win32\Release\MFCMAPI.pdb" -Target "$outdir\MFCMAPI.pdb.$version.zip"
+Compress -Source "$indir\x64\Release\MFCMAPI.exe" -Target "$outdir\MFCMAPI.exe.x64.$version.zip"
+Compress -Source "$indir\x64\Release\MFCMAPI.exe" -Target "$outdir\MFCMAPI.pdb.x64.$version.zip"
