@@ -31,13 +31,7 @@ function Compress {
   process
   {
     Write-Host "Compressing $Source to $Target"
-    #Try
-    {
-      Compress-Archive $Source $Target
-    }
-    #Catch
-    {
-    }
+    Compress-Archive $Source $Target
   }
 }
 
