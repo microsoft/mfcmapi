@@ -24,9 +24,9 @@ function Compress {
   param
   (
     [Parameter(Mandatory=$True)]
-    [string]Source,
+    [string]$Source,
     [Parameter(Mandatory=$True)]
-    [string]Target
+    [string]$Target
     )
   process
   {
