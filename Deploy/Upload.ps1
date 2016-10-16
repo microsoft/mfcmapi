@@ -37,8 +37,8 @@ function Build-FileName {
     [string]$Version
     )
   process
-  {	
-	return "$FileName.$Version.zip"
+  {
+    return "$FileName.$Version.zip"
   }
 }
 
@@ -49,7 +49,7 @@ function Build-ReleaseFile {
   .DESCRIPTION
   Describe the function in more detail
   .EXAMPLE
-  			Build-ReleaseFile(releaseService, "MFCMAPI 32 bit executable", "MFCMapi.exe", sourcepath, Version, release, true);
+  Build-ReleaseFile(releaseService, "MFCMAPI 32 bit executable", "MFCMapi.exe", sourcepath, Version, release, true);
   .PARAMETER Name
   Release name of the file.
   .PARAMETER FileName
@@ -75,17 +75,17 @@ function Build-ReleaseFile {
     [Parameter(Mandatory=$True)]
     [string]$Release)
   process
-  {	
-	Write-Host "Building release file for $FileName"
-	$fullFileName = "$FileName.$Version.zip"
-	$releaseFile = New-Object CodePlex.WebServices.Client.ReleaseFile
-	$releaseFile.Name = "$Name - $Release ($Version)"
-	$releaseFile.FileName = Build-FileName -FileName $FileName -Version $Version
-	$releaseFile.FileType = [CodePlex.WebServices.Client.ReleaseFileType]::RuntimeBinary
-	$releaseFile.FileData = Get-Content -Path "$sourcepath\$fullFileName" -Encoding Byte
-	Write-Host "Release file built"
+  {
+    Write-Host "Building release file for $FileName"
+    $fullFileName = "$FileName.$Version.zip"
+    $releaseFile = New-Object CodePlex.WebServices.Client.ReleaseFile
+    $releaseFile.Name = "$Name - $Release ($Version)"
+    $releaseFile.FileName = Build-FileName -FileName $FileName -Version $Version
+    $releaseFile.FileType = [CodePlex.WebServices.Client.ReleaseFileType]::RuntimeBinary
+    $releaseFile.FileData = Get-Content -Path "$sourcepath\$fullFileName" -Encoding Byte
+    Write-Host "Release file built"
 
-	return $releaseFile
+    return $releaseFile
   }
 }
 
@@ -111,14 +111,14 @@ $releaseService = New-Object CodePlex.WebServices.Client.ReleaseService
 $releaseService.Credentials = $cred
 
 Write-Host "Creating $project/$release"
-#Try
+Try
 {
-	$id = $releaseService.CreateARelease($project, $release, $releaseNotes, $null, [CodePlex.WebServices.Client.ReleaseStatus]::Planned, $False, $False)
-	Write-Host "New project id is $id"
+  $id = $releaseService.CreateARelease($project, $release, $releaseNotes, $null, [CodePlex.WebServices.Client.ReleaseStatus]::Planned, $False, $False)
+  Write-Host "New project id is $id"
 }
-#Catch
+Catch
 {
-	Write-Host "Release already existed"
+  Write-Host "Release already existed"
 }
 
 $releaseFiles = New-Object System.Collections.Generic.List[CodePlex.WebServices.Client.ReleaseFile]
