@@ -6,7 +6,6 @@ Write-Host "indir=$indir"
 Write-Host "outdir=$outdir"
 Write-Host "Version=$version"
 
-if (Test-Path $outdir) {Remove-Item -Path $outdir -Recurse}
 if (!(Test-Path $outdir)) {New-Item -Path $outdir -Type Directory}
 
 function Compress {
