@@ -1,4 +1,4 @@
-$outdir = "."
+$outdir = "$Env:SYSTEM_ARTIFACTSDIRECTORY\out"
 $version = $Env:BUILD_BUILDNUMBER
 $release = $($args[0])
 $username = $($args[1])

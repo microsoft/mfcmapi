@@ -1,4 +1,4 @@
-$outdir = "."
+$outdir = "$Env:SYSTEM_ARTIFACTSDIRECTORY\out"
 $version = $Env:BUILD_BUILDNUMBER
 $project = "MFCMAPI"
 $release = $($args[0])
