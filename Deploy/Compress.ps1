@@ -1,5 +1,5 @@
-$indir = "$Env:SYSTEM_ARTIFACTSDIRECTORY\$Env:BUILD_DEFINITIONNAME"
-$outdir = "$Env:SYSTEM_ARTIFACTSDIRECTORY\out"
+$indir = "$Env:BUILD_SOURCESDIRECTORY\bin"
+$outdir = "$Env:SYSTEM_ARTIFACTSDIRECTORY\archive"
 $version = $Env:BUILD_BUILDNUMBER
 
 Write-Host "indir=$indir"
