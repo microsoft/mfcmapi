@@ -41,6 +41,8 @@ function Compress {
   }
 }
 
+gci -Recurse $indir
+
 Compress -Source "$indir\Win32\MrMAPI\MrMAPI.exe" -Target "$outdir\MrMAPI.exe.$version.zip"
 Compress -Source "$indir\Win32\MrMAPI\MrMAPI.pdb" -Target "$outdir\MrMAPI.pdb.$version.zip"
 Compress -Source "$indir\x64\MrMAPI\MrMAPI.exe" -Target "$outdir\MrMAPI.exe.x64.$version.zip"
@@ -49,3 +51,5 @@ Compress -Source "$indir\Win32\Release\MFCMAPI.exe" -Target "$outdir\MFCMAPI.exe
 Compress -Source "$indir\Win32\Release\MFCMAPI.pdb" -Target "$outdir\MFCMAPI.pdb.$version.zip"
 Compress -Source "$indir\x64\Release\MFCMAPI.exe" -Target "$outdir\MFCMAPI.exe.x64.$version.zip"
 Compress -Source "$indir\x64\Release\MFCMAPI.exe" -Target "$outdir\MFCMAPI.pdb.x64.$version.zip"
+
+gci -Recurse $outdir
