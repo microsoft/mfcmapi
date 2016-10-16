@@ -10,10 +10,9 @@ Write-Host "Username=$username"
 Write-Host "Password=$password"
 Write-Host "Version=$version"
 
-#$secstr = New-Object -TypeName System.Security.SecureString
-#$password.ToCharArray() | ForEach-Object {$secstr.AppendChar($_)}
-#$cred = new-object -typename System.Management.Automation.PSCredential -argumentlist $username, $secstr
-$cred = new-object -typename System.Management.Automation.PSCredential -argumentlist $username, $password
+$secstr = New-Object -TypeName System.Security.SecureString
+$password.ToCharArray() | ForEach-Object {$secstr.AppendChar($_)}
+$cred = new-object -typename System.Management.Automation.PSCredential -argumentlist $username, $secstr
 
 Add-Type -Path .\CodePlex.WebServices.Client.dll
 
