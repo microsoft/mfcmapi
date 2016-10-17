@@ -82,7 +82,7 @@ function Build-ReleaseFile {
     $releaseFile.Name = "$Name - $Release ($Version)"
     $releaseFile.FileName = Build-FileName -FileName $FileName -Version $Version
     $releaseFile.FileType = [CodePlex.WebServices.Client.ReleaseFileType]::RuntimeBinary
-    $releaseFile.FileData = Get-Content -Path "$sourcepath\$fullFileName" -Encoding Byte
+    $releaseFile.FileData = [System.IO.File]::ReadAllBytes("$sourcepath\$fullFileName")
     Write-Host "Release file built"
 
     return $releaseFile
@@ -118,8 +118,8 @@ function Upload-ReleaseFile {
     $releaseFiles = New-Object System.Collections.Generic.List[CodePlex.WebServices.Client.ReleaseFile]
     $releaseFiles.Add($ReleaseFile)
 
-    Write-Host "Uploading $ReleaseFile.FileName"
-    
+    Write-Host "Uploading $($ReleaseFile.FileName)"
+
     switch ($Default)
     {
       $true { $releaseService.UploadReleaseFiles($project, $release, $releaseFiles, $ReleaseFile.FileName); break }
@@ -139,6 +139,7 @@ If you just want to run the MFCMAPI or MrMAPI, get the executables. If you want 
 [image:Facebook Badge|http://badge.facebook.com/badge/26764016480.2776.1538253884.png|http://www.facebook.com/pages/MFCMAPI/26764016480]"
 
 $releaseService = New-Object CodePlex.WebServices.Client.ReleaseService
+$releaseService.Timeout = 360000 # 6 minutes
 $releaseService.Credentials = $cred
 
 Write-Host "Creating $project/$release"
