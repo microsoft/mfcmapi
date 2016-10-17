@@ -29,8 +29,15 @@ function Compress {
     )
   process
   {
-    Write-Host "Compressing $Source to $Target"
-    Compress-Archive $Source $Target
+    if ((Test-Path $Source))
+    {
+      Write-Host "Compressing $Source to $Target"
+      Compress-Archive $Source $Target
+    }
+    else
+    {
+      Write-Host "$Source not found: skipping"
+    }
   }
 }
 
