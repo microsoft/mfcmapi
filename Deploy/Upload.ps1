@@ -120,10 +120,14 @@ function Upload-ReleaseFile {
 
     Write-Host "Uploading $($ReleaseFile.FileName)"
 
-    switch ($Default)
+    if ($Default)
     {
-      $true { $releaseService.UploadReleaseFiles($project, $release, $releaseFiles, $ReleaseFile.FileName); break }
-      default { $releaseService.UploadReleaseFiles($project, $release, $releaseFiles); break }
+      Write-Host "Setting $($ReleaseFile.FileName) as default file"
+      $releaseService.UploadReleaseFiles($project, $release, $releaseFiles, $ReleaseFile.FileName)
+    }
+    else
+    {
+      $releaseService.UploadReleaseFiles($project, $release, $releaseFiles)
     }
   }
 }
@@ -146,8 +150,6 @@ Write-Host "Creating $project/$release"
 $id = $releaseService.CreateARelease($project, $release, $releaseNotes, $null, [CodePlex.WebServices.Client.ReleaseStatus]::Planned, $False, $False)
 Write-Host "New project id is $id"
 
-$releaseFile = Build-ReleaseFile -Name "MFCMAPI 32 bit executable" -FileName "MFCMapi.exe" -Sourcepath $indir -Version $version -Release $release
-Upload-ReleaseFile -ReleaseService $releaseService -ReleaseFile $releaseFile -Default
 $releaseFile = Build-ReleaseFile -Name "MFCMAPI 32 bit symbol" -FileName "MFCMapi.pdb" -Sourcepath $indir -Version $version -Release $release
 Upload-ReleaseFile -ReleaseService $releaseService -ReleaseFile $releaseFile
 $releaseFile = Build-ReleaseFile -Name "MFCMAPI 64 bit executable" -FileName "MFCMapi.exe.x64" -Sourcepath $indir -Version $version -Release $release
@@ -163,3 +165,7 @@ $releaseFile = Build-ReleaseFile -Name "MrMAPI 64 bit executable" -FileName "MrM
 Upload-ReleaseFile -ReleaseService $releaseService -ReleaseFile $releaseFile
 $releaseFile = Build-ReleaseFile -Name "MrMAPI 64 bit symbol" -FileName "MrMAPI.pdb.x64" -Sourcepath $indir -Version $version -Release $release
 Upload-ReleaseFile -ReleaseService $releaseService -ReleaseFile $releaseFile
+
+# This must be last or the default file setting will be overwritten by the other uploads
+$releaseFile = Build-ReleaseFile -Name "MFCMAPI 32 bit executable" -FileName "MFCMapi.exe" -Sourcepath $indir -Version $version -Release $release
+Upload-ReleaseFile -ReleaseService $releaseService -ReleaseFile $releaseFile -Default
