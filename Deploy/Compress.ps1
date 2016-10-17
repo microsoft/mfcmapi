@@ -29,7 +29,7 @@ function Compress {
     )
   process
   {
-    if ((Test-Path $Source))
+    if (Test-Path $Source)
     {
       Write-Host "Compressing $Source to $Target"
       Compress-Archive $Source $Target
