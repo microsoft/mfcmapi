@@ -49,7 +49,7 @@ function Build-ReleaseFile {
   .DESCRIPTION
   Describe the function in more detail
   .EXAMPLE
-  Build-ReleaseFile("MFCMAPI 32 bit executable", "MFCMapi.exe", sourcepath, Version, release, true);
+  Build-ReleaseFile -Name "MFCMAPI 32 bit executable" -FileName "MFCMapi.exe" -Sourcepath indir -Version version -Release release
   .PARAMETER Name
   Release name of the file.
   .PARAMETER FileName
@@ -96,7 +96,7 @@ function Upload-ReleaseFile {
   .DESCRIPTION
   Describe the function in more detail
   .EXAMPLE
-  Upload-ReleaseFile(releaseService, releaseFile, true);
+  Upload-ReleaseFile -ReleaseService releaseService -ReleaseFile releaseFile -Default
   .PARAMETER ReleaseService
   Release service object
   .PARAMETER ReleaseFile
