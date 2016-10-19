@@ -9,6 +9,11 @@ public:
 		_In_opt_count_(cbSig) LPBYTE lpSig,
 		LPMAPINAMEID lpPropName,
 		ULONG ulPropID);
+
+	// Disables making copies of NamedPropCacheEntry
+	NamedPropCacheEntry(const NamedPropCacheEntry &) = delete;
+	NamedPropCacheEntry &operator=(const NamedPropCacheEntry &) = delete;
+
 	~NamedPropCacheEntry();
 
 	ULONG ulPropID;         // MAPI ID (ala PROP_ID) for a named property

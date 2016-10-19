@@ -14,6 +14,9 @@
 #include <cwchar>
 #pragma warning(pop)
 
+#include <list>
+#include <algorithm>
+
 // Speed up our string conversions for output
 #ifdef MRMAPI
 #define _CRT_DISABLE_PERFCRIT_LOCKS
