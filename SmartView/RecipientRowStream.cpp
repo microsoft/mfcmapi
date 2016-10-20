@@ -3,8 +3,9 @@
 #include "String.h"
 #include "PropertyStruct.h"
 
-RecipientRowStream::RecipientRowStream(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
+RecipientRowStream::RecipientRowStream(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
+	Init(cbBin, lpBin);
 	m_cVersion = 0;
 	m_cRowCount = 0;
 	m_lpAdrEntry = nullptr;

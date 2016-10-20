@@ -4,8 +4,9 @@
 #include "InterpretProp2.h"
 #include "ExtraPropTags.h"
 
-ReportTag::ReportTag(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
+ReportTag::ReportTag(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
+	Init(cbBin, lpBin);
 	memset(m_Cookie, 0, sizeof m_Cookie);
 	m_Version = 0;
 	m_cbStoreEntryID = 0;

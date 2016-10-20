@@ -2,8 +2,9 @@
 #include "XID.h"
 #include "InterpretProp2.h"
 
-XID::XID(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
+XID::XID(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
+	Init(cbBin, lpBin);
 	m_NamespaceGuid = { 0 };
 	m_cbLocalId = 0;
 	m_LocalID = nullptr;

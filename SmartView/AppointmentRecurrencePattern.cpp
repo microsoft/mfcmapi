@@ -6,8 +6,9 @@
 #include "ExtraPropTags.h"
 #include "Guids.h"
 
-AppointmentRecurrencePattern::AppointmentRecurrencePattern(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
+AppointmentRecurrencePattern::AppointmentRecurrencePattern(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
+	Init(cbBin, lpBin);
 	m_RecurrencePattern = nullptr;
 	m_ReaderVersion2 = 0;
 	m_WriterVersion2 = 0;

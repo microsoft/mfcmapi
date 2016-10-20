@@ -5,8 +5,9 @@
 #include "String.h"
 #include "ExtraPropTags.h"
 
-SearchFolderDefinition::SearchFolderDefinition(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
+SearchFolderDefinition::SearchFolderDefinition(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
+	Init(cbBin, lpBin);
 	m_Version = 0;
 	m_Flags = 0;
 	m_NumericSearch = 0;

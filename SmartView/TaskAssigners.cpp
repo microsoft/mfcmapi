@@ -2,8 +2,9 @@
 #include "TaskAssigners.h"
 #include "String.h"
 
-TaskAssigners::TaskAssigners(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
+TaskAssigners::TaskAssigners(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
+	Init(cbBin, lpBin);
 	m_cAssigners = 0;
 	m_lpTaskAssigners = nullptr;
 }

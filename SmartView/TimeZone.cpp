@@ -1,8 +1,9 @@
 #include "stdafx.h"
 #include "TimeZone.h"
 
-TimeZone::TimeZone(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
+TimeZone::TimeZone(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
+	Init(cbBin, lpBin);
 	m_lBias = 0;
 	m_lStandardBias = 0;
 	m_lDaylightBias = 0;

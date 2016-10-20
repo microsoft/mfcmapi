@@ -4,8 +4,9 @@
 #include "SmartView.h"
 #include "ExtraPropTags.h"
 
-VerbStream::VerbStream(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
+VerbStream::VerbStream(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
+	Init(cbBin, lpBin);
 	m_Version = 0;
 	m_Count = 0;
 	m_lpVerbData = nullptr;

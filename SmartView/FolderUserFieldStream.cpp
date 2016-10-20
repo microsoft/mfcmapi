@@ -4,8 +4,9 @@
 #include "InterpretProp2.h"
 #include "ExtraPropTags.h"
 
-FolderUserFieldStream::FolderUserFieldStream(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
+FolderUserFieldStream::FolderUserFieldStream(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
+	Init(cbBin, lpBin);
 	m_FolderUserFieldsAnsi = { 0 };
 	m_FolderUserFieldsUnicode = { 0 };
 }

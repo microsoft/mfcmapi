@@ -4,8 +4,9 @@
 #include "String.h"
 #include "InterpretProp.h"
 
-RestrictionStruct::RestrictionStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, bool bRuleCondition, bool bExtended) : SmartViewParser(cbBin, lpBin)
+RestrictionStruct::RestrictionStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, bool bRuleCondition, bool bExtended)
 {
+	Init(cbBin, lpBin);
 	m_bRuleCondition = bRuleCondition;
 	m_bExtended = bExtended;
 	m_lpRes = nullptr;

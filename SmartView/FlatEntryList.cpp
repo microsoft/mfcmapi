@@ -2,8 +2,9 @@
 #include "FlatEntryList.h"
 #include "String.h"
 
-FlatEntryList::FlatEntryList(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
+FlatEntryList::FlatEntryList(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
+	Init(cbBin, lpBin);
 	m_cEntries = 0;
 	m_cbEntries = 0;
 	m_pEntryIDs = nullptr;

@@ -6,8 +6,9 @@
 #include "Interpretprop2.h"
 #include "ExtraPropTags.h"
 
-EntryIdStruct::EntryIdStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
+EntryIdStruct::EntryIdStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
+	Init(cbBin, lpBin);
 	memset(m_abFlags, 0, sizeof m_abFlags);
 	memset(m_ProviderUID, 0, sizeof m_ProviderUID);
 	m_ObjectType = eidtUnknown;

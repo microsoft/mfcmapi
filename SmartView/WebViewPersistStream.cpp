@@ -4,8 +4,9 @@
 #include "InterpretProp2.h"
 #include "ExtraPropTags.h"
 
-WebViewPersistStream::WebViewPersistStream(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
+WebViewPersistStream::WebViewPersistStream(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
+	Init(cbBin, lpBin);
 	m_cWebViews = 0;
 	m_lpWebViews = nullptr;
 }

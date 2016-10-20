@@ -2,8 +2,9 @@
 #include "EntryList.h"
 #include "String.h"
 
-EntryList::EntryList(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
+EntryList::EntryList(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
+	Init(cbBin, lpBin);
 	m_EntryCount = 0;
 	m_Pad = 0;
 	m_Entry = nullptr;

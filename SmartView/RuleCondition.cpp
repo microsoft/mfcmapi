@@ -4,8 +4,9 @@
 #include "String.h"
 #include "InterpretProp2.h"
 
-RuleCondition::RuleCondition(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, bool bExtended) : SmartViewParser(cbBin, lpBin)
+RuleCondition::RuleCondition(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, bool bExtended)
 {
+	Init(cbBin, lpBin);
 	m_NamedPropertyInformation = { 0 };
 	m_lpRes = nullptr;
 	m_bExtended = bExtended;

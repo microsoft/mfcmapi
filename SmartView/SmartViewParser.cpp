@@ -2,13 +2,18 @@
 #include "SmartViewParser.h"
 #include "String.h"
 
-SmartViewParser::SmartViewParser(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
+SmartViewParser::SmartViewParser()
 {
 	m_bParsed = false;
 	m_bEnableJunk = true;
+	m_cbBin = 0;
+	m_lpBin = 0;
+}
+
+void SmartViewParser::Init(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
+{
 	m_cbBin = cbBin;
 	m_lpBin = lpBin;
-
 	m_Parser.Init(m_cbBin, m_lpBin);
 }
 

@@ -3,8 +3,9 @@
 #include "String.h"
 #include "PropertyStruct.h"
 
-NickNameCache::NickNameCache(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
+NickNameCache::NickNameCache(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
+	Init(cbBin, lpBin);
 	memset(m_Metadata1, 0, sizeof m_Metadata1);
 	m_ulMajorVersion = 0;
 	m_ulMinorVersion = 0;

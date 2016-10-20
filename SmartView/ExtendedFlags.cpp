@@ -4,8 +4,9 @@
 #include "InterpretProp2.h"
 #include "ExtraPropTags.h"
 
-ExtendedFlags::ExtendedFlags(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
+ExtendedFlags::ExtendedFlags(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
+	Init(cbBin, lpBin);
 	m_ulNumFlags = 0;
 	m_pefExtendedFlags = nullptr;
 }

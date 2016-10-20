@@ -15,9 +15,10 @@ typedef SmartViewParser FAR* LPSMARTVIEWPARSER;
 class SmartViewParser
 {
 public:
-	SmartViewParser(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+	SmartViewParser();
 	virtual ~SmartViewParser() = default;
 
+	void Init(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
 	_Check_return_ wstring ToString();
 
 	void DisableJunkParsing();

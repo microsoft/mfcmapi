@@ -4,8 +4,9 @@
 #include "InterpretProp2.h"
 #include "ExtraPropTags.h"
 
-PropertyDefinitionStream::PropertyDefinitionStream(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
+PropertyDefinitionStream::PropertyDefinitionStream(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
+	Init(cbBin, lpBin);
 	m_wVersion = 0;
 	m_dwFieldDefinitionCount = 0;
 	m_pfdFieldDefinitions = nullptr;

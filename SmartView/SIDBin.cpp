@@ -3,8 +3,9 @@
 #include "String.h"
 #include "MySecInfo.h"
 
-SIDBin::SIDBin(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin) : SmartViewParser(cbBin, lpBin)
+SIDBin::SIDBin(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
+	Init(cbBin, lpBin);
 	m_lpSidName = nullptr;
 	m_lpSidDomain = nullptr;
 }
