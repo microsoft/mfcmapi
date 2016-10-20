@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "RecurrencePattern.h"
 #include "SmartView.h"
-#include "String.h"
 #include "InterpretProp2.h"
 #include "ExtraPropTags.h"
 
@@ -20,18 +19,10 @@ RecurrencePattern::RecurrencePattern()
 	m_OccurrenceCount = 0;
 	m_FirstDOW = 0;
 	m_DeletedInstanceCount = 0;
-	m_DeletedInstanceDates = nullptr;
 	m_ModifiedInstanceCount = 0;
-	m_ModifiedInstanceDates = nullptr;
 	m_StartDate = 0;
 	m_EndDate = 0;
 
-}
-
-RecurrencePattern::~RecurrencePattern()
-{
-	delete[] m_DeletedInstanceDates;
-	delete[] m_ModifiedInstanceDates;
 }
 
 void RecurrencePattern::Parse()
@@ -72,14 +63,11 @@ void RecurrencePattern::Parse()
 
 	if (m_DeletedInstanceCount && m_DeletedInstanceCount < _MaxEntriesSmall)
 	{
-		m_DeletedInstanceDates = new DWORD[m_DeletedInstanceCount];
-		if (m_DeletedInstanceDates)
+		for (DWORD i = 0; i < m_DeletedInstanceCount; i++)
 		{
-			memset(m_DeletedInstanceDates, 0, sizeof(DWORD)* m_DeletedInstanceCount);
-			for (DWORD i = 0; i < m_DeletedInstanceCount; i++)
-			{
-				m_Parser.GetDWORD(&m_DeletedInstanceDates[i]);
-			}
+			DWORD deletedInstanceDate = 0;
+			m_Parser.GetDWORD(&deletedInstanceDate);
+			m_DeletedInstanceDates.push_back(deletedInstanceDate);
 		}
 	}
 
@@ -89,14 +77,11 @@ void RecurrencePattern::Parse()
 		m_ModifiedInstanceCount <= m_DeletedInstanceCount &&
 		m_ModifiedInstanceCount < _MaxEntriesSmall)
 	{
-		m_ModifiedInstanceDates = new DWORD[m_ModifiedInstanceCount];
-		if (m_ModifiedInstanceDates)
+		for (DWORD i = 0; i < m_ModifiedInstanceCount; i++)
 		{
-			memset(m_ModifiedInstanceDates, 0, sizeof(DWORD)* m_ModifiedInstanceCount);
-			for (DWORD i = 0; i < m_ModifiedInstanceCount; i++)
-			{
-				m_Parser.GetDWORD(&m_ModifiedInstanceDates[i]);
-			}
+			DWORD modifiedInstanceDate = 0;
+			m_Parser.GetDWORD(&modifiedInstanceDate);
+			m_ModifiedInstanceDates.push_back(modifiedInstanceDate);
 		}
 	}
 
@@ -158,9 +143,9 @@ _Check_return_ wstring RecurrencePattern::ToStringInternal()
 		m_FirstDOW, szFirstDOW.c_str(),
 		m_DeletedInstanceCount);
 
-	if (m_DeletedInstanceCount && m_DeletedInstanceDates)
+	if (m_DeletedInstanceDates.size())
 	{
-		for (DWORD i = 0; i < m_DeletedInstanceCount; i++)
+		for (DWORD i = 0; i < m_DeletedInstanceDates.size(); i++)
 		{
 			szRP += formatmessage(IDS_RPDELETEDINSTANCEDATES,
 				i, m_DeletedInstanceDates[i], RTimeToString(m_DeletedInstanceDates[i]).c_str());
@@ -170,9 +155,9 @@ _Check_return_ wstring RecurrencePattern::ToStringInternal()
 	szRP += formatmessage(IDS_RPMODIFIEDINSTANCECOUNT,
 		m_ModifiedInstanceCount);
 
-	if (m_ModifiedInstanceCount && m_ModifiedInstanceDates)
+	if (m_ModifiedInstanceDates.size())
 	{
-		for (DWORD i = 0; i < m_ModifiedInstanceCount; i++)
+		for (DWORD i = 0; i < m_ModifiedInstanceDates.size(); i++)
 		{
 			szRP += formatmessage(IDS_RPMODIFIEDINSTANCEDATES,
 				i, m_ModifiedInstanceDates[i], RTimeToString(m_ModifiedInstanceDates[i]).c_str());

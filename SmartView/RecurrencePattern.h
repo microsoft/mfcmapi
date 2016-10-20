@@ -22,7 +22,6 @@ class RecurrencePattern : public SmartViewParser
 {
 public:
 	RecurrencePattern();
-	~RecurrencePattern();
 
 	DWORD m_ModifiedInstanceCount;
 
@@ -43,8 +42,8 @@ private:
 	DWORD m_OccurrenceCount;
 	DWORD m_FirstDOW;
 	DWORD m_DeletedInstanceCount;
-	DWORD* m_DeletedInstanceDates;
-	DWORD* m_ModifiedInstanceDates;
+	vector<DWORD> m_DeletedInstanceDates;
+	vector<DWORD> m_ModifiedInstanceDates;
 	DWORD m_StartDate;
 	DWORD m_EndDate;
 };
