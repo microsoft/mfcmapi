@@ -13,12 +13,12 @@ private:
 
 	_Check_return_ LPSPropValue NickNameBinToSPropValue(DWORD dwPropCount);
 
-	BYTE m_Metadata1[4];
+	vector<BYTE> m_Metadata1; // 4 bytes
 	ULONG m_ulMajorVersion;
 	ULONG m_ulMinorVersion;
 	DWORD m_cRowCount;
 	LPSRow m_lpRows;
 	ULONG m_cbEI;
-	LPBYTE m_lpbEI;
-	BYTE m_Metadata2[8];
+	vector<BYTE> m_lpbEI;
+	vector<BYTE> m_Metadata2; // 8 bytes
 };

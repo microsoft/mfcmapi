@@ -7,24 +7,17 @@
 
 GlobalObjectId::GlobalObjectId()
 {
-	memset(m_Id, 0, sizeof m_Id);
 	m_Year = 0;
 	m_Month = 0;
 	m_Day = 0;
 	m_CreationTime = { 0 };
 	m_X = { 0 };
 	m_dwSize = 0;
-	m_lpData = nullptr;
-}
-
-GlobalObjectId::~GlobalObjectId()
-{
-	delete[] m_lpData;
 }
 
 void GlobalObjectId::Parse()
 {
-	m_Parser.GetBYTESNoAlloc(sizeof m_Id, sizeof m_Id, reinterpret_cast<LPBYTE>(&m_Id));
+	m_Id = m_Parser.GetBYTES(16);
 	BYTE b1 = NULL;
 	BYTE b2 = NULL;
 	m_Parser.GetBYTE(&b1);
@@ -35,7 +28,7 @@ void GlobalObjectId::Parse()
 	m_Parser.GetLARGE_INTEGER(reinterpret_cast<LARGE_INTEGER*>(&m_CreationTime));
 	m_Parser.GetLARGE_INTEGER(&m_X);
 	m_Parser.GetDWORD(&m_dwSize);
-	m_Parser.GetBYTES(m_dwSize, _MaxBytes, &m_lpData);
+	m_lpData = m_Parser.GetBYTES(m_dwSize, _MaxBytes);
 }
 
 _Check_return_ wstring GlobalObjectId::ToStringInternal()
@@ -44,10 +37,7 @@ _Check_return_ wstring GlobalObjectId::ToStringInternal()
 
 	szGlobalObjectId = formatmessage(IDS_GLOBALOBJECTIDHEADER);
 
-	SBinary sBin = { 0 };
-	sBin.cb = sizeof m_Id;
-	sBin.lpb = m_Id;
-	szGlobalObjectId += BinToHexString(&sBin, true);
+	szGlobalObjectId += BinToHexString(m_Id, true);
 
 	auto szFlags = InterpretFlags(flagGlobalObjectIdMonth, m_Month);
 
@@ -62,12 +52,10 @@ _Check_return_ wstring GlobalObjectId::ToStringInternal()
 		m_X.HighPart, m_X.LowPart,
 		m_dwSize);
 
-	if (m_dwSize && m_lpData)
+	if (m_lpData.size())
 	{
 		szGlobalObjectId += formatmessage(IDS_GLOBALOBJECTIDDATA2);
-		sBin.cb = m_dwSize;
-		sBin.lpb = m_lpData;
-		szGlobalObjectId += BinToHexString(&sBin, true);
+		szGlobalObjectId += BinToHexString(m_lpData, true);
 	}
 
 	return szGlobalObjectId;

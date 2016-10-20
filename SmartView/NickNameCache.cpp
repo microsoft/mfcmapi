@@ -5,14 +5,11 @@
 
 NickNameCache::NickNameCache()
 {
-	memset(m_Metadata1, 0, sizeof m_Metadata1);
 	m_ulMajorVersion = 0;
 	m_ulMinorVersion = 0;
 	m_cRowCount = 0;
 	m_lpRows = nullptr;
 	m_cbEI = 0;
-	m_lpbEI = nullptr;
-	memset(m_Metadata2, 0, sizeof m_Metadata2);
 }
 
 NickNameCache::~NickNameCache()
@@ -26,13 +23,11 @@ NickNameCache::~NickNameCache()
 
 		delete[] m_lpRows;
 	}
-
-	delete[] m_lpbEI;
 }
 
 void NickNameCache::Parse()
 {
-	m_Parser.GetBYTESNoAlloc(sizeof m_Metadata1, sizeof m_Metadata1, m_Metadata1);
+	m_Metadata1 = m_Parser.GetBYTES(4);
 	m_Parser.GetDWORD(&m_ulMajorVersion);
 	m_Parser.GetDWORD(&m_ulMinorVersion);
 	m_Parser.GetDWORD(&m_cRowCount);
@@ -59,8 +54,8 @@ void NickNameCache::Parse()
 	}
 
 	m_Parser.GetDWORD(&m_cbEI);
-	m_Parser.GetBYTES(m_cbEI, _MaxBytes, &m_lpbEI);
-	m_Parser.GetBYTESNoAlloc(sizeof m_Metadata2, sizeof m_Metadata2, m_Metadata2);
+	m_lpbEI = m_Parser.GetBYTES(m_cbEI, _MaxBytes);
+	m_Metadata2 = m_Parser.GetBYTES(8);
 }
 
 // Caller allocates with new. Clean up with DeleteSPropVal.
@@ -199,10 +194,7 @@ _Check_return_ wstring NickNameCache::ToStringInternal()
 	wstring szNickNameCache;
 
 	szNickNameCache = formatmessage(IDS_NICKNAMEHEADER);
-	SBinary sBinMetadata = { 0 };
-	sBinMetadata.cb = sizeof m_Metadata1;
-	sBinMetadata.lpb = m_Metadata1;
-	szNickNameCache += BinToHexString(&sBinMetadata, true);
+	szNickNameCache += BinToHexString(m_Metadata1, true);
 
 	szNickNameCache += formatmessage(IDS_NICKNAMEROWCOUNT, m_ulMajorVersion, m_ulMinorVersion, m_cRowCount);
 
@@ -218,18 +210,11 @@ _Check_return_ wstring NickNameCache::ToStringInternal()
 		}
 	}
 
-	SBinary sBinEI = { 0 };
 	szNickNameCache += formatmessage(IDS_NICKNAMEEXTRAINFO);
-
-	sBinEI.cb = m_cbEI;
-	sBinEI.lpb = m_lpbEI;
-	szNickNameCache += BinToHexString(&sBinEI, true);
+	szNickNameCache += BinToHexString(m_lpbEI, true);
 
 	szNickNameCache += formatmessage(IDS_NICKNAMEFOOTER);
-
-	sBinMetadata.cb = sizeof m_Metadata2;
-	sBinMetadata.lpb = m_Metadata2;
-	szNickNameCache += BinToHexString(&sBinMetadata, true);
+	szNickNameCache += BinToHexString(m_Metadata2, true);
 
 	return szNickNameCache;
 }
