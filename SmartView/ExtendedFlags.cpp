@@ -7,20 +7,6 @@
 ExtendedFlags::ExtendedFlags()
 {
 	m_ulNumFlags = 0;
-	m_pefExtendedFlags = nullptr;
-}
-
-ExtendedFlags::~ExtendedFlags()
-{
-	if (m_ulNumFlags && m_pefExtendedFlags)
-	{
-		for (ULONG i = 0; i < m_ulNumFlags; i++)
-		{
-			delete[] m_pefExtendedFlags[i].lpUnknownData;
-		}
-	}
-
-	delete[] m_pefExtendedFlags;
 }
 
 void ExtendedFlags::Parse()
@@ -45,52 +31,52 @@ void ExtendedFlags::Parse()
 	m_Parser.Rewind();
 
 	if (m_ulNumFlags && m_ulNumFlags < _MaxEntriesSmall)
-		m_pefExtendedFlags = new ExtendedFlag[m_ulNumFlags];
-	if (m_pefExtendedFlags)
 	{
-		memset(m_pefExtendedFlags, 0, sizeof(ExtendedFlag)*m_ulNumFlags);
 		auto bBadData = false;
 
 		for (ULONG i = 0; i < m_ulNumFlags; i++)
 		{
-			m_Parser.GetBYTE(&m_pefExtendedFlags[i].Id);
-			m_Parser.GetBYTE(&m_pefExtendedFlags[i].Cb);
+			ExtendedFlag extendedFlag;
+			m_pefExtendedFlags.push_back(extendedFlag);
+
+			m_Parser.GetBYTE(&extendedFlag.Id);
+			m_Parser.GetBYTE(&extendedFlag.Cb);
 
 			// If the structure says there's more bytes than remaining buffer, we're done parsing.
-			if (m_Parser.RemainingBytes() < m_pefExtendedFlags[i].Cb)
+			if (m_Parser.RemainingBytes() < extendedFlag.Cb)
 			{
 				m_ulNumFlags = i;
 				break;
 			}
 
-			switch (m_pefExtendedFlags[i].Id)
+			switch (extendedFlag.Id)
 			{
 			case EFPB_FLAGS:
-				if (m_pefExtendedFlags[i].Cb == sizeof(DWORD))
-					m_Parser.GetDWORD(&m_pefExtendedFlags[i].Data.ExtendedFlags);
+				if (extendedFlag.Cb == sizeof(DWORD))
+					m_Parser.GetDWORD(&extendedFlag.Data.ExtendedFlags);
 				else
 					bBadData = true;
 				break;
 			case EFPB_CLSIDID:
-				if (m_pefExtendedFlags[i].Cb == sizeof(GUID))
-					m_Parser.GetBYTESNoAlloc(sizeof(GUID), sizeof(GUID), reinterpret_cast<LPBYTE>(&m_pefExtendedFlags[i].Data.SearchFolderID));
+				if (extendedFlag.Cb == sizeof(GUID))
+					m_Parser.GetBYTESNoAlloc(sizeof(GUID), sizeof(GUID), reinterpret_cast<LPBYTE>(&extendedFlag.Data.SearchFolderID));
 				else
 					bBadData = true;
 				break;
 			case EFPB_SFTAG:
-				if (m_pefExtendedFlags[i].Cb == sizeof(DWORD))
-					m_Parser.GetDWORD(&m_pefExtendedFlags[i].Data.SearchFolderTag);
+				if (extendedFlag.Cb == sizeof(DWORD))
+					m_Parser.GetDWORD(&extendedFlag.Data.SearchFolderTag);
 				else
 					bBadData = true;
 				break;
 			case EFPB_TODO_VERSION:
-				if (m_pefExtendedFlags[i].Cb == sizeof(DWORD))
-					m_Parser.GetDWORD(&m_pefExtendedFlags[i].Data.ToDoFolderVersion);
+				if (extendedFlag.Cb == sizeof(DWORD))
+					m_Parser.GetDWORD(&extendedFlag.Data.ToDoFolderVersion);
 				else
 					bBadData = true;
 				break;
 			default:
-				m_Parser.GetBYTES(m_pefExtendedFlags[i].Cb, _MaxBytes, &m_pefExtendedFlags[i].lpUnknownData);
+				extendedFlag.lpUnknownData = m_Parser.GetBYTES(extendedFlag.Cb, _MaxBytes);
 				break;
 			}
 
@@ -108,41 +94,38 @@ _Check_return_ wstring ExtendedFlags::ToStringInternal()
 {
 	auto szExtendedFlags = formatmessage(IDS_EXTENDEDFLAGSHEADER, m_ulNumFlags);
 
-	if (m_ulNumFlags && m_pefExtendedFlags)
+	if (m_pefExtendedFlags.size())
 	{
-		for (ULONG i = 0; i < m_ulNumFlags; i++)
+		for (auto extendedFlag : m_pefExtendedFlags)
 		{
-			auto szFlags = InterpretFlags(flagExtendedFolderFlagType, m_pefExtendedFlags[i].Id);
+			auto szFlags = InterpretFlags(flagExtendedFolderFlagType, extendedFlag.Id);
 			szExtendedFlags += formatmessage(IDS_EXTENDEDFLAGID,
-				m_pefExtendedFlags[i].Id, szFlags.c_str(),
-				m_pefExtendedFlags[i].Cb);
+				extendedFlag.Id, szFlags.c_str(),
+				extendedFlag.Cb);
 
-			switch (m_pefExtendedFlags[i].Id)
+			switch (extendedFlag.Id)
 			{
 			case EFPB_FLAGS:
-				szFlags = InterpretFlags(flagExtendedFolderFlag, m_pefExtendedFlags[i].Data.ExtendedFlags);
-				szExtendedFlags += formatmessage(IDS_EXTENDEDFLAGDATAFLAG, m_pefExtendedFlags[i].Data.ExtendedFlags, szFlags.c_str());
+				szFlags = InterpretFlags(flagExtendedFolderFlag, extendedFlag.Data.ExtendedFlags);
+				szExtendedFlags += formatmessage(IDS_EXTENDEDFLAGDATAFLAG, extendedFlag.Data.ExtendedFlags, szFlags.c_str());
 				break;
 			case EFPB_CLSIDID:
-				szFlags = GUIDToString(&m_pefExtendedFlags[i].Data.SearchFolderID);
+				szFlags = GUIDToString(&extendedFlag.Data.SearchFolderID);
 				szExtendedFlags += formatmessage(IDS_EXTENDEDFLAGDATASFID, szFlags.c_str());
 				break;
 			case EFPB_SFTAG:
 				szExtendedFlags += formatmessage(IDS_EXTENDEDFLAGDATASFTAG,
-					m_pefExtendedFlags[i].Data.SearchFolderTag);
+					extendedFlag.Data.SearchFolderTag);
 				break;
 			case EFPB_TODO_VERSION:
-				szExtendedFlags += formatmessage(IDS_EXTENDEDFLAGDATATODOVERSION, m_pefExtendedFlags[i].Data.ToDoFolderVersion);
+				szExtendedFlags += formatmessage(IDS_EXTENDEDFLAGDATATODOVERSION, extendedFlag.Data.ToDoFolderVersion);
 				break;
 			}
 
-			if (m_pefExtendedFlags[i].lpUnknownData)
+			if (extendedFlag.lpUnknownData.size())
 			{
-				SBinary sBin = { 0 };
 				szExtendedFlags += loadstring(IDS_EXTENDEDFLAGUNKNOWN);
-				sBin.cb = m_pefExtendedFlags[i].Cb;
-				sBin.lpb = m_pefExtendedFlags[i].lpUnknownData;
-				szExtendedFlags += BinToHexString(&sBin, true);
+				szExtendedFlags += BinToHexString(extendedFlag.lpUnknownData, true);
 			}
 		}
 	}

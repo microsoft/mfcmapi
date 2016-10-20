@@ -12,19 +12,18 @@ struct ExtendedFlag
 		DWORD SearchFolderTag;
 		DWORD ToDoFolderVersion;
 	} Data;
-	BYTE* lpUnknownData;
+	vector<BYTE> lpUnknownData;
 };
 
 class ExtendedFlags : public SmartViewParser
 {
 public:
 	ExtendedFlags();
-	~ExtendedFlags();
 
 private:
 	void Parse() override;
 	_Check_return_ wstring ToStringInternal() override;
 
 	ULONG m_ulNumFlags;
-	ExtendedFlag* m_pefExtendedFlags;
+	vector<ExtendedFlag> m_pefExtendedFlags;
 };
