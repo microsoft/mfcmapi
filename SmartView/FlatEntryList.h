@@ -2,20 +2,18 @@
 #include "SmartViewParser.h"
 #include "EntryIdStruct.h"
 
-struct FlatEntryIDStruct
+struct FlatEntryID
 {
 	DWORD dwSize;
-	EntryIdStruct* lpEntryID;
+	EntryIdStruct lpEntryID;
 
-	size_t JunkDataSize; // TODO: Kill this junk data
-	LPBYTE JunkData;
+	vector<BYTE> JunkData;
 };
 
 class FlatEntryList : public SmartViewParser
 {
 public:
 	FlatEntryList();
-	~FlatEntryList();
 
 private:
 	void Parse() override;
@@ -23,5 +21,5 @@ private:
 
 	DWORD m_cEntries;
 	DWORD m_cbEntries;
-	FlatEntryIDStruct* m_pEntryIDs;
+	vector<FlatEntryID> m_pEntryIDs;
 };

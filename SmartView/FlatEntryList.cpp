@@ -1,26 +1,10 @@
 #include "stdafx.h"
 #include "FlatEntryList.h"
-#include "String.h"
 
 FlatEntryList::FlatEntryList()
 {
 	m_cEntries = 0;
 	m_cbEntries = 0;
-	m_pEntryIDs = nullptr;
-}
-
-FlatEntryList::~FlatEntryList()
-{
-	if (m_pEntryIDs)
-	{
-		for (DWORD iFlatEntryList = 0; iFlatEntryList < m_cEntries; iFlatEntryList++)
-		{
-			delete m_pEntryIDs[iFlatEntryList].lpEntryID;
-			delete[] m_pEntryIDs[iFlatEntryList].JunkData;
-		}
-	}
-
-	delete[] m_pEntryIDs;
 }
 
 void FlatEntryList::Parse()
@@ -32,35 +16,27 @@ void FlatEntryList::Parse()
 
 	if (m_cEntries && m_cEntries < _MaxEntriesLarge)
 	{
-		m_pEntryIDs = new FlatEntryIDStruct[m_cEntries];
-		if (m_pEntryIDs)
+		for (DWORD iFlatEntryList = 0; iFlatEntryList < m_cEntries; iFlatEntryList++)
 		{
-			memset(m_pEntryIDs, 0, m_cEntries * sizeof(FlatEntryIDStruct));
+			FlatEntryID flatEntryID;
+			// Size here will be the length of the serialized entry ID
+			// We'll have to round it up to a multiple of 4 to read off padding
+			m_Parser.GetDWORD(&flatEntryID.dwSize);
+			size_t ulSize = min(flatEntryID.dwSize, m_Parser.RemainingBytes());
 
-			for (DWORD iFlatEntryList = 0; iFlatEntryList < m_cEntries; iFlatEntryList++)
+			flatEntryID.lpEntryID.Init(
+				static_cast<ULONG>(ulSize),
+				m_Parser.GetCurrentAddress());
+
+			m_Parser.Advance(ulSize);
+
+			auto dwPAD = 3 - (flatEntryID.dwSize + 3) % 4;
+			if (dwPAD > 0)
 			{
-				// Size here will be the length of the serialized entry ID
-				// We'll have to round it up to a multiple of 4 to read off padding
-				m_Parser.GetDWORD(&m_pEntryIDs[iFlatEntryList].dwSize);
-				size_t ulSize = min(m_pEntryIDs[iFlatEntryList].dwSize, m_Parser.RemainingBytes());
-
-				m_pEntryIDs[iFlatEntryList].lpEntryID = new EntryIdStruct();
-				if (m_pEntryIDs[iFlatEntryList].lpEntryID)
-				{
-					m_pEntryIDs[iFlatEntryList].lpEntryID->Init(
-						static_cast<ULONG>(ulSize),
-						m_Parser.GetCurrentAddress());
-				}
-
-				m_Parser.Advance(ulSize);
-
-				auto dwPAD = 3 - (m_pEntryIDs[iFlatEntryList].dwSize + 3) % 4;
-				if (dwPAD > 0)
-				{
-					m_pEntryIDs[iFlatEntryList].JunkDataSize = dwPAD;
-					m_Parser.GetBYTES(m_pEntryIDs[iFlatEntryList].JunkDataSize, m_pEntryIDs[iFlatEntryList].JunkDataSize, &m_pEntryIDs[iFlatEntryList].JunkData);
-				}
+				flatEntryID.JunkData = m_Parser.GetBYTES(dwPAD);
 			}
+
+			m_pEntryIDs.push_back(flatEntryID);
 		}
 	}
 }
@@ -74,29 +50,23 @@ _Check_return_ wstring FlatEntryList::ToStringInternal()
 		m_cEntries,
 		m_cbEntries);
 
-	if (m_pEntryIDs)
+	for (DWORD iFlatEntryList = 0; iFlatEntryList < m_pEntryIDs.size(); iFlatEntryList++)
 	{
-		for (DWORD iFlatEntryList = 0; iFlatEntryList < m_cEntries; iFlatEntryList++)
+		szFlatEntryList += formatmessage(
+			IDS_FELENTRYHEADER,
+			iFlatEntryList,
+			m_pEntryIDs[iFlatEntryList].dwSize);
+		szFlatEntryList += m_pEntryIDs[iFlatEntryList].lpEntryID.ToString();
+
+		if (m_pEntryIDs[iFlatEntryList].JunkData.size())
 		{
 			szFlatEntryList += formatmessage(
-				IDS_FELENTRYHEADER,
-				iFlatEntryList,
-				m_pEntryIDs[iFlatEntryList].dwSize);
-			if (m_pEntryIDs[iFlatEntryList].lpEntryID)
-			{
-				szFlatEntryList += m_pEntryIDs[iFlatEntryList].lpEntryID->ToString();
-			}
-
-			if (m_pEntryIDs[iFlatEntryList].JunkDataSize)
-			{
-				szFlatEntryList += formatmessage(
-					IDS_FELENTRYPADDING,
-					iFlatEntryList);
-				szFlatEntryList += JunkDataToString(m_pEntryIDs[iFlatEntryList].JunkDataSize, m_pEntryIDs[iFlatEntryList].JunkData);
-			}
-
-			szFlatEntryList += L"\r\n"; // STRING_OK
+				IDS_FELENTRYPADDING,
+				iFlatEntryList);
+			szFlatEntryList += JunkDataToString(m_pEntryIDs[iFlatEntryList].JunkData);
 		}
+
+		szFlatEntryList += L"\r\n"; // STRING_OK
 	}
 
 	return szFlatEntryList;
