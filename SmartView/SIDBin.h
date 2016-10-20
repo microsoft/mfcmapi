@@ -4,7 +4,7 @@
 class SIDBin : public SmartViewParser
 {
 public:
-	SIDBin(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+	SIDBin();
 	~SIDBin();
 
 private:

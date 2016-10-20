@@ -5,9 +5,8 @@
 #include "InterpretProp2.h"
 #include "ExtraPropTags.h"
 
-GlobalObjectId::GlobalObjectId(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
+GlobalObjectId::GlobalObjectId()
 {
-	Init(cbBin, lpBin);
 	memset(m_Id, 0, sizeof m_Id);
 	m_Year = 0;
 	m_Month = 0;

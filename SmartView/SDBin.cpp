@@ -6,9 +6,8 @@
 #include "ExtraPropTags.h"
 #include "InterpretProp2.h"
 
-SDBin::SDBin(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, _In_opt_ LPMAPIPROP lpMAPIProp, bool bFB)
+SDBin::SDBin(_In_opt_ LPMAPIPROP lpMAPIProp, bool bFB)
 {
-	Init(cbBin, lpBin);
 	m_lpMAPIProp = lpMAPIProp;
 	if (m_lpMAPIProp) m_lpMAPIProp->AddRef();
 	m_bFB = bFB;

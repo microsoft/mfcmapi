@@ -4,9 +4,8 @@
 #include "InterpretProp2.h"
 #include "ExtraPropTags.h"
 
-TimeZoneDefinition::TimeZoneDefinition(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
+TimeZoneDefinition::TimeZoneDefinition()
 {
-	Init(cbBin, lpBin);
 	m_bMajorVersion = 0;
 	m_bMinorVersion = 0;
 	m_cbHeader = 0;

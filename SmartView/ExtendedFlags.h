@@ -18,7 +18,7 @@ struct ExtendedFlag
 class ExtendedFlags : public SmartViewParser
 {
 public:
-	ExtendedFlags(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+	ExtendedFlags();
 	~ExtendedFlags();
 
 private:

@@ -3,9 +3,8 @@
 #include "String.h"
 #include "InterpretProp2.h"
 
-PCL::PCL(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
+PCL::PCL()
 {
-	Init(cbBin, lpBin);
 	m_cXID = 0;
 	m_lpXID = nullptr;
 }

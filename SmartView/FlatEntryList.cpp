@@ -2,9 +2,8 @@
 #include "FlatEntryList.h"
 #include "String.h"
 
-FlatEntryList::FlatEntryList(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
+FlatEntryList::FlatEntryList()
 {
-	Init(cbBin, lpBin);
 	m_cEntries = 0;
 	m_cbEntries = 0;
 	m_pEntryIDs = nullptr;
@@ -45,9 +44,14 @@ void FlatEntryList::Parse()
 				m_Parser.GetDWORD(&m_pEntryIDs[iFlatEntryList].dwSize);
 				size_t ulSize = min(m_pEntryIDs[iFlatEntryList].dwSize, m_Parser.RemainingBytes());
 
-				m_pEntryIDs[iFlatEntryList].lpEntryID = new EntryIdStruct(
-					static_cast<ULONG>(ulSize),
-					m_Parser.GetCurrentAddress());
+				m_pEntryIDs[iFlatEntryList].lpEntryID = new EntryIdStruct();
+				if (m_pEntryIDs[iFlatEntryList].lpEntryID)
+				{
+					m_pEntryIDs[iFlatEntryList].lpEntryID->Init(
+						static_cast<ULONG>(ulSize),
+						m_Parser.GetCurrentAddress());
+				}
+
 				m_Parser.Advance(ulSize);
 
 				auto dwPAD = 3 - (m_pEntryIDs[iFlatEntryList].dwSize + 3) % 4;

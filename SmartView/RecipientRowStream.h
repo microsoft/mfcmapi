@@ -4,7 +4,7 @@
 class RecipientRowStream : public SmartViewParser
 {
 public:
-	RecipientRowStream(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+	RecipientRowStream();
 	~RecipientRowStream();
 
 private:

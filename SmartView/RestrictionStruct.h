@@ -4,7 +4,7 @@
 class RestrictionStruct : public SmartViewParser
 {
 public:
-	RestrictionStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, bool bRuleCondition, bool bExtended);
+	RestrictionStruct(bool bRuleCondition, bool bExtended);
 	~RestrictionStruct();
 
 private:

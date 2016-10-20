@@ -6,9 +6,8 @@
 #include "Interpretprop2.h"
 #include "ExtraPropTags.h"
 
-EntryIdStruct::EntryIdStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
+EntryIdStruct::EntryIdStruct()
 {
-	Init(cbBin, lpBin);
 	memset(m_abFlags, 0, sizeof m_abFlags);
 	memset(m_ProviderUID, 0, sizeof m_ProviderUID);
 	m_ObjectType = eidtUnknown;
@@ -164,11 +163,12 @@ void EntryIdStruct::Parse()
 				cbRemainingBytes = m_ProviderData.ContactAddressBookObject.EntryIDCount;
 			}
 
-			m_ProviderData.ContactAddressBookObject.lpEntryID = new EntryIdStruct(
-				static_cast<ULONG>(cbRemainingBytes),
-				m_Parser.GetCurrentAddress());
+			m_ProviderData.ContactAddressBookObject.lpEntryID = new EntryIdStruct();
 			if (m_ProviderData.ContactAddressBookObject.lpEntryID)
 			{
+				m_ProviderData.ContactAddressBookObject.lpEntryID->Init(
+					static_cast<ULONG>(cbRemainingBytes),
+					m_Parser.GetCurrentAddress());
 				m_ProviderData.ContactAddressBookObject.lpEntryID->DisableJunkParsing();
 				m_ProviderData.ContactAddressBookObject.lpEntryID->EnsureParsed();
 				m_Parser.Advance(m_ProviderData.ContactAddressBookObject.lpEntryID->GetCurrentOffset());
@@ -181,11 +181,12 @@ void EntryIdStruct::Parse()
 
 			m_Parser.GetBYTE(&m_ProviderData.WAB.Type);
 
-			m_ProviderData.WAB.lpEntryID = new EntryIdStruct(
-				static_cast<ULONG>(m_Parser.RemainingBytes()),
-				m_Parser.GetCurrentAddress());
+			m_ProviderData.WAB.lpEntryID = new EntryIdStruct();
 			if (m_ProviderData.WAB.lpEntryID)
 			{
+				m_ProviderData.WAB.lpEntryID->Init(
+					static_cast<ULONG>(m_Parser.RemainingBytes()),
+					m_Parser.GetCurrentAddress());
 				m_ProviderData.WAB.lpEntryID->DisableJunkParsing();
 				m_ProviderData.WAB.lpEntryID->EnsureParsed();
 				m_Parser.Advance(m_ProviderData.WAB.lpEntryID->GetCurrentOffset());

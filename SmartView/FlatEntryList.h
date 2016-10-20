@@ -14,7 +14,7 @@ struct FlatEntryIDStruct
 class FlatEntryList : public SmartViewParser
 {
 public:
-	FlatEntryList(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+	FlatEntryList();
 	~FlatEntryList();
 
 private:

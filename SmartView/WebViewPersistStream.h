@@ -14,7 +14,7 @@ struct WebViewPersistStruct
 class WebViewPersistStream : public SmartViewParser
 {
 public:
-	WebViewPersistStream(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+	WebViewPersistStream();
 	~WebViewPersistStream();
 
 private:

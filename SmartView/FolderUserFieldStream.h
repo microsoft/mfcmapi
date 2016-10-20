@@ -44,7 +44,7 @@ struct FolderUserFieldW
 class FolderUserFieldStream : public SmartViewParser
 {
 public:
-	FolderUserFieldStream(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+	FolderUserFieldStream();
 	~FolderUserFieldStream();
 
 private:

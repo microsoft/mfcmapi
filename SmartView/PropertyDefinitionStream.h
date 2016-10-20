@@ -41,7 +41,7 @@ struct FieldDefinition
 class PropertyDefinitionStream : public SmartViewParser
 {
 public:
-	PropertyDefinitionStream(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+	PropertyDefinitionStream();
 	~PropertyDefinitionStream();
 
 private:

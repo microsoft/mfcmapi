@@ -4,7 +4,7 @@
 class XID : public SmartViewParser
 {
 public:
-	XID(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+	XID();
 	~XID();
 
 private:

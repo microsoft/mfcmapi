@@ -12,7 +12,7 @@ struct AddressListEntryStruct
 class SearchFolderDefinition : public SmartViewParser
 {
 public:
-	SearchFolderDefinition(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+	SearchFolderDefinition();
 	~SearchFolderDefinition();
 
 private:

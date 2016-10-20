@@ -33,7 +33,7 @@ struct VerbExtraDataStruct
 class VerbStream : public SmartViewParser
 {
 public:
-	VerbStream(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+	VerbStream();
 	~VerbStream();
 
 private:

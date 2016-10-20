@@ -21,7 +21,7 @@ union PatternTypeSpecific
 class RecurrencePattern : public SmartViewParser
 {
 public:
-	RecurrencePattern(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+	RecurrencePattern();
 	~RecurrencePattern();
 
 	DWORD m_ModifiedInstanceCount;

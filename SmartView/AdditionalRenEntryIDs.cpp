@@ -3,11 +3,6 @@
 #include "InterpretProp2.h"
 #include "ExtraPropTags.h"
 
-AdditionalRenEntryIDs::AdditionalRenEntryIDs(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
-{
-	Init(cbBin, lpBin);
-}
-
 #define PERISIST_SENTINEL 0
 #define ELEMENT_SENTINEL 0
 

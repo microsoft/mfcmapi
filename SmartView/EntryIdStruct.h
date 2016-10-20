@@ -36,7 +36,7 @@ struct MDB_STORE_EID_V3
 class EntryIdStruct : public SmartViewParser
 {
 public:
-	EntryIdStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+	EntryIdStruct();
 	~EntryIdStruct();
 
 private:

@@ -19,9 +19,6 @@ struct PersistData
 
 class AdditionalRenEntryIDs : public SmartViewParser
 {
-public:
-	AdditionalRenEntryIDs(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
-
 private:
 	void Parse() override;
 	_Check_return_ wstring ToStringInternal() override;

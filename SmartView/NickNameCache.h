@@ -4,7 +4,7 @@
 class NickNameCache : public SmartViewParser
 {
 public:
-	NickNameCache(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+	NickNameCache();
 	~NickNameCache();
 
 private:

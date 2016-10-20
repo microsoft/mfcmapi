@@ -5,7 +5,7 @@
 class ReportTag : public SmartViewParser
 {
 public:
-	ReportTag(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+	ReportTag();
 	~ReportTag();
 
 private:

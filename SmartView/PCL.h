@@ -13,7 +13,7 @@ struct SizedXID
 class PCL : public SmartViewParser
 {
 public:
-	PCL(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+	PCL();
 	~PCL();
 
 private:

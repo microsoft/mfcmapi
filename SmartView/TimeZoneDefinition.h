@@ -29,7 +29,7 @@ struct TZRule
 class TimeZoneDefinition : public SmartViewParser
 {
 public:
-	TimeZoneDefinition(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+	TimeZoneDefinition();
 	~TimeZoneDefinition();
 
 private:

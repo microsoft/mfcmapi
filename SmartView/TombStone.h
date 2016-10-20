@@ -14,7 +14,7 @@ struct TombstoneRecord
 class TombStone : public SmartViewParser
 {
 public:
-	TombStone(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+	TombStone();
 	~TombStone();
 
 private:

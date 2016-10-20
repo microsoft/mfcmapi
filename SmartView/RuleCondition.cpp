@@ -4,9 +4,8 @@
 #include "String.h"
 #include "InterpretProp2.h"
 
-RuleCondition::RuleCondition(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, bool bExtended)
+RuleCondition::RuleCondition(bool bExtended)
 {
-	Init(cbBin, lpBin);
 	m_NamedPropertyInformation = { 0 };
 	m_lpRes = nullptr;
 	m_bExtended = bExtended;
@@ -36,7 +35,7 @@ void RuleCondition::Parse()
 		m_NamedPropertyInformation.PropId = new WORD[m_NamedPropertyInformation.NoOfNamedProps];
 		if (m_NamedPropertyInformation.PropId)
 		{
-			memset(m_NamedPropertyInformation.PropId, 0, m_NamedPropertyInformation.NoOfNamedProps*sizeof(WORD));
+			memset(m_NamedPropertyInformation.PropId, 0, m_NamedPropertyInformation.NoOfNamedProps * sizeof(WORD));
 			for (auto i = 0; i < m_NamedPropertyInformation.NoOfNamedProps; i++)
 			{
 				m_Parser.GetWORD(&m_NamedPropertyInformation.PropId[i]);
@@ -47,7 +46,7 @@ void RuleCondition::Parse()
 		m_NamedPropertyInformation.PropertyName = new PropertyNameStruct[m_NamedPropertyInformation.NoOfNamedProps];
 		if (m_NamedPropertyInformation.PropertyName)
 		{
-			memset(m_NamedPropertyInformation.PropertyName, 0, m_NamedPropertyInformation.NoOfNamedProps*sizeof(PropertyNameStruct));
+			memset(m_NamedPropertyInformation.PropertyName, 0, m_NamedPropertyInformation.NoOfNamedProps * sizeof(PropertyNameStruct));
 			for (auto i = 0; i < m_NamedPropertyInformation.NoOfNamedProps; i++)
 			{
 				m_Parser.GetBYTE(&m_NamedPropertyInformation.PropertyName[i].Kind);
@@ -68,12 +67,13 @@ void RuleCondition::Parse()
 	}
 
 	m_lpRes = new RestrictionStruct(
-		static_cast<ULONG>(m_Parser.RemainingBytes()),
-		m_Parser.GetCurrentAddress(),
 		true,
 		m_bExtended);
 	if (m_lpRes)
 	{
+		m_lpRes->Init(
+			static_cast<ULONG>(m_Parser.RemainingBytes()),
+			m_Parser.GetCurrentAddress());
 		m_lpRes->DisableJunkParsing();
 		m_lpRes->EnsureParsed();
 		m_Parser.Advance(m_lpRes->GetCurrentOffset());

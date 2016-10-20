@@ -6,7 +6,7 @@
 class PropertyStruct : public SmartViewParser
 {
 public:
-	PropertyStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+	PropertyStruct();
 	~PropertyStruct();
 
 private:

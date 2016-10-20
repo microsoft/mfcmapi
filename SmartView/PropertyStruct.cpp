@@ -3,9 +3,8 @@
 #include "InterpretProp.h"
 #include "InterpretProp2.h"
 
-PropertyStruct::PropertyStruct(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
+PropertyStruct::PropertyStruct()
 {
-	Init(cbBin, lpBin);
 	m_PropCount = 0;
 	m_Prop = nullptr;
 }

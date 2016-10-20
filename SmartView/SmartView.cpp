@@ -45,72 +45,72 @@ _Check_return_ wstring RTimeToSzString(DWORD rTime, bool bLabel);
 _Check_return_ wstring PTI8ToSzString(LARGE_INTEGER liI8, bool bLabel);
 // End: Functions to parse PT_LONG/PT-I2 properties
 
-LPSMARTVIEWPARSER GetSmartViewParser(__ParsingTypeEnum iStructType, ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, _In_opt_ LPMAPIPROP lpMAPIProp)
+LPSMARTVIEWPARSER GetSmartViewParser(__ParsingTypeEnum iStructType, _In_opt_ LPMAPIPROP lpMAPIProp)
 {
 	switch (iStructType)
 	{
 	case IDS_STNOPARSING:
 		return nullptr;
 	case IDS_STTOMBSTONE:
-		return new TombStone(cbBin, lpBin);
+		return new TombStone();
 	case IDS_STPCL:
-		return new PCL(cbBin, lpBin);
+		return new PCL();
 	case IDS_STVERBSTREAM:
-		return new VerbStream(cbBin, lpBin);
+		return new VerbStream();
 	case IDS_STNICKNAMECACHE:
-		return new NickNameCache(cbBin, lpBin);
+		return new NickNameCache();
 	case IDS_STFOLDERUSERFIELDS:
-		return new FolderUserFieldStream(cbBin, lpBin);
+		return new FolderUserFieldStream();
 	case IDS_STRECIPIENTROWSTREAM:
-		return new RecipientRowStream(cbBin, lpBin);
+		return new RecipientRowStream();
 	case IDS_STWEBVIEWPERSISTSTREAM:
-		return new WebViewPersistStream(cbBin, lpBin);
+		return new WebViewPersistStream();
 	case IDS_STFLATENTRYLIST:
-		return new FlatEntryList(cbBin, lpBin);
+		return new FlatEntryList();
 	case IDS_STADDITIONALRENENTRYIDSEX:
-		return new AdditionalRenEntryIDs(cbBin, lpBin);
+		return new AdditionalRenEntryIDs();
 	case IDS_STPROPERTYDEFINITIONSTREAM:
-		return new PropertyDefinitionStream(cbBin, lpBin);
+		return new PropertyDefinitionStream();
 	case IDS_STSEARCHFOLDERDEFINITION:
-		return new SearchFolderDefinition(cbBin, lpBin);
+		return new SearchFolderDefinition();
 	case IDS_STENTRYLIST:
-		return new EntryList(cbBin, lpBin);
+		return new EntryList();
 	case IDS_STRULECONDITION:
-		return new RuleCondition(cbBin, lpBin, false);
+		return new RuleCondition(false);
 	case IDS_STEXTENDEDRULECONDITION:
-		return new RuleCondition(cbBin, lpBin, true);
+		return new RuleCondition(true);
 	case IDS_STRESTRICTION:
-		return new RestrictionStruct(cbBin, lpBin, false, true);
+		return new RestrictionStruct(false, true);
 	case IDS_STPROPERTY:
-		return new PropertyStruct(cbBin, lpBin);
+		return new PropertyStruct();
 	case IDS_STENTRYID:
-		return new EntryIdStruct(cbBin, lpBin);
+		return new EntryIdStruct();
 	case IDS_STGLOBALOBJECTID:
-		return new GlobalObjectId(cbBin, lpBin);
+		return new GlobalObjectId();
 	case IDS_STTASKASSIGNERS:
-		return new TaskAssigners(cbBin, lpBin);
+		return new TaskAssigners();
 	case IDS_STCONVERSATIONINDEX:
-		return new ConversationIndex(cbBin, lpBin);
+		return new ConversationIndex();
 	case IDS_STREPORTTAG:
-		return new ReportTag(cbBin, lpBin);
+		return new ReportTag();
 	case IDS_STTIMEZONEDEFINITION:
-		return new TimeZoneDefinition(cbBin, lpBin);
+		return new TimeZoneDefinition();
 	case IDS_STTIMEZONE:
-		return new TimeZone(cbBin, lpBin);
+		return new TimeZone();
 	case IDS_STEXTENDEDFOLDERFLAGS:
-		return new ExtendedFlags(cbBin, lpBin);
+		return new ExtendedFlags();
 	case IDS_STAPPOINTMENTRECURRENCEPATTERN:
-		return new AppointmentRecurrencePattern(cbBin, lpBin);
+		return new AppointmentRecurrencePattern();
 	case IDS_STRECURRENCEPATTERN:
-		return new RecurrencePattern(cbBin, lpBin);
+		return new RecurrencePattern();
 	case IDS_STSID:
-		return new SIDBin(cbBin, lpBin);
+		return new SIDBin();
 	case IDS_STSECURITYDESCRIPTOR:
-		return new SDBin(cbBin, lpBin, lpMAPIProp, false);
+		return new SDBin(lpMAPIProp, false);
 	case IDS_STFBSECURITYDESCRIPTOR:
-		return new SDBin(cbBin, lpBin, lpMAPIProp, true);
+		return new SDBin(lpMAPIProp, true);
 	case IDS_STXID:
-		return new XID(cbBin, lpBin);
+		return new XID();
 	}
 
 	return nullptr;
@@ -420,9 +420,10 @@ wstring InterpretBinaryAsString(SBinary myBin, __ParsingTypeEnum iStructType, _I
 		return szResultString;
 	}
 
-	auto svp = GetSmartViewParser(iStructType, myBin.cb, myBin.lpb, lpMAPIProp);
+	auto svp = GetSmartViewParser(iStructType, lpMAPIProp);
 	if (svp)
 	{
+		svp->Init(myBin.cb, myBin.lpb);
 		szResultString = svp->ToString();
 		delete svp;
 		return szResultString;

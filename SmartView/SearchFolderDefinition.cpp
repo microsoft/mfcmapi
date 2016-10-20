@@ -5,9 +5,8 @@
 #include "String.h"
 #include "ExtraPropTags.h"
 
-SearchFolderDefinition::SearchFolderDefinition(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
+SearchFolderDefinition::SearchFolderDefinition()
 {
-	Init(cbBin, lpBin);
 	m_Version = 0;
 	m_Flags = 0;
 	m_NumericSearch = 0;
@@ -96,9 +95,14 @@ void SearchFolderDefinition::Parse()
 	{
 		auto cbRemainingBytes = m_Parser.RemainingBytes();
 		cbRemainingBytes = min(m_FolderList2Length, cbRemainingBytes);
-		m_FolderList2 = new EntryList(
-			static_cast<ULONG>(cbRemainingBytes),
-			m_Parser.GetCurrentAddress());
+		m_FolderList2 = new EntryList();
+		if (m_FolderList2)
+		{
+			m_FolderList2->Init(
+				static_cast<ULONG>(cbRemainingBytes),
+				m_Parser.GetCurrentAddress());
+		}
+
 		m_Parser.Advance(cbRemainingBytes);
 	}
 
@@ -134,12 +138,11 @@ void SearchFolderDefinition::Parse()
 	if (SFST_MRES & m_Flags)
 	{
 		auto res = new RestrictionStruct(
-			static_cast<ULONG>(m_Parser.RemainingBytes()),
-			m_Parser.GetCurrentAddress(),
 			false,
 			true);
 		if (res)
 		{
+			res->Init(static_cast<ULONG>(m_Parser.RemainingBytes()), m_Parser.GetCurrentAddress());
 			res->DisableJunkParsing();
 			m_Restriction = res->ToString();
 			m_Parser.Advance(res->GetCurrentOffset());

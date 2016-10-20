@@ -4,7 +4,7 @@
 class SDBin : public SmartViewParser
 {
 public:
-	SDBin(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, _In_opt_ LPMAPIPROP lpMAPIProp, bool bFB);
+	SDBin(_In_opt_ LPMAPIPROP lpMAPIProp, bool bFB);
 	~SDBin();
 
 private:

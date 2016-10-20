@@ -3,9 +3,8 @@
 #include "String.h"
 #include "SmartView.h"
 
-TombStone::TombStone(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
+TombStone::TombStone()
 {
-	Init(cbBin, lpBin);
 	m_Identifier = 0;
 	m_HeaderSize = 0;
 	m_Version = 0;

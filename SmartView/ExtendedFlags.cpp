@@ -4,9 +4,8 @@
 #include "InterpretProp2.h"
 #include "ExtraPropTags.h"
 
-ExtendedFlags::ExtendedFlags(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
+ExtendedFlags::ExtendedFlags()
 {
-	Init(cbBin, lpBin);
 	m_ulNumFlags = 0;
 	m_pefExtendedFlags = nullptr;
 }

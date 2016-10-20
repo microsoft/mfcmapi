@@ -4,7 +4,7 @@
 class GlobalObjectId : public SmartViewParser
 {
 public:
-	GlobalObjectId(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+	GlobalObjectId();
 	~GlobalObjectId();
 
 private:

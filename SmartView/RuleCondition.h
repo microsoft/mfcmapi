@@ -35,7 +35,7 @@ struct NamedPropertyInformationStruct
 class RuleCondition : public SmartViewParser
 {
 public:
-	RuleCondition(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin, bool bExtended);
+	RuleCondition(bool bExtended);
 	~RuleCondition();
 
 private:

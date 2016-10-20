@@ -16,7 +16,7 @@ struct TaskAssigner
 class TaskAssigners : public SmartViewParser
 {
 public:
-	TaskAssigners(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+	TaskAssigners();
 	~TaskAssigners();
 
 private:

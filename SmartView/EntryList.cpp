@@ -2,9 +2,8 @@
 #include "EntryList.h"
 #include "String.h"
 
-EntryList::EntryList(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
+EntryList::EntryList()
 {
-	Init(cbBin, lpBin);
 	m_EntryCount = 0;
 	m_Pad = 0;
 	m_Entry = nullptr;
@@ -43,9 +42,14 @@ void EntryList::Parse()
 			for (DWORD i = 0; i < m_EntryCount; i++)
 			{
 				size_t cbRemainingBytes = min(m_Entry[i].EntryLength, m_Parser.RemainingBytes());
-				m_Entry[i].EntryId = new EntryIdStruct(
-					static_cast<ULONG>(cbRemainingBytes),
-					m_Parser.GetCurrentAddress());
+				m_Entry[i].EntryId = new EntryIdStruct();
+				if (m_Entry[i].EntryId)
+				{
+					m_Entry[i].EntryId->Init(
+						static_cast<ULONG>(cbRemainingBytes),
+						m_Parser.GetCurrentAddress());
+				}
+
 				m_Parser.Advance(cbRemainingBytes);
 			}
 		}

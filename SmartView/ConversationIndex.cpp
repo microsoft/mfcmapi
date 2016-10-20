@@ -4,9 +4,8 @@
 #include "InterpretProp.h"
 #include "InterpretProp2.h"
 
-ConversationIndex::ConversationIndex(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
+ConversationIndex::ConversationIndex()
 {
-	Init(cbBin, lpBin);
 	m_UnnamedByte = 0;
 	m_ftCurrent = { 0 };
 	m_guid = { 0 };

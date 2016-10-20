@@ -13,7 +13,7 @@ struct ResponseLevel
 class ConversationIndex : public SmartViewParser
 {
 public:
-	ConversationIndex(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+	ConversationIndex();
 	~ConversationIndex();
 
 private:

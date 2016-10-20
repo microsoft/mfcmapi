@@ -59,7 +59,7 @@ struct ExtendedException
 class AppointmentRecurrencePattern : public SmartViewParser
 {
 public:
-	AppointmentRecurrencePattern(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+	AppointmentRecurrencePattern();
 	~AppointmentRecurrencePattern();
 
 private:

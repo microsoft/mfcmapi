@@ -6,9 +6,8 @@
 #include "ExtraPropTags.h"
 #include "Guids.h"
 
-AppointmentRecurrencePattern::AppointmentRecurrencePattern(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
+AppointmentRecurrencePattern::AppointmentRecurrencePattern()
 {
-	Init(cbBin, lpBin);
 	m_RecurrencePattern = nullptr;
 	m_ReaderVersion2 = 0;
 	m_WriterVersion2 = 0;
@@ -56,10 +55,11 @@ AppointmentRecurrencePattern::~AppointmentRecurrencePattern()
 
 void AppointmentRecurrencePattern::Parse()
 {
-	m_RecurrencePattern = new RecurrencePattern(static_cast<ULONG>(m_Parser.RemainingBytes()), m_Parser.GetCurrentAddress());
+	m_RecurrencePattern = new RecurrencePattern();
 
 	if (m_RecurrencePattern)
 	{
+		m_RecurrencePattern->Init(static_cast<ULONG>(m_Parser.RemainingBytes()), m_Parser.GetCurrentAddress());
 		m_RecurrencePattern->DisableJunkParsing();
 		m_RecurrencePattern->EnsureParsed();
 		m_Parser.Advance(m_RecurrencePattern->GetCurrentOffset());

@@ -12,7 +12,7 @@ struct EntryListEntryStruct
 class EntryList : public SmartViewParser
 {
 public:
-	EntryList(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+	EntryList();
 	~EntryList();
 
 private:
