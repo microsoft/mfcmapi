@@ -7,19 +7,18 @@ struct SizedXID
 	BYTE XidSize;
 	GUID NamespaceGuid;
 	DWORD cbLocalId;
-	LPBYTE LocalID;
+	vector<BYTE> LocalID;
 };
 
 class PCL : public SmartViewParser
 {
 public:
 	PCL();
-	~PCL();
 
 private:
 	void Parse() override;
 	_Check_return_ wstring ToStringInternal() override;
 
 	DWORD m_cXID;
-	SizedXID* m_lpXID;
+	vector<SizedXID> m_lpXID;
 };
