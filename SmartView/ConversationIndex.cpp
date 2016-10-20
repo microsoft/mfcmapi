@@ -10,12 +10,6 @@ ConversationIndex::ConversationIndex()
 	m_ftCurrent = { 0 };
 	m_guid = { 0 };
 	m_ulResponseLevels = 0;
-	m_lpResponseLevels = nullptr;
-}
-
-ConversationIndex::~ConversationIndex()
-{
-	delete[] m_lpResponseLevels;
 }
 
 void ConversationIndex::Parse()
@@ -51,27 +45,26 @@ void ConversationIndex::Parse()
 	}
 
 	if (m_ulResponseLevels && m_ulResponseLevels < _MaxEntriesSmall)
-		m_lpResponseLevels = new ResponseLevel[m_ulResponseLevels];
-
-	if (m_lpResponseLevels)
 	{
-		memset(m_lpResponseLevels, 0, sizeof(ResponseLevel)* m_ulResponseLevels);
 		for (ULONG i = 0; i < m_ulResponseLevels; i++)
 		{
+			ResponseLevel responseLevel;
 			m_Parser.GetBYTE(&b1);
 			m_Parser.GetBYTE(&b2);
 			m_Parser.GetBYTE(&b3);
 			m_Parser.GetBYTE(&b4);
-			m_lpResponseLevels[i].TimeDelta = b1 << 24 | b2 << 16 | b3 << 8 | b4;
-			if (m_lpResponseLevels[i].TimeDelta & 0x80000000)
+			responseLevel.TimeDelta = b1 << 24 | b2 << 16 | b3 << 8 | b4;
+			if (responseLevel.TimeDelta & 0x80000000)
 			{
-				m_lpResponseLevels[i].TimeDelta = m_lpResponseLevels[i].TimeDelta & ~0x80000000;
-				m_lpResponseLevels[i].DeltaCode = true;
+				responseLevel.TimeDelta = responseLevel.TimeDelta & ~0x80000000;
+				responseLevel.DeltaCode = true;
 			}
 
 			m_Parser.GetBYTE(&b1);
-			m_lpResponseLevels[i].Random = static_cast<BYTE>(b1 >> 4);
-			m_lpResponseLevels[i].Level = static_cast<BYTE>(b1 & 0xf);
+			responseLevel.Random = static_cast<BYTE>(b1 >> 4);
+			responseLevel.Level = static_cast<BYTE>(b1 & 0xf);
+
+			m_lpResponseLevels.push_back(responseLevel);
 		}
 	}
 }
@@ -91,9 +84,9 @@ _Check_return_ wstring ConversationIndex::ToStringInternal()
 		PropString.c_str(),
 		szGUID.c_str());
 
-	if (m_ulResponseLevels && m_lpResponseLevels)
+	if (m_lpResponseLevels.size())
 	{
-		for (ULONG i = 0; i < m_ulResponseLevels; i++)
+		for (ULONG i = 0; i < m_lpResponseLevels.size(); i++)
 		{
 			szConversationIndex += formatmessage(IDS_CONVERSATIONINDEXRESPONSELEVEL,
 				i, m_lpResponseLevels[i].DeltaCode,

@@ -14,7 +14,6 @@ class ConversationIndex : public SmartViewParser
 {
 public:
 	ConversationIndex();
-	~ConversationIndex();
 
 private:
 	void Parse() override;
@@ -24,5 +23,5 @@ private:
 	FILETIME m_ftCurrent;
 	GUID m_guid;
 	ULONG m_ulResponseLevels;
-	ResponseLevel* m_lpResponseLevels;
+	vector<ResponseLevel> m_lpResponseLevels;
 };
