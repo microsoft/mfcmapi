@@ -13,13 +13,13 @@ struct ExceptionInfo
 	WORD OverrideFlags;
 	WORD SubjectLength;
 	WORD SubjectLength2;
-	LPSTR Subject;
+	string Subject;
 	DWORD MeetingType;
 	DWORD ReminderDelta;
 	DWORD ReminderSet;
 	WORD LocationLength;
 	WORD LocationLength2;
-	LPSTR Location;
+	string Location;
 	DWORD BusyStatus;
 	DWORD Attachment;
 	DWORD SubType;
@@ -30,7 +30,7 @@ struct ChangeHighlight
 {
 	DWORD ChangeHighlightSize;
 	DWORD ChangeHighlightValue;
-	LPBYTE Reserved;
+	vector<BYTE> Reserved;
 };
 
 // ExtendedException
@@ -40,16 +40,16 @@ struct ExtendedException
 {
 	ChangeHighlight ChangeHighlight;
 	DWORD ReservedBlockEE1Size;
-	LPBYTE ReservedBlockEE1;
+	vector<BYTE> ReservedBlockEE1;
 	DWORD StartDateTime;
 	DWORD EndDateTime;
 	DWORD OriginalStartDate;
 	WORD WideCharSubjectLength;
-	LPWSTR WideCharSubject;
+	wstring WideCharSubject;
 	WORD WideCharLocationLength;
-	LPWSTR WideCharLocation;
+	wstring WideCharLocation;
 	DWORD ReservedBlockEE2Size;
-	LPBYTE ReservedBlockEE2;
+	vector<BYTE> ReservedBlockEE2;
 };
 
 // AppointmentRecurrencePattern
@@ -60,22 +60,21 @@ class AppointmentRecurrencePattern : public SmartViewParser
 {
 public:
 	AppointmentRecurrencePattern();
-	~AppointmentRecurrencePattern();
 
 private:
 	void Parse() override;
 	_Check_return_ wstring ToStringInternal() override;
 
-	RecurrencePattern* m_RecurrencePattern;
+	RecurrencePattern m_RecurrencePattern;
 	DWORD m_ReaderVersion2;
 	DWORD m_WriterVersion2;
 	DWORD m_StartTimeOffset;
 	DWORD m_EndTimeOffset;
 	WORD m_ExceptionCount;
-	ExceptionInfo* m_ExceptionInfo;
+	vector<ExceptionInfo> m_ExceptionInfo;
 	DWORD m_ReservedBlock1Size;
-	LPBYTE m_ReservedBlock1;
-	ExtendedException* m_ExtendedException;
+	vector<BYTE> m_ReservedBlock1;
+	vector<ExtendedException> m_ExtendedException;
 	DWORD m_ReservedBlock2Size;
-	LPBYTE m_ReservedBlock2;
+	vector<BYTE> m_ReservedBlock2;
 };
