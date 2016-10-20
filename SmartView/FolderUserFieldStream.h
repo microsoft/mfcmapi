@@ -10,14 +10,14 @@ struct FolderFieldDefinitionCommon
 	DWORD dwDisplay;
 	DWORD iFmt;
 	WORD wszFormulaLength;
-	LPWSTR wszFormula;
+	wstring wszFormula;
 };
 
 struct FolderFieldDefinitionA
 {
 	DWORD FieldType;
 	WORD FieldNameLength;
-	LPSTR FieldName;
+	string FieldName;
 	FolderFieldDefinitionCommon Common;
 };
 
@@ -25,34 +25,23 @@ struct FolderFieldDefinitionW
 {
 	DWORD FieldType;
 	WORD FieldNameLength;
-	LPWSTR FieldName;
+	wstring FieldName;
 	FolderFieldDefinitionCommon Common;
-};
-
-struct FolderUserFieldA
-{
-	DWORD FieldDefinitionCount;
-	FolderFieldDefinitionA* FieldDefinitions;
-};
-
-struct FolderUserFieldW
-{
-	DWORD FieldDefinitionCount;
-	FolderFieldDefinitionW* FieldDefinitions;
 };
 
 class FolderUserFieldStream : public SmartViewParser
 {
 public:
 	FolderUserFieldStream();
-	~FolderUserFieldStream();
 
 private:
 	void Parse() override;
 	_Check_return_ wstring ToStringInternal() override;
 
-	void BinToFolderFieldDefinitionCommon(_Out_ FolderFieldDefinitionCommon* pffdcFolderFieldDefinitionCommon);
+	FolderFieldDefinitionCommon BinToFolderFieldDefinitionCommon();
 
-	FolderUserFieldA m_FolderUserFieldsAnsi;
-	FolderUserFieldW m_FolderUserFieldsUnicode;
+	DWORD m_FolderUserFieldsAnsiCount;
+	vector<FolderFieldDefinitionA> m_FieldDefinitionsA;
+	DWORD m_FolderUserFieldsUnicodeCount;
+	vector<FolderFieldDefinitionW> m_FieldDefinitionsW;
 };

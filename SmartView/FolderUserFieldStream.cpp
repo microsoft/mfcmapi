@@ -1,115 +1,71 @@
 #include "stdafx.h"
 #include "FolderUserFieldStream.h"
-#include "String.h"
 #include "InterpretProp2.h"
 #include "ExtraPropTags.h"
 
-FolderUserFieldStream::FolderUserFieldStream()
-{
-	m_FolderUserFieldsAnsi = { 0 };
-	m_FolderUserFieldsUnicode = { 0 };
-}
-
-FolderUserFieldStream::~FolderUserFieldStream()
-{
-	if (m_FolderUserFieldsAnsi.FieldDefinitionCount && m_FolderUserFieldsAnsi.FieldDefinitions)
-	{
-		for (DWORD i = 0; i < m_FolderUserFieldsAnsi.FieldDefinitionCount; i++)
-		{
-			delete[] m_FolderUserFieldsAnsi.FieldDefinitions[i].FieldName;
-			delete[] m_FolderUserFieldsAnsi.FieldDefinitions[i].Common.wszFormula;
-		}
-	}
-
-	delete[] m_FolderUserFieldsAnsi.FieldDefinitions;
-
-	if (m_FolderUserFieldsUnicode.FieldDefinitionCount && m_FolderUserFieldsUnicode.FieldDefinitions)
-	{
-		for (DWORD i = 0; i < m_FolderUserFieldsUnicode.FieldDefinitionCount; i++)
-		{
-			delete[] m_FolderUserFieldsUnicode.FieldDefinitions[i].FieldName;
-			delete[] m_FolderUserFieldsUnicode.FieldDefinitions[i].Common.wszFormula;
-		}
-	}
-
-	delete[] m_FolderUserFieldsUnicode.FieldDefinitions;
-}
+FolderUserFieldStream::FolderUserFieldStream() : m_FolderUserFieldsAnsiCount(0), m_FolderUserFieldsUnicodeCount(0) {}
 
 void FolderUserFieldStream::Parse()
 {
-	m_Parser.GetDWORD(&m_FolderUserFieldsAnsi.FieldDefinitionCount);
-
-	if (m_FolderUserFieldsAnsi.FieldDefinitionCount && m_FolderUserFieldsAnsi.FieldDefinitionCount < _MaxEntriesSmall)
-		m_FolderUserFieldsAnsi.FieldDefinitions = new FolderFieldDefinitionA[m_FolderUserFieldsAnsi.FieldDefinitionCount];
-
-	if (m_FolderUserFieldsAnsi.FieldDefinitions)
+	m_Parser.GetDWORD(&m_FolderUserFieldsAnsiCount);
+	if (m_FolderUserFieldsAnsiCount && m_FolderUserFieldsAnsiCount < _MaxEntriesSmall)
 	{
-		memset(m_FolderUserFieldsAnsi.FieldDefinitions, 0, sizeof(FolderFieldDefinitionA)*m_FolderUserFieldsAnsi.FieldDefinitionCount);
-
-		for (DWORD i = 0; i < m_FolderUserFieldsAnsi.FieldDefinitionCount; i++)
+		for (DWORD i = 0; i < m_FolderUserFieldsAnsiCount; i++)
 		{
-			m_Parser.GetDWORD(&m_FolderUserFieldsAnsi.FieldDefinitions[i].FieldType);
-			m_Parser.GetWORD(&m_FolderUserFieldsAnsi.FieldDefinitions[i].FieldNameLength);
+			FolderFieldDefinitionA folderFieldDefinitionA;
+			m_Parser.GetDWORD(&folderFieldDefinitionA.FieldType);
+			m_Parser.GetWORD(&folderFieldDefinitionA.FieldNameLength);
 
-			if (m_FolderUserFieldsAnsi.FieldDefinitions[i].FieldNameLength &&
-				m_FolderUserFieldsAnsi.FieldDefinitions[i].FieldNameLength < _MaxEntriesSmall)
+			if (folderFieldDefinitionA.FieldNameLength &&
+				folderFieldDefinitionA.FieldNameLength < _MaxEntriesSmall)
 			{
-				m_Parser.GetStringA(
-					m_FolderUserFieldsAnsi.FieldDefinitions[i].FieldNameLength,
-					&m_FolderUserFieldsAnsi.FieldDefinitions[i].FieldName);
+				folderFieldDefinitionA.FieldName = m_Parser.GetStringA(folderFieldDefinitionA.FieldNameLength);
 			}
 
-			BinToFolderFieldDefinitionCommon(
-				&m_FolderUserFieldsAnsi.FieldDefinitions[i].Common);
+			folderFieldDefinitionA.Common = BinToFolderFieldDefinitionCommon();
+			m_FieldDefinitionsA.push_back(folderFieldDefinitionA);
 		}
 	}
 
-	m_Parser.GetDWORD(&m_FolderUserFieldsUnicode.FieldDefinitionCount);
-
-	if (m_FolderUserFieldsUnicode.FieldDefinitionCount && m_FolderUserFieldsUnicode.FieldDefinitionCount < _MaxEntriesSmall)
-		m_FolderUserFieldsUnicode.FieldDefinitions = new FolderFieldDefinitionW[m_FolderUserFieldsUnicode.FieldDefinitionCount];
-
-	if (m_FolderUserFieldsUnicode.FieldDefinitions)
+	m_Parser.GetDWORD(&m_FolderUserFieldsUnicodeCount);
+	if (m_FolderUserFieldsUnicodeCount && m_FolderUserFieldsUnicodeCount < _MaxEntriesSmall)
 	{
-		memset(m_FolderUserFieldsUnicode.FieldDefinitions, 0, sizeof(FolderFieldDefinitionA)*m_FolderUserFieldsUnicode.FieldDefinitionCount);
-
-		for (DWORD i = 0; i < m_FolderUserFieldsUnicode.FieldDefinitionCount; i++)
+		for (DWORD i = 0; i < m_FolderUserFieldsUnicodeCount; i++)
 		{
-			m_Parser.GetDWORD(&m_FolderUserFieldsUnicode.FieldDefinitions[i].FieldType);
-			m_Parser.GetWORD(&m_FolderUserFieldsUnicode.FieldDefinitions[i].FieldNameLength);
+			FolderFieldDefinitionW folderFieldDefinitionW;
+			m_Parser.GetDWORD(&folderFieldDefinitionW.FieldType);
+			m_Parser.GetWORD(&folderFieldDefinitionW.FieldNameLength);
 
-			if (m_FolderUserFieldsUnicode.FieldDefinitions[i].FieldNameLength &&
-				m_FolderUserFieldsUnicode.FieldDefinitions[i].FieldNameLength < _MaxEntriesSmall)
+			if (folderFieldDefinitionW.FieldNameLength &&
+				folderFieldDefinitionW.FieldNameLength < _MaxEntriesSmall)
 			{
-				m_Parser.GetStringW(
-					m_FolderUserFieldsUnicode.FieldDefinitions[i].FieldNameLength,
-					&m_FolderUserFieldsUnicode.FieldDefinitions[i].FieldName);
+				folderFieldDefinitionW.FieldName = m_Parser.GetStringW(folderFieldDefinitionW.FieldNameLength);
 			}
 
-			BinToFolderFieldDefinitionCommon(
-				&m_FolderUserFieldsUnicode.FieldDefinitions[i].Common);
+			folderFieldDefinitionW.Common = BinToFolderFieldDefinitionCommon();
+			m_FieldDefinitionsW.push_back(folderFieldDefinitionW);
 		}
 	}
 }
 
-void FolderUserFieldStream::BinToFolderFieldDefinitionCommon(_Out_ FolderFieldDefinitionCommon* pffdcFolderFieldDefinitionCommon)
+FolderFieldDefinitionCommon FolderUserFieldStream::BinToFolderFieldDefinitionCommon()
 {
-	*pffdcFolderFieldDefinitionCommon = FolderFieldDefinitionCommon();
+	FolderFieldDefinitionCommon common;
 
-	m_Parser.GetBYTESNoAlloc(sizeof(GUID), sizeof(GUID), reinterpret_cast<LPBYTE>(&pffdcFolderFieldDefinitionCommon->PropSetGuid));
-	m_Parser.GetDWORD(&pffdcFolderFieldDefinitionCommon->fcapm);
-	m_Parser.GetDWORD(&pffdcFolderFieldDefinitionCommon->dwString);
-	m_Parser.GetDWORD(&pffdcFolderFieldDefinitionCommon->dwBitmap);
-	m_Parser.GetDWORD(&pffdcFolderFieldDefinitionCommon->dwDisplay);
-	m_Parser.GetDWORD(&pffdcFolderFieldDefinitionCommon->iFmt);
-	m_Parser.GetWORD(&pffdcFolderFieldDefinitionCommon->wszFormulaLength);
-	if (pffdcFolderFieldDefinitionCommon->wszFormulaLength &&
-		pffdcFolderFieldDefinitionCommon->wszFormulaLength < _MaxEntriesLarge)
+	m_Parser.GetBYTESNoAlloc(sizeof(GUID), sizeof(GUID), reinterpret_cast<LPBYTE>(&common.PropSetGuid));
+	m_Parser.GetDWORD(&common.fcapm);
+	m_Parser.GetDWORD(&common.dwString);
+	m_Parser.GetDWORD(&common.dwBitmap);
+	m_Parser.GetDWORD(&common.dwDisplay);
+	m_Parser.GetDWORD(&common.iFmt);
+	m_Parser.GetWORD(&common.wszFormulaLength);
+	if (common.wszFormulaLength &&
+		common.wszFormulaLength < _MaxEntriesLarge)
 	{
-		m_Parser.GetStringW(
-			pffdcFolderFieldDefinitionCommon->wszFormulaLength,
-			&pffdcFolderFieldDefinitionCommon->wszFormula);
+		common.wszFormula = m_Parser.GetStringW(common.wszFormulaLength);
 	}
+
+	return common;
 }
 
 _Check_return_ wstring FolderUserFieldStream::ToStringInternal()
@@ -119,61 +75,61 @@ _Check_return_ wstring FolderUserFieldStream::ToStringInternal()
 
 	szFolderUserFieldStream = formatmessage(
 		IDS_FIELDHEADER,
-		m_FolderUserFieldsAnsi.FieldDefinitionCount);
+		m_FolderUserFieldsAnsiCount);
 
-	if (m_FolderUserFieldsAnsi.FieldDefinitionCount && m_FolderUserFieldsAnsi.FieldDefinitions)
+	if (m_FolderUserFieldsAnsiCount && m_FieldDefinitionsA.size())
 	{
-		for (DWORD i = 0; i < m_FolderUserFieldsAnsi.FieldDefinitionCount; i++)
+		for (DWORD i = 0; i < m_FieldDefinitionsA.size(); i++)
 		{
-			auto szGUID = GUIDToString(&m_FolderUserFieldsAnsi.FieldDefinitions[i].Common.PropSetGuid);
-			auto szFieldType = InterpretFlags(flagFolderType, m_FolderUserFieldsAnsi.FieldDefinitions[i].FieldType);
-			auto szFieldcap = InterpretFlags(flagFieldCap, m_FolderUserFieldsAnsi.FieldDefinitions[i].Common.fcapm);
+			auto szGUID = GUIDToString(&m_FieldDefinitionsA[i].Common.PropSetGuid);
+			auto szFieldType = InterpretFlags(flagFolderType, m_FieldDefinitionsA[i].FieldType);
+			auto szFieldcap = InterpretFlags(flagFieldCap, m_FieldDefinitionsA[i].Common.fcapm);
 
 			szTmp = formatmessage(
 				IDS_FIELDANSIFIELD,
 				i,
-				m_FolderUserFieldsAnsi.FieldDefinitions[i].FieldType, szFieldType.c_str(),
-				m_FolderUserFieldsAnsi.FieldDefinitions[i].FieldNameLength,
-				m_FolderUserFieldsAnsi.FieldDefinitions[i].FieldName,
+				m_FieldDefinitionsA[i].FieldType, szFieldType.c_str(),
+				m_FieldDefinitionsA[i].FieldNameLength,
+				m_FieldDefinitionsA[i].FieldName.c_str(),
 				szGUID.c_str(),
-				m_FolderUserFieldsAnsi.FieldDefinitions[i].Common.fcapm, szFieldcap.c_str(),
-				m_FolderUserFieldsAnsi.FieldDefinitions[i].Common.dwString,
-				m_FolderUserFieldsAnsi.FieldDefinitions[i].Common.dwBitmap,
-				m_FolderUserFieldsAnsi.FieldDefinitions[i].Common.dwDisplay,
-				m_FolderUserFieldsAnsi.FieldDefinitions[i].Common.iFmt,
-				m_FolderUserFieldsAnsi.FieldDefinitions[i].Common.wszFormulaLength,
-				m_FolderUserFieldsAnsi.FieldDefinitions[i].Common.wszFormula);
+				m_FieldDefinitionsA[i].Common.fcapm, szFieldcap.c_str(),
+				m_FieldDefinitionsA[i].Common.dwString,
+				m_FieldDefinitionsA[i].Common.dwBitmap,
+				m_FieldDefinitionsA[i].Common.dwDisplay,
+				m_FieldDefinitionsA[i].Common.iFmt,
+				m_FieldDefinitionsA[i].Common.wszFormulaLength,
+				m_FieldDefinitionsA[i].Common.wszFormula.c_str());
 			szFolderUserFieldStream += szTmp;
 		}
 	}
 
 	szTmp = formatmessage(
 		IDS_FIELDUNICODEHEADER,
-		m_FolderUserFieldsUnicode.FieldDefinitionCount);
+		m_FolderUserFieldsUnicodeCount);
 	szFolderUserFieldStream += szTmp;
 
-	if (m_FolderUserFieldsUnicode.FieldDefinitionCount && m_FolderUserFieldsUnicode.FieldDefinitions)
+	if (m_FolderUserFieldsUnicodeCount&& m_FieldDefinitionsW.size())
 	{
-		for (DWORD i = 0; i < m_FolderUserFieldsUnicode.FieldDefinitionCount; i++)
+		for (DWORD i = 0; i < m_FieldDefinitionsW.size(); i++)
 		{
-			auto szGUID = GUIDToString(&m_FolderUserFieldsUnicode.FieldDefinitions[i].Common.PropSetGuid);
-			auto szFieldType = InterpretFlags(flagFolderType, m_FolderUserFieldsUnicode.FieldDefinitions[i].FieldType);
-			auto szFieldcap = InterpretFlags(flagFieldCap, m_FolderUserFieldsUnicode.FieldDefinitions[i].Common.fcapm);
+			auto szGUID = GUIDToString(&m_FieldDefinitionsW[i].Common.PropSetGuid);
+			auto szFieldType = InterpretFlags(flagFolderType, m_FieldDefinitionsW[i].FieldType);
+			auto szFieldcap = InterpretFlags(flagFieldCap, m_FieldDefinitionsW[i].Common.fcapm);
 
 			szTmp = formatmessage(
 				IDS_FIELDUNICODEFIELD,
 				i,
-				m_FolderUserFieldsUnicode.FieldDefinitions[i].FieldType, szFieldType.c_str(),
-				m_FolderUserFieldsUnicode.FieldDefinitions[i].FieldNameLength,
-				m_FolderUserFieldsUnicode.FieldDefinitions[i].FieldName,
+				m_FieldDefinitionsW[i].FieldType, szFieldType.c_str(),
+				m_FieldDefinitionsW[i].FieldNameLength,
+				m_FieldDefinitionsW[i].FieldName.c_str(),
 				szGUID.c_str(),
-				m_FolderUserFieldsUnicode.FieldDefinitions[i].Common.fcapm, szFieldcap.c_str(),
-				m_FolderUserFieldsUnicode.FieldDefinitions[i].Common.dwString,
-				m_FolderUserFieldsUnicode.FieldDefinitions[i].Common.dwBitmap,
-				m_FolderUserFieldsUnicode.FieldDefinitions[i].Common.dwDisplay,
-				m_FolderUserFieldsUnicode.FieldDefinitions[i].Common.iFmt,
-				m_FolderUserFieldsUnicode.FieldDefinitions[i].Common.wszFormulaLength,
-				m_FolderUserFieldsUnicode.FieldDefinitions[i].Common.wszFormula);
+				m_FieldDefinitionsW[i].Common.fcapm, szFieldcap.c_str(),
+				m_FieldDefinitionsW[i].Common.dwString,
+				m_FieldDefinitionsW[i].Common.dwBitmap,
+				m_FieldDefinitionsW[i].Common.dwDisplay,
+				m_FieldDefinitionsW[i].Common.iFmt,
+				m_FieldDefinitionsW[i].Common.wszFormulaLength,
+				m_FieldDefinitionsW[i].Common.wszFormula.c_str());
 			szFolderUserFieldStream += szTmp;
 		}
 	}
