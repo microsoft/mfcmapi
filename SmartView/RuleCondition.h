@@ -39,8 +39,8 @@ public:
 	~RuleCondition();
 
 private:
-	void Parse();
-	_Check_return_ wstring ToStringInternal();
+	void Parse() override;
+	_Check_return_ wstring ToStringInternal() override;
 
 	NamedPropertyInformationStruct m_NamedPropertyInformation;
 	RestrictionStruct* m_lpRes;

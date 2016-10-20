@@ -8,8 +8,8 @@ public:
 	~RestrictionStruct();
 
 private:
-	void Parse();
-	_Check_return_ wstring ToStringInternal();
+	void Parse() override;
+	_Check_return_ wstring ToStringInternal() override;
 
 	// Caller allocates with new. Clean up with DeleteRestriction and delete[].
 	bool BinToRestriction(ULONG ulDepth, _In_ LPSRestriction psrRestriction, bool bRuleCondition, bool bExtendedCount);

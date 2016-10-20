@@ -9,8 +9,8 @@ public:
 	~ReportTag();
 
 private:
-	void Parse();
-	_Check_return_ wstring ToStringInternal();
+	void Parse() override;
+	_Check_return_ wstring ToStringInternal() override;
 
 	CHAR m_Cookie[9]; // 8 characters + NULL terminator
 	DWORD m_Version;

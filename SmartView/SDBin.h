@@ -8,8 +8,8 @@ public:
 	~SDBin();
 
 private:
-	void Parse();
-	_Check_return_ wstring ToStringInternal();
+	void Parse() override;
+	_Check_return_ wstring ToStringInternal() override;
 
 	LPMAPIPROP m_lpMAPIProp;
 	bool m_bFB;

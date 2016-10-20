@@ -8,8 +8,8 @@ public:
 	~XID();
 
 private:
-	void Parse();
-	_Check_return_ wstring ToStringInternal();
+	void Parse() override;
+	_Check_return_ wstring ToStringInternal() override;
 
 	GUID m_NamespaceGuid;
 	size_t m_cbLocalId;

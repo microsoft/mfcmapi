@@ -22,8 +22,8 @@ public:
 	~ExtendedFlags();
 
 private:
-	void Parse();
-	_Check_return_ wstring ToStringInternal();
+	void Parse() override;
+	_Check_return_ wstring ToStringInternal() override;
 
 	ULONG m_ulNumFlags;
 	ExtendedFlag* m_pefExtendedFlags;

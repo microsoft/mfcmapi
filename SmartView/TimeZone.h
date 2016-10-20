@@ -14,8 +14,8 @@ public:
 	TimeZone();
 
 private:
-	void Parse();
-	_Check_return_ wstring ToStringInternal();
+	void Parse() override;
+	_Check_return_ wstring ToStringInternal() override;
 
 	DWORD m_lBias; // offset from GMT
 	DWORD m_lStandardBias; // offset from bias during standard time

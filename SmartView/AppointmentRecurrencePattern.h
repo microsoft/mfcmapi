@@ -63,8 +63,8 @@ public:
 	~AppointmentRecurrencePattern();
 
 private:
-	void Parse();
-	_Check_return_ wstring ToStringInternal();
+	void Parse() override;
+	_Check_return_ wstring ToStringInternal() override;
 
 	RecurrencePattern* m_RecurrencePattern;
 	DWORD m_ReaderVersion2;

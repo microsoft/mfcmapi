@@ -45,8 +45,8 @@ public:
 	~PropertyDefinitionStream();
 
 private:
-	void Parse();
-	_Check_return_ wstring ToStringInternal();
+	void Parse() override;
+	_Check_return_ wstring ToStringInternal() override;
 
 	WORD m_wVersion;
 	DWORD m_dwFieldDefinitionCount;

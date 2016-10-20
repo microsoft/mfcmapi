@@ -8,8 +8,8 @@ public:
 	~SIDBin();
 
 private:
-	void Parse();
-	_Check_return_ wstring ToStringInternal();
+	void Parse() override;
+	_Check_return_ wstring ToStringInternal() override;
 
 	LPWSTR m_lpSidName;
 	LPWSTR m_lpSidDomain;
