@@ -54,6 +54,7 @@ void ConversationIndex::Parse()
 			m_Parser.GetBYTE(&b3);
 			m_Parser.GetBYTE(&b4);
 			responseLevel.TimeDelta = b1 << 24 | b2 << 16 | b3 << 8 | b4;
+			responseLevel.DeltaCode = false;
 			if (responseLevel.TimeDelta & 0x80000000)
 			{
 				responseLevel.TimeDelta = responseLevel.TimeDelta & ~0x80000000;

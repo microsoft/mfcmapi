@@ -37,7 +37,6 @@ void ExtendedFlags::Parse()
 		for (ULONG i = 0; i < m_ulNumFlags; i++)
 		{
 			ExtendedFlag extendedFlag;
-			m_pefExtendedFlags.push_back(extendedFlag);
 
 			m_Parser.GetBYTE(&extendedFlag.Id);
 			m_Parser.GetBYTE(&extendedFlag.Cb);
@@ -86,6 +85,8 @@ void ExtendedFlags::Parse()
 				m_ulNumFlags = i;
 				break;
 			}
+
+			m_pefExtendedFlags.push_back(extendedFlag);
 		}
 	}
 }
