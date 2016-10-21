@@ -5,20 +5,20 @@ struct PackedUnicodeString
 {
 	BYTE cchLength;
 	WORD cchExtendedLength;
-	LPWSTR szCharacters;
+	wstring szCharacters;
 };
 
 struct PackedAnsiString
 {
 	BYTE cchLength;
 	WORD cchExtendedLength;
-	LPSTR szCharacters;
+	string szCharacters;
 };
 
 struct SkipBlock
 {
 	DWORD dwSize;
-	BYTE* lpbContent;
+	vector<BYTE> lpbContent;
 };
 
 struct FieldDefinition
@@ -27,7 +27,7 @@ struct FieldDefinition
 	WORD wVT;
 	DWORD dwDispid;
 	WORD wNmidNameLength;
-	LPWSTR szNmidName;
+	wstring szNmidName;
 	PackedAnsiString pasNameANSI;
 	PackedAnsiString pasFormulaANSI;
 	PackedAnsiString pasValidationRuleANSI;
@@ -35,14 +35,13 @@ struct FieldDefinition
 	PackedAnsiString pasErrorANSI;
 	DWORD dwInternalType;
 	DWORD dwSkipBlockCount;
-	SkipBlock* psbSkipBlocks;
+	vector<SkipBlock> psbSkipBlocks;
 };
 
 class PropertyDefinitionStream : public SmartViewParser
 {
 public:
 	PropertyDefinitionStream();
-	~PropertyDefinitionStream();
 
 private:
 	void Parse() override;
@@ -50,5 +49,5 @@ private:
 
 	WORD m_wVersion;
 	DWORD m_dwFieldDefinitionCount;
-	FieldDefinition* m_pfdFieldDefinitions;
+	vector<FieldDefinition> m_pfdFieldDefinitions;
 };
