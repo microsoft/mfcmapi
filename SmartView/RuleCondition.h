@@ -6,11 +6,11 @@
 // http://msdn.microsoft.com/en-us/library/ee179073.aspx
 
 // [MS-OXCDATA]
-// PropertyNameStruct
+// PropertyName
 // =====================
 //   This structure specifies a Property Name
 //
-struct PropertyNameStruct
+struct PropertyName
 {
 	BYTE Kind;
 	GUID Guid;
@@ -20,29 +20,30 @@ struct PropertyNameStruct
 };
 
 // [MS-OXORULE]
-// NamedPropertyInformationStruct
+// NamedPropertyInformation
 // =====================
 //   This structure specifies named property information for a rule condition
 //
-struct NamedPropertyInformationStruct
+struct NamedPropertyInformation
 {
 	WORD NoOfNamedProps;
 	WORD* PropId;
 	DWORD NamedPropertiesSize;
-	PropertyNameStruct* PropertyName;
+	PropertyName* PropertyName;
 };
 
 class RuleCondition : public SmartViewParser
 {
 public:
-	RuleCondition(bool bExtended);
+	RuleCondition();
 	~RuleCondition();
 
+	void Init(bool bExtended);
 private:
 	void Parse() override;
 	_Check_return_ wstring ToStringInternal() override;
 
-	NamedPropertyInformationStruct m_NamedPropertyInformation;
+	NamedPropertyInformation m_NamedPropertyInformation;
 	RestrictionStruct* m_lpRes;
 	bool m_bExtended;
 };

@@ -4,9 +4,10 @@
 class RestrictionStruct : public SmartViewParser
 {
 public:
-	RestrictionStruct(bool bRuleCondition, bool bExtended);
+	RestrictionStruct();
 	~RestrictionStruct();
 
+	void Init(bool bRuleCondition, bool bExtended);
 private:
 	void Parse() override;
 	_Check_return_ wstring ToStringInternal() override;

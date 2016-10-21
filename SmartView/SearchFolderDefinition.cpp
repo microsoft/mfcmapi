@@ -137,12 +137,11 @@ void SearchFolderDefinition::Parse()
 
 	if (SFST_MRES & m_Flags)
 	{
-		auto res = new RestrictionStruct(
-			false,
-			true);
+		auto res = new RestrictionStruct();
 		if (res)
 		{
-			res->Init(static_cast<ULONG>(m_Parser.RemainingBytes()), m_Parser.GetCurrentAddress());
+			res->Init(false, true);
+			res->SmartViewParser::Init(static_cast<ULONG>(m_Parser.RemainingBytes()), m_Parser.GetCurrentAddress());
 			res->DisableJunkParsing();
 			m_Restriction = res->ToString();
 			m_Parser.Advance(res->GetCurrentOffset());

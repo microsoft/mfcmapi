@@ -4,10 +4,10 @@
 #include "String.h"
 #include "InterpretProp.h"
 
-RestrictionStruct::RestrictionStruct(bool bRuleCondition, bool bExtended)
+RestrictionStruct::RestrictionStruct()
 {
-	m_bRuleCondition = bRuleCondition;
-	m_bExtended = bExtended;
+	m_bRuleCondition = false;
+	m_bExtended = false;
 	m_lpRes = nullptr;
 }
 
@@ -15,6 +15,12 @@ RestrictionStruct::~RestrictionStruct()
 {
 	DeleteRestriction(m_lpRes);
 	delete[] m_lpRes;
+}
+
+void RestrictionStruct::Init(bool bRuleCondition, bool bExtended)
+{
+	m_bRuleCondition = bRuleCondition;
+	m_bExtended = bExtended;
 }
 
 void RestrictionStruct::Parse()

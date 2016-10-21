@@ -4,11 +4,11 @@
 #include "String.h"
 #include "InterpretProp2.h"
 
-RuleCondition::RuleCondition(bool bExtended)
+RuleCondition::RuleCondition()
 {
 	m_NamedPropertyInformation = { 0 };
 	m_lpRes = nullptr;
-	m_bExtended = bExtended;
+	m_bExtended = false;
 }
 
 RuleCondition::~RuleCondition()
@@ -27,6 +27,11 @@ RuleCondition::~RuleCondition()
 	delete m_lpRes;
 }
 
+void RuleCondition::Init(bool bExtended)
+{
+	m_bExtended = bExtended;
+}
+
 void RuleCondition::Parse()
 {
 	m_Parser.GetWORD(&m_NamedPropertyInformation.NoOfNamedProps);
@@ -43,10 +48,10 @@ void RuleCondition::Parse()
 		}
 
 		m_Parser.GetDWORD(&m_NamedPropertyInformation.NamedPropertiesSize);
-		m_NamedPropertyInformation.PropertyName = new PropertyNameStruct[m_NamedPropertyInformation.NoOfNamedProps];
+		m_NamedPropertyInformation.PropertyName = new PropertyName[m_NamedPropertyInformation.NoOfNamedProps];
 		if (m_NamedPropertyInformation.PropertyName)
 		{
-			memset(m_NamedPropertyInformation.PropertyName, 0, m_NamedPropertyInformation.NoOfNamedProps * sizeof(PropertyNameStruct));
+			memset(m_NamedPropertyInformation.PropertyName, 0, m_NamedPropertyInformation.NoOfNamedProps * sizeof(PropertyName));
 			for (auto i = 0; i < m_NamedPropertyInformation.NoOfNamedProps; i++)
 			{
 				m_Parser.GetBYTE(&m_NamedPropertyInformation.PropertyName[i].Kind);
@@ -66,12 +71,11 @@ void RuleCondition::Parse()
 		}
 	}
 
-	m_lpRes = new RestrictionStruct(
-		true,
-		m_bExtended);
+	m_lpRes = new RestrictionStruct();
 	if (m_lpRes)
 	{
-		m_lpRes->Init(
+		m_lpRes->Init(true, m_bExtended);
+		m_lpRes->SmartViewParser::Init(
 			static_cast<ULONG>(m_Parser.RemainingBytes()),
 			m_Parser.GetCurrentAddress());
 		m_lpRes->DisableJunkParsing();

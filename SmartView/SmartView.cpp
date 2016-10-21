@@ -76,11 +76,23 @@ LPSMARTVIEWPARSER GetSmartViewParser(__ParsingTypeEnum iStructType, _In_opt_ LPM
 	case IDS_STENTRYLIST:
 		return new EntryList();
 	case IDS_STRULECONDITION:
-		return new RuleCondition(false);
+	{
+		auto parser = new RuleCondition();
+		if (parser) parser->Init(false);
+		return parser;
+	}
 	case IDS_STEXTENDEDRULECONDITION:
-		return new RuleCondition(true);
+	{
+		auto parser = new RuleCondition();
+		if (parser) parser->Init(true);
+		return parser;
+	}
 	case IDS_STRESTRICTION:
-		return new RestrictionStruct(false, true);
+	{
+		auto parser = new RestrictionStruct();
+		if (parser) parser->Init(false, true);
+		return parser;
+	}
 	case IDS_STPROPERTY:
 		return new PropertyStruct();
 	case IDS_STENTRYID:
@@ -106,9 +118,17 @@ LPSMARTVIEWPARSER GetSmartViewParser(__ParsingTypeEnum iStructType, _In_opt_ LPM
 	case IDS_STSID:
 		return new SIDBin();
 	case IDS_STSECURITYDESCRIPTOR:
-		return new SDBin(lpMAPIProp, false);
+	{
+		auto parser = new SDBin();
+		if (parser) parser->Init(lpMAPIProp, false);
+		return parser;
+	}
 	case IDS_STFBSECURITYDESCRIPTOR:
-		return new SDBin(lpMAPIProp, true);
+	{
+		auto parser = new SDBin();
+		if (parser) parser->Init(lpMAPIProp, true);
+		return parser;
+	}
 	case IDS_STXID:
 		return new XID();
 	}
@@ -158,7 +178,7 @@ _Check_return_ __ParsingTypeEnum FindSmartViewParserForProp(const ULONG ulPropTa
 {
 	ULONG ulCurEntry = 0;
 	auto ulIndex = BuildFlagIndexFromTag(ulPropTag, ulPropNameID, nullptr, lpguidNamedProp);
-	bool bMV = (PROP_TYPE(ulPropTag) & MV_FLAG) == MV_FLAG;
+	auto bMV = (PROP_TYPE(ulPropTag) & MV_FLAG) == MV_FLAG;
 
 	while (ulCurEntry < ulSmartViewParserArray)
 	{

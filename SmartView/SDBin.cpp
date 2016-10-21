@@ -6,16 +6,23 @@
 #include "ExtraPropTags.h"
 #include "InterpretProp2.h"
 
-SDBin::SDBin(_In_opt_ LPMAPIPROP lpMAPIProp, bool bFB)
+SDBin::SDBin()
 {
-	m_lpMAPIProp = lpMAPIProp;
-	if (m_lpMAPIProp) m_lpMAPIProp->AddRef();
-	m_bFB = bFB;
+	m_lpMAPIProp = nullptr;
+	m_bFB = false;
 }
 
 SDBin::~SDBin()
 {
 	if (m_lpMAPIProp) m_lpMAPIProp->Release();
+}
+
+void SDBin::Init(_In_opt_ LPMAPIPROP lpMAPIProp, bool bFB)
+{
+	if (m_lpMAPIProp) m_lpMAPIProp->Release();
+	m_lpMAPIProp = lpMAPIProp;
+	if (m_lpMAPIProp) m_lpMAPIProp->AddRef();
+	m_bFB = bFB;
 }
 
 void SDBin::Parse()

@@ -4,9 +4,10 @@
 class SDBin : public SmartViewParser
 {
 public:
-	SDBin(_In_opt_ LPMAPIPROP lpMAPIProp, bool bFB);
+	SDBin();
 	~SDBin();
 
+	void Init(_In_opt_ LPMAPIPROP lpMAPIProp, bool bFB);
 private:
 	void Parse() override;
 	_Check_return_ wstring ToStringInternal() override;
