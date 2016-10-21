@@ -11,21 +11,6 @@ TombStone::TombStone()
 	m_RecordsCount = 0;
 	m_ActualRecordsCount = 0;
 	m_RecordsSize = 0;
-	m_lpRecords = nullptr;
-}
-
-TombStone::~TombStone()
-{
-	if (m_ActualRecordsCount && m_lpRecords)
-	{
-		for (ULONG i = 0; i < m_ActualRecordsCount; i++)
-		{
-			delete[] m_lpRecords[i].lpGlobalObjectId;
-			delete[] m_lpRecords[i].szUsername;
-		}
-
-		delete[] m_lpRecords;
-	}
 }
 
 void TombStone::Parse()
@@ -41,7 +26,7 @@ void TombStone::Parse()
 	for (;;)
 	{
 		// Must have at least 2 bytes left to have another flag
-		if (m_Parser.RemainingBytes() < sizeof(DWORD)* 3 + sizeof(WORD)) break;
+		if (m_Parser.RemainingBytes() < sizeof(DWORD) * 3 + sizeof(WORD)) break;
 		DWORD dwData = NULL;
 		WORD wData = NULL;
 		m_Parser.GetDWORD(&dwData);
@@ -57,18 +42,17 @@ void TombStone::Parse()
 	m_Parser.SetCurrentOffset(ulFlagOffset);
 
 	if (m_ActualRecordsCount && m_ActualRecordsCount < _MaxEntriesSmall)
-		m_lpRecords = new TombstoneRecord[m_ActualRecordsCount];
-	if (m_lpRecords)
 	{
-		memset(m_lpRecords, 0, sizeof(TombstoneRecord)*m_ActualRecordsCount);
 		for (ULONG i = 0; i < m_ActualRecordsCount; i++)
 		{
-			m_Parser.GetDWORD(&m_lpRecords[i].StartTime);
-			m_Parser.GetDWORD(&m_lpRecords[i].EndTime);
-			m_Parser.GetDWORD(&m_lpRecords[i].GlobalObjectIdSize);
-			m_Parser.GetBYTES(m_lpRecords[i].GlobalObjectIdSize, _MaxBytes, &m_lpRecords[i].lpGlobalObjectId);
-			m_Parser.GetWORD(&m_lpRecords[i].UsernameSize);
-			m_Parser.GetStringA(m_lpRecords[i].UsernameSize, &m_lpRecords[i].szUsername);
+			TombstoneRecord tombstoneRecord;
+			m_Parser.GetDWORD(&tombstoneRecord.StartTime);
+			m_Parser.GetDWORD(&tombstoneRecord.EndTime);
+			m_Parser.GetDWORD(&tombstoneRecord.GlobalObjectIdSize);
+			tombstoneRecord.lpGlobalObjectId = m_Parser.GetBYTES(tombstoneRecord.GlobalObjectIdSize, _MaxBytes);
+			m_Parser.GetWORD(&tombstoneRecord.UsernameSize);
+			tombstoneRecord.szUsername = m_Parser.GetStringA(tombstoneRecord.UsernameSize);
+			m_lpRecords.push_back(tombstoneRecord);
 		}
 	}
 }
@@ -85,25 +69,22 @@ _Check_return_ wstring TombStone::ToStringInternal()
 		m_ActualRecordsCount,
 		m_RecordsSize);
 
-	if (m_ActualRecordsCount && m_lpRecords)
+	for (ULONG i = 0; i < m_lpRecords.size(); i++)
 	{
-		for (ULONG i = 0; i < m_ActualRecordsCount; i++)
-		{
-			SBinary sBin = { 0 };
-			sBin.cb = m_lpRecords[i].GlobalObjectIdSize;
-			sBin.lpb = m_lpRecords[i].lpGlobalObjectId;
-			auto szGoid = InterpretBinaryAsString(sBin, IDS_STGLOBALOBJECTID, nullptr);
+		SBinary sBin = { 0 };
+		sBin.cb = static_cast<ULONG>(m_lpRecords[i].lpGlobalObjectId.size());
+		sBin.lpb = m_lpRecords[i].lpGlobalObjectId.data();
+		auto szGoid = InterpretBinaryAsString(sBin, IDS_STGLOBALOBJECTID, nullptr);
 
-			szTombstoneString += formatmessage(IDS_TOMBSTONERECORD,
-				i,
-				m_lpRecords[i].StartTime, RTimeToString(m_lpRecords[i].StartTime).c_str(),
-				m_lpRecords[i].EndTime, RTimeToString(m_lpRecords[i].EndTime).c_str(),
-				m_lpRecords[i].GlobalObjectIdSize,
-				BinToHexString(&sBin, true).c_str(),
-				szGoid.c_str(),
-				m_lpRecords[i].UsernameSize,
-				m_lpRecords[i].szUsername);
-		}
+		szTombstoneString += formatmessage(IDS_TOMBSTONERECORD,
+			i,
+			m_lpRecords[i].StartTime, RTimeToString(m_lpRecords[i].StartTime).c_str(),
+			m_lpRecords[i].EndTime, RTimeToString(m_lpRecords[i].EndTime).c_str(),
+			m_lpRecords[i].GlobalObjectIdSize,
+			BinToHexString(m_lpRecords[i].lpGlobalObjectId, true).c_str(),
+			szGoid.c_str(),
+			m_lpRecords[i].UsernameSize,
+			m_lpRecords[i].szUsername.c_str());
 	}
 
 	return szTombstoneString;

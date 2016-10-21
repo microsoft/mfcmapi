@@ -5,7 +5,6 @@ class XID : public SmartViewParser
 {
 public:
 	XID();
-	~XID();
 
 private:
 	void Parse() override;
@@ -13,5 +12,5 @@ private:
 
 	GUID m_NamespaceGuid;
 	size_t m_cbLocalId;
-	LPBYTE m_LocalID;
+	vector<BYTE> m_LocalID;
 };

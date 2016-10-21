@@ -46,6 +46,8 @@ wstring ScrubStringForXML(wstring szString);
 wstring SanitizeFileNameW(wstring szFileIn);
 wstring indent(int iIndent);
 
+wstring BinToTextStringW(const vector<BYTE>& lpByte, bool bMultiLine);
+wstring BinToTextStringW(_In_ LPSBinary lpBin, bool bMultiLine);
 wstring BinToTextString(_In_ LPSBinary lpBin, bool bMultiLine);
 wstring BinToHexString(const vector<BYTE>& lpByte, bool bPrependCB);
 wstring BinToHexString(_In_opt_count_(cb) LPBYTE lpb, size_t cb, bool bPrependCB);

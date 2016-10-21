@@ -6,16 +6,15 @@ struct TombstoneRecord
 	DWORD StartTime;
 	DWORD EndTime;
 	DWORD GlobalObjectIdSize;
-	LPBYTE lpGlobalObjectId;
+	vector<BYTE> lpGlobalObjectId;
 	WORD UsernameSize;
-	LPSTR szUsername;
+	string szUsername;
 };
 
 class TombStone : public SmartViewParser
 {
 public:
 	TombStone();
-	~TombStone();
 
 private:
 	void Parse() override;
@@ -27,5 +26,5 @@ private:
 	DWORD m_RecordsCount;
 	DWORD m_ActualRecordsCount; // computed based on state, not read value
 	DWORD m_RecordsSize;
-	TombstoneRecord* m_lpRecords;
+	vector<TombstoneRecord> m_lpRecords;
 };

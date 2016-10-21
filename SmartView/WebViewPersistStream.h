@@ -1,26 +1,25 @@
 #pragma once
 #include "SmartViewParser.h"
 
-struct WebViewPersistStruct
+struct WebViewPersist
 {
 	DWORD dwVersion;
 	DWORD dwType;
 	DWORD dwFlags;
-	DWORD dwUnused[7];
+	vector<BYTE> dwUnused; // 7 DWORDs
 	DWORD cbData;
-	LPBYTE lpData;
+	vector<BYTE> lpData;
 };
 
 class WebViewPersistStream : public SmartViewParser
 {
 public:
 	WebViewPersistStream();
-	~WebViewPersistStream();
 
 private:
 	void Parse() override;
 	_Check_return_ wstring ToStringInternal() override;
 
 	DWORD m_cWebViews;
-	WebViewPersistStruct* m_lpWebViews;
+	vector<WebViewPersist> m_lpWebViews;
 };

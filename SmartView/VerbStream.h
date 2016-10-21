@@ -1,17 +1,17 @@
 #pragma once
 #include "SmartViewParser.h"
 
-struct VerbDataStruct
+struct VerbData
 {
 	DWORD VerbType;
 	BYTE DisplayNameCount;
-	LPSTR DisplayName;
+	string DisplayName;
 	BYTE MsgClsNameCount;
-	LPSTR MsgClsName;
+	string MsgClsName;
 	BYTE Internal1StringCount;
-	LPSTR Internal1String;
+	string Internal1String;
 	BYTE DisplayNameCountRepeat;
-	LPSTR DisplayNameRepeat;
+	string DisplayNameRepeat;
 	DWORD Internal2;
 	BYTE Internal3;
 	DWORD fUseUSHeaders;
@@ -22,19 +22,18 @@ struct VerbDataStruct
 	DWORD Internal6;
 };
 
-struct VerbExtraDataStruct
+struct VerbExtraData
 {
 	BYTE DisplayNameCount;
-	LPWSTR DisplayName;
+	wstring DisplayName;
 	BYTE DisplayNameCountRepeat;
-	LPWSTR DisplayNameRepeat;
+	wstring DisplayNameRepeat;
 };
 
 class VerbStream : public SmartViewParser
 {
 public:
 	VerbStream();
-	~VerbStream();
 
 private:
 	void Parse() override;
@@ -42,7 +41,7 @@ private:
 
 	WORD m_Version;
 	DWORD m_Count;
-	VerbDataStruct* m_lpVerbData;
+	vector<VerbData> m_lpVerbData;
 	WORD m_Version2;
-	VerbExtraDataStruct* m_lpVerbExtraData;
+	vector<VerbExtraData> m_lpVerbExtraData;
 };

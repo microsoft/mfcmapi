@@ -257,6 +257,45 @@ wstring indent(int iIndent)
 	return wstring(iIndent, L'\t');
 }
 
+// Converts binary data to a string, assuming source string was unicode
+wstring BinToTextStringW(const vector<BYTE>& lpByte, bool bMultiLine)
+{
+	SBinary bin = { 0 };
+	bin.cb = lpByte.size();
+	bin.lpb = const_cast<LPBYTE>(lpByte.data());
+	return BinToTextStringW(&bin, bMultiLine);
+}
+
+// Converts binary data to a string, assuming source string was unicode
+wstring BinToTextStringW(_In_ LPSBinary lpBin, bool bMultiLine)
+{
+	if (!lpBin || !lpBin->cb || lpBin->cb % sizeof WCHAR || !lpBin->lpb) return L"";
+
+	wstring szBin(reinterpret_cast<LPWSTR>(lpBin->lpb), lpBin->cb / sizeof WCHAR);
+	std::replace_if(szBin.begin(), szBin.end(), [bMultiLine](const WCHAR & chr)
+	{
+		// Any printable extended ASCII character gets mapped directly
+		if (chr >= 0x20 &&
+			chr <= 0xFE)
+		{
+			return false;
+		}
+		// If we allow multiple lines, we accept tab, LF and CR
+		else if (bMultiLine &&
+			(chr == 9 || // Tab
+				chr == 10 || // Line Feed
+				chr == 13))  // Carriage Return
+		{
+			return false;
+		}
+
+		return true;
+	}, L'.');
+
+	return szBin;
+}
+
+// Converts binary data to a string, assuming source string was single byte
 wstring BinToTextString(_In_ LPSBinary lpBin, bool bMultiLine)
 {
 	if (!lpBin || !lpBin->cb || !lpBin->lpb) return L"";

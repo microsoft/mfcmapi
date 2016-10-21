@@ -6,28 +6,18 @@ XID::XID()
 {
 	m_NamespaceGuid = { 0 };
 	m_cbLocalId = 0;
-	m_LocalID = nullptr;
-}
-
-XID::~XID()
-{
-	if (m_LocalID) delete[] m_LocalID;
 }
 
 void XID::Parse()
 {
 	m_Parser.GetBYTESNoAlloc(sizeof(GUID), sizeof(GUID), (LPBYTE)&m_NamespaceGuid);
 	m_cbLocalId = m_Parser.RemainingBytes();
-	m_Parser.GetBYTES(m_cbLocalId, m_cbLocalId, &m_LocalID);
+	m_LocalID = m_Parser.GetBYTES(m_cbLocalId, m_cbLocalId);
 }
 
 _Check_return_ wstring XID::ToStringInternal()
 {
-	SBinary sBin = { 0 };
-	sBin.cb = (ULONG)m_cbLocalId;
-	sBin.lpb = m_LocalID;
-
 	return formatmessage(IDS_XID,
 		GUIDToString(&m_NamespaceGuid).c_str(),
-		BinToHexString(&sBin, true).c_str());
+		BinToHexString(m_LocalID, true).c_str());
 }
