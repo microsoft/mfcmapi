@@ -26,9 +26,9 @@ public:
 	void EnsureParsed();
 
 protected:
-	_Check_return_ LPSPropValue BinToSPropValue(DWORD dwPropCount, bool bStringPropsExcludeLength);
 	_Check_return_ wstring JunkDataToString(const vector<BYTE>& lpJunkData) const;
 	_Check_return_ wstring JunkDataToString(size_t cbJunkData, _In_count_(cbJunkData) LPBYTE lpJunkData) const;
+	_Check_return_ LPSPropValue BinToSPropValue(DWORD dwPropCount, bool bStringPropsExcludeLength);
 
 	CBinaryParser m_Parser;
 
@@ -41,3 +41,6 @@ private:
 	ULONG m_cbBin;
 	LPBYTE m_lpBin;
 };
+
+// Neuters an array of SPropValues - caller must use delete to delete the SPropValue
+void DeleteSPropVal(ULONG cVal, _In_count_(cVal) LPSPropValue lpsPropVal);
