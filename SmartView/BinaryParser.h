@@ -30,7 +30,7 @@ public:
 	string GetStringA(size_t cchChar = -1);
 	wstring GetStringW(size_t cchChar = -1);
 	vector<BYTE> GetBYTES(size_t cbBytes, size_t cbMaxBytes = -1);
-	size_t GetRemainingData(_Out_ LPBYTE* ppRemainingBYTES);
+	vector<BYTE> GetRemainingData();
 
 private:
 	bool CheckRemainingBytes(size_t cbBytes) const;

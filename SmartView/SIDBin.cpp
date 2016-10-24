@@ -1,19 +1,6 @@
 #include "stdafx.h"
 #include "SIDBin.h"
-#include "String.h"
 #include "MySecInfo.h"
-
-SIDBin::SIDBin()
-{
-	m_lpSidName = nullptr;
-	m_lpSidDomain = nullptr;
-}
-
-SIDBin::~SIDBin()
-{
-	delete[] m_lpSidName;
-	delete[] m_lpSidDomain;
-}
 
 void SIDBin::Parse()
 {
@@ -50,20 +37,22 @@ void SIDBin::Parse()
 			hRes = S_OK;
 		}
 
-		if (dwSidName) m_lpSidName = new WCHAR[dwSidName];
-		if (dwSidDomain) m_lpSidDomain = new WCHAR[dwSidDomain];
+		auto lpSidName = dwSidName ? new WCHAR[dwSidName] : nullptr;
+		auto lpSidDomain = dwSidDomain ? new WCHAR[dwSidDomain] : nullptr;
 
 		// Only make the call if we got something to get
-		if (m_lpSidName || m_lpSidDomain)
+		if (lpSidName || lpSidDomain)
 		{
 			WC_B(LookupAccountSidW(
 				NULL,
 				SidStart,
-				m_lpSidName,
+				lpSidName,
 				&dwSidName,
-				m_lpSidDomain,
+				lpSidDomain,
 				&dwSidDomain,
 				&SidNameUse));
+			if (lpSidName) m_lpSidName = lpSidName;
+			if (lpSidDomain) m_lpSidDomain = lpSidDomain;
 		}
 
 		m_lpStringSid = GetTextualSid(SidStart);
@@ -72,8 +61,8 @@ void SIDBin::Parse()
 
 _Check_return_ wstring SIDBin::ToStringInternal()
 {
-	auto szDomain = m_lpSidDomain ? m_lpSidDomain : formatmessage(IDS_NODOMAIN);
-	auto szName = m_lpSidName ? m_lpSidName : formatmessage(IDS_NONAME);
+	auto szDomain = !m_lpSidDomain.empty() ? m_lpSidDomain : formatmessage(IDS_NODOMAIN);
+	auto szName = !m_lpSidName.empty() ? m_lpSidName : formatmessage(IDS_NONAME);
 	auto szSID = !m_lpStringSid.empty() ? m_lpStringSid : formatmessage(IDS_NOSID);
 
 	return formatmessage(IDS_SIDHEADER, szDomain.c_str(), szName.c_str(), szSID.c_str());

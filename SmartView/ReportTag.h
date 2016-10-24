@@ -6,24 +6,23 @@ class ReportTag : public SmartViewParser
 {
 public:
 	ReportTag();
-	~ReportTag();
 
 private:
 	void Parse() override;
 	_Check_return_ wstring ToStringInternal() override;
 
-	CHAR m_Cookie[9]; // 8 characters + NULL terminator
+	vector<BYTE> m_Cookie; // 8 characters + NULL terminator
 	DWORD m_Version;
 	ULONG m_cbStoreEntryID;
-	LPBYTE m_lpStoreEntryID;
+	vector<BYTE> m_lpStoreEntryID;
 	ULONG m_cbFolderEntryID;
-	LPBYTE m_lpFolderEntryID;
+	vector<BYTE> m_lpFolderEntryID;
 	ULONG m_cbMessageEntryID;
-	LPBYTE m_lpMessageEntryID;
+	vector<BYTE> m_lpMessageEntryID;
 	ULONG m_cbSearchFolderEntryID;
-	LPBYTE m_lpSearchFolderEntryID;
+	vector<BYTE> m_lpSearchFolderEntryID;
 	ULONG m_cbMessageSearchKey;
-	LPBYTE m_lpMessageSearchKey;
+	vector<BYTE> m_lpMessageSearchKey;
 	ULONG m_cchAnsiText;
-	LPSTR m_lpszAnsiText;
+	string m_lpszAnsiText;
 };

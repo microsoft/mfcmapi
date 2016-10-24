@@ -254,16 +254,7 @@ vector<BYTE> CBinaryParser::GetBYTES(size_t cbBytes, size_t cbMaxBytes)
 	return ret;
 }
 
-size_t CBinaryParser::GetRemainingData(_Out_ LPBYTE* ppRemainingBYTES)
+vector<BYTE> CBinaryParser::GetRemainingData()
 {
-	if (!ppRemainingBYTES) return 0;
-	*ppRemainingBYTES = nullptr;
-
-	auto cbBytes = RemainingBytes();
-	if (cbBytes > 0)
-	{
-		GetBYTES(cbBytes, cbBytes, ppRemainingBYTES);
-	}
-
-	return cbBytes;
+	return GetBYTES(RemainingBytes());
 }

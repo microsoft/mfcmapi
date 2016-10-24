@@ -14,7 +14,7 @@ struct TZRule
 	WORD wReserved;
 	WORD wTZRuleFlags;
 	WORD wYear;
-	BYTE X[14];
+	vector<BYTE> X; // 14 bytes
 	DWORD lBias; // offset from GMT
 	DWORD lStandardBias; // offset from bias during standard time
 	DWORD lDaylightBias; // offset from bias during daylight time
@@ -30,7 +30,6 @@ class TimeZoneDefinition : public SmartViewParser
 {
 public:
 	TimeZoneDefinition();
-	~TimeZoneDefinition();
 
 private:
 	void Parse() override;
@@ -41,7 +40,7 @@ private:
 	WORD m_cbHeader;
 	WORD m_wReserved;
 	WORD m_cchKeyName;
-	LPWSTR m_szKeyName;
+	wstring m_szKeyName;
 	WORD m_cRules;
-	TZRule* m_lpTZRule;
+	vector<TZRule> m_lpTZRule;
 };
