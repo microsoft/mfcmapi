@@ -33,6 +33,105 @@ struct MDB_STORE_EID_V3
 	ULONG ulOffsetSmtpAddress; // offset past the beginning of the MDB_STORE_EID_V3 struct where szSmtpAddress starts
 };
 
+
+struct FolderObject
+{
+	BYTE DatabaseGUID[16];
+	BYTE GlobalCounter[6];
+	BYTE Pad[2];
+};
+
+struct MessageObject
+{
+	BYTE FolderDatabaseGUID[16];
+	BYTE FolderGlobalCounter[6];
+	BYTE Pad1[2];
+	BYTE MessageDatabaseGUID[16];
+	BYTE MessageGlobalCounter[6];
+	BYTE Pad2[2];
+};
+
+struct FolderOrMessage
+{
+	WORD Type;
+	union
+	{
+		FolderObject FolderObject;
+		MessageObject MessageObject;
+	} Data;
+};
+
+struct MessageDatabaseObject
+{
+	BYTE Version;
+	BYTE Flag;
+	LPSTR DLLFileName;
+	bool bIsExchange;
+	ULONG WrappedFlags;
+	BYTE WrappedProviderUID[16];
+	ULONG WrappedType;
+	LPSTR ServerShortname;
+	LPSTR MailboxDN;
+	ULONG MagicVersion;
+	MDB_STORE_EID_V2 v2;
+	MDB_STORE_EID_V3 v3;
+	LPSTR v2DN;
+	LPWSTR v2FQDN;
+	LPWSTR v3SmtpAddress;
+	BYTE v2Reserved[2];
+};
+
+struct EphemeralObject
+{
+	ULONG Version;
+	ULONG Type;
+};
+
+struct OneOffRecipientObject
+{
+	DWORD Bitmask;
+	union
+	{
+		struct
+		{
+			LPWSTR DisplayName;
+			LPWSTR AddressType;
+			LPWSTR EmailAddress;
+		} Unicode;
+		struct
+		{
+			LPSTR DisplayName;
+			LPSTR AddressType;
+			LPSTR EmailAddress;
+		} ANSI;
+	} Strings;
+} ;
+
+struct AddressBookObject
+{
+	DWORD Version;
+	DWORD Type;
+	LPSTR X500DN;
+} ;
+
+class EntryIdStruct;
+
+struct ContactAddressBookObject
+{
+	DWORD Version;
+	DWORD Type;
+	DWORD Index; // CONTAB_USER, CONTAB_DISTLIST only
+	DWORD EntryIDCount; // CONTAB_USER, CONTAB_DISTLIST only
+	BYTE muidID[16]; // CONTAB_CONTAINER only
+	EntryIdStruct* lpEntryID;
+} ;
+
+struct WAB
+{
+	BYTE Type;
+	EntryIdStruct* lpEntryID;
+};
+
 class EntryIdStruct : public SmartViewParser
 {
 public:
@@ -48,90 +147,12 @@ private:
 	EIDStructType m_ObjectType; // My own addition to simplify union parsing
 	union
 	{
-		struct
-		{
-			WORD Type;
-			union
-			{
-				struct
-				{
-					BYTE DatabaseGUID[16];
-					BYTE GlobalCounter[6];
-					BYTE Pad[2];
-				} FolderObject;
-				struct
-				{
-					BYTE FolderDatabaseGUID[16];
-					BYTE FolderGlobalCounter[6];
-					BYTE Pad1[2];
-					BYTE MessageDatabaseGUID[16];
-					BYTE MessageGlobalCounter[6];
-					BYTE Pad2[2];
-				} MessageObject;
-			} Data;
-		} FolderOrMessage;
-		struct
-		{
-			BYTE Version;
-			BYTE Flag;
-			LPSTR DLLFileName;
-			bool bIsExchange;
-			ULONG WrappedFlags;
-			BYTE WrappedProviderUID[16];
-			ULONG WrappedType;
-			LPSTR ServerShortname;
-			LPSTR MailboxDN;
-			ULONG MagicVersion;
-			MDB_STORE_EID_V2 v2;
-			MDB_STORE_EID_V3 v3;
-			LPSTR v2DN;
-			LPWSTR v2FQDN;
-			LPWSTR v3SmtpAddress;
-			BYTE v2Reserved[2];
-		} MessageDatabaseObject;
-		struct
-		{
-			ULONG Version;
-			ULONG Type;
-		} EphemeralObject;
-		struct
-		{
-			DWORD Bitmask;
-			union
-			{
-				struct
-				{
-					LPWSTR DisplayName;
-					LPWSTR AddressType;
-					LPWSTR EmailAddress;
-				} Unicode;
-				struct
-				{
-					LPSTR DisplayName;
-					LPSTR AddressType;
-					LPSTR EmailAddress;
-				} ANSI;
-			} Strings;
-		} OneOffRecipientObject;
-		struct
-		{
-			DWORD Version;
-			DWORD Type;
-			LPSTR X500DN;
-		} AddressBookObject;
-		struct
-		{
-			DWORD Version;
-			DWORD Type;
-			DWORD Index; // CONTAB_USER, CONTAB_DISTLIST only
-			DWORD EntryIDCount; // CONTAB_USER, CONTAB_DISTLIST only
-			BYTE muidID[16]; // CONTAB_CONTAINER only
-			EntryIdStruct* lpEntryID;
-		} ContactAddressBookObject;
-		struct
-		{
-			BYTE Type;
-			EntryIdStruct* lpEntryID;
-		} WAB;
+		FolderOrMessage FolderOrMessage;
+		MessageDatabaseObject MessageDatabaseObject;
+		EphemeralObject EphemeralObject;
+		OneOffRecipientObject OneOffRecipientObject;
+		AddressBookObject AddressBookObject;
+		ContactAddressBookObject ContactAddressBookObject;
+		WAB WAB;
 	} m_ProviderData;
 };
