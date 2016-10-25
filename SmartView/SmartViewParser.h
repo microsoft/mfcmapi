@@ -31,6 +31,10 @@ protected:
 	_Check_return_ wstring JunkDataToString(size_t cbJunkData, _In_count_(cbJunkData) LPBYTE lpJunkData) const;
 	_Check_return_ LPSPropValue BinToSPropValue(DWORD dwPropCount, bool bStringPropsExcludeLength);
 
+	// These functions return pointers to memory backed and cleaned up by SmartViewParser
+	LPBYTE Allocate(size_t cbBytes);
+	LPBYTE AllocateArray(size_t cArray, size_t cbEntry);
+
 	CBinaryParser m_Parser;
 
 private:
@@ -41,8 +45,6 @@ private:
 	LPBYTE GetBYTES(size_t cbBytes, size_t cbMaxBytes = -1);
 	LPSTR GetStringA(size_t cchChar = -1);
 	LPWSTR GetStringW(size_t cchChar = -1);
-	LPBYTE Allocate(size_t cbBytes);
-	LPBYTE AllocateArray(size_t cArray, size_t cbEntry);
 
 	bool m_bEnableJunk;
 	bool m_bParsed;

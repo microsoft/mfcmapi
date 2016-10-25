@@ -11,12 +11,6 @@ RestrictionStruct::RestrictionStruct()
 	m_lpRes = nullptr;
 }
 
-RestrictionStruct::~RestrictionStruct()
-{
-	DeleteRestriction(m_lpRes);
-	delete[] m_lpRes;
-}
-
 void RestrictionStruct::Init(bool bRuleCondition, bool bExtended)
 {
 	m_bRuleCondition = bRuleCondition;
@@ -25,7 +19,7 @@ void RestrictionStruct::Init(bool bRuleCondition, bool bExtended)
 
 void RestrictionStruct::Parse()
 {
-	m_lpRes = new SRestriction;
+	m_lpRes = reinterpret_cast<LPSRestriction>(Allocate(sizeof SRestriction));
 
 	if (m_lpRes)
 	{
@@ -50,7 +44,6 @@ _Check_return_ wstring RestrictionStruct::ToStringInternal()
 }
 
 // Helper function for both RestrictionStruct and RuleConditionStruct
-// Caller allocates with new. Clean up with DeleteRestriction and delete[].
 // If bRuleCondition is true, parse restrictions defined in [MS-OXCDATA] 2.13
 // If bRuleCondition is true, bExtendedCount controls whether the count fields in AND/OR restrictions is 16 or 32 bits
 // If bRuleCondition is false, parse restrictions defined in [MS-OXOCFG] 2.2.4.1.2
@@ -94,10 +87,9 @@ bool RestrictionStruct::BinToRestriction(ULONG ulDepth, _In_ LPSRestriction psrR
 		if (psrRestriction->res.resAnd.cRes &&
 			psrRestriction->res.resAnd.cRes < _MaxEntriesExtraLarge)
 		{
-			psrRestriction->res.resAnd.lpRes = new SRestriction[psrRestriction->res.resAnd.cRes];
+			psrRestriction->res.resAnd.lpRes = reinterpret_cast<SRestriction*>(AllocateArray(psrRestriction->res.resAnd.cRes, sizeof SRestriction));
 			if (psrRestriction->res.resAnd.lpRes)
 			{
-				memset(psrRestriction->res.resAnd.lpRes, 0, sizeof(SRestriction)* psrRestriction->res.resAnd.cRes);
 				for (ULONG i = 0; i < psrRestriction->res.resAnd.cRes; i++)
 				{
 					bRet = BinToRestriction(
@@ -111,10 +103,9 @@ bool RestrictionStruct::BinToRestriction(ULONG ulDepth, _In_ LPSRestriction psrR
 		}
 		break;
 	case RES_NOT:
-		psrRestriction->res.resNot.lpRes = new SRestriction;
+		psrRestriction->res.resNot.lpRes = reinterpret_cast<LPSRestriction>(Allocate(sizeof SRestriction));
 		if (psrRestriction->res.resNot.lpRes)
 		{
-			memset(psrRestriction->res.resNot.lpRes, 0, sizeof(SRestriction));
 			bRet = BinToRestriction(
 				ulDepth + 1,
 				psrRestriction->res.resNot.lpRes,
@@ -172,7 +163,7 @@ bool RestrictionStruct::BinToRestriction(ULONG ulDepth, _In_ LPSRestriction psrR
 		break;
 	case RES_SUBRESTRICTION:
 		m_Parser.GetDWORD(&psrRestriction->res.resSub.ulSubObject);
-		psrRestriction->res.resSub.lpRes = new SRestriction;
+		psrRestriction->res.resSub.lpRes = reinterpret_cast<LPSRestriction>(Allocate(sizeof SRestriction));
 		if (psrRestriction->res.resSub.lpRes)
 		{
 			memset(psrRestriction->res.resSub.lpRes, 0, sizeof(SRestriction));
@@ -197,7 +188,7 @@ bool RestrictionStruct::BinToRestriction(ULONG ulDepth, _In_ LPSRestriction psrR
 		m_Parser.GetBYTE(&bTemp);
 		if (bTemp)
 		{
-			psrRestriction->res.resComment.lpRes = new SRestriction;
+			psrRestriction->res.resComment.lpRes = reinterpret_cast<LPSRestriction>(Allocate(sizeof SRestriction));
 			if (psrRestriction->res.resComment.lpRes)
 			{
 				memset(psrRestriction->res.resComment.lpRes, 0, sizeof(SRestriction));
@@ -212,7 +203,7 @@ bool RestrictionStruct::BinToRestriction(ULONG ulDepth, _In_ LPSRestriction psrR
 	case RES_COUNT:
 		// RES_COUNT and RES_NOT look the same, so we use the resNot member here
 		m_Parser.GetDWORD(&psrRestriction->res.resNot.ulReserved);
-		psrRestriction->res.resNot.lpRes = new SRestriction;
+		psrRestriction->res.resNot.lpRes = reinterpret_cast<LPSRestriction>(Allocate(sizeof SRestriction));
 		if (psrRestriction->res.resNot.lpRes)
 		{
 			memset(psrRestriction->res.resNot.lpRes, 0, sizeof(SRestriction));
@@ -226,40 +217,4 @@ bool RestrictionStruct::BinToRestriction(ULONG ulDepth, _In_ LPSRestriction psrR
 	}
 
 	return bRet;
-}
-
-// Does not delete lpRes, which must be released manually. See RES_AND case below.
-void RestrictionStruct::DeleteRestriction(_In_ LPSRestriction lpRes)
-{
-	if (!lpRes) return;
-
-	switch (lpRes->rt)
-	{
-	case RES_AND:
-	case RES_OR:
-		if (lpRes->res.resAnd.lpRes)
-		{
-			for (ULONG i = 0; i < lpRes->res.resAnd.cRes; i++)
-			{
-				DeleteRestriction(&lpRes->res.resAnd.lpRes[i]);
-			}
-		}
-
-		delete[] lpRes->res.resAnd.lpRes;
-		break;
-		// Structures for these two types are identical
-	case RES_NOT:
-	case RES_COUNT:
-		DeleteRestriction(lpRes->res.resNot.lpRes);
-		delete[] lpRes->res.resNot.lpRes;
-		break;
-	case RES_SUBRESTRICTION:
-		DeleteRestriction(lpRes->res.resSub.lpRes);
-		delete[] lpRes->res.resSub.lpRes;
-		break;
-	case RES_COMMENT:
-		DeleteRestriction(lpRes->res.resComment.lpRes);
-		delete[] lpRes->res.resComment.lpRes;
-		break;
-	}
 }
