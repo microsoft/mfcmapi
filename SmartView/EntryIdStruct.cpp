@@ -20,15 +20,15 @@ EntryIdStruct::~EntryIdStruct()
 	case eidtOneOff:
 		if (MAPI_UNICODE & m_OneOffRecipientObject.Bitmask)
 		{
-			delete[] m_OneOffRecipientObject.Strings.Unicode.DisplayName;
-			delete[] m_OneOffRecipientObject.Strings.Unicode.AddressType;
-			delete[] m_OneOffRecipientObject.Strings.Unicode.EmailAddress;
+			delete[] m_OneOffRecipientObject.Unicode.DisplayName;
+			delete[] m_OneOffRecipientObject.Unicode.AddressType;
+			delete[] m_OneOffRecipientObject.Unicode.EmailAddress;
 		}
 		else
 		{
-			delete[] m_OneOffRecipientObject.Strings.ANSI.DisplayName;
-			delete[] m_OneOffRecipientObject.Strings.ANSI.AddressType;
-			delete[] m_OneOffRecipientObject.Strings.ANSI.EmailAddress;
+			delete[] m_OneOffRecipientObject.ANSI.DisplayName;
+			delete[] m_OneOffRecipientObject.ANSI.AddressType;
+			delete[] m_OneOffRecipientObject.ANSI.EmailAddress;
 		}
 		break;
 	case eidtAddressBook:
@@ -116,15 +116,15 @@ void EntryIdStruct::Parse()
 			m_Parser.GetDWORD(&m_OneOffRecipientObject.Bitmask);
 			if (MAPI_UNICODE & m_OneOffRecipientObject.Bitmask)
 			{
-				m_Parser.GetStringW(&m_OneOffRecipientObject.Strings.Unicode.DisplayName);
-				m_Parser.GetStringW(&m_OneOffRecipientObject.Strings.Unicode.AddressType);
-				m_Parser.GetStringW(&m_OneOffRecipientObject.Strings.Unicode.EmailAddress);
+				m_Parser.GetStringW(&m_OneOffRecipientObject.Unicode.DisplayName);
+				m_Parser.GetStringW(&m_OneOffRecipientObject.Unicode.AddressType);
+				m_Parser.GetStringW(&m_OneOffRecipientObject.Unicode.EmailAddress);
 			}
 			else
 			{
-				m_Parser.GetStringA(&m_OneOffRecipientObject.Strings.ANSI.DisplayName);
-				m_Parser.GetStringA(&m_OneOffRecipientObject.Strings.ANSI.AddressType);
-				m_Parser.GetStringA(&m_OneOffRecipientObject.Strings.ANSI.EmailAddress);
+				m_Parser.GetStringA(&m_OneOffRecipientObject.ANSI.DisplayName);
+				m_Parser.GetStringA(&m_OneOffRecipientObject.ANSI.AddressType);
+				m_Parser.GetStringA(&m_OneOffRecipientObject.ANSI.EmailAddress);
 			}
 			break;
 			// Address Book Recipient
@@ -290,37 +290,37 @@ void EntryIdStruct::Parse()
 			// Exchange message store folder
 		case eidtFolder:
 			m_Parser.GetWORD(&m_FolderOrMessage.Type);
-			m_Parser.GetBYTESNoAlloc(sizeof m_FolderOrMessage.Data.FolderObject.DatabaseGUID,
-				sizeof m_FolderOrMessage.Data.FolderObject.DatabaseGUID,
-				reinterpret_cast<LPBYTE>(&m_FolderOrMessage.Data.FolderObject.DatabaseGUID));
-			m_Parser.GetBYTESNoAlloc(sizeof m_FolderOrMessage.Data.FolderObject.GlobalCounter,
-				sizeof m_FolderOrMessage.Data.FolderObject.GlobalCounter,
-				reinterpret_cast<LPBYTE>(&m_FolderOrMessage.Data.FolderObject.GlobalCounter));
-			m_Parser.GetBYTESNoAlloc(sizeof m_FolderOrMessage.Data.FolderObject.Pad,
-				sizeof m_FolderOrMessage.Data.FolderObject.Pad,
-				reinterpret_cast<LPBYTE>(&m_FolderOrMessage.Data.FolderObject.Pad));
+			m_Parser.GetBYTESNoAlloc(sizeof m_FolderOrMessage.FolderObject.DatabaseGUID,
+				sizeof m_FolderOrMessage.FolderObject.DatabaseGUID,
+				reinterpret_cast<LPBYTE>(&m_FolderOrMessage.FolderObject.DatabaseGUID));
+			m_Parser.GetBYTESNoAlloc(sizeof m_FolderOrMessage.FolderObject.GlobalCounter,
+				sizeof m_FolderOrMessage.FolderObject.GlobalCounter,
+				reinterpret_cast<LPBYTE>(&m_FolderOrMessage.FolderObject.GlobalCounter));
+			m_Parser.GetBYTESNoAlloc(sizeof m_FolderOrMessage.FolderObject.Pad,
+				sizeof m_FolderOrMessage.FolderObject.Pad,
+				reinterpret_cast<LPBYTE>(&m_FolderOrMessage.FolderObject.Pad));
 			break;
 			// Exchange message store message
 		case eidtMessage:
 			m_Parser.GetWORD(&m_FolderOrMessage.Type);
-			m_Parser.GetBYTESNoAlloc(sizeof m_FolderOrMessage.Data.MessageObject.FolderDatabaseGUID,
-				sizeof m_FolderOrMessage.Data.MessageObject.FolderDatabaseGUID,
-				reinterpret_cast<LPBYTE>(&m_FolderOrMessage.Data.MessageObject.FolderDatabaseGUID));
-			m_Parser.GetBYTESNoAlloc(sizeof m_FolderOrMessage.Data.MessageObject.FolderGlobalCounter,
-				sizeof m_FolderOrMessage.Data.MessageObject.FolderGlobalCounter,
-				reinterpret_cast<LPBYTE>(&m_FolderOrMessage.Data.MessageObject.FolderGlobalCounter));
-			m_Parser.GetBYTESNoAlloc(sizeof m_FolderOrMessage.Data.MessageObject.Pad1,
-				sizeof m_FolderOrMessage.Data.MessageObject.Pad1,
-				reinterpret_cast<LPBYTE>(&m_FolderOrMessage.Data.MessageObject.Pad1));
-			m_Parser.GetBYTESNoAlloc(sizeof m_FolderOrMessage.Data.MessageObject.MessageDatabaseGUID,
-				sizeof m_FolderOrMessage.Data.MessageObject.MessageDatabaseGUID,
-				reinterpret_cast<LPBYTE>(&m_FolderOrMessage.Data.MessageObject.MessageDatabaseGUID));
-			m_Parser.GetBYTESNoAlloc(sizeof m_FolderOrMessage.Data.MessageObject.MessageGlobalCounter,
-				sizeof m_FolderOrMessage.Data.MessageObject.MessageGlobalCounter,
-				reinterpret_cast<LPBYTE>(&m_FolderOrMessage.Data.MessageObject.MessageGlobalCounter));
-			m_Parser.GetBYTESNoAlloc(sizeof m_FolderOrMessage.Data.MessageObject.Pad2,
-				sizeof m_FolderOrMessage.Data.MessageObject.Pad2,
-				reinterpret_cast<LPBYTE>(&m_FolderOrMessage.Data.MessageObject.Pad2));
+			m_Parser.GetBYTESNoAlloc(sizeof m_FolderOrMessage.MessageObject.FolderDatabaseGUID,
+				sizeof m_FolderOrMessage.MessageObject.FolderDatabaseGUID,
+				reinterpret_cast<LPBYTE>(&m_FolderOrMessage.MessageObject.FolderDatabaseGUID));
+			m_Parser.GetBYTESNoAlloc(sizeof m_FolderOrMessage.MessageObject.FolderGlobalCounter,
+				sizeof m_FolderOrMessage.MessageObject.FolderGlobalCounter,
+				reinterpret_cast<LPBYTE>(&m_FolderOrMessage.MessageObject.FolderGlobalCounter));
+			m_Parser.GetBYTESNoAlloc(sizeof m_FolderOrMessage.MessageObject.Pad1,
+				sizeof m_FolderOrMessage.MessageObject.Pad1,
+				reinterpret_cast<LPBYTE>(&m_FolderOrMessage.MessageObject.Pad1));
+			m_Parser.GetBYTESNoAlloc(sizeof m_FolderOrMessage.MessageObject.MessageDatabaseGUID,
+				sizeof m_FolderOrMessage.MessageObject.MessageDatabaseGUID,
+				reinterpret_cast<LPBYTE>(&m_FolderOrMessage.MessageObject.MessageDatabaseGUID));
+			m_Parser.GetBYTESNoAlloc(sizeof m_FolderOrMessage.MessageObject.MessageGlobalCounter,
+				sizeof m_FolderOrMessage.MessageObject.MessageGlobalCounter,
+				reinterpret_cast<LPBYTE>(&m_FolderOrMessage.MessageObject.MessageGlobalCounter));
+			m_Parser.GetBYTESNoAlloc(sizeof m_FolderOrMessage.MessageObject.Pad2,
+				sizeof m_FolderOrMessage.MessageObject.Pad2,
+				reinterpret_cast<LPBYTE>(&m_FolderOrMessage.MessageObject.Pad2));
 			break;
 		}
 	}
@@ -405,17 +405,17 @@ _Check_return_ wstring EntryIdStruct::ToStringInternal()
 		{
 			szEntryId += formatmessage(IDS_ONEOFFENTRYIDFOOTERUNICODE,
 				m_OneOffRecipientObject.Bitmask, szFlags.c_str(),
-				m_OneOffRecipientObject.Strings.Unicode.DisplayName,
-				m_OneOffRecipientObject.Strings.Unicode.AddressType,
-				m_OneOffRecipientObject.Strings.Unicode.EmailAddress);
+				m_OneOffRecipientObject.Unicode.DisplayName,
+				m_OneOffRecipientObject.Unicode.AddressType,
+				m_OneOffRecipientObject.Unicode.EmailAddress);
 		}
 		else
 		{
 			szEntryId += formatmessage(IDS_ONEOFFENTRYIDFOOTERANSI,
 				m_OneOffRecipientObject.Bitmask, szFlags.c_str(),
-				m_OneOffRecipientObject.Strings.ANSI.DisplayName,
-				m_OneOffRecipientObject.Strings.ANSI.AddressType,
-				m_OneOffRecipientObject.Strings.ANSI.EmailAddress);
+				m_OneOffRecipientObject.ANSI.DisplayName,
+				m_OneOffRecipientObject.ANSI.AddressType,
+				m_OneOffRecipientObject.ANSI.EmailAddress);
 		}
 	}
 	else if (eidtAddressBook == m_ObjectType)
@@ -538,15 +538,15 @@ _Check_return_ wstring EntryIdStruct::ToStringInternal()
 	{
 		auto szType = InterpretFlags(flagMessageDatabaseObjectType, m_FolderOrMessage.Type);
 
-		auto szDatabaseGUID = GUIDToStringAndName(reinterpret_cast<LPGUID>(&m_FolderOrMessage.Data.FolderObject.DatabaseGUID));
+		auto szDatabaseGUID = GUIDToStringAndName(reinterpret_cast<LPGUID>(&m_FolderOrMessage.FolderObject.DatabaseGUID));
 
 		SBinary sBinGlobalCounter = { 0 };
-		sBinGlobalCounter.cb = sizeof m_FolderOrMessage.Data.FolderObject.GlobalCounter;
-		sBinGlobalCounter.lpb = m_FolderOrMessage.Data.FolderObject.GlobalCounter;
+		sBinGlobalCounter.cb = sizeof m_FolderOrMessage.FolderObject.GlobalCounter;
+		sBinGlobalCounter.lpb = m_FolderOrMessage.FolderObject.GlobalCounter;
 
 		SBinary sBinPad = { 0 };
-		sBinPad.cb = sizeof m_FolderOrMessage.Data.FolderObject.Pad;
-		sBinPad.lpb = m_FolderOrMessage.Data.FolderObject.Pad;
+		sBinPad.cb = sizeof m_FolderOrMessage.FolderObject.Pad;
+		sBinPad.lpb = m_FolderOrMessage.FolderObject.Pad;
 
 		szEntryId += formatmessage(IDS_ENTRYIDEXCHANGEFOLDERDATA,
 			m_FolderOrMessage.Type, szType.c_str(),
@@ -559,25 +559,25 @@ _Check_return_ wstring EntryIdStruct::ToStringInternal()
 	else if (eidtMessage == m_ObjectType)
 	{
 		auto szType = InterpretFlags(flagMessageDatabaseObjectType, m_FolderOrMessage.Type);
-		auto szFolderDatabaseGUID = GUIDToStringAndName(reinterpret_cast<LPGUID>(&m_FolderOrMessage.Data.MessageObject.FolderDatabaseGUID));
+		auto szFolderDatabaseGUID = GUIDToStringAndName(reinterpret_cast<LPGUID>(&m_FolderOrMessage.MessageObject.FolderDatabaseGUID));
 
 		SBinary sBinFolderGlobalCounter = { 0 };
-		sBinFolderGlobalCounter.cb = sizeof m_FolderOrMessage.Data.MessageObject.FolderGlobalCounter;
-		sBinFolderGlobalCounter.lpb = m_FolderOrMessage.Data.MessageObject.FolderGlobalCounter;
+		sBinFolderGlobalCounter.cb = sizeof m_FolderOrMessage.MessageObject.FolderGlobalCounter;
+		sBinFolderGlobalCounter.lpb = m_FolderOrMessage.MessageObject.FolderGlobalCounter;
 
 		SBinary sBinPad1 = { 0 };
-		sBinPad1.cb = sizeof m_FolderOrMessage.Data.MessageObject.Pad1;
-		sBinPad1.lpb = m_FolderOrMessage.Data.MessageObject.Pad1;
+		sBinPad1.cb = sizeof m_FolderOrMessage.MessageObject.Pad1;
+		sBinPad1.lpb = m_FolderOrMessage.MessageObject.Pad1;
 
-		auto szMessageDatabaseGUID = GUIDToStringAndName(reinterpret_cast<LPGUID>(&m_FolderOrMessage.Data.MessageObject.MessageDatabaseGUID));
+		auto szMessageDatabaseGUID = GUIDToStringAndName(reinterpret_cast<LPGUID>(&m_FolderOrMessage.MessageObject.MessageDatabaseGUID));
 
 		SBinary sBinMessageGlobalCounter = { 0 };
-		sBinMessageGlobalCounter.cb = sizeof m_FolderOrMessage.Data.MessageObject.MessageGlobalCounter;
-		sBinMessageGlobalCounter.lpb = m_FolderOrMessage.Data.MessageObject.MessageGlobalCounter;
+		sBinMessageGlobalCounter.cb = sizeof m_FolderOrMessage.MessageObject.MessageGlobalCounter;
+		sBinMessageGlobalCounter.lpb = m_FolderOrMessage.MessageObject.MessageGlobalCounter;
 
 		SBinary sBinPad2 = { 0 };
-		sBinPad2.cb = sizeof m_FolderOrMessage.Data.MessageObject.Pad2;
-		sBinPad2.lpb = m_FolderOrMessage.Data.MessageObject.Pad2;
+		sBinPad2.cb = sizeof m_FolderOrMessage.MessageObject.Pad2;
+		sBinPad2.lpb = m_FolderOrMessage.MessageObject.Pad2;
 
 		szEntryId += formatmessage(IDS_ENTRYIDEXCHANGEMESSAGEDATA,
 			m_FolderOrMessage.Type, szType.c_str(),

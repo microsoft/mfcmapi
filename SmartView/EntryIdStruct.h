@@ -54,11 +54,8 @@ struct MessageObject
 struct FolderOrMessage
 {
 	WORD Type;
-	union
-	{
-		FolderObject FolderObject;
-		MessageObject MessageObject;
-	} Data;
+	FolderObject FolderObject;
+	MessageObject MessageObject;
 };
 
 struct MessageDatabaseObject
@@ -90,21 +87,18 @@ struct EphemeralObject
 struct OneOffRecipientObject
 {
 	DWORD Bitmask;
-	union
+	struct Unicode
 	{
-		struct
-		{
-			LPWSTR DisplayName;
-			LPWSTR AddressType;
-			LPWSTR EmailAddress;
-		} Unicode;
-		struct
-		{
-			LPSTR DisplayName;
-			LPSTR AddressType;
-			LPSTR EmailAddress;
-		} ANSI;
-	} Strings;
+		LPWSTR DisplayName;
+		LPWSTR AddressType;
+		LPWSTR EmailAddress;
+	} Unicode;
+	struct ANSI
+	{
+		LPSTR DisplayName;
+		LPSTR AddressType;
+		LPSTR EmailAddress;
+	} ANSI;
 };
 
 struct AddressBookObject
@@ -144,7 +138,7 @@ private:
 
 	BYTE m_abFlags[4];
 	BYTE m_ProviderUID[16];
-	EIDStructType m_ObjectType; // My own addition to simplify union parsing
+	EIDStructType m_ObjectType; // My own addition to simplify parsing
 	FolderOrMessage m_FolderOrMessage;
 	MessageDatabaseObject m_MessageDatabaseObject;
 	EphemeralObject m_EphemeralObject;
