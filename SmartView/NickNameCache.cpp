@@ -12,11 +12,6 @@ NickNameCache::NickNameCache()
 	m_cbEI = 0;
 }
 
-NickNameCache::~NickNameCache()
-{
-	delete[] m_lpRows;
-}
-
 void NickNameCache::Parse()
 {
 	m_Metadata1 = m_Parser.GetBYTES(4);
@@ -25,12 +20,10 @@ void NickNameCache::Parse()
 	m_Parser.GetDWORD(&m_cRowCount);
 
 	if (m_cRowCount && m_cRowCount < _MaxEntriesEnormous)
-		m_lpRows = new SRow[m_cRowCount];
+		m_lpRows = reinterpret_cast<LPSRow>(AllocateArray(m_cRowCount, sizeof SRow));
 
 	if (m_lpRows)
 	{
-		memset(m_lpRows, 0, sizeof(SRow)*m_cRowCount);
-
 		for (DWORD i = 0; i < m_cRowCount; i++)
 		{
 			m_Parser.GetDWORD(&m_lpRows[i].cValues);
@@ -54,10 +47,8 @@ _Check_return_ LPSPropValue NickNameCache::NickNameBinToSPropValue(DWORD dwPropC
 {
 	if (!dwPropCount || dwPropCount > _MaxEntriesSmall) return nullptr;
 
-	auto pspvProperty = new SPropValue[dwPropCount];
+	auto pspvProperty = reinterpret_cast<LPSPropValue>(AllocateArray(dwPropCount, sizeof SPropValue));
 	if (!pspvProperty) return nullptr;
-
-	memset(pspvProperty, 0, sizeof(SPropValue)*dwPropCount);
 
 	for (DWORD i = 0; i < dwPropCount; i++)
 	{
@@ -124,10 +115,9 @@ _Check_return_ LPSPropValue NickNameCache::NickNameBinToSPropValue(DWORD dwPropC
 			pspvProperty[i].Value.MVbin.cValues = dwTemp;
 			if (pspvProperty[i].Value.MVbin.cValues && pspvProperty[i].Value.MVbin.cValues < _MaxEntriesLarge)
 			{
-				pspvProperty[i].Value.MVbin.lpbin = new SBinary[dwTemp];
+				pspvProperty[i].Value.MVbin.lpbin = reinterpret_cast<LPSBinary>(AllocateArray(dwTemp, sizeof SBinary));
 				if (pspvProperty[i].Value.MVbin.lpbin)
 				{
-					memset(pspvProperty[i].Value.MVbin.lpbin, 0, sizeof(SBinary)* dwTemp);
 					for (ULONG j = 0; j < pspvProperty[i].Value.MVbin.cValues; j++)
 					{
 						m_Parser.GetDWORD(&dwTemp);
@@ -145,13 +135,12 @@ _Check_return_ LPSPropValue NickNameCache::NickNameBinToSPropValue(DWORD dwPropC
 			pspvProperty[i].Value.MVszA.cValues = dwTemp;
 			if (pspvProperty[i].Value.MVszA.cValues && pspvProperty[i].Value.MVszA.cValues < _MaxEntriesLarge)
 			{
-				pspvProperty[i].Value.MVszA.lppszA = new CHAR*[dwTemp];
+				pspvProperty[i].Value.MVszA.lppszA = reinterpret_cast<LPSTR*>(AllocateArray(dwTemp, sizeof LPVOID));
 				if (pspvProperty[i].Value.MVszA.lppszA)
 				{
-					memset(pspvProperty[i].Value.MVszA.lppszA, 0, sizeof(CHAR*)* dwTemp);
 					for (ULONG j = 0; j < pspvProperty[i].Value.MVszA.cValues; j++)
 					{
-						m_Parser.GetStringA(&pspvProperty[i].Value.MVszA.lppszA[j]);
+						pspvProperty[i].Value.MVszA.lppszA[j] = GetStringA();
 					}
 				}
 			}
@@ -161,13 +150,12 @@ _Check_return_ LPSPropValue NickNameCache::NickNameBinToSPropValue(DWORD dwPropC
 			pspvProperty[i].Value.MVszW.cValues = dwTemp;
 			if (pspvProperty[i].Value.MVszW.cValues && pspvProperty[i].Value.MVszW.cValues < _MaxEntriesLarge)
 			{
-				pspvProperty[i].Value.MVszW.lppszW = new WCHAR*[dwTemp];
+				pspvProperty[i].Value.MVszW.lppszW = reinterpret_cast<LPWSTR*>(AllocateArray(dwTemp, sizeof LPVOID));
 				if (pspvProperty[i].Value.MVszW.lppszW)
 				{
-					memset(pspvProperty[i].Value.MVszW.lppszW, 0, sizeof(WCHAR*)* dwTemp);
 					for (ULONG j = 0; j < pspvProperty[i].Value.MVszW.cValues; j++)
 					{
-						m_Parser.GetStringW(&pspvProperty[i].Value.MVszW.lppszW[j]);
+						pspvProperty[i].Value.MVszW.lppszW[j] = GetStringW();
 					}
 				}
 			}

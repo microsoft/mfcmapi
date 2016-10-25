@@ -5,7 +5,6 @@ class NickNameCache : public SmartViewParser
 {
 public:
 	NickNameCache();
-	~NickNameCache();
 
 private:
 	void Parse() override;
