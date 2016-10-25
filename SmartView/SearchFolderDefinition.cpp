@@ -13,35 +13,15 @@ SearchFolderDefinition::SearchFolderDefinition()
 	m_NumericSearch = 0;
 	m_TextSearchLength = 0;
 	m_TextSearchLengthExtended = 0;
-	m_TextSearch = nullptr;
 	m_SkipLen1 = 0;
-	m_SkipBytes1 = nullptr;
 	m_DeepSearch = 0;
 	m_FolderList1Length = 0;
 	m_FolderList1LengthExtended = 0;
-	m_FolderList1 = nullptr;
 	m_FolderList2Length = 0;
-	m_FolderList2 = nullptr;
 	m_AddressCount = 0;
-	m_Addresses = nullptr;
 	m_SkipLen2 = 0;
-	m_SkipBytes2 = nullptr;
 	m_AdvancedSearchLen = 0;
-	m_AdvancedSearchBytes = nullptr;
 	m_SkipLen3 = 0;
-	m_SkipBytes3 = nullptr;
-}
-
-SearchFolderDefinition::~SearchFolderDefinition()
-{
-	delete[] m_TextSearch;
-	delete[] m_SkipBytes1;
-	delete[] m_FolderList1;
-	if (m_FolderList2) delete m_FolderList2;
-	delete[] m_Addresses;
-	delete[] m_SkipBytes2;
-	delete[] m_AdvancedSearchBytes;
-	delete[] m_SkipBytes3;
 }
 
 void SearchFolderDefinition::Parse()
@@ -60,11 +40,11 @@ void SearchFolderDefinition::Parse()
 
 	if (cchTextSearch)
 	{
-		m_Parser.GetStringW(cchTextSearch, &m_TextSearch);
+		m_TextSearch = m_Parser.GetStringW(cchTextSearch);
 	}
 
 	m_Parser.GetDWORD(&m_SkipLen1);
-	m_Parser.GetBYTES(m_SkipLen1, _MaxBytes, &m_SkipBytes1);
+	m_SkipBytes1 = m_Parser.GetBYTES(m_SkipLen1, _MaxBytes);
 
 	m_Parser.GetDWORD(&m_DeepSearch);
 
@@ -78,7 +58,7 @@ void SearchFolderDefinition::Parse()
 
 	if (cchFolderList1)
 	{
-		m_Parser.GetStringW(cchFolderList1, &m_FolderList1);
+		m_FolderList1 = m_Parser.GetStringW(cchFolderList1);
 	}
 
 	m_Parser.GetDWORD(&m_FolderList2Length);
@@ -87,13 +67,9 @@ void SearchFolderDefinition::Parse()
 	{
 		auto cbRemainingBytes = m_Parser.RemainingBytes();
 		cbRemainingBytes = min(m_FolderList2Length, cbRemainingBytes);
-		m_FolderList2 = new EntryList();
-		if (m_FolderList2)
-		{
-			m_FolderList2->Init(
-				static_cast<ULONG>(cbRemainingBytes),
-				m_Parser.GetCurrentAddress());
-		}
+		m_FolderList2.Init(
+			static_cast<ULONG>(cbRemainingBytes),
+			m_Parser.GetCurrentAddress());
 
 		m_Parser.Advance(cbRemainingBytes);
 	}
@@ -103,29 +79,25 @@ void SearchFolderDefinition::Parse()
 		m_Parser.GetDWORD(&m_AddressCount);
 		if (m_AddressCount && m_AddressCount < _MaxEntriesSmall)
 		{
-			m_Addresses = new AddressListEntryStruct[m_AddressCount];
-
-			if (m_Addresses)
+			for (DWORD i = 0; i < m_AddressCount; i++)
 			{
-				memset(m_Addresses, 0, m_AddressCount * sizeof(AddressListEntryStruct));
-
-				for (DWORD i = 0; i < m_AddressCount; i++)
+				AddressListEntryStruct addressListEntryStruct;
+				m_Parser.GetDWORD(&addressListEntryStruct.PropertyCount);
+				m_Parser.GetDWORD(&addressListEntryStruct.Pad);
+				if (addressListEntryStruct.PropertyCount)
 				{
-					m_Parser.GetDWORD(&m_Addresses[i].PropertyCount);
-					m_Parser.GetDWORD(&m_Addresses[i].Pad);
-					if (m_Addresses[i].PropertyCount)
-					{
-						m_Addresses[i].Props = BinToSPropValue(
-							m_Addresses[i].PropertyCount,
-							false);
-					}
+					addressListEntryStruct.Props = BinToSPropValue(
+						addressListEntryStruct.PropertyCount,
+						false);
 				}
+
+				m_Addresses.push_back(addressListEntryStruct);
 			}
 		}
 	}
 
 	m_Parser.GetDWORD(&m_SkipLen2);
-	m_Parser.GetBYTES(m_SkipLen2, _MaxBytes, &m_SkipBytes2);
+	m_SkipBytes2 = m_Parser.GetBYTES(m_SkipLen2, _MaxBytes);
 
 	if (SFST_MRES & m_Flags)
 	{
@@ -149,14 +121,14 @@ void SearchFolderDefinition::Parse()
 		if (cbRemainingBytes > sizeof(DWORD))
 		{
 			m_AdvancedSearchLen = static_cast<DWORD>(cbRemainingBytes) - sizeof(DWORD);
-			m_Parser.GetBYTES(m_AdvancedSearchLen, m_AdvancedSearchLen, &m_AdvancedSearchBytes);
+			m_AdvancedSearchBytes = m_Parser.GetBYTES(m_AdvancedSearchLen);
 		}
 	}
 
 	m_Parser.GetDWORD(&m_SkipLen3);
 	if (m_SkipLen3)
 	{
-		m_Parser.GetBYTES(m_SkipLen3, _MaxBytes, &m_SkipBytes3);
+		m_SkipBytes3 = m_Parser.GetBYTES(m_SkipLen3, _MaxBytes);
 	}
 }
 
@@ -177,7 +149,7 @@ _Check_return_ wstring SearchFolderDefinition::ToStringInternal()
 		szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONTEXTSEARCH,
 			m_TextSearchLengthExtended);
 
-		if (m_TextSearch)
+		if (m_TextSearch.size())
 		{
 			szSearchFolderDefinition += m_TextSearch;
 		}
@@ -188,13 +160,8 @@ _Check_return_ wstring SearchFolderDefinition::ToStringInternal()
 
 	if (m_SkipLen1)
 	{
-		SBinary sBin = { 0 };
-
-		sBin.cb = static_cast<ULONG>(m_SkipLen1);
-		sBin.lpb = m_SkipBytes1;
-
 		szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONSKIPBYTES1);
-		szSearchFolderDefinition += BinToHexString(&sBin, true);
+		szSearchFolderDefinition += BinToHexString(m_SkipBytes1, true);
 	}
 
 	szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONDEEPSEARCH,
@@ -206,7 +173,7 @@ _Check_return_ wstring SearchFolderDefinition::ToStringInternal()
 		szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONFOLDERLIST1,
 			m_FolderList1LengthExtended);
 
-		if (m_FolderList1)
+		if (m_FolderList1.size())
 		{
 			szSearchFolderDefinition += m_FolderList1;
 		}
@@ -215,27 +182,25 @@ _Check_return_ wstring SearchFolderDefinition::ToStringInternal()
 	szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONFOLDERLISTLENGTH2,
 		m_FolderList2Length);
 
-	if (m_FolderList2Length && m_FolderList2)
+	if (m_FolderList2Length)
 	{
 		szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONFOLDERLIST2);
-		szSearchFolderDefinition += m_FolderList2->ToString();
+		szSearchFolderDefinition += m_FolderList2.ToString();
 	}
 
 	if (SFST_BINARY & m_Flags)
 	{
 		szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONADDRESSCOUNT,
 			m_AddressCount);
-		if (m_Addresses && m_AddressCount)
-		{
-			for (DWORD i = 0; i < m_AddressCount; i++)
-			{
-				szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONADDRESSES,
-					i, m_Addresses[i].PropertyCount,
-					i, m_Addresses[i].Pad);
 
-				szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONPROPERTIES, i);
-				szSearchFolderDefinition += PropsToString(m_Addresses[i].PropertyCount, m_Addresses[i].Props);
-			}
+		for (DWORD i = 0; i < m_Addresses.size(); i++)
+		{
+			szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONADDRESSES,
+				i, m_Addresses[i].PropertyCount,
+				i, m_Addresses[i].Pad);
+
+			szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONPROPERTIES, i);
+			szSearchFolderDefinition += PropsToString(m_Addresses[i].PropertyCount, m_Addresses[i].Props);
 		}
 	}
 
@@ -244,13 +209,8 @@ _Check_return_ wstring SearchFolderDefinition::ToStringInternal()
 
 	if (m_SkipLen2)
 	{
-		SBinary sBin = { 0 };
-
-		sBin.cb = static_cast<ULONG>(m_SkipLen2);
-		sBin.lpb = m_SkipBytes2;
-
 		szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONSKIPBYTES2);
-		szSearchFolderDefinition += BinToHexString(&sBin, true);
+		szSearchFolderDefinition += BinToHexString(m_SkipBytes2, true);
 	}
 
 	if (!m_Restriction.empty())
@@ -266,13 +226,8 @@ _Check_return_ wstring SearchFolderDefinition::ToStringInternal()
 
 		if (m_AdvancedSearchLen)
 		{
-			SBinary sBin = { 0 };
-
-			sBin.cb = static_cast<ULONG>(m_AdvancedSearchLen);
-			sBin.lpb = m_AdvancedSearchBytes;
-
 			szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONADVANCEDSEARCHBYTES);
-			szSearchFolderDefinition += BinToHexString(&sBin, true);
+			szSearchFolderDefinition += BinToHexString(m_AdvancedSearchBytes, true);
 		}
 	}
 
@@ -281,13 +236,8 @@ _Check_return_ wstring SearchFolderDefinition::ToStringInternal()
 
 	if (m_SkipLen3)
 	{
-		SBinary sBin = { 0 };
-
-		sBin.cb = static_cast<ULONG>(m_SkipLen3);
-		sBin.lpb = m_SkipBytes3;
-
 		szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONSKIPBYTES3);
-		szSearchFolderDefinition += BinToHexString(&sBin, true);
+		szSearchFolderDefinition += BinToHexString(m_SkipBytes3, true);
 	}
 
 	return szSearchFolderDefinition;

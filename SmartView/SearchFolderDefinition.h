@@ -13,7 +13,6 @@ class SearchFolderDefinition : public SmartViewParser
 {
 public:
 	SearchFolderDefinition();
-	~SearchFolderDefinition();
 
 private:
 	void Parse() override;
@@ -24,22 +23,22 @@ private:
 	DWORD m_NumericSearch;
 	BYTE m_TextSearchLength;
 	WORD m_TextSearchLengthExtended;
-	LPWSTR m_TextSearch;
+	wstring m_TextSearch;
 	DWORD m_SkipLen1;
-	LPBYTE m_SkipBytes1;
+	vector<BYTE> m_SkipBytes1;
 	DWORD m_DeepSearch;
 	BYTE m_FolderList1Length;
 	WORD m_FolderList1LengthExtended;
-	LPWSTR m_FolderList1;
+	wstring m_FolderList1;
 	DWORD m_FolderList2Length;
-	EntryList* m_FolderList2;
+	EntryList m_FolderList2;
 	DWORD m_AddressCount; // SFST_BINARY
-	AddressListEntryStruct* m_Addresses; // SFST_BINARY
+	vector<AddressListEntryStruct> m_Addresses; // SFST_BINARY
 	DWORD m_SkipLen2;
-	LPBYTE m_SkipBytes2;
+	vector<BYTE> m_SkipBytes2;
 	wstring m_Restriction; // SFST_MRES
 	DWORD m_AdvancedSearchLen; // SFST_FILTERSTREAM
-	LPBYTE m_AdvancedSearchBytes; // SFST_FILTERSTREAM
+	vector<BYTE> m_AdvancedSearchBytes; // SFST_FILTERSTREAM
 	DWORD m_SkipLen3;
-	LPBYTE m_SkipBytes3;
+	vector<BYTE> m_SkipBytes3;
 };
