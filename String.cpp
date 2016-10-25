@@ -261,7 +261,7 @@ wstring indent(int iIndent)
 wstring BinToTextStringW(const vector<BYTE>& lpByte, bool bMultiLine)
 {
 	SBinary bin = { 0 };
-	bin.cb = lpByte.size();
+	bin.cb = static_cast<ULONG>(lpByte.size());
 	bin.lpb = const_cast<LPBYTE>(lpByte.data());
 	return BinToTextStringW(&bin, bMultiLine);
 }

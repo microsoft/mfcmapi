@@ -62,10 +62,7 @@ _Check_return_ wstring WebViewPersistStream::ToStringInternal()
 			m_lpWebViews[i].dwType, szType.c_str(),
 			m_lpWebViews[i].dwFlags, szFlags.c_str());
 
-		SBinary sBin = { 0 };
-		sBin.cb = m_lpWebViews[i].dwUnused.size();
-		sBin.lpb = m_lpWebViews[i].dwUnused.data();
-		szWebViewPersistStream += BinToHexString(&sBin, true);
+		szWebViewPersistStream += BinToHexString(m_lpWebViews[i].dwUnused, true);
 
 		szWebViewPersistStream += formatmessage(IDS_WEBVIEWCBDATA, m_lpWebViews[i].cbData);
 
