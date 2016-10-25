@@ -4,6 +4,7 @@
 #include "PropertyStruct.h"
 #include "String.h"
 #include "ExtraPropTags.h"
+#include "SmartView.h"
 
 SearchFolderDefinition::SearchFolderDefinition()
 {
@@ -37,16 +38,7 @@ SearchFolderDefinition::~SearchFolderDefinition()
 	delete[] m_SkipBytes1;
 	delete[] m_FolderList1;
 	if (m_FolderList2) delete m_FolderList2;
-	if (m_Addresses)
-	{
-		for (DWORD i = 0; i < m_AddressCount; i++)
-		{
-			DeleteSPropVal(m_Addresses[i].PropertyCount, m_Addresses[i].Props);
-		}
-
-		delete[] m_Addresses;
-	}
-
+	delete[] m_Addresses;
 	delete[] m_SkipBytes2;
 	delete[] m_AdvancedSearchBytes;
 	delete[] m_SkipBytes3;

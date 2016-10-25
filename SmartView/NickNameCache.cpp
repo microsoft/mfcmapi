@@ -14,15 +14,7 @@ NickNameCache::NickNameCache()
 
 NickNameCache::~NickNameCache()
 {
-	if (m_cRowCount && m_lpRows)
-	{
-		for (DWORD i = 0; i < m_cRowCount; i++)
-		{
-			DeleteSPropVal(m_lpRows[i].cValues, m_lpRows[i].lpProps);
-		}
-
-		delete[] m_lpRows;
-	}
+	delete[] m_lpRows;
 }
 
 void NickNameCache::Parse()
@@ -58,7 +50,6 @@ void NickNameCache::Parse()
 	m_Metadata2 = m_Parser.GetBYTES(8);
 }
 
-// Caller allocates with new. Clean up with DeleteSPropVal.
 _Check_return_ LPSPropValue NickNameCache::NickNameBinToSPropValue(DWORD dwPropCount)
 {
 	if (!dwPropCount || dwPropCount > _MaxEntriesSmall) return nullptr;

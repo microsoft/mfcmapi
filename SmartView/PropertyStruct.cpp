@@ -2,16 +2,12 @@
 #include "PropertyStruct.h"
 #include "InterpretProp.h"
 #include "InterpretProp2.h"
+#include "SmartView.h"
 
 PropertyStruct::PropertyStruct()
 {
 	m_PropCount = 0;
 	m_Prop = nullptr;
-}
-
-PropertyStruct::~PropertyStruct()
-{
-	DeleteSPropVal(m_PropCount, m_Prop);
 }
 
 void PropertyStruct::Parse()
@@ -28,7 +24,6 @@ void PropertyStruct::Parse()
 		if (lpProp)
 		{
 			dwPropCount++;
-			DeleteSPropVal(1, lpProp);
 		}
 		else
 		{

@@ -1,13 +1,11 @@
 #pragma once
 #include "SmartViewParser.h"
-#include "SmartView.h"
 #include <MAPIDefs.h>
 
 class PropertyStruct : public SmartViewParser
 {
 public:
 	PropertyStruct();
-	~PropertyStruct();
 
 private:
 	void Parse() override;

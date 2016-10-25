@@ -12,14 +12,6 @@ RecipientRowStream::RecipientRowStream()
 
 RecipientRowStream::~RecipientRowStream()
 {
-	if (m_lpAdrEntry && m_cRowCount)
-	{
-		for (DWORD i = 0; i < m_cRowCount; i++)
-		{
-			DeleteSPropVal(m_lpAdrEntry[i].cValues, m_lpAdrEntry[i].rgPropVals);
-		}
-	}
-
 	delete[] m_lpAdrEntry;
 }
 

@@ -8,7 +8,7 @@ SmartViewParser::SmartViewParser()
 	m_bParsed = false;
 	m_bEnableJunk = true;
 	m_cbBin = 0;
-	m_lpBin = 0;
+	m_lpBin = nullptr;
 }
 
 void SmartViewParser::Init(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
@@ -77,13 +77,43 @@ _Check_return_ wstring SmartViewParser::JunkDataToString(size_t cbJunkData, _In_
 	return szJunk;
 }
 
-// Caller allocates with new. Clean up with DeleteSPropVal.
+LPBYTE SmartViewParser::GetBYTES(size_t cbBytes, size_t cbMaxBytes)
+{
+	m_binCache.push_back(m_Parser.GetBYTES(cbBytes, cbMaxBytes));
+	return m_binCache.back().data();
+}
+
+LPSTR SmartViewParser::GetStringA(size_t cchChar)
+{
+	m_stringCache.push_back(m_Parser.GetStringA(cchChar));
+	return const_cast<LPSTR>(m_stringCache.back().data());
+}
+
+LPWSTR SmartViewParser::GetStringW(size_t cchChar)
+{
+	m_wstringCache.push_back(m_Parser.GetStringW(cchChar));
+	return const_cast<LPWSTR>(m_wstringCache.back().data());
+}
+
+LPBYTE SmartViewParser::Allocate(size_t cbBytes)
+{
+	vector<BYTE> bin;
+	bin.resize(cbBytes);
+	m_binCache.push_back(bin);
+	return m_binCache.back().data();
+}
+
+LPBYTE SmartViewParser::AllocateArray(size_t cArray, size_t cbEntry)
+{
+	return Allocate(cArray * cbEntry);
+}
+
+
 _Check_return_ LPSPropValue SmartViewParser::BinToSPropValue(DWORD dwPropCount, bool bStringPropsExcludeLength)
 {
 	if (!dwPropCount || dwPropCount > _MaxEntriesSmall) return nullptr;
-	auto pspvProperty = new SPropValue[dwPropCount];
+	auto pspvProperty = reinterpret_cast<SPropValue*>(AllocateArray(dwPropCount, sizeof SPropValue));
 	if (!pspvProperty) return nullptr;
-	memset(pspvProperty, 0, sizeof(SPropValue)*dwPropCount);
 	auto ulCurrOffset = m_Parser.GetCurrentOffset();
 
 	for (DWORD i = 0; i < dwPropCount; i++)
@@ -116,25 +146,25 @@ _Check_return_ LPSPropValue SmartViewParser::BinToSPropValue(DWORD dwPropCount, 
 		case PT_UNICODE:
 			if (bStringPropsExcludeLength)
 			{
-				m_Parser.GetStringW(&pspvProperty[i].Value.lpszW);
+				pspvProperty[i].Value.lpszW = GetStringW();
 			}
 			else
 			{
 				// This is apparently a cb...
 				m_Parser.GetWORD(&wTemp);
-				m_Parser.GetStringW(wTemp / sizeof(WCHAR), &pspvProperty[i].Value.lpszW);
+				pspvProperty[i].Value.lpszW = GetStringW(wTemp / sizeof(WCHAR));
 			}
 			break;
 		case PT_STRING8:
 			if (bStringPropsExcludeLength)
 			{
-				m_Parser.GetStringA(&pspvProperty[i].Value.lpszA);
+				pspvProperty[i].Value.lpszA = GetStringA();
 			}
 			else
 			{
 				// This is apparently a cb...
 				m_Parser.GetWORD(&wTemp);
-				m_Parser.GetStringA(wTemp, &pspvProperty[i].Value.lpszA);
+				pspvProperty[i].Value.lpszA = GetStringA(wTemp);
 			}
 			break;
 		case PT_SYSTIME:
@@ -145,31 +175,29 @@ _Check_return_ LPSPropValue SmartViewParser::BinToSPropValue(DWORD dwPropCount, 
 			m_Parser.GetWORD(&wTemp);
 			pspvProperty[i].Value.bin.cb = wTemp;
 			// Note that we're not placing a restriction on how large a binary property we can parse. May need to revisit this.
-			m_Parser.GetBYTES(pspvProperty[i].Value.bin.cb, pspvProperty[i].Value.bin.cb, &pspvProperty[i].Value.bin.lpb);
+			pspvProperty[i].Value.bin.lpb = GetBYTES(pspvProperty[i].Value.bin.cb);
 			break;
 		case PT_MV_STRING8:
 			m_Parser.GetWORD(&wTemp);
 			pspvProperty[i].Value.MVszA.cValues = wTemp;
-			pspvProperty[i].Value.MVszA.lppszA = new CHAR*[wTemp];
+			pspvProperty[i].Value.MVszA.lppszA = reinterpret_cast<LPSTR*>(AllocateArray(wTemp, sizeof LPVOID));
 			if (pspvProperty[i].Value.MVszA.lppszA)
 			{
-				memset(pspvProperty[i].Value.MVszA.lppszA, 0, sizeof(CHAR*)* wTemp);
 				for (ULONG j = 0; j < pspvProperty[i].Value.MVszA.cValues; j++)
 				{
-					m_Parser.GetStringA(&pspvProperty[i].Value.MVszA.lppszA[j]);
+					pspvProperty[i].Value.MVszA.lppszA[j] = GetStringA();
 				}
 			}
 			break;
 		case PT_MV_UNICODE:
 			m_Parser.GetWORD(&wTemp);
 			pspvProperty[i].Value.MVszW.cValues = wTemp;
-			pspvProperty[i].Value.MVszW.lppszW = new WCHAR*[wTemp];
+			pspvProperty[i].Value.MVszW.lppszW = reinterpret_cast<LPWSTR*>(AllocateArray(wTemp, sizeof LPVOID));
 			if (pspvProperty[i].Value.MVszW.lppszW)
 			{
-				memset(pspvProperty[i].Value.MVszW.lppszW, 0, sizeof(WCHAR*)* wTemp);
 				for (ULONG j = 0; j < pspvProperty[i].Value.MVszW.cValues; j++)
 				{
-					m_Parser.GetStringW(&pspvProperty[i].Value.MVszW.lppszW[j]);
+					pspvProperty[i].Value.MVszW.lppszW[j] = GetStringW();
 				}
 			}
 			break;
@@ -186,59 +214,4 @@ _Check_return_ LPSPropValue SmartViewParser::BinToSPropValue(DWORD dwPropCount, 
 	}
 
 	return pspvProperty;
-}
-
-void DeleteSPropVal(ULONG cVal, _In_count_(cVal) LPSPropValue lpsPropVal)
-{
-	if (!lpsPropVal) return;
-	for (ULONG i = 0; i < cVal; i++)
-	{
-		switch (PROP_TYPE(lpsPropVal[i].ulPropTag))
-		{
-		case PT_UNICODE:
-			delete[] lpsPropVal[i].Value.lpszW;
-			break;
-		case PT_STRING8:
-			delete[] lpsPropVal[i].Value.lpszA;
-			break;
-		case PT_BINARY:
-			delete[] lpsPropVal[i].Value.bin.lpb;
-			break;
-		case PT_MV_STRING8:
-			if (lpsPropVal[i].Value.MVszA.lppszA)
-			{
-				for (ULONG j = 0; j < lpsPropVal[i].Value.MVszA.cValues; j++)
-				{
-					delete[] lpsPropVal[i].Value.MVszA.lppszA[j];
-				}
-
-				delete[] lpsPropVal[i].Value.MVszA.lppszA;
-			}
-			break;
-		case PT_MV_UNICODE:
-			if (lpsPropVal[i].Value.MVszW.lppszW)
-			{
-				for (ULONG j = 0; j < lpsPropVal[i].Value.MVszW.cValues; j++)
-				{
-					delete[] lpsPropVal[i].Value.MVszW.lppszW[j];
-				}
-
-				delete[] lpsPropVal[i].Value.MVszW.lppszW;
-			}
-			break;
-		case PT_MV_BINARY:
-			if (lpsPropVal[i].Value.MVbin.lpbin)
-			{
-				for (ULONG j = 0; j < lpsPropVal[i].Value.MVbin.cValues; j++)
-				{
-					delete[] lpsPropVal[i].Value.MVbin.lpbin[j].lpb;
-				}
-
-				delete[] lpsPropVal[i].Value.MVbin.lpbin;
-			}
-			break;
-		}
-	}
-
-	delete[] lpsPropVal;
 }

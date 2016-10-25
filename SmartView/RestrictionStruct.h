@@ -15,7 +15,7 @@ private:
 	// Caller allocates with new. Clean up with DeleteRestriction and delete[].
 	bool BinToRestriction(ULONG ulDepth, _In_ LPSRestriction psrRestriction, bool bRuleCondition, bool bExtendedCount);
 	// Neuters an SRestriction - caller must use delete to delete the SRestriction
-	void DeleteRestriction(_In_ LPSRestriction lpRes) const;
+	static void DeleteRestriction(_In_ LPSRestriction lpRes);
 
 	bool m_bRuleCondition;
 	bool m_bExtended;

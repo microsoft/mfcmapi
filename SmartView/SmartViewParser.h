@@ -1,5 +1,6 @@
 #pragma once
 #include "BinaryParser.h"
+#include <list>
 
 #define _MaxBytes 0xFFFF
 #define _MaxDepth 50
@@ -36,11 +37,20 @@ private:
 	virtual void Parse() = 0;
 	virtual _Check_return_ wstring ToStringInternal() = 0;
 
+	// These functions return pointers to memory backed and cleaned up by SmartViewParser
+	LPBYTE GetBYTES(size_t cbBytes, size_t cbMaxBytes = -1);
+	LPSTR GetStringA(size_t cchChar = -1);
+	LPWSTR GetStringW(size_t cchChar = -1);
+	LPBYTE Allocate(size_t cbBytes);
+	LPBYTE AllocateArray(size_t cArray, size_t cbEntry);
+
 	bool m_bEnableJunk;
 	bool m_bParsed;
 	ULONG m_cbBin;
 	LPBYTE m_lpBin;
-};
 
-// Neuters an array of SPropValues - caller must use delete to delete the SPropValue
-void DeleteSPropVal(ULONG cVal, _In_count_(cVal) LPSPropValue lpsPropVal);
+	// We use list instead of vector so our nodes never get reallocated
+	list<string> m_stringCache;
+	list<wstring> m_wstringCache;
+	list<vector<BYTE>> m_binCache;
+};

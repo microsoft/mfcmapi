@@ -229,7 +229,7 @@ bool RestrictionStruct::BinToRestriction(ULONG ulDepth, _In_ LPSRestriction psrR
 }
 
 // Does not delete lpRes, which must be released manually. See RES_AND case below.
-void RestrictionStruct::DeleteRestriction(_In_ LPSRestriction lpRes) const
+void RestrictionStruct::DeleteRestriction(_In_ LPSRestriction lpRes)
 {
 	if (!lpRes) return;
 
@@ -253,22 +253,11 @@ void RestrictionStruct::DeleteRestriction(_In_ LPSRestriction lpRes) const
 		DeleteRestriction(lpRes->res.resNot.lpRes);
 		delete[] lpRes->res.resNot.lpRes;
 		break;
-	case RES_CONTENT:
-		DeleteSPropVal(1, lpRes->res.resContent.lpProp);
-		break;
-	case RES_PROPERTY:
-		DeleteSPropVal(1, lpRes->res.resProperty.lpProp);
-		break;
 	case RES_SUBRESTRICTION:
 		DeleteRestriction(lpRes->res.resSub.lpRes);
 		delete[] lpRes->res.resSub.lpRes;
 		break;
 	case RES_COMMENT:
-		if (lpRes->res.resComment.cValues)
-		{
-			DeleteSPropVal(lpRes->res.resComment.cValues, lpRes->res.resComment.lpProp);
-		}
-
 		DeleteRestriction(lpRes->res.resComment.lpRes);
 		delete[] lpRes->res.resComment.lpRes;
 		break;
