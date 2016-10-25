@@ -105,14 +105,14 @@ struct OneOffRecipientObject
 			LPSTR EmailAddress;
 		} ANSI;
 	} Strings;
-} ;
+};
 
 struct AddressBookObject
 {
 	DWORD Version;
 	DWORD Type;
 	LPSTR X500DN;
-} ;
+};
 
 class EntryIdStruct;
 
@@ -124,7 +124,7 @@ struct ContactAddressBookObject
 	DWORD EntryIDCount; // CONTAB_USER, CONTAB_DISTLIST only
 	BYTE muidID[16]; // CONTAB_CONTAINER only
 	EntryIdStruct* lpEntryID;
-} ;
+};
 
 struct WAB
 {
@@ -145,14 +145,11 @@ private:
 	BYTE m_abFlags[4];
 	BYTE m_ProviderUID[16];
 	EIDStructType m_ObjectType; // My own addition to simplify union parsing
-	union
-	{
-		FolderOrMessage FolderOrMessage;
-		MessageDatabaseObject MessageDatabaseObject;
-		EphemeralObject EphemeralObject;
-		OneOffRecipientObject OneOffRecipientObject;
-		AddressBookObject AddressBookObject;
-		ContactAddressBookObject ContactAddressBookObject;
-		WAB WAB;
-	} m_ProviderData;
+	FolderOrMessage m_FolderOrMessage;
+	MessageDatabaseObject m_MessageDatabaseObject;
+	EphemeralObject m_EphemeralObject;
+	OneOffRecipientObject m_OneOffRecipientObject;
+	AddressBookObject m_AddressBookObject;
+	ContactAddressBookObject m_ContactAddressBookObject;
+	WAB m_WAB;
 };
