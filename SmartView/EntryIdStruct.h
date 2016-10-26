@@ -35,17 +35,17 @@ struct MDB_STORE_EID_V3
 
 struct FolderObject
 {
-	vector<BYTE> DatabaseGUID; // 16 bytes
+	GUID DatabaseGUID;
 	vector<BYTE> GlobalCounter; // 6 bytes
 	vector<BYTE> Pad; // 2 bytes
 };
 
 struct MessageObject
 {
-	vector<BYTE> FolderDatabaseGUID; // 16 bytes
+	GUID FolderDatabaseGUID;
 	vector<BYTE> FolderGlobalCounter; // 6 bytes
 	vector<BYTE> Pad1; // 2 bytes
-	vector<BYTE> MessageDatabaseGUID; // 16 bytes
+	GUID MessageDatabaseGUID;
 	vector<BYTE> MessageGlobalCounter; // 6 bytes
 	vector<BYTE> Pad2; // 2 bytes
 };
@@ -64,7 +64,7 @@ struct MessageDatabaseObject
 	string DLLFileName;
 	bool bIsExchange;
 	ULONG WrappedFlags;
-	vector<BYTE> WrappedProviderUID; // 16 bytes
+	GUID WrappedProviderUID;
 	ULONG WrappedType;
 	string ServerShortname;
 	string MailboxDN;
@@ -115,7 +115,7 @@ struct ContactAddressBookObject
 	DWORD Type;
 	DWORD Index; // CONTAB_USER, CONTAB_DISTLIST only
 	DWORD EntryIDCount; // CONTAB_USER, CONTAB_DISTLIST only
-	vector<BYTE> muidID; // 16 bytes. CONTAB_CONTAINER only
+	GUID muidID; // CONTAB_CONTAINER only
 	vector<EntryIdStruct> lpEntryID;
 };
 
@@ -135,7 +135,7 @@ private:
 	_Check_return_ wstring ToStringInternal() override;
 
 	vector<BYTE> m_abFlags; // 4 bytes
-	vector<BYTE> m_ProviderUID; // 16 bytes
+	GUID m_ProviderUID;
 	EIDStructType m_ObjectType; // My own addition to simplify parsing
 	FolderOrMessage m_FolderOrMessage;
 	MessageDatabaseObject m_MessageDatabaseObject;

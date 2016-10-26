@@ -115,24 +115,6 @@ void CBinaryParser::GetDWORD(_Out_ DWORD* pDWORD)
 	m_lpCur += sizeof(DWORD);
 }
 
-void CBinaryParser::GetLARGE_INTEGER(_Out_ LARGE_INTEGER* pLARGE_INTEGER)
-{
-	if (!pLARGE_INTEGER) return;
-	*pLARGE_INTEGER = LARGE_INTEGER();
-	if (!CheckRemainingBytes(sizeof(LARGE_INTEGER))) return;
-	*pLARGE_INTEGER = *reinterpret_cast<LARGE_INTEGER*>(m_lpCur);
-	m_lpCur += sizeof(LARGE_INTEGER);
-}
-
-void CBinaryParser::GetBYTESNoAlloc(size_t cbBytes, size_t cbMaxBytes, _In_count_(cbBytes) LPBYTE pBYTES)
-{
-	if (!cbBytes || !pBYTES || !CheckRemainingBytes(cbBytes)) return;
-	if (cbBytes > cbMaxBytes) return;
-	memset(pBYTES, 0, sizeof(BYTE)* cbBytes);
-	memcpy(pBYTES, m_lpCur, cbBytes);
-	m_lpCur += cbBytes;
-}
-
 string CBinaryParser::GetStringA(size_t cchChar)
 {
 	if (cchChar == -1)

@@ -36,7 +36,7 @@ void PCL::Parse()
 		{
 			SizedXID sizedXID;
 			m_Parser.GetBYTE(&sizedXID.XidSize);
-			m_Parser.GetBYTESNoAlloc(sizeof(GUID), sizeof(GUID), reinterpret_cast<LPBYTE>(&sizedXID.NamespaceGuid));
+			sizedXID.NamespaceGuid = m_Parser.Get<GUID>();
 			sizedXID.cbLocalId = sizedXID.XidSize - sizeof(GUID);
 			if (m_Parser.RemainingBytes() < sizedXID.cbLocalId) break;
 			sizedXID.LocalID = m_Parser.GetBYTES(sizedXID.cbLocalId);

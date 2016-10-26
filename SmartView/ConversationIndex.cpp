@@ -37,7 +37,10 @@ void ConversationIndex::Parse()
 	m_Parser.GetBYTE(&b1);
 	m_Parser.GetBYTE(&b2);
 	m_guid.Data3 = static_cast<unsigned short>(b1 << 8 | b2);
-	m_Parser.GetBYTESNoAlloc(sizeof m_guid.Data4, sizeof m_guid.Data4, m_guid.Data4);
+	for (auto i = 0 ; i < sizeof m_guid.Data4;i++)
+	{
+		m_guid.Data4[i] = m_Parser.Get<BYTE>();
+	}
 
 	if (m_Parser.RemainingBytes() > 0)
 	{

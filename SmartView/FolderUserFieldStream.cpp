@@ -52,7 +52,7 @@ FolderFieldDefinitionCommon FolderUserFieldStream::BinToFolderFieldDefinitionCom
 {
 	FolderFieldDefinitionCommon common;
 
-	m_Parser.GetBYTESNoAlloc(sizeof(GUID), sizeof(GUID), reinterpret_cast<LPBYTE>(&common.PropSetGuid));
+	common.PropSetGuid = m_Parser.Get<GUID>();
 	m_Parser.GetDWORD(&common.fcapm);
 	m_Parser.GetDWORD(&common.dwString);
 	m_Parser.GetDWORD(&common.dwBitmap);

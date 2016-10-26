@@ -61,10 +61,9 @@ _Check_return_ LPSPropValue NickNameCache::NickNameBinToSPropValue(DWORD dwPropC
 		pspvProperty[i].ulPropTag = PROP_TAG(PropType, PropID);
 		pspvProperty[i].dwAlignPad = 0;
 
-		LARGE_INTEGER liTemp = { 0 };
 		DWORD dwTemp = 0;
 		m_Parser.GetDWORD(&dwTemp); // reserved
-		m_Parser.GetLARGE_INTEGER(&liTemp); // union
+		auto liTemp = m_Parser.Get<LARGE_INTEGER>(); // union
 
 		switch (PropType)
 		{
@@ -102,7 +101,7 @@ _Check_return_ LPSPropValue NickNameCache::NickNameBinToSPropValue(DWORD dwPropC
 			pspvProperty[i].Value.lpszW = GetStringW(dwTemp / sizeof(WCHAR));
 			break;
 		case PT_CLSID:
-			m_Parser.GetBYTESNoAlloc(sizeof(GUID), sizeof(GUID), reinterpret_cast<LPBYTE>(pspvProperty[i].Value.lpguid));
+			pspvProperty[i].Value.lpguid = reinterpret_cast<LPGUID>(GetBYTES(sizeof GUID));
 			break;
 		case PT_BINARY:
 			m_Parser.GetDWORD(&dwTemp);

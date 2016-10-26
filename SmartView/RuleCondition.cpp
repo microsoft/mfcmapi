@@ -34,7 +34,7 @@ void RuleCondition::Parse()
 			{
 				PropertyName propertyName;
 				m_Parser.GetBYTE(&propertyName.Kind);
-				m_Parser.GetBYTESNoAlloc(sizeof(GUID), sizeof(GUID), reinterpret_cast<LPBYTE>(&propertyName.Guid));
+				propertyName.Guid = m_Parser.Get<GUID>();
 				if (MNID_ID == propertyName.Kind)
 				{
 					m_Parser.GetDWORD(&propertyName.LID);

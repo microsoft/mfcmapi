@@ -18,7 +18,7 @@ void EntryIdStruct::Parse()
 	m_Parser.GetBYTE(&m_abFlags[1]);
 	m_Parser.GetBYTE(&m_abFlags[2]);
 	m_Parser.GetBYTE(&m_abFlags[3]);
-	m_ProviderUID = m_Parser.GetBYTES(16);
+	m_ProviderUID = m_Parser.Get<GUID>();
 
 	// Ephemeral entry ID:
 	if (m_abFlags[0] == EPHEMERAL)
@@ -26,26 +26,26 @@ void EntryIdStruct::Parse()
 		m_ObjectType = eidtEphemeral;
 	}
 	// One Off Recipient
-	else if (!memcmp(m_ProviderUID.data(), &muidOOP, sizeof(GUID)))
+	else if (!memcmp(&m_ProviderUID, &muidOOP, sizeof(GUID)))
 	{
 		m_ObjectType = eidtOneOff;
 	}
 	// Address Book Recipient
-	else if (!memcmp(m_ProviderUID.data(), &muidEMSAB, sizeof(GUID)))
+	else if (!memcmp(&m_ProviderUID, &muidEMSAB, sizeof(GUID)))
 	{
 		m_ObjectType = eidtAddressBook;
 	}
 	// Contact Address Book / Personal Distribution List (PDL)
-	else if (!memcmp(m_ProviderUID.data(), &muidContabDLL, sizeof(GUID)))
+	else if (!memcmp(&m_ProviderUID, &muidContabDLL, sizeof(GUID)))
 	{
 		m_ObjectType = eidtContact;
 	}
 	// message store objects
-	else if (!memcmp(m_ProviderUID.data(), &muidStoreWrap, sizeof(GUID)))
+	else if (!memcmp(&m_ProviderUID, &muidStoreWrap, sizeof(GUID)))
 	{
 		m_ObjectType = eidtMessageDatabase;
 	}
-	else if (!memcmp(m_ProviderUID.data(), &WAB_GUID, sizeof(GUID)))
+	else if (!memcmp(&m_ProviderUID, &WAB_GUID, sizeof(GUID)))
 	{
 		m_ObjectType = eidtWAB;
 	}
@@ -103,7 +103,7 @@ void EntryIdStruct::Parse()
 
 			if (CONTAB_CONTAINER == m_ContactAddressBookObject.Type)
 			{
-				m_ContactAddressBookObject.muidID = m_Parser.GetBYTES(16);
+				m_ContactAddressBookObject.muidID = m_Parser.Get<GUID>();
 			}
 			else // Assume we've got some variation on the user/distlist format
 			{
@@ -168,7 +168,7 @@ void EntryIdStruct::Parse()
 				// Advance to the next multiple of 4
 				m_Parser.Advance(3 - (cbRead + 3) % 4);
 				m_Parser.GetDWORD(&m_MessageDatabaseObject.WrappedFlags);
-				m_MessageDatabaseObject.WrappedProviderUID = m_Parser.GetBYTES(16);
+				m_MessageDatabaseObject.WrappedProviderUID = m_Parser.Get<GUID>();
 				m_Parser.GetDWORD(&m_MessageDatabaseObject.WrappedType);
 				m_MessageDatabaseObject.ServerShortname = m_Parser.GetStringA();
 
@@ -239,18 +239,18 @@ void EntryIdStruct::Parse()
 			// Exchange message store folder
 		case eidtFolder:
 			m_Parser.GetWORD(&m_FolderOrMessage.Type);
-			m_FolderOrMessage.FolderObject.DatabaseGUID = m_Parser.GetBYTES(16);
+			m_FolderOrMessage.FolderObject.DatabaseGUID = m_Parser.Get<GUID>();
 			m_FolderOrMessage.FolderObject.GlobalCounter = m_Parser.GetBYTES(6);
 			m_FolderOrMessage.FolderObject.Pad = m_Parser.GetBYTES(2);
 			break;
 			// Exchange message store message
 		case eidtMessage:
 			m_Parser.GetWORD(&m_FolderOrMessage.Type);
-			m_FolderOrMessage.MessageObject.FolderDatabaseGUID = m_Parser.GetBYTES(16);
+			m_FolderOrMessage.MessageObject.FolderDatabaseGUID = m_Parser.Get<GUID>();
 			m_FolderOrMessage.MessageObject.FolderGlobalCounter = m_Parser.GetBYTES(6);
 			m_FolderOrMessage.MessageObject.Pad1 = m_Parser.GetBYTES(2);
 
-			m_FolderOrMessage.MessageObject.MessageDatabaseGUID = m_Parser.GetBYTES(16);
+			m_FolderOrMessage.MessageObject.MessageDatabaseGUID = m_Parser.Get<GUID>();
 			m_FolderOrMessage.MessageObject.MessageGlobalCounter = m_Parser.GetBYTES(6);
 			m_FolderOrMessage.MessageObject.Pad2 = m_Parser.GetBYTES(2);
 			break;
@@ -318,7 +318,7 @@ _Check_return_ wstring EntryIdStruct::ToStringInternal()
 			m_abFlags[3]);
 	}
 
-	auto szGUID = GUIDToStringAndName(m_ProviderUID);
+	auto szGUID = GUIDToStringAndName(&m_ProviderUID);
 	szEntryId += formatmessage(IDS_ENTRYIDPROVIDERGUID, szGUID.c_str());
 
 	if (eidtEphemeral == m_ObjectType)
@@ -381,7 +381,7 @@ _Check_return_ wstring EntryIdStruct::ToStringInternal()
 		case CONTAB_ROOT:
 		case CONTAB_CONTAINER:
 		case CONTAB_SUBROOT:
-			szGUID = GUIDToStringAndName(m_ContactAddressBookObject.muidID);
+			szGUID = GUIDToStringAndName(&m_ContactAddressBookObject.muidID);
 			szEntryId += formatmessage(IDS_ENTRYIDCONTACTADDRESSDATACONTAINER, szGUID.c_str());
 			break;
 		default:
@@ -415,7 +415,7 @@ _Check_return_ wstring EntryIdStruct::ToStringInternal()
 		{
 			auto szWrappedType = InterpretNumberAsStringProp(m_MessageDatabaseObject.WrappedType, PR_PROFILE_OPEN_FLAGS);
 
-			szGUID = GUIDToStringAndName(m_MessageDatabaseObject.WrappedProviderUID);
+			szGUID = GUIDToStringAndName(&m_MessageDatabaseObject.WrappedProviderUID);
 			szEntryId += formatmessage(IDS_ENTRYIDMAPIMESSAGESTOREEXCHANGEDATA,
 				m_MessageDatabaseObject.WrappedFlags,
 				szGUID.c_str(),
@@ -464,7 +464,7 @@ _Check_return_ wstring EntryIdStruct::ToStringInternal()
 	{
 		auto szType = InterpretFlags(flagMessageDatabaseObjectType, m_FolderOrMessage.Type);
 
-		auto szDatabaseGUID = GUIDToStringAndName(m_FolderOrMessage.FolderObject.DatabaseGUID);
+		auto szDatabaseGUID = GUIDToStringAndName(&m_FolderOrMessage.FolderObject.DatabaseGUID);
 
 		szEntryId += formatmessage(IDS_ENTRYIDEXCHANGEFOLDERDATA,
 			m_FolderOrMessage.Type, szType.c_str(),
@@ -477,8 +477,8 @@ _Check_return_ wstring EntryIdStruct::ToStringInternal()
 	else if (eidtMessage == m_ObjectType)
 	{
 		auto szType = InterpretFlags(flagMessageDatabaseObjectType, m_FolderOrMessage.Type);
-		auto szFolderDatabaseGUID = GUIDToStringAndName(m_FolderOrMessage.MessageObject.FolderDatabaseGUID);
-		auto szMessageDatabaseGUID = GUIDToStringAndName(m_FolderOrMessage.MessageObject.MessageDatabaseGUID);
+		auto szFolderDatabaseGUID = GUIDToStringAndName(&m_FolderOrMessage.MessageObject.FolderDatabaseGUID);
+		auto szMessageDatabaseGUID = GUIDToStringAndName(&m_FolderOrMessage.MessageObject.MessageDatabaseGUID);
 
 		szEntryId += formatmessage(IDS_ENTRYIDEXCHANGEMESSAGEDATA,
 			m_FolderOrMessage.Type, szType.c_str(),

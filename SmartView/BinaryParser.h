@@ -20,8 +20,14 @@ public:
 	void GetBYTE(_Out_ BYTE* pBYTE);
 	void GetWORD(_Out_ WORD* pWORD);
 	void GetDWORD(_Out_ DWORD* pDWORD);
-	void GetLARGE_INTEGER(_Out_ LARGE_INTEGER* pLARGE_INTEGER);
-	void GetBYTESNoAlloc(size_t cbBytes, size_t cbMaxBytes, _In_count_(cbBytes) LPBYTE pBYTES);
+	template <typename T> T Get()
+	{
+		if (!CheckRemainingBytes(sizeof T)) return T();
+		auto ret = *reinterpret_cast<T *>(m_lpCur);
+		m_lpCur += sizeof T;
+		return ret;
+	}
+
 	string GetStringA(size_t cchChar = -1);
 	wstring GetStringW(size_t cchChar = -1);
 	vector<BYTE> GetBYTES(size_t cbBytes, size_t cbMaxBytes = -1);

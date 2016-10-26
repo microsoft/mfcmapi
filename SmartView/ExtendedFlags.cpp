@@ -58,7 +58,7 @@ void ExtendedFlags::Parse()
 				break;
 			case EFPB_CLSIDID:
 				if (extendedFlag.Cb == sizeof(GUID))
-					m_Parser.GetBYTESNoAlloc(sizeof(GUID), sizeof(GUID), reinterpret_cast<LPBYTE>(&extendedFlag.Data.SearchFolderID));
+					extendedFlag.Data.SearchFolderID = m_Parser.Get<GUID>();
 				else
 					bBadData = true;
 				break;

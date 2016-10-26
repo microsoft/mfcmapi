@@ -25,8 +25,8 @@ void GlobalObjectId::Parse()
 	m_Year = static_cast<WORD>(b1 << 8 | b2);
 	m_Parser.GetBYTE(&m_Month);
 	m_Parser.GetBYTE(&m_Day);
-	m_Parser.GetLARGE_INTEGER(reinterpret_cast<LARGE_INTEGER*>(&m_CreationTime));
-	m_Parser.GetLARGE_INTEGER(&m_X);
+	m_CreationTime = m_Parser.Get<FILETIME>();
+	m_X = m_Parser.Get<LARGE_INTEGER>();
 	m_Parser.GetDWORD(&m_dwSize);
 	m_lpData = m_Parser.GetBYTES(m_dwSize, _MaxBytes);
 }

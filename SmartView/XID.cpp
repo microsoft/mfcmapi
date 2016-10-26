@@ -10,7 +10,7 @@ XID::XID()
 
 void XID::Parse()
 {
-	m_Parser.GetBYTESNoAlloc(sizeof(GUID), sizeof(GUID), (LPBYTE)&m_NamespaceGuid);
+	m_NamespaceGuid = m_Parser.Get<GUID>();
 	m_cbLocalId = m_Parser.RemainingBytes();
 	m_LocalID = m_Parser.GetBYTES(m_cbLocalId, m_cbLocalId);
 }
