@@ -244,6 +244,12 @@ wstring GUIDToString(_In_opt_ LPCGUID lpGUID)
 		lpGUID->Data4[7]);
 }
 
+wstring GUIDToStringAndName(const vector<BYTE>& guid)
+{
+	if (guid.size() != sizeof GUID) return emptystring;
+	return GUIDToStringAndName(LPGUID(guid.data()));
+}
+
 wstring GUIDToStringAndName(_In_opt_ LPCGUID lpGUID)
 {
 	auto szGUID = GUIDToString(lpGUID);

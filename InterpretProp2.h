@@ -17,6 +17,7 @@ _Check_return_ ULONG PropNameToPropTag(_In_ wstring lpszPropName);
 _Check_return_ ULONG PropTypeNameToPropType(_In_ wstring lpszPropType);
 
 wstring GUIDToString(_In_opt_ LPCGUID lpGUID);
+wstring GUIDToStringAndName(const vector<BYTE>& guid);
 wstring GUIDToStringAndName(_In_opt_ LPCGUID lpGUID);
 LPCGUID GUIDNameToGUID(_In_ wstring szGUID, bool bByteSwapped);
 _Check_return_ GUID StringToGUID(_In_ wstring szGUID);

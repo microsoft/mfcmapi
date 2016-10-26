@@ -33,22 +33,21 @@ struct MDB_STORE_EID_V3
 	ULONG ulOffsetSmtpAddress; // offset past the beginning of the MDB_STORE_EID_V3 struct where szSmtpAddress starts
 };
 
-
 struct FolderObject
 {
-	BYTE DatabaseGUID[16];
-	BYTE GlobalCounter[6];
-	BYTE Pad[2];
+	vector<BYTE> DatabaseGUID; // 16 bytes
+	vector<BYTE> GlobalCounter; // 6 bytes
+	vector<BYTE> Pad; // 2 bytes
 };
 
 struct MessageObject
 {
-	BYTE FolderDatabaseGUID[16];
-	BYTE FolderGlobalCounter[6];
-	BYTE Pad1[2];
-	BYTE MessageDatabaseGUID[16];
-	BYTE MessageGlobalCounter[6];
-	BYTE Pad2[2];
+	vector<BYTE> FolderDatabaseGUID; // 16 bytes
+	vector<BYTE> FolderGlobalCounter; // 6 bytes
+	vector<BYTE> Pad1; // 2 bytes
+	vector<BYTE> MessageDatabaseGUID; // 16 bytes
+	vector<BYTE> MessageGlobalCounter; // 6 bytes
+	vector<BYTE> Pad2; // 2 bytes
 };
 
 struct FolderOrMessage
@@ -62,20 +61,20 @@ struct MessageDatabaseObject
 {
 	BYTE Version;
 	BYTE Flag;
-	LPSTR DLLFileName;
+	string DLLFileName;
 	bool bIsExchange;
 	ULONG WrappedFlags;
-	BYTE WrappedProviderUID[16];
+	vector<BYTE> WrappedProviderUID; // 16 bytes
 	ULONG WrappedType;
-	LPSTR ServerShortname;
-	LPSTR MailboxDN;
+	string ServerShortname;
+	string MailboxDN;
 	ULONG MagicVersion;
 	MDB_STORE_EID_V2 v2;
 	MDB_STORE_EID_V3 v3;
-	LPSTR v2DN;
-	LPWSTR v2FQDN;
-	LPWSTR v3SmtpAddress;
-	BYTE v2Reserved[2];
+	string v2DN;
+	wstring v2FQDN;
+	wstring v3SmtpAddress;
+	vector<BYTE> v2Reserved; // 2 bytes
 };
 
 struct EphemeralObject
@@ -89,15 +88,15 @@ struct OneOffRecipientObject
 	DWORD Bitmask;
 	struct Unicode
 	{
-		LPWSTR DisplayName;
-		LPWSTR AddressType;
-		LPWSTR EmailAddress;
+		wstring DisplayName;
+		wstring AddressType;
+		wstring EmailAddress;
 	} Unicode;
 	struct ANSI
 	{
-		LPSTR DisplayName;
-		LPSTR AddressType;
-		LPSTR EmailAddress;
+		string DisplayName;
+		string AddressType;
+		string EmailAddress;
 	} ANSI;
 };
 
@@ -105,7 +104,7 @@ struct AddressBookObject
 {
 	DWORD Version;
 	DWORD Type;
-	LPSTR X500DN;
+	string X500DN;
 };
 
 class EntryIdStruct;
@@ -116,7 +115,7 @@ struct ContactAddressBookObject
 	DWORD Type;
 	DWORD Index; // CONTAB_USER, CONTAB_DISTLIST only
 	DWORD EntryIDCount; // CONTAB_USER, CONTAB_DISTLIST only
-	BYTE muidID[16]; // CONTAB_CONTAINER only
+	vector<BYTE> muidID; // 16 bytes. CONTAB_CONTAINER only
 	EntryIdStruct* lpEntryID;
 };
 
@@ -136,8 +135,8 @@ private:
 	void Parse() override;
 	_Check_return_ wstring ToStringInternal() override;
 
-	BYTE m_abFlags[4];
-	BYTE m_ProviderUID[16];
+	vector<BYTE> m_abFlags; // 4 bytes
+	vector<BYTE> m_ProviderUID; // 16 bytes
 	EIDStructType m_ObjectType; // My own addition to simplify parsing
 	FolderOrMessage m_FolderOrMessage;
 	MessageDatabaseObject m_MessageDatabaseObject;
