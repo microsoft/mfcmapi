@@ -8,30 +8,17 @@
 
 EntryIdStruct::EntryIdStruct()
 {
-}
-
-EntryIdStruct::~EntryIdStruct()
-{
-	switch (m_ObjectType)
-	{
-	case eidtContact:
-		delete m_ContactAddressBookObject.lpEntryID;
-		break;
-	case eidtWAB:
-		delete m_WAB.lpEntryID;
-	}
+	m_ObjectType = eidtUnknown;
 }
 
 void EntryIdStruct::Parse()
 {
-	m_abFlags.reserve(4);
+	m_abFlags.resize(4);
 	m_Parser.GetBYTE(&m_abFlags[0]);
 	m_Parser.GetBYTE(&m_abFlags[1]);
 	m_Parser.GetBYTE(&m_abFlags[2]);
 	m_Parser.GetBYTE(&m_abFlags[3]);
 	m_ProviderUID = m_Parser.GetBYTES(16);
-
-	m_ObjectType = eidtUnknown;
 
 	// Ephemeral entry ID:
 	if (m_abFlags[0] == EPHEMERAL)
@@ -134,16 +121,14 @@ void EntryIdStruct::Parse()
 				cbRemainingBytes = m_ContactAddressBookObject.EntryIDCount;
 			}
 
-			m_ContactAddressBookObject.lpEntryID = new EntryIdStruct();
-			if (m_ContactAddressBookObject.lpEntryID)
-			{
-				m_ContactAddressBookObject.lpEntryID->Init(
-					static_cast<ULONG>(cbRemainingBytes),
-					m_Parser.GetCurrentAddress());
-				m_ContactAddressBookObject.lpEntryID->DisableJunkParsing();
-				m_ContactAddressBookObject.lpEntryID->EnsureParsed();
-				m_Parser.Advance(m_ContactAddressBookObject.lpEntryID->GetCurrentOffset());
-			}
+			EntryIdStruct entryIdStruct;
+			entryIdStruct.Init(
+				static_cast<ULONG>(cbRemainingBytes),
+				m_Parser.GetCurrentAddress());
+			entryIdStruct.DisableJunkParsing();
+			entryIdStruct.EnsureParsed();
+			m_Parser.Advance(entryIdStruct.GetCurrentOffset());
+			m_ContactAddressBookObject.lpEntryID.push_back(entryIdStruct);
 		}
 		break;
 		case eidtWAB:
@@ -152,16 +137,14 @@ void EntryIdStruct::Parse()
 
 			m_Parser.GetBYTE(&m_WAB.Type);
 
-			m_WAB.lpEntryID = new EntryIdStruct();
-			if (m_WAB.lpEntryID)
-			{
-				m_WAB.lpEntryID->Init(
-					static_cast<ULONG>(m_Parser.RemainingBytes()),
-					m_Parser.GetCurrentAddress());
-				m_WAB.lpEntryID->DisableJunkParsing();
-				m_WAB.lpEntryID->EnsureParsed();
-				m_Parser.Advance(m_WAB.lpEntryID->GetCurrentOffset());
-			}
+			EntryIdStruct entryIdStruct;
+			entryIdStruct.Init(
+				static_cast<ULONG>(m_Parser.RemainingBytes()),
+				m_Parser.GetCurrentAddress());
+			entryIdStruct.DisableJunkParsing();
+			entryIdStruct.EnsureParsed();
+			m_Parser.Advance(entryIdStruct.GetCurrentOffset());
+			m_WAB.lpEntryID.push_back(entryIdStruct);
 		}
 		break;
 		// message store objects
@@ -405,18 +388,18 @@ _Check_return_ wstring EntryIdStruct::ToStringInternal()
 			break;
 		}
 
-		if (m_ContactAddressBookObject.lpEntryID)
+		for (auto entry : m_ContactAddressBookObject.lpEntryID)
 		{
-			szEntryId += m_ContactAddressBookObject.lpEntryID->ToString();
+			szEntryId += entry.ToString();
 		}
 	}
 	else if (eidtWAB == m_ObjectType)
 	{
 		szEntryId += formatmessage(IDS_ENTRYIDWRAPPEDENTRYIDDATA, m_WAB.Type, InterpretFlags(flagWABEntryIDType, m_WAB.Type).c_str());
 
-		if (m_WAB.lpEntryID)
+		for (auto entry : m_WAB.lpEntryID)
 		{
-			szEntryId += m_WAB.lpEntryID->ToString();
+			szEntryId += entry.ToString();
 		}
 	}
 	else if (eidtMessageDatabase == m_ObjectType)

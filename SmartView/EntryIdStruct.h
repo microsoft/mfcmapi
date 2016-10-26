@@ -116,20 +116,19 @@ struct ContactAddressBookObject
 	DWORD Index; // CONTAB_USER, CONTAB_DISTLIST only
 	DWORD EntryIDCount; // CONTAB_USER, CONTAB_DISTLIST only
 	vector<BYTE> muidID; // 16 bytes. CONTAB_CONTAINER only
-	EntryIdStruct* lpEntryID;
+	vector<EntryIdStruct> lpEntryID;
 };
 
 struct WAB
 {
 	BYTE Type;
-	EntryIdStruct* lpEntryID;
+	vector<EntryIdStruct> lpEntryID;
 };
 
 class EntryIdStruct : public SmartViewParser
 {
 public:
 	EntryIdStruct();
-	~EntryIdStruct();
 
 private:
 	void Parse() override;
