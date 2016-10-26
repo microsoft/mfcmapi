@@ -10,23 +10,16 @@ RecipientRowStream::RecipientRowStream()
 	m_lpAdrEntry = nullptr;
 }
 
-RecipientRowStream::~RecipientRowStream()
-{
-	delete[] m_lpAdrEntry;
-}
-
 void RecipientRowStream::Parse()
 {
 	m_Parser.GetDWORD(&m_cVersion);
 	m_Parser.GetDWORD(&m_cRowCount);
 
 	if (m_cRowCount && m_cRowCount < _MaxEntriesSmall)
-		m_lpAdrEntry = new ADRENTRY[m_cRowCount];
+		m_lpAdrEntry = reinterpret_cast<ADRENTRY*>(AllocateArray(m_cRowCount, sizeof ADRENTRY));
 
 	if (m_lpAdrEntry)
 	{
-		memset(m_lpAdrEntry, 0, sizeof(ADRENTRY)*m_cRowCount);
-
 		for (DWORD i = 0; i < m_cRowCount; i++)
 		{
 			m_Parser.GetDWORD(&m_lpAdrEntry[i].cValues);

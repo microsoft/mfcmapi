@@ -6,14 +6,13 @@ struct EntryListEntryStruct
 {
 	DWORD EntryLength;
 	DWORD EntryLengthPad;
-	EntryIdStruct* EntryId;
+	EntryIdStruct EntryId;
 };
 
 class EntryList : public SmartViewParser
 {
 public:
 	EntryList();
-	~EntryList();
 
 private:
 	void Parse() override;
@@ -22,5 +21,5 @@ private:
 	DWORD m_EntryCount;
 	DWORD m_Pad;
 
-	EntryListEntryStruct* m_Entry;
+	vector<EntryListEntryStruct> m_Entry;
 };

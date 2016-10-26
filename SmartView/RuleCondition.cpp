@@ -6,25 +6,7 @@
 
 RuleCondition::RuleCondition()
 {
-	m_NamedPropertyInformation = { 0 };
-	m_lpRes = nullptr;
 	m_bExtended = false;
-}
-
-RuleCondition::~RuleCondition()
-{
-	delete[] m_NamedPropertyInformation.PropId;
-	m_NamedPropertyInformation.NoOfNamedProps;
-	if (m_NamedPropertyInformation.PropertyName)
-	{
-		for (auto i = 0; i < m_NamedPropertyInformation.NoOfNamedProps; i++)
-		{
-			delete[] m_NamedPropertyInformation.PropertyName[i].Name;
-		}
-	}
-
-	delete[] m_NamedPropertyInformation.PropertyName;
-	delete m_lpRes;
 }
 
 void RuleCondition::Init(bool bExtended)
@@ -37,51 +19,44 @@ void RuleCondition::Parse()
 	m_Parser.GetWORD(&m_NamedPropertyInformation.NoOfNamedProps);
 	if (m_NamedPropertyInformation.NoOfNamedProps && m_NamedPropertyInformation.NoOfNamedProps < _MaxEntriesLarge)
 	{
-		m_NamedPropertyInformation.PropId = new WORD[m_NamedPropertyInformation.NoOfNamedProps];
-		if (m_NamedPropertyInformation.PropId)
 		{
-			memset(m_NamedPropertyInformation.PropId, 0, m_NamedPropertyInformation.NoOfNamedProps * sizeof(WORD));
 			for (auto i = 0; i < m_NamedPropertyInformation.NoOfNamedProps; i++)
 			{
-				m_Parser.GetWORD(&m_NamedPropertyInformation.PropId[i]);
+				WORD propId = 0;
+				m_Parser.GetWORD(&propId);
+				m_NamedPropertyInformation.PropId.push_back(propId);
 			}
 		}
 
 		m_Parser.GetDWORD(&m_NamedPropertyInformation.NamedPropertiesSize);
-		m_NamedPropertyInformation.PropertyName = new PropertyName[m_NamedPropertyInformation.NoOfNamedProps];
-		if (m_NamedPropertyInformation.PropertyName)
 		{
-			memset(m_NamedPropertyInformation.PropertyName, 0, m_NamedPropertyInformation.NoOfNamedProps * sizeof(PropertyName));
 			for (auto i = 0; i < m_NamedPropertyInformation.NoOfNamedProps; i++)
 			{
-				m_Parser.GetBYTE(&m_NamedPropertyInformation.PropertyName[i].Kind);
-				m_Parser.GetBYTESNoAlloc(sizeof(GUID), sizeof(GUID), reinterpret_cast<LPBYTE>(&m_NamedPropertyInformation.PropertyName[i].Guid));
-				if (MNID_ID == m_NamedPropertyInformation.PropertyName[i].Kind)
+				PropertyName propertyName;
+				m_Parser.GetBYTE(&propertyName.Kind);
+				m_Parser.GetBYTESNoAlloc(sizeof(GUID), sizeof(GUID), reinterpret_cast<LPBYTE>(&propertyName.Guid));
+				if (MNID_ID == propertyName.Kind)
 				{
-					m_Parser.GetDWORD(&m_NamedPropertyInformation.PropertyName[i].LID);
+					m_Parser.GetDWORD(&propertyName.LID);
 				}
-				else if (MNID_STRING == m_NamedPropertyInformation.PropertyName[i].Kind)
+				else if (MNID_STRING == propertyName.Kind)
 				{
-					m_Parser.GetBYTE(&m_NamedPropertyInformation.PropertyName[i].NameSize);
-					m_Parser.GetStringW(
-						m_NamedPropertyInformation.PropertyName[i].NameSize / sizeof(WCHAR),
-						&m_NamedPropertyInformation.PropertyName[i].Name);
+					m_Parser.GetBYTE(&propertyName.NameSize);
+					propertyName.Name = m_Parser.GetStringW(propertyName.NameSize / sizeof(WCHAR));
 				}
+
+				m_NamedPropertyInformation.PropertyName.push_back(propertyName);
 			}
 		}
 	}
 
-	m_lpRes = new RestrictionStruct();
-	if (m_lpRes)
-	{
-		m_lpRes->Init(true, m_bExtended);
-		m_lpRes->SmartViewParser::Init(
-			static_cast<ULONG>(m_Parser.RemainingBytes()),
-			m_Parser.GetCurrentAddress());
-		m_lpRes->DisableJunkParsing();
-		m_lpRes->EnsureParsed();
-		m_Parser.Advance(m_lpRes->GetCurrentOffset());
-	}
+	m_lpRes.Init(true, m_bExtended);
+	m_lpRes.SmartViewParser::Init(
+		static_cast<ULONG>(m_Parser.RemainingBytes()),
+		m_Parser.GetCurrentAddress());
+	m_lpRes.DisableJunkParsing();
+	m_lpRes.EnsureParsed();
+	m_Parser.Advance(m_lpRes.GetCurrentOffset());
 }
 
 _Check_return_ wstring RuleCondition::ToStringInternal()
@@ -99,12 +74,12 @@ _Check_return_ wstring RuleCondition::ToStringInternal()
 			m_NamedPropertyInformation.NoOfNamedProps);
 	}
 
-	if (m_NamedPropertyInformation.NoOfNamedProps && m_NamedPropertyInformation.PropId)
+	if (m_NamedPropertyInformation.PropId.size())
 	{
 		szRuleCondition += formatmessage(IDS_RULECONNAMEPROPSIZE,
 			m_NamedPropertyInformation.NamedPropertiesSize);
 
-		for (auto i = 0; i < m_NamedPropertyInformation.NoOfNamedProps; i++)
+		for (size_t i = 0; i < m_NamedPropertyInformation.PropId.size(); i++)
 		{
 			szRuleCondition += formatmessage(IDS_RULECONNAMEPROPID, i, m_NamedPropertyInformation.PropId[i]);
 
@@ -122,16 +97,13 @@ _Check_return_ wstring RuleCondition::ToStringInternal()
 			{
 				szRuleCondition += formatmessage(IDS_RULENAMEPROPSIZE,
 					m_NamedPropertyInformation.PropertyName[i].NameSize);
-				if (m_NamedPropertyInformation.PropertyName[i].Name)
-				{
-					szRuleCondition += m_NamedPropertyInformation.PropertyName[i].Name;
-				}
+				szRuleCondition += m_NamedPropertyInformation.PropertyName[i].Name;
 			}
 		}
 	}
 
 	szRuleCondition += L"\r\n"; // STRING_OK
-	szRuleCondition += m_lpRes->ToString();
+	szRuleCondition += m_lpRes.ToString();
 
 	return szRuleCondition;
 }

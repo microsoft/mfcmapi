@@ -5,7 +5,6 @@ class RecipientRowStream : public SmartViewParser
 {
 public:
 	RecipientRowStream();
-	~RecipientRowStream();
 
 private:
 	void Parse() override;

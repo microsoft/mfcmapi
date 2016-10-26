@@ -16,7 +16,7 @@ struct PropertyName
 	GUID Guid;
 	DWORD LID;
 	BYTE NameSize;
-	LPWSTR Name;
+	wstring Name;
 };
 
 // [MS-OXORULE]
@@ -27,16 +27,15 @@ struct PropertyName
 struct NamedPropertyInformation
 {
 	WORD NoOfNamedProps;
-	WORD* PropId;
+	vector<WORD> PropId;
 	DWORD NamedPropertiesSize;
-	PropertyName* PropertyName;
+	vector<PropertyName> PropertyName;
 };
 
 class RuleCondition : public SmartViewParser
 {
 public:
 	RuleCondition();
-	~RuleCondition();
 
 	void Init(bool bExtended);
 private:
@@ -44,6 +43,6 @@ private:
 	_Check_return_ wstring ToStringInternal() override;
 
 	NamedPropertyInformation m_NamedPropertyInformation;
-	RestrictionStruct* m_lpRes;
+	RestrictionStruct m_lpRes;
 	bool m_bExtended;
 };
