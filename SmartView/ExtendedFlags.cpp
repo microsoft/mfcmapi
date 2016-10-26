@@ -16,10 +16,8 @@ void ExtendedFlags::Parse()
 	{
 		// Must have at least 2 bytes left to have another flag
 		if (m_Parser.RemainingBytes() < 2) break;
-		BYTE ulId = NULL;
-		BYTE cbData = NULL;
-		m_Parser.GetBYTE(&ulId);
-		m_Parser.GetBYTE(&cbData);
+		(void)m_Parser.Get<BYTE>();
+		auto cbData = m_Parser.Get<BYTE>();
 		// Must have at least cbData bytes left to be a valid flag
 		if (m_Parser.RemainingBytes() < cbData) break;
 
@@ -38,8 +36,8 @@ void ExtendedFlags::Parse()
 		{
 			ExtendedFlag extendedFlag;
 
-			m_Parser.GetBYTE(&extendedFlag.Id);
-			m_Parser.GetBYTE(&extendedFlag.Cb);
+			extendedFlag.Id = m_Parser.Get<BYTE>();
+			extendedFlag.Cb = m_Parser.Get<BYTE>();
 
 			// If the structure says there's more bytes than remaining buffer, we're done parsing.
 			if (m_Parser.RemainingBytes() < extendedFlag.Cb)
@@ -52,7 +50,7 @@ void ExtendedFlags::Parse()
 			{
 			case EFPB_FLAGS:
 				if (extendedFlag.Cb == sizeof(DWORD))
-					m_Parser.GetDWORD(&extendedFlag.Data.ExtendedFlags);
+					extendedFlag.Data.ExtendedFlags = m_Parser.Get<DWORD>();
 				else
 					bBadData = true;
 				break;
@@ -64,13 +62,13 @@ void ExtendedFlags::Parse()
 				break;
 			case EFPB_SFTAG:
 				if (extendedFlag.Cb == sizeof(DWORD))
-					m_Parser.GetDWORD(&extendedFlag.Data.SearchFolderTag);
+					extendedFlag.Data.SearchFolderTag = m_Parser.Get<DWORD>();
 				else
 					bBadData = true;
 				break;
 			case EFPB_TODO_VERSION:
 				if (extendedFlag.Cb == sizeof(DWORD))
-					m_Parser.GetDWORD(&extendedFlag.Data.ToDoFolderVersion);
+					extendedFlag.Data.ToDoFolderVersion = m_Parser.Get<DWORD>();
 				else
 					bBadData = true;
 				break;

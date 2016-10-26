@@ -7,14 +7,14 @@ FolderUserFieldStream::FolderUserFieldStream() : m_FolderUserFieldsAnsiCount(0),
 
 void FolderUserFieldStream::Parse()
 {
-	m_Parser.GetDWORD(&m_FolderUserFieldsAnsiCount);
+	m_FolderUserFieldsAnsiCount = m_Parser.Get<DWORD>();
 	if (m_FolderUserFieldsAnsiCount && m_FolderUserFieldsAnsiCount < _MaxEntriesSmall)
 	{
 		for (DWORD i = 0; i < m_FolderUserFieldsAnsiCount; i++)
 		{
 			FolderFieldDefinitionA folderFieldDefinitionA;
-			m_Parser.GetDWORD(&folderFieldDefinitionA.FieldType);
-			m_Parser.GetWORD(&folderFieldDefinitionA.FieldNameLength);
+			folderFieldDefinitionA.FieldType = m_Parser.Get<DWORD>();
+			folderFieldDefinitionA.FieldNameLength = m_Parser.Get<WORD>();
 
 			if (folderFieldDefinitionA.FieldNameLength &&
 				folderFieldDefinitionA.FieldNameLength < _MaxEntriesSmall)
@@ -27,14 +27,14 @@ void FolderUserFieldStream::Parse()
 		}
 	}
 
-	m_Parser.GetDWORD(&m_FolderUserFieldsUnicodeCount);
+	m_FolderUserFieldsUnicodeCount = m_Parser.Get<DWORD>();
 	if (m_FolderUserFieldsUnicodeCount && m_FolderUserFieldsUnicodeCount < _MaxEntriesSmall)
 	{
 		for (DWORD i = 0; i < m_FolderUserFieldsUnicodeCount; i++)
 		{
 			FolderFieldDefinitionW folderFieldDefinitionW;
-			m_Parser.GetDWORD(&folderFieldDefinitionW.FieldType);
-			m_Parser.GetWORD(&folderFieldDefinitionW.FieldNameLength);
+			folderFieldDefinitionW.FieldType = m_Parser.Get<DWORD>();
+			folderFieldDefinitionW.FieldNameLength = m_Parser.Get<WORD>();
 
 			if (folderFieldDefinitionW.FieldNameLength &&
 				folderFieldDefinitionW.FieldNameLength < _MaxEntriesSmall)
@@ -53,12 +53,12 @@ FolderFieldDefinitionCommon FolderUserFieldStream::BinToFolderFieldDefinitionCom
 	FolderFieldDefinitionCommon common;
 
 	common.PropSetGuid = m_Parser.Get<GUID>();
-	m_Parser.GetDWORD(&common.fcapm);
-	m_Parser.GetDWORD(&common.dwString);
-	m_Parser.GetDWORD(&common.dwBitmap);
-	m_Parser.GetDWORD(&common.dwDisplay);
-	m_Parser.GetDWORD(&common.iFmt);
-	m_Parser.GetWORD(&common.wszFormulaLength);
+	common.fcapm = m_Parser.Get<DWORD>();
+	common.dwString = m_Parser.Get<DWORD>();
+	common.dwBitmap = m_Parser.Get<DWORD>();
+	common.dwDisplay = m_Parser.Get<DWORD>();
+	common.iFmt = m_Parser.Get<DWORD>();
+	common.wszFormulaLength = m_Parser.Get<WORD>();
 	if (common.wszFormulaLength &&
 		common.wszFormulaLength < _MaxEntriesLarge)
 	{

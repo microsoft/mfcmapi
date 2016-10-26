@@ -15,11 +15,11 @@ TombStone::TombStone()
 
 void TombStone::Parse()
 {
-	m_Parser.GetDWORD(&m_Identifier);
-	m_Parser.GetDWORD(&m_HeaderSize);
-	m_Parser.GetDWORD(&m_Version);
-	m_Parser.GetDWORD(&m_RecordsCount);
-	m_Parser.GetDWORD(&m_RecordsSize);
+	m_Identifier = m_Parser.Get<DWORD>();
+	m_HeaderSize = m_Parser.Get<DWORD>();
+	m_Version = m_Parser.Get<DWORD>();
+	m_RecordsCount = m_Parser.Get<DWORD>();
+	m_RecordsSize = m_Parser.Get<DWORD>();
 
 	// Run through the parser once to count the number of flag structs
 	auto ulFlagOffset = m_Parser.GetCurrentOffset();
@@ -27,14 +27,10 @@ void TombStone::Parse()
 	{
 		// Must have at least 2 bytes left to have another flag
 		if (m_Parser.RemainingBytes() < sizeof(DWORD) * 3 + sizeof(WORD)) break;
-		DWORD dwData = NULL;
-		WORD wData = NULL;
-		m_Parser.GetDWORD(&dwData);
-		m_Parser.GetDWORD(&dwData);
-		m_Parser.GetDWORD(&dwData);
-		m_Parser.Advance(dwData);
-		m_Parser.GetWORD(&wData);
-		m_Parser.Advance(wData);
+		(void)m_Parser.Get<DWORD>();
+		(void)m_Parser.Get<DWORD>();
+		m_Parser.Advance(m_Parser.Get<DWORD>());
+		m_Parser.Advance(m_Parser.Get<WORD>());
 		m_ActualRecordsCount++;
 	}
 
@@ -46,11 +42,11 @@ void TombStone::Parse()
 		for (ULONG i = 0; i < m_ActualRecordsCount; i++)
 		{
 			TombstoneRecord tombstoneRecord;
-			m_Parser.GetDWORD(&tombstoneRecord.StartTime);
-			m_Parser.GetDWORD(&tombstoneRecord.EndTime);
-			m_Parser.GetDWORD(&tombstoneRecord.GlobalObjectIdSize);
+			tombstoneRecord.StartTime = m_Parser.Get<DWORD>();
+			tombstoneRecord.EndTime = m_Parser.Get<DWORD>();
+			tombstoneRecord.GlobalObjectIdSize = m_Parser.Get<DWORD>();
 			tombstoneRecord.lpGlobalObjectId = m_Parser.GetBYTES(tombstoneRecord.GlobalObjectIdSize, _MaxBytes);
-			m_Parser.GetWORD(&tombstoneRecord.UsernameSize);
+			tombstoneRecord.UsernameSize = m_Parser.Get<WORD>();
 			tombstoneRecord.szUsername = m_Parser.GetStringA(tombstoneRecord.UsernameSize);
 			m_lpRecords.push_back(tombstoneRecord);
 		}

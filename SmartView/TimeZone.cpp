@@ -14,27 +14,27 @@ TimeZone::TimeZone()
 
 void TimeZone::Parse()
 {
-	m_Parser.GetDWORD(&m_lBias);
-	m_Parser.GetDWORD(&m_lStandardBias);
-	m_Parser.GetDWORD(&m_lDaylightBias);
-	m_Parser.GetWORD(&m_wStandardYear);
-	m_Parser.GetWORD(&m_stStandardDate.wYear);
-	m_Parser.GetWORD(&m_stStandardDate.wMonth);
-	m_Parser.GetWORD(&m_stStandardDate.wDayOfWeek);
-	m_Parser.GetWORD(&m_stStandardDate.wDay);
-	m_Parser.GetWORD(&m_stStandardDate.wHour);
-	m_Parser.GetWORD(&m_stStandardDate.wMinute);
-	m_Parser.GetWORD(&m_stStandardDate.wSecond);
-	m_Parser.GetWORD(&m_stStandardDate.wMilliseconds);
-	m_Parser.GetWORD(&m_wDaylightDate);
-	m_Parser.GetWORD(&m_stDaylightDate.wYear);
-	m_Parser.GetWORD(&m_stDaylightDate.wMonth);
-	m_Parser.GetWORD(&m_stDaylightDate.wDayOfWeek);
-	m_Parser.GetWORD(&m_stDaylightDate.wDay);
-	m_Parser.GetWORD(&m_stDaylightDate.wHour);
-	m_Parser.GetWORD(&m_stDaylightDate.wMinute);
-	m_Parser.GetWORD(&m_stDaylightDate.wSecond);
-	m_Parser.GetWORD(&m_stDaylightDate.wMilliseconds);
+	m_lBias = m_Parser.Get<DWORD>();
+	m_lStandardBias = m_Parser.Get<DWORD>();
+	m_lDaylightBias = m_Parser.Get<DWORD>();
+	m_wStandardYear = m_Parser.Get<WORD>();
+	m_stStandardDate.wYear = m_Parser.Get<WORD>();
+	m_stStandardDate.wMonth = m_Parser.Get<WORD>();
+	m_stStandardDate.wDayOfWeek = m_Parser.Get<WORD>();
+	m_stStandardDate.wDay = m_Parser.Get<WORD>();
+	m_stStandardDate.wHour = m_Parser.Get<WORD>();
+	m_stStandardDate.wMinute = m_Parser.Get<WORD>();
+	m_stStandardDate.wSecond = m_Parser.Get<WORD>();
+	m_stStandardDate.wMilliseconds = m_Parser.Get<WORD>();
+	m_wDaylightDate = m_Parser.Get<WORD>();
+	m_stDaylightDate.wYear = m_Parser.Get<WORD>();
+	m_stDaylightDate.wMonth = m_Parser.Get<WORD>();
+	m_stDaylightDate.wDayOfWeek = m_Parser.Get<WORD>();
+	m_stDaylightDate.wDay = m_Parser.Get<WORD>();
+	m_stDaylightDate.wHour = m_Parser.Get<WORD>();
+	m_stDaylightDate.wMinute = m_Parser.Get<WORD>();
+	m_stDaylightDate.wSecond = m_Parser.Get<WORD>();
+	m_stDaylightDate.wMilliseconds = m_Parser.Get<WORD>();
 }
 
 _Check_return_ wstring TimeZone::ToStringInternal()

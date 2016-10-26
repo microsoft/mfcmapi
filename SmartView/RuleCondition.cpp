@@ -16,32 +16,32 @@ void RuleCondition::Init(bool bExtended)
 
 void RuleCondition::Parse()
 {
-	m_Parser.GetWORD(&m_NamedPropertyInformation.NoOfNamedProps);
+	m_NamedPropertyInformation.NoOfNamedProps = m_Parser.Get<WORD>();
 	if (m_NamedPropertyInformation.NoOfNamedProps && m_NamedPropertyInformation.NoOfNamedProps < _MaxEntriesLarge)
 	{
 		{
 			for (auto i = 0; i < m_NamedPropertyInformation.NoOfNamedProps; i++)
 			{
 				WORD propId = 0;
-				m_Parser.GetWORD(&propId);
+				propId = m_Parser.Get<WORD>();
 				m_NamedPropertyInformation.PropId.push_back(propId);
 			}
 		}
 
-		m_Parser.GetDWORD(&m_NamedPropertyInformation.NamedPropertiesSize);
+		m_NamedPropertyInformation.NamedPropertiesSize = m_Parser.Get<DWORD>();
 		{
 			for (auto i = 0; i < m_NamedPropertyInformation.NoOfNamedProps; i++)
 			{
 				PropertyName propertyName;
-				m_Parser.GetBYTE(&propertyName.Kind);
+				propertyName.Kind = m_Parser.Get<BYTE>();
 				propertyName.Guid = m_Parser.Get<GUID>();
 				if (MNID_ID == propertyName.Kind)
 				{
-					m_Parser.GetDWORD(&propertyName.LID);
+					propertyName.LID = m_Parser.Get<DWORD>();
 				}
 				else if (MNID_STRING == propertyName.Kind)
 				{
-					m_Parser.GetBYTE(&propertyName.NameSize);
+					propertyName.NameSize = m_Parser.Get<BYTE>();
 					propertyName.Name = m_Parser.GetStringW(propertyName.NameSize / sizeof(WCHAR));
 				}
 

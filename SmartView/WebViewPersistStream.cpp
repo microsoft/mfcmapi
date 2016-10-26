@@ -17,7 +17,7 @@ void WebViewPersistStream::Parse()
 		if (m_Parser.RemainingBytes() < sizeof(DWORD) * 11) break;
 		m_Parser.Advance(sizeof(DWORD) * 10);
 		DWORD cbData;
-		m_Parser.GetDWORD(&cbData);
+		cbData = m_Parser.Get<DWORD>();
 
 		// Must have at least cbData bytes left to be a valid flag
 		if (m_Parser.RemainingBytes() < cbData) break;
@@ -35,11 +35,11 @@ void WebViewPersistStream::Parse()
 		for (ULONG i = 0; i < cWebViews; i++)
 		{
 			WebViewPersist webViewPersist;
-			m_Parser.GetDWORD(&webViewPersist.dwVersion);
-			m_Parser.GetDWORD(&webViewPersist.dwType);
-			m_Parser.GetDWORD(&webViewPersist.dwFlags);
+			webViewPersist.dwVersion = m_Parser.Get<DWORD>();
+			webViewPersist.dwType = m_Parser.Get<DWORD>();
+			webViewPersist.dwFlags = m_Parser.Get<DWORD>();
 			webViewPersist.dwUnused = m_Parser.GetBYTES(7 * sizeof(DWORD));
-			m_Parser.GetDWORD(&webViewPersist.cbData);
+			webViewPersist.cbData = m_Parser.Get<DWORD>();
 			webViewPersist.lpData = m_Parser.GetBYTES(webViewPersist.cbData, _MaxBytes);
 			m_lpWebViews.push_back(webViewPersist);
 		}

@@ -12,8 +12,8 @@ RecipientRowStream::RecipientRowStream()
 
 void RecipientRowStream::Parse()
 {
-	m_Parser.GetDWORD(&m_cVersion);
-	m_Parser.GetDWORD(&m_cRowCount);
+	m_cVersion = m_Parser.Get<DWORD>();
+	m_cRowCount = m_Parser.Get<DWORD>();
 
 	if (m_cRowCount && m_cRowCount < _MaxEntriesSmall)
 		m_lpAdrEntry = reinterpret_cast<ADRENTRY*>(AllocateArray(m_cRowCount, sizeof ADRENTRY));
@@ -22,8 +22,8 @@ void RecipientRowStream::Parse()
 	{
 		for (DWORD i = 0; i < m_cRowCount; i++)
 		{
-			m_Parser.GetDWORD(&m_lpAdrEntry[i].cValues);
-			m_Parser.GetDWORD(&m_lpAdrEntry[i].ulReserved1);
+			m_lpAdrEntry[i].cValues = m_Parser.Get<DWORD>();
+			m_lpAdrEntry[i].ulReserved1 = m_Parser.Get<DWORD>();
 
 			if (m_lpAdrEntry[i].cValues && m_lpAdrEntry[i].cValues < _MaxEntriesSmall)
 			{

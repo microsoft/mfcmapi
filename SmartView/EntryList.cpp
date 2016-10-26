@@ -10,8 +10,8 @@ EntryList::EntryList()
 
 void EntryList::Parse()
 {
-	m_Parser.GetDWORD(&m_EntryCount);
-	m_Parser.GetDWORD(&m_Pad);
+	m_EntryCount = m_Parser.Get<DWORD>();
+	m_Pad = m_Parser.Get<DWORD>();
 
 	if (m_EntryCount && m_EntryCount < _MaxEntriesLarge)
 	{
@@ -19,8 +19,8 @@ void EntryList::Parse()
 			for (DWORD i = 0; i < m_EntryCount; i++)
 			{
 				EntryListEntryStruct entryListEntryStruct;
-				m_Parser.GetDWORD(&entryListEntryStruct.EntryLength);
-				m_Parser.GetDWORD(&entryListEntryStruct.EntryLengthPad);
+				entryListEntryStruct.EntryLength = m_Parser.Get<DWORD>();
+				entryListEntryStruct.EntryLengthPad = m_Parser.Get<DWORD>();
 				m_Entry.push_back(entryListEntryStruct);
 			}
 

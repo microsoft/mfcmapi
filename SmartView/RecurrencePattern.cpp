@@ -27,51 +27,51 @@ RecurrencePattern::RecurrencePattern()
 
 void RecurrencePattern::Parse()
 {
-	m_Parser.GetWORD(&m_ReaderVersion);
-	m_Parser.GetWORD(&m_WriterVersion);
-	m_Parser.GetWORD(&m_RecurFrequency);
-	m_Parser.GetWORD(&m_PatternType);
-	m_Parser.GetWORD(&m_CalendarType);
-	m_Parser.GetDWORD(&m_FirstDateTime);
-	m_Parser.GetDWORD(&m_Period);
-	m_Parser.GetDWORD(&m_SlidingFlag);
+	m_ReaderVersion = m_Parser.Get<WORD>();
+	m_WriterVersion = m_Parser.Get<WORD>();
+	m_RecurFrequency = m_Parser.Get<WORD>();
+	m_PatternType = m_Parser.Get<WORD>();
+	m_CalendarType = m_Parser.Get<WORD>();
+	m_FirstDateTime = m_Parser.Get<DWORD>();
+	m_Period = m_Parser.Get<DWORD>();
+	m_SlidingFlag = m_Parser.Get<DWORD>();
 
 	switch (m_PatternType)
 	{
 	case rptMinute:
 		break;
 	case rptWeek:
-		m_Parser.GetDWORD(&m_PatternTypeSpecific.WeekRecurrencePattern);
+		m_PatternTypeSpecific.WeekRecurrencePattern = m_Parser.Get<DWORD>();
 		break;
 	case rptMonth:
 	case rptMonthEnd:
 	case rptHjMonth:
 	case rptHjMonthEnd:
-		m_Parser.GetDWORD(&m_PatternTypeSpecific.MonthRecurrencePattern);
+		m_PatternTypeSpecific.MonthRecurrencePattern = m_Parser.Get<DWORD>();
 		break;
 	case rptMonthNth:
 	case rptHjMonthNth:
-		m_Parser.GetDWORD(&m_PatternTypeSpecific.MonthNthRecurrencePattern.DayOfWeek);
-		m_Parser.GetDWORD(&m_PatternTypeSpecific.MonthNthRecurrencePattern.N);
+		m_PatternTypeSpecific.MonthNthRecurrencePattern.DayOfWeek = m_Parser.Get<DWORD>();
+		m_PatternTypeSpecific.MonthNthRecurrencePattern.N = m_Parser.Get<DWORD>();
 		break;
 	}
 
-	m_Parser.GetDWORD(&m_EndType);
-	m_Parser.GetDWORD(&m_OccurrenceCount);
-	m_Parser.GetDWORD(&m_FirstDOW);
-	m_Parser.GetDWORD(&m_DeletedInstanceCount);
+	m_EndType = m_Parser.Get<DWORD>();
+	m_OccurrenceCount = m_Parser.Get<DWORD>();
+	m_FirstDOW = m_Parser.Get<DWORD>();
+	m_DeletedInstanceCount = m_Parser.Get<DWORD>();
 
 	if (m_DeletedInstanceCount && m_DeletedInstanceCount < _MaxEntriesSmall)
 	{
 		for (DWORD i = 0; i < m_DeletedInstanceCount; i++)
 		{
 			DWORD deletedInstanceDate = 0;
-			m_Parser.GetDWORD(&deletedInstanceDate);
+			deletedInstanceDate = m_Parser.Get<DWORD>();
 			m_DeletedInstanceDates.push_back(deletedInstanceDate);
 		}
 	}
 
-	m_Parser.GetDWORD(&m_ModifiedInstanceCount);
+	m_ModifiedInstanceCount = m_Parser.Get<DWORD>();
 
 	if (m_ModifiedInstanceCount &&
 		m_ModifiedInstanceCount <= m_DeletedInstanceCount &&
@@ -80,13 +80,13 @@ void RecurrencePattern::Parse()
 		for (DWORD i = 0; i < m_ModifiedInstanceCount; i++)
 		{
 			DWORD modifiedInstanceDate = 0;
-			m_Parser.GetDWORD(&modifiedInstanceDate);
+			modifiedInstanceDate = m_Parser.Get<DWORD>();
 			m_ModifiedInstanceDates.push_back(modifiedInstanceDate);
 		}
 	}
 
-	m_Parser.GetDWORD(&m_StartDate);
-	m_Parser.GetDWORD(&m_EndDate);
+	m_StartDate = m_Parser.Get<DWORD>();
+	m_EndDate = m_Parser.Get<DWORD>();
 }
 
 _Check_return_ wstring RecurrencePattern::ToStringInternal()

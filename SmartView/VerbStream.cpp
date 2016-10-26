@@ -12,45 +12,45 @@ VerbStream::VerbStream()
 
 void VerbStream::Parse()
 {
-	m_Parser.GetWORD(&m_Version);
-	m_Parser.GetDWORD(&m_Count);
+	m_Version = m_Parser.Get<WORD>();
+	m_Count = m_Parser.Get<DWORD>();
 
 	if (m_Count && m_Count < _MaxEntriesSmall)
 	{
 		for (ULONG i = 0; i < m_Count; i++)
 		{
 			VerbData verbData;
-			m_Parser.GetDWORD(&verbData.VerbType);
-			m_Parser.GetBYTE(&verbData.DisplayNameCount);
+			verbData.VerbType = m_Parser.Get<DWORD>();
+			verbData.DisplayNameCount = m_Parser.Get<BYTE>();
 			verbData.DisplayName = m_Parser.GetStringA(verbData.DisplayNameCount);
-			m_Parser.GetBYTE(&verbData.MsgClsNameCount);
+			verbData.MsgClsNameCount = m_Parser.Get<BYTE>();
 			verbData.MsgClsName = m_Parser.GetStringA(verbData.MsgClsNameCount);
-			m_Parser.GetBYTE(&verbData.Internal1StringCount);
+			verbData.Internal1StringCount = m_Parser.Get<BYTE>();
 			verbData.Internal1String = m_Parser.GetStringA(verbData.Internal1StringCount);
-			m_Parser.GetBYTE(&verbData.DisplayNameCountRepeat);
+			verbData.DisplayNameCountRepeat = m_Parser.Get<BYTE>();
 			verbData.DisplayNameRepeat = m_Parser.GetStringA(verbData.DisplayNameCountRepeat);
-			m_Parser.GetDWORD(&verbData.Internal2);
-			m_Parser.GetBYTE(&verbData.Internal3);
-			m_Parser.GetDWORD(&verbData.fUseUSHeaders);
-			m_Parser.GetDWORD(&verbData.Internal4);
-			m_Parser.GetDWORD(&verbData.SendBehavior);
-			m_Parser.GetDWORD(&verbData.Internal5);
-			m_Parser.GetDWORD(&verbData.ID);
-			m_Parser.GetDWORD(&verbData.Internal6);
+			verbData.Internal2 = m_Parser.Get<DWORD>();
+			verbData.Internal3 = m_Parser.Get<BYTE>();
+			verbData.fUseUSHeaders = m_Parser.Get<DWORD>();
+			verbData.Internal4 = m_Parser.Get<DWORD>();
+			verbData.SendBehavior = m_Parser.Get<DWORD>();
+			verbData.Internal5 = m_Parser.Get<DWORD>();
+			verbData.ID = m_Parser.Get<DWORD>();
+			verbData.Internal6 = m_Parser.Get<DWORD>();
 			m_lpVerbData.push_back(verbData);
 		}
 	}
 
-	m_Parser.GetWORD(&m_Version2);
+	m_Version2 = m_Parser.Get<WORD>();
 
 	if (m_Count && m_Count < _MaxEntriesSmall)
 	{
 		for (ULONG i = 0; i < m_Count; i++)
 		{
 			VerbExtraData verbExtraData;
-			m_Parser.GetBYTE(&verbExtraData.DisplayNameCount);
+			verbExtraData.DisplayNameCount = m_Parser.Get<BYTE>();
 			verbExtraData.DisplayName = m_Parser.GetStringW(verbExtraData.DisplayNameCount);
-			m_Parser.GetBYTE(&verbExtraData.DisplayNameCountRepeat);
+			verbExtraData.DisplayNameCountRepeat = m_Parser.Get<BYTE>();
 			verbExtraData.DisplayNameRepeat = m_Parser.GetStringW(verbExtraData.DisplayNameCountRepeat);
 			m_lpVerbExtraData.push_back(verbExtraData);
 		}

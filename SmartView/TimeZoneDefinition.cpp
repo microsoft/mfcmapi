@@ -15,44 +15,44 @@ TimeZoneDefinition::TimeZoneDefinition()
 
 void TimeZoneDefinition::Parse()
 {
-	m_Parser.GetBYTE(&m_bMajorVersion);
-	m_Parser.GetBYTE(&m_bMinorVersion);
-	m_Parser.GetWORD(&m_cbHeader);
-	m_Parser.GetWORD(&m_wReserved);
-	m_Parser.GetWORD(&m_cchKeyName);
+	m_bMajorVersion = m_Parser.Get<BYTE>();
+	m_bMinorVersion = m_Parser.Get<BYTE>();
+	m_cbHeader = m_Parser.Get<WORD>();
+	m_wReserved = m_Parser.Get<WORD>();
+	m_cchKeyName = m_Parser.Get<WORD>();
 	m_szKeyName = m_Parser.GetStringW(m_cchKeyName);
-	m_Parser.GetWORD(&m_cRules);
+	m_cRules = m_Parser.Get<WORD>();
 
 	if (m_cRules && m_cRules < _MaxEntriesSmall)
 	{
 		for (ULONG i = 0; i < m_cRules; i++)
 		{
 			TZRule tzRule;
-			m_Parser.GetBYTE(&tzRule.bMajorVersion);
-			m_Parser.GetBYTE(&tzRule.bMinorVersion);
-			m_Parser.GetWORD(&tzRule.wReserved);
-			m_Parser.GetWORD(&tzRule.wTZRuleFlags);
-			m_Parser.GetWORD(&tzRule.wYear);
+			tzRule.bMajorVersion = m_Parser.Get<BYTE>();
+			tzRule.bMinorVersion = m_Parser.Get<BYTE>();
+			tzRule.wReserved = m_Parser.Get<WORD>();
+			tzRule.wTZRuleFlags = m_Parser.Get<WORD>();
+			tzRule.wYear = m_Parser.Get<WORD>();
 			tzRule.X = m_Parser.GetBYTES(14);
-			m_Parser.GetDWORD(&tzRule.lBias);
-			m_Parser.GetDWORD(&tzRule.lStandardBias);
-			m_Parser.GetDWORD(&tzRule.lDaylightBias);
-			m_Parser.GetWORD(&tzRule.stStandardDate.wYear);
-			m_Parser.GetWORD(&tzRule.stStandardDate.wMonth);
-			m_Parser.GetWORD(&tzRule.stStandardDate.wDayOfWeek);
-			m_Parser.GetWORD(&tzRule.stStandardDate.wDay);
-			m_Parser.GetWORD(&tzRule.stStandardDate.wHour);
-			m_Parser.GetWORD(&tzRule.stStandardDate.wMinute);
-			m_Parser.GetWORD(&tzRule.stStandardDate.wSecond);
-			m_Parser.GetWORD(&tzRule.stStandardDate.wMilliseconds);
-			m_Parser.GetWORD(&tzRule.stDaylightDate.wYear);
-			m_Parser.GetWORD(&tzRule.stDaylightDate.wMonth);
-			m_Parser.GetWORD(&tzRule.stDaylightDate.wDayOfWeek);
-			m_Parser.GetWORD(&tzRule.stDaylightDate.wDay);
-			m_Parser.GetWORD(&tzRule.stDaylightDate.wHour);
-			m_Parser.GetWORD(&tzRule.stDaylightDate.wMinute);
-			m_Parser.GetWORD(&tzRule.stDaylightDate.wSecond);
-			m_Parser.GetWORD(&tzRule.stDaylightDate.wMilliseconds);
+			tzRule.lBias = m_Parser.Get<DWORD>();
+			tzRule.lStandardBias = m_Parser.Get<DWORD>();
+			tzRule.lDaylightBias = m_Parser.Get<DWORD>();
+			tzRule.stStandardDate.wYear = m_Parser.Get<WORD>();
+			tzRule.stStandardDate.wMonth = m_Parser.Get<WORD>();
+			tzRule.stStandardDate.wDayOfWeek = m_Parser.Get<WORD>();
+			tzRule.stStandardDate.wDay = m_Parser.Get<WORD>();
+			tzRule.stStandardDate.wHour = m_Parser.Get<WORD>();
+			tzRule.stStandardDate.wMinute = m_Parser.Get<WORD>();
+			tzRule.stStandardDate.wSecond = m_Parser.Get<WORD>();
+			tzRule.stStandardDate.wMilliseconds = m_Parser.Get<WORD>();
+			tzRule.stDaylightDate.wYear = m_Parser.Get<WORD>();
+			tzRule.stDaylightDate.wMonth = m_Parser.Get<WORD>();
+			tzRule.stDaylightDate.wDayOfWeek = m_Parser.Get<WORD>();
+			tzRule.stDaylightDate.wDay = m_Parser.Get<WORD>();
+			tzRule.stDaylightDate.wHour = m_Parser.Get<WORD>();
+			tzRule.stDaylightDate.wMinute = m_Parser.Get<WORD>();
+			tzRule.stDaylightDate.wSecond = m_Parser.Get<WORD>();
+			tzRule.stDaylightDate.wMilliseconds = m_Parser.Get<WORD>();
 			m_lpTZRule.push_back(tzRule);
 		}
 	}

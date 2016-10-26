@@ -23,11 +23,11 @@ void AppointmentRecurrencePattern::Parse()
 	m_RecurrencePattern.EnsureParsed();
 	m_Parser.Advance(m_RecurrencePattern.GetCurrentOffset());
 
-	m_Parser.GetDWORD(&m_ReaderVersion2);
-	m_Parser.GetDWORD(&m_WriterVersion2);
-	m_Parser.GetDWORD(&m_StartTimeOffset);
-	m_Parser.GetDWORD(&m_EndTimeOffset);
-	m_Parser.GetWORD(&m_ExceptionCount);
+	m_ReaderVersion2 = m_Parser.Get<DWORD>();
+	m_WriterVersion2 = m_Parser.Get<DWORD>();
+	m_StartTimeOffset = m_Parser.Get<DWORD>();
+	m_EndTimeOffset = m_Parser.Get<DWORD>();
+	m_ExceptionCount = m_Parser.Get<WORD>();
 
 	if (m_ExceptionCount &&
 		m_ExceptionCount == m_RecurrencePattern.m_ModifiedInstanceCount &&
@@ -36,14 +36,14 @@ void AppointmentRecurrencePattern::Parse()
 		for (WORD i = 0; i < m_ExceptionCount; i++)
 		{
 			ExceptionInfo exceptionInfo;
-			m_Parser.GetDWORD(&exceptionInfo.StartDateTime);
-			m_Parser.GetDWORD(&exceptionInfo.EndDateTime);
-			m_Parser.GetDWORD(&exceptionInfo.OriginalStartDate);
-			m_Parser.GetWORD(&exceptionInfo.OverrideFlags);
+			exceptionInfo.StartDateTime = m_Parser.Get<DWORD>();
+			exceptionInfo.EndDateTime = m_Parser.Get<DWORD>();
+			exceptionInfo.OriginalStartDate = m_Parser.Get<DWORD>();
+			exceptionInfo.OverrideFlags = m_Parser.Get<WORD>();
 			if (exceptionInfo.OverrideFlags & ARO_SUBJECT)
 			{
-				m_Parser.GetWORD(&exceptionInfo.SubjectLength);
-				m_Parser.GetWORD(&exceptionInfo.SubjectLength2);
+				exceptionInfo.SubjectLength = m_Parser.Get<WORD>();
+				exceptionInfo.SubjectLength2 = m_Parser.Get<WORD>();
 				if (exceptionInfo.SubjectLength2 && exceptionInfo.SubjectLength2 + 1 == exceptionInfo.SubjectLength)
 				{
 					exceptionInfo.Subject = m_Parser.GetStringA(exceptionInfo.SubjectLength2);
@@ -52,22 +52,22 @@ void AppointmentRecurrencePattern::Parse()
 
 			if (exceptionInfo.OverrideFlags & ARO_MEETINGTYPE)
 			{
-				m_Parser.GetDWORD(&exceptionInfo.MeetingType);
+				exceptionInfo.MeetingType = m_Parser.Get<DWORD>();
 			}
 
 			if (exceptionInfo.OverrideFlags & ARO_REMINDERDELTA)
 			{
-				m_Parser.GetDWORD(&exceptionInfo.ReminderDelta);
+				exceptionInfo.ReminderDelta = m_Parser.Get<DWORD>();
 			}
 			if (exceptionInfo.OverrideFlags & ARO_REMINDER)
 			{
-				m_Parser.GetDWORD(&exceptionInfo.ReminderSet);
+				exceptionInfo.ReminderSet = m_Parser.Get<DWORD>();
 			}
 
 			if (exceptionInfo.OverrideFlags & ARO_LOCATION)
 			{
-				m_Parser.GetWORD(&exceptionInfo.LocationLength);
-				m_Parser.GetWORD(&exceptionInfo.LocationLength2);
+				exceptionInfo.LocationLength = m_Parser.Get<WORD>();
+				exceptionInfo.LocationLength2 = m_Parser.Get<WORD>();
 				if (exceptionInfo.LocationLength2 && exceptionInfo.LocationLength2 + 1 == exceptionInfo.LocationLength)
 				{
 					exceptionInfo.Location = m_Parser.GetStringA(exceptionInfo.LocationLength2);
@@ -76,29 +76,29 @@ void AppointmentRecurrencePattern::Parse()
 
 			if (exceptionInfo.OverrideFlags & ARO_BUSYSTATUS)
 			{
-				m_Parser.GetDWORD(&exceptionInfo.BusyStatus);
+				exceptionInfo.BusyStatus = m_Parser.Get<DWORD>();
 			}
 
 			if (exceptionInfo.OverrideFlags & ARO_ATTACHMENT)
 			{
-				m_Parser.GetDWORD(&exceptionInfo.Attachment);
+				exceptionInfo.Attachment = m_Parser.Get<DWORD>();
 			}
 
 			if (exceptionInfo.OverrideFlags & ARO_SUBTYPE)
 			{
-				m_Parser.GetDWORD(&exceptionInfo.SubType);
+				exceptionInfo.SubType = m_Parser.Get<DWORD>();
 			}
 
 			if (exceptionInfo.OverrideFlags & ARO_APPTCOLOR)
 			{
-				m_Parser.GetDWORD(&exceptionInfo.AppointmentColor);
+				exceptionInfo.AppointmentColor = m_Parser.Get<DWORD>();
 			}
 
 			m_ExceptionInfo.push_back(exceptionInfo);
 		}
 	}
 
-	m_Parser.GetDWORD(&m_ReservedBlock1Size);
+	m_ReservedBlock1Size = m_Parser.Get<DWORD>();
 	m_ReservedBlock1 = m_Parser.GetBYTES(m_ReservedBlock1Size, _MaxBytes);
 
 	if (m_ExceptionCount &&
@@ -120,28 +120,28 @@ void AppointmentRecurrencePattern::Parse()
 
 			vector<BYTE> ReservedBlockEE2;			if (m_WriterVersion2 >= 0x0003009)
 			{
-				m_Parser.GetDWORD(&extendedException.ChangeHighlight.ChangeHighlightSize);
-				m_Parser.GetDWORD(&extendedException.ChangeHighlight.ChangeHighlightValue);
+				extendedException.ChangeHighlight.ChangeHighlightSize = m_Parser.Get<DWORD>();
+				extendedException.ChangeHighlight.ChangeHighlightValue = m_Parser.Get<DWORD>();
 				if (extendedException.ChangeHighlight.ChangeHighlightSize > sizeof(DWORD))
 				{
 					extendedException.ChangeHighlight.Reserved = m_Parser.GetBYTES(extendedException.ChangeHighlight.ChangeHighlightSize - sizeof(DWORD), _MaxBytes);
 				}
 			}
 
-			m_Parser.GetDWORD(&extendedException.ReservedBlockEE1Size);
+			extendedException.ReservedBlockEE1Size = m_Parser.Get<DWORD>();
 			extendedException.ReservedBlockEE1 = m_Parser.GetBYTES(extendedException.ReservedBlockEE1Size, _MaxBytes);
 
 			if (m_ExceptionInfo[i].OverrideFlags & ARO_SUBJECT ||
 				m_ExceptionInfo[i].OverrideFlags & ARO_LOCATION)
 			{
-				m_Parser.GetDWORD(&extendedException.StartDateTime);
-				m_Parser.GetDWORD(&extendedException.EndDateTime);
-				m_Parser.GetDWORD(&extendedException.OriginalStartDate);
+				extendedException.StartDateTime = m_Parser.Get<DWORD>();
+				extendedException.EndDateTime = m_Parser.Get<DWORD>();
+				extendedException.OriginalStartDate = m_Parser.Get<DWORD>();
 			}
 
 			if (m_ExceptionInfo[i].OverrideFlags & ARO_SUBJECT)
 			{
-				m_Parser.GetWORD(&extendedException.WideCharSubjectLength);
+				extendedException.WideCharSubjectLength = m_Parser.Get<WORD>();
 				if (extendedException.WideCharSubjectLength)
 				{
 					extendedException.WideCharSubject = m_Parser.GetStringW(extendedException.WideCharSubjectLength);
@@ -150,7 +150,7 @@ void AppointmentRecurrencePattern::Parse()
 
 			if (m_ExceptionInfo[i].OverrideFlags & ARO_LOCATION)
 			{
-				m_Parser.GetWORD(&extendedException.WideCharLocationLength);
+				extendedException.WideCharLocationLength = m_Parser.Get<WORD>();
 				if (extendedException.WideCharLocationLength)
 				{
 					extendedException.WideCharLocation = m_Parser.GetStringW(extendedException.WideCharLocationLength);
@@ -160,7 +160,7 @@ void AppointmentRecurrencePattern::Parse()
 			if (m_ExceptionInfo[i].OverrideFlags & ARO_SUBJECT ||
 				m_ExceptionInfo[i].OverrideFlags & ARO_LOCATION)
 			{
-				m_Parser.GetDWORD(&extendedException.ReservedBlockEE2Size);
+				extendedException.ReservedBlockEE2Size = m_Parser.Get<DWORD>();
 				extendedException.ReservedBlockEE2 = m_Parser.GetBYTES(extendedException.ReservedBlockEE2Size, _MaxBytes);
 			}
 
@@ -168,7 +168,7 @@ void AppointmentRecurrencePattern::Parse()
 		}
 	}
 
-	m_Parser.GetDWORD(&m_ReservedBlock2Size);
+	m_ReservedBlock2Size = m_Parser.Get<DWORD>();
 	m_ReservedBlock2 = m_Parser.GetBYTES(m_ReservedBlock2Size, _MaxBytes);
 }
 

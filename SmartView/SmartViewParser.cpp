@@ -118,30 +118,22 @@ _Check_return_ LPSPropValue SmartViewParser::BinToSPropValue(DWORD dwPropCount, 
 
 	for (DWORD i = 0; i < dwPropCount; i++)
 	{
-		WORD PropType = 0;
-		WORD PropID = 0;
-
-		m_Parser.GetWORD(&PropType);
-		m_Parser.GetWORD(&PropID);
+		auto PropType = m_Parser.Get<WORD>();
+		auto PropID = m_Parser.Get<WORD>();
 
 		pspvProperty[i].ulPropTag = PROP_TAG(PropType, PropID);
 		pspvProperty[i].dwAlignPad = 0;
 
-		DWORD dwTemp = 0;
-		WORD wTemp = 0;
 		switch (PropType)
 		{
 		case PT_LONG:
-			m_Parser.GetDWORD(&dwTemp);
-			pspvProperty[i].Value.l = dwTemp;
+			pspvProperty[i].Value.l = m_Parser.Get<DWORD>();
 			break;
 		case PT_ERROR:
-			m_Parser.GetDWORD(&dwTemp);
-			pspvProperty[i].Value.err = dwTemp;
+			pspvProperty[i].Value.err = m_Parser.Get<DWORD>();
 			break;
 		case PT_BOOLEAN:
-			m_Parser.GetWORD(&wTemp);
-			pspvProperty[i].Value.b = wTemp;
+			pspvProperty[i].Value.b = m_Parser.Get<WORD>();
 			break;
 		case PT_UNICODE:
 			if (bStringPropsExcludeLength)
@@ -151,8 +143,7 @@ _Check_return_ LPSPropValue SmartViewParser::BinToSPropValue(DWORD dwPropCount, 
 			else
 			{
 				// This is apparently a cb...
-				m_Parser.GetWORD(&wTemp);
-				pspvProperty[i].Value.lpszW = GetStringW(wTemp / sizeof(WCHAR));
+				pspvProperty[i].Value.lpszW = GetStringW(m_Parser.Get<WORD>() / sizeof(WCHAR));
 			}
 			break;
 		case PT_STRING8:
@@ -163,24 +154,20 @@ _Check_return_ LPSPropValue SmartViewParser::BinToSPropValue(DWORD dwPropCount, 
 			else
 			{
 				// This is apparently a cb...
-				m_Parser.GetWORD(&wTemp);
-				pspvProperty[i].Value.lpszA = GetStringA(wTemp);
+				pspvProperty[i].Value.lpszA = GetStringA(m_Parser.Get<WORD>());
 			}
 			break;
 		case PT_SYSTIME:
-			m_Parser.GetDWORD(&pspvProperty[i].Value.ft.dwHighDateTime);
-			m_Parser.GetDWORD(&pspvProperty[i].Value.ft.dwLowDateTime);
+			pspvProperty[i].Value.ft.dwHighDateTime = m_Parser.Get<DWORD>();
+			pspvProperty[i].Value.ft.dwLowDateTime = m_Parser.Get<DWORD>();
 			break;
 		case PT_BINARY:
-			m_Parser.GetWORD(&wTemp);
-			pspvProperty[i].Value.bin.cb = wTemp;
+			pspvProperty[i].Value.bin.cb = m_Parser.Get<WORD>();
 			// Note that we're not placing a restriction on how large a binary property we can parse. May need to revisit this.
 			pspvProperty[i].Value.bin.lpb = GetBYTES(pspvProperty[i].Value.bin.cb);
 			break;
 		case PT_MV_STRING8:
-			m_Parser.GetWORD(&wTemp);
-			pspvProperty[i].Value.MVszA.cValues = wTemp;
-			pspvProperty[i].Value.MVszA.lppszA = reinterpret_cast<LPSTR*>(AllocateArray(wTemp, sizeof LPVOID));
+			pspvProperty[i].Value.MVszA.lppszA = reinterpret_cast<LPSTR*>(AllocateArray(pspvProperty[i].Value.MVszA.cValues, sizeof LPVOID));
 			if (pspvProperty[i].Value.MVszA.lppszA)
 			{
 				for (ULONG j = 0; j < pspvProperty[i].Value.MVszA.cValues; j++)
@@ -190,9 +177,7 @@ _Check_return_ LPSPropValue SmartViewParser::BinToSPropValue(DWORD dwPropCount, 
 			}
 			break;
 		case PT_MV_UNICODE:
-			m_Parser.GetWORD(&wTemp);
-			pspvProperty[i].Value.MVszW.cValues = wTemp;
-			pspvProperty[i].Value.MVszW.lppszW = reinterpret_cast<LPWSTR*>(AllocateArray(wTemp, sizeof LPVOID));
+			pspvProperty[i].Value.MVszW.lppszW = reinterpret_cast<LPWSTR*>(AllocateArray(pspvProperty[i].Value.MVszW.cValues, sizeof LPVOID));
 			if (pspvProperty[i].Value.MVszW.lppszW)
 			{
 				for (ULONG j = 0; j < pspvProperty[i].Value.MVszW.cValues; j++)

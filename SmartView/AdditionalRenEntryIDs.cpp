@@ -13,10 +13,8 @@ void AdditionalRenEntryIDs::Parse()
 	for (;;)
 	{
 		if (m_Parser.RemainingBytes() < 2 * sizeof(WORD)) break;
-		WORD wPersistID = NULL;
-		WORD wDataElementSize = NULL;
-		m_Parser.GetWORD(&wPersistID);
-		m_Parser.GetWORD(&wDataElementSize);
+		auto wPersistID = m_Parser.Get<WORD>();
+		auto wDataElementSize = m_Parser.Get<WORD>();
 		// Must have at least wDataElementSize bytes left to be a valid data element
 		if (m_Parser.RemainingBytes() < wDataElementSize) break;
 
@@ -41,8 +39,8 @@ PersistData AdditionalRenEntryIDs::BinToPersistData()
 {
 	PersistData persistData;
 	WORD wDataElementCount = 0;
-	m_Parser.GetWORD(&persistData.wPersistID);
-	m_Parser.GetWORD(&persistData.wDataElementsSize);
+	persistData.wPersistID = m_Parser.Get<WORD>();
+	persistData.wDataElementsSize = m_Parser.Get<WORD>();
 
 	if (persistData.wPersistID != PERISIST_SENTINEL &&
 		m_Parser.RemainingBytes() >= persistData.wDataElementsSize)
@@ -53,10 +51,8 @@ PersistData AdditionalRenEntryIDs::BinToPersistData()
 		for (;;)
 		{
 			if (DataElementParser.RemainingBytes() < 2 * sizeof(WORD)) break;
-			WORD wElementID = NULL;
-			WORD wElementDataSize = NULL;
-			DataElementParser.GetWORD(&wElementID);
-			DataElementParser.GetWORD(&wElementDataSize);
+			auto wElementID = DataElementParser.Get<WORD>();
+			auto wElementDataSize = DataElementParser.Get<WORD>();
 			// Must have at least wElementDataSize bytes left to be a valid element data
 			if (DataElementParser.RemainingBytes() < wElementDataSize) break;
 
@@ -71,8 +67,8 @@ PersistData AdditionalRenEntryIDs::BinToPersistData()
 		for (WORD iDataElement = 0; iDataElement < wDataElementCount; iDataElement++)
 		{
 			PersistElement persistElement;
-			m_Parser.GetWORD(&persistElement.wElementID);
-			m_Parser.GetWORD(&persistElement.wElementDataSize);
+			persistElement.wElementID = m_Parser.Get<WORD>();
+			persistElement.wElementDataSize = m_Parser.Get<WORD>();
 			if (ELEMENT_SENTINEL == persistElement.wElementID) break;
 			// Since this is a word, the size will never be too large
 			persistElement.lpbElementData = m_Parser.GetBYTES(persistElement.wElementDataSize);

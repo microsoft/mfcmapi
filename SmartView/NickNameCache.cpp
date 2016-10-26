@@ -15,9 +15,9 @@ NickNameCache::NickNameCache()
 void NickNameCache::Parse()
 {
 	m_Metadata1 = m_Parser.GetBYTES(4);
-	m_Parser.GetDWORD(&m_ulMajorVersion);
-	m_Parser.GetDWORD(&m_ulMinorVersion);
-	m_Parser.GetDWORD(&m_cRowCount);
+	m_ulMajorVersion = m_Parser.Get<DWORD>();
+	m_ulMinorVersion = m_Parser.Get<DWORD>();
+	m_cRowCount = m_Parser.Get<DWORD>();
 
 	if (m_cRowCount && m_cRowCount < _MaxEntriesEnormous)
 		m_lpRows = reinterpret_cast<LPSRow>(AllocateArray(m_cRowCount, sizeof SRow));
@@ -26,7 +26,7 @@ void NickNameCache::Parse()
 	{
 		for (DWORD i = 0; i < m_cRowCount; i++)
 		{
-			m_Parser.GetDWORD(&m_lpRows[i].cValues);
+			m_lpRows[i].cValues = m_Parser.Get<DWORD>();
 
 			if (m_lpRows[i].cValues && m_lpRows[i].cValues < _MaxEntriesSmall)
 			{
@@ -38,7 +38,7 @@ void NickNameCache::Parse()
 		}
 	}
 
-	m_Parser.GetDWORD(&m_cbEI);
+	m_cbEI = m_Parser.Get<DWORD>();
 	m_lpbEI = m_Parser.GetBYTES(m_cbEI, _MaxBytes);
 	m_Metadata2 = m_Parser.GetBYTES(8);
 }
@@ -52,17 +52,13 @@ _Check_return_ LPSPropValue NickNameCache::NickNameBinToSPropValue(DWORD dwPropC
 
 	for (DWORD i = 0; i < dwPropCount; i++)
 	{
-		WORD PropType = 0;
-		WORD PropID = 0;
-
-		m_Parser.GetWORD(&PropType);
-		m_Parser.GetWORD(&PropID);
+		auto PropType = m_Parser.Get<WORD>();
+		auto PropID = m_Parser.Get<WORD>();
 
 		pspvProperty[i].ulPropTag = PROP_TAG(PropType, PropID);
 		pspvProperty[i].dwAlignPad = 0;
 
-		DWORD dwTemp = 0;
-		m_Parser.GetDWORD(&dwTemp); // reserved
+		auto dwTemp = m_Parser.Get<DWORD>(); // reserved
 		auto liTemp = m_Parser.Get<LARGE_INTEGER>(); // union
 
 		switch (PropType)
@@ -93,24 +89,24 @@ _Check_return_ LPSPropValue NickNameCache::NickNameBinToSPropValue(DWORD dwPropC
 			pspvProperty[i].Value.li = liTemp;
 			break;
 		case PT_STRING8:
-			m_Parser.GetDWORD(&dwTemp);
+			dwTemp = m_Parser.Get<DWORD>();
 			pspvProperty[i].Value.lpszA = GetStringA(dwTemp);
 			break;
 		case PT_UNICODE:
-			m_Parser.GetDWORD(&dwTemp);
+			dwTemp = m_Parser.Get<DWORD>();
 			pspvProperty[i].Value.lpszW = GetStringW(dwTemp / sizeof(WCHAR));
 			break;
 		case PT_CLSID:
 			pspvProperty[i].Value.lpguid = reinterpret_cast<LPGUID>(GetBYTES(sizeof GUID));
 			break;
 		case PT_BINARY:
-			m_Parser.GetDWORD(&dwTemp);
+			dwTemp = m_Parser.Get<DWORD>();
 			pspvProperty[i].Value.bin.cb = dwTemp;
 			// Note that we're not placing a restriction on how large a binary property we can parse. May need to revisit this.
 			pspvProperty[i].Value.bin.lpb = GetBYTES(pspvProperty[i].Value.bin.cb);
 			break;
 		case PT_MV_BINARY:
-			m_Parser.GetDWORD(&dwTemp);
+			dwTemp = m_Parser.Get<DWORD>();
 			pspvProperty[i].Value.MVbin.cValues = dwTemp;
 			if (pspvProperty[i].Value.MVbin.cValues && pspvProperty[i].Value.MVbin.cValues < _MaxEntriesLarge)
 			{
@@ -119,7 +115,7 @@ _Check_return_ LPSPropValue NickNameCache::NickNameBinToSPropValue(DWORD dwPropC
 				{
 					for (ULONG j = 0; j < pspvProperty[i].Value.MVbin.cValues; j++)
 					{
-						m_Parser.GetDWORD(&dwTemp);
+						dwTemp = m_Parser.Get<DWORD>();
 						pspvProperty[i].Value.MVbin.lpbin[j].cb = dwTemp;
 						// Note that we're not placing a restriction on how large a multivalued binary property we can parse. May need to revisit this.
 						pspvProperty[i].Value.MVbin.lpbin[j].lpb = GetBYTES(pspvProperty[i].Value.MVbin.lpbin[j].cb);
@@ -128,7 +124,7 @@ _Check_return_ LPSPropValue NickNameCache::NickNameBinToSPropValue(DWORD dwPropC
 			}
 			break;
 		case PT_MV_STRING8:
-			m_Parser.GetDWORD(&dwTemp);
+			dwTemp = m_Parser.Get<DWORD>();
 			pspvProperty[i].Value.MVszA.cValues = dwTemp;
 			if (pspvProperty[i].Value.MVszA.cValues && pspvProperty[i].Value.MVszA.cValues < _MaxEntriesLarge)
 			{
@@ -143,7 +139,7 @@ _Check_return_ LPSPropValue NickNameCache::NickNameBinToSPropValue(DWORD dwPropC
 			}
 			break;
 		case PT_MV_UNICODE:
-			m_Parser.GetDWORD(&dwTemp);
+			dwTemp = m_Parser.Get<DWORD>();
 			pspvProperty[i].Value.MVszW.cValues = dwTemp;
 			if (pspvProperty[i].Value.MVszW.cValues && pspvProperty[i].Value.MVszW.cValues < _MaxEntriesLarge)
 			{

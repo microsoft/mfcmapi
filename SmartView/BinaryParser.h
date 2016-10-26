@@ -17,9 +17,6 @@ public:
 	// Moves the parser to an offset obtained from GetCurrentOffset
 	void SetCurrentOffset(size_t stOffset);
 	size_t RemainingBytes() const;
-	void GetBYTE(_Out_ BYTE* pBYTE);
-	void GetWORD(_Out_ WORD* pWORD);
-	void GetDWORD(_Out_ DWORD* pDWORD);
 	template <typename T> T Get()
 	{
 		if (!CheckRemainingBytes(sizeof T)) return T();

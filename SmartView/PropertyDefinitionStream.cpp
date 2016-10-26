@@ -16,10 +16,10 @@ PackedAnsiString ReadPackedAnsiString(_In_ CBinaryParser* pParser)
 	packedAnsiString.cchExtendedLength = 0;
 	if (pParser)
 	{
-		pParser->GetBYTE(&packedAnsiString.cchLength);
+		packedAnsiString.cchLength = pParser->Get<BYTE>();
 		if (0xFF == packedAnsiString.cchLength)
 		{
-			pParser->GetWORD(&packedAnsiString.cchExtendedLength);
+			packedAnsiString.cchExtendedLength = pParser->Get<WORD>();
 		}
 
 		packedAnsiString.szCharacters = pParser->GetStringA(packedAnsiString.cchExtendedLength ? packedAnsiString.cchExtendedLength : packedAnsiString.cchLength);
@@ -35,10 +35,10 @@ PackedUnicodeString ReadPackedUnicodeString(_In_ CBinaryParser* pParser)
 	packedUnicodeString.cchExtendedLength = 0;
 	if (pParser)
 	{
-		pParser->GetBYTE(&packedUnicodeString.cchLength);
+		packedUnicodeString.cchLength = pParser->Get<BYTE>();
 		if (0xFF == packedUnicodeString.cchLength)
 		{
-			pParser->GetWORD(&packedUnicodeString.cchExtendedLength);
+			packedUnicodeString.cchExtendedLength = pParser->Get<WORD>();
 		}
 
 		packedUnicodeString.szCharacters = pParser->GetStringW(packedUnicodeString.cchExtendedLength ? packedUnicodeString.cchExtendedLength : packedUnicodeString.cchLength);
@@ -49,17 +49,17 @@ PackedUnicodeString ReadPackedUnicodeString(_In_ CBinaryParser* pParser)
 
 void PropertyDefinitionStream::Parse()
 {
-	m_Parser.GetWORD(&m_wVersion);
-	m_Parser.GetDWORD(&m_dwFieldDefinitionCount);
+	m_wVersion = m_Parser.Get<WORD>();
+	m_dwFieldDefinitionCount = m_Parser.Get<DWORD>();
 	if (m_dwFieldDefinitionCount && m_dwFieldDefinitionCount < _MaxEntriesLarge)
 	{
 		for (DWORD iDef = 0; iDef < m_dwFieldDefinitionCount; iDef++)
 		{
 			FieldDefinition fieldDefinition;
-			m_Parser.GetDWORD(&fieldDefinition.dwFlags);
-			m_Parser.GetWORD(&fieldDefinition.wVT);
-			m_Parser.GetDWORD(&fieldDefinition.dwDispid);
-			m_Parser.GetWORD(&fieldDefinition.wNmidNameLength);
+			fieldDefinition.dwFlags = m_Parser.Get<DWORD>();
+			fieldDefinition.wVT = m_Parser.Get<WORD>();
+			fieldDefinition.dwDispid = m_Parser.Get<DWORD>();
+			fieldDefinition.wNmidNameLength = m_Parser.Get<WORD>();
 			fieldDefinition.szNmidName = m_Parser.GetStringW(fieldDefinition.wNmidNameLength);
 
 			fieldDefinition.pasNameANSI = ReadPackedAnsiString(&m_Parser);
@@ -70,7 +70,7 @@ void PropertyDefinitionStream::Parse()
 
 			if (PropDefV2 == m_wVersion)
 			{
-				m_Parser.GetDWORD(&fieldDefinition.dwInternalType);
+				fieldDefinition.dwInternalType = m_Parser.Get<DWORD>();
 
 				// Have to count how many skip blocks are here.
 				// The only way to do that is to parse them. So we parse once without storing, allocate, then reparse.
@@ -81,8 +81,7 @@ void PropertyDefinitionStream::Parse()
 				for (;;)
 				{
 					dwSkipBlockCount++;
-					DWORD dwBlock = 0;
-					m_Parser.GetDWORD(&dwBlock);
+					auto dwBlock = m_Parser.Get<DWORD>();
 					if (!dwBlock) break; // we hit the last, zero byte block, or the end of the buffer
 					m_Parser.Advance(dwBlock);
 				}
@@ -96,7 +95,7 @@ void PropertyDefinitionStream::Parse()
 					for (DWORD iSkip = 0; iSkip < fieldDefinition.dwSkipBlockCount; iSkip++)
 					{
 						SkipBlock skipBlock;
-						m_Parser.GetDWORD(&skipBlock.dwSize);
+						skipBlock.dwSize = m_Parser.Get<DWORD>();
 						skipBlock.lpbContent = m_Parser.GetBYTES(skipBlock.dwSize, _MaxBytes);
 						fieldDefinition.psbSkipBlocks.push_back(skipBlock);
 					}

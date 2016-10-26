@@ -9,10 +9,10 @@ FlatEntryList::FlatEntryList()
 
 void FlatEntryList::Parse()
 {
-	m_Parser.GetDWORD(&m_cEntries);
+	m_cEntries = m_Parser.Get<DWORD>();
 
 	// We read and report this, but ultimately, it's not used.
-	m_Parser.GetDWORD(&m_cbEntries);
+	m_cbEntries = m_Parser.Get<DWORD>();
 
 	if (m_cEntries && m_cEntries < _MaxEntriesLarge)
 	{
@@ -21,7 +21,7 @@ void FlatEntryList::Parse()
 			FlatEntryID flatEntryID;
 			// Size here will be the length of the serialized entry ID
 			// We'll have to round it up to a multiple of 4 to read off padding
-			m_Parser.GetDWORD(&flatEntryID.dwSize);
+			flatEntryID.dwSize = m_Parser.Get<DWORD>();
 			size_t ulSize = min(flatEntryID.dwSize, m_Parser.RemainingBytes());
 
 			flatEntryID.lpEntryID.Init(

@@ -14,10 +14,10 @@ EntryIdStruct::EntryIdStruct()
 void EntryIdStruct::Parse()
 {
 	m_abFlags.resize(4);
-	m_Parser.GetBYTE(&m_abFlags[0]);
-	m_Parser.GetBYTE(&m_abFlags[1]);
-	m_Parser.GetBYTE(&m_abFlags[2]);
-	m_Parser.GetBYTE(&m_abFlags[3]);
+	m_abFlags[0] = m_Parser.Get<BYTE>();
+	m_abFlags[1] = m_Parser.Get<BYTE>();
+	m_abFlags[2] = m_Parser.Get<BYTE>();
+	m_abFlags[3] = m_Parser.Get<BYTE>();
 	m_ProviderUID = m_Parser.Get<GUID>();
 
 	// Ephemeral entry ID:
@@ -70,12 +70,12 @@ void EntryIdStruct::Parse()
 		{
 			// Ephemeral Recipient
 		case eidtEphemeral:
-			m_Parser.GetDWORD(&m_EphemeralObject.Version);
-			m_Parser.GetDWORD(&m_EphemeralObject.Type);
+			m_EphemeralObject.Version = m_Parser.Get<DWORD>();
+			m_EphemeralObject.Type = m_Parser.Get<DWORD>();
 			break;
 			// One Off Recipient
 		case eidtOneOff:
-			m_Parser.GetDWORD(&m_OneOffRecipientObject.Bitmask);
+			m_OneOffRecipientObject.Bitmask = m_Parser.Get<DWORD>();
 			if (MAPI_UNICODE & m_OneOffRecipientObject.Bitmask)
 			{
 				m_OneOffRecipientObject.Unicode.DisplayName = m_Parser.GetStringW();
@@ -91,15 +91,15 @@ void EntryIdStruct::Parse()
 			break;
 			// Address Book Recipient
 		case eidtAddressBook:
-			m_Parser.GetDWORD(&m_AddressBookObject.Version);
-			m_Parser.GetDWORD(&m_AddressBookObject.Type);
+			m_AddressBookObject.Version = m_Parser.Get<DWORD>();
+			m_AddressBookObject.Type = m_Parser.Get<DWORD>();
 			m_AddressBookObject.X500DN = m_Parser.GetStringA();
 			break;
 			// Contact Address Book / Personal Distribution List (PDL)
 		case eidtContact:
 		{
-			m_Parser.GetDWORD(&m_ContactAddressBookObject.Version);
-			m_Parser.GetDWORD(&m_ContactAddressBookObject.Type);
+			m_ContactAddressBookObject.Version = m_Parser.Get<DWORD>();
+			m_ContactAddressBookObject.Type = m_Parser.Get<DWORD>();
 
 			if (CONTAB_CONTAINER == m_ContactAddressBookObject.Type)
 			{
@@ -107,8 +107,8 @@ void EntryIdStruct::Parse()
 			}
 			else // Assume we've got some variation on the user/distlist format
 			{
-				m_Parser.GetDWORD(&m_ContactAddressBookObject.Index);
-				m_Parser.GetDWORD(&m_ContactAddressBookObject.EntryIDCount);
+				m_ContactAddressBookObject.Index = m_Parser.Get<DWORD>();
+				m_ContactAddressBookObject.EntryIDCount = m_Parser.Get<DWORD>();
 			}
 
 			// Read the wrapped entry ID from the remaining data
@@ -135,7 +135,7 @@ void EntryIdStruct::Parse()
 		{
 			m_ObjectType = eidtWAB;
 
-			m_Parser.GetBYTE(&m_WAB.Type);
+			m_WAB.Type = m_Parser.Get<BYTE>();
 
 			EntryIdStruct entryIdStruct;
 			entryIdStruct.Init(
@@ -149,8 +149,8 @@ void EntryIdStruct::Parse()
 		break;
 		// message store objects
 		case eidtMessageDatabase:
-			m_Parser.GetBYTE(&m_MessageDatabaseObject.Version);
-			m_Parser.GetBYTE(&m_MessageDatabaseObject.Flag);
+			m_MessageDatabaseObject.Version = m_Parser.Get<BYTE>();
+			m_MessageDatabaseObject.Flag = m_Parser.Get<BYTE>();
 			m_MessageDatabaseObject.DLLFileName = m_Parser.GetStringA();
 			m_MessageDatabaseObject.bIsExchange = false;
 
@@ -167,9 +167,9 @@ void EntryIdStruct::Parse()
 				auto cbRead = m_Parser.GetCurrentOffset();
 				// Advance to the next multiple of 4
 				m_Parser.Advance(3 - (cbRead + 3) % 4);
-				m_Parser.GetDWORD(&m_MessageDatabaseObject.WrappedFlags);
+				m_MessageDatabaseObject.WrappedFlags = m_Parser.Get<DWORD>();
 				m_MessageDatabaseObject.WrappedProviderUID = m_Parser.Get<GUID>();
-				m_Parser.GetDWORD(&m_MessageDatabaseObject.WrappedType);
+				m_MessageDatabaseObject.WrappedType = m_Parser.Get<DWORD>();
 				m_MessageDatabaseObject.ServerShortname = m_Parser.GetStringA();
 
 				m_MessageDatabaseObject.MagicVersion = MDB_STORE_EID_V1_VERSION;
@@ -178,7 +178,7 @@ void EntryIdStruct::Parse()
 				if (m_MessageDatabaseObject.WrappedType & OPENSTORE_PUBLIC)
 				{
 					cbRead = m_Parser.GetCurrentOffset();
-					m_Parser.GetDWORD(&m_MessageDatabaseObject.MagicVersion);
+					m_MessageDatabaseObject.MagicVersion = m_Parser.Get<DWORD>();
 					m_Parser.SetCurrentOffset(cbRead);
 				}
 
@@ -192,7 +192,7 @@ void EntryIdStruct::Parse()
 
 				// Check again for a magic value
 				cbRead = m_Parser.GetCurrentOffset();
-				m_Parser.GetDWORD(&m_MessageDatabaseObject.MagicVersion);
+				m_MessageDatabaseObject.MagicVersion = m_Parser.Get<DWORD>();
 				m_Parser.SetCurrentOffset(cbRead);
 
 				switch (m_MessageDatabaseObject.MagicVersion)
@@ -200,11 +200,11 @@ void EntryIdStruct::Parse()
 				case MDB_STORE_EID_V2_MAGIC:
 					if (m_Parser.RemainingBytes() >= sizeof(MDB_STORE_EID_V2) + sizeof(WCHAR))
 					{
-						m_Parser.GetDWORD(&m_MessageDatabaseObject.v2.ulMagic);
-						m_Parser.GetDWORD(&m_MessageDatabaseObject.v2.ulSize);
-						m_Parser.GetDWORD(&m_MessageDatabaseObject.v2.ulVersion);
-						m_Parser.GetDWORD(&m_MessageDatabaseObject.v2.ulOffsetDN);
-						m_Parser.GetDWORD(&m_MessageDatabaseObject.v2.ulOffsetFQDN);
+						m_MessageDatabaseObject.v2.ulMagic = m_Parser.Get<DWORD>();
+						m_MessageDatabaseObject.v2.ulSize = m_Parser.Get<DWORD>();
+						m_MessageDatabaseObject.v2.ulVersion = m_Parser.Get<DWORD>();
+						m_MessageDatabaseObject.v2.ulOffsetDN = m_Parser.Get<DWORD>();
+						m_MessageDatabaseObject.v2.ulOffsetFQDN = m_Parser.Get<DWORD>();
 						if (m_MessageDatabaseObject.v2.ulOffsetDN)
 						{
 							m_MessageDatabaseObject.v2DN = m_Parser.GetStringA();
@@ -221,10 +221,10 @@ void EntryIdStruct::Parse()
 				case MDB_STORE_EID_V3_MAGIC:
 					if (m_Parser.RemainingBytes() >= sizeof(MDB_STORE_EID_V3) + sizeof(WCHAR))
 					{
-						m_Parser.GetDWORD(&m_MessageDatabaseObject.v3.ulMagic);
-						m_Parser.GetDWORD(&m_MessageDatabaseObject.v3.ulSize);
-						m_Parser.GetDWORD(&m_MessageDatabaseObject.v3.ulVersion);
-						m_Parser.GetDWORD(&m_MessageDatabaseObject.v3.ulOffsetSmtpAddress);
+						m_MessageDatabaseObject.v3.ulMagic = m_Parser.Get<DWORD>();
+						m_MessageDatabaseObject.v3.ulSize = m_Parser.Get<DWORD>();
+						m_MessageDatabaseObject.v3.ulVersion = m_Parser.Get<DWORD>();
+						m_MessageDatabaseObject.v3.ulOffsetSmtpAddress = m_Parser.Get<DWORD>();
 						if (m_MessageDatabaseObject.v3.ulOffsetSmtpAddress)
 						{
 							m_MessageDatabaseObject.v3SmtpAddress = m_Parser.GetStringW();
@@ -238,14 +238,14 @@ void EntryIdStruct::Parse()
 			break;
 			// Exchange message store folder
 		case eidtFolder:
-			m_Parser.GetWORD(&m_FolderOrMessage.Type);
+			m_FolderOrMessage.Type = m_Parser.Get<WORD>();
 			m_FolderOrMessage.FolderObject.DatabaseGUID = m_Parser.Get<GUID>();
 			m_FolderOrMessage.FolderObject.GlobalCounter = m_Parser.GetBYTES(6);
 			m_FolderOrMessage.FolderObject.Pad = m_Parser.GetBYTES(2);
 			break;
 			// Exchange message store message
 		case eidtMessage:
-			m_Parser.GetWORD(&m_FolderOrMessage.Type);
+			m_FolderOrMessage.Type = m_Parser.Get<WORD>();
 			m_FolderOrMessage.MessageObject.FolderDatabaseGUID = m_Parser.Get<GUID>();
 			m_FolderOrMessage.MessageObject.FolderGlobalCounter = m_Parser.GetBYTES(6);
 			m_FolderOrMessage.MessageObject.Pad1 = m_Parser.GetBYTES(2);

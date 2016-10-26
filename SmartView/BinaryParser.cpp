@@ -88,33 +88,6 @@ bool CBinaryParser::CheckRemainingBytes(size_t cbBytes) const
 	return true;
 }
 
-void CBinaryParser::GetBYTE(_Out_ BYTE* pBYTE)
-{
-	if (!pBYTE) return;
-	*pBYTE = NULL;
-	if (!CheckRemainingBytes(sizeof(BYTE))) return;
-	*pBYTE = *static_cast<BYTE*>(m_lpCur);
-	m_lpCur += sizeof(BYTE);
-}
-
-void CBinaryParser::GetWORD(_Out_ WORD* pWORD)
-{
-	if (!pWORD) return;
-	*pWORD = NULL;
-	if (!CheckRemainingBytes(sizeof(WORD))) return;
-	*pWORD = *reinterpret_cast<WORD*>(m_lpCur);
-	m_lpCur += sizeof(WORD);
-}
-
-void CBinaryParser::GetDWORD(_Out_ DWORD* pDWORD)
-{
-	if (!pDWORD) return;
-	*pDWORD = NULL;
-	if (!CheckRemainingBytes(sizeof(DWORD))) return;
-	*pDWORD = *reinterpret_cast<DWORD*>(m_lpCur);
-	m_lpCur += sizeof(DWORD);
-}
-
 string CBinaryParser::GetStringA(size_t cchChar)
 {
 	if (cchChar == -1)

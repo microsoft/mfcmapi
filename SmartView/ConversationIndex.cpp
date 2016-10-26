@@ -14,28 +14,24 @@ ConversationIndex::ConversationIndex()
 
 void ConversationIndex::Parse()
 {
-	m_Parser.GetBYTE(&m_UnnamedByte);
-	BYTE b1 = NULL;
-	BYTE b2 = NULL;
-	BYTE b3 = NULL;
-	BYTE b4 = NULL;
-	m_Parser.GetBYTE(&b1);
-	m_Parser.GetBYTE(&b2);
-	m_Parser.GetBYTE(&b3);
+	m_UnnamedByte = m_Parser.Get<BYTE>();
+	auto b1 = m_Parser.Get<BYTE>();
+	auto b2 = m_Parser.Get<BYTE>();
+	auto b3 = m_Parser.Get<BYTE>();
 	m_ftCurrent.dwHighDateTime = b1 << 16 | b2 << 8 | b3;
-	m_Parser.GetBYTE(&b1);
-	m_Parser.GetBYTE(&b2);
+	b1 = m_Parser.Get<BYTE>();
+	b2 = m_Parser.Get<BYTE>();
 	m_ftCurrent.dwLowDateTime = b1 << 24 | b2 << 16;
-	m_Parser.GetBYTE(&b1);
-	m_Parser.GetBYTE(&b2);
-	m_Parser.GetBYTE(&b3);
-	m_Parser.GetBYTE(&b4);
+	b1 = m_Parser.Get<BYTE>();
+	b2 = m_Parser.Get<BYTE>();
+	b3 = m_Parser.Get<BYTE>();
+	auto b4 = m_Parser.Get<BYTE>();
 	m_guid.Data1 = b1 << 24 | b2 << 16 | b3 << 8 | b4;
-	m_Parser.GetBYTE(&b1);
-	m_Parser.GetBYTE(&b2);
+	b1 = m_Parser.Get<BYTE>();
+	b2 = m_Parser.Get<BYTE>();
 	m_guid.Data2 = static_cast<unsigned short>(b1 << 8 | b2);
-	m_Parser.GetBYTE(&b1);
-	m_Parser.GetBYTE(&b2);
+	b1 = m_Parser.Get<BYTE>();
+	b2 = m_Parser.Get<BYTE>();
 	m_guid.Data3 = static_cast<unsigned short>(b1 << 8 | b2);
 	for (auto i = 0 ; i < sizeof m_guid.Data4;i++)
 	{
@@ -52,10 +48,10 @@ void ConversationIndex::Parse()
 		for (ULONG i = 0; i < m_ulResponseLevels; i++)
 		{
 			ResponseLevel responseLevel;
-			m_Parser.GetBYTE(&b1);
-			m_Parser.GetBYTE(&b2);
-			m_Parser.GetBYTE(&b3);
-			m_Parser.GetBYTE(&b4);
+			b1 = m_Parser.Get<BYTE>();
+			b2 = m_Parser.Get<BYTE>();
+			b3 = m_Parser.Get<BYTE>();
+			b4 = m_Parser.Get<BYTE>();
 			responseLevel.TimeDelta = b1 << 24 | b2 << 16 | b3 << 8 | b4;
 			responseLevel.DeltaCode = false;
 			if (responseLevel.TimeDelta & 0x80000000)
@@ -64,7 +60,7 @@ void ConversationIndex::Parse()
 				responseLevel.DeltaCode = true;
 			}
 
-			m_Parser.GetBYTE(&b1);
+			b1 = m_Parser.Get<BYTE>();
 			responseLevel.Random = static_cast<BYTE>(b1 >> 4);
 			responseLevel.Level = static_cast<BYTE>(b1 & 0xf);
 

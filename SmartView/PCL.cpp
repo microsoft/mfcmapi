@@ -17,8 +17,7 @@ void PCL::Parse()
 		// Must have at least 1 byte left to have another XID
 		if (m_Parser.RemainingBytes() <= sizeof(BYTE)) break;
 
-		BYTE XidSize = 0;
-		m_Parser.GetBYTE(&XidSize);
+		auto XidSize = m_Parser.Get<BYTE>();
 		if (m_Parser.RemainingBytes() >= XidSize)
 		{
 			m_Parser.Advance(XidSize);
@@ -35,7 +34,7 @@ void PCL::Parse()
 		for (DWORD i = 0; i < m_cXID; i++)
 		{
 			SizedXID sizedXID;
-			m_Parser.GetBYTE(&sizedXID.XidSize);
+			sizedXID.XidSize = m_Parser.Get<BYTE>();
 			sizedXID.NamespaceGuid = m_Parser.Get<GUID>();
 			sizedXID.cbLocalId = sizedXID.XidSize - sizeof(GUID);
 			if (m_Parser.RemainingBytes() < sizedXID.cbLocalId) break;

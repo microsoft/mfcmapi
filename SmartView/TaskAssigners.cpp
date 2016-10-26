@@ -8,17 +8,17 @@ TaskAssigners::TaskAssigners()
 
 void TaskAssigners::Parse()
 {
-	m_Parser.GetDWORD(&m_cAssigners);
+	m_cAssigners = m_Parser.Get<DWORD>();
 
 	if (m_cAssigners && m_cAssigners < _MaxEntriesSmall)
 	{
 		for (DWORD i = 0; i < m_cAssigners; i++)
 		{
 			TaskAssigner taskAssigner;
-			m_Parser.GetDWORD(&taskAssigner.cbAssigner);
+			taskAssigner.cbAssigner = m_Parser.Get<DWORD>();
 			auto ulSize = min(taskAssigner.cbAssigner, (ULONG)m_Parser.RemainingBytes());
 			CBinaryParser AssignerParser(ulSize, m_Parser.GetCurrentAddress());
-			AssignerParser.GetDWORD(&taskAssigner.cbEntryID);
+			taskAssigner.cbEntryID = AssignerParser.Get<DWORD>();
 			taskAssigner.lpEntryID = AssignerParser.GetBYTES(taskAssigner.cbEntryID, _MaxEID);
 			taskAssigner.szDisplayName = AssignerParser.GetStringA();
 			taskAssigner.wzDisplayName = AssignerParser.GetStringW();

@@ -19,43 +19,41 @@ void ReportTag::Parse()
 	m_Cookie = m_Parser.GetBYTES(9);
 
 	// Version is big endian, so we have to read individual bytes
-	WORD hiWord = NULL;
-	WORD loWord = NULL;
-	m_Parser.GetWORD(&hiWord);
-	m_Parser.GetWORD(&loWord);
+	auto hiWord = m_Parser.Get<WORD>();
+	auto loWord = m_Parser.Get<WORD>();
 	m_Version = hiWord << 16 | loWord;
 
-	m_Parser.GetDWORD(&m_cbStoreEntryID);
+	m_cbStoreEntryID = m_Parser.Get<DWORD>();
 	if (m_cbStoreEntryID)
 	{
 		m_lpStoreEntryID = m_Parser.GetBYTES(m_cbStoreEntryID, _MaxEID);
 	}
 
-	m_Parser.GetDWORD(&m_cbFolderEntryID);
+	m_cbFolderEntryID = m_Parser.Get<DWORD>();
 	if (m_cbFolderEntryID)
 	{
 		m_lpFolderEntryID = m_Parser.GetBYTES(m_cbFolderEntryID, _MaxEID);
 	}
 
-	m_Parser.GetDWORD(&m_cbMessageEntryID);
+	m_cbMessageEntryID = m_Parser.Get<DWORD>();
 	if (m_cbMessageEntryID)
 	{
 		m_lpMessageEntryID = m_Parser.GetBYTES(m_cbMessageEntryID, _MaxEID);
 	}
 
-	m_Parser.GetDWORD(&m_cbSearchFolderEntryID);
+	m_cbSearchFolderEntryID = m_Parser.Get<DWORD>();
 	if (m_cbSearchFolderEntryID)
 	{
 		m_lpSearchFolderEntryID = m_Parser.GetBYTES(m_cbSearchFolderEntryID, _MaxEID);
 	}
 
-	m_Parser.GetDWORD(&m_cbMessageSearchKey);
+	m_cbMessageSearchKey = m_Parser.Get<DWORD>();
 	if (m_cbMessageSearchKey)
 	{
 		m_lpMessageSearchKey = m_Parser.GetBYTES(m_cbMessageSearchKey, _MaxEID);
 	}
 
-	m_Parser.GetDWORD(&m_cchAnsiText);
+	m_cchAnsiText = m_Parser.Get<DWORD>();
 	if (m_cchAnsiText)
 	{
 		m_lpszAnsiText = m_Parser.GetStringA(m_cchAnsiText);

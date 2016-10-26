@@ -26,15 +26,15 @@ SearchFolderDefinition::SearchFolderDefinition()
 
 void SearchFolderDefinition::Parse()
 {
-	m_Parser.GetDWORD(&m_Version);
-	m_Parser.GetDWORD(&m_Flags);
-	m_Parser.GetDWORD(&m_NumericSearch);
+	m_Version = m_Parser.Get<DWORD>();
+	m_Flags = m_Parser.Get<DWORD>();
+	m_NumericSearch = m_Parser.Get<DWORD>();
 
-	m_Parser.GetBYTE(&m_TextSearchLength);
+	m_TextSearchLength = m_Parser.Get<BYTE>();
 	size_t cchTextSearch = m_TextSearchLength;
 	if (255 == m_TextSearchLength)
 	{
-		m_Parser.GetWORD(&m_TextSearchLengthExtended);
+		m_TextSearchLengthExtended = m_Parser.Get<WORD>();
 		cchTextSearch = m_TextSearchLengthExtended;
 	}
 
@@ -43,16 +43,16 @@ void SearchFolderDefinition::Parse()
 		m_TextSearch = m_Parser.GetStringW(cchTextSearch);
 	}
 
-	m_Parser.GetDWORD(&m_SkipLen1);
+	m_SkipLen1 = m_Parser.Get<DWORD>();
 	m_SkipBytes1 = m_Parser.GetBYTES(m_SkipLen1, _MaxBytes);
 
-	m_Parser.GetDWORD(&m_DeepSearch);
+	m_DeepSearch = m_Parser.Get<DWORD>();
 
-	m_Parser.GetBYTE(&m_FolderList1Length);
+	m_FolderList1Length = m_Parser.Get<BYTE>();
 	size_t cchFolderList1 = m_FolderList1Length;
 	if (255 == m_FolderList1Length)
 	{
-		m_Parser.GetWORD(&m_FolderList1LengthExtended);
+		m_FolderList1LengthExtended = m_Parser.Get<WORD>();
 		cchFolderList1 = m_FolderList1LengthExtended;
 	}
 
@@ -61,7 +61,7 @@ void SearchFolderDefinition::Parse()
 		m_FolderList1 = m_Parser.GetStringW(cchFolderList1);
 	}
 
-	m_Parser.GetDWORD(&m_FolderList2Length);
+	m_FolderList2Length = m_Parser.Get<DWORD>();
 
 	if (m_FolderList2Length)
 	{
@@ -76,14 +76,14 @@ void SearchFolderDefinition::Parse()
 
 	if (SFST_BINARY & m_Flags)
 	{
-		m_Parser.GetDWORD(&m_AddressCount);
+		m_AddressCount = m_Parser.Get<DWORD>();
 		if (m_AddressCount && m_AddressCount < _MaxEntriesSmall)
 		{
 			for (DWORD i = 0; i < m_AddressCount; i++)
 			{
 				AddressListEntryStruct addressListEntryStruct;
-				m_Parser.GetDWORD(&addressListEntryStruct.PropertyCount);
-				m_Parser.GetDWORD(&addressListEntryStruct.Pad);
+				addressListEntryStruct.PropertyCount = m_Parser.Get<DWORD>();
+				addressListEntryStruct.Pad = m_Parser.Get<DWORD>();
 				if (addressListEntryStruct.PropertyCount)
 				{
 					addressListEntryStruct.Props = BinToSPropValue(
@@ -96,7 +96,7 @@ void SearchFolderDefinition::Parse()
 		}
 	}
 
-	m_Parser.GetDWORD(&m_SkipLen2);
+	m_SkipLen2 = m_Parser.Get<DWORD>();
 	m_SkipBytes2 = m_Parser.GetBYTES(m_SkipLen2, _MaxBytes);
 
 	if (SFST_MRES & m_Flags)
@@ -125,7 +125,7 @@ void SearchFolderDefinition::Parse()
 		}
 	}
 
-	m_Parser.GetDWORD(&m_SkipLen3);
+	m_SkipLen3 = m_Parser.Get<DWORD>();
 	if (m_SkipLen3)
 	{
 		m_SkipBytes3 = m_Parser.GetBYTES(m_SkipLen3, _MaxBytes);
