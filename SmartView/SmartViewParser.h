@@ -32,6 +32,7 @@ protected:
 	_Check_return_ LPSPropValue BinToSPropValue(DWORD dwPropCount, bool bStringPropsExcludeLength);
 
 	// These functions return pointers to memory backed and cleaned up by SmartViewParser
+	LPBYTE GetBYTES(size_t cbBytes, size_t cbMaxBytes = -1);
 	LPSTR GetStringA(size_t cchChar = -1);
 	LPWSTR GetStringW(size_t cchChar = -1);
 	LPBYTE Allocate(size_t cbBytes);
@@ -42,9 +43,6 @@ protected:
 private:
 	virtual void Parse() = 0;
 	virtual _Check_return_ wstring ToStringInternal() = 0;
-
-	// These functions return pointers to memory backed and cleaned up by SmartViewParser
-	LPBYTE GetBYTES(size_t cbBytes, size_t cbMaxBytes = -1);
 
 	bool m_bEnableJunk;
 	bool m_bParsed;

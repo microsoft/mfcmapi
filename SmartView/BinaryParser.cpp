@@ -124,21 +124,6 @@ void CBinaryParser::GetLARGE_INTEGER(_Out_ LARGE_INTEGER* pLARGE_INTEGER)
 	m_lpCur += sizeof(LARGE_INTEGER);
 }
 
-void CBinaryParser::GetBYTES(size_t cbBytes, size_t cbMaxBytes, _Out_ LPBYTE* ppBYTES)
-{
-	if (ppBYTES) *ppBYTES = nullptr;
-	if (!cbBytes || !ppBYTES || !CheckRemainingBytes(cbBytes)) return;
-	if (cbBytes > cbMaxBytes) return;
-	*ppBYTES = new BYTE[cbBytes];
-	if (*ppBYTES)
-	{
-		memset(*ppBYTES, 0, sizeof(BYTE)* cbBytes);
-		memcpy(*ppBYTES, m_lpCur, cbBytes);
-	}
-
-	m_lpCur += cbBytes;
-}
-
 void CBinaryParser::GetBYTESNoAlloc(size_t cbBytes, size_t cbMaxBytes, _In_count_(cbBytes) LPBYTE pBYTES)
 {
 	if (!cbBytes || !pBYTES || !CheckRemainingBytes(cbBytes)) return;
@@ -146,73 +131,6 @@ void CBinaryParser::GetBYTESNoAlloc(size_t cbBytes, size_t cbMaxBytes, _In_count
 	memset(pBYTES, 0, sizeof(BYTE)* cbBytes);
 	memcpy(pBYTES, m_lpCur, cbBytes);
 	m_lpCur += cbBytes;
-}
-
-// cchChar is the length of the source string, NOT counting the NULL terminator
-void CBinaryParser::GetStringA(size_t cchChar, _Deref_out_opt_z_ LPSTR* ppStr)
-{
-	if (!ppStr) return;
-	*ppStr = nullptr;
-	if (!cchChar) return;
-	if (!CheckRemainingBytes(sizeof(CHAR)* cchChar)) return;
-	*ppStr = new CHAR[cchChar + 1];
-	if (*ppStr)
-	{
-		memset(*ppStr, 0, sizeof(CHAR)* cchChar);
-		memcpy(*ppStr, m_lpCur, sizeof(CHAR)* cchChar);
-		(*ppStr)[cchChar] = NULL;
-	}
-
-	m_lpCur += sizeof(CHAR)* cchChar;
-}
-
-// cchChar is the length of the source string, NOT counting the NULL terminator
-void CBinaryParser::GetStringW(size_t cchWChar, _Deref_out_opt_z_ LPWSTR* ppStr)
-{
-	if (!ppStr) return;
-	*ppStr = nullptr;
-	if (!cchWChar) return;
-	if (!CheckRemainingBytes(sizeof(WCHAR)* cchWChar)) return;
-	*ppStr = new WCHAR[cchWChar + 1];
-	if (*ppStr)
-	{
-		memset(*ppStr, 0, sizeof(WCHAR)* cchWChar);
-		memcpy(*ppStr, m_lpCur, sizeof(WCHAR)* cchWChar);
-		(*ppStr)[cchWChar] = NULL;
-	}
-
-	m_lpCur += sizeof(WCHAR)* cchWChar;
-}
-
-// No size specified - assume the NULL terminator is in the stream, but don't read off the end
-void CBinaryParser::GetStringA(_Deref_out_opt_z_ LPSTR* ppStr)
-{
-	if (!ppStr) return;
-	*ppStr = nullptr;
-	size_t cchChar = NULL;
-	auto hRes = StringCchLengthA(reinterpret_cast<LPSTR>(m_lpCur), (m_lpEnd - m_lpCur) / sizeof(CHAR), &cchChar);
-
-	if (FAILED(hRes)) return;
-
-	// With string length in hand, we defer to our other implementation
-	// Add 1 for the NULL terminator
-	GetStringA(cchChar + 1, ppStr);
-}
-
-// No size specified - assume the NULL terminator is in the stream, but don't read off the end
-void CBinaryParser::GetStringW(_Deref_out_opt_z_ LPWSTR* ppStr)
-{
-	if (!ppStr) return;
-	*ppStr = nullptr;
-
-	size_t cchChar = NULL;
-	auto hRes = StringCchLengthW(reinterpret_cast<LPWSTR>(m_lpCur), (m_lpEnd - m_lpCur) / sizeof(WCHAR), &cchChar);
-
-	if (FAILED(hRes)) return;
-
-	// With string length in hand, we defer to our other implementation
-	// Add 1 for the NULL terminator
-	GetStringW(cchChar + 1, ppStr);
 }
 
 string CBinaryParser::GetStringA(size_t cchChar)

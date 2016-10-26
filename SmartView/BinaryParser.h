@@ -21,12 +21,7 @@ public:
 	void GetWORD(_Out_ WORD* pWORD);
 	void GetDWORD(_Out_ DWORD* pDWORD);
 	void GetLARGE_INTEGER(_Out_ LARGE_INTEGER* pLARGE_INTEGER);
-	void GetBYTES(size_t cbBytes, size_t cbMaxBytes, _Out_ LPBYTE* ppBYTES);
 	void GetBYTESNoAlloc(size_t cbBytes, size_t cbMaxBytes, _In_count_(cbBytes) LPBYTE pBYTES);
-	void GetStringA(size_t cchChar, _Deref_out_opt_z_ LPSTR* ppStr);
-	void GetStringW(size_t cchChar, _Deref_out_opt_z_ LPWSTR* ppStr);
-	void GetStringA(_Deref_out_opt_z_ LPSTR* ppStr);
-	void GetStringW(_Deref_out_opt_z_ LPWSTR* ppStr);
 	string GetStringA(size_t cchChar = -1);
 	wstring GetStringW(size_t cchChar = -1);
 	vector<BYTE> GetBYTES(size_t cbBytes, size_t cbMaxBytes = -1);
