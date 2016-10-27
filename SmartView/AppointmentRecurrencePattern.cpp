@@ -18,7 +18,7 @@ AppointmentRecurrencePattern::AppointmentRecurrencePattern()
 
 void AppointmentRecurrencePattern::Parse()
 {
-	m_RecurrencePattern.Init(static_cast<ULONG>(m_Parser.RemainingBytes()), m_Parser.GetCurrentAddress());
+	m_RecurrencePattern.Init(m_Parser.RemainingBytes(), m_Parser.GetCurrentAddress());
 	m_RecurrencePattern.DisableJunkParsing();
 	m_RecurrencePattern.EnsureParsed();
 	m_Parser.Advance(m_RecurrencePattern.GetCurrentOffset());

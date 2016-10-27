@@ -11,7 +11,7 @@ SmartViewParser::SmartViewParser()
 	m_lpBin = nullptr;
 }
 
-void SmartViewParser::Init(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin)
+void SmartViewParser::Init(size_t cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
 	m_cbBin = cbBin;
 	m_lpBin = lpBin;

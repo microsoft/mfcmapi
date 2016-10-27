@@ -67,9 +67,7 @@ void SearchFolderDefinition::Parse()
 	{
 		auto cbRemainingBytes = m_Parser.RemainingBytes();
 		cbRemainingBytes = min(m_FolderList2Length, cbRemainingBytes);
-		m_FolderList2.Init(
-			static_cast<ULONG>(cbRemainingBytes),
-			m_Parser.GetCurrentAddress());
+		m_FolderList2.Init(cbRemainingBytes, m_Parser.GetCurrentAddress());
 
 		m_Parser.Advance(cbRemainingBytes);
 	}

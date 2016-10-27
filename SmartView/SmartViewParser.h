@@ -19,7 +19,7 @@ public:
 	SmartViewParser();
 	virtual ~SmartViewParser() = default;
 
-	void Init(ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
+	void Init(size_t cbBin, _In_count_(cbBin) LPBYTE lpBin);
 	_Check_return_ wstring ToString();
 
 	void DisableJunkParsing();
@@ -46,7 +46,7 @@ private:
 
 	bool m_bEnableJunk;
 	bool m_bParsed;
-	ULONG m_cbBin;
+	size_t m_cbBin;
 	LPBYTE m_lpBin;
 
 	// We use list instead of vector so our nodes never get reallocated

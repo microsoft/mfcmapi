@@ -27,9 +27,7 @@ void EntryList::Parse()
 			for (DWORD i = 0; i < m_EntryCount; i++)
 			{
 				size_t cbRemainingBytes = min(m_Entry[i].EntryLength, m_Parser.RemainingBytes());
-				m_Entry[i].EntryId.Init(
-					static_cast<ULONG>(cbRemainingBytes),
-					m_Parser.GetCurrentAddress());
+				m_Entry[i].EntryId.Init(cbRemainingBytes, m_Parser.GetCurrentAddress());
 				m_Parser.Advance(cbRemainingBytes);
 			}
 		}

@@ -51,9 +51,7 @@ void RuleCondition::Parse()
 	}
 
 	m_lpRes.Init(true, m_bExtended);
-	m_lpRes.SmartViewParser::Init(
-		static_cast<ULONG>(m_Parser.RemainingBytes()),
-		m_Parser.GetCurrentAddress());
+	m_lpRes.SmartViewParser::Init(m_Parser.RemainingBytes(), m_Parser.GetCurrentAddress());
 	m_lpRes.DisableJunkParsing();
 	m_lpRes.EnsureParsed();
 	m_Parser.Advance(m_lpRes.GetCurrentOffset());

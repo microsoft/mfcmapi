@@ -24,9 +24,7 @@ void FlatEntryList::Parse()
 			flatEntryID.dwSize = m_Parser.Get<DWORD>();
 			size_t ulSize = min(flatEntryID.dwSize, m_Parser.RemainingBytes());
 
-			flatEntryID.lpEntryID.Init(
-				static_cast<ULONG>(ulSize),
-				m_Parser.GetCurrentAddress());
+			flatEntryID.lpEntryID.Init(ulSize, m_Parser.GetCurrentAddress());
 
 			m_Parser.Advance(ulSize);
 

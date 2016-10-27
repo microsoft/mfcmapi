@@ -122,9 +122,7 @@ void EntryIdStruct::Parse()
 			}
 
 			EntryIdStruct entryIdStruct;
-			entryIdStruct.Init(
-				static_cast<ULONG>(cbRemainingBytes),
-				m_Parser.GetCurrentAddress());
+			entryIdStruct.Init(cbRemainingBytes, m_Parser.GetCurrentAddress());
 			entryIdStruct.DisableJunkParsing();
 			entryIdStruct.EnsureParsed();
 			m_Parser.Advance(entryIdStruct.GetCurrentOffset());
