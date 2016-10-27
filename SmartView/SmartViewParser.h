@@ -46,8 +46,6 @@ private:
 
 	bool m_bEnableJunk;
 	bool m_bParsed;
-	size_t m_cbBin;
-	LPBYTE m_lpBin;
 
 	// We use list instead of vector so our nodes never get reallocated
 	list<string> m_stringCache;

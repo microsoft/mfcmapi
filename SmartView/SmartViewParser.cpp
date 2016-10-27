@@ -7,15 +7,11 @@ SmartViewParser::SmartViewParser()
 {
 	m_bParsed = false;
 	m_bEnableJunk = true;
-	m_cbBin = 0;
-	m_lpBin = nullptr;
 }
 
 void SmartViewParser::Init(size_t cbBin, _In_count_(cbBin) LPBYTE lpBin)
 {
-	m_cbBin = cbBin;
-	m_lpBin = lpBin;
-	m_Parser.Init(m_cbBin, m_lpBin);
+	m_Parser.Init(cbBin, lpBin);
 }
 
 void SmartViewParser::DisableJunkParsing()
