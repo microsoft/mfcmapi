@@ -53,6 +53,8 @@ void SIDBin::Parse()
 				&SidNameUse));
 			if (lpSidName) m_lpSidName = lpSidName;
 			if (lpSidDomain) m_lpSidDomain = lpSidDomain;
+			delete[] lpSidName;
+			delete[] lpSidDomain;
 		}
 
 		m_lpStringSid = GetTextualSid(SidStart);

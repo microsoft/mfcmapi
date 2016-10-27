@@ -23,8 +23,6 @@ void RestrictionStruct::Parse()
 
 	if (m_lpRes)
 	{
-		memset(m_lpRes, 0, sizeof(SRestriction));
-
 		(void)BinToRestriction(
 			0,
 			m_lpRes,
@@ -162,7 +160,6 @@ bool RestrictionStruct::BinToRestriction(ULONG ulDepth, _In_ LPSRestriction psrR
 		psrRestriction->res.resSub.lpRes = reinterpret_cast<LPSRestriction>(Allocate(sizeof SRestriction));
 		if (psrRestriction->res.resSub.lpRes)
 		{
-			memset(psrRestriction->res.resSub.lpRes, 0, sizeof(SRestriction));
 			bRet = BinToRestriction(
 				ulDepth + 1,
 				psrRestriction->res.resSub.lpRes,
@@ -186,7 +183,6 @@ bool RestrictionStruct::BinToRestriction(ULONG ulDepth, _In_ LPSRestriction psrR
 			psrRestriction->res.resComment.lpRes = reinterpret_cast<LPSRestriction>(Allocate(sizeof SRestriction));
 			if (psrRestriction->res.resComment.lpRes)
 			{
-				memset(psrRestriction->res.resComment.lpRes, 0, sizeof(SRestriction));
 				bRet = BinToRestriction(
 					ulDepth + 1,
 					psrRestriction->res.resComment.lpRes,
@@ -201,7 +197,6 @@ bool RestrictionStruct::BinToRestriction(ULONG ulDepth, _In_ LPSRestriction psrR
 		psrRestriction->res.resNot.lpRes = reinterpret_cast<LPSRestriction>(Allocate(sizeof SRestriction));
 		if (psrRestriction->res.resNot.lpRes)
 		{
-			memset(psrRestriction->res.resNot.lpRes, 0, sizeof(SRestriction));
 			bRet = BinToRestriction(
 				ulDepth + 1,
 				psrRestriction->res.resNot.lpRes,

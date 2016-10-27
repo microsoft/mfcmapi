@@ -190,7 +190,7 @@ _Check_return_ LPSPropValue SmartViewParser::BinToSPropValue(DWORD dwPropCount, 
 	if (ulCurrOffset == m_Parser.GetCurrentOffset())
 	{
 		// We didn't advance at all - we should return nothing.
-		delete[] pspvProperty;
+		// Don't worry about memory cleanup - object destructor will handle it
 		pspvProperty = nullptr;
 	}
 
