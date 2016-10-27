@@ -20,8 +20,8 @@ public:
 	template <typename T> T Get()
 	{
 		if (!CheckRemainingBytes(sizeof T)) return T();
-		auto ret = *reinterpret_cast<T *>(m_lpCur);
-		m_lpCur += sizeof T;
+		auto ret = *reinterpret_cast<T *>(GetCurrentAddress());
+		m_Offset += sizeof T;
 		return ret;
 	}
 
@@ -32,8 +32,6 @@ public:
 
 private:
 	bool CheckRemainingBytes(size_t cbBytes) const;
-	size_t m_cbBin;
-	LPBYTE m_lpBin;
-	LPBYTE m_lpEnd;
-	LPBYTE m_lpCur;
+	vector<BYTE> m_Bin;
+	size_t m_Offset;
 };
