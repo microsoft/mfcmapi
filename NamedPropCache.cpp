@@ -1,6 +1,3 @@
-// NamedPropCache.cpp: implementation file
-//
-
 #include "stdafx.h"
 #include "NamedPropCache.h"
 
@@ -13,79 +10,69 @@ void UninitializeNamedPropCache()
 }
 
 // Go through all the details of copying allocated data to or from a cache entry
-void CopyCacheData(_In_ LPGUID lpSrcGUID,
-	ULONG ulSrcKind,
-	LONG lSrcID,
-	_In_z_ LPWSTR lpSrcName,
-	_In_ LPGUID* lppDstGUID,
-	_In_ ULONG* lpulDstKind,
-	_In_ LONG* lplDstID,
-	_In_z_ LPWSTR* lppDstName,
+void CopyCacheData(
+	MAPINAMEID& src,
+	MAPINAMEID& dst,
 	_In_opt_ LPVOID lpMAPIParent) // If passed, allocate using MAPI with this as a parent
 {
-	if (lpSrcGUID && lppDstGUID)
+	dst.lpguid = nullptr;
+	dst.Kind.lID = 0;
+
+	if (src.lpguid)
 	{
-		LPGUID lpDstGUID = nullptr;
 		if (lpMAPIParent)
 		{
-			MAPIAllocateMore(sizeof(GUID), lpMAPIParent, reinterpret_cast<LPVOID*>(&lpDstGUID));
+			MAPIAllocateMore(sizeof(GUID), lpMAPIParent, reinterpret_cast<LPVOID*>(&dst.lpguid));
 		}
-		else lpDstGUID = new GUID;
+		else dst.lpguid = new GUID;
 
-		if (lpDstGUID)
+		if (dst.lpguid)
 		{
-			memcpy(lpDstGUID, lpSrcGUID, sizeof GUID);
+			memcpy(dst.lpguid, src.lpguid, sizeof GUID);
 		}
-
-		*lppDstGUID = lpDstGUID;
 	}
 
-	if (lpulDstKind) *lpulDstKind = ulSrcKind;
-	if (MNID_ID == ulSrcKind)
+	dst.ulKind = src.ulKind;
+	if (MNID_ID == src.ulKind)
 	{
-		if (lplDstID) *lplDstID = lSrcID;
+		dst.Kind.lID = src.Kind.lID;
 	}
-	else if (MNID_STRING == ulSrcKind)
+	else if (MNID_STRING == src.ulKind)
 	{
-		if (lpSrcName && lppDstName)
+		if (src.Kind.lpwstrName)
 		{
 			// lpSrcName is LPWSTR which means it's ALWAYS unicode
 			// But some folks get it wrong and stuff ANSI data in there
 			// So we check the string length both ways to make our best guess
 			size_t cchShortLen = NULL;
 			size_t cchWideLen = NULL;
-			LPWSTR lpDstName = nullptr;
 			auto hRes = S_OK;
-			WC_H(StringCchLengthA(reinterpret_cast<LPSTR>(lpSrcName), STRSAFE_MAX_CCH, &cchShortLen));
-			WC_H(StringCchLengthW(lpSrcName, STRSAFE_MAX_CCH, &cchWideLen));
-			ULONG cbName = NULL;
+			WC_H(StringCchLengthA(reinterpret_cast<LPSTR>(src.Kind.lpwstrName), STRSAFE_MAX_CCH, &cchShortLen));
+			WC_H(StringCchLengthW(src.Kind.lpwstrName, STRSAFE_MAX_CCH, &cchWideLen));
+			size_t cbName = NULL;
 
 			if (cchShortLen < cchWideLen)
 			{
 				// this is the *proper* case
-				cbName = static_cast<ULONG>(cchWideLen + 1) * sizeof(WCHAR);
+				cbName = (cchWideLen + 1) * sizeof WCHAR;
 			}
 			else
 			{
 				// this is the case where ANSI data was shoved into a unicode string.
 				// add a couple extra NULL in case we read this as unicode again.
-				cbName = static_cast<ULONG>(cchShortLen + 3) * sizeof(CHAR);
+				cbName = (cchShortLen + 3) * sizeof CHAR;
 			}
 
 			if (lpMAPIParent)
 			{
-				MAPIAllocateMore(cbName, lpMAPIParent, reinterpret_cast<LPVOID*>(&lpDstName));
+				MAPIAllocateMore(cbName, lpMAPIParent, reinterpret_cast<LPVOID*>(&dst.Kind.lpwstrName));
 			}
-			else lpDstName = reinterpret_cast<LPWSTR>(new BYTE[cbName]);
+			else dst.Kind.lpwstrName = reinterpret_cast<LPWSTR>(new BYTE[cbName]);
 
-			if (lpDstName)
+			if (dst.Kind.lpwstrName)
 			{
-				memcpy(lpDstName,
-					lpSrcName,
-					cbName);
+				memcpy(dst.Kind.lpwstrName, src.Kind.lpwstrName, cbName);
 			}
-
-			*lppDstName = lpDstName;
 		}
 	}
 }
@@ -108,16 +95,7 @@ NamedPropCacheEntry::NamedPropCacheEntry(
 
 		if (lpmniName)
 		{
-			CopyCacheData(
-				lpPropName->lpguid,
-				lpPropName->ulKind,
-				lpPropName->Kind.lID,
-				lpPropName->Kind.lpwstrName,
-				&lpmniName->lpguid,
-				&lpmniName->ulKind,
-				&lpmniName->Kind.lID,
-				&lpmniName->Kind.lpwstrName,
-				nullptr);
+			CopyCacheData(*lpPropName, *lpmniName, nullptr);
 		}
 	}
 
@@ -150,7 +128,7 @@ NamedPropCacheEntry::~NamedPropCacheEntry()
 // Given a signature and property ID (ulPropID), finds the named prop mapping in the cache
 _Check_return_ LPNAMEDPROPCACHEENTRY FindCacheEntry(ULONG cbSig, _In_count_(cbSig) LPBYTE lpSig, ULONG ulPropID)
 {
-	auto entry = find_if(begin(g_lpNamedPropCache), end(g_lpNamedPropCache), [&] (NamedPropCacheEntry &namedPropCacheEntry)
+	auto entry = find_if(begin(g_lpNamedPropCache), end(g_lpNamedPropCache), [&](NamedPropCacheEntry &namedPropCacheEntry)
 	{
 		if (namedPropCacheEntry.ulPropID != ulPropID) return false;
 		if (namedPropCacheEntry.cbSig != cbSig) return false;
@@ -341,16 +319,7 @@ _Check_return_ HRESULT CacheGetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp,
 								EC_H(MAPIAllocateMore(sizeof(MAPINAMEID), lppNameIDs, reinterpret_cast<LPVOID*>(&lpNameID)));
 								if (lpNameID)
 								{
-									CopyCacheData(
-										lppUncachedPropNames[ulUncachedTag]->lpguid,
-										lppUncachedPropNames[ulUncachedTag]->ulKind,
-										lppUncachedPropNames[ulUncachedTag]->Kind.lID,
-										lppUncachedPropNames[ulUncachedTag]->Kind.lpwstrName,
-										&lpNameID->lpguid,
-										&lpNameID->ulKind,
-										&lpNameID->Kind.lID,
-										&lpNameID->Kind.lpwstrName,
-										lppNameIDs);
+									CopyCacheData(*lppUncachedPropNames[ulUncachedTag], *lpNameID, lppNameIDs);
 									lppNameIDs[ulTarget] = lpNameID;
 
 									// Got a hit, decrement the miss counter
@@ -362,8 +331,10 @@ _Check_return_ HRESULT CacheGetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp,
 						}
 					}
 				}
+
 				MAPIFreeBuffer(lppUncachedPropNames);
 			}
+
 			MAPIFreeBuffer(lpUncachedTags);
 
 			if (ulMisses != 0) hRes = MAPI_W_ERRORS_RETURNED;
