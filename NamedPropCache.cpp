@@ -4,15 +4,12 @@
 #include "stdafx.h"
 #include "NamedPropCache.h"
 
-// We keep a vector of named prop cache entries
-vector<LPNAMEDPROPCACHEENTRY> g_lpNamedPropCache;
+// We keep a list of named prop cache entries
+list<NamedPropCacheEntry> g_lpNamedPropCache;
 
 void UninitializeNamedPropCache()
 {
-	for (auto& i : g_lpNamedPropCache)
-	{
-		delete i;
-	}
+	g_lpNamedPropCache.clear();
 }
 
 // Go through all the details of copying allocated data to or from a cache entry
@@ -152,52 +149,53 @@ NamedPropCacheEntry::~NamedPropCacheEntry()
 // Given a signature and property ID (ulPropID), finds the named prop mapping in the cache
 _Check_return_ LPNAMEDPROPCACHEENTRY FindCacheEntry(ULONG cbSig, _In_count_(cbSig) LPBYTE lpSig, ULONG ulPropID)
 {
-	for (auto& i : g_lpNamedPropCache)
+	auto entry = find_if(begin(g_lpNamedPropCache), end(g_lpNamedPropCache), [&] (NamedPropCacheEntry &i)
 	{
-		if (i->ulPropID != ulPropID) continue;
-		if (i->cbSig != cbSig) continue;
-		if (cbSig && memcmp(lpSig, i->lpSig, cbSig)) continue;
+		if (i.ulPropID != ulPropID) return false;
+		if (i.cbSig != cbSig) return false;
+		if (cbSig && memcmp(lpSig, i.lpSig, cbSig)) return false;
 
-		return i;
-	}
+		return true;
+	});
 
-	return nullptr;
+	return entry != end(g_lpNamedPropCache) ? &(*entry) : nullptr;
 }
 
 // Given a signature, guid, kind, and value, finds the named prop mapping in the cache
 _Check_return_ LPNAMEDPROPCACHEENTRY FindCacheEntry(ULONG cbSig, _In_count_(cbSig) LPBYTE lpSig, _In_ LPGUID lpguid, ULONG ulKind, LONG lID, _In_z_ LPWSTR lpwstrName)
 {
-	for (auto& i : g_lpNamedPropCache)
+	auto entry = find_if(begin(g_lpNamedPropCache), end(g_lpNamedPropCache), [&](NamedPropCacheEntry &i)
 	{
-		if (!i->lpmniName) continue;
-		if (i->lpmniName->ulKind != ulKind) continue;
-		if (MNID_ID == ulKind && i->lpmniName->Kind.lID != lID) continue;
-		if (MNID_STRING == ulKind && 0 != lstrcmpW(i->lpmniName->Kind.lpwstrName, lpwstrName)) continue;
-		if (0 != memcmp(i->lpmniName->lpguid, lpguid, sizeof(GUID))) continue;
-		if (cbSig != i->cbSig) continue;
-		if (cbSig && memcmp(lpSig, i->lpSig, cbSig)) continue;
+		if (!i.lpmniName) return false;
+		if (i.lpmniName->ulKind != ulKind) return false;
+		if (MNID_ID == ulKind && i.lpmniName->Kind.lID != lID) return false;
+		if (MNID_STRING == ulKind && 0 != lstrcmpW(i.lpmniName->Kind.lpwstrName, lpwstrName)) return false;;
+		if (0 != memcmp(i.lpmniName->lpguid, lpguid, sizeof(GUID))) return false;
+		if (cbSig != i.cbSig) return false;
+		if (cbSig && memcmp(lpSig, i.lpSig, cbSig)) return false;
 
-		return i;
-	}
+		return true;
+	});
 
-	return nullptr;
+	return entry != end(g_lpNamedPropCache) ? &(*entry) : nullptr;
 }
 
 // Given a tag, guid, kind, and value, finds the named prop mapping in the cache
 _Check_return_ LPNAMEDPROPCACHEENTRY FindCacheEntry(ULONG ulPropID, _In_ LPGUID lpguid, ULONG ulKind, LONG lID, _In_z_ LPWSTR lpwstrName)
 {
-	for (auto& i : g_lpNamedPropCache)
+	auto entry = find_if(begin(g_lpNamedPropCache), end(g_lpNamedPropCache), [&](NamedPropCacheEntry &i)
 	{
-		if (i->ulPropID != ulPropID) continue;
-		if (!i->lpmniName) continue;
-		if (i->lpmniName->ulKind != ulKind) continue;
-		if (MNID_ID == ulKind && i->lpmniName->Kind.lID != lID) continue;
-		if (MNID_STRING == ulKind && 0 != lstrcmpW(i->lpmniName->Kind.lpwstrName, lpwstrName)) continue;
-		if (0 != memcmp(i->lpmniName->lpguid, lpguid, sizeof(GUID))) continue;
+		if (i.ulPropID != ulPropID) return false;
+		if (!i.lpmniName) return false;
+		if (i.lpmniName->ulKind != ulKind) return false;
+		if (MNID_ID == ulKind && i.lpmniName->Kind.lID != lID) return false;
+		if (MNID_STRING == ulKind && 0 != lstrcmpW(i.lpmniName->Kind.lpwstrName, lpwstrName)) return false;
+		if (0 != memcmp(i.lpmniName->lpguid, lpguid, sizeof(GUID))) return false;
 
-		return i;
-	}
-	return nullptr;
+		return true;
+	});
+
+	return entry != end(g_lpNamedPropCache) ? &(*entry) : nullptr;
 }
 
 void AddMapping(ULONG cbSig, // Count bytes of signature
@@ -213,7 +211,7 @@ void AddMapping(ULONG cbSig, // Count bytes of signature
 	{
 		if (lppPropNames[ulSource])
 		{
-			g_lpNamedPropCache.push_back(new NamedPropCacheEntry(cbSig, lpSig, lppPropNames[ulSource], PROP_ID(lpTag->aulPropTag[ulSource])));
+			g_lpNamedPropCache.emplace_back(cbSig, lpSig, lppPropNames[ulSource], PROP_ID(lpTag->aulPropTag[ulSource]));
 		}
 	}
 }
