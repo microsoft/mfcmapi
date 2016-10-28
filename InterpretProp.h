@@ -6,7 +6,6 @@ wstring Base64Encode(size_t cbSourceBuf, _In_count_(cbSourceBuf) LPBYTE lpSource
 
 void FileTimeToString(_In_ FILETIME* lpFileTime, _In_ wstring& PropString, _In_opt_ wstring& AltPropString);
 
-#define TAG_MAX_LEN 1024 // Max I've seen in testing is 546 - bit more to be safe
 wstring TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB, bool bSingleLine);
 wstring TypeToString(ULONG ulPropTag);
 wstring ProblemArrayToString(_In_ LPSPropProblemArray lpProblems);
