@@ -52,7 +52,7 @@ _Check_return_ wstring SDBin::ToStringInternal()
 	wstring szDACL;
 	wstring szInfo;
 
-	WC_H(SDToString(lpSDToParse, static_cast<ULONG>(ulSDToParse), acetype, szDACL, szInfo));
+	WC_H(SDToString(lpSDToParse, ulSDToParse, acetype, szDACL, szInfo));
 
 	auto szFlags = InterpretFlags(flagSecurityVersion, SECURITY_DESCRIPTOR_VERSION(lpSDToParse));
 	auto szResult = formatmessage(IDS_SECURITYDESCRIPTORHEADER);

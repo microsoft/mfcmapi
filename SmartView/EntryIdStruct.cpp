@@ -137,7 +137,7 @@ void EntryIdStruct::Parse()
 
 			EntryIdStruct entryIdStruct;
 			entryIdStruct.Init(
-				static_cast<ULONG>(m_Parser.RemainingBytes()),
+				m_Parser.RemainingBytes(),
 				m_Parser.GetCurrentAddress());
 			entryIdStruct.DisableJunkParsing();
 			entryIdStruct.EnsureParsed();

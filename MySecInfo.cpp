@@ -534,7 +534,7 @@ wstring ACEToString(_In_ void* pACE, eAceType acetype)
 	return AceString;
 }
 
-_Check_return_ HRESULT SDToString(_In_count_(cbBuf) LPBYTE lpBuf, ULONG cbBuf, eAceType acetype, _In_ wstring& SDString, _In_ wstring& sdInfo)
+_Check_return_ HRESULT SDToString(_In_count_(cbBuf) LPBYTE lpBuf, size_t cbBuf, eAceType acetype, _In_ wstring& SDString, _In_ wstring& sdInfo)
 {
 	auto hRes = S_OK;
 	BOOL bValidDACL = false;

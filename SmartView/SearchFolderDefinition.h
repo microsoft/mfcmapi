@@ -37,7 +37,6 @@ private:
 	DWORD m_SkipLen2;
 	vector<BYTE> m_SkipBytes2;
 	wstring m_Restriction; // SFST_MRES
-	DWORD m_AdvancedSearchLen; // SFST_FILTERSTREAM
 	vector<BYTE> m_AdvancedSearchBytes; // SFST_FILTERSTREAM
 	DWORD m_SkipLen3;
 	vector<BYTE> m_SkipBytes3;

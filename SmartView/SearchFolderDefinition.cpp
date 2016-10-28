@@ -20,7 +20,6 @@ SearchFolderDefinition::SearchFolderDefinition()
 	m_FolderList2Length = 0;
 	m_AddressCount = 0;
 	m_SkipLen2 = 0;
-	m_AdvancedSearchLen = 0;
 	m_SkipLen3 = 0;
 }
 
@@ -101,7 +100,7 @@ void SearchFolderDefinition::Parse()
 	{
 		RestrictionStruct res;
 		res.Init(false, true);
-		res.SmartViewParser::Init(static_cast<ULONG>(m_Parser.RemainingBytes()), m_Parser.GetCurrentAddress());
+		res.SmartViewParser::Init(m_Parser.RemainingBytes(), m_Parser.GetCurrentAddress());
 		res.DisableJunkParsing();
 		m_Restriction = res.ToString();
 		m_Parser.Advance(res.GetCurrentOffset());
@@ -112,10 +111,9 @@ void SearchFolderDefinition::Parse()
 		auto cbRemainingBytes = m_Parser.RemainingBytes();
 		// Since the format for SFST_FILTERSTREAM isn't documented, just assume that everything remaining
 		// is part of this bucket. We leave DWORD space for the final skip block, which should be empty
-		if (cbRemainingBytes > sizeof(DWORD))
+		if (cbRemainingBytes > sizeof DWORD)
 		{
-			m_AdvancedSearchLen = static_cast<DWORD>(cbRemainingBytes) - sizeof(DWORD);
-			m_AdvancedSearchBytes = m_Parser.GetBYTES(m_AdvancedSearchLen);
+			m_AdvancedSearchBytes = m_Parser.GetBYTES(cbRemainingBytes - sizeof DWORD);
 		}
 	}
 
@@ -216,9 +214,9 @@ _Check_return_ wstring SearchFolderDefinition::ToStringInternal()
 	if (SFST_FILTERSTREAM & m_Flags)
 	{
 		szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONADVANCEDSEARCHLEN,
-			m_AdvancedSearchLen);
+			m_AdvancedSearchBytes.size());
 
-		if (m_AdvancedSearchLen)
+		if (m_AdvancedSearchBytes.size())
 		{
 			szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONADVANCEDSEARCHBYTES);
 			szSearchFolderDefinition += BinToHexString(m_AdvancedSearchBytes, true);
