@@ -143,17 +143,18 @@ NamedPropCacheEntry::~NamedPropCacheEntry()
 
 		delete lpmniName;
 	}
+
 	delete[] lpSig;
 }
 
 // Given a signature and property ID (ulPropID), finds the named prop mapping in the cache
 _Check_return_ LPNAMEDPROPCACHEENTRY FindCacheEntry(ULONG cbSig, _In_count_(cbSig) LPBYTE lpSig, ULONG ulPropID)
 {
-	auto entry = find_if(begin(g_lpNamedPropCache), end(g_lpNamedPropCache), [&] (NamedPropCacheEntry &i)
+	auto entry = find_if(begin(g_lpNamedPropCache), end(g_lpNamedPropCache), [&] (NamedPropCacheEntry &namedPropCacheEntry)
 	{
-		if (i.ulPropID != ulPropID) return false;
-		if (i.cbSig != cbSig) return false;
-		if (cbSig && memcmp(lpSig, i.lpSig, cbSig)) return false;
+		if (namedPropCacheEntry.ulPropID != ulPropID) return false;
+		if (namedPropCacheEntry.cbSig != cbSig) return false;
+		if (cbSig && memcmp(lpSig, namedPropCacheEntry.lpSig, cbSig)) return false;
 
 		return true;
 	});
@@ -164,15 +165,15 @@ _Check_return_ LPNAMEDPROPCACHEENTRY FindCacheEntry(ULONG cbSig, _In_count_(cbSi
 // Given a signature, guid, kind, and value, finds the named prop mapping in the cache
 _Check_return_ LPNAMEDPROPCACHEENTRY FindCacheEntry(ULONG cbSig, _In_count_(cbSig) LPBYTE lpSig, _In_ LPGUID lpguid, ULONG ulKind, LONG lID, _In_z_ LPWSTR lpwstrName)
 {
-	auto entry = find_if(begin(g_lpNamedPropCache), end(g_lpNamedPropCache), [&](NamedPropCacheEntry &i)
+	auto entry = find_if(begin(g_lpNamedPropCache), end(g_lpNamedPropCache), [&](NamedPropCacheEntry &namedPropCacheEntry)
 	{
-		if (!i.lpmniName) return false;
-		if (i.lpmniName->ulKind != ulKind) return false;
-		if (MNID_ID == ulKind && i.lpmniName->Kind.lID != lID) return false;
-		if (MNID_STRING == ulKind && 0 != lstrcmpW(i.lpmniName->Kind.lpwstrName, lpwstrName)) return false;;
-		if (0 != memcmp(i.lpmniName->lpguid, lpguid, sizeof(GUID))) return false;
-		if (cbSig != i.cbSig) return false;
-		if (cbSig && memcmp(lpSig, i.lpSig, cbSig)) return false;
+		if (!namedPropCacheEntry.lpmniName) return false;
+		if (namedPropCacheEntry.lpmniName->ulKind != ulKind) return false;
+		if (MNID_ID == ulKind && namedPropCacheEntry.lpmniName->Kind.lID != lID) return false;
+		if (MNID_STRING == ulKind && 0 != lstrcmpW(namedPropCacheEntry.lpmniName->Kind.lpwstrName, lpwstrName)) return false;;
+		if (0 != memcmp(namedPropCacheEntry.lpmniName->lpguid, lpguid, sizeof(GUID))) return false;
+		if (cbSig != namedPropCacheEntry.cbSig) return false;
+		if (cbSig && memcmp(lpSig, namedPropCacheEntry.lpSig, cbSig)) return false;
 
 		return true;
 	});
@@ -183,14 +184,14 @@ _Check_return_ LPNAMEDPROPCACHEENTRY FindCacheEntry(ULONG cbSig, _In_count_(cbSi
 // Given a tag, guid, kind, and value, finds the named prop mapping in the cache
 _Check_return_ LPNAMEDPROPCACHEENTRY FindCacheEntry(ULONG ulPropID, _In_ LPGUID lpguid, ULONG ulKind, LONG lID, _In_z_ LPWSTR lpwstrName)
 {
-	auto entry = find_if(begin(g_lpNamedPropCache), end(g_lpNamedPropCache), [&](NamedPropCacheEntry &i)
+	auto entry = find_if(begin(g_lpNamedPropCache), end(g_lpNamedPropCache), [&](NamedPropCacheEntry &namedPropCacheEntry)
 	{
-		if (i.ulPropID != ulPropID) return false;
-		if (!i.lpmniName) return false;
-		if (i.lpmniName->ulKind != ulKind) return false;
-		if (MNID_ID == ulKind && i.lpmniName->Kind.lID != lID) return false;
-		if (MNID_STRING == ulKind && 0 != lstrcmpW(i.lpmniName->Kind.lpwstrName, lpwstrName)) return false;
-		if (0 != memcmp(i.lpmniName->lpguid, lpguid, sizeof(GUID))) return false;
+		if (namedPropCacheEntry.ulPropID != ulPropID) return false;
+		if (!namedPropCacheEntry.lpmniName) return false;
+		if (namedPropCacheEntry.lpmniName->ulKind != ulKind) return false;
+		if (MNID_ID == ulKind && namedPropCacheEntry.lpmniName->Kind.lID != lID) return false;
+		if (MNID_STRING == ulKind && 0 != lstrcmpW(namedPropCacheEntry.lpmniName->Kind.lpwstrName, lpwstrName)) return false;
+		if (0 != memcmp(namedPropCacheEntry.lpmniName->lpguid, lpguid, sizeof(GUID))) return false;
 
 		return true;
 	});

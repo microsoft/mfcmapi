@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "InterpretProp2.h"
 #include "String.h"
-#include <algorithm>
 #include <unordered_map>
 
 #define ulNoMatch 0xffffffff

@@ -9,7 +9,6 @@
 #include "SmartView/SmartView.h"
 #include "ColumnTags.h"
 #include "Property/ParseProperty.h"
-#include <algorithm>
 #include "Dialogs/Editors/DbgView.h"
 
 #ifdef CHECKFORMATPARAMS

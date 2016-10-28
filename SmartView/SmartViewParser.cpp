@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "SmartViewParser.h"
 #include "String.h"
-#include <algorithm>
 
 SmartViewParser::SmartViewParser()
 {

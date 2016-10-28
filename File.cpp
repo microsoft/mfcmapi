@@ -12,7 +12,6 @@
 #include "MFCUtilityFunctions.h"
 #include <shlobj.h>
 #include "Dumpstore.h"
-#include <algorithm>
 
 wstring GetDirectoryPath(HWND hWnd)
 {

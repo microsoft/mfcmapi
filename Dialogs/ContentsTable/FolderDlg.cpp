@@ -23,7 +23,6 @@
 #include "MAPIMime.h"
 #include "InterpretProp2.h"
 #include "SortList/ContentsData.h"
-#include <algorithm>
 #include "GlobalCache.h"
 
 static wstring CLASS = L"CFolderDlg";

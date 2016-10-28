@@ -16,14 +16,14 @@ public:
 
 	~NamedPropCacheEntry();
 
-	ULONG ulPropID;         // MAPI ID (ala PROP_ID) for a named property
+	ULONG ulPropID; // MAPI ID (ala PROP_ID) for a named property
 	LPMAPINAMEID lpmniName; // guid, kind, value
-	ULONG cbSig;            // Size and...
-	LPBYTE lpSig;           // Value of PR_MAPPING_SIGNATURE
-	bool bStringsCached;    // We have cached strings
-	wstring lpszPropName;    // Cached strings
-	wstring lpszPropGUID;    //
-	wstring lpszDASL;        //
+	ULONG cbSig; // Size and...
+	LPBYTE lpSig; // Value of PR_MAPPING_SIGNATURE
+	bool bStringsCached; // We have cached strings
+	wstring lpszPropName; // Cached strings
+	wstring lpszPropGUID;
+	wstring lpszDASL;
 };
 typedef NamedPropCacheEntry *LPNAMEDPROPCACHEENTRY;
 

@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "string.h"
-#include <algorithm>
 #include <locale>
 #include <codecvt>
 #include <sstream>

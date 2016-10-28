@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "FileDialogEx.h"
-#include <algorithm>
 
 wstring CFileDialogExW::OpenFile(
 	_In_ wstring lpszDefExt,

@@ -1,6 +1,5 @@
 #pragma once
 #include "BinaryParser.h"
-#include <list>
 
 #define _MaxBytes 0xFFFF
 #define _MaxDepth 50
