@@ -35,9 +35,10 @@ void InitMFC()
 _Check_return_ HRESULT MrMAPILogonEx(wstring const& lpszProfile, _Deref_out_opt_ LPMAPISESSION* lppSession)
 {
 	auto hRes = S_OK;
-	ULONG ulFlags = MAPI_EXTENDED | MAPI_NO_MAIL | MAPI_UNICODE | MAPI_NEW_SESSION;
+	auto ulFlags = MAPI_EXTENDED | MAPI_NO_MAIL | MAPI_UNICODE | MAPI_NEW_SESSION;
 	if (lpszProfile.empty()) ulFlags |= MAPI_USE_DEFAULT;
 
+	// TODO: profile parameter should be ansi in ansi builds
 	WC_MAPI(MAPILogonEx(NULL, (LPTSTR)(lpszProfile.empty() ? NULL : lpszProfile.c_str()), NULL,
 		ulFlags,
 		lppSession));
@@ -212,12 +213,12 @@ void DisplayUsage(BOOL bFull)
 			}
 		}
 		printf("MrMAPI currently knows:\n");
-		printf("%6u property tags\n", ulPropTagArray);
-		printf("%6u dispids\n", ulNameIDArray);
-		printf("%6u types\n", ulPropTypeArray);
-		printf("%6u guids\n", ulPropGuidArray);
+		printf("%6u property tags\n", static_cast<int>(PropTagArray.size()));
+		printf("%6u dispids\n", static_cast<int>(NameIDArray.size()));
+		printf("%6u types\n", static_cast<int>(PropTypeArray.size()));
+		printf("%6u guids\n", static_cast<int>(PropGuidArray.size()));
 		printf("%6u errors\n", g_ulErrorArray);
-		printf("%6u smart view parsers\n", ulSmartViewParserTypeArray - 1);
+		printf("%6u smart view parsers\n", static_cast<int>(SmartViewParserTypeArray.size()) - 1);
 		printf("\n");
 	}
 	printf("Usage:\n");
@@ -438,7 +439,7 @@ void DisplayUsage(BOOL bFull)
 		printf("\n");
 		printf("Smart View Parsers:\n");
 		// Print smart view options
-		for (ULONG i = 1; i < ulSmartViewParserTypeArray; i++)
+		for (ULONG i = 1; i < SmartViewParserTypeArray.size(); i++)
 		{
 			_tprintf(_T("   %2u %ws\n"), i, SmartViewParserTypeArray[i].lpszName);
 		}

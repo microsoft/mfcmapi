@@ -559,23 +559,10 @@ void MergeAddInArrays();
 using namespace std;
 wstring AddInSmartView(__ParsingTypeEnum iStructType, ULONG cbBin, _In_count_(cbBin) LPBYTE lpBin);
 
-extern LPNAME_ARRAY_ENTRY_V2 PropTagArray;
-extern ULONG ulPropTagArray;
-
-extern LPNAME_ARRAY_ENTRY PropTypeArray;
-extern ULONG ulPropTypeArray;
-
-extern LPGUID_ARRAY_ENTRY PropGuidArray;
-extern ULONG ulPropGuidArray;
-
-extern LPNAMEID_ARRAY_ENTRY NameIDArray;
-extern ULONG ulNameIDArray;
-
-extern LPFLAG_ARRAY_ENTRY FlagArray;
-extern ULONG ulFlagArray;
-
-extern LPSMARTVIEW_PARSER_ARRAY_ENTRY SmartViewParserArray;
-extern ULONG ulSmartViewParserArray;
-
-extern LPNAME_ARRAY_ENTRY SmartViewParserTypeArray;
-extern ULONG ulSmartViewParserTypeArray;
+extern vector<NAME_ARRAY_ENTRY_V2> PropTagArray;
+extern vector<NAME_ARRAY_ENTRY> PropTypeArray;
+extern vector<GUID_ARRAY_ENTRY> PropGuidArray;
+extern vector<NAMEID_ARRAY_ENTRY> NameIDArray;
+extern vector<FLAG_ARRAY_ENTRY> FlagArray;
+extern vector<SMARTVIEW_PARSER_ARRAY_ENTRY> SmartViewParserArray;
+extern vector<NAME_ARRAY_ENTRY> SmartViewParserTypeArray;

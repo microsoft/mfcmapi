@@ -12,7 +12,7 @@ SmartViewPane* SmartViewPane::SmartViewPane::Create(UINT uidLabel)
 	{
 		pane->SetLabel(uidLabel, true);
 	}
-	
+
 	return pane;
 }
 
@@ -37,17 +37,14 @@ ULONG SmartViewPane::GetFlags()
 
 void SmartViewPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 {
-	Setup(ulSmartViewParserTypeArray, nullptr, SmartViewParserTypeArray, false);
+	Setup(static_cast<ULONG>(SmartViewParserTypeArray.size()), nullptr, SmartViewParserTypeArray.data(), false);
 
 	CreateControl(iControl, pParent, hdc);
 
-	if (SmartViewParserTypeArray)
+	for (ULONG iDropNum = 0; iDropNum < SmartViewParserTypeArray.size(); iDropNum++)
 	{
-		for (ULONG iDropNum = 0; iDropNum < ulSmartViewParserTypeArray; iDropNum++)
-		{
-			auto szDropString = wstring(SmartViewParserTypeArray[iDropNum].lpszName);
-			InsertDropString(iDropNum, szDropString, SmartViewParserTypeArray[iDropNum].ulValue);
-		}
+		auto szDropString = wstring(SmartViewParserTypeArray[iDropNum].lpszName);
+		InsertDropString(iDropNum, szDropString, SmartViewParserTypeArray[iDropNum].ulValue);
 	}
 
 	m_DropDown.SetCurSel(static_cast<int>(m_iDropSelectionValue));
@@ -172,15 +169,12 @@ void SmartViewPane::DisableDropDown()
 
 void SmartViewPane::SetParser(__ParsingTypeEnum iParser)
 {
-	if (SmartViewParserTypeArray)
+	for (size_t iDropNum = 0; iDropNum < SmartViewParserTypeArray.size(); iDropNum++)
 	{
-		for (ULONG iDropNum = 0; iDropNum < ulSmartViewParserTypeArray; iDropNum++)
+		if (iParser == static_cast<__ParsingTypeEnum>(SmartViewParserTypeArray[iDropNum].ulValue))
 		{
-			if (iParser == static_cast<__ParsingTypeEnum>(SmartViewParserTypeArray[iDropNum].ulValue))
-			{
-				SetSelection(iDropNum);
-				break;
-			}
+			SetSelection(iDropNum);
+			break;
 		}
 	}
 }

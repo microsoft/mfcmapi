@@ -196,7 +196,7 @@ void DropDownPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 	// If this is a GUID list, load up our list of guids
 	if (m_bGUID)
 	{
-		for (ULONG iDropNum = 0; iDropNum < ulPropGuidArray; iDropNum++)
+		for (ULONG iDropNum = 0; iDropNum < PropGuidArray.size(); iDropNum++)
 		{
 			InsertDropString(iDropNum, GUIDToStringAndName(PropGuidArray[iDropNum].lpGuid), iDropNum);
 		}
@@ -273,7 +273,7 @@ _Check_return_ DWORD_PTR DropDownPane::GetDropDownValue() const
 // This should work whether the editor is active/displayed or not
 _Check_return_ bool DropDownPane::GetSelectedGUID(bool bByteSwapped, _In_ LPGUID lpSelectedGUID) const
 {
-	if (!lpSelectedGUID) return NULL;
+	if (!lpSelectedGUID) return false;
 
 	auto iCurSel = GetDropDownSelection();
 	if (iCurSel != CB_ERR)

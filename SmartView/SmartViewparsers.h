@@ -1,7 +1,7 @@
 #pragma once
 
 // After 'No Parsing', these are in alphabetical order
-NAME_ARRAY_ENTRY g_SmartViewParserTypeArray[] = {
+vector<NAME_ARRAY_ENTRY> SmartViewParserTypeArray = {
 	{ IDS_STNOPARSING, L"Choose Smart View Parser" }, // STRING_OK
 	{ IDS_STADDITIONALRENENTRYIDSEX, L"Additional Ren Entry IDs Ex" }, // STRING_OK
 	{ IDS_STAPPOINTMENTRECURRENCEPATTERN, L"Appointment Recurrence Pattern" }, // STRING_OK
@@ -37,7 +37,7 @@ NAME_ARRAY_ENTRY g_SmartViewParserTypeArray[] = {
 	{ IDS_STXID, L"XID" }, // STRING_OK
 };
 
-SMARTVIEW_PARSER_ARRAY_ENTRY g_SmartViewParserArray[] =
+vector<SMARTVIEW_PARSER_ARRAY_ENTRY> SmartViewParserArray =
 {
 	BINARY_STRUCTURE_ENTRY(PR_REPORT_TAG, IDS_STREPORTTAG)
 	BINARY_STRUCTURE_ENTRY(PR_RECEIVED_BY_ENTRYID, IDS_STENTRYID)

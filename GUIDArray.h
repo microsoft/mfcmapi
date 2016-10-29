@@ -2,7 +2,7 @@
 
 #define GUID_ENTRY(guid) {&(guid),L#guid},
 
-GUID_ARRAY_ENTRY g_PropGuidArray[] =
+vector<GUID_ARRAY_ENTRY> PropGuidArray =
 {
 	GUID_ENTRY(IID_IUnknown)
 	GUID_ENTRY(IID_IMAPITable)

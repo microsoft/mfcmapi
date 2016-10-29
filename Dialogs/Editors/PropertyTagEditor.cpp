@@ -72,7 +72,7 @@ BOOL CPropertyTagEditor::OnInitDialog()
 
 	// initialize our dropdowns here
 	// prop types
-	for (ULONG ulDropNum = 0; ulDropNum < ulPropTypeArray; ulDropNum++)
+	for (ULONG ulDropNum = 0; ulDropNum < PropTypeArray.size(); ulDropNum++)
 	{
 		InsertDropString(PROPTAG_TYPE, ulDropNum, PropTypeArray[ulDropNum].lpszName);
 	}
@@ -125,7 +125,7 @@ _Check_return_ LPNAMEID_ARRAY_ENTRY GetDispIDFromName(_In_z_ LPCWSTR lpszDispIDN
 {
 	if (!lpszDispIDName) return nullptr;
 
-	for (ULONG ulCur = 0; ulCur < ulNameIDArray; ulCur++)
+	for (size_t ulCur = 0; ulCur < NameIDArray.size(); ulCur++)
 	{
 		if (0 == wcscmp(NameIDArray[ulCur].lpszName, lpszDispIDName))
 		{
@@ -453,7 +453,7 @@ BOOL CPropertySelector::OnInitDialog()
 	InsertColumn(0, 3, IDS_TYPE);
 
 	ULONG ulCurRow = 0;
-	for (ULONG i = 0; i < ulPropTagArray; i++)
+	for (size_t i = 0; i < PropTagArray.size(); i++)
 	{
 		if (!m_bIncludeABProps && PropTagArray[i].ulValue & 0x80000000) continue;
 		auto lpData = InsertListRow(0, ulCurRow, PropTagArray[i].lpszName);

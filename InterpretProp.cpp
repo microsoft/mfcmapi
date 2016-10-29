@@ -754,7 +754,7 @@ wstring TypeToString(ULONG ulPropTag)
 
 	auto bTypeFound = false;
 
-	for (ULONG ulCur = 0; ulCur < ulPropTypeArray; ulCur++)
+	for (size_t ulCur = 0; ulCur < PropTypeArray.size(); ulCur++)
 	{
 		if (PropTypeArray[ulCur].ulValue == PROP_TYPE(ulPropTag))
 		{

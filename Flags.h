@@ -5,7 +5,7 @@
 #include "ExtraPropTags.h"
 
 // when listing flagVALUE entries, NULL values need to come first
-FLAG_ARRAY_ENTRY g_FlagArray[] =
+vector<FLAG_ARRAY_ENTRY> FlagArray =
 {
 	FLAG_ENTRY_NAMED(PR_ACKNOWLEDGEMENT_MODE, 0x00000000, L"Manual acknowledgment", flagVALUE) // STRING_OK
 	FLAG_ENTRY_NAMED(PR_ACKNOWLEDGEMENT_MODE, 0x00000001, L"Automatic acknowledgment", flagVALUE) // STRING_OK

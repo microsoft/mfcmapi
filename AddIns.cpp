@@ -20,37 +20,6 @@
 
 LPADDIN g_lpMyAddins = nullptr;
 
-// Count of built-in arrays
-ULONG g_ulPropTagArray = _countof(g_PropTagArray);
-ULONG g_ulFlagArray = _countof(g_FlagArray);
-ULONG g_ulPropGuidArray = _countof(g_PropGuidArray);
-ULONG g_ulNameIDArray = _countof(g_NameIDArray);
-ULONG g_ulPropTypeArray = _countof(g_PropTypeArray);
-ULONG g_ulSmartViewParserArray = _countof(g_SmartViewParserArray);
-ULONG g_ulSmartViewParserTypeArray = _countof(g_SmartViewParserTypeArray);
-
-// Arrays and counts declared in mfcmapi.h
-LPNAME_ARRAY_ENTRY PropTypeArray = nullptr;
-ULONG ulPropTypeArray = NULL;
-
-LPNAME_ARRAY_ENTRY_V2 PropTagArray = nullptr;
-ULONG ulPropTagArray = NULL;
-
-LPGUID_ARRAY_ENTRY PropGuidArray = nullptr;
-ULONG ulPropGuidArray = NULL;
-
-LPNAMEID_ARRAY_ENTRY NameIDArray = nullptr;
-ULONG ulNameIDArray;
-
-LPFLAG_ARRAY_ENTRY FlagArray = nullptr;
-ULONG ulFlagArray = NULL;
-
-LPSMARTVIEW_PARSER_ARRAY_ENTRY SmartViewParserArray = nullptr;
-ULONG ulSmartViewParserArray;
-
-LPNAME_ARRAY_ENTRY SmartViewParserTypeArray = nullptr;
-ULONG ulSmartViewParserTypeArray;
-
 _Check_return_ ULONG GetAddinVersion(HMODULE hMod)
 {
 	auto hRes = S_OK;
@@ -442,32 +411,6 @@ void LoadAddIns()
 	DebugPrint(DBGAddInPlumbing, L"Done loading AddIns\n");
 }
 
-void ResetArrays()
-{
-	if (PropTypeArray != g_PropTypeArray) delete[] PropTypeArray;
-	if (PropTagArray != g_PropTagArray) delete[] PropTagArray;
-	if (PropGuidArray != g_PropGuidArray) delete[] PropGuidArray;
-	if (NameIDArray != g_NameIDArray) delete[] NameIDArray;
-	if (FlagArray != g_FlagArray) delete[] FlagArray;
-	if (SmartViewParserArray != g_SmartViewParserArray) delete[] SmartViewParserArray;
-	if (SmartViewParserTypeArray != g_SmartViewParserTypeArray) delete[] SmartViewParserTypeArray;
-
-	ulPropTypeArray = g_ulPropTypeArray;
-	PropTypeArray = g_PropTypeArray;
-	ulPropTagArray = g_ulPropTagArray;
-	PropTagArray = g_PropTagArray;
-	ulPropGuidArray = g_ulPropGuidArray;
-	PropGuidArray = g_PropGuidArray;
-	ulNameIDArray = g_ulNameIDArray;
-	NameIDArray = g_NameIDArray;
-	ulFlagArray = g_ulFlagArray;
-	FlagArray = g_FlagArray;
-	ulSmartViewParserArray = g_ulSmartViewParserArray;
-	SmartViewParserArray = g_SmartViewParserArray;
-	ulSmartViewParserTypeArray = g_ulSmartViewParserTypeArray;
-	SmartViewParserTypeArray = g_SmartViewParserTypeArray;
-}
-
 void UnloadAddIns()
 {
 	DebugPrint(DBGAddInPlumbing, L"Unloading AddIns\n");
@@ -499,8 +442,6 @@ void UnloadAddIns()
 			delete lpAddInToFree;
 		}
 	}
-
-	ResetArrays();
 
 	DebugPrint(DBGAddInPlumbing, L"Done unloading AddIns\n");
 }
@@ -662,6 +603,7 @@ int _cdecl CompareTags(_In_ const void* a1, _In_ const void* a2)
 	{
 		return wcscmp(lpTag1->lpszName, lpTag2->lpszName);
 	}
+
 	return -1;
 }
 
@@ -699,69 +641,28 @@ int _cdecl CompareSmartViewParser(_In_ const void* a1, _In_ const void* a2)
 	return -1;
 }
 
-void MergeArrays(
-	_Inout_bytecap_x_(cIn1 * width) LPVOID In1,
-	_In_ size_t cIn1,
-	_Inout_bytecap_x_(cIn2 * width) LPVOID In2,
+template <typename T> void MergeArrays(
+	vector<T> &In1,
+	_Inout_bytecap_x_(cIn2 * width) T* In2,
 	_In_ size_t cIn2,
-	_Out_ _Deref_post_bytecap_x_(*lpcOut * width) LPVOID* lpOut,
-	_Out_ size_t* lpcOut,
-	_In_ size_t width,
 	_In_ int(_cdecl *comp)(const void *, const void *))
 {
-	if (!In1 && !In2) return;
-	if (!lpOut || !lpcOut) return;
-
-	// Assume no duplicates
-	*lpcOut = cIn1 + cIn2;
-	*lpOut = new char[*lpcOut * width];
-
-	if (*lpOut)
+	for (ULONG i = 0; i < cIn2; i++)
 	{
-		memset(*lpOut, 0, *lpcOut * width);
-		auto iIn1 = static_cast<char*>(In1);
-		auto iIn2 = static_cast<char*>(In2);
-		LPVOID endIn1 = iIn1 + width * (cIn1 - 1);
-		LPVOID endIn2 = iIn2 + width * (cIn2 - 1);
-		auto iOut = static_cast<char*>(*lpOut);
-
-		while (iIn1 <= endIn1 && iIn2 <= endIn2)
+		if (end(In1) == find_if(begin(In1), end(In1), [&](T &entry)
 		{
-			auto iComp = comp(iIn1, iIn2);
-			if (iComp < 0)
-			{
-				memcpy(iOut, iIn1, width);
-				iIn1 += width;
-			}
-			else if (iComp > 0)
-			{
-				memcpy(iOut, iIn2, width);
-				iIn2 += width;
-			}
-			else
-			{
-				// They're the same - copy one over and skip past both
-				memcpy(iOut, iIn1, width);
-				iIn1 += width;
-				iIn2 += width;
-			}
-			iOut += width;
-		}
-		while (iIn1 <= endIn1)
+			return comp(&In2[i], &entry) == 0;
+		}))
 		{
-			memcpy(iOut, iIn1, width);
-			iIn1 += width;
-			iOut += width;
+			In1.push_back(In2[i]);
 		}
-		while (iIn2 <= endIn2)
-		{
-			memcpy(iOut, iIn2, width);
-			iIn2 += width;
-			iOut += width;
-		}
-
-		*lpcOut = (iOut - static_cast<char*>(*lpOut)) / width;
 	}
+
+	std::stable_sort(begin(In1), end(In1), [comp](const T& a, const T& b) -> bool
+	{
+		return comp(&a, &b) < 0;
+	});
+
 }
 
 // Flags are difficult to sort since we need to have a stable sort
@@ -782,99 +683,81 @@ void SortFlagArray(_In_count_(ulFlags) LPFLAG_ARRAY_ENTRY lpFlags, _In_ ULONG ul
 	}
 }
 
-// Consults the end of the supplied array to find a match to the passed in entry
-// If no dupe is found, copies lpSource[*lpiSource] to lpTarget and increases *lpcArray
-// Increases *lpiSource regardless
-void AppendFlagIfNotDupe(_In_count_(*lpcArray) LPFLAG_ARRAY_ENTRY lpTarget, _In_ size_t* lpcArray, _In_count_(*lpiSource + 1) LPFLAG_ARRAY_ENTRY lpSource, _In_ size_t* lpiSource)
+// Consults the end of the target array to find a match to the source
+// If no dupe is found, copies source to target
+void AppendFlagIfNotDupe(vector<FLAG_ARRAY_ENTRY> &target, FLAG_ARRAY_ENTRY source)
 {
-	auto iTarget = *lpcArray;
-	auto iSource = *lpiSource;
-	(*lpiSource)++;
+	auto iTarget = target.size();
 	while (iTarget)
 	{
 		iTarget--;
 		// Stop searching when ulFlagName doesn't match
 		// Assumes lpTarget is sorted
-		if (lpTarget[iTarget].ulFlagName != lpSource[iSource].ulFlagName) break;
-		if (lpTarget[iTarget].lFlagValue == lpSource[iSource].lFlagValue &&
-			lpTarget[iTarget].ulFlagType == lpSource[iSource].ulFlagType &&
-			!wcscmp(lpTarget[iTarget].lpszName, lpSource[iSource].lpszName))
+		if (target[iTarget].ulFlagName != source.ulFlagName) break;
+		if (target[iTarget].lFlagValue == source.lFlagValue &&
+			target[iTarget].ulFlagType == source.ulFlagType &&
+			!wcscmp(target[iTarget].lpszName, source.lpszName))
 		{
 			return;
 		}
 	}
-	lpTarget[*lpcArray] = lpSource[iSource];
-	(*lpcArray)++;
+
+	target.push_back(source);
 }
 
 // Similar to MergeArrays, but using AppendFlagIfNotDupe logic
 void MergeFlagArrays(
-	_In_count_(cIn1) LPFLAG_ARRAY_ENTRY In1,
-	_In_ size_t cIn1,
+	vector<FLAG_ARRAY_ENTRY> &In1,
 	_In_count_(cIn2) LPFLAG_ARRAY_ENTRY In2,
-	_In_ size_t cIn2,
-	_Out_ _Deref_post_count_(*lpcOut) LPFLAG_ARRAY_ENTRY* lpOut,
-	_Out_ size_t* lpcOut)
+	_In_ size_t cIn2)
 {
-	if (!In1 && !In2) return;
-	if (!lpOut || !lpcOut) return;
+	if (!In2) return;
 
-	// Assume no duplicates
-	*lpcOut = cIn1 + cIn2;
-	auto Out = new FLAG_ARRAY_ENTRY[*lpcOut];
+	vector<FLAG_ARRAY_ENTRY> Out;
 
-	if (Out)
+	size_t iIn1 = 0;
+	size_t iIn2 = 0;
+
+	while (iIn1 < In1.size() && iIn2 < cIn2)
 	{
-		size_t iIn1 = 0;
-		size_t iIn2 = 0;
-		size_t iOut = 0;
-
-		while (iIn1 < cIn1 && iIn2 < cIn2)
+		// Add from In1 first, then In2 when In2 is bigger than In2
+		if (In1[iIn1].ulFlagName <= In2[iIn2].ulFlagName)
 		{
-			// Add from In1 first, then In2 when In2 is bigger than In2
-			if (In1[iIn1].ulFlagName <= In2[iIn2].ulFlagName)
-			{
-				AppendFlagIfNotDupe(Out, &iOut, In1, &iIn1);
-			}
-			else
-			{
-				AppendFlagIfNotDupe(Out, &iOut, In2, &iIn2);
-			}
+			AppendFlagIfNotDupe(Out, In1[iIn1++]);
 		}
-		while (iIn1 < cIn1)
+		else
 		{
-			AppendFlagIfNotDupe(Out, &iOut, In1, &iIn1);
+			AppendFlagIfNotDupe(Out, In2[iIn2++]);
 		}
-		while (iIn2 < cIn2)
-		{
-			AppendFlagIfNotDupe(Out, &iOut, In2, &iIn2);
-		}
-
-		*lpcOut = iOut;
-		*lpOut = Out;
 	}
+
+	while (iIn1 < In1.size())
+	{
+		AppendFlagIfNotDupe(Out, In1[iIn1++]);
+	}
+
+	while (iIn2 < cIn2)
+	{
+		AppendFlagIfNotDupe(Out, In2[iIn2++]);
+	}
+
+	In1 = Out;
 }
 
 // Assumes built in arrays are already sorted!
 void MergeAddInArrays()
 {
 	DebugPrint(DBGAddInPlumbing, L"Merging Add-In arrays\n");
-
-	ResetArrays();
-
-	DebugPrint(DBGAddInPlumbing, L"Found 0x%08X built in prop tags.\n", g_ulPropTagArray);
-	DebugPrint(DBGAddInPlumbing, L"Found 0x%08X built in prop types.\n", g_ulPropTypeArray);
-	DebugPrint(DBGAddInPlumbing, L"Found 0x%08X built in guids.\n", g_ulPropGuidArray);
-	DebugPrint(DBGAddInPlumbing, L"Found 0x%08X built in named ids.\n", g_ulNameIDArray);
-	DebugPrint(DBGAddInPlumbing, L"Found 0x%08X built in flags.\n", g_ulFlagArray);
-	DebugPrint(DBGAddInPlumbing, L"Found 0x%08X built in Smart View parsers.\n", g_ulSmartViewParserArray);
-	DebugPrint(DBGAddInPlumbing, L"Found 0x%08X built in Smart View parser types.\n", g_ulSmartViewParserTypeArray);
+	DebugPrint(DBGAddInPlumbing, L"Found 0x%08X built in prop tags.\n", PropTagArray.size());
+	DebugPrint(DBGAddInPlumbing, L"Found 0x%08X built in prop types.\n", PropTypeArray.size());
+	DebugPrint(DBGAddInPlumbing, L"Found 0x%08X built in guids.\n", PropGuidArray.size());
+	DebugPrint(DBGAddInPlumbing, L"Found 0x%08X built in named ids.\n", NameIDArray.size());
+	DebugPrint(DBGAddInPlumbing, L"Found 0x%08X built in flags.\n", FlagArray.size());
+	DebugPrint(DBGAddInPlumbing, L"Found 0x%08X built in Smart View parsers.\n", SmartViewParserArray.size());
+	DebugPrint(DBGAddInPlumbing, L"Found 0x%08X built in Smart View parser types.\n", SmartViewParserTypeArray.size());
 
 	// No add-in == nothing to merge
 	if (!g_lpMyAddins) return;
-
-	// First pass - count up any the size of the guid array
-	auto ulAddInPropGuidArray = g_ulPropGuidArray;
 
 	auto lpCurAddIn = g_lpMyAddins;
 	while (lpCurAddIn)
@@ -887,125 +770,54 @@ void MergeAddInArrays()
 		DebugPrint(DBGAddInPlumbing, L"Found 0x%08X flags.\n", lpCurAddIn->ulPropFlags);
 		DebugPrint(DBGAddInPlumbing, L"Found 0x%08X Smart View parsers.\n", lpCurAddIn->ulSmartViewParsers);
 		DebugPrint(DBGAddInPlumbing, L"Found 0x%08X Smart View parser types.\n", lpCurAddIn->ulSmartViewParserTypes);
-		ulAddInPropGuidArray += lpCurAddIn->ulPropGuids;
 		lpCurAddIn = lpCurAddIn->lpNextAddIn;
 	}
 
-	// if count has gone up - we need to merge
-	// Allocate a larger array and initialize it with our hardcoded data
-	if (ulAddInPropGuidArray != g_ulPropGuidArray)
-	{
-		PropGuidArray = new GUID_ARRAY_ENTRY[ulAddInPropGuidArray];
-		if (PropGuidArray)
-		{
-			for (ULONG i = 0; i < g_ulPropGuidArray; i++)
-			{
-				PropGuidArray[i] = g_PropGuidArray[i];
-			}
-		}
-	}
-
 	// Second pass - merge our arrays to the hardcoded arrays
-	auto ulCurPropGuid = g_ulPropGuidArray;
 	lpCurAddIn = g_lpMyAddins;
 	while (lpCurAddIn)
 	{
 		if (lpCurAddIn->ulPropTypes)
 		{
 			qsort(lpCurAddIn->lpPropTypes, lpCurAddIn->ulPropTypes, sizeof(NAME_ARRAY_ENTRY), &CompareTypes);
-			LPNAME_ARRAY_ENTRY newPropTypeArray = nullptr;
-			size_t ulnewPropTypeArray = NULL;
-			MergeArrays(PropTypeArray, ulPropTypeArray,
-				lpCurAddIn->lpPropTypes, lpCurAddIn->ulPropTypes,
-				reinterpret_cast<LPVOID*>(&newPropTypeArray), &ulnewPropTypeArray,
-				sizeof(NAME_ARRAY_ENTRY),
-				CompareTypes);
-			if (PropTypeArray != g_PropTypeArray) delete[] PropTypeArray;
-			PropTypeArray = newPropTypeArray;
-			ulPropTypeArray = static_cast<ULONG>(ulnewPropTypeArray);
+			MergeArrays<NAME_ARRAY_ENTRY>(PropTypeArray, lpCurAddIn->lpPropTypes, lpCurAddIn->ulPropTypes, CompareTypes);
 		}
 
 		if (lpCurAddIn->ulPropTags)
 		{
 			qsort(lpCurAddIn->lpPropTags, lpCurAddIn->ulPropTags, sizeof(NAME_ARRAY_ENTRY_V2), &CompareTags);
-			LPNAME_ARRAY_ENTRY_V2 newPropTagArray = nullptr;
-			size_t ulnewPropTagArray = NULL;
-			MergeArrays(PropTagArray, ulPropTagArray,
-				lpCurAddIn->lpPropTags, lpCurAddIn->ulPropTags,
-				reinterpret_cast<LPVOID*>(&newPropTagArray), &ulnewPropTagArray,
-				sizeof(NAME_ARRAY_ENTRY_V2),
-				CompareTags);
-			if (PropTagArray != g_PropTagArray) delete[] PropTagArray;
-			PropTagArray = newPropTagArray;
-			ulPropTagArray = static_cast<ULONG>(ulnewPropTagArray);
+			MergeArrays<NAME_ARRAY_ENTRY_V2>(PropTagArray, lpCurAddIn->lpPropTags, lpCurAddIn->ulPropTags, CompareTags);
 		}
 
 		if (lpCurAddIn->ulNameIDs)
 		{
 			qsort(lpCurAddIn->lpNameIDs, lpCurAddIn->ulNameIDs, sizeof(NAMEID_ARRAY_ENTRY), &CompareNameID);
-			LPNAMEID_ARRAY_ENTRY newNameIDArray = nullptr;
-			size_t ulnewNameIDArray = NULL;
-			MergeArrays(NameIDArray, ulNameIDArray,
-				lpCurAddIn->lpNameIDs, lpCurAddIn->ulNameIDs,
-				reinterpret_cast<LPVOID*>(&newNameIDArray), &ulnewNameIDArray,
-				sizeof(NAMEID_ARRAY_ENTRY),
-				CompareNameID);
-			if (NameIDArray != g_NameIDArray) delete[] NameIDArray;
-			NameIDArray = newNameIDArray;
-			ulNameIDArray = static_cast<ULONG>(ulnewNameIDArray);
+			MergeArrays<NAMEID_ARRAY_ENTRY>(NameIDArray, lpCurAddIn->lpNameIDs, lpCurAddIn->ulNameIDs, CompareNameID);
 		}
 
 		if (lpCurAddIn->ulPropFlags)
 		{
 			SortFlagArray(lpCurAddIn->lpPropFlags, lpCurAddIn->ulPropFlags);
-			LPFLAG_ARRAY_ENTRY newFlagArray = nullptr;
-			size_t ulnewFlagArray = NULL;
-			MergeFlagArrays(FlagArray, ulFlagArray,
-				lpCurAddIn->lpPropFlags, lpCurAddIn->ulPropFlags,
-				&newFlagArray, &ulnewFlagArray);
-			if (FlagArray != g_FlagArray) delete[] FlagArray;
-			FlagArray = newFlagArray;
-			ulFlagArray = static_cast<ULONG>(ulnewFlagArray);
+			MergeFlagArrays(FlagArray, lpCurAddIn->lpPropFlags, lpCurAddIn->ulPropFlags);
 		}
 
 		if (lpCurAddIn->ulSmartViewParsers)
 		{
 			qsort(lpCurAddIn->lpSmartViewParsers, lpCurAddIn->ulSmartViewParsers, sizeof(SMARTVIEW_PARSER_ARRAY_ENTRY), &CompareSmartViewParser);
-			LPSMARTVIEW_PARSER_ARRAY_ENTRY newSmartViewParserArray = nullptr;
-			size_t ulnewSmartViewParserArray = NULL;
-			MergeArrays(SmartViewParserArray, ulSmartViewParserArray,
-				lpCurAddIn->lpSmartViewParsers, lpCurAddIn->ulSmartViewParsers,
-				reinterpret_cast<LPVOID*>(&newSmartViewParserArray), &ulnewSmartViewParserArray,
-				sizeof(SMARTVIEW_PARSER_ARRAY_ENTRY),
-				CompareSmartViewParser);
-			if (SmartViewParserArray != g_SmartViewParserArray) delete[] SmartViewParserArray;
-			SmartViewParserArray = newSmartViewParserArray;
-			ulSmartViewParserArray = static_cast<ULONG>(ulnewSmartViewParserArray);
+			MergeArrays<SMARTVIEW_PARSER_ARRAY_ENTRY>(SmartViewParserArray, lpCurAddIn->lpSmartViewParsers, lpCurAddIn->ulSmartViewParsers, CompareSmartViewParser);
 		}
 
 		// We add our new parsers to the end of the array, assigning ids starting with IDS_STEND
 		static ULONG s_ulNextParser = IDS_STEND;
 		if (lpCurAddIn->ulSmartViewParserTypes)
 		{
-			auto ulNewArray = lpCurAddIn->ulSmartViewParserTypes + ulSmartViewParserTypeArray;
-			auto lpNewArray = new NAME_ARRAY_ENTRY[ulNewArray];
-
-			if (lpNewArray)
+			for (ULONG i = 0; i < lpCurAddIn->ulSmartViewParserTypes; i++)
 			{
-				for (ULONG i = 0; i < ulSmartViewParserTypeArray; i++)
-				{
-					lpNewArray[i] = SmartViewParserTypeArray[i];
-				}
-
-				for (ULONG i = 0; i < lpCurAddIn->ulSmartViewParserTypes; i++)
-				{
-					lpNewArray[i + ulSmartViewParserTypeArray].ulValue = s_ulNextParser++;
-					lpNewArray[i + ulSmartViewParserTypeArray].lpszName = lpCurAddIn->lpSmartViewParserTypes[i];
-				}
+				NAME_ARRAY_ENTRY addinType;
+				addinType.ulValue = s_ulNextParser++;
+				addinType.lpszName = lpCurAddIn->lpSmartViewParserTypes[i];
+				SmartViewParserTypeArray.push_back(addinType);
 			}
-
-			SmartViewParserTypeArray = lpNewArray;
-			ulSmartViewParserTypeArray = ulNewArray;
 		}
 
 		if (lpCurAddIn->ulPropGuids)
@@ -1015,7 +827,7 @@ void MergeAddInArrays()
 			{
 				auto bDupe = false;
 				// Since this array isn't sorted, we have to compare against all valid entries for dupes
-				for (ULONG iCur = 0; iCur < ulCurPropGuid; iCur++)
+				for (ULONG iCur = 0; iCur < PropGuidArray.size(); iCur++)
 				{
 					if (IsEqualGUID(*lpCurAddIn->lpPropGuids[i].lpGuid, *PropGuidArray[iCur].lpGuid))
 					{
@@ -1026,21 +838,20 @@ void MergeAddInArrays()
 
 				if (!bDupe)
 				{
-					PropGuidArray[ulCurPropGuid] = lpCurAddIn->lpPropGuids[i];
-					ulCurPropGuid++;
+					PropGuidArray.push_back(lpCurAddIn->lpPropGuids[i]);
 				}
 			}
-			ulPropGuidArray = ulCurPropGuid;
 		}
+
 		lpCurAddIn = lpCurAddIn->lpNextAddIn;
 	}
 
-	DebugPrint(DBGAddInPlumbing, L"After merge, 0x%08X prop tags.\n", ulPropTagArray);
-	DebugPrint(DBGAddInPlumbing, L"After merge, 0x%08X prop types.\n", ulPropTypeArray);
-	DebugPrint(DBGAddInPlumbing, L"After merge, 0x%08X guids.\n", ulPropGuidArray);
-	DebugPrint(DBGAddInPlumbing, L"After merge, 0x%08X flags.\n", ulFlagArray);
-	DebugPrint(DBGAddInPlumbing, L"After merge, 0x%08X Smart View parsers.\n", ulSmartViewParserArray);
-	DebugPrint(DBGAddInPlumbing, L"After merge, 0x%08X Smart View parser types.\n", ulSmartViewParserTypeArray);
+	DebugPrint(DBGAddInPlumbing, L"After merge, 0x%08X prop tags.\n", PropTagArray.size());
+	DebugPrint(DBGAddInPlumbing, L"After merge, 0x%08X prop types.\n", PropTypeArray.size());
+	DebugPrint(DBGAddInPlumbing, L"After merge, 0x%08X guids.\n", PropGuidArray.size());
+	DebugPrint(DBGAddInPlumbing, L"After merge, 0x%08X flags.\n", FlagArray.size());
+	DebugPrint(DBGAddInPlumbing, L"After merge, 0x%08X Smart View parsers.\n", SmartViewParserArray.size());
+	DebugPrint(DBGAddInPlumbing, L"After merge, 0x%08X Smart View parser types.\n", SmartViewParserTypeArray.size());
 
 	DebugPrint(DBGAddInPlumbing, L"Done merging add-in arrays\n");
 }
@@ -1259,7 +1070,7 @@ __declspec(dllexport) void __cdecl GetMAPIModule(_In_ HMODULE* lphModule, bool b
 
 wstring AddInStructTypeToString(__ParsingTypeEnum iStructType)
 {
-	for (ULONG i = 0; i < ulSmartViewParserTypeArray; i++)
+	for (ULONG i = 0; i < SmartViewParserTypeArray.size(); i++)
 	{
 		if (SmartViewParserTypeArray[i].ulValue == static_cast<ULONG>(iStructType))
 		{

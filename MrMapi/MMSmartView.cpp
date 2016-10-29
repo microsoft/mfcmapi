@@ -11,7 +11,7 @@ void DoSmartView(_In_ MYOPTIONS ProgOpts)
 
 	auto ulStructType = IDS_STNOPARSING;
 
-	if (ProgOpts.ulSVParser && ProgOpts.ulSVParser < ulSmartViewParserTypeArray)
+	if (ProgOpts.ulSVParser && ProgOpts.ulSVParser < SmartViewParserTypeArray.size())
 	{
 		ulStructType = static_cast<__ParsingTypeEnum>(SmartViewParserTypeArray[ProgOpts.ulSVParser].ulValue);
 	}

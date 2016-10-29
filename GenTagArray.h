@@ -1,6 +1,6 @@
 #pragma once
 
-NAME_ARRAY_ENTRY_V2 g_PropTagArray[] =
+vector<NAME_ARRAY_ENTRY_V2> PropTagArray =
 {
 	{0x00010003, 0x5, L"PR_ACKNOWLEDGEMENT_MODE" },
 	{0x00010003, 0x3, L"PR_CERT_PROP_VERSION" },

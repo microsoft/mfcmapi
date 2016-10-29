@@ -1,6 +1,6 @@
 #pragma once
 
-NAMEID_ARRAY_ENTRY g_NameIDArray[] =
+vector<NAMEID_ARRAY_ENTRY> NameIDArray =
 {
 {0x0001, &PSETID_Meeting, L"LID_ATTENDEE_CRITICAL_CHANGE", PT_SYSTIME, L"Meetings"},
 {0x0001, &PSETID_Meeting, L"PidLidAttendeeCriticalChange", PT_SYSTIME, L"Meetings"},

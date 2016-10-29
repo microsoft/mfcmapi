@@ -1,7 +1,7 @@
 #pragma once
 #define PTYPE_ENTRY(num) {(num),L#num},
 
-NAME_ARRAY_ENTRY g_PropTypeArray[] =
+vector<NAME_ARRAY_ENTRY> PropTypeArray =
 {
 	PTYPE_ENTRY(PT_UNSPECIFIED)
 	PTYPE_ENTRY(PT_NULL)

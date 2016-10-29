@@ -11,7 +11,7 @@ void UninitializeNamedPropCache()
 
 // Go through all the details of copying allocated data to or from a cache entry
 void CopyCacheData(
-	MAPINAMEID& src,
+	const MAPINAMEID &src,
 	MAPINAMEID& dst,
 	_In_opt_ LPVOID lpMAPIParent) // If passed, allocate using MAPI with this as a parent
 {
@@ -65,7 +65,7 @@ void CopyCacheData(
 
 			if (lpMAPIParent)
 			{
-				MAPIAllocateMore(cbName, lpMAPIParent, reinterpret_cast<LPVOID*>(&dst.Kind.lpwstrName));
+				MAPIAllocateMore(static_cast<ULONG>(cbName), lpMAPIParent, reinterpret_cast<LPVOID*>(&dst.Kind.lpwstrName));
 			}
 			else dst.Kind.lpwstrName = reinterpret_cast<LPWSTR>(new BYTE[cbName]);
 

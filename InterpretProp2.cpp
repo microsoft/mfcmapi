@@ -131,7 +131,7 @@ void PropTagToPropName(ULONG ulPropTag, bool bIsAB, _In_opt_  wstring& lpszExact
 
 	vector<ULONG> ulExacts;
 	vector<ULONG> ulPartials;
-	FindTagArrayMatches(ulPropTag, bIsAB, PropTagArray, ulPropTagArray, ulExacts, ulPartials);
+	FindTagArrayMatches(ulPropTag, bIsAB, PropTagArray.data(), static_cast<ULONG>(PropTagArray.size()), ulExacts, ulPartials);
 
 	NameMapEntry entry;
 
@@ -171,9 +171,9 @@ void PropTagToPropName(ULONG ulPropTag, bool bIsAB, _In_opt_  wstring& lpszExact
 // Strictly does a lookup in the array. Does not convert otherwise
 _Check_return_ ULONG LookupPropName(_In_ wstring lpszPropName)
 {
-	if (lpszPropName.empty() || !ulPropTagArray || !PropTagArray) return 0;
+	if (lpszPropName.empty()) return 0;
 
-	for (ULONG ulCur = 0; ulCur < ulPropTagArray; ulCur++)
+	for (size_t ulCur = 0; ulCur < PropTagArray.size(); ulCur++)
 	{
 		if (0 == lstrcmpiW(lpszPropName.c_str(), PropTagArray[ulCur].lpszName))
 		{
@@ -199,16 +199,16 @@ _Check_return_ ULONG PropNameToPropTag(_In_ wstring lpszPropName)
 
 _Check_return_ ULONG PropTypeNameToPropType(_In_ wstring lpszPropType)
 {
-	if (lpszPropType.empty() || !ulPropTypeArray || !PropTypeArray) return PT_UNSPECIFIED;
+	if (lpszPropType.empty() || PropTypeArray.empty()) return PT_UNSPECIFIED;
 
 	// Check for numbers first before trying the string as an array lookup.
 	// This will translate '0x102' to 0x102, 0x3 to 3, etc.
 	auto ulType = wstringToUlong(lpszPropType, 16);
 	if (ulType != NULL) return ulType;
 
-	ULONG ulPropType = PT_UNSPECIFIED;
+	auto ulPropType = PT_UNSPECIFIED;
 
-	for (ULONG ulCur = 0; ulCur < ulPropTypeArray; ulCur++)
+	for (size_t ulCur = 0; ulCur < PropTypeArray.size(); ulCur++)
 	{
 		if (0 == lstrcmpiW(lpszPropType.c_str(), PropTypeArray[ulCur].lpszName))
 		{
@@ -249,9 +249,9 @@ wstring GUIDToStringAndName(_In_opt_ LPCGUID lpGUID)
 
 	szGUID += L" = "; // STRING_OK
 
-	if (lpGUID && ulPropGuidArray && PropGuidArray)
+	if (lpGUID)
 	{
-		for (ULONG ulCur = 0; ulCur < ulPropGuidArray; ulCur++)
+		for (size_t ulCur = 0; ulCur < PropGuidArray.size(); ulCur++)
 		{
 			if (IsEqualGUID(*lpGUID, *PropGuidArray[ulCur].lpGuid))
 			{
@@ -270,15 +270,12 @@ LPCGUID GUIDNameToGUID(_In_ wstring szGUID, bool bByteSwapped)
 	GUID guid = { 0 };
 
 	// Try the GUID like PS_* first
-	if (ulPropGuidArray && PropGuidArray)
+	for (size_t ulCur = 0; ulCur < PropGuidArray.size(); ulCur++)
 	{
-		for (ULONG ulCur = 0; ulCur < ulPropGuidArray; ulCur++)
+		if (0 == lstrcmpiW(szGUID.c_str(), PropGuidArray[ulCur].lpszName))
 		{
-			if (0 == lstrcmpiW(szGUID.c_str(), PropGuidArray[ulCur].lpszName))
-			{
-				lpGUID = PropGuidArray[ulCur].lpGuid;
-				break;
-			}
+			lpGUID = PropGuidArray[ulCur].lpGuid;
+			break;
 		}
 	}
 
@@ -342,9 +339,9 @@ wstring NameIDToPropName(_In_ LPMAPINAMEID lpNameID)
 	if (lpNameID->ulKind != MNID_ID) return szResultString;
 	ULONG ulMatch = ulNoMatch;
 
-	if (!ulNameIDArray || !NameIDArray) return szResultString;
+	if (NameIDArray.empty()) return szResultString;
 
-	for (ULONG ulCur = 0; ulCur < ulNameIDArray; ulCur++)
+	for (ULONG ulCur = 0; ulCur < NameIDArray.size(); ulCur++)
 	{
 		if (NameIDArray[ulCur].lValue == lpNameID->Kind.lID)
 		{
@@ -355,7 +352,7 @@ wstring NameIDToPropName(_In_ LPMAPINAMEID lpNameID)
 
 	if (ulNoMatch != ulMatch)
 	{
-		for (auto ulCur = ulMatch; ulCur < ulNameIDArray; ulCur++)
+		for (auto ulCur = ulMatch; ulCur < NameIDArray.size(); ulCur++)
 		{
 			if (NameIDArray[ulCur].lValue != lpNameID->Kind.lID) break;
 			// We don't acknowledge array entries without guids
@@ -383,15 +380,15 @@ wstring InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue)
 {
 	ULONG ulCurEntry = 0;
 
-	if (!ulFlagArray || !FlagArray) return L"";
+	if (FlagArray.empty()) return L"";
 
-	while (ulCurEntry < ulFlagArray && FlagArray[ulCurEntry].ulFlagName != ulFlagName)
+	while (ulCurEntry < FlagArray.size() && FlagArray[ulCurEntry].ulFlagName != ulFlagName)
 	{
 		ulCurEntry++;
 	}
 
 	// Don't run off the end of the array
-	if (ulFlagArray == ulCurEntry) return L"";
+	if (FlagArray.size() == ulCurEntry) return L"";
 	if (FlagArray[ulCurEntry].ulFlagName != ulFlagName) return L"";
 
 	// We've matched our flag name to the array - we SHOULD return a string at this point
@@ -535,12 +532,12 @@ wstring AllFlagsToString(const ULONG ulFlagName, bool bHex)
 {
 	wstring szFlagString;
 	if (!ulFlagName) return szFlagString;
-	if (!ulFlagArray || !FlagArray) return szFlagString;
+	if (FlagArray.empty()) return szFlagString;
 
 	ULONG ulCurEntry = 0;
 	wstring szTempString;
 
-	while (ulCurEntry < ulFlagArray && FlagArray[ulCurEntry].ulFlagName != ulFlagName)
+	while (ulCurEntry < FlagArray.size() && FlagArray[ulCurEntry].ulFlagName != ulFlagName)
 	{
 		ulCurEntry++;
 	}
