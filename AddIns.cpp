@@ -169,11 +169,6 @@ void LoadSingleAddIn(_In_ LPADDIN lpAddIn, HMODULE hMod, _In_ LPLOADADDIN pfnLoa
 class CFileList
 {
 public:
-	CFileList(_In_ wstring szKey);
-	~CFileList();
-	void AddToList(_In_ wstring szDLL);
-	bool IsOnList(_In_ wstring szDLL) const;
-
 	wstring m_szKey;
 	HKEY m_hRootKey;
 	vector<wstring> m_lpList;
@@ -181,76 +176,76 @@ public:
 #define EXCLUSION_LIST L"AddInExclusionList" // STRING_OK
 #define INCLUSION_LIST L"AddInInclusionList" // STRING_OK
 #define SEPARATOR L";" // STRING_OK
-};
 
-// Read in registry and build a list of invalid add-in DLLs
-CFileList::CFileList(_In_ wstring szKey)
-{
-	wstring lpszReg;
-
-	m_hRootKey = CreateRootKey();
-	m_szKey = szKey;
-
-	if (m_hRootKey)
+	// Read in registry and build a list of invalid add-in DLLs
+	CFileList(_In_ wstring szKey)
 	{
-		lpszReg = ReadStringFromRegistry(
-			m_hRootKey,
-			m_szKey);
-	}
+		wstring lpszReg;
 
-	if (!lpszReg.empty())
-	{
-		LPWSTR szContext = nullptr;
-		auto szDLL = wcstok_s(LPWSTR(lpszReg.c_str()), SEPARATOR, &szContext);
-		while (szDLL)
+		m_hRootKey = CreateRootKey();
+		m_szKey = szKey;
+
+		if (m_hRootKey)
 		{
-			AddToList(szDLL);
-			szDLL = wcstok_s(nullptr, SEPARATOR, &szContext);
+			lpszReg = ReadStringFromRegistry(
+				m_hRootKey,
+				m_szKey);
+		}
+
+		if (!lpszReg.empty())
+		{
+			LPWSTR szContext = nullptr;
+			auto szDLL = wcstok_s(LPWSTR(lpszReg.c_str()), SEPARATOR, &szContext);
+			while (szDLL)
+			{
+				AddToList(szDLL);
+				szDLL = wcstok_s(nullptr, SEPARATOR, &szContext);
+			}
 		}
 	}
-}
 
-// Write the list back to registry
-CFileList::~CFileList()
-{
-	auto hRes = S_OK;
-	wstring szList;
-
-	if (!m_lpList.empty())
+	// Write the list back to registry
+	~CFileList()
 	{
+		auto hRes = S_OK;
+		wstring szList;
+
+		if (!m_lpList.empty())
+		{
+			for (auto dll : m_lpList)
+			{
+				szList += dll;
+				szList += SEPARATOR;
+			}
+
+			WriteStringToRegistry(
+				m_hRootKey,
+				m_szKey,
+				szList);
+		}
+
+		EC_W32(RegCloseKey(m_hRootKey));
+	}
+
+	// Add the DLL to the list
+	void AddToList(_In_ wstring szDLL)
+	{
+		if (szDLL.empty()) return;
+		m_lpList.push_back(szDLL);
+	}
+
+	// Check this DLL name against the list
+	bool IsOnList(_In_ wstring szDLL) const
+	{
+		if (szDLL.empty()) return true;
 		for (auto dll : m_lpList)
 		{
-			szList += dll;
-			szList += SEPARATOR;
+			if (wstringToLower(dll) == wstringToLower(szDLL)) return true;
 		}
 
-		WriteStringToRegistry(
-			m_hRootKey,
-			m_szKey,
-			szList);
+		return false;
 	}
-
-	EC_W32(RegCloseKey(m_hRootKey));
-}
-
-// Add the DLL to the list
-void CFileList::AddToList(_In_ wstring szDLL)
-{
-	if (szDLL.empty()) return;
-	m_lpList.push_back(szDLL);
-}
-
-// Check this DLL name against the list
-bool CFileList::IsOnList(_In_ wstring szDLL) const
-{
-	if (szDLL.empty()) return true;
-	for (auto dll : m_lpList)
-	{
-		if (wstringToLower(dll) == wstringToLower(szDLL)) return true;
-	}
-
-	return false;
-}
+};
 
 void LoadAddIns()
 {
