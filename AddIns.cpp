@@ -16,6 +16,14 @@
 #include "PropTypeArray.h"
 #include "SmartView/SmartViewParsers.h"
 
+vector<NAME_ARRAY_ENTRY_V2> PropTagArray;
+vector<NAME_ARRAY_ENTRY> PropTypeArray;
+vector<GUID_ARRAY_ENTRY> PropGuidArray;
+vector<NAMEID_ARRAY_ENTRY> NameIDArray;
+vector<FLAG_ARRAY_ENTRY> FlagArray;
+vector<SMARTVIEW_PARSER_ARRAY_ENTRY> SmartViewParserArray;
+vector<NAME_ARRAY_ENTRY> SmartViewParserTypeArray;
+
 LPADDIN g_lpMyAddins = nullptr;
 
 template <typename T> T GetFunction(
@@ -63,6 +71,7 @@ void LoadLegacyPropTags(
 					lpPropTagsV2[i].ulValue = lpPropTags[i].ulValue;
 					lpPropTagsV2[i].ulSortOrder = 0;
 				}
+
 				*lppPropTags = lpPropTagsV2;
 			}
 		}
@@ -404,6 +413,7 @@ void UnloadAddIns()
 			{
 				delete[] lpCurAddIn->lpPropTags;
 			}
+
 			if (lpCurAddIn->hMod)
 			{
 				if (lpCurAddIn->szName)
@@ -416,6 +426,7 @@ void UnloadAddIns()
 
 				FreeLibrary(lpCurAddIn->hMod);
 			}
+
 			auto lpAddInToFree = lpCurAddIn;
 			lpCurAddIn = lpCurAddIn->lpNextAddIn;
 			delete lpAddInToFree;
@@ -464,6 +475,7 @@ _Check_return_ ULONG ExtendAddInMenu(HMENU hMenu, ULONG ulAddInContext)
 						DebugPrint(DBGAddInPlumbing, L"MENU_FLAGS_SINGLESELECT and MENU_FLAGS_MULTISELECT cannot be combined\n");
 						continue;
 					}
+
 					if (lpCurAddIn->lpMenu[ulMenu].ulContext & ulAddInContext)
 					{
 						// Add the Add-Ins menu if we haven't added it already
@@ -503,6 +515,7 @@ _Check_return_ ULONG ExtendAddInMenu(HMENU hMenu, ULONG ulAddInContext)
 					}
 				}
 			}
+
 			lpCurAddIn = lpCurAddIn->lpNextAddIn;
 		}
 	}
@@ -735,7 +748,15 @@ void MergeFlagArrays(
 // Assumes built in arrays are already sorted!
 void MergeAddInArrays()
 {
-	DebugPrint(DBGAddInPlumbing, L"Merging Add-In arrays\n");
+	DebugPrint(DBGAddInPlumbing, L"Loading default arrays\n");
+	PropTagArray = vector<NAME_ARRAY_ENTRY_V2>(begin(g_PropTagArray), end(g_PropTagArray));
+	PropTypeArray = vector<NAME_ARRAY_ENTRY>(begin(g_PropTypeArray), end(g_PropTypeArray));
+	PropGuidArray = vector<GUID_ARRAY_ENTRY>(begin(g_PropGuidArray), end(g_PropGuidArray));
+	NameIDArray = vector<NAMEID_ARRAY_ENTRY>(begin(g_NameIDArray), end(g_NameIDArray));
+	FlagArray = vector<FLAG_ARRAY_ENTRY>(begin(g_FlagArray), end(g_FlagArray));
+	SmartViewParserArray = vector<SMARTVIEW_PARSER_ARRAY_ENTRY>(begin(g_SmartViewParserArray), end(g_SmartViewParserArray));
+	SmartViewParserTypeArray = vector<NAME_ARRAY_ENTRY>(begin(g_SmartViewParserTypeArray), end(g_SmartViewParserTypeArray));
+
 	DebugPrint(DBGAddInPlumbing, L"Found 0x%08X built in prop tags.\n", PropTagArray.size());
 	DebugPrint(DBGAddInPlumbing, L"Found 0x%08X built in prop types.\n", PropTypeArray.size());
 	DebugPrint(DBGAddInPlumbing, L"Found 0x%08X built in guids.\n", PropGuidArray.size());
@@ -747,6 +768,7 @@ void MergeAddInArrays()
 	// No add-in == nothing to merge
 	if (!g_lpMyAddins) return;
 
+	DebugPrint(DBGAddInPlumbing, L"Merging Add-In arrays\n");
 	auto lpCurAddIn = g_lpMyAddins;
 	while (lpCurAddIn)
 	{
