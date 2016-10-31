@@ -519,37 +519,32 @@ wstring AdrListToString(_In_ LPADRLIST lpAdrList)
 	return adrstring;
 }
 
-_Check_return_ wstring ActionToString(_In_ ACTION* lpAction)
+_Check_return_ wstring ActionToString(_In_ const ACTION& action)
 {
-	if (!lpAction)
-	{
-		return loadstring(IDS_ACTIONNULL);
-	}
-
 	wstring actstring;
 	wstring szProp;
 	wstring szAltProp;
-	auto szFlags = InterpretFlags(flagAccountType, lpAction->acttype);
-	auto szFlags2 = InterpretFlags(flagRuleFlag, lpAction->ulFlags);
+	auto szFlags = InterpretFlags(flagAccountType, action.acttype);
+	auto szFlags2 = InterpretFlags(flagRuleFlag, action.ulFlags);
 	actstring = formatmessage(
 		IDS_ACTION,
-		lpAction->acttype,
+		action.acttype,
 		szFlags.c_str(),
-		RestrictionToString(lpAction->lpRes, nullptr).c_str(),
-		lpAction->ulFlags,
+		RestrictionToString(action.lpRes, nullptr).c_str(),
+		action.ulFlags,
 		szFlags2.c_str());
 
-	switch (lpAction->acttype)
+	switch (action.acttype)
 	{
 	case OP_MOVE:
 	case OP_COPY:
 	{
 		SBinary sBinStore = { 0 };
 		SBinary sBinFld = { 0 };
-		sBinStore.cb = lpAction->actMoveCopy.cbStoreEntryId;
-		sBinStore.lpb = reinterpret_cast<LPBYTE>(lpAction->actMoveCopy.lpStoreEntryId);
-		sBinFld.cb = lpAction->actMoveCopy.cbFldEntryId;
-		sBinFld.lpb = reinterpret_cast<LPBYTE>(lpAction->actMoveCopy.lpFldEntryId);
+		sBinStore.cb = action.actMoveCopy.cbStoreEntryId;
+		sBinStore.lpb = reinterpret_cast<LPBYTE>(action.actMoveCopy.lpStoreEntryId);
+		sBinFld.cb = action.actMoveCopy.cbFldEntryId;
+		sBinFld.lpb = reinterpret_cast<LPBYTE>(action.actMoveCopy.lpFldEntryId);
 
 		actstring += formatmessage(IDS_ACTIONOPMOVECOPY,
 			BinToHexString(&sBinStore, true).c_str(),
@@ -563,9 +558,9 @@ _Check_return_ wstring ActionToString(_In_ ACTION* lpAction)
 	{
 
 		SBinary sBin = { 0 };
-		sBin.cb = lpAction->actReply.cbEntryId;
-		sBin.lpb = reinterpret_cast<LPBYTE>(lpAction->actReply.lpEntryId);
-		auto szGUID = GUIDToStringAndName(&lpAction->actReply.guidReplyTemplate);
+		sBin.cb = action.actReply.cbEntryId;
+		sBin.lpb = reinterpret_cast<LPBYTE>(action.actReply.lpEntryId);
+		auto szGUID = GUIDToStringAndName(&action.actReply.guidReplyTemplate);
 
 		actstring += formatmessage(IDS_ACTIONOPREPLY,
 			BinToHexString(&sBin, true).c_str(),
@@ -576,8 +571,8 @@ _Check_return_ wstring ActionToString(_In_ ACTION* lpAction)
 	case OP_DEFER_ACTION:
 	{
 		SBinary sBin = { 0 };
-		sBin.cb = lpAction->actDeferAction.cbData;
-		sBin.lpb = static_cast<LPBYTE>(lpAction->actDeferAction.pbData);
+		sBin.cb = action.actDeferAction.cbData;
+		sBin.lpb = static_cast<LPBYTE>(action.actDeferAction.pbData);
 
 		actstring += formatmessage(IDS_ACTIONOPDEFER,
 			BinToHexString(&sBin, true).c_str(),
@@ -586,23 +581,23 @@ _Check_return_ wstring ActionToString(_In_ ACTION* lpAction)
 	}
 	case OP_BOUNCE:
 	{
-		szFlags = InterpretFlags(flagBounceCode, lpAction->scBounceCode);
-		actstring += formatmessage(IDS_ACTIONOPBOUNCE, lpAction->scBounceCode, szFlags.c_str());
+		szFlags = InterpretFlags(flagBounceCode, action.scBounceCode);
+		actstring += formatmessage(IDS_ACTIONOPBOUNCE, action.scBounceCode, szFlags.c_str());
 		break;
 	}
 	case OP_FORWARD:
 	case OP_DELEGATE:
 	{
 		actstring += formatmessage(IDS_ACTIONOPFORWARDDEL);
-		actstring += AdrListToString(lpAction->lpadrlist);
+		actstring += AdrListToString(action.lpadrlist);
 		break;
 	}
 
 	case OP_TAG:
 	{
-		InterpretProp(&lpAction->propTag, &szProp, &szAltProp);
+		InterpretProp(const_cast<LPSPropValue>(&action.propTag), &szProp, &szAltProp);
 		actstring += formatmessage(IDS_ACTIONOPTAG,
-			TagToString(lpAction->propTag.ulPropTag, nullptr, false, true).c_str(),
+			TagToString(action.propTag.ulPropTag, nullptr, false, true).c_str(),
 			szProp.c_str(),
 			szAltProp.c_str());
 		break;
@@ -610,58 +605,53 @@ _Check_return_ wstring ActionToString(_In_ ACTION* lpAction)
 	default: break;
 	}
 
-	switch (lpAction->acttype)
+	switch (action.acttype)
 	{
 	case OP_REPLY:
 	{
-		szFlags = InterpretFlags(flagOPReply, lpAction->ulActionFlavor);
+		szFlags = InterpretFlags(flagOPReply, action.ulActionFlavor);
 		break;
 	}
 	case OP_FORWARD:
 	{
-		szFlags = InterpretFlags(flagOpForward, lpAction->ulActionFlavor);
+		szFlags = InterpretFlags(flagOpForward, action.ulActionFlavor);
 		break;
 	}
 	default: break;
 	}
 
-	actstring += formatmessage(IDS_ACTIONFLAVOR, lpAction->ulActionFlavor, szFlags.c_str());
+	actstring += formatmessage(IDS_ACTIONFLAVOR, action.ulActionFlavor, szFlags.c_str());
 
-	if (!lpAction->lpPropTagArray)
+	if (!action.lpPropTagArray)
 	{
 		actstring += loadstring(IDS_ACTIONTAGARRAYNULL);
 	}
 	else
 	{
-		actstring += formatmessage(IDS_ACTIONTAGARRAYCOUNT, lpAction->lpPropTagArray->cValues);
-		for (ULONG i = 0; i < lpAction->lpPropTagArray->cValues; i++)
+		actstring += formatmessage(IDS_ACTIONTAGARRAYCOUNT, action.lpPropTagArray->cValues);
+		for (ULONG i = 0; i < action.lpPropTagArray->cValues; i++)
 		{
 			actstring += formatmessage(IDS_ACTIONTAGARRAYTAG,
 				i,
-				TagToString(lpAction->lpPropTagArray->aulPropTag[i], nullptr, false, false).c_str());
+				TagToString(action.lpPropTagArray->aulPropTag[i], nullptr, false, false).c_str());
 		}
 	}
 
 	return actstring;
 }
 
-wstring ActionsToString(_In_ ACTIONS* lpActions)
+wstring ActionsToString(_In_ const ACTIONS& actions)
 {
-	if (!lpActions)
-	{
-		return loadstring(IDS_ACTIONSNULL);
-	}
-
-	auto szFlags = InterpretFlags(flagRulesVersion, lpActions->ulVersion);
+	auto szFlags = InterpretFlags(flagRulesVersion, actions.ulVersion);
 	auto actstring = formatmessage(IDS_ACTIONSMEMBERS,
-		lpActions->ulVersion,
+		actions.ulVersion,
 		szFlags.c_str(),
-		lpActions->cActions);
+		actions.cActions);
 
-	for (ULONG i = 0; i < lpActions->cActions; i++)
+	for (ULONG i = 0; i < actions.cActions; i++)
 	{
 		actstring += formatmessage(IDS_ACTIONSACTION, i);
-		actstring += ActionToString(&lpActions->lpAction[i]);
+		actstring += ActionToString(actions.lpAction[i]);
 	}
 
 	return actstring;

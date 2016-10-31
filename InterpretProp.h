@@ -25,7 +25,7 @@ void NameIDToStrings(
 wstring CurrencyToString(const CURRENCY& curVal);
 
 wstring RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj);
-wstring ActionsToString(_In_ ACTIONS* lpActions);
+wstring ActionsToString(_In_ const ACTIONS& actions);
 
 wstring AdrListToString(_In_ LPADRLIST lpAdrList);
 

@@ -213,8 +213,18 @@ Property ParseProperty(_In_ LPSPropValue lpProp)
 			bPropXMLSafe = false;
 			break;
 		case PT_ACTIONS:
-			szTmp = ActionsToString(reinterpret_cast<ACTIONS*>(lpProp->Value.lpszA));
+			if (lpProp->Value.lpszA)
+			{
+				auto actions = reinterpret_cast<ACTIONS*>(lpProp->Value.lpszA);
+				szTmp = ActionsToString(*actions);
+			}
+			else
+			{
+				szTmp = loadstring(IDS_ACTIONSNULL);
+			}
+
 			bPropXMLSafe = false;
+
 			break;
 		default:
 			break;
