@@ -519,7 +519,7 @@ typedef GETAPIVERSION* LPGETAPIVERSION;
 // by the add-in through the CallMenu function, it should only be consulted for debugging purposes.
 struct _AddIn
 {
-	LPADDIN lpNextAddIn; // Pointer to the next add-in
+	LPADDIN lpNextAddIn; // (UNUSED) Pointer to the next add-in
 	HMODULE hMod; // Handle to add-in module
 	LPWSTR szName; // Name of add-in
 	LPCALLMENU pfnCallMenu; // Pointer to function in module for invoking menus

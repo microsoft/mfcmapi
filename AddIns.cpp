@@ -24,7 +24,7 @@ vector<FLAG_ARRAY_ENTRY> FlagArray;
 vector<SMARTVIEW_PARSER_ARRAY_ENTRY> SmartViewParserArray;
 vector<NAME_ARRAY_ENTRY> SmartViewParserTypeArray;
 
-LPADDIN g_lpMyAddins = nullptr;
+vector<_AddIn> g_lpMyAddins;;
 
 template <typename T> T GetFunction(
 	HMODULE hMod,
@@ -78,16 +78,15 @@ void LoadLegacyPropTags(
 	}
 }
 
-void LoadSingleAddIn(_In_ LPADDIN lpAddIn, HMODULE hMod, _In_ LPLOADADDIN pfnLoadAddIn)
+void LoadSingleAddIn(_In_ _AddIn& addIn, HMODULE hMod, _In_ LPLOADADDIN pfnLoadAddIn)
 {
 	DebugPrint(DBGAddInPlumbing, L"Loading AddIn\n");
-	if (!lpAddIn) return;
 	if (!pfnLoadAddIn) return;
-	lpAddIn->hMod = hMod;
-	pfnLoadAddIn(&lpAddIn->szName);
-	if (lpAddIn->szName)
+	addIn.hMod = hMod;
+	pfnLoadAddIn(&addIn.szName);
+	if (addIn.szName)
 	{
-		DebugPrint(DBGAddInPlumbing, L"Loading \"%ws\"\n", lpAddIn->szName);
+		DebugPrint(DBGAddInPlumbing, L"Loading \"%ws\"\n", addIn.szName);
 	}
 
 	auto ulVersion = GetAddinVersion(hMod);
@@ -96,52 +95,52 @@ void LoadSingleAddIn(_In_ LPADDIN lpAddIn, HMODULE hMod, _In_ LPLOADADDIN pfnLoa
 	auto pfnGetMenus = GetFunction<LPGETMENUS>(hMod, szGetMenus);
 	if (pfnGetMenus)
 	{
-		pfnGetMenus(&lpAddIn->ulMenu, &lpAddIn->lpMenu);
-		if (!lpAddIn->ulMenu || !lpAddIn->lpMenu)
+		pfnGetMenus(&addIn.ulMenu, &addIn.lpMenu);
+		if (!addIn.ulMenu || !addIn.lpMenu)
 		{
 			DebugPrint(DBGAddInPlumbing, L"AddIn returned invalid menus\n");
-			lpAddIn->ulMenu = NULL;
-			lpAddIn->lpMenu = nullptr;
+			addIn.ulMenu = NULL;
+			addIn.lpMenu = nullptr;
 		}
-		if (lpAddIn->ulMenu && lpAddIn->lpMenu)
+		if (addIn.ulMenu && addIn.lpMenu)
 		{
-			for (ULONG ulMenu = 0; ulMenu < lpAddIn->ulMenu; ulMenu++)
+			for (ULONG ulMenu = 0; ulMenu < addIn.ulMenu; ulMenu++)
 			{
 				// Save off our add-in struct
-				lpAddIn->lpMenu[ulMenu].lpAddIn = lpAddIn;
-				if (lpAddIn->lpMenu[ulMenu].szMenu)
-					DebugPrint(DBGAddInPlumbing, L"Menu: %ws\n", lpAddIn->lpMenu[ulMenu].szMenu);
-				if (lpAddIn->lpMenu[ulMenu].szHelp)
-					DebugPrint(DBGAddInPlumbing, L"Help: %ws\n", lpAddIn->lpMenu[ulMenu].szHelp);
-				DebugPrint(DBGAddInPlumbing, L"ID: 0x%08X\n", lpAddIn->lpMenu[ulMenu].ulID);
-				DebugPrint(DBGAddInPlumbing, L"Context: 0x%08X\n", lpAddIn->lpMenu[ulMenu].ulContext);
-				DebugPrint(DBGAddInPlumbing, L"Flags: 0x%08X\n", lpAddIn->lpMenu[ulMenu].ulFlags);
+				addIn.lpMenu[ulMenu].lpAddIn = &addIn;
+				if (addIn.lpMenu[ulMenu].szMenu)
+					DebugPrint(DBGAddInPlumbing, L"Menu: %ws\n", addIn.lpMenu[ulMenu].szMenu);
+				if (addIn.lpMenu[ulMenu].szHelp)
+					DebugPrint(DBGAddInPlumbing, L"Help: %ws\n", addIn.lpMenu[ulMenu].szHelp);
+				DebugPrint(DBGAddInPlumbing, L"ID: 0x%08X\n", addIn.lpMenu[ulMenu].ulID);
+				DebugPrint(DBGAddInPlumbing, L"Context: 0x%08X\n", addIn.lpMenu[ulMenu].ulContext);
+				DebugPrint(DBGAddInPlumbing, L"Flags: 0x%08X\n", addIn.lpMenu[ulMenu].ulFlags);
 			}
 		}
 	}
 
-	lpAddIn->bLegacyPropTags = false;
+	addIn.bLegacyPropTags = false;
 	auto pfnGetPropTagsV2 = GetFunction<LPGETPROPTAGSV2>(hMod, szGetPropTagsV2);
 	if (pfnGetPropTagsV2)
 	{
-		pfnGetPropTagsV2(&lpAddIn->ulPropTags, &lpAddIn->lpPropTags);
+		pfnGetPropTagsV2(&addIn.ulPropTags, &addIn.lpPropTags);
 	}
 	else
 	{
-		LoadLegacyPropTags(hMod, &lpAddIn->ulPropTags, &lpAddIn->lpPropTags);
-		lpAddIn->bLegacyPropTags = true;
+		LoadLegacyPropTags(hMod, &addIn.ulPropTags, &addIn.lpPropTags);
+		addIn.bLegacyPropTags = true;
 	}
 
 	auto pfnGetPropTypes = GetFunction<LPGETPROPTYPES>(hMod, szGetPropTypes);
 	if (pfnGetPropTypes)
 	{
-		pfnGetPropTypes(&lpAddIn->ulPropTypes, &lpAddIn->lpPropTypes);
+		pfnGetPropTypes(&addIn.ulPropTypes, &addIn.lpPropTypes);
 	}
 
 	auto pfnGetPropGuids = GetFunction<LPGETPROPGUIDS>(hMod, szGetPropGuids);
 	if (pfnGetPropGuids)
 	{
-		pfnGetPropGuids(&lpAddIn->ulPropGuids, &lpAddIn->lpPropGuids);
+		pfnGetPropGuids(&addIn.ulPropGuids, &addIn.lpPropGuids);
 	}
 
 	// v2 changed the LPNAMEID_ARRAY_ENTRY structure
@@ -150,26 +149,26 @@ void LoadSingleAddIn(_In_ LPADDIN lpAddIn, HMODULE hMod, _In_ LPLOADADDIN pfnLoa
 		auto pfnGetNameIDs = GetFunction<LPGETNAMEIDS>(hMod, szGetNameIDs);
 		if (pfnGetNameIDs)
 		{
-			pfnGetNameIDs(&lpAddIn->ulNameIDs, &lpAddIn->lpNameIDs);
+			pfnGetNameIDs(&addIn.ulNameIDs, &addIn.lpNameIDs);
 		}
 	}
 
 	auto pfnGetPropFlags = GetFunction<LPGETPROPFLAGS>(hMod, szGetPropFlags);
 	if (pfnGetPropFlags)
 	{
-		pfnGetPropFlags(&lpAddIn->ulPropFlags, &lpAddIn->lpPropFlags);
+		pfnGetPropFlags(&addIn.ulPropFlags, &addIn.lpPropFlags);
 	}
 
 	auto pfnGetSmartViewParserArray = GetFunction<LPGETSMARTVIEWPARSERARRAY>(hMod, szGetSmartViewParserArray);
 	if (pfnGetSmartViewParserArray)
 	{
-		pfnGetSmartViewParserArray(&lpAddIn->ulSmartViewParsers, &lpAddIn->lpSmartViewParsers);
+		pfnGetSmartViewParserArray(&addIn.ulSmartViewParsers, &addIn.lpSmartViewParsers);
 	}
 
 	auto pfnGetSmartViewParserTypeArray = GetFunction<LPGETSMARTVIEWPARSERTYPEARRAY>(hMod, szGetSmartViewParserTypeArray);
 	if (pfnGetSmartViewParserTypeArray)
 	{
-		pfnGetSmartViewParserTypeArray(&lpAddIn->ulSmartViewParserTypes, &lpAddIn->lpSmartViewParserTypes);
+		pfnGetSmartViewParserTypeArray(&addIn.ulSmartViewParserTypes, &addIn.lpSmartViewParserTypes);
 	}
 
 	DebugPrint(DBGAddInPlumbing, L"Done loading AddIn\n");
@@ -260,8 +259,6 @@ void LoadAddIns()
 {
 	DebugPrint(DBGAddInPlumbing, L"Loading AddIns\n");
 	// First, we look at each DLL in the current dir and see if it exports 'LoadAddIn'
-	LPADDIN lpCurAddIn = nullptr;
-	// Allocate space to hold information on all DLLs in the directory
 
 	if (!RegKeys[regkeyLOADADDINS].ulCurDWORD)
 	{
@@ -349,29 +346,8 @@ void LoadAddIns()
 							if (pfnLoadAddIn && GetAddinVersion(hMod) == MFCMAPI_HEADER_CURRENT_VERSION)
 							{
 								DebugPrint(DBGAddInPlumbing, L"Found an add-in\n");
-								// Add a node
-								if (!lpCurAddIn)
-								{
-									if (!g_lpMyAddins)
-									{
-										g_lpMyAddins = new _AddIn;
-										ZeroMemory(g_lpMyAddins, sizeof(_AddIn));
-									}
-
-									lpCurAddIn = g_lpMyAddins;
-								}
-								else if (lpCurAddIn)
-								{
-									lpCurAddIn->lpNextAddIn = new _AddIn;
-									ZeroMemory(lpCurAddIn->lpNextAddIn, sizeof(_AddIn));
-									lpCurAddIn = lpCurAddIn->lpNextAddIn;
-								}
-
-								// Now that we have a node, populate it
-								if (lpCurAddIn)
-								{
-									LoadSingleAddIn(lpCurAddIn, hMod, pfnLoadAddIn);
-								}
+								g_lpMyAddins.push_back(_AddIn());
+								LoadSingleAddIn(g_lpMyAddins.back(), hMod, pfnLoadAddIn);
 							}
 							else
 							{
@@ -402,33 +378,26 @@ void LoadAddIns()
 void UnloadAddIns()
 {
 	DebugPrint(DBGAddInPlumbing, L"Unloading AddIns\n");
-	if (g_lpMyAddins)
+
+	for (auto addIn : g_lpMyAddins)
 	{
-		auto lpCurAddIn = g_lpMyAddins;
-		while (lpCurAddIn)
+		DebugPrint(DBGAddInPlumbing, L"Freeing add-in\n");
+		if (addIn.bLegacyPropTags)
 		{
-			DebugPrint(DBGAddInPlumbing, L"Freeing add-in\n");
-			if (lpCurAddIn->bLegacyPropTags)
+			delete[] addIn.lpPropTags;
+		}
+
+		if (addIn.hMod)
+		{
+			if (addIn.szName)
 			{
-				delete[] lpCurAddIn->lpPropTags;
+				DebugPrint(DBGAddInPlumbing, L"Unloading \"%ws\"\n", addIn.szName);
 			}
 
-			if (lpCurAddIn->hMod)
-			{
-				if (lpCurAddIn->szName)
-				{
-					DebugPrint(DBGAddInPlumbing, L"Unloading \"%ws\"\n", lpCurAddIn->szName);
-				}
+			auto pfnUnLoadAddIn = GetFunction<LPUNLOADADDIN>(addIn.hMod, szUnloadAddIn);
+			if (pfnUnLoadAddIn) pfnUnLoadAddIn();
 
-				auto pfnUnLoadAddIn = GetFunction<LPUNLOADADDIN>(lpCurAddIn->hMod, szUnloadAddIn);
-				if (pfnUnLoadAddIn) pfnUnLoadAddIn();
-
-				FreeLibrary(lpCurAddIn->hMod);
-			}
-
-			auto lpAddInToFree = lpCurAddIn;
-			lpCurAddIn = lpCurAddIn->lpNextAddIn;
-			delete lpAddInToFree;
+			FreeLibrary(addIn.hMod);
 		}
 	}
 
@@ -450,74 +419,67 @@ _Check_return_ ULONG ExtendAddInMenu(HMENU hMenu, ULONG ulAddInContext)
 		uidCurMenu = ID_ADDINPROPERTYMENU;
 	}
 
-	if (g_lpMyAddins)
+	for (auto addIn : g_lpMyAddins)
 	{
-		auto lpCurAddIn = g_lpMyAddins;
-		while (lpCurAddIn)
+		DebugPrint(DBGAddInPlumbing, L"Examining add-in for menus\n");
+		if (addIn.hMod)
 		{
-			DebugPrint(DBGAddInPlumbing, L"Examining add-in for menus\n");
-			if (lpCurAddIn->hMod)
+			auto hRes = S_OK;
+			if (addIn.szName)
 			{
-				auto hRes = S_OK;
-				if (lpCurAddIn->szName)
+				DebugPrint(DBGAddInPlumbing, L"Examining \"%ws\"\n", addIn.szName);
+			}
+
+			for (ULONG ulMenu = 0; ulMenu < addIn.ulMenu && SUCCEEDED(hRes); ulMenu++)
+			{
+				if (addIn.lpMenu[ulMenu].ulFlags & MENU_FLAGS_SINGLESELECT &&
+					addIn.lpMenu[ulMenu].ulFlags & MENU_FLAGS_MULTISELECT)
 				{
-					DebugPrint(DBGAddInPlumbing, L"Examining \"%ws\"\n", lpCurAddIn->szName);
+					// Invalid combo of flags - don't add the menu
+					DebugPrint(DBGAddInPlumbing, L"Invalid flags on menu \"%ws\" in add-in \"%ws\"\n", addIn.lpMenu[ulMenu].szMenu, addIn.szName);
+					DebugPrint(DBGAddInPlumbing, L"MENU_FLAGS_SINGLESELECT and MENU_FLAGS_MULTISELECT cannot be combined\n");
+					continue;
 				}
 
-				for (ULONG ulMenu = 0; ulMenu < lpCurAddIn->ulMenu && SUCCEEDED(hRes); ulMenu++)
+				if (addIn.lpMenu[ulMenu].ulContext & ulAddInContext)
 				{
-					if (lpCurAddIn->lpMenu[ulMenu].ulFlags & MENU_FLAGS_SINGLESELECT &&
-						lpCurAddIn->lpMenu[ulMenu].ulFlags & MENU_FLAGS_MULTISELECT)
+					// Add the Add-Ins menu if we haven't added it already
+					if (!hAddInMenu)
 					{
-						// Invalid combo of flags - don't add the menu
-						DebugPrint(DBGAddInPlumbing, L"Invalid flags on menu \"%ws\" in add-in \"%ws\"\n", lpCurAddIn->lpMenu[ulMenu].szMenu, lpCurAddIn->szName);
-						DebugPrint(DBGAddInPlumbing, L"MENU_FLAGS_SINGLESELECT and MENU_FLAGS_MULTISELECT cannot be combined\n");
-						continue;
+						hAddInMenu = CreatePopupMenu();
+						if (hAddInMenu)
+						{
+							::InsertMenuW(
+								hMenu,
+								static_cast<UINT>(-1),
+								MF_BYPOSITION | MF_POPUP | MF_ENABLED,
+								reinterpret_cast<UINT_PTR>(hAddInMenu),
+								loadstring(IDS_ADDINSMENU).c_str());
+						}
+						else continue;
 					}
 
-					if (lpCurAddIn->lpMenu[ulMenu].ulContext & ulAddInContext)
+					// Now add each of the menu entries
+					if (SUCCEEDED(hRes))
 					{
-						// Add the Add-Ins menu if we haven't added it already
-						if (!hAddInMenu)
+						auto lpMenu = CreateMenuEntry(addIn.lpMenu[ulMenu].szMenu);
+						if (lpMenu)
 						{
-							auto szAddInTitle = loadstring(IDS_ADDINSMENU);
-
-							hAddInMenu = CreatePopupMenu();
-							if (hAddInMenu)
-							{
-								::InsertMenuW(
-									hMenu,
-									static_cast<UINT>(-1),
-									MF_BYPOSITION | MF_POPUP | MF_ENABLED,
-									reinterpret_cast<UINT_PTR>(hAddInMenu),
-									szAddInTitle.c_str());
-							}
-							else continue;
+							lpMenu->m_AddInData = reinterpret_cast<ULONG_PTR>(&addIn.lpMenu[ulMenu]);
 						}
 
-						// Now add each of the menu entries
-						if (SUCCEEDED(hRes))
-						{
-							auto lpMenu = CreateMenuEntry(lpCurAddIn->lpMenu[ulMenu].szMenu);
-							if (lpMenu)
-							{
-								lpMenu->m_AddInData = reinterpret_cast<ULONG_PTR>(&lpCurAddIn->lpMenu[ulMenu]);
-							}
-
-							EC_B(AppendMenuW(
-								hAddInMenu,
-								MF_ENABLED | MF_OWNERDRAW,
-								uidCurMenu,
-								reinterpret_cast<LPCWSTR>(lpMenu)));
-							uidCurMenu++;
-						}
+						EC_B(AppendMenuW(
+							hAddInMenu,
+							MF_ENABLED | MF_OWNERDRAW,
+							uidCurMenu,
+							reinterpret_cast<LPCWSTR>(lpMenu)));
+						uidCurMenu++;
 					}
 				}
 			}
-
-			lpCurAddIn = lpCurAddIn->lpNextAddIn;
 		}
 	}
+
 	DebugPrint(DBGAddInPlumbing, L"Done extending menus\n");
 	return uidCurMenu - ID_ADDINMENU;
 }
@@ -765,76 +727,73 @@ void MergeAddInArrays()
 	DebugPrint(DBGAddInPlumbing, L"Found 0x%08X built in Smart View parser types.\n", SmartViewParserTypeArray.size());
 
 	// No add-in == nothing to merge
-	if (!g_lpMyAddins) return;
+	if (g_lpMyAddins.empty()) return;
 
 	DebugPrint(DBGAddInPlumbing, L"Merging Add-In arrays\n");
-	auto lpCurAddIn = g_lpMyAddins;
-	while (lpCurAddIn)
+	for (auto addIn : g_lpMyAddins)
 	{
-		DebugPrint(DBGAddInPlumbing, L"Looking at %ws\n", lpCurAddIn->szName);
-		DebugPrint(DBGAddInPlumbing, L"Found 0x%08X prop tags.\n", lpCurAddIn->ulPropTags);
-		DebugPrint(DBGAddInPlumbing, L"Found 0x%08X prop types.\n", lpCurAddIn->ulPropTypes);
-		DebugPrint(DBGAddInPlumbing, L"Found 0x%08X guids.\n", lpCurAddIn->ulPropGuids);
-		DebugPrint(DBGAddInPlumbing, L"Found 0x%08X named ids.\n", lpCurAddIn->ulNameIDs);
-		DebugPrint(DBGAddInPlumbing, L"Found 0x%08X flags.\n", lpCurAddIn->ulPropFlags);
-		DebugPrint(DBGAddInPlumbing, L"Found 0x%08X Smart View parsers.\n", lpCurAddIn->ulSmartViewParsers);
-		DebugPrint(DBGAddInPlumbing, L"Found 0x%08X Smart View parser types.\n", lpCurAddIn->ulSmartViewParserTypes);
-		lpCurAddIn = lpCurAddIn->lpNextAddIn;
+		DebugPrint(DBGAddInPlumbing, L"Looking at %ws\n", addIn.szName);
+		DebugPrint(DBGAddInPlumbing, L"Found 0x%08X prop tags.\n", addIn.ulPropTags);
+		DebugPrint(DBGAddInPlumbing, L"Found 0x%08X prop types.\n", addIn.ulPropTypes);
+		DebugPrint(DBGAddInPlumbing, L"Found 0x%08X guids.\n", addIn.ulPropGuids);
+		DebugPrint(DBGAddInPlumbing, L"Found 0x%08X named ids.\n", addIn.ulNameIDs);
+		DebugPrint(DBGAddInPlumbing, L"Found 0x%08X flags.\n", addIn.ulPropFlags);
+		DebugPrint(DBGAddInPlumbing, L"Found 0x%08X Smart View parsers.\n", addIn.ulSmartViewParsers);
+		DebugPrint(DBGAddInPlumbing, L"Found 0x%08X Smart View parser types.\n", addIn.ulSmartViewParserTypes);
 	}
 
 	// Second pass - merge our arrays to the hardcoded arrays
-	lpCurAddIn = g_lpMyAddins;
-	while (lpCurAddIn)
+	for (auto addIn : g_lpMyAddins)
 	{
-		if (lpCurAddIn->ulPropTypes)
+		if (addIn.ulPropTypes)
 		{
-			MergeArrays<NAME_ARRAY_ENTRY>(PropTypeArray, lpCurAddIn->lpPropTypes, lpCurAddIn->ulPropTypes, CompareTypes);
+			MergeArrays<NAME_ARRAY_ENTRY>(PropTypeArray, addIn.lpPropTypes, addIn.ulPropTypes, CompareTypes);
 		}
 
-		if (lpCurAddIn->ulPropTags)
+		if (addIn.ulPropTags)
 		{
-			MergeArrays<NAME_ARRAY_ENTRY_V2>(PropTagArray, lpCurAddIn->lpPropTags, lpCurAddIn->ulPropTags, CompareTags);
+			MergeArrays<NAME_ARRAY_ENTRY_V2>(PropTagArray, addIn.lpPropTags, addIn.ulPropTags, CompareTags);
 		}
 
-		if (lpCurAddIn->ulNameIDs)
+		if (addIn.ulNameIDs)
 		{
-			MergeArrays<NAMEID_ARRAY_ENTRY>(NameIDArray, lpCurAddIn->lpNameIDs, lpCurAddIn->ulNameIDs, CompareNameID);
+			MergeArrays<NAMEID_ARRAY_ENTRY>(NameIDArray, addIn.lpNameIDs, addIn.ulNameIDs, CompareNameID);
 		}
 
-		if (lpCurAddIn->ulPropFlags)
+		if (addIn.ulPropFlags)
 		{
-			SortFlagArray(lpCurAddIn->lpPropFlags, lpCurAddIn->ulPropFlags);
-			MergeFlagArrays(FlagArray, lpCurAddIn->lpPropFlags, lpCurAddIn->ulPropFlags);
+			SortFlagArray(addIn.lpPropFlags, addIn.ulPropFlags);
+			MergeFlagArrays(FlagArray, addIn.lpPropFlags, addIn.ulPropFlags);
 		}
 
-		if (lpCurAddIn->ulSmartViewParsers)
+		if (addIn.ulSmartViewParsers)
 		{
-			MergeArrays<SMARTVIEW_PARSER_ARRAY_ENTRY>(SmartViewParserArray, lpCurAddIn->lpSmartViewParsers, lpCurAddIn->ulSmartViewParsers, CompareSmartViewParser);
+			MergeArrays<SMARTVIEW_PARSER_ARRAY_ENTRY>(SmartViewParserArray, addIn.lpSmartViewParsers, addIn.ulSmartViewParsers, CompareSmartViewParser);
 		}
 
 		// We add our new parsers to the end of the array, assigning ids starting with IDS_STEND
 		static ULONG s_ulNextParser = IDS_STEND;
-		if (lpCurAddIn->ulSmartViewParserTypes)
+		if (addIn.ulSmartViewParserTypes)
 		{
-			for (ULONG i = 0; i < lpCurAddIn->ulSmartViewParserTypes; i++)
+			for (ULONG i = 0; i < addIn.ulSmartViewParserTypes; i++)
 			{
 				NAME_ARRAY_ENTRY addinType;
 				addinType.ulValue = s_ulNextParser++;
-				addinType.lpszName = lpCurAddIn->lpSmartViewParserTypes[i];
+				addinType.lpszName = addIn.lpSmartViewParserTypes[i];
 				SmartViewParserTypeArray.push_back(addinType);
 			}
 		}
 
-		if (lpCurAddIn->ulPropGuids)
+		if (addIn.ulPropGuids)
 		{
-			// Copy guids from lpCurAddIn->lpPropGuids, checking for dupes on the way
-			for (ULONG i = 0; i < lpCurAddIn->ulPropGuids; i++)
+			// Copy guids from addIn.lpPropGuids, checking for dupes on the way
+			for (ULONG i = 0; i < addIn.ulPropGuids; i++)
 			{
 				auto bDupe = false;
 				// Since this array isn't sorted, we have to compare against all valid entries for dupes
 				for (ULONG iCur = 0; iCur < PropGuidArray.size(); iCur++)
 				{
-					if (IsEqualGUID(*lpCurAddIn->lpPropGuids[i].lpGuid, *PropGuidArray[iCur].lpGuid))
+					if (IsEqualGUID(*addIn.lpPropGuids[i].lpGuid, *PropGuidArray[iCur].lpGuid))
 					{
 						bDupe = true;
 						break;
@@ -843,12 +802,10 @@ void MergeAddInArrays()
 
 				if (!bDupe)
 				{
-					PropGuidArray.push_back(lpCurAddIn->lpPropGuids[i]);
+					PropGuidArray.push_back(addIn.lpPropGuids[i]);
 				}
 			}
 		}
-
-		lpCurAddIn = lpCurAddIn->lpNextAddIn;
 	}
 
 	DebugPrint(DBGAddInPlumbing, L"After merge, 0x%08X prop tags.\n", PropTagArray.size());
@@ -1095,17 +1052,16 @@ wstring AddInSmartView(__ParsingTypeEnum iStructType, ULONG cbBin, _In_count_(cb
 	auto szStructType = AddInStructTypeToString(iStructType);
 	if (szStructType.empty()) return L"";
 
-	auto lpCurAddIn = g_lpMyAddins;
-	while (lpCurAddIn)
+	for (auto addIn : g_lpMyAddins)
 	{
-		if (lpCurAddIn->ulSmartViewParserTypes)
+		if (addIn.ulSmartViewParserTypes)
 		{
-			for (ULONG i = 0; i < lpCurAddIn->ulSmartViewParserTypes; i++)
+			for (ULONG i = 0; i < addIn.ulSmartViewParserTypes; i++)
 			{
-				if (0 == szStructType.compare(lpCurAddIn->lpSmartViewParserTypes[i]))
+				if (0 == szStructType.compare(addIn.lpSmartViewParserTypes[i]))
 				{
-					auto pfnSmartViewParse = GetFunction<LPSMARTVIEWPARSE>(lpCurAddIn->hMod, szSmartViewParse);
-					auto pfnFreeParse = GetFunction<LPFREEPARSE>(lpCurAddIn->hMod, szFreeParse);
+					auto pfnSmartViewParse = GetFunction<LPSMARTVIEWPARSE>(addIn.hMod, szSmartViewParse);
+					auto pfnFreeParse = GetFunction<LPFREEPARSE>(addIn.hMod, szFreeParse);
 
 					if (pfnSmartViewParse && pfnFreeParse)
 					{
@@ -1118,8 +1074,6 @@ wstring AddInSmartView(__ParsingTypeEnum iStructType, ULONG cbBin, _In_count_(cb
 				}
 			}
 		}
-
-		lpCurAddIn = lpCurAddIn->lpNextAddIn;
 	}
 
 	return L"No parser found";
