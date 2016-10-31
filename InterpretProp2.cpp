@@ -116,7 +116,7 @@ struct NameMapEntry
 
 unordered_map<ULONG64, NameMapEntry> g_PropNames;
 
-void PropTagToPropName(ULONG ulPropTag, bool bIsAB, _In_opt_  wstring& lpszExactMatch, _In_opt_  wstring& lpszPartialMatches)
+void PropTagToPropName(ULONG ulPropTag, bool bIsAB, _In_opt_ wstring& lpszExactMatch, _In_opt_ wstring& lpszPartialMatches)
 {
 	auto ulKey = (bIsAB ? static_cast<ULONG64>(1) << 32 : 0) | ulPropTag;
 
@@ -168,7 +168,7 @@ void PropTagToPropName(ULONG ulPropTag, bool bIsAB, _In_opt_  wstring& lpszExact
 }
 
 // Strictly does a lookup in the array. Does not convert otherwise
-_Check_return_ ULONG LookupPropName(_In_ wstring lpszPropName)
+_Check_return_ ULONG LookupPropName(_In_ const wstring& lpszPropName)
 {
 	if (lpszPropName.empty()) return 0;
 
@@ -183,7 +183,7 @@ _Check_return_ ULONG LookupPropName(_In_ wstring lpszPropName)
 	return 0;
 }
 
-_Check_return_ ULONG PropNameToPropTag(_In_ wstring lpszPropName)
+_Check_return_ ULONG PropNameToPropTag(_In_ const wstring& lpszPropName)
 {
 	if (lpszPropName.empty()) return 0;
 
@@ -196,7 +196,7 @@ _Check_return_ ULONG PropNameToPropTag(_In_ wstring lpszPropName)
 	return LookupPropName(lpszPropName);
 }
 
-_Check_return_ ULONG PropTypeNameToPropType(_In_ wstring lpszPropType)
+_Check_return_ ULONG PropTypeNameToPropType(_In_ const wstring& lpszPropType)
 {
 	if (lpszPropType.empty() || PropTypeArray.empty()) return PT_UNSPECIFIED;
 
@@ -262,7 +262,7 @@ wstring GUIDToStringAndName(_In_opt_ LPCGUID lpGUID)
 	return szGUID + loadstring(IDS_UNKNOWNGUID);
 }
 
-LPCGUID GUIDNameToGUID(_In_ wstring szGUID, bool bByteSwapped)
+LPCGUID GUIDNameToGUID(_In_ const wstring& szGUID, bool bByteSwapped)
 {
 	LPGUID lpGuidRet = nullptr;
 	LPCGUID lpGUID = nullptr;
@@ -299,12 +299,12 @@ LPCGUID GUIDNameToGUID(_In_ wstring szGUID, bool bByteSwapped)
 	return lpGuidRet;
 }
 
-_Check_return_ GUID StringToGUID(_In_ wstring szGUID)
+_Check_return_ GUID StringToGUID(_In_ const wstring& szGUID)
 {
 	return StringToGUID(szGUID, false);
 }
 
-_Check_return_ GUID StringToGUID(_In_ wstring szGUID, bool bByteSwapped)
+_Check_return_ GUID StringToGUID(_In_ const wstring& szGUID, bool bByteSwapped)
 {
 	auto guid = GUID_NULL;
 	if (szGUID.empty()) return guid;
@@ -375,7 +375,7 @@ wstring NameIDToPropName(_In_ LPMAPINAMEID lpNameID)
 
 // Interprets a flag value according to a flag name and returns a string
 // Will not return a string if the flag name is not recognized
-wstring InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue)
+wstring InterpretFlags(ULONG ulFlagName, LONG lFlagValue)
 {
 	ULONG ulCurEntry = 0;
 
@@ -527,7 +527,7 @@ wstring InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue)
  // 0x00040000 FL_LOOSE
 //
 // Since the string is always appended to a prompt we include \r\n at the start
-wstring AllFlagsToString(const ULONG ulFlagName, bool bHex)
+wstring AllFlagsToString(ULONG ulFlagName, bool bHex)
 {
 	wstring szFlagString;
 	if (!ulFlagName) return szFlagString;
