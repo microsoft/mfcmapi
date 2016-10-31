@@ -21,7 +21,7 @@ static const char pBase64[] = {
  0x2c, 0x2d, 0x2e, 0x2f, 0x30, 0x31, 0x32, 0x33
 };
 
-vector<BYTE> Base64Decode(wstring szEncodedStr)
+vector<BYTE> Base64Decode(wstring const& szEncodedStr)
 {
 	auto cchLen = szEncodedStr.length();
 	vector<BYTE> lpb;
