@@ -120,7 +120,7 @@ wstring Base64Encode(size_t cbSourceBuf, _In_count_(cbSourceBuf) LPBYTE lpSource
 	return szEncodedStr;
 }
 
-wstring CurrencyToString(CURRENCY curVal)
+wstring CurrencyToString(const CURRENCY& curVal)
 {
 	auto szCur = format(L"%05I64d", curVal.int64); // STRING_OK
 	if (szCur.length() > 4)
@@ -223,60 +223,51 @@ wstring TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB, bool
 	return szRet;
 }
 
-wstring ProblemArrayToString(_In_ LPSPropProblemArray lpProblems)
+wstring ProblemArrayToString(_In_ const SPropProblemArray& problems)
 {
 	wstring szOut;
-	if (lpProblems)
+	for (ULONG i = 0; i < problems.cProblem; i++)
 	{
-		for (ULONG i = 0; i < lpProblems->cProblem; i++)
-		{
-			auto szTemp = formatmessage(
-				IDS_PROBLEMARRAY,
-				lpProblems->aProblem[i].ulIndex,
-				TagToString(lpProblems->aProblem[i].ulPropTag, nullptr, false, false).c_str(),
-				lpProblems->aProblem[i].scode,
-				ErrorNameFromErrorCode(lpProblems->aProblem[i].scode).c_str());
-			szOut += szTemp;
-		}
+		auto szTemp = formatmessage(
+			IDS_PROBLEMARRAY,
+			problems.aProblem[i].ulIndex,
+			TagToString(problems.aProblem[i].ulPropTag, nullptr, false, false).c_str(),
+			problems.aProblem[i].scode,
+			ErrorNameFromErrorCode(problems.aProblem[i].scode).c_str());
+		szOut += szTemp;
 	}
 
 	return szOut;
 }
 
-wstring MAPIErrToString(ULONG ulFlags, _In_ LPMAPIERROR lpErr)
+wstring MAPIErrToString(ULONG ulFlags, _In_ const MAPIERROR& err)
 {
-	wstring szOut;
-	if (lpErr)
-	{
-		szOut = formatmessage(
-			ulFlags & MAPI_UNICODE ? IDS_MAPIERRUNICODE : IDS_MAPIERRANSI,
-			lpErr->ulVersion,
-			lpErr->lpszError,
-			lpErr->lpszComponent,
-			lpErr->ulLowLevelError,
-			ErrorNameFromErrorCode(lpErr->ulLowLevelError).c_str(),
-			lpErr->ulContext);
-	}
+	auto szOut = formatmessage(
+		ulFlags & MAPI_UNICODE ? IDS_MAPIERRUNICODE : IDS_MAPIERRANSI,
+		err.ulVersion,
+		err.lpszError,
+		err.lpszComponent,
+		err.ulLowLevelError,
+		ErrorNameFromErrorCode(err.ulLowLevelError).c_str(),
+		err.ulContext);
+
 	return szOut;
 }
 
-wstring TnefProblemArrayToString(_In_ LPSTnefProblemArray lpError)
+wstring TnefProblemArrayToString(_In_ const STnefProblemArray& error)
 {
 	wstring szOut;
-	if (lpError)
+	for (ULONG iError = 0; iError < error.cProblem; iError++)
 	{
-		for (ULONG iError = 0; iError < lpError->cProblem; iError++)
-		{
-			auto szTemp = formatmessage(
-				IDS_TNEFPROBARRAY,
-				lpError->aProblem[iError].ulComponent,
-				lpError->aProblem[iError].ulAttribute,
-				TagToString(lpError->aProblem[iError].ulPropTag, nullptr, false, false).c_str(),
-				lpError->aProblem[iError].scode,
-				ErrorNameFromErrorCode(lpError->aProblem[iError].scode).c_str());
-			szOut += szTemp;
-		}
+		szOut += formatmessage(
+			IDS_TNEFPROBARRAY,
+			error.aProblem[iError].ulComponent,
+			error.aProblem[iError].ulAttribute,
+			TagToString(error.aProblem[iError].ulPropTag, nullptr, false, false).c_str(),
+			error.aProblem[iError].scode,
+			ErrorNameFromErrorCode(error.aProblem[iError].scode).c_str());
 	}
+
 	return szOut;
 }
 
@@ -676,12 +667,12 @@ wstring ActionsToString(_In_ ACTIONS* lpActions)
 	return actstring;
 }
 
-void FileTimeToString(_In_ const FILETIME& lpFileTime, _In_ wstring& PropString, _In_opt_ wstring& AltPropString)
+void FileTimeToString(_In_ const FILETIME& fileTime, _In_ wstring& PropString, _In_opt_ wstring& AltPropString)
 {
 	auto hRes = S_OK;
 	SYSTEMTIME SysTime = { 0 };
 
-	WC_B(FileTimeToSystemTime(&lpFileTime, &SysTime));
+	WC_B(FileTimeToSystemTime(&fileTime, &SysTime));
 
 	if (S_OK == hRes)
 	{
@@ -715,7 +706,7 @@ void FileTimeToString(_In_ const FILETIME& lpFileTime, _In_ wstring& PropString,
 		PropString = loadstring(IDS_INVALIDSYSTIME);
 	}
 
-	AltPropString = formatmessage(IDS_FILETIMEALTFORMAT, lpFileTime.dwLowDateTime, lpFileTime.dwHighDateTime);
+	AltPropString = formatmessage(IDS_FILETIMEALTFORMAT, fileTime.dwLowDateTime, fileTime.dwHighDateTime);
 }
 
 /***************************************************************************

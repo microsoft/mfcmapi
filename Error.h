@@ -296,7 +296,7 @@ else	\
 {	\
 	if (problemarray)	\
 	{	\
-		wstring szProbArray = ProblemArrayToString((problemarray));	\
+		wstring szProbArray = ProblemArrayToString(*(problemarray));	\
 		ErrDialog(__FILE__,__LINE__,IDS_EDPROBLEMARRAY, szProbArray.c_str());	\
 		DebugPrint(DBGGeneric,L"Problem array:\n%ws\n",szProbArray.c_str());	\
 	}	\
@@ -306,7 +306,7 @@ else	\
 {	\
 	if (__lperr)	\
 	{	\
-		wstring szErr = MAPIErrToString((__ulflags),(__lperr));	\
+		wstring szErr = MAPIErrToString((__ulflags),*(__lperr));	\
 		ErrDialog(__FILE__,__LINE__,IDS_EDMAPIERROR, szErr.c_str());	\
 		DebugPrint(DBGGeneric,L"LPMAPIERROR:\n%ws\n", szErr.c_str());	\
 	}	\
@@ -316,7 +316,7 @@ else	\
 {	\
 	if (problemarray)	\
 	{	\
-		wstring szProbArray = TnefProblemArrayToString((problemarray));	\
+		wstring szProbArray = TnefProblemArrayToString(*(problemarray));	\
 		ErrDialog(__FILE__,__LINE__,IDS_EDTNEFPROBLEMARRAY, szProbArray.c_str());	\
 		DebugPrint(DBGGeneric,L"TNEF Problem array:\n%ws\n",szProbArray.c_str());	\
 	}	\

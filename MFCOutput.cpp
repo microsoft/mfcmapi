@@ -542,10 +542,14 @@ void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify, _
 			sbin.lpb = reinterpret_cast<LPBYTE>(lpNotifications[i].info.err.lpEntryID);
 			Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.err.lpEntryID = ", i);
 			_OutputBinary(ulDbgLvl, fFile, &sbin);
-			Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.err.lpMAPIError = %s\n", i,
-				MAPIErrToString(
-				lpNotifications[i].info.err.ulFlags,
-				lpNotifications[i].info.err.lpMAPIError).c_str());
+			if (lpNotifications[i].info.err.lpMAPIError)
+			{
+				Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.err.lpMAPIError = %s\n", i,
+					MAPIErrToString(
+						lpNotifications[i].info.err.ulFlags,
+						*lpNotifications[i].info.err.lpMAPIError).c_str());
+			}
+
 			break;
 		case fnevExtended:
 			Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.ext.ulEvent = 0x%08X\n", i,

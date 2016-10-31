@@ -4,13 +4,13 @@
 vector<BYTE> Base64Decode(wstring szEncodedStr);
 wstring Base64Encode(size_t cbSourceBuf, _In_count_(cbSourceBuf) LPBYTE lpSourceBuffer);
 
-void FileTimeToString(_In_ const FILETIME& lpFileTime, _In_ wstring& PropString, _In_opt_ wstring& AltPropString);
+void FileTimeToString(_In_ const FILETIME& fileTime, _In_ wstring& PropString, _In_opt_ wstring& AltPropString);
 
 wstring TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB, bool bSingleLine);
 wstring TypeToString(ULONG ulPropTag);
-wstring ProblemArrayToString(_In_ LPSPropProblemArray lpProblems);
-wstring MAPIErrToString(ULONG ulFlags, _In_ LPMAPIERROR lpErr);
-wstring TnefProblemArrayToString(_In_ LPSTnefProblemArray lpError);
+wstring ProblemArrayToString(_In_ const SPropProblemArray& problems);
+wstring MAPIErrToString(ULONG ulFlags, _In_ const MAPIERROR& err);
+wstring TnefProblemArrayToString(_In_ const STnefProblemArray& error);
 
 void NameIDToStrings(
 	ULONG ulPropTag, // optional 'original' prop tag
@@ -22,7 +22,7 @@ void NameIDToStrings(
 	_In_ wstring& lpszNamedPropGUID, // Built from ulPropTag & lpMAPIProp
 	_In_ wstring& lpszNamedPropDASL); // Built from ulPropTag & lpMAPIProp
 
-wstring CurrencyToString(CURRENCY curVal);
+wstring CurrencyToString(const CURRENCY& curVal);
 
 wstring RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj);
 wstring ActionsToString(_In_ ACTIONS* lpActions);
