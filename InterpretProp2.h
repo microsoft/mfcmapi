@@ -3,8 +3,7 @@
 #define PROP_TAG_MASK 0xffff0000
 void FindTagArrayMatches(_In_ ULONG ulTarget,
 	bool bIsAB,
-	_In_count_(ulMyArray) NAME_ARRAY_ENTRY_V2* MyArray,
-	_In_ ULONG ulMyArray,
+	const vector<NAME_ARRAY_ENTRY_V2>& MyArray,
 	vector<ULONG>& ulExacts,
 	vector<ULONG>& ulPartials);
 

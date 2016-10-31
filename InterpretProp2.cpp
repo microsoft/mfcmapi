@@ -29,8 +29,7 @@ bool CompareTagsSortOrder(int a1, int a2)
 // If no hits, then ulNoMatch should be returned for lpulFirstExact and/or lpulFirstPartial
 void FindTagArrayMatches(_In_ ULONG ulTarget,
 	bool bIsAB,
-	_In_count_(ulMyArray) NAME_ARRAY_ENTRY_V2* MyArray,
-	_In_ ULONG ulMyArray,
+	const vector<NAME_ARRAY_ENTRY_V2>& MyArray,
 	vector<ULONG>& ulExacts,
 	vector<ULONG>& ulPartials)
 {
@@ -40,7 +39,7 @@ void FindTagArrayMatches(_In_ ULONG ulTarget,
 	}
 
 	ULONG ulLowerBound = 0;
-	auto ulUpperBound = ulMyArray - 1; // ulMyArray-1 is the last entry
+	auto ulUpperBound = MyArray.size() - 1; // size-1 is the last entry
 	auto ulMidPoint = (ulUpperBound + ulLowerBound) / 2;
 	ULONG ulFirstMatch = ulNoMatch;
 	auto ulMaskedTarget = ulTarget & PROP_TAG_MASK;
@@ -91,7 +90,7 @@ void FindTagArrayMatches(_In_ ULONG ulTarget,
 
 		// Grab our matches
 		ULONG ulCur;
-		for (ulCur = ulFirstMatch; ulCur < ulMyArray && ulMaskedTarget == (PROP_TAG_MASK & MyArray[ulCur].ulValue); ulCur++)
+		for (ulCur = ulFirstMatch; ulCur < MyArray.size() && ulMaskedTarget == (PROP_TAG_MASK & MyArray[ulCur].ulValue); ulCur++)
 		{
 			if (ulTarget == MyArray[ulCur].ulValue)
 			{
@@ -131,7 +130,7 @@ void PropTagToPropName(ULONG ulPropTag, bool bIsAB, _In_opt_  wstring& lpszExact
 
 	vector<ULONG> ulExacts;
 	vector<ULONG> ulPartials;
-	FindTagArrayMatches(ulPropTag, bIsAB, PropTagArray.data(), static_cast<ULONG>(PropTagArray.size()), ulExacts, ulPartials);
+	FindTagArrayMatches(ulPropTag, bIsAB, PropTagArray, ulExacts, ulPartials);
 
 	NameMapEntry entry;
 
