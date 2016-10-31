@@ -487,30 +487,25 @@ wstring RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj
 	return RestrictionToString(lpRes, lpObj, 0);
 }
 
-wstring AdrListToString(_In_ LPADRLIST lpAdrList)
+wstring AdrListToString(_In_ const ADRLIST& adrList)
 {
-	if (!lpAdrList)
-	{
-		return loadstring(IDS_ADRLISTNULL);
-	}
-
 	wstring adrstring;
 	wstring szProp;
 	wstring szAltProp;
-	adrstring = formatmessage(IDS_ADRLISTCOUNT, lpAdrList->cEntries);
+	adrstring = formatmessage(IDS_ADRLISTCOUNT, adrList.cEntries);
 
-	for (ULONG i = 0; i < lpAdrList->cEntries; i++)
+	for (ULONG i = 0; i < adrList.cEntries; i++)
 	{
-		adrstring += formatmessage(IDS_ADRLISTENTRIESCOUNT, i, lpAdrList->aEntries[i].cValues);
+		adrstring += formatmessage(IDS_ADRLISTENTRIESCOUNT, i, adrList.aEntries[i].cValues);
 
-		for (ULONG j = 0; j < lpAdrList->aEntries[i].cValues; j++)
+		for (ULONG j = 0; j < adrList.aEntries[i].cValues; j++)
 		{
-			InterpretProp(&lpAdrList->aEntries[i].rgPropVals[j], &szProp, &szAltProp);
+			InterpretProp(&adrList.aEntries[i].rgPropVals[j], &szProp, &szAltProp);
 			adrstring += formatmessage(
 				IDS_ADRLISTENTRY,
 				i,
 				j,
-				TagToString(lpAdrList->aEntries[i].rgPropVals[j].ulPropTag, nullptr, false, false).c_str(),
+				TagToString(adrList.aEntries[i].rgPropVals[j].ulPropTag, nullptr, false, false).c_str(),
 				szProp.c_str(),
 				szAltProp.c_str());
 		}
@@ -589,7 +584,15 @@ _Check_return_ wstring ActionToString(_In_ const ACTION& action)
 	case OP_DELEGATE:
 	{
 		actstring += formatmessage(IDS_ACTIONOPFORWARDDEL);
-		actstring += AdrListToString(action.lpadrlist);
+		if (action.lpadrlist)
+		{
+			actstring += AdrListToString(*action.lpadrlist);
+		}
+		else
+		{
+			actstring += loadstring(IDS_ADRLISTNULL);
+		}
+
 		break;
 	}
 

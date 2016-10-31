@@ -27,6 +27,6 @@ wstring CurrencyToString(const CURRENCY& curVal);
 wstring RestrictionToString(_In_ LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj);
 wstring ActionsToString(_In_ const ACTIONS& actions);
 
-wstring AdrListToString(_In_ LPADRLIST lpAdrList);
+wstring AdrListToString(_In_ const ADRLIST& adrList);
 
 void InterpretProp(_In_ LPSPropValue lpProp, _In_opt_ wstring* PropString, _In_opt_ wstring* AltPropString);
