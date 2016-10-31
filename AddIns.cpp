@@ -301,7 +301,6 @@ void LoadAddIns()
 				{
 					for (;;)
 					{
-						hRes = S_OK;
 						DebugPrint(DBGAddInPlumbing, L"Examining \"%ws\"\n", FindFileData.cFileName);
 						HMODULE hMod = nullptr;
 
@@ -332,10 +331,9 @@ void LoadAddIns()
 										InclusionList.AddToList(FindFileData.cFileName);
 										// We found a candidate, load it for real now
 										hMod = MyLoadLibraryW(FindFileData.cFileName);
-										// GetProcAddress again just in case we loaded at a different address
-										WC_D(pfnLoadAddIn, reinterpret_cast<LPLOADADDIN>(GetProcAddress(hMod, szLoadAddIn)));
 									}
 								}
+
 								// If we still don't have a DLL loaded, exclude it
 								if (!hMod)
 								{
@@ -343,6 +341,7 @@ void LoadAddIns()
 								}
 							}
 						}
+
 						if (hMod)
 						{
 							DebugPrint(DBGAddInPlumbing, L"Opened module\n");
@@ -555,9 +554,9 @@ void InvokeAddInMenu(_In_opt_ LPADDINMENUPARAMS lpParams)
 	if (!lpParams->lpAddInMenu->lpAddIn->pfnCallMenu)
 	{
 		if (!lpParams->lpAddInMenu->lpAddIn->hMod) return;
-		WC_D(lpParams->lpAddInMenu->lpAddIn->pfnCallMenu, reinterpret_cast<LPCALLMENU>(GetProcAddress(
+		lpParams->lpAddInMenu->lpAddIn->pfnCallMenu = GetFunction<LPCALLMENU>(
 			lpParams->lpAddInMenu->lpAddIn->hMod,
-			szCallMenu)));
+			szCallMenu);
 	}
 
 	if (!lpParams->lpAddInMenu->lpAddIn->pfnCallMenu)
