@@ -125,18 +125,18 @@ _Check_return_ LPNAMEID_ARRAY_ENTRY GetDispIDFromName(_In_z_ LPCWSTR lpszDispIDN
 {
 	if (!lpszDispIDName) return nullptr;
 
-	for (auto nameID : NameIDArray)
+	auto entry = find_if(begin(NameIDArray), end(NameIDArray), [&](NAMEID_ARRAY_ENTRY& nameID)
 	{
 		if (0 == wcscmp(nameID.lpszName, lpszDispIDName))
 		{
 			// PSUNKNOWN is used as a placeholder in NameIDArray - don't return matching entries
-			if (IsEqualGUID(*nameID.lpGuid, PSUNKNOWN)) return nullptr;
-
-			return &nameID;
+			if (!IsEqualGUID(*nameID.lpGuid, PSUNKNOWN)) return true;
 		}
-	}
 
-	return nullptr;
+		return false;
+	});
+
+	return entry != end(NameIDArray) ? &(*entry) : nullptr;
 }
 
 void CPropertyTagEditor::LookupNamedProp(ULONG ulSkipField, bool bCreate)

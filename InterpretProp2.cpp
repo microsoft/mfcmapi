@@ -39,7 +39,7 @@ void FindTagArrayMatches(_In_ ULONG ulTarget,
 	}
 
 	ULONG ulLowerBound = 0;
-	auto ulUpperBound = MyArray.size() - 1; // size-1 is the last entry
+	auto ulUpperBound = static_cast<ULONG>(MyArray.size() - 1); // size-1 is the last entry
 	auto ulMidPoint = (ulUpperBound + ulLowerBound) / 2;
 	ULONG ulFirstMatch = ulNoMatch;
 	auto ulMaskedTarget = ulTarget & PROP_TAG_MASK;
