@@ -100,12 +100,12 @@ void PrintType(_In_ ULONG ulPropTag)
 	// Do a linear search through PropTypeArray - ulPropTypeArray will be small
 	auto bFound = false;
 
-	for (size_t ulMatch = 0; ulMatch < PropTypeArray.size(); ulMatch++)
+	for (auto propType : PropTypeArray)
 	{
-		if (PROP_TYPE(ulPropTag) == PropTypeArray[ulMatch].ulValue)
+		if (PROP_TYPE(ulPropTag) == propType.ulValue)
 		{
 			bFound = true;
-			printf("%ws", PropTypeArray[ulMatch].lpszName);
+			printf("%ws", propType.lpszName);
 			break;
 		}
 	}
@@ -119,9 +119,9 @@ void PrintKnownTypes()
 {
 	// Do a linear search through PropTypeArray - ulPropTypeArray will be small
 	printf("%-18s%-9s%s\n", "Type", "Hex", "Decimal");
-	for (size_t ulMatch = 0; ulMatch < PropTypeArray.size(); ulMatch++)
+	for (auto propType : PropTypeArray)
 	{
-		printf("%-15ws = 0x%04X = %u\n", PropTypeArray[ulMatch].lpszName, PropTypeArray[ulMatch].ulValue, PropTypeArray[ulMatch].ulValue);
+		printf("%-15ws = 0x%04X = %u\n", propType.lpszName, propType.ulValue, propType.ulValue);
 	}
 
 	printf("\n");
@@ -317,11 +317,11 @@ void PrintGUID(_In_ LPCGUID lpGUID)
 		lpGUID->Data4[7]);
 
 	printf(",");
-	for (size_t ulCur = 0; ulCur < PropGuidArray.size(); ulCur++)
+	for (auto guid : PropGuidArray)
 	{
-		if (IsEqualGUID(*lpGUID, *PropGuidArray[ulCur].lpGuid))
+		if (IsEqualGUID(*lpGUID, *guid.lpGuid))
 		{
-			printf("%ws", PropGuidArray[ulCur].lpszName);
+			printf("%ws", guid.lpszName);
 			break;
 		}
 	}
@@ -329,21 +329,21 @@ void PrintGUID(_In_ LPCGUID lpGUID)
 
 void PrintGUIDs()
 {
-	for (size_t ulCur = 0; ulCur < PropGuidArray.size(); ulCur++)
+	for (auto guid : PropGuidArray)
 	{
 		printf("{%.8X-%.4X-%.4X-%.2X%.2X-%.2X%.2X%.2X%.2X%.2X%.2X}",
-			PropGuidArray[ulCur].lpGuid->Data1,
-			PropGuidArray[ulCur].lpGuid->Data2,
-			PropGuidArray[ulCur].lpGuid->Data3,
-			PropGuidArray[ulCur].lpGuid->Data4[0],
-			PropGuidArray[ulCur].lpGuid->Data4[1],
-			PropGuidArray[ulCur].lpGuid->Data4[2],
-			PropGuidArray[ulCur].lpGuid->Data4[3],
-			PropGuidArray[ulCur].lpGuid->Data4[4],
-			PropGuidArray[ulCur].lpGuid->Data4[5],
-			PropGuidArray[ulCur].lpGuid->Data4[6],
-			PropGuidArray[ulCur].lpGuid->Data4[7]);
-		printf(",%ws\n", PropGuidArray[ulCur].lpszName);
+			guid.lpGuid->Data1,
+			guid.lpGuid->Data2,
+			guid.lpGuid->Data3,
+			guid.lpGuid->Data4[0],
+			guid.lpGuid->Data4[1],
+			guid.lpGuid->Data4[2],
+			guid.lpGuid->Data4[3],
+			guid.lpGuid->Data4[4],
+			guid.lpGuid->Data4[5],
+			guid.lpGuid->Data4[6],
+			guid.lpGuid->Data4[7]);
+		printf(",%ws\n", guid.lpszName);
 	}
 }
 
@@ -452,9 +452,9 @@ void PrintFlag(_In_ ULONG ulPropNum, _In_opt_z_ LPCWSTR lpszPropName, _In_ bool 
 	{
 		if (ulPropNum)
 		{
-			for (ulCur = 0; ulCur < NameIDArray.size(); ulCur++)
+			for (auto nameID : NameIDArray)
 			{
-				if (ulPropNum == static_cast<ULONG>(NameIDArray[ulCur].lValue))
+				if (ulPropNum == static_cast<ULONG>(nameID.lValue))
 				{
 					break;
 				}
@@ -462,9 +462,9 @@ void PrintFlag(_In_ ULONG ulPropNum, _In_opt_z_ LPCWSTR lpszPropName, _In_ bool 
 		}
 		else if (lpszPropName)
 		{
-			for (ulCur = 0; ulCur < NameIDArray.size(); ulCur++)
+			for (auto nameID : NameIDArray)
 			{
-				if (NameIDArray[ulCur].lpszName && 0 == lstrcmpiW(lpszPropName, NameIDArray[ulCur].lpszName))
+				if (nameID.lpszName && 0 == lstrcmpiW(lpszPropName, nameID.lpszName))
 				{
 					break;
 				}
@@ -589,11 +589,11 @@ void DoGUIDs(_In_ MYOPTIONS /*ProgOpts*/)
 
 void DoFlagSearch(_In_ MYOPTIONS ProgOpts)
 {
-	for (size_t ulCurEntry = 0; ulCurEntry < FlagArray.size(); ulCurEntry++)
+	for (auto flag : FlagArray)
 	{
-		if (!_wcsicmp(FlagArray[ulCurEntry].lpszName, ProgOpts.lpszFlagName.c_str()))
+		if (!_wcsicmp(flag.lpszName, ProgOpts.lpszFlagName.c_str()))
 		{
-			printf("%ws = 0x%08X\n", FlagArray[ulCurEntry].lpszName, FlagArray[ulCurEntry].lFlagValue);
+			printf("%ws = 0x%08X\n", flag.lpszName, flag.lFlagValue);
 			break;
 		}
 	}

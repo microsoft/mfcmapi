@@ -207,11 +207,11 @@ _Check_return_ ULONG PropTypeNameToPropType(_In_ wstring lpszPropType)
 
 	auto ulPropType = PT_UNSPECIFIED;
 
-	for (size_t ulCur = 0; ulCur < PropTypeArray.size(); ulCur++)
+	for (auto propType : PropTypeArray)
 	{
-		if (0 == lstrcmpiW(lpszPropType.c_str(), PropTypeArray[ulCur].lpszName))
+		if (0 == lstrcmpiW(lpszPropType.c_str(), propType.lpszName))
 		{
-			ulPropType = PropTypeArray[ulCur].ulValue;
+			ulPropType = propType.ulValue;
 			break;
 		}
 	}
@@ -250,11 +250,11 @@ wstring GUIDToStringAndName(_In_opt_ LPCGUID lpGUID)
 
 	if (lpGUID)
 	{
-		for (size_t ulCur = 0; ulCur < PropGuidArray.size(); ulCur++)
+		for (auto guid : PropGuidArray)
 		{
-			if (IsEqualGUID(*lpGUID, *PropGuidArray[ulCur].lpGuid))
+			if (IsEqualGUID(*lpGUID, *guid.lpGuid))
 			{
-				return szGUID + PropGuidArray[ulCur].lpszName;
+				return szGUID + guid.lpszName;
 			}
 		}
 	}
@@ -269,11 +269,11 @@ LPCGUID GUIDNameToGUID(_In_ wstring szGUID, bool bByteSwapped)
 	GUID guid = { 0 };
 
 	// Try the GUID like PS_* first
-	for (size_t ulCur = 0; ulCur < PropGuidArray.size(); ulCur++)
+	for (auto propGuid : PropGuidArray)
 	{
-		if (0 == lstrcmpiW(szGUID.c_str(), PropGuidArray[ulCur].lpszName))
+		if (0 == lstrcmpiW(szGUID.c_str(), propGuid.lpszName))
 		{
-			lpGUID = PropGuidArray[ulCur].lpGuid;
+			lpGUID = propGuid.lpGuid;
 			break;
 		}
 	}

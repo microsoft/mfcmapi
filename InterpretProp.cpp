@@ -754,11 +754,11 @@ wstring TypeToString(ULONG ulPropTag)
 
 	auto bTypeFound = false;
 
-	for (size_t ulCur = 0; ulCur < PropTypeArray.size(); ulCur++)
+	for (auto propType : PropTypeArray)
 	{
-		if (PropTypeArray[ulCur].ulValue == PROP_TYPE(ulPropTag))
+		if (propType.ulValue == PROP_TYPE(ulPropTag))
 		{
-			tmpPropType = PropTypeArray[ulCur].lpszName;
+			tmpPropType = propType.lpszName;
 			bTypeFound = true;
 			break;
 		}

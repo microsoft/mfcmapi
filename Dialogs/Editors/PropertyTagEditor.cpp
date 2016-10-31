@@ -125,14 +125,14 @@ _Check_return_ LPNAMEID_ARRAY_ENTRY GetDispIDFromName(_In_z_ LPCWSTR lpszDispIDN
 {
 	if (!lpszDispIDName) return nullptr;
 
-	for (size_t ulCur = 0; ulCur < NameIDArray.size(); ulCur++)
+	for (auto nameID : NameIDArray)
 	{
-		if (0 == wcscmp(NameIDArray[ulCur].lpszName, lpszDispIDName))
+		if (0 == wcscmp(nameID.lpszName, lpszDispIDName))
 		{
 			// PSUNKNOWN is used as a placeholder in NameIDArray - don't return matching entries
-			if (IsEqualGUID(*NameIDArray[ulCur].lpGuid, PSUNKNOWN)) return nullptr;
+			if (IsEqualGUID(*nameID.lpGuid, PSUNKNOWN)) return nullptr;
 
-			return &NameIDArray[ulCur];
+			return &nameID;
 		}
 	}
 

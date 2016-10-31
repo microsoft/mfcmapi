@@ -194,24 +194,23 @@ COMMANDLINE_SWITCH g_Switches[] =
 };
 ULONG g_ulSwitches = _countof(g_Switches);
 
-extern LPADDIN g_lpMyAddins;
+extern vector<_AddIn> g_lpMyAddins;
 
 void DisplayUsage(BOOL bFull)
 {
 	printf("MAPI data collection and parsing tool. Supports property tag lookup, error translation,\n");
 	printf("   smart view processing, rule tables, ACL tables, contents tables, and MAPI<->MIME conversion.\n");
-	auto lpCurAddIn = g_lpMyAddins;
 	if (bFull)
 	{
-		if (lpCurAddIn)
+		if (!g_lpMyAddins.empty())
 		{
 			printf("Addins Loaded:\n");
-			while (lpCurAddIn)
+			for (auto addIn : g_lpMyAddins)
 			{
-				printf("   %ws\n", lpCurAddIn->szName);
-				lpCurAddIn = lpCurAddIn->lpNextAddIn;
+				printf("   %ws\n", addIn.szName);
 			}
 		}
+
 		printf("MrMAPI currently knows:\n");
 		printf("%6u property tags\n", static_cast<int>(PropTagArray.size()));
 		printf("%6u dispids\n", static_cast<int>(NameIDArray.size()));
@@ -221,6 +220,7 @@ void DisplayUsage(BOOL bFull)
 		printf("%6u smart view parsers\n", static_cast<int>(SmartViewParserTypeArray.size()) - 1);
 		printf("\n");
 	}
+
 	printf("Usage:\n");
 	printf("   MrMAPI -%s\n", g_Switches[switchHelp].szSwitch);
 	printf("   MrMAPI [-%s] [-%s] [-%s] [-%s <type>] <property number>|<property name>\n",

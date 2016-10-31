@@ -791,9 +791,9 @@ void MergeAddInArrays()
 			{
 				auto bDupe = false;
 				// Since this array isn't sorted, we have to compare against all valid entries for dupes
-				for (ULONG iCur = 0; iCur < PropGuidArray.size(); iCur++)
+				for (auto guid : PropGuidArray)
 				{
-					if (IsEqualGUID(*addIn.lpPropGuids[i].lpGuid, *PropGuidArray[iCur].lpGuid))
+					if (IsEqualGUID(*addIn.lpPropGuids[i].lpGuid, *guid.lpGuid))
 					{
 						bDupe = true;
 						break;
@@ -1033,11 +1033,11 @@ __declspec(dllexport) void __cdecl GetMAPIModule(_In_ HMODULE* lphModule, bool b
 
 wstring AddInStructTypeToString(__ParsingTypeEnum iStructType)
 {
-	for (ULONG i = 0; i < SmartViewParserTypeArray.size(); i++)
+	for (auto smartViewParserType : SmartViewParserTypeArray)
 	{
-		if (SmartViewParserTypeArray[i].ulValue == static_cast<ULONG>(iStructType))
+		if (smartViewParserType.ulValue == static_cast<ULONG>(iStructType))
 		{
-			return SmartViewParserTypeArray[i].lpszName;
+			return smartViewParserType.lpszName;
 		}
 	}
 

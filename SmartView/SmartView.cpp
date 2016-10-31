@@ -176,16 +176,14 @@ _Check_return_ ULONG BuildFlagIndexFromTag(ULONG ulPropTag,
 
 _Check_return_ __ParsingTypeEnum FindSmartViewParserForProp(const ULONG ulPropTag, const ULONG ulPropNameID, _In_opt_ const LPCGUID lpguidNamedProp)
 {
-	size_t ulCurEntry = 0;
 	auto ulIndex = BuildFlagIndexFromTag(ulPropTag, ulPropNameID, nullptr, lpguidNamedProp);
 	auto bMV = (PROP_TYPE(ulPropTag) & MV_FLAG) == MV_FLAG;
 
-	while (ulCurEntry < SmartViewParserArray.size())
+	for (auto smartViewParser : SmartViewParserArray)
 	{
-		if (SmartViewParserArray[ulCurEntry].ulIndex == ulIndex &&
-			SmartViewParserArray[ulCurEntry].bMV == bMV)
-			return SmartViewParserArray[ulCurEntry].iStructType;
-		ulCurEntry++;
+		if (smartViewParser.ulIndex == ulIndex &&
+			smartViewParser.bMV == bMV)
+			return smartViewParser.iStructType;
 	}
 
 	return IDS_STNOPARSING;
