@@ -195,7 +195,7 @@ Property ParseProperty(_In_ LPSPropValue lpProp)
 			}
 			break;
 		case PT_SYSTIME:
-			FileTimeToString(&lpProp->Value.ft, szTmp, szAltTmp);
+			FileTimeToString(lpProp->Value.ft, szTmp, szAltTmp);
 			break;
 		case PT_CLSID:
 			// TODO: One string matches current behavior - look at splitting to two strings in future change

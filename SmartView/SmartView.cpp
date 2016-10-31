@@ -473,7 +473,7 @@ _Check_return_ wstring RTimeToString(DWORD rTime)
 	liNumSec.QuadPart = liNumSec.QuadPart * 10000000 * 60;
 	fTime.dwLowDateTime = liNumSec.LowPart;
 	fTime.dwHighDateTime = liNumSec.HighPart;
-	FileTimeToString(&fTime, rTimeString, rTimeAltString);
+	FileTimeToString(fTime, rTimeString, rTimeAltString);
 	return rTimeString;
 }
 

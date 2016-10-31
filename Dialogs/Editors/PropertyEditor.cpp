@@ -417,7 +417,7 @@ void CPropertyEditor::InitPropertyControls()
 		{
 			SetHex(0, static_cast<int>(m_lpsInputValue->Value.ft.dwLowDateTime));
 			SetHex(1, static_cast<int>(m_lpsInputValue->Value.ft.dwHighDateTime));
-			FileTimeToString(&m_lpsInputValue->Value.ft, szTemp1, szTemp2);
+			FileTimeToString(m_lpsInputValue->Value.ft, szTemp1, szTemp2);
 			SetStringW(2, szTemp1);
 		}
 		else
@@ -770,7 +770,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		szTmpString = GetStringUseControl(1);
 		ftVal.dwHighDateTime = wstringToUlong(szTmpString, 16);
 
-		FileTimeToString(&ftVal, szTemp1, szTemp2);
+		FileTimeToString(ftVal, szTemp1, szTemp2);
 		SetStringW(2, szTemp1);
 		break;
 	case PT_BINARY:

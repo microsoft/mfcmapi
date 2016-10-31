@@ -676,14 +676,12 @@ wstring ActionsToString(_In_ ACTIONS* lpActions)
 	return actstring;
 }
 
-void FileTimeToString(_In_ FILETIME* lpFileTime, _In_ wstring& PropString, _In_opt_ wstring& AltPropString)
+void FileTimeToString(_In_ const FILETIME& lpFileTime, _In_ wstring& PropString, _In_opt_ wstring& AltPropString)
 {
 	auto hRes = S_OK;
 	SYSTEMTIME SysTime = { 0 };
 
-	if (!lpFileTime) return;
-
-	WC_B(FileTimeToSystemTime(static_cast<FILETIME*>(lpFileTime), &SysTime));
+	WC_B(FileTimeToSystemTime(&lpFileTime, &SysTime));
 
 	if (S_OK == hRes)
 	{
@@ -717,7 +715,7 @@ void FileTimeToString(_In_ FILETIME* lpFileTime, _In_ wstring& PropString, _In_o
 		PropString = loadstring(IDS_INVALIDSYSTIME);
 	}
 
-	AltPropString = formatmessage(IDS_FILETIMEALTFORMAT, lpFileTime->dwLowDateTime, lpFileTime->dwHighDateTime);
+	AltPropString = formatmessage(IDS_FILETIMEALTFORMAT, lpFileTime.dwLowDateTime, lpFileTime.dwHighDateTime);
 }
 
 /***************************************************************************

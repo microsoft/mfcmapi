@@ -75,7 +75,7 @@ _Check_return_ wstring ConversationIndex::ToStringInternal()
 
 	wstring PropString;
 	wstring AltPropString;
-	FileTimeToString(&m_ftCurrent, PropString, AltPropString);
+	FileTimeToString(m_ftCurrent, PropString, AltPropString);
 	auto szGUID = GUIDToString(&m_guid);
 	szConversationIndex = formatmessage(IDS_CONVERSATIONINDEXHEADER,
 		m_UnnamedByte,

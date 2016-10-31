@@ -41,7 +41,7 @@ _Check_return_ wstring GlobalObjectId::ToStringInternal()
 
 	wstring PropString;
 	wstring AltPropString;
-	FileTimeToString(&m_CreationTime, PropString, AltPropString);
+	FileTimeToString(m_CreationTime, PropString, AltPropString);
 	szGlobalObjectId += formatmessage(IDS_GLOBALOBJECTIDDATA1,
 		m_Year,
 		m_Month, szFlags.c_str(),

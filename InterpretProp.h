@@ -4,7 +4,7 @@
 vector<BYTE> Base64Decode(wstring szEncodedStr);
 wstring Base64Encode(size_t cbSourceBuf, _In_count_(cbSourceBuf) LPBYTE lpSourceBuffer);
 
-void FileTimeToString(_In_ FILETIME* lpFileTime, _In_ wstring& PropString, _In_opt_ wstring& AltPropString);
+void FileTimeToString(_In_ const FILETIME& lpFileTime, _In_ wstring& PropString, _In_opt_ wstring& AltPropString);
 
 wstring TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB, bool bSingleLine);
 wstring TypeToString(ULONG ulPropTag);
