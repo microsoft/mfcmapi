@@ -834,7 +834,7 @@ void NameIDToStrings(_In_ LPMAPINAMEID lpNameID,
 		{
 			// this is the *proper* case
 			DebugPrint(DBGNamedProp, L"lpNameID->Kind.lpwstrName = \"%ws\"\n", lpNameID->Kind.lpwstrName);
-			szPropName = format(L"sz: \"%ws\"", lpNameID->Kind.lpwstrName);
+			szPropName = lpNameID->Kind.lpwstrName;
 
 			szDASL = format(L"string/%ws/%ws", // STRING_OK
 				szDASLGuid.c_str(),
@@ -847,7 +847,7 @@ void NameIDToStrings(_In_ LPMAPINAMEID lpNameID,
 			DebugPrint(DBGNamedProp, L"lpNameID->Kind.lpwstrName = \"%hs\"\n", reinterpret_cast<LPCSTR>(lpNameID->Kind.lpwstrName));
 
 			auto szComment = loadstring(IDS_NAMEWASANSI);
-			szPropName = format(L"sz: \"%hs\" %ws", reinterpret_cast<LPSTR>(lpNameID->Kind.lpwstrName), szComment.c_str());
+			szPropName = format(L"%hs %ws", reinterpret_cast<LPSTR>(lpNameID->Kind.lpwstrName), szComment.c_str());
 
 			szDASL = format(L"string/%ws/%hs", // STRING_OK
 				szDASLGuid.c_str(),
