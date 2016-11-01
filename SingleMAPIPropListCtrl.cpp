@@ -647,21 +647,13 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 	auto PropTag = format(L"0x%08X", ulPropTag);
 	wstring PropString;
 	wstring AltPropString;
-	wstring szNamedPropName;
-	wstring szNamedPropGUID;
-	wstring szNamedPropDASL;
 
-	// If we have lpNameID, we don't need to ask InterpretProp to look up named property information
-
-	NameIDToStrings(
+	auto namePropNames = NameIDToStrings(
 		ulPropTag,
 		m_lpPropBag->GetMAPIProp(),
 		lpNameID,
 		lpMappingSignature,
-		m_bIsAB,
-		szNamedPropName, // Built from lpProp & lpMAPIProp
-		szNamedPropGUID, // Built from lpProp & lpMAPIProp
-		szNamedPropDASL);
+		m_bIsAB);
 
 	auto propTagNames = PropTagToPropName(ulPropTag, m_bIsAB);
 
@@ -669,9 +661,9 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 	{
 		SetItemText(iRow, pcPROPBESTGUESS, propTagNames.bestGuess);
 	}
-	else if (!szNamedPropName.empty())
+	else if (!namePropNames.name.empty())
 	{
-		SetItemText(iRow, pcPROPBESTGUESS, szNamedPropName);
+		SetItemText(iRow, pcPROPBESTGUESS, namePropNames.name);
 	}
 	else
 	{
@@ -695,8 +687,8 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 		m_bIsAB,
 		false); // Built from lpProp & lpMAPIProp
 	if (!szSmartView.empty()) SetItemText(iRow, pcPROPSMARTVIEW, szSmartView);
-	if (!szNamedPropName.empty()) SetItemText(iRow, pcPROPNAMEDNAME, szNamedPropName);
-	if (!szNamedPropGUID.empty()) SetItemText(iRow, pcPROPNAMEDIID, szNamedPropGUID);
+	if (!namePropNames.name.empty()) SetItemText(iRow, pcPROPNAMEDNAME, namePropNames.name);
+	if (!namePropNames.guid.empty()) SetItemText(iRow, pcPROPNAMEDIID, namePropNames.guid);
 }
 
 _Check_return_ HRESULT CSingleMAPIPropListCtrl::GetDisplayedProps(ULONG FAR* lpcValues, LPSPropValue FAR* lppPropArray) const
@@ -1072,19 +1064,13 @@ void CSingleMAPIPropListCtrl::CountNamedProps()
 			if (fIsSet(DBGNamedProp))
 			{
 				DebugPrintEx(DBGNamedProp, CLASS, L"CountNamedProps", L"Found a named property at 0x%04X.\n", ulCurrent);
-				wstring szNamedPropName;
-				wstring szNamedPropGUID;
-				wstring szNamedPropDASL;
-				NameIDToStrings(
+				auto namePropNames = NameIDToStrings(
 					tag.aulPropTag[0],
 					nullptr,
 					lppPropNames[0],
 					nullptr,
-					false,
-					szNamedPropName,
-					szNamedPropGUID,
-					szNamedPropDASL);
-				DebugPrintEx(DBGNamedProp, CLASS, L"CountNamedProps", L"Name = %ws, GUID = %ws\n", szNamedPropName.c_str(), szNamedPropGUID.c_str());
+					false);
+				DebugPrintEx(DBGNamedProp, CLASS, L"CountNamedProps", L"Name = %ws, GUID = %ws\n", namePropNames.name.c_str(), namePropNames.guid.c_str());
 			}
 
 			ulHighestKnown = ulCurrent;
@@ -1131,19 +1117,13 @@ void CSingleMAPIPropListCtrl::CountNamedProps()
 
 		if (S_OK == hRes && ulPropNames == 1 && lppPropNames && *lppPropNames)
 		{
-			wstring szNamedPropName;
-			wstring szNamedPropGUID;
-			wstring szNamedPropDASL;
-			NameIDToStrings(
+			auto namePropNames = NameIDToStrings(
 				tag.aulPropTag[0],
 				nullptr,
 				lppPropNames[0],
 				nullptr,
-				false,
-				szNamedPropName,
-				szNamedPropGUID,
-				szNamedPropDASL);
-			MyResult.SetStringW(1, formatmessage(IDS_HIGHESTNAMEDPROPNAME, ulHighestKnown, szNamedPropName.c_str(), szNamedPropGUID.c_str()));
+				false);
+			MyResult.SetStringW(1, formatmessage(IDS_HIGHESTNAMEDPROPNAME, ulHighestKnown, namePropNames.name.c_str(), namePropNames.guid.c_str()));
 
 			MAPIFreeBuffer(lppPropNames);
 			lppPropNames = nullptr;

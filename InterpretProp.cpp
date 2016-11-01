@@ -136,19 +136,12 @@ wstring TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB, bool
 	wstring szRet;
 	wstring szTemp;
 
-	wstring szNamedPropName;
-	wstring szNamedPropGUID;
-	wstring szNamedPropDASL;
-
-	NameIDToStrings(
+	auto namePropNames = NameIDToStrings(
 		ulPropTag,
 		lpObj,
 		nullptr,
 		nullptr,
-		bIsAB,
-		szNamedPropName, // Built from lpProp & lpMAPIProp
-		szNamedPropGUID, // Built from lpProp & lpMAPIProp
-		szNamedPropDASL); // Built from ulPropTag & lpMAPIProp
+		bIsAB);
 
 	auto propTagNames = PropTagToPropName(ulPropTag, bIsAB);
 
@@ -158,12 +151,12 @@ wstring TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB, bool
 		szFormatString = L"0x%1!08X! (%2)"; // STRING_OK
 		if (!propTagNames.bestGuess.empty()) szFormatString += L": %3!ws!"; // STRING_OK
 		if (!propTagNames.otherMatches.empty()) szFormatString += L": (%4!ws!)"; // STRING_OK
-		if (!szNamedPropName.empty())
+		if (!namePropNames.name.empty())
 		{
 			szFormatString += loadstring(IDS_NAMEDPROPSINGLELINE);
 		}
 
-		if (!szNamedPropGUID.empty())
+		if (!namePropNames.guid.empty())
 		{
 			szFormatString += loadstring(IDS_GUIDSINGLELINE);
 		}
@@ -185,17 +178,17 @@ wstring TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB, bool
 		{
 			szFormatString += loadstring(IDS_DASLPROPTAG);
 		}
-		else if (!szNamedPropDASL.empty())
+		else if (!namePropNames.dasl.empty())
 		{
 			szFormatString += loadstring(IDS_DASLNAMED);
 		}
 
-		if (!szNamedPropName.empty())
+		if (!namePropNames.name.empty())
 		{
 			szFormatString += loadstring(IDS_NAMEPROPNAMEMULTILINE);
 		}
 
-		if (!szNamedPropGUID.empty())
+		if (!namePropNames.guid.empty())
 		{
 			szFormatString += loadstring(IDS_NAMEPROPGUIDMULTILINE);
 		}
@@ -206,9 +199,9 @@ wstring TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB, bool
 		TypeToString(ulPropTag).c_str(),
 		propTagNames.bestGuess.c_str(),
 		propTagNames.otherMatches.c_str(),
-		szNamedPropName.c_str(),
-		szNamedPropGUID.c_str(),
-		szNamedPropDASL.c_str());
+		namePropNames.name.c_str(),
+		namePropNames.guid.c_str(),
+		namePropNames.dasl.c_str());
 
 	if (fIsSet(DBGTest))
 	{
@@ -753,16 +746,13 @@ wstring TypeToString(ULONG ulPropTag)
 
 // TagToString will prepend the http://schemas.microsoft.com/MAPI/ for us since it's a constant
 // We don't compute a DASL string for non-named props as FormatMessage in TagToString can handle those
-void NameIDToStrings(_In_ LPMAPINAMEID lpNameID,
-	ULONG ulPropTag,
-	_In_ wstring& szPropName,
-	_In_ wstring& szPropGUID,
-	_In_ wstring& szDASL)
+NamePropNames NameIDToStrings(_In_ LPMAPINAMEID lpNameID, ULONG ulPropTag)
 {
 	auto hRes = S_OK;
+	NamePropNames namePropNames;
 
 	// Can't generate strings without a MAPINAMEID structure
-	if (!lpNameID) return;
+	if (!lpNameID) return namePropNames;
 
 	LPNAMEDPROPCACHEENTRY lpNamedPropCacheEntry = nullptr;
 
@@ -772,24 +762,24 @@ void NameIDToStrings(_In_ LPMAPINAMEID lpNameID,
 		lpNamedPropCacheEntry = FindCacheEntry(PROP_ID(ulPropTag), lpNameID->lpguid, lpNameID->ulKind, lpNameID->Kind.lID, lpNameID->Kind.lpwstrName);
 		if (lpNamedPropCacheEntry && lpNamedPropCacheEntry->bStringsCached)
 		{
-			szPropName = lpNamedPropCacheEntry->lpszPropName;
-			szPropGUID = lpNamedPropCacheEntry->lpszPropGUID;
-			szDASL = lpNamedPropCacheEntry->lpszDASL;
-			return;
+			namePropNames.name = lpNamedPropCacheEntry->lpszPropName;
+			namePropNames.guid = lpNamedPropCacheEntry->lpszPropGUID;
+			namePropNames.dasl = lpNamedPropCacheEntry->lpszDASL;
+			return namePropNames;
 		}
 
 		// We shouldn't ever get here without a cached entry
 		if (!lpNamedPropCacheEntry)
 		{
 			DebugPrint(DBGNamedProp, L"NameIDToStrings: Failed to find cache entry for ulPropTag = 0x%08X\n", ulPropTag);
-			return;
+			return namePropNames;
 		}
 	}
 
 	DebugPrint(DBGNamedProp, L"Parsing named property\n");
 	DebugPrint(DBGNamedProp, L"ulPropTag = 0x%08x\n", ulPropTag);
-	szPropGUID = GUIDToStringAndName(lpNameID->lpguid);
-	DebugPrint(DBGNamedProp, L"lpNameID->lpguid = %ws\n", szPropGUID.c_str());
+	namePropNames.guid = GUIDToStringAndName(lpNameID->lpguid);
+	DebugPrint(DBGNamedProp, L"lpNameID->lpguid = %ws\n", namePropNames.guid.c_str());
 
 	auto szDASLGuid = GUIDToString(lpNameID->lpguid);
 
@@ -801,7 +791,7 @@ void NameIDToStrings(_In_ LPMAPINAMEID lpNameID,
 		if (!szName.empty())
 		{
 			// Printing hex first gets a nice sort without spacing tricks
-			szPropName = format(L"id: 0x%04X=%d = %ws", // STRING_OK
+			namePropNames.name = format(L"id: 0x%04X=%d = %ws", // STRING_OK
 				lpNameID->Kind.lID,
 				lpNameID->Kind.lID,
 				szName.c_str());
@@ -810,12 +800,12 @@ void NameIDToStrings(_In_ LPMAPINAMEID lpNameID,
 		else
 		{
 			// Printing hex first gets a nice sort without spacing tricks
-			szPropName = format(L"id: 0x%04X=%d", // STRING_OK
+			namePropNames.name = format(L"id: 0x%04X=%d", // STRING_OK
 				lpNameID->Kind.lID,
 				lpNameID->Kind.lID);
 		}
 
-		szDASL = format(L"id/%s/%04X%04X", // STRING_OK
+		namePropNames.dasl = format(L"id/%s/%04X%04X", // STRING_OK
 			szDASLGuid.c_str(),
 			lpNameID->Kind.lID,
 			PROP_TYPE(ulPropTag));
@@ -834,9 +824,9 @@ void NameIDToStrings(_In_ LPMAPINAMEID lpNameID,
 		{
 			// this is the *proper* case
 			DebugPrint(DBGNamedProp, L"lpNameID->Kind.lpwstrName = \"%ws\"\n", lpNameID->Kind.lpwstrName);
-			szPropName = lpNameID->Kind.lpwstrName;
+			namePropNames.name = lpNameID->Kind.lpwstrName;
 
-			szDASL = format(L"string/%ws/%ws", // STRING_OK
+			namePropNames.dasl = format(L"string/%ws/%ws", // STRING_OK
 				szDASLGuid.c_str(),
 				lpNameID->Kind.lpwstrName);
 		}
@@ -847,9 +837,9 @@ void NameIDToStrings(_In_ LPMAPINAMEID lpNameID,
 			DebugPrint(DBGNamedProp, L"lpNameID->Kind.lpwstrName = \"%hs\"\n", reinterpret_cast<LPCSTR>(lpNameID->Kind.lpwstrName));
 
 			auto szComment = loadstring(IDS_NAMEWASANSI);
-			szPropName = format(L"%hs %ws", reinterpret_cast<LPSTR>(lpNameID->Kind.lpwstrName), szComment.c_str());
+			namePropNames.name = format(L"%hs %ws", reinterpret_cast<LPSTR>(lpNameID->Kind.lpwstrName), szComment.c_str());
 
-			szDASL = format(L"string/%ws/%hs", // STRING_OK
+			namePropNames.dasl = format(L"string/%ws/%hs", // STRING_OK
 				szDASLGuid.c_str(),
 				LPSTR(lpNameID->Kind.lpwstrName));
 		}
@@ -858,25 +848,24 @@ void NameIDToStrings(_In_ LPMAPINAMEID lpNameID,
 	// We've built our strings - if we're caching, put them in the cache
 	if (lpNamedPropCacheEntry)
 	{
-		lpNamedPropCacheEntry->lpszPropName = szPropName;
-		lpNamedPropCacheEntry->lpszPropGUID = szPropGUID;
-		lpNamedPropCacheEntry->lpszDASL = szDASL;
+		lpNamedPropCacheEntry->lpszPropName = namePropNames.name;
+		lpNamedPropCacheEntry->lpszPropGUID = namePropNames.guid;
+		lpNamedPropCacheEntry->lpszDASL = namePropNames.dasl;
 		lpNamedPropCacheEntry->bStringsCached = true;
 	}
+
+	return namePropNames;
 }
 
-// lpszNamedPropName, lpszNamedPropGUID, lpszNamedPropDASL freed with FreeNameIDStrings
-void NameIDToStrings(
+NamePropNames NameIDToStrings(
 	ULONG ulPropTag, // optional 'original' prop tag
 	_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
 	_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
 	_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
-	bool bIsAB, // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
-	_In_ wstring& lpszNamedPropName, // Built from ulPropTag & lpMAPIProp
-	_In_ wstring& lpszNamedPropGUID, // Built from ulPropTag & lpMAPIProp
-	_In_ wstring& lpszNamedPropDASL) // Built from ulPropTag & lpMAPIProp
+	bool bIsAB) // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
 {
 	auto hRes = S_OK;
+	NamePropNames namePropNames;
 
 	// Named Props
 	LPMAPINAMEID* lppPropNames = nullptr;
@@ -910,13 +899,11 @@ void NameIDToStrings(
 
 	if (lpNameID)
 	{
-		NameIDToStrings(lpNameID,
-			ulPropTag,
-			lpszNamedPropName,
-			lpszNamedPropGUID,
-			lpszNamedPropDASL);
+		namePropNames = NameIDToStrings(lpNameID, ulPropTag);
 	}
 
 	// Avoid making the call if we don't have to so we don't accidently depend on MAPI
 	if (lppPropNames) MAPIFreeBuffer(lppPropNames);
+
+	return namePropNames;
 }

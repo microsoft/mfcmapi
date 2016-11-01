@@ -287,19 +287,12 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField) const
 {
 	auto hRes = S_OK;
 
-	wstring szNamedPropName;
-	wstring szNamedPropGUID;
-	wstring szNamedPropDASL;
-
-	NameIDToStrings(
+	auto namePropNames = NameIDToStrings(
 		m_ulPropTag,
 		m_lpMAPIProp,
 		nullptr,
 		nullptr,
-		m_bIsAB,
-		szNamedPropName,
-		szNamedPropGUID,
-		szNamedPropDASL);
+		m_bIsAB);
 
 	if (PROPTAG_TAG != ulSkipField) SetHex(PROPTAG_TAG, m_ulPropTag);
 	if (PROPTAG_ID != ulSkipField) SetStringf(PROPTAG_ID, L"0x%04X", PROP_ID(m_ulPropTag)); // STRING_OK
@@ -310,8 +303,8 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField) const
 
 		if (PROP_ID(m_ulPropTag) && !propTagNames.bestGuess.empty())
 			SetStringf(PROPTAG_NAME, L"%ws (%ws)", propTagNames.bestGuess.c_str(), propTagNames.otherMatches.c_str()); // STRING_OK
-		else if (!szNamedPropName.empty())
-			SetStringf(PROPTAG_NAME, L"%ws", szNamedPropName.c_str()); // STRING_OK
+		else if (!namePropNames.name.empty())
+			SetStringf(PROPTAG_NAME, L"%ws", namePropNames.name.c_str()); // STRING_OK
 		else
 			LoadString(PROPTAG_NAME, IDS_UNKNOWNPROPERTY);
 	}

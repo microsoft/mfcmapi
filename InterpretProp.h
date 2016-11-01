@@ -12,15 +12,19 @@ wstring ProblemArrayToString(_In_ const SPropProblemArray& problems);
 wstring MAPIErrToString(ULONG ulFlags, _In_ const MAPIERROR& err);
 wstring TnefProblemArrayToString(_In_ const STnefProblemArray& error);
 
-void NameIDToStrings(
+struct NamePropNames
+{
+	wstring name; // Built from ulPropTag & lpMAPIProp
+	wstring guid; // Built from ulPropTag & lpMAPIProp
+	wstring dasl; // Built from ulPropTag & lpMAPIProp
+};
+
+NamePropNames NameIDToStrings(
 	ULONG ulPropTag, // optional 'original' prop tag
 	_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
 	_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
 	_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
-	bool bIsAB, // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
-	_In_ wstring& lpszNamedPropName, // Built from ulPropTag & lpMAPIProp
-	_In_ wstring& lpszNamedPropGUID, // Built from ulPropTag & lpMAPIProp
-	_In_ wstring& lpszNamedPropDASL); // Built from ulPropTag & lpMAPIProp
+	bool bIsAB); // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
 
 wstring CurrencyToString(const CURRENCY& curVal);
 

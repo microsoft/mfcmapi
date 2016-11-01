@@ -736,21 +736,14 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 	if (!propTagNames.bestGuess.empty()) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPBESTGUESS].uidName, propTagNames.bestGuess, false, iIndent);
 	if (!propTagNames.otherMatches.empty()) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPOTHERNAMES].uidName, propTagNames.otherMatches, false, iIndent);
 
-	wstring szNamedPropName;
-	wstring szNamedPropGUID;
-	wstring szNamedPropDASL;
-
-	NameIDToStrings(
+	auto namePropNames = NameIDToStrings(
 		lpProp->ulPropTag,
 		lpObj,
 		nullptr,
 		nullptr,
-		false,
-		szNamedPropName, // Built from lpProp & lpMAPIProp
-		szNamedPropGUID, // Built from lpProp & lpMAPIProp
-		szNamedPropDASL);
-	if (!szNamedPropGUID.empty()) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPNAMEDIID].uidName, szNamedPropGUID, false, iIndent);
-	if (!szNamedPropName.empty()) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPNAMEDNAME].uidName, szNamedPropName, false, iIndent);
+		false);
+	if (!namePropNames.guid.empty()) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPNAMEDIID].uidName, namePropNames.guid, false, iIndent);
+	if (!namePropNames.name.empty()) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPNAMEDNAME].uidName, namePropNames.name, false, iIndent);
 
 	auto prop = ParseProperty(lpProp);
 	Output(ulDbgLvl, fFile, false, StripCarriage(prop.toXML(iIndent)));
