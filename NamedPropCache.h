@@ -21,9 +21,7 @@ public:
 	ULONG cbSig; // Size and...
 	LPBYTE lpSig; // Value of PR_MAPPING_SIGNATURE
 	bool bStringsCached; // We have cached strings
-	wstring lpszPropName; // Cached strings
-	wstring lpszPropGUID;
-	wstring lpszDASL;
+	NamePropNames namePropNames;
 };
 typedef NamedPropCacheEntry *LPNAMEDPROPCACHEENTRY;
 

@@ -17,6 +17,7 @@ struct NamePropNames
 	wstring name; // Built from ulPropTag & lpMAPIProp
 	wstring guid; // Built from ulPropTag & lpMAPIProp
 	wstring dasl; // Built from ulPropTag & lpMAPIProp
+	wstring pidlid;
 };
 
 NamePropNames NameIDToStrings(

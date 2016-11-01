@@ -661,6 +661,10 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 	{
 		SetItemText(iRow, pcPROPBESTGUESS, propTagNames.bestGuess);
 	}
+	else if (!namePropNames.pidlid.empty())
+	{
+		SetItemText(iRow, pcPROPBESTGUESS, namePropNames.pidlid);
+	}
 	else if (!namePropNames.name.empty())
 	{
 		SetItemText(iRow, pcPROPBESTGUESS, namePropNames.name);

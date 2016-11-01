@@ -762,9 +762,7 @@ NamePropNames NameIDToStrings(_In_ LPMAPINAMEID lpNameID, ULONG ulPropTag)
 		lpNamedPropCacheEntry = FindCacheEntry(PROP_ID(ulPropTag), lpNameID->lpguid, lpNameID->ulKind, lpNameID->Kind.lID, lpNameID->Kind.lpwstrName);
 		if (lpNamedPropCacheEntry && lpNamedPropCacheEntry->bStringsCached)
 		{
-			namePropNames.name = lpNamedPropCacheEntry->lpszPropName;
-			namePropNames.guid = lpNamedPropCacheEntry->lpszPropGUID;
-			namePropNames.dasl = lpNamedPropCacheEntry->lpszDASL;
+			namePropNames = lpNamedPropCacheEntry->namePropNames;
 			return namePropNames;
 		}
 
@@ -786,16 +784,15 @@ NamePropNames NameIDToStrings(_In_ LPMAPINAMEID lpNameID, ULONG ulPropTag)
 	if (lpNameID->ulKind == MNID_ID)
 	{
 		DebugPrint(DBGNamedProp, L"lpNameID->Kind.lID = 0x%04X = %d\n", lpNameID->Kind.lID, lpNameID->Kind.lID);
-		auto szName = NameIDToPropName(lpNameID);
+		namePropNames.pidlid = NameIDToPropName(lpNameID);
 
-		if (!szName.empty())
+		if (!namePropNames.pidlid.empty())
 		{
 			// Printing hex first gets a nice sort without spacing tricks
 			namePropNames.name = format(L"id: 0x%04X=%d = %ws", // STRING_OK
 				lpNameID->Kind.lID,
 				lpNameID->Kind.lID,
-				szName.c_str());
-
+				namePropNames.pidlid.c_str());
 		}
 		else
 		{
@@ -848,9 +845,7 @@ NamePropNames NameIDToStrings(_In_ LPMAPINAMEID lpNameID, ULONG ulPropTag)
 	// We've built our strings - if we're caching, put them in the cache
 	if (lpNamedPropCacheEntry)
 	{
-		lpNamedPropCacheEntry->lpszPropName = namePropNames.name;
-		lpNamedPropCacheEntry->lpszPropGUID = namePropNames.guid;
-		lpNamedPropCacheEntry->lpszDASL = namePropNames.dasl;
+		lpNamedPropCacheEntry->namePropNames = namePropNames;
 		lpNamedPropCacheEntry->bStringsCached = true;
 	}
 
