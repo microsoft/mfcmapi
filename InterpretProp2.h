@@ -7,8 +7,15 @@ void FindTagArrayMatches(_In_ ULONG ulTarget,
 	vector<ULONG>& ulExacts,
 	vector<ULONG>& ulPartials);
 
+struct PropTagNames
+{
+	wstring bestGuess;
+	wstring exactMatches;
+	wstring partialMatches;
+};
+
 // Function to convert property tags to their names
-void PropTagToPropName(ULONG ulPropTag, bool bIsAB, _In_opt_ wstring& lpszExactMatch, _In_opt_ wstring& lpszPartialMatches);
+PropTagNames PropTagToPropName(ULONG ulPropTag, bool bIsAB);
 
 // Strictly does a lookup in the array. Does not convert otherwise
 _Check_return_ ULONG LookupPropName(_In_ const wstring& lpszPropName);

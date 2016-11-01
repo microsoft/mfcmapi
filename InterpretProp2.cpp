@@ -108,40 +108,37 @@ void FindTagArrayMatches(_In_ ULONG ulTarget,
 	}
 }
 
-struct NameMapEntry
-{
-	wstring szExactMatch;
-	wstring szPartialMatches;
-};
+unordered_map<ULONG64, PropTagNames> g_PropNames;
 
-unordered_map<ULONG64, NameMapEntry> g_PropNames;
-
-void PropTagToPropName(ULONG ulPropTag, bool bIsAB, _In_opt_ wstring& lpszExactMatch, _In_opt_ wstring& lpszPartialMatches)
+PropTagNames PropTagToPropName(ULONG ulPropTag, bool bIsAB)
 {
 	auto ulKey = (bIsAB ? static_cast<ULONG64>(1) << 32 : 0) | ulPropTag;
 
 	auto match = g_PropNames.find(ulKey);
 	if (match != g_PropNames.end())
 	{
-		lpszExactMatch = match->second.szExactMatch;
-		lpszPartialMatches = match->second.szPartialMatches;
-		return;
+		return match->second;
 	}
 
 	vector<ULONG> ulExacts;
 	vector<ULONG> ulPartials;
 	FindTagArrayMatches(ulPropTag, bIsAB, PropTagArray, ulExacts, ulPartials);
 
-	NameMapEntry entry;
+	PropTagNames entry;
 
 	if (ulExacts.size())
 	{
 		for (auto ulMatch : ulExacts)
 		{
-			entry.szExactMatch += format(L"%ws", PropTagArray[ulMatch].lpszName);
+			entry.exactMatches += PropTagArray[ulMatch].lpszName;
 			if (ulMatch != ulExacts.back())
 			{
-				entry.szExactMatch += szPropSeparator;
+				entry.exactMatches += szPropSeparator;
+			}
+
+			if (ulMatch == ulExacts.front())
+			{
+				entry.bestGuess = PropTagArray[ulMatch].lpszName;
 			}
 		}
 	}
@@ -151,10 +148,15 @@ void PropTagToPropName(ULONG ulPropTag, bool bIsAB, _In_opt_ wstring& lpszExactM
 		{
 			for (auto ulMatch : ulPartials)
 			{
-				entry.szPartialMatches += format(L"%ws", PropTagArray[ulMatch].lpszName);
+				entry.partialMatches += PropTagArray[ulMatch].lpszName;
 				if (ulMatch != ulPartials.back())
 				{
-					entry.szPartialMatches += szPropSeparator;
+					entry.partialMatches += szPropSeparator;
+				}
+
+				if (entry.bestGuess.empty() && ulMatch == ulPartials.front())
+				{
+					entry.bestGuess = PropTagArray[ulMatch].lpszName;
 				}
 			}
 		}
@@ -162,17 +164,14 @@ void PropTagToPropName(ULONG ulPropTag, bool bIsAB, _In_opt_ wstring& lpszExactM
 
 	// For PT_ERROR properties, we won't ever have an exact match
 	// So we swap in all the partial matches instead
-	if (PROP_TYPE(ulPropTag) == PT_ERROR && entry.szExactMatch.empty())
+	if (PROP_TYPE(ulPropTag) == PT_ERROR && entry.exactMatches.empty())
 	{
-		lpszExactMatch = entry.szPartialMatches;
-	}
-	else
-	{
-		lpszExactMatch = entry.szExactMatch;
-		lpszPartialMatches = entry.szPartialMatches;
+		entry.exactMatches.swap(entry.partialMatches);
 	}
 
 	g_PropNames.insert({ ulKey, entry });
+
+	return entry;
 }
 
 // Strictly does a lookup in the array. Does not convert otherwise

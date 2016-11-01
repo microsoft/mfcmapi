@@ -172,12 +172,10 @@ _Check_return_ wstring PropertyDefinitionStream::ToStringInternal()
 		{
 			if (m_pfdFieldDefinitions[iDef].dwDispid < 0x8000)
 			{
-				wstring szExactMatch;
-				wstring szDispidName;
-				PropTagToPropName(m_pfdFieldDefinitions[iDef].dwDispid, false, szExactMatch, szDispidName);
-				if (!szDispidName.empty())
+				auto propTagNames = PropTagToPropName(m_pfdFieldDefinitions[iDef].dwDispid, false);
+				if (!propTagNames.partialMatches.empty())
 				{
-					szPropertyDefinitionStream += formatmessage(IDS_PROPDEFDISPIDTAG, szDispidName.c_str());
+					szPropertyDefinitionStream += formatmessage(IDS_PROPDEFDISPIDTAG, propTagNames.partialMatches.c_str());
 				}
 			}
 			else

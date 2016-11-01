@@ -732,12 +732,9 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 
 	Outputf(ulDbgLvl, fFile, false, L"\t<property tag = \"0x%08X\" type = \"%ws\" >\n", lpProp->ulPropTag, TypeToString(lpProp->ulPropTag).c_str());
 
-	wstring szExactMatches;
-	wstring szPartialMatches;
-
-	PropTagToPropName(lpProp->ulPropTag, false, szExactMatches, szPartialMatches);
-	if (!szExactMatches.empty()) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPEXACTNAMES].uidName, szExactMatches, false, iIndent);
-	if (!szPartialMatches.empty()) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPPARTIALNAMES].uidName, szPartialMatches, false, iIndent);
+	auto propTagNames = PropTagToPropName(lpProp->ulPropTag, false);
+	if (!propTagNames.exactMatches.empty()) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPEXACTNAMES].uidName, propTagNames.exactMatches, false, iIndent);
+	if (!propTagNames.partialMatches.empty()) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPPARTIALNAMES].uidName, propTagNames.partialMatches, false, iIndent);
 
 	wstring szNamedPropName;
 	wstring szNamedPropGUID;

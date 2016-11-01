@@ -647,8 +647,6 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 	auto PropTag = format(L"0x%08X", ulPropTag);
 	wstring PropString;
 	wstring AltPropString;
-	wstring szExactMatches;
-	wstring szPartialMatches;
 	wstring szNamedPropName;
 	wstring szNamedPropGUID;
 	wstring szNamedPropDASL;
@@ -665,17 +663,18 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 		szNamedPropGUID, // Built from lpProp & lpMAPIProp
 		szNamedPropDASL);
 
-	PropTagToPropName(ulPropTag, m_bIsAB, szExactMatches, szPartialMatches);
-	if (!szExactMatches.empty())
+	auto propTagNames = PropTagToPropName(ulPropTag, m_bIsAB);
+	// TODO: Best guess column
+	if (!propTagNames.exactMatches.empty())
 	{
-		SetItemText(iRow, pcPROPEXACTNAMES, szExactMatches);
+		SetItemText(iRow, pcPROPEXACTNAMES, propTagNames.exactMatches);
 	}
 	else
 	{
 		SetItemText(iRow, pcPROPEXACTNAMES, PropTag);
 	}
 
-	SetItemText(iRow, pcPROPPARTIALNAMES, szPartialMatches);
+	SetItemText(iRow, pcPROPPARTIALNAMES, propTagNames.partialMatches);
 
 	SetItemText(iRow, pcPROPTAG, PropTag);
 	SetItemText(iRow, pcPROPTYPE, TypeToString(ulPropTag));

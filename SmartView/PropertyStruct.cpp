@@ -59,19 +59,17 @@ _Check_return_ wstring PropsToString(DWORD PropCount, LPSPropValue Prop)
 				i,
 				Prop[i].ulPropTag);
 
-			wstring szExactMatches;
-			wstring szPartialMatches;
-			PropTagToPropName(Prop[i].ulPropTag, false, szExactMatches, szPartialMatches);
-			if (!szExactMatches.empty())
+			auto propTagNames = PropTagToPropName(Prop[i].ulPropTag, false);
+			if (!propTagNames.exactMatches.empty())
 			{
 				szProperty += formatmessage(IDS_PROPERTYDATAEXACTMATCHES,
-					szExactMatches.c_str());
+					propTagNames.exactMatches.c_str());
 			}
 
-			if (!szPartialMatches.empty())
+			if (!propTagNames.partialMatches.empty())
 			{
 				szProperty += formatmessage(IDS_PROPERTYDATAPARTIALMATCHES,
-					szPartialMatches.c_str());
+					propTagNames.partialMatches.c_str());
 			}
 
 			InterpretProp(&Prop[i], &PropString, &AltPropString);

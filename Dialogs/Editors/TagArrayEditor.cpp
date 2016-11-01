@@ -91,8 +91,6 @@ _Check_return_ bool CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 	{
 		lpData->Prop()->m_ulPropTag = ulNewPropTag;
 
-		wstring szExactMatch;
-		wstring szPartialMatch;
 		wstring szNamedPropName;
 		wstring szNamedPropGUID;
 		wstring szNamedPropDASL;
@@ -107,11 +105,11 @@ _Check_return_ bool CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 			szNamedPropGUID, // Built from lpProp & lpMAPIProp
 			szNamedPropDASL);
 
-		PropTagToPropName(ulNewPropTag, m_bIsAB, szExactMatch, szPartialMatch);
+		auto propTagNames = PropTagToPropName(ulNewPropTag, m_bIsAB);
 
 		SetListString(ulListNum, iItem, 1, format(L"0x%08X", ulNewPropTag));
-		SetListString(ulListNum, iItem, 2, szExactMatch);
-		SetListString(ulListNum, iItem, 3, szPartialMatch);
+		SetListString(ulListNum, iItem, 2, propTagNames.exactMatches);
+		SetListString(ulListNum, iItem, 3, propTagNames.partialMatches);
 		SetListString(ulListNum, iItem, 4, TypeToString(ulNewPropTag));
 		SetListString(ulListNum, iItem, 5, szNamedPropName);
 		SetListString(ulListNum, iItem, 6, szNamedPropGUID);
@@ -147,8 +145,6 @@ void CTagArrayEditor::ReadTagArrayToList(ULONG ulListNum) const
 				lpData->InitializePropList(ulPropTag);
 			}
 
-			wstring szExactMatch;
-			wstring szPartialMatch;
 			wstring szNamedPropName;
 			wstring szNamedPropGUID;
 			wstring szNamedPropDASL;
@@ -163,11 +159,11 @@ void CTagArrayEditor::ReadTagArrayToList(ULONG ulListNum) const
 				szNamedPropGUID, // Built from lpProp & lpMAPIProp
 				szNamedPropDASL);
 
-			PropTagToPropName(ulPropTag, m_bIsAB, szExactMatch, szPartialMatch);
+			auto propTagNames = PropTagToPropName(ulPropTag, m_bIsAB);
 
 			SetListString(ulListNum, iTagCount, 1, format(L"0x%08X", ulPropTag));
-			SetListString(ulListNum, iTagCount, 2, szExactMatch);
-			SetListString(ulListNum, iTagCount, 3, szPartialMatch);
+			SetListString(ulListNum, iTagCount, 2, propTagNames.exactMatches);
+			SetListString(ulListNum, iTagCount, 3, propTagNames.partialMatches);
 			SetListString(ulListNum, iTagCount, 4, TypeToString(ulPropTag));
 			SetListString(ulListNum, iTagCount, 5, szNamedPropName);
 			SetListString(ulListNum, iTagCount, 6, szNamedPropGUID);

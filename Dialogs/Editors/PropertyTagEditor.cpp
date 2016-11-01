@@ -306,12 +306,10 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField) const
 	if (PROPTAG_TYPE != ulSkipField) SetDropDownSelection(PROPTAG_TYPE, TypeToString(m_ulPropTag));
 	if (PROPTAG_NAME != ulSkipField)
 	{
-		wstring szExactMatch;
-		wstring szPartialMatch;
-		PropTagToPropName(m_ulPropTag, m_bIsAB, szExactMatch, szPartialMatch);
+		auto propTagNames = PropTagToPropName(m_ulPropTag, m_bIsAB);
 
-		if (PROP_ID(m_ulPropTag) && !szExactMatch.empty() || !szPartialMatch.empty())
-			SetStringf(PROPTAG_NAME, L"%ws (%ws)", szExactMatch.c_str(), szPartialMatch.c_str()); // STRING_OK
+		if (PROP_ID(m_ulPropTag) && !propTagNames.exactMatches.empty() || !propTagNames.partialMatches.empty())
+			SetStringf(PROPTAG_NAME, L"%ws (%ws)", propTagNames.exactMatches.c_str(), propTagNames.partialMatches.c_str()); // STRING_OK
 		else if (!szNamedPropName.empty())
 			SetStringf(PROPTAG_NAME, L"%ws", szNamedPropName.c_str()); // STRING_OK
 		else
