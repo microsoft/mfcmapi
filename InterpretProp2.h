@@ -10,8 +10,7 @@ void FindTagArrayMatches(_In_ ULONG ulTarget,
 struct PropTagNames
 {
 	wstring bestGuess;
-	wstring exactMatches;
-	wstring partialMatches;
+	wstring otherMatches;
 };
 
 // Function to convert property tags to their names

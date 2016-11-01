@@ -128,45 +128,37 @@ PropTagNames PropTagToPropName(ULONG ulPropTag, bool bIsAB)
 
 	if (ulExacts.size())
 	{
+		entry.bestGuess = PropTagArray[ulExacts.front()].lpszName;
+		ulExacts.erase(ulExacts.begin());
+
 		for (auto ulMatch : ulExacts)
 		{
-			entry.exactMatches += PropTagArray[ulMatch].lpszName;
-			if (ulMatch != ulExacts.back())
+			if (!entry.otherMatches.empty())
 			{
-				entry.exactMatches += szPropSeparator;
+				entry.otherMatches += szPropSeparator;
 			}
 
-			if (ulMatch == ulExacts.front())
-			{
-				entry.bestGuess = PropTagArray[ulMatch].lpszName;
-			}
+			entry.otherMatches += PropTagArray[ulMatch].lpszName;
 		}
 	}
 
 	if (ulPartials.size())
 	{
+		if (entry.bestGuess.empty())
 		{
-			for (auto ulMatch : ulPartials)
-			{
-				entry.partialMatches += PropTagArray[ulMatch].lpszName;
-				if (ulMatch != ulPartials.back())
-				{
-					entry.partialMatches += szPropSeparator;
-				}
-
-				if (entry.bestGuess.empty() && ulMatch == ulPartials.front())
-				{
-					entry.bestGuess = PropTagArray[ulMatch].lpszName;
-				}
-			}
+			entry.bestGuess = PropTagArray[ulPartials.front()].lpszName;
+			ulPartials.erase(ulPartials.begin());
 		}
-	}
 
-	// For PT_ERROR properties, we won't ever have an exact match
-	// So we swap in all the partial matches instead
-	if (PROP_TYPE(ulPropTag) == PT_ERROR && entry.exactMatches.empty())
-	{
-		entry.exactMatches.swap(entry.partialMatches);
+		for (auto ulMatch : ulPartials)
+		{
+			if (!entry.otherMatches.empty())
+			{
+				entry.otherMatches += szPropSeparator;
+			}
+
+			entry.otherMatches += PropTagArray[ulMatch].lpszName;
+		}
 	}
 
 	g_PropNames.insert({ ulKey, entry });

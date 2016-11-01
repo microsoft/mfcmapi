@@ -108,8 +108,8 @@ _Check_return_ bool CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 		auto propTagNames = PropTagToPropName(ulNewPropTag, m_bIsAB);
 
 		SetListString(ulListNum, iItem, 1, format(L"0x%08X", ulNewPropTag));
-		SetListString(ulListNum, iItem, 2, propTagNames.exactMatches);
-		SetListString(ulListNum, iItem, 3, propTagNames.partialMatches);
+		SetListString(ulListNum, iItem, 2, propTagNames.bestGuess);
+		SetListString(ulListNum, iItem, 3, propTagNames.otherMatches);
 		SetListString(ulListNum, iItem, 4, TypeToString(ulNewPropTag));
 		SetListString(ulListNum, iItem, 5, szNamedPropName);
 		SetListString(ulListNum, iItem, 6, szNamedPropGUID);
@@ -126,7 +126,7 @@ void CTagArrayEditor::ReadTagArrayToList(ULONG ulListNum) const
 
 	InsertColumn(ulListNum, 0, IDS_SHARP);
 	InsertColumn(ulListNum, 1, IDS_TAG);
-	InsertColumn(ulListNum, 2, IDS_PROPERTYNAMES);
+	InsertColumn(ulListNum, 2, IDS_PROPERTYNAME);
 	InsertColumn(ulListNum, 3, IDS_OTHERNAMES);
 	InsertColumn(ulListNum, 4, IDS_TYPE);
 	InsertColumn(ulListNum, 5, IDS_NAMEDPROPNAME);
@@ -162,8 +162,8 @@ void CTagArrayEditor::ReadTagArrayToList(ULONG ulListNum) const
 			auto propTagNames = PropTagToPropName(ulPropTag, m_bIsAB);
 
 			SetListString(ulListNum, iTagCount, 1, format(L"0x%08X", ulPropTag));
-			SetListString(ulListNum, iTagCount, 2, propTagNames.exactMatches);
-			SetListString(ulListNum, iTagCount, 3, propTagNames.partialMatches);
+			SetListString(ulListNum, iTagCount, 2, propTagNames.bestGuess);
+			SetListString(ulListNum, iTagCount, 3, propTagNames.otherMatches);
 			SetListString(ulListNum, iTagCount, 4, TypeToString(ulPropTag));
 			SetListString(ulListNum, iTagCount, 5, szNamedPropName);
 			SetListString(ulListNum, iTagCount, 6, szNamedPropGUID);

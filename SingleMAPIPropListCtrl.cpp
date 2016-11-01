@@ -664,17 +664,21 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 		szNamedPropDASL);
 
 	auto propTagNames = PropTagToPropName(ulPropTag, m_bIsAB);
-	// TODO: Best guess column
-	if (!propTagNames.exactMatches.empty())
+
+	if (!propTagNames.bestGuess.empty())
 	{
-		SetItemText(iRow, pcPROPEXACTNAMES, propTagNames.exactMatches);
+		SetItemText(iRow, pcPROPBESTGUESS, propTagNames.bestGuess);
+	}
+	else if (!szNamedPropName.empty())
+	{
+		SetItemText(iRow, pcPROPBESTGUESS, szNamedPropName);
 	}
 	else
 	{
-		SetItemText(iRow, pcPROPEXACTNAMES, PropTag);
+		SetItemText(iRow, pcPROPBESTGUESS, PropTag);
 	}
 
-	SetItemText(iRow, pcPROPPARTIALNAMES, propTagNames.partialMatches);
+	SetItemText(iRow, pcPROPOTHERNAMES, propTagNames.otherMatches);
 
 	SetItemText(iRow, pcPROPTAG, PropTag);
 	SetItemText(iRow, pcPROPTYPE, TypeToString(ulPropTag));
@@ -760,7 +764,7 @@ _Check_return_ HRESULT CSingleMAPIPropListCtrl::SetDataSource(_In_opt_ LPMAPIPRO
 		{
 			// This fixes a ton of flashing problems
 			lpMyHeader->SetRedraw(true);
-			for (auto  iCurCol = 0; iCurCol < int(PropColumns.size()); iCurCol++)
+			for (auto iCurCol = 0; iCurCol < int(PropColumns.size()); iCurCol++)
 			{
 				SetColumnWidth(iCurCol, LVSCW_AUTOSIZE_USEHEADER);
 				if (GetColumnWidth(iCurCol) > 200) SetColumnWidth(iCurCol, 200);
@@ -804,11 +808,11 @@ void CSingleMAPIPropListCtrl::SavePropsToXML()
 				auto szTemp2 = GetItemText(iRow, pcPROPTYPE);
 				OutputToFilef(fProps, L"\t<property tag = \"%ws\" type = \"%ws\">\n", szTemp1.c_str(), szTemp2.c_str());
 
-				szTemp1 = GetItemText(iRow, pcPROPEXACTNAMES);
-				OutputXMLValueToFile(fProps, PropXMLNames[pcPROPEXACTNAMES].uidName, szTemp1, false, 2);
+				szTemp1 = GetItemText(iRow, pcPROPBESTGUESS);
+				OutputXMLValueToFile(fProps, PropXMLNames[pcPROPBESTGUESS].uidName, szTemp1, false, 2);
 
-				szTemp1 = GetItemText(iRow, pcPROPPARTIALNAMES);
-				OutputXMLValueToFile(fProps, PropXMLNames[pcPROPPARTIALNAMES].uidName, szTemp1, false, 2);
+				szTemp1 = GetItemText(iRow, pcPROPOTHERNAMES);
+				OutputXMLValueToFile(fProps, PropXMLNames[pcPROPOTHERNAMES].uidName, szTemp1, false, 2);
 
 				szTemp1 = GetItemText(iRow, pcPROPNAMEDIID);
 				OutputXMLValueToFile(fProps, PropXMLNames[pcPROPNAMEDIID].uidName, szTemp1, false, 2);

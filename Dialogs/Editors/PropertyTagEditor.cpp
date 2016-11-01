@@ -308,8 +308,8 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField) const
 	{
 		auto propTagNames = PropTagToPropName(m_ulPropTag, m_bIsAB);
 
-		if (PROP_ID(m_ulPropTag) && !propTagNames.exactMatches.empty() || !propTagNames.partialMatches.empty())
-			SetStringf(PROPTAG_NAME, L"%ws (%ws)", propTagNames.exactMatches.c_str(), propTagNames.partialMatches.c_str()); // STRING_OK
+		if (PROP_ID(m_ulPropTag) && !propTagNames.bestGuess.empty())
+			SetStringf(PROPTAG_NAME, L"%ws (%ws)", propTagNames.bestGuess.c_str(), propTagNames.otherMatches.c_str()); // STRING_OK
 		else if (!szNamedPropName.empty())
 			SetStringf(PROPTAG_NAME, L"%ws", szNamedPropName.c_str()); // STRING_OK
 		else

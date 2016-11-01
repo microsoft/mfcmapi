@@ -390,7 +390,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::AddColumn(UINT uidHeaderName, ULO
 	else
 	{
 		auto propTagNames = PropTagToPropName(ulPropTag, m_bIsAB);
-		szHeaderString = propTagNames.exactMatches;
+		szHeaderString = propTagNames.bestGuess;
 		if (szHeaderString.empty())
 			szHeaderString = format(L"0x%08X", ulPropTag); // STRING_OK
 	}

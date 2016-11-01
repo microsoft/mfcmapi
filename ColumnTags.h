@@ -607,8 +607,8 @@ static vector<TagNames> ACLColumns = {
 // These structures define the columns used in SingleMAPIPropListCtrl
 enum
 {
-	pcPROPEXACTNAMES,
-	pcPROPPARTIALNAMES,
+	pcPROPBESTGUESS,
+	pcPROPOTHERNAMES,
 	pcPROPTAG,
 	pcPROPTYPE,
 	pcPROPVAL,
@@ -620,8 +620,8 @@ enum
 };
 
 static vector<TagNames> PropColumns = {
-	{ pcPROPEXACTNAMES, IDS_COLPROPERTYNAMES },
-	{ pcPROPPARTIALNAMES, IDS_COLOTHERNAMES },
+	{ pcPROPBESTGUESS , IDS_COLBESTGUESS },
+	{ pcPROPOTHERNAMES, IDS_COLOTHERNAMES },
 	{ pcPROPTAG, IDS_COLTAG },
 	{ pcPROPTYPE, IDS_COLTYPE },
 	{ pcPROPVAL, IDS_COLVALUE },
@@ -632,8 +632,8 @@ static vector<TagNames> PropColumns = {
 };
 
 static vector<TagNames> PropXMLNames = {
-	{ pcPROPEXACTNAMES, IDS_COLEXACTNAMES },
-	{ pcPROPPARTIALNAMES, IDS_COLPARTIALNAMES },
+	{ pcPROPBESTGUESS , IDS_COLBESTGUESS },
+	{ pcPROPOTHERNAMES, IDS_COLOTHERNAMES },
 	{ pcPROPTAG, IDS_COLTAG },
 	{ pcPROPTYPE, IDS_COLTYPE },
 	{ pcPROPVAL, IDS_COLVALUE },

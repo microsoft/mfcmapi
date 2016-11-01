@@ -60,16 +60,16 @@ _Check_return_ wstring PropsToString(DWORD PropCount, LPSPropValue Prop)
 				Prop[i].ulPropTag);
 
 			auto propTagNames = PropTagToPropName(Prop[i].ulPropTag, false);
-			if (!propTagNames.exactMatches.empty())
+			if (!propTagNames.bestGuess.empty())
 			{
-				szProperty += formatmessage(IDS_PROPERTYDATAEXACTMATCHES,
-					propTagNames.exactMatches.c_str());
+				szProperty += formatmessage(IDS_PROPERTYDATANAME,
+					propTagNames.bestGuess.c_str());
 			}
 
-			if (!propTagNames.partialMatches.empty())
+			if (!propTagNames.otherMatches.empty())
 			{
 				szProperty += formatmessage(IDS_PROPERTYDATAPARTIALMATCHES,
-					propTagNames.partialMatches.c_str());
+					propTagNames.otherMatches.c_str());
 			}
 
 			InterpretProp(&Prop[i], &PropString, &AltPropString);
