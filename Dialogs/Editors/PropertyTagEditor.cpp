@@ -145,7 +145,6 @@ void CPropertyTagEditor::LookupNamedProp(ULONG ulSkipField, bool bCreate)
 
 	auto ulPropType = GetSelectedPropType();
 
-	GUID guid = { 0 };
 	MAPINAMEID NamedID = { nullptr };
 	auto lpNamedID = &NamedID;
 
@@ -161,10 +160,8 @@ void CPropertyTagEditor::LookupNamedProp(ULONG ulSkipField, bool bCreate)
 
 	auto szName = GetStringUseControl(PROPTAG_NAMEPROPNAME);
 
-	if (GetSelectedGUID(PROPTAG_NAMEPROPGUID, false, &guid))
-	{
-		NamedID.lpguid = &guid;
-	}
+	auto guid = GetSelectedGUID(PROPTAG_NAMEPROPGUID, false);
+	NamedID.lpguid = &guid;
 
 
 	if (MNID_ID == NamedID.ulKind)

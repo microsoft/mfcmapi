@@ -12,12 +12,12 @@ public:
 
 	void Setup(ULONG ulDropList, _In_opt_count_(ulDropList) UINT* lpuidDropList, _In_opt_count_(ulDropList) LPNAME_ARRAY_ENTRY lpnaeDropList, bool bGUID);
 
-	void SetDropDownSelection(_In_ wstring szText);
-	void InsertDropString(int iRow, _In_ wstring szText, ULONG ulValue);
+	void SetDropDownSelection(_In_ const wstring& szText);
+	void InsertDropString(int iRow, _In_ const wstring& szText, ULONG ulValue);
 	_Check_return_ wstring GetDropStringUseControl() const;
 	_Check_return_ int GetDropDownSelection() const;
 	_Check_return_ DWORD_PTR GetDropDownSelectionValue() const;
-	_Check_return_ bool GetSelectedGUID(bool bByteSwapped, _In_ LPGUID lpSelectedGUID) const;
+	_Check_return_ GUID GetSelectedGUID(bool bByteSwapped) const;
 	_Check_return_ int GetDropDown() const;
 	_Check_return_ DWORD_PTR GetDropDownValue() const;
 

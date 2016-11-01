@@ -95,9 +95,8 @@ void CProviderTableDlg::OnOpenProfileSection()
 	WC_H(MyUID.DisplayDialog());
 	if (S_OK != hRes) return;
 
-	GUID guid = { 0 };
+	auto guid = MyUID.GetSelectedGUID(0, MyUID.GetCheck(1));
 	SBinary MapiUID = { sizeof(GUID), reinterpret_cast<LPBYTE>(&guid) };
-	(void)MyUID.GetSelectedGUID(0, MyUID.GetCheck(1), &guid);
 
 	LPPROFSECT lpProfSect = nullptr;
 	EC_H(OpenProfileSection(

@@ -207,7 +207,7 @@ void DropDownPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 	m_bInitialized = true;
 }
 
-void DropDownPane::InsertDropString(int iRow, _In_ wstring szText, ULONG ulValue)
+void DropDownPane::InsertDropString(int iRow, _In_ const wstring& szText, ULONG ulValue)
 {
 	m_DropDown.InsertString(iRow, wstringTotstring(szText).c_str());
 	m_DropDown.SetItemData(iRow, ulValue);
@@ -271,15 +271,12 @@ _Check_return_ DWORD_PTR DropDownPane::GetDropDownValue() const
 }
 
 // This should work whether the editor is active/displayed or not
-_Check_return_ bool DropDownPane::GetSelectedGUID(bool bByteSwapped, _In_ LPGUID lpSelectedGUID) const
+_Check_return_ GUID DropDownPane::GetSelectedGUID(bool bByteSwapped) const
 {
-	if (!lpSelectedGUID) return false;
-
 	auto iCurSel = GetDropDownSelection();
 	if (iCurSel != CB_ERR)
 	{
-		memcpy(lpSelectedGUID, PropGuidArray[iCurSel].lpGuid, sizeof(GUID));
-		return true;
+		return *PropGuidArray[iCurSel].lpGuid;
 	}
 
 	// no match - need to do a lookup
@@ -297,15 +294,15 @@ _Check_return_ bool DropDownPane::GetSelectedGUID(bool bByteSwapped, _In_ LPGUID
 	auto lpGUID = GUIDNameToGUID(szText, bByteSwapped);
 	if (lpGUID)
 	{
-		memcpy(lpSelectedGUID, lpGUID, sizeof(GUID));
+		auto guid = *lpGUID;
 		delete[] lpGUID;
-		return true;
+		return guid;
 	}
 
-	return false;
+	return{ 0 };
 }
 
-void DropDownPane::SetDropDownSelection(_In_ wstring szText)
+void DropDownPane::SetDropDownSelection(_In_ const wstring& szText)
 {
 	auto hRes = S_OK;
 	auto text = wstringTotstring(szText);

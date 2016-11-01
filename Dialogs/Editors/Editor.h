@@ -66,7 +66,7 @@ public:
 	_Check_return_ int GetDropDown(ULONG i) const;
 	_Check_return_ DWORD_PTR GetDropDownValue(ULONG i) const;
 	_Check_return_ HRESULT GetEntryID(ULONG i, bool bIsBase64, _Out_ size_t* lpcbBin, _Out_ LPENTRYID* lpEID) const;
-	_Check_return_ bool GetSelectedGUID(ULONG iControl, bool bByteSwapped, _In_ LPGUID lpSelectedGUID) const;
+	_Check_return_ GUID GetSelectedGUID(ULONG iControl, bool bByteSwapped) const;
 
 	// AddIn functions
 	void SetAddInTitle(wstring szTitle);
