@@ -330,14 +330,14 @@ _Check_return_ GUID StringToGUID(_In_ const wstring& szGUID, bool bByteSwapped)
 }
 
 // Returns string built from NameIDArray
-wstring NameIDToPropName(_In_ LPMAPINAMEID lpNameID)
+vector<wstring> NameIDToPropNames(_In_ LPMAPINAMEID lpNameID)
 {
-	wstring szResultString;
-	if (!lpNameID) return szResultString;
-	if (lpNameID->ulKind != MNID_ID) return szResultString;
+	vector<wstring> results;
+	if (!lpNameID) return {};
+	if (lpNameID->ulKind != MNID_ID) return {};
 	ULONG ulMatch = ulNoMatch;
 
-	if (NameIDArray.empty()) return szResultString;
+	if (NameIDArray.empty()) return {};
 
 	for (ULONG ulCur = 0; ulCur < NameIDArray.size(); ulCur++)
 	{
@@ -358,16 +358,11 @@ wstring NameIDToPropName(_In_ LPMAPINAMEID lpNameID)
 			// But if we weren't asked about a guid, we don't check one
 			if (lpNameID->lpguid && !IsEqualGUID(*lpNameID->lpguid, *NameIDArray[ulCur].lpGuid)) continue;
 
-			if (ulCur != ulMatch)
-			{
-				szResultString += szPropSeparator;
-			}
-
-			szResultString += NameIDArray[ulCur].lpszName;
+			results.push_back(NameIDArray[ulCur].lpszName);
 		}
 	}
 
-	return szResultString;
+	return results;
 }
 
 //_Check_return_ wstring InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, wstring szPrefix);

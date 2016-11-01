@@ -185,7 +185,7 @@ _Check_return_ wstring PropertyDefinitionStream::ToStringInternal()
 				mnid.lpguid = nullptr;
 				mnid.ulKind = MNID_ID;
 				mnid.Kind.lID = m_pfdFieldDefinitions[iDef].dwDispid;
-				szDispidName = NameIDToPropName(&mnid);
+				szDispidName = join(NameIDToPropNames(&mnid), L',');
 				if (!szDispidName.empty())
 				{
 					szPropertyDefinitionStream += formatmessage(IDS_PROPDEFDISPIDNAMED, szDispidName.c_str());

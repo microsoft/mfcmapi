@@ -784,15 +784,23 @@ NamePropNames NameIDToStrings(_In_ LPMAPINAMEID lpNameID, ULONG ulPropTag)
 	if (lpNameID->ulKind == MNID_ID)
 	{
 		DebugPrint(DBGNamedProp, L"lpNameID->Kind.lID = 0x%04X = %d\n", lpNameID->Kind.lID, lpNameID->Kind.lID);
-		namePropNames.pidlid = NameIDToPropName(lpNameID);
+		auto pidlids = NameIDToPropNames(lpNameID);
 
-		if (!namePropNames.pidlid.empty())
+		if (!pidlids.empty())
 		{
+			namePropNames.bestPidLid = pidlids.front();
+			pidlids.erase(pidlids.begin());
+			namePropNames.otherPidLid = join(pidlids, L',');
 			// Printing hex first gets a nice sort without spacing tricks
 			namePropNames.name = format(L"id: 0x%04X=%d = %ws", // STRING_OK
 				lpNameID->Kind.lID,
 				lpNameID->Kind.lID,
-				namePropNames.pidlid.c_str());
+				namePropNames.bestPidLid.c_str());
+
+			if (!namePropNames.otherPidLid.empty())
+			{
+				namePropNames.name += format(L" (%ws)", namePropNames.otherPidLid.c_str());
+			}
 		}
 		else
 		{

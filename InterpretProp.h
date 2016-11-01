@@ -14,10 +14,11 @@ wstring TnefProblemArrayToString(_In_ const STnefProblemArray& error);
 
 struct NamePropNames
 {
-	wstring name; // Built from ulPropTag & lpMAPIProp
-	wstring guid; // Built from ulPropTag & lpMAPIProp
-	wstring dasl; // Built from ulPropTag & lpMAPIProp
-	wstring pidlid;
+	wstring name;
+	wstring guid;
+	wstring dasl;
+	wstring bestPidLid;
+	wstring otherPidLid;
 };
 
 NamePropNames NameIDToStrings(
