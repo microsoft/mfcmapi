@@ -39,10 +39,7 @@ private:
 	int GetFixedHeight() override;
 	int GetLines() override;
 
-	ULONG m_ulDropList; // count of entries in m_lpuidDropList or m_lpnaeDropList
-	UINT* m_lpuidDropList;
-	LPNAME_ARRAY_ENTRY m_lpnaeDropList;
 	int m_iDropSelection;
 	wstring m_lpszSelectionString;
-	bool m_bGUID;
+	vector<pair<wstring, ULONG>> m_DropList;
 };

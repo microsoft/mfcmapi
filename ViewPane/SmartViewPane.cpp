@@ -5,7 +5,7 @@
 
 static wstring CLASS = L"SmartViewPane";
 
-SmartViewPane* SmartViewPane::SmartViewPane::Create(UINT uidLabel)
+SmartViewPane* SmartViewPane::Create(UINT uidLabel)
 {
 	auto pane = new SmartViewPane();
 	if (pane)

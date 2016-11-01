@@ -46,18 +46,34 @@ DropDownPane::DropDownPane()
 {
 	m_iDropSelection = CB_ERR;
 	m_iDropSelectionValue = 0;
-	m_ulDropList = 0;
-	m_lpuidDropList = nullptr;
-	m_lpnaeDropList = nullptr;
-	m_bGUID = false;
 }
 
 void DropDownPane::Setup(ULONG ulDropList, _In_opt_count_(ulDropList) UINT* lpuidDropList, _In_opt_count_(ulDropList) LPNAME_ARRAY_ENTRY lpnaeDropList, bool bGUID)
 {
-	m_ulDropList = ulDropList;
-	m_lpuidDropList = lpuidDropList;
-	m_lpnaeDropList = lpnaeDropList;
-	m_bGUID = bGUID;
+	if (lpuidDropList)
+	{
+		for (ULONG iDropNum = 0; iDropNum < ulDropList; iDropNum++)
+		{
+			m_DropList.push_back({ loadstring(lpuidDropList[iDropNum]), lpuidDropList[iDropNum] });
+		}
+	}
+	else if (lpnaeDropList)
+	{
+		for (ULONG iDropNum = 0; iDropNum < ulDropList; iDropNum++)
+		{
+			m_DropList.push_back({ lpnaeDropList[iDropNum].lpszName, lpnaeDropList[iDropNum].ulValue });
+		}
+	}
+
+	// If this is a GUID list, load up our list of guids
+	if (bGUID)
+	{
+		for (ULONG iDropNum = 0; iDropNum < PropGuidArray.size(); iDropNum++)
+		{
+			m_DropList.push_back({ GUIDToStringAndName(PropGuidArray[iDropNum].lpGuid), iDropNum });
+		}
+	}
+
 }
 
 bool DropDownPane::IsType(__ViewTypes vType)
@@ -141,7 +157,7 @@ void DropDownPane::CreateControl(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 
 	ViewPane::Initialize(iControl, pParent, hdc);
 
-	auto ulDrops = 1 + (m_ulDropList ? min(m_ulDropList, 4) : 4);
+	auto ulDrops = 1 + (m_DropList.size() ? min(m_DropList.size(), 4) : 4);
 	auto dropHeight = ulDrops * (pParent ? GetEditHeight(pParent->m_hWnd) : 0x1e);
 
 	// m_bReadOnly means you can't type...
@@ -176,30 +192,10 @@ void DropDownPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 {
 	CreateControl(iControl, pParent, hdc);
 
-	if (m_lpuidDropList)
+	auto iDropNum = 0;
+	for (auto drop : m_DropList)
 	{
-		for (ULONG iDropNum = 0; iDropNum < m_ulDropList; iDropNum++)
-		{
-			auto szDropString = loadstring(m_lpuidDropList[iDropNum]);
-			InsertDropString(iDropNum, szDropString, m_lpuidDropList[iDropNum]);
-		}
-	}
-	else if (m_lpnaeDropList)
-	{
-		for (ULONG iDropNum = 0; iDropNum < m_ulDropList; iDropNum++)
-		{
-			auto szDropString = wstring(m_lpnaeDropList[iDropNum].lpszName);
-			InsertDropString(iDropNum, szDropString, m_lpnaeDropList[iDropNum].ulValue);
-		}
-	}
-
-	// If this is a GUID list, load up our list of guids
-	if (m_bGUID)
-	{
-		for (ULONG iDropNum = 0; iDropNum < PropGuidArray.size(); iDropNum++)
-		{
-			InsertDropString(iDropNum, GUIDToStringAndName(PropGuidArray[iDropNum].lpGuid), iDropNum);
-		}
+		InsertDropString(iDropNum++, drop.first, drop.second);
 	}
 
 	m_DropDown.SetCurSel(static_cast<int>(m_iDropSelectionValue));
