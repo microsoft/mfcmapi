@@ -144,8 +144,6 @@ void PropTagToPropName(ULONG ulPropTag, bool bIsAB, _In_opt_ wstring& lpszExactM
 				entry.szExactMatch += szPropSeparator;
 			}
 		}
-
-		lpszExactMatch = entry.szExactMatch;
 	}
 
 	if (ulPartials.size())
@@ -159,9 +157,19 @@ void PropTagToPropName(ULONG ulPropTag, bool bIsAB, _In_opt_ wstring& lpszExactM
 					entry.szPartialMatches += szPropSeparator;
 				}
 			}
-
-			lpszPartialMatches = entry.szPartialMatches;
 		}
+	}
+
+	// For PT_ERROR properties, we won't ever have an exact match
+	// So we swap in all the partial matches instead
+	if (PROP_TYPE(ulPropTag) == PT_ERROR && entry.szExactMatch.empty())
+	{
+		lpszExactMatch = entry.szPartialMatches;
+	}
+	else
+	{
+		lpszExactMatch = entry.szExactMatch;
+		lpszPartialMatches = entry.szPartialMatches;
 	}
 
 	g_PropNames.insert({ ulKey, entry });
