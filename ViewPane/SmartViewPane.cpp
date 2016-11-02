@@ -41,13 +41,7 @@ void SmartViewPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 
 	CreateControl(iControl, pParent, hdc);
 
-	for (ULONG iDropNum = 0; iDropNum < SmartViewParserTypeArray.size(); iDropNum++)
-	{
-		auto szDropString = wstring(SmartViewParserTypeArray[iDropNum].lpszName);
-		InsertDropString(iDropNum, szDropString, SmartViewParserTypeArray[iDropNum].ulValue);
-	}
-
-	m_DropDown.SetCurSel(static_cast<int>(m_iDropSelectionValue));
+	DropDownPane::Initialize(0, pParent, hdc);
 
 	// Passing a control # of 1 gives us a built in margin
 	m_TextPane.Initialize(1, pParent, hdc);

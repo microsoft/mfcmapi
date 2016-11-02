@@ -27,12 +27,12 @@ protected:
 	ULONG GetFlags() override;
 	void SetSelection(DWORD_PTR iSelection);
 	void CreateControl(int iControl, _In_ CWnd* pParent, _In_ HDC hdc);
+	void Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc) override;
 
 	CComboBox m_DropDown;
 	DWORD_PTR m_iDropSelectionValue;
 
 private:
-	void Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc) override;
 	void SetWindowPos(int x, int y, int width, int height) override;
 	void CommitUIValues() override;
 	int GetMinWidth(_In_ HDC hdc) override;
