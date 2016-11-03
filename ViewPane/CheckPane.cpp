@@ -59,7 +59,7 @@ void CheckPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC /*hdc*/)
 		CRect(0, 0, 0, 0),
 		pParent,
 		m_nID));
-	m_Check.SetCheck(m_bCheckValue); 
+	m_Check.SetCheck(m_bCheckValue);
 	SetWindowTextW(m_Check.m_hWnd, m_szLabel.c_str());
 
 	m_bInitialized = true;
@@ -73,15 +73,12 @@ void CheckPane::SetWindowPos(int x, int y, int width, int height)
 
 void CheckPane::CommitUIValues()
 {
-	m_bCheckValue = GetCheckUseControl();
+	m_bCheckValue = 0 != m_Check.GetCheck();
+	m_bCommitted = true;
 }
 
 bool CheckPane::GetCheck() const
 {
+	if (!m_bCommitted) return 0 != m_Check.GetCheck();
 	return m_bCheckValue;
-}
-
-bool CheckPane::GetCheckUseControl() const
-{
-	return 0 != m_Check.GetCheck();
 }

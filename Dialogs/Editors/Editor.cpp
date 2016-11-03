@@ -1071,17 +1071,6 @@ vector<BYTE> CEditor::GetBinaryUseControl(ULONG i) const
 	return HexStringToBin(GetStringUseControl(i));
 }
 
-_Check_return_ bool CEditor::GetCheckUseControl(ULONG iControl) const
-{
-	auto pane = dynamic_cast<CheckPane*>(GetPane(iControl));
-	if (pane)
-	{
-		return pane->GetCheckUseControl();
-	}
-
-	return false;
-}
-
 // converts string in a text(edit) control into an entry ID
 // Can base64 decode if needed
 // entryID is allocated with new, free with delete[]

@@ -1,14 +1,13 @@
 #pragma once
-// CheckPane.h : header file
-
 #include "ViewPane.h"
 
 class CheckPane : public ViewPane
 {
 public:
+	CheckPane() : m_bCheckValue(false), m_bCommitted(false) {}
+
 	static CheckPane* Create(UINT uidLabel, bool bVal, bool bReadOnly);
 	bool GetCheck() const;
-	bool GetCheckUseControl() const;
 
 private:
 	bool IsType(__ViewTypes vType) override;
@@ -22,4 +21,5 @@ private:
 
 	CButton m_Check;
 	bool m_bCheckValue;
+	bool m_bCommitted;
 };

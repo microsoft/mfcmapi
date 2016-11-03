@@ -536,7 +536,7 @@ void CPropertyEditor::WriteStringsToSPropValue()
 			m_lpsOutputValue->Value.err = static_cast<SCODE>(wstringToUlong(szTmpString, 16));
 			break;
 		case PT_BOOLEAN:
-			m_lpsOutputValue->Value.b = static_cast<unsigned short>(GetCheckUseControl(0));
+			m_lpsOutputValue->Value.b = static_cast<unsigned short>(GetCheck(0));
 			break;
 		case PT_I8:
 			szTmpString = GetStringUseControl(0);

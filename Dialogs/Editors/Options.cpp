@@ -79,11 +79,12 @@ void COptions::OnOK()
 	{
 		if (regoptCheck == RegKeys[ulReg].ulRegOptType)
 		{
-			if (RegKeys[ulReg].bRefresh && RegKeys[ulReg].ulCurDWORD != static_cast<ULONG>(GetCheckUseControl(ulReg)))
+			if (RegKeys[ulReg].bRefresh && RegKeys[ulReg].ulCurDWORD != static_cast<ULONG>(GetCheck(ulReg)))
 			{
 				m_bNeedPropRefresh = true;
 			}
-			RegKeys[ulReg].ulCurDWORD = GetCheckUseControl(ulReg);
+
+			RegKeys[ulReg].ulCurDWORD = GetCheck(ulReg);
 		}
 		else if (regoptStringHex == RegKeys[ulReg].ulRegOptType)
 		{

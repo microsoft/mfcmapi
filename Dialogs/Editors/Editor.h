@@ -91,7 +91,6 @@ protected:
 	_Check_return_ ULONG GetDecimalUseControl(ULONG i) const;
 	_Check_return_ ULONG GetPropTagUseControl(ULONG iControl) const;
 	vector<BYTE> GetBinaryUseControl(ULONG i) const;
-	_Check_return_ bool GetCheckUseControl(ULONG iControl) const;
 	_Check_return_ string GetEditBoxTextA(ULONG iControl) const;
 	_Check_return_ wstring GetEditBoxTextW(ULONG iContro) const;
 	_Check_return_ ULONG GetListCount(ULONG iControl) const;

@@ -94,7 +94,7 @@ _Check_return_ ULONG CDbgView::HandleChange(UINT nID)
 	}
 	case DBGVIEW_PAUSE:
 	{
-		m_bPaused = GetCheckUseControl(DBGVIEW_PAUSE);
+		m_bPaused = GetCheck(DBGVIEW_PAUSE);
 	}
 	break;
 
