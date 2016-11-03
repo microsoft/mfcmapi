@@ -4,12 +4,12 @@
 
 static wstring CLASS = L"CountedTextPane";
 
-CountedTextPane* CountedTextPane::CountedTextPane::Create(UINT uidLabel, bool bReadOnly, UINT uidCountLabel)
+CountedTextPane* CountedTextPane::Create(UINT uidLabel, bool bReadOnly, UINT uidCountLabel)
 {
 	auto lpPane = new CountedTextPane();
 	if (lpPane)
 	{
-		lpPane->m_uidCountLabel = uidCountLabel;
+		lpPane->m_szCountLabel = loadstring(uidCountLabel);
 		lpPane->SetLabel(uidLabel, bReadOnly);
 	}
 
@@ -36,11 +36,6 @@ ULONG CountedTextPane::GetFlags()
 void CountedTextPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 {
 	auto hRes = S_OK;
-
-	if (m_uidCountLabel)
-	{
-		m_szCountLabel = loadstring(m_uidCountLabel);
-	}
 
 	EC_B(m_Count.Create(
 		WS_CHILD

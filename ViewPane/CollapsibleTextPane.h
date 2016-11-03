@@ -1,6 +1,4 @@
 #pragma once
-// CollapsibleTextPane.h : header file
-
 #include "ViewPane.h"
 #include "TextPane.h"
 

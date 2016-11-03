@@ -6,8 +6,8 @@
 ViewPane::ViewPane()
 {
 	m_iControl = -1;
-	m_uidLabel = 0;
 
+	m_nID = 0;
 	m_bCollapsed = false;
 	m_bReadOnly = true;
 	m_bInitialized = false;
@@ -46,13 +46,12 @@ void ViewPane::SetWindowPos(int x, int y, int width, int /*height*/)
 
 void ViewPane::SetLabel(UINT uidLabel, bool bReadOnly)
 {
-	m_uidLabel = uidLabel;
 	m_bReadOnly = bReadOnly;
 
-	if (m_uidLabel)
+	if (uidLabel)
 	{
 		m_bUseLabelControl = true;
-		m_szLabel = loadstring(m_uidLabel);
+		m_szLabel = loadstring(uidLabel);
 	}
 }
 

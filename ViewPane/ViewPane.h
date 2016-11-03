@@ -74,7 +74,4 @@ protected:
 	int m_iLargeHeightMargin;
 	int m_iButtonHeight; // Height of buttons below the control
 	int m_iEditHeight; // height of an edit control
-
-private:
-	UINT m_uidLabel; // Label to load
 };
