@@ -37,7 +37,10 @@ ULONG SmartViewPane::GetFlags()
 
 void SmartViewPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 {
-	Setup(static_cast<ULONG>(SmartViewParserTypeArray.size()), nullptr, SmartViewParserTypeArray.data(), false);
+	for (auto smartViewParserType : SmartViewParserTypeArray)
+	{
+		InsertDropString(smartViewParserType.lpszName, smartViewParserType.ulValue);
+	}
 
 	CreateControl(iControl, pParent, hdc);
 

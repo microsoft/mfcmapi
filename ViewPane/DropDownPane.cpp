@@ -11,8 +11,12 @@ DropDownPane* DropDownPane::Create(UINT uidLabel, ULONG ulDropList, _In_opt_coun
 	auto pane = new DropDownPane();
 	if (pane)
 	{
+		for (ULONG iDropNum = 0; iDropNum < ulDropList; iDropNum++)
+		{
+			pane->InsertDropString(loadstring(lpuidDropList[iDropNum]), lpuidDropList[iDropNum]);
+		}
+
 		pane->SetLabel(uidLabel, bReadOnly);
-		pane->Setup(ulDropList, lpuidDropList, nullptr, false);
 	}
 
 	return pane;
@@ -23,7 +27,11 @@ DropDownPane* DropDownPane::CreateArray(UINT uidLabel, ULONG ulDropList, _In_opt
 	auto pane = new DropDownPane();
 	if (pane)
 	{
-		pane->Setup(ulDropList, nullptr, lpnaeDropList, false);
+		for (ULONG iDropNum = 0; iDropNum < ulDropList; iDropNum++)
+		{
+			pane->InsertDropString(lpnaeDropList[iDropNum].lpszName, lpnaeDropList[iDropNum].ulValue);
+		}
+
 		pane->SetLabel(uidLabel, bReadOnly);
 	}
 
@@ -35,7 +43,11 @@ DropDownPane* DropDownPane::CreateGuid(UINT uidLabel, bool bReadOnly)
 	auto pane = new DropDownPane();
 	if (pane)
 	{
-		pane->Setup(0, nullptr, nullptr, true);
+		for (ULONG iDropNum = 0; iDropNum < PropGuidArray.size(); iDropNum++)
+		{
+			pane->InsertDropString(GUIDToStringAndName(PropGuidArray[iDropNum].lpGuid), iDropNum);
+		}
+
 		pane->SetLabel(uidLabel, bReadOnly);
 	}
 
@@ -46,33 +58,6 @@ DropDownPane::DropDownPane()
 {
 	m_iDropSelection = CB_ERR;
 	m_iDropSelectionValue = 0;
-}
-
-void DropDownPane::Setup(ULONG ulDropList, _In_opt_count_(ulDropList) UINT* lpuidDropList, _In_opt_count_(ulDropList) LPNAME_ARRAY_ENTRY lpnaeDropList, bool bGUID)
-{
-	if (lpuidDropList)
-	{
-		for (ULONG iDropNum = 0; iDropNum < ulDropList; iDropNum++)
-		{
-			m_DropList.push_back({ loadstring(lpuidDropList[iDropNum]), lpuidDropList[iDropNum] });
-		}
-	}
-	else if (lpnaeDropList)
-	{
-		for (ULONG iDropNum = 0; iDropNum < ulDropList; iDropNum++)
-		{
-			m_DropList.push_back({ lpnaeDropList[iDropNum].lpszName, lpnaeDropList[iDropNum].ulValue });
-		}
-	}
-
-	// If this is a GUID list, load up our list of guids
-	if (bGUID)
-	{
-		for (ULONG iDropNum = 0; iDropNum < PropGuidArray.size(); iDropNum++)
-		{
-			m_DropList.push_back({ GUIDToStringAndName(PropGuidArray[iDropNum].lpGuid), iDropNum });
-		}
-	}
 }
 
 bool DropDownPane::IsType(__ViewTypes vType)

@@ -10,8 +10,6 @@ public:
 	static DropDownPane* CreateArray(UINT uidLabel, ULONG ulDropList, _In_opt_count_(ulDropList) LPNAME_ARRAY_ENTRY lpnaeDropList, bool bReadOnly);
 	static DropDownPane* CreateGuid(UINT uidLabel, bool bReadOnly);
 
-	void Setup(ULONG ulDropList, _In_opt_count_(ulDropList) UINT* lpuidDropList, _In_opt_count_(ulDropList) LPNAME_ARRAY_ENTRY lpnaeDropList, bool bGUID);
-
 	void SetDropDownSelection(_In_ const wstring& szText);
 	void InsertDropString(_In_ const wstring& szText, ULONG ulValue);
 	_Check_return_ wstring GetDropStringUseControl() const;
