@@ -1,6 +1,4 @@
 #pragma once
-// DropDownPane.h : header file
-
 #include "ViewPane.h"
 
 class DropDownPane : public ViewPane
@@ -27,7 +25,6 @@ protected:
 	void Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc) override;
 
 	CComboBox m_DropDown;
-	DWORD_PTR m_iDropSelectionValue;
 
 private:
 	void SetWindowPos(int x, int y, int width, int height) override;
@@ -36,7 +33,8 @@ private:
 	int GetFixedHeight() override;
 	int GetLines() override;
 
-	int m_iDropSelection;
-	wstring m_lpszSelectionString;
 	vector<pair<wstring, ULONG>> m_DropList;
+	wstring m_lpszSelectionString;
+	int m_iDropSelection;
+	DWORD_PTR m_iDropSelectionValue;
 };
