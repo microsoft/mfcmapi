@@ -21,7 +21,6 @@ private:
 	_Check_return_ ULONG HandleChange(UINT nID) override;
 	void OnEditAction1() override;
 	void OnEditAction2() override;
-	BOOL OnInitDialog() override;
 	void PopulateFields(ULONG ulSkipField) const;
 	_Check_return_ ULONG GetSelectedPropType() const;
 	void LookupNamedProp(ULONG ulSkipField, bool bCreate);

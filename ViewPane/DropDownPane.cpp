@@ -73,7 +73,6 @@ void DropDownPane::Setup(ULONG ulDropList, _In_opt_count_(ulDropList) UINT* lpui
 			m_DropList.push_back({ GUIDToStringAndName(PropGuidArray[iDropNum].lpGuid), iDropNum });
 		}
 	}
-
 }
 
 bool DropDownPane::IsType(__ViewTypes vType)
@@ -195,7 +194,9 @@ void DropDownPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 	auto iDropNum = 0;
 	for (auto drop : m_DropList)
 	{
-		InsertDropString(iDropNum++, drop.first, drop.second);
+		m_DropDown.InsertString(iDropNum, wstringTotstring(drop.first).c_str());
+		m_DropDown.SetItemData(iDropNum, drop.second);
+		iDropNum++;
 	}
 
 	m_DropDown.SetCurSel(static_cast<int>(m_iDropSelectionValue));
@@ -203,10 +204,9 @@ void DropDownPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 	m_bInitialized = true;
 }
 
-void DropDownPane::InsertDropString(int iRow, _In_ const wstring& szText, ULONG ulValue)
+void DropDownPane::InsertDropString(_In_ const wstring& szText, ULONG ulValue)
 {
-	m_DropDown.InsertString(iRow, wstringTotstring(szText).c_str());
-	m_DropDown.SetItemData(iRow, ulValue);
+	m_DropList.push_back({ szText, ulValue });
 }
 
 void DropDownPane::CommitUIValues()

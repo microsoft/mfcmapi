@@ -58,17 +58,6 @@ CPropertyTagEditor::CPropertyTagEditor(
 		InitPane(PROPTAG_NAMEPROPNAME, TextPane::CreateSingleLinePane(IDS_NAMEPROPNAME, false));
 		InitPane(PROPTAG_NAMEPROPGUID, DropDownPane::CreateGuid(IDS_NAMEPROPGUID, false));
 	}
-}
-
-CPropertyTagEditor::~CPropertyTagEditor()
-{
-	TRACE_DESTRUCTOR(CLASS);
-	if (m_lpMAPIProp) m_lpMAPIProp->Release();
-}
-
-BOOL CPropertyTagEditor::OnInitDialog()
-{
-	auto bRet = CEditor::OnInitDialog();
 
 	// initialize our dropdowns here
 	// prop types
@@ -84,8 +73,12 @@ BOOL CPropertyTagEditor::OnInitDialog()
 	}
 
 	PopulateFields(NOSKIPFIELD);
+}
 
-	return bRet;
+CPropertyTagEditor::~CPropertyTagEditor()
+{
+	TRACE_DESTRUCTOR(CLASS);
+	if (m_lpMAPIProp) m_lpMAPIProp->Release();
 }
 
 _Check_return_ ULONG CPropertyTagEditor::GetPropertyTag() const
@@ -404,7 +397,7 @@ void CPropertyTagEditor::InsertDropString(ULONG iControl, int iRow, _In_ wstring
 	auto lpPane = static_cast<DropDownPane*>(GetPane(iControl));
 	if (lpPane)
 	{
-		lpPane->InsertDropString(iRow, szText, iRow);
+		lpPane->InsertDropString(szText, iRow);
 	}
 }
 
