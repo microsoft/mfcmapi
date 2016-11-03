@@ -22,22 +22,6 @@ DropDownPane* DropDownPane::Create(UINT uidLabel, ULONG ulDropList, _In_opt_coun
 	return pane;
 }
 
-DropDownPane* DropDownPane::CreateArray(UINT uidLabel, ULONG ulDropList, _In_opt_count_(ulDropList) LPNAME_ARRAY_ENTRY lpnaeDropList, bool bReadOnly)
-{
-	auto pane = new DropDownPane();
-	if (pane)
-	{
-		for (ULONG iDropNum = 0; iDropNum < ulDropList; iDropNum++)
-		{
-			pane->InsertDropString(lpnaeDropList[iDropNum].lpszName, lpnaeDropList[iDropNum].ulValue);
-		}
-
-		pane->SetLabel(uidLabel, bReadOnly);
-	}
-
-	return pane;
-}
-
 DropDownPane* DropDownPane::CreateGuid(UINT uidLabel, bool bReadOnly)
 {
 	auto pane = new DropDownPane();
