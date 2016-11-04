@@ -151,7 +151,7 @@ void DropDownPane::CreateControl(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 		| CBS_AUTOHSCROLL
 		| CBS_DISABLENOSCROLL
 		| dwDropStyle,
-		CRect(0, 0, 0, dropHeight),
+		CRect(0, 0, 0, static_cast<int>(dropHeight)),
 		pParent,
 		m_nID));
 }
