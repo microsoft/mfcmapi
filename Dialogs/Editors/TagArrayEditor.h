@@ -15,10 +15,9 @@ public:
 	virtual ~CTagArrayEditor();
 
 	_Check_return_ LPSPropTagArray DetachModifiedTagArray();
+	_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData) override;
 
 private:
-	// Use this function to implement list editing
-	_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData) override;
 	BOOL OnInitDialog() override;
 	void OnOK() override;
 	void OnEditAction1() override;

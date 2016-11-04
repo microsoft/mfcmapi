@@ -52,10 +52,9 @@ public:
 	_Check_return_ LPSRestriction DetachModifiedSRestriction();
 	_Check_return_ LPENTRYLIST DetachModifiedEntryList();
 	_Check_return_ ULONG GetSearchFlags() const;
+	_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData) override;
 
 private:
-	// Use this function to implement list editing
-	_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData) override;
 	void OnEditAction1() override;
 	BOOL OnInitDialog() override;
 	_Check_return_ ULONG HandleChange(UINT nID) override;

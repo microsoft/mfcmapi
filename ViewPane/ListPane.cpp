@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "ListPane.h"
-#include <Dialogs/Editors/Editor.h>
 #include "UIFunctions.h"
 
 __ListButtons ListButtons[NUMLISTBUTTONS] = {
@@ -17,12 +16,12 @@ __ListButtons ListButtons[NUMLISTBUTTONS] = {
 
 static wstring CLASS = L"ListPane";
 
-ListPane* ListPane::Create(UINT uidLabel, bool bAllowSort, bool bReadOnly, CEditor* lpEdit)
+ListPane* ListPane::Create(UINT uidLabel, bool bAllowSort, bool bReadOnly, DoListEditCallback callback)
 {
 	auto pane = new ListPane();
 	if (pane)
 	{
-		pane->Setup(bAllowSort, [lpEdit](auto a, auto b, auto c) {return lpEdit->DoListEdit(a, b, c); });
+		pane->Setup(bAllowSort, callback);
 		pane->SetLabel(uidLabel, bReadOnly);
 	}
 
@@ -37,7 +36,7 @@ ListPane::ListPane()
 	m_bAllowSort = false;
 }
 
-void ListPane::Setup(bool bAllowSort, function<bool(ULONG, int, SortListData*)> callback)
+void ListPane::Setup(bool bAllowSort, DoListEditCallback callback)
 {
 	m_bAllowSort = bAllowSort;
 	m_callback = callback;

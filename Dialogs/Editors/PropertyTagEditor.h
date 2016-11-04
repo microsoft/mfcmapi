@@ -44,10 +44,10 @@ public:
 	virtual ~CPropertySelector();
 
 	_Check_return_ ULONG GetPropertyTag() const;
+	_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData) override;
 
 private:
 	BOOL OnInitDialog() override;
-	_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData) override;
 	void OnOK() override;
 	_Check_return_ SortListData* GetSelectedListRowData(ULONG iControl) const;
 

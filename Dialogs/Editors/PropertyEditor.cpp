@@ -958,7 +958,7 @@ void CMultiValuePropertyEditor::OnOK()
 
 void CMultiValuePropertyEditor::InitPropertyControls()
 {
-	InitPane(0, ListPane::Create(IDS_PROPVALUES, false, false, this));
+	InitPane(0, ListPane::Create(IDS_PROPVALUES, false, false, ListEditCallBack(this)));
 	if (PT_MV_BINARY == PROP_TYPE(m_ulPropTag) ||
 		PT_MV_LONG == PROP_TYPE(m_ulPropTag))
 	{

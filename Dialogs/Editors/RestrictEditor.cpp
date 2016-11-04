@@ -456,9 +456,9 @@ public:
 
 	_Check_return_ LPSRestriction DetachModifiedSRestrictionArray();
 	_Check_return_ ULONG GetResCount() const;
+	_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData) override;
 
 private:
-	_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData) override;
 	BOOL OnInitDialog() override;
 	void InitListFromRestriction(ULONG ulListNum, _In_ LPSRestriction lpRes) const;
 	void OnOK() override;
@@ -481,7 +481,7 @@ CResAndOrEditor::CResAndOrEditor(
 	m_ulNewResCount = NULL;
 	m_lpAllocParent = lpAllocParent;
 
-	InitPane(0, ListPane::Create(IDS_SUBRESTRICTIONS, false, false, this));
+	InitPane(0, ListPane::Create(IDS_SUBRESTRICTIONS, false, false, ListEditCallBack(this)));
 }
 
 // Used to call functions which need to be called AFTER controls are created
@@ -629,10 +629,10 @@ public:
 	_Check_return_ LPSRestriction DetachModifiedSRestriction();
 	_Check_return_ LPSPropValue DetachModifiedSPropValue();
 	_Check_return_ ULONG GetSPropValueCount() const;
+	_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData) override;
 
 private:
 	void OnEditAction1() override;
-	_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData) override;
 	BOOL OnInitDialog() override;
 	void InitListFromPropArray(ULONG ulListNum, ULONG cProps, _In_count_(cProps) LPSPropValue lpProps) const;
 	_Check_return_ LPSRestriction GetSourceRes() const;
@@ -659,7 +659,7 @@ CResCommentEditor::CResCommentEditor(
 	m_lpNewCommentProp = nullptr;
 	m_lpAllocParent = lpAllocParent;
 
-	InitPane(0, ListPane::Create(IDS_SUBRESTRICTION, false, false, this));
+	InitPane(0, ListPane::Create(IDS_SUBRESTRICTION, false, false, ListEditCallBack(this)));
 	InitPane(1, TextPane::CreateMultiLinePane(IDS_RESTRICTIONTEXT, RestrictionToString(m_lpSourceRes->res.resComment.lpRes, nullptr), true));
 }
 
@@ -1301,7 +1301,7 @@ CCriteriaEditor::CCriteriaEditor(
 	InitPane(2, TextPane::CreateSingleLinePane(IDS_SEARCHFLAGS, false));
 	SetHex(2, 0);
 	InitPane(3, TextPane::CreateSingleLinePane(IDS_SEARCHFLAGS, true));
-	InitPane(4, ListPane::Create(IDS_EIDLIST, false, false, this));
+	InitPane(4, ListPane::Create(IDS_EIDLIST, false, false, ListEditCallBack(this)));
 	InitPane(5, TextPane::CreateMultiLinePane(IDS_RESTRICTIONTEXT, RestrictionToString(m_lpSourceRes, nullptr), true));
 }
 

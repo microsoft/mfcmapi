@@ -70,10 +70,9 @@ public:
 
 	// Get values after we've done the DisplayDialog
 	_Check_return_ LPSPropValue DetachModifiedSPropValue();
+	_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData) override;
 
 private:
-	// Use this function to implement list editing
-	_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData) override;
 	BOOL OnInitDialog() override;
 	void InitPropertyControls();
 	void ReadMultiValueStringsFromProperty() const;

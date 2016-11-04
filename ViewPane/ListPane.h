@@ -10,11 +10,12 @@ struct __ListButtons
 #define NUMLISTBUTTONS 7
 
 class CEditor;
+typedef function<bool(ULONG, int, SortListData*)> DoListEditCallback;
 
 class ListPane : public ViewPane
 {
 public:
-	static ListPane* Create(UINT uidLabel, bool bAllowSort, bool bReadOnly, CEditor* lpEdit);
+	static ListPane* Create(UINT uidLabel, bool bAllowSort, bool bReadOnly, DoListEditCallback callback);
 
 	ULONG HandleChange(UINT nID) override;
 	void SetListString(ULONG iListRow, ULONG iListCol, wstring szListString);
@@ -31,7 +32,7 @@ public:
 
 private:
 	ListPane();
-	void Setup(bool bAllowSort, function<bool(ULONG, int, SortListData*)> callback);
+	void Setup(bool bAllowSort, DoListEditCallback callback);
 	void UpdateButtons() override;
 
 	bool IsType(__ViewTypes vType) override;
@@ -58,5 +59,5 @@ private:
 	bool m_bAllowSort;
 	int m_iButtonWidth;
 
-	function<bool(ULONG, int, SortListData*)> m_callback;
+	DoListEditCallback m_callback;
 };

@@ -16,6 +16,12 @@ class CParentWnd;
 //#define CEDITOR_BUTTON_CANCEL 0x00000008 // Duplicated from MFCMAPI.h - do not modify
 #define CEDITOR_BUTTON_ACTION3 0x00000010
 
+template<typename T>
+DoListEditCallback ListEditCallBack(T* editor)
+{
+	return [editor](auto a, auto b, auto c) {return editor->DoListEdit(a, b, c); };
+}
+
 class CEditor : public CMyDialog
 {
 public:

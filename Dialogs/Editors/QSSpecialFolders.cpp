@@ -14,11 +14,11 @@ public:
 		_In_ CWnd* pParentWnd,
 		_In_ LPMDB lpMDB);
 	~SpecialFolderEditor();
+	_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData) override;
 
 private:
 	BOOL OnInitDialog() override;
 	void LoadFolders() const;
-	_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData) override;
 
 	LPMDB m_lpMDB;
 };
@@ -33,7 +33,7 @@ SpecialFolderEditor::SpecialFolderEditor(
 	m_lpMDB = lpMDB;
 	if (m_lpMDB) m_lpMDB->AddRef();
 
-	InitPane(0, ListPane::Create(NULL, true, true, this));
+	InitPane(0, ListPane::Create(NULL, true, true, ListEditCallBack(this)));
 }
 
 SpecialFolderEditor::~SpecialFolderEditor()

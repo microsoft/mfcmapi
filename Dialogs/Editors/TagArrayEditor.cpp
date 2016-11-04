@@ -28,7 +28,7 @@ CTagArrayEditor::CTagArrayEditor(
 	m_lpMAPIProp = lpMAPIProp;
 	if (m_lpMAPIProp) m_lpMAPIProp->AddRef();
 
-	InitPane(0, ListPane::Create(IDS_PROPTAGARRAY, false, false, this));
+	InitPane(0, ListPane::Create(IDS_PROPTAGARRAY, false, false, ListEditCallBack(this)));
 }
 
 CTagArrayEditor::~CTagArrayEditor()

@@ -416,7 +416,7 @@ CPropertySelector::CPropertySelector(
 
 	if (m_lpMAPIProp) m_lpMAPIProp->AddRef();
 
-	InitPane(0, ListPane::Create(IDS_KNOWNPROPTAGS, true, true, this));
+	InitPane(0, ListPane::Create(IDS_KNOWNPROPTAGS, true, true, ListEditCallBack(this)));
 }
 
 CPropertySelector::~CPropertySelector()
