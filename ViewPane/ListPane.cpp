@@ -17,12 +17,12 @@ __ListButtons ListButtons[NUMLISTBUTTONS] = {
 
 static wstring CLASS = L"ListPane";
 
-ListPane* ListPane::ListPane::Create(UINT uidLabel, bool bAllowSort, bool bReadOnly, LPVOID lpEdit)
+ListPane* ListPane::Create(UINT uidLabel, bool bAllowSort, bool bReadOnly, CEditor* lpEdit)
 {
 	auto pane = new ListPane();
 	if (pane)
 	{
-		pane->Setup(bAllowSort, static_cast<CEditor*>(lpEdit));
+		pane->Setup(bAllowSort, [lpEdit](auto a, auto b, auto c) {return lpEdit->DoListEdit(a, b, c); });
 		pane->SetLabel(uidLabel, bReadOnly);
 	}
 
@@ -34,12 +34,13 @@ ListPane::ListPane()
 	m_iButtonWidth = 50;
 	m_List.AllowEscapeClose();
 	m_bDirty = false;
+	m_bAllowSort = false;
 }
 
-void ListPane::Setup(bool bAllowSort, CEditor* lpEdit)
+void ListPane::Setup(bool bAllowSort, function<bool(ULONG, int, SortListData*)> callback)
 {
 	m_bAllowSort = bAllowSort;
-	m_lpEdit = lpEdit;
+	m_callback = callback;
 }
 
 bool ListPane::IsType(__ViewTypes vType)
@@ -429,8 +430,11 @@ _Check_return_ bool ListPane::OnEditListEntry()
 	auto lpData = GetItemData(iItem);
 	if (!lpData) return false;
 
-	// TODO: Figure out a way to do this that doesn't involve caching the edit control
-	auto bDidEdit = m_lpEdit->DoListEdit(m_iControl, iItem, lpData);
+	auto bDidEdit = false;
+	if (m_callback)
+	{
+		bDidEdit = m_callback(m_iControl, iItem, lpData);
+	}
 
 	// the list is dirty now if the edit succeeded or it was already dirty
 	m_bDirty = bDidEdit || m_bDirty;

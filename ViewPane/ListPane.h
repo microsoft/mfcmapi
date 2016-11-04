@@ -1,6 +1,7 @@
 #pragma once
 #include "ViewPane.h"
 #include "SortList/SortListCtrl.h"
+#include <functional>
 
 struct __ListButtons
 {
@@ -13,7 +14,7 @@ class CEditor;
 class ListPane : public ViewPane
 {
 public:
-	static ListPane* Create(UINT uidLabel, bool bAllowSort, bool bReadOnly, LPVOID lpEdit);
+	static ListPane* Create(UINT uidLabel, bool bAllowSort, bool bReadOnly, CEditor* lpEdit);
 
 	ULONG HandleChange(UINT nID) override;
 	void SetListString(ULONG iListRow, ULONG iListCol, wstring szListString);
@@ -30,7 +31,7 @@ public:
 
 private:
 	ListPane();
-	void Setup(bool bAllowSort, CEditor* lpEdit);
+	void Setup(bool bAllowSort, function<bool(ULONG, int, SortListData*)> callback);
 	void UpdateButtons() override;
 
 	bool IsType(__ViewTypes vType) override;
@@ -57,6 +58,5 @@ private:
 	bool m_bAllowSort;
 	int m_iButtonWidth;
 
-	// TODO: Figure out a way to do this that doesn't involve caching the edit control
-	CEditor* m_lpEdit;
+	function<bool(ULONG, int, SortListData*)> m_callback;
 };
