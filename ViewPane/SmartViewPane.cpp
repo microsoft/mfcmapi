@@ -35,18 +35,14 @@ ULONG SmartViewPane::GetFlags()
 	return DropDownPane::GetFlags() | vpCollapsible;
 }
 
-void SmartViewPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
+void SmartViewPane::Initialize(int /*iControl*/, _In_ CWnd* pParent, _In_ HDC hdc)
 {
 	for (auto smartViewParserType : SmartViewParserTypeArray)
 	{
 		InsertDropString(smartViewParserType.lpszName, smartViewParserType.ulValue);
 	}
 
-	CreateControl(iControl, pParent, hdc);
-
 	DropDownPane::Initialize(0, pParent, hdc);
-
-	// Passing a control # of 1 gives us a built in margin
 	m_TextPane.Initialize(1, pParent, hdc);
 
 	m_bInitialized = true;
