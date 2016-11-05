@@ -3,13 +3,8 @@
 #include "SortList/SortListCtrl.h"
 #include <functional>
 
-struct __ListButtons
-{
-	UINT uiButtonID;
-};
 #define NUMLISTBUTTONS 7
 
-class CEditor;
 typedef function<bool(ULONG, int, SortListData*)> DoListEditCallback;
 
 class ListPane : public ViewPane

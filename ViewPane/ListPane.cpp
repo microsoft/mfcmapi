@@ -2,7 +2,7 @@
 #include "ListPane.h"
 #include "UIFunctions.h"
 
-__ListButtons ListButtons[NUMLISTBUTTONS] = {
+UINT ListButtons[NUMLISTBUTTONS] = {
 	{ IDD_LISTMOVEDOWN },
 	{ IDD_LISTMOVETOBOTTOM },
 	{ IDD_LISTADD },
@@ -71,7 +71,7 @@ void ListPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 	{
 		for (auto iButton = 0; iButton < NUMLISTBUTTONS; iButton++)
 		{
-			auto szButtonText = loadstring(ListButtons[iButton].uiButtonID);
+			auto szButtonText = loadstring(ListButtons[iButton]);
 
 			EC_B(m_ButtonArray[iButton].Create(
 				wstringTotstring(szButtonText).c_str(),
@@ -81,7 +81,7 @@ void ListPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 				| WS_VISIBLE,
 				CRect(0, 0, 0, 0),
 				pParent,
-				ListButtons[iButton].uiButtonID));
+				ListButtons[iButton]));
 
 			auto sizeText = GetTextExtentPoint32(hdc, szButtonText);
 			m_iButtonWidth = max(m_iButtonWidth, sizeText.cx);
@@ -280,7 +280,7 @@ void ListPane::UpdateButtons()
 	auto hRes = S_OK;
 	for (auto iButton = 0; iButton < NUMLISTBUTTONS; iButton++)
 	{
-		switch (ListButtons[iButton].uiButtonID)
+		switch (ListButtons[iButton])
 		{
 		case IDD_LISTMOVETOBOTTOM:
 		case IDD_LISTMOVEDOWN:
