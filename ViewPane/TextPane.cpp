@@ -345,11 +345,9 @@ string TextPane::GetStringA() const
 	return wstringTostring(m_lpszW);
 }
 
-// Gets string from edit box and places it in m_lpszW
-void TextPane::CommitUIValues()
+wstring TextPane::GetUIValue() const
 {
-	m_lpszW.clear();
-
+	wstring value;
 	GETTEXTLENGTHEX getTextLength = { 0 };
 	getTextLength.flags = GTL_PRECISE | GTL_NUMCHARS;
 	getTextLength.codepage = 1200;
@@ -369,57 +367,65 @@ void TextPane::CommitUIValues()
 			static_cast<LPARAM>(0)));
 	}
 
-	if (!cchText) return;
-
-	// Allocate a buffer large enough for either kind of string, along with a null terminator
-	auto cchTextWithNULL = cchText + 1;
-	auto cbBuffer = cchTextWithNULL * sizeof(WCHAR);
-	auto buffer = new BYTE[cbBuffer];
-	if (buffer)
+	if (cchText)
 	{
-		GETTEXTEX getText = { 0 };
-		getText.cb = DWORD(cbBuffer);
-		getText.flags = GT_DEFAULT;
-		getText.codepage = 1200;
+		// Allocate a buffer large enough for either kind of string, along with a null terminator
+		auto cchTextWithNULL = cchText + 1;
+		auto cbBuffer = cchTextWithNULL * sizeof(WCHAR);
+		auto buffer = new BYTE[cbBuffer];
+		if (buffer)
+		{
+			GETTEXTEX getText = { 0 };
+			getText.cb = DWORD(cbBuffer);
+			getText.flags = GT_DEFAULT;
+			getText.codepage = 1200;
 
-		auto cchW = ::SendMessage(
-			m_EditBox.m_hWnd,
-			EM_GETTEXTEX,
-			reinterpret_cast<WPARAM>(&getText),
-			reinterpret_cast<LPARAM>(buffer));
-		if (cchW != 0)
-		{
-			m_lpszW = wstring(LPWSTR(buffer), cchText);
-		}
-		else
-		{
-			// Didn't get a string from EM_GETTEXTEX, fall back to WM_GETTEXT
-			cchW = ::SendMessage(
+			auto cchW = ::SendMessage(
 				m_EditBox.m_hWnd,
-				WM_GETTEXT,
-				static_cast<WPARAM>(cchTextWithNULL),
+				EM_GETTEXTEX,
+				reinterpret_cast<WPARAM>(&getText),
 				reinterpret_cast<LPARAM>(buffer));
 			if (cchW != 0)
 			{
-				m_lpszW = stringTowstring(string(LPSTR(buffer), cchText));
+				value = wstring(LPWSTR(buffer), cchText);
+			}
+			else
+			{
+				// Didn't get a string from EM_GETTEXTEX, fall back to WM_GETTEXT
+				cchW = ::SendMessage(
+					m_EditBox.m_hWnd,
+					WM_GETTEXT,
+					static_cast<WPARAM>(cchTextWithNULL),
+					reinterpret_cast<LPARAM>(buffer));
+				if (cchW != 0)
+				{
+					value = stringTowstring(string(LPSTR(buffer), cchText));
+				}
 			}
 		}
+
+		delete[] buffer;
 	}
 
-	delete[] buffer;
+	return value;
+}
+
+// Gets string from edit box and places it in m_lpszW
+void TextPane::CommitUIValues()
+{
+	m_lpszW = GetUIValue();
+	m_bCommitted = true;
 }
 
 // No need to free this - treat it like a static
-_Check_return_ string TextPane::GetEditBoxTextA()
+_Check_return_ string TextPane::GetEditBoxTextA() const
 {
-	CommitUIValues();
-	return GetStringA();
+	return wstringTostring(GetEditBoxTextW());
 }
 
-_Check_return_ wstring TextPane::GetEditBoxTextW()
+_Check_return_ wstring TextPane::GetEditBoxTextW() const
 {
-	CommitUIValues();
-	return GetStringW();
+	return GetUIValue();
 }
 
 // Takes a binary stream and initializes an edit control with the HEX version of this stream
@@ -439,7 +445,7 @@ void TextPane::InitEditFromBinaryStream(_In_ LPSTREAM lpStreamIn)
 }
 
 // Writes a hex pane out to a binary stream
-void TextPane::WriteToBinaryStream(_In_ LPSTREAM lpStreamOut)
+void TextPane::WriteToBinaryStream(_In_ LPSTREAM lpStreamOut) const
 {
 	auto hRes = S_OK;
 

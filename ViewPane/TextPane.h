@@ -1,6 +1,4 @@
 #pragma once
-// TextPane.h : header file
-
 #include "ViewPane.h"
 
 #define LINES_MULTILINEEDIT 4
@@ -8,6 +6,12 @@
 class TextPane : public ViewPane
 {
 public:
+	TextPane()
+	{
+		m_bMultiline = false;
+		m_bCommitted = false;
+	}
+
 	static TextPane* CreateMultiLinePane(UINT uidLabel, bool bReadOnly);
 	static TextPane* CreateMultiLinePane(UINT uidLabel, _In_ wstring szVal, bool bReadOnly);
 	static TextPane* CreateSingleLinePane(UINT uidLabel, bool bReadOnly, bool bMultiLine = false);
@@ -24,15 +28,15 @@ public:
 	virtual void SetStringW(wstring szMsg);
 	void SetBinary(_In_opt_count_(cb) LPBYTE lpb, size_t cb);
 	void InitEditFromBinaryStream(_In_ LPSTREAM lpStreamIn);
-	void WriteToBinaryStream(_In_ LPSTREAM lpStreamOut);
+	void WriteToBinaryStream(_In_ LPSTREAM lpStreamOut) const;
 	void AppendString(_In_ wstring szMsg);
 	void ShowWindow(int nCmdShow);
 
 	void SetEditReadOnly();
 
 	wstring GetStringW() const;
-	_Check_return_ string GetEditBoxTextA();
-	_Check_return_ wstring GetEditBoxTextW();
+	_Check_return_ string GetEditBoxTextA() const;
+	_Check_return_ wstring GetEditBoxTextW() const;
 	bool m_bMultiline;
 
 protected:
@@ -40,9 +44,11 @@ protected:
 	CRichEditCtrl m_EditBox;
 
 private:
+	wstring GetUIValue() const;
 	void CommitUIValues() override;
 	string GetStringA() const;
 	void SetEditBoxText();
 
 	wstring m_lpszW;
+	bool m_bCommitted;
 };
