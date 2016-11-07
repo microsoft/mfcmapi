@@ -242,7 +242,7 @@ _Check_return_ ULONG CPropertyTagEditor::HandleChange(UINT nID)
 	switch (i)
 	{
 	case PROPTAG_TAG: // Prop tag changed
-		m_ulPropTag = GetPropTagUseControl(PROPTAG_TAG);
+		m_ulPropTag = GetPropTag(PROPTAG_TAG);
 		break;
 	case PROPTAG_ID: // Prop ID changed
 	{

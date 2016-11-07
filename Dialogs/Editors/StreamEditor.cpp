@@ -182,7 +182,7 @@ BOOL CStreamEditor::OnInitDialog()
 		{
 			SPropValue sProp = { 0 };
 			sProp.ulPropTag = CHANGE_PROP_TYPE(m_ulPropTag, PT_BINARY);
-			auto bin = GetBinaryUseControl(m_iBinBox);
+			auto bin = GetBinary(m_iBinBox);
 			sProp.Value.bin.lpb = bin.data();
 			sProp.Value.bin.cb = ULONG(bin.size());
 
@@ -384,10 +384,10 @@ void CStreamEditor::WriteTextStreamToProperty()
 	// We started with a binary stream, pull binary back into the stream
 	if (m_lpStream)
 	{
-		// We used to use EDITSTREAM here, but instead, just use GetBinaryUseControl and write it out.
+		// We used to use EDITSTREAM here, but instead, just use GetBinary and write it out.
 		ULONG cbWritten = 0;
 
-		auto bin = GetBinaryUseControl(m_iBinBox);
+		auto bin = GetBinary(m_iBinBox);
 
 		EC_MAPI(m_lpStream->Write(bin.data(), static_cast<ULONG>(bin.size()), &cbWritten));
 		DebugPrintEx(DBGStream, CLASS, L"WriteTextStreamToProperty", L"wrote 0x%X\n", cbWritten);
@@ -441,7 +441,7 @@ _Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
 	}
 	else if (m_iBinBox == i)
 	{
-		auto bin = GetBinaryUseControl(m_iBinBox);
+		auto bin = GetBinary(m_iBinBox);
 		{
 			switch (m_ulEditorType)
 			{
@@ -465,7 +465,7 @@ _Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
 		auto lpSmartView = static_cast<SmartViewPane*>(GetPane(m_iSmartViewBox));
 		if (lpSmartView)
 		{
-			auto bin = GetBinaryUseControl(m_iBinBox);
+			auto bin = GetBinary(m_iBinBox);
 
 			SBinary Bin = { 0 };
 			Bin.cb = ULONG(bin.size());

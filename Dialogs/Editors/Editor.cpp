@@ -1066,7 +1066,7 @@ void CEditor::SetSize(ULONG i, size_t cb) const
 }
 
 // Returns a binary buffer which is represented by the hex string
-vector<BYTE> CEditor::GetBinaryUseControl(ULONG i) const
+vector<BYTE> CEditor::GetBinary(ULONG i) const
 {
 	return HexStringToBin(GetStringW(i));
 }
@@ -1149,7 +1149,6 @@ void CEditor::ResizeList(ULONG iControl, bool bSort) const
 	{
 		pane->ResizeList(bSort);
 	}
-
 }
 
 wstring CEditor::GetStringW(ULONG i) const
@@ -1210,41 +1209,7 @@ _Check_return_ SortListData* CEditor::GetListRowData(ULONG iControl, int iRow) c
 _Check_return_ bool CEditor::IsDirty(ULONG iControl) const
 {
 	auto pane = GetPane(iControl);
-	return pane ? (vpDirty == (pane->GetFlags() & vpDirty)) : false;
-}
-
-_Check_return_ ULONG CEditor::GetHexUseControl(ULONG i) const
-{
-	return wstringToUlong(GetStringW(i), 16);
-}
-
-_Check_return_ ULONG CEditor::GetDecimalUseControl(ULONG i) const
-{
-	return wstringToUlong(GetStringW(i), 10);
-}
-
-_Check_return_ ULONG CEditor::GetPropTagUseControl(ULONG i) const
-{
-	auto szTag = GetStringW(i);
-
-	// remove any whitespace or nonsense punctuation
-	szTag = CleanString(szTag);
-
-	auto ulTag = wstringToUlong(szTag, 16);
-
-	if (ulTag == NULL) // If we didn't convert, try a lookup
-	{
-		ulTag = PropNameToPropTag(szTag);
-	}
-
-	// Figure if this is a full tag or just an ID
-	if (ulTag & PROP_TAG_MASK) // Full prop tag
-	{
-		return ulTag;
-	}
-
-	// Just an ID
-	return PROP_TAG(PT_UNSPECIFIED, ulTag);
+	return pane ? vpDirty == (pane->GetFlags() & vpDirty) : false;
 }
 
 _Check_return_ ULONG CEditor::GetPropTag(ULONG i) const

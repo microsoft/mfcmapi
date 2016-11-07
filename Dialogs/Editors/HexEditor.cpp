@@ -121,7 +121,7 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 	break;
 	case HEXED_HEX: // binary changed
 	{
-		auto bin = GetBinaryUseControl(HEXED_HEX);
+		auto bin = GetBinary(HEXED_HEX);
 		lpb = bin.data();
 		cb = bin.size();
 		SetStringA(HEXED_ANSI, string(LPCSTR(lpb), cb)); // ansi string
@@ -175,7 +175,7 @@ void CHexEditor::UpdateParser() const
 	auto lpPane = static_cast<SmartViewPane*>(GetPane(HEXED_SMARTVIEW));
 	if (lpPane)
 	{
-		auto bin = GetBinaryUseControl(HEXED_HEX);
+		auto bin = GetBinary(HEXED_HEX);
 		SBinary Bin = { 0 };
 		Bin.lpb = bin.data();
 		Bin.cb = ULONG(bin.size());

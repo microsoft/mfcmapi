@@ -88,11 +88,11 @@ void COptions::OnOK()
 		}
 		else if (regoptStringHex == RegKeys[ulReg].ulRegOptType)
 		{
-			RegKeys[ulReg].ulCurDWORD = GetHexUseControl(ulReg);
+			RegKeys[ulReg].ulCurDWORD = GetHex(ulReg);
 		}
 		else if (regoptStringDec == RegKeys[ulReg].ulRegOptType)
 		{
-			RegKeys[ulReg].ulCurDWORD = GetDecimalUseControl(ulReg);
+			RegKeys[ulReg].ulCurDWORD = GetDecimal(ulReg);
 		}
 	}
 

@@ -776,7 +776,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 	case PT_BINARY:
 		if (0 == i || 2 == i)
 		{
-			bin = GetBinaryUseControl(0);
+			bin = GetBinary(0);
 			if (0 == i) SetStringA(1, string(LPCSTR(bin.data()), bin.size())); // ansi string
 			Bin.lpb = bin.data();
 			Bin.cb = ULONG(bin.size());
@@ -820,7 +820,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		}
 		else if (1 == i)
 		{
-			bin = GetBinaryUseControl(1);
+			bin = GetBinary(1);
 
 			SetStringA(0, string(LPCSTR(bin.data()), bin.size()));
 
@@ -854,7 +854,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		else if (1 == i)
 		{
 			lpPane = static_cast<CountedTextPane*>(GetPane(0));
-			bin = GetBinaryUseControl(1);
+			bin = GetBinary(1);
 			if (!(bin.size() % sizeof(WCHAR)))
 			{
 				SetStringW(0, wstring(LPCWSTR(bin.data()), bin.size() / sizeof(WCHAR)));

@@ -88,7 +88,7 @@ _Check_return_ ULONG CDbgView::HandleChange(UINT nID)
 	{
 	case DBGVIEW_TAGS:
 	{
-		auto ulTag = GetHexUseControl(DBGVIEW_TAGS);
+		auto ulTag = GetHex(DBGVIEW_TAGS);
 		SetDebugLevel(ulTag);
 		return true;
 	}

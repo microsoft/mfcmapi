@@ -52,15 +52,15 @@ _Check_return_ ULONG CResCompareEditor::HandleChange(UINT nID)
 
 	if (0 == i)
 	{
-		SetStringW(1, InterpretFlags(flagRelop, GetHexUseControl(0)));
+		SetStringW(1, InterpretFlags(flagRelop, GetHex(0)));
 	}
 	else if (2 == i)
 	{
-		SetStringW(3, TagToString(GetPropTagUseControl(2), nullptr, false, true));
+		SetStringW(3, TagToString(GetPropTag(2), nullptr, false, true));
 	}
 	else if (4 == i)
 	{
-		SetStringW(5, TagToString(GetPropTagUseControl(4), nullptr, false, true));
+		SetStringW(5, TagToString(GetPropTag(4), nullptr, false, true));
 	}
 	return i;
 }
@@ -159,20 +159,20 @@ _Check_return_ ULONG CResCombinedEditor::HandleChange(UINT nID)
 	{
 		if (RES_CONTENT == m_ulResType)
 		{
-			SetStringW(1, InterpretFlags(flagFuzzyLevel, GetHexUseControl(0)));
+			SetStringW(1, InterpretFlags(flagFuzzyLevel, GetHex(0)));
 		}
 		else if (RES_PROPERTY == m_ulResType)
 		{
-			SetStringW(1, InterpretFlags(flagRelop, GetHexUseControl(0)));
+			SetStringW(1, InterpretFlags(flagRelop, GetHex(0)));
 		}
 	}
 	else if (2 == i)
 	{
-		SetStringW(3, TagToString(GetPropTagUseControl(2), nullptr, false, true));
+		SetStringW(3, TagToString(GetPropTag(2), nullptr, false, true));
 	}
 	else if (4 == i)
 	{
-		SetStringW(5, TagToString(GetPropTagUseControl(4), nullptr, false, true));
+		SetStringW(5, TagToString(GetPropTag(4), nullptr, false, true));
 		m_lpOldProp = nullptr;
 		m_lpNewProp = nullptr;
 		SetStringW(6, L"");
@@ -205,7 +205,7 @@ void CResCombinedEditor::OnEditAction1()
 		false,
 		m_lpAllocParent,
 		NULL,
-		GetPropTagUseControl(4),
+		GetPropTag(4),
 		false,
 		lpEditProp,
 		&lpOutProp));
@@ -265,11 +265,11 @@ _Check_return_ ULONG CResBitmaskEditor::HandleChange(UINT nID)
 
 	if (0 == i)
 	{
-		SetStringW(1, InterpretFlags(flagBitmask, GetHexUseControl(0)));
+		SetStringW(1, InterpretFlags(flagBitmask, GetHex(0)));
 	}
 	else if (2 == i)
 	{
-		SetStringW(3, TagToString(GetPropTagUseControl(2), nullptr, false, true));
+		SetStringW(3, TagToString(GetPropTag(2), nullptr, false, true));
 	}
 
 	return i;
@@ -318,11 +318,11 @@ _Check_return_ ULONG CResSizeEditor::HandleChange(UINT nID)
 
 	if (0 == i)
 	{
-		SetStringW(1, InterpretFlags(flagRelop, GetHexUseControl(0)));
+		SetStringW(1, InterpretFlags(flagRelop, GetHex(0)));
 	}
 	else if (2 == i)
 	{
-		SetStringW(3, TagToString(GetPropTagUseControl(2), nullptr, false, true));
+		SetStringW(3, TagToString(GetPropTag(2), nullptr, false, true));
 	}
 	return i;
 }
@@ -357,7 +357,7 @@ _Check_return_ ULONG CResExistEditor::HandleChange(UINT nID)
 
 	if (0 == i)
 	{
-		SetStringW(1, TagToString(GetPropTagUseControl(0), nullptr, false, true));
+		SetStringW(1, TagToString(GetPropTag(0), nullptr, false, true));
 	}
 	return i;
 }
@@ -411,7 +411,7 @@ _Check_return_ ULONG CResSubResEditor::HandleChange(UINT nID)
 
 	if (0 == i)
 	{
-		SetStringW(1, TagToString(GetPropTagUseControl(0), nullptr, false, true));
+		SetStringW(1, TagToString(GetPropTag(0), nullptr, false, true));
 	}
 
 	return i;
@@ -963,7 +963,7 @@ _Check_return_ ULONG CRestrictEditor::HandleChange(UINT nID)
 		if (!m_lpOutputRes) return i;
 		auto hRes = S_OK;
 		auto ulOldResType = m_lpOutputRes->rt;
-		auto ulNewResType = GetHexUseControl(i);
+		auto ulNewResType = GetHex(i);
 
 		if (ulOldResType == ulNewResType) return i;
 
@@ -1336,7 +1336,7 @@ _Check_return_ ULONG CCriteriaEditor::HandleChange(UINT nID)
 
 	if (2 == i)
 	{
-		SetStringW(3, InterpretFlags(flagSearchFlag, GetHexUseControl(i)));
+		SetStringW(3, InterpretFlags(flagSearchFlag, GetHex(i)));
 	}
 
 	return i;
@@ -1506,5 +1506,5 @@ void CCriteriaEditor::OnOK()
 		EC_H(HrCopyRestriction(m_lpSourceRes, NULL, &m_lpNewRes))
 	}
 
-	m_ulNewSearchFlags = GetHexUseControl(2);
+	m_ulNewSearchFlags = GetHex(2);
 }
