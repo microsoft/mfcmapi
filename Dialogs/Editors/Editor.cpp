@@ -1068,7 +1068,7 @@ void CEditor::SetSize(ULONG i, size_t cb) const
 // Returns a binary buffer which is represented by the hex string
 vector<BYTE> CEditor::GetBinaryUseControl(ULONG i) const
 {
-	return HexStringToBin(GetStringUseControl(i));
+	return HexStringToBin(GetEditBoxTextW(i));
 }
 
 // converts string in a text(edit) control into an entry ID
@@ -1196,17 +1196,6 @@ _Check_return_ ULONG CEditor::GetHex(ULONG i) const
 	return 0;
 }
 
-_Check_return_ wstring CEditor::GetStringUseControl(ULONG iControl) const
-{
-	auto pane = dynamic_cast<TextPane*>(GetPane(iControl));
-	if (pane)
-	{
-		return pane->GetStringUseControl();
-	}
-
-	return emptystring;
-}
-
 _Check_return_ ULONG CEditor::GetListCount(ULONG iControl) const
 {
 	auto pane = dynamic_cast<ListPane*>(GetPane(iControl));
@@ -1237,17 +1226,17 @@ _Check_return_ bool CEditor::IsDirty(ULONG iControl) const
 
 _Check_return_ ULONG CEditor::GetHexUseControl(ULONG i) const
 {
-	return wstringToUlong(GetStringUseControl(i), 16);
+	return wstringToUlong(GetEditBoxTextW(i), 16);
 }
 
 _Check_return_ ULONG CEditor::GetDecimalUseControl(ULONG i) const
 {
-	return wstringToUlong(GetStringUseControl(i), 10);
+	return wstringToUlong(GetEditBoxTextW(i), 10);
 }
 
 _Check_return_ ULONG CEditor::GetPropTagUseControl(ULONG i) const
 {
-	auto szTag = GetStringUseControl(i);
+	auto szTag = GetEditBoxTextW(i);
 
 	// remove any whitespace or nonsense punctuation
 	szTag = CleanString(szTag);

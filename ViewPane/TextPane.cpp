@@ -422,12 +422,6 @@ _Check_return_ wstring TextPane::GetEditBoxTextW()
 	return GetStringW();
 }
 
-_Check_return_ wstring TextPane::GetStringUseControl()
-{
-	CommitUIValues();
-	return GetStringW();
-}
-
 // Takes a binary stream and initializes an edit control with the HEX version of this stream
 void TextPane::InitEditFromBinaryStream(_In_ LPSTREAM lpStreamIn)
 {
@@ -449,7 +443,7 @@ void TextPane::WriteToBinaryStream(_In_ LPSTREAM lpStreamOut)
 {
 	auto hRes = S_OK;
 
-	auto bin = HexStringToBin(GetStringUseControl());
+	auto bin = HexStringToBin(GetEditBoxTextW());
 	if (bin.data() != nullptr)
 	{
 		ULONG cbWritten = 0;

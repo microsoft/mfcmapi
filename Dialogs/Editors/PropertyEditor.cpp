@@ -506,62 +506,62 @@ void CPropertyEditor::WriteStringsToSPropValue()
 		switch (PROP_TYPE(m_ulPropTag))
 		{
 		case PT_I2: // treat as signed long
-			szTmpString = GetStringUseControl(0);
+			szTmpString = GetEditBoxTextW(0);
 			m_lpsOutputValue->Value.i = static_cast<short int>(wstringToLong(szTmpString, 10));
 			break;
 		case PT_LONG: // treat as unsigned long
-			szTmpString = GetStringUseControl(0);
+			szTmpString = GetEditBoxTextW(0);
 			m_lpsOutputValue->Value.l = static_cast<LONG>(wstringToUlong(szTmpString, 10));
 			break;
 		case PT_R4:
-			szTmpString = GetStringUseControl(0);
+			szTmpString = GetEditBoxTextW(0);
 			m_lpsOutputValue->Value.flt = static_cast<float>(wstringToDouble(szTmpString));
 			break;
 		case PT_DOUBLE:
-			szTmpString = GetStringUseControl(0);
+			szTmpString = GetEditBoxTextW(0);
 			m_lpsOutputValue->Value.dbl = wstringToDouble(szTmpString);
 			break;
 		case PT_CURRENCY:
-			szTmpString = GetStringUseControl(0);
+			szTmpString = GetEditBoxTextW(0);
 			m_lpsOutputValue->Value.cur.Hi = wstringToUlong(szTmpString, 16);
-			szTmpString = GetStringUseControl(1);
+			szTmpString = GetEditBoxTextW(1);
 			m_lpsOutputValue->Value.cur.Lo = wstringToUlong(szTmpString, 16);
 			break;
 		case PT_APPTIME:
-			szTmpString = GetStringUseControl(0);
+			szTmpString = GetEditBoxTextW(0);
 			m_lpsOutputValue->Value.at = wstringToDouble(szTmpString);
 			break;
 		case PT_ERROR: // unsigned
-			szTmpString = GetStringUseControl(0);
+			szTmpString = GetEditBoxTextW(0);
 			m_lpsOutputValue->Value.err = static_cast<SCODE>(wstringToUlong(szTmpString, 16));
 			break;
 		case PT_BOOLEAN:
 			m_lpsOutputValue->Value.b = static_cast<unsigned short>(GetCheck(0));
 			break;
 		case PT_I8:
-			szTmpString = GetStringUseControl(0);
+			szTmpString = GetEditBoxTextW(0);
 			m_lpsOutputValue->Value.li.HighPart = static_cast<long>(wstringToUlong(szTmpString, 16));
-			szTmpString = GetStringUseControl(1);
+			szTmpString = GetEditBoxTextW(1);
 			m_lpsOutputValue->Value.li.LowPart = static_cast<long>(wstringToUlong(szTmpString, 16));
 			break;
 		case PT_STRING8:
 			// We read strings out of the hex control in order to preserve any hex level tweaks the user
 			// may have done. The RichEdit control likes throwing them away.
-			szTmpString = GetStringUseControl(1);
+			szTmpString = GetEditBoxTextW(1);
 			bin = HexStringToBin(szTmpString);
 			m_lpsOutputValue->Value.lpszA = reinterpret_cast<LPSTR>(ByteVectorToMAPI(bin, m_lpAllocParent));
 			break;
 		case PT_UNICODE:
 			// We read strings out of the hex control in order to preserve any hex level tweaks the user
 			// may have done. The RichEdit control likes throwing them away.
-			szTmpString = GetStringUseControl(1);
+			szTmpString = GetEditBoxTextW(1);
 			bin = HexStringToBin(szTmpString);
 			m_lpsOutputValue->Value.lpszW = reinterpret_cast<LPWSTR>(ByteVectorToMAPI(bin, m_lpAllocParent));
 			break;
 		case PT_SYSTIME:
-			szTmpString = GetStringUseControl(0);
+			szTmpString = GetEditBoxTextW(0);
 			m_lpsOutputValue->Value.ft.dwLowDateTime = wstringToUlong(szTmpString, 16);
-			szTmpString = GetStringUseControl(1);
+			szTmpString = GetEditBoxTextW(1);
 			m_lpsOutputValue->Value.ft.dwHighDateTime = wstringToUlong(szTmpString, 16);
 			break;
 		case PT_CLSID:
@@ -571,13 +571,13 @@ void CPropertyEditor::WriteStringsToSPropValue()
 				reinterpret_cast<LPVOID*>(&m_lpsOutputValue->Value.lpguid)));
 			if (m_lpsOutputValue->Value.lpguid)
 			{
-				*m_lpsOutputValue->Value.lpguid = StringToGUID(GetStringUseControl(0));
+				*m_lpsOutputValue->Value.lpguid = StringToGUID(GetEditBoxTextW(0));
 			}
 
 			break;
 		case PT_BINARY:
 			// remember we already read szTmpString and ulStrLen and found ulStrLen was even
-			szTmpString = GetStringUseControl(0);
+			szTmpString = GetEditBoxTextW(0);
 			bin = HexStringToBin(szTmpString);
 			m_lpsOutputValue->Value.bin.lpb = ByteVectorToMAPI(bin, m_lpAllocParent);
 			m_lpsOutputValue->Value.bin.cb = static_cast<ULONG>(bin.size());
@@ -664,7 +664,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 	switch (PROP_TYPE(m_ulPropTag))
 	{
 	case PT_I2: // signed 16 bit
-		szTmpString = GetStringUseControl(i);
+		szTmpString = GetEditBoxTextW(i);
 		if (0 == i)
 		{
 			iVal = static_cast<short int>(wstringToLong(szTmpString, 10));
@@ -690,7 +690,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 
 		break;
 	case PT_LONG: // unsigned 32 bit
-		szTmpString = GetStringUseControl(i);
+		szTmpString = GetEditBoxTextW(i);
 		if (0 == i)
 		{
 			lVal = static_cast<LONG>(wstringToUlong(szTmpString, 10));
@@ -718,15 +718,15 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 	case PT_CURRENCY:
 		if (0 == i || 1 == i)
 		{
-			szTmpString = GetStringUseControl(0);
+			szTmpString = GetEditBoxTextW(0);
 			curVal.Hi = wstringToUlong(szTmpString, 16);
-			szTmpString = GetStringUseControl(1);
+			szTmpString = GetEditBoxTextW(1);
 			curVal.Lo = wstringToUlong(szTmpString, 16);
 			SetStringW(2, CurrencyToString(curVal));
 		}
 		else if (2 == i)
 		{
-			szTmpString = GetStringUseControl(i);
+			szTmpString = GetEditBoxTextW(i);
 			szTmpString = StripCharacter(szTmpString, L'.');
 			curVal.int64 = wstringToInt64(szTmpString);
 			SetHex(0, static_cast<int>(curVal.Hi));
@@ -737,15 +737,15 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 	case PT_I8:
 		if (0 == i || 1 == i)
 		{
-			szTmpString = GetStringUseControl(0);
+			szTmpString = GetEditBoxTextW(0);
 			liVal.HighPart = static_cast<long>(wstringToUlong(szTmpString, 16));
-			szTmpString = GetStringUseControl(1);
+			szTmpString = GetEditBoxTextW(1);
 			liVal.LowPart = static_cast<long>(wstringToUlong(szTmpString, 16));
 			SetStringf(2, L"%I64d", liVal.QuadPart); // STRING_OK
 		}
 		else if (2 == i)
 		{
-			szTmpString = GetStringUseControl(i);
+			szTmpString = GetEditBoxTextW(i);
 			liVal.QuadPart = wstringToInt64(szTmpString);
 			SetHex(0, static_cast<int>(liVal.HighPart));
 			SetHex(1, static_cast<int>(liVal.LowPart));
@@ -765,9 +765,9 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 
 		break;
 	case PT_SYSTIME: // components are unsigned hex
-		szTmpString = GetStringUseControl(0);
+		szTmpString = GetEditBoxTextW(0);
 		ftVal.dwLowDateTime = wstringToUlong(szTmpString, 16);
-		szTmpString = GetStringUseControl(1);
+		szTmpString = GetEditBoxTextW(1);
 		ftVal.dwHighDateTime = wstringToUlong(szTmpString, 16);
 
 		FileTimeToString(ftVal, szTemp1, szTemp2);

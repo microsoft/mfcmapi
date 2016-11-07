@@ -92,7 +92,6 @@ protected:
 	void ResizeList(ULONG uControl, bool bSort) const;
 
 	// Functions used by derived classes during handle change events
-	_Check_return_ wstring GetStringUseControl(ULONG iControl) const;
 	_Check_return_ ULONG GetHexUseControl(ULONG i) const;
 	_Check_return_ ULONG GetDecimalUseControl(ULONG i) const;
 	_Check_return_ ULONG GetPropTagUseControl(ULONG iControl) const;

@@ -96,7 +96,7 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 	break;
 	case HEXED_BASE64: // base64 changed
 	{
-		auto szTmpString = GetStringUseControl(HEXED_BASE64);
+		auto szTmpString = GetEditBoxTextW(HEXED_BASE64);
 
 		// remove any whitespace before decoding
 		szTmpString = CleanString(szTmpString);

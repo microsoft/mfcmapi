@@ -33,7 +33,6 @@ public:
 	wstring GetStringW() const;
 	_Check_return_ string GetEditBoxTextA();
 	_Check_return_ wstring GetEditBoxTextW();
-	_Check_return_ wstring GetStringUseControl();
 	bool m_bMultiline;
 
 protected:
