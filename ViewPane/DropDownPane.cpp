@@ -171,6 +171,7 @@ void DropDownPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 	m_DropDown.SetCurSel(static_cast<int>(m_iDropSelectionValue));
 
 	m_bInitialized = true;
+	SetDropDownSelection(m_lpszSelectionString);
 }
 
 void DropDownPane::InsertDropString(_In_ const wstring& szText, ULONG ulValue)
@@ -269,8 +270,11 @@ _Check_return_ GUID DropDownPane::GetSelectedGUID(bool bByteSwapped) const
 
 void DropDownPane::SetDropDownSelection(_In_ const wstring& szText)
 {
+	m_lpszSelectionString = szText;
+	if (!m_bInitialized) return;
+
 	auto hRes = S_OK;
-	auto text = wstringTotstring(szText);
+	auto text = wstringTotstring(m_lpszSelectionString);
 	auto iSelect = m_DropDown.SelectString(0, text.c_str());
 
 	// if we can't select, try pushing the text in there
