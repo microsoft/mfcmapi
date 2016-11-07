@@ -24,7 +24,7 @@ public:
 	virtual void SetStringW(wstring szMsg);
 	void SetBinary(_In_opt_count_(cb) LPBYTE lpb, size_t cb);
 	void InitEditFromBinaryStream(_In_ LPSTREAM lpStreamIn);
-	void WriteToBinaryStream(_In_ LPSTREAM lpStreamOut) const;
+	void WriteToBinaryStream(_In_ LPSTREAM lpStreamOut);
 	void AppendString(_In_ wstring szMsg);
 	void ShowWindow(int nCmdShow);
 
@@ -33,7 +33,7 @@ public:
 	wstring GetStringW() const;
 	_Check_return_ string GetEditBoxTextA();
 	_Check_return_ wstring GetEditBoxTextW();
-	_Check_return_ wstring GetStringUseControl() const;
+	_Check_return_ wstring GetStringUseControl();
 	bool m_bMultiline;
 
 protected:

@@ -422,12 +422,10 @@ _Check_return_ wstring TextPane::GetEditBoxTextW()
 	return GetStringW();
 }
 
-_Check_return_ wstring TextPane::GetStringUseControl() const
+_Check_return_ wstring TextPane::GetStringUseControl()
 {
-	auto len = GetWindowTextLength(m_EditBox.m_hWnd) + 1;
-	vector<wchar_t> text(len);
-	GetWindowTextW(m_EditBox.m_hWnd, &text[0], len);
-	return &text[0];
+	CommitUIValues();
+	return GetStringW();
 }
 
 // Takes a binary stream and initializes an edit control with the HEX version of this stream
@@ -447,7 +445,7 @@ void TextPane::InitEditFromBinaryStream(_In_ LPSTREAM lpStreamIn)
 }
 
 // Writes a hex pane out to a binary stream
-void TextPane::WriteToBinaryStream(_In_ LPSTREAM lpStreamOut) const
+void TextPane::WriteToBinaryStream(_In_ LPSTREAM lpStreamOut)
 {
 	auto hRes = S_OK;
 
