@@ -66,7 +66,7 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 	{
 	case HEXED_ANSI:
 	{
-		auto text = GetEditBoxTextA(HEXED_ANSI);
+		auto text = GetStringA(HEXED_ANSI);
 		SetStringA(HEXED_UNICODE, text);
 
 		lpb = LPBYTE(text.c_str());
@@ -81,7 +81,7 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 	break;
 	case HEXED_UNICODE: // Unicode string changed
 	{
-		auto text = GetEditBoxTextW(HEXED_UNICODE);
+		auto text = GetStringW(HEXED_UNICODE);
 		SetStringW(HEXED_ANSI, text);
 
 		lpb = LPBYTE(text.c_str());
@@ -96,7 +96,7 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 	break;
 	case HEXED_BASE64: // base64 changed
 	{
-		auto szTmpString = GetEditBoxTextW(HEXED_BASE64);
+		auto szTmpString = GetStringW(HEXED_BASE64);
 
 		// remove any whitespace before decoding
 		szTmpString = CleanString(szTmpString);

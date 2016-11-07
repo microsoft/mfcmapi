@@ -337,12 +337,14 @@ void TextPane::SetEditReadOnly()
 
 wstring TextPane::GetStringW() const
 {
-	return m_lpszW;
+	if (m_bCommitted) return m_lpszW;
+	return GetUIValue();
 }
 
 string TextPane::GetStringA() const
 {
-	return wstringTostring(m_lpszW);
+	if (m_bCommitted) return wstringTostring(m_lpszW);
+	return wstringTostring(GetUIValue());
 }
 
 wstring TextPane::GetUIValue() const
@@ -417,17 +419,6 @@ void TextPane::CommitUIValues()
 	m_bCommitted = true;
 }
 
-// No need to free this - treat it like a static
-_Check_return_ string TextPane::GetEditBoxTextA() const
-{
-	return wstringTostring(GetEditBoxTextW());
-}
-
-_Check_return_ wstring TextPane::GetEditBoxTextW() const
-{
-	return GetUIValue();
-}
-
 // Takes a binary stream and initializes an edit control with the HEX version of this stream
 void TextPane::InitEditFromBinaryStream(_In_ LPSTREAM lpStreamIn)
 {
@@ -449,7 +440,7 @@ void TextPane::WriteToBinaryStream(_In_ LPSTREAM lpStreamOut) const
 {
 	auto hRes = S_OK;
 
-	auto bin = HexStringToBin(GetEditBoxTextW());
+	auto bin = HexStringToBin(GetStringW());
 	if (bin.data() != nullptr)
 	{
 		ULONG cbWritten = 0;

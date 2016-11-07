@@ -425,14 +425,14 @@ _Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
 		case EDITOR_STREAM_BINARY:
 		default:
 		{
-			auto lpszA = GetEditBoxTextA(m_iTextBox);
+			auto lpszA = GetStringA(m_iTextBox);
 
 			lpBinPane->SetBinary(LPBYTE(lpszA.c_str()), lpszA.length() * sizeof(CHAR));
 			lpBinPane->SetCount(lpszA.length() * sizeof(CHAR));
 			break;
 		}
 		case EDITOR_STREAM_UNICODE:
-			auto lpszW = GetEditBoxTextW(m_iTextBox);
+			auto lpszW = GetStringW(m_iTextBox);
 
 			lpBinPane->SetBinary(LPBYTE(lpszW.c_str()), lpszW.length() * sizeof(WCHAR));
 			lpBinPane->SetCount(lpszW.length() * sizeof(WCHAR));

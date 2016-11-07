@@ -35,8 +35,7 @@ public:
 	void SetEditReadOnly();
 
 	wstring GetStringW() const;
-	_Check_return_ string GetEditBoxTextA() const;
-	_Check_return_ wstring GetEditBoxTextW() const;
+	string GetStringA() const;
 	bool m_bMultiline;
 
 protected:
@@ -46,7 +45,6 @@ protected:
 private:
 	wstring GetUIValue() const;
 	void CommitUIValues() override;
-	string GetStringA() const;
 	void SetEditBoxText();
 
 	wstring m_lpszW;

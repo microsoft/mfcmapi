@@ -64,7 +64,7 @@ COptions::~COptions()
 void COptions::OnOK()
 {
 	// need to grab this FIRST
-	RegKeys[regkeyDEBUG_FILE_NAME].szCurSTRING = GetEditBoxTextW(regkeyDEBUG_FILE_NAME);
+	RegKeys[regkeyDEBUG_FILE_NAME].szCurSTRING = GetStringW(regkeyDEBUG_FILE_NAME);
 
 	if (GetHex(regkeyDEBUG_TAG) != RegKeys[regkeyDEBUG_TAG].ulCurDWORD)
 	{
