@@ -1042,24 +1042,6 @@ void CEditor::SetBinary(ULONG i, _In_opt_count_(cb) LPBYTE lpb, size_t cb) const
 	}
 }
 
-void CEditor::SetBinary(ULONG i, _In_ vector<BYTE> bin) const
-{
-	auto pane = dynamic_cast<TextPane*>(GetPane(i));
-	if (pane)
-	{
-		pane->SetBinary(bin.data(), bin.size());
-	}
-}
-
-void CEditor::SetBinary(ULONG i, _In_ SBinary bin) const
-{
-	auto pane = dynamic_cast<TextPane*>(GetPane(i));
-	if (pane)
-	{
-		pane->SetBinary(bin.lpb, bin.cb);
-	}
-}
-
 // Updates pane using SetStringW
 void CEditor::SetSize(ULONG i, size_t cb) const
 {

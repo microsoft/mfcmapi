@@ -787,7 +787,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 			Bin.lpb = LPBYTE(lpszA.c_str());
 			Bin.cb = ULONG(lpszA.length() * sizeof(CHAR));
 
-			SetBinary(0, Bin);
+			SetBinary(0, Bin.lpb, Bin.cb);
 		}
 
 		lpPane = static_cast<CountedTextPane*>(GetPane(0));
