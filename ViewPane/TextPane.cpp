@@ -335,12 +335,6 @@ void TextPane::SetReadOnly()
 	m_EditBox.SetReadOnly();
 }
 
-void TextPane::SetReadOnly()
-{
-	m_EditBox.SetBackgroundColor(false, MyGetSysColor(cBackgroundReadOnly));
-	m_EditBox.SetReadOnly();
-}
-
 void TextPane::SetMultiline()
 {
 	m_bMultiline = true;
