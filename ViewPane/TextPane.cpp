@@ -10,7 +10,7 @@ TextPane* TextPane::CreateMultiLinePane(UINT uidLabel, bool bReadOnly)
 	return CreateSingleLinePane(uidLabel, bReadOnly, true);
 }
 
-TextPane* TextPane::CreateMultiLinePane(UINT uidLabel, _In_ const wstring szVal, bool bReadOnly)
+TextPane* TextPane::CreateMultiLinePane(UINT uidLabel, _In_ wstring const& szVal, bool bReadOnly)
 {
 	return CreateSingleLinePane(uidLabel, szVal, bReadOnly, true);
 }
@@ -23,11 +23,11 @@ TextPane* TextPane::CreateSingleLinePane(UINT uidLabel, bool bReadOnly, bool bMu
 		lpPane->m_bMultiline = bMultiLine;
 		lpPane->SetLabel(uidLabel, bReadOnly);
 	}
-	
+
 	return lpPane;
 }
 
-TextPane* TextPane::CreateSingleLinePane(UINT uidLabel, _In_ const wstring szVal, bool bReadOnly, bool bMultiLine)
+TextPane* TextPane::CreateSingleLinePane(UINT uidLabel, _In_ wstring const& szVal, bool bReadOnly, bool bMultiLine)
 {
 	auto lpPane = new TextPane();
 	if (lpPane)
@@ -278,7 +278,7 @@ void TextPane::SetEditBoxText()
 }
 
 // Sets m_lpszW
-void TextPane::SetStringW(const wstring szMsg)
+void TextPane::SetStringW(wstring const& szMsg)
 {
 	m_lpszW = szMsg;
 
@@ -298,7 +298,7 @@ void TextPane::SetBinary(_In_opt_count_(cb) LPBYTE lpb, size_t cb)
 }
 
 // This is used by the DbgView - don't call any debugger functions here!!!
-void TextPane::AppendString(_In_ const wstring szMsg)
+void TextPane::AppendString(_In_ wstring const& szMsg)
 {
 	m_EditBox.HideSelection(false, true);
 

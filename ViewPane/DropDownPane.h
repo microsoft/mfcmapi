@@ -7,8 +7,8 @@ public:
 	static DropDownPane* Create(UINT uidLabel, ULONG ulDropList, _In_opt_count_(ulDropList) UINT* lpuidDropList, bool bReadOnly);
 	static DropDownPane* CreateGuid(UINT uidLabel, bool bReadOnly);
 
-	void SetDropDownSelection(_In_ const wstring& szText);
-	void InsertDropString(_In_ const wstring& szText, ULONG ulValue);
+	void SetDropDownSelection(_In_ wstring const & szText);
+	void InsertDropString(_In_ wstring const& szText, ULONG ulValue);
 	_Check_return_ wstring GetDropStringUseControl() const;
 	_Check_return_ int GetDropDownSelection() const;
 	_Check_return_ DWORD_PTR GetDropDownSelectionValue() const;

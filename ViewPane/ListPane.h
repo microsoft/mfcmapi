@@ -13,8 +13,8 @@ public:
 	static ListPane* Create(UINT uidLabel, bool bAllowSort, bool bReadOnly, DoListEditCallback callback);
 
 	ULONG HandleChange(UINT nID) override;
-	void SetListString(ULONG iListRow, ULONG iListCol, const wstring szListString);
-	_Check_return_ SortListData* InsertRow(int iRow, const wstring szText) const;
+	void SetListString(ULONG iListRow, ULONG iListCol, wstring const& szListString);
+	_Check_return_ SortListData* InsertRow(int iRow, wstring const& szText) const;
 	void ClearList();
 	void ResizeList(bool bSort);
 	_Check_return_ ULONG GetItemCount() const;

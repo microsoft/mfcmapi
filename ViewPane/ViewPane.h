@@ -33,7 +33,7 @@ public:
 		int iLargeHeightMargin,
 		int iButtonHeight, // Height of buttons below the control
 		int iEditHeight); // height of an edit control
-	void SetAddInLabel(const wstring szLabel);
+	void SetAddInLabel( wstring const& szLabel);
 	bool MatchID(UINT nID) const;
 	virtual void UpdateButtons();
 
