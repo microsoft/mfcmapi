@@ -1,6 +1,3 @@
-// DbgView.cpp : implementation file
-//
-
 #include "stdafx.h"
 #include <Dialogs/Editors/Editor.h>
 #include "DbgView.h"
@@ -13,14 +10,15 @@ class CDbgView : public CEditor
 public:
 	CDbgView(_In_ CParentWnd* pParentWnd);
 	virtual ~CDbgView();
-	void AppendText(wstring szMsg) const;
+	void AppendText(const wstring& szMsg) const;
 
 private:
 	_Check_return_ ULONG HandleChange(UINT nID) override;
 	void  OnEditAction1() override;
 	void  OnEditAction2() override;
 
-	void OnOK() override;
+	// OnOK override does nothing except *not* call base OnOK
+	void OnOK() override {}
 	void OnCancel() override;
 	bool m_bPaused;
 };
@@ -33,7 +31,7 @@ void DisplayDbgView(_In_ CParentWnd* pParentWnd)
 	if (!g_DgbView) g_DgbView = new CDbgView(pParentWnd);
 }
 
-void OutputToDbgView(wstring szMsg)
+void OutputToDbgView(const wstring& szMsg)
 {
 	if (!g_DgbView) return;
 	g_DgbView->AppendText(szMsg);
@@ -65,11 +63,6 @@ CDbgView::~CDbgView()
 {
 	TRACE_DESTRUCTOR(CLASS);
 	g_DgbView = nullptr;
-}
-
-void CDbgView::OnOK()
-{
-	// Override does nothing except *not* call base OnOK
 }
 
 void CDbgView::OnCancel()
@@ -121,7 +114,7 @@ void CDbgView::OnEditAction2()
 	OnCancel();
 }
 
-void CDbgView::AppendText(wstring szMsg) const
+void CDbgView::AppendText(const wstring& szMsg) const
 {
 	if (m_bPaused) return;
 
