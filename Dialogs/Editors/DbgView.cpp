@@ -111,7 +111,7 @@ void CDbgView::OnEditAction1()
 	auto lpPane = static_cast<TextPane*>(GetPane(DBGVIEW_VIEW));
 	if (lpPane)
 	{
-		return lpPane->ClearView();
+		return lpPane->Clear();
 	}
 }
 

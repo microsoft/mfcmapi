@@ -10,6 +10,7 @@ CountedTextPane* CountedTextPane::Create(UINT uidLabel, bool bReadOnly, UINT uid
 	if (lpPane)
 	{
 		lpPane->m_szCountLabel = loadstring(uidCountLabel);
+		lpPane->SetMultiline();
 		lpPane->SetLabel(uidLabel, bReadOnly);
 	}
 
@@ -18,7 +19,6 @@ CountedTextPane* CountedTextPane::Create(UINT uidLabel, bool bReadOnly, UINT uid
 
 CountedTextPane::CountedTextPane()
 {
-	m_bMultiline = true;
 	m_iCountLabelWidth = 0;
 	m_iCount = 0;
 }

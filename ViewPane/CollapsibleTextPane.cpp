@@ -8,15 +8,11 @@ CollapsibleTextPane* CollapsibleTextPane::Create(UINT uidLabel, bool bReadOnly)
 	auto pane = new CollapsibleTextPane();
 	if (pane)
 	{
+		pane->SetMultiline();
 		pane->SetLabel(uidLabel, bReadOnly);
 	}
 
 	return pane;
-}
-
-CollapsibleTextPane::CollapsibleTextPane()
-{
-	m_bMultiline = true;
 }
 
 bool CollapsibleTextPane::IsType(__ViewTypes vType)

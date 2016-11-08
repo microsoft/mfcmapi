@@ -362,7 +362,7 @@ void CStreamEditor::ReadTextStreamFromProperty() const
 		auto lpPane = static_cast<TextPane*>(GetPane(m_iBinBox));
 		if (lpPane)
 		{
-			return lpPane->InitEditFromBinaryStream(m_lpStream);
+			return lpPane->SetBinaryStream(m_lpStream);
 		}
 	}
 }
@@ -491,7 +491,7 @@ void CStreamEditor::SetEditReadOnly(ULONG iControl) const
 	auto lpPane = static_cast<TextPane*>(GetPane(iControl));
 	if (lpPane)
 	{
-		lpPane->SetEditReadOnly();
+		lpPane->SetReadOnly();
 	}
 }
 

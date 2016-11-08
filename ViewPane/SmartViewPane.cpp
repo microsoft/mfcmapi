@@ -18,7 +18,7 @@ SmartViewPane* SmartViewPane::Create(UINT uidLabel)
 
 SmartViewPane::SmartViewPane()
 {
-	m_TextPane.m_bMultiline = true;
+	m_TextPane.SetMultiline();
 	m_TextPane.SetLabel(NULL, true);
 	m_bHasData = false;
 	m_bDoDropDown = true;

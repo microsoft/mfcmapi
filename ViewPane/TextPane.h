@@ -23,20 +23,21 @@ public:
 	ULONG GetFlags() override;
 	int GetFixedHeight() override;
 	int GetLines() override;
-	void ClearView();
-	virtual void SetStringA(string szMsg);
-	virtual void SetStringW(wstring szMsg);
+
+	void Clear();
+	void SetStringA(string szMsg);
+	void SetStringW(wstring szMsg);
 	void SetBinary(_In_opt_count_(cb) LPBYTE lpb, size_t cb);
-	void InitEditFromBinaryStream(_In_ LPSTREAM lpStreamIn);
-	void WriteToBinaryStream(_In_ LPSTREAM lpStreamOut) const;
+	void SetBinaryStream(_In_ LPSTREAM lpStreamIn);
+	void GetBinaryStream(_In_ LPSTREAM lpStreamOut) const;
 	void AppendString(_In_ wstring szMsg);
 	void ShowWindow(int nCmdShow);
 
-	void SetEditReadOnly();
+	void SetReadOnly();
+	void SetMultiline();
 
 	wstring GetStringW() const;
 	string GetStringA() const;
-	bool m_bMultiline;
 
 protected:
 	bool IsType(__ViewTypes vType) override;
@@ -49,4 +50,5 @@ private:
 
 	wstring m_lpszW;
 	bool m_bCommitted;
+	bool m_bMultiline;
 };

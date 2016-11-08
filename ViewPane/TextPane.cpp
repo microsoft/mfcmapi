@@ -319,7 +319,7 @@ void TextPane::AppendString(_In_ wstring szMsg)
 }
 
 // This is used by the DbgView - don't call any debugger functions here!!!
-void TextPane::ClearView()
+void TextPane::Clear()
 {
 	m_lpszW.clear();
 	::SendMessage(
@@ -329,10 +329,21 @@ void TextPane::ClearView()
 		reinterpret_cast<LPARAM>(""));
 }
 
-void TextPane::SetEditReadOnly()
+void TextPane::SetReadOnly()
 {
 	m_EditBox.SetBackgroundColor(false, MyGetSysColor(cBackgroundReadOnly));
 	m_EditBox.SetReadOnly();
+}
+
+void TextPane::SetReadOnly()
+{
+	m_EditBox.SetBackgroundColor(false, MyGetSysColor(cBackgroundReadOnly));
+	m_EditBox.SetReadOnly();
+}
+
+void TextPane::SetMultiline()
+{
+	m_bMultiline = true;
 }
 
 wstring TextPane::GetStringW() const
@@ -420,7 +431,7 @@ void TextPane::CommitUIValues()
 }
 
 // Takes a binary stream and initializes an edit control with the HEX version of this stream
-void TextPane::InitEditFromBinaryStream(_In_ LPSTREAM lpStreamIn)
+void TextPane::SetBinaryStream(_In_ LPSTREAM lpStreamIn)
 {
 	EDITSTREAM es = { 0, 0, EditStreamReadCallBack };
 	UINT uFormat = SF_TEXT;
@@ -436,7 +447,7 @@ void TextPane::InitEditFromBinaryStream(_In_ LPSTREAM lpStreamIn)
 }
 
 // Writes a hex pane out to a binary stream
-void TextPane::WriteToBinaryStream(_In_ LPSTREAM lpStreamOut) const
+void TextPane::GetBinaryStream(_In_ LPSTREAM lpStreamOut) const
 {
 	auto hRes = S_OK;
 

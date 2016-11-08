@@ -214,7 +214,7 @@ void CHexEditor::OnEditAction1()
 				auto lpPane = static_cast<TextPane*>(GetPane(HEXED_HEX));
 				if (lpPane)
 				{
-					lpPane->InitEditFromBinaryStream(lpStream);
+					lpPane->SetBinaryStream(lpStream);
 				}
 
 				lpStream->Release();
@@ -240,7 +240,7 @@ void CHexEditor::OnEditAction2()
 			CGlobalCache::getInstance().MAPIInitialize(NULL);
 			LPSTREAM lpStream = nullptr;
 
-			// Get a Stream interface on the input file
+			// Get a Stream interface on the output file
 			EC_H(MyOpenStreamOnFile(
 				MAPIAllocateBuffer,
 				MAPIFreeBuffer,
@@ -254,8 +254,9 @@ void CHexEditor::OnEditAction2()
 				auto lpPane = static_cast<TextPane*>(GetPane(HEXED_HEX));
 				if (lpPane)
 				{
-					lpPane->WriteToBinaryStream(lpStream);
+					lpPane->GetBinaryStream(lpStream);
 				}
+
 				lpStream->Release();
 			}
 		}
