@@ -15,11 +15,6 @@ CollapsibleTextPane* CollapsibleTextPane::Create(UINT uidLabel, bool bReadOnly)
 	return pane;
 }
 
-bool CollapsibleTextPane::IsType(__ViewTypes vType)
-{
-	return CTRL_COLLAPSIBLETEXTPANE == vType || TextPane::IsType(vType);
-}
-
 ULONG CollapsibleTextPane::GetFlags()
 {
 	return TextPane::GetFlags() | vpCollapsible;

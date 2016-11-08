@@ -23,11 +23,6 @@ CountedTextPane::CountedTextPane()
 	m_iCount = 0;
 }
 
-bool CountedTextPane::IsType(__ViewTypes vType)
-{
-	return CTRL_COUNTEDTEXTPANE == vType || TextPane::IsType(vType);
-}
-
 ULONG CountedTextPane::GetFlags()
 {
 	return TextPane::GetFlags() | vpCollapsible;

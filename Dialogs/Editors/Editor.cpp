@@ -961,7 +961,8 @@ void CEditor::DeleteControls()
 // TODO: Use iNum as a proper accessor name
 void CEditor::InitPane(ULONG iNum, ViewPane* lpPane)
 {
-	if (lpPane && lpPane->IsType(CTRL_LISTPANE)) m_ulListNum = iNum;
+	auto listPane = dynamic_cast<ListPane*>(lpPane);
+	if (listPane) m_ulListNum = iNum;
 	m_lpControls.push_back(lpPane);
 }
 

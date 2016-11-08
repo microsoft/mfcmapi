@@ -44,11 +44,6 @@ DropDownPane::DropDownPane()
 	m_iDropSelectionValue = 0;
 }
 
-bool DropDownPane::IsType(__ViewTypes vType)
-{
-	return CTRL_DROPDOWNPANE == vType;
-}
-
 ULONG DropDownPane::GetFlags()
 {
 	ULONG ulFlags = vpNone;

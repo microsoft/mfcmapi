@@ -25,11 +25,6 @@ SmartViewPane::SmartViewPane()
 	m_bReadOnly = true;
 }
 
-bool SmartViewPane::IsType(__ViewTypes vType)
-{
-	return CTRL_SMARTVIEWPANE == vType || DropDownPane::IsType(vType);
-}
-
 ULONG SmartViewPane::GetFlags()
 {
 	return DropDownPane::GetFlags() | vpCollapsible;

@@ -42,11 +42,6 @@ void ListPane::Setup(bool bAllowSort, DoListEditCallback callback)
 	m_callback = callback;
 }
 
-bool ListPane::IsType(__ViewTypes vType)
-{
-	return CTRL_LISTPANE == vType;
-}
-
 ULONG ListPane::GetFlags()
 {
 	ULONG ulFlags = vpNone;

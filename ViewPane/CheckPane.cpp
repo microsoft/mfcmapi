@@ -15,11 +15,6 @@ CheckPane* CheckPane::Create(UINT uidLabel, bool bVal, bool bReadOnly)
 	return pane;
 }
 
-bool CheckPane::IsType(__ViewTypes vType)
-{
-	return CTRL_CHECKPANE == vType;
-}
-
 ULONG CheckPane::GetFlags()
 {
 	ULONG ulFlags = vpNone;

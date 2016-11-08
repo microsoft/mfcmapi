@@ -11,25 +11,12 @@ enum __ViewPaneFlags
 	vpCollapsible = 0x0004, // Pane can be collapsed and needs a collapse button
 };
 
-enum __ViewTypes
-{
-	CTRL_UNKNOWN,
-	CTRL_CHECKPANE,
-	CTRL_LISTPANE,
-	CTRL_DROPDOWNPANE,
-	CTRL_TEXTPANE,
-	CTRL_COLLAPSIBLETEXTPANE,
-	CTRL_COUNTEDTEXTPANE,
-	CTRL_SMARTVIEWPANE,
-};
-
 class ViewPane
 {
 public:
 	ViewPane();
 	virtual ~ViewPane() = default;
 
-	virtual bool IsType(__ViewTypes vType) = 0;
 	void SetLabel(UINT uidLabel, bool bReadOnly);
 	virtual void Initialize(int iControl, _In_ CWnd* pParent, _In_opt_ HDC hdc);
 	virtual void SetWindowPos(int x, int y, int width, int height) = 0;

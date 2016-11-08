@@ -40,7 +40,6 @@ public:
 	string GetStringA() const;
 
 protected:
-	bool IsType(__ViewTypes vType) override;
 	CRichEditCtrl m_EditBox;
 
 private:
