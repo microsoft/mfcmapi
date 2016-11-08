@@ -41,7 +41,6 @@ protected:
 	int m_iControl; // Number of the view pane in the view - used for callbacks and layout
 	bool m_bInitialized;
 	bool m_bReadOnly;
-	bool m_bUseLabelControl; // whether we have a label to display
 	wstring m_szLabel; // Text to push into UI in Initialize
 	int m_iLabelWidth; // The width of the label
 	CEdit m_Label;

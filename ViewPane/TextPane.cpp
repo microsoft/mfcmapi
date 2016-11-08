@@ -119,7 +119,7 @@ int TextPane::GetFixedHeight()
 	auto iHeight = 0;
 	if (0 != m_iControl) iHeight += m_iSmallHeightMargin; // Top margin
 
-	if (m_bUseLabelControl)
+	if (!m_szLabel.empty())
 	{
 		// Text labels will bump directly against their edit control, so we don't add a margin here
 		iHeight += m_iLabelHeight;
@@ -154,7 +154,7 @@ void TextPane::SetWindowPos(int x, int y, int width, int height)
 		height -= m_iSmallHeightMargin;
 	}
 
-	if (m_bUseLabelControl)
+	if (!m_szLabel.empty())
 	{
 		EC_B(m_Label.SetWindowPos(
 			nullptr,

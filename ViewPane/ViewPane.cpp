@@ -21,7 +21,6 @@ ViewPane::ViewPane()
 	m_iSmallHeightMargin = 0;
 	m_iLabelWidth = 0;
 
-	m_bUseLabelControl = false;
 	m_hWndParent = nullptr;
 }
 
@@ -50,7 +49,6 @@ void ViewPane::SetLabel(UINT uidLabel, bool bReadOnly)
 
 	if (uidLabel)
 	{
-		m_bUseLabelControl = true;
 		m_szLabel = loadstring(uidLabel);
 	}
 }
@@ -143,7 +141,6 @@ void ViewPane::SetMargins(
 
 void ViewPane::SetAddInLabel(const wstring szLabel)
 {
-	m_bUseLabelControl = true;
 	m_szLabel = szLabel;
 }
 

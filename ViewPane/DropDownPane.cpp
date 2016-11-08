@@ -73,7 +73,7 @@ int DropDownPane::GetFixedHeight()
 
 	if (0 != m_iControl) iHeight += m_iSmallHeightMargin; // Top margin
 
-	if (m_bUseLabelControl)
+	if (!m_szLabel.empty())
 	{
 		iHeight += m_iLabelHeight;
 	}
@@ -98,7 +98,7 @@ void DropDownPane::SetWindowPos(int x, int y, int width, int /*height*/)
 		// height -= m_iSmallHeightMargin;
 	}
 
-	if (m_bUseLabelControl)
+	if (!m_szLabel.empty())
 	{
 		EC_B(m_Label.SetWindowPos(
 			nullptr,
