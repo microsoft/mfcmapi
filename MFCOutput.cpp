@@ -165,7 +165,7 @@ void OutputThreadTime(ULONG ulDbgLvl)
 }
 
 // The root of all debug output - call no debug output functions besides OutputDebugString from here!
-void Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, wstring const& szMsg)
+void Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, const wstring& szMsg)
 {
 	CHKPARAM;
 	EARLYABORT;
@@ -1000,7 +1000,7 @@ void OutputCDataClose(ULONG ulDbgLvl, _In_opt_ FILE* fFile)
 	Output(ulDbgLvl, fFile, false, L"]]>");
 }
 
-void OutputXMLValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, wstring const& szValue, bool bWrapCData, int iIndent)
+void OutputXMLValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, const wstring& szValue, bool bWrapCData, int iIndent)
 {
 	CHKPARAM;
 	EARLYABORT;

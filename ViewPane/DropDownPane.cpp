@@ -169,7 +169,7 @@ void DropDownPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 	SetDropDownSelection(m_lpszSelectionString);
 }
 
-void DropDownPane::InsertDropString(_In_ wstring const& szText, ULONG ulValue)
+void DropDownPane::InsertDropString(_In_ const wstring& szText, ULONG ulValue)
 {
 	m_DropList.push_back({ szText, ulValue });
 }
@@ -263,7 +263,7 @@ _Check_return_ GUID DropDownPane::GetSelectedGUID(bool bByteSwapped) const
 	return{ 0 };
 }
 
-void DropDownPane::SetDropDownSelection(_In_ wstring const& szText)
+void DropDownPane::SetDropDownSelection(_In_ const wstring& szText)
 {
 	m_lpszSelectionString = szText;
 	if (!m_bInitialized) return;

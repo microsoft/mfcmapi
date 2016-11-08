@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "Attributes.h"
 
-Attribute::Attribute(wstring const& key, wstring const& value)
+Attribute::Attribute(const wstring& key, const wstring& value)
 {
 	m_key = key;
 	m_value = value;
@@ -33,12 +33,12 @@ wstring Attribute::toXML() const
 	return m_key + L"=\"" + m_value + L"\" ";
 }
 
-void Attributes::AddAttribute(wstring const& key, wstring const& value)
+void Attributes::AddAttribute(const wstring& key, const wstring& value)
 {
 	m_attributes.push_back(Attribute(key, value));
 }
 
-wstring Attributes::GetAttribute(wstring const& key)
+wstring Attributes::GetAttribute(const wstring& key)
 {
 	for (auto attribute : m_attributes)
 	{

@@ -195,7 +195,7 @@ void PrintObjectProperty(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
 	MAPIFreeBuffer(lpAllProps);
 }
 
-void PrintObjectProperties(wstring const& szObjType, _In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
+void PrintObjectProperties(const wstring& szObjType, _In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
 {
 	auto hRes = S_OK;
 	if (!lpMAPIProp) return;

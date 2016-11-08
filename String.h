@@ -27,20 +27,20 @@ wstring format(LPCWSTR szMsg, ...);
 
 wstring formatmessagesys(DWORD dwID);
 wstring formatmessage(DWORD dwID, ...);
-wstring formatmessage(wstring const szMsg, ...);
-tstring wstringTotstring(wstring const& src);
-string wstringTostring(wstring const& src);
+wstring formatmessage(const wstring szMsg, ...);
+tstring wstringTotstring(const wstring& src);
+string wstringTostring(const wstring& src);
 wstring stringTowstring(string const& src);
 wstring LPCTSTRToWstring(LPCTSTR src);
 wstring LPCSTRToWstring(LPCSTR src);
-wstring wstringToLower(wstring const& src);
-ULONG wstringToUlong(wstring const& src, int radix, bool rejectInvalidCharacters = true);
-long wstringToLong(wstring const& src, int radix);
-double wstringToDouble(wstring const& src);
-__int64 wstringToInt64(wstring const& src);
+wstring wstringToLower(const wstring& src);
+ULONG wstringToUlong(const wstring& src, int radix, bool rejectInvalidCharacters = true);
+long wstringToLong(const wstring& src, int radix);
+double wstringToDouble(const wstring& src);
+__int64 wstringToInt64(const wstring& src);
 
 wstring StripCharacter(wstring szString, WCHAR character);
-wstring StripCarriage(wstring const& szString);
+wstring StripCarriage(const wstring& szString);
 wstring CleanString(wstring szString);
 wstring ScrubStringForXML(wstring szString);
 wstring SanitizeFileNameW(wstring szFileIn);
@@ -55,5 +55,5 @@ wstring BinToHexString(_In_opt_ LPSBinary lpBin, bool bPrependCB);
 vector<BYTE> HexStringToBin(_In_ wstring lpsz, size_t cbTarget = 0);
 LPBYTE ByteVectorToLPBYTE(vector<BYTE> const& bin);
 
-vector<wstring> split(const wstring &str, const wchar_t delim);
+vector<wstring> split(const wstring& str, const wchar_t delim);
 wstring join(const vector<wstring> elems, const wchar_t delim);

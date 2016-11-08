@@ -32,7 +32,7 @@ void InitMFC()
 #pragma warning(pop)
 }
 
-_Check_return_ HRESULT MrMAPILogonEx(wstring const& lpszProfile, _Deref_out_opt_ LPMAPISESSION* lppSession)
+_Check_return_ HRESULT MrMAPILogonEx(const wstring& lpszProfile, _Deref_out_opt_ LPMAPISESSION* lppSession)
 {
 	auto hRes = S_OK;
 	auto ulFlags = MAPI_EXTENDED | MAPI_NO_MAIL | MAPI_UNICODE | MAPI_NEW_SESSION;

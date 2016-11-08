@@ -90,7 +90,7 @@ struct MYOPTIONS
 	MYOPTIONS();
 };
 
-_Check_return_ HRESULT MrMAPILogonEx(wstring const& lpszProfile, _Deref_out_opt_ LPMAPISESSION* lppSession);
+_Check_return_ HRESULT MrMAPILogonEx(const wstring& lpszProfile, _Deref_out_opt_ LPMAPISESSION* lppSession);
 _Check_return_ HRESULT OpenExchangeOrDefaultMessageStore(
 							 _In_ LPMAPISESSION lpMAPISession,
 							 _Deref_out_opt_ LPMDB* lppMDB);

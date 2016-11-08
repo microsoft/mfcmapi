@@ -3,7 +3,7 @@
 class Attribute
 {
 public:
-	Attribute(wstring const& key, wstring const& value);
+	Attribute(const wstring& key, const wstring& value);
 	Attribute(Attribute const& other);
 
 	bool empty() const;
@@ -20,8 +20,8 @@ private:
 class Attributes
 {
 public:
-	void AddAttribute(wstring const& key, wstring const& value);
-	wstring GetAttribute(wstring const& key);
+	void AddAttribute(const wstring& key, const wstring& value);
+	wstring GetAttribute(const wstring& key);
 
 	wstring toXML();
 

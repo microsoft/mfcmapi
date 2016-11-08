@@ -55,7 +55,7 @@ void SetDebugOutputToFile(bool bDoOutput);
 _Check_return_ FILE* MyOpenFile(wstring szFileName, bool bNewFile);
 void CloseFile(_In_opt_ FILE* fFile);
 
-void Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, wstring const& szMsg);
+void Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, const wstring& szMsg);
 void __cdecl Outputf(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, LPCWSTR szMsg, ...);
 #ifdef CHECKFORMATPARAMS
 #undef Outputf
@@ -138,7 +138,7 @@ void _OutputEntryList(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPENTRYLIST lpE
 #define TRACE_RELEASE(__class,__count)
 #endif
 
-void OutputXMLValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, wstring const& szValue, bool bWrapCData, int iIndent);
+void OutputXMLValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, const wstring& szValue, bool bWrapCData, int iIndent);
 void OutputCDataOpen(ULONG ulDbgLvl, _In_opt_ FILE* fFile);
 void OutputCDataClose(ULONG ulDbgLvl, _In_opt_ FILE* fFile);
 

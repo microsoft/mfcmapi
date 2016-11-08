@@ -333,11 +333,11 @@ _Check_return_ GUID StringToGUID(_In_ const wstring& szGUID, bool bByteSwapped)
 vector<wstring> NameIDToPropNames(_In_ LPMAPINAMEID lpNameID)
 {
 	vector<wstring> results;
-	if (!lpNameID) return {};
-	if (lpNameID->ulKind != MNID_ID) return {};
+	if (!lpNameID) return{};
+	if (lpNameID->ulKind != MNID_ID) return{};
 	ULONG ulMatch = ulNoMatch;
 
-	if (NameIDArray.empty()) return {};
+	if (NameIDArray.empty()) return{};
 
 	for (ULONG ulCur = 0; ulCur < NameIDArray.size(); ulCur++)
 	{

@@ -4,7 +4,7 @@
 class Parsing
 {
 public:
-	Parsing(wstring const& szParsing, bool bXMLSafe, Attributes const& attributes);
+	Parsing(const wstring& szParsing, bool bXMLSafe, Attributes const& attributes);
 	Parsing(Parsing const& other);
 
 	wstring toXML(UINT uidTag, int iIndent);
@@ -22,7 +22,7 @@ public:
 	void AddParsing(Parsing const& mainParsing, Parsing const& altParsing);
 	void AddMVParsing(Property const& Property);
 
-	void AddAttribute(wstring const& key, wstring const& value);
+	void AddAttribute(const wstring& key, const wstring& value);
 
 	wstring toXML(int iIndent);
 	wstring toString();

@@ -15,7 +15,7 @@ wstring tagclose(_In_ wstring szTag, int iIndent)
 	return indent(iIndent) + L"</" + szTag + L">\n";
 }
 
-Parsing::Parsing(wstring const& szParsing, bool bXMLSafe, Attributes const& attributes)
+Parsing::Parsing(const wstring& szParsing, bool bXMLSafe, Attributes const& attributes)
 {
 	m_szParsing = szParsing;
 	m_bXMLSafe = bXMLSafe;
@@ -84,7 +84,7 @@ void Property::AddMVParsing(Property const& Property)
 	m_AltParsing.push_back(Property.m_AltParsing[0]);
 }
 
-void Property::AddAttribute(wstring const& key, wstring const& value)
+void Property::AddAttribute(const wstring& key, const wstring& value)
 {
 	m_attributes.AddAttribute(key, value);
 }

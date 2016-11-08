@@ -136,7 +136,7 @@ void SmartViewPane::SetMargins(
 	ViewPane::SetMargins(iMargin, iSideMargin, iLabelHeight, iSmallHeightMargin, iLargeHeightMargin, iButtonHeight, iEditHeight);
 }
 
-void SmartViewPane::SetStringW(wstring const& szMsg)
+void SmartViewPane::SetStringW(const wstring& szMsg)
 {
 	if (!szMsg.empty())
 	{

@@ -55,7 +55,7 @@ wstring loadstring(DWORD dwID)
 	return fmtString;
 }
 
-wstring formatmessageV(wstring const& szMsg, va_list argList)
+wstring formatmessageV(const wstring& szMsg, va_list argList)
 {
 	LPWSTR buffer = nullptr;
 	auto dw = FormatMessageW(FORMAT_MESSAGE_FROM_STRING | FORMAT_MESSAGE_ALLOCATE_BUFFER, szMsg.c_str(), 0, 0, reinterpret_cast<LPWSTR>(&buffer), 0, &argList);
@@ -94,7 +94,7 @@ wstring formatmessage(DWORD dwID, ...)
 }
 
 // Takes format strings with %1 %2 %3...
-wstring formatmessage(wstring const szMsg, ...)
+wstring formatmessage(const wstring szMsg, ...)
 {
 	va_list argList;
 	va_start(argList, szMsg);
@@ -103,7 +103,7 @@ wstring formatmessage(wstring const szMsg, ...)
 	return ret;
 }
 
-tstring wstringTotstring(wstring const& src)
+tstring wstringTotstring(const wstring& src)
 {
 #ifdef _UNICODE
 	return src;
@@ -112,7 +112,7 @@ tstring wstringTotstring(wstring const& src)
 #endif
 }
 
-string wstringTostring(wstring const& src)
+string wstringTostring(const wstring& src)
 {
 	return string(src.begin(), src.end());
 }
@@ -140,7 +140,7 @@ wstring LPCSTRToWstring(LPCSTR src)
 	return wstring(ansi.begin(), ansi.end());
 }
 
-wstring wstringToLower(wstring const& src)
+wstring wstringToLower(const wstring& src)
 {
 	auto dst = src;
 	transform(dst.begin(), dst.end(), dst.begin(), ::tolower);
@@ -148,7 +148,7 @@ wstring wstringToLower(wstring const& src)
 }
 
 // Converts a wstring to a ulong. Will return 0 if string is empty or contains non-numeric data.
-ULONG wstringToUlong(wstring const& src, int radix, bool rejectInvalidCharacters)
+ULONG wstringToUlong(const wstring& src, int radix, bool rejectInvalidCharacters)
 {
 	if (src.empty()) return 0;
 
@@ -168,7 +168,7 @@ ULONG wstringToUlong(wstring const& src, int radix, bool rejectInvalidCharacters
 }
 
 // Converts a wstring to a long. Will return 0 if string is empty or contains non-numeric data.
-long wstringToLong(wstring const& src, int radix)
+long wstringToLong(const wstring& src, int radix)
 {
 	if (src.empty()) return 0;
 
@@ -185,7 +185,7 @@ long wstringToLong(wstring const& src, int radix)
 }
 
 // Converts a wstring to a double. Will return 0 if string is empty or contains non-numeric data.
-double wstringToDouble(wstring const& src)
+double wstringToDouble(const wstring& src)
 {
 	if (src.empty()) return 0;
 
@@ -201,7 +201,7 @@ double wstringToDouble(wstring const& src)
 	return dArg;
 }
 
-__int64 wstringToInt64(wstring const& src)
+__int64 wstringToInt64(const wstring& src)
 {
 	if (src.empty()) return 0;
 
@@ -214,7 +214,7 @@ wstring StripCharacter(wstring szString, WCHAR character)
 	return szString;
 }
 
-wstring StripCarriage(wstring const& szString)
+wstring StripCarriage(const wstring& szString)
 {
 	return StripCharacter(szString, L'\r');
 }
@@ -450,7 +450,7 @@ LPBYTE ByteVectorToLPBYTE(vector<BYTE> const& bin)
 	return nullptr;
 }
 
-vector<wstring> split(const wstring &str, const wchar_t delim)
+vector<wstring> split(const wstring& str, const wchar_t delim)
 {
 	auto ss = wstringstream(str);
 	wstring item;
