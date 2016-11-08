@@ -985,7 +985,7 @@ void CEditor::SetStringA(ULONG i, string szMsg) const
 	auto pane = dynamic_cast<TextPane*>(GetPane(i));
 	if (pane)
 	{
-		pane->SetStringA(szMsg);
+		pane->SetStringW(stringTowstring(szMsg));
 	}
 }
 
@@ -1150,7 +1150,7 @@ _Check_return_ string CEditor::GetStringA(ULONG iControl) const
 	auto pane = dynamic_cast<TextPane*>(GetPane(iControl));
 	if (pane)
 	{
-		return pane->GetStringA();
+		return wstringTostring(pane->GetStringW());
 	}
 
 	return "";

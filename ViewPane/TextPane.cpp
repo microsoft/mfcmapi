@@ -277,12 +277,6 @@ void TextPane::SetEditBoxText()
 	m_EditBox.SetEventMask(ulEventMask); // put original mask back
 }
 
-// Sets m_lpszW using SetStringW
-void TextPane::SetStringA(string szMsg)
-{
-	SetStringW(stringTowstring(szMsg));
-}
-
 // Sets m_lpszW
 void TextPane::SetStringW(wstring szMsg)
 {
@@ -339,12 +333,6 @@ wstring TextPane::GetStringW() const
 {
 	if (m_bCommitted) return m_lpszW;
 	return GetUIValue();
-}
-
-string TextPane::GetStringA() const
-{
-	if (m_bCommitted) return wstringTostring(m_lpszW);
-	return wstringTostring(GetUIValue());
 }
 
 wstring TextPane::GetUIValue() const

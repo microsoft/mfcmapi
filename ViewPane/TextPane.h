@@ -25,7 +25,6 @@ public:
 	int GetLines() override;
 
 	void Clear();
-	void SetStringA(string szMsg);
 	void SetStringW(wstring szMsg);
 	void SetBinary(_In_opt_count_(cb) LPBYTE lpb, size_t cb);
 	void SetBinaryStream(_In_ LPSTREAM lpStreamIn);
@@ -37,7 +36,6 @@ public:
 	void SetMultiline();
 
 	wstring GetStringW() const;
-	string GetStringA() const;
 
 protected:
 	CRichEditCtrl m_EditBox;
