@@ -141,7 +141,7 @@ void ViewPane::SetMargins(
 	m_iEditHeight = iEditHeight;
 }
 
-void ViewPane::SetAddInLabel(wstring szLabel)
+void ViewPane::SetAddInLabel(const wstring szLabel)
 {
 	m_bUseLabelControl = true;
 	m_szLabel = szLabel;

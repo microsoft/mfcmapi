@@ -191,12 +191,12 @@ void ListPane::CommitUIValues()
 {
 }
 
-void ListPane::SetListString(ULONG iListRow, ULONG iListCol, wstring szListString)
+void ListPane::SetListString(ULONG iListRow, ULONG iListCol, const wstring szListString)
 {
 	m_List.SetItemText(iListRow, iListCol, szListString);
 }
 
-_Check_return_ SortListData* ListPane::InsertRow(int iRow, wstring szText) const
+_Check_return_ SortListData* ListPane::InsertRow(int iRow, const wstring szText) const
 {
 	return m_List.InsertRow(iRow, szText);
 }

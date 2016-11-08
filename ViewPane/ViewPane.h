@@ -1,7 +1,4 @@
 #pragma once
-// ViewPane.h : header file
-
-#include "ViewPane.h"
 
 enum __ViewPaneFlags
 {
@@ -36,7 +33,7 @@ public:
 		int iLargeHeightMargin,
 		int iButtonHeight, // Height of buttons below the control
 		int iEditHeight); // height of an edit control
-	void SetAddInLabel(wstring szLabel);
+	void SetAddInLabel(const wstring szLabel);
 	bool MatchID(UINT nID) const;
 	virtual void UpdateButtons();
 

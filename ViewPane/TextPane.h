@@ -13,9 +13,9 @@ public:
 	}
 
 	static TextPane* CreateMultiLinePane(UINT uidLabel, bool bReadOnly);
-	static TextPane* CreateMultiLinePane(UINT uidLabel, _In_ wstring szVal, bool bReadOnly);
+	static TextPane* CreateMultiLinePane(UINT uidLabel, _In_ const wstring szVal, bool bReadOnly);
 	static TextPane* CreateSingleLinePane(UINT uidLabel, bool bReadOnly, bool bMultiLine = false);
-	static TextPane* CreateSingleLinePane(UINT uidLabel, _In_ wstring szVal, bool bReadOnly, bool bMultiLine = false);
+	static TextPane* CreateSingleLinePane(UINT uidLabel, _In_ const wstring szVal, bool bReadOnly, bool bMultiLine = false);
 	static TextPane* CreateSingleLinePaneID(UINT uidLabel, UINT uidVal, bool bReadOnly);
 
 	void Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc) override;
@@ -25,11 +25,11 @@ public:
 	int GetLines() override;
 
 	void Clear();
-	void SetStringW(wstring szMsg);
+	void SetStringW(const wstring szMsg);
 	void SetBinary(_In_opt_count_(cb) LPBYTE lpb, size_t cb);
 	void SetBinaryStream(_In_ LPSTREAM lpStreamIn);
 	void GetBinaryStream(_In_ LPSTREAM lpStreamOut) const;
-	void AppendString(_In_ wstring szMsg);
+	void AppendString(_In_ const wstring szMsg);
 	void ShowWindow(int nCmdShow);
 
 	void SetReadOnly();
