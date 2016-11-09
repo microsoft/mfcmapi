@@ -88,7 +88,7 @@ void CMultiValuePropertyEditor::InitPropertyControls()
 	if (PT_MV_BINARY == PROP_TYPE(m_ulPropTag) ||
 		PT_MV_LONG == PROP_TYPE(m_ulPropTag))
 	{
-		auto lpPane = static_cast<SmartViewPane*>(SmartViewPane::Create(IDS_SMARTVIEW));
+		auto lpPane = SmartViewPane::Create(IDS_SMARTVIEW);
 		InitPane(1, lpPane);
 
 		if (lpPane && PT_MV_LONG == PROP_TYPE(m_ulPropTag))

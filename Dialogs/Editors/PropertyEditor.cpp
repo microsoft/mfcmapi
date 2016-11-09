@@ -171,7 +171,7 @@ void CPropertyEditor::InitPropertyControls()
 	case PT_BINARY:
 	case PT_LONG:
 		// This will be freed by the pane that we pass it to.
-		m_lpSmartView = static_cast<SmartViewPane*>(SmartViewPane::Create(IDS_SMARTVIEW));
+		m_lpSmartView = SmartViewPane::Create(IDS_SMARTVIEW);
 	}
 
 	auto smartView = InterpretPropSmartView2(
@@ -362,7 +362,7 @@ void CPropertyEditor::InitPropertyControls()
 
 		break;
 	case PT_BINARY:
-		lpPane = static_cast<CountedTextPane*>(CountedTextPane::Create(IDS_BIN, false, IDS_CB));
+		lpPane = CountedTextPane::Create(IDS_BIN, false, IDS_CB);
 		InitPane(0, lpPane);
 		InitPane(1, CountedTextPane::Create(IDS_TEXT, false, IDS_CCH));
 		InitPane(2, m_lpSmartView);
