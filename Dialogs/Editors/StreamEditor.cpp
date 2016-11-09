@@ -108,8 +108,6 @@ CStreamEditor::CStreamEditor(
 		m_iBinBox = 1;
 	}
 
-	auto iNumBoxes = m_iBinBox + 1;
-
 	m_iSmartViewBox = 0xFFFFFFFF;
 	m_bDoSmartView = false;
 
@@ -121,7 +119,6 @@ CStreamEditor::CStreamEditor(
 	{
 		m_bDoSmartView = true;
 		m_iSmartViewBox = m_iBinBox + 1;
-		iNumBoxes++;
 	}
 
 	if (bEditPropAsRTF) m_ulEditorType = EDITOR_RTF;

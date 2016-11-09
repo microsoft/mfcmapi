@@ -1,6 +1,4 @@
 #pragma once
-// StreamEditor.h : header file
-
 #include <Dialogs/Editors/Editor.h>
 
 class CStreamEditor : public CEditor
@@ -24,12 +22,12 @@ public:
 	void DisableSave();
 
 private:
-	BOOL OnInitDialog();
+	BOOL OnInitDialog() override;
 	void OpenPropertyStream(bool bWrite, bool bRTF);
 	void ReadTextStreamFromProperty() const;
 	void WriteTextStreamToProperty();
-	_Check_return_ ULONG HandleChange(UINT nID);
-	void OnOK();
+	_Check_return_ ULONG HandleChange(UINT nID) override;
+	void OnOK() override;
 	void SetEditReadOnly(ULONG iControl) const;
 
 	// source variables

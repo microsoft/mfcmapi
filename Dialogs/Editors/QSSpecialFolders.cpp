@@ -78,7 +78,6 @@ ULONG g_ulsfCol = _countof(g_sfCol);
 
 void SpecialFolderEditor::LoadFolders() const
 {
-	auto hRes = S_OK;
 	ULONG ulListNum = 0;
 
 	static const SizedSPropTagArray(12, lptaFolderProps) =
@@ -111,7 +110,7 @@ void SpecialFolderEditor::LoadFolders() const
 	// This will iterate over all the special folders we know how to get.
 	for (ULONG i = DEFAULT_UNSPECIFIED + 1; i < NUM_DEFAULT_PROPS; i++)
 	{
-		hRes = S_OK;
+		auto hRes = S_OK;
 		ULONG cb = NULL;
 		LPENTRYID lpeid = nullptr;
 
