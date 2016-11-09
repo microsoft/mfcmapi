@@ -1,5 +1,4 @@
 #pragma once
-// HexEditor.h : header file
 
 #include <Dialogs/Editors/Editor.h>
 #include "ParentWnd.h"

@@ -1,5 +1,3 @@
-// Options.cpp : implementation file
-
 #include "stdafx.h"
 #include <Dialogs/Editors/Editor.h>
 #include "Options.h"
@@ -8,8 +6,7 @@
 class COptions : public CEditor
 {
 public:
-	COptions(
-		_In_ CWnd* pParentWnd);
+	COptions(_In_ CWnd* pParentWnd);
 	virtual ~COptions();
 	bool NeedPropRefresh() const;
 
@@ -24,7 +21,7 @@ private:
 static wstring CLASS = L"COptions";
 
 COptions::COptions(_In_ CWnd* pWnd) :
-CEditor(pWnd, IDS_SETOPTS, NULL, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
+	CEditor(pWnd, IDS_SETOPTS, NULL, CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	EnableScroll();

@@ -1,5 +1,3 @@
-// HexEditor.cpp : implementation file
-
 #include "stdafx.h"
 #include "HexEditor.h"
 #include "FileDialogEx.h"
