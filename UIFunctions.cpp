@@ -443,7 +443,7 @@ _Check_return_ int GetTextHeight(_In_ HWND hwndEdit)
 	return iHeight;
 }
 
-SIZE GetTextExtentPoint32(HDC hdc, wstring szText)
+SIZE GetTextExtentPoint32(HDC hdc, const wstring& szText)
 {
 	SIZE size = { 0 };
 	::GetTextExtentPoint32W(hdc, szText.c_str(), static_cast<int>(szText.length()), &size);

@@ -68,7 +68,7 @@ HMENU LocateSubmenu(_In_ HMENU hMenu, UINT uid);
 
 _Check_return_ int GetEditHeight(_In_ HWND hwndEdit);
 _Check_return_ int GetTextHeight(_In_ HWND hwndEdit);
-SIZE GetTextExtentPoint32(HDC hdc, wstring szText);
+SIZE GetTextExtentPoint32(HDC hdc, const wstring& szText);
 
 HFONT GetSegoeFont();
 HFONT GetSegoeFontBold();

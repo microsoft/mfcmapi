@@ -20,7 +20,7 @@ static wstring CLASS = L"CMailboxTableDlg";
 CMailboxTableDlg::CMailboxTableDlg(
 	_In_ CParentWnd* pParentWnd,
 	_In_ CMapiObjects* lpMapiObjects,
-	_In_ wstring lpszServerName,
+	_In_ const wstring& lpszServerName,
 	_In_ LPMAPITABLE lpMAPITable
 ) :
 	CContentsTableDlg(

@@ -13,7 +13,7 @@ static wstring CLASS = L"CPublicFolderTableDlg";
 CPublicFolderTableDlg::CPublicFolderTableDlg(
 	_In_ CParentWnd* pParentWnd,
 	_In_ CMapiObjects* lpMapiObjects,
-	_In_ wstring lpszServerName,
+	_In_ const wstring& lpszServerName,
 	_In_ LPMAPITABLE lpMAPITable
 ) :
 	CContentsTableDlg(

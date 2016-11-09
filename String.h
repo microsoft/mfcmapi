@@ -30,7 +30,7 @@ wstring formatmessage(DWORD dwID, ...);
 wstring formatmessage(const wstring szMsg, ...);
 tstring wstringTotstring(const wstring& src);
 string wstringTostring(const wstring& src);
-wstring stringTowstring(string const& src);
+wstring stringTowstring(const string& src);
 wstring LPCTSTRToWstring(LPCTSTR src);
 wstring LPCSTRToWstring(LPCSTR src);
 wstring wstringToLower(const wstring& src);

@@ -186,7 +186,7 @@ public:
 #define SEPARATOR L";" // STRING_OK
 
 	// Read in registry and build a list of invalid add-in DLLs
-	CFileList(_In_ wstring szKey)
+	CFileList(_In_ const wstring& szKey)
 	{
 		wstring lpszReg;
 
@@ -236,14 +236,14 @@ public:
 	}
 
 	// Add the DLL to the list
-	void AddToList(_In_ wstring szDLL)
+	void AddToList(_In_ const wstring& szDLL)
 	{
 		if (szDLL.empty()) return;
 		m_lpList.push_back(szDLL);
 	}
 
 	// Check this DLL name against the list
-	bool IsOnList(_In_ wstring szDLL) const
+	bool IsOnList(_In_ const wstring& szDLL) const
 	{
 		if (szDLL.empty()) return true;
 		for (auto dll : m_lpList)

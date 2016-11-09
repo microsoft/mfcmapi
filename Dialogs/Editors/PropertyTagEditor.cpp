@@ -358,7 +358,7 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField) const
 	}
 }
 
-void CPropertyTagEditor::SetDropDownSelection(ULONG i, _In_ wstring const& szText) const
+void CPropertyTagEditor::SetDropDownSelection(ULONG i, _In_ const wstring&szText) const
 {
 	auto lpPane = static_cast<DropDownPane*>(GetPane(i));
 	if (lpPane)
@@ -389,7 +389,7 @@ _Check_return_ int CPropertyTagEditor::GetDropDownSelection(ULONG iControl) cons
 	return CB_ERR;
 }
 
-void CPropertyTagEditor::InsertDropString(ULONG iControl, int iRow, _In_ wstring szText) const
+void CPropertyTagEditor::InsertDropString(ULONG iControl, int iRow, _In_ const wstring& szText) const
 {
 	auto lpPane = static_cast<DropDownPane*>(GetPane(iControl));
 	if (lpPane)

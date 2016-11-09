@@ -256,12 +256,12 @@ void CSortListCtrl::OnDeleteItem(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 	*pResult = 0;
 }
 
-_Check_return_ SortListData* CSortListCtrl::InsertRow(int iRow, wstring szText) const
+_Check_return_ SortListData* CSortListCtrl::InsertRow(int iRow, const wstring& szText) const
 {
 	return InsertRow(iRow, szText, 0, 0);
 }
 
-_Check_return_ SortListData* CSortListCtrl::InsertRow(int iRow, wstring szText, int iIndent, int iImage) const
+_Check_return_ SortListData* CSortListCtrl::InsertRow(int iRow, const wstring& szText, int iIndent, int iImage) const
 {
 	auto lpData = new SortListData();
 
@@ -644,7 +644,7 @@ _Check_return_ UINT CSortListCtrl::OnGetDlgCode()
 	return iDlgCode;
 }
 
-void CSortListCtrl::SetItemText(int nItem, int nSubItem, wstring lpszText)
+void CSortListCtrl::SetItemText(int nItem, int nSubItem, const wstring& lpszText)
 {
 	// Remove any whitespace before setting in the list
 	auto szWhitespace = const_cast<LPWSTR>(wcspbrk(lpszText.c_str(), L"\r\n\t")); // STRING_OK

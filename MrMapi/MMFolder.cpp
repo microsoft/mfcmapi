@@ -10,7 +10,7 @@
 // Search folder for entry ID of child folder by name.
 HRESULT HrMAPIFindFolderW(
 	_In_ LPMAPIFOLDER lpFolder, // pointer to folder
-	_In_ wstring lpszName, // name of child folder to find
+	_In_ const wstring& lpszName, // name of child folder to find
 	_Out_opt_ ULONG* lpcbeid, // pointer to count of bytes in entry ID
 	_Deref_out_opt_ LPENTRYID* lppeid) // pointer to entry ID pointer
 {
@@ -98,7 +98,7 @@ wstring unescape(_In_ wstring lpsz)
 }
 
 // Splits string lpsz at backslashes and returns components in vector
-vector<wstring> SplitPath(_In_ wstring lpsz)
+vector<wstring> SplitPath(_In_ const wstring& lpsz)
 {
 	DebugPrint(DBGGeneric, L"SplitPath: splitting path \"%ws\"\n", lpsz.c_str());
 
@@ -197,7 +197,7 @@ HRESULT HrMAPIFindSubfolderExW(
 // if matched.
 static HRESULT HrLookupRootFolderW(
 	_In_ LPMDB lpMDB, // pointer to open message store
-	_In_ wstring lpszRootFolder, // root folder name only (no separators)
+	_In_ const wstring& lpszRootFolder, // root folder name only (no separators)
 	_Out_opt_ ULONG* lpcbeid, // size of entryid
 	_Deref_out_opt_ LPENTRYID* lppeid) // pointer to entryid
 {
@@ -270,7 +270,7 @@ static HRESULT HrLookupRootFolderW(
 // path name.
 HRESULT HrMAPIFindFolderExW(
 	_In_ LPMDB lpMDB, // Open message store
-	_In_ wstring lpszFolderPath, // folder path
+	_In_ const wstring& lpszFolderPath, // folder path
 	_Out_opt_ ULONG* lpcbeid, // pointer to count of bytes in entry ID
 	_Deref_out_opt_ LPENTRYID* lppeid) // pointer to entry ID pointer
 {
@@ -344,7 +344,7 @@ HRESULT HrMAPIFindFolderExW(
 // path name.
 HRESULT HrMAPIOpenFolderExW(
 	_In_ LPMDB lpMDB, // Open message store
-	_In_ wstring lpszFolderPath, // folder path
+	_In_ const wstring& lpszFolderPath, // folder path
 	_Deref_out_opt_ LPMAPIFOLDER* lppFolder) // pointer to folder opened
 {
 	DebugPrint(DBGGeneric, L"HrMAPIOpenFolderExW: Locating path \"%ws\"\n", lpszFolderPath.c_str());
@@ -380,10 +380,10 @@ HRESULT HrMAPIOpenFolderExW(
 }
 
 void DumpHierarchyTable(
-	_In_ wstring lpszProfile,
+	_In_ const wstring& lpszProfile,
 	_In_ LPMAPIFOLDER lpFolder,
 	_In_ ULONG ulFolder,
-	_In_ wstring lpszFolder,
+	_In_ const wstring& lpszFolder,
 	_In_ ULONG ulDepth)
 {
 	if (0 == ulDepth)
@@ -527,10 +527,10 @@ ULONGLONG ComputeSingleFolderSize(
 }
 
 ULONGLONG ComputeFolderSize(
-	_In_ wstring lpszProfile,
+	_In_ const wstring& lpszProfile,
 	_In_ LPMAPIFOLDER lpFolder,
 	_In_ ULONG ulFolder,
-	_In_ wstring lpszFolder)
+	_In_ const wstring& lpszFolder)
 {
 	DebugPrint(DBGGeneric, L"ComputeFolderSize: Calculating size (including subfolders) for folder %u / %ws from profile %ws \n", ulFolder, lpszFolder.c_str(), lpszProfile.c_str());
 	auto hRes = S_OK;
@@ -625,10 +625,10 @@ ULONGLONG ComputeFolderSize(
 }
 
 void DumpSearchState(
-	_In_ wstring lpszProfile,
+	_In_ const wstring& lpszProfile,
 	_In_ LPMAPIFOLDER lpFolder,
 	_In_ ULONG ulFolder,
-	_In_ wstring lpszFolder)
+	_In_ const wstring& lpszFolder)
 {
 	DebugPrint(DBGGeneric, L"DumpSearchState: Outputting search state for folder %u / %ws from profile %ws \n", ulFolder, lpszFolder.c_str(), lpszProfile.c_str());
 

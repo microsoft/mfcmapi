@@ -52,7 +52,7 @@ void SetDebugOutputToFile(bool bDoOutput);
 #define fIsSet(ulTag) (RegKeys[regkeyDEBUG_TAG].ulCurDWORD & (ulTag))
 #define fIsSetv(ulTag) (((ulTag) != DBGNoDebug) && (RegKeys[regkeyDEBUG_TAG].ulCurDWORD & (ulTag)))
 
-_Check_return_ FILE* MyOpenFile(wstring szFileName, bool bNewFile);
+_Check_return_ FILE* MyOpenFile(const wstring& szFileName, bool bNewFile);
 void CloseFile(_In_opt_ FILE* fFile);
 
 void Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, const wstring& szMsg);
@@ -75,7 +75,7 @@ void __cdecl DebugPrint(ULONG ulDbgLvl, LPCWSTR szMsg, ...);
 #define DebugPrint(ulDbgLvl, szMsg, ...) (wprintf(szMsg, __VA_ARGS__), DebugPrint(ulDbgLvl, szMsg, __VA_ARGS__))
 #endif
 
-void __cdecl DebugPrintEx(ULONG ulDbgLvl, wstring& szClass, wstring szFunc, LPCWSTR szMsg, ...);
+void __cdecl DebugPrintEx(ULONG ulDbgLvl, wstring& szClass, const wstring& szFunc, LPCWSTR szMsg, ...);
 #ifdef CHECKFORMATPARAMS
 #undef DebugPrintEx
 #define DebugPrintEx(ulDbgLvl, szClass, szFunc, szMsg, ...) (wprintf(szMsg, __VA_ARGS__), DebugPrintEx(ulDbgLvl, szClass, szFunc, szMsg, __VA_ARGS__))

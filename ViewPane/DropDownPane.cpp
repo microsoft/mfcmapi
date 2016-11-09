@@ -9,7 +9,7 @@ static wstring CLASS = L"DropDownPane";
 DropDownPane* DropDownPane::Create(UINT uidLabel, ULONG ulDropList, _In_opt_count_(ulDropList) UINT* lpuidDropList, bool bReadOnly)
 {
 	auto pane = new DropDownPane();
-	if (pane)
+	if (pane && lpuidDropList)
 	{
 		for (ULONG iDropNum = 0; iDropNum < ulDropList; iDropNum++)
 		{

@@ -2,10 +2,10 @@
 #include "FileDialogEx.h"
 
 wstring CFileDialogExW::OpenFile(
-	_In_ wstring lpszDefExt,
-	_In_ wstring lpszFileName,
+	_In_ const wstring& lpszDefExt,
+	_In_ const wstring& lpszFileName,
 	DWORD dwFlags,
-	_In_ wstring lpszFilter,
+	_In_ const wstring& lpszFilter,
 	_In_opt_ CWnd* pParentWnd)
 {
 	auto hRes = S_OK;
@@ -28,10 +28,10 @@ wstring CFileDialogExW::OpenFile(
 }
 
 vector<wstring> CFileDialogExW::OpenFiles(
-	_In_ wstring lpszDefExt,
-	_In_ wstring lpszFileName,
+	_In_ const wstring& lpszDefExt,
+	_In_ const wstring& lpszFileName,
 	DWORD dwFlags,
-	_In_ wstring lpszFilter,
+	_In_ const wstring& lpszFilter,
 	_In_opt_ CWnd* pParentWnd)
 {
 	auto hRes = S_OK;
@@ -54,10 +54,10 @@ vector<wstring> CFileDialogExW::OpenFiles(
 }
 
 wstring CFileDialogExW::SaveAs(
-	_In_ wstring lpszDefExt,
-	_In_ wstring lpszFileName,
+	_In_ const wstring& lpszDefExt,
+	_In_ const wstring& lpszFileName,
 	DWORD dwFlags,
-	_In_ wstring lpszFilter,
+	_In_ const wstring& lpszFilter,
 	_In_opt_ CWnd* pParentWnd)
 {
 	auto hRes = S_OK;
@@ -145,8 +145,8 @@ vector<wstring> UnpackFileNames(OPENFILENAMEEXW ofn)
 
 _Check_return_ INT_PTR CFileDialogExW::DisplayDialog(
 	bool bOpenFileDialog, // true for open, false for FileSaveAs
-	_In_ wstring lpszDefExt,
-	_In_ wstring lpszFileName,
+	_In_ const wstring& lpszDefExt,
+	_In_ const wstring& lpszFileName,
 	DWORD dwFlags,
 	_In_ wstring lpszFilter,
 	_In_opt_ CWnd* pParentWnd)

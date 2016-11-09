@@ -740,7 +740,7 @@ _Check_return_ HRESULT CopyStringW(_Deref_out_z_ LPWSTR* lpszDestination, _In_z_
 // a particular property that matches the given string
 // If lpParent is passed in, it is used as the allocation parent.
 _Check_return_ HRESULT CreatePropertyStringRestriction(ULONG ulPropTag,
-	_In_ wstring& szString,
+	_In_ const wstring& szString,
 	ULONG ulFuzzyLevel,
 	_In_opt_ LPVOID lpParent,
 	_Deref_out_opt_ LPSRestriction* lppRes)
@@ -834,7 +834,7 @@ _Check_return_ HRESULT CreatePropertyStringRestriction(ULONG ulPropTag,
 }
 
 _Check_return_ HRESULT CreateRangeRestriction(ULONG ulPropTag,
-	_In_ wstring& szString,
+	_In_ const wstring& szString,
 	_In_opt_ LPVOID lpParent,
 	_Deref_out_opt_ LPSRestriction* lppRes)
 {
@@ -1914,10 +1914,10 @@ _Check_return_ HRESULT ResetPermissionsOnItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLD
 _Check_return_ HRESULT SendTestMessage(
 	_In_ LPMAPISESSION lpMAPISession,
 	_In_ LPMAPIFOLDER lpFolder,
-	_In_ wstring szRecipient,
-	_In_ wstring szBody,
-	_In_ wstring& szSubject,
-	_In_ wstring szClass)
+	_In_ const wstring& szRecipient,
+	_In_ const wstring& szBody,
+	_In_ const wstring& szSubject,
+	_In_ const wstring& szClass)
 {
 	auto hRes = S_OK;
 	LPMESSAGE lpNewMessage = nullptr;

@@ -34,7 +34,7 @@ HMODULE GetPrivateMAPI();
 void UnLoadPrivateMAPI();
 void ForceOutlookMAPI(bool fForce);
 
-static wstring GetRegisteredMapiClient(wstring pwzProviderOverride, bool bDLL, bool bEx);
+static wstring GetRegisteredMapiClient(const wstring& pwzProviderOverride, bool bDLL, bool bEx);
 vector<wstring> GetInstalledOutlookMAPI();
 
 const WCHAR WszKeyNameMailClient[] = L"Software\\Clients\\Mail";
@@ -129,7 +129,7 @@ void SetMAPIHandle(HMODULE hinstMAPI)
  * RegQueryWszExpand
  * Wrapper for RegQueryValueExW which automatically expands REG_EXPAND_SZ values
  */
-wstring RegQueryWszExpand(HKEY hKey, wstring lpValueName)
+wstring RegQueryWszExpand(HKEY hKey, const wstring& lpValueName)
 {
 	DebugPrint(DBGLoadMAPI, L"Enter RegQueryWszExpand: hKey = %p, lpValueName = %ws\n", hKey, lpValueName.c_str());
 	DWORD dwType = 0;
@@ -171,11 +171,11 @@ wstring RegQueryWszExpand(HKEY hKey, wstring lpValueName)
  * Wrapper around mapi32.dll->FGetComponentPath which maps an MSI component ID to
  * a DLL location from the default MAPI client registration values
  */
-wstring GetComponentPath(wstring szComponent, wstring szQualifier, bool fInstall)
+wstring GetComponentPath(const wstring& szComponent, const wstring& szQualifier, bool fInstall)
 {
 	DebugPrint(DBGLoadMAPI, L"Enter GetComponentPath: szComponent = %ws, szQualifier = %ws, fInstall = 0x%08X\n",
 		szComponent.c_str(), szQualifier.c_str(), fInstall);
-	bool fReturn = FALSE;
+	auto fReturn = false;
 	wstring path;
 
 	typedef bool (STDAPICALLTYPE *FGetComponentPathType)(LPCSTR, LPSTR, LPSTR, DWORD, bool);
@@ -205,7 +205,7 @@ wstring GetComponentPath(wstring szComponent, wstring szQualifier, bool fInstall
 	return path;
 }
 
-HKEY GetHKeyMapiClient(wstring pwzProviderOverride)
+HKEY GetHKeyMapiClient(const wstring& pwzProviderOverride)
 {
 	DebugPrint(DBGLoadMAPI, L"Enter GetHKeyMapiClient (%ws)\n", pwzProviderOverride.c_str());
 	auto hRes = S_OK;
@@ -412,7 +412,7 @@ WCHAR g_pszOutlookQualifiedComponents[][MAX_PATH] = {
 };
 
 // Looks up Outlook's path given its qualified component guid
-wstring GetOutlookPath(_In_ wstring szCategory, _Out_opt_ bool* lpb64)
+wstring GetOutlookPath(_In_ const wstring& szCategory, _Out_opt_ bool* lpb64)
 {
 	DebugPrint(DBGLoadMAPI, L"Enter GetOutlookPath: szCategory = %ws\n", szCategory.c_str());
 	auto hRes = S_OK;

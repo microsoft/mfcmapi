@@ -271,12 +271,12 @@ LRESULT CEditor::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 // AddIn functions
-void CEditor::SetAddInTitle(wstring szTitle)
+void CEditor::SetAddInTitle(const wstring& szTitle)
 {
 	m_szAddInTitle = szTitle;
 }
 
-void CEditor::SetAddInLabel(ULONG i, wstring szLabel) const
+void CEditor::SetAddInLabel(ULONG i, const wstring& szLabel) const
 {
 	if (INVALIDRANGE(i)) return;
 	auto pane = GetPane(i);
@@ -594,7 +594,7 @@ int ComputePromptWidth(CEdit* lpPrompt, HDC hdc, int iMaxWidth, int* iLineCount)
 	return cx;
 }
 
-int ComputeCaptionWidth(HDC hdc, wstring szTitle, int iMargin)
+int ComputeCaptionWidth(HDC hdc, const wstring& szTitle, int iMargin)
 {
 	auto sizeTitle = GetTextExtentPoint32(hdc, szTitle);
 	auto iCaptionWidth = sizeTitle.cx + iMargin; // Allow for some whitespace between the caption and buttons
@@ -973,14 +973,14 @@ ViewPane* CEditor::GetPane(ULONG iPane) const
 	return m_lpControls[iPane];
 }
 
-void CEditor::SetPromptPostFix(_In_ wstring szMsg)
+void CEditor::SetPromptPostFix(_In_ const wstring& szMsg)
 {
 	m_szPromptPostFix = szMsg;
 	m_bHasPrompt = true;
 }
 
 // Sets string
-void CEditor::SetStringA(ULONG i, string szMsg) const
+void CEditor::SetStringA(ULONG i, const string& szMsg) const
 {
 	auto pane = dynamic_cast<TextPane*>(GetPane(i));
 	if (pane)
@@ -990,7 +990,7 @@ void CEditor::SetStringA(ULONG i, string szMsg) const
 }
 
 // Sets string
-void CEditor::SetStringW(ULONG i, wstring szMsg) const
+void CEditor::SetStringW(ULONG i, const wstring& szMsg) const
 {
 	auto pane = dynamic_cast<TextPane*>(GetPane(i));
 	if (pane)
@@ -1096,7 +1096,7 @@ void CEditor::SetDecimal(ULONG i, ULONG ulVal) const
 	SetStringf(i, L"%u", ulVal); // STRING_OK
 }
 
-void CEditor::SetListString(ULONG iControl, ULONG iListRow, ULONG iListCol, wstring szListString) const
+void CEditor::SetListString(ULONG iControl, ULONG iListRow, ULONG iListCol, const wstring& szListString) const
 {
 	auto pane = dynamic_cast<ListPane*>(GetPane(iControl));
 	if (pane)
@@ -1105,7 +1105,7 @@ void CEditor::SetListString(ULONG iControl, ULONG iListRow, ULONG iListCol, wstr
 	}
 }
 
-_Check_return_ SortListData* CEditor::InsertListRow(ULONG iControl, int iRow, wstring szText) const
+_Check_return_ SortListData* CEditor::InsertListRow(ULONG iControl, int iRow, const wstring& szText) const
 {
 	auto pane = dynamic_cast<ListPane*>(GetPane(iControl));
 	if (pane)

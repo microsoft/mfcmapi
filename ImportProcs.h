@@ -12,14 +12,14 @@ extern LPMSIPROVIDEQUALIFIEDCOMPONENT pfnMsiProvideQualifiedComponent;
 extern LPMSIGETFILEVERSION pfnMsiGetFileVersion;
 extern LPSHGETPROPERTYSTOREFORWINDOW pfnSHGetPropertyStoreForWindow;
 
-_Check_return_ HMODULE LoadFromSystemDir(_In_ wstring szDLLName);
-_Check_return_ HMODULE LoadFromOLMAPIDir(_In_ wstring szDLLName);
+_Check_return_ HMODULE LoadFromSystemDir(_In_ const wstring& szDLLName);
+_Check_return_ HMODULE LoadFromOLMAPIDir(_In_ const wstring& szDLLName);
 
-_Check_return_ HMODULE MyLoadLibraryW(_In_ wstring lpszLibFileName);
+_Check_return_ HMODULE MyLoadLibraryW(_In_ const wstring& lpszLibFileName);
 
 void ImportProcs();
 
-wstring GetMAPIPath(wstring szClient);
+wstring GetMAPIPath(const wstring& szClient);
 
 // Exported from StubUtils.cpp
 HMODULE GetMAPIHandle();
@@ -28,7 +28,7 @@ void ForceOutlookMAPI(bool fForce);
 void ForceSystemMAPI(bool fForce);
 void SetMAPIHandle(HMODULE hinstMAPI);
 HMODULE GetPrivateMAPI();
-wstring GetComponentPath(wstring szComponent, wstring szQualifier, bool fInstall);
+wstring GetComponentPath(const wstring& szComponent, const wstring& szQualifier, bool fInstall);
 
 // Keep this in sync with g_pszOutlookQualifiedComponents
 #define oqcOfficeBegin 0
@@ -43,7 +43,7 @@ wstring GetComponentPath(wstring szComponent, wstring szQualifier, bool fInstall
 extern WCHAR g_pszOutlookQualifiedComponents[][MAX_PATH];
 
 // Looks up Outlook's path given its qualified component guid
-wstring GetOutlookPath(_In_ wstring szCategory, _Out_opt_ bool* lpb64);
+wstring GetOutlookPath(_In_ const wstring& szCategory, _Out_opt_ bool* lpb64);
 
 vector<wstring> GetMAPIPaths();
 wstring GetInstalledOutlookMAPI(int iOutlook);

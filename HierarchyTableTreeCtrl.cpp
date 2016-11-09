@@ -356,7 +356,7 @@ _Check_return_ HRESULT CHierarchyTableTreeCtrl::AddRootNode(_In_ LPMAPICONTAINER
 }
 
 void CHierarchyTableTreeCtrl::AddNode(
-	_In_ wstring szName,
+	_In_ const wstring& szName,
 	HTREEITEM hParent,
 	SortListData* lpData,
 	bool bGetTable) const

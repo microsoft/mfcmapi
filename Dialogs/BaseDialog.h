@@ -24,9 +24,9 @@ public:
 	void OnUpdateSingleMAPIPropListCtrl(_In_opt_ LPMAPIPROP lpMAPIProp, _In_opt_ SortListData* lpListData);
 	_Check_return_ bool HandleKeyDown(UINT nChar, bool bShift, bool bCtrl, bool bMenu);
 
-	void UpdateTitleBarText(_In_ wstring& szMsg) const;
+	void UpdateTitleBarText(_In_ const wstring& szMsg) const;
 	void UpdateTitleBarText() const;
-	void UpdateStatusBarText(__StatusPaneEnum nPos, _In_ wstring& szMsg);
+	void UpdateStatusBarText(__StatusPaneEnum nPos, _In_ const wstring& szMsg);
 	void __cdecl UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg);
 	void __cdecl UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg, ULONG ulParam1);
 	void __cdecl UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg, wstring& szParam1, wstring& szParam2, wstring& szParam3);
@@ -34,7 +34,7 @@ public:
 	_Check_return_ CParentWnd* GetParentWnd() const;
 	_Check_return_ CMapiObjects* GetMapiObjects() const;
 
-	static void UpdateStatus(HWND hWndHost, __StatusPaneEnum pane, wstring status);
+	static void UpdateStatus(HWND hWndHost, __StatusPaneEnum pane, const wstring& status);
 
 protected:
 	// Overrides called by child classes

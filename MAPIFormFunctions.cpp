@@ -18,7 +18,7 @@ _Check_return_ HRESULT CreateAndDisplayNewMailInFolder(
 	_In_ LPMAPISESSION lpMAPISession,
 	_In_ CContentsTableListCtrl *lpContentsTableListCtrl,
 	int iItem,
-	_In_ wstring szMessageClass,
+	_In_ const wstring& szMessageClass,
 	_In_ LPMAPIFOLDER lpFolder)
 {
 	auto hRes = S_OK;

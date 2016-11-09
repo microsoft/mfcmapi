@@ -248,7 +248,7 @@ _Check_return_ HRESULT LoadFromTNEF(_In_z_ LPCWSTR szMessageFile, _In_ LPADRBOOK
 
 // Builds a file name out of the passed in message and extension
 wstring BuildFileName(
-	_In_ wstring szExt,
+	_In_ const wstring& szExt,
 	_In_ LPMESSAGE lpMessage)
 {
 	if (!lpMessage) return emptystring;
@@ -304,7 +304,7 @@ wstring BuildFileName(
 #define MAXSUBJ 25
 #define MAXBIN 141
 wstring BuildFileNameAndPath(
-	_In_ wstring szExt,
+	_In_ const wstring& szExt,
 	_In_ wstring szSubj,
 	_In_ wstring szRootPath,
 	_In_opt_ LPSBinary lpBin)
@@ -789,7 +789,7 @@ _Check_return_ HRESULT SaveToTNEF(_In_ LPMESSAGE lpMessage, _In_ LPADRBOOK lpAdr
 	return hRes;
 }
 
-_Check_return_ HRESULT DeleteAttachments(_In_ LPMESSAGE lpMessage, _In_ wstring& szAttName, HWND hWnd)
+_Check_return_ HRESULT DeleteAttachments(_In_ LPMESSAGE lpMessage, _In_ const wstring& szAttName, HWND hWnd)
 {
 	LPSPropValue pProps = nullptr;
 	auto hRes = S_OK;

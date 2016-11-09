@@ -1,5 +1,4 @@
 #pragma once
-// MailboxTableDlg.h : header file
 
 class CContentsTableListCtrl;
 class CSingleMAPIPropListCtrl;
@@ -14,16 +13,16 @@ public:
 	CMailboxTableDlg(
 		_In_ CParentWnd* pParentWnd,
 		_In_ CMapiObjects* lpMapiObjects,
-		_In_ wstring lpszServerName,
+		_In_ const wstring& lpszServerName,
 		_In_ LPMAPITABLE lpMAPITable);
 	virtual ~CMailboxTableDlg();
 
 private:
 	// Overrides from base class
-	void CreateDialogAndMenu(UINT nIDMenuResource);
+	void CreateDialogAndMenu(UINT nIDMenuResource) override;
 	void DisplayItem(ULONG ulFlags);
-	void OnCreatePropertyStringRestriction();
-	void OnDisplayItem();
+	void OnCreatePropertyStringRestriction() override;
+	void OnDisplayItem() override;
 	void OnInitMenu(_In_ CMenu* pMenu);
 
 	// Menu items

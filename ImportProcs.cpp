@@ -82,7 +82,7 @@ LPHEAPSETINFORMATION pfnHeapSetInformation = nullptr;
 LPGETMODULEHANDLEEXW pfnGetModuleHandleExW = nullptr;
 
 // Exists to allow some logging
-_Check_return_ HMODULE MyLoadLibraryW(_In_ wstring lpszLibFileName)
+_Check_return_ HMODULE MyLoadLibraryW(_In_ const wstring& lpszLibFileName)
 {
 	HMODULE hMod = nullptr;
 	auto hRes = S_OK;
@@ -102,7 +102,7 @@ _Check_return_ HMODULE MyLoadLibraryW(_In_ wstring lpszLibFileName)
 
 // Loads szModule at the handle given by lphModule, then looks for szEntryPoint.
 // Will not load a module or entry point twice
-void LoadProc(wstring szModule, HMODULE* lphModule, LPCSTR szEntryPoint, FARPROC* lpfn)
+void LoadProc(const wstring& szModule, HMODULE* lphModule, LPCSTR szEntryPoint, FARPROC* lpfn)
 {
 	if (!szEntryPoint || !lpfn || !lphModule) return;
 	if (*lpfn) return;
@@ -119,7 +119,7 @@ void LoadProc(wstring szModule, HMODULE* lphModule, LPCSTR szEntryPoint, FARPROC
 		szEntryPoint));
 }
 
-_Check_return_ HMODULE LoadFromSystemDir(_In_ wstring szDLLName)
+_Check_return_ HMODULE LoadFromSystemDir(_In_ const wstring& szDLLName)
 {
 	if (szDLLName.empty()) return nullptr;
 
@@ -146,7 +146,7 @@ _Check_return_ HMODULE LoadFromSystemDir(_In_ wstring szDLLName)
 	return hModRet;
 }
 
-_Check_return_ HMODULE LoadFromOLMAPIDir(_In_ wstring  szDLLName)
+_Check_return_ HMODULE LoadFromOLMAPIDir(_In_ const wstring&  szDLLName)
 {
 	HMODULE hModRet = nullptr;
 
@@ -194,7 +194,7 @@ void ImportProcs()
 
 // Opens the mail key for the specified MAPI client, such as 'Microsoft Outlook' or 'ExchangeMAPI'
 // Pass empty string to open the mail key for the default MAPI client
-_Check_return_ HKEY GetMailKey(_In_ wstring szClient)
+_Check_return_ HKEY GetMailKey(_In_ const wstring& szClient)
 {
 	wstring lpszClient = L"Default";
 	if (!szClient.empty()) lpszClient = szClient;
@@ -247,7 +247,7 @@ _Check_return_ HKEY GetMailKey(_In_ wstring szClient)
 
 // Gets MSI IDs for the specified MAPI client, such as 'Microsoft Outlook' or 'ExchangeMAPI'
 // Pass empty string to get the IDs for the default MAPI client
-void GetMapiMsiIds(_In_ wstring szClient, _In_ wstring& lpszComponentID, _In_ wstring& lpszAppLCID, _In_ wstring& lpszOfficeLCID)
+void GetMapiMsiIds(_In_ const wstring& szClient, _In_ wstring& lpszComponentID, _In_ wstring& lpszAppLCID, _In_ wstring& lpszOfficeLCID)
 {
 	DebugPrint(DBGLoadLibrary, L"GetMapiMsiIds(%ws)\n", szClient.c_str());
 
@@ -268,7 +268,7 @@ void GetMapiMsiIds(_In_ wstring szClient, _In_ wstring& lpszComponentID, _In_ ws
 	}
 }
 
-wstring GetMAPIPath(wstring szClient)
+wstring GetMAPIPath(const wstring& szClient)
 {
 	wstring lpszPath;
 

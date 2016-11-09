@@ -54,7 +54,7 @@ private:
 	// Node insertion
 	_Check_return_ HRESULT AddRootNode(_In_ LPMAPICONTAINER lpMAPIContainer) const;
 	void AddNode(
-		_In_ wstring szName,
+		_In_ const wstring& szName,
 		HTREEITEM hParent,
 		SortListData* lpData,
 		bool bGetTable) const;

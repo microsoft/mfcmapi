@@ -9,7 +9,7 @@ void PrintErrFromNum(_In_ ULONG ulError)
 	printf("0x%08X = %ws\n", ulError, ErrorNameFromErrorCode(ulError).c_str());
 }
 
-void PrintErrFromName(_In_ wstring lpszError)
+void PrintErrFromName(_In_ const wstring& lpszError)
 {
 	auto szErr = lpszError.c_str();
 
@@ -22,7 +22,7 @@ void PrintErrFromName(_In_ wstring lpszError)
 	}
 }
 
-void PrintErrFromPartialName(_In_ wstring lpszError)
+void PrintErrFromPartialName(_In_ const wstring& lpszError)
 {
 	if (!lpszError.empty()) printf("Searching for \"%ws\"\n", lpszError.c_str());
 	else printf("Searching for all errors\n");

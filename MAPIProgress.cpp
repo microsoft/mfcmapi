@@ -6,14 +6,14 @@
 static wstring CLASS = L"CMAPIProgress";
 
 #ifdef MRMAPI
-_Check_return_ CMAPIProgress* GetMAPIProgress(wstring /*lpszContext*/, _In_ HWND /*hWnd*/)
+_Check_return_ CMAPIProgress* GetMAPIProgress(const wstring& /*lpszContext*/, _In_ HWND /*hWnd*/)
 {
 	return NULL;
 }
 #endif
 
 #ifndef MRMAPI
-_Check_return_ CMAPIProgress* GetMAPIProgress(wstring lpszContext, _In_ HWND hWnd)
+_Check_return_ CMAPIProgress* GetMAPIProgress(const wstring& lpszContext, _In_ HWND hWnd)
 {
 	if (RegKeys[regkeyUSE_IMAPIPROGRESS].ulCurDWORD)
 	{
@@ -25,7 +25,7 @@ _Check_return_ CMAPIProgress* GetMAPIProgress(wstring lpszContext, _In_ HWND hWn
 	return nullptr;
 }
 
-CMAPIProgress::CMAPIProgress(wstring lpszContext, _In_ HWND hWnd)
+CMAPIProgress::CMAPIProgress(const wstring& lpszContext, _In_ HWND hWnd)
 {
 	TRACE_CONSTRUCTOR(CLASS);
 
@@ -182,7 +182,7 @@ STDMETHODIMP CMAPIProgress::SetLimits(ULONG* lpulMin, ULONG* lpulMax, ULONG* lpu
 	return S_OK;
 }
 
-void CMAPIProgress::OutputState(wstring lpszFunction) const
+void CMAPIProgress::OutputState(const wstring& lpszFunction) const
 {
 	DebugPrint(DBGGeneric, L"%ws::%ws(%ws) - Current Values: Min = %u, Max = %u, Flags = %u\n",
 		CLASS.c_str(), lpszFunction.c_str(), m_szContext.c_str(), m_ulMin, m_ulMax, m_ulFlags);

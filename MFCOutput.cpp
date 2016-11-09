@@ -83,7 +83,7 @@ void SetDebugOutputToFile(bool bDoOutput)
 // quick check to see if we have anything to print - so we can avoid executing the call
 #define EARLYABORT {if (!fFile && !RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD && !fIsSetv(ulDbgLvl)) return;}
 
-_Check_return_ FILE* MyOpenFile(wstring szFileName, bool bNewFile)
+_Check_return_ FILE* MyOpenFile(const wstring& szFileName, bool bNewFile)
 {
 	FILE* fOut = nullptr;
 	auto szParams = L"a+"; // STRING_OK
@@ -120,7 +120,7 @@ void CloseFile(_In_opt_ FILE* fFile)
 	if (fFile) fclose(fFile);
 }
 
-void WriteFile(_In_ FILE* fFile, wstring szString)
+void WriteFile(_In_ FILE* fFile, const wstring& szString)
 {
 	if (!szString.empty())
 	{
@@ -248,7 +248,7 @@ void __cdecl DebugPrint(ULONG ulDbgLvl, LPCWSTR szMsg, ...)
 	va_end(argList);
 }
 
-void __cdecl DebugPrintEx(ULONG ulDbgLvl, wstring& szClass, wstring szFunc, LPCWSTR szMsg, ...)
+void __cdecl DebugPrintEx(ULONG ulDbgLvl, wstring& szClass, const wstring& szFunc, LPCWSTR szMsg, ...)
 {
 	if (!fIsSetv(ulDbgLvl) && !RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD) return;
 

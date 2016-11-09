@@ -72,7 +72,7 @@ void CMAPIProcessor::InitSortOrder(_In_ LPSSortOrderSet lpSort)
 
 // Server name MUST be passed
 void CMAPIProcessor::ProcessMailboxTable(
-	_In_ wstring szExchangeServerName)
+	_In_ const wstring& szExchangeServerName)
 {
 	if (szExchangeServerName.empty()) return;
 	auto hRes = S_OK;
@@ -629,7 +629,7 @@ void CMAPIProcessor::ProcessAttachments(_In_ LPMESSAGE lpMessage, bool bHasAttac
 // --------------------------------------------------------------------------------- //
 // List Functions
 // --------------------------------------------------------------------------------- //
-void CMAPIProcessor::AddFolderToFolderList(_In_opt_ LPSBinary lpFolderEID, _In_ wstring szFolderOffsetPath)
+void CMAPIProcessor::AddFolderToFolderList(_In_opt_ LPSBinary lpFolderEID, _In_ const wstring& szFolderOffsetPath)
 {
 	auto hRes = S_OK;
 	LPFOLDERNODE lpNewNode = nullptr;
@@ -718,7 +718,7 @@ void CMAPIProcessor::FreeFolderList()
 // Worker Functions
 // --------------------------------------------------------------------------------- //
 
-void CMAPIProcessor::BeginMailboxTableWork(_In_ wstring /*szExchangeServerName*/)
+void CMAPIProcessor::BeginMailboxTableWork(_In_ const wstring& /*szExchangeServerName*/)
 {
 }
 

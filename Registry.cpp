@@ -59,7 +59,7 @@ void SetDefaults()
 // -----------------------------------------------------------------------------
 _Check_return_ HRESULT HrGetRegistryValue(
 	_In_ HKEY hKey, // the key.
-	_In_ wstring lpszValue, // value name in key.
+	_In_ const wstring& lpszValue, // value name in key.
 	_Out_ DWORD* lpType, // where to put type info.
 	_Out_ LPVOID* lppData) // where to put the data.
 {
@@ -109,7 +109,7 @@ _Check_return_ HRESULT HrGetRegistryValue(
 }
 
 // If the value is not set in the registry, return the default value
-DWORD ReadDWORDFromRegistry(_In_ HKEY hKey, _In_ wstring szValue, _In_ DWORD dwDefaultVal)
+DWORD ReadDWORDFromRegistry(_In_ HKEY hKey, _In_ const wstring& szValue, _In_ DWORD dwDefaultVal)
 {
 	if (szValue.empty()) return dwDefaultVal;
 	auto hRes = S_OK;
@@ -131,7 +131,7 @@ DWORD ReadDWORDFromRegistry(_In_ HKEY hKey, _In_ wstring szValue, _In_ DWORD dwD
 	return ret;
 }
 // If the value is not set in the registry, return the default value
-wstring ReadStringFromRegistry(_In_ HKEY hKey, _In_ wstring szValue, _In_ wstring szDefault)
+wstring ReadStringFromRegistry(_In_ HKEY hKey, _In_ const wstring& szValue, _In_ const wstring& szDefault)
 {
 	if (szValue.empty()) return szDefault;
 	auto hRes = S_OK;
@@ -223,7 +223,7 @@ void ReadFromRegistry()
 	DebugPrintVersion(DBGVersionBanner);
 }
 
-void WriteDWORDToRegistry(_In_ HKEY hKey, _In_ wstring szValueName, DWORD dwValue)
+void WriteDWORDToRegistry(_In_ HKEY hKey, _In_ const wstring& szValueName, DWORD dwValue)
 {
 	auto hRes = S_OK;
 
@@ -236,7 +236,7 @@ void WriteDWORDToRegistry(_In_ HKEY hKey, _In_ wstring szValueName, DWORD dwValu
 		sizeof(DWORD)));
 }
 
-void CommitDWORDIfNeeded(_In_ HKEY hKey, _In_ wstring szValueName, DWORD dwValue, DWORD dwDefaultValue)
+void CommitDWORDIfNeeded(_In_ HKEY hKey, _In_ const wstring& szValueName, DWORD dwValue, DWORD dwDefaultValue)
 {
 	auto hRes = S_OK;
 	if (dwValue != dwDefaultValue)
@@ -252,7 +252,7 @@ void CommitDWORDIfNeeded(_In_ HKEY hKey, _In_ wstring szValueName, DWORD dwValue
 	}
 }
 
-void WriteStringToRegistry(_In_ HKEY hKey, _In_ wstring szValueName, _In_ wstring szValue)
+void WriteStringToRegistry(_In_ HKEY hKey, _In_ const wstring& szValueName, _In_ const wstring& szValue)
 {
 	auto hRes = S_OK;
 
@@ -269,7 +269,7 @@ void WriteStringToRegistry(_In_ HKEY hKey, _In_ wstring szValueName, _In_ wstrin
 		static_cast<DWORD>(cbValue)));
 }
 
-void CommitStringIfNeeded(_In_ HKEY hKey, _In_ wstring szValueName, _In_ wstring szValue, _In_ wstring szDefaultValue)
+void CommitStringIfNeeded(_In_ HKEY hKey, _In_ const wstring& szValueName, _In_ const wstring& szValue, _In_ const wstring& szDefaultValue)
 {
 	auto hRes = S_OK;
 	if (wstringToLower(szValue) != wstringToLower(szDefaultValue))

@@ -365,8 +365,6 @@ vector<wstring> NameIDToPropNames(_In_ LPMAPINAMEID lpNameID)
 	return results;
 }
 
-//_Check_return_ wstring InterpretFlags(const ULONG ulFlagName, const LONG lFlagValue, wstring szPrefix);
-
 // Interprets a flag value according to a flag name and returns a string
 // Will not return a string if the flag name is not recognized
 wstring InterpretFlags(ULONG ulFlagName, LONG lFlagValue)

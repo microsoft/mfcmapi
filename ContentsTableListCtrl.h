@@ -38,7 +38,7 @@ public:
 	_Check_return_ HRESULT NotificationOn();
 	_Check_return_ HRESULT RefreshTable();
 	void OnCancelTableLoad();
-	void OnOutputTable(wstring szFileName) const;
+	void OnOutputTable(const wstring& szFileName) const;
 	_Check_return_ HRESULT SetSortTable(_In_ LPSSortOrderSet lpSortOrderSet, ULONG ulFlags) const;
 	_Check_return_ HRESULT SetUIColumns(_In_ LPSPropTagArray lpTags);
 	_Check_return_ bool IsLoading() const;

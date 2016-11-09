@@ -4,15 +4,15 @@
 _Check_return_ HRESULT AddOneOffAddress(
 	_In_ LPMAPISESSION lpMAPISession,
 	_In_ LPMESSAGE lpMessage,
-	_In_ wstring& szDisplayName,
-	_In_ wstring& szAddrType,
-	_In_ wstring& szEmailAddress,
+	_In_ const wstring& szDisplayName,
+	_In_ const wstring& szAddrType,
+	_In_ const wstring& szEmailAddress,
 	ULONG ulRecipientType);
 
 _Check_return_ HRESULT AddRecipient(
 	_In_ LPMAPISESSION lpMAPISession,
 	_In_ LPMESSAGE lpMessage,
-	_In_ wstring szName,
+	_In_ const wstring& szName,
 	ULONG ulRecipientType);
 
 _Check_return_ HRESULT CreateANRRestriction(ULONG ulPropTag,
@@ -27,12 +27,12 @@ _Check_return_ HRESULT HrAllocAdrList(ULONG ulNumProps, _Deref_out_opt_ LPADRLIS
 _Check_return_ HRESULT ManualResolve(
 	_In_ LPMAPISESSION lpMAPISession,
 	_In_ LPMESSAGE lpMessage,
-	_In_ wstring& szName,
+	_In_ const wstring& szName,
 	ULONG PropTagToCompare);
 
 _Check_return_ HRESULT SearchContentsTableForName(
 	_In_ LPMAPITABLE pTable,
-	_In_ wstring& szName,
+	_In_ const wstring& szName,
 	ULONG PropTagToCompare,
 	_Deref_out_opt_ LPSPropValue *lppPropsFound);
 

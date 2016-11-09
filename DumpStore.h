@@ -17,9 +17,9 @@ public:
 	CDumpStore();
 	virtual ~CDumpStore();
 
-	void InitMessagePath(_In_ wstring szMessageFileName);
-	void InitFolderPathRoot(_In_ wstring szFolderPathRoot);
-	void InitMailboxTablePathRoot(_In_ wstring szMailboxTablePathRoot);
+	void InitMessagePath(_In_ const wstring& szMessageFileName);
+	void InitFolderPathRoot(_In_ const wstring& szFolderPathRoot);
+	void InitMailboxTablePathRoot(_In_ const wstring& szMailboxTablePathRoot);
 	void EnableMSG();
 	void EnableList();
 	void DisableStreamRetry();
@@ -27,7 +27,7 @@ public:
 
 private:
 	// Worker functions (dump messages, scan for something, etc)
-	void BeginMailboxTableWork(_In_ wstring szExchangeServerName) override;
+	void BeginMailboxTableWork(_In_ const wstring& szExchangeServerName) override;
 	void DoMailboxTablePerRowWork(_In_ LPMDB lpMDB, _In_ LPSRow lpSRow, ULONG ulCurRow) override;
 	void EndMailboxTableWork() override;
 

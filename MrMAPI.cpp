@@ -959,7 +959,7 @@ void PrintArgs(_In_ MYOPTIONS ProgOpts)
 
 // Returns true if we've done everything we need to do and can exit the program.
 // Returns false to continue work.
-bool LoadMAPIVersion(wstring lpszVersion)
+bool LoadMAPIVersion(const wstring& lpszVersion)
 {
 	// Load DLLS and get functions from them
 	ImportProcs();

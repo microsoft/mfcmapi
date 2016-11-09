@@ -44,10 +44,10 @@ public:
 	_Check_return_ HRESULT DisplayDialog();
 
 	// These functions can be used to set up a data editing dialog
-	void SetPromptPostFix(_In_ wstring szMsg);
+	void SetPromptPostFix(_In_ const wstring& szMsg);
 	void InitPane(ULONG iNum, ViewPane* lpPane);
-	void SetStringA(ULONG i, string szMsg) const;
-	void SetStringW(ULONG i, wstring szMsg) const;
+	void SetStringA(ULONG i, const string& szMsg) const;
+	void SetStringW(ULONG i, const wstring& szMsg) const;
 	void SetStringf(ULONG i, LPCWSTR szMsg, ...) const;
 #ifdef CHECKFORMATPARAMS
 #undef SetStringf
@@ -73,8 +73,8 @@ public:
 	_Check_return_ GUID GetSelectedGUID(ULONG iControl, bool bByteSwapped) const;
 
 	// AddIn functions
-	void SetAddInTitle(wstring szTitle);
-	void SetAddInLabel(ULONG i, wstring szLabel) const;
+	void SetAddInTitle(const wstring& szTitle);
+	void SetAddInLabel(ULONG i, const wstring& szLabel) const;
 
 	// Use this function to implement list editing
 	// return true to indicate the entry was changed, false to indicate it was not
@@ -84,8 +84,8 @@ protected:
 	// Functions used by derived classes during init
 	void InsertColumn(ULONG ulListNum, int nCol, UINT uidText) const;
 	void InsertColumn(ULONG ulListNum, int nCol, UINT uidText, ULONG ulPropType) const;
-	void SetListString(ULONG iControl, ULONG iListRow, ULONG iListCol, wstring szListString) const;
-	_Check_return_ SortListData* InsertListRow(ULONG iControl, int iRow, wstring szText) const;
+	void SetListString(ULONG iControl, ULONG iListRow, ULONG iListCol, const wstring& szListString) const;
+	_Check_return_ SortListData* InsertListRow(ULONG iControl, int iRow, const wstring& szText) const;
 	void ClearList(ULONG iControl) const;
 	void ResizeList(ULONG uControl, bool bSort) const;
 

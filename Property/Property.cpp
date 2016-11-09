@@ -5,12 +5,12 @@
 wstring cdataopen = L"<![CDATA[";
 wstring cdataclose = L"]]>";
 
-wstring tagopen(_In_ wstring szTag, int iIndent)
+wstring tagopen(_In_ const wstring& szTag, int iIndent)
 {
 	return indent(iIndent) + L"<" + szTag + L">";
 }
 
-wstring tagclose(_In_ wstring szTag, int iIndent)
+wstring tagclose(_In_ const wstring& szTag, int iIndent)
 {
 	return indent(iIndent) + L"</" + szTag + L">\n";
 }

@@ -1611,7 +1611,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::DoExpandCollapse()
 	return hRes;
 }
 
-void CContentsTableListCtrl::OnOutputTable(wstring szFileName) const
+void CContentsTableListCtrl::OnOutputTable(const wstring& szFileName) const
 {
 	if (m_bInLoadOp) return;
 	auto fTable = MyOpenFile(szFileName, true);

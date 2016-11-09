@@ -117,7 +117,7 @@ string wstringTostring(const wstring& src)
 	return string(src.begin(), src.end());
 }
 
-wstring stringTowstring(string const& src)
+wstring stringTowstring(const string& src)
 {
 	return wstring(src.begin(), src.end());
 }
@@ -376,7 +376,7 @@ wstring BinToHexString(_In_opt_ LPSBinary lpBin, bool bPrependCB)
 		bPrependCB);
 }
 
-bool stripPrefix(wstring& str, wstring prefix)
+bool stripPrefix(wstring& str, const wstring& prefix)
 {
 	auto length = prefix.length();
 	if (str.compare(0, length, prefix) == 0)

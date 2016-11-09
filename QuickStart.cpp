@@ -329,7 +329,7 @@ static const SizedSPropTagArray(qNUM_COLS, sptaQuota) =
 	PR_MDB_PROVIDER,
 };
 
-wstring FormatQuota(LPSPropValue lpProp, ULONG ulPropTag, wstring szName)
+wstring FormatQuota(LPSPropValue lpProp, ULONG ulPropTag, const wstring& szName)
 {
 	if (lpProp && lpProp->ulPropTag == ulPropTag)
 	{

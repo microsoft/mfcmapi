@@ -542,7 +542,7 @@ void CBaseDialog::OnSize(UINT/* nType*/, int cx, int cy)
 	}
 }
 
-void CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, _In_ wstring& szMsg)
+void CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, _In_ const wstring& szMsg)
 {
 	if (nPos < STATUSBARNUMPANES) m_StatusMessages[nPos] = szMsg;
 
@@ -604,7 +604,7 @@ void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg
 	UpdateStatusBarText(nPos, szStatBarString);
 }
 
-void CBaseDialog::UpdateTitleBarText(_In_ wstring& szMsg) const
+void CBaseDialog::UpdateTitleBarText(_In_ const wstring& szMsg) const
 {
 	auto szTitle = formatmessage(IDS_TITLEBARMESSAGE, m_szTitle.c_str(), szMsg.c_str());
 
@@ -620,7 +620,7 @@ void CBaseDialog::UpdateTitleBarText() const
 	::SetWindowTextW(m_hWnd, szTitle.c_str());
 }
 
-void CBaseDialog::UpdateStatus(HWND hWndHost, __StatusPaneEnum pane, wstring status)
+void CBaseDialog::UpdateStatus(HWND hWndHost, __StatusPaneEnum pane, const wstring& status)
 {
 	(void) ::SendMessage(hWndHost, WM_MFCMAPI_UPDATESTATUSBAR, pane, reinterpret_cast<LPARAM>(status.c_str()));
 }
