@@ -27,31 +27,9 @@ private:
 	_Check_return_ wstring GetDropStringUseControl(ULONG iControl) const;
 	_Check_return_ int GetDropDownSelection(ULONG iControl) const;
 	void InsertDropString(ULONG iControl, int iRow, _In_ wstring szText) const;
-	void SetDropDownSelection(ULONG i, _In_ wstring szText) const;
+	void SetDropDownSelection(ULONG i, _In_ wstring const& szText) const;
 
 	ULONG m_ulPropTag;
 	bool m_bIsAB;
-	LPMAPIPROP m_lpMAPIProp;
-};
-
-class CPropertySelector : public CEditor
-{
-public:
-	CPropertySelector(
-		bool bIncludeABProps,
-		_In_ LPMAPIPROP lpMAPIProp,
-		_In_ CWnd* pParentWnd);
-	virtual ~CPropertySelector();
-
-	_Check_return_ ULONG GetPropertyTag() const;
-	_Check_return_ bool DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData) override;
-
-private:
-	BOOL OnInitDialog() override;
-	void OnOK() override;
-	_Check_return_ SortListData* GetSelectedListRowData(ULONG iControl) const;
-
-	ULONG m_ulPropTag;
-	bool m_bIncludeABProps;
 	LPMAPIPROP m_lpMAPIProp;
 };
