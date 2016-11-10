@@ -1,5 +1,5 @@
 #pragma once
-// MrMAPI.h : MrMAPI command line
+// MrMAPI command line
 
 #define ulNoMatch 0xffffffff
 

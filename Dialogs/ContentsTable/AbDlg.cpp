@@ -1,4 +1,4 @@
-// AbDlg.cpp : Displays the contents of a single address book
+// Displays the contents of a single address book
 
 #include "stdafx.h"
 #include "ABDlg.h"

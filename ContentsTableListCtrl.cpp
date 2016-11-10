@@ -13,7 +13,6 @@
 #include "ExtraPropTags.h"
 #include "SmartView/Smartview.h"
 #include <process.h>
-#include "String.h"
 #include "SortList/ContentsData.h"
 #include "Dialogs/BaseDialog.h"
 #include "Dialogs/ContentsTable/ContentsTableDlg.h"

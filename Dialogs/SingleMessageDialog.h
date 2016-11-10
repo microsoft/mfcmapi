@@ -1,6 +1,4 @@
 #pragma once
-// SingleMessageDialog.h : header file
-
 class CContentsTableListCtrl;
 
 #include "BaseDialog.h"

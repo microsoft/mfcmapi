@@ -1,5 +1,5 @@
 #pragma once
-// MyMAPIFormViewer.h: interface for the CMyMAPIFormViewer class.
+// Interface for the CMyMAPIFormViewer class.
 
 class CContentsTableListCtrl;
 

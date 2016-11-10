@@ -1,5 +1,5 @@
 #pragma once
-// DumpStore.h : Processes a store/folder to dump to disk
+// Processes a store/folder to dump to disk
 
 #include "MAPIProcessor.h"
 

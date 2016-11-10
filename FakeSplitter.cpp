@@ -1,4 +1,3 @@
-// FakeSplitter.cpp : implementation file
 #include "stdafx.h"
 #include "FakeSplitter.h"
 #include <Dialogs/BaseDialog.h>

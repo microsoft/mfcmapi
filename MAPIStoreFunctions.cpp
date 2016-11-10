@@ -1,4 +1,4 @@
-// MAPIStorefunctions.cpp : Collection of useful MAPI Store functions
+// Collection of useful MAPI Store functions
 
 #include "stdafx.h"
 #include "MAPIStoreFunctions.h"

@@ -1,4 +1,4 @@
-// MAPIProfileFunctions.h : Stand alone MAPI profile functions
+// Stand alone MAPI profile functions
 #pragma once
 
 wstring LaunchProfileWizard(

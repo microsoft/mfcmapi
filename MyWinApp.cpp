@@ -1,4 +1,4 @@
-// MyWinApp.cpp : Defines the class behaviors for the application.
+// Defines the class behaviors for the application.
 
 #include "stdafx.h"
 #include "MyWinApp.h"

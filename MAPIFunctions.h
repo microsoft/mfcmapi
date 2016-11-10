@@ -1,4 +1,4 @@
-// MAPIFunctions.h : Stand alone MAPI functions
+// Stand alone MAPI functions
 #pragma once
 
 _Check_return_ HRESULT CallOpenEntry(

@@ -1,5 +1,4 @@
 #pragma once
-// File.h : header file
 
 wstring GetDirectoryPath(HWND hWnd);
 

@@ -1,4 +1,4 @@
-// MAPIABfunctions.cpp : Collection of useful MAPI Address Book functions
+// Collection of useful MAPI Address Book functions
 
 #include "stdafx.h"
 #include "MAPIABFunctions.h"

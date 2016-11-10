@@ -1,7 +1,3 @@
-// AdviseSink.cpp: implementation of the CAdviseSink class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 #include "AdviseSink.h"
 
@@ -33,6 +29,7 @@ STDMETHODIMP CAdviseSink::QueryInterface(REFIID riid,
 		AddRef();
 		return S_OK;
 	}
+
 	return E_NOINTERFACE;
 }
 
@@ -100,6 +97,7 @@ STDMETHODIMP_(ULONG) CAdviseSink::OnNotify(ULONG cNotify,
 			}
 		}
 	}
+
 	return 0;
 }
 

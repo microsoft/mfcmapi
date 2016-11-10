@@ -1,7 +1,4 @@
 #pragma once
-// MFCMAPI.h : header file
-//
-
 // Version history:
 // 1
 // Original, unversioned header

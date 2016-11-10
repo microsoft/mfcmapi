@@ -1,4 +1,4 @@
-// MAPIABFunctions.h : Stand alone MAPI Address Book functions
+// Stand alone MAPI Address Book functions
 #pragma once
 
 _Check_return_ HRESULT AddOneOffAddress(

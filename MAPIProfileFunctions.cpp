@@ -1,4 +1,4 @@
-// MAPIProfileFunctions.cpp : Collection of useful MAPI functions
+// Collection of useful MAPI functions
 
 #include "stdafx.h"
 #include "MAPIProfileFunctions.h"

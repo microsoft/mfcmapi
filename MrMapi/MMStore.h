@@ -1,5 +1,5 @@
 #pragma once
-// MMStore.h : Store Properties for MrMAPI
+// Store Properties for MrMAPI
 
 HRESULT HrMAPIOpenStoreAndFolder(
 	_In_ LPMAPISESSION lpMAPISession,

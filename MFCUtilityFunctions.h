@@ -1,9 +1,7 @@
 #pragma once
-// MFCUtilityFunctions.h : Common functions for MFC MAPI
+// Common functions for MFC MAPI
 
 #include <Dialogs/BaseDialog.h>
-#include "ParentWnd.h"
-#include "MAPIObjects.h"
 
 enum ObjectType
 {

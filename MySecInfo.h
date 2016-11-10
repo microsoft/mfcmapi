@@ -1,6 +1,4 @@
 #pragma once
-// MySecInfo.h : header file
-
 #include <Aclui.h>
 
 enum eAceType
@@ -18,29 +16,29 @@ public:
 	virtual ~CMySecInfo();
 
 	STDMETHODIMP QueryInterface(_In_ REFIID riid,
-		_Deref_out_opt_ LPVOID* ppvObj);
-	STDMETHODIMP_(ULONG) AddRef();
-	STDMETHODIMP_(ULONG) Release();
+		_Deref_out_opt_ LPVOID* ppvObj) override;
+	STDMETHODIMP_(ULONG) AddRef() override;
+	STDMETHODIMP_(ULONG) Release() override;
 
-	STDMETHOD(GetObjectInformation) (PSI_OBJECT_INFO pObjectInfo);
+	STDMETHOD(GetObjectInformation) (PSI_OBJECT_INFO pObjectInfo) override;
 	STDMETHOD(GetSecurity) (SECURITY_INFORMATION RequestedInformation,
 		PSECURITY_DESCRIPTOR* ppSecurityDescriptor,
-		BOOL fDefault);
+		BOOL fDefault) override;
 	STDMETHOD(SetSecurity) (SECURITY_INFORMATION SecurityInformation,
-		PSECURITY_DESCRIPTOR pSecurityDescriptor);
+		PSECURITY_DESCRIPTOR pSecurityDescriptor) override;
 	STDMETHOD(GetAccessRights) (const GUID* pguidObjectType,
 		DWORD dwFlags,
 		PSI_ACCESS* ppAccess,
 		ULONG* pcAccesses,
-		ULONG* piDefaultAccess);
+		ULONG* piDefaultAccess) override;
 	STDMETHOD(MapGeneric) (const GUID* pguidObjectType,
 		UCHAR* pAceFlags,
-		ACCESS_MASK *pMask);
+		ACCESS_MASK *pMask) override;
 	STDMETHOD(GetInheritTypes) (PSI_INHERIT_TYPE* ppInheritTypes,
-		ULONG* pcInheritTypes);
-	STDMETHOD(PropertySheetPageCallback)(HWND hwnd, UINT uMsg, SI_PAGE_TYPE uPage);
-	STDMETHOD_(BOOL, IsDaclCanonical) (PACL pDacl);
-	STDMETHOD(LookupSids) (ULONG cSids, PSID* rgpSids, LPDATAOBJECT* ppdo);
+		ULONG* pcInheritTypes) override;
+	STDMETHOD(PropertySheetPageCallback)(HWND hwnd, UINT uMsg, SI_PAGE_TYPE uPage) override;
+	STDMETHOD_(BOOL, IsDaclCanonical) (PACL pDacl) override;
+	STDMETHOD(LookupSids) (ULONG cSids, PSID* rgpSids, LPDATAOBJECT* ppdo) override;
 
 private:
 	LONG m_cRef;

@@ -1,5 +1,5 @@
 #pragma once
-// MapiObjects.h: interface for the CMapiObjects class.
+// Interface for the CMapiObjects class.
 
 class CMapiObjects
 {

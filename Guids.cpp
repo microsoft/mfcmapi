@@ -1,5 +1,3 @@
-// guids.cpp : where our guids live
-
 #include "stdafx.h"
 
 #define INITGUID

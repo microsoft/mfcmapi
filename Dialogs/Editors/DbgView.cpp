@@ -3,7 +3,6 @@
 #include "DbgView.h"
 #include "ParentWnd.h"
 #include "MFCOutput.h"
-#include "String.h"
 
 class CDbgView : public CEditor
 {

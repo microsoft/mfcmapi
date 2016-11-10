@@ -1,5 +1,5 @@
 #pragma once
-// MAPIFormFunctions.h : Stand alone MAPI Form functions
+// Stand alone MAPI Form functions
 
 class CContentsTableListCtrl;
 

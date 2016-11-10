@@ -1,6 +1,6 @@
 #pragma once
 
-// guids.h: where our guids are defined
+// Where our guids are defined
 
 DEFINE_GUID(CLSID_MailMessage, 0x00020D0B, 0x0000, 0x0000, 0xC0, 0x00, 0x0, 0x00, 0x0, 0x00, 0x00, 0x46);
 DEFINE_OLEGUID(PS_INTERNET_HEADERS, 0x00020386, 0, 0);

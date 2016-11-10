@@ -1,4 +1,4 @@
-// ImportProcs.h : header file for loading imports from DLLs
+// Loading imports from DLLs
 #pragma once
 
 extern LPEDITSECURITY pfnEditSecurity;

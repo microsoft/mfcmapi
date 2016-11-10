@@ -1,5 +1,4 @@
-// MAPIStoreFunctions.h : Stand alone MAPI Store functions
-
+// Stand alone MAPI Store functions
 #pragma once
 
 _Check_return_ HRESULT CallOpenMsgStore(

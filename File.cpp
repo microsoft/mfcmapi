@@ -1,5 +1,3 @@
-// file.cpp
-
 #include "stdafx.h"
 #include "File.h"
 #include "InterpretProp.h"

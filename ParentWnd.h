@@ -1,6 +1,5 @@
 #pragma once
 
-// ParentWnd.h : header file
 // This object exists to force MFC to keep our main thread alive until all of
 // our objects have cleaned themselves up. All objects Addref this object on
 // instantiation and Release it when they delete themselves. When there are no

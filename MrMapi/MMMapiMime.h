@@ -1,5 +1,5 @@
 #pragma once
-// MMMapiMime.h : MAPI <-> MIME conversion for MrMAPI
+// MAPI <-> MIME conversion for MrMAPI
 
 // Flags to control conversion
 #define MAPIMIME_TOMAPI      0x00000001

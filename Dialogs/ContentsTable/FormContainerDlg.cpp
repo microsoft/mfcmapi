@@ -1,4 +1,4 @@
-// FormContainerDlg.cpp : Displays the contents of a form container
+// Displays the contents of a form container
 #include "stdafx.h"
 #include "FormContainerDlg.h"
 #include "ContentsTableListCtrl.h"

@@ -1,5 +1,5 @@
 #pragma once
-// FakeSplitter.h : List splitter control which hosts two controls either horizontally or vertically
+// List splitter control which hosts two controls either horizontally or vertically
 
 class CBaseDialog;
 

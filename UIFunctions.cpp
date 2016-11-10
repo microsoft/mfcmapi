@@ -1,4 +1,4 @@
-// UIFunctions.h : Common UI functions for MFCMAPI
+// Common UI functions for MFCMAPI
 #include "stdafx.h"
 #include "UIFunctions.h"
 #include "Windowsx.h"

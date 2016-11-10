@@ -1,5 +1,4 @@
 #pragma once
-// AclDlg.h : header file
 
 #include "ContentsTableDlg.h"
 

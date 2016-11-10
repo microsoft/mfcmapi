@@ -1,4 +1,4 @@
-// MFCUtilityFunctions.h : Common functions for MFC MAPI
+// Common functions for MFC MAPI
 
 #include "stdafx.h"
 #include "MFCUtilityFunctions.h"
@@ -8,7 +8,6 @@
 #include <Dialogs/BaseDialog.h>
 #include "MapiObjects.h"
 #include <Dialogs/Editors/Editor.h>
-#include "SingleMAPIPropListCtrl.h"
 #include "SmartView/SmartView.h"
 #include "InterpretProp2.h"
 #include "Dialogs/HierarchyTable/MsgStoreDlg.h"

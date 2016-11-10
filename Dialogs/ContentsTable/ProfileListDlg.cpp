@@ -1,5 +1,6 @@
 // Displays the list of profiles
 #include "stdafx.h"
+
 #include "ProfileListDlg.h"
 #include "ContentsTableListCtrl.h"
 #include "MapiObjects.h"
@@ -8,11 +9,11 @@
 #include "FileDialogEx.h"
 #include <Dialogs/Editors/Editor.h>
 #include "MsgServiceTableDlg.h"
-#include "String.h"
+#include "GlobalCache.h"
 #include "File.h"
 #include "ExportProfile.h"
+#include "SortList/SortListData.h"
 #include "SortList/ContentsData.h"
-#include "GlobalCache.h"
 
 static wstring CLASS = L"CProfileListDlg";
 

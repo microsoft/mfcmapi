@@ -1,5 +1,5 @@
 #pragma once
-// MAPIProgress.h: interface for the CMAPIProgress
+// Interface for the CMAPIProgress
 
 class CMAPIProgress : public IMAPIProgress
 {
@@ -9,16 +9,16 @@ public:
 
 private:
 	// IUnknown
-	STDMETHODIMP QueryInterface(REFIID riid, LPVOID * ppvObj);
-	STDMETHODIMP_(ULONG) AddRef();
-	STDMETHODIMP_(ULONG) Release();
+	STDMETHODIMP QueryInterface(REFIID riid, LPVOID * ppvObj) override;
+	STDMETHODIMP_(ULONG) AddRef() override;
+	STDMETHODIMP_(ULONG) Release() override;
 
 	// IMAPIProgress
-	_Check_return_ STDMETHODIMP Progress(ULONG ulValue, ULONG ulCount, ULONG ulTotal);
-	STDMETHODIMP GetFlags(ULONG* lpulFlags);
-	STDMETHODIMP GetMax(ULONG* lpulMax);
-	STDMETHODIMP GetMin(ULONG* lpulMin);
-	STDMETHODIMP SetLimits(ULONG* lpulMin, ULONG* lpulMax, ULONG* lpulFlags);
+	_Check_return_ STDMETHODIMP Progress(ULONG ulValue, ULONG ulCount, ULONG ulTotal) override;
+	STDMETHODIMP GetFlags(ULONG* lpulFlags) override;
+	STDMETHODIMP GetMax(ULONG* lpulMax) override;
+	STDMETHODIMP GetMin(ULONG* lpulMin) override;
+	STDMETHODIMP SetLimits(ULONG* lpulMin, ULONG* lpulMax, ULONG* lpulFlags) override;
 
 	void OutputState(const wstring& lpszFunction) const;
 

@@ -6,7 +6,6 @@
 #include "MAPIFunctions.h"
 #include "UIFunctions.h"
 #include "AdviseSink.h"
-#include "SingleMAPIPropListCtrl.h"
 #include "SortList/NodeData.h"
 
 enum

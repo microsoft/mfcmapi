@@ -1,6 +1,4 @@
 #pragma once
-class SortListData;
-
 class ContentsData
 {
 public:

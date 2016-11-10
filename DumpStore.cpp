@@ -1,6 +1,4 @@
-// MODULE: DumpStore.cpp
-//
-// PURPOSE: Contains routines used in dumping the contents of the Exchange store
+// Routines used in dumping the contents of the Exchange store
 // in to a log file
 
 #include "stdafx.h"

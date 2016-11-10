@@ -1,4 +1,4 @@
-// MapiObjects.cpp: implementation of the CMapiObjects class.
+// Implementation of the CMapiObjects class.
 
 #include "stdafx.h"
 #include "MapiObjects.h"

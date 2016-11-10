@@ -1,6 +1,4 @@
 #pragma once
-// SmartViewPane.h : header file
-
 #include "DropDownPane.h"
 #include "TextPane.h"
 

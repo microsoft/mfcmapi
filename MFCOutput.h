@@ -1,6 +1,4 @@
 #pragma once
-// MFCOutput.h : header file
-//
 // Output (to File/Debug) functions
 #include "String.h"
 

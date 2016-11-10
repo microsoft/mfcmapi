@@ -1,5 +1,5 @@
 #pragma once
-// CFileDialogExW: Encapsulate Windows-2000 style open dialog.
+// Encapsulate Windows-2000 style open dialog.
 
 class CFileDialogExW
 {

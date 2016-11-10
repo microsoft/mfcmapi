@@ -1,5 +1,3 @@
-// MFCOutput.cpp
-
 #include "stdafx.h"
 #include "MFCOutput.h"
 #include "MapiFunctions.h"
@@ -478,7 +476,7 @@ void _OutputTable(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPITABLE lpMAPIT
 		BOOKMARK_BEGINNING,
 		0,
 		NULL));
-	hRes = S_OK; // don't let failure here fail the whole op
+
 	Output(ulDbgLvl, fFile, false, g_szXMLHeader);
 	Output(ulDbgLvl, fFile, false, L"<table>\n");
 

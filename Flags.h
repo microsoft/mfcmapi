@@ -1,6 +1,6 @@
 #pragma once
 
-// flags.h: where our flag parsing array is defined
+// Where our flag parsing array is defined
 
 #include "ExtraPropTags.h"
 

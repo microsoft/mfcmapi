@@ -1,4 +1,4 @@
-// MyMAPIFormViewer.cpp: implementation of the CMyMAPIFormViewer class.
+// Implementation of the CMyMAPIFormViewer class.
 
 #include "stdafx.h"
 #include "MyMAPIFormViewer.h"

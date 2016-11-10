@@ -1,5 +1,5 @@
 #pragma once
-// MMErr.h : Error code parsing for MrMAPI
+// Error code parsing for MrMAPI
 
 extern ERROR_ARRAY_ENTRY g_ErrorArray[];
 extern ULONG g_ulErrorArray;

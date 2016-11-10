@@ -1,5 +1,3 @@
-// ParentWnd.cpp : implementation file
-
 #include "stdafx.h"
 #include "ParentWnd.h"
 #include "ImportProcs.h"

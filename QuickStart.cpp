@@ -11,6 +11,7 @@
 #include "ViewPane/CountedTextPane.h"
 #include "Dialogs/ContentsTable/MainDlg.h"
 #include "Dialogs/Editors/QSSpecialFolders.h"
+#include "MAPIObjects.h"
 
 LPMAPISESSION OpenSessionForQuickStart(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 {

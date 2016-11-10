@@ -23,6 +23,7 @@
 #include "Dialogs/Editors/TagArrayEditor.h"
 #include "Dialogs/Editors/PropertyEditor.h"
 #include "Dialogs/Editors/PropertyTagEditor.h"
+#include "MAPIObjects.h"
 
 static wstring CLASS = L"CSingleMAPIPropListCtrl";
 

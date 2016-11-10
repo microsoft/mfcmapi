@@ -1,4 +1,4 @@
-// Registry.h : header file for the MFCMAPI application registry functions
+// Header file for the MFCMAPI application registry functions
 
 #pragma once
 #define RKEY_ROOT L"SOFTWARE\\Microsoft\\MFCMAPI" // STRING_OK

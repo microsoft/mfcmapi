@@ -1,6 +1,4 @@
 #pragma once
-// Error.h : header file
-//
 
 // Here's an index of error macros and functions for use throughout MFCMAPI
 // EC_H - When wrapping a function, checks that hRes is SUCCEEDED, then makes the call

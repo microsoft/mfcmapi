@@ -1,4 +1,3 @@
-// ExportProfile.cpp : implementation file
 // Export profile to file
 
 #include "stdafx.h"

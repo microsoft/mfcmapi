@@ -1,4 +1,4 @@
 #pragma once
-// MMPst.h : PST related utilities for MrMAPI
+// PST related utilities for MrMAPI
 
 void DoPST(_In_ MYOPTIONS ProgOpts);

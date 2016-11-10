@@ -1,6 +1,6 @@
 #pragma once
 
-// ErrorArray.h: where our error array is defined
+// Where our error array is defined
 
 #define E_ACCT_NOT_FOUND 0x800C8101
 #define E_ACCT_WRONG_SORT_ORDER 0x800C8105
