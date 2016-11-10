@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "Attributes.h"
+#include <sstream>
 
 Attribute::Attribute(const wstring& key, const wstring& value)
 {
@@ -38,7 +39,7 @@ void Attributes::AddAttribute(const wstring& key, const wstring& value)
 	m_attributes.push_back(Attribute(key, value));
 }
 
-wstring Attributes::GetAttribute(const wstring& key)
+wstring Attributes::GetAttribute(const wstring& key) const
 {
 	for (auto attribute : m_attributes)
 	{
@@ -51,18 +52,19 @@ wstring Attributes::GetAttribute(const wstring& key)
 	return L"";
 }
 
-wstring Attributes::toXML()
+wstring Attributes::toXML() const
 {
 	if (!m_attributes.empty())
 	{
-		wstring szXML = L" ";
+		wstringstream szXML;
+		szXML << L" ";
 
 		for (auto attribute : m_attributes)
 		{
-			szXML += attribute.toXML();
+			szXML << attribute.toXML();
 		}
 
-		return szXML;
+		return szXML.str();
 	}
 
 	return L"";

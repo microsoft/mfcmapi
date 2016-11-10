@@ -3,7 +3,6 @@
 #include "Property.h"
 #include "MAPIFunctions.h"
 #include "ExtraPropTags.h"
-#include "String.h"
 #include "InterpretProp.h"
 #include "InterpretProp2.h"
 #include <cctype>

@@ -21,9 +21,9 @@ class Attributes
 {
 public:
 	void AddAttribute(const wstring& key, const wstring& value);
-	wstring GetAttribute(const wstring& key);
+	wstring GetAttribute(const wstring& key) const;
 
-	wstring toXML();
+	wstring toXML() const;
 
 private:
 	vector<Attribute> m_attributes;

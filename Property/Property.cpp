@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "Property.h"
 #include "ColumnTags.h"
+#include <sstream>
 
 wstring cdataopen = L"<![CDATA[";
 wstring cdataclose = L"]]>";
@@ -15,45 +16,46 @@ wstring tagclose(_In_ const wstring& szTag, int iIndent)
 	return indent(iIndent) + L"</" + szTag + L">\n";
 }
 
-Parsing::Parsing(const wstring& szParsing, bool bXMLSafe, Attributes const& attributes)
+Parsing::Parsing(const wstring& szParsing, bool bXMLSafe, const Attributes& attributes)
 {
 	m_szParsing = szParsing;
 	m_bXMLSafe = bXMLSafe;
 	m_attributes = attributes;
 }
 
-Parsing::Parsing(Parsing const& other)
+Parsing::Parsing(const Parsing& other)
 {
 	m_szParsing = other.m_szParsing;
 	m_bXMLSafe = other.m_bXMLSafe;
 	m_attributes = other.m_attributes;
 }
 
-wstring Parsing::toXML(UINT uidTag, int iIndent)
+wstring Parsing::toXML(UINT uidTag, int iIndent) const
 {
 	if (m_szParsing.empty()) return L"";
 
 	auto szTag = loadstring(uidTag);
-	auto szXML = tagopen(szTag + m_attributes.toXML(), iIndent);
+	wstringstream szXML;
+	szXML << tagopen(szTag + m_attributes.toXML(), iIndent);
 
 	if (!m_bXMLSafe)
 	{
-		szXML += cdataopen;
+		szXML << cdataopen;
 	}
 
-	szXML += ScrubStringForXML(m_szParsing);
+	szXML << ScrubStringForXML(m_szParsing);
 
 	if (!m_bXMLSafe)
 	{
-		szXML += cdataclose;
+		szXML << cdataclose;
 	}
 
-	szXML += tagclose(szTag, 0);
+	szXML << tagclose(szTag, 0);
 
-	return szXML;
+	return szXML.str();
 }
 
-wstring Parsing::toString()
+wstring Parsing::toString() const
 {
 	auto cb = m_attributes.GetAttribute(L"cb");
 	if (!cb.empty())
@@ -70,7 +72,7 @@ wstring Parsing::toString()
 	return m_szParsing;
 }
 
-void Property::AddParsing(Parsing const& mainParsing, Parsing const& altParsing)
+void Property::AddParsing(const Parsing& mainParsing, const Parsing& altParsing)
 {
 	m_MainParsing.push_back(mainParsing);
 	m_AltParsing.push_back(altParsing);
@@ -78,7 +80,7 @@ void Property::AddParsing(Parsing const& mainParsing, Parsing const& altParsing)
 
 // Only used to add a MV row parsing to the main set, so we only
 // need to copy the first entry and no attributes
-void Property::AddMVParsing(Property const& Property)
+void Property::AddMVParsing(const Property& Property)
 {
 	m_MainParsing.push_back(Property.m_MainParsing[0]);
 	m_AltParsing.push_back(Property.m_AltParsing[0]);
@@ -89,64 +91,66 @@ void Property::AddAttribute(const wstring& key, const wstring& value)
 	m_attributes.AddAttribute(key, value);
 }
 
-wstring Property::toXML(int iIndent)
+wstring Property::toXML(int iIndent) const
 {
+	wstringstream szXML;
 	auto mv = m_attributes.GetAttribute(L"mv");
-	wstring szXML;
 
 	if (mv == L"true")
 	{
 		auto szValue = loadstring(PropXMLNames[pcPROPVAL].uidName);
 		auto szRow = loadstring(IDS_ROW);
 
-		szXML = tagopen(szValue + m_attributes.toXML(), iIndent) + L"\n";
+		szXML << tagopen(szValue + m_attributes.toXML(), iIndent) + L"\n";
 
 		for (auto parsing : m_MainParsing)
 		{
-			szXML += tagopen(szRow, iIndent + 1) + L"\n";
-			szXML += parsing.toXML(PropXMLNames[pcPROPVAL].uidName, iIndent + 2);
-			szXML += parsing.toXML(PropXMLNames[pcPROPVALALT].uidName, iIndent + 2);
-			szXML += tagclose(szRow, iIndent + 1);
+			szXML << tagopen(szRow, iIndent + 1) + L"\n";
+			szXML << parsing.toXML(PropXMLNames[pcPROPVAL].uidName, iIndent + 2);
+			szXML << parsing.toXML(PropXMLNames[pcPROPVALALT].uidName, iIndent + 2);
+			szXML << tagclose(szRow, iIndent + 1);
 		}
 
-		return szXML + tagclose(szValue, iIndent);
+		szXML << tagclose(szValue, iIndent);
+		return szXML.str();
 	}
 
-	if (m_MainParsing.size() == 1) szXML += m_MainParsing[0].toXML(PropXMLNames[pcPROPVAL].uidName, iIndent);
-	if (m_AltParsing.size() == 1) szXML += m_AltParsing[0].toXML(PropXMLNames[pcPROPVALALT].uidName, iIndent);
+	if (m_MainParsing.size() == 1) szXML << m_MainParsing[0].toXML(PropXMLNames[pcPROPVAL].uidName, iIndent);
+	if (m_AltParsing.size() == 1) szXML << m_AltParsing[0].toXML(PropXMLNames[pcPROPVALALT].uidName, iIndent);
 
-	return szXML;
+	return szXML.str();
 }
 
-wstring Property::toString()
+wstring Property::toString() const
 {
 	return toString(m_MainParsing);
 }
 
-wstring Property::toAltString()
+wstring Property::toAltString() const
 {
 	return toString(m_AltParsing);
 }
 
-wstring Property::toString(vector<Parsing>& parsings)
+wstring Property::toString(const vector<Parsing>& parsings) const
 {
 	auto mv = m_attributes.GetAttribute(L"mv");
 	if (mv == L"true")
 	{
-		auto szString = m_attributes.GetAttribute(L"count") + L": ";
+		wstringstream szString;
+		szString << m_attributes.GetAttribute(L"count") + L": ";
 		auto first = true;
 		for (auto parsing: parsings)
 		{
 			if (!first)
 			{
-				szString += L"; ";
+				szString << L"; ";
 			}
 
-			szString += parsing.toString();
+			szString << parsing.toString();
 			first = false;
 		}
 
-		return szString;
+		return szString.str();
 	}
 
 	if (parsings.size() == 1)
