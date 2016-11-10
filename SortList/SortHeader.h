@@ -1,5 +1,5 @@
 #pragma once
-// SortHeader.h : header file for our custom sort list control header
+// Custom sort list control header
 
 struct HeaderData
 {
@@ -17,7 +17,7 @@ public:
 	_Check_return_ bool Init(_In_ CHeaderCtrl *pHeader, _In_ HWND hwndParent);
 
 private:
-	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
 	void RegisterHeaderTooltip();
 
 	// Custom messages

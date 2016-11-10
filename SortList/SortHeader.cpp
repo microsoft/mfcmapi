@@ -1,4 +1,3 @@
-// SortHeader.cpp : implementation file
 #include "stdafx.h"
 #include "SortHeader.h"
 #include "UIFunctions.h"

@@ -391,7 +391,7 @@ void CSortListCtrl::SortClickedColumn()
 	auto hRes = S_OK;
 	HDITEM hdItem = { 0 };
 	ULONG ulPropTag = NULL;
-	SortInfo sortinfo = { 0 };
+	SortInfo sortinfo = { false };
 
 	// szText will be filled out by our LVM_GETITEMW calls
 	// There's little point in getting more than 128 characters for sorting
