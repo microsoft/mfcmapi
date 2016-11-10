@@ -1,6 +1,4 @@
 #pragma once
-// MsgStoreDlg.h : header file
-
 class CHierarchyTableTreeCtrl;
 class CSingleMAPIPropListCtrl;
 class CParentWnd;
@@ -20,13 +18,13 @@ public:
 
 private:
 	// Overrides from base class
-	void OnDeleteSelectedItem();
+	void OnDeleteSelectedItem() override;
 	void HandleAddInMenuSingle(
 		_In_ LPADDINMENUPARAMS lpParams,
 		_In_ LPMAPIPROP lpMAPIProp,
-		_In_ LPMAPICONTAINER lpContainer);
-	void HandleCopy();
-	_Check_return_ bool HandlePaste();
+		_In_ LPMAPICONTAINER lpContainer) override;
+	void HandleCopy() override;
+	_Check_return_ bool HandlePaste() override;
 	void OnInitMenu(_In_ CMenu* pMenu);
 
 	// Menu items

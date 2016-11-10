@@ -1,6 +1,4 @@
-// MsgStoreDlg.cpp : implementation file
 // Displays the hierarchy tree of folders in a message store
-
 #include "stdafx.h"
 #include "MsgStoreDlg.h"
 #include "HierarchyTableTreeCtrl.h"

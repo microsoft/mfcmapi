@@ -82,8 +82,8 @@ void CHierarchyTableDlg::OnInitMenu(_In_ CMenu* pMenu)
 				auto ulFlags = lpAddInMenu->ulFlags;
 				UINT uiEnable = MF_ENABLED;
 
-				if ((ulFlags & MENU_FLAGS_MULTISELECT) && !bItemSelected) uiEnable = MF_GRAYED;
-				if ((ulFlags & MENU_FLAGS_SINGLESELECT) && !bItemSelected) uiEnable = MF_GRAYED;
+				if (ulFlags & MENU_FLAGS_MULTISELECT && !bItemSelected) uiEnable = MF_GRAYED;
+				if (ulFlags & MENU_FLAGS_SINGLESELECT && !bItemSelected) uiEnable = MF_GRAYED;
 				EnableAddInMenus(pMenu->m_hMenu, ulMenu, lpAddInMenu, uiEnable);
 			}
 		}
@@ -306,7 +306,7 @@ _Check_return_ bool CHierarchyTableDlg::HandleAddInMenu(WORD wMenuSelect)
 	auto ulFlags = lpAddInMenu->ulFlags;
 
 	auto fRequestModify =
-		(ulFlags & MENU_FLAGS_REQUESTMODIFY) ? mfcmapiREQUEST_MODIFY : mfcmapiDO_NOT_REQUEST_MODIFY;
+		ulFlags & MENU_FLAGS_REQUESTMODIFY ? mfcmapiREQUEST_MODIFY : mfcmapiDO_NOT_REQUEST_MODIFY;
 
 	// Get the stuff we need for any case
 	_AddInMenuParams MyAddInMenuParams = { nullptr };

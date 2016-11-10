@@ -1,6 +1,4 @@
 #pragma once
-// AbContDlg.h : header file
-
 #include "HierarchyTableDlg.h"
 
 class CAbContDlg : public CHierarchyTableDlg
@@ -16,7 +14,7 @@ private:
 	void HandleAddInMenuSingle(
 		_In_ LPADDINMENUPARAMS lpParams,
 		_In_ LPMAPIPROP lpMAPIProp,
-		_In_ LPMAPICONTAINER lpContainer);
+		_In_ LPMAPICONTAINER lpContainer) override;
 
 	// Menu items
 	void OnSetDefaultDir();

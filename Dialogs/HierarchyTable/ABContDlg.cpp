@@ -1,6 +1,4 @@
-// AbContDlg.cpp : implementation file
 // Displays the hierarchy tree of address books
-
 #include "stdafx.h"
 #include "AbContDlg.h"
 #include "HierarchyTableTreeCtrl.h"
@@ -40,7 +38,7 @@ CAbContDlg::CAbContDlg(
 				NULL,
 				MAPI_BEST_ACCESS,
 				NULL,
-				(LPUNKNOWN*)&m_lpContainer));
+				reinterpret_cast<LPUNKNOWN*>(&m_lpContainer)));
 		}
 	}
 

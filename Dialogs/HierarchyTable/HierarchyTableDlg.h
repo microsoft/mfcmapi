@@ -33,12 +33,12 @@ private:
 		_In_opt_ LPMAPICONTAINER lpContainer);
 
 	// Overrides from base class
-	_Check_return_ bool HandleAddInMenu(WORD wMenuSelect);
-	void OnCancel();
-	BOOL OnInitDialog();
-	void OnRefreshView();
+	_Check_return_ bool HandleAddInMenu(WORD wMenuSelect) override;
+	void OnCancel() override;
+	BOOL OnInitDialog() override;
+	void OnRefreshView() override;
 
-	BOOL PreTranslateMessage(MSG* pMsg);
+	BOOL PreTranslateMessage(MSG* pMsg) override;
 
 	// Menu items
 	void OnDisplayHierarchyTable();
