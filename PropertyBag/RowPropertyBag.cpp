@@ -10,6 +10,7 @@ RowPropertyBag::RowPropertyBag(SortListData* lpListData)
 		m_cValues = lpListData->cSourceProps;
 		m_lpProps = lpListData->lpSourceProps;
 	}
+
 	m_bRowModified = false;
 }
 

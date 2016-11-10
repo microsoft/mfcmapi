@@ -1,10 +1,9 @@
 #pragma once
-#include <WinNT.h>
 
 enum propBagFlags
 {
-	pbNone             = 0x0000, // None
-	pbModified         = 0x0001, // The property bag has been modified
+	pbNone = 0x0000, // None
+	pbModified = 0x0001, // The property bag has been modified
 	pbBackedByGetProps = 0x0002, // The property bag is rendering from a GetProps call
 };
 
@@ -49,5 +48,4 @@ public:
 		LPSPropValue lpProp) = 0;
 	virtual _Check_return_ HRESULT DeleteProp(
 		ULONG ulPropTag) = 0;
-
 };

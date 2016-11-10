@@ -87,6 +87,7 @@ _Check_return_ HRESULT MAPIPropPropertyBag::GetAllProps(
 		{
 			CHECKHRESMSG(hRes, IDS_GETPROPSNULLFAILED);
 		}
+
 		return hRes;
 	}
 
@@ -135,6 +136,7 @@ _Check_return_ HRESULT MAPIPropPropertyBag::GetProp(
 			WC_MAPI(ScDupPropset(1, lpProp, MAPIAllocateBuffer, lppProp));
 		}
 	}
+
 	return hRes;
 }
 
@@ -145,7 +147,6 @@ void MAPIPropPropertyBag::FreeBuffer(LPSPropValue lpProp)
 	if (m_lpListData && m_lpListData->lpSourceProps == lpProp) return;
 
 	if (lpProp) MAPIFreeBuffer(lpProp);
-	return;
 }
 
 _Check_return_ HRESULT MAPIPropPropertyBag::SetProps(

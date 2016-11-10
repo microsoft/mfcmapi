@@ -1,6 +1,4 @@
 #pragma once
-// MAPIPropPropertyBag.h : header file
-
 #include "PropertyBag.h"
 #include "SortList/SortListData.h"
 

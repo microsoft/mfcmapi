@@ -1,6 +1,4 @@
 #pragma once
-// RowPropertyBag.h : header file
-
 #include "PropertyBag.h"
 #include "SortList/SortListData.h"
 
