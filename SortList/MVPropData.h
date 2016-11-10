@@ -1,7 +1,8 @@
 ﻿#pragma once
 #include <mapidefs.h>
+#include "Data.h"
 
-class MVPropData
+class MVPropData :public IData
 {
 public:
 	MVPropData(_In_opt_ LPSPropValue lpProp, ULONG iProp);

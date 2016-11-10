@@ -474,6 +474,9 @@
     <ClInclude Include="Dialogs\Editors\PropertySelector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SortList\Data.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Res\bldver.rc">

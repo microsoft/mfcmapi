@@ -1,6 +1,7 @@
 ﻿#pragma once
+#include "Data.h"
 
-class BinaryData
+class BinaryData :public IData
 {
 public:
 	BinaryData(_In_ LPSBinary lpOldBin);

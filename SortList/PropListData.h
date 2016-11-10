@@ -1,6 +1,7 @@
 ﻿#pragma once
+#include "Data.h"
 
-class PropListData
+class PropListData :public IData
 {
 public:
 	PropListData(_In_ ULONG ulPropTag);

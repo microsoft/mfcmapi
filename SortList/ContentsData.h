@@ -1,5 +1,7 @@
 #pragma once
-class ContentsData
+#include "Data.h"
+
+class ContentsData :public IData
 {
 public:
 	ContentsData(_In_ LPSRow lpsRowData);

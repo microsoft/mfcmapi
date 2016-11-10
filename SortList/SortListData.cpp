@@ -12,7 +12,6 @@ SortListData::SortListData() :
 	cSourceProps(0),
 	lpSourceProps(nullptr),
 	bItemFullyLoaded(false),
-	m_Type(SORTLIST_UNKNOWN),
 	m_lpData(nullptr)
 {
 	ulSortValue.QuadPart = NULL;
@@ -25,22 +24,9 @@ SortListData::~SortListData()
 
 void SortListData::Clean()
 {
-	switch (m_Type)
-	{
-	case SORTLIST_UNKNOWN: break;
-	case SORTLIST_CONTENTS: delete Contents(); break;
-	case SORTLIST_PROP: delete Prop(); break;
-	case SORTLIST_MVPROP: delete MV(); break;
-	case SORTLIST_RES: delete Res(); break;
-	case SORTLIST_COMMENT: delete Comment(); break;
-	case SORTLIST_BINARY: delete Binary(); break;
-	case SORTLIST_TREENODE: delete Node(); break;
-	default: break;
-	}
-
+	if (m_lpData) delete m_lpData;
 	m_lpData = nullptr;
 
-	m_Type = SORTLIST_UNKNOWN;
 	MAPIFreeBuffer(lpSourceProps);
 	lpSourceProps = nullptr;
 	cSourceProps = 0;
@@ -53,72 +39,37 @@ void SortListData::Clean()
 
 ContentsData* SortListData::Contents() const
 {
-	if (m_Type == SORTLIST_CONTENTS)
-	{
-		return reinterpret_cast<ContentsData*>(m_lpData);
-	}
-
-	return nullptr;
+	return reinterpret_cast<ContentsData*>(m_lpData);
 }
 
 NodeData* SortListData::Node() const
 {
-	if (m_Type == SORTLIST_TREENODE)
-	{
-		return reinterpret_cast<NodeData*>(m_lpData);
-	}
-
-	return nullptr;
+	return reinterpret_cast<NodeData*>(m_lpData);
 }
 
 PropListData* SortListData::Prop() const
 {
-	if (m_Type == SORTLIST_PROP)
-	{
-		return reinterpret_cast<PropListData*>(m_lpData);
-	}
-
-	return nullptr;
+	return reinterpret_cast<PropListData*>(m_lpData);
 }
 
 MVPropData* SortListData::MV() const
 {
-	if (m_Type == SORTLIST_MVPROP)
-	{
-		return reinterpret_cast<MVPropData*>(m_lpData);
-	}
-
-	return nullptr;
+	return reinterpret_cast<MVPropData*>(m_lpData);
 }
 
 ResData* SortListData::Res() const
 {
-	if (m_Type == SORTLIST_RES)
-	{
-		return reinterpret_cast<ResData*>(m_lpData);
-	}
-
-	return nullptr;
+	return reinterpret_cast<ResData*>(m_lpData);
 }
 
 CommentData* SortListData::Comment() const
 {
-	if (m_Type == SORTLIST_COMMENT)
-	{
-		return reinterpret_cast<CommentData*>(m_lpData);
-	}
-
-	return nullptr;
+	return reinterpret_cast<CommentData*>(m_lpData);
 }
 
 BinaryData* SortListData::Binary() const
 {
-	if (m_Type == SORTLIST_BINARY)
-	{
-		return reinterpret_cast<BinaryData*>(m_lpData);
-	}
-
-	return nullptr;
+	return reinterpret_cast<BinaryData*>(m_lpData);
 }
 
 // Sets data from the LPSRow into the SortListData structure
@@ -128,7 +79,6 @@ BinaryData* SortListData::Binary() const
 void SortListData::InitializeContents(_In_ LPSRow lpsRowData)
 {
 	Clean();
-	m_Type = SORTLIST_CONTENTS;
 
 	if (!lpsRowData) return;
 	lpSourceProps = lpsRowData->lpProps;
@@ -145,7 +95,6 @@ void SortListData::InitializeNode(
 	ULONG ulContainerFlags)
 {
 	Clean();
-	m_Type = SORTLIST_TREENODE;
 	cSourceProps = cProps;
 	lpSourceProps = lpProps;
 	m_lpData = new NodeData(
@@ -197,7 +146,6 @@ void SortListData::InitializeNode(_In_ LPSRow lpsRow)
 void SortListData::InitializePropList(_In_ ULONG ulPropTag)
 {
 	Clean();
-	m_Type = SORTLIST_PROP;
 	bItemFullyLoaded = true;
 	m_lpData = new PropListData(ulPropTag);
 }
@@ -205,21 +153,18 @@ void SortListData::InitializePropList(_In_ ULONG ulPropTag)
 void SortListData::InitializeMV(_In_ LPSPropValue lpProp, ULONG iProp)
 {
 	Clean();
-	m_Type = SORTLIST_MVPROP;
 	m_lpData = new MVPropData(lpProp, iProp);
 }
 
 void SortListData::InitializeMV(_In_opt_ LPSPropValue lpProp)
 {
 	Clean();
-	m_Type = SORTLIST_MVPROP;
 	m_lpData = new MVPropData(lpProp);
 }
 
 void SortListData::InitializeRes(_In_ LPSRestriction lpOldRes)
 {
 	Clean();
-	m_Type = SORTLIST_RES;
 	bItemFullyLoaded = true;
 	m_lpData = new ResData(lpOldRes);
 }
@@ -227,7 +172,6 @@ void SortListData::InitializeRes(_In_ LPSRestriction lpOldRes)
 void SortListData::InitializeComment(_In_ LPSPropValue lpOldProp)
 {
 	Clean();
-	m_Type = SORTLIST_COMMENT;
 	bItemFullyLoaded = true;
 	m_lpData = new CommentData(lpOldProp);
 }
@@ -235,6 +179,5 @@ void SortListData::InitializeComment(_In_ LPSPropValue lpOldProp)
 void SortListData::InitializeBinary(_In_ LPSBinary lpOldBin)
 {
 	Clean();
-	m_Type = SORTLIST_BINARY;
 	m_lpData = new BinaryData(lpOldBin);
 }

@@ -1,7 +1,8 @@
 #pragma once
+#include "Data.h"
 class SortListData;
 
-class NodeData
+class NodeData :public IData
 {
 public:
 	NodeData(

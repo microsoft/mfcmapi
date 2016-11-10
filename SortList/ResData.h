@@ -1,6 +1,7 @@
 ﻿#pragma once
+#include "Data.h"
 
-class ResData
+class ResData :public IData
 {
 public:
 	ResData(_In_ LPSRestriction lpOldRes);

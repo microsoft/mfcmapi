@@ -1,5 +1,7 @@
 ﻿#pragma once
-class CommentData
+#include "Data.h"
+
+class CommentData :public IData
 {
 public:
 	CommentData(_In_ LPSPropValue lpOldProp);
