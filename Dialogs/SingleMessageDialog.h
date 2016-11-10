@@ -16,13 +16,13 @@ public:
 
 protected:
 	// Overrides from base class
-	BOOL OnInitDialog();
+	BOOL OnInitDialog() override;
 
 private:
 	LPMESSAGE m_lpMessage;
 
 	// Menu items
-	void OnRefreshView();
+	void OnRefreshView() override;
 	void OnAttachmentProperties();
 	void OnRecipientProperties();
 	void OnRTFSync();

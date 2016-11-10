@@ -1,5 +1,5 @@
 #pragma once
-// Dialog.h : Base class for dialog class customization
+// Base class for dialog class customization
 #include "ParentWnd.h"
 
 class CMyDialog : public CDialog

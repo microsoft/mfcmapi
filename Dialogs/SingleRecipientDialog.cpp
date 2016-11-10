@@ -1,5 +1,3 @@
-// SingleRecipientDialog.cpp : implementation file
-
 #include "stdafx.h"
 #include "SingleRecipientDialog.h"
 #include "SingleMAPIPropListCtrl.h"
@@ -35,7 +33,6 @@ SingleRecipientDialog::~SingleRecipientDialog()
 
 BOOL SingleRecipientDialog::OnInitDialog()
 {
-	auto hRes = S_OK;
 	auto bRet = CBaseDialog::OnInitDialog();
 
 	if (m_lpMailUser)
@@ -46,7 +43,7 @@ BOOL SingleRecipientDialog::OnInitDialog()
 
 	UpdateTitleBarText();
 
-	hRes = S_OK;
+	auto hRes = S_OK;
 	EC_H(m_lpPropDisplay->SetDataSource(m_lpMailUser, NULL, true));
 
 	return bRet;

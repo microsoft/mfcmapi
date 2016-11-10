@@ -1,9 +1,7 @@
 #pragma once
-// SingleRecipientDialog.h : header file
+#include "BaseDialog.h"
 
 class CContentsTableListCtrl;
-
-#include "BaseDialog.h"
 
 class SingleRecipientDialog : public CBaseDialog
 {
@@ -17,13 +15,13 @@ public:
 protected:
 	// Overrides from base class
 	void CreateDialogAndMenu(UINT nIDMenuResource);
-	BOOL OnInitDialog();
+	BOOL OnInitDialog() override;
 
 private:
 	LPMAILUSER m_lpMailUser;
 
 	// Menu items
-	void OnRefreshView();
+	void OnRefreshView() override;
 
 	DECLARE_MESSAGE_MAP()
 };

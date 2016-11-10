@@ -1,5 +1,3 @@
-// AboutDlg.cpp : implementation file
-
 #include "stdafx.h"
 #include "AboutDlg.h"
 #include "UIFunctions.h"
@@ -8,7 +6,7 @@ void DisplayAboutDlg(_In_ CWnd* lpParentWnd)
 {
 	CAboutDlg AboutDlg(lpParentWnd);
 	auto hRes = S_OK;
-	INT_PTR iDlgRet = 0;
+	auto iDlgRet = 0;
 
 	EC_D_DIALOG(AboutDlg.DoModal());
 }

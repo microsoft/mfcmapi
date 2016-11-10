@@ -1,6 +1,3 @@
-// SingleMessageDialog.cpp : implementation file
-//
-
 #include "stdafx.h"
 #include "SingleMessageDialog.h"
 #include "SingleMAPIPropListCtrl.h"
@@ -39,7 +36,6 @@ SingleMessageDialog::~SingleMessageDialog()
 
 BOOL SingleMessageDialog::OnInitDialog()
 {
-	auto hRes = S_OK;
 	auto bRet = CBaseDialog::OnInitDialog();
 
 	if (m_lpMessage)
@@ -50,7 +46,7 @@ BOOL SingleMessageDialog::OnInitDialog()
 
 	UpdateTitleBarText();
 
-	hRes = S_OK;
+	auto hRes = S_OK;
 	EC_H(m_lpPropDisplay->SetDataSource(m_lpMessage, NULL, false));
 
 	return bRet;

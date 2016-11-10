@@ -1,5 +1,3 @@
-// Dialog.cpp : implementation file
-
 #include "stdafx.h"
 #include <Dialogs/Dialog.h>
 #include "UIFunctions.h"
