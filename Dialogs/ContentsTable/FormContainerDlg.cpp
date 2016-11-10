@@ -1,5 +1,4 @@
 // FormContainerDlg.cpp : Displays the contents of a form container
-
 #include "stdafx.h"
 #include "FormContainerDlg.h"
 #include "ContentsTableListCtrl.h"
@@ -62,9 +61,6 @@ BEGIN_MESSAGE_MAP(CFormContainerDlg, CContentsTableDlg)
 	ON_COMMAND(ID_CALCFORMPOPSET, OnCalcFormPropSet)
 	ON_COMMAND(ID_GETDISPLAY, OnGetDisplay)
 END_MESSAGE_MAP()
-
-/////////////////////////////////////////////////////////////////////////////
-// CFormContainerDlg message handlers
 
 void CFormContainerDlg::OnInitMenu(_In_ CMenu* pMenu)
 {

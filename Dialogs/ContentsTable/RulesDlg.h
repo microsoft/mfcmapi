@@ -1,12 +1,10 @@
 #pragma once
-// RulesDlg.h : header file
+#include "ContentsTableDlg.h"
 
 class CContentsTableListCtrl;
 class CSingleMAPIPropListCtrl;
 class CParentWnd;
 class CMapiObjects;
-
-#include "ContentsTableDlg.h"
 
 class CRulesDlg : public CContentsTableDlg
 {
@@ -22,10 +20,10 @@ private:
 	void HandleAddInMenuSingle(
 		_In_ LPADDINMENUPARAMS lpParams,
 		_In_ LPMAPIPROP lpMAPIProp,
-		_In_ LPMAPICONTAINER lpContainer);
-	void OnDeleteSelectedItem();
+		_In_ LPMAPICONTAINER lpContainer) override;
+	void OnDeleteSelectedItem() override;
 	void OnInitMenu(_In_opt_ CMenu* pMenu);
-	void OnRefreshView();
+	void OnRefreshView() override;
 
 	// Menu items
 	void OnModifySelectedItem();

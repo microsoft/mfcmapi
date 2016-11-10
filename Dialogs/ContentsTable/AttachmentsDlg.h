@@ -1,6 +1,4 @@
 #pragma once
-// AttachmentsDlg.h : header file
-
 #include "ContentsTableDlg.h"
 
 class CAttachmentsDlg : public CContentsTableDlg
@@ -18,15 +16,15 @@ private:
 	void HandleAddInMenuSingle(
 		_In_ LPADDINMENUPARAMS lpParams,
 		_In_ LPMAPIPROP lpMAPIProp,
-		_In_ LPMAPICONTAINER lpContainer);
-	void HandleCopy();
-	_Check_return_ bool HandlePaste();
-	void OnDeleteSelectedItem();
-	void OnDisplayItem();
+		_In_ LPMAPICONTAINER lpContainer) override;
+	void HandleCopy() override;
+	_Check_return_ bool HandlePaste() override;
+	void OnDeleteSelectedItem() override;
+	void OnDisplayItem() override;
 	void OnInitMenu(_In_ CMenu* pMenu);
 	_Check_return_ LPATTACH OpenAttach(ULONG ulAttachNum) const;
 	_Check_return_ LPMESSAGE CAttachmentsDlg::OpenEmbeddedMessage() const;
-	_Check_return_ HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp);
+	_Check_return_ HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp) override;
 
 	// Menu items
 	void OnModifySelectedItem();

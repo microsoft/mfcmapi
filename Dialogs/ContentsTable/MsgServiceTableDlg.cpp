@@ -1,5 +1,4 @@
-// MsgServiceTableDlg.cpp : Displays the list of services in a profile
-
+// Displays the list of services in a profile
 #include "stdafx.h"
 #include "MsgServiceTableDlg.h"
 #include "ContentsTableListCtrl.h"

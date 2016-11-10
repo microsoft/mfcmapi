@@ -1,4 +1,3 @@
-// AclDlg.cpp : implementation file
 // Displays the ACL table for an item
 
 #include "stdafx.h"
@@ -61,7 +60,6 @@ BEGIN_MESSAGE_MAP(CAclDlg, CContentsTableDlg)
 	ON_COMMAND(ID_MODIFYSELECTEDITEM, OnModifySelectedItem)
 END_MESSAGE_MAP()
 
-
 _Check_return_ HRESULT CAclDlg::OpenItemProp(int /*iSelectedItem*/, __mfcmapiModifyEnum /*bModify*/, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp)
 {
 	if (lppMAPIProp) *lppMAPIProp = nullptr;
@@ -80,6 +78,7 @@ void CAclDlg::OnInitMenu(_In_ CMenu* pMenu)
 			pMenu->EnableMenuItem(ID_MODIFYSELECTEDITEM, DIMMSOK(iNumSel));
 		}
 	}
+
 	CContentsTableDlg::OnInitMenu(pMenu);
 }
 

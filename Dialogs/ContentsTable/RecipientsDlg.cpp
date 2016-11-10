@@ -1,5 +1,4 @@
-// RecipientsDlg.cpp : Displays the recipient table for a message
-
+// Displays the recipient table for a message
 #include "stdafx.h"
 #include "RecipientsDlg.h"
 #include "ContentsTableListCtrl.h"

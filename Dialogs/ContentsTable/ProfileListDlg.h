@@ -1,12 +1,10 @@
 #pragma once
-// ProfileListDlg.h : header file
+#include "ContentsTableDlg.h"
 
 class CContentsTableListCtrl;
 class CSingleMAPIPropListCtrl;
 class CParentWnd;
 class CMapiObjects;
-
-#include "ContentsTableDlg.h"
 
 class CProfileListDlg : public CContentsTableDlg
 {
@@ -19,11 +17,11 @@ public:
 
 private:
 	// Overrides from base class
-	void OnDeleteSelectedItem();
-	void OnDisplayItem();
-	void OnRefreshView();
-	void HandleCopy();
-	_Check_return_ bool HandlePaste();
+	void OnDeleteSelectedItem() override;
+	void OnDisplayItem() override;
+	void OnRefreshView() override;
+	void HandleCopy() override;
+	_Check_return_ bool HandlePaste() override;
 
 	// Menu items
 	void OnAddExchangeToProfile();

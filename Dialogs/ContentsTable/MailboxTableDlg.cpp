@@ -1,5 +1,3 @@
-// MailboxTableDlg.cpp : implementation file
-
 #include "stdafx.h"
 #include "MailboxTableDlg.h"
 #include "ContentsTableListCtrl.h"

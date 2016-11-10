@@ -1,4 +1,4 @@
-// AttachmentsDlg.cpp : Displays the attachment table for a message
+// Displays the attachment table for a message
 
 #include "stdafx.h"
 #include "AttachmentsDlg.h"

@@ -1,12 +1,10 @@
 #pragma once
-// FolderDlg.h : header file
+#include "ContentsTableDlg.h"
 
 class CContentsTableListCtrl;
 class CSingleMAPIPropListCtrl;
 class CParentWnd;
 class CMapiObjects;
-
-#include "ContentsTableDlg.h"
 
 class CFolderDlg : public CContentsTableDlg
 {

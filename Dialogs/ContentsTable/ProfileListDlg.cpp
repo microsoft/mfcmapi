@@ -1,5 +1,4 @@
-// ProfileListDlg.cpp : Displays the list of profiles
-
+// Displays the list of profiles
 #include "stdafx.h"
 #include "ProfileListDlg.h"
 #include "ContentsTableListCtrl.h"

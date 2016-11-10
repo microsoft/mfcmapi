@@ -1,11 +1,10 @@
 #pragma once
+#include "ContentsTableDlg.h"
 
 class CContentsTableListCtrl;
 class CSingleMAPIPropListCtrl;
 class CParentWnd;
 class CMapiObjects;
-
-#include "ContentsTableDlg.h"
 
 class CMailboxTableDlg : public CContentsTableDlg
 {

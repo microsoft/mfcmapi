@@ -1,12 +1,10 @@
 #pragma once
-// FormContainerDlg.h : header file
+#include "ContentsTableDlg.h"
 
 class CContentsTableListCtrl;
 class CSingleMAPIPropListCtrl;
 class CParentWnd;
 class CMapiObjects;
-
-#include "ContentsTableDlg.h"
 
 class CFormContainerDlg : public CContentsTableDlg
 {
@@ -23,12 +21,12 @@ private:
 	void HandleAddInMenuSingle(
 		_In_ LPADDINMENUPARAMS lpParams,
 		_In_ LPMAPIPROP lpMAPIProp,
-		_In_ LPMAPICONTAINER lpContainer);
-	void OnDeleteSelectedItem();
-	BOOL OnInitDialog();
+		_In_ LPMAPICONTAINER lpContainer) override;
+	void OnDeleteSelectedItem() override;
+	BOOL OnInitDialog() override;
 	void OnInitMenu(_In_ CMenu* pMenu);
-	void OnRefreshView();
-	_Check_return_ HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp);
+	void OnRefreshView() override;
+	_Check_return_ HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp) override;
 
 	// Menu items
 	void OnCalcFormPropSet();

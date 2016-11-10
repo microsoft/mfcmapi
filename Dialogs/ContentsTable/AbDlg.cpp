@@ -54,9 +54,6 @@ BEGIN_MESSAGE_MAP(CAbDlg, CContentsTableDlg)
 	ON_COMMAND(ID_OPENOWNER, OnOpenOwner)
 END_MESSAGE_MAP()
 
-/////////////////////////////////////////////////////////////////////////////
-// CAbDlg message handlers
-
 void CAbDlg::CreateDialogAndMenu(UINT nIDMenuResource)
 {
 	DebugPrintEx(DBGCreateDialog, CLASS, L"CreateDialogAndMenu", L"id = 0x%X\n", nIDMenuResource);

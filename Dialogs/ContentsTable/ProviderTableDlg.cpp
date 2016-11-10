@@ -1,5 +1,4 @@
-// ProviderTableDlg.cpp : Displays the list of providers in a message service in a profile
-
+// Displays the list of providers in a message service in a profile
 #include "stdafx.h"
 #include "ProviderTableDlg.h"
 #include "ContentsTableListCtrl.h"

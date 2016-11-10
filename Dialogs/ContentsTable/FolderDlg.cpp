@@ -1,5 +1,4 @@
-// FolderDlg.cpp : Displays the contents of a folder
-
+// Displays the contents of a folder
 #include "stdafx.h"
 #include "FolderDlg.h"
 #include "ContentsTableListCtrl.h"

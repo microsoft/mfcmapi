@@ -1,6 +1,4 @@
-// RulesDlg.cpp : implementation file
 // Displays the rules table for a folder
-
 #include "stdafx.h"
 #include "RulesDlg.h"
 #include "ContentsTableListCtrl.h"

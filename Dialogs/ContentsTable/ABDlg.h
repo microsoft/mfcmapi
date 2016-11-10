@@ -1,6 +1,4 @@
 #pragma once
-// AbDlg.h : header file
-
 #include "ContentsTableDlg.h"
 
 class CAbDlg : public CContentsTableDlg
@@ -14,15 +12,15 @@ public:
 
 private:
 	// Overrides from base class
-	void CreateDialogAndMenu(UINT nIDMenuResource);
+	void CreateDialogAndMenu(UINT nIDMenuResource) override;
 	void HandleAddInMenuSingle(
 		_In_ LPADDINMENUPARAMS lpParams,
 		_In_ LPMAPIPROP lpMAPIProp,
-		_In_ LPMAPICONTAINER lpContainer);
-	void HandleCopy();
-	_Check_return_ bool HandlePaste();
-	void OnCreatePropertyStringRestriction();
-	void OnDeleteSelectedItem();
+		_In_ LPMAPICONTAINER lpContainer) override;
+	void HandleCopy() override;
+	_Check_return_ bool HandlePaste() override;
+	void OnCreatePropertyStringRestriction() override;
+	void OnDeleteSelectedItem() override;
 	void OnDisplayDetails();
 	void OnInitMenu(_In_ CMenu* pMenu);
 

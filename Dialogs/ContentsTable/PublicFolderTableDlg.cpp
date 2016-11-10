@@ -1,4 +1,3 @@
-// PublicFolderTableDlg.cpp : implementation file
 #include "stdafx.h"
 #include "PublicFolderTableDlg.h"
 #include "ContentsTableListCtrl.h"
