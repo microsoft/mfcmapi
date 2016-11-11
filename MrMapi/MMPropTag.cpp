@@ -100,7 +100,7 @@ void PrintType(_In_ ULONG ulPropTag)
 	// Do a linear search through PropTypeArray - ulPropTypeArray will be small
 	auto bFound = false;
 
-	for (auto propType : PropTypeArray)
+	for (const auto& propType : PropTypeArray)
 	{
 		if (PROP_TYPE(ulPropTag) == propType.ulValue)
 		{
@@ -119,7 +119,7 @@ void PrintKnownTypes()
 {
 	// Do a linear search through PropTypeArray - ulPropTypeArray will be small
 	printf("%-18s%-9s%s\n", "Type", "Hex", "Decimal");
-	for (auto propType : PropTypeArray)
+	for (const auto& propType : PropTypeArray)
 	{
 		printf("%-15ws = 0x%04X = %u\n", propType.lpszName, propType.ulValue, propType.ulValue);
 	}
@@ -179,7 +179,7 @@ void PrintTagFromNum(_In_ ULONG ulPropTag)
 	if (ulExacts.size())
 	{
 		printf("\nExact matches:\n");
-		for (auto ulCur : ulExacts)
+		for (const auto& ulCur : ulExacts)
 		{
 			PrintTag(ulCur);
 		}
@@ -189,7 +189,7 @@ void PrintTagFromNum(_In_ ULONG ulPropTag)
 	{
 		printf("\nPartial matches:\n");
 		// let's print our partial matches
-		for (auto ulCur : ulPartials)
+		for (const auto& ulCur : ulPartials)
 		{
 			if (ulPropTag == PropTagArray[ulCur].ulValue) continue; // skip our exact matches
 			PrintTag(ulCur);
@@ -234,7 +234,7 @@ void PrintTagFromName(_In_z_ LPCWSTR lpszPropName, _In_ ULONG ulType)
 					printf("\nOther exact matches:\n");
 				}
 
-				for (auto ulMatch : ulExacts)
+				for (const auto& ulMatch : ulExacts)
 				{
 					if (ulNoMatch == ulType && ulExactMatch == ulMatch) continue; // skip this one
 					if (ulNoMatch != ulType && ulType != PROP_TYPE(PropTagArray[ulMatch].ulValue)) continue;
@@ -249,7 +249,7 @@ void PrintTagFromName(_In_z_ LPCWSTR lpszPropName, _In_ ULONG ulType)
 					printf("\nOther partial matches:\n");
 				}
 
-				for (auto ulMatch : ulPartials)
+				for (const auto& ulMatch : ulPartials)
 				{
 					if (PropTagArray[ulExactMatch].ulValue == PropTagArray[ulMatch].ulValue) continue; // skip our exact matches
 					if (ulNoMatch != ulType && ulType != PROP_TYPE(PropTagArray[ulMatch].ulValue)) continue;
@@ -317,7 +317,7 @@ void PrintGUID(_In_ LPCGUID lpGUID)
 		lpGUID->Data4[7]);
 
 	printf(",");
-	for (auto guid : PropGuidArray)
+	for (const auto& guid : PropGuidArray)
 	{
 		if (IsEqualGUID(*lpGUID, *guid.lpGuid))
 		{
@@ -329,7 +329,7 @@ void PrintGUID(_In_ LPCGUID lpGUID)
 
 void PrintGUIDs()
 {
-	for (auto guid : PropGuidArray)
+	for (const auto& guid : PropGuidArray)
 	{
 		printf("{%.8X-%.4X-%.4X-%.2X%.2X-%.2X%.2X%.2X%.2X%.2X%.2X}",
 			guid.lpGuid->Data1,
@@ -378,7 +378,7 @@ void PrintDispIDFromNum(_In_ ULONG ulDispID)
 	if (ulNumExacts > 0 && ulNoMatch != ulFirstExactMatch)
 	{
 		printf("\nExact matches:\n");
-		for (auto ulCur = ulFirstExactMatch; ulCur < ulFirstExactMatch + ulNumExacts; ulCur++)
+		for (const auto& ulCur = ulFirstExactMatch; ulCur < ulFirstExactMatch + ulNumExacts; ulCur++)
 		{
 			PrintDispID(ulCur);
 		}
@@ -452,7 +452,7 @@ void PrintFlag(_In_ ULONG ulPropNum, _In_opt_z_ LPCWSTR lpszPropName, _In_ bool 
 	{
 		if (ulPropNum)
 		{
-			for (auto nameID : NameIDArray)
+			for (const auto& nameID : NameIDArray)
 			{
 				if (ulPropNum == static_cast<ULONG>(nameID.lValue))
 				{
@@ -462,7 +462,7 @@ void PrintFlag(_In_ ULONG ulPropNum, _In_opt_z_ LPCWSTR lpszPropName, _In_ bool 
 		}
 		else if (lpszPropName)
 		{
-			for (auto nameID : NameIDArray)
+			for (const auto& nameID : NameIDArray)
 			{
 				if (nameID.lpszName && 0 == lstrcmpiW(lpszPropName, nameID.lpszName))
 				{
@@ -589,7 +589,7 @@ void DoGUIDs(_In_ MYOPTIONS /*ProgOpts*/)
 
 void DoFlagSearch(_In_ MYOPTIONS ProgOpts)
 {
-	for (auto flag : FlagArray)
+	for (const auto& flag : FlagArray)
 	{
 		if (!_wcsicmp(flag.lpszName, ProgOpts.lpszFlagName.c_str()))
 		{

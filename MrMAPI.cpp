@@ -205,7 +205,7 @@ void DisplayUsage(BOOL bFull)
 		if (!g_lpMyAddins.empty())
 		{
 			printf("Addins Loaded:\n");
-			for (auto addIn : g_lpMyAddins)
+			for (const auto& addIn : g_lpMyAddins)
 			{
 				printf("   %ws\n", addIn.szName);
 			}
@@ -576,7 +576,7 @@ MYOPTIONS::MYOPTIONS()
 
 OptParser* GetParser(__CommandLineSwitch Switch)
 {
-	for (auto i = 0; i < _countof(g_Parsers); i++)
+	for (const auto& i = 0; i < _countof(g_Parsers); i++)
 	{
 		if (Switch == g_Parsers[i].Switch) return &g_Parsers[i];
 	}
@@ -629,7 +629,7 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 
 	auto bHitError = false;
 
-	for (auto i = 1; i < argc; i++)
+	for (const auto& i = 1; i < argc; i++)
 	{
 		auto iSwitch = ParseArgument(argv[i]);
 		auto opt = GetParser(iSwitch);
@@ -651,7 +651,7 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 			// Commands with variable argument counts can special case themselves
 			if (opt->MinArgs > 0)
 			{
-				for (auto iArg = 1; iArg <= opt->MinArgs; iArg++)
+				for (const auto& iArg = 1; iArg <= opt->MinArgs; iArg++)
 				{
 					if (argc <= i + iArg || switchNoSwitch != ParseArgument(argv[i + iArg]))
 					{
@@ -970,7 +970,7 @@ bool LoadMAPIVersion(const wstring& lpszVersion)
 	if (lpszVersion == L"0")
 	{
 		DebugPrint(DBGGeneric, L"Listing MAPI\n");
-		for (auto path : paths)
+		for (const auto& path : paths)
 		{
 
 			printf("MAPI path: %ws\n", wstringToLower(path).c_str());
@@ -983,7 +983,7 @@ bool LoadMAPIVersion(const wstring& lpszVersion)
 	{
 		DebugPrint(DBGGeneric, L"Got a string\n");
 
-		for (auto path : paths)
+		for (const auto& path : paths)
 		{
 			wstringToLower(path);
 

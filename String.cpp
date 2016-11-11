@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "string.h"
 #include <locale>
-#include <codecvt>
 #include <sstream>
 
 wstring emptystring = L"";

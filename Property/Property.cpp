@@ -103,7 +103,7 @@ wstring Property::toXML(int iIndent) const
 
 		szXML << tagopen(szValue + m_attributes.toXML(), iIndent) + L"\n";
 
-		for (auto parsing : m_MainParsing)
+		for (const auto& parsing : m_MainParsing)
 		{
 			szXML << tagopen(szRow, iIndent + 1) + L"\n";
 			szXML << parsing.toXML(PropXMLNames[pcPROPVAL].uidName, iIndent + 2);
@@ -139,7 +139,7 @@ wstring Property::toString(const vector<Parsing>& parsings) const
 		wstringstream szString;
 		szString << m_attributes.GetAttribute(L"count") + L": ";
 		auto first = true;
-		for (auto parsing: parsings)
+		for (const auto& parsing: parsings)
 		{
 			if (!first)
 			{

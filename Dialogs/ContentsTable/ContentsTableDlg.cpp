@@ -833,7 +833,7 @@ _Check_return_ bool CContentsTableDlg::HandleAddInMenu(WORD wMenuSelect)
 		// Add appropriate flag to context
 		MyAddInMenuParams.ulCurrentFlags |= ulFlags & (MENU_FLAGS_SINGLESELECT | MENU_FLAGS_MULTISELECT);
 		auto items = m_lpContentsTableListCtrl->GetSelectedItemNums();
-		for (auto item : items)
+		for (const auto& item : items)
 		{
 			SRow MyRow = { 0 };
 

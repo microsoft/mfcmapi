@@ -32,7 +32,7 @@ ULONG SmartViewPane::GetFlags()
 
 void SmartViewPane::Initialize(int /*iControl*/, _In_ CWnd* pParent, _In_ HDC hdc)
 {
-	for (auto smartViewParserType : SmartViewParserTypeArray)
+	for (const auto& smartViewParserType : SmartViewParserTypeArray)
 	{
 		InsertDropString(smartViewParserType.lpszName, smartViewParserType.ulValue);
 	}

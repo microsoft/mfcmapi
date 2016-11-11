@@ -395,7 +395,7 @@ _Check_return_ wstring EntryIdStruct::ToStringInternal()
 	{
 		szEntryId += formatmessage(IDS_ENTRYIDWRAPPEDENTRYIDDATA, m_WAB.Type, InterpretFlags(flagWABEntryIDType, m_WAB.Type).c_str());
 
-		for (auto entry : m_WAB.lpEntryID)
+		for (const auto& entry : m_WAB.lpEntryID)
 		{
 			szEntryId += entry.ToString();
 		}

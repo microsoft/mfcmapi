@@ -174,7 +174,7 @@ void CFormContainerDlg::OnDeleteSelectedItem()
 	if (!m_lpFormContainer || !m_lpContentsTableListCtrl) return;
 
 	auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
-	for (auto lpListData : items)
+	for (const auto& lpListData : items)
 	{
 		auto hRes = S_OK;
 		// Find the highlighted item AttachNum

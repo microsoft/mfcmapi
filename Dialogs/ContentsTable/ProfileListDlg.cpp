@@ -133,7 +133,7 @@ void CProfileListDlg::OnDisplayItem()
 
 	if (!m_lpContentsTableListCtrl) return;
 	auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
-	for (auto lpListData : items)
+	for (const auto& lpListData : items)
 	{
 		if (!lpListData || !lpListData->Contents()) break;
 
@@ -211,7 +211,7 @@ void CProfileListDlg::OnAddExchangeToProfile()
 		if (!szServer.empty() && !szMailbox.empty())
 		{
 			auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
-			for (auto lpListData : items)
+			for (const auto& lpListData : items)
 			{
 				if (!lpListData || !lpListData->Contents()) break;
 
@@ -245,7 +245,7 @@ void CProfileListDlg::AddPSTToProfile(bool bUnicodePST)
 	if (!file.empty())
 	{
 		auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
-		for (auto lpListData : items)
+		for (const auto& lpListData : items)
 		{
 			if (!lpListData || !lpListData->Contents()) break;
 
@@ -312,7 +312,7 @@ void CProfileListDlg::OnAddServiceToProfile()
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 		auto szService = wstringTostring(MyData.GetStringW(0));
 		auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
-		for (auto lpListData : items)
+		for (const auto& lpListData : items)
 		{
 			hRes = S_OK;
 			if (!lpListData || !lpListData->Contents()) break;
@@ -361,7 +361,7 @@ void CProfileListDlg::OnDeleteSelectedItem()
 	if (!m_lpContentsTableListCtrl) return;
 
 	auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
-	for (auto lpListData : items)
+	for (const auto& lpListData : items)
 	{
 		auto hRes = S_OK;
 		// Find the highlighted item AttachNum
@@ -382,7 +382,7 @@ void CProfileListDlg::OnGetProfileServiceVersion()
 	if (!m_lpContentsTableListCtrl) return;
 
 	auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
-	for (auto lpListData : items)
+	for (const auto& lpListData : items)
 	{
 		auto hRes = S_OK;
 		// Find the highlighted item AttachNum

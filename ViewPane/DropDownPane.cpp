@@ -156,7 +156,7 @@ void DropDownPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 	CreateControl(iControl, pParent, hdc);
 
 	auto iDropNum = 0;
-	for (auto drop : m_DropList)
+	for (const auto& drop : m_DropList)
 	{
 		m_DropDown.InsertString(iDropNum, wstringTotstring(drop.first).c_str());
 		m_DropDown.SetItemData(iDropNum, drop.second);

@@ -136,7 +136,7 @@ void CMsgServiceTableDlg::OnDisplayItem()
 	if (!m_lpContentsTableListCtrl || !m_lpServiceAdmin) return;
 
 	auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
-	for (auto lpListData : items)
+	for (const auto& lpListData : items)
 	{
 		if (lpListData && lpListData->Contents())
 		{
@@ -181,7 +181,7 @@ void CMsgServiceTableDlg::OnConfigureMsgService()
 	if (!m_lpContentsTableListCtrl || !m_lpServiceAdmin) return;
 
 	auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
-	for (auto lpListData : items)
+	for (const auto& lpListData : items)
 	{
 		if (lpListData && lpListData->Contents())
 		{
@@ -279,7 +279,7 @@ void CMsgServiceTableDlg::OnDeleteSelectedItem()
 	if (!m_lpServiceAdmin || !m_lpContentsTableListCtrl) return;
 
 	auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
-	for (auto lpListData : items)
+	for (const auto& lpListData : items)
 	{
 		// Find the highlighted item AttachNum
 		if (!lpListData || !lpListData->Contents()) break;

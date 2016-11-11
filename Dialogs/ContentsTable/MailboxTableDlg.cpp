@@ -93,7 +93,7 @@ void CMailboxTableDlg::DisplayItem(ULONG ulFlags)
 	{
 		LPMDB lpNewMDB = nullptr;
 		auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
-		for (auto lpListData : items)
+		for (const auto& lpListData : items)
 		{
 			hRes = S_OK;
 			if (lpListData && lpListData->Contents())

@@ -95,7 +95,7 @@ _Check_return_ wstring ExtendedFlags::ToStringInternal()
 
 	if (m_pefExtendedFlags.size())
 	{
-		for (auto extendedFlag : m_pefExtendedFlags)
+		for (const auto& extendedFlag : m_pefExtendedFlags)
 		{
 			auto szFlags = InterpretFlags(flagExtendedFolderFlagType, extendedFlag.Id);
 			szExtendedFlags += formatmessage(IDS_EXTENDEDFLAGID,

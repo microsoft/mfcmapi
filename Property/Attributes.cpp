@@ -41,7 +41,7 @@ void Attributes::AddAttribute(const wstring& key, const wstring& value)
 
 wstring Attributes::GetAttribute(const wstring& key) const
 {
-	for (auto attribute : m_attributes)
+	for (const auto& attribute : m_attributes)
 	{
 		if (attribute.Key() == key)
 		{
@@ -59,7 +59,7 @@ wstring Attributes::toXML() const
 		wstringstream szXML;
 		szXML << L" ";
 
-		for (auto attribute : m_attributes)
+		for (const auto& attribute : m_attributes)
 		{
 			szXML << attribute.toXML();
 		}

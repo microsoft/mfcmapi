@@ -220,7 +220,7 @@ public:
 
 		if (!m_lpList.empty())
 		{
-			for (auto dll : m_lpList)
+			for (const auto& dll : m_lpList)
 			{
 				szList += dll;
 				szList += SEPARATOR;
@@ -246,7 +246,7 @@ public:
 	bool IsOnList(_In_ const wstring& szDLL) const
 	{
 		if (szDLL.empty()) return true;
-		for (auto dll : m_lpList)
+		for (const auto& dll : m_lpList)
 		{
 			if (wstringToLower(dll) == wstringToLower(szDLL)) return true;
 		}
@@ -379,7 +379,7 @@ void UnloadAddIns()
 {
 	DebugPrint(DBGAddInPlumbing, L"Unloading AddIns\n");
 
-	for (auto addIn : g_lpMyAddins)
+	for (const auto& addIn : g_lpMyAddins)
 	{
 		DebugPrint(DBGAddInPlumbing, L"Freeing add-in\n");
 		if (addIn.bLegacyPropTags)
@@ -419,7 +419,7 @@ _Check_return_ ULONG ExtendAddInMenu(HMENU hMenu, ULONG ulAddInContext)
 		uidCurMenu = ID_ADDINPROPERTYMENU;
 	}
 
-	for (auto addIn : g_lpMyAddins)
+	for (const auto& addIn : g_lpMyAddins)
 	{
 		DebugPrint(DBGAddInPlumbing, L"Examining add-in for menus\n");
 		if (addIn.hMod)
@@ -730,7 +730,7 @@ void MergeAddInArrays()
 	if (g_lpMyAddins.empty()) return;
 
 	DebugPrint(DBGAddInPlumbing, L"Merging Add-In arrays\n");
-	for (auto addIn : g_lpMyAddins)
+	for (const auto& addIn : g_lpMyAddins)
 	{
 		DebugPrint(DBGAddInPlumbing, L"Looking at %ws\n", addIn.szName);
 		DebugPrint(DBGAddInPlumbing, L"Found 0x%08X prop tags.\n", addIn.ulPropTags);
@@ -743,7 +743,7 @@ void MergeAddInArrays()
 	}
 
 	// Second pass - merge our arrays to the hardcoded arrays
-	for (auto addIn : g_lpMyAddins)
+	for (const auto& addIn : g_lpMyAddins)
 	{
 		if (addIn.ulPropTypes)
 		{
@@ -791,7 +791,7 @@ void MergeAddInArrays()
 			{
 				auto bDupe = false;
 				// Since this array isn't sorted, we have to compare against all valid entries for dupes
-				for (auto guid : PropGuidArray)
+				for (const auto& guid : PropGuidArray)
 				{
 					if (IsEqualGUID(*addIn.lpPropGuids[i].lpGuid, *guid.lpGuid))
 					{
@@ -1033,7 +1033,7 @@ __declspec(dllexport) void __cdecl GetMAPIModule(_In_ HMODULE* lphModule, bool b
 
 wstring AddInStructTypeToString(__ParsingTypeEnum iStructType)
 {
-	for (auto smartViewParserType : SmartViewParserTypeArray)
+	for (const auto& smartViewParserType : SmartViewParserTypeArray)
 	{
 		if (smartViewParserType.ulValue == static_cast<ULONG>(iStructType))
 		{
@@ -1052,7 +1052,7 @@ wstring AddInSmartView(__ParsingTypeEnum iStructType, ULONG cbBin, _In_count_(cb
 	auto szStructType = AddInStructTypeToString(iStructType);
 	if (szStructType.empty()) return L"";
 
-	for (auto addIn : g_lpMyAddins)
+	for (const auto& addIn : g_lpMyAddins)
 	{
 		if (addIn.ulSmartViewParserTypes)
 		{

@@ -494,7 +494,7 @@ BOOL CEditor::OnInitDialog()
 void CEditor::OnOK()
 {
 	// save data from the UI back into variables that we can query later
-	for (auto pane : m_lpControls)
+	for (const auto& pane : m_lpControls)
 	{
 		if (pane)
 		{
@@ -543,7 +543,7 @@ _Check_return_ HRESULT CEditor::DisplayDialog()
 // Push current margin settings to the view panes
 void CEditor::SetMargins() const
 {
-	for (auto pane : m_lpControls)
+	for (const auto& pane : m_lpControls)
 	{
 		if (pane)
 		{
@@ -628,7 +628,7 @@ _Check_return_ SIZE CEditor::ComputeWorkArea(SIZE sScreen)
 
 	SetMargins();
 	// width
-	for (auto pane : m_lpControls)
+	for (const auto& pane : m_lpControls)
 	{
 		if (pane)
 		{
@@ -662,7 +662,7 @@ _Check_return_ SIZE CEditor::ComputeWorkArea(SIZE sScreen)
 	cy += m_iMargin; // add a little height between the buttons and our edit controls
 
 	auto iControlHeight = 0;
-	for (auto pane : m_lpControls)
+	for (const auto& pane : m_lpControls)
 	{
 		if (pane)
 		{
@@ -868,7 +868,7 @@ void CEditor::OnSize(UINT nType, int cx, int cy)
 	auto iLineHeight = 0;
 	auto iFixedHeight = 0;
 	auto iVariableLines = 0;
-	for (auto pane : m_lpControls)
+	for (const auto& pane : m_lpControls)
 	{
 		if (pane)
 		{
@@ -913,7 +913,7 @@ void CEditor::OnSize(UINT nType, int cx, int cy)
 		iCYTop = -iScrollPos; // We get scrolling for free by adjusting our top
 	}
 
-	for (auto pane : m_lpControls)
+	for (const auto& pane : m_lpControls)
 	{
 		// Calculate height for multiline edit boxes and lists
 		// If we had any slack space, parcel it out Monopoly house style over the controls
@@ -950,7 +950,7 @@ void CEditor::OnSize(UINT nType, int cx, int cy)
 
 void CEditor::DeleteControls()
 {
-	for (auto pane : m_lpControls)
+	for (const auto& pane : m_lpControls)
 	{
 		if (pane) delete[] pane;
 	}
@@ -1306,7 +1306,7 @@ _Check_return_ ULONG CEditor::HandleChange(UINT nID)
 
 void CEditor::UpdateButtons() const
 {
-	for (auto pane : m_lpControls)
+	for (const auto& pane : m_lpControls)
 	{
 		if (pane)
 		{

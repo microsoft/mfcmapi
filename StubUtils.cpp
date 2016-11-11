@@ -489,7 +489,7 @@ HMODULE GetDefaultMapiHandle()
 	HMODULE hinstMapi = nullptr;
 
 	auto paths = GetMAPIPaths();
-	for (auto szPath : paths)
+	for (const auto& szPath : paths)
 	{
 		DebugPrint(DBGLoadMAPI, L"Trying %ws\n", szPath.c_str());
 		hinstMapi = MyLoadLibraryW(szPath);

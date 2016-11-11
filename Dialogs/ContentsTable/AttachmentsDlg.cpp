@@ -230,7 +230,7 @@ void CAttachmentsDlg::HandleCopy()
 	{
 		vector<ULONG> lpAttNumList;
 		auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
-		for (auto lpListData : items)
+		for (const auto& lpListData : items)
 		{
 			if (lpListData && lpListData->Contents())
 			{
@@ -261,7 +261,7 @@ _Check_return_ bool CAttachmentsDlg::HandlePaste()
 	if (!lpAttNumList.empty() && lpSourceMessage)
 	{
 		// Go through each attachment and copy it
-		for (auto ulAtt : lpAttNumList)
+		for (const auto& ulAtt : lpAttNumList)
 		{
 			LPATTACH lpAttSrc = nullptr;
 			LPATTACH lpAttDst = nullptr;
@@ -331,7 +331,7 @@ void CAttachmentsDlg::OnDeleteSelectedItem()
 
 	vector<int> attachnums;
 	auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
-	for (auto lpListData : items)
+	for (const auto& lpListData : items)
 	{
 		if (lpListData && lpListData->Contents())
 		{
@@ -339,7 +339,7 @@ void CAttachmentsDlg::OnDeleteSelectedItem()
 		}
 	}
 
-	for (auto attachnum : attachnums)
+	for (const auto& attachnum : attachnums)
 	{
 		DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L"Deleting attachment 0x%08X\n", attachnum);
 		LPMAPIPROGRESS lpProgress = GetMAPIProgress(L"IMessage::DeleteAttach", m_hWnd); // STRING_OK
@@ -386,7 +386,7 @@ void CAttachmentsDlg::OnSaveToFile()
 	if (!m_lpContentsTableListCtrl || !m_lpMessage) return;
 
 	auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
-	for (auto lpListData : items)
+	for (const auto& lpListData : items)
 	{
 		// Find the highlighted item AttachNum
 		if (S_OK != hRes)

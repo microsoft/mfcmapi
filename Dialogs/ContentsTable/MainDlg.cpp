@@ -122,7 +122,7 @@ void CMainDlg::AddLoadMAPIMenus() const
 	if (SUCCEEDED(hRes))
 	{
 		auto paths = GetMAPIPaths();
-		for (auto szPath : paths)
+		for (const auto& szPath : paths)
 		{
 			if (uidCurMenu > ID_LOADMAPIMENUMAX) break;
 
@@ -732,7 +732,7 @@ void CMainDlg::OnOpenSelectedStoreDeletedFolders()
 	if (!lpMAPISession) return;
 
 	auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
-	for (auto lpListData : items)
+	for (const auto& lpListData : items)
 	{
 		if (lpListData && lpListData->Contents())
 		{
@@ -775,7 +775,7 @@ void CMainDlg::OnDumpStoreContents()
 	if (!lpMAPISession) return;
 
 	auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
-	for (auto lpListData : items)
+	for (const auto& lpListData : items)
 	{
 		if (lpListData && lpListData->Contents())
 		{

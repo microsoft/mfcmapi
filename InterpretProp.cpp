@@ -727,7 +727,7 @@ wstring TypeToString(ULONG ulPropTag)
 
 	auto bTypeFound = false;
 
-	for (auto propType : PropTypeArray)
+	for (const auto& propType : PropTypeArray)
 	{
 		if (propType.ulValue == PROP_TYPE(ulPropTag))
 		{

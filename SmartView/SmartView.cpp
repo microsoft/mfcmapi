@@ -179,7 +179,7 @@ _Check_return_ __ParsingTypeEnum FindSmartViewParserForProp(const ULONG ulPropTa
 	auto ulIndex = BuildFlagIndexFromTag(ulPropTag, ulPropNameID, nullptr, lpguidNamedProp);
 	auto bMV = (PROP_TYPE(ulPropTag) & MV_FLAG) == MV_FLAG;
 
-	for (auto smartViewParser : SmartViewParserArray)
+	for (const auto& smartViewParser : SmartViewParserArray)
 	{
 		if (smartViewParser.ulIndex == ulIndex &&
 			smartViewParser.bMV == bMV)

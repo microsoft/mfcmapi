@@ -441,7 +441,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::AddColumns(_In_ LPSPropTagArray l
 		// If we have named columns, put them up front
 
 		// Walk through the list of named/extra columns and add them to our header list
-		for (auto extraCol: m_lpExtraDisplayColumns)
+		for (const auto& extraCol: m_lpExtraDisplayColumns)
 		{
 			auto ulExtraColRowNum = extraCol.ulMatchingTableColumn;
 			auto ulExtraColTag = m_sptExtraColumnTags->aulPropTag[ulExtraColRowNum];

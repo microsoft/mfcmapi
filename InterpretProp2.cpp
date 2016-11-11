@@ -131,7 +131,7 @@ PropTagNames PropTagToPropName(ULONG ulPropTag, bool bIsAB)
 		entry.bestGuess = PropTagArray[ulExacts.front()].lpszName;
 		ulExacts.erase(ulExacts.begin());
 
-		for (auto ulMatch : ulExacts)
+		for (const auto& ulMatch : ulExacts)
 		{
 			if (!entry.otherMatches.empty())
 			{
@@ -150,7 +150,7 @@ PropTagNames PropTagToPropName(ULONG ulPropTag, bool bIsAB)
 			ulPartials.erase(ulPartials.begin());
 		}
 
-		for (auto ulMatch : ulPartials)
+		for (const auto& ulMatch : ulPartials)
 		{
 			if (!entry.otherMatches.empty())
 			{
@@ -206,7 +206,7 @@ _Check_return_ ULONG PropTypeNameToPropType(_In_ const wstring& lpszPropType)
 
 	auto ulPropType = PT_UNSPECIFIED;
 
-	for (auto propType : PropTypeArray)
+	for (const auto& propType : PropTypeArray)
 	{
 		if (0 == lstrcmpiW(lpszPropType.c_str(), propType.lpszName))
 		{
@@ -249,7 +249,7 @@ wstring GUIDToStringAndName(_In_opt_ LPCGUID lpGUID)
 
 	if (lpGUID)
 	{
-		for (auto guid : PropGuidArray)
+		for (const auto& guid : PropGuidArray)
 		{
 			if (IsEqualGUID(*lpGUID, *guid.lpGuid))
 			{
@@ -268,7 +268,7 @@ LPCGUID GUIDNameToGUID(_In_ const wstring& szGUID, bool bByteSwapped)
 	GUID guid = { 0 };
 
 	// Try the GUID like PS_* first
-	for (auto propGuid : PropGuidArray)
+	for (const auto& propGuid : PropGuidArray)
 	{
 		if (0 == lstrcmpiW(szGUID.c_str(), propGuid.lpszName))
 		{
