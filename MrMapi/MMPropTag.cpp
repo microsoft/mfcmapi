@@ -378,7 +378,7 @@ void PrintDispIDFromNum(_In_ ULONG ulDispID)
 	if (ulNumExacts > 0 && ulNoMatch != ulFirstExactMatch)
 	{
 		printf("\nExact matches:\n");
-		for (const auto& ulCur = ulFirstExactMatch; ulCur < ulFirstExactMatch + ulNumExacts; ulCur++)
+		for (auto ulCur = ulFirstExactMatch; ulCur < ulFirstExactMatch + ulNumExacts; ulCur++)
 		{
 			PrintDispID(ulCur);
 		}

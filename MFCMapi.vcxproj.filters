@@ -937,6 +937,9 @@
     <ClCompile Include="Dialogs\Editors\PropertySelector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MrMapi\MrMAPI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuildStep Include="mfcmapi.exe.manifest" />
