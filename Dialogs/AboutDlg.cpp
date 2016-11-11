@@ -6,7 +6,7 @@ void DisplayAboutDlg(_In_ CWnd* lpParentWnd)
 {
 	CAboutDlg AboutDlg(lpParentWnd);
 	auto hRes = S_OK;
-	auto iDlgRet = 0;
+	INT_PTR iDlgRet = 0;
 
 	EC_D_DIALOG(AboutDlg.DoModal());
 }
