@@ -40,7 +40,7 @@ _Check_return_ wstring EntryList::ToStringInternal()
 		m_EntryCount,
 		m_Pad);
 
-	for (DWORD i = 0; i < m_EntryCount; i++)
+	for (DWORD i = 0; i < m_Entry.size(); i++)
 	{
 		szEntryList += formatmessage(IDS_ENTRYLISTENTRYID,
 			i,
