@@ -177,6 +177,11 @@ _Check_return_ wstring PropertyDefinitionStream::ToStringInternal()
 				{
 					szPropertyDefinitionStream += formatmessage(IDS_PROPDEFDISPIDTAG, propTagNames.bestGuess.c_str());
 				}
+
+				if (!propTagNames.otherMatches.empty())
+				{
+					szPropertyDefinitionStream += formatmessage(IDS_PROPDEFDISPIDOTHER, propTagNames.otherMatches.c_str());
+				}
 			}
 			else
 			{
@@ -185,7 +190,7 @@ _Check_return_ wstring PropertyDefinitionStream::ToStringInternal()
 				mnid.lpguid = nullptr;
 				mnid.ulKind = MNID_ID;
 				mnid.Kind.lID = m_pfdFieldDefinitions[iDef].dwDispid;
-				szDispidName = join(NameIDToPropNames(&mnid), L',');
+				szDispidName = join(NameIDToPropNames(&mnid), L", ");
 				if (!szDispidName.empty())
 				{
 					szPropertyDefinitionStream += formatmessage(IDS_PROPDEFDISPIDNAMED, szDispidName.c_str());

@@ -790,7 +790,7 @@ NamePropNames NameIDToStrings(_In_ LPMAPINAMEID lpNameID, ULONG ulPropTag)
 		{
 			namePropNames.bestPidLid = pidlids.front();
 			pidlids.erase(pidlids.begin());
-			namePropNames.otherPidLid = join(pidlids, L',');
+			namePropNames.otherPidLid = join(pidlids, L", ");
 			// Printing hex first gets a nice sort without spacing tricks
 			namePropNames.name = format(L"id: 0x%04X=%d = %ws", // STRING_OK
 				lpNameID->Kind.lID,

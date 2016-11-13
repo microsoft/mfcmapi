@@ -462,7 +462,7 @@ vector<wstring> split(const wstring& str, const wchar_t delim)
 	return elems;
 }
 
-wstring join(const vector<wstring> elems, const wchar_t delim)
+wstring join(const vector<wstring> elems, const wstring& delim)
 {
 	wstringstream ss;
 	for (size_t i = 0; i < elems.size(); ++i)
@@ -473,4 +473,9 @@ wstring join(const vector<wstring> elems, const wchar_t delim)
 	}
 
 	return ss.str();
+}
+
+wstring join(const vector<wstring> elems, const wchar_t delim)
+{
+	return join(elems, wstring(1, delim));
 }

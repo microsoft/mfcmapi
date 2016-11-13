@@ -2088,6 +2088,7 @@ IDS_PROPDEFFIELDHEADER "\r\nDefinition: %1!d!\r\n\
 \tVT = 0x%4!04X! = %5!ws!\r\n\
 \tDispID = 0x%6!08X!"
 IDS_PROPDEFDISPIDTAG " = %1!ws!"
+IDS_PROPDEFDISPIDOTHER ": (%1!ws!)"
 IDS_PROPDEFDISPIDNAMED " = %1!ws!"
 IDS_PROPDEFNMIDNAME "\r\n\tNmidNameLength = 0x%1!04X!\r\n\
 \tNmidName = "
