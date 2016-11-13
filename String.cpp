@@ -418,7 +418,7 @@ vector<BYTE> HexStringToBin(_In_ wstring lpsz, size_t cbTarget)
 	while (iCur < cchStrLen && (cbTarget == 0 || cbConverted < cbTarget))
 	{
 		// Check for valid hex characters
-		if (!isxdigit(lpsz[iCur]) || !isxdigit(lpsz[iCur + 1]))
+		if (lpsz[iCur] > 255 || lpsz[iCur + 1] > 255 || !isxdigit(lpsz[iCur]) || !isxdigit(lpsz[iCur + 1]))
 		{
 			return vector<BYTE>();
 		}
