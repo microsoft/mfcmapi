@@ -8,7 +8,6 @@
 #include "InterpretProp.h"
 #include "InterpretProp2.h"
 #include <Dialogs/Editors/Editor.h>
-#include "SingleMAPIPropListCtrl.h"
 #include <Dialogs/Editors/TagArrayEditor.h>
 #include "ExtraPropTags.h"
 #include "SmartView/Smartview.h"
@@ -1234,7 +1233,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::DefaultOpenItemProp(
 	// Find the highlighted item EID
 	switch (m_ulContainerType)
 	{
-	case (MAPI_ABCONT):
+	case MAPI_ABCONT:
 	{
 		auto lpAB = m_lpMapiObjects->GetAddrBook(false); // do not release
 		WC_H(CallOpenEntry(
@@ -1250,7 +1249,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::DefaultOpenItemProp(
 	}
 
 	break;
-	case(MAPI_FOLDER):
+	case MAPI_FOLDER:
 	{
 		auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 		LPCIID lpInterface = nullptr;
@@ -1762,8 +1761,7 @@ _Check_return_ int CContentsTableListCtrl::FindRow(_In_ LPSBinary lpInstance) co
 
 	if (!lpInstance) return -1;
 
-	auto iItem = 0;
-	for (iItem = 0; iItem < GetItemCount(); iItem++)
+	for (auto iItem = 0; iItem < GetItemCount(); iItem++)
 	{
 		auto lpListData = GetSortListData(iItem);
 		if (lpListData && lpListData->Contents())
