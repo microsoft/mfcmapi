@@ -1761,7 +1761,8 @@ _Check_return_ int CContentsTableListCtrl::FindRow(_In_ LPSBinary lpInstance) co
 
 	if (!lpInstance) return -1;
 
-	for (auto iItem = 0; iItem < GetItemCount(); iItem++)
+	auto iItem = 0;
+	for (iItem = 0; iItem < GetItemCount(); iItem++)
 	{
 		auto lpListData = GetSortListData(iItem);
 		if (lpListData && lpListData->Contents())
