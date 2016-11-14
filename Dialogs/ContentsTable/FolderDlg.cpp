@@ -1,12 +1,12 @@
 // Displays the contents of a folder
 #include "stdafx.h"
 #include "FolderDlg.h"
-#include "ContentsTableListCtrl.h"
+#include <Controls/ContentsTableListCtrl.h>
 #include "MapiObjects.h"
 #include "MAPIFunctions.h"
 #include "MAPIStoreFunctions.h"
 #include "MAPIABFunctions.h"
-#include "SingleMAPIPropListCtrl.h"
+#include <Controls/SingleMAPIPropListCtrl.h>
 #include "ColumnTags.h"
 #include "MFCUtilityFunctions.h"
 #include <Dialogs/Editors/Editor.h>
@@ -21,7 +21,7 @@
 #include "MAPIProgress.h"
 #include "MAPIMime.h"
 #include "InterpretProp2.h"
-#include "SortList/ContentsData.h"
+#include <Controls/SortList/ContentsData.h>
 #include "GlobalCache.h"
 
 static wstring CLASS = L"CFolderDlg";

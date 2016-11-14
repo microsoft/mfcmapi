@@ -2,7 +2,7 @@
 #include "MultiValuePropertyEditor.h"
 #include "MAPIFunctions.h"
 #include "SmartView/SmartView.h"
-#include "SortList/MVPropData.h"
+#include <Controls/SortList/MVPropData.h>
 #include "PropertyEditor.h"
 
 static wstring MVCLASS = L"CMultiValuePropertyEditor"; // STRING_OK

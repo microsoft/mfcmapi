@@ -3,7 +3,7 @@
 #include "FakeSplitter.h"
 #include "MapiObjects.h"
 #include "ParentWnd.h"
-#include "SingleMAPIPropListCtrl.h"
+#include <Controls/SingleMAPIPropListCtrl.h>
 #include <Dialogs/Editors/Editor.h>
 #include <Dialogs/Editors/HexEditor.h>
 #include "MFCUtilityFunctions.h"

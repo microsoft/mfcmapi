@@ -1,6 +1,6 @@
 #pragma once
 #include "ViewPane.h"
-#include "SortList/SortListCtrl.h"
+#include "Controls/SortList/SortListCtrl.h"
 #include <functional>
 
 #define NUMLISTBUTTONS 7

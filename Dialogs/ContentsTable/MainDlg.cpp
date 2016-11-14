@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "MainDlg.h"
-#include "ContentsTableListCtrl.h"
+#include <Controls/ContentsTableListCtrl.h>
 #include "MapiObjects.h"
-#include "SingleMAPIPropListCtrl.h"
+#include <Controls/SingleMAPIPropListCtrl.h>
 #include "MAPIFunctions.h"
 #include "MAPIStoreFunctions.h"
 #include "MAPIProfileFunctions.h"
@@ -21,7 +21,7 @@
 #include "InterpretProp2.h"
 #include "QuickStart.h"
 #include "UIFunctions.h"
-#include "SortList/ContentsData.h"
+#include <Controls/SortList/ContentsData.h>
 #include "GlobalCache.h"
 
 static wstring CLASS = L"CMainDlg";

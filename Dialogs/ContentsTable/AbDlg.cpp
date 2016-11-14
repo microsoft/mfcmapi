@@ -2,9 +2,8 @@
 
 #include "stdafx.h"
 #include "ABDlg.h"
-#include "ContentsTableListCtrl.h"
+#include <Controls/ContentsTableListCtrl.h>
 #include "MapiObjects.h"
-#include "SingleMAPIPropListCtrl.h"
 #include "ColumnTags.h"
 #include "MFCUtilityFunctions.h"
 #include "UIFunctions.h"

@@ -1,15 +1,14 @@
 // Displays the list of services in a profile
 #include "stdafx.h"
 #include "MsgServiceTableDlg.h"
-#include "ContentsTableListCtrl.h"
+#include <Controls/ContentsTableListCtrl.h>
 #include "MapiObjects.h"
-#include "SingleMAPIPropListCtrl.h"
 #include "ColumnTags.h"
 #include "MFCUtilityFunctions.h"
 #include "ProviderTableDlg.h"
 #include "MAPIProfileFunctions.h"
 #include <Dialogs/Editors/Editor.h>
-#include "SortList/ContentsData.h"
+#include <Controls/SortList/ContentsData.h>
 
 static wstring CLASS = L"CMsgServiceTableDlg";
 

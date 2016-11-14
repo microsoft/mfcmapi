@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "PublicFolderTableDlg.h"
-#include "ContentsTableListCtrl.h"
+#include <Controls/ContentsTableListCtrl.h>
 #include "MAPIFunctions.h"
 #include "ColumnTags.h"
 #include "UIFunctions.h"

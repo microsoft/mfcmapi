@@ -4,8 +4,8 @@
 #include "Windowsx.h"
 #include "ImportProcs.h"
 #include "RichEditOleCallback.h"
-#include "SortList/SortListData.h"
-#include "SortList/NodeData.h"
+#include <Controls/SortList/SortListData.h>
+#include <Controls/SortList/NodeData.h>
 #include "DoubleBuffer.h"
 
 HFONT g_hFontSegoe = nullptr;

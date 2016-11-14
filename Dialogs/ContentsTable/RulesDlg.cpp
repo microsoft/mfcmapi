@@ -1,10 +1,10 @@
 // Displays the rules table for a folder
 #include "stdafx.h"
 #include "RulesDlg.h"
-#include "ContentsTableListCtrl.h"
+#include <Controls/ContentsTableListCtrl.h>
 #include "MapiObjects.h"
 #include "ColumnTags.h"
-#include "SingleMAPIPropListCtrl.h"
+#include <Controls/SingleMAPIPropListCtrl.h>
 #include "ImportProcs.h"
 
 static wstring CLASS = L"CRulesDlg";

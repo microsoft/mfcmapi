@@ -3,7 +3,7 @@
 #include "InterpretProp.h"
 #include "InterpretProp2.h"
 #include "PropertyTagEditor.h"
-#include "SortList/PropListData.h"
+#include <Controls/SortList/PropListData.h>
 
 static wstring CLASS = L"CTagArrayEditor";
 

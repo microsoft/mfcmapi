@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "PropertySelector.h"
 #include "String.h"
-#include "SortList/PropListData.h"
+#include <Controls/SortList/PropListData.h>
 
 static wstring CLASS = L"CPropertySelector";
 

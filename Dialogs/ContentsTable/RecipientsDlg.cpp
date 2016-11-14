@@ -1,12 +1,12 @@
 // Displays the recipient table for a message
 #include "stdafx.h"
 #include "RecipientsDlg.h"
-#include "ContentsTableListCtrl.h"
+#include <Controls/ContentsTableListCtrl.h>
 #include "MapiObjects.h"
 #include "ColumnTags.h"
-#include "SingleMAPIPropListCtrl.h"
+#include <Controls/SingleMAPIPropListCtrl.h>
 #include "InterpretProp.h"
-#include "SortList/ContentsData.h"
+#include <Controls/SortList/ContentsData.h>
 
 static wstring CLASS = L"CRecipientsDlg";
 

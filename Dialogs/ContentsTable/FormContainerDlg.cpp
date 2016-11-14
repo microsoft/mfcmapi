@@ -1,9 +1,9 @@
 // Displays the contents of a form container
 #include "stdafx.h"
 #include "FormContainerDlg.h"
-#include "ContentsTableListCtrl.h"
+#include <Controls/ContentsTableListCtrl.h>
 #include "MapiObjects.h"
-#include "SingleMAPIPropListCtrl.h"
+#include <Controls/SingleMAPIPropListCtrl.h>
 #include "ColumnTags.h"
 #include "MFCUtilityFunctions.h"
 #include <Dialogs/Editors/Editor.h>

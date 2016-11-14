@@ -2,11 +2,11 @@
 
 #include "stdafx.h"
 #include "AclDlg.h"
-#include "ContentsTableListCtrl.h"
+#include <Controls/ContentsTableListCtrl.h>
 #include <Dialogs/Editors/Editor.h>
 #include "MapiObjects.h"
 #include "ColumnTags.h"
-#include "SingleMAPIPropListCtrl.h"
+#include <Controls/SingleMAPIPropListCtrl.h>
 #include "InterpretProp2.h"
 
 static wstring CLASS = L"CAclDlg";

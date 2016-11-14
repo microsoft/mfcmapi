@@ -1,10 +1,9 @@
 // Displays the hierarchy tree of address books
 #include "stdafx.h"
 #include "AbContDlg.h"
-#include "HierarchyTableTreeCtrl.h"
+#include <Controls/HierarchyTableTreeCtrl.h>
 #include "MapiFunctions.h"
 #include "MapiObjects.h"
-#include "SingleMAPIPropListCtrl.h"
 
 static wstring CLASS = L"CAbContDlg";
 

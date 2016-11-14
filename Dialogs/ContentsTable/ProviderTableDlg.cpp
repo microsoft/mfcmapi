@@ -1,14 +1,13 @@
 // Displays the list of providers in a message service in a profile
 #include "stdafx.h"
 #include "ProviderTableDlg.h"
-#include "ContentsTableListCtrl.h"
+#include <Controls/ContentsTableListCtrl.h>
 #include "MapiObjects.h"
-#include "SingleMAPIPropListCtrl.h"
 #include "ColumnTags.h"
 #include "MFCUtilityFunctions.h"
 #include "MAPIProfileFunctions.h"
 #include <Dialogs/Editors/Editor.h>
-#include "SortList/ContentsData.h"
+#include <Controls/SortList/ContentsData.h>
 
 static wstring CLASS = L"CProviderTableDlg";
 

@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "HierarchyTableDlg.h"
-#include "HierarchyTableTreeCtrl.h"
+#include <Controls/HierarchyTableTreeCtrl.h>
 #include "FakeSplitter.h"
-#include "SingleMAPIPropListCtrl.h"
+#include <Controls/SingleMAPIPropListCtrl.h>
 #include "MAPIObjects.h"
 #include "MFCUtilityFunctions.h"
 #include <Dialogs/Editors/Editor.h>

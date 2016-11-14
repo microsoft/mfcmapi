@@ -1,17 +1,17 @@
 // Displays the hierarchy tree of folders in a message store
 #include "stdafx.h"
 #include "MsgStoreDlg.h"
-#include "HierarchyTableTreeCtrl.h"
+#include <Controls/HierarchyTableTreeCtrl.h>
 #include "MapiObjects.h"
 #include "MAPIFunctions.h"
-#include "SingleMAPIPropListCtrl.h"
+#include <Controls/SingleMAPIPropListCtrl.h>
 #include "MFCUtilityFunctions.h"
 #include <Dialogs/Editors/Editor.h>
 #include "InterpretProp.h"
 #include "InterpretProp2.h"
 #include "File.h"
 #include "MAPIProgress.h"
-#include "SortList/NodeData.h"
+#include <Controls/SortList/NodeData.h>
 #include "GlobalCache.h"
 #include <Dialogs/ContentsTable/FormContainerDlg.h>
 #include <Dialogs/ContentsTable/FolderDlg.h>

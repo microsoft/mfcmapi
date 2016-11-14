@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "ContentsTableDlg.h"
-#include "ContentsTableListCtrl.h"
+#include <Controls/ContentsTableListCtrl.h>
 #include "FakeSplitter.h"
 #include "FileDialogEx.h"
-#include "SingleMAPIPropListCtrl.h"
+#include <Controls/SingleMAPIPropListCtrl.h>
 #include "MAPIFunctions.h"
 #include "MAPIObjects.h"
 #include "MFCUtilityFunctions.h"

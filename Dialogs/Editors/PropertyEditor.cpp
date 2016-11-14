@@ -3,7 +3,7 @@
 #include "InterpretProp2.h"
 #include "MAPIFunctions.h"
 #include "SmartView/SmartView.h"
-#include "SortList/MVPropData.h"
+#include <Controls/SortList/MVPropData.h>
 #include "ViewPane/CountedTextPane.h"
 #include "MultiValuePropertyEditor.h"
 

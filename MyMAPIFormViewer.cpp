@@ -4,11 +4,11 @@
 #include "MyMAPIFormViewer.h"
 #include "MAPIFunctions.h"
 #include "MAPIFormFunctions.h"
-#include "ContentsTableListCtrl.h"
+#include <Controls/ContentsTableListCtrl.h>
 #include <Dialogs/Editors/Editor.h>
 #include "InterpretProp2.h"
 #include "MyWinApp.h"
-#include "SortList/ContentsData.h"
+#include <Controls/SortList/ContentsData.h>
 
 extern CMyWinApp theApp;
 

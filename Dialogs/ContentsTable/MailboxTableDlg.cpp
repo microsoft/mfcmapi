@@ -1,17 +1,16 @@
 #include "stdafx.h"
 #include "MailboxTableDlg.h"
-#include "ContentsTableListCtrl.h"
+#include <Controls/ContentsTableListCtrl.h>
 #include "MapiObjects.h"
 #include "MAPIFunctions.h"
 #include "MAPIStoreFunctions.h"
-#include "SingleMAPIPropListCtrl.h"
 #include "ColumnTags.h"
 #include "MFCUtilityFunctions.h"
 #include "UIFunctions.h"
 #include <Dialogs/Editors/Editor.h>
 #include <Dialogs/Editors/PropertyTagEditor.h>
 #include "InterpretProp2.h"
-#include "SortList/ContentsData.h"
+#include <Controls/SortList/ContentsData.h>
 
 static wstring CLASS = L"CMailboxTableDlg";
 

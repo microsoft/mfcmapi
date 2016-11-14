@@ -2,16 +2,15 @@
 
 #include "stdafx.h"
 #include "AttachmentsDlg.h"
-#include "ContentsTableListCtrl.h"
+#include <Controls/ContentsTableListCtrl.h>
 #include "File.h"
 #include "FileDialogEx.h"
 #include "MapiObjects.h"
 #include "ColumnTags.h"
-#include "SingleMAPIPropListCtrl.h"
 #include "MAPIProgress.h"
 #include "MFCUtilityFunctions.h"
 #include "ImportProcs.h"
-#include "SortList/ContentsData.h"
+#include <Controls/SortList/ContentsData.h>
 #include "GlobalCache.h"
 
 static wstring CLASS = L"CAttachmentsDlg";

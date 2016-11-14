@@ -6,9 +6,9 @@
 #include "MAPIFunctions.h"
 #include "ImportProcs.h"
 #include "ExtraPropTags.h"
-#include "SortList/ResData.h"
-#include "SortList/CommentData.h"
-#include "SortList/BinaryData.h"
+#include <Controls/SortList/ResData.h>
+#include <Controls/SortList/CommentData.h>
+#include <Controls/SortList/BinaryData.h>
 
 static wstring COMPCLASS = L"CResCompareEditor"; // STRING_OK
 class CResCompareEditor : public CEditor

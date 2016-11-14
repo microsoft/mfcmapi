@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "SingleMessageDialog.h"
-#include "SingleMAPIPropListCtrl.h"
+#include <Controls/SingleMAPIPropListCtrl.h>
 #include "MAPIFunctions.h"
 #include "MFCUtilityFunctions.h"
 #include <Dialogs/Editors/Editor.h>

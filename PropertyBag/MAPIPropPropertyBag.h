@@ -1,6 +1,6 @@
 #pragma once
 #include "PropertyBag.h"
-#include "SortList/SortListData.h"
+#include <Controls/SortList/SortListData.h>
 
 class MAPIPropPropertyBag : public IMAPIPropertyBag
 {

@@ -2,7 +2,7 @@
 #include "stdafx.h"
 
 #include "ProfileListDlg.h"
-#include "ContentsTableListCtrl.h"
+#include <Controls/ContentsTableListCtrl.h>
 #include "MapiObjects.h"
 #include "ColumnTags.h"
 #include "MAPIProfileFunctions.h"
@@ -12,8 +12,8 @@
 #include "GlobalCache.h"
 #include "File.h"
 #include "ExportProfile.h"
-#include "SortList/SortListData.h"
-#include "SortList/ContentsData.h"
+#include <Controls/SortList/SortListData.h>
+#include <Controls/SortList/ContentsData.h>
 
 static wstring CLASS = L"CProfileListDlg";
 
