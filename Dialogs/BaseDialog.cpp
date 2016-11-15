@@ -593,11 +593,7 @@ void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg
 		}
 		else
 		{
-			wstring szMsg;
-			szMsg = loadstring(uidMsg);
-			if (szMsg.length() == 0) DebugPrintEx(DBGMenu, CLASS, L"UpdateStatusBarText", L"Cannot find menu item 0x%08X\n", uidMsg);
-
-			szStatBarString = formatmessage(szMsg.c_str(), szParam1.c_str(), szParam2.c_str(), szParam3.c_str());
+			szStatBarString = formatmessage(uidMsg, szParam1.c_str(), szParam2.c_str(), szParam3.c_str());
 		}
 	}
 
