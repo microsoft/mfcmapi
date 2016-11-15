@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "string.h"
+#include <String.h>
 #include <locale>
 #include <sstream>
 
@@ -220,10 +220,10 @@ wstring StripCarriage(const wstring& szString)
 
 wstring CleanString(wstring szString)
 {
-	szString.erase(::remove_if(::begin(szString), ::end(szString), [](const WCHAR & chr)
+	szString.erase(std::remove_if(std::begin(szString), std::end(szString), [](const WCHAR & chr)
 	{
 		return wstring(L", ").find(chr) != wstring::npos;
-	}), ::end(szString));
+	}), std::end(szString));
 
 	return szString;
 }
@@ -451,7 +451,7 @@ LPBYTE ByteVectorToLPBYTE(vector<BYTE> const& bin)
 
 vector<wstring> split(const wstring& str, const wchar_t delim)
 {
-	auto ss = wstringstream(str);
+	auto ss = std::wstringstream(str);
 	wstring item;
 	vector<wstring> elems;
 	while (getline(ss, item, delim))
@@ -464,7 +464,7 @@ vector<wstring> split(const wstring& str, const wchar_t delim)
 
 wstring join(const vector<wstring> elems, const wstring& delim)
 {
-	wstringstream ss;
+	std::wstringstream ss;
 	for (size_t i = 0; i < elems.size(); ++i)
 	{
 		if (i != 0)

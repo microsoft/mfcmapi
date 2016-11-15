@@ -32,7 +32,7 @@ private:
 	int GetFixedHeight() override;
 	int GetLines() override;
 
-	vector<pair<wstring, ULONG>> m_DropList;
+	vector<std::pair<wstring, ULONG>> m_DropList;
 	wstring m_lpszSelectionString;
 	int m_iDropSelection;
 	DWORD_PTR m_iDropSelectionValue;

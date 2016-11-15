@@ -197,7 +197,7 @@ _Check_return_ __ParsingTypeEnum FindSmartViewParserForProp(const ULONG ulPropTa
 	return FindSmartViewParserForProp(ulLookupPropTag, ulPropNameID, lpguidNamedProp);
 }
 
-pair<__ParsingTypeEnum, wstring> InterpretPropSmartView2(_In_opt_ LPSPropValue lpProp, // required property value
+std::pair<__ParsingTypeEnum, wstring> InterpretPropSmartView2(_In_opt_ LPSPropValue lpProp, // required property value
 	_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
 	_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
 	_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
@@ -206,7 +206,7 @@ pair<__ParsingTypeEnum, wstring> InterpretPropSmartView2(_In_opt_ LPSPropValue l
 {
 	wstring lpszSmartView;
 
-	if (!RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD || !lpProp) return make_pair(IDS_STNOPARSING, L"");
+	if (!RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD || !lpProp) return std::make_pair(IDS_STNOPARSING, L"");
 
 	auto hRes = S_OK;
 	auto iStructType = IDS_STNOPARSING;

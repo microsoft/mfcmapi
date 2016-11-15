@@ -56,7 +56,7 @@ wstring Attributes::toXML() const
 {
 	if (!m_attributes.empty())
 	{
-		wstringstream szXML;
+		std::wstringstream szXML;
 		szXML << L" ";
 
 		for (const auto& attribute : m_attributes)

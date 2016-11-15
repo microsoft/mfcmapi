@@ -108,7 +108,7 @@ void FindTagArrayMatches(_In_ ULONG ulTarget,
 	}
 }
 
-unordered_map<ULONG64, PropTagNames> g_PropNames;
+std::unordered_map<ULONG64, PropTagNames> g_PropNames;
 
 PropTagNames PropTagToPropName(ULONG ulPropTag, bool bIsAB)
 {

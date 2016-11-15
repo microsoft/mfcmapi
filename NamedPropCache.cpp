@@ -2,7 +2,7 @@
 #include "NamedPropCache.h"
 
 // We keep a list of named prop cache entries
-list<NamedPropCacheEntry> g_lpNamedPropCache;
+std::list<NamedPropCacheEntry> g_lpNamedPropCache;
 
 void UninitializeNamedPropCache()
 {

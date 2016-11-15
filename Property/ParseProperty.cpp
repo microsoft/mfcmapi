@@ -5,7 +5,6 @@
 #include "ExtraPropTags.h"
 #include "InterpretProp.h"
 #include "InterpretProp2.h"
-#include <cctype>
 
 wstring BuildErrorPropString(_In_ LPSPropValue lpProp)
 {
@@ -100,7 +99,7 @@ Property ParseProperty(_In_ LPSPropValue lpProp)
 		// MV property
 		properties.AddAttribute(L"mv", L"true"); // STRING_OK
 		// All the MV structures are basically the same, so we can cheat when we pull the count
-		properties.AddAttribute(L"count", to_wstring(lpProp->Value.MVi.cValues)); // STRING_OK
+		properties.AddAttribute(L"count", std::to_wstring(lpProp->Value.MVi.cValues)); // STRING_OK
 
 		// Don't bother with the loop if we don't have data
 		if (lpProp->Value.MVi.lpi)
@@ -124,18 +123,18 @@ Property ParseProperty(_In_ LPSPropValue lpProp)
 		switch (PROP_TYPE(lpProp->ulPropTag))
 		{
 		case PT_I2:
-			szTmp = to_wstring(lpProp->Value.i);
+			szTmp = std::to_wstring(lpProp->Value.i);
 			szAltTmp = format(L"0x%X", lpProp->Value.i); // STRING_OK
 			break;
 		case PT_LONG:
-			szTmp = to_wstring(lpProp->Value.l);
+			szTmp = std::to_wstring(lpProp->Value.l);
 			szAltTmp = format(L"0x%X", lpProp->Value.l); // STRING_OK
 			break;
 		case PT_R4:
-			szTmp = to_wstring(lpProp->Value.flt); // STRING_OK
+			szTmp = std::to_wstring(lpProp->Value.flt); // STRING_OK
 			break;
 		case PT_DOUBLE:
-			szTmp = to_wstring(lpProp->Value.dbl); // STRING_OK
+			szTmp = std::to_wstring(lpProp->Value.dbl); // STRING_OK
 			break;
 		case PT_CURRENCY:
 			szTmp = format(L"%05I64d", lpProp->Value.cur.int64); // STRING_OK
@@ -147,7 +146,7 @@ Property ParseProperty(_In_ LPSPropValue lpProp)
 			szAltTmp = format(L"0x%08X:0x%08X", static_cast<int>(lpProp->Value.cur.Hi), static_cast<int>(lpProp->Value.cur.Lo)); // STRING_OK
 			break;
 		case PT_APPTIME:
-			szTmp = to_wstring(lpProp->Value.at); // STRING_OK
+			szTmp = std::to_wstring(lpProp->Value.at); // STRING_OK
 			break;
 		case PT_ERROR:
 			szTmp = ErrorNameFromErrorCode(lpProp->Value.err); // STRING_OK
@@ -176,7 +175,7 @@ Property ParseProperty(_In_ LPSPropValue lpProp)
 				sBin.lpb = reinterpret_cast<LPBYTE>(lpProp->Value.lpszA);
 				szAltTmp = BinToHexString(&sBin, false);
 
-				altAttributes.AddAttribute(L"cb", to_wstring(sBin.cb)); // STRING_OK
+				altAttributes.AddAttribute(L"cb", std::to_wstring(sBin.cb)); // STRING_OK
 			}
 			break;
 		case PT_UNICODE:
@@ -190,7 +189,7 @@ Property ParseProperty(_In_ LPSPropValue lpProp)
 				sBin.lpb = reinterpret_cast<LPBYTE>(lpProp->Value.lpszW);
 				szAltTmp = BinToHexString(&sBin, false);
 
-				altAttributes.AddAttribute(L"cb", to_wstring(sBin.cb)); // STRING_OK
+				altAttributes.AddAttribute(L"cb", std::to_wstring(sBin.cb)); // STRING_OK
 			}
 			break;
 		case PT_SYSTIME:
@@ -205,7 +204,7 @@ Property ParseProperty(_In_ LPSPropValue lpProp)
 			szAltTmp = BinToTextString(&lpProp->Value.bin, true);
 			bAltPropXMLSafe = false;
 
-			attributes.AddAttribute(L"cb", to_wstring(lpProp->Value.bin.cb)); // STRING_OK
+			attributes.AddAttribute(L"cb", std::to_wstring(lpProp->Value.bin.cb)); // STRING_OK
 			break;
 		case PT_SRESTRICTION:
 			szTmp = RestrictionToString(reinterpret_cast<LPSRestriction>(lpProp->Value.lpszA), nullptr);

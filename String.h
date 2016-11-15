@@ -1,7 +1,6 @@
 #pragma once
 #include <string>
 #include <vector>
-using namespace std;
 
 // Enable this macro to build with parameter checking for format()
 // Do NOT check in with this macro enabled!
@@ -14,7 +13,12 @@ namespace std
 #else
 	typedef string tstring;
 #endif
-};
+}
+
+using std::wstring;
+using std::string;
+using std::tstring;
+using std::vector;
 
 extern wstring emptystring;
 wstring loadstring(DWORD dwID);

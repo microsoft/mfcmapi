@@ -47,7 +47,7 @@ private:
 	bool m_bParsed;
 
 	// We use list instead of vector so our nodes never get reallocated
-	list<string> m_stringCache;
-	list<wstring> m_wstringCache;
-	list<vector<BYTE>> m_binCache;
+	std::list<string> m_stringCache;
+	std::list<wstring> m_wstringCache;
+	std::list<vector<BYTE>> m_binCache;
 };

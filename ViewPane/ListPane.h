@@ -5,7 +5,7 @@
 
 #define NUMLISTBUTTONS 7
 
-typedef function<bool(ULONG, int, SortListData*)> DoListEditCallback;
+typedef std::function<bool(ULONG, int, SortListData*)> DoListEditCallback;
 
 class ListPane : public ViewPane
 {

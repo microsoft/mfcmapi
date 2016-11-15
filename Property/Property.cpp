@@ -35,7 +35,7 @@ wstring Parsing::toXML(UINT uidTag, int iIndent) const
 	if (m_szParsing.empty()) return L"";
 
 	auto szTag = loadstring(uidTag);
-	wstringstream szXML;
+	std::wstringstream szXML;
 	szXML << tagopen(szTag + m_attributes.toXML(), iIndent);
 
 	if (!m_bXMLSafe)
@@ -93,7 +93,7 @@ void Property::AddAttribute(const wstring& key, const wstring& value)
 
 wstring Property::toXML(int iIndent) const
 {
-	wstringstream szXML;
+	std::wstringstream szXML;
 	auto mv = m_attributes.GetAttribute(L"mv");
 
 	if (mv == L"true")
@@ -136,7 +136,7 @@ wstring Property::toString(const vector<Parsing>& parsings) const
 	auto mv = m_attributes.GetAttribute(L"mv");
 	if (mv == L"true")
 	{
-		wstringstream szString;
+		std::wstringstream szString;
 		szString << m_attributes.GetAttribute(L"count") + L": ";
 		auto first = true;
 		for (const auto& parsing: parsings)

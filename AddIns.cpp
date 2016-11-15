@@ -710,13 +710,13 @@ void MergeFlagArrays(
 void MergeAddInArrays()
 {
 	DebugPrint(DBGAddInPlumbing, L"Loading default arrays\n");
-	PropTagArray = vector<NAME_ARRAY_ENTRY_V2>(begin(g_PropTagArray), end(g_PropTagArray));
-	PropTypeArray = vector<NAME_ARRAY_ENTRY>(begin(g_PropTypeArray), end(g_PropTypeArray));
-	PropGuidArray = vector<GUID_ARRAY_ENTRY>(begin(g_PropGuidArray), end(g_PropGuidArray));
-	NameIDArray = vector<NAMEID_ARRAY_ENTRY>(begin(g_NameIDArray), end(g_NameIDArray));
-	FlagArray = vector<FLAG_ARRAY_ENTRY>(begin(g_FlagArray), end(g_FlagArray));
-	SmartViewParserArray = vector<SMARTVIEW_PARSER_ARRAY_ENTRY>(begin(g_SmartViewParserArray), end(g_SmartViewParserArray));
-	SmartViewParserTypeArray = vector<NAME_ARRAY_ENTRY>(begin(g_SmartViewParserTypeArray), end(g_SmartViewParserTypeArray));
+	PropTagArray = vector<NAME_ARRAY_ENTRY_V2>(std::begin(g_PropTagArray), std::end(g_PropTagArray));
+	PropTypeArray = vector<NAME_ARRAY_ENTRY>(std::begin(g_PropTypeArray), std::end(g_PropTypeArray));
+	PropGuidArray = vector<GUID_ARRAY_ENTRY>(std::begin(g_PropGuidArray), std::end(g_PropGuidArray));
+	NameIDArray = vector<NAMEID_ARRAY_ENTRY>(std::begin(g_NameIDArray), std::end(g_NameIDArray));
+	FlagArray = vector<FLAG_ARRAY_ENTRY>(std::begin(g_FlagArray), std::end(g_FlagArray));
+	SmartViewParserArray = vector<SMARTVIEW_PARSER_ARRAY_ENTRY>(std::begin(g_SmartViewParserArray), std::end(g_SmartViewParserArray));
+	SmartViewParserTypeArray = vector<NAME_ARRAY_ENTRY>(std::begin(g_SmartViewParserTypeArray), std::end(g_SmartViewParserTypeArray));
 
 	DebugPrint(DBGAddInPlumbing, L"Found 0x%08X built in prop tags.\n", PropTagArray.size());
 	DebugPrint(DBGAddInPlumbing, L"Found 0x%08X built in prop types.\n", PropTypeArray.size());
