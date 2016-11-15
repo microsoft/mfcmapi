@@ -632,14 +632,14 @@ void CHierarchyTableTreeCtrl::UpdateSelectionUI(HTREEITEM hItem) const
 					WARNHRESMSG(lpProps[htcPR_CONTENT_COUNT].Value.err, IDS_NODELACKSCONTENTCOUNT);
 					szParam1 = L"?"; // STRING_OK
 				}
-				else szParam1 = format(L"%u", lpProps[htcPR_CONTENT_COUNT].Value.ul);
+				else szParam1 = std::to_wstring(lpProps[htcPR_CONTENT_COUNT].Value.ul);
 
 				if (PT_ERROR == PROP_TYPE(lpProps[htcPR_ASSOC_CONTENT_COUNT].ulPropTag))
 				{
 					WARNHRESMSG(lpProps[htcPR_ASSOC_CONTENT_COUNT].Value.err, IDS_NODELACKSASSOCCONTENTCOUNT);
 					szParam2 = L"?"; // STRING_OK
 				}
-				else szParam2 = format(L"%u", lpProps[htcPR_ASSOC_CONTENT_COUNT].Value.ul);
+				else szParam2 = std::to_wstring(lpProps[htcPR_ASSOC_CONTENT_COUNT].Value.ul);
 			}
 			else
 			{
@@ -649,21 +649,21 @@ void CHierarchyTableTreeCtrl::UpdateSelectionUI(HTREEITEM hItem) const
 					WARNHRESMSG(lpProps[htcPR_DELETED_MSG_COUNT].Value.err, IDS_NODELACKSDELETEDMESSAGECOUNT);
 					szParam1 = L"?"; // STRING_OK
 				}
-				else szParam1 = format(L"%u", lpProps[htcPR_DELETED_MSG_COUNT].Value.ul);
+				else szParam1 = std::to_wstring(lpProps[htcPR_DELETED_MSG_COUNT].Value.ul);
 
 				if (PT_ERROR == PROP_TYPE(lpProps[htcPR_DELETED_ASSOC_MSG_COUNT].ulPropTag))
 				{
 					WARNHRESMSG(lpProps[htcPR_DELETED_ASSOC_MSG_COUNT].Value.err, IDS_NODELACKSDELETEDASSOCMESSAGECOUNT);
 					szParam2 = L"?"; // STRING_OK
 				}
-				else szParam2 = format(L"%u", lpProps[htcPR_DELETED_ASSOC_MSG_COUNT].Value.ul);
+				else szParam2 = std::to_wstring(lpProps[htcPR_DELETED_ASSOC_MSG_COUNT].Value.ul);
 
 				if (PT_ERROR == PROP_TYPE(lpProps[htcPR_DELETED_FOLDER_COUNT].ulPropTag))
 				{
 					WARNHRESMSG(lpProps[htcPR_DELETED_FOLDER_COUNT].Value.err, IDS_NODELACKSDELETEDSUBFOLDERCOUNT);
 					szParam3 = L"?"; // STRING_OK
 				}
-				else szParam3 = format(L"%u", lpProps[htcPR_DELETED_FOLDER_COUNT].Value.ul);
+				else szParam3 = std::to_wstring(lpProps[htcPR_DELETED_FOLDER_COUNT].Value.ul);
 			}
 			MAPIFreeBuffer(lpProps);
 		}

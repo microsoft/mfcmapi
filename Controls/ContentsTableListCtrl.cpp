@@ -583,7 +583,7 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 	EC_MAPI(MAPIInitialize(NULL));
 
 	(void) ::SendMessage(hWndHost, WM_MFCMAPI_CLEARSINGLEMAPIPROPLIST, NULL, NULL);
-	auto szCount = format(L"%d", lpListCtrl->GetItemCount());
+	auto szCount = std::to_wstring(lpListCtrl->GetItemCount());
 	CBaseDialog::UpdateStatus(hWndHost, STATUSDATA1, formatmessage(IDS_STATUSTEXTNUMITEMS, szCount.c_str()));
 
 	// potentially lengthy op - check abort before and after
@@ -1375,11 +1375,11 @@ void CContentsTableListCtrl::OnItemChanged(_In_ NMHDR* pNMHDR, _In_ LRESULT* pRe
 			{
 				if (CheckStringProp(&lpProps[m_ulDisplayNameColumn], PT_STRING8))
 				{
-					szTitle = format(L"%hs", lpProps[m_ulDisplayNameColumn].Value.lpszA); // STRING_OK
+					szTitle = stringTowstring(lpProps[m_ulDisplayNameColumn].Value.lpszA);
 				}
 				else if (CheckStringProp(&lpProps[m_ulDisplayNameColumn], PT_UNICODE))
 				{
-					szTitle = format(L"%ws", lpProps[m_ulDisplayNameColumn].Value.lpszW); // STRING_OK
+					szTitle = lpProps[m_ulDisplayNameColumn].Value.lpszW;
 				}
 				else
 				{

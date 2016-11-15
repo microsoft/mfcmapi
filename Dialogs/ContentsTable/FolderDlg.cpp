@@ -369,7 +369,7 @@ void CFolderDlg::OnAddOneOffAddress()
 				{
 					for (ULONG i = 0; i < count; i++)
 					{
-						auto countedDisplayName = displayName + format(L"%d", i); // STRING_OK
+						auto countedDisplayName = displayName + std::to_wstring(i);
 						EC_H(AddOneOffAddress(
 							lpMAPISession,
 							lpMessage,

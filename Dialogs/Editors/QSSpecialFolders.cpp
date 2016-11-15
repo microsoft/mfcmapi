@@ -114,7 +114,7 @@ void SpecialFolderEditor::LoadFolders() const
 		ULONG cb = NULL;
 		LPENTRYID lpeid = nullptr;
 
-		auto lpData = InsertListRow(ulListNum, i - 1, format(L"%u", i)); // STRING_OK
+		auto lpData = InsertListRow(ulListNum, i - 1, std::to_wstring(i));
 		if (lpData)
 		{
 			auto iCol = 1;

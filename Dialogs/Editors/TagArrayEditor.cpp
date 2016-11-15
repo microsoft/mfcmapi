@@ -132,7 +132,7 @@ void CTagArrayEditor::ReadTagArrayToList(ULONG ulListNum) const
 		for (ULONG iTagCount = 0; iTagCount < cValues; iTagCount++)
 		{
 			auto ulPropTag = m_lpTagArray->aulPropTag[iTagCount];
-			auto lpData = InsertListRow(ulListNum, iTagCount, format(L"%u", iTagCount)); // STRING_OK
+			auto lpData = InsertListRow(ulListNum, iTagCount, std::to_wstring(iTagCount));
 			if (lpData)
 			{
 				lpData->InitializePropList(ulPropTag);

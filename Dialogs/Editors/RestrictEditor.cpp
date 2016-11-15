@@ -523,7 +523,7 @@ void CResAndOrEditor::InitListFromRestriction(ULONG ulListNum, _In_ LPSRestricti
 
 		for (ULONG i = 0; i < lpRes->res.resAnd.cRes; i++)
 		{
-			lpData = InsertListRow(ulListNum, i, format(L"%u", i)); // STRING_OK
+			lpData = InsertListRow(ulListNum, i, std::to_wstring(i));
 			if (lpData)
 			{
 				lpData->InitializeRes(&lpRes->res.resAnd.lpRes[i]);
@@ -536,7 +536,7 @@ void CResAndOrEditor::InitListFromRestriction(ULONG ulListNum, _In_ LPSRestricti
 
 		for (ULONG i = 0; i < lpRes->res.resOr.cRes; i++)
 		{
-			lpData = InsertListRow(ulListNum, i, format(L"%u", i)); // STRING_OK
+			lpData = InsertListRow(ulListNum, i, std::to_wstring(i));
 			if (lpData)
 			{
 				lpData->InitializeRes(&lpRes->res.resOr.lpRes[i]);
@@ -714,7 +714,7 @@ void CResCommentEditor::InitListFromPropArray(ULONG ulListNum, ULONG cProps, _In
 
 	for (ULONG i = 0; i < cProps; i++)
 	{
-		auto lpData = InsertListRow(ulListNum, i, format(L"%u", i)); // STRING_OK
+		auto lpData = InsertListRow(ulListNum, i, std::to_wstring(i));
 		if (lpData)
 		{
 			lpData->InitializeComment(&lpProps[i]);
@@ -1376,13 +1376,13 @@ void CCriteriaEditor::InitListFromEntryList(ULONG ulListNum, _In_ LPENTRYLIST lp
 	{
 		for (ULONG i = 0; i < lpEntryList->cValues; i++)
 		{
-			auto lpData = InsertListRow(ulListNum, i, format(L"%u", i)); // STRING_OK
+			auto lpData = InsertListRow(ulListNum, i, std::to_wstring(i));
 			if (lpData)
 			{
 				lpData->InitializeBinary(&lpEntryList->lpbin[i]);
 			}
 
-			SetListString(ulListNum, i, 1, format(L"%u", lpEntryList->lpbin[i].cb)); // STRING_OK
+			SetListString(ulListNum, i, 1, std::to_wstring(lpEntryList->lpbin[i].cb));
 			SetListString(ulListNum, i, 2, BinToHexString(&lpEntryList->lpbin[i], false));
 			SetListString(ulListNum, i, 3, BinToTextString(&lpEntryList->lpbin[i], true));
 			if (lpData) lpData->bItemFullyLoaded = true;
@@ -1449,7 +1449,7 @@ _Check_return_ bool CCriteriaEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 		if (lpData->Binary()->m_NewBin.lpb)
 		{
 			lpData->Binary()->m_NewBin.cb = static_cast<ULONG>(bin.size());
-			szTmp = format(L"%u", lpData->Binary()->m_NewBin.cb); // STRING_OK
+			szTmp = std::to_wstring(lpData->Binary()->m_NewBin.cb);
 			SetListString(ulListNum, iItem, 1, szTmp);
 			SetListString(ulListNum, iItem, 2, BinToHexString(&lpData->Binary()->m_NewBin, false));
 			SetListString(ulListNum, iItem, 3, BinToTextString(&lpData->Binary()->m_NewBin, true));

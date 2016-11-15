@@ -381,7 +381,7 @@ void ListPane::OnAddListEntry()
 {
 	auto iItem = m_List.GetItemCount();
 
-	(void)InsertRow(iItem, format(L"%d", iItem)); // STRING_OK
+	(void)InsertRow(iItem, std::to_wstring(iItem));
 
 	m_List.SetSelectedItem(iItem);
 

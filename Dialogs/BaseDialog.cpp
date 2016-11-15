@@ -133,7 +133,7 @@ LRESULT CBaseDialog::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			m_StatusWidth[STATUSDATA2],
 			m_StatusMessages[STATUSINFOTEXT]);
 		break;
-	} 
+	}
 
 	return CMyDialog::WindowProc(message, wParam, lParam);
 }
@@ -557,7 +557,7 @@ void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg
 void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg, ULONG ulParam1)
 {
 	wstring szParam1;
-	szParam1 = format(L"%u", ulParam1);
+	szParam1 = std::to_wstring(ulParam1);
 	UpdateStatusBarText(nPos, uidMsg, szParam1, emptystring, emptystring);
 }
 
@@ -589,7 +589,7 @@ void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg
 		auto lpAddInMenu = GetAddinMenuItem(m_hWnd, uidMsg);
 		if (lpAddInMenu && lpAddInMenu->szHelp)
 		{
-			szStatBarString = format(L"%ws", lpAddInMenu->szHelp); // STRING_OK
+			szStatBarString = lpAddInMenu->szHelp;
 		}
 		else
 		{

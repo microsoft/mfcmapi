@@ -117,7 +117,7 @@ void CMultiValuePropertyEditor::ReadMultiValueStringsFromProperty() const
 	auto cValues = m_lpsInputValue->Value.MVi.cValues;
 	for (ULONG iMVCount = 0; iMVCount < cValues; iMVCount++)
 	{
-		auto lpData = InsertListRow(0, iMVCount, format(L"%u", iMVCount)); // STRING_OK
+		auto lpData = InsertListRow(0, iMVCount, std::to_wstring(iMVCount));
 
 		if (lpData)
 		{

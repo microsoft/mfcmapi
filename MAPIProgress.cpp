@@ -140,7 +140,7 @@ STDMETHODIMP CMAPIProgress::SetLimits(ULONG* lpulMin, ULONG* lpulMax, ULONG* lpu
 
 	if (lpulMin)
 	{
-		szMin = format(L"%u", *lpulMin); // STRING_OK
+		szMin = std::to_wstring(*lpulMin);
 	}
 	else
 	{
@@ -149,7 +149,7 @@ STDMETHODIMP CMAPIProgress::SetLimits(ULONG* lpulMin, ULONG* lpulMax, ULONG* lpu
 
 	if (lpulMax)
 	{
-		szMax = format(L"%u", *lpulMax); // STRING_OK
+		szMax = std::to_wstring(*lpulMax);
 	}
 	else
 	{
