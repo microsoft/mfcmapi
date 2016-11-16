@@ -7,9 +7,9 @@ wstring BuildFileName(
 	_In_ LPMESSAGE lpMessage);
 wstring BuildFileNameAndPath(
 	_In_ const wstring& szExt,
-	_In_ wstring szSubj,
-	_In_ wstring szRootPath,
-	_In_opt_ LPSBinary lpBin);
+	_In_ const wstring& szSubj,
+	_In_ const wstring& szRootPath,
+	_In_opt_ const LPSBinary lpBin);
 
 _Check_return_ HRESULT LoadMSGToMessage(_In_z_ LPCWSTR szMessageFile, _Deref_out_opt_ LPMESSAGE* lppMessage);
 

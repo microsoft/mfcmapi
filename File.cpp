@@ -303,34 +303,36 @@ wstring BuildFileName(
 #define MAXBIN 141
 wstring BuildFileNameAndPath(
 	_In_ const wstring& szExt,
-	_In_ wstring szSubj,
-	_In_ wstring szRootPath,
-	_In_opt_ LPSBinary lpBin)
+	_In_ const wstring& szSubj,
+	_In_ const wstring& szRootPath,
+	_In_opt_ const LPSBinary lpBin)
 {
 	auto hRes = S_OK;
 
 	// set up the path portion of the output:
-	WCHAR szShortPath[MAX_PATH] = { 0 };
+	wstring cleanRoot;
 	if (!szRootPath.empty())
 	{
+		WCHAR szShortPath[MAX_PATH] = { 0 };
 		size_t cchShortPath = NULL;
 		// Use the short path to give us as much room as possible
 		EC_D(cchShortPath, GetShortPathNameW(szRootPath.c_str(), szShortPath, _countof(szShortPath)));
-		szRootPath = szShortPath;
-		if (szRootPath.back() != L'\\')
+		cleanRoot = szShortPath;
+		if (cleanRoot.back() != L'\\')
 		{
-			szRootPath += L'\\';
+			cleanRoot += L'\\';
 		}
 	}
 
+	wstring cleanSubj;
 	if (!szSubj.empty())
 	{
-		szSubj = SanitizeFileNameW(szSubj);
+		cleanSubj = SanitizeFileNameW(szSubj);
 	}
 	else
 	{
 		// We must have failed to get a subject before. Make one up.
-		szSubj = L"UnknownSubject"; // STRING_OK
+		cleanSubj = L"UnknownSubject"; // STRING_OK
 	}
 
 	wstring szBin;
@@ -339,11 +341,11 @@ wstring BuildFileNameAndPath(
 		szBin = L"_" + BinToHexString(lpBin, false);
 	}
 
-	auto szFileOut = szRootPath + szSubj + szBin + szExt;
+	auto szFileOut = cleanRoot + cleanSubj + szBin + szExt;
 
 	if (szFileOut.length() > MAX_PATH)
 	{
-		szFileOut = szRootPath + szSubj.substr(0, MAXSUBJ) + szBin.substr(0, MAXBIN) + szExt;
+		szFileOut = cleanRoot + cleanSubj.substr(0, MAXSUBJ) + szBin.substr(0, MAXBIN) + szExt;
 	}
 
 	return szFileOut;
