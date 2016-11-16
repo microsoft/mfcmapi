@@ -69,7 +69,7 @@ _Check_return_ HRESULT AddOneOffAddress(
 
 	EC_MAPI(lpMAPISession->OpenAddressBook(
 		NULL,
-		NULL,
+		nullptr,
 		NULL,
 		&lpAddrBook));
 
@@ -111,7 +111,7 @@ _Check_return_ HRESULT AddOneOffAddress(
 		EC_MAPI(lpAddrBook->ResolveName(
 			0L,
 			MAPI_UNICODE,
-			NULL,
+			nullptr,
 			lpAdrList));
 
 		// If everything goes right, add the new recipient to the message
@@ -148,7 +148,7 @@ _Check_return_ HRESULT AddRecipient(
 
 	EC_MAPI(lpMAPISession->OpenAddressBook(
 		NULL,
-		NULL,
+		nullptr,
 		NULL,
 		&lpAddrBook));
 
@@ -171,7 +171,7 @@ _Check_return_ HRESULT AddRecipient(
 		EC_MAPI(lpAddrBook->ResolveName(
 			0L,
 			fMapiUnicode,
-			NULL,
+			nullptr,
 			lpAdrList));
 
 		// If everything goes right, add the new recipient to the message
@@ -188,7 +188,7 @@ _Check_return_ HRESULT AddRecipient(
 
 // Same as CreatePropertyStringRestriction, but skips the existence part.
 _Check_return_ HRESULT CreateANRRestriction(ULONG ulPropTag,
-	wstring szString,
+	_In_ const wstring& szString,
 	_In_opt_ LPVOID lpParent,
 	_Deref_out_opt_ LPSRestriction* lppRes)
 {
@@ -252,7 +252,7 @@ _Check_return_ HRESULT CreateANRRestriction(ULONG ulPropTag,
 		}
 
 		DebugPrint(DBGGeneric, L"CreateANRRestriction built restriction:\n");
-		DebugPrintRestriction(DBGGeneric, lpRes, NULL);
+		DebugPrintRestriction(DBGGeneric, lpRes, nullptr);
 
 		*lppRes = lpRes;
 	}
@@ -278,14 +278,14 @@ _Check_return_ HRESULT GetABContainerTable(_In_ LPADRBOOK lpAdrBook, _Deref_out_
 
 	// Open root address book (container).
 	EC_H(CallOpenEntry(
-		NULL,
+		nullptr,
 		lpAdrBook,
+		nullptr,
+		nullptr,
+		nullptr,
+		nullptr,
 		NULL,
-		NULL,
-		NULL,
-		NULL,
-		NULL,
-		NULL,
+		nullptr,
 		reinterpret_cast<LPUNKNOWN*>(&lpABRootContainer)));
 
 	if (lpABRootContainer)
@@ -348,7 +348,7 @@ _Check_return_ HRESULT ManualResolve(
 
 	EC_MAPI(lpMAPISession->OpenAddressBook(
 		NULL,
-		NULL,
+		nullptr,
 		NULL,
 		&lpAdrBook));
 
@@ -380,13 +380,13 @@ _Check_return_ HRESULT ManualResolve(
 				if (lpABContainer) lpABContainer->Release();
 				lpABContainer = nullptr;
 				EC_H(CallOpenEntry(
-					NULL,
+					nullptr,
 					lpAdrBook,
-					NULL,
-					NULL,
+					nullptr,
+					nullptr,
 					lpABRow->aRow->lpProps[abcPR_ENTRYID].Value.bin.cb,
 					reinterpret_cast<ENTRYID*>(lpABRow->aRow->lpProps[abcPR_ENTRYID].Value.bin.lpb),
-					NULL,
+					nullptr,
 					NULL,
 					&ulObjType,
 					reinterpret_cast<LPUNKNOWN*>(&lpABContainer)));
@@ -541,7 +541,7 @@ _Check_return_ HRESULT SearchContentsTableForName(
 	EC_H(CreateANRRestriction(
 		PR_ANR_W,
 		szName,
-		NULL,
+		nullptr,
 		&lpSRes));
 
 	EC_MAPI(pTable->SetColumns(LPSPropTagArray(&abCols), TBL_BATCH));
@@ -550,7 +550,7 @@ _Check_return_ HRESULT SearchContentsTableForName(
 	EC_MAPI(pTable->SeekRow(
 		BOOKMARK_BEGINNING,
 		0,
-		NULL));
+		nullptr));
 
 	// ..and jump to the first matching entry in the table
 	EC_MAPI(pTable->Restrict(
@@ -638,13 +638,13 @@ _Check_return_ HRESULT SelectUser(_In_ LPADRBOOK lpAdrBook, HWND hwnd, _Out_opt_
 			ULONG ulObjType = NULL;
 
 			EC_H(CallOpenEntry(
-				NULL,
+				nullptr,
 				lpAdrBook,
-				NULL,
-				NULL,
+				nullptr,
+				nullptr,
 				lpEntryID->Value.bin.cb,
 				reinterpret_cast<LPENTRYID>(lpEntryID->Value.bin.lpb),
-				NULL,
+				nullptr,
 				MAPI_BEST_ACCESS,
 				&ulObjType,
 				reinterpret_cast<LPUNKNOWN*>(&lpMailUser)));

@@ -16,7 +16,7 @@ _Check_return_ HRESULT AddRecipient(
 	ULONG ulRecipientType);
 
 _Check_return_ HRESULT CreateANRRestriction(ULONG ulPropTag,
-	wstring szString,
+	_In_ const wstring& szString,
 	_In_opt_ LPVOID lpParent,
 	_Deref_out_opt_ LPSRestriction* lppRes);
 
