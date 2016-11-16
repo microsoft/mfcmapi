@@ -574,7 +574,7 @@ void CProfileListDlg::OnExportProfile()
 			this);
 		if (!file.empty())
 		{
-			ExportProfile(lpListData->Contents()->m_szProfileDisplayName.c_str(), nullptr, false, file);
+			ExportProfile(lpListData->Contents()->m_szProfileDisplayName, emptystring, false, file);
 		}
 	}
 }

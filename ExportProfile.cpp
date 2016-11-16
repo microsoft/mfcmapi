@@ -31,7 +31,7 @@ void ExportProfileSection(FILE* fProfile, LPPROFSECT lpSect, LPSBinary lpSectBin
 
 		OutputToFilef(fProfile, L"<properties listtype=\"profilesection\" profilesection=\"%ws\">\n", szBin.c_str());
 
-		OutputPropertiesToFile(fProfile, cValues, lpAllProps, NULL, false);
+		OutputPropertiesToFile(fProfile, cValues, lpAllProps, nullptr, false);
 
 		OutputToFile(fProfile, L"</properties>\n");
 
@@ -46,7 +46,7 @@ void ExportProfileProvider(FILE* fProfile, int iRow, LPPROVIDERADMIN lpProviderA
 	Outputf(DBGNoDebug, fProfile, true, L"<provider index = \"0x%08X\">\n", iRow);
 
 	OutputToFile(fProfile, L"<properties listtype=\"row\">\n");
-	OutputSRowToFile(fProfile, lpRow, NULL);
+	OutputSRowToFile(fProfile, lpRow, nullptr);
 	OutputToFile(fProfile, L"</properties>\n");
 
 	auto hRes = S_OK;
@@ -79,7 +79,7 @@ void ExportProfileService(FILE* fProfile, int iRow, LPSERVICEADMIN lpServiceAdmi
 	Outputf(DBGNoDebug, fProfile, true, L"<service index = \"0x%08X\">\n", iRow);
 
 	OutputToFile(fProfile, L"<properties listtype=\"row\">\n");
-	OutputSRowToFile(fProfile, lpRow, NULL);
+	OutputSRowToFile(fProfile, lpRow, nullptr);
 	OutputToFile(fProfile, L"</properties>\n");
 
 	auto hRes = S_OK;
@@ -118,7 +118,7 @@ void ExportProfileService(FILE* fProfile, int iRow, LPSERVICEADMIN lpServiceAdmi
 			if (lpProviderTable)
 			{
 				LPSRowSet lpRowSet = nullptr;
-				EC_MAPI(HrQueryAllRows(lpProviderTable, NULL, NULL, NULL, 0, &lpRowSet));
+				EC_MAPI(HrQueryAllRows(lpProviderTable, nullptr, nullptr, nullptr, 0, &lpRowSet));
 				if (lpRowSet && lpRowSet->cRows >= 1)
 				{
 					for (ULONG i = 0; i < lpRowSet->cRows; i++)
@@ -140,14 +140,14 @@ void ExportProfileService(FILE* fProfile, int iRow, LPSERVICEADMIN lpServiceAdmi
 	OutputToFile(fProfile, L"</service>\n");
 }
 
-void ExportProfile(_In_z_ LPCSTR szProfile, _In_opt_z_ LPCWSTR szProfileSection, bool bByteSwapped, const wstring& szFileName)
+void ExportProfile(_In_ const string& szProfile, _In_ const wstring& szProfileSection, bool bByteSwapped, const wstring& szFileName)
 {
-	if (!szProfile) return;
+	if (szProfile.empty()) return;
 
-	DebugPrint(DBGGeneric, L"ExportProfile: Saving profile \"%hs\" to \"%ws\"\n", szProfile, szFileName.c_str());
-	if (szProfileSection)
+	DebugPrint(DBGGeneric, L"ExportProfile: Saving profile \"%hs\" to \"%ws\"\n", szProfile.c_str(), szFileName.c_str());
+	if (!szProfileSection.empty())
 	{
-		DebugPrint(DBGGeneric, L"ExportProfile: Restricting to \"%ws\"\n", szProfileSection);
+		DebugPrint(DBGGeneric, L"ExportProfile: Restricting to \"%ws\"\n", szProfileSection.c_str());
 	}
 
 	auto hRes = S_OK;
@@ -160,7 +160,7 @@ void ExportProfile(_In_z_ LPCSTR szProfile, _In_opt_z_ LPCWSTR szProfileSection,
 	}
 
 	OutputToFile(fProfile, g_szXMLHeader);
-	Outputf(DBGNoDebug, fProfile, true, L"<profile profilename= \"%hs\">\n", szProfile);
+	Outputf(DBGNoDebug, fProfile, true, L"<profile profilename= \"%hs\">\n", szProfile.c_str());
 
 	EC_MAPI(MAPIAdminProfiles(0, &lpProfAdmin));
 
@@ -168,14 +168,14 @@ void ExportProfile(_In_z_ LPCSTR szProfile, _In_opt_z_ LPCWSTR szProfileSection,
 	{
 		LPSERVICEADMIN lpServiceAdmin = nullptr;
 		EC_MAPI(lpProfAdmin->AdminServices(
-			LPTSTR(szProfile),
+			LPTSTR(szProfile.c_str()),
 			LPTSTR(""),
 			NULL,
 			MAPI_DIALOG,
 			&lpServiceAdmin));
 		if (lpServiceAdmin)
 		{
-			if (szProfileSection)
+			if (!szProfileSection.empty())
 			{
 				auto lpGuid = GUIDNameToGUID(szProfileSection, bByteSwapped);
 
@@ -206,7 +206,7 @@ void ExportProfile(_In_z_ LPCSTR szProfile, _In_opt_z_ LPCWSTR szProfileSection,
 				if (lpServiceTable)
 				{
 					LPSRowSet lpRowSet = nullptr;
-					EC_MAPI(HrQueryAllRows(lpServiceTable, NULL, NULL, NULL, 0, &lpRowSet));
+					EC_MAPI(HrQueryAllRows(lpServiceTable, nullptr, nullptr, nullptr, 0, &lpRowSet));
 					if (lpRowSet && lpRowSet->cRows >= 1)
 					{
 						for (ULONG i = 0; i < lpRowSet->cRows; i++)

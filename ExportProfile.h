@@ -1,3 +1,3 @@
 #pragma once
 
-void ExportProfile(_In_z_ LPCSTR szProfile, _In_opt_z_ LPCWSTR szProfileSection, bool bByteSwapped, const wstring& szFileName);
+void ExportProfile(_In_ const string& szProfile, _In_ const wstring& szProfileSection, bool bByteSwapped, const wstring& szFileName);

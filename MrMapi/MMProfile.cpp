@@ -87,7 +87,7 @@ void DoProfile(_In_ MYOPTIONS ProgOpts)
 		printf("Options specified:\n");
 		printf("   Profile: %ws\n", ProgOpts.lpszProfile.c_str());
 		printf("   Output File: %ws\n", ProgOpts.lpszOutput.c_str());
-		ExportProfile(wstringTostring(ProgOpts.lpszProfile).c_str(), ProgOpts.lpszProfileSection.c_str(), ProgOpts.bByteSwapped, ProgOpts.lpszOutput);
+		ExportProfile(wstringTostring(ProgOpts.lpszProfile), ProgOpts.lpszProfileSection, ProgOpts.bByteSwapped, ProgOpts.lpszOutput);
 	}
 	else
 	{
