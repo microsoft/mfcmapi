@@ -280,7 +280,7 @@ wstring BinToTextStringW(const vector<BYTE>& lpByte, bool bMultiLine)
 }
 
 // Converts binary data to a string, assuming source string was unicode
-wstring BinToTextStringW(_In_ LPSBinary lpBin, bool bMultiLine)
+wstring BinToTextStringW(_In_ const LPSBinary lpBin, bool bMultiLine)
 {
 	if (!lpBin || !lpBin->cb || lpBin->cb % sizeof WCHAR || !lpBin->lpb) return L"";
 
@@ -309,7 +309,7 @@ wstring BinToTextStringW(_In_ LPSBinary lpBin, bool bMultiLine)
 }
 
 // Converts binary data to a string, assuming source string was single byte
-wstring BinToTextString(_In_ LPSBinary lpBin, bool bMultiLine)
+wstring BinToTextString(_In_ const LPSBinary lpBin, bool bMultiLine)
 {
 	if (!lpBin || !lpBin->cb || !lpBin->lpb) return L"";
 
@@ -342,7 +342,7 @@ wstring BinToTextString(_In_ LPSBinary lpBin, bool bMultiLine)
 	return szBin;
 }
 
-wstring BinToHexString(_In_opt_count_(cb) LPBYTE lpb, size_t cb, bool bPrependCB)
+wstring BinToHexString(_In_opt_count_(cb) const LPBYTE lpb, size_t cb, bool bPrependCB)
 {
 	wstring lpsz;
 
@@ -380,7 +380,7 @@ wstring BinToHexString(const vector<BYTE>& lpByte, bool bPrependCB)
 	return BinToHexString(&sBin, bPrependCB);
 }
 
-wstring BinToHexString(_In_opt_ LPSBinary lpBin, bool bPrependCB)
+wstring BinToHexString(_In_opt_ const LPSBinary lpBin, bool bPrependCB)
 {
 	if (!lpBin) return L"";
 

@@ -51,11 +51,11 @@ wstring SanitizeFileNameW(const wstring& szFileIn);
 wstring indent(int iIndent);
 
 wstring BinToTextStringW(const vector<BYTE>& lpByte, bool bMultiLine);
-wstring BinToTextStringW(_In_ LPSBinary lpBin, bool bMultiLine);
-wstring BinToTextString(_In_ LPSBinary lpBin, bool bMultiLine);
+wstring BinToTextStringW(_In_ const LPSBinary lpBin, bool bMultiLine);
+wstring BinToTextString(_In_ const LPSBinary lpBin, bool bMultiLine);
 wstring BinToHexString(const vector<BYTE>& lpByte, bool bPrependCB);
-wstring BinToHexString(_In_opt_count_(cb) LPBYTE lpb, size_t cb, bool bPrependCB);
-wstring BinToHexString(_In_opt_ LPSBinary lpBin, bool bPrependCB);
+wstring BinToHexString(_In_opt_count_(cb) const LPBYTE lpb, size_t cb, bool bPrependCB);
+wstring BinToHexString(_In_opt_ const LPSBinary lpBin, bool bPrependCB);
 vector<BYTE> HexStringToBin(_In_ wstring lpsz, size_t cbTarget = 0);
 LPBYTE ByteVectorToLPBYTE(vector<BYTE> const& bin);
 
