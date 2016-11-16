@@ -1618,7 +1618,7 @@ void CMainDlg::OnViewMSGProperties()
 		auto hRes = S_OK;
 		LPMESSAGE lpNewMessage = nullptr;
 		EC_H(LoadMSGToMessage(
-			file.c_str(),
+			file,
 			&lpNewMessage));
 		if (lpNewMessage)
 		{
@@ -1754,7 +1754,7 @@ void CMainDlg::OnConvertMSGToXML()
 		{
 			LPMESSAGE lpMessage = nullptr;
 
-			EC_H(LoadMSGToMessage(msgfile.c_str(), &lpMessage));
+			EC_H(LoadMSGToMessage(msgfile, &lpMessage));
 
 			if (lpMessage)
 			{

@@ -821,7 +821,7 @@ void CFolderDlg::OnLoadFromMSG()
 					if (m_lpPropDisplay)
 					{
 						EC_H(LoadMSGToMessage(
-							lpszPath.c_str(),
+							lpszPath,
 							&lpNewMessage));
 
 						if (lpNewMessage)
@@ -1604,7 +1604,7 @@ void CFolderDlg::OnSaveMessageToFile()
 
 					break;
 					case 5:
-						EC_H(SaveToTNEF(lpMessage, lpAddrBook, filename.c_str()));
+						EC_H(SaveToTNEF(lpMessage, lpAddrBook, filename));
 						break;
 					default:
 						break;

@@ -71,7 +71,7 @@ _Check_return_ HRESULT MyStgOpenStorage(_In_z_ LPCWSTR szMessageFile, bool bBest
 }
 
 // Creates an LPMESSAGE on top of the MSG file
-_Check_return_ HRESULT LoadMSGToMessage(_In_z_ LPCWSTR szMessageFile, _Deref_out_opt_ LPMESSAGE* lppMessage)
+_Check_return_ HRESULT LoadMSGToMessage(_In_ const wstring& szMessageFile, _Deref_out_opt_ LPMESSAGE* lppMessage)
 {
 	if (!lppMessage) return MAPI_E_INVALID_PARAMETER;
 
@@ -85,7 +85,7 @@ _Check_return_ HRESULT LoadMSGToMessage(_In_z_ LPCWSTR szMessageFile, _Deref_out
 	if (lpMalloc)
 	{
 		// Open the compound file
-		EC_H(MyStgOpenStorage(szMessageFile, true, &pStorage));
+		EC_H(MyStgOpenStorage(szMessageFile.c_str(), true, &pStorage));
 
 		if (pStorage)
 		{
@@ -690,7 +690,7 @@ _Check_return_ HRESULT SaveToMSG(_In_ LPMESSAGE lpMessage, _In_z_ LPCWSTR szFile
 	return hRes;
 }
 
-_Check_return_ HRESULT SaveToTNEF(_In_ LPMESSAGE lpMessage, _In_ LPADRBOOK lpAdrBook, _In_z_ LPCWSTR szFileName)
+_Check_return_ HRESULT SaveToTNEF(_In_ LPMESSAGE lpMessage, _In_ LPADRBOOK lpAdrBook, _In_ const wstring& szFileName)
 {
 	auto hRes = S_OK;
 
@@ -715,8 +715,8 @@ _Check_return_ HRESULT SaveToTNEF(_In_ LPMESSAGE lpMessage, _In_ LPADRBOOK lpAdr
 	PR_URL_COMP_NAME
 	};
 
-	if (!lpMessage || !lpAdrBook || !szFileName) return MAPI_E_INVALID_PARAMETER;
-	DebugPrint(DBGGeneric, L"SaveToTNEF: Saving message to \"%ws\"\n", szFileName);
+	if (!lpMessage || !lpAdrBook || szFileName.empty()) return MAPI_E_INVALID_PARAMETER;
+	DebugPrint(DBGGeneric, L"SaveToTNEF: Saving message to \"%ws\"\n", szFileName.c_str());
 
 	LPSTREAM lpStream = nullptr;
 	LPITNEF lpTNEF = nullptr;
@@ -729,7 +729,7 @@ _Check_return_ HRESULT SaveToTNEF(_In_ LPMESSAGE lpMessage, _In_ LPADRBOOK lpAdr
 		MAPIAllocateBuffer,
 		MAPIFreeBuffer,
 		STGM_READWRITE | STGM_CREATE,
-		szFileName,
+		szFileName.c_str(),
 		NULL,
 		&lpStream));
 
