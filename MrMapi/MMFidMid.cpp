@@ -28,7 +28,7 @@ private:
 	bool ShouldProcessContentsTable() override;
 	void BeginFolderWork() override;
 	void BeginContentsTableWork(ULONG ulFlags, ULONG ulCountRows) override;
-	bool DoContentsTablePerRowWork(_In_ LPSRow lpSRow, ULONG ulCurRow) override;
+	bool DoContentsTablePerRowWork(_In_ const LPSRow lpSRow, ULONG ulCurRow) override;
 
 	wstring m_szFid;
 	wstring m_szMid;
@@ -175,7 +175,7 @@ void CFindFidMid::BeginContentsTableWork(ULONG ulFlags, ULONG /*ulCountRows*/)
 	m_fAssociated = (ulFlags & MAPI_ASSOCIATED) == MAPI_ASSOCIATED;
 }
 
-bool CFindFidMid::DoContentsTablePerRowWork(_In_ LPSRow lpSRow, ULONG /*ulCurRow*/)
+bool CFindFidMid::DoContentsTablePerRowWork(_In_ const LPSRow lpSRow, ULONG /*ulCurRow*/)
 {
 	if (!lpSRow) return false;
 
@@ -246,13 +246,13 @@ void DumpFidMid(
 		// Open root container.
 		WC_H(CallOpenEntry(
 			lpMDB,
-			NULL,
-			NULL,
-			NULL,
-			NULL, // open root container
-			NULL,
+			nullptr,
+			nullptr,
+			nullptr,
+			nullptr, // open root container
+			nullptr,
 			MAPI_BEST_ACCESS,
-			NULL,
+			nullptr,
 			reinterpret_cast<LPUNKNOWN*>(&lpFolder)));
 	}
 

@@ -2,7 +2,6 @@
 #include "MAPIProcessor.h"
 #include "MAPIFunctions.h"
 #include "MAPIStoreFunctions.h"
-#include "File.h"
 #include "ColumnTags.h"
 
 CMAPIProcessor::CMAPIProcessor()
@@ -61,7 +60,7 @@ void CMAPIProcessor::InitMaxOutput(_In_ ULONG ulCount)
 	m_ulCount = ulCount;
 }
 
-void CMAPIProcessor::InitSortOrder(_In_ LPSSortOrderSet lpSort)
+void CMAPIProcessor::InitSortOrder(_In_ const LPSSortOrderSet lpSort)
 {
 	// If we ever need to hold this past the scope of the caller we'll need to copy the sort order.
 	// For now, just grab a pointer.
@@ -107,7 +106,7 @@ void CMAPIProcessor::ProcessMailboxTable(
 			WC_MAPI(lpMailBoxTable->SeekRow(
 				BOOKMARK_BEGINNING,
 				0,
-				NULL));
+				nullptr));
 
 			// get each row in turn and process it
 			if (!FAILED(hRes)) for (ulRowNum = 0;; ulRowNum++)
@@ -268,7 +267,7 @@ void CMAPIProcessor::ProcessFolder(bool bDoRegular,
 			WC_MAPI(lpHierarchyTable->SeekRow(
 				BOOKMARK_BEGINNING,
 				0,
-				NULL));
+				nullptr));
 
 			if (S_OK == hRes) for (;;)
 			{
@@ -362,7 +361,7 @@ void CMAPIProcessor::ProcessContentsTable(ULONG ulFlags)
 
 	if (SUCCEEDED(hRes) && lpContentsTable && m_lpResFolderContents)
 	{
-		DebugPrintRestriction(DBGGeneric, m_lpResFolderContents, NULL);
+		DebugPrintRestriction(DBGGeneric, m_lpResFolderContents, nullptr);
 		WC_MAPI(lpContentsTable->Restrict(m_lpResFolderContents, TBL_BATCH));
 		hRes = S_OK;
 	}
@@ -415,15 +414,15 @@ void CMAPIProcessor::ProcessContentsTable(ULONG ulFlags)
 
 				LPMESSAGE lpMessage = nullptr;
 				WC_H(CallOpenEntry(
-					NULL,
-					NULL,
+					nullptr,
+					nullptr,
 					m_lpFolder,
-					NULL,
+					nullptr,
 					lpMsgEID->Value.bin.cb,
 					reinterpret_cast<LPENTRYID>(lpMsgEID->Value.bin.lpb),
-					NULL,
+					nullptr,
 					MAPI_BEST_ACCESS,
-					NULL,
+					nullptr,
 					reinterpret_cast<LPUNKNOWN*>(&lpMessage)));
 
 				if (lpMessage)
@@ -583,7 +582,7 @@ void CMAPIProcessor::ProcessAttachments(_In_ LPMESSAGE lpMessage, bool bHasAttac
 					LPATTACH lpAttach = nullptr;
 					WC_MAPI(lpMessage->OpenAttach(
 						lpAttachNum->Value.l,
-						NULL,
+						nullptr,
 						MAPI_BEST_ACCESS,
 						static_cast<LPATTACH*>(&lpAttach)));
 
@@ -629,7 +628,7 @@ void CMAPIProcessor::ProcessAttachments(_In_ LPMESSAGE lpMessage, bool bHasAttac
 // --------------------------------------------------------------------------------- //
 // List Functions
 // --------------------------------------------------------------------------------- //
-void CMAPIProcessor::AddFolderToFolderList(_In_opt_ LPSBinary lpFolderEID, _In_ const wstring& szFolderOffsetPath)
+void CMAPIProcessor::AddFolderToFolderList(_In_opt_ const LPSBinary lpFolderEID, _In_ const wstring& szFolderOffsetPath)
 {
 	auto hRes = S_OK;
 	LPFOLDERNODE lpNewNode = nullptr;
@@ -678,13 +677,13 @@ void CMAPIProcessor::OpenFirstFolderInList()
 
 		WC_H(CallOpenEntry(
 			m_lpMDB,
-			NULL,
-			NULL,
-			NULL,
+			nullptr,
+			nullptr,
+			nullptr,
 			m_lpListHead->lpFolderEID,
-			NULL,
+			nullptr,
 			MAPI_BEST_ACCESS,
-			NULL,
+			nullptr,
 			reinterpret_cast<LPUNKNOWN*>(&lpFolder)));
 		if (!m_lpListHead->szFolderOffsetPath.empty())
 		{
@@ -722,7 +721,7 @@ void CMAPIProcessor::BeginMailboxTableWork(_In_ const wstring& /*szExchangeServe
 {
 }
 
-void CMAPIProcessor::DoMailboxTablePerRowWork(_In_ LPMDB /*lpMDB*/, _In_ LPSRow /*lpSRow*/, ULONG /*ulCurRow*/)
+void CMAPIProcessor::DoMailboxTablePerRowWork(_In_ LPMDB /*lpMDB*/, _In_ const LPSRow /*lpSRow*/, ULONG /*ulCurRow*/)
 {
 }
 
@@ -754,7 +753,7 @@ void CMAPIProcessor::BeginFolderWork()
 {
 }
 
-void CMAPIProcessor::DoFolderPerHierarchyTableRowWork(_In_ LPSRow /*lpSRow*/)
+void CMAPIProcessor::DoFolderPerHierarchyTableRowWork(_In_ const LPSRow /*lpSRow*/)
 {
 }
 
@@ -766,7 +765,7 @@ void CMAPIProcessor::BeginContentsTableWork(ULONG /*ulFlags*/, ULONG /*ulCountRo
 {
 }
 
-bool CMAPIProcessor::DoContentsTablePerRowWork(_In_ LPSRow /*lpSRow*/, ULONG /*ulCurRow*/)
+bool CMAPIProcessor::DoContentsTablePerRowWork(_In_ const LPSRow /*lpSRow*/, ULONG /*ulCurRow*/)
 {
 	return true; // Keep processing
 }
@@ -786,7 +785,7 @@ bool CMAPIProcessor::BeginRecipientWork(_In_ LPMESSAGE /*lpMessage*/, _In_opt_ L
 	return true; // Keep processing
 }
 
-void CMAPIProcessor::DoMessagePerRecipientWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID /*lpData*/, _In_ LPSRow /*lpSRow*/, ULONG /*ulCurRow*/)
+void CMAPIProcessor::DoMessagePerRecipientWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID /*lpData*/, _In_ const LPSRow /*lpSRow*/, ULONG /*ulCurRow*/)
 {
 }
 
@@ -799,7 +798,7 @@ bool CMAPIProcessor::BeginAttachmentWork(_In_ LPMESSAGE /*lpMessage*/, _In_opt_ 
 	return true; // Keep processing
 }
 
-void CMAPIProcessor::DoMessagePerAttachmentWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID /*lpData*/, _In_ LPSRow /*lpSRow*/, _In_ LPATTACH /*lpAttach*/, ULONG /*ulCurRow*/)
+void CMAPIProcessor::DoMessagePerAttachmentWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID /*lpData*/, _In_ const LPSRow /*lpSRow*/, _In_ LPATTACH /*lpAttach*/, ULONG /*ulCurRow*/)
 {
 }
 

@@ -77,7 +77,7 @@ void CDumpStore::BeginMailboxTableWork(_In_ const wstring& szExchangeServerName)
 	}
 }
 
-void CDumpStore::DoMailboxTablePerRowWork(_In_ LPMDB lpMDB, _In_ LPSRow lpSRow, ULONG /*ulCurRow*/)
+void CDumpStore::DoMailboxTablePerRowWork(_In_ LPMDB lpMDB, _In_ const LPSRow lpSRow, ULONG /*ulCurRow*/)
 {
 	if (!lpSRow || !m_fMailboxTable) return;
 	if (m_bOutputList) return;
@@ -117,7 +117,7 @@ void CDumpStore::DoMailboxTablePerRowWork(_In_ LPMDB lpMDB, _In_ LPSRow lpSRow, 
 			m_szMailboxTablePathRoot.c_str(), szTemp.c_str());
 
 		// suppress any error here since the folder may already exist
-		WC_B(CreateDirectoryW(m_szFolderPathRoot.c_str(), NULL));
+		WC_B(CreateDirectoryW(m_szFolderPathRoot.c_str(), nullptr));
 	}
 
 	OutputToFile(m_fMailboxTable, L"</mailbox>\n");
@@ -153,7 +153,7 @@ void CDumpStore::BeginFolderWork()
 	// We've done all the setup we need. If we're just outputting a list, we don't need to do the rest
 	if (m_bOutputList) return;
 
-	WC_B(CreateDirectoryW(m_szFolderPath.c_str(), NULL));
+	WC_B(CreateDirectoryW(m_szFolderPath.c_str(), nullptr));
 	hRes = S_OK; // ignore the error - the directory may exist already
 
 	// Dump the folder props to a file
@@ -192,7 +192,7 @@ void CDumpStore::BeginFolderWork()
 	OutputToFile(m_fFolderProps, L"<HierarchyTable>\n");
 }
 
-void CDumpStore::DoFolderPerHierarchyTableRowWork(_In_ LPSRow lpSRow)
+void CDumpStore::DoFolderPerHierarchyTableRowWork(_In_ const LPSRow lpSRow)
 {
 	if (m_bOutputList) return;
 	if (!m_fFolderProps || !lpSRow) return;
@@ -239,7 +239,7 @@ void CDumpStore::BeginContentsTableWork(ULONG ulFlags, ULONG ulCountRows)
 
 // Outputs a single message's details to the screen, so as to produce a list of messages
 void OutputMessageList(
-	_In_ LPSRow lpSRow,
+	_In_ const LPSRow lpSRow,
 	_In_ const wstring& szFolderPath,
 	bool bOutputMSG)
 {
@@ -290,7 +290,7 @@ void OutputMessageList(
 	wprintf(L",\"%ws\"\n", szFileName.c_str());
 }
 
-bool CDumpStore::DoContentsTablePerRowWork(_In_ LPSRow lpSRow, ULONG ulCurRow)
+bool CDumpStore::DoContentsTablePerRowWork(_In_ const LPSRow lpSRow, ULONG ulCurRow)
 {
 	if (m_bOutputList)
 	{
@@ -373,7 +373,7 @@ void OutputBody(_In_ FILE* fMessageProps, _In_ LPMESSAGE lpMessage, ULONG ulBody
 						NULL,
 						NULL,
 						&lpRTFUncompressed,
-						NULL));
+						nullptr));
 				}
 				if (!lpRTFUncompressed || FAILED(hRes))
 				{
@@ -607,7 +607,7 @@ void OutputMessageMSG(
 		lpMessage,
 		szFileName,
 		fMapiUnicode ? true : false,
-		NULL,
+		nullptr,
 		false));
 }
 
@@ -636,7 +636,7 @@ bool CDumpStore::BeginRecipientWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID lp
 	return true;
 }
 
-void CDumpStore::DoMessagePerRecipientWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData, _In_ LPSRow lpSRow, ULONG ulCurRow)
+void CDumpStore::DoMessagePerRecipientWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData, _In_ const LPSRow lpSRow, ULONG ulCurRow)
 {
 	if (!lpMessage || !lpData || !lpSRow) return;
 	if (m_bOutputMSG) return; // When outputting message files, no recipient work is needed
@@ -668,7 +668,7 @@ bool CDumpStore::BeginAttachmentWork(_In_ LPMESSAGE /*lpMessage*/, _In_ LPVOID l
 	return true;
 }
 
-void CDumpStore::DoMessagePerAttachmentWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData, _In_ LPSRow lpSRow, _In_ LPATTACH lpAttach, ULONG ulCurRow)
+void CDumpStore::DoMessagePerAttachmentWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpData, _In_ const LPSRow lpSRow, _In_ LPATTACH lpAttach, ULONG ulCurRow)
 {
 	if (!lpMessage || !lpData || !lpSRow) return;
 	if (m_bOutputMSG) return; // When outputting message files, no attachment work is needed
