@@ -14,7 +14,7 @@
 wstring GetDirectoryPath(HWND hWnd)
 {
 	WCHAR szPath[MAX_PATH] = { 0 };
-	BROWSEINFOW BrowseInfo = { 0 };
+	BROWSEINFOW BrowseInfo = { nullptr };
 	auto hRes = S_OK;
 
 	LPMALLOC lpMalloc = nullptr;
@@ -54,9 +54,9 @@ _Check_return_ HRESULT MyStgOpenStorage(_In_ const wstring& szMessageFile, bool 
 
 	WC_H(::StgOpenStorage(
 		szMessageFile.c_str(),
-		NULL,
+		nullptr,
 		ulFlags,
-		NULL,
+		nullptr,
 		0,
 		lppStorage));
 
@@ -90,14 +90,14 @@ _Check_return_ HRESULT LoadMSGToMessage(_In_ const wstring& szMessageFile, _Dere
 		if (pStorage)
 		{
 			// Open an IMessage interface on an IStorage object
-			EC_MAPI(OpenIMsgOnIStg(NULL,
+			EC_MAPI(OpenIMsgOnIStg(nullptr,
 				MAPIAllocateBuffer,
 				MAPIAllocateMore,
 				MAPIFreeBuffer,
 				lpMalloc,
-				NULL,
+				nullptr,
 				pStorage,
-				NULL,
+				nullptr,
 				0,
 				0,
 				lppMessage));
@@ -152,7 +152,7 @@ _Check_return_ HRESULT LoadFromMSG(_In_ const wstring& szMessageFile, _In_ LPMES
 
 		EC_MAPI(pIMsg->CopyTo(
 			0,
-			NULL,
+			nullptr,
 			LPSPropTagArray(&excludeTags),
 			lpProgress ? reinterpret_cast<ULONG_PTR>(hWnd) : NULL,
 			lpProgress,
@@ -213,7 +213,7 @@ _Check_return_ HRESULT LoadFromTNEF(_In_ const wstring& szMessageFile, _In_ LPAD
 #pragma warning(disable:4616)
 #pragma warning(disable:6276)
 	EC_H(OpenTnefStreamEx(
-		NULL,
+		nullptr,
 		lpStream,
 		LPTSTR("winmail.dat"), // STRING_OK - despite its signature, this function is ANSI only
 		TNEF_DECODE,
@@ -424,15 +424,15 @@ _Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_ 
 				if (lpMessage) lpMessage->Release();
 				lpMessage = nullptr;
 				EC_H(CallOpenEntry(
-					NULL,
-					NULL,
+					nullptr,
+					nullptr,
 					lpFolder,
-					NULL,
+					nullptr,
 					pRows->aRow->lpProps[fldPR_ENTRYID].Value.bin.cb,
 					reinterpret_cast<LPENTRYID>(pRows->aRow->lpProps[fldPR_ENTRYID].Value.bin.lpb),
-					NULL,
+					nullptr,
 					MAPI_BEST_ACCESS,
-					NULL,
+					nullptr,
 					reinterpret_cast<LPUNKNOWN*>(&lpMessage)));
 				if (!lpMessage) continue;
 
@@ -491,8 +491,8 @@ _Check_return_ HRESULT WriteStreamToFile(_In_ LPSTREAM pStrmSrc, _In_ const wstr
 
 		EC_MAPI(pStrmSrc->CopyTo(pStrmDest,
 			StatInfo.cbSize,
-			NULL,
-			NULL));
+			nullptr,
+			nullptr));
 
 		// Commit changes to new stream
 		EC_MAPI(pStrmDest->Commit(STGC_DEFAULT));
@@ -605,14 +605,14 @@ _Check_return_ HRESULT CreateNewMSG(_In_ const wstring& szFileName, bool bUnicod
 		{
 			// Open an IMessage interface on an IStorage object
 			EC_MAPI(OpenIMsgOnIStg(
-				NULL,
+				nullptr,
 				MAPIAllocateBuffer,
 				MAPIAllocateMore,
 				MAPIFreeBuffer,
 				pMalloc,
-				NULL,
+				nullptr,
 				pStorage,
-				NULL,
+				nullptr,
 				0,
 				bUnicode ? MAPI_UNICODE : 0,
 				&pIMsg));
@@ -742,7 +742,7 @@ _Check_return_ HRESULT SaveToTNEF(_In_ LPMESSAGE lpMessage, _In_ LPADRBOOK lpAdr
 #pragma warning(disable:4616)
 #pragma warning(disable:6276)
 		EC_H(OpenTnefStreamEx(
-			NULL,
+			nullptr,
 			lpStream,
 			LPTSTR("winmail.dat"), // STRING_OK - despite its signature, this function is ANSI only
 			TNEF_ENCODE,
@@ -758,20 +758,20 @@ _Check_return_ HRESULT SaveToTNEF(_In_ LPMESSAGE lpMessage, _In_ LPADRBOOK lpAdr
 			EC_MAPI(lpTNEF->AddProps(
 				TNEF_PROP_EXCLUDE,
 				0,
-				NULL,
+				nullptr,
 				LPSPropTagArray(&lpPropTnefExcludeArray)
 			));
 			EC_MAPI(lpTNEF->AddProps(
 				TNEF_PROP_EXCLUDE | TNEF_PROP_ATTACHMENTS_ONLY,
 				0,
-				NULL,
+				nullptr,
 				LPSPropTagArray(&lpPropTnefExcludeArray)
 			));
 
 			EC_MAPI(lpTNEF->AddProps(
 				TNEF_PROP_INCLUDE,
 				0,
-				NULL,
+				nullptr,
 				LPSPropTagArray(&lpPropTnefIncludeArray)
 			));
 
@@ -836,8 +836,8 @@ _Check_return_ HRESULT DeleteAttachments(_In_ LPMESSAGE lpMessage, _In_ const ws
 			// So I have to compare the strings myself (see below)
 			EC_MAPI(HrQueryAllRows(lpAttTbl,
 				LPSPropTagArray(&sptAttachTableCols),
-				NULL,
-				NULL,
+				nullptr,
+				nullptr,
 				0,
 				&pRows));
 
@@ -931,8 +931,8 @@ _Check_return_ HRESULT WriteAttachmentsToFile(_In_ LPMESSAGE lpMessage, HWND hWn
 		{
 			EC_MAPI(HrQueryAllRows(lpAttTbl,
 				LPSPropTagArray(&sptAttachTableCols),
-				NULL,
-				NULL,
+				nullptr,
+				nullptr,
 				0,
 				&pRows));
 
@@ -947,7 +947,7 @@ _Check_return_ HRESULT WriteAttachmentsToFile(_In_ LPMESSAGE lpMessage, HWND hWn
 					// Open the attachment
 					EC_MAPI(lpMessage->OpenAttach(
 						pRows->aRow[iRow].lpProps[ATTACHNUM].Value.l,
-						NULL,
+						nullptr,
 						MAPI_BEST_ACCESS,
 						&lpAttach));
 
@@ -1083,8 +1083,8 @@ _Check_return_ HRESULT WriteOleToFile(_In_ LPATTACH lpAttach, _In_z_ LPCWSTR szF
 			{
 				EC_MAPI(lpStorageSrc->CopyTo(
 					NULL,
-					NULL,
-					NULL,
+					nullptr,
+					nullptr,
 					lpStorageDest));
 
 				EC_MAPI(lpStorageDest->Commit(STGC_DEFAULT));
