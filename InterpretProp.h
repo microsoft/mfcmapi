@@ -2,7 +2,7 @@
 
 // Base64 functions
 vector<BYTE> Base64Decode(const wstring& szEncodedStr);
-wstring Base64Encode(size_t cbSourceBuf, _In_count_(cbSourceBuf) LPBYTE lpSourceBuffer);
+wstring Base64Encode(size_t cbSourceBuf, _In_count_(cbSourceBuf) const LPBYTE lpSourceBuffer);
 
 void FileTimeToString(_In_ const FILETIME& fileTime, _In_ wstring& PropString, _In_opt_ wstring& AltPropString);
 
@@ -25,7 +25,7 @@ NamePropNames NameIDToStrings(
 	ULONG ulPropTag, // optional 'original' prop tag
 	_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
 	_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
-	_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
+	_In_opt_ const LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
 	bool bIsAB); // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
 
 wstring CurrencyToString(const CURRENCY& curVal);
@@ -35,4 +35,4 @@ wstring ActionsToString(_In_ const ACTIONS& actions);
 
 wstring AdrListToString(_In_ const ADRLIST& adrList);
 
-void InterpretProp(_In_ LPSPropValue lpProp, _In_opt_ wstring* PropString, _In_opt_ wstring* AltPropString);
+void InterpretProp(_In_ const LPSPropValue lpProp, _In_opt_ wstring* PropString, _In_opt_ wstring* AltPropString);

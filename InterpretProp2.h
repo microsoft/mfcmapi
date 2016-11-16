@@ -27,7 +27,7 @@ LPCGUID GUIDNameToGUID(_In_ const wstring& szGUID, bool bByteSwapped);
 _Check_return_ GUID StringToGUID(_In_ const wstring& szGUID);
 _Check_return_ GUID StringToGUID(_In_ const wstring& szGUID, bool bByteSwapped);
 
-vector<wstring> NameIDToPropNames(_In_ LPMAPINAMEID lpNameID);
+vector<wstring> NameIDToPropNames(_In_ const LPMAPINAMEID lpNameID);
 
 wstring InterpretFlags(ULONG ulFlagName, LONG lFlagValue);
 wstring AllFlagsToString(ULONG ulFlagName, bool bHex);

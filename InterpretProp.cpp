@@ -84,7 +84,7 @@ char pIndex[] = { // and decoding table.
  0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x2b, 0x2f
 };
 
-wstring Base64Encode(size_t cbSourceBuf, _In_count_(cbSourceBuf) LPBYTE lpSourceBuffer)
+wstring Base64Encode(size_t cbSourceBuf, _In_count_(cbSourceBuf) const LPBYTE lpSourceBuffer)
 {
 	wstring szEncodedStr;
 	size_t cbBuf = 0;
@@ -704,7 +704,7 @@ wstring* tmpPropString: String representing property value
 wstring* tmpAltPropString: Alternative string representation
 Comment: Add new Property IDs as they become known
 ***************************************************************************/
-void InterpretProp(_In_ LPSPropValue lpProp, _In_opt_ wstring* PropString, _In_opt_ wstring* AltPropString)
+void InterpretProp(_In_ const LPSPropValue lpProp, _In_opt_ wstring* PropString, _In_opt_ wstring* AltPropString)
 {
 	if (!lpProp) return;
 
@@ -864,7 +864,7 @@ NamePropNames NameIDToStrings(
 	ULONG ulPropTag, // optional 'original' prop tag
 	_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
 	_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call
-	_In_opt_ LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
+	_In_opt_ const LPSBinary lpMappingSignature, // optional mapping signature for object to speed named prop lookups
 	bool bIsAB) // true if we know we're dealing with an address book property (they can be > 8000 and not named props)
 {
 	auto hRes = S_OK;

@@ -330,7 +330,7 @@ _Check_return_ GUID StringToGUID(_In_ const wstring& szGUID, bool bByteSwapped)
 }
 
 // Returns string built from NameIDArray
-vector<wstring> NameIDToPropNames(_In_ LPMAPINAMEID lpNameID)
+vector<wstring> NameIDToPropNames(_In_ const LPMAPINAMEID lpNameID)
 {
 	vector<wstring> results;
 	if (!lpNameID) return{};
