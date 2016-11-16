@@ -502,13 +502,13 @@ _Check_return_ HRESULT WriteStreamToFile(_In_ LPSTREAM pStrmSrc, _In_z_ LPCWSTR 
 	return hRes;
 }
 
-_Check_return_ HRESULT SaveToEML(_In_ LPMESSAGE lpMessage, _In_z_ LPCWSTR szFileName)
+_Check_return_ HRESULT SaveToEML(_In_ LPMESSAGE lpMessage, _In_ const wstring& szFileName)
 {
 	auto hRes = S_OK;
 	LPSTREAM pStrmSrc = nullptr;
 
-	if (!lpMessage || !szFileName) return MAPI_E_INVALID_PARAMETER;
-	DebugPrint(DBGGeneric, L"SaveToEML: Saving message to \"%ws\"\n", szFileName);
+	if (!lpMessage || szFileName.empty()) return MAPI_E_INVALID_PARAMETER;
+	DebugPrint(DBGGeneric, L"SaveToEML: Saving message to \"%ws\"\n", szFileName.c_str());
 
 	// Open the property of the attachment
 	// containing the file data
@@ -529,7 +529,7 @@ _Check_return_ HRESULT SaveToEML(_In_ LPMESSAGE lpMessage, _In_z_ LPCWSTR szFile
 	{
 		if (pStrmSrc)
 		{
-			WC_H(WriteStreamToFile(pStrmSrc, szFileName));
+			WC_H(WriteStreamToFile(pStrmSrc, szFileName.c_str()));
 
 			pStrmSrc->Release();
 		}
