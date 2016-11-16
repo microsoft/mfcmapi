@@ -13,7 +13,7 @@ wstring BuildFileNameAndPath(
 
 _Check_return_ HRESULT LoadMSGToMessage(_In_ const wstring& szMessageFile, _Deref_out_opt_ LPMESSAGE* lppMessage);
 
-_Check_return_ HRESULT LoadFromMSG(_In_z_ LPCWSTR szMessageFile, _In_ LPMESSAGE lpMessage, HWND hWnd);
+_Check_return_ HRESULT LoadFromMSG(_In_ const wstring& szMessageFile, _In_ LPMESSAGE lpMessage, HWND hWnd);
 _Check_return_ HRESULT LoadFromTNEF(_In_z_ LPCWSTR szMessageFile, _In_ LPADRBOOK lpAdrBook, _In_ LPMESSAGE lpMessage);
 
 void SaveFolderContentsToTXT(_In_ LPMDB lpMDB, _In_ LPMAPIFOLDER lpFolder, bool bRegular, bool bAssoc, bool bDescend, HWND hWnd);

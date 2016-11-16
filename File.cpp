@@ -110,7 +110,7 @@ _Check_return_ HRESULT LoadMSGToMessage(_In_ const wstring& szMessageFile, _Dere
 
 // Loads the MSG file into an LPMESSAGE pointer, then copies it into the passed in message
 // lpMessage must be created first
-_Check_return_ HRESULT LoadFromMSG(_In_z_ LPCWSTR szMessageFile, _In_ LPMESSAGE lpMessage, HWND hWnd)
+_Check_return_ HRESULT LoadFromMSG(_In_ const wstring& szMessageFile, _In_ LPMESSAGE lpMessage, HWND hWnd)
 {
 	auto hRes = S_OK;
 	LPMESSAGE pIMsg = nullptr;

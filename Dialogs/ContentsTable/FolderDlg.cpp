@@ -812,7 +812,7 @@ void CFolderDlg::OnLoadFromMSG()
 					if (lpNewMessage)
 					{
 						EC_H(LoadFromMSG(
-							lpszPath.c_str(),
+							lpszPath,
 							lpNewMessage, m_hWnd));
 					}
 
