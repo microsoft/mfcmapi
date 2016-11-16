@@ -465,9 +465,9 @@ _Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_ 
 	return hRes;
 }
 
-_Check_return_ HRESULT WriteStreamToFile(_In_ LPSTREAM pStrmSrc, _In_z_ LPCWSTR szFileName)
+_Check_return_ HRESULT WriteStreamToFile(_In_ LPSTREAM pStrmSrc, _In_ const wstring& szFileName)
 {
-	if (!pStrmSrc || !szFileName) return MAPI_E_INVALID_PARAMETER;
+	if (!pStrmSrc || szFileName.empty()) return MAPI_E_INVALID_PARAMETER;
 
 	auto hRes = S_OK;
 	LPSTREAM pStrmDest = nullptr;
@@ -499,6 +499,7 @@ _Check_return_ HRESULT WriteStreamToFile(_In_ LPSTREAM pStrmSrc, _In_z_ LPCWSTR 
 
 		pStrmDest->Release();
 	}
+
 	return hRes;
 }
 
@@ -529,7 +530,7 @@ _Check_return_ HRESULT SaveToEML(_In_ LPMESSAGE lpMessage, _In_ const wstring& s
 	{
 		if (pStrmSrc)
 		{
-			WC_H(WriteStreamToFile(pStrmSrc, szFileName.c_str()));
+			WC_H(WriteStreamToFile(pStrmSrc, szFileName));
 
 			pStrmSrc->Release();
 		}
