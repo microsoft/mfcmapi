@@ -103,7 +103,7 @@ _Check_return_ HRESULT CallOpenEntry(
 		WC_MAPI(lpAB->OpenEntry(
 			cbEntryID,
 			lpEntryID,
-			NULL, // no interface
+			nullptr, // no interface
 			ulFlags,
 			&ulObjType,
 			&lpUnk));
@@ -116,7 +116,7 @@ _Check_return_ HRESULT CallOpenEntry(
 			WC_MAPI(lpAB->OpenEntry(
 				cbEntryID,
 				lpEntryID,
-				NULL, // no interface
+				nullptr, // no interface
 				ulNoCacheFlags,
 				&ulObjType,
 				&lpUnk));
@@ -496,10 +496,10 @@ _Check_return_ HRESULT CopyFolderRules(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LPMAP
 
 			EC_MAPI(HrQueryAllRows(
 				lpTable,
-				NULL,
-				NULL,
-				NULL,
-				NULL,
+				nullptr,
+				nullptr,
+				nullptr,
+				0,
 				&lpRows));
 
 			if (lpRows && lpRows->cRows < MAXNewROWLIST)
@@ -603,9 +603,9 @@ _Check_return_ HRESULT CopyPropertyAsStream(_In_ LPMAPIPROP lpSourcePropObj,
 		li.QuadPart = 0;
 		uli.QuadPart = MAXLONGLONG;
 
-		EC_MAPI(lpStmSource->Seek(li, STREAM_SEEK_SET, NULL));
+		EC_MAPI(lpStmSource->Seek(li, STREAM_SEEK_SET, nullptr));
 
-		EC_MAPI(lpStmTarget->Seek(li, STREAM_SEEK_SET, NULL));
+		EC_MAPI(lpStmTarget->Seek(li, STREAM_SEEK_SET, nullptr));
 
 		EC_MAPI(lpStmSource->CopyTo(lpStmTarget, uli, &ulBytesRead, &ulBytesWritten));
 
@@ -818,7 +818,7 @@ _Check_return_ HRESULT CreatePropertyStringRestriction(ULONG ulPropTag,
 			lpAllocationParent));
 
 		DebugPrint(DBGGeneric, L"CreatePropertyStringRestriction built restriction:\n");
-		DebugPrintRestriction(DBGGeneric, lpRes, NULL);
+		DebugPrintRestriction(DBGGeneric, lpRes, nullptr);
 
 		*lppRes = lpRes;
 	}
@@ -910,7 +910,7 @@ _Check_return_ HRESULT CreateRangeRestriction(ULONG ulPropTag,
 			lpAllocationParent));
 
 		DebugPrint(DBGGeneric, L"CreateRangeRestriction built restriction:\n");
-		DebugPrintRestriction(DBGGeneric, lpRes, NULL);
+		DebugPrintRestriction(DBGGeneric, lpRes, nullptr);
 
 		*lppRes = lpRes;
 	}
@@ -985,7 +985,7 @@ _Check_return_ HRESULT DeleteToDeletedItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLDER 
 
 		EC_MAPI(lpSourceFolder->CopyMessages(
 			lpEIDs,
-			NULL, // default interface
+			nullptr, // default interface
 			lpWasteFolder,
 			lpProgress ? reinterpret_cast<ULONG_PTR>(hWnd) : NULL,
 			lpProgress,
@@ -1050,7 +1050,7 @@ _Check_return_ HRESULT GetInbox(_In_ LPMDB lpMDB, _Out_opt_ ULONG* lpcbeid, _Der
 		fMapiUnicode, // flags
 		&cbInboxEID, // size and...
 		&lpInboxEID, // value of entry ID
-		NULL)); // returns a message class if not NULL
+		nullptr)); // returns a message class if not NULL
 
 	if (cbInboxEID && lpInboxEID)
 	{
@@ -1085,14 +1085,14 @@ _Check_return_ HRESULT GetInbox(_In_ LPMDB lpMDB, _Deref_out_opt_ LPMAPIFOLDER* 
 		// Get the Inbox...
 		WC_H(CallOpenEntry(
 			lpMDB,
-			NULL,
-			NULL,
-			NULL,
+			nullptr,
+			nullptr,
+			nullptr,
 			cbInboxEID,
 			lpInboxEID,
-			NULL,
+			nullptr,
 			MAPI_BEST_ACCESS,
-			NULL,
+			nullptr,
 			reinterpret_cast<LPUNKNOWN*>(lpInbox)));
 	}
 
@@ -1132,14 +1132,14 @@ _Check_return_ HRESULT GetParentFolder(_In_ LPMAPIFOLDER lpChildFolder, _In_ LPM
 	{
 		WC_H(CallOpenEntry(
 			lpMDB,
-			NULL,
-			NULL,
-			NULL,
+			nullptr,
+			nullptr,
+			nullptr,
 			lpProps[PARENTEID].Value.bin.cb,
 			reinterpret_cast<LPENTRYID>(lpProps[PARENTEID].Value.bin.lpb),
-			NULL,
+			nullptr,
 			MAPI_BEST_ACCESS,
-			NULL,
+			nullptr,
 			reinterpret_cast<LPUNKNOWN*>(lpParentFolder)));
 	}
 
@@ -1214,13 +1214,13 @@ _Check_return_ HRESULT GetSpecialFolderEID(_In_ LPMDB lpMDB, ULONG ulFolderPropT
 		// Open root container.
 		EC_H(CallOpenEntry(
 			lpMDB,
-			NULL,
-			NULL,
-			NULL,
-			NULL, // open root container
-			NULL,
+			nullptr,
+			nullptr,
+			nullptr,
+			nullptr, // open root container
+			nullptr,
 			MAPI_BEST_ACCESS,
-			NULL,
+			nullptr,
 			reinterpret_cast<LPUNKNOWN*>(&lpRootFolder)));
 		if (lpRootFolder)
 		{
@@ -1328,7 +1328,7 @@ _Check_return_ HRESULT ManuallyEmptyFolder(_In_ LPMAPIFOLDER lpFolder, BOOL bAss
 		EC_MAPI(lpContentsTable->SeekRow(
 			BOOKMARK_BEGINNING,
 			0,
-			NULL));
+			nullptr));
 		hRes = S_OK; // don't let failure here fail the whole op
 
 		// get rows and delete messages one at a time (slow, but might work when batch deletion fails)
@@ -1356,7 +1356,7 @@ _Check_return_ HRESULT ManuallyEmptyFolder(_In_ LPMAPIFOLDER lpFolder, BOOL bAss
 					WC_MAPI(lpFolder->DeleteMessages(
 						&eid,
 						NULL,
-						NULL,
+						nullptr,
 						bHardDelete ? DELETE_HARD_DELETE : NULL));
 					if (SUCCEEDED(hRes)) iItemCount++;
 				}
@@ -1534,8 +1534,8 @@ _Check_return_ HRESULT ResendMessages(_In_ LPMAPIFOLDER lpFolder, _In_ HWND hWnd
 		EC_MAPI(HrQueryAllRows(
 			lpContentsTable,
 			LPSPropTagArray(&sptCols),
-			NULL, // restriction...we're not using this parameter
-			NULL, // sort order...we're not using this parameter
+			nullptr, // restriction...we're not using this parameter
+			nullptr, // sort order...we're not using this parameter
 			0,
 			&pRows));
 
@@ -1547,15 +1547,15 @@ _Check_return_ HRESULT ResendMessages(_In_ LPMAPIFOLDER lpFolder, _In_ HWND hWnd
 
 				hRes = S_OK;
 				WC_H(CallOpenEntry(
-					NULL,
-					NULL,
+					nullptr,
+					nullptr,
 					lpFolder,
-					NULL,
+					nullptr,
 					pRows->aRow[i].lpProps[ePR_ENTRYID].Value.bin.cb,
 					reinterpret_cast<LPENTRYID>(pRows->aRow[i].lpProps[ePR_ENTRYID].Value.bin.lpb),
-					NULL,
+					nullptr,
 					MAPI_BEST_ACCESS,
-					NULL,
+					nullptr,
 					reinterpret_cast<LPUNKNOWN*>(&lpMessage)));
 				if (lpMessage)
 				{
@@ -1582,15 +1582,15 @@ _Check_return_ HRESULT ResendSingleMessage(
 	if (!lpFolder || !MessageEID) return MAPI_E_INVALID_PARAMETER;
 
 	EC_H(CallOpenEntry(
-		NULL,
-		NULL,
+		nullptr,
+		nullptr,
 		lpFolder,
-		NULL,
+		nullptr,
 		MessageEID->cb,
 		reinterpret_cast<LPENTRYID>(MessageEID->lpb),
-		NULL,
+		nullptr,
 		MAPI_BEST_ACCESS,
-		NULL,
+		nullptr,
 		reinterpret_cast<LPUNKNOWN*>(&lpMessage)));
 	if (lpMessage)
 	{
@@ -1678,7 +1678,7 @@ _Check_return_ HRESULT ResendSingleMessage(
 				lpAttach = nullptr;
 				EC_MAPI(lpMessage->OpenAttach(
 					pRows->aRow->lpProps[atPR_ATTACH_NUM].Value.l,
-					NULL,
+					nullptr,
 					MAPI_BEST_ACCESS,
 					static_cast<LPATTACH*>(&lpAttach)));
 				if (!lpAttach) continue;
@@ -1709,7 +1709,7 @@ _Check_return_ HRESULT ResendSingleMessage(
 				DebugPrint(DBGGeneric, L"Creating new message.\n");
 				if (lpNewMessage) lpNewMessage->Release();
 				lpNewMessage = nullptr;
-				EC_MAPI(lpFolder->CreateMessage(NULL, 0, &lpNewMessage));
+				EC_MAPI(lpFolder->CreateMessage(nullptr, 0, &lpNewMessage));
 				if (!lpNewMessage) continue;
 
 				EC_MAPI(lpNewMessage->SaveChanges(KEEP_OPEN_READWRITE));
@@ -1776,7 +1776,7 @@ _Check_return_ HRESULT ResendSingleMessage(
 				sPropTagArray.aulPropTag[0] = PR_SENTMAIL_ENTRYID;
 
 				DebugPrint(DBGGeneric, L"Deleting PR_SENTMAIL_ENTRYID\n");
-				EC_MAPI(lpNewMessage->DeleteProps(&sPropTagArray, NULL));
+				EC_MAPI(lpNewMessage->DeleteProps(&sPropTagArray, nullptr));
 
 				EC_MAPI(lpNewMessage->SaveChanges(KEEP_OPEN_READWRITE));
 
@@ -1848,7 +1848,7 @@ _Check_return_ HRESULT ResetPermissionsOnItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLD
 			EC_MAPI(lpContentsTable->SeekRow(
 				BOOKMARK_BEGINNING,
 				0,
-				NULL));
+				nullptr));
 			hRes = S_OK; // don't let failure here fail the whole op
 
 			// get rows and delete PR_NT_SECURITY_DESCRIPTOR
@@ -1872,14 +1872,14 @@ _Check_return_ HRESULT ResetPermissionsOnItems(_In_ LPMDB lpMDB, _In_ LPMAPIFOLD
 
 					WC_H(CallOpenEntry(
 						lpMDB,
-						NULL,
-						NULL,
-						NULL,
+						nullptr,
+						nullptr,
+						nullptr,
 						pRows->aRow[iCurPropRow].lpProps[eidPR_ENTRYID].Value.bin.cb,
 						reinterpret_cast<LPENTRYID>(pRows->aRow[iCurPropRow].lpProps[eidPR_ENTRYID].Value.bin.lpb),
-						NULL,
+						nullptr,
 						MAPI_BEST_ACCESS,
-						NULL,
+						nullptr,
 						reinterpret_cast<LPUNKNOWN*>(&lpMessage)));
 					if (FAILED(hRes))
 					{
@@ -1925,7 +1925,7 @@ _Check_return_ HRESULT SendTestMessage(
 	if (!lpMAPISession || !lpFolder) return MAPI_E_INVALID_PARAMETER;
 
 	EC_MAPI(lpFolder->CreateMessage(
-		NULL, // default interface
+		nullptr, // default interface
 		0, // flags
 		&lpNewMessage));
 
@@ -1967,7 +1967,7 @@ _Check_return_ HRESULT SendTestMessage(
 		sPropTagArray.aulPropTag[0] = PR_SENTMAIL_ENTRYID;
 
 		DebugPrint(DBGGeneric, L"Deleting PR_SENTMAIL_ENTRYID\n");
-		EC_MAPI(lpNewMessage->DeleteProps(&sPropTagArray, NULL));
+		EC_MAPI(lpNewMessage->DeleteProps(&sPropTagArray, nullptr));
 
 		DebugPrint(DBGGeneric, L"Adding recipient: %ws.\n", szRecipient.c_str());
 		EC_H(AddRecipient(
@@ -2092,7 +2092,7 @@ _Check_return_ HRESULT GetNamedPropsByGUID(_In_ LPMAPIPROP lpSource, _In_ LPGUID
 
 		WC_H(GetNamesFromIDs(lpSource,
 			&lpAllProps,
-			NULL,
+			nullptr,
 			0,
 			&cProps,
 			&lppNameIDs));
@@ -2521,14 +2521,14 @@ STDMETHODIMP OpenDefaultFolder(_In_ ULONG ulFolder, _In_ LPMDB lpMDB, _Deref_out
 		LPMAPIFOLDER lpTemp = nullptr;
 		WC_H(CallOpenEntry(
 			lpMDB,
-			NULL,
-			NULL,
-			NULL,
+			nullptr,
+			nullptr,
+			nullptr,
 			cb,
 			lpeid,
-			NULL,
+			nullptr,
 			MAPI_BEST_ACCESS,
-			NULL,
+			nullptr,
 			reinterpret_cast<LPUNKNOWN*>(&lpTemp)));
 		if (SUCCEEDED(hRes) && lpTemp)
 		{
@@ -2707,7 +2707,7 @@ HRESULT CopyTo(HWND hWnd, _In_ LPMAPIPROP lpSource, _In_ LPMAPIPROP lpDest, LPCG
 	{
 		EC_MAPI(lpSource->CopyTo(
 			0,
-			NULL,
+			nullptr,
 			lpExcludedTags,
 			lpProgress ? reinterpret_cast<ULONG_PTR>(hWnd) : NULL, // UI param
 			lpProgress, // progress
