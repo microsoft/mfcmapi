@@ -475,7 +475,7 @@ void _OutputTable(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPITABLE lpMAPIT
 	EC_MAPI(lpMAPITable->SeekRow(
 		BOOKMARK_BEGINNING,
 		0,
-		NULL));
+		nullptr));
 
 	Output(ulDbgLvl, fFile, false, g_szXMLHeader);
 	Output(ulDbgLvl, fFile, false, L"<table>\n");
@@ -881,7 +881,7 @@ void _OutputStream(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSTREAM lpStream)
 	WC_H_MSG(lpStream->Seek(
 		li,
 		STREAM_SEEK_SET,
-		NULL), IDS_STREAMSEEKFAILED);
+		nullptr), IDS_STREAMSEEKFAILED);
 
 	if (S_OK == hRes) do
 	{
@@ -911,13 +911,13 @@ void _OutputVersion(ULONG ulDbgLvl, _In_opt_ FILE* fFile)
 	DWORD dwRet = 0;
 
 	// Get version information from the application.
-	EC_D(dwRet, GetModuleFileNameW(NULL, szFullPath, _countof(szFullPath)));
+	EC_D(dwRet, GetModuleFileNameW(nullptr, szFullPath, _countof(szFullPath)));
 
 	if (S_OK == hRes)
 	{
 		DWORD dwVerInfoSize = 0;
 
-		EC_D(dwVerInfoSize, GetFileVersionInfoSizeW(szFullPath, NULL));
+		EC_D(dwVerInfoSize, GetFileVersionInfoSizeW(szFullPath, nullptr));
 
 		if (dwVerInfoSize)
 		{

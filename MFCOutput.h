@@ -103,17 +103,17 @@ void _OutputTable(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPITABLE lpMAPIT
 void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify, _In_count_(cNotify) LPNOTIFICATION lpNotifications, _In_opt_ LPMAPIPROP lpObj);
 void _OutputEntryList(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPENTRYLIST lpEntryList);
 
-#define DebugPrintBinary(ulDbgLvl, lpBin) _OutputBinary((ulDbgLvl), NULL, (lpBin))
-#define DebugPrintProperties(ulDbgLvl, cProps, lpProps, lpObj) _OutputProperties((ulDbgLvl), NULL, (cProps), (lpProps), (lpObj), false)
-#define DebugPrintRestriction(ulDbgLvl, lpRes, lpObj) _OutputRestriction((ulDbgLvl), NULL, (lpRes), (lpObj))
-#define DebugPrintStream(ulDbgLvl, lpStream) _OutputStream((ulDbgLvl), NULL, lpStream)
-#define DebugPrintVersion(ulDbgLvl) _OutputVersion((ulDbgLvl), NULL)
-#define DebugPrintFormInfo(ulDbgLvl,lpMAPIFormInfo) _OutputFormInfo((ulDbgLvl),NULL, (lpMAPIFormInfo))
-#define DebugPrintFormPropArray(ulDbgLvl,lpMAPIFormPropArray) _OutputFormPropArray((ulDbgLvl),NULL, (lpMAPIFormPropArray))
-#define DebugPrintPropTagArray(ulDbgLvl,lpTagsToDump) _OutputPropTagArray((ulDbgLvl),NULL, (lpTagsToDump))
-#define DebugPrintNotifications(ulDbgLvl, cNotify, lpNotifications, lpObj) _OutputNotifications((ulDbgLvl),NULL, (cNotify), (lpNotifications), (lpObj))
-#define DebugPrintSRowSet(ulDbgLvl, lpRowSet, lpObj) _OutputSRowSet((ulDbgLvl), NULL, (lpRowSet), (lpObj))
-#define DebugPrintEntryList(ulDbgLvl, lpEntryList) _OutputEntryList((ulDbgLvl), NULL, (lpEntryList))
+#define DebugPrintBinary(ulDbgLvl, lpBin) _OutputBinary((ulDbgLvl), nullptr, (lpBin))
+#define DebugPrintProperties(ulDbgLvl, cProps, lpProps, lpObj) _OutputProperties((ulDbgLvl), nullptr, (cProps), (lpProps), (lpObj), false)
+#define DebugPrintRestriction(ulDbgLvl, lpRes, lpObj) _OutputRestriction((ulDbgLvl), nullptr, (lpRes), (lpObj))
+#define DebugPrintStream(ulDbgLvl, lpStream) _OutputStream((ulDbgLvl), nullptr, lpStream)
+#define DebugPrintVersion(ulDbgLvl) _OutputVersion((ulDbgLvl), nullptr)
+#define DebugPrintFormInfo(ulDbgLvl,lpMAPIFormInfo) _OutputFormInfo((ulDbgLvl),nullptr, (lpMAPIFormInfo))
+#define DebugPrintFormPropArray(ulDbgLvl,lpMAPIFormPropArray) _OutputFormPropArray((ulDbgLvl),nullptr, (lpMAPIFormPropArray))
+#define DebugPrintPropTagArray(ulDbgLvl,lpTagsToDump) _OutputPropTagArray((ulDbgLvl),nullptr, (lpTagsToDump))
+#define DebugPrintNotifications(ulDbgLvl, cNotify, lpNotifications, lpObj) _OutputNotifications((ulDbgLvl),nullptr, (cNotify), (lpNotifications), (lpObj))
+#define DebugPrintSRowSet(ulDbgLvl, lpRowSet, lpObj) _OutputSRowSet((ulDbgLvl), nullptr, (lpRowSet), (lpObj))
+#define DebugPrintEntryList(ulDbgLvl, lpEntryList) _OutputEntryList((ulDbgLvl), nullptr, (lpEntryList))
 
 #define OutputStreamToFile(fFile, lpStream) _OutputStream(DBGNoDebug, (fFile), (lpStream))
 #define OutputTableToFile(fFile, lpMAPITable) _OutputTable(DBGNoDebug, (fFile), (lpMAPITable))
