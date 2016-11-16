@@ -2,6 +2,8 @@
 #include <String.h>
 #include <locale>
 #include <sstream>
+#include <iterator>
+#include <functional>
 
 wstring emptystring = L"";
 
@@ -207,10 +209,20 @@ __int64 wstringToInt64(const wstring& src)
 	return _wtoi64(src.c_str());
 }
 
-wstring StripCharacter(wstring szString, WCHAR character)
+wstring strip(const wstring& str, std::function<bool(const WCHAR&)> func)
 {
-	szString.erase(remove(szString.begin(), szString.end(), character), szString.end());
-	return szString;
+	wstring result;
+	result.reserve(str.length());
+	remove_copy_if(str.begin(), str.end(), back_inserter(result), func);
+	return result;
+}
+
+wstring StripCharacter(const wstring& szString, const WCHAR& character)
+{
+	return strip(szString, [character](const WCHAR& chr)
+	{
+		return chr == character;
+	});
 }
 
 wstring StripCarriage(const wstring& szString)
@@ -218,36 +230,39 @@ wstring StripCarriage(const wstring& szString)
 	return StripCharacter(szString, L'\r');
 }
 
-wstring CleanString(wstring szString)
+wstring CleanString(const wstring& szString)
 {
-	szString.erase(std::remove_if(std::begin(szString), std::end(szString), [](const WCHAR & chr)
+	return strip(szString, [](const WCHAR & chr)
 	{
 		return wstring(L", ").find(chr) != wstring::npos;
-	}), std::end(szString));
-
-	return szString;
+	});
 }
 
-wstring ScrubStringForXML(wstring szString)
+wstring replace(const wstring& str, std::function<bool(const WCHAR&)> func, const WCHAR& chr)
 {
-	std::replace_if(szString.begin(), szString.end(), [](const WCHAR & chr)
+	wstring result;
+	result.reserve(str.length());
+	replace_copy_if(str.begin(), str.end(), back_inserter(result), func, chr);
+	return result;
+}
+
+wstring ScrubStringForXML(const wstring& szString)
+{
+	return replace(szString, [](const WCHAR& chr)
 	{
+		// Replace anything less than 0x20 except tab, carriage return and linefeed
 		return chr < 0x20 && wstring(L"\t\r\n").find(chr) == wstring::npos;
 	}, L'.');
-
-	return szString;
 }
 
 // Processes szFileIn, replacing non file system characters with underscores
 // Do NOT call with full path - just file names
-wstring SanitizeFileNameW(wstring szFileIn)
+wstring SanitizeFileNameW(const wstring& szFileIn)
 {
-	std::replace_if(szFileIn.begin(), szFileIn.end(), [](const WCHAR & chr)
+	return replace(szFileIn, [](const WCHAR& chr)
 	{
 		return wstring(L"^&*-+=[]\\|;:\",<>/?\r\n").find(chr) != wstring::npos;
 	}, L'_');
-
-	return szFileIn;
 }
 
 wstring indent(int iIndent)

@@ -43,11 +43,11 @@ long wstringToLong(const wstring& src, int radix);
 double wstringToDouble(const wstring& src);
 __int64 wstringToInt64(const wstring& src);
 
-wstring StripCharacter(wstring szString, WCHAR character);
+wstring StripCharacter(const wstring& szString, const WCHAR& character);
 wstring StripCarriage(const wstring& szString);
-wstring CleanString(wstring szString);
-wstring ScrubStringForXML(wstring szString);
-wstring SanitizeFileNameW(wstring szFileIn);
+wstring CleanString(const wstring& szString);
+wstring ScrubStringForXML(const wstring& szString);
+wstring SanitizeFileNameW(const wstring& szFileIn);
 wstring indent(int iIndent);
 
 wstring BinToTextStringW(const vector<BYTE>& lpByte, bool bMultiLine);
