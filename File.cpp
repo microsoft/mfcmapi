@@ -539,7 +539,7 @@ _Check_return_ HRESULT SaveToEML(_In_ LPMESSAGE lpMessage, _In_ const wstring& s
 	return hRes;
 }
 
-_Check_return_ HRESULT STDAPICALLTYPE MyStgCreateStorageEx(IN const WCHAR* pName,
+_Check_return_ HRESULT STDAPICALLTYPE MyStgCreateStorageEx(_In_ const wstring& pName,
 	DWORD grfMode,
 	DWORD stgfmt,
 	DWORD grfAttrs,
@@ -548,25 +548,27 @@ _Check_return_ HRESULT STDAPICALLTYPE MyStgCreateStorageEx(IN const WCHAR* pName
 	_In_ REFIID riid,
 	_Out_ void ** ppObjectOpen)
 {
-	auto hRes = S_OK;
-	if (!pName) return MAPI_E_INVALID_PARAMETER;
+	if (pName.empty()) return MAPI_E_INVALID_PARAMETER;
 
-	if (pfnStgCreateStorageEx) hRes = pfnStgCreateStorageEx(
-		pName,
-		grfMode,
-		stgfmt,
-		grfAttrs,
-		pStgOptions,
-		reserved,
-		riid,
-		ppObjectOpen);
+	if (pfnStgCreateStorageEx)
+	{
+		return pfnStgCreateStorageEx(
+			pName.c_str(),
+			grfMode,
+			stgfmt,
+			grfAttrs,
+			pStgOptions,
+			reserved,
+			riid,
+			ppObjectOpen);
+	}
+
 	// Fallback for NT4, which doesn't have StgCreateStorageEx
-	else hRes = ::StgCreateDocfile(
-		pName,
+	return ::StgCreateDocfile(
+		pName.c_str(),
 		grfMode,
 		0,
 		reinterpret_cast<LPSTORAGE*>(ppObjectOpen));
-	return hRes;
 }
 
 _Check_return_ HRESULT CreateNewMSG(_In_ const wstring& szFileName, bool bUnicode, _Deref_out_opt_ LPMESSAGE* lppMessage, _Deref_out_opt_ LPSTORAGE* lppStorage)
@@ -591,7 +593,7 @@ _Check_return_ HRESULT CreateNewMSG(_In_ const wstring& szFileName, bool bUnicod
 
 		// Open the compound file
 		EC_H(MyStgCreateStorageEx(
-			szFileName.c_str(),
+			szFileName,
 			STGM_READWRITE | STGM_TRANSACTED | STGM_CREATE,
 			STGFMT_DOCFILE,
 			0, // FILE_FLAG_NO_BUFFERING,
