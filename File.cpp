@@ -975,14 +975,14 @@ _Check_return_ HRESULT WriteAttachmentsToFile(_In_ LPMESSAGE lpMessage, HWND hWn
 }
 #endif
 
-_Check_return_ HRESULT WriteEmbeddedMSGToFile(_In_ LPATTACH lpAttach, _In_z_ LPCWSTR szFileName, bool bUnicode, HWND hWnd)
+_Check_return_ HRESULT WriteEmbeddedMSGToFile(_In_ LPATTACH lpAttach, _In_ const wstring& szFileName, bool bUnicode, HWND hWnd)
 {
 	auto hRes = S_OK;
 	LPMESSAGE lpAttachMsg = nullptr;
 
-	if (!lpAttach || !szFileName) return MAPI_E_INVALID_PARAMETER;
+	if (!lpAttach || szFileName.empty()) return MAPI_E_INVALID_PARAMETER;
 
-	DebugPrint(DBGGeneric, L"WriteEmbeddedMSGToFile: Saving attachment to \"%ws\"\n", szFileName);
+	DebugPrint(DBGGeneric, L"WriteEmbeddedMSGToFile: Saving attachment to \"%ws\"\n", szFileName.c_str());
 
 	EC_MAPI(lpAttach->OpenProperty(
 		PR_ATTACH_DATA_OBJ,
@@ -1186,7 +1186,7 @@ _Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd)
 				loadstring(IDS_MSGFILES));
 			if (!file.empty())
 			{
-				EC_H(WriteEmbeddedMSGToFile(lpAttach, file.c_str(), (MAPI_UNICODE == fMapiUnicode) ? true : false, hWnd));
+				EC_H(WriteEmbeddedMSGToFile(lpAttach, file, (MAPI_UNICODE == fMapiUnicode) ? true : false, hWnd));
 			}
 		}
 		break;
