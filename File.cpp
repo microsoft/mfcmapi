@@ -1000,12 +1000,12 @@ _Check_return_ HRESULT WriteEmbeddedMSGToFile(_In_ LPATTACH lpAttach, _In_ const
 	return hRes;
 }
 
-_Check_return_ HRESULT WriteAttachStreamToFile(_In_ LPATTACH lpAttach, _In_z_ LPCWSTR szFileName)
+_Check_return_ HRESULT WriteAttachStreamToFile(_In_ LPATTACH lpAttach, _In_ const wstring& szFileName)
 {
 	auto hRes = S_OK;
 	LPSTREAM pStrmSrc = nullptr;
 
-	if (!lpAttach || !szFileName) return MAPI_E_INVALID_PARAMETER;
+	if (!lpAttach || szFileName.empty()) return MAPI_E_INVALID_PARAMETER;
 
 	// Open the property of the attachment
 	// containing the file data
@@ -1171,7 +1171,7 @@ _Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd)
 				loadstring(IDS_ALLFILES));
 			if (!file.empty())
 			{
-				EC_H(WriteAttachStreamToFile(lpAttach, file.c_str()));
+				EC_H(WriteAttachStreamToFile(lpAttach, file));
 			}
 		}
 		break;
