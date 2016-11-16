@@ -449,7 +449,7 @@ _Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_ 
 
 				EC_H(SaveToMSG(
 					lpMessage,
-					szFileName.c_str(),
+					szFileName,
 					bUnicode,
 					hWnd,
 					false));
@@ -642,15 +642,15 @@ _Check_return_ HRESULT CreateNewMSG(_In_ const wstring& szFileName, bool bUnicod
 	return hRes;
 }
 
-_Check_return_ HRESULT SaveToMSG(_In_ LPMESSAGE lpMessage, _In_z_ LPCWSTR szFileName, bool bUnicode, HWND hWnd, bool bAllowUI)
+_Check_return_ HRESULT SaveToMSG(_In_ LPMESSAGE lpMessage, _In_ const wstring& szFileName, bool bUnicode, HWND hWnd, bool bAllowUI)
 {
 	auto hRes = S_OK;
 	LPSTORAGE pStorage = nullptr;
 	LPMESSAGE pIMsg = nullptr;
 
-	if (!lpMessage || !szFileName) return MAPI_E_INVALID_PARAMETER;
+	if (!lpMessage || szFileName.empty()) return MAPI_E_INVALID_PARAMETER;
 
-	DebugPrint(DBGGeneric, L"SaveToMSG: Saving message to \"%ws\"\n", szFileName);
+	DebugPrint(DBGGeneric, L"SaveToMSG: Saving message to \"%ws\"\n", szFileName.c_str());
 
 	EC_H(CreateNewMSG(szFileName, bUnicode, &pIMsg, &pStorage));
 	if (pIMsg && pStorage)

@@ -1569,10 +1569,10 @@ void CFolderDlg::OnSaveMessageToFile()
 
 					break;
 					case 1:
-						EC_H(SaveToMSG(lpMessage, filename.c_str(), false, m_hWnd, true));
+						EC_H(SaveToMSG(lpMessage, filename, false, m_hWnd, true));
 						break;
 					case 2:
-						EC_H(SaveToMSG(lpMessage, filename.c_str(), true, m_hWnd, true));
+						EC_H(SaveToMSG(lpMessage, filename, true, m_hWnd, true));
 						break;
 					case 3:
 						EC_H(SaveToEML(lpMessage, filename));

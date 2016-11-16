@@ -20,7 +20,7 @@ void SaveFolderContentsToTXT(_In_ LPMDB lpMDB, _In_ LPMAPIFOLDER lpFolder, bool 
 _Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_ const wstring& szPathName, bool bAssoc, bool bUnicode, HWND hWnd);
 _Check_return_ HRESULT SaveToEML(_In_ LPMESSAGE lpMessage, _In_ const wstring& szFileName);
 _Check_return_ HRESULT CreateNewMSG(_In_ const wstring& szFileName, bool bUnicode, _Deref_out_opt_ LPMESSAGE* lppMessage, _Deref_out_opt_ LPSTORAGE* lppStorage);
-_Check_return_ HRESULT SaveToMSG(_In_ LPMESSAGE lpMessage, _In_z_ LPCWSTR szFileName, bool bUnicode, HWND hWnd, bool bAllowUI);
+_Check_return_ HRESULT SaveToMSG(_In_ LPMESSAGE lpMessage, _In_ const wstring& szFileName, bool bUnicode, HWND hWnd, bool bAllowUI);
 _Check_return_ HRESULT SaveToTNEF(_In_ LPMESSAGE lpMessage, _In_ LPADRBOOK lpAdrBook, _In_ const wstring& szFileName);
 
 _Check_return_ HRESULT DeleteAttachments(_In_ LPMESSAGE lpMessage, _In_ const wstring& szAttName, HWND hWnd);

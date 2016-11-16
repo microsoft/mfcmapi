@@ -605,7 +605,7 @@ void OutputMessageMSG(
 
 	WC_H(SaveToMSG(
 		lpMessage,
-		szFileName.c_str(),
+		szFileName,
 		fMapiUnicode ? true : false,
 		NULL,
 		false));
