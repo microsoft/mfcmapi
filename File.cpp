@@ -368,7 +368,7 @@ void SaveFolderContentsToTXT(_In_ LPMDB lpMDB, _In_ LPMAPIFOLDER lpFolder, bool 
 	}
 }
 
-_Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_z_ LPCWSTR szPathName, bool bAssoc, bool bUnicode, HWND hWnd)
+_Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_ const wstring& szPathName, bool bAssoc, bool bUnicode, HWND hWnd)
 {
 	auto hRes = S_OK;
 	LPMAPITABLE lpFolderContents = nullptr;
@@ -391,9 +391,9 @@ _Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_z
 	PR_RECORD_KEY
 	};
 
-	if (!lpFolder || !szPathName) return MAPI_E_INVALID_PARAMETER;
+	if (!lpFolder || szPathName.empty()) return MAPI_E_INVALID_PARAMETER;
 
-	DebugPrint(DBGGeneric, L"SaveFolderContentsToMSG: Saving contents of folder to \"%ws\"\n", szPathName);
+	DebugPrint(DBGGeneric, L"SaveFolderContentsToMSG: Saving contents of folder to \"%ws\"\n", szPathName.c_str());
 
 	EC_MAPI(lpFolder->GetContentsTable(
 		fMapiUnicode | (bAssoc ? MAPI_ASSOCIATED : NULL),

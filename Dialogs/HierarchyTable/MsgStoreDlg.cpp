@@ -932,7 +932,7 @@ void CMsgStoreDlg::OnSaveFolderContentsAsMSG()
 
 			EC_H(SaveFolderContentsToMSG(
 				lpMAPIFolder,
-				szDir.c_str(),
+				szDir,
 				MyData.GetCheck(0) ? true : false,
 				MyData.GetCheck(1) ? true : false,
 				m_hWnd));
