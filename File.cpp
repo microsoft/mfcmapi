@@ -569,9 +569,9 @@ _Check_return_ HRESULT STDAPICALLTYPE MyStgCreateStorageEx(IN const WCHAR* pName
 	return hRes;
 }
 
-_Check_return_ HRESULT CreateNewMSG(_In_z_ LPCWSTR szFileName, bool bUnicode, _Deref_out_opt_ LPMESSAGE* lppMessage, _Deref_out_opt_ LPSTORAGE* lppStorage)
+_Check_return_ HRESULT CreateNewMSG(_In_ const wstring& szFileName, bool bUnicode, _Deref_out_opt_ LPMESSAGE* lppMessage, _Deref_out_opt_ LPSTORAGE* lppStorage)
 {
-	if (!szFileName || !lppMessage || !lppStorage) return MAPI_E_INVALID_PARAMETER;
+	if (szFileName.empty() || !lppMessage || !lppStorage) return MAPI_E_INVALID_PARAMETER;
 
 	auto hRes = S_OK;
 	LPSTORAGE pStorage = nullptr;
@@ -591,7 +591,7 @@ _Check_return_ HRESULT CreateNewMSG(_In_z_ LPCWSTR szFileName, bool bUnicode, _D
 
 		// Open the compound file
 		EC_H(MyStgCreateStorageEx(
-			szFileName,
+			szFileName.c_str(),
 			STGM_READWRITE | STGM_TRANSACTED | STGM_CREATE,
 			STGFMT_DOCFILE,
 			0, // FILE_FLAG_NO_BUFFERING,
@@ -630,8 +630,10 @@ _Check_return_ HRESULT CreateNewMSG(_In_z_ LPCWSTR szFileName, bool bUnicode, _D
 					(*lppMessage)->AddRef();
 				}
 			}
+
 			if (pIMsg) pIMsg->Release();
 		}
+
 		if (pStorage) pStorage->Release();
 	}
 
