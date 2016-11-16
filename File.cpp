@@ -203,8 +203,7 @@ _Check_return_ HRESULT LoadFromTNEF(_In_ const wstring& szMessageFile, _In_ LPAD
 		MAPIAllocateBuffer,
 		MAPIFreeBuffer,
 		STGM_READ,
-		szMessageFile.c_str(),
-		NULL,
+		szMessageFile,
 		&lpStream));
 
 	// get the key value for OpenTnefStreamEx function
@@ -482,7 +481,6 @@ _Check_return_ HRESULT WriteStreamToFile(_In_ LPSTREAM pStrmSrc, _In_z_ LPCWSTR 
 		MAPIFreeBuffer,
 		STGM_CREATE | STGM_READWRITE,
 		szFileName,
-		NULL,
 		&pStrmDest));
 
 	if (pStrmDest)
@@ -729,8 +727,7 @@ _Check_return_ HRESULT SaveToTNEF(_In_ LPMESSAGE lpMessage, _In_ LPADRBOOK lpAdr
 		MAPIAllocateBuffer,
 		MAPIFreeBuffer,
 		STGM_READWRITE | STGM_CREATE,
-		szFileName.c_str(),
-		NULL,
+		szFileName,
 		&lpStream));
 
 	if (lpStream)

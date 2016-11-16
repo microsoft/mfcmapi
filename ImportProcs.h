@@ -65,8 +65,7 @@ _Check_return_ HRESULT HrCopyRestrictionArray(
 _Check_return_ STDMETHODIMP MyOpenStreamOnFile(_In_ LPALLOCATEBUFFER lpAllocateBuffer,
 	_In_ LPFREEBUFFER lpFreeBuffer,
 	ULONG ulFlags,
-	_In_z_ LPCWSTR lpszFileName,
-	_In_opt_z_ LPCWSTR /*lpszPrefix*/,
+	_In_ const wstring& lpszFileName,
 	_Out_ LPSTREAM* lppStream);
 
 void WINAPI MyHeapSetInformation(_In_opt_ HANDLE HeapHandle,

@@ -457,8 +457,7 @@ void CAttachmentsDlg::OnAddAttachment()
 					MAPIAllocateBuffer,
 					MAPIFreeBuffer,
 					STGM_READ,
-					szAttachName.c_str(),
-					NULL,
+					szAttachName,
 					&pStreamFile));
 				if (SUCCEEDED(hRes) && pStreamFile)
 				{

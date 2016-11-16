@@ -33,7 +33,6 @@ _Check_return_ HRESULT ImportEMLToIMessage(
 			MAPIFreeBuffer,
 			STGM_READ,
 			lpszEMLFile,
-			NULL,
 			&lpEMLStm));
 		if (SUCCEEDED(hRes) && lpEMLStm)
 		{
@@ -118,7 +117,6 @@ _Check_return_ HRESULT ExportIMessageToEML(_In_ LPMESSAGE lpMsg, _In_z_ LPCWSTR 
 						MAPIFreeBuffer,
 						STGM_CREATE | STGM_READWRITE,
 						lpszEMLFile,
-						NULL,
 						&lpFileStm));
 					if (SUCCEEDED(hRes) && lpFileStm)
 					{

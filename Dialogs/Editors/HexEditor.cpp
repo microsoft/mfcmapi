@@ -203,8 +203,7 @@ void CHexEditor::OnEditAction1()
 				MAPIAllocateBuffer,
 				MAPIFreeBuffer,
 				STGM_READ,
-				file.c_str(),
-				NULL,
+				file,
 				&lpStream));
 
 			if (lpStream)
@@ -243,8 +242,7 @@ void CHexEditor::OnEditAction2()
 				MAPIAllocateBuffer,
 				MAPIFreeBuffer,
 				STGM_CREATE | STGM_READWRITE,
-				file.c_str(),
-				NULL,
+				file,
 				&lpStream));
 
 			if (lpStream)

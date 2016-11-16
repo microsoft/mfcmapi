@@ -323,15 +323,14 @@ _Check_return_ STDAPI OpenStreamOnFileW(_In_ LPALLOCATEBUFFER lpAllocateBuffer,
 _Check_return_ STDMETHODIMP MyOpenStreamOnFile(_In_ LPALLOCATEBUFFER lpAllocateBuffer,
 	_In_ LPFREEBUFFER lpFreeBuffer,
 	ULONG ulFlags,
-	_In_z_ LPCWSTR lpszFileName,
-	_In_opt_z_ LPCWSTR /*lpszPrefix*/,
+	_In_ const wstring& lpszFileName,
 	_Out_ LPSTREAM FAR * lppStream)
 {
 	auto hRes = OpenStreamOnFileW(
 		lpAllocateBuffer,
 		lpFreeBuffer,
 		ulFlags,
-		lpszFileName,
+		lpszFileName.c_str(),
 		nullptr,
 		lppStream);
 	if (MAPI_E_CALL_FAILED == hRes)
