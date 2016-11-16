@@ -1666,7 +1666,7 @@ void CFolderDlg::OnLoadFromTNEF()
 				if (lpNewMessage)
 				{
 					EC_H(LoadFromTNEF(
-						lpszPath.c_str(),
+						lpszPath,
 						lpAddrBook,
 						lpNewMessage));
 

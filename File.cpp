@@ -177,7 +177,7 @@ _Check_return_ HRESULT LoadFromMSG(_In_ const wstring& szMessageFile, _In_ LPMES
 }
 
 // lpMessage must be created first
-_Check_return_ HRESULT LoadFromTNEF(_In_z_ LPCWSTR szMessageFile, _In_ LPADRBOOK lpAdrBook, _In_ LPMESSAGE lpMessage)
+_Check_return_ HRESULT LoadFromTNEF(_In_ const wstring& szMessageFile, _In_ LPADRBOOK lpAdrBook, _In_ LPMESSAGE lpMessage)
 {
 	auto hRes = S_OK;
 	LPSTREAM lpStream = nullptr;
@@ -185,7 +185,7 @@ _Check_return_ HRESULT LoadFromTNEF(_In_z_ LPCWSTR szMessageFile, _In_ LPADRBOOK
 	LPSTnefProblemArray lpError = nullptr;
 	LPSTREAM lpBodyStream = nullptr;
 
-	if (!szMessageFile || !lpAdrBook || !lpMessage) return MAPI_E_INVALID_PARAMETER;
+	if (szMessageFile.empty() || !lpAdrBook || !lpMessage) return MAPI_E_INVALID_PARAMETER;
 	static auto dwKey = static_cast<WORD>(::GetTickCount());
 
 	enum
@@ -203,7 +203,7 @@ _Check_return_ HRESULT LoadFromTNEF(_In_z_ LPCWSTR szMessageFile, _In_ LPADRBOOK
 		MAPIAllocateBuffer,
 		MAPIFreeBuffer,
 		STGM_READ,
-		szMessageFile,
+		szMessageFile.c_str(),
 		NULL,
 		&lpStream));
 
