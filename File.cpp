@@ -43,17 +43,17 @@ wstring GetDirectoryPath(HWND hWnd)
 }
 
 // Opens storage with best access
-_Check_return_ HRESULT MyStgOpenStorage(_In_z_ LPCWSTR szMessageFile, bool bBestAccess, _Deref_out_ LPSTORAGE* lppStorage)
+_Check_return_ HRESULT MyStgOpenStorage(_In_ const wstring& szMessageFile, bool bBestAccess, _Deref_out_ LPSTORAGE* lppStorage)
 {
 	if (!lppStorage) return MAPI_E_INVALID_PARAMETER;
-	DebugPrint(DBGGeneric, L"MyStgOpenStorage: Opening \"%ws\", bBestAccess == %ws\n", szMessageFile, bBestAccess ? L"True" : L"False");
+	DebugPrint(DBGGeneric, L"MyStgOpenStorage: Opening \"%ws\", bBestAccess == %ws\n", szMessageFile.c_str(), bBestAccess ? L"True" : L"False");
 	auto hRes = S_OK;
 	ULONG ulFlags = STGM_TRANSACTED;
 
 	if (bBestAccess) ulFlags |= STGM_READWRITE;
 
 	WC_H(::StgOpenStorage(
-		szMessageFile,
+		szMessageFile.c_str(),
 		NULL,
 		ulFlags,
 		NULL,
@@ -85,7 +85,7 @@ _Check_return_ HRESULT LoadMSGToMessage(_In_ const wstring& szMessageFile, _Dere
 	if (lpMalloc)
 	{
 		// Open the compound file
-		EC_H(MyStgOpenStorage(szMessageFile.c_str(), true, &pStorage));
+		EC_H(MyStgOpenStorage(szMessageFile, true, &pStorage));
 
 		if (pStorage)
 		{
