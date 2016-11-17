@@ -240,18 +240,16 @@ void CPropertyEditor::InitPropertyControls()
 		InitPane(1, CountedTextPane::Create(IDS_BIN, false, IDS_CB));
 		if (m_lpsInputValue && CheckStringProp(m_lpsInputValue, PT_STRING8))
 		{
-			SetStringA(0, m_lpsInputValue->Value.lpszA);
+			auto lpszA = string(m_lpsInputValue->Value.lpszA);
+			SetStringA(0, lpszA);
 
 			lpPane = static_cast<CountedTextPane*>(GetPane(1));
 			if (lpPane)
 			{
-				auto hRes = S_OK;
-				EC_H(StringCbLengthA(m_lpsInputValue->Value.lpszA, STRSAFE_MAX_CCH * sizeof(char), &cbStr));
+				cbStr = lpszA.length() * sizeof(CHAR);
 
+				lpPane->SetBinary(LPBYTE(lpszA.c_str()), cbStr);
 				lpPane->SetCount(cbStr);
-				lpPane->SetBinary(
-					reinterpret_cast<LPBYTE>(m_lpsInputValue->Value.lpszA),
-					cbStr);
 			}
 
 			lpPane = static_cast<CountedTextPane*>(GetPane(0));
@@ -264,24 +262,20 @@ void CPropertyEditor::InitPropertyControls()
 		InitPane(1, CountedTextPane::Create(IDS_BIN, false, IDS_CB));
 		if (m_lpsInputValue && CheckStringProp(m_lpsInputValue, PT_UNICODE))
 		{
-			SetStringW(0, m_lpsInputValue->Value.lpszW);
+			auto lpszW = wstring(m_lpsInputValue->Value.lpszW);
+			SetStringW(0, lpszW);
 
 			lpPane = static_cast<CountedTextPane*>(GetPane(1));
 			if (lpPane)
 			{
-				auto hRes = S_OK;
-				EC_H(StringCbLengthW(m_lpsInputValue->Value.lpszW, STRSAFE_MAX_CCH * sizeof(WCHAR), &cbStr));
+				cbStr = lpszW.length() * sizeof(WCHAR);
 
+				lpPane->SetBinary(LPBYTE(lpszW.c_str()), cbStr);
 				lpPane->SetCount(cbStr);
-				lpPane->SetBinary(
-					reinterpret_cast<LPBYTE>(m_lpsInputValue->Value.lpszW),
-					cbStr);
 			}
 
 			lpPane = static_cast<CountedTextPane*>(GetPane(0));
-			size_t cchStr = 0;
-			if (cbStr % sizeof(WCHAR)) cchStr = cbStr / sizeof WCHAR;
-			if (lpPane) lpPane->SetCount(cchStr);
+			if (lpPane) lpPane->SetCount(lpszW.length());
 		}
 
 		break;
