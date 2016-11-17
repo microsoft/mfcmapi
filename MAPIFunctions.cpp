@@ -1986,10 +1986,10 @@ _Check_return_ HRESULT SendTestMessage(
 
 // Declaration missing from headers
 STDAPI_(HRESULT) WrapCompressedRTFStreamEx(
-	IStream* pCompressedRTFStream,
-	CONST RTF_WCSINFO * pWCSInfo,
-	IStream** ppUncompressedRTFStream,
-	RTF_WCSRETINFO * pRetInfo);
+	LPSTREAM pCompressedRTFStream,
+	const RTF_WCSINFO* pWCSInfo,
+	LPSTREAM* ppUncompressedRTFStream,
+	RTF_WCSRETINFO* pRetInfo);
 
 _Check_return_ HRESULT WrapStreamForRTF(
 	_In_ LPSTREAM lpCompressedRTFStream,

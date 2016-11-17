@@ -657,7 +657,7 @@ void GradientFillRect(_In_ HDC hdc, RECT rc, uiColor uc)
 	::GradientFill(hdc, vertex, 2, &gRect, 1, GRADIENT_FILL_RECT_V);
 }
 
-void DrawFilledPolygon(_In_ HDC hdc, _In_count_(cpt) CONST POINT *apt, _In_ int cpt, COLORREF cEdge, _In_ HBRUSH hFill)
+void DrawFilledPolygon(_In_ HDC hdc, _In_count_(cpt) const POINT *apt, _In_ int cpt, COLORREF cEdge, _In_ HBRUSH hFill)
 {
 	auto hPen = ::CreatePen(PS_SOLID, 0, cEdge);
 	auto hBrushOld = ::SelectObject(hdc, hFill);
