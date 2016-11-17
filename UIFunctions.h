@@ -88,13 +88,13 @@ void ClearEditFormatting(_In_ HWND hWnd, bool bReadOnly);
 struct MenuEntry
 {
 	MSAAMENUINFO m_MSAA; // MSAA info - must be first element.
-	LPWSTR       m_pName; // Menu text for display. NULL for separator item.
-	BOOL         b_OnMenuBar;
-	ULONG_PTR    m_AddInData;
+	wstring m_pName; // Menu text for display. Empty for separator item.
+	BOOL b_OnMenuBar;
+	ULONG_PTR m_AddInData;
 };
 typedef MenuEntry* LPMENUENTRY;
 
-_Check_return_ LPMENUENTRY CreateMenuEntry(_In_z_ LPCWSTR szMenu);
+_Check_return_ LPMENUENTRY CreateMenuEntry(_In_ const wstring& szMenu);
 void ConvertMenuOwnerDraw(_In_ HMENU hMenu, bool bRoot);
 void DeleteMenuEntries(_In_ HMENU hMenu);
 

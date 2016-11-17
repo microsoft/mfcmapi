@@ -581,7 +581,7 @@ void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg
 		if (mii.dwItemData)
 		{
 			auto lme = reinterpret_cast<LPMENUENTRY>(mii.dwItemData);
-			szStatBarString = formatmessage(IDS_LOADMAPISTATUS, lme->m_pName);
+			szStatBarString = formatmessage(IDS_LOADMAPISTATUS, lme->m_pName.c_str());
 		}
 	}
 	else

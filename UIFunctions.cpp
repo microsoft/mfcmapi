@@ -162,33 +162,34 @@ void UninitializeGDI()
 	}
 }
 
-_Check_return_ LPMENUENTRY CreateMenuEntry(_In_z_ LPCWSTR szMenu)
+_Check_return_ LPMENUENTRY CreateMenuEntry(_In_ const wstring& szMenu)
 {
 	auto hRes = S_OK;
 	auto lpMenu = new MenuEntry;
 	if (lpMenu)
 	{
-		ZeroMemory(lpMenu, sizeof(MenuEntry));
 		lpMenu->m_MSAA.dwMSAASignature = MSAA_MENU_SIG;
+		lpMenu->b_OnMenuBar = false;
 
-		size_t iLen = 0;
-		WC_H(StringCchLengthW(szMenu, STRSAFE_MAX_CCH, &iLen));
+		auto iLen = szMenu.length();
 
 		lpMenu->m_MSAA.pszWText = new WCHAR[iLen + 1];
 		if (lpMenu->m_MSAA.pszWText)
 		{
-			WC_H(StringCchCopyW(lpMenu->m_MSAA.pszWText, iLen + 1, szMenu));
-			lpMenu->m_pName = lpMenu->m_MSAA.pszWText;
 			lpMenu->m_MSAA.cchWText = static_cast<DWORD>(iLen);
+			WC_H(StringCchCopyW(lpMenu->m_MSAA.pszWText, iLen + 1, szMenu.c_str()));
+			lpMenu->m_pName = lpMenu->m_MSAA.pszWText;
 		}
+
 		return lpMenu;
 	}
+
 	return nullptr;
 }
 
 _Check_return_ LPMENUENTRY CreateMenuEntry(UINT iudMenu)
 {
-	return CreateMenuEntry(loadstring(iudMenu).c_str());
+	return CreateMenuEntry(loadstring(iudMenu));
 }
 
 void DeleteMenuEntry(_In_ LPMENUENTRY lpMenu)
@@ -578,7 +579,7 @@ HBITMAP GetBitmap(uiBitmap ub)
 
 void DrawSegoeTextW(
 	_In_ HDC hdc,
-	_In_z_ LPCWSTR lpchText,
+	_In_ const wstring& lpchText,
 	_In_ COLORREF color,
 	_In_ const RECT& rc,
 	bool bBold,
@@ -590,7 +591,7 @@ void DrawSegoeTextW(
 	auto drawRc = rc;
 	::DrawTextW(
 		hdc,
-		lpchText,
+		lpchText.c_str(),
 		-1,
 		&drawRc,
 		format);
@@ -1467,7 +1468,7 @@ void DrawMenu(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
 		::LineTo(hdc, rcText.right, lMid);
 		(void) ::SelectObject(hdc, hpenOld);
 	}
-	else if (lpMenuEntry->m_pName)
+	else if (!lpMenuEntry->m_pName.empty())
 	{
 		UINT uiTextFlags = DT_SINGLELINE | DT_VCENTER;
 		if (bAccel) uiTextFlags |= DT_HIDEPREFIX;
@@ -1550,7 +1551,7 @@ void DrawComboBox(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
 
 	DrawSegoeTextW(
 		lpDrawItemStruct->hDC,
-		szText.c_str(),
+		szText,
 		MyGetSysColor(cFore),
 		lpDrawItemStruct->rcItem,
 		false,
@@ -1602,27 +1603,27 @@ void DrawStatus(
 	GradientFillRect(ps.hdc, rcGrad, cStatus);
 
 	rcText.left = rcText.right - iStatusData2;
-	::DrawSegoeTextW(
+	DrawSegoeTextW(
 		ps.hdc,
-		szStatusData2.c_str(),
+		szStatusData2,
 		crFore,
 		rcText,
 		true,
 		DT_LEFT | DT_SINGLELINE | DT_BOTTOM);
 	rcText.right = rcText.left;
 	rcText.left = rcText.right - iStatusData1;
-	::DrawSegoeTextW(
+	DrawSegoeTextW(
 		ps.hdc,
-		szStatusData1.c_str(),
+		szStatusData1,
 		crFore,
 		rcText,
 		true,
 		DT_LEFT | DT_SINGLELINE | DT_BOTTOM);
 	rcText.right = rcText.left;
 	rcText.left = 0;
-	::DrawSegoeTextW(
+	DrawSegoeTextW(
 		ps.hdc,
-		szStatusInfo.c_str(),
+		szStatusInfo,
 		crFore,
 		rcText,
 		true,
@@ -2027,11 +2028,9 @@ void DrawHelpText(_In_ HWND hWnd, _In_ UINT uIDText)
 		auto rcText = rcWin;
 		::FillRect(hdc, &rcText, GetSysBrush(cBackground));
 
-		auto szHelpText = loadstring(uIDText);
-
 		DrawSegoeTextW(
 			hdc,
-			szHelpText.c_str(),
+			loadstring(uIDText),
 			MyGetSysColor(cTextDisabled),
 			rcText,
 			true,

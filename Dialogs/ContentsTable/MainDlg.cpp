@@ -127,7 +127,7 @@ void CMainDlg::AddLoadMAPIMenus() const
 			if (uidCurMenu > ID_LOADMAPIMENUMAX) break;
 
 			DebugPrint(DBGLoadMAPI, L"Found MAPI path %ws\n", szPath.c_str());
-			auto lpMenu = CreateMenuEntry(szPath.c_str());
+			auto lpMenu = CreateMenuEntry(szPath);
 
 			EC_B(AppendMenu(
 				hAddInMenu,
@@ -158,7 +158,7 @@ bool CMainDlg::InvokeLoadMAPIMenu(WORD wMenuSelect) const
 	if (subMenu.dwItemData)
 	{
 		auto lme = reinterpret_cast<LPMENUENTRY>(subMenu.dwItemData);
-		DebugPrint(DBGLoadMAPI, L"Loading MAPI from %ws\n", lme->m_pName);
+		DebugPrint(DBGLoadMAPI, L"Loading MAPI from %ws\n", lme->m_pName.c_str());
 		HMODULE hMAPI = nullptr;
 		EC_D(hMAPI, MyLoadLibraryW(lme->m_pName));
 		SetMAPIHandle(hMAPI);
