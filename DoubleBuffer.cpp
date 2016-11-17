@@ -11,7 +11,7 @@ CDoubleBuffer::~CDoubleBuffer()
 	Cleanup();
 }
 
-void CDoubleBuffer::Begin(_Inout_ HDC& hdc, _In_ RECT CONST* prcPaint)
+void CDoubleBuffer::Begin(_Inout_ HDC& hdc, _In_ const RECT& rcPaint)
 {
 #ifdef SKIPBUFFER
 	UNREFERENCED_PARAMETER(hdc);
@@ -24,13 +24,13 @@ void CDoubleBuffer::Begin(_Inout_ HDC& hdc, _In_ RECT CONST* prcPaint)
 		{
 			m_hbmpMem = ::CreateCompatibleBitmap(
 				hdc,
-				prcPaint->right - prcPaint->left,
-				prcPaint->bottom - prcPaint->top);
+				rcPaint.right - rcPaint.left,
+				rcPaint.bottom - rcPaint.top);
 
 			if (m_hbmpMem)
 			{
 				(void) ::SelectObject(m_hdcMem, m_hbmpMem);
-				(void) ::CopyRect(&m_rcPaint, prcPaint);
+				(void) ::CopyRect(&m_rcPaint, &rcPaint);
 				(void) ::OffsetWindowOrgEx(m_hdcMem,
 					m_rcPaint.left,
 					m_rcPaint.top,

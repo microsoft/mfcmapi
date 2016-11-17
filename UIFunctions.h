@@ -118,7 +118,7 @@ void DrawTreeItemGlow(_In_ HWND hWnd, _In_ HTREEITEM hItem);
 void DrawExpandTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ HTREEITEM hItem, bool bGlow, bool bHover);
 
 // Header
-void DrawTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ CONST RECT* lprc, bool bButton, bool bUp);
+void DrawTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ const RECT& lprc, bool bButton, bool bUp);
 void CustomDrawHeader(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult);
 void DrawTrackingBar(_In_ HWND hWndHeader, _In_ HWND hWndList, int x, int iHeaderHeight, bool bRedraw);
 

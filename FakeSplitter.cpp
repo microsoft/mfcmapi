@@ -344,7 +344,7 @@ void CFakeSplitter::OnPaint()
 		::GetClientRect(m_hWnd, &rcWin);
 		CDoubleBuffer db;
 		auto hdc = ps.hdc;
-		db.Begin(hdc, &rcWin);
+		db.Begin(hdc, rcWin);
 
 		auto rcSplitter = rcWin;
 		::FillRect(hdc, &rcSplitter, GetSysBrush(cBackground));

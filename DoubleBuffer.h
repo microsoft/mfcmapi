@@ -16,6 +16,6 @@ private:
 public:
 	CDoubleBuffer();
 	~CDoubleBuffer();
-	void Begin(_Inout_ HDC& hdc, _In_ RECT CONST* prcPaint);
+	void Begin(_Inout_ HDC& hdc, _In_ const RECT& prcPaint);
 	void End(_Inout_ HDC& hdc);
 };

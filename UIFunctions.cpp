@@ -580,18 +580,19 @@ void DrawSegoeTextW(
 	_In_ HDC hdc,
 	_In_z_ LPCWSTR lpchText,
 	_In_ COLORREF color,
-	_In_ LPRECT lprc,
+	_In_ const RECT& rc,
 	bool bBold,
 	_In_ UINT format)
 {
 	auto hfontOld = ::SelectObject(hdc, bBold ? GetSegoeFontBold() : GetSegoeFont());
 	auto crText = ::SetTextColor(hdc, color);
 	::SetBkMode(hdc, TRANSPARENT);
+	auto drawRc = rc;
 	::DrawTextW(
 		hdc,
 		lpchText,
 		-1,
-		lprc,
+		&drawRc,
 		format);
 	::SelectObject(hdc, hfontOld);
 	(void) ::SetTextColor(hdc, crText);
@@ -895,15 +896,14 @@ void CopyBitmap(HDC hdcSource, HDC hdcTarget, int iWidth, int iHeight, int ibmWi
 // Fills rectangle with cBackground
 // Replaces cBitmapTransFore (cyan) with cFrameSelected
 // Replaces cBitmapTransBack (magenta) with the cBackground
-void DrawBitmap(_In_ HDC hdc, _In_ LPRECT rcTarget, uiBitmap iBitmap, bool bHover)
+void DrawBitmap(_In_ HDC hdc, _In_ const RECT& rcTarget, uiBitmap iBitmap, bool bHover)
 {
-	if (!rcTarget) return;
 #ifdef SKIPBUFFER
 	UNREFERENCED_PARAMETER(iBitmap);
 	::FrameRect(hdc, rcTarget, GetSysBrush(bHover ? cBitmapTransFore : cBitmapTransBack));
 #else
-	int iWidth = rcTarget->right - rcTarget->left;
-	int iHeight = rcTarget->bottom - rcTarget->top;
+	int iWidth = rcTarget.right - rcTarget.left;
+	int iHeight = rcTarget.bottom - rcTarget.top;
 
 	// hdcBitmap: Load the image
 	auto hdcBitmap = ::CreateCompatibleDC(hdc);
@@ -924,8 +924,8 @@ void DrawBitmap(_In_ HDC hdc, _In_ LPRECT rcTarget, uiBitmap iBitmap, bool bHove
 	// hdc: BitBlt from hdcBackReplace
 	(void)BitBlt(
 		hdc,
-		rcTarget->left,
-		rcTarget->top,
+		rcTarget.left,
+		rcTarget.top,
 		iWidth,
 		iHeight,
 		hdcBackReplace,
@@ -994,7 +994,7 @@ void CustomDrawTree(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, bool bHover, _In_
 				TreeView_GetItemRect(lvcd->nmcd.hdr.hwndFrom, hItem, &rect, 1);
 				rect.left = rect.right;
 				rect.right += rect.bottom - rect.top;
-				DrawBitmap(lvcd->nmcd.hdc, &rect, cNotify, hItem == hItemCurHover);
+				DrawBitmap(lvcd->nmcd.hdc, rect, cNotify, hItem == hItemCurHover);
 			}
 		}
 		break;
@@ -1078,27 +1078,27 @@ void DrawExpandTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ HTREEITEM hItem, bool
 	}
 }
 
-void DrawTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ CONST RECT* lprc, bool bButton, bool bUp)
+void DrawTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ const RECT& rc, bool bButton, bool bUp)
 {
-	if (!hWnd || !hdc || !lprc) return;
+	if (!hWnd || !hdc) return;
 
 	CDoubleBuffer db;
-	db.Begin(hdc, lprc);
+	db.Begin(hdc, rc);
 
-	::FillRect(hdc, lprc, GetSysBrush(bButton ? cPaneHeaderBackground : cBackground));
+	::FillRect(hdc, &rc, GetSysBrush(bButton ? cPaneHeaderBackground : cBackground));
 
 	POINT tri[3] = { 0 };
 	LONG lCenter = 0;
 	LONG lTop = 0;
 	if (bButton)
 	{
-		lCenter = lprc->left + (lprc->bottom - lprc->top) / 2;
-		lTop = (lprc->top + lprc->bottom - TRIANGLE_SIZE) / 2;
+		lCenter = rc.left + (rc.bottom - rc.top) / 2;
+		lTop = (rc.top + rc.bottom - TRIANGLE_SIZE) / 2;
 	}
 	else
 	{
-		lCenter = (lprc->left + lprc->right) / 2;
-		lTop = lprc->top + GetSystemMetrics(SM_CYBORDER);
+		lCenter = (rc.left + rc.right) / 2;
+		lTop = rc.top + GetSystemMetrics(SM_CYBORDER);
 	}
 
 	if (bUp)
@@ -1126,7 +1126,7 @@ void DrawTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ CONST RECT* lprc, bool bBut
 	db.End(hdc);
 }
 
-void DrawHeaderItem(_In_ HWND hWnd, _In_ HDC hdc, UINT itemID, _In_ LPRECT lprc)
+void DrawHeaderItem(_In_ HWND hWnd, _In_ HDC hdc, UINT itemID, _In_ const RECT& rc)
 {
 	auto bSorted = false;
 	auto bSortUp = true;
@@ -1146,14 +1146,14 @@ void DrawHeaderItem(_In_ HWND hWnd, _In_ HDC hdc, UINT itemID, _In_ LPRECT lprc)
 	}
 
 	CDoubleBuffer db;
-	db.Begin(hdc, lprc);
+	db.Begin(hdc, rc);
 
-	auto rcHeader = *lprc;
+	auto rcHeader = rc;
 	::FillRect(hdc, &rcHeader, GetSysBrush(cBackground));
 
 	if (bSorted)
 	{
-		DrawTriangle(hWnd, hdc, lprc, false, bSortUp);
+		DrawTriangle(hWnd, hdc, rcHeader, false, bSortUp);
 	}
 
 	auto rcText = rcHeader;
@@ -1162,7 +1162,7 @@ void DrawHeaderItem(_In_ HWND hWnd, _In_ HDC hdc, UINT itemID, _In_ LPRECT lprc)
 		hdc,
 		hdItem.pszText,
 		MyGetSysColor(cText),
-		&rcText,
+		rcText,
 		false,
 		DT_END_ELLIPSIS | DT_SINGLELINE | DT_VCENTER);
 
@@ -1195,7 +1195,7 @@ void CustomDrawHeader(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 		break;
 
 	case CDDS_ITEMPREPAINT:
-		DrawHeaderItem(lvcd->hdr.hwndFrom, lvcd->hdc, static_cast<UINT>(lvcd->dwItemSpec), &lvcd->rc);
+		DrawHeaderItem(lvcd->hdr.hwndFrom, lvcd->hdc, static_cast<UINT>(lvcd->dwItemSpec), lvcd->rc);
 		*pResult = CDRF_SKIPDEFAULT;
 		break;
 
@@ -1261,9 +1261,9 @@ void StyleButton(_In_ HWND hWnd, uiButtonStyle bsStyle)
 	EC_B(::SetProp(hWnd, BUTTON_STYLE, reinterpret_cast<HANDLE>(bsStyle)));
 }
 
-void DrawButton(_In_ HWND hWnd, _In_ HDC hDC, _In_ LPRECT lprc, UINT itemState)
+void DrawButton(_In_ HWND hWnd, _In_ HDC hDC, _In_ const RECT& rc, UINT itemState)
 {
-	::FillRect(hDC, lprc, GetSysBrush(cBackground));
+	::FillRect(hDC, &rc, GetSysBrush(cBackground));
 
 	auto bsStyle = reinterpret_cast<intptr_t>(::GetProp(hWnd, BUTTON_STYLE));
 	switch (bsStyle)
@@ -1278,27 +1278,27 @@ void DrawButton(_In_ HWND hWnd, _In_ HDC hDC, _In_ LPRECT lprc, UINT itemState)
 		auto bDisabled = (itemState & CDIS_DISABLED) != 0;
 		auto bFocused = (itemState & CDIS_FOCUS) != 0;
 
-		::FrameRect(hDC, lprc, bFocused || bGlow || bPushed ? GetSysBrush(cFrameSelected) : GetSysBrush(cFrameUnselected));
+		::FrameRect(hDC, &rc, bFocused || bGlow || bPushed ? GetSysBrush(cFrameSelected) : GetSysBrush(cFrameUnselected));
 
 		DrawSegoeTextW(
 			hDC,
 			szButton,
 			bPushed || bDisabled ? MyGetSysColor(cTextDisabled) : MyGetSysColor(cText),
-			lprc,
+			rc,
 			false,
 			DT_SINGLELINE | DT_VCENTER | DT_CENTER);
 	}
 	break;
 	case bsUpArrow:
-		DrawTriangle(hWnd, hDC, lprc, true, true);
+		DrawTriangle(hWnd, hDC, rc, true, true);
 		break;
 	case bsDownArrow:
-		DrawTriangle(hWnd, hDC, lprc, true, false);
+		DrawTriangle(hWnd, hDC, rc, true, false);
 		break;
 	}
 }
 
-void DrawCheckButton(_In_ HWND hWnd, _In_ HDC hDC, _In_ LPRECT lprc, UINT itemState)
+void DrawCheckButton(_In_ HWND hWnd, _In_ HDC hDC, _In_ const RECT& rc, UINT itemState)
 {
 	WCHAR szButton[255];
 	::GetWindowTextW(hWnd, szButton, _countof(szButton));
@@ -1309,13 +1309,13 @@ void DrawCheckButton(_In_ HWND hWnd, _In_ HDC hDC, _In_ LPRECT lprc, UINT itemSt
 	auto bFocused = (itemState & CDIS_FOCUS) != 0;
 
 	long lSpacing = GetSystemMetrics(SM_CYEDGE);
-	auto lCheck = lprc->bottom - lprc->top - 2 * lSpacing;
+	auto lCheck = rc.bottom - rc.top - 2 * lSpacing;
 	RECT rcCheck = { 0 };
 	rcCheck.right = rcCheck.left + lCheck;
-	rcCheck.top = lprc->top + lSpacing;
-	rcCheck.bottom = lprc->bottom - lSpacing;
+	rcCheck.top = rc.top + lSpacing;
+	rcCheck.bottom = rc.bottom - lSpacing;
 
-	::FillRect(hDC, lprc, GetSysBrush(cBackground));
+	::FillRect(hDC, &rc, GetSysBrush(cBackground));
 	::FrameRect(hDC, &rcCheck, GetSysBrush(bDisabled ? cFrameUnselected : bGlow || bFocused ? cGlow : cFrameSelected));
 	if (bChecked)
 	{
@@ -1324,13 +1324,14 @@ void DrawCheckButton(_In_ HWND hWnd, _In_ HDC hDC, _In_ LPRECT lprc, UINT itemSt
 		::FillRect(hDC, &rcFill, GetSysBrush(cGlow));
 	}
 
-	lprc->left = rcCheck.right + lSpacing;
+	auto rcLabel = rc;
+	rcLabel.left = rcCheck.right + lSpacing;
 
 	DrawSegoeTextW(
 		hDC,
 		szButton,
 		bDisabled ? MyGetSysColor(cTextDisabled) : MyGetSysColor(cText),
-		lprc,
+		rcLabel,
 		false,
 		DT_SINGLELINE | DT_VCENTER);
 }
@@ -1354,12 +1355,12 @@ bool CustomDrawButton(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 		*pResult = CDRF_SKIPDEFAULT;
 		if (BS_AUTOCHECKBOX == lStyle)
 		{
-			DrawCheckButton(lvcd->hdr.hwndFrom, lvcd->hdc, &lvcd->rc, lvcd->uItemState);
+			DrawCheckButton(lvcd->hdr.hwndFrom, lvcd->hdc, lvcd->rc, lvcd->uItemState);
 		}
 		else if (BS_PUSHBUTTON == lStyle ||
 			BS_DEFPUSHBUTTON == lStyle)
 		{
-			DrawButton(lvcd->hdr.hwndFrom, lvcd->hdc, &lvcd->rc, lvcd->uItemState);
+			DrawButton(lvcd->hdr.hwndFrom, lvcd->hdc, lvcd->rc, lvcd->uItemState);
 		}
 		else *pResult = CDRF_DODEFAULT;
 
@@ -1429,7 +1430,7 @@ void DrawMenu(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
 	// Double buffer our menu painting
 	CDoubleBuffer db;
 	auto hdc = lpDrawItemStruct->hDC;
-	db.Begin(hdc, &lpDrawItemStruct->rcItem);
+	db.Begin(hdc, lpDrawItemStruct->rcItem);
 
 	// Draw background
 	auto rcItem = lpDrawItemStruct->rcItem;
@@ -1480,7 +1481,7 @@ void DrawMenu(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
 			hdc,
 			lpMenuEntry->m_pName,
 			MyGetSysColor(cFore),
-			&rcText,
+			rcText,
 			false,
 			uiTextFlags);
 
@@ -1551,7 +1552,7 @@ void DrawComboBox(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
 		lpDrawItemStruct->hDC,
 		szText.c_str(),
 		MyGetSysColor(cFore),
-		&lpDrawItemStruct->rcItem,
+		lpDrawItemStruct->rcItem,
 		false,
 		DT_LEFT | DT_SINGLELINE | DT_VCENTER);
 }
@@ -1590,7 +1591,7 @@ void DrawStatus(
 	::BeginPaint(hwnd, &ps);
 
 	CDoubleBuffer db;
-	db.Begin(ps.hdc, &rcStatus);
+	db.Begin(ps.hdc, rcStatus);
 
 	auto rcGrad = rcStatus;
 	auto rcText = rcGrad;
@@ -1605,7 +1606,7 @@ void DrawStatus(
 		ps.hdc,
 		szStatusData2.c_str(),
 		crFore,
-		&rcText,
+		rcText,
 		true,
 		DT_LEFT | DT_SINGLELINE | DT_BOTTOM);
 	rcText.right = rcText.left;
@@ -1614,7 +1615,7 @@ void DrawStatus(
 		ps.hdc,
 		szStatusData1.c_str(),
 		crFore,
-		&rcText,
+		rcText,
 		true,
 		DT_LEFT | DT_SINGLELINE | DT_BOTTOM);
 	rcText.right = rcText.left;
@@ -1623,7 +1624,7 @@ void DrawStatus(
 		ps.hdc,
 		szStatusInfo.c_str(),
 		crFore,
-		&rcText,
+		rcText,
 		true,
 		DT_LEFT | DT_SINGLELINE | DT_BOTTOM | DT_END_ELLIPSIS);
 
@@ -1747,18 +1748,18 @@ void DrawSystemButtons(_In_ HWND hWnd, _In_opt_ HDC hdc, int iHitTest)
 
 	// Draw our system buttons appropriately
 	(void) ::OffsetRect(&rcCloseIcon, HTCLOSE == iHitTest ? 1 : 0, HTCLOSE == iHitTest ? 1 : 0);
-	DrawBitmap(hdc, &rcCloseIcon, cClose, false);
+	DrawBitmap(hdc, rcCloseIcon, cClose, false);
 
 	if (bMaxBox)
 	{
 		(void) ::OffsetRect(&rcMaxIcon, HTMAXBUTTON == iHitTest ? 1 : 0, HTMAXBUTTON == iHitTest ? 1 : 0);
-		DrawBitmap(hdc, &rcMaxIcon, ::IsZoomed(hWnd) ? cRestore : cMaximize, false);
+		DrawBitmap(hdc, rcMaxIcon, ::IsZoomed(hWnd) ? cRestore : cMaximize, false);
 	}
 
 	if (bMinBox)
 	{
 		(void) ::OffsetRect(&rcMinIcon, HTMINBUTTON == iHitTest ? 1 : 0, HTMINBUTTON == iHitTest ? 1 : 0);
-		DrawBitmap(hdc, &rcMinIcon, cMinimize, false);
+		DrawBitmap(hdc, rcMinIcon, cMinimize, false);
 	}
 
 	if (hdcLocal) ::ReleaseDC(hWnd, hdcLocal);
@@ -1856,7 +1857,7 @@ void DrawWindowFrame(_In_ HWND hWnd, bool bActive, int iStatusHeight)
 	{
 		CDoubleBuffer db;
 		auto hdc = hdcWin;
-		db.Begin(hdc, &rcWindow);
+		db.Begin(hdc, rcWindow);
 
 		// Copy the current screen over to preserve it
 		BitBlt(
@@ -1942,7 +1943,7 @@ void DrawWindowFrame(_In_ HWND hWnd, bool bActive, int iStatusHeight)
 			hdc,
 			szTitle,
 			MyGetSysColor(cText),
-			&rcCaptionText,
+			rcCaptionText,
 			false,
 			DT_LEFT | DT_SINGLELINE | DT_VCENTER);
 
@@ -2021,7 +2022,7 @@ void DrawHelpText(_In_ HWND hWnd, _In_ UINT uIDText)
 
 		CDoubleBuffer db;
 		auto hdc = ps.hdc;
-		db.Begin(hdc, &rcWin);
+		db.Begin(hdc, rcWin);
 
 		auto rcText = rcWin;
 		::FillRect(hdc, &rcText, GetSysBrush(cBackground));
@@ -2032,7 +2033,7 @@ void DrawHelpText(_In_ HWND hWnd, _In_ UINT uIDText)
 			hdc,
 			szHelpText.c_str(),
 			MyGetSysColor(cTextDisabled),
-			&rcText,
+			rcText,
 			true,
 			DT_CENTER | DT_SINGLELINE | DT_VCENTER | DT_NOCLIP | DT_END_ELLIPSIS | DT_NOPREFIX);
 
