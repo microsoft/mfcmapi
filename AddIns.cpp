@@ -24,11 +24,11 @@ vector<FLAG_ARRAY_ENTRY> FlagArray;
 vector<SMARTVIEW_PARSER_ARRAY_ENTRY> SmartViewParserArray;
 vector<NAME_ARRAY_ENTRY> SmartViewParserTypeArray;
 
-vector<_AddIn> g_lpMyAddins;;
+vector<_AddIn> g_lpMyAddins;
 
 template <typename T> T GetFunction(
 	HMODULE hMod,
-	LPSTR szFuncName)
+	LPCSTR szFuncName)
 {
 	auto hRes = S_OK;
 	T pObj = nullptr;
