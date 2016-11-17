@@ -1576,11 +1576,11 @@ void DrawItem(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
 void DrawStatus(
 	HWND hwnd,
 	int iStatusHeight,
-	wstring& szStatusData1,
+	const wstring& szStatusData1,
 	int iStatusData1,
-	wstring& szStatusData2,
+	const wstring& szStatusData2,
 	int iStatusData2,
-	wstring& szStatusInfo)
+	const wstring& szStatusInfo)
 {
 	RECT rcStatus = { 0 };
 	::GetClientRect(hwnd, &rcStatus);

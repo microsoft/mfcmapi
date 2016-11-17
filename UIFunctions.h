@@ -131,11 +131,11 @@ wstring GetLBText(HWND hwnd, int nIndex);
 void DrawStatus(
 	HWND hwnd,
 	int iStatusHeight,
-	wstring& szStatusData1,
+	const wstring& szStatusData1,
 	int iStatusData1,
-	wstring& szStatusData2,
+	const wstring& szStatusData2,
 	int iStatusData2,
-	wstring& szStatusInfo);
+	const wstring& szStatusInfo);
 
 void GetCaptionRects(HWND hWnd,
 	RECT* lprcFullCaption,
