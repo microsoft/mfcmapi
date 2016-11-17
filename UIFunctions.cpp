@@ -169,7 +169,7 @@ _Check_return_ LPMENUENTRY CreateMenuEntry(_In_ const wstring& szMenu)
 	if (lpMenu)
 	{
 		lpMenu->m_MSAA.dwMSAASignature = MSAA_MENU_SIG;
-		lpMenu->b_OnMenuBar = false;
+		lpMenu->m_bOnMenuBar = false;
 
 		auto iLen = szMenu.length();
 
@@ -245,7 +245,7 @@ void ConvertMenuOwnerDraw(_In_ HMENU hMenu, bool bRoot)
 			auto lpMenuEntry = CreateMenuEntry(szMenu);
 			if (lpMenuEntry)
 			{
-				lpMenuEntry->b_OnMenuBar = bRoot;
+				lpMenuEntry->m_bOnMenuBar = bRoot;
 				menuiteminfo.fMask = MIIM_DATA | MIIM_FTYPE;
 				menuiteminfo.fType |= MF_OWNERDRAW;
 				menuiteminfo.dwItemData = reinterpret_cast<ULONG_PTR>(lpMenuEntry);
@@ -1394,7 +1394,7 @@ void MeasureMenu(_In_ LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 		lpMeasureItemStruct->itemHeight = size.cy + 2 * GetSystemMetrics(SM_CYEDGE);
 
 		// Make sure we have room for the flyout icon
-		if (!lpMenuEntry->b_OnMenuBar && ::IsMenu(reinterpret_cast<HMENU>(static_cast<UINT_PTR>(lpMeasureItemStruct->itemID))))
+		if (!lpMenuEntry->m_bOnMenuBar && ::IsMenu(reinterpret_cast<HMENU>(static_cast<UINT_PTR>(lpMeasureItemStruct->itemID))))
 		{
 			lpMeasureItemStruct->itemWidth += GetSystemMetrics(SM_CXSMICON);
 		}
@@ -1437,7 +1437,7 @@ void DrawMenu(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
 	auto rcItem = lpDrawItemStruct->rcItem;
 	auto rcText = rcItem;
 
-	if (!lpMenuEntry->b_OnMenuBar)
+	if (!lpMenuEntry->m_bOnMenuBar)
 	{
 		auto rectGutter = rcText;
 		rcText.left += GetSystemMetrics(SM_CXMENUCHECK);
@@ -1473,7 +1473,7 @@ void DrawMenu(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
 		UINT uiTextFlags = DT_SINGLELINE | DT_VCENTER;
 		if (bAccel) uiTextFlags |= DT_HIDEPREFIX;
 
-		if (lpMenuEntry->b_OnMenuBar)
+		if (lpMenuEntry->m_bOnMenuBar)
 			uiTextFlags |= DT_CENTER;
 		else
 			rcText.left += GetSystemMetrics(SM_CXEDGE);

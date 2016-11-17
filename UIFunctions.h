@@ -89,7 +89,7 @@ struct MenuEntry
 {
 	MSAAMENUINFO m_MSAA; // MSAA info - must be first element.
 	wstring m_pName; // Menu text for display. Empty for separator item.
-	BOOL b_OnMenuBar;
+	BOOL m_bOnMenuBar;
 	ULONG_PTR m_AddInData;
 };
 typedef MenuEntry* LPMENUENTRY;
