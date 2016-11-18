@@ -814,7 +814,6 @@ _Check_return_ HRESULT OpenPublicMessageStore(
 
 	LPMDB lpPublicMDBNonAdmin = nullptr;
 	LPSPropValue lpServerName = nullptr;
-	wstring SmtpAddress;
 
 	if (!lpMAPISession || !lppPublicMDB) return MAPI_E_INVALID_PARAMETER;
 
@@ -850,7 +849,7 @@ _Check_return_ HRESULT OpenPublicMessageStore(
 					lpPublicMDBNonAdmin,
 					szServerDN,
 					"",
-					SmtpAddress,
+					emptystring,
 					ulFlags,
 					false,
 					lppPublicMDB));
