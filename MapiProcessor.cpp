@@ -141,6 +141,7 @@ void CMAPIProcessor::ProcessMailboxTable(
 					lpPrimaryMDB,
 					wstringTostring(szExchangeServerName),
 					wstringTostring(LPCTSTRToWstring(lpEmailAddress->Value.LPSZ)),
+					emptystring,
 					OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP,
 					false,
 					&m_lpMDB));

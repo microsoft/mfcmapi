@@ -865,6 +865,7 @@ IDS_DISPLAYDETAILSDLG "Display Details dialog"
 IDS_SERVICE "Service:"
 IDS_CREATESTORENTRYIDFLAGS "CreateStoreEntryID flags"
 IDS_FORCESERVER "Ignore home server (use server DN)"
+IDS_USER_SMTP_ADDRESS "SMTP Address (Optional)"
 // MailboxTableDlg.cpp
 IDS_OPENWITHFLAGS "Open with flags"
 IDS_OPENWITHFLAGSPROMPT "Flags for CreateStoreEntryID\r\n\

@@ -104,6 +104,7 @@ void CMailboxTableDlg::DisplayItem(ULONG ulFlags)
 						lpSourceMDB,
 						wstringTostring(m_lpszServerName),
 						wstringTostring(lpListData->Contents()->m_szDN),
+						emptystring,
 						ulFlags,
 						false,
 						&lpNewMDB));

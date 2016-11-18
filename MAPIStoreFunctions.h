@@ -57,6 +57,7 @@ _Check_return_ HRESULT HrMailboxLogon(
 	_In_ LPMDB lpMDB, // ptr to message store
 	string lpszMsgStoreDN, // ptr to message store DN
 	string lpszMailboxDN, // ptr to mailbox DN
+	wstring SmtpAddress,
 	ULONG ulFlags, // desired flags for CreateStoreEntryID
 	bool bForceServer, // Use CreateStoreEntryID2
 	_Deref_out_opt_ LPMDB* lppMailboxMDB); // ptr to mailbox message store ptr
@@ -68,6 +69,7 @@ _Check_return_ HRESULT OpenOtherUsersMailbox(
 	_In_ LPMDB lpMDB,
 	string szServerName,
 	string szMailboxDN,
+	wstring SmtpAddress,
 	ULONG ulFlags, // desired flags for CreateStoreEntryID
 	bool bForceServer, // Use CreateStoreEntryID2
 	_Deref_out_opt_ LPMDB* lppOtherUserMDB);
