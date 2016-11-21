@@ -12,23 +12,23 @@ string BuildServerDN(
 	const string& szPost);
 _Check_return_ HRESULT GetMailboxTable(
 	_In_ LPMDB lpMDB,
-	string szServerName,
+	const string& szServerName,
 	ULONG ulOffset,
 	_Deref_out_opt_ LPMAPITABLE* lpMailboxTable);
 _Check_return_ HRESULT GetMailboxTable1(
 	_In_ LPMDB lpMDB,
-	string szServerDN,
+	const string& szServerDN,
 	ULONG ulFlags,
 	_Deref_out_opt_ LPMAPITABLE* lpMailboxTable);
 _Check_return_ HRESULT GetMailboxTable3(
 	_In_ LPMDB lpMDB,
-	string szServerDN,
+	const string& szServerDN,
 	ULONG ulOffset,
 	ULONG ulFlags,
 	_Deref_out_opt_ LPMAPITABLE* lpMailboxTable);
 _Check_return_ HRESULT GetMailboxTable5(
 	_In_ LPMDB lpMDB,
-	string szServerDN,
+	const string& szServerDN,
 	ULONG ulOffset,
 	ULONG ulFlags,
 	_In_opt_ LPGUID lpGuidMDB,
