@@ -494,6 +494,7 @@ void CMainDlg::OnOpenDefaultMessageStore()
 						lpMDB,
 						"",
 						lpMailboxName->Value.lpszA,
+						emptystring,
 						ulFlags,
 						false,
 						&lpAdminMDB));
