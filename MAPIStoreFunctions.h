@@ -55,9 +55,9 @@ string GetServerName(_In_ LPMAPISESSION lpSession);
 _Check_return_ HRESULT HrMailboxLogon(
 	_In_ LPMAPISESSION lplhSession, // ptr to MAPI session handle
 	_In_ LPMDB lpMDB, // ptr to message store
-	string lpszMsgStoreDN, // ptr to message store DN
-	string lpszMailboxDN, // ptr to mailbox DN
-	wstring smtpAddress, // ptr to SMTP Address of the target user. Optional but Required if using MAPI / HTTP
+	const string& lpszMsgStoreDN, // ptr to message store DN
+	const string& lpszMailboxDN, // ptr to mailbox DN
+	const wstring& smtpAddress, // ptr to SMTP Address of the target user. Optional but Required if using MAPI / HTTP
 	ULONG ulFlags, // desired flags for CreateStoreEntryID
 	bool bForceServer, // Use CreateStoreEntryID2
 	_Deref_out_opt_ LPMDB* lppMailboxMDB); // ptr to mailbox message store ptr
@@ -67,17 +67,17 @@ _Check_return_ HRESULT OpenDefaultMessageStore(
 _Check_return_ HRESULT OpenOtherUsersMailbox(
 	_In_ LPMAPISESSION lpMAPISession,
 	_In_ LPMDB lpMDB,
-	string szServerName,
-	string szMailboxDN,
-	wstring SmtpAddress,
+	const string& szServerName,
+	const string& szMailboxDN,
+	const wstring& smtpAddress,
 	ULONG ulFlags, // desired flags for CreateStoreEntryID
 	bool bForceServer, // Use CreateStoreEntryID2
 	_Deref_out_opt_ LPMDB* lppOtherUserMDB);
 _Check_return_ HRESULT OpenMailboxWithPrompt(
 	_In_ LPMAPISESSION lpMAPISession,
 	_In_ LPMDB lpMDB,
-	string szServerName,
-	wstring szMailboxDN,
+	const string& szServerName,
+	const wstring& szMailboxDN,
 	ULONG ulFlags, // desired flags for CreateStoreEntryID
 	_Deref_out_opt_ LPMDB* lppOtherUserMDB);
 _Check_return_ HRESULT OpenOtherUsersMailboxFromGal(

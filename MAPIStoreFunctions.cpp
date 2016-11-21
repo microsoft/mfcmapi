@@ -343,8 +343,8 @@ string GetServerName(_In_ LPMAPISESSION lpSession)
 
 _Check_return_ HRESULT CreateStoreEntryID(
 	_In_ LPMDB lpMDB, // open message store
-	string lpszMsgStoreDN, // desired message store DN
-	string lpszMailboxDN, // desired mailbox DN or NULL
+	const string& lpszMsgStoreDN, // desired message store DN
+	const string& lpszMailboxDN, // desired mailbox DN or NULL
 	ULONG ulFlags, // desired flags for CreateStoreEntryID
 	_Out_opt_ ULONG* lpcbEntryID,
 	_Deref_out_opt_ LPENTRYID * lppEntryID)
@@ -382,9 +382,9 @@ _Check_return_ HRESULT CreateStoreEntryID(
 
 _Check_return_ HRESULT CreateStoreEntryID2(
 	_In_ LPMDB lpMDB, // open message store
-	string lpszMsgStoreDN, // desired message store DN
-	string lpszMailboxDN, // desired mailbox DN or NULL
-	wstring smtpAddress,
+	const string& lpszMsgStoreDN, // desired message store DN
+	const string& lpszMailboxDN, // desired mailbox DN or NULL
+	const wstring& smtpAddress,
 	ULONG ulFlags, // desired flags for CreateStoreEntryID
 	_Out_opt_ ULONG* lpcbEntryID,
 	_Deref_out_opt_ LPENTRYID * lppEntryID)
@@ -434,9 +434,9 @@ _Check_return_ HRESULT CreateStoreEntryID2(
 
 _Check_return_ HRESULT CreateStoreEntryID(
 	_In_ LPMDB lpMDB, // open message store
-	string lpszMsgStoreDN, // desired message store DN
-	string lpszMailboxDN, // desired mailbox DN or NULL
-	wstring smtpAddress,
+	const string& lpszMsgStoreDN, // desired message store DN
+	const string& lpszMailboxDN, // desired mailbox DN or NULL
+	const wstring& smtpAddress,
 	ULONG ulFlags, // desired flags for CreateStoreEntryID
 	bool bForceServer, // Use CreateStoreEntryID2
 	_Out_opt_ ULONG* lpcbEntryID,
@@ -500,9 +500,9 @@ _Check_return_ HRESULT CreateStoreEntryID(
 _Check_return_ HRESULT HrMailboxLogon(
 	_In_ LPMAPISESSION lpMAPISession, // MAPI session handle
 	_In_ LPMDB lpMDB, // open message store
-	string lpszMsgStoreDN, // desired message store DN
-	string lpszMailboxDN, // desired mailbox DN or NULL
-	wstring SmtpAddress,
+	const string& lpszMsgStoreDN, // desired message store DN
+	const string& lpszMailboxDN, // desired mailbox DN or NULL
+	const wstring& smtpAddress,
 	ULONG ulFlags, // desired flags for CreateStoreEntryID
 	bool bForceServer, // Use CreateStoreEntryID2
 	_Deref_out_opt_ LPMDB* lppMailboxMDB) // ptr to mailbox message store ptr
@@ -518,7 +518,7 @@ _Check_return_ HRESULT HrMailboxLogon(
 		return MAPI_E_INVALID_PARAMETER;
 	}
 
-	WC_H(CreateStoreEntryID(lpMDB, lpszMsgStoreDN, lpszMailboxDN, SmtpAddress, ulFlags, bForceServer, &sbEID.cb, reinterpret_cast<LPENTRYID*>(&sbEID.lpb)));
+	WC_H(CreateStoreEntryID(lpMDB, lpszMsgStoreDN, lpszMailboxDN, smtpAddress, ulFlags, bForceServer, &sbEID.cb, reinterpret_cast<LPENTRYID*>(&sbEID.lpb)));
 
 	if (SUCCEEDED(hRes))
 	{
@@ -598,9 +598,9 @@ _Check_return_ HRESULT OpenDefaultMessageStore(
 _Check_return_ HRESULT OpenOtherUsersMailbox(
 	_In_ LPMAPISESSION lpMAPISession,
 	_In_ LPMDB lpMDB,
-	string szServerName,
-	string szMailboxDN,
-	wstring SmtpAddress,
+	const string& szServerName,
+	const string& szMailboxDN,
+	const wstring& smtpAddress,
 	ULONG ulFlags, // desired flags for CreateStoreEntryID
 	bool bForceServer, // Use CreateStoreEntryID2
 	_Deref_out_opt_ LPMDB* lppOtherUserMDB)
@@ -609,19 +609,24 @@ _Check_return_ HRESULT OpenOtherUsersMailbox(
 
 	*lppOtherUserMDB = nullptr;
 
-	DebugPrint(DBGGeneric, L"OpenOtherUsersMailbox called with lpMAPISession = %p, lpMDB = %p, Server = \"%hs\", Mailbox = \"%hs\", SmtpAddress = \"%ws\"\n", lpMAPISession, lpMDB, szServerName.c_str(), szMailboxDN.c_str(), SmtpAddress.c_str());
+	DebugPrint(DBGGeneric, L"OpenOtherUsersMailbox called with lpMAPISession = %p, lpMDB = %p, Server = \"%hs\", Mailbox = \"%hs\", SmtpAddress = \"%ws\"\n", lpMAPISession, lpMDB, szServerName.c_str(), szMailboxDN.c_str(), smtpAddress.c_str());
 	if (!lpMAPISession || !lpMDB || szMailboxDN.empty() || !StoreSupportsManageStore(lpMDB)) return MAPI_E_INVALID_PARAMETER;
 
+	string serverName;
 	if (szServerName.empty())
 	{
 		// If we weren't given a server name, get one from the profile
-		szServerName = GetServerName(lpMAPISession);
+		serverName = GetServerName(lpMAPISession);
+	}
+	else
+	{
+		serverName = szServerName;
 	}
 
-	if (!szServerName.empty())
+	if (!serverName.empty())
 	{
 		auto szServerDN = BuildServerDN(
-			szServerName,
+			serverName,
 			"/cn=Microsoft Private MDB"); // STRING_OK
 
 		if (!szServerDN.empty())
@@ -632,7 +637,7 @@ _Check_return_ HRESULT OpenOtherUsersMailbox(
 				lpMDB,
 				szServerDN,
 				szMailboxDN,
-				SmtpAddress,
+				smtpAddress,
 				ulFlags,
 				bForceServer,
 				lppOtherUserMDB));
@@ -646,8 +651,8 @@ _Check_return_ HRESULT OpenOtherUsersMailbox(
 _Check_return_ HRESULT OpenMailboxWithPrompt(
 	_In_ LPMAPISESSION lpMAPISession,
 	_In_ LPMDB lpMDB,
-	string szServerName,
-	wstring szMailboxDN,
+	const string& szServerName,
+	const wstring& szMailboxDN,
 	ULONG ulFlags, // desired flags for CreateStoreEntryID
 	_Deref_out_opt_ LPMDB* lppOtherUserMDB)
 {
