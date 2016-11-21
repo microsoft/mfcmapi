@@ -197,7 +197,7 @@ _Check_return_ HRESULT GetMailboxTable(
 
 _Check_return_ HRESULT GetPublicFolderTable1(
 	_In_ LPMDB lpMDB,
-	string szServerDN,
+	const string& szServerDN,
 	ULONG ulFlags,
 	_Deref_out_opt_ LPMAPITABLE* lpPFTable)
 {
@@ -226,7 +226,7 @@ _Check_return_ HRESULT GetPublicFolderTable1(
 
 _Check_return_ HRESULT GetPublicFolderTable4(
 	_In_ LPMDB lpMDB,
-	string szServerDN,
+	const string& szServerDN,
 	ULONG ulOffset,
 	ULONG ulFlags,
 	_Deref_out_opt_ LPMAPITABLE* lpPFTable)
@@ -256,7 +256,7 @@ _Check_return_ HRESULT GetPublicFolderTable4(
 
 _Check_return_ HRESULT GetPublicFolderTable5(
 	_In_ LPMDB lpMDB,
-	string szServerDN,
+	const string& szServerDN,
 	ULONG ulOffset,
 	ULONG ulFlags,
 	_In_opt_ LPGUID lpGuidMDB,
