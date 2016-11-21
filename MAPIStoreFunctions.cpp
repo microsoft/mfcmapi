@@ -417,7 +417,7 @@ _Check_return_ HRESULT CreateStoreEntryID2(
 		sProps[2].Value.b = true;
 
 		sProps[3].ulPropTag = PR_PROFILE_USER_SMTP_EMAIL_ADDRESS_W;
-		sProps[3].Value.lpszW = smtpAddress.empty() == true ? nullptr : const_cast<LPWSTR>(smtpAddress.c_str());
+		sProps[3].Value.lpszW = smtpAddress.empty() ? nullptr : const_cast<LPWSTR>(smtpAddress.c_str());
 
 		EC_MAPI(lpXManageStoreEx->CreateStoreEntryID2(
 			smtpAddress.empty() ? _countof(sProps) - 1 : _countof(sProps),
