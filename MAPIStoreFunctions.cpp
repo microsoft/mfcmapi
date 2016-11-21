@@ -384,7 +384,7 @@ _Check_return_ HRESULT CreateStoreEntryID2(
 	_In_ LPMDB lpMDB, // open message store
 	string lpszMsgStoreDN, // desired message store DN
 	string lpszMailboxDN, // desired mailbox DN or NULL
-	wstring SmtpAddress,
+	wstring smtpAddress,
 	ULONG ulFlags, // desired flags for CreateStoreEntryID
 	_Out_opt_ ULONG* lpcbEntryID,
 	_Deref_out_opt_ LPENTRYID * lppEntryID)
@@ -405,7 +405,7 @@ _Check_return_ HRESULT CreateStoreEntryID2(
 
 	if (lpXManageStoreEx)
 	{
-		DebugPrint(DBGGeneric, L"CreateStoreEntryID2: Creating EntryID. StoreDN = \"%hs\", MailboxDN = \"%hs\", SmtpAddress = \"%hs\"\n", lpszMsgStoreDN.c_str(), lpszMailboxDN.c_str(), SmtpAddress.c_str());
+		DebugPrint(DBGGeneric, L"CreateStoreEntryID2: Creating EntryID. StoreDN = \"%hs\", MailboxDN = \"%hs\", SmtpAddress = \"%ws\"\n", lpszMsgStoreDN.c_str(), lpszMailboxDN.c_str(), smtpAddress.c_str());
 		SPropValue sProps[4] = { 0 };
 		sProps[0].ulPropTag = PR_PROFILE_MAILBOX;
 		sProps[0].Value.lpszA = LPSTR(lpszMailboxDN.c_str());
@@ -417,10 +417,10 @@ _Check_return_ HRESULT CreateStoreEntryID2(
 		sProps[2].Value.b = true;
 
 		sProps[3].ulPropTag = PR_PROFILE_USER_SMTP_EMAIL_ADDRESS_W;
-		sProps[3].Value.lpszW = SmtpAddress.empty() == true ? nullptr : (LPWSTR)SmtpAddress.c_str();
+		sProps[3].Value.lpszW = smtpAddress.empty() == true ? nullptr : const_cast<LPWSTR>(smtpAddress.c_str());
 
 		EC_MAPI(lpXManageStoreEx->CreateStoreEntryID2(
-			SmtpAddress.empty() == true ? _countof(sProps) - 1 : _countof(sProps),
+			smtpAddress.empty() ? _countof(sProps) - 1 : _countof(sProps),
 			reinterpret_cast<LPSPropValue>(&sProps),
 			ulFlags,
 			lpcbEntryID,
@@ -436,7 +436,7 @@ _Check_return_ HRESULT CreateStoreEntryID(
 	_In_ LPMDB lpMDB, // open message store
 	string lpszMsgStoreDN, // desired message store DN
 	string lpszMailboxDN, // desired mailbox DN or NULL
-	wstring SmtpAddress,
+	wstring smtpAddress,
 	ULONG ulFlags, // desired flags for CreateStoreEntryID
 	bool bForceServer, // Use CreateStoreEntryID2
 	_Out_opt_ ULONG* lpcbEntryID,
@@ -466,7 +466,7 @@ _Check_return_ HRESULT CreateStoreEntryID(
 			lpMDB,
 			lpszMsgStoreDN,
 			lpszMailboxDN,
-			SmtpAddress,
+			smtpAddress,
 			ulFlags,
 			lpcbEntryID,
 			lppEntryID));
@@ -609,7 +609,7 @@ _Check_return_ HRESULT OpenOtherUsersMailbox(
 
 	*lppOtherUserMDB = nullptr;
 
-	DebugPrint(DBGGeneric, L"OpenOtherUsersMailbox called with lpMAPISession = %p, lpMDB = %p, Server = \"%hs\", Mailbox = \"%hs\", SmtpAddress = \"%hs\"\n", lpMAPISession, lpMDB, szServerName.c_str(), szMailboxDN.c_str(), SmtpAddress.c_str());
+	DebugPrint(DBGGeneric, L"OpenOtherUsersMailbox called with lpMAPISession = %p, lpMDB = %p, Server = \"%hs\", Mailbox = \"%hs\", SmtpAddress = \"%ws\"\n", lpMAPISession, lpMDB, szServerName.c_str(), szMailboxDN.c_str(), SmtpAddress.c_str());
 	if (!lpMAPISession || !lpMDB || szMailboxDN.empty() || !StoreSupportsManageStore(lpMDB)) return MAPI_E_INVALID_PARAMETER;
 
 	if (szServerName.empty())

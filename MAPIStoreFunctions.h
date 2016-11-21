@@ -57,7 +57,7 @@ _Check_return_ HRESULT HrMailboxLogon(
 	_In_ LPMDB lpMDB, // ptr to message store
 	string lpszMsgStoreDN, // ptr to message store DN
 	string lpszMailboxDN, // ptr to mailbox DN
-	wstring SmtpAddress,
+	wstring smtpAddress, // ptr to SMTP Address of the target user. Optional but Required if using MAPI / HTTP
 	ULONG ulFlags, // desired flags for CreateStoreEntryID
 	bool bForceServer, // Use CreateStoreEntryID2
 	_Deref_out_opt_ LPMDB* lppMailboxMDB); // ptr to mailbox message store ptr
