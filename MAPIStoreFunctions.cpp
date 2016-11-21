@@ -31,7 +31,7 @@ _Check_return_ HRESULT CallOpenMsgStore(
 		ulUIParam,
 		lpEID->cb,
 		reinterpret_cast<LPENTRYID>(lpEID->lpb),
-		NULL,
+		nullptr,
 		ulFlags,
 		static_cast<LPMDB*>(lpMDB)));
 	if (MAPI_E_UNKNOWN_FLAGS == hRes && ulFlags & MDB_ONLINE)
@@ -45,7 +45,7 @@ _Check_return_ HRESULT CallOpenMsgStore(
 			ulUIParam,
 			lpEID->cb,
 			reinterpret_cast<LPENTRYID>(lpEID->lpb),
-			NULL,
+			nullptr,
 			ulFlags,
 			static_cast<LPMDB*>(lpMDB)));
 	}
@@ -54,8 +54,8 @@ _Check_return_ HRESULT CallOpenMsgStore(
 
 // Build a server DN.
 string BuildServerDN(
-	string szServerName,
-	string szPost)
+	const string& szServerName,
+	const string& szPost)
 {
 	static string szPre = "/cn=Configuration/cn=Servers/cn="; // STRING_OK
 	return szPre + szServerName + szPost;
@@ -304,7 +304,7 @@ string GetServerName(_In_ LPMAPISESSION lpSession)
 
 	EC_MAPI(pSvcAdmin->OpenProfileSection(
 		LPMAPIUID(pbGlobalProfileSectionGuid),
-		NULL,
+		nullptr,
 		0,
 		&pGlobalProfSect));
 
@@ -574,7 +574,7 @@ _Check_return_ HRESULT OpenDefaultMessageStore(
 		pStoresTbl, // table to query
 		LPSPropTagArray(&sptEIDCol), // columns to get
 		&sres, // restriction to use
-		NULL, // sort order
+		nullptr, // sort order
 		0, // max number of rows - 0 means ALL
 		&pRow));
 
@@ -707,7 +707,7 @@ _Check_return_ HRESULT OpenOtherUsersMailboxFromGal(
 	WC_H(OpenMessageStoreGUID(lpMAPISession, pbExchangeProviderPrimaryUserGuid, &lpPrivateMDB));
 	if (lpPrivateMDB && StoreSupportsManageStore(lpPrivateMDB))
 	{
-		EC_H(SelectUser(lpAddrBook, ::GetDesktopWindow(), NULL, &lpMailUser));
+		EC_H(SelectUser(lpAddrBook, ::GetDesktopWindow(), nullptr, &lpMailUser));
 		if (lpMailUser)
 		{
 			EC_MAPI(HrGetOneProp(
@@ -773,8 +773,8 @@ _Check_return_ HRESULT OpenMessageStoreGUID(
 		EC_MAPI(HrQueryAllRows(
 			pStoresTbl, // table to query
 			LPSPropTagArray(&sptCols), // columns to get
-			NULL, // restriction to use
-			NULL, // sort order
+			nullptr, // restriction to use
+			nullptr, // sort order
 			0, // max number of rows
 			&pRow));
 		if (pRow)

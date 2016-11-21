@@ -8,8 +8,8 @@ _Check_return_ HRESULT CallOpenMsgStore(
 	ULONG ulFlags,
 	_Deref_out_ LPMDB* lpMDB);
 string BuildServerDN(
-	string szServerName,
-	string szPost);
+	const string& szServerName,
+	const string& szPost);
 _Check_return_ HRESULT GetMailboxTable(
 	_In_ LPMDB lpMDB,
 	string szServerName,
