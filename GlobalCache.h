@@ -46,7 +46,7 @@ public:
 	_Check_return_ ULONG GetPropertyToCopy() const;
 	_Check_return_ LPMAPIPROP GetSourcePropObject() const;
 
-	void SetAttachmentsToCopy(_In_ LPMESSAGE lpMessage, _In_ vector<ULONG> attNumList);
+	void SetAttachmentsToCopy(_In_ LPMESSAGE lpMessage, _In_ const vector<ULONG>& attNumList);
 	_Check_return_ vector<ULONG> GetAttachmentsToCopy() const;
 
 	void SetProfileToCopy(_In_ string szProfileName);

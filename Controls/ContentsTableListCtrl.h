@@ -12,7 +12,7 @@ public:
 		_In_ CWnd* pCreateParent,
 		_In_ CMapiObjects* lpMapiObjects,
 		_In_ LPSPropTagArray sptExtraColumnTags,
-		_In_ vector<TagNames> lpExtraDisplayColumns,
+		_In_ const vector<TagNames>& lpExtraDisplayColumns,
 		UINT nIDContextMenu,
 		bool bIsAB,
 		_In_ CContentsTableDlg* lpHostDlg);

@@ -24,7 +24,7 @@ CContentsTableListCtrl::CContentsTableListCtrl(
 	_In_ CWnd* pCreateParent,
 	_In_ CMapiObjects* lpMapiObjects,
 	_In_ LPSPropTagArray sptExtraColumnTags,
-	_In_ vector<TagNames> lpExtraDisplayColumns,
+	_In_ const vector<TagNames>& lpExtraDisplayColumns,
 	UINT nIDContextMenu,
 	bool bIsAB,
 	_In_ CContentsTableDlg *lpHostDlg)
@@ -538,7 +538,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::ApplyRestriction() const
 	else
 	{
 		WC_H_MSG(m_lpContentsTable->Restrict(
-			NULL,
+			nullptr,
 			TBL_BATCH),
 			IDS_TABLENOSUPPORTRES);
 	}
@@ -580,7 +580,7 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 	auto hWndHost = lpThreadInfo->hWndHost;
 
 	// required on da new thread before we do any MAPI work
-	EC_MAPI(MAPIInitialize(NULL));
+	EC_MAPI(MAPIInitialize(nullptr));
 
 	(void) ::SendMessage(hWndHost, WM_MFCMAPI_CLEARSINGLEMAPIPROPLIST, NULL, NULL);
 	auto szCount = std::to_wstring(lpListCtrl->GetItemCount());
@@ -596,7 +596,7 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 		EC_MAPI(lpContentsTable->SeekRow(
 			BOOKMARK_BEGINNING,
 			0,
-			NULL));
+			nullptr));
 		hRes = S_OK; // don't let failure here fail the whole load
 
 		EC_MAPI(lpContentsTable->GetRowCount(
@@ -626,7 +626,7 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 		if (mfcmapiFINDROW_RESTRICTION == lpListCtrl->GetRestrictionType() && lpRes)
 		{
 			DebugPrintEx(DBGGeneric, CLASS, L"DoFindRows", L"running FindRow with restriction:\n");
-			DebugPrintRestriction(DBGGeneric, lpRes, NULL);
+			DebugPrintRestriction(DBGGeneric, lpRes, nullptr);
 
 			CHECKABORT(WC_MAPI(lpContentsTable->FindRow(
 				lpRes,
@@ -757,7 +757,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::LoadContentsTableIntoView()
 		DebugPrintEx(DBGGeneric, CLASS, L"LoadContentsTableIntoView", L"Creating load thread.\n");
 
 		HANDLE hThread = nullptr;
-		EC_D(hThread, reinterpret_cast<HANDLE>(_beginthreadex(NULL, 0, ThreadFuncLoadTable, lpThreadInfo, 0, nullptr)));
+		EC_D(hThread, reinterpret_cast<HANDLE>(_beginthreadex(nullptr, 0, ThreadFuncLoadTable, lpThreadInfo, 0, nullptr)));
 
 		if (!hThread)
 		{
@@ -1237,14 +1237,14 @@ _Check_return_ HRESULT CContentsTableListCtrl::DefaultOpenItemProp(
 	{
 		auto lpAB = m_lpMapiObjects->GetAddrBook(false); // do not release
 		WC_H(CallOpenEntry(
-			NULL,
+			nullptr,
 			lpAB, // use AB
-			NULL,
-			NULL,
+			nullptr,
+			nullptr,
 			lpEID,
-			NULL,
+			nullptr,
 			bModify == mfcmapiREQUEST_MODIFY ? MAPI_MODIFY : MAPI_BEST_ACCESS,
-			NULL,
+			nullptr,
 			reinterpret_cast<LPUNKNOWN*>(lppProp)));
 	}
 
@@ -1261,13 +1261,13 @@ _Check_return_ HRESULT CContentsTableListCtrl::DefaultOpenItemProp(
 
 		WC_H(CallOpenEntry(
 			lpMDB, // use MDB
-			NULL,
-			NULL,
-			NULL,
+			nullptr,
+			nullptr,
+			nullptr,
 			lpEID,
 			lpInterface,
 			bModify == mfcmapiREQUEST_MODIFY ? MAPI_MODIFY : MAPI_BEST_ACCESS,
-			NULL,
+			nullptr,
 			reinterpret_cast<LPUNKNOWN*>(lppProp)));
 		if (MAPI_E_INTERFACE_NOT_SUPPORTED == hRes && RegKeys[regkeyUSE_MESSAGERAW].ulCurDWORD)
 		{
@@ -1280,14 +1280,14 @@ _Check_return_ HRESULT CContentsTableListCtrl::DefaultOpenItemProp(
 	{
 		auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 		WC_H(CallOpenEntry(
-			NULL,
-			NULL,
-			NULL,
+			nullptr,
+			nullptr,
+			nullptr,
 			lpMAPISession, // use session
 			lpEID,
-			NULL,
+			nullptr,
 			bModify == mfcmapiREQUEST_MODIFY ? MAPI_MODIFY : MAPI_BEST_ACCESS,
-			NULL,
+			nullptr,
 			reinterpret_cast<LPUNKNOWN*>(lppProp)));
 	}
 

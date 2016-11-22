@@ -269,7 +269,7 @@ void LoadAddIns()
 		auto hRes = S_OK;
 		WCHAR szFilePath[MAX_PATH];
 		DWORD dwDir = NULL;
-		EC_D(dwDir, GetModuleFileNameW(NULL, szFilePath, _countof(szFilePath)));
+		EC_D(dwDir, GetModuleFileNameW(nullptr, szFilePath, _countof(szFilePath)));
 		if (!dwDir) return;
 
 		// We got the path to mfcmapi.exe - need to strip it
@@ -646,7 +646,7 @@ void SortFlagArray(_In_count_(ulFlags) LPFLAG_ARRAY_ENTRY lpFlags, _In_ ULONG ul
 
 // Consults the end of the target array to find a match to the source
 // If no dupe is found, copies source to target
-void AppendFlagIfNotDupe(vector<FLAG_ARRAY_ENTRY> &target, FLAG_ARRAY_ENTRY source)
+void AppendFlagIfNotDupe(vector<FLAG_ARRAY_ENTRY>& target, FLAG_ARRAY_ENTRY source)
 {
 	auto iTarget = target.size();
 

@@ -404,6 +404,7 @@ bool stripPrefix(wstring& str, const wstring& prefix)
 
 // Converts hex string in lpsz to a binary buffer.
 // If cbTarget != 0, caps the number of bytes converted at cbTarget
+// TODO: rewrite with const ref parameter
 vector<BYTE> HexStringToBin(_In_ wstring lpsz, size_t cbTarget)
 {
 	// remove junk
@@ -449,7 +450,7 @@ vector<BYTE> HexStringToBin(_In_ wstring lpsz, size_t cbTarget)
 }
 
 // Converts byte vector to LPBYTE allocated with new
-LPBYTE ByteVectorToLPBYTE(vector<BYTE> const& bin)
+LPBYTE ByteVectorToLPBYTE(const vector<BYTE>& bin)
 {
 	if (bin.empty()) return nullptr;
 
@@ -477,7 +478,7 @@ vector<wstring> split(const wstring& str, const wchar_t delim)
 	return elems;
 }
 
-wstring join(const vector<wstring> elems, const wstring& delim)
+wstring join(const vector<wstring>& elems, const wstring& delim)
 {
 	std::wstringstream ss;
 	for (size_t i = 0; i < elems.size(); ++i)
@@ -490,7 +491,7 @@ wstring join(const vector<wstring> elems, const wstring& delim)
 	return ss.str();
 }
 
-wstring join(const vector<wstring> elems, const wchar_t delim)
+wstring join(const vector<wstring>& elems, const wchar_t delim)
 {
 	return join(elems, wstring(1, delim));
 }

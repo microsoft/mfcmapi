@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "ConversationIndex.h"
-#include "String.h"
 #include "InterpretProp.h"
 #include "InterpretProp2.h"
 

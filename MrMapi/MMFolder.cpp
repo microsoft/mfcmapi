@@ -41,7 +41,7 @@ HRESULT HrMAPIFindFolderW(
 	WC_MAPI(lpFolder->GetHierarchyTable(MAPI_UNICODE | MAPI_DEFERRED_ERRORS, &lpTable));
 	if (SUCCEEDED(hRes) && lpTable)
 	{
-		WC_MAPI(HrQueryAllRows(lpTable, LPSPropTagArray(&rgColProps), NULL, NULL, 0, &lpRow));
+		WC_MAPI(HrQueryAllRows(lpTable, LPSPropTagArray(&rgColProps), nullptr, nullptr, 0, &lpRow));
 	}
 
 	if (SUCCEEDED(hRes) && lpRow)
@@ -97,45 +97,11 @@ wstring unescape(_In_ wstring lpsz)
 	return lpsz;
 }
 
-// Splits string lpsz at backslashes and returns components in vector
-vector<wstring> SplitPath(_In_ const wstring& lpsz)
-{
-	DebugPrint(DBGGeneric, L"SplitPath: splitting path \"%ws\"\n", lpsz.c_str());
-
-	vector<wstring> result;
-
-	auto str = lpsz.c_str();
-	do
-	{
-		auto begin = str;
-
-		while (*str != 0)
-		{
-			if (*str == wszBackslash && *(str + 1) == wszBackslash)
-			{
-				str += 2;
-			}
-			else if (*str != wszBackslash)
-			{
-				str++;
-			}
-			else break;
-		}
-
-		if (begin != str)
-		{
-			result.push_back(unescape(wstring(begin, str)));
-		}
-	} while (0 != *str++);
-
-	return result;
-}
-
 // Finds an arbitrarily nested folder in the indicated folder given
 // a hierarchical list of subfolders.
 HRESULT HrMAPIFindSubfolderExW(
 	_In_ LPMAPIFOLDER lpRootFolder, // open root folder
-	vector<wstring> FolderList, // hierarchical list of subfolders to navigate
+	const vector<wstring>& FolderList, // hierarchical list of subfolders to navigate
 	_Out_opt_ ULONG* lpcbeid, // pointer to count of bytes in entry ID
 	_Deref_out_opt_ LPENTRYID* lppeid) // pointer to entry ID pointer
 {
@@ -166,7 +132,7 @@ HRESULT HrMAPIFindSubfolderExW(
 			WC_MAPI(lpParentFolder->OpenEntry(
 				cbeid,
 				lpeid,
-				NULL,
+				nullptr,
 				MAPI_DEFERRED_ERRORS,
 				&ulObjType,
 				reinterpret_cast<LPUNKNOWN*>(&lpChildFolder)));
@@ -287,7 +253,7 @@ HRESULT HrMAPIFindFolderExW(
 
 	if (!lpMDB) return MAPI_E_INVALID_PARAMETER;
 
-	auto FolderList = SplitPath(lpszFolderPath);
+	auto FolderList = split(lpszFolderPath, wszBackslash);
 
 	// Check for literal property name
 	if (!FolderList.empty() && FolderList[0][0] == L'@')
@@ -312,7 +278,7 @@ HRESULT HrMAPIFindFolderExW(
 		WC_MAPI(lpMDB->OpenEntry(
 			cbeid,
 			lpeid,
-			NULL,
+			nullptr,
 			MAPI_BEST_ACCESS | MAPI_DEFERRED_ERRORS,
 			&ulObjType,
 			reinterpret_cast<LPUNKNOWN*>(&lpRootFolder)));
@@ -368,7 +334,7 @@ HRESULT HrMAPIOpenFolderExW(
 		WC_MAPI(lpMDB->OpenEntry(
 			cbeid,
 			lpeid,
-			NULL,
+			nullptr,
 			MAPI_BEST_ACCESS | MAPI_DEFERRED_ERRORS,
 			&ulObjType,
 			reinterpret_cast<LPUNKNOWN*>(lppFolder)));
@@ -448,7 +414,7 @@ void DumpHierarchyTable(
 
 						WC_MAPI(lpFolder->OpenEntry(lpRow->aRow[i].lpProps[ePR_ENTRYID].Value.bin.cb,
 							reinterpret_cast<LPENTRYID>(lpRow->aRow[i].lpProps[ePR_ENTRYID].Value.bin.lpb),
-							NULL,
+							nullptr,
 							MAPI_BEST_ACCESS,
 							&ulObjType,
 							reinterpret_cast<LPUNKNOWN *>(&lpSubfolder)));
@@ -483,7 +449,7 @@ ULONGLONG ComputeSingleFolderSize(
 	WC_MAPI(lpFolder->GetContentsTable(0, &lpTable));
 	if (lpTable)
 	{
-		WC_MAPI(HrQueryAllRows(lpTable, reinterpret_cast<LPSPropTagArray>(&sProps), NULL, NULL, 0, &lpsRowSet));
+		WC_MAPI(HrQueryAllRows(lpTable, reinterpret_cast<LPSPropTagArray>(&sProps), nullptr, nullptr, 0, &lpsRowSet));
 
 		if (lpsRowSet)
 		{
@@ -504,7 +470,7 @@ ULONGLONG ComputeSingleFolderSize(
 	WC_MAPI(lpFolder->GetContentsTable(MAPI_ASSOCIATED, &lpTable));
 	if (lpTable)
 	{
-		WC_MAPI(HrQueryAllRows(lpTable, reinterpret_cast<LPSPropTagArray>(&sProps), NULL, NULL, 0, &lpsRowSet));
+		WC_MAPI(HrQueryAllRows(lpTable, reinterpret_cast<LPSPropTagArray>(&sProps), nullptr, nullptr, 0, &lpsRowSet));
 
 		if (lpsRowSet)
 		{
@@ -592,7 +558,7 @@ ULONGLONG ComputeFolderSize(
 
 						WC_MAPI(lpFolder->OpenEntry(lpRow->aRow[i].lpProps[ePR_ENTRYID].Value.bin.cb,
 							reinterpret_cast<LPENTRYID>(lpRow->aRow[i].lpProps[ePR_ENTRYID].Value.bin.lpb),
-							NULL,
+							nullptr,
 							MAPI_BEST_ACCESS,
 							&ulObjType,
 							reinterpret_cast<LPUNKNOWN *>(&lpSubfolder)));

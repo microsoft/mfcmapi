@@ -22,7 +22,7 @@ CContentsTableDlg::CContentsTableDlg(
 	__mfcmapiCreateDialogEnum bCreateDialog,
 	_In_opt_ LPMAPITABLE lpContentsTable,
 	_In_ LPSPropTagArray sptExtraColumnTags,
-	_In_ vector<TagNames> lpExtraDisplayColumns,
+	_In_ const vector<TagNames>& lpExtraDisplayColumns,
 	ULONG nIDContextMenu,
 	ULONG ulAddInContext
 ) :
@@ -330,7 +330,7 @@ void CContentsTableDlg::OnCreateMessageRestriction()
 	if (!m_lpContentsTableListCtrl) return;
 
 	EC_H(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(
-		NULL,
+		nullptr,
 		mfcmapiREQUEST_MODIFY,
 		&lpMAPIProp));
 
@@ -504,7 +504,7 @@ void CContentsTableDlg::OnCreatePropertyStringRestriction()
 			CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_UNICODE),
 			szString,
 			MyData.GetHex(1),
-			NULL,
+			nullptr,
 			&lpRes));
 		if (S_OK != hRes)
 		{
@@ -560,7 +560,7 @@ void CContentsTableDlg::OnCreateRangeRestriction()
 		EC_H(CreateRangeRestriction(
 			CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_UNICODE),
 			szString,
-			NULL,
+			nullptr,
 			&lpRes));
 		if (S_OK != hRes)
 		{
@@ -753,7 +753,7 @@ _Check_return_ HRESULT CContentsTableDlg::OpenItemProp(int iSelectedItem, __mfcm
 	{
 		// Get the first selected item
 		EC_H(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(
-			NULL,
+			nullptr,
 			bModify,
 			lppMAPIProp));
 	}

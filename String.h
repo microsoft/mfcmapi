@@ -57,8 +57,8 @@ wstring BinToHexString(const vector<BYTE>& lpByte, bool bPrependCB);
 wstring BinToHexString(_In_opt_count_(cb) const LPBYTE lpb, size_t cb, bool bPrependCB);
 wstring BinToHexString(_In_opt_ const LPSBinary lpBin, bool bPrependCB);
 vector<BYTE> HexStringToBin(_In_ wstring lpsz, size_t cbTarget = 0);
-LPBYTE ByteVectorToLPBYTE(vector<BYTE> const& bin);
+LPBYTE ByteVectorToLPBYTE(const vector<BYTE>& bin);
 
 vector<wstring> split(const wstring& str, const wchar_t delim);
-wstring join(const vector<wstring> elems, const wstring& delim);
-wstring join(const vector<wstring> elems, const wchar_t delim);
+wstring join(const vector<wstring>& elems, const wstring& delim);
+wstring join(const vector<wstring>& elems, const wchar_t delim);

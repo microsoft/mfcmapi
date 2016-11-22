@@ -1372,7 +1372,7 @@ _Check_return_ HRESULT ManuallyEmptyFolder(_In_ LPMAPIFOLDER lpFolder, BOOL bAss
 }
 
 // Converts byte vector to LPBYTE allocated with MAPIAllocateMore
-_Check_return_ LPBYTE ByteVectorToMAPI(vector<BYTE>& bin, LPVOID lpParent)
+_Check_return_ LPBYTE ByteVectorToMAPI(const vector<BYTE>& bin, LPVOID lpParent)
 {
 	if (bin.empty()) return nullptr;
 
