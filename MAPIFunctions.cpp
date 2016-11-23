@@ -1046,7 +1046,7 @@ _Check_return_ HRESULT GetInbox(_In_ LPMDB lpMDB, _Out_opt_ ULONG* lpcbeid, _Der
 	if (!lpMDB || !lpcbeid || !lppeid) return MAPI_E_INVALID_PARAMETER;
 
 	EC_MAPI(lpMDB->GetReceiveFolder(
-		LPTSTR("IPM.Note"), // STRING_OK this is the class of message we want
+		_T("IPM.Note"), // STRING_OK this is the class of message we want
 		fMapiUnicode, // flags
 		&cbInboxEID, // size and...
 		&lpInboxEID, // value of entry ID
