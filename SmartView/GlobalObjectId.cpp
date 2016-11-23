@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "GlobalObjectId.h"
-#include "String.h"
 #include "InterpretProp.h"
 #include "InterpretProp2.h"
 #include "ExtraPropTags.h"
@@ -29,6 +28,14 @@ void GlobalObjectId::Parse()
 	m_lpData = m_Parser.GetBYTES(m_dwSize, _MaxBytes);
 }
 
+static const BYTE s_rgbSPlus[] =
+{
+	0x04, 0x00, 0x00, 0x00,
+	0x82, 0x00, 0xE0, 0x00,
+	0x74, 0xC5, 0xB7, 0x10,
+	0x1A, 0x82, 0xE0, 0x08,
+};
+
 _Check_return_ wstring GlobalObjectId::ToStringInternal()
 {
 	wstring szGlobalObjectId;
@@ -36,6 +43,15 @@ _Check_return_ wstring GlobalObjectId::ToStringInternal()
 	szGlobalObjectId = formatmessage(IDS_GLOBALOBJECTIDHEADER);
 
 	szGlobalObjectId += BinToHexString(m_Id, true);
+	szGlobalObjectId += L" = ";
+	if (equal(m_Id.begin(), m_Id.end(), s_rgbSPlus))
+	{
+		szGlobalObjectId += formatmessage(IDS_GLOBALOBJECTSPLUS);
+	}
+	else
+	{
+		szGlobalObjectId += formatmessage(IDS_UNKNOWNGUID);
+	}
 
 	auto szFlags = InterpretFlags(flagGlobalObjectIdMonth, m_Month);
 
