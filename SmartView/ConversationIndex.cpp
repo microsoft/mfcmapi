@@ -17,21 +17,28 @@ void ConversationIndex::Parse()
 	auto b1 = m_Parser.Get<BYTE>();
 	auto b2 = m_Parser.Get<BYTE>();
 	auto b3 = m_Parser.Get<BYTE>();
-	m_ftCurrent.dwHighDateTime = b1 << 16 | b2 << 8 | b3;
+	// Encoding of the file time drops the high byte, which is always 1
+	// So we add it back to get a time which makes more sense
+	m_ftCurrent.dwHighDateTime = 1 << 24 | b1 << 16 | b2 << 8 | b3;
+
 	b1 = m_Parser.Get<BYTE>();
 	b2 = m_Parser.Get<BYTE>();
 	m_ftCurrent.dwLowDateTime = b1 << 24 | b2 << 16;
+
 	b1 = m_Parser.Get<BYTE>();
 	b2 = m_Parser.Get<BYTE>();
 	b3 = m_Parser.Get<BYTE>();
 	auto b4 = m_Parser.Get<BYTE>();
 	m_guid.Data1 = b1 << 24 | b2 << 16 | b3 << 8 | b4;
+
 	b1 = m_Parser.Get<BYTE>();
 	b2 = m_Parser.Get<BYTE>();
 	m_guid.Data2 = static_cast<unsigned short>(b1 << 8 | b2);
+
 	b1 = m_Parser.Get<BYTE>();
 	b2 = m_Parser.Get<BYTE>();
 	m_guid.Data3 = static_cast<unsigned short>(b1 << 8 | b2);
+
 	for (auto i = 0 ; i < sizeof m_guid.Data4;i++)
 	{
 		m_guid.Data4[i] = m_Parser.Get<BYTE>();
