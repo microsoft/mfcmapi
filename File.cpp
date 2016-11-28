@@ -814,10 +814,7 @@ _Check_return_ HRESULT DeleteAttachments(_In_ LPMESSAGE lpMessage, _In_ const ws
 
 	if (!lpMessage) return MAPI_E_INVALID_PARAMETER;
 
-	EC_MAPI(HrGetOneProp(
-		lpMessage,
-		PR_HASATTACH,
-		&pProps));
+	EC_MAPI(HrGetOneProp(lpMessage, PR_HASATTACH, &pProps));
 
 	if (pProps && PR_HASATTACH == pProps[0].ulPropTag && pProps[0].Value.b)
 	{
@@ -913,10 +910,7 @@ _Check_return_ HRESULT WriteAttachmentsToFile(_In_ LPMESSAGE lpMessage, HWND hWn
 
 	if (!lpMessage) return MAPI_E_INVALID_PARAMETER;
 
-	EC_MAPI(HrGetOneProp(
-		lpMessage,
-		PR_HASATTACH,
-		&pProps));
+	EC_MAPI(HrGetOneProp(lpMessage, PR_HASATTACH, &pProps));
 
 	if (pProps && PR_HASATTACH == pProps[0].ulPropTag && pProps[0].Value.b)
 	{

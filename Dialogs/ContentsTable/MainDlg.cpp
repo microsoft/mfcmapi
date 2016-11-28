@@ -274,14 +274,14 @@ void CMainDlg::OnOpenAddressBook()
 
 	EC_MAPI(lpMAPISession->OpenAddressBook(
 		NULL,
-		NULL,
+		nullptr,
 		NULL,
 		&lpAddrBook));
 
 	m_lpMapiObjects->SetAddrBook(lpAddrBook);
 
 	if (m_lpPropDisplay)
-		EC_H(m_lpPropDisplay->SetDataSource(lpAddrBook, NULL, true));
+		EC_H(m_lpPropDisplay->SetDataSource(lpAddrBook, nullptr, true));
 
 	if (lpAddrBook) lpAddrBook->Release();
 }
@@ -319,13 +319,13 @@ void CMainDlg::OnOpenDefaultDir()
 		&lpEID));
 
 	EC_H(CallOpenEntry(
-		NULL,
+		nullptr,
 		lpAddrBook,
-		NULL,
-		NULL,
+		nullptr,
+		nullptr,
 		cbEID,
 		lpEID,
-		NULL,
+		nullptr,
 		MAPI_MODIFY,
 		&ulObjType,
 		reinterpret_cast<LPUNKNOWN*>(&lpDefaultDir)));
@@ -359,13 +359,13 @@ void CMainDlg::OnOpenPAB()
 		&lpEID));
 
 	EC_H(CallOpenEntry(
-		NULL,
+		nullptr,
 		lpAddrBook,
-		NULL,
-		NULL,
+		nullptr,
+		nullptr,
 		cbEID,
 		lpEID,
-		NULL,
+		nullptr,
 		MAPI_MODIFY,
 		&ulObjType,
 		reinterpret_cast<LPUNKNOWN*>(&lpPAB)));
@@ -469,22 +469,19 @@ void CMainDlg::OnOpenDefaultMessageStore()
 		if (lpEntryID)
 		{
 			EC_H(CallOpenEntry(
-				NULL,
-				NULL,
-				NULL,
+				nullptr,
+				nullptr,
+				nullptr,
 				lpMAPISession,
 				cbEntryID,
 				lpEntryID,
+				nullptr,
 				NULL,
-				NULL,
-				NULL,
+				nullptr,
 				reinterpret_cast<LPUNKNOWN*>(&lpIdentity)));
 			if (lpIdentity)
 			{
-				EC_MAPI(HrGetOneProp(
-					lpIdentity,
-					PR_EMAIL_ADDRESS_A,
-					&lpMailboxName));
+				EC_MAPI(HrGetOneProp(lpIdentity, PR_EMAIL_ADDRESS_A, &lpMailboxName));
 
 				if (CheckStringProp(lpMailboxName, PT_STRING8))
 				{
@@ -572,7 +569,7 @@ void CMainDlg::OnOpenMessageStoreEID()
 			if (MyEID.GetCheck(3))
 			{
 				if (m_lpPropDisplay)
-					EC_H(m_lpPropDisplay->SetDataSource(lpMDB, NULL, true));
+					EC_H(m_lpPropDisplay->SetDataSource(lpMDB, nullptr, true));
 			}
 			else
 			{
@@ -858,7 +855,7 @@ void CMainDlg::OnLogoff()
 
 	// We do this first to free up any stray session pointers
 	EC_H(m_lpContentsTableListCtrl->SetContentsTable(
-		NULL,
+		nullptr,
 		dfNormal,
 		MAPI_STORE));
 
@@ -887,7 +884,7 @@ void CMainDlg::OnLogoffWithFlags()
 
 		// We do this first to free up any stray session pointers
 		EC_H(m_lpContentsTableListCtrl->SetContentsTable(
-			NULL,
+			nullptr,
 			dfNormal,
 			MAPI_STORE));
 
@@ -949,7 +946,7 @@ void CMainDlg::OnResolveMessageClass()
 	ResolveMessageClass(m_lpMapiObjects, nullptr, &lpMAPIFormInfo);
 	if (lpMAPIFormInfo)
 	{
-		EC_H(m_lpPropDisplay->SetDataSource(lpMAPIFormInfo, NULL, false));
+		EC_H(m_lpPropDisplay->SetDataSource(lpMAPIFormInfo, nullptr, false));
 		lpMAPIFormInfo->Release();
 	}
 }
@@ -964,7 +961,7 @@ void CMainDlg::OnSelectForm()
 	if (lpMAPIFormInfo)
 	{
 		// TODO: Put some code in here which works with the returned Form Info pointer
-		EC_H(m_lpPropDisplay->SetDataSource(lpMAPIFormInfo, NULL, false));
+		EC_H(m_lpPropDisplay->SetDataSource(lpMAPIFormInfo, nullptr, false));
 		lpMAPIFormInfo->Release();
 	}
 }
@@ -1042,7 +1039,7 @@ void CMainDlg::OnOpenFormContainer()
 			auto hFrmReg = MyFlags.GetHex(0);
 			EC_H_CANCEL(lpMAPIFormMgr->OpenFormContainer(
 				hFrmReg,
-				NULL,
+				nullptr,
 				&lpMAPIFormContainer));
 			if (lpMAPIFormContainer)
 			{
@@ -1250,7 +1247,7 @@ void CMainDlg::OnQueryDefaultMessageOpt()
 			&cValues,
 			&lpOptions));
 
-		DebugPrintProperties(DBGGeneric, cValues, lpOptions, NULL);
+		DebugPrintProperties(DBGGeneric, cValues, lpOptions, nullptr);
 
 		if (SUCCEEDED(hRes))
 		{
@@ -1315,7 +1312,7 @@ void CMainDlg::OnQueryDefaultRecipOpt()
 			&cValues,
 			&lpOptions));
 
-		DebugPrintProperties(DBGGeneric, cValues, lpOptions, NULL);
+		DebugPrintProperties(DBGGeneric, cValues, lpOptions, nullptr);
 
 		if (SUCCEEDED(hRes))
 		{
@@ -1386,31 +1383,31 @@ void CMainDlg::OnQueryIdentity()
 
 				EC_H_CANCEL(lpAB->Details(
 					&ulUIParam,
-					NULL,
-					NULL,
+					nullptr,
+					nullptr,
 					cbEntryID,
 					lpEntryID,
-					NULL,
-					NULL,
-					NULL,
+					nullptr,
+					nullptr,
+					nullptr,
 					DIALOG_MODAL)); // API doesn't like Unicode
 			}
 			else
 			{
 				EC_H(CallOpenEntry(
-					NULL,
-					NULL,
-					NULL,
+					nullptr,
+					nullptr,
+					nullptr,
 					lpMAPISession,
 					cbEntryID,
 					lpEntryID,
+					nullptr,
 					NULL,
-					NULL,
-					NULL,
+					nullptr,
 					reinterpret_cast<LPUNKNOWN*>(&lpIdentity)));
 				if (lpIdentity)
 				{
-					EC_H(m_lpPropDisplay->SetDataSource(lpIdentity, NULL, true));
+					EC_H(m_lpPropDisplay->SetDataSource(lpIdentity, nullptr, true));
 
 					lpIdentity->Release();
 				}
@@ -1832,7 +1829,7 @@ void CMainDlg::OnComputeGivenStoreHash()
 						DebugPrint(DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, emsmdbUID from PR_EMSMDB_SECTION_UID = %ws\n", szGUID.c_str());
 					}
 
-					WC_MAPI(lpMAPISession->OpenProfileSection(&emsmdbUID, NULL, 0, &lpProfSect));
+					WC_MAPI(lpMAPISession->OpenProfileSection(&emsmdbUID, nullptr, 0, &lpProfSect));
 				}
 			}
 
@@ -1841,7 +1838,7 @@ void CMainDlg::OnComputeGivenStoreHash()
 				hRes = S_OK;
 				// For Outlook 2003/2007, HrEmsmdbUIDFromStore may not succeed,
 				// so use pbGlobalProfileSectionGuid instead
-				WC_MAPI(lpMAPISession->OpenProfileSection(LPMAPIUID(pbGlobalProfileSectionGuid), NULL, 0, &lpProfSect));
+				WC_MAPI(lpMAPISession->OpenProfileSection(LPMAPIUID(pbGlobalProfileSectionGuid), nullptr, 0, &lpProfSect));
 			}
 
 			if (lpProfSect)

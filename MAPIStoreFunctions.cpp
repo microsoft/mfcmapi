@@ -308,9 +308,7 @@ string GetServerName(_In_ LPMAPISESSION lpSession)
 		0,
 		&pGlobalProfSect));
 
-	EC_MAPI(HrGetOneProp(pGlobalProfSect,
-		PR_PROFILE_HOME_SERVER,
-		&lpServerName));
+	EC_MAPI(HrGetOneProp(pGlobalProfSect, PR_PROFILE_HOME_SERVER, &lpServerName));
 
 	if (CheckStringProp(lpServerName, PT_STRING8)) // profiles are ASCII only
 	{
@@ -715,10 +713,7 @@ _Check_return_ HRESULT OpenOtherUsersMailboxFromGal(
 		EC_H(SelectUser(lpAddrBook, ::GetDesktopWindow(), nullptr, &lpMailUser));
 		if (lpMailUser)
 		{
-			EC_MAPI(HrGetOneProp(
-				lpMailUser,
-				PR_EMAIL_ADDRESS_W,
-				&lpEmailAddress));
+			EC_MAPI(HrGetOneProp(lpMailUser, PR_EMAIL_ADDRESS_W, &lpEmailAddress));
 
 			if (CheckStringProp(lpEmailAddress, PT_UNICODE))
 			{
@@ -836,10 +831,7 @@ _Check_return_ HRESULT OpenPublicMessageStore(
 
 	if (lpPublicMDBNonAdmin && StoreSupportsManageStore(lpPublicMDBNonAdmin))
 	{
-		EC_MAPI(HrGetOneProp(
-			lpPublicMDBNonAdmin,
-			CHANGE_PROP_TYPE(PR_HIERARCHY_SERVER, PT_STRING8),
-			&lpServerName));
+		EC_MAPI(HrGetOneProp(lpPublicMDBNonAdmin, CHANGE_PROP_TYPE(PR_HIERARCHY_SERVER, PT_STRING8), &lpServerName));
 
 		if (CheckStringProp(lpServerName, PT_STRING8))
 		{
@@ -874,10 +866,7 @@ _Check_return_ HRESULT OpenStoreFromMAPIProp(_In_ LPMAPISESSION lpMAPISession, _
 
 	if (!lpMAPISession || !lpMAPIProp) return MAPI_E_INVALID_PARAMETER;
 
-	EC_MAPI(HrGetOneProp(
-		lpMAPIProp,
-		PR_STORE_ENTRYID,
-		&lpProp));
+	EC_MAPI(HrGetOneProp(lpMAPIProp, PR_STORE_ENTRYID, &lpProp));
 
 	if (lpProp && PT_BINARY == PROP_TYPE(lpProp->ulPropTag))
 	{

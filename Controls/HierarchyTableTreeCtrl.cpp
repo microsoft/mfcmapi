@@ -479,15 +479,7 @@ _Check_return_ LPMAPITABLE CHierarchyTableTreeCtrl::GetHierarchyTable(HTREEITEM 
 					if (lpMDB)
 					{
 						lpData->Node()->m_lpAdviseSink->SetAdviseTarget(lpMDB);
-
-						LPSPropValue lpProp = nullptr;
-						// Try to trigger some RPC to get the notifications going
-						WC_MAPI(HrGetOneProp(
-							lpMDB,
-							PR_TEST_LINE_SPEED,
-							&lpProp));
-						// No need to check the error - we're not going to do anything with it
-						MAPIFreeBuffer(lpProp);
+						ForceRop(lpMDB);
 					}
 				}
 
@@ -516,7 +508,7 @@ _Check_return_ HRESULT CHierarchyTableTreeCtrl::ExpandNode(HTREEITEM hParent) co
 		EC_MAPI(lpHierarchyTable->SeekRow(
 			BOOKMARK_BEGINNING,
 			0,
-			NULL));
+			nullptr));
 		hRes = S_OK; // don't let failure here fail the whole load
 
 		ULONG i = 0;
@@ -906,13 +898,13 @@ void CHierarchyTableTreeCtrl::GetContainer(
 				DebugPrint(DBGGeneric, L"\tCalling OpenEntry on address book with ulFlags = 0x%X\n", ulFlags);
 
 				WC_H(CallOpenEntry(
-					NULL,
+					nullptr,
 					lpAddrBook,
-					NULL,
-					NULL,
+					nullptr,
+					nullptr,
 					lpCurBin->cb,
 					reinterpret_cast<LPENTRYID>(lpCurBin->lpb),
-					NULL,
+					nullptr,
 					ulFlags,
 					&ulObjType,
 					reinterpret_cast<LPUNKNOWN*>(&lpContainer)));
@@ -928,12 +920,12 @@ void CHierarchyTableTreeCtrl::GetContainer(
 
 				WC_H(CallOpenEntry(
 					lpMDB,
-					NULL,
-					NULL,
-					NULL,
+					nullptr,
+					nullptr,
+					nullptr,
 					lpCurBin->cb,
 					reinterpret_cast<LPENTRYID>(lpCurBin->lpb),
-					NULL,
+					nullptr,
 					ulFlags,
 					&ulObjType,
 					reinterpret_cast<LPUNKNOWN*>(&lpContainer)));
@@ -947,13 +939,13 @@ void CHierarchyTableTreeCtrl::GetContainer(
 		WARNHRESMSG(MAPI_E_CALL_FAILED, IDS_UNKNOWNCONTAINERTYPE);
 		hRes = S_OK;
 		WC_H(CallOpenEntry(
-			NULL,
-			NULL,
+			nullptr,
+			nullptr,
 			m_lpContainer,
-			NULL,
+			nullptr,
 			lpCurBin->cb,
 			reinterpret_cast<LPENTRYID>(lpCurBin->lpb),
-			NULL,
+			nullptr,
 			ulFlags,
 			&ulObjType,
 			reinterpret_cast<LPUNKNOWN*>(&lpContainer)));

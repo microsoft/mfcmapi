@@ -161,3 +161,13 @@ bool UnwrapContactEntryID(_In_ ULONG cbIn, _In_ LPBYTE lpbIn, _Out_ ULONG* lpcbO
 
 LPSPropTagArray GetExcludedTags(_In_opt_ LPSPropTagArray lpTagArray, _In_opt_ LPMAPIPROP lpProp, bool bIsAB);
 HRESULT CopyTo(HWND hWnd, _In_ LPMAPIPROP lpSource, _In_ LPMAPIPROP lpDest, LPCGUID lpGUID, _In_opt_ LPSPropTagArray lpTagArray, bool bIsAB, bool bAllowUI);
+
+// Augemented version of HrGetOneProp which allows passing flags to underlying GetProps
+// Useful for passing fMapiUnicode for unspecified string/stream types
+HRESULT HrGetOnePropEx(
+	_In_ LPMAPIPROP lpMAPIProp,
+	_In_ ULONG ulPropTag,
+	_In_ ULONG ulFlags,
+	_Out_ LPSPropValue* lppPropArray);
+
+void ForceRop(_In_ LPMDB lpMAPIProp);

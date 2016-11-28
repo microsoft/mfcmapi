@@ -440,7 +440,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::AddColumns(_In_ LPSPropTagArray l
 		// If we have named columns, put them up front
 
 		// Walk through the list of named/extra columns and add them to our header list
-		for (const auto& extraCol: m_lpExtraDisplayColumns)
+		for (const auto& extraCol : m_lpExtraDisplayColumns)
 		{
 			auto ulExtraColRowNum = extraCol.ulMatchingTableColumn;
 			auto ulExtraColTag = m_sptExtraColumnTags->aulPropTag[ulExtraColRowNum];
@@ -1430,25 +1430,11 @@ _Check_return_ HRESULT CContentsTableListCtrl::NotificationOn()
 		}
 		else if (S_OK == hRes)
 		{
-			LPSPropValue lpProp = nullptr;
-
 			auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 			if (lpMDB)
 			{
 				m_lpAdviseSink->SetAdviseTarget(lpMDB);
-
-				// Try to trigger some RPC to get the notifications going
-				WC_MAPI(HrGetOneProp(
-					lpMDB,
-					PR_TEST_LINE_SPEED,
-					&lpProp));
-				if (MAPI_E_NOT_FOUND == hRes)
-				{
-					// We're not on an Exchange server. We don't need to generate RPC after all.
-					hRes = S_OK;
-				}
-
-				MAPIFreeBuffer(lpProp);
+				ForceRop(lpMDB);
 			}
 		}
 	}

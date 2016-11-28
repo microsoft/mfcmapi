@@ -231,7 +231,7 @@ std::pair<__ParsingTypeEnum, wstring> InterpretPropSmartView2(_In_opt_ LPSPropVa
 		WC_H_GETPROPS(GetNamesFromIDs(lpMAPIProp,
 			lpMappingSignature,
 			&lpTag,
-			NULL,
+			nullptr,
 			NULL,
 			&ulPropNames,
 			&lppPropNames));
@@ -276,10 +276,7 @@ std::pair<__ParsingTypeEnum, wstring> InterpretPropSmartView2(_In_opt_ LPSPropVa
 		{
 			LPSPropValue lpPropSubject = nullptr;
 
-			WC_MAPI(HrGetOneProp(
-				lpMAPIProp,
-				PR_SUBJECT_W,
-				&lpPropSubject));
+			WC_MAPI(HrGetOneProp(lpMAPIProp, PR_SUBJECT_W, &lpPropSubject));
 
 			if (CheckStringProp(lpPropSubject, PT_UNICODE) && 0 == wcscmp(lpPropSubject->Value.lpszW, L"IPM.Configuration.Autocomplete"))
 			{

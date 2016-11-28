@@ -1023,10 +1023,7 @@ _Check_return_ ULONG GetMAPIObjectType(_In_opt_ LPMAPIPROP lpMAPIProp)
 
 	if (!lpMAPIProp) return 0; // 0's not a valid Object type
 
-	WC_MAPI(HrGetOneProp(
-		lpMAPIProp,
-		PR_OBJECT_TYPE,
-		&lpProp));
+	WC_MAPI(HrGetOneProp(lpMAPIProp, PR_OBJECT_TYPE, &lpProp));
 
 	if (lpProp)
 		ulObjType = lpProp->Value.ul;
@@ -1731,7 +1728,7 @@ _Check_return_ HRESULT ResendSingleMessage(
 					{
 						LPSPropValue lpProp = nullptr;
 						DebugPrint(DBGGeneric, L"Copying 0x%08X\n", lpsMessageTags->aulPropTag[ulProp]);
-						WC_MAPI(HrGetOneProp(lpAttachMsg, lpsMessageTags->aulPropTag[ulProp], &lpProp));
+						WC_MAPI(HrGetOnePropEx(lpAttachMsg, lpsMessageTags->aulPropTag[ulProp], fMapiUnicode, &lpProp));
 
 						WC_MAPI(HrSetOneProp(lpNewMessage, lpProp));
 
@@ -2566,10 +2563,7 @@ wstring GetTitle(LPMAPIPROP lpMAPIProp)
 	for (ULONG i = 0; !bFoundName && i < _countof(g_DisplayNameProps); i++)
 	{
 		hRes = S_OK;
-		WC_MAPI(HrGetOneProp(
-			lpMAPIProp,
-			g_DisplayNameProps[i],
-			&lpProp));
+		WC_MAPI(HrGetOneProp(lpMAPIProp, g_DisplayNameProps[i], &lpProp));
 
 		if (lpProp)
 		{
@@ -2727,4 +2721,36 @@ HRESULT CopyTo(HWND hWnd, _In_ LPMAPIPROP lpSource, _In_ LPMAPIPROP lpDest, LPCG
 	}
 
 	return hRes;
+}
+
+// Augemented version of HrGetOneProp which allows passing flags to underlying GetProps
+// Useful for passing fMapiUnicode for unspecified string/stream types
+HRESULT HrGetOnePropEx(
+	_In_ LPMAPIPROP lpMAPIProp,
+	_In_ ULONG ulPropTag,
+	_In_ ULONG ulFlags,
+	_Out_ LPSPropValue* lppProp)
+{
+	ULONG cValues = 0;
+	SPropTagArray tag = { 1, { ulPropTag } };
+
+	auto hRes = lpMAPIProp->GetProps(&tag, ulFlags, &cValues, lppProp);
+	if (SUCCEEDED(hRes) && PROP_TYPE((*lppProp)->ulPropTag) == PT_ERROR)
+	{
+		hRes = ResultFromScode((*lppProp)->Value.err);
+		MAPIFreeBuffer(*lppProp);
+		*lppProp = nullptr;
+	}
+
+	return hRes;
+}
+
+void ForceRop(_In_ LPMDB lpMDB)
+{
+	auto hRes = S_OK;
+	LPSPropValue lpProp = nullptr;
+	// Try to trigger a rop to get notifications going
+	WC_MAPI(HrGetOneProp(lpMDB, PR_TEST_LINE_SPEED, &lpProp));
+	// No need to worry about errors here - this is just to force rops
+	MAPIFreeBuffer(lpProp);
 }

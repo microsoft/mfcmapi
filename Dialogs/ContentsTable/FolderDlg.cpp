@@ -512,20 +512,20 @@ _Check_return_ bool CFolderDlg::HandlePaste()
 						LPMESSAGE lpMessage = nullptr;
 
 						EC_H(CallOpenEntry(
-							NULL,
-							NULL,
+							nullptr,
+							nullptr,
 							lpMAPISourceFolder,
-							NULL,
+							nullptr,
 							lpEIDs->lpbin[i].cb,
 							reinterpret_cast<LPENTRYID>(lpEIDs->lpbin[i].lpb),
-							NULL,
+							nullptr,
 							MyData.GetCheck(0) ? MAPI_MODIFY : 0, // only need write access for moves
-							NULL,
+							nullptr,
 							reinterpret_cast<LPUNKNOWN*>(&lpMessage)));
 						if (lpMessage)
 						{
 							LPMESSAGE lpNewMessage = nullptr;
-							EC_MAPI((static_cast<LPMAPIFOLDER>(m_lpContainer))->CreateMessage(NULL, m_ulDisplayFlags & dfAssoc ? MAPI_ASSOCIATED : NULL, &lpNewMessage));
+							EC_MAPI((static_cast<LPMAPIFOLDER>(m_lpContainer))->CreateMessage(nullptr, m_ulDisplayFlags & dfAssoc ? MAPI_ASSOCIATED : NULL, &lpNewMessage));
 							if (lpNewMessage)
 							{
 								LPSPropProblemArray lpProblems = nullptr;
@@ -538,7 +538,7 @@ _Check_return_ bool CFolderDlg::HandlePaste()
 
 								EC_MAPI(lpMessage->CopyTo(
 									0,
-									NULL, // ODO: interfaces?
+									nullptr, // TODO: interfaces?
 									lpTagsToExclude,
 									lpProgress ? reinterpret_cast<ULONG_PTR>(m_hWnd) : NULL, // UI param
 									lpProgress, // progress
@@ -747,14 +747,14 @@ void CFolderDlg::OnGetPropsUsingLongTermEID()
 			{
 				WC_H(CallOpenEntry(
 					lpMDB,
-					NULL,
-					NULL,
-					NULL,
+					nullptr,
+					nullptr,
+					nullptr,
 					lpMessageEID->cb,
 					reinterpret_cast<LPENTRYID>(lpMessageEID->lpb),
-					NULL,
+					nullptr,
 					MAPI_BEST_ACCESS,
-					NULL,
+					nullptr,
 					reinterpret_cast<LPUNKNOWN*>(&lpMAPIProp)));
 			}
 
@@ -805,7 +805,7 @@ void CFolderDlg::OnLoadFromMSG()
 				{
 				case 0:
 					EC_MAPI((static_cast<LPMAPIFOLDER>(m_lpContainer))->CreateMessage(
-						NULL,
+						nullptr,
 						m_ulDisplayFlags & dfAssoc ? MAPI_ASSOCIATED : NULL,
 						&lpNewMessage));
 
@@ -826,7 +826,7 @@ void CFolderDlg::OnLoadFromMSG()
 
 						if (lpNewMessage)
 						{
-							EC_H(m_lpPropDisplay->SetDataSource(lpNewMessage, NULL, false));
+							EC_H(m_lpPropDisplay->SetDataSource(lpNewMessage, nullptr, false));
 						}
 					}
 
@@ -1007,7 +1007,7 @@ void CFolderDlg::OnNewMessage()
 	LPMESSAGE lpMessage = nullptr;
 
 	EC_MAPI((static_cast<LPMAPIFOLDER>(m_lpContainer))->CreateMessage(
-		NULL,
+		nullptr,
 		m_ulDisplayFlags & dfAssoc ? MAPI_ASSOCIATED : 0,
 		&lpMessage));
 
@@ -1091,10 +1091,7 @@ void CFolderDlg::OnNewCustomForm()
 
 					if (lpMAPIFormInfo)
 					{
-						EC_MAPI(HrGetOneProp(
-							lpMAPIFormInfo,
-							PR_MESSAGE_CLASS_W,
-							&lpProp));
+						EC_MAPI(HrGetOneProp(lpMAPIFormInfo, PR_MESSAGE_CLASS_W, &lpProp));
 						if (CheckStringProp(lpProp, PT_UNICODE))
 						{
 							szClass = lpProp->Value.lpszW;
@@ -1206,7 +1203,7 @@ _Check_return_ HRESULT CFolderDlg::OnOpenNonModal(int iItem, _In_ SortListData* 
 					iItem,
 					lpMessage,
 					EXCHIVERB_OPEN,
-					NULL));
+					nullptr));
 
 				lpMessage->Release();
 			}
@@ -1266,7 +1263,7 @@ void CFolderDlg::OnExecuteVerbOnForm()
 						iItem,
 						lpMessage,
 						MyData.GetDecimal(0),
-						NULL));
+						nullptr));
 
 					lpMessage->Release();
 					lpMessage = nullptr;
@@ -1659,7 +1656,7 @@ void CFolderDlg::OnLoadFromTNEF()
 			{
 				auto hRes = S_OK;
 				EC_MAPI((static_cast<LPMAPIFOLDER>(m_lpContainer))->CreateMessage(
-					NULL,
+					nullptr,
 					m_ulDisplayFlags & dfAssoc ? MAPI_ASSOCIATED : 0,
 					&lpNewMessage));
 
@@ -1694,7 +1691,7 @@ void CFolderDlg::OnLoadFromEML()
 	auto bDoApply = false;
 	HCHARSET hCharSet = nullptr;
 	auto cSetApplyType = CSET_APPLY_UNTAGGED;
-	WC_H(GetConversionFromEMLOptions(this, &ulConvertFlags, &bDoAdrBook, &bDoApply, &hCharSet, &cSetApplyType, NULL));
+	WC_H(GetConversionFromEMLOptions(this, &ulConvertFlags, &bDoAdrBook, &bDoApply, &hCharSet, &cSetApplyType, nullptr));
 	if (S_OK == hRes)
 	{
 		LPADRBOOK lpAdrBook = nullptr;
@@ -1713,7 +1710,7 @@ void CFolderDlg::OnLoadFromEML()
 			{
 				hRes = S_OK;
 				EC_MAPI((static_cast<LPMAPIFOLDER>(m_lpContainer))->CreateMessage(
-					NULL,
+					nullptr,
 					m_ulDisplayFlags & dfAssoc ? MAPI_ASSOCIATED : 0,
 					&lpNewMessage));
 
@@ -1812,7 +1809,7 @@ void CFolderDlg::OnSetReadFlag()
 			LPMESSAGE lpMessage = nullptr;
 
 			EC_H(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(
-				NULL,
+				nullptr,
 				mfcmapiREQUEST_MODIFY,
 				reinterpret_cast<LPMAPIPROP*>(&lpMessage)));
 

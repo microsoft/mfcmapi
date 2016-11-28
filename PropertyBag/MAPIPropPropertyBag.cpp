@@ -121,9 +121,7 @@ _Check_return_ HRESULT MAPIPropPropertyBag::GetProp(
 	if (NULL == m_lpProp) return S_OK;
 
 	auto hRes = S_OK;
-	SPropTagArray tag = { 1, ulPropTag };
-	ULONG cVals = 0;
-	WC_H_GETPROPS(m_lpProp->GetProps(&tag, fMapiUnicode, &cVals, lppProp));
+	WC_MAPI(HrGetOnePropEx(m_lpProp, ulPropTag, fMapiUnicode, lppProp));
 
 	// Special case for profile sections and row properties - we may have a property which was in our row that isn't available on the object
 	// In that case, we'll get MAPI_E_NOT_FOUND, but the property will be present in m_lpListData->lpSourceProps

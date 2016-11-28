@@ -764,13 +764,13 @@ void CBaseDialog::OnOpenEntryID(_In_opt_ LPSBinary lpBin)
 
 		EC_H_CANCEL(lpAB->Details(
 			&ulUIParam,
-			NULL,
-			NULL,
+			nullptr,
+			nullptr,
 			static_cast<ULONG>(cbBin),
 			lpEntryID,
-			NULL,
-			NULL,
-			NULL,
+			nullptr,
+			nullptr,
+			nullptr,
 			DIALOG_MODAL)); // API doesn't like unicode
 	}
 	else
@@ -781,11 +781,11 @@ void CBaseDialog::OnOpenEntryID(_In_opt_ LPSBinary lpBin)
 		EC_H(CallOpenEntry(
 			MyEID.GetCheck(1) ? lpMDB : 0,
 			MyEID.GetCheck(2) ? lpAB : 0,
-			NULL,
+			nullptr,
 			MyEID.GetCheck(3) ? lpMAPISession : 0,
 			static_cast<ULONG>(cbBin),
 			lpEntryID,
-			NULL,
+			nullptr,
 			(MyEID.GetCheck(4) ? MAPI_MODIFY : MAPI_BEST_ACCESS) |
 			(MyEID.GetCheck(5) ? MAPI_NO_CACHE : 0) |
 			(MyEID.GetCheck(6) ? MAPI_CACHE_ONLY : 0),
@@ -1014,13 +1014,7 @@ void CBaseDialog::OnNotificationsOn()
 			{
 				if (0 == MyData.GetDropDown(2) && lpMDB)
 				{
-					// Try to trigger some RPC to get the notifications going
-					LPSPropValue lpProp = nullptr;
-					WC_MAPI(HrGetOneProp(
-						lpMDB,
-						PR_TEST_LINE_SPEED,
-						&lpProp));
-					MAPIFreeBuffer(lpProp);
+					ForceRop(lpMDB);
 				}
 			}
 			else // if we failed to advise, then we don't need the advise sink object
