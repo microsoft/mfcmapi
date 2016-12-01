@@ -496,68 +496,53 @@ void CPropertyEditor::WriteStringsToSPropValue()
 		m_lpsOutputValue->ulPropTag = m_ulPropTag;
 		m_lpsOutputValue->dwAlignPad = NULL;
 		vector<BYTE> bin;
-		wstring szTmpString;
 
 		switch (PROP_TYPE(m_ulPropTag))
 		{
 		case PT_I2: // treat as signed long
-			szTmpString = GetStringW(0);
-			m_lpsOutputValue->Value.i = static_cast<short int>(wstringToLong(szTmpString, 10));
+			m_lpsOutputValue->Value.i = static_cast<short int>(wstringToLong(GetStringW(0), 10));
 			break;
 		case PT_LONG: // treat as unsigned long
-			szTmpString = GetStringW(0);
-			m_lpsOutputValue->Value.l = static_cast<LONG>(wstringToUlong(szTmpString, 10));
+			m_lpsOutputValue->Value.l = static_cast<LONG>(wstringToUlong(GetStringW(0), 10));
 			break;
 		case PT_R4:
-			szTmpString = GetStringW(0);
-			m_lpsOutputValue->Value.flt = static_cast<float>(wstringToDouble(szTmpString));
+			m_lpsOutputValue->Value.flt = static_cast<float>(wstringToDouble(GetStringW(0)));
 			break;
 		case PT_DOUBLE:
-			szTmpString = GetStringW(0);
-			m_lpsOutputValue->Value.dbl = wstringToDouble(szTmpString);
+			m_lpsOutputValue->Value.dbl = wstringToDouble(GetStringW(0));
 			break;
 		case PT_CURRENCY:
-			szTmpString = GetStringW(0);
-			m_lpsOutputValue->Value.cur.Hi = wstringToUlong(szTmpString, 16);
-			szTmpString = GetStringW(1);
-			m_lpsOutputValue->Value.cur.Lo = wstringToUlong(szTmpString, 16);
+			m_lpsOutputValue->Value.cur.Hi = wstringToUlong(GetStringW(0), 16);
+			m_lpsOutputValue->Value.cur.Lo = wstringToUlong(GetStringW(1), 16);
 			break;
 		case PT_APPTIME:
-			szTmpString = GetStringW(0);
-			m_lpsOutputValue->Value.at = wstringToDouble(szTmpString);
+			m_lpsOutputValue->Value.at = wstringToDouble(GetStringW(0));
 			break;
 		case PT_ERROR: // unsigned
-			szTmpString = GetStringW(0);
-			m_lpsOutputValue->Value.err = static_cast<SCODE>(wstringToUlong(szTmpString, 16));
+			m_lpsOutputValue->Value.err = static_cast<SCODE>(wstringToUlong(GetStringW(0), 16));
 			break;
 		case PT_BOOLEAN:
 			m_lpsOutputValue->Value.b = static_cast<unsigned short>(GetCheck(0));
 			break;
 		case PT_I8:
-			szTmpString = GetStringW(0);
-			m_lpsOutputValue->Value.li.HighPart = static_cast<long>(wstringToUlong(szTmpString, 16));
-			szTmpString = GetStringW(1);
-			m_lpsOutputValue->Value.li.LowPart = static_cast<long>(wstringToUlong(szTmpString, 16));
+			m_lpsOutputValue->Value.li.HighPart = static_cast<long>(wstringToUlong(GetStringW(0), 16));
+			m_lpsOutputValue->Value.li.LowPart = static_cast<long>(wstringToUlong(GetStringW(1), 16));
 			break;
 		case PT_STRING8:
 			// We read strings out of the hex control in order to preserve any hex level tweaks the user
 			// may have done. The RichEdit control likes throwing them away.
-			szTmpString = GetStringW(1);
-			bin = HexStringToBin(szTmpString);
+			bin = HexStringToBin(GetStringW(1));
 			m_lpsOutputValue->Value.lpszA = reinterpret_cast<LPSTR>(ByteVectorToMAPI(bin, m_lpAllocParent));
 			break;
 		case PT_UNICODE:
 			// We read strings out of the hex control in order to preserve any hex level tweaks the user
 			// may have done. The RichEdit control likes throwing them away.
-			szTmpString = GetStringW(1);
-			bin = HexStringToBin(szTmpString);
+			bin = HexStringToBin(GetStringW(1));
 			m_lpsOutputValue->Value.lpszW = reinterpret_cast<LPWSTR>(ByteVectorToMAPI(bin, m_lpAllocParent));
 			break;
 		case PT_SYSTIME:
-			szTmpString = GetStringW(0);
-			m_lpsOutputValue->Value.ft.dwLowDateTime = wstringToUlong(szTmpString, 16);
-			szTmpString = GetStringW(1);
-			m_lpsOutputValue->Value.ft.dwHighDateTime = wstringToUlong(szTmpString, 16);
+			m_lpsOutputValue->Value.ft.dwLowDateTime = wstringToUlong(GetStringW(0), 16);
+			m_lpsOutputValue->Value.ft.dwHighDateTime = wstringToUlong(GetStringW(1), 16);
 			break;
 		case PT_CLSID:
 			EC_H(MAPIAllocateMore(
@@ -572,8 +557,7 @@ void CPropertyEditor::WriteStringsToSPropValue()
 			break;
 		case PT_BINARY:
 			// remember we already read szTmpString and ulStrLen and found ulStrLen was even
-			szTmpString = GetStringW(0);
-			bin = HexStringToBin(szTmpString);
+			bin = HexStringToBin(GetStringW(0));
 			m_lpsOutputValue->Value.bin.lpb = ByteVectorToMAPI(bin, m_lpAllocParent);
 			m_lpsOutputValue->Value.bin.cb = static_cast<ULONG>(bin.size());
 			break;

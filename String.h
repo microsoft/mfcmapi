@@ -56,7 +56,7 @@ wstring BinToTextString(_In_ const LPSBinary lpBin, bool bMultiLine);
 wstring BinToHexString(const vector<BYTE>& lpByte, bool bPrependCB);
 wstring BinToHexString(_In_opt_count_(cb) const LPBYTE lpb, size_t cb, bool bPrependCB);
 wstring BinToHexString(_In_opt_ const LPSBinary lpBin, bool bPrependCB);
-vector<BYTE> HexStringToBin(_In_ wstring lpsz, size_t cbTarget = 0);
+vector<BYTE> HexStringToBin(_In_ const wstring& input, size_t cbTarget = 0);
 LPBYTE ByteVectorToLPBYTE(const vector<BYTE>& bin);
 
 vector<wstring> split(const wstring& str, const wchar_t delim);

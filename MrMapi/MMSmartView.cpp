@@ -46,8 +46,7 @@ void DoSmartView(_In_ MYOPTIONS ProgOpts)
 				}
 				else
 				{
-					auto str = LPCSTRToWstring(reinterpret_cast<LPCSTR>(lpbIn));
-					bin = HexStringToBin(str);
+					bin = HexStringToBin(LPCSTRToWstring(reinterpret_cast<LPCSTR>(lpbIn)));
 					Bin.cb = static_cast<ULONG>(bin.size());
 					Bin.lpb = bin.data();
 				}

@@ -46,7 +46,7 @@ wstring loadstring(DWORD dwID)
 {
 	wstring fmtString;
 	LPWSTR buffer = nullptr;
-	size_t len = ::LoadStringW(nullptr, dwID, reinterpret_cast<PWCHAR>(&buffer), 0);
+	size_t len = LoadStringW(nullptr, dwID, reinterpret_cast<PWCHAR>(&buffer), 0);
 
 	if (len)
 	{
@@ -144,7 +144,7 @@ wstring LPCSTRToWstring(LPCSTR src)
 wstring wstringToLower(const wstring& src)
 {
 	auto dst = src;
-	transform(dst.begin(), dst.end(), dst.begin(), ::tolower);
+	transform(dst.begin(), dst.end(), dst.begin(), tolower);
 	return dst;
 }
 
@@ -404,15 +404,17 @@ bool stripPrefix(wstring& str, const wstring& prefix)
 
 // Converts hex string in lpsz to a binary buffer.
 // If cbTarget != 0, caps the number of bytes converted at cbTarget
-// TODO: rewrite with const ref parameter
-vector<BYTE> HexStringToBin(_In_ wstring lpsz, size_t cbTarget)
+vector<BYTE> HexStringToBin(_In_ const wstring& input, size_t cbTarget)
 {
+	// If our target is odd, we can't convert
+	if (cbTarget % 2 != 0) return vector<BYTE>();
+
 	// remove junk
-	WCHAR szJunk[] = L"\r\n\t -.,\\/'{}`\""; // STRING_OK
-	for (unsigned int i = 0; i < _countof(szJunk); ++i)
+	wstring szJunk = L"\r\n\t -.,\\/'{}`\""; // STRING_OK
+	auto lpsz = strip(input, [szJunk](const WCHAR & chr)
 	{
-		lpsz.erase(std::remove(lpsz.begin(), lpsz.end(), szJunk[i]), lpsz.end());
-	}
+		return szJunk.find(chr) != wstring::npos;
+	});
 
 	// strip one (and only one) prefix
 	stripPrefix(lpsz, L"0x") ||
@@ -421,9 +423,6 @@ vector<BYTE> HexStringToBin(_In_ wstring lpsz, size_t cbTarget)
 		stripPrefix(lpsz, L"X");
 
 	auto cchStrLen = lpsz.length();
-
-	// We have a clean string now. If it's of odd length, we're done.
-	if (cchStrLen % 2 != 0) return vector<BYTE>();
 
 	vector<BYTE> lpb;
 	WCHAR szTmp[3] = { 0 };
