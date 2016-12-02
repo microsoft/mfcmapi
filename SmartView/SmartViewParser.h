@@ -18,7 +18,7 @@ public:
 	SmartViewParser();
 	virtual ~SmartViewParser() = default;
 
-	void Init(size_t cbBin, _In_count_(cbBin) LPBYTE lpBin);
+	void Init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin);
 	_Check_return_ wstring ToString();
 
 	void DisableJunkParsing();
@@ -27,7 +27,7 @@ public:
 
 protected:
 	_Check_return_ wstring JunkDataToString(const vector<BYTE>& lpJunkData) const;
-	_Check_return_ wstring JunkDataToString(size_t cbJunkData, _In_count_(cbJunkData) LPBYTE lpJunkData) const;
+	_Check_return_ wstring JunkDataToString(size_t cbJunkData, _In_count_(cbJunkData) const BYTE* lpJunkData) const;
 	_Check_return_ LPSPropValue BinToSPropValue(DWORD dwPropCount, bool bStringPropsExcludeLength);
 
 	// These functions return pointers to memory backed and cleaned up by SmartViewParser

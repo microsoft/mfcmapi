@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "SmartViewParser.h"
-#include "String.h"
 
 SmartViewParser::SmartViewParser()
 {
@@ -8,7 +7,7 @@ SmartViewParser::SmartViewParser()
 	m_bEnableJunk = true;
 }
 
-void SmartViewParser::Init(size_t cbBin, _In_count_(cbBin) LPBYTE lpBin)
+void SmartViewParser::Init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin)
 {
 	m_Parser.Init(cbBin, lpBin);
 }
@@ -60,15 +59,12 @@ _Check_return_ wstring SmartViewParser::JunkDataToString(const vector<BYTE>& lpJ
 	return szJunk;
 }
 
-_Check_return_ wstring SmartViewParser::JunkDataToString(size_t cbJunkData, _In_count_(cbJunkData) LPBYTE lpJunkData) const
+_Check_return_ wstring SmartViewParser::JunkDataToString(size_t cbJunkData, _In_count_(cbJunkData) const BYTE* lpJunkData) const
 {
 	if (!cbJunkData || !lpJunkData) return L"";
 	DebugPrint(DBGSmartView, L"Had 0x%08X = %u bytes left over.\n", static_cast<int>(cbJunkData), static_cast<UINT>(cbJunkData));
-	SBinary sBin = { 0 };
-	sBin.cb = static_cast<ULONG>(cbJunkData);
-	sBin.lpb = lpJunkData;
 	auto szJunk = formatmessage(IDS_JUNKDATASIZE, cbJunkData);
-	szJunk += BinToHexString(&sBin, true);
+	szJunk += BinToHexString(lpJunkData, static_cast<ULONG>(cbJunkData), true);
 	return szJunk;
 }
 

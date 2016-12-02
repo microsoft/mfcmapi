@@ -342,7 +342,7 @@ wstring BinToTextString(_In_ const LPSBinary lpBin, bool bMultiLine)
 	return szBin;
 }
 
-wstring BinToHexString(_In_opt_count_(cb) const LPBYTE lpb, size_t cb, bool bPrependCB)
+wstring BinToHexString(_In_opt_count_(cb) const BYTE* lpb, size_t cb, bool bPrependCB)
 {
 	wstring lpsz;
 
