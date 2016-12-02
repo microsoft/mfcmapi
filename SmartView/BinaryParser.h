@@ -6,10 +6,10 @@ class CBinaryParser
 {
 public:
 	CBinaryParser();
-	CBinaryParser(size_t cbBin, _In_count_(cbBin) LPBYTE lpBin);
+	CBinaryParser(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin);
 
 	bool Empty() const;
-	void Init(size_t cbBin, _In_count_(cbBin) LPBYTE lpBin);
+	void Init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin);
 	void Advance(size_t cbAdvance);
 	void Rewind();
 	size_t GetCurrentOffset() const;

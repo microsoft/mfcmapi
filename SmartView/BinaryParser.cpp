@@ -8,12 +8,12 @@ CBinaryParser::CBinaryParser()
 	m_Offset = 0;
 }
 
-CBinaryParser::CBinaryParser(size_t cbBin, _In_count_(cbBin) LPBYTE lpBin)
+CBinaryParser::CBinaryParser(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin)
 {
 	Init(cbBin, lpBin);
 }
 
-void CBinaryParser::Init(size_t cbBin, _In_count_(cbBin) LPBYTE lpBin)
+void CBinaryParser::Init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin)
 {
 	DebugPrintEx(DBGSmartView, CLASS, L"Init", L"cbBin = 0x%08X = %u\n", static_cast<int>(cbBin), static_cast<UINT>(cbBin));
 	m_Bin = lpBin && cbBin ? vector<BYTE>(lpBin, lpBin + cbBin) : vector<BYTE>();
