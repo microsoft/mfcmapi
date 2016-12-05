@@ -68,9 +68,9 @@ _Check_return_ wstring SmartViewParser::JunkDataToString(size_t cbJunkData, _In_
 	return szJunk;
 }
 
-LPBYTE SmartViewParser::GetBYTES(size_t cbBytes, size_t cbMaxBytes)
+LPBYTE SmartViewParser::GetBYTES(size_t cbBytes)
 {
-	m_binCache.push_back(m_Parser.GetBYTES(cbBytes, cbMaxBytes));
+	m_binCache.push_back(m_Parser.GetBYTES(cbBytes, static_cast<size_t>(-1)));
 	return m_binCache.back().data();
 }
 
