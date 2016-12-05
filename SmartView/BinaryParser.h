@@ -13,14 +13,14 @@ public:
 	void Advance(size_t cbAdvance);
 	void Rewind();
 	size_t GetCurrentOffset() const;
-	LPBYTE GetCurrentAddress() const;
+	const BYTE* GetCurrentAddress() const;
 	// Moves the parser to an offset obtained from GetCurrentOffset
 	void SetCurrentOffset(size_t stOffset);
 	size_t RemainingBytes() const;
 	template <typename T> T Get()
 	{
 		if (!CheckRemainingBytes(sizeof T)) return T();
-		auto ret = *reinterpret_cast<T *>(GetCurrentAddress());
+		auto ret = *reinterpret_cast<const T *>(GetCurrentAddress());
 		m_Offset += sizeof T;
 		return ret;
 	}

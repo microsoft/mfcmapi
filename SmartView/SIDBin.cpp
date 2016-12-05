@@ -5,7 +5,7 @@
 void SIDBin::Parse()
 {
 	auto hRes = S_OK;
-	PSID SidStart = m_Parser.GetCurrentAddress();
+	PSID SidStart = const_cast<LPBYTE>(m_Parser.GetCurrentAddress());
 	auto cbSid = m_Parser.RemainingBytes();
 	m_Parser.Advance(cbSid);
 
@@ -44,7 +44,7 @@ void SIDBin::Parse()
 		if (lpSidName || lpSidDomain)
 		{
 			WC_B(LookupAccountSidW(
-				NULL,
+				nullptr,
 				SidStart,
 				lpSidName,
 				&dwSidName,

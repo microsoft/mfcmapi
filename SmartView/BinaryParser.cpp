@@ -41,10 +41,9 @@ size_t CBinaryParser::GetCurrentOffset() const
 	return m_Offset;
 }
 
-// TODO: Make this return const
-LPBYTE CBinaryParser::GetCurrentAddress() const
+const BYTE* CBinaryParser::GetCurrentAddress() const
 {
-	return const_cast<LPBYTE>(m_Bin.data() + m_Offset);
+	return m_Bin.data() + m_Offset;
 }
 
 void CBinaryParser::SetCurrentOffset(size_t stOffset)
