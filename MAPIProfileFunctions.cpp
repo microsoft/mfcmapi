@@ -18,7 +18,7 @@ STDAPI STDAPICALLTYPE LaunchWizard(HWND hParentWnd,
 wstring LaunchProfileWizard(
 	_In_ HWND hParentWnd,
 	ULONG ulFlags,
-	_In_ string szServiceNameToAdd)
+	_In_ const string& szServiceNameToAdd)
 {
 	auto hRes = S_OK;
 	CHAR szProfName[80] = { 0 };
@@ -396,9 +396,9 @@ _Check_return_ HRESULT HrMarkExistingProviders(_In_ LPSERVICEADMIN lpServiceAdmi
 	{
 		LPSRowSet lpRowSet = nullptr;
 
-		EC_MAPI(HrQueryAllRows(lpProviderTable, LPSPropTagArray(&pTagUID), NULL, NULL, 0, &lpRowSet));
+		EC_MAPI(HrQueryAllRows(lpProviderTable, LPSPropTagArray(&pTagUID), nullptr, nullptr, 0, &lpRowSet));
 
-		if (lpRowSet) DebugPrintSRowSet(DBGGeneric, lpRowSet, NULL);
+		if (lpRowSet) DebugPrintSRowSet(DBGGeneric, lpRowSet, nullptr);
 
 		if (lpRowSet && lpRowSet->cRows >= 1)
 		{
@@ -426,12 +426,12 @@ _Check_return_ HRESULT HrMarkExistingProviders(_In_ LPSERVICEADMIN lpServiceAdmi
 							SPropValue PropVal;
 							PropVal.ulPropTag = PR_MARKER;
 							PropVal.Value.lpszA = MARKER_STRING;
-							EC_MAPI(lpSect->SetProps(1, &PropVal, NULL));
+							EC_MAPI(lpSect->SetProps(1, &PropVal, nullptr));
 						}
 						else
 						{
 							SPropTagArray pTagArray = { 1, PR_MARKER };
-							WC_MAPI(lpSect->DeleteProps(&pTagArray, NULL));
+							WC_MAPI(lpSect->DeleteProps(&pTagArray, nullptr));
 						}
 						hRes = S_OK;
 						EC_MAPI(lpSect->SaveChanges(0));
@@ -527,12 +527,12 @@ _Check_return_ HRESULT HrFindUnmarkedProvider(_In_ LPSERVICEADMIN lpServiceAdmin
 }
 
 _Check_return_ HRESULT HrAddServiceToProfile(
-	_In_ string lpszServiceName, // Service Name
+	_In_ const string& lpszServiceName, // Service Name
 	_In_ ULONG_PTR ulUIParam, // hwnd for CreateMsgService
 	ULONG ulFlags, // Flags for CreateMsgService
 	ULONG cPropVals, // Count of properties for ConfigureMsgService
 	_In_opt_ LPSPropValue lpPropVals, // Properties for ConfigureMsgService
-	_In_ string lpszProfileName) // profile name
+	_In_ const string& lpszProfileName) // profile name
 {
 	auto hRes = S_OK;
 	LPPROFADMIN lpProfAdmin = nullptr;
@@ -592,7 +592,7 @@ _Check_return_ HRESULT HrAddServiceToProfile(
 				// Look for a provider without our dummy prop
 				EC_H(HrFindUnmarkedProvider(lpServiceAdmin, &lpRowSet));
 
-				if (lpRowSet) DebugPrintSRowSet(DBGGeneric, lpRowSet, NULL);
+				if (lpRowSet) DebugPrintSRowSet(DBGGeneric, lpRowSet, nullptr);
 
 				// should only have one unmarked row
 				if (lpRowSet && lpRowSet->cRows == 1)
@@ -636,9 +636,9 @@ _Check_return_ HRESULT HrAddServiceToProfile(
 
 _Check_return_ HRESULT HrAddExchangeToProfile(
 	_In_ ULONG_PTR ulUIParam, // hwnd for CreateMsgService
-	_In_ string& lpszServerName,
-	_In_ string& lpszMailboxName,
-	_In_ string lpszProfileName)
+	_In_ const string& lpszServerName,
+	_In_ const string& lpszMailboxName,
+	_In_ const string& lpszProfileName)
 {
 	auto hRes = S_OK;
 
@@ -661,9 +661,9 @@ _Check_return_ HRESULT HrAddPSTToProfile(
 	_In_ ULONG_PTR ulUIParam, // hwnd for CreateMsgService
 	bool bUnicodePST,
 	_In_ const wstring& lpszPSTPath, // PST name
-	_In_ string lpszProfileName, // profile name
+	_In_ const string& lpszProfileName, // profile name
 	bool bPasswordSet, // whether or not to include a password
-	_In_ string& lpszPassword) // password to include
+	_In_ const string& lpszPassword) // password to include
 {
 	auto hRes = S_OK;
 
@@ -691,7 +691,7 @@ _Check_return_ HRESULT HrAddPSTToProfile(
 
 // Creates an empty profile.
 _Check_return_ HRESULT HrCreateProfile(
-	_In_ string& lpszProfileName) // profile name
+	_In_ const string& lpszProfileName) // profile name
 {
 	auto hRes = S_OK;
 	LPPROFADMIN lpProfAdmin = nullptr;
@@ -707,7 +707,7 @@ _Check_return_ HRESULT HrCreateProfile(
 	// Create the profile
 	WC_MAPI(lpProfAdmin->CreateProfile(
 		reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszProfileName.c_str())),
-		NULL,
+		nullptr,
 		0,
 		NULL)); // fMapiUnicode is not supported!
 	if (S_OK != hRes)
@@ -724,7 +724,7 @@ _Check_return_ HRESULT HrCreateProfile(
 
 // Removes a profile.
 _Check_return_ HRESULT HrRemoveProfile(
-	_In_ string lpszProfileName)
+	_In_ const string& lpszProfileName)
 {
 	auto hRes = S_OK;
 	LPPROFADMIN lpProfAdmin = nullptr;
@@ -747,7 +747,7 @@ _Check_return_ HRESULT HrRemoveProfile(
 
 // Set a profile as default.
 _Check_return_ HRESULT HrSetDefaultProfile(
-	_In_ string lpszProfileName)
+	_In_ const string& lpszProfileName)
 {
 	auto hRes = S_OK;
 	LPPROFADMIN lpProfAdmin = nullptr;
@@ -771,7 +771,7 @@ _Check_return_ HRESULT HrSetDefaultProfile(
 // Checks for an existing profile.
 _Check_return_ HRESULT HrMAPIProfileExists(
 	_In_ LPPROFADMIN lpProfAdmin,
-	_In_ string& lpszProfileName)
+	_In_ const string& lpszProfileName)
 {
 	auto hRes = S_OK;
 	LPMAPITABLE lpTable = nullptr;
@@ -796,8 +796,8 @@ _Check_return_ HRESULT HrMAPIProfileExists(
 	EC_MAPI(HrQueryAllRows(
 		lpTable,
 		LPSPropTagArray(&rgPropTag),
-		NULL,
-		NULL,
+		nullptr,
+		nullptr,
 		0,
 		&lpRows));
 
@@ -843,7 +843,7 @@ _Check_return_ HRESULT HrMAPIProfileExists(
 }
 
 _Check_return_ HRESULT GetProfileServiceVersion(
-	_In_ string lpszProfileName,
+	_In_ const string& lpszProfileName,
 	_Out_ ULONG* lpulServerVersion,
 	_Out_ EXCHANGE_STORE_VERSION_NUM* lpStoreVersion,
 	_Out_ bool* lpbFoundServerVersion,
@@ -880,7 +880,7 @@ _Check_return_ HRESULT GetProfileServiceVersion(
 		LPPROFSECT lpProfSect = nullptr;
 		EC_MAPI(lpServiceAdmin->OpenProfileSection(
 			LPMAPIUID(pbGlobalProfileSectionGuid),
-			NULL,
+			nullptr,
 			0,
 			&lpProfSect));
 		if (lpProfSect)
@@ -929,8 +929,8 @@ _Check_return_ HRESULT GetProfileServiceVersion(
 
 // Copies a profile.
 _Check_return_ HRESULT HrCopyProfile(
-	_In_ string lpszOldProfileName,
-	_In_ string lpszNewProfileName)
+	_In_ const string& lpszOldProfileName,
+	_In_ const string& lpszNewProfileName)
 {
 	auto hRes = S_OK;
 	LPPROFADMIN lpProfAdmin = nullptr;
@@ -943,7 +943,7 @@ _Check_return_ HRESULT HrCopyProfile(
 
 	EC_MAPI(lpProfAdmin->CopyProfile(
 		reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszOldProfileName.c_str())),
-		NULL,
+		nullptr,
 		reinterpret_cast<LPTSTR>(const_cast<LPSTR>(lpszNewProfileName.c_str())),
 		NULL,
 		NULL));
@@ -970,7 +970,7 @@ _Check_return_ HRESULT OpenProfileSection(_In_ LPSERVICEADMIN lpServiceAdmin, _I
 	// First, we try the normal way of opening the profile section:
 	WC_MAPI(lpServiceAdmin->OpenProfileSection(
 		reinterpret_cast<LPMAPIUID>(lpServiceUID->lpb),
-		NULL,
+		nullptr,
 		MAPI_MODIFY | MAPI_FORCE_ACCESS, // passing this flag might actually work with Outlook 2000 and XP
 		lppProfSect));
 
@@ -983,9 +983,8 @@ _Check_return_ HRESULT OpenProfileSection(_In_ LPSERVICEADMIN lpServiceAdmin, _I
 		// (HACK) is to call into one of MAPI's internal functions that bypasses
 		// the security check. We build a Interface to it and then point to it from our
 		// offset of 0x48. USE AT YOUR OWN RISK! NOT SUPPORTED!
-		interface IOpenSectionHack : public IUnknown
+		interface IOpenSectionHack : IUnknown
 		{
-		public:
 			virtual HRESULT STDMETHODCALLTYPE OpenSection(LPMAPIUID, ULONG, LPPROFSECT*) = 0;
 		};
 
@@ -1026,7 +1025,7 @@ _Check_return_ HRESULT OpenProfileSection(_In_ LPPROVIDERADMIN lpProviderAdmin, 
 
 	WC_MAPI(lpProviderAdmin->OpenProfileSection(
 		reinterpret_cast<LPMAPIUID>(lpProviderUID->lpb),
-		NULL,
+		nullptr,
 		MAPI_MODIFY | MAPI_FORCE_ACCESS,
 		lppProfSect));
 	if (!*lppProfSect)
@@ -1038,7 +1037,7 @@ _Check_return_ HRESULT OpenProfileSection(_In_ LPPROVIDERADMIN lpProviderAdmin, 
 
 		WC_MAPI(lpProviderAdmin->OpenProfileSection(
 			reinterpret_cast<LPMAPIUID>(lpProviderUID->lpb),
-			NULL,
+			nullptr,
 			MAPI_MODIFY,
 			lppProfSect));
 	}
