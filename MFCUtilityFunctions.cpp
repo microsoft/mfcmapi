@@ -58,12 +58,12 @@ _Check_return_ HRESULT DisplayObject(
 	case MAPI_STORE:
 	{
 		LPMDB lpTempMDB = nullptr;
-		WC_H(lpUnk->QueryInterface(IID_IMsgStore, (LPVOID*)&lpTempMDB));
+		WC_H(lpUnk->QueryInterface(IID_IMsgStore, reinterpret_cast<LPVOID*>(&lpTempMDB)));
 		if (lpTempMDB)
 		{
 			lpHostDlg->OnUpdateSingleMAPIPropListCtrl(lpUnk, nullptr);
 
-			LPMDB lpMDB = lpMapiObjects->GetMDB(); // do not release
+			auto lpMDB = lpMapiObjects->GetMDB(); // do not release
 			if (lpMDB) lpMDB->AddRef(); // hold on to this so that...
 			lpMapiObjects->SetMDB(lpTempMDB);
 
@@ -85,14 +85,14 @@ _Check_return_ HRESULT DisplayObject(
 	case MAPI_FOLDER:
 	{
 		LPMAPIFOLDER lpTempFolder = nullptr;
-		WC_H(lpUnk->QueryInterface(IID_IMAPIFolder, (LPVOID*)&lpTempFolder));
+		WC_H(lpUnk->QueryInterface(IID_IMAPIFolder, reinterpret_cast<LPVOID*>(&lpTempFolder)));
 
 		if (lpTempFolder)
 		{
 			// There are two ways to display a folder...either the contents table or the hierarchy table.
 			if (otHierarchy == tType)
 			{
-				LPMDB lpMDB = lpMapiObjects->GetMDB(); // do not release
+				auto lpMDB = lpMapiObjects->GetMDB(); // do not release
 				if (lpMDB)
 				{
 					new CMsgStoreDlg(

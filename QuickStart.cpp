@@ -147,13 +147,13 @@ void OnQSDisplayDefaultDir(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 			&lpEID));
 
 		WC_H(CallOpenEntry(
-			NULL,
+			nullptr,
 			lpAdrBook,
-			NULL,
-			NULL,
+			nullptr,
+			nullptr,
 			cbEID,
 			lpEID,
-			NULL,
+			nullptr,
 			MAPI_MODIFY,
 			&ulObjType,
 			reinterpret_cast<LPUNKNOWN*>(&lpDefaultDir)));
@@ -247,7 +247,7 @@ void OnQSDisplayNicknameCache(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 						if (lpRows && 1 == lpRows->cRows && PR_ENTRYID == lpRows->aRow[0].lpProps[eidPR_ENTRYID].ulPropTag)
 						{
 							LPMESSAGE lpMSG = nullptr;
-							WC_H(CallOpenEntry(lpMDB, NULL, NULL, NULL, &lpRows->aRow[0].lpProps[eidPR_ENTRYID].Value.bin, NULL, NULL, NULL, reinterpret_cast<LPUNKNOWN*>(&lpMSG)));
+							WC_H(CallOpenEntry(lpMDB, nullptr, nullptr, nullptr, &lpRows->aRow[0].lpProps[eidPR_ENTRYID].Value.bin, nullptr, NULL, nullptr, reinterpret_cast<LPUNKNOWN*>(&lpMSG)));
 
 							if (SUCCEEDED(hRes) && lpMSG)
 							{
@@ -475,7 +475,7 @@ void OnQSLookupThumbail(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	{
 		LPMAILUSER lpMailUser = nullptr;
 
-		EC_H(SelectUser(lpAdrBook, hwnd, NULL, &lpMailUser));
+		EC_H(SelectUser(lpAdrBook, hwnd, nullptr, &lpMailUser));
 
 		if (SUCCEEDED(hRes) && lpMailUser)
 		{

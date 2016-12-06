@@ -74,9 +74,9 @@ _Check_return_ HRESULT HrGetRegistryValue(
 	WC_W32(RegQueryValueExW(
 		hKey,
 		lpszValue.c_str(),
-		NULL,
+		nullptr,
 		lpType,
-		NULL,
+		nullptr,
 		&cb));
 
 	// only handle types we know about - all others are bad
@@ -91,7 +91,7 @@ _Check_return_ HRESULT HrGetRegistryValue(
 			EC_W32(RegQueryValueExW(
 				hKey,
 				lpszValue.c_str(),
-				NULL,
+				nullptr,
 				lpType,
 				static_cast<unsigned char*>(*lppData),
 				&cb));
@@ -147,9 +147,9 @@ wstring ReadStringFromRegistry(_In_ HKEY hKey, _In_ const wstring& szValue, _In_
 	WC_W32(RegQueryValueExW(
 		hKey,
 		szValue.c_str(),
-		NULL,
+		nullptr,
 		&dwKeyType,
-		NULL,
+		nullptr,
 		&cb));
 
 	if (S_OK == hRes && cb  && !(cb % 2) && REG_SZ == dwKeyType)
@@ -161,7 +161,7 @@ wstring ReadStringFromRegistry(_In_ HKEY hKey, _In_ const wstring& szValue, _In_
 			EC_W32(RegQueryValueExW(
 				hKey,
 				szValue.c_str(),
-				NULL,
+				nullptr,
 				&dwKeyType,
 				szBuf,
 				&cb));
@@ -304,12 +304,12 @@ _Check_return_ HKEY CreateRootKey()
 		HKEY_CURRENT_USER,
 		RKEY_ROOT,
 		0,
-		NULL,
+		nullptr,
 		0,
 		KEY_READ | KEY_WRITE,
-		NULL,
+		nullptr,
 		&hkSub,
-		NULL));
+		nullptr));
 
 	return hkSub;
 }

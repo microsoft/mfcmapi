@@ -294,7 +294,7 @@ _Check_return_ HRESULT CacheGetNamesFromIDs(_In_ LPMAPIPROP lpMAPIProp,
 
 				WC_H_GETPROPS(lpMAPIProp->GetNamesFromIDs(
 					&lpUncachedTags,
-					NULL,
+					nullptr,
 					NULL,
 					&ulUncachedPropNames,
 					&lppUncachedPropNames));

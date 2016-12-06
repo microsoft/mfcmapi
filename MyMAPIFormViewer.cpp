@@ -226,7 +226,7 @@ STDMETHODIMP CMyMAPIFormViewer::NewMessage(ULONG fComposeInFolder,
 	if (pFolderFocus)
 	{
 		EC_MAPI(pFolderFocus->CreateMessage(
-			NULL, // IID
+			nullptr, // IID
 			NULL, // flags
 			ppMessage));
 
@@ -243,7 +243,7 @@ STDMETHODIMP CMyMAPIFormViewer::NewMessage(ULONG fComposeInFolder,
 				-1);
 			if (lpMAPIFormViewer) // not going to release this because we're returning it in ppMessageSite
 			{
-				EC_H(lpMAPIFormViewer->SetPersist(NULL, pPersistMessage));
+				EC_H(lpMAPIFormViewer->SetPersist(nullptr, pPersistMessage));
 				*ppMessageSite = static_cast<LPMAPIMESSAGESITE>(lpMAPIFormViewer);
 			}
 		}
@@ -281,7 +281,7 @@ STDMETHODIMP CMyMAPIFormViewer::SaveMessage()
 	if (!m_lpPersistMessage || !m_lpMessage) return MAPI_E_INVALID_PARAMETER;
 
 	EC_MAPI(m_lpPersistMessage->Save(
-		NULL, // m_lpMessage,
+		nullptr, // m_lpMessage,
 		true));
 	if (FAILED(hRes))
 	{
@@ -297,7 +297,7 @@ STDMETHODIMP CMyMAPIFormViewer::SaveMessage()
 	else
 	{
 		EC_MAPI(m_lpMessage->SaveChanges(KEEP_OPEN_READWRITE));
-		EC_MAPI(m_lpPersistMessage->SaveCompleted(NULL));
+		EC_MAPI(m_lpPersistMessage->SaveCompleted(nullptr));
 	}
 
 	return hRes;
@@ -461,13 +461,12 @@ _Check_return_ HRESULT CMyMAPIFormViewer::CallDoVerb(_In_ LPMAPIFORM lpMapiForm,
 	auto hRes = S_OK;
 	if (EXCHIVERB_OPEN == lVerb)
 	{
-		WC_H(SetPersist(lpMapiForm, NULL));
+		WC_H(SetPersist(lpMapiForm, nullptr));
 	}
 
 	WC_MAPI(lpMapiForm->DoVerb(
 		lVerb,
-		// (IMAPIViewContext *) this, // view context
-		NULL, // view context
+		nullptr, // view context
 		reinterpret_cast<ULONG_PTR>(m_hwndParent), // parent window
 		lpRect)); // RECT structure with size
 	if (S_OK != hRes)
@@ -481,8 +480,7 @@ _Check_return_ HRESULT CMyMAPIFormViewer::CallDoVerb(_In_ LPMAPIFORM lpMapiForm,
 		Rect.bottom = 400;
 		EC_MAPI(lpMapiForm->DoVerb(
 			lVerb,
-			// (IMAPIViewContext *) this, // view context
-			NULL, // view context
+			nullptr, // view context
 			reinterpret_cast<ULONG_PTR>(m_hwndParent), // parent window
 			&Rect)); // RECT structure with size
 	}
@@ -697,14 +695,14 @@ _Check_return_ HRESULT CMyMAPIFormViewer::GetNextMessage(
 			{
 				EC_H(CallOpenEntry(
 					m_lpMDB,
-					NULL,
-					NULL,
-					NULL,
+					nullptr,
+					nullptr,
+					nullptr,
 					lpEID->cb,
 					reinterpret_cast<LPENTRYID>(lpEID->lpb),
-					NULL,
+					nullptr,
 					MAPI_BEST_ACCESS,
-					NULL,
+					nullptr,
 					reinterpret_cast<LPUNKNOWN*>(ppMessage)));
 
 				EC_MAPI(m_lpFolder->GetMessageStatus(

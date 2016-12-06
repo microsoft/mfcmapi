@@ -96,7 +96,7 @@ _Check_return_ LPMAPISESSION CMapiObjects::LogonGetSession(_In_ HWND hWnd)
 {
 	if (m_lpMAPISession) return m_lpMAPISession;
 
-	CMapiObjects::MAPILogonEx(hWnd, nullptr, MAPI_EXTENDED | MAPI_LOGON_UI | MAPI_NEW_SESSION);
+	MAPILogonEx(hWnd, nullptr, MAPI_EXTENDED | MAPI_LOGON_UI | MAPI_NEW_SESSION);
 
 	return m_lpMAPISession;
 }
@@ -130,7 +130,7 @@ _Check_return_ LPADRBOOK CMapiObjects::GetAddrBook(bool bForceOpen)
 		auto hRes = S_OK;
 		EC_MAPI(m_lpMAPISession->OpenAddressBook(
 			NULL,
-			NULL,
+			nullptr,
 			NULL,
 			&m_lpAddrBook));
 	}

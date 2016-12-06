@@ -449,7 +449,7 @@ _Check_return_ ULONG ExtendAddInMenu(HMENU hMenu, ULONG ulAddInContext)
 						hAddInMenu = CreatePopupMenu();
 						if (hAddInMenu)
 						{
-							::InsertMenuW(
+							InsertMenuW(
 								hMenu,
 								static_cast<UINT>(-1),
 								MF_BYPOSITION | MF_POPUP | MF_ENABLED,
@@ -492,8 +492,8 @@ _Check_return_ LPMENUITEM GetAddinMenuItem(HWND hWnd, UINT uidMsg)
 	subMenu.cbSize = sizeof(MENUITEMINFO);
 	subMenu.fMask = MIIM_STATE | MIIM_ID | MIIM_DATA;
 
-	if (::GetMenuItemInfoW(
-		::GetMenu(hWnd),
+	if (GetMenuItemInfoW(
+		GetMenu(hWnd),
 		uidMsg,
 		false,
 		&subMenu) &&

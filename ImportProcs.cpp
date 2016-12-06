@@ -161,7 +161,7 @@ _Check_return_ HMODULE LoadFromOLMAPIDir(_In_ const wstring&  szDLLName)
 			UINT ret = 0;
 			WCHAR szDrive[_MAX_DRIVE] = { 0 };
 			WCHAR szMAPIPath[MAX_PATH] = { 0 };
-			WC_D(ret, _wsplitpath_s(szOutlookMAPIPath.c_str(), szDrive, _MAX_DRIVE, szMAPIPath, MAX_PATH, NULL, NULL, NULL, NULL));
+			WC_D(ret, _wsplitpath_s(szOutlookMAPIPath.c_str(), szDrive, _MAX_DRIVE, szMAPIPath, MAX_PATH, nullptr, NULL, nullptr, NULL));
 
 			if (SUCCEEDED(hRes))
 			{

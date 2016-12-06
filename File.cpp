@@ -186,7 +186,7 @@ _Check_return_ HRESULT LoadFromTNEF(_In_ const wstring& szMessageFile, _In_ LPAD
 	LPSTREAM lpBodyStream = nullptr;
 
 	if (szMessageFile.empty() || !lpAdrBook || !lpMessage) return MAPI_E_INVALID_PARAMETER;
-	static auto dwKey = static_cast<WORD>(::GetTickCount());
+	static auto dwKey = static_cast<WORD>(GetTickCount());
 
 	enum
 	{
@@ -564,7 +564,7 @@ _Check_return_ HRESULT STDAPICALLTYPE MyStgCreateStorageEx(_In_ const wstring& p
 	}
 
 	// Fallback for NT4, which doesn't have StgCreateStorageEx
-	return ::StgCreateDocfile(
+	return StgCreateDocfile(
 		pName.c_str(),
 		grfMode,
 		0,
@@ -725,7 +725,7 @@ _Check_return_ HRESULT SaveToTNEF(_In_ LPMESSAGE lpMessage, _In_ LPADRBOOK lpAdr
 	LPITNEF lpTNEF = nullptr;
 	LPSTnefProblemArray lpError = nullptr;
 
-	static auto dwKey = static_cast<WORD>(::GetTickCount());
+	static auto dwKey = static_cast<WORD>(GetTickCount());
 
 	// Get a Stream interface on the input TNEF file
 	EC_H(MyOpenStreamOnFile(

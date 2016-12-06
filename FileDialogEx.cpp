@@ -193,9 +193,9 @@ _Check_return_ INT_PTR CFileDialogExW::DisplayDialog(
 
 	BOOL bResult;
 	if (bOpenFileDialog)
-		bResult = ::GetOpenFileNameW(static_cast<OPENFILENAMEW*>(&ofn));
+		bResult = GetOpenFileNameW(static_cast<OPENFILENAMEW*>(&ofn));
 	else
-		bResult = ::GetSaveFileNameW(static_cast<OPENFILENAMEW*>(&ofn));
+		bResult = GetSaveFileNameW(static_cast<OPENFILENAMEW*>(&ofn));
 
 	if (bResult)
 	{

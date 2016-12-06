@@ -66,15 +66,15 @@ CFakeSplitter::CFakeSplitter(
 	EC_B(ModifyStyleEx(0, WS_EX_CONTROLPARENT));
 
 	// Load split cursors
-	EC_D(m_hSplitCursorV, ::LoadCursor(GetModuleHandle(NULL), MAKEINTRESOURCE(IDC_SPLITV)));
-	EC_D(m_hSplitCursorH, ::LoadCursor(GetModuleHandle(NULL), MAKEINTRESOURCE(IDC_SPLITH)));
+	EC_D(m_hSplitCursorV, ::LoadCursor(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDC_SPLITV)));
+	EC_D(m_hSplitCursorH, ::LoadCursor(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDC_SPLITH)));
 }
 
 CFakeSplitter::~CFakeSplitter()
 {
 	TRACE_DESTRUCTOR(CLASS);
-	(void)::DestroyCursor(m_hSplitCursorH);
-	(void)::DestroyCursor(m_hSplitCursorV);
+	(void)DestroyCursor(m_hSplitCursorH);
+	(void)DestroyCursor(m_hSplitCursorV);
 	CWnd::DestroyWindow();
 	if (m_lpHostDlg) m_lpHostDlg->Release();
 }
@@ -276,7 +276,7 @@ void CFakeSplitter::OnMouseMove(UINT /*nFlags*/, CPoint point)
 	if (SplitterHit == HitTest(point.x, point.y))
 	{
 		// This looks backwards, but it is not. A horizontal split needs the vertical cursor
-		::SetCursor(SplitHorizontal == m_SplitType ? m_hSplitCursorV : m_hSplitCursorH);
+		SetCursor(SplitHorizontal == m_SplitType ? m_hSplitCursorV : m_hSplitCursorH);
 	}
 
 	if (m_bTracking)
@@ -296,7 +296,7 @@ void CFakeSplitter::OnMouseMove(UINT /*nFlags*/, CPoint point)
 		SetPercent(flNewPercent);
 
 		// Force child windows to refresh now
-		EC_B(RedrawWindow(NULL, NULL, RDW_ALLCHILDREN | RDW_UPDATENOW));
+		EC_B(RedrawWindow(nullptr, nullptr, RDW_ALLCHILDREN | RDW_UPDATENOW));
 	}
 }
 
@@ -312,7 +312,7 @@ void CFakeSplitter::StartTracking(int ht)
 
 	// make sure no updates are pending
 	// CSplitterWnd does this...not sure why
-	EC_B(RedrawWindow(NULL, NULL, RDW_ALLCHILDREN | RDW_UPDATENOW));
+	EC_B(RedrawWindow(nullptr, nullptr, RDW_ALLCHILDREN | RDW_UPDATENOW));
 
 	// set tracking state and appropriate cursor
 	m_bTracking = true;
@@ -347,7 +347,7 @@ void CFakeSplitter::OnPaint()
 		db.Begin(hdc, rcWin);
 
 		auto rcSplitter = rcWin;
-		::FillRect(hdc, &rcSplitter, GetSysBrush(cBackground));
+		FillRect(hdc, &rcSplitter, GetSysBrush(cBackground));
 
 		POINT pts[2]; // 0 is left top, 1 is right bottom
 		if (SplitHorizontal == m_SplitType)
@@ -366,10 +366,10 @@ void CFakeSplitter::OnPaint()
 		}
 
 		// Draw the splitter bar
-		auto hpenOld = ::SelectObject(hdc, GetPen(m_bTracking ? cSolidPen : cDashedPen));
-		::MoveToEx(hdc, pts[0].x, pts[0].y, nullptr);
-		::LineTo(hdc, pts[1].x, pts[1].y);
-		(void) ::SelectObject(hdc, hpenOld);
+		auto hpenOld = SelectObject(hdc, GetPen(m_bTracking ? cSolidPen : cDashedPen));
+		MoveToEx(hdc, pts[0].x, pts[0].y, nullptr);
+		LineTo(hdc, pts[1].x, pts[1].y);
+		(void) SelectObject(hdc, hpenOld);
 
 		db.End(hdc);
 	}

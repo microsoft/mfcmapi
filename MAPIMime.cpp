@@ -21,7 +21,7 @@ _Check_return_ HRESULT ImportEMLToIMessage(
 	LPCONVERTERSESSION lpConverter = nullptr;
 
 	EC_H_MSG(CoCreateInstance(CLSID_IConverterSession,
-		NULL,
+		nullptr,
 		CLSCTX_INPROC_SERVER,
 		IID_IConverterSession,
 		reinterpret_cast<LPVOID*>(&lpConverter)),IDS_NOCONVERTERSESSION);
@@ -49,7 +49,7 @@ _Check_return_ HRESULT ImportEMLToIMessage(
 				// We'll make the user ensure CCSF_SMTP is passed
 				EC_MAPI(lpConverter->MIMEToMAPI(lpEMLStm,
 					lpMsg,
-					NULL, // Must be NULL
+					nullptr, // Must be nullptr
 					ulConvertFlags));
 				if (SUCCEEDED(hRes))
 				{
@@ -76,7 +76,7 @@ _Check_return_ HRESULT ExportIMessageToEML(_In_ LPMESSAGE lpMsg, _In_z_ LPCWSTR 
 	LPCONVERTERSESSION lpConverter = nullptr;
 
 	EC_H_MSG(CoCreateInstance(CLSID_IConverterSession,
-		NULL,
+		nullptr,
 		CLSCTX_INPROC_SERVER,
 		IID_IConverterSession,
 		reinterpret_cast<LPVOID*>(&lpConverter)),IDS_NOCONVERTERSESSION);
@@ -103,7 +103,7 @@ _Check_return_ HRESULT ExportIMessageToEML(_In_ LPMESSAGE lpMsg, _In_z_ LPCWSTR 
 		{
 			LPSTREAM lpMimeStm = nullptr;
 
-			EC_H(CreateStreamOnHGlobal(NULL, true, &lpMimeStm));
+			EC_H(CreateStreamOnHGlobal(nullptr, true, &lpMimeStm));
 			if (SUCCEEDED(hRes) && lpMimeStm)
 			{
 				// Per the docs for MAPIToMIMEStm, CCSF_SMTP must always be set
@@ -121,10 +121,10 @@ _Check_return_ HRESULT ExportIMessageToEML(_In_ LPMESSAGE lpMsg, _In_z_ LPCWSTR 
 					if (SUCCEEDED(hRes) && lpFileStm)
 					{
 						LARGE_INTEGER dwBegin = {0};
-						EC_MAPI(lpMimeStm->Seek(dwBegin, STREAM_SEEK_SET, NULL));
+						EC_MAPI(lpMimeStm->Seek(dwBegin, STREAM_SEEK_SET, nullptr));
 						if (SUCCEEDED(hRes))
 						{
-							EC_MAPI(lpMimeStm->CopyTo(lpFileStm, ULARGE_MAX, NULL, NULL));
+							EC_MAPI(lpMimeStm->CopyTo(lpFileStm, ULARGE_MAX, nullptr, nullptr));
 							if (SUCCEEDED(hRes))
 							{
 								EC_MAPI(lpFileStm->Commit(STGC_DEFAULT));

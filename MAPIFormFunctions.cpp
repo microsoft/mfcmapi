@@ -53,7 +53,7 @@ _Check_return_ HRESULT CreateAndDisplayNewMailInFolder(
 			LPMESSAGE lpMessage = nullptr;
 			// Get a message
 			EC_MAPI(lpFolder->CreateMessage(
-				NULL, // default interface
+				nullptr, // default interface
 				0, // flags
 				&lpMessage));
 			if (lpMessage)
@@ -85,7 +85,7 @@ _Check_return_ HRESULT CreateAndDisplayNewMailInFolder(
 						EC_MAPI(lpMAPIFormViewer->CallDoVerb(
 							lpForm,
 							EXCHIVERB_OPEN,
-							NULL)); // Not passing a RECT here so we'll try to use the default for the form
+							nullptr)); // Not passing a RECT here so we'll try to use the default for the form
 						lpForm->Release();
 					}
 
@@ -273,7 +273,7 @@ _Check_return_ HRESULT OpenMessageModal(_In_ LPMAPIFOLDER lpParentFolder,
 
 		// set up the 'display message' form
 		EC_MAPI(lpMAPISession->PrepareForm(
-			NULL, // default interface
+			nullptr, // default interface
 			lpMessage, // message to open
 			&Token)); // basically, the pointer to the form
 
@@ -281,9 +281,9 @@ _Check_return_ HRESULT OpenMessageModal(_In_ LPMAPIFOLDER lpParentFolder,
 			NULL,
 			lpMDB, // message store
 			lpParentFolder, // parent folder
-			NULL, // default interface
+			nullptr, // default interface
 			Token, // token?
-			NULL, // reserved
+			nullptr, // reserved
 			MAPI_POST_MESSAGE, // flags
 			ulMessageStatus, // message status
 			lpspvaShow[FLAGS].Value.ul, // message flags

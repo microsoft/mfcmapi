@@ -15,11 +15,11 @@ CRichEditOleCallback::CRichEditOleCallback(HWND hWnd, HWND hWndParent)
 STDMETHODIMP CRichEditOleCallback::QueryInterface(REFIID riid,
 	LPVOID* ppvObj)
 {
-	*ppvObj = 0;
+	*ppvObj = nullptr;
 	if (riid == IID_IRichEditOleCallback ||
 		riid == IID_IUnknown)
 	{
-		*ppvObj = (IRichEditOleCallback *) this;
+		*ppvObj = static_cast<IRichEditOleCallback *>(this);
 		AddRef();
 		return S_OK;
 	}
@@ -29,14 +29,14 @@ STDMETHODIMP CRichEditOleCallback::QueryInterface(REFIID riid,
 
 STDMETHODIMP_(ULONG) CRichEditOleCallback::AddRef()
 {
-	LONG lCount = InterlockedIncrement(&m_cRef);
+	auto lCount = InterlockedIncrement(&m_cRef);
 	TRACE_ADDREF(CLASS, lCount);
 	return lCount;
 }
 
 STDMETHODIMP_(ULONG) CRichEditOleCallback::Release()
 {
-	LONG lCount = InterlockedDecrement(&m_cRef);
+	auto lCount = InterlockedDecrement(&m_cRef);
 	TRACE_RELEASE(CLASS, lCount);
 	if (!lCount) delete this;
 	return lCount;
@@ -113,11 +113,11 @@ STDMETHODIMP CRichEditOleCallback::GetContextMenu(WORD /*seltype*/,
 	HMENU FAR * lphmenu)
 {
 	if (!lphmenu) return E_INVALIDARG;
-	lphmenu = NULL;
-	HMENU hContext = LoadMenu(NULL, MAKEINTRESOURCE(IDR_MENU_RICHEDIT_POPUP));
+	lphmenu = nullptr;
+	auto hContext = LoadMenu(nullptr, MAKEINTRESOURCE(IDR_MENU_RICHEDIT_POPUP));
 	if (hContext)
 	{
-		HMENU hPopup = GetSubMenu(hContext, 0);
+		auto hPopup = GetSubMenu(hContext, 0);
 		if (hPopup)
 		{
 			ConvertMenuOwnerDraw(hPopup, false);
@@ -133,17 +133,17 @@ STDMETHODIMP CRichEditOleCallback::GetContextMenu(WORD /*seltype*/,
 			if (m_hWnd != WindowFromPoint(pos))
 			{
 				DWORD dwPos = 0;
-				(void) ::SendMessage(m_hWnd, EM_GETSEL, (WPARAM)&dwPos, (LPARAM)NULL);
-				(void) ::SendMessage(m_hWnd, EM_POSFROMCHAR, (WPARAM)&pos, (LPARAM)dwPos);
-				::ClientToScreen(m_hWnd, &pos);
+				(void) ::SendMessage(m_hWnd, EM_GETSEL, reinterpret_cast<WPARAM>(&dwPos), static_cast<LPARAM>(NULL));
+				(void) ::SendMessage(m_hWnd, EM_POSFROMCHAR, reinterpret_cast<WPARAM>(&pos), static_cast<LPARAM>(dwPos));
+				ClientToScreen(m_hWnd, &pos);
 			}
 
-			DWORD dwCommand = ::TrackPopupMenu(hPopup, TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pos.x, pos.y, NULL, m_hWndParent, NULL);
+			DWORD dwCommand = TrackPopupMenu(hPopup, TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pos.x, pos.y, NULL, m_hWndParent, nullptr);
 			DeleteMenuEntries(hPopup);
-			(void) ::SendMessage(m_hWnd, dwCommand, (WPARAM)0, (LPARAM)(EM_SETSEL == dwCommand) ? -1 : 0);
+			(void) ::SendMessage(m_hWnd, dwCommand, static_cast<WPARAM>(0), static_cast<LPARAM>(EM_SETSEL == dwCommand) ? -1 : 0);
 		}
 
-		::DestroyMenu(hContext);
+		DestroyMenu(hContext);
 	}
 
 	return S_OK;

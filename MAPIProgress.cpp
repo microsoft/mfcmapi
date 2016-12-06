@@ -88,7 +88,7 @@ _Check_return_ STDMETHODIMP CMAPIProgress::Progress(ULONG ulValue, ULONG ulCount
 
 	if (m_hWnd)
 	{
-		auto iPercent = ::MulDiv(ulValue - m_ulMin, 100, m_ulMax - m_ulMin);
+		auto iPercent = MulDiv(ulValue - m_ulMin, 100, m_ulMax - m_ulMin);
 		CBaseDialog::UpdateStatus(m_hWnd, STATUSINFOTEXT, formatmessage(IDS_PERCENTLOADED, m_szContext.c_str(), iPercent));
 	}
 

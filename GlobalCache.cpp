@@ -21,7 +21,7 @@ CGlobalCache::~CGlobalCache()
 {
 	TRACE_DESTRUCTOR(GCCLASS);
 	EmptyBuffer();
-	CGlobalCache::MAPIUninitialize();
+	MAPIUninitialize();
 }
 
 void CGlobalCache::MAPIInitialize(ULONG ulFlags)

@@ -253,7 +253,7 @@ STDMETHODIMP CMySecInfo::SetSecurity(SECURITY_INFORMATION /*SecurityInformation*
 	if (!m_lpHeader || !pSecurityDescriptor || !m_lpMAPIProp) return MAPI_E_INVALID_PARAMETER;
 	if (!IsValidSecurityDescriptor(pSecurityDescriptor)) return MAPI_E_INVALID_PARAMETER;
 
-	auto dwSDLength = ::GetSecurityDescriptorLength(pSecurityDescriptor);
+	auto dwSDLength = GetSecurityDescriptorLength(pSecurityDescriptor);
 	auto cbBlob = m_cbHeader + dwSDLength;
 	if (cbBlob < m_cbHeader || cbBlob < dwSDLength) return MAPI_E_INVALID_PARAMETER;
 
@@ -457,11 +457,11 @@ wstring ACEToString(_In_ void* pACE, eAceType acetype)
 	SID_NAME_USE SidNameUse;
 
 	WC_B(LookupAccountSidW(
-		NULL,
+		nullptr,
 		SidStart,
-		NULL,
+		nullptr,
 		&dwSidName,
-		NULL,
+		nullptr,
 		&dwSidDomain,
 		&SidNameUse));
 	hRes = S_OK;
@@ -479,7 +479,7 @@ wstring ACEToString(_In_ void* pACE, eAceType acetype)
 	if (lpSidName || lpSidDomain)
 	{
 		WC_B(LookupAccountSidW(
-			NULL,
+			nullptr,
 			SidStart,
 			lpSidName,
 			&dwSidName,

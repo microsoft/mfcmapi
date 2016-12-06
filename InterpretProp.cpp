@@ -679,7 +679,7 @@ void FileTimeToString(_In_ const FILETIME& fileTime, _In_ wstring& PropString, _
 			LOCALE_USER_DEFAULT,
 			NULL,
 			&SysTime,
-			NULL,
+			nullptr,
 			szDateStr,
 			MAX_PATH));
 
@@ -890,7 +890,7 @@ NamePropNames NameIDToStrings(
 		WC_H_GETPROPS(GetNamesFromIDs(lpMAPIProp,
 			lpMappingSignature,
 			&lpTag,
-			NULL,
+			nullptr,
 			NULL,
 			&ulPropNames,
 			&lppPropNames));

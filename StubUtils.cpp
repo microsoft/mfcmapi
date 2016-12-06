@@ -236,7 +236,7 @@ HKEY GetHKeyMapiClient(const wstring& pwzProviderOverride)
 			DWORD dwType = 0;
 			WC_W32(RegQueryValueExW(
 				hMailKey,
-				NULL,
+				nullptr,
 				nullptr,
 				&dwType,
 				reinterpret_cast<LPBYTE>(rgchMailClient),
@@ -295,7 +295,7 @@ wstring GetMailClientFromMSIData(HKEY hkeyMapiClient)
 	{
 		auto componentID = wstring(rgchMSIComponentID, dwSizeComponentID);
 		auto applicationID = wstring(rgchMSIApplicationLCID, dwSizeLCID);
-		szPath = GetComponentPath(componentID, applicationID, FALSE);
+		szPath = GetComponentPath(componentID, applicationID, false);
 	}
 
 	DebugPrint(DBGLoadMAPI, L"Exit GetMailClientFromMSIData: szPath = %ws\n", szPath.c_str());
@@ -371,7 +371,7 @@ wstring GetInstalledOutlookMAPI(int iOutlook)
 		UINT ret = 0;
 		WCHAR szDrive[_MAX_DRIVE] = { 0 };
 		WCHAR szOutlookPath[MAX_PATH] = { 0 };
-		WC_D(ret, _wsplitpath_s(lpszTempPath.c_str(), szDrive, _MAX_DRIVE, szOutlookPath, MAX_PATH, NULL, NULL, NULL, NULL));
+		WC_D(ret, _wsplitpath_s(lpszTempPath.c_str(), szDrive, _MAX_DRIVE, szOutlookPath, MAX_PATH, nullptr, NULL, nullptr, NULL));
 
 		if (SUCCEEDED(hRes))
 		{
@@ -426,7 +426,7 @@ wstring GetOutlookPath(_In_ const wstring& szCategory, _Out_opt_ bool* lpb64)
 		szCategory.c_str(),
 		L"outlook.x64.exe", // STRING_OK
 		static_cast<DWORD>(INSTALLMODE_DEFAULT),
-		NULL,
+		nullptr,
 		&dwValueBuf));
 	if (ERROR_SUCCESS == ret)
 	{
@@ -438,7 +438,7 @@ wstring GetOutlookPath(_In_ const wstring& szCategory, _Out_opt_ bool* lpb64)
 			szCategory.c_str(),
 			L"outlook.exe", // STRING_OK
 			static_cast<DWORD>(INSTALLMODE_DEFAULT),
-			NULL,
+			nullptr,
 			&dwValueBuf));
 	}
 
