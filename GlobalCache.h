@@ -49,7 +49,7 @@ public:
 	void SetAttachmentsToCopy(_In_ LPMESSAGE lpMessage, _In_ const vector<ULONG>& attNumList);
 	_Check_return_ vector<ULONG> GetAttachmentsToCopy() const;
 
-	void SetProfileToCopy(_In_ string szProfileName);
+	void SetProfileToCopy(_In_ const string& szProfileName);
 	_Check_return_ string GetProfileToCopy() const;
 
 	_Check_return_ LPMAPIFOLDER GetSourceParentFolder() const;

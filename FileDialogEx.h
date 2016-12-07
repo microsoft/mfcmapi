@@ -30,7 +30,7 @@ private:
 		_In_ const wstring& lpszDefExt,
 		_In_ const wstring& lpszFileName,
 		DWORD dwFlags,
-		_In_ wstring lpszFilter = emptystring,
+		_In_ const wstring& lpszFilter = emptystring,
 		_In_opt_ CWnd* pParentWnd = nullptr);
 
 	wstring GetFileName() const;

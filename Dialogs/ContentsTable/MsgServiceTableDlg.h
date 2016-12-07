@@ -13,7 +13,7 @@ public:
 	CMsgServiceTableDlg(
 		_In_ CParentWnd* pParentWnd,
 		_In_ CMapiObjects* lpMapiObjects,
-		_In_ string szProfileName);
+		_In_ const string& szProfileName);
 	virtual ~CMsgServiceTableDlg();
 
 private:

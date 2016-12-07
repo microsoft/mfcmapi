@@ -148,7 +148,7 @@ _Check_return_ INT_PTR CFileDialogExW::DisplayDialog(
 	_In_ const wstring& lpszDefExt,
 	_In_ const wstring& lpszFileName,
 	DWORD dwFlags,
-	_In_ wstring lpszFilter,
+	_In_ const wstring& lpszFilter,
 	_In_opt_ CWnd* pParentWnd)
 {
 	WCHAR szFileName[_MAX_PATH]; // contains full path name after return
@@ -184,11 +184,11 @@ _Check_return_ INT_PTR CFileDialogExW::DisplayDialog(
 		wcsncpy_s(ofn.lpstrFile, ofn.nMaxFile, lpszFileName.c_str(), _TRUNCATE);
 
 	// Translate filter into commdlg format (lots of \0)
-	wstring strFilter; // filter string
-	if (!lpszFilter.empty())
+	auto strFilter = lpszFilter; // filter string
+	if (!strFilter.empty())
 	{
-		replace(lpszFilter.begin(), lpszFilter.end(), L'|', L'\0');
-		ofn.lpstrFilter = lpszFilter.c_str();
+		replace(strFilter.begin(), strFilter.end(), L'|', L'\0');
+		ofn.lpstrFilter = strFilter.c_str();
 	}
 
 	BOOL bResult;

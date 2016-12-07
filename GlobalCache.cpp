@@ -154,7 +154,7 @@ _Check_return_ vector<ULONG> CGlobalCache::GetAttachmentsToCopy() const
 	return m_attachmentsToCopy;
 }
 
-void CGlobalCache::SetProfileToCopy(_In_ string szProfileName)
+void CGlobalCache::SetProfileToCopy(_In_ const string& szProfileName)
 {
 	m_szProfileToCopy = szProfileName;
 }

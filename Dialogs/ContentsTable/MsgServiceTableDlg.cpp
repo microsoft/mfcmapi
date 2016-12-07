@@ -15,7 +15,7 @@ static wstring CLASS = L"CMsgServiceTableDlg";
 CMsgServiceTableDlg::CMsgServiceTableDlg(
 	_In_ CParentWnd* pParentWnd,
 	_In_ CMapiObjects* lpMapiObjects,
-	_In_ string szProfileName
+	_In_ const string& szProfileName
 ) :
 	CContentsTableDlg(
 		pParentWnd,
@@ -84,7 +84,7 @@ void CMsgServiceTableDlg::OnRefreshView()
 	// Clean up our table and admin in reverse order from which we obtained them
 	// Failure to do this leads to crashes in Outlook's profile code
 	EC_H(m_lpContentsTableListCtrl->SetContentsTable(
-		NULL,
+		nullptr,
 		dfNormal,
 		NULL));
 
