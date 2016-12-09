@@ -10,7 +10,7 @@
 
 enum
 {
-	htPR_DISPLAY_NAME,
+	htPR_DISPLAY_NAME_W,
 	htPR_ENTRYID,
 	htPR_INSTANCE_KEY,
 	htPR_SUBFOLDERS,
@@ -21,7 +21,7 @@ enum
 static const SizedSPropTagArray(htNUMCOLS, sptHTCols) =
 {
  htNUMCOLS,
- PR_DISPLAY_NAME,
+ PR_DISPLAY_NAME_W,
  PR_ENTRYID,
  PR_INSTANCE_KEY,
  PR_SUBFOLDERS,
@@ -314,18 +314,18 @@ _Check_return_ HRESULT CHierarchyTableTreeCtrl::AddRootNode(_In_ LPMAPICONTAINER
 	else lpEIDBin = &lpProps[htPR_ENTRYID].Value.bin;
 
 	// Get the Display Name for the Root Container
-	if (!lpProps || PT_ERROR == PROP_TYPE(lpProps[htPR_DISPLAY_NAME].ulPropTag))
+	if (!lpProps || PT_ERROR == PROP_TYPE(lpProps[htPR_DISPLAY_NAME_W].ulPropTag))
 	{
 		DebugPrint(DBGHierarchy, L"Could not find Display Name for Root Container. This is benign. Assuming NULL.\n");
 	}
-	else lpRootName = &lpProps[htPR_DISPLAY_NAME];
+	else lpRootName = &lpProps[htPR_DISPLAY_NAME_W];
 
 	wstring szName;
 
 	// Shouldn't have to check lpRootName for non-NULL since CheckString does it, but prefast is complaining
-	if (lpRootName && CheckStringProp(lpRootName, PT_TSTRING))
+	if (lpRootName && CheckStringProp(lpRootName, PT_UNICODE))
 	{
-		szName = LPCTSTRToWstring(lpRootName->Value.LPSZ);
+		szName = lpRootName->Value.lpszW;
 	}
 	else
 	{
@@ -387,10 +387,10 @@ void CHierarchyTableTreeCtrl::AddNode(_In_ LPSRow lpsRow, HTREEITEM hParent, boo
 	auto lpName = PpropFindProp(
 		lpsRow->lpProps,
 		lpsRow->cValues,
-		PR_DISPLAY_NAME);
-	if (CheckStringProp(lpName, PT_TSTRING))
+		PR_DISPLAY_NAME_W);
+	if (CheckStringProp(lpName, PT_UNICODE))
 	{
-		szName = LPCTSTRToWstring(lpName->Value.LPSZ);
+		szName = lpName->Value.lpszW;
 	}
 	else
 	{
@@ -487,6 +487,7 @@ _Check_return_ LPMAPITABLE CHierarchyTableTreeCtrl::GetHierarchyTable(HTREEITEM 
 			}
 		}
 	}
+
 	return lpData->Node()->m_lpHierarchyTable;
 }
 
@@ -699,20 +700,20 @@ void CHierarchyTableTreeCtrl::OnSelChanged(_In_ NMHDR* pNMHDR, _In_ LRESULT* pRe
 }
 
 // This function will be called when we edit a node so we can attempt to commit the changes
+// TODO: In non-unicode builds, this gives us ANSI strings - need to figure out how to change that
 void CHierarchyTableTreeCtrl::OnEndLabelEdit(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 {
 	auto hRes = S_OK;
-	LPMAPICONTAINER lpMAPIContainer = nullptr;
-	SPropValue sDisplayName;
 	TV_DISPINFO* pTVDispInfo = reinterpret_cast<TV_DISPINFO*>(pNMHDR);
-
 	*pResult = 0;
 
 	if (!pTVDispInfo || !pTVDispInfo->item.pszText) return;
 
+	LPMAPICONTAINER lpMAPIContainer = nullptr;
 	GetContainer(pTVDispInfo->item.hItem, mfcmapiREQUEST_MODIFY, &lpMAPIContainer);
 	if (!lpMAPIContainer) return;
 
+	SPropValue sDisplayName;
 	sDisplayName.ulPropTag = PR_DISPLAY_NAME;
 	sDisplayName.Value.LPSZ = pTVDispInfo->item.pszText;
 
@@ -1125,17 +1126,23 @@ _Check_return_ LRESULT CHierarchyTableTreeCtrl::msgOnModifyItem(WPARAM wParam, L
 		auto lpName = PpropFindProp(
 			tab->row.lpProps,
 			tab->row.cValues,
-			PR_DISPLAY_NAME);
+			PR_DISPLAY_NAME_W);
 
-		if (CheckStringProp(lpName, PT_TSTRING))
+		wstring szText;
+		if (CheckStringProp(lpName, PT_UNICODE))
 		{
-			EC_B(SetItemText(hModifyItem, lpName->Value.LPSZ));
+			szText = lpName->Value.lpszW;
 		}
 		else
 		{
-			auto szText = loadstring(IDS_UNKNOWNNAME);
-			EC_B(SetItemText(hModifyItem, wstringTotstring(szText).c_str()));
+			szText = loadstring(IDS_UNKNOWNNAME);
 		}
+
+		TVITEMEXW item = { 0 };
+		item.mask = TVIF_TEXT;
+		item.pszText = const_cast<LPWSTR>(szText.data());
+		item.hItem = hModifyItem;
+		EC_B(::SendMessage(m_hWnd, TVM_SETITEMW, 0, reinterpret_cast<LPARAM>(&item)));
 
 		// We make this copy here and pass it in to the node
 		// The mem will be freed when the item data is cleaned up - do not free here
