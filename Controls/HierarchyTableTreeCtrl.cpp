@@ -670,8 +670,15 @@ void CHierarchyTableTreeCtrl::UpdateSelectionUI(HTREEITEM hItem) const
 		szParam3);
 
 	m_lpHostDlg->OnUpdateSingleMAPIPropListCtrl(lpMAPIContainer, GetSortListData(hItem));
-	auto selectedItem = LPCTSTRToWstring(GetItemText(GetSelectedItem()));
-	m_lpHostDlg->UpdateTitleBarText(selectedItem);
+
+	WCHAR szText[255] = { 0 };
+	TVITEMEXW item = { 0 };
+	item.mask = TVIF_TEXT;
+	item.pszText = szText;
+	item.cchTextMax = _countof(szText);
+	item.hItem = GetSelectedItem();
+	WC_B(::SendMessage(m_hWnd, TVM_GETITEMW, 0, reinterpret_cast<LPARAM>(&item)));
+	m_lpHostDlg->UpdateTitleBarText(szText);
 
 	if (lpMAPIContainer) lpMAPIContainer->Release();
 }
