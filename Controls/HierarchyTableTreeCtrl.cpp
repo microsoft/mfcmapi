@@ -1140,7 +1140,7 @@ _Check_return_ LRESULT CHierarchyTableTreeCtrl::msgOnModifyItem(WPARAM wParam, L
 
 		TVITEMEXW item = { 0 };
 		item.mask = TVIF_TEXT;
-		item.pszText = const_cast<LPWSTR>(szText.data());
+		item.pszText = const_cast<LPWSTR>(szText.c_str());
 		item.hItem = hModifyItem;
 		EC_B(::SendMessage(m_hWnd, TVM_SETITEMW, 0, reinterpret_cast<LPARAM>(&item)));
 
