@@ -36,6 +36,10 @@ void CDumpStore::InitMessagePath(_In_ const wstring& szMessageFileName)
 void CDumpStore::InitFolderPathRoot(_In_ const wstring& szFolderPathRoot)
 {
 	m_szFolderPathRoot = szFolderPathRoot;
+	if (m_szFolderPathRoot.length() >= MAXMSGPATH)
+	{
+		DebugPrint(DBGGeneric, L"InitFolderPathRoot: \"%ws\" length (%d) greater than max length (%d)\n", m_szFolderPathRoot.c_str(), m_szFolderPathRoot.length(), MAXMSGPATH);
+	}
 }
 
 void CDumpStore::InitMailboxTablePathRoot(_In_ const wstring& szMailboxTablePathRoot)
@@ -112,9 +116,7 @@ void CDumpStore::DoMailboxTablePerRowWork(_In_ LPMDB lpMDB, _In_ const LPSRow lp
 	{
 		auto szTemp = SanitizeFileNameW(LPCTSTRToWstring(lpDisplayName->Value.LPSZ));
 
-		m_szFolderPathRoot = format(
-			L"%ws\\%ws", // STRING_OK
-			m_szMailboxTablePathRoot.c_str(), szTemp.c_str());
+		m_szFolderPathRoot = m_szMailboxTablePathRoot + L"\\" + szTemp;
 
 		// suppress any error here since the folder may already exist
 		WC_B(CreateDirectoryW(m_szFolderPathRoot.c_str(), nullptr));
@@ -146,9 +148,7 @@ void CDumpStore::EndStoreWork()
 void CDumpStore::BeginFolderWork()
 {
 	auto hRes = S_OK;
-	m_szFolderPath = format(
-		L"%ws%ws", // STRING_OK
-		m_szFolderPathRoot.c_str(), m_szFolderOffset.c_str());
+	m_szFolderPath = m_szFolderPathRoot + m_szFolderOffset;
 
 	// We've done all the setup we need. If we're just outputting a list, we don't need to do the rest
 	if (m_bOutputList) return;
@@ -158,9 +158,7 @@ void CDumpStore::BeginFolderWork()
 
 	// Dump the folder props to a file
 	// Holds file/path name for folder props
-	auto szFolderPropsFile = format(
-		L"%wsFOLDER_PROPS.xml", // STRING_OK
-		m_szFolderPath);
+	auto szFolderPropsFile = m_szFolderPath + L"FOLDER_PROPS.xml"; // STRING_OK
 	m_fFolderProps = MyOpenFile(szFolderPropsFile, true);
 	if (!m_fFolderProps) return;
 
@@ -216,7 +214,7 @@ void CDumpStore::EndFolderWork()
 
 void CDumpStore::BeginContentsTableWork(ULONG ulFlags, ULONG ulCountRows)
 {
-	if (m_szFolderPathRoot.empty()) return;
+	if (m_szFolderPath.empty()) return;
 	if (m_bOutputList)
 	{
 		_tprintf(_T("Subject, Message Class, Filename\n"));
@@ -224,9 +222,8 @@ void CDumpStore::BeginContentsTableWork(ULONG ulFlags, ULONG ulCountRows)
 	}
 
 	// Holds file/path name for contents table output
-	auto szContentsTableFile = format(
-		ulFlags & MAPI_ASSOCIATED ? L"%wsASSOCIATED_CONTENTS_TABLE.xml" : L"%wsCONTENTS_TABLE.xml", // STRING_OK
-		m_szFolderPath);
+	auto szContentsTableFile =
+		ulFlags & MAPI_ASSOCIATED ? m_szFolderPath + L"ASSOCIATED_CONTENTS_TABLE.xml": m_szFolderPath + L"CONTENTS_TABLE.xml"; // STRING_OK
 	m_fFolderContents = MyOpenFile(szContentsTableFile, true);
 	if (m_fFolderContents)
 	{
@@ -244,6 +241,7 @@ void OutputMessageList(
 	bool bOutputMSG)
 {
 	if (!lpSRow || szFolderPath.empty()) return;
+	if (szFolderPath.length() >= MAXMSGPATH) return;
 
 	// Get required properties from the message
 	auto lpTemp = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PR_SUBJECT_W);
@@ -486,64 +484,67 @@ void OutputMessageXML(
 		lpMsgData->szFilePath = BuildFileNameAndPath(L".xml", szSubj, szFolderPath, lpRecordKey); // STRING_OK
 	}
 
-	DebugPrint(DBGGeneric, L"OutputMessagePropertiesToFile: Saving to \"%ws\"\n", lpMsgData->szFilePath.c_str());
-	lpMsgData->fMessageProps = MyOpenFile(lpMsgData->szFilePath, true);
-
-	if (lpMsgData->fMessageProps)
+	if (!lpMsgData->szFilePath.empty())
 	{
-		OutputToFile(lpMsgData->fMessageProps, g_szXMLHeader);
-		OutputToFile(lpMsgData->fMessageProps, L"<message>\n");
-		if (lpAllProps)
-		{
-			OutputToFile(lpMsgData->fMessageProps, L"<properties listtype=\"summary\">\n");
-#define NUMPROPS 9
-			static const SizedSPropTagArray(NUMPROPS, sptCols) =
-			{
-			NUMPROPS,
-			PR_MESSAGE_CLASS_W,
-			PR_SUBJECT_W,
-			PR_SENDER_ADDRTYPE_W,
-			PR_SENDER_EMAIL_ADDRESS_W,
-			PR_MESSAGE_DELIVERY_TIME,
-			PR_ENTRYID,
-			PR_SEARCH_KEY,
-			PR_RECORD_KEY,
-			PR_INTERNET_CPID,
-			};
+		DebugPrint(DBGGeneric, L"OutputMessagePropertiesToFile: Saving to \"%ws\"\n", lpMsgData->szFilePath.c_str());
+		lpMsgData->fMessageProps = MyOpenFile(lpMsgData->szFilePath, true);
 
-			for (auto i = 0; i < NUMPROPS; i++)
+		if (lpMsgData->fMessageProps)
+		{
+			OutputToFile(lpMsgData->fMessageProps, g_szXMLHeader);
+			OutputToFile(lpMsgData->fMessageProps, L"<message>\n");
+			if (lpAllProps)
 			{
-				auto lpTemp = PpropFindProp(lpAllProps, cValues, sptCols.aulPropTag[i]);
-				if (lpTemp)
+				OutputToFile(lpMsgData->fMessageProps, L"<properties listtype=\"summary\">\n");
+#define NUMPROPS 9
+				static const SizedSPropTagArray(NUMPROPS, sptCols) =
 				{
-					OutputPropertyToFile(lpMsgData->fMessageProps, lpTemp, lpMessage, bRetryStreamProps);
+				NUMPROPS,
+				PR_MESSAGE_CLASS_W,
+				PR_SUBJECT_W,
+				PR_SENDER_ADDRTYPE_W,
+				PR_SENDER_EMAIL_ADDRESS_W,
+				PR_MESSAGE_DELIVERY_TIME,
+				PR_ENTRYID,
+				PR_SEARCH_KEY,
+				PR_RECORD_KEY,
+				PR_INTERNET_CPID,
+				};
+
+				for (auto i = 0; i < NUMPROPS; i++)
+				{
+					auto lpTemp = PpropFindProp(lpAllProps, cValues, sptCols.aulPropTag[i]);
+					if (lpTemp)
+					{
+						OutputPropertyToFile(lpMsgData->fMessageProps, lpTemp, lpMessage, bRetryStreamProps);
+					}
 				}
+
+				OutputToFile(lpMsgData->fMessageProps, L"</properties>\n");
 			}
 
-			OutputToFile(lpMsgData->fMessageProps, L"</properties>\n");
-		}
+			// Log Body
+			OutputBody(lpMsgData->fMessageProps, lpMessage, PR_BODY, L"PR_BODY", false, NULL);
+			OutputBody(lpMsgData->fMessageProps, lpMessage, PR_BODY_HTML, L"PR_BODY_HTML", false, NULL);
+			OutputBody(lpMsgData->fMessageProps, lpMessage, PR_RTF_COMPRESSED, L"PR_RTF_COMPRESSED", false, NULL);
 
-		// Log Body
-		OutputBody(lpMsgData->fMessageProps, lpMessage, PR_BODY, L"PR_BODY", false, NULL);
-		OutputBody(lpMsgData->fMessageProps, lpMessage, PR_BODY_HTML, L"PR_BODY_HTML", false, NULL);
-		OutputBody(lpMsgData->fMessageProps, lpMessage, PR_RTF_COMPRESSED, L"PR_RTF_COMPRESSED", false, NULL);
+			ULONG ulInCodePage = CP_ACP; // picking CP_ACP as our default
+			auto lpTemp = PpropFindProp(lpAllProps, cValues, PR_INTERNET_CPID);
+			if (lpTemp && PR_INTERNET_CPID == lpTemp->ulPropTag)
+			{
+				ulInCodePage = lpTemp->Value.l;
+			}
 
-		ULONG ulInCodePage = CP_ACP; // picking CP_ACP as our default
-		auto lpTemp = PpropFindProp(lpAllProps, cValues, PR_INTERNET_CPID);
-		if (lpTemp && PR_INTERNET_CPID == lpTemp->ulPropTag)
-		{
-			ulInCodePage = lpTemp->Value.l;
-		}
+			OutputBody(lpMsgData->fMessageProps, lpMessage, PR_RTF_COMPRESSED, L"WrapCompressedRTFEx best body", true, ulInCodePage);
 
-		OutputBody(lpMsgData->fMessageProps, lpMessage, PR_RTF_COMPRESSED, L"WrapCompressedRTFEx best body", true, ulInCodePage);
+			if (lpAllProps)
+			{
+				OutputToFile(lpMsgData->fMessageProps, L"<properties listtype=\"FullPropList\">\n");
 
-		if (lpAllProps)
-		{
-			OutputToFile(lpMsgData->fMessageProps, L"<properties listtype=\"FullPropList\">\n");
+				OutputPropertiesToFile(lpMsgData->fMessageProps, cValues, lpAllProps, lpMessage, bRetryStreamProps);
 
-			OutputPropertiesToFile(lpMsgData->fMessageProps, cValues, lpAllProps, lpMessage, bRetryStreamProps);
-
-			OutputToFile(lpMsgData->fMessageProps, L"</properties>\n");
+				OutputToFile(lpMsgData->fMessageProps, L"</properties>\n");
+			}
 		}
 	}
 
@@ -600,15 +601,17 @@ void OutputMessageMSG(
 	}
 
 	auto szFileName = BuildFileNameAndPath(L".msg", szSubj, szFolderPath, lpRecordKey); // STRING_OK
+	if (!szFileName.empty())
+	{
+		DebugPrint(DBGGeneric, L"Saving to = \"%ws\"\n", szFileName.c_str());
 
-	DebugPrint(DBGGeneric, L"Saving to = \"%ws\"\n", szFileName.c_str());
-
-	WC_H(SaveToMSG(
-		lpMessage,
-		szFileName,
-		fMapiUnicode ? true : false,
-		nullptr,
-		false));
+		WC_H(SaveToMSG(
+			lpMessage,
+			szFileName,
+			fMapiUnicode ? true : false,
+			nullptr,
+			false));
+	}
 }
 
 bool CDumpStore::BeginMessageWork(_In_ LPMESSAGE lpMessage, _In_ LPVOID lpParentMessageData, _Deref_out_opt_ LPVOID* lpData)

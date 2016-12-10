@@ -11,6 +11,27 @@
 #include <shlobj.h>
 #include "Dumpstore.h"
 
+wstring ShortenPath(const wstring& path)
+{
+	if (!path.empty())
+	{
+		auto hRes = S_OK;
+		WCHAR szShortPath[MAX_PATH] = { 0 };
+		size_t cchShortPath = NULL;
+		// Use the short path to give us as much room as possible
+		WC_D(cchShortPath, GetShortPathNameW(path.c_str(), szShortPath, _countof(szShortPath)));
+		wstring ret = szShortPath;
+		if (ret.back() != L'\\')
+		{
+			ret += L'\\';
+		}
+
+		return ret;
+	}
+
+	return path;
+}
+
 wstring GetDirectoryPath(HWND hWnd)
 {
 	WCHAR szPath[MAX_PATH] = { 0 };
@@ -39,7 +60,15 @@ wstring GetDirectoryPath(HWND hWnd)
 	}
 
 	lpMalloc->Release();
-	return szPath;
+
+	auto path = ShortenPath(szPath);
+	if (path.length() >= MAXMSGPATH)
+	{
+		ErrDialog(__FILE__, __LINE__, IDS_EDPATHTOOLONG, path.length(), MAXMSGPATH);
+		return emptystring;
+	}
+
+	return path;
 }
 
 // Opens storage with best access
@@ -298,30 +327,25 @@ wstring BuildFileName(
 
 // The file name we generate should be shorter than MAX_PATH
 // This includes our directory name too!
-#define MAXSUBJ 25
-#define MAXBIN 141
 wstring BuildFileNameAndPath(
 	_In_ const wstring& szExt,
 	_In_ const wstring& szSubj,
 	_In_ const wstring& szRootPath,
 	_In_opt_ const LPSBinary lpBin)
 {
-	auto hRes = S_OK;
+	DebugPrint(DBGGeneric, L"BuildFileNameAndPath ext = \"%ws\"\n", szExt.c_str());
+	DebugPrint(DBGGeneric, L"BuildFileNameAndPath subj = \"%ws\"\n", szSubj.c_str());
+	DebugPrint(DBGGeneric, L"BuildFileNameAndPath rootPath = \"%ws\"\n", szRootPath.c_str());
 
 	// set up the path portion of the output:
-	wstring cleanRoot;
-	if (!szRootPath.empty())
-	{
-		WCHAR szShortPath[MAX_PATH] = { 0 };
-		size_t cchShortPath = NULL;
-		// Use the short path to give us as much room as possible
-		EC_D(cchShortPath, GetShortPathNameW(szRootPath.c_str(), szShortPath, _countof(szShortPath)));
-		cleanRoot = szShortPath;
-		if (cleanRoot.back() != L'\\')
-		{
-			cleanRoot += L'\\';
-		}
-	}
+	auto cleanRoot = ShortenPath(szRootPath);
+	DebugPrint(DBGGeneric, L"BuildFileNameAndPath cleanRoot = \"%ws\"\n", cleanRoot.c_str());
+
+	// if we don't have enough space for even the shortest filename, give up.
+	if (cleanRoot.length() >= MAXMSGPATH) return emptystring;
+
+	// Work with a max path which allows us to add our extension
+	auto maxFile = MAX_PATH - cleanRoot.length() - szExt.length();
 
 	wstring cleanSubj;
 	if (!szSubj.empty())
@@ -334,20 +358,42 @@ wstring BuildFileNameAndPath(
 		cleanSubj = L"UnknownSubject"; // STRING_OK
 	}
 
+	DebugPrint(DBGGeneric, L"BuildFileNameAndPath cleanSubj = \"%ws\"\n", cleanSubj.c_str());
+
 	wstring szBin;
 	if (lpBin && lpBin->cb)
 	{
 		szBin = L"_" + BinToHexString(lpBin, false);
 	}
 
-	auto szFileOut = cleanRoot + cleanSubj + szBin + szExt;
-
-	if (szFileOut.length() > MAX_PATH)
+	if (cleanSubj.length() + szBin.length() <= maxFile)
 	{
-		szFileOut = cleanRoot + cleanSubj.substr(0, MAXSUBJ) + szBin.substr(0, MAXBIN) + szExt;
+		auto szFile = cleanRoot + cleanSubj + szBin + szExt;
+		DebugPrint(DBGGeneric, L"BuildFileNameAndPath fileOut= \"%ws\"\n", szFile.c_str());
+		return szFile;
 	}
 
-	return szFileOut;
+	// We couldn't build the string we wanted, so try something shorter
+	auto szFile = cleanSubj.substr(0, MAXSUBJ) + szBin.substr(0, MAXBIN);
+	DebugPrint(DBGGeneric, L"BuildFileNameAndPath shorter file = \"%ws\"\n", szFile.c_str());
+	DebugPrint(DBGGeneric, L"BuildFileNameAndPath new length = %d\n", szFile.length());
+
+	if (szFile.length() >= maxFile)
+	{
+		szFile = cleanSubj.substr(0, MAXSUBJTIGHT) + szBin.substr(0, MAXBIN);
+		DebugPrint(DBGGeneric, L"BuildFileNameAndPath shorter file = \"%ws\"\n", szFile.c_str());
+		DebugPrint(DBGGeneric, L"BuildFileNameAndPath new length = %d\n", szFile.length());
+	}
+
+	if (szFile.length() >= maxFile)
+	{
+		DebugPrint(DBGGeneric, L"BuildFileNameAndPath failed to build a string\n");
+		return emptystring;
+	}
+
+	auto szOut = cleanRoot + szFile + szExt;
+	DebugPrint(DBGGeneric, L"BuildFileNameAndPath fileOut= \"%ws\"\n", szOut.c_str());
+	return szOut;
 }
 
 void SaveFolderContentsToTXT(_In_ LPMDB lpMDB, _In_ LPMAPIFOLDER lpFolder, bool bRegular, bool bAssoc, bool bDescend, HWND hWnd)
@@ -392,6 +438,7 @@ _Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_ 
 	};
 
 	if (!lpFolder || szPathName.empty()) return MAPI_E_INVALID_PARAMETER;
+	if (szPathName.length() >= MAXMSGPATH) return MAPI_E_INVALID_PARAMETER;
 
 	DebugPrint(DBGGeneric, L"SaveFolderContentsToMSG: Saving contents of folder to \"%ws\"\n", szPathName.c_str());
 
@@ -444,17 +491,19 @@ _Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_ 
 				}
 
 				auto szFileName = BuildFileNameAndPath(L".msg", szSubj, szPathName, &pRows->aRow->lpProps[fldPR_RECORD_KEY].Value.bin); // STRING_OK
+				if (!szFileName.empty())
+				{
+					DebugPrint(DBGGeneric, L"Saving to = \"%ws\"\n", szFileName.c_str());
 
-				DebugPrint(DBGGeneric, L"Saving to = \"%ws\"\n", szFileName.c_str());
+					EC_H(SaveToMSG(
+						lpMessage,
+						szFileName,
+						bUnicode,
+						hWnd,
+						false));
 
-				EC_H(SaveToMSG(
-					lpMessage,
-					szFileName,
-					bUnicode,
-					hWnd,
-					false));
-
-				DebugPrint(DBGGeneric, L"Message Saved\n");
+					DebugPrint(DBGGeneric, L"Message Saved\n");
+				}
 			}
 		}
 	}

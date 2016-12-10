@@ -559,16 +559,10 @@ void CProfileListDlg::OnExportProfile()
 	if (lpListData && lpListData->Contents())
 	{
 		auto szProfileName = stringTowstring(lpListData->Contents()->m_szProfileDisplayName);
-		auto szFileName = BuildFileNameAndPath(
-			L".xml", // STRING_OK
-			szProfileName,
-			emptystring,
-			nullptr);
-		DebugPrint(DBGGeneric, L"BuildFileNameAndPath built file name \"%ws\"\n", szFileName.c_str());
 
 		auto file = CFileDialogExW::SaveAs(
 			L"xml", // STRING_OK
-			szFileName,
+			szProfileName + L".xml",
 			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
 			loadstring(IDS_XMLFILES),
 			this);

@@ -2,6 +2,11 @@
 
 wstring GetDirectoryPath(HWND hWnd);
 
+#define MAXSUBJ 25
+#define MAXSUBJTIGHT 10
+#define MAXBIN 141
+#define MAXEXT 4
+#define MAXMSGPATH (MAX_PATH - MAXSUBJTIGHT - MAXBIN - MAXEXT)
 wstring BuildFileName(
 	_In_ const wstring& szExt,
 	_In_ LPMESSAGE lpMessage);

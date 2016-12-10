@@ -2212,6 +2212,8 @@ Here are some known causes for this.\r\n\
 \tSee http://mfcmapi.codeplex.com for the latest 64 bit build of MFCMAPI.\r\n\
 3 - Windows Mail or Outlook Express (which do not implement Extended MAPI) is registered as the Default Mail Client.\r\n\
 \tSee http://msdn.microsoft.com/en-gb/library/dd162409.aspx for information on setting the Default Mail Client."
+IDS_EDPATHTOOLONG "Chosen path is too long (%d).\r\n\
+Try selecting a shorter path ( < %d)."
 #endif
 
 // UpdateStatusBarText - use FormatMessage style formatting
