@@ -92,7 +92,7 @@ if (SUCCEEDED(hRes))	\
 else	\
 {	\
 	PrintSkipNote(hRes,#fnx);\
-} // EC_H
+}
 
 #define WC_H(fnx)	\
 if (SUCCEEDED(hRes))	\
@@ -103,7 +103,7 @@ if (SUCCEEDED(hRes))	\
 else	\
 {	\
 	PrintSkipNote(hRes,#fnx);\
-} // WC_H
+}
 
 #define EC_MAPI(fnx)	\
 if (SUCCEEDED(hRes))	\
@@ -114,7 +114,7 @@ if (SUCCEEDED(hRes))	\
 else	\
 {	\
 	PrintSkipNote(hRes,#fnx);\
-} // EC_MAPI
+}
 
 #define WC_MAPI(fnx)	\
 if (SUCCEEDED(hRes))	\
@@ -125,7 +125,7 @@ if (SUCCEEDED(hRes))	\
 else	\
 {	\
 	PrintSkipNote(hRes,#fnx);\
-} // WC_MAPI
+}
 
 #define EC_H_MSG(fnx,uidErrorMsg)	\
 if (SUCCEEDED(hRes))	\
@@ -136,7 +136,7 @@ if (SUCCEEDED(hRes))	\
 else	\
 {	\
 	PrintSkipNote(hRes,#fnx);\
-} // EC_H_MSG
+}
 
 #define WC_H_MSG(fnx,uidErrorMsg)	\
 if (SUCCEEDED(hRes))	\
@@ -147,7 +147,7 @@ if (SUCCEEDED(hRes))	\
 else	\
 {	\
 	PrintSkipNote(hRes,#fnx);\
-} // WC_H_MSG
+}
 
 #define EC_W32(fnx)	\
 if (SUCCEEDED(hRes))	\
@@ -158,7 +158,7 @@ if (SUCCEEDED(hRes))	\
 else	\
 {	\
 	PrintSkipNote(hRes,#fnx);\
-} // EC_W32
+}
 
 #define WC_W32(fnx)	\
 if (SUCCEEDED(hRes))	\
@@ -169,7 +169,7 @@ if (SUCCEEDED(hRes))	\
 else	\
 {	\
 	PrintSkipNote(hRes,#fnx);\
-} // WC_W32
+}
 
 #define EC_B(fnx)	\
 if (SUCCEEDED(hRes))	\
@@ -182,7 +182,7 @@ if (SUCCEEDED(hRes))	\
 else	\
 {	\
 	PrintSkipNote(hRes,#fnx);\
-} // EC_B
+}
 
 #define WC_B(fnx)	\
 if (SUCCEEDED(hRes))	\
@@ -195,7 +195,7 @@ if (SUCCEEDED(hRes))	\
 else	\
 {	\
 	PrintSkipNote(hRes,#fnx);\
-} // WC_B
+}
 
 // Used for functions which return 0 on error
 // dwRet will contain the return value - assign to a local if needed for other calls.
@@ -212,7 +212,7 @@ else	\
 {	\
 	PrintSkipNote(hRes,#fnx);\
 	_ret = NULL;	\
-} // EC_D
+}
 
 // whatever's passed to _ret will contain the return value
 #define WC_D(_ret,fnx)	\
@@ -228,7 +228,7 @@ else	\
 {	\
 	PrintSkipNote(hRes,#fnx);\
 	_ret = NULL;	\
-} // WC_D
+}
 
 // MAPI's GetProps call will return MAPI_W_ERRORS_RETURNED if even one prop fails
 // This is annoying, so this macro tosses those warnings.
@@ -243,7 +243,7 @@ if (SUCCEEDED(hRes))	\
 else	\
 {	\
 	PrintSkipNote(hRes,#fnx);\
-} // EC_H_GETPROPS
+}
 
 #define WC_H_GETPROPS(fnx)	\
 if (SUCCEEDED(hRes))	\
@@ -254,7 +254,7 @@ if (SUCCEEDED(hRes))	\
 else	\
 {	\
 	PrintSkipNote(hRes,#fnx);\
-} // WC_H_GETPROPS
+}
 
 // some MAPI functions allow MAPI_E_CANCEL or MAPI_E_USER_CANCEL. I don't consider these to be errors.
 #define EC_H_CANCEL(fnx)	\
@@ -271,7 +271,7 @@ if (SUCCEEDED(hRes))	\
 else	\
 {	\
 	PrintSkipNote(hRes,#fnx);\
-} // EC_H_CANCEL
+}
 
 // Designed to check return values from dialog functions, primarily DoModal
 // These functions use CommDlgExtendedError to get error information
@@ -288,7 +288,7 @@ else	\
 		} \
 		else hRes = S_OK; \
 	}	\
-} // EC_D_DIALOG
+}
 
 #define EC_PROBLEMARRAY(problemarray)	\
 {	\
@@ -296,6 +296,15 @@ else	\
 	{	\
 		wstring szProbArray = ProblemArrayToString(*(problemarray));	\
 		ErrDialog(__FILE__,__LINE__,IDS_EDPROBLEMARRAY, szProbArray.c_str());	\
+		DebugPrint(DBGGeneric,L"Problem array:\n%ws\n",szProbArray.c_str());	\
+	}	\
+}
+
+#define WC_PROBLEMARRAY(problemarray)	\
+{	\
+	if (problemarray)	\
+	{	\
+		wstring szProbArray = ProblemArrayToString(*(problemarray));	\
 		DebugPrint(DBGGeneric,L"Problem array:\n%ws\n",szProbArray.c_str());	\
 	}	\
 }

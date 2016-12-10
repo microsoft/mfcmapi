@@ -2699,7 +2699,7 @@ HRESULT CopyTo(HWND hWnd, _In_ LPMAPIPROP lpSource, _In_ LPMAPIPROP lpDest, LPCG
 
 	if (S_OK == hRes)
 	{
-		EC_MAPI(lpSource->CopyTo(
+		WC_MAPI(lpSource->CopyTo(
 			0,
 			nullptr,
 			lpExcludedTags,
@@ -2716,7 +2716,7 @@ HRESULT CopyTo(HWND hWnd, _In_ LPMAPIPROP lpSource, _In_ LPMAPIPROP lpDest, LPCG
 
 	if (lpProblems)
 	{
-		EC_PROBLEMARRAY(lpProblems);
+		WC_PROBLEMARRAY(lpProblems);
 		MAPIFreeBuffer(lpProblems);
 	}
 
