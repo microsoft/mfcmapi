@@ -596,7 +596,7 @@ void DrawSegoeTextW(
 		&drawRc,
 		format);
 	SelectObject(hdc, hfontOld);
-	(void) SetTextColor(hdc, crText);
+	(void)SetTextColor(hdc, crText);
 }
 
 // Clear/initialize formatting on the rich edit control.
@@ -865,30 +865,30 @@ void DrawTreeItemGlow(_In_ HWND hWnd, _In_ HTREEITEM hItem)
 	InvalidateRect(hWnd, &rect, false);
 }
 
-// Copies ibmWidth x ibmHeight rect from hdcSource to a iWidth x iHeight rect in hdcTarget, replacing colors
+// Copies iWidth x iHeight rect from hdcSource to hdcTarget, replacing colors
 // No scaling is performed
-void CopyBitmap(HDC hdcSource, HDC hdcTarget, int iWidth, int iHeight, int ibmWidth, int ibmHeight, uiColor cSource, uiColor cReplace)
+void CopyBitmap(HDC hdcSource, HDC hdcTarget, int iWidth, int iHeight, uiColor cSource, uiColor cReplace)
 {
 	RECT rcBM = { 0, 0, iWidth, iHeight };
 
-	auto hbmTarget = CreateCompatibleBitmap(
+	HBITMAP hbmTarget = CreateCompatibleBitmap(
 		hdcSource,
 		iWidth,
 		iHeight);
-	(void) SelectObject(hdcTarget, hbmTarget);
+	(void)SelectObject(hdcTarget, hbmTarget);
 	FillRect(hdcTarget, &rcBM, GetSysBrush(cReplace));
 
 	(void)TransparentBlt(
 		hdcTarget,
 		0,
 		0,
-		ibmWidth,
-		ibmHeight,
+		iWidth,
+		iHeight,
 		hdcSource,
 		0,
 		0,
-		ibmWidth,
-		ibmHeight,
+		iWidth,
+		iHeight,
 		MyGetSysColor(cSource));
 	if (hbmTarget) DeleteObject(hbmTarget);
 }
@@ -897,33 +897,32 @@ void CopyBitmap(HDC hdcSource, HDC hdcTarget, int iWidth, int iHeight, int ibmWi
 // Fills rectangle with cBackground
 // Replaces cBitmapTransFore (cyan) with cFrameSelected
 // Replaces cBitmapTransBack (magenta) with the cBackground
+// Scales from size of bitmap to size of target rectangle
 void DrawBitmap(_In_ HDC hdc, _In_ const RECT& rcTarget, uiBitmap iBitmap, bool bHover)
 {
-#ifdef SKIPBUFFER
-	UNREFERENCED_PARAMETER(iBitmap);
-	::FrameRect(hdc, rcTarget, GetSysBrush(bHover ? cBitmapTransFore : cBitmapTransBack));
-#else
 	int iWidth = rcTarget.right - rcTarget.left;
 	int iHeight = rcTarget.bottom - rcTarget.top;
 
 	// hdcBitmap: Load the image
 	auto hdcBitmap = CreateCompatibleDC(hdc);
+	// TODO: pass target dimensions here and load the most appropriate bitmap
 	auto hbmBitmap = GetBitmap(iBitmap);
-	(void) SelectObject(hdcBitmap, hbmBitmap);
+	(void)SelectObject(hdcBitmap, hbmBitmap);
 
 	BITMAP bm = { 0 };
 	::GetObject(hbmBitmap, sizeof bm, &bm);
 
 	// hdcForeReplace: Create a bitmap compatible with hdc, select it, fill with cFrameSelected, copy from hdcBitmap, with cBitmapTransFore transparent
 	auto hdcForeReplace = CreateCompatibleDC(hdc);
-	CopyBitmap(hdcBitmap, hdcForeReplace, iWidth, iHeight, bm.bmWidth, bm.bmHeight, cBitmapTransFore, cFrameSelected);
+	CopyBitmap(hdcBitmap, hdcForeReplace, bm.bmWidth, bm.bmHeight, cBitmapTransFore, cFrameSelected);
 
 	// hdcBackReplace: Create a bitmap compatible with hdc, select it, fill with cBackground, copy from hdcForeReplace, with cBitmapTransBack transparent
 	auto hdcBackReplace = CreateCompatibleDC(hdc);
-	CopyBitmap(hdcForeReplace, hdcBackReplace, iWidth, iHeight, bm.bmWidth, bm.bmHeight, cBitmapTransBack, bHover ? cGlowBackground : cBackground);
+	CopyBitmap(hdcForeReplace, hdcBackReplace, bm.bmWidth, bm.bmHeight, cBitmapTransBack, bHover ? cGlowBackground : cBackground);
 
-	// hdc: BitBlt from hdcBackReplace
-	(void)BitBlt(
+	// In case the original bitmap dimensions doesn't match our target dimension, we stretch it to fit
+	// We can get better results if the original bitmap happens to match.
+	(void)StretchBlt(
 		hdc,
 		rcTarget.left,
 		rcTarget.top,
@@ -932,11 +931,16 @@ void DrawBitmap(_In_ HDC hdc, _In_ const RECT& rcTarget, uiBitmap iBitmap, bool 
 		hdcBackReplace,
 		0,
 		0,
+		bm.bmWidth,
+		bm.bmHeight,
 		SRCCOPY);
 
 	if (hdcBackReplace) DeleteDC(hdcBackReplace);
 	if (hdcForeReplace) DeleteDC(hdcForeReplace);
 	if (hdcBitmap) DeleteDC(hdcBitmap);
+
+#ifdef SKIPBUFFER
+	FrameRect(hdc, &rcTarget, GetSysBrush(bHover ? cBitmapTransFore : cBitmapTransBack));
 #endif
 }
 
@@ -1171,7 +1175,7 @@ void DrawHeaderItem(_In_ HWND hWnd, _In_ HDC hdc, UINT itemID, _In_ const RECT& 
 	auto hpenOld = SelectObject(hdc, GetPen(cSolidGreyPen));
 	MoveToEx(hdc, rcHeader.left, rcHeader.bottom - 1, nullptr);
 	LineTo(hdc, rcHeader.right, rcHeader.bottom - 1);
-	(void) SelectObject(hdc, hpenOld);
+	(void)SelectObject(hdc, hpenOld);
 
 	// Draw our divider
 	// Since no one else uses rcHeader after here, we can modify it in place
@@ -1466,7 +1470,7 @@ void DrawMenu(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
 		auto hpenOld = SelectObject(hdc, GetPen(cSolidGreyPen));
 		MoveToEx(hdc, rcText.left, lMid, nullptr);
 		LineTo(hdc, rcText.right, lMid);
-		(void) SelectObject(hdc, hpenOld);
+		(void)SelectObject(hdc, hpenOld);
 	}
 	else if (!lpMenuEntry->m_pName.empty())
 	{
@@ -1748,18 +1752,18 @@ void DrawSystemButtons(_In_ HWND hWnd, _In_opt_ HDC hdc, int iHitTest)
 	GetCaptionRects(hWnd, nullptr, nullptr, &rcCloseIcon, &rcMaxIcon, &rcMinIcon, nullptr);
 
 	// Draw our system buttons appropriately
-	(void) OffsetRect(&rcCloseIcon, HTCLOSE == iHitTest ? 1 : 0, HTCLOSE == iHitTest ? 1 : 0);
+	(void)OffsetRect(&rcCloseIcon, HTCLOSE == iHitTest ? 1 : 0, HTCLOSE == iHitTest ? 1 : 0);
 	DrawBitmap(hdc, rcCloseIcon, cClose, false);
 
 	if (bMaxBox)
 	{
-		(void) OffsetRect(&rcMaxIcon, HTMAXBUTTON == iHitTest ? 1 : 0, HTMAXBUTTON == iHitTest ? 1 : 0);
+		(void)OffsetRect(&rcMaxIcon, HTMAXBUTTON == iHitTest ? 1 : 0, HTMAXBUTTON == iHitTest ? 1 : 0);
 		DrawBitmap(hdc, rcMaxIcon, IsZoomed(hWnd) ? cRestore : cMaximize, false);
 	}
 
 	if (bMinBox)
 	{
-		(void) OffsetRect(&rcMinIcon, HTMINBUTTON == iHitTest ? 1 : 0, HTMINBUTTON == iHitTest ? 1 : 0);
+		(void)OffsetRect(&rcMinIcon, HTMINBUTTON == iHitTest ? 1 : 0, HTMINBUTTON == iHitTest ? 1 : 0);
 		DrawBitmap(hdc, rcMinIcon, cMinimize, false);
 	}
 
@@ -1876,7 +1880,7 @@ void DrawWindowFrame(_In_ HWND hWnd, bool bActive, int iStatusHeight)
 		auto hpenOld = SelectObject(hdc, GetPen(cSolidGreyPen));
 		MoveToEx(hdc, rcMenuGutterLeft.right, rcClient.top - 1, nullptr);
 		LineTo(hdc, rcMenuGutterRight.left, rcClient.top - 1);
-		(void) SelectObject(hdc, hpenOld);
+		(void)SelectObject(hdc, hpenOld);
 
 		// White out the caption
 		FillRect(hdc, &rcFullCaption, GetSysBrush(cBackground));
