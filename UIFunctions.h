@@ -144,7 +144,7 @@ void GetCaptionRects(HWND hWnd,
 	RECT* lprcMaxIcon,
 	RECT* lprcMinIcon,
 	RECT* lprcCaptionText);
-void DrawSystemButtons(_In_ HWND hWnd, _In_opt_ HDC hdc, int iHitTest);
+void DrawSystemButtons(_In_ HWND hWnd, _In_opt_ HDC hdc, int iHitTest, bool bHover);
 void DrawWindowFrame(_In_ HWND hWnd, bool bActive, int iStatusHeight);
 
 // Winproc handler for custom controls

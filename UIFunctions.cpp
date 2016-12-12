@@ -893,12 +893,38 @@ void CopyBitmap(HDC hdcSource, HDC hdcTarget, int iWidth, int iHeight, uiColor c
 	if (hbmTarget) DeleteObject(hbmTarget);
 }
 
+// Copies iWidth x iHeight rect from hdcSource to hdcTarget, shifted diagnoally by offset
+// Background filled with cBackground
+void ShiftBitmap(HDC hdcSource, HDC hdcTarget, int iWidth, int iHeight, int offset, uiColor cBackground)
+{
+	RECT rcBM = { 0, 0, iWidth, iHeight };
+
+	auto hbmTarget = CreateCompatibleBitmap(
+		hdcSource,
+		iWidth,
+		iHeight);
+	(void)SelectObject(hdcTarget, hbmTarget);
+	FillRect(hdcTarget, &rcBM, GetSysBrush(cBackground));
+
+	(void)BitBlt(
+		hdcTarget,
+		offset,
+		offset,
+		iWidth,
+		iHeight,
+		hdcSource,
+		0,
+		0,
+		SRCCOPY);
+	if (hbmTarget) DeleteObject(hbmTarget);
+}
+
 // Draws a bitmap on the screen, double buffered, with two color replacement
 // Fills rectangle with cBackground
 // Replaces cBitmapTransFore (cyan) with cFrameSelected
 // Replaces cBitmapTransBack (magenta) with the cBackground
 // Scales from size of bitmap to size of target rectangle
-void DrawBitmap(_In_ HDC hdc, _In_ const RECT& rcTarget, uiBitmap iBitmap, bool bHover)
+void DrawBitmap(_In_ HDC hdc, _In_ const RECT& rcTarget, uiBitmap iBitmap, bool bHover, size_t offset = 0)
 {
 	int iWidth = rcTarget.right - rcTarget.left;
 	int iHeight = rcTarget.bottom - rcTarget.top;
@@ -920,6 +946,9 @@ void DrawBitmap(_In_ HDC hdc, _In_ const RECT& rcTarget, uiBitmap iBitmap, bool 
 	auto hdcBackReplace = CreateCompatibleDC(hdc);
 	CopyBitmap(hdcForeReplace, hdcBackReplace, bm.bmWidth, bm.bmHeight, cBitmapTransBack, bHover ? cGlowBackground : cBackground);
 
+	auto hdcShift = CreateCompatibleDC(hdc);
+	ShiftBitmap(hdcBackReplace, hdcShift, bm.bmWidth, bm.bmHeight, offset, bHover ? cGlowBackground : cBackground);
+
 	// In case the original bitmap dimensions doesn't match our target dimension, we stretch it to fit
 	// We can get better results if the original bitmap happens to match.
 	(void)StretchBlt(
@@ -928,13 +957,14 @@ void DrawBitmap(_In_ HDC hdc, _In_ const RECT& rcTarget, uiBitmap iBitmap, bool 
 		rcTarget.top,
 		iWidth,
 		iHeight,
-		hdcBackReplace,
+		hdcShift,
 		0,
 		0,
 		bm.bmWidth,
 		bm.bmHeight,
 		SRCCOPY);
 
+	if (hdcShift) DeleteDC(hdcShift);
 	if (hdcBackReplace) DeleteDC(hdcBackReplace);
 	if (hdcForeReplace) DeleteDC(hdcForeReplace);
 	if (hdcBitmap) DeleteDC(hdcBitmap);
@@ -1728,7 +1758,7 @@ void GetCaptionRects(HWND hWnd,
 	if (lprcCaptionText) *lprcCaptionText = rcCaptionText;
 }
 
-void DrawSystemButtons(_In_ HWND hWnd, _In_opt_ HDC hdc, int iHitTest)
+void DrawSystemButtons(_In_ HWND hWnd, _In_opt_ HDC hdc, int iHitTest, bool bHover)
 {
 	HDC hdcLocal = nullptr;
 	if (!hdc)
@@ -1747,19 +1777,20 @@ void DrawSystemButtons(_In_ HWND hWnd, _In_opt_ HDC hdc, int iHitTest)
 	GetCaptionRects(hWnd, nullptr, nullptr, &rcCloseIcon, &rcMaxIcon, &rcMinIcon, nullptr);
 
 	// Draw our system buttons appropriately
-	(void)OffsetRect(&rcCloseIcon, HTCLOSE == iHitTest ? 1 : 0, HTCLOSE == iHitTest ? 1 : 0);
-	DrawBitmap(hdc, rcCloseIcon, cClose, false);
+	auto htClose = HTCLOSE == iHitTest;
+	auto htMax = HTMAXBUTTON == iHitTest;
+	auto htMin = HTMINBUTTON == iHitTest;
+
+	DrawBitmap(hdc, rcCloseIcon, cClose, htClose, htClose && !bHover ? 2 : 0);
 
 	if (bMaxBox)
 	{
-		(void)OffsetRect(&rcMaxIcon, HTMAXBUTTON == iHitTest ? 1 : 0, HTMAXBUTTON == iHitTest ? 1 : 0);
-		DrawBitmap(hdc, rcMaxIcon, IsZoomed(hWnd) ? cRestore : cMaximize, false);
+		DrawBitmap(hdc, rcMaxIcon, IsZoomed(hWnd) ? cRestore : cMaximize, htMax, htMax && !bHover ? 2 : 0);
 	}
 
 	if (bMinBox)
 	{
-		(void)OffsetRect(&rcMinIcon, HTMINBUTTON == iHitTest ? 1 : 0, HTMINBUTTON == iHitTest ? 1 : 0);
-		DrawBitmap(hdc, rcMinIcon, cMinimize, false);
+		DrawBitmap(hdc, rcMinIcon, cMinimize, htMin, htMin && !bHover ? 2 : 0);
 	}
 
 	if (hdcLocal) ReleaseDC(hWnd, hdcLocal);
@@ -1880,7 +1911,7 @@ void DrawWindowFrame(_In_ HWND hWnd, bool bActive, int iStatusHeight)
 		// White out the caption
 		FillRect(hdc, &rcFullCaption, GetSysBrush(cBackground));
 
-		DrawSystemButtons(hWnd, hdc, 0);
+		DrawSystemButtons(hWnd, hdc, HTNOWHERE, false);
 
 		// Draw our icon
 		if (!bModal)

@@ -27,8 +27,8 @@ void CMyDialog::Constructor()
 	// If the previous foreground window is ours, remember its handle for computing cascades
 	m_hWndPrevious = ::GetForegroundWindow();
 	DWORD pid = NULL;
-	(void) ::GetWindowThreadProcessId(m_hWndPrevious, &pid);
-	if (::GetCurrentProcessId() != pid)
+	(void)GetWindowThreadProcessId(m_hWndPrevious, &pid);
+	if (GetCurrentProcessId() != pid)
 	{
 		m_hWndPrevious = nullptr;
 	}
@@ -83,7 +83,7 @@ LRESULT CheckButtons(HWND hWnd, POINT pt)
 
 	// Get the screen coordinates of our window
 	RECT rcWindow = { 0 };
-	::GetWindowRect(hWnd, &rcWindow);
+	GetWindowRect(hWnd, &rcWindow);
 
 	// We subtract to get coordinates relative to our window
 	// GetCaptionRects coordinates are now compatible
@@ -124,6 +124,7 @@ LRESULT CMyDialog::NCHitTest(WPARAM wParam, LPARAM lParam)
 		if (ht == HTNOWHERE) ht = HTCAPTION;
 	}
 
+	DrawSystemButtons(m_hWnd, nullptr, ht, true);
 	DebugPrint(DBGUI, L"%ws\r\n", FormatHT(ht).c_str());
 	return ht;
 }
@@ -134,7 +135,7 @@ LRESULT NCHitTestMouse(HWND hWnd, LPARAM lParam)
 	// These are client coordinates - we need to translate them to screen coordinates
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 	DebugPrint(DBGUI, L"NCHitTestMouse: pt = %d %d", pt.x, pt.y);
-	(void) ::MapWindowPoints(hWnd, nullptr, &pt, 1); // Map our client point to the screen
+	(void)MapWindowPoints(hWnd, nullptr, &pt, 1); // Map our client point to the screen
 	Outputf(DBGUI, nullptr, false, L" mapped = %d %d\r\n", pt.x, pt.y);
 
 	auto ht = CheckButtons(hWnd, pt);
@@ -144,8 +145,7 @@ LRESULT NCHitTestMouse(HWND hWnd, LPARAM lParam)
 
 bool DepressSystemButton(HWND hWnd, int iHitTest)
 {
-	auto bDepressed = true;
-	DrawSystemButtons(hWnd, nullptr, iHitTest);
+	DrawSystemButtons(hWnd, nullptr, iHitTest, false);
 	SetCapture(hWnd);
 	for (;;)
 	{
@@ -156,22 +156,14 @@ bool DepressSystemButton(HWND hWnd, int iHitTest)
 			{
 			case WM_LBUTTONUP:
 				DebugPrint(DBGUI, L"WM_LBUTTONUP\n");
-				if (bDepressed)
-					DrawSystemButtons(hWnd, nullptr, HTNOWHERE);
+				DrawSystemButtons(hWnd, nullptr, HTNOWHERE, false);
 				ReleaseCapture();
 				if (NCHitTestMouse(hWnd, msg.lParam) == iHitTest) return true;
 				return false;
 
 			case WM_MOUSEMOVE:
 				DebugPrint(DBGUI, L"WM_MOUSEMOVE\n");
-				if (NCHitTestMouse(hWnd, msg.lParam) == iHitTest)
-				{
-					DrawSystemButtons(hWnd, nullptr, iHitTest);
-				}
-				else
-				{
-					DrawSystemButtons(hWnd, nullptr, HTNOWHERE);
-				}
+				DrawSystemButtons(hWnd, nullptr, iHitTest, NCHitTestMouse(hWnd, msg.lParam) != iHitTest);
 
 				break;
 			}
@@ -258,7 +250,7 @@ LRESULT CMyDialog::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 			(void) ::GetSystemMenu(m_hWnd, false);
 			MENUBARINFO mbi = { 0 };
 			mbi.cbSize = sizeof mbi;
-			(void) ::GetMenuBarInfo(m_hWnd, OBJID_SYSMENU, 0, &mbi);
+			(void)GetMenuBarInfo(m_hWnd, OBJID_SYSMENU, 0, &mbi);
 		}
 		break;
 	}
