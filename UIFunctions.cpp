@@ -871,7 +871,7 @@ void CopyBitmap(HDC hdcSource, HDC hdcTarget, int iWidth, int iHeight, uiColor c
 {
 	RECT rcBM = { 0, 0, iWidth, iHeight };
 
-	HBITMAP hbmTarget = CreateCompatibleBitmap(
+	auto hbmTarget = CreateCompatibleBitmap(
 		hdcSource,
 		iWidth,
 		iHeight);
@@ -1654,31 +1654,23 @@ void GetCaptionRects(HWND hWnd,
 
 	RECT rcWindow = { 0 };
 	auto dwWinStyle = GetWindowStyle(hWnd);
-	auto bModal = DS_MODALFRAME == (dwWinStyle & DS_MODALFRAME);
 	auto bThickFrame = WS_THICKFRAME == (dwWinStyle & WS_THICKFRAME);
-	auto bMinBox = WS_MINIMIZEBOX == (dwWinStyle & WS_MINIMIZEBOX);
-	auto bMaxBox = WS_MAXIMIZEBOX == (dwWinStyle & WS_MAXIMIZEBOX);
 
 	GetWindowRect(hWnd, &rcWindow); // Get our non-client size
 	OffsetRect(&rcWindow, -rcWindow.left, -rcWindow.top); // shift the origin to 0 since that's where our DC paints
 	// At this point, we have rectangles for our window and client area
 	// rcWindow is the outer rectangle for our NC frame
 
-	auto cxPaddedBorder = GetSystemMetrics(SM_CXPADDEDBORDER);
 	auto cxFixedFrame = GetSystemMetrics(SM_CXFIXEDFRAME);
 	auto cyFixedFrame = GetSystemMetrics(SM_CYFIXEDFRAME);
 	auto cxSizeFrame = GetSystemMetrics(SM_CXSIZEFRAME);
 	auto cySizeFrame = GetSystemMetrics(SM_CYSIZEFRAME);
-	auto cySize = GetSystemMetrics(SM_CYSIZE);
-	auto cxSizeButton = cySize;
-	if (pfnGetThemeSysSize) cxSizeButton = pfnGetThemeSysSize(nullptr, SM_CXSIZE);
-	auto cxBorder = GetSystemMetrics(SM_CXBORDER);
-	auto cyBorder = GetSystemMetrics(SM_CYBORDER);
 
 	auto cxFrame = bThickFrame ? cxSizeFrame : cxFixedFrame;
 	auto cyFrame = bThickFrame ? cySizeFrame : cyFixedFrame;
 
 	// If padded borders are in effect, we fall back to a single width for both thick and thin frames
+	auto cxPaddedBorder = GetSystemMetrics(SM_CXPADDEDBORDER);
 	if (cxPaddedBorder)
 	{
 		cxFrame = cxSizeFrame + cxPaddedBorder;
@@ -1688,8 +1680,7 @@ void GetCaptionRects(HWND hWnd,
 	rcFullCaption.top = rcWindow.top + BORDER_VISIBLEWIDTH;
 	rcFullCaption.left = rcWindow.left + BORDER_VISIBLEWIDTH;
 	rcFullCaption.right = rcWindow.right - BORDER_VISIBLEWIDTH;
-	rcFullCaption.bottom =
-		rcCaptionText.bottom =
+	rcFullCaption.bottom = rcCaptionText.bottom =
 		rcWindow.top + cyFrame + GetSystemMetrics(SM_CYCAPTION);
 
 	rcIcon.top = rcWindow.top + cyFrame + GetSystemMetrics(SM_CYEDGE);
@@ -1697,22 +1688,25 @@ void GetCaptionRects(HWND hWnd,
 	rcIcon.bottom = rcIcon.top + GetSystemMetrics(SM_CYSMICON);
 	rcIcon.right = rcIcon.left + GetSystemMetrics(SM_CXSMICON);
 
+	auto cxBorder = GetSystemMetrics(SM_CXBORDER);
+	auto cyBorder = GetSystemMetrics(SM_CYBORDER);
+	auto buttonSize = GetSystemMetrics(SM_CYSIZE) - 2 * cyBorder;
+
 	rcCloseIcon.top = rcMaxIcon.top = rcMinIcon.top = rcWindow.top + cyFrame + cyBorder;
-	rcCloseIcon.bottom = rcMaxIcon.bottom = rcMinIcon.bottom = rcCloseIcon.top + cySize - 2 * cyBorder;
+	rcCloseIcon.bottom = rcMaxIcon.bottom = rcMinIcon.bottom = rcCloseIcon.top + buttonSize;
 	rcCloseIcon.right = rcWindow.right - cxFrame - cxBorder;
-	rcCloseIcon.left = rcMaxIcon.right = rcCloseIcon.right - cxSizeButton;
+	rcCloseIcon.left = rcMaxIcon.right = rcCloseIcon.right - buttonSize;
 
-	rcMaxIcon.left = rcMaxIcon.right - cxSizeButton;
+	rcMaxIcon.left = rcMinIcon.right = rcMaxIcon.right - buttonSize;
 
-	rcMinIcon.right = rcMaxIcon.left + GetSystemMetrics(SM_CXEDGE);
-	rcMinIcon.left = rcMinIcon.right - cxSizeButton;
+	rcMinIcon.left = rcMinIcon.right - buttonSize;
 
 	InflateRect(&rcCloseIcon, -1, -1);
 	InflateRect(&rcMaxIcon, -1, -1);
 	InflateRect(&rcMinIcon, -1, -1);
 
 	rcCaptionText.top = rcWindow.top + cxFrame;
-	if (bModal)
+	if (DS_MODALFRAME == (dwWinStyle & DS_MODALFRAME))
 	{
 		rcCaptionText.left = rcWindow.left + BORDER_VISIBLEWIDTH + cxFixedFrame + cxBorder;
 	}
@@ -1722,8 +1716,9 @@ void GetCaptionRects(HWND hWnd,
 	}
 
 	rcCaptionText.right = rcCloseIcon.left;
-	if (bMinBox) rcCaptionText.right = rcMinIcon.left;
-	else if (bMaxBox) rcCaptionText.right = rcMaxIcon.left;
+
+	if (WS_MINIMIZEBOX == (dwWinStyle & WS_MINIMIZEBOX)) rcCaptionText.right = rcMinIcon.left;
+	else if (WS_MAXIMIZEBOX == (dwWinStyle & WS_MAXIMIZEBOX)) rcCaptionText.right = rcMaxIcon.left;
 
 	if (lprcFullCaption) *lprcFullCaption = rcFullCaption;
 	if (lprcIcon) *lprcIcon = rcIcon;
