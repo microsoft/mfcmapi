@@ -192,6 +192,7 @@ void TextPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC /*hdc*/)
 		pParent,
 		m_nID));
 	SubclassEdit(m_EditBox.m_hWnd, pParent ? pParent->m_hWnd : NULL, m_bReadOnly);
+	SendMessage(m_EditBox.m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(GetSegoeFont()), false);
 
 	m_bInitialized = true; // We can now call SetEditBoxText
 

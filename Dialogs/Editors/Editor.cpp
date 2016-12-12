@@ -189,9 +189,9 @@ LRESULT CEditor::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		RECT rect = { 0 };
 		::GetClientRect(m_hWnd, &rect);
-		auto hOld = ::SelectObject(reinterpret_cast<HDC>(wParam), GetSysBrush(cBackground));
-		auto bRet = ::PatBlt(reinterpret_cast<HDC>(wParam), 0, 0, rect.right - rect.left, rect.bottom - rect.top, PATCOPY);
-		::SelectObject(reinterpret_cast<HDC>(wParam), hOld);
+		auto hOld = SelectObject(reinterpret_cast<HDC>(wParam), GetSysBrush(cBackground));
+		auto bRet = PatBlt(reinterpret_cast<HDC>(wParam), 0, 0, rect.right - rect.left, rect.bottom - rect.top, PATCOPY);
+		SelectObject(reinterpret_cast<HDC>(wParam), hOld);
 		return bRet;
 	}
 	case WM_MOUSEWHEEL:
@@ -202,7 +202,7 @@ LRESULT CEditor::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 		auto zDelta = GET_WHEEL_DELTA_WPARAM(wParam);
 		s_DeltaTotal += zDelta;
 
-		int nLines = s_DeltaTotal / WHEEL_DELTA;
+		auto nLines = s_DeltaTotal / WHEEL_DELTA;
 		s_DeltaTotal -= nLines * WHEEL_DELTA;
 		for (auto i = 0; i != abs(nLines); ++i)
 		{
@@ -314,7 +314,7 @@ BOOL CEditor::OnInitDialog()
 	auto bRet = CMyDialog::OnInitDialog();
 
 	m_szTitle = szPostfix + m_szAddInTitle;
-	::SetWindowTextW(m_hWnd, m_szTitle.c_str());
+	SetWindowTextW(m_hWnd, m_szTitle.c_str());
 
 	SetIcon(m_hIcon, false); // Set small icon - large icon isn't used
 
@@ -341,7 +341,7 @@ BOOL CEditor::OnInitDialog()
 			CRect(0, 0, 0, 0),
 			this,
 			IDC_PROMPT));
-		::SetWindowTextW(m_Prompt.GetSafeHwnd(), szFullString.c_str());
+		SetWindowTextW(m_Prompt.GetSafeHwnd(), szFullString.c_str());
 
 		SubclassLabel(m_Prompt.m_hWnd);
 	}
@@ -349,7 +349,7 @@ BOOL CEditor::OnInitDialog()
 	// setup to get button widths
 	auto hdc = ::GetDC(m_hWnd);
 	if (!hdc) return false; // fatal error
-	auto hfontOld = ::SelectObject(hdc, GetSegoeFont());
+	auto hfontOld = SelectObject(hdc, GetSegoeFont());
 
 	CWnd* pParent = this;
 	if (m_bEnableScroll)
@@ -467,7 +467,7 @@ BOOL CEditor::OnInitDialog()
 	}
 
 	// tear down from our width computations
-	(void)::SelectObject(hdc, hfontOld);
+	(void)SelectObject(hdc, hfontOld);
 	::ReleaseDC(m_hWnd, hdc);
 
 	m_iButtonWidth += m_iMargin;
@@ -618,7 +618,7 @@ _Check_return_ SIZE CEditor::ComputeWorkArea(SIZE sScreen)
 	auto cx = 0;
 
 	auto hdc = ::GetDC(m_hWnd);
-	auto hfontOld = ::SelectObject(hdc, GetSegoeFont());
+	auto hfontOld = SelectObject(hdc, GetSegoeFont());
 
 	auto iPromptLineCount = 0;
 	if (m_bHasPrompt)
@@ -641,7 +641,7 @@ _Check_return_ SIZE CEditor::ComputeWorkArea(SIZE sScreen)
 		cx += GetSystemMetrics(SM_CXVSCROLL) + 2 * GetSystemMetrics(SM_CXFIXEDFRAME);
 	}
 
-	(void) ::SelectObject(hdc, hfontOld);
+	(void) SelectObject(hdc, hfontOld);
 
 	// Throw all that work out if we have enough buttons
 	cx = max(cx, (int)(m_cButtons * m_iButtonWidth + m_iMargin * (m_cButtons - 1)));
@@ -752,8 +752,8 @@ _Check_return_ LRESULT CEditor::OnNcHitTest(CPoint point)
 {
 	CRect gripRect;
 	GetWindowRect(gripRect);
-	gripRect.left = gripRect.right - ::GetSystemMetrics(SM_CXHSCROLL);
-	gripRect.top = gripRect.bottom - ::GetSystemMetrics(SM_CYVSCROLL);
+	gripRect.left = gripRect.right - GetSystemMetrics(SM_CXHSCROLL);
+	gripRect.top = gripRect.bottom - GetSystemMetrics(SM_CYVSCROLL);
 	// Test to see if the cursor is within the 'gripper'
 	// area, and tell the system that the user is over
 	// the lower right-hand corner if it is.
