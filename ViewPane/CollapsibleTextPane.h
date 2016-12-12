@@ -1,5 +1,4 @@
 #pragma once
-#include "ViewPane.h"
 #include "TextPane.h"
 
 class CollapsibleTextPane : public TextPane

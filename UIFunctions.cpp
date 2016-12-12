@@ -2,7 +2,6 @@
 #include "stdafx.h"
 #include "UIFunctions.h"
 #include "Windowsx.h"
-#include "ImportProcs.h"
 #include "RichEditOleCallback.h"
 #include <Controls/SortList/SortListData.h>
 #include <Controls/SortList/NodeData.h>
@@ -924,7 +923,7 @@ void ShiftBitmap(HDC hdcSource, HDC hdcTarget, int iWidth, int iHeight, int offs
 // Replaces cBitmapTransFore (cyan) with cFrameSelected
 // Replaces cBitmapTransBack (magenta) with the cBackground
 // Scales from size of bitmap to size of target rectangle
-void DrawBitmap(_In_ HDC hdc, _In_ const RECT& rcTarget, uiBitmap iBitmap, bool bHover, size_t offset = 0)
+void DrawBitmap(_In_ HDC hdc, _In_ const RECT& rcTarget, uiBitmap iBitmap, bool bHover, int offset = 0)
 {
 	int iWidth = rcTarget.right - rcTarget.left;
 	int iHeight = rcTarget.bottom - rcTarget.top;
@@ -1758,7 +1757,7 @@ void GetCaptionRects(HWND hWnd,
 	if (lprcCaptionText) *lprcCaptionText = rcCaptionText;
 }
 
-void DrawSystemButtons(_In_ HWND hWnd, _In_opt_ HDC hdc, int iHitTest, bool bHover)
+void DrawSystemButtons(_In_ HWND hWnd, _In_opt_ HDC hdc, LONG_PTR iHitTest, bool bHover)
 {
 	HDC hdcLocal = nullptr;
 	if (!hdc)
