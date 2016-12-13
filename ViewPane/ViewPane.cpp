@@ -74,7 +74,7 @@ void ViewPane::Initialize(int iControl, _In_ CWnd* pParent, _In_opt_ HDC /*hdc*/
 
 	if (vpCollapsible & GetFlags())
 	{
-		StyleLabel(m_Label.m_hWnd, lsPaneHeader);
+		StyleLabel(m_Label.m_hWnd, lsPaneHeaderLabel);
 
 		EC_B(m_CollapseButton.Create(
 			NULL,

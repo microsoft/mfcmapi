@@ -2006,7 +2006,7 @@ _Check_return_ bool HandleControlUI(UINT message, WPARAM wParam, LPARAM lParam, 
 		auto uiText = cText;
 		auto uiBackground = cBackground;
 
-		if (lsStyle == lsPaneHeader)
+		if (lsStyle == lsPaneHeaderLabel || lsStyle == lsPaneHeaderText)
 		{
 			uiText = cPaneHeaderText;
 			uiBackground = cPaneHeaderBackground;
@@ -2087,7 +2087,15 @@ LRESULT CALLBACK LabelProc(
 		return DefSubclassProc(hWnd, uMsg, wParam, lParam);
 	case WM_ERASEBKGND:
 		return true;
+	case WM_NCHITTEST:
+		if (reinterpret_cast<intptr_t>(::GetProp(hWnd, LABEL_STYLE)) == lsPaneHeaderLabel)
+		{
+			return HTTRANSPARENT;
+		}
+
+		break;
 	}
+
 	return DefSubclassProc(hWnd, uMsg, wParam, lParam);
 }
 

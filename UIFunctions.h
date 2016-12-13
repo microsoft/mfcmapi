@@ -54,7 +54,8 @@ enum uiButtonStyle
 enum uiLabelStyle
 {
 	lsUnstyled,
-	lsPaneHeader,
+	lsPaneHeaderLabel,
+	lsPaneHeaderText,
 };
 
 void InitializeGDI();

@@ -42,7 +42,7 @@ void CountedTextPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 		IDD_COUNTLABEL));
 	SetWindowTextW(m_Count.m_hWnd, m_szCountLabel.c_str());
 	SubclassLabel(m_Count.m_hWnd);
-	StyleLabel(m_Count.m_hWnd, lsPaneHeader);
+	StyleLabel(m_Count.m_hWnd, lsPaneHeaderText);
 
 	TextPane::Initialize(iControl, pParent, hdc);
 }
