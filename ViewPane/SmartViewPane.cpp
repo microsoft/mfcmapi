@@ -30,15 +30,16 @@ ULONG SmartViewPane::GetFlags()
 	return DropDownPane::GetFlags() | vpCollapsible;
 }
 
-void SmartViewPane::Initialize(int /*iControl*/, _In_ CWnd* pParent, _In_ HDC hdc)
+void SmartViewPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 {
 	for (const auto& smartViewParserType : SmartViewParserTypeArray)
 	{
 		InsertDropString(smartViewParserType.lpszName, smartViewParserType.ulValue);
 	}
 
-	DropDownPane::Initialize(0, pParent, hdc);
-	m_TextPane.Initialize(1, pParent, hdc);
+	DropDownPane::Initialize(iControl, pParent, hdc);
+	// The control id of this text pane doesn't matter, so leave it at 0
+	m_TextPane.Initialize(0, pParent, hdc);
 
 	m_bInitialized = true;
 }
