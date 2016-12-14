@@ -13,7 +13,7 @@ static wstring CLASS = L"CEditor";
 
 #define NOLIST 0XFFFFFFFF
 
-#define MAX_WIDTH 1000
+#define MAX_WIDTH 1750
 
 // After we compute dialog size minimums, when actually set an initial size, we won't go smaller than this
 #define MIN_WIDTH 600
