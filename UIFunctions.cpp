@@ -394,26 +394,9 @@ HMENU LocateSubmenu(_In_ HMENU hMenu, UINT uid)
 
 _Check_return_ int GetEditHeight(_In_ HWND hwndEdit)
 {
-	auto hRes = S_OK;
-	HDC hdc = nullptr;
-	TEXTMETRIC tmFont = { 0 };
-	auto iHeight = 0;
-
-	// Get the DC for the edit control.
-	WC_D(hdc, GetDC(hwndEdit));
-
-	if (hdc)
-	{
-		// Get the metrics for the Segoe font.
-		auto hOldFont = static_cast<HFONT>(SelectObject(hdc, GetSegoeFont()));
-		WC_B(::GetTextMetrics(hdc, &tmFont));
-		SelectObject(hdc, hOldFont);
-		ReleaseDC(hwndEdit, hdc);
-	}
-
 	// Calculate the new height for the edit control.
-	iHeight =
-		tmFont.tmHeight
+	auto iHeight =
+		GetTextHeight(hwndEdit)
 		+ 2 * GetSystemMetrics(SM_CYFIXEDFRAME) // Adjust for the edit border
 		+ 2 * GetSystemMetrics(SM_CXEDGE); // Adjust for the edit border
 	return iHeight;
@@ -432,7 +415,7 @@ _Check_return_ int GetTextHeight(_In_ HWND hwndEdit)
 	if (hdc)
 	{
 		// Get the metrics for the Segoe font.
-		auto hOldFont = static_cast<HFONT>(SelectObject(hdc, GetSegoeFont()));
+		auto hOldFont = SelectObject(hdc, GetSegoeFont());
 		WC_B(::GetTextMetrics(hdc, &tmFont));
 		SelectObject(hdc, hOldFont);
 		ReleaseDC(hwndEdit, hdc);
@@ -1429,7 +1412,7 @@ void MeasureMenu(_In_ LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 		auto szText = StripCharacter(lpMenuEntry->m_MSAA.pszWText, L'&');
 
 		auto size = GetTextExtentPoint32(hdc, szText);
-		lpMeasureItemStruct->itemWidth = size.cx + 2 * GetSystemMetrics(SM_CXEDGE);
+		lpMeasureItemStruct->itemWidth = size.cx + 4 * GetSystemMetrics(SM_CXEDGE);
 		lpMeasureItemStruct->itemHeight = size.cy + 2 * GetSystemMetrics(SM_CYEDGE);
 
 		// Make sure we have room for the flyout icon
@@ -1441,7 +1424,9 @@ void MeasureMenu(_In_ LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 		SelectObject(hdc, hfontOld);
 		ReleaseDC(nullptr, hdc);
 
-		DebugPrint(DBGUI, L"Measure %d, \"%ws\"\n", lpMeasureItemStruct->itemWidth, szText.c_str());
+		DebugPrint(DBGMenu, L"Measure %d, \"%ws\"\n",
+			lpMeasureItemStruct->itemWidth,
+			szText.c_str());
 	}
 }
 
@@ -1468,6 +1453,10 @@ void DrawMenu(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
 	auto bAccel = (lpDrawItemStruct->itemState & ODS_NOACCEL) != 0;
 	auto bHot = (lpDrawItemStruct->itemState & (ODS_HOTLIGHT | ODS_SELECTED)) != 0;
 	auto bDisabled = (lpDrawItemStruct->itemState & (ODS_GRAYED | ODS_DISABLED)) != 0;
+
+	DebugPrint(DBGMenu, L"DrawMenu %d, \"%ws\"\n",
+		lpDrawItemStruct->rcItem.right - lpDrawItemStruct->rcItem.left,
+		lpMenuEntry->m_pName.c_str());
 
 	// Double buffer our menu painting
 	CDoubleBuffer db;
@@ -1519,6 +1508,10 @@ void DrawMenu(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
 		else
 			rcText.left += GetSystemMetrics(SM_CXEDGE);
 
+		DebugPrint(DBGMenu, L"DrawMenu text %d, \"%ws\"\n",
+			rcText.right - rcText.left,
+			lpMenuEntry->m_pName.c_str());
+
 		DrawSegoeTextW(
 			hdc,
 			lpMenuEntry->m_pName,
@@ -1552,6 +1545,13 @@ void DrawMenu(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
 				nWidth,
 				nHeight,
 				MyGetSysColor(cBackground));
+
+#ifdef SKIPBUFFER
+			auto frameRect = rcItem;
+			frameRect.right = frameRect.left + nWidth;
+			frameRect.bottom = frameRect.top + nHeight;
+			FrameRect(hdc, &frameRect, GetSysBrush(cBitmapTransFore));
+#endif
 
 			DeleteDC(hdcMem);
 			DeleteObject(bm);
