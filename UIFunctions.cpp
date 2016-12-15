@@ -17,7 +17,6 @@ HFONT g_hFontSegoeBold = nullptr;
 #define LABEL_STYLE _T("LabelStyle") // STRING_OK
 
 #define BORDER_VISIBLEWIDTH 2
-#define TRIANGLE_SIZE 4
 
 enum myColor
 {
@@ -1113,10 +1112,11 @@ void DrawTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ const RECT& rc, bool bButto
 	POINT tri[3] = { 0 };
 	LONG lCenter = 0;
 	LONG lTop = 0;
+	int triangleSize = (rc.bottom - rc.top) / 5;
 	if (bButton)
 	{
 		lCenter = rc.left + (rc.bottom - rc.top) / 2;
-		lTop = (rc.top + rc.bottom - TRIANGLE_SIZE) / 2;
+		lTop = (rc.top + rc.bottom - triangleSize) / 2;
 	}
 	else
 	{
@@ -1128,20 +1128,21 @@ void DrawTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ const RECT& rc, bool bButto
 	{
 		tri[0].x = lCenter;
 		tri[0].y = lTop;
-		tri[1].x = lCenter - TRIANGLE_SIZE;
-		tri[1].y = lTop + TRIANGLE_SIZE;
-		tri[2].x = lCenter + TRIANGLE_SIZE;
-		tri[2].y = lTop + TRIANGLE_SIZE;
+		tri[1].x = lCenter - triangleSize;
+		tri[1].y = lTop + triangleSize;
+		tri[2].x = lCenter + triangleSize;
+		tri[2].y = lTop + triangleSize;
 	}
 	else
 	{
 		tri[0].x = lCenter;
-		tri[0].y = lTop + TRIANGLE_SIZE;
-		tri[1].x = lCenter - TRIANGLE_SIZE;
+		tri[0].y = lTop + triangleSize;
+		tri[1].x = lCenter - triangleSize;
 		tri[1].y = lTop;
-		tri[2].x = lCenter + TRIANGLE_SIZE;
+		tri[2].x = lCenter + triangleSize;
 		tri[2].y = lTop;
 	}
+
 	auto uiArrow = cArrow;
 	if (bButton) uiArrow = cPaneHeaderText;
 	DrawFilledPolygon(hdc, tri, _countof(tri), MyGetSysColor(uiArrow), GetSysBrush(uiArrow));
