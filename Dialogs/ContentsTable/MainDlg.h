@@ -26,7 +26,7 @@ private:
 	_Check_return_ bool HandleMenu(WORD wMenuSelect) override;
 	_Check_return_ HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp) override;
 	void OnDisplayItem() override;
-	void OnInitMenu(_In_ CMenu* pMenu);
+	void OnInitMenu(_In_ CMenu* pMenu) override;
 
 	void AddLoadMAPIMenus() const;
 	bool InvokeLoadMAPIMenu(WORD wMenuSelect) const;

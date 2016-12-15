@@ -21,7 +21,7 @@ public:
 protected:
 	// Overrides from base class
 	void CreateDialogAndMenu(UINT nIDMenuResource);
-	void OnInitMenu(_In_ CMenu* pMenu);
+	void OnInitMenu(_In_ CMenu* pMenu) override;
 
 	CHierarchyTableTreeCtrl* m_lpHierarchyTableTreeCtrl;
 	ULONG m_ulDisplayFlags;

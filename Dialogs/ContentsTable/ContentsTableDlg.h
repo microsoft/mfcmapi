@@ -26,7 +26,7 @@ protected:
 	virtual void CreateDialogAndMenu(UINT nIDMenuResource);
 	_Check_return_ bool HandleMenu(WORD wMenuSelect) override;
 	BOOL OnInitDialog() override;
-	void OnInitMenu(_In_opt_ CMenu* pMenu);
+	void OnInitMenu(_In_opt_ CMenu* pMenu) override;
 	void OnRefreshView() override;
 
 	virtual void OnDisplayItem();

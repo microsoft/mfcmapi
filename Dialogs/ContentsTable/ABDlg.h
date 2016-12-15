@@ -22,7 +22,7 @@ private:
 	void OnCreatePropertyStringRestriction() override;
 	void OnDeleteSelectedItem() override;
 	void OnDisplayDetails();
-	void OnInitMenu(_In_ CMenu* pMenu);
+	void OnInitMenu(_In_ CMenu* pMenu) override;
 
 	// Menu items
 	void OnOpenContact();

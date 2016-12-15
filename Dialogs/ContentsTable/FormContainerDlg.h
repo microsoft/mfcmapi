@@ -24,7 +24,7 @@ private:
 		_In_ LPMAPICONTAINER lpContainer) override;
 	void OnDeleteSelectedItem() override;
 	BOOL OnInitDialog() override;
-	void OnInitMenu(_In_ CMenu* pMenu);
+	void OnInitMenu(_In_ CMenu* pMenu) override;
 	void OnRefreshView() override;
 	_Check_return_ HRESULT OpenItemProp(int iSelectedItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppMAPIProp) override;
 

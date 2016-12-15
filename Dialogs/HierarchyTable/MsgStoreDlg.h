@@ -25,7 +25,7 @@ private:
 		_In_ LPMAPICONTAINER lpContainer) override;
 	void HandleCopy() override;
 	_Check_return_ bool HandlePaste() override;
-	void OnInitMenu(_In_ CMenu* pMenu);
+	void OnInitMenu(_In_ CMenu* pMenu) override;
 
 	// Menu items
 	void OnCreateSubFolder();

@@ -584,6 +584,7 @@ void DrawSegoeTextW(
 	bool bBold,
 	_In_ UINT format)
 {
+	DebugPrint(DBGUI, L"Draw %d, \"%ws\"\n", rc.right - rc.left, lpchText.c_str());
 	auto hfontOld = SelectObject(hdc, bBold ? GetSegoeFontBold() : GetSegoeFont());
 	auto crText = SetTextColor(hdc, color);
 	SetBkMode(hdc, TRANSPARENT);
@@ -594,6 +595,11 @@ void DrawSegoeTextW(
 		-1,
 		&drawRc,
 		format);
+
+#ifdef SKIPBUFFER
+	FrameRect(hdc, &drawRc, GetSysBrush(bBold ? cBitmapTransFore : cBitmapTransBack));
+#endif
+
 	SelectObject(hdc, hfontOld);
 	(void)SetTextColor(hdc, crText);
 }
@@ -1434,6 +1440,8 @@ void MeasureMenu(_In_ LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 
 		SelectObject(hdc, hfontOld);
 		ReleaseDC(nullptr, hdc);
+
+		DebugPrint(DBGUI, L"Measure %d, \"%ws\"\n", lpMeasureItemStruct->itemWidth, szText.c_str());
 	}
 }
 
@@ -1446,7 +1454,7 @@ void MeasureItem(_In_ LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 	// Important to keep this case even if we do not use it - CDialog::OnMeasureItem asserts.
 	else if (ODT_COMBOBOX == lpMeasureItemStruct->CtlType)
 	{
-		// DebugPrint(DBGGeneric,"Combo Box\n");
+		// DebugPrint(DBGUI,"Combo Box\n");
 	}
 }
 

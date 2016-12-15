@@ -44,7 +44,7 @@ protected:
 	_Check_return_ virtual bool HandlePaste();
 	void OnCancel() override;
 	BOOL OnInitDialog() override;
-	void OnInitMenu(_In_opt_ CMenu* pMenu);
+	virtual void OnInitMenu(_In_opt_ CMenu* pMenu);
 
 	ULONG m_ulAddInContext;
 	ULONG m_ulAddInMenuItems;

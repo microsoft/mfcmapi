@@ -22,7 +22,7 @@ private:
 	void DisplayItem(ULONG ulFlags);
 	void OnCreatePropertyStringRestriction() override;
 	void OnDisplayItem() override;
-	void OnInitMenu(_In_ CMenu* pMenu);
+	void OnInitMenu(_In_ CMenu* pMenu) override;
 
 	// Menu items
 	void OnOpenWithFlags();

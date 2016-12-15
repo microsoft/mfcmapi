@@ -22,7 +22,7 @@ private:
 		_In_ LPMAPIPROP lpMAPIProp,
 		_In_ LPMAPICONTAINER lpContainer) override;
 	void OnDeleteSelectedItem() override;
-	void OnInitMenu(_In_opt_ CMenu* pMenu);
+	void OnInitMenu(_In_opt_ CMenu* pMenu) override;
 	void OnRefreshView() override;
 
 	// Menu items

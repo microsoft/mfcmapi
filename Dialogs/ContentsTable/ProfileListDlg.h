@@ -32,7 +32,7 @@ private:
 	void OnCreateProfile();
 	void OnGetMAPISVC();
 	void OnGetProfileServiceVersion();
-	void OnInitMenu(_In_ CMenu* pMenu);
+	void OnInitMenu(_In_ CMenu* pMenu) override;
 	void OnLaunchProfileWizard();
 	void OnRemoveServicesFromMAPISVC();
 	void OnSetDefaultProfile();

@@ -28,7 +28,7 @@ private:
 	_Check_return_ bool HandlePaste() override;
 	void OnDeleteSelectedItem() override;
 	void OnDisplayItem() override;
-	void OnInitMenu(_In_ CMenu* pMenu);
+	void OnInitMenu(_In_ CMenu* pMenu) override;
 
 	// Menu items
 	void OnAddOneOffAddress();
