@@ -1039,6 +1039,7 @@ void DrawExpandTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ HTREEITEM hItem, bool
 	{
 		RECT rcButton = { 0 };
 		TreeView_GetItemRect(hWnd, hItem, &rcButton, true);
+		auto triangleSize = (rcButton.bottom - rcButton.top) / 4;
 
 		// Erase the +/- icons
 		// We erase everything to the left of the label
@@ -1056,10 +1057,10 @@ void DrawExpandTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ HTREEITEM hItem, bool
 		auto bExpanded = TVIS_EXPANDED == (tvitem.state & TVIS_EXPANDED);
 		if (bExpanded)
 		{
-			rcTriangle.top = (rcButton.top + rcButton.bottom) / 2 - 3;
-			rcTriangle.bottom = rcTriangle.top + 5;
+			rcTriangle.top = (rcButton.top + rcButton.bottom) / 2 - (triangleSize - 1);
+			rcTriangle.bottom = rcTriangle.top + (triangleSize + 1);
 			rcTriangle.left = rcButton.left;
-			rcTriangle.right = rcTriangle.left + 5;
+			rcTriangle.right = rcTriangle.left + (triangleSize + 1);
 
 			tri[0].x = rcTriangle.left;
 			tri[0].y = rcTriangle.bottom;
@@ -1070,10 +1071,10 @@ void DrawExpandTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ HTREEITEM hItem, bool
 		}
 		else
 		{
-			rcTriangle.top = (rcButton.top + rcButton.bottom) / 2 - 4;
-			rcTriangle.bottom = rcTriangle.top + 8;
+			rcTriangle.top = (rcButton.top + rcButton.bottom) / 2 - triangleSize;
+			rcTriangle.bottom = rcTriangle.top + triangleSize * 2;
 			rcTriangle.left = rcButton.left;
-			rcTriangle.right = rcTriangle.left + 4;
+			rcTriangle.right = rcTriangle.left + triangleSize;
 
 			tri[0].x = rcTriangle.left;
 			tri[0].y = rcTriangle.top;
@@ -1112,7 +1113,7 @@ void DrawTriangle(_In_ HWND hWnd, _In_ HDC hdc, _In_ const RECT& rc, bool bButto
 	POINT tri[3] = { 0 };
 	LONG lCenter = 0;
 	LONG lTop = 0;
-	int triangleSize = (rc.bottom - rc.top) / 5;
+	auto triangleSize = (rc.bottom - rc.top) / 5;
 	if (bButton)
 	{
 		lCenter = rc.left + (rc.bottom - rc.top) / 2;
