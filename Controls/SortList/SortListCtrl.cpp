@@ -73,7 +73,7 @@ _Check_return_ HRESULT CSortListCtrl::Create(_In_ CWnd* pCreateParent, ULONG ulF
 
 	if (bImages)
 	{
-		auto hImageList = ImageList_Create(16, 16, ILC_COLOR32 | ILC_MASK, 1, 1);
+		auto hImageList = ImageList_Create(32, 32, ILC_COLOR32 | ILC_MASK, 1, 1);
 		m_ImageList.Attach(hImageList);
 
 		CBitmap myBitmap;
