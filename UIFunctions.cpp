@@ -1345,7 +1345,8 @@ void DrawCheckButton(_In_ HWND hWnd, _In_ HDC hDC, _In_ const RECT& rc, UINT ite
 	if (bChecked)
 	{
 		auto rcFill = rcCheck;
-		InflateRect(&rcFill, -3, -3);
+		auto deflate = (rcCheck.bottom - rcCheck.top) / 5;
+		InflateRect(&rcFill, -deflate, -deflate);
 		FillRect(hDC, &rcFill, GetSysBrush(cGlow));
 	}
 
