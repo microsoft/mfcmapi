@@ -1438,10 +1438,9 @@ void MeasureItem(_In_ LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 	{
 		MeasureMenu(lpMeasureItemStruct);
 	}
-	// Important to keep this case even if we do not use it - CDialog::OnMeasureItem asserts.
 	else if (ODT_COMBOBOX == lpMeasureItemStruct->CtlType)
 	{
-		// DebugPrint(DBGUI,"Combo Box\n");
+		lpMeasureItemStruct->itemHeight = GetEditHeight(nullptr);
 	}
 }
 

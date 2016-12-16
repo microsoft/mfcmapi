@@ -32,7 +32,7 @@ public:
 		int iSmallHeightMargin,
 		int iLargeHeightMargin,
 		int iButtonHeight, // Height of buttons below the control
-		int iEditHeight); // height of an edit control
+		int iEditHeight); // Height of an edit control
 	void SetAddInLabel( const wstring& szLabel);
 	bool MatchID(UINT nID) const;
 	virtual void UpdateButtons();
@@ -44,7 +44,7 @@ protected:
 	wstring m_szLabel; // Text to push into UI in Initialize
 	int m_iLabelWidth; // The width of the label
 	CEdit m_Label;
-	UINT m_nID; // id for matching change notifications back to controls
+	UINT m_nID; // Id for matching change notifications back to controls
 	HWND m_hWndParent;
 	bool m_bCollapsed;
 	CButton m_CollapseButton;
@@ -56,5 +56,5 @@ protected:
 	int m_iSmallHeightMargin;
 	int m_iLargeHeightMargin;
 	int m_iButtonHeight; // Height of buttons below the control
-	int m_iEditHeight; // height of an edit control
+	int m_iEditHeight; // Height of an edit control
 };

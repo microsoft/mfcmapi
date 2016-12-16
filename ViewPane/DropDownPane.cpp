@@ -62,7 +62,7 @@ int DropDownPane::GetMinWidth(_In_ HDC hdc)
 	}
 
 	// Add scroll bar and margins for our frame
-	cxDropDown += ::GetSystemMetrics(SM_CXVSCROLL) + 2 * GetSystemMetrics(SM_CXFIXEDFRAME);
+	cxDropDown += GetSystemMetrics(SM_CXVSCROLL) + 2 * GetSystemMetrics(SM_CXFIXEDFRAME);
 
 	return max(ViewPane::GetMinWidth(hdc), cxDropDown);
 }
@@ -80,7 +80,8 @@ int DropDownPane::GetFixedHeight()
 
 	iHeight += m_iEditHeight; // Height of the dropdown
 
-	// No bottom margin on the DropDown as it's usually tied to the following control
+	iHeight += m_iLargeHeightMargin; // Bottom margin
+
 	return iHeight;
 }
 
@@ -95,7 +96,6 @@ void DropDownPane::SetWindowPos(int x, int y, int width, int /*height*/)
 	if (0 != m_iControl)
 	{
 		y += m_iSmallHeightMargin;
-		// height -= m_iSmallHeightMargin;
 	}
 
 	if (!m_szLabel.empty())
@@ -108,7 +108,6 @@ void DropDownPane::SetWindowPos(int x, int y, int width, int /*height*/)
 			m_iLabelHeight,
 			SWP_NOZORDER));
 		y += m_iLabelHeight;
-		// height -= m_iLabelHeight;
 	}
 
 	EC_B(m_DropDown.SetWindowPos(NULL, x, y, width, m_iEditHeight, SWP_NOZORDER));
@@ -145,6 +144,7 @@ void DropDownPane::CreateControl(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 		| CBS_HASSTRINGS
 		| CBS_AUTOHSCROLL
 		| CBS_DISABLENOSCROLL
+		| CBS_NOINTEGRALHEIGHT
 		| dwDropStyle,
 		CRect(0, 0, 0, static_cast<int>(dropHeight)),
 		pParent,
@@ -187,7 +187,7 @@ _Check_return_ wstring DropDownPane::GetDropStringUseControl() const
 	auto len = m_DropDown.GetWindowTextLength() + 1;
 	auto buffer = new WCHAR[len];
 	memset(buffer, 0, sizeof(WCHAR)* len);
-	::GetWindowTextW(m_DropDown.m_hWnd, buffer, len);
+	GetWindowTextW(m_DropDown.m_hWnd, buffer, len);
 	wstring szOut = buffer;
 	delete[] buffer;
 	return szOut;
