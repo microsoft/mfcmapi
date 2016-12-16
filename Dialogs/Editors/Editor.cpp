@@ -464,6 +464,9 @@ BOOL CEditor::OnInitDialog()
 			CRect(0, 0, 0, 0),
 			this,
 			IDCANCEL));
+
+		auto sizeText = GetTextExtentPoint32(hdc, szCancel);
+		m_iButtonWidth = max(m_iButtonWidth, sizeText.cx);
 	}
 
 	// tear down from our width computations
