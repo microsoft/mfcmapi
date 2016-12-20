@@ -843,10 +843,7 @@ _Check_return_ HRESULT OpenPublicMessageStore(
 		}
 		else
 		{
-			EC_MAPI(HrGetOneProp(
-				lpPublicMDBNonAdmin,
-				CHANGE_PROP_TYPE(PR_HIERARCHY_SERVER, PT_STRING8),
-				&lpServerName));
+			EC_MAPI(HrGetOneProp(lpPublicMDBNonAdmin, CHANGE_PROP_TYPE(PR_HIERARCHY_SERVER, PT_STRING8), &lpServerName));
 		}
 
 		if (CheckStringProp(lpServerName, PT_STRING8))
