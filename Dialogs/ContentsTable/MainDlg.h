@@ -65,6 +65,7 @@ private:
 	void OnOpenOtherUsersMailboxFromGAL();
 	void OnOpenPAB();
 	void OnOpenPublicFolders();
+	void OnOpenPublicFolderWithDN();
 	void OnOpenSelectedStoreDeletedFolders();
 	void OnRemoveServicesFromMAPISVC();
 	void OnQueryDefaultMessageOpt();

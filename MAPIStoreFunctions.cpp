@@ -363,11 +363,11 @@ _Check_return_ HRESULT CreateStoreEntryID(
 
 	if (lpXManageStore)
 	{
-		DebugPrint(DBGGeneric, L"CreateStoreEntryID: Creating EntryID. StoreDN = \"%hs\", MailboxDN = \"%hs\"\n", lpszMsgStoreDN.c_str(), lpszMailboxDN.c_str());
+		DebugPrint(DBGGeneric, L"CreateStoreEntryID: Creating EntryID. StoreDN = \"%hs\", MailboxDN = \"%hs\", Flags = \"0x%X\"\n", lpszMsgStoreDN.c_str(), lpszMailboxDN.c_str(), ulFlags);
 
 		EC_MAPI(lpXManageStore->CreateStoreEntryID(
 			LPSTR(lpszMsgStoreDN.c_str()),
-			LPSTR(lpszMailboxDN.c_str()),
+			lpszMailboxDN.empty() ? nullptr: LPSTR(lpszMailboxDN.c_str()),
 			ulFlags,
 			lpcbEntryID,
 			lppEntryID));
@@ -403,7 +403,7 @@ _Check_return_ HRESULT CreateStoreEntryID2(
 
 	if (lpXManageStoreEx)
 	{
-		DebugPrint(DBGGeneric, L"CreateStoreEntryID2: Creating EntryID. StoreDN = \"%hs\", MailboxDN = \"%hs\", SmtpAddress = \"%ws\"\n", lpszMsgStoreDN.c_str(), lpszMailboxDN.c_str(), smtpAddress.c_str());
+		DebugPrint(DBGGeneric, L"CreateStoreEntryID2: Creating EntryID. StoreDN = \"%hs\", MailboxDN = \"%hs\", SmtpAddress = \"%hs\", Flags = \"0x%X\"\n", lpszMsgStoreDN.c_str(), lpszMailboxDN.c_str(), smtpAddress.c_str(), ulFlags);
 		SPropValue sProps[4] = { 0 };
 		sProps[0].ulPropTag = PR_PROFILE_MAILBOX;
 		sProps[0].Value.lpszA = LPSTR(lpszMailboxDN.c_str());
@@ -807,6 +807,7 @@ _Check_return_ HRESULT OpenMessageStoreGUID(
 
 _Check_return_ HRESULT OpenPublicMessageStore(
 	_In_ LPMAPISESSION lpMAPISession,
+	LPSTR szServerName,
 	ULONG ulFlags, // Flags for CreateStoreEntryID
 	_Deref_out_opt_ LPMDB* lppPublicMDB)
 {
@@ -831,7 +832,22 @@ _Check_return_ HRESULT OpenPublicMessageStore(
 
 	if (lpPublicMDBNonAdmin && StoreSupportsManageStore(lpPublicMDBNonAdmin))
 	{
-		EC_MAPI(HrGetOneProp(lpPublicMDBNonAdmin, CHANGE_PROP_TYPE(PR_HIERARCHY_SERVER, PT_STRING8), &lpServerName));
+		if (szServerName != nullptr && strlen(szServerName) > 0)
+		{
+			MAPIAllocateBuffer(sizeof(SPropValue), reinterpret_cast<LPVOID*>(&lpServerName));
+			ZeroMemory(lpServerName, sizeof(SPropValue));
+			// This property is completely arbitrary, what matters is the type
+			// to keep with the original intention of the developer
+			lpServerName->ulPropTag = PR_PROFILE_UNRESOLVED_SERVER;
+			lpServerName->Value.lpszA = szServerName;
+		}
+		else
+		{
+			EC_MAPI(HrGetOneProp(
+				lpPublicMDBNonAdmin,
+				CHANGE_PROP_TYPE(PR_HIERARCHY_SERVER, PT_STRING8),
+				&lpServerName));
+		}
 
 		if (CheckStringProp(lpServerName, PT_STRING8))
 		{
