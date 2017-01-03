@@ -24,7 +24,15 @@ ULONG CheckPane::GetFlags()
 
 int CheckPane::GetMinWidth(_In_ HDC hdc)
 {
-	return ViewPane::GetMinWidth(hdc) + ::GetSystemMetrics(SM_CXMENUCHECK) + GetSystemMetrics(SM_CXEDGE);
+	auto label = ViewPane::GetMinWidth(hdc);
+	auto check = GetSystemMetrics(SM_CXMENUCHECK);
+	auto edge = GetSystemMetrics(SM_CXEDGE);
+	DebugPrint(DBGDraw, L"CheckPane::GetMinWidth Label:%d + check:%d + edge:%d = minwidth:%d\n",
+		label,
+		check,
+		edge,
+		label + edge + check);
+	return label + edge + check;
 }
 
 int CheckPane::GetFixedHeight()
@@ -63,6 +71,9 @@ void CheckPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC /*hdc*/)
 void CheckPane::SetWindowPos(int x, int y, int width, int height)
 {
 	auto hRes = S_OK;
+	DebugPrint(DBGDraw, L"CheckPane::SetWindowPos x:%d width:%d \n",
+		x,
+		width);
 	EC_B(m_Check.SetWindowPos(NULL, x, y, width, height, SWP_NOZORDER));
 }
 

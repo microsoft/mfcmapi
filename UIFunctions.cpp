@@ -566,7 +566,7 @@ void DrawSegoeTextW(
 	bool bBold,
 	_In_ UINT format)
 {
-	DebugPrint(DBGUI, L"Draw %d, \"%ws\"\n", rc.right - rc.left, lpchText.c_str());
+	DebugPrint(DBGDraw, L"Draw %d, \"%ws\"\n", rc.right - rc.left, lpchText.c_str());
 	auto hfontOld = SelectObject(hdc, bBold ? GetSegoeFontBold() : GetSegoeFont());
 	auto crText = SetTextColor(hdc, color);
 	SetBkMode(hdc, TRANSPARENT);
@@ -1327,18 +1327,18 @@ void DrawCheckButton(_In_ HWND hWnd, _In_ HDC hDC, _In_ const RECT& rc, UINT ite
 {
 	WCHAR szButton[255];
 	GetWindowTextW(hWnd, szButton, _countof(szButton));
-	auto iState = static_cast<int>(::SendMessage(hWnd, BM_GETSTATE, NULL, NULL));
-	auto bGlow = BST_HOT == (iState & BST_HOT);
+	auto iState = ::SendMessage(hWnd, BM_GETSTATE, NULL, NULL);
+	auto bGlow = (iState & BST_HOT) != 0;
 	auto bChecked = (iState & BST_CHECKED) != 0;
 	auto bDisabled = (itemState & CDIS_DISABLED) != 0;
 	auto bFocused = (itemState & CDIS_FOCUS) != 0;
 
-	long lSpacing = GetSystemMetrics(SM_CYEDGE);
-	auto lCheck = rc.bottom - rc.top - 2 * lSpacing;
+	auto lCheck = GetSystemMetrics(SM_CXMENUCHECK);
 	RECT rcCheck = { 0 };
+	rcCheck.left = rc.left;
 	rcCheck.right = rcCheck.left + lCheck;
-	rcCheck.top = rc.top + lSpacing;
-	rcCheck.bottom = rc.bottom - lSpacing;
+	rcCheck.top = (rc.bottom - rc.top - lCheck) / 2;
+	rcCheck.bottom = rcCheck.top + lCheck;
 
 	FillRect(hDC, &rc, GetSysBrush(cBackground));
 	FrameRect(hDC, &rcCheck, GetSysBrush(bDisabled ? cFrameUnselected : bGlow || bFocused ? cGlow : cFrameSelected));
@@ -1351,7 +1351,18 @@ void DrawCheckButton(_In_ HWND hWnd, _In_ HDC hDC, _In_ const RECT& rc, UINT ite
 	}
 
 	auto rcLabel = rc;
-	rcLabel.left = rcCheck.right + lSpacing;
+	rcLabel.left = rcCheck.right + GetSystemMetrics(SM_CXEDGE);
+	rcLabel.right = rcLabel.left + GetTextExtentPoint32(hDC, szButton).cx;
+
+	DebugPrint(DBGDraw, L"DrawCheckButton left:%d width:%d checkwidth:%d space:%d labelwidth:%d (scroll:%d 2frame:%d), \"%ws\"\n",
+		rc.left,
+		rc.right - rc.left,
+		rcCheck.right - rcCheck.left,
+		GetSystemMetrics(SM_CXEDGE),
+		rcLabel.right - rcLabel.left,
+		GetSystemMetrics(SM_CXVSCROLL),
+		2 * GetSystemMetrics(SM_CXFIXEDFRAME),
+		szButton);
 
 	DrawSegoeTextW(
 		hDC,
@@ -1427,7 +1438,7 @@ void MeasureMenu(_In_ LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 		SelectObject(hdc, hfontOld);
 		ReleaseDC(nullptr, hdc);
 
-		DebugPrint(DBGMenu, L"Measure %d, \"%ws\"\n",
+		DebugPrint(DBGDraw, L"Measure %d, \"%ws\"\n",
 			lpMeasureItemStruct->itemWidth,
 			szText.c_str());
 	}
@@ -1456,7 +1467,7 @@ void DrawMenu(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
 	auto bHot = (lpDrawItemStruct->itemState & (ODS_HOTLIGHT | ODS_SELECTED)) != 0;
 	auto bDisabled = (lpDrawItemStruct->itemState & (ODS_GRAYED | ODS_DISABLED)) != 0;
 
-	DebugPrint(DBGMenu, L"DrawMenu %d, \"%ws\"\n",
+	DebugPrint(DBGDraw, L"DrawMenu %d, \"%ws\"\n",
 		lpDrawItemStruct->rcItem.right - lpDrawItemStruct->rcItem.left,
 		lpMenuEntry->m_pName.c_str());
 
@@ -1510,7 +1521,7 @@ void DrawMenu(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
 		else
 			rcText.left += GetSystemMetrics(SM_CXEDGE);
 
-		DebugPrint(DBGMenu, L"DrawMenu text %d, \"%ws\"\n",
+		DebugPrint(DBGDraw, L"DrawMenu text %d, \"%ws\"\n",
 			rcText.right - rcText.left,
 			lpMenuEntry->m_pName.c_str());
 

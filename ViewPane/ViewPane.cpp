@@ -34,6 +34,11 @@ void ViewPane::SetWindowPos(int x, int y, int width, int /*height*/)
 		m_CollapseButton.SetWindowPos(nullptr, x, y, width, m_iLabelHeight, SWP_NOZORDER);
 	}
 
+	DebugPrint(DBGDraw, L"ViewPane::SetWindowPos x:%d width:%d labelpos:%d labelwidth:%d \n",
+		x,
+		width,
+		x + m_iButtonHeight,
+		m_iLabelWidth);
 	EC_B(m_Label.SetWindowPos(
 		nullptr,
 		x + m_iButtonHeight,
@@ -99,6 +104,9 @@ int ViewPane::GetMinWidth(_In_ HDC hdc)
 {
 	auto sizeText = GetTextExtentPoint32(hdc, m_szLabel);
 	m_iLabelWidth = sizeText.cx;
+	DebugPrint(DBGDraw, L"ViewPane::GetMinWidth m_iLabelWidth:%d \"%ws\"\n",
+		m_iLabelWidth,
+		m_szLabel.c_str());
 	return m_iLabelWidth;
 }
 
