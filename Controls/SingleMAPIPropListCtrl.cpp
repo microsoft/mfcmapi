@@ -818,7 +818,7 @@ void CSingleMAPIPropListCtrl::SavePropsToXML()
 				OutputXMLValueToFile(fProps, PropXMLNames[pcPROPNAMEDNAME].uidName, szTemp1, false, 2);
 
 				auto lpListData = reinterpret_cast<SortListData*>(GetItemData(iRow));
-				ULONG ulPropType = PT_NULL;
+				auto ulPropType = PT_NULL;
 				if (lpListData && lpListData->Prop())
 				{
 					ulPropType = PROP_TYPE(lpListData->Prop()->m_ulPropTag);
@@ -1345,7 +1345,7 @@ void CSingleMAPIPropListCtrl::OnEditGivenProp(ULONG ulPropTag)
 			lpEditProp,
 			lpSourceObj ? NULL : &lpModProp));
 
-		// If we had didn't have a source object, we need to shove our results back in to the property bag
+		// If we didn't have a source object, we need to shove our results back in to the property bag
 		if (S_OK == hRes && !lpSourceObj && lpModProp)
 		{
 			EC_H(m_lpPropBag->SetProp(lpModProp));

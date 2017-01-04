@@ -70,7 +70,7 @@ _Check_return_ HRESULT MAPIPropPropertyBag::GetAllProps(
 
 	if (!RegKeys[regkeyUSE_ROW_DATA_FOR_SINGLEPROPLIST].ulCurDWORD)
 	{
-		hRes = ::GetPropsNULL(m_lpProp,
+		hRes = GetPropsNULL(m_lpProp,
 			fMapiUnicode,
 			lpcValues,
 			lppPropArray);
