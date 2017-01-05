@@ -436,19 +436,19 @@ void CPropertyEditor::InitPropertyControls()
 		SetStringW(0, szGuid);
 		break;
 	case PT_SRESTRICTION:
-		InitPane(0, CollapsibleTextPane::Create(IDS_RESTRICTION, true));
+		InitPane(0, TextPane::CreateCollapsibleTextPane(IDS_RESTRICTION, true));
 		InterpretProp(m_lpsInputValue, &szTemp1, nullptr);
 		SetStringW(0, szTemp1);
 		break;
 	case PT_ACTIONS:
-		InitPane(0, CollapsibleTextPane::Create(IDS_ACTIONS, true));
+		InitPane(0, TextPane::CreateCollapsibleTextPane(IDS_ACTIONS, true));
 		InterpretProp(m_lpsInputValue, &szTemp1, nullptr);
 		SetStringW(0, szTemp1);
 		break;
 	default:
 		InterpretProp(m_lpsInputValue, &szTemp1, &szTemp2);
-		InitPane(0, CollapsibleTextPane::Create(IDS_VALUE, true));
-		InitPane(1, CollapsibleTextPane::Create(IDS_ALTERNATEVIEW, true));
+		InitPane(0, TextPane::CreateCollapsibleTextPane(IDS_VALUE, true));
+		InitPane(1, TextPane::CreateCollapsibleTextPane(IDS_ALTERNATEVIEW, true));
 		SetStringW(IDS_VALUE, szTemp1);
 		SetStringW(IDS_ALTERNATEVIEW, szTemp2);
 		break;

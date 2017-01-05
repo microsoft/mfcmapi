@@ -884,7 +884,7 @@ _Check_return_ __declspec(dllexport) HRESULT __cdecl ComplexDialog(_In_ LPADDIND
 			{
 				if (lpDialog->lpDialogControls[i].bMultiLine)
 				{
-					MyComplexDialog.InitPane(i, CollapsibleTextPane::Create(
+					MyComplexDialog.InitPane(i, TextPane::CreateCollapsibleTextPane(
 						NULL,
 						lpDialog->lpDialogControls[i].bReadOnly));
 					MyComplexDialog.SetStringW(i, lpDialog->lpDialogControls[i].szDefaultText);
@@ -899,7 +899,7 @@ _Check_return_ __declspec(dllexport) HRESULT __cdecl ComplexDialog(_In_ LPADDIND
 			case ADDIN_CTRL_EDIT_BINARY:
 				if (lpDialog->lpDialogControls[i].bMultiLine)
 				{
-					MyComplexDialog.InitPane(i, CollapsibleTextPane::Create(
+					MyComplexDialog.InitPane(i, TextPane::CreateCollapsibleTextPane(
 						NULL,
 						lpDialog->lpDialogControls[i].bReadOnly));
 				}

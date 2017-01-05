@@ -279,7 +279,7 @@ void OnQSDisplayNicknameCache(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 				IDS_NICKNAME,
 				NULL,
 				CEDITOR_BUTTON_OK);
-			MyResults.InitPane(0, CollapsibleTextPane::Create(NULL, true));
+			MyResults.InitPane(0, TextPane::CreateCollapsibleTextPane(NULL, true));
 			MyResults.InitPane(1, CountedTextPane::Create(IDS_HEX, true, IDS_CB));
 
 			MyResults.SetStringW(0, szNicknames);
@@ -495,7 +495,7 @@ void OnQSLookupThumbail(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 	if (lpThumbnail)
 	{
 		MyResults.InitPane(0, CountedTextPane::Create(IDS_HEX, true, IDS_CB));
-		MyResults.InitPane(1, CollapsibleTextPane::Create(IDS_ANSISTRING, true));
+		MyResults.InitPane(1, TextPane::CreateCollapsibleTextPane(IDS_ANSISTRING, true));
 
 		auto lpPane = static_cast<CountedTextPane*>(MyResults.GetPane(0));
 		if (lpPane) lpPane->SetCount(lpThumbnail->Value.bin.cb);

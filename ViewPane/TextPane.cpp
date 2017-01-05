@@ -53,6 +53,19 @@ TextPane* TextPane::CreateSingleLinePaneID(UINT uidLabel, UINT uidVal, bool bRea
 	return lpPane;
 }
 
+TextPane* TextPane::CreateCollapsibleTextPane(UINT uidLabel, bool bReadOnly)
+{
+	auto pane = new TextPane();
+	if (pane)
+	{
+		pane->SetMultiline();
+		pane->SetLabel(uidLabel, bReadOnly);
+		pane->m_bCollapsible = true;
+	}
+
+	return pane;
+}
+
 // Imports binary data from a stream, converting it to hex format before returning
 _Check_return_ static DWORD CALLBACK EditStreamReadCallBack(
 	DWORD_PTR dwCookie,

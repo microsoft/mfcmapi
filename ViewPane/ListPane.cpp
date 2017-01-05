@@ -2,18 +2,6 @@
 #include "ListPane.h"
 #include "UIFunctions.h"
 
-UINT ListButtons[NUMLISTBUTTONS] = {
-	{ IDD_LISTMOVEDOWN },
-	{ IDD_LISTMOVETOBOTTOM },
-	{ IDD_LISTADD },
-	{ IDD_LISTEDIT },
-	{ IDD_LISTDELETE },
-	{ IDD_LISTMOVETOTOP },
-	{ IDD_LISTMOVEUP },
-};
-
-#define LINES_LIST 6
-
 static wstring CLASS = L"ListPane";
 
 ListPane* ListPane::Create(UINT uidLabel, bool bAllowSort, bool bReadOnly, DoListEditCallback callback)
@@ -23,6 +11,19 @@ ListPane* ListPane::Create(UINT uidLabel, bool bAllowSort, bool bReadOnly, DoLis
 	{
 		pane->Setup(bAllowSort, callback);
 		pane->SetLabel(uidLabel, bReadOnly);
+	}
+
+	return pane;
+}
+
+ListPane* ListPane::CreateCollapsibleListPane(UINT uidLabel, bool bAllowSort, bool bReadOnly, DoListEditCallback callback)
+{
+	auto pane = new ListPane();
+	if (pane)
+	{
+		pane->Setup(bAllowSort, callback);
+		pane->SetLabel(uidLabel, bReadOnly);
+		pane->m_bCollapsible = true;
 	}
 
 	return pane;

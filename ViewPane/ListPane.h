@@ -3,14 +3,13 @@
 #include "Controls/SortList/SortListCtrl.h"
 #include <functional>
 
-#define NUMLISTBUTTONS 7
-
 typedef std::function<bool(ULONG, int, SortListData*)> DoListEditCallback;
 
 class ListPane : public ViewPane
 {
 public:
 	static ListPane* Create(UINT uidLabel, bool bAllowSort, bool bReadOnly, DoListEditCallback callback);
+	static ListPane* CreateCollapsibleListPane(UINT uidLabel, bool bAllowSort, bool bReadOnly, DoListEditCallback callback);
 
 	ULONG HandleChange(UINT nID) override;
 	void SetListString(ULONG iListRow, ULONG iListCol, const wstring& szListString);
@@ -25,16 +24,10 @@ public:
 	_Check_return_ bool OnEditListEntry();
 	wstring GetItemText(_In_ int nItem, _In_ int nSubItem) const;
 
-protected:
+private:
 	ListPane();
 	void Setup(bool bAllowSort, DoListEditCallback callback);
-	int GetFixedHeight() override;
 
-	CSortListCtrl m_List;
-	CButton m_ButtonArray[NUMLISTBUTTONS];
-	int m_iButtonWidth;
-
-private:
 	void UpdateButtons() override;
 
 	void Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc) override;
@@ -42,6 +35,7 @@ private:
 	void CommitUIValues() override;
 	ULONG GetFlags() override;
 	int GetMinWidth(_In_ HDC hdc) override;
+	int GetFixedHeight() override;
 	int GetLines() override;
 
 	void SwapListItems(ULONG ulFirstItem, ULONG ulSecondItem);
@@ -56,4 +50,19 @@ private:
 	bool m_bAllowSort;
 
 	DoListEditCallback m_callback;
+	CSortListCtrl m_List;
+	static const int LINES_LIST = 6;
+	static const int NUMLISTBUTTONS = 7;
+	CButton m_ButtonArray[NUMLISTBUTTONS];
+	const UINT ListButtons[NUMLISTBUTTONS] = {
+		{ IDD_LISTMOVEDOWN },
+		{ IDD_LISTMOVETOBOTTOM },
+		{ IDD_LISTADD },
+		{ IDD_LISTEDIT },
+		{ IDD_LISTDELETE },
+		{ IDD_LISTMOVETOTOP },
+		{ IDD_LISTMOVEUP },
+	};
+
+	int m_iButtonWidth;
 };

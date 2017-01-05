@@ -144,7 +144,7 @@ CStreamEditor::CStreamEditor(
 
 	// Let's crack our property open and see what kind of controls we'll need for it
 	// One control for text stream, one for binary
-	InitPane(m_iTextBox, CollapsibleTextPane::Create(IDS_STREAMTEXT, false));
+	InitPane(m_iTextBox, TextPane::CreateCollapsibleTextPane(IDS_STREAMTEXT, false));
 	if (bUseWrapEx)
 	{
 		InitPane(m_iFlagBox, TextPane::CreateSingleLinePane(IDS_STREAMFLAGS, true));

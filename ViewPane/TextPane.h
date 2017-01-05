@@ -1,8 +1,6 @@
 #pragma once
 #include "ViewPane.h"
 
-#define LINES_MULTILINEEDIT 4
-
 class TextPane : public ViewPane
 {
 public:
@@ -17,10 +15,10 @@ public:
 	static TextPane* CreateSingleLinePane(UINT uidLabel, bool bReadOnly, bool bMultiLine = false);
 	static TextPane* CreateSingleLinePane(UINT uidLabel, _In_ const wstring& szVal, bool bReadOnly, bool bMultiLine = false);
 	static TextPane* CreateSingleLinePaneID(UINT uidLabel, UINT uidVal, bool bReadOnly);
+	static TextPane* CreateCollapsibleTextPane(UINT uidLabel, bool bReadOnly);
 
 	void Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc) override;
 	void SetWindowPos(int x, int y, int width, int height) override;
-	ULONG GetFlags() override;
 	int GetFixedHeight() override;
 	int GetLines() override;
 
@@ -39,8 +37,11 @@ public:
 
 protected:
 	CRichEditCtrl m_EditBox;
+	static const int LINES_MULTILINEEDIT = 4;
 
 private:
+	ULONG GetFlags() override;
+
 	wstring GetUIValue() const;
 	void CommitUIValues() override;
 	void SetEditBoxText();

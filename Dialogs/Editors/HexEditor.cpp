@@ -24,8 +24,8 @@ CHexEditor::CHexEditor(_In_ CParentWnd* pParentWnd, _In_ CMapiObjects* lpMapiObj
 	m_lpMapiObjects = lpMapiObjects;
 	if (m_lpMapiObjects) m_lpMapiObjects->AddRef();
 
-	InitPane(HEXED_ANSI, CollapsibleTextPane::Create(IDS_ANSISTRING, false));
-	InitPane(HEXED_UNICODE, CollapsibleTextPane::Create(IDS_UNISTRING, false));
+	InitPane(HEXED_ANSI, TextPane::CreateCollapsibleTextPane(IDS_ANSISTRING, false));
+	InitPane(HEXED_UNICODE, TextPane::CreateCollapsibleTextPane(IDS_UNISTRING, false));
 	InitPane(HEXED_BASE64, CountedTextPane::Create(IDS_BASE64STRING, false, IDS_CCH));
 	InitPane(HEXED_HEX, CountedTextPane::Create(IDS_HEX, false, IDS_CB));
 	InitPane(HEXED_SMARTVIEW, SmartViewPane::Create(IDS_SMARTVIEW));

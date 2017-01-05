@@ -159,9 +159,6 @@
     <ClInclude Include="ViewPane\ViewPane.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ViewPane\CollapsibleTextPane.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ViewPane\CountedTextPane.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -477,9 +474,6 @@
     <ClInclude Include="Controls\SingleMAPIPropListCtrl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ViewPane\CollapsibleListPane.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Res\bldver.rc">
@@ -626,9 +620,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ViewPane\ViewPane.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ViewPane\CollapsibleTextPane.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ViewPane\CountedTextPane.cpp">
@@ -938,9 +929,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Controls\SingleMAPIPropListCtrl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ViewPane\CollapsibleListPane.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
