@@ -96,14 +96,24 @@ int ListPane::GetFixedHeight()
 	auto iHeight = 0;
 	if (0 != m_iControl) iHeight += m_iSmallHeightMargin; // Top margin
 
-	if (!m_szLabel.empty())
+	if (m_bCollapsible)
+	{
+		// Our expand/collapse button
+		iHeight += m_iButtonHeight;
+	}
+	else if (!m_szLabel.empty())
 	{
 		iHeight += m_iLabelHeight;
 	}
 
-	if (!m_bReadOnly)
+	if (!m_bCollapsed)
 	{
-		iHeight += m_iLargeHeightMargin + m_iButtonHeight;
+		iHeight += m_iSmallHeightMargin;
+
+		if (!m_bReadOnly)
+		{
+			iHeight += m_iLargeHeightMargin + m_iButtonHeight;
+		}
 	}
 
 	return iHeight;
@@ -138,26 +148,18 @@ ULONG ListPane::HandleChange(UINT nID)
 void ListPane::SetWindowPos(int x, int y, int width, int height)
 {
 	auto hRes = S_OK;
-
 	auto iVariableHeight = height - GetFixedHeight();
-
 	if (0 != m_iControl)
 	{
 		y += m_iSmallHeightMargin;
+		height -= m_iSmallHeightMargin;
 	}
 
-	if (!m_szLabel.empty())
-	{
-		EC_B(m_Label.SetWindowPos(
-			nullptr,
-			x,
-			y,
-			width,
-			m_iLabelHeight,
-			SWP_NOZORDER));
-		y += m_iLabelHeight;
-	}
+	ViewPane::SetWindowPos(x, y, width, height);
+	y += m_iLabelHeight + m_iSmallHeightMargin;
 
+	auto cmdShow = m_bCollapsed ? SW_HIDE : SW_SHOW;
+	EC_B(m_List.ShowWindow(cmdShow));
 	EC_B(m_List.SetWindowPos(
 		NULL,
 		x,
@@ -177,6 +179,7 @@ void ListPane::SetWindowPos(int x, int y, int width, int height)
 
 		for (auto iButton = 0; iButton < NUMLISTBUTTONS; iButton++)
 		{
+			EC_B(m_ButtonArray[iButton].ShowWindow(cmdShow));
 			EC_B(m_ButtonArray[iButton].SetWindowPos(
 				nullptr,
 				iOffset - iSlotWidth * (NUMLISTBUTTONS - iButton),

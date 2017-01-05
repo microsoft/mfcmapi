@@ -5,8 +5,4 @@ class CollapsibleListPane : public ListPane
 {
 public:
 	static CollapsibleListPane* Create(UINT uidLabel, bool bAllowSort, bool bReadOnly, DoListEditCallback callback);
-
-private:
-	void SetWindowPos(int x, int y, int width, int height) override;
-	int GetFixedHeight() override;
 };
