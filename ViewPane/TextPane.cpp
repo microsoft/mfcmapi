@@ -129,8 +129,8 @@ int TextPane::GetFixedHeight()
 		iHeight += m_iLabelHeight;
 	}
 
-	// A small margin between our button and the edit control, if we're not collapsed
-	if (!m_bCollapsed)
+	// A small margin between our button and the edit control, if we're collapsible and not collapsed
+	if (!m_bCollapsed && m_bCollapsible)
 	{
 		iHeight += m_iSmallHeightMargin;
 	}
@@ -163,28 +163,34 @@ int TextPane::GetLines()
 void TextPane::SetWindowPos(int x, int y, int width, int height)
 {
 	auto hRes = S_OK;
+	auto iVariableHeight = height - GetFixedHeight();
 	if (0 != m_iControl)
 	{
 		y += m_iSmallHeightMargin;
 		height -= m_iSmallHeightMargin;
 	}
 
-	if (!m_szLabel.empty())
+	auto cmdShow = m_bCollapsed ? SW_HIDE : SW_SHOW;
+	EC_B(m_EditBox.ShowWindow(cmdShow));
+	ViewPane::SetWindowPos(x, y, width, height);
+
+	if (m_bCollapsible)
 	{
-		EC_B(m_Label.SetWindowPos(
-			nullptr,
-			x,
-			y,
-			width,
-			m_iLabelHeight,
-			SWP_NOZORDER));
-		y += m_iLabelHeight;
-		height -= m_iLabelHeight;
+		y += m_iLabelHeight + m_iSmallHeightMargin;
+	}
+	else
+	{
+		if (!m_szLabel.empty())
+		{
+			y += m_iLabelHeight;
+			height -= m_iLabelHeight;
+		}
+
+		height -= m_iSmallHeightMargin; // This is the bottom margin
 	}
 
-	height -= m_iSmallHeightMargin; // This is the bottom margin
+	EC_B(m_EditBox.SetWindowPos(NULL, x, y, width, m_bCollapsible ? iVariableHeight : height, SWP_NOZORDER));
 
-	EC_B(m_EditBox.SetWindowPos(NULL, x, y, width, height, SWP_NOZORDER));
 }
 
 void TextPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC /*hdc*/)

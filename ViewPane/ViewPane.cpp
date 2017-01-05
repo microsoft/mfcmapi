@@ -33,6 +33,7 @@ void ViewPane::SetWindowPos(int x, int y, int width, int /*height*/)
 	{
 		StyleButton(m_CollapseButton.m_hWnd, m_bCollapsed ? bsUpArrow : bsDownArrow);
 		m_CollapseButton.SetWindowPos(nullptr, x, y, width, m_iLabelHeight, SWP_NOZORDER);
+		x += m_iButtonHeight;
 	}
 
 	DebugPrint(DBGDraw, L"ViewPane::SetWindowPos x:%d width:%d labelpos:%d labelwidth:%d \n",
@@ -42,7 +43,7 @@ void ViewPane::SetWindowPos(int x, int y, int width, int /*height*/)
 		m_iLabelWidth);
 	EC_B(m_Label.SetWindowPos(
 		nullptr,
-		x + m_iButtonHeight,
+		x,
 		y,
 		m_iLabelWidth,
 		m_iLabelHeight,
