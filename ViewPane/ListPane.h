@@ -4,6 +4,7 @@
 #include <functional>
 
 #define NUMLISTBUTTONS 7
+#define LINES_LIST 6
 
 typedef std::function<bool(ULONG, int, SortListData*)> DoListEditCallback;
 
@@ -25,12 +26,18 @@ public:
 	_Check_return_ bool OnEditListEntry();
 	wstring GetItemText(_In_ int nItem, _In_ int nSubItem) const;
 
-private:
+protected:
 	ListPane();
 	void Setup(bool bAllowSort, DoListEditCallback callback);
+	ULONG GetFlags() override;
+
+	CSortListCtrl m_List;
+	CButton m_ButtonArray[NUMLISTBUTTONS];
+	int m_iButtonWidth;
+
+private:
 	void UpdateButtons() override;
 
-	ULONG GetFlags() override;
 	void Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc) override;
 	void SetWindowPos(int x, int y, int width, int height) override;
 	void CommitUIValues() override;
@@ -46,12 +53,8 @@ private:
 	void OnAddListEntry();
 	void OnDeleteListEntry(bool bDoDirty);
 
-	CSortListCtrl m_List;
-	CButton m_ButtonArray[NUMLISTBUTTONS];
-
 	bool m_bDirty;
 	bool m_bAllowSort;
-	int m_iButtonWidth;
 
 	DoListEditCallback m_callback;
 };

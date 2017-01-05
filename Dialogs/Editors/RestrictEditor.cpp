@@ -659,7 +659,7 @@ CResCommentEditor::CResCommentEditor(
 	m_lpNewCommentProp = nullptr;
 	m_lpAllocParent = lpAllocParent;
 
-	InitPane(0, ListPane::Create(IDS_SUBRESTRICTION, false, false, ListEditCallBack(this)));
+	InitPane(0, CollapsibleListPane::Create(IDS_SUBRESTRICTION, false, false, ListEditCallBack(this)));
 	InitPane(1, TextPane::CreateMultiLinePane(IDS_RESTRICTIONTEXT, RestrictionToString(m_lpSourceRes->res.resComment.lpRes, nullptr), true));
 }
 
@@ -1301,7 +1301,7 @@ CCriteriaEditor::CCriteriaEditor(
 	InitPane(2, TextPane::CreateSingleLinePane(IDS_SEARCHFLAGS, false));
 	SetHex(2, 0);
 	InitPane(3, TextPane::CreateSingleLinePane(IDS_SEARCHFLAGS, true));
-	InitPane(4, ListPane::Create(IDS_EIDLIST, false, false, ListEditCallBack(this)));
+	InitPane(4, CollapsibleListPane::Create(IDS_EIDLIST, false, false, ListEditCallBack(this)));
 	InitPane(5, TextPane::CreateMultiLinePane(IDS_RESTRICTIONTEXT, RestrictionToString(m_lpSourceRes, nullptr), true));
 }
 

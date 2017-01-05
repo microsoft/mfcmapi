@@ -5,6 +5,7 @@
 #include "ViewPane/CheckPane.h"
 #include "ViewPane/DropDownPane.h"
 #include "ViewPane/ListPane.h"
+#include "ViewPane/CollapsibleListPane.h"
 #include "ViewPane/CollapsibleTextPane.h"
 
 class CParentWnd;

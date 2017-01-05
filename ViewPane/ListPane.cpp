@@ -12,8 +12,6 @@ UINT ListButtons[NUMLISTBUTTONS] = {
 	{ IDD_LISTMOVEUP },
 };
 
-#define LINES_LIST 6
-
 static wstring CLASS = L"ListPane";
 
 ListPane* ListPane::Create(UINT uidLabel, bool bAllowSort, bool bReadOnly, DoListEditCallback callback)
@@ -126,22 +124,20 @@ ULONG ListPane::HandleChange(UINT nID)
 	case IDD_LISTMOVEUP: OnMoveListEntryUp(); break;
 	case IDD_LISTMOVETOBOTTOM: OnMoveListEntryToBottom(); break;
 	case IDD_LISTMOVETOTOP: OnMoveListEntryToTop(); break;
-	default: return static_cast<ULONG>(-1);
 	}
 
-	return m_iControl;
+	return ViewPane::HandleChange(nID);
 }
 
 void ListPane::SetWindowPos(int x, int y, int width, int height)
 {
 	auto hRes = S_OK;
 
-	auto variableHeight = height - GetFixedHeight();
+	auto iVariableHeight = height - GetFixedHeight();
 
 	if (0 != m_iControl)
 	{
 		y += m_iSmallHeightMargin;
-		// height -= m_iSmallHeightMargin;
 	}
 
 	if (!m_szLabel.empty())
@@ -154,7 +150,6 @@ void ListPane::SetWindowPos(int x, int y, int width, int height)
 			m_iLabelHeight,
 			SWP_NOZORDER));
 		y += m_iLabelHeight;
-		// height -= m_iLabelHeight;
 	}
 
 	EC_B(m_List.SetWindowPos(
@@ -162,9 +157,9 @@ void ListPane::SetWindowPos(int x, int y, int width, int height)
 		x,
 		y,
 		width,
-		variableHeight,
+		iVariableHeight,
 		SWP_NOZORDER));
-	y += variableHeight;
+	y += iVariableHeight;
 
 	if (!m_bReadOnly)
 	{
