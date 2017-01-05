@@ -16,11 +16,6 @@ CollapsibleTextPane* CollapsibleTextPane::Create(UINT uidLabel, bool bReadOnly)
 	return pane;
 }
 
-void CollapsibleTextPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
-{
-	TextPane::Initialize(iControl, pParent, hdc);
-}
-
 int CollapsibleTextPane::GetFixedHeight()
 {
 	auto iHeight = 0;
