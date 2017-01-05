@@ -10,14 +10,10 @@ CollapsibleListPane* CollapsibleListPane::Create(UINT uidLabel, bool bAllowSort,
 	{
 		pane->Setup(bAllowSort, callback);
 		pane->SetLabel(uidLabel, bReadOnly);
+		pane->m_bCollapsible = true;
 	}
 
 	return pane;
-}
-
-ULONG CollapsibleListPane::GetFlags()
-{
-	return ListPane::GetFlags() | vpCollapsible;
 }
 
 int CollapsibleListPane::GetFixedHeight()

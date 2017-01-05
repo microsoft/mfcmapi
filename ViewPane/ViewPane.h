@@ -5,7 +5,6 @@ enum __ViewPaneFlags
 	vpNone = 0x0000, // None
 	vpDirty = 0x0001, // Pane has been edited
 	vpReadonly = 0x0002, // Pane is read only
-	vpCollapsible = 0x0004, // Pane can be collapsed and needs a collapse button
 };
 
 class ViewPane
@@ -46,6 +45,7 @@ protected:
 	CEdit m_Label;
 	UINT m_nID; // Id for matching change notifications back to controls
 	HWND m_hWndParent;
+	bool m_bCollapsible;
 	bool m_bCollapsed;
 	CButton m_CollapseButton;
 

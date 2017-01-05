@@ -15,13 +15,6 @@ CheckPane* CheckPane::Create(UINT uidLabel, bool bVal, bool bReadOnly)
 	return pane;
 }
 
-ULONG CheckPane::GetFlags()
-{
-	ULONG ulFlags = vpNone;
-	if (m_bReadOnly) ulFlags |= vpReadonly;
-	return ulFlags;
-}
-
 int CheckPane::GetMinWidth(_In_ HDC hdc)
 {
 	auto label = ViewPane::GetMinWidth(hdc);

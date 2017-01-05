@@ -42,9 +42,8 @@ void ListPane::Setup(bool bAllowSort, DoListEditCallback callback)
 
 ULONG ListPane::GetFlags()
 {
-	ULONG ulFlags = vpNone;
+	auto ulFlags = ViewPane::GetFlags();
 	if (m_bDirty) ulFlags |= vpDirty;
-	if (m_bReadOnly) ulFlags |= vpReadonly;
 	return ulFlags;
 }
 

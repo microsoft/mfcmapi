@@ -8,6 +8,7 @@ ViewPane::ViewPane()
 	m_iControl = -1;
 
 	m_nID = 0;
+	m_bCollapsible = false;
 	m_bCollapsed = false;
 	m_bReadOnly = true;
 	m_bInitialized = false;
@@ -28,7 +29,7 @@ void ViewPane::SetWindowPos(int x, int y, int width, int /*height*/)
 {
 	auto hRes = S_OK;
 
-	if (vpCollapsible & GetFlags())
+	if (m_bCollapsible)
 	{
 		StyleButton(m_CollapseButton.m_hWnd, m_bCollapsed ? bsUpArrow : bsDownArrow);
 		m_CollapseButton.SetWindowPos(nullptr, x, y, width, m_iLabelHeight, SWP_NOZORDER);
@@ -77,7 +78,7 @@ void ViewPane::Initialize(int iControl, _In_ CWnd* pParent, _In_opt_ HDC /*hdc*/
 	SetWindowTextW(m_Label.m_hWnd, m_szLabel.c_str());
 	SubclassLabel(m_Label.m_hWnd);
 
-	if (vpCollapsible & GetFlags())
+	if (m_bCollapsible)
 	{
 		StyleLabel(m_Label.m_hWnd, lsPaneHeaderLabel);
 

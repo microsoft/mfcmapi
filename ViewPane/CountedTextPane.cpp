@@ -12,6 +12,7 @@ CountedTextPane* CountedTextPane::Create(UINT uidLabel, bool bReadOnly, UINT uid
 		lpPane->m_szCountLabel = loadstring(uidCountLabel);
 		lpPane->SetMultiline();
 		lpPane->SetLabel(uidLabel, bReadOnly);
+		lpPane->m_bCollapsible = true;
 	}
 
 	return lpPane;
@@ -21,11 +22,6 @@ CountedTextPane::CountedTextPane()
 {
 	m_iCountLabelWidth = 0;
 	m_iCount = 0;
-}
-
-ULONG CountedTextPane::GetFlags()
-{
-	return TextPane::GetFlags() | vpCollapsible;
 }
 
 void CountedTextPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)

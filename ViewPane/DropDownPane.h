@@ -18,7 +18,6 @@ public:
 
 protected:
 	DropDownPane();
-	ULONG GetFlags() override;
 	void SetSelection(DWORD_PTR iSelection);
 	void CreateControl(int iControl, _In_ CWnd* pParent, _In_ HDC hdc);
 	void Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc) override;

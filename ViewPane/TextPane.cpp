@@ -108,9 +108,8 @@ _Check_return_ static DWORD CALLBACK EditStreamReadCallBack(
 
 ULONG TextPane::GetFlags()
 {
-	ULONG ulFlags = vpNone;
+	auto ulFlags = ViewPane::GetFlags();
 	if (m_EditBox.m_hWnd && m_EditBox.GetModify()) ulFlags |= vpDirty;
-	if (m_bReadOnly) ulFlags |= vpReadonly;
 	return ulFlags;
 }
 

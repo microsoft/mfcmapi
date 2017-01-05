@@ -10,14 +10,10 @@ CollapsibleTextPane* CollapsibleTextPane::Create(UINT uidLabel, bool bReadOnly)
 	{
 		pane->SetMultiline();
 		pane->SetLabel(uidLabel, bReadOnly);
+		pane->m_bCollapsible = true;
 	}
 
 	return pane;
-}
-
-ULONG CollapsibleTextPane::GetFlags()
-{
-	return TextPane::GetFlags() | vpCollapsible;
 }
 
 void CollapsibleTextPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)

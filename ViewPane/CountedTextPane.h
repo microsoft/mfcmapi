@@ -1,5 +1,4 @@
 #pragma once
-#include "ViewPane.h"
 #include "TextPane.h"
 
 class CountedTextPane : public TextPane
@@ -10,7 +9,6 @@ public:
 
 private:
 	CountedTextPane();
-	ULONG GetFlags() override;
 	void Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc) override;
 	void SetWindowPos(int x, int y, int width, int height) override;
 	int GetMinWidth(_In_ HDC hdc) override;

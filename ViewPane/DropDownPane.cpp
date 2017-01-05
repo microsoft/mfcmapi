@@ -44,13 +44,6 @@ DropDownPane::DropDownPane()
 	m_iDropSelectionValue = 0;
 }
 
-ULONG DropDownPane::GetFlags()
-{
-	ULONG ulFlags = vpNone;
-	if (m_bReadOnly) ulFlags |= vpReadonly;
-	return ulFlags;
-}
-
 int DropDownPane::GetMinWidth(_In_ HDC hdc)
 {
 	auto cxDropDown = 0;

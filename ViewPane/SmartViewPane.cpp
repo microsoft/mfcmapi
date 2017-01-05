@@ -11,6 +11,7 @@ SmartViewPane* SmartViewPane::Create(UINT uidLabel)
 	if (pane)
 	{
 		pane->SetLabel(uidLabel, true);
+		pane->m_bCollapsible = true;
 	}
 
 	return pane;
@@ -23,11 +24,6 @@ SmartViewPane::SmartViewPane()
 	m_bHasData = false;
 	m_bDoDropDown = true;
 	m_bReadOnly = true;
-}
-
-ULONG SmartViewPane::GetFlags()
-{
-	return DropDownPane::GetFlags() | vpCollapsible;
 }
 
 void SmartViewPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
