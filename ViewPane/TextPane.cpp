@@ -118,10 +118,21 @@ int TextPane::GetFixedHeight()
 	auto iHeight = 0;
 	if (0 != m_iControl) iHeight += m_iSmallHeightMargin; // Top margin
 
-	if (!m_szLabel.empty())
+	if (m_bCollapsible)
+	{
+		// Our expand/collapse button
+		iHeight += m_iButtonHeight;
+	}
+	else if (!m_szLabel.empty())
 	{
 		// Text labels will bump directly against their edit control, so we don't add a margin here
 		iHeight += m_iLabelHeight;
+	}
+
+	// A small margin between our button and the edit control, if we're not collapsed
+	if (!m_bCollapsed)
+	{
+		iHeight += m_iSmallHeightMargin;
 	}
 
 	if (!m_bMultiline)

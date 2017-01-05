@@ -16,25 +16,6 @@ CollapsibleTextPane* CollapsibleTextPane::Create(UINT uidLabel, bool bReadOnly)
 	return pane;
 }
 
-int CollapsibleTextPane::GetFixedHeight()
-{
-	auto iHeight = 0;
-	if (0 != m_iControl) iHeight += m_iSmallHeightMargin; // Top margin
-
-	// Our expand/collapse button
-	iHeight += m_iButtonHeight;
-
-	// A small margin between our button and the edit control, if we're not collapsed
-	if (!m_bCollapsed)
-	{
-		iHeight += m_iSmallHeightMargin;
-	}
-
-	iHeight += m_iSmallHeightMargin; // Bottom margin
-
-	return iHeight;
-}
-
 void CollapsibleTextPane::SetWindowPos(int x, int y, int width, int height)
 {
 	auto hRes = S_OK;
