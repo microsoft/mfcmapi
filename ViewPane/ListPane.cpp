@@ -12,6 +12,8 @@ UINT ListButtons[NUMLISTBUTTONS] = {
 	{ IDD_LISTMOVEUP },
 };
 
+#define LINES_LIST 6
+
 static wstring CLASS = L"ListPane";
 
 ListPane* ListPane::Create(UINT uidLabel, bool bAllowSort, bool bReadOnly, DoListEditCallback callback)
@@ -109,6 +111,11 @@ int ListPane::GetFixedHeight()
 
 int ListPane::GetLines()
 {
+	if (m_bCollapsed)
+	{
+		return 0;
+	}
+
 	return LINES_LIST;
 }
 

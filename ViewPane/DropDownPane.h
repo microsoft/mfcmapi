@@ -29,7 +29,6 @@ private:
 	void CommitUIValues() override;
 	int GetMinWidth(_In_ HDC hdc) override;
 	int GetFixedHeight() override;
-	int GetLines() override;
 
 	vector<std::pair<wstring, ULONG>> m_DropList;
 	wstring m_lpszSelectionString;

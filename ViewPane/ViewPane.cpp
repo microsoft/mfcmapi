@@ -111,6 +111,11 @@ int ViewPane::GetMinWidth(_In_ HDC hdc)
 	return m_iLabelWidth;
 }
 
+int ViewPane::GetLines()
+{
+	return 0;
+}
+
 ULONG ViewPane::HandleChange(UINT nID)
 {
 	if (static_cast<UINT>(IDD_COLLAPSE + m_iControl) == nID)

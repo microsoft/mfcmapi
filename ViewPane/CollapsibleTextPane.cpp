@@ -40,16 +40,6 @@ int CollapsibleTextPane::GetFixedHeight()
 	return iHeight;
 }
 
-int CollapsibleTextPane::GetLines()
-{
-	if (m_bCollapsed)
-	{
-		return 0;
-	}
-
-	return LINES_MULTILINEEDIT;
-}
-
 void CollapsibleTextPane::SetWindowPos(int x, int y, int width, int height)
 {
 	auto hRes = S_OK;

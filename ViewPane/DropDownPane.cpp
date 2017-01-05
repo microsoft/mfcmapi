@@ -78,11 +78,6 @@ int DropDownPane::GetFixedHeight()
 	return iHeight;
 }
 
-int DropDownPane::GetLines()
-{
-	return 0;
-}
-
 void DropDownPane::SetWindowPos(int x, int y, int width, int /*height*/)
 {
 	auto hRes = S_OK;

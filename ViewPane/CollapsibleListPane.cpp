@@ -36,16 +36,6 @@ int CollapsibleListPane::GetFixedHeight()
 	return iHeight;
 }
 
-int CollapsibleListPane::GetLines()
-{
-	if (m_bCollapsed)
-	{
-		return 0;
-	}
-
-	return LINES_LIST;
-}
-
 void CollapsibleListPane::SetWindowPos(int x, int y, int width, int height)
 {
 	auto hRes = S_OK;

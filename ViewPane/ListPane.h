@@ -4,7 +4,6 @@
 #include <functional>
 
 #define NUMLISTBUTTONS 7
-#define LINES_LIST 6
 
 typedef std::function<bool(ULONG, int, SortListData*)> DoListEditCallback;
 

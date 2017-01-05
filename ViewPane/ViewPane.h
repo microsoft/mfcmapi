@@ -20,7 +20,7 @@ public:
 	virtual ULONG GetFlags();
 	virtual int GetMinWidth(_In_ HDC hdc);
 	virtual int GetFixedHeight() = 0;
-	virtual int GetLines() = 0;
+	virtual int GetLines();
 	virtual ULONG HandleChange(UINT nID);
 	void OnToggleCollapse();
 

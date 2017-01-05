@@ -136,6 +136,11 @@ int TextPane::GetFixedHeight()
 
 int TextPane::GetLines()
 {
+	if (m_bCollapsed)
+	{
+		return 0;
+	}
+
 	if (m_bMultiline)
 	{
 		return LINES_MULTILINEEDIT;

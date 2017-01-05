@@ -33,11 +33,6 @@ int CheckPane::GetFixedHeight()
 	return m_iButtonHeight;
 }
 
-int CheckPane::GetLines()
-{
-	return 0;
-}
-
 void CheckPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC /*hdc*/)
 {
 	ViewPane::Initialize(iControl, pParent, nullptr);

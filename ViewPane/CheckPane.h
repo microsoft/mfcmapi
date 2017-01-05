@@ -15,7 +15,6 @@ private:
 	void CommitUIValues() override;
 	int GetMinWidth(_In_ HDC hdc) override;
 	int GetFixedHeight() override;
-	int GetLines() override;
 
 	CButton m_Check;
 	bool m_bCheckValue;
