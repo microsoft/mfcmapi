@@ -1,12 +1,5 @@
 #pragma once
 
-enum __ViewPaneFlags
-{
-	vpNone = 0x0000, // None
-	vpDirty = 0x0001, // Pane has been edited
-	vpReadonly = 0x0002, // Pane is read only
-};
-
 class ViewPane
 {
 public:
@@ -17,7 +10,7 @@ public:
 	virtual void Initialize(int iControl, _In_ CWnd* pParent, _In_opt_ HDC hdc);
 	virtual void SetWindowPos(int x, int y, int width, int height) = 0;
 	virtual void CommitUIValues() = 0;
-	virtual ULONG GetFlags();
+	virtual bool IsDirty();
 	virtual int GetMinWidth(_In_ HDC hdc);
 	virtual int GetFixedHeight() = 0;
 	virtual int GetLines();

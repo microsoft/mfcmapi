@@ -43,11 +43,9 @@ void ListPane::Setup(bool bAllowSort, DoListEditCallback callback)
 	m_callback = callback;
 }
 
-ULONG ListPane::GetFlags()
+bool ListPane::IsDirty()
 {
-	auto ulFlags = ViewPane::GetFlags();
-	if (m_bDirty) ulFlags |= vpDirty;
-	return ulFlags;
+	return m_bDirty;
 }
 
 void ListPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)

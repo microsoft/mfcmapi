@@ -1215,7 +1215,7 @@ _Check_return_ SortListData* CEditor::GetListRowData(ULONG iControl, int iRow) c
 _Check_return_ bool CEditor::IsDirty(ULONG iControl) const
 {
 	auto pane = GetPane(iControl);
-	return pane ? vpDirty == (pane->GetFlags() & vpDirty) : false;
+	return pane ? pane->IsDirty() : false;
 }
 
 _Check_return_ ULONG CEditor::GetPropTag(ULONG i) const

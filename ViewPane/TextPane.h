@@ -32,6 +32,7 @@ public:
 
 	void SetReadOnly();
 	void SetMultiline();
+	bool IsDirty() override;
 
 	wstring GetStringW() const;
 
@@ -40,8 +41,6 @@ protected:
 	static const int LINES_MULTILINEEDIT = 4;
 
 private:
-	ULONG GetFlags() override;
-
 	wstring GetUIValue() const;
 	void CommitUIValues() override;
 	void SetEditBoxText();

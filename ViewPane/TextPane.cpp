@@ -119,11 +119,9 @@ _Check_return_ static DWORD CALLBACK EditStreamReadCallBack(
 	return 0;
 }
 
-ULONG TextPane::GetFlags()
+bool TextPane::IsDirty()
 {
-	auto ulFlags = ViewPane::GetFlags();
-	if (m_EditBox.m_hWnd && m_EditBox.GetModify()) ulFlags |= vpDirty;
-	return ulFlags;
+	return m_EditBox.m_hWnd && m_EditBox.GetModify();
 }
 
 int TextPane::GetFixedHeight()

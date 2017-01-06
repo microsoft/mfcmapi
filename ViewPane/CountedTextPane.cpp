@@ -43,7 +43,6 @@ void CountedTextPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 	TextPane::Initialize(iControl, pParent, hdc);
 }
 
-
 int CountedTextPane::GetMinWidth(_In_ HDC hdc)
 {
 	auto iLabelWidth = TextPane::GetMinWidth(hdc);

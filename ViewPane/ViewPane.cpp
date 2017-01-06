@@ -95,11 +95,9 @@ void ViewPane::Initialize(int iControl, _In_ CWnd* pParent, _In_opt_ HDC /*hdc*/
 	}
 }
 
-ULONG ViewPane::GetFlags()
+bool ViewPane::IsDirty()
 {
-	ULONG ulFlags = vpNone;
-	if (m_bReadOnly) ulFlags |= vpReadonly;
-	return ulFlags;
+	return false;
 }
 
 int ViewPane::GetMinWidth(_In_ HDC hdc)

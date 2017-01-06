@@ -23,6 +23,7 @@ public:
 	void SetColumnType(int nCol, ULONG ulPropType) const;
 	_Check_return_ bool OnEditListEntry();
 	wstring GetItemText(_In_ int nItem, _In_ int nSubItem) const;
+	bool IsDirty() override;
 
 private:
 	ListPane();
@@ -33,7 +34,6 @@ private:
 	void Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc) override;
 	void SetWindowPos(int x, int y, int width, int height) override;
 	void CommitUIValues() override;
-	ULONG GetFlags() override;
 	int GetMinWidth(_In_ HDC hdc) override;
 	int GetFixedHeight() override;
 	int GetLines() override;
