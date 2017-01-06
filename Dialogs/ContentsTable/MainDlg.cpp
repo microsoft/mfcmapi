@@ -609,7 +609,7 @@ void CMainDlg::OnOpenPublicFolders()
 	{
 		EC_H(OpenPublicMessageStore(
 			lpMAPISession,
-			nullptr,
+			"",
 			MyPrompt.GetHex(0),
 			&lpMDB));
 
@@ -628,7 +628,6 @@ void CMainDlg::OnOpenPublicFolders()
 
 void CMainDlg::OnOpenPublicFolderWithDN()
 {
-	LPMDB lpMDB = nullptr;
 	auto hRes = S_OK;
 
 	if (!m_lpMapiObjects) return;
@@ -648,9 +647,10 @@ void CMainDlg::OnOpenPublicFolderWithDN()
 	WC_H(MyPrompt.DisplayDialog());
 	if (S_OK == hRes)
 	{
+		LPMDB lpMDB = nullptr;
 		EC_H(OpenPublicMessageStore(
 			lpMAPISession,
-			(LPSTR)wstringTostring(MyPrompt.GetStringW(0)).c_str(),
+			wstringTostring(MyPrompt.GetStringW(0)),
 			MyPrompt.GetHex(1),
 			&lpMDB));
 
