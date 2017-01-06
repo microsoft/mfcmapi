@@ -106,6 +106,7 @@ BEGIN_MESSAGE_MAP(CMainDlg, CContentsTableDlg)
 	ON_COMMAND(ID_CONVERTEMLTOMSG, OnConvertEMLToMSG)
 	ON_COMMAND(ID_CONVERTMSGTOXML, OnConvertMSGToXML)
 	ON_COMMAND(ID_DISPLAYMAPIPATH, OnDisplayMAPIPath)
+	ON_COMMAND(ID_OPENPUBLICFOLDERWITHDN, OnOpenPublicFolderWithDN)
 END_MESSAGE_MAP()
 
 void CMainDlg::AddLoadMAPIMenus() const
@@ -608,7 +609,49 @@ void CMainDlg::OnOpenPublicFolders()
 	{
 		EC_H(OpenPublicMessageStore(
 			lpMAPISession,
+			"",
 			MyPrompt.GetHex(0),
+			&lpMDB));
+
+		if (lpMDB)
+		{
+			EC_H(DisplayObject(
+				lpMDB,
+				NULL,
+				otStore,
+				this));
+
+			lpMDB->Release();
+		}
+	}
+}
+
+void CMainDlg::OnOpenPublicFolderWithDN()
+{
+	auto hRes = S_OK;
+
+	if (!m_lpMapiObjects) return;
+
+	auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
+	if (!lpMAPISession) return;
+
+	CEditor MyPrompt(
+		this,
+		IDS_OPENPUBSTORE,
+		IDS_OPENWITHFLAGSPROMPT,
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+	MyPrompt.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
+	MyPrompt.InitPane(0, TextPane::CreateSingleLinePane(IDS_SERVERNAME, false));
+	MyPrompt.InitPane(1, TextPane::CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, false));
+	MyPrompt.SetHex(1, OPENSTORE_PUBLIC);
+	WC_H(MyPrompt.DisplayDialog());
+	if (S_OK == hRes)
+	{
+		LPMDB lpMDB = nullptr;
+		EC_H(OpenPublicMessageStore(
+			lpMAPISession,
+			wstringTostring(MyPrompt.GetStringW(0)),
+			MyPrompt.GetHex(1),
 			&lpMDB));
 
 		if (lpMDB)

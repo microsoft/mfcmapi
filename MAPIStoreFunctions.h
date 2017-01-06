@@ -90,6 +90,7 @@ _Check_return_ HRESULT OpenMessageStoreGUID(
 	_Deref_out_opt_ LPMDB* lppMDB);
 _Check_return_ HRESULT OpenPublicMessageStore(
 	_In_ LPMAPISESSION lpMAPISession,
+	const string& szServerName,
 	ULONG ulFlags, // Flags for CreateStoreEntryID
 	_Deref_out_opt_ LPMDB* lppPublicMDB);
 _Check_return_ HRESULT OpenStoreFromMAPIProp(_In_ LPMAPISESSION lpMAPISession, _In_ LPMAPIPROP lpMAPIProp, _Deref_out_ LPMDB* lpMDB);
