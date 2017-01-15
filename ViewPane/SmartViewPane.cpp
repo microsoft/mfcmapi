@@ -63,8 +63,7 @@ int SmartViewPane::GetFixedHeight()
 
 int SmartViewPane::GetLines()
 {
-	auto iStructType = GetDropDownSelectionValue();
-	if (!m_bCollapsed && (m_bHasData || iStructType))
+	if (!m_bCollapsed && m_bHasData)
 	{
 		return m_TextPane.GetLines();
 	}
@@ -75,18 +74,9 @@ int SmartViewPane::GetLines()
 void SmartViewPane::SetWindowPos(int x, int y, int width, int height)
 {
 	auto hRes = S_OK;
-	if (!m_bDoDropDown && !m_bHasData)
-	{
-		EC_B(m_CollapseButton.ShowWindow(SW_HIDE));
-		EC_B(m_Label.ShowWindow(SW_HIDE));
-		EC_B(m_DropDown.ShowWindow(SW_HIDE));
-		m_TextPane.ShowWindow(SW_HIDE);
-	}
-	else
-	{
-		EC_B(m_CollapseButton.ShowWindow(SW_SHOW));
-		EC_B(m_Label.ShowWindow(SW_SHOW));
-	}
+	auto visibility = !m_bDoDropDown && !m_bHasData ? SW_HIDE : SW_SHOW;
+	EC_B(m_CollapseButton.ShowWindow(visibility));
+	EC_B(m_Label.ShowWindow(visibility));
 
 	if (0 != m_iControl)
 	{
@@ -99,25 +89,21 @@ void SmartViewPane::SetWindowPos(int x, int y, int width, int height)
 	y += m_iLabelHeight + m_iSmallHeightMargin;
 	height -= m_iButtonHeight + m_iSmallHeightMargin;
 
-	if (m_bCollapsed)
-	{
-		EC_B(m_DropDown.ShowWindow(SW_HIDE));
-		m_TextPane.ShowWindow(SW_HIDE);
-	}
-	else
+	if (!m_bCollapsed)
 	{
 		if (m_bDoDropDown)
 		{
-			EC_B(m_DropDown.ShowWindow(SW_SHOW));
-			EC_B(m_DropDown.SetWindowPos(NULL, x, y, width, m_iEditHeight, SWP_NOZORDER));
+			EC_B(m_DropDown.SetWindowPos(NULL, x, y, width, m_iEditHeight * 10, SWP_NOZORDER));
 
 			y += m_iEditHeight;
 			height -= m_iEditHeight;
 		}
 
-		m_TextPane.ShowWindow(SW_SHOW);
 		m_TextPane.SetWindowPos(x, y, width, height);
 	}
+
+	EC_B(m_DropDown.ShowWindow(m_bCollapsed ? SW_HIDE : SW_SHOW));
+	m_TextPane.ShowWindow(m_bCollapsed | !m_bHasData ? SW_HIDE : SW_SHOW);
 }
 
 void SmartViewPane::SetMargins(

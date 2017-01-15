@@ -98,7 +98,12 @@ void DropDownPane::SetWindowPos(int x, int y, int width, int /*height*/)
 		y += m_iLabelHeight;
 	}
 
-	EC_B(m_DropDown.SetWindowPos(NULL, x, y, width, m_iEditHeight, SWP_NOZORDER));
+	// Note - Real height of a combo box is fixed at m_iEditHeight
+	// Height we set here influences the amount of dropdown entries we see
+	// This will give us something between 4 and 10 entries
+	ULONG ulDrops = min(10, 1 + max(m_DropList.size(), 4));
+
+	EC_B(m_DropDown.SetWindowPos(NULL, x, y, width, m_iEditHeight * ulDrops, SWP_NOZORDER));
 }
 
 void DropDownPane::CreateControl(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
@@ -137,6 +142,8 @@ void DropDownPane::CreateControl(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 		CRect(0, 0, 0, static_cast<int>(dropHeight)),
 		pParent,
 		m_nID));
+
+	SendMessage(m_DropDown.m_hWnd, WM_SETFONT, reinterpret_cast<WPARAM>(GetSegoeFont()), false);
 }
 
 void DropDownPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
