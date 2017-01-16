@@ -308,7 +308,7 @@ string GetServerName(_In_ LPMAPISESSION lpSession)
 		0,
 		&pGlobalProfSect));
 
-	EC_MAPI(HrGetOneProp(pGlobalProfSect, PR_PROFILE_HOME_SERVER, &lpServerName));
+	WC_MAPI(HrGetOneProp(pGlobalProfSect, PR_PROFILE_HOME_SERVER, &lpServerName));
 
 	if (CheckStringProp(lpServerName, PT_STRING8)) // profiles are ASCII only
 	{
@@ -317,6 +317,7 @@ string GetServerName(_In_ LPMAPISESSION lpSession)
 #ifndef MRMAPI
 	else
 	{
+		hRes = S_OK;
 		// prompt the user to enter a server name
 		CEditor MyData(
 			nullptr,
