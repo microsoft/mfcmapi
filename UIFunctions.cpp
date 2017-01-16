@@ -1005,6 +1005,7 @@ void CustomDrawTree(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, bool bHover, _In_
 			// Cover over the +/- and paint triangles instead
 			DrawExpandTriangle(lvcd->nmcd.hdr.hwndFrom, lvcd->nmcd.hdc, hItem, bHover && hItem == hItemCurHover, hItem == hItemCurHover);
 
+			// Paint the advise icon, IDB_ADVISE
 			TVITEM tvi = { 0 };
 			tvi.mask = TVIF_PARAM;
 			tvi.hItem = hItem;
