@@ -17,3 +17,5 @@
 *.psess
 *.vspx
 /MFCMapi.aps
+/MrMapi/MrTag.pdb
+/MrMapi/MrTag.dll
