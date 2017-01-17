@@ -34,7 +34,7 @@ static NAME_ARRAY_ENTRY g_SmartViewParserTypeArray[] =
 { IDS_STVERBSTREAM, L"Verb Stream" }, // STRING_OK
 { IDS_STTOMBSTONE, L"Tombstone" }, // STRING_OK
 { IDS_STPCL, L"Predecessor Change List" }, // STRING_OK
-{ IDS_STSECURITYDESCRIPTOR, L"Free Busy Security Descriptor" }, // STRING_OK
+{ IDS_STFBSECURITYDESCRIPTOR, L"Free Busy Security Descriptor" }, // STRING_OK
 { IDS_STXID, L"XID" }, // STRING_OK
 };
 
