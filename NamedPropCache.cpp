@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "NamedPropCache.h"
+#include "InterpretProp2.h"
 
 // We keep a list of named prop cache entries
 std::list<NamedPropCacheEntry> g_lpNamedPropCache;
@@ -16,7 +17,7 @@ void CopyCacheData(
 	_In_opt_ LPVOID lpMAPIParent) // If passed, allocate using MAPI with this as a parent
 {
 	dst.lpguid = nullptr;
-	dst.Kind.lID = 0;
+	dst.Kind.lID = MNID_ID;
 
 	if (src.lpguid)
 	{
@@ -190,6 +191,15 @@ void AddMapping(ULONG cbSig, // Count bytes of signature
 	{
 		if (lppPropNames[ulSource])
 		{
+			if (fIsSet(DBGNamedPropCacheMisses) && lppPropNames[ulSource]->ulKind == MNID_ID)
+			{
+				auto names = NameIDToPropNames(lppPropNames[ulSource]);
+				if (names.empty())
+				{
+					DebugPrint(DBGNamedPropCacheMisses, L"AddMapping: Caching unknown property 0x%08X %ws\n", lppPropNames[ulSource]->Kind.lID, GUIDToStringAndName(lppPropNames[ulSource]->lpguid).c_str());
+				}
+			}
+
 			g_lpNamedPropCache.emplace_back(cbSig, lpSig, lppPropNames[ulSource], PROP_ID(lpTag->aulPropTag[ulSource]));
 		}
 	}

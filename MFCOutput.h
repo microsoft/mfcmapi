@@ -39,6 +39,7 @@ void SetDebugOutputToFile(bool bDoOutput);
 #define DBGSmartView ((ULONG) 0x00040000)
 #define DBGLoadMAPI ((ULONG) 0x00080000)
 #define DBGHierarchy ((ULONG) 0x00100000)
+#define DBGNamedPropCacheMisses ((ULONG) 0x00200000)
 #define DBGDraw ((ULONG) 0x10000000)
 #define DBGUI ((ULONG) 0x20000000)
 #define DBGMAPIFunctions ((ULONG) 0x40000000)
