@@ -101,7 +101,7 @@ void DropDownPane::SetWindowPos(int x, int y, int width, int /*height*/)
 	// Note - Real height of a combo box is fixed at m_iEditHeight
 	// Height we set here influences the amount of dropdown entries we see
 	// This will give us something between 4 and 10 entries
-	ULONG ulDrops = min(10, 1 + max(m_DropList.size(), 4));
+	auto ulDrops = static_cast<int>(min(10, 1 + max(m_DropList.size(), 4)));
 
 	EC_B(m_DropDown.SetWindowPos(NULL, x, y, width, m_iEditHeight * ulDrops, SWP_NOZORDER));
 }
