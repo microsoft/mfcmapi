@@ -731,12 +731,11 @@ void SubclassEdit(_In_ HWND hWnd, _In_ HWND hWndParent, bool bReadOnly)
 	}
 }
 
-void CustomDrawList(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, int iItemCurHover)
+void CustomDrawList(_In_ LPNMLVCUSTOMDRAW lvcd, _In_ LRESULT* pResult, DWORD_PTR iItemCurHover)
 {
 	static auto bSelected = false;
-	if (!pNMHDR) return;
-	auto lvcd = reinterpret_cast<LPNMLVCUSTOMDRAW>(pNMHDR);
-	auto iItem = static_cast<int>(lvcd->nmcd.dwItemSpec);
+	if (!lvcd) return;
+	auto iItem = lvcd->nmcd.dwItemSpec;
 
 	// If there's nothing to paint, this is a "fake paint" and we don't want to toggle selection highlight
 	// Toggling selection highlight causes a repaint, so this logic prevents flicker
@@ -759,6 +758,7 @@ void CustomDrawList(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, int iItemCurHover
 			// Turn off listview selection highlight
 			ListView_SetItemState(lvcd->nmcd.hdr.hwndFrom, iItem, 0, LVIS_SELECTED)
 		}
+
 		*pResult = CDRF_DODEFAULT | CDRF_NOTIFYPOSTPAINT | CDRF_NOTIFYSUBITEMDRAW;
 		break;
 
@@ -789,21 +789,22 @@ void CustomDrawList(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, int iItemCurHover
 			*pResult = CDRF_SKIPDEFAULT;
 			break;
 		}
-	}
 
-	// Turn on listview hover highlight
-	if (bSelected)
-	{
-		lvcd->clrText = MyGetSysColor(cGlowText);
-		lvcd->clrTextBk = MyGetSysColor(cSelectedBackground);
+		// Turn on listview hover highlight
+		if (bSelected)
+		{
+			lvcd->clrText = MyGetSysColor(cGlowText);
+			lvcd->clrTextBk = MyGetSysColor(cSelectedBackground);
+		}
+		else if (iItemCurHover == iItem)
+		{
+			lvcd->clrText = MyGetSysColor(cGlowText);
+			lvcd->clrTextBk = MyGetSysColor(cGlowBackground);
+		}
+
+		*pResult = CDRF_NEWFONT;
+		break;
 	}
-	else if (iItemCurHover == iItem)
-	{
-		lvcd->clrText = MyGetSysColor(cGlowText);
-		lvcd->clrTextBk = MyGetSysColor(cGlowBackground);
-	}
-	*pResult = CDRF_NEWFONT;
-	break;
 
 	case CDDS_ITEMPOSTPAINT:
 		// And then we'll handle our frame
@@ -812,6 +813,7 @@ void CustomDrawList(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, int iItemCurHover
 			// Turn on listview selection highlight
 			ListView_SetItemState(lvcd->nmcd.hdr.hwndFrom, iItem, LVIS_SELECTED, LVIS_SELECTED);
 		}
+
 		break;
 
 	default:

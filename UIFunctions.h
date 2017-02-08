@@ -110,7 +110,7 @@ LRESULT CALLBACK DrawEditProc(
 void SubclassEdit(_In_ HWND hWnd, _In_ HWND hWndParent, bool bReadOnly);
 
 // List
-void CustomDrawList(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult, int iItemCur);
+void CustomDrawList(_In_ LPNMLVCUSTOMDRAW lvcd, _In_ LRESULT* pResult, DWORD_PTR iItemCur);
 void DrawListItemGlow(_In_ HWND hWnd, UINT itemID);
 
 // Tree
