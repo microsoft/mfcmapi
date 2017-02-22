@@ -73,14 +73,27 @@ _Check_return_ HRESULT CSortListCtrl::Create(_In_ CWnd* pCreateParent, ULONG ulF
 
 	if (bImages)
 	{
-		auto hImageList = ImageList_Create(32, 32, ILC_COLOR32 | ILC_MASK, 1, 1);
+		// At 100% DPI, ideal ImageList height is 16 pixels
+		// At 200%, it's 32, 200% of 16.
+		// So we can use our DPI scale to find out what size ImageList to create.
+		auto scale = GetDPIScale();
+		auto imageX = 16 * scale.x / scale.denominator;
+		auto imageY = 16 * scale.y / scale.denominator;
+		auto hImageList = ImageList_Create(imageX, imageY, ILC_COLOR32 | ILC_MASK, 1, 1);
+
 		m_ImageList.Attach(hImageList);
 
-		CBitmap myBitmap;
-		myBitmap.LoadBitmap(IDB_ICONS);
-		m_ImageList.Add(&myBitmap, MyGetSysColor(cBitmapTransBack));
+		// Now we load our bitmap and scale it the same as our ImageList before loading
+		auto hBitmap = ::LoadBitmap(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDB_ICONS));
+		// Our bitmap is 32*32, which is already 2x scaled up
+		// So double the denominator to compensate before scaling the bitmap
+		scale.denominator *= 2;
+		auto hBitmapScaled = ScaleBitmap(hBitmap, scale);
+		m_ImageList.Add(CBitmap::FromHandle(hBitmapScaled), MyGetSysColor(cBitmapTransBack));
 
 		SetImageList(&m_ImageList, LVSIL_SMALL);
+		if (hBitmapScaled) DeleteObject(hBitmapScaled);
+		if (hBitmap) DeleteObject(hBitmap);
 	}
 
 	return hRes;
@@ -329,7 +342,7 @@ _Check_return_ int CALLBACK CSortListCtrl::MyCompareProc(_In_ LPARAM lParam1, _I
 	if (!lpData1) return sort2First; // sort null items to the end - this makes lParam2>lParam1
 	if (!lpData2) return sort1First; // sort null items to the end - this makes lParam1>lParam2
 
-	// Don't sort items which aren't fully loaded
+									 // Don't sort items which aren't fully loaded
 	if (!lpData1->bItemFullyLoaded) return sort2First;
 	if (!lpData2->bItemFullyLoaded) return sort1First;
 

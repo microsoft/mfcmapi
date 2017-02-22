@@ -558,6 +558,47 @@ HBITMAP GetBitmap(uiBitmap ub)
 	return g_Bitmaps[ub];
 }
 
+SCALE GetDPIScale()
+{
+	auto hdcWin = GetWindowDC(nullptr);
+	auto dpiX = GetDeviceCaps(hdcWin, LOGPIXELSX);
+	auto dpiY = GetDeviceCaps(hdcWin, LOGPIXELSY);
+
+	if (hdcWin) DeleteDC(hdcWin);
+	return{ dpiX, dpiY, 96 };
+}
+
+HBITMAP ScaleBitmap(HBITMAP hBitmap, SCALE& scale)
+{
+	BITMAP bm = { 0 };
+	::GetObject(hBitmap, sizeof(BITMAP), &bm);
+
+	SIZE sizeSrc = { bm.bmWidth, bm.bmHeight };
+	SIZE sizeDst = { scale.x * sizeSrc.cx / scale.denominator, scale.y * sizeSrc.cy / scale.denominator };
+
+	auto hdcWin = GetWindowDC(nullptr);
+	auto hRet = CreateCompatibleBitmap(hdcWin, sizeDst.cx, sizeDst.cy);
+
+	auto hdcSrc = CreateCompatibleDC(hdcWin);
+	auto hdcDst = CreateCompatibleDC(hdcWin);
+
+	auto bmpSrc = SelectObject(hdcSrc, hBitmap);
+	auto bmpDst = SelectObject(hdcDst, hRet);
+
+	(void)StretchBlt(hdcDst, 0, 0, sizeDst.cx, sizeDst.cy, hdcSrc, 0, 0, sizeSrc.cx, sizeSrc.cy, SRCCOPY);
+
+	(void)SelectObject(hdcSrc, bmpSrc);
+	(void)SelectObject(hdcDst, bmpDst);
+
+	if (bmpDst) DeleteObject(bmpDst);
+	if (bmpSrc) DeleteObject(bmpSrc);
+	if (hdcDst) DeleteDC(hdcDst);
+	if (hdcSrc) DeleteDC(hdcSrc);
+	if (hdcWin) DeleteDC(hdcWin);
+
+	return hRet;
+}
+
 void DrawSegoeTextW(
 	_In_ HDC hdc,
 	_In_ const wstring& lpchText,

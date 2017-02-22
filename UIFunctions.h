@@ -81,6 +81,16 @@ _Check_return_ HPEN GetPen(uiPen up);
 
 HBITMAP GetBitmap(uiBitmap ub);
 
+struct SCALE
+{
+	LONG x;
+	LONG y;
+	LONG denominator;
+};
+
+SCALE GetDPIScale();
+HBITMAP ScaleBitmap(HBITMAP hBitmap, SCALE& scale);
+
 void ClearEditFormatting(_In_ HWND hWnd, bool bReadOnly);
 
 // Application-specific owner-drawn menu info struct. Owner-drawn data 
