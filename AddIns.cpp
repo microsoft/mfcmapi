@@ -36,6 +36,7 @@ template <typename T> T GetFunction(
 	return pObj;
 }
 
+//Test some thing
 _Check_return_ ULONG GetAddinVersion(HMODULE hMod)
 {
 	auto pfnGetAPIVersion = GetFunction<LPGETAPIVERSION>(hMod, szGetAPIVersion);
@@ -43,7 +44,7 @@ _Check_return_ ULONG GetAddinVersion(HMODULE hMod)
 	{
 		return pfnGetAPIVersion();
 	}
-
+	
 	// Default case for unversioned add-ins
 	return MFCMAPI_HEADER_V1;
 }
