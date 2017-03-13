@@ -485,7 +485,7 @@ The Entry ID will be passed OpenMsgStore\r\n\
 0x00000010 MAPI_BEST_ACCESS     Request best access\r\n\
 0x00000020 MDB_TEMPORARY        Do not add store to table\r\n\
 0x00000080 MDB_NO_MAIL          Store will not be used to send/receive mail\r\n\
-0x00000100 MDB_ONLINE           Use the default profile\r\n\
+0x00000100 MDB_ONLINE           Bypass local cache and open store on server\r\n\
 \r\n\
 Enter Entry ID as a binary string"
 IDS_OPENPUBSTORE                 "Open Public Message Store"
