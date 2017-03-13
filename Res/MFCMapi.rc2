@@ -556,7 +556,7 @@ IDS_QUERYDEFRECIPOPT             "QueryDefaultRecipOpt"
 IDS_QUERYID                      "Query Identity"
 IDS_QUERYIDPROMPT                "Check box display Details dialog instead of getting properties"
 IDS_SETDEFSTORE                  "Set Default Store"
-IDS_SETDEFSTOREPROMPT            "Enter flags for SetDefaultStore (flags are mutually exclusive:\r\n\
+IDS_SETDEFSTOREPROMPT            "Enter flags for SetDefaultStore (flags are mutually exclusive):\r\n\
 \r\n\
 0x00000001 MAPI_DEFAULT_STORE          For incoming messages\r\n\
 0x00000002 MAPI_SIMPLE_STORE_TEMPORARY For simple MAPI and CMC\r\n\
