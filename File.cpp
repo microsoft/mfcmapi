@@ -10,6 +10,7 @@
 #include "MFCUtilityFunctions.h"
 #include <shlobj.h>
 #include "Dumpstore.h"
+#include <Dialogs/Editors/Editor.h>
 
 wstring ShortenPath(const wstring& path)
 {
@@ -418,7 +419,6 @@ _Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_ 
 {
 	auto hRes = S_OK;
 	LPMAPITABLE lpFolderContents = nullptr;
-	LPMESSAGE lpMessage = nullptr;
 	LPSRowSet pRows = nullptr;
 
 	enum
@@ -461,57 +461,109 @@ _Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_ 
 				&pRows));
 			if (FAILED(hRes) || !pRows || pRows && !pRows->cRows) break;
 
-			pRows->aRow->lpProps[fldPR_ENTRYID].ulPropTag;
-
-			if (PT_ERROR != PROP_TYPE(pRows->aRow->lpProps[fldPR_ENTRYID].ulPropTag))
-			{
-				DebugPrint(DBGGeneric, L"Source Message =\n");
-				DebugPrintBinary(DBGGeneric, &pRows->aRow->lpProps[fldPR_ENTRYID].Value.bin);
-
-				if (lpMessage) lpMessage->Release();
-				lpMessage = nullptr;
-				EC_H(CallOpenEntry(
-					nullptr,
-					nullptr,
-					lpFolder,
-					nullptr,
-					pRows->aRow->lpProps[fldPR_ENTRYID].Value.bin.cb,
-					reinterpret_cast<LPENTRYID>(pRows->aRow->lpProps[fldPR_ENTRYID].Value.bin.lpb),
-					nullptr,
-					MAPI_BEST_ACCESS,
-					nullptr,
-					reinterpret_cast<LPUNKNOWN*>(&lpMessage)));
-				if (!lpMessage) continue;
-
-				auto szSubj = L"UnknownSubject"; // STRING_OK
-
-				if (CheckStringProp(&pRows->aRow->lpProps[fldPR_SUBJECT_W], PT_UNICODE))
-				{
-					szSubj = pRows->aRow->lpProps[fldPR_SUBJECT_W].Value.lpszW;
-				}
-
-				auto szFileName = BuildFileNameAndPath(L".msg", szSubj, szPathName, &pRows->aRow->lpProps[fldPR_RECORD_KEY].Value.bin); // STRING_OK
-				if (!szFileName.empty())
-				{
-					DebugPrint(DBGGeneric, L"Saving to = \"%ws\"\n", szFileName.c_str());
-
-					EC_H(SaveToMSG(
-						lpMessage,
-						szFileName,
-						bUnicode,
-						hWnd,
-						false));
-
-					DebugPrint(DBGGeneric, L"Message Saved\n");
-				}
-			}
+			SaveToMSG(
+				lpFolder,
+				szPathName,
+				&pRows->aRow->lpProps[fldPR_ENTRYID],
+				&pRows->aRow->lpProps[fldPR_RECORD_KEY],
+				&pRows->aRow->lpProps[fldPR_SUBJECT_W],
+				bUnicode,
+				hWnd);
 		}
 	}
 
 	if (pRows) FreeProws(pRows);
-	if (lpMessage) lpMessage->Release();
 	if (lpFolderContents) lpFolderContents->Release();
 	return hRes;
+}
+
+void ExportMessages(_In_ const LPMAPIFOLDER lpFolder, HWND hWnd)
+{
+	auto hRes = S_OK;
+	CEditor MyData(
+		nullptr,
+		IDS_EXPORTTITLE,
+		IDS_EXPORTPROMPT,
+		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
+
+	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_EXPORTSEARCHTERM, false));
+
+	WC_H(MyData.DisplayDialog());
+	if (S_OK != hRes) return;
+
+	auto szDir = GetDirectoryPath(hWnd);
+	if (szDir.empty()) return;
+	auto restrictString = MyData.GetStringW(0);
+	if (restrictString.empty()) return;
+
+	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
+
+	LPSRestriction lpRes = nullptr;
+	// Allocate and create our SRestriction
+	EC_H(CreatePropertyStringRestriction(
+		PR_SUBJECT_W,
+		restrictString,
+		FL_SUBSTRING,
+		nullptr,
+		&lpRes));
+
+	LPMAPITABLE lpTable = nullptr;
+	WC_MAPI(lpFolder->GetContentsTable(MAPI_DEFERRED_ERRORS | MAPI_UNICODE, &lpTable));
+	if (lpTable)
+	{
+		WC_MAPI(lpTable->Restrict(lpRes, 0));
+		if (SUCCEEDED(hRes))
+		{
+			enum
+			{
+				fldPR_ENTRYID,
+				fldPR_SUBJECT_W,
+				fldPR_RECORD_KEY,
+				fldNUM_COLS
+			};
+
+			static const SizedSPropTagArray(fldNUM_COLS, fldCols) =
+			{
+				fldNUM_COLS,
+				PR_ENTRYID,
+				PR_SUBJECT_W,
+				PR_RECORD_KEY
+			};
+
+			WC_MAPI(lpTable->SetColumns(LPSPropTagArray(&fldCols), TBL_ASYNC));
+
+			// Export messages in the rows
+			LPSRowSet lpRow = nullptr;
+			if (!FAILED(hRes)) for (;;)
+			{
+				hRes = S_OK;
+				if (lpRow) FreeProws(lpRow);
+				lpRow = nullptr;
+				WC_MAPI(lpTable->QueryRows(
+					50,
+					NULL,
+					&lpRow));
+				if (FAILED(hRes) || !lpRow || !lpRow->cRows) break;
+
+				for (ULONG i = 0; i < lpRow->cRows; i++)
+				{
+					hRes = S_OK;
+					WC_H(SaveToMSG(
+						lpFolder,
+						szDir,
+						&lpRow->aRow[i].lpProps[fldPR_ENTRYID],
+						&lpRow->aRow[i].lpProps[fldPR_RECORD_KEY],
+						&lpRow->aRow[i].lpProps[fldPR_SUBJECT_W],
+						true,
+						hWnd));
+				}
+			}
+		}
+
+		lpTable->Release();
+	}
+
+	if (lpRes) MAPIFreeBuffer(lpRes);
 }
 
 _Check_return_ HRESULT WriteStreamToFile(_In_ LPSTREAM pStrmSrc, _In_ const wstring& szFileName)
@@ -687,6 +739,61 @@ _Check_return_ HRESULT CreateNewMSG(_In_ const wstring& szFileName, bool bUnicod
 
 		if (pStorage) pStorage->Release();
 	}
+
+	return hRes;
+}
+
+_Check_return_ HRESULT SaveToMSG(
+	_In_ const LPMAPIFOLDER lpFolder,
+	_In_ const wstring& szPathName,
+	_In_ const LPSPropValue lpEntryID,
+	_In_ const LPSPropValue lpRecordKey,
+	_In_ const LPSPropValue lpSubject,
+	bool bUnicode,
+	HWND hWnd)
+{
+	if (szPathName.empty() || szPathName.length() >= MAXMSGPATH) return MAPI_E_INVALID_PARAMETER;
+	if (lpEntryID || lpEntryID->ulPropTag != PR_ENTRYID) return MAPI_E_INVALID_PARAMETER;
+
+	auto hRes = S_OK;
+	LPMESSAGE lpMessage = nullptr;
+
+	DebugPrint(DBGGeneric, L"SaveToMSG: Saving message to \"%ws\"\n", szPathName.c_str());
+
+	DebugPrint(DBGGeneric, L"Source Message =\n");
+	DebugPrintBinary(DBGGeneric, &lpEntryID->Value.bin);
+
+	EC_H(CallOpenEntry(
+		nullptr,
+		nullptr,
+		reinterpret_cast<LPMAPICONTAINER>(lpFolder),
+		nullptr,
+		&lpEntryID->Value.bin,
+		nullptr,
+		MAPI_BEST_ACCESS,
+		nullptr,
+		reinterpret_cast<LPUNKNOWN*>(&lpMessage)));
+	if (FAILED(hRes) || !lpMessage) return hRes;
+
+	auto szSubj = CheckStringProp(lpSubject, PT_UNICODE) ? lpSubject->Value.lpszW : L"UnknownSubject";
+	LPSBinary recordKey = (lpRecordKey&& lpRecordKey->ulPropTag == PR_RECORD_KEY) ? &lpRecordKey->Value.bin : nullptr;
+
+	auto szFileName = BuildFileNameAndPath(L".msg", szSubj, szPathName, recordKey); // STRING_OK
+	if (!szFileName.empty())
+	{
+		DebugPrint(DBGGeneric, L"Saving to = \"%ws\"\n", szFileName.c_str());
+
+		EC_H(SaveToMSG(
+			lpMessage,
+			szFileName,
+			bUnicode,
+			hWnd,
+			false));
+
+		DebugPrint(DBGGeneric, L"Message Saved\n");
+	}
+
+	if (lpMessage) lpMessage->Release();
 
 	return hRes;
 }

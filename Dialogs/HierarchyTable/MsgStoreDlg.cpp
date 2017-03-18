@@ -95,6 +95,7 @@ BEGIN_MESSAGE_MAP(CMsgStoreDlg, CHierarchyTableDlg)
 	ON_COMMAND(ID_SAVEFOLDERCONTENTSASMSG, OnSaveFolderContentsAsMSG)
 	ON_COMMAND(ID_SAVEFOLDERCONTENTSASTEXTFILES, OnSaveFolderContentsAsTextFiles)
 	ON_COMMAND(ID_SETRECEIVEFOLDER, OnSetReceiveFolder)
+	ON_COMMAND(ID_EXPORTMESSAGES, OnExportMessages)
 
 	ON_COMMAND(ID_VALIDATEIPMSUBTREE, OnValidateIPMSubtree)
 END_MESSAGE_MAP()
@@ -976,6 +977,20 @@ void CMsgStoreDlg::OnSaveFolderContentsAsTextFiles()
 				MyData.GetCheck(0),
 				m_hWnd);
 		}
+		lpFolder->Release();
+	}
+}
+
+void CMsgStoreDlg::OnExportMessages()
+{
+	if (!m_lpHierarchyTableTreeCtrl) return;
+
+	auto lpFolder = static_cast<LPMAPIFOLDER>(m_lpHierarchyTableTreeCtrl->GetSelectedContainer(mfcmapiDO_NOT_REQUEST_MODIFY));
+
+	if (lpFolder)
+	{
+		ExportMessages(lpFolder, m_hWnd);
+
 		lpFolder->Release();
 	}
 }

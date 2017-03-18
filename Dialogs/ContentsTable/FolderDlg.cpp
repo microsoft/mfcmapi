@@ -74,6 +74,7 @@ _Check_return_ bool CFolderDlg::HandleMenu(WORD wMenuSelect)
 		}
 
 		return true;
+	case ID_EXPORTMESSAGES: OnExportMessages(); return true;
 	case ID_LOADFROMMSG: OnLoadFromMSG(); return true;
 	case ID_LOADFROMTNEF: OnLoadFromTNEF(); return true;
 	case ID_LOADFROMEML: OnLoadFromEML(); return true;
@@ -280,6 +281,7 @@ void CFolderDlg::OnInitMenu(_In_ CMenu* pMenu)
 		pMenu->EnableMenuItem(ID_NEW_MESSAGE, DIM(m_lpContainer));
 		pMenu->EnableMenuItem(ID_SENDBULKMAIL, DIM(m_lpContainer));
 		pMenu->EnableMenuItem(ID_SAVEFOLDERCONTENTSASTEXTFILES, DIM(m_lpContainer));
+		pMenu->EnableMenuItem(ID_EXPORTMESSAGES, DIM(m_lpContainer));
 
 		pMenu->EnableMenuItem(ID_CONTENTS, DIM(m_lpContainer && !(m_ulDisplayFlags == dfNormal)));
 		pMenu->EnableMenuItem(ID_HIDDENCONTENTS, DIM(m_lpContainer && !(m_ulDisplayFlags & dfAssoc)));
@@ -1468,6 +1470,16 @@ void CFolderDlg::OnSaveFolderContentsAsTextFiles()
 		m_ulDisplayFlags & dfAssoc ? true : false,
 		false,
 		m_hWnd);
+}
+
+void CFolderDlg::OnExportMessages()
+{
+	auto lpFolder = static_cast<LPMAPIFOLDER>(m_lpContainer);
+
+	if (lpFolder)
+	{
+		ExportMessages(lpFolder, m_hWnd);
+	}
 }
 
 void CFolderDlg::OnSaveMessageToFile()

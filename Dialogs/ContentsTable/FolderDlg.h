@@ -48,6 +48,7 @@ private:
 	void OnSelectForm();
 	void OnSendBulkMail();
 	void OnSaveMessageToFile();
+	void OnExportMessages();
 	void OnSetReadFlag();
 	void OnSetMessageStatus();
 	void OnGetMessageOptions();

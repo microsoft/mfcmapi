@@ -57,6 +57,7 @@ private:
 	void OnPasteFolderContents();
 	void OnPasteRules();
 	void OnPasteMessages();
+	void OnExportMessages();
 
 	DECLARE_MESSAGE_MAP()
 };
