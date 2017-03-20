@@ -1228,7 +1228,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::DefaultOpenItemProp(
 	if (!lpEID || lpEID->cb == 0) return S_OK;
 
 	DebugPrint(DBGGeneric, L"Item being opened:\n");
-	DebugPrintBinary(DBGGeneric, lpEID);
+	DebugPrintBinary(DBGGeneric, *lpEID);
 
 	// Find the highlighted item EID
 	switch (m_ulContainerType)

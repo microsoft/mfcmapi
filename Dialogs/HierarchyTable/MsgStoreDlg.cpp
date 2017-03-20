@@ -876,7 +876,7 @@ void CMsgStoreDlg::OnDeleteSelectedItem()
 				ulFlags |= bShiftPressed || MyData.GetCheck(0) ? DELETE_HARD_DELETE : 0;
 
 				DebugPrintEx(DBGDeleteSelectedItem, CLASS, L"OnDeleteSelectedItem", L"Calling DeleteFolder on folder. ulFlags = 0x%08X.\n", ulFlags);
-				DebugPrintBinary(DBGGeneric, lpItemEID);
+				DebugPrintBinary(DBGGeneric, *lpItemEID);
 
 				LPMAPIPROGRESS lpProgress = GetMAPIProgress(L"IMAPIFolder::DeleteFolder", m_hWnd); // STRING_OK
 

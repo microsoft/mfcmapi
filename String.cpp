@@ -380,7 +380,7 @@ wstring BinToHexString(const vector<BYTE>& lpByte, bool bPrependCB)
 	return BinToHexString(&sBin, bPrependCB);
 }
 
-wstring BinToHexString(_In_opt_ const LPSBinary lpBin, bool bPrependCB)
+wstring BinToHexString(_In_opt_ const SBinary* lpBin, bool bPrependCB)
 {
 	if (!lpBin) return L"";
 

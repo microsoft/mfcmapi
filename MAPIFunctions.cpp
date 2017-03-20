@@ -412,7 +412,7 @@ _Check_return_ HRESULT CopyFolderContents(_In_ LPMAPIFOLDER lpSrcFolder, _In_ LP
 				{
 					SBinaryArray sbaEID = { 0 };
 					DebugPrint(DBGGeneric, L"Source Message =\n");
-					DebugPrintBinary(DBGGeneric, &pRows->aRow->lpProps[fldPR_ENTRYID].Value.bin);
+					DebugPrintBinary(DBGGeneric, pRows->aRow->lpProps[fldPR_ENTRYID].Value.bin);
 
 					sbaEID.cValues = 1;
 					sbaEID.lpbin = &pRows->aRow->lpProps[fldPR_ENTRYID].Value.bin;

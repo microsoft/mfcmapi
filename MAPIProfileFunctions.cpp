@@ -905,7 +905,7 @@ _Check_return_ HRESULT GetProfileServiceVersion(
 				sizeof(EXCHANGE_STORE_VERSION_NUM) == lpServerFullVersion->Value.bin.cb)
 			{
 				DebugPrint(DBGGeneric, L"PR_PROFILE_SERVER_FULL_VERSION = ");
-				DebugPrintBinary(DBGGeneric, &lpServerFullVersion->Value.bin);
+				DebugPrintBinary(DBGGeneric, lpServerFullVersion->Value.bin);
 				DebugPrint(DBGGeneric, L"\n");
 
 				memcpy(lpStoreVersion, lpServerFullVersion->Value.bin.lpb, sizeof(EXCHANGE_STORE_VERSION_NUM));
@@ -960,12 +960,13 @@ _Check_return_ HRESULT OpenProfileSection(_In_ LPSERVICEADMIN lpServiceAdmin, _I
 {
 	auto hRes = S_OK;
 
-	DebugPrint(DBGOpenItemProp, L"OpenProfileSection opening lpServiceUID = ");
-	DebugPrintBinary(DBGOpenItemProp, lpServiceUID);
-	DebugPrint(DBGOpenItemProp, L"\n");
+	if (lppProfSect ) *lppProfSect = nullptr;
 
 	if (!lpServiceUID || !lpServiceAdmin || !lppProfSect) return MAPI_E_INVALID_PARAMETER;
-	*lppProfSect = nullptr;
+
+	DebugPrint(DBGOpenItemProp, L"OpenProfileSection opening lpServiceUID = ");
+	DebugPrintBinary(DBGOpenItemProp, *lpServiceUID);
+	DebugPrint(DBGOpenItemProp, L"\n");
 
 	// First, we try the normal way of opening the profile section:
 	WC_MAPI(lpServiceAdmin->OpenProfileSection(
@@ -1016,12 +1017,12 @@ _Check_return_ HRESULT OpenProfileSection(_In_ LPPROVIDERADMIN lpProviderAdmin, 
 {
 	auto hRes = S_OK;
 
-	DebugPrint(DBGOpenItemProp, L"OpenProfileSection opening lpServiceUID = ");
-	DebugPrintBinary(DBGOpenItemProp, lpProviderUID);
-	DebugPrint(DBGOpenItemProp, L"\n");
-
+	if (lppProfSect ) *lppProfSect = nullptr;
 	if (!lpProviderUID || !lpProviderAdmin || !lppProfSect) return MAPI_E_INVALID_PARAMETER;
-	*lppProfSect = nullptr;
+
+	DebugPrint(DBGOpenItemProp, L"OpenProfileSection opening lpServiceUID = ");
+	DebugPrintBinary(DBGOpenItemProp, *lpProviderUID);
+	DebugPrint(DBGOpenItemProp, L"\n");
 
 	WC_MAPI(lpProviderAdmin->OpenProfileSection(
 		reinterpret_cast<LPMAPIUID>(lpProviderUID->lpb),

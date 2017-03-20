@@ -375,7 +375,7 @@ _Check_return_ HRESULT ManualResolve(
 			if (PR_ENTRYID == lpABRow->aRow->lpProps[abcPR_ENTRYID].ulPropTag)
 			{
 				DebugPrint(DBGGeneric, L"ManualResolve: Searching this container\n");
-				DebugPrintBinary(DBGGeneric, &lpABRow->aRow->lpProps[abcPR_ENTRYID].Value.bin);
+				DebugPrintBinary(DBGGeneric, lpABRow->aRow->lpProps[abcPR_ENTRYID].Value.bin);
 
 				if (lpABContainer) lpABContainer->Release();
 				lpABContainer = nullptr;

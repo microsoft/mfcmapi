@@ -273,18 +273,12 @@ void OutputIndent(ULONG ulDbgLvl, _In_opt_ FILE* fFile, int iIndent)
 	for (auto i = 0; i < iIndent; i++) Output(ulDbgLvl, fFile, false, L"\t");
 }
 
-void _OutputBinary(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSBinary lpBin)
+void _OutputBinary(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ const SBinary& bin)
 {
 	CHKPARAM;
 	EARLYABORT;
 
-	if (!lpBin)
-	{
-		Output(DBGFatalError, fFile, true, L"OutputBinary called with NULL lpBin!\n");
-		return;
-	}
-
-	Output(ulDbgLvl, fFile, false, BinToHexString(lpBin, true));
+	Output(ulDbgLvl, fFile, false, BinToHexString(&bin, true));
 
 	Output(ulDbgLvl, fFile, false, L"\n");
 }
@@ -539,7 +533,7 @@ void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify, _
 			sbin.cb = lpNotifications[i].info.err.cbEntryID;
 			sbin.lpb = reinterpret_cast<LPBYTE>(lpNotifications[i].info.err.lpEntryID);
 			Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.err.lpEntryID = ", i);
-			_OutputBinary(ulDbgLvl, fFile, &sbin);
+			_OutputBinary(ulDbgLvl, fFile, sbin);
 			if (lpNotifications[i].info.err.lpMAPIError)
 			{
 				Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.err.lpMAPIError = %s\n", i,
@@ -555,7 +549,7 @@ void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify, _
 			sbin.cb = lpNotifications[i].info.ext.cb;
 			sbin.lpb = lpNotifications[i].info.ext.pbEventParameters;
 			Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.ext.pbEventParameters = \n", i);
-			_OutputBinary(ulDbgLvl, fFile, &sbin);
+			_OutputBinary(ulDbgLvl, fFile, sbin);
 			break;
 		case fnevNewMail:
 			Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.newmail.ulFlags = 0x%08X\n", i,
@@ -563,11 +557,11 @@ void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify, _
 			sbin.cb = lpNotifications[i].info.newmail.cbEntryID;
 			sbin.lpb = reinterpret_cast<LPBYTE>(lpNotifications[i].info.newmail.lpEntryID);
 			Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.newmail.lpEntryID = \n", i);
-			_OutputBinary(ulDbgLvl, fFile, &sbin);
+			_OutputBinary(ulDbgLvl, fFile, sbin);
 			sbin.cb = lpNotifications[i].info.newmail.cbParentID;
 			sbin.lpb = reinterpret_cast<LPBYTE>(lpNotifications[i].info.newmail.lpParentID);
 			Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.newmail.lpParentID = \n", i);
-			_OutputBinary(ulDbgLvl, fFile, &sbin);
+			_OutputBinary(ulDbgLvl, fFile, sbin);
 
 			if (lpNotifications[i].info.newmail.ulFlags & MAPI_UNICODE)
 			{
@@ -627,19 +621,19 @@ void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify, _
 			sbin.cb = lpNotifications[i].info.obj.cbOldID;
 			sbin.lpb = reinterpret_cast<LPBYTE>(lpNotifications[i].info.obj.lpOldID);
 			Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.obj.lpOldID = \n", i);
-			_OutputBinary(ulDbgLvl, fFile, &sbin);
+			_OutputBinary(ulDbgLvl, fFile, sbin);
 			sbin.cb = lpNotifications[i].info.obj.cbOldParentID;
 			sbin.lpb = reinterpret_cast<LPBYTE>(lpNotifications[i].info.obj.lpOldParentID);
 			Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.obj.lpOldParentID = \n", i);
-			_OutputBinary(ulDbgLvl, fFile, &sbin);
+			_OutputBinary(ulDbgLvl, fFile, sbin);
 			sbin.cb = lpNotifications[i].info.obj.cbEntryID;
 			sbin.lpb = reinterpret_cast<LPBYTE>(lpNotifications[i].info.obj.lpEntryID);
 			Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.obj.lpEntryID = \n", i);
-			_OutputBinary(ulDbgLvl, fFile, &sbin);
+			_OutputBinary(ulDbgLvl, fFile, sbin);
 			sbin.cb = lpNotifications[i].info.obj.cbParentID;
 			sbin.lpb = reinterpret_cast<LPBYTE>(lpNotifications[i].info.obj.lpParentID);
 			Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.obj.lpParentID = \n", i);
-			_OutputBinary(ulDbgLvl, fFile, &sbin);
+			_OutputBinary(ulDbgLvl, fFile, sbin);
 			Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.obj.ulObjType = 0x%08X", i,
 				lpNotifications[i].info.obj.ulObjType);
 
@@ -660,7 +654,7 @@ void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify, _
 			sbin.cb = lpNotifications[i].info.ext.cb;
 			sbin.lpb = lpNotifications[i].info.ext.pbEventParameters;
 			Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.ext.pbEventParameters = \n", i);
-			_OutputBinary(ulDbgLvl, fFile, &sbin);
+			_OutputBinary(ulDbgLvl, fFile, sbin);
 			if (INDEXING_SEARCH_OWNER == lpNotifications[i].info.ext.ulEvent &&
 				sizeof(INDEX_SEARCH_PUSHER_PROCESS) == lpNotifications[i].info.ext.cb)
 			{
@@ -693,7 +687,7 @@ void _OutputEntryList(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPENTRYLIST lpE
 	for (ULONG i = 0; i < lpEntryList->cValues; i++)
 	{
 		Outputf(ulDbgLvl, fFile, true, L"lpEntryList->lpbin[%u]\n\t", i);
-		_OutputBinary(ulDbgLvl, fFile, &lpEntryList->lpbin[i]);
+		_OutputBinary(ulDbgLvl, fFile, lpEntryList->lpbin[i]);
 	}
 
 	Outputf(ulDbgLvl, fFile, true, L"End dumping entry list.\n");

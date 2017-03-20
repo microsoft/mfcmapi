@@ -90,7 +90,7 @@ void __cdecl DebugPrintEx(ULONG ulDbgLvl, wstring& szClass, const wstring& szFun
 
 // We'll use macros to make these calls so the code will read right
 
-void _OutputBinary(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSBinary lpBin);
+void _OutputBinary(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ const SBinary& bin);
 void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpProp, _In_opt_ LPMAPIPROP lpObj, bool bRetryStreamProps);
 void _OutputProperties(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cProps, _In_count_(cProps) LPSPropValue lpProps, _In_opt_ LPMAPIPROP lpObj, bool bRetryStreamProps);
 void _OutputSRow(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSRow lpSRow, _In_opt_ LPMAPIPROP lpObj);
@@ -105,7 +105,7 @@ void _OutputTable(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPMAPITABLE lpMAPIT
 void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify, _In_count_(cNotify) LPNOTIFICATION lpNotifications, _In_opt_ LPMAPIPROP lpObj);
 void _OutputEntryList(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPENTRYLIST lpEntryList);
 
-#define DebugPrintBinary(ulDbgLvl, lpBin) _OutputBinary((ulDbgLvl), nullptr, (lpBin))
+#define DebugPrintBinary(ulDbgLvl, bin) _OutputBinary((ulDbgLvl), nullptr, (bin))
 #define DebugPrintProperties(ulDbgLvl, cProps, lpProps, lpObj) _OutputProperties((ulDbgLvl), nullptr, (cProps), (lpProps), (lpObj), false)
 #define DebugPrintRestriction(ulDbgLvl, lpRes, lpObj) _OutputRestriction((ulDbgLvl), nullptr, (lpRes), (lpObj))
 #define DebugPrintStream(ulDbgLvl, lpStream) _OutputStream((ulDbgLvl), nullptr, lpStream)

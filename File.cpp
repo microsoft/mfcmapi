@@ -761,7 +761,7 @@ _Check_return_ HRESULT SaveToMSG(
 	DebugPrint(DBGGeneric, L"SaveToMSG: Saving message to \"%ws\"\n", szPathName.c_str());
 
 	DebugPrint(DBGGeneric, L"Source Message =\n");
-	DebugPrintBinary(DBGGeneric, &lpEntryID->Value.bin);
+	DebugPrintBinary(DBGGeneric, lpEntryID->Value.bin);
 
 	EC_H(CallOpenEntry(
 		nullptr,
