@@ -477,6 +477,7 @@ _Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_ 
 	return hRes;
 }
 
+#ifndef MRMAPI
 void ExportMessages(_In_ const LPMAPIFOLDER lpFolder, HWND hWnd)
 {
 	auto hRes = S_OK;
@@ -565,6 +566,7 @@ void ExportMessages(_In_ const LPMAPIFOLDER lpFolder, HWND hWnd)
 
 	if (lpRes) MAPIFreeBuffer(lpRes);
 }
+#endif
 
 _Check_return_ HRESULT WriteStreamToFile(_In_ LPSTREAM pStrmSrc, _In_ const wstring& szFileName)
 {
