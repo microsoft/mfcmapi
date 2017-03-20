@@ -28,7 +28,7 @@ _Check_return_ HRESULT CreateNewMSG(_In_ const wstring& szFileName, bool bUnicod
 _Check_return_ HRESULT SaveToMSG(
 	_In_ const LPMAPIFOLDER lpFolder,
 	_In_ const wstring& szPathName,
-	_In_ const LPSPropValue lpEntryID,
+	_In_ const SPropValue& entryID,
 	_In_ const LPSPropValue lpRecordKey,
 	_In_ const LPSPropValue lpSubject,
 	bool bUnicode,

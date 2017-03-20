@@ -464,7 +464,7 @@ _Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_ 
 			SaveToMSG(
 				lpFolder,
 				szPathName,
-				&pRows->aRow->lpProps[fldPR_ENTRYID],
+				pRows->aRow->lpProps[fldPR_ENTRYID],
 				&pRows->aRow->lpProps[fldPR_RECORD_KEY],
 				&pRows->aRow->lpProps[fldPR_SUBJECT_W],
 				bUnicode,
@@ -534,27 +534,27 @@ void ExportMessages(_In_ const LPMAPIFOLDER lpFolder, HWND hWnd)
 			WC_MAPI(lpTable->SetColumns(LPSPropTagArray(&fldCols), TBL_ASYNC));
 
 			// Export messages in the rows
-			LPSRowSet lpRow = nullptr;
+			LPSRowSet lpRows = nullptr;
 			if (!FAILED(hRes)) for (;;)
 			{
 				hRes = S_OK;
-				if (lpRow) FreeProws(lpRow);
-				lpRow = nullptr;
+				if (lpRows) FreeProws(lpRows);
+				lpRows = nullptr;
 				WC_MAPI(lpTable->QueryRows(
 					50,
 					NULL,
-					&lpRow));
-				if (FAILED(hRes) || !lpRow || !lpRow->cRows) break;
+					&lpRows));
+				if (FAILED(hRes) || !lpRows || !lpRows->cRows) break;
 
-				for (ULONG i = 0; i < lpRow->cRows; i++)
+				for (ULONG i = 0; i < lpRows->cRows; i++)
 				{
 					hRes = S_OK;
 					WC_H(SaveToMSG(
 						lpFolder,
 						szDir,
-						&lpRow->aRow[i].lpProps[fldPR_ENTRYID],
-						&lpRow->aRow[i].lpProps[fldPR_RECORD_KEY],
-						&lpRow->aRow[i].lpProps[fldPR_SUBJECT_W],
+						lpRows->aRow[i].lpProps[fldPR_ENTRYID],
+						&lpRows->aRow[i].lpProps[fldPR_RECORD_KEY],
+						&lpRows->aRow[i].lpProps[fldPR_SUBJECT_W],
 						true,
 						hWnd));
 				}
@@ -748,14 +748,14 @@ _Check_return_ HRESULT CreateNewMSG(_In_ const wstring& szFileName, bool bUnicod
 _Check_return_ HRESULT SaveToMSG(
 	_In_ const LPMAPIFOLDER lpFolder,
 	_In_ const wstring& szPathName,
-	_In_ const LPSPropValue lpEntryID,
+	_In_ const SPropValue& entryID,
 	_In_ const LPSPropValue lpRecordKey,
 	_In_ const LPSPropValue lpSubject,
 	bool bUnicode,
 	HWND hWnd)
 {
 	if (szPathName.empty() || szPathName.length() >= MAXMSGPATH) return MAPI_E_INVALID_PARAMETER;
-	if (lpEntryID || lpEntryID->ulPropTag != PR_ENTRYID) return MAPI_E_INVALID_PARAMETER;
+	if (entryID.ulPropTag != PR_ENTRYID) return MAPI_E_INVALID_PARAMETER;
 
 	auto hRes = S_OK;
 	LPMESSAGE lpMessage = nullptr;
@@ -763,14 +763,14 @@ _Check_return_ HRESULT SaveToMSG(
 	DebugPrint(DBGGeneric, L"SaveToMSG: Saving message to \"%ws\"\n", szPathName.c_str());
 
 	DebugPrint(DBGGeneric, L"Source Message =\n");
-	DebugPrintBinary(DBGGeneric, lpEntryID->Value.bin);
+	DebugPrintBinary(DBGGeneric, entryID.Value.bin);
 
 	EC_H(CallOpenEntry(
 		nullptr,
 		nullptr,
 		reinterpret_cast<LPMAPICONTAINER>(lpFolder),
 		nullptr,
-		&lpEntryID->Value.bin,
+		&entryID.Value.bin,
 		nullptr,
 		MAPI_BEST_ACCESS,
 		nullptr,

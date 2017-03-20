@@ -207,7 +207,7 @@ _Check_return_ HRESULT CallOpenEntry(
 	_In_opt_ LPADRBOOK lpAB,
 	_In_opt_ LPMAPICONTAINER lpContainer,
 	_In_opt_ LPMAPISESSION lpMAPISession,
-	_In_opt_ LPSBinary lpSBinary,
+	_In_opt_ const SBinary* lpSBinary,
 	_In_opt_ LPCIID lpInterface,
 	ULONG ulFlags,
 	_Out_opt_ ULONG* ulObjTypeRet,
