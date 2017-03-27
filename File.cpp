@@ -778,7 +778,7 @@ _Check_return_ HRESULT SaveToMSG(
 	if (FAILED(hRes) || !lpMessage) return hRes;
 
 	auto szSubj = CheckStringProp(lpSubject, PT_UNICODE) ? lpSubject->Value.lpszW : L"UnknownSubject";
-	LPSBinary recordKey = (lpRecordKey&& lpRecordKey->ulPropTag == PR_RECORD_KEY) ? &lpRecordKey->Value.bin : nullptr;
+	LPSBinary recordKey = (lpRecordKey && lpRecordKey->ulPropTag == PR_RECORD_KEY) ? &lpRecordKey->Value.bin : nullptr;
 
 	auto szFileName = BuildFileNameAndPath(L".msg", szSubj, szPathName, recordKey); // STRING_OK
 	if (!szFileName.empty())
