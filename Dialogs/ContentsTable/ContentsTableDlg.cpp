@@ -152,7 +152,6 @@ BEGIN_MESSAGE_MAP(CContentsTableDlg, CBaseDialog)
 	ON_COMMAND(ID_DISPLAYSELECTEDITEM, OnDisplayItem)
 	ON_COMMAND(ID_CANCELTABLELOAD, OnEscHit)
 	ON_COMMAND(ID_REFRESHVIEW, OnRefreshView)
-	ON_COMMAND(ID_CREATEMESSAGERESTRICTION, OnCreateMessageRestriction)
 	ON_COMMAND(ID_CREATEPROPERTYSTRINGRESTRICTION, OnCreatePropertyStringRestriction)
 	ON_COMMAND(ID_CREATERANGERESTRICTION, OnCreateRangeRestriction)
 	ON_COMMAND(ID_EDITRESTRICTION, OnEditRestriction)
@@ -172,7 +171,6 @@ void CContentsTableDlg::OnInitMenu(_In_opt_ CMenu* pMenu)
 		int iNumSel = m_lpContentsTableListCtrl->GetSelectedCount();
 
 		pMenu->EnableMenuItem(ID_CANCELTABLELOAD, DIM(m_lpContentsTableListCtrl->IsLoading()));
-		pMenu->EnableMenuItem(ID_CREATEMESSAGERESTRICTION, DIM(1 == iNumSel && MAPI_FOLDER == m_lpContentsTableListCtrl->GetContainerType()));
 
 		pMenu->EnableMenuItem(ID_DISPLAYSELECTEDITEM, DIMMSOK(iNumSel));
 
@@ -188,7 +186,6 @@ void CContentsTableDlg::OnInitMenu(_In_opt_ CMenu* pMenu)
 		pMenu->EnableMenuItem(ID_SETCOLUMNS, DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
 		pMenu->EnableMenuItem(ID_SORTTABLE, DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
 		pMenu->EnableMenuItem(ID_GETSTATUS, DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
-		pMenu->EnableMenuItem(ID_CREATEMESSAGERESTRICTION, DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
 		pMenu->EnableMenuItem(ID_CREATEPROPERTYSTRINGRESTRICTION, DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
 		pMenu->EnableMenuItem(ID_CREATERANGERESTRICTION, DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
 		pMenu->EnableMenuItem(ID_EDITRESTRICTION, DIM(m_lpContentsTableListCtrl->IsContentsTableSet()));
@@ -290,179 +287,6 @@ void CContentsTableDlg::OnNotificationOff()
 {
 	if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
 	m_lpContentsTableListCtrl->NotificationOff();
-}
-
-// Read properties of the current message and save them for a restriction
-// Designed to work with messages, but could be made to work with anything
-void CContentsTableDlg::OnCreateMessageRestriction()
-{
-	if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
-	auto hRes = S_OK;
-	ULONG cVals = 0;
-	LPSPropValue lpProps = nullptr;
-	LPMAPIPROP lpMAPIProp = nullptr;
-
-	LPSRestriction lpRes = nullptr;
-	LPSRestriction lpResLevel1 = nullptr;
-	LPSRestriction lpResLevel2 = nullptr;
-
-	LPSPropValue lpspvSubject = nullptr;
-	LPSPropValue lpspvSubmitTime = nullptr;
-	LPSPropValue lpspvDeliveryTime = nullptr;
-
-	// These are the properties we're going to copy off of the current message and store
-	// in some object level variables
-	enum
-	{
-		frPR_SUBJECT,
-		frPR_CLIENT_SUBMIT_TIME,
-		frPR_MESSAGE_DELIVERY_TIME,
-		frNUMCOLS
-	};
-	static const SizedSPropTagArray(frNUMCOLS, sptFRCols) =
-	{
-	frNUMCOLS,
-	PR_SUBJECT,
-	PR_CLIENT_SUBMIT_TIME,
-	PR_MESSAGE_DELIVERY_TIME
-	};
-
-	if (!m_lpContentsTableListCtrl) return;
-
-	EC_H(m_lpContentsTableListCtrl->OpenNextSelectedItemProp(
-		nullptr,
-		mfcmapiREQUEST_MODIFY,
-		&lpMAPIProp));
-
-	if (lpMAPIProp)
-	{
-		EC_H_GETPROPS(lpMAPIProp->GetProps(
-			LPSPropTagArray(&sptFRCols),
-			fMapiUnicode,
-			&cVals,
-			&lpProps));
-		if (lpProps)
-		{
-			// Allocate and create our SRestriction
-			// Allocate base memory:
-			EC_H(MAPIAllocateBuffer(
-				sizeof(SRestriction),
-				reinterpret_cast<LPVOID*>(&lpRes)));
-
-			EC_H(MAPIAllocateMore(
-				sizeof(SRestriction) * 2,
-				lpRes,
-				reinterpret_cast<LPVOID*>(&lpResLevel1)));
-
-			EC_H(MAPIAllocateMore(
-				sizeof(SRestriction) * 2,
-				lpRes,
-				reinterpret_cast<LPVOID*>(&lpResLevel2)));
-
-			EC_H(MAPIAllocateMore(
-				sizeof(SPropValue),
-				lpRes,
-				reinterpret_cast<LPVOID*>(&lpspvSubject)));
-
-			EC_H(MAPIAllocateMore(
-				sizeof(SPropValue),
-				lpRes,
-				reinterpret_cast<LPVOID*>(&lpspvDeliveryTime)));
-
-			EC_H(MAPIAllocateMore(
-				sizeof(SPropValue),
-				lpRes,
-				reinterpret_cast<LPVOID*>(&lpspvSubmitTime)));
-
-			// Check that all our allocations were good before going on
-			if (!FAILED(hRes))
-			{
-				// Zero out allocated memory.
-				ZeroMemory(lpRes, sizeof(SRestriction));
-				ZeroMemory(lpResLevel1, sizeof(SRestriction) * 2);
-				ZeroMemory(lpResLevel2, sizeof(SRestriction) * 2);
-
-				ZeroMemory(lpspvSubject, sizeof(SPropValue));
-				ZeroMemory(lpspvSubmitTime, sizeof(SPropValue));
-				ZeroMemory(lpspvDeliveryTime, sizeof(SPropValue));
-
-				// Root Node
-				lpRes->rt = RES_AND; // We're doing an AND...
-				lpRes->res.resAnd.cRes = 2; // ...of two criteria...
-				lpRes->res.resAnd.lpRes = lpResLevel1; // ...described here
-
-				lpResLevel1[0].rt = RES_PROPERTY;
-				lpResLevel1[0].res.resProperty.relop = RELOP_EQ;
-				lpResLevel1[0].res.resProperty.ulPropTag = PR_SUBJECT;
-				lpResLevel1[0].res.resProperty.lpProp = lpspvSubject;
-
-				lpResLevel1[1].rt = RES_OR;
-				lpResLevel1[1].res.resOr.cRes = 2;
-				lpResLevel1[1].res.resOr.lpRes = lpResLevel2;
-
-				lpResLevel2[0].rt = RES_PROPERTY;
-				lpResLevel2[0].res.resProperty.relop = RELOP_EQ;
-				lpResLevel2[0].res.resProperty.ulPropTag = PR_CLIENT_SUBMIT_TIME;
-				lpResLevel2[0].res.resProperty.lpProp = lpspvSubmitTime;
-
-				lpResLevel2[1].rt = RES_PROPERTY;
-				lpResLevel2[1].res.resProperty.relop = RELOP_EQ;
-				lpResLevel2[1].res.resProperty.ulPropTag = PR_MESSAGE_DELIVERY_TIME;
-				lpResLevel2[1].res.resProperty.lpProp = lpspvDeliveryTime;
-
-				// Allocate and fill out properties:
-				lpspvSubject->ulPropTag = PR_SUBJECT;
-
-				if (CheckStringProp(&lpProps[frPR_SUBJECT], PT_TSTRING))
-				{
-					EC_H(CopyString(
-						&lpspvSubject->Value.LPSZ,
-						lpProps[frPR_SUBJECT].Value.LPSZ,
-						lpRes));
-				}
-				else lpspvSubject->Value.LPSZ = nullptr;
-
-				lpspvSubmitTime->ulPropTag = PR_CLIENT_SUBMIT_TIME;
-				if (PR_CLIENT_SUBMIT_TIME == lpProps[frPR_CLIENT_SUBMIT_TIME].ulPropTag)
-				{
-					lpspvSubmitTime->Value.ft.dwLowDateTime = lpProps[frPR_CLIENT_SUBMIT_TIME].Value.ft.dwLowDateTime;
-					lpspvSubmitTime->Value.ft.dwHighDateTime = lpProps[frPR_CLIENT_SUBMIT_TIME].Value.ft.dwHighDateTime;
-				}
-				else
-				{
-					lpspvSubmitTime->Value.ft.dwLowDateTime = 0x0;
-					lpspvSubmitTime->Value.ft.dwHighDateTime = 0x0;
-				}
-
-				lpspvDeliveryTime->ulPropTag = PR_MESSAGE_DELIVERY_TIME;
-				if (PR_MESSAGE_DELIVERY_TIME == lpProps[frPR_MESSAGE_DELIVERY_TIME].ulPropTag)
-				{
-					lpspvDeliveryTime->Value.ft.dwLowDateTime = lpProps[frPR_MESSAGE_DELIVERY_TIME].Value.ft.dwLowDateTime;
-					lpspvDeliveryTime->Value.ft.dwHighDateTime = lpProps[frPR_MESSAGE_DELIVERY_TIME].Value.ft.dwHighDateTime;
-				}
-				else
-				{
-					lpspvDeliveryTime->Value.ft.dwLowDateTime = 0x0;
-					lpspvDeliveryTime->Value.ft.dwHighDateTime = 0x0;
-				}
-
-				DebugPrintEx(DBGGeneric, CLASS, L"OnCreateMessageRestriction", L"built restriction:\n");
-				DebugPrintRestriction(DBGGeneric, lpRes, lpMAPIProp);
-			}
-			else
-			{
-				// We failed in our allocations - clean up what we got before we apply
-				// Everything was allocated off of lpRes, so cleaning up that will suffice
-				if (lpRes) MAPIFreeBuffer(lpRes);
-				lpRes = nullptr;
-			}
-			m_lpContentsTableListCtrl->SetRestriction(lpRes);
-
-			SetRestrictionType(mfcmapiNORMAL_RESTRICTION);
-			MAPIFreeBuffer(lpProps);
-		}
-		lpMAPIProp->Release();
-	}
 }
 
 void CContentsTableDlg::OnCreatePropertyStringRestriction()

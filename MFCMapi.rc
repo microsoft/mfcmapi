@@ -315,6 +315,8 @@ MENUITEM "Display ACL table...", ID_DISPLAYACLTABLE
 MENUITEM "Resolve message class..."     ID_RESOLVEMESSAGECLASS
 MENUITEM "Select form...", ID_SELECTFORM
 MENUITEM "Send bulk mail from folder...", ID_SENDBULKMAIL
+MENUITEM SEPARATOR
+MENUITEM "Create and apply restriction from current message", ID_CREATEMESSAGERESTRICTION
 END
 END
 END
@@ -796,12 +798,8 @@ MENUITEM "Table notification off", ID_TABLENOTIFICATIONOFF
 END
 POPUP "Restrictions"
 BEGIN
-MENUITEM "&Create and apply content restriction...",
-ID_CREATEPROPERTYSTRINGRESTRICTION
-MENUITEM "Create and apply restriction from current message",
-ID_CREATEMESSAGERESTRICTION
-MENUITEM "Create and apply range restriction...",
-ID_CREATERANGERESTRICTION
+MENUITEM "&Create and apply content restriction...", ID_CREATEPROPERTYSTRINGRESTRICTION
+MENUITEM "Create and apply range restriction...", ID_CREATERANGERESTRICTION
 MENUITEM "Edit", ID_EDITRESTRICTION
 MENUITEM SEPARATOR
 MENUITEM "Apply", ID_APPLYRESTRICTION

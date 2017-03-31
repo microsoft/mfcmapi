@@ -52,6 +52,7 @@ private:
 	void OnSetReadFlag();
 	void OnSetMessageStatus();
 	void OnGetMessageOptions();
+	void OnCreateMessageRestriction();
 	void OnDisplayFolder(WORD wMenuSelect);
 	_Check_return_ HRESULT OnAbortSubmit(int iItem, _In_ SortListData* lpData);
 	_Check_return_ HRESULT OnAttachmentProperties(int iItem, _In_ SortListData*	lpData);

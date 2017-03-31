@@ -53,7 +53,6 @@ private:
 	virtual void OnCreatePropertyStringRestriction();
 
 	// Menu items
-	void OnCreateMessageRestriction();
 	void OnCreateRangeRestriction();
 	void OnEditRestriction();
 	void OnGetStatus();
