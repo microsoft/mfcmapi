@@ -1534,13 +1534,15 @@ void DrawMenu(_In_ LPDRAWITEMSTRUCT lpDrawItemStruct)
 
 	auto cBack = cBackground;
 	auto cFore = cText;
-	if (bHot && !bDisabled)
+
+	if (bHot)
 	{
 		cBack = cSelectedBackground;
 		cFore = cGlowText;
 		FillRect(hdc, &rcItem, GetSysBrush(cBack));
 	}
-	else
+
+	if (!bHot || bDisabled)
 	{
 		if (bDisabled) cFore = cTextDisabled;
 		FillRect(hdc, &rcText, GetSysBrush(cBack));
