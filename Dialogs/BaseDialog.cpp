@@ -184,11 +184,11 @@ void CBaseDialog::CreateDialogAndMenu(UINT nIDMenuResource, UINT uiClassMenuReso
 
 	AddMenu(hMenu, IDR_MENU_PROPERTY, IDS_PROPERTYMENU, static_cast<unsigned>(-1));
 
-	AddMenu(hMenu, uiClassMenuResource, uidClassMenuTitle, static_cast<UINT>(-1));
+	AddMenu(hMenu, uiClassMenuResource, uidClassMenuTitle, static_cast<unsigned>(-1));
 
 	m_ulAddInMenuItems = ExtendAddInMenu(hMenu, m_ulAddInContext);
 
-	AddMenu(hMenu, IDR_MENU_TOOLS, IDS_TOOLSMENU, static_cast<UINT>(-1));
+	AddMenu(hMenu, IDR_MENU_TOOLS, IDS_TOOLSMENU, static_cast<unsigned>(-1));
 
 	auto hSub = ::GetSubMenu(hMenu, 0);
 	::AppendMenu(hSub, MF_SEPARATOR, NULL, nullptr);
