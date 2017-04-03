@@ -933,7 +933,8 @@ void CSingleMAPIPropListCtrl::OnContextMenu(_In_ CWnd* pWnd, CPoint pos)
 		::ClientToScreen(pWnd->m_hWnd, &point);
 		pos = point;
 	}
-	DisplayContextMenu(IDR_MENU_PROPERTY_POPUP, NULL, m_lpHostDlg->m_hWnd, pos.x, pos.y);
+
+	DisplayContextMenu(IDR_MENU_PROPERTY_POPUP, IDR_MENU_MESSAGE_POPUP, m_lpHostDlg->m_hWnd, pos.x, pos.y);
 }
 
 void CSingleMAPIPropListCtrl::FindAllNamedProps()
