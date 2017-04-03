@@ -11,6 +11,7 @@
 #include "InterpretProp2.h"
 #include <Dialogs/Editors/RestrictEditor.h>
 #include <Dialogs/Editors/PropertyTagEditor.h>
+#include <Dialogs/Editors/SearchEditor.h>
 #include "ExtraPropTags.h"
 
 static wstring CLASS = L"CContentsTableDlg";
@@ -291,60 +292,26 @@ void CContentsTableDlg::OnNotificationOff()
 
 void CContentsTableDlg::OnCreatePropertyStringRestriction()
 {
-	auto hRes = S_OK;
-	LPSRestriction lpRes = nullptr;
-
 	if (!m_lpContentsTableListCtrl || !m_lpContentsTableListCtrl->IsContentsTableSet()) return;
 
-	CPropertyTagEditor MyPropertyTag(
-		IDS_CREATEPROPRES,
-		NULL, // prompt
-		PR_SUBJECT,
-		m_bIsAB,
-		m_lpContainer,
-		this);
-
-	WC_H(MyPropertyTag.DisplayDialog());
+	CSearchEditor SearchEditor(PR_SUBJECT_W, m_lpContainer, this);
+	auto hRes = S_OK;
+	WC_H(SearchEditor.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		CEditor MyData(
-			this,
-			IDS_SEARCHCRITERIA,
-			IDS_CONTSEARCHCRITERIAPROMPT,
-			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
-		MyData.SetPromptPostFix(AllFlagsToString(flagFuzzyLevel, true));
-
-		MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_PROPVALUE, false));
-		MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_ULFUZZYLEVEL, false));
-		MyData.SetHex(1, FL_IGNORECASE | FL_PREFIX);
-		MyData.InitPane(2, CheckPane::Create(IDS_APPLYUSINGFINDROW, false, false));
-
-		WC_H(MyData.DisplayDialog());
-		if (S_OK != hRes) return;
-
-		auto szString = MyData.GetStringW(0);
-		// Allocate and create our SRestriction
-		EC_H(CreatePropertyStringRestriction(
-			CHANGE_PROP_TYPE(MyPropertyTag.GetPropertyTag(), PT_UNICODE),
-			szString,
-			MyData.GetHex(1),
-			nullptr,
-			&lpRes));
-		if (S_OK != hRes)
+		LPSRestriction lpRes = SearchEditor.GetRestriction();
+		if (lpRes)
 		{
-			MAPIFreeBuffer(lpRes);
-			lpRes = nullptr;
-		}
+			m_lpContentsTableListCtrl->SetRestriction(lpRes);
 
-		m_lpContentsTableListCtrl->SetRestriction(lpRes);
-
-		if (MyData.GetCheck(2))
-		{
-			SetRestrictionType(mfcmapiFINDROW_RESTRICTION);
-		}
-		else
-		{
-			SetRestrictionType(mfcmapiNORMAL_RESTRICTION);
+			if (SearchEditor.GetCheck(CSearchEditor::SearchFields::FINDROW))
+			{
+				SetRestrictionType(mfcmapiFINDROW_RESTRICTION);
+			}
+			else
+			{
+				SetRestrictionType(mfcmapiNORMAL_RESTRICTION);
+			}
 		}
 	}
 }
