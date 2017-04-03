@@ -275,7 +275,8 @@ _Check_return_ HRESULT LoadFromTNEF(_In_ const wstring& szMessageFile, _In_ LPAD
 
 // Builds a file name out of the passed in message and extension
 wstring BuildFileName(
-	_In_ const wstring& szExt,
+	_In_ const wstring& ext,
+	_In_ const wstring& dir,
 	_In_ LPMESSAGE lpMessage)
 {
 	if (!lpMessage) return emptystring;
@@ -304,10 +305,10 @@ wstring BuildFileName(
 		&ulProps,
 		&lpProps));
 
-	wstring szSubj;
+	wstring subj;
 	if (CheckStringProp(&lpProps[ePR_SUBJECT_W], PT_UNICODE))
 	{
-		szSubj = lpProps[ePR_SUBJECT_W].Value.lpszW;
+		subj = lpProps[ePR_SUBJECT_W].Value.lpszW;
 	}
 
 	LPSBinary lpRecordKey = nullptr;
@@ -317,9 +318,9 @@ wstring BuildFileName(
 	}
 
 	auto szFileOut = BuildFileNameAndPath(
-		szExt,
-		szSubj,
-		emptystring,
+		ext,
+		subj,
+		dir,
 		lpRecordKey);
 
 	MAPIFreeBuffer(lpProps);
@@ -504,7 +505,7 @@ void ExportMessages(_In_ const LPMAPIFOLDER lpFolder, HWND hWnd)
 	EC_H(CreatePropertyStringRestriction(
 		PR_SUBJECT_W,
 		restrictString,
-		FL_SUBSTRING,
+		FL_SUBSTRING | FL_IGNORECASE,
 		nullptr,
 		&lpRes));
 

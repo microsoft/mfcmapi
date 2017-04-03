@@ -438,6 +438,8 @@ IDS_SETMSGSTATUSPROMPT           "Type status and mask to pass into SetMessageSt
 0x00001000 MSGSTATUS_REMOTE_DOWNLOAD Mark message for downloading to the local client.\r\n\
 0x00002000 MSGSTATUS_REMOTE_DELETE   Mark message for deletion without downloading to the local client.\r\n\
 0x00004000 MSGSTATUS_MDNSENT         IMAP4 MDNSent flag"
+IDS_EXPORTPROMPTLOCATION         "Prompt for location of each file"
+
 // formcontainerdlg.cpp
 IDS_INSTALLFORM                  "Install Form"
 IDS_INSTALLFORMPROMPT            "Enter flags\r\n\

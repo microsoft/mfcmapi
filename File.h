@@ -8,7 +8,8 @@ wstring GetDirectoryPath(HWND hWnd);
 #define MAXEXT 4
 #define MAXMSGPATH (MAX_PATH - MAXSUBJTIGHT - MAXBIN - MAXEXT)
 wstring BuildFileName(
-	_In_ const wstring& szExt,
+	_In_ const wstring& ext,
+	_In_ const wstring& dir,
 	_In_ LPMESSAGE lpMessage);
 wstring BuildFileNameAndPath(
 	_In_ const wstring& szExt,

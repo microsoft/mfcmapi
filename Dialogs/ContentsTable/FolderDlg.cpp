@@ -1506,6 +1506,12 @@ void CFolderDlg::OnSaveMessageToFile()
 	IDS_DDTNEFFILE
 	};
 	MyData.InitPane(0, DropDownPane::Create(IDS_FORMATTOSAVEMESSAGE, _countof(uidDropDown), uidDropDown, true));
+	auto numSelected = m_lpContentsTableListCtrl->GetSelectedCount();
+	if (numSelected > 1)
+	{
+		MyData.InitPane(1, CheckPane::Create(IDS_EXPORTPROMPTLOCATION, false, false));
+	}
+
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
 	{
@@ -1543,6 +1549,14 @@ void CFolderDlg::OnSaveMessageToFile()
 			break;
 		}
 
+		wstring dir;
+		auto bPrompt = numSelected == 1 || MyData.GetCheck(1);
+		if (!bPrompt)
+		{
+			// If we weren't asked to prompt for each item, we still need to ask for a directory
+			dir = GetDirectoryPath(m_hWnd);
+		}
+
 		auto iItem = m_lpContentsTableListCtrl->GetNextItem(
 			-1,
 			LVNI_SELECTED);
@@ -1557,15 +1571,19 @@ void CFolderDlg::OnSaveMessageToFile()
 
 			if (lpMessage)
 			{
-				auto szFileName = BuildFileName(szDotExt, lpMessage);
-				DebugPrint(DBGGeneric, L"BuildFileName built file name \"%ws\"\n", szFileName.c_str());
+				auto filename = BuildFileName(szDotExt, dir, lpMessage);
+				DebugPrint(DBGGeneric, L"BuildFileName built file name \"%ws\"\n", filename.c_str());
 
-				auto filename = CFileDialogExW::SaveAs(
-					szExt,
-					szFileName,
-					OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-					szFilter,
-					this);
+				if (bPrompt)
+				{
+					filename = CFileDialogExW::SaveAs(
+						szExt,
+						filename,
+						OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
+						szFilter,
+						this);
+				}
+
 				if (!filename.empty())
 				{
 					switch (MyData.GetDropDown(0))
