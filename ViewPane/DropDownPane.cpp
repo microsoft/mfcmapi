@@ -15,7 +15,10 @@ DropDownPane* DropDownPane::Create(UINT uidLabel, ULONG ulDropList, _In_opt_coun
 		{
 			pane->InsertDropString(loadstring(lpuidDropList[iDropNum]), lpuidDropList[iDropNum]);
 		}
+	}
 
+	if (pane)
+	{
 		pane->SetLabel(uidLabel, bReadOnly);
 	}
 
