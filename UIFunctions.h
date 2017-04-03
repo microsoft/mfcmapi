@@ -169,3 +169,10 @@ void SubclassLabel(_In_ HWND hWnd);
 void StyleLabel(_In_ HWND hWnd, uiLabelStyle lsStyle);
 
 void StyleButton(_In_ HWND hWnd, uiButtonStyle bsStyle);
+void DrawSegoeTextW(
+	_In_ HDC hdc,
+	_In_ const wstring& lpchText,
+	_In_ COLORREF color,
+	_In_ const RECT& rc,
+	bool bBold,
+	_In_ UINT format);

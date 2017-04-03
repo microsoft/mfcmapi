@@ -1,5 +1,5 @@
 #pragma once
-#include "ViewPane.h"
+#include <ViewPane/ViewPane.h>
 
 class CheckPane : public ViewPane
 {
@@ -8,6 +8,7 @@ public:
 
 	static CheckPane* Create(UINT uidLabel, bool bVal, bool bReadOnly);
 	bool GetCheck() const;
+	static void Draw(_In_ HWND hWnd, _In_ HDC hDC, _In_ const RECT& rc, UINT itemState);
 
 private:
 	void Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc) override;

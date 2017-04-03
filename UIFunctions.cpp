@@ -5,6 +5,7 @@
 #include "RichEditOleCallback.h"
 #include <Controls/SortList/SortListData.h>
 #include <Controls/SortList/NodeData.h>
+#include <ViewPane/CheckPane.h>
 #include "DoubleBuffer.h"
 
 HFONT g_hFontSegoe = nullptr;
@@ -1367,55 +1368,6 @@ void DrawButton(_In_ HWND hWnd, _In_ HDC hDC, _In_ const RECT& rc, UINT itemStat
 	}
 }
 
-void DrawCheckButton(_In_ HWND hWnd, _In_ HDC hDC, _In_ const RECT& rc, UINT itemState)
-{
-	WCHAR szButton[255];
-	GetWindowTextW(hWnd, szButton, _countof(szButton));
-	auto iState = ::SendMessage(hWnd, BM_GETSTATE, NULL, NULL);
-	auto bGlow = (iState & BST_HOT) != 0;
-	auto bChecked = (iState & BST_CHECKED) != 0;
-	auto bDisabled = (itemState & CDIS_DISABLED) != 0;
-	auto bFocused = (itemState & CDIS_FOCUS) != 0;
-
-	auto lCheck = GetSystemMetrics(SM_CXMENUCHECK);
-	RECT rcCheck = { 0 };
-	rcCheck.left = rc.left;
-	rcCheck.right = rcCheck.left + lCheck;
-	rcCheck.top = (rc.bottom - rc.top - lCheck) / 2;
-	rcCheck.bottom = rcCheck.top + lCheck;
-
-	FillRect(hDC, &rc, GetSysBrush(cBackground));
-	FrameRect(hDC, &rcCheck, GetSysBrush(bDisabled ? cFrameUnselected : bGlow || bFocused ? cGlow : cFrameSelected));
-	if (bChecked)
-	{
-		auto rcFill = rcCheck;
-		auto deflate = (rcCheck.bottom - rcCheck.top) / 5;
-		InflateRect(&rcFill, -deflate, -deflate);
-		FillRect(hDC, &rcFill, GetSysBrush(cGlow));
-	}
-
-	auto rcLabel = rc;
-	rcLabel.left = rcCheck.right + GetSystemMetrics(SM_CXEDGE);
-	rcLabel.right = rcLabel.left + GetTextExtentPoint32(hDC, szButton).cx;
-
-	DebugPrint(DBGDraw, L"DrawCheckButton left:%d width:%d checkwidth:%d space:%d labelwidth:%d (scroll:%d 2frame:%d), \"%ws\"\n",
-		rc.left,
-		rc.right - rc.left,
-		rcCheck.right - rcCheck.left,
-		GetSystemMetrics(SM_CXEDGE),
-		rcLabel.right - rcLabel.left,
-		GetSystemMetrics(SM_CXVSCROLL),
-		2 * GetSystemMetrics(SM_CXFIXEDFRAME),
-		szButton);
-
-	DrawSegoeTextW(
-		hDC,
-		szButton,
-		bDisabled ? MyGetSysColor(cTextDisabled) : MyGetSysColor(cText),
-		rcLabel,
-		false,
-		DT_SINGLELINE | DT_VCENTER);
-}
 
 bool CustomDrawButton(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 {
@@ -1436,7 +1388,7 @@ bool CustomDrawButton(_In_ NMHDR* pNMHDR, _In_ LRESULT* pResult)
 		*pResult = CDRF_SKIPDEFAULT;
 		if (BS_AUTOCHECKBOX == lStyle)
 		{
-			DrawCheckButton(lvcd->hdr.hwndFrom, lvcd->hdc, lvcd->rc, lvcd->uItemState);
+			CheckPane::Draw(lvcd->hdr.hwndFrom, lvcd->hdc, lvcd->rc, lvcd->uItemState);
 		}
 		else if (BS_PUSHBUTTON == lStyle ||
 			BS_DEFPUSHBUTTON == lStyle)
