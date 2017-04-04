@@ -462,14 +462,14 @@ _Check_return_ HRESULT SaveFolderContentsToMSG(_In_ LPMAPIFOLDER lpFolder, _In_ 
 				&pRows));
 			if (FAILED(hRes) || !pRows || pRows && !pRows->cRows) break;
 
-			SaveToMSG(
+			WC_H(SaveToMSG(
 				lpFolder,
 				szPathName,
 				pRows->aRow->lpProps[fldPR_ENTRYID],
 				&pRows->aRow->lpProps[fldPR_RECORD_KEY],
 				&pRows->aRow->lpProps[fldPR_SUBJECT_W],
 				bUnicode,
-				hWnd);
+				hWnd));
 		}
 	}
 

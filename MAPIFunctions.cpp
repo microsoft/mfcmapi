@@ -2731,15 +2731,23 @@ HRESULT HrGetOnePropEx(
 	_In_ ULONG ulFlags,
 	_Out_ LPSPropValue* lppProp)
 {
+	if (!lppProp) return MAPI_E_INVALID_PARAMETER;
+	*lppProp = nullptr;
 	ULONG cValues = 0;
 	SPropTagArray tag = { 1, { ulPropTag } };
 
-	auto hRes = lpMAPIProp->GetProps(&tag, ulFlags, &cValues, lppProp);
-	if (SUCCEEDED(hRes) && PROP_TYPE((*lppProp)->ulPropTag) == PT_ERROR)
+	LPSPropValue lpProp = nullptr;
+	auto hRes = lpMAPIProp->GetProps(&tag, ulFlags, &cValues, &lpProp);
+	if (SUCCEEDED(hRes))
 	{
-		hRes = ResultFromScode((*lppProp)->Value.err);
-		MAPIFreeBuffer(*lppProp);
-		*lppProp = nullptr;
+		if (lpProp && PROP_TYPE(lpProp->ulPropTag) == PT_ERROR)
+		{
+			hRes = ResultFromScode(lpProp->Value.err);
+			MAPIFreeBuffer(lpProp);
+			lpProp = nullptr;
+		}
+
+		*lppProp = lpProp;
 	}
 
 	return hRes;

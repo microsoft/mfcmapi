@@ -114,8 +114,7 @@ BOOL CAboutDlg::OnInitDialog()
 	DWORD dwRet = 0;
 	EC_D(dwRet, GetModuleFileNameW(NULL, szFullPath, _countof(szFullPath)));
 	DWORD dwVerInfoSize = 0;
-	DWORD dwVerHnd = 0;
-	EC_D(dwVerInfoSize, GetFileVersionInfoSizeW(szFullPath, &dwVerHnd));
+	EC_D(dwVerInfoSize, GetFileVersionInfoSizeW(szFullPath, nullptr));
 	if (dwVerInfoSize)
 	{
 		// If we were able to get the information, process it.
@@ -124,7 +123,7 @@ BOOL CAboutDlg::OnInitDialog()
 		if (pbData)
 		{
 			EC_D(bRet, GetFileVersionInfoW(szFullPath,
-				dwVerHnd, dwVerInfoSize, static_cast<void*>(pbData)));
+				0, dwVerInfoSize, static_cast<void*>(pbData)));
 
 			struct LANGANDCODEPAGE {
 				WORD wLanguage;

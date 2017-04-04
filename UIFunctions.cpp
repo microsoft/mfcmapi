@@ -392,7 +392,7 @@ HMENU LocateSubmenu(_In_ HMENU hMenu, UINT uid)
 	return nullptr;
 }
 
-_Check_return_ int GetEditHeight(_In_ HWND hwndEdit)
+_Check_return_ int GetEditHeight(_In_opt_ HWND hwndEdit)
 {
 	// Calculate the new height for the edit control.
 	auto iHeight =
@@ -402,7 +402,7 @@ _Check_return_ int GetEditHeight(_In_ HWND hwndEdit)
 	return iHeight;
 }
 
-_Check_return_ int GetTextHeight(_In_ HWND hwndEdit)
+_Check_return_ int GetTextHeight(_In_opt_ HWND hwndEdit)
 {
 	auto hRes = S_OK;
 	HDC hdc = nullptr;

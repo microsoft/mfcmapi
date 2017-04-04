@@ -509,7 +509,7 @@ void CEditor::OnOK()
 }
 
 // This should work whether the editor is active/displayed or not
-_Check_return_ GUID CEditor::GetSelectedGUID(ULONG iControl, bool bByteSwapped) const
+GUID CEditor::GetSelectedGUID(ULONG iControl, bool bByteSwapped) const
 {
 	auto pane = dynamic_cast<DropDownPane*>(GetPane(iControl));
 	if (pane)

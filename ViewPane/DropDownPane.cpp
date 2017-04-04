@@ -230,7 +230,7 @@ _Check_return_ DWORD_PTR DropDownPane::GetDropDownValue() const
 }
 
 // This should work whether the editor is active/displayed or not
-_Check_return_ GUID DropDownPane::GetSelectedGUID(bool bByteSwapped) const
+GUID DropDownPane::GetSelectedGUID(bool bByteSwapped) const
 {
 	auto iCurSel = GetDropDownSelection();
 	if (iCurSel != CB_ERR)

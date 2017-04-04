@@ -12,7 +12,7 @@ public:
 	_Check_return_ wstring GetDropStringUseControl() const;
 	_Check_return_ int GetDropDownSelection() const;
 	_Check_return_ DWORD_PTR GetDropDownSelectionValue() const;
-	_Check_return_ GUID GetSelectedGUID(bool bByteSwapped) const;
+	GUID GetSelectedGUID(bool bByteSwapped) const;
 	_Check_return_ int GetDropDown() const;
 	_Check_return_ DWORD_PTR GetDropDownValue() const;
 

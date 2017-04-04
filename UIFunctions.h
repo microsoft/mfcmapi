@@ -67,8 +67,8 @@ void DisplayContextMenu(UINT uiClassMenu, UINT uiControlMenu, _In_ HWND hWnd, in
 
 HMENU LocateSubmenu(_In_ HMENU hMenu, UINT uid);
 
-_Check_return_ int GetEditHeight(_In_ HWND hwndEdit);
-_Check_return_ int GetTextHeight(_In_ HWND hwndEdit);
+_Check_return_ int GetEditHeight(_In_opt_ HWND hwndEdit);
+_Check_return_ int GetTextHeight(_In_opt_ HWND hwndEdit);
 SIZE GetTextExtentPoint32(HDC hdc, const wstring& szText);
 
 HFONT GetSegoeFont();
