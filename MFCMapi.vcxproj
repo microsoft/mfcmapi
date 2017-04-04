@@ -919,7 +919,12 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="Dialogs\Editors\SearchEditor.h" />
+    <ClInclude Include="Dialogs\Editors\SearchEditor.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Property\Attributes.h" />
     <ClInclude Include="Dialogs\ContentsTable\AttachmentsDlg.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
@@ -1784,7 +1789,12 @@ copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)"
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="Dialogs\Editors\SearchEditor.cpp" />
+    <ClCompile Include="Dialogs\Editors\SearchEditor.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Property\Attributes.cpp" />
     <ClCompile Include="Dialogs\BaseDialog.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='MrMAPI|Win32'">true</ExcludedFromBuild>
