@@ -1,21 +1,13 @@
 $indir = "$Env:SYSTEM_ARTIFACTSDIRECTORY\$Env:BUILD_DEFINITIONNAME\Archives"
-$deploydir = "$Env:SYSTEM_DEFAULTWORKINGDIRECTORY/$Env:BUILD_DEFINITIONNAME\Deploy"
 $version = $Env:BUILD_BUILDNUMBER
+$gitHubUsername = 'stephenegriffin'
+$gitHubRepository = 'mfcmapi'
 $project = "MFCMAPI"
 $release = $($args[0])
-$username = $($args[1])
-$password = $($args[2])
+$gitHubApiKey = $($args[1])
 
 Write-Host "Release=$release"
-Write-Host "Username=$username"
-Write-Host "Password=$password"
 Write-Host "Version=$version"
-
-$secstr = New-Object -TypeName System.Security.SecureString
-$password.ToCharArray() | ForEach-Object {$secstr.AppendChar($_)}
-$cred = new-object -typename System.Management.Automation.PSCredential -argumentlist $username, $secstr
-
-Add-Type -Path "$deploydir\CodePlex.WebServices.Client.dll"
 
 function Build-FileName {
   <#
@@ -42,20 +34,18 @@ function Build-FileName {
   }
 }
 
-function Build-ReleaseFile {
+function Create-Release {
   <#
   .SYNOPSIS
   Creates a ReleaseFile for upload
   .DESCRIPTION
   Describe the function in more detail
   .EXAMPLE
-  Build-ReleaseFile -Name "MFCMAPI 32 bit executable" -FileName "MFCMapi.exe" -Sourcepath indir -Version version -Release release
-  .PARAMETER Name
-  Release name of the file.
-  .PARAMETER FileName
-  Name of the file
-  .PARAMETER Sourcepath
-  Location of the file.
+  Create-Release -gitHubUsername $gitHubUsername -gitHubRepository $gitHubRepository -Version $version -Release $release
+  .PARAMETER gitHubUsername
+  Github username.
+  .PARAMETER gitHubRepository
+  Github repository name
   .PARAMETER Version
   Version of the file.
   .PARAMETER Release
@@ -65,27 +55,43 @@ function Build-ReleaseFile {
   param
   (
     [Parameter(Mandatory=$True)]
-    [string]$Name,
+    [string]$gitHubUsername,
     [Parameter(Mandatory=$True)]
-    [string]$FileName,
-    [Parameter(Mandatory=$True)]
-    [string]$Sourcepath,
+    [string]$gitHubRepository,
     [Parameter(Mandatory=$True)]
     [string]$Version,
     [Parameter(Mandatory=$True)]
-    [string]$Release)
+    [string]$Release
+  )
   process
   {
-    Write-Host "Building release file for $FileName"
-    $fullFileName = "$FileName.$Version.zip"
-    $releaseFile = New-Object CodePlex.WebServices.Client.ReleaseFile
-    $releaseFile.Name = "$Name - $Release ($Version)"
-    $releaseFile.FileName = Build-FileName -FileName $FileName -Version $Version
-    $releaseFile.FileType = [CodePlex.WebServices.Client.ReleaseFileType]::RuntimeBinary
-    $releaseFile.FileData = [System.IO.File]::ReadAllBytes("$sourcepath\$fullFileName")
-    Write-Host "Release file built"
+	Write-Host "Building release for $Version"
+	$releaseData = @{
+	   tag_name = "$Version";
+	   target_commitish = "master";
+	   name = "$Release ($Version)";
+	   body = $releaseNotes;
+	   draft = $TRUE;
+	   prerelease = $FALSE;
+	}
 
-    return $releaseFile
+	Write-Host "Release data built"
+
+	$releaseParams = @{
+	   Uri = "https://api.github.com/repos/$gitHubUsername/$gitHubRepository/releases";
+	   Method = 'POST';
+	   Headers = @{
+		 Authorization = 'Basic ' + [Convert]::ToBase64String(
+		 [Text.Encoding]::ASCII.GetBytes($gitHubApiKey + ":x-oauth-basic"));
+	   }
+	   ContentType = 'application/json';
+	   Body = (ConvertTo-Json $releaseData -Compress)
+	}
+
+	$result = Invoke-RestMethod @releaseParams 
+	$uploadUri = $result | Select -ExpandProperty upload_url
+
+	return $uploadUri
   }
 }
 
@@ -96,11 +102,21 @@ function Upload-ReleaseFile {
   .DESCRIPTION
   Describe the function in more detail
   .EXAMPLE
-  Upload-ReleaseFile -ReleaseService releaseService -ReleaseFile releaseFile -Default
-  .PARAMETER ReleaseService
-  Release service object
-  .PARAMETER ReleaseFile
-  Release file object for upload
+  Upload-ReleaseFile -Name "MFCMAPI 32 bit executable" -FileName "MFCMapi.exe" -Release $release -Sourcepath $indir -Version $version -UploadURI $uploadUri
+  .PARAMETER Name
+  Release name of the file.
+  .PARAMETER FileName
+  Name of the file
+  .PARAMETER Sourcepath
+  Location of the file.
+  .PARAMETER Release
+  Name of the release
+  .PARAMETER Version
+  Version of the file.
+  .PARAMETER UploadURI
+  Upload URI
+  .PARAMETER draft
+  Set to true to mark this as a draft release
   .PARAMETER Default
   Upload is default
   #>
@@ -108,64 +124,71 @@ function Upload-ReleaseFile {
   param
   (
     [Parameter(Mandatory=$True)]
-    [CodePlex.WebServices.Client.ReleaseService]$ReleaseService,
+    [string]$Name,
     [Parameter(Mandatory=$True)]
-    [CodePlex.WebServices.Client.ReleaseFile]$ReleaseFile,
+    [string]$FileName,
+    [Parameter(Mandatory=$True)]
+    [string]$Release,
+    [Parameter(Mandatory=$True)]
+    [string]$Sourcepath,
+    [Parameter(Mandatory=$True)]
+    [string]$Version,
+    [Parameter(Mandatory=$True)]
+    [string]$UploadURI,
+    [Parameter(Mandatory=$False)]
     [switch]$Default
   )
   process
   {
-    $releaseFiles = New-Object System.Collections.Generic.List[CodePlex.WebServices.Client.ReleaseFile]
-    $releaseFiles.Add($ReleaseFile)
+    Write-Host "Uploading release file for $Name"
 
-    Write-Host "Uploading $($ReleaseFile.FileName)"
+	$fullFileName = Build-FileName -FileName $FileName -Version $Version
+	$uploadFile = Join-Path -path $Sourcepath -childpath $fullFileName
+    $label = "$Name - $Release ($Version)"
+	$uploadUri = $uploadUri -replace '\{\?name,label\}', "?name=$fullFileName&label=$label"
+    Write-Host "Name = $Name"
+    Write-Host "fullFileName = $fullFileName"
+    Write-Host "Label = $Label"
+    Write-Host "uploadFile = $uploadFile"
+    Write-Host "uploadUri = $uploadUri"
 
-    if ($Default)
-    {
-      Write-Host "Setting $($ReleaseFile.FileName) as default file"
-      $releaseService.UploadReleaseFiles($project, $release, $releaseFiles, $ReleaseFile.FileName)
-    }
-    else
-    {
-      $releaseService.UploadReleaseFiles($project, $release, $releaseFiles)
-    }
+	$uploadParams = @{
+	   Uri = $UploadURI;
+	   Method = 'POST';
+	   Headers = @{
+		 Authorization = 'Basic ' + [Convert]::ToBase64String(
+		 [Text.Encoding]::ASCII.GetBytes($gitHubApiKey + ":x-oauth-basic"));
+	   }
+	   ContentType = 'application/zip';
+	   InFile = $uploadFile
+	}
+
+	$result = Invoke-RestMethod @uploadParams    
   }
 }
 
 $releaseNotes = "Build: *$version*
 
-Full release notes at [url:SGriffin's blog|FIXURL].
+Full release notes at [SGriffin's blog](FIXURL).
 
-If you just want to run the MFCMAPI or MrMAPI, get the executables. If you want to debug them, get the symbol files and the [url:source.|https://github.com/stephenegriffin/mfcmapi]
+If you just want to run the MFCMAPI or MrMAPI, get the executables. If you want to debug them, get the symbol files and the [source](https://github.com/stephenegriffin/mfcmapi).
 
 *The 64 bit builds will only work on a machine with Outlook 2010/2013/2016 64 bit installed. All other machines should use the 32 bit builds, regardless of the operating system.*
 
-[image:Facebook Badge|http://badge.facebook.com/badge/26764016480.2776.1538253884.png|http://www.facebook.com/pages/MFCMAPI/26764016480]"
-
-$releaseService = New-Object CodePlex.WebServices.Client.ReleaseService
-$releaseService.Timeout = 360000 # 6 minutes
-$releaseService.Credentials = $cred
+[![Facebook Badge](http://badge.facebook.com/badge/26764016480.2776.1538253884.png)](http://www.facebook.com/MFCMAPI)"
 
 Write-Host "Creating $project/$release"
-$id = $releaseService.CreateARelease($project, $release, $releaseNotes, $null, [CodePlex.WebServices.Client.ReleaseStatus]::Planned, $False, $False)
-Write-Host "New project id is $id"
 
-$releaseFile = Build-ReleaseFile -Name "MFCMAPI 32 bit symbol" -FileName "MFCMapi.pdb" -Sourcepath $indir -Version $version -Release $release
-Upload-ReleaseFile -ReleaseService $releaseService -ReleaseFile $releaseFile
-$releaseFile = Build-ReleaseFile -Name "MFCMAPI 64 bit executable" -FileName "MFCMapi.exe.x64" -Sourcepath $indir -Version $version -Release $release
-Upload-ReleaseFile -ReleaseService $releaseService -ReleaseFile $releaseFile
-$releaseFile = Build-ReleaseFile -Name "MFCMAPI 64 bit symbol" -FileName "MFCMapi.pdb.x64" -Sourcepath $indir -Version $version -Release $release
-Upload-ReleaseFile -ReleaseService $releaseService -ReleaseFile $releaseFile
+$uploadUri = Create-Release -gitHubUsername $gitHubUsername -gitHubRepository $gitHubRepository -Version $version -Release $release
+Write-Host $uploadUri
 
-$releaseFile = Build-ReleaseFile -Name "MrMAPI 32 bit executable" -FileName "MrMAPI.exe" -Sourcepath $indir -Version $version -Release $release
-Upload-ReleaseFile -ReleaseService $releaseService -ReleaseFile $releaseFile
-$releaseFile = Build-ReleaseFile -Name "MrMAPI 32 bit symbol" -FileName "MrMAPI.pdb" -Sourcepath $indir -Version $version -Release $release
-Upload-ReleaseFile -ReleaseService $releaseService -ReleaseFile $releaseFile
-$releaseFile = Build-ReleaseFile -Name "MrMAPI 64 bit executable" -FileName "MrMAPI.exe.x64" -Sourcepath $indir -Version $version -Release $release
-Upload-ReleaseFile -ReleaseService $releaseService -ReleaseFile $releaseFile
-$releaseFile = Build-ReleaseFile -Name "MrMAPI 64 bit symbol" -FileName "MrMAPI.pdb.x64" -Sourcepath $indir -Version $version -Release $release
-Upload-ReleaseFile -ReleaseService $releaseService -ReleaseFile $releaseFile
+Upload-ReleaseFile -Name "MFCMAPI 32 bit executable" -FileName "MFCMapi.exe" -Release $release -Sourcepath $indir -Version $version -UploadURI $uploadUri
+Upload-ReleaseFile -Name "MFCMAPI 32 bit symbol" -FileName "MFCMapi.pdb" -Release $release -Sourcepath $indir -Version $version -UploadURI $uploadUri
+Upload-ReleaseFile -Name "MFCMAPI 64 bit executable" -FileName "MFCMapi.exe.x64" -Release $release -Sourcepath $indir -Version $version -UploadURI $uploadUri
+Upload-ReleaseFile -Name "MFCMAPI 64 bit symbol" -FileName "MFCMapi.pdb.x64" -Release $release -Sourcepath $indir -Version $version -UploadURI $uploadUri
 
-# This must be last or the default file setting will be overwritten by the other uploads
-$releaseFile = Build-ReleaseFile -Name "MFCMAPI 32 bit executable" -FileName "MFCMapi.exe" -Sourcepath $indir -Version $version -Release $release
-Upload-ReleaseFile -ReleaseService $releaseService -ReleaseFile $releaseFile -Default
+Upload-ReleaseFile -Name "MrMAPI 32 bit executable" -FileName "MrMAPI.exe" -Release $release -Sourcepath $indir -Version $version -UploadURI $uploadUri
+Upload-ReleaseFile -Name "MrMAPI 32 bit symbol" -FileName "MrMAPI.pdb" -Release $release -Sourcepath $indir -Version $version -UploadURI $uploadUri
+Upload-ReleaseFile -Name "MrMAPI 64 bit executable" -FileName "MrMAPI.exe.x64" -Release $release -Sourcepath $indir -Version $version -UploadURI $uploadUri
+Upload-ReleaseFile -Name "MrMAPI 64 bit symbol" -FileName "MrMAPI.pdb.x64" -Release $release -Sourcepath $indir -Version $version -UploadURI $uploadUri
+
