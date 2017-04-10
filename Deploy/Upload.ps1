@@ -175,7 +175,9 @@ If you just want to run the MFCMAPI or MrMAPI, get the executables. If you want 
 
 *The 64 bit builds will only work on a machine with Outlook 2010/2013/2016 64 bit installed. All other machines should use the 32 bit builds, regardless of the operating system.*
 
-[![Facebook Badge](http://badge.facebook.com/badge/26764016480.2776.1538253884.png)](http://www.facebook.com/MFCMAPI)"
+[![Facebook Badge](http://badge.facebook.com/badge/26764016480.2776.1538253884.png)](http://www.facebook.com/MFCMAPI)
+
+[Download stats (raw JSON)](https://api.github.com/repos/stephenegriffin/mfcmapi/releases/tags/$version)"
 
 Write-Host "Creating $project/$release"
 
