@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "MrMAPI.h"
 #include "MMProfile.h"
-#include "ExportProfile.h"
-#include "MAPIFunctions.h"
-#include "String.h"
+#include <IO/ExportProfile.h>
+#include <MAPI/MAPIFunctions.h>
+#include <Interpret/String.h>
 
 void ExportProfileList()
 {

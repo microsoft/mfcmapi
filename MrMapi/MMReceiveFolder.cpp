@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "MrMAPI.h"
-#include "ColumnTags.h"
+#include <MAPI/ColumnTags.h>
 #include "MMReceiveFolder.h"
 
 void PrintReceiveFolderTable(_In_ LPMDB lpMDB)

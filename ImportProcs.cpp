@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "ImportProcs.h"
-#include "String.h"
+#include <Interpret/String.h>
 
 HMODULE hModAclui = nullptr;
 HMODULE hModOle32 = nullptr;

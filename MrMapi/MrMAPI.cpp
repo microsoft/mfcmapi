@@ -1,9 +1,9 @@
 #include "stdafx.h"
 
 #include "MrMAPI/MrMAPI.h"
-#include "MAPIFunctions.h"
-#include "String.h"
-#include "InterpretProp2.h"
+#include <MAPI/MAPIFunctions.h>
+#include <Interpret/String.h>
+#include <Interpret/InterpretProp2.h>
 #include "MrMAPI/MMAcls.h"
 #include "MrMAPI/MMContents.h"
 #include "MrMAPI/MMErr.h"
@@ -17,10 +17,10 @@
 #include "MrMAPI/MMMapiMime.h"
 #include <shlwapi.h>
 #include "ImportProcs.h"
-#include "MAPIStoreFunctions.h"
+#include <MAPI/MAPIStoreFunctions.h>
 #include "MrMAPI/MMPst.h"
 #include "MrMAPI/MMReceiveFolder.h"
-#include "NamedPropCache.h"
+#include <MAPI/NamedPropCache.h>
 
 // Initialize MFC for LoadString support later on
 void InitMFC()

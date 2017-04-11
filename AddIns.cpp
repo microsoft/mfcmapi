@@ -1,20 +1,20 @@
 #include "stdafx.h"
 #include "MFCMAPI.h"
 #include "ImportProcs.h"
-#include "String.h"
-#include <Dialogs/Editors/Editor.h>
-#include "Guids.h"
+#include <Interpret/String.h>
+#include <UI/Dialogs/Editors/Editor.h>
+#include <Interpret/Guids.h>
 #ifndef MRMAPI
-#include "UIFunctions.h"
+#include <UI/UIFunctions.h>
 #endif
 
 // Our built in arrays, which get merged into the arrays declared in mfcmapi.h
-#include "GenTagArray.h"
-#include "Flags.h"
-#include "GuidArray.h"
-#include "NameIDArray.h"
-#include "PropTypeArray.h"
-#include "SmartView/SmartViewParsers.h"
+#include <Interpret/GenTagArray.h>
+#include <Interpret/Flags.h>
+#include <Interpret/GUIDArray.h>
+#include <Interpret/NameIDArray.h>
+#include <Interpret/PropTypeArray.h>
+#include <Interpret/SmartView/SmartViewParsers.h>
 
 vector<NAME_ARRAY_ENTRY_V2> PropTagArray;
 vector<NAME_ARRAY_ENTRY> PropTypeArray;

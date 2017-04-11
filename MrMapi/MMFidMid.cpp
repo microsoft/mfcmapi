@@ -1,11 +1,11 @@
 #include "stdafx.h"
 #include "MrMAPI.h"
 #include "MMFidMid.h"
-#include "MAPIFunctions.h"
-#include "MapiProcessor.h"
-#include "ExtraPropTags.h"
-#include "SmartView/SmartView.h"
-#include "String.h"
+#include <MAPI/MAPIFunctions.h>
+#include <MAPI/MAPIProcessor/MAPIProcessor.h>
+#include <Interpret/ExtraPropTags.h>
+#include <Interpret/SmartView/SmartView.h>
+#include <Interpret/String.h>
 
 void PrintFolder(const wstring& szFid, const wstring& szFolder)
 {

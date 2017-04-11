@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "MrMAPI.h"
 #include "MMMapiMime.h"
-#include "MapiMime.h"
+#include <MAPI/MAPIMime.h>
 #include "ImportProcs.h"
-#include "InterpretProp2.h"
-#include "ExtraPropTags.h"
+#include <Interpret/InterpretProp2.h>
+#include <Interpret/ExtraPropTags.h>
 
 #define CHECKFLAG(__flag) ((ProgOpts.ulMAPIMIMEFlags & (__flag)) == (__flag))
 void DoMAPIMIME(_In_ MYOPTIONS ProgOpts)

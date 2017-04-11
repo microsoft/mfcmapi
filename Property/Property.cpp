@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "Property.h"
-#include "ColumnTags.h"
+#include <MAPI/ColumnTags.h>
 #include <sstream>
 
 wstring cdataopen = L"<![CDATA[";

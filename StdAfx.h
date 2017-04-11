@@ -69,12 +69,12 @@ typedef ULONG(STDAPICALLTYPE FREEBUFFER)(
 #define CHARFORMAT CHARFORMATW
 #endif
 
-#include "resource.h" // main symbols
+#include <Res/Resource.h> // main symbols
 
-#include "MFCOutput.h"
-#include "registry.h"
-#include "InterpretProp.h"
-#include "error.h"
+#include <IO/MFCOutput.h>
+#include <IO/Registry.h>
+#include <Interpret/InterpretProp.h>
+#include <IO/Error.h>
 
 #include "MFCMAPI.h"
 

@@ -1,11 +1,11 @@
 #include "stdafx.h"
 #include "MrMAPI.h"
 #include "MMFolder.h"
-#include "MAPIFunctions.h"
-#include "ExtraPropTags.h"
-#include "InterpretProp2.h"
+#include <MAPI/MAPIFunctions.h>
+#include <Interpret/ExtraPropTags.h>
+#include <Interpret/InterpretProp2.h>
 #include "MMStore.h"
-#include "String.h"
+#include <Interpret/String.h>
 
 // Search folder for entry ID of child folder by name.
 HRESULT HrMAPIFindFolderW(

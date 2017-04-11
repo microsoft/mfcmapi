@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "ParseProperty.h"
 #include "Property.h"
-#include "MAPIFunctions.h"
-#include "ExtraPropTags.h"
-#include "InterpretProp.h"
-#include "InterpretProp2.h"
+#include <MAPI/MAPIFunctions.h>
+#include <Interpret/ExtraPropTags.h>
+#include <Interpret/InterpretProp.h>
+#include <Interpret/InterpretProp2.h>
 
 wstring BuildErrorPropString(_In_ LPSPropValue lpProp)
 {

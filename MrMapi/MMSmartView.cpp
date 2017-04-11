@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "MrMAPI.h"
-#include "String.h"
+#include <Interpret/String.h>
 #include <io.h>
-#include "SmartView/SmartView.h"
+#include <Interpret/SmartView/SmartView.h>
 
 void DoSmartView(_In_ MYOPTIONS ProgOpts)
 {
