@@ -5,28 +5,19 @@
 [Blog entries on MFCMAPI/MAPI Editor](http://blogs.msdn.com/stephen_griffin/archive/tags/MFCMAPI/default.aspx)<br/>
 
 ## MFCMAPI Add-Ins
-[MFCMAPI Addin Development](MFCMAPIAddinDevelopment.md)
-
+[MFCMAPI Addin Development](MFCMAPIAddinDevelopment.md)<br/>
 [Sample add-in for creating contacts, appointments, tasks, etc.](CreateOutlookItemsAddin.md)
 
 ## General MAPI/Exchange Development Resources
-[MSDN MAPI Documentation](http://msdn2.microsoft.com/en-us/library/ms529058.aspx)
-
-[Exchange Protocol Documentation](http://msdn.microsoft.com/en-us/library/cc307725.aspx)
-
-[Exchange MAPI Implementation Download](http://blogs.msdn.com/stephen_griffin/archive/2006/06/09/announcing-mapi-cdo-download.aspx)
-
-[MAPI Mail List](http://peach.ease.lsoft.com/archives/mapi-l.html)
-
-[ExchangeDev Blog](http://blogs.msdn.com/exchangedev)
-
-[EHLO Blog](http://msexchangeteam.com/archive/category/3305.aspx)
-
-[![ewseditor](http://www.codeplex.com/Download?ProjectName=ewseditor&DownloadId=309916)](http://ewseditor.codeplex.com)
-
+[MSDN MAPI Documentation](http://msdn2.microsoft.com/en-us/library/ms529058.aspx)<br/>
+[Exchange Protocol Documentation](http://msdn.microsoft.com/en-us/library/cc307725.aspx)<br/>
+[Exchange MAPI Implementation Download](http://blogs.msdn.com/stephen_griffin/archive/2006/06/09/announcing-mapi-cdo-download.aspx)<br/>
+[MAPI Mail List](http://peach.ease.lsoft.com/archives/mapi-l.html)<br/>
+[ExchangeDev Blog](http://blogs.msdn.com/exchangedev)<br/>
+[EHLO Blog](http://msexchangeteam.com/archive/category/3305.aspx)<br/>
+[![ewseditor](http://www.codeplex.com/Download?ProjectName=ewseditor&DownloadId=309916)](http://ewseditor.codeplex.com)<br/>
 [EWSEditor](http://ewseditor.codeplex.com/)
 
 ## Newsgroups
-[microsoft.public.win32.programmer.messaging](http://msdn.microsoft.com/newsgroups/default.aspx?dg=microsoft.public.win32.programmer.messaging)
-
+[microsoft.public.win32.programmer.messaging](http://msdn.microsoft.com/newsgroups/default.aspx?dg=microsoft.public.win32.programmer.messaging)<br/>
 [microsoft.public.platformsdk.mapi](http://msdn.microsoft.com/newsgroups/default.aspx?dg=microsoft.public.platformsdk.mapi)
