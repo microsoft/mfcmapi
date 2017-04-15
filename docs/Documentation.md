@@ -15,8 +15,7 @@
 [MAPI Mail List](http://peach.ease.lsoft.com/archives/mapi-l.html)<br/>
 [ExchangeDev Blog](http://blogs.msdn.com/exchangedev)<br/>
 [EHLO Blog](http://msexchangeteam.com/archive/category/3305.aspx)<br/>
-[![ewseditor](http://www.codeplex.com/Download?ProjectName=ewseditor&DownloadId=309916)](http://ewseditor.codeplex.com)<br/>
-[EWSEditor](http://ewseditor.codeplex.com/)
+[![ewseditor](http://www.codeplex.com/Download?ProjectName=ewseditor&DownloadId=309916)](http://ewseditor.codeplex.com)[EWSEditor](http://ewseditor.codeplex.com/)
 
 ## Newsgroups
 [microsoft.public.win32.programmer.messaging](http://msdn.microsoft.com/newsgroups/default.aspx?dg=microsoft.public.win32.programmer.messaging)<br/>
