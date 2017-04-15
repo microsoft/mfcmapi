@@ -1,7 +1,7 @@
 # MFCMAPI Resources
-[![MFCMAPI on Facebook](http://badge.facebook.com/badge/26764016480.2776.1538253884.png)](http://www.facebook.com/pages/MFCMAPI/26764016480)
-[A Brief History of MFCMAPI](http://blogs.msdn.com/stephen_griffin/archive/2008/01/04/a-brief-history-of-mfcmapi.aspx)
-[MFCMAPI Articles](MFCMAPIArticles.md)
+[![MFCMAPI on Facebook](http://badge.facebook.com/badge/26764016480.2776.1538253884.png)](http://www.facebook.com/pages/MFCMAPI/26764016480)<br>
+[A Brief History of MFCMAPI](http://blogs.msdn.com/stephen_griffin/archive/2008/01/04/a-brief-history-of-mfcmapi.aspx)<br>
+[MFCMAPI Articles](MFCMAPIArticles.md)<br>
 [Blog entries on MFCMAPI/MAPI Editor](http://blogs.msdn.com/stephen_griffin/archive/tags/MFCMAPI/default.aspx)
 
 ## MFCMAPI Add-Ins
