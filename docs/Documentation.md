@@ -5,8 +5,8 @@
 [Blog entries on MFCMAPI/MAPI Editor](http://blogs.msdn.com/stephen_griffin/archive/tags/MFCMAPI/default.aspx)
 
 **MFCMAPI Add-Ins**</br>
-[MFCMAPI Addin Development](MFCMAPI-Addin-Development)</br>
-[Sample add-in for creating contacts, appointments, tasks, etc.](CreateOutlookItemsAddin)
+[MFCMAPI Addin Development](MFCMAPIAddinDevelopment.md)</br>
+[Sample add-in for creating contacts, appointments, tasks, etc.](CreateOutlookItemsAddin.md)
 
 **General MAPI/Exchange Development Resources**</br>
 [MSDN MAPI Documentation](http://msdn2.microsoft.com/en-us/library/ms529058.aspx)</br>
