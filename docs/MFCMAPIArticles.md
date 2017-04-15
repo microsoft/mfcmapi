@@ -38,7 +38,8 @@
 [Remove “Zombi” reminders using MFCMAPI](http://ilantz.wordpress.com/2008/09/16/remove-zombi-reminder-using-mfcmapi/)<br>
 [Mappen binnen Exchange User Account verwijderen MFCMAPI](http://www.resole.nl/mappen-binnen-exchange-user-account-verwijderen-mfcmapi/)<br>
 [如何关闭Outlook提醒重复弹出提醒](http://www.hao123new.com/blog/zhishi/160.html)</p>
-p>Corrupt Items: <br>
+
+# Corrupt Items
 [How to delete corrupt mail items with MFCMAPI &gt; ActiveDir.org](http://www.activedir.org/Articles/tabid/54/articleType/ArticleView/articleId/50/How-to-delete-corrupt-mail-items-with-MFCMAPI.aspx)<br>
 [Rick Mitchell Solutions - RMSBlog: Using MFCMAPI to find bad messages in Exchange 2007](http://www.rickmitchellsolutions.com/blog/2009/12/using-mfcmapi-to-find-bad-messages-in.html)<br>
 [http://www.microsoft.com/technet/support/ee/transform.aspx?ProdName=Exchange&amp;ProdVer=8.0&amp;EvtID=8501&amp;EvtSrc=MSExchangeIS&amp;LCID=1033](http://www.microsoft.com/technet/support/ee/transform.aspx?ProdName=Exchange&ProdVer=8.0&EvtID=8501&EvtSrc=MSExchangeIS&LCID=1033)</p>
