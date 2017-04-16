@@ -14,4 +14,4 @@
 [MAPI Mail List](http://peach.ease.lsoft.com/archives/mapi-l.html)<br/>
 [ExchangeDev Blog](https://blogs.msdn.microsoft.com/exchangedev/)<br/>
 [EHLO Blog](https://blogs.technet.microsoft.com/exchange/)<br/>
-[![ewseditor](https://www.codeplex.com/Download?ProjectName=ewseditor&DownloadId=309916)](http://ewseditor.codeplex.com)[EWSEditor](http://ewseditor.codeplex.com)
+[![ewseditor](https://www.codeplex.com/Download?ProjectName=ewseditor&DownloadId=309916)](https://ewseditor.codeplex.com)[EWSEditor](https://ewseditor.codeplex.com)
