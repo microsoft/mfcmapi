@@ -4,7 +4,7 @@ This add-in is the sample code that accompanies the MSDN technical article, [Usi
 
 The add-in architecture is documented here: [MFCMAPI Addin Development](MFCMAPI-Addin-Development)
 
-*Version History*
+## Version History
 * **1.0** (06/12/08) Original version for Using MAPI to Create Outlook 2007 Items article.
 	* Creates contacts.
 * **2.0** (08/28/08) Update for the upcoming Outlook MAPI reference. New features:
