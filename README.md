@@ -9,7 +9,7 @@ MFCMAPI provides access to MAPI stores to facilitate investigation of Exchange a
 For assistance using MFCMAPI, developing add-ins, or general MAPI development, consult the [documentation](docs/Documentation.md). Find a bug? Need help? Have a suggestion? Report your issues through the [issues tab](https://github.com/stephenegriffin/mfcmapi/issues).
 
 # Become a fan on Facebook!
-<a href="http://www.facebook.com/MFCMAPI"><img style="border: none;" title="Facebook Badge" src="http://badge.facebook.com/badge/26764016480.2776.1538253884.png" alt="Facebook Badge" /></a>
+<a href="https://www.facebook.com/MFCMAPI/"><img style="border: none;" title="Facebook Badge" src="https://badge.facebook.com/badge/26764016480.2776.1538253884.png" alt="Facebook Badge" /></a>
 
 Interested in Exchange Web Services (EWS)? Try [EWSEditor](https://ewseditor.codeplex.com)!
 
