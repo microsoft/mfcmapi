@@ -1369,10 +1369,9 @@ _Check_return_ HRESULT ManuallyEmptyFolder(_In_ LPMAPIFOLDER lpFolder, BOOL bAss
 }
 
 // Converts byte vector to LPBYTE allocated with MAPIAllocateMore
+// Will only return nullptr on allocation failure. Even empty bin will return pointer to 0 so MAPI handles empty strings properly
 _Check_return_ LPBYTE ByteVectorToMAPI(const vector<BYTE>& bin, LPVOID lpParent)
 {
-	if (bin.empty()) return nullptr;
-
 	auto hRes = S_OK;
 	LPBYTE lpBin = nullptr;
 
