@@ -366,7 +366,11 @@ void CPropertyEditor::InitPropertyControls()
 			if (lpPane)
 			{
 				lpPane->SetCount(m_lpsInputValue->Value.bin.cb);
-				lpPane->SetStringW(BinToHexString(&m_lpsInputValue->Value.bin, false));
+				if (m_lpsInputValue->Value.bin.cb != 0)
+				{
+					lpPane->SetStringW(BinToHexString(&m_lpsInputValue->Value.bin, false));
+				}
+
 				SetStringA(1, string(LPCSTR(m_lpsInputValue->Value.bin.lpb), m_lpsInputValue->Value.bin.cb));
 			}
 
