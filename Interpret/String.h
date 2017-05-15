@@ -46,6 +46,7 @@ __int64 wstringToInt64(const wstring& src);
 wstring StripCharacter(const wstring& szString, const WCHAR& character);
 wstring StripCarriage(const wstring& szString);
 wstring CleanString(const wstring& szString);
+wstring TrimString(const wstring& szString);
 wstring ScrubStringForXML(const wstring& szString);
 wstring SanitizeFileNameW(const wstring& szFileIn);
 wstring indent(int iIndent);

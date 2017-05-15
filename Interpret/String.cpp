@@ -238,6 +238,15 @@ wstring CleanString(const wstring& szString)
 	});
 }
 
+wstring TrimString(const wstring& szString)
+{
+	size_t first = szString.find_first_not_of(' ');
+	if (first == string::npos)
+		return emptystring;
+	size_t last = szString.find_last_not_of(' ');
+	return szString.substr(first, (last - first + 1));
+}
+
 wstring replace(const wstring& str, std::function<bool(const WCHAR&)> func, const WCHAR& chr)
 {
 	wstring result;

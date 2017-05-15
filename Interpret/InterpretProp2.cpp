@@ -169,11 +169,12 @@ PropTagNames PropTagToPropName(ULONG ulPropTag, bool bIsAB)
 // Strictly does a lookup in the array. Does not convert otherwise
 _Check_return_ ULONG LookupPropName(_In_ const wstring& lpszPropName)
 {
-	if (lpszPropName.empty()) return 0;
+	wstring trimName = TrimString(lpszPropName);
+	if (trimName.empty()) return 0;
 
 	for (size_t ulCur = 0; ulCur < PropTagArray.size(); ulCur++)
 	{
-		if (0 == lstrcmpiW(lpszPropName.c_str(), PropTagArray[ulCur].lpszName))
+		if (0 == lstrcmpiW(trimName.c_str(), PropTagArray[ulCur].lpszName))
 		{
 			return  PropTagArray[ulCur].ulValue;
 		}
