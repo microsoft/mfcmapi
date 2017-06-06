@@ -234,7 +234,7 @@ wstring CleanString(const wstring& szString)
 {
 	return strip(szString, [](const WCHAR & chr)
 	{
-		return wstring(L", ").find(chr) != wstring::npos;
+		return wstring(L", \r\n").find(chr) != wstring::npos;
 	});
 }
 

@@ -52,7 +52,8 @@ vector<BYTE> Base64Decode(const wstring& szEncodedStr)
 				break;
 			}
 
-			if (c[i] < 0x2b || c[i] > 0x7a) return vector<BYTE>();
+			if (c[i] < 0x2b || c[i] > 0x7a)
+				return vector<BYTE>();
 
 			c[i] = pBase64[c[i] - 0x2b];
 		}
