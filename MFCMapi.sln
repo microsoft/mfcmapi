@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MFCMapi", "MFCMapi.vcxproj", "{466117D5-278C-46E6-BC2E-4FA7B25C0B3F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MrMAPI", "MrMAPI\MrMAPI.vcxproj", "{7AFE5655-71D0-4390-A4E0-BA915DFC18C4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +13,6 @@ Global
 		Debug Unicode|x64 = Debug Unicode|x64
 		Debug|Win32 = Debug|Win32
 		Debug|x64 = Debug|x64
-		MrMAPI Debug|Win32 = MrMAPI Debug|Win32
-		MrMAPI Debug|x64 = MrMAPI Debug|x64
-		MrMAPI|Win32 = MrMAPI|Win32
-		MrMAPI|x64 = MrMAPI|x64
 		Prefast|Win32 = Prefast|Win32
 		Prefast|x64 = Prefast|x64
 		Release Unicode|Win32 = Release Unicode|Win32
@@ -31,14 +29,6 @@ Global
 		{466117D5-278C-46E6-BC2E-4FA7B25C0B3F}.Debug|Win32.Build.0 = Debug|Win32
 		{466117D5-278C-46E6-BC2E-4FA7B25C0B3F}.Debug|x64.ActiveCfg = Debug|x64
 		{466117D5-278C-46E6-BC2E-4FA7B25C0B3F}.Debug|x64.Build.0 = Debug|x64
-		{466117D5-278C-46E6-BC2E-4FA7B25C0B3F}.MrMAPI Debug|Win32.ActiveCfg = MrMAPI Debug|Win32
-		{466117D5-278C-46E6-BC2E-4FA7B25C0B3F}.MrMAPI Debug|Win32.Build.0 = MrMAPI Debug|Win32
-		{466117D5-278C-46E6-BC2E-4FA7B25C0B3F}.MrMAPI Debug|x64.ActiveCfg = MrMAPI Debug|x64
-		{466117D5-278C-46E6-BC2E-4FA7B25C0B3F}.MrMAPI Debug|x64.Build.0 = MrMAPI Debug|x64
-		{466117D5-278C-46E6-BC2E-4FA7B25C0B3F}.MrMAPI|Win32.ActiveCfg = MrMAPI|Win32
-		{466117D5-278C-46E6-BC2E-4FA7B25C0B3F}.MrMAPI|Win32.Build.0 = MrMAPI|Win32
-		{466117D5-278C-46E6-BC2E-4FA7B25C0B3F}.MrMAPI|x64.ActiveCfg = MrMAPI|x64
-		{466117D5-278C-46E6-BC2E-4FA7B25C0B3F}.MrMAPI|x64.Build.0 = MrMAPI|x64
 		{466117D5-278C-46E6-BC2E-4FA7B25C0B3F}.Prefast|Win32.ActiveCfg = Prefast|Win32
 		{466117D5-278C-46E6-BC2E-4FA7B25C0B3F}.Prefast|Win32.Build.0 = Prefast|Win32
 		{466117D5-278C-46E6-BC2E-4FA7B25C0B3F}.Prefast|x64.ActiveCfg = Prefast|x64
@@ -51,8 +41,31 @@ Global
 		{466117D5-278C-46E6-BC2E-4FA7B25C0B3F}.Release|Win32.Build.0 = Release|Win32
 		{466117D5-278C-46E6-BC2E-4FA7B25C0B3F}.Release|x64.ActiveCfg = Release|x64
 		{466117D5-278C-46E6-BC2E-4FA7B25C0B3F}.Release|x64.Build.0 = Release|x64
+		{7AFE5655-71D0-4390-A4E0-BA915DFC18C4}.Debug Unicode|Win32.ActiveCfg = Debug Unicode|Win32
+		{7AFE5655-71D0-4390-A4E0-BA915DFC18C4}.Debug Unicode|Win32.Build.0 = Debug Unicode|Win32
+		{7AFE5655-71D0-4390-A4E0-BA915DFC18C4}.Debug Unicode|x64.ActiveCfg = Debug Unicode|x64
+		{7AFE5655-71D0-4390-A4E0-BA915DFC18C4}.Debug Unicode|x64.Build.0 = Debug Unicode|x64
+		{7AFE5655-71D0-4390-A4E0-BA915DFC18C4}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7AFE5655-71D0-4390-A4E0-BA915DFC18C4}.Debug|Win32.Build.0 = Debug|Win32
+		{7AFE5655-71D0-4390-A4E0-BA915DFC18C4}.Debug|x64.ActiveCfg = Debug|x64
+		{7AFE5655-71D0-4390-A4E0-BA915DFC18C4}.Debug|x64.Build.0 = Debug|x64
+		{7AFE5655-71D0-4390-A4E0-BA915DFC18C4}.Prefast|Win32.ActiveCfg = Prefast|Win32
+		{7AFE5655-71D0-4390-A4E0-BA915DFC18C4}.Prefast|Win32.Build.0 = Prefast|Win32
+		{7AFE5655-71D0-4390-A4E0-BA915DFC18C4}.Prefast|x64.ActiveCfg = Prefast|x64
+		{7AFE5655-71D0-4390-A4E0-BA915DFC18C4}.Prefast|x64.Build.0 = Prefast|x64
+		{7AFE5655-71D0-4390-A4E0-BA915DFC18C4}.Release Unicode|Win32.ActiveCfg = Release Unicode|Win32
+		{7AFE5655-71D0-4390-A4E0-BA915DFC18C4}.Release Unicode|Win32.Build.0 = Release Unicode|Win32
+		{7AFE5655-71D0-4390-A4E0-BA915DFC18C4}.Release Unicode|x64.ActiveCfg = Release Unicode|x64
+		{7AFE5655-71D0-4390-A4E0-BA915DFC18C4}.Release Unicode|x64.Build.0 = Release Unicode|x64
+		{7AFE5655-71D0-4390-A4E0-BA915DFC18C4}.Release|Win32.ActiveCfg = Release|Win32
+		{7AFE5655-71D0-4390-A4E0-BA915DFC18C4}.Release|Win32.Build.0 = Release|Win32
+		{7AFE5655-71D0-4390-A4E0-BA915DFC18C4}.Release|x64.ActiveCfg = Release|x64
+		{7AFE5655-71D0-4390-A4E0-BA915DFC18C4}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {843E5DBD-D08E-47F1-9A88-7C0756361410}
 	EndGlobalSection
 EndGlobal

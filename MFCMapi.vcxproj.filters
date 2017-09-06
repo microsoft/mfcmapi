@@ -1,492 +1,66 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{76cedd9f-be1c-4ef5-8e5b-a6cfbb5899f7}</UniqueIdentifier>
-      <Extensions>h;hpp;hxx;hm;inl</Extensions>
-    </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{ece43b54-2110-499b-b923-d279574801e0}</UniqueIdentifier>
       <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
     </Filter>
     <Filter Include="Source Files">
       <UniqueIdentifier>{2b3c935c-0f37-418a-9fb7-5fea0dff0c7e}</UniqueIdentifier>
-      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Enums.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ImportProcs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MFCMAPI.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="StdAfx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PropertyBag\PropertyBag.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PropertyBag\MAPIPropPropertyBag.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PropertyBag\RowPropertyBag.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MrMapi\MMStore.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MrMapi\MMAcls.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MrMapi\MMContents.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MrMapi\MMErr.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MrMapi\MMFidMid.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MrMapi\MMFolder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MrMapi\MMMapiMime.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MrMapi\MMProfile.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MrMapi\MMPropTag.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MrMapi\MMPst.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MrMapi\MMReceiveFolder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MrMapi\MMRules.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MrMapi\MMSmartView.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MrMapi\MrMAPI.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Property\Attributes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Property\ParseProperty.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Property\Property.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\DoubleBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\UIFunctions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\RichEditOleCallback.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\FakeSplitter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\FileDialogEx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\ViewPane\CheckPane.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\ViewPane\CountedTextPane.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\ViewPane\DropDownPane.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\ViewPane\ListPane.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\ViewPane\SmartViewPane.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\ViewPane\TextPane.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\ViewPane\ViewPane.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Dialogs\ContentsTable\ABDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Dialogs\ContentsTable\AclDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Dialogs\ContentsTable\AttachmentsDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Dialogs\ContentsTable\ContentsTableDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Dialogs\ContentsTable\FolderDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Dialogs\ContentsTable\FormContainerDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Dialogs\ContentsTable\MailboxTableDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Dialogs\ContentsTable\MainDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Dialogs\ContentsTable\MsgServiceTableDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Dialogs\ContentsTable\ProfileListDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Dialogs\ContentsTable\ProviderTableDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Dialogs\ContentsTable\PublicFolderTableDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Dialogs\ContentsTable\RecipientsDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Dialogs\ContentsTable\RulesDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Dialogs\Editors\DbgView.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Dialogs\Editors\Editor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Dialogs\Editors\HexEditor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Dialogs\Editors\MultiValuePropertyEditor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Dialogs\Editors\Options.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Dialogs\Editors\PropertyEditor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Dialogs\Editors\PropertySelector.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Dialogs\Editors\PropertyTagEditor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Dialogs\Editors\QSSpecialFolders.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Dialogs\Editors\RestrictEditor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Dialogs\Editors\SearchEditor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Dialogs\Editors\StreamEditor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Dialogs\Editors\TagArrayEditor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Dialogs\HierarchyTable\ABContDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Dialogs\HierarchyTable\HierarchyTableDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Dialogs\HierarchyTable\MsgStoreDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Dialogs\AboutDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Dialogs\BaseDialog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Dialogs\Dialog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Dialogs\SingleMessageDialog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Dialogs\SingleRecipientDialog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Controls\SortList\BinaryData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Controls\SortList\CommentData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Controls\SortList\ContentsData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Controls\SortList\Data.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Controls\SortList\MVPropData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Controls\SortList\NodeData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Controls\SortList\PropListData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Controls\SortList\ResData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Controls\SortList\SortHeader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Controls\SortList\SortListCtrl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Controls\SortList\SortListData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Controls\ContentsTableListCtrl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Controls\HierarchyTableTreeCtrl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Controls\SingleMAPIPropListCtrl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MAPI\MAPIABFunctions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MAPI\MAPIFunctions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MAPI\MAPIProfileFunctions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MAPI\MAPIStoreFunctions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\MyMAPIFormViewer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\MAPIFormFunctions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MAPI\MAPIProcessor\DumpStore.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MAPI\MAPIProcessor\MapiProcessor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MAPI\MapiMime.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MAPI\MapiObjects.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MAPI\MAPIProgress.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\InterpretProp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\InterpretProp2.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\SmartView\AdditionalRenEntryIDs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\SmartView\AppointmentRecurrencePattern.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\SmartView\BinaryParser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\SmartView\ConversationIndex.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\SmartView\EntryIdStruct.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\SmartView\EntryList.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\SmartView\ExtendedFlags.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\SmartView\FlatEntryList.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\SmartView\FolderUserFieldStream.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\SmartView\GlobalObjectId.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\SmartView\NickNameCache.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\SmartView\PCL.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\SmartView\PropertyDefinitionStream.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\SmartView\PropertyStruct.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\SmartView\RecipientRowStream.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\SmartView\RecurrencePattern.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\SmartView\ReportTag.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\SmartView\RestrictionStruct.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\SmartView\RuleCondition.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\SmartView\SDBin.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\SmartView\SearchFolderDefinition.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\SmartView\SIDBin.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\SmartView\SmartView.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\SmartView\SmartViewParser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\SmartView\SmartViewParsers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\SmartView\TaskAssigners.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\SmartView\TimeZone.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\SmartView\TimeZoneDefinition.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\SmartView\TombStone.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\SmartView\VerbStream.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\SmartView\WebViewPersistStream.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\SmartView\XID.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\Flags.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\GenTagArray.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\GUIDArray.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\NameIDArray.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\PropTypeArray.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\Guids.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\MySecInfo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\Sid.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\ErrorArray.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MAPI\ColumnTags.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\MyWinApp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\ParentWnd.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\ExtraPropTags.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\MFCUtilityFunctions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MAPI\AdviseSink.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IO\ExportProfile.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IO\File.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IO\Registry.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IO\MFCOutput.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IO\Error.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MAPI\NamedPropCache.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\QuickStart.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Res\Resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MAPI\GlobalCache.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Interpret\String.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <Filter Include="Source Files\IO">
+      <UniqueIdentifier>{a1ac36fd-dbe7-4624-b877-091b6a9a68ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Property">
+      <UniqueIdentifier>{eae2548d-13de-4d9b-a225-ccc72aa4ab5e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\PropertyBag">
+      <UniqueIdentifier>{2c5ab9e0-50d2-4325-acd6-2e6c967ba7ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Interpret">
+      <UniqueIdentifier>{821f30bd-089b-43f4-9824-0dec9cc273b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Interpret\SmartView">
+      <UniqueIdentifier>{0ffbdd2b-c267-4bfa-b755-c0c3ebc72d5c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\MAPI">
+      <UniqueIdentifier>{a76fbfee-cb46-44c1-a554-f6082c4ce571}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\MAPI\MAPIProcessor">
+      <UniqueIdentifier>{fe54a615-ee34-4c82-808c-d9212f7e8b53}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UI">
+      <UniqueIdentifier>{26979dfe-c4a7-434b-8635-acbd45f82c20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UI\Controls">
+      <UniqueIdentifier>{fc8aafdb-214c-4e97-881b-13babb46ca4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UI\Dialogs">
+      <UniqueIdentifier>{52b8b5f7-3216-46f6-85b1-2b20d5f52256}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UI\ViewPane">
+      <UniqueIdentifier>{c36acb8b-c649-4285-a1d7-acfb70dc8e8e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UI\Controls\SortList">
+      <UniqueIdentifier>{87561f7e-ea96-42a0-bfa9-3df851f51b1a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UI\Dialogs\ContentsTable">
+      <UniqueIdentifier>{83d60fd7-4f9a-4547-b705-ab8d6455c01a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UI\Dialogs\Editors">
+      <UniqueIdentifier>{8be0d27b-3e55-4ca5-a7f3-34bd206e3a83}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UI\Dialogs\HierarchyTable">
+      <UniqueIdentifier>{79d3d5f7-6568-44ea-92cc-8bf5d15e2b83}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Res\bldver.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
     <ResourceCompile Include="Res\MFCMapi.rc">
-      <Filter>Source Files</Filter>
+      <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
@@ -513,438 +87,850 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Res\Resource.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="AddIns.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ImportProcs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PropertyBag\MAPIPropPropertyBag.cpp">
+    <ClInclude Include="ImportProcs.h">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PropertyBag\RowPropertyBag.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MrMapi\MMAcls.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MrMapi\MMContents.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MrMapi\MMErr.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MrMapi\MMFidMid.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MrMapi\MMFolder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MrMapi\MMMapiMime.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MrMapi\MMProfile.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MrMapi\MMPropTag.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MrMapi\MMPst.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MrMapi\MMReceiveFolder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MrMapi\MMRules.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MrMapi\MMSmartView.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MrMapi\MMStore.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Property\Attributes.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Property\ParseProperty.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Property\Property.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MrMapi\MrMAPI.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\DoubleBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\UIFunctions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\RichEditOleCallback.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\FakeSplitter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\FileDialogEx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\ViewPane\CheckPane.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\ViewPane\CountedTextPane.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\ViewPane\DropDownPane.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\ViewPane\ListPane.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\ViewPane\SmartViewPane.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\ViewPane\TextPane.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\ViewPane\ViewPane.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Dialogs\ContentsTable\AbDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Dialogs\ContentsTable\AclDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Dialogs\ContentsTable\AttachmentsDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Dialogs\ContentsTable\ContentsTableDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Dialogs\ContentsTable\FolderDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Dialogs\ContentsTable\FormContainerDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Dialogs\ContentsTable\MailboxTableDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Dialogs\ContentsTable\MainDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Dialogs\ContentsTable\MsgServiceTableDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Dialogs\ContentsTable\ProfileListDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Dialogs\ContentsTable\ProviderTableDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Dialogs\ContentsTable\PublicFolderTableDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Dialogs\ContentsTable\RecipientsDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Dialogs\ContentsTable\RulesDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Dialogs\Editors\DbgView.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Dialogs\Editors\Editor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Dialogs\Editors\HexEditor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Dialogs\Editors\MultiValuePropertyEditor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Dialogs\Editors\Options.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Dialogs\Editors\PropertyEditor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Dialogs\Editors\PropertySelector.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Dialogs\Editors\PropertyTagEditor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Dialogs\Editors\QSSpecialFolders.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Dialogs\Editors\RestrictEditor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Dialogs\Editors\SearchEditor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Dialogs\Editors\StreamEditor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Dialogs\Editors\TagArrayEditor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Dialogs\HierarchyTable\ABContDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Dialogs\HierarchyTable\HierarchyTableDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Dialogs\HierarchyTable\MsgStoreDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Dialogs\AboutDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Dialogs\BaseDialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Dialogs\Dialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Dialogs\SingleMessageDialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Dialogs\SingleRecipientDialog.cpp">
+    </ClInclude>
+    <ClInclude Include="Enums.h">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Controls\SortList\BinaryData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Controls\SortList\CommentData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Controls\SortList\ContentsData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Controls\SortList\MVPropData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Controls\SortList\NodeData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Controls\SortList\PropListData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Controls\SortList\ResData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Controls\SortList\SortHeader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Controls\SortList\SortListCtrl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Controls\SortList\SortListData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Controls\ContentsTableListCtrl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Controls\HierarchyTableTreeCtrl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Controls\SingleMAPIPropListCtrl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MAPI\MAPIABFunctions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MAPI\MAPIFunctions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MAPI\MAPIProfileFunctions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MAPI\MAPIStoreFunctions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MAPI\MapiStubLibrary.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MAPI\StubUtils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\MyMAPIFormViewer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\MAPIFormFunctions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MAPI\MAPIProcessor\DumpStore.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MAPI\MAPIProcessor\MapiProcessor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MAPI\MapiMime.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MAPI\MapiObjects.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MAPI\MAPIProgress.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Interpret\InterpretProp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Interpret\InterpretProp2.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Interpret\SmartView\AdditionalRenEntryIDs.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Interpret\SmartView\AppointmentRecurrencePattern.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Interpret\SmartView\BinaryParser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Interpret\SmartView\ConversationIndex.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Interpret\SmartView\EntryIdStruct.cpp">
+    </ClInclude>
+    <ClInclude Include="MFCMAPI.h">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Interpret\SmartView\EntryList.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Interpret\SmartView\ExtendedFlags.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Interpret\SmartView\FlatEntryList.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Interpret\SmartView\FolderUserFieldStream.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Interpret\SmartView\GlobalObjectId.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Interpret\SmartView\NickNameCache.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Interpret\SmartView\PCL.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Interpret\SmartView\PropertyDefinitionStream.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Interpret\SmartView\PropertyStruct.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Interpret\SmartView\RecipientRowStream.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Interpret\SmartView\RecurrencePattern.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Interpret\SmartView\ReportTag.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Interpret\SmartView\RestrictionStruct.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Interpret\SmartView\RuleCondition.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Interpret\SmartView\SDBin.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Interpret\SmartView\SearchFolderDefinition.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Interpret\SmartView\SIDBin.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Interpret\SmartView\SmartView.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Interpret\SmartView\SmartViewParser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Interpret\SmartView\TaskAssigners.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Interpret\SmartView\TimeZone.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Interpret\SmartView\TimeZoneDefinition.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Interpret\SmartView\TombStone.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Interpret\SmartView\VerbStream.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Interpret\SmartView\WebViewPersistStream.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Interpret\SmartView\XID.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Interpret\Guids.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\MySecInfo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Interpret\Sid.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\MyWinApp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\ParentWnd.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\MFCUtilityFunctions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MAPI\AdviseSink.cpp">
+    </ClInclude>
+    <ClInclude Include="StdAfx.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="IO\Error.cpp">
+      <Filter>Source Files\IO</Filter>
     </ClCompile>
+    <ClInclude Include="IO\Error.h">
+      <Filter>Source Files\IO</Filter>
+    </ClInclude>
     <ClCompile Include="IO\ExportProfile.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\IO</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\ExportProfile.h">
+      <Filter>Source Files\IO</Filter>
     </ClCompile>
     <ClCompile Include="IO\File.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\IO</Filter>
     </ClCompile>
-    <ClCompile Include="IO\Registry.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    <ClInclude Include="IO\File.h">
+      <Filter>Source Files\IO</Filter>
+    </ClInclude>
     <ClCompile Include="IO\MFCOutput.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\IO</Filter>
     </ClCompile>
-    <ClCompile Include="IO\Error.cpp">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="IO\MFCOutput.h">
+      <Filter>Source Files\IO</Filter>
+    </ClInclude>
+    <ClCompile Include="IO\Registry.cpp">
+      <Filter>Source Files\IO</Filter>
     </ClCompile>
-    <ClCompile Include="MAPI\NamedPropCache.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\QuickStart.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MAPI\GlobalCache.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Interpret\String.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="IO\Registry.h">
+      <Filter>Source Files\IO</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuildStep Include="mfcmapi.exe.manifest" />
-    <CustomBuildStep Include="mrmapi.exe.manifest" />
+    <ClInclude Include="Interpret\ErrorArray.h">
+      <Filter>Source Files\Interpret</Filter>
+    </ClInclude>
+    <ClInclude Include="Interpret\ExtraPropTags.h">
+      <Filter>Source Files\Interpret</Filter>
+    </ClInclude>
+    <ClInclude Include="Interpret\Flags.h">
+      <Filter>Source Files\Interpret</Filter>
+    </ClInclude>
+    <ClInclude Include="Interpret\GUIDArray.h">
+      <Filter>Source Files\Interpret</Filter>
+    </ClInclude>
+    <ClInclude Include="Interpret\GenTagArray.h">
+      <Filter>Source Files\Interpret</Filter>
+    </ClInclude>
+    <ClCompile Include="Interpret\Guids.cpp">
+      <Filter>Source Files\Interpret</Filter>
+    </ClCompile>
+    <ClInclude Include="Interpret\Guids.h">
+      <Filter>Source Files\Interpret</Filter>
+    </ClInclude>
+    <ClCompile Include="Interpret\InterpretProp.cpp">
+      <Filter>Source Files\Interpret</Filter>
+    </ClCompile>
+    <ClInclude Include="Interpret\InterpretProp.h">
+      <Filter>Source Files\Interpret</Filter>
+    </ClInclude>
+    <ClCompile Include="Interpret\InterpretProp2.cpp">
+      <Filter>Source Files\Interpret</Filter>
+    </ClCompile>
+    <ClInclude Include="Interpret\InterpretProp2.h">
+      <Filter>Source Files\Interpret</Filter>
+    </ClInclude>
+    <ClInclude Include="Interpret\NameIDArray.h">
+      <Filter>Source Files\Interpret</Filter>
+    </ClInclude>
+    <ClInclude Include="Interpret\PropTypeArray.h">
+      <Filter>Source Files\Interpret</Filter>
+    </ClInclude>
+    <ClCompile Include="Interpret\Sid.cpp">
+      <Filter>Source Files\Interpret</Filter>
+    </ClCompile>
+    <ClInclude Include="Interpret\Sid.h">
+      <Filter>Source Files\Interpret</Filter>
+    </ClInclude>
+    <ClCompile Include="Interpret\String.cpp">
+      <Filter>Source Files\Interpret</Filter>
+    </ClCompile>
+    <ClInclude Include="Interpret\String.h">
+      <Filter>Source Files\Interpret</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Interpret\SmartView\AdditionalRenEntryIDs.cpp">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClCompile>
+    <ClInclude Include="Interpret\SmartView\AdditionalRenEntryIDs.h">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClInclude>
+    <ClCompile Include="Interpret\SmartView\AppointmentRecurrencePattern.cpp">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClCompile>
+    <ClInclude Include="Interpret\SmartView\AppointmentRecurrencePattern.h">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClInclude>
+    <ClCompile Include="Interpret\SmartView\BinaryParser.cpp">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClCompile>
+    <ClInclude Include="Interpret\SmartView\BinaryParser.h">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClInclude>
+    <ClCompile Include="Interpret\SmartView\ConversationIndex.cpp">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClCompile>
+    <ClInclude Include="Interpret\SmartView\ConversationIndex.h">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClInclude>
+    <ClCompile Include="Interpret\SmartView\EntryIdStruct.cpp">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClCompile>
+    <ClInclude Include="Interpret\SmartView\EntryIdStruct.h">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClInclude>
+    <ClCompile Include="Interpret\SmartView\EntryList.cpp">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClCompile>
+    <ClInclude Include="Interpret\SmartView\EntryList.h">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClInclude>
+    <ClCompile Include="Interpret\SmartView\ExtendedFlags.cpp">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClCompile>
+    <ClInclude Include="Interpret\SmartView\ExtendedFlags.h">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClInclude>
+    <ClCompile Include="Interpret\SmartView\FlatEntryList.cpp">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClCompile>
+    <ClInclude Include="Interpret\SmartView\FlatEntryList.h">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClInclude>
+    <ClCompile Include="Interpret\SmartView\FolderUserFieldStream.cpp">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClCompile>
+    <ClInclude Include="Interpret\SmartView\FolderUserFieldStream.h">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClInclude>
+    <ClCompile Include="Interpret\SmartView\GlobalObjectId.cpp">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClCompile>
+    <ClInclude Include="Interpret\SmartView\GlobalObjectId.h">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClInclude>
+    <ClCompile Include="Interpret\SmartView\NickNameCache.cpp">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClCompile>
+    <ClInclude Include="Interpret\SmartView\NickNameCache.h">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClInclude>
+    <ClCompile Include="Interpret\SmartView\PCL.cpp">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClCompile>
+    <ClInclude Include="Interpret\SmartView\PCL.h">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClInclude>
+    <ClCompile Include="Interpret\SmartView\PropertyDefinitionStream.cpp">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClCompile>
+    <ClInclude Include="Interpret\SmartView\PropertyDefinitionStream.h">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClInclude>
+    <ClCompile Include="Interpret\SmartView\PropertyStruct.cpp">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClCompile>
+    <ClInclude Include="Interpret\SmartView\PropertyStruct.h">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClInclude>
+    <ClCompile Include="Interpret\SmartView\RecipientRowStream.cpp">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClCompile>
+    <ClInclude Include="Interpret\SmartView\RecipientRowStream.h">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClInclude>
+    <ClCompile Include="Interpret\SmartView\RecurrencePattern.cpp">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClCompile>
+    <ClInclude Include="Interpret\SmartView\RecurrencePattern.h">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClInclude>
+    <ClCompile Include="Interpret\SmartView\ReportTag.cpp">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClCompile>
+    <ClInclude Include="Interpret\SmartView\ReportTag.h">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClInclude>
+    <ClCompile Include="Interpret\SmartView\RestrictionStruct.cpp">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClCompile>
+    <ClInclude Include="Interpret\SmartView\RestrictionStruct.h">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClInclude>
+    <ClCompile Include="Interpret\SmartView\RuleCondition.cpp">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClCompile>
+    <ClInclude Include="Interpret\SmartView\RuleCondition.h">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClInclude>
+    <ClCompile Include="Interpret\SmartView\SDBin.cpp">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClCompile>
+    <ClInclude Include="Interpret\SmartView\SDBin.h">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClInclude>
+    <ClCompile Include="Interpret\SmartView\SIDBin.cpp">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClCompile>
+    <ClInclude Include="Interpret\SmartView\SIDBin.h">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClInclude>
+    <ClCompile Include="Interpret\SmartView\SearchFolderDefinition.cpp">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClCompile>
+    <ClInclude Include="Interpret\SmartView\SearchFolderDefinition.h">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClInclude>
+    <ClCompile Include="Interpret\SmartView\SmartView.cpp">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClCompile>
+    <ClInclude Include="Interpret\SmartView\SmartView.h">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClInclude>
+    <ClCompile Include="Interpret\SmartView\SmartViewParser.cpp">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClCompile>
+    <ClInclude Include="Interpret\SmartView\SmartViewParser.h">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClInclude>
+    <ClInclude Include="Interpret\SmartView\SmartViewParsers.h">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClInclude>
+    <ClCompile Include="Interpret\SmartView\TaskAssigners.cpp">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClCompile>
+    <ClInclude Include="Interpret\SmartView\TaskAssigners.h">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClInclude>
+    <ClCompile Include="Interpret\SmartView\TimeZone.cpp">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClCompile>
+    <ClInclude Include="Interpret\SmartView\TimeZone.h">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClInclude>
+    <ClCompile Include="Interpret\SmartView\TimeZoneDefinition.cpp">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClCompile>
+    <ClInclude Include="Interpret\SmartView\TimeZoneDefinition.h">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClInclude>
+    <ClCompile Include="Interpret\SmartView\TombStone.cpp">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClCompile>
+    <ClInclude Include="Interpret\SmartView\TombStone.h">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClInclude>
+    <ClCompile Include="Interpret\SmartView\VerbStream.cpp">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClCompile>
+    <ClInclude Include="Interpret\SmartView\VerbStream.h">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClInclude>
+    <ClCompile Include="Interpret\SmartView\WebViewPersistStream.cpp">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClCompile>
+    <ClInclude Include="Interpret\SmartView\WebViewPersistStream.h">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClInclude>
+    <ClCompile Include="Interpret\SmartView\XID.cpp">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClCompile>
+    <ClInclude Include="Interpret\SmartView\XID.h">
+      <Filter>Source Files\Interpret\SmartView</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="MAPI\AdviseSink.cpp">
+      <Filter>Source Files\MAPI</Filter>
+    </ClCompile>
+    <ClInclude Include="MAPI\AdviseSink.h">
+      <Filter>Source Files\MAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="MAPI\ColumnTags.h">
+      <Filter>Source Files\MAPI</Filter>
+    </ClInclude>
+    <ClCompile Include="MAPI\GlobalCache.cpp">
+      <Filter>Source Files\MAPI</Filter>
+    </ClCompile>
+    <ClInclude Include="MAPI\GlobalCache.h">
+      <Filter>Source Files\MAPI</Filter>
+    </ClInclude>
+    <ClCompile Include="MAPI\MAPIABFunctions.cpp">
+      <Filter>Source Files\MAPI</Filter>
+    </ClCompile>
+    <ClInclude Include="MAPI\MAPIABFunctions.h">
+      <Filter>Source Files\MAPI</Filter>
+    </ClInclude>
+    <ClCompile Include="MAPI\MAPIFunctions.cpp">
+      <Filter>Source Files\MAPI</Filter>
+    </ClCompile>
+    <ClInclude Include="MAPI\MAPIFunctions.h">
+      <Filter>Source Files\MAPI</Filter>
+    </ClInclude>
+    <ClCompile Include="MAPI\MapiMime.cpp">
+      <Filter>Source Files\MAPI</Filter>
+    </ClCompile>
+    <ClInclude Include="MAPI\MapiMime.h">
+      <Filter>Source Files\MAPI</Filter>
+    </ClInclude>
+    <ClCompile Include="MAPI\MapiObjects.cpp">
+      <Filter>Source Files\MAPI</Filter>
+    </ClCompile>
+    <ClInclude Include="MAPI\MapiObjects.h">
+      <Filter>Source Files\MAPI</Filter>
+    </ClInclude>
+    <ClCompile Include="MAPI\MAPIProfileFunctions.cpp">
+      <Filter>Source Files\MAPI</Filter>
+    </ClCompile>
+    <ClInclude Include="MAPI\MAPIProfileFunctions.h">
+      <Filter>Source Files\MAPI</Filter>
+    </ClInclude>
+    <ClCompile Include="MAPI\MAPIProgress.cpp">
+      <Filter>Source Files\MAPI</Filter>
+    </ClCompile>
+    <ClInclude Include="MAPI\MAPIProgress.h">
+      <Filter>Source Files\MAPI</Filter>
+    </ClInclude>
+    <ClCompile Include="MAPI\MAPIStoreFunctions.cpp">
+      <Filter>Source Files\MAPI</Filter>
+    </ClCompile>
+    <ClInclude Include="MAPI\MAPIStoreFunctions.h">
+      <Filter>Source Files\MAPI</Filter>
+    </ClInclude>
+    <ClCompile Include="MAPI\MapiStubLibrary.cpp">
+      <Filter>Source Files\MAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="MAPI\NamedPropCache.cpp">
+      <Filter>Source Files\MAPI</Filter>
+    </ClCompile>
+    <ClInclude Include="MAPI\NamedPropCache.h">
+      <Filter>Source Files\MAPI</Filter>
+    </ClInclude>
+    <ClCompile Include="MAPI\StubUtils.cpp">
+      <Filter>Source Files\MAPI</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="MAPI\MAPIProcessor\DumpStore.cpp">
+      <Filter>Source Files\MAPI\MAPIProcessor</Filter>
+    </ClCompile>
+    <ClInclude Include="MAPI\MAPIProcessor\DumpStore.h">
+      <Filter>Source Files\MAPI\MAPIProcessor</Filter>
+    </ClInclude>
+    <ClCompile Include="MAPI\MAPIProcessor\MapiProcessor.cpp">
+      <Filter>Source Files\MAPI\MAPIProcessor</Filter>
+    </ClCompile>
+    <ClInclude Include="MAPI\MAPIProcessor\MapiProcessor.h">
+      <Filter>Source Files\MAPI\MAPIProcessor</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Property\Attributes.cpp">
+      <Filter>Source Files\Property</Filter>
+    </ClCompile>
+    <ClInclude Include="Property\Attributes.h">
+      <Filter>Source Files\Property</Filter>
+    </ClInclude>
+    <ClCompile Include="Property\ParseProperty.cpp">
+      <Filter>Source Files\Property</Filter>
+    </ClCompile>
+    <ClInclude Include="Property\ParseProperty.h">
+      <Filter>Source Files\Property</Filter>
+    </ClInclude>
+    <ClCompile Include="Property\Property.cpp">
+      <Filter>Source Files\Property</Filter>
+    </ClCompile>
+    <ClInclude Include="Property\Property.h">
+      <Filter>Source Files\Property</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="PropertyBag\MAPIPropPropertyBag.cpp">
+      <Filter>Source Files\PropertyBag</Filter>
+    </ClCompile>
+    <ClInclude Include="PropertyBag\MAPIPropPropertyBag.h">
+      <Filter>Source Files\PropertyBag</Filter>
+    </ClInclude>
+    <ClInclude Include="PropertyBag\PropertyBag.h">
+      <Filter>Source Files\PropertyBag</Filter>
+    </ClInclude>
+    <ClCompile Include="PropertyBag\RowPropertyBag.cpp">
+      <Filter>Source Files\PropertyBag</Filter>
+    </ClCompile>
+    <ClInclude Include="PropertyBag\RowPropertyBag.h">
+      <Filter>Source Files\PropertyBag</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="UI\DoubleBuffer.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\DoubleBuffer.h">
+      <Filter>Source Files\UI</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\FakeSplitter.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\FakeSplitter.h">
+      <Filter>Source Files\UI</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\FileDialogEx.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\FileDialogEx.h">
+      <Filter>Source Files\UI</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\MAPIFormFunctions.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\MAPIFormFunctions.h">
+      <Filter>Source Files\UI</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\MFCUtilityFunctions.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\MFCUtilityFunctions.h">
+      <Filter>Source Files\UI</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\MyMAPIFormViewer.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\MyMAPIFormViewer.h">
+      <Filter>Source Files\UI</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\MySecInfo.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\MySecInfo.h">
+      <Filter>Source Files\UI</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\MyWinApp.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\MyWinApp.h">
+      <Filter>Source Files\UI</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\ParentWnd.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\ParentWnd.h">
+      <Filter>Source Files\UI</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\QuickStart.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\QuickStart.h">
+      <Filter>Source Files\UI</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\RichEditOleCallback.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\RichEditOleCallback.h">
+      <Filter>Source Files\UI</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\UIFunctions.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\UIFunctions.h">
+      <Filter>Source Files\UI</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="UI\Controls\ContentsTableListCtrl.cpp">
+      <Filter>Source Files\UI\Controls</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Controls\ContentsTableListCtrl.h">
+      <Filter>Source Files\UI\Controls</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\Controls\HierarchyTableTreeCtrl.cpp">
+      <Filter>Source Files\UI\Controls</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Controls\HierarchyTableTreeCtrl.h">
+      <Filter>Source Files\UI\Controls</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\Controls\SingleMAPIPropListCtrl.cpp">
+      <Filter>Source Files\UI\Controls</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Controls\SingleMAPIPropListCtrl.h">
+      <Filter>Source Files\UI\Controls</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="UI\Controls\SortList\BinaryData.cpp">
+      <Filter>Source Files\UI\Controls\SortList</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Controls\SortList\BinaryData.h">
+      <Filter>Source Files\UI\Controls\SortList</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\Controls\SortList\CommentData.cpp">
+      <Filter>Source Files\UI\Controls\SortList</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Controls\SortList\CommentData.h">
+      <Filter>Source Files\UI\Controls\SortList</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\Controls\SortList\ContentsData.cpp">
+      <Filter>Source Files\UI\Controls\SortList</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Controls\SortList\ContentsData.h">
+      <Filter>Source Files\UI\Controls\SortList</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Controls\SortList\Data.h">
+      <Filter>Source Files\UI\Controls\SortList</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\Controls\SortList\MVPropData.cpp">
+      <Filter>Source Files\UI\Controls\SortList</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Controls\SortList\MVPropData.h">
+      <Filter>Source Files\UI\Controls\SortList</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\Controls\SortList\NodeData.cpp">
+      <Filter>Source Files\UI\Controls\SortList</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Controls\SortList\NodeData.h">
+      <Filter>Source Files\UI\Controls\SortList</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\Controls\SortList\PropListData.cpp">
+      <Filter>Source Files\UI\Controls\SortList</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Controls\SortList\ResData.cpp">
+      <Filter>Source Files\UI\Controls\SortList</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Controls\SortList\ResData.h">
+      <Filter>Source Files\UI\Controls\SortList</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\Controls\SortList\SortHeader.cpp">
+      <Filter>Source Files\UI\Controls\SortList</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Controls\SortList\SortHeader.h">
+      <Filter>Source Files\UI\Controls\SortList</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\Controls\SortList\SortListCtrl.cpp">
+      <Filter>Source Files\UI\Controls\SortList</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Controls\SortList\SortListCtrl.h">
+      <Filter>Source Files\UI\Controls\SortList</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Controls\SortList\SortListData.h">
+      <Filter>Source Files\UI\Controls\SortList</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\Controls\SortList\SortListData.cpp">
+      <Filter>Source Files\UI\Controls\SortList</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Controls\SortList\PropListData.h">
+      <Filter>Source Files\UI\Controls\SortList</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="UI\Dialogs\AboutDlg.cpp">
+      <Filter>Source Files\UI\Dialogs</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Dialogs\AboutDlg.h">
+      <Filter>Source Files\UI\Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Dialogs\BaseDialog.h">
+      <Filter>Source Files\UI\Dialogs</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\Dialogs\BaseDialog.cpp">
+      <Filter>Source Files\UI\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Dialogs\Dialog.cpp">
+      <Filter>Source Files\UI\Dialogs</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Dialogs\Dialog.h">
+      <Filter>Source Files\UI\Dialogs</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\Dialogs\SingleMessageDialog.cpp">
+      <Filter>Source Files\UI\Dialogs</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Dialogs\SingleMessageDialog.h">
+      <Filter>Source Files\UI\Dialogs</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\Dialogs\SingleRecipientDialog.cpp">
+      <Filter>Source Files\UI\Dialogs</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Dialogs\SingleRecipientDialog.h">
+      <Filter>Source Files\UI\Dialogs</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="UI\Dialogs\ContentsTable\AbDlg.cpp">
+      <Filter>Source Files\UI\Dialogs\ContentsTable</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Dialogs\ContentsTable\ABDlg.h">
+      <Filter>Source Files\UI\Dialogs\ContentsTable</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\Dialogs\ContentsTable\AclDlg.cpp">
+      <Filter>Source Files\UI\Dialogs\ContentsTable</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Dialogs\ContentsTable\AclDlg.h">
+      <Filter>Source Files\UI\Dialogs\ContentsTable</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\Dialogs\ContentsTable\AttachmentsDlg.cpp">
+      <Filter>Source Files\UI\Dialogs\ContentsTable</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Dialogs\ContentsTable\AttachmentsDlg.h">
+      <Filter>Source Files\UI\Dialogs\ContentsTable</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\Dialogs\ContentsTable\ContentsTableDlg.cpp">
+      <Filter>Source Files\UI\Dialogs\ContentsTable</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Dialogs\ContentsTable\ContentsTableDlg.h">
+      <Filter>Source Files\UI\Dialogs\ContentsTable</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\Dialogs\ContentsTable\FolderDlg.cpp">
+      <Filter>Source Files\UI\Dialogs\ContentsTable</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Dialogs\ContentsTable\FolderDlg.h">
+      <Filter>Source Files\UI\Dialogs\ContentsTable</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\Dialogs\ContentsTable\FormContainerDlg.cpp">
+      <Filter>Source Files\UI\Dialogs\ContentsTable</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Dialogs\ContentsTable\FormContainerDlg.h">
+      <Filter>Source Files\UI\Dialogs\ContentsTable</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\Dialogs\ContentsTable\MailboxTableDlg.cpp">
+      <Filter>Source Files\UI\Dialogs\ContentsTable</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Dialogs\ContentsTable\MailboxTableDlg.h">
+      <Filter>Source Files\UI\Dialogs\ContentsTable</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\Dialogs\ContentsTable\MainDlg.cpp">
+      <Filter>Source Files\UI\Dialogs\ContentsTable</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Dialogs\ContentsTable\MainDlg.h">
+      <Filter>Source Files\UI\Dialogs\ContentsTable</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\Dialogs\ContentsTable\MsgServiceTableDlg.cpp">
+      <Filter>Source Files\UI\Dialogs\ContentsTable</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Dialogs\ContentsTable\MsgServiceTableDlg.h">
+      <Filter>Source Files\UI\Dialogs\ContentsTable</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\Dialogs\ContentsTable\ProfileListDlg.cpp">
+      <Filter>Source Files\UI\Dialogs\ContentsTable</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Dialogs\ContentsTable\ProfileListDlg.h">
+      <Filter>Source Files\UI\Dialogs\ContentsTable</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\Dialogs\ContentsTable\ProviderTableDlg.cpp">
+      <Filter>Source Files\UI\Dialogs\ContentsTable</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Dialogs\ContentsTable\ProviderTableDlg.h">
+      <Filter>Source Files\UI\Dialogs\ContentsTable</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\Dialogs\ContentsTable\PublicFolderTableDlg.cpp">
+      <Filter>Source Files\UI\Dialogs\ContentsTable</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Dialogs\ContentsTable\PublicFolderTableDlg.h">
+      <Filter>Source Files\UI\Dialogs\ContentsTable</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\Dialogs\ContentsTable\RecipientsDlg.cpp">
+      <Filter>Source Files\UI\Dialogs\ContentsTable</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Dialogs\ContentsTable\RecipientsDlg.h">
+      <Filter>Source Files\UI\Dialogs\ContentsTable</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\Dialogs\ContentsTable\RulesDlg.cpp">
+      <Filter>Source Files\UI\Dialogs\ContentsTable</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Dialogs\ContentsTable\RulesDlg.h">
+      <Filter>Source Files\UI\Dialogs\ContentsTable</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="UI\Dialogs\Editors\DbgView.cpp">
+      <Filter>Source Files\UI\Dialogs\Editors</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Dialogs\Editors\DbgView.h">
+      <Filter>Source Files\UI\Dialogs\Editors</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\Dialogs\Editors\Editor.cpp">
+      <Filter>Source Files\UI\Dialogs\Editors</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Dialogs\Editors\Editor.h">
+      <Filter>Source Files\UI\Dialogs\Editors</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\Dialogs\Editors\HexEditor.cpp">
+      <Filter>Source Files\UI\Dialogs\Editors</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Dialogs\Editors\HexEditor.h">
+      <Filter>Source Files\UI\Dialogs\Editors</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\Dialogs\Editors\MultiValuePropertyEditor.cpp">
+      <Filter>Source Files\UI\Dialogs\Editors</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Dialogs\Editors\MultiValuePropertyEditor.h">
+      <Filter>Source Files\UI\Dialogs\Editors</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\Dialogs\Editors\Options.cpp">
+      <Filter>Source Files\UI\Dialogs\Editors</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Dialogs\Editors\Options.h">
+      <Filter>Source Files\UI\Dialogs\Editors</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\Dialogs\Editors\PropertyEditor.cpp">
+      <Filter>Source Files\UI\Dialogs\Editors</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Dialogs\Editors\PropertyEditor.h">
+      <Filter>Source Files\UI\Dialogs\Editors</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\Dialogs\Editors\PropertySelector.cpp">
+      <Filter>Source Files\UI\Dialogs\Editors</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Dialogs\Editors\PropertySelector.h">
+      <Filter>Source Files\UI\Dialogs\Editors</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\Dialogs\Editors\PropertyTagEditor.cpp">
+      <Filter>Source Files\UI\Dialogs\Editors</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Dialogs\Editors\PropertyTagEditor.h">
+      <Filter>Source Files\UI\Dialogs\Editors</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\Dialogs\Editors\QSSpecialFolders.cpp">
+      <Filter>Source Files\UI\Dialogs\Editors</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Dialogs\Editors\QSSpecialFolders.h">
+      <Filter>Source Files\UI\Dialogs\Editors</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\Dialogs\Editors\RestrictEditor.cpp">
+      <Filter>Source Files\UI\Dialogs\Editors</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Dialogs\Editors\RestrictEditor.h">
+      <Filter>Source Files\UI\Dialogs\Editors</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\Dialogs\Editors\SearchEditor.cpp">
+      <Filter>Source Files\UI\Dialogs\Editors</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Dialogs\Editors\SearchEditor.h">
+      <Filter>Source Files\UI\Dialogs\Editors</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\Dialogs\Editors\StreamEditor.cpp">
+      <Filter>Source Files\UI\Dialogs\Editors</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Dialogs\Editors\StreamEditor.h">
+      <Filter>Source Files\UI\Dialogs\Editors</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\Dialogs\Editors\TagArrayEditor.cpp">
+      <Filter>Source Files\UI\Dialogs\Editors</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Dialogs\Editors\TagArrayEditor.h">
+      <Filter>Source Files\UI\Dialogs\Editors</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="UI\Dialogs\HierarchyTable\ABContDlg.cpp">
+      <Filter>Source Files\UI\Dialogs\HierarchyTable</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Dialogs\HierarchyTable\ABContDlg.h">
+      <Filter>Source Files\UI\Dialogs\HierarchyTable</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\Dialogs\HierarchyTable\HierarchyTableDlg.cpp">
+      <Filter>Source Files\UI\Dialogs\HierarchyTable</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Dialogs\HierarchyTable\HierarchyTableDlg.h">
+      <Filter>Source Files\UI\Dialogs\HierarchyTable</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\Dialogs\HierarchyTable\MsgStoreDlg.cpp">
+      <Filter>Source Files\UI\Dialogs\HierarchyTable</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\Dialogs\HierarchyTable\MsgStoreDlg.h">
+      <Filter>Source Files\UI\Dialogs\HierarchyTable</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="UI\ViewPane\CheckPane.cpp">
+      <Filter>Source Files\UI\ViewPane</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\ViewPane\CheckPane.h">
+      <Filter>Source Files\UI\ViewPane</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\ViewPane\CountedTextPane.cpp">
+      <Filter>Source Files\UI\ViewPane</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\ViewPane\CountedTextPane.h">
+      <Filter>Source Files\UI\ViewPane</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\ViewPane\DropDownPane.cpp">
+      <Filter>Source Files\UI\ViewPane</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\ViewPane\DropDownPane.h">
+      <Filter>Source Files\UI\ViewPane</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\ViewPane\ListPane.cpp">
+      <Filter>Source Files\UI\ViewPane</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\ViewPane\ListPane.h">
+      <Filter>Source Files\UI\ViewPane</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\ViewPane\SmartViewPane.cpp">
+      <Filter>Source Files\UI\ViewPane</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\ViewPane\SmartViewPane.h">
+      <Filter>Source Files\UI\ViewPane</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\ViewPane\TextPane.cpp">
+      <Filter>Source Files\UI\ViewPane</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\ViewPane\TextPane.h">
+      <Filter>Source Files\UI\ViewPane</Filter>
+    </ClInclude>
+    <ClCompile Include="UI\ViewPane\ViewPane.cpp">
+      <Filter>Source Files\UI\ViewPane</Filter>
+    </ClCompile>
+    <ClInclude Include="UI\ViewPane\ViewPane.h">
+      <Filter>Source Files\UI\ViewPane</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="mfcmapi.exe.manifest" />
   </ItemGroup>
 </Project>

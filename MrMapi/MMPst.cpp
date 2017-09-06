@@ -150,7 +150,7 @@ void DoPST(_In_ MYOPTIONS ProgOpts)
 	struct _stat64 stats = { 0 };
 	_wstati64(ProgOpts.lpszInput.c_str(), &stats);
 
-	auto fIn = _wfopen(ProgOpts.lpszInput.c_str(), L"rb");
+	auto fIn = MyOpenFile(ProgOpts.lpszInput.c_str(), L"rb");
 	if (fIn)
 	{
 		PSTHEADER pstHeader = { 0 };

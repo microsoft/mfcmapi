@@ -703,7 +703,7 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 			// If we have a next argument and it's not an option, parse it as a type
 			if (i + 1 < argc && switchNoSwitch == ParseArgument(argv[i + 1]))
 			{
-				pRunOpts->ulTypeNum = PropTypeNameToPropType(LPCTSTRToWstring(argv[i + 1]));
+				pRunOpts->ulTypeNum = PropTypeNameToPropType(LPCSTRToWstring(argv[i + 1]));
 				i++;
 			}
 			break;
@@ -1033,7 +1033,7 @@ void main(_In_ int argc, _In_count_(argc) char * argv[])
 	auto hRes = S_OK;
 	auto bMAPIInit = false;
 
-	SetDllDirectory("");
+	SetDllDirectory(_T(""));
 	MyHeapSetInformation(nullptr, HeapEnableTerminationOnCorruption, nullptr, 0);
 
 	// Set up our property arrays or nothing works
