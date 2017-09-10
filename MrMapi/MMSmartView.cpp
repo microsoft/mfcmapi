@@ -19,11 +19,11 @@ void DoSmartView(_In_ MYOPTIONS ProgOpts)
 	if (ulStructType)
 	{
 		FILE* fOut = nullptr;
-		auto fIn = _wfopen(ProgOpts.lpszInput.c_str(), L"rb");
+		auto fIn = MyOpenFile(ProgOpts.lpszInput.c_str(), L"rb");
 		if (!fIn) printf("Cannot open input file %ws\n", ProgOpts.lpszInput.c_str());
 		if (!ProgOpts.lpszOutput.empty())
 		{
-			fOut = _wfopen(ProgOpts.lpszOutput.c_str(), L"wb");
+			fOut = MyOpenFile(ProgOpts.lpszOutput.c_str(), L"wb");
 			if (!fOut) printf("Cannot open output file %ws\n", ProgOpts.lpszOutput.c_str());
 		}
 

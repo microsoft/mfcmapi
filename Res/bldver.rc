@@ -24,19 +24,10 @@
 #endif
 
 #define RC_VERSION_COMPANY_NAME     "Microsoft Corporation\0"
-#define VER_LEGALCOPYRIGHT_YEARS    "1999-2016"
+#define VER_LEGALCOPYRIGHT_YEARS    "1999-2017"
 #define RC_VERSION_PRODUCT_NAME     RC_PRODUCT_NAME "\0"
 #define RC_VERSION_LEGAL_COPYRIGHT  "Copyright \251 " VER_LEGALCOPYRIGHT_YEARS " Microsoft Corporation. All rights reserved.\0"
 #define RC_VERSION_LEGAL_TRADEMARKS "Microsoft\256 is a registered trademark of Microsoft Corporation.\0"
-
-#ifndef DS_SHELLFONT
-#error "Compilation requires the February 2003 or later Microsoft SDK"
-#error "Or Visual C++ 2005 or higher"
-#error "Go to the following URL"
-#error "    http://www.microsoft.com/downloads/details.aspx?FamilyId=A55B6B43-E24F-4EA3-A93E-40C0EC4F68E5"
-#error "and follow the instructions to install the core SDK"
-#error "Then go to Tools\Options\Directories and ensure the SDK include directory preceeds the Visual Studio include directories"
-#endif
 
 /////////////////////////////////////////////////////////////////////////////
 //
