@@ -114,7 +114,7 @@ void CDumpStore::DoMailboxTablePerRowWork(_In_ LPMDB lpMDB, _In_ const LPSRow lp
 	// build a path for our store's folder output:
 	if (CheckStringProp(lpEmailAddress, PT_TSTRING) && CheckStringProp(lpDisplayName, PT_TSTRING))
 	{
-		auto szTemp = SanitizeFileNameW(LPCTSTRToWstring(lpDisplayName->Value.LPSZ));
+		auto szTemp = SanitizeFileName(LPCTSTRToWstring(lpDisplayName->Value.LPSZ));
 
 		m_szFolderPathRoot = m_szMailboxTablePathRoot + L"\\" + szTemp;
 

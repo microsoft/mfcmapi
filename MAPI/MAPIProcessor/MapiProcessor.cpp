@@ -301,7 +301,7 @@ void CMAPIProcessor::ProcessFolder(bool bDoRegular,
 						if (CheckStringProp(lpFolderDisplayName, PT_TSTRING))
 						{
 							// Clean up the folder name before appending it to the offset
-							szSubFolderOffset = m_szFolderOffset + SanitizeFileNameW(LPCTSTRToWstring(lpFolderDisplayName->Value.LPSZ)) + L'\\'; // STRING_OK
+							szSubFolderOffset = m_szFolderOffset + SanitizeFileName(LPCTSTRToWstring(lpFolderDisplayName->Value.LPSZ)) + L'\\'; // STRING_OK
 						}
 						else
 						{

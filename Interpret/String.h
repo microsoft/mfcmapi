@@ -21,6 +21,7 @@ using std::tstring;
 using std::vector;
 
 extern wstring emptystring;
+wstring loadstring(HINSTANCE hInstance, DWORD dwID);
 wstring loadstring(DWORD dwID);
 wstring formatV(LPCWSTR szMsg, va_list argList);
 wstring format(LPCWSTR szMsg, ...);
@@ -48,7 +49,7 @@ wstring StripCarriage(const wstring& szString);
 wstring CleanString(const wstring& szString);
 wstring TrimString(const wstring& szString);
 wstring ScrubStringForXML(const wstring& szString);
-wstring SanitizeFileNameW(const wstring& szFileIn);
+wstring SanitizeFileName(const wstring& szFileIn);
 wstring indent(int iIndent);
 
 wstring BinToTextStringW(const vector<BYTE>& lpByte, bool bMultiLine);
