@@ -352,7 +352,7 @@ wstring BuildFileNameAndPath(
 	wstring cleanSubj;
 	if (!szSubj.empty())
 	{
-		cleanSubj = SanitizeFileNameW(szSubj);
+		cleanSubj = SanitizeFileName(szSubj);
 	}
 	else
 	{
@@ -1304,7 +1304,7 @@ _Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd)
 			szName = lpProps[DISPLAY_NAME_W].Value.lpszW;
 		}
 
-		auto szFileName = SanitizeFileNameW(szName);
+		auto szFileName = SanitizeFileName(szName);
 
 		// Get File Name
 		switch (lpProps[ATTACH_METHOD].Value.l)

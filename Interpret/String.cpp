@@ -42,11 +42,11 @@ wstring format(LPCWSTR szMsg, ...)
 	return ret;
 }
 
-wstring loadstring(DWORD dwID)
+wstring loadstring(HINSTANCE hInstance, DWORD dwID)
 {
 	wstring fmtString;
 	LPWSTR buffer = nullptr;
-	size_t len = LoadStringW(nullptr, dwID, reinterpret_cast<PWCHAR>(&buffer), 0);
+	size_t len = LoadStringW(hInstance, dwID, reinterpret_cast<PWCHAR>(&buffer), 0);
 
 	if (len)
 	{
@@ -54,6 +54,11 @@ wstring loadstring(DWORD dwID)
 	}
 
 	return fmtString;
+}
+
+wstring loadstring(DWORD dwID)
+{
+	return loadstring(nullptr, dwID);
 }
 
 wstring formatmessageV(const wstring& szMsg, va_list argList)
@@ -266,7 +271,7 @@ wstring ScrubStringForXML(const wstring& szString)
 
 // Processes szFileIn, replacing non file system characters with underscores
 // Do NOT call with full path - just file names
-wstring SanitizeFileNameW(const wstring& szFileIn)
+wstring SanitizeFileName(const wstring& szFileIn)
 {
 	return replace(szFileIn, [](const WCHAR& chr)
 	{
