@@ -1419,7 +1419,13 @@ void CCriteriaEditor::OnEditAction1()
 
 _Check_return_ bool CCriteriaEditor::DoListEdit(ULONG ulListNum, int iItem, _In_ SortListData* lpData)
 {
-	if (!lpData && !lpData->Binary()) return false;
+	if (!lpData) return false;
+
+	if (!lpData->Binary())
+	{
+		lpData->InitializeBinary(nullptr);
+	}
+
 	auto hRes = S_OK;
 	wstring szTmp;
 
