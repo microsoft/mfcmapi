@@ -380,6 +380,8 @@ _Check_return_ HRESULT CContentsTableListCtrl::AddColumn(UINT uidHeaderName, ULO
 	HDITEM hdItem = { 0 };
 	auto lpMyHeader = GetHeaderCtrl();
 	wstring szHeaderString;
+	LPMDB lpMDB = nullptr;
+	if (m_lpMapiObjects) lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 
 	if (uidHeaderName)
 	{
@@ -390,7 +392,21 @@ _Check_return_ HRESULT CContentsTableListCtrl::AddColumn(UINT uidHeaderName, ULO
 		auto propTagNames = PropTagToPropName(ulPropTag, m_bIsAB);
 		szHeaderString = propTagNames.bestGuess;
 		if (szHeaderString.empty())
+		{
+			auto namePropNames = NameIDToStrings(
+				ulPropTag,
+				lpMDB,
+				nullptr,
+				nullptr,
+				m_bIsAB);
+
+			szHeaderString = namePropNames.name;
+		}
+
+		if (szHeaderString.empty())
+		{
 			szHeaderString = format(L"0x%08X", ulPropTag); // STRING_OK
+		}
 	}
 
 	auto iRetVal = InsertColumn(ulCurHeaderCol, wstringTotstring(szHeaderString).c_str());
@@ -407,9 +423,6 @@ _Check_return_ HRESULT CContentsTableListCtrl::AddColumn(UINT uidHeaderName, ULO
 		auto lpHeaderData = new HeaderData; // Will be deleted in CSortListCtrl::DeleteAllColumns
 		if (lpHeaderData)
 		{
-			LPMDB lpMDB = nullptr;
-			if (m_lpMapiObjects) lpMDB = m_lpMapiObjects->GetMDB(); // do not release
-
 			lpHeaderData->ulTagArrayRow = ulCurTagArrayRow;
 			lpHeaderData->ulPropTag = ulPropTag;
 			lpHeaderData->bIsAB = m_bIsAB;
