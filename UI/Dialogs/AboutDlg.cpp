@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include <UI/Dialogs/AboutDlg.h>
 #include <UI/UIFunctions.h>
-#include <new>
 
 void DisplayAboutDlg(_In_ CWnd* lpParentWnd)
 {
