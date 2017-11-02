@@ -916,18 +916,16 @@ void _OutputVersion(ULONG ulDbgLvl, _In_opt_ FILE* fFile)
 		if (dwVerInfoSize)
 		{
 			// If we were able to get the information, process it.
-			auto pbData = new BYTE[dwVerInfoSize];
-			if (pbData == nullptr) return;
+			try {
+				auto pbData = new BYTE[dwVerInfoSize];
 
-			BOOL bRet = false;
-			EC_D(bRet, GetFileVersionInfoW(
-				szFullPath,
-				NULL,
-				dwVerInfoSize,
-				static_cast<void*>(pbData)));
+				BOOL bRet = false;
+				EC_D(bRet, GetFileVersionInfoW(
+					szFullPath,
+					NULL,
+					dwVerInfoSize,
+					static_cast<void*>(pbData)));
 
-			if (pbData)
-			{
 				struct LANGANDCODEPAGE {
 					WORD wLanguage;
 					WORD wCodePage;
@@ -975,9 +973,13 @@ void _OutputVersion(ULONG ulDbgLvl, _In_opt_ FILE* fFile)
 						}
 					}
 				}
-			}
 
-			delete[] pbData;
+
+				delete[] pbData;
+			}
+			catch (std::bad_alloc& ba) {
+				return;
+			}
 		}
 	}
 }
