@@ -163,12 +163,13 @@ _Check_return_ INT_PTR CFileDialogExW::DisplayDialog(
 	LPWSTR szBigBuff = nullptr;
 	if (dwFlags & OFN_ALLOWMULTISELECT)
 	{
-		szBigBuff = new WCHAR[CCHBIGBUFF];
-		if (szBigBuff)
-		{
+		try {
+			szBigBuff = new WCHAR[CCHBIGBUFF];
 			szBigBuff[0] = 0; // NULL terminate
 			ofn.lpstrFile = szBigBuff;
 			ofn.nMaxFile = CCHBIGBUFF;
+		}
+		catch (std::bad_alloc& ba) {
 		}
 	}
 
