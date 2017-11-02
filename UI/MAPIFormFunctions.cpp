@@ -58,17 +58,16 @@ _Check_return_ HRESULT CreateAndDisplayNewMailInFolder(
 				&lpMessage));
 			if (lpMessage)
 			{
-				auto lpMAPIFormViewer = new CMyMAPIFormViewer(
-					hwndParent,
-					lpMDB,
-					lpMAPISession,
-					lpFolder,
-					lpMessage,
-					lpContentsTableListCtrl,
-					iItem);
+				try {
+					auto lpMAPIFormViewer = new CMyMAPIFormViewer(
+						hwndParent,
+						lpMDB,
+						lpMAPISession,
+						lpFolder,
+						lpMessage,
+						lpContentsTableListCtrl,
+						iItem);
 
-				if (lpMAPIFormViewer)
-				{
 					// put everything together with the default info
 					EC_MAPI(lpPersistMessage->InitNew(
 						static_cast<LPMAPIMESSAGESITE>(lpMAPIFormViewer),
@@ -90,6 +89,8 @@ _Check_return_ HRESULT CreateAndDisplayNewMailInFolder(
 					}
 
 					lpMAPIFormViewer->Release();
+				}
+				catch (std::bad_alloc& ba) {
 				}
 
 				lpMessage->Release();
@@ -154,17 +155,16 @@ _Check_return_ HRESULT OpenMessageNonModal(
 			0,
 			&ulMessageStatus));
 
-		auto lpMAPIFormViewer = new CMyMAPIFormViewer(
-			hwndParent,
-			lpMDB,
-			lpMAPISession,
-			lpSourceFolder,
-			lpMessage,
-			lpContentsTableListCtrl,
-			iItem);
+		try {
+			auto lpMAPIFormViewer = new CMyMAPIFormViewer(
+				hwndParent,
+				lpMDB,
+				lpMAPISession,
+				lpSourceFolder,
+				lpMessage,
+				lpContentsTableListCtrl,
+				iItem);
 
-		if (lpMAPIFormViewer)
-		{
 			LPMAPIFORMMGR lpMAPIFormMgr = nullptr;
 			LPMAPIFORM lpForm = nullptr;
 
@@ -219,6 +219,8 @@ _Check_return_ HRESULT OpenMessageNonModal(
 				lpForm->Release();
 			}
 			lpMAPIFormViewer->Release();
+		}
+		catch (std::bad_alloc& ba) {
 		}
 
 		MAPIFreeBuffer(lpspvaShow);

@@ -2269,23 +2269,27 @@ _Check_return_ wstring DecodeID(ULONG cbBuffer, _In_count_(cbBuffer) LPBYTE lpbB
 
 	auto cbDecodedBuffer = cbBuffer / 2;
 	// Allocate memory for lpDecoded
-	auto lpDecoded = new BYTE[cbDecodedBuffer];
-	if (!lpDecoded) return emptystring;
+	try {
+		auto lpDecoded = new BYTE[cbDecodedBuffer];
 
-	// Subtract kwBaseOffset from every character and place result in lpDecoded
-	auto lpwzSrc = reinterpret_cast<LPWSTR>(lpbBuffer);
-	auto lpDst = lpDecoded;
-	for (ULONG i = 0; i < cbDecodedBuffer; i++, lpwzSrc++, lpDst++)
-	{
-		*lpDst = static_cast<BYTE>(*lpwzSrc - kwBaseOffset);
+		// Subtract kwBaseOffset from every character and place result in lpDecoded
+		auto lpwzSrc = reinterpret_cast<LPWSTR>(lpbBuffer);
+		auto lpDst = lpDecoded;
+		for (ULONG i = 0; i < cbDecodedBuffer; i++, lpwzSrc++, lpDst++)
+		{
+			*lpDst = static_cast<BYTE>(*lpwzSrc - kwBaseOffset);
+		}
+
+		auto szBin = BinToHexString(
+			lpDecoded,
+			cbDecodedBuffer,
+			true);
+		delete[] lpDecoded;
+		return szBin;
 	}
-
-	auto szBin = BinToHexString(
-		lpDecoded,
-		cbDecodedBuffer,
-		true);
-	delete[] lpDecoded;
-	return szBin;
+	catch (std::bad_alloc& ba) {
+		return emptystring;
+	}
 }
 
 HRESULT HrEmsmdbUIDFromStore(_In_ LPMAPISESSION pmsess,
