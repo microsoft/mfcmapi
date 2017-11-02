@@ -84,20 +84,24 @@ BOOL CContentsTableDlg::OnInitDialog()
 {
 	auto bRet = CBaseDialog::OnInitDialog();
 
-	m_lpContentsTableListCtrl = new CContentsTableListCtrl(
-		m_lpFakeSplitter,
-		m_lpMapiObjects,
-		m_sptExtraColumnTags,
-		m_lpExtraDisplayColumns,
-		m_nIDContextMenu,
-		m_bIsAB,
-		this);
+	try {
+		m_lpContentsTableListCtrl = new CContentsTableListCtrl(
+			m_lpFakeSplitter,
+			m_lpMapiObjects,
+			m_sptExtraColumnTags,
+			m_lpExtraDisplayColumns,
+			m_nIDContextMenu,
+			m_bIsAB,
+			this);
 
-	if (m_lpContentsTableListCtrl && m_lpFakeSplitter)
-	{
-		m_lpFakeSplitter->SetPaneOne(m_lpContentsTableListCtrl);
-		m_lpFakeSplitter->SetPercent(static_cast<FLOAT>(0.40));
-		m_lpFakeSplitter->SetSplitType(SplitVertical);
+		if (m_lpFakeSplitter)
+		{
+			m_lpFakeSplitter->SetPaneOne(m_lpContentsTableListCtrl);
+			m_lpFakeSplitter->SetPercent(static_cast<FLOAT>(0.40));
+			m_lpFakeSplitter->SetSplitType(SplitVertical);
+		}
+	}
+	catch (std::bad_alloc& ba) {
 	}
 
 	if (m_lpContainer)
