@@ -148,14 +148,17 @@ BOOL CBaseDialog::OnInitDialog()
 
 	SetIcon(m_hIcon, false); // Set small icon - large icon isn't used
 
-	m_lpFakeSplitter = new CFakeSplitter(this);
+	try {
+		m_lpFakeSplitter = new CFakeSplitter(this);
 
-	if (m_lpFakeSplitter)
-	{
-		m_lpPropDisplay = new CSingleMAPIPropListCtrl(m_lpFakeSplitter, this, m_lpMapiObjects, m_bIsAB);
-
-		if (m_lpPropDisplay)
+		try {
+			m_lpPropDisplay = new CSingleMAPIPropListCtrl(m_lpFakeSplitter, this, m_lpMapiObjects, m_bIsAB);
 			m_lpFakeSplitter->SetPaneTwo(m_lpPropDisplay);
+		}
+		catch (std::bad_alloc& ba) {
+		}
+	}
+	catch (std::bad_alloc& ba) {
 	}
 	return false;
 }
@@ -392,8 +395,12 @@ void CBaseDialog::OnOptions()
 
 void CBaseDialog::OnOpenMainWindow()
 {
-	auto pMain = new CMainDlg(m_lpParent, m_lpMapiObjects);
-	if (pMain) pMain->OnOpenMessageStoreTable();
+	try {
+		auto pMain = new CMainDlg(m_lpParent, m_lpMapiObjects);
+		pMain->OnOpenMessageStoreTable();
+	}
+	catch (std::bad_alloc& ba) {
+	}
 }
 
 void CBaseDialog::HandleCopy()
@@ -659,10 +666,10 @@ wstring GetOutlookVersionString()
 
 		if (!lpszTempPath.empty())
 		{
-			auto lpszTempVer = new WCHAR[MAX_PATH];
-			auto lpszTempLang = new WCHAR[MAX_PATH];
-			if (lpszTempVer && lpszTempLang)
-			{
+			try {
+				auto lpszTempVer = new WCHAR[MAX_PATH];
+				auto lpszTempLang = new WCHAR[MAX_PATH];
+
 				UINT ret = 0;
 				DWORD dwValueBuf = MAX_PATH;
 				WC_D(ret, pfnMsiGetFileVersion(lpszTempPath.c_str(),
@@ -679,6 +686,8 @@ wstring GetOutlookVersionString()
 
 				delete[] lpszTempLang;
 				delete[] lpszTempVer;
+			}
+			catch (std::bad_alloc& ba) {
 			}
 		}
 	}
@@ -973,10 +982,9 @@ void CBaseDialog::OnNotificationsOn()
 		WC_H(MyData.GetEntryID(0, false, &cbBin, &lpEntryID));
 		// don't actually care if the returning lpEntryID is NULL - Advise can work with that
 
-		m_lpBaseAdviseSink = new CAdviseSink(m_hWnd, nullptr);
+		try {
+			m_lpBaseAdviseSink = new CAdviseSink(m_hWnd, nullptr);
 
-		if (m_lpBaseAdviseSink)
-		{
 			switch (MyData.GetDropDown(2))
 			{
 			case 0:
@@ -1025,6 +1033,9 @@ void CBaseDialog::OnNotificationsOn()
 				m_ulBaseAdviseConnection = NULL;
 			}
 		}
+		catch (std::bad_alloc& ba) {
+		}
+
 		delete[] lpEntryID;
 	}
 }
