@@ -289,10 +289,11 @@ LPCGUID GUIDNameToGUID(_In_ const wstring& szGUID, bool bByteSwapped)
 
 	if (lpGUID)
 	{
-		lpGuidRet = new GUID;
-		if (lpGuidRet)
-		{
+		try {
+			lpGuidRet = new GUID;
 			memcpy(lpGuidRet, lpGUID, sizeof(GUID));
+		}
+		catch (std::bad_alloc& ba) {
 		}
 	}
 
