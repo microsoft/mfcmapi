@@ -420,9 +420,9 @@ _Check_return_ HRESULT CContentsTableListCtrl::AddColumn(UINT uidHeaderName, ULO
 	if (lpMyHeader)
 	{
 		hdItem.mask = HDI_LPARAM;
-		auto lpHeaderData = new HeaderData; // Will be deleted in CSortListCtrl::DeleteAllColumns
-		if (lpHeaderData)
-		{
+
+		try {
+			auto lpHeaderData = new HeaderData; // Will be deleted in CSortListCtrl::DeleteAllColumns
 			lpHeaderData->ulTagArrayRow = ulCurTagArrayRow;
 			lpHeaderData->ulPropTag = ulPropTag;
 			lpHeaderData->bIsAB = m_bIsAB;
@@ -430,6 +430,8 @@ _Check_return_ HRESULT CContentsTableListCtrl::AddColumn(UINT uidHeaderName, ULO
 
 			hdItem.lParam = reinterpret_cast<LPARAM>(lpHeaderData);
 			EC_B(lpMyHeader->SetItem(ulCurHeaderCol, &hdItem));
+		}
+		catch (std::bad_alloc& ba) {
 		}
 	}
 
@@ -753,10 +755,9 @@ _Check_return_ HRESULT CContentsTableListCtrl::LoadContentsTableIntoView()
 	m_bInLoadOp = true;
 	// Do not call return after this point!
 
-	auto lpThreadInfo = new ThreadLoadTableInfo;
+	try {
+		auto lpThreadInfo = new ThreadLoadTableInfo;
 
-	if (lpThreadInfo)
-	{
 		lpThreadInfo->hWndHost = m_lpHostDlg->m_hWnd;
 		lpThreadInfo->lpbAbort = &m_bAbortLoad;
 		m_bAbortLoad = false; // no need to synchronize this - the thread hasn't started yet
@@ -784,6 +785,8 @@ _Check_return_ HRESULT CContentsTableListCtrl::LoadContentsTableIntoView()
 			DebugPrintEx(DBGGeneric, CLASS, L"LoadContentsTableIntoView", L"Load thread created.\n");
 			m_LoadThreadHandle = hThread;
 		}
+	}
+	catch (std::bad_alloc& ba) {
 	}
 
 	return hRes;
@@ -1426,10 +1429,9 @@ _Check_return_ HRESULT CContentsTableListCtrl::NotificationOn()
 
 	DebugPrintEx(DBGGeneric, CLASS, L"NotificationOn", L"registering table notification on %p\n", m_lpContentsTable);
 
-	m_lpAdviseSink = new CAdviseSink(m_hWnd, nullptr);
+	try {
+		m_lpAdviseSink = new CAdviseSink(m_hWnd, nullptr);
 
-	if (m_lpAdviseSink)
-	{
 		WC_MAPI(m_lpContentsTable->Advise(
 			fnevTableModified,
 			static_cast<IMAPIAdviseSink *>(m_lpAdviseSink),
@@ -1450,6 +1452,8 @@ _Check_return_ HRESULT CContentsTableListCtrl::NotificationOn()
 				ForceRop(lpMDB);
 			}
 		}
+	}
+	catch (std::bad_alloc& ba) {
 	}
 
 	DebugPrintEx(DBGGeneric, CLASS, L"NotificationOn", L"Table notification results (Sink:%p, ulConnection:0x%X) on %p\n", m_lpAdviseSink, static_cast<int>(m_ulAdviseConnection), m_lpContentsTable);
