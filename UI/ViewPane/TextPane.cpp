@@ -17,7 +17,7 @@ TextPane* TextPane::CreateMultiLinePane(UINT uidLabel, _In_ const wstring& szVal
 
 TextPane* TextPane::CreateSingleLinePane(UINT uidLabel, bool bReadOnly, bool bMultiLine)
 {
-	auto lpPane = new TextPane();
+	auto lpPane = new (std::nothrow) TextPane();
 	if (lpPane)
 	{
 		lpPane->m_bMultiline = bMultiLine;
@@ -29,7 +29,7 @@ TextPane* TextPane::CreateSingleLinePane(UINT uidLabel, bool bReadOnly, bool bMu
 
 TextPane* TextPane::CreateSingleLinePane(UINT uidLabel, _In_ const wstring& szVal, bool bReadOnly, bool bMultiLine)
 {
-	auto lpPane = new TextPane();
+	auto lpPane = new (std::nothrow) TextPane();
 	if (lpPane)
 	{
 		lpPane->m_bMultiline = bMultiLine;
@@ -42,7 +42,7 @@ TextPane* TextPane::CreateSingleLinePane(UINT uidLabel, _In_ const wstring& szVa
 
 TextPane* TextPane::CreateSingleLinePaneID(UINT uidLabel, UINT uidVal, bool bReadOnly)
 {
-	auto lpPane = new TextPane();
+	auto lpPane = new (std::nothrow) TextPane();
 
 	if (lpPane && uidVal)
 	{
@@ -55,7 +55,7 @@ TextPane* TextPane::CreateSingleLinePaneID(UINT uidLabel, UINT uidVal, bool bRea
 
 TextPane* TextPane::CreateCollapsibleTextPane(UINT uidLabel, bool bReadOnly)
 {
-	auto pane = new TextPane();
+	auto pane = new (std::nothrow) TextPane();
 	if (pane)
 	{
 		pane->SetMultiline();
@@ -84,7 +84,7 @@ _Check_return_ static DWORD CALLBACK EditStreamReadCallBack(
 
 	auto cbTemp = cb / 2;
 	ULONG cbTempRead = 0;
-	auto pbTempBuff = new BYTE[cbTemp];
+	auto pbTempBuff = new (std::nothrow) BYTE[cbTemp];
 
 	if (pbTempBuff)
 	{
@@ -395,7 +395,7 @@ wstring TextPane::GetUIValue() const
 		// Allocate a buffer large enough for either kind of string, along with a null terminator
 		auto cchTextWithNULL = cchText + 1;
 		auto cbBuffer = cchTextWithNULL * sizeof(WCHAR);
-		auto buffer = new BYTE[cbBuffer];
+		auto buffer = new (std::nothrow) BYTE[cbBuffer];
 		if (buffer)
 		{
 			GETTEXTEX getText = { 0 };
