@@ -467,7 +467,7 @@ LPBYTE ByteVectorToLPBYTE(const vector<BYTE>& bin)
 {
 	if (bin.empty()) return nullptr;
 
-	auto lpBin = new BYTE[bin.size()];
+	auto lpBin = new (std::nothrow) BYTE[bin.size()];
 	if (lpBin != nullptr)
 	{
 		memset(lpBin, 0, bin.size());
