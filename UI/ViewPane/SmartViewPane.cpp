@@ -7,7 +7,7 @@ static wstring CLASS = L"SmartViewPane";
 
 SmartViewPane* SmartViewPane::Create(UINT uidLabel)
 {
-	auto pane = new SmartViewPane();
+	auto pane = new (std::nothrow) SmartViewPane();
 	if (pane)
 	{
 		pane->SetLabel(uidLabel, true);
