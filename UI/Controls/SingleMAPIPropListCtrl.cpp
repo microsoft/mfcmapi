@@ -68,7 +68,7 @@ CSingleMAPIPropListCtrl::CSingleMAPIPropListCtrl(
 		auto cchOrder = RegKeys[regkeyPROP_COLUMN_ORDER].szCurSTRING.length();
 		if (SUCCEEDED(hRes) && nColumnCount == static_cast<int>(cchOrder))
 		{
-			auto pnOrder = new int[nColumnCount];
+			auto pnOrder = new (std::nothrow) int[nColumnCount];
 
 			if (pnOrder)
 			{
@@ -149,7 +149,7 @@ _Check_return_ LRESULT CSingleMAPIPropListCtrl::msgOnSaveColumnOrder(WPARAM /*wP
 		ULONG nColumnCount = lpMyHeader->GetItemCount();
 		if (nColumnCount && nColumnCount <= MAX_SORT_COLS)
 		{
-			auto pnOrder = new int[nColumnCount];
+			auto pnOrder = new (std::nothrow) int[nColumnCount];
 
 			if (pnOrder)
 			{
@@ -1186,7 +1186,7 @@ void CSingleMAPIPropListCtrl::OnDisplayPropertyAsSecurityDescriptorPropSheet() c
 
 	DebugPrintEx(DBGGeneric, CLASS, L"OnDisplayPropertyAsSecurityDescriptorPropSheet", L"interpreting 0x%X as Security Descriptor\n", ulPropTag);
 
-	auto MySecInfo = new CMySecInfo(m_lpPropBag->GetMAPIProp(), ulPropTag);
+	auto MySecInfo = new (std::nothrow) CMySecInfo(m_lpPropBag->GetMAPIProp(), ulPropTag);
 
 	if (MySecInfo)
 	{
