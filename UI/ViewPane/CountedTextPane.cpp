@@ -6,7 +6,7 @@ static wstring CLASS = L"CountedTextPane";
 
 CountedTextPane* CountedTextPane::Create(UINT uidLabel, bool bReadOnly, UINT uidCountLabel)
 {
-	auto lpPane = new CountedTextPane();
+	auto lpPane = new (std::nothrow) CountedTextPane();
 	if (lpPane)
 	{
 		lpPane->m_szCountLabel = loadstring(uidCountLabel);
