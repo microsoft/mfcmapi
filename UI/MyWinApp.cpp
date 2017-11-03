@@ -57,7 +57,7 @@ BOOL CMyWinApp::InitInstance()
 	if (pWnd)
 	{
 		m_pMainWnd = static_cast<CWnd *>(pWnd);
-		auto MyObjects = new CMapiObjects(nullptr);
+		auto MyObjects = new (std::nothrow) CMapiObjects(nullptr);
 		if (MyObjects)
 		{
 			new CMainDlg(pWnd, MyObjects);

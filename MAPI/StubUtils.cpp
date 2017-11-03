@@ -228,7 +228,7 @@ HKEY GetHKeyMapiClient(const wstring& pwzProviderOverride)
 	wstring defaultClient;
 	if (hMailKey && pwzProvider.empty())
 	{
-		auto rgchMailClient = new WCHAR[MAX_PATH];
+		auto rgchMailClient = new (std::nothrow) WCHAR[MAX_PATH];
 		if (rgchMailClient)
 		{
 			// Get Outlook application path registry value
@@ -445,7 +445,7 @@ wstring GetOutlookPath(_In_ const wstring& szCategory, _Out_opt_ bool* lpb64)
 	if (ERROR_SUCCESS == ret)
 	{
 		dwValueBuf += 1;
-		auto lpszTempPath = new WCHAR[dwValueBuf];
+		auto lpszTempPath = new (std::nothrow) WCHAR[dwValueBuf];
 
 		if (lpszTempPath != nullptr)
 		{

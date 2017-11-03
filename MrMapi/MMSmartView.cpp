@@ -32,7 +32,7 @@ void DoSmartView(_In_ MYOPTIONS ProgOpts)
 			auto iDesc = _fileno(fIn);
 			auto iLength = _filelength(iDesc);
 
-			auto lpbIn = new BYTE[iLength + 1]; // +1 for NULL
+			auto lpbIn = new (std::nothrow) BYTE[iLength + 1]; // +1 for NULL
 			if (lpbIn)
 			{
 				memset(lpbIn, 0, sizeof(BYTE)*(iLength + 1));

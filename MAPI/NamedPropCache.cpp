@@ -92,7 +92,7 @@ NamedPropCacheEntry::NamedPropCacheEntry(
 
 	if (lpPropName)
 	{
-		lpmniName = new MAPINAMEID;
+		lpmniName = new (std::nothrow) MAPINAMEID;
 
 		if (lpmniName)
 		{
