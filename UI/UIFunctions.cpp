@@ -164,7 +164,7 @@ void UninitializeGDI()
 _Check_return_ LPMENUENTRY CreateMenuEntry(_In_ const wstring& szMenu)
 {
 	auto hRes = S_OK;
-	auto lpMenu = new MenuEntry;
+	auto lpMenu = new (std::nothrow) MenuEntry;
 	if (lpMenu)
 	{
 		lpMenu->m_MSAA.dwMSAASignature = MSAA_MENU_SIG;
@@ -172,7 +172,7 @@ _Check_return_ LPMENUENTRY CreateMenuEntry(_In_ const wstring& szMenu)
 
 		auto iLen = szMenu.length();
 
-		lpMenu->m_MSAA.pszWText = new WCHAR[iLen + 1];
+		lpMenu->m_MSAA.pszWText = new (std::nothrow) WCHAR[iLen + 1];
 		if (lpMenu->m_MSAA.pszWText)
 		{
 			lpMenu->m_MSAA.cchWText = static_cast<DWORD>(iLen);
@@ -761,7 +761,7 @@ void SubclassEdit(_In_ HWND hWnd, _In_ HWND hWndParent, bool bReadOnly)
 	ClearEditFormatting(hWnd, bReadOnly);
 
 	// Set up callback to control paste and context menus
-	auto reCallback = new CRichEditOleCallback(hWnd, hWndParent);
+	auto reCallback = new (std::nothrow) CRichEditOleCallback(hWnd, hWndParent);
 	if (reCallback)
 	{
 		(void) ::SendMessage(
