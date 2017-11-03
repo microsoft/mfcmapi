@@ -154,7 +154,7 @@ wstring ReadStringFromRegistry(_In_ HKEY hKey, _In_ const wstring& szValue, _In_
 
 	if (S_OK == hRes && cb  && !(cb % 2) && REG_SZ == dwKeyType)
 	{
-		szBuf = new BYTE[cb];
+		szBuf = new (std::nothrow) BYTE[cb];
 		if (szBuf)
 		{
 			// Get the current value
