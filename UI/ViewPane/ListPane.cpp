@@ -6,7 +6,7 @@ static wstring CLASS = L"ListPane";
 
 ListPane* ListPane::Create(UINT uidLabel, bool bAllowSort, bool bReadOnly, DoListEditCallback callback)
 {
-	auto pane = new ListPane();
+	auto pane = new (std::nothrow) ListPane();
 	if (pane)
 	{
 		pane->Setup(bAllowSort, callback);
@@ -18,7 +18,7 @@ ListPane* ListPane::Create(UINT uidLabel, bool bAllowSort, bool bReadOnly, DoLis
 
 ListPane* ListPane::CreateCollapsibleListPane(UINT uidLabel, bool bAllowSort, bool bReadOnly, DoListEditCallback callback)
 {
-	auto pane = new ListPane();
+	auto pane = new (std::nothrow) ListPane();
 	if (pane)
 	{
 		pane->Setup(bAllowSort, callback);
@@ -258,7 +258,7 @@ void ListPane::SetColumnType(int nCol, ULONG ulPropType) const
 	if (lpMyHeader)
 	{
 		hdItem.mask = HDI_LPARAM;
-		auto lpHeaderData = new HeaderData; // Will be deleted in CSortListCtrl::DeleteAllColumns
+		auto lpHeaderData = new (std::nothrow) HeaderData; // Will be deleted in CSortListCtrl::DeleteAllColumns
 		if (lpHeaderData)
 		{
 			lpHeaderData->ulTagArrayRow = NULL;
