@@ -230,13 +230,13 @@ namespace stringtest
 		wstring mystringW = wstring(L"mystring");
 		LPBYTE bufW = (LPBYTE)mystringW.c_str();
 		size_t cbW = mystringW.length() * sizeof(WCHAR);
-		SBinary sBinaryW = SBinary{ cbW, bufW };
+		SBinary sBinaryW = SBinary{ (ULONG)cbW, bufW };
 		vector<BYTE> myStringWvector = vector<BYTE>(bufW, bufW + cbW);
 
 		string mystringA = string("mystring");
 		LPBYTE bufA = (LPBYTE)mystringA.c_str();
 		size_t cbA = mystringA.length();
-		SBinary sBinaryA = SBinary{ cbA, bufA };
+		SBinary sBinaryA = SBinary{ (ULONG)cbA, bufA };
 		vector<BYTE> myStringAvector = vector<BYTE>(bufA, bufA + cbA);
 
 		vector<BYTE> vector_abcdW = vector<BYTE>({ 0x61, 0, 0x62, 0, 0x63, 0, 0x64, 0 });
@@ -268,13 +268,13 @@ namespace stringtest
 			Assert::AreEqual(wstring(L""), BinToTextString(nullptr, true));
 
 			Assert::AreEqual(mystringW, BinToTextString(&sBinaryA, false));
-			auto sBinary = SBinary{ vector_abcdA.size(), vector_abcdA.data() };
+			auto sBinary = SBinary{ (ULONG)vector_abcdA.size(), vector_abcdA.data() };
 			Assert::AreEqual(wstring(L"abcd"), BinToTextString(&sBinary, false));
-			sBinary = SBinary{ vector_abNULLdA.size(), vector_abNULLdA.data() };
+			sBinary = SBinary{ (ULONG)vector_abNULLdA.size(), vector_abNULLdA.data() };
 			Assert::AreEqual(wstring(L"ab.d"), BinToTextString(&sBinary, false));
-			sBinary = SBinary{ vector_tabcrlfA.size(), vector_tabcrlfA.data() };
+			sBinary = SBinary{ (ULONG)vector_tabcrlfA.size(), vector_tabcrlfA.data() };
 			Assert::AreEqual(wstring(L"\t\n\r"), BinToTextString(&sBinary, true));
-			sBinary = SBinary{ vector_tabcrlfA.size(), vector_tabcrlfA.data() };
+			sBinary = SBinary{ (ULONG)vector_tabcrlfA.size(), vector_tabcrlfA.data() };
 			Assert::AreEqual(wstring(L"..."), BinToTextString(&sBinary, false));
 		}
 

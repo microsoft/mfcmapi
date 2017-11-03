@@ -8,7 +8,7 @@
 
 namespace std
 {
-#ifdef _UNICODE 
+#ifdef _UNICODE
 	typedef wstring tstring;
 #else
 	typedef string tstring;
@@ -32,7 +32,7 @@ wstring format(LPCWSTR szMsg, ...);
 
 wstring formatmessagesys(DWORD dwID);
 wstring formatmessage(DWORD dwID, ...);
-wstring formatmessage(const wstring szMsg, ...);
+wstring formatmessage(LPCWSTR szMsg, ...);
 tstring wstringTotstring(const wstring& src);
 string wstringTostring(const wstring& src);
 wstring stringTowstring(const string& src);

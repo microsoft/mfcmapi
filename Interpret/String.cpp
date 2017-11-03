@@ -61,10 +61,10 @@ wstring loadstring(DWORD dwID)
 	return loadstring(nullptr, dwID);
 }
 
-wstring formatmessageV(const wstring& szMsg, va_list argList)
+wstring formatmessageV(LPCWSTR szMsg, va_list argList)
 {
 	LPWSTR buffer = nullptr;
-	auto dw = FormatMessageW(FORMAT_MESSAGE_FROM_STRING | FORMAT_MESSAGE_ALLOCATE_BUFFER, szMsg.c_str(), 0, 0, reinterpret_cast<LPWSTR>(&buffer), 0, &argList);
+	auto dw = FormatMessageW(FORMAT_MESSAGE_FROM_STRING | FORMAT_MESSAGE_ALLOCATE_BUFFER, szMsg, 0, 0, reinterpret_cast<LPWSTR>(&buffer), 0, &argList);
 	if (dw)
 	{
 		auto ret = wstring(buffer);
@@ -94,13 +94,13 @@ wstring formatmessage(DWORD dwID, ...)
 {
 	va_list argList;
 	va_start(argList, dwID);
-	auto ret = formatmessageV(loadstring(dwID), argList);
+	auto ret = formatmessageV(loadstring(dwID).c_str(), argList);
 	va_end(argList);
 	return ret;
 }
 
 // Takes format strings with %1 %2 %3...
-wstring formatmessage(const wstring szMsg, ...)
+wstring formatmessage(LPCWSTR szMsg, ...)
 {
 	va_list argList;
 	va_start(argList, szMsg);
@@ -149,7 +149,7 @@ wstring LPCSTRToWstring(LPCSTR src)
 wstring wstringToLower(const wstring& src)
 {
 	auto dst = src;
-	transform(dst.begin(), dst.end(), dst.begin(), tolower);
+	std::transform(src.begin(), src.end(), dst.begin(), towlower);
 	return dst;
 }
 
