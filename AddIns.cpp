@@ -62,9 +62,8 @@ void LoadLegacyPropTags(
 		pfnGetPropTags(lpulPropTags, &lpPropTags);
 		if (lpPropTags && *lpulPropTags)
 		{
-			auto lpPropTagsV2 = new NAME_ARRAY_ENTRY_V2[*lpulPropTags];
-			if (lpPropTagsV2)
-			{
+			try {
+				auto lpPropTagsV2 = new NAME_ARRAY_ENTRY_V2[*lpulPropTags];
 				for (ULONG i = 0; i < *lpulPropTags; i++)
 				{
 					lpPropTagsV2[i].lpszName = lpPropTags[i].lpszName;
@@ -73,6 +72,9 @@ void LoadLegacyPropTags(
 				}
 
 				*lppPropTags = lpPropTagsV2;
+			}
+			catch (std::bad_alloc& ba) {
+
 			}
 		}
 	}
@@ -937,13 +939,14 @@ _Check_return_ __declspec(dllexport) HRESULT __cdecl ComplexDialog(_In_ LPADDIND
 	// Put together results if needed
 	if (SUCCEEDED(hRes) && lppDialogResult && lpDialog->ulNumControls && lpDialog->lpDialogControls)
 	{
-		auto lpResults = new _AddInDialogResult;
-		if (lpResults)
-		{
+		try {
+			auto lpResults = new _AddInDialogResult;
+
 			lpResults->ulNumControls = lpDialog->ulNumControls;
-			lpResults->lpDialogControlResults = new _AddInDialogControlResult[lpDialog->ulNumControls];
-			if (lpResults->lpDialogControlResults)
-			{
+
+			try {
+				lpResults->lpDialogControlResults = new _AddInDialogControlResult[lpDialog->ulNumControls];
+
 				ZeroMemory(lpResults->lpDialogControlResults, sizeof(_AddInDialogControlResult)*lpDialog->ulNumControls);
 				for (ULONG i = 0; i < lpDialog->ulNumControls; i++)
 				{
@@ -989,6 +992,10 @@ _Check_return_ __declspec(dllexport) HRESULT __cdecl ComplexDialog(_In_ LPADDIND
 						break;
 					}
 				}
+
+			}
+			catch (std::bad_alloc& ba) {
+
 			}
 
 			if (SUCCEEDED(hRes))
@@ -996,6 +1003,10 @@ _Check_return_ __declspec(dllexport) HRESULT __cdecl ComplexDialog(_In_ LPADDIND
 				*lppDialogResult = lpResults;
 			}
 			else FreeDialogResult(lpResults);
+
+		}
+		catch (std::bad_alloc& ba) {
+
 		}
 	}
 
