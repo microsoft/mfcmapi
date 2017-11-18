@@ -332,9 +332,9 @@ _Check_return_ HRESULT CHierarchyTableTreeCtrl::AddRootNode(_In_ LPMAPICONTAINER
 		szName = loadstring(IDS_ROOTCONTAINER);
 	}
 
-	auto lpData = new SortListData();
-	if (lpData)
-	{
+	try {
+		auto lpData = new SortListData();
+
 		lpData->InitializeNode(
 			cVals,
 			lpProps, // pass our lpProps to be archived
@@ -348,6 +348,9 @@ _Check_return_ HRESULT CHierarchyTableTreeCtrl::AddRootNode(_In_ LPMAPICONTAINER
 			TVI_ROOT,
 			lpData,
 			true);
+
+	}
+	catch (std::bad_alloc& ba) {
 	}
 
 	// Node owns the lpProps memory now, so we don't free it
@@ -398,9 +401,9 @@ void CHierarchyTableTreeCtrl::AddNode(_In_ LPSRow lpsRow, HTREEITEM hParent, boo
 	}
 	DebugPrintEx(DBGHierarchy, CLASS, L"AddNode", L"Adding to %p: %ws\n", hParent, szName.c_str());
 
-	auto lpData = new SortListData();
-	if (lpData)
-	{
+	try {
+		auto lpData = new SortListData();
+
 		lpData->InitializeNode(lpsRow);
 
 		AddNode(
@@ -408,6 +411,8 @@ void CHierarchyTableTreeCtrl::AddNode(_In_ LPSRow lpsRow, HTREEITEM hParent, boo
 			hParent,
 			lpData,
 			bGetTable);
+	}
+	catch (std::bad_alloc& ba) {
 	}
 }
 
@@ -1161,11 +1166,13 @@ _Check_return_ LRESULT CHierarchyTableTreeCtrl::msgOnModifyItem(WPARAM wParam, L
 			tab->row.lpProps,
 			MAPIAllocateBuffer,
 			&NewRow.lpProps));
-		auto lpData = new SortListData();
-		if (lpData)
-		{
+
+		try {
+			auto lpData = new SortListData();
 			lpData->InitializeNode(&NewRow);
 			SetNodeData(m_hWnd, hModifyItem, lpData);
+		}
+		catch (std::bad_alloc& ba) {
 		}
 
 		if (hParent) EC_B(SortChildren(hParent));

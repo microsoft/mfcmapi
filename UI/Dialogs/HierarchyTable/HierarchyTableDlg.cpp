@@ -228,18 +228,18 @@ BOOL CHierarchyTableDlg::OnInitDialog()
 
 	if (m_lpFakeSplitter)
 	{
-		m_lpHierarchyTableTreeCtrl = new CHierarchyTableTreeCtrl(
-			m_lpFakeSplitter,
-			m_lpMapiObjects,
-			this,
-			m_ulDisplayFlags,
-			m_nIDContextMenu);
+		try {
+			m_lpHierarchyTableTreeCtrl = new CHierarchyTableTreeCtrl(
+				m_lpFakeSplitter,
+				m_lpMapiObjects,
+				this,
+				m_ulDisplayFlags,
+				m_nIDContextMenu);
 
-		if (m_lpHierarchyTableTreeCtrl)
-		{
 			m_lpFakeSplitter->SetPaneOne(m_lpHierarchyTableTreeCtrl);
-
 			m_lpFakeSplitter->SetPercent(0.25);
+		}
+		catch (std::bad_alloc& ba) {
 		}
 	}
 
