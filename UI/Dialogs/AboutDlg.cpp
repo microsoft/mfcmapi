@@ -118,10 +118,9 @@ BOOL CAboutDlg::OnInitDialog()
 	if (dwVerInfoSize)
 	{
 		// If we were able to get the information, process it.
-		auto pbData = new BYTE[dwVerInfoSize];
+		try {
+			auto pbData = new BYTE[dwVerInfoSize];
 
-		if (pbData)
-		{
 			EC_D(bRet, GetFileVersionInfoW(szFullPath,
 				0, dwVerInfoSize, static_cast<void*>(pbData)));
 
@@ -170,12 +169,14 @@ BOOL CAboutDlg::OnInitDialog()
 						::SetDlgItemTextW(m_hWnd, i, pszVer);
 					}
 				}
-			}
 
-			delete[] pbData;
+				delete[] pbData;
+			}
+		}
+		catch (std::bad_alloc& ba) {
+
 		}
 	}
-
 	return bRet;
 }
 

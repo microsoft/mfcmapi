@@ -11,6 +11,7 @@
 
 #include <list>
 #include <algorithm>
+#include <new>
 
 // Speed up our string conversions for output
 #ifdef MRMAPI
