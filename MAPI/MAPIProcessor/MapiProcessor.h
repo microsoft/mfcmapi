@@ -13,7 +13,7 @@ typedef struct FolderNode* LPFOLDERNODE;
 struct FolderNode
 {
 	LPSBinary lpFolderEID;
-	wstring szFolderOffsetPath;
+	LPWSTR szFolderOffsetPath;
 	LPFOLDERNODE lpNextFolder;
 };
 
