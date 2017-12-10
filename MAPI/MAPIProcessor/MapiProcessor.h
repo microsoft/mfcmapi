@@ -1,4 +1,5 @@
 #pragma once
+#include <deque>
 
 /*
 CMAPIProcessor
@@ -9,12 +10,10 @@ It calls worker functions to do the customizable work on each object
 These worker functions are intended to be overridden by specialized classes inheriting from this class
 */
 
-typedef struct FolderNode* LPFOLDERNODE;
 struct FolderNode
 {
 	LPSBinary lpFolderEID;
 	wstring szFolderOffsetPath;
-	LPFOLDERNODE lpNextFolder;
 };
 
 class CMAPIProcessor
@@ -99,9 +98,8 @@ private:
 	// Clean up the list
 	void FreeFolderList();
 
-	// Folder list pointers
-	LPFOLDERNODE m_lpListHead;
-	LPFOLDERNODE m_lpListTail;
+	// Folder list
+	std::deque<FolderNode> m_List;
 
 	LPSRestriction m_lpResFolderContents;
 	LPSSortOrderSet m_lpSort;

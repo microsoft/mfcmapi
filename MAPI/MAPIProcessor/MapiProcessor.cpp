@@ -9,8 +9,6 @@ CMAPIProcessor::CMAPIProcessor()
 	m_lpSession = nullptr;
 	m_lpMDB = nullptr;
 	m_lpFolder = nullptr;
-	m_lpListHead = nullptr;
-	m_lpListTail = nullptr;
 	m_lpResFolderContents = nullptr;
 	m_lpSort = nullptr;
 	m_ulCount = 0;
@@ -631,33 +629,19 @@ void CMAPIProcessor::ProcessAttachments(_In_ LPMESSAGE lpMessage, bool bHasAttac
 // --------------------------------------------------------------------------------- //
 void CMAPIProcessor::AddFolderToFolderList(_In_opt_ const LPSBinary lpFolderEID, _In_ const wstring& szFolderOffsetPath)
 {
-	auto hRes = S_OK;
-	LPFOLDERNODE lpNewNode = nullptr;
-	WC_H(MAPIAllocateBuffer(sizeof(FolderNode), reinterpret_cast<LPVOID*>(&lpNewNode)));
-	lpNewNode->lpNextFolder = nullptr;
-
-	lpNewNode->lpFolderEID = nullptr;
+	FolderNode newNode;
+	newNode.szFolderOffsetPath = szFolderOffsetPath;
+	newNode.lpFolderEID = nullptr;
 	if (lpFolderEID)
 	{
-		WC_H(MAPIAllocateMore(
+		auto hRes = S_OK;
+		WC_H(MAPIAllocateBuffer(
 			static_cast<ULONG>(sizeof(SBinary)),
-			lpNewNode,
-			reinterpret_cast<LPVOID*>(&lpNewNode->lpFolderEID)));
-		WC_H(CopySBinary(lpNewNode->lpFolderEID, lpFolderEID, lpNewNode));
+			reinterpret_cast<LPVOID*>(&newNode.lpFolderEID)));
+		WC_H(CopySBinary(newNode.lpFolderEID, lpFolderEID, nullptr));
 	}
 
-	lpNewNode->szFolderOffsetPath = szFolderOffsetPath;
-
-	if (!m_lpListHead)
-	{
-		m_lpListHead = lpNewNode;
-		m_lpListTail = lpNewNode;
-	}
-	else
-	{
-		m_lpListTail->lpNextFolder = lpNewNode;
-		m_lpListTail = lpNewNode;
-	}
+	m_List.push_back(newNode);
 }
 
 // Call OpenEntry on the first folder in the list, remove it from the list
@@ -672,8 +656,9 @@ void CMAPIProcessor::OpenFirstFolderInList()
 	m_lpFolder = nullptr;
 
 	// loop over nodes until we open one or run out
-	while (!lpFolder && m_lpListHead)
+	while (!lpFolder && !m_List.empty())
 	{
+		FolderNode node = m_List.front();
 		hRes = S_OK;
 
 		WC_H(CallOpenEntry(
@@ -681,20 +666,18 @@ void CMAPIProcessor::OpenFirstFolderInList()
 			nullptr,
 			nullptr,
 			nullptr,
-			m_lpListHead->lpFolderEID,
+			node.lpFolderEID,
 			nullptr,
 			MAPI_BEST_ACCESS,
 			nullptr,
 			reinterpret_cast<LPUNKNOWN*>(&lpFolder)));
-		if (!m_lpListHead->szFolderOffsetPath.empty())
+		if (!node.szFolderOffsetPath.empty())
 		{
-			m_szFolderOffset = m_lpListHead->szFolderOffsetPath;
+			m_szFolderOffset = node.szFolderOffsetPath;
 		}
 
-		auto lpTempNode = m_lpListHead;
-		m_lpListHead = m_lpListHead->lpNextFolder;
-		if (m_lpListHead == lpTempNode) m_lpListTail = nullptr;
-		MAPIFreeBuffer(lpTempNode);
+		MAPIFreeBuffer(node.lpFolderEID);
+		m_List.pop_front();
 	}
 
 	m_lpFolder = lpFolder;
@@ -703,15 +686,10 @@ void CMAPIProcessor::OpenFirstFolderInList()
 // Clean up the list
 void CMAPIProcessor::FreeFolderList()
 {
-	if (!m_lpListHead) return;
-	while (m_lpListHead)
+	for each(auto node in m_List)
 	{
-		auto lpTempNode = m_lpListHead->lpNextFolder;
-		MAPIFreeBuffer(m_lpListHead);
-		m_lpListHead = lpTempNode;
+		MAPIFreeBuffer(node.lpFolderEID);
 	}
-
-	m_lpListTail = nullptr;
 }
 
 // --------------------------------------------------------------------------------- //
