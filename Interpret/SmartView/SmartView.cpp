@@ -77,19 +77,19 @@ LPSMARTVIEWPARSER GetSmartViewParser(__ParsingTypeEnum iStructType, _In_opt_ LPM
 		return new EntryList();
 	case IDS_STRULECONDITION:
 	{
-		auto parser = new RuleCondition();
+		auto parser = new (std::nothrow) RuleCondition();
 		if (parser) parser->Init(false);
 		return parser;
 	}
 	case IDS_STEXTENDEDRULECONDITION:
 	{
-		auto parser = new RuleCondition();
+		auto parser = new (std::nothrow) RuleCondition();
 		if (parser) parser->Init(true);
 		return parser;
 	}
 	case IDS_STRESTRICTION:
 	{
-		auto parser = new RestrictionStruct();
+		auto parser = new (std::nothrow) RestrictionStruct();
 		if (parser) parser->Init(false, true);
 		return parser;
 	}
@@ -119,13 +119,13 @@ LPSMARTVIEWPARSER GetSmartViewParser(__ParsingTypeEnum iStructType, _In_opt_ LPM
 		return new SIDBin();
 	case IDS_STSECURITYDESCRIPTOR:
 	{
-		auto parser = new SDBin();
+		auto parser = new (std::nothrow) SDBin();
 		if (parser) parser->Init(lpMAPIProp, false);
 		return parser;
 	}
 	case IDS_STFBSECURITYDESCRIPTOR:
 	{
-		auto parser = new SDBin();
+		auto parser = new (std::nothrow) SDBin();
 		if (parser) parser->Init(lpMAPIProp, true);
 		return parser;
 	}

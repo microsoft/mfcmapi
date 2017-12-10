@@ -233,7 +233,7 @@ STDMETHODIMP CMyMAPIFormViewer::NewMessage(ULONG fComposeInFolder,
 		if (*ppMessage) // not going to release this because we're returning it
 		{
 			// don't free since we're passing it back
-			auto lpMAPIFormViewer = new CMyMAPIFormViewer(
+			auto lpMAPIFormViewer = new (std::nothrow) CMyMAPIFormViewer(
 				m_hwndParent,
 				m_lpMDB,
 				m_lpMAPISession,

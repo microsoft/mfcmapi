@@ -6,7 +6,7 @@ static wstring CLASS = L"CheckPane";
 
 CheckPane* CheckPane::Create(UINT uidLabel, bool bVal, bool bReadOnly)
 {
-	auto pane = new CheckPane();
+	auto pane = new (std::nothrow) CheckPane();
 	if (pane)
 	{
 		pane->m_bCheckValue = bVal;
