@@ -635,6 +635,7 @@ void CMAPIProcessor::AddFolderToFolderList(_In_opt_ const LPSBinary lpFolderEID,
 	LPFOLDERNODE lpNewNode = nullptr;
 	WC_H(MAPIAllocateBuffer(sizeof(FolderNode), reinterpret_cast<LPVOID*>(&lpNewNode)));
 	lpNewNode->lpNextFolder = nullptr;
+	lpNewNode->szFolderOffsetPath = nullptr;
 
 	lpNewNode->lpFolderEID = nullptr;
 	if (lpFolderEID)
@@ -646,7 +647,7 @@ void CMAPIProcessor::AddFolderToFolderList(_In_opt_ const LPSBinary lpFolderEID,
 		WC_H(CopySBinary(lpNewNode->lpFolderEID, lpFolderEID, lpNewNode));
 	}
 
-	lpNewNode->szFolderOffsetPath = szFolderOffsetPath;
+	WC_H(CopyStringW(&(lpNewNode->szFolderOffsetPath), szFolderOffsetPath.c_str(), lpNewNode));
 
 	if (!m_lpListHead)
 	{
@@ -686,7 +687,7 @@ void CMAPIProcessor::OpenFirstFolderInList()
 			MAPI_BEST_ACCESS,
 			nullptr,
 			reinterpret_cast<LPUNKNOWN*>(&lpFolder)));
-		if (!m_lpListHead->szFolderOffsetPath.empty())
+		if (m_lpListHead->szFolderOffsetPath != nullptr)
 		{
 			m_szFolderOffset = m_lpListHead->szFolderOffsetPath;
 		}
