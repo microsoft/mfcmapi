@@ -6,6 +6,7 @@ wstring GetDirectoryPath(HWND hWnd);
 #define MAXSUBJTIGHT 10
 #define MAXBIN 141
 #define MAXEXT 4
+#define MAXATTACH 10
 #define MAXMSGPATH (MAX_PATH - MAXSUBJTIGHT - MAXBIN - MAXEXT)
 wstring BuildFileName(
 	_In_ const wstring& ext,
@@ -37,7 +38,6 @@ _Check_return_ HRESULT SaveToMSG(
 _Check_return_ HRESULT SaveToMSG(_In_ LPMESSAGE lpMessage, _In_ const wstring& szFileName, bool bUnicode, HWND hWnd, bool bAllowUI);
 _Check_return_ HRESULT SaveToTNEF(_In_ LPMESSAGE lpMessage, _In_ LPADRBOOK lpAdrBook, _In_ const wstring& szFileName);
 void ExportMessages(_In_ const LPMAPIFOLDER lpFolder, HWND hWnd);
-
 
 _Check_return_ HRESULT DeleteAttachments(_In_ LPMESSAGE lpMessage, _In_ const wstring& szAttName, HWND hWnd);
 _Check_return_ HRESULT WriteAttachmentsToFile(_In_ LPMESSAGE lpMessage, HWND hWnd);

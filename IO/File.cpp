@@ -339,15 +339,16 @@ wstring BuildFileNameAndPath(
 	DebugPrint(DBGGeneric, L"BuildFileNameAndPath subj = \"%ws\"\n", szSubj.c_str());
 	DebugPrint(DBGGeneric, L"BuildFileNameAndPath rootPath = \"%ws\"\n", szRootPath.c_str());
 
-	// set up the path portion of the output:
+	// Set up the path portion of the output.
 	auto cleanRoot = ShortenPath(szRootPath);
 	DebugPrint(DBGGeneric, L"BuildFileNameAndPath cleanRoot = \"%ws\"\n", cleanRoot.c_str());
 
-	// if we don't have enough space for even the shortest filename, give up.
+	// If we don't have enough space for even the shortest filename, give up.
 	if (cleanRoot.length() >= MAXMSGPATH) return emptystring;
 
-	// Work with a max path which allows us to add our extension
-	auto maxFile = MAX_PATH - cleanRoot.length() - szExt.length();
+	// Work with a max path which allows us to add our extension.
+	// Shrink the max path to allow for a -ATTACHxxx extension.
+	auto maxFile = MAX_PATH - cleanRoot.length() - szExt.length() - MAXATTACH;
 
 	wstring cleanSubj;
 	if (!szSubj.empty())
@@ -376,7 +377,9 @@ wstring BuildFileNameAndPath(
 	}
 
 	// We couldn't build the string we wanted, so try something shorter
-	auto szFile = cleanSubj.substr(0, MAXSUBJ) + szBin.substr(0, MAXBIN);
+	// Compute a shorter subject length that should fit.
+	auto maxSubj = maxFile - min(MAXBIN, szBin.length()) - 1;
+	auto szFile = cleanSubj.substr(0, maxSubj) + szBin.substr(0, MAXBIN);
 	DebugPrint(DBGGeneric, L"BuildFileNameAndPath shorter file = \"%ws\"\n", szFile.c_str());
 	DebugPrint(DBGGeneric, L"BuildFileNameAndPath new length = %d\n", szFile.length());
 
