@@ -928,26 +928,27 @@ _Check_return_ HRESULT CreateRangeRestriction(ULONG ulPropTag,
 _Check_return_ HRESULT DeleteProperty(_In_ LPMAPIPROP lpMAPIProp, ULONG ulPropTag)
 {
 	auto hRes = S_OK;
-	SPropTagArray ptaTag;
 	LPSPropProblemArray pProbArray = nullptr;
 
 	if (!lpMAPIProp) return MAPI_E_INVALID_PARAMETER;
 
-	if (PT_ERROR == PROP_TYPE(ulPropTag))
+	if (PROP_TYPE(ulPropTag) == PT_ERROR)
 		ulPropTag = CHANGE_PROP_TYPE(ulPropTag, PT_UNSPECIFIED);
-
-	ptaTag.cValues = 1;
-	ptaTag.aulPropTag[0] = ulPropTag;
 
 	DebugPrint(DBGGeneric, L"DeleteProperty: Deleting prop 0x%08X from MAPI item %p.\n", ulPropTag, lpMAPIProp);
 
+	SPropTagArray ptaTag = { 1,{ ulPropTag } };
 	EC_MAPI(lpMAPIProp->DeleteProps(
 		&ptaTag,
 		&pProbArray));
 
 	if (S_OK == hRes && pProbArray)
 	{
-		EC_PROBLEMARRAY(pProbArray);
+		WC_PROBLEMARRAY(pProbArray);
+		if (pProbArray->cProblem == 1)
+		{
+			hRes = pProbArray->aProblem[0].scode;
+		}
 	}
 
 	if (SUCCEEDED(hRes))

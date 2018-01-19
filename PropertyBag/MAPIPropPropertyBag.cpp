@@ -178,6 +178,16 @@ _Check_return_ HRESULT MAPIPropPropertyBag::DeleteProp(
 {
 	if (NULL == m_lpProp) return S_OK;
 
-	// TODO: eliminate DeleteProperty - not used much and might all could go through here.
-	return DeleteProperty(m_lpProp, ulPropTag);
+	auto hRes = DeleteProperty(m_lpProp, ulPropTag);
+	if (hRes == MAPI_E_NOT_FOUND && PROP_TYPE(ulPropTag) == PT_ERROR)
+	{
+		// We failed to delete a property without giving a type.
+		// If the original type was error, it was quite likely a stream property.
+		// Let's guess some common stream types.
+		if (SUCCEEDED(DeleteProperty(m_lpProp, CHANGE_PROP_TYPE(ulPropTag, PT_BINARY)))) return S_OK;
+		if (SUCCEEDED(DeleteProperty(m_lpProp, CHANGE_PROP_TYPE(ulPropTag, PT_UNICODE)))) return S_OK;
+		if (SUCCEEDED(DeleteProperty(m_lpProp, CHANGE_PROP_TYPE(ulPropTag, PT_STRING8)))) return S_OK;
+	}
+
+	return hRes;
 };
