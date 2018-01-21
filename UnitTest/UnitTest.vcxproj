@@ -39,7 +39,6 @@
     <ProjectGuid>{B8B4C7F7-682E-40EF-B5AC-054187818E23}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>UnitTest2</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
     <ProjectSubType>NativeUnitTestProject</ProjectSubType>
     <ProjectName>UnitTest</ProjectName>
   </PropertyGroup>
