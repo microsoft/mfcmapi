@@ -59,7 +59,6 @@ namespace stringtest
 			// Since format is a passthrough to formatV, this will also cover formatV
 			Assert::AreEqual(wstring(L"Hello"), format(L"Hello"));
 			Assert::AreEqual(wstring(L"Hello world"), format(L"Hello %hs", "world"));
-			Assert::AreEqual(wstring(L"Hello (null)"), format(L"Hello %hs"));
 		}
 
 		TEST_METHOD(Test_formatmessage)
