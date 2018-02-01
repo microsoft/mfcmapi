@@ -23,12 +23,12 @@ private:
 	void OnEditAction1() override;
 	void OnEditAction2() override;
 
-	void ReadTagArrayToList(ULONG ulListNum) const;
+	void ReadTagArrayToList(ULONG ulListNum, LPSPropTagArray lpTagArray) const;
 	void WriteListToTagArray(ULONG ulListNum);
 
 	// source variables
 	LPMAPITABLE m_lpContentsTable;
-	LPSPropTagArray m_lpTagArray;
+	LPSPropTagArray m_lpSourceTagArray; // Source tag array - not our memory - do not modify or free
 	LPSPropTagArray m_lpOutputTagArray;
 	bool m_bIsAB; // whether the tag is from the AB or not
 	LPMAPIPROP m_lpMAPIProp;
