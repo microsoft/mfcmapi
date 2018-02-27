@@ -22,7 +22,7 @@ CTagArrayEditor::CTagArrayEditor(
 	m_lpContentsTable = lpContentsTable;
 	if (m_lpContentsTable) m_lpContentsTable->AddRef();
 	m_ulSetColumnsFlags = TBL_BATCH;
-	m_lpTagArray = lpTagArray;
+	m_lpSourceTagArray = lpTagArray;
 	m_bIsAB = bIsAB;
 	m_lpOutputTagArray = nullptr;
 	m_lpMAPIProp = lpMAPIProp;
@@ -43,7 +43,7 @@ BOOL CTagArrayEditor::OnInitDialog()
 {
 	auto bRet = CEditor::OnInitDialog();
 
-	ReadTagArrayToList(0);
+	ReadTagArrayToList(0, m_lpSourceTagArray);
 
 	UpdateButtons();
 	return bRet;
@@ -113,7 +113,7 @@ _Check_return_ bool CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 	return false;
 }
 
-void CTagArrayEditor::ReadTagArrayToList(ULONG ulListNum) const
+void CTagArrayEditor::ReadTagArrayToList(ULONG ulListNum, LPSPropTagArray lpTagArray) const
 {
 	ClearList(ulListNum);
 
@@ -125,13 +125,13 @@ void CTagArrayEditor::ReadTagArrayToList(ULONG ulListNum) const
 	InsertColumn(ulListNum, 5, IDS_NAMEDPROPNAME);
 	InsertColumn(ulListNum, 6, IDS_NAMEDPROPGUID);
 
-	if (m_lpTagArray)
+	if (lpTagArray)
 	{
-		auto cValues = m_lpTagArray->cValues;
+		auto cValues = lpTagArray->cValues;
 
 		for (ULONG iTagCount = 0; iTagCount < cValues; iTagCount++)
 		{
-			auto ulPropTag = m_lpTagArray->aulPropTag[iTagCount];
+			auto ulPropTag = lpTagArray->aulPropTag[iTagCount];
 			auto lpData = InsertListRow(ulListNum, iTagCount, std::to_wstring(iTagCount));
 			if (lpData)
 			{
@@ -216,12 +216,11 @@ void CTagArrayEditor::OnEditAction1()
 
 		if (SUCCEEDED(hRes))
 		{
-			MAPIFreeBuffer(m_lpTagArray);
-			m_lpTagArray = lpTagArray;
-
-			ReadTagArrayToList(0);
+			ReadTagArrayToList(0, lpTagArray);
 			UpdateButtons();
 		}
+
+		MAPIFreeBuffer(lpTagArray);
 	}
 }
 
