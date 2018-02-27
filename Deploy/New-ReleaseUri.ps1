@@ -27,7 +27,7 @@ function New-ReleaseUri {
 	[Parameter(Mandatory=$True)]
 	[string]$Version,
 	[Parameter(Mandatory=$True)]
-	[string]$Release
+	[string]$Release,
 	[Parameter(Mandatory=$True)]
 	[bool]$Draft
 	)
