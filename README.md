@@ -5,6 +5,8 @@ MFCMAPI provides access to MAPI stores to facilitate investigation of Exchange a
 
 [Release stats (raw JSON)](https://api.github.com/repos/stephenegriffin/mfcmapi/releases/latest)
 
+[Pretty release stats](www.somsubhra.com/github-release-stats/?username=stephenegriffin&repository=mfcmapi&search=0)
+
 # Help/Feedback
 For assistance using MFCMAPI, developing add-ins, or general MAPI development, consult the [documentation](docs/Documentation.md). Find a bug? Need help? Have a suggestion? Report your issues through the [issues tab](https://github.com/stephenegriffin/mfcmapi/issues).
 
