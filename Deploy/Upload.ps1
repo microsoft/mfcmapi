@@ -88,6 +88,7 @@ function Create-Release {
 	   Body = (ConvertTo-Json $releaseData -Compress)
 	}
 
+	[Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
 	$result = Invoke-RestMethod @releaseParams 
 	$uploadUri = $result | Select -ExpandProperty upload_url
 
@@ -163,6 +164,7 @@ function Upload-ReleaseFile {
 	   InFile = $uploadFile
 	}
 
+	[Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
 	$result = Invoke-RestMethod @uploadParams    
   }
 }
