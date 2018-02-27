@@ -1,7 +1,7 @@
-function New-ReleaseFile {
+function New-ReleaseUri {
 	<#
 	.SYNOPSIS
-	Creates a ReleaseFile for upload
+	Creates a Uri for a Release for upload
 	.DESCRIPTION
 	Describe the function in more detail
 	.EXAMPLE
