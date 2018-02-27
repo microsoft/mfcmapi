@@ -26,7 +26,7 @@ If you just want to run the MFCMAPI or MrMAPI, get the executables. If you want 
 
 Write-Host "Creating $gitHubRepository/$release"
 
-$uploadUri = New-ReleaseUri -gitHubUsername $gitHubUsername -gitHubRepository $gitHubRepository -Version $version -Release $release
+$uploadUri = New-ReleaseUri -gitHubUsername $gitHubUsername -gitHubRepository $gitHubRepository -Version $version -Release $release -Draft $false
 Write-Host $uploadUri
 
 Upload-ReleaseFile -Name "MFCMAPI 32 bit executable" -FileName "MFCMapi.exe" -Release $release -Sourcepath $indir -Version $version -UploadURI $uploadUri

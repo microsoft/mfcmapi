@@ -14,6 +14,8 @@ function New-ReleaseUri {
 	Version of the file.
 	.PARAMETER Release
 	Name of the release
+	.PARAMETER Draft
+	Create release as a draft
 	#>
 	[CmdletBinding()]
 	param
@@ -26,6 +28,8 @@ function New-ReleaseUri {
 	[string]$Version,
 	[Parameter(Mandatory=$True)]
 	[string]$Release
+	[Parameter(Mandatory=$True)]
+	[bool]$Draft
 	)
 	process
 	{
@@ -35,7 +39,7 @@ function New-ReleaseUri {
 		target_commitish = "master";
 		name = "$Release ($Version)";
 		body = $releaseNotes;
-		draft = $TRUE;
+		draft = $Draft;
 		prerelease = $FALSE;
 	}
 
