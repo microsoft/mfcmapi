@@ -1,4 +1,5 @@
-.\Compress-File.ps1
+$thisScript = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
+. ($thisScript + '.\Compress-File.ps1')
 
 $indir = "$Env:BUILD_SOURCESDIRECTORY\bin"
 $outdir = "$Env:BUILD_ARTIFACTSTAGINGDIRECTORY\archives"

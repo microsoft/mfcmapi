@@ -1,5 +1,6 @@
-.\Upload-ReleaseFile.ps1
-.\New-ReleaseFile.ps1
+$thisScript = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
+. ($thisScript + '.\Upload-ReleaseFile.ps1')
+. ($thisScript + '.\New-ReleaseFile.ps1')
 
 $indir = "$Env:SYSTEM_ARTIFACTSDIRECTORY\$Env:BUILD_DEFINITIONNAME\Archives"
 $version = $Env:BUILD_BUILDNUMBER

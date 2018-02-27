@@ -1,4 +1,5 @@
-.\New-VersionedFileName.ps1
+$thisScript = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
+. ($thisScript + '.\New-VersionedFileName.ps1')
 
 function Upload-ReleaseFile {
 	<#
