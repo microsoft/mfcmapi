@@ -1,14 +1,14 @@
 $gitHubUsername = 'stephenegriffin'
 $gitHubRepository = 'mfcmapi'
 
-function Stats-Release {
+function Get-ReleaseStats {
 	<#
 	.SYNOPSIS
 	Gets stats for a release
 	.DESCRIPTION
 	Describe the function in more detail
 	.EXAMPLE
-	Stats-Release 
+	Stats-Release
 	#>
 	[CmdletBinding()]
 	param
@@ -24,11 +24,12 @@ function Stats-Release {
 		ContentType = 'application/json';
 	}
 
+	[Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
 	$result = Invoke-RestMethod @releaseStats
 
 	return $result
 	}
 }
 
-$stats = Stats-Release
+$stats = Get-ReleaseStats
 $stats.assets |fl name,download_count
