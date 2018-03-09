@@ -14,5 +14,4 @@ For assistance using MFCMAPI, developing add-ins, or general MAPI development, c
 Interested in Exchange Web Services (EWS)? Try [EWSEditor](https://ewseditor.codeplex.com)!
 
 Build status:  
-<img src="https://mrmapi.visualstudio.com/_apis/public/build/definitions/657cee18-0f2f-4ed6-b215-cbe2d9e42387/5/badge"/> (release)  
-<img src="https://mrmapi.visualstudio.com/_apis/public/build/definitions/657cee18-0f2f-4ed6-b215-cbe2d9e42387/12/badge"/> (ci release)
+[![Build status](https://ci.appveyor.com/api/projects/status/v9e7q7wbtjehj7oa?svg=true)](https://ci.appveyor.com/project/stephenegriffin/mfcmapi)  
