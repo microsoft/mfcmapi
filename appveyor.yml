@@ -4,7 +4,9 @@ branches:
   - master
 skip_tags: true
 image: Visual Studio 2017
-configuration: Release
+configuration:
+- Release
+- Debug
 platform:
 - win32
 - x64
@@ -63,11 +65,6 @@ after_build:
     if (!(Test-Path $outdir)) {New-Item -Path $outdir -Type Directory}
 
 
-    #Write-Host "indir=$indir"
-
-    #Get-ChildItem -Recurse $indir
-
-
     Compress-File -Source "$indir\Win32\MrMAPI\Release\MrMAPI.exe" -Target "$outdir\MrMAPI.exe.$version.zip"
 
     Compress-File -Source "$indir\Win32\MrMAPI\Release\MrMAPI.pdb" -Target "$outdir\MrMAPI.pdb.$version.zip"
@@ -83,11 +80,6 @@ after_build:
     Compress-File -Source "$indir\x64\Release\MFCMAPI.exe" -Target "$outdir\MFCMAPI.exe.x64.$version.zip"
 
     Compress-File -Source "$indir\x64\Release\MFCMAPI.pdb" -Target "$outdir\MFCMAPI.pdb.x64.$version.zip"
-
-
-    #Write-Host "outdir=$outdir"
-
-    #Get-ChildItem -Recurse $outdir
 
 test_script:
 - cmd: vstest.console /logger:Appveyor %APPVEYOR_BUILD_FOLDER%\bin\%PLATFORM%\UnitTest\%CONFIGURATION%\UnitTest.dll
@@ -113,7 +105,7 @@ artifacts:
 deploy:
 - provider: GitHub
   tag: $(APPVEYOR_BUILD_VERSION)
-  release: Continous Integration (AppVeyor)
+  release: Continous Integration ($(APPVEYOR_BUILD_VERSION))
   description: "Build: *$(APPVEYOR_BUILD_VERSION)*\n\nThis is the continuous integration build of MFCMAPI.\n\nIf you just want to run the MFCMAPI or MrMAPI, get the executables. If you want to debug them, get the symbol files and the [source](https://github.com/stephenegriffin/mfcmapi).\n\n*The 64 bit builds will only work on a machine with Outlook 2010/2013/2016 64 bit installed. All other machines should use the 32 bit builds, regardless of the operating system.*\n\n[![Facebook Badge](http://badge.facebook.com/badge/26764016480.2776.1538253884.png)](http://www.facebook.com/MFCMAPI)\n\n[Download stats](https://www.somsubhra.com/github-release-stats/?username=stephenegriffin&repository=mfcmapi&search=0)"
 
   auth_token:
