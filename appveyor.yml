@@ -14,8 +14,8 @@ platform:
 skip_commits:
   files:
     - docs/*
-    - '**/*.md
-    - '**/*.zip
+    - '**/*.md'
+    - '**/*.zip'
 
 init:
 - ps: >-
