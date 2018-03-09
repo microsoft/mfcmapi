@@ -25,7 +25,7 @@ init:
 
     $build = $year + "{0:D3}" -f $date.DayOfYear
 
-    $version = "$year.$build.0.$Env:APPVEYOR_BUILD_NUMBER"
+    $version = "$year.2.$build.$Env:APPVEYOR_BUILD_NUMBER"
 
     Add-AppveyorMessage "Setting build version: $version"
 
@@ -117,4 +117,4 @@ deploy:
   auth_token:
     secure: vJsUDJyfK/dEUbimHuxnA5id48OJR5UeHpB2WK8rcN7SslRJ08BHy9ecKctDJzx/
   artifact: /.*\.zip/
-  draft: false
+  draft: true
