@@ -531,7 +531,7 @@ OptParser g_Parsers[] =
 	{ switchMAPI, cmdmodeMAPIMIME, 0, 0, OPT_NEEDMAPIINIT | OPT_INITMFC | OPT_NEEDINPUTFILE | OPT_NEEDOUTPUTFILE },
 	{ switchMIME, cmdmodeMAPIMIME, 0, 0, OPT_NEEDMAPIINIT | OPT_INITMFC | OPT_NEEDINPUTFILE | OPT_NEEDOUTPUTFILE },
 	{ switchCCSFFlags, cmdmodeMAPIMIME, 1, 1, 0 },
-	{ switchRFC822, cmdmodeMAPIMIME, 1, 1, 0 },
+	{ switchRFC822, cmdmodeMAPIMIME, 0, 0, 0 },
 	{ switchWrap, cmdmodeMAPIMIME, 1, 1, 0 },
 	{ switchEncoding, cmdmodeMAPIMIME, 1, 1, 0 },
 	{ switchCharset, cmdmodeMAPIMIME, 3, 3, 0 },
