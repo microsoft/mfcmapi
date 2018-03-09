@@ -21,7 +21,7 @@ init:
 
     $version = "$year.$build.0.$Env:APPVEYOR_BUILD_NUMBER"
 
-    Write-Host $version
+    Add-AppveyorMessage "Setting build version: $version"
 
     Update-AppveyorBuild -Version $version
 
@@ -111,4 +111,4 @@ deploy:
   auth_token:
     secure: vJsUDJyfK/dEUbimHuxnA5id48OJR5UeHpB2WK8rcN7SslRJ08BHy9ecKctDJzx/
   artifact: /.*\.zip/
-  draft: true
+  draft: false
