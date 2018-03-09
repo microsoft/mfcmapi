@@ -91,14 +91,22 @@ test_script:
 - cmd: vstest.console /logger:Appveyor %APPVEYOR_BUILD_FOLDER%\bin\%PLATFORM%\UnitTest\%CONFIGURATION%\UnitTest.dll
 
 artifacts:
-- path: Archives\MFCMAPI.exe.$(APPVEYOR_BUILD_VERSION).zip
-  name: MFCMAPI 32 bit executable - Continuous Integration ($(APPVEYOR_BUILD_VERSION))
-- path: Archives\MFCMAPI.exe.x64.$(APPVEYOR_BUILD_VERSION).zip
-  name: MFCMAPI 64 bit executable - Continuous Integration ($(APPVEYOR_BUILD_VERSION))
-- path: Archives\MrMAPI.exe.$(APPVEYOR_BUILD_VERSION).zip
-  name: MrMAPI 32 bit executable - Continuous Integration ($(APPVEYOR_BUILD_VERSION))
-- path: Archives\MrMAPI.exe.x64.$(APPVEYOR_BUILD_VERSION).zip
-  name: MrMAPI 64 bit executable - Continuous Integration ($(APPVEYOR_BUILD_VERSION))
+- path: Archives\MFCMAPI.exe.$(APPVEYOR_BUILD_VERSION).zip 
+  name: MFCMAPI 32 bit executable - Continuous Integration ($(APPVEYOR_BUILD_VERSION)) 
+- path: Archives\MFCMAPI.pdb.$(APPVEYOR_BUILD_VERSION).zip 
+  name: MFCMAPI 32 bit symbol - Continuous Integration ($(APPVEYOR_BUILD_VERSION)) 
+- path: Archives\MFCMAPI.exe.x64.$(APPVEYOR_BUILD_VERSION).zip 
+  name: MFCMAPI 64 bit executable - Continuous Integration ($(APPVEYOR_BUILD_VERSION)) 
+- path: Archives\MFCMAPI.pdb.x64.$(APPVEYOR_BUILD_VERSION).zip 
+  name: MFCMAPI 64 bit symbol - Continuous Integration ($(APPVEYOR_BUILD_VERSION)) 
+- path: Archives\MrMAPI.exe.$(APPVEYOR_BUILD_VERSION).zip 
+  name: MrMAPI 32 bit executable - Continuous Integration ($(APPVEYOR_BUILD_VERSION)) 
+- path: Archives\MrMAPI.pdb.$(APPVEYOR_BUILD_VERSION).zip 
+  name: MrMAPI 32 bit symbol - Continuous Integration ($(APPVEYOR_BUILD_VERSION)) 
+- path: Archives\MrMAPI.exe.x64.$(APPVEYOR_BUILD_VERSION).zip 
+  name: MrMAPI 64 bit executable - Continuous Integration ($(APPVEYOR_BUILD_VERSION)) 
+- path: Archives\MrMAPI.pdb.x64.$(APPVEYOR_BUILD_VERSION).zip 
+  name: MrMAPI 64 bit symbol - Continuous Integration ($(APPVEYOR_BUILD_VERSION)) 
 
 deploy:
 - provider: GitHub
@@ -108,5 +116,5 @@ deploy:
 
   auth_token:
     secure: vJsUDJyfK/dEUbimHuxnA5id48OJR5UeHpB2WK8rcN7SslRJ08BHy9ecKctDJzx/
-  artifact: /.*\.zip/
+  artifact: /.*exe.*\.zip/
   draft: true
