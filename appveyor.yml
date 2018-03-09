@@ -11,6 +11,12 @@ platform:
 - win32
 - x64
 
+skip_commits:
+  files:
+    - docs/*
+    - '**/*.md
+    - '**/*.zip
+
 init:
 - ps: >-
     $date = Get-Date
