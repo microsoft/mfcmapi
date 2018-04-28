@@ -156,7 +156,7 @@ namespace stringtest
 			Assert::AreEqual(wstring(L"1245"), StripCharacter(L"12345", L'3'));
 			Assert::AreEqual(wstring(L"12345"), StripCharacter(L"12345", L'6'));
 			Assert::AreEqual(wstring(L"12345"), StripCharacter(L" 1 2 3 4 5", L' '));
-			const wstring conststring = wstring(L"12345");
+			const wstring conststring = L"12345";
 			Assert::AreEqual(wstring(L"1345"), StripCharacter(conststring, L'2'));
 		}
 
@@ -226,7 +226,7 @@ namespace stringtest
 			Assert::AreEqual(wstring(L"\t\t\t\t\t"), indent(5));
 		}
 
-		wstring mystringW = wstring(L"mystring");
+		wstring mystringW = L"mystring";
 		LPBYTE bufW = (LPBYTE)mystringW.c_str();
 		size_t cbW = mystringW.length() * sizeof(WCHAR);
 		SBinary sBinaryW = SBinary{ (ULONG)cbW, bufW };
@@ -293,15 +293,15 @@ namespace stringtest
 
 		TEST_METHOD(Test_HexStringToBin)
 		{
-			Assert::AreEqual(vector<BYTE>(), HexStringToBin(wstring(L"12345")));
-			Assert::AreEqual(vector_abcdW, HexStringToBin(wstring(L"6100620063006400")));
-			Assert::AreEqual(vector_abcdW, HexStringToBin(wstring(L"0x6100620063006400")));
-			Assert::AreEqual(vector_abcdW, HexStringToBin(wstring(L"0X6100620063006400")));
-			Assert::AreEqual(vector_abcdW, HexStringToBin(wstring(L"x6100620063006400")));
-			Assert::AreEqual(vector_abcdW, HexStringToBin(wstring(L"X6100620063006400")));
-			Assert::AreEqual(vector_abNULLdW, HexStringToBin(wstring(L"6100620000006400")));
-			Assert::AreEqual(vector_tabcrlfW, HexStringToBin(wstring(L"09000A000D00")));
-			Assert::AreEqual(myStringWvector, HexStringToBin(wstring(L"6D00790073007400720069006E006700")));
+			Assert::AreEqual(vector<BYTE>(), HexStringToBin(L"12345"));
+			Assert::AreEqual(vector_abcdW, HexStringToBin(L"6100620063006400"));
+			Assert::AreEqual(vector_abcdW, HexStringToBin(L"0x6100620063006400"));
+			Assert::AreEqual(vector_abcdW, HexStringToBin(L"0X6100620063006400"));
+			Assert::AreEqual(vector_abcdW, HexStringToBin(L"x6100620063006400"));
+			Assert::AreEqual(vector_abcdW, HexStringToBin(L"X6100620063006400"));
+			Assert::AreEqual(vector_abNULLdW, HexStringToBin(L"6100620000006400"));
+			Assert::AreEqual(vector_tabcrlfW, HexStringToBin(L"09000A000D00"));
+			Assert::AreEqual(myStringWvector, HexStringToBin(L"6D00790073007400720069006E006700"));
 		}
 
 		void ByteVectorToLPBYTETest(const vector<BYTE>& bin)
@@ -327,8 +327,8 @@ namespace stringtest
 			ByteVectorToLPBYTETest(vector_tabcrlfA);
 		}
 
-		wstring fullstring = wstring(L"this is a string  yes");
-		vector<wstring> words = { wstring(L"this"), wstring(L"is"), wstring(L"a"), wstring(L"string"), wstring(L""), wstring(L"yes") };
+		wstring fullstring = L"this is a string  yes";
+		vector<wstring> words = { L"this", L"is", L"a", L"string", L"", L"yes" };
 
 		TEST_METHOD(Test_split)
 		{
