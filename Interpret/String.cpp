@@ -42,11 +42,21 @@ wstring format(LPCWSTR szMsg, ...)
 	return ret;
 }
 
-wstring loadstring(HINSTANCE hInstance, DWORD dwID)
+HINSTANCE g_testInstance = nullptr;
+// By default, we call LoadStringW with a null hInstance.
+// This will try to load the string from the executable, which is fine for MFCMAPI and MrMAPI
+// In our unit tests, we must load strings from UnitTest.dll, so we use setTestInstance
+// to populate an appropriate HINSTANCE
+void setTestInstance(HINSTANCE hInstance)
+{
+	g_testInstance = hInstance;
+}
+
+wstring loadstring(DWORD dwID)
 {
 	wstring fmtString;
 	LPWSTR buffer = nullptr;
-	size_t len = LoadStringW(hInstance, dwID, reinterpret_cast<PWCHAR>(&buffer), 0);
+	size_t len = LoadStringW(g_testInstance, dwID, reinterpret_cast<PWCHAR>(&buffer), 0);
 
 	if (len)
 	{
@@ -54,11 +64,6 @@ wstring loadstring(HINSTANCE hInstance, DWORD dwID)
 	}
 
 	return fmtString;
-}
-
-wstring loadstring(DWORD dwID)
-{
-	return loadstring(nullptr, dwID);
 }
 
 wstring formatmessageV(LPCWSTR szMsg, va_list argList)

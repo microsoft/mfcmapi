@@ -21,7 +21,7 @@ using std::tstring;
 using std::vector;
 
 extern wstring emptystring;
-wstring loadstring(HINSTANCE hInstance, DWORD dwID);
+void setTestInstance(HINSTANCE hInstance);
 wstring loadstring(DWORD dwID);
 wstring formatV(LPCWSTR szMsg, va_list argList);
 wstring format(LPCWSTR szMsg, ...);

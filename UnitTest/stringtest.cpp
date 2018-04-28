@@ -4,9 +4,6 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-// In case we have any tests that depend on MFC being loaded, here's how to load it
-// AfxWinInit(::GetModuleHandleW(L"UnitTest.dll"), nullptr, ::GetCommandLine(), 0);
-
 namespace stringtest
 {
 	TEST_CLASS(stringtest)
@@ -29,29 +26,17 @@ namespace stringtest
 
 		TEST_METHOD(Test_loadstring)
 		{
-			// loadstring has two flavors:
-			// wstring loadstring(HINSTANCE hInstance, DWORD dwID);
-			// wstring loadstring(DWORD dwID);
-			// The latter calls the former with a null hInstance.
-			// This will try to load the string from the executable, which is fine for MFCMAPI and MrMAPI
-			// In our unit tests, we must load strings from UnitTest.dll, so we can only test
-			// the variant which accepts an HINSTANCE
-			auto hInstance = ::GetModuleHandleW(L"UnitTest.dll");
+			setTestInstance(::GetModuleHandleW(L"UnitTest.dll"));
 
 			// A resource which does not exist
 			Assert::AreEqual(
 				wstring(L""),
-				loadstring(hInstance, 1234));
+				loadstring(1234));
 
 			// A resource which does exist
 			Assert::AreEqual(
 				wstring(L"\r\n\tUnknown Data = "),
-				loadstring(hInstance, IDS_EXTENDEDFLAGUNKNOWN));
-
-			// A resource which does exist, but loaded from the wrong dll
-			Assert::AreNotEqual(
-				wstring(L"\r\n\tUnknown Data = "),
-				loadstring(nullptr, IDS_EXTENDEDFLAGUNKNOWN));
+				loadstring(IDS_EXTENDEDFLAGUNKNOWN));
 		}
 
 		TEST_METHOD(Test_format)

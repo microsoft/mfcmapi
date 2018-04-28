@@ -1,5 +1,7 @@
 #pragma once
+#include "SmartViewParser.h"
 
+LPSMARTVIEWPARSER GetSmartViewParser(__ParsingTypeEnum iStructType, _In_opt_ LPMAPIPROP lpMAPIProp);
 std::pair<__ParsingTypeEnum, wstring> InterpretPropSmartView2(_In_opt_ LPSPropValue lpProp, // required property value
 	_In_opt_ LPMAPIPROP lpMAPIProp, // optional source object
 	_In_opt_ LPMAPINAMEID lpNameID, // optional named property information to avoid GetNamesFromIDs call

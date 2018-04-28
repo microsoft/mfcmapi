@@ -99,7 +99,6 @@ LPBYTE SmartViewParser::AllocateArray(size_t cArray, size_t cbEntry)
 	return Allocate(cArray * cbEntry);
 }
 
-
 _Check_return_ LPSPropValue SmartViewParser::BinToSPropValue(DWORD dwPropCount, bool bStringPropsExcludeLength)
 {
 	if (!dwPropCount || dwPropCount > _MaxEntriesSmall) return nullptr;
