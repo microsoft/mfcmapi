@@ -11,7 +11,7 @@ namespace SmartViewTest
 {
 	TEST_CLASS(SmartViewTest)
 	{
-	public:
+	private:
 		LPSMARTVIEWPARSER GetParser(wstring hexString, __ParsingTypeEnum iStructType)
 		{
 			auto bin = HexStringToBin(hexString);
@@ -25,11 +25,16 @@ namespace SmartViewTest
 			return nullptr;
 		}
 
-		TEST_METHOD(Test_smartview)
+	public:
+		TEST_CLASS_INITIALIZE(Initialize_smartview)
 		{
 			// Set up our property arrays or nothing works
 			MergeAddInArrays();
 			setTestInstance(::GetModuleHandleW(L"UnitTest.dll"));
+		}
+
+		TEST_METHOD(Test_smartview)
+		{
 
 			for (auto& data : g_smartViewTestData)
 			{
