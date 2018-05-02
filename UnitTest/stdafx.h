@@ -17,8 +17,8 @@ namespace Microsoft
 			{
 				if (expected != actual)
 				{
-					Logger::WriteMessage(format(L"Expected:\n%ws\n", expected.c_str()).c_str());
-					Logger::WriteMessage(format(L"\nActual:\n%ws\n", actual.c_str()).c_str());
+					Logger::WriteMessage(format(L"Expected:\n\"%ws\"\n\n", expected.c_str()).c_str());
+					Logger::WriteMessage(format(L"Actual:\n\"%ws\"\n", actual.c_str()).c_str());
 					Assert::IsTrue(false, ToString(message).c_str(), pLineInfo);
 				}
 			}

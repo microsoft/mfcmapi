@@ -46,7 +46,7 @@ namespace SmartViewTest
 						auto parsingType = static_cast<__ParsingTypeEnum>(i);
 						auto parser = GetParser(data.hex, parsingType);
 						if (parser) {
-							Logger::WriteMessage(format(L"Testing %ws\n", AddInStructTypeToString(parsingType).c_str()).c_str());
+							//Logger::WriteMessage(format(L"Testing %ws\n", AddInStructTypeToString(parsingType).c_str()).c_str());
 							Assert::IsTrue(parser->ToString().length() != 0);
 						}
 					}
