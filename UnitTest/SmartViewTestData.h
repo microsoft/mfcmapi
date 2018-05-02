@@ -3,8 +3,9 @@
 namespace SmartViewTest
 {
 	struct SmartViewTestData {
-		wstring hex;
 		__ParsingTypeEnum structType;
+		bool parseAll;
+		wstring hex;
 		wstring parsing;
 	};
 

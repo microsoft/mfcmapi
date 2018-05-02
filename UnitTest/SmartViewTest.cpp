@@ -3,6 +3,7 @@
 #include "Interpret\SmartView\SmartView.h"
 #include "Interpret\SmartView\SmartViewParser.h"
 #include "SmartViewTestData.h"
+#include "MFCMAPI.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -32,9 +33,19 @@ namespace SmartViewTest
 
 			for (auto& data : g_smartViewTestData)
 			{
-				Assert::AreEqual(
-					data.parsing,
-					GetParser(data.hex, data.structType)->ToString());
+				auto actual = GetParser(data.hex, data.structType)->ToString();
+				AreEqualEx(data.parsing, actual);
+
+				if (data.parseAll) {
+					for (ULONG i = IDS_STNOPARSING; i < IDS_STEND; i++) {
+						auto parsingType = static_cast<__ParsingTypeEnum>(i);
+						auto parser = GetParser(data.hex, parsingType);
+						if (parser) {
+							Logger::WriteMessage(format(L"Testing %ws\n", AddInStructTypeToString(parsingType).c_str()).c_str());
+							Assert::IsTrue(parser->ToString().length() != 0);
+						}
+					}
+				}
 			}
 		}
 	};
