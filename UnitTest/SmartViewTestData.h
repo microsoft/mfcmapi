@@ -1,13 +1,14 @@
 #pragma once
 
-namespace SmartViewTest
+namespace SmartViewTestData
 {
 	struct SmartViewTestData {
 		__ParsingTypeEnum structType;
 		bool parseAll;
 		wstring hex;
-		wstring parsing;
+		wstring expected;
 	};
 
-	extern vector<SmartViewTestData> const g_smartViewTestData;
+	extern vector<SmartViewTestData> g_smartViewTestData;
+	void init();
 }

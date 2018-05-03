@@ -31,15 +31,15 @@ namespace SmartViewTest
 			// Set up our property arrays or nothing works
 			MergeAddInArrays();
 			setTestInstance(::GetModuleHandleW(L"UnitTest.dll"));
+			SmartViewTestData::init();
 		}
 
 		TEST_METHOD(Test_smartview)
 		{
-
-			for (auto& data : g_smartViewTestData)
+			for (auto& data : SmartViewTestData::g_smartViewTestData)
 			{
 				auto actual = GetParser(data.hex, data.structType)->ToString();
-				AreEqualEx(data.parsing, actual);
+				AreEqualEx(data.expected, actual);
 
 				if (data.parseAll) {
 					for (ULONG i = IDS_STNOPARSING; i < IDS_STEND; i++) {

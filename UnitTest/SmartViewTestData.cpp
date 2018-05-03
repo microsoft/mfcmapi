@@ -1,86 +1,15 @@
 #include "stdafx.h"
 #include "SmartViewTestData.h"
+#include "SmartViewTestData_arp.h"
+#include "SmartViewTestData_aei.h"
 
-namespace SmartViewTest
+namespace SmartViewTestData
 {
-	vector<SmartViewTestData> const g_smartViewTestData = {
-	{ IDS_STADDITIONALRENENTRYIDSEX, true, // 1-aei1
-		L"0E80320001002E0000000000C31A1BB1FC55D34693186631C218FEB60100CDC2D035C80A7848AA5"
-		L"32A41B8AAE17F00000000013700000A80320001002E0000000000C31A1BB1FC55D34693186631C2"
-		L"18FEB60100CDC2D035C80A7848AA532A41B8AAE17F00000000012600000B80320001002E0000000"
-		L"000C31A1BB1FC55D34693186631C218FEB60100CDC2D035C80A7848AA532A41B8AAE17F00000000"
-		L"01250000",
-		L"Additional Ren Entry IDs\r\n"
-		L"PersistDataCount = 3\r\n"
-		L"\r\n"
-		L"Persist Element 0:\r\n"
-		L"PersistID = 0x800E = 0x800E\r\n"
-		L"DataElementsSize = 0x0032\r\n"
-		L"DataElement: 0\r\n"
-		L"\tElementID = 0x0001 = RSF_ELID_ENTRYID\r\n"
-		L"\tElementDataSize = 0x002E\r\n"
-		L"\tElementData = cb: 46 lpb: 00000000C31A1BB1FC55D34693186631C218FEB60100CDC2D035C80A7848AA532A41B8AAE17F0000000001370000\r\n"
-		L"\r\n"
-		L"Persist Element 1:\r\n"
-		L"PersistID = 0x800A = 0x800A\r\n"
-		L"DataElementsSize = 0x0032\r\n"
-		L"DataElement: 0\r\n"
-		L"\tElementID = 0x0001 = RSF_ELID_ENTRYID\r\n"
-		L"\tElementDataSize = 0x002E\r\n"
-		L"\tElementData = cb: 46 lpb: 00000000C31A1BB1FC55D34693186631C218FEB60100CDC2D035C80A7848AA532A41B8AAE17F0000000001260000\r\n"
-		L"\r\n"
-		L"Persist Element 2:\r\n"
-		L"PersistID = 0x800B = 0x800B\r\n"
-		L"DataElementsSize = 0x0032\r\n"
-		L"DataElement: 0\r\n"
-		L"\tElementID = 0x0001 = RSF_ELID_ENTRYID\r\n"
-		L"\tElementDataSize = 0x002E\r\n"
-		L"\tElementData = cb: 46 lpb: 00000000C31A1BB1FC55D34693186631C218FEB60100CDC2D035C80A7848AA532A41B8AAE17F0000000001250000"
-	},
-	{ IDS_STAPPOINTMENTRECURRENCEPATTERN, false, // 2-arp1
-		L"043004300B2001000000C0210000020000000000000010000000212000001200000000000000040"
-		L"00000806ADB0C40B9DB0C0008DC0CC056DC0C01000000806ADB0C80F4D80CA056DE0C0630000009"
-		L"30000066030000A20300000100E66DDB0C226EDB0CE66DDB0C82020100000000000000000000000"
-		L"4000000800100000000000000000000",
-		L"Recurrence Pattern: \r\n"
-		L"ReaderVersion: 0x3004\r\n"
-		L"WriterVersion: 0x3004\r\n"
-		L"RecurFrequency: 0x200B = IDC_RCEV_PAT_ORB_WEEKLY\r\n"
-		L"PatternType: 0x0001 = rptWeek\r\n"
-		L"CalendarType: 0x0000 = CAL_DEFAULT\r\n"
-		L"FirstDateTime: 0x000021C0 = 8640\r\n"
-		L"Period: 0x00000002 = 2\r\n"
-		L"SlidingFlag: 0x00000000\r\n"
-		L"PatternTypeSpecific.WeekRecurrencePattern: 0x00000010 = rdfThu\r\n"
-		L"EndType: 0x00002021 = IDC_RCEV_PAT_ERB_END\r\n"
-		L"OccurrenceCount: 0x00000012 = 18\r\n"
-		L"FirstDOW: 0x00000000 = Sunday\r\n"
-		L"DeletedInstanceCount: 0x00000004 = 4\r\n"
-		L"DeletedInstanceDates[0]: 0x0CDB6A80 = 12:00:00.000 AM 2/17/2011\r\n"
-		L"DeletedInstanceDates[1]: 0x0CDBB940 = 12:00:00.000 AM 3/3/2011\r\n"
-		L"DeletedInstanceDates[2]: 0x0CDC0800 = 12:00:00.000 AM 3/17/2011\r\n"
-		L"DeletedInstanceDates[3]: 0x0CDC56C0 = 12:00:00.000 AM 3/31/2011\r\n"
-		L"ModifiedInstanceCount: 0x00000001 = 1\r\n"
-		L"ModifiedInstanceDates[0]: 0x0CDB6A80 = 12:00:00.000 AM 2/17/2011\r\n"
-		L"StartDate: 0x0CD8F480 = 215544960 = 12:00:00.000 AM 10/28/2010\r\n"
-		L"EndDate: 0x0CDE56A0 = 215897760 = 12:00:00.000 AM 6/30/2011\r\n"
-		L"Appointment Recurrence Pattern: \r\n"
-		L"ReaderVersion2: 0x00003006\r\n"
-		L"WriterVersion2: 0x00003009\r\n"
-		L"StartTimeOffset: 0x00000366 = 870 = 02:30:00.000 PM 1/1/1601\r\n"
-		L"EndTimeOffset: 0x000003A2 = 930 = 03:30:00.000 PM 1/1/1601\r\n"
-		L"ExceptionCount: 0x0001\r\n"
-		L"ExceptionInfo[0].StartDateTime: 0x0CDB6DE6 = 02:30:00.000 PM 2/17/2011\r\n"
-		L"ExceptionInfo[0].EndDateTime: 0x0CDB6E22 = 03:30:00.000 PM 2/17/2011\r\n"
-		L"ExceptionInfo[0].OriginalStartDate: 0x0CDB6DE6 = 02:30:00.000 PM 2/17/2011\r\n"
-		L"ExceptionInfo[0].OverrideFlags: 0x0282 = ARO_MEETINGTYPE | ARO_SUBTYPE | ARO_EXCEPTIONAL_BODY\r\n"
-		L"ExceptionInfo[0].MeetingType: 0x00000001 = asfMeeting\r\n"
-		L"ExceptionInfo[0].SubType: 0x00000000\r\n"
-		L"ReservedBlock1Size: 0x00000000\r\n"
-		L"ExtendedException[0].ChangeHighlight.ChangeHighlightSize: 0x00000004\r\n"
-		L"ExtendedException[0].ChangeHighlight.ChangeHighlightValue: 0x00000180 = BIT_CH_BODY | BIT_CH_CUSTOM\r\n"
-		L"ExtendedException[0].ReservedBlockEE1Size: 0x00000000\r\n"
-		L"ExtendedException[0].ReservedBlockEE2Size: 0x00000000\r\n"
-		L"ReservedBlock2Size: 0x00000000" }
-	};
+	vector<SmartViewTestData> g_smartViewTestData;
+
+	void init()
+	{
+		SmartViewTestData_arp::init();
+		SmartViewTestData_aei::init();
+	}
 }
