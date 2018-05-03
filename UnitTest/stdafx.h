@@ -1,7 +1,8 @@
 #pragma once
+#include "..\StdAfx.h"
 #include "targetver.h"
 #include "CppUnitTest.h"
-#include "..\StdAfx.h"
+#include "Interpret\String.h"
 
 namespace Microsoft
 {
@@ -18,7 +19,19 @@ namespace Microsoft
 				if (expected != actual)
 				{
 					Logger::WriteMessage(format(L"Expected:\n\"%ws\"\n\n", expected.c_str()).c_str());
-					Logger::WriteMessage(format(L"Actual:\n\"%ws\"\n", actual.c_str()).c_str());
+					Logger::WriteMessage(format(L"Actual:\n\"%ws\"\n\n", actual.c_str()).c_str());
+					Logger::WriteMessage(L"Diff:\n");
+
+					auto splitExpected = split(expected, L'\n');
+					auto splitActual = split(actual, L'\n');
+					for (size_t i = 0; i < splitExpected.size() && i < splitActual.size(); i++)
+					{
+						if (splitExpected[i] != splitActual[i])
+						{
+							Logger::WriteMessage(format(L"[%d]\n\"%ws\"\n\"%ws\"\n", i, splitExpected[i].c_str(), splitActual[i].c_str()).c_str());
+						}
+					}
+
 					Assert::IsTrue(false, ToString(message).c_str(), pLineInfo);
 				}
 			}
