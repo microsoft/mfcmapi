@@ -18,8 +18,6 @@ namespace Microsoft
 			{
 				if (expected != actual)
 				{
-					Logger::WriteMessage(format(L"Expected:\n\"%ws\"\n\n", expected.c_str()).c_str());
-					Logger::WriteMessage(format(L"Actual:\n\"%ws\"\n\n", actual.c_str()).c_str());
 					Logger::WriteMessage(L"Diff:\n");
 
 					auto splitExpected = split(expected, L'\n');
@@ -31,6 +29,10 @@ namespace Microsoft
 							Logger::WriteMessage(format(L"[%d]\n\"%ws\"\n\"%ws\"\n", i, splitExpected[i].c_str(), splitActual[i].c_str()).c_str());
 						}
 					}
+
+					Logger::WriteMessage(L"\n");
+					Logger::WriteMessage(format(L"Expected:\n\"%ws\"\n\n", expected.c_str()).c_str());
+					Logger::WriteMessage(format(L"Actual:\n\"%ws\"", actual.c_str()).c_str());
 
 					Assert::IsTrue(false, ToString(message).c_str(), pLineInfo);
 				}
