@@ -9,6 +9,5 @@ namespace SmartViewTestData
 		wstring expected;
 	};
 
-	extern vector<SmartViewTestData> g_smartViewTestData;
-	void init(HMODULE handle);
+	vector<SmartViewTestData> getTestData(HMODULE handle);
 }

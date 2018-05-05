@@ -4,8 +4,6 @@
 
 namespace SmartViewTestData
 {
-	vector<SmartViewTestData> g_smartViewTestData;
-
 	struct SmartViewTestResource {
 		__ParsingTypeEnum structType;
 		bool parseAll;
@@ -23,7 +21,7 @@ namespace SmartViewTestData
 		return wstring(ansi.begin(), ansi.end());
 	}
 
-	void init(HMODULE handle)
+	vector<SmartViewTestData> getTestData(HMODULE handle)
 	{
 		auto resources = {
 			SmartViewTestResource{IDS_STADDITIONALRENENTRYIDSEX, true, IDR_SV1AEI1IN, IDR_SV1AEI1OUT},
@@ -35,14 +33,17 @@ namespace SmartViewTestData
 			SmartViewTestResource{ IDS_STAPPOINTMENTRECURRENCEPATTERN, true, IDR_SV2ARP4IN, IDR_SV2ARP4OUT },
 		};
 
+		vector<SmartViewTestData> testData;
 		for (auto resource : resources)
 		{
-			g_smartViewTestData.push_back(SmartViewTestData
+			testData.push_back(SmartViewTestData
 			{
 				resource.structType, resource.parseAll,
 				loadfile(handle, resource.hex),
 				loadfile(handle, resource.expected)
 			});
 		}
+
+		return testData;
 	}
 }

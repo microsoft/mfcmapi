@@ -30,14 +30,13 @@ namespace SmartViewTest
 		{
 			// Set up our property arrays or nothing works
 			MergeAddInArrays();
-			auto handle = ::GetModuleHandleW(L"UnitTest.dll");
-			setTestInstance(handle);
-			SmartViewTestData::init(handle);
+			setTestInstance(::GetModuleHandleW(L"UnitTest.dll"));
 		}
 
 		TEST_METHOD(Test_smartview)
 		{
-			for (auto& data : SmartViewTestData::g_smartViewTestData)
+			auto testData = SmartViewTestData::getTestData(::GetModuleHandleW(L"UnitTest.dll"));
+			for (auto data : testData)
 			{
 				auto actual = GetParser(data.hex, data.structType)->ToString();
 				AreEqualEx(data.expected, actual);
