@@ -10,5 +10,6 @@ namespace SmartViewTestData
 	};
 
 	extern vector<SmartViewTestData> g_smartViewTestData;
-	void init();
+	void init(HMODULE handle);
+	wstring loadfile(HMODULE handle, int name);
 }

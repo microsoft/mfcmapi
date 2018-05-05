@@ -30,8 +30,9 @@ namespace SmartViewTest
 		{
 			// Set up our property arrays or nothing works
 			MergeAddInArrays();
-			setTestInstance(::GetModuleHandleW(L"UnitTest.dll"));
-			SmartViewTestData::init();
+			auto handle = ::GetModuleHandleW(L"UnitTest.dll");
+			setTestInstance(handle);
+			SmartViewTestData::init(handle);
 		}
 
 		TEST_METHOD(Test_smartview)
