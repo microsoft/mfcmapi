@@ -12,37 +12,22 @@ namespace SmartViewTest
 	TEST_CLASS(SmartViewTest)
 	{
 	private:
-		LPSMARTVIEWPARSER GetParser(wstring hexString, __ParsingTypeEnum iStructType)
+		wstring ParseString(wstring hexString, __ParsingTypeEnum iStructType)
 		{
 			auto bin = HexStringToBin(hexString);
-			auto svp = GetSmartViewParser(iStructType, nullptr);
-			if (svp)
-			{
-				svp->Init(bin.size(), bin.data());
-				return svp;
-			}
-
-			return nullptr;
+			return InterpretBinaryAsString({ bin.size(), bin.data() }, iStructType, nullptr);
 		}
 
 		void test(vector<SmartViewTestData::SmartViewTestData> testData)
 		{
 			for (auto data : testData)
 			{
-				auto parser = GetParser(data.hex, data.structType);
-				if (parser != nullptr)
-				{
-					AreEqualEx(data.expected, parser->ToString(), data.testName.c_str());
-				}
+				AreEqualEx(data.expected, ParseString(data.hex, data.structType), data.testName.c_str());
 
 				if (data.parseAll) {
 					for (ULONG i = IDS_STNOPARSING; i < IDS_STEND; i++) {
-						auto parsingType = static_cast<__ParsingTypeEnum>(i);
-						parser = GetParser(data.hex, parsingType);
-						if (parser) {
-							//Logger::WriteMessage(format(L"Testing %ws\n", AddInStructTypeToString(parsingType).c_str()).c_str());
-							Assert::IsTrue(parser->ToString().length() != 0);
-						}
+						//Logger::WriteMessage(format(L"Testing %ws\n", AddInStructTypeToString(static_cast<__ParsingTypeEnum>(i)).c_str()).c_str());
+						Assert::IsTrue(ParseString(data.hex, data.structType).length() != 0);
 					}
 				}
 			}
