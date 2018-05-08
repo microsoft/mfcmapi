@@ -23,15 +23,14 @@ namespace SmartViewTest
 			__ParsingTypeEnum structType;
 			bool parseAll;
 			wstring testName;
-			wstring hex;
+			vector<BYTE> hex;
 			wstring expected;
 		};
 
 		const bool parseAll = false;
-		wstring ParseString(wstring hexString, __ParsingTypeEnum iStructType)
+		wstring ParseString(vector<BYTE> hex, __ParsingTypeEnum iStructType)
 		{
-			auto bin = HexStringToBin(hexString);
-			return InterpretBinaryAsString({ bin.size(), bin.data() }, iStructType, nullptr);
+			return InterpretBinaryAsString({ hex.size(), hex.data() }, iStructType, nullptr);
 		}
 
 		void test(vector<SmartViewTestData> testData)
@@ -80,7 +79,7 @@ namespace SmartViewTest
 					{
 						resource.structType, resource.parseAll,
 						format(L"%d/%d", resource.hex, resource.expected),
-						loadfile(handle, resource.hex),
+						HexStringToBin(loadfile(handle, resource.hex)),
 						loadfile(handle, resource.expected)
 					});
 			}
