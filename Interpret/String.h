@@ -52,6 +52,8 @@ wstring ScrubStringForXML(const wstring& szString);
 wstring SanitizeFileName(const wstring& szFileIn);
 wstring indent(int iIndent);
 
+string RemoveInvalidCharactersA(const string& szString, bool bMultiLine = true);
+wstring RemoveInvalidCharactersW(const wstring& szString, bool bMultiLine = true);
 wstring BinToTextStringW(const vector<BYTE>& lpByte, bool bMultiLine);
 wstring BinToTextStringW(_In_ const LPSBinary lpBin, bool bMultiLine);
 wstring BinToTextString(const vector<BYTE>& lpByte, bool bMultiLine);

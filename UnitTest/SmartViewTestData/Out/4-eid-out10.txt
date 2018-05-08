@@ -1,0 +1,7 @@
+Exchange Folder Entry ID:
+abFlags = 0x00000000
+Provider GUID = {C64E6196-0166-11D2-A3B1-0008C728E7F1} = Unknown GUID
+Folder Type = 0x0001 = eitLTPrivateFolder
+Database GUID = {108EB6C3-75F7-CE11-B4CD-00AA00BBB6E6} = Unknown GUID
+GlobalCounter = cb: 6 lpb: 000000000005
+Pad = cb: 2 lpb: 0000

@@ -289,21 +289,38 @@ wstring indent(int iIndent)
 	return wstring(iIndent, L'\t');
 }
 
-// Converts binary data to a string, assuming source string was unicode
-wstring BinToTextStringW(const vector<BYTE>& lpByte, bool bMultiLine)
+string RemoveInvalidCharactersA(const string& szString, bool bMultiLine)
 {
-	SBinary bin = { 0 };
-	bin.cb = static_cast<ULONG>(lpByte.size());
-	bin.lpb = const_cast<LPBYTE>(lpByte.data());
-	return BinToTextStringW(&bin, bMultiLine);
+	string szBin(szString);
+	auto nullTerminated = szBin.back() == '\0';
+	std::replace_if(szBin.begin(), szBin.end(), [bMultiLine](const char& chr)
+	{
+		// Any printable extended ASCII character gets mapped directly
+		if (chr >= 0x20 &&
+			chr <= 0xFE)
+		{
+			return false;
+		}
+		// If we allow multiple lines, we accept tab, LF and CR
+		else if (bMultiLine &&
+			(chr == 9 || // Tab
+				chr == 10 || // Line Feed
+				chr == 13))  // Carriage Return
+		{
+			return false;
+		}
+
+		return true;
+	}, '.');
+
+	if (nullTerminated) szBin.back() = '\0';
+	return szBin;
 }
 
-// Converts binary data to a string, assuming source string was unicode
-wstring BinToTextStringW(_In_ const LPSBinary lpBin, bool bMultiLine)
+wstring RemoveInvalidCharactersW(const wstring& szString, bool bMultiLine)
 {
-	if (!lpBin || !lpBin->cb || lpBin->cb % sizeof WCHAR || !lpBin->lpb) return L"";
-
-	wstring szBin(reinterpret_cast<LPWSTR>(lpBin->lpb), lpBin->cb / sizeof WCHAR);
+	wstring szBin(szString);
+	auto nullTerminated = szBin.back() == L'\0';
 	std::replace_if(szBin.begin(), szBin.end(), [bMultiLine](const WCHAR & chr)
 	{
 		// Any printable extended ASCII character gets mapped directly
@@ -324,7 +341,26 @@ wstring BinToTextStringW(_In_ const LPSBinary lpBin, bool bMultiLine)
 		return true;
 	}, L'.');
 
+	if (nullTerminated) szBin.back() = L'\0';
 	return szBin;
+}
+
+// Converts binary data to a string, assuming source string was unicode
+wstring BinToTextStringW(const vector<BYTE>& lpByte, bool bMultiLine)
+{
+	SBinary bin = { 0 };
+	bin.cb = static_cast<ULONG>(lpByte.size());
+	bin.lpb = const_cast<LPBYTE>(lpByte.data());
+	return BinToTextStringW(&bin, bMultiLine);
+}
+
+// Converts binary data to a string, assuming source string was unicode
+wstring BinToTextStringW(_In_ const LPSBinary lpBin, bool bMultiLine)
+{
+	if (!lpBin || !lpBin->cb || lpBin->cb % sizeof WCHAR || !lpBin->lpb) return L"";
+
+	wstring szBin(reinterpret_cast<LPWSTR>(lpBin->lpb), lpBin->cb / sizeof WCHAR);
+	return RemoveInvalidCharactersW(szBin, bMultiLine);
 }
 
 wstring BinToTextString(const vector<BYTE>& lpByte, bool bMultiLine)
