@@ -18,5 +18,4 @@ namespace SmartViewTestData
 	};
 
 	vector<SmartViewTestData> loadTestData(HMODULE handle, std::initializer_list<SmartViewTestResource> resources);
-	vector<SmartViewTestData> getTestData(HMODULE handle);
 }
