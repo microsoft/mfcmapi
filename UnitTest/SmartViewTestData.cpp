@@ -34,6 +34,23 @@ namespace SmartViewTestData
 
 	}
 
+	vector<SmartViewTestData> loadTestData(HMODULE handle, std::initializer_list<SmartViewTestResource> resources)
+	{
+		vector<SmartViewTestData> testData;
+		for (auto resource : resources)
+		{
+			testData.push_back(SmartViewTestData
+				{
+					resource.structType, resource.parseAll,
+					format(L"%d/%d", resource.hex, resource.expected),
+					loadfile(handle, resource.hex),
+					loadfile(handle, resource.expected)
+				});
+		}
+
+		return testData;
+	}
+
 	vector<SmartViewTestData> getTestData(HMODULE handle)
 	{
 		const bool parseAll = false;
@@ -90,18 +107,6 @@ namespace SmartViewTestData
 			SmartViewTestResource{ IDS_STENTRYID, parseAll, IDR_SV4EID38IN, IDR_SV4EID38OUT },
 		};
 
-		vector<SmartViewTestData> testData;
-		for (auto resource : resources)
-		{
-			testData.push_back(SmartViewTestData
-				{
-					resource.structType, resource.parseAll,
-					format(L"%d/%d", resource.hex, resource.expected),
-					loadfile(handle, resource.hex),
-					loadfile(handle, resource.expected)
-				});
-		}
-
-		return testData;
+		return loadTestData(handle, resources);
 	}
 }
