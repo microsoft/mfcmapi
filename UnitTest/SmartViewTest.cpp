@@ -49,8 +49,7 @@ namespace SmartViewTest
 
 		TEST_METHOD(Test_smartview)
 		{
-			auto testData = SmartViewTestData::getTestData(::GetModuleHandleW(L"UnitTest.dll"));
-			test(testData);
+			test(SmartViewTestData::getTestData(::GetModuleHandleW(L"UnitTest.dll")));
 		}
 	};
 }
