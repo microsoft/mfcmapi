@@ -26,7 +26,7 @@ namespace stringtest
 
 		TEST_METHOD(Test_loadstring)
 		{
-			setTestInstance(::GetModuleHandleW(L"UnitTest.dll"));
+			setTestInstance(GetModuleHandleW(L"UnitTest.dll"));
 
 			// A resource which does not exist
 			Assert::AreEqual(
@@ -233,9 +233,8 @@ namespace stringtest
 
 		TEST_METHOD(Test_BinToTextStringW)
 		{
-			Assert::AreEqual(wstring(L""), BinToTextStringW(0, true));
-			Assert::AreEqual(wstring(L""), BinToTextStringW(0, false));
 			Assert::AreEqual(wstring(L""), BinToTextStringW(nullptr, true));
+			Assert::AreEqual(wstring(L""), BinToTextStringW(nullptr, false));
 
 			Assert::AreEqual(mystringW, BinToTextStringW(&sBinaryW, false));
 			Assert::AreEqual(mystringW, BinToTextStringW(myStringWvector, false));
@@ -247,9 +246,8 @@ namespace stringtest
 
 		TEST_METHOD(Test_BinToTextString)
 		{
-			Assert::AreEqual(wstring(L""), BinToTextString(0, true));
-			Assert::AreEqual(wstring(L""), BinToTextString(0, false));
 			Assert::AreEqual(wstring(L""), BinToTextString(nullptr, true));
+			Assert::AreEqual(wstring(L""), BinToTextString(nullptr, false));
 
 			Assert::AreEqual(mystringW, BinToTextString(&sBinaryA, false));
 			auto sBinary = SBinary{ static_cast<ULONG>(vector_abcdA.size()), vector_abcdA.data() };
