@@ -4,13 +4,6 @@
 
 namespace SmartViewTestData
 {
-	struct SmartViewTestResource {
-		__ParsingTypeEnum structType;
-		bool parseAll;
-		DWORD hex;
-		DWORD expected;
-	};
-
 	// Resource files saved in unicode have a byte order mark of 0xfeff
 	// We load these in and strip the BOM.
 	// Otherwise we load as ansi and convert to unicode
@@ -55,9 +48,6 @@ namespace SmartViewTestData
 	{
 		const bool parseAll = false;
 		auto resources = {
-			SmartViewTestResource{ IDS_STADDITIONALRENENTRYIDSEX, parseAll, IDR_SV1AEI1IN, IDR_SV1AEI1OUT },
-			SmartViewTestResource{ IDS_STADDITIONALRENENTRYIDSEX, parseAll, IDR_SV1AEI2IN, IDR_SV1AEI2OUT },
-
 			SmartViewTestResource{ IDS_STAPPOINTMENTRECURRENCEPATTERN, parseAll, IDR_SV2ARP1IN, IDR_SV2ARP1OUT },
 			SmartViewTestResource{ IDS_STAPPOINTMENTRECURRENCEPATTERN, parseAll, IDR_SV2ARP2IN, IDR_SV2ARP2OUT },
 			SmartViewTestResource{ IDS_STAPPOINTMENTRECURRENCEPATTERN, parseAll, IDR_SV2ARP3IN, IDR_SV2ARP3OUT },

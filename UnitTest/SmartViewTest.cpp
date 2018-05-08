@@ -4,6 +4,7 @@
 #include "Interpret\SmartView\SmartViewParser.h"
 #include "SmartViewTestData.h"
 #include "MFCMAPI.h"
+#include "resource.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -12,6 +13,7 @@ namespace SmartViewTest
 	TEST_CLASS(SmartViewTest)
 	{
 	private:
+		const bool parseAll = false;
 		wstring ParseString(wstring hexString, __ParsingTypeEnum iStructType)
 		{
 			auto bin = HexStringToBin(hexString);
@@ -50,6 +52,15 @@ namespace SmartViewTest
 		TEST_METHOD(Test_smartview)
 		{
 			test(SmartViewTestData::getTestData(::GetModuleHandleW(L"UnitTest.dll")));
+		}
+
+		TEST_METHOD(Test_IDS_STADDITIONALRENENTRYIDSEX)
+		{
+			test(SmartViewTestData::loadTestData(::GetModuleHandleW(L"UnitTest.dll"),
+				{
+					SmartViewTestData::SmartViewTestResource{ IDS_STADDITIONALRENENTRYIDSEX, parseAll, IDR_SV1AEI1IN, IDR_SV1AEI1OUT },
+					SmartViewTestData::SmartViewTestResource{ IDS_STADDITIONALRENENTRYIDSEX, parseAll, IDR_SV1AEI2IN, IDR_SV1AEI2OUT },
+				}));
 		}
 	};
 }
