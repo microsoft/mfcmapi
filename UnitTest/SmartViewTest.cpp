@@ -78,7 +78,8 @@ namespace SmartViewTest
 				auto actual = InterpretBinaryAsString({ data.hex.size(), data.hex.data() }, data.structType, nullptr);
 				AreEqualEx(data.expected, actual, data.testName.c_str());
 
-				if (data.parseAll) {
+				if (data.parseAll)
+				{
 					for (ULONG i = IDS_STNOPARSING; i < IDS_STEND; i++)
 					{
 						auto structType = static_cast<__ParsingTypeEnum>(i);
