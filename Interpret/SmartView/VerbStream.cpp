@@ -59,12 +59,13 @@ void VerbStream::Parse()
 
 _Check_return_ wstring VerbStream::ToStringInternal()
 {
-	auto szVerbString = formatmessage(IDS_VERBHEADER, m_Version, m_Count);
+	vector<wstring> verbStream;
+	verbStream.push_back(formatmessage(IDS_VERBHEADER, m_Version, m_Count));
 
 	for (ULONG i = 0; i < m_lpVerbData.size(); i++)
 	{
 		auto szVerb = InterpretNumberAsStringProp(m_lpVerbData[i].ID, PR_LAST_VERB_EXECUTED);
-		szVerbString += formatmessage(IDS_VERBDATA,
+		verbStream.push_back(formatmessage(IDS_VERBDATA,
 			i,
 			m_lpVerbData[i].VerbType,
 			m_lpVerbData[i].DisplayNameCount,
@@ -83,20 +84,20 @@ _Check_return_ wstring VerbStream::ToStringInternal()
 			m_lpVerbData[i].Internal5,
 			m_lpVerbData[i].ID,
 			szVerb.c_str(),
-			m_lpVerbData[i].Internal6);
+			m_lpVerbData[i].Internal6));
 	}
 
-	szVerbString += formatmessage(IDS_VERBVERSION2, m_Version2);
+	verbStream.push_back(formatmessage(IDS_VERBVERSION2, m_Version2));
 
 	for (ULONG i = 0; i < m_lpVerbExtraData.size(); i++)
 	{
-		szVerbString += formatmessage(IDS_VERBEXTRADATA,
+		verbStream.push_back(formatmessage(IDS_VERBEXTRADATA,
 			i,
 			m_lpVerbExtraData[i].DisplayNameCount,
 			m_lpVerbExtraData[i].DisplayName.c_str(),
 			m_lpVerbExtraData[i].DisplayNameCountRepeat,
-			m_lpVerbExtraData[i].DisplayNameRepeat.c_str());
+			m_lpVerbExtraData[i].DisplayNameRepeat.c_str()));
 	}
 
-	return szVerbString;
+	return join(verbStream, L"\r\n\r\n");
 }

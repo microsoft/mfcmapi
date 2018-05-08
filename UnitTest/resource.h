@@ -3,18 +3,26 @@
 // Used by UnitTest.rc
 //
 #define TEXTFILE                        256
-#define IDR_SV1AEI1IN                   101
-#define IDR_SV1AEI2IN                   102
-#define IDR_SV2ARP1IN                   103
-#define IDR_SV2ARP2IN                   104
-#define IDR_SV2ARP3IN                   105
-#define IDR_SV2ARP4IN                   106
-#define IDR_SV1AEI1OUT                  401
-#define IDR_SV1AEI2OUT                  402
-#define IDR_SV2ARP1OUT                  403
-#define IDR_SV2ARP2OUT                  404
-#define IDR_SV2ARP3OUT                  405
-#define IDR_SV2ARP4OUT                  406
+
+#define IDR_SV1AEI1IN                  1001
+#define IDR_SV1AEI2IN                  1002
+#define IDR_SV2ARP1IN                  2001
+#define IDR_SV2ARP2IN                  2002
+#define IDR_SV2ARP3IN                  2003
+#define IDR_SV2ARP4IN                  2004
+#define IDR_SV3CI1IN                   3001
+#define IDR_SV3CI2IN                   3002
+#define IDR_SV3CI3IN                   3003
+
+#define IDR_SV1AEI1OUT              1001001
+#define IDR_SV1AEI2OUT              1001002
+#define IDR_SV2ARP1OUT              1002001
+#define IDR_SV2ARP2OUT              1002002
+#define IDR_SV2ARP3OUT              1002003
+#define IDR_SV2ARP4OUT              1002004
+#define IDR_SV3CI1OUT               1003001
+#define IDR_SV3CI2OUT               1003002
+#define IDR_SV3CI3OUT               1003003
 
 // Next default values for new objects
 // 

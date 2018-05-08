@@ -54,6 +54,7 @@ wstring indent(int iIndent);
 
 wstring BinToTextStringW(const vector<BYTE>& lpByte, bool bMultiLine);
 wstring BinToTextStringW(_In_ const LPSBinary lpBin, bool bMultiLine);
+wstring BinToTextString(const vector<BYTE>& lpByte, bool bMultiLine);
 wstring BinToTextString(_In_ const LPSBinary lpBin, bool bMultiLine);
 wstring BinToHexString(const vector<BYTE>& lpByte, bool bPrependCB);
 wstring BinToHexString(_In_opt_count_(cb) const BYTE* lpb, size_t cb, bool bPrependCB);

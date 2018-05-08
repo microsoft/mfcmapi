@@ -41,7 +41,7 @@ _Check_return_ wstring SmartViewParser::ToString()
 		szParsedString += JunkDataToString(m_Parser.RemainingBytes(), m_Parser.GetCurrentAddress());
 	}
 
-	// If we built a string with emedded nulls in it, replace them with dots.
+	// If we built a string with embedded nulls in it, replace them with dots.
 	std::replace_if(szParsedString.begin(), szParsedString.end(), [](const WCHAR & chr)
 	{
 		return chr == L'\0';

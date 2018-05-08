@@ -30,6 +30,12 @@ namespace SmartViewTest
 		{
 			// Set up our property arrays or nothing works
 			MergeAddInArrays();
+
+			RegKeys[regkeyDO_SMART_VIEW].ulCurDWORD = 1;
+			RegKeys[regkeyUSE_GETPROPLIST].ulCurDWORD = 1;
+			RegKeys[regkeyPARSED_NAMED_PROPS].ulCurDWORD = 1;
+			RegKeys[regkeyCACHE_NAME_DPROPS].ulCurDWORD = 1;
+
 			setTestInstance(::GetModuleHandleW(L"UnitTest.dll"));
 		}
 
@@ -38,13 +44,16 @@ namespace SmartViewTest
 			auto testData = SmartViewTestData::getTestData(::GetModuleHandleW(L"UnitTest.dll"));
 			for (auto data : testData)
 			{
-				auto actual = GetParser(data.hex, data.structType)->ToString();
-				AreEqualEx(data.expected, actual);
+				auto parser = GetParser(data.hex, data.structType);
+				if (parser != nullptr)
+				{
+					AreEqualEx(data.expected, parser->ToString(), data.testName.c_str());
+				}
 
 				if (data.parseAll) {
 					for (ULONG i = IDS_STNOPARSING; i < IDS_STEND; i++) {
 						auto parsingType = static_cast<__ParsingTypeEnum>(i);
-						auto parser = GetParser(data.hex, parsingType);
+						parser = GetParser(data.hex, parsingType);
 						if (parser) {
 							//Logger::WriteMessage(format(L"Testing %ws\n", AddInStructTypeToString(parsingType).c_str()).c_str());
 							Assert::IsTrue(parser->ToString().length() != 0);

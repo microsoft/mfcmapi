@@ -327,6 +327,14 @@ wstring BinToTextStringW(_In_ const LPSBinary lpBin, bool bMultiLine)
 	return szBin;
 }
 
+wstring BinToTextString(const vector<BYTE>& lpByte, bool bMultiLine)
+{
+	SBinary bin = { 0 };
+	bin.cb = static_cast<ULONG>(lpByte.size());
+	bin.lpb = const_cast<LPBYTE>(lpByte.data());
+	return BinToTextString(&bin, bMultiLine);
+}
+
 // Converts binary data to a string, assuming source string was single byte
 wstring BinToTextString(_In_ const LPSBinary lpBin, bool bMultiLine)
 {

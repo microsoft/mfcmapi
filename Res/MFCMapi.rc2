@@ -1333,66 +1333,66 @@ IDS_PROBLEMARRAY "Index: 0x%1!08X!, ulPropTag: %2!ws!, scode: 0x%3!08X! = %4!ws!
 IDS_MAPIERRUNICODE "ulVersion = 0x%1!X!\r\nlpszError = %2!ws!\r\nlpszComponent = %3!ws!\r\nulLowLevelError = 0x%4!X! = %5!ws!\r\nulContext = 0x%6!X!"
 IDS_MAPIERRANSI    "ulVersion = 0x%1!X!\r\nlpszError = %2!hs!\r\nlpszComponent = %3!hs!\r\nulLowLevelError = 0x%4!X! = %5!ws!\r\nulContext = 0x%6!X!"
 IDS_TNEFPROBARRAY "Component: 0x%1!08X!\r\nAttribute: 0x%2!08X!\r\n%3!ws!\r\nError: 0x%4!08X! = %5!ws!\r\n"
-IDS_NULLRES "lpRes was NULL\r\n"
-IDS_RESDEPTHEXCEEDED "Restriction nested too many (100) levels.\r\n"
-IDS_RESTYPE "%1!ws!lpRes->rt = 0x%2!X! = %3!ws!\r\n"
+IDS_NULLRES "lpRes was NULL"
+IDS_RESDEPTHEXCEEDED "Restriction nested too many (100) levels."
+IDS_RESTYPE "%1!ws!lpRes->rt = 0x%2!X! = %3!ws!"
 
 IDS_RESCOMPARE "%1!ws!lpRes->res.resCompareProps.relop = %2!ws! = 0x%3!08X!\r\n\
 %1!ws!lpRes->res.resCompareProps.ulPropTag1 = %4!ws!\r\n\
-%1!ws!lpRes->res.resCompareProps.ulPropTag2 = %5!ws!\r\n"
+%1!ws!lpRes->res.resCompareProps.ulPropTag2 = %5!ws!"
 
-IDS_RESANDCOUNT "%1!ws!lpRes->res.resAnd.cRes = 0x%2!08X!\r\n"
-IDS_RESANDPOINTER "%1!ws!lpRes->res.resAnd.lpRes[0x%2!08X!]\r\n"
+IDS_RESANDCOUNT "%1!ws!lpRes->res.resAnd.cRes = 0x%2!08X!"
+IDS_RESANDPOINTER "%1!ws!lpRes->res.resAnd.lpRes[0x%2!08X!]"
 
-IDS_RESORCOUNT "%1!ws!lpRes->res.resOr.cRes = 0x%2!08X!\r\n"
-IDS_RESORPOINTER "%1!ws!lpRes->res.resOr.lpRes[0x%2!08X!]\r\n"
+IDS_RESORCOUNT "%1!ws!lpRes->res.resOr.cRes = 0x%2!08X!"
+IDS_RESORPOINTER "%1!ws!lpRes->res.resOr.lpRes[0x%2!08X!]"
 
 IDS_RESNOT "%1!ws!lpRes->res.resNot.ulReserved = 0x%2!08X!\r\n\
-%1!ws!lpRes->res.resNot.lpRes\r\n"
+%1!ws!lpRes->res.resNot.lpRes"
 
 IDS_RESCOUNT "%1!ws!lpRes->res.resCount.ulCount = 0x%2!08X!\r\n\
-%1!ws!lpRes->res.resCount.lpRes\r\n"
+%1!ws!lpRes->res.resCount.lpRes"
 
 IDS_RESCONTENT "%1!ws!lpRes->res.resContent.ulFuzzyLevel = %2!ws! = 0x%3!08X!\r\n\
-%1!ws!lpRes->res.resContent.ulPropTag = %4!ws!\r\n"
+%1!ws!lpRes->res.resContent.ulPropTag = %4!ws!"
 IDS_RESCONTENTPROP "%1!ws!lpRes->res.resContent.lpProp->ulPropTag = %2!ws!\r\n\
 %1!ws!lpRes->res.resContent.lpProp->Value = %3!ws!\r\n\
-%1!ws!\tAlt: %4!ws!\r\n"
+%1!ws!\tAlt: %4!ws!"
 
 IDS_RESPROP "%1!ws!lpRes->res.resProperty.relop = %2!ws! = 0x%3!08X!\r\n\
-%1!ws!lpRes->res.resProperty.ulPropTag = %4!ws!\r\n"
+%1!ws!lpRes->res.resProperty.ulPropTag = %4!ws!"
 IDS_RESPROPPROP "%1!ws!lpRes->res.resProperty.lpProp->ulPropTag = %2!ws!\r\n\
 %1!ws!lpRes->res.resProperty.lpProp->Value = %3!ws!\r\n\
-%1!ws!\tAlt: %4!ws!\r\n"
-IDS_RESPROPPROPFLAGS "%1!ws!\tFlags: %2!ws!\r\n"
+%1!ws!\tAlt: %4!ws!"
+IDS_RESPROPPROPFLAGS "%1!ws!\tFlags: %2!ws!"
 
 IDS_RESBITMASK "%1!ws!lpRes->res.resBitMask.relBMR = %2!ws! = 0x%3!08X!\r\n\
 %1!ws!lpRes->res.resBitMask.ulMask = 0x%4!08X!"
 IDS_RESBITMASKFLAGS ": %1!ws!"
-IDS_RESBITMASKTAG "\r\n%1!ws!lpRes->res.resBitMask.ulPropTag = %2!ws!\r\n"
+IDS_RESBITMASKTAG "\r\n%1!ws!lpRes->res.resBitMask.ulPropTag = %2!ws!"
 
 IDS_RESSIZE "%1!ws!lpRes->res.resSize.relop = %2!ws! = 0x%3!08X!\r\n\
 %1!ws!lpRes->res.resSize.cb = 0x%4!08X!\r\n\
-%1!ws!lpRes->res.resSize.ulPropTag = %5!ws!\r\n"
+%1!ws!lpRes->res.resSize.ulPropTag = %5!ws!"
 
 IDS_RESEXIST "%1!ws!lpRes->res.resExist.ulPropTag = %2!ws!\r\n\
 %1!ws!lpRes->res.resExist.ulReserved1 = 0x%3!08X!\r\n\
-%1!ws!lpRes->res.resExist.ulReserved2 = 0x%4!08X!\r\n"
+%1!ws!lpRes->res.resExist.ulReserved2 = 0x%4!08X!"
 
 IDS_RESSUBRES "%1!ws!lpRes->res.resSub.ulSubObject = %2!ws!\r\n\
-%1!ws!lpRes->res.resSub.lpRes\r\n"
+%1!ws!lpRes->res.resSub.lpRes"
 
-IDS_RESCOMMENT "%1!ws!lpRes->res.resComment.cValues = 0x%2!08X!\r\n"
+IDS_RESCOMMENT "%1!ws!lpRes->res.resComment.cValues = 0x%2!08X!"
 IDS_RESCOMMENTPROPS "%1!ws!lpRes->res.resComment.lpProp[0x%2!08X!].ulPropTag = %3!ws!\r\n\
 %1!ws!lpRes->res.resComment.lpProp[0x%2!08X!].Value = %4!ws!\r\n\
-%1!ws!\tAlt: %5!ws!\r\n"
-IDS_RESCOMMENTRES "%1!ws!lpRes->res.resComment.lpRes\r\n"
+%1!ws!\tAlt: %5!ws!"
+IDS_RESCOMMENTRES "%1!ws!lpRes->res.resComment.lpRes"
 
-IDS_RESANNOTATION "%1!ws!lpRes->res.resAnnotation.cValues = 0x%2!08X!\r\n"
+IDS_RESANNOTATION "%1!ws!lpRes->res.resAnnotation.cValues = 0x%2!08X!"
 IDS_RESANNOTATIONPROPS "%1!ws!lpRes->res.resAnnotation.lpProp[0x%2!08X!].ulPropTag = %3!ws!\r\n\
 %1!ws!lpRes->res.resAnnotation.lpProp[0x%2!08X!].Value = %4!ws!\r\n\
-%1!ws!\tAlt: %5!ws!\r\n"
-IDS_RESANNOTATIONRES "%1!ws!lpRes->res.resAnnotation.lpRes\r\n"
+%1!ws!\tAlt: %5!ws!"
+IDS_RESANNOTATIONRES "%1!ws!lpRes->res.resAnnotation.lpRes"
 
 IDS_ADRLISTNULL "lpAdrList was NULL\r\n"
 IDS_ADRLISTCOUNT "lpAdrList->cEntries = 0x%1!08X!\r\n"
@@ -1612,7 +1612,7 @@ IDS_FIDMIDFORMAT "%1!X!-%2!I64X!"
 IDS_VERBHEADER "Verb Stream\r\n\
 Version = 0x%1!04X!\r\n\
 Count = 0x%2!08X!"
-IDS_VERBDATA "\r\n\r\nVerbData[%1!d!]\r\n\
+IDS_VERBDATA "VerbData[%1!d!]\r\n\
 VerbType = 0x%2!08X!\r\n\
 DisplayNameCount = 0x%3!02X!\r\n\
 DisplayName = ""%4!hs!""\r\n\
@@ -1630,12 +1630,12 @@ SendBehavior = 0x%15!08X!\r\n\
 Internal5 = 0x%16!08X!\r\n\
 ID = 0x%17!08X! = %18!ws!\r\n\
 Internal6 = 0x%19!08X!"
-IDS_VERBVERSION2 "\r\n\r\nVersion2 = 0x%1!04X!\r\n"
-IDS_VERBEXTRADATA "\r\nVerbExtraData[%1!d!]\r\n\
+IDS_VERBVERSION2 "Version2 = 0x%1!04X!"
+IDS_VERBEXTRADATA "VerbExtraData[%1!d!]\r\n\
 DisplayNameCount = 0x%2!02X! \r\n\
 DisplayName = ""%3!ws!""\r\n\
 DisplayNameCountRepeat = 0x%4!02X!\r\n\
-DisplayNameRepeat = ""%5!ws!""\r\n"
+DisplayNameRepeat = ""%5!ws!"""
 IDS_TOMBSTONEHEADER "Tombstone:\r\n\
 Identifier = 0x%1!08X!\r\n\
 HeaderSize = 0x%2!08X!\r\n\
@@ -2055,11 +2055,11 @@ Message GlobalCounter = "
 IDS_ENTRYIDWRAPPEDENTRYIDDATA "\r\nWrapped Entry Type = 0x%1!02X! = %2!ws!\r\n"
 
 IDS_PROPERTYDATAHEADER "Property[%1!d!]\r\n\
-Property = 0x%2!08X!\r\n"
-IDS_PROPERTYDATA "PropString = %1!ws! AltPropString = %2!ws!\r\n"
-IDS_PROPERTYDATASMARTVIEW "Smart View: %1!ws!\r\n"
-IDS_PROPERTYDATANAME "Name: %1!ws!\r\n"
-IDS_PROPERTYDATAPARTIALMATCHES "Other Matches: %1!ws!\r\n"
+Property = 0x%2!08X!"
+IDS_PROPERTYDATA "PropString = %1!ws! AltPropString = %2!ws!"
+IDS_PROPERTYDATASMARTVIEW "Smart View: %1!ws!"
+IDS_PROPERTYDATANAME "Name: %1!ws!"
+IDS_PROPERTYDATAPARTIALMATCHES "Other Matches: %1!ws!"
 
 IDS_RESTRICTIONDATA "Restriction:\r\n"
 
@@ -2148,9 +2148,9 @@ IDS_MVROWBIN "Row %1!d!\r\n"
 IDS_MVROWLONG "Row %1!d!: %2!ws!"
 IDS_FELHEADER "Flat Entry List\r\n\
 cEntries = %1!d!\r\n\
-cbEntries = 0x%2!08X!\r\n"
-IDS_FELENTRYHEADER "\r\nEntry[%1!d!] Size = 0x%2!08X!\r\n"
-IDS_FELENTRYPADDING "\r\nEntry[%1!d!] Padding:"
+cbEntries = 0x%2!08X!"
+IDS_FELENTRYHEADER "\r\nEntry[%1!d!] Size = 0x%2!08X!"
+IDS_FELENTRYPADDING "Entry[%1!d!] Padding:"
 IDS_WEBVIEWSTREAMHEADER "Web View Persistence Object Stream\r\n\
 cWebViews = %1!d!"
 IDS_WEBVIEWHEADER "\r\n\r\nWeb View %1!d!\r\n\
