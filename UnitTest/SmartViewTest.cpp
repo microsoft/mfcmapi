@@ -74,7 +74,7 @@ namespace SmartViewTest
 		{
 			for (auto data : testData)
 			{
-				auto actual = InterpretBinaryAsString({ data.hex.size(), data.hex.data() }, data.structType, nullptr);
+				auto actual = InterpretBinaryAsString({ static_cast<ULONG>(data.hex.size()), data.hex.data() }, data.structType, nullptr);
 				AreEqualEx(data.expected, actual, data.testName.c_str());
 
 				if (data.parseAll)
@@ -82,7 +82,7 @@ namespace SmartViewTest
 					for (ULONG i = IDS_STNOPARSING; i < IDS_STEND; i++)
 					{
 						const auto structType = static_cast<__ParsingTypeEnum>(i);
-						actual = InterpretBinaryAsString({ data.hex.size(), data.hex.data() }, structType, nullptr);
+						actual = InterpretBinaryAsString({ static_cast<ULONG>(data.hex.size()), data.hex.data() }, structType, nullptr);
 						//Logger::WriteMessage(format(L"Testing %ws\n", AddInStructTypeToString(structType).c_str()).c_str());
 						Assert::IsTrue(actual.length() != 0);
 					}
