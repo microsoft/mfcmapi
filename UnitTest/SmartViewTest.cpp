@@ -12,14 +12,16 @@ namespace SmartViewTest
 	TEST_CLASS(SmartViewTest)
 	{
 	private:
-		struct SmartViewTestResource {
+		struct SmartViewTestResource
+		{
 			__ParsingTypeEnum structType;
 			bool parseAll;
 			DWORD hex;
 			DWORD expected;
 		};
 
-		struct SmartViewTestData {
+		struct SmartViewTestData
+		{
 			__ParsingTypeEnum structType;
 			bool parseAll;
 			wstring testName;
@@ -77,7 +79,8 @@ namespace SmartViewTest
 				AreEqualEx(data.expected, actual, data.testName.c_str());
 
 				if (data.parseAll) {
-					for (ULONG i = IDS_STNOPARSING; i < IDS_STEND; i++) {
+					for (ULONG i = IDS_STNOPARSING; i < IDS_STEND; i++)
+					{
 						auto structType = static_cast<__ParsingTypeEnum>(i);
 						actual = InterpretBinaryAsString({ data.hex.size(), data.hex.data() }, structType, nullptr);
 						//Logger::WriteMessage(format(L"Testing %ws\n", AddInStructTypeToString(structType).c_str()).c_str());
@@ -116,7 +119,8 @@ namespace SmartViewTest
 			{
 				testData.push_back(SmartViewTestData
 					{
-						resource.structType, resource.parseAll,
+						resource.structType,
+						resource.parseAll,
 						format(L"%d/%d", resource.hex, resource.expected),
 						HexStringToBin(loadfile(handle, resource.hex)),
 						loadfile(handle, resource.expected)
