@@ -56,12 +56,12 @@ namespace stringtest
 
 		TEST_METHOD(Test_stringConverters)
 		{
-			LPCTSTR lpctstr = _T("Hello World");
-			LPCSTR lpcstr = "Hello World";
-			auto tstr = tstring(lpctstr);
-			auto wstr = wstring(L"Hello World");
-			auto str = string(lpcstr);
-			auto wstrLower = wstring(L"hello world");
+			const auto lpctstr = _T("Hello World");
+			const auto lpcstr = "Hello World";
+			const auto tstr = tstring(lpctstr);
+			const auto wstr = wstring(L"Hello World");
+			const auto str = string(lpcstr);
+			const auto wstrLower = wstring(L"hello world");
 
 			Assert::AreEqual(tstr, wstringTotstring(wstr));
 			Assert::AreEqual(str, wstringTostring(wstr));
@@ -212,15 +212,15 @@ namespace stringtest
 		}
 
 		wstring mystringW = L"mystring";
-		LPBYTE bufW = (LPBYTE)mystringW.c_str();
+		LPBYTE bufW = LPBYTE(mystringW.c_str());
 		size_t cbW = mystringW.length() * sizeof(WCHAR);
-		SBinary sBinaryW = SBinary{ (ULONG)cbW, bufW };
+		SBinary sBinaryW = SBinary{ static_cast<ULONG>(cbW), bufW };
 		vector<BYTE> myStringWvector = vector<BYTE>(bufW, bufW + cbW);
 
 		string mystringA = string("mystring");
-		LPBYTE bufA = (LPBYTE)mystringA.c_str();
+		LPBYTE bufA = LPBYTE(mystringA.c_str());
 		size_t cbA = mystringA.length();
-		SBinary sBinaryA = SBinary{ (ULONG)cbA, bufA };
+		SBinary sBinaryA = SBinary{ static_cast<ULONG>(cbA), bufA };
 		vector<BYTE> myStringAvector = vector<BYTE>(bufA, bufA + cbA);
 
 		vector<BYTE> vector_abcdW = vector<BYTE>({ 0x61, 0, 0x62, 0, 0x63, 0, 0x64, 0 });
@@ -252,13 +252,13 @@ namespace stringtest
 			Assert::AreEqual(wstring(L""), BinToTextString(nullptr, true));
 
 			Assert::AreEqual(mystringW, BinToTextString(&sBinaryA, false));
-			auto sBinary = SBinary{ (ULONG)vector_abcdA.size(), vector_abcdA.data() };
+			auto sBinary = SBinary{ static_cast<ULONG>(vector_abcdA.size()), vector_abcdA.data() };
 			Assert::AreEqual(wstring(L"abcd"), BinToTextString(&sBinary, false));
-			sBinary = SBinary{ (ULONG)vector_abNULLdA.size(), vector_abNULLdA.data() };
+			sBinary = SBinary{ static_cast<ULONG>(vector_abNULLdA.size()), vector_abNULLdA.data() };
 			Assert::AreEqual(wstring(L"ab.d"), BinToTextString(&sBinary, false));
-			sBinary = SBinary{ (ULONG)vector_tabcrlfA.size(), vector_tabcrlfA.data() };
+			sBinary = SBinary{ static_cast<ULONG>(vector_tabcrlfA.size()), vector_tabcrlfA.data() };
 			Assert::AreEqual(wstring(L"\t\n\r"), BinToTextString(&sBinary, true));
-			sBinary = SBinary{ (ULONG)vector_tabcrlfA.size(), vector_tabcrlfA.data() };
+			sBinary = SBinary{ static_cast<ULONG>(vector_tabcrlfA.size()), vector_tabcrlfA.data() };
 			Assert::AreEqual(wstring(L"..."), BinToTextString(&sBinary, false));
 		}
 
@@ -289,9 +289,9 @@ namespace stringtest
 			Assert::AreEqual(myStringWvector, HexStringToBin(L"6D00790073007400720069006E006700"));
 		}
 
-		void ByteVectorToLPBYTETest(const vector<BYTE>& bin)
+		void ByteVectorToLPBYTETest(const vector<BYTE>& bin) const
 		{
-			auto bytes = ByteVectorToLPBYTE(bin);
+			const auto bytes = ByteVectorToLPBYTE(bin);
 			for (size_t i = 0; i < bin.size(); i++)
 			{
 				Assert::AreEqual(bytes[i], bin[i]);
