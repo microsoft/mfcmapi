@@ -55,6 +55,11 @@
 #define IDR_SV5EL2IN                   5002
 #define IDR_SV6EFF1IN                  6001
 #define IDR_SV6EFF2IN                  6002
+#define IDR_SV7EXRULE1IN               7001
+#define IDR_SV8FE1IN                   8001
+#define IDR_SV8FE2IN                   8002
+#define IDR_SV9FUF1IN                  9001
+#define IDR_SV9FUF2IN                  9002
 
 #define IDR_SV1AEI1OUT              1001001
 #define IDR_SV1AEI2OUT              1001002
@@ -107,6 +112,11 @@
 #define IDR_SV5EL2OUT               1005002
 #define IDR_SV6EFF1OUT              1006001
 #define IDR_SV6EFF2OUT              1006002
+#define IDR_SV7EXRULE1OUT           1007001
+#define IDR_SV8FE1OUT               1008001
+#define IDR_SV8FE2OUT               1008002
+#define IDR_SV9FUF1OUT              1009001
+#define IDR_SV9FUF2OUT              1009002
 
 // Next default values for new objects
 // 
