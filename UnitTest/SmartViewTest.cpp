@@ -215,5 +215,21 @@ namespace SmartViewTest
 				SmartViewTestResource{ IDS_STENTRYID, parse_all, IDR_SV4EID38IN, IDR_SV4EID38OUT }
 				}));
 		}
+
+		TEST_METHOD(Test_STENTRYLIST)
+		{
+			test(loadTestData({
+				SmartViewTestResource{ IDS_STENTRYLIST, parse_all, IDR_SV5EL1IN, IDR_SV5EL1OUT },
+				SmartViewTestResource{ IDS_STENTRYLIST, parse_all, IDR_SV5EL2IN, IDR_SV5EL2OUT },
+				}));
+		}
+
+		TEST_METHOD(Test_STEXTENDEDFOLDERFLAGS)
+		{
+			test(loadTestData({
+				SmartViewTestResource{ IDS_STEXTENDEDFOLDERFLAGS, parse_all, IDR_SV6EFF1IN, IDR_SV6EFF1OUT },
+				SmartViewTestResource{ IDS_STEXTENDEDFOLDERFLAGS, parse_all, IDR_SV6EFF2IN, IDR_SV6EFF2OUT },
+				}));
+		}
 	};
 }
