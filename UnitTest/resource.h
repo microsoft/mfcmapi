@@ -60,6 +60,21 @@
 #define IDR_SV8FE2IN                   8002
 #define IDR_SV9FUF1IN                  9001
 #define IDR_SV9FUF2IN                  9002
+#define IDR_SV10GOID1IN               10001
+#define IDR_SV10GOID2IN               10002
+#define IDR_SV11PROP1IN               11001
+#define IDR_SV11PROP2IN               11002
+#define IDR_SV11PROP3IN               11003
+#define IDR_SV11PROP4IN               11004
+#define IDR_SV11PROP5IN               11005
+#define IDR_SV11PROP6IN               11006
+#define IDR_SV11PROP7IN               11007
+#define IDR_SV12PROPDEF1IN            12001
+#define IDR_SV12PROPDEF2IN            12002
+#define IDR_SV12PROPDEF3IN            12003
+#define IDR_SV12PROPDEF4IN            12004
+#define IDR_SV12PROPDEF5IN            12005
+#define IDR_SV12PROPDEF6IN            12006
 
 #define IDR_SV1AEI1OUT              1001001
 #define IDR_SV1AEI2OUT              1001002
@@ -117,6 +132,21 @@
 #define IDR_SV8FE2OUT               1008002
 #define IDR_SV9FUF1OUT              1009001
 #define IDR_SV9FUF2OUT              1009002
+#define IDR_SV10GOID1OUT            1010001
+#define IDR_SV10GOID2OUT            1010002
+#define IDR_SV11PROP1OUT            1011001
+#define IDR_SV11PROP2OUT            1011002
+#define IDR_SV11PROP3OUT            1011003
+#define IDR_SV11PROP4OUT            1011004
+#define IDR_SV11PROP5OUT            1011005
+#define IDR_SV11PROP6OUT            1011006
+#define IDR_SV11PROP7OUT            1011007
+#define IDR_SV12PROPDEF1OUT         1012001
+#define IDR_SV12PROPDEF2OUT         1012002
+#define IDR_SV12PROPDEF3OUT         1012003
+#define IDR_SV12PROPDEF4OUT         1012004
+#define IDR_SV12PROPDEF5OUT         1012005
+#define IDR_SV12PROPDEF6OUT         1012006
 
 // Next default values for new objects
 // 

@@ -1,0 +1,9 @@
+Global Object ID: 
+Byte Array ID = cb: 16 lpb: 040000008200E00074C5B7101A82E008 = s_rgbSPlus
+Year: 0x07DB = 2011
+Month: 0x01 = 1 = January
+Day: 0x12 = 18
+Creation Time = 0x01CADFE7:0xE82CA5C0 = 05:44:05.916 PM 4/19/2010
+X: 0x00000000:0x00000000
+Size: 0x10 = 16
+Data = cb: 16 lpb: FFAFECEBDB4A2E4FA02EBC759661827B

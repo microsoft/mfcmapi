@@ -53,6 +53,13 @@ namespace SmartViewTest
 					{
 						errorCount++;
 						Logger::WriteMessage(format(L"[%d]\n\"%ws\"\n\"%ws\"\n", i, splitExpected[i].c_str(), splitActual[i].c_str()).c_str());
+						for (size_t ch = 0; ch < splitExpected[i].size() && ch < splitActual[i].size(); ch++)
+						{
+							if (splitExpected[i][ch] != splitActual[i][ch])
+							{
+								Logger::WriteMessage(format(L"[%d]: %X != %X\n", ch, splitExpected[i][ch], splitActual[i][ch]).c_str());
+							}
+						}
 					}
 				}
 
@@ -252,6 +259,39 @@ namespace SmartViewTest
 			test(loadTestData({
 				SmartViewTestResource{ IDS_STFOLDERUSERFIELDS, parse_all, IDR_SV9FUF1IN, IDR_SV9FUF1OUT },
 				SmartViewTestResource{ IDS_STFOLDERUSERFIELDS, parse_all, IDR_SV9FUF2IN, IDR_SV9FUF2OUT },
+				}));
+		}
+
+		TEST_METHOD(Test_STGLOBALOBJECTID)
+		{
+			test(loadTestData({
+				SmartViewTestResource{ IDS_STGLOBALOBJECTID, parse_all, IDR_SV10GOID1IN, IDR_SV10GOID1OUT },
+				SmartViewTestResource{ IDS_STGLOBALOBJECTID, parse_all, IDR_SV10GOID2IN, IDR_SV10GOID2OUT },
+				}));
+		}
+
+		TEST_METHOD(Test_STPROPERTY)
+		{
+			test(loadTestData({
+				//SmartViewTestResource{ IDS_STPROPERTY, parse_all, IDR_SV11PROP1IN, IDR_SV11PROP1OUT },
+				SmartViewTestResource{ IDS_STPROPERTY, parse_all, IDR_SV11PROP2IN, IDR_SV11PROP2OUT },
+				//SmartViewTestResource{ IDS_STPROPERTY, parse_all, IDR_SV11PROP3IN, IDR_SV11PROP3OUT },
+				//SmartViewTestResource{ IDS_STPROPERTY, parse_all, IDR_SV11PROP4IN, IDR_SV11PROP4OUT },
+				//SmartViewTestResource{ IDS_STPROPERTY, parse_all, IDR_SV11PROP5IN, IDR_SV11PROP5OUT },
+				//SmartViewTestResource{ IDS_STPROPERTY, parse_all, IDR_SV11PROP6IN, IDR_SV11PROP6OUT },
+				//SmartViewTestResource{ IDS_STPROPERTY, parse_all, IDR_SV11PROP7IN, IDR_SV11PROP7OUT },
+				}));
+		}
+
+		TEST_METHOD(Test_STPROPERTYDEFINITIONSTREAM)
+		{
+			test(loadTestData({
+				SmartViewTestResource{ IDS_STPROPERTYDEFINITIONSTREAM, parse_all, IDR_SV12PROPDEF1IN, IDR_SV12PROPDEF1OUT },
+				SmartViewTestResource{ IDS_STPROPERTYDEFINITIONSTREAM, parse_all, IDR_SV12PROPDEF2IN, IDR_SV12PROPDEF2OUT },
+				SmartViewTestResource{ IDS_STPROPERTYDEFINITIONSTREAM, parse_all, IDR_SV12PROPDEF3IN, IDR_SV12PROPDEF3OUT },
+				SmartViewTestResource{ IDS_STPROPERTYDEFINITIONSTREAM, parse_all, IDR_SV12PROPDEF4IN, IDR_SV12PROPDEF4OUT },
+				SmartViewTestResource{ IDS_STPROPERTYDEFINITIONSTREAM, parse_all, IDR_SV12PROPDEF5IN, IDR_SV12PROPDEF5OUT },
+				SmartViewTestResource{ IDS_STPROPERTYDEFINITIONSTREAM, parse_all, IDR_SV12PROPDEF6IN, IDR_SV12PROPDEF6OUT },
 				}));
 		}
 	};

@@ -130,7 +130,14 @@ string wstringTostring(const wstring& src)
 
 wstring stringTowstring(const string& src)
 {
-	return wstring(src.begin(), src.end());
+	std::wstring dst;
+	dst.reserve(src.length());
+	for (auto ch : src)
+	{
+		dst.push_back(ch & 255);
+	}
+
+	return dst;
 }
 
 wstring LPCTSTRToWstring(LPCTSTR src)
@@ -295,6 +302,7 @@ string RemoveInvalidCharactersA(const string& szString, bool bMultiLine)
 	auto nullTerminated = szBin.back() == '\0';
 	std::replace_if(szBin.begin(), szBin.end(), [bMultiLine](const char& chr)
 	{
+		if (chr == 0x82) return true;
 		// Any printable extended ASCII character gets mapped directly
 		if (chr >= 0x20 &&
 			chr <= 0xFE)
@@ -323,6 +331,7 @@ wstring RemoveInvalidCharactersW(const wstring& szString, bool bMultiLine)
 	auto nullTerminated = szBin.back() == L'\0';
 	std::replace_if(szBin.begin(), szBin.end(), [bMultiLine](const WCHAR & chr)
 	{
+		if (chr == 0x82) return true;
 		// Any printable extended ASCII character gets mapped directly
 		if (chr >= 0x20 &&
 			chr <= 0xFE)
@@ -383,7 +392,8 @@ wstring BinToTextString(_In_ const LPSBinary lpBin, bool bMultiLine)
 	{
 		// Any printable extended ASCII character gets mapped directly
 		if (lpBin->lpb[i] >= 0x20 &&
-			lpBin->lpb[i] <= 0xFE)
+			lpBin->lpb[i] <= 0xFE &&
+			lpBin->lpb[i] != 0x82)
 		{
 			szBin += lpBin->lpb[i];
 		}

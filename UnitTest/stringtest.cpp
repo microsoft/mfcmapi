@@ -69,6 +69,7 @@ namespace stringtest
 			Assert::AreEqual(wstr, LPCTSTRToWstring(lpctstr));
 			Assert::AreEqual(wstr, LPCSTRToWstring(lpcstr));
 			Assert::AreEqual(wstrLower, wstringToLower(wstr));
+			Assert::AreEqual(wstring(L"abc\xDC\xA7\x40\xC8\xC0\x42"), stringTowstring("abc\xDC\xA7\x40\xC8\xC0\x42"));
 
 			Assert::AreEqual(wstring(L""), LPCTSTRToWstring(nullptr));
 			Assert::AreEqual(wstring(L""), LPCSTRToWstring(nullptr));
