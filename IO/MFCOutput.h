@@ -53,6 +53,7 @@ void SetDebugOutputToFile(bool bDoOutput);
 #define fIsSetv(ulTag) (((ulTag) != DBGNoDebug) && (RegKeys[regkeyDEBUG_TAG].ulCurDWORD & (ulTag)))
 
 _Check_return_ FILE* MyOpenFile(const wstring& szFileName, bool bNewFile);
+_Check_return_ FILE* MyOpenFileMode(const wstring& szFileName, const wchar_t* mode);
 void CloseFile(_In_opt_ FILE* fFile);
 
 void Output(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime, const wstring& szMsg);
