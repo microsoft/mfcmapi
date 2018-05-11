@@ -33,8 +33,8 @@ void SDBin::Parse()
 _Check_return_ wstring SDBin::ToStringInternal()
 {
 	auto hRes = S_OK;
-	auto lpSDToParse = m_Parser.GetCurrentAddress();
-	auto ulSDToParse = m_Parser.RemainingBytes();
+	const auto lpSDToParse = m_Parser.GetCurrentAddress();
+	const auto ulSDToParse = m_Parser.RemainingBytes();
 	m_Parser.Advance(ulSDToParse);
 
 	auto acetype = acetypeMessage;

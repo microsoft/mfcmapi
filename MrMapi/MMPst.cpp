@@ -98,6 +98,7 @@ void PrintCryptType(BYTE bCryptMethod)
 		printf("cyclic encoding");
 		break;
 	}
+
 	printf(")");
 }
 
@@ -114,6 +115,7 @@ void PrintAMAPValid(BYTE fAMapValid)
 		printf("valid");
 		break;
 	}
+
 	printf(")");
 }
 
@@ -150,7 +152,7 @@ void DoPST(_In_ MYOPTIONS ProgOpts)
 	struct _stat64 stats = { 0 };
 	_wstati64(ProgOpts.lpszInput.c_str(), &stats);
 
-	auto fIn = MyOpenFile(ProgOpts.lpszInput.c_str(), L"rb");
+	const auto fIn = MyOpenFileMode(ProgOpts.lpszInput, L"rb");
 	if (fIn)
 	{
 		PSTHEADER pstHeader = { 0 };
@@ -158,7 +160,6 @@ void DoPST(_In_ MYOPTIONS ProgOpts)
 		{
 			ULONGLONG ibFileEof = 0;
 			ULONGLONG cbAMapFree = 0;
-			double percentFree;
 			BYTE fAMapValid = 0;
 			BYTE bCryptMethod = 0;
 
@@ -206,7 +207,7 @@ void DoPST(_In_ MYOPTIONS ProgOpts)
 			printf("Free Space = ");
 			PrintFileSize(cbAMapFree);
 			printf("\n");
-			percentFree = cbAMapFree * 100.0 / ibFileEof;
+			const auto percentFree = cbAMapFree * 100.0 / ibFileEof;
 			printf("Percent free = %.2f%%\n", percentFree);
 			if (fIsSet(DBGGeneric))
 			{

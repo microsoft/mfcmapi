@@ -9,10 +9,10 @@ _Check_return_ wstring GetTextualSid(_In_ PSID pSid)
 	if (!IsValidSid(pSid)) return L"";
 
 	// Get the identifier authority value from the SID.
-	auto psia = GetSidIdentifierAuthority(pSid);
+	const auto psia = GetSidIdentifierAuthority(pSid);
 
 	// Get the number of subauthorities in the SID.
-	auto lpSubAuthoritiesCount = GetSidSubAuthorityCount(pSid);
+	const auto lpSubAuthoritiesCount = GetSidSubAuthorityCount(pSid);
 
 	// Compute the buffer length.
 	// S-SID_REVISION- + IdentifierAuthority- + subauthorities- + NULL
@@ -68,8 +68,8 @@ wstring ACEToString(_In_ void* pACE, eAceType acetype)
 
 	if (!pACE) return L"";
 
-	auto AceType = static_cast<PACE_HEADER>(pACE)->AceType;
-	auto AceFlags = static_cast<PACE_HEADER>(pACE)->AceFlags;
+	const auto AceType = static_cast<PACE_HEADER>(pACE)->AceType;
+	const auto AceFlags = static_cast<PACE_HEADER>(pACE)->AceFlags;
 
 	/* Check type of ACE */
 	switch (AceType)
@@ -191,7 +191,7 @@ _Check_return_ HRESULT SDToString(_In_count_(cbBuf) const BYTE* lpBuf, size_t cb
 
 	if (!lpBuf) return MAPI_E_NOT_FOUND;
 
-	auto pSecurityDescriptor = SECURITY_DESCRIPTOR_OF(lpBuf);
+	const auto pSecurityDescriptor = SECURITY_DESCRIPTOR_OF(lpBuf);
 
 	if (CbSecurityDescriptorHeader(lpBuf) > cbBuf || !IsValidSecurityDescriptor(pSecurityDescriptor))
 	{

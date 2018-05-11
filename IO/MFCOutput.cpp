@@ -54,7 +54,7 @@ void SetDebugLevel(ULONG ulDbgLvl)
 void SetDebugOutputToFile(bool bDoOutput)
 {
 	// save our old value
-	auto bOldDoOutput = 0 != RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD;
+	const auto bOldDoOutput = 0 != RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD;
 
 	// set the new value
 	RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD = bDoOutput;
@@ -65,7 +65,7 @@ void SetDebugOutputToFile(bool bDoOutput)
 	// output text if we just toggled on
 	if (bDoOutput && !bOldDoOutput)
 	{
-		auto lpApp = AfxGetApp();
+		const auto lpApp = AfxGetApp();
 
 		if (lpApp)
 		{
@@ -83,14 +83,19 @@ void SetDebugOutputToFile(bool bDoOutput)
 
 _Check_return_ FILE* MyOpenFile(const wstring& szFileName, bool bNewFile)
 {
+	auto mode = L"a+"; // STRING_OK
+	if (bNewFile) mode = L"w"; // STRING_OK
+	return MyOpenFileMode(szFileName, mode);
+}
+
+_Check_return_ FILE* MyOpenFileMode(const wstring& szFileName, const wchar_t* mode)
+{
 	FILE* fOut = nullptr;
-	auto szParams = L"a+"; // STRING_OK
-	if (bNewFile) szParams = L"w"; // STRING_OK
 
 	// _wfopen has been deprecated, but older compilers do not have _wfopen_s
 	// Use the replacement when we're on VS 2005 or higher.
 #if defined(_MSC_VER) && (_MSC_VER >= 1400)
-	_wfopen_s(&fOut, szFileName.c_str(), szParams);
+	_wfopen_s(&fOut, szFileName.c_str(), mode);
 #else
 	fOut = _wfopen(szFileName.c_str(), szParams);
 #endif
@@ -100,7 +105,7 @@ _Check_return_ FILE* MyOpenFile(const wstring& szFileName, bool bNewFile)
 	}
 
 	// File IO failed - complain - not using error macros since we may not have debug output here
-	auto dwErr = GetLastError();
+	const auto dwErr = GetLastError();
 	auto szSysErr = formatmessagesys(HRESULT_FROM_WIN32(dwErr));
 
 	auto szErr = format(
@@ -660,7 +665,7 @@ void _OutputNotifications(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cNotify, _
 			{
 				Outputf(ulDbgLvl, fFile, true, L"lpNotifications[%u].info.ext.ulEvent = INDEXING_SEARCH_OWNER\n", i);
 
-				auto lpidxExt = reinterpret_cast<INDEX_SEARCH_PUSHER_PROCESS*>(lpNotifications[i].info.ext.pbEventParameters);
+				const auto lpidxExt = reinterpret_cast<INDEX_SEARCH_PUSHER_PROCESS*>(lpNotifications[i].info.ext.pbEventParameters);
 				if (lpidxExt)
 				{
 					Outputf(ulDbgLvl, fFile, true, L"lpidxExt->dwPID = 0x%08X\n", lpidxExt->dwPID);
@@ -702,7 +707,7 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 
 	auto hRes = S_OK;
 	LPSPropValue lpLargeProp = nullptr;
-	auto iIndent = 2;
+	const auto iIndent = 2;
 
 	if (PT_ERROR == PROP_TYPE(lpProp->ulPropTag) && MAPI_E_NOT_ENOUGH_MEMORY == lpProp->Value.err && lpObj && bRetryStreamProps)
 	{
@@ -718,8 +723,6 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 		{
 			lpProp = lpLargeProp;
 		}
-
-		hRes = S_OK;
 	}
 
 	Outputf(ulDbgLvl, fFile, false, L"\t<property tag = \"0x%08X\" type = \"%ws\" >\n", lpProp->ulPropTag, TypeToString(lpProp->ulPropTag).c_str());
@@ -771,7 +774,7 @@ void _OutputProperties(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cProps, _In_c
 	// Copy the list before we sort it or else we affect the caller
 	// Don't worry about linked memory - we just need to sort the index
 	LPSPropValue lpSortedProps = nullptr;
-	size_t cbProps = cProps * sizeof(SPropValue);
+	const auto cbProps = cProps * sizeof(SPropValue);
 	MAPIAllocateBuffer(static_cast<ULONG>(cbProps), reinterpret_cast<LPVOID*>(&lpSortedProps));
 
 	if (lpSortedProps)
@@ -783,7 +786,7 @@ void _OutputProperties(ULONG ulDbgLvl, _In_opt_ FILE* fFile, ULONG cProps, _In_c
 		for (ULONG iUnsorted = 1; iUnsorted < cProps; iUnsorted++)
 		{
 			ULONG iLoc = 0;
-			auto NextItem = lpSortedProps[iUnsorted];
+			const auto NextItem = lpSortedProps[iUnsorted];
 			for (iLoc = iUnsorted; iLoc > 0; iLoc--)
 			{
 				if (lpSortedProps[iLoc - 1].ulPropTag < NextItem.ulPropTag) break;
@@ -864,7 +867,7 @@ void _OutputStream(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSTREAM lpStream)
 	auto hRes = S_OK;
 	BYTE bBuf[MAXBYTES + 2]; // Allocate some extra for NULL terminators - 2 for Unicode
 	ULONG ulNumBytes = 0;
-	LARGE_INTEGER li = { 0 };
+	const LARGE_INTEGER li = { 0 };
 
 	if (!lpStream)
 	{
@@ -916,7 +919,7 @@ void _OutputVersion(ULONG ulDbgLvl, _In_opt_ FILE* fFile)
 		if (dwVerInfoSize)
 		{
 			// If we were able to get the information, process it.
-			auto pbData = new BYTE[dwVerInfoSize];
+			const auto pbData = new BYTE[dwVerInfoSize];
 			if (pbData == nullptr) return;
 
 			BOOL bRet = false;
@@ -948,7 +951,7 @@ void _OutputVersion(ULONG ulDbgLvl, _In_opt_ FILE* fFile)
 				{
 					for (UINT iCodePages = 0; iCodePages < cbTranslate / sizeof(LANGANDCODEPAGE); iCodePages++)
 					{
-						auto szSubBlock = format(
+						const auto szSubBlock = format(
 							L"\\StringFileInfo\\%04x%04x\\", // STRING_OK
 							lpTranslate[iCodePages].wLanguage,
 							lpTranslate[iCodePages].wCodePage);
