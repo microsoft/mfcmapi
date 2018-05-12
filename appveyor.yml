@@ -1,4 +1,5 @@
 version: 1.0.{build}
+clone_depth: 1
 branches:
   only:
   - master
@@ -25,7 +26,7 @@ init:
 
     $build = $year + "{0:D3}" -f $date.DayOfYear
 
-    $version = "$year.$build.0.$Env:APPVEYOR_BUILD_NUMBER"
+    $version = "$year.2.$build.$Env:APPVEYOR_BUILD_NUMBER"
 
     Add-AppveyorMessage "Setting build version: $version"
 
@@ -91,30 +92,30 @@ test_script:
 - cmd: vstest.console /logger:Appveyor %APPVEYOR_BUILD_FOLDER%\bin\%PLATFORM%\UnitTest\%CONFIGURATION%\UnitTest.dll
 
 artifacts:
-- path: Archives\MFCMAPI.exe.$(APPVEYOR_BUILD_VERSION).zip
-  name: MFCMAPI 32 bit executable - Continuous Integration ($(APPVEYOR_BUILD_VERSION))
-- path: Archives\MFCMAPI.pdb.$(APPVEYOR_BUILD_VERSION).zip
-  name: MFCMAPI 32 bit symbol - Continuous Integration ($(APPVEYOR_BUILD_VERSION))
-- path: Archives\MFCMAPI.exe.x64.$(APPVEYOR_BUILD_VERSION).zip
-  name: MFCMAPI 64 bit executable - Continuous Integration ($(APPVEYOR_BUILD_VERSION))
-- path: Archives\MFCMAPI.pdb.x64.$(APPVEYOR_BUILD_VERSION).zip
-  name: MFCMAPI 64 bit symbol - Continuous Integration ($(APPVEYOR_BUILD_VERSION))
-- path: Archives\MrMAPI.exe.$(APPVEYOR_BUILD_VERSION).zip
-  name: MrMAPI 32 bit executable - Continuous Integration ($(APPVEYOR_BUILD_VERSION))
-- path: Archives\MrMAPI.pdb.$(APPVEYOR_BUILD_VERSION).zip
-  name: MrMAPI 32 bit symbol - Continuous Integration ($(APPVEYOR_BUILD_VERSION))
-- path: Archives\MrMAPI.exe.x64.$(APPVEYOR_BUILD_VERSION).zip
-  name: MrMAPI 64 bit executable - Continuous Integration ($(APPVEYOR_BUILD_VERSION))
-- path: Archives\MrMAPI.pdb.x64.$(APPVEYOR_BUILD_VERSION).zip
-  name: MrMAPI 64 bit symbol - Continuous Integration ($(APPVEYOR_BUILD_VERSION))
+- path: Archives\MFCMAPI.exe.$(APPVEYOR_BUILD_VERSION).zip 
+  name: MFCMAPI 32 bit executable - Continuous Integration ($(APPVEYOR_BUILD_VERSION)) 
+- path: Archives\MFCMAPI.pdb.$(APPVEYOR_BUILD_VERSION).zip 
+  name: MFCMAPI 32 bit symbol - Continuous Integration ($(APPVEYOR_BUILD_VERSION)) 
+- path: Archives\MFCMAPI.exe.x64.$(APPVEYOR_BUILD_VERSION).zip 
+  name: MFCMAPI 64 bit executable - Continuous Integration ($(APPVEYOR_BUILD_VERSION)) 
+- path: Archives\MFCMAPI.pdb.x64.$(APPVEYOR_BUILD_VERSION).zip 
+  name: MFCMAPI 64 bit symbol - Continuous Integration ($(APPVEYOR_BUILD_VERSION)) 
+- path: Archives\MrMAPI.exe.$(APPVEYOR_BUILD_VERSION).zip 
+  name: MrMAPI 32 bit executable - Continuous Integration ($(APPVEYOR_BUILD_VERSION)) 
+- path: Archives\MrMAPI.pdb.$(APPVEYOR_BUILD_VERSION).zip 
+  name: MrMAPI 32 bit symbol - Continuous Integration ($(APPVEYOR_BUILD_VERSION)) 
+- path: Archives\MrMAPI.exe.x64.$(APPVEYOR_BUILD_VERSION).zip 
+  name: MrMAPI 64 bit executable - Continuous Integration ($(APPVEYOR_BUILD_VERSION)) 
+- path: Archives\MrMAPI.pdb.x64.$(APPVEYOR_BUILD_VERSION).zip 
+  name: MrMAPI 64 bit symbol - Continuous Integration ($(APPVEYOR_BUILD_VERSION)) 
 
 deploy:
 - provider: GitHub
   tag: $(APPVEYOR_BUILD_VERSION)
   release: Continuous Integration ($(APPVEYOR_BUILD_VERSION))
-  description: "Build: *$(APPVEYOR_BUILD_VERSION)*\n\nThis is the continuous integration build of MFCMAPI.\n\nIf you just want to run the MFCMAPI or MrMAPI, get the executables. If you want to debug them, get the symbol files and the [source](https://github.com/stephenegriffin/mfcmapi).\n\n*The 64 bit builds will only work on a machine with Outlook 2010/2013/2016 64 bit installed. All other machines should use the 32 bit builds, regardless of the operating system.*\n\n[![Facebook Badge](http://badge.facebook.com/badge/26764016480.2776.1538253884.png)](http://www.facebook.com/MFCMAPI)\n\n[Download stats](https://www.somsubhra.com/github-release-stats/?username=stephenegriffin&repository=mfcmapi&search=0)"
+  description: "Build: *$(APPVEYOR_BUILD_VERSION)*\n\nThis is the continuous integration build of MFCMAPI.\n\nIf you just want to run the MFCMAPI or MrMAPI, get the executables. If you want to debug them, get the symbol files [from AppVeyor](https://ci.appveyor.com/project/stephenegriffin/mfcmapi/build/$(APPVEYOR_BUILD_VERSION)) (click a job and look at the ARTIFACTS).\n\n*The 64 bit builds will only work on a machine with Outlook 2010/2013/2016 64 bit installed. All other machines should use the 32 bit builds, regardless of the operating system.*\n\n[![Facebook Badge](http://badge.facebook.com/badge/26764016480.2776.1538253884.png)](http://www.facebook.com/MFCMAPI)\n\n[Download stats](https://www.somsubhra.com/github-release-stats/?username=stephenegriffin&repository=mfcmapi&search=0)"
 
   auth_token:
     secure: vJsUDJyfK/dEUbimHuxnA5id48OJR5UeHpB2WK8rcN7SslRJ08BHy9ecKctDJzx/
-  artifact: /.*\.zip/
-  draft: false
+  artifact: /.*exe.*\.zip/
+  draft: true

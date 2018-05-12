@@ -19,20 +19,20 @@ void DoSmartView(_In_ MYOPTIONS ProgOpts)
 	if (ulStructType)
 	{
 		FILE* fOut = nullptr;
-		auto fIn = MyOpenFile(ProgOpts.lpszInput.c_str(), L"rb");
+		const auto fIn = MyOpenFileMode(ProgOpts.lpszInput, L"rb");
 		if (!fIn) printf("Cannot open input file %ws\n", ProgOpts.lpszInput.c_str());
 		if (!ProgOpts.lpszOutput.empty())
 		{
-			fOut = MyOpenFile(ProgOpts.lpszOutput.c_str(), L"wb");
+			fOut = MyOpenFileMode(ProgOpts.lpszOutput, L"wb");
 			if (!fOut) printf("Cannot open output file %ws\n", ProgOpts.lpszOutput.c_str());
 		}
 
 		if (fIn && (ProgOpts.lpszOutput.empty() || fOut))
 		{
-			auto iDesc = _fileno(fIn);
-			auto iLength = _filelength(iDesc);
+			const auto iDesc = _fileno(fIn);
+			const auto iLength = _filelength(iDesc);
 
-			auto lpbIn = new (std::nothrow) BYTE[iLength + 1]; // +1 for NULL
+			const auto lpbIn = new (std::nothrow) BYTE[iLength + 1]; // +1 for NULL
 			if (lpbIn)
 			{
 				memset(lpbIn, 0, sizeof(BYTE)*(iLength + 1));
