@@ -1369,7 +1369,7 @@ IDS_RESPROPPROPFLAGS "%1!ws!\tFlags: %2!ws!"
 IDS_RESBITMASK "%1!ws!lpRes->res.resBitMask.relBMR = %2!ws! = 0x%3!08X!\r\n\
 %1!ws!lpRes->res.resBitMask.ulMask = 0x%4!08X!"
 IDS_RESBITMASKFLAGS ": %1!ws!"
-IDS_RESBITMASKTAG "\r\n%1!ws!lpRes->res.resBitMask.ulPropTag = %2!ws!"
+IDS_RESBITMASKTAG "%1!ws!lpRes->res.resBitMask.ulPropTag = %2!ws!"
 
 IDS_RESSIZE "%1!ws!lpRes->res.resSize.relop = %2!ws! = 0x%3!08X!\r\n\
 %1!ws!lpRes->res.resSize.cb = 0x%4!08X!\r\n\

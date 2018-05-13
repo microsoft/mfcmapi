@@ -47,17 +47,21 @@ namespace SmartViewTest
 				auto splitExpected = split(expected, L'\n');
 				auto splitActual = split(actual, L'\n');
 				auto errorCount = 0;
-				for (size_t i = 0; i < splitExpected.size() && i < splitActual.size() && (errorCount < 4 || !limit_output); i++)
+				for (size_t line = 0; line < splitExpected.size() && line < splitActual.size() && (errorCount < 4 || !limit_output); line++)
 				{
-					if (splitExpected[i] != splitActual[i])
+					if (splitExpected[line] != splitActual[line])
 					{
 						errorCount++;
-						Logger::WriteMessage(format(L"[%d]\n\"%ws\"\n\"%ws\"\n", i, splitExpected[i].c_str(), splitActual[i].c_str()).c_str());
-						for (size_t ch = 0; ch < splitExpected[i].size() && ch < splitActual[i].size(); ch++)
+						Logger::WriteMessage(format(L"[%d]\n\"%ws\"\n\"%ws\"\n", line + 1, splitExpected[line].c_str(), splitActual[line].c_str()).c_str());
+						auto lineErrorCount = 0;
+						for (size_t ch = 0; ch < splitExpected[line].size() && ch < splitActual[line].size() && (lineErrorCount < 10 || !limit_output); ch++)
 						{
-							if (splitExpected[i][ch] != splitActual[i][ch])
+							wchar_t expectedChar = splitExpected[line][ch];
+							wchar_t actualChar = splitActual[line][ch];
+							if (expectedChar != actualChar)
 							{
-								Logger::WriteMessage(format(L"[%d]: %X != %X\n", ch, splitExpected[i][ch], splitActual[i][ch]).c_str());
+								lineErrorCount++;
+								Logger::WriteMessage(format(L"[%d]: %X (%wc) != %X (%wc)\n", ch + 1, expectedChar, expectedChar, actualChar, actualChar).c_str());
 							}
 						}
 					}
@@ -292,6 +296,48 @@ namespace SmartViewTest
 				SmartViewTestResource{ IDS_STPROPERTYDEFINITIONSTREAM, parse_all, IDR_SV12PROPDEF4IN, IDR_SV12PROPDEF4OUT },
 				SmartViewTestResource{ IDS_STPROPERTYDEFINITIONSTREAM, parse_all, IDR_SV12PROPDEF5IN, IDR_SV12PROPDEF5OUT },
 				SmartViewTestResource{ IDS_STPROPERTYDEFINITIONSTREAM, parse_all, IDR_SV12PROPDEF6IN, IDR_SV12PROPDEF6OUT },
+				}));
+		}
+
+		TEST_METHOD(Test_STRECIPIENTROWSTREAM)
+		{
+			test(loadTestData({
+				SmartViewTestResource{ IDS_STRECIPIENTROWSTREAM, parse_all, IDR_SV13RECIPROW1IN, IDR_SV13RECIPROW1OUT },
+				SmartViewTestResource{ IDS_STRECIPIENTROWSTREAM, parse_all, IDR_SV13RECIPROW2IN, IDR_SV13RECIPROW2OUT },
+				}));
+		}
+
+		TEST_METHOD(Test_STRECURRENCEPATTERN)
+		{
+			test(loadTestData({
+				SmartViewTestResource{ IDS_STRECURRENCEPATTERN, parse_all, IDR_SV14ARP1IN, IDR_SV14ARP1OUT },
+				SmartViewTestResource{ IDS_STRECURRENCEPATTERN, parse_all, IDR_SV14ARP2IN, IDR_SV14ARP2OUT },
+				SmartViewTestResource{ IDS_STRECURRENCEPATTERN, parse_all, IDR_SV14ARP3IN, IDR_SV14ARP3OUT },
+				}));
+		}
+
+		TEST_METHOD(Test_STREPORTTAG)
+		{
+			test(loadTestData({
+				SmartViewTestResource{ IDS_STREPORTTAG, parse_all, IDR_SV15REPORTTAG1IN, IDR_SV15REPORTTAG1OUT },
+				}));
+		}
+
+		TEST_METHOD(Test_STRESTRICTION)
+		{
+			test(loadTestData({
+				SmartViewTestResource{ IDS_STRESTRICTION, parse_all, IDR_SV16RES1IN, IDR_SV16RES1OUT },
+				}));
+		}
+
+		TEST_METHOD(Test_STRULECONDITION)
+		{
+			test(loadTestData({
+				SmartViewTestResource{ IDS_STRULECONDITION, parse_all, IDR_SV17RULECON1IN, IDR_SV17RULECON1OUT },
+				SmartViewTestResource{ IDS_STRULECONDITION, parse_all, IDR_SV17RULECON2IN, IDR_SV17RULECON2OUT },
+				SmartViewTestResource{ IDS_STRULECONDITION, parse_all, IDR_SV17RULECON3IN, IDR_SV17RULECON3OUT },
+				SmartViewTestResource{ IDS_STRULECONDITION, parse_all, IDR_SV17RULECON4IN, IDR_SV17RULECON4OUT },
+				SmartViewTestResource{ IDS_STRULECONDITION, parse_all, IDR_SV17RULECON5IN, IDR_SV17RULECON5OUT },
 				}));
 		}
 	};

@@ -75,6 +75,18 @@
 #define IDR_SV12PROPDEF4IN            12004
 #define IDR_SV12PROPDEF5IN            12005
 #define IDR_SV12PROPDEF6IN            12006
+#define IDR_SV13RECIPROW1IN           13001
+#define IDR_SV13RECIPROW2IN           13002
+#define IDR_SV14ARP1IN                14001
+#define IDR_SV14ARP2IN                14002
+#define IDR_SV14ARP3IN                14003
+#define IDR_SV15REPORTTAG1IN          15001
+#define IDR_SV16RES1IN                16001
+#define IDR_SV17RULECON1IN            17001
+#define IDR_SV17RULECON2IN            17002
+#define IDR_SV17RULECON3IN            17003
+#define IDR_SV17RULECON4IN            17004
+#define IDR_SV17RULECON5IN            17005
 
 #define IDR_SV1AEI1OUT              1001001
 #define IDR_SV1AEI2OUT              1001002
@@ -147,6 +159,18 @@
 #define IDR_SV12PROPDEF4OUT         1012004
 #define IDR_SV12PROPDEF5OUT         1012005
 #define IDR_SV12PROPDEF6OUT         1012006
+#define IDR_SV13RECIPROW1OUT        1013001
+#define IDR_SV13RECIPROW2OUT        1013002
+#define IDR_SV14ARP1OUT             1014001
+#define IDR_SV14ARP2OUT             1014002
+#define IDR_SV14ARP3OUT             1014003
+#define IDR_SV15REPORTTAG1OUT       1015001
+#define IDR_SV16RES1OUT             1016001
+#define IDR_SV17RULECON1OUT         1017001
+#define IDR_SV17RULECON2OUT         1017002
+#define IDR_SV17RULECON3OUT         1017003
+#define IDR_SV17RULECON4OUT         1017004
+#define IDR_SV17RULECON5OUT         1017005
 
 // Next default values for new objects
 // 

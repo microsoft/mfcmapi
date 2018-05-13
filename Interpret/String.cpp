@@ -296,29 +296,38 @@ wstring indent(int iIndent)
 	return wstring(iIndent, L'\t');
 }
 
+bool InvalidCharacter(ULONG chr, bool bMultiLine)
+{
+	if (chr == 0x80) return true;
+	if (chr == 0x82) return true;
+	if (chr == 0x8A) return true;
+	if (chr == 0x90) return true;
+	if (chr == 0x98) return true;
+	// Any printable extended ASCII character gets mapped directly
+	if (chr >= 0x20 &&
+		chr <= 0xFE)
+	{
+		return false;
+	}
+	// If we allow multiple lines, we accept tab, LF and CR
+	else if (bMultiLine &&
+		(chr == 9 || // Tab
+			chr == 10 || // Line Feed
+			chr == 13))  // Carriage Return
+	{
+		return false;
+	}
+
+	return true;
+}
+
 string RemoveInvalidCharactersA(const string& szString, bool bMultiLine)
 {
 	string szBin(szString);
 	auto nullTerminated = szBin.back() == '\0';
 	std::replace_if(szBin.begin(), szBin.end(), [bMultiLine](const char& chr)
 	{
-		if (chr == 0x82) return true;
-		// Any printable extended ASCII character gets mapped directly
-		if (chr >= 0x20 &&
-			chr <= 0xFE)
-		{
-			return false;
-		}
-		// If we allow multiple lines, we accept tab, LF and CR
-		else if (bMultiLine &&
-			(chr == 9 || // Tab
-				chr == 10 || // Line Feed
-				chr == 13))  // Carriage Return
-		{
-			return false;
-		}
-
-		return true;
+		return InvalidCharacter(chr, bMultiLine);
 	}, '.');
 
 	if (nullTerminated) szBin.back() = '\0';
@@ -331,23 +340,7 @@ wstring RemoveInvalidCharactersW(const wstring& szString, bool bMultiLine)
 	auto nullTerminated = szBin.back() == L'\0';
 	std::replace_if(szBin.begin(), szBin.end(), [bMultiLine](const WCHAR & chr)
 	{
-		if (chr == 0x82) return true;
-		// Any printable extended ASCII character gets mapped directly
-		if (chr >= 0x20 &&
-			chr <= 0xFE)
-		{
-			return false;
-		}
-		// If we allow multiple lines, we accept tab, LF and CR
-		else if (bMultiLine &&
-			(chr == 9 || // Tab
-				chr == 10 || // Line Feed
-				chr == 13))  // Carriage Return
-		{
-			return false;
-		}
-
-		return true;
+		return InvalidCharacter(chr, bMultiLine);
 	}, L'.');
 
 	if (nullTerminated) szBin.back() = L'\0';
@@ -386,30 +379,11 @@ wstring BinToTextString(_In_ const LPSBinary lpBin, bool bMultiLine)
 	if (!lpBin || !lpBin->cb || !lpBin->lpb) return L"";
 
 	wstring szBin;
+	szBin.reserve(lpBin->cb);
 
-	ULONG i;
-	for (i = 0; i < lpBin->cb; i++)
+	for (ULONG i = 0; i < lpBin->cb; i++)
 	{
-		// Any printable extended ASCII character gets mapped directly
-		if (lpBin->lpb[i] >= 0x20 &&
-			lpBin->lpb[i] <= 0xFE &&
-			lpBin->lpb[i] != 0x82)
-		{
-			szBin += lpBin->lpb[i];
-		}
-		// If we allow multiple lines, we accept tab, LF and CR
-		else if (bMultiLine &&
-			(lpBin->lpb[i] == 9 || // Tab
-				lpBin->lpb[i] == 10 || // Line Feed
-				lpBin->lpb[i] == 13))  // Carriage Return
-		{
-			szBin += lpBin->lpb[i];
-		}
-		// Everything else is a dot
-		else
-		{
-			szBin += L'.';
-		}
+		szBin += InvalidCharacter(lpBin->lpb[i], bMultiLine)? L'.' : lpBin->lpb[i];
 	}
 
 	return szBin;

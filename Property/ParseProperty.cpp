@@ -201,7 +201,7 @@ Property ParseProperty(_In_ LPSPropValue lpProp)
 			break;
 		case PT_BINARY:
 			szTmp = BinToHexString(&lpProp->Value.bin, false);
-			szAltTmp = BinToTextString(&lpProp->Value.bin, true);
+			szAltTmp = BinToTextString(&lpProp->Value.bin, false);
 			bAltPropXMLSafe = false;
 
 			attributes.AddAttribute(L"cb", std::to_wstring(lpProp->Value.bin.cb)); // STRING_OK
