@@ -102,6 +102,16 @@
 #define IDR_SV20SID3IN                20003
 #define IDR_SV20SID4IN                20004
 #define IDR_SV20SID5IN                20005
+#define IDR_SV21TA1IN                 21001
+#define IDR_SV22TZ1IN                 22001
+#define IDR_SV23TZD1IN                23001
+#define IDR_SV23TZD2IN                23002
+#define IDR_SV24WEBVIEW1IN            24001
+#define IDR_SV24WEBVIEW2IN            24002
+#define IDR_SV24WEBVIEW3IN            24003
+#define IDR_SV24WEBVIEW4IN            24004
+#define IDR_SV24WEBVIEW5IN            24005
+#define IDR_SV24WEBVIEW6IN            24006
 
 #define IDR_SV1AEI1OUT              1001001
 #define IDR_SV1AEI2OUT              1001002
@@ -201,6 +211,16 @@
 #define IDR_SV20SID3OUT             1020003
 #define IDR_SV20SID4OUT             1020004
 #define IDR_SV20SID5OUT             1020005
+#define IDR_SV21TA1OUT              1021001
+#define IDR_SV22TZ1OUT              1022001
+#define IDR_SV23TZD1OUT             1023001
+#define IDR_SV23TZD2OUT             1023002
+#define IDR_SV24WEBVIEW1OUT         1024001
+#define IDR_SV24WEBVIEW2OUT         1024002
+#define IDR_SV24WEBVIEW3OUT         1024003
+#define IDR_SV24WEBVIEW4OUT         1024004
+#define IDR_SV24WEBVIEW5OUT         1024005
+#define IDR_SV24WEBVIEW6OUT         1024006
 
 // Next default values for new objects
 // 

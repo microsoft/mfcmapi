@@ -277,13 +277,13 @@ namespace SmartViewTest
 		TEST_METHOD(Test_STPROPERTY)
 		{
 			test(loadTestData({
-				//SmartViewTestResource{ IDS_STPROPERTY, parse_all, IDR_SV11PROP1IN, IDR_SV11PROP1OUT },
+				SmartViewTestResource{ IDS_STPROPERTY, parse_all, IDR_SV11PROP1IN, IDR_SV11PROP1OUT },
 				SmartViewTestResource{ IDS_STPROPERTY, parse_all, IDR_SV11PROP2IN, IDR_SV11PROP2OUT },
-				//SmartViewTestResource{ IDS_STPROPERTY, parse_all, IDR_SV11PROP3IN, IDR_SV11PROP3OUT },
-				//SmartViewTestResource{ IDS_STPROPERTY, parse_all, IDR_SV11PROP4IN, IDR_SV11PROP4OUT },
-				//SmartViewTestResource{ IDS_STPROPERTY, parse_all, IDR_SV11PROP5IN, IDR_SV11PROP5OUT },
-				//SmartViewTestResource{ IDS_STPROPERTY, parse_all, IDR_SV11PROP6IN, IDR_SV11PROP6OUT },
-				//SmartViewTestResource{ IDS_STPROPERTY, parse_all, IDR_SV11PROP7IN, IDR_SV11PROP7OUT },
+				SmartViewTestResource{ IDS_STPROPERTY, parse_all, IDR_SV11PROP3IN, IDR_SV11PROP3OUT },
+				SmartViewTestResource{ IDS_STPROPERTY, parse_all, IDR_SV11PROP4IN, IDR_SV11PROP4OUT },
+				SmartViewTestResource{ IDS_STPROPERTY, parse_all, IDR_SV11PROP5IN, IDR_SV11PROP5OUT },
+				SmartViewTestResource{ IDS_STPROPERTY, parse_all, IDR_SV11PROP6IN, IDR_SV11PROP6OUT },
+				SmartViewTestResource{ IDS_STPROPERTY, parse_all, IDR_SV11PROP7IN, IDR_SV11PROP7OUT },
 				}));
 		}
 
@@ -371,6 +371,40 @@ namespace SmartViewTest
 				SmartViewTestResource{ IDS_STSID, parse_all, IDR_SV20SID3IN, IDR_SV20SID3OUT },
 				SmartViewTestResource{ IDS_STSID, parse_all, IDR_SV20SID4IN, IDR_SV20SID4OUT },
 				SmartViewTestResource{ IDS_STSID, parse_all, IDR_SV20SID5IN, IDR_SV20SID5OUT },
+				}));
+		}
+
+		TEST_METHOD(Test_STTASKASSIGNERS)
+		{
+			test(loadTestData({
+				SmartViewTestResource{ IDS_STTASKASSIGNERS, parse_all, IDR_SV21TA1IN, IDR_SV21TA1OUT },
+				}));
+		}
+
+		TEST_METHOD(Test_STTIMEZONE)
+		{
+			test(loadTestData({
+				SmartViewTestResource{ IDS_STTIMEZONE, parse_all, IDR_SV22TZ1IN, IDR_SV22TZ1OUT },
+				}));
+		}
+
+		TEST_METHOD(Test_STTIMEZONEDEFINITION)
+		{
+			test(loadTestData({
+				SmartViewTestResource{ IDS_STTIMEZONEDEFINITION, parse_all, IDR_SV23TZD1IN, IDR_SV23TZD1OUT },
+				SmartViewTestResource{ IDS_STTIMEZONEDEFINITION, parse_all, IDR_SV23TZD2IN, IDR_SV23TZD2OUT },
+				}));
+		}
+
+		TEST_METHOD(Test_STWEBVIEWPERSISTSTREAM)
+		{
+			test(loadTestData({
+				SmartViewTestResource{ IDS_STWEBVIEWPERSISTSTREAM, parse_all, IDR_SV24WEBVIEW1IN, IDR_SV24WEBVIEW1OUT },
+				SmartViewTestResource{ IDS_STWEBVIEWPERSISTSTREAM, parse_all, IDR_SV24WEBVIEW2IN, IDR_SV24WEBVIEW2OUT },
+				SmartViewTestResource{ IDS_STWEBVIEWPERSISTSTREAM, parse_all, IDR_SV24WEBVIEW3IN, IDR_SV24WEBVIEW3OUT },
+				SmartViewTestResource{ IDS_STWEBVIEWPERSISTSTREAM, parse_all, IDR_SV24WEBVIEW4IN, IDR_SV24WEBVIEW4OUT },
+				SmartViewTestResource{ IDS_STWEBVIEWPERSISTSTREAM, parse_all, IDR_SV24WEBVIEW5IN, IDR_SV24WEBVIEW5OUT },
+				SmartViewTestResource{ IDS_STWEBVIEWPERSISTSTREAM, parse_all, IDR_SV24WEBVIEW6IN, IDR_SV24WEBVIEW6OUT },
 				}));
 		}
 	};
