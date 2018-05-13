@@ -340,5 +340,38 @@ namespace SmartViewTest
 				SmartViewTestResource{ IDS_STRULECONDITION, parse_all, IDR_SV17RULECON5IN, IDR_SV17RULECON5OUT },
 				}));
 		}
+
+		TEST_METHOD(Test_STSEARCHFOLDERDEFINITION)
+		{
+			test(loadTestData({
+				SmartViewTestResource{ IDS_STSEARCHFOLDERDEFINITION, parse_all, IDR_SV18SF1IN, IDR_SV18SF1OUT },
+				SmartViewTestResource{ IDS_STSEARCHFOLDERDEFINITION, parse_all, IDR_SV18SF2IN, IDR_SV18SF2OUT },
+				SmartViewTestResource{ IDS_STSEARCHFOLDERDEFINITION, parse_all, IDR_SV18SF3IN, IDR_SV18SF3OUT },
+				SmartViewTestResource{ IDS_STSEARCHFOLDERDEFINITION, parse_all, IDR_SV18SF4IN, IDR_SV18SF4OUT },
+				SmartViewTestResource{ IDS_STSEARCHFOLDERDEFINITION, parse_all, IDR_SV18SF5IN, IDR_SV18SF5OUT },
+				SmartViewTestResource{ IDS_STSEARCHFOLDERDEFINITION, parse_all, IDR_SV18SF6IN, IDR_SV18SF6OUT },
+				}));
+		}
+
+		TEST_METHOD(Test_STSECURITYDESCRIPTOR)
+		{
+			test(loadTestData({
+				SmartViewTestResource{ IDS_STSECURITYDESCRIPTOR, parse_all, IDR_SV19SD1IN, IDR_SV19SD1OUT },
+				SmartViewTestResource{ IDS_STSECURITYDESCRIPTOR, parse_all, IDR_SV19SD2IN, IDR_SV19SD2OUT },
+				SmartViewTestResource{ IDS_STSECURITYDESCRIPTOR, parse_all, IDR_SV19SD3IN, IDR_SV19SD3OUT },
+				SmartViewTestResource{ IDS_STSECURITYDESCRIPTOR, parse_all, IDR_SV19SD4IN, IDR_SV19SD4OUT },
+				}));
+		}
+
+		TEST_METHOD(Test_STSID)
+		{
+			test(loadTestData({
+				SmartViewTestResource{ IDS_STSID, parse_all, IDR_SV20SID1IN, IDR_SV20SID1OUT },
+				SmartViewTestResource{ IDS_STSID, parse_all, IDR_SV20SID2IN, IDR_SV20SID2OUT },
+				SmartViewTestResource{ IDS_STSID, parse_all, IDR_SV20SID3IN, IDR_SV20SID3OUT },
+				SmartViewTestResource{ IDS_STSID, parse_all, IDR_SV20SID4IN, IDR_SV20SID4OUT },
+				SmartViewTestResource{ IDS_STSID, parse_all, IDR_SV20SID5IN, IDR_SV20SID5OUT },
+				}));
+		}
 	};
 }

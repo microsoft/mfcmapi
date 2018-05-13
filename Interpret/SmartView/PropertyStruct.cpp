@@ -73,9 +73,9 @@ _Check_return_ wstring PropsToString(DWORD PropCount, LPSPropValue Prop)
 			}
 
 			InterpretProp(&Prop[i], &PropString, &AltPropString);
-			property.push_back(formatmessage(IDS_PROPERTYDATA,
+			property.push_back(RemoveInvalidCharactersW(formatmessage(IDS_PROPERTYDATA,
 				PropString.c_str(),
-				AltPropString.c_str()));
+				AltPropString.c_str()), false));
 
 			auto szSmartView = InterpretPropSmartView(
 				&Prop[i],

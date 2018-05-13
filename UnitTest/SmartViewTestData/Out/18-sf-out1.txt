@@ -1,0 +1,31 @@
+Search Folder Definition:
+Version = 0x00001004
+Flags = 0x00000048 = SFST_MRES | SFST_FOLDERLIST
+Numeric Search = 0x00000000
+Text Search Length = 0x00
+SkipLen1 = 0x00000000
+Deep Search = 0x00000000
+Folder List 1 Length = 0x00
+Folder List 2 Length = 0x0000003E
+FolderList2 = 
+EntryCount = 0x00000001
+Pad = 0x26106C48
+EntryId[0]:
+EntryLength = 0x0000002E
+EntryLengthPad = 0x26106C50
+Entry Id = Exchange Folder Entry ID:
+abFlags = 0x00000000
+Provider GUID = {C64E6196-0166-11D2-A3B1-0008C728E7F1} = Unknown GUID
+Folder Type = 0x0001 = eitLTPrivateFolder
+Database GUID = {865CFA85-E6FC-11D1-A3A6-0008C728E7F1} = Unknown GUID
+GlobalCounter = cb: 6 lpb: 000000019EBE
+Pad = cb: 2 lpb: 0000
+SkipLen2 = 0x00000000
+Restriction:
+lpRes->rt = 0x3 = RES_CONTENT
+lpRes->res.resContent.ulFuzzyLevel = FL_PHRASE_MATCH | FL_IGNORECASE | FL_SUBSTRING = 0x00010021
+lpRes->res.resContent.ulPropTag = 0x0037001F (PT_UNICODE): PR_SUBJECT_W: (PidTagSubject, PR_SUBJECT, PR_SUBJECT_A, ptagSubject)
+lpRes->res.resContent.lpProp->ulPropTag = 0x0037001F (PT_UNICODE): PR_SUBJECT_W: (PidTagSubject, PR_SUBJECT, PR_SUBJECT_A, ptagSubject)
+lpRes->res.resContent.lpProp->Value = Test
+	Alt: cb: 8 lpb: 5400650073007400
+SkipLen3 = 0x00000000

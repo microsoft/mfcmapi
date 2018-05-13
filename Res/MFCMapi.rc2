@@ -1547,18 +1547,17 @@ IDS_ACCESSDETAILEDFREEBUSY "Detailed FreeBusy"
 
 IDS_SECURITYDESCRIPTORHEADER "Security Descriptor: \r\n\
 Security Info: "
-IDS_SECURITYDESCRIPTORVERSION "\r\n\
-Security Version: 0x%1!04X! = %2!ws!\r\n\
-Descriptor:\r\n"
+IDS_SECURITYDESCRIPTORVERSION "Security Version: 0x%1!04X! = %2!ws!\r\n\
+Descriptor:"
 
 IDS_SIDACCOUNT "Account: %1!ws!\\%2!ws!\r\n\
 SID: %3!ws!\r\n\
 Access Type: 0x%4!08X! = %5!ws!\r\n\
 Access Flags: 0x%6!08X! = %7!ws!\r\n\
-Access Mask: 0x%8!08X! = %9!ws!\r\n"
+Access Mask: 0x%8!08X! = %9!ws!"
 IDS_SIDOBJECTYPE "ObjectType: "
-IDS_SIDINHERITEDOBJECTYPE "\r\nInheritedObjectType: "
-IDS_SIDFLAGS "\r\nFlags: 0x%1!08X!\r\n"
+IDS_SIDINHERITEDOBJECTYPE "InheritedObjectType: "
+IDS_SIDFLAGS "Flags: 0x%1!08X!"
 
 IDS_INVALIDSD "This is not a valid security descriptor."
 

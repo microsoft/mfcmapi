@@ -87,6 +87,21 @@
 #define IDR_SV17RULECON3IN            17003
 #define IDR_SV17RULECON4IN            17004
 #define IDR_SV17RULECON5IN            17005
+#define IDR_SV18SF1IN                 18001
+#define IDR_SV18SF2IN                 18002
+#define IDR_SV18SF3IN                 18003
+#define IDR_SV18SF4IN                 18004
+#define IDR_SV18SF5IN                 18005
+#define IDR_SV18SF6IN                 18006
+#define IDR_SV19SD1IN                 19001
+#define IDR_SV19SD2IN                 19002
+#define IDR_SV19SD3IN                 19003
+#define IDR_SV19SD4IN                 19004
+#define IDR_SV20SID1IN                20001
+#define IDR_SV20SID2IN                20002
+#define IDR_SV20SID3IN                20003
+#define IDR_SV20SID4IN                20004
+#define IDR_SV20SID5IN                20005
 
 #define IDR_SV1AEI1OUT              1001001
 #define IDR_SV1AEI2OUT              1001002
@@ -171,6 +186,21 @@
 #define IDR_SV17RULECON3OUT         1017003
 #define IDR_SV17RULECON4OUT         1017004
 #define IDR_SV17RULECON5OUT         1017005
+#define IDR_SV18SF1OUT              1018001
+#define IDR_SV18SF2OUT              1018002
+#define IDR_SV18SF3OUT              1018003
+#define IDR_SV18SF4OUT              1018004
+#define IDR_SV18SF5OUT              1018005
+#define IDR_SV18SF6OUT              1018006
+#define IDR_SV19SD1OUT              1019001
+#define IDR_SV19SD2OUT              1019002
+#define IDR_SV19SD3OUT              1019003
+#define IDR_SV19SD4OUT              1019004
+#define IDR_SV20SID1OUT             1020001
+#define IDR_SV20SID2OUT             1020002
+#define IDR_SV20SID3OUT             1020003
+#define IDR_SV20SID4OUT             1020004
+#define IDR_SV20SID5OUT             1020005
 
 // Next default values for new objects
 // 

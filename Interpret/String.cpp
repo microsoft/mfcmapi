@@ -300,9 +300,18 @@ bool InvalidCharacter(ULONG chr, bool bMultiLine)
 {
 	if (chr == 0x80) return true;
 	if (chr == 0x82) return true;
+	if (chr == 0x83) return true;
+	if (chr == 0x85) return true;
+	if (chr == 0x86) return true;
+	if (chr == 0x88) return true;
 	if (chr == 0x8A) return true;
+	if (chr == 0x8E) return true;
 	if (chr == 0x90) return true;
+	if (chr == 0x92) return true;
+	if (chr == 0x96) return true;
 	if (chr == 0x98) return true;
+	if (chr == 0x9E) return true;
+	if (chr == 0x9F) return true;
 	// Any printable extended ASCII character gets mapped directly
 	if (chr >= 0x20 &&
 		chr <= 0xFE)
@@ -336,6 +345,7 @@ string RemoveInvalidCharactersA(const string& szString, bool bMultiLine)
 
 wstring RemoveInvalidCharactersW(const wstring& szString, bool bMultiLine)
 {
+	if (szString.empty()) return szString;
 	wstring szBin(szString);
 	auto nullTerminated = szBin.back() == L'\0';
 	std::replace_if(szBin.begin(), szBin.end(), [bMultiLine](const WCHAR & chr)

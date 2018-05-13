@@ -6,6 +6,7 @@
 #include <Interpret/ExtraPropTags.h>
 #include <Interpret/InterpretProp2.h>
 #include <Interpret/Sid.h>
+#include <Interpret/String.h>
 
 SDBin::SDBin()
 {
@@ -52,14 +53,13 @@ _Check_return_ wstring SDBin::ToStringInternal()
 
 	wstring szDACL;
 	wstring szInfo;
-
 	WC_H(SDToString(lpSDToParse, ulSDToParse, acetype, szDACL, szInfo));
-
 	auto szFlags = InterpretFlags(flagSecurityVersion, SECURITY_DESCRIPTOR_VERSION(lpSDToParse));
-	auto szResult = formatmessage(IDS_SECURITYDESCRIPTORHEADER);
-	szResult += szInfo;
-	szResult += formatmessage(IDS_SECURITYDESCRIPTORVERSION, SECURITY_DESCRIPTOR_VERSION(lpSDToParse), szFlags.c_str());
-	szResult += szDACL;
 
-	return szResult;
+	vector<wstring> result;
+	result.push_back(formatmessage(IDS_SECURITYDESCRIPTORHEADER) + szInfo);
+	result.push_back(formatmessage(IDS_SECURITYDESCRIPTORVERSION, SECURITY_DESCRIPTOR_VERSION(lpSDToParse), szFlags.c_str()));
+	result.push_back(szDACL);
+
+	return join(result, L"\r\n");
 }

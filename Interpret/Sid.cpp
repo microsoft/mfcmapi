@@ -58,7 +58,7 @@ _Check_return_ wstring GetTextualSid(_In_ PSID pSid)
 wstring ACEToString(_In_ void* pACE, eAceType acetype)
 {
 	auto hRes = S_OK;
-	wstring AceString;
+	vector<wstring> aceString;
 	ACCESS_MASK Mask = 0;
 	DWORD Flags = 0;
 	GUID ObjectType = { 0 };
@@ -161,25 +161,25 @@ wstring ACEToString(_In_ void* pACE, eAceType acetype)
 	delete[] lpSidDomain;
 	delete[] lpSidName;
 
-	AceString += formatmessage(
+	aceString.push_back(formatmessage(
 		IDS_SIDACCOUNT,
 		szDomain.c_str(),
 		szName.c_str(),
 		szSID.c_str(),
 		AceType, szAceType.c_str(),
 		AceFlags, szAceFlags.c_str(),
-		Mask, szAceMask.c_str());
+		Mask, szAceMask.c_str()));
 
 	if (bObjectFound)
 	{
-		AceString += formatmessage(IDS_SIDOBJECTYPE);
-		AceString += GUIDToStringAndName(&ObjectType);
-		AceString += formatmessage(IDS_SIDINHERITEDOBJECTYPE);
-		AceString += GUIDToStringAndName(&InheritedObjectType);
-		AceString += formatmessage(IDS_SIDFLAGS, Flags);
+		aceString.push_back(formatmessage(IDS_SIDOBJECTYPE));
+		aceString.push_back(GUIDToStringAndName(&ObjectType));
+		aceString.push_back(formatmessage(IDS_SIDINHERITEDOBJECTYPE));
+		aceString.push_back(GUIDToStringAndName(&InheritedObjectType));
+		aceString.push_back(formatmessage(IDS_SIDFLAGS, Flags));
 	}
 
-	return AceString;
+	return join(aceString, L"\r\n");
 }
 
 _Check_return_ HRESULT SDToString(_In_count_(cbBuf) const BYTE* lpBuf, size_t cbBuf, eAceType acetype, _In_ wstring& SDString, _In_ wstring& sdInfo)
@@ -215,6 +215,7 @@ _Check_return_ HRESULT SDToString(_In_count_(cbBuf) const BYTE* lpBuf, size_t cb
 			sizeof ACLSizeInfo,
 			AclSizeInformation));
 
+		vector<wstring> sdString;
 		for (DWORD i = 0; i < ACLSizeInfo.AceCount; i++)
 		{
 			void* pACE = nullptr;
@@ -223,9 +224,11 @@ _Check_return_ HRESULT SDToString(_In_count_(cbBuf) const BYTE* lpBuf, size_t cb
 
 			if (pACE)
 			{
-				SDString += ACEToString(pACE, acetype);
+				sdString.push_back(ACEToString(pACE, acetype));
 			}
 		}
+
+		SDString = join(sdString, L"\r\n");
 	}
 
 	return hRes;
