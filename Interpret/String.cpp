@@ -13,7 +13,7 @@ wstring formatV(LPCWSTR szMsg, va_list argList)
 	if (0 != len)
 	{
 		len++;
-		auto buffer = new wchar_t[len];
+		const auto buffer = new wchar_t[len];
 		memset(buffer, 0, sizeof(wchar_t)* len);
 		if (_vsnwprintf_s(buffer, len, _TRUNCATE, szMsg, argList) > 0)
 		{
@@ -56,7 +56,7 @@ wstring loadstring(DWORD dwID)
 {
 	wstring fmtString;
 	LPWSTR buffer = nullptr;
-	size_t len = LoadStringW(g_testInstance, dwID, reinterpret_cast<PWCHAR>(&buffer), 0);
+	const size_t len = LoadStringW(g_testInstance, dwID, reinterpret_cast<PWCHAR>(&buffer), 0);
 
 	if (len)
 	{
@@ -69,7 +69,7 @@ wstring loadstring(DWORD dwID)
 wstring formatmessageV(LPCWSTR szMsg, va_list argList)
 {
 	LPWSTR buffer = nullptr;
-	auto dw = FormatMessageW(FORMAT_MESSAGE_FROM_STRING | FORMAT_MESSAGE_ALLOCATE_BUFFER, szMsg, 0, 0, reinterpret_cast<LPWSTR>(&buffer), 0, &argList);
+	const auto dw = FormatMessageW(FORMAT_MESSAGE_FROM_STRING | FORMAT_MESSAGE_ALLOCATE_BUFFER, szMsg, 0, 0, reinterpret_cast<LPWSTR>(&buffer), 0, &argList);
 	if (dw)
 	{
 		auto ret = wstring(buffer);
@@ -83,7 +83,7 @@ wstring formatmessageV(LPCWSTR szMsg, va_list argList)
 wstring formatmessagesys(DWORD dwID)
 {
 	LPWSTR buffer = nullptr;
-	auto dw = FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, nullptr, dwID, 0, reinterpret_cast<LPWSTR>(&buffer), 0, nullptr);
+	const auto dw = FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, nullptr, dwID, 0, reinterpret_cast<LPWSTR>(&buffer), 0, nullptr);
 	if (dw)
 	{
 		auto ret = wstring(buffer);
@@ -257,11 +257,11 @@ wstring CleanString(const wstring& szString)
 
 wstring TrimString(const wstring& szString)
 {
-	size_t first = szString.find_first_not_of(' ');
+	const auto first = szString.find_first_not_of(' ');
 	if (first == string::npos)
 		return emptystring;
-	size_t last = szString.find_last_not_of(' ');
-	return szString.substr(first, (last - first + 1));
+	const auto last = szString.find_last_not_of(' ');
+	return szString.substr(first, last - first + 1);
 }
 
 wstring replace(const wstring& str, std::function<bool(const WCHAR&)> func, const WCHAR& chr)
@@ -346,8 +346,8 @@ bool InvalidCharacter(ULONG chr, bool bMultiLine)
 
 string RemoveInvalidCharactersA(const string& szString, bool bMultiLine)
 {
-	string szBin(szString);
-	auto nullTerminated = szBin.back() == '\0';
+	auto szBin(szString);
+	const auto nullTerminated = szBin.back() == '\0';
 	std::replace_if(szBin.begin(), szBin.end(), [bMultiLine](const char& chr)
 	{
 		return InvalidCharacter(chr, bMultiLine);
@@ -360,8 +360,8 @@ string RemoveInvalidCharactersA(const string& szString, bool bMultiLine)
 wstring RemoveInvalidCharactersW(const wstring& szString, bool bMultiLine)
 {
 	if (szString.empty()) return szString;
-	wstring szBin(szString);
-	auto nullTerminated = szBin.back() == L'\0';
+	auto szBin(szString);
+	const auto nullTerminated = szBin.back() == L'\0';
 	std::replace_if(szBin.begin(), szBin.end(), [bMultiLine](const WCHAR & chr)
 	{
 		return InvalidCharacter(chr, bMultiLine);
@@ -374,31 +374,27 @@ wstring RemoveInvalidCharactersW(const wstring& szString, bool bMultiLine)
 // Converts binary data to a string, assuming source string was unicode
 wstring BinToTextStringW(const vector<BYTE>& lpByte, bool bMultiLine)
 {
-	SBinary bin = { 0 };
-	bin.cb = static_cast<ULONG>(lpByte.size());
-	bin.lpb = const_cast<LPBYTE>(lpByte.data());
+	SBinary bin = { static_cast<ULONG>(lpByte.size()),const_cast<LPBYTE>(lpByte.data()) };
 	return BinToTextStringW(&bin, bMultiLine);
 }
 
 // Converts binary data to a string, assuming source string was unicode
-wstring BinToTextStringW(_In_ const LPSBinary lpBin, bool bMultiLine)
+wstring BinToTextStringW(_In_ const SBinary* lpBin, bool bMultiLine)
 {
 	if (!lpBin || !lpBin->cb || lpBin->cb % sizeof WCHAR || !lpBin->lpb) return L"";
 
-	wstring szBin(reinterpret_cast<LPWSTR>(lpBin->lpb), lpBin->cb / sizeof WCHAR);
+	const wstring szBin(reinterpret_cast<LPWSTR>(lpBin->lpb), lpBin->cb / sizeof WCHAR);
 	return RemoveInvalidCharactersW(szBin, bMultiLine);
 }
 
 wstring BinToTextString(const vector<BYTE>& lpByte, bool bMultiLine)
 {
-	SBinary bin = { 0 };
-	bin.cb = static_cast<ULONG>(lpByte.size());
-	bin.lpb = const_cast<LPBYTE>(lpByte.data());
+	SBinary bin = { static_cast<ULONG>(lpByte.size()),const_cast<LPBYTE>(lpByte.data()) };
 	return BinToTextString(&bin, bMultiLine);
 }
 
 // Converts binary data to a string, assuming source string was single byte
-wstring BinToTextString(_In_ const LPSBinary lpBin, bool bMultiLine)
+wstring BinToTextString(_In_ const SBinary* lpBin, bool bMultiLine)
 {
 	if (!lpBin || !lpBin->cb || !lpBin->lpb) return L"";
 
@@ -407,7 +403,7 @@ wstring BinToTextString(_In_ const LPSBinary lpBin, bool bMultiLine)
 
 	for (ULONG i = 0; i < lpBin->cb; i++)
 	{
-		szBin += InvalidCharacter(lpBin->lpb[i], bMultiLine)? L'.' : lpBin->lpb[i];
+		szBin += InvalidCharacter(lpBin->lpb[i], bMultiLine) ? L'.' : lpBin->lpb[i];
 	}
 
 	return szBin;
@@ -430,10 +426,10 @@ wstring BinToHexString(_In_opt_count_(cb) const BYTE* lpb, size_t cb, bool bPrep
 	{
 		for (ULONG i = 0; i < cb; i++)
 		{
-			auto bLow = static_cast<BYTE>(lpb[i] & 0xf);
-			auto bHigh = static_cast<BYTE>(lpb[i] >> 4 & 0xf);
-			auto szLow = static_cast<wchar_t>(bLow <= 0x9 ? L'0' + bLow : L'A' + bLow - 0xa);
-			auto szHigh = static_cast<wchar_t>(bHigh <= 0x9 ? L'0' + bHigh : L'A' + bHigh - 0xa);
+			const auto bLow = static_cast<BYTE>(lpb[i] & 0xf);
+			const auto bHigh = static_cast<BYTE>(lpb[i] >> 4 & 0xf);
+			const auto szLow = static_cast<wchar_t>(bLow <= 0x9 ? L'0' + bLow : L'A' + bLow - 0xa);
+			const auto szHigh = static_cast<wchar_t>(bHigh <= 0x9 ? L'0' + bHigh : L'A' + bHigh - 0xa);
 
 			lpsz += szHigh;
 			lpsz += szLow;
@@ -445,9 +441,7 @@ wstring BinToHexString(_In_opt_count_(cb) const BYTE* lpb, size_t cb, bool bPrep
 
 wstring BinToHexString(const vector<BYTE>& lpByte, bool bPrependCB)
 {
-	SBinary sBin = { 0 };
-	sBin.cb = static_cast<ULONG>(lpByte.size());
-	sBin.lpb = const_cast<LPBYTE>(lpByte.data());
+	SBinary sBin = { static_cast<ULONG>(lpByte.size()), const_cast<LPBYTE>(lpByte.data()) };
 	return BinToHexString(&sBin, bPrependCB);
 }
 
@@ -463,7 +457,7 @@ wstring BinToHexString(_In_opt_ const SBinary* lpBin, bool bPrependCB)
 
 bool stripPrefix(wstring& str, const wstring& prefix)
 {
-	auto length = prefix.length();
+	const auto length = prefix.length();
 	if (str.compare(0, length, prefix) == 0)
 	{
 		str.erase(0, length);
@@ -493,7 +487,7 @@ vector<BYTE> HexStringToBin(_In_ const wstring& input, size_t cbTarget)
 		stripPrefix(lpsz, L"x") ||
 		stripPrefix(lpsz, L"X");
 
-	auto cchStrLen = lpsz.length();
+	const auto cchStrLen = lpsz.length();
 
 	vector<BYTE> lpb;
 	WCHAR szTmp[3] = { 0 };
@@ -524,7 +518,7 @@ LPBYTE ByteVectorToLPBYTE(const vector<BYTE>& bin)
 {
 	if (bin.empty()) return nullptr;
 
-	auto lpBin = new (std::nothrow) BYTE[bin.size()];
+	const auto lpBin = new (std::nothrow) BYTE[bin.size()];
 	if (lpBin != nullptr)
 	{
 		memset(lpBin, 0, bin.size());
