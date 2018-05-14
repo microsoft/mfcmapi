@@ -111,7 +111,7 @@ namespace SmartViewTest
 			const auto cb = SizeofResource(handle, rc);
 			const auto bytes = LockResource(rcData);
 			const auto data = static_cast<const BYTE*>(bytes);
-			if (cb >= 2 && data[0] == 0xfe && data[1] == 0xff)
+			if (cb >= 2 && data[0] == 0xff && data[1] == 0xfe)
 			{
 				// Skip the byte order mark
 				const auto wstr = static_cast<const wchar_t*>(bytes);
@@ -405,6 +405,32 @@ namespace SmartViewTest
 				SmartViewTestResource{ IDS_STWEBVIEWPERSISTSTREAM, parse_all, IDR_SV24WEBVIEW4IN, IDR_SV24WEBVIEW4OUT },
 				SmartViewTestResource{ IDS_STWEBVIEWPERSISTSTREAM, parse_all, IDR_SV24WEBVIEW5IN, IDR_SV24WEBVIEW5OUT },
 				SmartViewTestResource{ IDS_STWEBVIEWPERSISTSTREAM, parse_all, IDR_SV24WEBVIEW6IN, IDR_SV24WEBVIEW6OUT },
+				}));
+		}
+
+		TEST_METHOD(Test_STENCODEENTRYID)
+		{
+			test(loadTestData({
+				SmartViewTestResource{ IDS_STENCODEENTRYID, parse_all, IDR_SV26EIDENCODE1IN, IDR_SV26EIDENCODE1OUT },
+				}));
+		}
+
+		TEST_METHOD(Test_STDECODEENTRYID)
+		{
+			test(loadTestData({
+				SmartViewTestResource{ IDS_STDECODEENTRYID, parse_all, IDR_SV27EIDDECODE1IN, IDR_SV27EIDDECODE1OUT },
+				}));
+		}
+
+		TEST_METHOD(Test_STVERBSTREAM)
+		{
+			test(loadTestData({
+				SmartViewTestResource{ IDS_STVERBSTREAM, parse_all, IDR_SV28VERBSTREAM1IN, IDR_SV28VERBSTREAM1OUT },
+				SmartViewTestResource{ IDS_STVERBSTREAM, parse_all, IDR_SV28VERBSTREAM2IN, IDR_SV28VERBSTREAM2OUT },
+				SmartViewTestResource{ IDS_STVERBSTREAM, parse_all, IDR_SV28VERBSTREAM3IN, IDR_SV28VERBSTREAM3OUT },
+				SmartViewTestResource{ IDS_STVERBSTREAM, parse_all, IDR_SV28VERBSTREAM4IN, IDR_SV28VERBSTREAM4OUT },
+				SmartViewTestResource{ IDS_STVERBSTREAM, parse_all, IDR_SV28VERBSTREAM5IN, IDR_SV28VERBSTREAM5OUT },
+				SmartViewTestResource{ IDS_STVERBSTREAM, parse_all, IDR_SV28VERBSTREAM6IN, IDR_SV28VERBSTREAM6OUT },
 				}));
 		}
 	};
