@@ -173,7 +173,7 @@ bool RestrictionStruct::BinToRestriction(ULONG ulDepth, _In_ LPSRestriction psrR
 		else
 			psrRestriction->res.resComment.cValues = m_Parser.Get<DWORD>();
 
-		psrRestriction->res.resProperty.lpProp = BinToSPropValue(
+		psrRestriction->res.resComment.lpProp = BinToSPropValue(
 			psrRestriction->res.resComment.cValues,
 			bRuleCondition);
 
