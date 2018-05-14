@@ -30,7 +30,7 @@ namespace SmartViewTest
 
 		static const bool parse_all = false;
 		static const bool assert_on_failure = true;
-		static const bool limit_output = false;
+		static const bool limit_output = true;
 
 		// Assert::AreEqual doesn't do full logging, so we roll our own
 		void AreEqualEx(const wstring& expected, const wstring& actual, const wchar_t* message = nullptr, const __LineInfo* pLineInfo = nullptr) const
@@ -67,12 +67,9 @@ namespace SmartViewTest
 					}
 				}
 
-				if (!limit_output)
-				{
-					Logger::WriteMessage(L"\n");
-					Logger::WriteMessage(format(L"Expected:\n\"%ws\"\n\n", expected.c_str()).c_str());
-					Logger::WriteMessage(format(L"Actual:\n\"%ws\"", actual.c_str()).c_str());
-				}
+				Logger::WriteMessage(L"\n");
+				Logger::WriteMessage(format(L"Expected:\n\"%ws\"\n\n", expected.c_str()).c_str());
+				Logger::WriteMessage(format(L"Actual:\n\"%ws\"", actual.c_str()).c_str());
 
 				if (assert_on_failure)
 				{
