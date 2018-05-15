@@ -98,7 +98,7 @@ namespace SmartViewTest
 			}
 		}
 
-		// Resource files saved in unicode have a byte order mark of 0xfeff
+		// Resource files saved in unicode have a byte order mark of 0xfffe
 		// We load these in and strip the BOM.
 		// Otherwise we load as ansi and convert to unicode
 		static wstring loadfile(const HMODULE handle, const int name)
@@ -428,6 +428,42 @@ namespace SmartViewTest
 				SmartViewTestResource{ IDS_STVERBSTREAM, parse_all, IDR_SV28VERBSTREAM4IN, IDR_SV28VERBSTREAM4OUT },
 				SmartViewTestResource{ IDS_STVERBSTREAM, parse_all, IDR_SV28VERBSTREAM5IN, IDR_SV28VERBSTREAM5OUT },
 				SmartViewTestResource{ IDS_STVERBSTREAM, parse_all, IDR_SV28VERBSTREAM6IN, IDR_SV28VERBSTREAM6OUT },
+				}));
+		}
+
+		TEST_METHOD(Test_STTOMBSTONE)
+		{
+			test(loadTestData({
+				SmartViewTestResource{ IDS_STTOMBSTONE, parse_all, IDR_SV29TOMBSTONE1IN, IDR_SV29TOMBSTONE1OUT },
+				SmartViewTestResource{ IDS_STTOMBSTONE, parse_all, IDR_SV29TOMBSTONE2IN, IDR_SV29TOMBSTONE2OUT },
+				SmartViewTestResource{ IDS_STTOMBSTONE, parse_all, IDR_SV29TOMBSTONE3IN, IDR_SV29TOMBSTONE3OUT },
+				}));
+		}
+
+		TEST_METHOD(Test_STPCL)
+		{
+			test(loadTestData({
+				SmartViewTestResource{ IDS_STPCL, parse_all, IDR_SV30PCL1IN, IDR_SV30PCL1OUT },
+				SmartViewTestResource{ IDS_STPCL, parse_all, IDR_SV30PCL2IN, IDR_SV30PCL2OUT },
+				SmartViewTestResource{ IDS_STPCL, parse_all, IDR_SV30PCL3IN, IDR_SV30PCL3OUT },
+				}));
+		}
+
+		TEST_METHOD(Test_STFBSECURITYDESCRIPTOR)
+		{
+			test(loadTestData({
+				SmartViewTestResource{ IDS_STFBSECURITYDESCRIPTOR, parse_all, IDR_SV31FREEBUSYSID1IN, IDR_SV31FREEBUSYSID1OUT },
+				SmartViewTestResource{ IDS_STFBSECURITYDESCRIPTOR, parse_all, IDR_SV31FREEBUSYSID2IN, IDR_SV31FREEBUSYSID2OUT },
+				}));
+		}
+
+		TEST_METHOD(Test_STXID)
+		{
+			test(loadTestData({
+				SmartViewTestResource{ IDS_STXID, parse_all, IDR_SV32XID1IN, IDR_SV32XID1OUT },
+				SmartViewTestResource{ IDS_STXID, parse_all, IDR_SV32XID2IN, IDR_SV32XID2OUT },
+				SmartViewTestResource{ IDS_STXID, parse_all, IDR_SV32XID3IN, IDR_SV32XID3OUT },
+				SmartViewTestResource{ IDS_STXID, parse_all, IDR_SV32XID4IN, IDR_SV32XID4OUT },
 				}));
 		}
 	};

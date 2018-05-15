@@ -120,6 +120,18 @@
 #define IDR_SV28VERBSTREAM4IN         28004
 #define IDR_SV28VERBSTREAM5IN         28005
 #define IDR_SV28VERBSTREAM6IN         28006
+#define IDR_SV29TOMBSTONE1IN          29001
+#define IDR_SV29TOMBSTONE2IN          29002
+#define IDR_SV29TOMBSTONE3IN          29003
+#define IDR_SV30PCL1IN                30001
+#define IDR_SV30PCL2IN                30002
+#define IDR_SV30PCL3IN                30003
+#define IDR_SV31FREEBUSYSID1IN        31001
+#define IDR_SV31FREEBUSYSID2IN        31002
+#define IDR_SV32XID1IN                32001
+#define IDR_SV32XID2IN                32002
+#define IDR_SV32XID3IN                32003
+#define IDR_SV32XID4IN                32004
 
 #define IDR_SV1AEI1OUT              1001001
 #define IDR_SV1AEI2OUT              1001002
@@ -237,6 +249,18 @@
 #define IDR_SV28VERBSTREAM4OUT      1028004
 #define IDR_SV28VERBSTREAM5OUT      1028005
 #define IDR_SV28VERBSTREAM6OUT      1028006
+#define IDR_SV29TOMBSTONE1OUT       1029001
+#define IDR_SV29TOMBSTONE2OUT       1029002
+#define IDR_SV29TOMBSTONE3OUT       1029003
+#define IDR_SV30PCL1OUT             1030001
+#define IDR_SV30PCL2OUT             1030002
+#define IDR_SV30PCL3OUT             1030003
+#define IDR_SV31FREEBUSYSID1OUT     1031001
+#define IDR_SV31FREEBUSYSID2OUT     1031002
+#define IDR_SV32XID1OUT             1032001
+#define IDR_SV32XID2OUT             1032002
+#define IDR_SV32XID3OUT             1032003
+#define IDR_SV32XID4OUT             1032004
 
 // Next default values for new objects
 // 
