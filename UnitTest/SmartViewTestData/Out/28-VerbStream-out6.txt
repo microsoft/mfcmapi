@@ -1,0 +1,155 @@
+Verb Stream
+Version = 0x0102
+Count = 0x00000006
+
+VerbData[0]
+VerbType = 0x00000000
+DisplayNameCount = 0x05
+DisplayName = "Reply"
+MsgClsNameCount = 0x08
+MsgClsName = "IPM.Note"
+Internal1StringCount = 0x07
+Internal1String = "Message"
+DisplayNameCountRepeat = 0x02
+DisplayNameRepeat = "RE"
+Internal2 = 0x00000005
+Internal3 = 0x00000000
+fUseUSHeaders = 0x00
+Internal4 = 0x00000001
+SendBehavior = 0x00000000
+Internal5 = 0x00000002
+ID = 0x00000066 = NOTEIVERB_REPLYTOSENDER
+Internal6 = 0x00000002
+
+VerbData[1]
+VerbType = 0x00000001
+DisplayNameCount = 0x0C
+DisplayName = "Reply to All"
+MsgClsNameCount = 0x08
+MsgClsName = "IPM.Note"
+Internal1StringCount = 0x07
+Internal1String = "Message"
+DisplayNameCountRepeat = 0x02
+DisplayNameRepeat = "RE"
+Internal2 = 0x00000005
+Internal3 = 0x00000000
+fUseUSHeaders = 0x00
+Internal4 = 0x00000001
+SendBehavior = 0x00000000
+Internal5 = 0x00000002
+ID = 0x00000067 = NOTEIVERB_REPLYTOALL
+Internal6 = 0x00000003
+
+VerbData[2]
+VerbType = 0x00000002
+DisplayNameCount = 0x07
+DisplayName = "Forward"
+MsgClsNameCount = 0x08
+MsgClsName = "IPM.Note"
+Internal1StringCount = 0x07
+Internal1String = "Message"
+DisplayNameCountRepeat = 0x02
+DisplayNameRepeat = "FW"
+Internal2 = 0x00000005
+Internal3 = 0x00000000
+fUseUSHeaders = 0x00
+Internal4 = 0x00000001
+SendBehavior = 0x00000000
+Internal5 = 0x00000002
+ID = 0x00000068 = NOTEIVERB_FORWARD
+Internal6 = 0x00000004
+
+VerbData[3]
+VerbType = 0x00000003
+DisplayNameCount = 0x0F
+DisplayName = "Reply to Folder"
+MsgClsNameCount = 0x08
+MsgClsName = "IPM.Post"
+Internal1StringCount = 0x04
+Internal1String = "Post"
+DisplayNameCountRepeat = 0x00
+DisplayNameRepeat = ""
+Internal2 = 0x00000005
+Internal3 = 0x00000000
+fUseUSHeaders = 0x00
+Internal4 = 0x00000001
+SendBehavior = 0x00000000
+Internal5 = 0x00000002
+ID = 0x0000006C = NOTEIVERB_REPLYTOFOLDER
+Internal6 = 0x00000008
+
+VerbData[4]
+VerbType = 0x00000004
+DisplayNameCount = 0x03
+DisplayName = "Yes"
+MsgClsNameCount = 0x08
+MsgClsName = "IPM.Note"
+Internal1StringCount = 0x00
+Internal1String = ""
+DisplayNameCountRepeat = 0x03
+DisplayNameRepeat = "Yes"
+Internal2 = 0x00000000
+Internal3 = 0x00000000
+fUseUSHeaders = 0x00
+Internal4 = 0x00000001
+SendBehavior = 0x00000002
+Internal5 = 0x00000002
+ID = 0x00000001 = 0x1
+Internal6 = 0xFFFFFFFF
+
+VerbData[5]
+VerbType = 0x00000004
+DisplayNameCount = 0x02
+DisplayName = "No"
+MsgClsNameCount = 0x08
+MsgClsName = "IPM.Note"
+Internal1StringCount = 0x00
+Internal1String = ""
+DisplayNameCountRepeat = 0x02
+DisplayNameRepeat = "No"
+Internal2 = 0x00000000
+Internal3 = 0x00000000
+fUseUSHeaders = 0x00
+Internal4 = 0x00000001
+SendBehavior = 0x00000002
+Internal5 = 0x00000002
+ID = 0x00000002 = 0x2
+Internal6 = 0xFFFFFFFF
+
+Version2 = 0x0104
+
+VerbExtraData[0]
+DisplayNameCount = 0x05 
+DisplayName = "Reply"
+DisplayNameCountRepeat = 0x02
+DisplayNameRepeat = "RE"
+
+VerbExtraData[1]
+DisplayNameCount = 0x0C 
+DisplayName = "Reply to All"
+DisplayNameCountRepeat = 0x02
+DisplayNameRepeat = "RE"
+
+VerbExtraData[2]
+DisplayNameCount = 0x07 
+DisplayName = "Forward"
+DisplayNameCountRepeat = 0x02
+DisplayNameRepeat = "FW"
+
+VerbExtraData[3]
+DisplayNameCount = 0x0F 
+DisplayName = "Reply to Folder"
+DisplayNameCountRepeat = 0x00
+DisplayNameRepeat = ""
+
+VerbExtraData[4]
+DisplayNameCount = 0x03 
+DisplayName = "Yes"
+DisplayNameCountRepeat = 0x03
+DisplayNameRepeat = "Yes"
+
+VerbExtraData[5]
+DisplayNameCount = 0x02 
+DisplayName = "No"
+DisplayNameCountRepeat = 0x02
+DisplayNameRepeat = "No"

@@ -1,0 +1,70 @@
+Property[0]
+Property = 0x0FFE0003
+Name: PR_OBJECT_TYPE
+Other Matches: PidTagObjectType, ptagObjectType
+PropString = 6 AltPropString = 0x6
+Smart View: Flags: MAPI_MAILUSER
+Property[1]
+Property = 0x39000003
+Name: PR_DISPLAY_TYPE
+Other Matches: PidTagDisplayType, ptagDisplayType
+PropString = 0 AltPropString = 0x0
+Smart View: Flags: DT_MAILUSER
+Property[2]
+Property = 0x3003001F
+Name: PR_EMAIL_ADDRESS_W
+Other Matches: PidTagEmailAddress, PR_EMAIL_ADDRESS, PR_EMAIL_ADDRESS_A
+PropString = /oooooooooooooooooooooooooooooooooooooooooooooooooooo AltPropString = cb: 106 lpb: 2F006F006F006F006F006F006F006F006F006F006F006F006F006F006F006F006F006F006F006F006F006F006F006F006F006F006F006F006F006F006F006F006F006F006F006F006F006F006F006F006F006F006F006F006F006F006F006F006F006F006F006F006F00
+Property[3]
+Property = 0x0000006F
+PropString =  AltPropString = 
+Property[4]
+Property = 0x0C150003
+Name: PR_RECIPIENT_TYPE
+Other Matches: PidTagRecipientType, ptagRecipientType
+PropString = 1 AltPropString = 0x1
+Smart View: Flags: MAPI_TO
+Property[5]
+Property = 0x3001001F
+Name: PR_DISPLAY_NAME_W
+Other Matches: PidTagDisplayName, PR_DISPLAY_NAME, PR_DISPLAY_NAME_A, ptagDisplayName
+PropString = fffffffffffffffff AltPropString = cb: 34 lpb: 66006600660066006600660066006600660066006600660066006600660066006600
+Property[6]
+Property = 0x3002001F
+Name: PR_ADDRTYPE_W
+Other Matches: PidTagAddressType, PR_ADDRTYPE, PR_ADDRTYPE_A, ptagAddrType
+PropString = EX AltPropString = cb: 4 lpb: 45005800
+Property[7]
+Property = 0x0FFF0102
+Name: PR_ENTRYID
+Other Matches: PR_MEMBER_ENTRYID, PidTagEntryId, PidTagMemberEntryId, ptagEntryId
+PropString = cb: 81 lpb: 00000000DCA740C8C042101AB4B908002B2FE18201000000000000002F66666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666600 AltPropString = ....‹ß@»¿B..¥π..+/·........./fffffffffffffffffffffffffffffffffffffffffffffffffff.
+Smart View: Exchange Address Entry ID:
+abFlags = 0x00000000
+Provider GUID = {C840A7DC-42C0-1A10-B4B9-08002B2FE182} = muidEMSAB
+Version = 0x00000001 = EMS_VERSION
+Type = 0x00000000 = DT_MAILUSER
+X500DN = /fffffffffffffffffffffffffffffffffffffffffffffffffff
+Property[8]
+Property = 0x0FFE0003
+Name: PR_OBJECT_TYPE
+Other Matches: PidTagObjectType, ptagObjectType
+PropString = 6 AltPropString = 0x6
+Smart View: Flags: MAPI_MAILUSER
+Property[9]
+Property = 0x39000003
+Name: PR_DISPLAY_TYPE
+Other Matches: PidTagDisplayType, ptagDisplayType
+PropString = 0 AltPropString = 0x0
+Smart View: Flags: DT_MAILUSER
+Property[10]
+Property = 0x3003001F
+Name: PR_EMAIL_ADDRESS_W
+Other Matches: PidTagEmailAddress, PR_EMAIL_ADDRESS, PR_EMAIL_ADDRESS_A
+PropString = //////////////////////////////////////////////////// AltPropString = cb: 104 lpb: 2F002F002F002F002F002F002F002F002F002F002F002F002F002F002F002F002F002F002F002F002F002F002F002F002F002F002F002F002F002F002F002F002F002F002F002F002F002F002F002F002F002F002F002F002F002F002F002F002F002F002F002F00
+Property[11]
+Property = 0x0C150003
+Name: PR_RECIPIENT_TYPE
+Other Matches: PidTagRecipientType, ptagRecipientType
+PropString = 1 AltPropString = 0x1
+Smart View: Flags: MAPI_TO

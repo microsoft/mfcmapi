@@ -1,0 +1,338 @@
+Recipient Row Stream
+cVersion = 1
+cRowCount = 2
+
+Row 0
+cValues = 0x0000001F = 31
+ulReserved1 = 0x00000000 = 0
+Property[0]
+Property = 0x0C150003
+Name: PR_RECIPIENT_TYPE
+Other Matches: PidTagRecipientType, ptagRecipientType
+PropString = 1 AltPropString = 0x1
+Smart View: Flags: MAPI_TO
+Property[1]
+Property = 0x0E0F000B
+Name: PR_RESPONSIBILITY
+Other Matches: PidTagResponsibility, ptagResponsibility
+PropString = False AltPropString = 
+Property[2]
+Property = 0x0FF9000A
+Name: PR_RECORD_KEY
+Other Matches: PidTagRecordKey, ptagRecordKey
+PropString = Err: 0x8004010F=MAPI_E_NOT_FOUND AltPropString = 
+Property[3]
+Property = 0x0FFE0003
+Name: PR_OBJECT_TYPE
+Other Matches: PidTagObjectType, ptagObjectType
+PropString = 6 AltPropString = 0x6
+Smart View: Flags: MAPI_MAILUSER
+Property[4]
+Property = 0x0FFF0102
+Name: PR_ENTRYID
+Other Matches: PR_MEMBER_ENTRYID, PidTagEntryId, PidTagMemberEntryId, ptagEntryId
+PropString = cb: 83 lpb: 00000000DCA740C8C042101AB4B908002B2FE18201000000000000002F4F3D6D6963726F736F66742F4F553D736F6D65626F64792F636E3D526563697069656E74732F636E3D736F6D656F6E65656565656500 AltPropString = ....‹ß@»¿B..¥π..+/·........./O=microsoft/OU=somebody/cn=Recipients/cn=someoneeeeee.
+Smart View: Exchange Address Entry ID:
+abFlags = 0x00000000
+Provider GUID = {C840A7DC-42C0-1A10-B4B9-08002B2FE182} = muidEMSAB
+Version = 0x00000001 = EMS_VERSION
+Type = 0x00000000 = DT_MAILUSER
+X500DN = /O=microsoft/OU=somebody/cn=Recipients/cn=someoneeeeee
+Property[5]
+Property = 0x3001001F
+Name: PR_DISPLAY_NAME_W
+Other Matches: PidTagDisplayName, PR_DISPLAY_NAME, PR_DISPLAY_NAME_A, ptagDisplayName
+PropString = Mister Somebody AltPropString = cb: 30 lpb: 4D0069007300740065007200200053006F006D00650062006F0064007900
+Property[6]
+Property = 0x3002001F
+Name: PR_ADDRTYPE_W
+Other Matches: PidTagAddressType, PR_ADDRTYPE, PR_ADDRTYPE_A, ptagAddrType
+PropString = EX AltPropString = cb: 4 lpb: 45005800
+Property[7]
+Property = 0x3003001F
+Name: PR_EMAIL_ADDRESS_W
+Other Matches: PidTagEmailAddress, PR_EMAIL_ADDRESS, PR_EMAIL_ADDRESS_A
+PropString = /O=MICROSOFT/OU=Somewhere/cn=Recipients/cn=somebodyyyy AltPropString = cb: 108 lpb: 2F004F003D004D004900430052004F0053004F00460054002F004F0055003D0053006F006D006500770068006500720065002F0063006E003D0052006500630069007000690065006E00740073002F0063006E003D0073006F006D00650062006F0064007900790079007900
+Property[8]
+Property = 0x300B0102
+Name: PR_SEARCH_KEY
+Other Matches: PidTagSearchKey, ptagSearchKey
+PropString = cb: 58 lpb: 45583A2F4F3D4D4943524F534F46542F4F553D534F4D45424F44592F434E3D524543495049454E54532F434E3D534F4D454F4E45656565656500 AltPropString = EX:/O=MICROSOFT/OU=SOMEBODY/CN=RECIPIENTS/CN=SOMEONEeeeee.
+Property[9]
+Property = 0x39000003
+Name: PR_DISPLAY_TYPE
+Other Matches: PidTagDisplayType, ptagDisplayType
+PropString = 0 AltPropString = 0x0
+Smart View: Flags: DT_MAILUSER
+Property[10]
+Property = 0x39050003
+Name: PR_DISPLAY_TYPE_EX
+Other Matches: PidTagDisplayTypeEx
+PropString = 1073741824 AltPropString = 0x40000000
+Smart View: Flags: DTE_FLAG_ACL_CAPABLE | Remote: DT_MAILUSER | Local: DT_MAILUSER
+Property[11]
+Property = 0x39FE001F
+Name: PR_SMTP_ADDRESS_W
+Other Matches: PidTagSmtpAddress, PR_SMTP_ADDRESS, PR_SMTP_ADDRESS_A, ptagPrimarySMTPAddress
+PropString = somebody@exampleee.com AltPropString = cb: 44 lpb: 73006F006D00650062006F006400790040006500780061006D0070006C006500650065002E0063006F006D00
+Property[12]
+Property = 0x39FF001F
+Name: PR_7BIT_DISPLAY_NAME_W
+Other Matches: PR_EMS_AB_DISPLAY_NAME_PRINTABLE_W, PidTagAddressBookDisplayNamePrintable, PR_7BIT_DISPLAY_NAME, PR_7BIT_DISPLAY_NAME_A, PR_EMS_AB_DISPLAY_NAME_PRINTABLE, PR_EMS_AB_DISPLAY_NAME_PRINTABLE_A
+PropString = Mister Somebody AltPropString = cb: 30 lpb: 4D0069007300740065007200200053006F006D00650062006F0064007900
+Property[13]
+Property = 0x3A00001F
+Name: PR_ACCOUNT_W
+Other Matches: PidTagAccount, PR_ACCOUNT, PR_ACCOUNT_A
+PropString = someonee AltPropString = cb: 16 lpb: 73006F006D0065006F006E0065006500
+Property[14]
+Property = 0x3A20001F
+Name: PR_TRANSMITABLE_DISPLAY_NAME_W
+Other Matches: PidTagTransmittableDisplayName, PR_TRANSMITABLE_DISPLAY_NAME, PR_TRANSMITABLE_DISPLAY_NAME_A, ptagTransmitableDisplayName
+PropString = Mister Somebody AltPropString = cb: 30 lpb: 4D0069007300740065007200200053006F006D00650062006F0064007900
+Property[15]
+Property = 0x3A40000B
+Name: PR_SEND_RICH_INFO
+Other Matches: PidTagSendRichInfo, ptagSendRichInfo
+PropString = True AltPropString = 
+Property[16]
+Property = 0x3D010102
+Name: PR_AB_PROVIDERS
+Other Matches: PidTagAbProviders
+PropString = cb: 16 lpb: 8A0DB398E825D311907900805F31F826 AltPropString = ..≥.Ë%”..y.._1¯&
+Property[17]
+Property = 0x5FDE0003
+Name: PR_RECIPIENT_RESOURCESTATE
+Other Matches: PidTagRecipientResourceState
+PropString = 0 AltPropString = 0x0
+Property[18]
+Property = 0x5FDF0003
+Name: PR_RECIPIENT_ORDER
+Other Matches: PidTagRecipientOrder, ptagRecipientOrder
+PropString = 0 AltPropString = 0x0
+Property[19]
+Property = 0x5FE5001F
+Name: ptagRecipientSipUri
+PropString = sip:somebody@exampleee.com AltPropString = cb: 52 lpb: 7300690070003A0073006F006D00650062006F006400790040006500780061006D0070006C006500650065002E0063006F006D00
+Property[20]
+Property = 0x5FEB0003
+PropString = 0 AltPropString = 0x0
+Property[21]
+Property = 0x5FEF0003
+PropString = 0 AltPropString = 0x0
+Property[22]
+Property = 0x5FF20003
+PropString = 0 AltPropString = 0x0
+Property[23]
+Property = 0x5FF50003
+PropString = 0 AltPropString = 0x0
+Property[24]
+Property = 0x5FF6001F
+Name: PR_RECIPIENT_DISPLAY_NAME_W
+Other Matches: PidTagRecipientDisplayName, PR_RECIPIENT_DISPLAY_NAME
+PropString = Mister Somebody AltPropString = cb: 30 lpb: 4D0069007300740065007200200053006F006D00650062006F0064007900
+Property[25]
+Property = 0x5FF70102
+Name: PR_RECIPIENT_ENTRYID
+Other Matches: PidTagRecipientEntryId, ptagRecipientEntryId
+PropString = cb: 83 lpb: 00000000DCA740C8C042101AB4B908002B2FE18201000000000000002F4F3D6D6963726F736F66742F4F553D736F6D65626F64792F636E3D526563697069656E74732F636E3D736F6D656F6E65656565656500 AltPropString = ....‹ß@»¿B..¥π..+/·........./O=microsoft/OU=somebody/cn=Recipients/cn=someoneeeeee.
+Smart View: Exchange Address Entry ID:
+abFlags = 0x00000000
+Provider GUID = {C840A7DC-42C0-1A10-B4B9-08002B2FE182} = muidEMSAB
+Version = 0x00000001 = EMS_VERSION
+Type = 0x00000000 = DT_MAILUSER
+X500DN = /O=microsoft/OU=somebody/cn=Recipients/cn=someoneeeeee
+Property[26]
+Property = 0x5FFD0003
+Name: PR_RECIPIENT_FLAGS
+Other Matches: PidTagRecipientFlags
+PropString = 768 AltPropString = 0x300
+Smart View: Flags: RECIP_ORIGINAL | 0x200
+Property[27]
+Property = 0x5FFF0003
+Name: PR_RECIPIENT_TRACKSTATUS
+Other Matches: PidTagRecipientTrackStatus, ptagRecipientTrackStatus
+PropString = 0 AltPropString = 0x0
+Smart View: Flags: respNone
+Property[28]
+Property = 0x6001001F
+Name: PR_NICK_NAME_W
+Other Matches: PR_NICK_NAME, PR_NICK_NAME_A, PR_DOTSTUFF_STATE
+PropString = somebody@exampleee.com AltPropString = cb: 44 lpb: 73006F006D00650062006F006400790040006500780061006D0070006C006500650065002E0063006F006D00
+Property[29]
+Property = 0x0FF60102
+Name: PR_INSTANCE_KEY
+Other Matches: PidTagInstanceKey, ptagInstanceKey
+PropString = cb: 4 lpb: 001A14A4 AltPropString = ...§
+Property[30]
+Property = 0x30000003
+Name: PR_ROWID
+Other Matches: PidTagRowid, ptagRowId
+PropString = 1709220 AltPropString = 0x1A14A4
+Row 1
+cValues = 0x0000001F = 31
+ulReserved1 = 0x00000000 = 0
+Property[0]
+Property = 0x0C150003
+Name: PR_RECIPIENT_TYPE
+Other Matches: PidTagRecipientType, ptagRecipientType
+PropString = 1 AltPropString = 0x1
+Smart View: Flags: MAPI_TO
+Property[1]
+Property = 0x0E0F000A
+Name: PR_RESPONSIBILITY
+Other Matches: PidTagResponsibility, ptagResponsibility
+PropString = Err: 0x8004010F=MAPI_E_NOT_FOUND AltPropString = 
+Property[2]
+Property = 0x0FF9000A
+Name: PR_RECORD_KEY
+Other Matches: PidTagRecordKey, ptagRecordKey
+PropString = Err: 0x8004010F=MAPI_E_NOT_FOUND AltPropString = 
+Property[3]
+Property = 0x0FFE0003
+Name: PR_OBJECT_TYPE
+Other Matches: PidTagObjectType, ptagObjectType
+PropString = 6 AltPropString = 0x6
+Smart View: Flags: MAPI_MAILUSER
+Property[4]
+Property = 0x0FFF0102
+Name: PR_ENTRYID
+Other Matches: PR_MEMBER_ENTRYID, PidTagEntryId, PidTagMemberEntryId, ptagEntryId
+PropString = cb: 90 lpb: 00000000DCA740C8C042101AB4B908002B2FE18201000000000000002F4F3D6578616D706C652F4F553D736F6D65626F64792F636E3D526563697069656E74732F636E3D736F6D656F6E65656565656565653531343038363500 AltPropString = ....‹ß@»¿B..¥π..+/·........./O=example/OU=somebody/cn=Recipients/cn=someoneeeeeeee5140865.
+Smart View: Exchange Address Entry ID:
+abFlags = 0x00000000
+Provider GUID = {C840A7DC-42C0-1A10-B4B9-08002B2FE182} = muidEMSAB
+Version = 0x00000001 = EMS_VERSION
+Type = 0x00000000 = DT_MAILUSER
+X500DN = /O=example/OU=somebody/cn=Recipients/cn=someoneeeeeeee5140865
+Property[5]
+Property = 0x3001001F
+Name: PR_DISPLAY_NAME_W
+Other Matches: PidTagDisplayName, PR_DISPLAY_NAME, PR_DISPLAY_NAME_A, ptagDisplayName
+PropString = Mr Someonee AltPropString = cb: 22 lpb: 4D007200200053006F006D0065006F006E0065006500
+Property[6]
+Property = 0x3002001F
+Name: PR_ADDRTYPE_W
+Other Matches: PidTagAddressType, PR_ADDRTYPE, PR_ADDRTYPE_A, ptagAddrType
+PropString = EX AltPropString = cb: 4 lpb: 45005800
+Property[7]
+Property = 0x3003001F
+Name: PR_EMAIL_ADDRESS_W
+Other Matches: PidTagEmailAddress, PR_EMAIL_ADDRESS, PR_EMAIL_ADDRESS_A
+PropString = /O=microsoft/OU=somebody/cn=Recipients/cn=someoneeeeee5140865 AltPropString = cb: 122 lpb: 2F004F003D006D006900630072006F0073006F00660074002F004F0055003D0073006F006D00650062006F00640079002F0063006E003D0052006500630069007000690065006E00740073002F0063006E003D0073006F006D0065006F006E006500650065006500650065003500310034003000380036003500
+Property[8]
+Property = 0x300B0102
+Name: PR_SEARCH_KEY
+Other Matches: PidTagSearchKey, ptagSearchKey
+PropString = cb: 65 lpb: 45583A2F4F3D4D4943524F534F46542F4F553D534F4D45424F44592F434E3D524543495049454E54532F434E3D534F4D454F4E4545454545454545343038363500 AltPropString = EX:/O=MICROSOFT/OU=SOMEBODY/CN=RECIPIENTS/CN=SOMEONEEEEEEEE40865.
+Property[9]
+Property = 0x39000003
+Name: PR_DISPLAY_TYPE
+Other Matches: PidTagDisplayType, ptagDisplayType
+PropString = 0 AltPropString = 0x0
+Smart View: Flags: DT_MAILUSER
+Property[10]
+Property = 0x39050003
+Name: PR_DISPLAY_TYPE_EX
+Other Matches: PidTagDisplayTypeEx
+PropString = 1073741824 AltPropString = 0x40000000
+Smart View: Flags: DTE_FLAG_ACL_CAPABLE | Remote: DT_MAILUSER | Local: DT_MAILUSER
+Property[11]
+Property = 0x39FE001F
+Name: PR_SMTP_ADDRESS_W
+Other Matches: PidTagSmtpAddress, PR_SMTP_ADDRESS, PR_SMTP_ADDRESS_A, ptagPrimarySMTPAddress
+PropString = someone@exampleee.com AltPropString = cb: 42 lpb: 73006F006D0065006F006E00650040006500780061006D0070006C006500650065002E0063006F006D00
+Property[12]
+Property = 0x39FF000A
+Name: PR_7BIT_DISPLAY_NAME
+Other Matches: PR_7BIT_DISPLAY_NAME_A, PR_7BIT_DISPLAY_NAME_W, PR_EMS_AB_DISPLAY_NAME_PRINTABLE, PR_EMS_AB_DISPLAY_NAME_PRINTABLE_A, PR_EMS_AB_DISPLAY_NAME_PRINTABLE_W, PidTagAddressBookDisplayNamePrintable
+PropString = Err: 0x8004010F=MAPI_E_NOT_FOUND AltPropString = 
+Property[13]
+Property = 0x3A00001F
+Name: PR_ACCOUNT_W
+Other Matches: PidTagAccount, PR_ACCOUNT, PR_ACCOUNT_A
+PropString = someone AltPropString = cb: 14 lpb: 73006F006D0065006F006E006500
+Property[14]
+Property = 0x3A20001F
+Name: PR_TRANSMITABLE_DISPLAY_NAME_W
+Other Matches: PidTagTransmittableDisplayName, PR_TRANSMITABLE_DISPLAY_NAME, PR_TRANSMITABLE_DISPLAY_NAME_A, ptagTransmitableDisplayName
+PropString = Mr Somebody AltPropString = cb: 22 lpb: 4D007200200053006F006D00650062006F0064007900
+Property[15]
+Property = 0x3A40000B
+Name: PR_SEND_RICH_INFO
+Other Matches: PidTagSendRichInfo, ptagSendRichInfo
+PropString = False AltPropString = 
+Property[16]
+Property = 0x3D01000A
+Name: PR_AB_PROVIDERS
+Other Matches: PidTagAbProviders
+PropString = Err: 0x8004010F=MAPI_E_NOT_FOUND AltPropString = 
+Property[17]
+Property = 0x5FDE0003
+Name: PR_RECIPIENT_RESOURCESTATE
+Other Matches: PidTagRecipientResourceState
+PropString = 0 AltPropString = 0x0
+Property[18]
+Property = 0x5FDF0003
+Name: PR_RECIPIENT_ORDER
+Other Matches: PidTagRecipientOrder, ptagRecipientOrder
+PropString = 1 AltPropString = 0x1
+Property[19]
+Property = 0x5FE5000A
+Name: ptagRecipientSipUri
+PropString = Err: 0x8004010F=MAPI_E_NOT_FOUND AltPropString = 
+Property[20]
+Property = 0x5FEB000A
+PropString = Err: 0x8004010F=MAPI_E_NOT_FOUND AltPropString = 
+Property[21]
+Property = 0x5FEF000A
+PropString = Err: 0x8004010F=MAPI_E_NOT_FOUND AltPropString = 
+Property[22]
+Property = 0x5FF2000A
+PropString = Err: 0x8004010F=MAPI_E_NOT_FOUND AltPropString = 
+Property[23]
+Property = 0x5FF5000A
+PropString = Err: 0x8004010F=MAPI_E_NOT_FOUND AltPropString = 
+Property[24]
+Property = 0x5FF6001F
+Name: PR_RECIPIENT_DISPLAY_NAME_W
+Other Matches: PidTagRecipientDisplayName, PR_RECIPIENT_DISPLAY_NAME
+PropString = My Somebody AltPropString = cb: 22 lpb: 4D007900200053006F006D00650062006F0064007900
+Property[25]
+Property = 0x5FF70102
+Name: PR_RECIPIENT_ENTRYID
+Other Matches: PidTagRecipientEntryId, ptagRecipientEntryId
+PropString = cb: 90 lpb: 00000000DCA740C8C042101AB4B908002B2FE18201000000000000002F4F3D6578616D706C652F4F553D736F6D65626F64792F636E3D526563697069656E74732F636E3D736F6D656F6E65656565656565653531343038363500 AltPropString = ....‹ß@»¿B..¥π..+/·........./O=example/OU=somebody/cn=Recipients/cn=someoneeeeeeee5140865.
+Smart View: Exchange Address Entry ID:
+abFlags = 0x00000000
+Provider GUID = {C840A7DC-42C0-1A10-B4B9-08002B2FE182} = muidEMSAB
+Version = 0x00000001 = EMS_VERSION
+Type = 0x00000000 = DT_MAILUSER
+X500DN = /O=example/OU=somebody/cn=Recipients/cn=someoneeeeeeee5140865
+Property[26]
+Property = 0x5FFD0003
+Name: PR_RECIPIENT_FLAGS
+Other Matches: PidTagRecipientFlags
+PropString = 768 AltPropString = 0x300
+Smart View: Flags: RECIP_ORIGINAL | 0x200
+Property[27]
+Property = 0x5FFF0003
+Name: PR_RECIPIENT_TRACKSTATUS
+Other Matches: PidTagRecipientTrackStatus, ptagRecipientTrackStatus
+PropString = 0 AltPropString = 0x0
+Smart View: Flags: respNone
+Property[28]
+Property = 0x6001001F
+Name: PR_NICK_NAME_W
+Other Matches: PR_NICK_NAME, PR_NICK_NAME_A, PR_DOTSTUFF_STATE
+PropString = Someone@exampleee.com AltPropString = cb: 42 lpb: 53006F006D0065006F006E00650040006500780061006D0070006C006500650065002E0063006F006D00
+Property[29]
+Property = 0x0FF60102
+Name: PR_INSTANCE_KEY
+Other Matches: PidTagInstanceKey, ptagInstanceKey
+PropString = cb: 4 lpb: 001A14A7 AltPropString = ...ß
+Property[30]
+Property = 0x30000003
+Name: PR_ROWID
+Other Matches: PidTagRowid, ptagRowId
+PropString = 1709223 AltPropString = 0x1A14A7

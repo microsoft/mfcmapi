@@ -1,14 +1,17 @@
-// stdafx.h : include file for standard system include files,
-// or project specific include files that are used frequently, but
-// are changed infrequently
-//
-
 #pragma once
-
-#include "targetver.h"
-
-// Headers for CppUnitTest
-#include "CppUnitTest.h"
-
-// TODO: reference additional headers your program requires here
 #include "..\StdAfx.h"
+#include "targetver.h"
+#include "CppUnitTest.h"
+#include "Interpret\String.h"
+
+namespace Microsoft
+{
+	namespace VisualStudio
+	{
+		namespace CppUnitTestFramework
+		{
+			template<> inline std::wstring ToString<__int64>(const __int64& t) { RETURN_WIDE_STRING(t); }
+			template<> inline std::wstring ToString<vector<BYTE>>(const vector<BYTE>& t) { RETURN_WIDE_STRING(t.data()); }
+		}
+	}
+}

@@ -41,31 +41,33 @@ void FlatEntryList::Parse()
 
 _Check_return_ wstring FlatEntryList::ToStringInternal()
 {
-	wstring szFlatEntryList;
-
-	szFlatEntryList = formatmessage(
+	vector<wstring> flatEntryList;
+	flatEntryList.push_back(formatmessage(
 		IDS_FELHEADER,
 		m_cEntries,
-		m_cbEntries);
+		m_cbEntries));
 
 	for (DWORD iFlatEntryList = 0; iFlatEntryList < m_pEntryIDs.size(); iFlatEntryList++)
 	{
-		szFlatEntryList += formatmessage(
+		flatEntryList.push_back(formatmessage(
 			IDS_FELENTRYHEADER,
 			iFlatEntryList,
-			m_pEntryIDs[iFlatEntryList].dwSize);
-		szFlatEntryList += m_pEntryIDs[iFlatEntryList].lpEntryID.ToString();
+			m_pEntryIDs[iFlatEntryList].dwSize));
+		auto entryID = m_pEntryIDs[iFlatEntryList].lpEntryID.ToString();
+
+		if (entryID.length())
+		{
+			flatEntryList.push_back(entryID);
+		}
 
 		if (m_pEntryIDs[iFlatEntryList].JunkData.size())
 		{
-			szFlatEntryList += formatmessage(
+			flatEntryList.push_back(formatmessage(
 				IDS_FELENTRYPADDING,
-				iFlatEntryList);
-			szFlatEntryList += JunkDataToString(m_pEntryIDs[iFlatEntryList].JunkData);
+				iFlatEntryList) +
+				JunkDataToString(m_pEntryIDs[iFlatEntryList].JunkData));
 		}
-
-		szFlatEntryList += L"\r\n"; // STRING_OK
 	}
 
-	return szFlatEntryList;
+	return join(flatEntryList, L"\r\n"); //STRING_OK
 }

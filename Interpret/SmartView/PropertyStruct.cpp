@@ -46,7 +46,7 @@ _Check_return_ wstring PropertyStruct::ToStringInternal()
 
 _Check_return_ wstring PropsToString(DWORD PropCount, LPSPropValue Prop)
 {
-	wstring szProperty;
+	vector<wstring> property;
 
 	if (Prop)
 	{
@@ -55,27 +55,27 @@ _Check_return_ wstring PropsToString(DWORD PropCount, LPSPropValue Prop)
 			wstring PropString;
 			wstring AltPropString;
 
-			szProperty += formatmessage(IDS_PROPERTYDATAHEADER,
+			property.push_back(formatmessage(IDS_PROPERTYDATAHEADER,
 				i,
-				Prop[i].ulPropTag);
+				Prop[i].ulPropTag));
 
 			auto propTagNames = PropTagToPropName(Prop[i].ulPropTag, false);
 			if (!propTagNames.bestGuess.empty())
 			{
-				szProperty += formatmessage(IDS_PROPERTYDATANAME,
-					propTagNames.bestGuess.c_str());
+				property.push_back(formatmessage(IDS_PROPERTYDATANAME,
+					propTagNames.bestGuess.c_str()));
 			}
 
 			if (!propTagNames.otherMatches.empty())
 			{
-				szProperty += formatmessage(IDS_PROPERTYDATAPARTIALMATCHES,
-					propTagNames.otherMatches.c_str());
+				property.push_back(formatmessage(IDS_PROPERTYDATAPARTIALMATCHES,
+					propTagNames.otherMatches.c_str()));
 			}
 
 			InterpretProp(&Prop[i], &PropString, &AltPropString);
-			szProperty += formatmessage(IDS_PROPERTYDATA,
+			property.push_back(RemoveInvalidCharactersW(formatmessage(IDS_PROPERTYDATA,
 				PropString.c_str(),
-				AltPropString.c_str());
+				AltPropString.c_str()), false));
 
 			auto szSmartView = InterpretPropSmartView(
 				&Prop[i],
@@ -87,11 +87,11 @@ _Check_return_ wstring PropsToString(DWORD PropCount, LPSPropValue Prop)
 
 			if (!szSmartView.empty())
 			{
-				szProperty += formatmessage(IDS_PROPERTYDATASMARTVIEW,
-					szSmartView.c_str());
+				property.push_back(formatmessage(IDS_PROPERTYDATASMARTVIEW,
+					szSmartView.c_str()));
 			}
 		}
 	}
 
-	return szProperty;
+	return join(property, L"\r\n");
 }

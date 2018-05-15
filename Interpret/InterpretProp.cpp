@@ -277,7 +277,7 @@ wstring RestrictionToString(_In_ const LPSRestriction lpRes, _In_opt_ LPMAPIPROP
 		return loadstring(IDS_RESDEPTHEXCEEDED);
 	}
 
-	wstring resString;
+	vector<wstring> resString;
 	wstring szProp;
 	wstring szAltProp;
 
@@ -289,189 +289,191 @@ wstring RestrictionToString(_In_ const LPSRestriction lpRes, _In_opt_ LPMAPIPROP
 
 	wstring szPropNum;
 	auto szFlags = InterpretFlags(flagRestrictionType, lpRes->rt);
-	resString += formatmessage(IDS_RESTYPE, szTabs.c_str(), lpRes->rt, szFlags.c_str());
+	resString.push_back(formatmessage(IDS_RESTYPE, szTabs.c_str(), lpRes->rt, szFlags.c_str()));
 
 	switch (lpRes->rt)
 	{
 	case RES_COMPAREPROPS:
 		szFlags = InterpretFlags(flagRelop, lpRes->res.resCompareProps.relop);
-		resString += formatmessage(
+		resString.push_back(formatmessage(
 			IDS_RESCOMPARE,
 			szTabs.c_str(),
 			szFlags.c_str(),
 			lpRes->res.resCompareProps.relop,
 			TagToString(lpRes->res.resCompareProps.ulPropTag1, lpObj, false, true).c_str(),
-			TagToString(lpRes->res.resCompareProps.ulPropTag2, lpObj, false, true).c_str());
+			TagToString(lpRes->res.resCompareProps.ulPropTag2, lpObj, false, true).c_str()));
 		break;
 	case RES_AND:
-		resString += formatmessage(IDS_RESANDCOUNT, szTabs.c_str(), lpRes->res.resAnd.cRes);
+		resString.push_back(formatmessage(IDS_RESANDCOUNT, szTabs.c_str(), lpRes->res.resAnd.cRes));
 		if (lpRes->res.resAnd.lpRes)
 		{
 			for (ULONG i = 0; i < lpRes->res.resAnd.cRes; i++)
 			{
-				resString += formatmessage(IDS_RESANDPOINTER, szTabs.c_str(), i);
-				resString += RestrictionToString(&lpRes->res.resAnd.lpRes[i], lpObj, ulTabLevel + 1);
+				resString.push_back(formatmessage(IDS_RESANDPOINTER, szTabs.c_str(), i));
+				resString.push_back(RestrictionToString(&lpRes->res.resAnd.lpRes[i], lpObj, ulTabLevel + 1));
 			}
 		}
 		break;
 	case RES_OR:
-		resString += formatmessage(IDS_RESORCOUNT, szTabs.c_str(), lpRes->res.resOr.cRes);
+		resString.push_back(formatmessage(IDS_RESORCOUNT, szTabs.c_str(), lpRes->res.resOr.cRes));
 		if (lpRes->res.resOr.lpRes)
 		{
 			for (ULONG i = 0; i < lpRes->res.resOr.cRes; i++)
 			{
-				resString += formatmessage(IDS_RESORPOINTER, szTabs.c_str(), i);
-				resString += RestrictionToString(&lpRes->res.resOr.lpRes[i], lpObj, ulTabLevel + 1);
+				resString.push_back(formatmessage(IDS_RESORPOINTER, szTabs.c_str(), i));
+				resString.push_back(RestrictionToString(&lpRes->res.resOr.lpRes[i], lpObj, ulTabLevel + 1));
 			}
 		}
 		break;
 	case RES_NOT:
-		resString += formatmessage(
+		resString.push_back(formatmessage(
 			IDS_RESNOT,
 			szTabs.c_str(),
-			lpRes->res.resNot.ulReserved);
-		resString += RestrictionToString(lpRes->res.resNot.lpRes, lpObj, ulTabLevel + 1);
+			lpRes->res.resNot.ulReserved));
+		resString.push_back(RestrictionToString(lpRes->res.resNot.lpRes, lpObj, ulTabLevel + 1));
 		break;
 	case RES_COUNT:
 		// RES_COUNT and RES_NOT look the same, so we use the resNot member here
-		resString += formatmessage(
+		resString.push_back(formatmessage(
 			IDS_RESCOUNT,
 			szTabs.c_str(),
-			lpRes->res.resNot.ulReserved);
-		resString += RestrictionToString(lpRes->res.resNot.lpRes, lpObj, ulTabLevel + 1);
+			lpRes->res.resNot.ulReserved));
+		resString.push_back(RestrictionToString(lpRes->res.resNot.lpRes, lpObj, ulTabLevel + 1));
 		break;
 	case RES_CONTENT:
 		szFlags = InterpretFlags(flagFuzzyLevel, lpRes->res.resContent.ulFuzzyLevel);
-		resString += formatmessage(
+		resString.push_back(formatmessage(
 			IDS_RESCONTENT,
 			szTabs.c_str(),
 			szFlags.c_str(),
 			lpRes->res.resContent.ulFuzzyLevel,
-			TagToString(lpRes->res.resContent.ulPropTag, lpObj, false, true).c_str());
+			TagToString(lpRes->res.resContent.ulPropTag, lpObj, false, true).c_str()));
 		if (lpRes->res.resContent.lpProp)
 		{
 			InterpretProp(lpRes->res.resContent.lpProp, &szProp, &szAltProp);
-			resString += formatmessage(
+			resString.push_back(formatmessage(
 				IDS_RESCONTENTPROP,
 				szTabs.c_str(),
 				TagToString(lpRes->res.resContent.lpProp->ulPropTag, lpObj, false, true).c_str(),
 				szProp.c_str(),
-				szAltProp.c_str());
+				szAltProp.c_str()));
 		}
 		break;
 	case RES_PROPERTY:
 		szFlags = InterpretFlags(flagRelop, lpRes->res.resProperty.relop);
-		resString += formatmessage(
+		resString.push_back(formatmessage(
 			IDS_RESPROP,
 			szTabs.c_str(),
 			szFlags.c_str(),
 			lpRes->res.resProperty.relop,
-			TagToString(lpRes->res.resProperty.ulPropTag, lpObj, false, true).c_str());
+			TagToString(lpRes->res.resProperty.ulPropTag, lpObj, false, true).c_str()));
 		if (lpRes->res.resProperty.lpProp)
 		{
 			InterpretProp(lpRes->res.resProperty.lpProp, &szProp, &szAltProp);
-			resString += formatmessage(
+			resString.push_back(formatmessage(
 				IDS_RESPROPPROP,
 				szTabs.c_str(),
 				TagToString(lpRes->res.resProperty.lpProp->ulPropTag, lpObj, false, true).c_str(),
 				szProp.c_str(),
-				szAltProp.c_str());
+				szAltProp.c_str()));
 			szPropNum = InterpretNumberAsString(lpRes->res.resProperty.lpProp->Value, lpRes->res.resProperty.lpProp->ulPropTag, NULL, nullptr, nullptr, false);
 			if (!szPropNum.empty())
 			{
-				resString += formatmessage(IDS_RESPROPPROPFLAGS, szTabs.c_str(), szPropNum.c_str());
+				resString.push_back(formatmessage(IDS_RESPROPPROPFLAGS, szTabs.c_str(), szPropNum.c_str()));
 			}
 		}
 		break;
 	case RES_BITMASK:
 		szFlags = InterpretFlags(flagBitmask, lpRes->res.resBitMask.relBMR);
-		resString += formatmessage(
+		resString.push_back(formatmessage(
 			IDS_RESBITMASK,
 			szTabs.c_str(),
 			szFlags.c_str(),
 			lpRes->res.resBitMask.relBMR,
-			lpRes->res.resBitMask.ulMask);
+			lpRes->res.resBitMask.ulMask));
 		szPropNum = InterpretNumberAsStringProp(lpRes->res.resBitMask.ulMask, lpRes->res.resBitMask.ulPropTag);
 		if (!szPropNum.empty())
 		{
-			resString += formatmessage(IDS_RESBITMASKFLAGS, szPropNum.c_str());
+			resString.push_back(formatmessage(IDS_RESBITMASKFLAGS, szPropNum.c_str()));
 		}
-		resString += formatmessage(
+
+		resString.push_back(formatmessage(
 			IDS_RESBITMASKTAG,
 			szTabs.c_str(),
-			TagToString(lpRes->res.resBitMask.ulPropTag, lpObj, false, true).c_str());
+			TagToString(lpRes->res.resBitMask.ulPropTag, lpObj, false, true).c_str()));
 		break;
 	case RES_SIZE:
 		szFlags = InterpretFlags(flagRelop, lpRes->res.resSize.relop);
-		resString += formatmessage(
+		resString.push_back(formatmessage(
 			IDS_RESSIZE,
 			szTabs.c_str(),
 			szFlags.c_str(),
 			lpRes->res.resSize.relop,
 			lpRes->res.resSize.cb,
-			TagToString(lpRes->res.resSize.ulPropTag, lpObj, false, true).c_str());
+			TagToString(lpRes->res.resSize.ulPropTag, lpObj, false, true).c_str()));
 		break;
 	case RES_EXIST:
-		resString += formatmessage(
+		resString.push_back(formatmessage(
 			IDS_RESEXIST,
 			szTabs.c_str(),
 			TagToString(lpRes->res.resExist.ulPropTag, lpObj, false, true).c_str(),
 			lpRes->res.resExist.ulReserved1,
-			lpRes->res.resExist.ulReserved2);
+			lpRes->res.resExist.ulReserved2));
 		break;
 	case RES_SUBRESTRICTION:
-		resString += formatmessage(
+		resString.push_back(formatmessage(
 			IDS_RESSUBRES,
 			szTabs.c_str(),
-			TagToString(lpRes->res.resSub.ulSubObject, lpObj, false, true).c_str());
-		resString += RestrictionToString(lpRes->res.resSub.lpRes, lpObj, ulTabLevel + 1);
+			TagToString(lpRes->res.resSub.ulSubObject, lpObj, false, true).c_str()));
+		resString.push_back(RestrictionToString(lpRes->res.resSub.lpRes, lpObj, ulTabLevel + 1));
 		break;
 	case RES_COMMENT:
-		resString += formatmessage(IDS_RESCOMMENT, szTabs.c_str(), lpRes->res.resComment.cValues);
+		resString.push_back(formatmessage(IDS_RESCOMMENT, szTabs.c_str(), lpRes->res.resComment.cValues));
 		if (lpRes->res.resComment.lpProp)
 		{
 			for (ULONG i = 0; i < lpRes->res.resComment.cValues; i++)
 			{
 				InterpretProp(&lpRes->res.resComment.lpProp[i], &szProp, &szAltProp);
-				resString += formatmessage(
+				resString.push_back(formatmessage(
 					IDS_RESCOMMENTPROPS,
 					szTabs.c_str(),
 					i,
 					TagToString(lpRes->res.resComment.lpProp[i].ulPropTag, lpObj, false, true).c_str(),
 					szProp.c_str(),
-					szAltProp.c_str());
+					szAltProp.c_str()));
 			}
 		}
-		resString += formatmessage(
+
+		resString.push_back(formatmessage(
 			IDS_RESCOMMENTRES,
-			szTabs.c_str());
-		resString += RestrictionToString(lpRes->res.resComment.lpRes, lpObj, ulTabLevel + 1);
+			szTabs.c_str()));
+		resString.push_back(RestrictionToString(lpRes->res.resComment.lpRes, lpObj, ulTabLevel + 1));
 		break;
 	case RES_ANNOTATION:
-		resString += formatmessage(IDS_RESANNOTATION, szTabs.c_str(), lpRes->res.resComment.cValues);
+		resString.push_back(formatmessage(IDS_RESANNOTATION, szTabs.c_str(), lpRes->res.resComment.cValues));
 		if (lpRes->res.resComment.lpProp)
 		{
 			for (ULONG i = 0; i < lpRes->res.resComment.cValues; i++)
 			{
 				InterpretProp(&lpRes->res.resComment.lpProp[i], &szProp, &szAltProp);
-				resString += formatmessage(
+				resString.push_back(formatmessage(
 					IDS_RESANNOTATIONPROPS,
 					szTabs.c_str(),
 					i,
 					TagToString(lpRes->res.resComment.lpProp[i].ulPropTag, lpObj, false, true).c_str(),
 					szProp.c_str(),
-					szAltProp.c_str());
+					szAltProp.c_str()));
 			}
 		}
 
-		resString += formatmessage(
+		resString.push_back(formatmessage(
 			IDS_RESANNOTATIONRES,
-			szTabs.c_str());
-		resString += RestrictionToString(lpRes->res.resComment.lpRes, lpObj, ulTabLevel + 1);
+			szTabs.c_str()));
+		resString.push_back(RestrictionToString(lpRes->res.resComment.lpRes, lpObj, ulTabLevel + 1));
 		break;
 	}
 
-	return resString;
+	return join(resString,L"\r\n");
 }
 
 wstring RestrictionToString(_In_ const LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj)
