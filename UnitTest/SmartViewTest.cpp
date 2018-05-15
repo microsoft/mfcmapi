@@ -28,7 +28,7 @@ namespace SmartViewTest
 			wstring expected;
 		};
 
-		static const bool parse_all = false;
+		static const bool parse_all = true;
 		static const bool assert_on_failure = true;
 		static const bool limit_output = true;
 
@@ -87,12 +87,18 @@ namespace SmartViewTest
 
 				if (data.parseAll)
 				{
-					for (ULONG i = IDS_STNOPARSING; i < IDS_STEND; i++)
+					for (ULONG iStruct = IDS_STNOPARSING; iStruct < IDS_STEND; iStruct++)
 					{
-						const auto structType = static_cast<__ParsingTypeEnum>(i);
-						actual = InterpretBinaryAsString({ static_cast<ULONG>(data.hex.size()), data.hex.data() }, structType, nullptr);
-						//Logger::WriteMessage(format(L"Testing %ws\n", AddInStructTypeToString(structType).c_str()).c_str());
-						Assert::IsTrue(actual.length() != 0);
+						const auto structType = static_cast<__ParsingTypeEnum>(iStruct);
+						try
+						{
+							actual = InterpretBinaryAsString({ static_cast<ULONG>(data.hex.size()), data.hex.data() }, structType, nullptr);
+						}
+						catch (int exception)
+						{
+							Logger::WriteMessage(format(L"Testing %ws failed at %ws with error 0x%08X\n", data.testName.c_str(), AddInStructTypeToString(structType).c_str(), exception).c_str());
+							Assert::Fail();
+						}
 					}
 				}
 			}
