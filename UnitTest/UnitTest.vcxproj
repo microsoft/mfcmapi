@@ -46,21 +46,21 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140_xp</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>Static</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140_xp</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <UseOfMfc>Static</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140_xp</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>Static</UseOfMfc>
@@ -68,7 +68,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140_xp</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
     <UseOfMfc>Static</UseOfMfc>
@@ -76,21 +76,21 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140_xp</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>Static</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140_xp</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <UseOfMfc>Static</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140_xp</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>Static</UseOfMfc>
@@ -98,7 +98,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140_xp</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
     <UseOfMfc>Static</UseOfMfc>
@@ -231,7 +231,7 @@
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(SolutionDir)obj\$(Platform)\$(Configuration);$(WindowsSdkDir)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>version.lib;ABContDlg.obj;AbDlg.obj;AboutDlg.obj;AclDlg.obj;AddIns.obj;AdditionalRenEntryIDs.obj;AdviseSink.obj;AppointmentRecurrencePattern.obj;AttachmentsDlg.obj;Attributes.obj;BaseDialog.obj;BinaryData.obj;BinaryParser.obj;CheckPane.obj;CommentData.obj;ContentsData.obj;ContentsTableDlg.obj;ContentsTableListCtrl.obj;ConversationIndex.obj;CountedTextPane.obj;DbgView.obj;Dialog.obj;DoubleBuffer.obj;DropDownPane.obj;DumpStore.obj;Editor.obj;EntryIdStruct.obj;EntryList.obj;Error.obj;ExportProfile.obj;ExtendedFlags.obj;FakeSplitter.obj;File.obj;FileDialogEx.obj;FlatEntryList.obj;FolderDlg.obj;FolderUserFieldStream.obj;FormContainerDlg.obj;GlobalCache.obj;GlobalObjectId.obj;Guids.obj;HexEditor.obj;HierarchyTableDlg.obj;HierarchyTableTreeCtrl.obj;ImportProcs.obj;InterpretProp.obj;InterpretProp2.obj;ListPane.obj;MailboxTableDlg.obj;MainDlg.obj;MAPIABFunctions.obj;MAPIFormFunctions.obj;MAPIFunctions.obj;MapiMime.obj;MapiObjects.obj;MapiProcessor.obj;MAPIProfileFunctions.obj;MAPIProgress.obj;MAPIPropPropertyBag.obj;MAPIStoreFunctions.obj;MapiStubLibrary.obj;MFCOutput.obj;MFCUtilityFunctions.obj;MsgServiceTableDlg.obj;MsgStoreDlg.obj;MultiValuePropertyEditor.obj;MVPropData.obj;MyMAPIFormViewer.obj;MySecInfo.obj;MyWinApp.obj;NamedPropCache.obj;NickNameCache.obj;NodeData.obj;Options.obj;ParentWnd.obj;ParseProperty.obj;PCL.obj;ProfileListDlg.obj;Property.obj;PropertyDefinitionStream.obj;PropertyEditor.obj;PropertySelector.obj;PropertyStruct.obj;PropertyTagEditor.obj;PropListData.obj;ProviderTableDlg.obj;PublicFolderTableDlg.obj;QSSpecialFolders.obj;QuickStart.obj;RecipientRowStream.obj;RecipientsDlg.obj;RecurrencePattern.obj;Registry.obj;ReportTag.obj;ResData.obj;RestrictEditor.obj;RestrictionStruct.obj;RichEditOleCallback.obj;RowPropertyBag.obj;RuleCondition.obj;RulesDlg.obj;SDBin.obj;SearchEditor.obj;SearchFolderDefinition.obj;Sid.obj;SIDBin.obj;SingleMAPIPropListCtrl.obj;SingleMessageDialog.obj;SingleRecipientDialog.obj;SmartView.obj;SmartViewPane.obj;SmartViewParser.obj;SortHeader.obj;SortListCtrl.obj;SortListData.obj;StreamEditor.obj;String.obj;StubUtils.obj;TagArrayEditor.obj;TaskAssigners.obj;TextPane.obj;TimeZone.obj;TimeZoneDefinition.obj;TombStone.obj;UIFunctions.obj;VerbStream.obj;ViewPane.obj;WebViewPersistStream.obj;XID.obj;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">
@@ -250,7 +250,7 @@
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(SolutionDir)obj\$(Platform)\$(Configuration);$(WindowsSdkDir)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>version.lib;ABContDlg.obj;AbDlg.obj;AboutDlg.obj;AclDlg.obj;AddIns.obj;AdditionalRenEntryIDs.obj;AdviseSink.obj;AppointmentRecurrencePattern.obj;AttachmentsDlg.obj;Attributes.obj;BaseDialog.obj;BinaryData.obj;BinaryParser.obj;CheckPane.obj;CommentData.obj;ContentsData.obj;ContentsTableDlg.obj;ContentsTableListCtrl.obj;ConversationIndex.obj;CountedTextPane.obj;DbgView.obj;Dialog.obj;DoubleBuffer.obj;DropDownPane.obj;DumpStore.obj;Editor.obj;EntryIdStruct.obj;EntryList.obj;Error.obj;ExportProfile.obj;ExtendedFlags.obj;FakeSplitter.obj;File.obj;FileDialogEx.obj;FlatEntryList.obj;FolderDlg.obj;FolderUserFieldStream.obj;FormContainerDlg.obj;GlobalCache.obj;GlobalObjectId.obj;Guids.obj;HexEditor.obj;HierarchyTableDlg.obj;HierarchyTableTreeCtrl.obj;ImportProcs.obj;InterpretProp.obj;InterpretProp2.obj;ListPane.obj;MailboxTableDlg.obj;MainDlg.obj;MAPIABFunctions.obj;MAPIFormFunctions.obj;MAPIFunctions.obj;MapiMime.obj;MapiObjects.obj;MapiProcessor.obj;MAPIProfileFunctions.obj;MAPIProgress.obj;MAPIPropPropertyBag.obj;MAPIStoreFunctions.obj;MapiStubLibrary.obj;MFCOutput.obj;MFCUtilityFunctions.obj;MsgServiceTableDlg.obj;MsgStoreDlg.obj;MultiValuePropertyEditor.obj;MVPropData.obj;MyMAPIFormViewer.obj;MySecInfo.obj;MyWinApp.obj;NamedPropCache.obj;NickNameCache.obj;NodeData.obj;Options.obj;ParentWnd.obj;ParseProperty.obj;PCL.obj;ProfileListDlg.obj;Property.obj;PropertyDefinitionStream.obj;PropertyEditor.obj;PropertySelector.obj;PropertyStruct.obj;PropertyTagEditor.obj;PropListData.obj;ProviderTableDlg.obj;PublicFolderTableDlg.obj;QSSpecialFolders.obj;QuickStart.obj;RecipientRowStream.obj;RecipientsDlg.obj;RecurrencePattern.obj;Registry.obj;ReportTag.obj;ResData.obj;RestrictEditor.obj;RestrictionStruct.obj;RichEditOleCallback.obj;RowPropertyBag.obj;RuleCondition.obj;RulesDlg.obj;SDBin.obj;SearchEditor.obj;SearchFolderDefinition.obj;Sid.obj;SIDBin.obj;SingleMAPIPropListCtrl.obj;SingleMessageDialog.obj;SingleRecipientDialog.obj;SmartView.obj;SmartViewPane.obj;SmartViewParser.obj;SortHeader.obj;SortListCtrl.obj;SortListData.obj;StreamEditor.obj;String.obj;StubUtils.obj;TagArrayEditor.obj;TaskAssigners.obj;TextPane.obj;TimeZone.obj;TimeZoneDefinition.obj;TombStone.obj;UIFunctions.obj;VerbStream.obj;ViewPane.obj;WebViewPersistStream.obj;XID.obj;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -269,7 +269,7 @@
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(SolutionDir)obj\$(Platform)\$(Configuration);$(WindowsSdkDir)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>version.lib;ABContDlg.obj;AbDlg.obj;AboutDlg.obj;AclDlg.obj;AddIns.obj;AdditionalRenEntryIDs.obj;AdviseSink.obj;AppointmentRecurrencePattern.obj;AttachmentsDlg.obj;Attributes.obj;BaseDialog.obj;BinaryData.obj;BinaryParser.obj;CheckPane.obj;CommentData.obj;ContentsData.obj;ContentsTableDlg.obj;ContentsTableListCtrl.obj;ConversationIndex.obj;CountedTextPane.obj;DbgView.obj;Dialog.obj;DoubleBuffer.obj;DropDownPane.obj;DumpStore.obj;Editor.obj;EntryIdStruct.obj;EntryList.obj;Error.obj;ExportProfile.obj;ExtendedFlags.obj;FakeSplitter.obj;File.obj;FileDialogEx.obj;FlatEntryList.obj;FolderDlg.obj;FolderUserFieldStream.obj;FormContainerDlg.obj;GlobalCache.obj;GlobalObjectId.obj;Guids.obj;HexEditor.obj;HierarchyTableDlg.obj;HierarchyTableTreeCtrl.obj;ImportProcs.obj;InterpretProp.obj;InterpretProp2.obj;ListPane.obj;MailboxTableDlg.obj;MainDlg.obj;MAPIABFunctions.obj;MAPIFormFunctions.obj;MAPIFunctions.obj;MapiMime.obj;MapiObjects.obj;MapiProcessor.obj;MAPIProfileFunctions.obj;MAPIProgress.obj;MAPIPropPropertyBag.obj;MAPIStoreFunctions.obj;MapiStubLibrary.obj;MFCOutput.obj;MFCUtilityFunctions.obj;MsgServiceTableDlg.obj;MsgStoreDlg.obj;MultiValuePropertyEditor.obj;MVPropData.obj;MyMAPIFormViewer.obj;MySecInfo.obj;MyWinApp.obj;NamedPropCache.obj;NickNameCache.obj;NodeData.obj;Options.obj;ParentWnd.obj;ParseProperty.obj;PCL.obj;ProfileListDlg.obj;Property.obj;PropertyDefinitionStream.obj;PropertyEditor.obj;PropertySelector.obj;PropertyStruct.obj;PropertyTagEditor.obj;PropListData.obj;ProviderTableDlg.obj;PublicFolderTableDlg.obj;QSSpecialFolders.obj;QuickStart.obj;RecipientRowStream.obj;RecipientsDlg.obj;RecurrencePattern.obj;Registry.obj;ReportTag.obj;ResData.obj;RestrictEditor.obj;RestrictionStruct.obj;RichEditOleCallback.obj;RowPropertyBag.obj;RuleCondition.obj;RulesDlg.obj;SDBin.obj;SearchEditor.obj;SearchFolderDefinition.obj;Sid.obj;SIDBin.obj;SingleMAPIPropListCtrl.obj;SingleMessageDialog.obj;SingleRecipientDialog.obj;SmartView.obj;SmartViewPane.obj;SmartViewParser.obj;SortHeader.obj;SortListCtrl.obj;SortListData.obj;StreamEditor.obj;String.obj;StubUtils.obj;TagArrayEditor.obj;TaskAssigners.obj;TextPane.obj;TimeZone.obj;TimeZoneDefinition.obj;TombStone.obj;UIFunctions.obj;VerbStream.obj;ViewPane.obj;WebViewPersistStream.obj;XID.obj;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'">
@@ -288,7 +288,7 @@
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(SolutionDir)obj\$(Platform)\$(Configuration);$(WindowsSdkDir)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>version.lib;ABContDlg.obj;AbDlg.obj;AboutDlg.obj;AclDlg.obj;AddIns.obj;AdditionalRenEntryIDs.obj;AdviseSink.obj;AppointmentRecurrencePattern.obj;AttachmentsDlg.obj;Attributes.obj;BaseDialog.obj;BinaryData.obj;BinaryParser.obj;CheckPane.obj;CommentData.obj;ContentsData.obj;ContentsTableDlg.obj;ContentsTableListCtrl.obj;ConversationIndex.obj;CountedTextPane.obj;DbgView.obj;Dialog.obj;DoubleBuffer.obj;DropDownPane.obj;DumpStore.obj;Editor.obj;EntryIdStruct.obj;EntryList.obj;Error.obj;ExportProfile.obj;ExtendedFlags.obj;FakeSplitter.obj;File.obj;FileDialogEx.obj;FlatEntryList.obj;FolderDlg.obj;FolderUserFieldStream.obj;FormContainerDlg.obj;GlobalCache.obj;GlobalObjectId.obj;Guids.obj;HexEditor.obj;HierarchyTableDlg.obj;HierarchyTableTreeCtrl.obj;ImportProcs.obj;InterpretProp.obj;InterpretProp2.obj;ListPane.obj;MailboxTableDlg.obj;MainDlg.obj;MAPIABFunctions.obj;MAPIFormFunctions.obj;MAPIFunctions.obj;MapiMime.obj;MapiObjects.obj;MapiProcessor.obj;MAPIProfileFunctions.obj;MAPIProgress.obj;MAPIPropPropertyBag.obj;MAPIStoreFunctions.obj;MapiStubLibrary.obj;MFCOutput.obj;MFCUtilityFunctions.obj;MsgServiceTableDlg.obj;MsgStoreDlg.obj;MultiValuePropertyEditor.obj;MVPropData.obj;MyMAPIFormViewer.obj;MySecInfo.obj;MyWinApp.obj;NamedPropCache.obj;NickNameCache.obj;NodeData.obj;Options.obj;ParentWnd.obj;ParseProperty.obj;PCL.obj;ProfileListDlg.obj;Property.obj;PropertyDefinitionStream.obj;PropertyEditor.obj;PropertySelector.obj;PropertyStruct.obj;PropertyTagEditor.obj;PropListData.obj;ProviderTableDlg.obj;PublicFolderTableDlg.obj;QSSpecialFolders.obj;QuickStart.obj;RecipientRowStream.obj;RecipientsDlg.obj;RecurrencePattern.obj;Registry.obj;ReportTag.obj;ResData.obj;RestrictEditor.obj;RestrictionStruct.obj;RichEditOleCallback.obj;RowPropertyBag.obj;RuleCondition.obj;RulesDlg.obj;SDBin.obj;SearchEditor.obj;SearchFolderDefinition.obj;Sid.obj;SIDBin.obj;SingleMAPIPropListCtrl.obj;SingleMessageDialog.obj;SingleRecipientDialog.obj;SmartView.obj;SmartViewPane.obj;SmartViewParser.obj;SortHeader.obj;SortListCtrl.obj;SortListData.obj;StreamEditor.obj;String.obj;StubUtils.obj;TagArrayEditor.obj;TaskAssigners.obj;TextPane.obj;TimeZone.obj;TimeZoneDefinition.obj;TombStone.obj;UIFunctions.obj;VerbStream.obj;ViewPane.obj;WebViewPersistStream.obj;XID.obj;MFCMapi.res;%(AdditionalDependencies)</AdditionalDependencies>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
