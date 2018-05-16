@@ -38,6 +38,8 @@
     <ClInclude Include="..\Res\Resource.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\IO\ExportProfile.h" />
+    <ClInclude Include="..\IO\Registry.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\AddIns.cpp">
@@ -155,9 +157,6 @@
     <ClCompile Include="..\IO\ExportProfile.cpp">
       <Filter>Source Files\IO</Filter>
     </ClCompile>
-    <ClCompile Include="..\IO\ExportProfile.h">
-      <Filter>Source Files\IO</Filter>
-    </ClCompile>
     <ClCompile Include="..\IO\File.cpp">
       <Filter>Source Files\IO</Filter>
     </ClCompile>
@@ -171,9 +170,6 @@
       <Filter>Source Files\IO</Filter>
     </ClInclude>
     <ClCompile Include="..\IO\Registry.cpp">
-      <Filter>Source Files\IO</Filter>
-    </ClCompile>
-    <ClCompile Include="..\IO\Registry.h">
       <Filter>Source Files\IO</Filter>
     </ClCompile>
   </ItemGroup>
@@ -544,6 +540,11 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Manifest Include="..\MrMAPI.exe.manifest" />
+    <ResourceCompile Include="Res\bldver.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+    <ResourceCompile Include="..\Res\MFCMapi.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>
