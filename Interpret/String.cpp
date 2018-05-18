@@ -228,7 +228,7 @@ namespace strings
 		return _wtoi64(src.c_str());
 	}
 
-	std::wstring strip(const std::wstring& str, std::function<bool(const WCHAR&)> func)
+	std::wstring strip(const std::wstring& str, const std::function<bool(const WCHAR&)>& func)
 	{
 		std::wstring result;
 		result.reserve(str.length());
@@ -266,7 +266,7 @@ namespace strings
 		return szString.substr(first, last - first + 1);
 	}
 
-	std::wstring replace(const std::wstring& str, std::function<bool(const WCHAR&)> func, const WCHAR& chr)
+	std::wstring replace(const std::wstring& str, const std::function<bool(const WCHAR&)>& func, const WCHAR& chr)
 	{
 		std::wstring result;
 		result.reserve(str.length());
