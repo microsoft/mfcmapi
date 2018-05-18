@@ -96,7 +96,7 @@ _Check_return_ wstring RecurrencePattern::ToStringInternal()
 	auto szRecurFrequency = InterpretFlags(flagRecurFrequency, m_RecurFrequency);
 	auto szPatternType = InterpretFlags(flagPatternType, m_PatternType);
 	auto szCalendarType = InterpretFlags(flagCalendarType, m_CalendarType);
-	szRP = formatmessage(IDS_RPHEADER,
+	szRP = strings::formatmessage(IDS_RPHEADER,
 		m_ReaderVersion,
 		m_WriterVersion,
 		m_RecurFrequency, szRecurFrequency.c_str(),
@@ -114,21 +114,21 @@ _Check_return_ wstring RecurrencePattern::ToStringInternal()
 		break;
 	case rptWeek:
 		szDOW = InterpretFlags(flagDOW, m_PatternTypeSpecific.WeekRecurrencePattern);
-		szRP += formatmessage(IDS_RPPATTERNWEEK,
+		szRP += strings::formatmessage(IDS_RPPATTERNWEEK,
 			m_PatternTypeSpecific.WeekRecurrencePattern, szDOW.c_str());
 		break;
 	case rptMonth:
 	case rptMonthEnd:
 	case rptHjMonth:
 	case rptHjMonthEnd:
-		szRP += formatmessage(IDS_RPPATTERNMONTH,
+		szRP += strings::formatmessage(IDS_RPPATTERNMONTH,
 			m_PatternTypeSpecific.MonthRecurrencePattern);
 		break;
 	case rptMonthNth:
 	case rptHjMonthNth:
 		szDOW = InterpretFlags(flagDOW, m_PatternTypeSpecific.MonthNthRecurrencePattern.DayOfWeek);
 		szN = InterpretFlags(flagN, m_PatternTypeSpecific.MonthNthRecurrencePattern.N);
-		szRP += formatmessage(IDS_RPPATTERNMONTHNTH,
+		szRP += strings::formatmessage(IDS_RPPATTERNMONTHNTH,
 			m_PatternTypeSpecific.MonthNthRecurrencePattern.DayOfWeek, szDOW.c_str(),
 			m_PatternTypeSpecific.MonthNthRecurrencePattern.N, szN.c_str());
 		break;
@@ -137,7 +137,7 @@ _Check_return_ wstring RecurrencePattern::ToStringInternal()
 	auto szEndType = InterpretFlags(flagEndType, m_EndType);
 	auto szFirstDOW = InterpretFlags(flagFirstDOW, m_FirstDOW);
 
-	szRP += formatmessage(IDS_RPHEADER2,
+	szRP += strings::formatmessage(IDS_RPHEADER2,
 		m_EndType, szEndType.c_str(),
 		m_OccurrenceCount,
 		m_FirstDOW, szFirstDOW.c_str(),
@@ -147,24 +147,24 @@ _Check_return_ wstring RecurrencePattern::ToStringInternal()
 	{
 		for (DWORD i = 0; i < m_DeletedInstanceDates.size(); i++)
 		{
-			szRP += formatmessage(IDS_RPDELETEDINSTANCEDATES,
+			szRP += strings::formatmessage(IDS_RPDELETEDINSTANCEDATES,
 				i, m_DeletedInstanceDates[i], RTimeToString(m_DeletedInstanceDates[i]).c_str());
 		}
 	}
 
-	szRP += formatmessage(IDS_RPMODIFIEDINSTANCECOUNT,
+	szRP += strings::formatmessage(IDS_RPMODIFIEDINSTANCECOUNT,
 		m_ModifiedInstanceCount);
 
 	if (m_ModifiedInstanceDates.size())
 	{
 		for (DWORD i = 0; i < m_ModifiedInstanceDates.size(); i++)
 		{
-			szRP += formatmessage(IDS_RPMODIFIEDINSTANCEDATES,
+			szRP += strings::formatmessage(IDS_RPMODIFIEDINSTANCEDATES,
 				i, m_ModifiedInstanceDates[i], RTimeToString(m_ModifiedInstanceDates[i]).c_str());
 		}
 	}
 
-	szRP += formatmessage(IDS_RPDATE,
+	szRP += strings::formatmessage(IDS_RPDATE,
 		m_StartDate, RTimeToString(m_StartDate).c_str(),
 		m_EndDate, RTimeToString(m_EndDate).c_str());
 

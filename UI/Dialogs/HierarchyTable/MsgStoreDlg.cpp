@@ -653,8 +653,8 @@ void CMsgStoreDlg::OnCreateSubFolder()
 	MyData.InitPane(0, TextPane::CreateSingleLinePaneID(IDS_FOLDERNAME, IDS_FOLDERNAMEVALUE, false));
 	MyData.InitPane(1, TextPane::CreateSingleLinePane(IDS_FOLDERTYPE, false));
 	MyData.SetHex(1, FOLDER_GENERIC);
-	auto szProduct = loadstring(ID_PRODUCTNAME);
-	auto szFolderComment = formatmessage(IDS_FOLDERCOMMENTVALUE, szProduct.c_str());
+	auto szProduct = strings::loadstring(ID_PRODUCTNAME);
+	auto szFolderComment = strings::formatmessage(IDS_FOLDERCOMMENTVALUE, szProduct.c_str());
 	MyData.InitPane(2, TextPane::CreateSingleLinePane(IDS_FOLDERCOMMENT, szFolderComment, false));
 	MyData.InitPane(3, CheckPane::Create(IDS_PASSOPENIFEXISTS, false, false));
 

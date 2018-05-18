@@ -102,9 +102,9 @@ void CMailboxTableDlg::DisplayItem(ULONG ulFlags)
 					EC_H(OpenOtherUsersMailbox(
 						lpMAPISession,
 						lpSourceMDB,
-						wstringTostring(m_lpszServerName),
-						wstringTostring(lpListData->Contents()->m_szDN),
-						emptystring,
+						strings::wstringTostring(m_lpszServerName),
+						strings::wstringTostring(lpListData->Contents()->m_szDN),
+						strings::emptystring,
 						ulFlags,
 						false,
 						&lpNewMDB));

@@ -425,10 +425,10 @@ void CAttachmentsDlg::OnAddAttachment()
 {
 	HRESULT hRes = 0;
 	auto szAttachName = CFileDialogExW::OpenFile(
-		emptystring,
-		emptystring,
+		strings::emptystring,
+		strings::emptystring,
 		NULL,
-		loadstring(IDS_ALLFILES));
+		strings::loadstring(IDS_ALLFILES));
 	if (!szAttachName.empty())
 	{
 		LPATTACH lpAttachment = nullptr;

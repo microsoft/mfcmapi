@@ -69,7 +69,7 @@ void SetDebugOutputToFile(bool bDoOutput)
 
 		if (lpApp)
 		{
-			DebugPrint(DBGGeneric, L"%ws: Debug printing to file enabled.\n", LPCTSTRToWstring(lpApp->m_pszAppName).c_str());
+			DebugPrint(DBGGeneric, L"%ws: Debug printing to file enabled.\n", strings::LPCTSTRToWstring(lpApp->m_pszAppName).c_str());
 		}
 
 		DebugPrintVersion(DBGVersionBanner);
@@ -106,9 +106,9 @@ _Check_return_ FILE* MyOpenFileMode(const wstring& szFileName, const wchar_t* mo
 
 	// File IO failed - complain - not using error macros since we may not have debug output here
 	const auto dwErr = GetLastError();
-	auto szSysErr = formatmessagesys(HRESULT_FROM_WIN32(dwErr));
+	auto szSysErr = strings::formatmessagesys(HRESULT_FROM_WIN32(dwErr));
 
-	auto szErr = format(
+	auto szErr = strings::format(
 		L"_tfopen failed, hRes = 0x%08X, dwErr = 0x%08X = \"%ws\"\n", // STRING_OK
 		HRESULT_FROM_WIN32(dwErr),
 		dwErr,
@@ -127,7 +127,7 @@ void WriteFile(_In_ FILE* fFile, const wstring& szString)
 {
 	if (!szString.empty())
 	{
-		auto szStringA = wstringTostring(szString);
+		auto szStringA = strings::wstringTostring(szString);
 		fputs(szStringA.c_str(), fFile);
 	}
 }
@@ -143,7 +143,7 @@ void OutputThreadTime(ULONG ulDbgLvl)
 	GetSystemTime(&stLocalTime);
 	GetSystemTimeAsFileTime(&ftLocalTime);
 
-	szThreadTime = format(
+	szThreadTime = strings::format(
 		L"0x%04x %02d:%02u:%02u.%03u%ws  %02u-%02u-%4u 0x%08X: ", // STRING_OK
 		GetCurrentThreadId(),
 		stLocalTime.wHour <= 12 ? stLocalTime.wHour : stLocalTime.wHour - 12,
@@ -210,7 +210,7 @@ void __cdecl Outputf(ULONG ulDbgLvl, _In_opt_ FILE* fFile, bool bPrintThreadTime
 
 	va_list argList = nullptr;
 	va_start(argList, szMsg);
-	Output(ulDbgLvl, fFile, bPrintThreadTime, formatV(szMsg, argList));
+	Output(ulDbgLvl, fFile, bPrintThreadTime, strings::formatV(szMsg, argList));
 	va_end(argList);
 }
 
@@ -222,7 +222,7 @@ void __cdecl OutputToFilef(_In_opt_ FILE* fFile, LPCWSTR szMsg, ...)
 	va_start(argList, szMsg);
 	if (argList)
 	{
-		Output(DBGNoDebug, fFile, true, formatV(szMsg, argList));
+		Output(DBGNoDebug, fFile, true, strings::formatV(szMsg, argList));
 	}
 	else
 	{
@@ -241,7 +241,7 @@ void __cdecl DebugPrint(ULONG ulDbgLvl, LPCWSTR szMsg, ...)
 	va_start(argList, szMsg);
 	if (argList)
 	{
-		Output(ulDbgLvl, nullptr, true, formatV(szMsg, argList));
+		Output(ulDbgLvl, nullptr, true, strings::formatV(szMsg, argList));
 	}
 	else
 	{
@@ -255,12 +255,12 @@ void __cdecl DebugPrintEx(ULONG ulDbgLvl, wstring& szClass, const wstring& szFun
 {
 	if (!fIsSetv(ulDbgLvl) && !RegKeys[regkeyDEBUG_TO_FILE].ulCurDWORD) return;
 
-	auto szMsgEx = format(L"%ws::%ws %ws", szClass.c_str(), szFunc.c_str(), szMsg); // STRING_OK
+	auto szMsgEx = strings::format(L"%ws::%ws %ws", szClass.c_str(), szFunc.c_str(), szMsg); // STRING_OK
 	va_list argList = nullptr;
 	va_start(argList, szMsg);
 	if (argList)
 	{
-		Output(ulDbgLvl, nullptr, true, formatV(szMsgEx.c_str(), argList));
+		Output(ulDbgLvl, nullptr, true, strings::formatV(szMsgEx.c_str(), argList));
 	}
 	else
 	{
@@ -283,7 +283,7 @@ void _OutputBinary(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ const SBinary& bin
 	CHKPARAM;
 	EARLYABORT;
 
-	Output(ulDbgLvl, fFile, false, BinToHexString(&bin, true));
+	Output(ulDbgLvl, fFile, false, strings::BinToHexString(&bin, true));
 
 	Output(ulDbgLvl, fFile, false, L"\n");
 }
@@ -741,7 +741,7 @@ void _OutputProperty(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSPropValue lpP
 	if (!namePropNames.name.empty()) OutputXMLValue(ulDbgLvl, fFile, PropXMLNames[pcPROPNAMEDNAME].uidName, namePropNames.name, false, iIndent);
 
 	auto prop = ParseProperty(lpProp);
-	Output(ulDbgLvl, fFile, false, StripCarriage(prop.toXML(iIndent)));
+	Output(ulDbgLvl, fFile, false, strings::StripCarriage(prop.toXML(iIndent)));
 
 	auto szSmartView = InterpretPropSmartView(
 		lpProp,
@@ -856,7 +856,7 @@ void _OutputRestriction(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_opt_ LPSRestri
 		return;
 	}
 
-	Output(ulDbgLvl, fFile, true, StripCarriage(RestrictionToString(lpRes, lpObj)));
+	Output(ulDbgLvl, fFile, true, strings::StripCarriage(RestrictionToString(lpRes, lpObj)));
 }
 
 #define MAXBYTES 4096
@@ -894,7 +894,7 @@ void _OutputStream(ULONG ulDbgLvl, _In_opt_ FILE* fFile, _In_ LPSTREAM lpStream)
 			bBuf[ulNumBytes] = 0;
 			bBuf[ulNumBytes + 1] = 0; // In case we are in Unicode
 			// TODO: Check how this works in Unicode vs ANSI
-			Output(ulDbgLvl, fFile, true, StripCarriage(LPCTSTRToWstring(reinterpret_cast<TCHAR*>(bBuf))));
+			Output(ulDbgLvl, fFile, true, strings::StripCarriage(strings::LPCTSTRToWstring(reinterpret_cast<TCHAR*>(bBuf))));
 		}
 	} while (ulNumBytes > 0);
 }
@@ -951,7 +951,7 @@ void _OutputVersion(ULONG ulDbgLvl, _In_opt_ FILE* fFile)
 				{
 					for (UINT iCodePages = 0; iCodePages < cbTranslate / sizeof(LANGANDCODEPAGE); iCodePages++)
 					{
-						const auto szSubBlock = format(
+						const auto szSubBlock = strings::format(
 							L"\\StringFileInfo\\%04x%04x\\", // STRING_OK
 							lpTranslate[iCodePages].wLanguage,
 							lpTranslate[iCodePages].wCodePage);
@@ -961,7 +961,7 @@ void _OutputVersion(ULONG ulDbgLvl, _In_opt_ FILE* fFile)
 						{
 							UINT cchVer = 0;
 							wchar_t* lpszVer = nullptr;
-							auto szVerString = loadstring(iVerString);
+							auto szVerString = strings::loadstring(iVerString);
 							auto szQueryString = szSubBlock + szVerString;
 							hRes = S_OK;
 
@@ -1003,7 +1003,7 @@ void OutputXMLValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, const wst
 
 	if (!szValue[0]) return;
 
-	auto szTag = loadstring(uidTag);
+	auto szTag = strings::loadstring(uidTag);
 
 	OutputIndent(ulDbgLvl, fFile, iIndent);
 	Outputf(ulDbgLvl, fFile, false, L"<%ws>", szTag.c_str());
@@ -1012,7 +1012,7 @@ void OutputXMLValue(ULONG ulDbgLvl, _In_opt_ FILE* fFile, UINT uidTag, const wst
 		OutputCDataOpen(ulDbgLvl, fFile);
 	}
 
-	Output(ulDbgLvl, fFile, false, StripCarriage(szValue));
+	Output(ulDbgLvl, fFile, false, strings::StripCarriage(szValue));
 
 	if (bWrapCData)
 	{

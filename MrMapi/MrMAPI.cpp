@@ -666,36 +666,36 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 			pRunOpts->ulFolder = strtoul(argv[i + 1], &szEndPtr, 10);
 			if (!pRunOpts->ulFolder)
 			{
-				pRunOpts->lpszFolderPath = LPCSTRToWstring(argv[i + 1]);
+				pRunOpts->lpszFolderPath = strings::LPCSTRToWstring(argv[i + 1]);
 				pRunOpts->ulFolder = DEFAULT_INBOX;
 			}
 			i++;
 			break;
 		case switchInput:
-			pRunOpts->lpszInput = LPCSTRToWstring(argv[i + 1]);
+			pRunOpts->lpszInput = strings::LPCSTRToWstring(argv[i + 1]);
 			i++;
 			break;
 		case switchOutput:
-			pRunOpts->lpszOutput = LPCSTRToWstring(argv[i + 1]);
+			pRunOpts->lpszOutput = strings::LPCSTRToWstring(argv[i + 1]);
 			i++;
 			break;
 		case switchProfile:
 			// If we have a next argument and it's not an option, parse it as a profile name
 			if (i + 1 < argc && switchNoSwitch == ParseArgument(argv[i + 1]))
 			{
-				pRunOpts->lpszProfile = LPCSTRToWstring(argv[i + 1]);
+				pRunOpts->lpszProfile = strings::LPCSTRToWstring(argv[i + 1]);
 				i++;
 			}
 			break;
 		case switchProfileSection:
-			pRunOpts->lpszProfileSection = LPCSTRToWstring(argv[i + 1]);
+			pRunOpts->lpszProfileSection = strings::LPCSTRToWstring(argv[i + 1]);
 			i++;
 			break;
 		case switchByteSwapped:
 			pRunOpts->bByteSwapped = true;
 			break;
 		case switchVersion:
-			pRunOpts->lpszVersion = LPCSTRToWstring(argv[i + 1]);
+			pRunOpts->lpszVersion = strings::LPCSTRToWstring(argv[i + 1]);
 			i++;
 			break;
 			// Proptag parsing
@@ -703,13 +703,13 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 			// If we have a next argument and it's not an option, parse it as a type
 			if (i + 1 < argc && switchNoSwitch == ParseArgument(argv[i + 1]))
 			{
-				pRunOpts->ulTypeNum = PropTypeNameToPropType(LPCSTRToWstring(argv[i + 1]));
+				pRunOpts->ulTypeNum = PropTypeNameToPropType(strings::LPCSTRToWstring(argv[i + 1]));
 				i++;
 			}
 			break;
 		case switchFlag:
 			// If we have a next argument and it's not an option, parse it as a flag
-			pRunOpts->lpszFlagName = LPCSTRToWstring(argv[i + 1]);
+			pRunOpts->lpszFlagName = strings::LPCSTRToWstring(argv[i + 1]);
 			pRunOpts->ulFlagValue = strtoul(argv[i + 1], &szEndPtr, 16);
 
 			// Set mode based on whether the flag string was completely parsed as a number
@@ -731,11 +731,11 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 			break;
 			// Contents tables
 		case switchSubject:
-			pRunOpts->lpszSubject = LPCSTRToWstring(argv[i + 1]);
+			pRunOpts->lpszSubject = strings::LPCSTRToWstring(argv[i + 1]);
 			i++;
 			break;
 		case switchMessageClass:
-			pRunOpts->lpszMessageClass = LPCSTRToWstring(argv[i + 1]);
+			pRunOpts->lpszMessageClass = strings::LPCSTRToWstring(argv[i + 1]);
 			i++;
 			break;
 		case switchRecent:
@@ -746,14 +746,14 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 		case switchFid:
 			if (i + 1 < argc  && switchNoSwitch == ParseArgument(argv[i + 1]))
 			{
-				pRunOpts->lpszFid = LPCSTRToWstring(argv[i + 1]);
+				pRunOpts->lpszFid = strings::LPCSTRToWstring(argv[i + 1]);
 				i++;
 			}
 			break;
 		case switchMid:
 			if (i + 1 < argc  && switchNoSwitch == ParseArgument(argv[i + 1]))
 			{
-				pRunOpts->lpszMid = LPCSTRToWstring(argv[i + 1]);
+				pRunOpts->lpszMid = strings::LPCSTRToWstring(argv[i + 1]);
 				i++;
 			}
 			else
@@ -823,7 +823,7 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 		case switchNoSwitch:
 			// naked option without a flag - we only allow one of these
 			if (!pRunOpts->lpszUnswitchedOption.empty()) { bHitError = true; break; } // He's already got one, you see.
-			pRunOpts->lpszUnswitchedOption = LPCSTRToWstring(argv[i]);
+			pRunOpts->lpszUnswitchedOption = strings::LPCSTRToWstring(argv[i]);
 			break;
 		case switchUnknown:
 			// display help
@@ -884,7 +884,7 @@ bool ParseArgs(_In_ int argc, _In_count_(argc) char * argv[], _Out_ MYOPTIONS * 
 		char strPath[_MAX_PATH];
 		GetCurrentDirectoryA(_MAX_PATH, strPath);
 
-		pRunOpts->lpszOutput = LPCSTRToWstring(strPath);
+		pRunOpts->lpszOutput = strings::LPCSTRToWstring(strPath);
 	}
 
 	// Validate that we have bare minimum to run
@@ -969,21 +969,21 @@ bool LoadMAPIVersion(const wstring& lpszVersion)
 		for (const auto& path : paths)
 		{
 
-			printf("MAPI path: %ws\n", wstringToLower(path).c_str());
+			printf("MAPI path: %ws\n", strings::wstringToLower(path).c_str());
 		}
 		return true;
 	}
 
-	auto ulVersion = wstringToUlong(lpszVersion, 10);
+	auto ulVersion = strings::wstringToUlong(lpszVersion, 10);
 	if (ulVersion == 0)
 	{
 		DebugPrint(DBGGeneric, L"Got a string\n");
 
 		for (const auto& path : paths)
 		{
-			wstringToLower(path);
+			strings::wstringToLower(path);
 
-			if (wstringToLower(path).find(wstringToLower(lpszVersion)) != wstring::npos)
+			if (strings::wstringToLower(path).find(strings::wstringToLower(lpszVersion)) != wstring::npos)
 			{
 				szPath = path;
 				break;

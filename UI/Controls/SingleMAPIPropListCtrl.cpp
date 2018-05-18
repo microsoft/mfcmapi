@@ -53,8 +53,8 @@ CSingleMAPIPropListCtrl::CSingleMAPIPropListCtrl(
 
 	for (ULONG i = 0; i < PropColumns.size(); i++)
 	{
-		auto szHeaderName = loadstring(PropColumns[i].uidName);
-		InsertColumn(i, wstringTotstring(szHeaderName).c_str());
+		auto szHeaderName = strings::loadstring(PropColumns[i].uidName);
+		InsertColumn(i, strings::wstringTotstring(szHeaderName).c_str());
 	}
 
 	auto lpMyHeader = GetHeaderCtrl();
@@ -645,7 +645,7 @@ void CSingleMAPIPropListCtrl::AddPropToListBox(
 		lpData->InitializePropList(ulPropTag);
 	}
 
-	auto PropTag = format(L"0x%08X", ulPropTag);
+	auto PropTag = strings::format(L"0x%08X", ulPropTag);
 	wstring PropString;
 	wstring AltPropString;
 
@@ -782,7 +782,7 @@ void CSingleMAPIPropListCtrl::SavePropsToXML()
 		L"xml", // STRING_OK
 		L"props.xml", // STRING_OK
 		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-		loadstring(IDS_XMLFILES),
+		strings::loadstring(IDS_XMLFILES),
 		this);
 	if (!szFileName.empty())
 	{
@@ -1129,7 +1129,7 @@ void CSingleMAPIPropListCtrl::CountNamedProps()
 				lppPropNames[0],
 				nullptr,
 				false);
-			MyResult.SetStringW(1, formatmessage(IDS_HIGHESTNAMEDPROPNAME, ulHighestKnown, namePropNames.name.c_str(), namePropNames.guid.c_str()));
+			MyResult.SetStringW(1, strings::formatmessage(IDS_HIGHESTNAMEDPROPNAME, ulHighestKnown, namePropNames.name.c_str(), namePropNames.guid.c_str()));
 
 			MAPIFreeBuffer(lppPropNames);
 			lppPropNames = nullptr;

@@ -73,7 +73,7 @@ _Check_return_ wstring FolderUserFieldStream::ToStringInternal()
 	wstring szFolderUserFieldStream;
 	wstring szTmp;
 
-	szFolderUserFieldStream = formatmessage(
+	szFolderUserFieldStream = strings::formatmessage(
 		IDS_FIELDHEADER,
 		m_FolderUserFieldsAnsiCount);
 
@@ -85,7 +85,7 @@ _Check_return_ wstring FolderUserFieldStream::ToStringInternal()
 			auto szFieldType = InterpretFlags(flagFolderType, m_FieldDefinitionsA[i].FieldType);
 			auto szFieldcap = InterpretFlags(flagFieldCap, m_FieldDefinitionsA[i].Common.fcapm);
 
-			szTmp = formatmessage(
+			szTmp = strings::formatmessage(
 				IDS_FIELDANSIFIELD,
 				i,
 				m_FieldDefinitionsA[i].FieldType, szFieldType.c_str(),
@@ -103,7 +103,7 @@ _Check_return_ wstring FolderUserFieldStream::ToStringInternal()
 		}
 	}
 
-	szTmp = formatmessage(
+	szTmp = strings::formatmessage(
 		IDS_FIELDUNICODEHEADER,
 		m_FolderUserFieldsUnicodeCount);
 	szFolderUserFieldStream += szTmp;
@@ -116,7 +116,7 @@ _Check_return_ wstring FolderUserFieldStream::ToStringInternal()
 			auto szFieldType = InterpretFlags(flagFolderType, m_FieldDefinitionsW[i].FieldType);
 			auto szFieldcap = InterpretFlags(flagFieldCap, m_FieldDefinitionsW[i].Common.fcapm);
 
-			szTmp = formatmessage(
+			szTmp = strings::formatmessage(
 				IDS_FIELDUNICODEFIELD,
 				i,
 				m_FieldDefinitionsW[i].FieldType, szFieldType.c_str(),

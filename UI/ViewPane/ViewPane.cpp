@@ -56,7 +56,7 @@ void ViewPane::SetLabel(UINT uidLabel, bool bReadOnly)
 
 	if (uidLabel)
 	{
-		m_szLabel = loadstring(uidLabel);
+		m_szLabel = strings::loadstring(uidLabel);
 	}
 }
 

@@ -41,7 +41,7 @@ _Check_return_ wstring TimeZone::ToStringInternal()
 {
 	wstring szTimeZone;
 
-	szTimeZone = formatmessage(IDS_TIMEZONE,
+	szTimeZone = strings::formatmessage(IDS_TIMEZONE,
 		m_lBias,
 		m_lStandardBias,
 		m_lDaylightBias,

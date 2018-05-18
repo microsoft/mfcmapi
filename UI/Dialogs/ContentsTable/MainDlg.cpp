@@ -492,7 +492,7 @@ void CMainDlg::OnOpenDefaultMessageStore()
 						lpMDB,
 						"",
 						lpMailboxName->Value.lpszA,
-						emptystring,
+						strings::emptystring,
 						ulFlags,
 						false,
 						&lpAdminMDB));
@@ -650,7 +650,7 @@ void CMainDlg::OnOpenPublicFolderWithDN()
 		LPMDB lpMDB = nullptr;
 		EC_H(OpenPublicMessageStore(
 			lpMAPISession,
-			wstringTostring(MyPrompt.GetStringW(0)),
+			strings::wstringTostring(MyPrompt.GetStringW(0)),
 			MyPrompt.GetHex(1),
 			&lpMDB));
 
@@ -689,7 +689,7 @@ void CMainDlg::OnOpenMailboxWithDN()
 			lpMAPISession,
 			lpMDB,
 			szServerName,
-			emptystring,
+			strings::emptystring,
 			OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP,
 			&lpOtherMDB));
 		if (SUCCEEDED(hRes) && lpOtherMDB)
@@ -861,7 +861,7 @@ void CMainDlg::OnDumpServerContents()
 	auto lpMAPISession = m_lpMapiObjects->GetSession(); // do not release
 	if (!lpMAPISession) return;
 
-	auto szServerName = stringTowstring(GetServerName(lpMAPISession));
+	auto szServerName = strings::stringTowstring(GetServerName(lpMAPISession));
 
 	CEditor MyData(
 		this,
@@ -1282,7 +1282,7 @@ void CMainDlg::OnQueryDefaultMessageOpt()
 	{
 		ULONG cValues = NULL;
 		LPSPropValue lpOptions = nullptr;
-		auto adrType = wstringTostring(MyData.GetStringW(0));
+		auto adrType = strings::wstringTostring(MyData.GetStringW(0));
 
 		EC_MAPI(lpMAPISession->QueryDefaultMessageOpt(
 			reinterpret_cast<LPTSTR>(const_cast<LPSTR>(adrType.c_str())),
@@ -1310,7 +1310,7 @@ void CMainDlg::OnQueryDefaultMessageOpt()
 				for (ULONG i = 0; i < cValues; i++)
 				{
 					InterpretProp(&lpOptions[i], &szProp, &szAltProp);
-					szPropString += formatmessage(IDS_OPTIONSSTRUCTURE,
+					szPropString += strings::formatmessage(IDS_OPTIONSSTRUCTURE,
 						i,
 						TagToString(lpOptions[i].ulPropTag, nullptr, false, true).c_str(),
 						szProp.c_str(),
@@ -1347,7 +1347,7 @@ void CMainDlg::OnQueryDefaultRecipOpt()
 		ULONG cValues = NULL;
 		LPSPropValue lpOptions = nullptr;
 
-		auto adrType = wstringTostring(MyData.GetStringW(0));
+		auto adrType = strings::wstringTostring(MyData.GetStringW(0));
 
 		EC_MAPI(lpAddrBook->QueryDefaultRecipOpt(
 			reinterpret_cast<LPTSTR>(const_cast<LPSTR>(adrType.c_str())),
@@ -1375,7 +1375,7 @@ void CMainDlg::OnQueryDefaultRecipOpt()
 				for (ULONG i = 0; i < cValues; i++)
 				{
 					InterpretProp(&lpOptions[i], &szProp, &szAltProp);
-					szPropString += formatmessage(IDS_OPTIONSSTRUCTURE,
+					szPropString += strings::formatmessage(IDS_OPTIONSSTRUCTURE,
 						i,
 						TagToString(lpOptions[i].ulPropTag, nullptr, false, true).c_str(),
 						szProp.c_str(),
@@ -1522,7 +1522,7 @@ void CMainDlg::OnIsAttachmentBlocked()
 				IDS_ISATTBLOCKED,
 				IDS_RESULTOFCALLPROMPT,
 				CEDITOR_BUTTON_OK);
-			auto szResult = loadstring(bBlocked ? IDS_TRUE : IDS_FALSE);
+			auto szResult = strings::loadstring(bBlocked ? IDS_TRUE : IDS_FALSE);
 			MyResult.InitPane(0, TextPane::CreateSingleLinePane(IDS_RESULT, szResult, true));
 
 			WC_H(MyResult.DisplayDialog());
@@ -1579,7 +1579,7 @@ void CMainDlg::OnLaunchProfileWizard()
 		auto szProfName = LaunchProfileWizard(
 			m_hWnd,
 			MyData.GetHex(0),
-			wstringTostring(MyData.GetStringW(1)));
+			strings::wstringTostring(MyData.GetStringW(1)));
 	}
 }
 
@@ -1650,9 +1650,9 @@ void CMainDlg::OnViewMSGProperties()
 
 	auto file = CFileDialogExW::OpenFile(
 		L"msg", // STRING_OK
-		emptystring,
+		strings::emptystring,
 		OFN_FILEMUSTEXIST,
-		loadstring(IDS_MSGFILES),
+		strings::loadstring(IDS_MSGFILES),
 		this);
 	if (!file.empty())
 	{
@@ -1689,9 +1689,9 @@ void CMainDlg::OnConvertMSGToEML()
 
 		auto msgfile = CFileDialogExW::OpenFile(
 			L"msg", // STRING_OK
-			emptystring,
+			strings::emptystring,
 			OFN_FILEMUSTEXIST,
-			loadstring(IDS_MSGFILES),
+			strings::loadstring(IDS_MSGFILES),
 			this);
 		if (!msgfile.empty())
 		{
@@ -1699,9 +1699,9 @@ void CMainDlg::OnConvertMSGToEML()
 
 			auto emlfile = CFileDialogExW::SaveAs(
 				L"eml", // STRING_OK
-				emptystring,
+				strings::emptystring,
 				OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-				loadstring(IDS_EMLFILES),
+				strings::loadstring(IDS_EMLFILES),
 				this);
 			if (!emlfile.empty())
 			{
@@ -1738,17 +1738,17 @@ void CMainDlg::OnConvertEMLToMSG()
 
 		auto emlfile = CFileDialogExW::OpenFile(
 			L"eml", // STRING_OK
-			emptystring,
+			strings::emptystring,
 			OFN_FILEMUSTEXIST,
-			loadstring(IDS_EMLFILES),
+			strings::loadstring(IDS_EMLFILES),
 			this);
 		if (!emlfile.empty())
 		{
 			auto msgfile = CFileDialogExW::SaveAs(
 				L"msg", // STRING_OK
-				emptystring,
+				strings::emptystring,
 				OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-				loadstring(IDS_MSGFILES),
+				strings::loadstring(IDS_MSGFILES),
 				this);
 			if (!msgfile.empty())
 			{
@@ -1773,13 +1773,13 @@ void CMainDlg::OnConvertMSGToXML()
 
 	auto hRes = S_OK;
 
-	auto szFileSpec = loadstring(IDS_MSGFILES);
+	auto szFileSpec = strings::loadstring(IDS_MSGFILES);
 
 	auto msgfile = CFileDialogExW::OpenFile(
 		L"msg", // STRING_OK
-		emptystring,
+		strings::emptystring,
 		OFN_FILEMUSTEXIST,
-		loadstring(IDS_MSGFILES),
+		strings::loadstring(IDS_MSGFILES),
 		this);
 	if (!msgfile.empty())
 	{
@@ -1787,9 +1787,9 @@ void CMainDlg::OnConvertMSGToXML()
 
 		auto xmlfile = CFileDialogExW::SaveAs(
 			L"xml", // STRING_OK
-			emptystring,
+			strings::emptystring,
 			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-			loadstring(IDS_XMLFILES),
+			strings::loadstring(IDS_XMLFILES),
 			this);
 		if (!xmlfile.empty())
 		{
@@ -1948,11 +1948,11 @@ void CMainDlg::OnComputeGivenStoreHash()
 			wstring szHash;
 			if (dwSigHash)
 			{
-				szHash = formatmessage(IDS_STOREHASHDOUBLEVAL, dwEIDHash, dwSigHash);
+				szHash = strings::formatmessage(IDS_STOREHASHDOUBLEVAL, dwEIDHash, dwSigHash);
 			}
 			else
 			{
-				szHash = formatmessage(IDS_STOREHASHVAL, dwEIDHash);
+				szHash = strings::formatmessage(IDS_STOREHASHVAL, dwEIDHash);
 			}
 
 			DebugPrint(DBGGeneric, L"CMainDlg::OnComputeGivenStoreHash, Entry ID hash = 0x%08X\n", dwEIDHash);

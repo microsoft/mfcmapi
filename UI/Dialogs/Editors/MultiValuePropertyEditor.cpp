@@ -30,7 +30,7 @@ CMultiValuePropertyEditor::CMultiValuePropertyEditor(
 	m_ulPropTag = ulPropTag;
 	m_lpsInputValue = lpsPropValue;
 
-	auto szPromptPostFix = format(L"\r\n%ws", TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, false).c_str()); // STRING_OK
+	auto szPromptPostFix = strings::format(L"\r\n%ws", TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, false).c_str()); // STRING_OK
 	SetPromptPostFix(szPromptPostFix);
 
 	InitPropertyControls();

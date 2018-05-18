@@ -31,7 +31,7 @@ CBaseDialog::CBaseDialog(
 {
 	TRACE_CONSTRUCTOR(CLASS);
 	auto hRes = S_OK;
-	m_szTitle = loadstring(IDS_BASEDIALOG);
+	m_szTitle = strings::loadstring(IDS_BASEDIALOG);
 	m_bDisplayingMenuText = false;
 
 	m_lpBaseAdviseSink = nullptr;
@@ -192,7 +192,7 @@ void CBaseDialog::CreateDialogAndMenu(UINT nIDMenuResource, UINT uiClassMenuReso
 
 	auto hSub = ::GetSubMenu(hMenu, 0);
 	::AppendMenu(hSub, MF_SEPARATOR, NULL, nullptr);
-	auto szExit = loadstring(IDS_EXIT);
+	auto szExit = strings::loadstring(IDS_EXIT);
 	::AppendMenuW(hSub, MF_ENABLED | MF_STRING, IDCANCEL, szExit.c_str());
 
 	// Make sure the menu background is filled in the right color
@@ -450,7 +450,7 @@ void CBaseDialog::AddMenu(HMENU hMenuBar, UINT uiResource, UINT uidTitle, UINT u
 
 	if (hMenuBar && hMenuToAdd)
 	{
-		auto szTitle = loadstring(uidTitle);
+		auto szTitle = strings::loadstring(uidTitle);
 		::InsertMenuW(hMenuBar, uiPos, MF_BYPOSITION | MF_POPUP, reinterpret_cast<UINT_PTR>(hMenuToAdd), szTitle.c_str());
 		if (IDR_MENU_PROPERTY == uiResource)
 		{
@@ -551,14 +551,14 @@ void CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, _In_ const wstring&
 
 void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg)
 {
-	UpdateStatusBarText(nPos, uidMsg, emptystring, emptystring, emptystring);
+	UpdateStatusBarText(nPos, uidMsg, strings::emptystring, strings::emptystring, strings::emptystring);
 }
 
 void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg, ULONG ulParam1)
 {
 	wstring szParam1;
 	szParam1 = std::to_wstring(ulParam1);
-	UpdateStatusBarText(nPos, uidMsg, szParam1, emptystring, emptystring);
+	UpdateStatusBarText(nPos, uidMsg, szParam1, strings::emptystring, strings::emptystring);
 }
 
 void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg, wstring& szParam1, wstring& szParam2, wstring& szParam3)
@@ -581,7 +581,7 @@ void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg
 		if (mii.dwItemData)
 		{
 			auto lme = reinterpret_cast<LPMENUENTRY>(mii.dwItemData);
-			szStatBarString = formatmessage(IDS_LOADMAPISTATUS, lme->m_pName.c_str());
+			szStatBarString = strings::formatmessage(IDS_LOADMAPISTATUS, lme->m_pName.c_str());
 		}
 	}
 	else
@@ -593,7 +593,7 @@ void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg
 		}
 		else
 		{
-			szStatBarString = formatmessage(uidMsg, szParam1.c_str(), szParam2.c_str(), szParam3.c_str());
+			szStatBarString = strings::formatmessage(uidMsg, szParam1.c_str(), szParam2.c_str(), szParam3.c_str());
 		}
 	}
 
@@ -602,7 +602,7 @@ void __cdecl CBaseDialog::UpdateStatusBarText(__StatusPaneEnum nPos, UINT uidMsg
 
 void CBaseDialog::UpdateTitleBarText(_In_ const wstring& szMsg) const
 {
-	auto szTitle = formatmessage(IDS_TITLEBARMESSAGE, m_szTitle.c_str(), szMsg.c_str());
+	auto szTitle = strings::formatmessage(IDS_TITLEBARMESSAGE, m_szTitle.c_str(), szMsg.c_str());
 
 	// set the title bar
 	::SetWindowTextW(m_hWnd, szTitle.c_str());
@@ -610,7 +610,7 @@ void CBaseDialog::UpdateTitleBarText(_In_ const wstring& szMsg) const
 
 void CBaseDialog::UpdateTitleBarText() const
 {
-	auto szTitle = formatmessage(IDS_TITLEBARPLAIN, m_szTitle.c_str());
+	auto szTitle = strings::formatmessage(IDS_TITLEBARPLAIN, m_szTitle.c_str());
 
 	// set the title bar
 	::SetWindowTextW(m_hWnd, szTitle.c_str());
@@ -648,7 +648,7 @@ wstring GetOutlookVersionString()
 {
 	auto hRes = S_OK;
 
-	if (!pfnMsiProvideQualifiedComponent || !pfnMsiGetFileVersion) return emptystring;
+	if (!pfnMsiProvideQualifiedComponent || !pfnMsiGetFileVersion) return strings::emptystring;
 
 	wstring szOut;
 
@@ -672,8 +672,8 @@ wstring GetOutlookVersionString()
 					&dwValueBuf));
 				if (ERROR_SUCCESS == ret)
 				{
-					szOut = formatmessage(IDS_OUTLOOKVERSIONSTRING, lpszTempPath.c_str(), lpszTempVer, lpszTempLang);
-					szOut += formatmessage(b64 ? IDS_TRUE : IDS_FALSE);
+					szOut = strings::formatmessage(IDS_OUTLOOKVERSIONSTRING, lpszTempPath.c_str(), lpszTempVer, lpszTempLang);
+					szOut += strings::formatmessage(b64 ? IDS_TRUE : IDS_FALSE);
 					szOut += L"\n"; // STRING_OK
 				}
 
@@ -699,7 +699,7 @@ void CBaseDialog::OnOutlookVersion()
 	auto szVersionString = GetOutlookVersionString();
 	if (szVersionString.empty())
 	{
-		szVersionString = loadstring(IDS_NOOUTLOOK);
+		szVersionString = strings::loadstring(IDS_NOOUTLOOK);
 	}
 
 	MyEID.InitPane(0, TextPane::CreateMultiLinePane(IDS_OUTLOOKVERSIONPROMPT, szVersionString, true));
@@ -717,7 +717,7 @@ void CBaseDialog::OnOpenEntryID(_In_opt_ LPSBinary lpBin)
 		IDS_OPENEIDPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-	MyEID.InitPane(0, TextPane::CreateSingleLinePane(IDS_EID, BinToHexString(lpBin, false), false));
+	MyEID.InitPane(0, TextPane::CreateSingleLinePane(IDS_EID, strings::BinToHexString(lpBin, false), false));
 
 	auto lpMDB = m_lpMapiObjects->GetMDB(); // do not release
 	MyEID.InitPane(1, CheckPane::Create(IDS_USEMDB, lpMDB ? true : false, lpMDB ? false : true));
@@ -877,8 +877,8 @@ void CBaseDialog::OnCompareEntryIDs()
 
 	if (SUCCEEDED(hRes))
 	{
-		auto szResult = loadstring(ulResult ? IDS_TRUE : IDS_FALSE);
-		auto szRet = formatmessage(IDS_COMPAREEIDBOOL, ulResult, szResult.c_str());
+		auto szResult = strings::loadstring(ulResult ? IDS_TRUE : IDS_FALSE);
+		auto szRet = strings::formatmessage(IDS_COMPAREEIDBOOL, ulResult, szResult.c_str());
 
 		CEditor Result(
 			this,
@@ -917,7 +917,7 @@ void CBaseDialog::OnComputeStoreHash()
 	EC_H(MyStoreEID.GetEntryID(0, MyStoreEID.GetCheck(1), &cbBin, &lpEntryID));
 
 	auto dwHash = ComputeStoreHash(static_cast<ULONG>(cbBin), reinterpret_cast<LPBYTE>(lpEntryID), nullptr, MyStoreEID.GetStringW(2).c_str(), MyStoreEID.GetCheck(3));
-	auto szHash = formatmessage(IDS_STOREHASHVAL, dwHash);
+	auto szHash = strings::formatmessage(IDS_STOREHASHVAL, dwHash);
 
 	CEditor Result(
 		this,

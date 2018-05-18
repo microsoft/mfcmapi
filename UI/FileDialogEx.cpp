@@ -74,7 +74,7 @@ wstring CFileDialogExW::SaveAs(
 	if (iDlgRet == IDOK)
 	{
 		return dlgFilePicker.GetFileName();
-}
+	}
 
 	return wstring();
 }
@@ -201,7 +201,7 @@ _Check_return_ INT_PTR CFileDialogExW::DisplayDialog(
 	{
 		m_paths = UnpackFileNames(ofn);
 	}
-	
+
 	delete[] szBigBuff;
 	return bResult ? bResult : IDCANCEL;
 }
@@ -209,7 +209,7 @@ _Check_return_ INT_PTR CFileDialogExW::DisplayDialog(
 wstring CFileDialogExW::GetFileName() const
 {
 	if (m_paths.size() >= 1) return m_paths[0];
-	return emptystring;
+	return strings::emptystring;
 }
 
 vector<wstring> CFileDialogExW::GetFileNames() const

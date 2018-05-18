@@ -70,7 +70,7 @@ void CDumpStore::DisableEmbeddedAttachments()
 void CDumpStore::BeginMailboxTableWork(_In_ const wstring& szExchangeServerName)
 {
 	if (m_bOutputList) return;
-	auto szTableContentsFile = format(
+	auto szTableContentsFile = strings::format(
 		L"%ws\\MAILBOX_TABLE.xml", // STRING_OK
 		m_szMailboxTablePathRoot.c_str());
 	m_fMailboxTable = MyOpenFile(szTableContentsFile, true);
@@ -100,12 +100,12 @@ void CDumpStore::DoMailboxTablePerRowWork(_In_ LPMDB lpMDB, _In_ const LPSRow lp
 	OutputToFile(m_fMailboxTable, L"<mailbox prdisplayname=\"");
 	if (CheckStringProp(lpDisplayName, PT_TSTRING))
 	{
-		OutputToFile(m_fMailboxTable, LPCTSTRToWstring(lpDisplayName->Value.LPSZ));
+		OutputToFile(m_fMailboxTable, strings::LPCTSTRToWstring(lpDisplayName->Value.LPSZ));
 	}
 	OutputToFile(m_fMailboxTable, L"\" premailaddress=\"");
 	if (!CheckStringProp(lpEmailAddress, PT_TSTRING))
 	{
-		OutputToFile(m_fMailboxTable, LPCTSTRToWstring(lpEmailAddress->Value.LPSZ));
+		OutputToFile(m_fMailboxTable, strings::LPCTSTRToWstring(lpEmailAddress->Value.LPSZ));
 	}
 	OutputToFile(m_fMailboxTable, L"\">\n");
 
@@ -114,7 +114,7 @@ void CDumpStore::DoMailboxTablePerRowWork(_In_ LPMDB lpMDB, _In_ const LPSRow lp
 	// build a path for our store's folder output:
 	if (CheckStringProp(lpEmailAddress, PT_TSTRING) && CheckStringProp(lpDisplayName, PT_TSTRING))
 	{
-		auto szTemp = SanitizeFileName(LPCTSTRToWstring(lpDisplayName->Value.LPSZ));
+		auto szTemp = strings::SanitizeFileName(strings::LPCTSTRToWstring(lpDisplayName->Value.LPSZ));
 
 		m_szFolderPathRoot = m_szMailboxTablePathRoot + L"\\" + szTemp;
 
@@ -223,7 +223,7 @@ void CDumpStore::BeginContentsTableWork(ULONG ulFlags, ULONG ulCountRows)
 
 	// Holds file/path name for contents table output
 	auto szContentsTableFile =
-		ulFlags & MAPI_ASSOCIATED ? m_szFolderPath + L"ASSOCIATED_CONTENTS_TABLE.xml": m_szFolderPath + L"CONTENTS_TABLE.xml"; // STRING_OK
+		ulFlags & MAPI_ASSOCIATED ? m_szFolderPath + L"ASSOCIATED_CONTENTS_TABLE.xml" : m_szFolderPath + L"CONTENTS_TABLE.xml"; // STRING_OK
 	m_fFolderContents = MyOpenFile(szContentsTableFile, true);
 	if (m_fFolderContents)
 	{
@@ -255,7 +255,7 @@ void OutputMessageList(
 		lpTemp = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PR_SUBJECT_A);
 		if (lpTemp && CheckStringProp(lpTemp, PT_STRING8))
 		{
-			szSubj = stringTowstring(lpTemp->Value.lpszA);
+			szSubj = strings::stringTowstring(lpTemp->Value.lpszA);
 		}
 	}
 
@@ -448,7 +448,7 @@ void OutputMessageXML(
 		lpMsgData->szFilePath = lpMsgData->szFilePath.substr(0, lpMsgData->szFilePath.find_last_of(L'.'));
 
 		// Update file name and add extension
-		lpMsgData->szFilePath += format(L"-Attach%u.xml", (static_cast<LPMESSAGEDATA>(lpParentMessageData))->ulCurAttNum); // STRING_OK
+		lpMsgData->szFilePath += strings::format(L"-Attach%u.xml", (static_cast<LPMESSAGEDATA>(lpParentMessageData))->ulCurAttNum); // STRING_OK
 
 		OutputToFilef(static_cast<LPMESSAGEDATA>(lpParentMessageData)->fMessageProps, L"<embeddedmessage path=\"%ws\"/>\n", lpMsgData->szFilePath.c_str());
 	}
@@ -471,7 +471,7 @@ void OutputMessageXML(
 			lpTemp = PpropFindProp(lpAllProps, cValues, PR_SUBJECT_A);
 			if (lpTemp && CheckStringProp(lpTemp, PT_STRING8))
 			{
-				szSubj = stringTowstring(lpTemp->Value.lpszA);
+				szSubj = strings::stringTowstring(lpTemp->Value.lpszA);
 			}
 		}
 
@@ -699,7 +699,7 @@ void CDumpStore::DoMessagePerAttachmentWork(_In_ LPMESSAGE lpMessage, _In_ LPVOI
 	}
 
 	if (lpAttachName && CheckStringProp(lpAttachName, PT_TSTRING))
-		OutputToFile(lpMsgData->fMessageProps, LPCTSTRToWstring(lpAttachName->Value.LPSZ));
+		OutputToFile(lpMsgData->fMessageProps, strings::LPCTSTRToWstring(lpAttachName->Value.LPSZ));
 	else
 		OutputToFile(lpMsgData->fMessageProps, L"PR_ATTACH_FILENAME not found");
 

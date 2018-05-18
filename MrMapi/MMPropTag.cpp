@@ -522,7 +522,7 @@ void PrintFlag(_In_ ULONG ulPropNum, _In_opt_z_ LPCWSTR lpszPropName, _In_ bool 
 void DoPropTags(_In_ MYOPTIONS ProgOpts)
 {
 	auto lpszPropName = ProgOpts.lpszUnswitchedOption.empty() ? NULL : ProgOpts.lpszUnswitchedOption.c_str();
-	auto ulPropNum = wstringToUlong(ProgOpts.lpszUnswitchedOption, ProgOpts.ulOptions & OPT_DODECIMAL ? 10 : 16);
+	auto ulPropNum = strings::wstringToUlong(ProgOpts.lpszUnswitchedOption, ProgOpts.ulOptions & OPT_DODECIMAL ? 10 : 16);
 	if (lpszPropName) DebugPrint(DBGGeneric, L"lpszPropName = %ws\n", lpszPropName);
 	DebugPrint(DBGGeneric, L"ulPropNum = 0x%08X\n", ulPropNum);
 

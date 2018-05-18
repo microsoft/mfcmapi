@@ -16,7 +16,7 @@ void LogFunctionCall(
 {
 	if (fIsSet(DBGMAPIFunctions) && bMAPICall)
 	{
-		auto szFunctionString = formatmessage(
+		auto szFunctionString = strings::formatmessage(
 			IDS_FUNCTION,
 			szFile,
 			iLine,
@@ -35,9 +35,9 @@ void LogFunctionCall(
 #endif
 
 	// Get our error message if we have one
-	auto szErrorMsg = bSystemCall ? formatmessagesys(uidErrorMsg) : uidErrorMsg ? loadstring(uidErrorMsg) : L"";
+	auto szErrorMsg = bSystemCall ? strings::formatmessagesys(uidErrorMsg) : uidErrorMsg ? strings::loadstring(uidErrorMsg) : L"";
 
-	auto szErrString = formatmessage(
+	auto szErrString = strings::formatmessage(
 		FAILED(hRes) ? IDS_ERRFORMATSTRING : IDS_WARNFORMATSTRING,
 		szErrorMsg.c_str(),
 		ErrorNameFromErrorCode(hRes).c_str(),
@@ -46,7 +46,7 @@ void LogFunctionCall(
 		szFile,
 		iLine);
 
-	Output(DBGHRes, nullptr, true, StripCarriage(szErrString));
+	Output(DBGHRes, nullptr, true, strings::StripCarriage(szErrString));
 	Output(DBGHRes, nullptr, false, L"\n");
 
 	if (bShowDialog)
@@ -73,15 +73,15 @@ _Check_return_ HRESULT CheckWin32Error(bool bDisplayDialog, _In_z_ LPCSTR szFile
 
 void __cdecl ErrDialog(_In_z_ LPCSTR szFile, int iLine, UINT uidErrorFmt, ...)
 {
-	auto szErrorFmt = loadstring(uidErrorFmt);
+	auto szErrorFmt = strings::loadstring(uidErrorFmt);
 
 	// Build out error message from the variant argument list
 	va_list argList = nullptr;
 	va_start(argList, uidErrorFmt);
-	auto szErrorBegin = formatV(szErrorFmt.c_str(), argList);
+	auto szErrorBegin = strings::formatV(szErrorFmt.c_str(), argList);
 	va_end(argList);
 
-	auto szCombo = szErrorBegin + formatmessage(IDS_INFILEONLINE, szFile, iLine);
+	auto szCombo = szErrorBegin + strings::formatmessage(IDS_INFILEONLINE, szFile, iLine);
 
 	Output(DBGHRes, nullptr, true, szCombo);
 	Output(DBGHRes, nullptr, false, L"\n");
@@ -107,7 +107,7 @@ wstring ErrorNameFromErrorCode(ULONG hrErr)
 		if (g_ErrorArray[i].ulErrorName == hrErr) return const_cast<LPWSTR>(g_ErrorArray[i].lpszName);
 	}
 
-	return format(L"0x%08X", hrErr); // STRING_OK
+	return strings::format(L"0x%08X", hrErr); // STRING_OK
 }
 
 #ifdef _DEBUG

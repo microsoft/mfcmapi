@@ -45,7 +45,7 @@ wstring LaunchProfileWizard(
 		DebugPrint(DBGGeneric, L"LaunchProfileWizard: Profile \"%hs\" configured.\n", szProfName);
 	}
 
-	return LPCSTRToWstring(szProfName);
+	return strings::LPCSTRToWstring(szProfName);
 }
 
 void DisplayMAPISVCPath(_In_ CWnd* pParentWnd)
@@ -295,7 +295,7 @@ _Check_return_ HRESULT HrSetProfileParameters(_In_ SERVICESINIREC *lpServicesIni
 			// Switch the property if necessary
 			if (lpszProp.empty() && lpServicesIni[n].ulKey != 0)
 			{
-				lpszProp = format(
+				lpszProp = strings::format(
 					L"%lx", // STRING_OK
 					lpServicesIni[n].ulKey);
 			}
@@ -960,7 +960,7 @@ _Check_return_ HRESULT OpenProfileSection(_In_ LPSERVICEADMIN lpServiceAdmin, _I
 {
 	auto hRes = S_OK;
 
-	if (lppProfSect ) *lppProfSect = nullptr;
+	if (lppProfSect) *lppProfSect = nullptr;
 
 	if (!lpServiceUID || !lpServiceAdmin || !lppProfSect) return MAPI_E_INVALID_PARAMETER;
 
@@ -1017,7 +1017,7 @@ _Check_return_ HRESULT OpenProfileSection(_In_ LPPROVIDERADMIN lpProviderAdmin, 
 {
 	auto hRes = S_OK;
 
-	if (lppProfSect ) *lppProfSect = nullptr;
+	if (lppProfSect) *lppProfSect = nullptr;
 	if (!lpProviderUID || !lpProviderAdmin || !lppProfSect) return MAPI_E_INVALID_PARAMETER;
 
 	DebugPrint(DBGOpenItemProp, L"OpenProfileSection opening lpServiceUID = ");

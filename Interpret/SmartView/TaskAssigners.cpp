@@ -34,29 +34,29 @@ _Check_return_ wstring TaskAssigners::ToStringInternal()
 {
 	wstring szTaskAssigners;
 
-	szTaskAssigners += formatmessage(IDS_TASKASSIGNERSHEADER,
+	szTaskAssigners += strings::formatmessage(IDS_TASKASSIGNERSHEADER,
 		m_cAssigners);
 
 	for (DWORD i = 0; i < m_lpTaskAssigners.size(); i++)
 	{
-		szTaskAssigners += formatmessage(IDS_TASKASSIGNEREID,
+		szTaskAssigners += strings::formatmessage(IDS_TASKASSIGNEREID,
 			i,
 			m_lpTaskAssigners[i].cbEntryID);
 
 		if (m_lpTaskAssigners[i].lpEntryID.size())
 		{
-			szTaskAssigners += BinToHexString(m_lpTaskAssigners[i].lpEntryID, true);
+			szTaskAssigners += strings::BinToHexString(m_lpTaskAssigners[i].lpEntryID, true);
 		}
 
-		szTaskAssigners += formatmessage(IDS_TASKASSIGNERNAME,
+		szTaskAssigners += strings::formatmessage(IDS_TASKASSIGNERNAME,
 			m_lpTaskAssigners[i].szDisplayName.c_str(),
 			m_lpTaskAssigners[i].wzDisplayName.c_str());
 
 		if (m_lpTaskAssigners[i].JunkData.size())
 		{
-			szTaskAssigners += formatmessage(IDS_TASKASSIGNERJUNKDATA,
+			szTaskAssigners += strings::formatmessage(IDS_TASKASSIGNERJUNKDATA,
 				m_lpTaskAssigners[i].JunkData.size());
-			szTaskAssigners += BinToHexString(m_lpTaskAssigners[i].JunkData, true);
+			szTaskAssigners += strings::BinToHexString(m_lpTaskAssigners[i].JunkData, true);
 		}
 	}
 

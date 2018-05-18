@@ -165,16 +165,16 @@ _Check_return_ wstring NickNameCache::ToStringInternal()
 {
 	wstring szNickNameCache;
 
-	szNickNameCache = formatmessage(IDS_NICKNAMEHEADER);
-	szNickNameCache += BinToHexString(m_Metadata1, true);
+	szNickNameCache = strings::formatmessage(IDS_NICKNAMEHEADER);
+	szNickNameCache += strings::BinToHexString(m_Metadata1, true);
 
-	szNickNameCache += formatmessage(IDS_NICKNAMEROWCOUNT, m_ulMajorVersion, m_ulMinorVersion, m_cRowCount);
+	szNickNameCache += strings::formatmessage(IDS_NICKNAMEROWCOUNT, m_ulMajorVersion, m_ulMinorVersion, m_cRowCount);
 
 	if (m_cRowCount && m_lpRows)
 	{
 		for (DWORD i = 0; i < m_cRowCount; i++)
 		{
-			szNickNameCache += formatmessage(IDS_NICKNAMEROWS,
+			szNickNameCache += strings::formatmessage(IDS_NICKNAMEROWS,
 				i,
 				m_lpRows[i].cValues);
 
@@ -182,11 +182,11 @@ _Check_return_ wstring NickNameCache::ToStringInternal()
 		}
 	}
 
-	szNickNameCache += formatmessage(IDS_NICKNAMEEXTRAINFO);
-	szNickNameCache += BinToHexString(m_lpbEI, true);
+	szNickNameCache += strings::formatmessage(IDS_NICKNAMEEXTRAINFO);
+	szNickNameCache += strings::BinToHexString(m_lpbEI, true);
 
-	szNickNameCache += formatmessage(IDS_NICKNAMEFOOTER);
-	szNickNameCache += BinToHexString(m_Metadata2, true);
+	szNickNameCache += strings::formatmessage(IDS_NICKNAMEFOOTER);
+	szNickNameCache += strings::BinToHexString(m_Metadata2, true);
 
 	return szNickNameCache;
 }

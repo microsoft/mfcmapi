@@ -90,7 +90,7 @@ CMySecInfo::CMySecInfo(_In_ LPMAPIPROP lpMAPIProp,
 	if (PR_FREEBUSY_NT_SECURITY_DESCRIPTOR == m_ulPropTag)
 		m_acetype = acetypeFreeBusy;
 
-	m_wszObject = loadstring(IDS_OBJECT);
+	m_wszObject = strings::loadstring(IDS_OBJECT);
 }
 
 CMySecInfo::~CMySecInfo()

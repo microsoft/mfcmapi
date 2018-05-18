@@ -63,37 +63,37 @@ _Check_return_ wstring RuleCondition::ToStringInternal()
 
 	if (m_bExtended)
 	{
-		ruleCondition.push_back(formatmessage(IDS_EXRULECONHEADER,
+		ruleCondition.push_back(strings::formatmessage(IDS_EXRULECONHEADER,
 			m_NamedPropertyInformation.NoOfNamedProps));
 	}
 	else
 	{
-		ruleCondition.push_back(formatmessage(IDS_RULECONHEADER,
+		ruleCondition.push_back(strings::formatmessage(IDS_RULECONHEADER,
 			m_NamedPropertyInformation.NoOfNamedProps));
 	}
 
 	if (m_NamedPropertyInformation.PropId.size())
 	{
-		ruleCondition.push_back(formatmessage(IDS_RULECONNAMEPROPSIZE,
+		ruleCondition.push_back(strings::formatmessage(IDS_RULECONNAMEPROPSIZE,
 			m_NamedPropertyInformation.NamedPropertiesSize));
 
 		for (size_t i = 0; i < m_NamedPropertyInformation.PropId.size(); i++)
 		{
-			ruleCondition.push_back(formatmessage(IDS_RULECONNAMEPROPID, i, m_NamedPropertyInformation.PropId[i]));
+			ruleCondition.push_back(strings::formatmessage(IDS_RULECONNAMEPROPID, i, m_NamedPropertyInformation.PropId[i]));
 
-			ruleCondition.push_back(formatmessage(IDS_RULECONNAMEPROPKIND,
+			ruleCondition.push_back(strings::formatmessage(IDS_RULECONNAMEPROPKIND,
 				m_NamedPropertyInformation.PropertyName[i].Kind));
 
 			ruleCondition.push_back(GUIDToString(&m_NamedPropertyInformation.PropertyName[i].Guid));
 
 			if (MNID_ID == m_NamedPropertyInformation.PropertyName[i].Kind)
 			{
-				ruleCondition.push_back(formatmessage(IDS_RULECONNAMEPROPLID,
+				ruleCondition.push_back(strings::formatmessage(IDS_RULECONNAMEPROPLID,
 					m_NamedPropertyInformation.PropertyName[i].LID));
 			}
 			else if (MNID_STRING == m_NamedPropertyInformation.PropertyName[i].Kind)
 			{
-				ruleCondition.push_back(formatmessage(IDS_RULENAMEPROPSIZE,
+				ruleCondition.push_back(strings::formatmessage(IDS_RULENAMEPROPSIZE,
 					m_NamedPropertyInformation.PropertyName[i].NameSize));
 				ruleCondition.push_back(m_NamedPropertyInformation.PropertyName[i].Name);
 			}
@@ -102,5 +102,5 @@ _Check_return_ wstring RuleCondition::ToStringInternal()
 
 	ruleCondition.push_back(m_lpRes.ToString());
 
-	return join(ruleCondition, L"\r\n"); // STRING_OK
+	return strings::join(ruleCondition, L"\r\n"); // STRING_OK
 }

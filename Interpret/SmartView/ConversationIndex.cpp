@@ -39,7 +39,7 @@ void ConversationIndex::Parse()
 	b2 = m_Parser.Get<BYTE>();
 	m_guid.Data3 = static_cast<unsigned short>(b1 << 8 | b2);
 
-	for (auto i = 0 ; i < sizeof m_guid.Data4;i++)
+	for (auto i = 0; i < sizeof m_guid.Data4; i++)
 	{
 		m_guid.Data4[i] = m_Parser.Get<BYTE>();
 	}
@@ -83,7 +83,7 @@ _Check_return_ wstring ConversationIndex::ToStringInternal()
 	wstring AltPropString;
 	FileTimeToString(m_ftCurrent, PropString, AltPropString);
 	auto szGUID = GUIDToString(&m_guid);
-	szConversationIndex = formatmessage(IDS_CONVERSATIONINDEXHEADER,
+	szConversationIndex = strings::formatmessage(IDS_CONVERSATIONINDEXHEADER,
 		m_UnnamedByte,
 		m_ftCurrent.dwLowDateTime,
 		m_ftCurrent.dwHighDateTime,
@@ -94,7 +94,7 @@ _Check_return_ wstring ConversationIndex::ToStringInternal()
 	{
 		for (ULONG i = 0; i < m_lpResponseLevels.size(); i++)
 		{
-			szConversationIndex += formatmessage(IDS_CONVERSATIONINDEXRESPONSELEVEL,
+			szConversationIndex += strings::formatmessage(IDS_CONVERSATIONINDEXRESPONSELEVEL,
 				i, m_lpResponseLevels[i].DeltaCode,
 				m_lpResponseLevels[i].TimeDelta,
 				m_lpResponseLevels[i].Random,

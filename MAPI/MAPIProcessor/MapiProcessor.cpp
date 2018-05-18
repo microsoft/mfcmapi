@@ -92,7 +92,7 @@ void CMAPIProcessor::ProcessMailboxTable(
 		hRes = S_OK;
 		WC_H(GetMailboxTable(
 			lpPrimaryMDB,
-			wstringTostring(szExchangeServerName),
+			strings::wstringTostring(szExchangeServerName),
 			ulOffset,
 			&lpMailBoxTable));
 		if (lpMailBoxTable)
@@ -136,9 +136,9 @@ void CMAPIProcessor::ProcessMailboxTable(
 				WC_H(OpenOtherUsersMailbox(
 					m_lpSession,
 					lpPrimaryMDB,
-					wstringTostring(szExchangeServerName),
-					wstringTostring(LPCTSTRToWstring(lpEmailAddress->Value.LPSZ)),
-					emptystring,
+					strings::wstringTostring(szExchangeServerName),
+					strings::wstringTostring(strings::LPCTSTRToWstring(lpEmailAddress->Value.LPSZ)),
+					strings::emptystring,
 					OPENSTORE_USE_ADMIN_PRIVILEGE | OPENSTORE_TAKE_OWNERSHIP,
 					false,
 					&m_lpMDB));
@@ -299,7 +299,7 @@ void CMAPIProcessor::ProcessFolder(bool bDoRegular,
 						if (CheckStringProp(lpFolderDisplayName, PT_TSTRING))
 						{
 							// Clean up the folder name before appending it to the offset
-							szSubFolderOffset = m_szFolderOffset + SanitizeFileName(LPCTSTRToWstring(lpFolderDisplayName->Value.LPSZ)) + L'\\'; // STRING_OK
+							szSubFolderOffset = m_szFolderOffset + strings::SanitizeFileName(strings::LPCTSTRToWstring(lpFolderDisplayName->Value.LPSZ)) + L'\\'; // STRING_OK
 						}
 						else
 						{

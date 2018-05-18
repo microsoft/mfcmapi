@@ -129,7 +129,7 @@ _Check_return_ wstring SearchFolderDefinition::ToStringInternal()
 	wstring szSearchFolderDefinition;
 
 	auto szFlags = InterpretNumberAsStringProp(m_Flags, PR_WB_SF_STORAGE_TYPE);
-	szSearchFolderDefinition = formatmessage(IDS_SFDEFINITIONHEADER,
+	szSearchFolderDefinition = strings::formatmessage(IDS_SFDEFINITIONHEADER,
 		m_Version,
 		m_Flags,
 		szFlags.c_str(),
@@ -138,7 +138,7 @@ _Check_return_ wstring SearchFolderDefinition::ToStringInternal()
 
 	if (m_TextSearchLength)
 	{
-		szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONTEXTSEARCH,
+		szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONTEXTSEARCH,
 			m_TextSearchLengthExtended);
 
 		if (m_TextSearch.size())
@@ -147,22 +147,22 @@ _Check_return_ wstring SearchFolderDefinition::ToStringInternal()
 		}
 	}
 
-	szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONSKIPLEN1,
+	szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONSKIPLEN1,
 		m_SkipLen1);
 
 	if (m_SkipLen1)
 	{
-		szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONSKIPBYTES1);
-		szSearchFolderDefinition += BinToHexString(m_SkipBytes1, true);
+		szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONSKIPBYTES1);
+		szSearchFolderDefinition += strings::BinToHexString(m_SkipBytes1, true);
 	}
 
-	szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONDEEPSEARCH,
+	szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONDEEPSEARCH,
 		m_DeepSearch,
 		m_FolderList1Length);
 
 	if (m_FolderList1Length)
 	{
-		szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONFOLDERLIST1,
+		szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONFOLDERLIST1,
 			m_FolderList1LengthExtended);
 
 		if (m_FolderList1.size())
@@ -171,38 +171,38 @@ _Check_return_ wstring SearchFolderDefinition::ToStringInternal()
 		}
 	}
 
-	szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONFOLDERLISTLENGTH2,
+	szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONFOLDERLISTLENGTH2,
 		m_FolderList2Length);
 
 	if (m_FolderList2Length)
 	{
-		szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONFOLDERLIST2);
+		szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONFOLDERLIST2);
 		szSearchFolderDefinition += m_FolderList2.ToString();
 	}
 
 	if (SFST_BINARY & m_Flags)
 	{
-		szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONADDRESSCOUNT,
+		szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONADDRESSCOUNT,
 			m_AddressCount);
 
 		for (DWORD i = 0; i < m_Addresses.size(); i++)
 		{
-			szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONADDRESSES,
+			szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONADDRESSES,
 				i, m_Addresses[i].PropertyCount,
 				i, m_Addresses[i].Pad);
 
-			szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONPROPERTIES, i);
+			szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONPROPERTIES, i);
 			szSearchFolderDefinition += PropsToString(m_Addresses[i].PropertyCount, m_Addresses[i].Props);
 		}
 	}
 
-	szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONSKIPLEN2,
+	szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONSKIPLEN2,
 		m_SkipLen2);
 
 	if (m_SkipLen2)
 	{
-		szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONSKIPBYTES2);
-		szSearchFolderDefinition += BinToHexString(m_SkipBytes2, true);
+		szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONSKIPBYTES2);
+		szSearchFolderDefinition += strings::BinToHexString(m_SkipBytes2, true);
 	}
 
 	if (!m_Restriction.empty())
@@ -213,23 +213,23 @@ _Check_return_ wstring SearchFolderDefinition::ToStringInternal()
 
 	if (SFST_FILTERSTREAM & m_Flags)
 	{
-		szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONADVANCEDSEARCHLEN,
+		szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONADVANCEDSEARCHLEN,
 			m_AdvancedSearchBytes.size());
 
 		if (m_AdvancedSearchBytes.size())
 		{
-			szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONADVANCEDSEARCHBYTES);
-			szSearchFolderDefinition += BinToHexString(m_AdvancedSearchBytes, true);
+			szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONADVANCEDSEARCHBYTES);
+			szSearchFolderDefinition += strings::BinToHexString(m_AdvancedSearchBytes, true);
 		}
 	}
 
-	szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONSKIPLEN3,
+	szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONSKIPLEN3,
 		m_SkipLen3);
 
 	if (m_SkipLen3)
 	{
-		szSearchFolderDefinition += formatmessage(IDS_SFDEFINITIONSKIPBYTES3);
-		szSearchFolderDefinition += BinToHexString(m_SkipBytes3, true);
+		szSearchFolderDefinition += strings::formatmessage(IDS_SFDEFINITIONSKIPBYTES3);
+		szSearchFolderDefinition += strings::BinToHexString(m_SkipBytes3, true);
 	}
 
 	return szSearchFolderDefinition;

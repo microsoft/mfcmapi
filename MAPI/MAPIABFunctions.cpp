@@ -616,7 +616,7 @@ _Check_return_ HRESULT SelectUser(_In_ LPADRBOOK lpAdrBook, HWND hwnd, _Out_opt_
 		*lpulObjType = NULL;
 	}
 
-	auto szTitle = wstringTostring(loadstring(IDS_SELECTMAILBOX));
+	auto szTitle = strings::wstringTostring(strings::loadstring(IDS_SELECTMAILBOX));
 
 	AdrParm.ulFlags = DIALOG_MODAL | ADDRESS_ONE | AB_SELECTONLY | AB_RESOLVE;
 	AdrParm.lpszCaption = LPTSTR(szTitle.c_str());

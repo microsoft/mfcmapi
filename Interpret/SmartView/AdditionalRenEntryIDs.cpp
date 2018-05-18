@@ -92,13 +92,13 @@ PersistData AdditionalRenEntryIDs::BinToPersistData()
 
 _Check_return_ wstring AdditionalRenEntryIDs::ToStringInternal()
 {
-	auto szAdditionalRenEntryIDs = formatmessage(IDS_AEIDHEADER, m_ppdPersistData.size());
+	auto szAdditionalRenEntryIDs = strings::formatmessage(IDS_AEIDHEADER, m_ppdPersistData.size());
 
 	if (m_ppdPersistData.size())
 	{
 		for (WORD iPersistElement = 0; iPersistElement < m_ppdPersistData.size(); iPersistElement++)
 		{
-			szAdditionalRenEntryIDs += formatmessage(IDS_AEIDPERSISTELEMENT,
+			szAdditionalRenEntryIDs += strings::formatmessage(IDS_AEIDPERSISTELEMENT,
 				iPersistElement,
 				m_ppdPersistData[iPersistElement].wPersistID,
 				InterpretFlags(flagPersistID, m_ppdPersistData[iPersistElement].wPersistID).c_str(),
@@ -108,13 +108,13 @@ _Check_return_ wstring AdditionalRenEntryIDs::ToStringInternal()
 			{
 				for (WORD iDataElement = 0; iDataElement < m_ppdPersistData[iPersistElement].ppeDataElement.size(); iDataElement++)
 				{
-					szAdditionalRenEntryIDs += formatmessage(IDS_AEIDDATAELEMENT,
+					szAdditionalRenEntryIDs += strings::formatmessage(IDS_AEIDDATAELEMENT,
 						iDataElement,
 						m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID,
 						InterpretFlags(flagElementID, m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementID).c_str(),
 						m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].wElementDataSize);
 
-					szAdditionalRenEntryIDs += BinToHexString(m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].lpbElementData, true);
+					szAdditionalRenEntryIDs += strings::BinToHexString(m_ppdPersistData[iPersistElement].ppeDataElement[iDataElement].lpbElementData, true);
 				}
 			}
 

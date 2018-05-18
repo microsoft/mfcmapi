@@ -60,7 +60,7 @@ void TimeZoneDefinition::Parse()
 
 _Check_return_ wstring TimeZoneDefinition::ToStringInternal()
 {
-	auto szTimeZoneDefinition = formatmessage(IDS_TIMEZONEDEFINITION,
+	auto szTimeZoneDefinition = strings::formatmessage(IDS_TIMEZONEDEFINITION,
 		m_bMajorVersion,
 		m_bMinorVersion,
 		m_cbHeader,
@@ -73,7 +73,7 @@ _Check_return_ wstring TimeZoneDefinition::ToStringInternal()
 		for (WORD i = 0; i < m_lpTZRule.size(); i++)
 		{
 			auto szFlags = InterpretFlags(flagTZRule, m_lpTZRule[i].wTZRuleFlags);
-			szTimeZoneDefinition += formatmessage(IDS_TZRULEHEADER,
+			szTimeZoneDefinition += strings::formatmessage(IDS_TZRULEHEADER,
 				i,
 				m_lpTZRule[i].bMajorVersion,
 				m_lpTZRule[i].bMinorVersion,
@@ -82,9 +82,9 @@ _Check_return_ wstring TimeZoneDefinition::ToStringInternal()
 				szFlags.c_str(),
 				m_lpTZRule[i].wYear);
 
-			szTimeZoneDefinition += BinToHexString(m_lpTZRule[i].X, true);
+			szTimeZoneDefinition += strings::BinToHexString(m_lpTZRule[i].X, true);
 
-			szTimeZoneDefinition += formatmessage(IDS_TZRULEFOOTER,
+			szTimeZoneDefinition += strings::formatmessage(IDS_TZRULEFOOTER,
 				i,
 				m_lpTZRule[i].lBias,
 				m_lpTZRule[i].lStandardBias,

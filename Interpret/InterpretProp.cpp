@@ -123,7 +123,7 @@ wstring Base64Encode(size_t cbSourceBuf, _In_count_(cbSourceBuf) const LPBYTE lp
 
 wstring CurrencyToString(const CURRENCY& curVal)
 {
-	auto szCur = format(L"%05I64d", curVal.int64); // STRING_OK
+	auto szCur = strings::format(L"%05I64d", curVal.int64); // STRING_OK
 	if (szCur.length() > 4)
 	{
 		szCur.insert(szCur.length() - 4, L"."); // STRING_OK
@@ -154,48 +154,48 @@ wstring TagToString(ULONG ulPropTag, _In_opt_ LPMAPIPROP lpObj, bool bIsAB, bool
 		if (!propTagNames.otherMatches.empty()) szFormatString += L": (%4!ws!)"; // STRING_OK
 		if (!namePropNames.name.empty())
 		{
-			szFormatString += loadstring(IDS_NAMEDPROPSINGLELINE);
+			szFormatString += strings::loadstring(IDS_NAMEDPROPSINGLELINE);
 		}
 
 		if (!namePropNames.guid.empty())
 		{
-			szFormatString += loadstring(IDS_GUIDSINGLELINE);
+			szFormatString += strings::loadstring(IDS_GUIDSINGLELINE);
 		}
 	}
 	else
 	{
-		szFormatString = loadstring(IDS_TAGMULTILINE);
+		szFormatString = strings::loadstring(IDS_TAGMULTILINE);
 		if (!propTagNames.bestGuess.empty())
 		{
-			szFormatString += loadstring(IDS_PROPNAMEMULTILINE);
+			szFormatString += strings::loadstring(IDS_PROPNAMEMULTILINE);
 		}
 
 		if (!propTagNames.otherMatches.empty())
 		{
-			szFormatString += loadstring(IDS_OTHERNAMESMULTILINE);
+			szFormatString += strings::loadstring(IDS_OTHERNAMESMULTILINE);
 		}
 
 		if (PROP_ID(ulPropTag) < 0x8000)
 		{
-			szFormatString += loadstring(IDS_DASLPROPTAG);
+			szFormatString += strings::loadstring(IDS_DASLPROPTAG);
 		}
 		else if (!namePropNames.dasl.empty())
 		{
-			szFormatString += loadstring(IDS_DASLNAMED);
+			szFormatString += strings::loadstring(IDS_DASLNAMED);
 		}
 
 		if (!namePropNames.name.empty())
 		{
-			szFormatString += loadstring(IDS_NAMEPROPNAMEMULTILINE);
+			szFormatString += strings::loadstring(IDS_NAMEPROPNAMEMULTILINE);
 		}
 
 		if (!namePropNames.guid.empty())
 		{
-			szFormatString += loadstring(IDS_NAMEPROPGUIDMULTILINE);
+			szFormatString += strings::loadstring(IDS_NAMEPROPGUIDMULTILINE);
 		}
 	}
 
-	szRet = formatmessage(szFormatString.c_str(),
+	szRet = strings::formatmessage(szFormatString.c_str(),
 		ulPropTag,
 		TypeToString(ulPropTag).c_str(),
 		propTagNames.bestGuess.c_str(),
@@ -220,7 +220,7 @@ wstring ProblemArrayToString(_In_ const SPropProblemArray& problems)
 	wstring szOut;
 	for (ULONG i = 0; i < problems.cProblem; i++)
 	{
-		auto szTemp = formatmessage(
+		auto szTemp = strings::formatmessage(
 			IDS_PROBLEMARRAY,
 			problems.aProblem[i].ulIndex,
 			TagToString(problems.aProblem[i].ulPropTag, nullptr, false, false).c_str(),
@@ -234,7 +234,7 @@ wstring ProblemArrayToString(_In_ const SPropProblemArray& problems)
 
 wstring MAPIErrToString(ULONG ulFlags, _In_ const MAPIERROR& err)
 {
-	auto szOut = formatmessage(
+	auto szOut = strings::formatmessage(
 		ulFlags & MAPI_UNICODE ? IDS_MAPIERRUNICODE : IDS_MAPIERRANSI,
 		err.ulVersion,
 		err.lpszError,
@@ -251,7 +251,7 @@ wstring TnefProblemArrayToString(_In_ const STnefProblemArray& error)
 	wstring szOut;
 	for (ULONG iError = 0; iError < error.cProblem; iError++)
 	{
-		szOut += formatmessage(
+		szOut += strings::formatmessage(
 			IDS_TNEFPROBARRAY,
 			error.aProblem[iError].ulComponent,
 			error.aProblem[iError].ulAttribute,
@@ -270,11 +270,11 @@ wstring RestrictionToString(_In_ const LPSRestriction lpRes, _In_opt_ LPMAPIPROP
 {
 	if (!lpRes)
 	{
-		return loadstring(IDS_NULLRES);
+		return strings::loadstring(IDS_NULLRES);
 	}
 	if (ulTabLevel > _MaxRestrictionNesting)
 	{
-		return loadstring(IDS_RESDEPTHEXCEEDED);
+		return strings::loadstring(IDS_RESDEPTHEXCEEDED);
 	}
 
 	vector<wstring> resString;
@@ -289,13 +289,13 @@ wstring RestrictionToString(_In_ const LPSRestriction lpRes, _In_opt_ LPMAPIPROP
 
 	wstring szPropNum;
 	auto szFlags = InterpretFlags(flagRestrictionType, lpRes->rt);
-	resString.push_back(formatmessage(IDS_RESTYPE, szTabs.c_str(), lpRes->rt, szFlags.c_str()));
+	resString.push_back(strings::formatmessage(IDS_RESTYPE, szTabs.c_str(), lpRes->rt, szFlags.c_str()));
 
 	switch (lpRes->rt)
 	{
 	case RES_COMPAREPROPS:
 		szFlags = InterpretFlags(flagRelop, lpRes->res.resCompareProps.relop);
-		resString.push_back(formatmessage(
+		resString.push_back(strings::formatmessage(
 			IDS_RESCOMPARE,
 			szTabs.c_str(),
 			szFlags.c_str(),
@@ -304,29 +304,29 @@ wstring RestrictionToString(_In_ const LPSRestriction lpRes, _In_opt_ LPMAPIPROP
 			TagToString(lpRes->res.resCompareProps.ulPropTag2, lpObj, false, true).c_str()));
 		break;
 	case RES_AND:
-		resString.push_back(formatmessage(IDS_RESANDCOUNT, szTabs.c_str(), lpRes->res.resAnd.cRes));
+		resString.push_back(strings::formatmessage(IDS_RESANDCOUNT, szTabs.c_str(), lpRes->res.resAnd.cRes));
 		if (lpRes->res.resAnd.lpRes)
 		{
 			for (ULONG i = 0; i < lpRes->res.resAnd.cRes; i++)
 			{
-				resString.push_back(formatmessage(IDS_RESANDPOINTER, szTabs.c_str(), i));
+				resString.push_back(strings::formatmessage(IDS_RESANDPOINTER, szTabs.c_str(), i));
 				resString.push_back(RestrictionToString(&lpRes->res.resAnd.lpRes[i], lpObj, ulTabLevel + 1));
 			}
 		}
 		break;
 	case RES_OR:
-		resString.push_back(formatmessage(IDS_RESORCOUNT, szTabs.c_str(), lpRes->res.resOr.cRes));
+		resString.push_back(strings::formatmessage(IDS_RESORCOUNT, szTabs.c_str(), lpRes->res.resOr.cRes));
 		if (lpRes->res.resOr.lpRes)
 		{
 			for (ULONG i = 0; i < lpRes->res.resOr.cRes; i++)
 			{
-				resString.push_back(formatmessage(IDS_RESORPOINTER, szTabs.c_str(), i));
+				resString.push_back(strings::formatmessage(IDS_RESORPOINTER, szTabs.c_str(), i));
 				resString.push_back(RestrictionToString(&lpRes->res.resOr.lpRes[i], lpObj, ulTabLevel + 1));
 			}
 		}
 		break;
 	case RES_NOT:
-		resString.push_back(formatmessage(
+		resString.push_back(strings::formatmessage(
 			IDS_RESNOT,
 			szTabs.c_str(),
 			lpRes->res.resNot.ulReserved));
@@ -334,7 +334,7 @@ wstring RestrictionToString(_In_ const LPSRestriction lpRes, _In_opt_ LPMAPIPROP
 		break;
 	case RES_COUNT:
 		// RES_COUNT and RES_NOT look the same, so we use the resNot member here
-		resString.push_back(formatmessage(
+		resString.push_back(strings::formatmessage(
 			IDS_RESCOUNT,
 			szTabs.c_str(),
 			lpRes->res.resNot.ulReserved));
@@ -342,7 +342,7 @@ wstring RestrictionToString(_In_ const LPSRestriction lpRes, _In_opt_ LPMAPIPROP
 		break;
 	case RES_CONTENT:
 		szFlags = InterpretFlags(flagFuzzyLevel, lpRes->res.resContent.ulFuzzyLevel);
-		resString.push_back(formatmessage(
+		resString.push_back(strings::formatmessage(
 			IDS_RESCONTENT,
 			szTabs.c_str(),
 			szFlags.c_str(),
@@ -351,7 +351,7 @@ wstring RestrictionToString(_In_ const LPSRestriction lpRes, _In_opt_ LPMAPIPROP
 		if (lpRes->res.resContent.lpProp)
 		{
 			InterpretProp(lpRes->res.resContent.lpProp, &szProp, &szAltProp);
-			resString.push_back(formatmessage(
+			resString.push_back(strings::formatmessage(
 				IDS_RESCONTENTPROP,
 				szTabs.c_str(),
 				TagToString(lpRes->res.resContent.lpProp->ulPropTag, lpObj, false, true).c_str(),
@@ -361,7 +361,7 @@ wstring RestrictionToString(_In_ const LPSRestriction lpRes, _In_opt_ LPMAPIPROP
 		break;
 	case RES_PROPERTY:
 		szFlags = InterpretFlags(flagRelop, lpRes->res.resProperty.relop);
-		resString.push_back(formatmessage(
+		resString.push_back(strings::formatmessage(
 			IDS_RESPROP,
 			szTabs.c_str(),
 			szFlags.c_str(),
@@ -370,7 +370,7 @@ wstring RestrictionToString(_In_ const LPSRestriction lpRes, _In_opt_ LPMAPIPROP
 		if (lpRes->res.resProperty.lpProp)
 		{
 			InterpretProp(lpRes->res.resProperty.lpProp, &szProp, &szAltProp);
-			resString.push_back(formatmessage(
+			resString.push_back(strings::formatmessage(
 				IDS_RESPROPPROP,
 				szTabs.c_str(),
 				TagToString(lpRes->res.resProperty.lpProp->ulPropTag, lpObj, false, true).c_str(),
@@ -379,13 +379,13 @@ wstring RestrictionToString(_In_ const LPSRestriction lpRes, _In_opt_ LPMAPIPROP
 			szPropNum = InterpretNumberAsString(lpRes->res.resProperty.lpProp->Value, lpRes->res.resProperty.lpProp->ulPropTag, NULL, nullptr, nullptr, false);
 			if (!szPropNum.empty())
 			{
-				resString.push_back(formatmessage(IDS_RESPROPPROPFLAGS, szTabs.c_str(), szPropNum.c_str()));
+				resString.push_back(strings::formatmessage(IDS_RESPROPPROPFLAGS, szTabs.c_str(), szPropNum.c_str()));
 			}
 		}
 		break;
 	case RES_BITMASK:
 		szFlags = InterpretFlags(flagBitmask, lpRes->res.resBitMask.relBMR);
-		resString.push_back(formatmessage(
+		resString.push_back(strings::formatmessage(
 			IDS_RESBITMASK,
 			szTabs.c_str(),
 			szFlags.c_str(),
@@ -394,17 +394,17 @@ wstring RestrictionToString(_In_ const LPSRestriction lpRes, _In_opt_ LPMAPIPROP
 		szPropNum = InterpretNumberAsStringProp(lpRes->res.resBitMask.ulMask, lpRes->res.resBitMask.ulPropTag);
 		if (!szPropNum.empty())
 		{
-			resString.push_back(formatmessage(IDS_RESBITMASKFLAGS, szPropNum.c_str()));
+			resString.push_back(strings::formatmessage(IDS_RESBITMASKFLAGS, szPropNum.c_str()));
 		}
 
-		resString.push_back(formatmessage(
+		resString.push_back(strings::formatmessage(
 			IDS_RESBITMASKTAG,
 			szTabs.c_str(),
 			TagToString(lpRes->res.resBitMask.ulPropTag, lpObj, false, true).c_str()));
 		break;
 	case RES_SIZE:
 		szFlags = InterpretFlags(flagRelop, lpRes->res.resSize.relop);
-		resString.push_back(formatmessage(
+		resString.push_back(strings::formatmessage(
 			IDS_RESSIZE,
 			szTabs.c_str(),
 			szFlags.c_str(),
@@ -413,7 +413,7 @@ wstring RestrictionToString(_In_ const LPSRestriction lpRes, _In_opt_ LPMAPIPROP
 			TagToString(lpRes->res.resSize.ulPropTag, lpObj, false, true).c_str()));
 		break;
 	case RES_EXIST:
-		resString.push_back(formatmessage(
+		resString.push_back(strings::formatmessage(
 			IDS_RESEXIST,
 			szTabs.c_str(),
 			TagToString(lpRes->res.resExist.ulPropTag, lpObj, false, true).c_str(),
@@ -421,20 +421,20 @@ wstring RestrictionToString(_In_ const LPSRestriction lpRes, _In_opt_ LPMAPIPROP
 			lpRes->res.resExist.ulReserved2));
 		break;
 	case RES_SUBRESTRICTION:
-		resString.push_back(formatmessage(
+		resString.push_back(strings::formatmessage(
 			IDS_RESSUBRES,
 			szTabs.c_str(),
 			TagToString(lpRes->res.resSub.ulSubObject, lpObj, false, true).c_str()));
 		resString.push_back(RestrictionToString(lpRes->res.resSub.lpRes, lpObj, ulTabLevel + 1));
 		break;
 	case RES_COMMENT:
-		resString.push_back(formatmessage(IDS_RESCOMMENT, szTabs.c_str(), lpRes->res.resComment.cValues));
+		resString.push_back(strings::formatmessage(IDS_RESCOMMENT, szTabs.c_str(), lpRes->res.resComment.cValues));
 		if (lpRes->res.resComment.lpProp)
 		{
 			for (ULONG i = 0; i < lpRes->res.resComment.cValues; i++)
 			{
 				InterpretProp(&lpRes->res.resComment.lpProp[i], &szProp, &szAltProp);
-				resString.push_back(formatmessage(
+				resString.push_back(strings::formatmessage(
 					IDS_RESCOMMENTPROPS,
 					szTabs.c_str(),
 					i,
@@ -444,19 +444,19 @@ wstring RestrictionToString(_In_ const LPSRestriction lpRes, _In_opt_ LPMAPIPROP
 			}
 		}
 
-		resString.push_back(formatmessage(
+		resString.push_back(strings::formatmessage(
 			IDS_RESCOMMENTRES,
 			szTabs.c_str()));
 		resString.push_back(RestrictionToString(lpRes->res.resComment.lpRes, lpObj, ulTabLevel + 1));
 		break;
 	case RES_ANNOTATION:
-		resString.push_back(formatmessage(IDS_RESANNOTATION, szTabs.c_str(), lpRes->res.resComment.cValues));
+		resString.push_back(strings::formatmessage(IDS_RESANNOTATION, szTabs.c_str(), lpRes->res.resComment.cValues));
 		if (lpRes->res.resComment.lpProp)
 		{
 			for (ULONG i = 0; i < lpRes->res.resComment.cValues; i++)
 			{
 				InterpretProp(&lpRes->res.resComment.lpProp[i], &szProp, &szAltProp);
-				resString.push_back(formatmessage(
+				resString.push_back(strings::formatmessage(
 					IDS_RESANNOTATIONPROPS,
 					szTabs.c_str(),
 					i,
@@ -466,14 +466,14 @@ wstring RestrictionToString(_In_ const LPSRestriction lpRes, _In_opt_ LPMAPIPROP
 			}
 		}
 
-		resString.push_back(formatmessage(
+		resString.push_back(strings::formatmessage(
 			IDS_RESANNOTATIONRES,
 			szTabs.c_str()));
 		resString.push_back(RestrictionToString(lpRes->res.resComment.lpRes, lpObj, ulTabLevel + 1));
 		break;
 	}
 
-	return join(resString,L"\r\n");
+	return strings::join(resString, L"\r\n");
 }
 
 wstring RestrictionToString(_In_ const LPSRestriction lpRes, _In_opt_ LPMAPIPROP lpObj)
@@ -486,16 +486,16 @@ wstring AdrListToString(_In_ const ADRLIST& adrList)
 	wstring adrstring;
 	wstring szProp;
 	wstring szAltProp;
-	adrstring = formatmessage(IDS_ADRLISTCOUNT, adrList.cEntries);
+	adrstring = strings::formatmessage(IDS_ADRLISTCOUNT, adrList.cEntries);
 
 	for (ULONG i = 0; i < adrList.cEntries; i++)
 	{
-		adrstring += formatmessage(IDS_ADRLISTENTRIESCOUNT, i, adrList.aEntries[i].cValues);
+		adrstring += strings::formatmessage(IDS_ADRLISTENTRIESCOUNT, i, adrList.aEntries[i].cValues);
 
 		for (ULONG j = 0; j < adrList.aEntries[i].cValues; j++)
 		{
 			InterpretProp(&adrList.aEntries[i].rgPropVals[j], &szProp, &szAltProp);
-			adrstring += formatmessage(
+			adrstring += strings::formatmessage(
 				IDS_ADRLISTENTRY,
 				i,
 				j,
@@ -515,7 +515,7 @@ _Check_return_ wstring ActionToString(_In_ const ACTION& action)
 	wstring szAltProp;
 	auto szFlags = InterpretFlags(flagAccountType, action.acttype);
 	auto szFlags2 = InterpretFlags(flagRuleFlag, action.ulFlags);
-	actstring = formatmessage(
+	actstring = strings::formatmessage(
 		IDS_ACTION,
 		action.acttype,
 		szFlags.c_str(),
@@ -535,11 +535,11 @@ _Check_return_ wstring ActionToString(_In_ const ACTION& action)
 		sBinFld.cb = action.actMoveCopy.cbFldEntryId;
 		sBinFld.lpb = reinterpret_cast<LPBYTE>(action.actMoveCopy.lpFldEntryId);
 
-		actstring += formatmessage(IDS_ACTIONOPMOVECOPY,
-			BinToHexString(&sBinStore, true).c_str(),
-			BinToTextString(&sBinStore, false).c_str(),
-			BinToHexString(&sBinFld, true).c_str(),
-			BinToTextString(&sBinFld, false).c_str());
+		actstring += strings::formatmessage(IDS_ACTIONOPMOVECOPY,
+			strings::BinToHexString(&sBinStore, true).c_str(),
+			strings::BinToTextString(&sBinStore, false).c_str(),
+			strings::BinToHexString(&sBinFld, true).c_str(),
+			strings::BinToTextString(&sBinFld, false).c_str());
 		break;
 	}
 	case OP_REPLY:
@@ -551,9 +551,9 @@ _Check_return_ wstring ActionToString(_In_ const ACTION& action)
 		sBin.lpb = reinterpret_cast<LPBYTE>(action.actReply.lpEntryId);
 		auto szGUID = GUIDToStringAndName(&action.actReply.guidReplyTemplate);
 
-		actstring += formatmessage(IDS_ACTIONOPREPLY,
-			BinToHexString(&sBin, true).c_str(),
-			BinToTextString(&sBin, false).c_str(),
+		actstring += strings::formatmessage(IDS_ACTIONOPREPLY,
+			strings::BinToHexString(&sBin, true).c_str(),
+			strings::BinToTextString(&sBin, false).c_str(),
 			szGUID.c_str());
 		break;
 	}
@@ -563,28 +563,28 @@ _Check_return_ wstring ActionToString(_In_ const ACTION& action)
 		sBin.cb = action.actDeferAction.cbData;
 		sBin.lpb = static_cast<LPBYTE>(action.actDeferAction.pbData);
 
-		actstring += formatmessage(IDS_ACTIONOPDEFER,
-			BinToHexString(&sBin, true).c_str(),
-			BinToTextString(&sBin, false).c_str());
+		actstring += strings::formatmessage(IDS_ACTIONOPDEFER,
+			strings::BinToHexString(&sBin, true).c_str(),
+			strings::BinToTextString(&sBin, false).c_str());
 		break;
 	}
 	case OP_BOUNCE:
 	{
 		szFlags = InterpretFlags(flagBounceCode, action.scBounceCode);
-		actstring += formatmessage(IDS_ACTIONOPBOUNCE, action.scBounceCode, szFlags.c_str());
+		actstring += strings::formatmessage(IDS_ACTIONOPBOUNCE, action.scBounceCode, szFlags.c_str());
 		break;
 	}
 	case OP_FORWARD:
 	case OP_DELEGATE:
 	{
-		actstring += formatmessage(IDS_ACTIONOPFORWARDDEL);
+		actstring += strings::formatmessage(IDS_ACTIONOPFORWARDDEL);
 		if (action.lpadrlist)
 		{
 			actstring += AdrListToString(*action.lpadrlist);
 		}
 		else
 		{
-			actstring += loadstring(IDS_ADRLISTNULL);
+			actstring += strings::loadstring(IDS_ADRLISTNULL);
 		}
 
 		break;
@@ -593,7 +593,7 @@ _Check_return_ wstring ActionToString(_In_ const ACTION& action)
 	case OP_TAG:
 	{
 		InterpretProp(const_cast<LPSPropValue>(&action.propTag), &szProp, &szAltProp);
-		actstring += formatmessage(IDS_ACTIONOPTAG,
+		actstring += strings::formatmessage(IDS_ACTIONOPTAG,
 			TagToString(action.propTag.ulPropTag, nullptr, false, true).c_str(),
 			szProp.c_str(),
 			szAltProp.c_str());
@@ -617,18 +617,18 @@ _Check_return_ wstring ActionToString(_In_ const ACTION& action)
 	default: break;
 	}
 
-	actstring += formatmessage(IDS_ACTIONFLAVOR, action.ulActionFlavor, szFlags.c_str());
+	actstring += strings::formatmessage(IDS_ACTIONFLAVOR, action.ulActionFlavor, szFlags.c_str());
 
 	if (!action.lpPropTagArray)
 	{
-		actstring += loadstring(IDS_ACTIONTAGARRAYNULL);
+		actstring += strings::loadstring(IDS_ACTIONTAGARRAYNULL);
 	}
 	else
 	{
-		actstring += formatmessage(IDS_ACTIONTAGARRAYCOUNT, action.lpPropTagArray->cValues);
+		actstring += strings::formatmessage(IDS_ACTIONTAGARRAYCOUNT, action.lpPropTagArray->cValues);
 		for (ULONG i = 0; i < action.lpPropTagArray->cValues; i++)
 		{
-			actstring += formatmessage(IDS_ACTIONTAGARRAYTAG,
+			actstring += strings::formatmessage(IDS_ACTIONTAGARRAYTAG,
 				i,
 				TagToString(action.lpPropTagArray->aulPropTag[i], nullptr, false, false).c_str());
 		}
@@ -640,14 +640,14 @@ _Check_return_ wstring ActionToString(_In_ const ACTION& action)
 wstring ActionsToString(_In_ const ACTIONS& actions)
 {
 	auto szFlags = InterpretFlags(flagRulesVersion, actions.ulVersion);
-	auto actstring = formatmessage(IDS_ACTIONSMEMBERS,
+	auto actstring = strings::formatmessage(IDS_ACTIONSMEMBERS,
 		actions.ulVersion,
 		szFlags.c_str(),
 		actions.cActions);
 
 	for (ULONG i = 0; i < actions.cActions; i++)
 	{
-		actstring += formatmessage(IDS_ACTIONSACTION, i);
+		actstring += strings::formatmessage(IDS_ACTIONSACTION, i);
 		actstring += ActionToString(actions.lpAction[i]);
 	}
 
@@ -668,7 +668,7 @@ void FileTimeToString(_In_ const FILETIME& fileTime, _In_ wstring& PropString, _
 		wchar_t szDateStr[MAX_PATH] = { 0 };
 
 		// shove millisecond info into our format string since GetTimeFormat doesn't use it
-		auto szFormatStr = formatmessage(IDS_FILETIMEFORMAT, SysTime.wMilliseconds);
+		auto szFormatStr = strings::formatmessage(IDS_FILETIMEFORMAT, SysTime.wMilliseconds);
 
 		WC_D(iRet, GetTimeFormatW(
 			LOCALE_USER_DEFAULT,
@@ -686,14 +686,14 @@ void FileTimeToString(_In_ const FILETIME& fileTime, _In_ wstring& PropString, _
 			szDateStr,
 			MAX_PATH));
 
-		PropString = format(L"%ws %ws", szTimeStr, szDateStr); // STRING_OK
+		PropString = strings::format(L"%ws %ws", szTimeStr, szDateStr); // STRING_OK
 	}
 	else
 	{
-		PropString = loadstring(IDS_INVALIDSYSTIME);
+		PropString = strings::loadstring(IDS_INVALIDSYSTIME);
 	}
 
-	AltPropString = formatmessage(IDS_FILETIMEALTFORMAT, fileTime.dwLowDateTime, fileTime.dwHighDateTime);
+	AltPropString = strings::formatmessage(IDS_FILETIMEALTFORMAT, fileTime.dwLowDateTime, fileTime.dwHighDateTime);
 }
 
 /***************************************************************************
@@ -741,7 +741,7 @@ wstring TypeToString(ULONG ulPropTag)
 	}
 
 	if (!bTypeFound)
-		tmpPropType = format(L"0x%04x", PROP_TYPE(ulPropTag)); // STRING_OK
+		tmpPropType = strings::format(L"0x%04x", PROP_TYPE(ulPropTag)); // STRING_OK
 
 	if (bNeedInstance) tmpPropType += L" | MV_INSTANCE"; // STRING_OK
 	return tmpPropType;
@@ -793,27 +793,27 @@ NamePropNames NameIDToStrings(_In_ LPMAPINAMEID lpNameID, ULONG ulPropTag)
 		{
 			namePropNames.bestPidLid = pidlids.front();
 			pidlids.erase(pidlids.begin());
-			namePropNames.otherPidLid = join(pidlids, L", ");
+			namePropNames.otherPidLid = strings::join(pidlids, L", ");
 			// Printing hex first gets a nice sort without spacing tricks
-			namePropNames.name = format(L"id: 0x%04X=%d = %ws", // STRING_OK
+			namePropNames.name = strings::format(L"id: 0x%04X=%d = %ws", // STRING_OK
 				lpNameID->Kind.lID,
 				lpNameID->Kind.lID,
 				namePropNames.bestPidLid.c_str());
 
 			if (!namePropNames.otherPidLid.empty())
 			{
-				namePropNames.name += format(L" (%ws)", namePropNames.otherPidLid.c_str());
+				namePropNames.name += strings::format(L" (%ws)", namePropNames.otherPidLid.c_str());
 			}
 		}
 		else
 		{
 			// Printing hex first gets a nice sort without spacing tricks
-			namePropNames.name = format(L"id: 0x%04X=%d", // STRING_OK
+			namePropNames.name = strings::format(L"id: 0x%04X=%d", // STRING_OK
 				lpNameID->Kind.lID,
 				lpNameID->Kind.lID);
 		}
 
-		namePropNames.dasl = format(L"id/%s/%04X%04X", // STRING_OK
+		namePropNames.dasl = strings::format(L"id/%s/%04X%04X", // STRING_OK
 			szDASLGuid.c_str(),
 			lpNameID->Kind.lID,
 			PROP_TYPE(ulPropTag));
@@ -834,7 +834,7 @@ NamePropNames NameIDToStrings(_In_ LPMAPINAMEID lpNameID, ULONG ulPropTag)
 			DebugPrint(DBGNamedProp, L"lpNameID->Kind.lpwstrName = \"%ws\"\n", lpNameID->Kind.lpwstrName);
 			namePropNames.name = lpNameID->Kind.lpwstrName;
 
-			namePropNames.dasl = format(L"string/%ws/%ws", // STRING_OK
+			namePropNames.dasl = strings::format(L"string/%ws/%ws", // STRING_OK
 				szDASLGuid.c_str(),
 				lpNameID->Kind.lpwstrName);
 		}
@@ -844,10 +844,10 @@ NamePropNames NameIDToStrings(_In_ LPMAPINAMEID lpNameID, ULONG ulPropTag)
 			DebugPrint(DBGNamedProp, L"Warning: ANSI data was found in a unicode field. This is a bug on the part of the creator of this named property\n");
 			DebugPrint(DBGNamedProp, L"lpNameID->Kind.lpwstrName = \"%hs\"\n", reinterpret_cast<LPCSTR>(lpNameID->Kind.lpwstrName));
 
-			auto szComment = loadstring(IDS_NAMEWASANSI);
-			namePropNames.name = format(L"%hs %ws", reinterpret_cast<LPSTR>(lpNameID->Kind.lpwstrName), szComment.c_str());
+			auto szComment = strings::loadstring(IDS_NAMEWASANSI);
+			namePropNames.name = strings::format(L"%hs %ws", reinterpret_cast<LPSTR>(lpNameID->Kind.lpwstrName), szComment.c_str());
 
-			namePropNames.dasl = format(L"string/%ws/%hs", // STRING_OK
+			namePropNames.dasl = strings::format(L"string/%ws/%hs", // STRING_OK
 				szDASLGuid.c_str(),
 				LPSTR(lpNameID->Kind.lpwstrName));
 		}

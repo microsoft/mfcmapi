@@ -188,7 +188,7 @@ _Check_return_ LPMENUENTRY CreateMenuEntry(_In_ const wstring& szMenu)
 
 _Check_return_ LPMENUENTRY CreateMenuEntry(UINT iudMenu)
 {
-	return CreateMenuEntry(loadstring(iudMenu));
+	return CreateMenuEntry(strings::loadstring(iudMenu));
 }
 
 void DeleteMenuEntry(_In_ LPMENUENTRY lpMenu)
@@ -263,7 +263,7 @@ void UpdateMenuString(_In_ HWND hWnd, UINT uiMenuTag, UINT uidNewString)
 {
 	auto hRes = S_OK;
 
-	auto szNewString = loadstring(uidNewString);
+	auto szNewString = strings::loadstring(uidNewString);
 
 	DebugPrint(DBGMenu, L"UpdateMenuString: Changing menu item 0x%X on window %p to \"%ws\"\n", uiMenuTag, hWnd, szNewString.c_str());
 	auto hMenu = GetMenu(hWnd);
@@ -1419,7 +1419,7 @@ void MeasureMenu(_In_ LPMEASUREITEMSTRUCT lpMeasureItemStruct)
 		auto hfontOld = SelectObject(hdc, GetSegoeFont());
 
 		// In order to compute the right width, we need to drop our prefix characters
-		auto szText = StripCharacter(lpMenuEntry->m_MSAA.pszWText, L'&');
+		auto szText = strings::StripCharacter(lpMenuEntry->m_MSAA.pszWText, L'&');
 
 		auto size = GetTextExtentPoint32(hdc, szText);
 		lpMeasureItemStruct->itemWidth = size.cx + 4 * GetSystemMetrics(SM_CXEDGE);
@@ -1578,7 +1578,7 @@ wstring GetLBText(HWND hwnd, int nIndex)
 	auto buffer = new TCHAR[len];
 	memset(buffer, 0, sizeof(TCHAR)* len);
 	ComboBox_GetLBText(hwnd, nIndex, buffer);
-	auto szOut = LPCTSTRToWstring(buffer);
+	auto szOut = strings::LPCTSTRToWstring(buffer);
 	delete[] buffer;
 	return szOut;
 }
@@ -2078,7 +2078,7 @@ void DrawHelpText(_In_ HWND hWnd, _In_ UINT uIDText)
 
 		DrawSegoeTextW(
 			hdc,
-			loadstring(uIDText),
+			strings::loadstring(uIDText),
 			MyGetSysColor(cTextDisabled),
 			rcText,
 			true,

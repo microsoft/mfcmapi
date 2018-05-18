@@ -169,7 +169,7 @@ PropTagNames PropTagToPropName(ULONG ulPropTag, bool bIsAB)
 // Strictly does a lookup in the array. Does not convert otherwise
 _Check_return_ ULONG LookupPropName(_In_ const wstring& lpszPropName)
 {
-	wstring trimName = TrimString(lpszPropName);
+	wstring trimName = strings::TrimString(lpszPropName);
 	if (trimName.empty()) return 0;
 
 	for (size_t ulCur = 0; ulCur < PropTagArray.size(); ulCur++)
@@ -187,7 +187,7 @@ _Check_return_ ULONG PropNameToPropTag(_In_ const wstring& lpszPropName)
 {
 	if (lpszPropName.empty()) return 0;
 
-	auto ulTag = wstringToUlong(lpszPropName, 16);
+	auto ulTag = strings::wstringToUlong(lpszPropName, 16);
 	if (ulTag != NULL)
 	{
 		return ulTag;
@@ -202,7 +202,7 @@ _Check_return_ ULONG PropTypeNameToPropType(_In_ const wstring& lpszPropType)
 
 	// Check for numbers first before trying the string as an array lookup.
 	// This will translate '0x102' to 0x102, 0x3 to 3, etc.
-	auto ulType = wstringToUlong(lpszPropType, 16);
+	auto ulType = strings::wstringToUlong(lpszPropType, 16);
 	if (ulType != NULL) return ulType;
 
 	auto ulPropType = PT_UNSPECIFIED;
@@ -228,7 +228,7 @@ wstring GUIDToString(_In_opt_ LPCGUID lpGUID)
 		lpGUID = &nullGUID;
 	}
 
-	return format(L"{%.8X-%.4X-%.4X-%.2X%.2X-%.2X%.2X%.2X%.2X%.2X%.2X}", // STRING_OK
+	return strings::format(L"{%.8X-%.4X-%.4X-%.2X%.2X-%.2X%.2X%.2X%.2X%.2X%.2X}", // STRING_OK
 		lpGUID->Data1,
 		lpGUID->Data2,
 		lpGUID->Data3,
@@ -259,7 +259,7 @@ wstring GUIDToStringAndName(_In_opt_ LPCGUID lpGUID)
 		}
 	}
 
-	return szGUID + loadstring(IDS_UNKNOWNGUID);
+	return szGUID + strings::loadstring(IDS_UNKNOWNGUID);
 }
 
 LPCGUID GUIDNameToGUID(_In_ const wstring& szGUID, bool bByteSwapped)
@@ -309,7 +309,7 @@ _Check_return_ GUID StringToGUID(_In_ const wstring& szGUID, bool bByteSwapped)
 	auto guid = GUID_NULL;
 	if (szGUID.empty()) return guid;
 
-	auto bin = HexStringToBin(szGUID, sizeof(GUID));
+	auto bin = strings::HexStringToBin(szGUID, sizeof(GUID));
 	if (bin.size() == sizeof(GUID))
 	{
 		memcpy(&guid, bin.data(), sizeof(GUID));
@@ -486,7 +486,7 @@ wstring InterpretFlags(ULONG ulFlagName, LONG lFlagValue)
 					szTempString += L" | "; // STRING_OK
 				}
 
-				szTempString += format(L"0x%X", lClearedBits); // STRING_OK
+				szTempString += strings::format(L"0x%X", lClearedBits); // STRING_OK
 				// clear the bits out
 				lTempValue &= ~FlagArray[ulCurEntry].lFlagValue;
 				bNeedSeparator = true;
@@ -504,7 +504,7 @@ wstring InterpretFlags(ULONG ulFlagName, LONG lFlagValue)
 			szTempString += L" | "; // STRING_OK
 		}
 
-		szTempString += format(L"0x%X", lTempValue); // STRING_OK
+		szTempString += strings::format(L"0x%X", lTempValue); // STRING_OK
 	}
 
 	return szTempString;
@@ -547,11 +547,11 @@ wstring AllFlagsToString(ULONG ulFlagName, bool bHex)
 		{
 			if (bHex)
 			{
-				szFlagString += formatmessage(IDS_FLAGTOSTRINGHEX, FlagArray[ulCurEntry].lFlagValue, FlagArray[ulCurEntry].lpszName);
+				szFlagString += strings::formatmessage(IDS_FLAGTOSTRINGHEX, FlagArray[ulCurEntry].lFlagValue, FlagArray[ulCurEntry].lpszName);
 			}
 			else
 			{
-				szFlagString += formatmessage(IDS_FLAGTOSTRINGDEC, FlagArray[ulCurEntry].lFlagValue, FlagArray[ulCurEntry].lpszName);
+				szFlagString += strings::formatmessage(IDS_FLAGTOSTRINGDEC, FlagArray[ulCurEntry].lFlagValue, FlagArray[ulCurEntry].lpszName);
 			}
 		}
 	}

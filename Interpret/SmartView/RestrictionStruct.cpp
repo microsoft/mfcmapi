@@ -35,7 +35,7 @@ _Check_return_ wstring RestrictionStruct::ToStringInternal()
 {
 	wstring szRestriction;
 
-	szRestriction = formatmessage(IDS_RESTRICTIONDATA);
+	szRestriction = strings::formatmessage(IDS_RESTRICTIONDATA);
 	szRestriction += RestrictionToString(m_lpRes, nullptr);
 
 	return szRestriction;

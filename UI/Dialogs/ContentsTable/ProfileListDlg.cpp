@@ -165,7 +165,7 @@ void CProfileListDlg::OnLaunchProfileWizard()
 		auto szProfName = LaunchProfileWizard(
 			m_hWnd,
 			MyData.GetHex(0),
-			wstringTostring(MyData.GetStringW(1)));
+			strings::wstringTostring(MyData.GetStringW(1)));
 		OnRefreshView(); // Update the view since we don't have notifications here.
 	}
 }
@@ -205,8 +205,8 @@ void CProfileListDlg::OnAddExchangeToProfile()
 	if (S_OK == hRes)
 	{
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
-		auto szServer = wstringTostring(MyData.GetStringW(0));
-		auto szMailbox = wstringTostring(MyData.GetStringW(1));
+		auto szServer = strings::wstringTostring(MyData.GetStringW(0));
+		auto szMailbox = strings::wstringTostring(MyData.GetStringW(1));
 
 		if (!szServer.empty() && !szMailbox.empty())
 		{
@@ -238,9 +238,9 @@ void CProfileListDlg::AddPSTToProfile(bool bUnicodePST)
 
 	auto file = CFileDialogExW::OpenFile(
 		L"pst", // STRING_OK
-		emptystring,
+		strings::emptystring,
 		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-		loadstring(IDS_PSTFILES),
+		strings::loadstring(IDS_PSTFILES),
 		this);
 	if (!file.empty())
 	{
@@ -265,7 +265,7 @@ void CProfileListDlg::AddPSTToProfile(bool bUnicodePST)
 			{
 				auto szPath = MyFile.GetStringW(0);
 				auto bPasswordSet = MyFile.GetCheck(1);
-				auto szPwd = wstringTostring(MyFile.GetStringW(2));
+				auto szPwd = strings::wstringTostring(MyFile.GetStringW(2));
 
 				DebugPrintEx(DBGGeneric, CLASS, L"AddPSTToProfile", L"Adding PST \"%ws\" to profile \"%hs\", bUnicodePST = 0x%X\n, bPasswordSet = 0x%X, password = \"%hs\"\n",
 					szPath.c_str(),
@@ -310,7 +310,7 @@ void CProfileListDlg::OnAddServiceToProfile()
 	if (S_OK == hRes)
 	{
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
-		auto szService = wstringTostring(MyData.GetStringW(0));
+		auto szService = strings::wstringTostring(MyData.GetStringW(0));
 		auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
 		for (const auto& lpListData : items)
 		{
@@ -340,7 +340,7 @@ void CProfileListDlg::OnCreateProfile()
 	if (S_OK == hRes)
 	{
 		CWaitCursor Wait; // Change the mouse to an hourglass while we work.
-		auto szProfile = wstringTostring(MyData.GetStringW(0));
+		auto szProfile = strings::wstringTostring(MyData.GetStringW(0));
 
 		DebugPrintEx(DBGGeneric, CLASS,
 			L"OnCreateProfile", // STRING_OK
@@ -489,7 +489,7 @@ void CProfileListDlg::OnOpenProfileByName()
 
 	if (S_OK == hRes)
 	{
-		auto szProfileName = wstringTostring(MyData.GetStringW(0));
+		auto szProfileName = strings::wstringTostring(MyData.GetStringW(0));
 		if (!szProfileName.empty())
 		{
 			new CMsgServiceTableDlg(
@@ -532,12 +532,12 @@ _Check_return_ bool CProfileListDlg::HandlePaste()
 		NULL,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 
-	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_COPYPROFILEPROMPT, stringTowstring(szOldProfile), false));
+	MyData.InitPane(0, TextPane::CreateSingleLinePane(IDS_COPYPROFILEPROMPT, strings::stringTowstring(szOldProfile), false));
 
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		auto szNewProfile = wstringTostring(MyData.GetStringW(0));
+		auto szNewProfile = strings::wstringTostring(MyData.GetStringW(0));
 
 		WC_MAPI(HrCopyProfile(szOldProfile, szNewProfile));
 
@@ -558,17 +558,17 @@ void CProfileListDlg::OnExportProfile()
 	auto lpListData = m_lpContentsTableListCtrl->GetFirstSelectedItemData();
 	if (lpListData && lpListData->Contents())
 	{
-		auto szProfileName = stringTowstring(lpListData->Contents()->m_szProfileDisplayName);
+		auto szProfileName = strings::stringTowstring(lpListData->Contents()->m_szProfileDisplayName);
 
 		auto file = CFileDialogExW::SaveAs(
 			L"xml", // STRING_OK
 			szProfileName + L".xml",
 			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-			loadstring(IDS_XMLFILES),
+			strings::loadstring(IDS_XMLFILES),
 			this);
 		if (!file.empty())
 		{
-			ExportProfile(lpListData->Contents()->m_szProfileDisplayName, emptystring, false, file);
+			ExportProfile(lpListData->Contents()->m_szProfileDisplayName, strings::emptystring, false, file);
 		}
 	}
 }

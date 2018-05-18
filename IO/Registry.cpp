@@ -152,7 +152,7 @@ wstring ReadStringFromRegistry(_In_ HKEY hKey, _In_ const wstring& szValue, _In_
 		nullptr,
 		&cb));
 
-	if (S_OK == hRes && cb  && !(cb % 2) && REG_SZ == dwKeyType)
+	if (S_OK == hRes && cb && !(cb % 2) && REG_SZ == dwKeyType)
 	{
 		szBuf = new (std::nothrow) BYTE[cb];
 		if (szBuf)
@@ -272,7 +272,7 @@ void WriteStringToRegistry(_In_ HKEY hKey, _In_ const wstring& szValueName, _In_
 void CommitStringIfNeeded(_In_ HKEY hKey, _In_ const wstring& szValueName, _In_ const wstring& szValue, _In_ const wstring& szDefaultValue)
 {
 	auto hRes = S_OK;
-	if (wstringToLower(szValue) != wstringToLower(szDefaultValue))
+	if (strings::wstringToLower(szValue) != strings::wstringToLower(szDefaultValue))
 	{
 		WriteStringToRegistry(
 			hKey,

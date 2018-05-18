@@ -446,7 +446,7 @@ _Check_return_ bool bShouldCancel(_In_opt_ CWnd* cWnd, HRESULT hResPrev)
 			CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 		if (bGotError)
 		{
-			auto szPrevErr = formatmessage(IDS_PREVIOUSCALL, ErrorNameFromErrorCode(hResPrev).c_str(), hResPrev);
+			auto szPrevErr = strings::formatmessage(IDS_PREVIOUSCALL, ErrorNameFromErrorCode(hResPrev).c_str(), hResPrev);
 			Cancel.InitPane(0, TextPane::CreateSingleLinePane(IDS_ERROR, szPrevErr, true));
 		}
 		WC_H(Cancel.DisplayDialog());
@@ -479,7 +479,7 @@ void DisplayMailboxTable(_In_ CParentWnd* lpParent,
 	if (lpMDB && StoreSupportsManageStore(lpMDB))
 	{
 		LPMAPITABLE lpMailboxTable = nullptr;
-		auto szServerName = stringTowstring(GetServerName(lpMAPISession));
+		auto szServerName = strings::stringTowstring(GetServerName(lpMAPISession));
 
 		CEditor MyData(
 			static_cast<CWnd*>(lpParent),
@@ -506,7 +506,7 @@ void DisplayMailboxTable(_In_ CParentWnd* lpParent,
 		else if (S_OK == hRes)
 		{
 			auto szServerDN = BuildServerDN(
-				wstringTostring(MyData.GetStringW(0)),
+				strings::wstringTostring(MyData.GetStringW(0)),
 				"");
 			if (!szServerDN.empty())
 			{
@@ -615,7 +615,7 @@ void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
 	if (lpMDB && StoreSupportsManageStore(lpMDB))
 	{
 		LPMAPITABLE lpPFTable = nullptr;
-		auto szServerName = stringTowstring(GetServerName(lpMAPISession));
+		auto szServerName = strings::stringTowstring(GetServerName(lpMAPISession));
 
 		CEditor MyData(
 			static_cast<CWnd*>(lpParent),
@@ -644,7 +644,7 @@ void DisplayPublicFolderTable(_In_ CParentWnd* lpParent,
 		else if (S_OK == hRes)
 		{
 			auto szServerDN = BuildServerDN(
-				wstringTostring(MyData.GetStringW(0)),
+				strings::wstringTostring(MyData.GetStringW(0)),
 				"");
 			if (!szServerDN.empty())
 			{
@@ -765,7 +765,7 @@ void ResolveMessageClass(_In_ CMapiObjects* lpMapiObjects, _In_opt_ LPMAPIFOLDER
 			{
 				LPMAPIFORMINFO lpMAPIFormInfo = nullptr;
 				DebugPrint(DBGForms, L"OnResolveMessageClass: Calling ResolveMessageClass(\"%ws\",0x%08X)\n", szClass.c_str(), ulFlags); // STRING_OK
-				EC_MAPI(lpMAPIFormMgr->ResolveMessageClass(wstringTostring(szClass).c_str(), ulFlags, lpMAPIFolder, &lpMAPIFormInfo));
+				EC_MAPI(lpMAPIFormMgr->ResolveMessageClass(strings::wstringTostring(szClass).c_str(), ulFlags, lpMAPIFolder, &lpMAPIFormInfo));
 				if (lpMAPIFormInfo)
 				{
 					DebugPrintFormInfo(DBGForms, lpMAPIFormInfo);
@@ -796,7 +796,7 @@ void SelectForm(_In_ HWND hWnd, _In_ CMapiObjects* lpMapiObjects, _In_opt_ LPMAP
 	{
 		LPMAPIFORMINFO lpMAPIFormInfo = nullptr;
 		// Apparently, SelectForm doesn't support unicode
-		auto szTitle = wstringTostring(loadstring(IDS_SELECTFORMPROPS));
+		auto szTitle = strings::wstringTostring(strings::loadstring(IDS_SELECTFORMPROPS));
 		EC_H_CANCEL(lpMAPIFormMgr->SelectForm(
 			reinterpret_cast<ULONG_PTR>(hWnd),
 			0, // fMapiUnicode,

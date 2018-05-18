@@ -193,8 +193,8 @@ wstring GetComponentPath(const wstring& szComponent, const wstring& szQualifier,
 			CHAR lpszPath[MAX_PATH] = { 0 };
 			ULONG cchPath = _countof(lpszPath);
 
-			fReturn = pFGetCompPath(wstringTostring(szComponent).c_str(), LPSTR(wstringTostring(szQualifier).c_str()), lpszPath, cchPath, fInstall);
-			if (fReturn) path = LPCSTRToWstring(lpszPath);
+			fReturn = pFGetCompPath(strings::wstringTostring(szComponent).c_str(), LPSTR(strings::wstringTostring(szQualifier).c_str()), lpszPath, cchPath, fInstall);
+			if (fReturn) path = strings::LPCSTRToWstring(lpszPath);
 			DebugPrint(DBGLoadMAPI, L"GetComponentPath: path = %ws\n", path.c_str());
 		}
 
@@ -281,7 +281,7 @@ HKEY GetHKeyMapiClient(const wstring& pwzProviderOverride)
 wstring GetMailClientFromMSIData(HKEY hkeyMapiClient)
 {
 	DebugPrint(DBGLoadMAPI, L"Enter GetMailClientFromMSIData\n");
-	if (!hkeyMapiClient) return emptystring;
+	if (!hkeyMapiClient) return strings::emptystring;
 	WCHAR rgchMSIComponentID[MAX_PATH] = { 0 };
 	WCHAR rgchMSIApplicationLCID[MAX_PATH] = { 0 };
 	DWORD dwType = 0;
@@ -354,7 +354,7 @@ wstring GetMAPISystemDir()
 	}
 
 	DebugPrint(DBGLoadMAPI, L"Exit GetMAPISystemDir: found nothing\n");
-	return emptystring;
+	return strings::emptystring;
 }
 
 wstring GetInstalledOutlookMAPI(int iOutlook)
@@ -362,7 +362,7 @@ wstring GetInstalledOutlookMAPI(int iOutlook)
 	DebugPrint(DBGLoadMAPI, L"Enter GetInstalledOutlookMAPI(%d)\n", iOutlook);
 	auto hRes = S_OK;
 
-	if (!pfnMsiProvideQualifiedComponent || !pfnMsiGetFileVersion) return emptystring;
+	if (!pfnMsiProvideQualifiedComponent || !pfnMsiGetFileVersion) return strings::emptystring;
 
 	auto lpszTempPath = GetOutlookPath(g_pszOutlookQualifiedComponents[iOutlook], nullptr);
 
@@ -383,7 +383,7 @@ wstring GetInstalledOutlookMAPI(int iOutlook)
 	}
 
 	DebugPrint(DBGLoadMAPI, L"Exit GetInstalledOutlookMAPI: found nothing\n");
-	return emptystring;
+	return strings::emptystring;
 }
 
 vector<wstring> GetInstalledOutlookMAPI()

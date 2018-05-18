@@ -38,7 +38,7 @@ CFormContainerDlg::CFormContainerDlg(
 		(void)m_lpFormContainer->GetDisplay(fMapiUnicode, &lpszDisplayName);
 		if (lpszDisplayName)
 		{
-			m_szTitle = LPCTSTRToWstring(lpszDisplayName);
+			m_szTitle = strings::LPCTSTRToWstring(lpszDisplayName);
 			MAPIFreeBuffer(lpszDisplayName);
 		}
 	}
@@ -219,9 +219,9 @@ void CFormContainerDlg::OnInstallForm()
 	{
 		auto files = CFileDialogExW::OpenFiles(
 			L"cfg", // STRING_OK
-			emptystring,
+			strings::emptystring,
 			OFN_FILEMUSTEXIST,
-			loadstring(IDS_CFGFILES),
+			strings::loadstring(IDS_CFGFILES),
 			this);
 		if (!files.empty())
 		{
@@ -232,7 +232,7 @@ void CFormContainerDlg::OnInstallForm()
 				hRes = S_OK;
 				DebugPrintEx(DBGForms, CLASS, L"OnInstallForm",
 					L"Calling InstallForm(%p,0x%08X,\"%ws\")\n", hwnd, ulFlags, lpszPath.c_str()); // STRING_OK
-				WC_MAPI(m_lpFormContainer->InstallForm(reinterpret_cast<ULONG_PTR>(hwnd), ulFlags, LPCTSTR(wstringTostring(lpszPath).c_str())));
+				WC_MAPI(m_lpFormContainer->InstallForm(reinterpret_cast<ULONG_PTR>(hwnd), ulFlags, LPCTSTR(strings::wstringTostring(lpszPath).c_str())));
 				if (MAPI_E_EXTENDED_ERROR == hRes)
 				{
 					LPMAPIERROR lpErr = nullptr;
@@ -269,7 +269,7 @@ void CFormContainerDlg::OnRemoveForm()
 	WC_H(MyClass.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		auto szClass = wstringTostring(MyClass.GetStringW(0)); // RemoveForm requires an ANSI string
+		auto szClass = strings::wstringTostring(MyClass.GetStringW(0)); // RemoveForm requires an ANSI string
 		if (!szClass.empty())
 		{
 			DebugPrintEx(DBGForms, CLASS, L"OnRemoveForm",
@@ -297,7 +297,7 @@ void CFormContainerDlg::OnResolveMessageClass()
 	WC_H(MyData.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		auto szClass = wstringTostring(MyData.GetStringW(0)); // ResolveMessageClass requires an ANSI string
+		auto szClass = strings::wstringTostring(MyData.GetStringW(0)); // ResolveMessageClass requires an ANSI string
 		auto ulFlags = MyData.GetHex(1);
 		if (!szClass.empty())
 		{
@@ -356,7 +356,7 @@ void CFormContainerDlg::OnResolveMultipleMessageClasses()
 					WC_H(MyClass.DisplayDialog());
 					if (S_OK == hRes)
 					{
-						auto szClass = wstringTostring(MyClass.GetStringW(0)); // MSDN says always use ANSI strings here
+						auto szClass = strings::wstringTostring(MyClass.GetStringW(0)); // MSDN says always use ANSI strings here
 						auto cbClass = szClass.length();
 
 						if (cbClass)
@@ -440,7 +440,7 @@ void CFormContainerDlg::OnGetDisplay()
 
 	if (lpszDisplayName)
 	{
-		auto szDisplayName = LPCTSTRToWstring(lpszDisplayName);
+		auto szDisplayName = strings::LPCTSTRToWstring(lpszDisplayName);
 		DebugPrintEx(DBGForms, CLASS, L"OnGetDisplay", L"Got display name \"%ws\"\n", szDisplayName.c_str());
 		CEditor MyOutput(
 			this,

@@ -209,13 +209,13 @@ bool CFindFidMid::DoContentsTablePerRowWork(_In_ const LPSRow lpSRow, ULONG /*ul
 		auto lpPropSubject = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PR_SUBJECT);
 		if (lpPropSubject)
 		{
-			lpszSubject = LPCTSTRToWstring(lpPropSubject->Value.LPSZ);
+			lpszSubject = strings::LPCTSTRToWstring(lpPropSubject->Value.LPSZ);
 		}
 
 		auto lpPropClass = PpropFindProp(lpSRow->lpProps, lpSRow->cValues, PR_MESSAGE_CLASS);
 		if (lpPropClass)
 		{
-			lpszClass = LPCTSTRToWstring(lpPropClass->Value.LPSZ);
+			lpszClass = strings::LPCTSTRToWstring(lpPropClass->Value.LPSZ);
 		}
 
 		PrintMessage(lpszThisMid, m_fAssociated, lpszSubject, lpszClass);

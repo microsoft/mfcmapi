@@ -9,7 +9,7 @@ CountedTextPane* CountedTextPane::Create(UINT uidLabel, bool bReadOnly, UINT uid
 	auto lpPane = new (std::nothrow) CountedTextPane();
 	if (lpPane)
 	{
-		lpPane->m_szCountLabel = loadstring(uidCountLabel);
+		lpPane->m_szCountLabel = strings::loadstring(uidCountLabel);
 		lpPane->SetMultiline();
 		lpPane->SetLabel(uidLabel, bReadOnly);
 		lpPane->m_bCollapsible = true;
@@ -47,7 +47,7 @@ int CountedTextPane::GetMinWidth(_In_ HDC hdc)
 {
 	auto iLabelWidth = TextPane::GetMinWidth(hdc);
 
-	auto szCount = format(L"%ws: 0x%08X = %u", m_szCountLabel.c_str(), static_cast<int>(m_iCount), static_cast<UINT>(m_iCount)); // STRING_OK
+	auto szCount = strings::format(L"%ws: 0x%08X = %u", m_szCountLabel.c_str(), static_cast<int>(m_iCount), static_cast<UINT>(m_iCount)); // STRING_OK
 	SetWindowTextW(m_Count.m_hWnd, szCount.c_str());
 
 	auto sizeText = GetTextExtentPoint32(hdc, szCount);

@@ -41,7 +41,7 @@ CMAPIProgress::CMAPIProgress(const wstring& lpszContext, _In_ HWND hWnd)
 	}
 	else
 	{
-		m_szContext = loadstring(IDS_NOCONTEXT);
+		m_szContext = strings::loadstring(IDS_NOCONTEXT);
 	}
 }
 
@@ -89,7 +89,7 @@ _Check_return_ STDMETHODIMP CMAPIProgress::Progress(ULONG ulValue, ULONG ulCount
 	if (m_hWnd)
 	{
 		auto iPercent = MulDiv(ulValue - m_ulMin, 100, m_ulMax - m_ulMin);
-		CBaseDialog::UpdateStatus(m_hWnd, STATUSINFOTEXT, formatmessage(IDS_PERCENTLOADED, m_szContext.c_str(), iPercent));
+		CBaseDialog::UpdateStatus(m_hWnd, STATUSINFOTEXT, strings::formatmessage(IDS_PERCENTLOADED, m_szContext.c_str(), iPercent));
 	}
 
 	return S_OK;
@@ -158,7 +158,7 @@ STDMETHODIMP CMAPIProgress::SetLimits(ULONG* lpulMin, ULONG* lpulMax, ULONG* lpu
 
 	if (lpulFlags)
 	{
-		szFlags = format(L"0x%08X", *lpulFlags); // STRING_OK
+		szFlags = strings::format(L"0x%08X", *lpulFlags); // STRING_OK
 	}
 	else
 	{

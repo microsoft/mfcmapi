@@ -40,17 +40,17 @@ _Check_return_ wstring GlobalObjectId::ToStringInternal()
 {
 	wstring szGlobalObjectId;
 
-	szGlobalObjectId = formatmessage(IDS_GLOBALOBJECTIDHEADER);
+	szGlobalObjectId = strings::formatmessage(IDS_GLOBALOBJECTIDHEADER);
 
-	szGlobalObjectId += BinToHexString(m_Id, true);
+	szGlobalObjectId += strings::BinToHexString(m_Id, true);
 	szGlobalObjectId += L" = ";
 	if (equal(m_Id.begin(), m_Id.end(), s_rgbSPlus))
 	{
-		szGlobalObjectId += formatmessage(IDS_GLOBALOBJECTSPLUS);
+		szGlobalObjectId += strings::formatmessage(IDS_GLOBALOBJECTSPLUS);
 	}
 	else
 	{
-		szGlobalObjectId += formatmessage(IDS_UNKNOWNGUID);
+		szGlobalObjectId += strings::formatmessage(IDS_UNKNOWNGUID);
 	}
 
 	auto szFlags = InterpretFlags(flagGlobalObjectIdMonth, m_Month);
@@ -58,7 +58,7 @@ _Check_return_ wstring GlobalObjectId::ToStringInternal()
 	wstring PropString;
 	wstring AltPropString;
 	FileTimeToString(m_CreationTime, PropString, AltPropString);
-	szGlobalObjectId += formatmessage(IDS_GLOBALOBJECTIDDATA1,
+	szGlobalObjectId += strings::formatmessage(IDS_GLOBALOBJECTIDDATA1,
 		m_Year,
 		m_Month, szFlags.c_str(),
 		m_Day,
@@ -68,8 +68,8 @@ _Check_return_ wstring GlobalObjectId::ToStringInternal()
 
 	if (m_lpData.size())
 	{
-		szGlobalObjectId += formatmessage(IDS_GLOBALOBJECTIDDATA2);
-		szGlobalObjectId += BinToHexString(m_lpData, true);
+		szGlobalObjectId += strings::formatmessage(IDS_GLOBALOBJECTIDDATA2);
+		szGlobalObjectId += strings::BinToHexString(m_lpData, true);
 	}
 
 	return szGlobalObjectId;

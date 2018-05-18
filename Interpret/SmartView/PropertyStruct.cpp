@@ -55,25 +55,25 @@ _Check_return_ wstring PropsToString(DWORD PropCount, LPSPropValue Prop)
 			wstring PropString;
 			wstring AltPropString;
 
-			property.push_back(formatmessage(IDS_PROPERTYDATAHEADER,
+			property.push_back(strings::formatmessage(IDS_PROPERTYDATAHEADER,
 				i,
 				Prop[i].ulPropTag));
 
 			auto propTagNames = PropTagToPropName(Prop[i].ulPropTag, false);
 			if (!propTagNames.bestGuess.empty())
 			{
-				property.push_back(formatmessage(IDS_PROPERTYDATANAME,
+				property.push_back(strings::formatmessage(IDS_PROPERTYDATANAME,
 					propTagNames.bestGuess.c_str()));
 			}
 
 			if (!propTagNames.otherMatches.empty())
 			{
-				property.push_back(formatmessage(IDS_PROPERTYDATAPARTIALMATCHES,
+				property.push_back(strings::formatmessage(IDS_PROPERTYDATAPARTIALMATCHES,
 					propTagNames.otherMatches.c_str()));
 			}
 
 			InterpretProp(&Prop[i], &PropString, &AltPropString);
-			property.push_back(RemoveInvalidCharactersW(formatmessage(IDS_PROPERTYDATA,
+			property.push_back(strings::RemoveInvalidCharactersW(strings::formatmessage(IDS_PROPERTYDATA,
 				PropString.c_str(),
 				AltPropString.c_str()), false));
 
@@ -87,11 +87,11 @@ _Check_return_ wstring PropsToString(DWORD PropCount, LPSPropValue Prop)
 
 			if (!szSmartView.empty())
 			{
-				property.push_back(formatmessage(IDS_PROPERTYDATASMARTVIEW,
+				property.push_back(strings::formatmessage(IDS_PROPERTYDATASMARTVIEW,
 					szSmartView.c_str()));
 			}
 		}
 	}
 
-	return join(property, L"\r\n");
+	return strings::join(property, L"\r\n");
 }

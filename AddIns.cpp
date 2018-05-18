@@ -248,7 +248,7 @@ public:
 		if (szDLL.empty()) return true;
 		for (const auto& dll : m_lpList)
 		{
-			if (wstringToLower(dll) == wstringToLower(szDLL)) return true;
+			if (strings::wstringToLower(dll) == strings::wstringToLower(szDLL)) return true;
 		}
 
 		return false;
@@ -454,7 +454,7 @@ _Check_return_ ULONG ExtendAddInMenu(HMENU hMenu, ULONG ulAddInContext)
 								static_cast<UINT>(-1),
 								MF_BYPOSITION | MF_POPUP | MF_ENABLED,
 								reinterpret_cast<UINT_PTR>(hAddInMenu),
-								loadstring(IDS_ADDINSMENU).c_str());
+								strings::loadstring(IDS_ADDINSMENU).c_str());
 						}
 						else continue;
 					}
@@ -824,7 +824,7 @@ __declspec(dllexport) void __cdecl AddInLog(bool bPrintThreadTime, _Printf_forma
 
 	va_list argList = nullptr;
 	va_start(argList, szMsg);
-	auto szAddInLogString = formatV(szMsg, argList);
+	auto szAddInLogString = strings::formatV(szMsg, argList);
 	va_end(argList);
 
 	Output(DBGAddIn, nullptr, bPrintThreadTime, szAddInLogString);
@@ -844,7 +844,7 @@ _Check_return_ __declspec(dllexport) HRESULT __cdecl SimpleDialog(_In_z_ LPWSTR 
 
 	va_list argList = nullptr;
 	va_start(argList, szMsg);
-	auto szDialogString = formatV(szMsg, argList);
+	auto szDialogString = strings::formatV(szMsg, argList);
 	va_end(argList);
 
 	MySimpleDialog.SetPromptPostFix(szDialogString);

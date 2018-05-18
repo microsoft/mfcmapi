@@ -30,7 +30,7 @@ BOOL CAboutDlg::OnInitDialog()
 	auto hRes = S_OK;
 	auto bRet = CMyDialog::OnInitDialog();
 
-	auto szProductName = loadstring(ID_PRODUCTNAME);
+	auto szProductName = strings::loadstring(ID_PRODUCTNAME);
 	::SetWindowTextW(m_hWnd, szProductName.c_str());
 
 	RECT rcClient = { 0 };
@@ -88,7 +88,7 @@ BOOL CAboutDlg::OnInitDialog()
 	::SendMessage(m_HelpText.m_hWnd, EM_AUTOURLDETECT, true, NULL);
 	m_HelpText.SetFont(GetFont());
 
-	auto szHelpText = formatmessage(IDS_HELPTEXT, szProductName.c_str());
+	auto szHelpText = strings::formatmessage(IDS_HELPTEXT, szProductName.c_str());
 	::SetWindowTextW(m_HelpText.m_hWnd, szHelpText.c_str());
 
 	auto rcCheck = rcHelpText;
@@ -106,7 +106,7 @@ BOOL CAboutDlg::OnInitDialog()
 		this,
 		IDD_DISPLAYABOUT));
 	m_DisplayAboutCheck.SetCheck(RegKeys[regkeyDISPLAY_ABOUT_DIALOG].ulCurDWORD ? BST_CHECKED : BST_UNCHECKED);
-	auto szDisplayAboutCheck = loadstring(IDS_DISPLAYABOUTCHECK);
+	auto szDisplayAboutCheck = strings::loadstring(IDS_DISPLAYABOUTCHECK);
 	::SetWindowTextW(m_DisplayAboutCheck.m_hWnd, szDisplayAboutCheck.c_str());
 
 	// Get version information from the application.
@@ -142,7 +142,7 @@ BOOL CAboutDlg::OnInitDialog()
 			// Read the file description for the first language/codepage
 			if (S_OK == hRes && lpTranslate)
 			{
-				auto szGetName = format(
+				auto szGetName = strings::format(
 					L"\\StringFileInfo\\%04x%04x\\", // STRING_OK
 					lpTranslate[0].wLanguage,
 					lpTranslate[0].wCodePage);

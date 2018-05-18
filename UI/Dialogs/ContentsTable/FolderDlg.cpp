@@ -781,9 +781,9 @@ void CFolderDlg::OnLoadFromMSG()
 
 	auto files = CFileDialogExW::OpenFiles(
 		L"msg", // STRING_OK
-		emptystring,
+		strings::emptystring,
 		OFN_HIDEREADONLY | OFN_FILEMUSTEXIST,
-		loadstring(IDS_MSGFILES),
+		strings::loadstring(IDS_MSGFILES),
 		this);
 
 	if (!files.empty())
@@ -1084,13 +1084,13 @@ void CFolderDlg::OnNewCustomForm()
 				{
 					LPMAPIFOLDER lpFormSource = nullptr;
 					if (1 == MyPrompt1.GetDropDown(0)) lpFormSource = static_cast<LPMAPIFOLDER>(m_lpContainer);
-					auto szTitle = loadstring(IDS_SELECTFORMCREATE);
+					auto szTitle = strings::loadstring(IDS_SELECTFORMCREATE);
 
 					// Apparently, SelectForm doesn't support unicode
 					EC_H_CANCEL(lpMAPIFormMgr->SelectForm(
 						reinterpret_cast<ULONG_PTR>(m_hWnd),
 						0,
-						reinterpret_cast<LPCTSTR>(wstringTostring(szTitle).c_str()),
+						reinterpret_cast<LPCTSTR>(strings::wstringTostring(szTitle).c_str()),
 						lpFormSource,
 						&lpMAPIFormInfo));
 
@@ -1524,24 +1524,24 @@ void CFolderDlg::OnSaveMessageToFile()
 		case 0:
 			szExt = L"xml"; // STRING_OK
 			szDotExt = L".xml"; // STRING_OK
-			szFilter = loadstring(IDS_XMLFILES);
+			szFilter = strings::loadstring(IDS_XMLFILES);
 			break;
 		case 1:
 		case 2:
 			szExt = L"msg"; // STRING_OK
 			szDotExt = L".msg"; // STRING_OK
-			szFilter = loadstring(IDS_MSGFILES);
+			szFilter = strings::loadstring(IDS_MSGFILES);
 			break;
 		case 3:
 		case 4:
 			szExt = L"eml"; // STRING_OK
 			szDotExt = L".eml"; // STRING_OK
-			szFilter = loadstring(IDS_EMLFILES);
+			szFilter = strings::loadstring(IDS_EMLFILES);
 			break;
 		case 5:
 			szExt = L"tnef"; // STRING_OK
 			szDotExt = L".tnef"; // STRING_OK
-			szFilter = loadstring(IDS_TNEFFILES);
+			szFilter = strings::loadstring(IDS_TNEFFILES);
 
 			lpAddrBook = m_lpMapiObjects->GetAddrBook(true); // do not release
 			break;
@@ -1678,9 +1678,9 @@ void CFolderDlg::OnLoadFromTNEF()
 	{
 		auto files = CFileDialogExW::OpenFiles(
 			L"tnef", // STRING_OK
-			emptystring,
+			strings::emptystring,
 			OFN_FILEMUSTEXIST,
-			loadstring(IDS_TNEFFILES),
+			strings::loadstring(IDS_TNEFFILES),
 			this);
 
 		if (!files.empty())
@@ -1732,9 +1732,9 @@ void CFolderDlg::OnLoadFromEML()
 
 		auto files = CFileDialogExW::OpenFiles(
 			L"eml", // STRING_OK
-			emptystring,
+			strings::emptystring,
 			OFN_FILEMUSTEXIST,
-			loadstring(IDS_EMLFILES),
+			strings::loadstring(IDS_EMLFILES),
 			this);
 
 		if (!files.empty())
@@ -1796,7 +1796,7 @@ void CFolderDlg::OnSendBulkMail()
 		for (ULONG i = 0; i < ulNumMessages; i++)
 		{
 			hRes = S_OK;
-			auto szTestSubject = formatmessage(IDS_TESTSUBJECT, szSubject.c_str(), i);
+			auto szTestSubject = strings::formatmessage(IDS_TESTSUBJECT, szSubject.c_str(), i);
 
 			EC_H(SendTestMessage(
 				lpMAPISession,
@@ -1918,7 +1918,7 @@ void CFolderDlg::OnGetMessageOptions()
 				EC_MAPI(lpMAPISession->MessageOptions(
 					reinterpret_cast<ULONG_PTR>(m_hWnd),
 					NULL, // API doesn't like Unicode
-					LPTSTR(wstringTostring(MyAddress.GetStringW(0)).c_str()),
+					LPTSTR(strings::wstringTostring(MyAddress.GetStringW(0)).c_str()),
 					lpMessage));
 
 				lpMessage->Release();

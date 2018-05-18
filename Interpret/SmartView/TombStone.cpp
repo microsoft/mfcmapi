@@ -57,7 +57,7 @@ _Check_return_ wstring TombStone::ToStringInternal()
 {
 	wstring szTombstoneString;
 
-	szTombstoneString = formatmessage(IDS_TOMBSTONEHEADER,
+	szTombstoneString = strings::formatmessage(IDS_TOMBSTONEHEADER,
 		m_Identifier,
 		m_HeaderSize,
 		m_Version,
@@ -72,12 +72,12 @@ _Check_return_ wstring TombStone::ToStringInternal()
 		sBin.lpb = m_lpRecords[i].lpGlobalObjectId.data();
 		auto szGoid = InterpretBinaryAsString(sBin, IDS_STGLOBALOBJECTID, nullptr);
 
-		szTombstoneString += formatmessage(IDS_TOMBSTONERECORD,
+		szTombstoneString += strings::formatmessage(IDS_TOMBSTONERECORD,
 			i,
 			m_lpRecords[i].StartTime, RTimeToString(m_lpRecords[i].StartTime).c_str(),
 			m_lpRecords[i].EndTime, RTimeToString(m_lpRecords[i].EndTime).c_str(),
 			m_lpRecords[i].GlobalObjectIdSize,
-			BinToHexString(m_lpRecords[i].lpGlobalObjectId, true).c_str(),
+			strings::BinToHexString(m_lpRecords[i].lpGlobalObjectId, true).c_str(),
 			szGoid.c_str(),
 			m_lpRecords[i].UsernameSize,
 			m_lpRecords[i].szUsername.c_str());

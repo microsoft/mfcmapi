@@ -16,7 +16,7 @@ SingleRecipientDialog::SingleRecipientDialog(
 		NULL)
 {
 	TRACE_CONSTRUCTOR(CLASS);
-	m_szTitle = loadstring(IDS_ADDRESS_BOOK_ENTRY);
+	m_szTitle = strings::loadstring(IDS_ADDRESS_BOOK_ENTRY);
 
 	m_lpMailUser = lpMAPIProp;
 	if (m_lpMailUser) m_lpMailUser->AddRef();

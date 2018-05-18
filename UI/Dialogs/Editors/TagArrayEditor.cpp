@@ -100,7 +100,7 @@ _Check_return_ bool CTagArrayEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 
 		auto propTagNames = PropTagToPropName(ulNewPropTag, m_bIsAB);
 
-		SetListString(ulListNum, iItem, 1, format(L"0x%08X", ulNewPropTag));
+		SetListString(ulListNum, iItem, 1, strings::format(L"0x%08X", ulNewPropTag));
 		SetListString(ulListNum, iItem, 2, propTagNames.bestGuess);
 		SetListString(ulListNum, iItem, 3, propTagNames.otherMatches);
 		SetListString(ulListNum, iItem, 4, TypeToString(ulNewPropTag));
@@ -147,7 +147,7 @@ void CTagArrayEditor::ReadTagArrayToList(ULONG ulListNum, LPSPropTagArray lpTagA
 
 			auto propTagNames = PropTagToPropName(ulPropTag, m_bIsAB);
 
-			SetListString(ulListNum, iTagCount, 1, format(L"0x%08X", ulPropTag));
+			SetListString(ulListNum, iTagCount, 1, strings::format(L"0x%08X", ulPropTag));
 			SetListString(ulListNum, iTagCount, 2, propTagNames.bestGuess);
 			SetListString(ulListNum, iTagCount, 3, propTagNames.otherMatches);
 			SetListString(ulListNum, iTagCount, 4, TypeToString(ulPropTag));

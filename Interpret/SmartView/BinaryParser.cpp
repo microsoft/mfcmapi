@@ -89,7 +89,7 @@ string CBinaryParser::GetStringA(size_t cchChar)
 	if (!cchChar || !CheckRemainingBytes(sizeof CHAR * cchChar)) return "";
 	string ret(reinterpret_cast<LPCSTR>(GetCurrentAddress()), cchChar);
 	m_Offset += sizeof CHAR * cchChar;
-	return RemoveInvalidCharactersA(ret);
+	return strings::RemoveInvalidCharactersA(ret);
 }
 
 wstring CBinaryParser::GetStringW(size_t cchChar)
@@ -97,14 +97,14 @@ wstring CBinaryParser::GetStringW(size_t cchChar)
 	if (cchChar == -1)
 	{
 		auto hRes = StringCchLengthW(reinterpret_cast<LPCWSTR>(GetCurrentAddress()), (m_Bin.size() - m_Offset) / sizeof WCHAR, &cchChar);
-		if (FAILED(hRes)) return emptystring;
+		if (FAILED(hRes)) return strings::emptystring;
 		cchChar += 1;
 	}
 
-	if (!cchChar || !CheckRemainingBytes(sizeof WCHAR * cchChar)) return emptystring;
+	if (!cchChar || !CheckRemainingBytes(sizeof WCHAR * cchChar)) return strings::emptystring;
 	wstring ret(reinterpret_cast<LPCWSTR>(GetCurrentAddress()), cchChar);
 	m_Offset += sizeof WCHAR * cchChar;
-	return RemoveInvalidCharactersW(ret);
+	return strings::RemoveInvalidCharactersW(ret);
 }
 
 vector<BYTE> CBinaryParser::GetBYTES(size_t cbBytes, size_t cbMaxBytes)

@@ -8,21 +8,21 @@ public:
 		_In_ const wstring& lpszDefExt,
 		_In_ const wstring& lpszFileName,
 		DWORD dwFlags = 0,
-		_In_ const wstring& lpszFilter = emptystring,
+		_In_ const wstring& lpszFilter = strings::emptystring,
 		_In_opt_ CWnd* pParentWnd = nullptr);
 
 	static vector<wstring> OpenFiles(
 		_In_ const wstring& lpszDefExt,
 		_In_ const wstring& lpszFileName,
 		DWORD dwFlags = 0,
-		_In_ const wstring& lpszFilter = emptystring,
+		_In_ const wstring& lpszFilter = strings::emptystring,
 		_In_opt_ CWnd* pParentWnd = nullptr);
 
 	static wstring SaveAs(
 		_In_ const wstring& lpszDefExt,
 		_In_ const wstring& lpszFileName,
 		DWORD dwFlags = OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-		_In_ const wstring& lpszFilter = emptystring,
+		_In_ const wstring& lpszFilter = strings::emptystring,
 		_In_opt_ CWnd* pParentWnd = nullptr);
 
 private:
@@ -30,7 +30,7 @@ private:
 		_In_ const wstring& lpszDefExt,
 		_In_ const wstring& lpszFileName,
 		DWORD dwFlags,
-		_In_ const wstring& lpszFilter = emptystring,
+		_In_ const wstring& lpszFilter = strings::emptystring,
 		_In_opt_ CWnd* pParentWnd = nullptr);
 
 	wstring GetFileName() const;

@@ -301,7 +301,7 @@ wstring GetMAPIPath(const wstring& szClient)
 		{
 			lpszPath = GetComponentPath(
 				szComponentID,
-				emptystring,
+				strings::emptystring,
 				false);
 		}
 	}
@@ -339,7 +339,7 @@ _Check_return_ STDMETHODIMP MyOpenStreamOnFile(_In_ LPALLOCATEBUFFER lpAllocateB
 			lpAllocateBuffer,
 			lpFreeBuffer,
 			ulFlags,
-			wstringTotstring(lpszFileName).c_str(),
+			strings::wstringTotstring(lpszFileName).c_str(),
 			nullptr,
 			lppStream);
 	}

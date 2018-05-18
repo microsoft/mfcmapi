@@ -75,6 +75,6 @@ void ReadFromRegistry();
 _Check_return_ HKEY CreateRootKey();
 
 DWORD ReadDWORDFromRegistry(_In_ HKEY hKey, _In_ const wstring& szValue, _In_ DWORD dwDefaultVal = 0);
-wstring ReadStringFromRegistry(_In_ HKEY hKey, _In_ const wstring& szValue, _In_ const wstring& szDefault = emptystring);
+wstring ReadStringFromRegistry(_In_ HKEY hKey, _In_ const wstring& szValue, _In_ const wstring& szDefault = strings::emptystring);
 
 void WriteStringToRegistry(_In_ HKEY hKey, _In_ const wstring& szValueName, _In_ const wstring& szValue);

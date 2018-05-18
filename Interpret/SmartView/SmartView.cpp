@@ -331,7 +331,7 @@ wstring InterpretMVBinaryAsString(SBinaryArray myBinArray, __ParsingTypeEnum  iS
 			szResult += L"\r\n\r\n"; // STRING_OK
 		}
 
-		szResult += formatmessage(IDS_MVROWBIN, ulRow);
+		szResult += strings::formatmessage(IDS_MVROWBIN, ulRow);
 		szResult += InterpretBinaryAsString(myBinArray.lpbin[ulRow], iStructType, lpMAPIProp);
 	}
 
@@ -386,7 +386,7 @@ wstring InterpretNumberAsString(_PV pV, ULONG ulPropTag, ULONG ulPropNameID, _In
 
 			if (bLabel && !lpszResultString.empty())
 			{
-				lpszResultString = formatmessage(IDS_FLAGS_PREFIX) + lpszResultString;
+				lpszResultString = strings::formatmessage(IDS_FLAGS_PREFIX) + lpszResultString;
 			}
 		}
 
@@ -417,7 +417,7 @@ wstring InterpretMVLongAsString(SLongArray myLongArray, ULONG ulPropTag, ULONG u
 			}
 
 			bHasData = true;
-			szResult += formatmessage(IDS_MVROWLONG,
+			szResult += strings::formatmessage(IDS_MVROWLONG,
 				ulRow,
 				szSmartView.c_str());
 		}
@@ -490,10 +490,10 @@ _Check_return_ wstring PTI8ToSzString(LARGE_INTEGER liI8, bool bLabel)
 {
 	if (bLabel)
 	{
-		return formatmessage(IDS_PTI8FORMATLABEL, liI8.LowPart, liI8.HighPart);
+		return strings::formatmessage(IDS_PTI8FORMATLABEL, liI8.LowPart, liI8.HighPart);
 	}
 
-	return formatmessage(IDS_PTI8FORMAT, liI8.LowPart, liI8.HighPart);
+	return strings::formatmessage(IDS_PTI8FORMAT, liI8.LowPart, liI8.HighPart);
 }
 
 typedef WORD REPLID;
@@ -527,8 +527,8 @@ _Check_return_ wstring FidMidToSzString(LONGLONG llID, bool bLabel)
 	auto pid = reinterpret_cast<ID*>(&llID);
 	if (bLabel)
 	{
-		return formatmessage(IDS_FIDMIDFORMATLABEL, WGetReplId(*pid), UllGetIdGlobcnt(*pid));
+		return strings::formatmessage(IDS_FIDMIDFORMATLABEL, WGetReplId(*pid), UllGetIdGlobcnt(*pid));
 	}
 
-	return formatmessage(IDS_FIDMIDFORMAT, WGetReplId(*pid), UllGetIdGlobcnt(*pid));
+	return strings::formatmessage(IDS_FIDMIDFORMAT, WGetReplId(*pid), UllGetIdGlobcnt(*pid));
 }

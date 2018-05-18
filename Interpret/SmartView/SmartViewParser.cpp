@@ -52,10 +52,10 @@ _Check_return_ wstring SmartViewParser::ToString()
 
 _Check_return_ wstring SmartViewParser::JunkDataToString(const vector<BYTE>& lpJunkData) const
 {
-	if (!lpJunkData.size()) return emptystring;
+	if (!lpJunkData.size()) return strings::emptystring;
 	DebugPrint(DBGSmartView, L"Had 0x%08X = %u bytes left over.\n", static_cast<int>(lpJunkData.size()), static_cast<UINT>(lpJunkData.size()));
-	auto szJunk = formatmessage(IDS_JUNKDATASIZE, lpJunkData.size());
-	szJunk += BinToHexString(lpJunkData, true);
+	auto szJunk = strings::formatmessage(IDS_JUNKDATASIZE, lpJunkData.size());
+	szJunk += strings::BinToHexString(lpJunkData, true);
 	return szJunk;
 }
 
@@ -63,8 +63,8 @@ _Check_return_ wstring SmartViewParser::JunkDataToString(size_t cbJunkData, _In_
 {
 	if (!cbJunkData || !lpJunkData) return L"";
 	DebugPrint(DBGSmartView, L"Had 0x%08X = %u bytes left over.\n", static_cast<int>(cbJunkData), static_cast<UINT>(cbJunkData));
-	auto szJunk = formatmessage(IDS_JUNKDATASIZE, cbJunkData);
-	szJunk += BinToHexString(lpJunkData, static_cast<ULONG>(cbJunkData), true);
+	auto szJunk = strings::formatmessage(IDS_JUNKDATASIZE, cbJunkData);
+	szJunk += strings::BinToHexString(lpJunkData, static_cast<ULONG>(cbJunkData), true);
 	return szJunk;
 }
 

@@ -17,14 +17,14 @@ wstring BuildErrorPropString(_In_ LPSPropValue lpProp)
 		if (MAPI_E_NOT_ENOUGH_MEMORY == lpProp->Value.err ||
 			MAPI_E_NOT_FOUND == lpProp->Value.err)
 		{
-			return loadstring(IDS_OPENBODY);
+			return strings::loadstring(IDS_OPENBODY);
 		}
 
 		break;
 	default:
 		if (MAPI_E_NOT_ENOUGH_MEMORY == lpProp->Value.err)
 		{
-			return loadstring(IDS_OPENSTREAM);
+			return strings::loadstring(IDS_OPENSTREAM);
 		}
 	}
 
@@ -124,11 +124,11 @@ Property ParseProperty(_In_ LPSPropValue lpProp)
 		{
 		case PT_I2:
 			szTmp = std::to_wstring(lpProp->Value.i);
-			szAltTmp = format(L"0x%X", lpProp->Value.i); // STRING_OK
+			szAltTmp = strings::format(L"0x%X", lpProp->Value.i); // STRING_OK
 			break;
 		case PT_LONG:
 			szTmp = std::to_wstring(lpProp->Value.l);
-			szAltTmp = format(L"0x%X", lpProp->Value.l); // STRING_OK
+			szAltTmp = strings::format(L"0x%X", lpProp->Value.l); // STRING_OK
 			break;
 		case PT_R4:
 			szTmp = std::to_wstring(lpProp->Value.flt); // STRING_OK
@@ -137,13 +137,13 @@ Property ParseProperty(_In_ LPSPropValue lpProp)
 			szTmp = std::to_wstring(lpProp->Value.dbl); // STRING_OK
 			break;
 		case PT_CURRENCY:
-			szTmp = format(L"%05I64d", lpProp->Value.cur.int64); // STRING_OK
+			szTmp = strings::format(L"%05I64d", lpProp->Value.cur.int64); // STRING_OK
 			if (szTmp.length() > 4)
 			{
 				szTmp.insert(szTmp.length() - 4, L".");
 			}
 
-			szAltTmp = format(L"0x%08X:0x%08X", static_cast<int>(lpProp->Value.cur.Hi), static_cast<int>(lpProp->Value.cur.Lo)); // STRING_OK
+			szAltTmp = strings::format(L"0x%08X:0x%08X", static_cast<int>(lpProp->Value.cur.Hi), static_cast<int>(lpProp->Value.cur.Lo)); // STRING_OK
 			break;
 		case PT_APPTIME:
 			szTmp = std::to_wstring(lpProp->Value.at); // STRING_OK
@@ -152,28 +152,28 @@ Property ParseProperty(_In_ LPSPropValue lpProp)
 			szTmp = ErrorNameFromErrorCode(lpProp->Value.err); // STRING_OK
 			szAltTmp = BuildErrorPropString(lpProp);
 
-			attributes.AddAttribute(L"err", format(L"0x%08X", lpProp->Value.err)); // STRING_OK
+			attributes.AddAttribute(L"err", strings::format(L"0x%08X", lpProp->Value.err)); // STRING_OK
 			break;
 		case PT_BOOLEAN:
-			szTmp = loadstring(lpProp->Value.b ? IDS_TRUE : IDS_FALSE);
+			szTmp = strings::loadstring(lpProp->Value.b ? IDS_TRUE : IDS_FALSE);
 			break;
 		case PT_OBJECT:
-			szTmp = loadstring(IDS_OBJECT);
+			szTmp = strings::loadstring(IDS_OBJECT);
 			break;
 		case PT_I8: // LARGE_INTEGER
-			szTmp = format(L"0x%08X:0x%08X", static_cast<int>(lpProp->Value.li.HighPart), static_cast<int>(lpProp->Value.li.LowPart)); // STRING_OK
-			szAltTmp = format(L"%I64d", lpProp->Value.li.QuadPart); // STRING_OK
+			szTmp = strings::format(L"0x%08X:0x%08X", static_cast<int>(lpProp->Value.li.HighPart), static_cast<int>(lpProp->Value.li.LowPart)); // STRING_OK
+			szAltTmp = strings::format(L"%I64d", lpProp->Value.li.QuadPart); // STRING_OK
 			break;
 		case PT_STRING8:
 			if (CheckStringProp(lpProp, PT_STRING8))
 			{
-				szTmp = LPCSTRToWstring(lpProp->Value.lpszA);
+				szTmp = strings::LPCSTRToWstring(lpProp->Value.lpszA);
 				bPropXMLSafe = false;
 
 				SBinary sBin = { 0 };
 				sBin.cb = static_cast<ULONG>(szTmp.length());
 				sBin.lpb = reinterpret_cast<LPBYTE>(lpProp->Value.lpszA);
-				szAltTmp = BinToHexString(&sBin, false);
+				szAltTmp = strings::BinToHexString(&sBin, false);
 
 				altAttributes.AddAttribute(L"cb", std::to_wstring(sBin.cb)); // STRING_OK
 			}
@@ -187,7 +187,7 @@ Property ParseProperty(_In_ LPSPropValue lpProp)
 				SBinary sBin = { 0 };
 				sBin.cb = static_cast<ULONG>(szTmp.length()) * sizeof(WCHAR);
 				sBin.lpb = reinterpret_cast<LPBYTE>(lpProp->Value.lpszW);
-				szAltTmp = BinToHexString(&sBin, false);
+				szAltTmp = strings::BinToHexString(&sBin, false);
 
 				altAttributes.AddAttribute(L"cb", std::to_wstring(sBin.cb)); // STRING_OK
 			}
@@ -200,8 +200,8 @@ Property ParseProperty(_In_ LPSPropValue lpProp)
 			szTmp = GUIDToStringAndName(lpProp->Value.lpguid);
 			break;
 		case PT_BINARY:
-			szTmp = BinToHexString(&lpProp->Value.bin, false);
-			szAltTmp = BinToTextString(&lpProp->Value.bin, false);
+			szTmp = strings::BinToHexString(&lpProp->Value.bin, false);
+			szAltTmp = strings::BinToTextString(&lpProp->Value.bin, false);
 			bAltPropXMLSafe = false;
 
 			attributes.AddAttribute(L"cb", std::to_wstring(lpProp->Value.bin.cb)); // STRING_OK
@@ -218,7 +218,7 @@ Property ParseProperty(_In_ LPSPropValue lpProp)
 			}
 			else
 			{
-				szTmp = loadstring(IDS_ACTIONSNULL);
+				szTmp = strings::loadstring(IDS_ACTIONSNULL);
 			}
 
 			bPropXMLSafe = false;

@@ -26,11 +26,11 @@ CHierarchyTableDlg::CHierarchyTableDlg(
 	TRACE_CONSTRUCTOR(CLASS);
 	if (NULL != uidTitle)
 	{
-		m_szTitle = loadstring(uidTitle);
+		m_szTitle = strings::loadstring(uidTitle);
 	}
 	else
 	{
-		m_szTitle = loadstring(IDS_TABLEASHIERARCHY);
+		m_szTitle = strings::loadstring(IDS_TABLEASHIERARCHY);
 	}
 
 	m_nIDContextMenu = nIDContextMenu;

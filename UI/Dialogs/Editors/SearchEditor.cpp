@@ -45,10 +45,10 @@ CSearchEditor::CSearchEditor(
 	{
 		for (auto fuzzyLevel : FuzzyLevels)
 		{
-			lpFuzzyPane->InsertDropString(loadstring(fuzzyLevel.first), ulDropNum++);
+			lpFuzzyPane->InsertDropString(strings::loadstring(fuzzyLevel.first), ulDropNum++);
 		}
 
-		lpFuzzyPane->SetDropDownSelection(loadstring(FuzzyLevels[0].first));
+		lpFuzzyPane->SetDropDownSelection(strings::loadstring(FuzzyLevels[0].first));
 	}
 
 	PopulateFields(NOSKIPFIELD);
@@ -158,7 +158,7 @@ _Check_return_ ULONG CSearchEditor::GetSelectedFuzzyLevel() const
 		auto ulFuzzySelection = lpFuzzyPane->GetDropDownSelection();
 		if (ulFuzzySelection == CB_ERR)
 		{
-			return wstringToUlong(lpFuzzyPane->GetDropStringUseControl(), 16);
+			return strings::wstringToUlong(lpFuzzyPane->GetDropStringUseControl(), 16);
 		}
 		else
 		{

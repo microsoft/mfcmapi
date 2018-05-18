@@ -36,13 +36,13 @@ void EntryList::Parse()
 
 _Check_return_ wstring EntryList::ToStringInternal()
 {
-	auto szEntryList = formatmessage(IDS_ENTRYLISTDATA,
+	auto szEntryList = strings::formatmessage(IDS_ENTRYLISTDATA,
 		m_EntryCount,
 		m_Pad);
 
 	for (DWORD i = 0; i < m_Entry.size(); i++)
 	{
-		szEntryList += formatmessage(IDS_ENTRYLISTENTRYID,
+		szEntryList += strings::formatmessage(IDS_ENTRYLISTENTRYID,
 			i,
 			m_Entry[i].EntryLength,
 			m_Entry[i].EntryLengthPad);

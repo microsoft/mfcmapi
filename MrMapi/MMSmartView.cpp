@@ -46,7 +46,7 @@ void DoSmartView(_In_ MYOPTIONS ProgOpts)
 				}
 				else
 				{
-					bin = HexStringToBin(LPCSTRToWstring(reinterpret_cast<LPCSTR>(lpbIn)));
+					bin = strings::HexStringToBin(strings::LPCSTRToWstring(reinterpret_cast<LPCSTR>(lpbIn)));
 					Bin.cb = static_cast<ULONG>(bin.size());
 					Bin.lpb = bin.data();
 				}
@@ -60,7 +60,7 @@ void DoSmartView(_In_ MYOPTIONS ProgOpts)
 					}
 					else
 					{
-						wprintf(L"%ws\n", StripCarriage(szString).c_str());
+						wprintf(L"%ws\n", strings::StripCarriage(szString).c_str());
 					}
 				}
 

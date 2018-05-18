@@ -48,35 +48,35 @@ void WebViewPersistStream::Parse()
 
 _Check_return_ wstring WebViewPersistStream::ToStringInternal()
 {
-	auto szWebViewPersistStream = formatmessage(IDS_WEBVIEWSTREAMHEADER, m_cWebViews);
+	auto szWebViewPersistStream = strings::formatmessage(IDS_WEBVIEWSTREAMHEADER, m_cWebViews);
 	for (ULONG i = 0; i < m_lpWebViews.size(); i++)
 	{
 		auto szVersion = InterpretFlags(flagWebViewVersion, m_lpWebViews[i].dwVersion);
 		auto szType = InterpretFlags(flagWebViewType, m_lpWebViews[i].dwType);
 		auto szFlags = InterpretFlags(flagWebViewFlags, m_lpWebViews[i].dwFlags);
 
-		szWebViewPersistStream += formatmessage(
+		szWebViewPersistStream += strings::formatmessage(
 			IDS_WEBVIEWHEADER,
 			i,
 			m_lpWebViews[i].dwVersion, szVersion.c_str(),
 			m_lpWebViews[i].dwType, szType.c_str(),
 			m_lpWebViews[i].dwFlags, szFlags.c_str());
 
-		szWebViewPersistStream += BinToHexString(m_lpWebViews[i].dwUnused, true);
+		szWebViewPersistStream += strings::BinToHexString(m_lpWebViews[i].dwUnused, true);
 
-		szWebViewPersistStream += formatmessage(IDS_WEBVIEWCBDATA, m_lpWebViews[i].cbData);
+		szWebViewPersistStream += strings::formatmessage(IDS_WEBVIEWCBDATA, m_lpWebViews[i].cbData);
 
 		switch (m_lpWebViews[i].dwType)
 		{
 		case WEBVIEWURL:
 		{
-			szWebViewPersistStream += formatmessage(IDS_WEBVIEWURL);
-			szWebViewPersistStream += BinToTextStringW(m_lpWebViews[i].lpData, false);
+			szWebViewPersistStream += strings::formatmessage(IDS_WEBVIEWURL);
+			szWebViewPersistStream += strings::BinToTextStringW(m_lpWebViews[i].lpData, false);
 			break;
 		}
 		default:
-			szWebViewPersistStream += formatmessage(IDS_WEBVIEWDATA);
-			szWebViewPersistStream += BinToHexString(m_lpWebViews[i].lpData, true);
+			szWebViewPersistStream += strings::formatmessage(IDS_WEBVIEWDATA);
+			szWebViewPersistStream += strings::BinToHexString(m_lpWebViews[i].lpData, true);
 			break;
 		}
 	}

@@ -97,7 +97,7 @@ _Check_return_ ULONG CHexEditor::HandleChange(UINT nID)
 		auto szTmpString = GetStringW(HEXED_BASE64);
 
 		// remove any whitespace before decoding
-		szTmpString = CleanString(szTmpString);
+		szTmpString = strings::CleanString(szTmpString);
 
 		cchEncodeStr = szTmpString.length();
 		auto bin = Base64Decode(szTmpString);
@@ -188,10 +188,10 @@ void CHexEditor::OnEditAction1()
 	if (S_OK == hRes)
 	{
 		auto file = CFileDialogExW::OpenFile(
-			emptystring,
-			emptystring,
+			strings::emptystring,
+			strings::emptystring,
 			OFN_FILEMUSTEXIST,
-			loadstring(IDS_ALLFILES),
+			strings::loadstring(IDS_ALLFILES),
 			this);
 		if (!file.empty())
 		{
@@ -227,10 +227,10 @@ void CHexEditor::OnEditAction2()
 	if (S_OK == hRes)
 	{
 		auto file = CFileDialogExW::SaveAs(
-			emptystring,
-			emptystring,
+			strings::emptystring,
+			strings::emptystring,
 			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-			loadstring(IDS_ALLFILES),
+			strings::loadstring(IDS_ALLFILES),
 			this);
 		if (!file.empty())
 		{

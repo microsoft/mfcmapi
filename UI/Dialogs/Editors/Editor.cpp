@@ -308,7 +308,7 @@ BOOL CEditor::OnInitDialog()
 {
 	auto hRes = S_OK;
 	wstring szPrefix;
-	auto szPostfix = loadstring(m_uidTitle);
+	auto szPostfix = strings::loadstring(m_uidTitle);
 	wstring szFullString;
 
 	auto bRet = CMyDialog::OnInitDialog();
@@ -322,12 +322,12 @@ BOOL CEditor::OnInitDialog()
 	{
 		if (m_uidPrompt)
 		{
-			szPrefix = loadstring(m_uidPrompt);
+			szPrefix = strings::loadstring(m_uidPrompt);
 		}
 		else
 		{
 			// Make sure we clear the prefix out or it might show up in the prompt
-			szPrefix = emptystring;
+			szPrefix = strings::emptystring;
 		}
 
 		szFullString = szPrefix + m_szPromptPostFix;
@@ -389,9 +389,9 @@ BOOL CEditor::OnInitDialog()
 
 	if (m_bButtonFlags & CEDITOR_BUTTON_OK)
 	{
-		auto szOk = loadstring(IDS_OK);
+		auto szOk = strings::loadstring(IDS_OK);
 		EC_B(m_OkButton.Create(
-			wstringTotstring(szOk).c_str(),
+			strings::wstringTotstring(szOk).c_str(),
 			WS_TABSTOP
 			| WS_CHILD
 			| WS_CLIPSIBLINGS
@@ -403,9 +403,9 @@ BOOL CEditor::OnInitDialog()
 
 	if (m_bButtonFlags & CEDITOR_BUTTON_ACTION1)
 	{
-		auto szActionButtonText1 = loadstring(m_uidActionButtonText1);
+		auto szActionButtonText1 = strings::loadstring(m_uidActionButtonText1);
 		EC_B(m_ActionButton1.Create(
-			wstringTotstring(szActionButtonText1).c_str(),
+			strings::wstringTotstring(szActionButtonText1).c_str(),
 			WS_TABSTOP
 			| WS_CHILD
 			| WS_CLIPSIBLINGS
@@ -420,9 +420,9 @@ BOOL CEditor::OnInitDialog()
 
 	if (m_bButtonFlags & CEDITOR_BUTTON_ACTION2)
 	{
-		auto szActionButtonText2 = loadstring(m_uidActionButtonText2);
+		auto szActionButtonText2 = strings::loadstring(m_uidActionButtonText2);
 		EC_B(m_ActionButton2.Create(
-			wstringTotstring(szActionButtonText2).c_str(),
+			strings::wstringTotstring(szActionButtonText2).c_str(),
 			WS_TABSTOP
 			| WS_CHILD
 			| WS_CLIPSIBLINGS
@@ -437,9 +437,9 @@ BOOL CEditor::OnInitDialog()
 
 	if (m_bButtonFlags & CEDITOR_BUTTON_ACTION3)
 	{
-		auto szActionButtonText3 = loadstring(m_uidActionButtonText3);
+		auto szActionButtonText3 = strings::loadstring(m_uidActionButtonText3);
 		EC_B(m_ActionButton3.Create(
-			wstringTotstring(szActionButtonText3).c_str(),
+			strings::wstringTotstring(szActionButtonText3).c_str(),
 			WS_TABSTOP
 			| WS_CHILD
 			| WS_CLIPSIBLINGS
@@ -454,9 +454,9 @@ BOOL CEditor::OnInitDialog()
 
 	if (m_bButtonFlags & CEDITOR_BUTTON_CANCEL)
 	{
-		auto szCancel = loadstring(IDS_CANCEL);
+		auto szCancel = strings::loadstring(IDS_CANCEL);
 		EC_B(m_CancelButton.Create(
-			wstringTotstring(szCancel).c_str(),
+			strings::wstringTotstring(szCancel).c_str(),
 			WS_TABSTOP
 			| WS_CHILD
 			| WS_CLIPSIBLINGS
@@ -517,7 +517,7 @@ GUID CEditor::GetSelectedGUID(ULONG iControl, bool bByteSwapped) const
 		return pane->GetSelectedGUID(bByteSwapped);
 	}
 
-	return {0};
+	return { 0 };
 }
 
 _Check_return_ HRESULT CEditor::DisplayDialog()
@@ -648,7 +648,7 @@ _Check_return_ SIZE CEditor::ComputeWorkArea(SIZE sScreen)
 	}
 
 	DebugPrint(DBGDraw, L"CEditor::ComputeWorkArea cx:%d \n", cx);
-	(void) SelectObject(hdc, hfontOld);
+	(void)SelectObject(hdc, hfontOld);
 
 	// Throw all that work out if we have enough buttons
 	cx = max(cx, (int)(m_cButtons * m_iButtonWidth + m_iMargin * (m_cButtons - 1)));
@@ -1008,7 +1008,7 @@ void CEditor::SetStringA(ULONG i, const string& szMsg) const
 	auto pane = dynamic_cast<TextPane*>(GetPane(i));
 	if (pane)
 	{
-		pane->SetStringW(stringTowstring(szMsg));
+		pane->SetStringW(strings::stringTowstring(szMsg));
 	}
 }
 
@@ -1033,7 +1033,7 @@ void CEditor::SetStringf(ULONG i, LPCWSTR szMsg, ...) const
 	{
 		va_list argList = nullptr;
 		va_start(argList, szMsg);
-		SetStringW(i, formatV(szMsg, argList));
+		SetStringW(i, strings::formatV(szMsg, argList));
 		va_end(argList);
 	}
 	else
@@ -1047,7 +1047,7 @@ void CEditor::LoadString(ULONG i, UINT uidMsg) const
 {
 	if (uidMsg)
 	{
-		SetStringW(i, loadstring(uidMsg));
+		SetStringW(i, strings::loadstring(uidMsg));
 	}
 	else
 	{
@@ -1074,7 +1074,7 @@ void CEditor::SetSize(ULONG i, size_t cb) const
 // Returns a binary buffer which is represented by the hex string
 vector<BYTE> CEditor::GetBinary(ULONG i) const
 {
-	return HexStringToBin(GetStringW(i));
+	return strings::HexStringToBin(GetStringW(i));
 }
 
 // converts string in a text(edit) control into an entry ID
@@ -1099,10 +1099,10 @@ _Check_return_ HRESULT CEditor::GetEntryID(ULONG i, bool bIsBase64, _Out_ size_t
 		}
 		else // Entry was hexized string
 		{
-			bin = HexStringToBin(szString);
+			bin = strings::HexStringToBin(szString);
 		}
 
-		*lppEID = reinterpret_cast<LPENTRYID>(ByteVectorToLPBYTE(bin));
+		*lppEID = reinterpret_cast<LPENTRYID>(strings::ByteVectorToLPBYTE(bin));
 		*lpcbBin = bin.size();
 	}
 
@@ -1165,7 +1165,7 @@ wstring CEditor::GetStringW(ULONG i) const
 		return pane->GetStringW();
 	}
 
-	return emptystring;
+	return strings::emptystring;
 }
 
 _Check_return_ string CEditor::GetStringA(ULONG iControl) const
@@ -1173,7 +1173,7 @@ _Check_return_ string CEditor::GetStringA(ULONG iControl) const
 	auto pane = dynamic_cast<TextPane*>(GetPane(iControl));
 	if (pane)
 	{
-		return wstringTostring(pane->GetStringW());
+		return strings::wstringTostring(pane->GetStringW());
 	}
 
 	return "";
@@ -1184,7 +1184,7 @@ _Check_return_ ULONG CEditor::GetHex(ULONG i) const
 	auto pane = dynamic_cast<TextPane*>(GetPane(i));
 	if (pane)
 	{
-		return wstringToUlong(pane->GetStringW(), 16);
+		return strings::wstringToUlong(pane->GetStringW(), 16);
 	}
 
 	return 0;
@@ -1244,7 +1244,7 @@ _Check_return_ ULONG CEditor::GetDecimal(ULONG i) const
 	auto pane = dynamic_cast<TextPane*>(GetPane(i));
 	if (pane)
 	{
-		return wstringToUlong(pane->GetStringW(), 10);
+		return strings::wstringToUlong(pane->GetStringW(), 10);
 	}
 
 	return 0;

@@ -90,14 +90,14 @@ void ExtendedFlags::Parse()
 
 _Check_return_ wstring ExtendedFlags::ToStringInternal()
 {
-	auto szExtendedFlags = formatmessage(IDS_EXTENDEDFLAGSHEADER, m_ulNumFlags);
+	auto szExtendedFlags = strings::formatmessage(IDS_EXTENDEDFLAGSHEADER, m_ulNumFlags);
 
 	if (m_pefExtendedFlags.size())
 	{
 		for (const auto& extendedFlag : m_pefExtendedFlags)
 		{
 			auto szFlags = InterpretFlags(flagExtendedFolderFlagType, extendedFlag.Id);
-			szExtendedFlags += formatmessage(IDS_EXTENDEDFLAGID,
+			szExtendedFlags += strings::formatmessage(IDS_EXTENDEDFLAGID,
 				extendedFlag.Id, szFlags.c_str(),
 				extendedFlag.Cb);
 
@@ -105,25 +105,25 @@ _Check_return_ wstring ExtendedFlags::ToStringInternal()
 			{
 			case EFPB_FLAGS:
 				szFlags = InterpretFlags(flagExtendedFolderFlag, extendedFlag.Data.ExtendedFlags);
-				szExtendedFlags += formatmessage(IDS_EXTENDEDFLAGDATAFLAG, extendedFlag.Data.ExtendedFlags, szFlags.c_str());
+				szExtendedFlags += strings::formatmessage(IDS_EXTENDEDFLAGDATAFLAG, extendedFlag.Data.ExtendedFlags, szFlags.c_str());
 				break;
 			case EFPB_CLSIDID:
 				szFlags = GUIDToString(&extendedFlag.Data.SearchFolderID);
-				szExtendedFlags += formatmessage(IDS_EXTENDEDFLAGDATASFID, szFlags.c_str());
+				szExtendedFlags += strings::formatmessage(IDS_EXTENDEDFLAGDATASFID, szFlags.c_str());
 				break;
 			case EFPB_SFTAG:
-				szExtendedFlags += formatmessage(IDS_EXTENDEDFLAGDATASFTAG,
+				szExtendedFlags += strings::formatmessage(IDS_EXTENDEDFLAGDATASFTAG,
 					extendedFlag.Data.SearchFolderTag);
 				break;
 			case EFPB_TODO_VERSION:
-				szExtendedFlags += formatmessage(IDS_EXTENDEDFLAGDATATODOVERSION, extendedFlag.Data.ToDoFolderVersion);
+				szExtendedFlags += strings::formatmessage(IDS_EXTENDEDFLAGDATATODOVERSION, extendedFlag.Data.ToDoFolderVersion);
 				break;
 			}
 
 			if (extendedFlag.lpUnknownData.size())
 			{
-				szExtendedFlags += loadstring(IDS_EXTENDEDFLAGUNKNOWN);
-				szExtendedFlags += BinToHexString(extendedFlag.lpUnknownData, true);
+				szExtendedFlags += strings::loadstring(IDS_EXTENDEDFLAGUNKNOWN);
+				szExtendedFlags += strings::BinToHexString(extendedFlag.lpUnknownData, true);
 			}
 		}
 	}

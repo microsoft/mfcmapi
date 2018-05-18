@@ -13,7 +13,7 @@ DropDownPane* DropDownPane::Create(UINT uidLabel, ULONG ulDropList, _In_opt_coun
 	{
 		for (ULONG iDropNum = 0; iDropNum < ulDropList; iDropNum++)
 		{
-			pane->InsertDropString(loadstring(lpuidDropList[iDropNum]), lpuidDropList[iDropNum]);
+			pane->InsertDropString(strings::loadstring(lpuidDropList[iDropNum]), lpuidDropList[iDropNum]);
 		}
 	}
 
@@ -156,7 +156,7 @@ void DropDownPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 	auto iDropNum = 0;
 	for (const auto& drop : m_DropList)
 	{
-		m_DropDown.InsertString(iDropNum, wstringTotstring(drop.first).c_str());
+		m_DropDown.InsertString(iDropNum, strings::wstringTotstring(drop.first).c_str());
 		m_DropDown.SetItemData(iDropNum, drop.second);
 		iDropNum++;
 	}
@@ -267,7 +267,7 @@ void DropDownPane::SetDropDownSelection(_In_ const wstring& szText)
 	if (!m_bInitialized) return;
 
 	auto hRes = S_OK;
-	auto text = wstringTotstring(m_lpszSelectionString);
+	auto text = strings::wstringTotstring(m_lpszSelectionString);
 	auto iSelect = m_DropDown.SelectString(0, text.c_str());
 
 	// if we can't select, try pushing the text in there

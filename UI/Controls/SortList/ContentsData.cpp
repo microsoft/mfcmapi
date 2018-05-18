@@ -146,7 +146,7 @@ ContentsData::ContentsData(_In_ LPSRow lpsRowData)
 		PR_EMAIL_ADDRESS);
 	if (CheckStringProp(lpProp, PT_TSTRING))
 	{
-		m_szDN = LPCTSTRToWstring(lpProp->Value.LPSZ);
+		m_szDN = strings::LPCTSTRToWstring(lpProp->Value.LPSZ);
 		DebugPrint(DBGGeneric, L"\tPR_EMAIL_ADDRESS = %ws\n", m_szDN.c_str());
 	}
 }

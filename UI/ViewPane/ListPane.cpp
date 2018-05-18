@@ -64,10 +64,10 @@ void ListPane::Initialize(int iControl, _In_ CWnd* pParent, _In_ HDC hdc)
 	{
 		for (auto iButton = 0; iButton < NUMLISTBUTTONS; iButton++)
 		{
-			auto szButtonText = loadstring(ListButtons[iButton]);
+			auto szButtonText = strings::loadstring(ListButtons[iButton]);
 
 			EC_B(m_ButtonArray[iButton].Create(
-				wstringTotstring(szButtonText).c_str(),
+				strings::wstringTotstring(szButtonText).c_str(),
 				WS_TABSTOP
 				| WS_CHILD
 				| WS_CLIPSIBLINGS
@@ -246,7 +246,7 @@ _Check_return_ SortListData* ListPane::GetSelectedListRowData() const
 
 void ListPane::InsertColumn(int nCol, UINT uidText)
 {
-	m_List.InsertColumn(nCol, wstringTotstring(loadstring(uidText)).c_str());
+	m_List.InsertColumn(nCol, strings::wstringTotstring(strings::loadstring(uidText)).c_str());
 }
 
 void ListPane::SetColumnType(int nCol, ULONG ulPropType) const

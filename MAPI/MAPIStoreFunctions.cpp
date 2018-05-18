@@ -330,7 +330,7 @@ string GetServerName(_In_ LPMAPISESSION lpSession)
 
 		if (S_OK == hRes)
 		{
-			serverName = wstringTostring(MyData.GetStringW(0));
+			serverName = strings::wstringTostring(MyData.GetStringW(0));
 		}
 	}
 #endif
@@ -368,7 +368,7 @@ _Check_return_ HRESULT CreateStoreEntryID(
 
 		EC_MAPI(lpXManageStore->CreateStoreEntryID(
 			LPSTR(lpszMsgStoreDN.c_str()),
-			lpszMailboxDN.empty() ? nullptr: LPSTR(lpszMailboxDN.c_str()),
+			lpszMailboxDN.empty() ? nullptr : LPSTR(lpszMailboxDN.c_str()),
 			ulFlags,
 			lpcbEntryID,
 			lppEntryID));
@@ -666,7 +666,7 @@ _Check_return_ HRESULT OpenMailboxWithPrompt(
 		IDS_OPENWITHFLAGSPROMPT,
 		CEDITOR_BUTTON_OK | CEDITOR_BUTTON_CANCEL);
 	MyPrompt.SetPromptPostFix(AllFlagsToString(PROP_ID(PR_PROFILE_OPEN_FLAGS), true));
-	MyPrompt.InitPane(0, TextPane::CreateSingleLinePane(IDS_SERVERNAME, stringTowstring(szServerName), false));
+	MyPrompt.InitPane(0, TextPane::CreateSingleLinePane(IDS_SERVERNAME, strings::stringTowstring(szServerName), false));
 	MyPrompt.InitPane(1, TextPane::CreateSingleLinePane(IDS_USERDN, szMailboxDN, false));
 	MyPrompt.InitPane(2, TextPane::CreateSingleLinePane(IDS_USER_SMTP_ADDRESS, false));
 	MyPrompt.InitPane(3, TextPane::CreateSingleLinePane(IDS_CREATESTORENTRYIDFLAGS, false));
@@ -678,8 +678,8 @@ _Check_return_ HRESULT OpenMailboxWithPrompt(
 		WC_H(OpenOtherUsersMailbox(
 			lpMAPISession,
 			lpMDB,
-			wstringTostring(MyPrompt.GetStringW(0)),
-			wstringTostring(MyPrompt.GetStringW(1)),
+			strings::wstringTostring(MyPrompt.GetStringW(0)),
+			strings::wstringTostring(MyPrompt.GetStringW(1)),
 			MyPrompt.GetStringW(2),
 			MyPrompt.GetHex(3),
 			MyPrompt.GetCheck(4),
@@ -858,7 +858,7 @@ _Check_return_ HRESULT OpenPublicMessageStore(
 					lpPublicMDBNonAdmin,
 					szServerDN,
 					"",
-					emptystring,
+					strings::emptystring,
 					ulFlags,
 					false,
 					lppPublicMDB));

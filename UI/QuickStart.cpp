@@ -296,7 +296,7 @@ void OnQSDisplayNicknameCache(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 
 		MAPIFreeBuffer(lpsProp);
 	}
-	lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, emptystring);
+	lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, strings::emptystring);
 }
 
 enum
@@ -334,7 +334,7 @@ wstring FormatQuota(LPSPropValue lpProp, ULONG ulPropTag, const wstring& szName)
 {
 	if (lpProp && lpProp->ulPropTag == ulPropTag)
 	{
-		return formatmessage(IDS_QUOTAPROP, szName.c_str(), lpProp->Value.l);
+		return strings::formatmessage(IDS_QUOTAPROP, szName.c_str(), lpProp->Value.l);
 	}
 
 	return L"";
@@ -372,15 +372,15 @@ void OnQSDisplayQuota(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 				wstring szDisplayName = lpProps[qPR_DISPLAY_NAME_W].Value.lpszW;
 				if (szDisplayName.empty())
 				{
-					szDisplayName = loadstring(IDS_NOTFOUND);
+					szDisplayName = strings::loadstring(IDS_NOTFOUND);
 				}
 
-				szQuotaString += formatmessage(IDS_QUOTADISPLAYNAME, szDisplayName.c_str());
+				szQuotaString += strings::formatmessage(IDS_QUOTADISPLAYNAME, szDisplayName.c_str());
 			}
 
 			if (lpProps[qPR_MESSAGE_SIZE_EXTENDED].ulPropTag == PR_MESSAGE_SIZE_EXTENDED)
 			{
-				szQuotaString += formatmessage(IDS_QUOTASIZE,
+				szQuotaString += strings::formatmessage(IDS_QUOTASIZE,
 					lpProps[qPR_MESSAGE_SIZE_EXTENDED].Value.li.QuadPart,
 					lpProps[qPR_MESSAGE_SIZE_EXTENDED].Value.li.QuadPart / 1024);
 			}
@@ -397,12 +397,12 @@ void OnQSDisplayQuota(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 			if (lpProps[qPR_STORE_SUPPORT_MASK].ulPropTag == PR_STORE_SUPPORT_MASK)
 			{
 				auto szFlags = InterpretNumberAsStringProp(lpProps[qPR_STORE_SUPPORT_MASK].Value.l, PR_STORE_SUPPORT_MASK);
-				szQuotaString += formatmessage(IDS_QUOTAMASK, lpProps[qPR_STORE_SUPPORT_MASK].Value.l, szFlags.c_str());
+				szQuotaString += strings::formatmessage(IDS_QUOTAMASK, lpProps[qPR_STORE_SUPPORT_MASK].Value.l, szFlags.c_str());
 			}
 
 			if (lpProps[qPR_MDB_PROVIDER].ulPropTag == PR_MDB_PROVIDER)
 			{
-				szQuotaString += formatmessage(IDS_QUOTAPROVIDER, BinToHexString(&lpProps[qPR_MDB_PROVIDER].Value.bin, true).c_str());
+				szQuotaString += strings::formatmessage(IDS_QUOTAPROVIDER, strings::BinToHexString(&lpProps[qPR_MDB_PROVIDER].Value.bin, true).c_str());
 			}
 
 			MAPIFreeBuffer(lpProps);
@@ -421,7 +421,7 @@ void OnQSDisplayQuota(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 		WC_H(MyResults.DisplayDialog());
 	}
 
-	lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, emptystring);
+	lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, strings::emptystring);
 }
 
 void OnQSOpenUser(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)

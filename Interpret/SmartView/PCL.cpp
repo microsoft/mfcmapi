@@ -46,17 +46,17 @@ void PCL::Parse()
 
 _Check_return_ wstring PCL::ToStringInternal()
 {
-	auto szPCLString = formatmessage(IDS_PCLHEADER, m_cXID);
+	auto szPCLString = strings::formatmessage(IDS_PCLHEADER, m_cXID);
 
 	if (m_lpXID.size())
 	{
 		for (ULONG i = 0; i < m_lpXID.size(); i++)
 		{
-			szPCLString += formatmessage(IDS_PCLXID,
+			szPCLString += strings::formatmessage(IDS_PCLXID,
 				i,
 				m_lpXID[i].XidSize,
 				GUIDToString(&m_lpXID[i].NamespaceGuid).c_str(),
-				BinToHexString(m_lpXID[i].LocalID, true).c_str());
+				strings::BinToHexString(m_lpXID[i].LocalID, true).c_str());
 		}
 	}
 

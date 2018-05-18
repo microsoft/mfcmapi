@@ -134,7 +134,7 @@ CPropertyEditor::CPropertyEditor(
 	// So by definition, we're already dirty
 	if (!m_lpsInputValue) m_bDirty = true;
 
-	auto szPromptPostFix = format(L"%ws%ws", uidPrompt ? L"\r\n" : L"", TagToString(m_ulPropTag | (m_bMVRow ? MV_FLAG : NULL), m_lpMAPIProp, m_bIsAB, false).c_str()); // STRING_OK
+	auto szPromptPostFix = strings::format(L"%ws%ws", uidPrompt ? L"\r\n" : L"", TagToString(m_ulPropTag | (m_bMVRow ? MV_FLAG : NULL), m_lpMAPIProp, m_bIsAB, false).c_str()); // STRING_OK
 	SetPromptPostFix(szPromptPostFix);
 
 	InitPropertyControls();
@@ -368,7 +368,7 @@ void CPropertyEditor::InitPropertyControls()
 				lpPane->SetCount(m_lpsInputValue->Value.bin.cb);
 				if (m_lpsInputValue->Value.bin.cb != 0)
 				{
-					lpPane->SetStringW(BinToHexString(&m_lpsInputValue->Value.bin, false));
+					lpPane->SetStringW(strings::BinToHexString(&m_lpsInputValue->Value.bin, false));
 				}
 
 				SetStringA(1, string(LPCSTR(m_lpsInputValue->Value.bin.lpb), m_lpsInputValue->Value.bin.cb));
@@ -504,49 +504,49 @@ void CPropertyEditor::WriteStringsToSPropValue()
 		switch (PROP_TYPE(m_ulPropTag))
 		{
 		case PT_I2: // treat as signed long
-			m_lpsOutputValue->Value.i = static_cast<short int>(wstringToLong(GetStringW(0), 10));
+			m_lpsOutputValue->Value.i = static_cast<short int>(strings::wstringToLong(GetStringW(0), 10));
 			break;
 		case PT_LONG: // treat as unsigned long
-			m_lpsOutputValue->Value.l = static_cast<LONG>(wstringToUlong(GetStringW(0), 10));
+			m_lpsOutputValue->Value.l = static_cast<LONG>(strings::wstringToUlong(GetStringW(0), 10));
 			break;
 		case PT_R4:
-			m_lpsOutputValue->Value.flt = static_cast<float>(wstringToDouble(GetStringW(0)));
+			m_lpsOutputValue->Value.flt = static_cast<float>(strings::wstringToDouble(GetStringW(0)));
 			break;
 		case PT_DOUBLE:
-			m_lpsOutputValue->Value.dbl = wstringToDouble(GetStringW(0));
+			m_lpsOutputValue->Value.dbl = strings::wstringToDouble(GetStringW(0));
 			break;
 		case PT_CURRENCY:
-			m_lpsOutputValue->Value.cur.Hi = wstringToUlong(GetStringW(0), 16);
-			m_lpsOutputValue->Value.cur.Lo = wstringToUlong(GetStringW(1), 16);
+			m_lpsOutputValue->Value.cur.Hi = strings::wstringToUlong(GetStringW(0), 16);
+			m_lpsOutputValue->Value.cur.Lo = strings::wstringToUlong(GetStringW(1), 16);
 			break;
 		case PT_APPTIME:
-			m_lpsOutputValue->Value.at = wstringToDouble(GetStringW(0));
+			m_lpsOutputValue->Value.at = strings::wstringToDouble(GetStringW(0));
 			break;
 		case PT_ERROR: // unsigned
-			m_lpsOutputValue->Value.err = static_cast<SCODE>(wstringToUlong(GetStringW(0), 16));
+			m_lpsOutputValue->Value.err = static_cast<SCODE>(strings::wstringToUlong(GetStringW(0), 16));
 			break;
 		case PT_BOOLEAN:
 			m_lpsOutputValue->Value.b = static_cast<unsigned short>(GetCheck(0));
 			break;
 		case PT_I8:
-			m_lpsOutputValue->Value.li.HighPart = static_cast<long>(wstringToUlong(GetStringW(0), 16));
-			m_lpsOutputValue->Value.li.LowPart = static_cast<long>(wstringToUlong(GetStringW(1), 16));
+			m_lpsOutputValue->Value.li.HighPart = static_cast<long>(strings::wstringToUlong(GetStringW(0), 16));
+			m_lpsOutputValue->Value.li.LowPart = static_cast<long>(strings::wstringToUlong(GetStringW(1), 16));
 			break;
 		case PT_STRING8:
 			// We read strings out of the hex control in order to preserve any hex level tweaks the user
 			// may have done. The RichEdit control likes throwing them away.
-			bin = HexStringToBin(GetStringW(1));
+			bin = strings::HexStringToBin(GetStringW(1));
 			m_lpsOutputValue->Value.lpszA = reinterpret_cast<LPSTR>(ByteVectorToMAPI(bin, m_lpAllocParent));
 			break;
 		case PT_UNICODE:
 			// We read strings out of the hex control in order to preserve any hex level tweaks the user
 			// may have done. The RichEdit control likes throwing them away.
-			bin = HexStringToBin(GetStringW(1));
+			bin = strings::HexStringToBin(GetStringW(1));
 			m_lpsOutputValue->Value.lpszW = reinterpret_cast<LPWSTR>(ByteVectorToMAPI(bin, m_lpAllocParent));
 			break;
 		case PT_SYSTIME:
-			m_lpsOutputValue->Value.ft.dwLowDateTime = wstringToUlong(GetStringW(0), 16);
-			m_lpsOutputValue->Value.ft.dwHighDateTime = wstringToUlong(GetStringW(1), 16);
+			m_lpsOutputValue->Value.ft.dwLowDateTime = strings::wstringToUlong(GetStringW(0), 16);
+			m_lpsOutputValue->Value.ft.dwHighDateTime = strings::wstringToUlong(GetStringW(1), 16);
 			break;
 		case PT_CLSID:
 			EC_H(MAPIAllocateMore(
@@ -561,7 +561,7 @@ void CPropertyEditor::WriteStringsToSPropValue()
 			break;
 		case PT_BINARY:
 			// remember we already read szTmpString and ulStrLen and found ulStrLen was even
-			bin = HexStringToBin(GetStringW(0));
+			bin = strings::HexStringToBin(GetStringW(0));
 			m_lpsOutputValue->Value.bin.lpb = ByteVectorToMAPI(bin, m_lpAllocParent);
 			m_lpsOutputValue->Value.bin.cb = static_cast<ULONG>(bin.size());
 			break;
@@ -650,12 +650,12 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		szTmpString = GetStringW(i);
 		if (0 == i)
 		{
-			iVal = static_cast<short int>(wstringToLong(szTmpString, 10));
+			iVal = static_cast<short int>(strings::wstringToLong(szTmpString, 10));
 			SetHex(1, iVal);
 		}
 		else if (1 == i)
 		{
-			lVal = static_cast<short int>(wstringToLong(szTmpString, 16));
+			lVal = static_cast<short int>(strings::wstringToLong(szTmpString, 16));
 			SetDecimal(0, lVal);
 		}
 
@@ -676,12 +676,12 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		szTmpString = GetStringW(i);
 		if (0 == i)
 		{
-			lVal = static_cast<LONG>(wstringToUlong(szTmpString, 10));
+			lVal = static_cast<LONG>(strings::wstringToUlong(szTmpString, 10));
 			SetHex(1, lVal);
 		}
 		else if (1 == i)
 		{
-			lVal = static_cast<LONG>(wstringToUlong(szTmpString, 16));
+			lVal = static_cast<LONG>(strings::wstringToUlong(szTmpString, 16));
 			SetStringf(0, L"%d", lVal); // STRING_OK
 		}
 
@@ -702,16 +702,16 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		if (0 == i || 1 == i)
 		{
 			szTmpString = GetStringW(0);
-			curVal.Hi = wstringToUlong(szTmpString, 16);
+			curVal.Hi = strings::wstringToUlong(szTmpString, 16);
 			szTmpString = GetStringW(1);
-			curVal.Lo = wstringToUlong(szTmpString, 16);
+			curVal.Lo = strings::wstringToUlong(szTmpString, 16);
 			SetStringW(2, CurrencyToString(curVal));
 		}
 		else if (2 == i)
 		{
 			szTmpString = GetStringW(i);
-			szTmpString = StripCharacter(szTmpString, L'.');
-			curVal.int64 = wstringToInt64(szTmpString);
+			szTmpString = strings::StripCharacter(szTmpString, L'.');
+			curVal.int64 = strings::wstringToInt64(szTmpString);
 			SetHex(0, static_cast<int>(curVal.Hi));
 			SetHex(1, static_cast<int>(curVal.Lo));
 		}
@@ -721,15 +721,15 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		if (0 == i || 1 == i)
 		{
 			szTmpString = GetStringW(0);
-			liVal.HighPart = static_cast<long>(wstringToUlong(szTmpString, 16));
+			liVal.HighPart = static_cast<long>(strings::wstringToUlong(szTmpString, 16));
 			szTmpString = GetStringW(1);
-			liVal.LowPart = static_cast<long>(wstringToUlong(szTmpString, 16));
+			liVal.LowPart = static_cast<long>(strings::wstringToUlong(szTmpString, 16));
 			SetStringf(2, L"%I64d", liVal.QuadPart); // STRING_OK
 		}
 		else if (2 == i)
 		{
 			szTmpString = GetStringW(i);
-			liVal.QuadPart = wstringToInt64(szTmpString);
+			liVal.QuadPart = strings::wstringToInt64(szTmpString);
 			SetHex(0, static_cast<int>(liVal.HighPart));
 			SetHex(1, static_cast<int>(liVal.LowPart));
 		}
@@ -749,9 +749,9 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 		break;
 	case PT_SYSTIME: // components are unsigned hex
 		szTmpString = GetStringW(0);
-		ftVal.dwLowDateTime = wstringToUlong(szTmpString, 16);
+		ftVal.dwLowDateTime = strings::wstringToUlong(szTmpString, 16);
 		szTmpString = GetStringW(1);
-		ftVal.dwHighDateTime = wstringToUlong(szTmpString, 16);
+		ftVal.dwHighDateTime = strings::wstringToUlong(szTmpString, 16);
 
 		FileTimeToString(ftVal, szTemp1, szTemp2);
 		SetStringW(2, szTemp1);

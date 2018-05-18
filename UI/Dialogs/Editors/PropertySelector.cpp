@@ -48,7 +48,7 @@ BOOL CPropertySelector::OnInitDialog()
 			lpData->InitializePropList(PropTagArray[i].ulValue);
 		}
 
-		SetListString(0, ulCurRow, 1, format(L"0x%08X", PropTagArray[i].ulValue)); // STRING_OK
+		SetListString(0, ulCurRow, 1, strings::format(L"0x%08X", PropTagArray[i].ulValue)); // STRING_OK
 		SetListString(0, ulCurRow, 2, TypeToString(PropTagArray[i].ulValue));
 		ulCurRow++;
 	}

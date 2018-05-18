@@ -34,7 +34,7 @@ _Check_return_ HRESULT CreateAndDisplayNewMailInFolder(
 	LPPERSISTMESSAGE lpPersistMessage = nullptr;
 
 	EC_H_MSG(lpMAPIFormMgr->ResolveMessageClass(
-		wstringTostring(szMessageClass).c_str(), // class
+		strings::wstringTostring(szMessageClass).c_str(), // class
 		0, // flags
 		lpFolder, // folder to resolve to
 		&lpMAPIFormInfo),

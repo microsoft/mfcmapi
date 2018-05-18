@@ -39,20 +39,20 @@ namespace SmartViewTest
 			{
 				if (message != nullptr)
 				{
-					Logger::WriteMessage(format(L"Test: %ws\n", message).c_str());
+					Logger::WriteMessage(strings::format(L"Test: %ws\n", message).c_str());
 				}
 
 				Logger::WriteMessage(L"Diff:\n");
 
-				auto splitExpected = split(expected, L'\n');
-				auto splitActual = split(actual, L'\n');
+				auto splitExpected = strings::split(expected, L'\n');
+				auto splitActual = strings::split(actual, L'\n');
 				auto errorCount = 0;
 				for (size_t line = 0; line < splitExpected.size() && line < splitActual.size() && (errorCount < 4 || !limit_output); line++)
 				{
 					if (splitExpected[line] != splitActual[line])
 					{
 						errorCount++;
-						Logger::WriteMessage(format(L"[%d]\n\"%ws\"\n\"%ws\"\n", line + 1, splitExpected[line].c_str(), splitActual[line].c_str()).c_str());
+						Logger::WriteMessage(strings::format(L"[%d]\n\"%ws\"\n\"%ws\"\n", line + 1, splitExpected[line].c_str(), splitActual[line].c_str()).c_str());
 						auto lineErrorCount = 0;
 						for (size_t ch = 0; ch < splitExpected[line].size() && ch < splitActual[line].size() && (lineErrorCount < 10 || !limit_output); ch++)
 						{
@@ -61,15 +61,15 @@ namespace SmartViewTest
 							if (expectedChar != actualChar)
 							{
 								lineErrorCount++;
-								Logger::WriteMessage(format(L"[%d]: %X (%wc) != %X (%wc)\n", ch + 1, expectedChar, expectedChar, actualChar, actualChar).c_str());
+								Logger::WriteMessage(strings::format(L"[%d]: %X (%wc) != %X (%wc)\n", ch + 1, expectedChar, expectedChar, actualChar, actualChar).c_str());
 							}
 						}
 					}
 				}
 
 				Logger::WriteMessage(L"\n");
-				Logger::WriteMessage(format(L"Expected:\n\"%ws\"\n\n", expected.c_str()).c_str());
-				Logger::WriteMessage(format(L"Actual:\n\"%ws\"", actual.c_str()).c_str());
+				Logger::WriteMessage(strings::format(L"Expected:\n\"%ws\"\n\n", expected.c_str()).c_str());
+				Logger::WriteMessage(strings::format(L"Actual:\n\"%ws\"", actual.c_str()).c_str());
 
 				if (assert_on_failure)
 				{
@@ -96,7 +96,7 @@ namespace SmartViewTest
 						}
 						catch (int exception)
 						{
-							Logger::WriteMessage(format(L"Testing %ws failed at %ws with error 0x%08X\n", data.testName.c_str(), AddInStructTypeToString(structType).c_str(), exception).c_str());
+							Logger::WriteMessage(strings::format(L"Testing %ws failed at %ws with error 0x%08X\n", data.testName.c_str(), AddInStructTypeToString(structType).c_str(), exception).c_str());
 							Assert::Fail();
 						}
 					}
@@ -123,7 +123,7 @@ namespace SmartViewTest
 			}
 
 			const auto str = std::string(static_cast<const char*>(bytes), cb);
-			return stringTowstring(str);
+			return strings::stringTowstring(str);
 		}
 
 		static vector<SmartViewTestData> loadTestData(std::initializer_list<SmartViewTestResource> resources)
@@ -136,8 +136,8 @@ namespace SmartViewTest
 					{
 						resource.structType,
 						resource.parseAll,
-						format(L"%d/%d", resource.hex, resource.expected),
-						HexStringToBin(loadfile(handle, resource.hex)),
+						strings::format(L"%d/%d", resource.hex, resource.expected),
+						strings::HexStringToBin(loadfile(handle, resource.hex)),
 						loadfile(handle, resource.expected)
 					});
 			}
@@ -156,7 +156,7 @@ namespace SmartViewTest
 			RegKeys[regkeyPARSED_NAMED_PROPS].ulCurDWORD = 1;
 			RegKeys[regkeyCACHE_NAME_DPROPS].ulCurDWORD = 1;
 
-			setTestInstance(GetModuleHandleW(L"UnitTest.dll"));
+			strings::setTestInstance(GetModuleHandleW(L"UnitTest.dll"));
 		}
 
 		TEST_METHOD(Test_STADDITIONALRENENTRYIDSEX)

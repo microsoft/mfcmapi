@@ -64,48 +64,48 @@ _Check_return_ wstring ReportTag::ToStringInternal()
 {
 	wstring szReportTag;
 
-	szReportTag = formatmessage(IDS_REPORTTAGHEADER);
+	szReportTag = strings::formatmessage(IDS_REPORTTAGHEADER);
 
-	szReportTag += BinToHexString(m_Cookie, true);
+	szReportTag += strings::BinToHexString(m_Cookie, true);
 
 	auto szFlags = InterpretFlags(flagReportTagVersion, m_Version);
-	szReportTag += formatmessage(IDS_REPORTTAGVERSION,
+	szReportTag += strings::formatmessage(IDS_REPORTTAGVERSION,
 		m_Version,
 		szFlags.c_str());
 
 	if (m_cbStoreEntryID)
 	{
-		szReportTag += formatmessage(IDS_REPORTTAGSTOREEID);
-		szReportTag += BinToHexString(m_lpStoreEntryID, true);
+		szReportTag += strings::formatmessage(IDS_REPORTTAGSTOREEID);
+		szReportTag += strings::BinToHexString(m_lpStoreEntryID, true);
 	}
 
 	if (m_cbFolderEntryID)
 	{
-		szReportTag += formatmessage(IDS_REPORTTAGFOLDEREID);
-		szReportTag += BinToHexString(m_lpFolderEntryID, true);
+		szReportTag += strings::formatmessage(IDS_REPORTTAGFOLDEREID);
+		szReportTag += strings::BinToHexString(m_lpFolderEntryID, true);
 	}
 
 	if (m_cbMessageEntryID)
 	{
-		szReportTag += formatmessage(IDS_REPORTTAGMESSAGEEID);
-		szReportTag += BinToHexString(m_lpMessageEntryID, true);
+		szReportTag += strings::formatmessage(IDS_REPORTTAGMESSAGEEID);
+		szReportTag += strings::BinToHexString(m_lpMessageEntryID, true);
 	}
 
 	if (m_cbSearchFolderEntryID)
 	{
-		szReportTag += formatmessage(IDS_REPORTTAGSFEID);
-		szReportTag += BinToHexString(m_lpSearchFolderEntryID, true);
+		szReportTag += strings::formatmessage(IDS_REPORTTAGSFEID);
+		szReportTag += strings::BinToHexString(m_lpSearchFolderEntryID, true);
 	}
 
 	if (m_cbMessageSearchKey)
 	{
-		szReportTag += formatmessage(IDS_REPORTTAGMESSAGEKEY);
-		szReportTag += BinToHexString(m_lpMessageSearchKey, true);
+		szReportTag += strings::formatmessage(IDS_REPORTTAGMESSAGEKEY);
+		szReportTag += strings::BinToHexString(m_lpMessageSearchKey, true);
 	}
 
 	if (m_cchAnsiText)
 	{
-		szReportTag += formatmessage(IDS_REPORTTAGANSITEXT,
+		szReportTag += strings::formatmessage(IDS_REPORTTAGANSITEXT,
 			m_cchAnsiText,
 			m_lpszAnsiText.c_str()); // STRING_OK
 	}

@@ -8,12 +8,12 @@ wstring cdataclose = L"]]>";
 
 wstring tagopen(_In_ const wstring& szTag, int iIndent)
 {
-	return indent(iIndent) + L"<" + szTag + L">";
+	return strings::indent(iIndent) + L"<" + szTag + L">";
 }
 
 wstring tagclose(_In_ const wstring& szTag, int iIndent)
 {
-	return indent(iIndent) + L"</" + szTag + L">\n";
+	return strings::indent(iIndent) + L"</" + szTag + L">\n";
 }
 
 Parsing::Parsing(const wstring& szParsing, bool bXMLSafe, const Attributes& attributes)
@@ -34,7 +34,7 @@ wstring Parsing::toXML(UINT uidTag, int iIndent) const
 {
 	if (m_szParsing.empty()) return L"";
 
-	auto szTag = loadstring(uidTag);
+	auto szTag = strings::loadstring(uidTag);
 	std::wstringstream szXML;
 	szXML << tagopen(szTag + m_attributes.toXML(), iIndent);
 
@@ -43,7 +43,7 @@ wstring Parsing::toXML(UINT uidTag, int iIndent) const
 		szXML << cdataopen;
 	}
 
-	szXML << ScrubStringForXML(m_szParsing);
+	szXML << strings::ScrubStringForXML(m_szParsing);
 
 	if (!m_bXMLSafe)
 	{
@@ -98,8 +98,8 @@ wstring Property::toXML(int iIndent) const
 
 	if (mv == L"true")
 	{
-		auto szValue = loadstring(PropXMLNames[pcPROPVAL].uidName);
-		auto szRow = loadstring(IDS_ROW);
+		auto szValue = strings::loadstring(PropXMLNames[pcPROPVAL].uidName);
+		auto szRow = strings::loadstring(IDS_ROW);
 
 		szXML << tagopen(szValue + m_attributes.toXML(), iIndent) + L"\n";
 

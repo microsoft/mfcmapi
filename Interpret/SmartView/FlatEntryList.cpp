@@ -42,14 +42,14 @@ void FlatEntryList::Parse()
 _Check_return_ wstring FlatEntryList::ToStringInternal()
 {
 	vector<wstring> flatEntryList;
-	flatEntryList.push_back(formatmessage(
+	flatEntryList.push_back(strings::formatmessage(
 		IDS_FELHEADER,
 		m_cEntries,
 		m_cbEntries));
 
 	for (DWORD iFlatEntryList = 0; iFlatEntryList < m_pEntryIDs.size(); iFlatEntryList++)
 	{
-		flatEntryList.push_back(formatmessage(
+		flatEntryList.push_back(strings::formatmessage(
 			IDS_FELENTRYHEADER,
 			iFlatEntryList,
 			m_pEntryIDs[iFlatEntryList].dwSize));
@@ -62,12 +62,12 @@ _Check_return_ wstring FlatEntryList::ToStringInternal()
 
 		if (m_pEntryIDs[iFlatEntryList].JunkData.size())
 		{
-			flatEntryList.push_back(formatmessage(
+			flatEntryList.push_back(strings::formatmessage(
 				IDS_FELENTRYPADDING,
 				iFlatEntryList) +
 				JunkDataToString(m_pEntryIDs[iFlatEntryList].JunkData));
 		}
 	}
 
-	return join(flatEntryList, L"\r\n"); //STRING_OK
+	return strings::join(flatEntryList, L"\r\n"); //STRING_OK
 }

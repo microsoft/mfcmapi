@@ -183,7 +183,7 @@ static HRESULT HrLookupRootFolderW(
 	{
 		// Maybe one of our folder constants was passed.
 		// These are base 10.
-		auto ulFolder = wstringToUlong(lpszRootFolder, 10);
+		auto ulFolder = strings::wstringToUlong(lpszRootFolder, 10);
 		if (0 < ulFolder && ulFolder < NUM_DEFAULT_PROPS)
 		{
 			WC_H(GetDefaultFolderEID(ulFolder, lpMDB, lpcbeid, lppeid));
@@ -192,7 +192,7 @@ static HRESULT HrLookupRootFolderW(
 
 		// Still no match?
 		// Maybe a prop tag was passed as hex
-		ulPropTag = wstringToUlong(lpszRootFolder, 16);
+		ulPropTag = strings::wstringToUlong(lpszRootFolder, 16);
 	}
 
 	if (!ulPropTag) return MAPI_E_NOT_FOUND;
@@ -253,7 +253,7 @@ HRESULT HrMAPIFindFolderExW(
 
 	if (!lpMDB) return MAPI_E_INVALID_PARAMETER;
 
-	auto FolderList = split(lpszFolderPath, wszBackslash);
+	auto FolderList = strings::split(lpszFolderPath, wszBackslash);
 
 	// Check for literal property name
 	if (!FolderList.empty() && FolderList[0][0] == L'@')

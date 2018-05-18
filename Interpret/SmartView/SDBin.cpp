@@ -57,9 +57,9 @@ _Check_return_ wstring SDBin::ToStringInternal()
 	auto szFlags = InterpretFlags(flagSecurityVersion, SECURITY_DESCRIPTOR_VERSION(lpSDToParse));
 
 	vector<wstring> result;
-	result.push_back(formatmessage(IDS_SECURITYDESCRIPTORHEADER) + szInfo);
-	result.push_back(formatmessage(IDS_SECURITYDESCRIPTORVERSION, SECURITY_DESCRIPTOR_VERSION(lpSDToParse), szFlags.c_str()));
+	result.push_back(strings::formatmessage(IDS_SECURITYDESCRIPTORHEADER) + szInfo);
+	result.push_back(strings::formatmessage(IDS_SECURITYDESCRIPTORVERSION, SECURITY_DESCRIPTOR_VERSION(lpSDToParse), szFlags.c_str()));
 	result.push_back(szDACL);
 
-	return join(result, L"\r\n");
+	return strings::join(result, L"\r\n");
 }

@@ -141,7 +141,7 @@ CResCombinedEditor::CResCombinedEditor(
 
 	InitPane(4, TextPane::CreateSingleLinePane(IDS_LPPROPULPROPTAG, false));
 	if (lpProp) SetHex(4, lpProp->ulPropTag);
-	InitPane(5, TextPane::CreateSingleLinePane(IDS_LPPROPULPROPTAG, lpProp ? TagToString(lpProp->ulPropTag, nullptr, false, true) : emptystring, true));
+	InitPane(5, TextPane::CreateSingleLinePane(IDS_LPPROPULPROPTAG, lpProp ? TagToString(lpProp->ulPropTag, nullptr, false, true) : strings::emptystring, true));
 
 	wstring szProp;
 	wstring szAltProp;
@@ -1383,8 +1383,8 @@ void CCriteriaEditor::InitListFromEntryList(ULONG ulListNum, _In_ LPENTRYLIST lp
 			}
 
 			SetListString(ulListNum, i, 1, std::to_wstring(lpEntryList->lpbin[i].cb));
-			SetListString(ulListNum, i, 2, BinToHexString(&lpEntryList->lpbin[i], false));
-			SetListString(ulListNum, i, 3, BinToTextString(&lpEntryList->lpbin[i], true));
+			SetListString(ulListNum, i, 2, strings::BinToHexString(&lpEntryList->lpbin[i], false));
+			SetListString(ulListNum, i, 3, strings::BinToTextString(&lpEntryList->lpbin[i], true));
 			if (lpData) lpData->bItemFullyLoaded = true;
 		}
 	}
@@ -1445,20 +1445,20 @@ _Check_return_ bool CCriteriaEditor::DoListEdit(ULONG ulListNum, int iItem, _In_
 		lpSourcebin = &lpData->Binary()->m_NewBin;
 	}
 
-	BinEdit.InitPane(0, TextPane::CreateSingleLinePane(IDS_EID, BinToHexString(lpSourcebin, false), false));
+	BinEdit.InitPane(0, TextPane::CreateSingleLinePane(IDS_EID, strings::BinToHexString(lpSourcebin, false), false));
 
 	WC_H(BinEdit.DisplayDialog());
 	if (S_OK == hRes)
 	{
-		auto bin = HexStringToBin(BinEdit.GetStringW(0));
+		auto bin = strings::HexStringToBin(BinEdit.GetStringW(0));
 		lpData->Binary()->m_NewBin.lpb = ByteVectorToMAPI(bin, m_lpNewEntryList);
 		if (lpData->Binary()->m_NewBin.lpb)
 		{
 			lpData->Binary()->m_NewBin.cb = static_cast<ULONG>(bin.size());
 			szTmp = std::to_wstring(lpData->Binary()->m_NewBin.cb);
 			SetListString(ulListNum, iItem, 1, szTmp);
-			SetListString(ulListNum, iItem, 2, BinToHexString(&lpData->Binary()->m_NewBin, false));
-			SetListString(ulListNum, iItem, 3, BinToTextString(&lpData->Binary()->m_NewBin, true));
+			SetListString(ulListNum, iItem, 2, strings::BinToHexString(&lpData->Binary()->m_NewBin, false));
+			SetListString(ulListNum, iItem, 3, strings::BinToTextString(&lpData->Binary()->m_NewBin, true));
 			return true;
 		}
 	}

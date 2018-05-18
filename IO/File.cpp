@@ -43,9 +43,9 @@ wstring GetDirectoryPath(HWND hWnd)
 
 	EC_H(SHGetMalloc(&lpMalloc));
 
-	if (!lpMalloc) return emptystring;
+	if (!lpMalloc) return strings::emptystring;
 
-	auto szInputString = loadstring(IDS_DIRPROMPT);
+	auto szInputString = strings::loadstring(IDS_DIRPROMPT);
 
 	BrowseInfo.hwndOwner = hWnd;
 	BrowseInfo.lpszTitle = szInputString.c_str();
@@ -66,7 +66,7 @@ wstring GetDirectoryPath(HWND hWnd)
 	if (path.length() >= MAXMSGPATH)
 	{
 		ErrDialog(__FILE__, __LINE__, IDS_EDPATHTOOLONG, path.length(), MAXMSGPATH);
-		return emptystring;
+		return strings::emptystring;
 	}
 
 	return path;
@@ -279,7 +279,7 @@ wstring BuildFileName(
 	_In_ const wstring& dir,
 	_In_ LPMESSAGE lpMessage)
 {
-	if (!lpMessage) return emptystring;
+	if (!lpMessage) return strings::emptystring;
 
 	enum
 	{
@@ -344,7 +344,7 @@ wstring BuildFileNameAndPath(
 	DebugPrint(DBGGeneric, L"BuildFileNameAndPath cleanRoot = \"%ws\"\n", cleanRoot.c_str());
 
 	// If we don't have enough space for even the shortest filename, give up.
-	if (cleanRoot.length() >= MAXMSGPATH) return emptystring;
+	if (cleanRoot.length() >= MAXMSGPATH) return strings::emptystring;
 
 	// Work with a max path which allows us to add our extension.
 	// Shrink the max path to allow for a -ATTACHxxx extension.
@@ -353,7 +353,7 @@ wstring BuildFileNameAndPath(
 	wstring cleanSubj;
 	if (!szSubj.empty())
 	{
-		cleanSubj = SanitizeFileName(szSubj);
+		cleanSubj = strings::SanitizeFileName(szSubj);
 	}
 	else
 	{
@@ -366,7 +366,7 @@ wstring BuildFileNameAndPath(
 	wstring szBin;
 	if (lpBin && lpBin->cb)
 	{
-		szBin = L"_" + BinToHexString(lpBin, false);
+		szBin = L"_" + strings::BinToHexString(lpBin, false);
 	}
 
 	if (cleanSubj.length() + szBin.length() <= maxFile)
@@ -393,7 +393,7 @@ wstring BuildFileNameAndPath(
 	if (szFile.length() >= maxFile)
 	{
 		DebugPrint(DBGGeneric, L"BuildFileNameAndPath failed to build a string\n");
-		return emptystring;
+		return strings::emptystring;
 	}
 
 	auto szOut = cleanRoot + szFile + szExt;
@@ -1307,7 +1307,7 @@ _Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd)
 			szName = lpProps[DISPLAY_NAME_W].Value.lpszW;
 		}
 
-		auto szFileName = SanitizeFileName(szName);
+		auto szFileName = strings::SanitizeFileName(szName);
 
 		// Get File Name
 		switch (lpProps[ATTACH_METHOD].Value.l)
@@ -1323,7 +1323,7 @@ _Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd)
 				L"txt", // STRING_OK
 				szFileName,
 				OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-				loadstring(IDS_ALLFILES));
+				strings::loadstring(IDS_ALLFILES));
 			if (!file.empty())
 			{
 				EC_H(WriteAttachStreamToFile(lpAttach, file));
@@ -1338,7 +1338,7 @@ _Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd)
 				L"msg", // STRING_OK
 				szFileName,
 				OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-				loadstring(IDS_MSGFILES));
+				strings::loadstring(IDS_MSGFILES));
 			if (!file.empty())
 			{
 				EC_H(WriteEmbeddedMSGToFile(lpAttach, file, (MAPI_UNICODE == fMapiUnicode) ? true : false, hWnd));
@@ -1349,10 +1349,10 @@ _Check_return_ HRESULT WriteAttachmentToFile(_In_ LPATTACH lpAttach, HWND hWnd)
 		{
 			DebugPrint(DBGGeneric, L"WriteAttachmentToFile: Prompting with \"%ws\"\n", szFileName.c_str());
 			auto file = CFileDialogExW::SaveAs(
-				emptystring,
+				strings::emptystring,
 				szFileName,
 				OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-				loadstring(IDS_ALLFILES));
+				strings::loadstring(IDS_ALLFILES));
 			if (!file.empty())
 			{
 				EC_H(WriteOleToFile(lpAttach, file));

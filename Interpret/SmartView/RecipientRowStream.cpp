@@ -39,7 +39,7 @@ _Check_return_ wstring RecipientRowStream::ToStringInternal()
 {
 	wstring szRecipientRowStream;
 
-	szRecipientRowStream = formatmessage(
+	szRecipientRowStream = strings::formatmessage(
 		IDS_RECIPIENTROWSTREAMHEADER,
 		m_cVersion,
 		m_cRowCount);
@@ -47,7 +47,7 @@ _Check_return_ wstring RecipientRowStream::ToStringInternal()
 	{
 		for (DWORD i = 0; i < m_cRowCount; i++)
 		{
-			szRecipientRowStream += formatmessage(
+			szRecipientRowStream += strings::formatmessage(
 				IDS_RECIPIENTROWSTREAMROW,
 				i,
 				m_lpAdrEntry[i].cValues,

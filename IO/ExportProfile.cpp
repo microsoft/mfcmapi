@@ -26,7 +26,7 @@ void ExportProfileSection(FILE* fProfile, LPPROFSECT lpSect, LPSBinary lpSectBin
 		wstring szBin;
 		if (lpSectBin)
 		{
-			szBin = BinToHexString(lpSectBin, false);
+			szBin = strings::BinToHexString(lpSectBin, false);
 		}
 
 		OutputToFilef(fProfile, L"<properties listtype=\"profilesection\" profilesection=\"%ws\">\n", szBin.c_str());

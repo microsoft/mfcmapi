@@ -19,7 +19,7 @@ SingleMessageDialog::SingleMessageDialog(
 		NULL)
 {
 	TRACE_CONSTRUCTOR(CLASS);
-	m_szTitle = loadstring(IDS_MESSAGE);
+	m_szTitle = strings::loadstring(IDS_MESSAGE);
 
 	m_lpMessage = lpMAPIProp;
 	if (m_lpMessage) m_lpMessage->AddRef();

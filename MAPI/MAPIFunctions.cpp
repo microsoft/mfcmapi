@@ -2266,12 +2266,12 @@ _Check_return_ wstring EncodeID(ULONG cbEID, _In_ LPENTRYID rgbID)
 
 _Check_return_ wstring DecodeID(ULONG cbBuffer, _In_count_(cbBuffer) LPBYTE lpbBuffer)
 {
-	if (cbBuffer % 2) return emptystring;
+	if (cbBuffer % 2) return strings::emptystring;
 
 	auto cbDecodedBuffer = cbBuffer / 2;
 	// Allocate memory for lpDecoded
 	auto lpDecoded = new BYTE[cbDecodedBuffer];
-	if (!lpDecoded) return emptystring;
+	if (!lpDecoded) return strings::emptystring;
 
 	// Subtract kwBaseOffset from every character and place result in lpDecoded
 	auto lpwzSrc = reinterpret_cast<LPWSTR>(lpbBuffer);
@@ -2281,7 +2281,7 @@ _Check_return_ wstring DecodeID(ULONG cbBuffer, _In_count_(cbBuffer) LPBYTE lpbB
 		*lpDst = static_cast<BYTE>(*lpwzSrc - kwBaseOffset);
 	}
 
-	auto szBin = BinToHexString(
+	auto szBin = strings::BinToHexString(
 		lpDecoded,
 		cbDecodedBuffer,
 		true);
@@ -2579,7 +2579,7 @@ wstring GetTitle(LPMAPIPROP lpMAPIProp)
 
 	if (!bFoundName)
 	{
-		szTitle = loadstring(IDS_DISPLAYNAMENOTFOUND);
+		szTitle = strings::loadstring(IDS_DISPLAYNAMENOTFOUND);
 	}
 
 	return szTitle;

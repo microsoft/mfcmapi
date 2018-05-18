@@ -17,7 +17,7 @@ void XID::Parse()
 
 _Check_return_ wstring XID::ToStringInternal()
 {
-	return formatmessage(IDS_XID,
+	return strings::formatmessage(IDS_XID,
 		GUIDToString(&m_NamespaceGuid).c_str(),
-		BinToHexString(m_LocalID, true).c_str());
+		strings::BinToHexString(m_LocalID, true).c_str());
 }

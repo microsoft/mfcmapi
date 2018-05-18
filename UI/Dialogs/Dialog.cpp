@@ -68,7 +68,7 @@ wstring FormatHT(LRESULT ht)
 	case HTMINBUTTON: szRet = L"HTMINBUTTON"; break;
 	}
 
-	return format(L"ht = 0x%X = %ws", ht, szRet.c_str());
+	return strings::format(L"ht = 0x%X = %ws", ht, szRet.c_str());
 
 }
 

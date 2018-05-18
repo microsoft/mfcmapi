@@ -44,7 +44,7 @@ void PrintErrFromPartialName(_In_ const wstring& lpszError)
 void DoErrorParse(_In_ MYOPTIONS ProgOpts)
 {
 	auto lpszErr = ProgOpts.lpszUnswitchedOption;
-	auto ulErrNum = wstringToUlong(lpszErr, ProgOpts.ulOptions & OPT_DODECIMAL ? 10 : 16);
+	auto ulErrNum = strings::wstringToUlong(lpszErr, ProgOpts.ulOptions & OPT_DODECIMAL ? 10 : 16);
 
 	if (ulErrNum)
 	{

@@ -187,7 +187,7 @@ void CPropertyTagEditor::LookupNamedProp(ULONG ulSkipField, bool bCreate)
 		}
 		else
 		{
-			NamedID.Kind.lID = wstringToUlong(szName, 16);
+			NamedID.Kind.lID = strings::wstringToUlong(szName, 16);
 		}
 	}
 	else if (MNID_STRING == NamedID.ulKind)
@@ -244,7 +244,7 @@ _Check_return_ ULONG CPropertyTagEditor::HandleChange(UINT nID)
 	case PROPTAG_ID: // Prop ID changed
 	{
 		auto szID = GetStringW(PROPTAG_ID);
-		auto ulID = wstringToUlong(szID, 16);
+		auto ulID = strings::wstringToUlong(szID, 16);
 
 		m_ulPropTag = PROP_TAG(PROP_TYPE(m_ulPropTag), ulID);
 	}
@@ -349,9 +349,9 @@ void CPropertyTagEditor::PopulateFields(ULONG ulSkipField) const
 				PROPTAG_NAMEPROPNAME != ulSkipField &&
 				PROPTAG_NAMEPROPGUID != ulSkipField)
 			{
-				SetDropDownSelection(PROPTAG_NAMEPROPKIND, emptystring);
+				SetDropDownSelection(PROPTAG_NAMEPROPKIND, strings::emptystring);
 				SetStringW(PROPTAG_NAMEPROPNAME, L"");
-				SetDropDownSelection(PROPTAG_NAMEPROPGUID, emptystring);
+				SetDropDownSelection(PROPTAG_NAMEPROPGUID, strings::emptystring);
 			}
 		}
 		MAPIFreeBuffer(lppPropNames);
@@ -375,7 +375,7 @@ _Check_return_ wstring CPropertyTagEditor::GetDropStringUseControl(ULONG iContro
 		return lpPane->GetDropStringUseControl();
 	}
 
-	return emptystring;
+	return strings::emptystring;
 }
 
 _Check_return_ int CPropertyTagEditor::GetDropDownSelection(ULONG iControl) const

@@ -180,7 +180,7 @@ _Check_return_ wstring AppointmentRecurrencePattern::ToStringInternal()
 
 	szARP = m_RecurrencePattern.ToString();
 
-	szARP += formatmessage(IDS_ARPHEADER,
+	szARP += strings::formatmessage(IDS_ARPHEADER,
 		m_ReaderVersion2,
 		m_WriterVersion2,
 		m_StartTimeOffset, RTimeToString(m_StartTimeOffset).c_str(),
@@ -192,7 +192,7 @@ _Check_return_ wstring AppointmentRecurrencePattern::ToStringInternal()
 		for (WORD i = 0; i < m_ExceptionInfo.size(); i++)
 		{
 			auto szOverrideFlags = InterpretFlags(flagOverrideFlags, m_ExceptionInfo[i].OverrideFlags);
-			auto szExceptionInfo = formatmessage(IDS_ARPEXHEADER,
+			auto szExceptionInfo = strings::formatmessage(IDS_ARPEXHEADER,
 				i, m_ExceptionInfo[i].StartDateTime, RTimeToString(m_ExceptionInfo[i].StartDateTime).c_str(),
 				m_ExceptionInfo[i].EndDateTime, RTimeToString(m_ExceptionInfo[i].EndDateTime).c_str(),
 				m_ExceptionInfo[i].OriginalStartDate, RTimeToString(m_ExceptionInfo[i].OriginalStartDate).c_str(),
@@ -200,7 +200,7 @@ _Check_return_ wstring AppointmentRecurrencePattern::ToStringInternal()
 
 			if (m_ExceptionInfo[i].OverrideFlags & ARO_SUBJECT)
 			{
-				szExceptionInfo += formatmessage(IDS_ARPEXSUBJECT,
+				szExceptionInfo += strings::formatmessage(IDS_ARPEXSUBJECT,
 					i, m_ExceptionInfo[i].SubjectLength,
 					m_ExceptionInfo[i].SubjectLength2,
 					m_ExceptionInfo[i].Subject.c_str());
@@ -209,25 +209,25 @@ _Check_return_ wstring AppointmentRecurrencePattern::ToStringInternal()
 			if (m_ExceptionInfo[i].OverrideFlags & ARO_MEETINGTYPE)
 			{
 				auto szFlags = InterpretNumberAsStringNamedProp(m_ExceptionInfo[i].MeetingType, dispidApptStateFlags, const_cast<LPGUID>(&PSETID_Appointment));
-				szExceptionInfo += formatmessage(IDS_ARPEXMEETINGTYPE,
+				szExceptionInfo += strings::formatmessage(IDS_ARPEXMEETINGTYPE,
 					i, m_ExceptionInfo[i].MeetingType, szFlags.c_str());
 			}
 
 			if (m_ExceptionInfo[i].OverrideFlags & ARO_REMINDERDELTA)
 			{
-				szExceptionInfo += formatmessage(IDS_ARPEXREMINDERDELTA,
+				szExceptionInfo += strings::formatmessage(IDS_ARPEXREMINDERDELTA,
 					i, m_ExceptionInfo[i].ReminderDelta);
 			}
 
 			if (m_ExceptionInfo[i].OverrideFlags & ARO_REMINDER)
 			{
-				szExceptionInfo += formatmessage(IDS_ARPEXREMINDERSET,
+				szExceptionInfo += strings::formatmessage(IDS_ARPEXREMINDERSET,
 					i, m_ExceptionInfo[i].ReminderSet);
 			}
 
 			if (m_ExceptionInfo[i].OverrideFlags & ARO_LOCATION)
 			{
-				szExceptionInfo += formatmessage(IDS_ARPEXLOCATION,
+				szExceptionInfo += strings::formatmessage(IDS_ARPEXLOCATION,
 					i, m_ExceptionInfo[i].LocationLength,
 					m_ExceptionInfo[i].LocationLength2,
 					m_ExceptionInfo[i].Location.c_str());
@@ -236,24 +236,24 @@ _Check_return_ wstring AppointmentRecurrencePattern::ToStringInternal()
 			if (m_ExceptionInfo[i].OverrideFlags & ARO_BUSYSTATUS)
 			{
 				auto szFlags = InterpretNumberAsStringNamedProp(m_ExceptionInfo[i].BusyStatus, dispidBusyStatus, const_cast<LPGUID>(&PSETID_Appointment));
-				szExceptionInfo += formatmessage(IDS_ARPEXBUSYSTATUS,
+				szExceptionInfo += strings::formatmessage(IDS_ARPEXBUSYSTATUS,
 					i, m_ExceptionInfo[i].BusyStatus, szFlags.c_str());
 			}
 
 			if (m_ExceptionInfo[i].OverrideFlags & ARO_ATTACHMENT)
 			{
-				szExceptionInfo += formatmessage(IDS_ARPEXATTACHMENT,
+				szExceptionInfo += strings::formatmessage(IDS_ARPEXATTACHMENT,
 					i, m_ExceptionInfo[i].Attachment);
 			}
 
 			if (m_ExceptionInfo[i].OverrideFlags & ARO_SUBTYPE)
 			{
-				szExceptionInfo += formatmessage(IDS_ARPEXSUBTYPE,
+				szExceptionInfo += strings::formatmessage(IDS_ARPEXSUBTYPE,
 					i, m_ExceptionInfo[i].SubType);
 			}
 			if (m_ExceptionInfo[i].OverrideFlags & ARO_APPTCOLOR)
 			{
-				szExceptionInfo += formatmessage(IDS_ARPEXAPPOINTMENTCOLOR,
+				szExceptionInfo += strings::formatmessage(IDS_ARPEXAPPOINTMENTCOLOR,
 					i, m_ExceptionInfo[i].AppointmentColor);
 			}
 
@@ -261,11 +261,11 @@ _Check_return_ wstring AppointmentRecurrencePattern::ToStringInternal()
 		}
 	}
 
-	szARP += formatmessage(IDS_ARPRESERVED1,
+	szARP += strings::formatmessage(IDS_ARPRESERVED1,
 		m_ReservedBlock1Size);
 	if (m_ReservedBlock1Size)
 	{
-		szARP += BinToHexString(m_ReservedBlock1, true);
+		szARP += strings::BinToHexString(m_ReservedBlock1, true);
 	}
 
 	if (m_ExtendedException.size())
@@ -276,25 +276,25 @@ _Check_return_ wstring AppointmentRecurrencePattern::ToStringInternal()
 			if (m_WriterVersion2 >= 0x00003009)
 			{
 				auto szFlags = InterpretNumberAsStringNamedProp(m_ExtendedException[i].ChangeHighlight.ChangeHighlightValue, dispidChangeHighlight, const_cast<LPGUID>(&PSETID_Appointment));
-				szExtendedException += formatmessage(IDS_ARPEXCHANGEHIGHLIGHT,
+				szExtendedException += strings::formatmessage(IDS_ARPEXCHANGEHIGHLIGHT,
 					i, m_ExtendedException[i].ChangeHighlight.ChangeHighlightSize,
 					m_ExtendedException[i].ChangeHighlight.ChangeHighlightValue, szFlags.c_str());
 
 				if (m_ExtendedException[i].ChangeHighlight.ChangeHighlightSize > sizeof(DWORD))
 				{
-					szExtendedException += formatmessage(IDS_ARPEXCHANGEHIGHLIGHTRESERVED,
+					szExtendedException += strings::formatmessage(IDS_ARPEXCHANGEHIGHLIGHTRESERVED,
 						i);
 
-					szExtendedException += BinToHexString(m_ExtendedException[i].ChangeHighlight.Reserved, true);
+					szExtendedException += strings::BinToHexString(m_ExtendedException[i].ChangeHighlight.Reserved, true);
 					szExtendedException += L"\n"; // STRING_OK
 				}
 			}
 
-			szExtendedException += formatmessage(IDS_ARPEXRESERVED1,
+			szExtendedException += strings::formatmessage(IDS_ARPEXRESERVED1,
 				i, m_ExtendedException[i].ReservedBlockEE1Size);
 			if (m_ExtendedException[i].ReservedBlockEE1.size())
 			{
-				szExtendedException += BinToHexString(m_ExtendedException[i].ReservedBlockEE1, true);
+				szExtendedException += strings::BinToHexString(m_ExtendedException[i].ReservedBlockEE1, true);
 			}
 
 			if (i < m_ExceptionInfo.size())
@@ -302,7 +302,7 @@ _Check_return_ wstring AppointmentRecurrencePattern::ToStringInternal()
 				if (m_ExceptionInfo[i].OverrideFlags & ARO_SUBJECT ||
 					m_ExceptionInfo[i].OverrideFlags & ARO_LOCATION)
 				{
-					szExtendedException += formatmessage(IDS_ARPEXDATETIME,
+					szExtendedException += strings::formatmessage(IDS_ARPEXDATETIME,
 						i, m_ExtendedException[i].StartDateTime, RTimeToString(m_ExtendedException[i].StartDateTime).c_str(),
 						m_ExtendedException[i].EndDateTime, RTimeToString(m_ExtendedException[i].EndDateTime).c_str(),
 						m_ExtendedException[i].OriginalStartDate, RTimeToString(m_ExtendedException[i].OriginalStartDate).c_str());
@@ -310,35 +310,35 @@ _Check_return_ wstring AppointmentRecurrencePattern::ToStringInternal()
 
 				if (m_ExceptionInfo[i].OverrideFlags & ARO_SUBJECT)
 				{
-					szExtendedException += formatmessage(IDS_ARPEXWIDESUBJECT,
+					szExtendedException += strings::formatmessage(IDS_ARPEXWIDESUBJECT,
 						i, m_ExtendedException[i].WideCharSubjectLength,
 						m_ExtendedException[i].WideCharSubject.c_str());
 				}
 
 				if (m_ExceptionInfo[i].OverrideFlags & ARO_LOCATION)
 				{
-					szExtendedException += formatmessage(IDS_ARPEXWIDELOCATION,
+					szExtendedException += strings::formatmessage(IDS_ARPEXWIDELOCATION,
 						i, m_ExtendedException[i].WideCharLocationLength,
 						m_ExtendedException[i].WideCharLocation.c_str());
 				}
 			}
 
-			szExtendedException += formatmessage(IDS_ARPEXRESERVED2,
+			szExtendedException += strings::formatmessage(IDS_ARPEXRESERVED2,
 				i, m_ExtendedException[i].ReservedBlockEE2Size);
 			if (m_ExtendedException[i].ReservedBlockEE2Size)
 			{
-				szExtendedException += BinToHexString(m_ExtendedException[i].ReservedBlockEE2, true);
+				szExtendedException += strings::BinToHexString(m_ExtendedException[i].ReservedBlockEE2, true);
 			}
 
 			szARP += szExtendedException;
 		}
 	}
 
-	szARP += formatmessage(IDS_ARPRESERVED2,
+	szARP += strings::formatmessage(IDS_ARPRESERVED2,
 		m_ReservedBlock2Size);
 	if (m_ReservedBlock2Size)
 	{
-		szARP += BinToHexString(m_ReservedBlock2, true);
+		szARP += strings::BinToHexString(m_ReservedBlock2, true);
 	}
 
 	return szARP;

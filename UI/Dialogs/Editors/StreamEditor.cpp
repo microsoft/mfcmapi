@@ -139,7 +139,7 @@ CStreamEditor::CStreamEditor(
 		}
 	}
 
-	auto szPromptPostFix = format(L"\r\n%ws", TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, false).c_str()); // STRING_OK
+	auto szPromptPostFix = strings::format(L"\r\n%ws", TagToString(m_ulPropTag, m_lpMAPIProp, m_bIsAB, false).c_str()); // STRING_OK
 	SetPromptPostFix(szPromptPostFix);
 
 	// Let's crack our property open and see what kind of controls we'll need for it
@@ -338,7 +338,7 @@ void CStreamEditor::ReadTextStreamFromProperty() const
 	// If we don't have a stream to display, put up an error instead
 	if (FAILED(m_StreamError) || !m_lpStream)
 	{
-		auto szStreamErr = formatmessage(
+		auto szStreamErr = strings::formatmessage(
 			IDS_CANNOTOPENSTREAM,
 			ErrorNameFromErrorCode(m_StreamError).c_str(),
 			m_StreamError);
@@ -476,7 +476,7 @@ _Check_return_ ULONG CStreamEditor::HandleChange(UINT nID)
 	{
 		auto szFlags = InterpretFlags(flagStreamFlag, m_ulStreamFlags);
 		SetStringf(m_iFlagBox, L"0x%08X = %ws", m_ulStreamFlags, szFlags.c_str()); // STRING_OK
-		SetStringW(m_iCodePageBox, formatmessage(IDS_CODEPAGES, m_ulInCodePage, m_ulOutCodePage));
+		SetStringW(m_iCodePageBox, strings::formatmessage(IDS_CODEPAGES, m_ulInCodePage, m_ulOutCodePage));
 	}
 
 	OnRecalcLayout();

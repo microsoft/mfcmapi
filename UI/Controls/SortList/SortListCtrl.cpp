@@ -464,7 +464,7 @@ void CSortListCtrl::SortClickedColumn()
 			if (lpData)
 			{
 				lpData->szSortText.clear();
-				lpData->ulSortValue.QuadPart = wstringToUlong(szText, 10, false);
+				lpData->ulSortValue.QuadPart = strings::wstringToUlong(szText, 10, false);
 			}
 		}
 		break;
@@ -667,12 +667,12 @@ void CSortListCtrl::SetItemText(int nItem, int nSubItem, const wstring& lpszText
 		szWhitespace = static_cast<LPWSTR>(wcspbrk(szWhitespace, L"\r\n\t")); // STRING_OK
 	}
 
-	(void)CListCtrl::SetItemText(nItem, nSubItem, wstringTotstring(lpszText).c_str());
+	(void)CListCtrl::SetItemText(nItem, nSubItem, strings::wstringTotstring(lpszText).c_str());
 }
 
 wstring CSortListCtrl::GetItemText(_In_ int nItem, _In_ int nSubItem) const
 {
-	return LPCTSTRToWstring(CListCtrl::GetItemText(nItem, nSubItem));
+	return strings::LPCTSTRToWstring(CListCtrl::GetItemText(nItem, nSubItem));
 }
 
 // if asked to select the item after the last item - will select the last item.

@@ -329,7 +329,7 @@ _Check_return_ HRESULT CHierarchyTableTreeCtrl::AddRootNode(_In_ LPMAPICONTAINER
 	}
 	else
 	{
-		szName = loadstring(IDS_ROOTCONTAINER);
+		szName = strings::loadstring(IDS_ROOTCONTAINER);
 	}
 
 	auto lpData = new SortListData();
@@ -394,7 +394,7 @@ void CHierarchyTableTreeCtrl::AddNode(_In_ LPSRow lpsRow, HTREEITEM hParent, boo
 	}
 	else
 	{
-		szName = loadstring(IDS_UNKNOWNNAME);
+		szName = strings::loadstring(IDS_UNKNOWNNAME);
 	}
 	DebugPrintEx(DBGHierarchy, CLASS, L"AddNode", L"Adding to %p: %ws\n", hParent, szName.c_str());
 
@@ -458,7 +458,7 @@ _Check_return_ LPMAPITABLE CHierarchyTableTreeCtrl::GetHierarchyTable(HTREEITEM 
 		if (bRegNotifs &&
 			(RegKeys[regkeyHIER_ROOT_NOTIFS].ulCurDWORD || GetRootItem() != hItem))
 		{
-			DebugPrintEx(DBGNotify, CLASS, L"GetHierarchyTable", L"Advise sink for \"%ws\" = %p\n", LPCTSTRToWstring(GetItemText(hItem)).c_str(), hItem);
+			DebugPrintEx(DBGNotify, CLASS, L"GetHierarchyTable", L"Advise sink for \"%ws\" = %p\n", strings::LPCTSTRToWstring(GetItemText(hItem)).c_str(), hItem);
 			lpData->Node()->m_lpAdviseSink = new CAdviseSink(m_hWnd, hItem);
 
 			if (lpData->Node()->m_lpAdviseSink)
@@ -564,7 +564,7 @@ void CHierarchyTableTreeCtrl::OnGetDispInfo(_In_ NMHDR* pNMHDR, _In_ LRESULT* pR
 			{
 				LPCTSTR szName = nullptr;
 				if (PROP_TYPE(lpData->lpSourceProps[0].ulPropTag) == PT_TSTRING) szName = lpData->lpSourceProps[0].Value.LPSZ;
-				DebugPrintEx(DBGHierarchy, CLASS, L"OnGetDispInfo", L"Using Hierarchy table %d %p %ws\n", lpData->Node()->m_cSubfolders, lpData->Node()->m_lpHierarchyTable, LPCTSTRToWstring(szName).c_str());
+				DebugPrintEx(DBGHierarchy, CLASS, L"OnGetDispInfo", L"Using Hierarchy table %d %p %ws\n", lpData->Node()->m_cSubfolders, lpData->Node()->m_lpHierarchyTable, strings::LPCTSTRToWstring(szName).c_str());
 				// won't force the hierarchy table - just get it if we've already got it
 				auto lpHierarchyTable = lpData->Node()->m_lpHierarchyTable;
 				if (lpHierarchyTable)
@@ -991,7 +991,7 @@ void CHierarchyTableTreeCtrl::OnItemExpanding(_In_ NMHDR* pNMHDR, _In_ LRESULT* 
 	NM_TREEVIEW* pNMTreeView = reinterpret_cast<NM_TREEVIEW*>(pNMHDR);
 	if (pNMTreeView)
 	{
-		DebugPrintEx(DBGHierarchy, CLASS, L"OnItemExpanding", L"Expanding item %p \"%ws\" action = 0x%08X state = 0x%08X\n", pNMTreeView->itemNew.hItem, LPCTSTRToWstring(GetItemText(pNMTreeView->itemOld.hItem)).c_str(), pNMTreeView->action, pNMTreeView->itemNew.state);
+		DebugPrintEx(DBGHierarchy, CLASS, L"OnItemExpanding", L"Expanding item %p \"%ws\" action = 0x%08X state = 0x%08X\n", pNMTreeView->itemNew.hItem, strings::LPCTSTRToWstring(GetItemText(pNMTreeView->itemOld.hItem)).c_str(), pNMTreeView->action, pNMTreeView->itemNew.state);
 		if (pNMTreeView->action & TVE_EXPAND)
 		{
 			if (!(pNMTreeView->itemNew.state & TVIS_EXPANDEDONCE))
@@ -1009,7 +1009,7 @@ void CHierarchyTableTreeCtrl::OnDeleteItem(_In_ NMHDR* pNMHDR, _In_ LRESULT* pRe
 	if (pNMTreeView)
 	{
 		auto* lpData = reinterpret_cast<SortListData*>(pNMTreeView->itemOld.lParam);
-		DebugPrintEx(DBGHierarchy, CLASS, L"OnDeleteItem", L"Deleting item %p \"%ws\"\n", pNMTreeView->itemOld.hItem, LPCTSTRToWstring(GetItemText(pNMTreeView->itemOld.hItem)).c_str());
+		DebugPrintEx(DBGHierarchy, CLASS, L"OnDeleteItem", L"Deleting item %p \"%ws\"\n", pNMTreeView->itemOld.hItem, strings::LPCTSTRToWstring(GetItemText(pNMTreeView->itemOld.hItem)).c_str());
 
 		if (lpData&& lpData->Node() && lpData->Node()->m_lpAdviseSink)
 		{
@@ -1055,7 +1055,7 @@ _Check_return_ LRESULT CHierarchyTableTreeCtrl::msgOnAddItem(WPARAM wParam, LPAR
 	auto tab = reinterpret_cast<TABLE_NOTIFICATION*>(wParam);
 	auto hParent = reinterpret_cast<HTREEITEM>(lParam);
 
-	DebugPrintEx(DBGHierarchy, CLASS, L"msgOnAddItem", L"Received message add item under: %p =\"%ws\"\n", hParent, LPCTSTRToWstring(GetItemText(hParent)).c_str());
+	DebugPrintEx(DBGHierarchy, CLASS, L"msgOnAddItem", L"Received message add item under: %p =\"%ws\"\n", hParent, strings::LPCTSTRToWstring(GetItemText(hParent)).c_str());
 
 	// only need to add the node if we're expanded
 	int iState = GetItemState(hParent, NULL);
@@ -1107,7 +1107,7 @@ _Check_return_ LRESULT CHierarchyTableTreeCtrl::msgOnDeleteItem(WPARAM wParam, L
 
 	if (hItemToDelete)
 	{
-		DebugPrintEx(DBGHierarchy, CLASS, L"msgOnDeleteItem", L"Received message delete item: %p =\"%ws\"\n", hItemToDelete, LPCTSTRToWstring(GetItemText(hItemToDelete)).c_str());
+		DebugPrintEx(DBGHierarchy, CLASS, L"msgOnDeleteItem", L"Received message delete item: %p =\"%ws\"\n", hItemToDelete, strings::LPCTSTRToWstring(GetItemText(hItemToDelete)).c_str());
 		EC_B(DeleteItem(hItemToDelete));
 	}
 
@@ -1128,7 +1128,7 @@ _Check_return_ LRESULT CHierarchyTableTreeCtrl::msgOnModifyItem(WPARAM wParam, L
 
 	if (hModifyItem)
 	{
-		DebugPrintEx(DBGHierarchy, CLASS, L"msgOnModifyItem", L"Received message modify item: %p =\"%ws\"\n", hModifyItem, LPCTSTRToWstring(GetItemText(hModifyItem)).c_str());
+		DebugPrintEx(DBGHierarchy, CLASS, L"msgOnModifyItem", L"Received message modify item: %p =\"%ws\"\n", hModifyItem, strings::LPCTSTRToWstring(GetItemText(hModifyItem)).c_str());
 
 		auto lpName = PpropFindProp(
 			tab->row.lpProps,
@@ -1142,7 +1142,7 @@ _Check_return_ LRESULT CHierarchyTableTreeCtrl::msgOnModifyItem(WPARAM wParam, L
 		}
 		else
 		{
-			szText = loadstring(IDS_UNKNOWNNAME);
+			szText = strings::loadstring(IDS_UNKNOWNNAME);
 		}
 
 		TVITEMEXW item = { 0 };
@@ -1183,7 +1183,7 @@ _Check_return_ LRESULT CHierarchyTableTreeCtrl::msgOnRefreshTable(WPARAM wParam,
 {
 	auto hRes = S_OK;
 	auto hRefreshItem = reinterpret_cast<HTREEITEM>(wParam);
-	DebugPrintEx(DBGHierarchy, CLASS, L"msgOnRefreshTable", L"Received message refresh table: %p =\"%ws\"\n", hRefreshItem, LPCTSTRToWstring(GetItemText(hRefreshItem)).c_str());
+	DebugPrintEx(DBGHierarchy, CLASS, L"msgOnRefreshTable", L"Received message refresh table: %p =\"%ws\"\n", hRefreshItem, strings::LPCTSTRToWstring(GetItemText(hRefreshItem)).c_str());
 
 	int iState = GetItemState(hRefreshItem, NULL);
 	if (iState & TVIS_EXPANDED)
@@ -1227,7 +1227,7 @@ _Check_return_ HTREEITEM CHierarchyTableTreeCtrl::FindNode(_In_ LPSBinary lpInst
 {
 	if (!lpInstance || !hParent) return nullptr;
 
-	DebugPrintEx(DBGGeneric, CLASS, L"FindNode", L"Looking for child of: %p =\"%ws\"\n", hParent, LPCTSTRToWstring(GetItemText(hParent)).c_str());
+	DebugPrintEx(DBGGeneric, CLASS, L"FindNode", L"Looking for child of: %p =\"%ws\"\n", hParent, strings::LPCTSTRToWstring(GetItemText(hParent)).c_str());
 
 	auto hCurrent = GetNextItem(hParent, TVGN_CHILD);
 
@@ -1241,7 +1241,7 @@ _Check_return_ HTREEITEM CHierarchyTableTreeCtrl::FindNode(_In_ LPSBinary lpInst
 			{
 				if (!memcmp(lpCurInstance->lpb, lpInstance->lpb, lpInstance->cb))
 				{
-					DebugPrintEx(DBGGeneric, CLASS, L"FindNode", L"Matched at %p =\"%ws\"\n", hCurrent, LPCTSTRToWstring(GetItemText(hCurrent)).c_str());
+					DebugPrintEx(DBGGeneric, CLASS, L"FindNode", L"Matched at %p =\"%ws\"\n", hCurrent, strings::LPCTSTRToWstring(GetItemText(hCurrent)).c_str());
 					return hCurrent;
 				}
 			}

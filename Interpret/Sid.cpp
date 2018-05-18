@@ -17,12 +17,12 @@ _Check_return_ wstring GetTextualSid(_In_ PSID pSid)
 	// Compute the buffer length.
 	// S-SID_REVISION- + IdentifierAuthority- + subauthorities- + NULL
 	// Add 'S' prefix and revision number to the string.
-	auto TextualSid = format(L"S-%lu-", SID_REVISION); // STRING_OK
+	auto TextualSid = strings::format(L"S-%lu-", SID_REVISION); // STRING_OK
 
 													   // Add SID identifier authority to the string.
 	if (psia->Value[0] != 0 || psia->Value[1] != 0)
 	{
-		TextualSid += format(
+		TextualSid += strings::format(
 			L"0x%02hx%02hx%02hx%02hx%02hx%02hx", // STRING_OK
 			static_cast<USHORT>(psia->Value[0]),
 			static_cast<USHORT>(psia->Value[1]),
@@ -33,7 +33,7 @@ _Check_return_ wstring GetTextualSid(_In_ PSID pSid)
 	}
 	else
 	{
-		TextualSid += format(
+		TextualSid += strings::format(
 			L"%lu", // STRING_OK
 			static_cast<ULONG>(psia->Value[4] << 8) +
 			static_cast<ULONG>(psia->Value[5]) +
@@ -46,7 +46,7 @@ _Check_return_ wstring GetTextualSid(_In_ PSID pSid)
 	{
 		for (DWORD dwCounter = 0; dwCounter < *lpSubAuthoritiesCount; dwCounter++)
 		{
-			TextualSid += format(
+			TextualSid += strings::format(
 				L"-%lu", // STRING_OK
 				*GetSidSubAuthority(pSid, dwCounter));
 		}
@@ -154,14 +154,14 @@ wstring ACEToString(_In_ void* pACE, eAceType acetype)
 		break;
 	};
 
-	auto szDomain = lpSidDomain ? lpSidDomain : formatmessage(IDS_NODOMAIN);
-	auto szName = lpSidName ? lpSidName : formatmessage(IDS_NONAME);
+	auto szDomain = lpSidDomain ? lpSidDomain : strings::formatmessage(IDS_NODOMAIN);
+	auto szName = lpSidName ? lpSidName : strings::formatmessage(IDS_NONAME);
 	auto szSID = GetTextualSid(SidStart);
-	if (szSID.empty()) szSID = formatmessage(IDS_NOSID);
+	if (szSID.empty()) szSID = strings::formatmessage(IDS_NOSID);
 	delete[] lpSidDomain;
 	delete[] lpSidName;
 
-	aceString.push_back(formatmessage(
+	aceString.push_back(strings::formatmessage(
 		IDS_SIDACCOUNT,
 		szDomain.c_str(),
 		szName.c_str(),
@@ -172,14 +172,14 @@ wstring ACEToString(_In_ void* pACE, eAceType acetype)
 
 	if (bObjectFound)
 	{
-		aceString.push_back(formatmessage(IDS_SIDOBJECTYPE));
+		aceString.push_back(strings::formatmessage(IDS_SIDOBJECTYPE));
 		aceString.push_back(GUIDToStringAndName(&ObjectType));
-		aceString.push_back(formatmessage(IDS_SIDINHERITEDOBJECTYPE));
+		aceString.push_back(strings::formatmessage(IDS_SIDINHERITEDOBJECTYPE));
 		aceString.push_back(GUIDToStringAndName(&InheritedObjectType));
-		aceString.push_back(formatmessage(IDS_SIDFLAGS, Flags));
+		aceString.push_back(strings::formatmessage(IDS_SIDFLAGS, Flags));
 	}
 
-	return join(aceString, L"\r\n");
+	return strings::join(aceString, L"\r\n");
 }
 
 _Check_return_ HRESULT SDToString(_In_count_(cbBuf) const BYTE* lpBuf, size_t cbBuf, eAceType acetype, _In_ wstring& SDString, _In_ wstring& sdInfo)
@@ -195,7 +195,7 @@ _Check_return_ HRESULT SDToString(_In_count_(cbBuf) const BYTE* lpBuf, size_t cb
 
 	if (CbSecurityDescriptorHeader(lpBuf) > cbBuf || !IsValidSecurityDescriptor(pSecurityDescriptor))
 	{
-		SDString = formatmessage(IDS_INVALIDSD);
+		SDString = strings::formatmessage(IDS_INVALIDSD);
 		return S_OK;
 	}
 
@@ -228,7 +228,7 @@ _Check_return_ HRESULT SDToString(_In_count_(cbBuf) const BYTE* lpBuf, size_t cb
 			}
 		}
 
-		SDString = join(sdString, L"\r\n");
+		SDString = strings::join(sdString, L"\r\n");
 	}
 
 	return hRes;

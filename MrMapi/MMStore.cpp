@@ -74,7 +74,7 @@ HRESULT HrMAPIOpenStoreAndFolder(
 	LPMDB lpMDB = nullptr;
 	LPMAPIFOLDER lpFolder = nullptr;
 
-	auto paths = split(lpszFolderPath, L'\\');
+	auto paths = strings::split(lpszFolderPath, L'\\');
 
 	if (lpMAPISession)
 	{
@@ -84,9 +84,9 @@ HRESULT HrMAPIOpenStoreAndFolder(
 			// Skip the '#'
 			auto root = paths[0].substr(1);
 			paths.erase(paths.begin());
-			lpszFolderPath = join(paths, L'\\');
+			lpszFolderPath = strings::join(paths, L'\\');
 
-			auto bin = HexStringToBin(root);
+			auto bin = strings::HexStringToBin(root);
 			// In order for cb to get bigger than 1, the string has to have at least 4 characters
 			// Which is larger than any reasonable store number. So we use that to distinguish.
 			if (bin.size() > 1)

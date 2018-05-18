@@ -385,7 +385,7 @@ _Check_return_ HRESULT CContentsTableListCtrl::AddColumn(UINT uidHeaderName, ULO
 
 	if (uidHeaderName)
 	{
-		szHeaderString = loadstring(uidHeaderName);
+		szHeaderString = strings::loadstring(uidHeaderName);
 	}
 	else
 	{
@@ -405,11 +405,11 @@ _Check_return_ HRESULT CContentsTableListCtrl::AddColumn(UINT uidHeaderName, ULO
 
 		if (szHeaderString.empty())
 		{
-			szHeaderString = format(L"0x%08X", ulPropTag); // STRING_OK
+			szHeaderString = strings::format(L"0x%08X", ulPropTag); // STRING_OK
 		}
 	}
 
-	auto iRetVal = InsertColumn(ulCurHeaderCol, wstringTotstring(szHeaderString).c_str());
+	auto iRetVal = InsertColumn(ulCurHeaderCol, strings::wstringTotstring(szHeaderString).c_str());
 
 	if (-1 == iRetVal)
 	{
@@ -597,7 +597,7 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 
 	(void) ::SendMessage(hWndHost, WM_MFCMAPI_CLEARSINGLEMAPIPROPLIST, NULL, NULL);
 	auto szCount = std::to_wstring(lpListCtrl->GetItemCount());
-	CBaseDialog::UpdateStatus(hWndHost, STATUSDATA1, formatmessage(IDS_STATUSTEXTNUMITEMS, szCount.c_str()));
+	CBaseDialog::UpdateStatus(hWndHost, STATUSDATA1, strings::formatmessage(IDS_STATUSTEXTNUMITEMS, szCount.c_str()));
 
 	// potentially lengthy op - check abort before and after
 	CHECKABORT(WC_H(lpListCtrl->ApplyRestriction()));
@@ -623,7 +623,7 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 
 		if (ulTotal)
 		{
-			CBaseDialog::UpdateStatus(hWndHost, STATUSDATA2, formatmessage(IDS_LOADINGITEMS, 0, ulTotal));
+			CBaseDialog::UpdateStatus(hWndHost, STATUSDATA2, strings::formatmessage(IDS_LOADINGITEMS, 0, ulTotal));
 		}
 	}
 
@@ -632,7 +632,7 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 	if (!FAILED(hRes)) for (;;)
 	{
 		BREAKONABORT;
-		CBaseDialog::UpdateStatus(hWndHost, STATUSINFOTEXT, loadstring(IDS_ESCSTOPLOADING));
+		CBaseDialog::UpdateStatus(hWndHost, STATUSINFOTEXT, strings::loadstring(IDS_ESCSTOPLOADING));
 		hRes = S_OK;
 		if (pRows) FreeProws(pRows);
 		pRows = nullptr;
@@ -679,7 +679,7 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 			BREAKONABORT; // This check is cheap enough not to be a perf concern anymore
 			if (ulTotal)
 			{
-				CBaseDialog::UpdateStatus(hWndHost, STATUSDATA2, formatmessage(IDS_LOADINGITEMS, iCurListBoxRow + 1, ulTotal));
+				CBaseDialog::UpdateStatus(hWndHost, STATUSDATA2, strings::formatmessage(IDS_LOADINGITEMS, iCurListBoxRow + 1, ulTotal));
 			}
 
 			DebugPrintEx(DBGGeneric, CLASS, L"ThreadFuncLoadTable", L"Asking to add %p to %u\n", &pRows->aRow[iCurPropRow], iCurListBoxRow);
@@ -697,14 +697,14 @@ unsigned STDAPICALLTYPE ThreadFuncLoadTable(_In_ void* lpParam)
 
 	if (bABORTSET)
 	{
-		CBaseDialog::UpdateStatus(hWndHost, STATUSINFOTEXT, loadstring(IDS_TABLELOADCANCELLED));
+		CBaseDialog::UpdateStatus(hWndHost, STATUSINFOTEXT, strings::loadstring(IDS_TABLELOADCANCELLED));
 	}
 	else
 	{
-		CBaseDialog::UpdateStatus(hWndHost, STATUSINFOTEXT, loadstring(IDS_TABLELOADED));
+		CBaseDialog::UpdateStatus(hWndHost, STATUSINFOTEXT, strings::loadstring(IDS_TABLELOADED));
 	}
 
-	CBaseDialog::UpdateStatus(hWndHost, STATUSDATA2, emptystring);
+	CBaseDialog::UpdateStatus(hWndHost, STATUSDATA2, strings::emptystring);
 	DebugPrintEx(DBGGeneric, CLASS, L"ThreadFuncLoadTable", L"added %u items\n", iCurListBoxRow);
 	DebugPrintEx(DBGGeneric, CLASS, L"ThreadFuncLoadTable", L"Releasing pointers.\n");
 
@@ -1379,7 +1379,7 @@ void CContentsTableListCtrl::OnItemChanged(_In_ NMHDR* pNMHDR, _In_ LRESULT* pRe
 
 			WC_H(m_lpHostDlg->OpenItemProp(pNMListView->iItem, mfcmapiREQUEST_MODIFY, &lpMAPIProp));
 
-			szTitle = loadstring(IDS_DISPLAYNAMENOTFOUND);
+			szTitle = strings::loadstring(IDS_DISPLAYNAMENOTFOUND);
 
 			// try to use our rowset first
 			if (NODISPLAYNAME != m_ulDisplayNameColumn
@@ -1388,7 +1388,7 @@ void CContentsTableListCtrl::OnItemChanged(_In_ NMHDR* pNMHDR, _In_ LRESULT* pRe
 			{
 				if (CheckStringProp(&lpProps[m_ulDisplayNameColumn], PT_STRING8))
 				{
-					szTitle = stringTowstring(lpProps[m_ulDisplayNameColumn].Value.lpszA);
+					szTitle = strings::stringTowstring(lpProps[m_ulDisplayNameColumn].Value.lpszA);
 				}
 				else if (CheckStringProp(&lpProps[m_ulDisplayNameColumn], PT_UNICODE))
 				{

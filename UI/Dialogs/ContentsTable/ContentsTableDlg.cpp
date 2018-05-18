@@ -35,11 +35,11 @@ CContentsTableDlg::CContentsTableDlg(
 	TRACE_CONSTRUCTOR(CLASS);
 	if (NULL != uidTitle)
 	{
-		m_szTitle = loadstring(uidTitle);
+		m_szTitle = strings::loadstring(uidTitle);
 	}
 	else
 	{
-		m_szTitle = loadstring(IDS_TABLEASCONTENTS);
+		m_szTitle = strings::loadstring(IDS_TABLEASCONTENTS);
 	}
 
 	m_lpContentsTableListCtrl = nullptr;
@@ -107,7 +107,7 @@ BOOL CContentsTableDlg::OnInitDialog()
 
 		if (m_ulDisplayFlags & dfAssoc)
 		{
-			m_szTitle = formatmessage(IDS_HIDDEN, m_szTitle.c_str());
+			m_szTitle = strings::formatmessage(IDS_HIDDEN, m_szTitle.c_str());
 		}
 
 		if (m_lpContentsTable) m_lpContentsTable->Release();
@@ -396,7 +396,7 @@ void CContentsTableDlg::OnOutputTable()
 		L"txt", // STRING_OK
 		L"table.txt", // STRING_OK
 		OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-		loadstring(IDS_TEXTFILES),
+		strings::loadstring(IDS_TEXTFILES),
 		this);
 	if (!szFileName.empty())
 	{

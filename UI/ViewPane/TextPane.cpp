@@ -47,7 +47,7 @@ TextPane* TextPane::CreateSingleLinePaneID(UINT uidLabel, UINT uidVal, bool bRea
 	if (lpPane && uidVal)
 	{
 		lpPane->SetLabel(uidLabel, bReadOnly);
-		lpPane->SetStringW(loadstring(uidVal));
+		lpPane->SetStringW(strings::loadstring(uidVal));
 	}
 
 	return lpPane;
@@ -326,7 +326,7 @@ void TextPane::SetBinary(_In_opt_count_(cb) LPBYTE lpb, size_t cb)
 	}
 	else
 	{
-		SetStringW(BinToHexString(lpb, cb, false));
+		SetStringW(strings::BinToHexString(lpb, cb, false));
 	}
 }
 
@@ -337,7 +337,7 @@ void TextPane::AppendString(_In_ const wstring& szMsg)
 
 	auto cchText = m_EditBox.GetWindowTextLength();
 	m_EditBox.SetSel(cchText, cchText);
-	m_EditBox.ReplaceSel(wstringTotstring(szMsg).c_str());
+	m_EditBox.ReplaceSel(strings::wstringTotstring(szMsg).c_str());
 }
 
 // This is used by the DbgView - don't call any debugger functions here!!!
@@ -422,7 +422,7 @@ wstring TextPane::GetUIValue() const
 					reinterpret_cast<LPARAM>(buffer));
 				if (cchW != 0)
 				{
-					value = stringTowstring(string(LPSTR(buffer), cchText));
+					value = strings::stringTowstring(string(LPSTR(buffer), cchText));
 				}
 			}
 		}
@@ -461,7 +461,7 @@ void TextPane::GetBinaryStream(_In_ LPSTREAM lpStreamOut) const
 {
 	auto hRes = S_OK;
 
-	auto bin = HexStringToBin(GetStringW());
+	auto bin = strings::HexStringToBin(GetStringW());
 	if (bin.data() != nullptr)
 	{
 		ULONG cbWritten = 0;

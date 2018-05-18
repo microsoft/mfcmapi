@@ -172,7 +172,7 @@ void SpecialFolderEditor::LoadFolders() const
 				else
 				{
 					// We couldn't open the folder - log the error
-					szTmp = formatmessage(IDS_QSSFCANNOTOPEN, ErrorNameFromErrorCode(hRes).c_str(), hRes);
+					szTmp = strings::formatmessage(IDS_QSSFCANNOTOPEN, ErrorNameFromErrorCode(hRes).c_str(), hRes);
 					SetListString(ulListNum, iRow, iCol, szTmp);
 				}
 
@@ -182,7 +182,7 @@ void SpecialFolderEditor::LoadFolders() const
 			else
 			{
 				// We couldn't locate the entry ID- log the error
-				szTmp = formatmessage(IDS_QSSFCANNOTLOCATE, ErrorNameFromErrorCode(hRes).c_str(), hRes);
+				szTmp = strings::formatmessage(IDS_QSSFCANNOTLOCATE, ErrorNameFromErrorCode(hRes).c_str(), hRes);
 				SetListString(ulListNum, iRow, iCol, szTmp);
 			}
 
@@ -216,7 +216,7 @@ _Check_return_ bool SpecialFolderEditor::DoListEdit(ULONG ulListNum, int iItem, 
 		// We skip the first column, which is just the index
 		for (ULONG i = 1; i < g_ulsfCol; i++)
 		{
-			szLabel = loadstring(g_sfCol[i].ulID);
+			szLabel = strings::loadstring(g_sfCol[i].ulID);
 			szData = listPane->GetItemText(iItem, i);
 			szTmp += szLabel + L": " + szData + L"\n";
 		}
@@ -253,5 +253,5 @@ void OnQSCheckSpecialFolders(_In_ CMainDlg* lpHostDlg, _In_ HWND hwnd)
 		lpMDB->Release();
 	}
 
-	lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, emptystring);
+	lpHostDlg->UpdateStatusBarText(STATUSINFOTEXT, strings::emptystring);
 }
