@@ -45,7 +45,7 @@ extern WCHAR g_pszOutlookQualifiedComponents[][MAX_PATH];
 // Looks up Outlook's path given its qualified component guid
 std::wstring GetOutlookPath(_In_ const std::wstring& szCategory, _Out_opt_ bool* lpb64);
 
-vector<std::wstring> GetMAPIPaths();
+std::vector<std::wstring> GetMAPIPaths();
 std::wstring GetInstalledOutlookMAPI(int iOutlook);
 std::wstring GetMAPISystemDir();
 

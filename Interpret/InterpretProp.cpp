@@ -21,10 +21,10 @@ static const char pBase64[] = {
  0x2c, 0x2d, 0x2e, 0x2f, 0x30, 0x31, 0x32, 0x33
 };
 
-vector<BYTE> Base64Decode(const std::wstring& szEncodedStr)
+std::vector<BYTE> Base64Decode(const std::wstring& szEncodedStr)
 {
 	auto cchLen = szEncodedStr.length();
-	vector<BYTE> lpb;
+	std::vector<BYTE> lpb;
 	if (cchLen % 4) return lpb;
 
 	// look for padding at the end
@@ -53,7 +53,7 @@ vector<BYTE> Base64Decode(const std::wstring& szEncodedStr)
 			}
 
 			if (c[i] < 0x2b || c[i] > 0x7a)
-				return vector<BYTE>();
+				return std::vector<BYTE>();
 
 			c[i] = pBase64[c[i] - 0x2b];
 		}
@@ -277,7 +277,7 @@ std::wstring RestrictionToString(_In_ const LPSRestriction lpRes, _In_opt_ LPMAP
 		return strings::loadstring(IDS_RESDEPTHEXCEEDED);
 	}
 
-	vector<std::wstring> resString;
+	std::vector<std::wstring> resString;
 	std::wstring szProp;
 	std::wstring szAltProp;
 

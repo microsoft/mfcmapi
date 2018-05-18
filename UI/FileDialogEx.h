@@ -11,7 +11,7 @@ public:
 		_In_ const std::wstring& lpszFilter = strings::emptystring,
 		_In_opt_ CWnd* pParentWnd = nullptr);
 
-	static vector<std::wstring> OpenFiles(
+	static std::vector<std::wstring> OpenFiles(
 		_In_ const std::wstring& lpszDefExt,
 		_In_ const std::wstring& lpszFileName,
 		DWORD dwFlags = 0,
@@ -34,8 +34,8 @@ private:
 		_In_opt_ CWnd* pParentWnd = nullptr);
 
 	std::wstring GetFileName() const;
-	vector<std::wstring> GetFileNames() const;
+	std::vector<std::wstring> GetFileNames() const;
 
 private:
-	vector<std::wstring> m_paths;
+	std::vector<std::wstring> m_paths;
 };

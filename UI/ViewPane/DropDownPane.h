@@ -30,7 +30,7 @@ private:
 	int GetMinWidth(_In_ HDC hdc) override;
 	int GetFixedHeight() override;
 
-	vector<std::pair<std::wstring, ULONG>> m_DropList;
+	std::vector<std::pair<std::wstring, ULONG>> m_DropList;
 	std::wstring m_lpszSelectionString;
 	int m_iDropSelection;
 	DWORD_PTR m_iDropSelectionValue;

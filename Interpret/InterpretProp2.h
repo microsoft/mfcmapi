@@ -3,9 +3,9 @@
 #define PROP_TAG_MASK 0xffff0000
 void FindTagArrayMatches(_In_ ULONG ulTarget,
 	bool bIsAB,
-	const vector<NAME_ARRAY_ENTRY_V2>& MyArray,
-	vector<ULONG>& ulExacts,
-	vector<ULONG>& ulPartials);
+	const std::vector<NAME_ARRAY_ENTRY_V2>& MyArray,
+	std::vector<ULONG>& ulExacts,
+	std::vector<ULONG>& ulPartials);
 
 struct PropTagNames
 {
@@ -27,7 +27,7 @@ LPCGUID GUIDNameToGUID(_In_ const std::wstring& szGUID, bool bByteSwapped);
 _Check_return_ GUID StringToGUID(_In_ const std::wstring& szGUID);
 _Check_return_ GUID StringToGUID(_In_ const std::wstring& szGUID, bool bByteSwapped);
 
-vector<std::wstring> NameIDToPropNames(_In_ const LPMAPINAMEID lpNameID);
+std::vector<std::wstring> NameIDToPropNames(_In_ const LPMAPINAMEID lpNameID);
 
 std::wstring InterpretFlags(ULONG ulFlagName, LONG lFlagValue);
 std::wstring AllFlagsToString(ULONG ulFlagName, bool bHex);

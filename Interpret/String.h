@@ -16,7 +16,6 @@ namespace std
 }
 
 using std::tstring;
-using std::vector;
 
 namespace strings
 {
@@ -54,17 +53,17 @@ namespace strings
 
 	std::string RemoveInvalidCharactersA(const std::string& szString, bool bMultiLine = true);
 	std::wstring RemoveInvalidCharactersW(const std::wstring& szString, bool bMultiLine = true);
-	std::wstring BinToTextStringW(const vector<BYTE>& lpByte, bool bMultiLine);
+	std::wstring BinToTextStringW(const std::vector<BYTE>& lpByte, bool bMultiLine);
 	std::wstring BinToTextStringW(_In_ const SBinary* lpBin, bool bMultiLine);
-	std::wstring BinToTextString(const vector<BYTE>& lpByte, bool bMultiLine);
+	std::wstring BinToTextString(const std::vector<BYTE>& lpByte, bool bMultiLine);
 	std::wstring BinToTextString(_In_ const SBinary* lpBin, bool bMultiLine);
-	std::wstring BinToHexString(const vector<BYTE>& lpByte, bool bPrependCB);
+	std::wstring BinToHexString(const std::vector<BYTE>& lpByte, bool bPrependCB);
 	std::wstring BinToHexString(_In_opt_count_(cb) const BYTE* lpb, size_t cb, bool bPrependCB);
 	std::wstring BinToHexString(_In_opt_ const SBinary* lpBin, bool bPrependCB);
-	vector<BYTE> HexStringToBin(_In_ const std::wstring& input, size_t cbTarget = 0);
-	LPBYTE ByteVectorToLPBYTE(const vector<BYTE>& bin);
+	std::vector<BYTE> HexStringToBin(_In_ const std::wstring& input, size_t cbTarget = 0);
+	LPBYTE ByteVectorToLPBYTE(const std::vector<BYTE>& bin);
 
-	vector<std::wstring> split(const std::wstring& str, wchar_t delim);
-	std::wstring join(const vector<std::wstring>& elems, const std::wstring& delim);
-	std::wstring join(const vector<std::wstring>& elems, wchar_t delim);
+	std::vector<std::wstring> split(const std::wstring& str, wchar_t delim);
+	std::wstring join(const std::vector<std::wstring>& elems, const std::wstring& delim);
+	std::wstring join(const std::vector<std::wstring>& elems, wchar_t delim);
 }

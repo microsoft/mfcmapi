@@ -42,8 +42,8 @@ private:
 	DWORD m_OccurrenceCount;
 	DWORD m_FirstDOW;
 	DWORD m_DeletedInstanceCount;
-	vector<DWORD> m_DeletedInstanceDates;
-	vector<DWORD> m_ModifiedInstanceDates;
+	std::vector<DWORD> m_DeletedInstanceDates;
+	std::vector<DWORD> m_ModifiedInstanceDates;
 	DWORD m_StartDate;
 	DWORD m_EndDate;
 };

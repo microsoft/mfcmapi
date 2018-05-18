@@ -27,11 +27,11 @@ public:
 
 	std::string GetStringA(size_t cchChar = -1);
 	std::wstring GetStringW(size_t cchChar = -1);
-	vector<BYTE> GetBYTES(size_t cbBytes, size_t cbMaxBytes = -1);
-	vector<BYTE> GetRemainingData();
+	std::vector<BYTE> GetBYTES(size_t cbBytes, size_t cbMaxBytes = -1);
+	std::vector<BYTE> GetRemainingData();
 
 private:
 	bool CheckRemainingBytes(size_t cbBytes) const;
-	vector<BYTE> m_Bin;
+	std::vector<BYTE> m_Bin;
 	size_t m_Offset;
 };

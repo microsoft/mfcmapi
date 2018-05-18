@@ -36,18 +36,18 @@ struct MDB_STORE_EID_V3
 struct FolderObject
 {
 	GUID DatabaseGUID;
-	vector<BYTE> GlobalCounter; // 6 bytes
-	vector<BYTE> Pad; // 2 bytes
+	std::vector<BYTE> GlobalCounter; // 6 bytes
+	std::vector<BYTE> Pad; // 2 bytes
 };
 
 struct MessageObject
 {
 	GUID FolderDatabaseGUID;
-	vector<BYTE> FolderGlobalCounter; // 6 bytes
-	vector<BYTE> Pad1; // 2 bytes
+	std::vector<BYTE> FolderGlobalCounter; // 6 bytes
+	std::vector<BYTE> Pad1; // 2 bytes
 	GUID MessageDatabaseGUID;
-	vector<BYTE> MessageGlobalCounter; // 6 bytes
-	vector<BYTE> Pad2; // 2 bytes
+	std::vector<BYTE> MessageGlobalCounter; // 6 bytes
+	std::vector<BYTE> Pad2; // 2 bytes
 };
 
 struct FolderOrMessage
@@ -74,7 +74,7 @@ struct MessageDatabaseObject
 	std::string v2DN;
 	std::wstring v2FQDN;
 	std::wstring v3SmtpAddress;
-	vector<BYTE> v2Reserved; // 2 bytes
+	std::vector<BYTE> v2Reserved; // 2 bytes
 };
 
 struct EphemeralObject
@@ -116,13 +116,13 @@ struct ContactAddressBookObject
 	DWORD Index; // CONTAB_USER, CONTAB_DISTLIST only
 	DWORD EntryIDCount; // CONTAB_USER, CONTAB_DISTLIST only
 	GUID muidID; // CONTAB_CONTAINER only
-	vector<EntryIdStruct> lpEntryID;
+	std::vector<EntryIdStruct> lpEntryID;
 };
 
 struct WAB
 {
 	BYTE Type;
-	vector<EntryIdStruct> lpEntryID;
+	std::vector<EntryIdStruct> lpEntryID;
 };
 
 class EntryIdStruct : public SmartViewParser
@@ -134,7 +134,7 @@ private:
 	void Parse() override;
 	_Check_return_ std::wstring ToStringInternal() override;
 
-	vector<BYTE> m_abFlags; // 4 bytes
+	std::vector<BYTE> m_abFlags; // 4 bytes
 	GUID m_ProviderUID;
 	EIDStructType m_ObjectType; // My own addition to simplify parsing
 	FolderOrMessage m_FolderOrMessage;

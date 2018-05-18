@@ -7,7 +7,7 @@ struct FlatEntryID
 	DWORD dwSize;
 	EntryIdStruct lpEntryID;
 
-	vector<BYTE> JunkData;
+	std::vector<BYTE> JunkData;
 };
 
 class FlatEntryList : public SmartViewParser
@@ -21,5 +21,5 @@ private:
 
 	DWORD m_cEntries;
 	DWORD m_cbEntries;
-	vector<FlatEntryID> m_pEntryIDs;
+	std::vector<FlatEntryID> m_pEntryIDs;
 };

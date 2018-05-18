@@ -5,16 +5,16 @@ struct PersistElement
 {
 	WORD wElementID;
 	WORD wElementDataSize;
-	vector<BYTE> lpbElementData;
+	std::vector<BYTE> lpbElementData;
 };
 
 struct PersistData
 {
 	WORD wPersistID;
 	WORD wDataElementsSize;
-	vector<PersistElement> ppeDataElement;
+	std::vector<PersistElement> ppeDataElement;
 
-	vector<BYTE> JunkData;
+	std::vector<BYTE> JunkData;
 };
 
 class AdditionalRenEntryIDs : public SmartViewParser
@@ -24,5 +24,5 @@ private:
 	_Check_return_ std::wstring ToStringInternal() override;
 	PersistData BinToPersistData();
 
-	vector<PersistData> m_ppdPersistData;
+	std::vector<PersistData> m_ppdPersistData;
 };

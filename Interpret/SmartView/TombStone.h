@@ -6,7 +6,7 @@ struct TombstoneRecord
 	DWORD StartTime;
 	DWORD EndTime;
 	DWORD GlobalObjectIdSize;
-	vector<BYTE> lpGlobalObjectId;
+	std::vector<BYTE> lpGlobalObjectId;
 	WORD UsernameSize;
 	std::string szUsername;
 };
@@ -26,5 +26,5 @@ private:
 	DWORD m_RecordsCount;
 	DWORD m_ActualRecordsCount; // computed based on state, not read value
 	DWORD m_RecordsSize;
-	vector<TombstoneRecord> m_lpRecords;
+	std::vector<TombstoneRecord> m_lpRecords;
 };

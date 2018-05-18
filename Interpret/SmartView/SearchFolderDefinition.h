@@ -25,7 +25,7 @@ private:
 	WORD m_TextSearchLengthExtended;
 	std::wstring m_TextSearch;
 	DWORD m_SkipLen1;
-	vector<BYTE> m_SkipBytes1;
+	std::vector<BYTE> m_SkipBytes1;
 	DWORD m_DeepSearch;
 	BYTE m_FolderList1Length;
 	WORD m_FolderList1LengthExtended;
@@ -33,11 +33,11 @@ private:
 	DWORD m_FolderList2Length;
 	EntryList m_FolderList2;
 	DWORD m_AddressCount; // SFST_BINARY
-	vector<AddressListEntryStruct> m_Addresses; // SFST_BINARY
+	std::vector<AddressListEntryStruct> m_Addresses; // SFST_BINARY
 	DWORD m_SkipLen2;
-	vector<BYTE> m_SkipBytes2;
+	std::vector<BYTE> m_SkipBytes2;
 	std::wstring m_Restriction; // SFST_MRES
-	vector<BYTE> m_AdvancedSearchBytes; // SFST_FILTERSTREAM
+	std::vector<BYTE> m_AdvancedSearchBytes; // SFST_FILTERSTREAM
 	DWORD m_SkipLen3;
-	vector<BYTE> m_SkipBytes3;
+	std::vector<BYTE> m_SkipBytes3;
 };

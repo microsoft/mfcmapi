@@ -12,7 +12,7 @@ struct ExtendedFlag
 		DWORD SearchFolderTag;
 		DWORD ToDoFolderVersion;
 	} Data;
-	vector<BYTE> lpUnknownData;
+	std::vector<BYTE> lpUnknownData;
 };
 
 class ExtendedFlags : public SmartViewParser
@@ -25,5 +25,5 @@ private:
 	_Check_return_ std::wstring ToStringInternal() override;
 
 	ULONG m_ulNumFlags;
-	vector<ExtendedFlag> m_pefExtendedFlags;
+	std::vector<ExtendedFlag> m_pefExtendedFlags;
 };

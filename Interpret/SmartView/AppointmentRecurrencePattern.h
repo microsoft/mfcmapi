@@ -30,7 +30,7 @@ struct ChangeHighlight
 {
 	DWORD ChangeHighlightSize;
 	DWORD ChangeHighlightValue;
-	vector<BYTE> Reserved;
+	std::vector<BYTE> Reserved;
 };
 
 // ExtendedException
@@ -40,7 +40,7 @@ struct ExtendedException
 {
 	ChangeHighlight ChangeHighlight;
 	DWORD ReservedBlockEE1Size;
-	vector<BYTE> ReservedBlockEE1;
+	std::vector<BYTE> ReservedBlockEE1;
 	DWORD StartDateTime;
 	DWORD EndDateTime;
 	DWORD OriginalStartDate;
@@ -49,7 +49,7 @@ struct ExtendedException
 	WORD WideCharLocationLength;
 	std::wstring WideCharLocation;
 	DWORD ReservedBlockEE2Size;
-	vector<BYTE> ReservedBlockEE2;
+	std::vector<BYTE> ReservedBlockEE2;
 };
 
 // AppointmentRecurrencePattern
@@ -71,10 +71,10 @@ private:
 	DWORD m_StartTimeOffset;
 	DWORD m_EndTimeOffset;
 	WORD m_ExceptionCount;
-	vector<ExceptionInfo> m_ExceptionInfo;
+	std::vector<ExceptionInfo> m_ExceptionInfo;
 	DWORD m_ReservedBlock1Size;
-	vector<BYTE> m_ReservedBlock1;
-	vector<ExtendedException> m_ExtendedException;
+	std::vector<BYTE> m_ReservedBlock1;
+	std::vector<ExtendedException> m_ExtendedException;
 	DWORD m_ReservedBlock2Size;
-	vector<BYTE> m_ReservedBlock2;
+	std::vector<BYTE> m_ReservedBlock2;
 };

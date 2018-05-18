@@ -58,7 +58,7 @@ _Check_return_ std::wstring GetTextualSid(_In_ PSID pSid)
 std::wstring ACEToString(_In_ void* pACE, eAceType acetype)
 {
 	auto hRes = S_OK;
-	vector<std::wstring> aceString;
+	std::vector<std::wstring> aceString;
 	ACCESS_MASK Mask = 0;
 	DWORD Flags = 0;
 	GUID ObjectType = { 0 };
@@ -215,7 +215,7 @@ _Check_return_ HRESULT SDToString(_In_count_(cbBuf) const BYTE* lpBuf, size_t cb
 			sizeof ACLSizeInfo,
 			AclSizeInformation));
 
-		vector<std::wstring> sdString;
+		std::vector<std::wstring> sdString;
 		for (DWORD i = 0; i < ACLSizeInfo.AceCount; i++)
 		{
 			void* pACE = nullptr;

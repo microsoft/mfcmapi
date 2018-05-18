@@ -227,7 +227,7 @@ void CAttachmentsDlg::HandleCopy()
 
 	if (ulNumSelected && ulNumSelected < ULONG_MAX / sizeof(ULONG))
 	{
-		vector<ULONG> lpAttNumList;
+		std::vector<ULONG> lpAttNumList;
 		auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
 		for (const auto& lpListData : items)
 		{
@@ -328,7 +328,7 @@ void CAttachmentsDlg::OnDeleteSelectedItem()
 	auto hRes = S_OK;
 	CWaitCursor Wait; // Change the mouse to an hourglass while we work.
 
-	vector<int> attachnums;
+	std::vector<int> attachnums;
 	auto items = m_lpContentsTableListCtrl->GetSelectedItemData();
 	for (const auto& lpListData : items)
 	{

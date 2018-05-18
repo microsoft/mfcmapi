@@ -26,7 +26,7 @@ public:
 	void EnsureParsed();
 
 protected:
-	_Check_return_ std::wstring JunkDataToString(const vector<BYTE>& lpJunkData) const;
+	_Check_return_ std::wstring JunkDataToString(const std::vector<BYTE>& lpJunkData) const;
 	_Check_return_ std::wstring JunkDataToString(size_t cbJunkData, _In_count_(cbJunkData) const BYTE* lpJunkData) const;
 	_Check_return_ LPSPropValue BinToSPropValue(DWORD dwPropCount, bool bStringPropsExcludeLength);
 
@@ -49,5 +49,5 @@ private:
 	// We use list instead of vector so our nodes never get reallocated
 	std::list<std::string> m_stringCache;
 	std::list<std::wstring> m_wstringCache;
-	std::list<vector<BYTE>> m_binCache;
+	std::list<std::vector<BYTE>> m_binCache;
 };

@@ -41,7 +41,7 @@ private:
 	FolderFieldDefinitionCommon BinToFolderFieldDefinitionCommon();
 
 	DWORD m_FolderUserFieldsAnsiCount;
-	vector<FolderFieldDefinitionA> m_FieldDefinitionsA;
+	std::vector<FolderFieldDefinitionA> m_FieldDefinitionsA;
 	DWORD m_FolderUserFieldsUnicodeCount;
-	vector<FolderFieldDefinitionW> m_FieldDefinitionsW;
+	std::vector<FolderFieldDefinitionW> m_FieldDefinitionsW;
 };

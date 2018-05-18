@@ -29,9 +29,9 @@ public:
 	std::wstring toAltString() const;
 
 private:
-	std::wstring toString(const vector<Parsing>& parsing) const;
+	std::wstring toString(const std::vector<Parsing>& parsing) const;
 
-	vector<Parsing> m_MainParsing;
-	vector<Parsing> m_AltParsing;
+	std::vector<Parsing> m_MainParsing;
+	std::vector<Parsing> m_AltParsing;
 	Attributes m_attributes;
 };

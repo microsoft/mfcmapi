@@ -26,5 +26,5 @@ public:
 	std::wstring toXML() const;
 
 private:
-	vector<Attribute> m_attributes;
+	std::vector<Attribute> m_attributes;
 };

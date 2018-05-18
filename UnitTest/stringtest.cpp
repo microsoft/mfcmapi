@@ -216,21 +216,21 @@ namespace stringtest
 		LPBYTE bufW = LPBYTE(mystringW.c_str());
 		size_t cbW = mystringW.length() * sizeof(WCHAR);
 		SBinary sBinaryW = SBinary{ static_cast<ULONG>(cbW), bufW };
-		vector<BYTE> myStringWvector = vector<BYTE>(bufW, bufW + cbW);
+		std::vector<BYTE> myStringWvector = std::vector<BYTE>(bufW, bufW + cbW);
 
 		std::string mystringA = std::string("mystring");
 		LPBYTE bufA = LPBYTE(mystringA.c_str());
 		size_t cbA = mystringA.length();
 		SBinary sBinaryA = SBinary{ static_cast<ULONG>(cbA), bufA };
-		vector<BYTE> myStringAvector = vector<BYTE>(bufA, bufA + cbA);
+		std::vector<BYTE> myStringAvector = std::vector<BYTE>(bufA, bufA + cbA);
 
-		vector<BYTE> vector_abcdW = vector<BYTE>({ 0x61, 0, 0x62, 0, 0x63, 0, 0x64, 0 });
-		vector<BYTE> vector_abNULLdW = vector<BYTE>({ 0x61, 0, 0x62, 0, 0x00, 0, 0x64, 0 });
-		vector<BYTE> vector_tabcrlfW = vector<BYTE>({ 0x9, 0, 0xa, 0, 0xd, 0 });
+		std::vector<BYTE> vector_abcdW = std::vector<BYTE>({ 0x61, 0, 0x62, 0, 0x63, 0, 0x64, 0 });
+		std::vector<BYTE> vector_abNULLdW = std::vector<BYTE>({ 0x61, 0, 0x62, 0, 0x00, 0, 0x64, 0 });
+		std::vector<BYTE> vector_tabcrlfW = std::vector<BYTE>({ 0x9, 0, 0xa, 0, 0xd, 0 });
 
-		vector<BYTE> vector_abcdA = vector<BYTE>({ 0x61, 0x62, 0x63, 0x64 });
-		vector<BYTE> vector_abNULLdA = vector<BYTE>({ 0x61, 0x62, 0x00, 0x64 });
-		vector<BYTE> vector_tabcrlfA = vector<BYTE>({ 0x9, 0xa, 0xd });
+		std::vector<BYTE> vector_abcdA = std::vector<BYTE>({ 0x61, 0x62, 0x63, 0x64 });
+		std::vector<BYTE> vector_abNULLdA = std::vector<BYTE>({ 0x61, 0x62, 0x00, 0x64 });
+		std::vector<BYTE> vector_tabcrlfA = std::vector<BYTE>({ 0x9, 0xa, 0xd });
 
 		TEST_METHOD(Test_BinToTextStringW)
 		{
@@ -263,12 +263,12 @@ namespace stringtest
 
 		TEST_METHOD(Test_BinToHexString)
 		{
-			Assert::AreEqual(std::wstring(L"NULL"), strings::BinToHexString(vector<BYTE>(), false));
-			Assert::AreEqual(std::wstring(L"FF"), strings::BinToHexString(vector<BYTE>{0xFF}, false));
+			Assert::AreEqual(std::wstring(L"NULL"), strings::BinToHexString(std::vector<BYTE>(), false));
+			Assert::AreEqual(std::wstring(L"FF"), strings::BinToHexString(std::vector<BYTE>{0xFF}, false));
 			Assert::AreEqual(std::wstring(L""), strings::BinToHexString(nullptr, false));
 			Assert::AreEqual(std::wstring(L"6D79737472696E67"), strings::BinToHexString(&sBinaryA, false));
 			Assert::AreEqual(std::wstring(L"6D00790073007400720069006E006700"), strings::BinToHexString(&sBinaryW, false));
-			Assert::AreEqual(std::wstring(L"cb: 8 lpb: 6D79737472696E67"), strings::BinToHexString(vector<BYTE>(bufA, bufA + cbA), true));
+			Assert::AreEqual(std::wstring(L"cb: 8 lpb: 6D79737472696E67"), strings::BinToHexString(std::vector<BYTE>(bufA, bufA + cbA), true));
 			Assert::AreEqual(std::wstring(L"6100620063006400"), strings::BinToHexString(vector_abcdW, false));
 			Assert::AreEqual(std::wstring(L"6100620000006400"), strings::BinToHexString(vector_abNULLdW, false));
 			Assert::AreEqual(std::wstring(L"cb: 6 lpb: 09000A000D00"), strings::BinToHexString(vector_tabcrlfW, true));
@@ -277,7 +277,7 @@ namespace stringtest
 
 		TEST_METHOD(Test_HexStringToBin)
 		{
-			Assert::AreEqual(vector<BYTE>(), strings::HexStringToBin(L"12345"));
+			Assert::AreEqual(std::vector<BYTE>(), strings::HexStringToBin(L"12345"));
 			Assert::AreEqual(vector_abcdW, strings::HexStringToBin(L"6100620063006400"));
 			Assert::AreEqual(vector_abcdW, strings::HexStringToBin(L"0x6100620063006400"));
 			Assert::AreEqual(vector_abcdW, strings::HexStringToBin(L"0X6100620063006400"));
@@ -288,7 +288,7 @@ namespace stringtest
 			Assert::AreEqual(myStringWvector, strings::HexStringToBin(L"6D00790073007400720069006E006700"));
 		}
 
-		void ByteVectorToLPBYTETest(const vector<BYTE>& bin) const
+		void ByteVectorToLPBYTETest(const std::vector<BYTE>& bin) const
 		{
 			const auto bytes = strings::ByteVectorToLPBYTE(bin);
 			for (size_t i = 0; i < bin.size(); i++)
@@ -301,7 +301,7 @@ namespace stringtest
 
 		TEST_METHOD(Test_ByteVectorToLPBYTE)
 		{
-			ByteVectorToLPBYTETest(vector<BYTE>{});
+			ByteVectorToLPBYTETest(std::vector<BYTE>{});
 			ByteVectorToLPBYTETest(vector_abcdW);
 			ByteVectorToLPBYTETest(vector_abNULLdW);
 			ByteVectorToLPBYTETest(vector_tabcrlfW);
@@ -312,7 +312,7 @@ namespace stringtest
 		}
 
 		std::wstring fullstring = L"this is a string  yes";
-		vector<std::wstring> words = { L"this", L"is", L"a", L"string", L"", L"yes" };
+		std::vector<std::wstring> words = { L"this", L"is", L"a", L"string", L"", L"yes" };
 
 		TEST_METHOD(Test_split)
 		{

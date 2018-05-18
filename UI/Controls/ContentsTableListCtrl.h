@@ -12,7 +12,7 @@ public:
 		_In_ CWnd* pCreateParent,
 		_In_ CMapiObjects* lpMapiObjects,
 		_In_ LPSPropTagArray sptExtraColumnTags,
-		_In_ const vector<TagNames>& lpExtraDisplayColumns,
+		_In_ const std::vector<TagNames>& lpExtraDisplayColumns,
 		UINT nIDContextMenu,
 		bool bIsAB,
 		_In_ CContentsTableDlg* lpHostDlg);
@@ -28,8 +28,8 @@ public:
 	_Check_return_ HRESULT GetSelectedItemEIDs(_Deref_out_opt_ LPENTRYLIST* lppEntryIDs) const;
 	_Check_return_ SortListData* GetSortListData(int iItem) const;
 	_Check_return_ HRESULT OpenNextSelectedItemProp(_Inout_opt_ int* iCurItem, __mfcmapiModifyEnum bModify, _Deref_out_opt_ LPMAPIPROP* lppProp) const;
-	_Check_return_ vector<int> GetSelectedItemNums() const;
-	_Check_return_ vector<SortListData*> GetSelectedItemData() const;
+	_Check_return_ std::vector<int> GetSelectedItemNums() const;
+	_Check_return_ std::vector<SortListData*> GetSelectedItemData() const;
 	_Check_return_ SortListData* GetFirstSelectedItemData() const;
 
 	_Check_return_ HRESULT ApplyRestriction() const;
@@ -83,7 +83,7 @@ private:
 	HANDLE m_LoadThreadHandle;
 	CContentsTableDlg* m_lpHostDlg;
 	CMapiObjects* m_lpMapiObjects;
-	vector<TagNames> m_lpExtraDisplayColumns;
+	std::vector<TagNames> m_lpExtraDisplayColumns;
 	LPSPropTagArray m_sptExtraColumnTags;
 	ULONG m_ulHeaderColumns;
 	ULONG_PTR m_ulAdviseConnection;

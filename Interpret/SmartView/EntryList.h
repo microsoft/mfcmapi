@@ -21,5 +21,5 @@ private:
 	DWORD m_EntryCount;
 	DWORD m_Pad;
 
-	vector<EntryListEntryStruct> m_Entry;
+	std::vector<EntryListEntryStruct> m_Entry;
 };

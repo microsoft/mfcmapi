@@ -41,7 +41,7 @@ private:
 
 	WORD m_Version;
 	DWORD m_Count;
-	vector<VerbData> m_lpVerbData;
+	std::vector<VerbData> m_lpVerbData;
 	WORD m_Version2;
-	vector<VerbExtraData> m_lpVerbExtraData;
+	std::vector<VerbExtraData> m_lpVerbExtraData;
 };

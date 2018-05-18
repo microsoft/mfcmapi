@@ -131,7 +131,7 @@ std::wstring Property::toAltString() const
 	return toString(m_AltParsing);
 }
 
-std::wstring Property::toString(const vector<Parsing>& parsings) const
+std::wstring Property::toString(const std::vector<Parsing>& parsings) const
 {
 	auto mv = m_attributes.GetAttribute(L"mv");
 	if (mv == L"true")

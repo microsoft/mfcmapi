@@ -59,7 +59,7 @@ void VerbStream::Parse()
 
 _Check_return_ std::wstring VerbStream::ToStringInternal()
 {
-	vector<std::wstring> verbStream;
+	std::vector<std::wstring> verbStream;
 	verbStream.push_back(strings::formatmessage(IDS_VERBHEADER, m_Version, m_Count));
 
 	for (ULONG i = 0; i < m_lpVerbData.size(); i++)

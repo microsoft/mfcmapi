@@ -16,15 +16,15 @@
 #include <Interpret/PropTypeArray.h>
 #include <Interpret/SmartView/SmartViewParsers.h>
 
-vector<NAME_ARRAY_ENTRY_V2> PropTagArray;
-vector<NAME_ARRAY_ENTRY> PropTypeArray;
-vector<GUID_ARRAY_ENTRY> PropGuidArray;
-vector<NAMEID_ARRAY_ENTRY> NameIDArray;
-vector<FLAG_ARRAY_ENTRY> FlagArray;
-vector<SMARTVIEW_PARSER_ARRAY_ENTRY> SmartViewParserArray;
-vector<NAME_ARRAY_ENTRY> SmartViewParserTypeArray;
+std::vector<NAME_ARRAY_ENTRY_V2> PropTagArray;
+std::vector<NAME_ARRAY_ENTRY> PropTypeArray;
+std::vector<GUID_ARRAY_ENTRY> PropGuidArray;
+std::vector<NAMEID_ARRAY_ENTRY> NameIDArray;
+std::vector<FLAG_ARRAY_ENTRY> FlagArray;
+std::vector<SMARTVIEW_PARSER_ARRAY_ENTRY> SmartViewParserArray;
+std::vector<NAME_ARRAY_ENTRY> SmartViewParserTypeArray;
 
-vector<_AddIn> g_lpMyAddins;
+std::vector<_AddIn> g_lpMyAddins;
 
 template <typename T> T GetFunction(
 	HMODULE hMod,
@@ -179,7 +179,7 @@ class CFileList
 public:
 	std::wstring m_szKey;
 	HKEY m_hRootKey;
-	vector<std::wstring> m_lpList;
+	std::vector<std::wstring> m_lpList;
 
 #define EXCLUSION_LIST L"AddInExclusionList" // STRING_OK
 #define INCLUSION_LIST L"AddInInclusionList" // STRING_OK
@@ -598,7 +598,7 @@ int _cdecl CompareSmartViewParser(_In_ const void* a1, _In_ const void* a2)
 }
 
 template <typename T> void MergeArrays(
-	vector<T> &Target,
+	std::vector<T> &Target,
 	_Inout_bytecap_x_(cSource* width) T* Source,
 	_In_ size_t cSource,
 	_In_ int(_cdecl *Comparison)(const void *, const void *))
@@ -646,7 +646,7 @@ void SortFlagArray(_In_count_(ulFlags) LPFLAG_ARRAY_ENTRY lpFlags, _In_ ULONG ul
 
 // Consults the end of the target array to find a match to the source
 // If no dupe is found, copies source to target
-void AppendFlagIfNotDupe(vector<FLAG_ARRAY_ENTRY>& target, FLAG_ARRAY_ENTRY source)
+void AppendFlagIfNotDupe(std::vector<FLAG_ARRAY_ENTRY>& target, FLAG_ARRAY_ENTRY source)
 {
 	auto iTarget = target.size();
 
@@ -669,13 +669,13 @@ void AppendFlagIfNotDupe(vector<FLAG_ARRAY_ENTRY>& target, FLAG_ARRAY_ENTRY sour
 
 // Similar to MergeArrays, but using AppendFlagIfNotDupe logic
 void MergeFlagArrays(
-	vector<FLAG_ARRAY_ENTRY> &In1,
+	std::vector<FLAG_ARRAY_ENTRY> &In1,
 	_In_count_(cIn2) LPFLAG_ARRAY_ENTRY In2,
 	_In_ size_t cIn2)
 {
 	if (!In2) return;
 
-	vector<FLAG_ARRAY_ENTRY> Out;
+	std::vector<FLAG_ARRAY_ENTRY> Out;
 
 	size_t iIn1 = 0;
 	size_t iIn2 = 0;
@@ -710,13 +710,13 @@ void MergeFlagArrays(
 void MergeAddInArrays()
 {
 	DebugPrint(DBGAddInPlumbing, L"Loading default arrays\n");
-	PropTagArray = vector<NAME_ARRAY_ENTRY_V2>(std::begin(g_PropTagArray), std::end(g_PropTagArray));
-	PropTypeArray = vector<NAME_ARRAY_ENTRY>(std::begin(g_PropTypeArray), std::end(g_PropTypeArray));
-	PropGuidArray = vector<GUID_ARRAY_ENTRY>(std::begin(g_PropGuidArray), std::end(g_PropGuidArray));
-	NameIDArray = vector<NAMEID_ARRAY_ENTRY>(std::begin(g_NameIDArray), std::end(g_NameIDArray));
-	FlagArray = vector<FLAG_ARRAY_ENTRY>(std::begin(g_FlagArray), std::end(g_FlagArray));
-	SmartViewParserArray = vector<SMARTVIEW_PARSER_ARRAY_ENTRY>(std::begin(g_SmartViewParserArray), std::end(g_SmartViewParserArray));
-	SmartViewParserTypeArray = vector<NAME_ARRAY_ENTRY>(std::begin(g_SmartViewParserTypeArray), std::end(g_SmartViewParserTypeArray));
+	PropTagArray = std::vector<NAME_ARRAY_ENTRY_V2>(std::begin(g_PropTagArray), std::end(g_PropTagArray));
+	PropTypeArray = std::vector<NAME_ARRAY_ENTRY>(std::begin(g_PropTypeArray), std::end(g_PropTypeArray));
+	PropGuidArray = std::vector<GUID_ARRAY_ENTRY>(std::begin(g_PropGuidArray), std::end(g_PropGuidArray));
+	NameIDArray = std::vector<NAMEID_ARRAY_ENTRY>(std::begin(g_NameIDArray), std::end(g_NameIDArray));
+	FlagArray = std::vector<FLAG_ARRAY_ENTRY>(std::begin(g_FlagArray), std::end(g_FlagArray));
+	SmartViewParserArray = std::vector<SMARTVIEW_PARSER_ARRAY_ENTRY>(std::begin(g_SmartViewParserArray), std::end(g_SmartViewParserArray));
+	SmartViewParserTypeArray = std::vector<NAME_ARRAY_ENTRY>(std::begin(g_SmartViewParserTypeArray), std::end(g_SmartViewParserTypeArray));
 
 	DebugPrint(DBGAddInPlumbing, L"Found 0x%08X built in prop tags.\n", PropTagArray.size());
 	DebugPrint(DBGAddInPlumbing, L"Found 0x%08X built in prop types.\n", PropTypeArray.size());

@@ -23,7 +23,7 @@ CContentsTableDlg::CContentsTableDlg(
 	__mfcmapiCreateDialogEnum bCreateDialog,
 	_In_opt_ LPMAPITABLE lpContentsTable,
 	_In_ LPSPropTagArray sptExtraColumnTags,
-	_In_ const vector<TagNames>& lpExtraDisplayColumns,
+	_In_ const std::vector<TagNames>& lpExtraDisplayColumns,
 	ULONG nIDContextMenu,
 	ULONG ulAddInContext
 ) :

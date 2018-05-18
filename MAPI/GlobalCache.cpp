@@ -141,7 +141,7 @@ _Check_return_ LPMAPIPROP CGlobalCache::GetSourcePropObject() const
 	return m_lpSourcePropObject;
 }
 
-void CGlobalCache::SetAttachmentsToCopy(_In_ LPMESSAGE lpMessage, _In_ const vector<ULONG>& attNumList)
+void CGlobalCache::SetAttachmentsToCopy(_In_ LPMESSAGE lpMessage, _In_ const std::vector<ULONG>& attNumList)
 {
 	EmptyBuffer();
 	m_lpSourcePropObject = lpMessage;
@@ -149,7 +149,7 @@ void CGlobalCache::SetAttachmentsToCopy(_In_ LPMESSAGE lpMessage, _In_ const vec
 	if (m_lpSourcePropObject) m_lpSourcePropObject->AddRef();
 }
 
-_Check_return_ vector<ULONG> CGlobalCache::GetAttachmentsToCopy() const
+_Check_return_ std::vector<ULONG> CGlobalCache::GetAttachmentsToCopy() const
 {
 	return m_attachmentsToCopy;
 }

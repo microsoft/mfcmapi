@@ -6,9 +6,9 @@ struct WebViewPersist
 	DWORD dwVersion;
 	DWORD dwType;
 	DWORD dwFlags;
-	vector<BYTE> dwUnused; // 7 DWORDs
+	std::vector<BYTE> dwUnused; // 7 DWORDs
 	DWORD cbData;
-	vector<BYTE> lpData;
+	std::vector<BYTE> lpData;
 };
 
 class WebViewPersistStream : public SmartViewParser
@@ -21,5 +21,5 @@ private:
 	_Check_return_ std::wstring ToStringInternal() override;
 
 	DWORD m_cWebViews;
-	vector<WebViewPersist> m_lpWebViews;
+	std::vector<WebViewPersist> m_lpWebViews;
 };

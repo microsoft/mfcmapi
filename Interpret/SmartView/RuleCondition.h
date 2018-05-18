@@ -27,9 +27,9 @@ struct PropertyName
 struct NamedPropertyInformation
 {
 	WORD NoOfNamedProps;
-	vector<WORD> PropId;
+	std::vector<WORD> PropId;
 	DWORD NamedPropertiesSize;
-	vector<PropertyName> PropertyName;
+	std::vector<PropertyName> PropertyName;
 };
 
 class RuleCondition : public SmartViewParser

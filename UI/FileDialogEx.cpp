@@ -27,7 +27,7 @@ std::wstring CFileDialogExW::OpenFile(
 	return std::wstring();
 }
 
-vector<std::wstring> CFileDialogExW::OpenFiles(
+std::vector<std::wstring> CFileDialogExW::OpenFiles(
 	_In_ const std::wstring& lpszDefExt,
 	_In_ const std::wstring& lpszFileName,
 	DWORD dwFlags,
@@ -50,7 +50,7 @@ vector<std::wstring> CFileDialogExW::OpenFiles(
 		return dlgFilePicker.GetFileNames();
 	}
 
-	return vector<std::wstring>();
+	return std::vector<std::wstring>();
 }
 
 std::wstring CFileDialogExW::SaveAs(
@@ -93,9 +93,9 @@ struct OPENFILENAMEEXW : public OPENFILENAMEW
 
 #define CCHBIGBUFF 8192
 
-vector<std::wstring> UnpackFileNames(OPENFILENAMEEXW ofn)
+std::vector<std::wstring> UnpackFileNames(OPENFILENAMEEXW ofn)
 {
-	auto paths = vector<std::wstring>();
+	auto paths = std::vector<std::wstring>();
 
 	if ((ofn.Flags & OFN_ALLOWMULTISELECT) == 0)
 	{
@@ -212,7 +212,7 @@ std::wstring CFileDialogExW::GetFileName() const
 	return strings::emptystring;
 }
 
-vector<std::wstring> CFileDialogExW::GetFileNames() const
+std::vector<std::wstring> CFileDialogExW::GetFileNames() const
 {
 	return m_paths;
 }

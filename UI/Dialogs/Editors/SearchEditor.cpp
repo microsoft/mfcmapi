@@ -7,7 +7,7 @@
 
 static std::wstring CLASS = L"CSearchEditor";
 
-vector<std::pair<ULONG, ULONG>> FuzzyLevels = {
+std::vector<std::pair<ULONG, ULONG>> FuzzyLevels = {
 	{ IDS_SEARCHSUBSTRING , FL_IGNORECASE | FL_SUBSTRING },
 	{ IDS_SEARCHPREFIX, FL_IGNORECASE | FL_PREFIX },
 	{ IDS_SEARCHFULLSTRING, FL_IGNORECASE | FL_FULLSTRING },

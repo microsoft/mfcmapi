@@ -18,7 +18,7 @@ struct PackedAnsiString
 struct SkipBlock
 {
 	DWORD dwSize;
-	vector<BYTE> lpbContent;
+	std::vector<BYTE> lpbContent;
 };
 
 struct FieldDefinition
@@ -35,7 +35,7 @@ struct FieldDefinition
 	PackedAnsiString pasErrorANSI;
 	DWORD dwInternalType;
 	DWORD dwSkipBlockCount;
-	vector<SkipBlock> psbSkipBlocks;
+	std::vector<SkipBlock> psbSkipBlocks;
 };
 
 class PropertyDefinitionStream : public SmartViewParser
@@ -49,5 +49,5 @@ private:
 
 	WORD m_wVersion;
 	DWORD m_dwFieldDefinitionCount;
-	vector<FieldDefinition> m_pfdFieldDefinitions;
+	std::vector<FieldDefinition> m_pfdFieldDefinitions;
 };

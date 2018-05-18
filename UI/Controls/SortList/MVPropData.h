@@ -11,5 +11,5 @@ public:
 private:
 	std::string m_lpszA;
 	std::wstring m_lpszW;
-	vector<BYTE> m_lpBin;
+	std::vector<BYTE> m_lpBin;
 };

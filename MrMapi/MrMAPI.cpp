@@ -190,7 +190,7 @@ COMMANDLINE_SWITCH g_Switches[] =
 };
 ULONG g_ulSwitches = _countof(g_Switches);
 
-extern vector<_AddIn> g_lpMyAddins;
+extern std::vector<_AddIn> g_lpMyAddins;
 
 void DisplayUsage(BOOL bFull)
 {

@@ -172,8 +172,8 @@ void PrintTagFromNum(_In_ ULONG ulPropTag)
 		printf("Only trust the following output if this property is known to be an address book property.\n");
 	}
 
-	vector<ULONG> ulExacts;
-	vector<ULONG> ulPartials;
+	std::vector<ULONG> ulExacts;
+	std::vector<ULONG> ulPartials;
 	FindTagArrayMatches(ulPropTag, true, PropTagArray, ulExacts, ulPartials);
 
 	if (ulExacts.size())
@@ -222,8 +222,8 @@ void PrintTagFromName(_In_z_ LPCWSTR lpszPropName, _In_ ULONG ulType)
 			// now that we have a match, let's see if we have other tags with the same number
 			auto ulExactMatch = ulCur; // The guy that matched lpszPropName
 
-			vector<ULONG> ulExacts;
-			vector<ULONG> ulPartials;
+			std::vector<ULONG> ulExacts;
+			std::vector<ULONG> ulPartials;
 			FindTagArrayMatches(PropTagArray[ulExactMatch].ulValue, true, PropTagArray, ulExacts, ulPartials);
 
 			// We're gonna skip at least one, so only print if we have more than one

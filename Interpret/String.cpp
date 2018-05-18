@@ -374,7 +374,7 @@ namespace strings
 	}
 
 	// Converts binary data to a string, assuming source string was unicode
-	std::wstring BinToTextStringW(const vector<BYTE>& lpByte, bool bMultiLine)
+	std::wstring BinToTextStringW(const std::vector<BYTE>& lpByte, bool bMultiLine)
 	{
 		SBinary bin = { static_cast<ULONG>(lpByte.size()),const_cast<LPBYTE>(lpByte.data()) };
 		return strings::BinToTextStringW(&bin, bMultiLine);
@@ -389,7 +389,7 @@ namespace strings
 		return strings::RemoveInvalidCharactersW(szBin, bMultiLine);
 	}
 
-	std::wstring BinToTextString(const vector<BYTE>& lpByte, bool bMultiLine)
+	std::wstring BinToTextString(const std::vector<BYTE>& lpByte, bool bMultiLine)
 	{
 		SBinary bin = { static_cast<ULONG>(lpByte.size()),const_cast<LPBYTE>(lpByte.data()) };
 		return strings::BinToTextString(&bin, bMultiLine);
@@ -441,7 +441,7 @@ namespace strings
 		return lpsz;
 	}
 
-	std::wstring BinToHexString(const vector<BYTE>& lpByte, bool bPrependCB)
+	std::wstring BinToHexString(const std::vector<BYTE>& lpByte, bool bPrependCB)
 	{
 		SBinary sBin = { static_cast<ULONG>(lpByte.size()), const_cast<LPBYTE>(lpByte.data()) };
 		return strings::BinToHexString(&sBin, bPrependCB);
@@ -471,10 +471,10 @@ namespace strings
 
 	// Converts hex string in lpsz to a binary buffer.
 	// If cbTarget != 0, caps the number of bytes converted at cbTarget
-	vector<BYTE> HexStringToBin(_In_ const std::wstring& input, size_t cbTarget)
+	std::vector<BYTE> HexStringToBin(_In_ const std::wstring& input, size_t cbTarget)
 	{
 		// If our target is odd, we can't convert
-		if (cbTarget % 2 != 0) return vector<BYTE>();
+		if (cbTarget % 2 != 0) return std::vector<BYTE>();
 
 		// remove junk
 		std::wstring szJunk = L"\r\n\t -.,\\/'{}`\""; // STRING_OK
@@ -491,7 +491,7 @@ namespace strings
 
 		const auto cchStrLen = lpsz.length();
 
-		vector<BYTE> lpb;
+		std::vector<BYTE> lpb;
 		WCHAR szTmp[3] = { 0 };
 		size_t iCur = 0;
 		size_t cbConverted = 0;
@@ -502,7 +502,7 @@ namespace strings
 			// Check for valid hex characters
 			if (lpsz[iCur] > 255 || lpsz[iCur + 1] > 255 || !isxdigit(lpsz[iCur]) || !isxdigit(lpsz[iCur + 1]))
 			{
-				return vector<BYTE>();
+				return std::vector<BYTE>();
 			}
 
 			szTmp[0] = lpsz[iCur];
@@ -515,8 +515,8 @@ namespace strings
 		return lpb;
 	}
 
-	// Converts byte vector to LPBYTE allocated with new
-	LPBYTE ByteVectorToLPBYTE(const vector<BYTE>& bin)
+	// Converts vector<BYTE> to LPBYTE allocated with new
+	LPBYTE ByteVectorToLPBYTE(const std::vector<BYTE>& bin)
 	{
 		if (bin.empty()) return nullptr;
 
@@ -531,11 +531,11 @@ namespace strings
 		return nullptr;
 	}
 
-	vector<std::wstring> split(const std::wstring& str, const wchar_t delim)
+	std::vector<std::wstring> split(const std::wstring& str, const wchar_t delim)
 	{
 		auto ss = std::wstringstream(str);
 		std::wstring item;
-		vector<std::wstring> elems;
+		std::vector<std::wstring> elems;
 		while (getline(ss, item, delim))
 		{
 			elems.push_back(item);
@@ -544,7 +544,7 @@ namespace strings
 		return elems;
 	}
 
-	std::wstring join(const vector<std::wstring>& elems, const std::wstring& delim)
+	std::wstring join(const std::vector<std::wstring>& elems, const std::wstring& delim)
 	{
 		std::wstringstream ss;
 		for (size_t i = 0; i < elems.size(); ++i)
@@ -557,7 +557,7 @@ namespace strings
 		return ss.str();
 	}
 
-	std::wstring join(const vector<std::wstring>& elems, const wchar_t delim)
+	std::wstring join(const std::vector<std::wstring>& elems, const wchar_t delim)
 	{
 		return strings::join(elems, std::wstring(1, delim));
 	}

@@ -89,7 +89,7 @@ protected:
 	void ResizeList(ULONG uControl, bool bSort) const;
 
 	// Functions used by derived classes during handle change events
-	vector<BYTE> GetBinary(ULONG i) const;
+	std::vector<BYTE> GetBinary(ULONG i) const;
 	_Check_return_ std::string GetStringA(ULONG iControl) const;
 	_Check_return_ ULONG GetListCount(ULONG iControl) const;
 	_Check_return_ SortListData* GetListRowData(ULONG iControl, int iRow) const;
@@ -173,7 +173,7 @@ private:
 	UINT m_uidActionButtonText2;
 	UINT m_uidActionButtonText3;
 
-	vector<ViewPane*> m_lpControls; // array of controls
+	std::vector<ViewPane*> m_lpControls; // array of controls
 
 	bool m_bEnableScroll;
 	CWnd m_ScrollWindow;

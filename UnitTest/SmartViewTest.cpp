@@ -24,7 +24,7 @@ namespace SmartViewTest
 			__ParsingTypeEnum structType;
 			bool parseAll;
 			std::wstring testName;
-			vector<BYTE> hex;
+			std::vector<BYTE> hex;
 			std::wstring expected;
 		};
 
@@ -78,7 +78,7 @@ namespace SmartViewTest
 			}
 		}
 
-		void test(vector<SmartViewTestData> testData) const
+		void test(std::vector<SmartViewTestData> testData) const
 		{
 			for (auto data : testData)
 			{
@@ -126,10 +126,10 @@ namespace SmartViewTest
 			return strings::stringTowstring(str);
 		}
 
-		static vector<SmartViewTestData> loadTestData(std::initializer_list<SmartViewTestResource> resources)
+		static std::vector<SmartViewTestData> loadTestData(std::initializer_list<SmartViewTestResource> resources)
 		{
 			static auto handle = GetModuleHandleW(L"UnitTest.dll");
-			vector<SmartViewTestData> testData;
+			std::vector<SmartViewTestData> testData;
 			for (auto resource : resources)
 			{
 				testData.push_back(SmartViewTestData

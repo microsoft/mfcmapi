@@ -12,5 +12,5 @@ private:
 
 	GUID m_NamespaceGuid;
 	size_t m_cbLocalId;
-	vector<BYTE> m_LocalID;
+	std::vector<BYTE> m_LocalID;
 };

@@ -118,7 +118,7 @@ void AppointmentRecurrencePattern::Parse()
 			extendedException.WideCharLocationLength = 0;
 			extendedException.ReservedBlockEE2Size = 0;
 
-			vector<BYTE> ReservedBlockEE2;
+			std::vector<BYTE> ReservedBlockEE2;
 			if (m_WriterVersion2 >= 0x0003009)
 			{
 				extendedException.ChangeHighlight.ChangeHighlightSize = m_Parser.Get<DWORD>();

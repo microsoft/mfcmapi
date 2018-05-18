@@ -50,7 +50,7 @@ _Check_return_ std::wstring SmartViewParser::ToString()
 	return szParsedString;
 }
 
-_Check_return_ std::wstring SmartViewParser::JunkDataToString(const vector<BYTE>& lpJunkData) const
+_Check_return_ std::wstring SmartViewParser::JunkDataToString(const std::vector<BYTE>& lpJunkData) const
 {
 	if (!lpJunkData.size()) return strings::emptystring;
 	DebugPrint(DBGSmartView, L"Had 0x%08X = %u bytes left over.\n", static_cast<int>(lpJunkData.size()), static_cast<UINT>(lpJunkData.size()));
@@ -88,7 +88,7 @@ LPWSTR SmartViewParser::GetStringW(size_t cchChar)
 
 LPBYTE SmartViewParser::Allocate(size_t cbBytes)
 {
-	vector<BYTE> bin;
+	std::vector<BYTE> bin;
 	bin.resize(cbBytes);
 	m_binCache.push_back(bin);
 	return m_binCache.back().data();

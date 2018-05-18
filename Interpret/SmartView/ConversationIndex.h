@@ -23,5 +23,5 @@ private:
 	FILETIME m_ftCurrent;
 	GUID m_guid;
 	ULONG m_ulResponseLevels;
-	vector<ResponseLevel> m_lpResponseLevels;
+	std::vector<ResponseLevel> m_lpResponseLevels;
 };

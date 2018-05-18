@@ -16,7 +16,7 @@ CBinaryParser::CBinaryParser(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin)
 void CBinaryParser::Init(size_t cbBin, _In_count_(cbBin) const BYTE* lpBin)
 {
 	DebugPrintEx(DBGSmartView, CLASS, L"Init", L"cbBin = 0x%08X = %u\n", static_cast<int>(cbBin), static_cast<UINT>(cbBin));
-	m_Bin = lpBin && cbBin ? vector<BYTE>(lpBin, lpBin + cbBin) : vector<BYTE>();
+	m_Bin = lpBin && cbBin ? std::vector<BYTE>(lpBin, lpBin + cbBin) : std::vector<BYTE>();
 	m_Offset = 0;
 }
 
@@ -107,16 +107,16 @@ std::wstring CBinaryParser::GetStringW(size_t cchChar)
 	return strings::RemoveInvalidCharactersW(ret);
 }
 
-vector<BYTE> CBinaryParser::GetBYTES(size_t cbBytes, size_t cbMaxBytes)
+std::vector<BYTE> CBinaryParser::GetBYTES(size_t cbBytes, size_t cbMaxBytes)
 {
-	if (!cbBytes || !CheckRemainingBytes(cbBytes)) return vector<BYTE>();
-	if (cbMaxBytes != -1 && cbBytes > cbMaxBytes) return vector<BYTE>();
-	vector<BYTE> ret(const_cast<LPBYTE>(GetCurrentAddress()), const_cast<LPBYTE>(GetCurrentAddress() + cbBytes));
+	if (!cbBytes || !CheckRemainingBytes(cbBytes)) return std::vector<BYTE>();
+	if (cbMaxBytes != -1 && cbBytes > cbMaxBytes) return std::vector<BYTE>();
+	std::vector<BYTE> ret(const_cast<LPBYTE>(GetCurrentAddress()), const_cast<LPBYTE>(GetCurrentAddress() + cbBytes));
 	m_Offset += cbBytes;
 	return ret;
 }
 
-vector<BYTE> CBinaryParser::GetRemainingData()
+std::vector<BYTE> CBinaryParser::GetRemainingData()
 {
 	return GetBYTES(RemainingBytes());
 }

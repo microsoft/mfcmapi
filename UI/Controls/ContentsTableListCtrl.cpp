@@ -24,7 +24,7 @@ CContentsTableListCtrl::CContentsTableListCtrl(
 	_In_ CWnd* pCreateParent,
 	_In_ CMapiObjects* lpMapiObjects,
 	_In_ LPSPropTagArray sptExtraColumnTags,
-	_In_ const vector<TagNames>& lpExtraDisplayColumns,
+	_In_ const std::vector<TagNames>& lpExtraDisplayColumns,
 	UINT nIDContextMenu,
 	bool bIsAB,
 	_In_ CContentsTableDlg *lpHostDlg)
@@ -1117,10 +1117,10 @@ _Check_return_ HRESULT CContentsTableListCtrl::GetSelectedItemEIDs(_Deref_out_op
 	return hRes;
 }
 
-_Check_return_ vector<int> CContentsTableListCtrl::GetSelectedItemNums() const
+_Check_return_ std::vector<int> CContentsTableListCtrl::GetSelectedItemNums() const
 {
 	auto iItem = -1;
-	vector<int> iItems;
+	std::vector<int> iItems;
 	do
 	{
 		iItem = GetNextItem(
@@ -1136,10 +1136,10 @@ _Check_return_ vector<int> CContentsTableListCtrl::GetSelectedItemNums() const
 	return iItems;
 }
 
-_Check_return_ vector<SortListData*> CContentsTableListCtrl::GetSelectedItemData() const
+_Check_return_ std::vector<SortListData*> CContentsTableListCtrl::GetSelectedItemData() const
 {
 	auto iItem = -1;
-	vector<SortListData*> items;
+	std::vector<SortListData*> items;
 	do
 	{
 		iItem = GetNextItem(

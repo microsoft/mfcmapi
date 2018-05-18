@@ -1072,7 +1072,7 @@ void CEditor::SetSize(ULONG i, size_t cb) const
 }
 
 // Returns a binary buffer which is represented by the hex string
-vector<BYTE> CEditor::GetBinary(ULONG i) const
+std::vector<BYTE> CEditor::GetBinary(ULONG i) const
 {
 	return strings::HexStringToBin(GetStringW(i));
 }
@@ -1092,7 +1092,7 @@ _Check_return_ HRESULT CEditor::GetEntryID(ULONG i, bool bIsBase64, _Out_ size_t
 
 	if (!szString.empty())
 	{
-		vector<BYTE> bin;
+		std::vector<BYTE> bin;
 		if (bIsBase64) // entry was BASE64 encoded
 		{
 			bin = Base64Decode(szString);

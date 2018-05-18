@@ -46,8 +46,8 @@ public:
 	_Check_return_ ULONG GetPropertyToCopy() const;
 	_Check_return_ LPMAPIPROP GetSourcePropObject() const;
 
-	void SetAttachmentsToCopy(_In_ LPMESSAGE lpMessage, _In_ const vector<ULONG>& attNumList);
-	_Check_return_ vector<ULONG> GetAttachmentsToCopy() const;
+	void SetAttachmentsToCopy(_In_ LPMESSAGE lpMessage, _In_ const std::vector<ULONG>& attNumList);
+	_Check_return_ std::vector<ULONG> GetAttachmentsToCopy() const;
 
 	void SetProfileToCopy(_In_ const std::string& szProfileName);
 	_Check_return_ std::string GetProfileToCopy() const;
@@ -63,7 +63,7 @@ private:
 	LPENTRYLIST m_lpMessagesToCopy;
 	LPMAPIFOLDER m_lpFolderToCopy;
 	ULONG m_ulPropTagToCopy;
-	vector<ULONG> m_attachmentsToCopy;
+	std::vector<ULONG> m_attachmentsToCopy;
 	std::string m_szProfileToCopy;
 	LPMAPIFOLDER m_lpSourceParent;
 	LPMAPIPROP m_lpSourcePropObject;

@@ -46,7 +46,7 @@ _Check_return_ std::wstring PropertyStruct::ToStringInternal()
 
 _Check_return_ std::wstring PropsToString(DWORD PropCount, LPSPropValue Prop)
 {
-	vector<std::wstring> property;
+	std::vector<std::wstring> property;
 
 	if (Prop)
 	{

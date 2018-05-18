@@ -14,7 +14,7 @@ struct TZRule
 	WORD wReserved;
 	WORD wTZRuleFlags;
 	WORD wYear;
-	vector<BYTE> X; // 14 bytes
+	std::vector<BYTE> X; // 14 bytes
 	DWORD lBias; // offset from GMT
 	DWORD lStandardBias; // offset from bias during standard time
 	DWORD lDaylightBias; // offset from bias during daylight time
@@ -42,5 +42,5 @@ private:
 	WORD m_cchKeyName;
 	std::wstring m_szKeyName;
 	WORD m_cRules;
-	vector<TZRule> m_lpTZRule;
+	std::vector<TZRule> m_lpTZRule;
 };

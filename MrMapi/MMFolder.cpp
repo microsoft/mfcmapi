@@ -101,7 +101,7 @@ std::wstring unescape(_In_ std::wstring lpsz)
 // a hierarchical list of subfolders.
 HRESULT HrMAPIFindSubfolderExW(
 	_In_ LPMAPIFOLDER lpRootFolder, // open root folder
-	const vector<std::wstring>& FolderList, // hierarchical list of subfolders to navigate
+	const std::vector<std::wstring>& FolderList, // hierarchical list of subfolders to navigate
 	_Out_opt_ ULONG* lpcbeid, // pointer to count of bytes in entry ID
 	_Deref_out_opt_ LPENTRYID* lppeid) // pointer to entry ID pointer
 {

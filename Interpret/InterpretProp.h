@@ -1,7 +1,7 @@
 #pragma once
 
 // Base64 functions
-vector<BYTE> Base64Decode(const std::wstring& szEncodedStr);
+std::vector<BYTE> Base64Decode(const std::wstring& szEncodedStr);
 std::wstring Base64Encode(size_t cbSourceBuf, _In_count_(cbSourceBuf) const LPBYTE lpSourceBuffer);
 
 void FileTimeToString(_In_ const FILETIME& fileTime, _In_ std::wstring& PropString, _In_opt_ std::wstring& AltPropString);

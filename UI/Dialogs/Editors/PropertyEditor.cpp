@@ -499,7 +499,7 @@ void CPropertyEditor::WriteStringsToSPropValue()
 		auto bFailed = false; // set true if we fail to get a prop and have to clean up memory
 		m_lpsOutputValue->ulPropTag = m_ulPropTag;
 		m_lpsOutputValue->dwAlignPad = NULL;
-		vector<BYTE> bin;
+		std::vector<BYTE> bin;
 
 		switch (PROP_TYPE(m_ulPropTag))
 		{
@@ -635,7 +635,7 @@ _Check_return_ ULONG CPropertyEditor::HandleChange(UINT nID)
 	LARGE_INTEGER liVal = { 0 };
 	FILETIME ftVal = { 0 };
 	SBinary Bin = { 0 };
-	vector<BYTE> bin;
+	std::vector<BYTE> bin;
 	std::string lpszA;
 	std::wstring lpszW;
 

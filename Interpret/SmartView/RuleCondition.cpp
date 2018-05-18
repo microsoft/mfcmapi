@@ -59,7 +59,7 @@ void RuleCondition::Parse()
 
 _Check_return_ std::wstring RuleCondition::ToStringInternal()
 {
-	vector<std::wstring> ruleCondition;
+	std::vector<std::wstring> ruleCondition;
 
 	if (m_bExtended)
 	{

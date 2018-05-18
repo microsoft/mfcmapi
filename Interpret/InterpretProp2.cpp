@@ -29,9 +29,9 @@ bool CompareTagsSortOrder(int a1, int a2)
 // If no hits, then ulNoMatch should be returned for lpulFirstExact and/or lpulFirstPartial
 void FindTagArrayMatches(_In_ ULONG ulTarget,
 	bool bIsAB,
-	const vector<NAME_ARRAY_ENTRY_V2>& MyArray,
-	vector<ULONG>& ulExacts,
-	vector<ULONG>& ulPartials)
+	const std::vector<NAME_ARRAY_ENTRY_V2>& MyArray,
+	std::vector<ULONG>& ulExacts,
+	std::vector<ULONG>& ulPartials)
 {
 	if (!(ulTarget & PROP_TAG_MASK)) // not dealing with a full prop tag
 	{
@@ -120,8 +120,8 @@ PropTagNames PropTagToPropName(ULONG ulPropTag, bool bIsAB)
 		return match->second;
 	}
 
-	vector<ULONG> ulExacts;
-	vector<ULONG> ulPartials;
+	std::vector<ULONG> ulExacts;
+	std::vector<ULONG> ulPartials;
 	FindTagArrayMatches(ulPropTag, bIsAB, PropTagArray, ulExacts, ulPartials);
 
 	PropTagNames entry;
@@ -331,9 +331,9 @@ _Check_return_ GUID StringToGUID(_In_ const std::wstring& szGUID, bool bByteSwap
 }
 
 // Returns string built from NameIDArray
-vector<std::wstring> NameIDToPropNames(_In_ const LPMAPINAMEID lpNameID)
+std::vector<std::wstring> NameIDToPropNames(_In_ const LPMAPINAMEID lpNameID)
 {
-	vector<std::wstring> results;
+	std::vector<std::wstring> results;
 	if (!lpNameID) return{};
 	if (lpNameID->ulKind != MNID_ID) return{};
 	ULONG ulMatch = ulNoMatch;

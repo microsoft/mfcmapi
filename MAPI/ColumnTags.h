@@ -35,7 +35,7 @@ static const SizedSPropTagArray(DEFTAGS_NUM_COLS, sptDEFCols) =
 	PR_OBJECT_TYPE,
 };
 
-static vector<TagNames> DEFColumns = {
+static std::vector<TagNames> DEFColumns = {
 	{ deftagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY },
 	{ deftagPR_DISPLAY_NAME, IDS_COLDISPLAYNAME },
 	{ deftagPR_ROW_TYPE, IDS_COLROWTYPE },
@@ -78,7 +78,7 @@ static const SizedSPropTagArray(STORETAGS_NUM_COLS, sptSTORECols) =
 	PR_PROVIDER_UID,
 };
 
-static vector<TagNames> STOREColumns = {
+static std::vector<TagNames> STOREColumns = {
 	{ storetagPR_DISPLAY_NAME, IDS_COLDISPLAYNAME },
 	{ storetagPR_DEFAULT_STORE, IDS_COLDEFAULTSTORE },
 	{ storetagPR_PROVIDER_DISPLAY, IDS_COLPROVIDERDISPLAY },
@@ -142,7 +142,7 @@ static const SizedSPropTagArray(MSGTAGS_NUM_COLS, sptMSGCols) =
 	PR_CONTENT_FILTER_SCL,
 };
 
-static vector<TagNames> MSGColumns = {
+static std::vector<TagNames> MSGColumns = {
 	{ msgtagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY },
 	{ msgtagPR_HASATTACH, IDS_COLATT },
 	{ msgtagPR_SENT_REPRESENTING_NAME, IDS_COLFROM },
@@ -189,7 +189,7 @@ static const SizedSPropTagArray(ABTAGS_NUM_COLS, sptABCols) =
 	PR_ADDRTYPE,
 };
 
-static vector<TagNames> ABColumns = {
+static std::vector<TagNames> ABColumns = {
 	{ abtagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY },
 	{ abtagPR_DISPLAY_NAME, IDS_COLDISPLAYNAME },
 	{ abtagPR_EMAIL_ADDRESS, IDS_COLEMAIL },
@@ -222,7 +222,7 @@ static const SizedSPropTagArray(ATTACHTAGS_NUM_COLS, sptATTACHCols) =
 	PR_OBJECT_TYPE,
 };
 
-static vector<TagNames> ATTACHColumns = {
+static std::vector<TagNames> ATTACHColumns = {
 	{ attachtagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY },
 	{ attachtagPR_ATTACH_NUM, IDS_COLNUM },
 	{ attachtagPR_ATTACH_METHOD, IDS_COLMETHOD },
@@ -283,7 +283,7 @@ static const SizedSPropTagArray(MBXTAGS_NUM_COLS, sptMBXCols) =
 	PR_INTERNET_MDNS,
 };
 
-static vector<TagNames> MBXColumns = {
+static std::vector<TagNames> MBXColumns = {
 	{ mbxtagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY },
 	{ mbxtagPR_DISPLAY_NAME, IDS_COLDISPLAYNAME },
 	{ mbxtagPR_EMAIL_ADDRESS, IDS_COLEMAILADDRESS },
@@ -385,7 +385,7 @@ static const SizedSPropTagArray(PFTAGS_NUM_COLS, sptPFCols) =
 	PR_SORT_LOCALE_ID,
 };
 
-static vector<TagNames> PFColumns = {
+static std::vector<TagNames> PFColumns = {
 	{ pftagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY },
 	{ pftagPR_DISPLAY_NAME, IDS_COLDISPLAYNAME },
 	{ pftagPR_CONTENT_COUNT, IDS_COLCONTENTCOUNT },
@@ -428,7 +428,7 @@ static const SizedSPropTagArray(STATUSTAGS_NUM_COLS, sptSTATUSCols) =
 	PR_OBJECT_TYPE,
 };
 
-static vector<TagNames> STATUSColumns = {
+static std::vector<TagNames> STATUSColumns = {
 	{ statustagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY },
 	{ statustagPR_DISPLAY_NAME, IDS_COLDISPLAYNAME },
 	{ statustagPR_IDENTITY_DISPLAY, IDS_COLIDENTITY },
@@ -460,7 +460,7 @@ static const SizedSPropTagArray(RECEIVETAGS_NUM_COLS, sptRECEIVECols) =
 	PR_OBJECT_TYPE,
 };
 
-static vector<TagNames> RECEIVEColumns = {
+static std::vector<TagNames> RECEIVEColumns = {
 	{ receivetagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY },
 	{ receivetagPR_MESSAGE_CLASS, IDS_COLMESSAGECLASS }
 };
@@ -489,7 +489,7 @@ static const SizedSPropTagArray(HIERARCHYTAGS_NUM_COLS, sptHIERARCHYCols) =
 	PR_SORT_PARENTID,
 };
 
-static vector<TagNames> HIERARCHYColumns = {
+static std::vector<TagNames> HIERARCHYColumns = {
 	{ hiertagPR_DISPLAY_NAME, IDS_COLDISPLAYNAME },
 	{ hiertagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY },
 	{ hiertagPR_DEPTH, IDS_COLDEPTH },
@@ -513,7 +513,7 @@ static const SizedSPropTagArray(PROFLISTTAGS_NUM_COLS, sptPROFLISTCols) =
 	PR_DISPLAY_NAME_A,
 };
 
-static vector<TagNames> PROFLISTColumns = {
+static std::vector<TagNames> PROFLISTColumns = {
 	{ proflisttagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY },
 	{ proflisttagPR_DISPLAY_NAME, IDS_COLDISPLAYNAME }
 };
@@ -534,7 +534,7 @@ static const SizedSPropTagArray(SERVICETAGS_NUM_COLS, sptSERVICECols) =
 	PR_DISPLAY_NAME,
 };
 
-static vector<TagNames> SERVICEColumns = {
+static std::vector<TagNames> SERVICEColumns = {
 	{ servicetagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY },
 	{ servicetagPR_DISPLAY_NAME, IDS_COLDISPLAYNAME }
 };
@@ -555,7 +555,7 @@ static const SizedSPropTagArray(PROVIDERTAGS_NUM_COLS, sptPROVIDERCols) =
 	PR_DISPLAY_NAME,
 };
 
-static vector<TagNames> PROVIDERColumns = {
+static std::vector<TagNames> PROVIDERColumns = {
 	{ providertagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY },
 	{ providertagPR_DISPLAY_NAME, IDS_COLDISPLAYNAME }
 };
@@ -576,7 +576,7 @@ static const SizedSPropTagArray(RULETAGS_NUM_COLS, sptRULECols) =
 	PR_RULE_NAME
 };
 
-static vector<TagNames> RULEColumns = {
+static std::vector<TagNames> RULEColumns = {
 	{ ruletagPR_INSTANCE_KEY, IDS_COLINSTANCEKEY },
 	{ ruletagPR_RULE_NAME, IDS_COLRULENAME }
 };
@@ -597,7 +597,7 @@ static const SizedSPropTagArray(ACLTAGS_NUM_COLS, sptACLCols) =
 	PR_MEMBER_RIGHTS
 };
 
-static vector<TagNames> ACLColumns = {
+static std::vector<TagNames> ACLColumns = {
 	{ acltagPR_MEMBER_ID, IDS_COLMEMBERID },
 	{ acltagPR_MEMBER_RIGHTS, IDS_COLMEMBERRIGHTS }
 };
@@ -617,7 +617,7 @@ enum
 	PROPCOLTAGS_NUM_COLS
 };
 
-static vector<TagNames> PropColumns = {
+static std::vector<TagNames> PropColumns = {
 	{ pcPROPBESTGUESS , IDS_COLBESTGUESS },
 	{ pcPROPOTHERNAMES, IDS_COLOTHER_NAMES },
 	{ pcPROPTAG, IDS_COLTAG },
@@ -629,7 +629,7 @@ static vector<TagNames> PropColumns = {
 	{ pcPROPNAMEDIID, IDS_COLNAMED_PROP_GUID },
 };
 
-static vector<TagNames> PropXMLNames = {
+static std::vector<TagNames> PropXMLNames = {
 	{ pcPROPBESTGUESS , IDS_COLBESTGUESS },
 	{ pcPROPOTHERNAMES, IDS_COLOTHERNAMES },
 	{ pcPROPTAG, IDS_COLTAG },

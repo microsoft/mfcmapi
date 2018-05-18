@@ -35,7 +35,7 @@ void UnLoadPrivateMAPI();
 void ForceOutlookMAPI(bool fForce);
 
 static std::wstring GetRegisteredMapiClient(const std::wstring& pwzProviderOverride, bool bDLL, bool bEx);
-vector<std::wstring> GetInstalledOutlookMAPI();
+std::vector<std::wstring> GetInstalledOutlookMAPI();
 
 const WCHAR WszKeyNameMailClient[] = L"Software\\Clients\\Mail";
 const WCHAR WszValueNameDllPathEx[] = L"DllPathEx";
@@ -302,9 +302,9 @@ std::wstring GetMailClientFromMSIData(HKEY hkeyMapiClient)
 	return szPath;
 }
 
-vector<std::wstring> GetMAPIPaths()
+std::vector<std::wstring> GetMAPIPaths()
 {
-	auto paths = vector<std::wstring>();
+	auto paths = std::vector<std::wstring>();
 	std::wstring szPath;
 	if (s_fForceSystemMAPI)
 	{
@@ -386,10 +386,10 @@ std::wstring GetInstalledOutlookMAPI(int iOutlook)
 	return strings::emptystring;
 }
 
-vector<std::wstring> GetInstalledOutlookMAPI()
+std::vector<std::wstring> GetInstalledOutlookMAPI()
 {
 	DebugPrint(DBGLoadMAPI, L"Enter GetInstalledOutlookMAPI\n");
-	auto paths = vector<std::wstring>();
+	auto paths = std::vector<std::wstring>();
 	if (!pfnMsiProvideQualifiedComponent || !pfnMsiGetFileVersion) return paths;
 
 	for (auto iCurrentOutlook = oqcOfficeBegin; iCurrentOutlook < oqcOfficeEnd; iCurrentOutlook++)
